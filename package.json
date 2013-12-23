@@ -12,8 +12,10 @@
     "url": "https://github.com/AriaMinaei/timeflow.git"
   },
   "keywords": [
-    "struct",
-    "webgl"
+    "keyframes",
+    "animation",
+    "webgl",
+    "cubic-bezier"
   ],
   "author": "Aria Minaei",
   "license": "MIT",
