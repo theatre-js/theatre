@@ -2,7 +2,7 @@
  * Right now:
  *  - No incremental props
  *  - No lonely points, only beziers
- *  - Beziers are all linear
+ *  / Beziers are all linear
  *  - Only going forward
  *  - No dynamicism
 ###
@@ -22,33 +22,49 @@ module.exports = class DynamicTimeFlow
 
 		@_arrays = {}
 
-		@_regularProps = {}
+		@_props = {}
+
+		@_propsDone = no
 
 		@pacs = new PacsManager @
 
-		@_beziers = []
-
-		@_currentBezier = 0
-
-		@_currentActions = {}
-
-	startAt: (t) ->
-
-		@_startAt = t
-
-		return
-
 	addArray: (name, array) ->
+
+		if @_arrays[name]?
+
+			throw Error "An array named '#{name}' already exists"
 
 		@_arrays[name] = array
 
 		@
 
-	addRegularProp: (name, arrayName, indexInArray) ->
+	addRegularProp: (name, arrayName, indexInArray, initial) ->
 
-		@_regularProps[name] = [arrayName, indexInArray]
+		if @_propsDone
+
+			throw Error "Cannot add props after calling DynamicTimeFlow.propsDone()"
+
+		if @_props[name]?
+
+			throw Error "A prop named '#{name}' already exists"
+
+		unless @_arrays[arrayName]
+
+			throw Error "Couldn't find array named '#{arrayName}'"
+
+		@_props[name] = new RegularProp @, name, arrayName, indexInArray, initial
 
 		@
+
+	propsDone: ->
+
+		if @_propsDone
+
+			throw Error "Cannot call propsDone() twice."
+
+		@_propsDone = yes
+
+		return
 
 	goto: (t) ->
 
@@ -68,30 +84,8 @@ module.exports = class DynamicTimeFlow
 
 	_goForwardTo: (t) ->
 
-		while (bezier = @_beziers[@_currentBezier]) and bezier? and bezier.fromT <= t
+		for name, prop of @_props
 
-			prop = @_regularProps[bezier.prop]
-
-			array = @_arrays[prop[0]]
-
-			indexInArray = prop[1]
-
-			@_currentActions[bezier.prop] = new BezierRunner array, indexInArray, bezier.fromT, bezier.fromVal, bezier.toT, bezier.toVal
-
-			@_currentBezier++
-
-		@_runCurrentActionsForward t
-
-		return
-
-	_runCurrentActionsForward: (t) ->
-
-		for prop, updater of @_currentActions
-
-			unless updater.runAt t
-
-				delete @_currentActions[prop]
-
-				console.log @_currentActions
+			prop._goForwardTo t
 
 		return
