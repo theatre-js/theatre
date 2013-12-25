@@ -1,4 +1,4 @@
-PacTimeline = require 'prop/PacTimeline'
+PacsTimeline = require './prop/PacsTimeline'
 
 module.exports = class RegularProp
 
@@ -8,5 +8,6 @@ module.exports = class RegularProp
 
 		@_processedTimeline = []
 
-		@pacs = new PacTimeline
+		@pacs = new PacsTimeline @
 
+	_reportUpdate: (from, to) ->

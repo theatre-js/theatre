@@ -1,14 +1,9 @@
 ###*
  * Right now:
  *  - No incremental props
- *  - No lonely points, only beziers
- *  / Beziers are all linear
- *  - Only going forward
- *  - No dynamicism
 ###
 
-PacsManager = require './dynamic/PacsManager'
-BezierRunner = require './dynamic/BezierRunner'
+RegularProp = require './dynamic/RegularProp'
 
 module.exports = class DynamicTimeFlow
 
@@ -26,8 +21,6 @@ module.exports = class DynamicTimeFlow
 
 		@_propsDone = no
 
-		@pacs = new PacsManager @
-
 	addArray: (name, array) ->
 
 		if @_arrays[name]?
@@ -38,7 +31,7 @@ module.exports = class DynamicTimeFlow
 
 		@
 
-	addRegularProp: (name, arrayName, indexInArray, initial) ->
+	_verifyPropAdd: (name, arrayName) ->
 
 		if @_propsDone
 
@@ -52,9 +45,23 @@ module.exports = class DynamicTimeFlow
 
 			throw Error "Couldn't find array named '#{arrayName}'"
 
+		return
+
+	addRegularProp: (name, arrayName, indexInArray, initial) ->
+
+		@_verifyPropAdd name, arrayName
+
 		@_props[name] = new RegularProp @, name, arrayName, indexInArray, initial
 
 		@
+
+	getProp: (name) ->
+
+		unless @_propsDone
+
+			throw Error "You cannot access any prop before calling propsDone()"
+
+		@_props[name]
 
 	propsDone: ->
 

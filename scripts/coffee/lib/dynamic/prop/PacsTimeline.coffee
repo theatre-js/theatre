@@ -1,6 +1,6 @@
 array = require 'utila/scripts/js/lib/array'
-Point = require './pacTimeline/Point'
-Connector = require './pacTimeline/Connector'
+Point = require './pacsTimeline/Point'
+Connector = require './pacsTimeline/Connector'
 
 module.exports = class PacTimeline
 
@@ -19,6 +19,12 @@ module.exports = class PacTimeline
 			lastIndex = index
 
 		lastIndex
+
+	_reportUpdate: (from, to) ->
+
+		@prop._reportUpdate from, to
+
+		return
 
 	getItemByIndex: (index) ->
 
@@ -74,16 +80,16 @@ module.exports = class PacTimeline
 		pointIndex = prevIndex + 1
 
 		# now lets see if we are in between a connector
-		if prevItem.isConnector()
+		if prevItem? and prevItem.isConnector()
 
 			# we're in between a connector
 
 			# let's inject this point inside the timeline...
-			array.injectByIndex @timeline, pointIndex, point
+			array.injectInIndex @timeline, pointIndex, point
 
 			# ... and add a connector right after it
 			newConnectorIndex = pointIndex + 1
-			array.injectByIndex @timeline, newConnectorIndex, new Connector t
+			array.injectInIndex @timeline, newConnectorIndex, new Connector t
 
 			# the timeline has changed from the previous point, to the next point
 			prevPoint = @getItemByIndex prevIndex - 1
@@ -96,7 +102,7 @@ module.exports = class PacTimeline
 			# we're not between a connector
 
 			# let's inject this point inside the timeline
-			array.injectByIndex @timeline, pointIndex, point
+			array.injectInIndex @timeline, pointIndex, point
 
 			nextItem = @getItemByIndex pointIndex + 1
 
@@ -131,9 +137,89 @@ module.exports = class PacTimeline
 
 		# all safe, let's make the connector
 		connectorIndex = nextPointIndex
-		array.injectByIndex @timeline, connectorIndex, new Connector t
+		array.injectInIndex @timeline, connectorIndex, new Connector t
 
 		# things have changed from the previous point to the next point
 		@_reportUpdate t, nextPoint.t
+
+		return
+
+	removeConnector: (t) ->
+
+		connectorIndex = @_getIndexOfItemBeforeOrAt t
+		connector = @getItemByIndex connectorIndex
+
+		# make sure we have a connector there
+		unless connector? and connector.isConnector()
+
+			throw Error "Couldn't find a connector at that time"
+
+		# okay, let's remove the connector
+		array.pluck @timeline, connectorIndex
+
+		# the timeline is updated from previous point
+		# to the next point
+		prevPoint = @getItemByIndex connectorIndex - 1
+		nextPoint = @getItemByIndex connectorIndex
+
+		@_reportUpdate prevPoint.t, nextPoint.t
+
+		return
+
+	removePoint: (t) ->
+
+		pointIndex = @_getIndexOfItemBeforeOrAt t
+		point = @getItemByIndex pointIndex
+
+		if point? and point.isConnector()
+
+			pointIndex -= 1
+			point = @getItemByIndex pointIndex
+
+		# make sure we have a point there
+		unless point? and point.isPoint()
+
+			throw Error "Couldn't find a point at that time"
+
+		# remove the point first
+		array.pluck @timeline, pointIndex
+
+		# lets get the previous and next items
+		prevItemIndex = pointIndex - 1
+		prevItem = @getItemByIndex prevItemIndex
+
+		nextItemIndex = pointIndex
+
+		updatedFrom = point.t
+		updatedTo = Infinity
+
+		# if we are connected to a point from the left
+		if prevItem? and prevItem.isConnector()
+
+			# remove the connector from the left
+			array.pluck @timeline, prevItemIndex
+
+			nextItemIndex -= 1
+
+			updatedFrom = @getItemByIndex(prevItemIndex - 1).t
+
+		nextItem = @getItemByIndex nextItemIndex
+
+		if nextItem?
+
+			# if we are not connected to a point to the right
+			if nextItem.isPoint()
+
+				updatedTo = nextItem.t
+
+			# we are connected to a connector to the right
+			else
+
+				# remove the connector
+				array.pluck @timeline, nextItemIndex
+
+				updatedTo = @getItemByIndex(nextItemIndex).t
+
+		@_reportUpdate updatedFrom, updatedTo
 
 		return
