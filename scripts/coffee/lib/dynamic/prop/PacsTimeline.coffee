@@ -34,12 +34,6 @@ module.exports = class PacTimeline extends _Emitter
 
 		return
 
-	done: ->
-
-		do @_reportUpdate
-
-		return
-
 	_reportUpdate: ->
 
 		if @_updateRange[0] is Infinity and @_updateRange[1] is -Infinity
@@ -53,39 +47,53 @@ module.exports = class PacTimeline extends _Emitter
 
 		return
 
-	getItemByIndex: (index) ->
+	_getItemByIndex: (index) ->
 
 		@timeline[index]
 
-	itemExistsAt: (t) ->
+	_pointExistsAt: (t) ->
+
+		item = @_getPointAt t
+
+		return no unless item?
+
+		item.t is t
+
+	_getPointAt: (t) ->
 
 		index = @_getIndexOfItemBeforeOrAt t
 
-		item = @getItemByIndex index
+		item = @_getItemByIndex index
+
+		return unless item?
+
+		if item.isConnector()
+
+			return @_getItemByIndex index - 1
+
+		else
+
+			return null if item.t isnt t
+
+			return item
+
+	_getItemIndex: (item) ->
+
+		@timeline.indexOf item
+
+	_connectorExistsAt: (t) ->
+
+		index = @_getIndexOfItemBeforeOrAt t
+
+		item = @_getItemByIndex index
 
 		return no unless item?
 
-		item.t is t
-
-	pointExistsAt: (t) ->
-
-		item = @getPointAt t
-
-		return no unless item?
+		return no unless item.isConnector()
 
 		item.t is t
 
-	_makeConnector: (t) ->
-
-		@_idCounter++
-
-		c = new Connector @, t, @prop.id + '-connector-' + @_idCounter
-
-		@_fire 'new-connector', c
-
-		c
-
-	_makePoint: (t, val, pLeftX, pLeftY, pRightX, pRightY) ->
+	addPoint: (t, val, pLeftX, pLeftY, pRightX, pRightY) ->
 
 		@_idCounter++
 
@@ -95,200 +103,18 @@ module.exports = class PacTimeline extends _Emitter
 
 		p
 
-	getPointAt: (t) ->
-
-		index = @_getIndexOfItemBeforeOrAt t
-
-		item = @getItemByIndex index
-
-		return unless item?
-
-		if item.isConnector()
-
-			return @getItemByIndex index - 1
-
-		else
-
-			return null if item.t isnt t
-
-			return item
-
-	getConnectorAt: (t) ->
-
-		index = @_getIndexOfItemBeforeOrAt t
-
-		item = @getItemByIndex index
-
-		return unless item?
-
-		return unless item.isConnector() and item.t is t
-
-		return item
-
-	getItemIndex: (item) ->
-
-		@timeline.indexOf item
-
-	connectorExistsAt: (t) ->
-
-		index = @_getIndexOfItemBeforeOrAt t
-
-		item = @getItemByIndex index
-
-		return no unless item?
-
-		return no unless item.isConnector()
-
-		item.t is t
-
-	getConnectorOnIndex: (index) ->
-
-		item = @getItemByIndex index
-
-		if item? and item.isConnector()
-
-			return item
-
-		else
-
-			return
-
-	addPoint: (t, val, pLeftX, pLeftY, pRightX, pRightY) ->
-
-		# first, lets make sure no point sits at t
-		if @pointExistsAt t
-
-			throw Error "Another point already exists at t"
-
-		point = @_makePoint t, val, pLeftX, pLeftY, pRightX, pRightY
-
-		prevIndex = @_getIndexOfItemBeforeOrAt t
-
-		prevItem = @getItemByIndex prevIndex
-
-		pointIndex = prevIndex + 1
-
-		# now lets see if we are in between a connector
-		if prevItem? and prevItem.isConnector()
-
-			# we're in between a connector
-
-			# let's inject this point inside the timeline...
-			array.injectInIndex @timeline, pointIndex, point
-
-			# ... and add a connector right after it
-			newConnectorIndex = pointIndex + 1
-			array.injectInIndex @timeline, newConnectorIndex, @_makeConnector t
-
-			# the timeline has changed from the previous point, to the next point
-			prevPoint = @getItemByIndex prevIndex - 1
-			nextPoint = @getItemByIndex newConnectorIndex + 1
-
-			@_setUpdateRange prevPoint.t, nextPoint.t
-
-		else
-
-			# we're not between a connector
-
-			# let's inject this point inside the timeline
-			array.injectInIndex @timeline, pointIndex, point
-
-			nextItem = @getItemByIndex pointIndex + 1
-
-			# the timeline has changed from this t, to the next t
-			@_setUpdateRange t, if nextItem? then nextItem.t else Infinity
-
-		point
-
 	addConnector: (t) ->
 
-		# first, lets make sure no connector sits at t
-		if @connectorExistsAt t
+		@_idCounter++
 
-			throw Error "Another connector already exists at t"
+		c = new Connector @, t, @prop.id + '-connector-' + @_idCounter
 
-		# lets find the point that sits before the connector
-		prevPointIndex = @_getIndexOfItemBeforeOrAt t
-		prevPoint = @getItemByIndex prevPointIndex
+		@_fire 'new-connector', c
 
-		# make sure the point sits exactly on this t
-		unless prevPoint? and prevPoint.t is t
+		c
 
-			throw Error "No point sits at this t"
+	done: ->
 
-		nextPointIndex = prevPointIndex + 1
-		nextPoint = @getItemByIndex nextPointIndex
+		do @_reportUpdate
 
-		# make sure next point exists
-		unless nextPoint? and nextPoint.isPoint()
-
-			throw Error "There is no point to come after the connector"
-
-		# all safe, let's make the connector
-		connector = @_makeConnector t
-
-		array.injectInIndex @timeline, nextPointIndex, connector
-
-		# things have changed from the previous point to the next point
-		@_setUpdateRange t, nextPoint.t
-
-		connector
-
-	_getPointNeighbours: (t) ->
-
-		neighbours =
-
-			leftConnector: null
-			leftPoint: null
-
-			rightConnector: null
-			rightPoint: null
-
-		point = @getPointAt t
-
-		unless point?
-
-			throw Error "Couldn't find a point on that time"
-
-		pointIndex = @getItemIndex point
-
-		prevItem = @getItemByIndex pointIndex - 1
-
-		if prevItem?
-
-			if prevItem.isPoint()
-
-				neighbours.leftPoint = prevItem
-
-			else
-
-				neighbours.leftConnector = prevItem
-				neighbours.leftPoint = @getItemByIndex pointIndex - 2
-
-		nextItem = @getItemByIndex pointIndex + 1
-
-		if nextItem?
-
-			if nextItem.isPoint()
-
-				neighbours.rightPoint = nextItem
-
-			else
-
-				neighbours.rightConnector = nextItem
-				neighbours.rightPoint = @getItemByIndex pointIndex + 2
-
-		neighbours
-
-	changePointTime: (t, newT) ->
-
-		point = @getPointAt t
-
-		unless point?
-
-			throw Error "Couldn't find a point on that time"
-
-		pointIndex = @getItemIndex point
-
-		neighbours = @_getPointNeighbours t
-
+		return

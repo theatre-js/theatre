@@ -345,39 +345,6 @@ it "should support changing a point's time", ->
 	p.addConnector 300
 	p.addConnector 400
 
-describe '_getPointNeighbours()'
-
-it "should work", ->
-
-	p = makePacs()
-
-	p100 = p.addPoint 100, 0, 1, 1, 1, 1
-
-	p200 = p.addPoint 200, 0, 1, 1, 1, 1
-
-	p300 = p.addPoint 300, 0, 1, 1, 1, 1
-
-	p400 = p.addPoint 400, 0, 1, 1, 1, 1
-
-	p500 = p.addPoint 500, 0, 1, 1, 1, 1
-
-	p.addConnector 300
-	p.addConnector 400
-
-	n = p._getPointNeighbours(100)
-
-	expect(n.leftPoint).to.equal null
-	expect(n.leftConnector).to.equal null
-	expect(n.rightConnector).to.equal null
-	expect(n.rightPoint).to.not.equal null
-
-	n = p._getPointNeighbours(300)
-
-	expect(n.leftPoint).to.not.equal null
-	expect(n.leftConnector).to.equal null
-	expect(n.rightConnector).to.not.equal null
-	expect(n.rightPoint).to.not.equal null
-
 describe 'Point Helpers'
 
 it "[get/has][next/prev]Connector()", ->

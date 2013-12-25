@@ -7,6 +7,48 @@ module.exports = class Point extends _PacsTimelineItem
 
 		super
 
+		# first, lets make sure no point sits at t
+		if @prop._pointExistsAt @t
+
+			throw Error "Another point already exists at t"
+
+		prevIndex = @prop._getIndexOfItemBeforeOrAt @t
+
+		prevItem = @prop._getItemByIndex prevIndex
+
+		index = prevIndex + 1
+
+		# now lets see if we are in between a connector
+		if prevItem? and prevItem.isConnector()
+
+			# we're in between a connector
+
+			# let's inject this point inside the timeline...
+			array.injectInIndex @prop.timeline, index, @
+
+			# ... and add a connector right after it
+			newConnectorIndex = index + 1
+
+			@prop.addConnector @t
+
+			# the timeline has changed from the previous point, to the next point
+			prevPoint = @prop._getItemByIndex prevIndex - 1
+			nextPoint = @prop._getItemByIndex newConnectorIndex + 1
+
+			@prop._setUpdateRange prevPoint.t, nextPoint.t
+
+		else
+
+			# we're not between a connector
+
+			# let's inject this point inside the timeline
+			array.injectInIndex @prop.timeline, index, @
+
+			nextItem = @prop._getItemByIndex index + 1
+
+			# the timeline has changed from this t, to the next t
+			@prop._setUpdateRange t, if nextItem? then nextItem.t else Infinity
+
 	changeValues: (@pLeftX, @pLeftY, @pRightX, @pRightY) ->
 
 	remove: ->
@@ -54,7 +96,7 @@ module.exports = class Point extends _PacsTimelineItem
 
 	getIndex: ->
 
-		i = @prop.getItemIndex @
+		i = @prop._getItemIndex @
 
 		if i is -1
 
@@ -64,7 +106,7 @@ module.exports = class Point extends _PacsTimelineItem
 
 	getLeftConnector: ->
 
-		item = @prop.getItemByIndex @getIndex() - 1
+		item = @prop._getItemByIndex @getIndex() - 1
 
 		if item? and item.isConnector()
 
@@ -74,7 +116,7 @@ module.exports = class Point extends _PacsTimelineItem
 
 	getRightConnector: ->
 
-		item = @prop.getItemByIndex @getIndex() + 1
+		item = @prop._getItemByIndex @getIndex() + 1
 
 		if item? and item.isConnector()
 
@@ -94,11 +136,11 @@ module.exports = class Point extends _PacsTimelineItem
 
 		if @isConnectedToTheLeft()
 
-			@prop.getItemByIndex @getIndex() - 2
+			@prop._getItemByIndex @getIndex() - 2
 
 		else
 
-			@prop.getItemByIndex @getIndex() - 1
+			@prop._getItemByIndex @getIndex() - 1
 
 	hasLeftPoint: ->
 
@@ -108,11 +150,11 @@ module.exports = class Point extends _PacsTimelineItem
 
 		if @isConnectedToTheRight()
 
-			@prop.getItemByIndex @getIndex() + 2
+			@prop._getItemByIndex @getIndex() + 2
 
 		else
 
-			@prop.getItemByIndex @getIndex() + 1
+			@prop._getItemByIndex @getIndex() + 1
 
 	hasRightPoint: ->
 
