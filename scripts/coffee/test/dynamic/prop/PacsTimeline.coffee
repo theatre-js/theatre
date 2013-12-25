@@ -214,3 +214,79 @@ it "should support points connected from both sides", ->
 
 	p.timeline[1].t.should.equal 300
 	p.timeline[1].isPoint().should.equal yes
+
+it "should support changing a lonely point's values", ->
+
+	p = makePacs()
+
+	p.addPoint 100, 0, 1, 1, 1, 1
+
+	p.addPoint 200, 0, 1, 1, 1, 1
+
+	p.addPoint 300, 0, 1, 1, 1, 1
+
+	p.updates.length = 0
+
+	p.changePointValues 100, 0.5, 1, 1, 1, 1
+
+	p.updates.should.be.like [[100, 200]]
+
+	p.updates.length = 0
+
+	p.changePointValues 200, 0.5, 1, 1, 1, 1
+
+	p.updates.should.be.like [[200, 300]]
+
+	p.updates.length = 0
+
+	p.changePointValues 300, 0.5, 1, 1, 1, 1
+
+	p.updates.should.be.like [[300, Infinity]]
+
+it "should support changing a connected point's values", ->
+
+	p = makePacs()
+
+	p.addPoint 100, 0, 1, 1, 1, 1
+
+	p.addPoint 200, 0, 1, 1, 1, 1
+
+	p.addPoint 300, 0, 1, 1, 1, 1
+
+	p.addPoint 400, 0, 1, 1, 1, 1
+
+	p.addConnector 100
+	p.addConnector 200
+	p.addConnector 300
+
+	p.updates.length = 0
+
+	p.changePointValues 100, 0.5, 1, 1, 1, 1
+
+	p.updates.should.be.like [[100, 200]]
+
+	p.updates.length = 0
+
+	p.changePointValues 100, 0.5, 1, 1, 1, 1
+
+	p.timeline.length.should.equal 7
+
+	p.updates.should.be.like [[100, 200]]
+
+	p.updates.length = 0
+
+	p.changePointValues 200, 0.5, 1, 1, 1, 1
+
+	p.updates.should.be.like [[100, 300]]
+
+	p.updates.length = 0
+
+	p.changePointValues 300, 0.5, 1, 1, 1, 1
+
+	p.updates.should.be.like [[200, 400]]
+
+	p.updates.length = 0
+
+	p.changePointValues 400, 0.5, 1, 1, 1, 1
+
+	p.updates.should.be.like [[300, Infinity]]

@@ -30,6 +30,8 @@ module.exports = class PacTimeline
 
 		@timeline[index]
 
+	getPointAt: (t) ->
+
 	itemExistsAt: (t) ->
 
 		index = @_getIndexOfItemBeforeOrAt t
@@ -42,15 +44,31 @@ module.exports = class PacTimeline
 
 	pointExistsAt: (t) ->
 
+		item = @getPointAt t
+
+		return no unless item?
+
+		item.t is t
+
+	getPointAt: (t) ->
+
 		index = @_getIndexOfItemBeforeOrAt t
 
 		item = @getItemByIndex index
 
-		return no unless item?
+		return unless item?
 
-		return no unless item.isPoint()
+		if item.isConnector()
 
-		item.t is t
+			return @getItemByIndex index - 1
+
+		else
+
+			return item
+
+	getItemIndex: (item) ->
+
+		@timeline.indexOf item
 
 	connectorExistsAt: (t) ->
 
@@ -168,18 +186,13 @@ module.exports = class PacTimeline
 
 	removePoint: (t) ->
 
-		pointIndex = @_getIndexOfItemBeforeOrAt t
-		point = @getItemByIndex pointIndex
+		point = @getPointAt t
 
-		if point? and point.isConnector()
+		unless point?
 
-			pointIndex -= 1
-			point = @getItemByIndex pointIndex
+			throw Error "Couldn't find a point on that time"
 
-		# make sure we have a point there
-		unless point? and point.isPoint()
-
-			throw Error "Couldn't find a point at that time"
+		pointIndex = @getItemIndex point
 
 		# remove the point first
 		array.pluck @timeline, pointIndex
@@ -223,3 +236,35 @@ module.exports = class PacTimeline
 		@_reportUpdate updatedFrom, updatedTo
 
 		return
+
+	changePointValues: (t, val, pLeftX, pLeftY, pRightX, pRightY) ->
+
+		point = @getPointAt t
+
+		unless point?
+
+			throw Error "Couldn't find a point on that time"
+
+		# let's update the values first
+		point.changeValues val, pLeftX, pLeftY, pRightX, pRightY
+
+		updatedFrom = point.t
+		updatedTo = Infinity
+
+		pointIndex = @getItemIndex point
+
+		# if we're connected from the left
+		if (connector = @getItemByIndex(pointIndex - 1)) and connector.isConnector()
+
+			updatedFrom = @getItemByIndex(pointIndex - 2).t
+
+		# if there is anything on our right
+		if (nextItem = @getItemByIndex(pointIndex + 1)) and nextItem?
+
+			unless nextItem.isPoint()
+
+				nextItem = @getItemByIndex(pointIndex + 2)
+
+			updatedTo = nextItem.t
+
+		@_reportUpdate updatedFrom, updatedTo
