@@ -93,11 +93,11 @@ module.exports = class PacTimeline extends _Emitter
 
 		item.t is t
 
-	addPoint: (t, val, pLeftX, pLeftY, pRightX, pRightY) ->
+	addPoint: (t, val, leftHandler, rightHandler) ->
 
 		@_idCounter++
 
-		p = new Point @, @prop.id + '-connector-' + @_idCounter, t, val, pLeftX, pLeftY, pRightX, pRightY
+		p = new Point @, @prop.id + '-connector-' + @_idCounter, t, val, leftHandler, rightHandler
 
 		@_fire 'new-point', p
 

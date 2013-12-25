@@ -3,7 +3,7 @@ array = require 'utila/scripts/js/lib/array'
 
 module.exports = class Point extends _PacsTimelineItem
 
-	constructor: (@prop, @id, @t, @value, @pLeftX, @pLeftY, @pRightX, @pRightY) ->
+	constructor: (@prop, @id, @t, @value, @leftHandler, @rightHandler) ->
 
 		super
 
@@ -46,10 +46,8 @@ module.exports = class Point extends _PacsTimelineItem
 
 			nextItem = @prop._getItemByIndex index + 1
 
-			# the timeline has changed from this t, to the next t
+			# the timeline has changed from this t, to the next point's t
 			@prop._setUpdateRange t, if nextItem? then nextItem.t else Infinity
-
-	changeValues: (@pLeftX, @pLeftY, @pRightX, @pRightY) ->
 
 	remove: ->
 
