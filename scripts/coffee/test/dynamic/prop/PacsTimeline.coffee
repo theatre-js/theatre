@@ -4,47 +4,57 @@ PacsTimeline = mod 'dynamic/prop/PacsTimeline'
 
 makePacs = ->
 
-	updates = []
+	updates = [Infinity, -Infinity]
+
+	Object.defineProperty updates, 'reset',
+
+		value: ->
+
+			updates[0] = Infinity
+			updates[1] = -Infinity
 
 	p = new PacsTimeline {}
 
 	p._setUpdateRange = (from, to) ->
 
-		updates.push [from, to]
+		updates[0] = Math.min(updates[0], from)
+		updates[1] = Math.max(updates[1], to)
+
+		return
 
 	p.updates = updates
 
 	p
 
-describe 'situations'
+describe 'adding'
 
 it "should correctly add points and connectors and report updates", ->
 
 	p = makePacs()
 
-	p.addPoint 100, 0, 1, 1, 1, 1
+	p100 = p.addPoint 100, 0, 1, 1, 1, 1
 
-	p.addPoint 200, 0, 1, 1, 1, 1
+	p200 = p.addPoint 200, 0, 1, 1, 1, 1
 
 	p.addConnector 100
 
-	p.updates.should.be.like [[100, Infinity], [200, Infinity], [100, 200]]
+	p.updates.should.be.like [100, Infinity]
 
 	p.timeline.length.should.equal 3
 
-it "shold support adding points in between connected points", ->
+it "should support adding points in between connected points", ->
 
 	p = makePacs()
 
-	p.addPoint 100, 0, 1, 1, 1, 1
+	p100 = p.addPoint 100, 0, 1, 1, 1, 1
 
-	p.addPoint 200, 0, 1, 1, 1, 1
+	p200 = p.addPoint 200, 0, 1, 1, 1, 1
 
 	p.addConnector 100
 
-	p.updates.length = 0
+	p.updates.reset()
 
-	p.addPoint 150, 0, 1, 1, 1, 1
+	p150 = p.addPoint 150, 0, 1, 1, 1, 1
 
 	p.timeline.length.should.equal 5
 
@@ -63,21 +73,46 @@ it "shold support adding points in between connected points", ->
 	p.timeline[4].t.should.equal 200
 	p.timeline[4].isPoint().should.equal yes
 
-	p.updates.should.be.like [[100, 200]]
+	p.updates.should.be.like [100, 200]
+
+it "should throw when adding an item in an occupied time", ->
+
+	p = makePacs()
+
+	p100 = p.addPoint 100, 0, 1, 1, 1, 1
+	(->p100 = p.addPoint 100, 0, 1, 1, 1, 1).should.throw()
+
+	p200 = p.addPoint 200, 0, 1, 1, 1, 1
+
+	p.addConnector 100
+	(->p100 = p.addPoint 100, 0, 1, 1, 1, 1).should.throw()
+
+	(->p.addConnector 100).should.throw()
+
+it "should throw when adding a connector in the wrong place", ->
+
+	p = makePacs()
+
+	p100 = p.addPoint 100, 0, 1, 1, 1, 1
+
+	(->p.addConnector 100).should.throw()
+	(->p.addConnector 50).should.throw()
+
+describe 'removing'
 
 it "should support removing a connector", ->
 
 	p = makePacs()
 
-	p.addPoint 100, 0, 1, 1, 1, 1
+	p100 = p.addPoint 100, 0, 1, 1, 1, 1
 
-	p.addPoint 200, 0, 1, 1, 1, 1
+	p200 = p.addPoint 200, 0, 1, 1, 1, 1
 
-	p.addConnector 100
+	c = p.addConnector 100
 
-	p.updates.length = 0
+	p.updates.reset()
 
-	p.removeConnector 100
+	c.remove()
 
 	p.timeline.length.should.equal 2
 
@@ -87,75 +122,75 @@ it "should support removing a connector", ->
 	p.timeline[1].t.should.equal 200
 	p.timeline[1].isPoint().should.equal yes
 
-	p.updates.should.be.like [[100, 200]]
+	p.updates.should.be.like [100, 200]
 
 it "should support removing lonely points", ->
 
 	p = makePacs()
 
-	p.addPoint 100, 0, 1, 1, 1, 1
+	p100 = p.addPoint 100, 0, 1, 1, 1, 1
 
-	p.addPoint 200, 0, 1, 1, 1, 1
+	p200 = p.addPoint 200, 0, 1, 1, 1, 1
 
-	p.addPoint 300, 0, 1, 1, 1, 1
+	p300 = p.addPoint 300, 0, 1, 1, 1, 1
 
-	p.addPoint 400, 0, 1, 1, 1, 1
+	p400 = p.addPoint 400, 0, 1, 1, 1, 1
 
-	p.updates.length = 0
+	p.updates.reset()
 
-	p.removePoint 200
+	p200.remove()
 
 	p.timeline.length.should.equal 3
 
-	p.updates.should.be.like [[200, 300]]
+	p.updates.should.be.like [200, 300]
 
-	p.updates.length = 0
+	p.updates.reset()
 
-	p.removePoint 400
+	p400.remove()
 
 	p.timeline.length.should.equal 2
 
-	p.updates.should.be.like [[400, Infinity]]
+	p.updates.should.be.like [400, Infinity]
 
-	p.updates.length = 0
+	p.updates.reset()
 
-	p.removePoint 100
+	p100.remove()
 
 	p.timeline.length.should.equal 1
 
-	p.updates.should.be.like [[100, 300]]
+	p.updates.should.be.like [100, 300]
 
-	p.updates.length = 0
+	p.updates.reset()
 
-	p.removePoint 300
+	p300.remove()
 
 	p.timeline.length.should.equal 0
 
-	p.updates.should.be.like [[300, Infinity]]
+	p.updates.should.be.like [300, Infinity]
 
 it "should support removing points connected to the right", ->
 
 	p = makePacs()
 
-	p.addPoint 100, 0, 1, 1, 1, 1
+	p100 = p.addPoint 100, 0, 1, 1, 1, 1
 
-	p.addPoint 200, 0, 1, 1, 1, 1
+	p200 = p.addPoint 200, 0, 1, 1, 1, 1
 
-	p.addPoint 300, 0, 1, 1, 1, 1
+	p300 = p.addPoint 300, 0, 1, 1, 1, 1
 
-	p.addPoint 400, 0, 1, 1, 1, 1
+	p400 = p.addPoint 400, 0, 1, 1, 1, 1
 
 	p.addConnector 100
 	p.addConnector 200
 	p.addConnector 300
 
-	p.updates.length = 0
+	p.updates.reset()
 
-	p.removePoint 100
+	p100.remove()
 
 	p.timeline.length.should.equal 5
 
-	p.updates.should.be.like [[100, 200]]
+	p.updates.should.be.like [100, 200], [100, 200]
 
 	p.timeline[0].t.should.equal 200
 
@@ -163,49 +198,49 @@ it "should support removing points connected to the left", ->
 
 	p = makePacs()
 
-	p.addPoint 100, 0, 1, 1, 1, 1
+	p100 = p.addPoint 100, 0, 1, 1, 1, 1
 
-	p.addPoint 200, 0, 1, 1, 1, 1
+	p200 = p.addPoint 200, 0, 1, 1, 1, 1
 
-	p.addPoint 300, 0, 1, 1, 1, 1
+	p300 = p.addPoint 300, 0, 1, 1, 1, 1
 
-	p.addPoint 400, 0, 1, 1, 1, 1
+	p400 = p.addPoint 400, 0, 1, 1, 1, 1
 
 	p.addConnector 100
 	p.addConnector 200
 	p.addConnector 300
 
-	p.updates.length = 0
+	p.updates.reset()
 
-	p.removePoint 400
+	p400.remove()
 
 	p.timeline.length.should.equal 5
 
-	p.updates.should.be.like [[300, Infinity]]
+	p.updates.should.be.like [300, Infinity]
 
 	p.timeline[4].t.should.equal 300
 	p.timeline[4].isPoint().should.equal yes
 
-it "should support points connected from both sides", ->
+it "should support removing points connected from both sides", ->
 
 	p = makePacs()
 
-	p.addPoint 100, 0, 1, 1, 1, 1
+	p100 = p.addPoint 100, 0, 1, 1, 1, 1
 
-	p.addPoint 200, 0, 1, 1, 1, 1
+	p200 = p.addPoint 200, 0, 1, 1, 1, 1
 
-	p.addPoint 300, 0, 1, 1, 1, 1
+	p300 = p.addPoint 300, 0, 1, 1, 1, 1
 
 	p.addConnector 100
 	p.addConnector 200
 
-	p.updates.length = 0
+	p.updates.reset()
 
-	p.removePoint 200
+	p200.remove()
 
 	p.timeline.length.should.equal 2
 
-	p.updates.should.be.like [[100, 300]]
+	p.updates.should.be.like [100, 300]
 
 	p.timeline[0].t.should.equal 100
 	p.timeline[0].isPoint().should.equal yes
@@ -213,78 +248,224 @@ it "should support points connected from both sides", ->
 	p.timeline[1].t.should.equal 300
 	p.timeline[1].isPoint().should.equal yes
 
-it "should support changing a lonely point's values", ->
+describe 'changing value'
+
+it "should support changing a lonely point's value", ->
 
 	p = makePacs()
 
-	p.addPoint 100, 0, 1, 1, 1, 1
+	p100 = p.addPoint 100, 0, 1, 1, 1, 1
 
-	p.addPoint 200, 0, 1, 1, 1, 1
+	p200 = p.addPoint 200, 0, 1, 1, 1, 1
 
-	p.addPoint 300, 0, 1, 1, 1, 1
+	p300 = p.addPoint 300, 0, 1, 1, 1, 1
 
-	p.updates.length = 0
+	p.updates.reset()
 
-	p.changePointValues 100, 0.5, 1, 1, 1, 1
+	p100.setValue 0.5
 
-	p.updates.should.be.like [[100, 200]]
+	p.updates.should.be.like [100, 200]
 
-	p.updates.length = 0
+	p.updates.reset()
 
-	p.changePointValues 200, 0.5, 1, 1, 1, 1
+	p200.setValue 0.5
 
-	p.updates.should.be.like [[200, 300]]
+	p.updates.should.be.like [200, 300]
 
-	p.updates.length = 0
+	p.updates.reset()
 
-	p.changePointValues 300, 0.5, 1, 1, 1, 1
+	p300.setValue 0.5
 
-	p.updates.should.be.like [[300, Infinity]]
+	p.updates.should.be.like [300, Infinity]
 
-it "should support changing a connected point's values", ->
+it "should support changing a connected point's value", ->
 
 	p = makePacs()
 
-	p.addPoint 100, 0, 1, 1, 1, 1
+	p100 = p.addPoint 100, 0, 1, 1, 1, 1
 
-	p.addPoint 200, 0, 1, 1, 1, 1
+	p200 = p.addPoint 200, 0, 1, 1, 1, 1
 
-	p.addPoint 300, 0, 1, 1, 1, 1
+	p300 = p.addPoint 300, 0, 1, 1, 1, 1
 
-	p.addPoint 400, 0, 1, 1, 1, 1
+	p400 = p.addPoint 400, 0, 1, 1, 1, 1
 
 	p.addConnector 100
 	p.addConnector 200
 	p.addConnector 300
 
-	p.updates.length = 0
+	p.updates.reset()
 
-	p.changePointValues 100, 0.5, 1, 1, 1, 1
+	p100.setValue 0.5
 
-	p.updates.should.be.like [[100, 200]]
+	p.updates.should.be.like [100, 200]
 
-	p.updates.length = 0
+	p.updates.reset()
 
-	p.changePointValues 100, 0.5, 1, 1, 1, 1
+	p100.setValue 0.56
 
 	p.timeline.length.should.equal 7
 
-	p.updates.should.be.like [[100, 200]]
+	p.updates.should.be.like [100, 200]
 
-	p.updates.length = 0
+	p.updates.reset()
 
-	p.changePointValues 200, 0.5, 1, 1, 1, 1
+	p200.setValue 0.5
 
-	p.updates.should.be.like [[100, 300]]
+	p.updates.should.be.like [100, 300]
 
-	p.updates.length = 0
+	p.updates.reset()
 
-	p.changePointValues 300, 0.5, 1, 1, 1, 1
+	p300.setValue 0.5
 
-	p.updates.should.be.like [[200, 400]]
+	p.updates.should.be.like [200, 400]
 
-	p.updates.length = 0
+	p.updates.reset()
 
-	p.changePointValues 400, 0.5, 1, 1, 1, 1
+	p400.setValue 0.5
 
-	p.updates.should.be.like [[300, Infinity]]
+	p.updates.should.be.like [300, Infinity]
+
+describe 'changing time'
+
+it "should support changing a point's time", ->
+
+	p = makePacs()
+
+	p100 = p.addPoint 100, 0, 1, 1, 1, 1
+
+	p200 = p.addPoint 200, 0, 1, 1, 1, 1
+
+	p300 = p.addPoint 300, 0, 1, 1, 1, 1
+
+	p400 = p.addPoint 400, 0, 1, 1, 1, 1
+
+	p500 = p.addPoint 500, 0, 1, 1, 1, 1
+
+	p.addConnector 300
+	p.addConnector 400
+
+describe '_getPointNeighbours()'
+
+it "should work", ->
+
+	p = makePacs()
+
+	p100 = p.addPoint 100, 0, 1, 1, 1, 1
+
+	p200 = p.addPoint 200, 0, 1, 1, 1, 1
+
+	p300 = p.addPoint 300, 0, 1, 1, 1, 1
+
+	p400 = p.addPoint 400, 0, 1, 1, 1, 1
+
+	p500 = p.addPoint 500, 0, 1, 1, 1, 1
+
+	p.addConnector 300
+	p.addConnector 400
+
+	n = p._getPointNeighbours(100)
+
+	expect(n.leftPoint).to.equal null
+	expect(n.leftConnector).to.equal null
+	expect(n.rightConnector).to.equal null
+	expect(n.rightPoint).to.not.equal null
+
+	n = p._getPointNeighbours(300)
+
+	expect(n.leftPoint).to.not.equal null
+	expect(n.leftConnector).to.equal null
+	expect(n.rightConnector).to.not.equal null
+	expect(n.rightPoint).to.not.equal null
+
+describe 'Point Helpers'
+
+it "[get/has][next/prev]Connector()", ->
+
+	p = makePacs()
+
+	p100 = p.addPoint 100, 0, 1, 1, 1, 1
+
+	p200 = p.addPoint 200, 0, 1, 1, 1, 1
+
+	p300 = p.addPoint 300, 0, 1, 1, 1, 1
+
+	p400 = p.addPoint 400, 0, 1, 1, 1, 1
+
+	p500 = p.addPoint 500, 0, 1, 1, 1, 1
+
+	c100 = p.addConnector 100
+	c200 = p.addConnector 200
+
+	p.updates.reset()
+
+	p100.isConnectedToTheLeft().should.equal no
+	expect(p100.getLeftConnector()).to.equal undefined
+
+	p200.isConnectedToTheLeft().should.equal yes
+	p200.getLeftConnector().should.equal c100
+
+	p200.isConnectedToTheRight().should.equal yes
+	p200.getRightConnector().should.equal c200
+
+	p300.isConnectedToTheRight().should.equal no
+	expect(p300.getRightConnector()).to.equal undefined
+
+it "[get/has][next/prev]Point()", ->
+
+	p = makePacs()
+
+	p100 = p.addPoint 100, 0, 1, 1, 1, 1
+
+	p200 = p.addPoint 200, 0, 1, 1, 1, 1
+
+	p300 = p.addPoint 300, 0, 1, 1, 1, 1
+
+	p400 = p.addPoint 400, 0, 1, 1, 1, 1
+
+	p500 = p.addPoint 500, 0, 1, 1, 1, 1
+
+	c100 = p.addConnector 100
+	c200 = p.addConnector 200
+
+	p.updates.reset()
+
+	p100.hasLeftPoint().should.equal no
+	p100.hasRightPoint().should.equal yes
+	expect(p100.getLeftPoint()).to.equal undefined
+	p100.getRightPoint().should.equal p200
+
+	p200.hasLeftPoint().should.equal yes
+	p200.hasRightPoint().should.equal yes
+	expect(p200.getLeftPoint()).to.equal p100
+	p200.getRightPoint().should.equal p300
+
+	p500.hasLeftPoint().should.equal yes
+	p500.hasRightPoint().should.equal no
+	expect(p500.getLeftPoint()).to.equal p400
+	expect(p500.getRightPoint()).to.equal undefined
+
+describe "Connector Helpers"
+
+it "get[Left/Right]Point()", ->
+
+	p = makePacs()
+
+	p100 = p.addPoint 100, 0, 1, 1, 1, 1
+
+	p200 = p.addPoint 200, 0, 1, 1, 1, 1
+
+	p300 = p.addPoint 300, 0, 1, 1, 1, 1
+
+	p400 = p.addPoint 400, 0, 1, 1, 1, 1
+
+	p500 = p.addPoint 500, 0, 1, 1, 1, 1
+
+	c100 = p.addConnector 100
+	c200 = p.addConnector 200
+
+	c100.getLeftPoint().should.equal p100
+	c100.getRightPoint().should.equal p200
+
+	c200.getLeftPoint().should.equal p200
+	c200.getRightPoint().should.equal p300

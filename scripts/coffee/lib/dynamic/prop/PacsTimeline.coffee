@@ -1,14 +1,19 @@
 array = require 'utila/scripts/js/lib/array'
 Point = require './pacsTimeline/Point'
 Connector = require './pacsTimeline/Connector'
+_Emitter = require '../../_Emitter'
 
-module.exports = class PacTimeline
+module.exports = class PacTimeline extends _Emitter
 
 	constructor: (@prop) ->
+
+		super
 
 		@timeline = []
 
 		@_updateRange = [Infinity, -Infinity]
+
+		@_idCounter = -1
 
 	_getIndexOfItemBeforeOrAt: (t) ->
 
@@ -52,8 +57,6 @@ module.exports = class PacTimeline
 
 		@timeline[index]
 
-	getPointAt: (t) ->
-
 	itemExistsAt: (t) ->
 
 		index = @_getIndexOfItemBeforeOrAt t
@@ -72,6 +75,26 @@ module.exports = class PacTimeline
 
 		item.t is t
 
+	_makeConnector: (t) ->
+
+		@_idCounter++
+
+		c = new Connector @, t, @prop.id + '-connector-' + @_idCounter
+
+		@_fire 'new-connector', c
+
+		c
+
+	_makePoint: (t, val, pLeftX, pLeftY, pRightX, pRightY) ->
+
+		@_idCounter++
+
+		p = new Point @, @prop.id + '-connector-' + @_idCounter, t, val, pLeftX, pLeftY, pRightX, pRightY
+
+		@_fire 'new-point', p
+
+		p
+
 	getPointAt: (t) ->
 
 		index = @_getIndexOfItemBeforeOrAt t
@@ -86,7 +109,21 @@ module.exports = class PacTimeline
 
 		else
 
+			return null if item.t isnt t
+
 			return item
+
+	getConnectorAt: (t) ->
+
+		index = @_getIndexOfItemBeforeOrAt t
+
+		item = @getItemByIndex index
+
+		return unless item?
+
+		return unless item.isConnector() and item.t is t
+
+		return item
 
 	getItemIndex: (item) ->
 
@@ -104,6 +141,18 @@ module.exports = class PacTimeline
 
 		item.t is t
 
+	getConnectorOnIndex: (index) ->
+
+		item = @getItemByIndex index
+
+		if item? and item.isConnector()
+
+			return item
+
+		else
+
+			return
+
 	addPoint: (t, val, pLeftX, pLeftY, pRightX, pRightY) ->
 
 		# first, lets make sure no point sits at t
@@ -111,7 +160,7 @@ module.exports = class PacTimeline
 
 			throw Error "Another point already exists at t"
 
-		point = new Point t, val, pLeftX, pLeftY, pRightX, pRightY
+		point = @_makePoint t, val, pLeftX, pLeftY, pRightX, pRightY
 
 		prevIndex = @_getIndexOfItemBeforeOrAt t
 
@@ -129,7 +178,7 @@ module.exports = class PacTimeline
 
 			# ... and add a connector right after it
 			newConnectorIndex = pointIndex + 1
-			array.injectInIndex @timeline, newConnectorIndex, new Connector t
+			array.injectInIndex @timeline, newConnectorIndex, @_makeConnector t
 
 			# the timeline has changed from the previous point, to the next point
 			prevPoint = @getItemByIndex prevIndex - 1
@@ -149,7 +198,7 @@ module.exports = class PacTimeline
 			# the timeline has changed from this t, to the next t
 			@_setUpdateRange t, if nextItem? then nextItem.t else Infinity
 
-		return
+		point
 
 	addConnector: (t) ->
 
@@ -176,37 +225,24 @@ module.exports = class PacTimeline
 			throw Error "There is no point to come after the connector"
 
 		# all safe, let's make the connector
-		connectorIndex = nextPointIndex
-		array.injectInIndex @timeline, connectorIndex, new Connector t
+		connector = @_makeConnector t
+
+		array.injectInIndex @timeline, nextPointIndex, connector
 
 		# things have changed from the previous point to the next point
 		@_setUpdateRange t, nextPoint.t
 
-		return
+		connector
 
-	removeConnector: (t) ->
+	_getPointNeighbours: (t) ->
 
-		connectorIndex = @_getIndexOfItemBeforeOrAt t
-		connector = @getItemByIndex connectorIndex
+		neighbours =
 
-		# make sure we have a connector there
-		unless connector? and connector.isConnector()
+			leftConnector: null
+			leftPoint: null
 
-			throw Error "Couldn't find a connector at that time"
-
-		# okay, let's remove the connector
-		array.pluck @timeline, connectorIndex
-
-		# the timeline is updated from previous point
-		# to the next point
-		prevPoint = @getItemByIndex connectorIndex - 1
-		nextPoint = @getItemByIndex connectorIndex
-
-		@_setUpdateRange prevPoint.t, nextPoint.t
-
-		return
-
-	removePoint: (t) ->
+			rightConnector: null
+			rightPoint: null
 
 		point = @getPointAt t
 
@@ -216,50 +252,35 @@ module.exports = class PacTimeline
 
 		pointIndex = @getItemIndex point
 
-		# remove the point first
-		array.pluck @timeline, pointIndex
+		prevItem = @getItemByIndex pointIndex - 1
 
-		# lets get the previous and next items
-		prevItemIndex = pointIndex - 1
-		prevItem = @getItemByIndex prevItemIndex
+		if prevItem?
 
-		nextItemIndex = pointIndex
+			if prevItem.isPoint()
 
-		updatedFrom = point.t
-		updatedTo = Infinity
+				neighbours.leftPoint = prevItem
 
-		# if we are connected to a point from the left
-		if prevItem? and prevItem.isConnector()
+			else
 
-			# remove the connector from the left
-			array.pluck @timeline, prevItemIndex
+				neighbours.leftConnector = prevItem
+				neighbours.leftPoint = @getItemByIndex pointIndex - 2
 
-			nextItemIndex -= 1
-
-			updatedFrom = @getItemByIndex(prevItemIndex - 1).t
-
-		nextItem = @getItemByIndex nextItemIndex
+		nextItem = @getItemByIndex pointIndex + 1
 
 		if nextItem?
 
-			# if we are not connected to a point to the right
 			if nextItem.isPoint()
 
-				updatedTo = nextItem.t
+				neighbours.rightPoint = nextItem
 
-			# we are connected to a connector to the right
 			else
 
-				# remove the connector
-				array.pluck @timeline, nextItemIndex
+				neighbours.rightConnector = nextItem
+				neighbours.rightPoint = @getItemByIndex pointIndex + 2
 
-				updatedTo = @getItemByIndex(nextItemIndex).t
+		neighbours
 
-		@_setUpdateRange updatedFrom, updatedTo
-
-		return
-
-	changePointValues: (t, val, pLeftX, pLeftY, pRightX, pRightY) ->
+	changePointTime: (t, newT) ->
 
 		point = @getPointAt t
 
@@ -267,26 +288,7 @@ module.exports = class PacTimeline
 
 			throw Error "Couldn't find a point on that time"
 
-		# let's update the values first
-		point.changeValues val, pLeftX, pLeftY, pRightX, pRightY
-
-		updatedFrom = point.t
-		updatedTo = Infinity
-
 		pointIndex = @getItemIndex point
 
-		# if we're connected from the left
-		if (connector = @getItemByIndex(pointIndex - 1)) and connector.isConnector()
+		neighbours = @_getPointNeighbours t
 
-			updatedFrom = @getItemByIndex(pointIndex - 2).t
-
-		# if there is anything on our right
-		if (nextItem = @getItemByIndex(pointIndex + 1)) and nextItem?
-
-			unless nextItem.isPoint()
-
-				nextItem = @getItemByIndex(pointIndex + 2)
-
-			updatedTo = nextItem.t
-
-		@_setUpdateRange updatedFrom, updatedTo

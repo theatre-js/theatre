@@ -7,7 +7,7 @@ RegularProp = require './dynamic/RegularProp'
 
 module.exports = class DynamicTimeFlow
 
-	constructor: ->
+	constructor: (@id = 'timeflow') ->
 
 		@maxTickLength = 25 #ms
 
