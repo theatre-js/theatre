@@ -248,84 +248,6 @@ it "should support removing points connected from both sides", ->
 	p.timeline[1].t.should.equal 300
 	p.timeline[1].isPoint().should.equal yes
 
-describe 'changing value'
-
-it "should support changing a lonely point's value", ->
-
-	p = makePacs()
-
-	p100 = p.addPoint 100, 0, 1, 1, 1, 1
-
-	p200 = p.addPoint 200, 0, 1, 1, 1, 1
-
-	p300 = p.addPoint 300, 0, 1, 1, 1, 1
-
-	p.updates.reset()
-
-	p100.setValue 0.5
-
-	p.updates.should.be.like [100, 200]
-
-	p.updates.reset()
-
-	p200.setValue 0.5
-
-	p.updates.should.be.like [200, 300]
-
-	p.updates.reset()
-
-	p300.setValue 0.5
-
-	p.updates.should.be.like [300, Infinity]
-
-it "should support changing a connected point's value", ->
-
-	p = makePacs()
-
-	p100 = p.addPoint 100, 0, 1, 1, 1, 1
-
-	p200 = p.addPoint 200, 0, 1, 1, 1, 1
-
-	p300 = p.addPoint 300, 0, 1, 1, 1, 1
-
-	p400 = p.addPoint 400, 0, 1, 1, 1, 1
-
-	p.addConnector 100
-	p.addConnector 200
-	p.addConnector 300
-
-	p.updates.reset()
-
-	p100.setValue 0.5
-
-	p.updates.should.be.like [100, 200]
-
-	p.updates.reset()
-
-	p100.setValue 0.56
-
-	p.timeline.length.should.equal 7
-
-	p.updates.should.be.like [100, 200]
-
-	p.updates.reset()
-
-	p200.setValue 0.5
-
-	p.updates.should.be.like [100, 300]
-
-	p.updates.reset()
-
-	p300.setValue 0.5
-
-	p.updates.should.be.like [200, 400]
-
-	p.updates.reset()
-
-	p400.setValue 0.5
-
-	p.updates.should.be.like [300, Infinity]
-
 describe 'changing time'
 
 it "should support changing a point's time", ->
@@ -436,3 +358,178 @@ it "get[Left/Right]Point()", ->
 
 	c200.getLeftPoint().should.equal p200
 	c200.getRightPoint().should.equal p300
+
+describe 'changing value'
+
+it "should support changing a lonely point's value", ->
+
+	p = makePacs()
+
+	p100 = p.addPoint 100, 0, 1, 1, 1, 1
+
+	p200 = p.addPoint 200, 0, 1, 1, 1, 1
+
+	p300 = p.addPoint 300, 0, 1, 1, 1, 1
+
+	p.updates.reset()
+
+	p100.setValue 0.5
+
+	p.updates.should.be.like [100, 200]
+
+	p.updates.reset()
+
+	p200.setValue 0.5
+
+	p.updates.should.be.like [200, 300]
+
+	p.updates.reset()
+
+	p300.setValue 0.5
+
+	p.updates.should.be.like [300, Infinity]
+
+it "should support changing a connected point's value", ->
+
+	p = makePacs()
+
+	p100 = p.addPoint 100, 0, 1, 1, 1, 1
+
+	p200 = p.addPoint 200, 0, 1, 1, 1, 1
+
+	p300 = p.addPoint 300, 0, 1, 1, 1, 1
+
+	p400 = p.addPoint 400, 0, 1, 1, 1, 1
+
+	p.addConnector 100
+	p.addConnector 200
+	p.addConnector 300
+
+	p.updates.reset()
+
+	p100.setValue 0.5
+
+	p.updates.should.be.like [100, 200]
+
+	p.updates.reset()
+
+	p100.setValue 0.56
+
+	p.timeline.length.should.equal 7
+
+	p.updates.should.be.like [100, 200]
+
+	p.updates.reset()
+
+	p200.setValue 0.5
+
+	p.updates.should.be.like [100, 300]
+
+	p.updates.reset()
+
+	p300.setValue 0.5
+
+	p.updates.should.be.like [200, 400]
+
+	p.updates.reset()
+
+	p400.setValue 0.5
+
+	p.updates.should.be.like [300, Infinity]
+
+describe 'changing handlers'
+
+it "should support changing left handler", ->
+
+	p = makePacs()
+
+	p100 = p.addPoint 100, 0, 1, 1, 1, 1
+
+	p200 = p.addPoint 200, 0, 1, 1, 1, 1
+
+	p300 = p.addPoint 300, 0, 1, 1, 1, 1
+
+	p400 = p.addPoint 400, 0, 1, 1, 1, 1
+
+	p.addConnector 200
+
+	p.updates.reset()
+
+	p100.setLeftHandler 0.1, 0.9
+
+	p.updates.should.be.like [Infinity, -Infinity]
+
+	p200.setLeftHandler 0.1, 0.9
+
+	p.updates.should.be.like [Infinity, -Infinity]
+
+	p300.setLeftHandler 0.1, 0.9
+
+	p.updates.should.be.like [200, 300]
+
+it "should support changing right handler", ->
+
+	p = makePacs()
+
+	p100 = p.addPoint 100, 0, 1, 1, 1, 1
+
+	p200 = p.addPoint 200, 0, 1, 1, 1, 1
+
+	p300 = p.addPoint 300, 0, 1, 1, 1, 1
+
+	p400 = p.addPoint 400, 0, 1, 1, 1, 1
+
+	p.addConnector 200
+
+	p.updates.reset()
+
+	p100.setRightHandler 0.1, 0.9
+
+	p.updates.should.be.like [Infinity, -Infinity]
+
+	p200.setRightHandler 0.1, 0.9
+
+	p.updates.should.be.like [200, 300]
+
+	p.updates.reset()
+
+	p300.setRightHandler 0.1, 0.9
+
+	p.updates.should.be.like [Infinity, -Infinity]
+
+it "should support changing both handlers", ->
+
+	p = makePacs()
+
+	p100 = p.addPoint 100, 0, 1, 1, 1, 1
+
+	p200 = p.addPoint 200, 0, 1, 1, 1, 1
+
+	p300 = p.addPoint 300, 0, 1, 1, 1, 1
+
+	p400 = p.addPoint 400, 0, 1, 1, 1, 1
+
+	p.addConnector 200
+	p.addConnector 300
+
+	p.updates.reset()
+
+	p100.setBothHandlers 0.1, 0.9, 0.1, 0.9
+
+	p.updates.should.be.like [Infinity, -Infinity]
+
+	p200.setBothHandlers 0.1, 0.9, 0.4, 0.8
+
+	p.updates.should.be.like [200, 300]
+
+	p.updates.reset()
+
+	p300.setBothHandlers 0.1, 0.9, 0.4, 0.8
+
+	p.updates.should.be.like [200, 400]
+
+	p.updates.reset()
+
+	p400.setBothHandlers 0.1, 0.9, 0.4, 0.8
+
+	p.updates.should.be.like [300, Infinity]

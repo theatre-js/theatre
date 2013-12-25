@@ -192,3 +192,73 @@ module.exports = class Point extends _PacsTimelineItem
 			@getRightConnector()._bezierShouldChange()
 
 		return
+
+	setLeftHandler: (x, y) ->
+
+		return if @leftHandler[0] is x and @leftHandler[1] is y
+
+		@leftHandler[0] = x
+		@leftHandler[1] = y
+
+		@_fire 'handler-change'
+
+		if @isConnectedToTheLeft()
+
+			@getLeftConnector()._bezierShouldChange()
+
+			@prop._setUpdateRange @getLeftPoint().t, @t
+
+		return
+
+	setRightHandler: (x, y) ->
+
+		return if @rightHandler[0] is x and @rightHandler[1] is y
+
+		@rightHandler[0] = x
+		@rightHandler[1] = y
+
+		@_fire 'handler-change'
+
+		updatedFrom = @t
+		updatedTo = Infinity
+
+		if @isConnectedToTheRight()
+
+			@getRightConnector()._bezierShouldChange()
+
+			updatedTo = @getRightPoint().t
+
+			@prop._setUpdateRange updatedFrom, updatedTo
+
+		return
+
+	setBothHandlers: (p1x, p1y, p2x, p2y) ->
+
+		@leftHandler[0] = p1x
+		@leftHandler[1] = p1y
+
+		@rightHandler[0] = p2x
+		@rightHandler[1] = p2y
+
+		@_fire 'handler-change'
+
+		updatedFrom = @t
+		updatedTo = Infinity
+
+		if @isConnectedToTheRight()
+
+			@getRightConnector()._bezierShouldChange()
+
+			updatedTo = @getRightPoint().t
+
+		if @isConnectedToTheLeft()
+
+			@getLeftConnector()._bezierShouldChange()
+
+			updatedFrom = @getLeftPoint().t
+
+		if @isConnectedToTheLeft() or @isConnectedToTheRight()
+
+			@prop._setUpdateRange updatedFrom, updatedTo
+
+		return
