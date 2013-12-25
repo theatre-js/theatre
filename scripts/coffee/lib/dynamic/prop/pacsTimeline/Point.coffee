@@ -183,4 +183,12 @@ module.exports = class Point extends _PacsTimelineItem
 
 		@_fire 'value-change'
 
+		if @isConnectedToTheLeft()
+
+			@getLeftConnector()._bezierShouldChange()
+
+		if @isConnectedToTheRight()
+
+			@getRightConnector()._bezierShouldChange()
+
 		return
