@@ -26,6 +26,8 @@ module.exports = class Point extends _PacsTimelineItem
 			# let's inject this point inside the timeline...
 			array.injectInIndex @prop.timeline, index, @
 
+			prevItem._bezierShouldChange()
+
 			# ... and add a connector right after it
 			newConnectorIndex = index + 1
 
@@ -178,5 +180,7 @@ module.exports = class Point extends _PacsTimelineItem
 			updatedTo = nextPoint.t
 
 		@prop._setUpdateRange updatedFrom, updatedTo
+
+		@_fire 'value-change'
 
 		return

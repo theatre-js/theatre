@@ -68,3 +68,9 @@ module.exports = class Connector extends _PacsTimelineItem
 	getRightPoint: ->
 
 		@prop._getItemByIndex(@getIndex() + 1)
+
+	_bezierShouldChange: ->
+
+		@_fire 'bezier-changed'
+
+		return
