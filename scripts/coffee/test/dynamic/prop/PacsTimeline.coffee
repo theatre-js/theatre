@@ -6,13 +6,11 @@ makePacs = ->
 
 	updates = []
 
-	p = new PacsTimeline
+	p = new PacsTimeline {}
 
-		_reportUpdate: (from, to) ->
+	p._setUpdateRange = (from, to) ->
 
-			updates.push [from, to]
-
-			return
+		updates.push [from, to]
 
 	p.updates = updates
 

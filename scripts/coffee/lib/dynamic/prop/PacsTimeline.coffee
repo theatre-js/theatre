@@ -8,6 +8,8 @@ module.exports = class PacTimeline
 
 		@timeline = []
 
+		@_updateRange = [Infinity, -Infinity]
+
 	_getIndexOfItemBeforeOrAt: (t) ->
 
 		lastIndex = -1
@@ -20,9 +22,29 @@ module.exports = class PacTimeline
 
 		lastIndex
 
-	_reportUpdate: (from, to) ->
+	_setUpdateRange: (from, to) ->
 
-		@prop._reportUpdate from, to
+		@_updateRange[0] = Math.min(@_updateRange[0], from)
+		@_updateRange[1] = Math.max(@_updateRange[1], to)
+
+		return
+
+	done: ->
+
+		do @_reportUpdate
+
+		return
+
+	_reportUpdate: ->
+
+		if @_updateRange[0] is Infinity and @_updateRange[1] is -Infinity
+
+			return
+
+		@prop._reportUpdate @_updateRange[0], @_updateRange[1]
+
+		@_updateRange[0] = Infinity
+		@_updateRange[1] = -Infinity
 
 		return
 
@@ -113,7 +135,7 @@ module.exports = class PacTimeline
 			prevPoint = @getItemByIndex prevIndex - 1
 			nextPoint = @getItemByIndex newConnectorIndex + 1
 
-			@_reportUpdate prevPoint.t, nextPoint.t
+			@_setUpdateRange prevPoint.t, nextPoint.t
 
 		else
 
@@ -125,7 +147,7 @@ module.exports = class PacTimeline
 			nextItem = @getItemByIndex pointIndex + 1
 
 			# the timeline has changed from this t, to the next t
-			@_reportUpdate t, if nextItem? then nextItem.t else Infinity
+			@_setUpdateRange t, if nextItem? then nextItem.t else Infinity
 
 		return
 
@@ -158,7 +180,7 @@ module.exports = class PacTimeline
 		array.injectInIndex @timeline, connectorIndex, new Connector t
 
 		# things have changed from the previous point to the next point
-		@_reportUpdate t, nextPoint.t
+		@_setUpdateRange t, nextPoint.t
 
 		return
 
@@ -180,7 +202,7 @@ module.exports = class PacTimeline
 		prevPoint = @getItemByIndex connectorIndex - 1
 		nextPoint = @getItemByIndex connectorIndex
 
-		@_reportUpdate prevPoint.t, nextPoint.t
+		@_setUpdateRange prevPoint.t, nextPoint.t
 
 		return
 
@@ -233,7 +255,7 @@ module.exports = class PacTimeline
 
 				updatedTo = @getItemByIndex(nextItemIndex).t
 
-		@_reportUpdate updatedFrom, updatedTo
+		@_setUpdateRange updatedFrom, updatedTo
 
 		return
 
@@ -267,4 +289,4 @@ module.exports = class PacTimeline
 
 			updatedTo = nextItem.t
 
-		@_reportUpdate updatedFrom, updatedTo
+		@_setUpdateRange updatedFrom, updatedTo
