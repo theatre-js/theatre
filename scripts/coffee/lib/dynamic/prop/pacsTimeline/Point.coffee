@@ -181,7 +181,7 @@ module.exports = class Point extends _PacsTimelineItem
 
 		@prop._setUpdateRange updatedFrom, updatedTo
 
-		@_fire 'value-change'
+		@_fire 'value-changed'
 
 		if @isConnectedToTheLeft()
 
