@@ -4,7 +4,7 @@
   "description": "(work in progress)",
   "main": "scripts/js/lib/TimeFlow.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node ./node_modules/coffee-script/bin/cake test",
     "prepublish": "node ./node_modules/coffee-script/bin/cake build"
   },
   "repository": {
@@ -22,8 +22,12 @@
   "bugs": {
     "url": "https://github.com/AriaMinaei/timeflow/issues"
   },
-  "dependencies": {},
+  "dependencies": {
+    "timing-function": "*",
+    "utila": "*"
+    },
   "devDependencies": {
-    "coffee-script": "~1.6.3"
+    "coffee-script": "~1.6.3",
+    "little-popo": "*"
   }
 }

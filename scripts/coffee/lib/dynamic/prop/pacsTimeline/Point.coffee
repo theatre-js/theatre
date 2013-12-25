@@ -76,7 +76,7 @@ module.exports = class Point extends _PacsTimelineItem
 		@prop._setUpdateRange updatedFrom, updatedTo
 
 		# remove the point first
-		array.pluck @prop.timeline, @getIndex()
+		array.pluck @prop.timeline, @_getIndex()
 
 		do @_remove
 
@@ -94,7 +94,7 @@ module.exports = class Point extends _PacsTimelineItem
 
 	isPoint: -> yes
 
-	getIndex: ->
+	_getIndex: ->
 
 		i = @prop._getItemIndex @
 
@@ -106,7 +106,7 @@ module.exports = class Point extends _PacsTimelineItem
 
 	getLeftConnector: ->
 
-		item = @prop._getItemByIndex @getIndex() - 1
+		item = @prop._getItemByIndex @_getIndex() - 1
 
 		if item? and item.isConnector()
 
@@ -116,7 +116,7 @@ module.exports = class Point extends _PacsTimelineItem
 
 	getRightConnector: ->
 
-		item = @prop._getItemByIndex @getIndex() + 1
+		item = @prop._getItemByIndex @_getIndex() + 1
 
 		if item? and item.isConnector()
 
@@ -136,11 +136,11 @@ module.exports = class Point extends _PacsTimelineItem
 
 		if @isConnectedToTheLeft()
 
-			@prop._getItemByIndex @getIndex() - 2
+			@prop._getItemByIndex @_getIndex() - 2
 
 		else
 
-			@prop._getItemByIndex @getIndex() - 1
+			@prop._getItemByIndex @_getIndex() - 1
 
 	hasLeftPoint: ->
 
@@ -150,11 +150,11 @@ module.exports = class Point extends _PacsTimelineItem
 
 		if @isConnectedToTheRight()
 
-			@prop._getItemByIndex @getIndex() + 2
+			@prop._getItemByIndex @_getIndex() + 2
 
 		else
 
-			@prop._getItemByIndex @getIndex() + 1
+			@prop._getItemByIndex @_getIndex() + 1
 
 	hasRightPoint: ->
 
