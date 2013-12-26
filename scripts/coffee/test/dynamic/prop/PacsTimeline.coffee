@@ -13,7 +13,9 @@ makePacs = ->
 			updates[0] = Infinity
 			updates[1] = -Infinity
 
-	p = new PacsTimeline {}
+	p = new PacsTimeline
+
+		initial: 0.5
 
 	p._setUpdateRange = (from, to) ->
 
@@ -533,3 +535,5 @@ it "should support changing both handlers", ->
 	p400.setBothHandlers 0.1, 0.9, 0.4, 0.8
 
 	p.updates.should.be.like [300, Infinity]
+
+	p.done()

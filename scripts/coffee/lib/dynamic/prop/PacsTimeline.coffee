@@ -9,6 +9,9 @@ module.exports = class PacTimeline extends _Emitter
 
 		super
 
+		@peak = @prop.initial
+		@bottom = @prop.initial
+
 		@timeline = []
 
 		@_updateRange = [Infinity, -Infinity]
@@ -123,12 +126,11 @@ module.exports = class PacTimeline extends _Emitter
 
 		return
 
-
-	addPoint: (t, val, leftHandler, rightHandler) ->
+	addPoint: (t, val, leftHandlerX, leftHandlerY, rightHandlerX, rightHandlerY) ->
 
 		@_idCounter++
 
-		p = new Point @, @prop.id + '-connector-' + @_idCounter, t, val, leftHandler, rightHandler
+		p = new Point @, @prop.id + '-connector-' + @_idCounter, t, val, leftHandlerX, leftHandlerY, rightHandlerX, rightHandlerY
 
 		@_fire 'new-point', p
 
@@ -146,6 +148,24 @@ module.exports = class PacTimeline extends _Emitter
 
 	done: ->
 
+		do @_recalculatePeakAndBottom
+
 		do @_reportUpdate
+
+		return
+
+	_recalculatePeakAndBottom: ->
+
+		@bottom = @prop.initial
+		@peak = @prop.initial
+
+		for item in @timeline
+
+			continue if item instanceof Connector
+
+			@bottom = Math.min(@bottom, item.leftHandler[1], item.rightHandler[1])
+			@peak = Math.max(@peak, item.leftHandler[1], item.rightHandler[1])
+
+		@_fire 'peak-and-bottom-changed'
 
 		return

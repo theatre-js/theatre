@@ -2,7 +2,10 @@ _PacsTimelineItem = require './_PacsTimelineItem'
 
 module.exports = class Point extends _PacsTimelineItem
 
-	constructor: (@pacs, @id, @t, @value, @leftHandler, @rightHandler) ->
+	constructor: (@pacs, @id, @t, @value, leftHandlerX, leftHandlerY, rightHandlerX, rightHandlerY) ->
+
+		@leftHandler = [parseFloat(leftHandlerX), parseFloat(leftHandlerY)]
+		@rightHandler = [parseFloat(rightHandlerX), parseFloat(rightHandlerY)]
 
 		super
 
@@ -197,8 +200,8 @@ module.exports = class Point extends _PacsTimelineItem
 
 		return if @leftHandler[0] is x and @leftHandler[1] is y
 
-		@leftHandler[0] = x
-		@leftHandler[1] = y
+		@leftHandler[0] = parseFloat x
+		@leftHandler[1] = parseFloat y
 
 		@_fire 'handler-change'
 
@@ -240,7 +243,7 @@ module.exports = class Point extends _PacsTimelineItem
 		@rightHandler[0] = p2x
 		@rightHandler[1] = p2y
 
-		@_fire 'handler-change'
+		@_fire 'handler-changed'
 
 		updatedFrom = @t
 		updatedTo = Infinity
