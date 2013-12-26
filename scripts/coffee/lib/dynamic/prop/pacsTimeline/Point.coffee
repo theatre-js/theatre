@@ -1,20 +1,19 @@
 _PacsTimelineItem = require './_PacsTimelineItem'
-array = require 'utila/scripts/js/lib/array'
 
 module.exports = class Point extends _PacsTimelineItem
 
-	constructor: (@prop, @id, @t, @value, @leftHandler, @rightHandler) ->
+	constructor: (@pacs, @id, @t, @value, @leftHandler, @rightHandler) ->
 
 		super
 
 		# first, lets make sure no point sits at t
-		if @prop._pointExistsAt @t
+		if @pacs._pointExistsAt @t
 
 			throw Error "Another point already exists at t"
 
-		prevIndex = @prop._getIndexOfItemBeforeOrAt @t
+		prevIndex = @pacs._getIndexOfItemBeforeOrAt @t
 
-		prevItem = @prop._getItemByIndex prevIndex
+		prevItem = @pacs._getItemByIndex prevIndex
 
 		index = prevIndex + 1
 
@@ -23,33 +22,34 @@ module.exports = class Point extends _PacsTimelineItem
 
 			# we're in between a connector
 
+			# @pacs.
 			# let's inject this point inside the timeline...
-			array.injectInIndex @prop.timeline, index, @
+			@pacs._injectPointOn @, index
 
 			prevItem._bezierShouldChange()
 
 			# ... and add a connector right after it
 			newConnectorIndex = index + 1
 
-			@prop.addConnector @t
+			@pacs.addConnector @t
 
 			# the timeline has changed from the previous point, to the next point
-			prevPoint = @prop._getItemByIndex prevIndex - 1
-			nextPoint = @prop._getItemByIndex newConnectorIndex + 1
+			prevPoint = @pacs._getItemByIndex prevIndex - 1
+			nextPoint = @pacs._getItemByIndex newConnectorIndex + 1
 
-			@prop._setUpdateRange prevPoint.t, nextPoint.t
+			@pacs._setUpdateRange prevPoint.t, nextPoint.t
 
 		else
 
 			# we're not between a connector
 
 			# let's inject this point inside the timeline
-			array.injectInIndex @prop.timeline, index, @
+			@pacs._injectPointOn @, index
 
-			nextItem = @prop._getItemByIndex index + 1
+			nextItem = @pacs._getItemByIndex index + 1
 
 			# the timeline has changed from this t, to the next point's t
-			@prop._setUpdateRange t, if nextItem? then nextItem.t else Infinity
+			@pacs._setUpdateRange t, if nextItem? then nextItem.t else Infinity
 
 	remove: ->
 
@@ -73,10 +73,10 @@ module.exports = class Point extends _PacsTimelineItem
 
 			updatedTo = @getRightPoint().t
 
-		@prop._setUpdateRange updatedFrom, updatedTo
+		@pacs._setUpdateRange updatedFrom, updatedTo
 
 		# remove the point first
-		array.pluck @prop.timeline, @_getIndex()
+		@pacs._pluckPointOn @, @_getIndex()
 
 		do @_remove
 
@@ -86,7 +86,7 @@ module.exports = class Point extends _PacsTimelineItem
 
 		@_fire 'remove'
 
-		@prop = null
+		@pacs = null
 
 		return
 
@@ -96,7 +96,7 @@ module.exports = class Point extends _PacsTimelineItem
 
 	_getIndex: ->
 
-		i = @prop._getItemIndex @
+		i = @pacs._getItemIndex @
 
 		if i is -1
 
@@ -106,7 +106,7 @@ module.exports = class Point extends _PacsTimelineItem
 
 	getLeftConnector: ->
 
-		item = @prop._getItemByIndex @_getIndex() - 1
+		item = @pacs._getItemByIndex @_getIndex() - 1
 
 		if item? and item.isConnector()
 
@@ -116,7 +116,7 @@ module.exports = class Point extends _PacsTimelineItem
 
 	getRightConnector: ->
 
-		item = @prop._getItemByIndex @_getIndex() + 1
+		item = @pacs._getItemByIndex @_getIndex() + 1
 
 		if item? and item.isConnector()
 
@@ -136,11 +136,11 @@ module.exports = class Point extends _PacsTimelineItem
 
 		if @isConnectedToTheLeft()
 
-			@prop._getItemByIndex @_getIndex() - 2
+			@pacs._getItemByIndex @_getIndex() - 2
 
 		else
 
-			@prop._getItemByIndex @_getIndex() - 1
+			@pacs._getItemByIndex @_getIndex() - 1
 
 	hasLeftPoint: ->
 
@@ -150,11 +150,11 @@ module.exports = class Point extends _PacsTimelineItem
 
 		if @isConnectedToTheRight()
 
-			@prop._getItemByIndex @_getIndex() + 2
+			@pacs._getItemByIndex @_getIndex() + 2
 
 		else
 
-			@prop._getItemByIndex @_getIndex() + 1
+			@pacs._getItemByIndex @_getIndex() + 1
 
 	hasRightPoint: ->
 
@@ -179,7 +179,7 @@ module.exports = class Point extends _PacsTimelineItem
 
 			updatedTo = nextPoint.t
 
-		@prop._setUpdateRange updatedFrom, updatedTo
+		@pacs._setUpdateRange updatedFrom, updatedTo
 
 		@_fire 'value-changed'
 
@@ -206,7 +206,7 @@ module.exports = class Point extends _PacsTimelineItem
 
 			@getLeftConnector()._bezierShouldChange()
 
-			@prop._setUpdateRange @getLeftPoint().t, @t
+			@pacs._setUpdateRange @getLeftPoint().t, @t
 
 		return
 
@@ -228,7 +228,7 @@ module.exports = class Point extends _PacsTimelineItem
 
 			updatedTo = @getRightPoint().t
 
-			@prop._setUpdateRange updatedFrom, updatedTo
+			@pacs._setUpdateRange updatedFrom, updatedTo
 
 		return
 
@@ -259,6 +259,6 @@ module.exports = class Point extends _PacsTimelineItem
 
 		if @isConnectedToTheLeft() or @isConnectedToTheRight()
 
-			@prop._setUpdateRange updatedFrom, updatedTo
+			@pacs._setUpdateRange updatedFrom, updatedTo
 
 		return

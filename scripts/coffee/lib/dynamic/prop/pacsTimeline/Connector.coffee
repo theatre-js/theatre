@@ -1,22 +1,20 @@
-array = require 'utila/scripts/js/lib/array'
-UnitBezier = require 'timing-function/scripts/js/lib/UnitBezier'
-
 _PacsTimelineItem = require './_PacsTimelineItem'
+UnitBezier = require 'timing-function/scripts/js/lib/UnitBezier'
 
 module.exports = class Connector extends _PacsTimelineItem
 
-	constructor: (@prop, @t, @id) ->
+	constructor: (@pacs, @t, @id) ->
 
 		super
 
 		# first, lets make sure no connector sits at t
-		if @prop._connectorExistsAt t
+		if @pacs._connectorExistsAt t
 
 			throw Error "Another connector already exists at t"
 
 		# lets find the point that sits before the connector
-		prevPointIndex = @prop._getIndexOfItemBeforeOrAt t
-		prevPoint = @prop._getItemByIndex prevPointIndex
+		prevPointIndex = @pacs._getIndexOfItemBeforeOrAt t
+		prevPoint = @pacs._getItemByIndex prevPointIndex
 
 		# make sure the point sits exactly on this t
 		unless prevPoint? and prevPoint.t is t
@@ -24,17 +22,17 @@ module.exports = class Connector extends _PacsTimelineItem
 			throw Error "No point sits at this t"
 
 		nextPointIndex = prevPointIndex + 1
-		nextPoint = @prop._getItemByIndex nextPointIndex
+		nextPoint = @pacs._getItemByIndex nextPointIndex
 
 		# make sure next point exists
 		unless nextPoint? and nextPoint.isPoint()
 
 			throw Error "There is no point to come after the connector"
 
-		array.injectInIndex @prop.timeline, nextPointIndex, @
+		@pacs._injectConnectorOn @, nextPointIndex
 
 		# things have changed from the previous point to the next point
-		@prop._setUpdateRange t, nextPoint.t
+		@pacs._setUpdateRange t, nextPoint.t
 
 		@bezier = new UnitBezier 0, 0, 0, 0
 
@@ -46,9 +44,9 @@ module.exports = class Connector extends _PacsTimelineItem
 
 	remove: ->
 
-		@prop._setUpdateRange @getLeftPoint().t, @getRightPoint().t
+		@pacs._setUpdateRange @getLeftPoint().t, @getRightPoint().t
 
-		array.pluck @prop.timeline, @getIndex()
+		@pacs._pluckConnectorOn @, @getIndex()
 
 		@_remove()
 
@@ -64,15 +62,15 @@ module.exports = class Connector extends _PacsTimelineItem
 
 	getIndex: ->
 
-		@prop._getItemIndex @
+		@pacs._getItemIndex @
 
 	getLeftPoint: ->
 
-		@prop._getItemByIndex(@getIndex() - 1)
+		@pacs._getItemByIndex(@getIndex() - 1)
 
 	getRightPoint: ->
 
-		@prop._getItemByIndex(@getIndex() + 1)
+		@pacs._getItemByIndex(@getIndex() + 1)
 
 	_bezierShouldChange: ->
 

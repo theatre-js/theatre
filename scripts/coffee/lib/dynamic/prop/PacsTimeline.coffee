@@ -53,11 +53,7 @@ module.exports = class PacTimeline extends _Emitter
 
 	_pointExistsAt: (t) ->
 
-		item = @_getPointAt t
-
-		return no unless item?
-
-		item.t is t
+		@_getPointAt(t)?
 
 	_getPointAt: (t) ->
 
@@ -69,13 +65,11 @@ module.exports = class PacTimeline extends _Emitter
 
 		if item.isConnector()
 
-			return @_getItemByIndex index - 1
+			item = @_getItemByIndex index - 1
 
-		else
+		return null if item.t isnt t
 
-			return null if item.t isnt t
-
-			return item
+		return item
 
 	_getItemIndex: (item) ->
 
@@ -92,6 +86,43 @@ module.exports = class PacTimeline extends _Emitter
 		return no unless item.isConnector()
 
 		item.t is t
+
+	_injectPointOn: (point, index) ->
+
+		@_injectItemOn point, index
+
+		return
+
+	_injectConnectorOn: (connector, index) ->
+
+		@_injectItemOn connector, index
+
+		return
+
+	_injectItemOn: (item, index) ->
+
+		array.injectInIndex @timeline, index, item
+
+		return
+
+	_pluckPointOn: (point, index) ->
+
+		@_pluckItemOn index
+
+		return
+
+	_pluckConnectorOn: (connector, index) ->
+
+		@_pluckItemOn index
+
+		return
+
+	_pluckItemOn: (index) ->
+
+		array.pluck @timeline, index
+
+		return
+
 
 	addPoint: (t, val, leftHandler, rightHandler) ->
 
