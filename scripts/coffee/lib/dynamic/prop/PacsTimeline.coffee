@@ -178,6 +178,6 @@ module.exports = class PacsTimeline extends _Emitter
 			@bottom = Math.min(@bottom, item.value)
 			@peak = Math.max(@peak, item.value)
 
-		@_emit 'peak-and-bottom-changed'
+		@_emit 'peak-and-bottom-change'
 
 		return

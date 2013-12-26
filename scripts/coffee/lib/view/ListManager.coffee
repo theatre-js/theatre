@@ -1,9 +1,12 @@
 array = require 'utila/scripts/js/lib/array'
 List = require './listManager/List'
+_Emitter = require '../_Emitter'
 
-module.exports = class ListManager
+module.exports = class ListManager extends _Emitter
 
 	constructor: (@view) ->
+
+		super
 
 		@_lists = []
 
@@ -18,6 +21,8 @@ module.exports = class ListManager
 		unless list?
 
 			@_lists.push list = new List @, name
+
+			@_emit 'new-list', list
 
 		list
 

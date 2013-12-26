@@ -76,7 +76,7 @@ module.exports = class Connector extends _PacsTimelineItem
 
 		do @_recalculateBezier
 
-		@_emit 'bezier-changed'
+		@_emit 'bezier-change'
 
 		return
 

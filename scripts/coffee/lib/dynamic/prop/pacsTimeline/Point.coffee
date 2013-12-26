@@ -185,7 +185,7 @@ module.exports = class Point extends _PacsTimelineItem
 
 		@pacs._setUpdateRange updatedFrom, updatedTo
 
-		@_emit 'value-changed'
+		@_emit 'value-change'
 
 		if @isConnectedToTheLeft()
 
@@ -263,7 +263,7 @@ module.exports = class Point extends _PacsTimelineItem
 
 		@_setHandlers x1, y1, x2, y2
 
-		@_emit 'handler-changed'
+		@_emit 'handler-change'
 
 		updatedFrom = @t
 		updatedTo = Infinity

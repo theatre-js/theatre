@@ -28,7 +28,7 @@ module.exports = class DynamicTimeFlow extends _Emitter
 
 		@timelineLength = Math.max(dur, @timelineLength)
 
-		@_emit 'length-changed'
+		@_emit 'length-change'
 
 		return
 

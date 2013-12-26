@@ -1,8 +1,11 @@
 ViewProp = require '../structure/category/actor/ViewProp'
+_Emitter = require '../../_Emitter'
 
-module.exports = class List
+module.exports = class List extends _Emitter
 
 	constructor: (@listManager, @name) ->
+
+		super
 
 		@props = []
 
@@ -16,11 +19,15 @@ module.exports = class List
 
 		@name = newName
 
+		@_emit 'rename'
+
 		return
 
 	remove: ->
 
 		@listManager._removeList @
+
+		@_emit 'remove'
 
 		@listManager = null
 
@@ -37,5 +44,7 @@ module.exports = class List
 		return if @props.indexOf(prop) isnt -1
 
 		@props.push prop
+
+		@_emit 'new-prop', prop
 
 		return
