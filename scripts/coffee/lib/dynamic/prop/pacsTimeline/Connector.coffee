@@ -82,9 +82,26 @@ module.exports = class Connector extends _PacsTimelineItem
 
 	_recalculateBezier: ->
 
-		left = @getLeftPoint().rightHandler
-		right = @getRightPoint().leftHandler
+		leftPoint = @getLeftPoint()
+		rightPoint = @getRightPoint()
+
+		left = leftPoint.rightHandler
+		right = rightPoint.leftHandler
+
+		@leftValue = leftPoint.value
+		@rightValue = rightPoint.value
+		@_valDiff = @rightValue - @leftValue
+
+		@leftT = leftPoint.t
+		@rightT = rightPoint.t
+		@_timeDiff = @rightT - @leftT
 
 		@bezier.set left[0], left[1], right[0], right[1]
 
 		return
+
+	tickAt: (t) ->
+
+		prog = (t - @leftT) / @_timeDiff
+
+		@leftValue + (@_valDiff * @bezier.solveSimple(prog))

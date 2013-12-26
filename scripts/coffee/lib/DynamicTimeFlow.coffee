@@ -73,26 +73,34 @@ module.exports = class DynamicTimeFlow
 
 		return
 
-	goto: (t) ->
+	tick: (t) ->
 
 		t -= @_startAt
 
 		if t < @_lastT
 
-			@_goBackwardTo t
+			@_tickBackward t
 
 		else
 
-			@_goForwardTo t
+			@_tickForward t
 
 		@_lastT = t
 
 		return
 
-	_goForwardTo: (t) ->
+	_tickForward: (t) ->
 
 		for name, prop of @_props
 
-			prop._goForwardTo t
+			prop._tickForward t
+
+		return
+
+	_tickBackward: (t) ->
+
+		for name, prop of @_props
+
+			prop._tickBackward t
 
 		return

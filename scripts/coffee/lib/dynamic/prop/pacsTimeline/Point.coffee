@@ -265,3 +265,7 @@ module.exports = class Point extends _PacsTimelineItem
 			@pacs._setUpdateRange updatedFrom, updatedTo
 
 		return
+
+	tickAt: (t) ->
+
+		return @value
