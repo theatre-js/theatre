@@ -4,10 +4,13 @@
 ###
 
 RegularProp = require './dynamic/RegularProp'
+_Emitter = require './_Emitter'
 
-module.exports = class DynamicTimeFlow
+module.exports = class DynamicTimeFlow extends _Emitter
 
 	constructor: (@id = 'timeflow') ->
+
+		super
 
 		@maxTickLength = 25 #ms
 
@@ -20,6 +23,16 @@ module.exports = class DynamicTimeFlow
 		@_props = {}
 
 		@_propsDone = no
+
+		@timelineLength = 0
+
+	_maximizeTimelineLength: (dur) ->
+
+		@timelineLength = Math.max(dur, @timelineLength)
+
+		@_emit 'length-changed'
+
+		return
 
 	addArray: (name, array) ->
 

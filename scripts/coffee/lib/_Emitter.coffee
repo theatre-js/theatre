@@ -14,7 +14,7 @@ module.exports = class _Emitter
 
 		@
 
-	_fire: (eventName, data) ->
+	_emit: (eventName, data) ->
 
 		return unless @_listeners[eventName]?
 

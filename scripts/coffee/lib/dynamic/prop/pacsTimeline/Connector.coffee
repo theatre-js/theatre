@@ -56,7 +56,7 @@ module.exports = class Connector extends _PacsTimelineItem
 
 	_remove: ->
 
-		@_fire 'remove'
+		@_emit 'remove'
 
 		return
 
@@ -76,7 +76,7 @@ module.exports = class Connector extends _PacsTimelineItem
 
 		do @_recalculateBezier
 
-		@_fire 'bezier-changed'
+		@_emit 'bezier-changed'
 
 		return
 

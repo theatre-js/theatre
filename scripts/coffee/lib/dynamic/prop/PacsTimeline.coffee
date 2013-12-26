@@ -3,7 +3,7 @@ Point = require './pacsTimeline/Point'
 Connector = require './pacsTimeline/Connector'
 _Emitter = require '../../_Emitter'
 
-module.exports = class PacTimeline extends _Emitter
+module.exports = class PacsTimeline extends _Emitter
 
 	constructor: (@prop) ->
 
@@ -132,7 +132,7 @@ module.exports = class PacTimeline extends _Emitter
 
 		p = new Point @, @prop.id + '-connector-' + @_idCounter, t, val, leftHandlerX, leftHandlerY, rightHandlerX, rightHandlerY
 
-		@_fire 'new-point', p
+		@_emit 'new-point', p
 
 		p
 
@@ -142,7 +142,7 @@ module.exports = class PacTimeline extends _Emitter
 
 		c = new Connector @, t, @prop.id + '-connector-' + @_idCounter
 
-		@_fire 'new-connector', c
+		@_emit 'new-connector', c
 
 		c
 
@@ -150,7 +150,19 @@ module.exports = class PacTimeline extends _Emitter
 
 		do @_recalculatePeakAndBottom
 
+		do @_recalculateLength
+
 		do @_reportUpdate
+
+		return
+
+	_recalculateLength: ->
+
+		lastPoint = @timeline[@timeline.length - 1]
+
+		if lastPoint?
+
+			@prop.timeFlow._maximizeTimelineLength lastPoint.t
 
 		return
 
@@ -166,6 +178,6 @@ module.exports = class PacTimeline extends _Emitter
 			@bottom = Math.min(@bottom, item.leftHandler[1], item.rightHandler[1])
 			@peak = Math.max(@peak, item.leftHandler[1], item.rightHandler[1])
 
-		@_fire 'peak-and-bottom-changed'
+		@_emit 'peak-and-bottom-changed'
 
 		return

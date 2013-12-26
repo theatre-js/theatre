@@ -17,6 +17,8 @@ makePacs = ->
 
 		initial: 0.5
 
+		timeFlow: _maximizeTimelineLength: ->
+
 	p._setUpdateRange = (from, to) ->
 
 		updates[0] = Math.min(updates[0], from)

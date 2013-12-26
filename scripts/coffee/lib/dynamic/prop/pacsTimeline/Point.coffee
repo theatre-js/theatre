@@ -87,7 +87,7 @@ module.exports = class Point extends _PacsTimelineItem
 
 	_remove: ->
 
-		@_fire 'remove'
+		@_emit 'remove'
 
 		@pacs = null
 
@@ -184,7 +184,7 @@ module.exports = class Point extends _PacsTimelineItem
 
 		@pacs._setUpdateRange updatedFrom, updatedTo
 
-		@_fire 'value-changed'
+		@_emit 'value-changed'
 
 		if @isConnectedToTheLeft()
 
@@ -203,7 +203,7 @@ module.exports = class Point extends _PacsTimelineItem
 		@leftHandler[0] = parseFloat x
 		@leftHandler[1] = parseFloat y
 
-		@_fire 'handler-change'
+		@_emit 'handler-change'
 
 		if @isConnectedToTheLeft()
 
@@ -220,7 +220,7 @@ module.exports = class Point extends _PacsTimelineItem
 		@rightHandler[0] = x
 		@rightHandler[1] = y
 
-		@_fire 'handler-change'
+		@_emit 'handler-change'
 
 		updatedFrom = @t
 		updatedTo = Infinity
@@ -243,7 +243,7 @@ module.exports = class Point extends _PacsTimelineItem
 		@rightHandler[0] = p2x
 		@rightHandler[1] = p2y
 
-		@_fire 'handler-changed'
+		@_emit 'handler-changed'
 
 		updatedFrom = @t
 		updatedTo = Infinity
