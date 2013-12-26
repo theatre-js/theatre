@@ -2,9 +2,7 @@ PacsTimeline = require './prop/PacsTimeline'
 
 module.exports = class _Prop
 
-	constructor: (@timeFlow, @name, @arrayName, @arrayIndex) ->
-
-		@id = @timeFlow.id + '-' + @name
+	constructor: (@timeFlow, @id, @arrayName, @arrayIndex) ->
 
 		@array = @timeFlow._arrays[@arrayName]
 

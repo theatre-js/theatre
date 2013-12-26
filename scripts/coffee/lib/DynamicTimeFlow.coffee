@@ -8,7 +8,7 @@ _Emitter = require './_Emitter'
 
 module.exports = class DynamicTimeFlow extends _Emitter
 
-	constructor: (@id = 'timeflow') ->
+	constructor: ->
 
 		super
 
@@ -21,8 +21,6 @@ module.exports = class DynamicTimeFlow extends _Emitter
 		@_arrays = {}
 
 		@_props = {}
-
-		@_propsDone = no
 
 		@timelineLength = 0
 
@@ -44,47 +42,31 @@ module.exports = class DynamicTimeFlow extends _Emitter
 
 		@
 
-	_verifyPropAdd: (name, arrayName) ->
+	_verifyPropAdd: (id, arrayName, indexInArray) ->
 
-		if @_propsDone
+		if @_props[id]?
 
-			throw Error "Cannot add props after calling DynamicTimeFlow.propsDone()"
+			throw Error "A prop named '#{id}' already exists"
 
-		if @_props[name]?
-
-			throw Error "A prop named '#{name}' already exists"
-
-		unless @_arrays[arrayName]
+		unless @_arrays[arrayName]?
 
 			throw Error "Couldn't find array named '#{arrayName}'"
 
-		return
+		unless @_arrays[arrayName][indexInArray]?
 
-	addRegularProp: (name, arrayName, indexInArray, initial) ->
-
-		@_verifyPropAdd name, arrayName
-
-		@_props[name] = new RegularProp @, name, arrayName, indexInArray, initial
-
-		@
-
-	getProp: (name) ->
-
-		unless @_propsDone
-
-			throw Error "You cannot access any prop before calling propsDone()"
-
-		@_props[name]
-
-	propsDone: ->
-
-		if @_propsDone
-
-			throw Error "Cannot call propsDone() twice."
-
-		@_propsDone = yes
+			throw Error "Array '#{arrayName}' doesn't have an index of '#{indexInArray}'"
 
 		return
+
+	addRegularProp: (id, arrayName, indexInArray) ->
+
+		@_verifyPropAdd id, arrayName, indexInArray
+
+		@_props[id] = new RegularProp @, id, arrayName, indexInArray
+
+	getProp: (id) ->
+
+		@_props[id]
 
 	tick: (t) ->
 

@@ -85,8 +85,8 @@ module.exports = class Connector extends _PacsTimelineItem
 		leftPoint = @getLeftPoint()
 		rightPoint = @getRightPoint()
 
-		left = leftPoint.rightHandler
-		right = rightPoint.leftHandler
+		left = leftPoint.handler
+		right = rightPoint.handler
 
 		@leftValue = leftPoint.value
 		@rightValue = rightPoint.value
@@ -96,7 +96,7 @@ module.exports = class Connector extends _PacsTimelineItem
 		@rightT = rightPoint.t
 		@_timeDiff = @rightT - @leftT
 
-		@bezier.set left[0], left[1], right[0], right[1]
+		@bezier.set left[2], left[3], right[0], right[1]
 
 		return
 

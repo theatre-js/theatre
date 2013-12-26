@@ -4,8 +4,9 @@ module.exports = class Point extends _PacsTimelineItem
 
 	constructor: (@pacs, @id, @t, @value, leftHandlerX, leftHandlerY, rightHandlerX, rightHandlerY) ->
 
-		@leftHandler = [parseFloat(leftHandlerX), parseFloat(leftHandlerY)]
-		@rightHandler = [parseFloat(rightHandlerX), parseFloat(rightHandlerY)]
+		@handler = new Float32Array 4
+
+		@_setHandlers leftHandlerX, leftHandlerY, rightHandlerX, rightHandlerY
 
 		super
 
@@ -196,12 +197,38 @@ module.exports = class Point extends _PacsTimelineItem
 
 		return
 
+	_setHandlers: (x1, y1, x2, y2) ->
+
+		@_setLeftHandler x1, y1
+		@_setRightHandler x2, y2
+
+		return
+
+	_setLeftHandler: (x, y) ->
+
+		unless Number.isFinite(x) and Number.isFinite(x)
+
+			throw Error "Wrong value for handlers"
+
+		@handler[0] = x
+		@handler[1] = y
+
+		return
+
+	_setRightHandler: (x, y) ->
+
+		unless Number.isFinite(x) and Number.isFinite(x)
+
+			throw Error "Wrong value for handlers"
+
+		@handler[2] = x
+		@handler[3] = y
+
+		return
+
 	setLeftHandler: (x, y) ->
 
-		return if @leftHandler[0] is x and @leftHandler[1] is y
-
-		@leftHandler[0] = parseFloat x
-		@leftHandler[1] = parseFloat y
+		@_setLeftHandler x, y
 
 		@_emit 'handler-change'
 
@@ -215,10 +242,7 @@ module.exports = class Point extends _PacsTimelineItem
 
 	setRightHandler: (x, y) ->
 
-		return if @rightHandler[0] is x and @rightHandler[1] is y
-
-		@rightHandler[0] = x
-		@rightHandler[1] = y
+		@_setRightHandler x, y
 
 		@_emit 'handler-change'
 
@@ -235,13 +259,9 @@ module.exports = class Point extends _PacsTimelineItem
 
 		return
 
-	setBothHandlers: (p1x, p1y, p2x, p2y) ->
+	setBothHandlers: (x1, y1, x2, y2) ->
 
-		@leftHandler[0] = p1x
-		@leftHandler[1] = p1y
-
-		@rightHandler[0] = p2x
-		@rightHandler[1] = p2y
+		@_setHandlers x1, y1, x2, y2
 
 		@_emit 'handler-changed'
 
