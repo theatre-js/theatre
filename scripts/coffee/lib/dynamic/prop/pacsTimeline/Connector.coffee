@@ -1,4 +1,5 @@
 array = require 'utila/scripts/js/lib/array'
+UnitBezier = require 'timing-function/scripts/js/lib/UnitBezier'
 
 _PacsTimelineItem = require './_PacsTimelineItem'
 
@@ -34,6 +35,10 @@ module.exports = class Connector extends _PacsTimelineItem
 
 		# things have changed from the previous point to the next point
 		@prop._setUpdateRange t, nextPoint.t
+
+		@bezier = new UnitBezier 0, 0, 0, 0
+
+		do @_recalculateBezier
 
 	isConnector: -> yes
 
@@ -71,6 +76,17 @@ module.exports = class Connector extends _PacsTimelineItem
 
 	_bezierShouldChange: ->
 
+		do @_recalculateBezier
+
 		@_fire 'bezier-changed'
+
+		return
+
+	_recalculateBezier: ->
+
+		left = @getLeftPoint().rightHandler
+		right = @getRightPoint().leftHandler
+
+		@bezier.set left[0], left[1], right[0], right[1]
 
 		return
