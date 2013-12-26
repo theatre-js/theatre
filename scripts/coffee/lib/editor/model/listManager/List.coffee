@@ -1,5 +1,5 @@
 ViewProp = require '../structure/category/actor/ViewProp'
-_Emitter = require '../../_Emitter'
+_Emitter = require '../../../_Emitter'
 
 module.exports = class List extends _Emitter
 

@@ -2,7 +2,7 @@ Category = require './structure/Category'
 
 module.exports = class Structure
 
-	constructor: (@view) ->
+	constructor: (@model) ->
 
 		@categories = {}
 

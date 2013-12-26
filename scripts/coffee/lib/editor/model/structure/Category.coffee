@@ -1,5 +1,5 @@
 Actor = require './category/Actor'
-_Emitter = require '../../_Emitter'
+_Emitter = require '../../../_Emitter'
 
 module.exports = class Category extends _Emitter
 
@@ -7,7 +7,7 @@ module.exports = class Category extends _Emitter
 
 		super
 
-		@id = @structure.view.id + '-' + @name
+		@id = @structure.model.id + '-' + @name
 
 		@actors = {}
 

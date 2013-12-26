@@ -3,8 +3,8 @@
  *  - No incremental props
 ###
 
-RegularProp = require './dynamic/RegularProp'
 _Emitter = require './_Emitter'
+RegularProp = require './dynamic/RegularProp'
 
 module.exports = class DynamicTimeFlow extends _Emitter
 
@@ -79,6 +79,8 @@ module.exports = class DynamicTimeFlow extends _Emitter
 		else
 
 			@_tickForward t
+
+		@_emit 'tick'
 
 		@_lastT = t
 

@@ -1,10 +1,10 @@
 array = require 'utila/scripts/js/lib/array'
 List = require './listManager/List'
-_Emitter = require '../_Emitter'
+_Emitter = require '../../_Emitter'
 
 module.exports = class ListManager extends _Emitter
 
-	constructor: (@view) ->
+	constructor: (@model) ->
 
 		super
 

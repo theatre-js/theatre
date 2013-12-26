@@ -1,5 +1,5 @@
 ViewProp = require './actor/ViewProp'
-_Emitter = require '../../../_Emitter'
+_Emitter = require '../../../../_Emitter'
 
 module.exports = class Actor extends _Emitter
 
@@ -9,7 +9,7 @@ module.exports = class Actor extends _Emitter
 
 		@id = @category.id + '-' + @name
 
-		@timeFlow = @category.structure.view.timeFlow
+		@timeFlow = @category.structure.model.timeFlow
 
 		@props = {}
 
