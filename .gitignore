@@ -11,3 +11,8 @@ scripts/dist
 
 npm-debug.log
 !*.gitkeep
+
+css
+.sass-cache
+
+pg.*

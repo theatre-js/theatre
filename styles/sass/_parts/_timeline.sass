@@ -1,0 +1,151 @@
+$height-close: 40px
+$height-open: 200px
+
+@mixin list-parent ($width)
+
+	height: 400px
+	width: $width
+	float: left
+
+@mixin list-child ($width, $color1, $color2)
+
+	border-bottom: 1px solid #111
+	box-sizing: border-box
+	background: $color1
+	height: $height-close
+	width: $width
+
+	&:nth-child(odd)
+
+		background: $color2
+
+	&.open
+
+		height: $height-open
+
+@mixin list-props ($color, $width, $left)
+
+	margin-left: $left
+	font-family: Grotesk
+	line-height: $height-close
+	font-size: 16px
+	display: inline-block
+	height: 100%
+	width: $width
+	color: $color
+
+@mixin button ($src, $left)
+
+	width: 13px
+	height: 40px
+
+	background: url($src) no-repeat center center
+
+	margin-left: $left
+
+	float: left
+
+	opacity: .7
+
+	-webkit-transition: opacity .15s
+
+	&:hover
+
+		opacity: 1
+
+.timeline
+
+	width: 100%
+	height: 400px
+
+	background: black
+
+	position: absolute
+	bottom: 0
+
+	overflow-y: scroll
+
+	-webkit-user-select: none
+	cursor: default
+
+	.propList
+
+		@include list-parent (13%)
+
+		.prop
+
+			@include list-child (100%, #080808, #0d0d0d)
+
+			span.propAttr
+
+				@include list-props (#ababab, 50%, 10%)
+
+			span.propName
+
+				@include list-props (#606060, 30%,  10%)
+
+	.keyframesArea
+
+		@include list-parent (87%)
+
+		.keyframeArea
+
+			@include list-child (100%, #040404, #090909)
+
+	.buttons
+
+		position: fixed
+		bottom: 0
+
+		width: 13%
+		height: $height-close
+
+		background: #040404
+
+		-webkit-transform: translateY($height-close)
+		-webkit-transition: -webkit-transform .2s ease-in-out
+
+		&:before
+
+			content: "\0020"
+			display: block
+
+			width: 100%
+			height: 30px
+
+			position: absolute
+
+			top: -$height-close
+
+			background: transparent
+
+		&:hover
+
+			-webkit-transform: translateY(0)
+
+		.objListButton
+
+			@include button ("../../images/objects-list.png", 10%)
+
+		.viewButton
+
+			@include button ("../../images/view-list.png", 2%)
+
+		span.viewName
+
+			line-height: $height-close
+
+			width: 58%
+			height: 100%
+
+			display: inline-block
+			float: left
+
+			font-family: Grotesk
+			color: #848484
+
+			font-size: 11px
+
+			text-align: right
+
+

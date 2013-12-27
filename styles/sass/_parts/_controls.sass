@@ -1,0 +1,54 @@
+@mixin button ($src)
+
+	width: 25%
+	height: 100%
+
+	float: left
+
+	background: url($src) no-repeat center center
+
+	opacity: .75
+
+	-webkit-transition: opacity .15s
+
+	&:hover
+
+		opacity: 1
+
+.controls
+
+	position: absolute
+
+	bottom: 420px
+	left: 10px
+
+	width: 150px
+	height: 30px
+
+	border-radius: 5px
+
+	background: #090909
+
+	ul
+
+		list-style: none
+		height: 100%
+		width: 100%
+
+		li
+
+			&.toggle
+
+				@include button ("../../images/8.png")
+
+			&.prev
+
+				@include button ("../../images/prev.png")
+
+			&.pause
+
+				@include button ("../../images/pause.png")
+
+			&.next
+
+				@include button ("../../images/next.png")
