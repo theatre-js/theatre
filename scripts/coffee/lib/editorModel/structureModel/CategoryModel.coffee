@@ -1,11 +1,8 @@
 ActorModel = require './categoryModel/ActorModel'
-_Emitter = require '../../_Emitter'
 
-module.exports = class CategoryModel extends _Emitter
+module.exports = class CategoryModel
 
 	constructor: (@structure, @name) ->
-
-		super
 
 		@id = @structure.editor.id + '-' + @name
 
@@ -16,7 +13,5 @@ module.exports = class CategoryModel extends _Emitter
 		unless @actors[name]?
 
 			@actors[name] = new ActorModel @, name
-
-			@_emit 'new-actor', @actors[name]
 
 		@actors[name]

@@ -1,8 +1,3 @@
-###*
- * Right now:
- *  - No incremental props
-###
-
 _Emitter = require './_Emitter'
 RegularProp = require './dynamic/RegularProp'
 
@@ -11,8 +6,6 @@ module.exports = class DynamicTimeFlow extends _Emitter
 	constructor: ->
 
 		super
-
-		@maxTickLength = 25 #ms
 
 		@_lastT = 0
 
