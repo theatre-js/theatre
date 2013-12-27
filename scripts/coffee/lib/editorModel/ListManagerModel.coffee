@@ -64,3 +64,4 @@ module.exports = class ListManagerModel extends _Emitter
 
 	togglePropListing: (propModel) ->
 
+		console.log 'toggle', propModel.name

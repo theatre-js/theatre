@@ -1,5 +1,6 @@
 EditorModel = require './EditorModel'
 StructureView = require './editorView/StructureView'
+StupidClickManager = require './editorView/StupidClickManager'
 
 module.exports = class EditorView
 
@@ -8,6 +9,8 @@ module.exports = class EditorView
 		@editorModel = new EditorModel @id
 
 		do @_prepareNode
+
+		@clicks = new StupidClickManager @node
 
 		@_structureView = new StructureView @
 

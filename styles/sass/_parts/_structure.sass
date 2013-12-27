@@ -15,6 +15,15 @@
 
 	overflow: hidden
 
+
+	-webkit-transform: translate3d(-5000px, 0, 1px)
+	opacity: 0
+
+	&.visible
+
+		-webkit-transform: translate3d(0, 0, 1px)
+		opacity: 1
+
 .timeflow-structure-category
 
 	width: 460px
@@ -60,7 +69,6 @@
 		font-size: 24px
 
 		color: #d5d5d5
-		cursor: pointer
 
 		transition: 0.3s all
 
@@ -104,6 +112,13 @@
 				border-bottom: 1px solid #101010
 
 				color: #555
+				cursor: pointer
+
+				&:hover
+
+					transition: 0.1s all
+
+				transition: 0.6s all
 
 				&.available
 
