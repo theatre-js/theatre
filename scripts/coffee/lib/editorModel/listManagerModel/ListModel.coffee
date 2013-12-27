@@ -1,7 +1,7 @@
-ViewProp = require '../structure/category/actor/ViewProp'
-_Emitter = require '../../../_Emitter'
+ActorPropModel = require '../structureModel/categoryModel/actorModel/ActorPropModel'
+_Emitter = require '../../_Emitter'
 
-module.exports = class List extends _Emitter
+module.exports = class ListModel extends _Emitter
 
 	constructor: (@listManager, @name) ->
 
@@ -37,9 +37,9 @@ module.exports = class List extends _Emitter
 
 	addProp: (prop) ->
 
-		unless prop instanceof ViewProp
+		unless prop instanceof ActorPropModel
 
-			throw Error "prop must be an instance of ViewProp"
+			throw Error "prop must be an instance of ActorPropModel"
 
 		return if @props.indexOf(prop) isnt -1
 

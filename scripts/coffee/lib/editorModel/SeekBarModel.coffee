@@ -1,12 +1,12 @@
-_Emitter = require '../../_Emitter'
+_Emitter = require '../_Emitter'
 
-module.exports = class SeekBar extends _Emitter
+module.exports = class SeekBarModel extends _Emitter
 
-	constructor: (@model) ->
+	constructor: (@editor) ->
 
 		super
 
-		@timeFlow = @model.timeFlow
+		@timeFlow = @editor.timeFlow
 
 		@timelineLength = 0
 

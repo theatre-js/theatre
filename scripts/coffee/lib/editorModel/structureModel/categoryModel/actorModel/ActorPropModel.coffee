@@ -1,4 +1,4 @@
-module.exports = class ViewProp
+module.exports = class ActorPropModel
 
 	constructor: (@actor, @name, @timeFlowProp) ->
 

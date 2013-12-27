@@ -1,15 +1,12 @@
-ViewProp = require './actor/ViewProp'
-_Emitter = require '../../../../_Emitter'
+ActorPropModel = require './actorModel/ActorPropModel'
 
-module.exports = class Actor extends _Emitter
+module.exports = class ActorModel
 
 	constructor: (@category, @name) ->
 
-		super
-
 		@id = @category.id + '-' + @name
 
-		@timeFlow = @category.structure.model.timeFlow
+		@timeFlow = @category.structure.editor.timeFlow
 
 		@props = {}
 
@@ -23,8 +20,6 @@ module.exports = class Actor extends _Emitter
 
 		timeFlowProp = @timeFlow.addRegularProp(propId, arrayName, arrayIndex)
 
-		@props[name] = prop = new ViewProp @, name, timeFlowProp
-
-		@_emit 'new-prop', prop
+		@props[name] = prop = new ActorPropModel @, name, timeFlowProp
 
 		prop
