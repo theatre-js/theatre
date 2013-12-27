@@ -10,6 +10,8 @@ module.exports = class ListManagerModel extends _Emitter
 
 		@_lists = []
 
+		@_propListingChangeListeners = {}
+
 	getAll: ->
 
 		@_lists
@@ -45,3 +47,20 @@ module.exports = class ListManagerModel extends _Emitter
 		array.pluckOneItem @_lists, list
 
 		return
+
+	onPropListingChange: (propModel, cb) ->
+
+		unless @_propListingChangeListeners[propModel.id]?
+
+			@_propListingChangeListeners[propModel.id] = [cb]
+
+			return
+
+		@_propListingChangeListeners[propModel.id].push cb
+
+		return
+
+	isPropListed: (propModel) ->
+
+	togglePropListing: (propModel) ->
+

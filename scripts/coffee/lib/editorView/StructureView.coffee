@@ -3,6 +3,7 @@ module.exports = class StructureView
 	constructor: (@editorView) ->
 
 		@structureModel = @editorView.editorModel.structure
+		@listsModel = @editorView.editorModel.lists
 
 		@node = document.createElement 'div'
 		@node.classList.add 'timeflow-structure'
@@ -29,14 +30,49 @@ module.exports = class StructureView
 
 			catEl.appendChild actorListEl
 
-			for name, actor of category.actors then do (actor) ->
+			for name, actor of category.actors then do (actor) =>
 
 				actorEl = document.createElement 'li'
 				actorEl.classList.add 'timeflow-structure-category-actor'
 
-				actorEl.innerHTML = actor.name
+				actorLink = document.createElement 'a'
+				actorLink.innerHTML = actor.name
+
+				actorEl.appendChild actorLink
 
 				actorListEl.appendChild actorEl
+
+				propsListEl = document.createElement 'ul'
+				propsListEl.classList.add 'timeflow-structure-category-actor-propsList'
+
+				actorLink.appendChild propsListEl
+
+				for name, prop of actor.props then do (prop) =>
+
+					propEl = document.createElement 'li'
+					propEl.innerHTML = prop.name
+
+					propsListEl.appendChild propEl
+
+					unless @listsModel.isPropListed prop
+
+						propEl.classList.add 'available'
+
+					@listsModel.onPropListingChange prop, (type) =>
+
+						if type is 'add'
+
+							propEl.classList.add 'available'
+
+						else
+
+							propEl.classList.remove 'available'
+
+						return
+
+					propEl.addEventListener 'click', =>
+
+						@listsModel.togglePropListing prop
 
 
 		return
