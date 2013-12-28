@@ -9,8 +9,6 @@ module.exports = class DynamicTimeFlow extends _Emitter
 
 		@t = 0
 
-		@_startAt = 0
-
 		@_arrays = {}
 
 		@_props = {}
@@ -62,8 +60,6 @@ module.exports = class DynamicTimeFlow extends _Emitter
 		@_props[id]
 
 	tick: (t) ->
-
-		t -= @_startAt
 
 		if t < @t
 

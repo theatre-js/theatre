@@ -1,7 +1,9 @@
+GraphView = require './editorView/GraphView'
 EditorModel = require './EditorModel'
 TimelineView = require './editorView/TimelineView'
-GraphView = require './editorView/GraphView'
-StupidClickManager = require './editorView/StupidClickManager'
+ControlsView = require './editorView/ControlsView'
+StupidClickManager = require './tools/StupidClickManager'
+StupidKeyboardManager = require './tools/StupidKeyboardManager'
 
 module.exports = class EditorView
 
@@ -13,11 +15,21 @@ module.exports = class EditorView
 
 		@clicks = new StupidClickManager @node
 
+		@keys = new StupidKeyboardManager
+
 		@graph = new GraphView @
 
 		@timeline = new TimelineView @
 
+		@controls = new ControlsView @
+
 		@_prepared = no
+
+	tick: (t) =>
+
+		@model._tick t
+
+		return
 
 	_prepareNode: ->
 

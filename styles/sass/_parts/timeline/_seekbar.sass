@@ -1,0 +1,36 @@
+.timeflow-seekbar
+
+	position: absolute
+	top: 0
+	left: 0
+	right: 0
+	height: 6px
+
+	background: url('../../images/strip-values.png') repeat-x
+
+.timeflow-seekbar-seeker
+
+	position: absolute
+
+	width: 11px
+	height: 15px
+
+	left: 500px
+	top: -5px
+
+	background: url('../../images/marker.png')
+
+	&:after
+
+		content: "\0020"
+		display: block
+
+		position: absolute
+
+		width: 1px
+		height: 500px
+
+		left: 5px
+		top: 15px
+
+		background: #333
