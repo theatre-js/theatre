@@ -1,23 +1,26 @@
 WorkspaceButtonsView = require './timelineView/WorkspaceButtonsView'
 WorkspaceListView = require './timelineView/WorkspaceListView'
+SeekBarView = require './timelineView/SeekBarView'
 
 module.exports = class TimelineView
 
-	constructor: (@editorView) ->
+	constructor: (@editor) ->
 
-		@timelineModel = @editorView.editorModel.timeline
+		@timelineModel = @editor.editorModel.timeline
 
-		do @_prepare
+		do @_prepareNode
 
-		@workspaceListView = new WorkspaceListView @
+		@seekbar = new SeekBarView @
 
-		@workspaceButtonsView = new WorkspaceButtonsView @
+		@workspaceList = new WorkspaceListView @
 
-	_prepare: ->
+		@workspaceButtons = new WorkspaceButtonsView @
+
+	_prepareNode: ->
 
 		@node = document.createElement 'div'
 		@node.classList.add 'timeflow-timeline'
-		@editorView.node.appendChild @node
+		@editor.node.appendChild @node
 
 		if @timelineModel.isVisible()
 

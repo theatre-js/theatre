@@ -13,9 +13,9 @@ module.exports = class EditorView
 
 		@clicks = new StupidClickManager @node
 
-		@_structureView = new StructureView @
+		@structure = new StructureView @
 
-		@_timelineView = new TimelineView @
+		@timeline = new TimelineView @
 
 		@_prepared = no
 
@@ -35,7 +35,7 @@ module.exports = class EditorView
 
 		@parentNode.appendChild @node
 
-		do @_structureView.prepare
+		do @structure.prepare
 
 		@_prepared = yes
 

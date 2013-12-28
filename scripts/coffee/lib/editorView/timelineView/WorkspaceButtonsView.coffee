@@ -1,26 +1,40 @@
 module.exports = class WorkspaceButtonsView
 
-	constructor: (@timelineView) ->
+	constructor: (@timeline) ->
 
-		@clicks = @timelineView.editorView.clicks
+		@clicks = @timeline.editor.clicks
+
+		do @_prepareNode
+		do @_prepareShowStructureButton
+		do @_prepareActiveWorkspaceButton
+
+	_prepareNode: ->
 
 		@node = document.createElement 'div'
 		@node.classList.add 'timeflow-workspaceButtons'
 
-		@timelineView.node.appendChild @node
+		@timeline.node.appendChild @node
+
+		return
+
+	_prepareShowStructureButton: ->
 
 		@showStructureButton = document.createElement 'div'
 		@showStructureButton.classList.add 'timeflow-workspaceButtons-showStructure'
 
 		@node.appendChild @showStructureButton
 
-		structureView = @timelineView.editorView._structureView
+		structure = @timeline.editor.structure
 
 		@clicks.onClick @showStructureButton, =>
 
-			structureView.show()
+			structure.show()
 
-		workspaces = @timelineView.editorView.editorModel.workspaces
+		return
+
+	_prepareActiveWorkspaceButton: ->
+
+		workspaces = @timeline.editor.editorModel.workspaces
 
 		activeWsName = document.createElement 'span'
 		activeWsName.classList.add 'timeflow-workspaceButtons-activeWorkspaceName'
@@ -33,8 +47,10 @@ module.exports = class WorkspaceButtonsView
 
 			activeWsName.innerHTML = workspaces.getActiveWorkspace().name
 
-		wsListView = @timelineView.workspaceListView
+		wsList = @timeline.workspaceList
 
 		@clicks.onClick activeWsName, =>
 
-			wsListView.show()
+			wsList.show()
+
+		return

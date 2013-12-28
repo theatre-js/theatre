@@ -1,4 +1,3 @@
-SeekBarModel = require './editorModel/SeekBarModel'
 TimelineModel = require './editorModel/TimelineModel'
 StructureModel = require './editorModel/StructureModel'
 WorkspaceManagerModel = require './editorModel/WorkspaceManagerModel'
@@ -13,7 +12,5 @@ module.exports = class EditorModel
 		@structure = new StructureModel @
 
 		@workspaces = new WorkspaceManagerModel @
-
-		@seekBar = new SeekBarModel @
 
 		@timeline = new TimelineModel @

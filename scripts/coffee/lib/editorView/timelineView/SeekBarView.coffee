@@ -1,10 +1,14 @@
-module.exports = class WorkspaceListView
+module.exports = class SeekBarView
 
 	constructor: (@timeline) ->
 
 		@clicks = @timeline.editor.clicks
 
+		do @_prepareNode
+
+	_prepareNode: ->
+
 		@node = document.createElement 'div'
-		@node.classList.add 'timeflow-workspaceList'
+		@node.classList.add 'timeflow-seekbar'
 
 		@timeline.node.appendChild @node

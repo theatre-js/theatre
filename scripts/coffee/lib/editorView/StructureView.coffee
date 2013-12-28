@@ -1,15 +1,21 @@
 module.exports = class StructureView
 
-	constructor: (@editorView) ->
+	constructor: (@editor) ->
 
-		@structureModel = @editorView.editorModel.structure
-		@workspacesModel = @editorView.editorModel.workspaces
+		@structureModel = @editor.editorModel.structure
+		@workspacesModel = @editor.editorModel.workspaces
+
+		@clicks = @editor.clicks
+
+		do @_prepareNode
+
+	_prepareNode: ->
 
 		@node = document.createElement 'div'
 		@node.classList.add 'timeflow-structure'
-		@editorView.node.appendChild @node
+		@editor.node.appendChild @node
 
-		@clicks = @editorView.clicks
+		return
 
 	show: ->
 
