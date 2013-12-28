@@ -4,9 +4,7 @@ module.exports = class SeekbarView
 
 		@clicks = @timeline.editor.clicks
 
-		@model = @timeline.editor.model.timeline.seekbar
-
-		@controlsModel = @timeline.editor.model.controls
+		@model = @timeline.editor.model.timeControl
 
 		window.addEventListener 'resize', => do @_resetSpace
 
@@ -32,9 +30,9 @@ module.exports = class SeekbarView
 
 		@node.appendChild @seeker
 
-		do @_updateSeeker
+		do @_repositionSeeker
 
-		@model.on 'time-change', => do @_updateSeeker
+		@model.on 'time-change', => do @_repositionSeeker
 
 		lastDragX = 0
 
@@ -44,78 +42,38 @@ module.exports = class SeekbarView
 
 			start: =>
 
-				wasPlaying = @controlsModel.isPlaying()
+				wasPlaying = @model.isPlaying()
 
-				@controlsModel.pause() if wasPlaying
+				@model.pause() if wasPlaying
 
 			end: ->
 
 				lastDragX = 0
 
-				if wasPlaying then @controlsModel.play()
+				if wasPlaying then @model.play()
 
 			drag: (absX) =>
+
+				# debugger
 
 				relX = absX - lastDragX
 
 				lastDragX = absX
 
+				# debugger
+
 				@_moveSeekerRelatively relX
-
-	_moveSeekerRelatively: (x) ->
-
-		toPos = @_getSeekerPos() + x
-
-		console.log toPos
-
-		t = @_seekerPosToTime toPos
-
-		@model.tick t
-
-	_getSeekerPos: ->
-
-		t = @model.t
-
-		zoom = @model.getZoomArea()
-
-		rel = (t - zoom.position) / (zoom.duration / @model.timelineLength)
-
-		@_space * rel
-
-	_seekerPosToTime: (pos) ->
-
-		tMinusPos = (pos / @_space) * (@model.getZoomArea().duration / @model.timelineLength)
-
-		tMinusPos + @model.getZoomArea().position
-
-	_repositionSeeker: ->
-
-		curSeekerPos = @_getSeekerPos()
-
-		@seeker.style.left = curSeekerPos + 'px'
-
-		return
-
-	_updateSeeker: ->
-
-		zoom = @model.getZoomArea()
-
-		t = @model.t
-
-		# readjust the zoom area
-		if t < zoom.position or t > zoom.position + zoom.duration
-
-			@model.changeZoomArea t - (zoom.duration / 2), zoom.duration
-
-		else
-
-			do @_repositionSeeker
 
 		return
 
 	_prepareZoom: ->
 
-		@model.on 'zoom-change', => do @_updateZoom
+		@zoomLeftNode = document.createElement 'div'
+		@zoomLeftNode.classList.add 'timeflow-seekbar-zoom-left'
+
+		@node.appendChild @zoomLeftNode
+
+		@model.on 'zoom-change', => do @_repositionZoom
 
 	_resetSpace: ->
 
@@ -126,3 +84,51 @@ module.exports = class SeekbarView
 	_repositionElements: ->
 
 		do @_repositionSeeker
+
+	_repositionSeeker: ->
+
+		curSeekerPos = @_getSeekerPos()
+
+		@seeker.style.left = curSeekerPos + 'px'
+
+		return
+
+	_getSeekerPos: ->
+
+		t = @model.t
+
+		zoom = @model.getZoomArea()
+
+		rel = (t - zoom.position) / zoom.duration
+
+		@_space * rel
+
+	_moveSeekerRelatively: (x) ->
+
+		toPos = @_getSeekerPos() + x
+
+		t = @_seekerPosToTime toPos
+
+		@model.tick t
+
+	_seekerPosToTime: (pos) ->
+
+		zoom = @model.getZoomArea()
+
+		(pos / @_space * zoom.duration) + zoom.position
+
+	_repositionZoom: ->
+
+		zoom = @model.getZoomArea()
+
+		left = (zoom.position / @_getTimelineLength()) * @_space
+
+		@zoomLeftNode.style.left = left + 'px'
+
+		right = ((zoom.position + zoom.duration) / @_getTimelineLength()) * @_space
+
+		@zoomRightNode.style.left = right + 'px'
+
+	_getTimelineLength: ->
+
+		@model.timelineLength

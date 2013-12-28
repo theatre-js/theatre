@@ -2,7 +2,7 @@ module.exports = class ControlsView
 
 	constructor: (@editor) ->
 
-		@model = @editor.model.controls
+		@model = @editor.model.timeControl
 
 		@clicks = @editor.clicks
 
@@ -41,6 +41,30 @@ module.exports = class ControlsView
 		@keys.on ' ', null, =>
 
 			do @_togglePlayState
+
+		@keys.on 'home', null, =>
+
+			do @model.jumpToBeginning
+
+		@keys.on 'end', null, =>
+
+			do @model.jumpToEnd
+
+		@keys.on 'up', null, =>
+
+			do @model.prevMarker
+
+		@keys.on 'down', null, =>
+
+			do @model.nextMarker
+
+		@keys.on 'right', null, =>
+
+			do @model.seekForward
+
+		@keys.on 'left', null, =>
+
+			do @model.seekBackward
 
 	_togglePlayState: ->
 

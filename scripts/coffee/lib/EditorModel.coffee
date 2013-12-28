@@ -1,7 +1,7 @@
 GraphModel = require './editorModel/GraphModel'
 TimelineModel = require './editorModel/TimelineModel'
-ControlsModel = require './editorModel/ControlsModel'
 DynamicTimeFlow = require './DynamicTimeFlow'
+TimeControlModel = require './editorModel/TimeControlModel'
 WorkspaceManagerModel = require './editorModel/WorkspaceManagerModel'
 
 module.exports = class EditorModel
@@ -12,12 +12,12 @@ module.exports = class EditorModel
 
 		@graph = new GraphModel @
 
-		@workspaces = new WorkspaceManagerModel @
-
 		@timeline = new TimelineModel @
 
-		@controls = new ControlsModel @
+		@workspaces = new WorkspaceManagerModel @
+
+		@timeControl = new TimeControlModel @
 
 	_tick: (t) ->
 
-		@controls._tick t
+		@timeControl._tick t

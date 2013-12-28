@@ -69,9 +69,9 @@ module.exports = class DynamicTimeFlow extends _Emitter
 
 			@_tickForward t
 
-		@_emit 'tick'
-
 		@t = t
+
+		@_emit 'tick'
 
 		return
 
