@@ -1,6 +1,7 @@
 SeekBarModel = require './editorModel/SeekBarModel'
+TimelineModel = require './editorModel/TimelineModel'
 StructureModel = require './editorModel/StructureModel'
-ListManagerModel = require './editorModel/ListManagerModel'
+WorkspaceManagerModel = require './editorModel/WorkspaceManagerModel'
 DynamicTimeFlow = require './DynamicTimeFlow'
 
 module.exports = class EditorModel
@@ -11,6 +12,8 @@ module.exports = class EditorModel
 
 		@structure = new StructureModel @
 
-		@lists = new ListManagerModel @
+		@workspaces = new WorkspaceManagerModel @
 
 		@seekBar = new SeekBarModel @
+
+		@timeline = new TimelineModel @

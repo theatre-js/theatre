@@ -1,4 +1,5 @@
 EditorModel = require './EditorModel'
+TimelineView = require './editorView/TimelineView'
 StructureView = require './editorView/StructureView'
 StupidClickManager = require './editorView/StupidClickManager'
 
@@ -13,6 +14,8 @@ module.exports = class EditorView
 		@clicks = new StupidClickManager @node
 
 		@_structureView = new StructureView @
+
+		@_timelineView = new TimelineView @
 
 		@_prepared = no
 

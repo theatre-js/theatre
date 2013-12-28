@@ -1,0 +1,77 @@
+@mixin button ($src, $left)
+
+	width: 13px
+	height: 40px
+
+	cursor: pointer
+
+	background: url($src) no-repeat center center
+
+	margin-left: $left
+
+	float: left
+
+	opacity: .7
+
+	-webkit-transform: translateZ(1px)
+
+	-webkit-transition: opacity .5s
+
+	&:hover
+
+		-webkit-transition: opacity .1s
+
+
+		opacity: 1
+
+.timeflow-workspaceButtons
+
+	position: fixed
+	bottom: 0
+
+	width: 220px
+	height: 42px
+
+	background: #040404
+
+	-webkit-user-select: none
+	-moz-user-select: none
+	-ms-user-select: none
+	user-select: none
+
+	.timeflow-workspaceButtons-showStructure
+
+		@include button ("../../images/objects-list.png", 10%)
+
+	// .viewButton
+
+	// 	// @include button ("../../images/view-list.png", 2%)
+
+	.timeflow-workspaceButtons-activeWorkspaceName
+
+		display: block
+		float: left
+
+		color: #848484
+
+		font-size: 11px
+
+		height: 42px
+
+		line-height: 42px
+
+		margin-left: 12px
+
+		cursor: pointer
+
+		min-width: 80px
+
+		-webkit-transform: translateZ(1px)
+
+		-webkit-transition: all .5s
+
+		&:hover
+
+			-webkit-transition: all .1s
+
+			color: #aaa

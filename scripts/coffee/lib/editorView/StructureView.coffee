@@ -1,11 +1,9 @@
-# clicks = require '../clicks'
-
 module.exports = class StructureView
 
 	constructor: (@editorView) ->
 
 		@structureModel = @editorView.editorModel.structure
-		@listsModel = @editorView.editorModel.lists
+		@workspacesModel = @editorView.editorModel.workspaces
 
 		@node = document.createElement 'div'
 		@node.classList.add 'timeflow-structure'
@@ -67,8 +65,6 @@ module.exports = class StructureView
 
 				actorLink.appendChild propsListEl
 
-
-
 				for name, prop of actor.props then do (prop) =>
 
 					propEl = document.createElement 'li'
@@ -76,11 +72,11 @@ module.exports = class StructureView
 
 					propsListEl.appendChild propEl
 
-					unless @listsModel.isPropListed prop
+					unless @workspacesModel.isPropListed prop
 
 						propEl.classList.add 'available'
 
-					@listsModel.onPropListingChange prop, (type) =>
+					@workspacesModel.onPropListingChange prop, (type) =>
 
 						if type is 'add'
 
@@ -94,10 +90,8 @@ module.exports = class StructureView
 
 					@clicks.onClick propEl, =>
 
-						@listsModel.togglePropListing prop
+						@workspacesModel.togglePropListing prop
 
 						return
-
-		do @show
 
 		return
