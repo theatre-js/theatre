@@ -5,7 +5,7 @@ module.exports = class WorkspaceButtonsView
 		@clicks = @timeline.editor.clicks
 
 		do @_prepareNode
-		do @_prepareShowStructureButton
+		do @_prepareShowGraphButton
 		do @_prepareActiveWorkspaceButton
 
 	_prepareNode: ->
@@ -17,24 +17,24 @@ module.exports = class WorkspaceButtonsView
 
 		return
 
-	_prepareShowStructureButton: ->
+	_prepareShowGraphButton: ->
 
-		@showStructureButton = document.createElement 'div'
-		@showStructureButton.classList.add 'timeflow-workspaceButtons-showStructure'
+		@showGraphButton = document.createElement 'div'
+		@showGraphButton.classList.add 'timeflow-workspaceButtons-showGraph'
 
-		@node.appendChild @showStructureButton
+		@node.appendChild @showGraphButton
 
-		structure = @timeline.editor.structure
+		graph = @timeline.editor.graph
 
-		@clicks.onClick @showStructureButton, =>
+		@clicks.onClick @showGraphButton, =>
 
-			structure.show()
+			graph.show()
 
 		return
 
 	_prepareActiveWorkspaceButton: ->
 
-		workspaces = @timeline.editor.editorModel.workspaces
+		workspaces = @timeline.editor.model.workspaces
 
 		activeWsName = document.createElement 'span'
 		activeWsName.classList.add 'timeflow-workspaceButtons-activeWorkspaceName'

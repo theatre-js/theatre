@@ -1,6 +1,6 @@
-CategoryModel = require './structureModel/CategoryModel'
+CategoryModel = require './graphModel/CategoryModel'
 
-module.exports = class StructureModel
+module.exports = class GraphModel
 
 	constructor: (@editor) ->
 

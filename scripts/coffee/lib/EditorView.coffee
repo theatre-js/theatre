@@ -1,19 +1,19 @@
 EditorModel = require './EditorModel'
 TimelineView = require './editorView/TimelineView'
-StructureView = require './editorView/StructureView'
+GraphView = require './editorView/GraphView'
 StupidClickManager = require './editorView/StupidClickManager'
 
 module.exports = class EditorView
 
 	constructor: (@id, @parentNode) ->
 
-		@editorModel = new EditorModel @id
+		@model = new EditorModel @id
 
 		do @_prepareNode
 
 		@clicks = new StupidClickManager @node
 
-		@structure = new StructureView @
+		@graph = new GraphView @
 
 		@timeline = new TimelineView @
 
@@ -35,7 +35,7 @@ module.exports = class EditorView
 
 		@parentNode.appendChild @node
 
-		do @structure.prepare
+		do @graph.prepare
 
 		@_prepared = yes
 

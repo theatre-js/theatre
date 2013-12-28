@@ -1,16 +1,16 @@
 WorkspaceButtonsView = require './timelineView/WorkspaceButtonsView'
 WorkspaceListView = require './timelineView/WorkspaceListView'
-SeekBarView = require './timelineView/SeekBarView'
+SeekbarView = require './timelineView/SeekbarView'
 
 module.exports = class TimelineView
 
 	constructor: (@editor) ->
 
-		@timelineModel = @editor.editorModel.timeline
+		@timelineModel = @editor.model.timeline
 
 		do @_prepareNode
 
-		@seekbar = new SeekBarView @
+		@seekbar = new SeekbarView @
 
 		@workspaceList = new WorkspaceListView @
 

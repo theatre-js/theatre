@@ -7,7 +7,7 @@ module.exports = class DynamicTimeFlow extends _Emitter
 
 		super
 
-		@_lastT = 0
+		@t = 0
 
 		@_startAt = 0
 
@@ -65,7 +65,7 @@ module.exports = class DynamicTimeFlow extends _Emitter
 
 		t -= @_startAt
 
-		if t < @_lastT
+		if t < @t
 
 			@_tickBackward t
 
@@ -75,7 +75,7 @@ module.exports = class DynamicTimeFlow extends _Emitter
 
 		@_emit 'tick'
 
-		@_lastT = t
+		@t = t
 
 		return
 

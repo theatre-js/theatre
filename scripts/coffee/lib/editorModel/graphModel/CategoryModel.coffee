@@ -2,9 +2,9 @@ ActorModel = require './categoryModel/ActorModel'
 
 module.exports = class CategoryModel
 
-	constructor: (@structure, @name) ->
+	constructor: (@graph, @name) ->
 
-		@id = @structure.editor.id + '-' + @name
+		@id = @graph.editor.id + '-' + @name
 
 		@actors = {}
 

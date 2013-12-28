@@ -1,5 +1,5 @@
 _Emitter = require '../_Emitter'
-SeekBarModel = require './timelineModel/SeekBarModel'
+SeekbarModel = require './timelineModel/SeekbarModel'
 
 module.exports = class TimelineModel extends _Emitter
 
@@ -7,7 +7,7 @@ module.exports = class TimelineModel extends _Emitter
 
 		super
 
-		@seekbar = new SeekBarModel @
+		@seekbar = new SeekbarModel @
 
 	isVisible: ->
 

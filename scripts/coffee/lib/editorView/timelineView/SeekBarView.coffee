@@ -1,8 +1,10 @@
-module.exports = class SeekBarView
+module.exports = class SeekbarView
 
 	constructor: (@timeline) ->
 
 		@clicks = @timeline.editor.clicks
+
+		@model = @timeline.editor.model.timeline.seekbar
 
 		do @_prepareNode
 

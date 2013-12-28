@@ -6,7 +6,7 @@ module.exports = class ActorModel
 
 		@id = @category.id + '-' + @name
 
-		@timeFlow = @category.structure.editor.timeFlow
+		@timeFlow = @category.graph.editor.timeFlow
 
 		@props = {}
 

@@ -1,9 +1,9 @@
-module.exports = class StructureView
+module.exports = class GraphView
 
 	constructor: (@editor) ->
 
-		@structureModel = @editor.editorModel.structure
-		@workspacesModel = @editor.editorModel.workspaces
+		@graphModel = @editor.model.graph
+		@workspacesModel = @editor.model.workspaces
 
 		@clicks = @editor.clicks
 
@@ -12,7 +12,7 @@ module.exports = class StructureView
 	_prepareNode: ->
 
 		@node = document.createElement 'div'
-		@node.classList.add 'timeflow-structure'
+		@node.classList.add 'timeflow-graph'
 		@editor.node.appendChild @node
 
 		return
@@ -35,29 +35,29 @@ module.exports = class StructureView
 
 	prepare: ->
 
-		for name, category of @structureModel.categories then do (category) =>
+		for name, category of @graphModel.categories then do (category) =>
 
 			catEl = document.createElement 'div'
-			catEl.classList.add 'timeflow-structure-category'
+			catEl.classList.add 'timeflow-graph-category'
 
 			@node.appendChild catEl
 
 			catNameEl = document.createElement 'h3'
-			catNameEl.classList.add 'timeflow-structure-category-name'
+			catNameEl.classList.add 'timeflow-graph-category-name'
 
 			catNameEl.innerHTML = category.name
 
 			catEl.appendChild catNameEl
 
 			actorListEl = document.createElement 'ul'
-			actorListEl.classList.add 'timeflow-structure-category-actor-list'
+			actorListEl.classList.add 'timeflow-graph-category-actor-list'
 
 			catEl.appendChild actorListEl
 
 			for name, actor of category.actors then do (actor) =>
 
 				actorEl = document.createElement 'li'
-				actorEl.classList.add 'timeflow-structure-category-actor'
+				actorEl.classList.add 'timeflow-graph-category-actor'
 
 				actorLink = document.createElement 'a'
 				actorLink.innerHTML = actor.name
@@ -67,7 +67,7 @@ module.exports = class StructureView
 				actorListEl.appendChild actorEl
 
 				propsListEl = document.createElement 'ul'
-				propsListEl.classList.add 'timeflow-structure-category-actor-propsList'
+				propsListEl.classList.add 'timeflow-graph-category-actor-propsList'
 
 				actorLink.appendChild propsListEl
 
