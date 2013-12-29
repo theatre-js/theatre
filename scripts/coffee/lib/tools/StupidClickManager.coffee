@@ -5,6 +5,10 @@ module.exports = class StupidClickManager
 
 	constructor: (@root) ->
 
+		if @root.node?
+
+			@root = @root.node
+
 		@root.addEventListener 'mousedown', (e) => @_mouseDown e
 		@root.addEventListener 'mouseup', (e) => @_mouseUp e
 		@root.addEventListener 'mousemove', (e) => @_mouseMove e
@@ -21,6 +25,7 @@ module.exports = class StupidClickManager
 			node: null
 			callbacks: null
 			initialPos: [0, 0]
+			lastPos: [0, 0]
 
 	_mouseUp: (e) ->
 
@@ -33,7 +38,16 @@ module.exports = class StupidClickManager
 
 		else if @_dragRequest.node?
 
-			@_dragRequest.callbacks.end e.x - @_dragRequest.initialPos[0], e.y - @_dragRequest.initialPos[1]
+			relX = e.x - @_dragRequest.lastPos[0]
+			relY = e.y - @_dragRequest.lastPos[1]
+
+			absX = e.x - @_dragRequest.initialPos[0]
+			absY = e.y - @_dragRequest.initialPos[1]
+
+			@_dragRequest.callbacks.end absX, absY, relX, relY
+
+			@_dragRequest.lastPos[0] = e.x
+			@_dragRequest.lastPos[1] = e.y
 
 			@_dragRequest.node = null
 
@@ -52,11 +66,24 @@ module.exports = class StupidClickManager
 
 		if @_dragRequest.node?
 
-			@_dragRequest.callbacks.drag e.x - @_dragRequest.initialPos[0], e.y - @_dragRequest.initialPos[1]
+			relX = e.x - @_dragRequest.lastPos[0]
+			relY = e.y - @_dragRequest.lastPos[1]
+
+			absX = e.x - @_dragRequest.initialPos[0]
+			absY = e.y - @_dragRequest.initialPos[1]
+
+			@_dragRequest.callbacks.drag absX, absY, relX, relY
+
+			@_dragRequest.lastPos[0] = e.x
+			@_dragRequest.lastPos[1] = e.y
 
 		return
 
 	onModalClosure: (node, closureCallback) ->
+
+		if node.node?
+
+			node = node.node
 
 		for modal in @_modals
 
@@ -73,6 +100,10 @@ module.exports = class StupidClickManager
 
 	onClick: (node, cb) ->
 
+		if node.node?
+
+			node = node.node
+
 		node.addEventListener 'mousedown', (e) =>
 
 			e.stopPropagation()
@@ -86,6 +117,10 @@ module.exports = class StupidClickManager
 		return
 
 	onDrag: (node, callbacks) ->
+
+		if node.node?
+
+			node = node.node
 
 		unless callbacks? and callbacks.start? and callbacks.end? and callbacks.drag?
 
@@ -154,6 +189,8 @@ module.exports = class StupidClickManager
 		@_dragRequest.callbacks = callbacks
 		@_dragRequest.initialPos[0] = e.x
 		@_dragRequest.initialPos[1] = e.y
+		@_dragRequest.lastPos[0] = e.x
+		@_dragRequest.lastPos[1] = e.y
 
 		callbacks.start()
 

@@ -20,10 +20,24 @@
 	width: 11px
 	height: 15px
 
-	left: 500px
+	// left: 500px
 	top: -5px
 
+	cursor: e-resize
+
+
 	background: url('../../images/marker.png')
+
+	&:before
+
+		content: "\0020"
+		display: block
+
+		position: absolute
+
+		width: 20px
+		height: 50px
+		top: -30px
 
 	&:after
 
@@ -39,3 +53,53 @@
 		top: 15px
 
 		background: #333
+
+
+@mixin focusHandle($side)
+
+	position: absolute
+
+	width: 0px
+	height: 10px
+
+	top: -2px
+
+	&:before
+
+		content: "\0020"
+		display: block
+		position: absolute
+		width: 10px
+		height: 10px
+
+		@if $side == 'left'
+
+			right: 0
+
+		@else
+
+			left: 0
+
+	&:after
+
+		content: "\0020"
+		display: block
+		position: absolute
+		#{$side}: 0
+
+		width: 6px
+		height: 10px
+
+		background: url('../../images/focus-#{$side}.png')
+
+.timeflow-seekbar-focus-left
+
+	cursor: nwse-resize
+
+	@include focusHandle(left)
+
+.timeflow-seekbar-focus-right
+
+	cursor: sw-resize
+
+	@include focusHandle(right)

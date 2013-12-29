@@ -26,7 +26,7 @@ module.exports = class TimeControlModel extends _Emitter
 
 			return
 
-		@_zoom = position: 0, duration: 0
+		@_focus = from: 0, to: 0, duration: 0
 
 		do @_updateT
 
@@ -50,16 +50,19 @@ module.exports = class TimeControlModel extends _Emitter
 
 		t = @t
 
-		# readjust the zoom area
-		if t < @_zoom.position or t > @_zoom.position + @_zoom.duration
+		# while playing, we might have gone out of bounds
+		# of the focused area
+		unless @_focus.from <= t <= @_focus.to
 
-			newPos = t - (@_zoom.duration / 2)
+			newFrom = t
 
-			if newPos < 0
+			newTo = @_focus.to - @_focus.from + newFrom
 
-				newPos = 0
+			if newTo > @timelineLength
 
-			@changeZoomArea newPos, @_zoom.duration
+				newTo = @timelineLength
+
+			@changeFocusArea newFrom, newTo
 
 		@_emit 'time-change'
 
@@ -67,35 +70,45 @@ module.exports = class TimeControlModel extends _Emitter
 
 	tick: (t) ->
 
+		if t < 0
+
+			debugger
+
 		@timeFlow.tick t
 
 		return
 
-	changeZoomArea: (position, duration) ->
+	changeFocusArea: (from, to) ->
 
-		unless Number.isFinite(position) and position >= 0
+		unless 0 <= from <= @timelineLength
 
-			throw Error "Wrong position"
+			debugger
 
-		unless Number.isFinite(duration) and duration >= 0
+			throw Error "Wrong from"
 
-			throw Error "Wrong duration"
+		unless from <= to <= @timelineLength
 
-		@_zoom.position = position
-		@_zoom.duration = duration
+			debugger
 
-		@_emit 'zoom-change'
+			throw Error "Wrong to"
+
+		@_focus.from = from
+		@_focus.to = to
+		@_focus.duration = to - from
+
+		@_emit 'focus-change'
 
 		return
 
-	getZoomArea: ->
+	getFocusArea: ->
 
-		# if zoom area is unchanged...
-		if @_zoom.position is 0 and @_zoom.duration is 0
+		# if focus area is unchanged...
+		if @_focus.duration is 0
 
-			@_zoom.duration = @timelineLength + 1000
+			@_focus.to = @_focus.from + 1000
+			@_focus.duration = 1000
 
-		@_zoom
+		@_focus
 
 	_tick: (t) ->
 
@@ -119,7 +132,17 @@ module.exports = class TimeControlModel extends _Emitter
 
 	_tickByDiff: (diff) ->
 
-		@timeFlow.tick @timeFlow.t + diff
+		newT = @timeFlow.t + diff
+
+		if newT > @timelineLength
+
+			newT = @timelineLength
+
+			do @pause
+
+			return
+
+		@timeFlow.tick newT
 
 		return
 
