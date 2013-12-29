@@ -23,9 +23,13 @@ module.exports = class ControlsView
 
 		@editor.node.appendChild @node
 
-		do @_preparePlayPayseNode
+		do @_prepareFullscreenNode
+		do @_prepareJumpToPrevMarkerNode
+		do @_preparePlayPauseNode
+		do @_prepareJumpToNextMarkerNode
 
-	_preparePlayPayseNode: ->
+
+	_preparePlayPauseNode: ->
 
 		@playPauseNode = document.createElement 'div'
 		@playPauseNode.classList.add 'timeflow-controls-playPause'
@@ -36,21 +40,66 @@ module.exports = class ControlsView
 
 			do @_togglePlayState
 
+	_prepareFullscreenNode: ->
+
+		@toggleFullScreenNode = document.createElement 'div'
+		@toggleFullScreenNode.classList.add 'timeflow-controls-fullscreen'
+
+		@node.appendChild @toggleFullScreenNode
+
+		@clicks.onClick @toggleFullScreenNode, =>
+
+			console.log 'to be implemented'
+
+	_prepareJumpToPrevMarkerNode: ->
+
+		@jumpToPrevMarkerNode = document.createElement 'div'
+		@jumpToPrevMarkerNode.classList.add 'timeflow-controls-jumpToPrevMarker'
+
+		@node.appendChild @jumpToPrevMarkerNode
+
+		@clicks.onClick @jumpToPrevMarkerNode, =>
+
+			do @model.jumpToPrevMarker
+
+	_prepareJumpToNextMarkerNode: ->
+
+		@jumpToNextMarkerNode = document.createElement 'div'
+		@jumpToNextMarkerNode.classList.add 'timeflow-controls-jumpToNextMarker'
+
+		@node.appendChild @jumpToNextMarkerNode
+
+		@clicks.onClick @jumpToNextMarkerNode, =>
+
+			do @model.jumpToNextMarker
+
 	_prepareKeyboard: ->
 
 		@keys.on ' ', null, =>
 
 			do @_togglePlayState
 
-		@keys.on 'home', null, =>
+		@keys.on 'home', null, (e) =>
 
-			do @model.jumpToBeginning
+			if e.ctrlKey
 
-		@keys.on 'end', null, =>
+				do @model.jumpToBeginning
 
-			do @model.jumpToEnd
+			else
 
-		@keys.on 'up', null, =>
+				do @model.jumpToFocusBeginning
+
+		@keys.on 'end', null, (e) =>
+
+			if e.ctrlKey
+
+				do @model.jumpToEnd
+
+			else
+
+				do @model.jumpToFocusEnd
+
+		@keys.on 'up', null, (e) =>
 
 			do @model.prevMarker
 
@@ -58,13 +107,31 @@ module.exports = class ControlsView
 
 			do @model.nextMarker
 
-		@keys.on 'right', null, =>
+		@keys.on 'right', null, (e) =>
 
-			do @model.seekForward
+			amount = @_getSeekAmountByEvent e
 
-		@keys.on 'left', null, =>
+			@model.seekBy amount
 
-			do @model.seekBackward
+		@keys.on 'left', null, (e) =>
+
+			amount = @_getSeekAmountByEvent e
+
+			@model.seekBy -amount
+
+	_getSeekAmountByEvent: (e) ->
+
+		amount = 16
+
+		if e.shiftKey
+
+			amount = 48
+
+		if e.altKey
+
+			amount = 8
+
+		amount
 
 	_togglePlayState: ->
 

@@ -105,8 +105,8 @@ module.exports = class TimeControlModel extends _Emitter
 		# if focus area is unchanged...
 		if @_focus.duration is 0
 
-			@_focus.to = @_focus.from + 1000
-			@_focus.duration = 1000
+			@_focus.to = @timelineLength
+			@_focus.duration = @timelineLength
 
 		@_focus
 
@@ -192,22 +192,60 @@ module.exports = class TimeControlModel extends _Emitter
 
 		return
 
-	seekForward: ->
+	seekBy: (amount) ->
 
 		if @isPlaying()
 
 			do @pause
 
-		@seekbar.seekForward()
+		toT = @timeFlow.t + amount
+
+		toT = 0 if toT < 0
+
+		if toT > @timelineLength
+
+			toT = @timelineLength
+
+		@tick toT
 
 		return
 
-	seekBackward: ->
+	jumpToBeginning: ->
 
 		if @isPlaying()
 
 			do @pause
 
-		@seekbar.seekBackward()
+		@tick 0
+
+		return
+
+	jumpToEnd: ->
+
+		if @isPlaying()
+
+			do @pause
+
+		@tick @timelineLength
+
+		return
+
+	jumpToFocusBeginning: ->
+
+		if @isPlaying()
+
+			do @pause
+
+		@tick @_focus.from + 1
+
+		return
+
+	jumpToFocusEnd: ->
+
+		if @isPlaying()
+
+			do @pause
+
+		@tick @_focus.to - 1
 
 		return

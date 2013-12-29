@@ -1,54 +1,63 @@
-// @mixin button ($src)
+@mixin button ($src)
 
-// 	width: 25%
-// 	height: 100%
+	width: 36px
+	height: 100%
 
-// 	float: left
+	float: left
 
-// 	background: url($src) no-repeat center center
+	background: url($src) no-repeat center center
 
-// 	opacity: .75
+	opacity: .75
 
-// 	-webkit-transition: opacity .15s
+	-webkit-transform: translateZ(1px)
 
-// 	&:hover
+	-webkit-transition: opacity .15s
 
-// 		opacity: 1
+	&:hover
 
-// .controls
+		opacity: 1
 
-// 	position: absolute
+.timeflow-controls
 
-// 	bottom: 420px
-// 	left: 10px
+	position: absolute
 
-// 	width: 150px
-// 	height: 30px
+	bottom: 420px
+	left: 10px
 
-// 	border-radius: 5px
+	// width: 150px
+	height: 30px
 
-// 	background: #090909
+	border-radius: 5px
 
-// 	ul
+	background: #090909
 
-// 		list-style: none
-// 		height: 100%
-// 		width: 100%
 
-// 		li
 
-// 			&.toggle
 
-// 				@include button ("../../images/8.png")
+// &.toggle
 
-// 			&.prev
+// 	@include button ("../../images/8.png")
 
-// 				@include button ("../../images/prev.png")
+// &.prev
 
-// 			&.pause
+// 	@include button ("../../images/prev.png")
 
-// 				@include button ("../../images/pause.png")
+.timeflow-controls-playPause
 
-// 			&.next
+	@include button ("../../images/play.png")
 
-// 				@include button ("../../images/next.png")
+	&.playing
+
+		background: url("../../images/pause.png") no-repeat center center
+
+.timeflow-controls-fullscreen
+
+	@include button ("../../images/fullscreen.png")
+
+.timeflow-controls-jumpToPrevMarker
+
+	@include button ("../../images/prevMarker.png")
+
+.timeflow-controls-jumpToNextMarker
+
+	@include button ("../../images/nextMarker.png")
