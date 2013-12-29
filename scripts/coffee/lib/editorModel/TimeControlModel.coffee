@@ -70,9 +70,9 @@ module.exports = class TimeControlModel extends _Emitter
 
 	tick: (t) ->
 
-		if t < 0
+		unless 0 <= t <= @timelineLength
 
-			debugger
+			throw Error "t is out of bounds"
 
 		@timeFlow.tick t
 
@@ -137,6 +137,8 @@ module.exports = class TimeControlModel extends _Emitter
 		if newT > @timelineLength
 
 			newT = @timelineLength
+
+			@timeFlow.tick newT
 
 			do @pause
 

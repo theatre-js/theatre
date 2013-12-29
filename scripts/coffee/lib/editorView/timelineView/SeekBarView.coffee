@@ -65,13 +65,15 @@ module.exports = class SeekbarView
 
 		do @_prepareFocusRight
 
+		do @_prepareFocusStrip
+
 		@model.on 'focus-change', => do @_repositionFocus
 
 	_prepareFocusLeft: ->
 
 		@focusLeftNode = Foxie('.timeflow-seekbar-focus-left')
 		.moveZ(1)
-		.trans(200)
+		# .trans(200)
 		.set('left', 0)
 		.putIn(@node)
 
@@ -94,7 +96,7 @@ module.exports = class SeekbarView
 		@focusRightNode = Foxie('.timeflow-seekbar-focus-right')
 		.moveZ(1)
 		.set('left', 0)
-		.trans(200)
+		# .trans(200)
 		.putIn(@node)
 
 		@clicks.onDrag @focusRightNode,
@@ -111,6 +113,13 @@ module.exports = class SeekbarView
 
 				@_moveFocusRightInWindowSpace relX
 
+	_prepareFocusStrip: ->
+
+		@focusStripNode = Foxie('.timeflow-seekbar-focus-strip')
+		.moveZ(-3)
+		.css('width', '300px')
+		.putIn(@node)
+
 	_moveFocusLeftInWindowSpace: (x) ->
 
 		focus = @model.getFocusArea()
@@ -126,12 +135,6 @@ module.exports = class SeekbarView
 
 			nextFrom = 0
 
-		# if the seeker is before the new from
-		if nextFrom > @model.t
-
-			# put it on the new from
-			@model.tick nextFrom
-
 		# and the next to
 		nextTo = focus.to
 
@@ -145,6 +148,12 @@ module.exports = class SeekbarView
 
 		# update the model
 		@model.changeFocusArea nextFrom, nextTo
+
+		# if the seeker is before the new from
+		if nextFrom > @model.t
+
+			# put it on the new from
+			@model.tick nextFrom
 
 		# if seeker is after the new focused area
 		if nextTo < @model.t
@@ -173,11 +182,7 @@ module.exports = class SeekbarView
 
 			nextTo = 1000
 
-		# if the seeker is before the new from
-		if @model.t > nextTo
 
-			# put it on the new from
-			@model.tick nextTo
 
 		# and the next to
 		nextFrom = focus.from
@@ -192,6 +197,12 @@ module.exports = class SeekbarView
 
 		# update the model
 		@model.changeFocusArea nextFrom, nextTo
+
+		# if the seeker is before the new from
+		if @model.t > nextTo
+
+			# put it on the new from
+			@model.tick nextTo
 
 		# if seeker is after the new focused area
 		if nextFrom > @model.t
@@ -260,6 +271,10 @@ module.exports = class SeekbarView
 		@focusRightNode
 		.moveXTo(right)
 		.set('left', right)
+
+		@focusStripNode
+		.moveXTo(left)
+		.css('width', (right - left) + 'px')
 
 		return
 

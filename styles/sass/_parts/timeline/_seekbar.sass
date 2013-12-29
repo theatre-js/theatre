@@ -25,6 +25,7 @@
 
 	cursor: e-resize
 
+	z-index: 3
 
 	background: url('../../images/marker.png')
 
@@ -54,7 +55,6 @@
 
 		background: #333
 
-
 @mixin focusHandle($side)
 
 	position: absolute
@@ -63,6 +63,8 @@
 	height: 10px
 
 	top: -2px
+
+	z-index: 2
 
 	&:before
 
@@ -103,3 +105,19 @@
 	cursor: sw-resize
 
 	@include focusHandle(right)
+
+.timeflow-seekbar-focus-strip
+
+	position: absolute
+	height: 6px
+
+	top: 0
+	left: 0
+
+	background: rgb(87, 230, 42)
+
+	z-index: 1
+
+	opacity: 0.1
+
+	pointer-events: none
