@@ -10,6 +10,8 @@ module.exports = class WorkspaceListView
 
 		@node = Foxie('.timeflow-workspaceList').putIn(@timeline.node)
 
+		@holder = Foxie('.timeflow-workspaceList-holder').putIn(@node)
+
 		@model = @timeline.editor.model.workspaces
 
 		window.model = @model
@@ -18,11 +20,14 @@ module.exports = class WorkspaceListView
 
 			@_recognizeNewWorkspace ws
 
+
 		@_initRename()
+
+		@_initNewBtn()
 
 	_recognizeNewWorkspace: (ws) ->
 
-		wsNode = new Foxie('.timeflow-workspaceList-workspace').putIn(@node)
+		wsNode = new Foxie('.timeflow-workspaceList-workspace').putIn(@holder)
 
 		wsNode.node.innerText = ws.name
 
@@ -30,15 +35,7 @@ module.exports = class WorkspaceListView
 
 			if e.ctrlKey
 
-				@currentEdit = wsNode.node
-
-				@currentEdit.contentEditable = yes
-
-				@currentEdit.focus()
-
-				# newName = wsNode.node.innerHTML
-
-				# ws.rename(newName)
+				@_startEdit wsNode
 
 				return
 
@@ -50,11 +47,45 @@ module.exports = class WorkspaceListView
 
 		@keys.on 'enter', null, (e) =>
 
-			if @currentEdit
+			@_storeEdit()
 
-				@currentEdit.contentEditable = no
+	_startEdit: (wsNode, cb) ->
 
-				@currentEdit = no
+		@currentEditCallBack = cb
+
+		@currentEdit = wsNode.node
+
+		@currentEdit.contentEditable = yes
+
+		@currentEdit.focus()
+
+	_storeEdit: ->
+
+		if @currentEdit
+
+			@currentEdit.contentEditable = no
+
+			@currentEdit = no
+
+			@currentEditCallBack()
+
+	_initNewBtn: ->
+
+		@newBtn = Foxie('.timeflow-workspaceList-workspace').putIn(@node)
+
+		@newBtn.node.innerText = '+'
+
+		@clicks.onClick @newBtn, =>
+
+			@newBtn.node.innerText = ''
+
+			@_startEdit @newBtn, =>
+
+				if @newBtn.node.innerText isnt ''
+
+					@model.get(@newBtn.node.innerText)
+
+				@newBtn.node.innerText = '+'
 
 	show: ->
 
@@ -68,10 +99,11 @@ module.exports = class WorkspaceListView
 
 			do @hide
 
-
 	hide: ->
 
 		if @showing
+
+			@_storeEdit()
 
 			@node.node.classList.remove 'show'
 
