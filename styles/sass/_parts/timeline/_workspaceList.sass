@@ -1,5 +1,7 @@
 .timeflow-workspaceList
 
+	cursor: default
+
 	position: fixed
 	bottom: 48px
 	left: 30px
@@ -10,8 +12,20 @@
 
 	padding: 10px
 
+	opacity: 0
+
+	-webkit-transform: translate3d(-5000px, 0, 1px)
+
 .timeflow-workspaceList-workspace
 
 	float: left
 
 	margin-right: 10px
+
+	-webkit-user-select: initial
+
+.show
+
+	opacity: 1
+
+	-webkit-transform: translate3d(0px, 0, 1px)

@@ -31,7 +31,7 @@ module.exports = class StupidClickManager
 
 		if @_clickRequest.node?
 
-			@_clickRequest.cb()
+			@_clickRequest.cb(e)
 
 			@_clickRequest.node = null
 			@_clickRequest.cb = null
