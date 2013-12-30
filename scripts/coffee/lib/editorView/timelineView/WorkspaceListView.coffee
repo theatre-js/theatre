@@ -6,7 +6,11 @@ module.exports = class WorkspaceListView
 
 		@clicks = @timeline.editor.clicks
 
+		@keys = @timeline.editor.keys
+
 		@node = Foxie('.timeflow-workspaceList').putIn(@timeline.node)
+
+		@holder = Foxie('.timeflow-workspaceList-holder').putIn(@node)
 
 		@model = @timeline.editor.model.workspaces
 
@@ -16,16 +20,132 @@ module.exports = class WorkspaceListView
 
 			@_recognizeNewWorkspace ws
 
+		do @_initRename
+
+		do @_initNewBtn
+
 	_recognizeNewWorkspace: (ws) ->
 
-		wsNode = new Foxie('.timeflow-workspaceList-workspace').putIn(@node)
+		wsNode = new Foxie('.timeflow-workspaceList-workspace').putIn(@holder)
 
-		wsNode.node.innerHTML = ws.name
+		wsNode.node.innerText = ws.name
 
-		@clicks.onClick wsNode, =>
+		@clicks.onClick wsNode, (e) =>
+
+			if e.ctrlKey
+
+				@_startEdit wsNode, =>
+
+					if wsNode.node.innerText is '' or wsNode.node.innerText is ' '
+
+						ws.remove()
+
+					else
+
+						ws.rename wsNode.node.innerText
+
+				, =>
+
+					wsNode.node.innerText = ws.name
+
+				return
 
 			ws.activate()
 
+	_initRename: ->
+
+		@currentEdit = no
+
+		@keys.on 'enter', null, (e) =>
+
+			@_storeEdit()
+
+		@keys.on 'esc', null, (e) =>
+
+			@_discardEdit()
+
+	_startEdit: (wsNode, cb, discard) ->
+
+		@currentEditCallBack = cb
+
+		@currentEditDiscardCallBack = discard
+
+		@currentEdit = wsNode.node
+
+		@currentText = @currentEdit.innerText
+
+		@currentEdit.contentEditable = yes
+
+		@currentEdit.focus()
+
+	_storeEdit: ->
+
+		if @currentEdit
+
+			@currentEdit.contentEditable = no
+
+			@currentEdit = no
+
+			if @currentEditCallBack
+
+				@currentEditCallBack()
+
+				@currentEditCallBack = null
+
+	_discardEdit: ->
+
+		if @currentEdit
+
+			@currentEdit.contentEditable = no
+
+			@currentEdit = no
+
+			if @currentEditDiscardCallBack
+
+				@currentEditDiscardCallBack()
+
+				@currentEditDiscardCallBack = null
+
+	_initNewBtn: ->
+
+		@newBtn = Foxie('.timeflow-workspaceList-workspace').putIn(@node)
+
+		@newBtn.node.innerText = '+'
+
+		@clicks.onClick @newBtn, =>
+
+			@newBtn.node.innerText = ''
+
+			@_startEdit @newBtn, =>
+
+				if @newBtn.node.innerText isnt ''
+
+					@model.get(@newBtn.node.innerText)
+
+				@newBtn.node.innerText = '+'
+
+			, =>
+
+				@newBtn.node.innerText = '+'
+
 	show: ->
 
-		console.log 'showing'
+		return if @showing
+
+		@node.node.classList.add 'show'
+
+		@showing = yes
+
+		@clicks.onModalClosure @node.node, =>
+
+			do @hide
+
+	hide: ->
+
+		if @showing
+
+			@_storeEdit()
+
+			@node.node.classList.remove 'show'
+
+			@showing = no
