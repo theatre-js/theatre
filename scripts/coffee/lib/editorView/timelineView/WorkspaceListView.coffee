@@ -64,6 +64,12 @@ module.exports = class WorkspaceListView
 
 			@_discardEdit()
 
+		@keys.on 'delete', {ctrl: true}, (e) =>
+
+			@currentEdit.innerText = ''
+
+			@_storeEdit()
+
 	_startEdit: (wsNode, cb, discard) ->
 
 		@currentEditCallBack = cb
