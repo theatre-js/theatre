@@ -20,10 +20,9 @@ module.exports = class WorkspaceListView
 
 			@_recognizeNewWorkspace ws
 
+		do @_initRename
 
-		@_initRename()
-
-		@_initNewBtn()
+		do @_initNewBtn
 
 	_recognizeNewWorkspace: (ws) ->
 
@@ -39,6 +38,10 @@ module.exports = class WorkspaceListView
 
 					ws.rename wsNode.node.innerText
 
+				, =>
+
+					wsNode.node.innerText = ws.name
+
 				return
 
 			ws.activate()
@@ -51,11 +54,19 @@ module.exports = class WorkspaceListView
 
 			@_storeEdit()
 
-	_startEdit: (wsNode, cb) ->
+		@keys.on 'esc', null, (e) =>
+
+			@_discardEdit()
+
+	_startEdit: (wsNode, cb, discard) ->
 
 		@currentEditCallBack = cb
 
+		@currentEditDiscardCallBack = discard
+
 		@currentEdit = wsNode.node
+
+		@currentText = @currentEdit.innerText
 
 		@currentEdit.contentEditable = yes
 
@@ -69,7 +80,25 @@ module.exports = class WorkspaceListView
 
 			@currentEdit = no
 
-			@currentEditCallBack()
+			if @currentEditCallBack
+
+				@currentEditCallBack()
+
+				@currentEditCallBack = null
+
+	_discardEdit: ->
+
+		if @currentEdit
+
+			@currentEdit.contentEditable = no
+
+			@currentEdit = no
+
+			if @currentEditDiscardCallBack
+
+				@currentEditDiscardCallBack()
+
+				@currentEditDiscardCallBack = null
 
 	_initNewBtn: ->
 
@@ -86,6 +115,10 @@ module.exports = class WorkspaceListView
 				if @newBtn.node.innerText isnt ''
 
 					@model.get(@newBtn.node.innerText)
+
+				@newBtn.node.innerText = '+'
+
+			, =>
 
 				@newBtn.node.innerText = '+'
 

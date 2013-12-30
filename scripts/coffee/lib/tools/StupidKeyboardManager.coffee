@@ -14,6 +14,7 @@ module.exports = class StupidKeyboardManager
 		'left': 37
 		'up': 38
 		'enter': 13
+		'esc': 27
 
 	self = @
 
