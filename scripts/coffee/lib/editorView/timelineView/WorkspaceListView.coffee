@@ -35,7 +35,9 @@ module.exports = class WorkspaceListView
 
 			if e.ctrlKey
 
-				@_startEdit wsNode
+				@_startEdit wsNode, =>
+
+					ws.rename wsNode.node.innerText
 
 				return
 
