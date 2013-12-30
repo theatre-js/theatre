@@ -52,7 +52,7 @@ module.exports = class WorkspaceModel extends _Emitter
 
 	activate: ->
 
-		do @workspaceManager._activate @
+		@workspaceManager._activate @
 
 		return
 

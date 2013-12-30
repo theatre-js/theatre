@@ -93,3 +93,37 @@ module.exports = class WorkspaceManagerModel extends _Emitter
 		@getActiveWorkspace().togglePropListing propModel
 
 		return
+
+	_activate: (ws) ->
+
+		active = @getActiveWorkspace()
+
+		return if active is ws
+
+		for propModel in active.props
+
+			id = propModel.id
+
+			listeners = @_propListingChangeListeners[id]
+
+			continue unless listeners?
+
+			for cb in listeners
+
+				cb 'remove'
+
+		@_active = ws
+
+		for propModel in @_active.props
+
+			id = propModel.id
+
+			listeners = @_propListingChangeListeners[id]
+
+			continue unless listeners?
+
+			for cb in listeners
+
+				cb 'add'
+
+		return
