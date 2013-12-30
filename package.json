@@ -24,7 +24,8 @@
   },
   "dependencies": {
     "timing-function": "*",
-    "utila": "*"
+    "utila": "*",
+    "foxie": "*"
     },
   "devDependencies": {
     "coffee-script": "~1.6.3",
