@@ -36,7 +36,13 @@ module.exports = class WorkspaceListView
 
 				@_startEdit wsNode, =>
 
-					ws.rename wsNode.node.innerText
+					if wsNode.node.innerText is ''
+
+						ws.remove()
+
+					else
+
+						ws.rename wsNode.node.innerText
 
 				, =>
 
