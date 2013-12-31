@@ -86,15 +86,17 @@ module.exports = class GraphView
 
 						if type is 'add'
 
-							propEl.classList.add 'available'
+							propEl.classList.remove 'available'
 
 						else
 
-							propEl.classList.remove 'available'
+							propEl.classList.add 'available'
 
 						return
 
 					@clicks.onClick propEl, =>
+
+						# debugger
 
 						@workspacesModel.togglePropListing prop
 

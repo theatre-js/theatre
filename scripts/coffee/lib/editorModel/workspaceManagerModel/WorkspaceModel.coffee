@@ -74,7 +74,7 @@ module.exports = class WorkspaceModel extends _Emitter
 
 		return
 
-	togglePropListing: (prop) ->
+	_togglePropListing: (prop) ->
 
 		if @isPropListed prop
 

@@ -1,6 +1,7 @@
 WorkspaceButtonsView = require './mainBoxView/WorkspaceButtonsView'
 WorkspaceListView = require './mainBoxView/WorkspaceListView'
 SeekbarView = require './mainBoxView/SeekbarView'
+TimelineView = require './mainBoxView/TimelineView'
 
 module.exports = class MainBoxView
 
@@ -15,6 +16,8 @@ module.exports = class MainBoxView
 		@workspaceList = new WorkspaceListView @
 
 		@workspaceButtons = new WorkspaceButtonsView @
+
+		@timeline = new TimelineView @
 
 	_prepareNode: ->
 
