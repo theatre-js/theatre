@@ -36,6 +36,12 @@ module.exports = class TimeControlModel extends _Emitter
 
 		@_shouldStartPlaying = no
 
+		setTimeout =>
+
+			@tick 0
+
+		, 0
+
 	_updateTimelineLength: ->
 
 		@timelineLength = @timeFlow.timelineLength + 5000

@@ -70,6 +70,8 @@ module.exports = class _Prop
 
 			unless item?
 
+				@_nextIndexToCheck = 0
+
 				@_set @initial
 
 				return
