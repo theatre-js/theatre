@@ -67,7 +67,11 @@ module.exports = class SeekbarView
 
 		do @_prepareFocusStrip
 
-		@model.on 'focus-change', => do @_repositionFocus
+		@model.on 'focus-change', =>
+
+			# debugger
+
+			do @_repositionElements
 
 	_prepareFocusLeft: ->
 
