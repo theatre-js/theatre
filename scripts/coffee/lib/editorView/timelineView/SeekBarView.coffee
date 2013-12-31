@@ -69,15 +69,12 @@ module.exports = class SeekbarView
 
 		@model.on 'focus-change', =>
 
-			# debugger
-
 			do @_repositionElements
 
 	_prepareFocusLeft: ->
 
 		@focusLeftNode = Foxie('.timeflow-seekbar-focus-left')
 		.moveZ(1)
-		# .trans(200)
 		.set('left', 0)
 		.putIn(@node)
 
@@ -100,7 +97,6 @@ module.exports = class SeekbarView
 		@focusRightNode = Foxie('.timeflow-seekbar-focus-right')
 		.moveZ(1)
 		.set('left', 0)
-		# .trans(200)
 		.putIn(@node)
 
 		@clicks.onDrag @focusRightNode,
@@ -185,8 +181,6 @@ module.exports = class SeekbarView
 		if nextTo < 1000
 
 			nextTo = 1000
-
-
 
 		# and the next to
 		nextFrom = focus.from

@@ -126,4 +126,6 @@ module.exports = class WorkspaceManagerModel extends _Emitter
 
 				cb 'add'
 
+		@_emit 'active-workspace-change'
+
 		return

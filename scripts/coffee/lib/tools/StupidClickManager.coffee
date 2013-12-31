@@ -55,6 +55,8 @@ module.exports = class StupidClickManager
 
 	_mouseDown: (e) ->
 
+		return unless e.which is 1
+
 		return if @_shouldUseMouseDownToCloseModal e
 
 	_mouseMove: (e) ->
@@ -105,6 +107,8 @@ module.exports = class StupidClickManager
 			node = node.node
 
 		node.addEventListener 'mousedown', (e) =>
+
+			return unless e.which is 1
 
 			e.stopPropagation()
 
