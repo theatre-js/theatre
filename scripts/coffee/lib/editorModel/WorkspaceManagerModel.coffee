@@ -26,11 +26,11 @@ module.exports = class WorkspaceManagerModel extends _Emitter
 
 			@_workspaces.push workspace = new WorkspaceModel @, name
 
-			workspace.on 'new-prop', (propModel) =>
+			workspace.on 'new-prop', (propHolder) =>
 
 				if workspace is @_active
 
-					id = propModel.id
+					id = propHolder.id
 
 					listeners = @_propListingChangeListeners[id]
 
@@ -42,11 +42,11 @@ module.exports = class WorkspaceManagerModel extends _Emitter
 
 				return
 
-			workspace.on 'prop-remove', (propModel) =>
+			workspace.on 'prop-remove', (propHolder) =>
 
 				if workspace is @_active
 
-					id = propModel.id
+					id = propHolder.id
 
 					listeners = @_propListingChangeListeners[id]
 
@@ -106,9 +106,9 @@ module.exports = class WorkspaceManagerModel extends _Emitter
 
 		ws.isPropListed propModel
 
-	onPropListingChange: (propModel, cb) ->
+	onPropListingChange: (prop, cb) ->
 
-		id = propModel.id
+		id = prop.id
 
 		unless @_propListingChangeListeners[id]?
 
@@ -120,9 +120,9 @@ module.exports = class WorkspaceManagerModel extends _Emitter
 
 		return
 
-	togglePropListing: (propModel) ->
+	togglePropListing: (prop) ->
 
-		@getActiveWorkspace()._togglePropListing propModel
+		@getActiveWorkspace()._togglePropListing prop
 
 		return
 
@@ -132,7 +132,7 @@ module.exports = class WorkspaceManagerModel extends _Emitter
 
 		return if active is ws
 
-		for propModel in active.props
+		for propModel in active.propHolders
 
 			id = propModel.id
 
@@ -146,7 +146,7 @@ module.exports = class WorkspaceManagerModel extends _Emitter
 
 		@_active = ws
 
-		for propModel in @_active.props
+		for propModel in @_active.propHolders
 
 			id = propModel.id
 

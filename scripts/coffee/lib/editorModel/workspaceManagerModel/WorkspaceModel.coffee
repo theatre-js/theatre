@@ -1,6 +1,7 @@
 ActorPropModel = require '../graphModel/categoryModel/actorModel/ActorPropModel'
 _Emitter = require '../../_Emitter'
 array = require 'utila/scripts/js/lib/array'
+WorkspacePropHolderModel = require './workspaceModel/WorkspacePropHolderModel'
 
 module.exports = class WorkspaceModel extends _Emitter
 
@@ -8,7 +9,7 @@ module.exports = class WorkspaceModel extends _Emitter
 
 		super
 
-		@props = []
+		@propHolders = []
 
 	rename: (newName) ->
 
@@ -36,17 +37,29 @@ module.exports = class WorkspaceModel extends _Emitter
 
 		return
 
-	addProp: (prop) ->
+	addProp: (actorPropModel) ->
 
-		unless prop instanceof ActorPropModel
+		unless actorPropModel instanceof ActorPropModel
 
 			throw Error "prop must be an instance of ActorPropModel"
 
-		return if @props.indexOf(prop) isnt -1
+		if @_getHolderPropById(actorPropModel.id)
 
-		@props.push prop
+			throw Error "Prop `#{prop.id}` already exists in #{@name}"
 
-		@_emit 'new-prop', prop
+		propHolder = new WorkspacePropHolderModel @, actorPropModel
+
+		@propHolders.push propHolder
+
+		@_emit 'new-prop', propHolder
+
+		return
+
+	_getHolderPropById: (id) ->
+
+		for prop in @propHolders
+
+			return prop if prop.id is id
 
 		return
 
@@ -58,19 +71,19 @@ module.exports = class WorkspaceModel extends _Emitter
 
 	isPropListed: (prop) ->
 
-		@props.indexOf(prop) isnt -1
+		@_getHolderPropById(prop.id)?
 
 	removeProp: (prop) ->
 
-		index = @props.indexOf(prop)
+		propHolder = @_getHolderPropById prop.id
 
-		if index is -1
+		unless propHolder?
 
-			throw Error "prop '#{prop.id}' is not in this workspace"
+			throw Error "Prop `#{prop.id}` is not listed in #{@name}"
 
-		array.pluck @props, index
+		array.pluckOneItem @propHolders, propHolder
 
-		@_emit 'prop-remove', prop
+		@_emit 'prop-remove', propHolder
 
 		return
 
