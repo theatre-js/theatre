@@ -30,6 +30,11 @@ module.exports = class WorkspaceManagerModel extends _Emitter
 
 				if workspace is @_active
 
+					console.log 'adding'
+					# @_emit 'list-of-props-change'
+
+					@_emit 'prop-add', propHolder
+
 					id = propHolder.id
 
 					listeners = @_propListingChangeListeners[id]
@@ -45,6 +50,10 @@ module.exports = class WorkspaceManagerModel extends _Emitter
 			workspace.on 'prop-remove', (propHolder) =>
 
 				if workspace is @_active
+
+					# @_emit 'list-of-props-change'
+
+					@_emit 'prop-remove', propHolder
 
 					id = propHolder.id
 
@@ -88,11 +97,13 @@ module.exports = class WorkspaceManagerModel extends _Emitter
 
 			if @_workspaces.length isnt 0
 
-				@_active = @_workspaces[0]
+				@_workspaces[0].activate()
 
 			else
 
-				@_active = do @_makeEmptyWorkspace
+				empty = do @_makeEmptyWorkspace
+
+				empty.activate()
 
 		@_active
 
@@ -128,21 +139,23 @@ module.exports = class WorkspaceManagerModel extends _Emitter
 
 	_activate: (ws) ->
 
-		active = @getActiveWorkspace()
+		active = @_active
 
 		return if active is ws
 
-		for propModel in active.propHolders
+		if active?
 
-			id = propModel.id
+			for propModel in active.propHolders
 
-			listeners = @_propListingChangeListeners[id]
+				id = propModel.id
 
-			continue unless listeners?
+				listeners = @_propListingChangeListeners[id]
 
-			for cb in listeners
+				continue unless listeners?
 
-				cb 'remove'
+				for cb in listeners
+
+					cb 'remove'
 
 		@_active = ws
 
@@ -160,4 +173,10 @@ module.exports = class WorkspaceManagerModel extends _Emitter
 
 		@_emit 'active-workspace-change'
 
+		# @_emit 'list-of-props-change'
+
 		return
+
+	getCurrentlyListedProps: ->
+
+		@getActiveWorkspace().propHolders

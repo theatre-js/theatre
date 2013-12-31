@@ -1,0 +1,64 @@
+.timeflow-timeline
+
+	position: absolute
+	left: 0
+	right: 0
+	top: 0
+	bottom: 0
+
+	padding-top: 6px
+
+.timeflow-timeline-prop
+
+	position: relative
+
+	min-height: 30px
+
+	clear: both
+
+	background: #040404
+
+	background: #090909
+
+	&:nth-child(2n)
+
+		background: #040404
+
+	border-bottom: 1px solid #101010
+
+.timeflow-timeline-prop-info
+
+	position: absolute
+
+	left: 10px
+
+	color: white
+
+	font-size: 10px
+
+	text-transform: uppercase
+
+	line-height: 32px
+
+@mixin infoPart
+
+	float: left
+	margin-right: 10px
+
+.timeflow-timeline-prop-info-propName
+
+	@include infoPart
+
+	color: rgb(27, 132, 165)
+
+.timeflow-timeline-prop-info-actorName
+
+	@include infoPart
+
+	color: rgb(82, 82, 82)
+
+.timeflow-timeline-prop-info-catName
+
+	@include infoPart
+
+	color: rgb(48, 48, 48)
