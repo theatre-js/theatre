@@ -8,8 +8,6 @@ module.exports = class SeekbarView
 
 		@model = @mainBox.editor.model.timeControl
 
-		window.addEventListener 'resize', => do @_resetSpace
-
 		@mainBoxLength = @model.timelineLength
 
 		@model.on 'length-change', => do @_updateTimelineLength
@@ -21,6 +19,8 @@ module.exports = class SeekbarView
 		do @_prepareFocus
 
 		do @_resetSpace
+
+		@mainBox.on 'width-change', => do @_resetSpace
 
 	_prepareNode: ->
 
@@ -212,7 +212,7 @@ module.exports = class SeekbarView
 
 	_resetSpace: ->
 
-		@_space = window.innerWidth - 8
+		@_space = @mainBox.width
 
 		do @_repositionElements
 

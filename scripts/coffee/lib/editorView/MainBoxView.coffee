@@ -1,15 +1,22 @@
 WorkspaceButtonsView = require './mainBoxView/WorkspaceButtonsView'
 WorkspaceListView = require './mainBoxView/WorkspaceListView'
-SeekbarView = require './mainBoxView/SeekbarView'
 TimelineView = require './mainBoxView/TimelineView'
+SeekbarView = require './mainBoxView/SeekbarView'
+_Emitter = require '../_Emitter'
 
-module.exports = class MainBoxView
+module.exports = class MainBoxView extends _Emitter
 
 	constructor: (@editor) ->
+
+		super
 
 		@model = @editor.model.mainBox
 
 		do @_prepareNode
+
+		do @_recalculateSpace
+
+		window.addEventListener 'resize', => do @_recalculateSpace
 
 		@seekbar = new SeekbarView @
 
@@ -40,5 +47,11 @@ module.exports = class MainBoxView
 				do @hide
 
 			return
+
+	_recalculateSpace: ->
+
+		@width = window.innerWidth - 8
+
+		@_emit 'width-change'
 
 	show: ->

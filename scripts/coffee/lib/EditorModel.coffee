@@ -3,6 +3,7 @@ MainBoxModel = require './editorModel/MainBoxModel'
 DynamicTimeFlow = require './DynamicTimeFlow'
 TimeControlModel = require './editorModel/TimeControlModel'
 WorkspaceManagerModel = require './editorModel/WorkspaceManagerModel'
+TimelineModel = require './editorModel/TimelineModel'
 
 module.exports = class EditorModel
 
@@ -17,6 +18,8 @@ module.exports = class EditorModel
 		@workspaces = new WorkspaceManagerModel @
 
 		@timeControl = new TimeControlModel @
+
+		@timeline = new TimelineModel @
 
 	_tick: (t) ->
 
