@@ -1,6 +1,6 @@
 _Emitter = require '../_Emitter'
 
-module.exports = class TimelineModel extends _Emitter
+module.exports = class MainBoxModel extends _Emitter
 
 	constructor: (@editor) ->
 

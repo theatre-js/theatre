@@ -2,17 +2,17 @@ Foxie = require 'foxie'
 
 module.exports = class WorkspaceListView
 
-	constructor: (@timeline) ->
+	constructor: (@mainBox) ->
 
-		@clicks = @timeline.editor.clicks
+		@clicks = @mainBox.editor.clicks
 
-		@keys = @timeline.editor.keys
+		@keys = @mainBox.editor.keys
 
-		@node = Foxie('.timeflow-workspaceList').putIn(@timeline.node)
+		@node = Foxie('.timeflow-workspaceList').putIn(@mainBox.node)
 
 		@holder = Foxie('.timeflow-workspaceList-holder').putIn(@node)
 
-		@model = @timeline.editor.model.workspaces
+		@model = @mainBox.editor.model.workspaces
 
 		window.model = @model
 

@@ -1,6 +1,6 @@
 GraphView = require './editorView/GraphView'
 EditorModel = require './EditorModel'
-TimelineView = require './editorView/TimelineView'
+MainBoxView = require './editorView/MainBoxView'
 ControlsView = require './editorView/ControlsView'
 StupidClickManager = require './tools/StupidClickManager'
 StupidKeyboardManager = require './tools/StupidKeyboardManager'
@@ -19,7 +19,7 @@ module.exports = class EditorView
 
 		@graph = new GraphView @
 
-		@timeline = new TimelineView @
+		@mainBox = new MainBoxView @
 
 		@controls = new ControlsView @
 

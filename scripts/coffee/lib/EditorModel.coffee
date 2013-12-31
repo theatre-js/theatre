@@ -1,5 +1,5 @@
 GraphModel = require './editorModel/GraphModel'
-TimelineModel = require './editorModel/TimelineModel'
+MainBoxModel = require './editorModel/MainBoxModel'
 DynamicTimeFlow = require './DynamicTimeFlow'
 TimeControlModel = require './editorModel/TimeControlModel'
 WorkspaceManagerModel = require './editorModel/WorkspaceManagerModel'
@@ -12,7 +12,7 @@ module.exports = class EditorModel
 
 		@graph = new GraphModel @
 
-		@timeline = new TimelineModel @
+		@mainBox = new MainBoxModel @
 
 		@workspaces = new WorkspaceManagerModel @
 

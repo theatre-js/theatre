@@ -2,15 +2,15 @@ Foxie = require 'foxie'
 
 module.exports = class SeekbarView
 
-	constructor: (@timeline) ->
+	constructor: (@mainBox) ->
 
-		@clicks = @timeline.editor.clicks
+		@clicks = @mainBox.editor.clicks
 
-		@model = @timeline.editor.model.timeControl
+		@model = @mainBox.editor.model.timeControl
 
 		window.addEventListener 'resize', => do @_resetSpace
 
-		@timelineLength = @model.timelineLength
+		@mainBoxLength = @model.timelineLength
 
 		@model.on 'length-change', => do @_updateTimelineLength
 
@@ -25,7 +25,7 @@ module.exports = class SeekbarView
 	_prepareNode: ->
 
 		@node = Foxie('.timeflow-seekbar')
-		.putIn(@timeline.node)
+		.putIn(@mainBox.node)
 
 	_prepareSeeker: ->
 
@@ -129,7 +129,7 @@ module.exports = class SeekbarView
 		nextWinPos = curWinPos + x
 
 		# the from part
-		nextFrom = nextWinPos / @_space * @timelineLength
+		nextFrom = nextWinPos / @_space * @mainBoxLength
 
 		if nextFrom < 0
 
@@ -142,9 +142,9 @@ module.exports = class SeekbarView
 
 			nextTo = nextFrom + 1000
 
-		if nextTo > @timelineLength
+		if nextTo > @mainBoxLength
 
-			nextTo = @timelineLength
+			nextTo = @mainBoxLength
 
 		# update the model
 		@model.changeFocusArea nextFrom, nextTo
@@ -172,11 +172,11 @@ module.exports = class SeekbarView
 		nextWinPos = curWinPos + x
 
 		# the to part
-		nextTo = nextWinPos / @_space * @timelineLength
+		nextTo = nextWinPos / @_space * @mainBoxLength
 
-		if nextTo > @timelineLength
+		if nextTo > @mainBoxLength
 
-			nextTo = @timelineLength
+			nextTo = @mainBoxLength
 
 		if nextTo < 1000
 
@@ -248,7 +248,7 @@ module.exports = class SeekbarView
 
 		t = 0 if t < 0
 
-		t = @timelineLength if t > @timelineLength
+		t = @mainBoxLength if t > @mainBoxLength
 
 		@model.tick t
 
@@ -258,13 +258,13 @@ module.exports = class SeekbarView
 
 		focus = @model.getFocusArea()
 
-		left = parseInt (focus.from / @timelineLength) * @_space
+		left = parseInt (focus.from / @mainBoxLength) * @_space
 
 		@focusLeftNode
 		.moveXTo(left)
 		.set('left', left)
 
-		right = parseInt ((focus.from + focus.duration) / @timelineLength) * @_space
+		right = parseInt ((focus.from + focus.duration) / @mainBoxLength) * @_space
 
 		@focusRightNode
 		.moveXTo(right)
@@ -278,6 +278,6 @@ module.exports = class SeekbarView
 
 	_updateTimelineLength: ->
 
-		@timelineLength = @model.timelineLength
+		@mainBoxLength = @model.timelineLength
 
 		do @_repositionElements
