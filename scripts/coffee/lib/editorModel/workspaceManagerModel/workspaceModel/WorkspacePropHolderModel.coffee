@@ -8,28 +8,14 @@ module.exports = class WorkspacePropHolderModel extends _Emitter
 
 		@id = @actorProp.id
 
-		@_expanded = yes
+		@_expanded = no
 
 	isExpanded: ->
 
 		@_expanded
 
-	expand: ->
+	toggleExpansion: ->
 
-		return if @_expanded
+		@_expanded = not @_expanded
 
-		@_expanded = yes
-
-		@_emit 'expand'
-
-		return
-
-	contract: ->
-
-		return unless @_expanded
-
-		@_expanded = no
-
-		@_emit 'contract'
-
-		return
+		return @_expanded

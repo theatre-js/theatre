@@ -10,15 +10,39 @@
 
 	color: white
 
-	padding: 10px
+	padding: 16px
 
-	opacity: 0
+	-webkit-transform: translate3d(0, 0, 1px)
 
-	-webkit-transform: translate3d(-5000px, 0, 1px)
+	z-index: 3
+
+	&.show
+
+		-webkit-transform: translate3d(0px, 0, 1px)
 
 .timeflow-workspaceList-holder
 
 	float: left
+
+.timeflow-workspaceList-holder > .timeflow-workspaceList-workspace
+
+	// &:after
+
+	// 	display: block
+	// 	content: "\0020"
+
+	// 	right: -16px
+	// 	top: 4px
+
+	// 	width: 1px
+	// 	height: 12px
+
+	// 	background: rgb(32, 31, 31)
+
+	// 	position: absolute
+
+	margin-right: 31px
+
 
 .timeflow-workspaceList-workspace
 
@@ -28,9 +52,8 @@
 
 	-webkit-user-select: initial
 
+	position: relative
 
-.show
+	text-transform: uppercase
 
-	opacity: 1
-
-	-webkit-transform: translate3d(0px, 0, 1px)
+	font-size: 12px

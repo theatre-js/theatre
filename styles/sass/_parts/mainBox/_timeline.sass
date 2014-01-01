@@ -8,6 +8,12 @@
 
 	padding-top: 6px
 
+	overflow-y: scroll
+
+	background: #040404
+
+	z-index: 0
+
 .timeflow-timeline-prop
 
 	position: relative
@@ -26,6 +32,12 @@
 
 	border-bottom: 1px solid #101010
 
+	transition: 0.5s all ease-in-out
+
+	&.expanded
+
+		height: 180px
+
 .timeflow-timeline-prop-info
 
 	position: absolute
@@ -39,6 +51,9 @@
 	text-transform: uppercase
 
 	line-height: 32px
+
+	user-select: none
+	cursor: pointer
 
 @mixin infoPart
 

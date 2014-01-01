@@ -6,7 +6,11 @@ module.exports = class PropView
 
 		@timeline = @repo.timeline
 
+		@clicks = @repo.timeline.mainBox.editor.clicks
+
 		@id = @propModel.id
+
+		@_expanded = no
 
 		@_propHolderModel = null
 
@@ -17,6 +21,10 @@ module.exports = class PropView
 		@node = Foxie '.timeflow-timeline-prop'
 
 		@info = Foxie('.timeflow-timeline-prop-info').putIn @node
+
+		@clicks.onClick @info, =>
+
+			@_setExpansion @_propHolderModel.toggleExpansion()
 
 		@catName = Foxie('.timeflow-timeline-prop-info-catName').putIn @info
 		@catName.node.innerHTML = @propModel.actor.category.name
@@ -29,6 +37,8 @@ module.exports = class PropView
 
 	_setPropHolderModel: (@_propHolderModel) ->
 
+		@_setExpansion @_propHolderModel.isExpanded()
+
 	attach: ->
 
 		@node.putIn @timeline.node
@@ -38,5 +48,21 @@ module.exports = class PropView
 	detach: ->
 
 		@node.remove()
+
+		return
+
+	_setExpansion: (expanded) ->
+
+		return if expanded is @_expanded
+
+		@_expanded = expanded
+
+		if @_expanded
+
+			@node.addClass 'expanded'
+
+		else
+
+			@node.removeClass 'expanded'
 
 		return
