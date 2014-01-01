@@ -30,9 +30,6 @@ module.exports = class WorkspaceManagerModel extends _Emitter
 
 				if workspace is @_active
 
-					console.log 'adding'
-					# @_emit 'list-of-props-change'
-
 					@_emit 'prop-add', propHolder
 
 					id = propHolder.id
@@ -50,8 +47,6 @@ module.exports = class WorkspaceManagerModel extends _Emitter
 			workspace.on 'prop-remove', (propHolder) =>
 
 				if workspace is @_active
-
-					# @_emit 'list-of-props-change'
 
 					@_emit 'prop-remove', propHolder
 
@@ -88,6 +83,10 @@ module.exports = class WorkspaceManagerModel extends _Emitter
 	_removeWorkspace: (workspace) ->
 
 		array.pluckOneItem @_workspaces, workspace
+
+		if @_active is workspace
+
+			@_workspaces[0].activate()
 
 		return
 

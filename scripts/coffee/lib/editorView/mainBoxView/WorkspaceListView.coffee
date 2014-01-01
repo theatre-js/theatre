@@ -30,6 +30,10 @@ module.exports = class WorkspaceListView
 
 		wsNode.node.innerText = ws.name
 
+		ws.on 'remove', =>
+
+			wsNode.remove()
+
 		@clicks.onClick wsNode, (e) =>
 
 			if e.ctrlKey
@@ -82,6 +86,8 @@ module.exports = class WorkspaceListView
 
 		@currentEdit.contentEditable = yes
 
+		@currentEdit.classList.add 'editing'
+
 		@currentEdit.focus()
 
 	_storeEdit: ->
@@ -89,6 +95,8 @@ module.exports = class WorkspaceListView
 		if @currentEdit
 
 			@currentEdit.contentEditable = no
+
+			@currentEdit.classList.remove 'editing'
 
 			@currentEdit = no
 
@@ -103,6 +111,8 @@ module.exports = class WorkspaceListView
 		if @currentEdit
 
 			@currentEdit.contentEditable = no
+
+			@currentEdit.classList.remove 'editing'
 
 			@currentEdit = no
 

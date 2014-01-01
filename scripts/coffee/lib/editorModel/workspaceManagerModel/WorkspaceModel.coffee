@@ -27,7 +27,7 @@ module.exports = class WorkspaceModel extends _Emitter
 
 	remove: ->
 
-		@workspaceManager._removeList @
+		@workspaceManager._removeWorkspace @
 
 		@_emit 'remove'
 
