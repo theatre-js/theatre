@@ -2,7 +2,7 @@
 
 	position: absolute
 
-	background: #000a10
+	background: #050505
 
 	left: 35px
 	right: 35px
@@ -15,14 +15,44 @@
 
 	overflow: hidden
 
+	transition: 0.3s all
 
-	-webkit-transform: translate3d(-5000px, 0, 1px)
+	-webkit-transform: perspective(800) translate3d(-0, 0, -100px) rotateX(-10deg)
+
 	opacity: 0
+	pointer-events: none
 
 	&.visible
 
-		-webkit-transform: translate3d(0, 0, 1px)
+		-webkit-transform: perspective(800) translate3d(0, 0, 0)
 		opacity: 1
+		pointer-events: auto
+
+		.opening-animation
+
+			-webkit-transform-origin: 0% 0%
+			-webkit-animation: entrance 0.5s both
+			// opacity: 0
+
+			@for $i from 0 to 50
+
+				&.n-#{$i}
+
+					$delay: $i * 0.019s
+
+					-webkit-animation-delay: $delay
+
+@-webkit-keyframes entrance
+
+	0%
+
+		opacity: 0
+		-webkit-transform: perspective(800) translate3d(0, 0, -50px)
+
+	100%
+
+		opacity: 1
+		-webkit-transform: perspective(1200) translate3d(0px, 0, 0)
 
 .timeflow-graph-category
 
@@ -61,9 +91,10 @@
 
 .timeflow-graph-category-actor
 
-	> a
+	position: relative
 
-		position: relative
+
+	> a
 
 		line-height: 36px
 		font-size: 24px
@@ -79,69 +110,65 @@
 
 			color: #fefefe
 
-		.timeflow-graph-category-actor-propsList
+	&:hover .timeflow-graph-category-actor-propsList
 
-			opacity: 0
+		opacity: 1
 
-			position: absolute
+		-webkit-transform: translate3d(0, 0, 1px)
 
-			min-width: 180px
-			max-height: 300px
+		pointer-events: all
 
-			background: rgba(0, 0, 0, 0.9)
-			color: white
+.timeflow-graph-category-actor-propsList
 
-			top: 0
-			right: -180px
+	opacity: 0
 
-			transition: 0.2s all
+	position: absolute
+	left: 90px
+	top: 0
 
-			z-index: 500
+	min-width: 180px
+	max-height: 300px
 
-			font-size: 16px
+	background: rgba(0, 0, 0, 0.9)
+	color: white
 
-			-webkit-transform: translate3d(-5px, 0, 1px)
+	transition: 0.2s all
 
-			padding: 0
+	z-index: 500
 
+	font-size: 16px
 
-			> li
+	-webkit-transform: translate3d(-5px, 0, 1px)
 
-				padding: 0 20px
+	padding: 0
 
-				border-bottom: 1px solid #101010
+	pointer-events: none
 
-				color: #555
-				cursor: pointer
+	> li
 
-				&:hover
+		padding: 10px 20px
 
-					transition: 0.1s all
+		border-bottom: 1px solid #0C0A0A
 
-				transition: 0.6s all
+		color: #555
+		cursor: pointer
 
-				&.available
+		&:hover
 
-					color: #eee
+			transition: 0.1s all
 
-					&:hover
+		transition: 0.6s all
 
-						color: #fff
+		&.available
 
-						background: rgba(255, 255, 255, 0.08) !important
+			color: #eee
 
-				&:last-child
+			&:hover
 
-					border-bottom-color: transparent
+				color: #fff
 
-				&:nth-child(even)
+				background: rgba(255, 255, 255, 0.08) !important
 
-					background: rgba(255, 255, 255, 0.025)
+		&:last-child
 
-		&:hover, &.active
-
-			.timeflow-graph-category-actor-propsList,
-
-				opacity: 1
-
-				-webkit-transform: translate3d(0, 0, 1px)
+			border-bottom-color: transparent

@@ -35,15 +35,22 @@ module.exports = class GraphView
 
 	prepare: ->
 
+		n = -1
+
 		for name, category of @graphModel.categories then do (category) =>
+
+			n++
 
 			catEl = document.createElement 'div'
 			catEl.classList.add 'timeflow-graph-category'
+
 
 			@node.appendChild catEl
 
 			catNameEl = document.createElement 'h3'
 			catNameEl.classList.add 'timeflow-graph-category-name'
+			catNameEl.classList.add 'opening-animation'
+			catNameEl.classList.add "n-#{n}"
 
 			catNameEl.innerHTML = category.name
 
@@ -56,11 +63,17 @@ module.exports = class GraphView
 
 			for name, actor of category.actors then do (actor) =>
 
+				n++
+
 				actorEl = document.createElement 'li'
 				actorEl.classList.add 'timeflow-graph-category-actor'
 
+
+
 				actorLink = document.createElement 'a'
 				actorLink.innerHTML = actor.name
+				actorLink.classList.add 'opening-animation'
+				actorLink.classList.add "n-#{n}"
 
 				actorEl.appendChild actorLink
 
@@ -69,7 +82,7 @@ module.exports = class GraphView
 				propsListEl = document.createElement 'ul'
 				propsListEl.classList.add 'timeflow-graph-category-actor-propsList'
 
-				actorLink.appendChild propsListEl
+				actorEl.appendChild propsListEl
 
 				for name, prop of actor.props then do (prop) =>
 

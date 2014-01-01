@@ -1,3 +1,16 @@
+@mixin expand-area
+
+	&:after
+
+		position: absolute
+		left: -5px
+		right: -5px
+		bottom: -5px
+		top: -5px
+
+		content: "\0020"
+		display: block
+
 @mixin button ($src, $left)
 
 	width: 13px
@@ -21,8 +34,9 @@
 
 		-webkit-transition: opacity .1s
 
-
 		opacity: 1
+
+	@include expand-area
 
 .timeflow-workspaceButtons
 
@@ -75,3 +89,5 @@
 			-webkit-transition: all .1s
 
 			color: #aaa
+
+		@include expand-area
