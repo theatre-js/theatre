@@ -30,6 +30,8 @@ module.exports = class WorkspaceListView
 
 		wsNode.node.innerText = ws.name
 
+		@_attachCtrl wsNode.node
+
 		ws.on 'remove', =>
 
 			wsNode.remove()
@@ -55,6 +57,18 @@ module.exports = class WorkspaceListView
 				return
 
 			ws.activate()
+
+	_attachCtrl: (node) ->
+
+		node.addEventListener 'mousemove', =>
+
+			if @keys.ctrl
+
+				node.classList.add 'pre-edit'
+
+			else
+
+				node.classList.remove 'pre-edit'
 
 	_initRename: ->
 
