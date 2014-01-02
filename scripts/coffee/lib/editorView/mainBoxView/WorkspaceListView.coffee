@@ -146,11 +146,11 @@ module.exports = class WorkspaceListView
 
 	show: ->
 
-		return if @showing
+		return if @visible
 
-		@node.node.classList.add 'show'
+		@node.node.classList.add 'visible'
 
-		@showing = yes
+		@visible = yes
 
 		@clicks.onModalClosure @node.node, =>
 
@@ -158,10 +158,10 @@ module.exports = class WorkspaceListView
 
 	hide: ->
 
-		if @showing
+		if @visible
 
 			@_storeEdit()
 
-			@node.node.classList.remove 'show'
+			@node.node.classList.remove 'visible'
 
-			@showing = no
+			@visible = no

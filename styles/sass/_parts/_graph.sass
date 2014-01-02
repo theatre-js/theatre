@@ -17,7 +17,7 @@
 
 	transition: 0.3s all
 
-	-webkit-transform: perspective(800) translate3d(-0, 0, -100px) rotateX(-10deg)
+	-webkit-transform: perspective(800) translate3d(-0, 0, 100px) rotateX(-10deg)
 
 	opacity: 0
 	pointer-events: none
@@ -31,7 +31,7 @@
 		.opening-animation
 
 			-webkit-transform-origin: 0% 0%
-			-webkit-animation: entrance 0.5s both
+			-webkit-animation: graphiItem-entrance 0.5s both
 			// opacity: 0
 
 			@for $i from 0 to 50
@@ -42,7 +42,7 @@
 
 					-webkit-animation-delay: $delay
 
-@-webkit-keyframes entrance
+@-webkit-keyframes graphiItem-entrance
 
 	0%
 
