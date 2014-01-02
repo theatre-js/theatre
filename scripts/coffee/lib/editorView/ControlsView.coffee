@@ -75,11 +75,13 @@ module.exports = class ControlsView
 
 	_prepareKeyboard: ->
 
-		@keys.on ' ', null, =>
+		@keys.setScope 'time'
+
+		@keys 'space', 'time', (e, h) =>
 
 			do @_togglePlayState
 
-		@keys.on 'home', null, (e) =>
+		@keys 'home, ctrl+home', 'time', (e, h) =>
 
 			if e.ctrlKey
 
@@ -89,7 +91,7 @@ module.exports = class ControlsView
 
 				do @model.jumpToFocusBeginning
 
-		@keys.on 'end', null, (e) =>
+		@keys 'end, ctrl+end', 'time', (e, h) =>
 
 			if e.ctrlKey
 
@@ -99,21 +101,21 @@ module.exports = class ControlsView
 
 				do @model.jumpToFocusEnd
 
-		@keys.on 'up', null, (e) =>
+		@keys 'up', 'time', (e, h) =>
 
 			do @model.prevMarker
 
-		@keys.on 'down', null, =>
+		@keys 'down', 'time', (e, h) =>
 
 			do @model.nextMarker
 
-		@keys.on 'right', null, (e) =>
+		@keys 'right, shift+right, alt+right', 'time', (e, h) =>
 
 			amount = @_getSeekAmountByEvent e
 
 			@model.seekBy amount
 
-		@keys.on 'left', null, (e) =>
+		@keys 'left, shift+left, alt+left', 'time', (e, h) =>
 
 			amount = @_getSeekAmountByEvent e
 

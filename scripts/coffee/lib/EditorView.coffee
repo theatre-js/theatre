@@ -3,7 +3,7 @@ EditorModel = require './EditorModel'
 MainBoxView = require './editorView/MainBoxView'
 ControlsView = require './editorView/ControlsView'
 StupidClickManager = require './tools/StupidClickManager'
-StupidKeyboardManager = require './tools/StupidKeyboardManager'
+keymaster = require 'keymaster-updated'
 
 module.exports = class EditorView
 
@@ -15,7 +15,7 @@ module.exports = class EditorView
 
 		@clicks = new StupidClickManager @node
 
-		@keys = new StupidKeyboardManager
+		@keys = keymaster
 
 		@graph = new GraphView @
 
