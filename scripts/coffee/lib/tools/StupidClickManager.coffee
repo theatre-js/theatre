@@ -79,6 +79,9 @@ module.exports = class StupidClickManager
 			@_dragRequest.lastPos[0] = e.x
 			@_dragRequest.lastPos[1] = e.y
 
+			e.preventDefault()
+			e.stopPropagation()
+
 		return
 
 	onModalClosure: (node, closureCallback) ->

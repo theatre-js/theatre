@@ -14,6 +14,8 @@
 
 	z-index: 0
 
+	-webkit-user-select: none
+
 .timeflow-timeline-prop
 
 	position: relative
@@ -55,6 +57,10 @@
 	user-select: none
 	cursor: pointer
 
+	&:hover .timeflow-timeline-prop-info-propName
+
+		opacity: 1
+
 @mixin infoPart
 
 	float: left
@@ -64,7 +70,9 @@
 
 	@include infoPart
 
-	color: rgb(27, 132, 165)
+	color: #1EADDA
+
+	opacity: 0.7
 
 .timeflow-timeline-prop-info-actorName
 

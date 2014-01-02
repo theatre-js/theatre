@@ -8,7 +8,7 @@ module.exports = class WorkspacePropHolderModel extends _Emitter
 
 		@id = @actorProp.id
 
-		@_expanded = no
+		@_expanded = yes
 
 	isExpanded: ->
 
