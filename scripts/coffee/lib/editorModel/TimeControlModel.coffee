@@ -84,6 +84,12 @@ module.exports = class TimeControlModel extends _Emitter
 
 		return
 
+	tickOnSpot: ->
+
+		@timeFlow.tick @timeFlow.t
+
+		return
+
 	changeFocusArea: (from, to) ->
 
 		unless 0 <= from <= @timelineLength

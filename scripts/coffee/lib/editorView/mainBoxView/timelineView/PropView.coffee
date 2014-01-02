@@ -130,7 +130,7 @@ module.exports = class PropView
 
 	_relayVertically: ->
 
-		height = @pacsContainer.node.clientHeight
+		height = @pacsNode.node.clientHeight
 
 		return if height < 30
 
@@ -183,3 +183,9 @@ module.exports = class PropView
 		return
 
 	_addConnector: (connector) ->
+
+	_tick: ->
+
+		@timeline._tick()
+
+		return

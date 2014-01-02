@@ -69,3 +69,9 @@ module.exports = class TimelineView
 		prop.relayHorizontally() for prop in @_currentProps
 
 		return
+
+	_tick: ->
+
+		@model.tick()
+
+		return

@@ -21,7 +21,7 @@
 $size: 10px
 $bigSize: $size * 1.2
 
-.pointy
+.timeflow-timeline-prop-pacs-point
 
 	width: $size
 	height: $size
@@ -38,8 +38,6 @@ $bigSize: $size * 1.2
 
 	background: #080808
 
-	-webkit-transition: 0.2s (width, height, left, bottom, border-color)
-
 	&:hover
 
 		border-color: #00fff0
@@ -49,7 +47,7 @@ $bigSize: $size * 1.2
 		bottom: -($bigSize / 2)
 		left: -($bigSize / 2)
 
-	cursor: ns-resize
+	cursor: pointer
 
 	&:before
 
@@ -61,3 +59,32 @@ $bigSize: $size * 1.2
 
 		content: "\0020"
 		display: block
+
+.timeflow-timeline-prop-pacs-point-valueContainer
+
+	opacity: 0
+
+	&.visible
+
+		opacity: 1
+
+	position: absolute
+
+	$w: 60px
+	$h: 20px
+
+	width: $w
+	height: $h
+
+	left: (-$w) / 2
+	bottom: (-$h) / 2
+
+	background: black !important
+
+	color: #FFF
+
+	font-size: 11px
+
+	border: none
+
+	text-align: center

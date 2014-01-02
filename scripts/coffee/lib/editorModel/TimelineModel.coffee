@@ -27,6 +27,12 @@ module.exports = class TimelineModel extends _Emitter
 
 		@currentProps = []
 
+	tick: ->
+
+		@timeControl.tickOnSpot()
+
+		return
+
 	_relist: ->
 
 		newProps = @workspaces.getCurrentlyListedProps()
