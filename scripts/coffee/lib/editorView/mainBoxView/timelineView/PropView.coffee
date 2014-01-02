@@ -6,19 +6,29 @@ module.exports = class PropView
 
 		@timeline = @repo.timeline
 
-		@clicks = @repo.timeline.mainBox.editor.clicks
-
 		@id = @propModel.id
+
+		@timeFlowProp = @propModel.timeFlowProp
+
+		@pacs = @timeFlowProp.pacs
+
+		@clicks = @repo.timeline.mainBox.editor.clicks
 
 		@_expanded = no
 
 		@_propHolderModel = null
 
-		do @_prepareNode
+		do @_prepareNodes
 
-	_prepareNode: ->
+	_prepareNodes: ->
 
 		@node = Foxie '.timeflow-timeline-prop'
+
+		do @_prepareInfoNodes
+
+		do @_preparePacsNode
+
+	_prepareInfoNodes: ->
 
 		@info = Foxie('.timeflow-timeline-prop-info').putIn @node
 
@@ -34,6 +44,10 @@ module.exports = class PropView
 
 		@propName = Foxie('.timeflow-timeline-prop-info-propName').putIn @info
 		@propName.node.innerHTML = @propModel.name
+
+	_preparePacsNode: ->
+
+		@pacsNode = Foxie('.timeflow-timeline-prop-pacs').putIn @node
 
 	_setPropHolderModel: (@_propHolderModel) ->
 

@@ -9,20 +9,24 @@
 	top: 55px
 	bottom: 55px
 
-	z-index: 2
+	z-index: -20
 
 	padding: 80px 85px 80px 95px
 
 	overflow: hidden
 
-	transition: 0.3s all
+	display: none
 
-	-webkit-transform: translate3d(-20px, 0px, 1px) //rotateX(10deg)
+	transition: 0.3s -webkit-transform, 0.3s opacity
+
+	-webkit-transform: translate3d(-20px, 0px, -1000px) //rotateX(10deg)
 
 	opacity: 0
 	pointer-events: none
 
 	&.visible
+
+		z-index: 2
 
 		-webkit-transform: translate3d(0, 0, 0)
 		opacity: 1
