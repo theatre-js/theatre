@@ -12,6 +12,8 @@ module.exports = class MainBoxView extends _Emitter
 
 		@model = @editor.model.mainBox
 
+		@clicks = @editor.clicks
+
 		do @_prepareNode
 
 		do @_recalculateSpace
@@ -31,6 +33,22 @@ module.exports = class MainBoxView extends _Emitter
 		@node = document.createElement 'div'
 		@node.classList.add 'timeflow-mainBox'
 		@editor.node.appendChild @node
+
+		@nodeResizeHandle = document.createElement 'div'
+		@nodeResizeHandle.classList.add 'timeflow-mainBox-resizeHandle'
+		@node.appendChild @nodeResizeHandle
+
+		@clicks.onDrag @nodeResizeHandle,
+
+			start: =>
+
+			end: =>
+
+			drag: (absX, absY, relX, relY) =>
+
+				rects = @node.getBoundingClientRect()
+
+				@node.style.height = (rects.height - relY) + 'px'
 
 		if @model.isVisible()
 
