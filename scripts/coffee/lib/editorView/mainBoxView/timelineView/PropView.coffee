@@ -1,4 +1,5 @@
 Foxie = require 'foxie'
+PointView = require './propView/PointView'
 
 module.exports = class PropView
 
@@ -12,13 +13,35 @@ module.exports = class PropView
 
 		@pacs = @timeFlowProp.pacs
 
+		@pacs.on 'peak-and-bottom-change', => do @_relayVertically
+
+		@_items = []
+
 		@clicks = @repo.timeline.mainBox.editor.clicks
 
 		@_expanded = no
 
 		@_propHolderModel = null
 
+		@_widthToTimeRatio = 0
+
+		@_heightToValueRatio = 0
+
 		do @_prepareNodes
+
+		do @_preparePacs
+
+		setTimeout =>
+
+			do @_relayVertically
+
+			do @relayHorizontally
+
+		, 0
+
+	_setPropHolderModel: (@_propHolderModel) ->
+
+		@_setExpansion @_propHolderModel.isExpanded()
 
 	_prepareNodes: ->
 
@@ -26,7 +49,7 @@ module.exports = class PropView
 
 		do @_prepareInfoNodes
 
-		do @_preparePacsNode
+		do @_preparePacsNodes
 
 	_prepareInfoNodes: ->
 
@@ -45,13 +68,11 @@ module.exports = class PropView
 		@propName = Foxie('.timeflow-timeline-prop-info-propName').putIn @info
 		@propName.node.innerHTML = @propModel.name
 
-	_preparePacsNode: ->
+	_preparePacsNodes: ->
 
-		@pacsNode = Foxie('.timeflow-timeline-prop-pacs').putIn @node
+		@pacsContainer = Foxie('.timeflow-timeline-prop-pacsContainer').putIn @node
 
-	_setPropHolderModel: (@_propHolderModel) ->
-
-		@_setExpansion @_propHolderModel.isExpanded()
+		@pacsNode = Foxie('.timeflow-timeline-prop-pacs').putIn @pacsContainer
 
 	attach: ->
 
@@ -80,3 +101,85 @@ module.exports = class PropView
 			@node.removeClass 'expanded'
 
 		return
+
+	relayHorizontally: ->
+
+		width = @timeline.horizontalSpace
+
+		newRatio = width / @timeline.focusArea.duration
+
+		if newRatio isnt @_widthToTimeRatio
+
+			@_widthToTimeRatio = newRatio
+
+			for item in @_items
+
+				do item.relayHorizontally
+
+		@_shiftViewToTime @timeline.focusArea.from
+
+		return
+
+	_shiftViewToTime: (t) ->
+
+		newPos = t * @_widthToTimeRatio
+
+		@pacsNode.moveXTo -newPos
+
+		return
+
+	_relayVertically: ->
+
+		height = @pacsContainer.node.clientHeight
+
+		return if height < 30
+
+		valDiff = @pacs.peak - @pacs.bottom
+
+		newRatio = height / valDiff
+
+		return if newRatio is @_heightToValueRatio
+
+		@_heightToValueRatio = newRatio
+
+		for item in @_items
+
+			item.relayVertically()
+
+		return
+
+	_preparePacs: ->
+
+		for item in @pacs.timeline
+
+			if item.isPoint()
+
+				@_addPoint item
+
+			else
+
+				@_addConnector item
+
+		@pacs.on 'new-point', (point) =>
+
+			@_addPoint point
+
+			return
+
+		@pacs.on 'new-connector', (connector) =>
+
+			@_addConnector connector
+
+			return
+
+		return
+
+	_addPoint: (point) ->
+
+		pointView = new PointView @, point
+
+		@_items.push pointView
+
+		return
+
+	_addConnector: (connector) ->

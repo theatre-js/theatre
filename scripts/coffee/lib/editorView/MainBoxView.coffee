@@ -50,7 +50,11 @@ module.exports = class MainBoxView extends _Emitter
 
 	_recalculateSpace: ->
 
-		@width = window.innerWidth - 8
+		newWidth = window.innerWidth - 8
+
+		return if newWidth is @width
+
+		@width = newWidth
 
 		@_emit 'width-change'
 

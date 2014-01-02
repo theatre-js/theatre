@@ -8,9 +8,13 @@ module.exports = class TimelineView
 
 		@model = @mainBox.editor.model.timeline
 
+		@focusArea = @model.focusArea
+
 		@_repo = new PropViewRepo @
 
 		@_currentProps = []
+
+		do @_relayHorizontally
 
 		do @_prepareNode
 
@@ -18,9 +22,9 @@ module.exports = class TimelineView
 
 	_prepareListeners: ->
 
-		@mainBox.on 'width-change', => do @_relayout
+		@mainBox.on 'width-change', => do @_relayHorizontally
 
-		@model.on 'focus-change', => do @_relayout
+		@model.on 'focus-change', => do @_relayHorizontally
 
 		@model.on 'prop-add', (propHolder) => @_add propHolder
 
@@ -55,5 +59,13 @@ module.exports = class TimelineView
 		array.pluckOneItem @_currentProps, propViewToRemove
 
 		do propViewToRemove.detach
+
+		return
+
+	_relayHorizontally: ->
+
+		@horizontalSpace = @mainBox.width
+
+		prop.relayHorizontally() for prop in @_currentProps
 
 		return

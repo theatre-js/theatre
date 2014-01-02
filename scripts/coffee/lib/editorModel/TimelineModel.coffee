@@ -11,6 +11,14 @@ module.exports = class TimelineModel extends _Emitter
 
 		@timeControl = @editor.timeControl
 
+		@focusArea = @timeControl.getFocusArea()
+
+		@timeControl.on 'focus-change', =>
+
+			@focusArea = @timeControl.getFocusArea()
+
+			@_emit 'focus-change'
+
 		@workspaces.on 'active-workspace-change', => do @_relist
 
 		@workspaces.on 'prop-add', (propHolder) => @_add propHolder
