@@ -1,20 +1,25 @@
 Foxie = require 'foxie'
+_ItemView = require './_ItemView'
 
-module.exports = class PointView
+module.exports = class PointView extends _ItemView
 
 	constructor: (@prop, @model) ->
+
+		super
+
+		@x = 0
+
+		@y = 0
 
 		@clicks = @prop.clicks
 
 		@pacs = @model.pacs
 
+		@heightUsage = 0.7
+
 		@model.on 'value-change', =>
 
 			do @relayVertically
-
-		@x = 0
-
-		@y = 0
 
 		do @_prepareNode
 
@@ -54,9 +59,33 @@ module.exports = class PointView
 
 		do @_updateValue
 
+	_moveValueInputX: ->
+
+		@valueInput.moveXTo @x
+
+		return
+
+	_moveValueInputY: ->
+
+		newY = @y
+
+		if newY < 10
+
+			newY += 20
+
+		else
+
+			newY -= 20
+
+		@valueInput.moveYTo -newY
+
+		return
+
 	_openValueInput: ->
 
 		@valueInput.addClass 'visible'
+
+		@valueInput.node.focus()
 
 		@clicks.onModalClosure @valueInput, =>
 
@@ -91,28 +120,6 @@ module.exports = class PointView
 		do @_moveNodeX
 
 		do @_moveValueInputX
-
-		return
-
-	_moveValueInputX: ->
-
-		@valueInput.moveXTo @x
-
-		return
-
-	_moveValueInputY: ->
-
-		newY = @y
-
-		if newY < 10
-
-			newY += 20
-
-		else
-
-			newY -= 20
-
-		@valueInput.moveYTo -newY
 
 		return
 

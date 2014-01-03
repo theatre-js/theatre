@@ -1,5 +1,7 @@
 Foxie = require 'foxie'
 PointView = require './propView/PointView'
+ConnectorView = require './propView/ConnectorView'
+SvgArea = require './propView/SvgArea'
 
 module.exports = class PropView
 
@@ -27,7 +29,11 @@ module.exports = class PropView
 
 		@_heightToValueRatio = 0
 
+		@_height = 0
+
 		do @_prepareNodes
+
+		@svgArea = new SvgArea @
 
 		do @_preparePacs
 
@@ -112,6 +118,8 @@ module.exports = class PropView
 
 			@_widthToTimeRatio = newRatio
 
+			@svgArea.relayHorizontally()
+
 			for item in @_items
 
 				do item.relayHorizontally
@@ -134,6 +142,8 @@ module.exports = class PropView
 
 		return if height < 30
 
+		@_height = height
+
 		valDiff = @pacs.peak - @pacs.bottom
 
 		newRatio = height / valDiff
@@ -141,6 +151,8 @@ module.exports = class PropView
 		return if newRatio is @_heightToValueRatio
 
 		@_heightToValueRatio = newRatio
+
+		@svgArea.relayVertically()
 
 		for item in @_items
 
@@ -183,6 +195,12 @@ module.exports = class PropView
 		return
 
 	_addConnector: (connector) ->
+
+		connectorView = new ConnectorView @, connector
+
+		@_items.push connectorView
+
+		return
 
 	_tick: ->
 

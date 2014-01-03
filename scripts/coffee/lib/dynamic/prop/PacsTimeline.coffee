@@ -14,6 +14,8 @@ module.exports = class PacsTimeline extends _Emitter
 
 		@timeline = []
 
+		@timelineLength = 0
+
 		@_updateRange = [Infinity, -Infinity]
 
 		@_idCounter = -1
@@ -163,6 +165,12 @@ module.exports = class PacsTimeline extends _Emitter
 		if lastPoint?
 
 			@prop.timeFlow._maximizeTimelineLength lastPoint.t
+
+			if lastPoint.t isnt @timelineLength
+
+				@timelineLength = lastPoint.t
+
+				@_emit 'length-change'
 
 		return
 
