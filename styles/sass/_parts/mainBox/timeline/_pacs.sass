@@ -26,57 +26,69 @@
 
 	z-index: 0
 
-$size: 10px
-$bigSize: $size * 1.2
+$ringSize: 12px
+$bigRingSize: $ringSize * 1.2
 
 .timeflow-timeline-prop-pacs-point
 
 	z-index: 10
 
-	width: $size
-	height: $size
 	position: absolute
-
-	top: -($size / 2)
-	left: -($size / 2)
-
-	border-radius: 50%
-
-	-webkit-box-sizing: border-box
-
-	border: 2px solid #367c89
-
-	background: #080808
-
-	&:hover
-
-		border-color: #00fff0
-		width: $bigSize
-		height: $bigSize
-
-		top: -($bigSize / 2)
-		left: -($bigSize / 2)
+	top: 0
+	left: 0
 
 	cursor: pointer
 
-	&:before
+	&:after
 
 		position: absolute
-		left: -5px
-		right: -5px
-		bottom: -5px
-		top: -5px
+		width: $ringSize
+		height: $ringSize
+		top: -($ringSize / 2)
+		left: -($ringSize / 2)
 
 		content: "\0020"
 		display: block
 
+		border-radius: 50%
+		border: 3px solid #367c89
+		background: #080808
+
+		-webkit-box-sizing: border-box
+
+		-webkit-transition: all 0.3s cubic-bezier(.07,1.15,1,1)
+
+		-webkit-transform: scale(0.8)
+
+
+	&:hover:after, &.active:after
+
+		border-color: #00fff0
+
+		-webkit-transform: scale(1)
+
+	&:before
+
+		position: absolute
+		content: "\0020"
+		display: block
+
+		width: 30px
+		height: 30px
+
+		top: -15px
+		left: -15px
+
 .timeflow-timeline-prop-pacs-point-valueContainer
 
 	opacity: 0
+	pointer-events: none
+	-webkit-transition: opacity 0.1s
 
 	&.visible
 
 		opacity: 1
+		pointer-events: auto
 
 	position: absolute
 
@@ -98,3 +110,52 @@ $bigSize: $size * 1.2
 	border: none
 
 	text-align: center
+
+.timeflow-timeline-prop-pacs-pointHandler
+
+	position: absolute
+	top: 0
+	left: 0
+
+	cursor: pointer
+	z-index: 11
+
+	&:after
+
+		position: absolute
+		width: $ringSize
+		height: $ringSize
+		top: -($ringSize / 2)
+		left: -($ringSize / 2)
+
+		content: "\0020"
+		display: block
+
+		border-radius: 50%
+		background: white
+		opacity: 0.5
+
+		-webkit-box-sizing: border-box
+
+		-webkit-transition: all 0.3s cubic-bezier(.07,1.15,1,1)
+
+		-webkit-transform: scale(0.5)
+
+
+	&:hover:after, &.active:after
+
+		opacity: 1
+
+		-webkit-transform: scale(0.7)
+
+	&:before
+
+		position: absolute
+		content: "\0020"
+		display: block
+
+		width: 30px
+		height: 30px
+
+		top: -15px
+		left: -15px

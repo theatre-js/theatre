@@ -10,6 +10,10 @@ module.exports = class _ItemView
 
 		@_normalizeY @_normalizeValue(v) * @prop._heightToValueRatio
 
+	_normalizedValToY: (v) ->
+
+		-v * @prop._heightToValueRatio
+
 	_normalizeValue: (v) ->
 
 		v - @model.pacs.bottom

@@ -21,7 +21,11 @@ module.exports = class PointView extends _ItemView
 
 			do @relayVertically
 
+		@svgArea = @prop.svgArea
+
 		do @_prepareNode
+
+		do @_prepareHandlers
 
 		do @_prepareValueInputNode
 
@@ -37,21 +41,57 @@ module.exports = class PointView extends _ItemView
 
 			do @_openValueInput
 
-	_moveNodeX: ->
+	_moveNode: ->
 
 		@node.moveXTo @x
-
-		return
-
-	_moveNodeY: ->
 
 		@node.moveYTo @y
 
 		return
 
+	_prepareHandlers: ->
+
+		@leftHandler = Foxie('.timeflow-timeline-prop-pacs-pointHandler.left').putIn @node
+
+		@leftHandlerLine = Foxie('svg:path').putIn(@svgArea.node)
+		.attr('stroke', 'white')
+		.attr('stroke-width', '1px')
+		.attr('fill', 'transparent')
+
+		@rightHandlerLine = Foxie('svg:path').putIn(@svgArea.node)
+		.attr('stroke', 'white')
+		.attr('stroke-width', '1px')
+		.attr('fill', 'transparent')
+
+		@rightHandler = Foxie('.timeflow-timeline-prop-pacs-pointHandler.right').putIn @node
+
+		return
+
+	_moveHandlers: ->
+
+		@leftHandler.moveXTo @_timeToX -@model.leftHandler[0]
+		@rightHandler.moveXTo @_timeToX @model.rightHandler[0]
+
+		@leftHandler.moveYTo @_normalizedValToY @model.leftHandler[1]
+		@rightHandler.moveYTo @_normalizedValToY @model.rightHandler[1]
+
+		@leftHandlerLine.attr 'd',
+
+			"M#{@x} #{@y} L " +
+			"#{@_timeToX(@model.t - @model.leftHandler[0])} #{@_valToY(@model.value + @model.leftHandler[1])}"
+
+		@rightHandlerLine.attr 'd',
+
+			"M#{@x} #{@y} L " +
+			"#{@_timeToX(@model.t + @model.rightHandler[0])} #{@_valToY(@model.value + @model.rightHandler[1])}"
+
 	_prepareValueInputNode: ->
 
-		@valueInput = Foxie('input.timeflow-timeline-prop-pacs-point-valueContainer').putIn @prop.pacsNode
+		@valueInput = Foxie('input.timeflow-timeline-prop-pacs-point-valueContainer').putIn @node
+
+		@valueInput.trans(200)
+
+		@valueInput.moveZTo(-1)
 
 		@valueInput.node.addEventListener 'keyup', =>
 
@@ -59,25 +99,9 @@ module.exports = class PointView extends _ItemView
 
 		do @_updateValue
 
-	_moveValueInputX: ->
+	_moveValueInput: ->
 
-		@valueInput.moveXTo @x
-
-		return
-
-	_moveValueInputY: ->
-
-		newY = @y
-
-		if newY > 10
-
-			newY -= 20
-
-		else
-
-			newY += 20
-
-		@valueInput.moveYTo newY
+		@valueInput.moveYTo if @y > 10 then 30 else -30
 
 		return
 
@@ -85,11 +109,15 @@ module.exports = class PointView extends _ItemView
 
 		@valueInput.addClass 'visible'
 
+		@node.addClass 'active'
+
 		@valueInput.node.focus()
 
 		@clicks.onModalClosure @valueInput, =>
 
 			@valueInput.removeClass 'visible'
+
+			@node.removeClass 'active'
 
 			return
 
@@ -117,9 +145,9 @@ module.exports = class PointView extends _ItemView
 
 		@x = @_timeToX @model.t
 
-		do @_moveNodeX
+		do @_moveNode
 
-		do @_moveValueInputX
+		do @_moveHandlers
 
 		return
 
@@ -127,8 +155,10 @@ module.exports = class PointView extends _ItemView
 
 		@y = @_valToY @model.value
 
-		do @_moveNodeY
+		do @_moveNode
 
-		do @_moveValueInputY
+		do @_moveValueInput
+
+		do @_moveHandlers
 
 		return
