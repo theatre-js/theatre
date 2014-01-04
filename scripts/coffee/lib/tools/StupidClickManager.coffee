@@ -135,9 +135,7 @@ module.exports = class StupidClickManager
 
 			e.stopPropagation()
 
-			if @_closeModalIfNexessary e
-
-				return
+			@_closeModalIfNexessary e
 
 			@_requestDragFor node, callbacks, e
 

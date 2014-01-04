@@ -54,12 +54,12 @@ module.exports = class PointView extends _ItemView
 		@leftHandler = Foxie('.timeflow-timeline-prop-pacs-pointHandler.left').putIn @node
 
 		@leftHandlerLine = Foxie('svg:path').putIn(@svgArea.node)
-		.attr('stroke', 'white')
+		.attr('stroke', '#272727')
 		.attr('stroke-width', '1px')
 		.attr('fill', 'transparent')
 
 		@rightHandlerLine = Foxie('svg:path').putIn(@svgArea.node)
-		.attr('stroke', 'white')
+		.attr('stroke', '#272727')
 		.attr('stroke-width', '1px')
 		.attr('fill', 'transparent')
 

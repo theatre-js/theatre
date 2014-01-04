@@ -211,7 +211,11 @@ module.exports = class Point extends _PacsTimelineItem
 
 		unless Number.isFinite(x) and Number.isFinite(y)
 
-			throw Error "Wrong value for handlers"
+			throw Error "Handlers should both be finite numbers"
+
+		if x < 0
+
+			throw Error "Handler must be a positive number"
 
 		@leftHandler[0] = x
 		@leftHandler[1] = y
@@ -222,7 +226,11 @@ module.exports = class Point extends _PacsTimelineItem
 
 		unless Number.isFinite(x) and Number.isFinite(y)
 
-			throw Error "Wrong value for handlers"
+			throw Error "Handlers should both be finite numbers"
+
+		if x < 0
+
+			throw Error "Handler must be a positive number"
 
 		@rightHandler[0] = x
 		@rightHandler[1] = y
