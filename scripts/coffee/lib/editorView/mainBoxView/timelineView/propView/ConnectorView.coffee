@@ -18,6 +18,10 @@ module.exports = class ConnectorView extends _ItemView
 
 		@pacs = @model.pacs
 
+		@model.on 'bezier-change', =>
+
+			do @relayHorizontally
+
 		do @_prepareNode
 
 	_prepareNode: ->
@@ -41,11 +45,11 @@ module.exports = class ConnectorView extends _ItemView
 
 		@leftHandler[0] = @_timeToX @model.leftT + @model.leftHandler[0]
 
-		@leftHandler[1] = @_timeToX @model.leftValue + @model.leftHandler[1]
+		@leftHandler[1] = @_valToY @model.leftValue + @model.leftHandler[1]
 
 		@rightHandler[0] = @_timeToX @model.rightT - @model.rightHandler[0]
 
-		@rightHandler[1] = @_timeToX @model.rightValue + @model.rightHandler[1]
+		@rightHandler[1] = @_valToY @model.rightValue + @model.rightHandler[1]
 
 		do @_redrawCurve
 
@@ -56,22 +60,6 @@ module.exports = class ConnectorView extends _ItemView
 		do @_redrawCurve
 
 		return
-
-	_timeToX: (t) ->
-
-		t * @prop._widthToTimeRatio
-
-	_valToY: (v) ->
-
-		@_normalizeY @_normalizeValue(v) * @prop._heightToValueRatio
-
-	_normalizeValue: (v) ->
-
-		v - @model.pacs.bottom
-
-	_normalizeY: (y) ->
-
-		@svgArea.height - y
 
 	_redrawCurve: ->
 

@@ -45,7 +45,7 @@ module.exports = class PointView extends _ItemView
 
 	_moveNodeY: ->
 
-		@node.moveYTo -@y
+		@node.moveYTo @y
 
 		return
 
@@ -69,15 +69,15 @@ module.exports = class PointView extends _ItemView
 
 		newY = @y
 
-		if newY < 10
-
-			newY += 20
-
-		else
+		if newY > 10
 
 			newY -= 20
 
-		@valueInput.moveYTo -newY
+		else
+
+			newY += 20
+
+		@valueInput.moveYTo newY
 
 		return
 
@@ -115,7 +115,7 @@ module.exports = class PointView extends _ItemView
 
 	relayHorizontally: ->
 
-		@x = @model.t * @prop._widthToTimeRatio
+		@x = @_timeToX @model.t
 
 		do @_moveNodeX
 
@@ -125,9 +125,7 @@ module.exports = class PointView extends _ItemView
 
 	relayVertically: ->
 
-		baseVal = @model.value - @model.pacs.bottom
-
-		@y = baseVal * @prop._heightToValueRatio
+		@y = @_valToY @model.value
 
 		do @_moveNodeY
 

@@ -57,7 +57,7 @@ module.exports = class StupidClickManager
 
 		return unless e.which is 1
 
-		return if @_shouldUseMouseDownToCloseModal e
+		return if @_closeModalIfNexessary e
 
 	_mouseMove: (e) ->
 
@@ -115,9 +115,7 @@ module.exports = class StupidClickManager
 
 			e.stopPropagation()
 
-			if @_shouldUseMouseDownToCloseModal e
-
-				return
+			@_closeModalIfNexessary e
 
 			@_requestClickFor node, cb, e
 
@@ -137,7 +135,7 @@ module.exports = class StupidClickManager
 
 			e.stopPropagation()
 
-			if @_shouldUseMouseDownToCloseModal e
+			if @_closeModalIfNexessary e
 
 				return
 
@@ -145,7 +143,7 @@ module.exports = class StupidClickManager
 
 		return
 
-	_shouldUseMouseDownToCloseModal: (e) ->
+	_closeModalIfNexessary: (e) ->
 
 		return no if @_modals.length is 0
 

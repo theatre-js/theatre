@@ -183,8 +183,8 @@ module.exports = class PacsTimeline extends _Emitter
 
 			continue if item instanceof Connector
 
-			@bottom = Math.min(@bottom, item.value, item.value + item.leftHandler[1], item.value + item.rightHandler[1])
-			@peak = Math.max(@peak, item.value, item.value + item.leftHandler[1], item.value + item.rightHandler[1])
+			@bottom = Math.min @bottom, item.value, item.value + item.leftHandler[1], item.value + item.rightHandler[1]
+			@peak = Math.max @peak, item.value, item.value + item.leftHandler[1], item.value + item.rightHandler[1]
 
 		@_emit 'peak-and-bottom-change'
 
