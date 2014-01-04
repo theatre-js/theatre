@@ -39,7 +39,7 @@ module.exports = class PointView extends _ItemView
 
 		@clicks.onClick @node, =>
 
-			do @_openValueInput
+			do @_activate
 
 	_moveNode: ->
 
@@ -51,7 +51,7 @@ module.exports = class PointView extends _ItemView
 
 	_prepareHandlers: ->
 
-		@leftHandler = Foxie('.timeflow-timeline-prop-pacs-pointHandler.left').putIn @node
+		@leftHandler = Foxie('.timeflow-timeline-prop-pacs-point-handler.left').putIn @node
 
 		@leftHandlerLine = Foxie('svg:path').putIn(@svgArea.node)
 		.attr('stroke', '#272727')
@@ -63,7 +63,7 @@ module.exports = class PointView extends _ItemView
 		.attr('stroke-width', '1px')
 		.attr('fill', 'transparent')
 
-		@rightHandler = Foxie('.timeflow-timeline-prop-pacs-pointHandler.right').putIn @node
+		@rightHandler = Foxie('.timeflow-timeline-prop-pacs-point-handler.right').putIn @node
 
 		return
 
@@ -87,11 +87,9 @@ module.exports = class PointView extends _ItemView
 
 	_prepareValueInputNode: ->
 
-		@valueInput = Foxie('input.timeflow-timeline-prop-pacs-point-valueContainer').putIn @node
+		@valueContainer = Foxie('.timeflow-timeline-prop-pacs-point-valueContainer').putIn @node
 
-		@valueInput.trans(200)
-
-		@valueInput.moveZTo(-1)
+		@valueInput = Foxie('input').putIn @valueContainer
 
 		@valueInput.node.addEventListener 'keyup', =>
 
@@ -99,23 +97,25 @@ module.exports = class PointView extends _ItemView
 
 		do @_updateValue
 
-	_moveValueInput: ->
+	_moveValueContainer: ->
 
-		@valueInput.moveYTo if @y > 10 then 30 else -30
+		if @y > 90
+
+			@valueContainer.removeClass 'hang'
+
+		else
+
+			@valueContainer.addClass 'hang'
 
 		return
 
-	_openValueInput: ->
-
-		@valueInput.addClass 'visible'
+	_activate: ->
 
 		@node.addClass 'active'
 
 		@valueInput.node.focus()
 
-		@clicks.onModalClosure @valueInput, =>
-
-			@valueInput.removeClass 'visible'
+		@clicks.onModalClosure @node, =>
 
 			@node.removeClass 'active'
 
@@ -157,7 +157,7 @@ module.exports = class PointView extends _ItemView
 
 		do @_moveNode
 
-		do @_moveValueInput
+		do @_moveValueContainer
 
 		do @_moveHandlers
 

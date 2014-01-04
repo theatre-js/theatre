@@ -1,0 +1,52 @@
+
+$ringSize: 12px
+
+.timeflow-timeline-prop-pacs-point
+
+	z-index: 10
+
+	position: absolute
+	top: 0
+	left: 0
+
+	cursor: pointer
+
+	&:after
+
+		position: absolute
+		width: $ringSize
+		height: $ringSize
+		top: -($ringSize / 2)
+		left: -($ringSize / 2)
+
+		content: "\0020"
+		display: block
+
+		border-radius: 50%
+		border: 3px solid #367c89
+		background: #080808
+
+		-webkit-box-sizing: border-box
+
+		-webkit-transition: all 0.3s cubic-bezier(.07,1.15,1,1)
+
+		-webkit-transform: scale(0.8)
+
+
+	&:hover:after, &.active:after
+
+		border-color: #00fff0
+
+		-webkit-transform: scale(1)
+
+	&:before
+
+		position: absolute
+		content: "\0020"
+		display: block
+
+		width: 30px
+		height: 30px
+
+		top: -15px
+		left: -15px
