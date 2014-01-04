@@ -176,16 +176,21 @@ module.exports = class PacsTimeline extends _Emitter
 
 	_recalculatePeakAndBottom: ->
 
-		@bottom = @prop.initial
-		@peak = @prop.initial
+		bottom = @prop.initial
+		peak = @prop.initial
 
 		for item in @timeline
 
 			continue if item instanceof Connector
 
-			@bottom = Math.min @bottom, item.value, item.value + item.leftHandler[1], item.value + item.rightHandler[1]
-			@peak = Math.max @peak, item.value, item.value + item.leftHandler[1], item.value + item.rightHandler[1]
+			bottom = Math.min bottom, item.value, item.value + item.leftHandler[1], item.value + item.rightHandler[1]
+			peak = Math.max peak, item.value, item.value + item.leftHandler[1], item.value + item.rightHandler[1]
 
-		@_emit 'peak-and-bottom-change'
+		if bottom isnt @bottom or peak isnt @peak
+
+			@peak = peak
+			@bottom = bottom
+
+			@_emit 'peak-and-bottom-change'
 
 		return

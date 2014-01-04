@@ -20,7 +20,7 @@ module.exports = class ConnectorView extends _ItemView
 
 		@model.on 'bezier-change', =>
 
-			do @relayHorizontally
+			do @relay
 
 		do @_prepareNode
 
@@ -34,6 +34,14 @@ module.exports = class ConnectorView extends _ItemView
 		do @relayHorizontally
 
 	relayHorizontally: ->
+
+		do @relay
+
+	relayVertically: ->
+
+		do @relay
+
+	relay: ->
 
 		@leftPoint[0] = @_timeToX @model.leftT
 
@@ -50,12 +58,6 @@ module.exports = class ConnectorView extends _ItemView
 		@rightHandler[0] = @_timeToX @model.rightT - @model.rightHandler[0]
 
 		@rightHandler[1] = @_valToY @model.rightValue + @model.rightHandler[1]
-
-		do @_redrawCurve
-
-		return
-
-	relayVertically: ->
 
 		do @_redrawCurve
 
