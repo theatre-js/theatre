@@ -7,11 +7,10 @@ module.exports = class ConnectorView extends _ItemView
 
 		super
 
-		@leftX = 0
-		@rightX = 0
-
-		@leftY = 0
-		@rightY = 0
+		@leftPoint = new Float32Array 2
+		@rightPoint = new Float32Array 2
+		@leftHandler = new Float32Array 2
+		@rightHandler = new Float32Array 2
 
 		@clicks = @prop.clicks
 
@@ -28,21 +27,25 @@ module.exports = class ConnectorView extends _ItemView
 		.attr('stroke-width', '4px')
 		.attr('fill', 'transparent')
 
-		do @_redrawCurve
+		do @relayHorizontally
 
 	relayHorizontally: ->
 
-		@leftX = @model.leftT * @prop._widthToTimeRatio
+		@leftPoint[0] = @_timeToX @model.leftT
 
-		@rightX = @model.rightT * @prop._widthToTimeRatio
+		@leftPoint[1] = @_valToY @model.leftValue
 
-		baseLeftValue = @model.leftValue - @model.pacs.bottom
+		@rightPoint[0] = @_timeToX @model.rightT
 
-		@leftY = baseLeftValue * @prop._heightToValueRatio
+		@rightPoint[1] = @_valToY @model.rightValue
 
-		baseRightValue = @model.rightValue - @model.pacs.bottom
+		@leftHandler[0] = @_timeToX @model.leftT + @model.leftHandler[0]
 
-		@rightY = baseRightValue * @prop._heightToValueRatio
+		@leftHandler[1] = @_timeToX @model.leftValue + @model.leftHandler[1]
+
+		@rightHandler[0] = @_timeToX @model.rightT - @model.rightHandler[0]
+
+		@rightHandler[1] = @_timeToX @model.rightValue + @model.rightHandler[1]
 
 		do @_redrawCurve
 
@@ -54,12 +57,29 @@ module.exports = class ConnectorView extends _ItemView
 
 		return
 
+	_timeToX: (t) ->
+
+		t * @prop._widthToTimeRatio
+
+	_valToY: (v) ->
+
+		@_normalizeY @_normalizeValue(v) * @prop._heightToValueRatio
+
+	_normalizeValue: (v) ->
+
+		v - @model.pacs.bottom
+
+	_normalizeY: (y) ->
+
+		@svgArea.height - y
+
 	_redrawCurve: ->
 
-		leftY = @svgArea.height - @leftY
+		@node.attr 'd',
 
-		endY = @svgArea.height - @rightY
-
-		@node.attr 'd', "M#{@leftX} #{leftY} L #{@rightX} #{endY}"
+			"M#{@leftPoint[0]} #{@leftPoint[1]} C " +
+			"#{@leftHandler[0]} #{@leftHandler[1]}, " +
+			"#{@rightHandler[0]} #{@rightHandler[1]}, " +
+			"#{@rightPoint[0]} #{@rightPoint[1]}"
 
 		return

@@ -6,6 +6,9 @@ module.exports = class Point extends _PacsTimelineItem
 
 		@handler = new Float32Array 4
 
+		@leftHandler = @handler.subarray 0, 2
+		@rightHandler = @handler.subarray 2, 4
+
 		@_setHandlers leftHandlerX, leftHandlerY, rightHandlerX, rightHandlerY
 
 		super
@@ -206,23 +209,23 @@ module.exports = class Point extends _PacsTimelineItem
 
 	_setLeftHandler: (x, y) ->
 
-		unless Number.isFinite(x) and Number.isFinite(x)
+		unless Number.isFinite(x) and Number.isFinite(y)
 
 			throw Error "Wrong value for handlers"
 
-		@handler[0] = x
-		@handler[1] = y
+		@leftHandler[0] = x
+		@leftHandler[1] = y
 
 		return
 
 	_setRightHandler: (x, y) ->
 
-		unless Number.isFinite(x) and Number.isFinite(x)
+		unless Number.isFinite(x) and Number.isFinite(y)
 
 			throw Error "Wrong value for handlers"
 
-		@handler[2] = x
-		@handler[3] = y
+		@rightHandler[0] = x
+		@rightHandler[1] = y
 
 		return
 
