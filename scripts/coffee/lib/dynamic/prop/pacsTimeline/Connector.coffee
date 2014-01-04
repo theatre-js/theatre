@@ -96,7 +96,18 @@ module.exports = class Connector extends _PacsTimelineItem
 		@rightT = rightPoint.t
 		@_timeDiff = @rightT - @leftT
 
-		@bezier.set @leftHandler[0], @leftHandler[1], @rightHandler[0], @rightHandler[1]
+		x1 = @leftHandler[0] / @_timeDiff
+		y1 = @leftHandler[1] / @_valDiff
+
+		x2 = @rightHandler[0] / @_timeDiff
+		y2 = @rightHandler[1] / @_valDiff
+
+		# if @leftValue > @rightValue
+
+		# 	y1 = - y1
+		# 	# y2 = - y2
+
+		@bezier.set x1, y1, x2, y2
 
 		return
 
