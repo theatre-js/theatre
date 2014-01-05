@@ -8,11 +8,13 @@ module.exports = class SeekbarView
 
 		@model = @mainBox.editor.model.timeControl
 
-		@mainBoxLength = @model.timelineLength
+		@timelineLength = @model.timelineLength
 
 		@model.on 'length-change', => do @_updateTimelineLength
 
 		do @_prepareNode
+
+		do @_prepareGrid
 
 		do @_prepareSeeker
 
@@ -26,6 +28,38 @@ module.exports = class SeekbarView
 
 		@node = Foxie('.timeflow-seekbar')
 		.putIn(@mainBox.node)
+
+	_prepareGrid: ->
+
+		@grid = Foxie('.timeflow-seekbar-timeGrid').putIn @mainBox.node
+
+		@gridLegends = []
+
+		for i in [0..parseInt(screen.width / 75)]
+
+			@gridLegends.push Foxie('.timeflow-seekbar-timeGrid-legend').putIn(@grid)
+
+		return
+
+	_redoTimeGrid: ->
+
+		focus = @model.getFocusArea()
+
+		for legend, i in @gridLegends
+
+			curX = i * 75 + 37.5
+
+			w = curX / @_width
+
+			w *= focus.duration
+
+			w += focus.from
+
+			w /= 1000
+
+			legend.node.innerHTML = w.toFixed(2)
+
+		return
 
 	_prepareSeeker: ->
 
@@ -129,7 +163,7 @@ module.exports = class SeekbarView
 		nextWinPos = curWinPos + x
 
 		# the from part
-		nextFrom = nextWinPos / @_space * @mainBoxLength
+		nextFrom = nextWinPos / @_width * @timelineLength
 
 		if nextFrom < 0
 
@@ -142,9 +176,9 @@ module.exports = class SeekbarView
 
 			nextTo = nextFrom + 1000
 
-		if nextTo > @mainBoxLength
+		if nextTo > @timelineLength
 
-			nextTo = @mainBoxLength
+			nextTo = @timelineLength
 
 		# update the model
 		@model.changeFocusArea nextFrom, nextTo
@@ -172,11 +206,11 @@ module.exports = class SeekbarView
 		nextWinPos = curWinPos + x
 
 		# the to part
-		nextTo = nextWinPos / @_space * @mainBoxLength
+		nextTo = nextWinPos / @_width * @timelineLength
 
-		if nextTo > @mainBoxLength
+		if nextTo > @timelineLength
 
-			nextTo = @mainBoxLength
+			nextTo = @timelineLength
 
 		if nextTo < 1000
 
@@ -212,7 +246,7 @@ module.exports = class SeekbarView
 
 	_resetSpace: ->
 
-		@_space = @mainBox.width
+		@_width = @mainBox.width
 
 		do @_repositionElements
 
@@ -222,6 +256,8 @@ module.exports = class SeekbarView
 
 		do @_repositionFocus
 
+		do @_redoTimeGrid
+
 	_repositionSeeker: ->
 
 		t = @model.t
@@ -230,7 +266,7 @@ module.exports = class SeekbarView
 
 		rel = (t - focus.from) / focus.duration
 
-		curSeekerPos = parseInt @_space * rel
+		curSeekerPos = parseInt @_width * rel
 
 		@seeker
 		.moveXTo(curSeekerPos)
@@ -244,11 +280,11 @@ module.exports = class SeekbarView
 
 		focus = @model.getFocusArea()
 
-		t = (toPos / @_space * focus.duration) + focus.from
+		t = (toPos / @_width * focus.duration) + focus.from
 
 		t = 0 if t < 0
 
-		t = @mainBoxLength if t > @mainBoxLength
+		t = @timelineLength if t > @timelineLength
 
 		@model.tick t
 
@@ -258,13 +294,13 @@ module.exports = class SeekbarView
 
 		focus = @model.getFocusArea()
 
-		left = parseInt (focus.from / @mainBoxLength) * @_space
+		left = parseInt (focus.from / @timelineLength) * @_width
 
 		@focusLeftNode
 		.moveXTo(left)
 		.set('left', left)
 
-		right = parseInt ((focus.from + focus.duration) / @mainBoxLength) * @_space
+		right = parseInt ((focus.from + focus.duration) / @timelineLength) * @_width
 
 		@focusRightNode
 		.moveXTo(right)
@@ -278,6 +314,6 @@ module.exports = class SeekbarView
 
 	_updateTimelineLength: ->
 
-		@mainBoxLength = @model.timelineLength
+		@timelineLength = @model.timelineLength
 
 		do @_repositionElements

@@ -6,7 +6,8 @@
 	right: 8px
 	height: 6px
 
-	background: url('../../images/strip-values.png') repeat-x
+	background: url('../../images/strip-grid.png') repeat-x -11px
+	background-color: #0d0d0d
 
 	-webkit-user-select: none
 	-moz-user-select: none
@@ -14,6 +15,45 @@
 	user-select: none
 
 	z-index: 1
+
+.timeflow-seekbar-timeGrid
+
+	position: absolute
+	top: 6px
+	left: -19px
+	right: 8px
+	height: 18px
+
+	background: #090909
+	// background: red
+	user-select: none
+	pointer-events: none
+	z-index: 0
+
+	// overflow: hidden
+
+.timeflow-seekbar-timeGrid-legend
+
+	position: relative
+	top: 0
+	width: 75px
+	text-align: center
+	height: 15px
+
+	// float: left
+
+	left: 0px
+	top: 3px
+
+	font-family: Helvetica
+	font-size: 8px
+	color: #636161
+
+	&:nth-child(2n)
+
+		color: #464040
+
+	display: inline-block
 
 .timeflow-seekbar-seeker
 

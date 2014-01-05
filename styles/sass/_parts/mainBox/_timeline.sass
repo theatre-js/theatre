@@ -3,10 +3,10 @@
 	position: absolute
 	left: 0
 	right: 0
-	top: 0
+	top: 17px
 	bottom: 0
 
-	padding-top: 6px
+	// padding-top: 6px
 
 	overflow-y: scroll
 	overflow-x: hidden
@@ -25,8 +25,6 @@
 
 	clear: both
 
-	background: #040404
-
 	background: #090909
 
 	&:nth-child(2n)
@@ -40,6 +38,12 @@
 	&.expanded
 
 		height: 180px
+
+	&:first-child
+
+		> .timeflow-timeline-prop-info, > .timeflow-timeline-prop-pacsContainer
+
+			top: -6px
 
 .timeflow-timeline-prop-info
 
