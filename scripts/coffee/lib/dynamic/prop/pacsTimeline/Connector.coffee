@@ -92,6 +92,8 @@ module.exports = class Connector extends _PacsTimelineItem
 		@rightValue = rightPoint.value
 		@_valDiff = @rightValue - @leftValue
 
+		@_valDiff = 1e-6 if @_valDiff is 0
+
 		@leftT = leftPoint.t
 		@rightT = rightPoint.t
 		@_timeDiff = @rightT - @leftT

@@ -16,7 +16,7 @@ module.exports = class Point extends _PacsTimelineItem
 		# first, lets make sure no point sits at t
 		if @pacs._pointExistsAt @t
 
-			throw Error "Another point already exists at t"
+			throw Error "Another point already exists at t:#{@t}"
 
 		prevIndex = @pacs._getIndexOfItemBeforeOrAt @t
 
