@@ -22,6 +22,8 @@ module.exports = class ConnectorView extends _ItemView
 
 			do @relay
 
+		@_wasBadBezier = no
+
 		do @_prepareNode
 
 	_prepareNode: ->
@@ -71,5 +73,21 @@ module.exports = class ConnectorView extends _ItemView
 			"#{@leftHandler[0]} #{@leftHandler[1]}, " +
 			"#{@rightHandler[0]} #{@rightHandler[1]}, " +
 			"#{@rightPoint[0]} #{@rightPoint[1]}"
+
+		if @model.badBezier
+
+			unless @_wasBadBezier
+
+				@node.attr 'stroke', 'red'
+
+				@_wasBadBezier = yes
+
+		else
+
+			if @_wasBadBezier
+
+				@node.attr 'stroke', '#367c89'
+
+				@_wasBadBezier = no
 
 		return

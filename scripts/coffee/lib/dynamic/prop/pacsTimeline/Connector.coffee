@@ -99,8 +99,15 @@ module.exports = class Connector extends _PacsTimelineItem
 		x1 = @leftHandler[0] / @_timeDiff
 		y1 = @leftHandler[1] / @_valDiff
 
-		x2 = @rightHandler[0] / @_timeDiff
-		y2 = @rightHandler[1] / @_valDiff
+		x2 = 1 - (@rightHandler[0] / @_timeDiff)
+		y2 = 1 + (@rightHandler[1] / @_valDiff)
+
+		@badBezier = x1 < 0 or x1 > 1 or x2 < 0 or x2 > 1
+
+		x1 = 0 if x1 < 0
+		x1 = 1 if x1 > 1
+		x2 = 0 if x2 < 0
+		x2 = 1 if x2 > 1
 
 		@bezier.set x1, y1, x2, y2
 
