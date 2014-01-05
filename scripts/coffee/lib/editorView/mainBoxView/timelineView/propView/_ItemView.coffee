@@ -6,6 +6,10 @@ module.exports = class _ItemView
 
 		t * @prop._widthToTimeRatio
 
+	_XToTime: (x) ->
+
+		x / @prop._widthToTimeRatio
+
 	_valToY: (v) ->
 
 		@_normalizeY @_normalizeValue(v) * @prop._heightToValueRatio
@@ -13,6 +17,10 @@ module.exports = class _ItemView
 	_normalizedValToY: (v) ->
 
 		-v * @prop._heightToValueRatio
+
+	_YToNormalizedVal: (y) ->
+
+		-y / @prop._heightToValueRatio
 
 	_normalizeValue: (v) ->
 

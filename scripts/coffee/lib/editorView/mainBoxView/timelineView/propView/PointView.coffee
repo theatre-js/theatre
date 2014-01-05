@@ -21,6 +21,10 @@ module.exports = class PointView extends _ItemView
 
 			do @relayVertically
 
+		@model.on 'handler-change', =>
+
+			do @_moveHandlers
+
 		@svgArea = @prop.svgArea
 
 		do @_prepareNode
@@ -36,6 +40,8 @@ module.exports = class PointView extends _ItemView
 	_prepareNode: ->
 
 		@node = Foxie('.timeflow-timeline-prop-pacs-point').putIn @prop.pacsNode
+
+		window.n = @node
 
 		@clicks.onClick @node, =>
 
@@ -65,14 +71,77 @@ module.exports = class PointView extends _ItemView
 
 		@rightHandler = Foxie('.timeflow-timeline-prop-pacs-point-handler.right').putIn @node
 
+		do @_setupDragForRightHandler
+		do @_setupDragForLeftHandler
+
+	_setupDragForRightHandler: ->
+
+		startX = startY = nextX = nextY = 0
+
+		@clicks.onDrag @rightHandler,
+
+			start: =>
+
+				startX = @rightHandler.getMovement().x
+				startY = @rightHandler.getMovement().y
+
+			end: =>
+
+				@pacs.done()
+
+			drag: (absX, absY) =>
+
+				nextX = startX + absX
+				nextY = startY + absY
+
+				nextX = 0 if nextX < 0
+
+				nextT = @_XToTime nextX
+				nextVal = @_YToNormalizedVal nextY
+
+				@model.setRightHandler nextT, nextVal
+
+				@prop._tick()
+
+		return
+
+	_setupDragForLeftHandler: ->
+
+		startX = startY = nextX = nextY = 0
+
+		@clicks.onDrag @leftHandler,
+
+			start: =>
+
+				startX = -@leftHandler.getMovement().x
+				startY = @leftHandler.getMovement().y
+
+			end: =>
+
+				@pacs.done()
+
+			drag: (absX, absY) =>
+
+				nextX = startX - absX
+				nextY = startY + absY
+
+				nextX = 0 if nextX < 0
+
+				nextT = @_XToTime nextX
+				nextVal = @_YToNormalizedVal nextY
+
+				@model.setLeftHandler nextT, nextVal
+
+				@prop._tick()
+
 		return
 
 	_moveHandlers: ->
 
 		@leftHandler.moveXTo @_timeToX -@model.leftHandler[0]
-		@rightHandler.moveXTo @_timeToX @model.rightHandler[0]
-
 		@leftHandler.moveYTo @_normalizedValToY @model.leftHandler[1]
+
+		@rightHandler.moveXTo @_timeToX @model.rightHandler[0]
 		@rightHandler.moveYTo @_normalizedValToY @model.rightHandler[1]
 
 		@leftHandlerLine.attr 'd',
