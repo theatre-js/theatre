@@ -5,14 +5,17 @@ module.exports = class ButtonManager
 
 	constructor: (@clickManager, @keyName, @keyCode) ->
 
-	handleMouseMove: (e, ancestors) ->
+		@_activeListeners = []
 
-		for nodeData in ancestors
+	_removeListenerFromActiveListenersList: (listener) ->
 
-			# let's iterate through all of this node's wheel listeners
-			for listener in nodeData[@keyName].clickListeners
+		array.pluckOneItem @_activeListeners, listener
 
-				listener._handleMouseMove e
+		return
+
+	_addListenerToActiveListenersList: (listener) ->
+
+		@_activeListeners.push listener
 
 		return
 
@@ -20,21 +23,27 @@ module.exports = class ButtonManager
 
 		for nodeData in ancestors
 
-			# let's iterate through all of this node's wheel listeners
 			for listener in nodeData[@keyName].clickListeners
 
 				listener._handleMouseDown e
+
+			return if @_activeListeners.length > 0
+
+		return
+
+	handleMouseMove: (e, ancestors) ->
+
+		for listener in @_activeListeners
+
+			listener._handleMouseMove e
 
 		return
 
 	handleMouseUp: (e, ancestors) ->
 
-		for nodeData in ancestors
+		for listener in @_activeListeners
 
-			# let's iterate through all of this node's wheel listeners
-			for listener in nodeData[@keyName].clickListeners
-
-				listener._handleMouseUp e
+			listener._handleMouseUp e
 
 		return
 

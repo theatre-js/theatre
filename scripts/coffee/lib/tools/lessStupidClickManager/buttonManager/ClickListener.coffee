@@ -30,11 +30,23 @@ module.exports = class ClickListener extends _Listener
 
 		@
 
+	_endCombo: ->
+
+		do @_cancel
+
+		return
+
 	_handleMouseMove: ->
+
+		do @_cancel
+
+	_cancel: ->
 
 		if @_mightBe
 
 			@_mightBe = no
+
+			@_manager._removeListenerFromActiveListenersList @
 
 			if @_cancelCallback
 
@@ -50,6 +62,8 @@ module.exports = class ClickListener extends _Listener
 
 		@_mightBe = yes
 
+		@_manager._addListenerToActiveListenersList @
+
 		do @_modifyEvent
 
 		if @_downCallback?
@@ -64,13 +78,15 @@ module.exports = class ClickListener extends _Listener
 
 		@_lastReceivedMouseEvent = e
 
-		return unless @_comboSatisfies
+		if @_comboSatisfies
 
-		do @_modifyEvent
+			do @_modifyEvent
 
-		if @_upCallback?
+			if @_upCallback?
 
-			@_upCallback @_event
+				@_upCallback @_event
+
+		@_manager._removeListenerFromActiveListenersList @
 
 		@_mightBe = no
 
