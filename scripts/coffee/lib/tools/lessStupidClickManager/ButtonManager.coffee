@@ -38,17 +38,43 @@ module.exports = class ButtonManager
 
 	handleMouseMove: (e, ancestors) ->
 
-		for listener in @_activeListeners
+		lastLength = @_activeListeners.length
+		i = 0
+
+		while lastLength > 0
+
+			listener = @_activeListeners[i]
+
+			return unless listener?
 
 			listener._handleMouseMove e
+
+			newLength = @_activeListeners.length
+
+			i += newLength - lastLength + 1
+
+			lastLength = newLength
 
 		return
 
 	handleMouseUp: (e, ancestors) ->
 
-		for listener in @_activeListeners
+		lastLength = @_activeListeners.length
+		i = 0
+
+		while lastLength > 0
+
+			listener = @_activeListeners[i]
+
+			return unless listener?
 
 			listener._handleMouseUp e
+
+			newLength = @_activeListeners.length
+
+			i += newLength - lastLength + 1
+
+			lastLength = newLength
 
 		return
 

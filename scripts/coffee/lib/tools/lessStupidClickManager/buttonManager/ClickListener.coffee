@@ -7,8 +7,13 @@ module.exports = class ClickListener extends _Listener
 		@_downCallback = null
 		@_upCallback = null
 		@_cancelCallback = null
+		@_doneCallback = null
 
-		@_mightBe = no
+		@_active = no
+
+		n = 1
+
+		@_lastRepeatCheckTimeout = null
 
 		super
 
@@ -30,21 +35,51 @@ module.exports = class ClickListener extends _Listener
 
 		@
 
+	onDone: (cb) ->
+
+		@_doneCallback = cb
+
+		return
+
+	repeat: (n) ->
+
+		if @_locked
+
+			throw Error "Cannot call repeat when the listener is already set up"
+
+		@_repeats = parseInt n
+
+		unless Number.isFinite(@_repeats)
+
+			throw Error "Invalid number for repeat"
+
+		@
+
 	_endCombo: ->
 
 		do @_cancel
 
 		return
 
-	_handleMouseMove: ->
+	_handleMouseMove: (e) ->
+
+		unless @_active
+
+			throw Error "called _handleMouseMove when mighBe is off"
+
+		if Math.abs(e.pageX - @_event.pageX) < 5
+
+			return
 
 		do @_cancel
 
+		return
+
 	_cancel: ->
 
-		if @_mightBe
+		if @_active
 
-			@_mightBe = no
+			@_active = no
 
 			@_manager._removeListenerFromActiveListenersList @
 
@@ -58,11 +93,13 @@ module.exports = class ClickListener extends _Listener
 
 		@_lastReceivedMouseEvent = e
 
-		return unless @_comboSatisfies
+		unless @_active
 
-		@_mightBe = yes
+			return unless @_comboSatisfies
 
-		@_manager._addListenerToActiveListenersList @
+			@_active = yes
+
+			@_manager._addListenerToActiveListenersList @
 
 		do @_modifyEvent
 
@@ -70,22 +107,44 @@ module.exports = class ClickListener extends _Listener
 
 			@_downCallback @_event
 
+		if @_repeats > 1
+
+			if @_lastRepeatCheckTimeout?
+
+				clearTimeout @_lastRepeatCheckTimeout
+
+			@_lastRepeatCheckTimeout = setTimeout =>
+
+				do @_cancel
+
+			, 300
+
 		return
 
 	_handleMouseUp: (e) ->
 
-		return unless @_mightBe
+		return unless @_active
 
 		@_lastReceivedMouseEvent = e
 
 		do @_modifyEvent
 
+		@_event.repeats = e.detail
+
 		if @_upCallback?
 
 			@_upCallback @_event
 
-		@_manager._removeListenerFromActiveListenersList @
+		if e.detail >= @_repeats
 
-		@_mightBe = no
+			@_manager._removeListenerFromActiveListenersList @
+
+			@_active = no
+
+			if @_doneCallback?
+
+				@_doneCallback @_event
+
+			clearTimeout @_lastRepeatCheckTimeout
 
 		return
