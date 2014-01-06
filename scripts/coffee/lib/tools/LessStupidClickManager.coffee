@@ -116,7 +116,7 @@ module.exports = class LessStupidClickManager
 
 	_mousedown: (e) ->
 
-		console.log @_getNodeAncestors e.target
+		ancestors = @_getNodeAncestors e.target
 
 	_mouseup: (e) ->
 

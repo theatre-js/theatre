@@ -1,20 +1,18 @@
-keymaster = require 'keymaster-updated'
+Keys = require 'keyboardjs'
 
 module.exports = class HoverListener
 
 	constructor: (@_manager, @_nodeData) ->
 
-		@_active = no
+		@_mouseIsOverNode = no # or @_isActive
 
 		@_enterCallback = null
 		@_moveCallback = null
 		@_leaveCallback = null
 
-		@_keys = keymaster
-
 		@_event =
 
-			keys: @_keys
+			keys: Keys.activeKeys()
 
 			pageX: 0
 			pageY: 0
@@ -25,7 +23,134 @@ module.exports = class HoverListener
 			layerX: 0
 			layerY: 0
 
-	_modifyEventBy: (e) ->
+		@_lastReceivedMouseEvent = null
+
+		@_locked = no
+
+		setTimeout =>
+
+			@_locked = yes
+
+		, 0
+
+		@_keyBinding = null
+
+		@_comboActive = yes
+
+	_startCombo: ->
+
+		if @_mouseIsOverNode
+
+			do @_enter
+
+		return
+
+	_endCombo: ->
+
+		if @_mouseIsOverNode
+
+			do @_leave
+
+		return
+
+	_enter: ->
+
+		do @_modifyEvent
+
+		if @_enterCallback?
+
+			@_enterCallback @_event
+
+		return
+
+	_move: ->
+
+		do @_modifyEvent
+
+		if @_moveCallback?
+
+			@_moveCallback @_event
+
+		return
+
+	_leave: ->
+
+		do @_modifyEvent
+
+		if @_leaveCallback?
+
+			@_leaveCallback @_event
+
+		return
+
+	_checkIfShouldLeave: (e, ancestors) ->
+
+		@_lastReceivedMouseEvent = e
+
+		unless @_mouseIsOverNode
+
+			throw Error "called _checkIfShouldLeave() when listener is not active"
+
+		# if the mousemove event is outside this listener
+		if ancestors.indexOf(@_nodeData) is -1
+
+			do @_deactivate
+
+			if @_comboActive
+
+				do @_leave
+
+		return
+
+	_handleMouseMove: (e) ->
+
+		@_lastReceivedMouseEvent = e
+
+		if @_mouseIsOverNode
+
+			if @_comboActive
+
+				do @_move
+
+		else
+
+			do @_activate
+
+			if @_comboActive
+
+				do @_enter
+
+		return
+
+	_activate: ->
+
+		if @_mouseIsOverNode
+
+			throw Error "Cannot call _activate when listener is already active"
+
+		@_mouseIsOverNode = yes
+
+		@_manager._addListenerToActiveListenersList @
+
+		return
+
+	_deactivate: ->
+
+		unless @_mouseIsOverNode
+
+			throw Error "Cannot call _deactivate when listener is not active"
+
+		@_mouseIsOverNode = no
+
+		@_manager._removeListenerFromActiveListenersList @
+
+		return
+
+	_modifyEvent: ->
+
+		e = @_lastReceivedMouseEvent
+
+		@_event.keys = Keys.activeKeys()
 
 		@_event.screenX = e.screenX
 		@_event.screenY = e.screenY
@@ -39,36 +164,6 @@ module.exports = class HoverListener
 		rect = @_nodeData.node.getBoundingClientRect()
 		@_event.layerX = e.clientX - rect.left
 		@_event.layerY = e.clientY - rect.top
-
-		return
-
-	_enter: (e) ->
-
-		@_modifyEventBy e
-
-		if @_enterCallback?
-
-			@_enterCallback @_event
-
-		return
-
-	_move: (e) ->
-
-		@_modifyEventBy e
-
-		if @_moveCallback?
-
-			@_moveCallback @_event
-
-		return
-
-	_leave: (e) ->
-
-		@_modifyEventBy e
-
-		if @_leaveCallback?
-
-			@_leaveCallback @_event
 
 		return
 
@@ -90,55 +185,40 @@ module.exports = class HoverListener
 
 		@
 
-	_checkIfShouldLeave: (e, ancestors) ->
+	withKeys: (combo) ->
 
-		unless @_active
+		if @_locked
 
-			throw Error "called _checkIfShouldLeave() when listener is not active"
+			throw Error "You can only set key combos on the same tick this listener was created"
 
-		# if the mousemove event is outside this listener
-		if ancestors.indexOf(@_nodeData) is -1
+		if @_keyBinding?
 
-			do @_deactivate
+			throw Error "Keyboard combo is already set on this event listener"
 
-			@_leave e
+		@_comboActive = no
 
-		return
+		combo = String combo
 
-	_handleMouseMove: (e) ->
+		unless combo.match /^[a-zA-Z0-9\s\+]+$/
 
-		if @_active
+			throw Error "Bad combo '#{combo}'"
 
-			@_move e
+		@_keyBinding = Keys.on combo
 
-		else
+		@_keyBinding.on 'keydown', =>
 
-			do @_activate
+			return if @_comboActive
 
-			@_enter e
+			@_comboActive = yes
 
-		return
+			do @_startCombo
 
-	_activate: ->
+		@_keyBinding.on 'keyup', =>
 
-		if @_active
+			return unless @_comboActive
 
-			throw Error "Cannot call _activate when listener is already active"
+			@_comboActive = no
 
-		@_active = yes
+			do @_endCombo
 
-		@_manager._addListenerToActiveListenersList @
-
-		return
-
-	_deactivate: ->
-
-		unless @_active
-
-			throw Error "Cannot call _deactivate when listener is not active"
-
-		@_active = no
-
-		@_manager._removeListenerFromActiveListenersList @
-
-		return
+		@
