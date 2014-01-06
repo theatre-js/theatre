@@ -15,4 +15,4 @@ npm-debug.log
 css
 .sass-cache
 
-pg.*
+pg*.*
