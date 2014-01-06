@@ -1,4 +1,5 @@
 array = require 'utila/scripts/js/lib/array'
+DragListener = require './buttonManager/DragListener'
 ClickListener = require './buttonManager/ClickListener'
 
 module.exports = class ButtonManager
@@ -27,6 +28,10 @@ module.exports = class ButtonManager
 
 				listener._handleMouseDown e
 
+			for listener in nodeData[@keyName].dragListeners
+
+				listener._handleMouseDown e
+
 			return if @_activeListeners.length > 0
 
 		return
@@ -52,5 +57,13 @@ module.exports = class ButtonManager
 		l = new ClickListener @, nodeData
 
 		nodeData[@keyName].clickListeners.push l
+
+		l
+
+	onDrag: (nodeData) ->
+
+		l = new DragListener @, nodeData
+
+		nodeData[@keyName].dragListeners.push l
 
 		l

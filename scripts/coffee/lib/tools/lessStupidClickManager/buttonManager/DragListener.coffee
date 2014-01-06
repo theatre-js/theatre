@@ -1,16 +1,38 @@
 _Listener = require '../_Listener'
 
-module.exports = class ClickListener extends _Listener
+module.exports = class DragListener extends _Listener
 
 	constructor: (@_manager, @_nodeData) ->
 
 		@_downCallback = null
 		@_upCallback = null
 		@_cancelCallback = null
+		@_dragCallback = null
+
+		@_startPageX = 0
+		@_startPageY = 0
+
+		@_lastPageX = 0
+		@_lastPageY = 0
 
 		@_mightBe = no
 
 		super
+
+	_modifyEvent: ->
+
+		super
+
+		@_event.absX = @_event.pageX - @_startPageX
+		@_event.absY = @_event.pageY - @_startPageY
+
+		@_event.relX = @_event.pageX - @_lastPageX
+		@_event.relY = @_event.pageY - @_lastPageY
+
+		@_lastPageX = @_event.pageX
+		@_lastPageY = @_event.pageY
+
+		return
 
 	onDown: (cb) ->
 
@@ -30,15 +52,17 @@ module.exports = class ClickListener extends _Listener
 
 		@
 
+	onDrag: (cb) ->
+
+		@_dragCallback = cb
+
+		@
+
 	_endCombo: ->
 
 		do @_cancel
 
 		return
-
-	_handleMouseMove: ->
-
-		do @_cancel
 
 	_cancel: ->
 
@@ -64,6 +88,12 @@ module.exports = class ClickListener extends _Listener
 
 		@_manager._addListenerToActiveListenersList @
 
+		@_startPageX = e.pageX
+		@_startPageY = e.pageY
+
+		@_lastPageX  = e.pageX
+		@_lastPageY  = e.pageY
+
 		do @_modifyEvent
 
 		if @_downCallback?
@@ -87,5 +117,19 @@ module.exports = class ClickListener extends _Listener
 		@_manager._removeListenerFromActiveListenersList @
 
 		@_mightBe = no
+
+		return
+
+	_handleMouseMove: (e) ->
+
+		return unless @_mightBe
+
+		@_lastReceivedMouseEvent = e
+
+		do @_modifyEvent
+
+		if @_dragCallback?
+
+			@_dragCallback @_event
 
 		return
