@@ -1,4 +1,6 @@
 HoverManager = require './lessStupidClickManager/HoverManager'
+WheelManager = require './lessStupidClickManager/WheelManager'
+ButtonManager = require './lessStupidClickManager/ButtonManager'
 
 # This is supposed to be more capable than our last
 # click manager, but I'm keeping the 'Stupid' prefix
@@ -19,6 +21,12 @@ module.exports = class LessStupidClickManager
 
 		@_hovers = new HoverManager @
 
+		@_wheels = new WheelManager @
+
+		@_lefts = new ButtonManager @, 'left', 0
+		@_middles = new ButtonManager @, 'middle', 1
+		@_rights = new ButtonManager @, 'right', 2
+
 		@rootNode.addEventListener 'mousedown', =>
 
 			@_mousedown event
@@ -30,6 +38,14 @@ module.exports = class LessStupidClickManager
 		@rootNode.addEventListener 'mousemove', =>
 
 			@_mousemove event
+
+		@rootNode.addEventListener 'mousewheel', =>
+
+			event.preventDefault()
+
+			@_mousewheel event
+
+		, no
 
 	_getHtmlNode: (node) ->
 
@@ -57,8 +73,22 @@ module.exports = class LessStupidClickManager
 				node: node
 
 				hoverListeners: []
-				clickListeners: []
-				dragListeners: []
+				wheelListeners: []
+
+				left:
+
+					clickListeners: []
+					dragListeners: []
+
+				right:
+
+					clickListeners: []
+					dragListeners: []
+
+				middle:
+
+					clickListeners: []
+					dragListeners: []
 
 		parseInt id
 
@@ -71,10 +101,13 @@ module.exports = class LessStupidClickManager
 		if id?
 
 			data = @_nodesData[id]
-			data.ndoe = null
-			data.hoverListeners.length = 0
-			data.clickListeners.length = 0
-			data.dragListeners.length  = 0
+			delete data.node
+			delete data.hoverListeners
+			delete data.wheelListeners
+
+			delete data.left
+			delete data.right
+			delete data.middle
 
 			node.removeAttribute "data-lessStupidClickManager-#{@id}-id"
 
@@ -114,13 +147,63 @@ module.exports = class LessStupidClickManager
 
 		@_hovers.handleMouseMove e, ancestors
 
+		if e.button is 0
+
+			@_lefts.handleMouseMove e, ancestors
+
+		else if e.button is 1
+
+			@_middles.handleMouseMove e, ancestors
+
+		else if e.button is 2
+
+			@_rights.handleMouseMove e, ancestors
+
+		return
+
 	_mousedown: (e) ->
 
 		ancestors = @_getNodeAncestors e.target
 
+		if e.button is 0
+
+			@_lefts.handleMouseDown e, ancestors
+
+		else if e.button is 1
+
+			@_middles.handleMouseDown e, ancestors
+
+		else if e.button is 2
+
+			@_rights.handleMouseDown e, ancestors
+
+		return
+
 	_mouseup: (e) ->
 
-	onHover: (node) ->
+		ancestors = @_getNodeAncestors e.target
+
+		if e.button is 0
+
+			@_lefts.handleMouseUp e, ancestors
+
+		else if e.button is 1
+
+			@_middles.handleMouseUp e, ancestors
+
+		else if e.button is 2
+
+			@_rights.handleMouseUp e, ancestors
+
+		return
+
+	_mousewheel: (e) ->
+
+		ancestors = @_getNodeAncestors e.target
+
+		@_wheels.handleMouseWheel e, ancestors
+
+	_getDataForListener: (node) ->
 
 		node = @_getHtmlNode node
 
@@ -128,4 +211,50 @@ module.exports = class LessStupidClickManager
 
 		data = @_nodesData[id]
 
+	onHover: (node) ->
+
+		data = @_getDataForListener node
+
 		@_hovers.onHover data
+
+	onWheel: (node) ->
+
+		data = @_getDataForListener node
+
+		@_wheels.onWheel data
+
+	onLeftClick: (node) ->
+
+		data = @_getDataForListener node
+
+		@_lefts.onClick data
+
+	onRightClick: (node) ->
+
+		data = @_getDataForListener node
+
+		@_right.onClick data
+
+	onMiddleClick: (node) ->
+
+		data = @_getDataForListener node
+
+		@_middles.onClick data
+
+	onLeftDrag: (node) ->
+
+		data = @_getDataForListener node
+
+		@_lefts.onDrag data
+
+	onRightDrag: (node) ->
+
+		data = @_getDataForListener node
+
+		@_right.onDrag data
+
+	onMiddleDrag: (node) ->
+
+		data = @_getDataForListener node
+
+		@_middles.onDrag data

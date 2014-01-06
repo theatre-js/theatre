@@ -1,8 +1,10 @@
-Keys = require 'keyboardjs'
+_Listener = require '../_Listener'
 
-module.exports = class HoverListener
+module.exports = class HoverListener extends _Listener
 
 	constructor: (@_manager, @_nodeData) ->
+
+		super
 
 		@_mouseIsOverNode = no # or @_isActive
 
@@ -10,32 +12,7 @@ module.exports = class HoverListener
 		@_moveCallback = null
 		@_leaveCallback = null
 
-		@_event =
-
-			keys: Keys.activeKeys()
-
-			pageX: 0
-			pageY: 0
-
-			screenX: 0
-			screenY: 0
-
-			layerX: 0
-			layerY: 0
-
 		@_lastReceivedMouseEvent = null
-
-		@_locked = no
-
-		setTimeout =>
-
-			@_locked = yes
-
-		, 0
-
-		@_keyBinding = null
-
-		@_comboActive = yes
 
 	_startCombo: ->
 
@@ -96,7 +73,7 @@ module.exports = class HoverListener
 
 			do @_deactivate
 
-			if @_comboActive
+			if @_comboSatisfies
 
 				do @_leave
 
@@ -108,7 +85,7 @@ module.exports = class HoverListener
 
 		if @_mouseIsOverNode
 
-			if @_comboActive
+			if @_comboSatisfies
 
 				do @_move
 
@@ -116,7 +93,7 @@ module.exports = class HoverListener
 
 			do @_activate
 
-			if @_comboActive
+			if @_comboSatisfies
 
 				do @_enter
 
@@ -146,27 +123,6 @@ module.exports = class HoverListener
 
 		return
 
-	_modifyEvent: ->
-
-		e = @_lastReceivedMouseEvent
-
-		@_event.keys = Keys.activeKeys()
-
-		@_event.screenX = e.screenX
-		@_event.screenY = e.screenY
-
-		@_event.clientX = e.clientX
-		@_event.clientY = e.clientY
-
-		@_event.pageX = e.pageX
-		@_event.pageY = e.pageY
-
-		rect = @_nodeData.node.getBoundingClientRect()
-		@_event.layerX = e.clientX - rect.left
-		@_event.layerY = e.clientY - rect.top
-
-		return
-
 	onEnter: (cb) ->
 
 		@_enterCallback = cb
@@ -182,43 +138,5 @@ module.exports = class HoverListener
 	onLeave: (cb) ->
 
 		@_leaveCallback = cb
-
-		@
-
-	withKeys: (combo) ->
-
-		if @_locked
-
-			throw Error "You can only set key combos on the same tick this listener was created"
-
-		if @_keyBinding?
-
-			throw Error "Keyboard combo is already set on this event listener"
-
-		@_comboActive = no
-
-		combo = String combo
-
-		unless combo.match /^[a-zA-Z0-9\s\+]+$/
-
-			throw Error "Bad combo '#{combo}'"
-
-		@_keyBinding = Keys.on combo
-
-		@_keyBinding.on 'keydown', =>
-
-			return if @_comboActive
-
-			@_comboActive = yes
-
-			do @_startCombo
-
-		@_keyBinding.on 'keyup', =>
-
-			return unless @_comboActive
-
-			@_comboActive = no
-
-			do @_endCombo
 
 		@
