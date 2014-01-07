@@ -3,6 +3,7 @@ WorkspaceListView = require './mainBoxView/WorkspaceListView'
 TimelineView = require './mainBoxView/TimelineView'
 SeekbarView = require './mainBoxView/SeekbarView'
 _Emitter = require '../_Emitter'
+Foxie = require 'foxie'
 
 module.exports = class MainBoxView extends _Emitter
 
@@ -28,27 +29,21 @@ module.exports = class MainBoxView extends _Emitter
 
 		@timeline = new TimelineView @
 
+		do @_resizeNode
+
+		@model.on 'height-change', => do @_resizeNode
+
 	_prepareNode: ->
 
-		@node = document.createElement 'div'
-		@node.classList.add 'timeflow-mainBox'
-		@editor.node.appendChild @node
+		@node = Foxie('.timeflow-mainBox').putIn(@editor.node)
 
-		@nodeResizeHandle = document.createElement 'div'
-		@nodeResizeHandle.classList.add 'timeflow-mainBox-resizeHandle'
-		@node.appendChild @nodeResizeHandle
+		@nodeResizeHandle = Foxie('.timeflow-mainBox-resizeHandle')
+		.putIn(@node)
 
-		@clicks.onDrag @nodeResizeHandle,
+		@clicks.onDrag(@nodeResizeHandle)
+		.onDrag (e) =>
 
-			start: =>
-
-			end: =>
-
-			drag: (absX, absY, relX, relY) =>
-
-				rects = @node.getBoundingClientRect()
-
-				@node.style.height = (rects.height - relY) + 'px'
+			@model.setHeight @model.height - e.relY
 
 		if @model.isVisible()
 
@@ -65,6 +60,12 @@ module.exports = class MainBoxView extends _Emitter
 				do @hide
 
 			return
+
+	_resizeNode: ->
+
+		@node.css 'height', @model.height + 'px'
+
+		return
 
 	_recalculateSpace: ->
 

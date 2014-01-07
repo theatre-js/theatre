@@ -61,7 +61,8 @@ module.exports = class PropView
 
 		@info = Foxie('.timeflow-timeline-prop-info').putIn @node
 
-		@clicks.onClick @info, =>
+		@clicks.onClick(@info)
+		.onDone =>
 
 			@_setExpansion @_propHolderModel.toggleExpansion()
 

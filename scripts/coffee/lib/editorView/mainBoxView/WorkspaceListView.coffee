@@ -36,61 +36,69 @@ module.exports = class WorkspaceListView
 
 			wsNode.remove()
 
-		@clicks.onClick wsNode, (e) =>
+		@clicks.onClick(wsNode)
+		.withNoKeys()
+		.onDone (e) =>
 
-			if e.ctrlKey
-
-				@_startEdit wsNode, =>
-
-					if wsNode.node.innerText is '' or wsNode.node.innerText is ' '
-
-						ws.remove()
-
-					else
-
-						ws.rename wsNode.node.innerText
-
-				, =>
-
-					wsNode.node.innerText = ws.name
-
-				return
+			console.log 'activate'
 
 			ws.activate()
 
+		@clicks.onClick(wsNode)
+		.withKeys('ctrl')
+		.onDone (e) =>
+
+			console.log 'edit'
+
+			@_startEdit wsNode, =>
+
+				if wsNode.node.innerText is '' or wsNode.node.innerText is ' '
+
+					ws.remove()
+
+				else
+
+					ws.rename wsNode.node.innerText
+
+			, =>
+
+				wsNode.node.innerText = ws.name
+
 	_attachCtrl: (node) ->
 
-		node.addEventListener 'mousemove', =>
+		@clicks.onHover(node)
+		.withKeys('ctrl')
+		.onEnter =>
 
-			if @keys.ctrl
+			node.classList.add 'pre-edit'
 
-				node.classList.add 'pre-edit'
+		.onLeave =>
 
-			else
+			node.classList.remove 'pre-edit'
 
-				node.classList.remove 'pre-edit'
+		return
 
 	_initRename: ->
 
 		@currentEdit = no
 
-		@keys 'enter', 'rename', (e) =>
+		# @keys 'enter', 'rename', (e) =>
 
-			@_storeEdit()
+		# 	@_storeEdit()
 
-		@keys 'esc', 'rename', (e) =>
+		# @keys 'esc', 'rename', (e) =>
 
-			@_discardEdit()
+		# 	@_discardEdit()
 
-		@keys 'ctrl+delete', 'rename', (e) =>
+		# @keys 'ctrl+delete', 'rename', (e) =>
 
-			@currentEdit.innerText = ''
+		# 	@currentEdit.innerText = ''
 
-			@_storeEdit()
+		# 	@_storeEdit()
 
 	_startEdit: (wsNode, cb, discard) ->
 
-		@keys.setScope 'rename'
+		# @keys.setScope 'rename'
 
 		@currentEditCallBack = cb
 
@@ -110,7 +118,7 @@ module.exports = class WorkspaceListView
 
 		if @currentEdit
 
-			@keys.setScope 'time'
+			# @keys.setScope 'time'
 
 			@currentEdit.contentEditable = no
 
@@ -128,7 +136,7 @@ module.exports = class WorkspaceListView
 
 		if @currentEdit
 
-			@keys.setScope 'time'
+			# @keys.setScope 'time'
 
 			@currentEdit.contentEditable = no
 
@@ -148,7 +156,8 @@ module.exports = class WorkspaceListView
 
 		@newBtn.node.innerText = '+'
 
-		@clicks.onClick @newBtn, =>
+		@clicks.onClick(@newBtn)
+		.onDone =>
 
 			@newBtn.node.innerText = ''
 
@@ -168,11 +177,11 @@ module.exports = class WorkspaceListView
 
 		return if @visible
 
-		@node.node.classList.add 'visible'
+		@node.addClass 'visible'
 
 		@visible = yes
 
-		@clicks.onModalClosure @node.node, =>
+		@clicks.onClickOutside @node, =>
 
 			do @hide
 
@@ -182,6 +191,8 @@ module.exports = class WorkspaceListView
 
 			@_storeEdit()
 
-			@node.node.classList.remove 'visible'
+			@node.removeClass 'visible'
 
 			@visible = no
+
+		return

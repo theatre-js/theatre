@@ -1,9 +1,9 @@
+Moosh = require 'moosh'
+keypress = require './tools/keypress'
 GraphView = require './editorView/GraphView'
 EditorModel = require './EditorModel'
 MainBoxView = require './editorView/MainBoxView'
 ControlsView = require './editorView/ControlsView'
-StupidClickManager = require './tools/StupidClickManager'
-keymaster = require 'keymaster-updated'
 
 module.exports = class EditorView
 
@@ -13,9 +13,9 @@ module.exports = class EditorView
 
 		do @_prepareNode
 
-		@clicks = new StupidClickManager @node
+		@keys = keypress
 
-		@keys = keymaster
+		@clicks = new Moosh @node, @keys
 
 		@graph = new GraphView @
 

@@ -36,7 +36,8 @@ module.exports = class ControlsView
 
 		@node.appendChild @playPauseNode
 
-		@clicks.onClick @playPauseNode, =>
+		@clicks.onClick(@playPauseNode)
+		.onDone =>
 
 			do @_togglePlayState
 
@@ -47,7 +48,8 @@ module.exports = class ControlsView
 
 		@node.appendChild @toggleFullScreenNode
 
-		@clicks.onClick @toggleFullScreenNode, =>
+		@clicks.onClick(@toggleFullScreenNode)
+		.onDone =>
 
 			console.log 'to be implemented'
 
@@ -58,7 +60,8 @@ module.exports = class ControlsView
 
 		@node.appendChild @jumpToPrevMarkerNode
 
-		@clicks.onClick @jumpToPrevMarkerNode, =>
+		@clicks.onClick(@jumpToPrevMarkerNode)
+		.onDone =>
 
 			do @model.jumpToPrevMarker
 
@@ -69,57 +72,58 @@ module.exports = class ControlsView
 
 		@node.appendChild @jumpToNextMarkerNode
 
-		@clicks.onClick @jumpToNextMarkerNode, =>
+		@clicks.onClick(@jumpToNextMarkerNode)
+		.onDone =>
 
 			do @model.jumpToNextMarker
 
 	_prepareKeyboard: ->
 
-		@keys.setScope 'time'
+		# @keys.setScope 'time'
 
-		@keys 'space', 'time', (e, h) =>
+		# @keys 'space', 'time', (e, h) =>
 
-			do @_togglePlayState
+		# 	do @_togglePlayState
 
-		@keys 'home, ctrl+home', 'time', (e, h) =>
+		# @keys 'home, ctrl+home', 'time', (e, h) =>
 
-			if e.ctrlKey
+		# 	if e.ctrlKey
 
-				do @model.jumpToBeginning
+		# 		do @model.jumpToBeginning
 
-			else
+		# 	else
 
-				do @model.jumpToFocusBeginning
+		# 		do @model.jumpToFocusBeginning
 
-		@keys 'end, ctrl+end', 'time', (e, h) =>
+		# @keys 'end, ctrl+end', 'time', (e, h) =>
 
-			if e.ctrlKey
+		# 	if e.ctrlKey
 
-				do @model.jumpToEnd
+		# 		do @model.jumpToEnd
 
-			else
+		# 	else
 
-				do @model.jumpToFocusEnd
+		# 		do @model.jumpToFocusEnd
 
-		@keys 'up', 'time', (e, h) =>
+		# @keys 'up', 'time', (e, h) =>
 
-			do @model.prevMarker
+		# 	do @model.prevMarker
 
-		@keys 'down', 'time', (e, h) =>
+		# @keys 'down', 'time', (e, h) =>
 
-			do @model.nextMarker
+		# 	do @model.nextMarker
 
-		@keys 'right, shift+right, alt+right', 'time', (e, h) =>
+		# @keys 'right, shift+right, alt+right', 'time', (e, h) =>
 
-			amount = @_getSeekAmountByEvent e
+		# 	amount = @_getSeekAmountByEvent e
 
-			@model.seekBy amount
+		# 	@model.seekBy amount
 
-		@keys 'left, shift+left, alt+left', 'time', (e, h) =>
+		# @keys 'left, shift+left, alt+left', 'time', (e, h) =>
 
-			amount = @_getSeekAmountByEvent e
+		# 	amount = @_getSeekAmountByEvent e
 
-			@model.seekBy -amount
+		# 	@model.seekBy -amount
 
 	_getSeekAmountByEvent: (e) ->
 

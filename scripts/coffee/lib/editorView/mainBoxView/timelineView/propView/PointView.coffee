@@ -78,30 +78,32 @@ module.exports = class PointView extends _ItemView
 
 		startX = startY = nextX = nextY = 0
 
-		@clicks.onDrag @rightHandler,
+		@clicks.onDrag(@rightHandler)
 
-			start: =>
+		.onDown =>
 
-				startX = @rightHandler.getMovement().x
-				startY = @rightHandler.getMovement().y
+			startX = @rightHandler.getMovement().x
+			startY = @rightHandler.getMovement().y
 
-			end: =>
+		.onUp =>
 
-				@pacs.done()
+			@pacs.done()
 
-			drag: (absX, absY) =>
+		.onDrag (e) =>
 
-				nextX = startX + absX
-				nextY = startY + absY
+			console.log 'right drag'
 
-				nextX = 0 if nextX < 0
+			nextX = startX + e.absX
+			nextY = startY + e.absY
 
-				nextT = @_XToTime nextX
-				nextVal = @_YToNormalizedVal nextY
+			nextX = 0 if nextX < 0
 
-				@model.setRightHandler nextT, nextVal
+			nextT = @_XToTime nextX
+			nextVal = @_YToNormalizedVal nextY
 
-				@prop._tick()
+			@model.setRightHandler nextT, nextVal
+
+			@prop._tick()
 
 		return
 
@@ -109,30 +111,30 @@ module.exports = class PointView extends _ItemView
 
 		startX = startY = nextX = nextY = 0
 
-		@clicks.onDrag @leftHandler,
+		@clicks.onDrag(@leftHandler)
 
-			start: =>
+		.onDown =>
 
-				startX = -@leftHandler.getMovement().x
-				startY = @leftHandler.getMovement().y
+			startX = -@leftHandler.getMovement().x
+			startY = @leftHandler.getMovement().y
 
-			end: =>
+		.onUp =>
 
-				@pacs.done()
+			@pacs.done()
 
-			drag: (absX, absY) =>
+		.onDrag (e) =>
 
-				nextX = startX - absX
-				nextY = startY + absY
+			nextX = startX - e.absX
+			nextY = startY + e.absY
 
-				nextX = 0 if nextX < 0
+			nextX = 0 if nextX < 0
 
-				nextT = @_XToTime nextX
-				nextVal = @_YToNormalizedVal nextY
+			nextT = @_XToTime nextX
+			nextVal = @_YToNormalizedVal nextY
 
-				@model.setLeftHandler nextT, nextVal
+			@model.setLeftHandler nextT, nextVal
 
-				@prop._tick()
+			@prop._tick()
 
 		return
 
@@ -184,7 +186,7 @@ module.exports = class PointView extends _ItemView
 
 		@valueInput.node.focus()
 
-		@clicks.onModalClosure @node, =>
+		@clicks.onClickOutside @node, =>
 
 			@node.removeClass 'active'
 

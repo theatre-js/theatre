@@ -21,7 +21,7 @@ module.exports = class GraphView
 
 		@node.classList.add 'visible'
 
-		@clicks.onModalClosure @node, =>
+		@clicks.onClickOutside @node, =>
 
 			do @hide
 
@@ -107,11 +107,10 @@ module.exports = class GraphView
 
 						return
 
-					@clicks.onClick propEl, =>
+					@clicks.onClick(propEl)
+					.onDone =>
 
-						# debugger
-
-						@workspacesModel.togglePropListing prop
+						# debugger						@workspacesModel.togglePropListing prop
 
 						return
 

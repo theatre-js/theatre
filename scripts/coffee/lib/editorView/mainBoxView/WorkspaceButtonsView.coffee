@@ -1,3 +1,5 @@
+Foxie = require 'foxie'
+
 module.exports = class WorkspaceButtonsView
 
 	constructor: (@mainBox) ->
@@ -10,23 +12,19 @@ module.exports = class WorkspaceButtonsView
 
 	_prepareNode: ->
 
-		@node = document.createElement 'div'
-		@node.classList.add 'timeflow-workspaceButtons'
-
-		@mainBox.node.appendChild @node
+		@node = Foxie('.timeflow-workspaceButtons').putIn @mainBox.node
 
 		return
 
 	_prepareShowGraphButton: ->
 
-		@showGraphButton = document.createElement 'div'
-		@showGraphButton.classList.add 'timeflow-workspaceButtons-showGraph'
-
-		@node.appendChild @showGraphButton
+		@showGraphButton = Foxie('.timeflow-workspaceButtons-showGraph')
+		.putIn(@node)
 
 		graph = @mainBox.editor.graph
 
-		@clicks.onClick @showGraphButton, =>
+		@clicks.onClick(@showGraphButton)
+		.onDone =>
 
 			graph.show()
 
@@ -36,20 +34,18 @@ module.exports = class WorkspaceButtonsView
 
 		workspaces = @mainBox.editor.model.workspaces
 
-		activeWsName = document.createElement 'span'
-		activeWsName.classList.add 'timeflow-workspaceButtons-activeWorkspaceName'
-
-		activeWsName.innerHTML = workspaces.getActiveWorkspace().name
-
-		@node.appendChild activeWsName
+		activeWsName = Foxie('span.timeflow-workspaceButtons-activeWorkspaceName')
+		.innerHTML(workspaces.getActiveWorkspace().name)
+		.putIn(@node)
 
 		workspaces.on 'active-workspace-change', =>
 
-			activeWsName.innerHTML = workspaces.getActiveWorkspace().name
+			activeWsName.innerHTML workspaces.getActiveWorkspace().name
 
 		wsList = @mainBox.workspaceList
 
-		@clicks.onClick activeWsName, =>
+		@clicks.onClick(activeWsName)
+		.onDone =>
 
 			wsList.show()
 

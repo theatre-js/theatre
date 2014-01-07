@@ -71,25 +71,25 @@ module.exports = class SeekbarView
 
 		wasPlaying = no
 
-		@clicks.onDrag @seeker,
+		@clicks.onDrag(@seeker)
 
-			start: =>
+		.onDown =>
 
-				document.body.style.cursor = getComputedStyle(@seeker.node).cursor
+			document.body.style.cursor = getComputedStyle(@seeker.node).cursor
 
-				wasPlaying = @model.isPlaying()
+			wasPlaying = @model.isPlaying()
 
-				@model.pause() if wasPlaying
+			@model.pause() if wasPlaying
 
-			end: ->
+		.onUp =>
 
-				document.body.style.cursor = ''
+			document.body.style.cursor = ''
 
-				if wasPlaying then @model.play()
+			if wasPlaying then @model.play()
 
-			drag: (absX, absY, relX) =>
+		.onDrag (e) =>
 
-				@_moveSeekerRelatively relX
+			@_moveSeekerRelatively e.relX
 
 		return
 
@@ -112,19 +112,19 @@ module.exports = class SeekbarView
 		.set('left', 0)
 		.putIn(@node)
 
-		@clicks.onDrag @focusLeftNode,
+		@clicks.onDrag(@focusLeftNode)
 
-			start: =>
+		.onDown =>
 
-				document.body.style.cursor = getComputedStyle(@focusLeftNode.node).cursor
+			document.body.style.cursor = getComputedStyle(@focusLeftNode.node).cursor
 
-			end: ->
+		.onUp =>
 
-				document.body.style.cursor = ''
+			document.body.style.cursor = ''
 
-			drag: (absX, absY, relX) =>
+		.onDrag (e) =>
 
-				@_moveFocusLeftInWindowSpace relX
+			@_moveFocusLeftInWindowSpace e.relX
 
 	_prepareFocusRight: ->
 
@@ -133,19 +133,19 @@ module.exports = class SeekbarView
 		.set('left', 0)
 		.putIn(@node)
 
-		@clicks.onDrag @focusRightNode,
+		@clicks.onDrag(@focusRightNode)
 
-			start: =>
+		.onDown =>
 
-				document.body.style.cursor = getComputedStyle(@focusRightNode.node).cursor
+			document.body.style.cursor = getComputedStyle(@focusRightNode.node).cursor
 
-			end: ->
+		.onUp =>
 
-				document.body.style.cursor = ''
+			document.body.style.cursor = ''
 
-			drag: (absX, absY, relX) =>
+		.onDrag (e) =>
 
-				@_moveFocusRightInWindowSpace relX
+			@_moveFocusRightInWindowSpace e.relX
 
 	_prepareFocusStrip: ->
 
