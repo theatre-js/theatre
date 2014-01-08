@@ -40,19 +40,19 @@ module.exports = class WorkspaceListView
 		.withNoKeys()
 		.onDone (e) =>
 
-			console.log 'activate'
-
 			ws.activate()
 
 		@clicks.onClick(wsNode)
 		.withKeys('ctrl')
 		.onDone (e) =>
 
-			console.log 'edit'
+			@clicks.ignore(wsNode)
 
 			@_startEdit wsNode, =>
 
-				if wsNode.node.innerText is '' or wsNode.node.innerText is ' '
+				@clicks.unignore(wsNode)
+
+				if wsNode.node.innerText.trim() is ''
 
 					ws.remove()
 
@@ -61,6 +61,8 @@ module.exports = class WorkspaceListView
 					ws.rename wsNode.node.innerText
 
 			, =>
+
+				@clicks.unignore(wsNode)
 
 				wsNode.node.innerText = ws.name
 

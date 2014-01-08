@@ -1,5 +1,5 @@
 Moosh = require 'moosh'
-keypress = require './tools/keypress'
+Kilid = require 'kilid'
 GraphView = require './editorView/GraphView'
 EditorModel = require './EditorModel'
 MainBoxView = require './editorView/MainBoxView'
@@ -13,7 +13,7 @@ module.exports = class EditorView
 
 		do @_prepareNode
 
-		@keys = keypress
+		@keys = new Kilid(null, @id + '-kilid').getRootScope()
 
 		@clicks = new Moosh @node, @keys
 
