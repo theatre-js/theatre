@@ -26,7 +26,8 @@
     "timing-function": "*",
     "utila": "*",
     "foxie": "*",
-    "keyboardjs": "0.4.3"
+    "kilid": "*",
+    "moosh": "*"
   },
   "devDependencies": {
     "coffee-script": "~1.6.3",
