@@ -83,6 +83,9 @@ module.exports = class PropView
 		.onUp (e) =>
 
 			t = @timeline._XToFocusedTime e.layerX
+			val = @_YToVal e.layerY - parseInt(@pacsNode.computedStyle('top'))
+
+			@pacs.addPoint t, val, val * 0.1, val * 0.1, val * 0.1, val * 0.1
 
 		do @_prepareInfoNodes
 
@@ -263,6 +266,10 @@ module.exports = class PropView
 
 		@_normalizeY @_normalizeValue(v) * @_heightToValueRatio
 
+	_YToVal: (y) ->
+
+		@_unnormalizeValue @_unnormalizeY(y) / @_heightToValueRatio
+
 	_normalizedValToY: (v) ->
 
 		-v * @_heightToValueRatio
@@ -271,10 +278,18 @@ module.exports = class PropView
 
 		-y / @_heightToValueRatio
 
-	_normalizeValue: (v) ->
+	_normalizeValue: (value) ->
 
-		v - @pacs.bottom
+		value - @pacs.bottom
+
+	_unnormalizeValue: (normalizedValue) ->
+
+		normalizedValue + @pacs.bottom
 
 	_normalizeY: (y) ->
 
 		@_height - y
+
+	_unnormalizeY: (normalizedY) ->
+
+		@_height - normalizedY
