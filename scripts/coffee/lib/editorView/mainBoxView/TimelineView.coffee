@@ -41,6 +41,7 @@ module.exports = class TimelineView
 		@mainBox.seekbar
 
 		@moosh.onMiddleDrag(@node)
+		.withNoKeys()
 		.onDown =>
 
 			@cursor.use '-webkit-grabbing'
@@ -52,6 +53,13 @@ module.exports = class TimelineView
 		.onUp =>
 
 			@cursor.free()
+
+		@moosh.onClick(@node)
+		.withNoKeys()
+		.repeatedBy(2)
+		.onDone (e) =>
+
+			@mainBox.seekbar._seekToX e.layerX
 
 	_add: (propHolder) ->
 

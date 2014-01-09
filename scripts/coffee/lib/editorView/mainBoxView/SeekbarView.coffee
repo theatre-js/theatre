@@ -95,7 +95,7 @@ module.exports = class SeekbarView
 
 		.onDrag (e) =>
 
-			@_moveSeekerRelatively e.relX
+			@_dragSeekerRelatively e.relX
 
 		return
 
@@ -132,7 +132,7 @@ module.exports = class SeekbarView
 
 		.onDrag (e) =>
 
-			@_moveFocusLeftInWindowSpace e.relX
+			@_dragFocusLeftInWindowSpace e.relX
 
 	_prepareFocusRight: ->
 
@@ -153,7 +153,7 @@ module.exports = class SeekbarView
 
 		.onDrag (e) =>
 
-			@_moveFocusRightInWindowSpace e.relX
+			@_dragFocusRightInWindowSpace e.relX
 
 	_prepareFocusStrip: ->
 
@@ -203,7 +203,7 @@ module.exports = class SeekbarView
 
 		return
 
-	_moveFocusLeftInWindowSpace: (x) ->
+	_dragFocusLeftInWindowSpace: (x) ->
 
 		focus = @model.getFocusArea()
 
@@ -246,7 +246,7 @@ module.exports = class SeekbarView
 
 		return
 
-	_moveFocusRightInWindowSpace: (x) ->
+	_dragFocusRightInWindowSpace: (x) ->
 
 		focus = @model.getFocusArea()
 
@@ -375,7 +375,7 @@ module.exports = class SeekbarView
 
 		no
 
-	_moveSeekerRelatively: (x) ->
+	_dragSeekerRelatively: (x) ->
 
 		toPos = @seeker.get('left') + x
 
@@ -418,3 +418,17 @@ module.exports = class SeekbarView
 		@timelineLength = @model.timelineLength
 
 		do @_repositionElements
+
+	_seekToX: (toPos) ->
+
+		focus = @model.getFocusArea()
+
+		t = (toPos / @_width * focus.duration) + focus.from
+
+		t = 0 if t < 0
+
+		t = @timelineLength if t > @timelineLength
+
+		@model.tick t
+
+		return
