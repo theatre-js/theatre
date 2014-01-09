@@ -8,6 +8,10 @@ module.exports = class TimelineView
 
 		@model = @mainBox.editor.model.timeline
 
+		@moosh = @mainBox.moosh
+
+		@cursor = @mainBox.editor.cursor
+
 		@focusArea = @model.focusArea
 
 		@_repo = new PropViewRepo @
@@ -33,6 +37,21 @@ module.exports = class TimelineView
 	_prepareNode: ->
 
 		@node = Foxie('.timeflow-timeline').putIn(@mainBox.node)
+
+		@mainBox.seekbar
+
+		@moosh.onMiddleDrag(@node)
+		.onDown =>
+
+			@cursor.use '-webkit-grabbing'
+
+		.onDrag (e) =>
+
+			@mainBox.seekbar._dragFocusBy e.relX
+
+		.onUp =>
+
+			@cursor.free()
 
 	_add: (propHolder) ->
 
