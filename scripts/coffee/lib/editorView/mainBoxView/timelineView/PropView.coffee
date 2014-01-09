@@ -54,6 +54,12 @@ module.exports = class PropView
 
 		@node = Foxie '.timeflow-timeline-prop'
 
+		@moosh.onHover(@node)
+		.withKeys('ctrl')
+		.onMove =>
+
+			console.log 'hovering'
+
 		do @_prepareInfoNodes
 
 		do @_preparePacsNodes
@@ -63,6 +69,7 @@ module.exports = class PropView
 		@info = Foxie('.timeflow-timeline-prop-info').putIn @node
 
 		@moosh.onClick(@info)
+		.withNoKeys()
 		.onDone =>
 
 			@_setExpansion @_propHolderModel.toggleExpansion()

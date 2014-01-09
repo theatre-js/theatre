@@ -37,6 +37,26 @@ module.exports = class ConnectorView extends _ItemView
 		.attr('stroke-width', '4px')
 		.attr('fill', 'transparent')
 
+		@moosh.onHover(@node)
+		.withKeys('alt')
+		.onEnter =>
+
+			@node.attr('stroke', 'red')
+
+		.onLeave =>
+
+			@node.attr('stroke', '#367c89')
+
+		@moosh.onClick(@node)
+		.withKeys('alt')
+		.onUp =>
+
+			do @model.remove
+
+			@pacs.done()
+
+			@prop._tick()
+
 		do @relayHorizontally
 
 	relayHorizontally: ->
@@ -97,6 +117,8 @@ module.exports = class ConnectorView extends _ItemView
 		return
 
 	_remove: ->
+
+		@moosh.forgetNode(@node)
 
 		@node.quit()
 

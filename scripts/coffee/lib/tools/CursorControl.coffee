@@ -14,7 +14,7 @@ module.exports = class CursorControl
 
 			if node.node? then node = node.node
 
-			unless node instanceof HTMLElement
+			unless node instanceof Element
 
 				throw Error "node must be a foxie instance or an html element"
 
