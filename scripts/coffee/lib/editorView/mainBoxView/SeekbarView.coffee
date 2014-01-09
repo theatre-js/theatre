@@ -432,3 +432,56 @@ module.exports = class SeekbarView
 		@model.tick t
 
 		return
+
+	_zoomFocus: (zoomMult, x) ->
+
+		focus = @model.getFocusArea()
+
+		pivotInDur = x / @_width
+
+		pivot = pivotInDur * focus.duration
+
+		newDuration = focus.duration * zoomMult
+
+		if newDuration > @timelineLength
+
+			newFrom = 0
+
+			newTo = @timelineLength
+
+			@model.changeFocusArea newFrom, newTo
+
+			return
+
+		if newDuration < 1000
+
+			zoomMult = 1000 / focus.duration
+
+			newDuration = 1000
+
+		oldLeftHalf = pivotInDur * focus.duration
+
+		newLeftHalf = oldLeftHalf * zoomMult
+
+		newFrom = focus.from - (newLeftHalf - oldLeftHalf)
+
+		oldRightHalf = (1 - pivotInDur) * focus.duration
+
+		newRightHalf = oldRightHalf * zoomMult
+
+		newTo = focus.to + (newRightHalf - oldRightHalf)
+
+		if newFrom < 0
+
+			newFrom = 0
+
+		if newTo > @timelineLength
+
+			newTo = @timelineLength
+
+		newDur = newTo - newFrom
+
+		@model.changeFocusArea newFrom, newTo
+
+		return
+

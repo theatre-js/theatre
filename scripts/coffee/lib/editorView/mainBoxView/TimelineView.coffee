@@ -61,6 +61,12 @@ module.exports = class TimelineView
 
 			@mainBox.seekbar._seekToX e.layerX
 
+		@moosh.onWheel(@node)
+		.withKeys('shift')
+		.onWheel (e) =>
+
+			@mainBox.seekbar._zoomFocus 1 + (-e.delta / 120 / 8), e.layerX
+
 	_add: (propHolder) ->
 
 		propView = @_repo.getPropViewFor propHolder
