@@ -99,17 +99,29 @@ module.exports = class ControlsView
 
 			do @model.jumpToEnd
 
-		# @kilid 'right, shift+right, alt+right', 'time', (e, h) =>
+		@kilid.on 'right', =>
 
-		# 	amount = @_getSeekAmountByEvent e
+			@model.seekBy 16
 
-		# 	@model.seekBy amount
+		@kilid.on 'left', =>
 
-		# @kilid 'left, shift+left, alt+left', 'time', (e, h) =>
+			@model.seekBy -16
 
-		# 	amount = @_getSeekAmountByEvent e
+		@kilid.on 'shift+right', =>
 
-		# 	@model.seekBy -amount
+			@model.seekBy 48
+
+		@kilid.on 'shift+left', =>
+
+			@model.seekBy -48
+
+		@kilid.on 'alt+right', =>
+
+			@model.seekBy 8
+
+		@kilid.on 'alt+left', =>
+
+			@model.seekBy -8
 
 	_getSeekAmountByEvent: (e) ->
 
