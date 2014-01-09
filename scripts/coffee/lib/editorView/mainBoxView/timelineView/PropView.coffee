@@ -1,7 +1,8 @@
 Foxie = require 'foxie'
+array = require 'utila/scripts/js/lib/array'
+SvgArea = require './propView/SvgArea'
 PointView = require './propView/PointView'
 ConnectorView = require './propView/ConnectorView'
-SvgArea = require './propView/SvgArea'
 
 module.exports = class PropView
 
@@ -200,6 +201,12 @@ module.exports = class PropView
 		connectorView = new ConnectorView @, connector
 
 		@_items.push connectorView
+
+		return
+
+	_removeItem: (item) ->
+
+		array.pluckOneItem @_items, item
 
 		return
 

@@ -18,6 +18,10 @@ module.exports = class ConnectorView extends _ItemView
 
 		@pacs = @model.pacs
 
+		@model.on 'remove', =>
+
+			do @_remove
+
 		@model.on 'bezier-change', =>
 
 			do @relay
@@ -91,3 +95,9 @@ module.exports = class ConnectorView extends _ItemView
 				@_wasBadBezier = no
 
 		return
+
+	_remove: ->
+
+		@node.quit()
+
+		super

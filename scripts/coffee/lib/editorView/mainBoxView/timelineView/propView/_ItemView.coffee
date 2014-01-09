@@ -29,3 +29,9 @@ module.exports = class _ItemView
 	_normalizeY: (y) ->
 
 		@prop._height - y
+
+	_remove: ->
+
+		@prop._removeItem @
+
+		return

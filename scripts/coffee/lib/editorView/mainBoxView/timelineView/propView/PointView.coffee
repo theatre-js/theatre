@@ -25,6 +25,10 @@ module.exports = class PointView extends _ItemView
 
 			do @_moveHandlers
 
+		@model.on 'remove', =>
+
+			do @_remove
+
 		@svgArea = @prop.svgArea
 
 		do @_prepareNode
@@ -46,6 +50,28 @@ module.exports = class PointView extends _ItemView
 		@moosh.onClick @node, =>
 
 			do @_activate
+
+		.withNoKeys()
+
+		@moosh.onHover(@node)
+		.withKeys('alt')
+		.onEnter =>
+
+			@node.addClass 'hint-remove'
+
+		.onLeave =>
+
+			@node.removeClass 'hint-remove'
+
+		@moosh.onClick(@node)
+		.withKeys('alt')
+		.onUp =>
+
+			@model.remove()
+
+			@pacs.done()
+
+			@prop._tick()
 
 	_moveNode: ->
 
@@ -231,3 +257,17 @@ module.exports = class PointView extends _ItemView
 		do @_moveHandlers
 
 		return
+
+	_remove: ->
+
+		@moosh.forgetNode(@node)
+		@moosh.forgetNode(@leftHandler)
+		@moosh.forgetNode(@rightHandler)
+
+		@node.quit()
+		@leftHandler.quit()
+		@leftHandlerLine.quit()
+		@rightHandler.quit()
+		@rightHandlerLine.quit()
+
+		super
