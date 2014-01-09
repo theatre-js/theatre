@@ -10,7 +10,7 @@ module.exports = class PropView
 
 		@timeline = @repo.timeline
 
-		@cursor = @repo.timeline.cursor
+		@rootView = @timeline.rootView
 
 		@id = @propModel.id
 
@@ -22,7 +22,7 @@ module.exports = class PropView
 
 		@_items = []
 
-		@moosh = @repo.timeline.mainBox.editor.moosh
+		@rootView.moosh = @repo.timeline.mainBox.editor.moosh
 
 		@_expanded = no
 
@@ -56,11 +56,11 @@ module.exports = class PropView
 
 		@node = Foxie '.timeflow-timeline-prop'
 
-		@moosh.onHover(@node)
+		@rootView.moosh.onHover(@node)
 		.withKeys('ctrl')
 		.onEnter (e) =>
 
-			@cursor.use 'none'
+			@rootView.cursor.use 'none'
 
 			@hypotheticalPointNode
 			.moveXTo(e.layerX)
@@ -74,15 +74,15 @@ module.exports = class PropView
 
 		.onLeave =>
 
-			@cursor.free()
+			@rootView.cursor.free()
 
 			@hypotheticalPointNode.moveTo(-1000, -1000, 1)
 
-		@moosh.onClick(@node)
+		@rootView.moosh.onClick(@node)
 		.withKeys('ctrl')
 		.onUp (e) =>
 
-			console.log e
+			t = @timeline._XToFocusedTime e.layerX
 
 		do @_prepareInfoNodes
 
@@ -96,7 +96,7 @@ module.exports = class PropView
 
 		@info = Foxie('.timeflow-timeline-prop-info').putIn @node
 
-		@moosh.onClick(@info)
+		@rootView.moosh.onClick(@info)
 		.withNoKeys()
 		.onDone =>
 
@@ -250,3 +250,31 @@ module.exports = class PropView
 		@timeline._tick()
 
 		return
+
+	_timeToX: (t) ->
+
+		t * @_widthToTimeRatio
+
+	_XToTime: (x) ->
+
+		x / @_widthToTimeRatio
+
+	_valToY: (v) ->
+
+		@_normalizeY @_normalizeValue(v) * @_heightToValueRatio
+
+	_normalizedValToY: (v) ->
+
+		-v * @_heightToValueRatio
+
+	_YToNormalizedVal: (y) ->
+
+		-y / @_heightToValueRatio
+
+	_normalizeValue: (v) ->
+
+		v - @pacs.bottom
+
+	_normalizeY: (y) ->
+
+		@_height - y

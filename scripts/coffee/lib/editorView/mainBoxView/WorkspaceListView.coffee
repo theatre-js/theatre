@@ -7,11 +7,9 @@ module.exports = class WorkspaceListView extends _Emitter
 
 		super
 
-		@moosh = @mainBox.editor.moosh
+		@rootView = @mainBox.rootView
 
-		@kilid = @mainBox.editor.kilid
-
-		@kilidScopeForEdit = @kilid.getScope 'workspace-list-view'
+		@rootView.kilidScopeForEdit = @rootView.kilid.getScope 'workspace-list-view'
 
 		@node = Foxie('.timeflow-workspaceList').putIn(@mainBox.node)
 
@@ -41,21 +39,21 @@ module.exports = class WorkspaceListView extends _Emitter
 
 			wsNode.remove()
 
-		@moosh.onClick(wsNode)
+		@rootView.moosh.onClick(wsNode)
 		.withNoKeys()
 		.onDone (e) =>
 
 			ws.activate()
 
-		@moosh.onClick(wsNode)
+		@rootView.moosh.onClick(wsNode)
 		.withKeys('ctrl')
 		.onDone (e) =>
 
-			@moosh.ignore(wsNode)
+			@rootView.moosh.ignore(wsNode)
 
 			@_startEdit wsNode, =>
 
-				@moosh.unignore(wsNode)
+				@rootView.moosh.unignore(wsNode)
 
 				if wsNode.node.innerText.trim() is ''
 
@@ -67,13 +65,13 @@ module.exports = class WorkspaceListView extends _Emitter
 
 			, =>
 
-				@moosh.unignore(wsNode)
+				@rootView.moosh.unignore(wsNode)
 
 				wsNode.node.innerText = ws.name
 
 	_attachCtrl: (node) ->
 
-		@moosh.onHover(node)
+		@rootView.moosh.onHover(node)
 		.withKeys('ctrl')
 		.onEnter =>
 
@@ -89,17 +87,17 @@ module.exports = class WorkspaceListView extends _Emitter
 
 		@currentEdit = null
 
-		@kilidScopeForEdit.on('enter')
+		@rootView.kilidScopeForEdit.on('enter')
 		.onEnd (e) =>
 
 			@_storeEdit()
 
-		@kilidScopeForEdit.on('esc')
+		@rootView.kilidScopeForEdit.on('esc')
 		.onEnd (e) =>
 
 			@_discardEdit()
 
-		@kilidScopeForEdit.on('ctrl+delete')
+		@rootView.kilidScopeForEdit.on('ctrl+delete')
 		.onEnd (e) =>
 
 			@currentEdit.innerText = ''
@@ -108,7 +106,7 @@ module.exports = class WorkspaceListView extends _Emitter
 
 	_startEdit: (wsNode, cb, discard) ->
 
-		@kilidScopeForEdit.activate()
+		@rootView.kilidScopeForEdit.activate()
 
 		@currentEditCallBack = cb
 
@@ -128,7 +126,7 @@ module.exports = class WorkspaceListView extends _Emitter
 
 		return unless @currentEdit?
 
-		@kilidScopeForEdit.deactivate()
+		@rootView.kilidScopeForEdit.deactivate()
 
 		@currentEdit.contentEditable = no
 
@@ -146,7 +144,7 @@ module.exports = class WorkspaceListView extends _Emitter
 
 		return unless @currentEdit?
 
-		@kilidScopeForEdit.deactivate()
+		@rootView.kilidScopeForEdit.deactivate()
 
 		@currentEdit.contentEditable = no
 
@@ -166,7 +164,7 @@ module.exports = class WorkspaceListView extends _Emitter
 
 		@newBtn.node.innerText = '+'
 
-		@moosh.onClick(@newBtn)
+		@rootView.moosh.onClick(@newBtn)
 		.onDone =>
 
 			@newBtn.node.innerText = ''
@@ -191,7 +189,7 @@ module.exports = class WorkspaceListView extends _Emitter
 
 		@visible = yes
 
-		@moosh.onClickOutside @node, =>
+		@rootView.moosh.onClickOutside @node, =>
 
 			do @hide
 

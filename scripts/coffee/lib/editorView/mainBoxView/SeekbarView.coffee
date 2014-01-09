@@ -4,9 +4,7 @@ module.exports = class SeekbarView
 
 	constructor: (@mainBox) ->
 
-		@moosh = @mainBox.editor.moosh
-
-		@cursor = @mainBox.editor.cursor
+		@rootView = @mainBox.rootView
 
 		@model = @mainBox.editor.model.timeControl
 
@@ -79,11 +77,11 @@ module.exports = class SeekbarView
 
 		wasPlaying = no
 
-		@moosh.onDrag(@seeker)
+		@rootView.moosh.onDrag(@seeker)
 
 		.onDown =>
 
-			@cursor.use @seeker
+			@rootView.cursor.use @seeker
 
 			wasPlaying = @model.isPlaying()
 
@@ -91,7 +89,7 @@ module.exports = class SeekbarView
 
 		.onUp =>
 
-			@cursor.free()
+			@rootView.cursor.free()
 
 			if wasPlaying then @model.play()
 
@@ -122,15 +120,15 @@ module.exports = class SeekbarView
 		.set('left', 0)
 		.putIn(@node)
 
-		@moosh.onDrag(@focusLeftNode)
+		@rootView.moosh.onDrag(@focusLeftNode)
 
 		.onDown =>
 
-			@cursor.use @focusLeftNode
+			@rootView.cursor.use @focusLeftNode
 
 		.onUp =>
 
-			@cursor.free()
+			@rootView.cursor.free()
 
 		.onDrag (e) =>
 
@@ -143,15 +141,15 @@ module.exports = class SeekbarView
 		.set('left', 0)
 		.putIn(@node)
 
-		@moosh.onDrag(@focusRightNode)
+		@rootView.moosh.onDrag(@focusRightNode)
 
 		.onDown =>
 
-			@cursor.use @focusRightNode
+			@rootView.cursor.use @focusRightNode
 
 		.onUp =>
 
-			@cursor.free()
+			@rootView.cursor.free()
 
 		.onDrag (e) =>
 
@@ -164,12 +162,12 @@ module.exports = class SeekbarView
 		.css('width', '300px')
 		.putIn(@node)
 
-		@moosh.onDrag(@focusStripNode)
+		@rootView.moosh.onDrag(@focusStripNode)
 		.onDown =>
 
 			@focusStripNode.addClass 'dragging'
 
-			@cursor.use @focusStripNode
+			@rootView.cursor.use @focusStripNode
 
 		.onDrag (e) =>
 
@@ -179,7 +177,7 @@ module.exports = class SeekbarView
 
 			@focusStripNode.removeClass 'dragging'
 
-			@cursor.free()
+			@rootView.cursor.free()
 
 	_dragFocusStripBy: (x) ->
 

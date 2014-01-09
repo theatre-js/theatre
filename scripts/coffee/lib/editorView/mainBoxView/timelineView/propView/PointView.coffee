@@ -11,11 +11,31 @@ module.exports = class PointView extends _ItemView
 
 		@y = 0
 
-		@moosh = @prop.moosh
-
 		@pacs = @model.pacs
 
 		@heightUsage = 0.7
+
+		@svgArea = @prop.svgArea
+
+		@_active = no
+
+		@_lastValue = @model.value
+
+		@_tempKilidScope = @rootView.kilid.getTempScope()
+
+		@_tempKilidScope.on 'enter', => do @_commitValueAndDeactivate
+
+		@_tempKilidScope.on 'esc', => do @_discardValueAndDeactivate
+
+		do @_prepareNode
+
+		do @_prepareHandlers
+
+		do @_prepareValueInputNode
+
+		do @relayHorizontally
+
+		do @relayVertically
 
 		@model.on 'value-change', =>
 
@@ -29,31 +49,19 @@ module.exports = class PointView extends _ItemView
 
 			do @_remove
 
-		@svgArea = @prop.svgArea
-
-		do @_prepareNode
-
-		do @_prepareHandlers
-
-		do @_prepareValueInputNode
-
-		do @relayHorizontally
-
-		do @relayVertically
-
 	_prepareNode: ->
 
 		@node = Foxie('.timeflow-timeline-prop-pacs-point').putIn @prop.pacsNode
 
 		window.n = @node
 
-		@moosh.onClick @node, =>
+		@rootView.moosh.onClick @node, =>
 
 			do @_activate
 
 		.withNoKeys()
 
-		@moosh.onHover(@node)
+		@rootView.moosh.onHover(@node)
 		.withKeys('alt')
 		.onEnter =>
 
@@ -63,7 +71,7 @@ module.exports = class PointView extends _ItemView
 
 			@node.removeClass 'hint-remove'
 
-		@moosh.onClick(@node)
+		@rootView.moosh.onClick(@node)
 		.withKeys('alt')
 		.onUp =>
 
@@ -104,7 +112,7 @@ module.exports = class PointView extends _ItemView
 
 		startX = startY = nextX = nextY = 0
 
-		@moosh.onDrag(@rightHandler)
+		@rootView.moosh.onDrag(@rightHandler)
 
 		.onDown =>
 
@@ -122,8 +130,8 @@ module.exports = class PointView extends _ItemView
 
 			nextX = 0 if nextX < 0
 
-			nextT = @_XToTime nextX
-			nextVal = @_YToNormalizedVal nextY
+			nextT = @prop._XToTime nextX
+			nextVal = @prop._YToNormalizedVal nextY
 
 			@model.setRightHandler nextT, nextVal
 
@@ -135,7 +143,7 @@ module.exports = class PointView extends _ItemView
 
 		startX = startY = nextX = nextY = 0
 
-		@moosh.onDrag(@leftHandler)
+		@rootView.moosh.onDrag(@leftHandler)
 
 		.onDown =>
 
@@ -153,8 +161,8 @@ module.exports = class PointView extends _ItemView
 
 			nextX = 0 if nextX < 0
 
-			nextT = @_XToTime nextX
-			nextVal = @_YToNormalizedVal nextY
+			nextT = @prop._XToTime nextX
+			nextVal = @prop._YToNormalizedVal nextY
 
 			@model.setLeftHandler nextT, nextVal
 
@@ -164,21 +172,21 @@ module.exports = class PointView extends _ItemView
 
 	_moveHandlers: ->
 
-		@leftHandler.moveXTo @_timeToX -@model.leftHandler[0]
-		@leftHandler.moveYTo @_normalizedValToY @model.leftHandler[1]
+		@leftHandler.moveXTo @prop._timeToX -@model.leftHandler[0]
+		@leftHandler.moveYTo @prop._normalizedValToY @model.leftHandler[1]
 
-		@rightHandler.moveXTo @_timeToX @model.rightHandler[0]
-		@rightHandler.moveYTo @_normalizedValToY @model.rightHandler[1]
+		@rightHandler.moveXTo @prop._timeToX @model.rightHandler[0]
+		@rightHandler.moveYTo @prop._normalizedValToY @model.rightHandler[1]
 
 		@leftHandlerLine.attr 'd',
 
 			"M#{@x} #{@y} L " +
-			"#{@_timeToX(@model.t - @model.leftHandler[0])} #{@_valToY(@model.value + @model.leftHandler[1])}"
+			"#{@prop._timeToX(@model.t - @model.leftHandler[0])} #{@prop._valToY(@model.value + @model.leftHandler[1])}"
 
 		@rightHandlerLine.attr 'd',
 
 			"M#{@x} #{@y} L " +
-			"#{@_timeToX(@model.t + @model.rightHandler[0])} #{@_valToY(@model.value + @model.rightHandler[1])}"
+			"#{@prop._timeToX(@model.t + @model.rightHandler[0])} #{@prop._valToY(@model.value + @model.rightHandler[1])}"
 
 	_prepareValueInputNode: ->
 
@@ -188,9 +196,9 @@ module.exports = class PointView extends _ItemView
 
 		@valueInput.node.addEventListener 'keyup', =>
 
-			@_setValue @valueInput.node.value
+			if @_active
 
-		do @_updateValue
+				@_setValue @valueInput.node.value
 
 	_moveValueContainer: ->
 
@@ -201,20 +209,6 @@ module.exports = class PointView extends _ItemView
 		else
 
 			@valueContainer.addClass 'hang'
-
-		return
-
-	_activate: ->
-
-		@node.addClass 'active'
-
-		@valueInput.node.focus()
-
-		@moosh.onClickOutside @node, =>
-
-			@node.removeClass 'active'
-
-			return
 
 		return
 
@@ -232,13 +226,9 @@ module.exports = class PointView extends _ItemView
 
 		return
 
-	_updateValue: ->
-
-		@valueInput.node.value = @model.value
-
 	relayHorizontally: ->
 
-		@x = @_timeToX @model.t
+		@x = @prop._timeToX @model.t
 
 		do @_moveNode
 
@@ -248,7 +238,7 @@ module.exports = class PointView extends _ItemView
 
 	relayVertically: ->
 
-		@y = @_valToY @model.value
+		@y = @prop._valToY @model.value
 
 		do @_moveNode
 
@@ -260,9 +250,9 @@ module.exports = class PointView extends _ItemView
 
 	_remove: ->
 
-		@moosh.forgetNode(@node)
-		@moosh.forgetNode(@leftHandler)
-		@moosh.forgetNode(@rightHandler)
+		@rootView.moosh.forgetNode(@node)
+		@rootView.moosh.forgetNode(@leftHandler)
+		@rootView.moosh.forgetNode(@rightHandler)
 
 		@node.quit()
 		@leftHandler.quit()
@@ -271,3 +261,57 @@ module.exports = class PointView extends _ItemView
 		@rightHandlerLine.quit()
 
 		super
+
+	_activate: ->
+
+		return if @_active
+
+		@_active = yes
+
+		@valueInput.node.value = @model.value
+
+		@node.addClass 'active'
+
+		@valueInput.node.focus()
+
+		@rootView.moosh.ignore(@valueInput)
+
+		@_tempKilidScope.activate()
+
+		@_lastValue = @model.value
+
+		@rootView.moosh.onClickOutside @node, =>
+
+			do @_commitValueAndDeactivate
+
+		return
+
+	_deactivate: ->
+
+		@_active = no
+
+		@node.removeClass 'active'
+
+		@_tempKilidScope.deactivate()
+
+		@rootView.moosh.discardClickOutside @node
+
+		@rootView.moosh.unignore(@valueInput)
+
+		return
+
+	_commitValueAndDeactivate: ->
+
+		@_setValue @valueInput.node.value
+
+		do @_deactivate
+
+		return
+
+	_discardValueAndDeactivate: ->
+
+		@_setValue @_lastValue
+
+		do @_deactivate
+
+		return

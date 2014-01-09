@@ -8,9 +8,7 @@ module.exports = class TimelineView
 
 		@model = @mainBox.editor.model.timeline
 
-		@moosh = @mainBox.moosh
-
-		@cursor = @mainBox.editor.cursor
+		@rootView = @mainBox.rootView
 
 		@focusArea = @model.focusArea
 
@@ -52,11 +50,11 @@ module.exports = class TimelineView
 
 		@mainBox.seekbar
 
-		@moosh.onMiddleDrag(@node)
+		@rootView.moosh.onMiddleDrag(@node)
 		.withNoKeys()
 		.onDown =>
 
-			@cursor.use '-webkit-grabbing'
+			@rootView.cursor.use '-webkit-grabbing'
 
 		.onDrag (e) =>
 
@@ -64,16 +62,16 @@ module.exports = class TimelineView
 
 		.onUp =>
 
-			@cursor.free()
+			@rootView.cursor.free()
 
-		@moosh.onClick(@node)
+		@rootView.moosh.onClick(@node)
 		.withNoKeys()
 		.repeatedBy(2)
 		.onDone (e) =>
 
 			@mainBox.seekbar._seekToX e.layerX
 
-		@moosh.onWheel(@node)
+		@rootView.moosh.onWheel(@node)
 		.withKeys('shift')
 		.onWheel (e) =>
 
@@ -140,3 +138,4 @@ module.exports = class TimelineView
 	_timeToX: (t) ->
 
 		parseInt (t / @timelineLength) * @width
+

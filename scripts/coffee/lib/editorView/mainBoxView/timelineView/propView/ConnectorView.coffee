@@ -12,8 +12,6 @@ module.exports = class ConnectorView extends _ItemView
 		@leftHandler = new Float32Array 2
 		@rightHandler = new Float32Array 2
 
-		@moosh = @prop.moosh
-
 		@svgArea = @prop.svgArea
 
 		@pacs = @model.pacs
@@ -37,7 +35,7 @@ module.exports = class ConnectorView extends _ItemView
 		.attr('stroke-width', '4px')
 		.attr('fill', 'transparent')
 
-		@moosh.onHover(@node)
+		@rootView.moosh.onHover(@node)
 		.withKeys('alt')
 		.onEnter =>
 
@@ -47,7 +45,7 @@ module.exports = class ConnectorView extends _ItemView
 
 			@node.attr('stroke', '#367c89')
 
-		@moosh.onClick(@node)
+		@rootView.moosh.onClick(@node)
 		.withKeys('alt')
 		.onUp =>
 
@@ -69,21 +67,21 @@ module.exports = class ConnectorView extends _ItemView
 
 	relay: ->
 
-		@leftPoint[0] = @_timeToX @model.leftT
+		@leftPoint[0] = @prop._timeToX @model.leftT
 
-		@leftPoint[1] = @_valToY @model.leftValue
+		@leftPoint[1] = @prop._valToY @model.leftValue
 
-		@rightPoint[0] = @_timeToX @model.rightT
+		@rightPoint[0] = @prop._timeToX @model.rightT
 
-		@rightPoint[1] = @_valToY @model.rightValue
+		@rightPoint[1] = @prop._valToY @model.rightValue
 
-		@leftHandler[0] = @_timeToX @model.leftT + @model.leftHandler[0]
+		@leftHandler[0] = @prop._timeToX @model.leftT + @model.leftHandler[0]
 
-		@leftHandler[1] = @_valToY @model.leftValue + @model.leftHandler[1]
+		@leftHandler[1] = @prop._valToY @model.leftValue + @model.leftHandler[1]
 
-		@rightHandler[0] = @_timeToX @model.rightT - @model.rightHandler[0]
+		@rightHandler[0] = @prop._timeToX @model.rightT - @model.rightHandler[0]
 
-		@rightHandler[1] = @_valToY @model.rightValue + @model.rightHandler[1]
+		@rightHandler[1] = @prop._valToY @model.rightValue + @model.rightHandler[1]
 
 		do @_redrawCurve
 
@@ -118,7 +116,7 @@ module.exports = class ConnectorView extends _ItemView
 
 	_remove: ->
 
-		@moosh.forgetNode(@node)
+		@rootView.moosh.forgetNode(@node)
 
 		@node.quit()
 

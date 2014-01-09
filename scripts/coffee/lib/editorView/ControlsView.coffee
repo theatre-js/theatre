@@ -2,11 +2,9 @@ module.exports = class ControlsView
 
 	constructor: (@editor) ->
 
+		@rootView = @editor
+
 		@model = @editor.model.timeControl
-
-		@moosh = @editor.moosh
-
-		@kilid = @editor.kilid
 
 		do @_prepareNodes
 
@@ -36,7 +34,7 @@ module.exports = class ControlsView
 
 		@node.appendChild @playPauseNode
 
-		@moosh.onClick(@playPauseNode)
+		@rootView.moosh.onClick(@playPauseNode)
 		.onDone =>
 
 			do @_togglePlayState
@@ -48,7 +46,7 @@ module.exports = class ControlsView
 
 		@node.appendChild @toggleFullScreenNode
 
-		@moosh.onClick(@toggleFullScreenNode)
+		@rootView.moosh.onClick(@toggleFullScreenNode)
 		.onDone =>
 
 			console.log 'to be implemented'
@@ -60,7 +58,7 @@ module.exports = class ControlsView
 
 		@node.appendChild @jumpToPrevMarkerNode
 
-		@moosh.onClick(@jumpToPrevMarkerNode)
+		@rootView.moosh.onClick(@jumpToPrevMarkerNode)
 		.onDone =>
 
 			do @model.jumpToPrevMarker
@@ -72,54 +70,54 @@ module.exports = class ControlsView
 
 		@node.appendChild @jumpToNextMarkerNode
 
-		@moosh.onClick(@jumpToNextMarkerNode)
+		@rootView.moosh.onClick(@jumpToNextMarkerNode)
 		.onDone =>
 
 			do @model.jumpToNextMarker
 
 	_prepareKeyboard: ->
 
-		@kilid.on 'space', =>
+		@rootView.kilid.on 'space', =>
 
 			do @_togglePlayState
 
-		@kilid.on 'home', =>
+		@rootView.kilid.on 'home', =>
 
 			do @model.jumpToFocusBeginning
 
-		@kilid.on 'ctrl+home', =>
+		@rootView.kilid.on 'ctrl+home', =>
 
 			do @model.jumpToBeginning
 
-		@kilid.on 'end', =>
+		@rootView.kilid.on 'end', =>
 
 			do @model.jumpToFocusEnd
 
-		@kilid.on 'ctrl+end', =>
+		@rootView.kilid.on 'ctrl+end', =>
 
 			do @model.jumpToEnd
 
-		@kilid.on 'right', =>
+		@rootView.kilid.on 'right', =>
 
 			@model.seekBy 16
 
-		@kilid.on 'left', =>
+		@rootView.kilid.on 'left', =>
 
 			@model.seekBy -16
 
-		@kilid.on 'shift+right', =>
+		@rootView.kilid.on 'shift+right', =>
 
 			@model.seekBy 48
 
-		@kilid.on 'shift+left', =>
+		@rootView.kilid.on 'shift+left', =>
 
 			@model.seekBy -48
 
-		@kilid.on 'alt+right', =>
+		@rootView.kilid.on 'alt+right', =>
 
 			@model.seekBy 8
 
-		@kilid.on 'alt+left', =>
+		@rootView.kilid.on 'alt+left', =>
 
 			@model.seekBy -8
 

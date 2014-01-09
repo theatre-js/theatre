@@ -2,10 +2,12 @@ module.exports = class GraphView
 
 	constructor: (@editor) ->
 
+		@rootView = @editor
+
 		@graphModel = @editor.model.graph
 		@workspacesModel = @editor.model.workspaces
 
-		@moosh = @editor.moosh
+		@rootView.moosh = @editor.moosh
 
 		do @_prepareNode
 
@@ -21,7 +23,7 @@ module.exports = class GraphView
 
 		@node.classList.add 'visible'
 
-		@moosh.onClickOutside @node, =>
+		@rootView.moosh.onClickOutside @node, =>
 
 			do @hide
 
@@ -107,7 +109,7 @@ module.exports = class GraphView
 
 						return
 
-					@moosh.onClick(propEl)
+					@rootView.moosh.onClick(propEl)
 					.onDone =>
 
 						# debugger						@workspacesModel.togglePropListing prop
