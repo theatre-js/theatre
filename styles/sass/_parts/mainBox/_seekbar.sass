@@ -165,4 +165,16 @@
 
 	opacity: 0.1
 
-	pointer-events: none
+	cursor: -webkit-grab
+
+	-webkit-transition: opacity 0.2s
+
+	&:hover
+
+		opacity: 0.15
+
+	&.dragging
+
+		opacity: 0.2
+
+		cursor: -webkit-grabbing

@@ -4,6 +4,7 @@ GraphView = require './editorView/GraphView'
 EditorModel = require './EditorModel'
 MainBoxView = require './editorView/MainBoxView'
 ControlsView = require './editorView/ControlsView'
+CursorControl = require './tools/CursorControl'
 
 module.exports = class EditorView
 
@@ -12,6 +13,8 @@ module.exports = class EditorView
 		@model = new EditorModel @id
 
 		do @_prepareNode
+
+		@cursor = new CursorControl
 
 		@kilid = new Kilid(null, @id + '-kilid').getRootScope()
 

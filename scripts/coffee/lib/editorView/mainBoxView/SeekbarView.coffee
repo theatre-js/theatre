@@ -6,6 +6,8 @@ module.exports = class SeekbarView
 
 		@moosh = @mainBox.editor.moosh
 
+		@cursor = @mainBox.editor.cursor
+
 		@model = @mainBox.editor.model.timeControl
 
 		@timelineLength = @model.timelineLength
@@ -67,7 +69,11 @@ module.exports = class SeekbarView
 		.moveZ(1)
 		.putIn(@node)
 
-		@model.on 'time-change', => do @_repositionSeeker
+		@model.on 'time-change', =>
+
+			do @_updateT
+
+
 
 		wasPlaying = no
 
@@ -75,7 +81,7 @@ module.exports = class SeekbarView
 
 		.onDown =>
 
-			document.body.style.cursor = getComputedStyle(@seeker.node).cursor
+			@cursor.use @seeker
 
 			wasPlaying = @model.isPlaying()
 
@@ -83,7 +89,7 @@ module.exports = class SeekbarView
 
 		.onUp =>
 
-			document.body.style.cursor = ''
+			@cursor.free()
 
 			if wasPlaying then @model.play()
 
@@ -103,6 +109,8 @@ module.exports = class SeekbarView
 
 		@model.on 'focus-change', =>
 
+			return if @_isNecessaryToReadjustSeeker()
+
 			do @_repositionElements
 
 	_prepareFocusLeft: ->
@@ -116,11 +124,11 @@ module.exports = class SeekbarView
 
 		.onDown =>
 
-			document.body.style.cursor = getComputedStyle(@focusLeftNode.node).cursor
+			@cursor.use @focusLeftNode
 
 		.onUp =>
 
-			document.body.style.cursor = ''
+			@cursor.free()
 
 		.onDrag (e) =>
 
@@ -137,11 +145,11 @@ module.exports = class SeekbarView
 
 		.onDown =>
 
-			document.body.style.cursor = getComputedStyle(@focusRightNode.node).cursor
+			@cursor.use @focusRightNode
 
 		.onUp =>
 
-			document.body.style.cursor = ''
+			@cursor.free()
 
 		.onDrag (e) =>
 
@@ -150,9 +158,50 @@ module.exports = class SeekbarView
 	_prepareFocusStrip: ->
 
 		@focusStripNode = Foxie('.timeflow-seekbar-focus-strip')
-		.moveZ(-3)
+		.moveZ(1)
 		.css('width', '300px')
 		.putIn(@node)
+
+		@moosh.onDrag(@focusStripNode)
+		.onDown =>
+
+			@focusStripNode.addClass 'dragging'
+
+			@cursor.use @focusStripNode
+
+		.onDrag (e) =>
+
+			@_dragFocusBy e.relX
+
+		.onUp =>
+
+			@focusStripNode.removeClass 'dragging'
+
+			@cursor.free()
+
+	_dragFocusBy: (x) ->
+
+		t = x / @_width * @timelineLength
+
+		focus = @model.getFocusArea()
+
+		newFrom = focus.from + t
+
+		if newFrom < 0
+
+			newFrom = 0
+
+		newTo = newFrom + focus.duration
+
+		if newTo > @timelineLength
+
+			newTo = @timelineLength
+
+			newFrom = newTo - focus.duration
+
+		@model.changeFocusArea newFrom, newTo
+
+		return
 
 	_moveFocusLeftInWindowSpace: (x) ->
 
@@ -258,19 +307,11 @@ module.exports = class SeekbarView
 
 		do @_redoTimeGrid
 
-	_repositionSeeker: ->
+	_updateT: ->
 
 		t = @model.t
 
 		focus = @model.getFocusArea()
-
-		rel = (t - focus.from) / focus.duration
-
-		curSeekerPos = parseInt @_width * rel
-
-		@seeker
-		.moveXTo(curSeekerPos)
-		.set('left', curSeekerPos)
 
 		# while playing, we might have gone out of bounds
 		# of the focused area
@@ -292,7 +333,47 @@ module.exports = class SeekbarView
 
 			@model.changeFocusArea newFrom, newTo
 
+			return
+
+		do @_repositionSeeker
+
 		return
+
+	_repositionSeeker: ->
+
+		t = @model.t
+
+		focus = @model.getFocusArea()
+
+		rel = (t - focus.from) / focus.duration
+
+		curSeekerPos = parseInt @_width * rel
+
+		@seeker
+		.moveXTo(curSeekerPos)
+		.set('left', curSeekerPos)
+
+		return
+
+	_isNecessaryToReadjustSeeker: ->
+
+		t = @model.t
+
+		focus = @model.getFocusArea()
+
+		if t < focus.from
+
+			@model.tick focus.from
+
+			return yes
+
+		else if t > focus.to
+
+			@model.tick focus.to
+
+			return yes
+
+		no
 
 	_moveSeekerRelatively: (x) ->
 
