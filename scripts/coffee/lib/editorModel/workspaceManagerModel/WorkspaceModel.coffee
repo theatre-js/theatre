@@ -15,7 +15,7 @@ module.exports = class WorkspaceModel extends _Emitter
 
 		return if newName is @name
 
-		if @workspaceManager._getListByName(newName)?
+		if @workspaceManager._getWorkspaceByName(newName)?
 
 			throw Error "A workspace named '#{newName}' already exists"
 

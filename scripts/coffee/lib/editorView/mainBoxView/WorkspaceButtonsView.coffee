@@ -6,6 +6,16 @@ module.exports = class WorkspaceButtonsView
 
 		@clicks = @mainBox.editor.clicks
 
+		@wsList = @mainBox.workspaceList
+
+		@wsList.on 'show', =>
+
+			@node.addClass 'visible'
+
+		@wsList.on 'hide', =>
+
+			@node.removeClass 'visible'
+
 		do @_prepareNode
 		do @_prepareShowGraphButton
 		do @_prepareActiveWorkspaceButton
@@ -42,11 +52,10 @@ module.exports = class WorkspaceButtonsView
 
 			activeWsName.innerHTML workspaces.getActiveWorkspace().name
 
-		wsList = @mainBox.workspaceList
 
 		@clicks.onClick(activeWsName)
 		.onDone =>
 
-			wsList.show()
+			@wsList.show()
 
 		return

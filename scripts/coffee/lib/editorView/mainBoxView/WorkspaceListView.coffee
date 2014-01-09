@@ -1,12 +1,17 @@
 Foxie = require 'foxie'
+_Emitter = require '../../_Emitter'
 
-module.exports = class WorkspaceListView
+module.exports = class WorkspaceListView extends _Emitter
 
 	constructor: (@mainBox) ->
+
+		super
 
 		@clicks = @mainBox.editor.clicks
 
 		@keys = @mainBox.editor.keys
+
+		@kilidScopeForEdit = @keys.getScope 'workspace-list-view'
 
 		@node = Foxie('.timeflow-workspaceList').putIn(@mainBox.node)
 
@@ -58,7 +63,7 @@ module.exports = class WorkspaceListView
 
 				else
 
-					ws.rename wsNode.node.innerText
+					ws.rename wsNode.node.innerText.trim()
 
 			, =>
 
@@ -82,25 +87,28 @@ module.exports = class WorkspaceListView
 
 	_initRename: ->
 
-		@currentEdit = no
+		@currentEdit = null
 
-		# @keys 'enter', 'rename', (e) =>
+		@kilidScopeForEdit.on('enter')
+		.onEnd (e) =>
 
-		# 	@_storeEdit()
+			@_storeEdit()
 
-		# @keys 'esc', 'rename', (e) =>
+		@kilidScopeForEdit.on('esc')
+		.onEnd (e) =>
 
-		# 	@_discardEdit()
+			@_discardEdit()
 
-		# @keys 'ctrl+delete', 'rename', (e) =>
+		@kilidScopeForEdit.on('ctrl+delete')
+		.onEnd (e) =>
 
-		# 	@currentEdit.innerText = ''
+			@currentEdit.innerText = ''
 
-		# 	@_storeEdit()
+			@_storeEdit()
 
 	_startEdit: (wsNode, cb, discard) ->
 
-		# @keys.setScope 'rename'
+		@kilidScopeForEdit.activate()
 
 		@currentEditCallBack = cb
 
@@ -118,39 +126,39 @@ module.exports = class WorkspaceListView
 
 	_storeEdit: ->
 
-		if @currentEdit
+		return unless @currentEdit?
 
-			# @keys.setScope 'time'
+		@kilidScopeForEdit.deactivate()
 
-			@currentEdit.contentEditable = no
+		@currentEdit.contentEditable = no
 
-			@currentEdit.classList.remove 'editing'
+		@currentEdit.classList.remove 'editing'
 
-			@currentEdit = no
+		@currentEdit = null
 
-			if @currentEditCallBack
+		if @currentEditCallBack
 
-				@currentEditCallBack()
+			@currentEditCallBack()
 
-				@currentEditCallBack = null
+			@currentEditCallBack = null
 
 	_discardEdit: ->
 
-		if @currentEdit
+		return unless @currentEdit?
 
-			# @keys.setScope 'time'
+		@kilidScopeForEdit.deactivate()
 
-			@currentEdit.contentEditable = no
+		@currentEdit.contentEditable = no
 
-			@currentEdit.classList.remove 'editing'
+		@currentEdit.classList.remove 'editing'
 
-			@currentEdit = no
+		@currentEdit = null
 
-			if @currentEditDiscardCallBack
+		if @currentEditDiscardCallBack
 
-				@currentEditDiscardCallBack()
+			@currentEditDiscardCallBack()
 
-				@currentEditDiscardCallBack = null
+			@currentEditDiscardCallBack = null
 
 	_initNewBtn: ->
 
@@ -187,6 +195,8 @@ module.exports = class WorkspaceListView
 
 			do @hide
 
+		@_emit 'show'
+
 	hide: ->
 
 		if @visible
@@ -196,5 +206,7 @@ module.exports = class WorkspaceListView
 			@node.removeClass 'visible'
 
 			@visible = no
+
+		@_emit 'hide'
 
 		return

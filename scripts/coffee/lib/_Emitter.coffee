@@ -1,3 +1,5 @@
+array = require 'utila/scripts/js/lib/array'
+
 module.exports = class _Emitter
 
 	constructor: ->
@@ -11,6 +13,14 @@ module.exports = class _Emitter
 			@_listeners[eventName] = []
 
 		@_listeners[eventName].push listener
+
+		@
+
+	removeEvent: (eventName, listener) ->
+
+		return @ unless @_listeners[eventName]?
+
+		array.pluckOneItem @_listeners[eventName], listener
 
 		@
 

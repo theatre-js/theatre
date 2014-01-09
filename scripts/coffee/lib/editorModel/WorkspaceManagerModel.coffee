@@ -62,6 +62,12 @@ module.exports = class WorkspaceManagerModel extends _Emitter
 
 				return
 
+			workspace.on 'rename', =>
+
+				if workspace is @_active
+
+					@_emit 'active-workspace-change', workspace
+
 			@_emit 'new-workspace', workspace
 
 		workspace
