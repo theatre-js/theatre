@@ -173,7 +173,7 @@ module.exports = class SeekbarView
 
 		.onDrag (e) =>
 
-			@_dragFocusBy e.relX
+			@_dragFocusStripBy e.relX
 
 		.onUp =>
 
@@ -181,9 +181,33 @@ module.exports = class SeekbarView
 
 			@cursor.free()
 
-	_dragFocusBy: (x) ->
+	_dragFocusStripBy: (x) ->
 
 		t = @timeline._XToTime x
+
+		focus = @model.getFocusArea()
+
+		newFrom = focus.from + t
+
+		if newFrom < 0
+
+			newFrom = 0
+
+		newTo = newFrom + focus.duration
+
+		if newTo > @timelineLength
+
+			newTo = @timelineLength
+
+			newFrom = newTo - focus.duration
+
+		@model.changeFocusArea newFrom, newTo
+
+		return
+
+	_dragFocusBy: (x) ->
+
+		t = @timeline._XToFocusDuration x
 
 		focus = @model.getFocusArea()
 

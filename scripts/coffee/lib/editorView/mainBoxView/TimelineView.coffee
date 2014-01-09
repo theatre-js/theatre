@@ -60,7 +60,7 @@ module.exports = class TimelineView
 
 		.onDrag (e) =>
 
-			@mainBox.seekbar._dragFocusBy e.relX
+			@mainBox.seekbar._dragFocusBy -e.relX
 
 		.onUp =>
 
@@ -134,8 +134,6 @@ module.exports = class TimelineView
 		@_XToFocusDuration(x) + @focusArea.from
 
 	_XToTime: (x) ->
-
-		console.log 'drag'
 
 		x / @width * @timelineLength
 
