@@ -4,9 +4,9 @@ module.exports = class ControlsView
 
 		@model = @editor.model.timeControl
 
-		@clicks = @editor.clicks
+		@moosh = @editor.moosh
 
-		@keys = @editor.keys
+		@kilid = @editor.kilid
 
 		do @_prepareNodes
 
@@ -36,7 +36,7 @@ module.exports = class ControlsView
 
 		@node.appendChild @playPauseNode
 
-		@clicks.onClick(@playPauseNode)
+		@moosh.onClick(@playPauseNode)
 		.onDone =>
 
 			do @_togglePlayState
@@ -48,7 +48,7 @@ module.exports = class ControlsView
 
 		@node.appendChild @toggleFullScreenNode
 
-		@clicks.onClick(@toggleFullScreenNode)
+		@moosh.onClick(@toggleFullScreenNode)
 		.onDone =>
 
 			console.log 'to be implemented'
@@ -60,7 +60,7 @@ module.exports = class ControlsView
 
 		@node.appendChild @jumpToPrevMarkerNode
 
-		@clicks.onClick(@jumpToPrevMarkerNode)
+		@moosh.onClick(@jumpToPrevMarkerNode)
 		.onDone =>
 
 			do @model.jumpToPrevMarker
@@ -72,54 +72,40 @@ module.exports = class ControlsView
 
 		@node.appendChild @jumpToNextMarkerNode
 
-		@clicks.onClick(@jumpToNextMarkerNode)
+		@moosh.onClick(@jumpToNextMarkerNode)
 		.onDone =>
 
 			do @model.jumpToNextMarker
 
 	_prepareKeyboard: ->
 
-		# @keys.setScope 'time'
+		@kilid.on 'space', =>
 
-		# @keys 'space', 'time', (e, h) =>
+			do @_togglePlayState
 
-		# 	do @_togglePlayState
+		@kilid.on 'home', =>
 
-		# @keys 'home, ctrl+home', 'time', (e, h) =>
+			do @model.jumpToFocusBeginning
 
-		# 	if e.ctrlKey
+		@kilid.on 'ctrl+home', =>
 
-		# 		do @model.jumpToBeginning
+			do @model.jumpToBeginning
 
-		# 	else
+		@kilid.on 'end', =>
 
-		# 		do @model.jumpToFocusBeginning
+			do @model.jumpToFocusEnd
 
-		# @keys 'end, ctrl+end', 'time', (e, h) =>
+		@kilid.on 'ctrl+end', =>
 
-		# 	if e.ctrlKey
+			do @model.jumpToEnd
 
-		# 		do @model.jumpToEnd
-
-		# 	else
-
-		# 		do @model.jumpToFocusEnd
-
-		# @keys 'up', 'time', (e, h) =>
-
-		# 	do @model.prevMarker
-
-		# @keys 'down', 'time', (e, h) =>
-
-		# 	do @model.nextMarker
-
-		# @keys 'right, shift+right, alt+right', 'time', (e, h) =>
+		# @kilid 'right, shift+right, alt+right', 'time', (e, h) =>
 
 		# 	amount = @_getSeekAmountByEvent e
 
 		# 	@model.seekBy amount
 
-		# @keys 'left, shift+left, alt+left', 'time', (e, h) =>
+		# @kilid 'left, shift+left, alt+left', 'time', (e, h) =>
 
 		# 	amount = @_getSeekAmountByEvent e
 

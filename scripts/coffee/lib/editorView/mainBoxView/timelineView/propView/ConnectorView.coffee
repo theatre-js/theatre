@@ -12,7 +12,7 @@ module.exports = class ConnectorView extends _ItemView
 		@leftHandler = new Float32Array 2
 		@rightHandler = new Float32Array 2
 
-		@clicks = @prop.clicks
+		@moosh = @prop.moosh
 
 		@svgArea = @prop.svgArea
 

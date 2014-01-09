@@ -13,7 +13,7 @@ module.exports = class MainBoxView extends _Emitter
 
 		@model = @editor.model.mainBox
 
-		@clicks = @editor.clicks
+		@moosh = @editor.moosh
 
 		do @_prepareNode
 
@@ -40,7 +40,7 @@ module.exports = class MainBoxView extends _Emitter
 		@nodeResizeHandle = Foxie('.timeflow-mainBox-resizeHandle')
 		.putIn(@node)
 
-		@clicks.onDrag(@nodeResizeHandle)
+		@moosh.onDrag(@nodeResizeHandle)
 		.onDrag (e) =>
 
 			@model.setHeight @model.height - e.relY

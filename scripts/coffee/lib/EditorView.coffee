@@ -13,9 +13,9 @@ module.exports = class EditorView
 
 		do @_prepareNode
 
-		@keys = new Kilid(null, @id + '-kilid').getRootScope()
+		@kilid = new Kilid(null, @id + '-kilid').getRootScope()
 
-		@clicks = new Moosh @node, @keys
+		@moosh = new Moosh @node, @kilid
 
 		@graph = new GraphView @
 

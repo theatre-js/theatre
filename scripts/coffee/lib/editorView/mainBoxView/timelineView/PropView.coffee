@@ -19,7 +19,7 @@ module.exports = class PropView
 
 		@_items = []
 
-		@clicks = @repo.timeline.mainBox.editor.clicks
+		@moosh = @repo.timeline.mainBox.editor.moosh
 
 		@_expanded = no
 
@@ -61,7 +61,7 @@ module.exports = class PropView
 
 		@info = Foxie('.timeflow-timeline-prop-info').putIn @node
 
-		@clicks.onClick(@info)
+		@moosh.onClick(@info)
 		.onDone =>
 
 			@_setExpansion @_propHolderModel.toggleExpansion()

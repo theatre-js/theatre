@@ -7,11 +7,11 @@ module.exports = class WorkspaceListView extends _Emitter
 
 		super
 
-		@clicks = @mainBox.editor.clicks
+		@moosh = @mainBox.editor.moosh
 
-		@keys = @mainBox.editor.keys
+		@kilid = @mainBox.editor.kilid
 
-		@kilidScopeForEdit = @keys.getScope 'workspace-list-view'
+		@kilidScopeForEdit = @kilid.getScope 'workspace-list-view'
 
 		@node = Foxie('.timeflow-workspaceList').putIn(@mainBox.node)
 
@@ -41,21 +41,21 @@ module.exports = class WorkspaceListView extends _Emitter
 
 			wsNode.remove()
 
-		@clicks.onClick(wsNode)
+		@moosh.onClick(wsNode)
 		.withNoKeys()
 		.onDone (e) =>
 
 			ws.activate()
 
-		@clicks.onClick(wsNode)
+		@moosh.onClick(wsNode)
 		.withKeys('ctrl')
 		.onDone (e) =>
 
-			@clicks.ignore(wsNode)
+			@moosh.ignore(wsNode)
 
 			@_startEdit wsNode, =>
 
-				@clicks.unignore(wsNode)
+				@moosh.unignore(wsNode)
 
 				if wsNode.node.innerText.trim() is ''
 
@@ -67,13 +67,13 @@ module.exports = class WorkspaceListView extends _Emitter
 
 			, =>
 
-				@clicks.unignore(wsNode)
+				@moosh.unignore(wsNode)
 
 				wsNode.node.innerText = ws.name
 
 	_attachCtrl: (node) ->
 
-		@clicks.onHover(node)
+		@moosh.onHover(node)
 		.withKeys('ctrl')
 		.onEnter =>
 
@@ -166,7 +166,7 @@ module.exports = class WorkspaceListView extends _Emitter
 
 		@newBtn.node.innerText = '+'
 
-		@clicks.onClick(@newBtn)
+		@moosh.onClick(@newBtn)
 		.onDone =>
 
 			@newBtn.node.innerText = ''
@@ -191,7 +191,7 @@ module.exports = class WorkspaceListView extends _Emitter
 
 		@visible = yes
 
-		@clicks.onClickOutside @node, =>
+		@moosh.onClickOutside @node, =>
 
 			do @hide
 

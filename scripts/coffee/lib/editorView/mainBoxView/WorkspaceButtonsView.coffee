@@ -4,7 +4,7 @@ module.exports = class WorkspaceButtonsView
 
 	constructor: (@mainBox) ->
 
-		@clicks = @mainBox.editor.clicks
+		@moosh = @mainBox.editor.moosh
 
 		@wsList = @mainBox.workspaceList
 
@@ -33,7 +33,7 @@ module.exports = class WorkspaceButtonsView
 
 		graph = @mainBox.editor.graph
 
-		@clicks.onClick(@showGraphButton)
+		@moosh.onClick(@showGraphButton)
 		.onDone =>
 
 			graph.show()
@@ -53,7 +53,7 @@ module.exports = class WorkspaceButtonsView
 			activeWsName.innerHTML workspaces.getActiveWorkspace().name
 
 
-		@clicks.onClick(activeWsName)
+		@moosh.onClick(activeWsName)
 		.onDone =>
 
 			@wsList.show()

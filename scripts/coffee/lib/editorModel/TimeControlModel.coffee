@@ -56,19 +56,19 @@ module.exports = class TimeControlModel extends _Emitter
 
 		t = @t
 
-		# while playing, we might have gone out of bounds
-		# of the focused area
-		unless @_focus.from <= t <= @_focus.to
+		# # while playing, we might have gone out of bounds
+		# # of the focused area
+		# unless @_focus.from <= t <= @_focus.to
 
-			newFrom = t
+		# 	newFrom = t
 
-			newTo = @_focus.to - @_focus.from + newFrom
+		# 	newTo = @_focus.to - @_focus.from + newFrom
 
-			if newTo > @timelineLength
+		# 	if newTo > @timelineLength
 
-				newTo = @timelineLength
+		# 		newTo = @timelineLength
 
-			@changeFocusArea newFrom, newTo
+		# 	@changeFocusArea newFrom, newTo
 
 		@_emit 'time-change'
 

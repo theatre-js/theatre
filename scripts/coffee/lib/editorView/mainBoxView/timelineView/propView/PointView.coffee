@@ -11,7 +11,7 @@ module.exports = class PointView extends _ItemView
 
 		@y = 0
 
-		@clicks = @prop.clicks
+		@moosh = @prop.moosh
 
 		@pacs = @model.pacs
 
@@ -43,7 +43,7 @@ module.exports = class PointView extends _ItemView
 
 		window.n = @node
 
-		@clicks.onClick @node, =>
+		@moosh.onClick @node, =>
 
 			do @_activate
 
@@ -78,7 +78,7 @@ module.exports = class PointView extends _ItemView
 
 		startX = startY = nextX = nextY = 0
 
-		@clicks.onDrag(@rightHandler)
+		@moosh.onDrag(@rightHandler)
 
 		.onDown =>
 
@@ -90,8 +90,6 @@ module.exports = class PointView extends _ItemView
 			@pacs.done()
 
 		.onDrag (e) =>
-
-			console.log 'right drag'
 
 			nextX = startX + e.absX
 			nextY = startY + e.absY
@@ -111,7 +109,7 @@ module.exports = class PointView extends _ItemView
 
 		startX = startY = nextX = nextY = 0
 
-		@clicks.onDrag(@leftHandler)
+		@moosh.onDrag(@leftHandler)
 
 		.onDown =>
 
@@ -186,7 +184,7 @@ module.exports = class PointView extends _ItemView
 
 		@valueInput.node.focus()
 
-		@clicks.onClickOutside @node, =>
+		@moosh.onClickOutside @node, =>
 
 			@node.removeClass 'active'
 

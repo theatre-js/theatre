@@ -4,7 +4,7 @@ module.exports = class SeekbarView
 
 	constructor: (@mainBox) ->
 
-		@clicks = @mainBox.editor.clicks
+		@moosh = @mainBox.editor.moosh
 
 		@model = @mainBox.editor.model.timeControl
 
@@ -71,7 +71,7 @@ module.exports = class SeekbarView
 
 		wasPlaying = no
 
-		@clicks.onDrag(@seeker)
+		@moosh.onDrag(@seeker)
 
 		.onDown =>
 
@@ -112,7 +112,7 @@ module.exports = class SeekbarView
 		.set('left', 0)
 		.putIn(@node)
 
-		@clicks.onDrag(@focusLeftNode)
+		@moosh.onDrag(@focusLeftNode)
 
 		.onDown =>
 
@@ -133,7 +133,7 @@ module.exports = class SeekbarView
 		.set('left', 0)
 		.putIn(@node)
 
-		@clicks.onDrag(@focusRightNode)
+		@moosh.onDrag(@focusRightNode)
 
 		.onDown =>
 
@@ -271,6 +271,26 @@ module.exports = class SeekbarView
 		@seeker
 		.moveXTo(curSeekerPos)
 		.set('left', curSeekerPos)
+
+		# while playing, we might have gone out of bounds
+		# of the focused area
+		unless focus.from <= t <= focus.to
+
+			newFrom = t
+
+			newTo = newFrom + focus.duration
+
+			if focus.to < t and newTo > @timelineLength
+
+				shift = newTo - @timelineLength
+
+				newTo = @timelineLength
+
+				newFrom -= shift
+
+				if newFrom < 0 then newFrom = 0
+
+			@model.changeFocusArea newFrom, newTo
 
 		return
 
