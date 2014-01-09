@@ -12,6 +12,8 @@ module.exports = class SeekbarView
 
 		@timelineLength = @model.timelineLength
 
+		@timeline = @mainBox.timeline
+
 		@model.on 'length-change', => do @_updateTimelineLength
 
 		do @_prepareNode
@@ -181,7 +183,7 @@ module.exports = class SeekbarView
 
 	_dragFocusBy: (x) ->
 
-		t = x / @_width * @timelineLength
+		t = @timeline._XToTime x
 
 		focus = @model.getFocusArea()
 
@@ -212,7 +214,7 @@ module.exports = class SeekbarView
 		nextWinPos = curWinPos + x
 
 		# the from part
-		nextFrom = nextWinPos / @_width * @timelineLength
+		nextFrom = @timeline._XToTime nextWinPos
 
 		if nextFrom < 0
 
@@ -255,7 +257,7 @@ module.exports = class SeekbarView
 		nextWinPos = curWinPos + x
 
 		# the to part
-		nextTo = nextWinPos / @_width * @timelineLength
+		nextTo = @timeline._XToTime nextWinPos
 
 		if nextTo > @timelineLength
 
@@ -341,13 +343,7 @@ module.exports = class SeekbarView
 
 	_repositionSeeker: ->
 
-		t = @model.t
-
-		focus = @model.getFocusArea()
-
-		rel = (t - focus.from) / focus.duration
-
-		curSeekerPos = parseInt @_width * rel
+		curSeekerPos = @timeline._timeToFocusedX @model.t
 
 		@seeker
 		.moveXTo(curSeekerPos)
@@ -381,7 +377,7 @@ module.exports = class SeekbarView
 
 		focus = @model.getFocusArea()
 
-		t = (toPos / @_width * focus.duration) + focus.from
+		t = @timeline._XToFocusedTime toPos
 
 		t = 0 if t < 0
 
@@ -395,13 +391,13 @@ module.exports = class SeekbarView
 
 		focus = @model.getFocusArea()
 
-		left = parseInt (focus.from / @timelineLength) * @_width
+		left = @timeline._timeToX focus.from
 
 		@focusLeftNode
 		.moveXTo(left)
 		.set('left', left)
 
-		right = parseInt ((focus.from + focus.duration) / @timelineLength) * @_width
+		right = @timeline._timeToX focus.from + focus.duration
 
 		@focusRightNode
 		.moveXTo(right)
@@ -423,7 +419,7 @@ module.exports = class SeekbarView
 
 		focus = @model.getFocusArea()
 
-		t = (toPos / @_width * focus.duration) + focus.from
+		t = @timeline._XToFocusedTime toPos
 
 		t = 0 if t < 0
 
@@ -438,8 +434,6 @@ module.exports = class SeekbarView
 		focus = @model.getFocusArea()
 
 		pivotInDur = x / @_width
-
-		pivot = pivotInDur * focus.duration
 
 		newDuration = focus.duration * zoomMult
 

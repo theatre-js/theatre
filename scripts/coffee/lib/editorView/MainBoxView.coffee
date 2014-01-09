@@ -21,13 +21,13 @@ module.exports = class MainBoxView extends _Emitter
 
 		window.addEventListener 'resize', => do @_recalculateSpace
 
+		@timeline = new TimelineView @
+
 		@seekbar = new SeekbarView @
 
 		@workspaceList = new WorkspaceListView @
 
 		@workspaceButtons = new WorkspaceButtonsView @
-
-		@timeline = new TimelineView @
 
 		do @_resizeNode
 

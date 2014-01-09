@@ -14,6 +14,18 @@ module.exports = class TimelineView
 
 		@focusArea = @model.focusArea
 
+		timeControlModel = @mainBox.editor.model.timeControl
+
+		@timelineLength = timeControlModel.timelineLength
+
+		timeControlModel.on 'time-change', =>
+
+			@timelineLength = timeControlModel.timelineLength
+
+		@width = @mainBox.width
+
+		@mainBox.on 'width-change', => @width = @mainBox.width
+
 		@_repo = new PropViewRepo @
 
 		@_currentProps = []
@@ -108,3 +120,25 @@ module.exports = class TimelineView
 		@model.tick()
 
 		return
+
+	_timeToFocusedX: (t) ->
+
+		parseInt @width * (t - @focusArea.from) / @focusArea.duration
+
+	_XToFocusDuration: (x) ->
+
+		x / @width * @focusArea.duration
+
+	_XToFocusedTime: (x) ->
+
+		@_XToFocusDuration(x) + @focusArea.from
+
+	_XToTime: (x) ->
+
+		console.log 'drag'
+
+		x / @width * @timelineLength
+
+	_timeToX: (t) ->
+
+		parseInt (t / @timelineLength) * @width

@@ -10,6 +10,8 @@ module.exports = class PropView
 
 		@timeline = @repo.timeline
 
+		@cursor = @repo.timeline.cursor
+
 		@id = @propModel.id
 
 		@timeFlowProp = @propModel.timeFlowProp
@@ -56,13 +58,39 @@ module.exports = class PropView
 
 		@moosh.onHover(@node)
 		.withKeys('ctrl')
-		.onMove =>
+		.onEnter (e) =>
 
-			console.log 'hovering'
+			@cursor.use 'none'
+
+			@hypotheticalPointNode
+			.moveXTo(e.layerX)
+			.moveYTo(e.layerY - 16)
+
+		.onMove (e) =>
+
+			@hypotheticalPointNode
+			.moveXTo(e.layerX)
+			.moveYTo(e.layerY - 16)
+
+		.onLeave =>
+
+			@cursor.free()
+
+			@hypotheticalPointNode.moveTo(-1000, -1000, 1)
+
+		@moosh.onClick(@node)
+		.withKeys('ctrl')
+		.onUp (e) =>
+
+			console.log e
 
 		do @_prepareInfoNodes
 
 		do @_preparePacsNodes
+
+		@hypotheticalPointNode = Foxie('.timeflow-timeline-prop-pacs-hypotheticalPoint')
+		.putIn(@pacsNode)
+		.moveTo(-1000, -1000, 1)
 
 	_prepareInfoNodes: ->
 
