@@ -53,13 +53,19 @@ module.exports = class PointView extends _ItemView
 
 		@node = Foxie('.timeflow-timeline-prop-pacs-point').putIn @prop.pacsNode
 
-		window.n = @node
+		do @_prepareNodeActivationInteractions
+		do @_prepareNodeRemovalInteractions
+		do @_prepareNodeConnectionInteractions
+
+	_prepareNodeActivationInteractions: ->
 
 		@rootView.moosh.onClick @node, =>
 
 			do @_activate
 
 		.withNoKeys()
+
+	_prepareNodeRemovalInteractions: ->
 
 		@rootView.moosh.onHover(@node)
 		.withKeys('alt')
@@ -75,11 +81,14 @@ module.exports = class PointView extends _ItemView
 		.withKeys('alt')
 		.onUp =>
 
+			# debugger
 			@model.remove()
 
 			@pacs.done()
 
 			@prop._tick()
+
+	_prepareNodeConnectionInteractions: ->
 
 		classAddedOnCtrlHover = null
 

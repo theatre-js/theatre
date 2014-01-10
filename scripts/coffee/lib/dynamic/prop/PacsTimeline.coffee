@@ -179,14 +179,36 @@ module.exports = class PacsTimeline extends _Emitter
 		bottom = @prop.initial
 		peak = @prop.initial
 
-		for item in @timeline
+		if @timeline.length is 0
 
-			continue if item instanceof Connector
+			bottom = 0
+			peak = 100
 
-			bottom = Math.min bottom, item.value, item.value + item.leftHandler[1], item.value + item.rightHandler[1]
-			peak = Math.max peak, item.value, item.value + item.leftHandler[1], item.value + item.rightHandler[1]
+		else
 
-		if bottom isnt @bottom or peak isnt @peak
+			vals = []
+
+			for item in @timeline
+
+				continue if item instanceof Connector
+
+				vals.push item.value
+				vals.push item.value + item.leftHandler[1]
+				vals.push item.value + item.rightHandler[1]
+
+			peak = Math.max.apply Math, vals
+			bottom = Math.min.apply Math, vals
+
+			unless Number.isFinite(peak) and Number.isFinite(bottom)
+
+				bottom = 0
+				peak = 100
+
+			else if peak is bottom
+
+				peak = bottom * 2
+
+		unless bottom is @bottom and peak is @peak
 
 			@peak = peak
 			@bottom = bottom

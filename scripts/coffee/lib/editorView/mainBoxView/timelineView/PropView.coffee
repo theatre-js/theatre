@@ -87,7 +87,7 @@ module.exports = class PropView
 			t = @timeline._XToFocusedTime e.layerX
 			val = @_YToVal e.layerY - parseInt(@pacsNode.computedStyle('top'))
 
-			@pacs.addPoint t, val, val * 0.1, val * 0.1, val * 0.1, val * 0.1
+			@pacs.addPoint t, val, 100, val * 0.1, 100, val * 0.1
 
 		do @_prepareInfoNodes
 

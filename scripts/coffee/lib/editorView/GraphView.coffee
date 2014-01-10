@@ -112,7 +112,7 @@ module.exports = class GraphView
 					@rootView.moosh.onClick(propEl)
 					.onDone =>
 
-						# debugger						@workspacesModel.togglePropListing prop
+						@workspacesModel.togglePropListing prop
 
 						return
 
