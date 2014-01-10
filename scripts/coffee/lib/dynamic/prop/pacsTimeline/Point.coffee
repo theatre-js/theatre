@@ -13,6 +13,10 @@ module.exports = class Point extends _PacsTimelineItem
 
 		super
 
+		do @_putOnTime
+
+	_putOnTime: ->
+
 		# first, lets make sure no point sits at t
 		if @pacs._pointExistsAt @t
 
@@ -56,7 +60,7 @@ module.exports = class Point extends _PacsTimelineItem
 			nextItem = @pacs._getItemByIndex index + 1
 
 			# the timeline has changed from this t, to the next point's t
-			@pacs._setUpdateRange t, if nextItem? then nextItem.t else Infinity
+			@pacs._setUpdateRange @t, if nextItem? then nextItem.t else Infinity
 
 	remove: ->
 
@@ -332,3 +336,72 @@ module.exports = class Point extends _PacsTimelineItem
 	tickAt: (t) ->
 
 		return @value
+
+	setTime: (t) ->
+
+		oldT = @t
+		diff = t - @t
+
+		wasConnectedToLeft = @isConnectedToTheLeft()
+		wasConnectedToRight = @isConnectedToTheRight()
+		leftBound = 0
+		rightBound = Infinity
+
+		if @hasLeftPoint()
+
+			oldLeftPoint = @getLeftPoint()
+			leftBound = oldLeftPoint.t
+
+		if @hasRightPoint()
+
+			oldRightPoint = @getRightPoint()
+			rightBound = oldRightPoint.t
+
+		if wasConnectedToLeft
+
+			@getLeftConnector().remove()
+
+		if wasConnectedToRight
+
+			@getRightConnector().remove()
+
+		# remove the point first
+		@pacs._pluckPointOn @, @_getIndex()
+
+		@t = t
+
+		do @_putOnTime
+
+		if leftBound < @t < rightBound
+
+			console.log 'in bound', leftBound, rightBound
+
+			if wasConnectedToLeft
+
+				@pacs.addConnector oldLeftPoint.t
+
+			if wasConnectedToRight
+
+				@pacs.addConnector @t
+
+		else
+
+			if wasConnectedToLeft and wasConnectedToRight
+
+				@pacs.addConnector oldLeftPoint.t
+
+			if diff < 0
+
+				if wasConnectedToLeft and oldLeftPoint.getLeftPoint() is @ and not @isConnectedToTheRight()
+
+					@pacs.addConnector @t
+
+			else
+
+				if wasConnectedToRight and oldRightPoint.getRightPoint() is @ and not @isConnectedToTheLeft()
+
+					@pacs.addConnector oldRightPoint.t
+
+		@_emit 'time-change'
+
+		@

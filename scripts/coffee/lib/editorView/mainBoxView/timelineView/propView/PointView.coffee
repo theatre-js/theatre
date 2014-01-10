@@ -45,6 +45,10 @@ module.exports = class PointView extends _ItemView
 
 			do @_moveHandlers
 
+		@model.on 'time-change', =>
+
+			do @relayHorizontally
+
 		@model.on 'remove', =>
 
 			do @_remove
@@ -174,13 +178,16 @@ module.exports = class PointView extends _ItemView
 
 	_prepareNodeMoveInteractions: ->
 
+		do @_prepareNodeDragValueInteractions
+		do @_prepareNodeDragTimeInteractions
+
+	_prepareNodeDragValueInteractions: ->
+
 		@rootView.moosh.onDrag(@node)
 		.withNoKeys()
 		.onDown =>
 
 			@rootView.cursor.use @node
-
-			console.log 'dragging value'
 
 		.onDrag (e) =>
 
@@ -197,6 +204,64 @@ module.exports = class PointView extends _ItemView
 			@pacs.done()
 
 			@prop._tick()
+
+		return
+
+	_prepareNodeDragTimeInteractions: ->
+
+		@rootView.moosh.onHover(@node)
+		.withKeys('shift')
+		.onEnter =>
+
+			@node.addClass 'mightChangeTime'
+
+		.onLeave =>
+
+			@node.removeClass 'mightChangeTime'
+
+		@rootView.moosh.onDrag(@node)
+		.withKeys('shift')
+		.onDown =>
+
+			@node.addClass 'changingTime'
+
+			@rootView.cursor.use @node
+
+			do @_hideHandlers
+
+		.onDrag (e) =>
+
+			@node.moveX e.relX
+
+		.onUp (e) =>
+
+			timeChange = @prop._XToTime e.absX
+
+			@model.setTime @model.t + timeChange
+
+			@pacs.done()
+
+			@prop._tick()
+
+			@node.removeClass 'changingTime'
+
+			@rootView.cursor.free()
+
+			do @_showHandlers
+
+	_hideHandlers: ->
+
+		@leftHandler.setOpacity(0)
+		@rightHandler.setOpacity(0)
+		@leftHandlerLine.setOpacity(0)
+		@rightHandlerLine.setOpacity(0)
+
+	_showHandlers: ->
+
+		@leftHandler.setOpacity(1)
+		@rightHandler.setOpacity(1)
+		@leftHandlerLine.setOpacity(1)
+		@rightHandlerLine.setOpacity(1)
 
 	_showHypotheticalConnectorToTheLeft: ->
 
