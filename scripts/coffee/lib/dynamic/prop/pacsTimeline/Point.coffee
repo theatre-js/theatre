@@ -167,6 +167,38 @@ module.exports = class Point extends _PacsTimelineItem
 
 		@getRightPoint()?
 
+	canConnect: ->
+
+		@canConnectToLeft() or @canConnectToRight()
+
+	canConnectToLeft: ->
+
+		@hasLeftPoint() and not @isConnectedToTheLeft()
+
+	canConnectToRight: ->
+
+		@hasRightPoint() and not @isConnectedToTheRight()
+
+	connectToRight: ->
+
+		unless @canConnectToRight()
+
+			throw Error "Cannot connect to right"
+
+		@pacs.addConnector @t
+
+		@
+
+	connectToLeft: ->
+
+		unless @canConnectToLeft()
+
+			throw Error "Cannot connect to left"
+
+		@pacs.addConnector @getLeftPoint().t
+
+		@
+
 	setValue: (value) ->
 
 		return if value is @value

@@ -81,6 +81,103 @@ module.exports = class PointView extends _ItemView
 
 			@prop._tick()
 
+		classAddedOnCtrlHover = null
+
+		@rootView.moosh.onHover(@node)
+		.withKeys('ctrl')
+		.onEnter =>
+
+			if @model.canConnect()
+
+				classAddedOnCtrlHover = 'mightConnect'
+
+			else
+
+				classAddedOnCtrlHover = 'cantConnect'
+
+			@node.addClass classAddedOnCtrlHover
+
+		.onLeave =>
+
+			@node.removeClass classAddedOnCtrlHover
+
+		couldConnectToLeft = no
+		couldConnectToRight = no
+		sideToConnect = 0
+
+		@rootView.moosh.onDrag(@node)
+		.withKeys('ctrl')
+		.onDown =>
+
+			couldConnectToLeft = @model.canConnectToLeft()
+			couldConnectToRight = @model.canConnectToRight()
+
+			sideToConnect = 0
+
+		.onDrag (e) =>
+
+			sideToConnect = 0
+
+			if e.absX < 0
+
+				if couldConnectToLeft
+
+					@_showHypotheticalConnectorToTheLeft()
+
+					sideToConnect = -1
+
+				else
+
+					@_hideHypothericalConnector()
+
+					@rootView.cursor.use 'not-allowed'
+
+			else if e.absX > 0
+
+				if couldConnectToRight
+
+					@_showHypotheticalConnectorToTheRight()
+
+					sideToConnect = 1
+
+				else
+
+					@_hideHypothericalConnector()
+
+					@rootView.cursor.use 'not-allowed'
+
+		.onUp =>
+
+			@_hideHypothericalConnector()
+
+			@rootView.cursor.free()
+
+			if sideToConnect is 1
+
+				@model.connectToRight()
+
+			else if sideToConnect is -1
+
+				@model.connectToLeft()
+
+			return
+
+	_showHypotheticalConnectorToTheLeft: ->
+
+		leftPoint = @model.getLeftPoint()
+
+		@prop.drawHypotheticalConnector @model.t, @model.value, leftPoint.t, leftPoint.value
+
+	_showHypotheticalConnectorToTheRight: ->
+
+		rightPoint = @model.getRightPoint()
+
+		@prop.drawHypotheticalConnector @model.t, @model.value, rightPoint.t, rightPoint.value
+
+	_hideHypothericalConnector: ->
+
+		@prop.hideHypotheticalConnector()
+
 	_moveNode: ->
 
 		@node.moveXTo @x

@@ -38,6 +38,8 @@ module.exports = class PropView
 
 		@svgArea = new SvgArea @
 
+		do @_prepareHypothericalConnector
+
 		do @_preparePacs
 
 		setTimeout =>
@@ -94,6 +96,27 @@ module.exports = class PropView
 		@hypotheticalPointNode = Foxie('.timeflow-timeline-prop-pacs-hypotheticalPoint')
 		.putIn(@pacsNode)
 		.moveTo(-1000, -1000, 1)
+
+	_prepareHypothericalConnector: ->
+
+		@hypotheticalConnector = Foxie('svg:path').putIn(@svgArea.node)
+		.attr('stroke', '#999')
+		.attr('stroke-width', '3px')
+		.attr('fill', 'transparent')
+
+	hideHypotheticalConnector: ->
+
+		@hypotheticalConnector
+		.attr('d', 'M 0 0')
+
+	drawHypotheticalConnector: (fromT, fromVal, toT, toVal) ->
+
+		@hypotheticalConnector.attr 'd',
+
+			"M#{@_timeToX(fromT)} #{@_valToY(fromVal)} L " +
+			"#{@_timeToX(toT)} #{@_valToY(toVal)}"
+
+		return
 
 	_prepareInfoNodes: ->
 
