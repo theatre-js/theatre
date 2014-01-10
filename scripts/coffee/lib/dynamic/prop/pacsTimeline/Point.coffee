@@ -374,8 +374,6 @@ module.exports = class Point extends _PacsTimelineItem
 
 		if leftBound < @t < rightBound
 
-			console.log 'in bound', leftBound, rightBound
-
 			if wasConnectedToLeft
 
 				@pacs.addConnector oldLeftPoint.t

@@ -73,7 +73,7 @@ module.exports = class PointView extends _ItemView
 	_prepareNodeRemovalInteractions: ->
 
 		@rootView.moosh.onHover(@node)
-		.withKeys('alt')
+		.withKeys('ctrl')
 		.onEnter =>
 
 			@node.addClass 'hint-remove'
@@ -83,10 +83,9 @@ module.exports = class PointView extends _ItemView
 			@node.removeClass 'hint-remove'
 
 		@rootView.moosh.onClick(@node)
-		.withKeys('alt')
+		.withKeys('ctrl')
 		.onUp =>
 
-			# debugger
 			@model.remove()
 
 			@pacs.done()
@@ -95,25 +94,25 @@ module.exports = class PointView extends _ItemView
 
 	_prepareNodeConnectionInteractions: ->
 
-		classAddedOnCtrlHover = null
+		# classAddedOnCtrlHover = null
 
-		@rootView.moosh.onHover(@node)
-		.withKeys('ctrl')
-		.onEnter =>
+		# @rootView.moosh.onHover(@node)
+		# .withKeys('ctrl')
+		# .onEnter =>
 
-			if @model.canConnect()
+		# 	if @model.canConnect()
 
-				classAddedOnCtrlHover = 'mightConnect'
+		# 		classAddedOnCtrlHover = 'mightConnect'
 
-			else
+		# 	else
 
-				classAddedOnCtrlHover = 'cantConnect'
+		# 		classAddedOnCtrlHover = 'cantConnect'
 
-			@node.addClass classAddedOnCtrlHover
+		# 	@node.addClass classAddedOnCtrlHover
 
-		.onLeave =>
+		# .onLeave =>
 
-			@node.removeClass classAddedOnCtrlHover
+		# 	@node.removeClass classAddedOnCtrlHover
 
 		couldConnectToLeft = no
 		couldConnectToRight = no
@@ -178,13 +177,66 @@ module.exports = class PointView extends _ItemView
 
 	_prepareNodeMoveInteractions: ->
 
+		@rootView.moosh.onDrag(@node)
+		.withNoKeys()
+		.onDown =>
+
+			@node.addClass 'moving'
+
+			@rootView.cursor.use @node
+
+			do @_hideHandlers
+
+		.onDrag (e) =>
+
+			@node.moveX e.relX
+			@node.moveY e.relY
+
+		.onUp (e) =>
+
+			timeChange = @prop._XToTime e.absX
+
+			@model.setTime @model.t + timeChange
+
+			valDiff = @prop._YToNormalizedVal e.absY
+
+			@model.setValue @model.value + valDiff
+
+			@rootView.cursor.free()
+
+			@pacs.done()
+
+			@prop._tick()
+
+		.onCancel =>
+
+			do @relayHorizontally
+
+			@node.removeClass 'moving'
+
+			@rootView.cursor.free()
+
+			do @_showHandlers
+
 		do @_prepareNodeDragValueInteractions
 		do @_prepareNodeDragTimeInteractions
 
 	_prepareNodeDragValueInteractions: ->
 
+		@rootView.moosh.onHover(@node)
+		.withKeys('alt')
+		.onEnter =>
+
+			@node.addClass 'mightChangeValue'
+			@rootView.cursor.use @node
+
+		.onLeave =>
+
+			@node.removeClass 'mightChangeValue'
+			@rootView.cursor.free()
+
 		@rootView.moosh.onDrag(@node)
-		.withNoKeys()
+		.withKeys('alt')
 		.onDown =>
 
 			@rootView.cursor.use @node
@@ -242,6 +294,16 @@ module.exports = class PointView extends _ItemView
 			@pacs.done()
 
 			@prop._tick()
+
+			@node.removeClass 'changingTime'
+
+			@rootView.cursor.free()
+
+			do @_showHandlers
+
+		.onCancel =>
+
+			do @relayHorizontally
 
 			@node.removeClass 'changingTime'
 
