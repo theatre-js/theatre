@@ -1,6 +1,7 @@
 Foxie = require 'foxie'
 array = require 'utila/scripts/js/lib/array'
 SvgArea = require './propView/SvgArea'
+Selection = require './propView/Selection'
 PointView = require './propView/PointView'
 ConnectorView = require './propView/ConnectorView'
 
@@ -36,6 +37,10 @@ module.exports = class PropView
 
 		do @_prepareNodes
 
+		do @_prepareInteractions
+
+		@selection = new Selection @
+
 		@svgArea = new SvgArea @
 
 		do @_prepareHypothericalConnector
@@ -58,21 +63,32 @@ module.exports = class PropView
 
 		@node = Foxie '.timeflow-timeline-prop'
 
+		do @_prepareInfoNodes
+
+		do @_preparePacsNodes
+
+	_prepareInteractions: ->
+
+		top = parseInt(@pacsNode.computedStyle('top'))
+
 		@rootView.moosh.onHover(@node)
-		.withKeys('ctrl')
+		.withKeys('ctrl+shift')
 		.onEnter (e) =>
 
 			@rootView.cursor.use 'none'
 
 			@hypotheticalPointNode
 			.moveXTo(e.layerX)
-			.moveYTo(e.layerY - 16)
+			.moveYTo(e.layerY - top)
 
 		.onMove (e) =>
 
+			t = @timeline._XToFocusedTime e.layerX
+			x = @_timeToX t
+
 			@hypotheticalPointNode
-			.moveXTo(e.layerX)
-			.moveYTo(e.layerY - 16)
+			.moveXTo(x)
+			.moveYTo(e.layerY - top)
 
 		.onLeave =>
 
@@ -81,17 +97,13 @@ module.exports = class PropView
 			@hypotheticalPointNode.moveTo(-1000, -1000, 1)
 
 		@rootView.moosh.onClick(@node)
-		.withKeys('ctrl')
+		.withKeys('ctrl+shift')
 		.onUp (e) =>
 
 			t = @timeline._XToFocusedTime e.layerX
-			val = @_YToVal e.layerY - parseInt(@pacsNode.computedStyle('top'))
+			val = @_YToVal e.layerY - top
 
 			@pacs.addPoint t, val, 100, val * 0.1, 100, val * 0.1
-
-		do @_prepareInfoNodes
-
-		do @_preparePacsNodes
 
 		@hypotheticalPointNode = Foxie('.timeflow-timeline-prop-pacs-hypotheticalPoint')
 		.putIn(@pacsNode)
