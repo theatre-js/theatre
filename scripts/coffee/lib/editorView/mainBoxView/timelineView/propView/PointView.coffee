@@ -56,6 +56,7 @@ module.exports = class PointView extends _ItemView
 		do @_prepareNodeActivationInteractions
 		do @_prepareNodeRemovalInteractions
 		do @_prepareNodeConnectionInteractions
+		do @_prepareNodeMoveInteractions
 
 	_prepareNodeActivationInteractions: ->
 
@@ -170,6 +171,32 @@ module.exports = class PointView extends _ItemView
 				@model.connectToLeft()
 
 			return
+
+	_prepareNodeMoveInteractions: ->
+
+		@rootView.moosh.onDrag(@node)
+		.withNoKeys()
+		.onDown =>
+
+			@rootView.cursor.use @node
+
+			console.log 'dragging value'
+
+		.onDrag (e) =>
+
+			add = @prop._YToNormalizedVal e.relY
+
+			@model.setValue @model.value + add
+
+			@prop._tick()
+
+		.onUp =>
+
+			@rootView.cursor.free()
+
+			@pacs.done()
+
+			@prop._tick()
 
 	_showHypotheticalConnectorToTheLeft: ->
 
