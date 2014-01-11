@@ -9,11 +9,31 @@ module.exports = class DynamicTimeFlow extends _Emitter
 
 		@t = 0
 
+		@setFps 60
+
 		@_arrays = {}
 
 		@_props = {}
 
 		@timelineLength = 0
+
+	setFps: (fps) ->
+
+		unless Number.isFinite(fps)
+
+			throw Error "Fps must be a finite integer"
+
+		@fps = parseInt fps
+
+		@_frameLength = 1000 / @fps
+
+		@_fpsT = @_calcuateFpsT @t
+
+		@
+
+	_calcuateFpsT: (t) ->
+
+		parseInt Math.floor(t / @_frameLength) * @_frameLength
 
 	_maximizeTimelineLength: (dur) ->
 
@@ -61,14 +81,17 @@ module.exports = class DynamicTimeFlow extends _Emitter
 
 	tick: (t) ->
 
+		fpsT = @_calcuateFpsT t
+
 		if t < @t
 
-			@_tickBackward t
+			@_tickBackward fpsT
 
 		else
 
-			@_tickForward t
+			@_tickForward fpsT
 
+		@_fpsT = fpsT
 		@t = t
 
 		@_emit 'tick'

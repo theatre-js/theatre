@@ -6,6 +6,8 @@ module.exports = class Selection
 
 		@rootView = @prop.rootView
 
+		@_selecting = no
+
 		@_from = 0
 		@_to = 0
 		@_selected = no
@@ -19,6 +21,12 @@ module.exports = class Selection
 		@node = Foxie('.timeflow-timeline-prop-selection')
 		.putIn(@prop.pacsNode)
 		.moveX(-5000)
+
+		@leftEdge = Foxie('.timeflow-timeline-prop-selection-leftEdge')
+		.putIn(@node)
+
+		@rightEdge = Foxie('.timeflow-timeline-prop-selection-rightEdge')
+		.putIn(@node)
 
 	_prepareInteractions: ->
 
@@ -41,17 +49,59 @@ module.exports = class Selection
 		.withKeys('shift')
 		.onDown (e) =>
 
-			# start =
+			start = e.layerX
 
-			@_select
+			do @_startSelecting
 
-		.onDrag (e) ->
+			@_select start, start
 
-			console.log 'dragging'
+			@rootView.cursor.use 'ew-resize'
 
-		.onUp ->
+		.onDrag (e) =>
 
-			console.log 'up'
+			if e.layerX > start
+
+				@_select start, e.layerX
+
+			else
+
+				@_select e.layerX, start
+
+		.onUp =>
+
+			do @_endSelecting
+
+			@rootView.cursor.free()
+
+		.onCancel =>
+
+			do @_endSelecting
+
+			do @_hide
+
+			@rootView.cursor.free()
+
+	_startSelecting: ->
+
+		@_selecting = yes
+
+		do @_show
+
+	_endSelecting: ->
+
+		@_selecting = no
+
+	_select: (localFromX, localToX) ->
+
+		fromTime = @prop.timeline._XToFocusedTime localFromX
+		fromX = @prop._timeToX fromTime
+
+		toTime = @prop.timeline._XToFocusedTime localToX
+		toX = @prop._timeToX toTime
+
+		@node
+		.moveXTo(fromX)
+		.css('width', parseInt(toX - fromX) + 'px')
 
 	_deselect: ->
 
@@ -61,9 +111,9 @@ module.exports = class Selection
 
 	_hide: ->
 
-		@node.moveX(-5000)
+		@node.moveYTo(-5000)
 
 	_show: ->
 
-		@node.moveX(0)
+		@node.moveYTo(0)
 
