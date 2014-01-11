@@ -35,8 +35,9 @@ module.exports = class Selection
 
 	_prepareDeselectInteraction: ->
 
-		@rootView.moosh.onClick(@prop.node)
+		@_deselectListener = @rootView.moosh.onClick(@prop.node)
 		.withNoKeys()
+		.disable()
 		.onUp =>
 
 			do @_deselect
@@ -113,7 +114,10 @@ module.exports = class Selection
 
 		@node.moveYTo(-5000)
 
+		@_deselectListener.disable()
+
 	_show: ->
 
 		@node.moveYTo(0)
 
+		@_deselectListener.enable()
