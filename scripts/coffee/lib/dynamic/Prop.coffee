@@ -1,6 +1,6 @@
 PacsTimeline = require './prop/PacsTimeline'
 
-module.exports = class _Prop
+module.exports = class Prop
 
 	constructor: (@timeFlow, @id, @arrayName, @arrayIndex) ->
 
@@ -14,6 +14,22 @@ module.exports = class _Prop
 
 		@_nextIndexToCheck = 0
 
+		@_incrementalIsolates = []
+
+	attachToIncrementalIsolate: (isolate) ->
+
+		if isolate in @_incrementalIsolates
+
+			throw Error "Prop '#{@id}' is already attached to isolate '#{isolate.id}'"
+
+		@_incrementalIsolates.push isolate
+
+		@timeFlow._pluckFromRegularProps @
+
+		isolate._addProp @
+
+		@
+
 	_set: (val) ->
 
 		@array[@arrayIndex] = val
@@ -25,6 +41,10 @@ module.exports = class _Prop
 		@array[@arrayIndex]
 
 	_reportUpdate: (from, to) ->
+
+		for ic in @_incrementalIsolates
+
+			ic._reportUpdate from, to
 
 		@_nextIndexToCheck = 0
 

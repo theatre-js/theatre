@@ -1,16 +1,13 @@
 Moosh = require 'moosh'
 Kilid = require 'kilid'
 GraphView = require './editorView/GraphView'
-EditorModel = require './EditorModel'
 MainBoxView = require './editorView/MainBoxView'
 ControlsView = require './editorView/ControlsView'
 CursorControl = require './tools/CursorControl'
 
 module.exports = class EditorView
 
-	constructor: (@id, @parentNode) ->
-
-		@model = new EditorModel @id
+	constructor: (@id, @parentNode, @model) ->
 
 		do @_prepareNode
 

@@ -10,7 +10,7 @@ module.exports = class ActorModel
 
 		@props = {}
 
-	addRegularProp: (name, arrayName, arrayIndex) ->
+	addProp: (name, arrayName, arrayIndex) ->
 
 		if @props[name]?
 
@@ -18,8 +18,18 @@ module.exports = class ActorModel
 
 		propId = @id + '-' + name
 
-		timeFlowProp = @timeFlow.addRegularProp(propId, arrayName, arrayIndex)
+		timeFlowProp = @timeFlow.addProp(propId, arrayName, arrayIndex)
 
 		@props[name] = prop = new ActorPropModel @, name, timeFlowProp
 
 		prop
+
+	useProp: (name, timeFlowProp) ->
+
+		if @props[name]?
+
+			throw Error "prop with name '#{name}' already exists in actor '#{@id}'"
+
+		@props[name] = timeFlowProp
+
+		@

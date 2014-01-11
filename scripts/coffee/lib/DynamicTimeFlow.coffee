@@ -1,23 +1,14 @@
 _Emitter = require './_Emitter'
-RegularProp = require './dynamic/RegularProp'
+Prop = require './dynamic/Prop'
+IncrementalIsolate = require './dynamic/IncrementalIsolate'
 
 module.exports = class DynamicTimeFlow extends _Emitter
 
-	constructor: ->
+	constructor: (fps = 60) ->
 
 		super
 
 		@t = 0
-
-		@setFps 60
-
-		@_arrays = {}
-
-		@_props = {}
-
-		@timelineLength = 0
-
-	setFps: (fps) ->
 
 		unless Number.isFinite(fps)
 
@@ -29,7 +20,15 @@ module.exports = class DynamicTimeFlow extends _Emitter
 
 		@_fpsT = @_calcuateFpsT @t
 
-		@
+		@_arrays = {}
+
+		@_incrementalIsolates = {}
+
+		@_allProps = {}
+
+		@_regularProps = {}
+
+		@timelineLength = 0
 
 	_calcuateFpsT: (t) ->
 
@@ -55,7 +54,7 @@ module.exports = class DynamicTimeFlow extends _Emitter
 
 	_verifyPropAdd: (id, arrayName, indexInArray) ->
 
-		if @_props[id]?
+		if @_allProps[id]?
 
 			throw Error "A prop named '#{id}' already exists"
 
@@ -69,15 +68,23 @@ module.exports = class DynamicTimeFlow extends _Emitter
 
 		return
 
-	addRegularProp: (id, arrayName, indexInArray) ->
+	addProp: (id, arrayName, indexInArray) ->
 
 		@_verifyPropAdd id, arrayName, indexInArray
 
-		@_props[id] = new RegularProp @, id, arrayName, indexInArray
+		@_regularProps[id] = @_allProps[id] = new Prop @, id, arrayName, indexInArray
+
+	defineIncrementalIsolate: (id, isolate) ->
+
+		if @_incrementalIsolates[id]?
+
+			throw Error "Another incremental isolate already exists with id '#{id}'"
+
+		@_incrementalIsolates[id] = new IncrementalIsolate @, id, isolate
 
 	getProp: (id) ->
 
-		@_props[id]
+		@_regularProps[id]
 
 	tick: (t) ->
 
@@ -91,6 +98,10 @@ module.exports = class DynamicTimeFlow extends _Emitter
 
 			@_tickForward fpsT
 
+		for name, ic of @_incrementalIsolates
+
+			ic._tickForTimeFlow fpsT
+
 		@_fpsT = fpsT
 		@t = t
 
@@ -98,9 +109,15 @@ module.exports = class DynamicTimeFlow extends _Emitter
 
 		return
 
+	_pluckFromRegularProps: (prop) ->
+
+		delete @_regularProps[prop.id]
+
+		return
+
 	_tickForward: (t) ->
 
-		for name, prop of @_props
+		for name, prop of @_regularProps
 
 			prop._tickForward t
 
@@ -108,7 +125,7 @@ module.exports = class DynamicTimeFlow extends _Emitter
 
 	_tickBackward: (t) ->
 
-		for name, prop of @_props
+		for name, prop of @_regularProps
 
 			prop._tickBackward t
 
