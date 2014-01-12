@@ -54,15 +54,30 @@ module.exports = class TimeControlModel extends _Emitter
 
 			from: @_focus.from
 			to: @_focus.to
-			duration: @_focus.duration
 
 		se._lastPlayedTickAt = @_lastPlayedTickAt
 
 		se
 
+	loadFrom: (se) ->
+
+		if @_isPlaying
+
+			do @pause
+
+		@_setTimelineLength Number se.timelineLength
+
+		@changeFocusArea se._focus.from, se._focus.to
+
+		@tick Number se.t
+
+		return
+
 	_updateTimelineLength: ->
 
-		@timelineLength = @timeFlow.timelineLength + 5000
+		@_setTimelineLength @timeFlow.timelineLength + 5000
+
+	_setTimelineLength: (@timelineLength) ->
 
 		@_emit 'length-change'
 

@@ -46,6 +46,6 @@ module.exports = class EditorModel
 
 		@workspaces.loadFrom se.workspaces
 
-		# @timeControl.loadFrom se.timeControl
+		@timeControl.loadFrom se.timeControl
 
 		@
