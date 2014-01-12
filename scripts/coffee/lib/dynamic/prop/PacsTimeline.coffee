@@ -39,7 +39,7 @@ module.exports = class PacsTimeline extends _Emitter
 
 		se = {}
 
-		se._idCounter = -1
+		se._idCounter = @_idCounter
 
 		se.timelineLength = @timelineLength
 
@@ -57,6 +57,24 @@ module.exports = class PacsTimeline extends _Emitter
 		connectors.push item.serialize() for item in @timeline when item instanceof Connector
 
 		se
+
+	loadFrom: (se) ->
+
+		@_idCounter = se._idCounter
+
+		@timelineLength = Number se.timelineLength
+
+		for item in se.timeline.points
+
+			Point.constructFrom item, @
+
+		for item in se.timeline.connectors
+
+			Connector.constructFrom item, @
+
+		do @done
+
+		return
 
 	_getIndexOfItemBeforeOrAt: (t) ->
 
@@ -172,9 +190,15 @@ module.exports = class PacsTimeline extends _Emitter
 
 		p = new Point @, @prop.id + '-connector-' + @_idCounter, t, val, leftHandlerX, leftHandlerY, rightHandlerX, rightHandlerY
 
-		@_emit 'new-point', p
+		@_addPoint p
 
 		p
+
+	_addPoint: (p) ->
+
+		@_emit 'new-point', p
+
+		return
 
 	addConnector: (t) ->
 
@@ -182,9 +206,15 @@ module.exports = class PacsTimeline extends _Emitter
 
 		c = new Connector @, t, @prop.id + '-connector-' + @_idCounter
 
-		@_emit 'new-connector', c
+		@_addConnector c
 
 		c
+
+	_addConnector: (c) ->
+
+		@_emit 'new-connector', c
+
+		return
 
 	done: ->
 

@@ -2,6 +2,8 @@ _PacsTimelineItem = require './_PacsTimelineItem'
 
 module.exports = class Point extends _PacsTimelineItem
 
+	self = @
+
 	constructor: (@pacs, @id, @t, @value, leftHandlerX, leftHandlerY, rightHandlerX, rightHandlerY) ->
 
 		@handler = new Float32Array 4
@@ -28,6 +30,14 @@ module.exports = class Point extends _PacsTimelineItem
 		se.handler = Array::slice.call(@handler, 0)
 
 		se
+
+	@constructFrom: (se, pacs) ->
+
+		p = new self pacs, se.id, se.t, se.value, se.handler[0], se.handler[1], se.handler[2], se.handler[3]
+
+		pacs._addPoint p
+
+		return
 
 	_putOnTime: ->
 

@@ -3,6 +3,8 @@ UnitBezier = require 'timing-function/scripts/js/lib/UnitBezier'
 
 module.exports = class Connector extends _PacsTimelineItem
 
+	self = @
+
 	constructor: (@pacs, @t, @id) ->
 
 		super
@@ -47,6 +49,14 @@ module.exports = class Connector extends _PacsTimelineItem
 		se.id = @id
 
 		se
+
+	@constructFrom: (se, pacs) ->
+
+		c = new self pacs, se.t, se.id
+
+		pacs._addConnector c
+
+		return
 
 	isConnector: -> yes
 

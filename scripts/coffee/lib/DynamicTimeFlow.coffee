@@ -1,6 +1,7 @@
-_Emitter = require './_Emitter'
-Prop = require './dynamic/Prop'
 IncrementalIsolate = require './dynamic/IncrementalIsolate'
+_Emitter = require './_Emitter'
+array = require 'utila/scripts/js/lib/array'
+Prop = require './dynamic/Prop'
 
 module.exports = class DynamicTimeFlow extends _Emitter
 
@@ -152,3 +153,26 @@ module.exports = class DynamicTimeFlow extends _Emitter
 		return
 
 	loadFrom: (se) ->
+
+		serializedKeys = Object.keys(se._allProps)
+
+		currentKeys = Object.keys(@_allProps)
+
+		for i, name of currentKeys
+
+			unless serializedKeys[i] is name
+
+				throw Error "Prop number #{i} is supposed to be '#{name}', but is #{serializedKeys[i]}"
+
+		unless serializedKeys.length is currentKeys.length
+
+			throw Error "Number of props is supposed to be #{currentKeys.length}. Given: #{serializedKeys.length}"
+
+		for id, prop of @_allProps
+
+			prop.loadFrom se._allProps[id]
+
+		@
+
+
+

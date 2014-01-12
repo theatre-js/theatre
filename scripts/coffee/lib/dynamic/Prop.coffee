@@ -22,6 +22,12 @@ module.exports = class Prop
 
 		se
 
+	loadFrom: (se) ->
+
+		@pacs.loadFrom se.pacs
+
+		return
+
 	attachToIncrementalIsolate: (id) ->
 
 		isolate = @timeFlow.getIncrementalIsolate id
