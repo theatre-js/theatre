@@ -6,18 +6,6 @@ module.exports = class GraphModel
 
 		@categories = {}
 
-	serialize: ->
-
-		se = {}
-
-		se.categories = categories = {}
-
-		for name, cat of @categories
-
-			categories[name] = cat.serialize()
-
-		se
-
 	getCategory: (name) ->
 
 		unless @categories[name]?

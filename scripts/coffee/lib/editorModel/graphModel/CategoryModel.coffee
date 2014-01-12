@@ -8,22 +8,6 @@ module.exports = class CategoryModel
 
 		@actors = {}
 
-	serialize: ->
-
-		se = {}
-
-		se.id = @id
-
-		se.name = @name
-
-		se.actors = actors = {}
-
-		for name, actor of @actors
-
-			actors[name] = actor.serialize()
-
-		se
-
 	getActor: (name) ->
 
 		unless @actors[name]?

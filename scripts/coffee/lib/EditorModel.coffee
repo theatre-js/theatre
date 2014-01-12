@@ -28,8 +28,6 @@ module.exports = class EditorModel
 
 		se.timeFlow = @timeFlow.serialize()
 
-		se.graph = @graph.serialize()
-
 		se.timeControl = @timeControl.serialize()
 
 		se.mainBox = @mainBox.serialize()
