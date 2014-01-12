@@ -5,9 +5,13 @@ WorkspacePropHolderModel = require './workspaceModel/WorkspacePropHolderModel'
 
 module.exports = class WorkspaceModel extends _Emitter
 
+	self = @
+
 	constructor: (@workspaceManager, @name) ->
 
 		super
+
+		@rootModel = @workspaceManager.rootModel
 
 		@propHolders = []
 
@@ -22,6 +26,22 @@ module.exports = class WorkspaceModel extends _Emitter
 		propHolders.push p.serialize() for p in @propHolders
 
 		se
+
+	@constructFrom: (se, workspaceManager) ->
+
+		ws = new self workspaceManager, se.name
+
+		for propHolder in se.propHolders
+
+			ws._constructPropHolderAndAdd propHolder
+
+		ws
+
+	_constructPropHolderAndAdd: (se) ->
+
+		ph = WorkspacePropHolderModel.constructFrom se, @
+
+		@_addPropHolder ph
 
 	rename: (newName) ->
 
@@ -59,13 +79,15 @@ module.exports = class WorkspaceModel extends _Emitter
 
 			throw Error "Prop `#{prop.id}` already exists in #{@name}"
 
-		propHolder = new WorkspacePropHolderModel @, actorPropModel
+		@_addPropHolder propHolder = new WorkspacePropHolderModel @, actorPropModel
+
+		return
+
+	_addPropHolder: (propHolder) ->
 
 		@propHolders.push propHolder
 
 		@_emit 'new-prop', propHolder
-
-		return
 
 	_getHolderPropById: (id) ->
 

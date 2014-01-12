@@ -27,11 +27,6 @@ module.exports = class TimelineModel extends _Emitter
 
 		@currentProps = []
 
-	serialize: ->
-
-		# nothing to serialize
-		{}
-
 	tick: ->
 
 		@timeControl.tickOnSpot()

@@ -8,6 +8,8 @@ module.exports = class WorkspaceManagerModel extends _Emitter
 
 		super
 
+		@rootModel = @editor
+
 		@_workspaces = []
 
 		@_propListingChangeListeners = {}
@@ -30,9 +32,83 @@ module.exports = class WorkspaceManagerModel extends _Emitter
 
 		se
 
+	loadFrom: (se) ->
+
+		for ws in se.workspaces
+
+			@_constructWorkspaceAndAdd ws
+
+		if se._activeWorkspaceName isnt ''
+
+			@get(se._activeWorkspaceName).activate()
+
+		return
+
 	getAll: ->
 
 		@_workspaces
+
+	_constructWorkspaceAndAdd: (se) ->
+
+		workspace = WorkspaceModel.constructFrom se, @
+
+		@_setupListenersOnWorkspace workspace
+
+		@_addWorkspace workspace
+
+	_makeWorkspace: (name) ->
+
+		workspace = new WorkspaceModel @, name
+
+		@_setupListenersOnWorkspace workspace
+
+		workspace
+
+	_setupListenersOnWorkspace: (workspace) ->
+
+		workspace.on 'new-prop', (propHolder) =>
+
+			if workspace is @_active
+
+				@_emit 'prop-add', propHolder
+
+				id = propHolder.id
+
+				listeners = @_propListingChangeListeners[id]
+
+				return unless listeners?
+
+				for cb in listeners
+
+					cb 'add'
+
+			return
+
+		workspace.on 'prop-remove', (propHolder) =>
+
+			if workspace is @_active
+
+				@_emit 'prop-remove', propHolder
+
+				id = propHolder.id
+
+				listeners = @_propListingChangeListeners[id]
+
+				return unless listeners?
+
+				for cb in listeners
+
+					cb 'remove'
+
+			return
+
+		workspace.on 'rename', =>
+
+			if workspace is @_active
+
+				@_emit 'active-workspace-change', workspace
+
+		return
 
 	get: (name) ->
 
@@ -40,53 +116,17 @@ module.exports = class WorkspaceManagerModel extends _Emitter
 
 		unless workspace?
 
-			@_workspaces.push workspace = new WorkspaceModel @, name
-
-			workspace.on 'new-prop', (propHolder) =>
-
-				if workspace is @_active
-
-					@_emit 'prop-add', propHolder
-
-					id = propHolder.id
-
-					listeners = @_propListingChangeListeners[id]
-
-					return unless listeners?
-
-					for cb in listeners
-
-						cb 'add'
-
-				return
-
-			workspace.on 'prop-remove', (propHolder) =>
-
-				if workspace is @_active
-
-					@_emit 'prop-remove', propHolder
-
-					id = propHolder.id
-
-					listeners = @_propListingChangeListeners[id]
-
-					return unless listeners?
-
-					for cb in listeners
-
-						cb 'remove'
-
-				return
-
-			workspace.on 'rename', =>
-
-				if workspace is @_active
-
-					@_emit 'active-workspace-change', workspace
-
-			@_emit 'new-workspace', workspace
+			@_addWorkspace workspace = @_makeWorkspace name
 
 		workspace
+
+	_addWorkspace: (workspace) ->
+
+		@_workspaces.push workspace
+
+		@_emit 'new-workspace', workspace
+
+		return
 
 	_getWorkspaceByName: (name) ->
 

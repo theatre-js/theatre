@@ -6,6 +6,8 @@ module.exports = class GraphModel
 
 		@categories = {}
 
+		@_actorProps = {}
+
 	getCategory: (name) ->
 
 		unless @categories[name]?
@@ -17,3 +19,17 @@ module.exports = class GraphModel
 	getCategories: ->
 
 		@categories
+
+	_addActorProp: (id, actorProp) ->
+
+		if @_actorProps[id]?
+
+			throw Error "ActorProp with '#{id}' is already in the graph"
+
+		@_actorProps[id] = actorProp
+
+		return
+
+	getActorPropById: (id) ->
+
+		@_actorProps[id]

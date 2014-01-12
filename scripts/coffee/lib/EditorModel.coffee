@@ -30,13 +30,11 @@ module.exports = class EditorModel
 
 		se.timeFlow = @timeFlow.serialize()
 
-		se.timeControl = @timeControl.serialize()
-
 		se.mainBox = @mainBox.serialize()
 
 		se.workspaces = @workspaces.serialize()
 
-		se.timeline = @timeline.serialize()
+		se.timeControl = @timeControl.serialize()
 
 		se
 
@@ -44,12 +42,10 @@ module.exports = class EditorModel
 
 		@timeFlow.loadFrom se.timeFlow
 
+		@mainBox.loadFrom se.mainBox
+
+		@workspaces.loadFrom se.workspaces
+
 		# @timeControl.loadFrom se.timeControl
-
-		# @mainBox.loadFrom se.mainBox
-
-		# @workspaces.loadFrom se.workspaces
-
-		# @timeline.loadFrom se.timeline
 
 		@

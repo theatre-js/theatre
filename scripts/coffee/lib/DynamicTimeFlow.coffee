@@ -33,19 +33,35 @@ module.exports = class DynamicTimeFlow extends _Emitter
 
 	serialize: ->
 
-		se = {}
-
-		se.t = @t
-
-		se._fpsT = @_fpsT
-
-		se._allProps = {}
+		se = _allProps: {}
 
 		for name, prop of @_allProps
 
 			se._allProps[name] = prop.serialize()
 
 		se
+
+	loadFrom: (se) ->
+
+		serializedKeys = Object.keys(se._allProps)
+
+		currentKeys = Object.keys(@_allProps)
+
+		for i, name of currentKeys
+
+			unless serializedKeys[i] is name
+
+				throw Error "Prop number #{i} is supposed to be '#{name}', but is #{serializedKeys[i]}"
+
+		unless serializedKeys.length is currentKeys.length
+
+			throw Error "Number of props is supposed to be #{currentKeys.length}. Given: #{serializedKeys.length}"
+
+		for id, prop of @_allProps
+
+			prop.loadFrom se._allProps[id]
+
+		return
 
 	_calcuateFpsT: (t) ->
 
@@ -151,28 +167,4 @@ module.exports = class DynamicTimeFlow extends _Emitter
 			prop._tickBackward t
 
 		return
-
-	loadFrom: (se) ->
-
-		serializedKeys = Object.keys(se._allProps)
-
-		currentKeys = Object.keys(@_allProps)
-
-		for i, name of currentKeys
-
-			unless serializedKeys[i] is name
-
-				throw Error "Prop number #{i} is supposed to be '#{name}', but is #{serializedKeys[i]}"
-
-		unless serializedKeys.length is currentKeys.length
-
-			throw Error "Number of props is supposed to be #{currentKeys.length}. Given: #{serializedKeys.length}"
-
-		for id, prop of @_allProps
-
-			prop.loadFrom se._allProps[id]
-
-		@
-
-
 

@@ -4,6 +4,8 @@ module.exports = class ActorModel
 
 	constructor: (@category, @name) ->
 
+		@graph = @category.graph
+
 		@id = @category.id + '-' + @name
 
 		@timeFlow = @category.graph.editor.timeFlow

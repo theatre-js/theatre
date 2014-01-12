@@ -16,7 +16,15 @@ module.exports = class MainBoxModel extends _Emitter
 
 		se
 
+	loadFrom: (se) ->
+
+		@setHeight se.height
+
+		return
+
 	setHeight: (newH) ->
+
+		return if @height is newH
 
 		@height = newH
 
