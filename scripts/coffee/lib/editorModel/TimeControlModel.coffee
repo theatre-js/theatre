@@ -42,6 +42,24 @@ module.exports = class TimeControlModel extends _Emitter
 
 		, 0
 
+	serialize: ->
+
+		se = {}
+
+		se.timelineLength = @timelineLength
+
+		se.t = @t
+
+		se._focus =
+
+			from: @_focus.from
+			to: @_focus.to
+			duration: @_focus.duration
+
+		se._lastPlayedTickAt = @_lastPlayedTickAt
+
+		se
+
 	_updateTimelineLength: ->
 
 		@timelineLength = @timeFlow.timelineLength + 5000

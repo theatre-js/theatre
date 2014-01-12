@@ -10,6 +10,22 @@ module.exports = class ActorModel
 
 		@props = {}
 
+	serialize: ->
+
+		se = {}
+
+		se.id = @id
+
+		se.name = @name
+
+		se.props = props = {}
+
+		for name, prop of @props
+
+			props[name] = prop.serialize()
+
+		se
+
 	addProp: (name, arrayName, arrayIndex) ->
 
 		if @props[name]?

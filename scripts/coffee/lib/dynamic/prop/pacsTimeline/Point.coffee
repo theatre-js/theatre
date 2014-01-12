@@ -15,6 +15,20 @@ module.exports = class Point extends _PacsTimelineItem
 
 		do @_putOnTime
 
+	serialize: ->
+
+		se = {}
+
+		se.t = @t
+
+		se.value = @value
+
+		se.id = @id
+
+		se.handler = Array::slice.call(@handler, 0)
+
+		se
+
 	_putOnTime: ->
 
 		# first, lets make sure no point sits at t

@@ -30,6 +30,22 @@ module.exports = class DynamicTimeFlow extends _Emitter
 
 		@timelineLength = 0
 
+	serialize: ->
+
+		se = {}
+
+		se.t = @t
+
+		se._fpsT = @_fpsT
+
+		se._allProps = {}
+
+		for name, prop of @_allProps
+
+			se._allProps[name] = prop.serialize()
+
+		se
+
 	_calcuateFpsT: (t) ->
 
 		parseInt Math.floor(t / @_frameLength) * @_frameLength

@@ -20,6 +20,29 @@ module.exports = class PacsTimeline extends _Emitter
 
 		@_idCounter = -1
 
+	serialize: ->
+
+		se = {}
+
+		se._idCounter = -1
+
+		se.timelineLength = @timelineLength
+
+		# se.peak = @peak
+		# se.bottom = @bottom
+
+		se.timeline = {}
+
+		se.timeline.points = points = []
+
+		points.push item.serialize() for item in @timeline when item instanceof Point
+
+		se.timeline.connectors = connectors = []
+
+		connectors.push item.serialize() for item in @timeline when item instanceof Connector
+
+		se
+
 	_getIndexOfItemBeforeOrAt: (t) ->
 
 		lastIndex = -1

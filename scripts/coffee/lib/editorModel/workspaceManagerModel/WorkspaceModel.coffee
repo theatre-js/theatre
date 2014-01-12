@@ -11,6 +11,18 @@ module.exports = class WorkspaceModel extends _Emitter
 
 		@propHolders = []
 
+	serialize: ->
+
+		se = {}
+
+		se.name = @name
+
+		se.propHolders = propHolders = []
+
+		propHolders.push p.serialize() for p in @propHolders
+
+		se
+
 	rename: (newName) ->
 
 		return if newName is @name

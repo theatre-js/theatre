@@ -21,3 +21,21 @@ module.exports = class EditorModel
 	_tick: (t) ->
 
 		@timeControl._tick t
+
+	serialize: ->
+
+		se = {}
+
+		se.timeFlow = @timeFlow.serialize()
+
+		se.graph = @graph.serialize()
+
+		se.timeControl = @timeControl.serialize()
+
+		se.mainBox = @mainBox.serialize()
+
+		se.workspaces = @workspaces.serialize()
+
+		se.timeline = @timeline.serialize()
+
+		se

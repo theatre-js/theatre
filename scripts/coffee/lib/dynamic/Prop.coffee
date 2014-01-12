@@ -16,6 +16,12 @@ module.exports = class Prop
 
 		@_incrementalIsolates = []
 
+	serialize: ->
+
+		se = pacs: @pacs.serialize()
+
+		se
+
 	attachToIncrementalIsolate: (isolate) ->
 
 		if isolate in @_incrementalIsolates

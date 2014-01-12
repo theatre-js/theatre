@@ -38,6 +38,16 @@ module.exports = class Connector extends _PacsTimelineItem
 
 		do @_recalculateBezier
 
+	serialize: ->
+
+		se = {}
+
+		se.t = @t
+
+		se.id = @id
+
+		se
+
 	isConnector: -> yes
 
 	isPoint: -> no

@@ -14,6 +14,22 @@ module.exports = class WorkspaceManagerModel extends _Emitter
 
 		@_active = null
 
+	serialize: ->
+
+		se = {}
+
+		se.workspaces = workspaces = []
+
+		workspaces.push ws.serialize() for ws in @_workspaces
+
+		se._activeWorkspaceName = ''
+
+		if @_active?
+
+			se._activeWorkspaceName = @_active.name
+
+		se
+
 	getAll: ->
 
 		@_workspaces

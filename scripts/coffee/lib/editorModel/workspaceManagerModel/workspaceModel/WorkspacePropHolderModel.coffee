@@ -10,6 +10,18 @@ module.exports = class WorkspacePropHolderModel extends _Emitter
 
 		@_expanded = yes
 
+	serialize: ->
+
+		se = {}
+
+		se.id = @id
+
+		se._expanded = @_expanded
+
+		se.actorPropId = @actorProp.id
+
+		se
+
 	isExpanded: ->
 
 		@_expanded

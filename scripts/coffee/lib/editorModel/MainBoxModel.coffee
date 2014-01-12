@@ -10,6 +10,12 @@ module.exports = class MainBoxModel extends _Emitter
 
 	isVisible: -> yes
 
+	serialize: ->
+
+		se = height: @height
+
+		se
+
 	setHeight: (newH) ->
 
 		@height = newH
