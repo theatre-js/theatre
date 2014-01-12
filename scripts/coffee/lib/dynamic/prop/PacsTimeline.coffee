@@ -12,6 +12,21 @@ module.exports = class PacsTimeline extends _Emitter
 		@peak = @prop.initial
 		@bottom = @prop.initial
 
+		unless Number.isFinite(@bottom) and Number.isFinite(@peak)
+
+			@bottom = 0
+			@peak = 100
+
+		if @peak is @bottom
+
+			if @bottom is 0
+
+				@peak = 100
+
+			else
+
+				@peak = Math.abs(@bottom) * 2
+
 		@timeline = []
 
 		@timelineLength = 0

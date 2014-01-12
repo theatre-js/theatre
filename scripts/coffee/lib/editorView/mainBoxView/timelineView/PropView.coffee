@@ -69,7 +69,7 @@ module.exports = class PropView
 
 	_prepareInteractions: ->
 
-		top = parseInt(@pacsNode.computedStyle('top'))
+		top = parseInt(@pacsNode.computedStyle('top')) || 0
 
 		@rootView.moosh.onHover(@node)
 		.withKeys('ctrl+shift')

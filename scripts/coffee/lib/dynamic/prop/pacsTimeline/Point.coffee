@@ -261,7 +261,7 @@ module.exports = class Point extends _PacsTimelineItem
 
 		unless Number.isFinite(x) and Number.isFinite(y)
 
-			throw Error "Handlers should both be finite numbers"
+			throw Error "Handlers should both be finite numbers. Given: '#{x}, #{y}'"
 
 		if x < 0
 
@@ -276,7 +276,7 @@ module.exports = class Point extends _PacsTimelineItem
 
 		unless Number.isFinite(x) and Number.isFinite(y)
 
-			throw Error "Handlers should both be finite numbers"
+			throw Error "Handlers should both be finite numbers. Given: '#{x}, #{y}'"
 
 		if x < 0
 

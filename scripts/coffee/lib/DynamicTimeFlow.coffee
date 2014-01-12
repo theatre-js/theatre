@@ -150,3 +150,5 @@ module.exports = class DynamicTimeFlow extends _Emitter
 			prop._tickBackward t
 
 		return
+
+	loadFrom: (se) ->
