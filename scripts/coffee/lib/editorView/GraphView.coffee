@@ -1,3 +1,5 @@
+Foxie = require 'foxie'
+
 module.exports = class GraphView
 
 	constructor: (@editor) ->
@@ -13,15 +15,15 @@ module.exports = class GraphView
 
 	_prepareNode: ->
 
-		@node = document.createElement 'div'
-		@node.classList.add 'timeflow-graph'
-		@editor.node.appendChild @node
+		@node = Foxie 'div.timeflow-graph'
+
+		@node.putIn @editor.node
 
 		return
 
 	show: ->
 
-		@node.classList.add 'visible'
+		@node.addClass 'visible'
 
 		@rootView.moosh.onClickOutside @node, =>
 
@@ -31,7 +33,7 @@ module.exports = class GraphView
 
 	hide: ->
 
-		@node.classList.remove 'visible'
+		@node.removeClass 'visible'
 
 		return
 
@@ -43,69 +45,58 @@ module.exports = class GraphView
 
 			n++
 
-			catEl = document.createElement 'div'
-			catEl.classList.add 'timeflow-graph-category'
+			catEl = Foxie 'div.timeflow-graph-category'
 
 
-			@node.appendChild catEl
+			catEl.putIn @node
 
-			catNameEl = document.createElement 'h3'
-			catNameEl.classList.add 'timeflow-graph-category-name'
-			catNameEl.classList.add 'opening-animation'
-			catNameEl.classList.add "n-#{n}"
+			catNameEl = Foxie "h3.timeflow-graph-category-name.opening-animation.n-#{n}"
 
-			catNameEl.innerHTML = category.name
+			catNameEl.innerHTML category.name
 
-			catEl.appendChild catNameEl
+			catNameEl.putIn catEl
 
-			actorListEl = document.createElement 'ul'
-			actorListEl.classList.add 'timeflow-graph-category-actor-list'
+			actorListEl = Foxie 'ul.timeflow-graph-category-actor-list'
 
-			catEl.appendChild actorListEl
+			actorListEl.putIn catEl
 
 			for name, actor of category.actors then do (actor) =>
 
 				n++
 
-				actorEl = document.createElement 'li'
-				actorEl.classList.add 'timeflow-graph-category-actor'
+				actorEl = Foxie 'li.timeflow-graph-category-actor'
 
+				actorLink = Foxie "a.opening-animation.n-#{n}"
+				actorLink.innerHTML actor.name
 
+				actorLink.putIn actorEl
 
-				actorLink = document.createElement 'a'
-				actorLink.innerHTML = actor.name
-				actorLink.classList.add 'opening-animation'
-				actorLink.classList.add "n-#{n}"
+				actorEl.putIn actorListEl
 
-				actorEl.appendChild actorLink
+				propsListEl = Foxie 'ul.timeflow-graph-category-actor-propsList'
 
-				actorListEl.appendChild actorEl
-
-				propsListEl = document.createElement 'ul'
-				propsListEl.classList.add 'timeflow-graph-category-actor-propsList'
-
-				actorEl.appendChild propsListEl
+				propsListEl.putIn actorEl
 
 				for name, prop of actor.props then do (prop) =>
 
-					propEl = document.createElement 'li'
-					propEl.innerHTML = prop.name
+					propEl = Foxie 'li'
+					propEl.innerHTML prop.name
 
-					propsListEl.appendChild propEl
+					propEl.putIn propsListEl
 
 					unless @workspacesModel.isPropListed prop
 
-						propEl.classList.add 'available'
+						propEl.addClass 'available'
 
 					@workspacesModel.onPropListingChange prop, (type) =>
 
 						if type is 'add'
 
-							propEl.classList.remove 'available'
+							propEl.removeClass 'available'
 
 						else
 
-							propEl.classList.add 'available'
+							propEl.addClass 'available'
 
 						return
 

@@ -98,6 +98,10 @@ module.exports = class DynamicTimeFlow extends _Emitter
 
 		@_incrementalIsolates[id] = new IncrementalIsolate @, id, isolate
 
+	getIncrementalIsolate: (id) ->
+
+		@_incrementalIsolates[id]
+
 	getProp: (id) ->
 
 		@_regularProps[id]

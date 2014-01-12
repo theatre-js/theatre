@@ -1,3 +1,4 @@
+Foxie = require 'foxie'
 Moosh = require 'moosh'
 Kilid = require 'kilid'
 GraphView = require './editorView/GraphView'
@@ -33,9 +34,7 @@ module.exports = class EditorView
 
 	_prepareNode: ->
 
-		@node = document.createElement 'div'
-
-		@node.classList.add 'timeflow'
+		@node = Foxie '.timeflow'
 
 		return
 
@@ -45,7 +44,7 @@ module.exports = class EditorView
 
 			throw Error "Already prepared"
 
-		@parentNode.appendChild @node
+		@node.putIn @parentNode
 
 		do @graph.prepare
 

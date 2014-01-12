@@ -22,7 +22,13 @@ module.exports = class Prop
 
 		se
 
-	attachToIncrementalIsolate: (isolate) ->
+	attachToIncrementalIsolate: (id) ->
+
+		isolate = @timeFlow.getIncrementalIsolate id
+
+		unless isolate?
+
+			throw Error "Couldn't find incremental isolate '#{id}'"
 
 		if isolate in @_incrementalIsolates
 

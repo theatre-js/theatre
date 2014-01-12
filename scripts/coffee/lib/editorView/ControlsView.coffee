@@ -1,3 +1,5 @@
+Foxie = require 'foxie'
+
 module.exports = class ControlsView
 
 	constructor: (@editor) ->
@@ -16,10 +18,9 @@ module.exports = class ControlsView
 
 	_prepareNodes: ->
 
-		@node = document.createElement 'div'
-		@node.classList.add 'timeflow-controls'
+		@node = Foxie '.timeflow-controls'
 
-		@editor.node.appendChild @node
+		@node.putIn @editor.node
 
 		do @_prepareFullscreenNode
 		do @_prepareJumpToPrevMarkerNode
@@ -29,10 +30,9 @@ module.exports = class ControlsView
 
 	_preparePlayPauseNode: ->
 
-		@playPauseNode = document.createElement 'div'
-		@playPauseNode.classList.add 'timeflow-controls-playPause'
+		@playPauseNode = Foxie '.timeflow-controls-playPause'
 
-		@node.appendChild @playPauseNode
+		@playPauseNode.putIn @node
 
 		@rootView.moosh.onClick(@playPauseNode)
 		.onDone =>
@@ -41,10 +41,9 @@ module.exports = class ControlsView
 
 	_prepareFullscreenNode: ->
 
-		@toggleFullScreenNode = document.createElement 'div'
-		@toggleFullScreenNode.classList.add 'timeflow-controls-fullscreen'
+		@toggleFullScreenNode = Foxie '.timeflow-controls-fullscreen'
 
-		@node.appendChild @toggleFullScreenNode
+		@toggleFullScreenNode.putIn @node
 
 		@rootView.moosh.onClick(@toggleFullScreenNode)
 		.onDone =>
@@ -53,10 +52,9 @@ module.exports = class ControlsView
 
 	_prepareJumpToPrevMarkerNode: ->
 
-		@jumpToPrevMarkerNode = document.createElement 'div'
-		@jumpToPrevMarkerNode.classList.add 'timeflow-controls-jumpToPrevMarker'
+		@jumpToPrevMarkerNode = Foxie '.timeflow-controls-jumpToPrevMarker'
 
-		@node.appendChild @jumpToPrevMarkerNode
+		@jumpToPrevMarkerNode.putIn @node
 
 		@rootView.moosh.onClick(@jumpToPrevMarkerNode)
 		.onDone =>
@@ -65,10 +63,9 @@ module.exports = class ControlsView
 
 	_prepareJumpToNextMarkerNode: ->
 
-		@jumpToNextMarkerNode = document.createElement 'div'
-		@jumpToNextMarkerNode.classList.add 'timeflow-controls-jumpToNextMarker'
+		@jumpToNextMarkerNode = Foxie '.timeflow-controls-jumpToNextMarker'
 
-		@node.appendChild @jumpToNextMarkerNode
+		@jumpToNextMarkerNode.putIn @node
 
 		@rootView.moosh.onClick(@jumpToNextMarkerNode)
 		.onDone =>
@@ -143,10 +140,10 @@ module.exports = class ControlsView
 
 		if @model.isPlaying()
 
-			@playPauseNode.classList.add 'playing'
+			@playPauseNode.addClass 'playing'
 
 		else
 
-			@playPauseNode.classList.remove 'playing'
+			@playPauseNode.removeClass 'playing'
 
 		return
