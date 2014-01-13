@@ -8,7 +8,9 @@ CursorControl = require './tools/CursorControl'
 
 module.exports = class EditorView
 
-	constructor: (@id, @parentNode, @model) ->
+	constructor: (@model, @parentNode) ->
+
+		@id = @model.id
 
 		do @_prepareNode
 

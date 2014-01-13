@@ -1,8 +1,9 @@
 GraphModel = require './editorModel/GraphModel'
 MainBoxModel = require './editorModel/MainBoxModel'
+Communicator = require './editorModel/Communicator'
+TimelineModel = require './editorModel/TimelineModel'
 TimeControlModel = require './editorModel/TimeControlModel'
 WorkspaceManagerModel = require './editorModel/WorkspaceManagerModel'
-TimelineModel = require './editorModel/TimelineModel'
 
 module.exports = class EditorModel
 
@@ -47,5 +48,15 @@ module.exports = class EditorModel
 		@workspaces.loadFrom se.workspaces
 
 		@timeControl.loadFrom se.timeControl
+
+		@
+
+	communicateWith: (server, namespace, password) ->
+
+		if @_communicator?
+
+			throw Error "Editor '#{@id}' already has a communicator set up"
+
+		@_communicator = new Communicator @, server, namespace, password
 
 		@

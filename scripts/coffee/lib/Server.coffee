@@ -1,11 +1,43 @@
+ConnectionToClient = require './server/ConnectionToClient'
 sysPath = require 'path'
+array = require 'utila/scripts/js/lib/array'
 git = require 'gift'
 io = require 'socket.io'
 fs = require 'graceful-fs'
 
 module.exports = class Server
 
-	constructor: (@rootPath, @port, @timelinesDir) ->
+	constructor: (rootPath, timelinesDir, port, acceptablePasswords) ->
+
+		@_setPaths rootPath, timelinesDir
+
+		@_setPort port
+
+		@_setAcceptablePasswords acceptablePasswords
+
+		do @_setupGit
+
+		do @_setupSocket
+
+	_setPaths: (@rootPath, @timelinesDir) ->
+
+		@gitPath = sysPath.join @rootPath, '.git'
+
+		unless fs.existsSync @gitPath
+
+			throw Error "Git repo path '#{@gitPath}' doesn't exist"
+
+		unless String(@timelinesDir).length > 0
+
+			throw Error "@timelinesDir '#{@timelinesDir}' is not valid"
+
+		@timelinesPath = sysPath.join @rootPath, @timelinesDir
+
+		unless fs.existsSync @timelinesPath
+
+			throw Error "Timelines path '#{@timelinesPath}' doesn't exist"
+
+	_setPort: (@port) ->
 
 		unless Number.isFinite(@port) and parseInt(@port) is parseFloat(@port)
 
@@ -15,23 +47,23 @@ module.exports = class Server
 
 			throw Error "Port must be an integer over 3000"
 
-		gitPath = sysPath.join @rootPath, '.git'
+	_setAcceptablePasswords: (@acceptablePasswords) ->
 
-		unless fs.existsSync gitPath
+		unless Array.isArray(@acceptablePasswords) and @acceptablePasswords.length > 0
 
-			throw Error "Git repo path '#{gitPath}' doesn't exist"
+			throw Error "acceptablePasswords must be an array of strings"
 
-		unless String(@timelinesDir).length > 0
+		for pass in @acceptablePasswords
 
-			throw Error "@timelinesDir '#{@timelinesDir}' is not valid"
+			unless typeof pass is 'string' and pass.length > 0
 
-		timelinesPath = sysPath.join @rootPath, @timelinesDir
+				throw Error "Invalid password in acceptablePasswords: '#{pass}'"
 
-		unless fs.existsSync timelinesPath
+		return
 
-			throw Error "Timelines path '#{timelinesPath}' doesn't exist"
+	_setupGit: ->
 
-		repo = git @rootPath
+		@repo = git @rootPath
 
 		# repo.add '.', ->
 
@@ -56,3 +88,25 @@ module.exports = class Server
 		# repo.status ->
 
 		# 	console.log arguments
+
+	_setupSocket: ->
+
+		@_connections = []
+
+		@_connectionCounter = 0
+
+		@io = io.listen @port
+
+		@io.on 'connection', @_serveConnection
+
+		console.log "listening to port #{@port}"
+
+		return
+
+	_serveConnection: (socket) =>
+
+		@_connections.push new ConnectionToClient @, @_connectionCounter++, socket
+
+	_removeConnection: (c) ->
+
+		array.pluckOneItem @_connections, c
