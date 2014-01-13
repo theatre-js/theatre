@@ -2,6 +2,8 @@ module.exports = class ConnectionToClient
 
 	constructor: (@server, @id, @socket) ->
 
+		@dataHandler = @server.dataHandler
+
 		console.log "connection: #{@id}"
 
 		# get redy for disconnect
@@ -12,7 +14,7 @@ module.exports = class ConnectionToClient
 
 		@socket.on 'authenticate', @_authenticate
 
-		@socket.on 'get-head', @_getHead
+		@socket.on 'get-head', @_sendHeadJson
 
 		do @_askAuthentication
 
@@ -34,13 +36,21 @@ module.exports = class ConnectionToClient
 
 	_authenticate: (data) =>
 
-		console.log 'tryed to authenticate with', data
+		console.log 'tried to authenticate with', data
 
 		@_isAuthenticated = data in @server.acceptablePasswords
 
-		@socket.emit 'authentication-result', @_isAuthenticated
+		@socket.emit 'receive-authentication-result', @_isAuthenticated
 
-	_getHead: ->
+	_sendHeadJson: =>
+
+		console.log 'sending head json'
+
+		@dataHandler.getJsonForNamespace(@namespaceName)
+
+		.then (json) =>
+
+			@socket.emit 'receive-head', json
 
 	_askNamespace: ->
 
@@ -54,7 +64,7 @@ module.exports = class ConnectionToClient
 
 		console.log 'Setting namespace to', ns
 
-		unless ns in @server.namespaces
+		unless @dataHandler.hasNamespace ns
 
 			console.log 'Invalid namespace: ', ns
 

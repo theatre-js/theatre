@@ -18,13 +18,15 @@ module.exports = class ConnectionToServer
 
 		@_socket.on 'authenticate', @_authenticate
 
-		@_socket.on 'authentication-result', @_authenticationResult
+		@_socket.on 'receive-authentication-result', @_receiveAuthenticationResult
 
-		@_socket.on 'set-client-id', @_setClientId
+		@_socket.on 'set-client-id', @_receiveClientID
 
 		@_socket.on 'receive-head', @_recieveHead
 
-		@_socket.on 'get-namespace', @_getNamespace
+		@_socket.on 'get-namespace', @_sendNamespace
+
+
 
 	_authenticate: =>
 
@@ -32,13 +34,13 @@ module.exports = class ConnectionToServer
 
 		@_socket.emit 'authenticate', @communicator._password
 
-	_setClientId: (clientId) =>
+	_receiveClientID: (clientId) =>
 
 		@clientId = parseInt clientId
 
 		console.log 'client id is', @clientId
 
-	_authenticationResult: (data) =>
+	_receiveAuthenticationResult: (data) =>
 
 		@isAuthenticated = Boolean data
 
@@ -66,8 +68,9 @@ module.exports = class ConnectionToServer
 
 		console.log 'receiving head:', data
 
-	_getNamespace: =>
+	_sendNamespace: =>
 
 		console.log 'setting namespace to', @communicator._namespaceName
 
 		@_socket.emit 'set-namespace', @communicator._namespaceName
+
