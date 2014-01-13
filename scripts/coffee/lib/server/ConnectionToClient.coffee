@@ -12,7 +12,11 @@ module.exports = class ConnectionToClient
 
 		@socket.on 'authenticate', @_authenticate
 
+		@socket.on 'get-head', @_getHead
+
 		do @_askAuthentication
+
+		do @_askNamespace
 
 	_handleDisconnect: =>
 
@@ -36,3 +40,24 @@ module.exports = class ConnectionToClient
 
 		@socket.emit 'authentication-result', @_isAuthenticated
 
+	_getHead: ->
+
+	_askNamespace: ->
+
+		@namespaceName = null
+
+		@socket.emit 'get-namespace'
+
+		@socket.on 'set-namespace', @_setNamespace
+
+	_setNamespace: (ns) =>
+
+		console.log 'Setting namespace to', ns
+
+		unless ns in @server.namespaces
+
+			console.log 'Invalid namespace: ', ns
+
+			@socket.emit 'invalid-namespace'
+
+		@namespaceName = ns

@@ -8,6 +8,8 @@ module.exports = class ConnectionToServer
 
 		@isAuthenticated = no
 
+		@initiallyLoaded = no
+
 		do @_setupSocket
 
 	_setupSocket: ->
@@ -20,9 +22,13 @@ module.exports = class ConnectionToServer
 
 		@_socket.on 'set-client-id', @_setClientId
 
+		@_socket.on 'receive-head', @_recieveHead
+
+		@_socket.on 'get-namespace', @_getNamespace
+
 	_authenticate: =>
 
-		console.log 'authenticating'
+		console.log 'authenticating with', @communicator._password
 
 		@_socket.emit 'authenticate', @communicator._password
 
@@ -30,16 +36,38 @@ module.exports = class ConnectionToServer
 
 		@clientId = parseInt clientId
 
-		console.log 'client id', @clientId
+		console.log 'client id is', @clientId
 
-	_authenticationResult: (data) ->
+	_authenticationResult: (data) =>
 
 		@isAuthenticated = Boolean data
 
 		if @isAuthenticated
 
-			console.log 'Authenticated'
+			console.log 'authenticated'
+
+			do @_decideOnLoading
 
 		else
 
-			console.log 'Auth failed'
+			console.log 'auth failed'
+
+	_decideOnLoading: ->
+
+		return if @initiallyLoaded
+
+		@initiallyLoaded = yes
+
+		console.log 'asking for head'
+
+		@_socket.emit 'get-head'
+
+	_recieveHead: (data) =>
+
+		console.log 'receiving head:', data
+
+	_getNamespace: =>
+
+		console.log 'setting namespace to', @communicator._namespaceName
+
+		@_socket.emit 'set-namespace', @communicator._namespaceName

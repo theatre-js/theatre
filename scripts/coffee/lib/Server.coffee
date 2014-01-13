@@ -37,6 +37,24 @@ module.exports = class Server
 
 			throw Error "Timelines path '#{@timelinesPath}' doesn't exist"
 
+		namespaces = fs.readdirSync @timelinesPath
+
+		@namespaces = []
+
+		unless Array.isArray(namespaces) and namespaces.length > 0
+
+			throw Error "no namespace found"
+
+		for namespace in namespaces
+
+			unless namespace.match /^[a-zA-Z0-9\-\_]+\.json$/
+
+				throw Error "Invalid namespace json file: #{namespace}"
+
+			@namespaces.push namespace.substr(0, namespace.length - 5)
+
+		return
+
 	_setPort: (@port) ->
 
 		unless Number.isFinite(@port) and parseInt(@port) is parseFloat(@port)
