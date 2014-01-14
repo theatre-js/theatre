@@ -6,16 +6,36 @@ module.exports = class Communicator
 
 		@connection = new ConnectionToServer @
 
-		@connection.connect().then =>
-
-			do @_load
+		@connection.connect().then @_load
 
 	_load: =>
 
 		console.log 'asking for head-json'
 
-		@connection.askFor('head-json').then (data) =>
+		@connection.request('head-json').then (data) =>
 
 			console.log 'received head-json'
 
 			@editor.loadFrom data
+
+	wireLocalChange: (address, newData) ->
+
+		console.log 'local change', address, newData
+
+		console.log 'wiring local change for', address
+
+		req =
+
+			address: address
+
+			newData: newData
+
+		@connection.request('replace-part-of-head', req)
+
+		.then (response) =>
+
+			console.log 'server responded with', response
+
+			return
+
+		return

@@ -1,3 +1,4 @@
+_Emitter = require './_Emitter'
 GraphModel = require './editorModel/GraphModel'
 MainBoxModel = require './editorModel/MainBoxModel'
 Communicator = require './editorModel/Communicator'
@@ -5,9 +6,11 @@ TimelineModel = require './editorModel/TimelineModel'
 TimeControlModel = require './editorModel/TimeControlModel'
 WorkspaceManagerModel = require './editorModel/WorkspaceManagerModel'
 
-module.exports = class EditorModel
+module.exports = class EditorModel extends _Emitter
 
 	constructor: (@id = 'timeFlow', @timeFlow) ->
+
+		super
 
 		@graph = new GraphModel @
 
@@ -53,10 +56,26 @@ module.exports = class EditorModel
 
 	communicateWith: (server, namespace, password) ->
 
-		if @_communicator?
+		if @communicator?
 
 			throw Error "Editor '#{@id}' already has a communicator set up"
 
-		@_communicator = new Communicator @, server, namespace, password
+		@communicator = new Communicator @, server, namespace, password
 
 		@
+
+	run: ->
+
+		if @_isRunning
+
+			throw Error "Already running"
+
+		@_isRunning = yes
+
+		@_emit 'run'
+
+		@
+
+	isRunning: ->
+
+		@_isRunning

@@ -6,7 +6,7 @@ module.exports = class ConnectionToClient
 
 		@_isAuthenticated = no
 
-		@_askListeners = {}
+		@_requestListeners = {}
 
 		console.log "connection: #{@id}"
 
@@ -14,9 +14,9 @@ module.exports = class ConnectionToClient
 
 		socket.$emit = (msg, data, cb) =>
 
-			if msg.substr(0, 15) is 'client-asks-for'
+			if msg.substr(0, 15) is 'client-requests'
 
-				@_receiveRequest msg, data, cb
+				@_receiveClientRequest msg, data, cb
 
 				return
 
@@ -25,9 +25,9 @@ module.exports = class ConnectionToClient
 		# get redy for disconnect
 		@socket.on 'disconnect', @_handleDisconnect
 
-		@socket.emit '-server-asks:send-auth-data', @id
+		@socket.emit 'server-asks:send-auth-data', @id
 
-		@socket.on '-client-asks:get-auth-data', @_getAuthData
+		@socket.on 'client-asks:get-auth-data', @_getAuthData
 
 	_handleDisconnect: =>
 
@@ -37,7 +37,7 @@ module.exports = class ConnectionToClient
 
 	_getAuthData: (data, cb) =>
 
-		console.log 'got asked for auth'
+		console.log 'got requested for auth'
 
 		{password, namespace} = data
 
@@ -63,11 +63,11 @@ module.exports = class ConnectionToClient
 
 		@_isAuthenticated = yes
 
-	_receiveRequest: (msg, data, cb) =>
+	_receiveClientRequest: (msg, data, cb) =>
 
 		what = msg.substr 16, msg.length
 
-		console.log 'got asked for', what
+		console.log 'got requested for', what
 
 		unless @_isAuthenticated
 
@@ -75,7 +75,7 @@ module.exports = class ConnectionToClient
 
 			return cb 'error:auth-required'
 
-		listener = @_askListeners[what]
+		listener = @_requestListeners[what]
 
 		unless listener?
 
@@ -83,12 +83,12 @@ module.exports = class ConnectionToClient
 
 		listener data, cb, what
 
-	whenAskedFor: (what, cb) ->
+	whenRequestedFor: (what, cb) ->
 
-		if @_askListeners[what]?
+		if @_requestListeners[what]?
 
 			throw Error "msg '#{what}' already has a listener attached"
 
-		@_askListeners[what] = cb
+		@_requestListeners[what] = cb
 
 		@

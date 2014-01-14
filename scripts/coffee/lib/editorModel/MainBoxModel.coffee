@@ -1,12 +1,16 @@
-_Emitter = require '../_Emitter'
+_Dynamic = require '../_Dynamic'
 
-module.exports = class MainBoxModel extends _Emitter
+module.exports = class MainBoxModel extends _Dynamic
 
 	constructor: (@editor) ->
 
-		@height = 400
-
 		super
+
+		@_serializedAddress = 'mainBox'
+
+		@rootModel = @editor
+
+		@height = 400
 
 	isVisible: -> yes
 
@@ -16,7 +20,7 @@ module.exports = class MainBoxModel extends _Emitter
 
 		se
 
-	loadFrom: (se) ->
+	_loadFrom: (se) ->
 
 		@setHeight se.height
 
@@ -29,5 +33,7 @@ module.exports = class MainBoxModel extends _Emitter
 		@height = newH
 
 		@_emit 'height-change'
+
+		do @_reportLocalChange
 
 		return

@@ -6,6 +6,8 @@ module.exports = class _Emitter
 
 		@_listeners = {}
 
+		@_disabledEmitters = {}
+
 	on: (eventName, listener) ->
 
 		unless @_listeners[eventName]?
@@ -41,3 +43,61 @@ module.exports = class _Emitter
 			listener data
 
 		return
+
+	# this makes sure that all the calls to this class's method 'fnName'
+	# are throttled
+	_throttleEmitterMethod: (fnName, time = 1000) ->
+
+		originalFn = @[fnName]
+
+		if typeof originalFn isnt 'function'
+
+			throw Error "this class does not have a method called '#{fnName}'"
+
+		lastCallArgs = null
+		pending = no
+		timer = null
+
+		@[fnName] = =>
+
+			lastCallArgs = arguments
+
+			do pend
+
+		pend = =>
+
+			if pending
+
+				clearTimeout timer
+
+			timer = setTimeout runIt, time
+
+			pending = yes
+
+		runIt = =>
+
+			pending = no
+
+			originalFn.apply @, lastCallArgs
+
+	_disableEmitter: (fnName) ->
+
+		if @_disabledEmitters[fnName]?
+
+			throw Error "#{fnName} is already a disabled emitter"
+
+		@_disabledEmitters[fnName] = @[fnName]
+
+		@[fnName] = ->
+
+	_enableEmitter: (fnName) ->
+
+		fn = @_disabledEmitters[fnName]
+
+		unless fn?
+
+			throw Error "#{fnName} is not a disabled emitter"
+
+		@[fnName] = fn
+
+		delete @_disabledEmitters[fnName]

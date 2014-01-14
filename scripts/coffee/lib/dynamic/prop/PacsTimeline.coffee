@@ -188,7 +188,7 @@ module.exports = class PacsTimeline extends _Emitter
 
 		@_idCounter++
 
-		p = new Point @, @prop.id + '-connector-' + @_idCounter, t, val, leftHandlerX, leftHandlerY, rightHandlerX, rightHandlerY
+		p = new Point @, @prop.id + '-point-' + @_idCounter, t, val, leftHandlerX, leftHandlerY, rightHandlerX, rightHandlerY
 
 		@_addPoint p
 

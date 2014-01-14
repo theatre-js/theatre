@@ -52,7 +52,7 @@ module.exports = class ConnectionToServer extends _Emitter
 
 		@_socket = io.connect(@communicator._server)
 
-		@_socket.on '-server-asks:send-auth-data', @_sendAuthData
+		@_socket.on 'server-asks:send-auth-data', @_sendAuthData
 
 	_sendAuthData: (clientId) =>
 
@@ -62,7 +62,7 @@ module.exports = class ConnectionToServer extends _Emitter
 
 		console.log "authenticating with '#{@communicator._password}' in '#{@communicator._namespaceName}'"
 
-		@_socket.emit '-client-asks:get-auth-data',
+		@_socket.emit 'client-asks:get-auth-data',
 
 			namespace: @communicator._namespaceName
 
@@ -90,11 +90,17 @@ module.exports = class ConnectionToServer extends _Emitter
 
 		@removeListeners 'next-authentication'
 
-	askFor: (what, data) ->
+	request: (what, data) ->
+
+		@ensureAuthentication().then =>
+
+			@_request what, data
+
+	_request: (what, data) ->
 
 		deferred = wn.defer()
 
-		@_socket.emit 'client-asks-for:' + what, data, (receivedData) ->
+		@_socket.emit 'client-requests:' + what, data, (receivedData) ->
 
 			deferred.resolve receivedData
 

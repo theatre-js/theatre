@@ -26,7 +26,7 @@ module.exports = class EditorView
 
 		@controls = new ControlsView @
 
-		@_prepared = no
+		@model.on 'run', => do @_run
 
 	tick: (t) =>
 
@@ -40,15 +40,8 @@ module.exports = class EditorView
 
 		return
 
-	prepare: ->
-
-		if @_prepared
-
-			throw Error "Already prepared"
+	_run: ->
 
 		@node.putIn @parentNode
 
 		do @graph.prepare
-
-		@_prepared = yes
-

@@ -90,6 +90,15 @@ module.exports = class DataHandler
 			throw Error "Invalid namespace '#{ns}'"
 
 		nodefn.call(fs.readFile, @getJsonPathFor(ns), {encoding: 'utf-8'})
+		.then (json) =>
+
+			JSON.parse json
+
+	replaceJsonForNamespace: (ns, obj) ->
+
+		json = JSON.stringify obj
+
+		nodefn.call(fs.writeFile, @getJsonPathFor(ns), json, {encoding: 'utf-8'})
 
 	getJsonPathFor: (ns) ->
 
