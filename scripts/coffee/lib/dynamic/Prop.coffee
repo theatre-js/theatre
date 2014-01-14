@@ -1,8 +1,15 @@
 PacsTimeline = require './prop/PacsTimeline'
+_DynamicModel = require '../_DynamicModel'
 
-module.exports = class Prop
+module.exports = class Prop extends _DynamicModel
 
 	constructor: (@timeFlow, @id, @arrayName, @arrayIndex) ->
+
+		@rootModel = @timeFlow.rootModel
+
+		@_serializedAddress = ['timeFlow', '_allProps', @id]
+
+		super
 
 		@array = @timeFlow._arrays[@arrayName]
 
@@ -22,7 +29,7 @@ module.exports = class Prop
 
 		se
 
-	loadFrom: (se) ->
+	_loadFrom: (se) ->
 
 		@pacs.loadFrom se.pacs
 
@@ -59,6 +66,8 @@ module.exports = class Prop
 		@array[@arrayIndex]
 
 	_reportUpdate: (from, to) ->
+
+		do @_reportLocalChange
 
 		for ic in @_incrementalIsolates
 

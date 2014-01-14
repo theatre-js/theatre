@@ -1,6 +1,6 @@
-_Dynamic = require '../_Dynamic'
+_DynamicModel = require '../_DynamicModel'
 
-module.exports = class MainBoxModel extends _Dynamic
+module.exports = class MainBoxModel extends _DynamicModel
 
 	constructor: (@editor) ->
 

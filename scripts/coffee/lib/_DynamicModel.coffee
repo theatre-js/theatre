@@ -1,7 +1,7 @@
 _Emitter = require './_Emitter'
 fn = require './tools/fn'
 
-module.exports = class _Dynamic extends _Emitter
+module.exports = class _DynamicModel extends _Emitter
 
 	constructor: ->
 

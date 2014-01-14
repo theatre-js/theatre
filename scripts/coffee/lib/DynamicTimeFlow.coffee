@@ -31,6 +31,8 @@ module.exports = class DynamicTimeFlow extends _Emitter
 
 		@timelineLength = 0
 
+	setRootModel: (@rootModel) ->
+
 	serialize: ->
 
 		se = _allProps: {}

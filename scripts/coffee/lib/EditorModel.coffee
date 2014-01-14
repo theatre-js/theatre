@@ -12,6 +12,8 @@ module.exports = class EditorModel extends _Emitter
 
 		super
 
+		@timeFlow.setRootModel @
+
 		@graph = new GraphModel @
 
 		@mainBox = new MainBoxModel @
