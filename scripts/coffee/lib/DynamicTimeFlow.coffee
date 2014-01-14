@@ -47,19 +47,15 @@ module.exports = class DynamicTimeFlow extends _Emitter
 
 		currentKeys = Object.keys(@_allProps)
 
-		for i, name of currentKeys
+		for name, prop of @_allProps
 
-			unless serializedKeys[i] is name
+			propData = se._allProps[name]
 
-				throw Error "Prop number #{i} is supposed to be '#{name}', but is #{serializedKeys[i]}"
+			unless propData?
 
-		unless serializedKeys.length is currentKeys.length
+				throw Error "Prop '#{name}' isn't found in the received serialized data"
 
-			throw Error "Number of props is supposed to be #{currentKeys.length}. Given: #{serializedKeys.length}"
-
-		for id, prop of @_allProps
-
-			prop.loadFrom se._allProps[id]
+			prop.loadFrom propData
 
 		return
 
