@@ -10,7 +10,7 @@ module.exports = class Session
 
 		@connection = new ConnectionToClient @, socket
 
-		@connection.whenRequestedFor 'head-json', @_sendHeadJson
+		@connection.whenRequestedFor 'head-data', @_sendHeadData
 
 		@connection.whenRequestedFor 'replace-part-of-head', @_replacePartOfHead
 
@@ -28,12 +28,12 @@ module.exports = class Session
 
 	_setNamespace: (@namespaceName) ->
 
-	_sendHeadJson: (received, cb) =>
+	_sendHeadData: (received, cb) =>
 
-		@dataHandler.getHeadJsonForNamespace(@namespaceName)
-		.then (json) =>
+		@dataHandler.getHeadDataForNamespace(@namespaceName)
+		.then (data) =>
 
-			cb json
+			cb data
 
 		return
 
@@ -43,10 +43,8 @@ module.exports = class Session
 
 		{address, newData} = parts
 
-		@dataHandler.getHeadJsonForNamespace(@namespaceName)
-		.then (json) =>
-
-			obj = json
+		@dataHandler.getHeadDataForNamespace(@namespaceName)
+		.then (obj) =>
 
 			cur = obj
 
@@ -58,10 +56,10 @@ module.exports = class Session
 
 				unless cur?
 
-					throw Error "Couldn't find subName '#{subName}' in json data"
+					throw Error "Couldn't find subName '#{subName}' in cson data"
 
 			cur[lastName] = newData
 
-			@dataHandler.replaceJsonForNamespace(@namespaceName, obj)
+			@dataHandler.replaceHeadDataForNamespace(@namespaceName, obj)
 
 			cb 'done'

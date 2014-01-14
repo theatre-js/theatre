@@ -29,7 +29,8 @@
     "kilid": "*",
     "moosh": "*",
     "gift": "~0.1.1",
-    "when": "~2.7.1"
+    "when": "~2.7.1",
+    "cson": "~1.4.5"
   },
   "devDependencies": {
     "coffee-script": "~1.6.3",

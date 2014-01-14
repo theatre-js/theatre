@@ -1,5 +1,6 @@
 fs = require 'graceful-fs'
 git = require 'gift'
+CSON = require 'cson'
 nodefn = require 'when/node/function'
 sysPath = require 'path'
 
@@ -39,15 +40,17 @@ module.exports = class DataHandler
 
 		for namespace in namespaces
 
-			unless namespace.match /^[a-zA-Z0-9\-\_]+\.json$/
-
-				throw Error "Invalid namespace json file: #{namespace}"
+			continue unless namespace.match /^[a-zA-Z0-9\-\_]+\.cson$/
 
 			nsName = namespace.substr(0, namespace.length - 5)
 
 			console.log "recognized namespace", nsName
 
 			@namespaces.push nsName
+
+		if @namespaces.length is 0
+
+			throw Error "No namespace cson file was found"
 
 		return
 
@@ -83,23 +86,25 @@ module.exports = class DataHandler
 
 		# 	console.log arguments
 
-	getHeadJsonForNamespace: (ns) ->
+	getHeadDataForNamespace: (ns) ->
 
 		unless @hasNamespace ns
 
 			throw Error "Invalid namespace '#{ns}'"
 
-		nodefn.call(fs.readFile, @getJsonPathFor(ns), {encoding: 'utf-8'})
-		.then (json) =>
+		nodefn.call(fs.readFile, @getDataFilePathFor(ns), {encoding: 'utf-8'})
+		.then (cson) =>
 
-			JSON.parse json
+			obj = CSON.parseSync cson
 
-	replaceJsonForNamespace: (ns, obj) ->
+			obj
 
-		json = JSON.stringify obj
+	replaceHeadDataForNamespace: (ns, obj) ->
 
-		nodefn.call(fs.writeFile, @getJsonPathFor(ns), json, {encoding: 'utf-8'})
+		cson = CSON.stringifySync obj
 
-	getJsonPathFor: (ns) ->
+		nodefn.call(fs.writeFile, @getDataFilePathFor(ns), cson, {encoding: 'utf-8'})
 
-		sysPath.join @timelinesPath, ns + '.json'
+	getDataFilePathFor: (ns) ->
+
+		sysPath.join @timelinesPath, ns + '.cson'

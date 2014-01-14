@@ -10,11 +10,11 @@ module.exports = class Communicator
 
 	_load: =>
 
-		console.log 'asking for head-json'
+		console.log 'asking for head-data'
 
-		@connection.request('head-json').then (data) =>
+		@connection.request('head-data').then (data) =>
 
-			console.log 'received head-json'
+			console.log 'received head-data'
 
 			@editor.loadFrom data
 
