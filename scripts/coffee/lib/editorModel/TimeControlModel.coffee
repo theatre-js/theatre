@@ -1,8 +1,12 @@
-_Emitter = require '../_Emitter'
+_DynamicModel = require '../_DynamicModel'
 
-module.exports = class TimeControlModel extends _Emitter
+module.exports = class TimeControlModel extends _DynamicModel
 
 	constructor: (@editor) ->
+
+		@rootModel = @editor
+
+		@_serializedAddress = 'timeControl'
 
 		super
 
@@ -59,7 +63,7 @@ module.exports = class TimeControlModel extends _Emitter
 
 		se
 
-	loadFrom: (se) ->
+	_loadFrom: (se) ->
 
 		if @_isPlaying
 
@@ -81,6 +85,8 @@ module.exports = class TimeControlModel extends _Emitter
 
 		@_emit 'length-change'
 
+		do @_reportLocalChange
+
 		return
 
 	_updateT: ->
@@ -90,6 +96,8 @@ module.exports = class TimeControlModel extends _Emitter
 		t = @t
 
 		@_emit 'time-change'
+
+		do @_reportLocalChange
 
 		return
 
@@ -128,6 +136,8 @@ module.exports = class TimeControlModel extends _Emitter
 		@_focus.duration = to - from
 
 		@_emit 'focus-change'
+
+		do @_reportLocalChange
 
 		return
 
