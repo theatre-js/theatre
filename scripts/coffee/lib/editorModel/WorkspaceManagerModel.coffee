@@ -1,10 +1,14 @@
 array = require 'utila/scripts/js/lib/array'
 WorkspaceModel = require './workspaceManagerModel/WorkspaceModel'
-_Emitter = require '../_Emitter'
+_DynamicModel = require '../_DynamicModel'
 
-module.exports = class WorkspaceManagerModel extends _Emitter
+module.exports = class WorkspaceManagerModel extends _DynamicModel
 
 	constructor: (@editor) ->
+
+		@rootModel = @editor
+
+		@_serializedAddress = 'workspaces'
 
 		super
 
@@ -22,7 +26,7 @@ module.exports = class WorkspaceManagerModel extends _Emitter
 
 		se.workspaces = workspaces = []
 
-		workspaces.push ws.serialize() for ws in @_workspaces
+		workspaces.push ws.serialize() for ws in @_workspaces when ws.name isnt 'EMPTY'
 
 		se._activeWorkspaceName = ''
 
@@ -32,9 +36,11 @@ module.exports = class WorkspaceManagerModel extends _Emitter
 
 		se
 
-	loadFrom: (se) ->
+	_loadFrom: (se) ->
 
 		for ws in se.workspaces
+
+			continue if ws.name is 'EMPTY'
 
 			@_constructWorkspaceAndAdd ws
 
@@ -68,6 +74,8 @@ module.exports = class WorkspaceManagerModel extends _Emitter
 
 		workspace.on 'new-prop', (propHolder) =>
 
+			do @_reportLocalChange
+
 			if workspace is @_active
 
 				@_emit 'prop-add', propHolder
@@ -85,6 +93,8 @@ module.exports = class WorkspaceManagerModel extends _Emitter
 			return
 
 		workspace.on 'prop-remove', (propHolder) =>
+
+			do @_reportLocalChange
 
 			if workspace is @_active
 
@@ -104,9 +114,15 @@ module.exports = class WorkspaceManagerModel extends _Emitter
 
 		workspace.on 'rename', =>
 
+			do @_reportLocalChange
+
 			if workspace is @_active
 
 				@_emit 'active-workspace-change', workspace
+
+		workspace.on 'remove', =>
+
+			do @_reportLocalChange
 
 		return
 
@@ -126,9 +142,13 @@ module.exports = class WorkspaceManagerModel extends _Emitter
 
 		@_emit 'new-workspace', workspace
 
+		do @_reportLocalChange
+
 		return
 
 	_getWorkspaceByName: (name) ->
+
+		console.log name
 
 		name = String name
 
@@ -234,7 +254,7 @@ module.exports = class WorkspaceManagerModel extends _Emitter
 
 		@_emit 'active-workspace-change'
 
-		# @_emit 'list-of-props-change'
+		do @_reportLocalChange
 
 		return
 
