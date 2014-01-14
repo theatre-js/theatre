@@ -1,5 +1,5 @@
-ConnectionToClient = require './server/ConnectionToClient'
 DataHandler = require './server/DataHandler'
+Session = require './server/Session'
 array = require 'utila/scripts/js/lib/array'
 io = require 'socket.io'
 
@@ -41,7 +41,7 @@ module.exports = class Server
 
 	_setupSocket: ->
 
-		@_connections = []
+		@_sessions = []
 
 		@_connectionCounter = 0
 
@@ -57,8 +57,8 @@ module.exports = class Server
 
 	_serveConnection: (socket) =>
 
-		@_connections.push new ConnectionToClient @, @_connectionCounter++, socket
+		@_sessions.push new Session @, @_connectionCounter++, socket
 
-	_removeConnection: (c) ->
+	_removeSession: (s) ->
 
-		array.pluckOneItem @_connections, c
+		array.pluckOneItem @_sessions, s

@@ -30,7 +30,11 @@ module.exports = class WorkspacePropHolderModel extends _Emitter
 
 		actorProp = workspace.rootModel.graph.getActorPropById se.actorPropId
 
-		new self workspace, actorProp
+		propHolder = new self workspace, actorProp
+
+		propHolder._expanded = Boolean se._expanded
+
+		propHolder
 
 	isExpanded: ->
 

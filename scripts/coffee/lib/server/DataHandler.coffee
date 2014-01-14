@@ -83,7 +83,7 @@ module.exports = class DataHandler
 
 		# 	console.log arguments
 
-	getJsonForNamespace: (ns) ->
+	getHeadJsonForNamespace: (ns) ->
 
 		unless @hasNamespace ns
 

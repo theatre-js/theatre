@@ -1,8 +1,12 @@
 io = require 'socket.io/node_modules/socket.io-client'
+_Emitter = require '../../_Emitter'
+wn = require 'when'
 
-module.exports = class ConnectionToServer
+module.exports = class ConnectionToServer extends _Emitter
 
 	constructor: (@communicator) ->
+
+		super
 
 		@clientId = -1
 
@@ -12,65 +16,86 @@ module.exports = class ConnectionToServer
 
 		do @_setupSocket
 
+	ensureAuthentication: ->
+
+		deferred = wn.defer()
+
+		if @isAuthenticated
+
+			deferred.resolve()
+
+			return deferred.promise
+
+		resolved = no
+
+		@on 'next-authentication', (didAuthenticate) ->
+
+			return if resolved
+
+			resolved = yes
+
+			if didAuthenticate
+
+				deferred.resolve()
+
+			else
+
+				deferred.reject()
+
+		deferred.promise
+
+	connect: ->
+
+		@ensureAuthentication()
+
 	_setupSocket: ->
 
 		@_socket = io.connect(@communicator._server)
 
-		@_socket.on 'authenticate', @_authenticate
+		@_socket.on '-server-asks:send-auth-data', @_sendAuthData
 
-		@_socket.on 'receive-authentication-result', @_receiveAuthenticationResult
-
-		@_socket.on 'set-client-id', @_receiveClientID
-
-		@_socket.on 'receive-head', @_recieveHead
-
-		@_socket.on 'get-namespace', @_sendNamespace
-
-
-
-	_authenticate: =>
-
-		console.log 'authenticating with', @communicator._password
-
-		@_socket.emit 'authenticate', @communicator._password
-
-	_receiveClientID: (clientId) =>
+	_sendAuthData: (clientId) =>
 
 		@clientId = parseInt clientId
 
-		console.log 'client id is', @clientId
+		console.log 'client id', @clientId
 
-	_receiveAuthenticationResult: (data) =>
+		console.log "authenticating with '#{@communicator._password}' in '#{@communicator._namespaceName}'"
 
-		@isAuthenticated = Boolean data
+		@_socket.emit '-client-asks:get-auth-data',
 
-		if @isAuthenticated
+			namespace: @communicator._namespaceName
 
-			console.log 'authenticated'
+			password: @communicator._password
 
-			do @_decideOnLoading
+		, @_getAuthResult
+
+	_getAuthResult: (data) =>
+
+		if data is 'accepted'
+
+			@isAuthenticated = yes
+
+			console.log 'auth accepted'
 
 		else
 
-			console.log 'auth failed'
+			@isAuthenticated = no
 
-	_decideOnLoading: ->
+			console.error 'auth failed: ', data
 
-		return if @initiallyLoaded
+		@_emit 'authentication', @isAuthenticated
 
-		@initiallyLoaded = yes
+		@_emit 'next-authentication', @isAuthenticated
 
-		console.log 'asking for head'
+		@removeListeners 'next-authentication'
 
-		@_socket.emit 'get-head'
+	askFor: (what, data) ->
 
-	_recieveHead: (data) =>
+		deferred = wn.defer()
 
-		console.log 'receiving head:', data
+		@_socket.emit 'client-asks-for:' + what, data, (receivedData) ->
 
-	_sendNamespace: =>
+			deferred.resolve receivedData
 
-		console.log 'setting namespace to', @communicator._namespaceName
-
-		@_socket.emit 'set-namespace', @communicator._namespaceName
-
+		deferred.promise

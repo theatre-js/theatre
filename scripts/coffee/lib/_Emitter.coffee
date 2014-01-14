@@ -24,6 +24,14 @@ module.exports = class _Emitter
 
 		@
 
+	removeListeners: (eventName) ->
+
+		return @ unless @_listeners[eventName]?
+
+		@_listeners[eventName].length = 0
+
+		@
+
 	_emit: (eventName, data) ->
 
 		return unless @_listeners[eventName]?
