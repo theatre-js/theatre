@@ -16,7 +16,7 @@ module.exports = class TimelineView
 
 		@timelineLength = timeControlModel.timelineLength
 
-		timeControlModel.on 'time-change', =>
+		timeControlModel.on 'length-change', =>
 
 			@timelineLength = timeControlModel.timelineLength
 

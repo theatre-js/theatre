@@ -109,7 +109,7 @@ module.exports = class SeekbarView
 
 		@model.on 'focus-change', =>
 
-			return if @_isNecessaryToReadjustSeeker()
+			return if @_reactToFocusChangeAndDecideOnRepositioningElements()
 
 			do @_repositionElements
 
@@ -373,7 +373,9 @@ module.exports = class SeekbarView
 
 		return
 
-	_isNecessaryToReadjustSeeker: ->
+	# In my defence, There are only two hard things in Computer Science:
+	# cache invalidation and naming things. -- Phil Karlton
+	_reactToFocusChangeAndDecideOnRepositioningElements: ->
 
 		t = @model.t
 
@@ -500,4 +502,3 @@ module.exports = class SeekbarView
 		@model.changeFocusArea newFrom, newTo
 
 		return
-
