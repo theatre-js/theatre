@@ -26,8 +26,6 @@ module.exports = class WorkspacePropHolderModel extends _Emitter
 
 		se.actorPropId = @actorProp.id
 
-		console.log 'serializing with', @_expanded
-
 		se._height = @_height
 
 		se

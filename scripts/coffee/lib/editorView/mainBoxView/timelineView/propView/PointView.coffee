@@ -194,6 +194,12 @@ module.exports = class PointView extends _ItemView
 
 		.onUp (e) =>
 
+			@node.removeClass 'moving'
+
+			@rootView.cursor.free()
+
+			do @_showHandlers
+
 			timeChange = @prop._XToTime e.absX
 
 			@model.setTime @model.t + timeChange
@@ -201,8 +207,6 @@ module.exports = class PointView extends _ItemView
 			valDiff = @prop._YToNormalizedVal e.absY
 
 			@model.setValue @model.value + valDiff
-
-			@rootView.cursor.free()
 
 			@pacs.done()
 
