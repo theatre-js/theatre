@@ -89,6 +89,8 @@ module.exports = class TimelineView
 
 	_remove: (propHolder) ->
 
+		console.log propHolder
+
 		for propView in @_currentProps
 
 			if propView.id is propHolder.id

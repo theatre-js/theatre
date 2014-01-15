@@ -23,7 +23,7 @@ module.exports = class TimelineModel extends _Emitter
 
 		@workspaces.on 'prop-add', (propHolder) => @_add propHolder
 
-		@workspaces.on 'prop-remove', => (propHolder) => @_remove propHolder
+		@workspaces.on 'prop-remove', (propHolder) => @_remove propHolder
 
 		@currentProps = []
 
