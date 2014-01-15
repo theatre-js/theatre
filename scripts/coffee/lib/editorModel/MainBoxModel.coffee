@@ -12,7 +12,17 @@ module.exports = class MainBoxModel extends _DynamicModel
 
 		@height = 400
 
-	isVisible: -> yes
+		@_isVisible = yes
+
+	isVisible: -> @_isVisible
+
+	toggleVisibility: ->
+
+		@_isVisible = not @_isVisible
+
+		@_emit 'visibility-toggle'
+
+		return
 
 	serialize: ->
 
@@ -34,6 +44,11 @@ module.exports = class MainBoxModel extends _DynamicModel
 
 		@_emit 'height-change'
 
+		@_emit 'position-change'
+
 		do @_reportLocalChange
 
 		return
+
+	toggleFullscreen: ->
+

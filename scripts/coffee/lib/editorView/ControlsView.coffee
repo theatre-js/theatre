@@ -14,13 +14,16 @@ module.exports = class ControlsView
 
 		@model.on 'play-state-change', => do @_updatePlayState
 
-		@mainBox = @editor.model.mainBox
-
 		@_curY = 0
+
+		@mainBoxModel = @editor.model.mainBox
+
+		@mainBox = @editor.mainBox
 
 		do @_updatePosition
 
-		@mainBox.on 'height-change', => do @_updatePosition
+		@editor.model.mainBox.on 'height-change', => do @_updatePosition
+		@editor.model.mainBox.on 'visibility-toggle', => do @_updatePosition
 
 		do @_updatePlayState
 
@@ -48,14 +51,19 @@ module.exports = class ControlsView
 
 	_prepareFullscreenNode: ->
 
-		@toggleFullScreenNode = Foxie '.timeflow-controls-fullscreen'
+		@toggleFullscreenNode = Foxie '.timeflow-controls-fullscreen'
 
-		@toggleFullScreenNode.putIn @node
+		@toggleFullscreenNode.putIn @node
 
-		@rootView.moosh.onClick(@toggleFullScreenNode)
+		@rootView.moosh.onClick(@toggleFullscreenNode)
 		.onDone =>
 
-			console.log 'to be implemented'
+			do @mainBoxModel.toggleVisibility
+
+		@rootView.kilid.on('alt+enter')
+		.onEnd =>
+
+			do @mainBoxModel.toggleVisibility
 
 	_prepareJumpToPrevMarkerNode: ->
 
@@ -127,7 +135,7 @@ module.exports = class ControlsView
 
 	_updatePosition: ->
 
-		newY = -@mainBox.height - 8
+		newY = -@mainBox.getCurrentHeight() - 8
 
 		return if newY is @_curY
 

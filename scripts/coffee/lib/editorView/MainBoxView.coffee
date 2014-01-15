@@ -29,13 +29,15 @@ module.exports = class MainBoxView extends _Emitter
 
 		@workspaceButtons = new WorkspaceButtonsView @
 
-		do @_resizeNode
+		do @_updateVertically
 
-		@model.on 'height-change', => do @_resizeNode
+		@_visible = yes
+
+		@model.on 'height-change', => do @_updateVertically
 
 	_prepareNode: ->
 
-		@node = Foxie('.timeflow-mainBox').putIn(@editor.node)
+		@node = Foxie('.timeflow-mainBox').putIn(@editor.node).trans(500)
 
 		@nodeResizeHandle = Foxie('.timeflow-mainBox-resizeHandle')
 		.putIn(@node)
@@ -45,25 +47,17 @@ module.exports = class MainBoxView extends _Emitter
 
 			@model.setHeight @model.height - e.relY
 
-		if @model.isVisible()
+		@model.on 'visibility-toggle', =>
 
-			do @show
-
-		@model.on 'visibility-change', =>
-
-			if @model.isVisible()
-
-				do @show
-
-			else
-
-				do @hide
+			do @_updateVisibility
 
 			return
 
-	_resizeNode: ->
+	_updateVertically: ->
 
-		@node.css 'height', @model.height + 'px'
+		@node.css('height', @model.height + 'px')
+
+		do @_updateVisibility
 
 		return
 
@@ -77,4 +71,22 @@ module.exports = class MainBoxView extends _Emitter
 
 		@_emit 'width-change'
 
-	show: ->
+	getCurrentHeight: ->
+
+		@model.height - (if @model.isVisible() then 0 else @model.height - 21)
+
+	_updateVisibility: ->
+
+		return if @_visible is @model.isVisible()
+
+		@_visible = @model.isVisible()
+
+		if @_visible
+
+			@node.moveYTo(0).setOpacity(1)
+
+		else
+
+			@node.moveYTo(@model.height - 21).setOpacity(0.8)
+
+		return
