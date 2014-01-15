@@ -14,11 +14,19 @@ module.exports = class ControlsView
 
 		@model.on 'play-state-change', => do @_updatePlayState
 
+		@mainBox = @editor.model.mainBox
+
+		@_curY = 0
+
+		do @_updatePosition
+
+		@mainBox.on 'height-change', => do @_updatePosition
+
 		do @_updatePlayState
 
 	_prepareNodes: ->
 
-		@node = Foxie '.timeflow-controls'
+		@node = Foxie('.timeflow-controls').trans(500)
 
 		@node.putIn @editor.node
 
@@ -26,7 +34,6 @@ module.exports = class ControlsView
 		do @_prepareJumpToPrevMarkerNode
 		do @_preparePlayPauseNode
 		do @_prepareJumpToNextMarkerNode
-
 
 	_preparePlayPauseNode: ->
 
@@ -118,19 +125,17 @@ module.exports = class ControlsView
 
 			@model.seekBy -8
 
-	_getSeekAmountByEvent: (e) ->
+	_updatePosition: ->
 
-		amount = 16
+		newY = -@mainBox.height - 8
 
-		if e.shiftKey
+		return if newY is @_curY
 
-			amount = 48
+		@_curY = newY
 
-		if e.altKey
+		@node.moveYTo(@_curY)
 
-			amount = 8
-
-		amount
+		return
 
 	_togglePlayState: ->
 
