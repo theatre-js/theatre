@@ -34,6 +34,14 @@ module.exports = class _Emitter
 
 		@
 
+	removeAllListeners: ->
+
+		for name, listeners of @_listeners
+
+			listeners.length = 0
+
+		@
+
 	_emit: (eventName, data) ->
 
 		return unless @_listeners[eventName]?

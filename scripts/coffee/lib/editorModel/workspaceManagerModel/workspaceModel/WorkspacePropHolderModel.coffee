@@ -14,6 +14,8 @@ module.exports = class WorkspacePropHolderModel extends _Emitter
 
 		@_expanded = yes
 
+		@_height = 180
+
 	serialize: ->
 
 		se = {}
@@ -44,4 +46,20 @@ module.exports = class WorkspacePropHolderModel extends _Emitter
 
 		@_expanded = not @_expanded
 
+		@_emit 'expansion-toggle'
+
 		return @_expanded
+
+	getHeight: ->
+
+		@_height
+
+	setHeight: (newHeight) ->
+
+		return if newHeight is @_height
+
+		@_height = parseInt(newHeight)|0
+
+		@_emit 'height-change'
+
+		return

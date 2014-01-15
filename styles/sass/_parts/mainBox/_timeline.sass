@@ -21,8 +21,6 @@
 
 	position: relative
 
-	min-height: 30px
-
 	clear: both
 
 	background: #090909
@@ -33,17 +31,44 @@
 
 	border-bottom: 1px solid #101010
 
-	transition: 0.5s all ease-in-out
+	&.shouldTransition
+
+		transition: 0.5s all ease-in-out
 
 	&.expanded
 
 		height: 180px
+
+		> .timeflow-timeline-prop-pacsContainer
+
+			opacity: 1
+
+	&.not-expanded
+
+		height: 30px !important
+
+		> .timeflow-timeline-prop-pacsContainer
+
+			opacity: 0
 
 	&:first-child
 
 		> .timeflow-timeline-prop-info, > .timeflow-timeline-prop-pacsContainer
 
 			top: -4px
+
+.timeflow-timeline-prop-resizer
+
+	left: 0
+	right: 0
+	bottom: -3px
+	height: 6px
+
+	z-index: 10
+
+	position: absolute
+
+	cursor: ns-resize
 
 .timeflow-timeline-prop-info
 

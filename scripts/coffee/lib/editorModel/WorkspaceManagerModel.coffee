@@ -148,8 +148,6 @@ module.exports = class WorkspaceManagerModel extends _DynamicModel
 
 	_getWorkspaceByName: (name) ->
 
-		console.log name
-
 		name = String name
 
 		if name.length < 3

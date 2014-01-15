@@ -57,11 +57,25 @@ module.exports = class PropView
 
 	_setPropHolderModel: (@_propHolderModel) ->
 
-		@_setExpansion @_propHolderModel.isExpanded()
+		@_propHolderModel.removeAllListeners()
+
+		@_propHolderModel.on 'expansion-toggle', =>
+
+			do @_updateExpansion
+
+		do @_updateExpansion
+
+		@_propHolderModel.on 'height-change', =>
+
+			do @_updateHeight
+
+		do @_updateHeight
 
 	_prepareNodes: ->
 
-		@node = Foxie '.timeflow-timeline-prop'
+		@node = Foxie '.timeflow-timeline-prop.shouldTransition'
+
+		@resizer = Foxie('.timeflow-timeline-prop-resizer').putIn(@node)
 
 		do @_prepareInfoNodes
 
@@ -109,6 +123,22 @@ module.exports = class PropView
 		.putIn(@pacsNode)
 		.moveTo(-1000, -1000, 1)
 
+		@rootView.moosh.onDrag(@resizer)
+		.withNoKeys()
+		.onDown =>
+
+			@node.removeClass 'shouldTransition'
+
+		.onUp =>
+
+			@node.addClass 'shouldTransition'
+
+			do @_relayVertically
+
+		.onDrag (e) =>
+
+			@_propHolderModel.setHeight @_propHolderModel.getHeight() + e.relY
+
 	_prepareHypothericalConnector: ->
 
 		@hypotheticalConnector = Foxie('svg:path').putIn(@svgArea.node)
@@ -138,7 +168,7 @@ module.exports = class PropView
 		.withNoKeys()
 		.onDone =>
 
-			@_setExpansion @_propHolderModel.toggleExpansion()
+			@_propHolderModel.toggleExpansion()
 
 		@catName = Foxie('.timeflow-timeline-prop-info-catName').putIn @info
 		@catName.node.innerHTML = @propModel.actor.category.name
@@ -167,7 +197,9 @@ module.exports = class PropView
 
 		return
 
-	_setExpansion: (expanded) ->
+	_updateExpansion: ->
+
+		expanded = @_propHolderModel.isExpanded()
 
 		return if expanded is @_expanded
 
@@ -175,11 +207,23 @@ module.exports = class PropView
 
 		if @_expanded
 
-			@node.addClass 'expanded'
+			@node.addClass('expanded').removeClass('not-expanded')
 
 		else
 
-			@node.removeClass 'expanded'
+			@node.removeClass('expanded').addClass('not-expanded')
+
+		return
+
+	_updateHeight: ->
+
+		nodeHeight = @_propHolderModel.getHeight()
+
+		return if nodeHeight - 40 is @_height
+
+		@_height = nodeHeight - 40
+
+		@node.css 'height', nodeHeight + 'px'
 
 		return
 
@@ -213,15 +257,9 @@ module.exports = class PropView
 
 	_relayVertically: ->
 
-		height = @pacsNode.node.clientHeight
-
-		return if height < 30
-
-		@_height = height
-
 		valDiff = @pacs.peak - @pacs.bottom
 
-		newRatio = height / valDiff
+		newRatio = @_height / valDiff
 
 		return if newRatio is @_heightToValueRatio
 
