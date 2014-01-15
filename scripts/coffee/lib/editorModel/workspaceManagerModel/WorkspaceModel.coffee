@@ -87,6 +87,8 @@ module.exports = class WorkspaceModel extends _Emitter
 
 		@propHolders.push propHolder
 
+		propHolder.onAnyEvent => @_emit 'something-changed'
+
 		@_emit 'new-prop', propHolder
 
 	_getHolderPropById: (id) ->

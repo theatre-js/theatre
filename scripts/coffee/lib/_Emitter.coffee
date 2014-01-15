@@ -6,6 +6,8 @@ module.exports = class _Emitter
 
 		@_listeners = {}
 
+		@_listenersForAnyEvent = []
+
 		@_disabledEmitters = {}
 
 	on: (eventName, listener) ->
@@ -15,6 +17,12 @@ module.exports = class _Emitter
 			@_listeners[eventName] = []
 
 		@_listeners[eventName].push listener
+
+		@
+
+	onAnyEvent: (listener) ->
+
+		@_listenersForAnyEvent.push listener
 
 		@
 
@@ -43,6 +51,10 @@ module.exports = class _Emitter
 		@
 
 	_emit: (eventName, data) ->
+
+		for listener in @_listenersForAnyEvent
+
+			listener data, eventName
 
 		return unless @_listeners[eventName]?
 

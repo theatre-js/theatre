@@ -20,6 +20,8 @@ module.exports = class WorkspaceManagerModel extends _DynamicModel
 
 		@_active = null
 
+		@onAnyEvent => do @_reportLocalChange
+
 	serialize: ->
 
 		se = {}
@@ -72,9 +74,9 @@ module.exports = class WorkspaceManagerModel extends _DynamicModel
 
 	_setupListenersOnWorkspace: (workspace) ->
 
-		workspace.on 'new-prop', (propHolder) =>
+		workspace.onAnyEvent => do @_reportLocalChange
 
-			do @_reportLocalChange
+		workspace.on 'new-prop', (propHolder) =>
 
 			if workspace is @_active
 
@@ -94,8 +96,6 @@ module.exports = class WorkspaceManagerModel extends _DynamicModel
 
 		workspace.on 'prop-remove', (propHolder) =>
 
-			do @_reportLocalChange
-
 			if workspace is @_active
 
 				@_emit 'prop-remove', propHolder
@@ -114,15 +114,11 @@ module.exports = class WorkspaceManagerModel extends _DynamicModel
 
 		workspace.on 'rename', =>
 
-			do @_reportLocalChange
-
 			if workspace is @_active
 
 				@_emit 'active-workspace-change', workspace
 
 		workspace.on 'remove', =>
-
-			do @_reportLocalChange
 
 		return
 

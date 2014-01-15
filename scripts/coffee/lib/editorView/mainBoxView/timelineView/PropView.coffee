@@ -25,7 +25,7 @@ module.exports = class PropView
 
 		@rootView.moosh = @repo.timeline.mainBox.editor.moosh
 
-		@_expanded = no
+		@_expanded = null
 
 		@_propHolderModel = null
 

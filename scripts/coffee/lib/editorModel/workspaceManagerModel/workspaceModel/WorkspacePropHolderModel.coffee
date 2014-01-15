@@ -26,21 +26,40 @@ module.exports = class WorkspacePropHolderModel extends _Emitter
 
 		se.actorPropId = @actorProp.id
 
+		console.log 'serializing with', @_expanded
+
+		se._height = @_height
+
 		se
 
 	@constructFrom: (se, workspace) ->
+
 
 		actorProp = workspace.rootModel.graph.getActorPropById se.actorPropId
 
 		propHolder = new self workspace, actorProp
 
-		propHolder._expanded = Boolean se._expanded
+		if se._expanded?
+
+			propHolder.setExpansion Boolean se._expanded
+
+		if se._height?
+
+			propHolder.setHeight parseInt se._height
 
 		propHolder
 
 	isExpanded: ->
 
 		@_expanded
+
+	setExpansion: (newExpansion) ->
+
+		return if newExpansion is @_expanded
+
+		@_expanded = Boolean newExpansion
+
+		@_emit 'expansion-toggle'
 
 	toggleExpansion: ->
 
