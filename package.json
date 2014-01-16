@@ -1,6 +1,6 @@
 {
   "name": "theatrejs",
-  "version": "0.1.0-beta.2",
+  "version": "0.1.0-beta.3",
   "description": "(work in progress)",
   "main": "scripts/js/lib/Theatre.js",
   "scripts": {

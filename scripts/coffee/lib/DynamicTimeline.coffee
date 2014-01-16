@@ -123,21 +123,19 @@ module.exports = class DynamicTimeline extends _Emitter
 
 	tick: (t) ->
 
-		fpsT = @_calcuateFpsT t
-
 		if t < @t
 
-			@_tickBackward fpsT
+			@_tickBackward t
 
 		else
 
-			@_tickForward fpsT
+			@_tickForward t
 
 		for name, ic of @_incrementalIsolates
 
-			ic._tickForTimeline fpsT
+			ic._tickForTimeline t
 
-		@_fpsT = fpsT
+		@_fpsT = @_calcuateFpsT t
 		@t = t
 
 		@_emit 'tick'
