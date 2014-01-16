@@ -1,6 +1,6 @@
 require '../../_prepare'
 
-PacsTimeline = mod 'dynamic/prop/PacsTimeline'
+Pacs = mod 'dynamic/prop/Pacs'
 
 makePacs = ->
 
@@ -13,7 +13,7 @@ makePacs = ->
 			updates[0] = Infinity
 			updates[1] = -Infinity
 
-	p = new PacsTimeline
+	p = new Pacs
 
 		initial: 0.5
 
@@ -44,7 +44,7 @@ it "should correctly add points and connectors and report updates", ->
 
 	p.updates.should.be.like [100, Infinity]
 
-	p.timeline.length.should.equal 3
+	p.chronology.length.should.equal 3
 
 it "should support adding points in between connected points", ->
 
@@ -60,22 +60,22 @@ it "should support adding points in between connected points", ->
 
 	p150 = p.addPoint 150, 0, 1, 1, 1, 1
 
-	p.timeline.length.should.equal 5
+	p.chronology.length.should.equal 5
 
-	p.timeline[0].t.should.equal 100
-	p.timeline[0].isPoint().should.equal yes
+	p.chronology[0].t.should.equal 100
+	p.chronology[0].isPoint().should.equal yes
 
-	p.timeline[1].t.should.equal 100
-	p.timeline[1].isConnector().should.equal yes
+	p.chronology[1].t.should.equal 100
+	p.chronology[1].isConnector().should.equal yes
 
-	p.timeline[2].t.should.equal 150
-	p.timeline[2].isPoint().should.equal yes
+	p.chronology[2].t.should.equal 150
+	p.chronology[2].isPoint().should.equal yes
 
-	p.timeline[3].t.should.equal 150
-	p.timeline[3].isConnector().should.equal yes
+	p.chronology[3].t.should.equal 150
+	p.chronology[3].isConnector().should.equal yes
 
-	p.timeline[4].t.should.equal 200
-	p.timeline[4].isPoint().should.equal yes
+	p.chronology[4].t.should.equal 200
+	p.chronology[4].isPoint().should.equal yes
 
 	p.updates.should.be.like [100, 200]
 
@@ -118,13 +118,13 @@ it "should support removing a connector", ->
 
 	c.remove()
 
-	p.timeline.length.should.equal 2
+	p.chronology.length.should.equal 2
 
-	p.timeline[0].t.should.equal 100
-	p.timeline[0].isPoint().should.equal yes
+	p.chronology[0].t.should.equal 100
+	p.chronology[0].isPoint().should.equal yes
 
-	p.timeline[1].t.should.equal 200
-	p.timeline[1].isPoint().should.equal yes
+	p.chronology[1].t.should.equal 200
+	p.chronology[1].isPoint().should.equal yes
 
 	p.updates.should.be.like [100, 200]
 
@@ -144,7 +144,7 @@ it "should support removing lonely points", ->
 
 	p200.remove()
 
-	p.timeline.length.should.equal 3
+	p.chronology.length.should.equal 3
 
 	p.updates.should.be.like [200, 300]
 
@@ -152,7 +152,7 @@ it "should support removing lonely points", ->
 
 	p400.remove()
 
-	p.timeline.length.should.equal 2
+	p.chronology.length.should.equal 2
 
 	p.updates.should.be.like [400, Infinity]
 
@@ -160,7 +160,7 @@ it "should support removing lonely points", ->
 
 	p100.remove()
 
-	p.timeline.length.should.equal 1
+	p.chronology.length.should.equal 1
 
 	p.updates.should.be.like [100, 300]
 
@@ -168,7 +168,7 @@ it "should support removing lonely points", ->
 
 	p300.remove()
 
-	p.timeline.length.should.equal 0
+	p.chronology.length.should.equal 0
 
 	p.updates.should.be.like [300, Infinity]
 
@@ -192,11 +192,11 @@ it "should support removing points connected to the right", ->
 
 	p100.remove()
 
-	p.timeline.length.should.equal 5
+	p.chronology.length.should.equal 5
 
 	p.updates.should.be.like [100, 200], [100, 200]
 
-	p.timeline[0].t.should.equal 200
+	p.chronology[0].t.should.equal 200
 
 it "should support removing points connected to the left", ->
 
@@ -218,12 +218,12 @@ it "should support removing points connected to the left", ->
 
 	p400.remove()
 
-	p.timeline.length.should.equal 5
+	p.chronology.length.should.equal 5
 
 	p.updates.should.be.like [300, Infinity]
 
-	p.timeline[4].t.should.equal 300
-	p.timeline[4].isPoint().should.equal yes
+	p.chronology[4].t.should.equal 300
+	p.chronology[4].isPoint().should.equal yes
 
 it "should support removing points connected from both sides", ->
 
@@ -242,15 +242,15 @@ it "should support removing points connected from both sides", ->
 
 	p200.remove()
 
-	p.timeline.length.should.equal 2
+	p.chronology.length.should.equal 2
 
 	p.updates.should.be.like [100, 300]
 
-	p.timeline[0].t.should.equal 100
-	p.timeline[0].isPoint().should.equal yes
+	p.chronology[0].t.should.equal 100
+	p.chronology[0].isPoint().should.equal yes
 
-	p.timeline[1].t.should.equal 300
-	p.timeline[1].isPoint().should.equal yes
+	p.chronology[1].t.should.equal 300
+	p.chronology[1].isPoint().should.equal yes
 
 
 
@@ -402,7 +402,7 @@ it "should support changing a connected point's value", ->
 
 	p100.setValue 0.56
 
-	p.timeline.length.should.equal 7
+	p.chronology.length.should.equal 7
 
 	p.updates.should.be.like [100, 200]
 

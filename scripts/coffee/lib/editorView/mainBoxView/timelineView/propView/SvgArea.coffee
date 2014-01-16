@@ -35,7 +35,7 @@ module.exports = class SvgArea
 
 	relayHorizontally: ->
 
-		newWidth = @prop.pacs.timelineLength * @prop._widthToTimeRatio
+		newWidth = @prop.pacs.chronologyLength * @prop._widthToTimeRatio
 
 		return if newWidth < @width
 

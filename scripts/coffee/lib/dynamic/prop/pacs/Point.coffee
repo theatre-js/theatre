@@ -1,6 +1,6 @@
-_PacsTimelineItem = require './_PacsTimelineItem'
+_PacItem = require './_PacItem'
 
-module.exports = class Point extends _PacsTimelineItem
+module.exports = class Point extends _PacItem
 
 	self = @
 

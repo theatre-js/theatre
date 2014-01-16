@@ -1,9 +1,9 @@
 array = require 'utila/scripts/js/lib/array'
-Point = require './pacsTimeline/Point'
-Connector = require './pacsTimeline/Connector'
+Point = require './pacs/Point'
+Connector = require './pacs/Connector'
 _Emitter = require '../../_Emitter'
 
-module.exports = class PacsTimeline extends _Emitter
+module.exports = class Pacs extends _Emitter
 
 	constructor: (@prop) ->
 
@@ -27,9 +27,9 @@ module.exports = class PacsTimeline extends _Emitter
 
 				@peak = Math.abs(@bottom) * 2
 
-		@timeline = []
+		@chronology = []
 
-		@timelineLength = 0
+		@chronologyLength = 0
 
 		@_updateRange = [Infinity, -Infinity]
 
@@ -41,20 +41,20 @@ module.exports = class PacsTimeline extends _Emitter
 
 		se._idCounter = @_idCounter
 
-		se.timelineLength = @timelineLength
+		se.chronologyLength = @chronologyLength
 
 		# se.peak = @peak
 		# se.bottom = @bottom
 
-		se.timeline = {}
+		se.chronology = {}
 
-		se.timeline.points = points = []
+		se.chronology.points = points = []
 
-		points.push item.serialize() for item in @timeline when item instanceof Point
+		points.push item.serialize() for item in @chronology when item instanceof Point
 
-		se.timeline.connectors = connectors = []
+		se.chronology.connectors = connectors = []
 
-		connectors.push item.serialize() for item in @timeline when item instanceof Connector
+		connectors.push item.serialize() for item in @chronology when item instanceof Connector
 
 		se
 
@@ -62,13 +62,13 @@ module.exports = class PacsTimeline extends _Emitter
 
 		@_idCounter = se._idCounter
 
-		@timelineLength = Number se.timelineLength
+		@chronologyLength = Number se.chronologyLength
 
-		for item in se.timeline.points
+		for item in se.chronology.points
 
 			Point.constructFrom item, @
 
-		for item in se.timeline.connectors
+		for item in se.chronology.connectors
 
 			Connector.constructFrom item, @
 
@@ -80,7 +80,7 @@ module.exports = class PacsTimeline extends _Emitter
 
 		lastIndex = -1
 
-		for item, index in @timeline
+		for item, index in @chronology
 
 			break if item.t > t
 
@@ -110,7 +110,7 @@ module.exports = class PacsTimeline extends _Emitter
 
 	_getItemByIndex: (index) ->
 
-		@timeline[index]
+		@chronology[index]
 
 	_pointExistsAt: (t) ->
 
@@ -134,7 +134,7 @@ module.exports = class PacsTimeline extends _Emitter
 
 	_getItemIndex: (item) ->
 
-		@timeline.indexOf item
+		@chronology.indexOf item
 
 	_connectorExistsAt: (t) ->
 
@@ -162,7 +162,7 @@ module.exports = class PacsTimeline extends _Emitter
 
 	_injectItemOn: (item, index) ->
 
-		array.injectInIndex @timeline, index, item
+		array.injectInIndex @chronology, index, item
 
 		return
 
@@ -180,7 +180,7 @@ module.exports = class PacsTimeline extends _Emitter
 
 	_pluckItemOn: (index) ->
 
-		array.pluck @timeline, index
+		array.pluck @chronology, index
 
 		return
 
@@ -228,15 +228,15 @@ module.exports = class PacsTimeline extends _Emitter
 
 	_recalculateLength: ->
 
-		lastPoint = @timeline[@timeline.length - 1]
+		lastPoint = @chronology[@chronology.length - 1]
 
 		if lastPoint?
 
 			@prop.timeFlow._maximizeTimelineLength lastPoint.t
 
-			if lastPoint.t isnt @timelineLength
+			if lastPoint.t isnt @chronologyLength
 
-				@timelineLength = lastPoint.t
+				@chronologyLength = lastPoint.t
 
 				@_emit 'length-change'
 
@@ -247,7 +247,7 @@ module.exports = class PacsTimeline extends _Emitter
 		bottom = @prop.initial
 		peak = @prop.initial
 
-		if @timeline.length is 0
+		if @chronology.length is 0
 
 			bottom = 0
 			peak = 100
@@ -256,7 +256,7 @@ module.exports = class PacsTimeline extends _Emitter
 
 			vals = []
 
-			for item in @timeline
+			for item in @chronology
 
 				continue if item instanceof Connector
 

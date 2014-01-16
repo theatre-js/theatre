@@ -94,10 +94,10 @@ module.exports = class Selection
 
 	_select: (localFromX, localToX) ->
 
-		fromTime = @prop.timeline._XToFocusedTime localFromX
+		fromTime = @prop.timelineEditor._XToFocusedTime localFromX
 		fromX = @prop._timeToX fromTime
 
-		toTime = @prop.timeline._XToFocusedTime localToX
+		toTime = @prop.timelineEditor._XToFocusedTime localToX
 		toX = @prop._timeToX toTime
 
 		@node

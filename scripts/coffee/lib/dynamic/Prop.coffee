@@ -1,4 +1,4 @@
-PacsTimeline = require './prop/PacsTimeline'
+Pacs = require './prop/Pacs'
 _DynamicModel = require '../_DynamicModel'
 
 module.exports = class Prop extends _DynamicModel
@@ -15,9 +15,9 @@ module.exports = class Prop extends _DynamicModel
 
 		@initial = @array[@arrayIndex]
 
-		@pacs = new PacsTimeline @
+		@pacs = new Pacs @
 
-		@_timeline = @pacs.timeline
+		@_chronology = @pacs.chronology
 
 		@_nextIndexToCheck = 0
 
@@ -77,13 +77,13 @@ module.exports = class Prop extends _DynamicModel
 
 	_tickForward: (t) ->
 
-		item = @_timeline[@_nextIndexToCheck]
+		item = @_chronology[@_nextIndexToCheck]
 
 		return if not item? or item.t > t
 
 		nextIndex = @_nextIndexToCheck + 1
 
-		while (nextItem = @_timeline[nextIndex]) and nextItem?
+		while (nextItem = @_chronology[nextIndex]) and nextItem?
 
 			break if nextItem.t > t
 
@@ -103,7 +103,7 @@ module.exports = class Prop extends _DynamicModel
 
 	_tickBackward: (t) ->
 
-		item = @_timeline[@_nextIndexToCheck]
+		item = @_chronology[@_nextIndexToCheck]
 
 		return @_tickForward(t) if item? and item.t <= t
 
@@ -113,7 +113,7 @@ module.exports = class Prop extends _DynamicModel
 
 			indexToCheck--
 
-			item = @_timeline[indexToCheck]
+			item = @_chronology[indexToCheck]
 
 			unless item?
 

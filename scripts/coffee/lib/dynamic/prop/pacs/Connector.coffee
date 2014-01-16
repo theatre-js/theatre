@@ -1,7 +1,7 @@
-_PacsTimelineItem = require './_PacsTimelineItem'
+_PacItem = require './_PacItem'
 UnitBezier = require 'timing-function/scripts/js/lib/UnitBezier'
 
-module.exports = class Connector extends _PacsTimelineItem
+module.exports = class Connector extends _PacItem
 
 	self = @
 

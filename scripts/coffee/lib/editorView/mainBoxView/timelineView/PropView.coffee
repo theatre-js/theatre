@@ -275,7 +275,7 @@ module.exports = class PropView
 
 	_preparePacs: ->
 
-		for item in @pacs.timeline
+		for item in @pacs.chronology
 
 			if item.isPoint()
 
