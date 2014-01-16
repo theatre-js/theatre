@@ -11,9 +11,9 @@ module.exports = class WorkspaceListView extends _Emitter
 
 		@rootView.kilidScopeForEdit = @rootView.kilid.getScope 'workspace-list-view'
 
-		@node = Foxie('.timeflow-workspaceList').putIn(@mainBox.node)
+		@node = Foxie('.theatrejs-workspaceList').putIn(@mainBox.node)
 
-		@holder = Foxie('.timeflow-workspaceList-holder').putIn(@node)
+		@holder = Foxie('.theatrejs-workspaceList-holder').putIn(@node)
 
 		@model = @mainBox.editor.model.workspaces
 
@@ -29,7 +29,7 @@ module.exports = class WorkspaceListView extends _Emitter
 
 	_recognizeNewWorkspace: (ws) ->
 
-		wsNode = new Foxie('.timeflow-workspaceList-workspace').putIn(@holder)
+		wsNode = new Foxie('.theatrejs-workspaceList-workspace').putIn(@holder)
 
 		wsNode.node.innerText = ws.name
 
@@ -160,7 +160,7 @@ module.exports = class WorkspaceListView extends _Emitter
 
 	_initNewBtn: ->
 
-		@newBtn = Foxie('.timeflow-workspaceList-workspace').putIn(@node)
+		@newBtn = Foxie('.theatrejs-workspaceList-workspace').putIn(@node)
 
 		@newBtn.node.innerText = '+'
 

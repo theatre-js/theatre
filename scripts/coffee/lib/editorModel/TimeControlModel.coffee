@@ -10,11 +10,11 @@ module.exports = class TimeControlModel extends _DynamicModel
 
 		super
 
-		@timeFlow = @editor.timeFlow
+		@timeline = @editor.timeline
 
 		@timelineLength = 0
 
-		@timeFlow.on 'length-change', =>
+		@timeline.on 'length-change', =>
 
 			do @_updateTimelineLength
 
@@ -24,7 +24,7 @@ module.exports = class TimeControlModel extends _DynamicModel
 
 		@t = 0
 
-		@timeFlow.on 'tick', =>
+		@timeline.on 'tick', =>
 
 			do @_updateT
 
@@ -79,7 +79,7 @@ module.exports = class TimeControlModel extends _DynamicModel
 
 	_updateTimelineLength: ->
 
-		@_setTimelineLength @timeFlow.timelineLength + 5000
+		@_setTimelineLength @timeline.timelineLength + 5000
 
 	_setTimelineLength: (@timelineLength) ->
 
@@ -91,7 +91,7 @@ module.exports = class TimeControlModel extends _DynamicModel
 
 	_updateT: ->
 
-		@t = @timeFlow.t
+		@t = @timeline.t
 
 		t = @t
 
@@ -107,13 +107,13 @@ module.exports = class TimeControlModel extends _DynamicModel
 
 			throw Error "t is out of bounds"
 
-		@timeFlow.tick t
+		@timeline.tick t
 
 		return
 
 	tickOnSpot: ->
 
-		@timeFlow.tick @timeFlow.t
+		@timeline.tick @timeline.t
 
 		return
 
@@ -173,19 +173,19 @@ module.exports = class TimeControlModel extends _DynamicModel
 
 	_tickByDiff: (diff) ->
 
-		newT = @timeFlow.t + diff
+		newT = @timeline.t + diff
 
 		if newT > @timelineLength
 
 			newT = @timelineLength
 
-			@timeFlow.tick newT
+			@timeline.tick newT
 
 			do @pause
 
 			return
 
-		@timeFlow.tick newT
+		@timeline.tick newT
 
 		return
 
@@ -239,7 +239,7 @@ module.exports = class TimeControlModel extends _DynamicModel
 
 			do @pause
 
-		toT = @timeFlow.t + amount
+		toT = @timeline.t + amount
 
 		toT = 0 if toT < 0
 

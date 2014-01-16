@@ -46,7 +46,7 @@ module.exports = class TimelineEditorView
 
 	_prepareNode: ->
 
-		@node = Foxie('.timeflow-timeline').putIn(@mainBox.node)
+		@node = Foxie('.theatrejs-timeline').putIn(@mainBox.node)
 
 		@mainBox.seekbar
 

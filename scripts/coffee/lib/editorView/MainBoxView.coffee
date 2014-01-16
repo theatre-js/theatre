@@ -37,9 +37,9 @@ module.exports = class MainBoxView extends _Emitter
 
 	_prepareNode: ->
 
-		@node = Foxie('.timeflow-mainBox').putIn(@editor.node).trans(500)
+		@node = Foxie('.theatrejs-mainBox').putIn(@editor.node).trans(500)
 
-		@nodeResizeHandle = Foxie('.timeflow-mainBox-resizeHandle')
+		@nodeResizeHandle = Foxie('.theatrejs-mainBox-resizeHandle')
 		.putIn(@node)
 
 		@rootView.moosh.onDrag(@nodeResizeHandle)

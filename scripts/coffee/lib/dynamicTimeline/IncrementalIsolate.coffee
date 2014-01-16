@@ -1,6 +1,6 @@
 module.exports = class IncrementalIsolate
 
-	constructor: (@timeFlow, @id, @isolate) ->
+	constructor: (@timeline, @id, @isolate) ->
 
 		@_props = []
 
@@ -24,7 +24,7 @@ module.exports = class IncrementalIsolate
 
 		return
 
-	_tickForTimeFlow: (t) ->
+	_tickForTimeline: (t) ->
 
 		@isolate.requestTick t, @_hadUpdates, @_updateFrom
 

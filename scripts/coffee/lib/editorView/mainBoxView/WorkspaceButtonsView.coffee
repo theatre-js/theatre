@@ -22,13 +22,13 @@ module.exports = class WorkspaceButtonsView
 
 	_prepareNode: ->
 
-		@node = Foxie('.timeflow-workspaceButtons').putIn @mainBox.node
+		@node = Foxie('.theatrejs-workspaceButtons').putIn @mainBox.node
 
 		return
 
 	_prepareShowGraphButton: ->
 
-		@showGraphButton = Foxie('.timeflow-workspaceButtons-showGraph')
+		@showGraphButton = Foxie('.theatrejs-workspaceButtons-showGraph')
 		.putIn(@node)
 
 		graph = @mainBox.editor.graph
@@ -44,7 +44,7 @@ module.exports = class WorkspaceButtonsView
 
 		workspaces = @mainBox.editor.model.workspaces
 
-		activeWsName = Foxie('span.timeflow-workspaceButtons-activeWorkspaceName')
+		activeWsName = Foxie('span.theatrejs-workspaceButtons-activeWorkspaceName')
 		.innerHTML(workspaces.getActiveWorkspace().name)
 		.putIn(@node)
 

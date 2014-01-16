@@ -43,9 +43,6 @@ module.exports = class Pacs extends _Emitter
 
 		se.chronologyLength = @chronologyLength
 
-		# se.peak = @peak
-		# se.bottom = @bottom
-
 		se.chronology = {}
 
 		se.chronology.points = points = []
@@ -232,7 +229,7 @@ module.exports = class Pacs extends _Emitter
 
 		if lastPoint?
 
-			@prop.timeFlow._maximizeTimelineLength lastPoint.t
+			@prop.timeline._maximizeTimelineLength lastPoint.t
 
 			if lastPoint.t isnt @chronologyLength
 

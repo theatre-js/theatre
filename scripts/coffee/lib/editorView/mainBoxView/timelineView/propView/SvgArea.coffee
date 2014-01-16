@@ -18,7 +18,7 @@ module.exports = class SvgArea
 
 	_prepareNode: ->
 
-		@node = Foxie('svg:svg.timeflow-timelineEditor-prop-pacs-svgArea')
+		@node = Foxie('svg:svg.theatrejs-timelineEditor-prop-pacs-svgArea')
 		.putIn(@prop.pacsNode)
 
 		return

@@ -1,6 +1,6 @@
 module.exports = class ActorPropModel
 
-	constructor: (@actor, @name, @timeFlowProp) ->
+	constructor: (@actor, @name, @timelineProp) ->
 
 		@id = @actor.id + '-' + @name
 

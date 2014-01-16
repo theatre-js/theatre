@@ -8,7 +8,7 @@ module.exports = class ActorModel
 
 		@id = @category.id + '-' + @name
 
-		@timeFlow = @category.graph.editor.timeFlow
+		@timeline = @category.graph.editor.timeline
 
 		@props = {}
 
@@ -20,18 +20,18 @@ module.exports = class ActorModel
 
 		propId = @id + '-' + name
 
-		timeFlowProp = @timeFlow.addProp(propId, arrayName, arrayIndex)
+		timelineProp = @timeline.addProp(propId, arrayName, arrayIndex)
 
-		@props[name] = prop = new ActorPropModel @, name, timeFlowProp
+		@props[name] = prop = new ActorPropModel @, name, timelineProp
 
 		prop
 
-	useProp: (name, timeFlowProp) ->
+	useProp: (name, timelineProp) ->
 
 		if @props[name]?
 
 			throw Error "prop with name '#{name}' already exists in actor '#{@id}'"
 
-		@props[name] = timeFlowProp
+		@props[name] = timelineProp
 
 		@

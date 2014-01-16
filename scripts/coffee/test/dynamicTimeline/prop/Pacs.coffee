@@ -17,7 +17,7 @@ makePacs = ->
 
 		initial: 0.5
 
-		timeFlow: _maximizeTimelineLength: ->
+		timeline: _maximizeTimelineLength: ->
 
 	p._setUpdateRange = (from, to) ->
 

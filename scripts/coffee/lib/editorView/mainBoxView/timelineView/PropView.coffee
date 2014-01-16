@@ -15,9 +15,9 @@ module.exports = class PropView
 
 		@id = @propModel.id
 
-		@timeFlowProp = @propModel.timeFlowProp
+		@timelineProp = @propModel.timelineProp
 
-		@pacs = @timeFlowProp.pacs
+		@pacs = @timelineProp.pacs
 
 		@pacs.on 'peak-and-bottom-change', => do @_relayVertically
 
@@ -73,9 +73,9 @@ module.exports = class PropView
 
 	_prepareNodes: ->
 
-		@node = Foxie '.timeflow-timelineEditor-prop.shouldTransition'
+		@node = Foxie '.theatrejs-timelineEditor-prop.shouldTransition'
 
-		@resizer = Foxie('.timeflow-timelineEditor-prop-resizer').putIn(@node)
+		@resizer = Foxie('.theatrejs-timelineEditor-prop-resizer').putIn(@node)
 
 		do @_prepareInfoNodes
 
@@ -119,7 +119,7 @@ module.exports = class PropView
 
 			@pacs.addPoint t, val, 100, val * 0.1, 100, val * 0.1
 
-		@hypotheticalPointNode = Foxie('.timeflow-timelineEditor-prop-pacs-hypotheticalPoint')
+		@hypotheticalPointNode = Foxie('.theatrejs-timelineEditor-prop-pacs-hypotheticalPoint')
 		.putIn(@pacsNode)
 		.moveTo(-1000, -1000, 1)
 
@@ -162,7 +162,7 @@ module.exports = class PropView
 
 	_prepareInfoNodes: ->
 
-		@info = Foxie('.timeflow-timelineEditor-prop-info').putIn @node
+		@info = Foxie('.theatrejs-timelineEditor-prop-info').putIn @node
 
 		@rootView.moosh.onClick(@info)
 		.withNoKeys()
@@ -170,20 +170,20 @@ module.exports = class PropView
 
 			@_propHolderModel.toggleExpansion()
 
-		@catName = Foxie('.timeflow-timelineEditor-prop-info-catName').putIn @info
+		@catName = Foxie('.theatrejs-timelineEditor-prop-info-catName').putIn @info
 		@catName.node.innerHTML = @propModel.actor.category.name
 
-		@actorName = Foxie('.timeflow-timelineEditor-prop-info-actorName').putIn @info
+		@actorName = Foxie('.theatrejs-timelineEditor-prop-info-actorName').putIn @info
 		@actorName.node.innerHTML = @propModel.actor.name
 
-		@propName = Foxie('.timeflow-timelineEditor-prop-info-propName').putIn @info
+		@propName = Foxie('.theatrejs-timelineEditor-prop-info-propName').putIn @info
 		@propName.node.innerHTML = @propModel.name
 
 	_preparePacsNodes: ->
 
-		@pacsContainer = Foxie('.timeflow-timelineEditor-prop-pacsContainer').putIn @node
+		@pacsContainer = Foxie('.theatrejs-timelineEditor-prop-pacsContainer').putIn @node
 
-		@pacsNode = Foxie('.timeflow-timelineEditor-prop-pacs').putIn @pacsContainer
+		@pacsNode = Foxie('.theatrejs-timelineEditor-prop-pacs').putIn @pacsContainer
 
 	attach: ->
 

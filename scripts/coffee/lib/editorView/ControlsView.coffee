@@ -29,7 +29,7 @@ module.exports = class ControlsView
 
 	_prepareNodes: ->
 
-		@node = Foxie('.timeflow-controls').trans(500)
+		@node = Foxie('.theatrejs-controls').trans(500)
 
 		@node.putIn @editor.node
 
@@ -40,7 +40,7 @@ module.exports = class ControlsView
 
 	_preparePlayPauseNode: ->
 
-		@playPauseNode = Foxie '.timeflow-controls-playPause'
+		@playPauseNode = Foxie '.theatrejs-controls-playPause'
 
 		@playPauseNode.putIn @node
 
@@ -51,7 +51,7 @@ module.exports = class ControlsView
 
 	_prepareFullscreenNode: ->
 
-		@toggleFullscreenNode = Foxie '.timeflow-controls-fullscreen'
+		@toggleFullscreenNode = Foxie '.theatrejs-controls-fullscreen'
 
 		@toggleFullscreenNode.putIn @node
 
@@ -67,7 +67,7 @@ module.exports = class ControlsView
 
 	_prepareJumpToPrevMarkerNode: ->
 
-		@jumpToPrevMarkerNode = Foxie '.timeflow-controls-jumpToPrevMarker'
+		@jumpToPrevMarkerNode = Foxie '.theatrejs-controls-jumpToPrevMarker'
 
 		@jumpToPrevMarkerNode.putIn @node
 
@@ -78,7 +78,7 @@ module.exports = class ControlsView
 
 	_prepareJumpToNextMarkerNode: ->
 
-		@jumpToNextMarkerNode = Foxie '.timeflow-controls-jumpToNextMarker'
+		@jumpToNextMarkerNode = Foxie '.theatrejs-controls-jumpToNextMarker'
 
 		@jumpToNextMarkerNode.putIn @node
 

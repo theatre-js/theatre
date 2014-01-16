@@ -15,7 +15,7 @@ module.exports = class GraphView
 
 	_prepareNode: ->
 
-		@node = Foxie 'div.timeflow-graph'
+		@node = Foxie 'div.theatrejs-graph'
 
 		@node.putIn @editor.node
 
@@ -45,18 +45,18 @@ module.exports = class GraphView
 
 			n++
 
-			catEl = Foxie 'div.timeflow-graph-category'
+			catEl = Foxie 'div.theatrejs-graph-category'
 
 
 			catEl.putIn @node
 
-			catNameEl = Foxie "h3.timeflow-graph-category-name.opening-animation.n-#{n}"
+			catNameEl = Foxie "h3.theatrejs-graph-category-name.opening-animation.n-#{n}"
 
 			catNameEl.innerHTML category.name
 
 			catNameEl.putIn catEl
 
-			actorListEl = Foxie 'ul.timeflow-graph-category-actor-list'
+			actorListEl = Foxie 'ul.theatrejs-graph-category-actor-list'
 
 			actorListEl.putIn catEl
 
@@ -64,7 +64,7 @@ module.exports = class GraphView
 
 				n++
 
-				actorEl = Foxie 'li.timeflow-graph-category-actor'
+				actorEl = Foxie 'li.theatrejs-graph-category-actor'
 
 				actorLink = Foxie "a.opening-animation.n-#{n}"
 				actorLink.innerHTML actor.name
@@ -73,7 +73,7 @@ module.exports = class GraphView
 
 				actorEl.putIn actorListEl
 
-				propsListEl = Foxie 'ul.timeflow-graph-category-actor-propsList'
+				propsListEl = Foxie 'ul.theatrejs-graph-category-actor-propsList'
 
 				propsListEl.putIn actorEl
 

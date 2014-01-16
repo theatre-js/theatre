@@ -36,7 +36,7 @@ module.exports = class EditorView
 
 	_prepareNode: ->
 
-		@node = Foxie '.timeflow'
+		@node = Foxie '.theatrejs'
 
 		return
 

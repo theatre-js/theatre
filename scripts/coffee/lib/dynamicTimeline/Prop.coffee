@@ -3,15 +3,15 @@ _DynamicModel = require '../_DynamicModel'
 
 module.exports = class Prop extends _DynamicModel
 
-	constructor: (@timeFlow, @id, @arrayName, @arrayIndex) ->
+	constructor: (@timeline, @id, @arrayName, @arrayIndex) ->
 
-		@rootModel = @timeFlow.rootModel
+		@rootModel = @timeline.rootModel
 
-		@_serializedAddress = ['timeFlow', '_allProps', @id]
+		@_serializedAddress = ['timeline', '_allProps', @id]
 
 		super
 
-		@array = @timeFlow._arrays[@arrayName]
+		@array = @timeline._arrays[@arrayName]
 
 		@initial = @array[@arrayIndex]
 
@@ -37,7 +37,7 @@ module.exports = class Prop extends _DynamicModel
 
 	attachToIncrementalIsolate: (id) ->
 
-		isolate = @timeFlow.getIncrementalIsolate id
+		isolate = @timeline.getIncrementalIsolate id
 
 		unless isolate?
 
@@ -49,7 +49,7 @@ module.exports = class Prop extends _DynamicModel
 
 		@_incrementalIsolates.push isolate
 
-		@timeFlow._pluckFromRegularProps @
+		@timeline._pluckFromRegularProps @
 
 		isolate._addProp @
 

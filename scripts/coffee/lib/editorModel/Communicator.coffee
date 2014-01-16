@@ -14,7 +14,7 @@ module.exports = class Communicator
 
 		@connection.request('head-data').then (data) =>
 
-			console.log 'received head-data'
+			console.log 'received head-data', data
 
 			@editor.loadFrom data
 

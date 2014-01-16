@@ -8,11 +8,11 @@ WorkspaceManagerModel = require './editorModel/WorkspaceManagerModel'
 
 module.exports = class EditorModel extends _Emitter
 
-	constructor: (@id = 'timeFlow', @timeFlow) ->
+	constructor: (@id = 'timeline', @timeline) ->
 
 		super
 
-		@timeFlow.setRootModel @
+		@timeline.setRootModel @
 
 		@graph = new GraphModel @
 
@@ -34,7 +34,7 @@ module.exports = class EditorModel extends _Emitter
 
 		se.id = @id
 
-		se.timeFlow = @timeFlow.serialize()
+		se.timeline = @timeline.serialize()
 
 		se.mainBox = @mainBox.serialize()
 
@@ -46,7 +46,7 @@ module.exports = class EditorModel extends _Emitter
 
 	loadFrom: (se) ->
 
-		@timeFlow.loadFrom se.timeFlow
+		@timeline.loadFrom se.timeline
 
 		@mainBox.loadFrom se.mainBox
 

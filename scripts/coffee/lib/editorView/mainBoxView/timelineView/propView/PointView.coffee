@@ -55,7 +55,7 @@ module.exports = class PointView extends _ItemView
 
 	_prepareNode: ->
 
-		@node = Foxie('.timeflow-timelineEditor-prop-pacs-point').putIn @prop.pacsNode
+		@node = Foxie('.theatrejs-timelineEditor-prop-pacs-point').putIn @prop.pacsNode
 
 		do @_prepareNodeActivationInteractions
 		do @_prepareNodeRemovalInteractions
@@ -355,7 +355,7 @@ module.exports = class PointView extends _ItemView
 
 	_prepareHandlers: ->
 
-		@leftHandler = Foxie('.timeflow-timelineEditor-prop-pacs-point-handler.left').putIn @node
+		@leftHandler = Foxie('.theatrejs-timelineEditor-prop-pacs-point-handler.left').putIn @node
 
 		@leftHandlerLine = Foxie('svg:path').putIn(@svgArea.node)
 		.attr('stroke', '#272727')
@@ -367,7 +367,7 @@ module.exports = class PointView extends _ItemView
 		.attr('stroke-width', '1px')
 		.attr('fill', 'transparent')
 
-		@rightHandler = Foxie('.timeflow-timelineEditor-prop-pacs-point-handler.right').putIn @node
+		@rightHandler = Foxie('.theatrejs-timelineEditor-prop-pacs-point-handler.right').putIn @node
 
 		do @_setupDragForRightHandler
 		do @_setupDragForLeftHandler
@@ -454,7 +454,7 @@ module.exports = class PointView extends _ItemView
 
 	_prepareValueInputNode: ->
 
-		@valueContainer = Foxie('.timeflow-timelineEditor-prop-pacs-point-valueContainer').putIn @node
+		@valueContainer = Foxie('.theatrejs-timelineEditor-prop-pacs-point-valueContainer').putIn @node
 
 		@valueInput = Foxie('input').putIn @valueContainer
 

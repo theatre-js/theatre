@@ -1,9 +1,9 @@
-IncrementalIsolate = require './dynamic/IncrementalIsolate'
+IncrementalIsolate = require './dynamicTimeline/IncrementalIsolate'
 _Emitter = require './_Emitter'
 array = require 'utila/scripts/js/lib/array'
-Prop = require './dynamic/Prop'
+Prop = require './dynamicTimeline/Prop'
 
-module.exports = class DynamicTimeFlow extends _Emitter
+module.exports = class DynamicTimeline extends _Emitter
 
 	constructor: (fps = 60) ->
 
@@ -135,7 +135,7 @@ module.exports = class DynamicTimeFlow extends _Emitter
 
 		for name, ic of @_incrementalIsolates
 
-			ic._tickForTimeFlow fpsT
+			ic._tickForTimeline fpsT
 
 		@_fpsT = fpsT
 		@t = t

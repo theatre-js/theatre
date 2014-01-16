@@ -28,18 +28,18 @@ module.exports = class SeekbarView
 
 	_prepareNode: ->
 
-		@node = Foxie('.timeflow-seekbar')
+		@node = Foxie('.theatrejs-seekbar')
 		.putIn(@mainBox.node)
 
 	_prepareGrid: ->
 
-		@grid = Foxie('.timeflow-seekbar-timeGrid').putIn @mainBox.node
+		@grid = Foxie('.theatrejs-seekbar-timeGrid').putIn @mainBox.node
 
 		@gridLegends = []
 
 		for i in [0..parseInt(screen.width / 75)]
 
-			@gridLegends.push Foxie('.timeflow-seekbar-timeGrid-legend').putIn(@grid)
+			@gridLegends.push Foxie('.theatrejs-seekbar-timeGrid-legend').putIn(@grid)
 
 		return
 
@@ -65,7 +65,7 @@ module.exports = class SeekbarView
 
 	_prepareSeeker: ->
 
-		@seeker = Foxie('.timeflow-seekbar-seeker')
+		@seeker = Foxie('.theatrejs-seekbar-seeker')
 		.moveZ(1)
 		.putIn(@node)
 
@@ -115,7 +115,7 @@ module.exports = class SeekbarView
 
 	_prepareFocusLeft: ->
 
-		@focusLeftNode = Foxie('.timeflow-seekbar-focus-left')
+		@focusLeftNode = Foxie('.theatrejs-seekbar-focus-left')
 		.moveZ(1)
 		.set('left', 0)
 		.putIn(@node)
@@ -136,7 +136,7 @@ module.exports = class SeekbarView
 
 	_prepareFocusRight: ->
 
-		@focusRightNode = Foxie('.timeflow-seekbar-focus-right')
+		@focusRightNode = Foxie('.theatrejs-seekbar-focus-right')
 		.moveZ(1)
 		.set('left', 0)
 		.putIn(@node)
@@ -157,7 +157,7 @@ module.exports = class SeekbarView
 
 	_prepareFocusStrip: ->
 
-		@focusStripNode = Foxie('.timeflow-seekbar-focus-strip')
+		@focusStripNode = Foxie('.theatrejs-seekbar-focus-strip')
 		.moveZ(1)
 		.css('width', '300px')
 		.putIn(@node)

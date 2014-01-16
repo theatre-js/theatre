@@ -46,6 +46,8 @@ module.exports = class Session
 		@dataHandler.getHeadDataForNamespace(@namespaceName)
 		.then (obj) =>
 
+			console.log '------------------then', obj
+
 			cur = obj
 
 			lastName = address.pop()
