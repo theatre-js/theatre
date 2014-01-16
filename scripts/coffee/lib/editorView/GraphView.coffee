@@ -41,30 +41,30 @@ module.exports = class GraphView
 
 		n = -1
 
-		for name, category of @graphModel.categories then do (category) =>
+		for name, group of @graphModel.categories then do (group) =>
 
 			n++
 
-			catEl = Foxie 'div.theatrejs-graph-category'
+			catEl = Foxie 'div.theatrejs-graph-group'
 
 
 			catEl.putIn @node
 
-			catNameEl = Foxie "h3.theatrejs-graph-category-name.opening-animation.n-#{n}"
+			catNameEl = Foxie "h3.theatrejs-graph-group-name.opening-animation.n-#{n}"
 
-			catNameEl.innerHTML category.name
+			catNameEl.innerHTML group.name
 
 			catNameEl.putIn catEl
 
-			actorListEl = Foxie 'ul.theatrejs-graph-category-actor-list'
+			actorListEl = Foxie 'ul.theatrejs-graph-group-actor-list'
 
 			actorListEl.putIn catEl
 
-			for name, actor of category.actors then do (actor) =>
+			for name, actor of group.actors then do (actor) =>
 
 				n++
 
-				actorEl = Foxie 'li.theatrejs-graph-category-actor'
+				actorEl = Foxie 'li.theatrejs-graph-group-actor'
 
 				actorLink = Foxie "a.opening-animation.n-#{n}"
 				actorLink.innerHTML actor.name
@@ -73,7 +73,7 @@ module.exports = class GraphView
 
 				actorEl.putIn actorListEl
 
-				propsListEl = Foxie 'ul.theatrejs-graph-category-actor-propsList'
+				propsListEl = Foxie 'ul.theatrejs-graph-group-actor-propsList'
 
 				propsListEl.putIn actorEl
 

@@ -1,4 +1,4 @@
-ActorPropModel = require '../graphModel/categoryModel/actorModel/ActorPropModel'
+ActorPropModel = require '../graphModel/groupModel/actorModel/ActorPropModel'
 _Emitter = require '../../_Emitter'
 array = require 'utila/scripts/js/lib/array'
 WorkspacePropHolderModel = require './workspaceModel/WorkspacePropHolderModel'

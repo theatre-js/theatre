@@ -1,4 +1,4 @@
-CategoryModel = require './graphModel/CategoryModel'
+GroupModel = require './graphModel/GroupModel'
 
 module.exports = class GraphModel
 
@@ -8,11 +8,11 @@ module.exports = class GraphModel
 
 		@_actorProps = {}
 
-	getCategory: (name) ->
+	getGroup: (name) ->
 
 		unless @categories[name]?
 
-			@categories[name] = cat = new CategoryModel @, name
+			@categories[name] = cat = new GroupModel @, name
 
 		@categories[name]
 

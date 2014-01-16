@@ -2,13 +2,13 @@ ActorPropModel = require './actorModel/ActorPropModel'
 
 module.exports = class ActorModel
 
-	constructor: (@category, @name) ->
+	constructor: (@group, @name) ->
 
-		@graph = @category.graph
+		@graph = @group.graph
 
-		@id = @category.id + '-' + @name
+		@id = @group.id + '-' + @name
 
-		@timeline = @category.graph.editor.timeline
+		@timeline = @group.graph.editor.timeline
 
 		@props = {}
 

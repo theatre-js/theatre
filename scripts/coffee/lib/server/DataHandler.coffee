@@ -3,7 +3,6 @@ git = require 'gift'
 CSON = require 'cson'
 nodefn = require 'when/node/function'
 sysPath = require 'path'
-{object} = require 'utila'
 
 module.exports = class DataHandler
 
@@ -100,7 +99,7 @@ module.exports = class DataHandler
 
 			if obj instanceof Error
 
-				throw Error obj
+				throw obj
 
 			obj
 

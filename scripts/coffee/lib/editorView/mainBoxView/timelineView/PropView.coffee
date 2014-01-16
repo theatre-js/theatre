@@ -171,7 +171,7 @@ module.exports = class PropView
 			@_propHolderModel.toggleExpansion()
 
 		@catName = Foxie('.theatrejs-timelineEditor-prop-info-catName').putIn @info
-		@catName.node.innerHTML = @propModel.actor.category.name
+		@catName.node.innerHTML = @propModel.actor.group.name
 
 		@actorName = Foxie('.theatrejs-timelineEditor-prop-info-actorName').putIn @info
 		@actorName.node.innerHTML = @propModel.actor.name

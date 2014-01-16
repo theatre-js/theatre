@@ -1,6 +1,6 @@
-ActorModel = require './categoryModel/ActorModel'
+ActorModel = require './groupModel/ActorModel'
 
-module.exports = class CategoryModel
+module.exports = class GroupModel
 
 	constructor: (@graph, @name) ->
 
