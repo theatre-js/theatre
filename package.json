@@ -1,15 +1,15 @@
 {
-  "name": "timeflow",
+  "name": "theatrejs",
   "version": "0.0.0",
   "description": "(work in progress)",
-  "main": "scripts/js/lib/TimeFlow.js",
+  "main": "scripts/js/lib/Theatre.js",
   "scripts": {
     "test": "node ./node_modules/coffee-script/bin/cake test",
     "prepublish": "node ./node_modules/coffee-script/bin/cake build"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/AriaMinaei/timeflow.git"
+    "url": "https://github.com/AriaMinaei/theatrejs.git"
   },
   "keywords": [
     "keyframes",
@@ -20,7 +20,7 @@
   "author": "Aria Minaei",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/AriaMinaei/timeflow/issues"
+    "url": "https://github.com/AriaMinaei/theatrejs/issues"
   },
   "dependencies": {
     "timing-function": "*",
