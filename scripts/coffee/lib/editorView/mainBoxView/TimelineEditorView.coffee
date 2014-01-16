@@ -2,11 +2,11 @@ Foxie = require 'foxie'
 array = require 'utila/scripts/js/lib/array'
 PropViewRepo = require './timelineView/PropViewRepo'
 
-module.exports = class TimelineView
+module.exports = class TimelineEditorView
 
 	constructor: (@mainBox) ->
 
-		@model = @mainBox.editor.model.timeline
+		@model = @mainBox.editor.model.timelineEditor
 
 		@rootView = @mainBox.rootView
 

@@ -10,7 +10,7 @@ module.exports = class SeekbarView
 
 		@timelineLength = @model.timelineLength
 
-		@timeline = @mainBox.timeline
+		@timelineEditor = @mainBox.timelineEditor
 
 		@model.on 'length-change', => do @_updateTimelineLength
 
@@ -181,7 +181,7 @@ module.exports = class SeekbarView
 
 	_dragFocusStripBy: (x) ->
 
-		t = @timeline._XToTime x
+		t = @timelineEditor._XToTime x
 
 		focus = @model.getFocusArea()
 
@@ -205,7 +205,7 @@ module.exports = class SeekbarView
 
 	_dragFocusBy: (x) ->
 
-		t = @timeline._XToFocusDuration x
+		t = @timelineEditor._XToFocusDuration x
 
 		focus = @model.getFocusArea()
 
@@ -236,7 +236,7 @@ module.exports = class SeekbarView
 		nextWinPos = curWinPos + x
 
 		# the from part
-		nextFrom = @timeline._XToTime nextWinPos
+		nextFrom = @timelineEditor._XToTime nextWinPos
 
 		if nextFrom < 0
 
@@ -279,7 +279,7 @@ module.exports = class SeekbarView
 		nextWinPos = curWinPos + x
 
 		# the to part
-		nextTo = @timeline._XToTime nextWinPos
+		nextTo = @timelineEditor._XToTime nextWinPos
 
 		if nextTo > @timelineLength
 
@@ -365,7 +365,7 @@ module.exports = class SeekbarView
 
 	_repositionSeeker: ->
 
-		curSeekerPos = @timeline._timeToFocusedX @model.t
+		curSeekerPos = @timelineEditor._timeToFocusedX @model.t
 
 		@seeker
 		.moveXTo(curSeekerPos)
@@ -401,7 +401,7 @@ module.exports = class SeekbarView
 
 		focus = @model.getFocusArea()
 
-		t = @timeline._XToFocusedTime toPos
+		t = @timelineEditor._XToFocusedTime toPos
 
 		t = 0 if t < 0
 
@@ -415,13 +415,13 @@ module.exports = class SeekbarView
 
 		focus = @model.getFocusArea()
 
-		left = @timeline._timeToX focus.from
+		left = @timelineEditor._timeToX focus.from
 
 		@focusLeftNode
 		.moveXTo(left)
 		.set('left', left)
 
-		right = @timeline._timeToX focus.from + focus.duration
+		right = @timelineEditor._timeToX focus.from + focus.duration
 
 		@focusRightNode
 		.moveXTo(right)
@@ -443,7 +443,7 @@ module.exports = class SeekbarView
 
 		focus = @model.getFocusArea()
 
-		t = @timeline._XToFocusedTime toPos
+		t = @timelineEditor._XToFocusedTime toPos
 
 		t = 0 if t < 0
 

@@ -18,14 +18,14 @@ module.exports = class Selection
 
 	_prepareNode: ->
 
-		@node = Foxie('.timeflow-timeline-prop-selection')
+		@node = Foxie('.timeflow-timelineEditor-prop-selection')
 		.putIn(@prop.pacsNode)
 		.moveX(-5000)
 
-		@leftEdge = Foxie('.timeflow-timeline-prop-selection-leftEdge')
+		@leftEdge = Foxie('.timeflow-timelineEditor-prop-selection-leftEdge')
 		.putIn(@node)
 
-		@rightEdge = Foxie('.timeflow-timeline-prop-selection-rightEdge')
+		@rightEdge = Foxie('.timeflow-timelineEditor-prop-selection-rightEdge')
 		.putIn(@node)
 
 	_prepareInteractions: ->

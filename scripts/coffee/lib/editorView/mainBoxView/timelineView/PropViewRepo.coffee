@@ -2,7 +2,7 @@ PropView = require './PropView'
 
 module.exports = class PropViewRepo
 
-	constructor: (@timeline) ->
+	constructor: (@timelineEditor) ->
 
 		@_propViews = {}
 

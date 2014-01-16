@@ -9,9 +9,9 @@ module.exports = class PropView
 
 	constructor: (@repo, @propModel) ->
 
-		@timeline = @repo.timeline
+		@timelineEditor = @repo.timelineEditor
 
-		@rootView = @timeline.rootView
+		@rootView = @timelineEditor.rootView
 
 		@id = @propModel.id
 
@@ -23,7 +23,7 @@ module.exports = class PropView
 
 		@_items = []
 
-		@rootView.moosh = @repo.timeline.mainBox.editor.moosh
+		@rootView.moosh = @repo.timelineEditor.mainBox.editor.moosh
 
 		@_expanded = null
 
@@ -73,9 +73,9 @@ module.exports = class PropView
 
 	_prepareNodes: ->
 
-		@node = Foxie '.timeflow-timeline-prop.shouldTransition'
+		@node = Foxie '.timeflow-timelineEditor-prop.shouldTransition'
 
-		@resizer = Foxie('.timeflow-timeline-prop-resizer').putIn(@node)
+		@resizer = Foxie('.timeflow-timelineEditor-prop-resizer').putIn(@node)
 
 		do @_prepareInfoNodes
 
@@ -97,7 +97,7 @@ module.exports = class PropView
 
 		.onMove (e) =>
 
-			t = @timeline._XToFocusedTime e.layerX
+			t = @timelineEditor._XToFocusedTime e.layerX
 			x = @_timeToX t
 
 			@hypotheticalPointNode
@@ -114,12 +114,12 @@ module.exports = class PropView
 		.withKeys('ctrl+shift')
 		.onUp (e) =>
 
-			t = @timeline._XToFocusedTime e.layerX
+			t = @timelineEditor._XToFocusedTime e.layerX
 			val = @_YToVal e.layerY - top
 
 			@pacs.addPoint t, val, 100, val * 0.1, 100, val * 0.1
 
-		@hypotheticalPointNode = Foxie('.timeflow-timeline-prop-pacs-hypotheticalPoint')
+		@hypotheticalPointNode = Foxie('.timeflow-timelineEditor-prop-pacs-hypotheticalPoint')
 		.putIn(@pacsNode)
 		.moveTo(-1000, -1000, 1)
 
@@ -162,7 +162,7 @@ module.exports = class PropView
 
 	_prepareInfoNodes: ->
 
-		@info = Foxie('.timeflow-timeline-prop-info').putIn @node
+		@info = Foxie('.timeflow-timelineEditor-prop-info').putIn @node
 
 		@rootView.moosh.onClick(@info)
 		.withNoKeys()
@@ -170,24 +170,24 @@ module.exports = class PropView
 
 			@_propHolderModel.toggleExpansion()
 
-		@catName = Foxie('.timeflow-timeline-prop-info-catName').putIn @info
+		@catName = Foxie('.timeflow-timelineEditor-prop-info-catName').putIn @info
 		@catName.node.innerHTML = @propModel.actor.category.name
 
-		@actorName = Foxie('.timeflow-timeline-prop-info-actorName').putIn @info
+		@actorName = Foxie('.timeflow-timelineEditor-prop-info-actorName').putIn @info
 		@actorName.node.innerHTML = @propModel.actor.name
 
-		@propName = Foxie('.timeflow-timeline-prop-info-propName').putIn @info
+		@propName = Foxie('.timeflow-timelineEditor-prop-info-propName').putIn @info
 		@propName.node.innerHTML = @propModel.name
 
 	_preparePacsNodes: ->
 
-		@pacsContainer = Foxie('.timeflow-timeline-prop-pacsContainer').putIn @node
+		@pacsContainer = Foxie('.timeflow-timelineEditor-prop-pacsContainer').putIn @node
 
-		@pacsNode = Foxie('.timeflow-timeline-prop-pacs').putIn @pacsContainer
+		@pacsNode = Foxie('.timeflow-timelineEditor-prop-pacs').putIn @pacsContainer
 
 	attach: ->
 
-		@node.putIn @timeline.node
+		@node.putIn @timelineEditor.node
 
 		return
 
@@ -229,9 +229,9 @@ module.exports = class PropView
 
 	relayHorizontally: ->
 
-		width = @timeline.horizontalSpace
+		width = @timelineEditor.horizontalSpace
 
-		newRatio = width / @timeline.focusArea.duration
+		newRatio = width / @timelineEditor.focusArea.duration
 
 		if newRatio isnt @_widthToTimeRatio
 
@@ -243,7 +243,7 @@ module.exports = class PropView
 
 				do item.relayHorizontally
 
-		@_shiftViewToTime @timeline.focusArea.from
+		@_shiftViewToTime @timelineEditor.focusArea.from
 
 		return
 
@@ -323,7 +323,7 @@ module.exports = class PropView
 
 	_tick: ->
 
-		@timeline._tick()
+		@timelineEditor._tick()
 
 		return
 

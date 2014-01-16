@@ -1,7 +1,7 @@
 _Emitter = require '../_Emitter'
 array = require 'utila/scripts/js/lib/array'
 
-module.exports = class TimelineModel extends _Emitter
+module.exports = class TimelineEditorModel extends _Emitter
 
 	constructor: (@editor) ->
 

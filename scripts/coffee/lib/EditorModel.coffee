@@ -1,9 +1,9 @@
 _Emitter = require './_Emitter'
 GraphModel = require './editorModel/GraphModel'
-MainBoxModel = require './editorModel/MainBoxModel'
 Communicator = require './editorModel/Communicator'
-TimelineModel = require './editorModel/TimelineModel'
+MainBoxModel = require './editorModel/MainBoxModel'
 TimeControlModel = require './editorModel/TimeControlModel'
+TimelineEditorModel = require './editorModel/TimelineEditorModel'
 WorkspaceManagerModel = require './editorModel/WorkspaceManagerModel'
 
 module.exports = class EditorModel extends _Emitter
@@ -22,7 +22,7 @@ module.exports = class EditorModel extends _Emitter
 
 		@timeControl = new TimeControlModel @
 
-		@timeline = new TimelineModel @
+		@timelineEditor = new TimelineEditorModel @
 
 	_tick: (t) ->
 

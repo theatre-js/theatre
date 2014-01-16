@@ -1,6 +1,6 @@
 WorkspaceButtonsView = require './mainBoxView/WorkspaceButtonsView'
 WorkspaceListView = require './mainBoxView/WorkspaceListView'
-TimelineView = require './mainBoxView/TimelineView'
+TimelineEditorView = require './mainBoxView/TimelineEditorView'
 SeekbarView = require './mainBoxView/SeekbarView'
 _Emitter = require '../_Emitter'
 Foxie = require 'foxie'
@@ -21,7 +21,7 @@ module.exports = class MainBoxView extends _Emitter
 
 		window.addEventListener 'resize', => do @_recalculateSpace
 
-		@timeline = new TimelineView @
+		@timelineEditor = new TimelineEditorView @
 
 		@seekbar = new SeekbarView @
 
