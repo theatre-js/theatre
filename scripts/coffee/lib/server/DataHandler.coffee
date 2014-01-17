@@ -1,3 +1,4 @@
+wn = require 'when'
 fs = require 'graceful-fs'
 git = require 'gift'
 CSON = require 'cson'
@@ -10,7 +11,7 @@ module.exports = class DataHandler
 
 		@_setPaths rootPath, timelinesDir
 
-		# do @_setupGit
+		@_lastPromiseToWorkWithHeadData = wn()
 
 	_setPaths: (@rootPath, @timelinesDir) ->
 
@@ -58,41 +59,16 @@ module.exports = class DataHandler
 
 		ns in @namespaces
 
-	_setupGit: ->
-
-		@repo = git @rootPath
-
-		# repo.add '.', ->
-
-		# 	console.log 'added'
-
-		# repo.commit 'second', (err) ->
-
-		# 	console.log 'commited', err
-
-		# repo.create_tag 'second', ->
-
-		# 	# console.log arguments
-
-		# repo.tags (err, tags) ->
-
-		# 	console.log tags
-
-		# repo.checkout 'first', ->
-
-		# 	console.log arguments
-
-		# repo.status ->
-
-		# 	console.log arguments
-
 	getHeadDataForNamespace: (ns) ->
 
 		unless @hasNamespace ns
 
 			throw Error "Invalid namespace '#{ns}'"
 
-		nodefn.call(fs.readFile, @getDataFilePathFor(ns), {encoding: 'utf-8'})
+		@_scheduleToWorkWithHeadData =>
+
+			nodefn.call(fs.readFile, @getDataFilePathFor(ns), {encoding: 'utf-8'})
+
 		.then (cson) =>
 
 			obj = CSON.parseSync cson
@@ -103,13 +79,19 @@ module.exports = class DataHandler
 
 			obj
 
-	replaceHeadDataForNamespace: (ns, obj) ->
+	_scheduleToWorkWithHeadData: (cb) ->
 
-		debugger
+		@_lastPromiseToWorkWithHeadData = @_lastPromiseToWorkWithHeadData.then cb
+
+	replaceHeadDataForNamespace: (ns, obj) ->
 
 		cson = CSON.stringifySync obj
 
-		nodefn.call(fs.writeFile, @getDataFilePathFor(ns), cson, {encoding: 'utf-8'})
+		@_scheduleToWorkWithHeadData =>
+
+			console.log 'callback on'
+
+			nodefn.call(fs.writeFile, @getDataFilePathFor(ns), cson, {encoding: 'utf-8'})
 
 	getDataFilePathFor: (ns) ->
 

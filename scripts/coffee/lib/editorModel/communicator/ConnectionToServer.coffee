@@ -2,6 +2,8 @@ io = require 'socket.io/node_modules/socket.io-client'
 _Emitter = require '../../_Emitter'
 wn = require 'when'
 
+window.wn = wn
+
 module.exports = class ConnectionToServer extends _Emitter
 
 	constructor: (@communicator) ->

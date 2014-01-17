@@ -39,14 +39,14 @@ module.exports = class Session
 
 	_replacePartOfHead: (parts, cb) =>
 
-		console.log 'replacing head with', parts
+		# console.log 'replacing head with', parts
 
 		{address, newData} = parts
 
 		@dataHandler.getHeadDataForNamespace(@namespaceName)
 		.then (obj) =>
 
-			console.log '------------------then', obj
+			# console.log '------------------then', obj
 
 			cur = obj
 
