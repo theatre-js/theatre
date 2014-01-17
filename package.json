@@ -1,8 +1,8 @@
 {
   "name": "theatrejs",
-  "version": "0.1.0-beta.3",
+  "version": "0.1.0-beta.4",
   "description": "(work in progress)",
-  "main": "scripts/js/lib/Theatre.js",
+  "main": "scripts/js/lib/theatre.js",
   "scripts": {
     "test": "node ./node_modules/coffee-script/bin/cake test",
     "prepublish": "node ./node_modules/coffee-script/bin/cake build"
@@ -32,7 +32,9 @@
     "when": "~2.7.1",
     "cson": "~1.4.5",
     "socket.io": "~0.9.16",
-    "graceful-fs": "~2.0.1"
+    "graceful-fs": "~2.0.1",
+    "pretty-error": "*",
+    "pretty-monitor": "*"
   },
   "devDependencies": {
     "coffee-script": "~1.6.3",
