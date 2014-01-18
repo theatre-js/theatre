@@ -168,10 +168,12 @@ module.exports = class PointView extends _ItemView
 			if sideToConnect is 1
 
 				@model.connectToRight()
+				@model.pacs.done()
 
 			else if sideToConnect is -1
 
 				@model.connectToLeft()
+				@model.pacs.done()
 
 			return
 

@@ -45,6 +45,8 @@ module.exports = class DynamicTimeline extends _Emitter
 
 	loadFrom: (se) ->
 
+		return unless se._allProps?
+
 		for name, prop of @_allProps
 
 			propData = se._allProps[name]

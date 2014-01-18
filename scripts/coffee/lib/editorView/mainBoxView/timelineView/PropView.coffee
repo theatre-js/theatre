@@ -119,6 +119,8 @@ module.exports = class PropView
 
 			@pacs.addPoint t, val, 100, val * 0.1, 100, val * 0.1
 
+			@pacs.done()
+
 		@hypotheticalPointNode = Foxie('.theatrejs-timelineEditor-prop-pacs-hypotheticalPoint')
 		.putIn(@pacsNode)
 		.moveTo(-1000, -1000, 1)

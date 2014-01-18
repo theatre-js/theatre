@@ -89,8 +89,6 @@ module.exports = class DataHandler
 
 		@_scheduleToWorkWithHeadData =>
 
-			console.log 'callback on'
-
 			nodefn.call(fs.writeFile, @getDataFilePathFor(ns), cson, {encoding: 'utf-8'})
 
 	getDataFilePathFor: (ns) ->
