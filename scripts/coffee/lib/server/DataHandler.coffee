@@ -71,6 +71,10 @@ module.exports = class DataHandler
 
 		.then (cson) =>
 
+			if (cson.replace /\s+/, '') is ''
+
+				return {}
+
 			obj = CSON.parseSync cson
 
 			if obj instanceof Error
