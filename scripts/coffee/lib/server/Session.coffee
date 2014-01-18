@@ -39,14 +39,10 @@ module.exports = class Session
 
 	_replacePartOfHead: (parts, cb) =>
 
-		# console.log 'replacing head with', parts
-
 		{address, newData} = parts
 
 		@dataHandler.getHeadDataForNamespace(@namespaceName)
 		.then (obj) =>
-
-			# console.log '------------------then', obj
 
 			cur = obj
 
@@ -54,11 +50,15 @@ module.exports = class Session
 
 			for subName in address
 
-				cur = cur[subName]
+				if cur[subName]?
 
-				unless cur?
+					cur = cur[subName]
 
-					throw Error "Couldn't find subName '#{subName}' in cson data"
+				else
+
+					cur[subName] = cur = {}
+
+					console.log "Couldn't find subName '#{subName}' in cson data"
 
 			cur[lastName] = newData
 

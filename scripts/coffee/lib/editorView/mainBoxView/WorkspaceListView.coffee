@@ -17,8 +17,6 @@ module.exports = class WorkspaceListView extends _Emitter
 
 		@model = @mainBox.editor.model.workspaces
 
-		window.model = @model
-
 		@model.on 'new-workspace', (ws) =>
 
 			@_recognizeNewWorkspace ws

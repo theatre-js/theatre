@@ -112,16 +112,18 @@ module.exports = class Connector extends _PacItem
 		@rightValue = rightPoint.value
 		@_valDiff = @rightValue - @leftValue
 
-		@_valDiff = 1e-6 if @_valDiff is 0
+		if @_valDiff is 0
+
+			@_valDiff = 1e-6
 
 		@leftT = leftPoint.t
 		@rightT = rightPoint.t
 		@_timeDiff = @rightT - @leftT
 
 		x1 = @leftHandler[0] / @_timeDiff
-		y1 = @leftHandler[1] / @_valDiff
-
 		x2 = 1 - (@rightHandler[0] / @_timeDiff)
+
+		y1 = @leftHandler[1] / @_valDiff
 		y2 = 1 + (@rightHandler[1] / @_valDiff)
 
 		@badBezier = x1 < 0 or x1 > 1 or x2 < 0 or x2 > 1
@@ -139,4 +141,4 @@ module.exports = class Connector extends _PacItem
 
 		prog = (t - @leftT) / @_timeDiff
 
-		@leftValue + (@_valDiff * @bezier.solveSimple(prog))
+		@leftValue + (@_valDiff * @bezier.solve(prog, 1e-6))

@@ -46,13 +46,13 @@ module.exports = class EditorModel extends _Emitter
 
 	loadFrom: (se) ->
 
-		@timeline.loadFrom se.timeline
+		@timeline.loadFrom se.timeline if se.timeline?
 
-		@mainBox.loadFrom se.mainBox
+		@mainBox.loadFrom se.mainBox if se.mainBox?
 
-		@workspaces.loadFrom se.workspaces
+		@workspaces.loadFrom se.workspaces if se.workspaces?
 
-		@timeControl.loadFrom se.timeControl
+		@timeControl.loadFrom se.timeControl if se.timeControl?
 
 		@
 
