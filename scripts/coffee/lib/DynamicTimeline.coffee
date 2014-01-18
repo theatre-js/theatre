@@ -53,7 +53,9 @@ module.exports = class DynamicTimeline extends _Emitter
 
 			unless propData?
 
-				throw Error "Prop '#{name}' isn't found in the received serialized data"
+				console.log "Prop '#{name}' isn't found in the received serialized data"
+
+				continue
 
 			prop.loadFrom propData
 

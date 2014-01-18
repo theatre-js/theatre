@@ -71,8 +71,6 @@ module.exports = class DataHandler
 
 		.then (cson) =>
 
-			return {} if typeof cson isnt 'string'
-
 			if (cson.replace /\s+/, '') is ''
 
 				return {}
