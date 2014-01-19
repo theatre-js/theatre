@@ -37,7 +37,7 @@ module.exports = class SplittedAudioTrack extends _Emitter
 
 		for partConfig in @config.parts
 
-			# return if i++ is 2
+			break if i++ is 1
 
 			@_addPart partConfig
 
@@ -78,8 +78,6 @@ module.exports = class SplittedAudioTrack extends _Emitter
 	play: ->
 
 		return if @_isPlaying
-
-		windowTime = performance.now() / 1000.0
 
 		@_lastContextTime = @context.currentTime
 
