@@ -1,164 +1,160 @@
 SplittedAudioTrackPart = require './splittedAudioTrack/SplittedAudioTrackPart'
 _Emitter = require '../../_Emitter'
-{pad} = require 'utila/scripts/js/lib/string'
+array = require 'utila/scripts/js/lib/array'
 wn = require 'when'
 
 module.exports = class SplittedAudioTrack extends _Emitter
 
-	constructor: (@context, @src, @partsCount, @_tracksStartAt = 1) ->
+	constructor: (@context, @config) ->
 
 		super
 
 		@node = @context.createGain()
 
-		@_remainingToLoad = 0
+		@node.connect @context.destination
 
-		@_isLoaded = no
-
-		@_loadDeferred = wn.defer()
-
-		@_isPlaying = no
+		@duration = 0.0
 
 		do @_preparePieces
 
-		do @load
+		@_readyToPlayPromise = null
 
-		@_getReadyToPlay 0
+		@_isPlaying = no
+
+		@t = 0
+
+		@_waitBeforePlay = 0.016
+
+		@_secondsToSchedulePartInAdvance = 1.0
+
+		@_queuedParts = []
 
 	_preparePieces: ->
 
 		@_parts = []
 
-		numWidth = String(@partsCount).length
+		i = 0
 
-		for i in [@_tracksStartAt...@_tracksStartAt + @partsCount]
+		for partConfig in @config.parts
 
-			trackNum = pad i, numWidth
+			# return if i++ is 2
 
-			trackAddress = @src.replace /(\[n\])/, trackNum
+			@_addPart partConfig
 
-			@_addPart i, trackAddress
+		console.log @_parts
 
 		return
 
-	_addPart: (i, trackAddress) ->
+	_addPart: (partConfig) ->
 
-		part = new SplittedAudioTrackPart @, trackAddress
+		part = new SplittedAudioTrackPart @, @_parts.length, partConfig
 
-		@_remainingToLoad++
-
-		part.load().then =>
-
-			@_remainingToLoad--
-
-			if @_remainingToLoad is 0
-
-				@_isLoaded = yes
-
-				@_loadDeferred.resolve()
-
-			return
+		@duration = @duration + part.duration
 
 		@_parts.push part
 
-	load: ->
+	getReadyToPlay: ->
 
-		@_loadDeferred.promise
+		unless @_readyToPlayPromise?
 
-	isLoaded: ->
+			d = wn.defer()
 
-		@_isLoaded
+			@_readyToPlayPromise = d.promise
 
-	tick: (t) ->
+			remaining = @_parts.length
 
-		return unless @_isLoaded
+			for part in @_parts
 
-		return unless @_scheduledToPlay
+				part.getReadyToPlay().then =>
 
-		if @_isPlaying
+					remaining--
 
-			@_emit 'tick'
+					if remaining is 0 then d.resolve()
 
-		else
+					return
 
-			return unless @_isReadyToPlayTime @t
-
-			i = @_getPartIndexForTime @t
-
-			console.log i
-
-			@_isPlaying = yes
-
-			part = @_parts[i]
-
-			source = part.getASource()
-
-			source.connect @node
-
-			source.start 0
-
-			# console.log 'can play', part
-
-	_pauseParts: ->
+		@_readyToPlayPromise
 
 	play: ->
 
 		return if @_isPlaying
 
-		@_scheduledToPlay = yes
+		windowTime = performance.now() / 1000.0
 
-		@_emit 'play'
+		@_lastContextTime = @context.currentTime
+
+		@t -= @_waitBeforePlay
+
+		do @_queuePartsToPlay
+
+		@_isPlaying = yes
+
+	_queuePartsToPlay: ->
+
+		for part in @_parts
+
+			continue if part in @_queuedParts
+
+			break if part.from - @_secondsToSchedulePartInAdvance > @t
+
+			continue if part.to < @t
+
+			@_queuedParts.push part
+
+			part.queue()
+
+		return
+
+	_unqueuePart: (part) ->
+
+		array.pluckOneItem @_queuedParts, part
+
+		return
+
+	tick: (t) ->
+
+		return unless @_isPlaying
+
+		contextTime = @context.currentTime
+
+		@t = @t + contextTime - @_lastContextTime
+
+		@_lastContextTime = contextTime
+
+		if @t > @duration
+
+			do @pause
+
+			return
+
+		for part in @_parts
+
+			part.tick @t
+
+		do @_queuePartsToPlay
 
 		return
 
 	pause: ->
 
-		return unless @_scheduledToPlay
+		unless @_isPlaying
 
-		@_emit 'pause'
+			throw Error "Already paused"
 
-		@_scheduledToPlay = no
+		do @_unqueueParts
 
-		do @_pauseParts
+		@_isPlaying = no
+
+		console.log 'pausing'
+
+	_unqueueParts: ->
+
+		loop
+
+			part = @_queuedParts.pop()
+
+			break unless part?
+
+			part.unqueue()
 
 		return
-
-	seekTo: (t) ->
-
-		do @pause
-
-		@t = t
-
-		@_getReadyToPlay t
-
-		@_emit 'tick'
-
-		return
-
-	_getReadyToPlay: (t) ->
-
-		i = @_getPartIndexForTime t
-
-		part = @_parts[i]
-
-		part.getReadyToPlay().then =>
-
-			@_reportReadyToPlay i
-
-			return
-
-	_reportReadyToPlay: (i) ->
-
-		console.log i, 'is ready to play'
-
-	_isReadyToPlayTime: (t) ->
-
-		i = @_getPartIndexForTime t
-
-		part = @_parts[i]
-
-		part.isReadyToPlay()
-
-	_getPartIndexForTime: (t) ->
-
-		0

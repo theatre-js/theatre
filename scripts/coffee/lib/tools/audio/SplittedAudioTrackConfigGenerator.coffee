@@ -120,5 +120,6 @@ module.exports = class SplittedAudioTrackConfigGenerator
 	_putMetadataFromBufferOn: (buffer, part) ->
 
 		part.length = buffer.length
+		part.duration = buffer.duration
 		part.sampleRate = buffer.sampleRate
 		part.numberOfChannels = buffer.numberOfChannels
