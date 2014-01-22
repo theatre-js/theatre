@@ -27,6 +27,22 @@ module.exports = class ControlsView
 
 		do @_updatePlayState
 
+		@audioModel = @editor.model.audio
+
+		@audioModel.on 'ready-state-change', => do @_updateReadyState
+
+		do @_updateReadyState
+
+	_updateReadyState: ->
+
+		if @audioModel.isReady()
+
+			@playPauseNode.addClass 'ready'
+
+		else
+
+			@playPauseNode.removeClass 'ready'
+
 	_prepareNodes: ->
 
 		@node = Foxie('.theatrejs-controls').trans(500)
