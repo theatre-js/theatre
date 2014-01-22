@@ -139,17 +139,17 @@ module.exports = class TimeControlModel extends _DynamicModel
 	# duration ourself.
 	changeFocusArea: (from, to) ->
 
-		unless 0 <= from <= @duration
+		# unless 0 <= from <= @duration
 
-			debugger
+		# 	debugger
 
-			throw Error "Wrong from"
+		# 	throw Error "Wrong from"
 
-		unless from <= to <= @duration
+		# unless from <= to <= @duration
 
-			debugger
+		# 	debugger
 
-			throw Error "Wrong to"
+		# 	throw Error "Wrong to"
 
 		@_focus.from = from
 		@_focus.to = to
@@ -167,9 +167,9 @@ module.exports = class TimeControlModel extends _DynamicModel
 		# ... but if focus area is unchanged...
 		if @_focus.duration is 0
 
-			# ... then we should set it to view the whole timeline
-			@_focus.to = @duration
-			@_focus.duration = @duration
+			# ... then we should set it to view the timeline
+			@_focus.to = @timeline.duration
+			@_focus.duration = @timeline.duration
 
 		@_focus
 
@@ -180,32 +180,6 @@ module.exports = class TimeControlModel extends _DynamicModel
 
 		# we'll just wire the tick right to @audio
 		@audio.tick t
-
-		return
-
-		diff = t - @_lastPlayedTickAt
-
-		@_lastPlayedTickAt = t
-
-		@_tickByDiff diff
-
-		return
-
-	_tickByDiff: (diff) ->
-
-		newT = @timeline.t + diff
-
-		if newT > @duration
-
-			newT = @duration
-
-			@timeline.tick newT
-
-			do @pause
-
-			return
-
-		@timeline.tick newT
 
 		return
 
