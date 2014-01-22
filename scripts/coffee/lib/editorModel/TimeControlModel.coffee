@@ -10,35 +10,43 @@ module.exports = class TimeControlModel extends _DynamicModel
 
 		super
 
+		@audio = @editor.audio
+
 		@timeline = @editor.timeline
 
-		@timelineLength = 0
+		# duration of the whole animation
+		@duration = 0
 
-		@timeline.on 'length-change', =>
+		# when the duration of the audio track changes
+		@audio.on 'duration-change', =>
 
-			do @_updateTimelineLength
+			do @_recheckAudioDuration
 
-			return
+		do @_recheckAudioDuration
 
-		do @_updateTimelineLength
+		# when the duration of the timeline changes...
+		@timeline.on 'duration-change', =>
 
+			do @_recheckTimelineDuration
+
+		do @_recheckTimelineDuration
+
+		# current time in milliseconds
 		@t = 0
 
-		@timeline.on 'tick', =>
-
-			do @_updateT
-
-			return
-
+		# the focus area
 		@_focus = from: 0, to: 0, duration: 0
+
+		# when the audio ticks, we'll wire that to
+		# our timeline...
+		@audio.on 'tick', (t) => @timeline.tick t
+
+		# ... and we update our time when the timeline ticks
+		@timeline.on 'tick', => do @_updateT
 
 		do @_updateT
 
-		@_isPlaying = no
-
 		@_lastPlayedTickAt = 0
-
-		@_shouldStartPlaying = no
 
 		setTimeout =>
 
@@ -50,7 +58,7 @@ module.exports = class TimeControlModel extends _DynamicModel
 
 		se = {}
 
-		se.timelineLength = @timelineLength
+		se.duration = @duration
 
 		se.t = @t
 
@@ -65,11 +73,9 @@ module.exports = class TimeControlModel extends _DynamicModel
 
 	_loadFrom: (se) ->
 
-		if @_isPlaying
+		do @pause
 
-			do @pause
-
-		@_setTimelineLength Number se.timelineLength
+		@_setDuration Number se.duration
 
 		@changeFocusArea se._focus.from, se._focus.to
 
@@ -77,23 +83,32 @@ module.exports = class TimeControlModel extends _DynamicModel
 
 		return
 
-	_updateTimelineLength: ->
+	# when the duration of our timeline changes...
+	_recheckTimelineDuration: ->
 
-		@_setTimelineLength @timeline.timelineLength + 5000
+		# ... report that to @audio. It'll then decide if
+		# the duration of the whole animation should change
+		@audio.maximizeDuration @timeline.duration + 5000
 
-	_setTimelineLength: (@timelineLength) ->
+	# when the duration of @audio changes...
+	_recheckAudioDuration: ->
 
-		@_emit 'length-change'
+		# ... remember the new duration
+		@_setDuration @audio.duration
+
+	# save the duration of the whole animation
+	_setDuration: (@duration) ->
+
+		@_emit 'duration-change'
 
 		do @_reportLocalChange
 
 		return
 
+	# we update our local time based on the timeline's time
 	_updateT: ->
 
 		@t = @timeline.t
-
-		t = @t
 
 		@_emit 'time-change'
 
@@ -103,29 +118,30 @@ module.exports = class TimeControlModel extends _DynamicModel
 
 	tick: (t) ->
 
-		unless 0 <= t <= @timelineLength
-
-			throw Error "t is out of bounds"
-
-		@timeline.tick t
+		@audio.seekTo t
 
 		return
 
+	# to tick on spot...
 	tickOnSpot: ->
 
+		# ... we only force the timeline to tick.
+		# There is no reason to bother @audio
 		@timeline.tick @timeline.t
 
 		return
 
+	# change the focus area; we'll calculate the focus
+	# duration ourself.
 	changeFocusArea: (from, to) ->
 
-		unless 0 <= from <= @timelineLength
+		unless 0 <= from <= @duration
 
 			debugger
 
 			throw Error "Wrong from"
 
-		unless from <= to <= @timelineLength
+		unless from <= to <= @duration
 
 			debugger
 
@@ -141,27 +157,27 @@ module.exports = class TimeControlModel extends _DynamicModel
 
 		return
 
+	# get the focus area...
 	getFocusArea: ->
 
-		# if focus area is unchanged...
+		# ... but if focus area is unchanged...
 		if @_focus.duration is 0
 
-			@_focus.to = @timelineLength
-			@_focus.duration = @timelineLength
+			# ... then we should set it to view the whole timeline
+			@_focus.to = @duration
+			@_focus.duration = @duration
 
 		@_focus
 
+	# we receive ticks from the editor. ticks come from requestAnimationFrame,
+	# and might be set to be in sync with other animation controllers outside
+	# theatre.js
 	_tick: (t) ->
 
-		return unless @_isPlaying
+		# we'll just wire the tick right to @audio
+		@audio.tick t
 
-		if @_shouldStartPlaying
-
-			@_lastPlayedTickAt = t
-
-			@_shouldStartPlaying = no
-
-			return
+		return
 
 		diff = t - @_lastPlayedTickAt
 
@@ -175,9 +191,9 @@ module.exports = class TimeControlModel extends _DynamicModel
 
 		newT = @timeline.t + diff
 
-		if newT > @timelineLength
+		if newT > @duration
 
-			newT = @timelineLength
+			newT = @duration
 
 			@timeline.tick newT
 
@@ -191,29 +207,17 @@ module.exports = class TimeControlModel extends _DynamicModel
 
 	isPlaying: ->
 
-		@_isPlaying
+		@audio.isPlaying()
 
 	togglePlayState: ->
 
-		if @_isPlaying
-
-			do @pause
-
-		else
-
-			do @play
+		@audio.togglePlay()
 
 		return
 
 	play: ->
 
-		if @_isPlaying
-
-			throw Error "Already  playing"
-
-		@_isPlaying = yes
-
-		@_shouldStartPlaying = yes
+		@audio.play()
 
 		@_emit 'play-state-change'
 
@@ -221,13 +225,7 @@ module.exports = class TimeControlModel extends _DynamicModel
 
 	pause: ->
 
-		unless @_isPlaying
-
-			throw Error "Already paused"
-
-		@_shouldStartPlaying = no
-
-		@_isPlaying = no
+		@audio.pause()
 
 		@_emit 'play-state-change'
 
@@ -235,58 +233,30 @@ module.exports = class TimeControlModel extends _DynamicModel
 
 	seekBy: (amount) ->
 
-		if @isPlaying()
-
-			do @pause
-
-		toT = @timeline.t + amount
-
-		toT = 0 if toT < 0
-
-		if toT > @timelineLength
-
-			toT = @timelineLength
-
-		@tick toT
+		@audio.seek amount
 
 		return
 
 	jumpToBeginning: ->
 
-		if @isPlaying()
-
-			do @pause
-
-		@tick 0
+		@audio.seekTo 0
 
 		return
 
 	jumpToEnd: ->
 
-		if @isPlaying()
-
-			do @pause
-
-		@tick @timelineLength
+		@audio.seekTo @duration
 
 		return
 
 	jumpToFocusBeginning: ->
 
-		if @isPlaying()
-
-			do @pause
-
-		@tick @_focus.from + 1
+		@audio.seekTo @_focus.from + 1
 
 		return
 
 	jumpToFocusEnd: ->
 
-		if @isPlaying()
-
-			do @pause
-
-		@tick @_focus.to - 1
+		@audio.seekTo @_focus.to - 1
 
 		return

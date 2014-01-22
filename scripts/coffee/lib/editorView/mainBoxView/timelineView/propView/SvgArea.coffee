@@ -10,7 +10,7 @@ module.exports = class SvgArea
 
 		do @_prepareNode
 
-		@prop.pacs.on 'length-change', =>
+		@prop.pacs.on 'duration-change', =>
 
 			do @relayHorizontally
 

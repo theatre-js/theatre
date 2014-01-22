@@ -29,7 +29,7 @@ module.exports = class DynamicTimeline extends _Emitter
 
 		@_regularProps = {}
 
-		@timelineLength = 0
+		@duration = 0
 
 	setRootModel: (@rootModel) ->
 
@@ -65,11 +65,11 @@ module.exports = class DynamicTimeline extends _Emitter
 
 		parseInt Math.floor(t / @_frameLength) * @_frameLength
 
-	_maximizeTimelineLength: (dur) ->
+	_maximizeDuration: (dur) ->
 
-		@timelineLength = Math.max(dur, @timelineLength)
+		@duration = Math.max(dur, @duration)
 
-		@_emit 'length-change'
+		@_emit 'duration-change'
 
 		return
 

@@ -229,13 +229,13 @@ module.exports = class Pacs extends _Emitter
 
 		if lastPoint?
 
-			@prop.timeline._maximizeTimelineLength lastPoint.t
+			@prop.timeline._maximizeDuration lastPoint.t
 
 			if lastPoint.t isnt @chronologyLength
 
 				@chronologyLength = lastPoint.t
 
-				@_emit 'length-change'
+				@_emit 'duration-change'
 
 		return
 

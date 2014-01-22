@@ -14,11 +14,11 @@ module.exports = class TimelineEditorView
 
 		timeControlModel = @mainBox.editor.model.timeControl
 
-		@timelineLength = timeControlModel.timelineLength
+		@duration = timeControlModel.duration
 
-		timeControlModel.on 'length-change', =>
+		timeControlModel.on 'duration-change', =>
 
-			@timelineLength = timeControlModel.timelineLength
+			@duration = timeControlModel.duration
 
 		@width = @mainBox.width
 
@@ -135,9 +135,9 @@ module.exports = class TimelineEditorView
 
 	_XToTime: (x) ->
 
-		x / @width * @timelineLength
+		x / @width * @duration
 
 	_timeToX: (t) ->
 
-		parseInt (t / @timelineLength) * @width
+		parseInt (t / @duration) * @width
 

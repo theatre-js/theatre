@@ -8,11 +8,11 @@ module.exports = class SeekbarView
 
 		@model = @mainBox.editor.model.timeControl
 
-		@timelineLength = @model.timelineLength
+		@duration = @model.duration
 
 		@timelineEditor = @mainBox.timelineEditor
 
-		@model.on 'length-change', => do @_updateTimelineLength
+		@model.on 'duration-change', => do @_updateDuration
 
 		do @_prepareNode
 
@@ -193,9 +193,9 @@ module.exports = class SeekbarView
 
 		newTo = newFrom + focus.duration
 
-		if newTo > @timelineLength
+		if newTo > @duration
 
-			newTo = @timelineLength
+			newTo = @duration
 
 			newFrom = newTo - focus.duration
 
@@ -217,9 +217,9 @@ module.exports = class SeekbarView
 
 		newTo = newFrom + focus.duration
 
-		if newTo > @timelineLength
+		if newTo > @duration
 
-			newTo = @timelineLength
+			newTo = @duration
 
 			newFrom = newTo - focus.duration
 
@@ -249,9 +249,9 @@ module.exports = class SeekbarView
 
 			nextTo = nextFrom + 1000
 
-		if nextTo > @timelineLength
+		if nextTo > @duration
 
-			nextTo = @timelineLength
+			nextTo = @duration
 
 		# update the model
 		@model.changeFocusArea nextFrom, nextTo
@@ -281,9 +281,9 @@ module.exports = class SeekbarView
 		# the to part
 		nextTo = @timelineEditor._XToTime nextWinPos
 
-		if nextTo > @timelineLength
+		if nextTo > @duration
 
-			nextTo = @timelineLength
+			nextTo = @duration
 
 		if nextTo < 1000
 
@@ -345,11 +345,11 @@ module.exports = class SeekbarView
 
 			newTo = newFrom + focus.duration
 
-			if focus.to < t and newTo > @timelineLength
+			if focus.to < t and newTo > @duration
 
-				shift = newTo - @timelineLength
+				shift = newTo - @duration
 
-				newTo = @timelineLength
+				newTo = @duration
 
 				newFrom -= shift
 
@@ -405,7 +405,7 @@ module.exports = class SeekbarView
 
 		t = 0 if t < 0
 
-		t = @timelineLength if t > @timelineLength
+		t = @duration if t > @duration
 
 		@model.tick t
 
@@ -433,9 +433,9 @@ module.exports = class SeekbarView
 
 		return
 
-	_updateTimelineLength: ->
+	_updateDuration: ->
 
-		@timelineLength = @model.timelineLength
+		@duration = @model.duration
 
 		do @_repositionElements
 
@@ -447,7 +447,7 @@ module.exports = class SeekbarView
 
 		t = 0 if t < 0
 
-		t = @timelineLength if t > @timelineLength
+		t = @duration if t > @duration
 
 		@model.tick t
 
@@ -461,11 +461,11 @@ module.exports = class SeekbarView
 
 		newDuration = focus.duration * zoomMult
 
-		if newDuration > @timelineLength
+		if newDuration > @duration
 
 			newFrom = 0
 
-			newTo = @timelineLength
+			newTo = @duration
 
 			@model.changeFocusArea newFrom, newTo
 
@@ -493,9 +493,9 @@ module.exports = class SeekbarView
 
 			newFrom = 0
 
-		if newTo > @timelineLength
+		if newTo > @duration
 
-			newTo = @timelineLength
+			newTo = @duration
 
 		newDur = newTo - newFrom
 

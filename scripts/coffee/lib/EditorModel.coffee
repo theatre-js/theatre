@@ -5,6 +5,7 @@ MainBoxModel = require './editorModel/MainBoxModel'
 TimeControlModel = require './editorModel/TimeControlModel'
 TimelineEditorModel = require './editorModel/TimelineEditorModel'
 WorkspaceManagerModel = require './editorModel/WorkspaceManagerModel'
+AudioDrivenTimeControl = require 'audio-driven-time-control'
 
 module.exports = class EditorModel extends _Emitter
 
@@ -13,6 +14,8 @@ module.exports = class EditorModel extends _Emitter
 		super
 
 		@timeline.setRootModel @
+
+		@audio = new AudioDrivenTimeControl
 
 		@graph = new GraphModel @
 

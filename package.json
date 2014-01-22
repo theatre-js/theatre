@@ -1,6 +1,6 @@
 {
   "name": "theatrejs",
-  "version": "0.1.0-beta.4",
+  "version": "0.1.0-beta.5",
   "description": "(work in progress)",
   "main": "scripts/js/lib/theatre.js",
   "scripts": {
@@ -34,7 +34,8 @@
     "socket.io": "~0.9.16",
     "graceful-fs": "~2.0.1",
     "pretty-error": "*",
-    "pretty-monitor": "*"
+    "pretty-monitor": "*",
+    "audio-driven-time-control": "*"
   },
   "devDependencies": {
     "coffee-script": "~1.6.3",
