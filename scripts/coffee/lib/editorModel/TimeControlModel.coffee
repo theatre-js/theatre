@@ -31,6 +31,10 @@ module.exports = class TimeControlModel extends _DynamicModel
 
 		do @_recheckTimelineDuration
 
+		@audio.on 'play', => do @_updatePlayState
+		@audio.on 'pause', => do @_updatePlayState
+		@audio.on 'scheduled-to-play', => do @_updatePlayState
+
 		# current time in milliseconds
 		@t = 0
 
@@ -204,6 +208,10 @@ module.exports = class TimeControlModel extends _DynamicModel
 		@timeline.tick newT
 
 		return
+
+	_updatePlayState: ->
+
+		@_emit 'play-state-change'
 
 	isPlaying: ->
 

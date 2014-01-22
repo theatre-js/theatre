@@ -15,7 +15,7 @@ module.exports = class EditorModel extends _Emitter
 
 		@timeline.setRootModel @
 
-		@audio = new AudioDrivenTimeControl
+		@audio = new AudioDrivenTimeControl null, @id + '-audio'
 
 		@graph = new GraphModel @
 
