@@ -12,7 +12,7 @@ module.exports = class ActorModel
 
 		@props = {}
 
-	addProp: (name, arrayName, arrayIndex) ->
+	addPropOfArray: (name, arrayName, arrayIndex) ->
 
 		if @props[name]?
 
@@ -20,7 +20,21 @@ module.exports = class ActorModel
 
 		propId = @id + '-' + name
 
-		timelineProp = @timeline.addProp(propId, arrayName, arrayIndex)
+		timelineProp = @timeline.addPropOfArray(propId, arrayName, arrayIndex)
+
+		@props[name] = prop = new ActorPropModel @, name, timelineProp
+
+		prop
+
+	addPropOfObject: (name, objectName, setter, getter) ->
+
+		if @props[name]?
+
+			throw Error "prop with name '#{name}' already exists in actor '#{@id}'"
+
+		propId = @id + '-' + name
+
+		timelineProp = @timeline.addPropOfObject(propId, objectName, setter, getter)
 
 		@props[name] = prop = new ActorPropModel @, name, timelineProp
 

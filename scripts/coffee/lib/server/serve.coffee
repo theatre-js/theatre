@@ -11,7 +11,7 @@ module.exports = serve = (repoPath, port, serializedDirName, passwords) ->
 	PrettyError = require 'pretty-error'
 	Server = require '../Server'
 	path = require 'path'
-	prettyWhenMonitor = require 'pretty-monitor'
+	prettyMonitor = require 'pretty-monitor'
 
 	# Pretty Errors
 	do ->
@@ -27,14 +27,14 @@ module.exports = serve = (repoPath, port, serializedDirName, passwords) ->
 
 		process.on 'uncaughtException', (e) ->
 
-			pe.render e, yes, no, 5
+			pe.render e, yes
 
 			console.log "-----------------------\n"
 
 			process.exit(1)
 
 	# Pretty When Monitor
-	prettyWhenMonitor 100, null, ['socket.io']
+	prettyMonitor.start 100, null, ['socket.io']
 
 	process.nextTick ->
 

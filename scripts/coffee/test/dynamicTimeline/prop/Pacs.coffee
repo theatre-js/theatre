@@ -1,6 +1,6 @@
 require '../../_prepare'
 
-Pacs = mod 'dynamic/prop/Pacs'
+Pacs = mod 'dynamicTimeline/prop/Pacs'
 
 makePacs = ->
 
@@ -17,7 +17,7 @@ makePacs = ->
 
 		initial: 0.5
 
-		timeline: _maximizeTimelineLength: ->
+		timeline: _maximizeDuration: ->
 
 	p._setUpdateRange = (from, to) ->
 

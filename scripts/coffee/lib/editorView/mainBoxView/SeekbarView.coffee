@@ -69,11 +69,7 @@ module.exports = class SeekbarView
 		.moveZ(1)
 		.putIn(@node)
 
-		@model.on 'time-change', =>
-
-			do @_updateT
-
-
+		@model.on 'time-change', => do @_updateT
 
 		wasPlaying = no
 

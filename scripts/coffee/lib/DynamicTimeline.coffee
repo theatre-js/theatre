@@ -1,7 +1,8 @@
 IncrementalIsolate = require './dynamicTimeline/IncrementalIsolate'
 _Emitter = require './_Emitter'
 array = require 'utila/scripts/js/lib/array'
-Prop = require './dynamicTimeline/Prop'
+PropOfArray = require './dynamicTimeline/PropOfArray'
+PropOfObject = require './dynamicTimeline/PropOfObject'
 
 module.exports = class DynamicTimeline extends _Emitter
 
@@ -22,6 +23,8 @@ module.exports = class DynamicTimeline extends _Emitter
 		@_fpsT = @_calcuateFpsT @t
 
 		@_arrays = {}
+
+		@_objects = {}
 
 		@_incrementalIsolates = {}
 
@@ -83,7 +86,17 @@ module.exports = class DynamicTimeline extends _Emitter
 
 		@
 
-	_verifyPropAdd: (id, arrayName, indexInArray) ->
+	addObject: (name, obj) ->
+
+		if @_objects[name]?
+
+			throw Error "An object named '#{name}' already exists"
+
+		@_objects[name] = obj
+
+		@
+
+	addPropOfArray: (id, arrayName, indexInArray) ->
 
 		if @_allProps[id]?
 
@@ -97,13 +110,27 @@ module.exports = class DynamicTimeline extends _Emitter
 
 			throw Error "Array '#{arrayName}' doesn't have an index of '#{indexInArray}'"
 
-		return
+		@_regularProps[id] = @_allProps[id] = new PropOfArray @, id, arrayName, indexInArray
 
-	addProp: (id, arrayName, indexInArray) ->
+	addPropOfObject: (id, objectName, setter, getter) ->
 
-		@_verifyPropAdd id, arrayName, indexInArray
+		if @_allProps[id]?
 
-		@_regularProps[id] = @_allProps[id] = new Prop @, id, arrayName, indexInArray
+			throw Error "A prop named '#{id}' already exists"
+
+		unless @_objects[objectName]?
+
+			throw Error "Couldn't find object named '#{objectName}'"
+
+		unless @_objects[objectName][setter]?
+
+			throw Error "Object '#{objectName}' doesn't have '#{setter}'"
+
+		unless @_objects[objectName][getter]?
+
+			throw Error "Object '#{objectName}' doesn't have '#{getter}'"
+
+		@_regularProps[id] = @_allProps[id] = new PropOfObject @, id, objectName, setter, getter
 
 	defineIncrementalIsolate: (id, isolate) ->
 

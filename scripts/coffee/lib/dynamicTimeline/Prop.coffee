@@ -3,17 +3,13 @@ _DynamicModel = require '../_DynamicModel'
 
 module.exports = class Prop extends _DynamicModel
 
-	constructor: (@timeline, @id, @arrayName, @arrayIndex) ->
+	constructor: (@timeline, @id) ->
 
 		@rootModel = @timeline.rootModel
 
 		@_serializedAddress = ['timeline', '_allProps', @id]
 
 		super
-
-		@array = @timeline._arrays[@arrayName]
-
-		@initial = @array[@arrayIndex]
 
 		@pacs = new Pacs @
 
@@ -54,16 +50,6 @@ module.exports = class Prop extends _DynamicModel
 		isolate._addProp @
 
 		@
-
-	_set: (val) ->
-
-		@array[@arrayIndex] = val
-
-		return
-
-	get: ->
-
-		@array[@arrayIndex]
 
 	_reportUpdate: (from, to) ->
 

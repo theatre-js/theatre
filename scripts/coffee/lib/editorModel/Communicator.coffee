@@ -8,6 +8,8 @@ module.exports = class Communicator
 
 		@connection.connect().then @_load
 
+		@_loaded = no
+
 	_load: =>
 
 		console.log 'asking for head-data'
@@ -18,7 +20,15 @@ module.exports = class Communicator
 
 			@editor.loadFrom data
 
+			@_loaded = yes
+
 	wireLocalChange: (address, newData) ->
+
+		unless @_loaded
+
+			console.log 'cannot wire anything when not loaded'
+
+			return
 
 		console.log 'local change', address, newData
 
