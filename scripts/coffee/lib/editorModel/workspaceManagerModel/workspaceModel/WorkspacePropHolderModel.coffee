@@ -32,7 +32,6 @@ module.exports = class WorkspacePropHolderModel extends _Emitter
 
 	@constructFrom: (se, workspace) ->
 
-
 		actorProp = workspace.rootModel.graph.getActorPropById se.actorPropId
 
 		propHolder = new self workspace, actorProp

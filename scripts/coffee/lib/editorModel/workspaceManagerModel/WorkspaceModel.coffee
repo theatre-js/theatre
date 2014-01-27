@@ -39,9 +39,17 @@ module.exports = class WorkspaceModel extends _Emitter
 
 	_constructPropHolderAndAdd: (se) ->
 
-		ph = WorkspacePropHolderModel.constructFrom se, @
+		try
 
-		@_addPropHolder ph
+			ph = WorkspacePropHolderModel.constructFrom se, @
+
+			return @_addPropHolder ph
+
+		catch e
+
+			console.warn "Couldn't construct a prop holder for", se, e
+
+		return
 
 	rename: (newName) ->
 
