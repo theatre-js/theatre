@@ -91,7 +91,8 @@ module.exports = class SeekbarView
 
 		.onDrag (e) =>
 
-			@_dragSeekerRelatively e.relX
+			# i hate it when there are numbers in my code
+			@_dragSeekerRelatively e.layerX - 5
 
 		return
 
