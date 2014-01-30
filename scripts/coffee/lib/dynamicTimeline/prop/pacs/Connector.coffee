@@ -72,8 +72,6 @@ module.exports = class Connector extends _PacItem
 
 		return
 
-		return
-
 	_remove: ->
 
 		@_emit 'remove'

@@ -33,11 +33,14 @@ module.exports = serve = (repoPath, port, serializedDirName, passwords) ->
 
 			process.exit(1)
 
-	# Pretty When Monitor
-	prettyMonitor.start 100, null, ['socket.io']
+		# Pretty When Monitor
+		prettyMonitor.start 100, pe
 
-	process.nextTick ->
+		pe.skipNodeFiles()
+		pe.skipPackage 'socket.io'
 
-		console.log "\n-----------------------\n"
+		process.nextTick ->
 
-		s = new Server repoPath, serializedDirName, port, passwords
+			console.log "\n-----------------------\n"
+
+			s = new Server repoPath, serializedDirName, port, passwords

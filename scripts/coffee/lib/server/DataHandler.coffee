@@ -2,6 +2,7 @@ wn = require 'when'
 fs = require 'graceful-fs'
 git = require 'gift'
 CSON = require 'cson'
+delay = require 'when/delay'
 nodefn = require 'when/node/function'
 sysPath = require 'path'
 

@@ -6,7 +6,7 @@ module.exports = class TimeControlModel extends _DynamicModel
 
 		@rootModel = @editor
 
-		@_serializedAddress = 'timeControl'
+		@_serializedAddress = ['timeControl']
 
 		super
 

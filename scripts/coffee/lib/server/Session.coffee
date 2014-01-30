@@ -46,6 +46,10 @@ module.exports = class Session
 
 			cur = obj
 
+			console.log '----------------'
+			console.log 'address', address
+			console.log 'before', obj.timeline._allProps['main-Directorals-Rectanguli-width'].pacs.chronology.points.length
+
 			lastName = address.pop()
 
 			for subName in address
@@ -61,6 +65,9 @@ module.exports = class Session
 					console.log "Couldn't find subName '#{subName}' in cson data"
 
 			cur[lastName] = newData
+
+			console.log 'after', obj.timeline._allProps['main-Directorals-Rectanguli-width'].pacs.chronology.points.length
+			console.log '------------------'
 
 			@dataHandler.replaceHeadDataForNamespace(@namespaceName, obj)
 
