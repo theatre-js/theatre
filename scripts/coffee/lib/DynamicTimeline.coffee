@@ -10,7 +10,7 @@ module.exports = class DynamicTimeline extends _Emitter
 
 		super
 
-		@t = 0
+		@t = 1000
 
 		unless Number.isFinite(fps)
 

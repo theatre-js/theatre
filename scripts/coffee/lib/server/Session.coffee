@@ -39,20 +39,12 @@ module.exports = class Session
 
 	_replacePartOfHead: (parts, cb) =>
 
-		debugger
-
 		{address, newData} = parts
 
 		@dataHandler.getHeadDataForNamespace(@namespaceName)
 		.then (obj) =>
 
-			debugger
-
 			cur = obj
-
-			console.log '----------------'
-			console.log 'address', address
-			console.log 'before', obj.timeline._allProps['main-Directorals-Rectanguli-width'].pacs.chronology.points.length
 
 			lastName = address.pop()
 
@@ -69,9 +61,6 @@ module.exports = class Session
 					console.log "Couldn't find subName '#{subName}' in cson data"
 
 			cur[lastName] = newData
-
-			console.log 'after', obj.timeline._allProps['main-Directorals-Rectanguli-width'].pacs.chronology.points.length
-			console.log '------------------'
 
 			promise = @dataHandler.replaceHeadDataForNamespace(@namespaceName, obj)
 
