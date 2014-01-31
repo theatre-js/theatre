@@ -62,8 +62,6 @@ module.exports = class TimeControlModel extends _DynamicModel
 
 		se = {}
 
-		se.duration = @duration
-
 		se.t = @t
 
 		se._focus =
@@ -78,8 +76,6 @@ module.exports = class TimeControlModel extends _DynamicModel
 	_loadFrom: (se) ->
 
 		do @pause
-
-		@_setDuration Number se.duration
 
 		@changeFocusArea se._focus.from, se._focus.to
 
@@ -105,18 +101,18 @@ module.exports = class TimeControlModel extends _DynamicModel
 
 		@_emit 'duration-change'
 
-		do @_reportLocalChange
-
 		return
 
 	# we update our local time based on the timeline's time
 	_updateT: ->
 
-		@t = @timeline.t
+		if @timeline.t isnt @t
 
-		@_emit 'time-change'
+			@t = @timeline.t
 
-		do @_reportLocalChange
+			@_emit 'time-change'
+
+			do @_reportLocalChange
 
 		return
 

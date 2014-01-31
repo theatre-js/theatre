@@ -70,9 +70,11 @@ module.exports = class DynamicTimeline extends _Emitter
 
 	_maximizeDuration: (dur) ->
 
-		@duration = Math.max(dur, @duration)
+		if dur > @duration
 
-		@_emit 'duration-change'
+			@duration = dur
+
+			@_emit 'duration-change'
 
 		return
 

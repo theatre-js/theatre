@@ -68,9 +68,13 @@ module.exports = class DataHandler
 
 		@_scheduleToWorkWithHeadData =>
 
+			debugger
+
 			nodefn.call(fs.readFile, @getDataFilePathFor(ns), {encoding: 'utf-8'})
 
 		.then (cson) =>
+
+			debugger
 
 			if (cson.replace /\s+/, '') is ''
 
@@ -92,7 +96,11 @@ module.exports = class DataHandler
 
 		cson = CSON.stringifySync obj
 
+		debugger
+
 		@_scheduleToWorkWithHeadData =>
+
+			debugger
 
 			nodefn.call(fs.writeFile, @getDataFilePathFor(ns), cson, {encoding: 'utf-8'})
 

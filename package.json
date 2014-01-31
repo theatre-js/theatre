@@ -1,6 +1,6 @@
 {
   "name": "theatrejs",
-  "version": "0.1.0-beta.10",
+  "version": "0.1.0-beta.11",
   "description": "A high-performance animation editor for the web",
   "main": "scripts/js/lib/theatre.js",
   "scripts": {

@@ -39,10 +39,14 @@ module.exports = class Session
 
 	_replacePartOfHead: (parts, cb) =>
 
+		debugger
+
 		{address, newData} = parts
 
 		@dataHandler.getHeadDataForNamespace(@namespaceName)
 		.then (obj) =>
+
+			debugger
 
 			cur = obj
 
@@ -69,6 +73,8 @@ module.exports = class Session
 			console.log 'after', obj.timeline._allProps['main-Directorals-Rectanguli-width'].pacs.chronology.points.length
 			console.log '------------------'
 
-			@dataHandler.replaceHeadDataForNamespace(@namespaceName, obj)
+			promise = @dataHandler.replaceHeadDataForNamespace(@namespaceName, obj)
 
 			cb 'done'
+
+			promise
