@@ -45,13 +45,28 @@ module.exports = class MainBoxView extends _Emitter
 		@rootView.moosh.onDrag(@nodeResizeHandle)
 		.onDrag (e) =>
 
-			@model.setHeight @model.height - e.relY
+			if @model.isVisible()
+
+				@model.setHeight @model.height - e.relY
+
+			return
+
+		@rootView.moosh.onClick(@nodeResizeHandle)
+		.repeatedBy(2)
+		.onDone =>
+
+			do @model.toggleVisibility
 
 		@model.on 'visibility-toggle', =>
 
 			do @_updateVisibility
 
 			return
+
+		@rootView.kilid.on('alt+enter')
+		.onEnd =>
+
+			do @model.toggleVisibility
 
 	_updateVertically: ->
 

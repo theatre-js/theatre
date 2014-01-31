@@ -71,16 +71,6 @@ module.exports = class ControlsView
 
 		@toggleFullscreenNode.putIn @node
 
-		@rootView.moosh.onClick(@toggleFullscreenNode)
-		.onDone =>
-
-			do @mainBoxModel.toggleVisibility
-
-		@rootView.kilid.on('alt+enter')
-		.onEnd =>
-
-			do @mainBoxModel.toggleVisibility
-
 	_prepareJumpToPrevMarkerNode: ->
 
 		@jumpToPrevMarkerNode = Foxie '.theatrejs-controls-jumpToPrevMarker'
