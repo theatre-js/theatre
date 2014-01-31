@@ -1,7 +1,7 @@
 {
   "name": "theatrejs",
-  "version": "0.1.0-beta.9",
-  "description": "(work in progress)",
+  "version": "0.1.0-beta.10",
+  "description": "A high-performance animation editor for the web",
   "main": "scripts/js/lib/theatre.js",
   "scripts": {
     "test": "node ./node_modules/coffee-script/bin/cake test",
