@@ -1,8 +1,9 @@
-IncrementalIsolate = require './dynamicTimeline/IncrementalIsolate'
-_Emitter = require './_Emitter'
 array = require 'utila/scripts/js/lib/array'
+_Emitter = require './_Emitter'
 PropOfArray = require './dynamicTimeline/PropOfArray'
 PropOfObject = require './dynamicTimeline/PropOfObject'
+EventController = require './dynamicTimeline/EventController'
+IncrementalIsolate = require './dynamicTimeline/IncrementalIsolate'
 
 module.exports = class DynamicTimeline extends _Emitter
 
@@ -31,6 +32,8 @@ module.exports = class DynamicTimeline extends _Emitter
 		@_allProps = {}
 
 		@_regularProps = {}
+
+		@_eventControllers = {}
 
 		@duration = 0
 
@@ -150,6 +153,14 @@ module.exports = class DynamicTimeline extends _Emitter
 
 		@_regularProps[id]
 
+	addEventController: (id) ->
+
+		if @_eventControllers[id]?
+
+			throw Error "An event controller named #{id} already exists"
+
+		@_eventControllers[id] = new EventController @, id
+
 	tick: (t) ->
 
 		if t < @t
@@ -183,6 +194,10 @@ module.exports = class DynamicTimeline extends _Emitter
 
 			prop._tickForward t
 
+		for name, c of @_eventControllers
+
+			c._tickForward t
+
 		return
 
 	_tickBackward: (t) ->
@@ -191,5 +206,8 @@ module.exports = class DynamicTimeline extends _Emitter
 
 			prop._tickBackward t
 
-		return
+		for name, c of @_eventControllers
 
+			c._tickBackward t
+
+		return

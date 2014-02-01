@@ -1,11 +1,9 @@
 Pacs = require './prop/Pacs'
-_DynamicModel = require '../_DynamicModel'
+_TimelineRow = require './_TimelineRow'
 
-module.exports = class Prop extends _DynamicModel
+module.exports = class Prop extends _TimelineRow
 
-	constructor: (@timeline, @id) ->
-
-		@rootModel = @timeline.rootModel
+	constructor: ->
 
 		@_serializedAddress = ['timeline', '_allProps', @id]
 
@@ -16,8 +14,6 @@ module.exports = class Prop extends _DynamicModel
 		@_chronology = @pacs.chronology
 
 		@_nextIndexToCheck = 0
-
-		@_incrementalIsolates = []
 
 	serialize: ->
 
@@ -30,36 +26,6 @@ module.exports = class Prop extends _DynamicModel
 		@pacs.loadFrom se.pacs
 
 		return
-
-	attachToIncrementalIsolate: (id) ->
-
-		isolate = @timeline.getIncrementalIsolate id
-
-		unless isolate?
-
-			throw Error "Couldn't find incremental isolate '#{id}'"
-
-		if isolate in @_incrementalIsolates
-
-			throw Error "Prop '#{@id}' is already attached to isolate '#{isolate.id}'"
-
-		@_incrementalIsolates.push isolate
-
-		@timeline._pluckFromRegularProps @
-
-		isolate._addProp @
-
-		@
-
-	_reportUpdate: (from, to) ->
-
-		do @_reportLocalChange
-
-		for ic in @_incrementalIsolates
-
-			ic._reportUpdate from, to
-
-		@_nextIndexToCheck = 0
 
 	_tickForward: (t) ->
 

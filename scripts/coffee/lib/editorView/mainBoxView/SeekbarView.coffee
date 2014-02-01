@@ -106,9 +106,13 @@ module.exports = class SeekbarView
 
 		@model.on 'focus-change', =>
 
-			return if @_reactToFocusChangeAndDecideOnRepositioningElements()
+			if @_reactToFocusChangeAndDecideOnRepositioningElements()
 
-			do @_repositionElements
+				do @_repositionExceptSeeker
+
+			else
+
+				do @_repositionElements
 
 	_prepareFocusLeft: ->
 
@@ -328,6 +332,12 @@ module.exports = class SeekbarView
 
 		do @_redoTimeGrid
 
+	_repositionExceptSeeker: ->
+
+		do @_repositionFocus
+
+		do @_redoTimeGrid
+
 	_updateT: ->
 
 		t = @model.t
@@ -370,8 +380,13 @@ module.exports = class SeekbarView
 
 		return
 
-	# In my defence, There are only two hard things in Computer Science:
-	# cache invalidation and naming things. -- Phil Karlton
+	# in my defence:
+	#
+	# 		There are only two hard things in Computer Science:
+	# 		cache invalidation and naming things.
+	#
+	# 		-- Phil Karlton
+	#
 	_reactToFocusChangeAndDecideOnRepositioningElements: ->
 
 		t = @model.t
@@ -390,7 +405,7 @@ module.exports = class SeekbarView
 
 			return yes
 
-		no
+			no
 
 	_dragSeekerRelatively: (x) ->
 

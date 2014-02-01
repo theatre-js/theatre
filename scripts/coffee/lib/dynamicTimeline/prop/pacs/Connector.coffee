@@ -5,7 +5,7 @@ module.exports = class Connector extends _PacItem
 
 	self = @
 
-	constructor: (@pacs, @t, @id) ->
+	constructor: (@pacs, @id, @t) ->
 
 		super
 
@@ -52,7 +52,7 @@ module.exports = class Connector extends _PacItem
 
 	@constructFrom: (se, pacs) ->
 
-		c = new self pacs, se.t, se.id
+		c = new self pacs, se.id, se.t
 
 		pacs._addConnector c
 

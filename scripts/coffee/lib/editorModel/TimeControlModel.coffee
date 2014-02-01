@@ -135,18 +135,6 @@ module.exports = class TimeControlModel extends _DynamicModel
 	# duration ourself.
 	changeFocusArea: (from, to) ->
 
-		# unless 0 <= from <= @duration
-
-		# 	debugger
-
-		# 	throw Error "Wrong from"
-
-		# unless from <= to <= @duration
-
-		# 	debugger
-
-		# 	throw Error "Wrong to"
-
 		@_focus.from = from
 		@_focus.to = to
 		@_focus.duration = to - from

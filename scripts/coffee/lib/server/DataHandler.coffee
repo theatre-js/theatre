@@ -1,8 +1,6 @@
 wn = require 'when'
 fs = require 'graceful-fs'
-git = require 'gift'
 CSON = require 'cson'
-delay = require 'when/delay'
 nodefn = require 'when/node/function'
 sysPath = require 'path'
 
@@ -15,12 +13,6 @@ module.exports = class DataHandler
 		@_lastPromiseToWorkWithHeadData = wn()
 
 	_setPaths: (@rootPath, @timelinesDir) ->
-
-		@gitPath = sysPath.join @rootPath, '.git'
-
-		unless fs.existsSync @gitPath
-
-			throw Error "Git repo path '#{@gitPath}' doesn't exist"
 
 		unless String(@timelinesDir).length > 0
 

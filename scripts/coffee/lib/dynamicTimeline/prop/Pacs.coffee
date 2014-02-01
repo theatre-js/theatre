@@ -1,11 +1,13 @@
 array = require 'utila/scripts/js/lib/array'
 Point = require './pacs/Point'
 Connector = require './pacs/Connector'
-_Emitter = require '../../_Emitter'
+_ChronologyContainer = require '../_ChronologyContainer'
 
-module.exports = class Pacs extends _Emitter
+module.exports = class Pacs extends _ChronologyContainer
 
 	constructor: (@prop) ->
+
+		@timeline = @prop.timeline
 
 		super
 
@@ -26,14 +28,6 @@ module.exports = class Pacs extends _Emitter
 			else
 
 				@peak = Math.abs(@bottom) * 2
-
-		@chronology = []
-
-		@chronologyLength = 0
-
-		@_updateRange = [Infinity, -Infinity]
-
-		@_idCounter = -1
 
 	serialize: ->
 
@@ -73,42 +67,6 @@ module.exports = class Pacs extends _Emitter
 
 		return
 
-	_getIndexOfItemBeforeOrAt: (t) ->
-
-		lastIndex = -1
-
-		for item, index in @chronology
-
-			break if item.t > t
-
-			lastIndex = index
-
-		lastIndex
-
-	_setUpdateRange: (from, to) ->
-
-		@_updateRange[0] = Math.min(@_updateRange[0], from)
-		@_updateRange[1] = Math.max(@_updateRange[1], to)
-
-		return
-
-	_reportUpdate: ->
-
-		if @_updateRange[0] is Infinity and @_updateRange[1] is -Infinity
-
-			return
-
-		@prop._reportUpdate @_updateRange[0], @_updateRange[1]
-
-		@_updateRange[0] = Infinity
-		@_updateRange[1] = -Infinity
-
-		return
-
-	_getItemByIndex: (index) ->
-
-		@chronology[index]
-
 	_pointExistsAt: (t) ->
 
 		@_getPointAt(t)?
@@ -128,10 +86,6 @@ module.exports = class Pacs extends _Emitter
 		return null if item.t isnt t
 
 		return item
-
-	_getItemIndex: (item) ->
-
-		@chronology.indexOf item
 
 	_connectorExistsAt: (t) ->
 
@@ -157,12 +111,6 @@ module.exports = class Pacs extends _Emitter
 
 		return
 
-	_injectItemOn: (item, index) ->
-
-		array.injectInIndex @chronology, index, item
-
-		return
-
 	_pluckPointOn: (point, index) ->
 
 		@_pluckItemOn index
@@ -172,12 +120,6 @@ module.exports = class Pacs extends _Emitter
 	_pluckConnectorOn: (connector, index) ->
 
 		@_pluckItemOn index
-
-		return
-
-	_pluckItemOn: (index) ->
-
-		array.pluck @chronology, index
 
 		return
 
@@ -201,7 +143,7 @@ module.exports = class Pacs extends _Emitter
 
 		@_idCounter++
 
-		c = new Connector @, t, @prop.id + '-connector-' + @_idCounter
+		c = new Connector @,  @prop.id + '-connector-' + @_idCounter, t
 
 		@_addConnector c
 
@@ -217,25 +159,7 @@ module.exports = class Pacs extends _Emitter
 
 		do @_recalculatePeakAndBottom
 
-		do @_recalculateLength
-
-		do @_reportUpdate
-
-		return
-
-	_recalculateLength: ->
-
-		lastPoint = @chronology[@chronology.length - 1]
-
-		if lastPoint?
-
-			@prop.timeline._maximizeDuration lastPoint.t
-
-			if lastPoint.t isnt @chronologyLength
-
-				@chronologyLength = lastPoint.t
-
-				@_emit 'duration-change'
+		super
 
 		return
 
