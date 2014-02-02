@@ -48,79 +48,90 @@
 
 		@include transform(translate3d(0, -1px, 1px))
 
-
 		opacity: 1
 
 	@include expand-area
 
+@-webkit-keyframes webkit-bugfix-for-workspaceButtons
+
+	0%
+
+		left: -2px
+
+	100%
+
+		left: 0
 
 .theatrejs-workspaceButtons
 
 	@include transition(0.3s all)
 
-	@include transform(translate3d(0, 42px, 1px))
+	@include transform(translate3d(0, 42px, 0px))
 
 	&:hover, &.visible
 
-		@include transform(translate3d(0, 0px, 0px))
+		@include transform(translate3d(0, 0px, 1px))
 
 	&:before
 
 		display: block
 		content: "\0020"
 		position: absolute
-		top: -10px
+		top: -15px
 		height: 10px
 		left: 0
 		right: 0
+		z-index: 30
+
+	-webkit-animation: webkit-bugfix-for-workspaceButtons 0.2s
 
 	position: fixed
-	bottom: 0
+	bottom: 0px
 
 	width: 220px
 	height: 42px
 
-	z-index: 3
+	z-index: 12
 
 	background: #040404
 
 	@include user-select(none)
 
-	.theatrejs-workspaceButtons-showGraph
+.theatrejs-workspaceButtons-showGraph
 
-		@include button ("../../images/objects-list.png", 10%)
+	@include button ("../../images/objects-list.png", 10%)
 
-	.theatrejs-workspaceButtons-activeWorkspaceName
+.theatrejs-workspaceButtons-activeWorkspaceName
 
-		display: block
-		float: left
+	display: block
+	float: left
 
-		color: #848484
+	color: #848484
 
-		font-size: 12px
+	font-size: 12px
 
-		height: 42px
+	height: 42px
 
-		line-height: 43px
+	line-height: 43px
 
-		margin-left: 12px
+	margin-left: 12px
 
-		cursor: pointer
+	cursor: pointer
 
-		min-width: 80px
+	min-width: 80px
 
-		text-transform: uppercase
+	text-transform: uppercase
 
-		@include transform(translateZ(1px))
+	@include transform(translateZ(1px))
 
-		@include transition(all .5s)
+	@include transition(all .5s)
 
-		&:hover
+	&:hover
 
-			@include transition(all .1s)
+		@include transition(all .1s)
 
-			@include transform(translate3d(0, -1px, 1px))
+		@include transform(translate3d(0, -1px, 1px))
 
-			color: #aaa
+		color: #aaa
 
-		@include expand-area
+	@include expand-area
