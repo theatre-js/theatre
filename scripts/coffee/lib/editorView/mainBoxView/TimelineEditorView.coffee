@@ -55,6 +55,7 @@ module.exports = class TimelineEditorView
 		.onDown =>
 
 			@rootView.cursor.use '-webkit-grabbing'
+			@rootView.cursor.use '-moz-grabbing'
 
 		.onDrag (e) =>
 

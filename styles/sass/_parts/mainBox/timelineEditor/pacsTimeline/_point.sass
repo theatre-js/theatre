@@ -9,8 +9,6 @@ $ringSize: 12px
 	top: 0
 	left: 0
 
-
-
 	&:after
 
 		position: absolute
@@ -26,17 +24,17 @@ $ringSize: 12px
 		border: 3px solid #367c89
 		background: #080808
 
-		-webkit-box-sizing: border-box
+		@include box-sizing(border-box)
 
-		-webkit-transition: all 0.3s cubic-bezier(.07,1.15,1,1)
+		@include transition(all 0.3s cubic-bezier(.07,1.15,1,1))
 
-		-webkit-transform: scale(0.8)
+		@include transform(scale(0.8))
 
 	&:hover:after, &.active:after
 
 		border-color: #00fff0
 
-		-webkit-transform: scale(1)
+		@include transform(scale(1))
 
 	&:before
 
@@ -54,7 +52,7 @@ $ringSize: 12px
 
 		border-color: red
 
-		-webkit-transform: scale(0.8) translateY(1px)
+		@include transform(scale(0.8) translateY(1px))
 
 	&.mightConnect:after
 

@@ -15,26 +15,26 @@
 
 	overflow: hidden
 
-	transition: 0.3s -webkit-transform, 0.3s opacity
+	transition: 0.3s transform, 0.3s opacity
+	-webkit-transition: 0.3s -webkit-transform, 0.3s opacity
 
-	-webkit-transform: translate3d(-20px, 0px, -1000px) //rotateX(10deg)
+	@include transform(translate3d(-20px, 0px, -1000px))
 
 	opacity: 0
 	pointer-events: none
 
 	&.visible
 
-		z-index: 2
+		z-index: 13
 
-		-webkit-transform: translate3d(0, 0, 0)
+		@include transform(translate3d(0, 0, 0))
 		opacity: 1
 		pointer-events: auto
 
 		.opening-animation
 
-			-webkit-transform-origin: 0% 0%
-			-webkit-animation: graphiItem-entrance 0.5s both
-			// opacity: 0
+			@include transform-origin(0% 0%)
+			@include animation(graphiItem-entrance 0.5s both)
 
 			@for $i from 0 to 50
 
@@ -42,19 +42,19 @@
 
 					$delay: $i * 0.019s
 
-					-webkit-animation-delay: $delay
+					@include animation-delay($delay)
 
-@-webkit-keyframes graphiItem-entrance
+@include keyframes(graphiItem-entrance)
 
 	0%
 
 		opacity: 0
-		-webkit-transform: perspective(800) translate3d(0, 0, -50px)
+		@include transform(perspective(800) translate3d(0, 0, -50px))
 
 	100%
 
 		opacity: 1
-		-webkit-transform: perspective(1200) translate3d(0px, 0, 0)
+		@include transform(perspective(1200) translate3d(0px, 0, 0))
 
 .theatrejs-graph-group
 
@@ -63,8 +63,7 @@
 
 	font-family: "AktivGrotW15-Light", Helvetica, Arial, sans-serif
 
-	-webkit-user-select: none
-	user-select: none
+	@include user-select(none)
 
 	cursor: default
 
@@ -78,16 +77,10 @@
 
 	text-transform: uppercase
 
-	-webkit-margin-after: 0px
-	-webkit-margin-before: 0px
-
 .theatrejs-graph-group-actor-list
 
 	list-style: none
 	padding: 0 0px 0 3px
-
-	-webkit-margin-after: 0px
-	-webkit-margin-before: 0px
 
 	margin-bottom: 36px
 
@@ -116,7 +109,7 @@
 
 		opacity: 1
 
-		-webkit-transform: translate3d(0, 0, 1px)
+		@include transform(translate3d(0, 0, 1px))
 
 		pointer-events: all
 
@@ -140,7 +133,7 @@
 
 	font-size: 16px
 
-	-webkit-transform: translate3d(-5px, 0, 1px)
+	@include transform(translate3d(-5px, 0, 1px))
 
 	padding: 0
 

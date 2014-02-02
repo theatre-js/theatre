@@ -9,10 +9,7 @@
 	background: url('../../images/strip-grid.png') repeat-x -11px
 	background-color: #0d0d0d
 
-	-webkit-user-select: none
-	-moz-user-select: none
-	-ms-user-select: none
-	user-select: none
+	@include user-select(none)
 
 	z-index: 1
 
@@ -25,8 +22,7 @@
 	height: 11px
 
 	background: #090909
-	// background: red
-	user-select: none
+	@include user-select(none)
 	pointer-events: none
 	z-index: 0
 
@@ -39,8 +35,6 @@
 	width: 75px
 	text-align: center
 	height: 15px
-
-	// float: left
 
 	left: 0px
 	top: 3px
@@ -166,8 +160,9 @@
 	opacity: 0.1
 
 	cursor: -webkit-grab
+	cursor: -moz-grab
 
-	-webkit-transition: opacity 0.2s
+	@include transition(opacity 0.2s)
 
 	&:hover
 
@@ -178,3 +173,4 @@
 		opacity: 0.2
 
 		cursor: -webkit-grabbing
+		cursor: -moz-grabbing

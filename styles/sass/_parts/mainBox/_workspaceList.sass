@@ -1,14 +1,14 @@
-@-webkit-keyframes workspaceListItem-entrance
+@include keyframes (workspaceListItem-entrance)
 
 	0%
 
 		opacity: 0
-		-webkit-transform: perspective(800) translate3d(0, 0, -50px)
+		@include transform(perspective(800) translate3d(0, 0, -50px))
 
 	100%
 
 		opacity: 1
-		-webkit-transform: perspective(1200) translate3d(0px, 0, 0)
+		@include transform(perspective(1200) translate3d(0px, 0, 0))
 
 .theatrejs-workspaceList
 
@@ -24,7 +24,7 @@
 
 	padding: 16px
 
-	-webkit-transform: translate3d(0, 20px, 1px)
+	@include transform(translate3d(0, 20px, 1px))
 
 	opacity: 0
 
@@ -36,7 +36,7 @@
 
 	&.visible
 
-		-webkit-transform: translate3d(0px, 0, 0px)
+		@include transform(translate3d(0px, 0, 0px))
 
 		opacity: 1
 
@@ -50,8 +50,8 @@
 
 	.visible &
 
-		-webkit-animation: workspaceListItem-entrance 0.5s both
-		-webkit-animation-direction: normal
+		@include animation(workspaceListItem-entrance 0.5s both)
+		@include animation-direction(normal)
 
 	@for $i from 0 to 20
 
@@ -59,10 +59,10 @@
 
 			$delay: $i * 0.025s
 
-			-webkit-animation-delay: $delay
+			@include animation-delay($delay)
 
 	margin-right: 31px
-	-webkit-transform-origin: 0% 0%
+	@include transform-origin(0% 0%)
 
 .theatrejs-workspaceList-workspace
 
@@ -70,7 +70,7 @@
 
 	margin-right: 10px
 
-	-webkit-user-select: initial
+	@include user-select(initial)
 
 	position: relative
 

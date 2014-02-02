@@ -5,8 +5,8 @@
 	float: left
 	background: url($src) no-repeat center center
 	opacity: .75
-	-webkit-transform: translateZ(1px)
-	-webkit-transition: opacity .15s
+	@include transform(translateZ(1px))
+	@include transition(opacity .15s)
 
 	&:hover
 

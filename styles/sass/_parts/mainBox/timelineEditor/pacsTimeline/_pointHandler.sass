@@ -24,15 +24,15 @@ $ringSize: 10px
 		background: #0c0c0c
 		border: 4px solid #272727
 
-		-webkit-box-sizing: border-box
+		@include box-sizing(border-box)
 
-		-webkit-transition: all 0.3s cubic-bezier(.07,1.15,1,1)
+		@include transition(all 0.3s cubic-bezier(.07,1.15,1,1))
 
-		-webkit-transform: scale(0.7)
+		@include transform(scale(0.7))
 
 	&:hover:after, &.active:after
 
-		-webkit-transform: scale(1)
+		@include transform(scale(1))
 
 	&:before
 

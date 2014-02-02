@@ -1,14 +1,14 @@
-@-webkit-keyframes workspaceButtons-entrance
+@include keyframes(workspaceButtons-entrance)
 
 	0%
 
 		opacity: 0
-		-webkit-transform: perspective(800) translate3d(0, 0, -50px)
+		@include transform(perspective(800) translate3d(0, 0, -50px))
 
 	100%
 
 		opacity: 1
-		-webkit-transform: perspective(1200) translate3d(0px, 0, 0)
+		@include transform(perspective(1200) translate3d(0px, 0, 0))
 
 @mixin expand-area
 
@@ -38,15 +38,15 @@
 
 	opacity: .7
 
-	-webkit-transform: translateZ(1px)
+	@include transform(translateZ(1px))
 
-	-webkit-transition: opacity .5s
+	@include transition(opacity .5s)
 
 	&:hover
 
-		-webkit-transition: opacity .1s
+		@include transition(opacity .1s)
 
-		-webkit-transform: translate3d(0, -1px, 1px)
+		@include transform(translate3d(0, -1px, 1px))
 
 
 		opacity: 1
@@ -56,13 +56,13 @@
 
 .theatrejs-workspaceButtons
 
-	-webkit-transition: 0.3s all
+	@include transition(0.3s all)
 
-	-webkit-transform: translate3d(0, 42px, 1px)
+	@include transform(translate3d(0, 42px, 1px))
 
 	&:hover, &.visible
 
-		-webkit-transform: translate3d(0, 0px, 0px)
+		@include transform(translate3d(0, 0px, 0px))
 
 	&:before
 
@@ -84,10 +84,7 @@
 
 	background: #040404
 
-	-webkit-user-select: none
-	-moz-user-select: none
-	-ms-user-select: none
-	user-select: none
+	@include user-select(none)
 
 	.theatrejs-workspaceButtons-showGraph
 
@@ -114,15 +111,15 @@
 
 		text-transform: uppercase
 
-		-webkit-transform: translateZ(1px)
+		@include transform(translateZ(1px))
 
-		-webkit-transition: all .5s
+		@include transition(all .5s)
 
 		&:hover
 
-			-webkit-transition: all .1s
+			@include transition(all .1s)
 
-			-webkit-transform: translate3d(0, -1px, 1px)
+			@include transform(translate3d(0, -1px, 1px))
 
 			color: #aaa
 
