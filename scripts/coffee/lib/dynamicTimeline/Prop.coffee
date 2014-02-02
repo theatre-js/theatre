@@ -3,7 +3,7 @@ _TimelineRow = require './_TimelineRow'
 
 module.exports = class Prop extends _TimelineRow
 
-	constructor: ->
+	constructor: (@timeline, @id) ->
 
 		@_serializedAddress = ['timeline', '_allProps', @id]
 
