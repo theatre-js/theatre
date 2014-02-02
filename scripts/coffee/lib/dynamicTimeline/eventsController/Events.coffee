@@ -10,13 +10,13 @@ module.exports = class Events extends _ChronologyContainer
 
 		super
 
-	add: (typeName, t, arg) ->
+	add: (typeId, t, arg) ->
 
 		@_idCounter++
 
 		id = @controller.id + '-event-' + @_idCounter
 
-		e = new Event @, id, typeName, t, arg
+		e = new Event @, id, typeId, t, arg
 
 		@_addEvent e
 

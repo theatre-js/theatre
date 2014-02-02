@@ -2,7 +2,7 @@ array = require 'utila/scripts/js/lib/array'
 _Emitter = require './_Emitter'
 PropOfArray = require './dynamicTimeline/PropOfArray'
 PropOfObject = require './dynamicTimeline/PropOfObject'
-EventController = require './dynamicTimeline/EventController'
+EventsController = require './dynamicTimeline/EventsController'
 IncrementalIsolate = require './dynamicTimeline/IncrementalIsolate'
 
 module.exports = class DynamicTimeline extends _Emitter
@@ -159,7 +159,7 @@ module.exports = class DynamicTimeline extends _Emitter
 
 			throw Error "An event controller named #{id} already exists"
 
-		@_eventControllers[id] = new EventController @, id
+		@_eventControllers[id] = new EventsController @, id
 
 	tick: (t) ->
 
