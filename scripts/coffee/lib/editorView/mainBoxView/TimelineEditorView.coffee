@@ -48,8 +48,6 @@ module.exports = class TimelineEditorView
 
 		@node = Foxie('.theatrejs-timelineEditor').putIn(@mainBox.node)
 
-		@mainBox.seekbar
-
 		@rootView.moosh.onMiddleDrag(@node)
 		.withNoKeys()
 		.onDown =>
@@ -67,7 +65,6 @@ module.exports = class TimelineEditorView
 
 		@rootView.moosh.onClick(@node)
 		.withNoKeys()
-		.repeatedBy(2)
 		.onDone (e) =>
 
 			@mainBox.seekbar._seekToX e.layerX
