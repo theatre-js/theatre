@@ -12,11 +12,11 @@ module.exports = class Communicator
 
 	_load: =>
 
-		console.log 'asking for head-data'
+		console.log 'asking for head-data' if @editor.debug
 
 		@connection.request('head-data').then (data) =>
 
-			console.log 'received head-data', data
+			console.log 'received head-data', data if @editor.debug
 
 			@editor.loadFrom data
 
@@ -26,13 +26,15 @@ module.exports = class Communicator
 
 		unless @_loaded
 
-			console.log 'cannot wire anything when not loaded'
+			console.log 'cannot wire anything when not loaded' if @editor.debug
 
 			return
 
-		console.log 'local change', address, newData
+		if @editor.debug
 
-		console.log 'wiring local change for', address
+			console.info 'local change', address, newData
+
+			console.info 'wiring local change for', address
 
 		req =
 
@@ -44,7 +46,7 @@ module.exports = class Communicator
 
 		.then (response) =>
 
-			console.log 'server responded with', response
+			console.log 'server responded with', response if @editor.debug
 
 			return
 

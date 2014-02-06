@@ -9,7 +9,7 @@ AudioDrivenTimeControl = require 'audio-driven-time-control'
 
 module.exports = class EditorModel extends _Emitter
 
-	constructor: (@id = 'timeline', @timeline) ->
+	constructor: (@id = 'timeline', @timeline, @debug = no) ->
 
 		super
 

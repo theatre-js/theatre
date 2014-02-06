@@ -58,9 +58,11 @@ module.exports = class ConnectionToServer extends _Emitter
 
 		@clientId = parseInt clientId
 
-		console.log 'client id', @clientId
+		if @communicator.editor.debug
 
-		console.log "authenticating with '#{@communicator._password}' in '#{@communicator._namespaceName}'"
+			console.log 'client id', @clientId
+
+			console.log "authenticating with '#{@communicator._password}' in '#{@communicator._namespaceName}'"
 
 		@_socket.emit 'client-asks:get-auth-data',
 
@@ -76,7 +78,7 @@ module.exports = class ConnectionToServer extends _Emitter
 
 			@isAuthenticated = yes
 
-			console.log 'auth accepted'
+			console.log 'auth accepted' if @communicator.editor.debug
 
 		else
 
