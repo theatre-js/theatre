@@ -30,6 +30,10 @@ module.exports = class _TimelineRow extends _DynamicModel
 
 		@
 
+	_reportIneffectiveUpdate: ->
+
+		do @_reportLocalChange
+
 	_reportUpdate: (from, to) ->
 
 		do @_reportLocalChange

@@ -18,7 +18,7 @@ module.exports = class EditorView
 
 		@kilid = new Kilid(null, @id + '-kilid').getRootScope()
 
-		@moosh = new Moosh @node, @kilid
+		@moosh = new Moosh document.body, @kilid
 
 		@graph = new GraphView @
 

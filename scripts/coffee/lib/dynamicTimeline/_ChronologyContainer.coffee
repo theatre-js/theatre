@@ -38,6 +38,8 @@ module.exports = class _ChronologyContainer extends _Emitter
 
 		if @_updateRange[0] is Infinity and @_updateRange[1] is -Infinity
 
+			@parent._reportIneffectiveUpdate()
+
 			return
 
 		@parent._reportUpdate @_updateRange[0], @_updateRange[1]

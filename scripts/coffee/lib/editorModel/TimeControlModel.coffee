@@ -39,7 +39,7 @@ module.exports = class TimeControlModel extends _DynamicModel
 		@t = 0
 
 		# the focus area
-		@_focus = from: 0, to: 0, duration: 0
+		@_focus = from: 0, to: 1000, duration: 1000
 
 		# when the audio ticks, we'll wire that to
 		# our timeline...
