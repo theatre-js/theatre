@@ -73,6 +73,8 @@ module.exports = class SeekbarView
 
 		wasPlaying = no
 
+		initialSeekerPosition = 0
+
 		@rootView.moosh.onDrag(@seeker)
 
 		.onDown =>
@@ -83,6 +85,8 @@ module.exports = class SeekbarView
 
 			@model.pause() if wasPlaying
 
+			initialSeekerPosition = @seeker.get('left')
+
 		.onUp =>
 
 			@rootView.cursor.free()
@@ -92,7 +96,7 @@ module.exports = class SeekbarView
 		.onDrag (e) =>
 
 			# i hate it when there are numbers in my code
-			@_dragSeekerRelatively e.layerX - 5
+			@_dragSeekerToPos e.absX + initialSeekerPosition
 
 		return
 
@@ -407,9 +411,7 @@ module.exports = class SeekbarView
 
 			no
 
-	_dragSeekerRelatively: (x) ->
-
-		toPos = @seeker.get('left') + x
+	_dragSeekerToPos: (toPos) ->
 
 		focus = @model.getFocusArea()
 
