@@ -29,7 +29,7 @@ module.exports = class WorkspaceListView extends _Emitter
 
 		wsNode = new Foxie('.theatrejs-workspaceList-workspace').putIn(@holder)
 
-		wsNode.node.innerText = ws.name
+		wsNode.node.innerHTML = ws.name
 
 		@_attachCtrl wsNode.node
 
@@ -53,19 +53,19 @@ module.exports = class WorkspaceListView extends _Emitter
 
 				@rootView.moosh.unignore(wsNode)
 
-				if wsNode.node.innerText.trim() is ''
+				if wsNode.node.innerHTML.trim() is ''
 
 					ws.remove()
 
 				else
 
-					ws.rename wsNode.node.innerText.trim()
+					ws.rename wsNode.node.innerHTML.trim()
 
 			, =>
 
 				@rootView.moosh.unignore(wsNode)
 
-				wsNode.node.innerText = ws.name
+				wsNode.node.innerHTML = ws.name
 
 	_attachCtrl: (node) ->
 
@@ -98,7 +98,7 @@ module.exports = class WorkspaceListView extends _Emitter
 		@rootView.kilidScopeForEdit.on('ctrl+delete')
 		.onEnd (e) =>
 
-			@currentEdit.innerText = ''
+			@currentEdit.innerHTML = ''
 
 			@_storeEdit()
 
@@ -112,7 +112,7 @@ module.exports = class WorkspaceListView extends _Emitter
 
 		@currentEdit = wsNode.node
 
-		@currentText = @currentEdit.innerText
+		@currentText = @currentEdit.innerHTML
 
 		@currentEdit.contentEditable = yes
 
@@ -160,24 +160,24 @@ module.exports = class WorkspaceListView extends _Emitter
 
 		@newBtn = Foxie('.theatrejs-workspaceList-workspace').putIn(@node)
 
-		@newBtn.node.innerText = '+'
+		@newBtn.node.innerHTML = '+'
 
 		@rootView.moosh.onClick(@newBtn)
 		.onDone =>
 
-			@newBtn.node.innerText = ''
+			@newBtn.node.innerHTML = ''
 
 			@_startEdit @newBtn, =>
 
-				if @newBtn.node.innerText isnt ''
+				if @newBtn.node.innerHTML isnt ''
 
-					@model.get(@newBtn.node.innerText)
+					@model.get(@newBtn.node.innerHTML)
 
-				@newBtn.node.innerText = '+'
+				@newBtn.node.innerHTML = '+'
 
 			, =>
 
-				@newBtn.node.innerText = '+'
+				@newBtn.node.innerHTML = '+'
 
 	show: ->
 
