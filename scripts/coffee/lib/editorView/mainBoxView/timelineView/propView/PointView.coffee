@@ -535,7 +535,7 @@ module.exports = class PointView extends _ItemView
 
 		@_active = yes
 
-		@valueInput.node.value = @model.value
+		@valueInput.node.value = parseFloat(parseFloat(@model.value).toFixed(3))
 
 		@node.addClass 'active'
 

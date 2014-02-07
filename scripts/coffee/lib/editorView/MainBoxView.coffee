@@ -37,7 +37,9 @@ module.exports = class MainBoxView extends _Emitter
 
 	_prepareNode: ->
 
-		@node = Foxie('.theatrejs-mainBox').putIn(@editor.node).trans(500)
+		@node = Foxie('.theatrejs-mainBox')
+		.moveZ(1)
+		.putIn(@editor.node).trans(500)
 
 		@nodeResizeHandle = Foxie('.theatrejs-mainBox-resizeHandle')
 		.putIn(@node)
@@ -98,10 +100,12 @@ module.exports = class MainBoxView extends _Emitter
 
 		if @_visible
 
+			@editor.node.removeClass 'hidden'
 			@node.moveYTo(0).setOpacity(1)
 
 		else
 
-			@node.moveYTo(@model.height - 21).setOpacity(0.8)
+			@editor.node.addClass 'hidden'
+			@node.moveYTo(@model.height - 21)
 
 		return

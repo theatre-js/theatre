@@ -12,6 +12,16 @@
 
 	font-family: Helvetica !important
 
+	transition: opacity 0.3s
+
+	&.hidden
+
+		opacity: 0
+
+		&:hover
+
+			opacity: 1
+
 @import "./_prepare/mixins"
 @import "./_parts/_graph"
 @import "./_parts/_controls"
