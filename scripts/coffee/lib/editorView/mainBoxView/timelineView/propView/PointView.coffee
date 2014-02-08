@@ -92,7 +92,6 @@ module.exports = class PointView extends _ItemView
 
 			@prop._tick()
 
-
 	_prepareNodeConnectionInteractions: ->
 
 		# classAddedOnCtrlHover = null

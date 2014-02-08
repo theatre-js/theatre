@@ -33,6 +33,10 @@ module.exports = class PropView
 
 		@_heightToValueRatio = 0
 
+		@_lastPeak = 0
+
+		@_lastBottom = 0
+
 		@_height = 0
 
 		do @_prepareNodes
@@ -259,13 +263,15 @@ module.exports = class PropView
 
 	_relayVertically: ->
 
+		return if @pacs.peak is @_lastPeak and @pacs.bottom is @_lastBottom
+
+		@_lastPeak = @pacs.peak
+
+		@_lastBottom = @pacs.bottom
+
 		valDiff = @pacs.peak - @pacs.bottom
 
-		newRatio = @_height / valDiff
-
-		return if newRatio is @_heightToValueRatio
-
-		@_heightToValueRatio = newRatio
+		@_heightToValueRatio = @_height / valDiff
 
 		@svgArea.relayVertically()
 
