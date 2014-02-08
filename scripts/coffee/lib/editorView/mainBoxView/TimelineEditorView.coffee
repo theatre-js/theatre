@@ -69,6 +69,20 @@ module.exports = class TimelineEditorView
 
 			@mainBox.seekbar._seekToX e.layerX
 
+		@rootView.moosh.onDrag(@node)
+		.withNoKeys()
+		.onDown =>
+
+			@rootView.cursor.use 'ew-resize'
+
+		.onDrag (e) =>
+
+			@mainBox.seekbar._seekToX e.layerX
+
+		.onUp =>
+
+			@rootView.cursor.free()
+
 		@rootView.moosh.onWheel(@node)
 		.withKeys('shift')
 		.onWheel (e) =>
