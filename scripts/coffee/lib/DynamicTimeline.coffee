@@ -119,7 +119,7 @@ module.exports = class DynamicTimeline extends _Emitter
 
 		@_regularProps[id] = @_allProps[id] = new PropOfArray @, id, arrayName, indexInArray
 
-	addPropOfObject: (id, objectName, setter, getter) ->
+	addPropOfObject: (id, objectName, setter, initial) ->
 
 		if @_allProps[id]?
 
@@ -133,11 +133,7 @@ module.exports = class DynamicTimeline extends _Emitter
 
 			throw Error "Object '#{objectName}' doesn't have '#{setter}'"
 
-		unless @_objects[objectName][getter]?
-
-			throw Error "Object '#{objectName}' doesn't have '#{getter}'"
-
-		@_regularProps[id] = @_allProps[id] = new PropOfObject @, id, objectName, setter, getter
+		@_regularProps[id] = @_allProps[id] = new PropOfObject @, id, objectName, setter, initial
 
 	defineIncrementalIsolate: (id, isolate) ->
 
