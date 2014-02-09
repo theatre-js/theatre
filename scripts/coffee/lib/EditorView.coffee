@@ -38,6 +38,10 @@ module.exports = class EditorView
 
 		@node = Foxie '.theatrejs'
 
+		if navigator.product is 'Gecko' and navigator.platform is 'Win32'
+
+			@node.addClass 'badFirefoxScrollbar'
+
 		return
 
 	_run: ->

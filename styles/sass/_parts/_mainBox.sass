@@ -12,6 +12,18 @@
 
 	@include user-select(none)
 
+	.badFirefoxScrollbar &:after
+
+		content: "\0020"
+		display: block
+		position: absolute
+		right: 0
+		bottom: 0
+		top: 0
+		width: 15px
+
+		z-index: 20
+
 .theatrejs-mainBox-resizeHandle
 
 	position: absolute
