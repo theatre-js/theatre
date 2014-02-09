@@ -27,11 +27,27 @@ module.exports = class Prop extends _TimelineRow
 
 		return
 
+	_getInitial: ->
+
+		firstPoint = @_chronology[0]
+
+		if firstPoint? then firstPoint.value else @initial
+
 	_tickForward: (t) ->
 
 		item = @_chronology[@_nextIndexToCheck]
 
-		return if not item? or item.t > t
+		return if not item?
+
+		if item.t > t
+
+			if @_nextIndexToCheck is 0
+
+				@_set @_getInitial()
+
+				@_nextIndexToCheck = 1
+
+			return
 
 		nextIndex = @_nextIndexToCheck + 1
 
@@ -71,7 +87,7 @@ module.exports = class Prop extends _TimelineRow
 
 				@_nextIndexToCheck = 0
 
-				@_set @initial
+				@_set @_getInitial()
 
 				return
 
