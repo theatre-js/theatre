@@ -34,6 +34,8 @@ module.exports = class TimelineEditorView
 
 		do @_prepareListeners
 
+		@_firstPropAdded = no
+
 	_prepareListeners: ->
 
 		@mainBox.on 'width-change', => do @_relayHorizontally
@@ -47,6 +49,10 @@ module.exports = class TimelineEditorView
 	_prepareNode: ->
 
 		@node = Foxie('.theatrejs-timelineEditor').putIn(@mainBox.node)
+
+		@node.node.addEventListener 'scroll', =>
+
+			@model._setScrollTopFromUser @node.node.scrollTop
 
 		@rootView.moosh.onMiddleDrag(@node)
 		.withNoKeys()
@@ -89,7 +95,22 @@ module.exports = class TimelineEditorView
 
 			@mainBox.seekbar._zoomFocus 1 + (-e.delta / 120 / 8), e.layerX
 
+	_updateScrollTopFromModel: ->
+
+		@node.node.scrollTop = @model.scrollTop|0
+
 	_add: (propHolder) ->
+
+		unless @_firstPropAdded
+
+			setTimeout =>
+
+				do @_updateScrollTopFromModel
+
+			, 50
+
+			@_firstPropAdded = yes
+
 
 		propView = @_repo.getPropViewFor propHolder
 

@@ -12,8 +12,6 @@ module.exports = class WorkspaceManagerModel extends _DynamicModel
 
 		super
 
-		@rootModel = @editor
-
 		@_workspaces = []
 
 		@_propListingChangeListeners = {}

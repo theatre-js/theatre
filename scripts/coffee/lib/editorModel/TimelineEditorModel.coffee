@@ -1,9 +1,13 @@
-_Emitter = require '../_Emitter'
+_DynamicModel = require '../_DynamicModel'
 array = require 'utila/scripts/js/lib/array'
 
-module.exports = class TimelineEditorModel extends _Emitter
+module.exports = class TimelineEditorModel extends _DynamicModel
 
 	constructor: (@editor) ->
+
+		@rootModel = @editor
+
+		@_serializedAddress = 'timelineEditor'
 
 		super
 
@@ -26,6 +30,30 @@ module.exports = class TimelineEditorModel extends _Emitter
 		@workspaces.on 'prop-remove', (propHolder) => @_remove propHolder
 
 		@currentProps = []
+
+		@scrollTop = 0
+
+	serialize: ->
+
+		se = scrollTop: @scrollTop
+
+		se
+
+	_loadFrom: (se) ->
+
+		if se.scrollTop?
+
+			@scrollTop = se.scrollTop|0
+
+		return
+
+	_setScrollTopFromUser: (scrollTop) ->
+
+		@scrollTop = scrollTop|0
+
+		do @_reportLocalChange
+
+		return
 
 	tick: ->
 
