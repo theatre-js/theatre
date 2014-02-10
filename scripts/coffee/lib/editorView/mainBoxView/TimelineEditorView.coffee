@@ -24,6 +24,8 @@ module.exports = class TimelineEditorView
 
 		@mainBox.on 'width-change', => @width = @mainBox.width
 
+		@model.on 'scroll-change', => do @_updateScrollTopFromModel
+
 		@_repo = new PropViewRepo @
 
 		@_currentProps = []
@@ -64,6 +66,7 @@ module.exports = class TimelineEditorView
 		.onDrag (e) =>
 
 			@mainBox.seekbar._dragFocusBy -e.relX
+			@_dragScrollBy -e.relY
 
 		.onUp =>
 
@@ -98,6 +101,10 @@ module.exports = class TimelineEditorView
 	_updateScrollTopFromModel: ->
 
 		@node.node.scrollTop = @model.scrollTop|0
+
+	_dragScrollBy: (amount) ->
+
+		@model._setScroll @model.scrollTop + amount
 
 	_add: (propHolder) ->
 

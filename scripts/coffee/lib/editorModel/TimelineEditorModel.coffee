@@ -55,6 +55,12 @@ module.exports = class TimelineEditorModel extends _DynamicModel
 
 		return
 
+	_setScroll: (scrollTop) ->
+
+		@_setScrollTopFromUser scrollTop
+
+		@_emit 'scroll-change'
+
 	tick: ->
 
 		@timeControl.tickOnSpot()
