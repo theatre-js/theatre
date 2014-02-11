@@ -1,4 +1,5 @@
 _DynamicModel = require '../_DynamicModel'
+GuidesManagerModel = require './timelineEditorModel/GuidesManagerModel'
 array = require 'utila/scripts/js/lib/array'
 
 module.exports = class TimelineEditorModel extends _DynamicModel
@@ -33,9 +34,11 @@ module.exports = class TimelineEditorModel extends _DynamicModel
 
 		@scrollTop = 0
 
+		@guides = new GuidesManagerModel @
+
 	serialize: ->
 
-		se = scrollTop: @scrollTop
+		se = scrollTop: @scrollTop, guides: @guides.serialize()
 
 		se
 
@@ -44,6 +47,8 @@ module.exports = class TimelineEditorModel extends _DynamicModel
 		if se.scrollTop?
 
 			@scrollTop = se.scrollTop|0
+
+		@guides._loadFrom se.guides if se.guides?
 
 		return
 

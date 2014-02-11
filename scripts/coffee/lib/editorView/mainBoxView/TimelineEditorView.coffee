@@ -1,6 +1,7 @@
 Foxie = require 'foxie'
 array = require 'utila/scripts/js/lib/array'
-PropViewRepo = require './timelineView/PropViewRepo'
+GuidesManagerView = require './timelineEditorView/GuidesManagerView'
+PropViewRepo = require './timelineEditorView/PropViewRepo'
 
 module.exports = class TimelineEditorView
 
@@ -30,9 +31,11 @@ module.exports = class TimelineEditorView
 
 		@_currentProps = []
 
-		do @_relayHorizontally
-
 		do @_prepareNode
+
+		@guides = new GuidesManagerView @
+
+		do @_relayHorizontally
 
 		do @_prepareListeners
 
@@ -152,6 +155,8 @@ module.exports = class TimelineEditorView
 		@horizontalSpace = @mainBox.width
 
 		prop.relayHorizontally() for prop in @_currentProps
+
+		@guides.relay()
 
 		return
 

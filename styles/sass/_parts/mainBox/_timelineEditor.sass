@@ -4,7 +4,7 @@
 	left: 0
 	right: 0
 	top: 17px
-	bottom: 0
+	height: 100%
 
 	// padding-top: 6px
 
@@ -21,107 +21,6 @@
 
 		right: -15px
 
-.theatrejs-timelineEditor-prop
 
-	position: relative
-
-	clear: both
-
-	background: #090909
-
-	&:nth-child(2n)
-
-		background: #040404
-
-	border-bottom: 1px solid #101010
-
-	&.shouldTransition
-
-		transition: 0.5s all ease-in-out
-
-	&.expanded
-
-		height: 180px
-
-		> .theatrejs-timelineEditor-prop-pacsContainer
-
-			opacity: 1
-
-	&.not-expanded
-
-		height: 30px !important
-
-		> .theatrejs-timelineEditor-prop-pacsContainer
-
-			opacity: 0
-
-	&:first-child
-
-		> .theatrejs-timelineEditor-prop-info, > .theatrejs-timelineEditor-prop-pacsContainer
-
-			top: -4px
-
-	overflow: hidden
-
-.theatrejs-timelineEditor-prop-resizer
-
-	left: 0
-	right: 0
-	bottom: -3px
-	height: 6px
-
-	z-index: 10
-
-	position: absolute
-
-	cursor: ns-resize
-
-.theatrejs-timelineEditor-prop-info
-
-	z-index: 1
-
-	position: absolute
-
-	left: 10px
-
-	color: white
-
-	font-size: 10px
-
-	text-transform: uppercase
-
-	line-height: 32px
-
-	user-select: none
-	cursor: pointer
-
-	&:hover .theatrejs-timelineEditor-prop-info-propName
-
-		opacity: 1
-
-@mixin infoPart
-
-	float: left
-	margin-right: 10px
-
-.theatrejs-timelineEditor-prop-info-propName
-
-	@include infoPart
-
-	color: #1EADDA
-
-	opacity: 0.7
-
-.theatrejs-timelineEditor-prop-info-actorName
-
-	@include infoPart
-
-	color: rgb(82, 82, 82)
-
-.theatrejs-timelineEditor-prop-info-catName
-
-	@include infoPart
-
-	color: rgb(48, 48, 48)
-
-@import "./timelineEditor/pacs"
+@import "./timelineEditor/prop"
+@import "./timelineEditor/guides"
