@@ -350,7 +350,12 @@ module.exports = class SeekbarView
 
 		# while playing, we might have gone out of bounds
 		# of the focused area
-		unless focus.from <= t <= focus.to
+		#
+		# todo: this 16ms tolerance is arbitrary, and it makes
+		# up for the fact that AudioDrivenTimeControl starts
+		# playing 16ms before the last `timeline.t`. I need a
+		# better solution.
+		unless focus.from - 16 <= t <= focus.to
 
 			newFrom = t
 
