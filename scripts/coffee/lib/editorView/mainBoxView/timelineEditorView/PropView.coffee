@@ -131,7 +131,13 @@ module.exports = class PropView
 
 		@rootView.moosh.onDrag(@resizer)
 		.withNoKeys()
-		.onDown =>
+		.onDown (e) =>
+
+			unless @_propHolderModel.isExpanded()
+
+				e.cancel()
+
+				return
 
 			@node.removeClass 'shouldTransition'
 
