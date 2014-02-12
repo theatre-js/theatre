@@ -195,7 +195,13 @@ module.exports = class Pacs extends _ChronologyContainer
 
 			else if peak is bottom
 
-				peak = bottom * 2
+				if bottom is 0
+
+					peak = 100
+
+				else
+
+					peak = bottom * 2
 
 		unless bottom is @bottom and peak is @peak
 
