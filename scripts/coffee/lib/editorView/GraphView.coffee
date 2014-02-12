@@ -11,17 +11,25 @@ module.exports = class GraphView
 
 		@rootView.moosh = @editor.moosh
 
+		@_showHideTimeout = null
+
 		do @_prepareNode
 
 	_prepareNode: ->
 
 		@node = Foxie 'div.theatrejs-graph'
 
-		@node.putIn @editor.node
-
 		return
 
 	show: ->
+
+		if @_showHideTimeout?
+
+			clearTimeout @_showHideTimeout
+
+			@_showHideTimeout = null
+
+		@node.putIn @editor.node
 
 		@node.addClass 'visible'
 
@@ -34,6 +42,14 @@ module.exports = class GraphView
 	hide: ->
 
 		@node.removeClass 'visible'
+
+		@_showHideTimeout = setTimeout =>
+
+			@node.remove()
+
+			@_showHideTimeout = null
+
+		, 500
 
 		return
 
