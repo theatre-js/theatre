@@ -468,7 +468,7 @@ module.exports = class PointView extends _ItemView
 
 	_moveValueContainer: ->
 
-		if @y > 90
+		if @y > 30
 
 			@valueContainer.removeClass 'hang'
 

@@ -37,7 +37,7 @@
     "audio-driven-time-control": "*"
   },
   "devDependencies": {
-    "coffee-script": "~1.6.3",
+    "coffee-script": "~1.7.1",
     "little-popo": "*"
   }
 }
