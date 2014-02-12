@@ -172,9 +172,35 @@ module.exports = class PropView
 
 		@rootView.moosh.onClick(@info)
 		.withNoKeys()
-		.onDone =>
+		.onDone (e) =>
+
+			e.preventDefault()
 
 			@_propHolderModel.toggleExpansion()
+
+		@rootView.moosh.onDrag(@info)
+		.withNoKeys()
+		.onDrag (e) =>
+
+			if e.relX <= -20
+
+				e.cancel()
+
+				@_propHolderModel.removeFromWorkspace()
+
+			else if e.relY <= -20
+
+				e.cancel()
+
+				@_propHolderModel.shiftUp()
+
+			else if e.relY >= 20
+
+				e.cancel()
+
+				@_propHolderModel.shiftDown()
+
+			return
 
 		@catName = Foxie('.theatrejs-timelineEditor-prop-info-catName').putIn @info
 		@catName.node.innerHTML = @propModel.actor.group.name

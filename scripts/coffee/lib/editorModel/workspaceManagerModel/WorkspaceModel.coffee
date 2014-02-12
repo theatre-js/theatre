@@ -142,3 +142,70 @@ module.exports = class WorkspaceModel extends _Emitter
 			@addProp prop
 
 		return
+
+	# this is very hacky, but gets the job done for now
+	_shiftPropUp: (prop) ->
+
+		currentHolder = @_getHolderPropById prop.id
+
+		unless currentHolder?
+
+			throw Error "Prop `#{prop.id}` is not listed in #{@name}"
+
+		index = @propHolders.indexOf currentHolder
+
+		return if index < 1
+
+		toAppend = []
+
+		propHolderBefore = @propHolders[index - 1]
+
+		toAppend.push propHolderBefore.actorProp
+
+		propHolderBefore.removeFromWorkspace()
+
+		while @propHolders.length > index
+
+			ph = @propHolders[index]
+
+			toAppend.push ph.actorProp
+
+			ph.removeFromWorkspace()
+
+		for actorProp in toAppend
+
+			@addProp actorProp
+
+		return
+
+	_shiftPropDown: (prop) ->
+
+		currentHolder = @_getHolderPropById prop.id
+
+		unless currentHolder?
+
+			throw Error "Prop `#{prop.id}` is not listed in #{@name}"
+
+		index = @propHolders.indexOf currentHolder
+
+		return if index is @propHolders.length - 1
+
+		toAppend = []
+
+		toAppend.push currentHolder.actorProp
+
+		currentHolder.removeFromWorkspace()
+
+		while @propHolders.length > index + 1
+
+			ph = @propHolders[index]
+
+			toAppend.push ph.actorProp
+
+			ph.removeFromWorkspace()
+
+		for actorProp in toAppend
+
+			@addProp actorProp
+
+		return

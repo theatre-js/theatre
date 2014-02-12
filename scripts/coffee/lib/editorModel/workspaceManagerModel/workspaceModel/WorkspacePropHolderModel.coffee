@@ -79,3 +79,21 @@ module.exports = class WorkspacePropHolderModel extends _Emitter
 		@_emit 'height-change'
 
 		return
+
+	removeFromWorkspace: ->
+
+		@workspace.removeProp @actorProp
+
+		@
+
+	shiftUp: ->
+
+		@workspace._shiftPropUp @actorProp
+
+		@
+
+	shiftDown: ->
+
+		@workspace._shiftPropDown @actorProp
+
+		@
