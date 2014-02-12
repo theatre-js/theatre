@@ -57,7 +57,7 @@ module.exports = class PropView
 
 			do @relayHorizontally
 
-		, 0
+		, 5
 
 	_setPropHolderModel: (@_propHolderModel) ->
 

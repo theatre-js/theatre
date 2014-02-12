@@ -160,21 +160,25 @@ module.exports = class WorkspaceModel extends _Emitter
 
 		propHolderBefore = @propHolders[index - 1]
 
-		toAppend.push propHolderBefore.actorProp
+		toAppend.push propHolderBefore
 
 		propHolderBefore.removeFromWorkspace()
+
+		propHolderBefore.removeAllListeners()
 
 		while @propHolders.length > index
 
 			ph = @propHolders[index]
 
-			toAppend.push ph.actorProp
+			toAppend.push ph
 
 			ph.removeFromWorkspace()
 
-		for actorProp in toAppend
+			ph.removeAllListeners()
 
-			@addProp actorProp
+		for ph in toAppend
+
+			@_addPropHolder ph
 
 		return
 
@@ -192,20 +196,24 @@ module.exports = class WorkspaceModel extends _Emitter
 
 		toAppend = []
 
-		toAppend.push currentHolder.actorProp
+		toAppend.push currentHolder
 
 		currentHolder.removeFromWorkspace()
+
+		currentHolder.removeAllListeners()
 
 		while @propHolders.length > index + 1
 
 			ph = @propHolders[index]
 
-			toAppend.push ph.actorProp
+			toAppend.push ph
 
 			ph.removeFromWorkspace()
 
-		for actorProp in toAppend
+			ph.removeAllListeners()
 
-			@addProp actorProp
+		for ph in toAppend
+
+			@_addPropHolder ph
 
 		return

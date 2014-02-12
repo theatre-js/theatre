@@ -14,7 +14,7 @@ module.exports = class WorkspacePropHolderModel extends _Emitter
 
 		@_expanded = yes
 
-		@_height = 180
+		@_height = 80
 
 	serialize: ->
 
