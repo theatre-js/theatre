@@ -1,6 +1,6 @@
 {
   "name": "theatrejs",
-  "version": "0.1.0-beta.13",
+  "version": "0.1.0-beta.14",
   "description": "A high-performance animation editor for the web",
   "main": "scripts/js/lib/theatre.js",
   "scripts": {
@@ -34,7 +34,8 @@
     "graceful-fs": "~2.0.1",
     "pretty-error": "*",
     "pretty-monitor": "*",
-    "audio-driven-time-control": "*"
+    "audio-driven-time-control": "*",
+    "gift": "~0.1.3-3"
   },
   "devDependencies": {
     "coffee-script": "~1.7.1",

@@ -1,6 +1,8 @@
 wn = require 'when'
 fs = require 'graceful-fs'
+git = require 'gift'
 CSON = require 'cson'
+delay = require 'when/delay'
 nodefn = require 'when/node/function'
 sysPath = require 'path'
 
@@ -45,6 +47,51 @@ module.exports = class DataHandler
 		if @namespaces.length is 0
 
 			throw Error "No namespace cson file was found"
+
+		do @_initGit
+
+		return
+
+	_initGit: ->
+
+		unless fs.existsSync @rootPath + '/.git'
+
+			throw Error "Git repo is not initialized yet"
+
+		@repo = git @rootPath
+
+		unless @repo?
+
+			throw Error "Could not get a repo from gift"
+
+		do @_scheduleToCommit
+
+	_scheduleToCommit: ->
+
+		delay(5 * 60 * 1000)
+		.then =>
+
+			@_scheduleToWorkWithHeadData =>
+
+				do @_scheduleToCommit
+
+				nodefn.call(@repo.status.bind(@repo))
+				.then (status) =>
+
+					if status.clean is yes
+
+						console.log 'no need to commit'
+
+						return
+
+					nodefn.call(@repo.add.bind(@repo), '.')
+					.then =>
+
+						nodefn.call(@repo.commit.bind(@repo), '[autosave]', all: yes)
+
+					.then =>
+
+						console.log 'commited'
 
 		return
 
