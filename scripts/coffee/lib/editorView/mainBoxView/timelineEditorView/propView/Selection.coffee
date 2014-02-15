@@ -174,7 +174,7 @@ module.exports = class Selection
 		.repeatedBy 2
 		.onDone =>
 
-			@_selectByTime @_fromTime, @prop.pacs.chronologyLength
+			@_selectByTime @_fromTime, @prop.pacs.timeline.duration
 
 			do @_endSelecting
 
@@ -347,5 +347,7 @@ module.exports = class Selection
 
 			@_fromTime += lastDelta
 			@_toTime += lastDelta
+
+			@prop.pacs.done()
 
 			do @_updateEl
