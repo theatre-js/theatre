@@ -1,6 +1,7 @@
 array = require 'utila/scripts/js/lib/array'
 Point = require './pacs/Point'
 Connector = require './pacs/Connector'
+PacSelection = require './pacs/PacSelection'
 _ChronologyContainer = require '../_ChronologyContainer'
 
 module.exports = class Pacs extends _ChronologyContainer
@@ -227,3 +228,7 @@ module.exports = class Pacs extends _ChronologyContainer
 			points.push item
 
 		points
+
+	getSelection: (from, to) ->
+
+		new PacSelection @, from, to

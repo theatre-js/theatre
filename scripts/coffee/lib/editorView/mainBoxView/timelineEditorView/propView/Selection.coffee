@@ -15,7 +15,7 @@ module.exports = class Selection
 		@_toX = 0
 		@_selected = no
 
-		@_items = []
+		@_pacSelection = null
 
 		do @_prepareNode
 
@@ -66,7 +66,7 @@ module.exports = class Selection
 
 			do @_startSelecting
 
-			@_select start, start
+			@_selectByLocalX start, start
 
 			@rootView.cursor.use 'ew-resize'
 
@@ -74,11 +74,11 @@ module.exports = class Selection
 
 			if e.layerX > start
 
-				@_select start, e.layerX
+				@_selectByLocalX start, e.layerX
 
 			else
 
-				@_select e.layerX, start
+				@_selectByLocalX e.layerX, start
 
 		.onUp =>
 
@@ -102,8 +102,8 @@ module.exports = class Selection
 		@rootView.moosh.onDrag @leftEdge
 		.onDown =>
 
-			lastFromX = @_fromX
-			lastToX = @_toX
+			lastFromX = @_fromX + 1
+			lastToX = @_toX - 1
 
 			do @_startSelecting
 
@@ -113,11 +113,37 @@ module.exports = class Selection
 
 			if lastFromX + e.absX <= lastToX
 
-				@_select lastFromX + e.absX, lastToX
+				@_selectByX lastFromX + e.absX, lastToX
 
 			else
 
-				@_select lastToX, lastFromX + e.absX
+				@_selectByX lastToX, lastFromX + e.absX
+
+		.onUp =>
+
+			do @_endSelecting
+
+			@rootView.cursor.free()
+
+		@rootView.moosh.onDrag @rightEdge
+		.onDown =>
+
+			lastFromX = @_fromX + 1
+			lastToX = @_toX - 1
+
+			do @_startSelecting
+
+			@rootView.cursor.use 'ew-resize'
+
+		.onDrag (e) =>
+
+			if lastToX + e.absX >= lastFromX
+
+				@_selectByX lastFromX, lastToX + e.absX
+
+			else
+
+				@_selectByX lastToX + e.absX, lastFromX
 
 		.onUp =>
 
@@ -145,35 +171,11 @@ module.exports = class Selection
 
 			do @_endSelecting
 
-		@rootView.moosh.onDrag @rightEdge
-		.onDown =>
-
-			lastFromX = @_fromX
-			lastToX = @_toX
-
-			do @_startSelecting
-
-			@rootView.cursor.use 'ew-resize'
-
-		.onDrag (e) =>
-
-			if lastToX + e.absX >= lastFromX
-
-				@_select lastFromX, lastToX + e.absX
-
-			else
-
-				@_select lastToX + e.absX, lastFromX
-
-		.onUp =>
-
-			do @_endSelecting
-
-			@rootView.cursor.free()
-
 	_startSelecting: ->
 
 		@_selecting = yes
+
+		@_pacSelection = null
 
 		do @_show
 
@@ -183,25 +185,23 @@ module.exports = class Selection
 
 		@_selected = yes
 
-		@_items = @prop.pacs.getPointsInRange @_fromTime, @_toTime
-
-		if @_items.length < 2
-
-			do @_deselect
-
-			return
-
-		@_fromTime = @_items[0].t
-
-		@_toTime = @_items[@_items.length - 1].t
+		@_pacSelection = @prop.pacs.getSelection @_fromTime, @_toTime
 
 		do @_updateEl
 
-	_select: (localFromX, localToX) ->
+	_selectByLocalX: (localFromX, localToX) ->
 
 		@_fromTime = @prop.timelineEditor._XToFocusedTime localFromX
 
 		@_toTime = @prop.timelineEditor._XToFocusedTime localToX
+
+		do @_updateEl
+
+	_selectByX: (fromX, toX) ->
+
+		@_fromTime = @prop._XToTime fromX
+
+		@_toTime = @prop._XToTime toX
 
 		do @_updateEl
 
@@ -210,6 +210,14 @@ module.exports = class Selection
 		do @_updateEl
 
 	_updateEl: ->
+
+		if @_pacSelection? and @_pacSelection.empty
+
+			@node.addClass 'empty'
+
+		else
+
+			@node.removeClass 'empty'
 
 		@_fromX = @prop._timeToX(@_fromTime) - 1
 
@@ -222,6 +230,8 @@ module.exports = class Selection
 	_deselect: ->
 
 		@_selected = no
+
+		@_pacSelection = null
 
 		do @_hide
 
