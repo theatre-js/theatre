@@ -7,6 +7,8 @@ module.exports = class ConnectorView extends _ItemView
 
 		super
 
+		@timelineEditor = @prop.timelineEditor
+
 		@leftPoint = new Float32Array 2
 		@rightPoint = new Float32Array 2
 		@leftHandler = new Float32Array 2
@@ -67,19 +69,19 @@ module.exports = class ConnectorView extends _ItemView
 
 	relay: ->
 
-		@leftPoint[0] = @prop._timeToX @model.leftT
+		@leftPoint[0] = @timelineEditor._timeToX @model.leftT
 
 		@leftPoint[1] = @prop._valToY @model.leftValue
 
-		@rightPoint[0] = @prop._timeToX @model.rightT
+		@rightPoint[0] = @timelineEditor._timeToX @model.rightT
 
 		@rightPoint[1] = @prop._valToY @model.rightValue
 
-		@leftHandler[0] = @prop._timeToX @model.leftT + @model.leftHandler[0]
+		@leftHandler[0] = @timelineEditor._timeToX @model.leftT + @model.leftHandler[0]
 
 		@leftHandler[1] = @prop._valToY @model.leftValue + @model.leftHandler[1]
 
-		@rightHandler[0] = @prop._timeToX @model.rightT - @model.rightHandler[0]
+		@rightHandler[0] = @timelineEditor._timeToX @model.rightT - @model.rightHandler[0]
 
 		@rightHandler[1] = @prop._valToY @model.rightValue + @model.rightHandler[1]
 

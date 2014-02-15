@@ -6,6 +6,8 @@ module.exports = class Selection
 
 		@rootView = @prop.rootView
 
+		@timelineEditor = @prop.timelineEditor
+
 		@_selecting = no
 
 		@_fromTime = 0
@@ -42,8 +44,9 @@ module.exports = class Selection
 	_prepareInteractions: ->
 
 		do @_prepareSelectInteraction
-		do @_prepareModifySelectionInteraction
 		do @_prepareDeselectInteraction
+		do @_prepareShiftSelectionInteractions
+		do @_prepareModifySelectionInteractions
 
 	_prepareDeselectInteraction: ->
 
@@ -94,7 +97,7 @@ module.exports = class Selection
 
 			@rootView.cursor.free()
 
-	_prepareModifySelectionInteraction: ->
+	_prepareModifySelectionInteractions: ->
 
 		lastFromX = 0
 		lastToX = 0
@@ -155,8 +158,6 @@ module.exports = class Selection
 		.repeatedBy 2
 		.onDone =>
 
-			do @_startSelecting
-
 			@_selectByTime 0, @_toTime
 
 			do @_endSelecting
@@ -165,11 +166,24 @@ module.exports = class Selection
 		.repeatedBy 2
 		.onDone =>
 
-			do @_startSelecting
-
 			@_selectByTime @_fromTime, @prop.pacs.chronologyLength
 
 			do @_endSelecting
+
+		# this will shrink the selection to its effective area
+		@rootView.moosh.onClick @node
+		.repeatedBy 2
+		.onDone =>
+
+			if @_pacSelection.empty
+
+				do @_deselect
+
+			else
+
+				@_selectByTime @_pacSelection.realFrom, @_pacSelection.realTo
+
+				do @_endSelecting
 
 	_startSelecting: ->
 
@@ -191,17 +205,17 @@ module.exports = class Selection
 
 	_selectByLocalX: (localFromX, localToX) ->
 
-		@_fromTime = @prop.timelineEditor._XToFocusedTime localFromX
+		@_fromTime = @timelineEditor._XToFocusedTime localFromX
 
-		@_toTime = @prop.timelineEditor._XToFocusedTime localToX
+		@_toTime = @timelineEditor._XToFocusedTime localToX
 
 		do @_updateEl
 
 	_selectByX: (fromX, toX) ->
 
-		@_fromTime = @prop._XToTime fromX
+		@_fromTime = @timelineEditor._XToTime fromX
 
-		@_toTime = @prop._XToTime toX
+		@_toTime = @timelineEditor._XToTime toX
 
 		do @_updateEl
 
@@ -219,9 +233,9 @@ module.exports = class Selection
 
 			@node.removeClass 'empty'
 
-		@_fromX = @prop._timeToX(@_fromTime) - 1
+		@_fromX = @timelineEditor._timeToX(@_fromTime) - 1
 
-		@_toX = @prop._timeToX(@_toTime) + 1
+		@_toX = @timelineEditor._timeToX(@_toTime) + 1
 
 		@node
 		.moveXTo(@_fromX)
@@ -246,3 +260,9 @@ module.exports = class Selection
 		@node.moveYTo(0)
 
 		@_deselectListener.enable() unless @_deselectListener.enabled
+
+	_prepareShiftSelectionInteractions: ->
+
+		@rootView.moosh.onDrag @node
+		.withNoKeys()
+		.onDown

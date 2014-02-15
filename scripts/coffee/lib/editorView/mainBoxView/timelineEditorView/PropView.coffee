@@ -102,7 +102,7 @@ module.exports = class PropView
 		.onMove (e) =>
 
 			t = @timelineEditor._XToFocusedTime e.layerX
-			x = @_timeToX t
+			x = @timelineEditor._timeToX t
 
 			@hypotheticalPointNode
 			.moveXTo(x)
@@ -167,8 +167,8 @@ module.exports = class PropView
 
 		@hypotheticalConnector.attr 'd',
 
-			"M#{@_timeToX(fromT)} #{@_valToY(fromVal)} L " +
-			"#{@_timeToX(toT)} #{@_valToY(toVal)}"
+			"M#{@timelineEditor._timeToX(fromT)} #{@_valToY(fromVal)} L " +
+			"#{@timelineEditor._timeToX(toT)} #{@_valToY(toVal)}"
 
 		return
 
@@ -267,9 +267,7 @@ module.exports = class PropView
 
 	relayHorizontally: ->
 
-		width = @timelineEditor.horizontalSpace
-
-		newRatio = width / @timelineEditor.focusArea.duration
+		newRatio = @timelineEditor._widthToTimeRatio
 
 		if newRatio isnt @_widthToTimeRatio
 
@@ -289,7 +287,7 @@ module.exports = class PropView
 
 	_shiftViewToTime: (t) ->
 
-		newPos = t * @_widthToTimeRatio
+		newPos = @timelineEditor._timeToX t
 
 		@pacsNode.moveXTo -newPos
 
@@ -370,14 +368,6 @@ module.exports = class PropView
 		@timelineEditor._tick()
 
 		return
-
-	_timeToX: (t) ->
-
-		t * @_widthToTimeRatio
-
-	_XToTime: (x) ->
-
-		x / @_widthToTimeRatio
 
 	_valToY: (v) ->
 

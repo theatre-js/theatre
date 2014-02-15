@@ -150,7 +150,9 @@ module.exports = class TimelineEditorView
 
 	_relayHorizontally: ->
 
-		@horizontalSpace = @mainBox.width
+		@width = @mainBox.width
+
+		@_widthToTimeRatio = @width / @focusArea.duration
 
 		prop.relayHorizontally() for prop in @_currentProps
 
@@ -164,23 +166,26 @@ module.exports = class TimelineEditorView
 
 		return
 
+	_XToTime: (x) ->
+
+		x / @_widthToTimeRatio
+
+	_XToFocusedTime: (x) ->
+
+		@_XToTime(x) + @focusArea.from
+
+	_unfocusedXToTime: (x) ->
+
+		x / @width * @duration
+
+	_timeToUnfocusedX: (t) ->
+
+		parseInt @width * (t / @duration)
+
 	_timeToFocusedX: (t) ->
 
 		parseInt @width * (t - @focusArea.from) / @focusArea.duration
 
-	_XToFocusDuration: (x) ->
-
-		x / @width * @focusArea.duration
-
-	_XToFocusedTime: (x) ->
-
-		@_XToFocusDuration(x) + @focusArea.from
-
-	_XToTime: (x) ->
-
-		x / @width * @duration
-
 	_timeToX: (t) ->
 
-		parseInt (t / @duration) * @width
-
+		t * @_widthToTimeRatio

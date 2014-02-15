@@ -17,6 +17,8 @@ module.exports = class PointView extends _ItemView
 
 		@svgArea = @prop.svgArea
 
+		@timelineEditor = @prop.timelineEditor
+
 		@_active = no
 
 		@_lastValue = @model.value
@@ -202,7 +204,7 @@ module.exports = class PointView extends _ItemView
 
 			do @_showHandlers
 
-			timeChange = @prop._XToTime e.absX
+			timeChange = @timelineEditor._XToTime e.absX
 
 			@model.setTime @model.t + timeChange
 
@@ -293,7 +295,7 @@ module.exports = class PointView extends _ItemView
 
 		.onUp (e) =>
 
-			timeChange = @prop._XToTime e.absX
+			timeChange = @timelineEditor._XToTime e.absX
 
 			@model.setTime @model.t + timeChange
 
@@ -396,7 +398,7 @@ module.exports = class PointView extends _ItemView
 
 			nextX = 0 if nextX < 0
 
-			nextT = @prop._XToTime nextX
+			nextT = @timelineEditor._XToTime nextX
 			nextVal = @prop._YToNormalizedVal nextY
 
 			@model.setRightHandler nextT, nextVal
@@ -427,7 +429,7 @@ module.exports = class PointView extends _ItemView
 
 			nextX = 0 if nextX < 0
 
-			nextT = @prop._XToTime nextX
+			nextT = @timelineEditor._XToTime nextX
 			nextVal = @prop._YToNormalizedVal nextY
 
 			@model.setLeftHandler nextT, nextVal
@@ -438,21 +440,21 @@ module.exports = class PointView extends _ItemView
 
 	_moveHandlers: ->
 
-		@leftHandler.moveXTo @prop._timeToX -@model.leftHandler[0]
+		@leftHandler.moveXTo @timelineEditor._timeToX -@model.leftHandler[0]
 		@leftHandler.moveYTo @prop._normalizedValToY @model.leftHandler[1]
 
-		@rightHandler.moveXTo @prop._timeToX @model.rightHandler[0]
+		@rightHandler.moveXTo @timelineEditor._timeToX @model.rightHandler[0]
 		@rightHandler.moveYTo @prop._normalizedValToY @model.rightHandler[1]
 
 		@leftHandlerLine.attr 'd',
 
 			"M#{@x} #{@y} L " +
-			"#{@prop._timeToX(@model.t - @model.leftHandler[0])} #{@prop._valToY(@model.value + @model.leftHandler[1])}"
+			"#{@timelineEditor._timeToX(@model.t - @model.leftHandler[0])} #{@prop._valToY(@model.value + @model.leftHandler[1])}"
 
 		@rightHandlerLine.attr 'd',
 
 			"M#{@x} #{@y} L " +
-			"#{@prop._timeToX(@model.t + @model.rightHandler[0])} #{@prop._valToY(@model.value + @model.rightHandler[1])}"
+			"#{@timelineEditor._timeToX(@model.t + @model.rightHandler[0])} #{@prop._valToY(@model.value + @model.rightHandler[1])}"
 
 	_prepareValueInputNode: ->
 
@@ -494,7 +496,7 @@ module.exports = class PointView extends _ItemView
 
 	relayHorizontally: ->
 
-		@x = @prop._timeToX @model.t
+		@x = @timelineEditor._timeToX @model.t
 
 		do @_moveNode
 

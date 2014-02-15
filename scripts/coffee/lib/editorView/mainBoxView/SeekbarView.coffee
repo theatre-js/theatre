@@ -186,7 +186,7 @@ module.exports = class SeekbarView
 
 	_dragFocusStripBy: (x) ->
 
-		t = @timelineEditor._XToTime x
+		t = @timelineEditor._unfocusedXToTime x
 
 		focus = @model.getFocusArea()
 
@@ -210,7 +210,7 @@ module.exports = class SeekbarView
 
 	_dragFocusBy: (x) ->
 
-		t = @timelineEditor._XToFocusDuration x
+		t = @timelineEditor._XToTime x
 
 		focus = @model.getFocusArea()
 
@@ -241,7 +241,7 @@ module.exports = class SeekbarView
 		nextWinPos = curWinPos + x
 
 		# the from part
-		nextFrom = @timelineEditor._XToTime nextWinPos
+		nextFrom = @timelineEditor._unfocusedXToTime nextWinPos
 
 		if nextFrom < 0
 
@@ -284,7 +284,7 @@ module.exports = class SeekbarView
 		nextWinPos = curWinPos + x
 
 		# the to part
-		nextTo = @timelineEditor._XToTime nextWinPos
+		nextTo = @timelineEditor._unfocusedXToTime nextWinPos
 
 		if nextTo > @duration
 
@@ -434,13 +434,13 @@ module.exports = class SeekbarView
 
 		focus = @model.getFocusArea()
 
-		left = @timelineEditor._timeToX focus.from
+		left = @timelineEditor._timeToUnfocusedX focus.from
 
 		@focusLeftNode
 		.moveXTo(left)
 		.set('left', left)
 
-		right = @timelineEditor._timeToX focus.from + focus.duration
+		right = @timelineEditor._timeToUnfocusedX focus.from + focus.duration
 
 		@focusRightNode
 		.moveXTo(right)
