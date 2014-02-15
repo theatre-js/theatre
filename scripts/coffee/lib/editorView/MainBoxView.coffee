@@ -17,9 +17,11 @@ module.exports = class MainBoxView extends _Emitter
 
 		do @_prepareNode
 
-		do @_recalculateSpace
+		@width = window.innerWidth - 8
 
-		window.addEventListener 'resize', => do @_recalculateSpace
+		setTimeout @_recalculateSpace, 50
+
+		window.addEventListener 'resize', @_recalculateSpace
 
 		@timelineEditor = new TimelineEditorView @
 
@@ -78,9 +80,9 @@ module.exports = class MainBoxView extends _Emitter
 
 		return
 
-	_recalculateSpace: ->
+	_recalculateSpace: =>
 
-		newWidth = window.innerWidth - 8
+		newWidth = @node.node.clientWidth - 8
 
 		return if newWidth is @width
 
