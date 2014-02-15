@@ -101,6 +101,20 @@ module.exports = class _ChronologyContainer extends _Emitter
 
 		return
 
+	getItemsInRange: (from, to) ->
+
+		items = []
+
+		for item in @chronology
+
+			break if item.t > to
+
+			continue if item.t < from
+
+			items.push item
+
+		items
+
 	done: ->
 
 		do @_recalculateLength

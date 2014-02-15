@@ -1,5 +1,5 @@
-wn = require 'when'
 fs = require 'graceful-fs'
+wn = require 'when'
 git = require 'gift'
 CSON = require 'cson'
 delay = require 'when/delay'

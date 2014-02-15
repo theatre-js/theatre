@@ -8,9 +8,14 @@ module.exports = class Selection
 
 		@_selecting = no
 
-		@_from = 0
-		@_to = 0
+		@_fromTime = 0
+		@_toTime = 0
+
+		@_fromX = 0
+		@_toX = 0
 		@_selected = no
+
+		@_items = []
 
 		do @_prepareNode
 
@@ -31,6 +36,7 @@ module.exports = class Selection
 	_prepareInteractions: ->
 
 		do @_prepareSelectInteraction
+		do @_prepareModifySelectionInteraction
 		do @_prepareDeselectInteraction
 
 	_prepareDeselectInteraction: ->
@@ -82,6 +88,63 @@ module.exports = class Selection
 
 			@rootView.cursor.free()
 
+	_prepareModifySelectionInteraction: ->
+
+		lastFromX = 0
+		lastToX = 0
+
+		@rootView.moosh.onDrag @leftEdge
+		.onDown =>
+
+			lastFromX = @_fromX
+			lastToX = @_toX
+
+			do @_startSelecting
+
+			@rootView.cursor.use 'ew-resize'
+
+		.onDrag (e) =>
+
+			if lastFromX + e.absX <= lastToX
+
+				@_select lastFromX + e.absX, lastToX
+
+			else
+
+				@_select lastToX, lastFromX + e.absX
+
+		.onUp =>
+
+			do @_endSelecting
+
+			@rootView.cursor.free()
+
+		@rootView.moosh.onDrag @rightEdge
+		.onDown =>
+
+			lastFromX = @_fromX
+			lastToX = @_toX
+
+			do @_startSelecting
+
+			@rootView.cursor.use 'ew-resize'
+
+		.onDrag (e) =>
+
+			if lastToX + e.absX >= lastFromX
+
+				@_select lastFromX, lastToX + e.absX
+
+			else
+
+				@_select lastToX + e.absX, lastFromX
+
+		.onUp =>
+
+			do @_endSelecting
+
+			@rootView.cursor.free()
+
 	_startSelecting: ->
 
 		@_selecting = yes
@@ -92,17 +155,37 @@ module.exports = class Selection
 
 		@_selecting = no
 
+		@_items = @prop.pacs.getPointsInRange @_fromTime, @_toTime
+
+		if @_items.length < 2
+
+			do @_deselect
+
+			return
+
+		@_fromTime = @_items[0].t
+
+		@_toTime = @_items[@_items.length - 1].t
+
+		do @_updateEl
+
 	_select: (localFromX, localToX) ->
 
-		fromTime = @prop.timelineEditor._XToFocusedTime localFromX
-		fromX = @prop._timeToX fromTime
+		@_fromTime = @prop.timelineEditor._XToFocusedTime localFromX
 
-		toTime = @prop.timelineEditor._XToFocusedTime localToX
-		toX = @prop._timeToX toTime
+		@_toTime = @prop.timelineEditor._XToFocusedTime localToX
+
+		do @_updateEl
+
+	_updateEl: ->
+
+		@_fromX = @prop._timeToX @_fromTime
+
+		@_toX = @prop._timeToX @_toTime
 
 		@node
-		.moveXTo(fromX)
-		.css('width', parseInt(toX - fromX) + 'px')
+		.moveXTo(@_fromX)
+		.css('width', parseInt(@_toX - @_fromX) + 'px')
 
 	_deselect: ->
 
@@ -114,10 +197,10 @@ module.exports = class Selection
 
 		@node.moveYTo(-5000)
 
-		@_deselectListener.disable()
+		@_deselectListener.disable() if @_deselectListener.enabled
 
 	_show: ->
 
 		@node.moveYTo(0)
 
-		@_deselectListener.enable()
+		@_deselectListener.enable() unless @_deselectListener.enabled

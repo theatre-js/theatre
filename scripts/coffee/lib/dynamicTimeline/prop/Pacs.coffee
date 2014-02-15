@@ -211,3 +211,19 @@ module.exports = class Pacs extends _ChronologyContainer
 			@_emit 'peak-and-bottom-change'
 
 		return
+
+	getPointsInRange: (from, to) ->
+
+		points = []
+
+		for item in @chronology
+
+			break if item.t > to
+
+			continue if item.t < from
+
+			continue unless item.isPoint()
+
+			points.push item
+
+		points
