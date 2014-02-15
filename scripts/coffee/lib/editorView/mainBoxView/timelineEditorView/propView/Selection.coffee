@@ -21,6 +21,8 @@ module.exports = class Selection
 
 		do @_prepareNode
 
+		do @_prepareHollow
+
 		do @_prepareInteractions
 
 	relayHorizontally: ->
@@ -40,6 +42,12 @@ module.exports = class Selection
 
 		@rightEdge = Foxie('.theatrejs-timelineEditor-prop-selection-rightEdge')
 		.putIn(@node)
+
+	_prepareHollow: ->
+
+		@hollow = Foxie('.theatrejs-timelineEditor-prop-selection-hollow')
+		.putIn(@prop.pacsNode)
+		.moveYTo(-5000)
 
 	_prepareInteractions: ->
 
@@ -261,8 +269,83 @@ module.exports = class Selection
 
 		@_deselectListener.enable() unless @_deselectListener.enabled
 
+	_showHollow: ->
+
+		@hollow.moveYTo 0
+
+	_hideHollow: ->
+
+		@hollow.moveYTo -5000
+
+	_resizeHollow: ->
+
+		@hollow
+		.css('width', parseInt(@_toX - @_fromX) + 'px')
+
+	_updateHollow: (fromX, toX) ->
+
+		@hollow
+		.moveXTo(fromX)
+
 	_prepareShiftSelectionInteractions: ->
+
+		firstDrag = yes
+
+		lastDelta = 0
+
+		couldMove = no
 
 		@rootView.moosh.onDrag @node
 		.withNoKeys()
-		.onDown
+		.onDown (e) =>
+
+			if @_pacSelection.empty
+
+				e.cancel()
+
+				return
+
+			firstDrag = yes
+
+		.onDrag (e) =>
+
+			if firstDrag
+
+				@rootView.cursor.use 'move'
+
+				do @_resizeHollow
+
+				do @_showHollow
+
+				@node.addClass 'moving'
+
+				firstDrag = no
+
+			@_updateHollow @_fromX + e.absX, @_toX + e.absX
+
+			lastDelta = @timelineEditor._XToTime e.absX
+
+			if couldMove = @_pacSelection.canMoveBy lastDelta
+
+				@hollow.removeClass 'bad'
+
+			else
+
+				@hollow.addClass 'bad'
+
+		.onUp =>
+
+			@rootView.cursor.free()
+
+			do @_hideHollow
+
+			@node.removeClass 'moving'
+
+			return unless couldMove
+
+			@_pacSelection.moveBy lastDelta
+
+			@_fromTime += lastDelta
+			@_toTime += lastDelta
+
+			do @_updateEl

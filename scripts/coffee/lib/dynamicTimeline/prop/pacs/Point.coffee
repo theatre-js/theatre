@@ -207,7 +207,7 @@ module.exports = class Point extends _PacItem
 
 		@hasRightPoint() and not @isConnectedToTheRight()
 
-	connectToRight: ->
+	connectToTheRight: ->
 
 		unless @canConnectToRight()
 
@@ -217,7 +217,7 @@ module.exports = class Point extends _PacItem
 
 		@
 
-	connectToLeft: ->
+	connectToTheLeft: ->
 
 		unless @canConnectToLeft()
 
