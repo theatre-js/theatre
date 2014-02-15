@@ -21,6 +21,12 @@ module.exports = class Selection
 
 		do @_prepareInteractions
 
+	relayHorizontally: ->
+
+		return unless @_selected
+
+		do @_updateEl
+
 	_prepareNode: ->
 
 		@node = Foxie('.theatrejs-timelineEditor-prop-selection')
@@ -119,6 +125,26 @@ module.exports = class Selection
 
 			@rootView.cursor.free()
 
+		@rootView.moosh.onClick @leftEdge
+		.repeatedBy 2
+		.onDone =>
+
+			do @_startSelecting
+
+			@_selectByTime 0, @_toTime
+
+			do @_endSelecting
+
+		@rootView.moosh.onClick @rightEdge
+		.repeatedBy 2
+		.onDone =>
+
+			do @_startSelecting
+
+			@_selectByTime @_fromTime, @prop.pacs.chronologyLength
+
+			do @_endSelecting
+
 		@rootView.moosh.onDrag @rightEdge
 		.onDown =>
 
@@ -155,6 +181,8 @@ module.exports = class Selection
 
 		@_selecting = no
 
+		@_selected = yes
+
 		@_items = @prop.pacs.getPointsInRange @_fromTime, @_toTime
 
 		if @_items.length < 2
@@ -177,11 +205,15 @@ module.exports = class Selection
 
 		do @_updateEl
 
+	_selectByTime: (@_fromTime, @_toTime) ->
+
+		do @_updateEl
+
 	_updateEl: ->
 
-		@_fromX = @prop._timeToX @_fromTime
+		@_fromX = @prop._timeToX(@_fromTime) - 1
 
-		@_toX = @prop._timeToX @_toTime
+		@_toX = @prop._timeToX(@_toTime) + 1
 
 		@node
 		.moveXTo(@_fromX)

@@ -281,6 +281,8 @@ module.exports = class PropView
 
 				do item.relayHorizontally
 
+			@selection.relayHorizontally()
+
 		@_shiftViewToTime @timelineEditor.focusArea.from
 
 		return
