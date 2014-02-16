@@ -340,19 +340,9 @@ module.exports = class Selection
 
 		firstDrag = yes
 
-		lastDelta = 0
-
-		couldMove = no
-
 		@rootView.moosh.onDrag @node
 		.withNoKeys()
 		.onDown (e) =>
-
-			if @_pacSelection.empty
-
-				e.cancel()
-
-				return
 
 			firstDrag = yes
 
@@ -360,47 +350,119 @@ module.exports = class Selection
 
 			if firstDrag
 
-				@rootView.cursor.use 'move'
-
-				do @_resizeHollow
-
-				do @_showHollow
-
-				@node.addClass 'moving'
+				do @_startShifting
 
 				firstDrag = no
 
-			@_updateHollow @_fromX + e.absX, @_toX + e.absX
-
-			lastDelta = @timelineEditor._XToTime e.absX
-
-			if couldMove = @_pacSelection.canMoveBy lastDelta
-
-				@hollow.removeClass 'bad'
-
-			else
-
-				@hollow.addClass 'bad'
+			@_shift e.absX
 
 		.onUp =>
 
-			@rootView.cursor.free()
-
-			do @_hideHollow
-
-			@node.removeClass 'moving'
-
-			return unless couldMove
-
-			@_moveSelection lastDelta
+			@_endShifting()
 
 		.onCancel =>
 
-			@rootView.cursor.free()
+			@_cancelShifting()
 
-			do @_hideHollow
+	_startShifting: (applyToGroup = yes) ->
 
-			@node.removeClass 'moving'
+		@_couldShift = yes
+
+		@rootView.cursor.use 'move'
+
+		do @_resizeHollow
+
+		do @_showHollow
+
+		@node.addClass 'moving'
+
+		if applyToGroup and @_inGroup
+
+			for s in @manager.group
+
+				continue if s is @
+
+				s._startShifting no
+
+		return
+
+	_canShift: (delta) ->
+
+		@_pacSelection.canMoveBy delta
+
+	_shift: (xDelta, applyToGroup = yes) ->
+
+		@_updateHollow @_fromX + xDelta, @_toX + xDelta
+
+		@_lastDelta = @timelineEditor._XToTime xDelta
+
+		if applyToGroup
+
+			@_couldShift = @_canShift @_lastDelta
+
+			if @_inGroup
+
+				for s in @manager.group
+
+					continue if s is @
+
+					@_couldShift = no if s._canShift(@_lastDelta) is no
+
+				for s in @manager.group
+
+					s._couldShift = @_couldShift
+
+					s._shift xDelta, no
+
+		if @_couldShift
+
+			@hollow.removeClass 'bad'
+
+		else
+
+			@hollow.addClass 'bad'
+
+		return
+
+	_endShifting: (applyToGroup = yes) ->
+
+		@rootView.cursor.free()
+
+		do @_hideHollow
+
+		@node.removeClass 'moving'
+
+		if @_couldShift
+
+			@_moveSelection @_lastDelta, no
+
+		if applyToGroup and @_inGroup
+
+			for s in @manager.group
+
+				continue if s is @
+
+				s._endShifting no
+
+		return
+
+	_cancelShifting: (applyToGroup = yes) ->
+
+		@rootView.cursor.free()
+
+		do @_hideHollow
+
+		@node.removeClass 'moving'
+
+		if applyToGroup and @_inGroup
+
+			for s in @manager.group
+
+				continue if s is @
+
+				s._cancelShifting no
+
+		return
 
 	_toggleGrouping: =>
 
@@ -437,10 +499,6 @@ module.exports = class Selection
 		do @_updateEl
 
 	_moveSelection: (delta, applyToGroup = yes) ->
-
-		if window.d
-
-			debugger
 
 		@_pacSelection.moveBy delta
 
