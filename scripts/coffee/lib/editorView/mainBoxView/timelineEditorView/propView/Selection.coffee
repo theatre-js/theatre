@@ -420,6 +420,8 @@ module.exports = class Selection
 
 			do @_startSelecting
 
+			do @_deselect
+
 			@_selectByTime copyFrom._fromTime, copyFrom._toTime
 
 			@_endSelecting no
