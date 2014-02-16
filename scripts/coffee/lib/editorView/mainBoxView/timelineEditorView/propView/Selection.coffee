@@ -70,7 +70,7 @@ module.exports = class Selection
 		start = 0
 
 		@rootView.moosh.onDrag(@prop.node)
-		.withKeys('shift')
+		.withKeys 'shift'
 		.onDown (e) =>
 
 			start = e.layerX
@@ -178,20 +178,13 @@ module.exports = class Selection
 
 			do @_endSelecting
 
-		# this will shrink the selection to its effective area
 		@rootView.moosh.onClick @node
 		.repeatedBy 2
 		.onDone =>
 
-			if @_pacSelection.empty
+			@_selectByTime @_pacSelection.realFrom, @_pacSelection.realTo
 
-				do @_deselect
-
-			else
-
-				@_selectByTime @_pacSelection.realFrom, @_pacSelection.realTo
-
-				do @_endSelecting
+			do @_endSelecting
 
 	_startSelecting: ->
 
@@ -351,3 +344,11 @@ module.exports = class Selection
 			@prop.pacs.done()
 
 			do @_updateEl
+
+		.onCancel =>
+
+			@rootView.cursor.free()
+
+			do @_hideHollow
+
+			@node.removeClass 'moving'
