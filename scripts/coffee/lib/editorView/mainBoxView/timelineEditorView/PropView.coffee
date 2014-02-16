@@ -225,11 +225,15 @@ module.exports = class PropView
 
 	attach: ->
 
+		@selection.attach()
+
 		@node.putIn @timelineEditor.node
 
 		return
 
 	detach: ->
+
+		@selection.detach()
 
 		@node.remove()
 

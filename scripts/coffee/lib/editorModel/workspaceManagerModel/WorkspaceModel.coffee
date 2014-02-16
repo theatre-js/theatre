@@ -89,7 +89,7 @@ module.exports = class WorkspaceModel extends _Emitter
 
 		@_addPropHolder propHolder = new WorkspacePropHolderModel @, actorPropModel
 
-		return
+		propHolder
 
 	_addPropHolder: (propHolder) ->
 

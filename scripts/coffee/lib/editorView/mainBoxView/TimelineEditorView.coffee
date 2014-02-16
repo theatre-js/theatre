@@ -1,7 +1,8 @@
 Foxie = require 'foxie'
 array = require 'utila/scripts/js/lib/array'
-GuidesManagerView = require './timelineEditorView/GuidesManagerView'
 PropViewRepo = require './timelineEditorView/PropViewRepo'
+SelectionManager = require './timelineEditorView/SelectionManager'
+GuidesManagerView = require './timelineEditorView/GuidesManagerView'
 
 module.exports = class TimelineEditorView
 
@@ -16,6 +17,8 @@ module.exports = class TimelineEditorView
 		timeControlModel = @mainBox.editor.model.timeControl
 
 		@duration = timeControlModel.duration
+
+		@selectionManager = new SelectionManager @
 
 		timeControlModel.on 'duration-change', =>
 

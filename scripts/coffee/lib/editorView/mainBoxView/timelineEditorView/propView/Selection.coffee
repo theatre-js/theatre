@@ -8,6 +8,10 @@ module.exports = class Selection
 
 		@timelineEditor = @prop.timelineEditor
 
+		@manager = @timelineEditor.selectionManager
+
+		@_inGroup = no
+
 		@_selecting = no
 
 		@_fromTime = 0
@@ -24,6 +28,16 @@ module.exports = class Selection
 		do @_prepareHollow
 
 		do @_prepareInteractions
+
+	attach: ->
+
+		@manager.include @
+
+	detach: ->
+
+		@_inGroup = no
+
+		@manager.exclude @
 
 	relayHorizontally: ->
 
@@ -180,11 +194,19 @@ module.exports = class Selection
 
 		@rootView.moosh.onClick @node
 		.repeatedBy 2
+		.withNoKeys()
 		.onDone =>
 
 			@_selectByTime @_pacSelection.realFrom, @_pacSelection.realTo
 
 			do @_endSelecting
+
+		@rootView.moosh.onClick @node
+		.repeatedBy 2
+		.withKeys 'ctrl'
+		.onDone =>
+
+			do @_toggleGrouping
 
 	_startSelecting: ->
 
@@ -194,7 +216,7 @@ module.exports = class Selection
 
 		do @_show
 
-	_endSelecting: ->
+	_endSelecting: (applyToGroup = yes) ->
 
 		@_selecting = no
 
@@ -204,25 +226,37 @@ module.exports = class Selection
 
 		do @_updateEl
 
+		if applyToGroup and @_inGroup
+
+			for s in @manager.group
+
+				continue if s is @
+
+				s._endSelecting no
+
+		return
+
 	_selectByLocalX: (localFromX, localToX) ->
 
-		@_fromTime = @timelineEditor._XToFocusedTime localFromX
-
-		@_toTime = @timelineEditor._XToFocusedTime localToX
-
-		do @_updateEl
+		@_selectByTime @timelineEditor._XToFocusedTime(localFromX), @timelineEditor._XToFocusedTime(localToX)
 
 	_selectByX: (fromX, toX) ->
 
-		@_fromTime = @timelineEditor._XToTime fromX
+		@_selectByTime @timelineEditor._XToTime(fromX), @timelineEditor._XToTime(toX)
 
-		@_toTime = @timelineEditor._XToTime toX
-
-		do @_updateEl
-
-	_selectByTime: (@_fromTime, @_toTime) ->
+	_selectByTime: (@_fromTime, @_toTime, applyToGroup = yes) ->
 
 		do @_updateEl
+
+		if applyToGroup and @_inGroup
+
+			for s in @manager.group
+
+				continue if s is @
+
+				s._selectByTime @_fromTime, @_toTime, no
+
+		return
 
 	_updateEl: ->
 
@@ -234,6 +268,14 @@ module.exports = class Selection
 
 			@node.removeClass 'empty'
 
+		if @_inGroup
+
+			@node.addClass 'inGroup'
+
+		else
+
+			@node.removeClass 'inGroup'
+
 		@_fromX = @timelineEditor._timeToX(@_fromTime) - 1
 
 		@_toX = @timelineEditor._timeToX(@_toTime) + 1
@@ -242,13 +284,25 @@ module.exports = class Selection
 		.moveXTo(@_fromX)
 		.css('width', parseInt(@_toX - @_fromX) + 'px')
 
-	_deselect: ->
+	_deselect: (applyToGroup = yes) ->
 
 		@_selected = no
 
 		@_pacSelection = null
 
 		do @_hide
+
+		if applyToGroup and @_inGroup
+
+			for s in @manager.group
+
+				continue if s is @
+
+				s._deselect no
+
+			@manager.closeGroup()
+
+		return
 
 	_hide: ->
 
@@ -336,14 +390,7 @@ module.exports = class Selection
 
 			return unless couldMove
 
-			@_pacSelection.moveBy lastDelta
-
-			@_fromTime += lastDelta
-			@_toTime += lastDelta
-
-			@prop.pacs.done()
-
-			do @_updateEl
+			@_moveSelection lastDelta
 
 		.onCancel =>
 
@@ -352,3 +399,56 @@ module.exports = class Selection
 			do @_hideHollow
 
 			@node.removeClass 'moving'
+
+	_toggleGrouping: =>
+
+		if @_inGroup
+
+			@manager.takeOffGroup @
+
+		else
+
+			@manager.startGroup @
+
+		do @_updateEl
+
+	_beInGroup: (copyFrom) ->
+
+		if copyFrom?
+
+			do @_startSelecting
+
+			@_selectByTime copyFrom._fromTime, copyFrom._toTime
+
+			@_endSelecting no
+
+		@_inGroup = yes
+
+		do @_updateEl
+
+	_beOffGroup: ->
+
+		@_inGroup = no
+
+		do @_updateEl
+
+	_moveSelection: (delta, applyToGroup = yes) ->
+
+		@_pacSelection.moveBy delta
+
+		@_fromTime += delta
+		@_toTime += delta
+
+		@prop.pacs.done()
+
+		do @_updateEl
+
+		if applyToGroup and @_inGroup
+
+			for s in @manager.group
+
+				continue if s is @
+
+				s._moveSelection delta, no
+
+		return
