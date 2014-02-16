@@ -89,6 +89,8 @@ module.exports = class Selection
 
 			start = e.layerX
 
+			do @_deselect
+
 			do @_startSelecting
 
 			@_selectByLocalX start, start
