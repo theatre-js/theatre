@@ -25,6 +25,12 @@ module.exports = serve = (repoPath, port, serializedDirName, passwords) ->
 				marginLeft: 3
 				marginTop: 1
 
+		pe.filter ->
+
+			`console.log("\007")`
+
+			return
+
 		process.on 'uncaughtException', (e) ->
 
 			pe.render e, yes
@@ -38,6 +44,8 @@ module.exports = serve = (repoPath, port, serializedDirName, passwords) ->
 
 		pe.skipNodeFiles()
 		pe.skipPackage 'socket.io'
+
+
 
 		process.nextTick ->
 
