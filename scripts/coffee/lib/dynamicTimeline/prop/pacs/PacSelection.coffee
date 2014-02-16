@@ -47,9 +47,11 @@ module.exports = class PacSelection
 
 		residingItems = @pacs.getItemsInRange @realFrom + delta, @realTo + delta
 
+		nextConnector = @_lastPoint.getRightConnector()
+
 		for item in residingItems
 
-			return no unless item in @_items
+			return no unless (item in @_items or item is nextConnector)
 
 		return yes
 

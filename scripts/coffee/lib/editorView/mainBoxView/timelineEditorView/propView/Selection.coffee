@@ -438,6 +438,10 @@ module.exports = class Selection
 
 	_moveSelection: (delta, applyToGroup = yes) ->
 
+		if window.d
+
+			debugger
+
 		@_pacSelection.moveBy delta
 
 		@_fromTime += delta
@@ -445,7 +449,7 @@ module.exports = class Selection
 
 		@prop.pacs.done()
 
-		do @_updateEl
+		@_endSelecting no
 
 		if applyToGroup and @_inGroup
 
