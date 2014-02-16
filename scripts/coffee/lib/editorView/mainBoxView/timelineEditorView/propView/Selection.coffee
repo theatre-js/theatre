@@ -418,9 +418,9 @@ module.exports = class Selection
 
 		if copyFrom?
 
-			do @_startSelecting
-
 			do @_deselect
+
+			do @_startSelecting
 
 			@_selectByTime copyFrom._fromTime, copyFrom._toTime
 
