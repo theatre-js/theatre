@@ -31,6 +31,8 @@ module.exports = serve = (repoPath, port, serializedDirName, passwords, logsPath
 
 			pe.filterParsedError (e) ->
 
+				`console.log("\007");`
+
 				errorLog = CSON.stringifySync(JSON.parse(JSON.stringify(e)))
 				errorLog += '\n\n------------------\n\n'
 
