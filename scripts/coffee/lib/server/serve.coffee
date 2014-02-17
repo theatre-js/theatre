@@ -1,6 +1,6 @@
 didServe = no
 
-module.exports = serve = (repoPath, port, serializedDirName, passwords) ->
+module.exports = serve = (repoPath, port, serializedDirName, passwords, logsPath) ->
 
 	if didServe
 
@@ -10,7 +10,9 @@ module.exports = serve = (repoPath, port, serializedDirName, passwords) ->
 
 	PrettyError = require 'pretty-error'
 	Server = require '../Server'
+	CSON = require 'cson'
 	path = require 'path'
+	fs = require 'fs'
 	prettyMonitor = require 'pretty-monitor'
 
 	# Pretty Errors
@@ -25,11 +27,16 @@ module.exports = serve = (repoPath, port, serializedDirName, passwords) ->
 				marginLeft: 3
 				marginTop: 1
 
-		pe.filter ->
+		if logsPath?
 
-			`console.log("\007")`
+			pe.filterParsedError (e) ->
 
-			return
+				errorLog = CSON.stringifySync(JSON.parse(JSON.stringify(e)))
+				errorLog += '\n\n------------------\n\n'
+
+				fs.writeFileSync path.join(repoPath, logsPath), errorLog, flag: 'a'
+
+				return
 
 		process.on 'uncaughtException', (e) ->
 
