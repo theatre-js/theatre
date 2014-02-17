@@ -38,6 +38,8 @@ module.exports = serve = (repoPath, port, serializedDirName, passwords, logsPath
 
 				fs.writeFileSync path.join(repoPath, logsPath), errorLog, flag: 'a'
 
+				setTimeout (-> process.exit(1)), 0
+
 				return
 
 		process.on 'uncaughtException', (e) ->
@@ -53,8 +55,6 @@ module.exports = serve = (repoPath, port, serializedDirName, passwords, logsPath
 
 		pe.skipNodeFiles()
 		pe.skipPackage 'socket.io'
-
-
 
 		process.nextTick ->
 
