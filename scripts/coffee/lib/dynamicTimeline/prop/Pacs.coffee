@@ -229,6 +229,46 @@ module.exports = class Pacs extends _ChronologyContainer
 
 		points
 
+	getOrMakePointOnOrInVicinity: (t, tolerance) ->
+
+		points = @getPointsInRange t - tolerance, t + tolerance
+
+		point = null
+
+		lastDistance = Infinity
+
+		for p in points
+
+			distance = Math.abs p.t - t
+
+			if distance < lastDistance
+
+				point = p
+
+				lastDistance = distance
+
+		unless point?
+
+			val = @prop.getValueAt t
+
+			point = @addPoint t, val, 10, 0, 10, 0
+
+		point
+
+
+
 	getSelection: (from, to) ->
 
 		new PacSelection @, from, to
+
+	getValueAt: (t) ->
+
+		index = @_getIndexOfItemBeforeOrAt t
+
+		item = @_getItemByIndex index
+
+		return unless item?
+
+		return item.value if item.isPoint()
+
+		item.tickAt t

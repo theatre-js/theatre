@@ -71,7 +71,7 @@ module.exports = class DataHandler
 		delay(5 * 60 * 1000)
 		.then =>
 
-			@_scheduleToWorkWithHeadData =>
+			@queue =>
 
 				do @_scheduleToCommit
 
@@ -105,10 +105,7 @@ module.exports = class DataHandler
 
 			throw Error "Invalid namespace '#{ns}'"
 
-		@_scheduleToWorkWithHeadData =>
-
-			nodefn.call(fs.readFile, @getDataFilePathFor(ns), {encoding: 'utf-8'})
-
+		nodefn.call(fs.readFile, @getDataFilePathFor(ns), {encoding: 'utf-8'})
 		.then (cson) =>
 
 			if (cson.replace /\s+/, '') is ''
@@ -123,7 +120,7 @@ module.exports = class DataHandler
 
 			obj
 
-	_scheduleToWorkWithHeadData: (cb) ->
+	queue: (cb) ->
 
 		@_lastPromiseToWorkWithHeadData = @_lastPromiseToWorkWithHeadData.then cb
 
@@ -131,9 +128,7 @@ module.exports = class DataHandler
 
 		cson = CSON.stringifySync obj
 
-		@_scheduleToWorkWithHeadData =>
-
-			nodefn.call(fs.writeFile, @getDataFilePathFor(ns), cson, {encoding: 'utf-8'})
+		nodefn.call(fs.writeFile, @getDataFilePathFor(ns), cson, {encoding: 'utf-8'})
 
 	getDataFilePathFor: (ns) ->
 

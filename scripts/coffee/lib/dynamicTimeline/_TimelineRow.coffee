@@ -30,16 +30,18 @@ module.exports = class _TimelineRow extends _DynamicModel
 
 		@
 
-	_reportIneffectiveUpdate: ->
+	_reportIneffectiveChange: ->
 
 		do @_reportLocalChange
 
-	_reportUpdate: (from, to) ->
+	_reportChange: (from, to) ->
 
 		do @_reportLocalChange
+
+		@_emit 'change'
 
 		for ic in @_incrementalIsolates
 
-			ic._reportUpdate from, to
+			ic._reportChange from, to
 
 		@_nextIndexToCheck = 0

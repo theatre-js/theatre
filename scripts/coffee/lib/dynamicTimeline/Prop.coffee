@@ -33,6 +33,14 @@ module.exports = class Prop extends _TimelineRow
 
 		if firstPoint? then firstPoint.value else @initial
 
+	getValueAt: (t) ->
+
+		v = @pacs.getValueAt t
+
+		return v if v?
+
+		@_getInitial()
+
 	_tickForward: (t) ->
 
 		item = @_chronology[@_nextIndexToCheck]

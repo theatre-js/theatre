@@ -4,9 +4,9 @@ module.exports = class IncrementalIsolate
 
 		@_props = []
 
-		@_hadUpdates = no
+		@_hadChanges = no
 
-		@_updateFrom = Infinity
+		@_changedFrom = Infinity
 
 		@t = 0
 
@@ -16,21 +16,21 @@ module.exports = class IncrementalIsolate
 
 		return
 
-	_reportUpdate: (from, to) ->
+	_reportChange: (from, to) ->
 
-		@_hadUpdates = yes
+		@_hadChanges = yes
 
-		@_updateFrom = Math.min(@_updateFrom, from)
+		@_changedFrom = Math.min(@_changedFrom, from)
 
 		return
 
 	_tickForTimeline: (t) ->
 
-		@isolate.requestTick t, @_hadUpdates, @_updateFrom
+		@isolate.requestTick t, @_hadChanges, @_changedFrom
 
-		@_hadUpdates = no
+		@_hadChanges = no
 
-		@_updateFrom = Infinity
+		@_changedFrom = Infinity
 
 		return
 

@@ -56,8 +56,6 @@ module.exports = class MainBoxModel extends _DynamicModel
 
 		@_emit 'height-change'
 
-		@_emit 'position-change'
-
 		do @_reportLocalChange
 
 		return

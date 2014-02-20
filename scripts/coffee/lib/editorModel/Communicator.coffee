@@ -46,7 +46,7 @@ module.exports = class Communicator
 
 		.then (response) =>
 
-			console.log 'server responded with', response if @editor.debug
+			console.log 'server responded for', address, response if @editor.debug
 
 			return
 

@@ -11,7 +11,7 @@ module.exports = class _ChronologyContainer extends _Emitter
 
 		@chronologyLength = 0
 
-		@_updateRange = [Infinity, -Infinity]
+		@_changeRange = [Infinity, -Infinity]
 
 		@_idCounter = -1
 
@@ -29,23 +29,23 @@ module.exports = class _ChronologyContainer extends _Emitter
 
 	_setUpdateRange: (from, to) ->
 
-		@_updateRange[0] = Math.min(@_updateRange[0], from)
-		@_updateRange[1] = Math.max(@_updateRange[1], to)
+		@_changeRange[0] = Math.min(@_changeRange[0], from)
+		@_changeRange[1] = Math.max(@_changeRange[1], to)
 
 		return
 
-	_reportUpdate: ->
+	_reportChange: ->
 
-		if @_updateRange[0] is Infinity and @_updateRange[1] is -Infinity
+		if @_changeRange[0] is Infinity and @_changeRange[1] is -Infinity
 
-			@parent._reportIneffectiveUpdate()
+			@parent._reportIneffectiveChange()
 
 			return
 
-		@parent._reportUpdate @_updateRange[0], @_updateRange[1]
+		@parent._reportChange @_changeRange[0], @_changeRange[1]
 
-		@_updateRange[0] = Infinity
-		@_updateRange[1] = -Infinity
+		@_changeRange[0] = Infinity
+		@_changeRange[1] = -Infinity
 
 		return
 
@@ -119,6 +119,6 @@ module.exports = class _ChronologyContainer extends _Emitter
 
 		do @_recalculateLength
 
-		do @_reportUpdate
+		do @_reportChange
 
 		return

@@ -30,10 +30,12 @@ module.exports = class Session
 
 	_sendHeadData: (received, cb) =>
 
-		@dataHandler.getHeadDataForNamespace(@namespaceName)
-		.then (data) =>
+		@dataHandler.queue =>
 
-			cb data
+			@dataHandler.getHeadDataForNamespace(@namespaceName)
+			.then (data) =>
+
+				cb data
 
 		return
 
@@ -41,29 +43,31 @@ module.exports = class Session
 
 		{address, newData} = parts
 
-		@dataHandler.getHeadDataForNamespace(@namespaceName)
-		.then (obj) =>
+		@dataHandler.queue =>
 
-			cur = obj
+			@dataHandler.getHeadDataForNamespace(@namespaceName)
+			.then (obj) =>
 
-			lastName = address.pop()
+				cur = obj
 
-			for subName in address
+				lastName = address.pop()
 
-				if cur[subName]?
+				for subName in address
 
-					cur = cur[subName]
+					if cur[subName]?
 
-				else
+						cur = cur[subName]
 
-					cur[subName] = cur = {}
+					else
 
-					console.log "Couldn't find subName '#{subName}' in cson data"
+						cur[subName] = cur = {}
 
-			cur[lastName] = newData
+						console.log "Couldn't find subName '#{subName}' in cson data"
 
-			promise = @dataHandler.replaceHeadDataForNamespace(@namespaceName, obj)
+				cur[lastName] = newData
 
-			cb 'done'
+				promise = @dataHandler.replaceHeadDataForNamespace(@namespaceName, obj)
 
-			promise
+				cb 'done'
+
+				promise
