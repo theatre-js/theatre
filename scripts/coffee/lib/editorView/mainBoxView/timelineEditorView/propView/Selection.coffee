@@ -69,8 +69,6 @@ module.exports = class Selection
 		do @_prepareDeselectInteraction
 		do @_prepareShiftSelectionInteractions
 		do @_prepareModifySelectionInteractions
-		do @_prepareRemoveSelectionInteraction
-		do @_prepareDuplicateSelectionInteraction
 
 	_prepareDeselectInteraction: ->
 
@@ -201,9 +199,7 @@ module.exports = class Selection
 		.withNoKeys()
 		.onDone =>
 
-			@_selectByTime @_pacSelection.realFrom, @_pacSelection.realTo
-
-			do @_endSelecting
+			do @_showModifySelectionOptions
 
 		@rootView.moosh.onClick @node
 		.repeatedBy 2
@@ -466,17 +462,35 @@ module.exports = class Selection
 
 		return
 
-	_prepareRemoveSelectionInteraction: ->
+	_showModifySelectionOptions: ->
 
-		@rootView.moosh.onClick @node
-		.withKeys 'delete'
-		.onDone =>
+		@rootView.chooser.choose '', ['Fit', 'Delete', 'Repeat'], (success, choice) =>
 
-			do @_remove
+			return unless success
 
-	_remove: (applyToGroup = yes) ->
+			switch choice
 
-		@_pacSelection.remove()
+				when 'Fit'
+
+					do @_fitSelection
+
+				when 'Delete'
+
+					do @_delete
+
+				when 'Repeat'
+
+					do @_askRepeatQuestions
+
+	_fitSelection: ->
+
+		@_selectByTime @_pacSelection.realFrom, @_pacSelection.realTo
+
+		do @_endSelecting
+
+	_delete: (applyToGroup = yes) ->
+
+		@_pacSelection.delete()
 
 		@prop.pacs.done()
 
@@ -486,19 +500,11 @@ module.exports = class Selection
 
 				continue if s is @
 
-				s._remove no
+				s._delete no
 
 		return
 
-	_prepareDuplicateSelectionInteraction: ->
-
-		@rootView.moosh.onClick @node
-		.withKeys 'd'
-		.onDone =>
-
-			setTimeout (=> do @_askDuplicateQuestions), 0
-
-	_askDuplicateQuestions: ->
+	_askRepeatQuestions: ->
 
 		@rootView.asker.ask
 
@@ -514,19 +520,29 @@ module.exports = class Selection
 
 				return unless 1 <= n <= 1000
 
-		connect = prompt 'Connect? [y/n/empty]', 'n'
+				@rootView.chooser.choose '', ['Connect', 'Dont Connect'], (success, choice) =>
 
-		return unless connect in ['y', 'n', '']
+					return unless success
 
-		connect = if connect is 'y' then yes else no
+					connect = choice is 'Connect'
 
-		@_duplicate n, connect
+					@_repeat n, connect
 
-	_duplicate: (n, connect, applyToGroup = yes) ->
+	_repeat: (n, connect, applyToGroup = yes) ->
 
-		@_pacSelection.duplicate n, connect
+		@_pacSelection.repeat n, connect
 
 		@prop.pacs.done()
+
+		if applyToGroup and @_inGroup
+
+			for s in @manager.group
+
+				continue if s is @
+
+				s._repeat n, connect, no
+
+		return
 
 	_toggleGrouping: =>
 

@@ -119,7 +119,7 @@ module.exports = class PacSelection
 
 		return
 
-	remove: ->
+	delete: ->
 
 		items = @pacs.getItemsInRange @from, @to
 
@@ -139,7 +139,7 @@ module.exports = class PacSelection
 
 		return
 
-	duplicate: (n, connect) ->
+	repeat: (n, connect) ->
 
 		items = @pacs.getItemsInRange @from, @to
 
