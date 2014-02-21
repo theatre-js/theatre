@@ -410,6 +410,8 @@ module.exports = class SeekbarView
 		.moveXTo(curSeekerPos)
 		.set('left', curSeekerPos)
 
+		@seeker.node.title = @model.t
+
 		return
 
 	# in my defence:

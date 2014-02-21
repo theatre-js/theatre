@@ -72,6 +72,13 @@ module.exports = class PointView extends _ItemView
 
 		.withNoKeys()
 
+		@rootView.moosh.onMiddleClick @node
+		.onUp =>
+
+			do @_ask
+
+		.withNoKeys()
+
 	_prepareNodeRemovalInteractions: ->
 
 		@rootView.moosh.onHover(@node)
@@ -567,6 +574,41 @@ module.exports = class PointView extends _ItemView
 		@rootView.moosh.unignore(@valueInput)
 
 		return
+
+	_ask: ->
+
+		@rootView.chooser.choose '', ['Set Time'], (success, choice) =>
+
+			return unless success
+
+			if choice is 'Set Time'
+
+				do @_askSetTime
+
+	_askSetTime: ->
+
+		@rootView.asker.ask
+
+			question: 'Time: (ms)'
+
+			validate: 'number'
+
+			defaultValue: @model.t
+
+			cb: (success, t) =>
+
+				return unless success
+
+				t = parseInt t
+
+				return unless 0 <= t and isFinite t
+
+				@model.setTime t
+
+				@pacs.done()
+
+				@prop._tick()
+
 
 	_commitValueAndDeactivate: ->
 
