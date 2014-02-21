@@ -22,7 +22,9 @@ module.exports = class GuidesManagerView
 
 			@model.toggle @timeControlModel.t
 
-		@_multipleGuides '200 800', 20
+		@rootView.kilid.on 'ctrl+shift+space', =>
+
+			do @_askMultipleGuidesQuestions
 
 	_prepareNode: ->
 
@@ -57,6 +59,46 @@ module.exports = class GuidesManagerView
 
 		array.pluckOneItem @_list, guideView
 
+	_askMultipleGuidesQuestions: ->
+
+		@rootView.asker.ask
+
+			question: 'Spacing: (Example: \'200 1800\')'
+
+			validate: (v) -> v.match /[0-9\s]+/
+
+			cb: (success, spacing) =>
+
+				return unless success
+
+				@rootView.asker.ask
+
+					question: 'How many?'
+
+					validate: 'number'
+
+					cb: (success, count) =>
+
+						return unless success
+
+						@_multipleGuides spacing, count
+
 	_multipleGuides: (spacing, count) ->
 
-		console.log arguments
+		return unless spacing.match /^[0-9\s]+$/
+
+		spaces = spacing.split(/\s+/).map (v) -> parseInt v
+
+		count = parseInt count
+
+		t = @timeControlModel.t
+
+		for i in [0...count]
+
+			for s in spaces
+
+				t += s
+
+				@model.add t
+
+		return

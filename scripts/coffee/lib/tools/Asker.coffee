@@ -6,9 +6,11 @@ module.exports = class Asker
 
 		@_tempKilidScope = @rootView.kilid.getTempScope()
 
-		@_tempKilidScope.on 'enter', => do @_commit
+		@_tempKilidScope.on 'enter'
+		.onEnd => do @_commit
 
-		@_tempKilidScope.on 'esc', => do @_discard
+		@_tempKilidScope.on 'esc'
+		.onEnd => do @_discard
 
 		@_active = no
 
