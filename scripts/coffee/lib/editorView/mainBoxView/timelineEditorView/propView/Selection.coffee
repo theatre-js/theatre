@@ -366,8 +366,6 @@ module.exports = class Selection
 
 			@_cancelShifting()
 
-
-
 	_startShifting: (applyToGroup = yes) ->
 
 		@_couldShift = yes
@@ -502,13 +500,19 @@ module.exports = class Selection
 
 	_askDuplicateQuestions: ->
 
-		n = prompt 'How many?'
+		@rootView.asker.ask
 
-		return unless String(n).match /^[0-9]+$/
+			question: 'How many?'
 
-		return unless 1 <= n <= 1000
+			validate: 'number'
 
-		n = parseInt n
+			cb: (success, n) =>
+
+				return unless success
+
+				n = parseInt n
+
+				return unless 1 <= n <= 1000
 
 		connect = prompt 'Connect? [y/n/empty]', 'n'
 
