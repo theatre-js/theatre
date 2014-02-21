@@ -26,6 +26,8 @@ module.exports = class SeekbarView
 
 		@mainBox.on 'width-change', => do @_resetSpace
 
+		do @_prepareShortcuts
+
 	_prepareNode: ->
 
 		@node = Foxie('.theatrejs-seekbar')
@@ -183,6 +185,27 @@ module.exports = class SeekbarView
 			@focusStripNode.removeClass 'dragging'
 
 			@rootView.cursor.free()
+
+	_prepareShortcuts: ->
+
+		@rootView.kilid.on 't'
+		.onEnd =>
+
+			@rootView.asker.ask
+
+				question: 'Time (in milliseconds)'
+
+				validate: 'number'
+
+				cb: (success, t) =>
+
+					return unless success
+
+					t = parseInt t
+
+					return unless 0 <= t and isFinite t
+
+					@model.tick t
 
 	_dragFocusStripBy: (x) ->
 
