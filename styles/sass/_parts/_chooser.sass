@@ -1,0 +1,57 @@
+#chooser
+
+	position: fixed
+
+	bottom: 0px
+	left: 0
+	height: 42px
+
+	z-index: 12
+
+	background: #040404
+
+	@include transition(0.3s all)
+
+	@include transform(translate3d(0, 42px, 0px))
+
+	&.visible
+
+		@include transform(translate3d(0, 0px, 1px))
+
+	color: white
+
+	font-size: 12px
+	line-height: 43px
+
+	padding-left: 10px
+
+#chooser-question
+
+	display: inline-block
+
+#chooser-choices
+
+	display: inline-block
+
+#chooser .choice
+
+	display: inline-block
+
+	color: white
+
+	padding: 0 4px
+
+	margin: 6px 8px 0
+
+	background: #1A1A1A
+
+	user-select: none
+	cursor: pointer
+
+	line-height: 28px
+
+	padding: 0 8px
+
+	&:hover
+
+		background: #5A5A5A

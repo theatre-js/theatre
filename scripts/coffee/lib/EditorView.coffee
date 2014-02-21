@@ -2,6 +2,7 @@ Foxie = require 'foxie'
 Moosh = require 'moosh'
 Kilid = require 'kilid'
 Asker = require './tools/Asker'
+Chooser = require './tools/Chooser'
 GraphView = require './editorView/GraphView'
 MainBoxView = require './editorView/MainBoxView'
 ControlsView = require './editorView/ControlsView'
@@ -21,21 +22,9 @@ module.exports = class EditorView
 
 		@moosh = new Moosh document.body, @kilid
 
-		@asker = new Asker @, document.body
+		@asker = new Asker @
 
-		setTimeout =>
-
-			@asker.ask
-
-				question: 'Okay?'
-
-				validate: (v) -> String(v).match /^[0-9]+$/
-
-				cb: (commit, v) ->
-
-					console.log arguments
-
-		, 100
+		@chooser = new Chooser @
 
 		@graph = new GraphView @
 
