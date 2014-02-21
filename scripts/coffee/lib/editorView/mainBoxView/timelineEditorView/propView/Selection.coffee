@@ -70,6 +70,7 @@ module.exports = class Selection
 		do @_prepareShiftSelectionInteractions
 		do @_prepareModifySelectionInteractions
 		do @_prepareRemoveSelectionInteraction
+		do @_prepareDuplicateSelectionInteraction
 
 	_prepareDeselectInteraction: ->
 
@@ -365,14 +366,7 @@ module.exports = class Selection
 
 			@_cancelShifting()
 
-	_prepareRemoveSelectionInteraction: ->
 
-		@rootView.moosh.onClick @node
-		.withKeys 'delete'
-		.repeatedBy 2
-		.onDone =>
-
-			do @_remove
 
 	_startShifting: (applyToGroup = yes) ->
 
@@ -474,9 +468,19 @@ module.exports = class Selection
 
 		return
 
+	_prepareRemoveSelectionInteraction: ->
+
+		@rootView.moosh.onClick @node
+		.withKeys 'delete'
+		.onDone =>
+
+			do @_remove
+
 	_remove: (applyToGroup = yes) ->
 
 		@_pacSelection.remove()
+
+		@prop.pacs.done()
 
 		if applyToGroup and @_inGroup
 
@@ -487,6 +491,38 @@ module.exports = class Selection
 				s._remove no
 
 		return
+
+	_prepareDuplicateSelectionInteraction: ->
+
+		@rootView.moosh.onClick @node
+		.withKeys 'd'
+		.onDone =>
+
+			setTimeout (=> do @_askDuplicateQuestions), 0
+
+	_askDuplicateQuestions: ->
+
+		n = prompt 'How many?'
+
+		return unless String(n).match /^[0-9]+$/
+
+		return unless 1 <= n <= 1000
+
+		n = parseInt n
+
+		connect = prompt 'Connect? [y/n/empty]', 'n'
+
+		return unless connect in ['y', 'n', '']
+
+		connect = if connect is 'y' then yes else no
+
+		@_duplicate n, connect
+
+	_duplicate: (n, connect, applyToGroup = yes) ->
+
+		@_pacSelection.duplicate n, connect
+
+		@prop.pacs.done()
 
 	_toggleGrouping: =>
 

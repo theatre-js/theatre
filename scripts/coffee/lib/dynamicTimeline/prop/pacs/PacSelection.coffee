@@ -138,3 +138,67 @@ module.exports = class PacSelection
 		do @_init
 
 		return
+
+	duplicate: (n, connect) ->
+
+		items = @pacs.getItemsInRange @from, @to
+
+		points = []
+
+		connectors = []
+
+		for item, i in items
+
+			if item.isPoint()
+
+				points.push item
+
+				continue
+
+			return if item is items[items.length - 1]
+
+			connectors.push item
+
+		return if points.length < 2
+
+		first = points[0]
+		second = points[1]
+		last = points[points.length - 1]
+
+		spaceBetweenFirstTwoPoints = second.t - first.t
+
+		spaceBetweenGroups = last.t - first.t + spaceBetweenFirstTwoPoints
+
+		delta = 0
+
+		for i in [0...n]
+
+			delta += spaceBetweenGroups
+
+			for point in points
+
+				p = point.serialize()
+
+				p.t += delta
+
+				Point.constructFrom p, @pacs
+
+			for connector in connectors
+
+				c = connector.serialize()
+
+				c.t += delta
+
+				Connector.constructFrom c, @pacs
+
+		return unless connect
+
+		delta = 0
+
+		for i in [0...n]
+
+			@pacs.addConnector last.t + delta
+
+			delta += spaceBetweenGroups
+
+		return
