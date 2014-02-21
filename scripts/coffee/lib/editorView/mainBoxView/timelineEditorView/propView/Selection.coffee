@@ -69,6 +69,7 @@ module.exports = class Selection
 		do @_prepareDeselectInteraction
 		do @_prepareShiftSelectionInteractions
 		do @_prepareModifySelectionInteractions
+		do @_prepareRemoveSelectionInteraction
 
 	_prepareDeselectInteraction: ->
 
@@ -364,6 +365,15 @@ module.exports = class Selection
 
 			@_cancelShifting()
 
+	_prepareRemoveSelectionInteraction: ->
+
+		@rootView.moosh.onClick @node
+		.withKeys 'delete'
+		.repeatedBy 2
+		.onDone =>
+
+			do @_remove
+
 	_startShifting: (applyToGroup = yes) ->
 
 		@_couldShift = yes
@@ -461,6 +471,20 @@ module.exports = class Selection
 				continue if s is @
 
 				s._cancelShifting no
+
+		return
+
+	_remove: (applyToGroup = yes) ->
+
+		@_pacSelection.remove()
+
+		if applyToGroup and @_inGroup
+
+			for s in @manager.group
+
+				continue if s is @
+
+				s._remove no
 
 		return
 

@@ -118,3 +118,23 @@ module.exports = class PacSelection
 			@_lastPoint.connectToTheRight()
 
 		return
+
+	remove: ->
+
+		items = @pacs.getItemsInRange @from, @to
+
+		for item in items
+
+			if item.isConnector()
+
+				item.remove()
+
+		for item in items
+
+			if item.isPoint()
+
+				item.remove()
+
+		do @_init
+
+		return
