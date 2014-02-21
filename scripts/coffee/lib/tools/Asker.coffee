@@ -120,15 +120,15 @@ module.exports = class Asker
 
 	_commit: ->
 
-		@_cb yes, @_value
-
 		do @_deactivate
+
+		@_cb yes, @_value
 
 	_discard: ->
 
-		@_cb no
-
 		do @_deactivate
+
+		@_cb no
 
 	_setValue: (v) ->
 

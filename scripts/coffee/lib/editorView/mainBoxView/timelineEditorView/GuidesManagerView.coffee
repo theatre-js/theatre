@@ -22,6 +22,8 @@ module.exports = class GuidesManagerView
 
 			@model.toggle @timeControlModel.t
 
+		@_multipleGuides '200 800', 20
+
 	_prepareNode: ->
 
 		@node = Foxie '.theatrejs-timelineEditor-guides'
@@ -54,3 +56,7 @@ module.exports = class GuidesManagerView
 	_remove: (guideView) ->
 
 		array.pluckOneItem @_list, guideView
+
+	_multipleGuides: (spacing, count) ->
+
+		console.log arguments

@@ -74,9 +74,9 @@ module.exports = class Asker
 			@moosh.onClick node
 			.onDone =>
 
-				@_cb yes, c
-
 				do @_deactivate
+
+				@_cb yes, c
 
 			return
 
@@ -84,6 +84,6 @@ module.exports = class Asker
 
 	_discard: ->
 
-		@_cb no
-
 		do @_deactivate
+
+		@_cb no
