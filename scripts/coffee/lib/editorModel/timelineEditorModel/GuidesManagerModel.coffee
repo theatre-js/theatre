@@ -97,3 +97,17 @@ module.exports = class GuidesManagerModel extends _DynamicModel
 		@add t
 
 		return
+
+	removeInRange: (from, to) ->
+
+		guides = []
+
+		for g in @_list
+
+			guides.push g if from <= g.t <= to
+
+		for g in guides
+
+			g.remove()
+
+		return

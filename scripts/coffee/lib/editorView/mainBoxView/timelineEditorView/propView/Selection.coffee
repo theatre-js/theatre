@@ -464,7 +464,10 @@ module.exports = class Selection
 
 	_showModifySelectionOptions: ->
 
-		@rootView.chooser.choose '', ['Fit', 'Delete', 'Repeat'], (success, choice) =>
+		@rootView.chooser.choose '', [
+			'Fit', 'Delete', 'Repeat', 'Seek to Center', 'Delete Guides',
+			'Delete Guides After', 'Delete Guides Before'
+			], (success, choice) =>
 
 			return unless success
 
@@ -481,6 +484,22 @@ module.exports = class Selection
 				when 'Repeat'
 
 					do @_askRepeatQuestions
+
+				when 'Seek to Center'
+
+					do @_seekToCenter
+
+				when 'Delete Guides'
+
+					do @_deleteGuides
+
+				when 'Delete Guides After'
+
+					do @_deleteGuidesAfter
+
+				when 'Delete Guides Before'
+
+					do @_deleteGuidesBefore
 
 	_fitSelection: ->
 
@@ -543,6 +562,22 @@ module.exports = class Selection
 				s._repeat n, connect, no
 
 		return
+
+	_seekToCenter: ->
+
+		@timelineEditor.rootView.model.timeControl.tick (@_toTime - @_fromTime) / 2 + @_fromTime
+
+	_deleteGuides: ->
+
+		@timelineEditor.guides.model.removeInRange @_fromTime, @_toTime
+
+	_deleteGuidesAfter: ->
+
+		@timelineEditor.guides.model.removeInRange @_toTime + 1, Infinity
+
+	_deleteGuidesBefore: ->
+
+		@timelineEditor.guides.model.removeInRange 0, @_toTime - 1
 
 	_toggleGrouping: =>
 
