@@ -156,6 +156,22 @@ module.exports = class Pacs extends _ChronologyContainer
 
 		return
 
+	addMultiple: (items, t = 0) ->
+
+		for point in items.points
+
+			point.t += t
+
+			Point.constructFrom point, @
+
+		for connector in items.connectors
+
+			connector.t += t
+
+			Connector.constructFrom connector, @
+
+		return
+
 	done: ->
 
 		do @_recalculatePeakAndBottom

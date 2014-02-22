@@ -151,6 +151,26 @@ module.exports = class PropView
 
 			@_propHolderModel.setHeight @_propHolderModel.getHeight() + e.relY
 
+		@rootView.moosh.onMiddleClick @node
+		.withKeys('ctrl')
+		.onUp =>
+
+			do @_showPropOptions
+
+	_showPropOptions: ->
+
+		@rootView.chooser.choose @propModel.name, [
+			'Paste'
+		], (did, choice) =>
+
+			return unless did
+
+			switch choice
+
+				when 'Paste'
+
+					@selection.paste()
+
 	_prepareHypothericalConnector: ->
 
 		@hypotheticalConnector = Foxie('svg:path').putIn(@svgArea.node)

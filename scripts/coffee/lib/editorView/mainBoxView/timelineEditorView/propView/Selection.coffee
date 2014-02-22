@@ -138,8 +138,6 @@ module.exports = class Selection
 
 		.onDrag (e) =>
 
-			console.log 'drag'
-
 			if lastFromX + e.absX <= lastToX
 
 				@_selectByX lastFromX + e.absX, lastToX
@@ -180,31 +178,27 @@ module.exports = class Selection
 
 			@rootView.cursor.free()
 
-		@rootView.moosh.onClick @leftEdge
-		.repeatedBy 2
+		@rootView.moosh.onMiddleClick @leftEdge
 		.onDone =>
 
 			@_selectByTime 0, @_toTime
 
 			do @_endSelecting
 
-		@rootView.moosh.onClick @rightEdge
-		.repeatedBy 2
+		@rootView.moosh.onMiddleClick @rightEdge
 		.onDone =>
 
 			@_selectByTime @_fromTime, @prop.pacs.timeline.duration
 
 			do @_endSelecting
 
-		@rootView.moosh.onClick @node
-		.repeatedBy 2
+		@rootView.moosh.onMiddleClick @node
 		.withNoKeys()
 		.onDone =>
 
 			do @_showModifySelectionOptions
 
-		@rootView.moosh.onClick @node
-		.repeatedBy 2
+		@rootView.moosh.onMiddleClick @node
 		.withKeys 'ctrl'
 		.onDone =>
 
@@ -344,13 +338,9 @@ module.exports = class Selection
 		.withNoKeys()
 		.onDown (e) =>
 
-			console.log 'down'
-
 			firstDrag = yes
 
 		.onDrag (e) =>
-
-			console.log 'drag'
 
 			if firstDrag
 
@@ -361,8 +351,6 @@ module.exports = class Selection
 			@_shift e.absX
 
 		.onUp =>
-
-			console.log 'up'
 
 			@_endShifting()
 
@@ -477,7 +465,7 @@ module.exports = class Selection
 	_showModifySelectionOptions: ->
 
 		@rootView.chooser.choose '', [
-			'Fit', 'Delete', 'Repeat', 'Seek to Center', 'Delete Guides',
+			'Fit', 'Copy', 'Delete', 'Repeat', 'Seek to Center', 'Delete Guides',
 			'Delete Guides After', 'Delete Guides Before'
 			], (success, choice) =>
 
@@ -513,6 +501,10 @@ module.exports = class Selection
 
 					do @_deleteGuidesBefore
 
+				when 'Copy'
+
+					do @_copy
+
 	_fitSelection: ->
 
 		@_selectByTime @_pacSelection.realFrom, @_pacSelection.realTo
@@ -534,6 +526,42 @@ module.exports = class Selection
 				s._delete no
 
 		return
+
+	_copy: (returnIt = no) ->
+
+		if returnIt
+
+			return {
+
+				propName: @prop.propModel.name
+
+				actorName: @prop.propModel.actor.name
+
+				items: @_pacSelection.serialize()
+
+			}
+
+		toCopy = []
+
+		if @_inGroup
+
+			for s in @manager.group
+
+				toCopy.push s._copy yes
+
+		else
+
+			toCopy.push @_copy yes
+
+		@manager.copyToClipboard toCopy
+
+	paste: ->
+
+		@manager.paste @
+
+	_pasteFromClipboard: (items) ->
+
+		@prop.pacs.addMultiple items, @rootView.model.timeControl.t
 
 	_askRepeatQuestions: ->
 

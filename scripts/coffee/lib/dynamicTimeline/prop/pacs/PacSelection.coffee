@@ -202,3 +202,25 @@ module.exports = class PacSelection
 			delta += spaceBetweenGroups
 
 		return
+
+	serialize: ->
+
+		items = @pacs.getItemsInRange @from, @to
+
+		points = []
+
+		connectors = []
+
+		for item in items
+
+			break if item is items[items.length - 1] and item.isConnector()
+
+			if item.isPoint()
+
+				points.push item.serialize()
+
+			else
+
+				connectors.push item.serialize()
+
+		{points, connectors}
