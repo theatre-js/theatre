@@ -138,6 +138,8 @@ module.exports = class Selection
 
 		.onDrag (e) =>
 
+			console.log 'drag'
+
 			if lastFromX + e.absX <= lastToX
 
 				@_selectByX lastFromX + e.absX, lastToX
@@ -342,9 +344,13 @@ module.exports = class Selection
 		.withNoKeys()
 		.onDown (e) =>
 
+			console.log 'down'
+
 			firstDrag = yes
 
 		.onDrag (e) =>
+
+			console.log 'drag'
 
 			if firstDrag
 
@@ -355,6 +361,8 @@ module.exports = class Selection
 			@_shift e.absX
 
 		.onUp =>
+
+			console.log 'up'
 
 			@_endShifting()
 
@@ -441,6 +449,10 @@ module.exports = class Selection
 				continue if s is @
 
 				s._endShifting no
+
+		@_lastDelta = 0
+
+		@_couldShift = no
 
 		return
 
