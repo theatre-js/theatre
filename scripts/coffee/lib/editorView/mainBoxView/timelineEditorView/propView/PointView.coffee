@@ -75,9 +75,11 @@ module.exports = class PointView extends _ItemView
 		@rootView.moosh.onMiddleClick @node
 		.onUp =>
 
-			do @_ask
+			do @_showPointModificationOptions
 
 		.withNoKeys()
+
+
 
 	_prepareNodeRemovalInteractions: ->
 
@@ -102,26 +104,6 @@ module.exports = class PointView extends _ItemView
 			@prop._tick()
 
 	_prepareNodeConnectionInteractions: ->
-
-		# classAddedOnCtrlHover = null
-
-		# @rootView.moosh.onHover(@node)
-		# .withKeys('ctrl')
-		# .onEnter =>
-
-		# 	if @model.canConnect()
-
-		# 		classAddedOnCtrlHover = 'mightConnect'
-
-		# 	else
-
-		# 		classAddedOnCtrlHover = 'cantConnect'
-
-		# 	@node.addClass classAddedOnCtrlHover
-
-		# .onLeave =>
-
-		# 	@node.removeClass classAddedOnCtrlHover
 
 		couldConnectToLeft = no
 		couldConnectToRight = no
@@ -380,8 +362,25 @@ module.exports = class PointView extends _ItemView
 
 		@rightHandler = Foxie('.theatrejs-timelineEditor-prop-pacs-point-handler.right').putIn @node
 
+		do @_setupHandlerModifications
 		do @_setupDragForRightHandler
 		do @_setupDragForLeftHandler
+
+	_setupHandlerModifications: ->
+
+		@rootView.moosh.onMiddleClick @leftHandler
+		.onUp =>
+
+			@_showHandlerModificationOptions 'left'
+
+		.withNoKeys()
+
+		@rootView.moosh.onMiddleClick @rightHandler
+		.onUp =>
+
+			@_showHandlerModificationOptions 'right'
+
+		.withNoKeys()
 
 	_setupDragForRightHandler: ->
 
@@ -575,7 +574,7 @@ module.exports = class PointView extends _ItemView
 
 		return
 
-	_ask: ->
+	_showPointModificationOptions: ->
 
 		@rootView.chooser.choose '', ['Set Time'], (success, choice) =>
 
@@ -609,6 +608,25 @@ module.exports = class PointView extends _ItemView
 
 				@prop._tick()
 
+	_showHandlerModificationOptions: (side) ->
+
+		@rootView.chooser.choose '', ['Mirror Other Handler'], (success, choice) =>
+
+			return unless success
+
+			if choice is 'Mirror Other Handler'
+
+				@_mirrorOtherHandler side
+
+	_mirrorOtherHandler: (side) ->
+
+		if side is 'left'
+
+			@model.setLeftHandler @model.rightHandler[0], @model.rightHandler[1]
+
+		else
+
+			@model.setRightHandler @model.leftHandler[0], @model.leftHandler[1]
 
 	_commitValueAndDeactivate: ->
 
