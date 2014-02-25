@@ -97,3 +97,6 @@ module.exports = class SelectionManager
 			return if prop.items.points.length is 0
 
 			s._pasteFromClipboard prop.items
+
+			return
+

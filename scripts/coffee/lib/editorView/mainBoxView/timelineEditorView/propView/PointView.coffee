@@ -79,8 +79,6 @@ module.exports = class PointView extends _ItemView
 
 		.withNoKeys()
 
-
-
 	_prepareNodeRemovalInteractions: ->
 
 		@rootView.moosh.onHover(@node)
@@ -610,13 +608,21 @@ module.exports = class PointView extends _ItemView
 
 	_showHandlerModificationOptions: (side) ->
 
-		@rootView.chooser.choose '', ['Mirror Other Handler'], (success, choice) =>
+		@rootView.chooser.choose '', [
+
+			'Mirror Other Handler', 'Horizontalize'
+
+			], (success, choice) =>
 
 			return unless success
 
 			if choice is 'Mirror Other Handler'
 
 				@_mirrorOtherHandler side
+
+			else if choice is 'Horizontalize'
+
+				@_horizontalizeHandler side
 
 	_mirrorOtherHandler: (side) ->
 
@@ -627,6 +633,20 @@ module.exports = class PointView extends _ItemView
 		else
 
 			@model.setRightHandler @model.leftHandler[0], @model.leftHandler[1]
+
+		@model.pacs.done()
+
+	_horizontalizeHandler: (side) ->
+
+		if side is 'left'
+
+			@model.setLeftHandler @model.leftHandler[0], 0
+
+		else
+
+			@model.setRightHandler @model.rightHandler[0], 0
+
+		@model.pacs.done()
 
 	_commitValueAndDeactivate: ->
 

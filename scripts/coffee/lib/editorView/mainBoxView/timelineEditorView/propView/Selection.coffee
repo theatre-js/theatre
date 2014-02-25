@@ -563,6 +563,8 @@ module.exports = class Selection
 
 		@prop.pacs.addMultiple items, @rootView.model.timeControl.t
 
+		@prop.pacs.done()
+
 	_askRepeatQuestions: ->
 
 		@rootView.asker.ask
