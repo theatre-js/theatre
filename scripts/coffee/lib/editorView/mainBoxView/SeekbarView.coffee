@@ -515,11 +515,11 @@ module.exports = class SeekbarView
 
 			return
 
-		if newDuration < 1000
+		if newDuration < 500
 
-			zoomMult = 1000 / focus.duration
+			zoomMult = 500 / focus.duration
 
-			newDuration = 1000
+			newDuration = 500
 
 		oldLeftHalf = pivotInDur * focus.duration
 

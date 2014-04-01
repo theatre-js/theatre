@@ -388,8 +388,8 @@ module.exports = class PointView extends _ItemView
 
 		.onDown =>
 
-			startX = @rightHandler.getMovement().x
-			startY = @rightHandler.getMovement().y
+			startX = @rightHandler.getMovement()[0]
+			startY = @rightHandler.getMovement()[1]
 
 		.onUp =>
 
@@ -419,8 +419,8 @@ module.exports = class PointView extends _ItemView
 
 		.onDown =>
 
-			startX = -@leftHandler.getMovement().x
-			startY = @leftHandler.getMovement().y
+			startX = -@leftHandler.getMovement()[0]
+			startY = @leftHandler.getMovement()[1]
 
 		.onUp =>
 

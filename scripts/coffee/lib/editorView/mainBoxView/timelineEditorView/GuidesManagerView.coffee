@@ -24,7 +24,7 @@ module.exports = class GuidesManagerView
 
 		@rootView.kilid.on 'ctrl+shift+space', =>
 
-			do @_askMultipleGuidesQuestions
+			do @_askMultilpeGuidesQuestions
 
 	_prepareNode: ->
 

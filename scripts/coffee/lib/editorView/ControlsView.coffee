@@ -133,11 +133,11 @@ module.exports = class ControlsView
 
 		@rootView.kilid.on 'alt+right', =>
 
-			@model.seekBy 8
+			@model.seekBy 2
 
 		@rootView.kilid.on 'alt+left', =>
 
-			@model.seekBy -8
+			@model.seekBy -2
 
 	_updatePosition: ->
 
