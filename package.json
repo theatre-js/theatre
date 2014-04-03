@@ -34,7 +34,7 @@
     "graceful-fs": "~2.0.1",
     "pretty-error": "~0.1.17",
     "pretty-monitor": "~0.1.7",
-    "audio-driven-time-control": "~0.1.0-beta.4",
+    "audio-driven-time-control": "~0.1.0-beta.5",
     "gift": "~0.2"
   },
   "devDependencies": {
