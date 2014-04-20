@@ -128,8 +128,25 @@ module.exports = class DataHandler
 
 		cson = CSON.stringifySync obj
 
-		nodefn.call(fs.writeFile, @getDataFilePathFor(ns), cson, {encoding: 'utf-8'})
+		json = @trimData obj
+
+		first = nodefn.call(fs.writeFile, @getDataFilePathFor(ns), cson, {encoding: 'utf-8'})
+		second = nodefn.call(fs.writeFile, @getTrimmedDataFilePathFor(ns), json, {encoding: 'utf-8'})
+
+		wn.all([first, second])
+
+	trimData: (obj) ->
+
+		timeline = obj?.timeline
+
+		timeline ?= {}
+
+		JSON.stringify timeline
 
 	getDataFilePathFor: (ns) ->
 
 		sysPath.join @timelinesPath, ns + '.cson'
+
+	getTrimmedDataFilePathFor: (ns) ->
+
+		sysPath.join @timelinesPath, ns + '.json'
