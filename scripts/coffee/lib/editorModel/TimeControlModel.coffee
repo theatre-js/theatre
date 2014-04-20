@@ -2,7 +2,7 @@ _DynamicModel = require '../_DynamicModel'
 
 module.exports = class TimeControlModel extends _DynamicModel
 
-	constructor: (@editor) ->
+	constructor: (@editor, @extraTimeMargin = 5000) ->
 
 		@rootModel = @editor
 
@@ -88,7 +88,7 @@ module.exports = class TimeControlModel extends _DynamicModel
 
 		# ... report that to @audio. It'll then decide if
 		# the duration of the whole animation should change
-		@audio.maximizeDuration @timeline.duration + 5000
+		@audio.maximizeDuration @timeline.duration + @extraTimeMargin|0
 
 	# when the duration of @audio changes...
 	_recheckAudioDuration: ->
