@@ -44,6 +44,8 @@ module.exports = serve = (repoPath, port, serializedDirName, passwords, logsPath
 
 		process.on 'uncaughtException', (e) ->
 
+			`console.log("\007");`
+
 			pe.render e, yes
 
 			console.log "-----------------------\n"
