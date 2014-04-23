@@ -33,6 +33,8 @@ module.exports = class GraphView
 
 		@node.addClass 'visible'
 
+		@editor.mainBox.node.addClass 'noPointerEvents'
+
 		@rootView.moosh.onClickOutside @node, =>
 
 			do @hide
@@ -46,6 +48,9 @@ module.exports = class GraphView
 		@_showHideTimeout = setTimeout =>
 
 			@node.remove()
+
+			@editor.mainBox.node.removeClass 'noPointerEvents'
+
 
 			@_showHideTimeout = null
 

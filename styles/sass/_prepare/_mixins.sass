@@ -1,3 +1,11 @@
+@mixin user-select($stuff)
+
+	-webkit-user-select: $stuff
+	-moz-user-select: $stuff
+	-ms-user-select: $stuff
+	-o-user-select: $stuff
+	user-select: $stuff
+
 @mixin transform($stuff)
 
 	-webkit-transform: $stuff
@@ -11,6 +19,13 @@
 	-ms-transform-origin: $stuff
 	-o-transform-origin: $stuff
 	transform-origin: $stuff
+
+@mixin transform-style($stuff)
+
+	-webkit-transform-style: $stuff
+	-ms-transform-style: $stuff
+	-o-transform-style: $stuff
+	transform-style: $stuff
 
 @mixin animation($stuff)
 
@@ -64,3 +79,8 @@
 
 	-moz-box-sizing: $stuff
 	box-sizing: $stuff
+
+@mixin psuedo
+
+	display: block
+	content: "\0020"
