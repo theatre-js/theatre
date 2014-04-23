@@ -12,17 +12,23 @@
 
 	z-index: -20
 
-	padding: 80px 85px 80px 95px
+	padding: 40px 60px
 
 	overflow: hidden
 
-	transition: 0.3s transform, 0.3s opacity
 	-webkit-transition: 0.3s -webkit-transform, 0.3s opacity
+	transition: 0.3s transform, 0.3s opacity
 
 	@include transform(translate3d(-20px, 0px, -1000px))
 
 	opacity: 0
 	pointer-events: none
+
+	display: flex
+	flex-direction: column
+	flex-wrap: wrap
+	justify-content: flex-start
+	align-content: flex-start
 
 	&.visible
 
@@ -32,35 +38,16 @@
 		opacity: 1
 		pointer-events: auto
 
-		.opening-animation
+.theatrejs-graph-group-name
 
-			@include transform-origin(0% 0%)
-			@include animation(graphiItem-entrance 0.5s)
+	color: #747779
 
-			@for $i from 0 to 50
+	font-size: 30px
+	font-weight: 300
 
-				&.n-#{$i}
+	text-transform: uppercase
 
-					$delay: $i * 0.019s
-
-					@include animation-delay($delay)
-
-@include keyframes(graphiItem-entrance)
-
-	0%
-
-		opacity: 0
-		@include transform(perspective(800) translate3d(0, 0, -50px))
-
-	100%
-
-		opacity: 1
-		@include transform(perspective(1200) translate3d(0px, 0, 0))
-
-.theatrejs-graph-group
-
-	width: 460px
-	float: left
+	width: 260px
 
 	font-family: "AktivGrotW15-Light", Helvetica, Arial, sans-serif
 
@@ -68,27 +55,19 @@
 
 	cursor: default
 
-.theatrejs-graph-group-name
-
-	color: #747779
-	// opacity: .3
-
-	font-size: 30px
-	font-weight: 300
-
-	text-transform: uppercase
-
-.theatrejs-graph-group-actor-list
-
-	list-style: none
-	padding: 0 0px 0 3px
-
-	margin-bottom: 36px
+	margin: 0
+	margin-right: 20px
 
 .theatrejs-graph-group-actor
 
 	position: relative
+	width: 260px
+	margin: 0
+	margin-right: 20px
 
+	&.last
+
+		margin-bottom: 30px
 
 	> a
 
