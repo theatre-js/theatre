@@ -15,8 +15,6 @@ module.exports = class GraphView
 
 		do @_prepareNode
 
-		do @show
-
 	_prepareNode: ->
 
 		@node = Foxie 'div.theatrejs-graph'
