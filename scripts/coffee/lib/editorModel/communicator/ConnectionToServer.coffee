@@ -99,7 +99,7 @@ module.exports = class ConnectionToServer extends _Emitter
 
 			@_request what, data
 
-		timeout 3000, promise
+		timeout 10000, promise
 		.then (result) ->
 
 			return result
