@@ -1,6 +1,7 @@
-io = require 'socket.io/node_modules/socket.io-client'
-_Emitter = require '../../_Emitter'
 wn = require 'when'
+io = require 'socket.io/node_modules/socket.io-client'
+timeout = require 'when/timeout'
+_Emitter = require '../../_Emitter'
 
 module.exports = class ConnectionToServer extends _Emitter
 
@@ -94,9 +95,20 @@ module.exports = class ConnectionToServer extends _Emitter
 
 	request: (what, data) ->
 
-		@ensureAuthentication().then =>
+		promise = @ensureAuthentication().then =>
 
 			@_request what, data
+
+		timeout 3000, promise
+		.then (result) ->
+
+			return result
+
+		, (ret) ->
+
+			alert "Server is not responding"
+
+			return ret
 
 	_request: (what, data) ->
 
