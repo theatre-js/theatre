@@ -106,7 +106,7 @@ module.exports = class ConnectionToServer extends _Emitter
 
 		, (ret) ->
 
-			alert "Server is not responding"
+			console.error "Server is not responding"
 
 			return ret
 

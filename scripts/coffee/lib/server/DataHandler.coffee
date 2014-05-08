@@ -116,6 +116,8 @@ module.exports = class DataHandler
 
 			if obj instanceof Error
 
+				console.log obj
+
 				throw obj
 
 			obj
