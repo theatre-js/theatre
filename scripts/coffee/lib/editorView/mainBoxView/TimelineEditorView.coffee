@@ -78,6 +78,10 @@ module.exports = class TimelineEditorView
 
 			@rootView.cursor.free()
 
+		.onCancel =>
+
+			@rootView.cursor.free()
+
 		@rootView.moosh.onClick(@node)
 		.withNoKeys()
 		.onDone (e) =>
@@ -97,6 +101,11 @@ module.exports = class TimelineEditorView
 		.onUp =>
 
 			@rootView.cursor.free()
+
+		.onCancel =>
+
+			@rootView.cursor.free()
+
 
 		@rootView.moosh.onWheel(@node)
 		.withKeys('shift')

@@ -99,16 +99,19 @@ module.exports = class ConnectionToServer extends _Emitter
 
 			@_request what, data
 
-		timeout 10000, promise
-		.then (result) ->
+		# promise = timeout 10000, promise
+		# .then (result) ->
 
-			return result
+		# 	return result
 
-		, (ret) ->
+		# , (ret) ->
 
-			console.error "Server is not responding"
+		# 	console.error "Server is not responding"
 
-			return ret
+		# 	return ret
+		#
+
+		promise
 
 	_request: (what, data) ->
 

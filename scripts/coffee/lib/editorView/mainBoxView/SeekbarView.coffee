@@ -77,6 +77,12 @@ module.exports = class SeekbarView
 
 		initialSeekerPosition = 0
 
+		up = =>
+
+			@rootView.cursor.free()
+
+			if wasPlaying then @model.play()
+
 		@rootView.moosh.onDrag(@seeker)
 
 		.onDown =>
@@ -89,11 +95,9 @@ module.exports = class SeekbarView
 
 			initialSeekerPosition = @seeker.get('left')
 
-		.onUp =>
+		.onUp up
 
-			@rootView.cursor.free()
-
-			if wasPlaying then @model.play()
+		.onCancel up
 
 		.onDrag (e) =>
 
