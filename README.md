@@ -1,7 +1,8 @@
 # theatre.js
 [![Build Status](https://secure.travis-ci.org/AriaMinaei/theatrejs.png)](http://travis-ci.org/AriaMinaei/theatrejs)
 
-[To be] a timeline-based animation editor for the web.
+[To be] a timeline-based animation editor for the web:
+
 ![screenshot of theatre.js's timeline editor](https://github.com/AriaMinaei/theatrejs/raw/master/docs/screenshots/timeline.png)
 
 ## Demos
