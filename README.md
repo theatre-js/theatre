@@ -5,7 +5,7 @@
 
 ![screenshot of theatre.js's timeline editor](https://github.com/AriaMinaei/theatrejs/raw/master/docs/screenshots/timeline.png)
 
-## Demos
+## Demo
 
  Take a look at [this page](http://gelobi.org/griddify) if you wanna see a demo. It's our first attempt to use theatre.js in a real-world project!
 
