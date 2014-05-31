@@ -1,6 +1,6 @@
 {
   "name": "theatrejs",
-  "version": "0.1.0-beta.15",
+  "version": "0.1.0-beta.16",
   "description": "(to be) a timeline-based animation editor for the web",
   "main": "scripts/js/lib/theatre.js",
   "scripts": {
@@ -18,7 +18,7 @@
     "timeline"
   ],
   "author": "Aria Minaei",
-  "license": "MIT",
+  "license": "N/A",
   "bugs": {
     "url": "https://github.com/AriaMinaei/theatrejs/issues"
   },
