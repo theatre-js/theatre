@@ -63,13 +63,13 @@ module.exports = class EditorModel extends _Emitter
 
 		@
 
-	communicateWith: (server, namespace, password) ->
+	communicateWith: (server, namespace, passphrase) ->
 
 		if @communicator?
 
 			throw Error "Editor '#{@id}' already has a communicator set up"
 
-		@communicator = new Communicator @, server, namespace, password
+		@communicator = new Communicator @, server, namespace, passphrase
 
 		@
 

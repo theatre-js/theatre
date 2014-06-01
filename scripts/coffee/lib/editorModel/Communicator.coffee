@@ -2,7 +2,7 @@ ConnectionToServer = require './communicator/ConnectionToServer'
 
 module.exports = class Communicator
 
-	constructor: (@editor, @_server, @_namespaceName, @_password) ->
+	constructor: (@editor, @_server, @_namespaceName, @_passphrase) ->
 
 		@connection = new ConnectionToServer @
 

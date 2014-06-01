@@ -63,13 +63,13 @@ module.exports = class ConnectionToServer extends _Emitter
 
 			console.log 'client id', @clientId
 
-			console.log "authenticating with '#{@communicator._password}' in '#{@communicator._namespaceName}'"
+			console.log "authenticating with '#{@communicator._passphrase}' in '#{@communicator._namespaceName}'"
 
 		@_socket.emit 'client-asks:get-auth-data',
 
 			namespace: @communicator._namespaceName
 
-			password: @communicator._password
+			passphrase: @communicator._passphrase
 
 		, @_getAuthResult
 
