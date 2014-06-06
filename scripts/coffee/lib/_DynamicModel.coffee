@@ -9,7 +9,7 @@ module.exports = class _DynamicModel extends _Emitter
 
 		@_shouldReportLocalChange = yes
 
-		@__wireLocalChange = fn.throttle @__wireLocalChange.bind(@), 1200
+		@__wireLocalChange = fn.throttle @__wireLocalChange.bind(@), 500
 
 	loadFrom: (se) ->
 

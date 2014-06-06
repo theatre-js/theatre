@@ -9,116 +9,54 @@ module.exports = class ConnectionToServer extends _Emitter
 
 		super
 
-		@clientId = -1
-
-		@isAuthenticated = no
-
-		@initiallyLoaded = no
-
 		do @_setupSocket
-
-	ensureAuthentication: ->
-
-		deferred = wn.defer()
-
-		if @isAuthenticated
-
-			deferred.resolve()
-
-			return deferred.promise
-
-		resolved = no
-
-		@on 'next-authentication', (didAuthenticate) ->
-
-			return if resolved
-
-			resolved = yes
-
-			if didAuthenticate
-
-				deferred.resolve()
-
-			else
-
-				deferred.reject()
-
-		deferred.promise
 
 	connect: ->
 
-		@ensureAuthentication()
+		@_connectionPromise
 
 	_setupSocket: ->
 
-		@_socket = io.connect(@communicator._server)
+		d = wn.defer()
 
-		@_socket.on 'server-asks:send-auth-data', @_sendAuthData
+		@_connectionPromise = d.promise
 
-	_sendAuthData: (clientId) =>
+		@_socket = io.connect @communicator._server
 
-		@clientId = parseInt clientId
+		@_socket.on 'connect', -> d.resolve()
 
-		if @communicator.editor.debug
+		@_socket.on 'error', (data) ->
 
-			console.log 'client id', @clientId
+			console.log 'socket error', data
 
-			console.log "authenticating with '#{@communicator._passphrase}' in '#{@communicator._namespaceName}'"
+		@_socket.on 'connection_failed', (data) ->
 
-		@_socket.emit 'client-asks:get-auth-data',
-
-			namespace: @communicator._namespaceName
-
-			passphrase: @communicator._passphrase
-
-		, @_getAuthResult
-
-	_getAuthResult: (data) =>
-
-		if data is 'accepted'
-
-			@isAuthenticated = yes
-
-			console.log 'auth accepted' if @communicator.editor.debug
-
-		else
-
-			@isAuthenticated = no
-
-			console.error 'auth failed: ', data
-
-		@_emit 'authentication', @isAuthenticated
-
-		@_emit 'next-authentication', @isAuthenticated
-
-		@removeListeners 'next-authentication'
+			console.log 'socket connection failed', data
 
 	request: (what, data) ->
 
-		promise = @ensureAuthentication().then =>
+		promise = @connect().then =>
 
 			@_request what, data
-
-		# promise = timeout 10000, promise
-		# .then (result) ->
-
-		# 	return result
-
-		# , (ret) ->
-
-		# 	console.error "Server is not responding"
-
-		# 	return ret
-		#
 
 		promise
 
 	_request: (what, data) ->
 
-		deferred = wn.defer()
+		d = wn.defer()
+
+		data =
+
+			croods:
+
+				namespace: @communicator._namespaceName
+
+				passphrase: @communicator._passphrase
+
+			data: data
 
 		@_socket.emit 'client-requests:' + what, data, (receivedData) ->
 
-			deferred.resolve receivedData
+			d.resolve receivedData
 
-		deferred.promise
+		d.promise
