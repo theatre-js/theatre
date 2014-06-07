@@ -13,7 +13,7 @@
 
 **This is a work-in-progress** and we're actively working on getting it ready for public release, so please stay tuned :)
 
-Right now we have to partially replace two modules (the timeline data saver and the ui). Then `0.1` will be officially ready and we'll post installation instructions and tutorials.
+Right now we have to partially replace two modules (~~the timeline data saver~~ (done) and the ui). Then `0.1` will be officially ready and we'll post installation instructions and tutorials.
 
 ## License
 
