@@ -1,21 +1,21 @@
 _Emitter = require './_Emitter'
+SingleTrack = require 'audio-driven-time-control/lib/SingleTrack'
 GraphModel = require './editorModel/GraphModel'
 Communicator = require './editorModel/Communicator'
 MainBoxModel = require './editorModel/MainBoxModel'
 TimeControlModel = require './editorModel/TimeControlModel'
 TimelineEditorModel = require './editorModel/TimelineEditorModel'
 WorkspaceManagerModel = require './editorModel/WorkspaceManagerModel'
-UnfancyAudioDrivenTimeControl = require 'audio-driven-time-control/scripts/js/lib/UnfancyAudioDrivenTimeControl'
 
 module.exports = class EditorModel extends _Emitter
 
-	constructor: (@id = 'timeline', @timeline, @debug = no) ->
+	constructor: (@id = 'timeline', @timeline, @debug = no, @audio) ->
 
 		super
 
 		@timeline.setRootModel @
 
-		@audio = new UnfancyAudioDrivenTimeControl @id + '-audio'
+		@audio ?= new SingleTrack @id + '-audio'
 
 		@graph = new GraphModel @
 
