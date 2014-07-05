@@ -49,8 +49,10 @@ module.exports = class Prop extends _TimelineRow
 
 		if item.t > t
 
+			# if it's the first item
 			if @_nextIndexToCheck is 0
 
+				# fill in before first point
 				@_set @_getInitial()
 
 				@_nextIndexToCheck = 1

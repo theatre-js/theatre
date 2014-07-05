@@ -30,7 +30,7 @@
     "moosh": "~0.1.0-beta.15",
     "when": "~2.7.1",
     "socket.io": "~0.9.16",
-    "audio-driven-time-control": "~0.1.0-beta.7",
+    "audio-driven-time-control": "~0.1.0-beta.8",
     "theatrejs-data-server": "~0.1.0-dev.1"
   },
   "devDependencies": {
