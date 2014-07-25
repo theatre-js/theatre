@@ -1,11 +1,10 @@
 {
   "name": "theatrejs",
-  "version": "0.1.0-beta.18",
-  "description": "(to be) a timeline-based animation editor for the web",
-  "main": "scripts/js/lib/theatre.js",
+  "version": "0.2.0-dev",
+  "description": "(to be) a web based animation studio",
+  "main": "lib/Theatre.js",
   "scripts": {
-    "test": "node ./node_modules/coffee-script/bin/cake test",
-    "prepublish": "node ./node_modules/coffee-script/bin/cake build"
+    "prepublish": "coffee --bare --compile --output ./lib ./src"
   },
   "repository": {
     "type": "git",
@@ -23,18 +22,10 @@
     "url": "https://github.com/AriaMinaei/theatrejs/issues"
   },
   "dependencies": {
-    "timing-function": "~0.1.3",
-    "utila": "~0.3.3",
-    "foxie": "~0.1.13",
-    "kilid": "~0.1.0-beta.9",
-    "moosh": "~0.1.0-beta.15",
-    "when": "~2.7.1",
-    "socket.io": "~0.9.16",
-    "audio-driven-time-control": "~0.1.0-beta.8",
-    "theatrejs-data-server": "~0.1.0-dev.2"
+    "kilid": "0.1.0-beta.10",
+    "moosh": "0.1.0-beta.18"
   },
   "devDependencies": {
-    "coffee-script": "~1.7.1",
-    "little-popo": "~0.1.7"
+    "coffee-script": "~1.7.1"
   }
 }
