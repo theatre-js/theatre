@@ -12,6 +12,8 @@ module.exports = class View extends Emitter
 
 		@model = @scrollableArea.model
 
+		@model.on 'timeFocus-change', => @_emit 'view-change'
+
 		@box = @scrollableArea.box
 
 		do @_initScrolla
@@ -24,7 +26,7 @@ module.exports = class View extends Emitter
 
 	_initScrolla: ->
 
-		@scrolla = new Scrolla
+		@scrolla = new Scrolla maxStretch: 1500
 
 		@scrolla.on 'position-change', => do @_readPositionFromScrolla
 
@@ -34,7 +36,9 @@ module.exports = class View extends Emitter
 
 	_readPositionFromScrolla: ->
 
-		time = @xToTime_ -@scrolla.position
+		time = @absoluteXToTime -@scrolla.position
+
+		console.log 'read', @scrolla.position
 
 		@model.setTimeFocus time, @model.timeFocus.length
 
@@ -67,7 +71,66 @@ module.exports = class View extends Emitter
 
 			do @_endDragging
 
+		moosh.onWheel @containerNode
+		.onWheel (e) =>
+
+			@multiplyTimeZoom 1 + (-e.delta / 120 / 8), e.layerX
+
+	multiplyTimeZoom: (zoomMult, x) ->
+
+		pivotInLen = x / @width
+
+		timeFocus = @model.timeFocus
+
+		curLen = timeFocus.length
+		curStart = timeFocus.start
+		curTo = curStart + curLen
+
+		newLen = curLen * zoomMult
+
+		if newLen < 100
+
+			zoomMult = 100 / curLen
+
+			newLen = 100
+
+		oldLeftHalf = pivotInLen * curLen
+
+		newLeftHalf = oldLeftHalf * zoomMult
+
+		newFrom = curStart - (newLeftHalf - oldLeftHalf)
+
+		oldRightHalf = (1 - pivotInLen) * curLen
+
+		newRightHalf = oldRightHalf * zoomMult
+
+		newTo = curTo + (newRightHalf - oldRightHalf)
+
+		if newFrom < 0
+
+			newTo += -newFrom
+
+			newFrom = 0
+
+		newLen = newTo - newFrom
+
+		@rewriteTimeFocus newFrom, newLen
+
+		return
+
+	rewriteTimeFocus: (from, len) ->
+
+		@model.setTimeFocus from, len
+
+		@scrolla.stop()
+
+		console.log 'rewrite', from
+
+		@scrolla.position = @timeToAbsoluteX from
+
 	_startDragging: ->
+
+		@scrolla.drag 0
 
 	_dragBy: (x, y) ->
 
@@ -90,10 +153,16 @@ module.exports = class View extends Emitter
 
 		@scrolla.setSizeAndSpace null, @width
 
+		@_emit 'view-change'
+
 	timeToX: (t) ->
 
 		(t - @model.timeFocus.start) / @model.timeFocus.length * @width
 
-	xToTime_: (x) ->
+	absoluteXToTime: (x) ->
 
 		x * @model.timeFocus.length / @width
+
+	timeToAbsoluteX: (t) ->
+
+		t * @width / @model.timeFocus.length

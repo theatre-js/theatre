@@ -21,11 +21,11 @@ module.exports = class Box
 
 	_initDummyPoints: ->
 
-		p1 = new DummyPoint @, 0
-		p2 = new DummyPoint @, 1500
-		p3 = new DummyPoint @, 1600
-		p4 = new DummyPoint @, 2600
-		p5 = new DummyPoint @, 26000
+		for i in [0..50]
+
+			new DummyPoint @, Math.random() * 15000
+
+		return
 
 El = require 'stupid-dom-interface'
 
@@ -36,13 +36,23 @@ class DummyPoint
 		@el = El '.dummyPoint'
 		.inside @box.view.containerNode
 
-		@el.y 150
+		@el.y Math.random() * 300
 		@el.z 1
 
-		@box.scrollableArea.model.on 'timeFocus-change', => do @_updatePos
+		@el.css 'border-color', randomColor()
+
+		@box.scrollableArea.view.on 'view-change', => do @_updatePos
 
 		do @_updatePos
 
 	_updatePos: ->
 
 		@el.x @box.scrollableArea.view.timeToX @t
+
+randomColor = ->
+
+	r = 100 + (Math.random() * 155)|0
+	g = 100 + (Math.random() * 155)|0
+	b = 100 + (Math.random() * 155)|0
+
+	"rgb(#{r}, #{g}, #{b})"

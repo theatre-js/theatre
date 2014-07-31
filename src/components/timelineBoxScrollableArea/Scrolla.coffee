@@ -80,6 +80,8 @@ module.exports = class Scrolla extends Emitter
 			x: 0
 			duration: 0
 
+		@_shouldSlide = no
+
 		do initBezier
 
 		return null
@@ -134,6 +136,8 @@ module.exports = class Scrolla extends Emitter
 
 	drag: (delta) ->
 
+		@_shouldSlide = no
+
 		do @_syncPuller if not @_pullerInSync
 
 		@_bounce.ing = no
@@ -168,6 +172,7 @@ module.exports = class Scrolla extends Emitter
 			return @min - @_unstretch( - ( sticky - @min ) )
 
 		else
+
 			return sticky
 
 	_stretch: (puller) ->
@@ -234,6 +239,8 @@ module.exports = class Scrolla extends Emitter
 	# if it should still be moving, it'll call @scroller.needAnimation()
 	release: ->
 
+		@_shouldSlide = yes
+
 		@_setLastVelocity @_getRecordedVelocity()
 
 		@_pullerInSync = no
@@ -244,11 +251,18 @@ module.exports = class Scrolla extends Emitter
 			# Don't bounce
 			@_bounce.skip = yes
 
-
 		do @animate
+
+	stop: ->
+
+		do @_syncPuller
+
+		@_shouldSlide = no
 
 	# Called by a scroller's animationFrame function
 	animate: =>
+
+		return unless @_shouldSlide
 
 		# Last x.
 		x0 = @position
@@ -285,13 +299,17 @@ module.exports = class Scrolla extends Emitter
 		# Update the delta.
 		@setPosition x
 
+		@_shouldSlide = no
+
 		# Only not ask for animation if:
 		#
 		# we're inside the bounds, AND
 		# velocity is close to zero, OR
 		# there has been change in velocity direction.
 		#
-		unless @min <= x <= @max and v * v0 < 0.001
+		unless @min <= x <= @max and v * v0 < 0.0001
+
+			@_shouldSlide = yes
 
 			requestAnimationFrame @animate
 
