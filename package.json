@@ -23,7 +23,11 @@
   },
   "dependencies": {
     "kilid": "0.1.0-beta.10",
-    "moosh": "0.1.0-beta.18"
+    "moosh": "0.1.0-beta.18",
+    "raf-timing": "^0.3.3",
+    "stupid-dom-interface": "0.1.0-beta.13",
+    "timing-function": "^0.1.3",
+    "utila": "^0.3.3"
   },
   "devDependencies": {
     "coffee-script": "~1.7.1"

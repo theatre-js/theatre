@@ -1,9 +1,11 @@
-View = require './scrollableArea/View'
-Model = require './scrollableArea/Model'
+View = require './View'
+Model = require './Model'
 
 module.exports = class ScrollableArea
 
 	constructor: (@box) ->
+
+		@theatre = @box.theatre
 
 		@model = new Model @
 

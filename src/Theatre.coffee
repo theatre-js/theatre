@@ -1,5 +1,9 @@
-TimelineBoxManager = require './components/timelineBox/Manager'
+TimelineBoxManager = require './components/timelineBoxManager/Manager'
+CursorControl = require './tools/CursorControl'
 El = require 'stupid-dom-interface'
+
+Moosh = require 'moosh'
+Kilid = require 'kilid'
 
 module.exports = class Theatre
 
@@ -7,5 +11,11 @@ module.exports = class Theatre
 
 		@containerNode = El '.theatrejs'
 		.inside document.body
+
+		@kilid = new Kilid().getRootScope()
+
+		@moosh = new Moosh document.body, @kilid
+
+		@cursor = new CursorControl
 
 		@timelineBoxManager = new TimelineBoxManager @

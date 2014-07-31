@@ -1,4 +1,4 @@
-Box = require './Box'
+Box = require '../timelineBox/Box'
 
 module.exports = class TimelineBoxManager
 

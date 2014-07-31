@@ -1,14 +1,15 @@
+Emitter = require 'utila/scripts/js/lib/Emitter'
 El = require 'stupid-dom-interface'
 
-module.exports = class TimelineBoxView
+module.exports = class View extends Emitter
 
 	constructor: (@box) ->
+
+		super
 
 		@model = @box.model
 
 		do @_prepareContainer
-
-		@seekbar = new SeekbarView
 
 	_prepareContainer: ->
 
@@ -16,6 +17,8 @@ module.exports = class TimelineBoxView
 		.inside @box.theatre.containerNode
 
 		@model.on 'dims-change', => @_updateDims
+
+		window.addEventListener 'resize', => do @_updateDims
 
 		do @_updateDims
 
@@ -38,3 +41,8 @@ module.exports = class TimelineBoxView
 		.css 'right', dims.right + 'px'
 		.css 'height', dims.height + 'px'
 		.css 'bottom', dims.bottom + 'px'
+
+		@width = window.innerWidth - dims.left - dims.right
+		@height = dims.height
+
+		@_emit 'dims-change'
