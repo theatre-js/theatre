@@ -152,28 +152,15 @@ module.exports = class Scrolla extends Emitter
 
 		if puller > @max
 
-			return @max + @_stretch( puller - @max )
+			@max + @_stretch(puller - @max)
 
 		else if puller < @min
 
-			return @min - @_stretch( - (puller - @min) )
-
-		else
-			return puller
-
-	_stickyToPuller: (sticky) ->
-
-		if sticky > @max
-
-			return @max + @_unstretch( sticky - @max )
-
-		else if sticky < @min
-
-			return @min - @_unstretch( - ( sticky - @min ) )
+			@min - @_stretch(-(puller - @min))
 
 		else
 
-			return sticky
+			puller
 
 	_stretch: (puller) ->
 
@@ -234,6 +221,20 @@ module.exports = class Scrolla extends Emitter
 
 		@_puller = @_stickyToPuller @position
 		@_pullerInSync = yes
+
+	_stickyToPuller: (sticky) ->
+
+		if sticky > @max
+
+			return @max + @_unstretch( sticky - @max )
+
+		else if sticky < @min
+
+			return @min - @_unstretch( - ( sticky - @min ) )
+
+		else
+
+			return sticky
 
 	# For when the finger is released. It'll calculate velocity, and
 	# if it should still be moving, it'll call @scroller.needAnimation()

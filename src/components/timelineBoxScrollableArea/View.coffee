@@ -38,8 +38,6 @@ module.exports = class View extends Emitter
 
 		time = @absoluteXToTime -@scrolla.position
 
-		console.log 'read', @scrolla.position
-
 		@model.setTimeFocus time, @model.timeFocus.length
 
 	_prepareContainer: ->
@@ -122,11 +120,9 @@ module.exports = class View extends Emitter
 
 		@model.setTimeFocus from, len
 
+		@scrolla.position = -@timeToAbsoluteX from
+
 		@scrolla.stop()
-
-		console.log 'rewrite', from
-
-		@scrolla.position = @timeToAbsoluteX from
 
 	_startDragging: ->
 
