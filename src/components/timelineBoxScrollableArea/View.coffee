@@ -12,8 +12,6 @@ module.exports = class View extends Emitter
 
 		@model = @scrollableArea.model
 
-		@model.on 'timeFocus-change', => @_emit 'view-change'
-
 		@box = @scrollableArea.box
 
 		do @_initScrolla
@@ -23,6 +21,8 @@ module.exports = class View extends Emitter
 		do @_prepareInteractions
 
 		do @_prepareConversions
+
+		do @_initLengthCalculations
 
 	_initScrolla: ->
 
@@ -38,7 +38,7 @@ module.exports = class View extends Emitter
 
 		time = @absoluteXToTime -@scrolla.position
 
-		@model.setTimeFocus time, @model.timeFocus.length
+		@model.setTimeFocus time, @model.focusLength
 
 	_prepareContainer: ->
 
@@ -78,10 +78,10 @@ module.exports = class View extends Emitter
 
 		pivotInLen = x / @width
 
-		timeFocus = @model.timeFocus
+		{focusStart, focusLength} = @model
 
-		curLen = timeFocus.length
-		curStart = timeFocus.start
+		curLen = focusLength
+		curStart = focusStart
 		curTo = curStart + curLen
 
 		newLen = curLen * zoomMult
@@ -138,27 +138,69 @@ module.exports = class View extends Emitter
 
 	_prepareConversions: ->
 
+		@timeFocus = start: 0, length: 0
+
+		@model.on 'timeFocus-change', => do @_updateTimeFocus
+
+		do @_updateTimeFocus
+
 		@box.view.on 'dims-change', => do @_updateDims
 
-		do @_updateDims
+		@_updateDims no
 
-	_updateDims: ->
+	_updateTimeFocus: ->
+
+		@timelineLength = @model.timelineLength
+		@filledTimelineLength = @model.filledTimelineLength
+
+		@focusStart = @model.focusStart
+		@focusLength = @model.focusLength
+		@focusEnd = @focusStart + @focusLength
+
+		@_emit 'view-change'
+
+	_updateDims: (emit = yes) ->
 
 		@width = @box.view.width
 		@height = @box.view.height
 
 		@scrolla.setSizeAndSpace null, @width
 
-		@_emit 'view-change'
+		@_emit 'view-change' if emit
 
-	timeToX: (t) ->
+	_initLengthCalculations: ->
 
-		(t - @model.timeFocus.start) / @model.timeFocus.length * @width
+		@length = @model.length
+
+		@model.on 'length-change', =>
+
+			@length = @model.length
+
+			@_emit 'length-change'
+
+		@timeFocus =
+
+			start: @model.focusStart
+			length: @model.focusLength
+
+	# Used for the seeker and almost everything else
+	timeToFocusedX: (t) ->
+
+		(t - @model.focusStart) / @model.focusLength * @width
 
 	absoluteXToTime: (x) ->
 
-		x * @model.timeFocus.length / @width
+		x * @model.focusLength / @width
 
 	timeToAbsoluteX: (t) ->
 
-		t * @width / @model.timeFocus.length
+		t * @width / @model.focusLength
+
+	# Used for the panner
+	timeToUnfocusedX: (t) ->
+
+		t / @model.length * @width
+
+	unfocusedXToTime: (x) ->
+
+		x / @width * @model.length

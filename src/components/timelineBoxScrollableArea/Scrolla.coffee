@@ -31,7 +31,7 @@ module.exports = class Scrolla extends Emitter
 		# with touch movement, as the element might be getting pulled
 		# out of its bounds.
 		#
-		# But @_puller always follows user's fingers. The its value will
+		# But @_puller always follows user's fingers. Its value will
 		# be converted to @position using a function that simulates
 		# the sticky effect.
 
@@ -130,10 +130,6 @@ module.exports = class Scrolla extends Emitter
 
 			@min = - (@size - @space)
 
-	_outsideCurve: (t) ->
-
-		bezier.solve t, UnitBezier.epsilon
-
 	drag: (delta) ->
 
 		@_shouldSlide = no
@@ -147,6 +143,36 @@ module.exports = class Scrolla extends Emitter
 		@_puller = @_puller + delta
 
 		@setPosition @_pullerToSticky @_puller
+
+	_syncPuller: ->
+
+		@_puller = @_stickyToPuller @position
+
+		@_pullerInSync = yes
+
+	_recordForVelocity: (delta) ->
+
+		if @_velocityRecords.length is 0
+
+			# Note:
+			#
+			# We're creating a whole new object, on every touchmove!
+			# This is not optimal. We're gonna have to do some pulling
+			# for that.
+			@_velocityRecords.push
+				d: delta
+				t: Date.now()
+			return
+
+		else
+
+			@_velocityRecords.push
+				d: delta + @_velocityRecords[@_velocityRecords.length - 1].d
+				t: Date.now()
+
+			if @_velocityRecords.length > 3
+
+				do @_velocityRecords.shift
 
 	_pullerToSticky: (puller) ->
 
@@ -217,10 +243,7 @@ module.exports = class Scrolla extends Emitter
 
 		@_stretchedMax = stretched
 
-	_syncPuller: ->
 
-		@_puller = @_stickyToPuller @position
-		@_pullerInSync = yes
 
 	_stickyToPuller: (sticky) ->
 
@@ -237,7 +260,7 @@ module.exports = class Scrolla extends Emitter
 			return sticky
 
 	# For when the finger is released. It'll calculate velocity, and
-	# if it should still be moving, it'll call @scroller.needAnimation()
+	# if it should still be moving.
 	release: ->
 
 		@_shouldSlide = yes
@@ -254,13 +277,46 @@ module.exports = class Scrolla extends Emitter
 
 		do @animate
 
+	_setLastVelocity: (v) ->
+
+		@_lastV = v
+		@_lastT = Date.now()
+
+	_getRecordedVelocity: ->
+
+		length = @_velocityRecords.length
+
+		v = 0
+
+		if length > 1
+
+			first = @_velocityRecords[0]
+			last  = @_velocityRecords[length - 1]
+
+			# only calculate v if the there  has been at least one
+			# touchmove in the last 50 milliseconds.
+			if Date.now() - last.t < 50
+
+				v = (last.d - first.d) / (last.t - first.t) / 1.1
+
+		do @_clearVelocityRecords
+
+		v = 0 unless (Math.abs v) > @_velocityThreshold
+
+		return v
+
+	_clearVelocityRecords: ->
+
+		@_velocityRecords.length = 0
+
 	stop: ->
 
-		do @_syncPuller
+		@_bounce.ing = no
 
 		@_shouldSlide = no
 
-	# Called by a scroller's animationFrame function
+		do @_syncPuller
+
 	animate: =>
 
 		return unless @_shouldSlide
@@ -392,7 +448,6 @@ module.exports = class Scrolla extends Emitter
 					deltaX: newX - x0
 					deltaV: - v0
 
-
 			return ret
 
 		# We're moving outbounds.
@@ -424,70 +479,19 @@ module.exports = class Scrolla extends Emitter
 		# Friction based on direction and velocity.
 		friction = -direction * 0.031 * Math.min(Math.abs(v0), 0.1)
 
-		# Calculate the deltaV/
+		# Calculate the deltaV
 		deltaV = friction * deltaT
 
 		ret =
 
-			# DeltaX based on Euler's integrator/
+			# DeltaX based on Euler's integrator
 			deltaX: 0.5 * deltaV * deltaT + v0 * deltaT
 
 			deltaV: deltaV
 
-	_recordForVelocity: (delta) ->
+	_outsideCurve: (t) ->
 
-		if @_velocityRecords.length is 0
-
-			# Note:
-			#
-			# We're creating a whole new object, on every touchmove!
-			# This is not optimal. We're gonna have to do some pulling
-			# for that.
-			@_velocityRecords.push
-				d: delta
-				t: Date.now()
-			return
-
-		else
-
-			@_velocityRecords.push
-				d: delta + @_velocityRecords[@_velocityRecords.length - 1].d
-				t: Date.now()
-
-			if @_velocityRecords.length > 3
-
-				do @_velocityRecords.shift
-
-	_getRecordedVelocity: ->
-
-		length = @_velocityRecords.length
-
-		v = 0
-		if length > 1
-
-			first = @_velocityRecords[0]
-			last  = @_velocityRecords[length - 1]
-
-			# only calculate v if the there  has been at least one
-			# touchmove in the last 50 milliseconds.
-			if Date.now() - last.t < 50
-
-				v = (last.d - first.d) / (last.t - first.t) / 1.1
-
-		do @_clearVelocityRecords
-
-		v = 0 unless (Math.abs v) > @_velocityThreshold
-
-		return v
-
-	_clearVelocityRecords: ->
-
-		@_velocityRecords.length = 0
-
-	_setLastVelocity: (v) ->
-
-		@_lastV = v
-		@_lastT = Date.now()
+		bezier.solve t, UnitBezier.epsilon
 
 UnitBezier = Easing.UnitBezier
 {requestAnimationFrame, cancelAnimationFrame} = raf

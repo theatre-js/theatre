@@ -6,14 +6,17 @@ module.exports = class Model extends Emitter
 
 		super
 
-		@timeFocus =
+		@focusStart = 0
+		@focusLength = 2000
 
-			start: 0
-			length: 2000
+		@filledTimelineLength = 0
+		@timelineLength = 2000
 
 	setTimeFocus: (start, length) ->
 
-		@timeFocus.start = +start
-		@timeFocus.length = +length
+		@focusStart = +start
+		@focusLength = +length
+
+		@timelineLength = Math.max @focusStart + @focusLength, @filledTimelineLength
 
 		@_emit 'timeFocus-change'
