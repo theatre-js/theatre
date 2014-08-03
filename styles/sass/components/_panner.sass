@@ -1,0 +1,31 @@
+.theatrejs-timelineBox-panner
+
+	position: absolute
+	top: 0
+	left: 0
+
+	width: 1000px
+	height: 5px
+
+	transform-origin: top left
+
+	background-color: #FFF
+
+	opacity: .15
+	transition: opacity .15s
+
+	&:after
+
+		content: " "
+
+		position: absolute
+		top: -4px
+		bottom: -4px
+		left: -4px
+		right: -4px
+
+		display: block
+
+	&:hover
+
+		opacity: .6
