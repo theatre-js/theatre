@@ -22,8 +22,6 @@ module.exports = class View extends Emitter
 
 		do @_prepareConversions
 
-		do @_initLengthCalculations
-
 	_initScrolla: ->
 
 		@scrolla = new Scrolla maxStretch: 1500
@@ -112,11 +110,19 @@ module.exports = class View extends Emitter
 
 		newLen = newTo - newFrom
 
-		@rewriteTimeFocus newFrom, newLen
+		@rewriteFocus newFrom, newLen
 
 		return
 
-	rewriteTimeFocus: (from, len) ->
+	shiftFocus: (delta, disallowOutOfBounds = no) ->
+
+		start = @model.focusStart + delta
+
+		start = 0 if disallowOutOfBounds and start < 0
+
+		@rewriteFocus start
+
+	rewriteFocus: (from, len = @model.focusLength) ->
 
 		@model.setTimeFocus from, len
 
@@ -168,21 +174,6 @@ module.exports = class View extends Emitter
 
 		@_emit 'view-change' if emit
 
-	_initLengthCalculations: ->
-
-		@length = @model.length
-
-		@model.on 'length-change', =>
-
-			@length = @model.length
-
-			@_emit 'length-change'
-
-		@timeFocus =
-
-			start: @model.focusStart
-			length: @model.focusLength
-
 	# Used for the seeker and almost everything else
 	timeToFocusedX: (t) ->
 
@@ -199,8 +190,8 @@ module.exports = class View extends Emitter
 	# Used for the panner
 	timeToUnfocusedX: (t) ->
 
-		t / @model.length * @width
+		t / @timelineLength * @width
 
 	unfocusedXToTime: (x) ->
 
-		x / @width * @model.length
+		x / @width * @timelineLength

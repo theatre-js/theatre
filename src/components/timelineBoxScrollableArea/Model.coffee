@@ -9,8 +9,8 @@ module.exports = class Model extends Emitter
 		@focusStart = 0
 		@focusLength = 2000
 
-		@filledTimelineLength = 0
-		@timelineLength = 2000
+		@filledTimelineLength = 8000
+		@timelineLength = 8000
 
 	setTimeFocus: (start, length) ->
 
