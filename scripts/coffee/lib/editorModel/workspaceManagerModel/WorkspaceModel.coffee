@@ -1,6 +1,6 @@
 ActorPropModel = require '../graphModel/groupModel/actorModel/ActorPropModel'
 _Emitter = require '../../_Emitter'
-array = require 'utila/scripts/js/lib/array'
+array = require 'utila/lib/array'
 WorkspacePropHolderModel = require './workspaceModel/WorkspacePropHolderModel'
 
 module.exports = class WorkspaceModel extends _Emitter

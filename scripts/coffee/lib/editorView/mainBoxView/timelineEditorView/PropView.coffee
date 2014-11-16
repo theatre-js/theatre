@@ -1,5 +1,5 @@
 Foxie = require 'foxie'
-array = require 'utila/scripts/js/lib/array'
+array = require 'utila/lib/array'
 SvgArea = require './propView/SvgArea'
 Selection = require './propView/Selection'
 PointView = require './propView/PointView'

@@ -1,5 +1,5 @@
 Foxie = require 'foxie'
-array = require 'utila/scripts/js/lib/array'
+array = require 'utila/lib/array'
 PropViewRepo = require './timelineEditorView/PropViewRepo'
 SelectionManager = require './timelineEditorView/SelectionManager'
 GuidesManagerView = require './timelineEditorView/GuidesManagerView'

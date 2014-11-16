@@ -1,4 +1,4 @@
-array = require 'utila/scripts/js/lib/array'
+array = require 'utila/lib/array'
 WorkspaceModel = require './workspaceManagerModel/WorkspaceModel'
 _DynamicModel = require '../_DynamicModel'
 

@@ -1,4 +1,4 @@
-array = require 'utila/scripts/js/lib/array'
+array = require 'utila/lib/array'
 Event = require './events/Event'
 _ChronologyContainer = require '../_ChronologyContainer'
 

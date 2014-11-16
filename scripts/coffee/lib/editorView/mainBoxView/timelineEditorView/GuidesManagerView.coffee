@@ -1,5 +1,5 @@
 Foxie = require 'foxie'
-array = require 'utila/scripts/js/lib/array'
+array = require 'utila/lib/array'
 GuideView = require './guidesManagerView/GuideView'
 
 module.exports = class GuidesManagerView

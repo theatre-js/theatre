@@ -1,6 +1,6 @@
 _DynamicModel = require '../../_DynamicModel'
 GuideModel = require './guidesManagerModel/GuideModel'
-array = require 'utila/scripts/js/lib/array'
+array = require 'utila/lib/array'
 
 module.exports = class GuidesManagerModel extends _DynamicModel
 

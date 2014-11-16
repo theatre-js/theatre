@@ -1,4 +1,4 @@
-array = require 'utila/scripts/js/lib/array'
+array = require 'utila/lib/array'
 _Emitter = require './_Emitter'
 PropOfArray = require './dynamicTimeline/PropOfArray'
 PropOfObject = require './dynamicTimeline/PropOfObject'

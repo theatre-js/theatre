@@ -1,6 +1,6 @@
 _DynamicModel = require '../_DynamicModel'
 GuidesManagerModel = require './timelineEditorModel/GuidesManagerModel'
-array = require 'utila/scripts/js/lib/array'
+array = require 'utila/lib/array'
 
 module.exports = class TimelineEditorModel extends _DynamicModel
 
