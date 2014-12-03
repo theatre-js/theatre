@@ -6,8 +6,14 @@ module.exports = class TimelineBoxManager
 
 		@boxes = {}
 
-		do @_initDefaultBox
+	addBox: (name, box) ->
 
-	_initDefaultBox: ->
+		if @boxes[name]?
 
-		@boxes['default'] = new Box @, 'default'
+			throw Error "A TimeloneBox named '#{name}' already exists"
+
+		box ?= new Box @, name
+
+		@boxes[name] = box
+
+		box

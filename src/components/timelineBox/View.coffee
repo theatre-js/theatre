@@ -1,4 +1,5 @@
-Emitter = require 'utila/scripts/js/lib/Emitter'
+Emitter = require 'utila/lib/Emitter
+'
 El = require 'stupid-dom-interface'
 
 module.exports = class View extends Emitter

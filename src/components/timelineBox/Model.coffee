@@ -1,4 +1,4 @@
-Emitter = require 'utila/scripts/js/lib/Emitter'
+Emitter = require 'utila/lib/Emitter'
 
 module.exports = class Model extends Emitter
 
