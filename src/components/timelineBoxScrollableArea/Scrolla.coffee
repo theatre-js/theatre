@@ -243,8 +243,6 @@ module.exports = class Scrolla extends Emitter
 
 		@_stretchedMax = stretched
 
-
-
 	_stickyToPuller: (sticky) ->
 
 		if sticky > @max

@@ -1,12 +1,12 @@
-# theatre.js
+# TheatreJS
 
 [To be] a timeline-based animation editor for the web:
 
-![screenshot of theatre.js's timeline editor](https://github.com/AriaMinaei/theatrejs/raw/master/docs/screenshots/timeline.png)
+![screenshot of TheatreJS's timeline editor](https://github.com/AriaMinaei/theatrejs/raw/master/docs/screenshots/timeline.png)
 
 ## Demo
 
- Take a look at [this page](http://gelobi.org/griddify) if you wanna see a demo. It's our first attempt to use theatre.js in a real-world project!
+ Take a look at [this page](http://gelobi.org/griddify) if you wanna see a demo. It's our first attempt to use TheatreJS in a real-world project!
 
 ## When will it release?
 
@@ -20,4 +20,4 @@ Right now we have to partially replace two modules (~~the timeline data saver~~ 
 
 ## License
 
-theatrejs will be free and open-source. We're discussing which open-source licensing model to choose, and whether to include a commercial license.
+TheatreJS will be free and open-source. We're discussing which open-source licensing model to choose, and whether to include a commercial license.
