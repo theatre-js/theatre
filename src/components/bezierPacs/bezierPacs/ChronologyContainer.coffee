@@ -1,40 +1,104 @@
+PipingEmitter = require 'utila/lib/PipingEmitter'
+
 module.exports = class ChronologyContainer
 
 	constructor: ->
 
-		@itemsInOrder = []
+		@events = new PipingEmitter
 
-		@allItems = {}
+		###
+		 * This is the list of our Points and Connectors, in sequence.
+		 *
+		 * @type {Array}
+		###
+		@_itemsInSequence = []
 
-		@lastId = -1
+		###
+		 * This is the map to all the objects recognized by this Pacs. Not all
+		 * the items in this map will be in @_itemsInSequence, but all the @_itemsInSequence
+		 * will be in this map.
+		 *
+		 * @type {Object}
+		###
+		@_ids = {}
+
+		@_lastAssignedId = -1
 
 	recognizeItem: (item) ->
 
-		if item._idInChronologyContainer isnt null
+		if item._pacs?
 
-			throw Error "Item hasn't been unrecognized from its ChronologyContainer, therefore it cannot be recognized in this ChronologyContainer"
+			throw Error "This item already is recognized by a Pacs, so it cannot be recognized by this pacs."
 
-		@lastId++
+		if item._sequence?
 
-		item._idInChronologyContainer = @lastId
+			throw Error "This item is not recognized by any Pacs, but it is in a sequence."
 
-		@allItems[@lastId] = item
+		id = ++@_lastAssignedId
 
-		#Todo: emit()
+		item._pacs = this
+
+		item._idInPacs = id
+
+		@_ids[id] = item
+
+		@events._emit 'item-recognized', item
 
 		@
 
 	unrecognizeItem: (item) ->
 
-		if item._idInChronologyContainer is null
+		unless item._pacs?
 
-			throw Error "Item cannot be unrecognized because its Item._idInChronologyContainer is null. How did this happen btw?"
+			throw Error "Cannot unrecognize this item because it doesn't have a Pacs. How did this happen btw?"
 
-		@allItems[item._idInChronologyContainer] = null
+		if item._pacs isnt this
 
-		@item._idInChronologyContainer = null
+			throw Error "Cannot unrecognize this item because its Pacs isnt this Pacs."
 
-		#Todo: emit()
+		if item._sequence?
+
+			throw Error "This item is still in sequence."
+
+		@_ids[item._idInPacs] = null
+
+		item._idInPacs = null
+
+		item._pacs = null
+
+		@events._emit 'item-unrecognized', item
+
+		@
+
+	putItemInSequence: (item) ->
+
+		if item._pacs isnt this
+
+			throw Error "This item is not recognized by this Pacs."
+
+		if item._sequence?
+
+			throw Error "This item is still in sequence."
+
+		item._sequence = @_itemsInSequence
+
+		item._fitInSequence()
+
+		@
+
+	takeItemOutOfSequence: (item) ->
+
+		if item._pacs isnt this
+
+			throw Error "This item is not recognized by this Pacs."
+
+		if item._sequence isnt @_itemsInSequence
+
+			throw Error "This item is not in this sequence."
+
+		item._getOutOfSequence()
+
+		item._sequence = null
 
 		@
 
@@ -42,7 +106,7 @@ module.exports = class ChronologyContainer
 
 		lastIndex = -1
 
-		for item, index in @itemsInOrder
+		for item, index in @_itemsInSequence
 
 			break if item.t > t
 
@@ -50,13 +114,28 @@ module.exports = class ChronologyContainer
 
 		lastIndex
 
+	###*
+	 * If there are two Items on that time (a point and a connector),
+	 * returns the connector.
+	 *
+	 * @param  Float32 t time
+	 * @return Item/undefined
+	###
+	getItemAfter: (t) ->
+
+		@getItemByIndex @getIndexOfItemBeforeOrAt(t) + 1
+
+	getItemBeforeOrAt: (t) ->
+
+		@getItemByIndex @getIndexOfItemBeforeOrAt t
+
 	getItemByIndex: (index) ->
 
-		@itemsInOrder[index]
+		@_itemsInSequence[index]
 
 	getItemIndex: (item) ->
 
-		@itemsInOrder.indexOf item
+		@_itemsInSequence.indexOf item
 
 	getItemAt: (t) ->
 
@@ -74,15 +153,27 @@ module.exports = class ChronologyContainer
 
 		@getItemAt(t)?
 
-	injectItemOn: (item, index) ->
+	getItemBeforeItem: (item) ->
 
-		array.injectInIndex @itemsInOrder, index, item
+		index = @getItemIndex item
+
+		@getItemByIndex index - 1
+
+	getItemAfterItem: (item) ->
+
+		index = @getItemIndex item
+
+		@getItemByIndex index + 1
+
+	injectItemOnIndex: (item, index) ->
+
+		@_itemsInSequence.splice index, item
 
 		return
 
 	pluckItemOn: (index) ->
 
-		array.pluck @itemsInOrder, index
+		@_itemsInSequence.splice index, 1
 
 		return
 
@@ -90,7 +181,7 @@ module.exports = class ChronologyContainer
 
 		items = []
 
-		for item in @itemsInOrder
+		for item in @_itemsInSequence
 
 			break if item.t > to
 

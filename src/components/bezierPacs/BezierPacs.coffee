@@ -1,10 +1,11 @@
 ChronologyContainer = require './bezierPacs/ChronologyContainer'
+Point = require './bezierPacs/Point'
 
-module.exports = class BezierPacs
+module.exports = class BezierPacs extends ChronologyContainer
 
 	constructor: ->
 
-		@_chronology = new ChronologyContainer
+		super
 
 		@_haveDataChanges = no
 		@_committingDataChangesHeldOff = no
@@ -70,6 +71,8 @@ module.exports = class BezierPacs
 	###
 	_reportChange: (from, to) ->
 
+		console.log 'Change from', from, 'to', to
+
 		# Sometimes we might not have changes in animation, but just in data,
 		# so let's allow such cases to be valid
 		if from?
@@ -84,3 +87,8 @@ module.exports = class BezierPacs
 		@_haveDataChanges = yes
 
 		do @commitDataChanges unless @_committingDataChangesHeldOff
+
+	createPoint: ->
+
+		#TODO: pool
+		new Point
