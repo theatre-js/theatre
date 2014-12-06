@@ -30,7 +30,10 @@
     "utila": "^0.3.3"
   },
   "devDependencies": {
-    "coffee-script": "~1.7.1",
+    "chai": "^1.10.0",
+    "coffee-script": "^1.8.0",
+    "mocha": "^2.0.1",
+    "mocha-pretty-spec-reporter": "0.1.0-beta.1",
     "sweetify": "^0.4.0"
   }
 }
