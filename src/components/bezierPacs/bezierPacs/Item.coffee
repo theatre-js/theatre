@@ -1,5 +1,12 @@
 PipingEmitter = require 'utila/lib/PipingEmitter'
 
+###*
+ * Items give a very basic interface to interact with the their position in time
+ * and their other attributes. They don't try to be smart. If you create a point
+ * in the middle of two connected points, it's not gonna create another Their operations are
+ * not undoable. Some other
+ * @type {[type]}
+###
 module.exports = class Item
 
 	constructor: ->
@@ -20,9 +27,13 @@ module.exports = class Item
 
 	getRecognizedBy: (pacs) ->
 
-		pacs.recognizeItem @
+		pacs.recognizeItem this
 
 		@
+
+	_receiveRecognition: (@_pacs, @_idInPacs) ->
+
+		@events._emit 'recognition'
 
 	getUnrecognized: ->
 
@@ -30,9 +41,16 @@ module.exports = class Item
 
 			throw Error "Item isn't recognized by any Pacs yet."
 
-		@_pacs.unrecognizeItem @
+		@_pacs.unrecognizeItem this
 
 		@
+
+	_receiveUnrecognition: ->
+
+		@_pacs = null
+		@_idInPacs = null
+
+		@events._emit 'unrecognition'
 
 	getInSequence: ->
 
@@ -40,7 +58,7 @@ module.exports = class Item
 
 			throw Error "Item isn't recognized by any Pacs yet."
 
-		@_pacs.putItemInSequence @
+		@_pacs.putItemInSequence this
 
 		@
 
@@ -50,10 +68,12 @@ module.exports = class Item
 
 			throw Error "Item isn't recognized by any Pacs yet."
 
-		@_pacs.takeItemOutOfSequence()
+		@_pacs.takeItemOutOfSequence this
 
 		@
 
-	getItemBefore: ->
+	eliminate: ->
 
-		@_pacs.
+		do @getOutOfSequence
+
+		do @getUnrecognized

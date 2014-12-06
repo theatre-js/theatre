@@ -81,17 +81,18 @@ module.exports = class Point extends Item
 		@_handlers[0] = +x
 		@_handlers[1] = +y
 
-		#TODO: emit
+		@events._emit 'leftHandler-change'
+		@getLeftConnector()?.reactToChangesInRightPoint()
 
 		@
 
 	setRightHandler: (x, y) ->
 
-		#TODO: Validate
 		@_handlers[2] = +x
 		@_handlers[3] = +y
 
-		#TODO: emit
+		@events._emit 'rightHandler-change'
+		@getRightConnector()?.reactToChangesInLeftPoint()
 
 		@
 
@@ -133,19 +134,52 @@ module.exports = class Point extends Item
 
 			changeTo = afterItem._time
 
+		@_pacs.injectItemOnIndex this, myIndex
 
-		after = @_pacs.getItemAfter @_time
+		leftConnector?.reactToChangesInRightPoint()
 
-		unless before?
+		@_pacs._reportChange changeFrom, changeTo
 
-			@_pacs.injectItemOnIndex @, 0
+		@events._emit 'inSequnce'
 
+	_fitOutOfSequence: ->
 
-			changeTo = if after? then after._time else Infinity
+		before = @_pacs.getItemBeforeItem this
+		after = @_pacs.getItemAfterItem this
 
-			@_pacs._reportChange changeFrom, changeTo
+		if before?.isConnector()
 
-			return
+			changeFrom = before.getLeftTime()
+
+			before.getOutOfSequence()
+
+		else if before?
+
+			changeFrom = @_time
+
+		else
+
+			changeFrom = -Infinity
+
+		if after?.isConnector()
+
+			changeTo = after.getRightTime()
+
+			after.getOutOfSequence()
+
+		else if after?
+
+			changeTo = after._time
+
+		else
+
+			changeTo = Infinity
+
+		@_pacs.pluckItem this
+
+		@_pacs._reportChange changeFrom, changeTo
+
+		@events._emit 'outOfSequence'
 
 	isPoint: ->
 
@@ -154,3 +188,15 @@ module.exports = class Point extends Item
 	isConnector: ->
 
 		no
+
+	getLeftConnector: ->
+
+		c = @_pacs.getItemBeforeItem this
+
+		return c if c?.isConnector()
+
+	getRightConnector: ->
+
+		c = @_pacs.getItemAfterItem this
+
+		return c if c?.isConnector()

@@ -17,7 +17,7 @@ module.exports = class View extends Emitter
 
 		do @_initScrolla
 
-		do @_prepareContainer
+		do @_prepareContainers
 
 		do @_prepareInteractions
 
@@ -39,9 +39,12 @@ module.exports = class View extends Emitter
 
 		@model.setTimeFocus time, @model.focusLength
 
-	_prepareContainer: ->
+	_prepareContainers: ->
 
 		@containerNode = El '.theatrejs-timelineBox-scrollableArea'
+		.inside @box.view.containerNode
+
+		@svgNode = El 'svg:svg.theatrejs-timelineBox-scrollableArea-svgContainer'
 		.inside @box.view.containerNode
 
 	_prepareInteractions: ->
@@ -170,6 +173,10 @@ module.exports = class View extends Emitter
 
 		@width = @box.view.width
 		@height = @box.view.height
+
+		@svgNode
+		.attr 'width', "#{@width}px"
+		.attr 'height', "#{@height}px"
 
 		@scrolla.setSizeAndSpace null, @width
 

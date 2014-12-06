@@ -1,5 +1,6 @@
 ChronologyContainer = require './bezierPacs/ChronologyContainer'
 Point = require './bezierPacs/Point'
+Connector = require './bezierPacs/Connector'
 
 module.exports = class BezierPacs extends ChronologyContainer
 
@@ -71,7 +72,7 @@ module.exports = class BezierPacs extends ChronologyContainer
 	###
 	_reportChange: (from, to) ->
 
-		console.log 'Change from', from, 'to', to
+		# console.log 'Change from', from, 'to', to
 
 		# Sometimes we might not have changes in animation, but just in data,
 		# so let's allow such cases to be valid
@@ -92,3 +93,7 @@ module.exports = class BezierPacs extends ChronologyContainer
 
 		#TODO: pool
 		new Point
+
+	createConnector: ->
+
+		new Connector

@@ -36,13 +36,11 @@ module.exports = class ChronologyContainer
 
 		id = ++@_lastAssignedId
 
-		item._pacs = this
-
-		item._idInPacs = id
-
 		@_ids[id] = item
 
-		@events._emit 'item-recognized', item
+		item._receiveRecognition this, id
+
+		@events._emit 'item-recognition', item
 
 		@
 
@@ -62,11 +60,9 @@ module.exports = class ChronologyContainer
 
 		@_ids[item._idInPacs] = null
 
-		item._idInPacs = null
+		item._receiveUnrecognition()
 
-		item._pacs = null
-
-		@events._emit 'item-unrecognized', item
+		@events._emit 'item-unrecognition', item
 
 		@
 
@@ -96,7 +92,7 @@ module.exports = class ChronologyContainer
 
 			throw Error "This item is not in this sequence."
 
-		item._getOutOfSequence()
+		item._fitOutOfSequence()
 
 		item._sequence = null
 
@@ -108,7 +104,7 @@ module.exports = class ChronologyContainer
 
 		for item, index in @_itemsInSequence
 
-			break if item.t > t
+			break if item._time > t
 
 			lastIndex = index
 
@@ -145,7 +141,7 @@ module.exports = class ChronologyContainer
 
 		return unless item?
 
-		return unless item.t is t
+		return unless item._time is t
 
 		item
 
@@ -167,7 +163,7 @@ module.exports = class ChronologyContainer
 
 	injectItemOnIndex: (item, index) ->
 
-		@_itemsInSequence.splice index, item
+		@_itemsInSequence.splice index, 0, item
 
 		return
 
@@ -177,15 +173,21 @@ module.exports = class ChronologyContainer
 
 		return
 
+	pluckItem: (item) ->
+
+		@pluckItemOn @getItemIndex item
+
+		return
+
 	getItemsInRange: (from, to) ->
 
 		items = []
 
 		for item in @_itemsInSequence
 
-			break if item.t > to
+			break if item._time > to
 
-			continue if item.t < from
+			continue if item._time < from
 
 			items.push item
 
