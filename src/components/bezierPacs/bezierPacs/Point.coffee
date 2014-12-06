@@ -9,7 +9,8 @@ module.exports = class Point extends Item
 
 		@_value = 0
 
-		@_handlers = new Float32Array 4
+		@_leftHandler = new Float32Array 2
+		@_rightHandler = new Float32Array 2
 
 		@_leftConnector = null
 		@_rightConnector = null
@@ -77,8 +78,8 @@ module.exports = class Point extends Item
 
 	setLeftHandler: (x, y) ->
 
-		@_handlers[0] = clamp +x, 0, 1
-		@_handlers[1] = +y
+		@_leftHandler[0] = clamp +x, 0, 1
+		@_leftHandler[1] = +y
 
 		@events._emit 'leftHandler-change'
 		@getLeftConnector()?.reactToChangesInRightPoint()
@@ -87,8 +88,8 @@ module.exports = class Point extends Item
 
 	setRightHandler: (x, y) ->
 
-		@_handlers[2] = clamp +x, 0, 1
-		@_handlers[3] = +y
+		@_rightHandler[0] = clamp +x, 0, 1
+		@_rightHandler[1] = +y
 
 		@events._emit 'rightHandler-change'
 		@getRightConnector()?.reactToChangesInLeftPoint()

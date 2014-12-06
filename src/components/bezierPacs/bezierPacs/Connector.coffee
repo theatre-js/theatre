@@ -6,13 +6,15 @@ module.exports = class Connector extends Item
 
 		super
 
-		@_leftTime = 0
-		@_rightTime = 0
-		@_leftValue = 0
-		@_rightValue = 0
+		@_leftPoint   = null
+		@_leftTime    = Infinity
+		@_leftValue   = 0
+		@_leftHandler = 0
 
-		@_leftPoint = null
-		@_rightPoint = null
+		@_rightPoint   = null
+		@_rightTime    = -Infinity
+		@_rightValue   = 0
+		@_rightHandler = 0
 
 	isPoint: ->
 
@@ -51,35 +53,18 @@ module.exports = class Connector extends Item
 
 		@_pacs.injectItemOnIndex this, myIndex
 
-		@_setLeftPoint before
-		@_setRightPoint after
+		@_leftPoint = before
+		@_rightPoint = after
 
 		do @reactToChangesInLeftPoint
 		do @reactToChangesInRightPoint
 
+		@_leftPoint._setRightConnector this
+		@_rightPoint._setLeftConnector this
+
 		@_pacs._reportChange before._time, after._time
 
 		@events._emit 'inSequnce'
-
-	_setLeftPoint: (@_leftPoint) ->
-
-		@_leftPoint._setRightConnector this
-
-	_unsetLeftPoint: ->
-
-		@_leftPoint._unsetRightConnector()
-
-		@_leftPoint = null
-
-	_setRightPoint: (@_rightPoint) ->
-
-		@_rightPoint._setLeftConnector this
-
-	_unsetRightPoint: ->
-
-		@_rightPoint._unsetLeftConnector()
-
-		@_rightPoint = null
 
 	getLeftTime: ->
 
@@ -97,15 +82,30 @@ module.exports = class Connector extends Item
 
 		@_rightValue
 
+	getLeftPoint: ->
+
+		@_leftPoint
+
+	getRightPoint: ->
+
+		@_rightPoint
+
+	getLeftHandler: ->
+
+		@_leftHandler
+
+	getRightHandler: ->
+
+		@_rightHandler
+
 	reactToChangesInRightPoint: ->
 
-		rightPoint = @_pacs.getItemAfterItem this
-
 		changeFrom = @_leftTime
-		changeTo = Math.max @_rightTime, rightPoint._time
+		changeTo = Math.max @_rightTime, @_rightPoint._time
 
-		@_rightValue = rightPoint._value
-		@_rightTime = rightPoint._time
+		@_rightTime = @_rightPoint._time
+		@_rightValue = @_rightPoint._value
+		@_rightHandler = @_rightPoint._leftHandler
 
 		@_pacs._reportChange changeFrom, changeTo
 
@@ -115,15 +115,14 @@ module.exports = class Connector extends Item
 
 	reactToChangesInLeftPoint: ->
 
-		leftPoint = @_pacs.getItemBeforeItem this
-
-		changeFrom = Math.min @_leftTime, leftPoint._time
+		changeFrom = Math.min @_leftTime, @_leftPoint._time
 		changeTo = @_rightTime
 
-		@setTime leftPoint._time
+		@setTime @_leftPoint._time
 
-		@_leftValue = leftPoint._value
-		@_leftTime = leftPoint._time
+		@_leftTime = @_leftPoint._time
+		@_leftValue = @_leftPoint._value
+		@_leftHandler = @_leftPoint._rightHandler
 
 		@_pacs._reportChange changeFrom, changeTo
 
@@ -133,11 +132,13 @@ module.exports = class Connector extends Item
 
 	_fitOutOfSequence: ->
 
-		changeFrom = @_leftPoint._time
-		changeTo = @_rightPoint._time
+		changeFrom = @_leftTime
+		changeTo = @_rightTime
 
-		do @_unsetLeftPoint
-		do @_unsetRightPoint
+		@_leftPoint._unsetRightConnector()
+		@_leftPoint = null
+		@_rightPoint._unsetLeftConnector()
+		@_rightPoint = null
 
 		@_pacs.pluckItem this
 		@_pacs._reportChange changeFrom, changeTo
