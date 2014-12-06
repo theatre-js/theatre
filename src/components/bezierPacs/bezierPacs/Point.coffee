@@ -1,4 +1,5 @@
 Item = require './Item'
+clamp = require 'utila/lib/math/clamp'
 
 module.exports = class Point extends Item
 
@@ -9,6 +10,9 @@ module.exports = class Point extends Item
 		@_value = 0
 
 		@_handlers = new Float32Array 4
+
+		@_leftConnector = null
+		@_rightConnector = null
 
 	setValue: (v) ->
 
@@ -24,10 +28,6 @@ module.exports = class Point extends Item
 		@_value
 
 	setTime: (t) ->
-
-		#TODO: allow changing time only in the left/right confinements.
-		# If they wanna go out of that time limit, they would have to take
-		# us off the sequence first
 
 		unless @_sequence?
 
@@ -77,8 +77,7 @@ module.exports = class Point extends Item
 
 	setLeftHandler: (x, y) ->
 
-		#TODO: Validate
-		@_handlers[0] = +x
+		@_handlers[0] = clamp +x, 0, 1
 		@_handlers[1] = +y
 
 		@events._emit 'leftHandler-change'
@@ -88,7 +87,7 @@ module.exports = class Point extends Item
 
 	setRightHandler: (x, y) ->
 
-		@_handlers[2] = +x
+		@_handlers[2] = clamp +x, 0, 1
 		@_handlers[3] = +y
 
 		@events._emit 'rightHandler-change'
@@ -97,8 +96,6 @@ module.exports = class Point extends Item
 		@
 
 	_fitInSequence: ->
-
-		#TODO: emit
 
 		beforeIndex = @_pacs.getIndexOfItemBeforeOrAt @_time
 
@@ -118,11 +115,9 @@ module.exports = class Point extends Item
 
 			else
 
-				leftConnector = beforeItem
-
-				leftPoint = @_pacs.getItemByIndex beforeIndex - 1
-
-				changeFrom = leftPoint._time
+				throw Error "Point cannot fit where a connector already exists.
+					Remove the connector, put the point in sequence, and then restore
+					the connector if necessary"
 
 		afterItem = @_pacs.getItemByIndex myIndex
 
@@ -130,13 +125,17 @@ module.exports = class Point extends Item
 
 			changeTo = Infinity
 
-		else
+		else if afterItem.isPoint()
 
 			changeTo = afterItem._time
 
-		@_pacs.injectItemOnIndex this, myIndex
+		else
 
-		leftConnector?.reactToChangesInRightPoint()
+			throw Error "Point cannot fit where a connector already exists.
+				Remove the connector, put the point in sequence, and then restore
+				the connector if necessary"
+
+		@_pacs.injectItemOnIndex this, myIndex
 
 		@_pacs._reportChange changeFrom, changeTo
 
@@ -144,36 +143,20 @@ module.exports = class Point extends Item
 
 	_fitOutOfSequence: ->
 
+		if @_leftConnector?
+
+			throw Error "Cannot fit out of sequence when already connected to the left."
+
+		if @_rightConnector?
+
+			throw Error "Cannot fit out of sequence when already connected to the right."
+
 		before = @_pacs.getItemBeforeItem this
 		after = @_pacs.getItemAfterItem this
 
-		if before?.isConnector()
+		changeFrom = if before? then @_time else -Infinity
 
-			changeFrom = before.getLeftTime()
-
-			before.getOutOfSequence()
-
-		else if before?
-
-			changeFrom = @_time
-
-		else
-
-			changeFrom = -Infinity
-
-		if after?.isConnector()
-
-			changeTo = after.getRightTime()
-
-			after.getOutOfSequence()
-
-		else if after?
-
-			changeTo = after._time
-
-		else
-
-			changeTo = Infinity
+		changeTo = if after? then after._time else Infinity
 
 		@_pacs.pluckItem this
 
@@ -191,12 +174,28 @@ module.exports = class Point extends Item
 
 	getLeftConnector: ->
 
-		c = @_pacs.getItemBeforeItem this
-
-		return c if c?.isConnector()
+		@_leftConnector
 
 	getRightConnector: ->
 
-		c = @_pacs.getItemAfterItem this
+		@_rightConnector
 
-		return c if c?.isConnector()
+	_setLeftConnector: (@_leftConnector) ->
+
+		@events._emit 'connectionToLeft', @_leftConnector
+
+	_unsetLeftConnector: ->
+
+		@events._emit 'disconnectionFromLeft'
+
+		@_leftConnector = null
+
+	_setRightConnector: (@_rightConnector) ->
+
+		@events._emit 'connectionToRight', @_rightConnector
+
+	_unsetRightConnector: ->
+
+		@events._emit 'disconnectionFromRight'
+
+		@_rightConnector = null

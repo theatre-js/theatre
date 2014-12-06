@@ -30,6 +30,7 @@
     "utila": "^0.3.3"
   },
   "devDependencies": {
-    "coffee-script": "~1.7.1"
+    "coffee-script": "~1.7.1",
+    "sweetify": "^0.4.0"
   }
 }

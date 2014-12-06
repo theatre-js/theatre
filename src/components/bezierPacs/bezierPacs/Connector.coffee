@@ -11,6 +11,9 @@ module.exports = class Connector extends Item
 		@_leftValue = 0
 		@_rightValue = 0
 
+		@_leftPoint = null
+		@_rightPoint = null
+
 	isPoint: ->
 
 		no
@@ -21,19 +24,14 @@ module.exports = class Connector extends Item
 
 	setTime: (t) ->
 
-		unless @_sequence?
-
-			@_time = +t
-
-		# else
+		#TODO: validate
+		@_time = +t
 
 		@events._emit 'time-change', t
 
 		@
 
 	_fitInSequence: ->
-
-		#TODO: emit
 
 		beforeIndex = @_pacs.getIndexOfItemBeforeOrAt @_time
 
@@ -53,6 +51,9 @@ module.exports = class Connector extends Item
 
 		@_pacs.injectItemOnIndex this, myIndex
 
+		@_setLeftPoint before
+		@_setRightPoint after
+
 		do @reactToChangesInLeftPoint
 		do @reactToChangesInRightPoint
 
@@ -60,6 +61,25 @@ module.exports = class Connector extends Item
 
 		@events._emit 'inSequnce'
 
+	_setLeftPoint: (@_leftPoint) ->
+
+		@_leftPoint._setRightConnector this
+
+	_unsetLeftPoint: ->
+
+		@_leftPoint._unsetRightConnector()
+
+		@_leftPoint = null
+
+	_setRightPoint: (@_rightPoint) ->
+
+		@_rightPoint._setLeftConnector this
+
+	_unsetRightPoint: ->
+
+		@_rightPoint._unsetLeftConnector()
+
+		@_rightPoint = null
 
 	getLeftTime: ->
 
@@ -100,6 +120,8 @@ module.exports = class Connector extends Item
 		changeFrom = Math.min @_leftTime, leftPoint._time
 		changeTo = @_rightTime
 
+		@setTime leftPoint._time
+
 		@_leftValue = leftPoint._value
 		@_leftTime = leftPoint._time
 
@@ -111,11 +133,11 @@ module.exports = class Connector extends Item
 
 	_fitOutOfSequence: ->
 
-		before = @_pacs.getItemBeforeItem this
-		after = @_pacs.getItemAfterItem this
+		changeFrom = @_leftPoint._time
+		changeTo = @_rightPoint._time
 
-		changeFrom = before._time
-		changeTo = after._time
+		do @_unsetLeftPoint
+		do @_unsetRightPoint
 
 		@_pacs.pluckItem this
 		@_pacs._reportChange changeFrom, changeTo
