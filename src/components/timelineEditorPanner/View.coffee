@@ -126,8 +126,19 @@ module.exports = class View
 
 	_applyTransforms: ->
 
-		@containerNode.scaleX @width / 1000
+		x = @x
+		width = @width
 
-		@containerNode.x @x
+		if x < 0
+
+			width += x * 2
+
+			if width < 1 then width = 1
+
+			x = 0
+
+		@containerNode.scaleX width / 1000
+
+		@containerNode.x x
 
 		return
