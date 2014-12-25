@@ -1,10 +1,10 @@
-ScrollableArea = require '../timelineBoxScrollableArea/ScrollableArea'
-GuidesManager = require '../timelineBoxGuides/GuidesManager'
-Panner = require '../timelineBoxPanner/Panner'
+ScrollableArea = require '../timelineEditorScrollableArea/ScrollableArea'
+GuidesManager = require '../timelineEditorGuides/GuidesManager'
+Panner = require '../timelineEditorPanner/Panner'
 Model = require './Model'
 View = require './View'
 
-module.exports = class Box
+module.exports = class Editor
 
 	constructor: (@manager, @id) ->
 

@@ -14,7 +14,7 @@ module.exports = class View extends Emitter
 
 	_prepareContainer: ->
 
-		@containerNode = El '.theatrejs-timelineBox'
+		@containerNode = El '.theatrejs-timelineEditor'
 		.inside @box.theatre.containerNode
 
 		@model.on 'dims-change', => @_updateDims

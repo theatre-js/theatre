@@ -22,7 +22,7 @@ module.exports = class View
 
 	_prepareNodes: ->
 
-		@containerNode = El '.theatrejs-timelineBox-panner'
+		@containerNode = El '.theatrejs-timelineEditor-panner'
 		.inside @box.view.containerNode
 
 		return

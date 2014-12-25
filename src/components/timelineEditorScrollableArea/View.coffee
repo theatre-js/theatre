@@ -41,10 +41,10 @@ module.exports = class View extends Emitter
 
 	_prepareContainers: ->
 
-		@containerNode = El '.theatrejs-timelineBox-scrollableArea'
+		@containerNode = El '.theatrejs-timelineEditor-scrollableArea'
 		.inside @box.view.containerNode
 
-		@svgNode = El 'svg:svg.theatrejs-timelineBox-scrollableArea-svgContainer'
+		@svgNode = El 'svg:svg.theatrejs-timelineEditor-scrollableArea-svgContainer'
 		.inside @box.view.containerNode
 
 	_prepareInteractions: ->

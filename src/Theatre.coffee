@@ -1,4 +1,4 @@
-TimelineBoxManager = require './components/timelineBoxManager/Manager'
+TimelineEditorManager = require './components/timelineEditorManager/Manager'
 CursorControl = require './tools/CursorControl'
 El = require 'stupid-dom-interface'
 
@@ -18,4 +18,4 @@ module.exports = class Theatre
 
 		@cursor = new CursorControl
 
-		@timelineBoxManager = new TimelineBoxManager @
+		@timelineEditorManager = new TimelineEditorManager @
