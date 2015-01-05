@@ -1,5 +1,4 @@
-Emitter = require 'utila/lib/Emitter
-'
+Emitter = require 'utila/lib/Emitter'
 Easing = require 'timing-function'
 raf = require 'raf-timing/scripts/js/lib/raf'
 

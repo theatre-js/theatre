@@ -8,7 +8,7 @@ module.exports = class GuidesManager
 		@theatre = @box.theatre
 		@_pool = new GuidesPool @
 
-		do @_initDummyGuides
+		# do @_initDummyGuides
 
 		@
 

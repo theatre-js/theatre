@@ -4,16 +4,16 @@ module.exports = class TimelineEditorManager
 
 	constructor: (@theatre) ->
 
-		@boxes = {}
+		@editors = {}
 
-	addEditor: (name, box) ->
+	addEditor: (name, editor) ->
 
-		if @boxes[name]?
+		if @editors[name]?
 
 			throw Error "A TimeloneEditor named '#{name}' already exists"
 
-		box ?= new Editor @, name
+		editor ?= new Editor @, name
 
-		@boxes[name] = box
+		@editors[name] = editor
 
-		box
+		editor

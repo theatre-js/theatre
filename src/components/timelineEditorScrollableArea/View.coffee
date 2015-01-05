@@ -114,7 +114,7 @@ module.exports = class View extends Emitter
 
 		newLen = newTo - newFrom
 
-		@rewriteFocus newFrom, newLen
+		@rewriteFocusWithoutStopping newFrom, newLen
 
 		return
 
@@ -126,13 +126,17 @@ module.exports = class View extends Emitter
 
 		@rewriteFocus start
 
-	rewriteFocus: (from, len = @model.focusLength) ->
+	rewriteFocus: (from, len) ->
+
+		@rewriteFocusWithoutStopping from, len
+
+		@scrolla.stop()
+
+	rewriteFocusWithoutStopping: (from, len = @model.focusLength) ->
 
 		@model.setTimeFocus from, len
 
 		@scrolla.position = -@timeToAbsoluteX from
-
-		@scrolla.stop()
 
 	_startDragging: ->
 

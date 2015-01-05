@@ -1,5 +1,5 @@
 ScrollableArea = require '../timelineEditorScrollableArea/ScrollableArea'
-GuidesManager = require '../timelineEditorGuides/GuidesManager'
+# GuidesManager = require '../timelineEditorGuides/GuidesManager'
 Panner = require '../timelineEditorPanner/Panner'
 Model = require './Model'
 View = require './View'
@@ -16,6 +16,6 @@ module.exports = class Editor
 
 		@scrollableArea = new ScrollableArea @
 
-		@guidesManager = new GuidesManager @
+		# @guidesManager = new GuidesManager @
 
 		@panner = new Panner @
