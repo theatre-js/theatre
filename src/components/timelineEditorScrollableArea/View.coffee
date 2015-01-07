@@ -12,7 +12,7 @@ module.exports = class View
 
 		@model = @scrollableArea.model
 
-		@box = @scrollableArea.box
+		@editor = @scrollableArea.editor
 
 		do @_initScrolla
 
@@ -41,10 +41,10 @@ module.exports = class View
 	_prepareContainers: ->
 
 		@containerNode = El '.theatrejs-timelineEditor-scrollableArea'
-		.inside @box.view.containerNode
+		.inside @editor.view.containerNode
 
 		@svgNode = El 'svg:svg.theatrejs-timelineEditor-scrollableArea-svgContainer'
-		.inside @box.view.containerNode
+		.inside @editor.view.containerNode
 
 	_prepareInteractions: ->
 
@@ -157,7 +157,7 @@ module.exports = class View
 
 		do @_updateTimeFocus
 
-		@box.view.events.on 'dims-change', => do @_updateDims
+		@editor.view.events.on 'dims-change', => do @_updateDims
 
 		@_updateDims no
 
@@ -174,8 +174,8 @@ module.exports = class View
 
 	_updateDims: (emit = yes) ->
 
-		@width = @box.view.width
-		@height = @box.view.height
+		@width = @editor.view.width
+		@height = @editor.view.height
 
 		@svgNode
 		.attr 'width', "#{@width}px"

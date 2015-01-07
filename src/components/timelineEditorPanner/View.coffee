@@ -8,9 +8,9 @@ module.exports = class View
 
 		@model = @panner.model
 
-		@box = @panner.box
+		@editor = @panner.editor
 
-		@scrollView = @box.scrollableArea.view
+		@scrollView = @editor.scrollableArea.view
 
 		do @_prepareNodes
 
@@ -23,7 +23,7 @@ module.exports = class View
 	_prepareNodes: ->
 
 		@containerNode = El '.theatrejs-timelineEditor-panner'
-		.inside @box.view.containerNode
+		.inside @editor.view.containerNode
 
 		return
 

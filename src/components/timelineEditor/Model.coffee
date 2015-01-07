@@ -2,11 +2,11 @@ PipingEmitter = require 'utila/lib/PipingEmitter'
 
 module.exports = class Model
 
-	constructor: (@box) ->
+	constructor: (@editor) ->
 
 		@events = new PipingEmitter
 
-		# How the size and the position of the box is defined
+		# How the size and the position of the editor is defined
 		@dims =
 
 			# Offset from each corner of the window. Currently only

@@ -3,18 +3,18 @@ El = require 'stupid-dom-interface'
 
 module.exports = class View
 
-	constructor: (@box) ->
+	constructor: (@editor) ->
 
 		@events = new PipingEmitter
 
-		@model = @box.model
+		@model = @editor.model
 
 		do @_prepareContainer
 
 	_prepareContainer: ->
 
 		@containerNode = El '.theatrejs-timelineEditor'
-		.inside @box.theatre.containerNode
+		.inside @editor.theatre.containerNode
 
 		@model.events.on 'dims-change', => @_updateDims
 

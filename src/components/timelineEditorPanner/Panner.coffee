@@ -3,9 +3,9 @@ View = require './View'
 
 module.exports = class Panner
 
-	constructor: (@box) ->
+	constructor: (@editor) ->
 
-		@theatre = @box.theatre
+		@theatre = @editor.theatre
 
 		@model = new Model @
 

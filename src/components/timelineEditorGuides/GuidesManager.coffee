@@ -3,9 +3,9 @@ GuidesPool = require './GuidesPool'
 
 module.exports = class GuidesManager
 
-	constructor: (@box) ->
+	constructor: (@editor) ->
 
-		@theatre = @box.theatre
+		@theatre = @editor.theatre
 		@_pool = new GuidesPool @
 
 		# do @_initDummyGuides

@@ -3,9 +3,9 @@ Model = require './Model'
 
 module.exports = class ScrollableArea
 
-	constructor: (@box) ->
+	constructor: (@editor) ->
 
-		@theatre = @box.theatre
+		@theatre = @editor.theatre
 
 		@model = new Model @
 
