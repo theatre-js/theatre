@@ -1,12 +1,11 @@
-Emitter = require 'utila/lib/Emitter
-'
+PipingEmitter = require 'utila/lib/PipingEmitter'
 El = require 'stupid-dom-interface'
 
-module.exports = class View extends Emitter
+module.exports = class View
 
 	constructor: (@box) ->
 
-		super
+		@events = new PipingEmitter
 
 		@model = @box.model
 
@@ -17,7 +16,7 @@ module.exports = class View extends Emitter
 		@containerNode = El '.theatrejs-timelineEditor'
 		.inside @box.theatre.containerNode
 
-		@model.on 'dims-change', => @_updateDims
+		@model.events.on 'dims-change', => @_updateDims
 
 		window.addEventListener 'resize', => do @_updateDims
 
@@ -46,4 +45,4 @@ module.exports = class View extends Emitter
 		@width = window.innerWidth - dims.left - dims.right
 		@height = dims.height
 
-		@_emit 'dims-change'
+		@events._emit 'dims-change'

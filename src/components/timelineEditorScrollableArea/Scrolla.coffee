@@ -1,14 +1,14 @@
-Emitter = require 'utila/lib/Emitter'
+PipingEmitter = require 'utila/lib/PipingEmitter'
 Easing = require 'timing-function'
 raf = require 'raf-timing/scripts/js/lib/raf'
 
 # From the old TouchAndDomExperiments
 # https://github.com/AriaMinaei/TouchAndDomExperiments
-module.exports = class Scrolla extends Emitter
+module.exports = class Scrolla
 
 	constructor: (options = {}) ->
 
-		super
+		@events = new PipingEmitter
 
 		# Free space to wiggle in.
 		@space = 0
@@ -90,7 +90,7 @@ module.exports = class Scrolla extends Emitter
 
 		@position = +p
 
-		@_emit 'position-change'
+		@events._emit 'position-change'
 
 		@
 

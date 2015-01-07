@@ -25,7 +25,7 @@ module.exports = class Guide
 
 	_registerEvents: ->
 
-		@manager.box.scrollableArea.view.on 'view-change', =>
+		@manager.box.scrollableArea.view.events.on 'view-change', =>
 
 			do @_checkVisibility
 

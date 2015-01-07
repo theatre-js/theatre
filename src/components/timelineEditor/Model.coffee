@@ -1,10 +1,10 @@
-Emitter = require 'utila/lib/Emitter'
+PipingEmitter = require 'utila/lib/PipingEmitter'
 
-module.exports = class Model extends Emitter
+module.exports = class Model
 
 	constructor: (@box) ->
 
-		super
+		@events = new PipingEmitter
 
 		# How the size and the position of the box is defined
 		@dims =

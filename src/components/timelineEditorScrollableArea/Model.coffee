@@ -1,11 +1,10 @@
-Emitter = require 'utila/lib/Emitter
-'
+PipingEmitter = require 'utila/lib/PipingEmitter'
 
-module.exports = class Model extends Emitter
+module.exports = class Model
 
 	constructor: (@scrollableArea) ->
 
-		super
+		@events = new PipingEmitter
 
 		@focusStart = 0
 		@focusLength = 2000
@@ -20,4 +19,4 @@ module.exports = class Model extends Emitter
 
 		@timelineLength = Math.max @focusStart + @focusLength, @filledTimelineLength
 
-		@_emit 'timeFocus-change'
+		@events._emit 'timeFocus-change'

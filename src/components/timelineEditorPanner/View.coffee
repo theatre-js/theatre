@@ -18,7 +18,7 @@ module.exports = class View
 
 		do @_update
 
-		@scrollView.on 'view-change', => do @_update
+		@scrollView.events.on 'view-change', => do @_update
 
 	_prepareNodes: ->
 

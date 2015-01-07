@@ -1,8 +1,7 @@
-Emitter = require 'utila/lib/Emitter
-'
+PipingEmitter = require 'utila/lib/PipingEmitter'
 
-module.exports = class Model extends Emitter
+module.exports = class Model
 
 	constructor: (@panner) ->
 
-		super
+		@events = new PipingEmitter

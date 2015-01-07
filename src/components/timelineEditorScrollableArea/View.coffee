@@ -1,13 +1,12 @@
 Scrolla = require './Scrolla'
-Emitter = require 'utila/lib/Emitter
-'
+PipingEmitter = require 'utila/lib/PipingEmitter'
 El = require 'stupid-dom-interface'
 
-module.exports = class View extends Emitter
+module.exports = class View
 
 	constructor: (@scrollableArea) ->
 
-		super
+		@events = new PipingEmitter
 
 		@theatre = @scrollableArea.theatre
 
@@ -27,7 +26,7 @@ module.exports = class View extends Emitter
 
 		@scrolla = new Scrolla maxStretch: 1500
 
-		@scrolla.on 'position-change', => do @_readPositionFromScrolla
+		@scrolla.events.on 'position-change', => do @_readPositionFromScrolla
 
 		@scrolla
 		.setSizeAndSpace Math.pow(10, 20), 1000
@@ -154,11 +153,11 @@ module.exports = class View extends Emitter
 
 		@timeFocus = start: 0, length: 0
 
-		@model.on 'timeFocus-change', => do @_updateTimeFocus
+		@model.events.on 'timeFocus-change', => do @_updateTimeFocus
 
 		do @_updateTimeFocus
 
-		@box.view.on 'dims-change', => do @_updateDims
+		@box.view.events.on 'dims-change', => do @_updateDims
 
 		@_updateDims no
 
@@ -171,7 +170,7 @@ module.exports = class View extends Emitter
 		@focusLength = @model.focusLength
 		@focusEnd = @focusStart + @focusLength
 
-		@_emit 'view-change'
+		@events._emit 'view-change'
 
 	_updateDims: (emit = yes) ->
 
@@ -184,7 +183,7 @@ module.exports = class View extends Emitter
 
 		@scrolla.setSizeAndSpace null, @width
 
-		@_emit 'view-change' if emit
+		@events._emit 'view-change' if emit
 
 	# Used for the seeker and almost everything else
 	timeToFocusedX: (t) ->
