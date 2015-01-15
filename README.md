@@ -7,6 +7,8 @@
 ## Demo
 
  Take a look at [this page](http://gelobi.org/griddify) if you wanna see a demo. It's our first attempt to use TheatreJS in a real-world project!
+ 
+ **Note**: Please make sure you're not confusing this project with [TheaterJS](https://github.com/Zhouzi/TheaterJS)
 
 ## When will it release?
 
