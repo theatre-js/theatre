@@ -1,5 +1,5 @@
 _PacItem = require './_PacItem'
-UnitBezier = require 'timing-function/scripts/js/lib/UnitBezier'
+UnitBezier = require 'timing-function/lib/UnitBezier'
 
 module.exports = class Connector extends _PacItem
 

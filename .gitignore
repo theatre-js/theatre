@@ -1,18 +1,16 @@
 *.bat
 .htaccess
 
-scripts/js/**
-xeno/**
+lib
+xeno
 node_modules
-pg
-scripts/dist
 
 -p
 
 npm-debug.log
 !*.gitkeep
 
-css
-.sass-cache
+styles/css
+styles/.sass-cache
 
 pg*.*
