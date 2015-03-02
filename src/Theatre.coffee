@@ -9,7 +9,7 @@ module.exports = class Theatre
 
 	constructor: ->
 
-		@containerNode = El '.theatrejs'
+		@containerEl = El '.theatrejs'
 		.inside document.body
 
 		@kilid = new Kilid().getRootScope()

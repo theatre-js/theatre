@@ -13,8 +13,8 @@ module.exports = class View
 
 	_prepareContainer: ->
 
-		@containerNode = El '.theatrejs-timelineEditor'
-		.inside @editor.theatre.containerNode
+		@containerEl = El '.theatrejs-timelineEditor'
+		.inside @editor.theatre.containerEl
 
 		@model.events.on 'dims-change', => @_updateDims
 
@@ -36,7 +36,7 @@ module.exports = class View
 
 		{dims} = @model
 
-		@containerNode
+		@containerEl
 		.css 'left', dims.left + 'px'
 		.css 'right', dims.right + 'px'
 		.css 'height', dims.height + 'px'

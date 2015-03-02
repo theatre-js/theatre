@@ -6,13 +6,11 @@ module.exports = class View
 
 		@theatre = @panner.theatre
 
-		@model = @panner.model
-
 		@editor = @panner.editor
 
 		@scrollView = @editor.scrollableArea.view
 
-		do @_prepareNodes
+		do @_prepareEls
 
 		do @_prepareInteractions
 
@@ -20,10 +18,10 @@ module.exports = class View
 
 		@scrollView.events.on 'view-change', => do @_update
 
-	_prepareNodes: ->
+	_prepareEls: ->
 
-		@containerNode = El '.theatrejs-timelineEditor-panner'
-		.inside @editor.view.containerNode
+		@containerEl = El '.theatrejs-timelineEditor-panner'
+		.inside @editor.view.containerEl
 
 		return
 
@@ -33,7 +31,7 @@ module.exports = class View
 
 		mode = 's'
 
-		moosh.onLeftDrag @containerNode
+		moosh.onLeftDrag @containerEl
 		.withNoKeys()
 		.onStart (e) =>
 
@@ -88,7 +86,7 @@ module.exports = class View
 				cursor.use 'grab'
 
 
-		moosh.onHover @containerNode
+		moosh.onHover @containerEl
 		.withNoKeys()
 		.onEnter cursorPointer
 
@@ -137,8 +135,8 @@ module.exports = class View
 
 			x = 0
 
-		@containerNode.scaleX width / 1000
+		@containerEl.scaleX width / 1000
 
-		@containerNode.x x
+		@containerEl.x x
 
 		return

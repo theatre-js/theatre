@@ -1,7 +1,7 @@
 PipingEmitter = require 'utila/lib/PipingEmitter'
 
-module.exports = class Model
+module.exports = class BarModel
 
-	constructor: (@panner) ->
+	constructor: ->
 
 		@events = new PipingEmitter

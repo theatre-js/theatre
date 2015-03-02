@@ -40,17 +40,17 @@ module.exports = class View
 
 	_prepareContainers: ->
 
-		@containerNode = El '.theatrejs-timelineEditor-scrollableArea'
-		.inside @editor.view.containerNode
+		@containerEl = El '.theatrejs-timelineEditor-scrollableArea'
+		.inside @editor.view.containerEl
 
-		@svgNode = El 'svg:svg.theatrejs-timelineEditor-scrollableArea-svgContainer'
-		.inside @editor.view.containerNode
+		@svgEl = El 'svg:svg.theatrejs-timelineEditor-scrollableArea-svgContainer'
+		.inside @editor.view.containerEl
 
 	_prepareInteractions: ->
 
 		{moosh, cursor} = @theatre
 
-		moosh.onMiddleDrag @containerNode
+		moosh.onMiddleDrag @containerEl
 		.withNoKeys()
 		.onStart =>
 
@@ -70,7 +70,7 @@ module.exports = class View
 
 			do @_endDragging
 
-		moosh.onWheel @containerNode
+		moosh.onWheel @containerEl
 		.onWheel (e) =>
 
 			@multiplyTimeZoom 1 + (-e.delta / 120 / 8), e.layerX
@@ -177,7 +177,7 @@ module.exports = class View
 		@width = @editor.view.width
 		@height = @editor.view.height
 
-		@svgNode
+		@svgEl
 		.attr 'width', "#{@width}px"
 		.attr 'height', "#{@height}px"
 

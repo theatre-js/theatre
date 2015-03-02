@@ -35,3 +35,36 @@
 	position: absolute
 	top: -3px
 	left: -3px
+
+.strip
+
+	position: absolute
+	left: 0
+	right: 0
+
+	&:before
+
+		position: absolute
+		left: 0
+		top: 0
+		bottom: 0
+		width: 6px
+
+		background: white
+		content: " "
+
+	&:nth-child(1):before
+
+		background: rgb(63, 63, 77)
+
+	&:nth-child(2):before
+
+		background: #586E54
+
+	&:nth-child(3):before
+
+		background: #9A4D4D
+
+	&:nth-child(4):before
+
+		background: #33A8A6
