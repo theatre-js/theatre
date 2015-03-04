@@ -1,8 +1,8 @@
 module.exports = class TimelineEditorManager
-	@instantiable: no
+	@type: 'global'
 	@globalDeps:
 		studio: 'studio'
-		di: 'di'
+		componentInjector: 'componentInjector'
 
 	initialize: ->
 		@editors = {}
@@ -13,9 +13,8 @@ module.exports = class TimelineEditorManager
 			throw Error "A TimeloneEditor named '#{name}' already exists"
 
 		unless editor?
-			editor = @di
+			editor = @componentInjector
 			.instantiate('studio-timelineEditor', [this, name])
-			.setName(name)
 
 		@editors[name] = editor
 

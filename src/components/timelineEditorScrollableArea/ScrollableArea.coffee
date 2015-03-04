@@ -2,11 +2,10 @@ View = require './View'
 Model = require './Model'
 
 module.exports = class ScrollableArea
-	@type: 'global'
-	@instantiateWithInstantiationOf: 'studio-timelineEditor'
-	@globalDeps:
-		studio: 'studio'
+	@type: 'leech'
+	@target: 'studio-timelineEditor'
+	@globalDeps: {'studio', 'moosh', 'cursor'}
 
-	initialize: (@editor) ->
-		@model = new Model @
-		@view = new View @
+	constructor: (@editor) ->
+		@model = new Model this
+		@view = new View this

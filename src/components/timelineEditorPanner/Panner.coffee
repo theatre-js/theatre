@@ -1,14 +1,18 @@
 El = require 'stupid-dom-interface'
 
 module.exports = class Panner
-	@instantiable: yes
-	@instantiateWithInstantiationOf: 'studio-timelineEditor'
+	@type: 'leech'
+	@target: 'studio-timelineEditor'
 	@globalDeps:
 		studio: 'studio'
-	@instanceDeps:
+		moosh: 'moosh'
+		cursor: 'cursor'
+	@peerDeps:
 		scrollableArea: 'studio-timelineEditor-scrollableArea'
 
-	initialize: (@editor) ->
+	constructor: (@editor) ->
+		@scrollableArea = @scrollableArea.view
+
 		do @_prepareEls
 		do @_prepareInteractions
 		do @_update
@@ -16,13 +20,12 @@ module.exports = class Panner
 		@scrollableArea.events.on 'view-change', => do @_update
 
 	_prepareEls: ->
-		@containerEl = El '.studiojs-timelineEditor-panner'
+		@containerEl = El '.theatre-timelineEditor-panner'
 		.inside @editor.view.containerEl
 
 	_prepareInteractions: ->
-		{moosh, cursor} = @studio
 		mode = 's'
-		moosh.onLeftDrag @containerEl
+		@moosh.onLeftDrag @containerEl
 		.withNoKeys()
 		.onStart (e) =>
 			if @width - e.layerX < 10
@@ -35,29 +38,29 @@ module.exports = class Panner
 		.onDrag (e) =>
 			switch mode
 				when 's'
-					cursor.use 'grabbing'
+					@cursor.use 'grabbing'
 					@_shiftBy e.relX
 				when 'rr'
-					cursor.use 'ew-resize'
+					@cursor.use 'ew-resize'
 					@_resizeRightBy e.relX
 				when 'rl'
-					cursor.use 'ew-resize'
+					@cursor.use 'ew-resize'
 					@_resizeLeftBy e.relX
 
-		.onEnd => do cursor.free
+		.onEnd => do @cursor.free
 
 		cursorPointer = (e) =>
 			if @width - e.layerX < 10
-				cursor.use 'ew-resize'
+				@cursor.use 'ew-resize'
 			else if e.layerX < 10
-				cursor.use 'ew-resize'
+				@cursor.use 'ew-resize'
 			else
-				cursor.use 'grab'
+				@cursor.use 'grab'
 
-		moosh.onHover @containerEl
+		@moosh.onHover @containerEl
 		.withNoKeys()
 		.onEnter cursorPointer
-		.onLeave (e) => do cursor.free
+		.onLeave (e) => do @cursor.free
 		.onMove cursorPointer
 
 	_shiftBy: (x) ->

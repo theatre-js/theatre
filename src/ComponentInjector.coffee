@@ -100,7 +100,7 @@ module.exports = class ComponentInjector
 				obj[name] = @_instantiatedGlobals[depId]
 			else
 				unless @_globalClasses[depId]?
-					throw Error "Unkown global component '#{depId}'"
+					throw Error "Unkown global component '#{depId}' required by '#{descriptor.id}'"
 				obj[name] = @_instantiateGlobalClass depId
 		return
 
@@ -122,22 +122,24 @@ module.exports = class ComponentInjector
 			obj[name] = @_instantiateLocalClass depId, mapOfResolvedDepIds
 		return
 
-	instantiate: (id) ->
-		@_instantiateLocalClass(id, {})
+	instantiate: (id, constructorArgs = []) ->
+		@_instantiateLocalClass(id, {}, constructorArgs)
 
-	_instantiateLocalClass: (id, mapOfResolvedDepIds) ->
+	_instantiateLocalClass: (id, mapOfResolvedDepIds, constructorArgs) ->
 		descriptor = @_localClasses[id]
 		unless descriptor?
 			throw Error "Unkown local class `#{id}`"
-		@_instantiateLocalOrLeech descriptor, mapOfResolvedDepIds
+		@_instantiateLocalOrLeech descriptor, mapOfResolvedDepIds, constructorArgs
 
-	_instantiateLocalOrLeech: (descriptor, mapOfResolvedDepIds, constructorArgs = []) ->
+	_instantiateLocalOrLeech: (descriptor, mapOfResolvedDepIds, constructorArgs = [], additionalProps = {}) ->
 		{id} = descriptor
 		if mapOfResolvedDepIds[id]?
 			throw Error "Circular dependency involving '#{id}'"
 		mapOfResolvedDepIds[id] = true
 
 		obj = Object.create descriptor.cls.prototype
+		for name, vr of additionalProps
+			obj[name] = vr
 		@_resolveDependenciesAndInitialize descriptor, obj, mapOfResolvedDepIds, constructorArgs
 		obj
 
@@ -153,15 +155,15 @@ module.exports = class ComponentInjector
 		return unless leechDescriptors?
 		listOfLeechIds = for id of leechDescriptors then id
 		deferredLeechIds = []
-		instantiatedLeechIds = []
+		instantiatedLeeches = []
 		loop
 			break if listOfLeechIds.length is 0
 			leechId = listOfLeechIds.shift()
 			leechDescriptor = leechDescriptors[leechId]
-			if leechDescriptor.cls.precedingLeeches?
+			if leechDescriptor.cls.peerDeps?
 				shouldDefer = no
-				for peerLeechId in leechDescriptor.cls.precedingLeeches
-					continue if peerLeechId in instantiatedLeechIds
+				for depName, peerLeechId of leechDescriptor.cls.peerDeps
+					continue if instantiatedLeeches[peerLeechId]?
 					unless peerLeechId in listOfLeechIds
 						throw Error "Leech component '#{leechDescriptor.id}' needs to be peered with non-existing leech component '#{peerLeechId}'"
 					shouldDefer = yes
@@ -174,11 +176,16 @@ module.exports = class ComponentInjector
 					deferredLeechIds.push leechId
 					continue
 
-			@_instantiateLeechClass leechId, targetDescriptor, targetObject, mapOfResolvedDepIds
-			instantiatedLeechIds.push leechId
+			additionalProps = {}
+			if leechDescriptor.cls.peerDeps?
+				for depName, peerLeechId of leechDescriptor.cls.peerDeps
+					additionalProps[depName] = instantiatedLeeches[peerLeechId]
+
+			leechObj = @_instantiateLeechClass leechId, targetDescriptor, targetObject, mapOfResolvedDepIds, additionalProps
+			instantiatedLeeches[leechId] = leechObj
 
 		return
 
-	_instantiateLeechClass: (id, targetDescriptor, targetObject, mapOfResolvedDepIds) ->
+	_instantiateLeechClass: (id, targetDescriptor, targetObject, mapOfResolvedDepIds, additionalProps) ->
 		descriptor = @_leechClasses[id]
-		@_instantiateLocalOrLeech descriptor, mapOfResolvedDepIds, [targetObject]
+		@_instantiateLocalOrLeech descriptor, mapOfResolvedDepIds, [targetObject], additionalProps

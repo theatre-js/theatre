@@ -6,6 +6,6 @@ module.exports = class Editor
 	@globalDeps:
 		studio: 'studio'
 
-	initialize: (@manager, @id) ->
+	constructor: (@manager, @id) ->
 		@model = new Model this
 		@view = new View this

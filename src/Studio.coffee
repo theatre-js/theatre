@@ -1,10 +1,9 @@
-CursorControl = require './tools/CursorControl'
 El = require 'stupid-dom-interface'
-ComponentInjector = require './ComponentInjector'
-componentsMap = require './componentsMap'
-
 Moosh = require 'moosh'
 Kilid = require 'kilid'
+componentsMap = require './componentsMap'
+CursorControl = require './tools/CursorControl'
+ComponentInjector = require './ComponentInjector'
 
 module.exports = class Studio
 
@@ -17,8 +16,8 @@ module.exports = class Studio
 		@containerEl = El '.theatrejs'
 		.inside document.body
 
-		@kilid = new Kilid().getRootScope()
-		@moosh = new Moosh document.body, @kilid
-		@cursor = new CursorControl
+		@componentInjector.register 'kilid', kilid = new Kilid().getRootScope()
+		@componentInjector.register 'moosh', new Moosh document.body, kilid
+		@componentInjector.register 'cursor', new CursorControl
 
 		@componentInjector.initialize()

@@ -29,7 +29,9 @@ describe "ComponentInjector", ->
 
 					c.register 'a', A
 					c.initialize()
-					c.get('a').should.be.instanceof A
+					a = c.get('a')
+					a.should.be.instanceof A
+					a.should.equal c.get('a')
 
 			describe "with dependencies", ->
 
@@ -168,7 +170,7 @@ describe "ComponentInjector", ->
 			c.register 'b', B
 			(-> c.instantiate('a')).should.throw()
 
-	describe "for leech dependencies", ->
+	describe "for leech components", ->
 
 		it "should not instantiate upon #initialize()", ->
 			spy = sinon.spy()
@@ -286,8 +288,9 @@ describe "ComponentInjector", ->
 			class A
 				@type: 'leech'
 				@target: 'g'
-				@precedingLeeches: ['b']
+				@peerDeps: {b: 'b'}
 				constructor: (g) ->
+					g.a = this
 					spyA()
 
 			spyB = sinon.spy()
@@ -304,3 +307,4 @@ describe "ComponentInjector", ->
 
 			c.get('g')
 			spyA.should.have.been.calledAfter spyB
+			c.get('g').a.b.should.be.instanceof B
