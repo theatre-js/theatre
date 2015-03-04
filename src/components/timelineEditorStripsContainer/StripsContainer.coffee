@@ -5,7 +5,7 @@ module.exports = class StripsContainer
 
 	constructor: (@editor) ->
 
-		@theatre = @editor.theatre
+		@studio = @editor.studio
 
 		@events = new PipingEmitter
 

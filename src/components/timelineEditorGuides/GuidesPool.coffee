@@ -8,7 +8,7 @@ module.exports = class GuidesPool
 
 	_createEl: ->
 
-		el = new El '.theatrejs-timelineEditor-guide'
+		el = new El '.studiojs-timelineEditor-guide'
 		.inside @manager.editor.scrollableArea.view.containerEl
 
 	pushEl: (el) ->

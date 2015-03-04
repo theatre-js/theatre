@@ -8,7 +8,7 @@ module.exports = class View
 
 		@events = new PipingEmitter
 
-		@theatre = @scrollableArea.theatre
+		@studio = @scrollableArea.studio
 
 		@model = @scrollableArea.model
 
@@ -40,15 +40,15 @@ module.exports = class View
 
 	_prepareContainers: ->
 
-		@containerEl = El '.theatrejs-timelineEditor-scrollableArea'
+		@containerEl = El '.studiojs-timelineEditor-scrollableArea'
 		.inside @editor.view.containerEl
 
-		@svgEl = El 'svg:svg.theatrejs-timelineEditor-scrollableArea-svgContainer'
+		@svgEl = El 'svg:svg.studiojs-timelineEditor-scrollableArea-svgContainer'
 		.inside @editor.view.containerEl
 
 	_prepareInteractions: ->
 
-		{moosh, cursor} = @theatre
+		{moosh, cursor} = @studio
 
 		moosh.onMiddleDrag @containerEl
 		.withNoKeys()

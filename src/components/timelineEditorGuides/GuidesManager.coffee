@@ -5,7 +5,7 @@ module.exports = class GuidesManager
 
 	constructor: (@editor) ->
 
-		@theatre = @editor.theatre
+		@studio = @editor.studio
 		@_pool = new GuidesPool @
 
 		# do @_initDummyGuides

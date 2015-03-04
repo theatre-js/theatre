@@ -4,7 +4,16 @@
   "description": "(to be) a web based animation studio",
   "main": "lib/Theatre.js",
   "scripts": {
-    "prepublish": "coffee --bare --compile --output ./lib ./src"
+    "test": "mocha \"test/**/*.coffee\"",
+    "test:watch": "mocha \"test/**/*.coffee\" --watch",
+
+    "compile": "coffee --bare --compile --output ./lib ./src",
+    "compile:watch": "jitter src lib -b",
+
+    "watch": "npm run compile:watch & npm run test:watch",
+    "winwatch": "start/b npm run compile:watch & npm run test:watch",
+
+    "prepublish": "npm run compile"
   },
   "repository": {
     "type": "git",
@@ -31,9 +40,13 @@
   },
   "devDependencies": {
     "chai": "^1.10.0",
-    "coffee-script": "^1.8.0",
+    "chai-changes": "^1.3.4",
+    "chai-fuzzy": "^1.4.0",
+    "coffee-script": "^1.9.0",
+    "jitter": "^1.3.0",
     "mocha": "^2.0.1",
     "mocha-pretty-spec-reporter": "0.1.0-beta.1",
-    "sweetify": "^0.4.0"
+    "sinon": "^1.12.2",
+    "sinon-chai": "^2.6.0"
   }
 }
