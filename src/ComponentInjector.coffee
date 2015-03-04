@@ -151,11 +151,34 @@ module.exports = class ComponentInjector
 	_resolveLeeches: (targetDescriptor, targetObject, mapOfResolvedDepIds) ->
 		leechDescriptors = @_leechesByTarget[targetDescriptor.id]
 		return unless leechDescriptors?
-		for id, leechDescriptor of leechDescriptors
-			@_instantiateLeechClass id, targetDescriptor, targetObject, mapOfResolvedDepIds
+		listOfLeechIds = for id of leechDescriptors then id
+		deferredLeechIds = []
+		instantiatedLeechIds = []
+		loop
+			break if listOfLeechIds.length is 0
+			leechId = listOfLeechIds.shift()
+			leechDescriptor = leechDescriptors[leechId]
+			if leechDescriptor.cls.precedingLeeches?
+				shouldDefer = no
+				for peerLeechId in leechDescriptor.cls.precedingLeeches
+					continue if peerLeechId in instantiatedLeechIds
+					unless peerLeechId in listOfLeechIds
+						throw Error "Leech component '#{leechDescriptor.id}' needs to be peered with non-existing leech component '#{peerLeechId}'"
+					shouldDefer = yes
+					break
+
+				if shouldDefer
+					if leechId in deferredLeechIds
+						throw Error "Looks like there is a circular dependency involving '#{leechId}'"
+					listOfLeechIds.push leechId
+					deferredLeechIds.push leechId
+					continue
+
+			@_instantiateLeechClass leechId, targetDescriptor, targetObject, mapOfResolvedDepIds
+			instantiatedLeechIds.push leechId
+
 		return
 
 	_instantiateLeechClass: (id, targetDescriptor, targetObject, mapOfResolvedDepIds) ->
 		descriptor = @_leechClasses[id]
-
 		@_instantiateLocalOrLeech descriptor, mapOfResolvedDepIds, [targetObject]

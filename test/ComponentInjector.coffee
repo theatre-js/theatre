@@ -197,3 +197,110 @@ describe "ComponentInjector", ->
 
 			b = c.instantiate('b')
 			spy.should.have.been.calledWith b
+
+		it "should support global and local dependencies", ->
+			spy = sinon.spy()
+			class A
+				@type: 'leech'
+				@target: 'b'
+				@globalDeps: {g: 'g'}
+				@localDeps: {l: 'l'}
+				constructor: (target) ->
+					spy target
+					target.leecher = this
+			class B
+				@type: 'local'
+			class G
+				@type: 'global'
+			class L
+				@type: 'local'
+
+			c.register 'a', A
+			c.register 'b', B
+			c.register 'g', G
+			c.register 'l', L
+
+			b = c.instantiate('b')
+			spy.should.have.been.calledWith b
+			b.leecher.g.should.equal c.get 'g'
+			b.leecher.l.should.be.instanceof L
+
+		it "should support leeches for global components", ->
+
+			spy = sinon.spy()
+
+			class A
+				@type: 'leech'
+				@target: 'g'
+				constructor: (target) ->
+					spy target
+					target.leecher = this
+
+			class G
+				@type: 'global'
+
+			c.register 'a', A
+			c.register 'g', G
+
+			g = c.get('g')
+
+			spy.should.have.been.calledWith g
+			g.leecher.should.be.instanceof A
+
+		it "should support leeches for other leeches", ->
+
+			class L1
+				@type: 'leech'
+				@target: 'l2'
+				constructor: (target) ->
+					target.leecher = this
+
+			class L2
+				@type: 'leech'
+				@target: 'g'
+				constructor: (target) ->
+					target.leecher = this
+
+			class G
+				@type: 'global'
+
+			c.register 'l1', L1
+			c.register 'l2', L2
+			c.register 'g', G
+
+			g = c.get('g')
+
+			l2 = g.leecher
+			l2.should.be.instanceof L2
+
+			l1 = l2.leecher
+			l1.should.be.instanceof L1
+
+		it "should support preceding leeches", ->
+
+			class G
+				@type: 'global'
+
+			spyA = sinon.spy()
+
+			class A
+				@type: 'leech'
+				@target: 'g'
+				@precedingLeeches: ['b']
+				constructor: (g) ->
+					spyA()
+
+			spyB = sinon.spy()
+
+			class B
+				@type: 'leech'
+				@target: 'g'
+				constructor: ->
+					spyB()
+
+			c.register 'g', G
+			c.register 'a', A
+			c.register 'b', B
+
+			c.get('g')
+			spyA.should.have.been.calledAfter spyB
