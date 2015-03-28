@@ -1,15 +1,15 @@
-ComponentInjector = require '../src/ComponentInjector'
+Dee = require '../src/Dee'
 
-describe "ComponentInjector", ->
+describe "Dee", ->
 
 	c = null
 	beforeEach ->
-		c = new ComponentInjector
+		c = new Dee
 
 	describe "constructor()", ->
 
 		it "should work", ->
-			(-> new ComponentInjector).should.not.throw()
+			(-> new Dee).should.not.throw()
 
 	describe "for global components", ->
 
@@ -29,7 +29,9 @@ describe "ComponentInjector", ->
 
 					c.register 'a', A
 					c.initialize()
+
 					a = c.get('a')
+
 					a.should.be.instanceof A
 					a.should.equal c.get('a')
 
@@ -39,23 +41,31 @@ describe "ComponentInjector", ->
 					class A
 						@type: 'global'
 						@globalDeps: 'b': 'b'
+
 					class B
 						@type: 'global'
+
 					c.register 'a', A
 					c.register 'b', B
+
 					c.initialize()
+
 					expect(c.get('a').b).to.equal c.get('b')
 
 				it "should resolve circular dependencies", ->
 					class A
 						@type: 'global'
 						@globalDeps: 'b': 'b'
+
 					class B
 						@type: 'global'
 						@globalDeps: 'a': 'a'
+
 					c.register 'a', A
 					c.register 'b', B
+
 					c.initialize()
+
 					expect(c.get('a').b).to.equal c.get('b')
 					expect(c.get('b').a).to.equal c.get('a')
 
@@ -63,14 +73,18 @@ describe "ComponentInjector", ->
 
 				it "should not instantiate on #initialize()", ->
 					spy = sinon.spy()
+
 					class A
 						@type: 'global'
 						@lazy: yes
+
 						constructor: ->
 							spy()
 
 					c.register 'a', A
+
 					c.initialize()
+
 					spy.should.not.have.been.called
 
 				it "should instantiate on demand", ->
@@ -150,12 +164,15 @@ describe "ComponentInjector", ->
 			class A
 				@type: 'local'
 				@localDeps: 'b': 'b'
+
 			class B
 				@type: 'local'
 
 			c.register 'a', A
 			c.register 'b', B
+
 			a = c.instantiate('a')
+
 			expect(a.b).to.be.instanceof B
 
 		it "should detect circular dependencies in local deps", ->
@@ -170,12 +187,12 @@ describe "ComponentInjector", ->
 			c.register 'b', B
 			(-> c.instantiate('a')).should.throw()
 
-	describe "for leech components", ->
+	describe "for attachment components", ->
 
 		it "should not instantiate upon #initialize()", ->
 			spy = sinon.spy()
 			class A
-				@type: 'leech'
+				@type: 'attachment'
 				@target: 'something'
 				constructor: (target) ->
 					spy target
@@ -187,10 +204,11 @@ describe "ComponentInjector", ->
 		it "should instantiate upon instantiation of target", ->
 			spy = sinon.spy()
 			class A
-				@type: 'leech'
+				@type: 'attachment'
 				@target: 'b'
 				constructor: (target) ->
 					spy target
+
 			class B
 				@type: 'local'
 
@@ -198,22 +216,26 @@ describe "ComponentInjector", ->
 			c.register 'b', B
 
 			b = c.instantiate('b')
+
 			spy.should.have.been.calledWith b
 
 		it "should support global and local dependencies", ->
 			spy = sinon.spy()
 			class A
-				@type: 'leech'
+				@type: 'attachment'
 				@target: 'b'
 				@globalDeps: {g: 'g'}
 				@localDeps: {l: 'l'}
 				constructor: (target) ->
 					spy target
-					target.leecher = this
+					target.attachmenter = this
+
 			class B
 				@type: 'local'
+
 			class G
 				@type: 'global'
+
 			class L
 				@type: 'local'
 
@@ -223,20 +245,21 @@ describe "ComponentInjector", ->
 			c.register 'l', L
 
 			b = c.instantiate('b')
-			spy.should.have.been.calledWith b
-			b.leecher.g.should.equal c.get 'g'
-			b.leecher.l.should.be.instanceof L
 
-		it "should support leeches for global components", ->
+			spy.should.have.been.calledWith b
+			b.attachmenter.g.should.equal c.get 'g'
+			b.attachmenter.l.should.be.instanceof L
+
+		it "should support attachmentes for global components", ->
 
 			spy = sinon.spy()
 
 			class A
-				@type: 'leech'
+				@type: 'attachment'
 				@target: 'g'
 				constructor: (target) ->
 					spy target
-					target.leecher = this
+					target.attachmenter = this
 
 			class G
 				@type: 'global'
@@ -247,21 +270,21 @@ describe "ComponentInjector", ->
 			g = c.get('g')
 
 			spy.should.have.been.calledWith g
-			g.leecher.should.be.instanceof A
+			g.attachmenter.should.be.instanceof A
 
-		it "should support leeches for other leeches", ->
+		it "should support attachmentes for other attachmentes", ->
 
 			class L1
-				@type: 'leech'
+				@type: 'attachment'
 				@target: 'l2'
 				constructor: (target) ->
-					target.leecher = this
+					target.attachmenter = this
 
 			class L2
-				@type: 'leech'
+				@type: 'attachment'
 				@target: 'g'
 				constructor: (target) ->
-					target.leecher = this
+					target.attachmenter = this
 
 			class G
 				@type: 'global'
@@ -272,13 +295,13 @@ describe "ComponentInjector", ->
 
 			g = c.get('g')
 
-			l2 = g.leecher
+			l2 = g.attachmenter
 			l2.should.be.instanceof L2
 
-			l1 = l2.leecher
+			l1 = l2.attachmenter
 			l1.should.be.instanceof L1
 
-		it "should support preceding leeches", ->
+		it "should support preceding attachmentes", ->
 
 			class G
 				@type: 'global'
@@ -286,7 +309,7 @@ describe "ComponentInjector", ->
 			spyA = sinon.spy()
 
 			class A
-				@type: 'leech'
+				@type: 'attachment'
 				@target: 'g'
 				@peerDeps: {b: 'b'}
 				constructor: (g) ->
@@ -296,7 +319,7 @@ describe "ComponentInjector", ->
 			spyB = sinon.spy()
 
 			class B
-				@type: 'leech'
+				@type: 'attachment'
 				@target: 'g'
 				constructor: ->
 					spyB()

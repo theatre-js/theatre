@@ -2,10 +2,11 @@ PipingEmitter = require 'utila/lib/PipingEmitter'
 El = require 'stupid-dom-interface'
 
 module.exports = class View
-
 	constructor: (@editor) ->
 		@events = new PipingEmitter
+
 		@model = @editor.model
+
 		do @_prepareContainer
 
 	_prepareContainer: ->

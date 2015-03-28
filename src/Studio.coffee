@@ -3,12 +3,12 @@ Moosh = require 'moosh'
 Kilid = require 'kilid'
 componentsMap = require './componentsMap'
 CursorControl = require './tools/CursorControl'
-ComponentInjector = require './ComponentInjector'
+Dee = require './Dee'
 
 module.exports = class Studio
 
 	constructor: ->
-		@componentInjector = new ComponentInjector
+		@componentInjector = new Dee
 		@componentInjector.register 'componentInjector', @componentInjector
 		@componentInjector.register 'studio', this
 		@componentInjector.register componentsMap

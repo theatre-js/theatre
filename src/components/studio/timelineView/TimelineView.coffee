@@ -1,5 +1,5 @@
 Model = require './Model'
-View = require './View'
+Presenter = require './Presenter'
 
 module.exports = class Editor
 	@type: 'local'
@@ -8,4 +8,4 @@ module.exports = class Editor
 
 	constructor: (@manager, @id) ->
 		@model = new Model this
-		@view = new View this
+		@view = new Presenter this
