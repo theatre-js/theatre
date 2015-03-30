@@ -55,6 +55,7 @@ module.exports = class EditorModel extends _Emitter
 
 		@mainBox.loadFrom se.mainBox if se.mainBox?
 
+
 		@workspaces.loadFrom se.workspaces if se.workspaces?
 
 		@timeControl.loadFrom se.timeControl if se.timeControl?

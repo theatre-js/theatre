@@ -10,16 +10,16 @@ module.exports = class Connector extends _PacItem
 		super
 
 		# first, lets make sure no connector sits at t
-		if @pacs._connectorExistsAt t
+		if @pacs._connectorExistsAt @t
 
 			throw Error "Another connector already exists at t"
 
 		# lets find the point that sits before the connector
-		prevPointIndex = @pacs._getIndexOfItemBeforeOrAt t
+		prevPointIndex = @pacs._getIndexOfItemBeforeOrAt @t
 		prevPoint = @pacs._getItemByIndex prevPointIndex
 
 		# make sure the point sits exactly on this t
-		unless prevPoint? and prevPoint.t is t
+		unless prevPoint? and prevPoint.t is @t
 
 			throw Error "No point sits at this t"
 
@@ -34,7 +34,7 @@ module.exports = class Connector extends _PacItem
 		@pacs._injectConnectorOn @, nextPointIndex
 
 		# things have changed from the previous point to the next point
-		@pacs._setUpdateRange t, nextPoint.t
+		@pacs._setUpdateRange @t, nextPoint.t
 
 		@bezier = new UnitBezier 0, 0, 0, 0
 

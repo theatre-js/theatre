@@ -6,7 +6,7 @@ module.exports = class Communicator
 
 		@connection = new ConnectionToServer @
 
-		@connection.connect().then @_load
+		@connection.connect().done @_load
 
 		@_loaded = no
 
@@ -14,7 +14,7 @@ module.exports = class Communicator
 
 		console.log 'asking for head-data' if @editor.debug
 
-		@connection.request('head-data').then (data) =>
+		@connection.request('head-data').done (data) =>
 
 			console.log 'received head-data', data if @editor.debug
 
@@ -44,7 +44,7 @@ module.exports = class Communicator
 
 		@connection.request('replace-part-of-head', req)
 
-		.then (response) =>
+		.done (response) =>
 
 			console.log 'server responded for', address, response if @editor.debug
 
