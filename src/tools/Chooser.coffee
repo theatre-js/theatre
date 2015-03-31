@@ -62,6 +62,8 @@ module.exports = class Asker
 
 		@_cb = cb
 
+		@choicesNode.node.innerHTML = ''
+
 		@questionNode.node.innerHTML = q
 
 		for c in choices then do (c) =>

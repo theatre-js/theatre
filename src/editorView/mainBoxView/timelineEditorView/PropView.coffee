@@ -90,39 +90,36 @@ module.exports = class PropView
 		top = parseInt(@pacsNode.computedStyle('top')) || 0
 
 		@rootView.moosh.onHover(@node)
-		.withKeys('ctrl+shift')
+		.withKeys('ctrl')
 		.onEnter (e) =>
-
 			@rootView.cursor.use 'none'
-
-			@hypotheticalPointNode
-			.moveXTo(e.layerX)
-			.moveYTo(e.layerY - top)
-
-		.onMove (e) =>
 
 			t = @timelineEditor._XToFocusedTime e.layerX
 			x = @timelineEditor._timeToX t
 
 			@hypotheticalPointNode
 			.moveXTo(x)
-			.moveYTo(e.layerY - top)
+			.moveYTo(e.layerY - top - 18)
+
+		.onMove (e) =>
+			t = @timelineEditor._XToFocusedTime e.layerX
+			x = @timelineEditor._timeToX t
+
+			@hypotheticalPointNode
+			.moveXTo(x)
+			.moveYTo(e.layerY - top - 18)
 
 		.onLeave =>
-
 			@rootView.cursor.free()
-
 			@hypotheticalPointNode.moveTo(-1000, -1000, 1)
 
 		@rootView.moosh.onClick(@node)
-		.withKeys('ctrl+shift')
+		.withKeys('ctrl')
 		.onUp (e) =>
-
 			t = @timelineEditor._XToFocusedTime e.layerX
-			val = @_YToVal e.layerY - top
+			val = @_YToVal e.layerY - top - 18
 
-			@pacs.addPoint t, val, 100, val * 0.1, 100, val * 0.1
-
+			@pacs.addPoint t, val, 100, 0, 100, 0
 			@pacs.done()
 
 		@hypotheticalPointNode = Foxie('.theatrejs-timelineEditor-prop-pacs-hypotheticalPoint')
@@ -151,8 +148,7 @@ module.exports = class PropView
 
 			@_propHolderModel.setHeight @_propHolderModel.getHeight() + e.relY
 
-		@rootView.moosh.onMiddleClick @node
-		.withKeys('ctrl')
+		@rootView.moosh.onRightClick @node
 		.onUp =>
 
 			do @_showPropOptions

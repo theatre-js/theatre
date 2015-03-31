@@ -40,6 +40,18 @@ module.exports = class ActorModel
 
 		prop
 
+	addProp: (name, initial, cb) ->
+
+		if @props[name]?
+
+			throw Error "prop with name '#{name}' already exists in actor '#{@id}'"
+
+		propId = @id + '-' + name
+
+		timelineProp = @timeline.addProp(propId, initial, cb)
+
+		@props[name] = prop = new ActorPropModel @, name, timelineProp
+
 	useProp: (name, timelineProp) ->
 
 		if @props[name]?

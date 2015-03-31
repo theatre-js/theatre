@@ -178,27 +178,29 @@ module.exports = class Selection
 
 			@rootView.cursor.free()
 
-		@rootView.moosh.onMiddleClick @leftEdge
+		@rootView.moosh.onClick @leftEdge
+		.withKeys "ctrl"
 		.onDone =>
 
 			@_selectByTime 0, @_toTime
 
 			do @_endSelecting
 
-		@rootView.moosh.onMiddleClick @rightEdge
+		@rootView.moosh.onClick @rightEdge
+		.withKeys "ctrl"
 		.onDone =>
 
 			@_selectByTime @_fromTime, @prop.pacs.timeline.duration
 
 			do @_endSelecting
 
-		@rootView.moosh.onMiddleClick @node
+		@rootView.moosh.onRightClick @node
 		.withNoKeys()
 		.onDone =>
 
 			do @_showModifySelectionOptions
 
-		@rootView.moosh.onMiddleClick @node
+		@rootView.moosh.onRightClick @node
 		.withKeys 'ctrl'
 		.onDone =>
 

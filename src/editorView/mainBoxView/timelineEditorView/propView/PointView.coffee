@@ -72,12 +72,11 @@ module.exports = class PointView extends _ItemView
 
 		.withNoKeys()
 
-		@rootView.moosh.onMiddleClick @node
+		@rootView.moosh.onRightClick @node
+		.withNoKeys()
 		.onUp =>
 
 			do @_showPointModificationOptions
-
-		.withNoKeys()
 
 	_prepareNodeRemovalInteractions: ->
 
@@ -366,14 +365,14 @@ module.exports = class PointView extends _ItemView
 
 	_setupHandlerModifications: ->
 
-		@rootView.moosh.onMiddleClick @leftHandler
+		@rootView.moosh.onRightClick @leftHandler
 		.onUp =>
 
 			@_showHandlerModificationOptions 'left'
 
 		.withNoKeys()
 
-		@rootView.moosh.onMiddleClick @rightHandler
+		@rootView.moosh.onRightClick @rightHandler
 		.onUp =>
 
 			@_showHandlerModificationOptions 'right'

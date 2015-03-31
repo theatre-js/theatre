@@ -2,6 +2,7 @@ array = require 'utila/lib/array'
 _Emitter = require './_Emitter'
 PropOfArray = require './dynamicTimeline/PropOfArray'
 PropOfObject = require './dynamicTimeline/PropOfObject'
+CallbackProp = require './dynamicTimeline/CallbackProp'
 EventsController = require './dynamicTimeline/EventsController'
 IncrementalIsolate = require './dynamicTimeline/IncrementalIsolate'
 
@@ -134,6 +135,14 @@ module.exports = class DynamicTimeline extends _Emitter
 			throw Error "Object '#{objectName}' doesn't have '#{setter}'"
 
 		@_regularProps[id] = @_allProps[id] = new PropOfObject @, id, objectName, setter, initial
+
+	addProp: (id, initial, callback) ->
+
+		if @_allProps[id]?
+
+			throw Error "A prop named '#{id}' already exists"
+
+		@_regularProps[id] = @_allProps[id] = new CallbackProp @, id, initial, callback
 
 	defineIncrementalIsolate: (id, isolate) ->
 
