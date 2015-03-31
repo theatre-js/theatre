@@ -81,7 +81,7 @@ module.exports = class PointView extends _ItemView
 	_prepareNodeRemovalInteractions: ->
 
 		@rootView.moosh.onHover(@node)
-		.withKeys('ctrl')
+		.withKeys('super')
 		.onEnter =>
 
 			@node.addClass 'hint-remove'
@@ -91,7 +91,7 @@ module.exports = class PointView extends _ItemView
 			@node.removeClass 'hint-remove'
 
 		@rootView.moosh.onClick(@node)
-		.withKeys('ctrl')
+		.withKeys('super')
 		.onUp =>
 
 			@model.remove()
@@ -107,7 +107,7 @@ module.exports = class PointView extends _ItemView
 		sideToConnect = 0
 
 		@rootView.moosh.onDrag(@node)
-		.withKeys('ctrl')
+		.withKeys('super')
 		.onDown =>
 
 			couldConnectToLeft = @model.canConnectToLeft()

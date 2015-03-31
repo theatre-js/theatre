@@ -3,12 +3,15 @@ array = require 'utila/lib/array'
 PropViewRepo = require './timelineEditorView/PropViewRepo'
 SelectionManager = require './timelineEditorView/SelectionManager'
 GuidesManagerView = require './timelineEditorView/GuidesManagerView'
+fn = require '../../tools/fn'
 
 module.exports = class TimelineEditorView
 
 	constructor: (@mainBox) ->
 
 		@model = @mainBox.editor.model.timelineEditor
+
+		@editorModel = @mainBox.editor.model
 
 		@rootView = @mainBox.rootView
 
@@ -43,6 +46,8 @@ module.exports = class TimelineEditorView
 		do @_prepareListeners
 
 		@_firstPropAdded = no
+
+		@_prepareScrollCache()
 
 	_prepareListeners: ->
 
@@ -113,9 +118,42 @@ module.exports = class TimelineEditorView
 
 			@mainBox.seekbar._zoomFocus 1 + (-e.delta / 120 / 8), e.layerX
 
-	_updateScrollTopFromModel: ->
+		@rootView.moosh.onWheel(@node)
+		.withNoKeys()
+		.onWheel (e) =>
+			if e.originalEvent.ctrlKey
+				@mainBox.seekbar._zoomFocus 1 + (-e.delta / 120 / 8 / 5), e.layerX
+			else
+				@mainBox.seekbar._dragFocusBy e.originalEvent.deltaX
+				@_dragScrollBy e.originalEvent.deltaY
 
-		@node.node.scrollTop = @model.scrollTop|0
+			e.preventDefault()
+
+	_prepareScrollCache: ->
+		update = => setTimeout @updateScrollCache, 200
+		update = fn.throttle update, 200
+
+		@editorModel.mainBox.on 'height-change', update
+		@model.on 'prop-add', update
+		@model.on 'prop-remove', update
+
+		update()
+
+	updateScrollCache: =>
+		@_maxScroll = @node.node.scrollHeight - @node.node.getBoundingClientRect().height
+
+	_updateScrollTopFromModel: ->
+		t = @model.scrollTop|0
+
+		if t < 0
+			@model._setScroll 0
+			return
+
+		if t > @_maxScroll
+			@model._setScroll @_maxScroll
+			return
+
+		@node.node.scrollTop = t
 
 	_dragScrollBy: (amount) ->
 

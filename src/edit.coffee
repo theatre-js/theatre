@@ -26,7 +26,12 @@ module.exports = (port, file, audio = no, debug = yes, autoRaf = yes) ->
 
 		raf frame
 
-	model.communicateWith 'http://localhost:' + port, file, "nopass"
+	server = if typeof port is 'number'
+		'http://localhost:' + port
+	else
+		port
+
+	model.communicateWith server, file, "nopass"
 
 	graph = model.graph
 

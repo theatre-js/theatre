@@ -12,4 +12,4 @@ npm-debug.log
 !*.gitkeep
 
 styles/sass
-styles/.sass-cache
+.sass-cache

@@ -38,7 +38,7 @@ module.exports = class ConnectorView extends _ItemView
 		.attr('fill', 'transparent')
 
 		@rootView.moosh.onHover(@node)
-		.withKeys('ctrl')
+		.withKeys('super')
 		.onEnter =>
 
 			@node.attr('stroke', 'red')
@@ -48,7 +48,7 @@ module.exports = class ConnectorView extends _ItemView
 			@node.attr('stroke', '#367c89')
 
 		@rootView.moosh.onClick(@node)
-		.withKeys('ctrl')
+		.withKeys('super')
 		.onUp =>
 
 			do @model.remove

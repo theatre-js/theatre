@@ -179,7 +179,7 @@ module.exports = class Selection
 			@rootView.cursor.free()
 
 		@rootView.moosh.onClick @leftEdge
-		.withKeys "ctrl"
+		.withKeys "super"
 		.onDone =>
 
 			@_selectByTime 0, @_toTime
@@ -187,7 +187,7 @@ module.exports = class Selection
 			do @_endSelecting
 
 		@rootView.moosh.onClick @rightEdge
-		.withKeys "ctrl"
+		.withKeys "super"
 		.onDone =>
 
 			@_selectByTime @_fromTime, @prop.pacs.timeline.duration
@@ -201,7 +201,7 @@ module.exports = class Selection
 			do @_showModifySelectionOptions
 
 		@rootView.moosh.onRightClick @node
-		.withKeys 'ctrl'
+		.withKeys 'super'
 		.onDone =>
 
 			do @_toggleGrouping

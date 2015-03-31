@@ -62,6 +62,8 @@ module.exports = class TimelineEditorModel extends _DynamicModel
 
 	_setScroll: (scrollTop) ->
 
+		scrollTop = Math.max(scrollTop, 0)
+
 		@_setScrollTopFromUser scrollTop
 
 		@_emit 'scroll-change'

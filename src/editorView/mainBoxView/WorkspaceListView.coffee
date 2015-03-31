@@ -44,7 +44,7 @@ module.exports = class WorkspaceListView extends _Emitter
 			ws.activate()
 
 		@rootView.moosh.onClick(wsNode)
-		.withKeys('ctrl')
+		.withKeys('super')
 		.onDone (e) =>
 
 			@rootView.moosh.ignore(wsNode)
@@ -70,7 +70,7 @@ module.exports = class WorkspaceListView extends _Emitter
 	_attachCtrl: (node) ->
 
 		@rootView.moosh.onHover(node)
-		.withKeys('ctrl')
+		.withKeys('super')
 		.onEnter =>
 
 			node.classList.add 'pre-edit'
@@ -95,7 +95,7 @@ module.exports = class WorkspaceListView extends _Emitter
 
 			@_discardEdit()
 
-		@rootView.kilidScopeForEdit.on('ctrl+delete')
+		@rootView.kilidScopeForEdit.on('super+delete')
 		.onEnd (e) =>
 
 			@currentEdit.innerHTML = ''

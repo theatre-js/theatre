@@ -90,7 +90,7 @@ module.exports = class PropView
 		top = parseInt(@pacsNode.computedStyle('top')) || 0
 
 		@rootView.moosh.onHover(@node)
-		.withKeys('ctrl')
+		.withKeys('super')
 		.onEnter (e) =>
 			@rootView.cursor.use 'none'
 
@@ -114,7 +114,7 @@ module.exports = class PropView
 			@hypotheticalPointNode.moveTo(-1000, -1000, 1)
 
 		@rootView.moosh.onClick(@node)
-		.withKeys('ctrl')
+		.withKeys('super')
 		.onUp (e) =>
 			t = @timelineEditor._XToFocusedTime e.layerX
 			val = @_YToVal e.layerY - top - 18
@@ -204,7 +204,7 @@ module.exports = class PropView
 		.withKeys('alt')
 		.onDrag (e) =>
 
-			if e.absX <= -20
+			if e.absX <= -50
 
 				e.cancel()
 
@@ -282,6 +282,8 @@ module.exports = class PropView
 		@_height = nodeHeight - 40
 
 		@node.css 'height', nodeHeight + 'px'
+
+		@timelineEditor.updateScrollCache()
 
 		return
 

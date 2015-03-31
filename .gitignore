@@ -11,6 +11,6 @@ npm-debug.log
 !*.gitkeep
 
 styles/css
-styles/.sass-cache
+.sass-cache
 
 pg*.*
