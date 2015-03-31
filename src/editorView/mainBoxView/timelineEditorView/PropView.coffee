@@ -201,22 +201,22 @@ module.exports = class PropView
 			@_propHolderModel.toggleExpansion()
 
 		@rootView.moosh.onDrag(@info)
-		.withNoKeys()
+		.withKeys('alt')
 		.onDrag (e) =>
 
-			if e.relX <= -20
+			if e.absX <= -20
 
 				e.cancel()
 
 				@_propHolderModel.removeFromWorkspace()
 
-			else if e.relY <= -20
+			else if e.absY <= -20
 
 				e.cancel()
 
 				@_propHolderModel.shiftUp()
 
-			else if e.relY >= 20
+			else if e.absY >= 20
 
 				e.cancel()
 
