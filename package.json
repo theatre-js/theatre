@@ -1,6 +1,6 @@
 {
   "name": "theatrejs",
-  "version": "0.1.0-beta.21",
+  "version": "0.3.0-beta.1",
   "description": "(to be) a timeline-based animation editor for the web",
   "main": "lib/Theatre.js",
   "scripts": {
