@@ -1,6 +1,6 @@
 {
   "name": "theatrejs",
-  "version": "0.3.0-beta.3",
+  "version": "0.3.0-beta.4",
   "description": "(to be) a timeline-based animation editor for the web",
   "main": "lib/Theatre.js",
   "scripts": {
@@ -31,7 +31,7 @@
     "kilid": "0.2.0",
     "moosh": "~0.2.0-beta.1",
     "socket.io": "~0.9.16",
-    "theatrejs-data-server": "~0.1.0-dev.2",
+    "theatrejs-data-server": "~0.1.0-beta.1",
     "timing-function": "^0.2.3",
     "utila": "~0.4.0",
     "when": "~2.7.1"
