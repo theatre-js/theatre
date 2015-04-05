@@ -194,13 +194,20 @@ module.exports = class Pacs extends _ChronologyContainer
 
 			vals = []
 
+			connectionExistsOnLeft = no
+
 			for item in @chronology
 
 				continue if item instanceof Connector
 
 				vals.push item.value
-				vals.push item.value + item.leftHandler[1]
-				vals.push item.value + item.rightHandler[1]
+
+				vals.push item.value + item.leftHandler[1] if connectionExistsOnLeft
+
+				connectionExistsOnLeft = no
+				if item.isConnectedToTheRight()
+					connectionExistsOnLeft = yes
+					vals.push item.value + item.rightHandler[1]
 
 			peak = Math.max.apply Math, vals
 			bottom = Math.min.apply Math, vals
