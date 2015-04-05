@@ -1,10 +1,11 @@
-PipingEmitter = require 'utila/lib/PipingEmitter'
+Emitter = require 'utila/lib/events/Emitter'
 
 module.exports = class Model
+	@type: 'local'
 
-	constructor: (@editor) ->
+	constructor: ->
 
-		@events = new PipingEmitter
+		@events = new Emitter
 
 		# How the size and the position of the editor is defined
 		@dims =

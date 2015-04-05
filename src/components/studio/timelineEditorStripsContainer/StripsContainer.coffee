@@ -1,7 +1,18 @@
 module.exports = class StripsContainer
-	@type: 'leech'
-	@target: 'studio-timelineEditor'
+	@type: 'attachment'
+	@target: 'studio-timelineView'
 	@globalDeps: {'moosh'}
 
-	constructor: (@editor) ->
-		@editor.stripsContainer = this
+	constructor: (@_timelineView) ->
+		@_timelineView.strips = this
+
+	getContainers: -> # [StripContainer]
+	getContainerByIndex: -> # StripContainer
+	createContainer: -> # StripContainer
+	addContainer: (container: Container, onIndex: Int?) ->
+	addContainerById: (containerId : Int, onIndex: Int?) ->
+	setContainers: (containers: [Container]) ->
+	setContainersById: (ids: [Int]) ->
+	removeContainerById: ->
+	clear: ->
+

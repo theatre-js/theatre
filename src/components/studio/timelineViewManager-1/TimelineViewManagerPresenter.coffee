@@ -38,8 +38,7 @@ module.exports = class TimelineViewManagerPresenter
 
 			elemento.setOrder order
 
-		oldElementsList = @_elementsList
-		for elemento in oldElementsList
+		for elemento in @_elementsList
 			unless newElementsByID[elemento.id]?
 				elemento.detach()
 				delete @_elementsByID[elemento.id]

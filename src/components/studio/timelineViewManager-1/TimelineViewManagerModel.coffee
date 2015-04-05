@@ -1,8 +1,9 @@
 pluck = require 'utila/lib/array/pluck'
 append = require 'utila/lib/array/append'
 Emitter = require 'utila/lib/events/Emitter'
+PersistentModel = require '../../../../src/PersistentModel'
 
-module.exports = class TimelineViewManagerModel
+module.exports = class TimelineViewManagerModel extends PersistentModel
 	constructor: ->
 		@_idsList = []
 		@_idsMap = {}
@@ -11,13 +12,12 @@ module.exports = class TimelineViewManagerModel
 
 		@events = new Emitter
 
-	setState: (state) ->
+		super
+
+	_setState: (state) ->
 		return unless Array.isArray state.listOfTimelineViewNumbers
 
-		@set state.listOfTimelineViewNumbers
-
-	getState: ->
-		@_state
+		@set state.listOfTimelineViewNumbers, no
 
 	getIDs: ->
 		@_idsList.concat()
@@ -44,7 +44,7 @@ module.exports = class TimelineViewManagerModel
 
 		this
 
-	set: (newList) ->
+	set: (newList, saveChanges) ->
 		@_idsList.length = 0
 		append @_idsList, newList
 
@@ -52,10 +52,10 @@ module.exports = class TimelineViewManagerModel
 		for id in newList
 			@_idsMap[id] = true
 
-		@_reportChange()
+		@_reportChange(saveChanges)
 
 		return
 
-	_reportChange: ->
+	_reportChange: (saveChanges = yes) ->
 		@events.emit 'IDs:didChange'
-		@events.emit 'state:didChange'
+		@_saveChanges() if saveChanges

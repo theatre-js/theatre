@@ -1,5 +1,5 @@
 module.exports = class PersistentModel
-	constructor: (@_storage) ->
+	_initModel: (@_storage) ->
 		@_setStateFromStorage()
 
 	_setStateFromStorage: ->
