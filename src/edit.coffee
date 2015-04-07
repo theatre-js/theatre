@@ -3,7 +3,7 @@ EditorModel = require './EditorModel'
 EditorView = require './EditorView'
 NoAudioTimeControl = require './tools/NoAudioTimeControl'
 
-module.exports = (port, file, audio = no, debug = yes, autoRaf = yes) ->
+module.exports = (port, file, audio = no, debug = no, autoRaf = yes) ->
 	timeline = new DynamicTimeline 60
 
 	if audio is no
