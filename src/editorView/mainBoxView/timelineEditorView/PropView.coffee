@@ -245,6 +245,9 @@ module.exports = class PropView
 
 		@node.putIn @timelineEditor.node
 
+		@relayHorizontally()
+		@_relayVertically()
+
 		return
 
 	detach: ->

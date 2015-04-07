@@ -82,7 +82,7 @@ module.exports = class GraphView
 				actorEl.addClass 'last' if last
 
 				actorLink = Foxie 'a'
-				actorLink.innerHTML actor.name
+				actorLink.innerHTML actor.name.substr(0, 19)
 
 				actorLink.putIn actorEl
 

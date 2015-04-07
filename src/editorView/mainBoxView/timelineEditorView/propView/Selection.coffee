@@ -258,6 +258,10 @@ module.exports = class Selection
 
 	_updateEl: ->
 
+		if @_selected is no
+			@node.moveYTo(-5000)
+			return
+
 		if @_pacSelection? and @_pacSelection.empty
 
 			@node.addClass 'empty'

@@ -33,8 +33,8 @@ module.exports = class ConnectorView extends _ItemView
 	_prepareNode: ->
 
 		@node = Foxie('svg:path').putIn(@svgArea.node)
-		.attr('stroke', '#367c89')
-		.attr('stroke-width', '4px')
+		.attr('stroke', '#38B6CD')
+		.attr('stroke-width', '2px')
 		.attr('fill', 'transparent')
 
 		@rootView.moosh.onHover(@node)
