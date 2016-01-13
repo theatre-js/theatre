@@ -1,17 +1,12 @@
 ActorModel = require './groupModel/ActorModel'
 
 module.exports = class GroupModel
+  constructor: (@graph, @name) ->
+    @id = @graph.editor.id + '-' + @name
+    @actors = {}
 
-	constructor: (@graph, @name) ->
+  getActor: (name) ->
+    unless @actors[name]?
+      @actors[name] = new ActorModel @, name
 
-		@id = @graph.editor.id + '-' + @name
-
-		@actors = {}
-
-	getActor: (name) ->
-
-		unless @actors[name]?
-
-			@actors[name] = new ActorModel @, name
-
-		@actors[name]
+    @actors[name]

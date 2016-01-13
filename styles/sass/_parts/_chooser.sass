@@ -1,57 +1,42 @@
 #chooser
+  position: fixed
+  bottom: 0px
+  left: 0
+  height: 42px
 
-	position: fixed
+  z-index: 12
 
-	bottom: 0px
-	left: 0
-	height: 42px
+  background: #040404
 
-	z-index: 12
+  @include transition(0.3s all)
+  @include transform(translate3d(0, 42px, 0px))
 
-	background: #040404
+  &.visible
+    @include transform(translate3d(0, 0px, 1px))
 
-	@include transition(0.3s all)
+  color: white
 
-	@include transform(translate3d(0, 42px, 0px))
-
-	&.visible
-
-		@include transform(translate3d(0, 0px, 1px))
-
-	color: white
-
-	font-size: 12px
-	line-height: 43px
-
-	padding-left: 10px
+  font-size: 12px
+  line-height: 43px
+  padding-left: 10px
 
 #chooser-question
-
-	display: inline-block
+  display: inline-block
 
 #chooser-choices
-
-	display: inline-block
+  display: inline-block
 
 #chooser .choice
+  display: inline-block
+  color: white
+  padding: 0 4px
+  margin: 6px 8px 0
+  background: #1A1A1A
 
-	display: inline-block
+  user-select: none
+  cursor: pointer
+  line-height: 28px
+  padding: 0 8px
 
-	color: white
-
-	padding: 0 4px
-
-	margin: 6px 8px 0
-
-	background: #1A1A1A
-
-	user-select: none
-	cursor: pointer
-
-	line-height: 28px
-
-	padding: 0 8px
-
-	&:hover
-
-		background: #5A5A5A
+  &:hover
+    background: #5A5A5A

@@ -1,57 +1,39 @@
 module.exports = class EventType
+  constructor: (@controller, @id, options) ->
+    @_hasValidator = no
+    @_hasFilter = no
 
-	constructor: (@controller, @id, options) ->
+    if typeof options is 'function'
+      @_fn = options
 
-		@_hasValidator = no
+    else if typeof options is 'object'
+      @_fn = options.fn
+      unless typeof @_fn is 'function'
+        throw Error "Event type must have an fn defined"
 
-		@_hasFilter = no
+      if typeof options.validate is 'function'
+        @_hasValidator = yes
+        @_validate = options.validate
 
-		if typeof options is 'function'
+      if typeof options.filter is 'function'
+        @_hasFilter = yes
+        @_filter = options.filter
 
-			@_fn = options
+    else
+      throw Error "Invalid options: #{options}"
 
-		else if typeof options is 'object'
+    unless @_hasFilter
+      @_filter = ->
 
-			@_fn = options.fn
+    unless @_hasValidator
+      @_validate = ->
 
-			unless typeof @_fn is 'function'
+  validate: (arg) ->
+    if @_hasValidator then @_validate arg else yes
 
-				throw Error "Event type must have an fn defined"
+  filter: (arg) ->
+    if @_hasFilter then @_filter arg else arg
 
-			if typeof options.validate is 'function'
-
-				@_hasValidator = yes
-
-				@_validate = options.validate
-
-			if typeof options.filter is 'function'
-
-				@_hasFilter = yes
-
-				@_filter = options.filter
-
-		else
-
-			throw Error "Invalid options: #{options}"
-
-		unless @_hasFilter
-
-			@_filter = ->
-
-		unless @_hasValidator
-
-			@_validate = ->
-
-	validate: (arg) ->
-
-		if @_hasValidator then @_validate arg else yes
-
-	filter: (arg) ->
-
-		if @_hasFilter then @_filter arg else arg
-
-	run: (forward, last, supposedT, currentT, args) ->
-
-		@_fn forward, last, supposedT, currentT, args
-
-		return
+  run: (forward, last, supposedT, currentT, args) ->
+    @_fn forward, last, supposedT, currentT, args
+    return

@@ -1,123 +1,89 @@
 array = require 'utila/lib/array'
 
 module.exports = class _Emitter
+  constructor: ->
+    @_listeners = {}
+    @_listenersForAnyEvent = []
+    @_disabledEmitters = {}
 
-	constructor: ->
+  on: (eventName, listener) ->
+    unless @_listeners[eventName]?
+      @_listeners[eventName] = []
 
-		@_listeners = {}
+    @_listeners[eventName].push listener
+    this
 
-		@_listenersForAnyEvent = []
+  onAnyEvent: (listener) ->
+    @_listenersForAnyEvent.push listener
+    this
 
-		@_disabledEmitters = {}
+  removeEvent: (eventName, listener) ->
+    return @ unless @_listeners[eventName]?
+    array.pluckOneItem @_listeners[eventName], listener
+    this
 
-	on: (eventName, listener) ->
+  removeListeners: (eventName) ->
+    return @ unless @_listeners[eventName]?
+    @_listeners[eventName].length = 0
+    this
 
-		unless @_listeners[eventName]?
+  removeAllListeners: ->
+    for name, listeners of @_listeners
+      listeners.length = 0
 
-			@_listeners[eventName] = []
+    this
 
-		@_listeners[eventName].push listener
+  _emit: (eventName, data) ->
+    for listener in @_listenersForAnyEvent
+      listener data, eventName
 
-		@
+    return unless @_listeners[eventName]?
 
-	onAnyEvent: (listener) ->
+    for listener in @_listeners[eventName]
+      listener data
 
-		@_listenersForAnyEvent.push listener
+    return
 
-		@
+  # this makes sure that all the calls to this class's method 'fnName'
+  # are throttled
+  _throttleEmitterMethod: (fnName, time = 1000) ->
+    originalFn = @[fnName]
 
-	removeEvent: (eventName, listener) ->
+    if typeof originalFn isnt 'function'
+      throw Error "this class does not have a method called '#{fnName}'"
 
-		return @ unless @_listeners[eventName]?
+    lastCallArgs = null
+    pending = no
+    timer = null
 
-		array.pluckOneItem @_listeners[eventName], listener
+    @[fnName] = =>
+      lastCallArgs = arguments
+      do pend
 
-		@
+    pend = =>
+      if pending
+        clearTimeout timer
+      timer = setTimeout runIt, time
+      pending = yes
 
-	removeListeners: (eventName) ->
+    runIt = =>
+      pending = no
+      originalFn.apply @, lastCallArgs
 
-		return @ unless @_listeners[eventName]?
+  _disableEmitter: (fnName) ->
+    if @_disabledEmitters[fnName]?
+      throw Error "#{fnName} is already a disabled emitter"
 
-		@_listeners[eventName].length = 0
+    @_disabledEmitters[fnName] = @[fnName]
 
-		@
+    @[fnName] = ->
 
-	removeAllListeners: ->
+  _enableEmitter: (fnName) ->
+    fn = @_disabledEmitters[fnName]
 
-		for name, listeners of @_listeners
+    unless fn?
+      throw Error "#{fnName} is not a disabled emitter"
 
-			listeners.length = 0
+    @[fnName] = fn
 
-		@
-
-	_emit: (eventName, data) ->
-
-		for listener in @_listenersForAnyEvent
-
-			listener data, eventName
-
-		return unless @_listeners[eventName]?
-
-		for listener in @_listeners[eventName]
-
-			listener data
-
-		return
-
-	# this makes sure that all the calls to this class's method 'fnName'
-	# are throttled
-	_throttleEmitterMethod: (fnName, time = 1000) ->
-
-		originalFn = @[fnName]
-
-		if typeof originalFn isnt 'function'
-
-			throw Error "this class does not have a method called '#{fnName}'"
-
-		lastCallArgs = null
-		pending = no
-		timer = null
-
-		@[fnName] = =>
-
-			lastCallArgs = arguments
-
-			do pend
-
-		pend = =>
-
-			if pending
-
-				clearTimeout timer
-
-			timer = setTimeout runIt, time
-
-			pending = yes
-
-		runIt = =>
-
-			pending = no
-
-			originalFn.apply @, lastCallArgs
-
-	_disableEmitter: (fnName) ->
-
-		if @_disabledEmitters[fnName]?
-
-			throw Error "#{fnName} is already a disabled emitter"
-
-		@_disabledEmitters[fnName] = @[fnName]
-
-		@[fnName] = ->
-
-	_enableEmitter: (fnName) ->
-
-		fn = @_disabledEmitters[fnName]
-
-		unless fn?
-
-			throw Error "#{fnName} is not a disabled emitter"
-
-		@[fnName] = fn
-
-		delete @_disabledEmitters[fnName]
+    delete @_disabledEmitters[fnName]

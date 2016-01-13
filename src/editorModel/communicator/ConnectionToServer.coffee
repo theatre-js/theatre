@@ -4,59 +4,41 @@ timeout = require 'when/timeout'
 _Emitter = require '../../_Emitter'
 
 module.exports = class ConnectionToServer extends _Emitter
+  constructor: (@communicator) ->
+    super
+    do @_setupSocket
 
-	constructor: (@communicator) ->
+  connect: ->
+    @_connectionPromise
 
-		super
+  _setupSocket: ->
+    d = wn.defer()
+    @_connectionPromise = d.promise
+    @_socket = io.connect @communicator._server
 
-		do @_setupSocket
+    @_socket.on 'connect', -> d.resolve()
 
-	connect: ->
+    @_socket.on 'error', (data) ->
+      console.log 'socket error', data
 
-		@_connectionPromise
+    @_socket.on 'connection_failed', (data) ->
+      console.log 'socket connection failed', data
 
-	_setupSocket: ->
+  request: (what, data) ->
+    promise = @connect().then =>
+      @_request what, data
 
-		d = wn.defer()
+    promise
 
-		@_connectionPromise = d.promise
+  _request: (what, data) ->
+    d = wn.defer()
+    data =
+      croods:
+        namespace: @communicator._namespaceName
+        passphrase: @communicator._passphrase
+      data: data
 
-		@_socket = io.connect @communicator._server
+    @_socket.emit 'client-requests:' + what, data, (receivedData) ->
+      d.resolve receivedData
 
-		@_socket.on 'connect', -> d.resolve()
-
-		@_socket.on 'error', (data) ->
-
-			console.log 'socket error', data
-
-		@_socket.on 'connection_failed', (data) ->
-
-			console.log 'socket connection failed', data
-
-	request: (what, data) ->
-
-		promise = @connect().then =>
-
-			@_request what, data
-
-		promise
-
-	_request: (what, data) ->
-
-		d = wn.defer()
-
-		data =
-
-			croods:
-
-				namespace: @communicator._namespaceName
-
-				passphrase: @communicator._passphrase
-
-			data: data
-
-		@_socket.emit 'client-requests:' + what, data, (receivedData) ->
-
-			d.resolve receivedData
-
-		d.promise
+    d.promise

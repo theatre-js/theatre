@@ -4,87 +4,59 @@ _TimelineRow = require './_TimelineRow'
 _queuedItems = []
 
 module.exports = class EventsController extends _TimelineRow
+  constructor: ->
+    @_serializedAddress = ['timeline', '_eventsControllers', @id]
+    super
 
-	constructor: ->
+    @_types = {}
+    @events = new Events @
+    @_chronology = @events.chronology
+    @_lastRanIndex = -1
 
-		@_serializedAddress = ['timeline', '_eventsControllers', @id]
+  _tickForward: (t) ->
 
-		super
+  _tickBackward: (t) ->
 
-		@_types = {}
+  defineType: (id, options) ->
+    if @_types[id]?
+      throw Error "An event-type named '#{id}' already exists"
 
-		@events = new Events @
+    @_types[id] = new EventType @, id, options
+    this
 
-		@_chronology = @events.chronology
+  getType: (id) ->
+    @_types[id]
 
-		@_lastRanIndex = -1
+  _tickForward: (t) ->
+    return if @_chronology.length is 0
+    nextIndex = @_lastRanIndex + 1
+    while (nextItem = @_chronology[nextIndex]) and nextItem?
+      break if nextItem.t > t
+      _queuedItems.push nextItem
+      nextIndex++
 
-	_tickForward: (t) ->
+    for item, i in _queuedItems
+      item.tickAt t, i is _queuedItems.length - 1
 
-	_tickBackward: (t) ->
+    if _queuedItems.length > 0
+      _queuedItems.length = 0
+      @_lastRanIndex = nextIndex - 1
 
-	defineType: (id, options) ->
+    return
 
-		if @_types[id]?
+  _tickBackward: (t) ->
+    nextIndex = @_lastRanIndex
+    loop
+      item = @_chronology[nextIndex]
+      break if not item? or item.t < t
+      _queuedItems.push item
+      nextIndex--
 
-			throw Error "An event-type named '#{id}' already exists"
+    for item, i in _queuedItems
+      item.tickAt t, i is _queuedItems.length - 1
 
-		@_types[id] = new EventType @, id, options
+    if _queuedItems.length > 0
+      _queuedItems.length = 0
+      @_lastRanIndex = nextIndex
 
-		@
-
-	getType: (id) ->
-
-		@_types[id]
-
-	_tickForward: (t) ->
-
-		return if @_chronology.length is 0
-
-		nextIndex = @_lastRanIndex + 1
-
-		while (nextItem = @_chronology[nextIndex]) and nextItem?
-
-			break if nextItem.t > t
-
-			_queuedItems.push nextItem
-
-			nextIndex++
-
-		for item, i in _queuedItems
-
-			item.tickAt t, i is _queuedItems.length - 1
-
-		if _queuedItems.length > 0
-
-			_queuedItems.length = 0
-
-			@_lastRanIndex = nextIndex - 1
-
-		return
-
-	_tickBackward: (t) ->
-
-		nextIndex = @_lastRanIndex
-
-		loop
-
-			item = @_chronology[nextIndex]
-
-			break if not item? or item.t < t
-
-			_queuedItems.push item
-
-			nextIndex--
-
-		for item, i in _queuedItems
-
-			item.tickAt t, i is _queuedItems.length - 1
-
-		if _queuedItems.length > 0
-
-			_queuedItems.length = 0
-
-			@_lastRanIndex = nextIndex
-
-		return
+    return

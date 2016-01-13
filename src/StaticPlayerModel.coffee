@@ -4,29 +4,21 @@ DynamicTimeline = require './DynamicTimeline'
 TimeControlModel = require './editorModel/TimeControlModel'
 
 module.exports = class StaticPlayerModel
+  constructor: (@id = 'timeline', @timeline, @timelineData, @audio) ->
+    @timeline.setRootModel @
 
-	constructor: (@id = 'timeline', @timeline, @timelineData, @audio) ->
+    @audio ?= new SingleTrack @id + '-audio'
+    @graph = new GraphModel @
+    @timeControl = new TimeControlModel @, 0
 
-		@timeline.setRootModel @
+    @_ran = no
 
-		@audio ?= new SingleTrack @id + '-audio'
+  tick: (t) =>
+    @timeControl._tick t
 
-		@graph = new GraphModel @
+  run: ->
+    return if @_ran
+    @_ran = yes
+    @timeline.loadFrom @timelineData
 
-		@timeControl = new TimeControlModel @, 0
-
-		@_ran = no
-
-	tick: (t) =>
-
-		@timeControl._tick t
-
-	run: ->
-
-		return if @_ran
-
-		@_ran = yes
-
-		@timeline.loadFrom @timelineData
-
-		@
+    this

@@ -1,102 +1,69 @@
 array = require 'utila/lib/array'
 
 module.exports = class SelectionManager
+  constructor: (@timelineEditor) ->
+    @selections = []
+    @group = []
+    @_clipboard = []
 
-	constructor: (@timelineEditor) ->
+  include: (s) ->
+    @selections.push s unless s in @selections
 
-		@selections = []
+  exclude: (s) ->
+    array.pluckOneItem @selections, s
+    array.pluckOneItem @group, s
+    s._beOffGroup()
 
-		@group = []
+  closeGroup: ->
+    for s in @group
+      s._beOffGroup()
 
-		@_clipboard = []
+    @group.length = 0
 
-	include: (s) ->
+  startGroup: (firstSelection) ->
+    do @closeGroup
 
-		@selections.push s unless s in @selections
+    firstSelection._beInGroup()
+    @group.push firstSelection
 
-	exclude: (s) ->
+    for s in @selections
+      continue if s is firstSelection
+      s._beInGroup firstSelection
+      @group.push s
 
-		array.pluckOneItem @selections, s
+    return
 
-		array.pluckOneItem @group, s
+  takeOffGroup: (s) ->
+    s._beOffGroup()
+    array.pluckOneItem @group, s
+    return
 
-		s._beOffGroup()
+  copyToClipboard: (props) ->
+    @_clipboard = @_normalizeClipboard props
+    return
 
-	closeGroup: ->
+  _normalizeClipboard: (props) ->
+    smallest = Infinity
+    for prop in props
+      first = prop.items.points[0]
+      if first?
+        smallest = Math.min smallest, first.t
 
-		for s in @group
+    for prop in props
+      for item in prop.items.points
+        item.t -= smallest
 
-			s._beOffGroup()
+      for item in prop.items.connectors
+        item.t -= smallest
 
-		@group.length = 0
+    props
 
-	startGroup: (firstSelection) ->
+  paste: (s) ->
+    return if @_clipboard.length is 0
 
-		do @closeGroup
-
-		firstSelection._beInGroup()
-
-		@group.push firstSelection
-
-		for s in @selections
-
-			continue if s is firstSelection
-
-			s._beInGroup firstSelection
-
-			@group.push s
-
-		return
-
-	takeOffGroup: (s) ->
-
-		s._beOffGroup()
-
-		array.pluckOneItem @group, s
-
-		return
-
-	copyToClipboard: (props) ->
-
-		@_clipboard = @_normalizeClipboard props
-
-		return
-
-	_normalizeClipboard: (props) ->
-
-		smallest = Infinity
-
-		for prop in props
-
-			first = prop.items.points[0]
-
-			if first?
-
-				smallest = Math.min smallest, first.t
-
-		for prop in props
-
-			for item in prop.items.points
-
-				item.t -= smallest
-
-			for item in prop.items.connectors
-
-				item.t -= smallest
-
-		props
-
-	paste: (s) ->
-
-		return if @_clipboard.length is 0
-
-		if @_clipboard.length is 1
-
-			prop = @_clipboard[0]
-
-			return if prop.items.points.length is 0
-
-			s._pasteFromClipboard prop.items
-
-			return
+    if @_clipboard.length is 1
+      prop = @_clipboard[0]
+      return if prop.items.points.length is 0
+      s._pasteFromClipboard prop.items
+      return
 

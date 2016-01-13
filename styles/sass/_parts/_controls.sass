@@ -1,54 +1,43 @@
 @mixin button ($src)
+  width: 36px
+  height: 100%
+  float: left
+  background: url($src) no-repeat center center
+  opacity: .75
+  @include transform(translateZ(1px))
+  @include transition(opacity .15s)
 
-	width: 36px
-	height: 100%
-	float: left
-	background: url($src) no-repeat center center
-	opacity: .75
-	@include transform(translateZ(1px))
-	@include transition(opacity .15s)
-
-	&:hover
-
-		opacity: 1
+  &:hover
+    opacity: 1
 
 .theatrejs-controls
+  position: absolute
+  bottom: 0px
+  left: 10px
+  height: 30px
+  border-radius: 5px
+  background: #090909
 
-	position: absolute
-	bottom: 0px
-	left: 10px
-	height: 30px
-	border-radius: 5px
-	background: #090909
-
-	z-index: 12
+  z-index: 12
 
 .theatrejs-controls-playPause
+  @include button ("../../images/play.png")
 
-	@include button ("../../images/play.png")
+  &.playing
+    background: url("../../images/pause.png") no-repeat center center
 
-	&.playing
+  opacity: 0.2
 
-		background: url("../../images/pause.png") no-repeat center center
-
-	opacity: 0.2
-
-	&.ready
-
-		opacity: .75
-
-		&:hover
-
-			opacity: 1
+  &.ready
+    opacity: .75
+    &:hover
+      opacity: 1
 
 .theatrejs-controls-fullscreen
-
-	@include button ("../../images/fullscreen.png")
+  @include button ("../../images/fullscreen.png")
 
 .theatrejs-controls-jumpToPrevMarker
-
-	@include button ("../../images/prevMarker.png")
+  @include button ("../../images/prevMarker.png")
 
 .theatrejs-controls-jumpToNextMarker
-
-	@include button ("../../images/nextMarker.png")
+  @include button ("../../images/nextMarker.png")

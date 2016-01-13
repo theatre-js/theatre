@@ -1,91 +1,66 @@
 Foxie = require 'foxie'
 
 module.exports = class Asker
+  constructor: (@rootView) ->
+    @_tempKilidScope = @rootView.kilid.getTempScope()
+    @_tempKilidScope.on 'esc', => do @_discard
 
-	constructor: (@rootView) ->
+    @_active = no
+    @_cb = null
 
-		@_tempKilidScope = @rootView.kilid.getTempScope()
+    @moosh = @rootView.moosh
+    @kilid = @rootView.kilid
 
-		@_tempKilidScope.on 'esc', => do @_discard
+    do @_prepareNode
 
-		@_active = no
+  _prepareNode: ->
+    @node = Foxie '#chooser'
 
-		@_cb = null
+    @questionNode = Foxie '#chooser-question'
+    .putIn @node
 
-		@moosh = @rootView.moosh
+    @choicesNode = Foxie '#chooser-choices'
+    .putIn @node
 
-		@kilid = @rootView.kilid
+  _activate: ->
+    return if @_active
 
-		do @_prepareNode
+    @_active = yes
+    @node.putIn @rootView.mainBox.node
+    @node.addClass 'visible'
 
-	_prepareNode: ->
+    @moosh.onClickOutside @node, =>
+      do @_discard
 
-		@node = Foxie '#chooser'
+  _deactivate: ->
+    return unless @_active
+    @_active = no
+    @node.removeClass 'visible'
+    @_tempKilidScope.deactivate()
+    @moosh.discardClickOutside @node
+    @choicesNode.node.innerHTML = ''
 
-		@questionNode = Foxie '#chooser-question'
-		.putIn @node
+  choose: (q, choices, cb) ->
+    @_cb = cb
 
-		@choicesNode = Foxie '#chooser-choices'
-		.putIn @node
+    @choicesNode.node.innerHTML = ''
+    @questionNode.node.innerHTML = q
 
-	_activate: ->
+    for c in choices then do (c) =>
+      node = Foxie '.choice'
+      .putIn @choicesNode
 
-		return if @_active
+      node.node.innerHTML = c
 
-		@_active = yes
+      @moosh.onClick node
+      .onDone =>
+        do @_deactivate
+        @_cb yes, c
 
-		@node.putIn @rootView.mainBox.node
+      return
 
-		@node.addClass 'visible'
+    do @_activate
 
-		@_tempKilidScope.activate()
-
-		@moosh.onClickOutside @node, =>
-
-			do @_discard
-
-	_deactivate: ->
-
-		return unless @_active
-
-		@_active = no
-
-		@node.removeClass 'visible'
-
-		@_tempKilidScope.deactivate()
-
-		@moosh.discardClickOutside @node
-
-		@choicesNode.node.innerHTML = ''
-
-	choose: (q, choices, cb) ->
-
-		@_cb = cb
-
-		@choicesNode.node.innerHTML = ''
-
-		@questionNode.node.innerHTML = q
-
-		for c in choices then do (c) =>
-
-			node = Foxie '.choice'
-			.putIn @choicesNode
-
-			node.node.innerHTML = c
-
-			@moosh.onClick node
-			.onDone =>
-
-				do @_deactivate
-
-				@_cb yes, c
-
-			return
-
-		do @_activate
-
-	_discard: ->
-
-		do @_deactivate
-
-		@_cb no
+  _discard: ->
+    do @_deactivate
+    @_cb no

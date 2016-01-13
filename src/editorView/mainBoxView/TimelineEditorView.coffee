@@ -6,236 +6,181 @@ GuidesManagerView = require './timelineEditorView/GuidesManagerView'
 fn = require '../../tools/fn'
 
 module.exports = class TimelineEditorView
+  constructor: (@mainBox) ->
+    @model = @mainBox.editor.model.timelineEditor
+    @editorModel = @mainBox.editor.model
+    @rootView = @mainBox.rootView
+    @focusArea = @model.focusArea
+    timeControlModel = @mainBox.editor.model.timeControl
+    @duration = timeControlModel.duration
 
-	constructor: (@mainBox) ->
+    @selectionManager = new SelectionManager @
 
-		@model = @mainBox.editor.model.timelineEditor
+    timeControlModel.on 'duration-change', =>
+      @duration = timeControlModel.duration
 
-		@editorModel = @mainBox.editor.model
+    @width = @mainBox.width
+    @mainBox.on 'width-change', => @width = @mainBox.width
+    @model.on 'scroll-change', => do @_updateScrollTopFromModel
 
-		@rootView = @mainBox.rootView
+    @_repo = new PropViewRepo @
+    @_currentProps = []
 
-		@focusArea = @model.focusArea
+    do @_prepareNode
 
-		timeControlModel = @mainBox.editor.model.timeControl
+    @guides = new GuidesManagerView @
 
-		@duration = timeControlModel.duration
+    do @_relayHorizontally
+    do @_prepareListeners
 
-		@selectionManager = new SelectionManager @
+    @_firstPropAdded = no
+    @_prepareScrollCache()
 
-		timeControlModel.on 'duration-change', =>
+  _prepareListeners: ->
+    @mainBox.on 'width-change', => do @_relayHorizontally
+    @model.on 'focus-change', => do @_relayHorizontally
+    @model.on 'prop-add', (propHolder) => @_add propHolder
+    @model.on 'prop-remove', (propHolder) => @_remove propHolder
 
-			@duration = timeControlModel.duration
+  _prepareNode: ->
+    @node = Foxie('.theatrejs-timelineEditor').putIn(@mainBox.node)
 
-		@width = @mainBox.width
+    @node.node.addEventListener 'scroll', =>
+      @model._setScrollTopFromUser @node.node.scrollTop
 
-		@mainBox.on 'width-change', => @width = @mainBox.width
+    @rootView.moosh.onMiddleDrag(@node)
+    .withNoKeys()
+    .onDown =>
+      @rootView.cursor.use '-webkit-grabbing'
+      @rootView.cursor.use '-moz-grabbing'
 
-		@model.on 'scroll-change', => do @_updateScrollTopFromModel
+    .onDrag (e) =>
+      @mainBox.seekbar._dragFocusBy -e.relX
+      @_dragScrollBy -e.relY
 
-		@_repo = new PropViewRepo @
+    .onUp =>
+      @rootView.cursor.free()
 
-		@_currentProps = []
+    .onCancel =>
+      @rootView.cursor.free()
 
-		do @_prepareNode
+    @rootView.moosh.onClick(@node)
+    .withNoKeys()
+    .onDone (e) =>
+      @mainBox.seekbar._seekToX e.layerX
 
-		@guides = new GuidesManagerView @
+    @rootView.moosh.onDrag(@node)
+    .withNoKeys()
+    .onDown =>
+      @rootView.cursor.use 'ew-resize'
 
-		do @_relayHorizontally
+    .onDrag (e) =>
+      @mainBox.seekbar._seekToX e.layerX
 
-		do @_prepareListeners
+    .onUp =>
+      @rootView.cursor.free()
 
-		@_firstPropAdded = no
+    .onCancel =>
+      @rootView.cursor.free()
 
-		@_prepareScrollCache()
 
-	_prepareListeners: ->
+    @rootView.moosh.onWheel(@node)
+    .withKeys('shift')
+    .onWheel (e) =>
+      @mainBox.seekbar._zoomFocus 1 + (-e.delta / 120 / 8), e.layerX
 
-		@mainBox.on 'width-change', => do @_relayHorizontally
+    @rootView.moosh.onWheel(@node)
+    .withNoKeys()
+    .onWheel (e) =>
+      if e.originalEvent.ctrlKey
+        @mainBox.seekbar._zoomFocus 1 + (-e.delta / 120 / 8 / 5), e.layerX
+      else
+        @mainBox.seekbar._dragFocusBy e.originalEvent.deltaX
+        @_dragScrollBy e.originalEvent.deltaY
 
-		@model.on 'focus-change', => do @_relayHorizontally
+      e.preventDefault()
 
-		@model.on 'prop-add', (propHolder) => @_add propHolder
+  _prepareScrollCache: ->
+    update = => setTimeout @updateScrollCache, 200
+    update = fn.throttle update, 200
 
-		@model.on 'prop-remove', (propHolder) => @_remove propHolder
+    @editorModel.mainBox.on 'height-change', update
+    @model.on 'prop-add', update
+    @model.on 'prop-remove', update
 
-	_prepareNode: ->
+    update()
 
-		@node = Foxie('.theatrejs-timelineEditor').putIn(@mainBox.node)
+  updateScrollCache: =>
+    @_maxScroll = @node.node.scrollHeight - @node.node.getBoundingClientRect().height
 
-		@node.node.addEventListener 'scroll', =>
+  _updateScrollTopFromModel: ->
+    t = @model.scrollTop|0
 
-			@model._setScrollTopFromUser @node.node.scrollTop
+    if t < 0
+      @model._setScroll 0
+      return
 
-		@rootView.moosh.onMiddleDrag(@node)
-		.withNoKeys()
-		.onDown =>
+    if t > @_maxScroll
+      @model._setScroll @_maxScroll
+      return
 
-			@rootView.cursor.use '-webkit-grabbing'
-			@rootView.cursor.use '-moz-grabbing'
+    @node.node.scrollTop = t
 
-		.onDrag (e) =>
+  _dragScrollBy: (amount) ->
+    @model._setScroll @model.scrollTop + amount
 
-			@mainBox.seekbar._dragFocusBy -e.relX
-			@_dragScrollBy -e.relY
+  _add: (propHolder) ->
+    unless @_firstPropAdded
+      setTimeout =>
+        do @_updateScrollTopFromModel
+      , 50
 
-		.onUp =>
+      @_firstPropAdded = yes
 
-			@rootView.cursor.free()
 
-		.onCancel =>
+    propView = @_repo.getPropViewFor propHolder
+    @_currentProps.push propView
 
-			@rootView.cursor.free()
+    do propView.attach
+    return
 
-		@rootView.moosh.onClick(@node)
-		.withNoKeys()
-		.onDone (e) =>
+  _remove: (propHolder) ->
+    for propView in @_currentProps
+      if propView.id is propHolder.id
+        propViewToRemove = propView
 
-			@mainBox.seekbar._seekToX e.layerX
+    unless propViewToRemove?
+      throw Error "Couldn't find prop '#{propHolder.id}' in the current props list"
 
-		@rootView.moosh.onDrag(@node)
-		.withNoKeys()
-		.onDown =>
+    array.pluckOneItem @_currentProps, propViewToRemove
+    do propViewToRemove.detach
+    return
 
-			@rootView.cursor.use 'ew-resize'
+  _relayHorizontally: ->
+    @width = @mainBox.width
+    @_widthToTimeRatio = @width / @focusArea.duration
+    prop.relayHorizontally() for prop in @_currentProps
+    @guides.relay()
+    return
 
-		.onDrag (e) =>
+  _tick: ->
+    @model.tick()
+    return
 
-			@mainBox.seekbar._seekToX e.layerX
+  _XToTime: (x) ->
+    x / @_widthToTimeRatio
 
-		.onUp =>
+  _XToFocusedTime: (x) ->
+    @_XToTime(x) + @focusArea.from
 
-			@rootView.cursor.free()
+  _unfocusedXToTime: (x) ->
+    x / @width * @duration
 
-		.onCancel =>
+  _timeToUnfocusedX: (t) ->
+    parseInt @width * (t / @duration)
 
-			@rootView.cursor.free()
+  _timeToFocusedX: (t) ->
+    parseInt @width * (t - @focusArea.from) / @focusArea.duration
 
-
-		@rootView.moosh.onWheel(@node)
-		.withKeys('shift')
-		.onWheel (e) =>
-
-			@mainBox.seekbar._zoomFocus 1 + (-e.delta / 120 / 8), e.layerX
-
-		@rootView.moosh.onWheel(@node)
-		.withNoKeys()
-		.onWheel (e) =>
-			if e.originalEvent.ctrlKey
-				@mainBox.seekbar._zoomFocus 1 + (-e.delta / 120 / 8 / 5), e.layerX
-			else
-				@mainBox.seekbar._dragFocusBy e.originalEvent.deltaX
-				@_dragScrollBy e.originalEvent.deltaY
-
-			e.preventDefault()
-
-	_prepareScrollCache: ->
-		update = => setTimeout @updateScrollCache, 200
-		update = fn.throttle update, 200
-
-		@editorModel.mainBox.on 'height-change', update
-		@model.on 'prop-add', update
-		@model.on 'prop-remove', update
-
-		update()
-
-	updateScrollCache: =>
-		@_maxScroll = @node.node.scrollHeight - @node.node.getBoundingClientRect().height
-
-	_updateScrollTopFromModel: ->
-		t = @model.scrollTop|0
-
-		if t < 0
-			@model._setScroll 0
-			return
-
-		if t > @_maxScroll
-			@model._setScroll @_maxScroll
-			return
-
-		@node.node.scrollTop = t
-
-	_dragScrollBy: (amount) ->
-
-		@model._setScroll @model.scrollTop + amount
-
-	_add: (propHolder) ->
-
-		unless @_firstPropAdded
-
-			setTimeout =>
-
-				do @_updateScrollTopFromModel
-
-			, 50
-
-			@_firstPropAdded = yes
-
-
-		propView = @_repo.getPropViewFor propHolder
-
-		@_currentProps.push propView
-
-		do propView.attach
-
-		return
-
-	_remove: (propHolder) ->
-
-		for propView in @_currentProps
-
-			if propView.id is propHolder.id
-
-				propViewToRemove = propView
-
-		unless propViewToRemove?
-
-			throw Error "Couldn't find prop '#{propHolder.id}' in the current props list"
-
-		array.pluckOneItem @_currentProps, propViewToRemove
-
-		do propViewToRemove.detach
-
-		return
-
-	_relayHorizontally: ->
-
-		@width = @mainBox.width
-
-		@_widthToTimeRatio = @width / @focusArea.duration
-
-		prop.relayHorizontally() for prop in @_currentProps
-
-		@guides.relay()
-
-		return
-
-	_tick: ->
-
-		@model.tick()
-
-		return
-
-	_XToTime: (x) ->
-
-		x / @_widthToTimeRatio
-
-	_XToFocusedTime: (x) ->
-
-		@_XToTime(x) + @focusArea.from
-
-	_unfocusedXToTime: (x) ->
-
-		x / @width * @duration
-
-	_timeToUnfocusedX: (t) ->
-
-		parseInt @width * (t / @duration)
-
-	_timeToFocusedX: (t) ->
-
-		parseInt @width * (t - @focusArea.from) / @focusArea.duration
-
-	_timeToX: (t) ->
-
-		t * @_widthToTimeRatio
+  _timeToX: (t) ->
+    t * @_widthToTimeRatio

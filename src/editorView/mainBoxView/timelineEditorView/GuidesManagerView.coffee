@@ -3,102 +3,70 @@ array = require 'utila/lib/array'
 GuideView = require './guidesManagerView/GuideView'
 
 module.exports = class GuidesManagerView
+  constructor: (@timelineEditor) ->
+    @model = @timelineEditor.model.guides
+    @rootView = @timelineEditor.rootView
+    @timeControlModel = @timelineEditor.mainBox.editor.model.timeControl
 
-	constructor: (@timelineEditor) ->
+    do @_prepareNode
+    do @_prepareGuides
 
-		@model = @timelineEditor.model.guides
+    @_list = []
 
-		@rootView = @timelineEditor.rootView
+    @rootView.kilid.on 'ctrl+space', =>
+      @model.toggle @timeControlModel.t
 
-		@timeControlModel = @timelineEditor.mainBox.editor.model.timeControl
+    @rootView.kilid.on 'ctrl+shift+space', =>
+      do @_askMultilpeGuidesQuestions
 
-		do @_prepareNode
+  _prepareNode: ->
+    @node = Foxie '.theatrejs-timelineEditor-guides'
+    .putIn @timelineEditor.node
 
-		do @_prepareGuides
+  _prepareGuides: ->
+    for guideModel in @model._list
+      @_add guideModel
 
-		@_list = []
+    @model.on 'new-guide', (guideModel) =>
+      @_add guideModel
 
-		@rootView.kilid.on 'ctrl+space', =>
+    return
 
-			@model.toggle @timeControlModel.t
+  _add: (guideModel) ->
+    @_list.push new GuideView @, guideModel
 
-		@rootView.kilid.on 'ctrl+shift+space', =>
+  relay: ->
+    for guideView in @_list
+      guideView.relay()
 
-			do @_askMultilpeGuidesQuestions
+    return
 
-	_prepareNode: ->
+  _remove: (guideView) ->
+    array.pluckOneItem @_list, guideView
 
-		@node = Foxie '.theatrejs-timelineEditor-guides'
-		.putIn @timelineEditor.node
+  _askMultipleGuidesQuestions: ->
+    @rootView.asker.ask
+      question: 'Spacing: (Example: \'200 1800\')'
+      validate: (v) -> v.match /[0-9\s]+/
+      cb: (success, spacing) =>
+        return unless success
+        @rootView.asker.ask
+          question: 'How many?'
+          validate: 'number'
+          cb: (success, count) =>
+            return unless success
+            @_multipleGuides spacing, count
 
-	_prepareGuides: ->
+  _multipleGuides: (spacing, count) ->
+    return unless spacing.match /^[0-9\s]+$/
 
-		for guideModel in @model._list
+    spaces = spacing.split(/\s+/).map (v) -> parseInt v
+    count = parseInt count
+    t = @timeControlModel.t
 
-			@_add guideModel
+    for i in [0...count]
+      for s in spaces
+        t += s
+        @model.add t
 
-		@model.on 'new-guide', (guideModel) =>
-
-			@_add guideModel
-
-		return
-
-	_add: (guideModel) ->
-
-		@_list.push new GuideView @, guideModel
-
-	relay: ->
-
-		for guideView in @_list
-
-			guideView.relay()
-
-		return
-
-	_remove: (guideView) ->
-
-		array.pluckOneItem @_list, guideView
-
-	_askMultipleGuidesQuestions: ->
-
-		@rootView.asker.ask
-
-			question: 'Spacing: (Example: \'200 1800\')'
-
-			validate: (v) -> v.match /[0-9\s]+/
-
-			cb: (success, spacing) =>
-
-				return unless success
-
-				@rootView.asker.ask
-
-					question: 'How many?'
-
-					validate: 'number'
-
-					cb: (success, count) =>
-
-						return unless success
-
-						@_multipleGuides spacing, count
-
-	_multipleGuides: (spacing, count) ->
-
-		return unless spacing.match /^[0-9\s]+$/
-
-		spaces = spacing.split(/\s+/).map (v) -> parseInt v
-
-		count = parseInt count
-
-		t = @timeControlModel.t
-
-		for i in [0...count]
-
-			for s in spaces
-
-				t += s
-
-				@model.add t
-
-		return
+    return

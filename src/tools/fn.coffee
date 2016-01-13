@@ -1,28 +1,20 @@
 module.exports.throttle = (fn, time = 1000) ->
+  pending = no
+  timer = null
+  lastArgs = null
 
-	pending = no
-	timer = null
-	lastArgs = null
+  pend = ->
+    if pending
+      clearTimeout timer
 
-	pend = ->
+    timer = setTimeout run, time
+    pending = yes
 
-		if pending
+  run = ->
+    pending = no
+    fn.apply null, lastArgs
 
-			clearTimeout timer
-
-		timer = setTimeout run, time
-		pending = yes
-
-	run = ->
-
-		pending = no
-
-		fn.apply null, lastArgs
-
-	->
-
-		lastArgs = arguments
-
-		do pend
-
-		return
+  ->
+    lastArgs = arguments
+    do pend
+    return

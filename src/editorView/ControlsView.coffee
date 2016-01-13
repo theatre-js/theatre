@@ -1,168 +1,121 @@
 Foxie = require 'foxie'
 
 module.exports = class ControlsView
+  constructor: (@editor) ->
+    @rootView = @editor
+    @model = @editor.model.timeControl
 
-	constructor: (@editor) ->
+    do @_prepareNodes
+    do @_prepareKeyboard
 
-		@rootView = @editor
+    @model.on 'play-state-change', => do @_updatePlayState
+    @_curY = 0
 
-		@model = @editor.model.timeControl
+    @mainBoxModel = @editor.model.mainBox
+    @mainBox = @editor.mainBox
 
-		do @_prepareNodes
+    do @_updatePosition
 
-		do @_prepareKeyboard
+    @editor.model.mainBox.on 'height-change', => do @_updatePosition
+    @editor.model.mainBox.on 'visibility-toggle', => do @_updatePosition
 
-		@model.on 'play-state-change', => do @_updatePlayState
+    do @_updatePlayState
 
-		@_curY = 0
+    @audioModel = @editor.model.audio
+    @audioModel.on 'ready-state-change', => do @_updateReadyState
 
-		@mainBoxModel = @editor.model.mainBox
+    do @_updateReadyState
 
-		@mainBox = @editor.mainBox
+  _updateReadyState: ->
+    if @audioModel.isReady()
+      @playPauseNode.addClass 'ready'
+    else
+      @playPauseNode.removeClass 'ready'
 
-		do @_updatePosition
+  _prepareNodes: ->
+    @node = Foxie('.theatrejs-controls').trans(500)
+    @node.putIn @editor.node
 
-		@editor.model.mainBox.on 'height-change', => do @_updatePosition
-		@editor.model.mainBox.on 'visibility-toggle', => do @_updatePosition
+    do @_prepareFullscreenNode
+    do @_prepareJumpToPrevMarkerNode
+    do @_preparePlayPauseNode
+    do @_prepareJumpToNextMarkerNode
 
-		do @_updatePlayState
+  _preparePlayPauseNode: ->
+    @playPauseNode = Foxie '.theatrejs-controls-playPause'
+    @playPauseNode.putIn @node
 
-		@audioModel = @editor.model.audio
+    @rootView.moosh.onClick(@playPauseNode)
+    .onDone =>
+      do @_togglePlayState
 
-		@audioModel.on 'ready-state-change', => do @_updateReadyState
+  _prepareFullscreenNode: ->
+    @toggleFullscreenNode = Foxie '.theatrejs-controls-fullscreen'
+    @toggleFullscreenNode.putIn @node
 
-		do @_updateReadyState
+  _prepareJumpToPrevMarkerNode: ->
+    @jumpToPrevMarkerNode = Foxie '.theatrejs-controls-jumpToPrevMarker'
+    @jumpToPrevMarkerNode.putIn @node
 
-	_updateReadyState: ->
+    @rootView.moosh.onClick(@jumpToPrevMarkerNode)
+    .onDone =>
+      do @model.jumpToPrevMarker
 
-		if @audioModel.isReady()
+  _prepareJumpToNextMarkerNode: ->
+    @jumpToNextMarkerNode = Foxie '.theatrejs-controls-jumpToNextMarker'
+    @jumpToNextMarkerNode.putIn @node
 
-			@playPauseNode.addClass 'ready'
+    @rootView.moosh.onClick(@jumpToNextMarkerNode)
+    .onDone =>
+      do @model.jumpToNextMarker
 
-		else
+  _prepareKeyboard: ->
+    @rootView.kilid.on 'space', =>
+      do @_togglePlayState
 
-			@playPauseNode.removeClass 'ready'
+    @rootView.kilid.on 'home', =>
+      do @model.jumpToFocusBeginning
 
-	_prepareNodes: ->
+    @rootView.kilid.on 'ctrl+home', =>
+      do @model.jumpToBeginning
 
-		@node = Foxie('.theatrejs-controls').trans(500)
+    @rootView.kilid.on 'end', =>
+      do @model.jumpToFocusEnd
 
-		@node.putIn @editor.node
+    @rootView.kilid.on 'ctrl+end', =>
+      do @model.jumpToEnd
 
-		do @_prepareFullscreenNode
-		do @_prepareJumpToPrevMarkerNode
-		do @_preparePlayPauseNode
-		do @_prepareJumpToNextMarkerNode
+    @rootView.kilid.on 'right', =>
+      @model.seekBy 16
 
-	_preparePlayPauseNode: ->
+    @rootView.kilid.on 'left', =>
+      @model.seekBy -16
 
-		@playPauseNode = Foxie '.theatrejs-controls-playPause'
+    @rootView.kilid.on 'shift+right', =>
+      @model.seekBy 48
 
-		@playPauseNode.putIn @node
+    @rootView.kilid.on 'shift+left', =>
+      @model.seekBy -48
 
-		@rootView.moosh.onClick(@playPauseNode)
-		.onDone =>
+    @rootView.kilid.on 'alt+right', =>
+      @model.seekBy 2
 
-			do @_togglePlayState
-
-	_prepareFullscreenNode: ->
-
-		@toggleFullscreenNode = Foxie '.theatrejs-controls-fullscreen'
-
-		@toggleFullscreenNode.putIn @node
-
-	_prepareJumpToPrevMarkerNode: ->
-
-		@jumpToPrevMarkerNode = Foxie '.theatrejs-controls-jumpToPrevMarker'
-
-		@jumpToPrevMarkerNode.putIn @node
-
-		@rootView.moosh.onClick(@jumpToPrevMarkerNode)
-		.onDone =>
-
-			do @model.jumpToPrevMarker
-
-	_prepareJumpToNextMarkerNode: ->
-
-		@jumpToNextMarkerNode = Foxie '.theatrejs-controls-jumpToNextMarker'
-
-		@jumpToNextMarkerNode.putIn @node
-
-		@rootView.moosh.onClick(@jumpToNextMarkerNode)
-		.onDone =>
-
-			do @model.jumpToNextMarker
-
-	_prepareKeyboard: ->
-
-		@rootView.kilid.on 'space', =>
-
-			do @_togglePlayState
-
-		@rootView.kilid.on 'home', =>
-
-			do @model.jumpToFocusBeginning
-
-		@rootView.kilid.on 'ctrl+home', =>
-
-			do @model.jumpToBeginning
-
-		@rootView.kilid.on 'end', =>
-
-			do @model.jumpToFocusEnd
-
-		@rootView.kilid.on 'ctrl+end', =>
-
-			do @model.jumpToEnd
-
-		@rootView.kilid.on 'right', =>
-
-			@model.seekBy 16
-
-		@rootView.kilid.on 'left', =>
-
-			@model.seekBy -16
-
-		@rootView.kilid.on 'shift+right', =>
-
-			@model.seekBy 48
-
-		@rootView.kilid.on 'shift+left', =>
-
-			@model.seekBy -48
-
-		@rootView.kilid.on 'alt+right', =>
-
-			@model.seekBy 2
-
-		@rootView.kilid.on 'alt+left', =>
-
-			@model.seekBy -2
-
-	_updatePosition: ->
-
-		newY = -@mainBox.getCurrentHeight() - 8
-
-		return if newY is @_curY
-
-		@_curY = newY
-
-		@node.moveYTo(@_curY)
-
-		return
-
-	_togglePlayState: ->
-
-		@model.togglePlayState()
-
-	_updatePlayState: ->
-
-		if @model.isPlaying()
-
-			@playPauseNode.addClass 'playing'
-
-		else
-
-			@playPauseNode.removeClass 'playing'
-
-		return
+    @rootView.kilid.on 'alt+left', =>
+      @model.seekBy -2
+
+  _updatePosition: ->
+    newY = -@mainBox.getCurrentHeight() - 8
+    return if newY is @_curY
+    @_curY = newY
+    @node.moveYTo(@_curY)
+    return
+
+  _togglePlayState: ->
+    @model.togglePlayState()
+
+  _updatePlayState: ->
+    if @model.isPlaying()
+      @playPauseNode.addClass 'playing'
+    else
+      @playPauseNode.removeClass 'playing'
+    return

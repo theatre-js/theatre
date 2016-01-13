@@ -2,141 +2,110 @@ _PacItem = require './_PacItem'
 UnitBezier = require 'timing-function/lib/UnitBezier'
 
 module.exports = class Connector extends _PacItem
+  self = @
+  constructor: (@pacs, @id, @t) ->
+    super
 
-	self = @
+    # first, lets make sure no connector sits at t
+    if @pacs._connectorExistsAt @t
+      throw Error "Another connector already exists at t"
 
-	constructor: (@pacs, @id, @t) ->
+    # lets find the point that sits before the connector
+    prevPointIndex = @pacs._getIndexOfItemBeforeOrAt @t
+    prevPoint = @pacs._getItemByIndex prevPointIndex
 
-		super
+    # make sure the point sits exactly on this t
+    unless prevPoint? and prevPoint.t is @t
+      throw Error "No point sits at this t"
 
-		# first, lets make sure no connector sits at t
-		if @pacs._connectorExistsAt @t
+    nextPointIndex = prevPointIndex + 1
+    nextPoint = @pacs._getItemByIndex nextPointIndex
 
-			throw Error "Another connector already exists at t"
+    # make sure next point exists
+    unless nextPoint? and nextPoint.isPoint()
+      throw Error "There is no point to come after the connector"
 
-		# lets find the point that sits before the connector
-		prevPointIndex = @pacs._getIndexOfItemBeforeOrAt @t
-		prevPoint = @pacs._getItemByIndex prevPointIndex
+    @pacs._injectConnectorOn @, nextPointIndex
 
-		# make sure the point sits exactly on this t
-		unless prevPoint? and prevPoint.t is @t
+    # things have changed from the previous point to the next point
+    @pacs._setUpdateRange @t, nextPoint.t
+    @bezier = new UnitBezier 0, 0, 0, 0
+    do @_recalculateBezier
 
-			throw Error "No point sits at this t"
+  serialize: ->
+    se = {}
+    se.t = @t
+    se.id = @id
+    se
 
-		nextPointIndex = prevPointIndex + 1
-		nextPoint = @pacs._getItemByIndex nextPointIndex
+  @constructFrom: (se, pacs) ->
+    c = new self pacs, se.id, se.t
+    pacs._addConnector c
+    return
 
-		# make sure next point exists
-		unless nextPoint? and nextPoint.isPoint()
+  isConnector: -> yes
 
-			throw Error "There is no point to come after the connector"
+  isPoint: -> no
 
-		@pacs._injectConnectorOn @, nextPointIndex
+  remove: ->
+    @pacs._setUpdateRange @getLeftPoint().t, @getRightPoint().t
+    @pacs._pluckConnectorOn @, @getIndex()
+    @_remove()
+    return
 
-		# things have changed from the previous point to the next point
-		@pacs._setUpdateRange @t, nextPoint.t
+  _remove: ->
+    @_emit 'remove'
+    return
 
-		@bezier = new UnitBezier 0, 0, 0, 0
+  getIndex: ->
+    @pacs._getItemIndex @
 
-		do @_recalculateBezier
+  getLeftPoint: ->
+    @pacs._getItemByIndex(@getIndex() - 1)
 
-	serialize: ->
+  getRightPoint: ->
+    @pacs._getItemByIndex(@getIndex() + 1)
 
-		se = {}
+  _bezierShouldChange: ->
+    do @_recalculateBezier
+    @_emit 'bezier-change'
+    return
 
-		se.t = @t
+  _recalculateBezier: ->
+    leftPoint = @getLeftPoint()
+    rightPoint = @getRightPoint()
 
-		se.id = @id
+    @leftHandler = leftPoint.rightHandler
+    @rightHandler = rightPoint.leftHandler
 
-		se
+    @leftValue = leftPoint.value
+    @rightValue = rightPoint.value
+    @_valDiff = @rightValue - @leftValue
 
-	@constructFrom: (se, pacs) ->
+    if @_valDiff is 0
+      @_valDiff = 1e-6
 
-		c = new self pacs, se.id, se.t
+    @leftT = leftPoint.t
+    @rightT = rightPoint.t
+    @_timeDiff = @rightT - @leftT
 
-		pacs._addConnector c
+    x1 = @leftHandler[0] / @_timeDiff
+    x2 = 1 - (@rightHandler[0] / @_timeDiff)
 
-		return
+    y1 = @leftHandler[1] / @_valDiff
+    y2 = 1 + (@rightHandler[1] / @_valDiff)
 
-	isConnector: -> yes
+    @badBezier = x1 < 0 or x1 > 1 or x2 < 0 or x2 > 1
 
-	isPoint: -> no
+    x1 = 0 if x1 < 0
+    x1 = 1 if x1 > 1
+    x2 = 0 if x2 < 0
+    x2 = 1 if x2 > 1
 
-	remove: ->
+    @bezier.set x1, y1, x2, y2
 
-		@pacs._setUpdateRange @getLeftPoint().t, @getRightPoint().t
+    return
 
-		@pacs._pluckConnectorOn @, @getIndex()
-
-		@_remove()
-
-		return
-
-	_remove: ->
-
-		@_emit 'remove'
-
-		return
-
-	getIndex: ->
-
-		@pacs._getItemIndex @
-
-	getLeftPoint: ->
-
-		@pacs._getItemByIndex(@getIndex() - 1)
-
-	getRightPoint: ->
-
-		@pacs._getItemByIndex(@getIndex() + 1)
-
-	_bezierShouldChange: ->
-
-		do @_recalculateBezier
-
-		@_emit 'bezier-change'
-
-		return
-
-	_recalculateBezier: ->
-
-		leftPoint = @getLeftPoint()
-		rightPoint = @getRightPoint()
-
-		@leftHandler = leftPoint.rightHandler
-		@rightHandler = rightPoint.leftHandler
-
-		@leftValue = leftPoint.value
-		@rightValue = rightPoint.value
-		@_valDiff = @rightValue - @leftValue
-
-		if @_valDiff is 0
-
-			@_valDiff = 1e-6
-
-		@leftT = leftPoint.t
-		@rightT = rightPoint.t
-		@_timeDiff = @rightT - @leftT
-
-		x1 = @leftHandler[0] / @_timeDiff
-		x2 = 1 - (@rightHandler[0] / @_timeDiff)
-
-		y1 = @leftHandler[1] / @_valDiff
-		y2 = 1 + (@rightHandler[1] / @_valDiff)
-
-		@badBezier = x1 < 0 or x1 > 1 or x2 < 0 or x2 > 1
-
-		x1 = 0 if x1 < 0
-		x1 = 1 if x1 > 1
-		x2 = 0 if x2 < 0
-		x2 = 1 if x2 > 1
-
-		@bezier.set x1, y1, x2, y2
-
-		return
-
-	tickAt: (t) ->
-
-		prog = (t - @leftT) / @_timeDiff
-
-		@leftValue + (@_valDiff * @bezier.solve(prog, 1e-6))
+  tickAt: (t) ->
+    prog = (t - @leftT) / @_timeDiff
+    @leftValue + (@_valDiff * @bezier.solve(prog, 1e-6))

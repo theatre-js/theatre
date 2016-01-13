@@ -1,66 +1,52 @@
 .strip
+  position: absolute
+  bottom: 394px
+  right: 0
+  width: 87%
+  height: 6px
 
-	width: 87%
-	height: 6px
+  background: url('../../images/strip-values.png') repeat-x
 
-	position: absolute
+  .marker
+    width: 0
+    height: 0
+    position: absolute
 
-	bottom: 394px
-	right: 0
+    border-left: 6px solid transparent
+    border-right: 6px solid transparent
+    border-bottom: 6px solid rgba(0, 200, 0 , .5)
 
-	background: url('../../images/strip-values.png') repeat-x
+  .focus
+    position: absolute
+    width: 6px
+    height: 10px
+    top: -2px
 
-	.marker
+    &.left
+      left: 100px
+      background: url('../../images/focus-left.png')
 
-		width: 0
-		height: 0
-		position: absolute
+    &.right
+      left: 300px
+      background: url('../../images/focus-right.png')
 
-		border-left: 6px solid transparent
-		border-right: 6px solid transparent
-		border-bottom: 6px solid rgba(0, 200, 0 , .5)
+  .seeker
+    position: absolute
+    left: 500px
+    top: -5px
+    width: 11px
+    height: 15px
 
-	.focus
+    background: url('../../images/marker.png')
 
-		position: absolute
+    &:after
+      content: "\0020"
+      display: block
 
-		width: 6px
-		height: 10px
+      position: absolute
+      top: 15px
+      left: 5px
+      width: 1px
+      height: 500px
 
-		top: -2px
-
-		&.left
-			left: 100px
-			background: url('../../images/focus-left.png')
-
-		&.right
-			left: 300px
-			background: url('../../images/focus-right.png')
-
-	.seeker
-
-		position: absolute
-
-		width: 11px
-		height: 15px
-
-		left: 500px
-		top: -5px
-
-		background: url('../../images/marker.png')
-
-		&:after
-
-			content: "\0020"
-			display: block
-
-			position: absolute
-
-			width: 1px
-			height: 500px
-
-			left: 5px
-			top: 15px
-
-			background: #333
-
+      background: #333

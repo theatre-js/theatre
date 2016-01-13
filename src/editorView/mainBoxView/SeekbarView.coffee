@@ -1,552 +1,402 @@
 Foxie = require 'foxie'
 
 module.exports = class SeekbarView
+  constructor: (@mainBox) ->
+    @rootView = @mainBox.rootView
+    @model = @mainBox.editor.model.timeControl
 
-	constructor: (@mainBox) ->
+    @duration = @model.duration
+    @timelineEditor = @mainBox.timelineEditor
+
+    @model.on 'duration-change', => do @_updateDuration
 
-		@rootView = @mainBox.rootView
+    do @_prepareNode
+    do @_prepareGrid
+    do @_prepareSeeker
+    do @_prepareFocus
+    do @_resetSpace
 
-		@model = @mainBox.editor.model.timeControl
+    @mainBox.on 'width-change', => do @_resetSpace
 
-		@duration = @model.duration
+    do @_prepareShortcuts
 
-		@timelineEditor = @mainBox.timelineEditor
+  _prepareNode: ->
+    @node = Foxie('.theatrejs-seekbar')
+    .putIn(@mainBox.node)
+
+  _prepareGrid: ->
+    @grid = Foxie('.theatrejs-seekbar-timeGrid').putIn @mainBox.node
+    @gridLegends = []
+
+    for i in [0..parseInt(screen.width / 75)]
+      @gridLegends.push Foxie('.theatrejs-seekbar-timeGrid-legend').putIn(@grid)
+
+    return
 
-		@model.on 'duration-change', => do @_updateDuration
+  _redoTimeGrid: ->
+    focus = @model.getFocusArea()
+
+    for legend, i in @gridLegends
+      curX = i * 75 + 37.5
+      w = curX / @_width
+      w *= focus.duration
+      w += focus.from
+      w /= 1000
+      legend.node.innerHTML = w.toFixed(2)
+
+    return
+
+  _prepareSeeker: ->
+    @seeker = Foxie('.theatrejs-seekbar-seeker')
+    .moveZ(1)
+    .putIn(@node)
+
+    @model.on 'time-change', => do @_updateT
+
+    wasPlaying = no
+    initialSeekerPosition = 0
+
+    up = =>
+      @rootView.cursor.free()
+      if wasPlaying then @model.play()
+
+    @rootView.moosh.onDrag(@seeker)
+    .onDown =>
+      @rootView.cursor.use @seeker
+      wasPlaying = @model.isPlaying()
+      @model.pause() if wasPlaying
+      initialSeekerPosition = @seeker.get('left')
+
+    .onUp up
+    .onCancel up
+    .onDrag (e) =>
+      # i hate it when there are numbers in my code
+      @_dragSeekerToPos e.absX + initialSeekerPosition
+
+    return
+
+  _prepareFocus: ->
+    do @_prepareFocusLeft
+    do @_prepareFocusRight
+    do @_prepareFocusStrip
+
+    @model.on 'focus-change', =>
+      if @_reactToFocusChangeAndDecideOnRepositioningElements()
+        do @_repositionExceptSeeker
+      else
+        do @_repositionElements
 
-		do @_prepareNode
+  _prepareFocusLeft: ->
+    @focusLeftNode = Foxie('.theatrejs-seekbar-focus-left')
+    .moveZ(1)
+    .set('left', 0)
+    .putIn(@node)
 
-		do @_prepareGrid
+    @rootView.moosh.onDrag(@focusLeftNode)
+    .onDown =>
+      @rootView.cursor.use @focusLeftNode
 
-		do @_prepareSeeker
+    .onUp =>
+      @rootView.cursor.free()
 
-		do @_prepareFocus
+    .onDrag (e) =>
+      @_dragFocusLeftInWindowSpace e.relX
 
-		do @_resetSpace
+  _prepareFocusRight: ->
+    @focusRightNode = Foxie('.theatrejs-seekbar-focus-right')
+    .moveZ(1)
+    .set('left', 0)
+    .putIn(@node)
 
-		@mainBox.on 'width-change', => do @_resetSpace
+    @rootView.moosh.onDrag(@focusRightNode)
+    .onDown =>
+      @rootView.cursor.use @focusRightNode
 
-		do @_prepareShortcuts
+    .onUp =>
+      @rootView.cursor.free()
 
-	_prepareNode: ->
+    .onDrag (e) =>
+      @_dragFocusRightInWindowSpace e.relX
 
-		@node = Foxie('.theatrejs-seekbar')
-		.putIn(@mainBox.node)
+  _prepareFocusStrip: ->
+    @focusStripNode = Foxie('.theatrejs-seekbar-focus-strip')
+    .moveZ(1)
+    .css('width', '300px')
+    .putIn(@node)
 
-	_prepareGrid: ->
+    @rootView.moosh.onDrag(@focusStripNode)
+    .onDown =>
+      @focusStripNode.addClass 'dragging'
+      @rootView.cursor.use @focusStripNode
 
-		@grid = Foxie('.theatrejs-seekbar-timeGrid').putIn @mainBox.node
+    .onDrag (e) =>
+      @_dragFocusStripBy e.relX
 
-		@gridLegends = []
+    .onUp =>
+      @focusStripNode.removeClass 'dragging'
+      @rootView.cursor.free()
 
-		for i in [0..parseInt(screen.width / 75)]
+  _prepareShortcuts: ->
+    @rootView.kilid.on 't'
+    .onEnd =>
+      @rootView.asker.ask
+        question: 'Time (in milliseconds)'
+        validate: 'number'
+        cb: (success, t) =>
+          return unless success
+          t = parseInt t
+          return unless 0 <= t and isFinite t
+          @model.tick t
 
-			@gridLegends.push Foxie('.theatrejs-seekbar-timeGrid-legend').putIn(@grid)
+  _dragFocusStripBy: (x) ->
+    t = @timelineEditor._unfocusedXToTime x
+    focus = @model.getFocusArea()
+    newFrom = focus.from + t
 
-		return
+    if newFrom < 0
+      newFrom = 0
 
-	_redoTimeGrid: ->
+    newTo = newFrom + focus.duration
 
-		focus = @model.getFocusArea()
+    if newTo > @duration
+      newTo = @duration
+      newFrom = newTo - focus.duration
 
-		for legend, i in @gridLegends
+    @model.changeFocusArea newFrom, newTo
+    return
 
-			curX = i * 75 + 37.5
+  _dragFocusBy: (x) ->
+    t = @timelineEditor._XToTime x
+    focus = @model.getFocusArea()
+    newFrom = focus.from + t
 
-			w = curX / @_width
+    if newFrom < 0
+      newFrom = 0
 
-			w *= focus.duration
+    newTo = newFrom + focus.duration
 
-			w += focus.from
+    if newTo > @duration
+      newTo = @duration
+      newFrom = newTo - focus.duration
 
-			w /= 1000
+    @model.changeFocusArea newFrom, newTo
 
-			legend.node.innerHTML = w.toFixed(2)
+    return
 
-		return
+  _dragFocusLeftInWindowSpace: (x) ->
+    focus = @model.getFocusArea()
+    curWinPos = @focusLeftNode.get('left')
+    nextWinPos = curWinPos + x
 
-	_prepareSeeker: ->
+    # the from part
+    nextFrom = @timelineEditor._unfocusedXToTime nextWinPos
 
-		@seeker = Foxie('.theatrejs-seekbar-seeker')
-		.moveZ(1)
-		.putIn(@node)
+    if nextFrom < 0
+      nextFrom = 0
 
-		@model.on 'time-change', => do @_updateT
+    # and the next to
+    nextTo = focus.to
 
-		wasPlaying = no
+    if nextTo - nextFrom < 1000
+      nextTo = nextFrom + 1000
 
-		initialSeekerPosition = 0
+    if nextTo > @duration
+      nextTo = @duration
 
-		up = =>
+    # update the model
+    @model.changeFocusArea nextFrom, nextTo
 
-			@rootView.cursor.free()
+    # if the seeker is before the new from
+    if nextFrom > @model.t
+      # put it on the new from
+      @model.tick nextFrom
 
-			if wasPlaying then @model.play()
+    # if seeker is after the new focused area
+    if nextTo < @model.t
+      # put it on the end of the new focused area
+      @model.tick nextTo
 
-		@rootView.moosh.onDrag(@seeker)
+    return
 
-		.onDown =>
+  _dragFocusRightInWindowSpace: (x) ->
+    focus = @model.getFocusArea()
+    curWinPos = @focusRightNode.get('left')
+    nextWinPos = curWinPos + x
 
-			@rootView.cursor.use @seeker
+    # the to part
+    nextTo = @timelineEditor._unfocusedXToTime nextWinPos
 
-			wasPlaying = @model.isPlaying()
+    if nextTo > @duration
+      nextTo = @duration
 
-			@model.pause() if wasPlaying
+    if nextTo < 1000
+      nextTo = 1000
+
+    # and the next to
+    nextFrom = focus.from
+
+    if nextTo - nextFrom < 1000
+      nextFrom = nextTo - 1000
+
+    if nextFrom < 0
+      nextFrom = 0
+
+    # update the model
+    @model.changeFocusArea nextFrom, nextTo
+
+    # if the seeker is before the new from
+    if @model.t > nextTo
+      # put it on the new from
+      @model.tick nextTo
+
+    # if seeker is after the new focused area
+    if nextFrom > @model.t
+      # put it on the end of the new focused area
+      @model.tick nextFrom
 
-			initialSeekerPosition = @seeker.get('left')
+    return
 
-		.onUp up
+  _resetSpace: ->
+    @_width = @mainBox.width
+    do @_repositionElements
 
-		.onCancel up
+  _repositionElements: ->
+    do @_repositionSeeker
+    do @_repositionFocus
+    do @_redoTimeGrid
 
-		.onDrag (e) =>
+  _repositionExceptSeeker: ->
+    do @_repositionFocus
+    do @_redoTimeGrid
 
-			# i hate it when there are numbers in my code
-			@_dragSeekerToPos e.absX + initialSeekerPosition
+  _updateT: ->
+    t = @model.t
+    focus = @model.getFocusArea()
 
-		return
-
-	_prepareFocus: ->
-
-		do @_prepareFocusLeft
-
-		do @_prepareFocusRight
-
-		do @_prepareFocusStrip
-
-		@model.on 'focus-change', =>
-
-			if @_reactToFocusChangeAndDecideOnRepositioningElements()
-
-				do @_repositionExceptSeeker
-
-			else
-
-				do @_repositionElements
-
-	_prepareFocusLeft: ->
-
-		@focusLeftNode = Foxie('.theatrejs-seekbar-focus-left')
-		.moveZ(1)
-		.set('left', 0)
-		.putIn(@node)
-
-		@rootView.moosh.onDrag(@focusLeftNode)
-
-		.onDown =>
-
-			@rootView.cursor.use @focusLeftNode
-
-		.onUp =>
-
-			@rootView.cursor.free()
-
-		.onDrag (e) =>
-
-			@_dragFocusLeftInWindowSpace e.relX
-
-	_prepareFocusRight: ->
-
-		@focusRightNode = Foxie('.theatrejs-seekbar-focus-right')
-		.moveZ(1)
-		.set('left', 0)
-		.putIn(@node)
-
-		@rootView.moosh.onDrag(@focusRightNode)
-
-		.onDown =>
-
-			@rootView.cursor.use @focusRightNode
-
-		.onUp =>
-
-			@rootView.cursor.free()
-
-		.onDrag (e) =>
-
-			@_dragFocusRightInWindowSpace e.relX
-
-	_prepareFocusStrip: ->
-
-		@focusStripNode = Foxie('.theatrejs-seekbar-focus-strip')
-		.moveZ(1)
-		.css('width', '300px')
-		.putIn(@node)
-
-		@rootView.moosh.onDrag(@focusStripNode)
-		.onDown =>
-
-			@focusStripNode.addClass 'dragging'
-
-			@rootView.cursor.use @focusStripNode
-
-		.onDrag (e) =>
-
-			@_dragFocusStripBy e.relX
-
-		.onUp =>
-
-			@focusStripNode.removeClass 'dragging'
-
-			@rootView.cursor.free()
-
-	_prepareShortcuts: ->
-
-		@rootView.kilid.on 't'
-		.onEnd =>
-
-			@rootView.asker.ask
-
-				question: 'Time (in milliseconds)'
-
-				validate: 'number'
-
-				cb: (success, t) =>
-
-					return unless success
-
-					t = parseInt t
-
-					return unless 0 <= t and isFinite t
-
-					@model.tick t
-
-	_dragFocusStripBy: (x) ->
-
-		t = @timelineEditor._unfocusedXToTime x
-
-		focus = @model.getFocusArea()
-
-		newFrom = focus.from + t
-
-		if newFrom < 0
-
-			newFrom = 0
-
-		newTo = newFrom + focus.duration
-
-		if newTo > @duration
-
-			newTo = @duration
-
-			newFrom = newTo - focus.duration
-
-		@model.changeFocusArea newFrom, newTo
-
-		return
-
-	_dragFocusBy: (x) ->
-
-		t = @timelineEditor._XToTime x
-
-		focus = @model.getFocusArea()
-
-		newFrom = focus.from + t
-
-		if newFrom < 0
-
-			newFrom = 0
-
-		newTo = newFrom + focus.duration
-
-		if newTo > @duration
-
-			newTo = @duration
-
-			newFrom = newTo - focus.duration
-
-		@model.changeFocusArea newFrom, newTo
-
-		return
-
-	_dragFocusLeftInWindowSpace: (x) ->
-
-		focus = @model.getFocusArea()
-
-		curWinPos = @focusLeftNode.get('left')
-
-		nextWinPos = curWinPos + x
-
-		# the from part
-		nextFrom = @timelineEditor._unfocusedXToTime nextWinPos
-
-		if nextFrom < 0
-
-			nextFrom = 0
-
-		# and the next to
-		nextTo = focus.to
-
-		if nextTo - nextFrom < 1000
-
-			nextTo = nextFrom + 1000
-
-		if nextTo > @duration
-
-			nextTo = @duration
-
-		# update the model
-		@model.changeFocusArea nextFrom, nextTo
-
-		# if the seeker is before the new from
-		if nextFrom > @model.t
-
-			# put it on the new from
-			@model.tick nextFrom
-
-		# if seeker is after the new focused area
-		if nextTo < @model.t
-
-			# put it on the end of the new focused area
-			@model.tick nextTo
-
-		return
-
-	_dragFocusRightInWindowSpace: (x) ->
-
-		focus = @model.getFocusArea()
-
-		curWinPos = @focusRightNode.get('left')
-
-		nextWinPos = curWinPos + x
-
-		# the to part
-		nextTo = @timelineEditor._unfocusedXToTime nextWinPos
-
-		if nextTo > @duration
-
-			nextTo = @duration
-
-		if nextTo < 1000
-
-			nextTo = 1000
-
-		# and the next to
-		nextFrom = focus.from
-
-		if nextTo - nextFrom < 1000
-
-			nextFrom = nextTo - 1000
-
-		if nextFrom < 0
-
-			nextFrom = 0
-
-		# update the model
-		@model.changeFocusArea nextFrom, nextTo
-
-		# if the seeker is before the new from
-		if @model.t > nextTo
-
-			# put it on the new from
-			@model.tick nextTo
-
-		# if seeker is after the new focused area
-		if nextFrom > @model.t
-
-			# put it on the end of the new focused area
-			@model.tick nextFrom
-
-		return
-
-	_resetSpace: ->
-
-		@_width = @mainBox.width
-
-		do @_repositionElements
-
-	_repositionElements: ->
-
-		do @_repositionSeeker
-
-		do @_repositionFocus
-
-		do @_redoTimeGrid
-
-	_repositionExceptSeeker: ->
-
-		do @_repositionFocus
-
-		do @_redoTimeGrid
-
-	_updateT: ->
-
-		t = @model.t
-
-		focus = @model.getFocusArea()
-
-		# while playing, we might have gone out of bounds
-		# of the focused area
-		#
-		# todo: this 16ms tolerance is arbitrary, and it makes
-		# up for the fact that AudioDrivenTimeControl starts
-		# playing 16ms before the last `timeline.t`. I need a
-		# better solution.
-		unless focus.from - 16 <= t <= focus.to
-
-			newFrom = t
-
-			newTo = newFrom + focus.duration
-
-			if focus.to < t and newTo > @duration
-
-				shift = newTo - @duration
-
-				newTo = @duration
-
-				newFrom -= shift
-
-				if newFrom < 0 then newFrom = 0
-
-			@model.changeFocusArea newFrom, newTo
-
-			return
-
-		do @_repositionSeeker
-
-		return
-
-	_repositionSeeker: ->
-
-		curSeekerPos = @timelineEditor._timeToFocusedX @model.t
-
-		@seeker
-		.moveXTo(curSeekerPos)
-		.set('left', curSeekerPos)
-
-		@seeker.node.title = @model.t
-
-		return
-
-	# in my defence:
-	#
-	# 		There are only two hard things in Computer Science:
-	# 		cache invalidation and naming things.
-	#
-	# 		-- Phil Karlton
-	#
-	_reactToFocusChangeAndDecideOnRepositioningElements: ->
-
-		t = @model.t
-
-		focus = @model.getFocusArea()
-
-		if t < focus.from
-
-			@model.tick focus.from
-
-			return yes
-
-		else if t > focus.to
-
-			@model.tick focus.to
-
-			return yes
-
-			no
-
-	_dragSeekerToPos: (toPos) ->
-
-		focus = @model.getFocusArea()
-
-		t = @timelineEditor._XToFocusedTime toPos
-
-		t = 0 if t < 0
-
-		t = @duration if t > @duration
-
-		@model.tick t
-
-		return
-
-	_repositionFocus: ->
-
-		focus = @model.getFocusArea()
-
-		left = @timelineEditor._timeToUnfocusedX focus.from
-
-		@focusLeftNode
-		.moveXTo(left)
-		.set('left', left)
-
-		right = @timelineEditor._timeToUnfocusedX focus.from + focus.duration
-
-		@focusRightNode
-		.moveXTo(right)
-		.set('left', right)
-
-		@focusStripNode
-		.moveXTo(left)
-		.css('width', (right - left) + 'px')
-
-		return
-
-	_updateDuration: ->
-
-		@duration = @model.duration
-
-		do @_repositionElements
-
-	_seekToX: (toPos) ->
-
-		focus = @model.getFocusArea()
-
-		t = @timelineEditor._XToFocusedTime toPos
-
-		t = 0 if t < 0
-
-		t = @duration if t > @duration
-
-		@model.tick t
-
-		return
-
-	_zoomFocus: (zoomMult, x) ->
-
-		focus = @model.getFocusArea()
-
-		pivotInDur = x / @_width
-
-		newDuration = focus.duration * zoomMult
-
-		if newDuration > @duration
-
-			newFrom = 0
-
-			newTo = @duration
-
-			@model.changeFocusArea newFrom, newTo
-
-			return
-
-		if newDuration < 500
-
-			zoomMult = 500 / focus.duration
-
-			newDuration = 500
-
-		oldLeftHalf = pivotInDur * focus.duration
-
-		newLeftHalf = oldLeftHalf * zoomMult
-
-		newFrom = focus.from - (newLeftHalf - oldLeftHalf)
-
-		oldRightHalf = (1 - pivotInDur) * focus.duration
-
-		newRightHalf = oldRightHalf * zoomMult
-
-		newTo = focus.to + (newRightHalf - oldRightHalf)
-
-		if newFrom < 0
-
-			newFrom = 0
-
-		if newTo > @duration
-
-			newTo = @duration
-
-		newDur = newTo - newFrom
-
-		@model.changeFocusArea newFrom, newTo
-
-		return
+    # while playing, we might have gone out of bounds
+    # of the focused area
+    #
+    # todo: this 16ms tolerance is arbitrary, and it makes
+    # up for the fact that AudioDrivenTimeControl starts
+    # playing 16ms before the last `timeline.t`. I need a
+    # better solution.
+    unless focus.from - 16 <= t <= focus.to
+      newFrom = t
+      newTo = newFrom + focus.duration
+
+      if focus.to < t and newTo > @duration
+        shift = newTo - @duration
+        newTo = @duration
+        newFrom -= shift
+        if newFrom < 0 then newFrom = 0
+
+      @model.changeFocusArea newFrom, newTo
+
+      return
+
+    do @_repositionSeeker
+    return
+
+  _repositionSeeker: ->
+    curSeekerPos = @timelineEditor._timeToFocusedX @model.t
+
+    @seeker
+    .moveXTo(curSeekerPos)
+    .set('left', curSeekerPos)
+
+    @seeker.node.title = @model.t
+    return
+
+  # in my defence:
+  #
+  #     There are only two hard things in Computer Science:
+  #     cache invalidation and naming things.
+  #
+  #     -- Phil Karlton
+  #
+  _reactToFocusChangeAndDecideOnRepositioningElements: ->
+    t = @model.t
+
+    focus = @model.getFocusArea()
+
+    if t < focus.from
+      @model.tick focus.from
+      return yes
+    else if t > focus.to
+      @model.tick focus.to
+      return yes
+      no
+
+  _dragSeekerToPos: (toPos) ->
+    focus = @model.getFocusArea()
+    t = @timelineEditor._XToFocusedTime toPos
+    t = 0 if t < 0
+    t = @duration if t > @duration
+    @model.tick t
+    return
+
+  _repositionFocus: ->
+    focus = @model.getFocusArea()
+    left = @timelineEditor._timeToUnfocusedX focus.from
+
+    @focusLeftNode
+    .moveXTo(left)
+    .set('left', left)
+
+    right = @timelineEditor._timeToUnfocusedX focus.from + focus.duration
+
+    @focusRightNode
+    .moveXTo(right)
+    .set('left', right)
+
+    @focusStripNode
+    .moveXTo(left)
+    .css('width', (right - left) + 'px')
+
+    return
+
+  _updateDuration: ->
+    @duration = @model.duration
+    do @_repositionElements
+
+  _seekToX: (toPos) ->
+    focus = @model.getFocusArea()
+
+    t = @timelineEditor._XToFocusedTime toPos
+    t = 0 if t < 0
+    t = @duration if t > @duration
+
+    @model.tick t
+    return
+
+  _zoomFocus: (zoomMult, x) ->
+    focus = @model.getFocusArea()
+    pivotInDur = x / @_width
+    newDuration = focus.duration * zoomMult
+
+    if newDuration > @duration
+      newFrom = 0
+      newTo = @duration
+      @model.changeFocusArea newFrom, newTo
+      return
+
+    if newDuration < 500
+      zoomMult = 500 / focus.duration
+      newDuration = 500
+
+    oldLeftHalf = pivotInDur * focus.duration
+    newLeftHalf = oldLeftHalf * zoomMult
+    newFrom = focus.from - (newLeftHalf - oldLeftHalf)
+    oldRightHalf = (1 - pivotInDur) * focus.duration
+    newRightHalf = oldRightHalf * zoomMult
+    newTo = focus.to + (newRightHalf - oldRightHalf)
+
+    if newFrom < 0
+      newFrom = 0
+
+    if newTo > @duration
+      newTo = @duration
+
+    newDur = newTo - newFrom
+    @model.changeFocusArea newFrom, newTo
+    return

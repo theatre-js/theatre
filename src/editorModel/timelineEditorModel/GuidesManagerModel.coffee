@@ -3,111 +3,73 @@ GuideModel = require './guidesManagerModel/GuideModel'
 array = require 'utila/lib/array'
 
 module.exports = class GuidesManagerModel extends _DynamicModel
+  constructor: (@timelineEditor) ->
+    @rootModel = @timelineEditor.editor
+    @_serializedAddress = ['timelineEditor', 'guides']
+    super
+    @_list = []
 
-	constructor: (@timelineEditor) ->
+  serialize: ->
+    se = {}
+    se._list = list = []
 
-		@rootModel = @timelineEditor.editor
+    for g in @_list
+      list.push g.t
 
-		@_serializedAddress = ['timelineEditor', 'guides']
+    se
 
-		super
+  _loadFrom: (se) ->
+    return unless se? and se._list? and Array.isArray se._list
+    list = se._list
+    for t in list
+      @add t
 
-		@_list = []
+    return
 
-	serialize: ->
+  add: (t) ->
+    index = @_getIndexOfItemBeforeOrAt t
+    array.injectInIndex @_list, index + 1, g = new GuideModel @, t
+    @_emit 'new-guide', g
+    do @_reportLocalChange
+    this
 
-		se = {}
+  _remove: (g) ->
+    array.pluckOneItem @_list, g
+    do @_reportLocalChange
 
-		se._list = list = []
+  _getIndexOfItemBeforeOrAt: (t) ->
+    lastIndex = -1
+    for item, index in @_list
+      break if item.t > t
+      lastIndex = index
 
-		for g in @_list
+    lastIndex
 
-			list.push g.t
+  toggle: (t) ->
+    index = @_getIndexOfItemBeforeOrAt t
+    if index is -1
+      @add t
+      return
 
-		se
+    item = @_list[index]
+    if item.t >= t - 50
+      item.remove()
+      return
 
-	_loadFrom: (se) ->
+    nextItem = @_list[index + 1]
+    if nextItem? and nextItem.t <= t + 50
+      nextItem.remove()
+      return
 
-		return unless se? and se._list? and Array.isArray se._list
+    @add t
+    return
 
-		list = se._list
+  removeInRange: (from, to) ->
+    guides = []
+    for g in @_list
+      guides.push g if from <= g.t <= to
 
-		for t in list
+    for g in guides
+      g.remove()
 
-			@add t
-
-		return
-
-	add: (t) ->
-
-		index = @_getIndexOfItemBeforeOrAt t
-
-		array.injectInIndex @_list, index + 1, g = new GuideModel @, t
-
-		@_emit 'new-guide', g
-
-		do @_reportLocalChange
-
-		@
-
-	_remove: (g) ->
-
-		array.pluckOneItem @_list, g
-
-		do @_reportLocalChange
-
-	_getIndexOfItemBeforeOrAt: (t) ->
-
-		lastIndex = -1
-
-		for item, index in @_list
-
-			break if item.t > t
-
-			lastIndex = index
-
-		lastIndex
-
-	toggle: (t) ->
-
-		index = @_getIndexOfItemBeforeOrAt t
-
-		if index is -1
-
-			@add t
-
-			return
-
-		item = @_list[index]
-
-		if item.t >= t - 50
-
-			item.remove()
-
-			return
-
-		nextItem = @_list[index + 1]
-
-		if nextItem? and nextItem.t <= t + 50
-
-			nextItem.remove()
-
-			return
-
-		@add t
-
-		return
-
-	removeInRange: (from, to) ->
-
-		guides = []
-
-		for g in @_list
-
-			guides.push g if from <= g.t <= to
-
-		for g in guides
-
-			g.remove()
-
-		return
+    return

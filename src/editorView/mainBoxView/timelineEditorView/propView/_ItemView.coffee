@@ -1,11 +1,8 @@
 module.exports = class _ItemView
 
-	constructor: ->
+  constructor: ->
+    @rootView = @prop.rootView
 
-		@rootView = @prop.rootView
-
-	_remove: ->
-
-		@prop._removeItem @
-
-		return
+  _remove: ->
+    @prop._removeItem @
+    return

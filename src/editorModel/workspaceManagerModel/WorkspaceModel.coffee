@@ -4,216 +4,146 @@ array = require 'utila/lib/array'
 WorkspacePropHolderModel = require './workspaceModel/WorkspacePropHolderModel'
 
 module.exports = class WorkspaceModel extends _Emitter
+  self = @
+
+  constructor: (@workspaceManager, @name) ->
+    super
+    @rootModel = @workspaceManager.rootModel
+    @propHolders = []
+
+  serialize: ->
+    se = {}
+    se.name = @name
+    se.propHolders = propHolders = []
+    propHolders.push p.serialize() for p in @propHolders
+    se
+
+  @constructFrom: (se, workspaceManager) ->
+    ws = new self workspaceManager, se.name
+    for propHolder in se.propHolders
+      ws._constructPropHolderAndAdd propHolder
+
+    ws
 
-	self = @
+  _constructPropHolderAndAdd: (se) ->
+    try
+      ph = WorkspacePropHolderModel.constructFrom se, @
+      return @_addPropHolder ph
+    catch e
+      console.warn "Couldn't construct a prop holder for", se, e
 
-	constructor: (@workspaceManager, @name) ->
+    return
 
-		super
+  rename: (newName) ->
+    return if newName is @name
+    if @workspaceManager._getWorkspaceByName(newName)?
+      throw Error "A workspace named '#{newName}' already exists"
 
-		@rootModel = @workspaceManager.rootModel
+    @name = newName
+    @_emit 'rename'
+    return
+
+  remove: ->
+    @workspaceManager._removeWorkspace @
+    @_emit 'remove'
+    @workspaceManager = null
+    @name = 'REMOVED'
+    return
 
-		@propHolders = []
+  addProp: (actorPropModel) ->
+    unless actorPropModel instanceof ActorPropModel
+      throw Error "prop must be an instance of ActorPropModel"
 
-	serialize: ->
+    if @_getHolderPropById(actorPropModel.id)
+      throw Error "Prop `#{prop.id}` already exists in #{@name}"
 
-		se = {}
+    @_addPropHolder propHolder = new WorkspacePropHolderModel @, actorPropModel
+    propHolder
 
-		se.name = @name
+  _addPropHolder: (propHolder) ->
+    @propHolders.push propHolder
+    propHolder.onAnyEvent => @_emit 'something-changed'
+    @_emit 'new-prop', propHolder
 
-		se.propHolders = propHolders = []
+  _getHolderPropById: (id) ->
+    for prop in @propHolders
+      return prop if prop.id is id
 
-		propHolders.push p.serialize() for p in @propHolders
+    return
 
-		se
+  activate: ->
+    @workspaceManager._activate @
+    return
 
-	@constructFrom: (se, workspaceManager) ->
+  isPropListed: (prop) ->
+    @_getHolderPropById(prop.id)?
 
-		ws = new self workspaceManager, se.name
+  removeProp: (prop) ->
+    propHolder = @_getHolderPropById prop.id
 
-		for propHolder in se.propHolders
+    unless propHolder?
+      throw Error "Prop `#{prop.id}` is not listed in #{@name}"
 
-			ws._constructPropHolderAndAdd propHolder
+    array.pluckOneItem @propHolders, propHolder
+    @_emit 'prop-remove', propHolder
+    return
 
-		ws
+  _togglePropListing: (prop) ->
+    if @isPropListed prop
+      @removeProp prop
+    else
+      @addProp prop
 
-	_constructPropHolderAndAdd: (se) ->
+    return
 
-		try
+  # this is very hacky, but gets the job done for now
+  _shiftPropUp: (prop) ->
+    currentHolder = @_getHolderPropById prop.id
+    unless currentHolder?
+      throw Error "Prop `#{prop.id}` is not listed in #{@name}"
 
-			ph = WorkspacePropHolderModel.constructFrom se, @
+    index = @propHolders.indexOf currentHolder
 
-			return @_addPropHolder ph
+    return if index < 1
 
-		catch e
+    toAppend = []
+    propHolderBefore = @propHolders[index - 1]
+    toAppend.push propHolderBefore
+    propHolderBefore.removeFromWorkspace()
+    propHolderBefore.removeAllListeners()
 
-			console.warn "Couldn't construct a prop holder for", se, e
+    while @propHolders.length > index
+      ph = @propHolders[index]
+      toAppend.push ph
+      ph.removeFromWorkspace()
+      ph.removeAllListeners()
 
-		return
+    for ph in toAppend
+      @_addPropHolder ph
 
-	rename: (newName) ->
+    return
 
-		return if newName is @name
+  _shiftPropDown: (prop) ->
+    currentHolder = @_getHolderPropById prop.id
 
-		if @workspaceManager._getWorkspaceByName(newName)?
+    unless currentHolder?
+      throw Error "Prop `#{prop.id}` is not listed in #{@name}"
 
-			throw Error "A workspace named '#{newName}' already exists"
+    index = @propHolders.indexOf currentHolder
+    return if index is @propHolders.length - 1
 
-		@name = newName
+    toAppend = []
+    toAppend.push currentHolder
+    currentHolder.removeFromWorkspace()
+    currentHolder.removeAllListeners()
 
-		@_emit 'rename'
+    while @propHolders.length > index + 1
+      ph = @propHolders[index]
+      toAppend.push ph
+      ph.removeFromWorkspace()
+      ph.removeAllListeners()
 
-		return
+    for ph in toAppend
+      @_addPropHolder ph
 
-	remove: ->
-
-		@workspaceManager._removeWorkspace @
-
-		@_emit 'remove'
-
-		@workspaceManager = null
-
-		@name = 'REMOVED'
-
-		return
-
-	addProp: (actorPropModel) ->
-
-		unless actorPropModel instanceof ActorPropModel
-
-			throw Error "prop must be an instance of ActorPropModel"
-
-		if @_getHolderPropById(actorPropModel.id)
-
-			throw Error "Prop `#{prop.id}` already exists in #{@name}"
-
-		@_addPropHolder propHolder = new WorkspacePropHolderModel @, actorPropModel
-
-		propHolder
-
-	_addPropHolder: (propHolder) ->
-
-		@propHolders.push propHolder
-
-		propHolder.onAnyEvent => @_emit 'something-changed'
-
-		@_emit 'new-prop', propHolder
-
-	_getHolderPropById: (id) ->
-
-		for prop in @propHolders
-
-			return prop if prop.id is id
-
-		return
-
-	activate: ->
-
-		@workspaceManager._activate @
-
-		return
-
-	isPropListed: (prop) ->
-
-		@_getHolderPropById(prop.id)?
-
-	removeProp: (prop) ->
-
-		propHolder = @_getHolderPropById prop.id
-
-		unless propHolder?
-
-			throw Error "Prop `#{prop.id}` is not listed in #{@name}"
-
-		array.pluckOneItem @propHolders, propHolder
-
-		@_emit 'prop-remove', propHolder
-
-		return
-
-	_togglePropListing: (prop) ->
-
-		if @isPropListed prop
-
-			@removeProp prop
-
-		else
-
-			@addProp prop
-
-		return
-
-	# this is very hacky, but gets the job done for now
-	_shiftPropUp: (prop) ->
-
-		currentHolder = @_getHolderPropById prop.id
-
-		unless currentHolder?
-
-			throw Error "Prop `#{prop.id}` is not listed in #{@name}"
-
-		index = @propHolders.indexOf currentHolder
-
-		return if index < 1
-
-		toAppend = []
-
-		propHolderBefore = @propHolders[index - 1]
-
-		toAppend.push propHolderBefore
-
-		propHolderBefore.removeFromWorkspace()
-
-		propHolderBefore.removeAllListeners()
-
-		while @propHolders.length > index
-
-			ph = @propHolders[index]
-
-			toAppend.push ph
-
-			ph.removeFromWorkspace()
-
-			ph.removeAllListeners()
-
-		for ph in toAppend
-
-			@_addPropHolder ph
-
-		return
-
-	_shiftPropDown: (prop) ->
-
-		currentHolder = @_getHolderPropById prop.id
-
-		unless currentHolder?
-
-			throw Error "Prop `#{prop.id}` is not listed in #{@name}"
-
-		index = @propHolders.indexOf currentHolder
-
-		return if index is @propHolders.length - 1
-
-		toAppend = []
-
-		toAppend.push currentHolder
-
-		currentHolder.removeFromWorkspace()
-
-		currentHolder.removeAllListeners()
-
-		while @propHolders.length > index + 1
-
-			ph = @propHolders[index]
-
-			toAppend.push ph
-
-			ph.removeFromWorkspace()
-
-			ph.removeAllListeners()
-
-		for ph in toAppend
-
-			@_addPropHolder ph
-
-		return
+    return

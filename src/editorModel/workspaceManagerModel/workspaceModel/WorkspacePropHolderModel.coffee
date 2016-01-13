@@ -1,99 +1,65 @@
 _Emitter = require '../../../_Emitter'
 
 module.exports = class WorkspacePropHolderModel extends _Emitter
+  self = @
 
-	self = @
+  constructor: (@workspace, @actorProp) ->
+    super
+    @rootModel = @workspace.rootModel
+    @id = @actorProp.id
+    @_expanded = yes
+    @_height = 80
 
-	constructor: (@workspace, @actorProp) ->
+  serialize: ->
+    se = {}
+    se.id = @id
+    se._expanded = @_expanded
+    se.actorPropId = @actorProp.id
+    se._height = @_height
+    se
 
-		super
+  @constructFrom: (se, workspace) ->
+    actorProp = workspace.rootModel.graph.getActorPropById se.actorPropId
+    propHolder = new self workspace, actorProp
 
-		@rootModel = @workspace.rootModel
+    if se._expanded?
+      propHolder.setExpansion Boolean se._expanded
 
-		@id = @actorProp.id
+    if se._height?
+      propHolder.setHeight parseInt se._height
 
-		@_expanded = yes
+    propHolder
 
-		@_height = 80
+  isExpanded: ->
+    @_expanded
 
-	serialize: ->
+  setExpansion: (newExpansion) ->
+    return if newExpansion is @_expanded
+    @_expanded = Boolean newExpansion
+    @_emit 'expansion-toggle'
 
-		se = {}
+  toggleExpansion: ->
+    @_expanded = not @_expanded
+    @_emit 'expansion-toggle'
+    @_expanded
 
-		se.id = @id
+  getHeight: ->
+    @_height
 
-		se._expanded = @_expanded
+  setHeight: (newHeight) ->
+    return if newHeight is @_height
+    @_height = parseInt(newHeight)|0
+    @_emit 'height-change'
+    return
 
-		se.actorPropId = @actorProp.id
+  removeFromWorkspace: ->
+    @workspace.removeProp @actorProp
+    this
 
-		se._height = @_height
+  shiftUp: ->
+    @workspace._shiftPropUp @actorProp
+    this
 
-		se
-
-	@constructFrom: (se, workspace) ->
-
-		actorProp = workspace.rootModel.graph.getActorPropById se.actorPropId
-
-		propHolder = new self workspace, actorProp
-
-		if se._expanded?
-
-			propHolder.setExpansion Boolean se._expanded
-
-		if se._height?
-
-			propHolder.setHeight parseInt se._height
-
-		propHolder
-
-	isExpanded: ->
-
-		@_expanded
-
-	setExpansion: (newExpansion) ->
-
-		return if newExpansion is @_expanded
-
-		@_expanded = Boolean newExpansion
-
-		@_emit 'expansion-toggle'
-
-	toggleExpansion: ->
-
-		@_expanded = not @_expanded
-
-		@_emit 'expansion-toggle'
-
-		return @_expanded
-
-	getHeight: ->
-
-		@_height
-
-	setHeight: (newHeight) ->
-
-		return if newHeight is @_height
-
-		@_height = parseInt(newHeight)|0
-
-		@_emit 'height-change'
-
-		return
-
-	removeFromWorkspace: ->
-
-		@workspace.removeProp @actorProp
-
-		@
-
-	shiftUp: ->
-
-		@workspace._shiftPropUp @actorProp
-
-		@
-
-	shiftDown: ->
-
-		@workspace._shiftPropDown @actorProp
-
-		@
+  shiftDown: ->
+    @workspace._shiftPropDown @actorProp
+    this

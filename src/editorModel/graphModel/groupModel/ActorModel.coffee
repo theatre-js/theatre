@@ -1,63 +1,41 @@
 ActorPropModel = require './actorModel/ActorPropModel'
 
 module.exports = class ActorModel
+  constructor: (@group, @name) ->
+    @graph = @group.graph
+    @id = @group.id + '-' + @name
+    @timeline = @group.graph.editor.timeline
+    @props = {}
 
-	constructor: (@group, @name) ->
+  addPropOfArray: (name, arrayName, arrayIndex) ->
+    if @props[name]?
+      throw Error "prop with name '#{name}' already exists in actor '#{@id}'"
 
-		@graph = @group.graph
+    propId = @id + '-' + name
+    timelineProp = @timeline.addPropOfArray(propId, arrayName, arrayIndex)
+    @props[name] = prop = new ActorPropModel @, name, timelineProp
+    prop
 
-		@id = @group.id + '-' + @name
+  addPropOfObject: (name, objectName, setter, getter) ->
+    if @props[name]?
+      throw Error "prop with name '#{name}' already exists in actor '#{@id}'"
 
-		@timeline = @group.graph.editor.timeline
+    propId = @id + '-' + name
+    timelineProp = @timeline.addPropOfObject(propId, objectName, setter, getter)
+    @props[name] = prop = new ActorPropModel @, name, timelineProp
+    prop
 
-		@props = {}
+  addProp: (name, initial, cb) ->
+    if @props[name]?
+      throw Error "prop with name '#{name}' already exists in actor '#{@id}'"
 
-	addPropOfArray: (name, arrayName, arrayIndex) ->
+    propId = @id + '-' + name
+    timelineProp = @timeline.addProp(propId, initial, cb)
+    @props[name] = prop = new ActorPropModel @, name, timelineProp
 
-		if @props[name]?
+  useProp: (name, timelineProp) ->
+    if @props[name]?
+      throw Error "prop with name '#{name}' already exists in actor '#{@id}'"
 
-			throw Error "prop with name '#{name}' already exists in actor '#{@id}'"
-
-		propId = @id + '-' + name
-
-		timelineProp = @timeline.addPropOfArray(propId, arrayName, arrayIndex)
-
-		@props[name] = prop = new ActorPropModel @, name, timelineProp
-
-		prop
-
-	addPropOfObject: (name, objectName, setter, getter) ->
-
-		if @props[name]?
-
-			throw Error "prop with name '#{name}' already exists in actor '#{@id}'"
-
-		propId = @id + '-' + name
-
-		timelineProp = @timeline.addPropOfObject(propId, objectName, setter, getter)
-
-		@props[name] = prop = new ActorPropModel @, name, timelineProp
-
-		prop
-
-	addProp: (name, initial, cb) ->
-
-		if @props[name]?
-
-			throw Error "prop with name '#{name}' already exists in actor '#{@id}'"
-
-		propId = @id + '-' + name
-
-		timelineProp = @timeline.addProp(propId, initial, cb)
-
-		@props[name] = prop = new ActorPropModel @, name, timelineProp
-
-	useProp: (name, timelineProp) ->
-
-		if @props[name]?
-
-			throw Error "prop with name '#{name}' already exists in actor '#{@id}'"
-
-		@props[name] = timelineProp
-
-		@
+    @props[name] = timelineProp
+    this

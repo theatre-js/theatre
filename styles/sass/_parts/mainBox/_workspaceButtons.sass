@@ -1,137 +1,102 @@
 @include keyframes(workspaceButtons-entrance)
+  0%
+    opacity: 0
+    @include transform(perspective(800) translate3d(0, 0, -50px))
 
-	0%
-
-		opacity: 0
-		@include transform(perspective(800) translate3d(0, 0, -50px))
-
-	100%
-
-		opacity: 1
-		@include transform(perspective(1200) translate3d(0px, 0, 0))
+  100%
+    opacity: 1
+    @include transform(perspective(1200) translate3d(0px, 0, 0))
 
 @mixin expand-area
+  &:after
+    position: absolute
+    left: -5px
+    right: -5px
+    bottom: -5px
+    top: -5px
 
-	&:after
-
-		position: absolute
-		left: -5px
-		right: -5px
-		bottom: -5px
-		top: -5px
-
-		content: "\0020"
-		display: block
+    content: "\0020"
+    display: block
 
 @mixin button ($src, $left)
+  width: 13px
+  height: 40px
 
-	width: 13px
-	height: 40px
+  cursor: pointer
+  background: url($src) no-repeat center center
+  margin-left: $left
+  float: left
+  opacity: .7
 
-	cursor: pointer
+  @include transform(translateZ(1px))
+  @include transition(opacity .5s)
 
-	background: url($src) no-repeat center center
+  &:hover
+    @include transition(opacity .1s)
+    @include transform(translate3d(0, -1px, 1px))
+    opacity: 1
 
-	margin-left: $left
-
-	float: left
-
-	opacity: .7
-
-	@include transform(translateZ(1px))
-
-	@include transition(opacity .5s)
-
-	&:hover
-
-		@include transition(opacity .1s)
-
-		@include transform(translate3d(0, -1px, 1px))
-
-		opacity: 1
-
-	@include expand-area
+  @include expand-area
 
 @-webkit-keyframes webkit-bugfix-for-workspaceButtons
-
-	0%
-
-		left: -2px
-
-	100%
-
-		left: 0
+  0%
+    left: -2px
+  100%
+    left: 0
 
 .theatrejs-workspaceButtons
+  @include transition(0.3s all)
+  @include transform(translate3d(0, 42px, 0px))
 
-	@include transition(0.3s all)
+  &:hover, &.visible
+    @include transform(translate3d(0, 0px, 1px))
 
-	@include transform(translate3d(0, 42px, 0px))
+  &:before
+    display: block
+    content: "\0020"
+    position: absolute
+    top: -15px
+    height: 10px
+    left: 0
+    right: 0
+    z-index: 30
 
-	&:hover, &.visible
+  -webkit-animation: webkit-bugfix-for-workspaceButtons 0.2s
 
-		@include transform(translate3d(0, 0px, 1px))
+  position: fixed
+  bottom: 0px
 
-	&:before
+  width: 220px
+  height: 42px
 
-		display: block
-		content: "\0020"
-		position: absolute
-		top: -15px
-		height: 10px
-		left: 0
-		right: 0
-		z-index: 30
+  z-index: 12
+  background: #040404
 
-	-webkit-animation: webkit-bugfix-for-workspaceButtons 0.2s
-
-	position: fixed
-	bottom: 0px
-
-	width: 220px
-	height: 42px
-
-	z-index: 12
-
-	background: #040404
-
-	@include user-select(none)
+  @include user-select(none)
 
 .theatrejs-workspaceButtons-showGraph
-
-	@include button ("../../images/objects-list.png", 10%)
+  @include button ("../../images/objects-list.png", 10%)
 
 .theatrejs-workspaceButtons-activeWorkspaceName
+  display: block
+  float: left
+  height: 42px
+  margin-left: 12px
+  min-width: 80px
 
-	display: block
-	float: left
+  color: #848484
+  font-size: 12px
+  line-height: 43px
+  text-transform: uppercase
 
-	color: #848484
+  cursor: pointer
 
-	font-size: 12px
+  @include transform(translateZ(1px))
+  @include transition(all .5s)
 
-	height: 42px
+  &:hover
+    @include transition(all .1s)
+    @include transform(translate3d(0, -1px, 1px))
+    color: #aaa
 
-	line-height: 43px
-
-	margin-left: 12px
-
-	cursor: pointer
-
-	min-width: 80px
-
-	text-transform: uppercase
-
-	@include transform(translateZ(1px))
-
-	@include transition(all .5s)
-
-	&:hover
-
-		@include transition(all .1s)
-
-		@include transform(translate3d(0, -1px, 1px))
-
-		color: #aaa
-
-	@include expand-area
+  @include expand-area

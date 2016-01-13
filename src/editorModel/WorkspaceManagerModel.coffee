@@ -3,253 +3,175 @@ WorkspaceModel = require './workspaceManagerModel/WorkspaceModel'
 _DynamicModel = require '../_DynamicModel'
 
 module.exports = class WorkspaceManagerModel extends _DynamicModel
+  constructor: (@editor) ->
+    @rootModel = @editor
+    @_serializedAddress = 'workspaces'
 
-	constructor: (@editor) ->
+    super
 
-		@rootModel = @editor
+    @_workspaces = []
+    @_propListingChangeListeners = {}
+    @_active = null
+    @onAnyEvent => do @_reportLocalChange
 
-		@_serializedAddress = 'workspaces'
+  serialize: ->
+    se = {}
+    se.workspaces = workspaces = []
+    workspaces.push ws.serialize() for ws in @_workspaces when ws.name isnt 'EMPTY'
 
-		super
+    se._activeWorkspaceName = ''
+    if @_active?
+      se._activeWorkspaceName = @_active.name
 
-		@_workspaces = []
+    se
 
-		@_propListingChangeListeners = {}
+  _loadFrom: (se) ->
+    for ws in se.workspaces
+      continue if ws.name is 'EMPTY'
+      @_constructWorkspaceAndAdd ws
 
-		@_active = null
+    if se._activeWorkspaceName isnt ''
+      @get(se._activeWorkspaceName).activate()
 
-		@onAnyEvent => do @_reportLocalChange
+    return
 
-	serialize: ->
+  getAll: ->
+    @_workspaces
 
-		se = {}
+  _constructWorkspaceAndAdd: (se) ->
+    workspace = WorkspaceModel.constructFrom se, @
+    @_setupListenersOnWorkspace workspace
+    @_addWorkspace workspace
 
-		se.workspaces = workspaces = []
+  _makeWorkspace: (name) ->
+    workspace = new WorkspaceModel @, name
+    @_setupListenersOnWorkspace workspace
+    workspace
 
-		workspaces.push ws.serialize() for ws in @_workspaces when ws.name isnt 'EMPTY'
+  _setupListenersOnWorkspace: (workspace) ->
+    workspace.onAnyEvent => do @_reportLocalChange
+    workspace.on 'new-prop', (propHolder) =>
+      if workspace is @_active
+        @_emit 'prop-add', propHolder
+        id = propHolder.id
+        listeners = @_propListingChangeListeners[id]
 
-		se._activeWorkspaceName = ''
+        return unless listeners?
 
-		if @_active?
+        for cb in listeners
+          cb 'add'
 
-			se._activeWorkspaceName = @_active.name
+      return
 
-		se
+    workspace.on 'prop-remove', (propHolder) =>
+      if workspace is @_active
+        @_emit 'prop-remove', propHolder
+        id = propHolder.id
+        listeners = @_propListingChangeListeners[id]
 
-	_loadFrom: (se) ->
+        return unless listeners?
 
-		for ws in se.workspaces
+        for cb in listeners
+          cb 'remove'
 
-			continue if ws.name is 'EMPTY'
+      return
 
-			@_constructWorkspaceAndAdd ws
+    workspace.on 'rename', =>
+      if workspace is @_active
+        @_emit 'active-workspace-change', workspace
 
-		if se._activeWorkspaceName isnt ''
+    workspace.on 'remove', =>
 
-			@get(se._activeWorkspaceName).activate()
+    return
 
-		return
+  get: (name) ->
+    workspace = @_getWorkspaceByName name
+    unless workspace?
+      @_addWorkspace workspace = @_makeWorkspace name
 
-	getAll: ->
+    workspace
 
-		@_workspaces
+  _addWorkspace: (workspace) ->
+    @_workspaces.push workspace
+    @_emit 'new-workspace', workspace
+    do @_reportLocalChange
+    return
 
-	_constructWorkspaceAndAdd: (se) ->
+  _getWorkspaceByName: (name) ->
+    name = String name
+    if name.length < 3
+      throw Error "Wrong name '#{name}' for a workspace"
 
-		workspace = WorkspaceModel.constructFrom se, @
+    for workspace in @_workspaces
+      return workspace if workspace.name is name
 
-		@_setupListenersOnWorkspace workspace
+    return
 
-		@_addWorkspace workspace
+  _removeWorkspace: (workspace) ->
+    array.pluckOneItem @_workspaces, workspace
+    if @_active is workspace
+      @_workspaces[0].activate()
 
-	_makeWorkspace: (name) ->
+    return
 
-		workspace = new WorkspaceModel @, name
+  getActiveWorkspace: ->
+    unless @_active?
+      if @_workspaces.length isnt 0
+        @_workspaces[0].activate()
+      else
+        empty = do @_makeEmptyWorkspace
+        empty.activate()
 
-		@_setupListenersOnWorkspace workspace
+    @_active
 
-		workspace
+  _makeEmptyWorkspace: ->
+    @get 'EMPTY'
 
-	_setupListenersOnWorkspace: (workspace) ->
+  isPropListed: (propModel) ->
+    ws = @getActiveWorkspace()
+    ws.isPropListed propModel
 
-		workspace.onAnyEvent => do @_reportLocalChange
+  onPropListingChange: (prop, cb) ->
+    id = prop.id
+    unless @_propListingChangeListeners[id]?
+      @_propListingChangeListeners[id] = [cb]
+      return
 
-		workspace.on 'new-prop', (propHolder) =>
+    @_propListingChangeListeners[id].push cb
 
-			if workspace is @_active
+    return
 
-				@_emit 'prop-add', propHolder
+  togglePropListing: (prop) ->
+    @getActiveWorkspace()._togglePropListing prop
+    return
 
-				id = propHolder.id
+  _activate: (ws) ->
+    active = @_active
+    return if active is ws
 
-				listeners = @_propListingChangeListeners[id]
+    if active?
+      for propModel in active.propHolders
+        id = propModel.id
+        listeners = @_propListingChangeListeners[id]
 
-				return unless listeners?
+        continue unless listeners?
 
-				for cb in listeners
+        for cb in listeners
+          cb 'remove'
 
-					cb 'add'
+    @_active = ws
 
-			return
+    for propModel in @_active.propHolders
+      id = propModel.id
+      listeners = @_propListingChangeListeners[id]
+      continue unless listeners?
 
-		workspace.on 'prop-remove', (propHolder) =>
+      for cb in listeners
+        cb 'add'
 
-			if workspace is @_active
+    @_emit 'active-workspace-change'
+    do @_reportLocalChange
+    return
 
-				@_emit 'prop-remove', propHolder
-
-				id = propHolder.id
-
-				listeners = @_propListingChangeListeners[id]
-
-				return unless listeners?
-
-				for cb in listeners
-
-					cb 'remove'
-
-			return
-
-		workspace.on 'rename', =>
-
-			if workspace is @_active
-
-				@_emit 'active-workspace-change', workspace
-
-		workspace.on 'remove', =>
-
-		return
-
-	get: (name) ->
-
-		workspace = @_getWorkspaceByName name
-
-		unless workspace?
-
-			@_addWorkspace workspace = @_makeWorkspace name
-
-		workspace
-
-	_addWorkspace: (workspace) ->
-
-		@_workspaces.push workspace
-
-		@_emit 'new-workspace', workspace
-
-		do @_reportLocalChange
-
-		return
-
-	_getWorkspaceByName: (name) ->
-
-		name = String name
-
-		if name.length < 3
-
-			throw Error "Wrong name '#{name}' for a workspace"
-
-		for workspace in @_workspaces
-
-			return workspace if workspace.name is name
-
-		return
-
-	_removeWorkspace: (workspace) ->
-
-		array.pluckOneItem @_workspaces, workspace
-
-		if @_active is workspace
-
-			@_workspaces[0].activate()
-
-		return
-
-	getActiveWorkspace: ->
-
-		unless @_active?
-
-			if @_workspaces.length isnt 0
-
-				@_workspaces[0].activate()
-
-			else
-
-				empty = do @_makeEmptyWorkspace
-
-				empty.activate()
-
-		@_active
-
-	_makeEmptyWorkspace: ->
-
-		@get 'EMPTY'
-
-	isPropListed: (propModel) ->
-
-		ws = @getActiveWorkspace()
-
-		ws.isPropListed propModel
-
-	onPropListingChange: (prop, cb) ->
-
-		id = prop.id
-
-		unless @_propListingChangeListeners[id]?
-
-			@_propListingChangeListeners[id] = [cb]
-
-			return
-
-		@_propListingChangeListeners[id].push cb
-
-		return
-
-	togglePropListing: (prop) ->
-
-		@getActiveWorkspace()._togglePropListing prop
-
-		return
-
-	_activate: (ws) ->
-
-		active = @_active
-
-		return if active is ws
-
-		if active?
-
-			for propModel in active.propHolders
-
-				id = propModel.id
-
-				listeners = @_propListingChangeListeners[id]
-
-				continue unless listeners?
-
-				for cb in listeners
-
-					cb 'remove'
-
-		@_active = ws
-
-		for propModel in @_active.propHolders
-
-			id = propModel.id
-
-			listeners = @_propListingChangeListeners[id]
-
-			continue unless listeners?
-
-			for cb in listeners
-
-				cb 'add'
-
-		@_emit 'active-workspace-change'
-
-		do @_reportLocalChange
-
-		return
-
-	getCurrentlyListedProps: ->
-
-		@getActiveWorkspace().propHolders
+  getCurrentlyListedProps: ->
+    @getActiveWorkspace().propHolders

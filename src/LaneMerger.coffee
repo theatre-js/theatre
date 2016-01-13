@@ -7,198 +7,150 @@ wn = require 'when'
 require('pretty-monitor').start()
 
 module.exports = class LaneMerger
+  constructor: (oursPath, theirsPath, mergedPath) ->
+    @ours = @_getJson oursPath
+    @theirs = @_getJson theirsPath
 
-	constructor: (oursPath, theirsPath, mergedPath) ->
+    @_mergeLanes @ours, @theirs
+    .then (merged) ->
+      cson = CSON.stringifySync merged
+      fs.writeFileSync mergedPath, cson, {encoding: 'utf-8'}
 
-		@ours = @_getJson oursPath
-		@theirs = @_getJson theirsPath
+  _getJson: (path) ->
+    cson = fs.readFileSync path, {encoding: 'utf-8'}
 
-		@_mergeLanes @ours, @theirs
-		.then (merged) ->
+    if (cson.replace /\s+/, '') is ''
+      return {}
 
-			cson = CSON.stringifySync merged
+    obj = CSON.parseSync cson
 
-			fs.writeFileSync mergedPath, cson, {encoding: 'utf-8'}
+    if obj instanceof Error
+      console.log obj
+      throw obj
 
-	_getJson: (path) ->
+    obj
 
-		cson = fs.readFileSync path, {encoding: 'utf-8'}
+  _mergeLanes: (ours, theirs) ->
+    ret = {}
+    d = wn.defer()
 
-		if (cson.replace /\s+/, '') is ''
+    @_mergeEasyParts ours, theirs, ret
+    @_mergeTimelineEditor ours, theirs, ret
+    @_mergeWorkspaces ours, theirs, ret
 
-			return {}
+    @_mergeTimeline ours, theirs, ret
+    .then ->
+      d.resolve ret
 
-		obj = CSON.parseSync cson
+    d.promise
 
-		if obj instanceof Error
+  _mergeEasyParts: (ours, theirs, ret) ->
+    ret.mainBox = object.append ours.mainBox or {}, theirs.mainBox
+    ret.timeControl = object.append ours.timeControl or {}, theirs.timeControl
 
-			console.log obj
+  _mergeTimelineEditor: (ours, theirs, ret) ->
+    ret.timelineEditor = object.append ours.timelineEditor or {}, theirs.timelineEditor
 
-			throw obj
+    list = []
 
-		obj
+    if ours.timelineEditor.guides._list?
+      for t in ours.timelineEditor.guides._list
+        t = parseFloat t
+        list.push t unless t in list
 
-	_mergeLanes: (ours, theirs) ->
+    if theirs.timelineEditor.guides._list?
+      for t in theirs.timelineEditor.guides._list
+        t = parseFloat t
+        list.push t unless t in list
 
-		ret = {}
+    list.sort (b, a) ->
+      b - a
 
-		d = wn.defer()
+    ret.timelineEditor.guides._list = list
 
-		@_mergeEasyParts ours, theirs, ret
-		@_mergeTimelineEditor ours, theirs, ret
-		@_mergeWorkspaces ours, theirs, ret
+  _mergeWorkspaces: (ours, theirs, ret) ->
+    ret.workspaces = object.append ours.workspaces or {}, theirs.workspaces
+    list = object.clone ours.workspaces.workspaces
+    return unless theirs.workspaces.workspaces?
 
-		@_mergeTimeline ours, theirs, ret
-		.then ->
+    for ws in theirs.workspaces.workspaces
+      @_appendWorkspace list, ws
 
-			d.resolve ret
+    return
 
-		d.promise
+  _appendWorkspace: (list, ws) ->
+    cur = @_getWorkspaceByName(list, ws.name)
 
-	_mergeEasyParts: (ours, theirs, ret) ->
+    unless cur?
+      list.push ws
+      return
 
-		ret.mainBox = object.append ours.mainBox or {}, theirs.mainBox
-		ret.timeControl = object.append ours.timeControl or {}, theirs.timeControl
+    @_mergeSingleWorkspaces cur, ws
 
-	_mergeTimelineEditor: (ours, theirs, ret) ->
+  _getWorkspaceByName: (list, name) ->
+    for ws in list
+      return ws if ws.name is name
 
-		ret.timelineEditor = object.append ours.timelineEditor or {}, theirs.timelineEditor
+    return
 
-		list = []
+  _mergeSingleWorkspaces: (cur, ws) ->
+    for propHolder in ws.propHolders
+      unless @_workspaceHasPropHolder cur, propHolder
+        cur.propHolders.push propHolder
 
-		if ours.timelineEditor.guides._list?
+    return
 
-			for t in ours.timelineEditor.guides._list
+  _workspaceHasPropHolder: (ws, propHolder) ->
+    for ph in ws.propHolders
+      return yes if ph.id is propHolder.id
 
-				t = parseFloat t
+    no
 
-				list.push t unless t in list
+  _mergeTimeline: (ours, theirs, ret) ->
+    lastPromise = wn()
+    ret.timeline = object.clone ours.timeline
+    props = ret.timeline._allProps
 
-		if theirs.timelineEditor.guides._list?
+    for id, prop of theirs.timeline._allProps
+      unless props[id]?
+        props[id] = prop
+        continue
 
-			for t in theirs.timelineEditor.guides._list
+      do (id, props, prop) =>
+        lastPromise = lastPromise.then =>
+          @_mergeProps props[id], prop, id, props
 
-				t = parseFloat t
+    lastPromise
 
-				list.push t unless t in list
+  _mergeProps: (ours, theirs, id, props) ->
+    return if _.isEqual(ours, theirs)
 
-		list.sort (b, a) ->
+    console.log "\n"
+    console.log "Conflict in #{id}"
+    console.log "  Ours:   #{ours.pacs.chronology.points.length} points and #{ours.pacs.chronology.connectors.length} connectors"
+    console.log "  Theirs: #{theirs.pacs.chronology.points.length} points and #{theirs.pacs.chronology.connectors.length} connectors"
 
-			b - a
+    @_ask 'Which?', ['Keep ours', 'Keep theirs']
+    .then (choice) ->
+      return if choice is 'Keep ours'
 
-		ret.timelineEditor.guides._list = list
+      if choice is 'Keep theirs'
+        props[id] = theirs
 
-	_mergeWorkspaces: (ours, theirs, ret) ->
+      return
 
-		ret.workspaces = object.append ours.workspaces or {}, theirs.workspaces
+  _ask: (msg, choices, cb) ->
+    d = wn.defer()
 
-		list = object.clone ours.workspaces.workspaces
+    a =
+      type: "list"
+      name: "name"
+      message: msg
+      choices: choices
 
-		return unless theirs.workspaces.workspaces?
+    inquirer.prompt [a], (choice) ->
+      d.resolve choice.name
 
-		for ws in theirs.workspaces.workspaces
+      return
 
-			@_appendWorkspace list, ws
-
-		return
-
-	_appendWorkspace: (list, ws) ->
-
-		cur = @_getWorkspaceByName(list, ws.name)
-
-		unless cur?
-
-			list.push ws
-
-			return
-
-		@_mergeSingleWorkspaces cur, ws
-
-	_getWorkspaceByName: (list, name) ->
-
-		for ws in list
-
-			return ws if ws.name is name
-
-		return
-
-	_mergeSingleWorkspaces: (cur, ws) ->
-
-		for propHolder in ws.propHolders
-
-			unless @_workspaceHasPropHolder cur, propHolder
-
-				cur.propHolders.push propHolder
-
-		return
-
-	_workspaceHasPropHolder: (ws, propHolder) ->
-
-		for ph in ws.propHolders
-
-			return yes if ph.id is propHolder.id
-
-		no
-
-	_mergeTimeline: (ours, theirs, ret) ->
-
-		lastPromise = wn()
-
-		ret.timeline = object.clone ours.timeline
-
-		props = ret.timeline._allProps
-
-		for id, prop of theirs.timeline._allProps
-
-			unless props[id]?
-
-				props[id] = prop
-
-				continue
-
-			do (id, props, prop) =>
-
-				lastPromise = lastPromise.then =>
-
-					@_mergeProps props[id], prop, id, props
-
-		lastPromise
-
-	_mergeProps: (ours, theirs, id, props) ->
-
-		return if _.isEqual(ours, theirs)
-
-		console.log "\n"
-		console.log "Conflict in #{id}"
-		console.log "  Ours:   #{ours.pacs.chronology.points.length} points and #{ours.pacs.chronology.connectors.length} connectors"
-		console.log "  Theirs: #{theirs.pacs.chronology.points.length} points and #{theirs.pacs.chronology.connectors.length} connectors"
-
-		@_ask 'Which?', ['Keep ours', 'Keep theirs']
-		.then (choice) ->
-
-			return if choice is 'Keep ours'
-
-			if choice is 'Keep theirs'
-
-				props[id] = theirs
-
-			return
-
-	_ask: (msg, choices, cb) ->
-
-		d = wn.defer()
-
-		a =
-
-			type: "list"
-			name: "name"
-			message: msg
-			choices: choices
-
-		inquirer.prompt [a], (choice) ->
-
-			d.resolve choice.name
-
-			return
-
-		d.promise
+    d.promise

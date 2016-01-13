@@ -1,61 +1,48 @@
 Foxie = require 'foxie'
 
 module.exports = class WorkspaceButtonsView
+  constructor: (@mainBox) ->
+    @rootView = @mainBox.rootView
+    @wsList = @mainBox.workspaceList
 
-	constructor: (@mainBox) ->
+    @wsList.on 'show', =>
+      @node.addClass 'visible'
 
-		@rootView = @mainBox.rootView
+    @wsList.on 'hide', =>
+      @node.removeClass 'visible'
 
-		@wsList = @mainBox.workspaceList
+    do @_prepareNode
+    do @_prepareShowGraphButton
+    do @_prepareActiveWorkspaceButton
 
-		@wsList.on 'show', =>
+  _prepareNode: ->
+    @node = Foxie('.theatrejs-workspaceButtons').putIn @mainBox.node
+    return
 
-			@node.addClass 'visible'
+  _prepareShowGraphButton: ->
+    @showGraphButton = Foxie('.theatrejs-workspaceButtons-showGraph')
+    .putIn(@node)
 
-		@wsList.on 'hide', =>
+    graph = @mainBox.editor.graph
 
-			@node.removeClass 'visible'
+    @rootView.moosh.onClick(@showGraphButton)
+    .onDone =>
+      graph.show()
 
-		do @_prepareNode
-		do @_prepareShowGraphButton
-		do @_prepareActiveWorkspaceButton
+    return
 
-	_prepareNode: ->
+  _prepareActiveWorkspaceButton: ->
+    workspaces = @mainBox.editor.model.workspaces
 
-		@node = Foxie('.theatrejs-workspaceButtons').putIn @mainBox.node
+    activeWsName = Foxie('span.theatrejs-workspaceButtons-activeWorkspaceName')
+    .innerHTML(workspaces.getActiveWorkspace().name)
+    .putIn(@node)
 
-		return
+    workspaces.on 'active-workspace-change', =>
+      activeWsName.innerHTML workspaces.getActiveWorkspace().name
 
-	_prepareShowGraphButton: ->
+    @rootView.moosh.onClick(activeWsName)
+    .onDone =>
+      @wsList.show()
 
-		@showGraphButton = Foxie('.theatrejs-workspaceButtons-showGraph')
-		.putIn(@node)
-
-		graph = @mainBox.editor.graph
-
-		@rootView.moosh.onClick(@showGraphButton)
-		.onDone =>
-
-			graph.show()
-
-		return
-
-	_prepareActiveWorkspaceButton: ->
-
-		workspaces = @mainBox.editor.model.workspaces
-
-		activeWsName = Foxie('span.theatrejs-workspaceButtons-activeWorkspaceName')
-		.innerHTML(workspaces.getActiveWorkspace().name)
-		.putIn(@node)
-
-		workspaces.on 'active-workspace-change', =>
-
-			activeWsName.innerHTML workspaces.getActiveWorkspace().name
-
-
-		@rootView.moosh.onClick(activeWsName)
-		.onDone =>
-
-			@wsList.show()
-
-		return
+    return

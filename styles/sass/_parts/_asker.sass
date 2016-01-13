@@ -1,51 +1,39 @@
 #asker
+  position: fixed
+  bottom: 0px
+  left: 0
+  height: 42px
 
-	position: fixed
+  z-index: 12
 
-	bottom: 0px
-	left: 0
-	height: 42px
+  background: #040404
 
-	z-index: 12
+  @include transition(0.3s all)
+  @include transform(translate3d(0, 42px, 0px))
 
-	background: #040404
+  &.visible
+    @include transform(translate3d(0, 0px, 1px))
 
-	@include transition(0.3s all)
+  color: white
 
-	@include transform(translate3d(0, 42px, 0px))
-
-	&.visible
-
-		@include transform(translate3d(0, 0px, 1px))
-
-	color: white
-
-	font-size: 12px
-	line-height: 43px
-
-	padding-left: 10px
+  font-size: 12px
+  line-height: 43px
+  padding-left: 10px
 
 #asker-question
-
-	display: inline-block
+  display: inline-block
 
 #asker-input
+  display: inline-block
+  background: transparent
+  border: none
 
-	display: inline-block
+  border-bottom: 1px solid #333
+  color: white
+  width: 120px
+  margin-left: 10px
 
-	background: transparent
-	border: none
+  @include transition(all 0.2s)
 
-	border-bottom: 1px solid #333
-
-	color: white
-
-	width: 120px
-
-	margin-left: 10px
-
-	@include transition(all 0.2s)
-
-	&.invalid
-
-		border-bottom-color: red
+  &.invalid
+    border-bottom-color: red

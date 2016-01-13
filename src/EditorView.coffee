@@ -9,49 +9,32 @@ ControlsView = require './editorView/ControlsView'
 CursorControl = require './tools/CursorControl'
 
 module.exports = class EditorView
+  constructor: (@model, @parentNode) ->
+    @id = @model.id
+    do @_prepareNode
 
-	constructor: (@model, @parentNode) ->
+    @cursor = new CursorControl
+    @kilid = new Kilid(null, @id + '-kilid').getRootScope()
+    @moosh = new Moosh document.body, @kilid
+    @asker = new Asker @
+    @chooser = new Chooser @
+    @graph = new GraphView @
+    @mainBox = new MainBoxView @
+    @controls = new ControlsView @
+    @model.on 'run', => do @_run
 
-		@id = @model.id
+  tick: (t) =>
+    @model._tick t
+    return
 
-		do @_prepareNode
+  _prepareNode: ->
+    @node = Foxie '.theatrejs'
 
-		@cursor = new CursorControl
+    if navigator.product is 'Gecko' and navigator.platform is 'Win32'
+      @node.addClass 'badFirefoxScrollbar'
 
-		@kilid = new Kilid(null, @id + '-kilid').getRootScope()
+    return
 
-		@moosh = new Moosh document.body, @kilid
-
-		@asker = new Asker @
-
-		@chooser = new Chooser @
-
-		@graph = new GraphView @
-
-		@mainBox = new MainBoxView @
-
-		@controls = new ControlsView @
-
-		@model.on 'run', => do @_run
-
-	tick: (t) =>
-
-		@model._tick t
-
-		return
-
-	_prepareNode: ->
-
-		@node = Foxie '.theatrejs'
-
-		if navigator.product is 'Gecko' and navigator.platform is 'Win32'
-
-			@node.addClass 'badFirefoxScrollbar'
-
-		return
-
-	_run: ->
-
-		@node.putIn @parentNode
-
-		do @graph.prepare
+  _run: ->
+    @node.putIn @parentNode
+    do @graph.prepare

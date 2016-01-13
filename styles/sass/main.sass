@@ -1,26 +1,21 @@
 .theatrejs
+  position: fixed
+  right: 0
+  height: 0
+  bottom: 0
+  left: 0
 
-	position: fixed
+  text-align: left
+  direction: ltr
+  font-family: Helvetica !important
 
-	right: 0
-	height: 0
-	bottom: 0
-	left: 0
+  transition: opacity 0.3s
 
-	text-align: left
-	direction: ltr
+  &.hidden
+    opacity: 0
 
-	font-family: Helvetica !important
-
-	transition: opacity 0.3s
-
-	&.hidden
-
-		opacity: 0
-
-		&:hover
-
-			opacity: 1
+    &:hover
+      opacity: 1
 
 @import "./_prepare/mixins"
 @import "./_parts/graph"

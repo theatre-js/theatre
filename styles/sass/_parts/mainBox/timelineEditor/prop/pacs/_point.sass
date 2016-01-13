@@ -1,86 +1,67 @@
-
 $ringSize: 12px
 
 .theatrejs-timelineEditor-prop-pacs-point
+  z-index: 10
+  position: absolute
+  top: 0
+  left: 0
 
-	z-index: 10
+  &:after
+    position: absolute
+    width: $ringSize
+    height: $ringSize
+    top: -($ringSize / 2)
+    left: -($ringSize / 2)
 
-	position: absolute
-	top: 0
-	left: 0
+    content: "\0020"
+    display: block
 
-	&:after
+    border-radius: 50%
+    border: 3px solid #367c89
+    background: #080808
 
-		position: absolute
-		width: $ringSize
-		height: $ringSize
-		top: -($ringSize / 2)
-		left: -($ringSize / 2)
+    @include box-sizing(border-box)
+    @include transition(all 0.3s cubic-bezier(.07,1.15,1,1))
+    @include transform(scale(0.8))
 
-		content: "\0020"
-		display: block
+  &:hover:after, &.active:after
+    border-color: #00fff0
+    @include transform(scale(1))
 
-		border-radius: 50%
-		border: 3px solid #367c89
-		background: #080808
+  &:before
+    position: absolute
+    content: "\0020"
+    display: block
 
-		@include box-sizing(border-box)
+    width: 30px
+    height: 30px
+    top: -15px
+    left: -15px
 
-		@include transition(all 0.3s cubic-bezier(.07,1.15,1,1))
+  &.hint-remove:after
+    border-color: red
+    @include transform(scale(0.8) translateY(1px))
 
-		@include transform(scale(0.8))
+  &.mightConnect:after
+    border-color: #62FC0B
 
-	&:hover:after, &.active:after
+  &.cantConnect
+    cursor: not-allowed
 
-		border-color: #00fff0
+  &.mightChangeTime
+    cursor: ew-resize
 
-		@include transform(scale(1))
+  &.changingTime
+    cursor: ew-resize
+    opacity: 0.9
 
-	&:before
+  &.mightChangeValue
+    cursor: ns-resize
 
-		position: absolute
-		content: "\0020"
-		display: block
-
-		width: 30px
-		height: 30px
-
-		top: -15px
-		left: -15px
-
-	&.hint-remove:after
-
-		border-color: red
-
-		@include transform(scale(0.8) translateY(1px))
-
-	&.mightConnect:after
-
-		border-color: #62FC0B
-
-	&.cantConnect
-
-		cursor: not-allowed
-
-	&.mightChangeTime
-
-		cursor: ew-resize
-
-	&.changingTime
-
-		cursor: ew-resize
-		opacity: 0.9
-
-	&.mightChangeValue
-
-		cursor: ns-resize
-
-	cursor: move
+  cursor: move
 
 .theatrejs-timelineEditor-prop-pacs-hypotheticalPoint
+  @extend .theatrejs-timelineEditor-prop-pacs-point
 
-	@extend .theatrejs-timelineEditor-prop-pacs-point
-
-	pointer-events: none
-
-	opacity: 0.5
+  pointer-events: none
+  opacity: 0.5

@@ -3,103 +3,69 @@ GuidesManagerModel = require './timelineEditorModel/GuidesManagerModel'
 array = require 'utila/lib/array'
 
 module.exports = class TimelineEditorModel extends _DynamicModel
+  constructor: (@editor) ->
+    @rootModel = @editor
+    @_serializedAddress = 'timelineEditor'
 
-	constructor: (@editor) ->
+    super
 
-		@rootModel = @editor
+    @workspaces = @editor.workspaces
+    @timeControl = @editor.timeControl
+    @focusArea = @timeControl.getFocusArea()
 
-		@_serializedAddress = 'timelineEditor'
+    @timeControl.on 'focus-change', =>
+      @focusArea = @timeControl.getFocusArea()
+      @_emit 'focus-change'
 
-		super
+    @workspaces.on 'active-workspace-change', => do @_relist
+    @workspaces.on 'prop-add', (propHolder) => @_add propHolder
+    @workspaces.on 'prop-remove', (propHolder) => @_remove propHolder
 
-		@workspaces = @editor.workspaces
+    @currentProps = []
+    @scrollTop = 0
+    @guides = new GuidesManagerModel @
 
-		@timeControl = @editor.timeControl
+  serialize: ->
+    se = scrollTop: @scrollTop, guides: @guides.serialize()
+    se
 
-		@focusArea = @timeControl.getFocusArea()
+  _loadFrom: (se) ->
+    if se.scrollTop?
+      @scrollTop = se.scrollTop|0
 
-		@timeControl.on 'focus-change', =>
+    @guides._loadFrom se.guides if se.guides?
+    return
 
-			@focusArea = @timeControl.getFocusArea()
+  _setScrollTopFromUser: (scrollTop) ->
+    @scrollTop = scrollTop|0
+    do @_reportLocalChange
+    return
 
-			@_emit 'focus-change'
+  _setScroll: (scrollTop) ->
+    scrollTop = Math.max(scrollTop, 0)
+    @_setScrollTopFromUser scrollTop
+    @_emit 'scroll-change'
 
-		@workspaces.on 'active-workspace-change', => do @_relist
+  tick: ->
+    @timeControl.tickOnSpot()
+    return
 
-		@workspaces.on 'prop-add', (propHolder) => @_add propHolder
+  _relist: ->
+    newProps = @workspaces.getCurrentlyListedProps()
+    while @currentProps.length > 0
+      @_remove @currentProps[0]
 
-		@workspaces.on 'prop-remove', (propHolder) => @_remove propHolder
+    for propHolder in newProps
+      @_add propHolder
 
-		@currentProps = []
+    return
 
-		@scrollTop = 0
+  _add: (propHolder) ->
+    @currentProps.push propHolder
+    @_emit 'prop-add', propHolder
+    return
 
-		@guides = new GuidesManagerModel @
-
-	serialize: ->
-
-		se = scrollTop: @scrollTop, guides: @guides.serialize()
-
-		se
-
-	_loadFrom: (se) ->
-
-		if se.scrollTop?
-
-			@scrollTop = se.scrollTop|0
-
-		@guides._loadFrom se.guides if se.guides?
-
-		return
-
-	_setScrollTopFromUser: (scrollTop) ->
-
-		@scrollTop = scrollTop|0
-
-		do @_reportLocalChange
-
-		return
-
-	_setScroll: (scrollTop) ->
-
-		scrollTop = Math.max(scrollTop, 0)
-
-		@_setScrollTopFromUser scrollTop
-
-		@_emit 'scroll-change'
-
-	tick: ->
-
-		@timeControl.tickOnSpot()
-
-		return
-
-	_relist: ->
-
-		newProps = @workspaces.getCurrentlyListedProps()
-
-		while @currentProps.length > 0
-
-			@_remove @currentProps[0]
-
-		for propHolder in newProps
-
-			@_add propHolder
-
-		return
-
-	_add: (propHolder) ->
-
-		@currentProps.push propHolder
-
-		@_emit 'prop-add', propHolder
-
-		return
-
-	_remove: (propHolder) ->
-
-		array.pluckOneItem @currentProps, propHolder
-
-		@_emit 'prop-remove', propHolder
-
-		return
+  _remove: (propHolder) ->
+    array.pluckOneItem @currentProps, propHolder
+    @_emit 'prop-remove', propHolder
+    return

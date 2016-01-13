@@ -1,34 +1,25 @@
 Prop = require './Prop'
 
 module.exports = class CallbackProp extends Prop
+  constructor: (timeline, id, @initial = 0.0, cb) ->
+    super
 
-	constructor: (timeline, id, @initial = 0.0, cb) ->
+    @_callbacks = []
+    @_val = @initial
 
-		super
+    if typeof cb is 'function'
+      @onChange cb
 
-		@_callbacks = []
+  _set: (val) ->
+    @_val = val
+    for cb in @_callbacks
+      cb val
 
-		@_val = @initial
+    return
 
-		if typeof cb is 'function'
-			@onChange cb
+  onChange: (cb) ->
+    @_callbacks.push cb
+    this
 
-	_set: (val) ->
-
-		@_val = val
-
-		for cb in @_callbacks
-
-			cb val
-
-		return
-
-	onChange: (cb) ->
-
-		@_callbacks.push cb
-
-		this
-
-	getValue: ->
-
-		@_val
+  getValue: ->
+    @_val

@@ -1,119 +1,110 @@
 _Emitter = require '../_Emitter'
 
 module.exports = class NoAudioTimeControl extends _Emitter
-	constructor: ->
-		super
+  constructor: ->
+    super
 
-		@_actualT = 0.0
+    @_actualT = 0.0
+    @_lastWindowTime = 0.0
+    @duration = 0.0
+    @_trackDuration = 0.0
+    @_waitBeforePlay = 50
+    @_isPlaying = no
+    @_isSet = no
+    @_offset = 0.0
 
-		@_lastWindowTime = 0.0
+    @_emit 'ready-state-change'
 
-		@duration = 0.0
+  setOffset: (offset) ->
+    @_offset = +offset
 
-		@_trackDuration = 0.0
+  maximizeDuration: (duration) ->
+    if duration isnt @duration
+      @duration = duration
+      @_emit 'duration-change'
 
-		@_waitBeforePlay = 50
+    return
 
-		@_isPlaying = no
-		@_isSet = no
-		@_offset = 0.0
+  isPlaying: ->
+    @_isPlaying
 
-		@_emit 'ready-state-change'
+  isReady: ->
+    @_isReady
 
-	setOffset: (offset) ->
-		@_offset = +offset
+  _actualTToUserT: (actualT) ->
+    actualT + @_offset
 
-	maximizeDuration: (duration) ->
-		if duration isnt @duration
-			@duration = duration
-			@_emit 'duration-change'
+  _userTToActualT: (userT) ->
+    userT - @_offset
 
-		return
+  _setT: (actual) ->
+    @_actualT = actual
+    @t = @_actualTToUserT actual
 
-	isPlaying: ->
-		@_isPlaying
+  tick: ->
+    return unless @_isPlaying
 
-	isReady: ->
-		@_isReady
+    currentWindowTime = performance.now()
+    @_setT @_actualT + currentWindowTime - @_lastWindowTime
+    @_lastWindowTime = currentWindowTime
 
-	_actualTToUserT: (actualT) ->
-		actualT + @_offset
+    if @_actualT > @duration
+      do @pause
+      @seekTo 0.0
+      return
 
-	_userTToActualT: (userT) ->
-		userT - @_offset
+    @_emit 'tick', @t
 
-	_setT: (actual) ->
-		@_actualT = actual
-		@t = @_actualTToUserT actual
+    return
 
-	tick: ->
-		return unless @_isPlaying
+  play: ->
+    return if @_isPlaying
+    do @_play
+    return
 
-		currentWindowTime = performance.now()
-		@_setT @_actualT + currentWindowTime - @_lastWindowTime
-		@_lastWindowTime = currentWindowTime
+  togglePlay: ->
+    if @_isPlaying
+      do @pause
+    else
+      do @play
 
-		if @_actualT > @duration
-			do @pause
-			@seekTo 0.0
+  pause: ->
+    return unless @_isPlaying
+    @_isPlaying = no
 
-			return
+    @_emit 'pause'
 
-		@_emit 'tick', @t
+    return
 
-		return
+  seekTo: (t) ->
+    t = @_userTToActualT t
 
-	play: ->
-		return if @_isPlaying
+    if @_isPlaying
+      wasPlaying = yes
+      do @pause
 
-		do @_play
+    if t > @duration then t = @duration
+    if t < 0 then t = 0.0
 
-		return
+    @_setT t
+    @_emit 'tick', @t
 
-	togglePlay: ->
-		if @_isPlaying
-			do @pause
-		else
-			do @play
+    if wasPlaying
+      do @play
 
-	pause: ->
-		return unless @_isPlaying
-		@_isPlaying = no
+    return
 
-		@_emit 'pause'
+  seek: (amount) ->
+    @seekTo @t + amount
 
-		return
+  _play: ->
+    return if @_actualT > @duration
 
-	seekTo: (t) ->
-		t = @_userTToActualT t
+    @_lastWindowTime = performance.now()
+    @_actualT -= @_waitBeforePlay
 
-		if @_isPlaying
-			wasPlaying = yes
-			do @pause
+    @_isPlaying = yes
+    @_emit 'play'
 
-		if t > @duration then t = @duration
-		if t < 0 then t = 0.0
-
-		@_setT t
-		@_emit 'tick', @t
-
-		if wasPlaying
-			do @play
-
-		return
-
-	seek: (amount) ->
-		@seekTo @t + amount
-
-	_play: ->
-
-		return if @_actualT > @duration
-
-		@_lastWindowTime = performance.now()
-		@_actualT -= @_waitBeforePlay
-
-		@_isPlaying = yes
-		@_emit 'play'
-
-	isReady: ->
-		yes
+  isReady: ->
+    yes

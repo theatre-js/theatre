@@ -7,214 +7,157 @@ EventsController = require './dynamicTimeline/EventsController'
 IncrementalIsolate = require './dynamicTimeline/IncrementalIsolate'
 
 module.exports = class DynamicTimeline extends _Emitter
+  constructor: (fps = 60) ->
+    super
 
-	constructor: (fps = 60) ->
+    @t = 1000
 
-		super
+    unless Number.isFinite(fps)
 
-		@t = 1000
+      throw Error "Fps must be a finite integer"
 
-		unless Number.isFinite(fps)
+    @fps = parseInt fps
+    @_frameLength = 1000 / @fps
+    @_fpsT = @_calcuateFpsT @t
 
-			throw Error "Fps must be a finite integer"
+    @_arrays = {}
+    @_objects = {}
+    @_incrementalIsolates = {}
+    @_allProps = {}
+    @_regularProps = {}
+    @_eventControllers = {}
+    @duration = 0
 
-		@fps = parseInt fps
+  setRootModel: (@rootModel) ->
 
-		@_frameLength = 1000 / @fps
+  serialize: ->
+    se = _allProps: {}
 
-		@_fpsT = @_calcuateFpsT @t
+    for name, prop of @_allProps
+      se._allProps[name] = prop.serialize()
 
-		@_arrays = {}
+    se
 
-		@_objects = {}
+  loadFrom: (se) ->
+    return unless se._allProps?
 
-		@_incrementalIsolates = {}
+    for name, prop of @_allProps
+      propData = se._allProps[name]
+      unless propData?
+        if @rootModel.debug
+          console.log "Prop '#{name}' isn't found in the received serialized data"
+        continue
 
-		@_allProps = {}
+      prop.loadFrom propData
 
-		@_regularProps = {}
+    return
 
-		@_eventControllers = {}
+  _calcuateFpsT: (t) ->
+    parseInt Math.floor(t / @_frameLength) * @_frameLength
 
-		@duration = 0
+  _maximizeDuration: (dur) ->
+    if dur > @duration
+      @duration = dur
+      @_emit 'duration-change'
 
-	setRootModel: (@rootModel) ->
+    return
 
-	serialize: ->
+  addArray: (name, array) ->
+    if @_arrays[name]?
+      throw Error "An array named '#{name}' already exists"
 
-		se = _allProps: {}
+    @_arrays[name] = array
+    this
 
-		for name, prop of @_allProps
+  addObject: (name, obj) ->
+    if @_objects[name]?
+      throw Error "An object named '#{name}' already exists"
 
-			se._allProps[name] = prop.serialize()
+    @_objects[name] = obj
+    this
 
-		se
+  addPropOfArray: (id, arrayName, indexInArray) ->
+    if @_allProps[id]?
+      throw Error "A prop named '#{id}' already exists"
 
-	loadFrom: (se) ->
+    unless @_arrays[arrayName]?
+      throw Error "Couldn't find array named '#{arrayName}'"
 
-		return unless se._allProps?
+    unless @_arrays[arrayName][indexInArray]?
+      throw Error "Array '#{arrayName}' doesn't have an index of '#{indexInArray}'"
 
-		for name, prop of @_allProps
+    @_regularProps[id] = @_allProps[id] = new PropOfArray @, id, arrayName, indexInArray
 
-			propData = se._allProps[name]
+  addPropOfObject: (id, objectName, setter, initial) ->
+    if @_allProps[id]?
+      throw Error "A prop named '#{id}' already exists"
 
-			unless propData?
+    unless @_objects[objectName]?
+      throw Error "Couldn't find object named '#{objectName}'"
 
-				if @rootModel.debug
+    unless @_objects[objectName][setter]?
+      throw Error "Object '#{objectName}' doesn't have '#{setter}'"
 
-					console.log "Prop '#{name}' isn't found in the received serialized data"
+    @_regularProps[id] = @_allProps[id] = new PropOfObject @, id, objectName, setter, initial
 
-				continue
+  addProp: (id, initial, callback) ->
+    if @_allProps[id]?
+      throw Error "A prop named '#{id}' already exists"
 
-			prop.loadFrom propData
+    @_regularProps[id] = @_allProps[id] = new CallbackProp @, id, initial, callback
 
-		return
+  defineIncrementalIsolate: (id, isolate) ->
+    if @_incrementalIsolates[id]?
+      throw Error "Another incremental isolate already exists with id '#{id}'"
 
-	_calcuateFpsT: (t) ->
+    @_incrementalIsolates[id] = new IncrementalIsolate @, id, isolate
 
-		parseInt Math.floor(t / @_frameLength) * @_frameLength
+  getIncrementalIsolate: (id) ->
+    @_incrementalIsolates[id]
 
-	_maximizeDuration: (dur) ->
+  getProp: (id) ->
+    @_regularProps[id]
 
-		if dur > @duration
+  addEventController: (id) ->
+    if @_eventControllers[id]?
+      throw Error "An event controller named #{id} already exists"
 
-			@duration = dur
+    @_eventControllers[id] = new EventsController @, id
 
-			@_emit 'duration-change'
+  tick: (t) ->
+    if t < @t
+      @_tickBackward t
+    else
+      @_tickForward t
 
-		return
+    for name, ic of @_incrementalIsolates
+      ic._tickForTimeline t
 
-	addArray: (name, array) ->
+    @_fpsT = @_calcuateFpsT t
+    @t = t
 
-		if @_arrays[name]?
+    @_emit 'tick'
 
-			throw Error "An array named '#{name}' already exists"
+    return
 
-		@_arrays[name] = array
+  _pluckFromRegularProps: (prop) ->
+    delete @_regularProps[prop.id]
+    return
 
-		@
+  _tickForward: (t) ->
+    for name, prop of @_regularProps
+      prop._tickForward t
 
-	addObject: (name, obj) ->
+    for name, c of @_eventControllers
+      c._tickForward t
 
-		if @_objects[name]?
+    return
 
-			throw Error "An object named '#{name}' already exists"
+  _tickBackward: (t) ->
+    for name, prop of @_regularProps
+      prop._tickBackward t
 
-		@_objects[name] = obj
+    for name, c of @_eventControllers
+      c._tickBackward t
 
-		@
-
-	addPropOfArray: (id, arrayName, indexInArray) ->
-
-		if @_allProps[id]?
-
-			throw Error "A prop named '#{id}' already exists"
-
-		unless @_arrays[arrayName]?
-
-			throw Error "Couldn't find array named '#{arrayName}'"
-
-		unless @_arrays[arrayName][indexInArray]?
-
-			throw Error "Array '#{arrayName}' doesn't have an index of '#{indexInArray}'"
-
-		@_regularProps[id] = @_allProps[id] = new PropOfArray @, id, arrayName, indexInArray
-
-	addPropOfObject: (id, objectName, setter, initial) ->
-
-		if @_allProps[id]?
-
-			throw Error "A prop named '#{id}' already exists"
-
-		unless @_objects[objectName]?
-
-			throw Error "Couldn't find object named '#{objectName}'"
-
-		unless @_objects[objectName][setter]?
-
-			throw Error "Object '#{objectName}' doesn't have '#{setter}'"
-
-		@_regularProps[id] = @_allProps[id] = new PropOfObject @, id, objectName, setter, initial
-
-	addProp: (id, initial, callback) ->
-
-		if @_allProps[id]?
-
-			throw Error "A prop named '#{id}' already exists"
-
-		@_regularProps[id] = @_allProps[id] = new CallbackProp @, id, initial, callback
-
-	defineIncrementalIsolate: (id, isolate) ->
-
-		if @_incrementalIsolates[id]?
-
-			throw Error "Another incremental isolate already exists with id '#{id}'"
-
-		@_incrementalIsolates[id] = new IncrementalIsolate @, id, isolate
-
-	getIncrementalIsolate: (id) ->
-
-		@_incrementalIsolates[id]
-
-	getProp: (id) ->
-
-		@_regularProps[id]
-
-	addEventController: (id) ->
-
-		if @_eventControllers[id]?
-
-			throw Error "An event controller named #{id} already exists"
-
-		@_eventControllers[id] = new EventsController @, id
-
-	tick: (t) ->
-
-		if t < @t
-
-			@_tickBackward t
-
-		else
-
-			@_tickForward t
-
-		for name, ic of @_incrementalIsolates
-
-			ic._tickForTimeline t
-
-		@_fpsT = @_calcuateFpsT t
-		@t = t
-
-		@_emit 'tick'
-
-		return
-
-	_pluckFromRegularProps: (prop) ->
-
-		delete @_regularProps[prop.id]
-
-		return
-
-	_tickForward: (t) ->
-
-		for name, prop of @_regularProps
-
-			prop._tickForward t
-
-		for name, c of @_eventControllers
-
-			c._tickForward t
-
-		return
-
-	_tickBackward: (t) ->
-
-		for name, prop of @_regularProps
-
-			prop._tickBackward t
-
-		for name, c of @_eventControllers
-
-			c._tickBackward t
-
-		return
+    return

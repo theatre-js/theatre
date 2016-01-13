@@ -6,108 +6,77 @@ _Emitter = require '../_Emitter'
 Foxie = require 'foxie'
 
 module.exports = class MainBoxView extends _Emitter
+  constructor: (@editor) ->
+    super
+    @rootView = @editor
+    @model = @editor.model.mainBox
 
-	constructor: (@editor) ->
+    do @_prepareNode
 
-		super
+    @width = window.innerWidth - 8
+    setTimeout @_recalculateSpace, 50
 
-		@rootView = @editor
+    window.addEventListener 'resize', @_recalculateSpace
 
-		@model = @editor.model.mainBox
+    @timelineEditor = new TimelineEditorView @
+    @seekbar = new SeekbarView @
+    @workspaceList = new WorkspaceListView @
+    @workspaceButtons = new WorkspaceButtonsView @
 
-		do @_prepareNode
+    do @_updateVertically
+    @_visible = yes
+    @model.on 'height-change', => do @_updateVertically
 
-		@width = window.innerWidth - 8
+  _prepareNode: ->
+    @node = Foxie('.theatrejs-mainBox')
+    .moveZ(1)
+    .putIn(@editor.node).trans(500)
 
-		setTimeout @_recalculateSpace, 50
+    @nodeResizeHandle = Foxie('.theatrejs-mainBox-resizeHandle')
+    .putIn(@node)
 
-		window.addEventListener 'resize', @_recalculateSpace
+    @rootView.moosh.onDrag(@nodeResizeHandle)
+    .onDrag (e) =>
+      if @model.isVisible()
+        @model.setHeight @model.height - e.relY
+      return
 
-		@timelineEditor = new TimelineEditorView @
+    @rootView.moosh.onClick(@nodeResizeHandle)
+    .repeatedBy(2)
+    .onDone =>
+      do @model.toggleVisibility
 
-		@seekbar = new SeekbarView @
+    @model.on 'visibility-toggle', =>
+      do @_updateVisibility
+      return
 
-		@workspaceList = new WorkspaceListView @
+    @rootView.kilid.on('alt+enter')
+    .onEnd =>
+      do @model.toggleVisibility
 
-		@workspaceButtons = new WorkspaceButtonsView @
+  _updateVertically: ->
+    @node.css('height', @model.height + 'px')
+    do @_updateVisibility
+    return
 
-		do @_updateVertically
+  _recalculateSpace: =>
+    newWidth = @node.node.clientWidth - 8
+    return if newWidth is @width
+    @width = newWidth
+    @_emit 'width-change'
 
-		@_visible = yes
+  getCurrentHeight: ->
+    @model.height - (if @model.isVisible() then 0 else @model.height - 21)
 
-		@model.on 'height-change', => do @_updateVertically
+  _updateVisibility: ->
+    return if @_visible is @model.isVisible()
+    @_visible = @model.isVisible()
 
-	_prepareNode: ->
+    if @_visible
+      @editor.node.removeClass 'hidden'
+      @node.moveYTo(0).setOpacity(1)
+    else
+      @editor.node.addClass 'hidden'
+      @node.moveYTo(@model.height - 21)
 
-		@node = Foxie('.theatrejs-mainBox')
-		.moveZ(1)
-		.putIn(@editor.node).trans(500)
-
-		@nodeResizeHandle = Foxie('.theatrejs-mainBox-resizeHandle')
-		.putIn(@node)
-
-		@rootView.moosh.onDrag(@nodeResizeHandle)
-		.onDrag (e) =>
-
-			if @model.isVisible()
-
-				@model.setHeight @model.height - e.relY
-
-			return
-
-		@rootView.moosh.onClick(@nodeResizeHandle)
-		.repeatedBy(2)
-		.onDone =>
-
-			do @model.toggleVisibility
-
-		@model.on 'visibility-toggle', =>
-
-			do @_updateVisibility
-
-			return
-
-		@rootView.kilid.on('alt+enter')
-		.onEnd =>
-
-			do @model.toggleVisibility
-
-	_updateVertically: ->
-
-		@node.css('height', @model.height + 'px')
-
-		do @_updateVisibility
-
-		return
-
-	_recalculateSpace: =>
-
-		newWidth = @node.node.clientWidth - 8
-
-		return if newWidth is @width
-
-		@width = newWidth
-
-		@_emit 'width-change'
-
-	getCurrentHeight: ->
-
-		@model.height - (if @model.isVisible() then 0 else @model.height - 21)
-
-	_updateVisibility: ->
-
-		return if @_visible is @model.isVisible()
-
-		@_visible = @model.isVisible()
-
-		if @_visible
-
-			@editor.node.removeClass 'hidden'
-			@node.moveYTo(0).setOpacity(1)
-
-		else
-
-			@editor.node.addClass 'hidden'
-			@node.moveYTo(@model.height - 21)
-
-		return
+    return

@@ -1,35 +1,25 @@
 GroupModel = require './graphModel/GroupModel'
 
 module.exports = class GraphModel
+  constructor: (@editor) ->
+    @categories = {}
+    @_actorProps = {}
 
-	constructor: (@editor) ->
+  getGroup: (name) ->
+    unless @categories[name]?
+      @categories[name] = cat = new GroupModel @, name
 
-		@categories = {}
+    @categories[name]
 
-		@_actorProps = {}
+  getCategories: ->
+    @categories
 
-	getGroup: (name) ->
+  _addActorProp: (id, actorProp) ->
+    if @_actorProps[id]?
+      throw Error "ActorProp with '#{id}' is already in the graph"
 
-		unless @categories[name]?
+    @_actorProps[id] = actorProp
+    return
 
-			@categories[name] = cat = new GroupModel @, name
-
-		@categories[name]
-
-	getCategories: ->
-
-		@categories
-
-	_addActorProp: (id, actorProp) ->
-
-		if @_actorProps[id]?
-
-			throw Error "ActorProp with '#{id}' is already in the graph"
-
-		@_actorProps[id] = actorProp
-
-		return
-
-	getActorPropById: (id) ->
-
-		@_actorProps[id]
+  getActorPropById: (id) ->
+    @_actorProps[id]

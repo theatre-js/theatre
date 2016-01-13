@@ -1,125 +1,88 @@
 Foxie = require 'foxie'
 
 module.exports = class GraphView
+  constructor: (@editor) ->
+    @rootView = @editor
 
-	constructor: (@editor) ->
+    @graphModel = @editor.model.graph
+    @workspacesModel = @editor.model.workspaces
+    @rootView.moosh = @editor.moosh
 
-		@rootView = @editor
+    @_showHideTimeout = null
+    do @_prepareNode
 
-		@graphModel = @editor.model.graph
-		@workspacesModel = @editor.model.workspaces
+  _prepareNode: ->
+    @node = Foxie 'div.theatrejs-graph'
+    return
 
-		@rootView.moosh = @editor.moosh
+  show: ->
+    if @_showHideTimeout?
+      clearTimeout @_showHideTimeout
+      @_showHideTimeout = null
 
-		@_showHideTimeout = null
+    @node.putIn @editor.node
+    @node.addClass 'visible'
+    @editor.mainBox.node.addClass 'noPointerEvents'
+    @rootView.moosh.onClickOutside @node, =>
+      do @hide
 
-		do @_prepareNode
+    return
 
-	_prepareNode: ->
+  hide: ->
+    @node.removeClass 'visible'
+    @_showHideTimeout = setTimeout =>
+      @node.remove()
+      @editor.mainBox.node.removeClass 'noPointerEvents'
+      @_showHideTimeout = null
+    , 500
 
-		@node = Foxie 'div.theatrejs-graph'
+    return
 
-		return
+  prepare: ->
+    for name, group of @graphModel.categories then do (group) =>
+      catNameEl = Foxie "h3.theatrejs-graph-group-name"
+      catNameEl.innerHTML group.name
+      catNameEl.putIn @node
+      actorsCount = Object.keys(group.actors).length
 
-	show: ->
+      i = -1
+      for name, actor of group.actors then do (actor) =>
+        i++
+        last = i is actorsCount - 1
 
-		if @_showHideTimeout?
+        actorEl = Foxie '.theatrejs-graph-group-actor'
+        actorEl.addClass 'last' if last
 
-			clearTimeout @_showHideTimeout
+        actorLink = Foxie 'a'
+        actorLink.innerHTML actor.name
+        actorLink.putIn actorEl
 
-			@_showHideTimeout = null
+        actorEl.putIn @node
 
-		@node.putIn @editor.node
+        propsListEl = Foxie 'ul.theatrejs-graph-group-actor-propsList'
+        propsListEl.putIn actorEl
 
-		@node.addClass 'visible'
+        for name, prop of actor.props then do (prop) =>
+          propEl = Foxie 'li'
+          propEl.innerHTML prop.name
 
-		@editor.mainBox.node.addClass 'noPointerEvents'
+          propEl.putIn propsListEl
 
-		@rootView.moosh.onClickOutside @node, =>
+          unless @workspacesModel.isPropListed prop
+            propEl.addClass 'available'
 
-			do @hide
+          @workspacesModel.onPropListingChange prop, (type) =>
+            if type is 'add'
+              propEl.removeClass 'available'
+            else
+              propEl.addClass 'available'
 
-		return
+            return
 
-	hide: ->
+          @rootView.moosh.onClick(propEl)
+          .onDone =>
+            @workspacesModel.togglePropListing prop
 
-		@node.removeClass 'visible'
+            return
 
-		@_showHideTimeout = setTimeout =>
-
-			@node.remove()
-
-			@editor.mainBox.node.removeClass 'noPointerEvents'
-
-
-			@_showHideTimeout = null
-
-		, 500
-
-		return
-
-	prepare: ->
-
-		for name, group of @graphModel.categories then do (group) =>
-
-			catNameEl = Foxie "h3.theatrejs-graph-group-name"
-
-			catNameEl.innerHTML group.name
-
-			catNameEl.putIn @node
-
-			actorsCount = Object.keys(group.actors).length
-
-			i = -1
-
-			for name, actor of group.actors then do (actor) =>
-
-				i++
-
-				last = i is actorsCount - 1
-
-				actorEl = Foxie '.theatrejs-graph-group-actor'
-				actorEl.addClass 'last' if last
-
-				actorLink = Foxie 'a'
-				actorLink.innerHTML actor.name
-
-				actorLink.putIn actorEl
-
-				actorEl.putIn @node
-
-				propsListEl = Foxie 'ul.theatrejs-graph-group-actor-propsList'
-
-				propsListEl.putIn actorEl
-
-				for name, prop of actor.props then do (prop) =>
-
-					propEl = Foxie 'li'
-					propEl.innerHTML prop.name
-
-					propEl.putIn propsListEl
-
-					unless @workspacesModel.isPropListed prop
-
-						propEl.addClass 'available'
-
-					@workspacesModel.onPropListingChange prop, (type) =>
-
-						if type is 'add'
-
-							propEl.removeClass 'available'
-
-						else
-
-							propEl.addClass 'available'
-
-						return
-
-					@rootView.moosh.onClick(propEl)
-					.onDone =>
-
-						@workspacesModel.togglePropListing prop
-
-						return
-
-		return
+    return

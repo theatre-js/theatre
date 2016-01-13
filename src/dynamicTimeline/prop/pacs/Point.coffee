@@ -1,429 +1,314 @@
 _PacItem = require './_PacItem'
 
 module.exports = class Point extends _PacItem
+  self = @
 
-	self = @
+  constructor: (@pacs, @id, @t, @value, leftHandlerX, leftHandlerY, rightHandlerX, rightHandlerY) ->
+    @handler = new Float32Array 4
+    @leftHandler = @handler.subarray 0, 2
+    @rightHandler = @handler.subarray 2, 4
+    @_setHandlers leftHandlerX, leftHandlerY, rightHandlerX, rightHandlerY
 
-	constructor: (@pacs, @id, @t, @value, leftHandlerX, leftHandlerY, rightHandlerX, rightHandlerY) ->
+    super
+    do @_putOnTime
 
-		@handler = new Float32Array 4
+  serialize: ->
+    se = {}
+    se.t = @t
+    se.value = @value
+    se.id = @id
+    se.handler = Array::slice.call(@handler, 0)
+    se
 
-		@leftHandler = @handler.subarray 0, 2
-		@rightHandler = @handler.subarray 2, 4
+  @constructFrom: (se, pacs) ->
+    p = new self pacs, se.id, se.t, se.value, se.handler[0], se.handler[1], se.handler[2], se.handler[3]
+    pacs._addPoint p
+    return
 
-		@_setHandlers leftHandlerX, leftHandlerY, rightHandlerX, rightHandlerY
+  _putOnTime: ->
+    # first, lets make sure no point sits at t
+    if @pacs._pointExistsAt @t
+      throw Error "Another point already exists at t:#{@t}"
 
-		super
+    prevIndex = @pacs._getIndexOfItemBeforeOrAt @t
+    prevItem = @pacs._getItemByIndex prevIndex
+    index = prevIndex + 1
 
-		do @_putOnTime
+    # now lets see if we are in between a connector
+    if prevItem? and prevItem.isConnector()
+      # we're in between a connector
 
-	serialize: ->
+      # @pacs.
+      # let's inject this point inside the timeline...
+      @pacs._injectPointOn @, index
+      prevItem._bezierShouldChange()
 
-		se = {}
+      # ... and add a connector right after it
+      newConnectorIndex = index + 1
+      @pacs.addConnector @t
 
-		se.t = @t
+      # the timeline has changed from the previous point, to the next point
+      prevPoint = @pacs._getItemByIndex prevIndex - 1
+      nextPoint = @pacs._getItemByIndex newConnectorIndex + 1
 
-		se.value = @value
+      @pacs._setUpdateRange prevPoint.t, nextPoint.t
 
-		se.id = @id
+    else
+      # we're not between a connector
 
-		se.handler = Array::slice.call(@handler, 0)
+      # let's inject this point inside the timeline
+      @pacs._injectPointOn @, index
+      nextItem = @pacs._getItemByIndex index + 1
 
-		se
+      # the timeline has changed from this t, to the next point's t
+      @pacs._setUpdateRange @t, if nextItem? then nextItem.t else Infinity
 
-	@constructFrom: (se, pacs) ->
+  remove: ->
+    updatedFrom = @t
+    updatedTo = Infinity
 
-		p = new self pacs, se.id, se.t, se.value, se.handler[0], se.handler[1], se.handler[2], se.handler[3]
+    # if we are connected to a point to the left
+    if @hasLeftPoint() and @isConnectedToTheLeft()
+      @getLeftConnector().remove()
+      updatedFrom = @getLeftPoint().t
 
-		pacs._addPoint p
+    if @isConnectedToTheRight()
+      @getRightConnector().remove()
+      updatedTo = @getRightPoint().t
 
-		return
+    else if @hasRightPoint()
+      updatedTo = @getRightPoint().t
 
-	_putOnTime: ->
+    @pacs._setUpdateRange updatedFrom, updatedTo
 
-		# first, lets make sure no point sits at t
-		if @pacs._pointExistsAt @t
+    # remove the point first
+    @pacs._pluckPointOn @, @_getIndex()
 
-			throw Error "Another point already exists at t:#{@t}"
+    do @_remove
+    return
 
-		prevIndex = @pacs._getIndexOfItemBeforeOrAt @t
+  _remove: ->
+    @_emit 'remove'
+    @pacs = null
+    return
 
-		prevItem = @pacs._getItemByIndex prevIndex
+  isConnector: -> no
 
-		index = prevIndex + 1
+  isPoint: -> yes
 
-		# now lets see if we are in between a connector
-		if prevItem? and prevItem.isConnector()
+  _getIndex: ->
+    i = @pacs._getItemIndex @
+    if i is -1
+      throw Error "This point doesn't reside in the timeline anymore"
+    i
 
-			# we're in between a connector
+  getLeftConnector: ->
+    item = @pacs._getItemByIndex @_getIndex() - 1
+    if item? and item.isConnector()
+      return item
 
-			# @pacs.
-			# let's inject this point inside the timeline...
-			@pacs._injectPointOn @, index
+    return
 
-			prevItem._bezierShouldChange()
+  getRightConnector: ->
+    item = @pacs._getItemByIndex @_getIndex() + 1
+    if item? and item.isConnector()
+      return item
 
-			# ... and add a connector right after it
-			newConnectorIndex = index + 1
+    return
 
-			@pacs.addConnector @t
+  isConnectedToTheLeft: ->
+    @getLeftConnector()?
 
-			# the timeline has changed from the previous point, to the next point
-			prevPoint = @pacs._getItemByIndex prevIndex - 1
-			nextPoint = @pacs._getItemByIndex newConnectorIndex + 1
+  isConnectedToTheRight: ->
+    @getRightConnector()?
 
-			@pacs._setUpdateRange prevPoint.t, nextPoint.t
+  getLeftPoint: ->
+    if @isConnectedToTheLeft()
+      @pacs._getItemByIndex @_getIndex() - 2
+    else
+      @pacs._getItemByIndex @_getIndex() - 1
 
-		else
+  hasLeftPoint: ->
+    @getLeftPoint()?
 
-			# we're not between a connector
+  getRightPoint: ->
+    if @isConnectedToTheRight()
+      @pacs._getItemByIndex @_getIndex() + 2
+    else
+      @pacs._getItemByIndex @_getIndex() + 1
 
-			# let's inject this point inside the timeline
-			@pacs._injectPointOn @, index
+  hasRightPoint: ->
+    @getRightPoint()?
 
-			nextItem = @pacs._getItemByIndex index + 1
+  canConnect: ->
+    @canConnectToLeft() or @canConnectToRight()
 
-			# the timeline has changed from this t, to the next point's t
-			@pacs._setUpdateRange @t, if nextItem? then nextItem.t else Infinity
+  canConnectToLeft: ->
+    @hasLeftPoint() and not @isConnectedToTheLeft()
 
-	remove: ->
+  canConnectToRight: ->
+    @hasRightPoint() and not @isConnectedToTheRight()
 
-		updatedFrom = @t
-		updatedTo = Infinity
+  connectToTheRight: ->
+    unless @canConnectToRight()
+      throw Error "Cannot connect to right"
 
-		# if we are connected to a point to the left
-		if @hasLeftPoint() and @isConnectedToTheLeft()
+    @pacs.addConnector @t
+    this
 
-			@getLeftConnector().remove()
+  connectToTheLeft: ->
+    unless @canConnectToLeft()
+      throw Error "Cannot connect to left"
 
-			updatedFrom = @getLeftPoint().t
+    @pacs.addConnector @getLeftPoint().t
 
-		if @isConnectedToTheRight()
+    this
 
-			@getRightConnector().remove()
+  setValue: (value) ->
+    return if value is @value
 
-			updatedTo = @getRightPoint().t
+    @value = value
+    updatedFrom = @t
+    updatedTo = Infinity
 
-		else if @hasRightPoint()
+    if @isConnectedToTheLeft()
+      updatedFrom = @getLeftPoint().t
 
-			updatedTo = @getRightPoint().t
+    nextPoint = @getRightPoint()
 
-		@pacs._setUpdateRange updatedFrom, updatedTo
+    if nextPoint?
+      updatedTo = nextPoint.t
 
-		# remove the point first
-		@pacs._pluckPointOn @, @_getIndex()
+    @pacs._setUpdateRange updatedFrom, updatedTo
+    @_emit 'value-change'
 
-		do @_remove
+    if @isConnectedToTheLeft()
+      @getLeftConnector()._bezierShouldChange()
 
-		return
+    if @isConnectedToTheRight()
+      @getRightConnector()._bezierShouldChange()
 
-	_remove: ->
+    return
 
-		@_emit 'remove'
+  _setHandlers: (x1, y1, x2, y2) ->
+    @_setLeftHandler x1, y1
+    @_setRightHandler x2, y2
+    return
 
-		@pacs = null
+  _setLeftHandler: (x, y) ->
+    unless Number.isFinite(x) and Number.isFinite(y)
+      throw Error "Handlers should both be finite numbers. Given: '#{x}, #{y}'"
 
-		return
+    if x < 0
+      throw Error "Handler must be a positive number"
 
-	isConnector: -> no
+    @leftHandler[0] = x
+    @leftHandler[1] = y
+    return
 
-	isPoint: -> yes
+  _setRightHandler: (x, y) ->
+    unless Number.isFinite(x) and Number.isFinite(y)
+      throw Error "Handlers should both be finite numbers. Given: '#{x}, #{y}'"
 
-	_getIndex: ->
+    if x < 0
+      throw Error "Handler must be a positive number"
 
-		i = @pacs._getItemIndex @
+    @rightHandler[0] = x
+    @rightHandler[1] = y
 
-		if i is -1
+    return
 
-			throw Error "This point doesn't reside in the timeline anymore"
+  setLeftHandler: (x, y) ->
+    @_setLeftHandler x, y
+    @_emit 'handler-change'
+    if @isConnectedToTheLeft()
+      @getLeftConnector()._bezierShouldChange()
+      @pacs._setUpdateRange @getLeftPoint().t, @t
 
-		i
+    return
 
-	getLeftConnector: ->
+  setRightHandler: (x, y) ->
+    @_setRightHandler x, y
+    @_emit 'handler-change'
+    updatedFrom = @t
+    updatedTo = Infinity
 
-		item = @pacs._getItemByIndex @_getIndex() - 1
+    if @isConnectedToTheRight()
+      @getRightConnector()._bezierShouldChange()
+      updatedTo = @getRightPoint().t
+      @pacs._setUpdateRange updatedFrom, updatedTo
 
-		if item? and item.isConnector()
+    return
 
-			return item
+  setBothHandlers: (x1, y1, x2, y2) ->
+    @_setHandlers x1, y1, x2, y2
+    @_emit 'handler-change'
+    updatedFrom = @t
+    updatedTo = Infinity
 
-		return
+    if @isConnectedToTheRight()
+      @getRightConnector()._bezierShouldChange()
+      updatedTo = @getRightPoint().t
 
-	getRightConnector: ->
+    if @isConnectedToTheLeft()
+      @getLeftConnector()._bezierShouldChange()
+      updatedFrom = @getLeftPoint().t
 
-		item = @pacs._getItemByIndex @_getIndex() + 1
+    if @isConnectedToTheLeft() or @isConnectedToTheRight()
+      @pacs._setUpdateRange updatedFrom, updatedTo
 
-		if item? and item.isConnector()
+    return
 
-			return item
+  tickAt: (t) ->
+    return @value
 
-		return
+  setTime: (t) ->
+    oldT = @t
+    diff = t - @t
 
-	isConnectedToTheLeft: ->
+    wasConnectedToLeft = @isConnectedToTheLeft()
+    wasConnectedToRight = @isConnectedToTheRight()
+    leftBound = 0
+    rightBound = Infinity
 
-		@getLeftConnector()?
+    if @hasLeftPoint()
+      oldLeftPoint = @getLeftPoint()
+      leftBound = oldLeftPoint.t
 
-	isConnectedToTheRight: ->
+    if @hasRightPoint()
+      oldRightPoint = @getRightPoint()
+      rightBound = oldRightPoint.t
 
-		@getRightConnector()?
+    if wasConnectedToLeft
+      @getLeftConnector().remove()
 
-	getLeftPoint: ->
+    if wasConnectedToRight
+      @getRightConnector().remove()
 
-		if @isConnectedToTheLeft()
+    # remove the point first
+    @pacs._pluckPointOn @, @_getIndex()
+    @t = t
+    do @_putOnTime
 
-			@pacs._getItemByIndex @_getIndex() - 2
+    if leftBound < @t < rightBound
+      if wasConnectedToLeft
+        @pacs.addConnector oldLeftPoint.t
 
-		else
+      if wasConnectedToRight
+        @pacs.addConnector @t
 
-			@pacs._getItemByIndex @_getIndex() - 1
+    else
+      if wasConnectedToLeft and wasConnectedToRight
+        @pacs.addConnector oldLeftPoint.t
 
-	hasLeftPoint: ->
+      if diff < 0
+        if wasConnectedToLeft and oldLeftPoint.getLeftPoint() is @ and not @isConnectedToTheRight()
+          @pacs.addConnector @t
 
-		@getLeftPoint()?
+      else
+        if wasConnectedToRight and oldRightPoint.getRightPoint() is @ and not @isConnectedToTheLeft()
+          @pacs.addConnector oldRightPoint.t
 
-	getRightPoint: ->
+    @_emit 'time-change'
 
-		if @isConnectedToTheRight()
-
-			@pacs._getItemByIndex @_getIndex() + 2
-
-		else
-
-			@pacs._getItemByIndex @_getIndex() + 1
-
-	hasRightPoint: ->
-
-		@getRightPoint()?
-
-	canConnect: ->
-
-		@canConnectToLeft() or @canConnectToRight()
-
-	canConnectToLeft: ->
-
-		@hasLeftPoint() and not @isConnectedToTheLeft()
-
-	canConnectToRight: ->
-
-		@hasRightPoint() and not @isConnectedToTheRight()
-
-	connectToTheRight: ->
-
-		unless @canConnectToRight()
-
-			throw Error "Cannot connect to right"
-
-		@pacs.addConnector @t
-
-		@
-
-	connectToTheLeft: ->
-
-		unless @canConnectToLeft()
-
-			throw Error "Cannot connect to left"
-
-		@pacs.addConnector @getLeftPoint().t
-
-		@
-
-	setValue: (value) ->
-
-		return if value is @value
-
-		@value = value
-
-		updatedFrom = @t
-		updatedTo = Infinity
-
-		if @isConnectedToTheLeft()
-
-			updatedFrom = @getLeftPoint().t
-
-		nextPoint = @getRightPoint()
-
-		if nextPoint?
-
-			updatedTo = nextPoint.t
-
-		@pacs._setUpdateRange updatedFrom, updatedTo
-
-		@_emit 'value-change'
-
-		if @isConnectedToTheLeft()
-
-			@getLeftConnector()._bezierShouldChange()
-
-		if @isConnectedToTheRight()
-
-			@getRightConnector()._bezierShouldChange()
-
-		return
-
-	_setHandlers: (x1, y1, x2, y2) ->
-
-		@_setLeftHandler x1, y1
-		@_setRightHandler x2, y2
-
-		return
-
-	_setLeftHandler: (x, y) ->
-
-		unless Number.isFinite(x) and Number.isFinite(y)
-
-			throw Error "Handlers should both be finite numbers. Given: '#{x}, #{y}'"
-
-		if x < 0
-
-			throw Error "Handler must be a positive number"
-
-		@leftHandler[0] = x
-		@leftHandler[1] = y
-
-		return
-
-	_setRightHandler: (x, y) ->
-
-		unless Number.isFinite(x) and Number.isFinite(y)
-
-			throw Error "Handlers should both be finite numbers. Given: '#{x}, #{y}'"
-
-		if x < 0
-
-			throw Error "Handler must be a positive number"
-
-		@rightHandler[0] = x
-		@rightHandler[1] = y
-
-		return
-
-	setLeftHandler: (x, y) ->
-
-		@_setLeftHandler x, y
-
-		@_emit 'handler-change'
-
-		if @isConnectedToTheLeft()
-
-			@getLeftConnector()._bezierShouldChange()
-
-			@pacs._setUpdateRange @getLeftPoint().t, @t
-
-		return
-
-	setRightHandler: (x, y) ->
-
-		@_setRightHandler x, y
-
-		@_emit 'handler-change'
-
-		updatedFrom = @t
-		updatedTo = Infinity
-
-		if @isConnectedToTheRight()
-
-			@getRightConnector()._bezierShouldChange()
-
-			updatedTo = @getRightPoint().t
-
-			@pacs._setUpdateRange updatedFrom, updatedTo
-
-		return
-
-	setBothHandlers: (x1, y1, x2, y2) ->
-
-		@_setHandlers x1, y1, x2, y2
-
-		@_emit 'handler-change'
-
-		updatedFrom = @t
-		updatedTo = Infinity
-
-		if @isConnectedToTheRight()
-
-			@getRightConnector()._bezierShouldChange()
-
-			updatedTo = @getRightPoint().t
-
-		if @isConnectedToTheLeft()
-
-			@getLeftConnector()._bezierShouldChange()
-
-			updatedFrom = @getLeftPoint().t
-
-		if @isConnectedToTheLeft() or @isConnectedToTheRight()
-
-			@pacs._setUpdateRange updatedFrom, updatedTo
-
-		return
-
-	tickAt: (t) ->
-
-		return @value
-
-	setTime: (t) ->
-
-		oldT = @t
-		diff = t - @t
-
-		wasConnectedToLeft = @isConnectedToTheLeft()
-		wasConnectedToRight = @isConnectedToTheRight()
-		leftBound = 0
-		rightBound = Infinity
-
-		if @hasLeftPoint()
-
-			oldLeftPoint = @getLeftPoint()
-			leftBound = oldLeftPoint.t
-
-		if @hasRightPoint()
-
-			oldRightPoint = @getRightPoint()
-			rightBound = oldRightPoint.t
-
-		if wasConnectedToLeft
-
-			@getLeftConnector().remove()
-
-		if wasConnectedToRight
-
-			@getRightConnector().remove()
-
-		# remove the point first
-		@pacs._pluckPointOn @, @_getIndex()
-
-		@t = t
-
-		do @_putOnTime
-
-		if leftBound < @t < rightBound
-
-			if wasConnectedToLeft
-
-				@pacs.addConnector oldLeftPoint.t
-
-			if wasConnectedToRight
-
-				@pacs.addConnector @t
-
-		else
-
-			if wasConnectedToLeft and wasConnectedToRight
-
-				@pacs.addConnector oldLeftPoint.t
-
-			if diff < 0
-
-				if wasConnectedToLeft and oldLeftPoint.getLeftPoint() is @ and not @isConnectedToTheRight()
-
-					@pacs.addConnector @t
-
-			else
-
-				if wasConnectedToRight and oldRightPoint.getRightPoint() is @ and not @isConnectedToTheLeft()
-
-					@pacs.addConnector oldRightPoint.t
-
-		@_emit 'time-change'
-
-		@
+    this
