@@ -1,0 +1,10 @@
+// @flow
+import StandardStore from './StandardStore'
+import rootReducer from './rootReducer'
+import rootSaga from './rootSaga'
+
+export const defaultConfig = {rootReducer, rootSaga}
+
+export default function createStore(config: typeof defaultConfig = defaultConfig) {
+  return new StandardStore(config)
+}

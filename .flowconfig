@@ -1,0 +1,43 @@
+[include]
+.*/src/
+
+[ignore]
+.*/node_modules/fbjs
+.*/node_modules/editions/source
+
+[libs]
+; ./node_modules/@flow-atom/electron/sig/v0.37.8/
+flow-typed/npm
+flow-typed/custom ; custom takes precedence over the others
+
+[options]
+esproposal.class_static_fields=enable
+esproposal.class_instance_fields=enable
+unsafe.enable_getters_and_setters=true
+
+module.name_mapper.extension='css' -> 'CSSModule'
+module.name_mapper='.*\.\(svg\|png\|jpg\|gif\)$' -> 'EmptyModule'
+module.name_mapper='^\$root/\(.*\)$' -> '<PROJECT_ROOT>/\1'
+module.name_mapper='^\$src/\(.*\)$' -> '<PROJECT_ROOT>/src/\1'
+module.name_mapper='^\$lb/\(.*\)$' -> '<PROJECT_ROOT>/src/lb/\1'
+module.name_mapper='^\$lf/\(.*\)$' -> '<PROJECT_ROOT>/src/lf/\1'
+module.name_mapper='^\$shared/\(.*\)$' -> '<PROJECT_ROOT>/src/shared/\1'
+module.name_mapper='^exec-loader!\(.*\)$' -> '\1'
+
+;; We have a few different comments for flow to ignore type errors, each of which signals
+;; a different emaning:
+
+; Signals a TODO to fix the type error
+suppress_comment= \\(.\\|\n\\)*\\$FlowFixMe
+; Signals a bug error that's caused by flow's own bugs
+suppress_comment= \\(.\\|\n\\)*\\$BugOfFlowItself
+; Signals a type error that wer're sure we can ignore and won't need to fix later
+suppress_comment= \\(.\\|\n\\)*\\$FlowIgnore
+; When writing tests, this is used to indicate when we expect a line to error
+suppress_comment= \\(.\\|\n\\)*\\$FlowExpectError
+
+;; We avoid using `any`, and instead use these more descriptive aliases for it:
+; Signals a TODO to come up with a more precise annotation
+suppress_type=$FlowFixMe
+; Siagnals an `any` type that we won't need to refine latera
+suppress_type=$IntentionalAny
