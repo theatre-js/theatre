@@ -1,0 +1,7 @@
+/node_modules
+/xeno
+/bundles
+/.vscode
+*.log
+development.env.json
+production.env.json
