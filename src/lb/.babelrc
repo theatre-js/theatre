@@ -1,0 +1,36 @@
+{
+  "presets": ["react", "stage-1"],
+  "env": {
+    "test": {
+      "presets": [
+        ["env", {
+          "targets": {
+            "node": "current"
+          }
+        }]
+      ]
+    },
+    "development": {
+      "presets": [
+        ["env", {
+          "modules": false,
+          "targets": {
+            "node": "current"
+          }
+        }]
+      ]
+    },
+    "production": {
+      "presets": [
+        ["env", {
+          "modules": false,
+          "targets": {
+            "node": "current",
+            "uglify": true
+          }
+        }]
+      ]
+    }
+  }
+
+}

@@ -1,0 +1,36 @@
+{
+  "presets": ["react", "stage-1"],
+  "env": {
+    "test": {
+      "presets": [
+        ["env", {"targets": {"node": "current"}}]
+      ]
+    },
+    "development": {
+      "presets": [
+        ["env", {"targets": {"node": "current"}}]
+      ]
+    },
+    "launcherBackendDevelopment": {
+      "presets": [
+        ["env", {"targets": {"node": "current"}}]
+      ]
+    },
+    "launcherBackendProduction": {
+      "presets": [
+        ["env", {"targets": {"node": "current"}}]
+      ]
+    },
+    "launcherFrontendDevelopment": {
+      "presets": [
+        ["env", {"targets": {"chrome": "56"}}]
+      ],
+      "plugins": ["react-hot-loader/babel"]
+    },
+    "launcherFrontendProduction": {
+      "presets": [
+        ["env", {"targets": {"chrome": "56"}}]
+      ]
+    }
+  }
+}

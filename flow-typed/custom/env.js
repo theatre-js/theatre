@@ -1,18 +1,46 @@
 // @flow
 
 /**
- * Any project-specific globals (which we should strive to have none) should be typed
- * here
+ * Project-specific globals (such as the unique shape of process.env) will be defined here.
  */
- declare var process: {
-  +env: {
-    BACKEND_BASE_URL: string,
-    NODE_ENV: 'development' | 'production',
-    REDUX_PERSIST_KEY_PREFIX: string,
-    AMPLITUDE_API_KEY: string,
-  },
 
-  exit: () => void,
+// First, the env variables that exist regardless of the value of NODE_ENV
+type CommonEnvironmentVariables = {
+  // The hash of the last git commit the moment webpack last started running
+  commitHash: string,
+  launcherFrontend: {
+    statePersistencePrefix: string,
+  },
+  launcherBackend: {
+
+  },
+}
+
+// Some environment variables are specific to NODE_ENV='development'
+type DevSpecificEnvironmentVariables = {
+  NODE_ENV: 'development',
+  devSpecific: {
+    launcherFrontend: {
+      devServerPort: number,
+    },
+  },
+}
+
+type ProductionSpecificEnvironmentVariables = {
+  NODE_ENV: 'production',
+}
+
+
+// The final encironment variables equal:
+// All the common env variables', PLUS (either the dev-specific variables, OR the production-specific variables)
+type EnvironmentVariables =
+  CommonEnvironmentVariables & (
+    DevSpecificEnvironmentVariables |
+    ProductionSpecificEnvironmentVariables
+  )
+
+declare var process: {
+  env: EnvironmentVariables,
 }
 
 declare var module: {

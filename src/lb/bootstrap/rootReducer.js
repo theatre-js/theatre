@@ -8,4 +8,3 @@ const mainReducer =
   })
 
 export default wrapRootReducer(mainReducer)
-

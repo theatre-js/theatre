@@ -5,7 +5,24 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "flow-typed:install": "flow-typed install --flowVersion=0.51.0"
+    "flow-typed:install": "flow-typed install --flowVersion=0.51.0",
+    "lint": "eslint ./src",
+    "flow": "flow",
+    "test": "jest",
+    "prepush": "run-p lint flow test"
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "\\$root/(.*)": "<rootDir>/$1",
+      "\\$src/(.*)": "<rootDir>/src/$1",
+      "\\$lb/(.*)": "<rootDir>/src/lb/$1",
+      "\\$lf/(.*)": "<rootDir>/src/lf/$1",
+      "\\$shared/(.*)": "<rootDir>/src/shared/$1"
+    },
+    "setupFiles": [
+      "./src/test/env.js"
+    ],
+    "automock": false
   },
   "repository": {
     "type": "git",
@@ -14,14 +31,22 @@
   "author": "TheaterJS Oy",
   "license": "Proprietary",
   "devDependencies": {
+    "babel-eslint": "^7.2.3",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-1": "^6.24.1",
     "deep-equal": "^1.0.1",
     "electron": "^1.6.11",
     "electron-debug": "^1.3.0",
     "electron-devtools-installer": "^2.2.0",
     "electron-prebuilt": "^1.4.13",
+    "eslint": "^4.3.0",
+    "eslint-plugin-flowtype": "^2.35.0",
+    "eslint-plugin-react": "^7.1.0",
     "jest": "^20.0.4",
     "lodash": "^4.17.4",
     "react-flow-types": "^0.1.1",
+    "react-hot-loader": "^3.0.0-beta.7",
     "react-router-dom": "^4.1.2",
     "recompose": "^0.24.0",
     "redux-actions": "^2.2.1",
