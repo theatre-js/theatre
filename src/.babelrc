@@ -11,25 +11,25 @@
         ["env", {"targets": {"node": "current"}}]
       ]
     },
-    "launcherBackendDevelopment": {
+    "lb:development": {
       "presets": [
-        ["env", {"targets": {"node": "current"}}]
+        ["env", {"targets": {"node": "current", "modules": false}}]
       ]
     },
-    "launcherBackendProduction": {
+    "lb:production": {
       "presets": [
-        ["env", {"targets": {"node": "current"}}]
+        ["env", {"targets": {"node": "current", "modules": false}}]
       ]
     },
-    "launcherFrontendDevelopment": {
+    "lf:development": {
       "presets": [
-        ["env", {"targets": {"chrome": "56"}}]
+        ["env", {"targets": {"chrome": "56", "modules": false}}]
       ],
       "plugins": ["react-hot-loader/babel"]
     },
-    "launcherFrontendProduction": {
+    "lf:production": {
       "presets": [
-        ["env", {"targets": {"chrome": "56"}}]
+        ["env", {"targets": {"chrome": "56", "modules": false}}]
       ]
     }
   }

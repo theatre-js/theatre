@@ -41,3 +41,5 @@ suppress_comment= \\(.\\|\n\\)*\\$FlowExpectError
 suppress_type=$FlowFixMe
 ; Siagnals an `any` type that we won't need to refine latera
 suppress_type=$IntentionalAny
+; Siagnals an `any` type where we don't care about type correctness (obvs should be used sparingly)
+suppress_type=$UnimportantAny
