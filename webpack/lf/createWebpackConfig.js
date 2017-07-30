@@ -24,13 +24,15 @@ module.exports = (options: Options) => {
 
   const config: Object = {
     context: context,
-    target: 'electron-renderer',
+    // target: '',
     devtool: isDev ? 'source-map' : 'source-map',
     entry: {
       index: isDev ? ['react-hot-loader/patch', './src/lf/index.js'] : ['./src/lf/index.js'],
     },
+    externals: ['electron'],
     output: {
       path: bundlesDir,
+      libraryTarget: 'commonjs2',
       publicPath: '/',
       filename: '[name].js',
       sourceMapFilename: '[file].map.js',

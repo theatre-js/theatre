@@ -13,6 +13,9 @@ const bundlesDir = path.join(context, './bundles/lb')
 
 module.exports = (options: Options) => {
   const isDev = options.env === 'development'
+  // We set this manually to make it available to external modules imported in lf
+  // $FlowIgnore
+  process.env.NODE_ENV = options.env
 
   const config = {
     context: context,
@@ -37,7 +40,7 @@ module.exports = (options: Options) => {
     },
     output: {
       path: bundlesDir,
-      publicPath: '/',
+      publicPath: './bundles/lb/',
       filename: '[name].js',
       sourceMapFilename: '[file].map.js',
       libraryTarget: 'commonjs2',
@@ -49,6 +52,7 @@ module.exports = (options: Options) => {
     module: {
       rules: [
         {test: /\.js$/, use: {loader: `babel-loader`, options: {forceEnv: `lb:${options.env}`}}, exclude: /node_modules/},
+        {test: /\.(png|jpg|jpeg|gif|webp)$/, use: [{loader: 'file-loader'}]},
       ],
     },
     plugins: [

@@ -34,10 +34,8 @@ type ProductionSpecificEnvironmentVariables = {
 // The final encironment variables equal:
 // All the common env variables', PLUS (either the dev-specific variables, OR the production-specific variables)
 type EnvironmentVariables =
-  CommonEnvironmentVariables & (
-    DevSpecificEnvironmentVariables |
-    ProductionSpecificEnvironmentVariables
-  )
+  (CommonEnvironmentVariables & DevSpecificEnvironmentVariables) |
+  (CommonEnvironmentVariables & ProductionSpecificEnvironmentVariables)
 
 declare var process: {
   env: EnvironmentVariables,

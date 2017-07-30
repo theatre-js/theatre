@@ -1,7 +1,7 @@
 // @flow
 import combineChannels from './combineChannels'
 import {channel} from 'redux-saga'
-import {call, take, fork} from 'redux-saga/effects'
+import {call, take} from 'redux-saga/effects'
 import EventEmitter from 'events'
 import channelFromEmitter from './channelFromEmitter'
 import dummySagaRunner from './dummySagaRunner'
@@ -15,10 +15,10 @@ describe('combineChannels()', () => {
 
     const record = []
     middleware.run(function* (): Generator<> {
-      const channelA = yield call(channelFromEmitter, emitterA, ['a'])
-      const channelB = yield call(channelFromEmitter, emitterB, ['b'])
+      const channelA = yield channelFromEmitter(emitterA, ['a'])
+      const channelB = yield channelFromEmitter(emitterB, ['b'])
       const combined = yield call(channel)
-      yield fork(combineChannels, combined, channelA, channelB)
+      yield combineChannels(combined, [channelA, channelB])
 
       while (true) {
         record.push(yield take(combined))
@@ -33,5 +33,5 @@ describe('combineChannels()', () => {
     expect(record[0]).toMatchObject({type: 'a', payload: 'a'})
     emitterB.emit('b', 'b')
     expect(record[1]).toMatchObject({type: 'b', payload: 'b'})
-  });
-});
+  })
+})

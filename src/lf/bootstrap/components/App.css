@@ -1,0 +1,28 @@
+/**
+ * Global CSS rules should be placed here.
+ */
+ body {
+  margin: 0;
+  padding: 0;
+
+  background: #121821;
+  font-family: 'Montserrat', sans-serif;
+
+  color: #FFF;
+  font-size: 18px;
+  font-weight: 300;
+  line-height: 24px;
+  user-select: none;
+ }
+
+ * {
+  color: inherit;
+  text-decoration: none;
+  margin: 0;
+  padding: 0;
+  outline: none;
+  border: 0;
+  background: none;
+ }
+
+@import url('https://fonts.googleapis.com/css?family=Montserrat:300,400,500');
