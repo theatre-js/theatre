@@ -5,7 +5,7 @@ import electronIsReadyPromise from '$lb/launcherWindow/utils/electronIsReadyProm
 import temporaryTrayIcon from '$lb/launcherWindow/assets/temporaryTrayIcon.png'
 import {Tray, BrowserWindow} from 'electron'
 import deepEqual from 'deep-equal'
-import {sendRequestToWindow, getChannelOfRequestsFromWindow, autoRetryOnTimeout} from './utils'
+import {sendRequestToWindow, getChannelOfRequestsFromWindow} from './utils'
 import {reduceState} from '$shared/utils'
 
 function createWindow() {
@@ -30,7 +30,13 @@ function* sendStateUpdatesToWindow(window: BrowserWindow): Generator<> {
     yield delay(2)
     const newState = yield select()
     if (!deepEqual(lastState, newState)) {
-      yield call(autoRetryOnTimeout, sendRequestToWindow, [window, 'receiveNewState', newState, 200])
+      try {
+        yield call(sendRequestToWindow, window, 'receiveNewState', newState, 500)
+      } catch (e) {
+        if (e !== 'timeout') {
+          throw e
+        }
+      }
       lastState = newState
     }
   })
