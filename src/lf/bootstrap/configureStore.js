@@ -7,6 +7,7 @@ export const defaultConfig = {rootReducer, rootSaga}
 
 export default function createStore(config: typeof defaultConfig = defaultConfig) {
   const store = new StandardStore(config)
+  console.log(store)
 
   return store
 }

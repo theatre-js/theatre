@@ -6,7 +6,7 @@ import {reduceState} from '$shared/utils'
 import {type StoreState} from '$lf/types'
 
 export default function* errorCatchingRootSaga(): Generator<> {
-  yield call(rootSaga)
+  return yield call(rootSaga)
 }
 
 function* rootSaga(): Generator<> {

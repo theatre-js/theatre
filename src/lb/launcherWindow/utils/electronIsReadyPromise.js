@@ -1,6 +1,6 @@
 // @flow
 import wn from 'when'
-import {app, ipcMain} from 'electron'
+import {app} from 'electron'
 
 const installDevtoolsExtensions = () => {
   require('electron-debug')({showDevTools: true})
@@ -17,8 +17,7 @@ app.dock.hide()
 
 function waitForElectron() {
   const d = wn.defer()
-  // @todo better to check for memory leaks inside `$shared/utils/sagas/ipcComms/main.js` than
-  // set this to such high number
+  // @note we might have to increase the maxListeners on ipcMain if we get maxListeners warnings
   // ipcMain.setMaxListeners(100)
   app.on('ready', d.resolve)
   return d.promise

@@ -7,7 +7,7 @@ type Props = {}
 
 const ProjectsPage = (props: Props) => {
   return (
-    <div className={css.container}>projects page</div>
+    <div className={css.container}>projects page here</div>
   )
 }
 

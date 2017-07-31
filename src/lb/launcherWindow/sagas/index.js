@@ -45,19 +45,15 @@ export default function* laucnherWindowSaga(): Generator<> {
 
   try {
     yield fork(sendStateUpdatesToWindow, window)
-    yield fork(listenToRendererRequests, window)
-    while(true) {
-      yield delay(1000)
-      yield reduceState(['blah'], () => 'hss1' + Math.random())
-    }
-    // yield new Promise(() => {})
+    yield fork(listenToWindowRequests, window)
+    yield new Promise(() => {}) // just prevents the window from being closed right after it's open
   } finally {
     tray.destroy()
     window.destroy()
   }
 }
 
-function* listenToRendererRequests(window: BrowserWindow): Generator<> {
+function* listenToWindowRequests(window: BrowserWindow): Generator<> {
   const requestsFromWindow = yield call(getChannelOfRequestsFromWindow, window)
 
   while(true) {

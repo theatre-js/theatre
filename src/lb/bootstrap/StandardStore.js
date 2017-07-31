@@ -2,7 +2,7 @@
 import {applyMiddleware, createStore, compose, type Reducer, type Store} from 'redux'
 import createSagaMiddleware from 'redux-saga'
 
-type RootSaga<State, Action> = (core: Core<State, Action>) => Generator<mixed, mixed, mixed>
+type RootSaga<State, Action> = (store: StandardStore<State, Action>) => Generator<mixed, mixed, mixed>
 type ConstructorProps<State, Action> = {
   initialState?: State,
   rootSaga: RootSaga<State, Action>,
@@ -12,7 +12,7 @@ type ConstructorProps<State, Action> = {
 /**
  * StandardStore is basically just a standard configuration of redux store and sagas. Nothing special really.
  */
-export default class Core<State: Object, Action: Object> {
+export default class StandardStore<State: Object, Action: Object> {
   sagaMiddleware: *
   _initialState: ?State
   rootReducer: Reducer<State, Action>
