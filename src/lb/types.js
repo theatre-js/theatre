@@ -1,5 +1,9 @@
 // @flow
+import type {CommonNamespaceState} from '$lb/common/types'
 
 export type StoreState = {
-  // projects: ProjectsModuleState,
+  common: CommonNamespaceState,
 }
+
+export type Selector<ReturnType, ParamsType> =
+  (state: StoreState, params: ParamsType) => ReturnType

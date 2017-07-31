@@ -1,5 +1,5 @@
-// flow-typed signature: c23776257216b8a13bf48db17de8d07c
-// flow-typed version: b43dff3e0e/recompose_v0.24.x/flow_>=v0.47.x
+// flow-typed signature: 96577314b7cd4dcd846ceef59463fb64
+// flow-typed version: 8ece6897e2/recompose_v0.24.x/flow_>=v0.47.x
 
 // TODO:
 // extend compose to 10
@@ -70,8 +70,6 @@ declare module 'recompose' {
 
   declare type ClassComponent<D, A, S> = Class<React$Component<D, A, S>>
 
-  declare type Component<A> = FunctionComponent<A> | ClassComponent<any, A, any>
-
   declare type UnaryFn<A, R> = (a: A) => R
 
   declare type Compose = (<A, B, C, D, E, F, G>(
@@ -115,6 +113,10 @@ declare module 'recompose' {
   // Public declarations
   // -----------------------------------------------------------------
 
+  declare export type Component<A> =
+    | FunctionComponent<A>
+    | ClassComponent<any, A, any>
+
   declare export type HOC<Base, Enhanced> = UnaryFn<
     Component<Base>,
     Component<Enhanced>
@@ -135,7 +137,7 @@ declare module 'recompose' {
   ): HOC<Base, Enhanced>
 
   declare export function withProps<BaseAdd, Enhanced>(
-    propsMapper: (ownerProps: Enhanced) => BaseAdd
+    propsMapper: ((ownerProps: Enhanced) => BaseAdd) | BaseAdd
   ): HOC<{ ...$Exact<Enhanced>, ...BaseAdd }, Enhanced>
 
   declare export function withStateHandlers<

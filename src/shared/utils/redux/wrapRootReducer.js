@@ -1,9 +1,7 @@
 // @flow
 import {mergeStateAction, setStateAction, resetStateAction} from './commonActions'
 import pick from 'lodash/pick'
-
-type Reducer<State, Action> =
-  (s: State | void, a: Action) => State
+import {type Reducer} from '$shared/types'
 
 /**
  * Takes a reducer and returns a new reducer that acts the same as the original reducer, but

@@ -5,7 +5,7 @@ import electronIsReadyPromise from '$lb/launcherWindow/utils/electronIsReadyProm
 import temporaryTrayIcon from '$lb/launcherWindow/assets/temporaryTrayIcon.png'
 import {Tray, BrowserWindow} from 'electron'
 import deepEqual from 'deep-equal'
-import {sendRequestToWindow, getChannelOfRequestsFromWindow} from '$shared/utils/sagas/ipcComms/main'
+import {sendRequestToWindow, getChannelOfRequestsFromWindow, autoRetryOnTimeout} from './utils'
 import {reduceState} from '$shared/utils'
 
 function createWindow() {
@@ -30,9 +30,8 @@ function* sendStateUpdatesToWindow(window: BrowserWindow): Generator<> {
     yield delay(2)
     const newState = yield select()
     if (!deepEqual(lastState, newState)) {
-      yield call(sendRequestToWindow, window, 'receiveNewState', newState)
+      yield call(autoRetryOnTimeout, sendRequestToWindow, [window, 'receiveNewState', newState, 200])
       lastState = newState
-      // @todo should we check if the window received this?
     }
   })
 }
@@ -46,6 +45,8 @@ export default function* laucnherWindowSaga(): Generator<> {
   try {
     yield fork(sendStateUpdatesToWindow, window)
     yield fork(listenToWindowRequests, window)
+    yield delay(400)
+    yield reduceState(['projects', 'foo', 'bar'], () => 'alohamora')
     yield new Promise(() => {}) // just prevents the window from being closed right after it's open
   } finally {
     tray.destroy()

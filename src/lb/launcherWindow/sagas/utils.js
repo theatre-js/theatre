@@ -1,5 +1,6 @@
 // @flow
 import {type Channel, eventChannel, END} from 'redux-saga'
+import {call} from 'redux-saga/effects'
 import generateUniqueId from 'uuid/v4'
 import wn from 'when'
 import {typeof BrowserWindow, ipcMain} from 'electron'
@@ -21,7 +22,27 @@ type RequestFromWindow = {
   respond: (payload: mixed) => void,
 }
 
-export function sendRequestToWindow(window: BrowserWindow, type: string, payload: mixed): Promise<mixed> {
+export function* autoRetryOnTimeout(callee: Function, args: Array<mixed>, numberOfRetries: number = 10): Generator<> {
+  let retries = -1
+  while(true) {
+    retries++
+    try {
+      return yield call(callee, ...args)
+    } catch (e) {
+      if (e !== 'timeout') {
+        throw e
+      } else if (retries === numberOfRetries) {
+        throw e
+      }
+    }
+  }
+}
+
+/**
+ * @note If you set the timeout arg to a big number (say 10000ms), then we'll have a memory leak caused
+ * by having set up too many listeners on ipcMain
+ */
+export function sendRequestToWindow(window: BrowserWindow, type: string, payload: mixed, timeout: number = 4000): Promise<mixed> {
   const request = {
     id: generateUniqueId(),
     type, payload,
@@ -29,10 +50,12 @@ export function sendRequestToWindow(window: BrowserWindow, type: string, payload
 
   // @todo implement a timeout
   const payloadDeferred = wn.defer()
+  let responded = false
 
   const listener = (event, response: Response) => {
-    if (event.sender === window.webContents && response.id === request.id) {
+    if (response.id === request.id) {
       ipcMain.removeListener('response', listener)
+      responded = true
       payloadDeferred.resolve(response.payload)
     }
   }
@@ -40,7 +63,17 @@ export function sendRequestToWindow(window: BrowserWindow, type: string, payload
   ipcMain.on('response', listener)
   window.webContents.send('request', request)
 
-  return payloadDeferred.promise
+  // if the response doesn't come within the specified timeout period, then we'll remove
+  // listneer from ipcMain, and reject with 'timeout' being the reason
+  const timeoutAndGCPromise = wn().delay(timeout).then(() => {
+    if (!responded) {
+      ipcMain.removeListener('response', listener)
+      return wn.reject('timeout')
+    }
+  })
+
+  return wn.race([payloadDeferred.promise, timeoutAndGCPromise])
+
 }
 
 export const getChannelOfRequestsFromWindow = (window: BrowserWindow): Channel => {
