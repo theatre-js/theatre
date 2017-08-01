@@ -6,6 +6,7 @@ type Props = {
   children: React$Element<*>,
   css?: any,
   activeCss?: any,
+  onDropHandler: Function,
 }
 
 type State = {
@@ -44,13 +45,13 @@ class FolderDropzone extends React.Component {
     this.setActiveState(false)
     const entry = e.dataTransfer.items[0].webkitGetAsEntry()
     if (entry.isDirectory) {
-      const path = e.dataTransfer.files[0].path
+      this.props.onDropHandler(e.dataTransfer.files[0].path)
     }
   }
 
   setActiveState(newState) {
-    if(this.state.isActive !== newState){
-      this.setState({isActive: newState})
+    if (this.state.isActive !== newState) {
+      this.setState(() => ({isActive: newState}))
     }
   }
 
@@ -70,5 +71,5 @@ class FolderDropzone extends React.Component {
 }
 
 export default compose(
-  (a) => a
+  (a) => a,
 )(FolderDropzone)

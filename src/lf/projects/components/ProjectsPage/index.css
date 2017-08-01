@@ -1,3 +1,5 @@
+@value listWidth: 300px;
+
 .container {
   padding: 20px;
 }
@@ -9,11 +11,12 @@
 
 .dropzone {
   position: relative;
-  width: 300px;
+  width: listWidth;
   min-height: 200px;
   max-height: 400px;
   background: #333;
   padding: 10px;
+  box-sizing: border-box;
   overflow: scroll;
 }
 
@@ -29,4 +32,16 @@
     height: 100%;
     background: rgba(255, 255, 255, .1);
   }
+}
+
+.dropGuide {
+  width: listWidth;
+  min-height: 30px;
+  font-size: 12px;
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  background: #222;
+  color: #666;
 }
