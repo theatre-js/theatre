@@ -23,11 +23,11 @@ class FolderDropzone extends React.Component {
   }
 
   onDragStart = (e) => {
-    this.changeActiveState(true)
+    this.setActiveState(true)
   }
 
   onDragEnter = (e) => {
-    this.changeActiveState(true)
+    this.setActiveState(true)
   }
 
   onDragOver = (e) => {
@@ -35,19 +35,19 @@ class FolderDropzone extends React.Component {
   }
 
   onDragLeave = (e) => {
-    this.changeActiveState(false)
+    this.setActiveState(false)
   }
 
   onDrop = (e) => {
     e.preventDefault()
-    this.changeActiveState(false)
+    this.setActiveState(false)
     const entry = e.dataTransfer.items[0].webkitGetAsEntry()
     if (entry.isDirectory) {
       const path = e.dataTransfer.files[0].path
     }
   }
 
-  changeActiveState(newState) {
+  setActiveState(newState) {
     if(this.state.isActive !== newState){
       this.setState({isActive: newState})
     }
