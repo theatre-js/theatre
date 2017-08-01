@@ -11,8 +11,10 @@
   position: relative;
   width: 300px;
   min-height: 200px;
+  max-height: 400px;
   background: #333;
   padding: 10px;
+  overflow: scroll;
 }
 
 .activeDropzone {

@@ -5,14 +5,14 @@ import css from './ProjectItem.css'
 
 type Props = {
   project: Object,
-  onClick: Function,
+  onForget: Function,
 }
 
 const ProjectItem = (props: Props) => {
   return (
     <div className={css.container}>
       <div className={css.name}>{props.project.bar}</div>
-      <button className={css.forgetButton} onClick={props.onClick}>forget</button>
+      <button className={css.forgetButton} onClick={props.onForget}>forget</button>
     </div>
   )
 }

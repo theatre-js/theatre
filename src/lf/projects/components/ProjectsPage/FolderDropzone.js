@@ -7,6 +7,7 @@ type Props = {
   css?: any,
   activeCss?: any,
 }
+
 type State = {
   isActive: boolean,
 }

@@ -2,6 +2,7 @@
 import React from 'react'
 import compose from 'ramda/src/compose'
 import {connect} from 'react-redux'
+import {type StoreState} from '$lf/types'
 import css from './index.css'
 import FolderDropzone from './FolderDropzone'
 import ProjectItem from './ProjectItem'
@@ -17,7 +18,7 @@ const ProjectsPage = (props: Props) => {
       <FolderDropzone css={css.dropzone} activeCss={css.activeDropzone}>
         {
           Object.entries(props.projects).map(([key, value]) => {
-            return <ProjectItem key={key} project={value}/>
+            return <ProjectItem key={key} project={value} onForget={() => {}}/>
           })
         }
       </FolderDropzone>
@@ -27,9 +28,11 @@ const ProjectsPage = (props: Props) => {
 
 export default compose(
   connect(
-    (state) => {
+    (state: StoreState) => {
       return {
-        projects: state.mirrorOfLBState.projects
+        projects: state.mirrorOfLBState
+          && state.mirrorOfLBState.projects
+          && state.mirrorOfLBState.projects
       }
     }
   )

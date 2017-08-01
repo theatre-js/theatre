@@ -11,7 +11,7 @@
 
 .forgetButton {
   cursor: pointer;
-  opacity: .1;
+  opacity: .2;
   float: right;
 
   &:hover {
