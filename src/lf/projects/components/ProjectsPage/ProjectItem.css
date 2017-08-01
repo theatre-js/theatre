@@ -1,0 +1,21 @@
+.container {
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.name {
+  display: inline-block;
+}
+
+.forgetButton {
+  cursor: pointer;
+  opacity: .1;
+  float: right;
+
+  &:hover {
+    text-decoration: underline;
+    opacity: .6;
+  }
+}
