@@ -5,7 +5,7 @@ import generateUniqueId from 'uuid/v4'
 import wn from 'when'
 import {typeof BrowserWindow, ipcMain} from 'electron'
 
-type Request = {
+type RawRequest = {
   type: string,
   id: string,
   payload: mixed,
@@ -16,7 +16,7 @@ type Response = {
   payload: mixed,
 }
 
-type RequestFromWindow = {
+export type Request = {
   type: string,
   payload: mixed,
   respond: (payload: mixed) => void,
@@ -78,7 +78,7 @@ export function sendRequestToWindow(window: BrowserWindow, type: string, payload
 
 export const getChannelOfRequestsFromWindow = (window: BrowserWindow): Channel => {
   return eventChannel((emitToChannel) => {
-    const listener = (event, request: Request) => {
+    const listener = (event, request: RawRequest) => {
       if (event.sender !== window.webContents) {
         console.log('got st but not from this window')
         return
@@ -97,7 +97,7 @@ export const getChannelOfRequestsFromWindow = (window: BrowserWindow): Channel =
         type: request.type,
         payload: request.payload,
         respond,
-      }: RequestFromWindow))
+      }: Request))
     }
 
     ipcMain.on('request', listener)
