@@ -1,10 +1,10 @@
 // @flow
 import createSagaMiddleware from 'redux-saga'
-import {applyMiddleware, createStore, compose} from 'redux'
+import {applyMiddleware, createStore} from 'redux'
 
 export default function dummySagaRunner() {
 
   const sagaMiddleware = createSagaMiddleware()
-  const store = createStore((s = {}) => s, undefined, applyMiddleware(sagaMiddleware))
+  createStore((s = {}) => s, undefined, applyMiddleware(sagaMiddleware))
   return sagaMiddleware
 }

@@ -4,6 +4,7 @@ import {type RunSagaFn} from './withRunSaga'
 describe('withRunSaga()', () => {
   it('should work')
 
+  /* eslint-disable no-unused-vars */
   async function typeTests(){
     declare var run: RunSagaFn
     function* foo(a: string, b: number): Generator<*, boolean, *> {
