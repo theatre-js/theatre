@@ -13,9 +13,11 @@ const installDevtoolsExtensions = () => {
   return installExtension(REACT_DEVELOPER_TOOLS).then(installExtension(REDUX_DEVTOOLS))
 }
 
-app.dock.hide()
+if (app)
+  app.dock.hide()
 
 function waitForElectron() {
+  if (!app) return Promise.resolve()
   const d = wn.defer()
   // @note we might have to increase the maxListeners on ipcMain if we get maxListeners warnings
   // ipcMain.setMaxListeners(100)

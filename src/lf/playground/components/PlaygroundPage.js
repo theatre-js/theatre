@@ -3,9 +3,7 @@ import React from 'react'
 import compose from 'ramda/src/compose'
 import css from './PlaygroundPage.css'
 
-type Props = {}
-
-const PlaygroundPage = (props: Props) => {
+const PlaygroundPage = () => {
   return (
     <div className={css.container}>playground here</div>
   )

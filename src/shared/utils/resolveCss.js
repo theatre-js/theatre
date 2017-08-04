@@ -9,7 +9,7 @@ const resolveCss = (...stylesToClassNames: Array<StylesToClassNames>) => (...cla
   // $FlowIgnore
   const styles: Array<string> =
     classNameOrClassNames
-    .filter((s) => typeof s === 'string' && s.length > 0)
+      .filter((s) => typeof s === 'string' && s.length > 0)
 
   function resolveSingleStyle(style: string): string {
 
@@ -31,7 +31,7 @@ const resolveCss = (...stylesToClassNames: Array<StylesToClassNames>) => (...cla
       // apply '!override's
       if (sanitizedPiece === '!important') {return false}
       // take 'class' out of 'class !important'
-      const pieceWithoutOverride = piece.replace(/\s*\!override/, '').trim()
+      const pieceWithoutOverride = piece.replace(/\s*!override/, '').trim()
       // prepend 'class' to the array
       eligiblePieces.unshift(pieceWithoutOverride)
 

@@ -5,8 +5,8 @@ import electronIsReadyPromise from '$lb/launcherWindow/utils/electronIsReadyProm
 import temporaryTrayIcon from '$lb/launcherWindow/assets/temporaryTrayIcon.png'
 import {Tray, BrowserWindow} from 'electron'
 import deepEqual from 'deep-equal'
-import {sendRequestToWindow, getChannelOfRequestsFromWindow} from './utils'
-import {reduceState} from '$shared/utils'
+import {sendRequestToWindow, getChannelOfRequestsFromWindow, type Request} from './utils'
+import allLfEndpoints from './allLfEndpoints'
 
 function createWindow() {
   let win = new BrowserWindow({width: 1200, height: 920, show: false})
@@ -51,8 +51,6 @@ export default function* laucnherWindowSaga(): Generator<> {
   try {
     yield fork(sendStateUpdatesToWindow, window)
     yield fork(listenToWindowRequests, window)
-    yield delay(400)
-    yield reduceState(['projects', 'foo', 'bar'], () => 'alohamora')
     yield new Promise(() => {}) // just prevents the window from being closed right after it's open
   } finally {
     tray.destroy()
@@ -65,15 +63,23 @@ function* listenToWindowRequests(window: BrowserWindow): Generator<> {
 
   while(true) {
     const request = yield take(requestsFromWindow)
-    if (request.type === 'getCurrentState') {
-      yield fork(handleGetCurrentState, request)
+    const endpointHandler = allLfEndpoints[request.type]
+    if (endpointHandler) {
+      yield fork(handleRequestFromWindow, endpointHandler, request)
     } else {
       throw Error(`Unkown request type received from LB '${request.type}'`)
     }
   }
 }
 
-function* handleGetCurrentState(request): Generator<> {
-  const state = yield select()
-  request.respond(state)
+function* handleRequestFromWindow(handler: Function, request: Request): Generator<> {
+  try {
+    const result = yield call(handler, request.payload)
+    request.respond(result)
+    return
+  } catch (e) {
+    console.error(e) // @todo log this somewhere
+    request.respond({type: 'error', errorType: 'unkown'})
+    return
+  }
 }

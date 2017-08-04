@@ -1,5 +1,4 @@
 // @flow
-
 export function* isPathAProject(params: {path: string}): Generator<*, *, boolean> {
   console.log('isProject', params)
 }
