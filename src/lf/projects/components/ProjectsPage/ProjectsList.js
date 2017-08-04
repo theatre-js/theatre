@@ -1,8 +1,9 @@
 // @flow
 import React from 'react'
 import css from './ProjectsList.css'
-import Dropzone from '$lf/common/components/Dropzone'
 import ProjectItem from './ProjectItem'
+import Dropzone from '$lf/common/components/Dropzone'
+import ErrorLogger from '$lf/common/components/ErrorLogger'
 
 type Props = {
   projects: Object,
@@ -56,14 +57,13 @@ class ProjectsList extends React.Component {
     
     const entry : Object = e.dataTransfer.items[0].webkitGetAsEntry()
     if (entry.isDirectory) {
-      console.log('is Dir')
+      console.log(e.dataTransfer.files[0].path)
     } else {
       this.setErrorStateTo('Not a Folder!')
     }
   }
 
   render() {
-    console.log(this.state.isDropzoneActive)
     return (
       <div>
         <div className={css.title}>Projects</div>
@@ -87,7 +87,9 @@ class ProjectsList extends React.Component {
         </Dropzone>
         {
           (this.state.error !== null) ?
-            <div className={css.error}>{this.state.error}</div>
+            <div className={css.error}>
+              <ErrorLogger closeHandler={() => this.setErrorStateTo(null)} >{this.state.error}</ErrorLogger>
+            </div>
             :
             <div className={css.dropGuide}>Drop a Folder to Add/Create a new Project.</div>
         }

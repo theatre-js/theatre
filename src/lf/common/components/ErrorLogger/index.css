@@ -1,0 +1,27 @@
+.container {
+  box-sizing: border-box;
+  padding: 5px 10px;
+  background: #F00;
+  color: #FFF;
+  font-size: 12px;
+}
+
+.message {
+  display: inline-block;
+  vertical-align: middle;
+  width: calc(100% - 50px);
+}
+
+.close {
+  width: 50px;
+  display: inline-block;
+  vertical-align: middle;
+  text-align: right;
+  opacity: .5;
+  cursor: pointer;
+
+  &:hover {
+    opacity: .8;
+    text-decoration: underline;
+  }
+}

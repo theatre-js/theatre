@@ -32,11 +32,11 @@
 }
 
 .dropGuide {
+  position: relative;
   width: listWidth;
   min-height: 30px;
   font-size: 12px;
   display: flex;
-  text-align: center;
   align-items: center;
   justify-content: center;
   background: #222;
@@ -44,7 +44,6 @@
 }
 
 .error {
-  composes: dropGuide;
-  color: #FFF;
-  background: #F00;
+  position: relative;
+  width: listWidth;
 }
