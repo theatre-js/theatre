@@ -42,3 +42,9 @@
   background: #222;
   color: #666;
 }
+
+.error {
+  composes: dropGuide;
+  color: #FFF;
+  background: #F00;
+}

@@ -9,6 +9,7 @@ type Props = {
 }
 type State = {
   isDropzoneActive: boolean,
+  error: ?string,
 }
 
 class ProjectsList extends React.Component {
@@ -19,21 +20,26 @@ class ProjectsList extends React.Component {
     super(props)
     this.state = {
       isDropzoneActive: false,
+      error: null,
     }
   }
 
   setDropzoneActiveStateTo(newState: boolean) {
-    if (this.state.isDropzoneActive !== newState) {
-      this.setState(() => ({isDropzoneActive: newState}))
-    }
+    this.setState(() => ({isDropzoneActive: newState}))
+  }
+
+  setErrorStateTo(message: string | null) {
+    this.setState(() => ({error: message}))
   }
 
   dragStartHandler = () => {
     this.setDropzoneActiveStateTo(true)
+    this.setErrorStateTo(null)
   }
 
   dragEnterHandler = () => {
     this.setDropzoneActiveStateTo(true)
+    this.setErrorStateTo(null)
   }
 
   dragLeaveHandler = () => {
@@ -52,11 +58,12 @@ class ProjectsList extends React.Component {
     if (entry.isDirectory) {
       console.log('is Dir')
     } else {
-      console.error('not a Dir')
+      this.setErrorStateTo('Not a Folder!')
     }
   }
 
   render() {
+    console.log(this.state.isDropzoneActive)
     return (
       <div>
         <div className={css.title}>Projects</div>
@@ -78,7 +85,12 @@ class ProjectsList extends React.Component {
             })
           }
         </Dropzone>
-        <div className={css.dropGuide}>Drop a folder to Add/Create a new Project.</div>
+        {
+          (this.state.error !== null) ?
+            <div className={css.error}>{this.state.error}</div>
+            :
+            <div className={css.dropGuide}>Drop a Folder to Add/Create a new Project.</div>
+        }
       </div>
     )
   }
