@@ -4,11 +4,14 @@ import css from './ProjectsList.css'
 import ProjectItem from './ProjectItem'
 import Dropzone from '$lf/common/components/Dropzone'
 import ErrorLogger from '$lf/common/components/ErrorLogger'
+import SingleInputForm from '$lf/common/components/SingleInputForm'
 
 type Props = {
   projects: Object,
 }
 type State = {
+  isCreatingNewProject: boolean,
+  newProjectPath: ?string,
   isDropzoneActive: boolean,
   error: ?string,
 }
@@ -20,27 +23,44 @@ class ProjectsList extends React.Component {
   constructor(props: Props) {
     super(props)
     this.state = {
+      isCreatingNewProject: false,
+      newProjectPath: null,
       isDropzoneActive: false,
       error: null,
     }
+  }
+
+  setCreatingNewProjectStateTo(newState: boolean) {
+    this.setState(() => ({isCreatingNewProject: newState}))
+    if (!newState) {
+      this.setNewProjectPathTo(null)
+    }
+  }
+
+  setNewProjectPathTo(path: ?string) {
+    this.setState(() => ({newProjectPath: path}))
   }
 
   setDropzoneActiveStateTo(newState: boolean) {
     this.setState(() => ({isDropzoneActive: newState}))
   }
 
-  setErrorStateTo(message: string | null) {
+  setErrorStateTo(message: ?string) {
     this.setState(() => ({error: message}))
   }
 
-  dragStartHandler = () => {
+  prepareDropzoneOnDragStart() {
+    this.setCreatingNewProjectStateTo(false)
     this.setDropzoneActiveStateTo(true)
     this.setErrorStateTo(null)
   }
 
+  dragStartHandler = () => {
+    this.prepareDropzoneOnDragStart()
+  }
+
   dragEnterHandler = () => {
-    this.setDropzoneActiveStateTo(true)
-    this.setErrorStateTo(null)
+    this.prepareDropzoneOnDragStart()
   }
 
   dragLeaveHandler = () => {
@@ -57,10 +77,22 @@ class ProjectsList extends React.Component {
     
     const entry : Object = e.dataTransfer.items[0].webkitGetAsEntry()
     if (entry.isDirectory) {
-      console.log(e.dataTransfer.files[0].path)
+      const path = e.dataTransfer.files[0].path
+      this.setNewProjectPathTo(path)
+      this.setCreatingNewProjectStateTo(true)
     } else {
       this.setErrorStateTo('Not a Folder!')
     }
+  }
+
+  addNewProject = (projectName: string) => {
+    this.setCreatingNewProjectStateTo(false)
+    console.log(projectName, this.state.newProjectPath)
+  }
+
+  cancelAddingNewProject = () => {
+    this.setCreatingNewProjectStateTo(false)
+    this.setNewProjectPathTo(null)
   }
 
   render() {
@@ -83,6 +115,12 @@ class ProjectsList extends React.Component {
                   onForget={() => {console.log('forget')}}/>
               )
             })
+          }
+          {this.state.isCreatingNewProject &&
+            <SingleInputForm
+              placeholder='Project name (return to add/esc to cancel)'
+              onSubmit={this.addNewProject}
+              onCancel={this.cancelAddingNewProject}/>
           }
         </Dropzone>
         {
