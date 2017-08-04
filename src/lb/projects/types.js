@@ -2,24 +2,25 @@
 
 // @todo maybe opaque types here would be more suitable?
 
-/**
- * isPathAProject({path: string}) => boolean
- * recogniseProject({path: string}) => {type: 'ok'} | {type: 'error', message: string}
- * createNewProject({path: string, name: string}) => {type: 'ok'} | {type: 'error', message: string}
- * unrecognizeProject({path: string}) => {type: 'ok'} | {type: 'error', message: string}
- */
-
 export type ProjectID = string
 
 export type ProjectPath = string
 
-export type ProjectDescription = {
-  id: ProjectID,
-  path: ProjectPath,
-  name: string,
-}
+export type ProjectLoadingStateErrors =
+  {loadingState: 'error', errorType: 'jsonCantBeParsed', message: string} |
+  {loadingState: 'error', errorType: 'invalidJsonSchema', message: string}
+
+export type ProjectDescription =
+  {loadingState: 'loading'} |
+  ProjectLoadingStateErrors |
+  {
+    loadingState: 'loaded',
+    projectID: ProjectID,
+    name: string,
+  }
 
 export type ProjectsNamespaceState = {
+  // If a project is mentioned in `byPath` but isn't here, it means it is yet to be loaded
   listOfPaths: Array<ProjectPath>,
   byPath: {[id: ProjectPath]: ProjectDescription},
 }
