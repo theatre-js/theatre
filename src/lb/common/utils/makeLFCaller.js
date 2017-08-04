@@ -8,7 +8,7 @@ const makeCallerFor = (handlerName: string): any => {
     return r
   }
 
-  fn.name = handlerName
+  // fn.name = handlerName
 
   return fn
 }
