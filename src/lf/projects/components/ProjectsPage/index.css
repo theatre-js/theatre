@@ -1,3 +1,55 @@
+.centered-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .container {
-  padding: 20px;
+  width: 400px;
+  background: #333;
+}
+
+.title {
+  composes: centered-text;
+  width: 100%;
+  opacity: .3;
+  font-weight: 100;
+  padding: 15px 0;
+  background: #222;
+}
+
+.dropzone {
+  position: relative;
+  width: listWidth;
+  min-height: 200px;
+  max-height: 400px;
+  background: #333;
+  padding: 10px;
+  box-sizing: border-box;
+  overflow: scroll;
+}
+
+.activeDropzone {
+  composes: dropzone;
+
+  &:after {
+    position: absolute;
+    display: block;
+    content: '';
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, .1);
+  }
+}
+
+.dropHint {
+  composes: centered-text;
+  position: relative;
+  width: 100%;
+  min-height: 30px;
+  font-size: 12px;
+  background: #222;
+  color: #666;
 }

@@ -2,16 +2,28 @@
 import React from 'react'
 import compose from 'ramda/src/compose'
 import css from './ProjectItem.css'
+import {type ProjectDescription} from '$lb/projects/types'
 
 type Props = {
-  project: Object,
+  path: String,
+  projectDesc: ?ProjectDescription,
   onForget: Function,
 }
 
 const ProjectItem = (props: Props) => {
   return (
     <div className={css.container}>
-      <div className={css.name}>{props.project.bar}</div>
+      <div className={css.projectInfo}>
+        {(props.projectDesc != null) && (props.projectDesc.loadingState === 'loaded')
+          ?
+          <div className={css.title}>{props.projectDesc.name}</div>
+          :
+          <div className={css.loading}>
+            <span>L</span><span>o</span><span>a</span><span>d</span><span>i</span><span>n</span><span>g</span>
+          </div>
+        }
+        <div title={props.path} className={css.path}>{props.path}</div>
+      </div>
       <button className={css.forgetButton} onClick={props.onForget}>forget</button>
     </div>
   )
