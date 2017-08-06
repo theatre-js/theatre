@@ -5,6 +5,7 @@ import {type ProjectsNamespaceState} from '$lb/projects/types'
 
 type Props = {
   projects: ProjectsNamespaceState,
+  forgetHandler: Function,
 }
 
 const ProjectsList = (props: Props) => {
@@ -18,7 +19,7 @@ const ProjectsList = (props: Props) => {
               key={path}
               path={path.slice(1)}
               projectDesc={byPath[path]}
-              onForget={() => {console.log('forget')}} />
+              onForget={() => props.forgetHandler(path)} />
           )
         })
       }

@@ -9,6 +9,7 @@ import {withRunSaga, type WithRunSagaProps} from '$shared/utils'
 import isPathAProject from '$lb/projects/lfEndpoints/isPathAProject.caller'
 import createNewProject from '$lb/projects/lfEndpoints/createNewProject.caller'
 import recogniseProject from '$lb/projects/lfEndpoints/recogniseProject.caller'
+import unrecogniseProject from '$lb/projects/lfEndpoints/unrecogniseProject.caller'
 import SingleInputForm from '$lf/common/components/SingleInputForm'
 import ErrorLogger from '$lf/common/components/ErrorLogger'
 
@@ -87,13 +88,13 @@ class ProjectsPage extends React.Component {
   }
 
   async addOrRecogniseProject(path: string) {
-    const isProject = await this.props.runSaga(isPathAProject, {fileOrFolderPath: path})
-    if (isProject.type === 'ok') {
-      if (isProject.isIt) {
-        const isRecognised = await this.props.runSaga(recogniseProject, {filePath: isProject.filePath})
-        if (isRecognised.type === 'error') {
+    const isProjectResult = await this.props.runSaga(isPathAProject, {fileOrFolderPath: path})
+    if (isProjectResult.type === 'ok') {
+      if (isProjectResult.isIt) {
+        const recogniseResult = await this.props.runSaga(recogniseProject, {filePath: isProjectResult.filePath})
+        if (recogniseResult.type === 'error') {
           this.setState(() => ({
-            error: isRecognised.errorType,
+            error: recogniseResult.errorType,
           }))
         }
       } else {
@@ -102,9 +103,9 @@ class ProjectsPage extends React.Component {
         }))
       }
     }
-    if (isProject.type === 'error') {
+    if (isProjectResult.type === 'error') {
       this.setState(() => ({
-        error: isProject.message,
+        error: isProjectResult.message,
       }))
     }
   }
@@ -112,15 +113,24 @@ class ProjectsPage extends React.Component {
   async createProject(name: string) {
     if (this.state.lastDroppedPath != null) {
       const folderPath: string = this.state.lastDroppedPath
-      const createdProject = await this.props.runSaga(createNewProject, {folderPath, name})
+      const createResult = await this.props.runSaga(createNewProject, {folderPath, name})
       this.setState(() => ({
         isCreatingNewProject: false,
       }))
-      if (createdProject.type === 'error') {
+      if (createResult.type === 'error') {
         this.setState(() => ({
-          error: createdProject.errorType,
+          error: createResult.errorType,
         }))
       }
+    }
+  }
+
+  async forgetProject(path: string) {
+    const unrecogniseResult = await this.props.runSaga(unrecogniseProject, {filePath: path})
+    if (unrecogniseResult.type === 'error') {
+      this.setState(() => ({
+        error: unrecogniseResult.errorType,
+      }))
     }
   }
 
@@ -136,7 +146,9 @@ class ProjectsPage extends React.Component {
           onDragLeave={this.dragLeaveHandler}
           onDragOver={this.dragOverHandler}
           onDrop={this.dropHandler}>
-          <ProjectsList projects={this.props.projects} />
+          <ProjectsList
+            projects={this.props.projects}
+            forgetHandler={(path) => this.forgetProject(path)}/>
           {this.state.isCreatingNewProject &&
             <SingleInputForm
               placeholder='Project name (return to add/esc to cancel)'
