@@ -22,7 +22,7 @@ const ProjectItem = (props: Props) => {
             <span>L</span><span>o</span><span>a</span><span>d</span><span>i</span><span>n</span><span>g</span>
           </div>
         }
-        <div title={props.path} className={css.path}>{props.path}</div>
+        <div title={props.path} className={css.path}>{props.path.slice(1).slice(0, -15)}</div>
       </div>
       <button className={css.forgetButton} onClick={props.onForget}>forget</button>
     </div>
