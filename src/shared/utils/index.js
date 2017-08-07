@@ -7,13 +7,13 @@ import onlyUpdateForKeysDeep from './onlyUpdateForKeysDeep'
 
 import {
   default as withRouter,
-  type WithRouterProps as _WithRouterProps
+  type WithRouterProps as _WithRouterProps,
 } from './withRouter'
 
 import {
   default as withRunSaga,
   type RunSagaFn as _RunSagaFn,
-  type WithRunSagaProps as _WithRunSagaProps
+  type WithRunSagaProps as _WithRunSagaProps,
 } from './sagas/withRunSaga'
 
 export type RunSagaFn = _RunSagaFn

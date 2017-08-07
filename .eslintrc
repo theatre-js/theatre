@@ -16,7 +16,7 @@
     "arrow-parens": ["error", "always"],
     "comma-dangle": [2, "always-multiline"],
     "indent": [2, 2, {"SwitchCase":1}],
-    "no-console": ["warn"],
+    "no-console": ["off"],
     "no-multiple-empty-lines": 2,
     "no-unused-vars": ["error", {"ignoreRestSiblings": true}],
     "object-curly-spacing": [2, "never"],

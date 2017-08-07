@@ -25,9 +25,7 @@ function* handleRequestsFromMain(): Generator<> {
 }
 
 function* receiveNewState(request): Generator<> {
-  console.log('req', request)
   yield reduceState(['mirrorOfLBState'], () => request.payload)
-  console.log(yield call(request.respond, 'done'))
 }
 
 function* getInitialStateFromLB(): Generator<> {

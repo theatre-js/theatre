@@ -1,0 +1,99 @@
+.container {
+  background: #333;
+  margin-bottom: 20px;
+  padding: 5px;
+  box-sizing: border-box;
+
+  &:hover {
+    background: #555;
+  }
+}
+
+.projectInfo {
+  width: calc(100% - 35px);
+  display: inline-block;
+  vertical-align: top;
+}
+
+.title {
+  font-size: 15px;
+}
+
+.loading {
+  font-size: 15px;
+
+  & span {
+    animation-name: loading;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-direction: both;
+    animation-timing-function: ease-in-out;
+    opacity: .2;
+
+    &:nth-child(2) {
+      animation-delay: .08s;
+    }
+
+    &:nth-child(3) {
+      animation-delay: .16s;
+    }
+
+    &:nth-child(4) {
+      animation-delay: .24s;
+    }
+
+    &:nth-child(5) {
+      animation-delay: .32s;
+    }
+
+    &:nth-child(6) {
+      animation-delay: .4s;
+    }
+
+    &:nth-child(7) {
+      animation-delay: .48s;
+    }
+  }
+}
+
+.path {
+  width: 89%;
+  font-size: 12px;
+  color: #999;
+  line-height: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+  direction: rtl;
+}
+
+.forgetButton {
+  display: inline-block;
+  vertical-align: top;
+  width: 35px;
+  cursor: pointer;
+  color: #999;
+  opacity: .5;
+  padding-top: 3px;
+
+  &:hover {
+    text-decoration: underline;
+    opacity: 1;
+  }
+}
+
+@keyframes loading {
+  0% {
+    opacity: 0.2;
+  }
+  25% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .2;
+  }
+  100% {
+    opacity: .2;
+  }
+}
