@@ -44,6 +44,18 @@
   }
 }
 
+.nameInput {
+  position: absolute;
+  left: 10px;
+  top: 0;
+  right: 10px;
+  bottom: 0;
+  background: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .dropHint {
   composes: centered-text;
   position: relative;

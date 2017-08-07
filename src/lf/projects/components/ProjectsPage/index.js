@@ -12,6 +12,7 @@ import recogniseProject from '$lb/projects/lfEndpoints/recogniseProject.caller'
 import unrecogniseProject from '$lb/projects/lfEndpoints/unrecogniseProject.caller'
 import SingleInputForm from '$lf/common/components/SingleInputForm'
 import ErrorLogger from '$lf/common/components/ErrorLogger'
+import errorMessages from '$lf/projects/errors'
 
 type Props = WithRunSagaProps & {
   projects: Object,
@@ -94,7 +95,7 @@ class ProjectsPage extends React.Component {
         const recogniseResult = await this.props.runSaga(recogniseProject, {filePath: isProjectResult.filePath})
         if (recogniseResult.type === 'error') {
           this.setState(() => ({
-            error: recogniseResult.errorType,
+            error: errorMessages[recogniseResult.errorType],
           }))
         }
       } else {
@@ -119,7 +120,7 @@ class ProjectsPage extends React.Component {
       }))
       if (createResult.type === 'error') {
         this.setState(() => ({
-          error: createResult.errorType,
+          error: errorMessages[createResult.errorType],
         }))
       }
     }
@@ -129,7 +130,7 @@ class ProjectsPage extends React.Component {
     const unrecogniseResult = await this.props.runSaga(unrecogniseProject, {filePath: path})
     if (unrecogniseResult.type === 'error') {
       this.setState(() => ({
-        error: unrecogniseResult.errorType,
+        error: errorMessages[unrecogniseResult.errorType],
       }))
     }
   }
@@ -150,10 +151,12 @@ class ProjectsPage extends React.Component {
             projects={this.props.projects}
             forgetHandler={(path) => this.forgetProject(path)}/>
           {this.state.isCreatingNewProject &&
-            <SingleInputForm
-              placeholder='Project name (return to add/esc to cancel)'
-              onSubmit={(value) => {this.createProject(value)}}
-              onCancel={this.cancelCreatingProject}/>
+            <div className={css.nameInput}>
+              <SingleInputForm
+                placeholder='Project name (return to add/esc to cancel)'
+                onSubmit={(value) => {this.createProject(value)}}
+                onCancel={this.cancelCreatingProject}/>
+            </div>
           }
         </div>
         {
