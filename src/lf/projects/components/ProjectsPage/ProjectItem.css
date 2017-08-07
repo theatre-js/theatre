@@ -24,10 +24,11 @@
 
   & span {
     animation-name: loading;
-    animation-duration: 1.7s;
+    animation-duration: 3s;
     animation-iteration-count: infinite;
     animation-direction: both;
     animation-timing-function: ease-in-out;
+    opacity: .2;
 
     &:nth-child(2) {
       animation-delay: .08s;
@@ -86,10 +87,10 @@
   0% {
     opacity: 0.2;
   }
-  35% {
+  25% {
     opacity: 1;
   }
-  70% {
+  50% {
     opacity: .2;
   }
   100% {
