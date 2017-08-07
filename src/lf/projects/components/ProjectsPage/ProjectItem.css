@@ -72,12 +72,13 @@
   vertical-align: top;
   width: 35px;
   cursor: pointer;
-  opacity: .2;
+  color: #999;
+  opacity: .5;
   padding-top: 3px;
 
   &:hover {
     text-decoration: underline;
-    opacity: .6;
+    opacity: 1;
   }
 }
 
