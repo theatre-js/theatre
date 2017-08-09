@@ -36,6 +36,13 @@
         ["env", {"targets": {"chrome": "56", "modules": false}}],
         "react", "stage-1",
       ]
-    }
+    },
+    "studio:development": {
+      "presets": [
+        ["env", {"targets": {"chrome": "56", "modules": false}}],
+        "react", "stage-1",
+      ],
+      "plugins": ["react-hot-loader/babel"]
+    },
   }
 }

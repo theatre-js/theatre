@@ -8,5 +8,6 @@ export const aliases: {[alias: string]: string} = {
   $src: path.join(context, './src/'),
   $lb: path.join(context, './src/lb/'),
   $lf: path.join(context, './src/lf/'),
+  $studio: path.join(context, './src/studio/'),
   $shared: path.join(context, './src/shared/'),
 }

@@ -21,6 +21,7 @@ module.name_mapper='^\$root/\(.*\)$' -> '<PROJECT_ROOT>/\1'
 module.name_mapper='^\$src/\(.*\)$' -> '<PROJECT_ROOT>/src/\1'
 module.name_mapper='^\$lb/\(.*\)$' -> '<PROJECT_ROOT>/src/lb/\1'
 module.name_mapper='^\$lf/\(.*\)$' -> '<PROJECT_ROOT>/src/lf/\1'
+module.name_mapper='^\$studio/\(.*\)$' -> '<PROJECT_ROOT>/src/studio/\1'
 module.name_mapper='^\$shared/\(.*\)$' -> '<PROJECT_ROOT>/src/shared/\1'
 module.name_mapper='^exec-loader!\(.*\)$' -> '\1'
 

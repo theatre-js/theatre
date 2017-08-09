@@ -14,7 +14,8 @@
     "lb:dev": "nodemon -e jade --exec \"electron\" ./bundles/lb/index.js",
     "lb:run": "electron ./bundles/lb/index.js",
     "lf:webpack:dev": "webpack-dev-server --progress --config webpack/lf/development.babel.js",
-    "build:dev": "npm-run-all --parallel lb:webpack:dev lf:webpack:dev"
+    "studio:webpack:dev": "webpack-dev-server --progress --config webpack/studio/development.babel.js",
+    "build:dev": "npm-run-all --parallel lb:webpack:dev lf:webpack:dev studio:webpack:dev"
   },
   "jest": {
     "moduleNameMapper": {
@@ -22,6 +23,7 @@
       "\\$src/(.*)": "<rootDir>/src/$1",
       "\\$lb/(.*)": "<rootDir>/src/lb/$1",
       "\\$lf/(.*)": "<rootDir>/src/lf/$1",
+      "\\$studio/(.*)": "<rootDir>/src/studio/$1",
       "\\$shared/(.*)": "<rootDir>/src/shared/$1"
     },
     "setupFiles": [
@@ -84,13 +86,12 @@
     "webpack": "^3.4.1",
     "webpack-dev-server": "^2.6.1",
     "webpack-notifier": "^1.5.0",
-    "when": "^3.7.8"
-  },
-  "dependencies": {
+    "when": "^3.7.8",
     "babel-core": "^6.25.0",
     "flow-bin": "^0.51.0",
     "flow-typed": "^2.1.5",
     "redux": "^3.7.2",
-    "redux-saga": "^0.15.5"
+    "redux-saga": "^0.15.5",
+    "socket.io": "^2.0.3"
   }
 }

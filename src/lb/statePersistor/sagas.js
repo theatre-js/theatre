@@ -22,6 +22,8 @@ export default function* statePersistorRootSaga(): Generator<> {
 }
 
 function* loadState(): Generator<> {
+  // return yield put(bootstrapAction())
+
   const fileExists: boolean = yield call(fse.pathExists, pathToPersistenceFile)
   if (!fileExists)
     return yield put(bootstrapAction())

@@ -14,6 +14,9 @@ type CommonEnvironmentVariables = {
   launcherBackend: {
 
   },
+  studio: {
+    socketPort: number,
+  },
 }
 
 // Some environment variables are specific to NODE_ENV='development'
@@ -21,6 +24,9 @@ type DevSpecificEnvironmentVariables = {
   NODE_ENV: 'development',
   devSpecific: {
     launcherFrontend: {
+      devServerPort: number,
+    },
+    studio: {
       devServerPort: number,
     },
   },
