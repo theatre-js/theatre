@@ -12,6 +12,7 @@
 }
 
 .settings {
+  display: inline-block;
   font-size: 14px;
   color: rgba(150, 150, 150, .3);
   cursor: pointer;

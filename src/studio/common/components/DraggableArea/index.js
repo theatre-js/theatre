@@ -31,26 +31,38 @@ class DraggableArea extends React.Component {
     }
   }
 
+  addDragListeners() {
+    document.addEventListener('mousemove', this.dragHandler)
+    document.addEventListener('mouseup', this.dragEndHandler)
+  }
+
+  removeDragListeners() {
+    document.removeEventListener('mousemove', this.dragHandler)
+    document.removeEventListener('mouseup', this.dragEndHandler)
+  }
+
   dragStartHandler = (e: SyntheticMouseEvent) => {
+    if (this.state.isDragging) return
+
     const {screenX, screenY} = e
     this.setState(() => ({
       isDragging: true,
-      startPos: {
-        x: screenX,
-        y: screenY,
-      },
+      startPos: {x: screenX, y: screenY},
     }))
+
+    this.addDragListeners()
     this.props.onDragStart()
   }
 
   dragEndHandler = () => {
     if (this.state.isDragging) {
       this.setState(() => ({isDragging: false}))
+      this.removeDragListeners()
       this.props.onDragEnd()
     }
   }
 
-  dragHandler = (e: SyntheticMouseEvent) => {
+  dragHandler = (e: MouseEvent) => {
     if (!this.state.isDragging) return
     
     const {startPos} = this.state
@@ -59,10 +71,7 @@ class DraggableArea extends React.Component {
 
   render() {
     return (
-      <div
-        onMouseDown={this.dragStartHandler}
-        onMouseUp={this.dragEndHandler}
-        onMouseMove={this.dragHandler}>
+      <div onMouseDown={this.dragStartHandler}>
         {this.props.children}
       </div>
     )
