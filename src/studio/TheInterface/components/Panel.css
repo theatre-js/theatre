@@ -1,0 +1,31 @@
+.container {
+  position: absolute;
+  width: 30%;
+  height: 60%;
+  background: #333;
+  padding: 20px;
+  box-sizing: border-box;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.topBar {
+  height: 30px;
+  text-align: right;
+}
+
+.settings {
+  font-size: 14px;
+  color: rgba(150, 150, 150, .3);
+  cursor: pointer;
+
+  &:hover {
+    color: rgba(150, 150, 150, .8);
+    text-decoration: underline;
+  }
+}
+
+.content {
+  height: calc(100% - 30px);
+  background: #111;
+  overflow: scroll;
+}

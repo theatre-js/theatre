@@ -5,3 +5,5 @@
 *.log
 development.env.json
 production.env.json
+
+.DS_Store

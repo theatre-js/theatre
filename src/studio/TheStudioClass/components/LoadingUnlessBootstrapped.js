@@ -25,7 +25,7 @@ const LoadingUnlessBootstrapped = (props: Props) => {
 export default compose(
   connect(
     (state: StoreState) => ({
-      isBootstrapped: getIsBootstrapped(state),
+      isBootstrapped: getIsBootstrapped(state) || true,
     }),
   ),
 )(LoadingUnlessBootstrapped)
