@@ -1,7 +1,5 @@
 .container {
   position: absolute;
-  width: 30%;
-  height: 60%;
   background: #333;
   padding: 20px;
   box-sizing: border-box;
@@ -26,6 +24,5 @@
 
 .content {
   height: calc(100% - 30px);
-  background: #111;
   overflow: scroll;
 }
