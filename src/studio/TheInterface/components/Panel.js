@@ -15,8 +15,10 @@ type State = {
   isInSettings: boolean,
   pos: XY,
   dim: XY,
-  transform: XY,
-  boundaries: Boundary,
+  move: XY,
+  resize: XY,
+  moveBoundaries: Boundary,
+  resizeBoundaries: Boundary,
 }
 
 class Panel extends React.Component {
@@ -28,13 +30,14 @@ class Panel extends React.Component {
     
     const initialPos = {x: 10, y: 10}
     const initialDim = {x: 30, y: 30}
-    const initialTransform = {x: 0, y: 0}
+    const initialBoundaries = this.calculatePanelBoundaries(initialPos, initialDim)
     this.state = {
       isInSettings: false,
       pos: initialPos,
       dim: initialDim,
-      transform: initialTransform,
-      boundaries: this.calculatePanelBoundaries(initialPos, initialDim),
+      move: {x: 0, y: 0},
+      resize: {x: 0, y: 0},
+      ...initialBoundaries,
     }
   }
 
@@ -43,54 +46,89 @@ class Panel extends React.Component {
   }
 
   movePanel = (dx: number, dy: number) => {
-    const {boundaries: {xlow, xhigh, ylow, yhigh}} = this.state
-    this.setState(() => ({
-      transform: {
-        x: _.clamp(dx, xlow, xhigh),
-        y: _.clamp(dy, ylow, yhigh),
-      },
-    }))
+    this.setState((state) => {
+      const {moveBoundaries: {xlow, xhigh, ylow, yhigh}} = state
+      return {
+        move: {
+          x: _.clamp(dx, xlow, xhigh),
+          y: _.clamp(dy, ylow, yhigh),
+        }}
+    })
   }
 
-  repositionPanel = () => {
-    const {pos, transform} = this.state
-    const newPos = {
-      x: pos.x + transform.x / window.innerWidth * 100,
-      y: pos.y + transform.y / window.innerHeight * 100,
-    }
-
-    this.setState(() => ({
-      pos: newPos,
-      transform: {x: 0, y: 0},
-    }))
+  setPanelPosition = () => {
+    this.setState((state) => {
+      const {pos, dim, move} = state
+      const newPos = {
+        x: pos.x + move.x / window.innerWidth * 100,
+        y: pos.y + move.y / window.innerHeight * 100,
+      }
+      const newBoundaries = this.calculatePanelBoundaries(newPos, dim)
+      return {
+        pos: newPos,
+        move: {x: 0, y: 0},
+        ...newBoundaries,
+      }
+    })
   }
 
-  calculatePanelBoundaries(
-    pos: XY = this.state.pos,
-    dim: XY = this.state.dim,): Boundary
+  calculatePanelBoundaries(pos: XY, dim: XY): {moveBoundaries: Boundary, resizeBoundaries: Boundary}
   { 
+    const distanceToRight = 100 - pos.x - dim.x
+    const distanceToBottom = 100 - pos.y - dim.y
     return {
-      xlow: - pos.x * window.innerWidth / 100,
-      xhigh: (100 - pos.x - dim.x) * window.innerWidth / 100,
-      ylow: - pos.y * window.innerHeight / 100,
-      yhigh: (100 - pos.y - dim.y) * window.innerHeight / 100,
+      moveBoundaries: {
+        xlow: - pos.x * window.innerWidth / 100,
+        xhigh: distanceToRight * window.innerWidth / 100,
+        ylow: - pos.y * window.innerHeight / 100,
+        yhigh: distanceToBottom * window.innerHeight / 100,
+      },
+      resizeBoundaries: {
+        xlow: - (dim.x - 10),
+        xhigh: distanceToRight,
+        ylow: - (dim.y - 10),
+        yhigh: distanceToBottom,
+      },
     }
   }
 
-  resetPanelBoundaries = () => {
-    const boundaries = this.calculatePanelBoundaries()
-    this.setState(() => ({boundaries}))
+  resizePanel = (dx: number, dy: number) => {
+    this.setState((state) => {
+      const {resizeBoundaries: {xlow, xhigh, ylow, yhigh}} = state
+      return {
+        resize: {
+          x: _.clamp(dx / window.innerWidth * 100, xlow, xhigh),
+          y: _.clamp(dy / window.innerHeight * 100, ylow, yhigh),
+        },
+      }
+    })
+  }
+
+  setPanelSize = () => {
+    this.setState((state) => {
+      const {pos, dim, resize} = state
+      const newDim = {
+        x: dim.x + resize.x,
+        y: dim.y + resize.y,
+      }
+      const newBoundaries = this.calculatePanelBoundaries(pos, newDim)
+      return {
+        dim: newDim,
+        resize: {x: 0, y: 0},
+        ...newBoundaries,
+      }
+    })
   }
 
   render() {
     const {children} = this.props
-    const {isInSettings, pos, dim, transform} = this.state
+    const {isInSettings, pos, dim, move, resize} = this.state
     const style = {
       left: `${pos.x}%`,
       top: `${pos.y}%`,
-      width: `${dim.x}%`,
-      height: `${dim.y}%`,
-      transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+      width: `${dim.x + resize.x}%`,
+      height: `${dim.y + resize.y}%`,
+      transform: `translate3d(${move.x}px, ${move.y}px, 0)`,
     }
 
     return (
@@ -107,8 +145,9 @@ class Panel extends React.Component {
             ?
             <Settings
               onPanelDrag={this.movePanel}
-              onPanelDragEnd={this.repositionPanel}
-              onPanelDragStart={this.resetPanelBoundaries}/>
+              onPanelDragEnd={this.setPanelPosition}
+              onPanelResize={this.resizePanel}
+              onPanelResizeEnd={this.setPanelSize}/>
             :
             children}
         </div>
