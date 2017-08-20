@@ -3,9 +3,9 @@ import React from 'react'
 
 type Props = {
   children: any,
-  onDragStart: Function,
-  onDragEnd: Function,
-  onDrag: Function,
+  onDragStart?: Function,
+  onDragEnd?: Function,
+  onDrag?: Function,
 }
 
 type State = {
@@ -51,14 +51,14 @@ class DraggableArea extends React.Component {
     }))
 
     this.addDragListeners()
-    this.props.onDragStart()
+    this.props.onDragStart && this.props.onDragStart()
   }
 
   dragEndHandler = () => {
     if (this.state.isDragging) {
       this.setState(() => ({isDragging: false}))
       this.removeDragListeners()
-      this.props.onDragEnd()
+      this.props.onDragEnd && this.props.onDragEnd()
     }
   }
 
@@ -66,7 +66,7 @@ class DraggableArea extends React.Component {
     if (!this.state.isDragging) return
     
     const {startPos} = this.state
-    this.props.onDrag(e.screenX - startPos.x, e.screenY - startPos.y)
+    this.props.onDrag && this.props.onDrag(e.screenX - startPos.x, e.screenY - startPos.y)
   }
 
   render() {
