@@ -1,7 +1,7 @@
 // @flow
 // This will be some sort of loading indicator to show before the studio is ready to function
 
-import React from 'react'
+import * as React from 'react'
 import compose from 'ramda/src/compose'
 import {connect} from 'react-redux'
 import {getIsBootstrapped} from '$studio/common/selectors'

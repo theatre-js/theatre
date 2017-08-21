@@ -1,5 +1,5 @@
 // @flow
-import React from 'react'
+import * as React from 'react'
 import ProjectItem from './ProjectItem'
 import css from './ProjectsList.css'
 import {type ProjectsNamespaceState} from '$lb/projects/types'

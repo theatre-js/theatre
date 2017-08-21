@@ -1,6 +1,6 @@
 // @flow
 /* eslint-disable react/jsx-key */
-import React from 'react'
+import * as React from 'react'
 import {Route} from 'react-router-dom'
 import ProjectsPage from '$lf/projects/components/ProjectsPage'
 

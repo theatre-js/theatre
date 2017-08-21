@@ -44,10 +44,10 @@ function* loadState(): Generator<> {
 }
 
 function* persistStateChanges(): Generator<> {
-  let lastState = pickPathsFromObject(yield select(), whitelistOfPartsOfStateToPersist)
+  let lastState = pickPathsFromObject((yield select()), whitelistOfPartsOfStateToPersist)
   yield takeLatest('*', function* (): Generator<> {
     yield delay(2)
-    const newState = pickPathsFromObject(yield select(), whitelistOfPartsOfStateToPersist)
+    const newState = pickPathsFromObject((yield select()), whitelistOfPartsOfStateToPersist)
     if (!deepEqual(lastState, newState)) {
       yield call(persistNewState, newState)
       lastState = newState

@@ -6,7 +6,7 @@ import Store from '$lb/bootstrap/StandardStore'
 import {AppContainer} from 'react-hot-loader'
 import compose from 'ramda/src/compose'
 import './StudioRootComponent.css'
-import React from 'react'
+import * as React from 'react'
 
 type Props = {
   store: Store<any, any>,
@@ -16,7 +16,8 @@ type State = {
   HotReloadablePart: typeof HotReloadablePart,
 }
 
-class StudioRootComponent extends React.Component<*, Props, *> {
+class StudioRootComponent extends React.Component<Props, *> {
+  static defaultProps: *;
   state: State
 
   constructor(props: Props) {
