@@ -16,9 +16,7 @@ type State = {
   },
 }
 
-class DraggableArea extends React.Component {
-  props: Props
-  state: State
+class DraggableArea extends React.Component<Props, State> {
 
   constructor(props: Props) {
     super(props)
@@ -41,7 +39,7 @@ class DraggableArea extends React.Component {
     document.removeEventListener('mouseup', this.dragEndHandler)
   }
 
-  dragStartHandler = (e: SyntheticMouseEvent) => {
+  dragStartHandler = (e: SyntheticMouseEvent<*>) => {
     if (e.button !== 0 || this.state.isDragging) return
 
     const {screenX, screenY} = e
@@ -64,7 +62,7 @@ class DraggableArea extends React.Component {
 
   dragHandler = (e: MouseEvent) => {
     if (!this.state.isDragging) return
-    
+
     const {startPos} = this.state
     this.props.onDrag && this.props.onDrag(e.screenX - startPos.x, e.screenY - startPos.y)
   }

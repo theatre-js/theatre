@@ -1,4 +1,6 @@
 // @flow
+import {type ComponentID} from '$studio/componentModel/types'
+
 export type PanelId = string
 
 export type XY = {x: number, y: number}
@@ -17,4 +19,5 @@ export type Panels = {
 
 export type WorkspaceNamespaceState = {
   panels: Panels,
+  currentCanvasCommponentID: ?ComponentID,
 }

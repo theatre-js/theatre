@@ -4,9 +4,10 @@ import {render} from 'react-dom'
 import StudioRootComponent from './components/StudioRootComponent'
 import configureStore from './configureStore'
 import LBCommunicator from './LBCommunicator'
+import StandardStore from '$lb/bootstrap/StandardStore'
 
 export default class TheStudioClass {
-  _store: *
+  _store: StandardStore<*, *>
   _lbCommunicator: *
 
   constructor() {
@@ -16,11 +17,11 @@ export default class TheStudioClass {
   }
 
   run() {
-    this._lbCommunicator.getSocket().then(() => {
-      this._lbCommunicator.request('ping', 'pingalu').then((res) => {
-        console.log(res)
-      })
-    })
+    // this._lbCommunicator.getSocket().then(() => {
+    //   this._lbCommunicator.request('ping', 'pingalu').then((res) => {
+    //     console.log(res)
+    //   })
+    // })
     this._store.runRootSaga()
     this._mountElement()
   }

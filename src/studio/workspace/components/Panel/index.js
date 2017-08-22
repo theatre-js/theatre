@@ -34,10 +34,7 @@ type State = PanelPlacementSettings & {
   isInSettings: boolean,
 }
 
-class Panel extends React.Component {
-  props: Props
-  state: State
-
+class Panel extends React.Component<Props, State> {
   static getZeroXY() {
     return {x: 0, y: 0}
   }
@@ -67,7 +64,7 @@ class Panel extends React.Component {
   }
 
   calculatePanelBoundaries(pos: XY, dim: XY): {moveBoundaries: Boundary, resizeBoundaries: Boundary}
-  { 
+  {
     const distanceToRight = 100 - pos.x - dim.x
     const distanceToBottom = 100 - pos.y - dim.y
     return {

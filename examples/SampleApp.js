@@ -5,7 +5,7 @@ import {AppContainer} from 'react-hot-loader'
 import './SampleApp.css'
 import SamplePlayground from './playground/SamplePlayground'
 
-const TheaterJSRoot = window.TheaterJS.Root
+const TheaterJSRoot = window.TheaterJS.react.Root
 
 type Props = {}
 
