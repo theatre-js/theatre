@@ -5,6 +5,8 @@ import {AppContainer} from 'react-hot-loader'
 import './SampleApp.css'
 import SamplePlayground from './playground/SamplePlayground'
 
+const TheaterJSRoot = window.TheaterJS.Root
+
 type Props = {}
 
 type State = {
@@ -42,7 +44,9 @@ class SampleApp extends React.Component<Props, State> {
     const {SamplePlayground} = this.state
     return (
       <AppContainer>
+        <TheaterJSRoot>
           <SamplePlayground />
+        </TheaterJSRoot>
       </AppContainer>
     )
   }

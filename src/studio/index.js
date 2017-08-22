@@ -3,8 +3,12 @@
 // with this global polyfill
 import 'babel-polyfill'
 import TheStudioClass from '$studio/TheStudioClass'
+import TheaterJSRoot from './stuff/TheaterJSRoot'
 
 const theaterStudioInstance = new TheStudioClass()
 theaterStudioInstance.run()
 
-module.exports = theaterStudioInstance
+module.exports = {
+  studio: theaterStudioInstance,
+  Root: TheaterJSRoot,
+}

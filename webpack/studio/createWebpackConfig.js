@@ -33,7 +33,7 @@ module.exports = (options: Options) => {
     output: {
       path: bundlesDir,
       libraryTarget: 'umd',
-      library: 'TheaterStudio',
+      library: 'TheaterJS',
       publicPath: '/',
       filename: '[name].js',
       sourceMapFilename: '[file].map.js',

@@ -5,7 +5,7 @@ import css from './SamplePlayground.css'
 
 const SamplePlayground = () => {
   return (
-    <div className={css.container}></div>
+    <div className={css.container}>example playground here</div>
   )
 }
 
