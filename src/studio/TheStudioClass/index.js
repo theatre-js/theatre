@@ -1,5 +1,5 @@
 // @flow
-import React from 'react'
+import * as React from 'react'
 import {render} from 'react-dom'
 import StudioRootComponent from './components/StudioRootComponent'
 import configureStore from './configureStore'

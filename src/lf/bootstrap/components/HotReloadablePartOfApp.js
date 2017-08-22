@@ -1,6 +1,6 @@
 // @flow
 import RootRoutes from './RootRoutes'
-import React from 'react'
+import * as React from 'react'
 
 /**
  * Hack to enable hot-reloading the components higher up the component tree

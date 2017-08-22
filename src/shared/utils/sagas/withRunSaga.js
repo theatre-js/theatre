@@ -1,5 +1,5 @@
 // @flow
-import React from 'react'
+import * as React from 'react'
 import hoistNonReactStatics from 'hoist-non-react-statics'
 import type {HigherOrderComponent} from 'react-flow-types'
 import {PropTypes} from 'prop-types'

@@ -5,7 +5,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "flow-typed:install": "flow-typed install --flowVersion=0.51.0",
+    "flow-typed:install": "flow-typed install --flowVersion=0.53.0",
     "lint": "eslint ./src",
     "flow": "flow",
     "test": "jest",
@@ -15,7 +15,9 @@
     "lb:run": "electron ./bundles/lb/index.js",
     "lf:webpack:dev": "webpack-dev-server --progress --config webpack/lf/development.babel.js",
     "studio:webpack:dev": "webpack-dev-server --progress --config webpack/studio/development.babel.js",
-    "build:dev": "npm-run-all --parallel lb:webpack:dev lf:webpack:dev studio:webpack:dev"
+    "examples:webpack:dev": "webpack-dev-server --progress --config webpack/examples/development.babel.js",
+    "build:dev": "npm-run-all --parallel lb:webpack:dev lf:webpack:dev studio:webpack:dev examples:webpack:dev",
+    "open-examples": "opn http://localhost:9092/examples"
   },
   "jest": {
     "moduleNameMapper": {
@@ -39,6 +41,7 @@
   "license": "Proprietary",
   "devDependencies": {
     "autoprefixer": "^7.1.2",
+    "babel-core": "^6.25.0",
     "babel-eslint": "^7.2.3",
     "babel-loader": "^7.1.1",
     "babel-preset-env": "^1.6.0",
@@ -58,6 +61,8 @@
     "eslint-plugin-react": "^7.1.0",
     "exec-loader": "^3.0.0",
     "file-loader": "^0.11.2",
+    "flow-bin": "^0.53.0",
+    "flow-typed": "^2.1.5",
     "fs-extra": "^4.0.0",
     "html-webpack-plugin": "^2.29.0",
     "husky": "^0.14.3",
@@ -65,6 +70,7 @@
     "lodash": "^4.17.4",
     "mock-fs": "^4.4.1",
     "npm-run-all": "^4.0.2",
+    "opn-cli": "^3.1.0",
     "postcss": "^6.0.8",
     "postcss-hexrgba": "^1.0.0",
     "postcss-loader": "^2.0.6",
@@ -78,7 +84,10 @@
     "react-redux": "^5.0.5",
     "react-router-dom": "^4.1.2",
     "recompose": "^0.24.0",
+    "redux": "^3.7.2",
     "redux-actions": "^2.2.1",
+    "redux-saga": "^0.15.5",
+    "socket.io": "^2.0.3",
     "style-loader": "^0.18.2",
     "svg-inline-loader": "^0.8.0",
     "url-loader": "^0.5.9",
@@ -86,12 +95,6 @@
     "webpack": "^3.4.1",
     "webpack-dev-server": "^2.6.1",
     "webpack-notifier": "^1.5.0",
-    "when": "^3.7.8",
-    "babel-core": "^6.25.0",
-    "flow-bin": "^0.51.0",
-    "flow-typed": "^2.1.5",
-    "redux": "^3.7.2",
-    "redux-saga": "^0.15.5",
-    "socket.io": "^2.0.3"
+    "when": "^3.7.8"
   }
 }

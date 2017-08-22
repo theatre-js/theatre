@@ -1,8 +1,7 @@
 // @flow
 import WebpackNotifierPlugin from 'webpack-notifier'
-import HtmlWebpackPlugin from 'html-webpack-plugin'
 import CleanPlugin from 'clean-webpack-plugin'
-import {context, aliases} from '../commons'
+import {context} from '../commons'
 import webpack from 'webpack'
 import path from 'path'
 
@@ -10,41 +9,29 @@ type Options = {
   env: 'development' | 'production',
 }
 
-const bundlesDir = path.join(context, './bundles/studio')
+const bundlesDir = path.join(context, './bundles/examples')
 
 module.exports = (options: Options) => {
   const isDev = options.env === 'development'
-
-  // Don't let this global bother you. It's just a hack to make $root/webpack/env/dotEnvFile.js work
-  // both inside a webpack bundle and outside. And that is the only place this global is used.
-  global.$$$NODE_ENV = options.env
 
   // $FlowIgnore
   const envConfig = require(path.join(context, `${options.env}.env.json`))
 
   const config: Object = {
     context: context,
-    // target: '',
     devtool: isDev ? 'source-map' : 'source-map',
     entry: {
-      index: isDev ? ['react-hot-loader/patch', './src/studio/index.js'] : ['./src/studio/index.js'],
+      index: isDev ? ['react-hot-loader/patch', './examples/index.js'] : ['./examples/index.js'],
     },
-    // externals: ['electron'],
     output: {
       path: bundlesDir,
-      libraryTarget: 'umd',
-      library: 'TheaterJS',
       publicPath: '/',
       filename: '[name].js',
       sourceMapFilename: '[file].map.js',
     },
-    resolve: {
-      // fallback: path.join(context, 'node_modules'),
-      alias: aliases,
-    },
     module: {
       rules: [
-        {test: /\.js$/, use: {loader: `babel-loader`, options: {forceEnv: `studio:${options.env}`}}, exclude: /node_modules/},
+        {test: /\.js$/, use: {loader: `babel-loader`, options: {forceEnv: options.env}}, exclude: /node_modules/},
         {
           test: /\.css$/,
           use: [
@@ -70,7 +57,7 @@ module.exports = (options: Options) => {
               },
             },
           ],
-          include: path.join(context, 'src'),
+          exclude: /node_modules/,
         },
         {test: /\.svg$/, use: 'svg-inline-loader'},
         {test: /\.(png|jpg|jpeg|gif)$/, use: [{loader: 'url-loader', options: {'prefix': 'img/', limit: 5000}}]},
@@ -79,16 +66,7 @@ module.exports = (options: Options) => {
     plugins: [
       new CleanPlugin([bundlesDir], {root: context}),
       new webpack.DefinePlugin({
-        // This is only used inside `$root/webpack/env/index.js` and there it is
-        // mirrored in process.env.NODE_ENV. So read this value from process.env.NODE_ENV.
-        '$$$NODE_ENV': JSON.stringify(options.env),
-      }),
-      new webpack.ProvidePlugin({
-        'process.env': '$root/webpack/env/index.js',
-      }),
-      new HtmlWebpackPlugin({
-        inject: 'body',
-        template: 'src/studio/index.html',
+        'process.env.NODE_ENV': JSON.stringify(options.env),
       }),
     ],
   }
@@ -118,7 +96,7 @@ module.exports = (options: Options) => {
       noInfo: true,
       quiet: true,
       stats: false,
-      port: envConfig.devSpecific.studio.devServerPort,
+      port: envConfig.devSpecific.examples.devServerPort,
     }
   }
 

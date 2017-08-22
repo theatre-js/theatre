@@ -29,6 +29,9 @@ type DevSpecificEnvironmentVariables = {
     studio: {
       devServerPort: number,
     },
+    examples: {
+      devServerPort: number,
+    },
   },
 }
 
