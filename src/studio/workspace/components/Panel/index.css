@@ -4,6 +4,7 @@
   padding: 20px;
   box-sizing: border-box;
   font-family: 'Montserrat', sans-serif;
+  box-shadow: 0 0px 15px 1px #222;
 }
 
 .topBar {

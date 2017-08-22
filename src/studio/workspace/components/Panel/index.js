@@ -1,75 +1,69 @@
 // @flow
 import React from 'react'
-import css from './Panel.css'
+import css from './index.css'
 import Settings from './Settings'
+import compose from 'ramda/src/compose'
+import {connect} from 'react-redux'
+import {withRunSaga, type WithRunSagaProps} from '$shared/utils'
+import {type StoreState} from '$studio/types'
+import {type XY} from '$studio/workspace/types'
+import {getPanelById} from '$studio/workspace/selectors'
+import {setPanelPosition, setPanelSize} from '$studio/workspace/sagas'
 import _ from 'lodash'
 
-type Props = {
+type OwnProps = {
   children: any,
+  panelId: string,
 }
 
-type XY = {x: number, y: number}
-type Boundary = {xlow: number, xhigh: number, ylow: number, yhigh: number}
-
-type State = {
-  isInSettings: boolean,
+type Props = WithRunSagaProps & OwnProps & {
   pos: XY,
   dim: XY,
+}
+
+type Boundary = {xlow: number, xhigh: number, ylow: number, yhigh: number}
+
+type PanelPlacementSettings = {
   move: XY,
   resize: XY,
   moveBoundaries: Boundary,
   resizeBoundaries: Boundary,
 }
 
+type State = PanelPlacementSettings & {
+  isInSettings: boolean,
+}
+
 class Panel extends React.Component {
   props: Props
   state: State
 
+  static getZeroXY() {
+    return {x: 0, y: 0}
+  }
+
   constructor(props: Props) {
     super(props)
-    
-    const initialPos = {x: 10, y: 10}
-    const initialDim = {x: 30, y: 30}
-    const initialBoundaries = this.calculatePanelBoundaries(initialPos, initialDim)
+
     this.state = {
       isInSettings: false,
-      pos: initialPos,
-      dim: initialDim,
-      move: {x: 0, y: 0},
-      resize: {x: 0, y: 0},
-      ...initialBoundaries,
+      ...this.getPanelPlacementSettings(props.pos, props.dim),
     }
   }
 
-  toggleSettings = () => {
-    this.setState((state) => ({isInSettings: !state.isInSettings}))
+  componentWillReceiveProps(nextProps) {
+    const {pos, dim} = nextProps
+    if (pos !== this.props.pos || dim !== this.props.dim) {
+      this.setState(() => (this.getPanelPlacementSettings(pos, dim)))
+    }
   }
 
-  movePanel = (dx: number, dy: number) => {
-    this.setState((state) => {
-      const {moveBoundaries: {xlow, xhigh, ylow, yhigh}} = state
-      return {
-        move: {
-          x: _.clamp(dx, xlow, xhigh),
-          y: _.clamp(dy, ylow, yhigh),
-        }}
-    })
-  }
-
-  setPanelPosition = () => {
-    this.setState((state) => {
-      const {pos, dim, move} = state
-      const newPos = {
-        x: pos.x + move.x / window.innerWidth * 100,
-        y: pos.y + move.y / window.innerHeight * 100,
-      }
-      const newBoundaries = this.calculatePanelBoundaries(newPos, dim)
-      return {
-        pos: newPos,
-        move: {x: 0, y: 0},
-        ...newBoundaries,
-      }
-    })
+  getPanelPlacementSettings(pos: XY, dim: XY) {
+    return {
+      move: Panel.getZeroXY(),
+      resize: Panel.getZeroXY(),
+      ...this.calculatePanelBoundaries(pos, dim),
+    }
   }
 
   calculatePanelBoundaries(pos: XY, dim: XY): {moveBoundaries: Boundary, resizeBoundaries: Boundary}
@@ -92,6 +86,31 @@ class Panel extends React.Component {
     }
   }
 
+  toggleSettings = () => {
+    this.setState((state) => ({isInSettings: !state.isInSettings}))
+  }
+
+  movePanel = (dx: number, dy: number) => {
+    this.setState((state) => {
+      const {moveBoundaries: {xlow, xhigh, ylow, yhigh}} = state
+      return {
+        move: {
+          x: _.clamp(dx, xlow, xhigh),
+          y: _.clamp(dy, ylow, yhigh),
+        }}
+    })
+  }
+
+  setPanelPosition = () => {
+    const {pos, panelId} = this.props
+    const {move} = this.state
+    const newPos = {
+      x: pos.x + move.x / window.innerWidth * 100,
+      y: pos.y + move.y / window.innerHeight * 100,
+    }
+    this.props.runSaga(setPanelPosition, panelId, newPos)
+  }
+
   resizePanel = (dx: number, dy: number) => {
     this.setState((state) => {
       const {resizeBoundaries: {xlow, xhigh, ylow, yhigh}} = state
@@ -105,24 +124,18 @@ class Panel extends React.Component {
   }
 
   setPanelSize = () => {
-    this.setState((state) => {
-      const {pos, dim, resize} = state
-      const newDim = {
-        x: dim.x + resize.x,
-        y: dim.y + resize.y,
-      }
-      const newBoundaries = this.calculatePanelBoundaries(pos, newDim)
-      return {
-        dim: newDim,
-        resize: {x: 0, y: 0},
-        ...newBoundaries,
-      }
-    })
+    const {dim, panelId} = this.props
+    const {resize} = this.state
+    const newDim = {
+      x: dim.x + resize.x,
+      y: dim.y + resize.y,
+    }
+    this.props.runSaga(setPanelSize, panelId, newDim)
   }
 
   render() {
-    const {children} = this.props
-    const {isInSettings, pos, dim, move, resize} = this.state
+    const {children, pos, dim} = this.props
+    const {isInSettings, move, resize} = this.state
     const style = {
       left: `${pos.x}%`,
       top: `${pos.y}%`,
@@ -156,4 +169,9 @@ class Panel extends React.Component {
   }
 }
 
-export default Panel
+export default compose(
+  connect(
+    (state: StoreState, ownProps: OwnProps) => ({...getPanelById(state, ownProps.panelId)})
+  ),
+  withRunSaga(),
+)(Panel)

@@ -42,7 +42,7 @@ class DraggableArea extends React.Component {
   }
 
   dragStartHandler = (e: SyntheticMouseEvent) => {
-    if (this.state.isDragging) return
+    if (e.button !== 0 || this.state.isDragging) return
 
     const {screenX, screenY} = e
     this.setState(() => ({
