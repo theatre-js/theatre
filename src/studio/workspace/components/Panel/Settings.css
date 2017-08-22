@@ -13,8 +13,8 @@
 
 .resizeHandler {
   position: absolute;
-  right: 0;
-  bottom: 0;
+  right: -2px;
+  bottom: -2px;
   width: 15px;
   height: 15px;
   background: #555;

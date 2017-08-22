@@ -170,7 +170,6 @@ class ProjectsPage extends React.Component<Props, State> {
 }
 
 export default compose(
-  withRunSaga(),
   connect(
     (state: StoreState) => {
       return {
