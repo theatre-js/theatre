@@ -4,9 +4,12 @@ import compose from 'ramda/src/compose'
 // import projectsRoutes from '$studio/projects/routes'
 import LoadingUnlessBootstrapped from './LoadingUnlessBootstrapped'
 import {MemoryRouter as Router, Route, Switch, Redirect} from 'react-router-dom'
+import TheUI from '$studio/workspace/components/TheUI'
 
-const mainRoutes = []
-
+const mainRoutes = [
+  <Route key="/" path="/" component={TheUI} />,
+]
+    
 const routes =
   [
     ...mainRoutes,
