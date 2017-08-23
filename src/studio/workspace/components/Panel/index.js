@@ -6,37 +6,38 @@ import compose from 'ramda/src/compose'
 import {connect} from 'react-redux'
 import {withRunSaga, type WithRunSagaProps} from '$shared/utils'
 import {type StoreState} from '$studio/types'
-import {type XY} from '$studio/workspace/types'
+import {type XY, type PanelPlacementSettings, type PanelType, type PanelConfiguration} from '$studio/workspace/types'
 import {getPanelById} from '$studio/workspace/selectors'
 import {setPanelPosition, setPanelSize} from '$studio/workspace/sagas'
+import panelTypes from '$studio/workspace/panelTypes'
 import _ from 'lodash'
 
 type OwnProps = {
-  children: any,
   panelId: string,
 }
 
-type Props = WithRunSagaProps & OwnProps & {
-  pos: XY,
-  dim: XY,
+type Props = WithRunSagaProps & OwnProps & PanelPlacementSettings & {
+  type: PanelType,
+  configuration: PanelConfiguration,
 }
 
 type Boundary = {xlow: number, xhigh: number, ylow: number, yhigh: number}
 
-type PanelPlacementSettings = {
+type PanelPlacementState = {
   move: XY,
   resize: XY,
   moveBoundaries: Boundary,
   resizeBoundaries: Boundary,
 }
 
-type State = PanelPlacementSettings & {
+type State = PanelPlacementState & {
   isInSettings: boolean,
 }
 
 class Panel extends React.Component {
   props: Props
   state: State
+  ContentElement: $FlowFixMe
 
   static getZeroXY() {
     return {x: 0, y: 0}
@@ -45,6 +46,7 @@ class Panel extends React.Component {
   constructor(props: Props) {
     super(props)
 
+    this.ContentElement = panelTypes[props.type].requireFn()
     this.state = {
       isInSettings: false,
       ...this.getPanelPlacementSettings(props.pos, props.dim),
@@ -134,7 +136,7 @@ class Panel extends React.Component {
   }
 
   render() {
-    const {children, pos, dim} = this.props
+    const {pos, dim, configuration} = this.props
     const {isInSettings, move, resize} = this.state
     const style = {
       left: `${pos.x}%`,
@@ -162,7 +164,7 @@ class Panel extends React.Component {
               onPanelResize={this.resizePanel}
               onPanelResizeEnd={this.setPanelSize}/>
             :
-            children}
+            <this.ContentElement {...configuration} />}
         </div>
       </div>
     )
@@ -171,7 +173,14 @@ class Panel extends React.Component {
 
 export default compose(
   connect(
-    (state: StoreState, ownProps: OwnProps) => ({...getPanelById(state, ownProps.panelId)})
+    (state: StoreState, ownProps: OwnProps) => {
+      const {type, configuration, placementSettings} = getPanelById(state, ownProps.panelId)
+      return {
+        type,
+        configuration,
+        ...placementSettings,
+      }
+    }
   ),
   withRunSaga(),
 )(Panel)

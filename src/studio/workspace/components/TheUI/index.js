@@ -15,11 +15,7 @@ const TheUI = (props: Props) => {
     <div>
       {
         props.visiblePanels.map((panelId) => (
-          <Panel
-            key={panelId}
-            panelId={panelId} >
-            {panelId}
-          </Panel>
+          <Panel key={panelId} panelId={panelId} />
         ))
       }
     </div>
