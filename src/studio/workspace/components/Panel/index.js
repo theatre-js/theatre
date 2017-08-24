@@ -19,6 +19,7 @@ type OwnProps = {
 type Props = WithRunSagaProps & OwnProps & PanelPlacementSettings & {
   type: PanelType,
   configuration: PanelConfiguration,
+  notInitializedYet?: boolean,
 }
 
 type Boundary = {xlow: number, xhigh: number, ylow: number, yhigh: number}
@@ -48,7 +49,7 @@ class Panel extends React.Component {
 
     this.ContentElement = panelTypes[props.type].requireFn()
     this.state = {
-      isInSettings: false,
+      isInSettings: (props.notInitializedYet != null) ? true : false,
       ...this.getPanelPlacementSettings(props.pos, props.dim),
     }
   }
@@ -152,7 +153,7 @@ class Panel extends React.Component {
           <div
             className={css.settings}
             onClick={this.toggleSettings}>
-            {isInSettings ? 'Confirm Settings' : 'Show Settings'}
+            {isInSettings ? 'Show Content' : 'Show Settings'}
           </div>
         </div>
         <div className={css.content}>
@@ -174,11 +175,12 @@ class Panel extends React.Component {
 export default compose(
   connect(
     (state: StoreState, ownProps: OwnProps) => {
-      const {type, configuration, placementSettings} = getPanelById(state, ownProps.panelId)
+      const {type, configuration, placementSettings, notInitializedYet} = getPanelById(state, ownProps.panelId)
       return {
         type,
         configuration,
         ...placementSettings,
+        notInitializedYet,
       }
     }
   ),

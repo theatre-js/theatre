@@ -43,9 +43,13 @@ class TheUI extends React.Component {
   }
 
   createNewPanel = (type: string, defaultConfig: $FlowFixMe) => {
-    const defaultPlacement = TheUI.getDefaultPanelPlacement()
+    const panelProperties = {
+      type,
+      configuration: defaultConfig,
+      placementSettings: TheUI.getDefaultPanelPlacement(),
+    }
     this.setState(() => ({isCreatingNewPanel: false}))
-    this.props.runSaga(createPanel, {type, defaultConfig, defaultPlacement})
+    this.props.runSaga(createPanel, panelProperties)
   }
 
   render() {

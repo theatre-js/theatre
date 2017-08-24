@@ -1,10 +1,16 @@
 // @flow
 import React from 'react' 
 
-const ElementInspector = (props: Object) => {
-  console.log(props)
+export const componentConfig = {
+  name: {
+    value: 'Element Inspector',
+    type: 'text',
+  },
+}
+
+const ElementInspector = (props: $FlowFixMe) => {
   return (
-    <div>element inspector here!</div>
+    <div>{props.name.value}</div>
   )
 }
 

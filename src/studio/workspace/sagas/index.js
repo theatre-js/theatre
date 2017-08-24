@@ -1,24 +1,25 @@
 // @flow
-import {
-  type PanelId,
-  type XY,
-  type PanelType,
-  type PanelPlacementSettings,
-  type PanelProperties} from '$studio/workspace/types'
+import {type PanelId, type XY, type PanelProps} from '$studio/workspace/types'
 import {reduceState} from '$shared/utils'
 import generateUniqueId from 'uuid/v4'
 
-export function* createPanel(params: {type: PanelType, defaultConfig: $FlowFixMe, defaultPlacement: PanelPlacementSettings}): Generator<*, void, *> {
+export function* createPanel(params: PanelProps): Generator<*, PanelId, *> {
   const id = generateUniqueId()
-  const panelProperties: PanelProperties = {
+  const panelProperties = {
     id,
-    type: params.type,
-    configuration: params.defaultConfig,
-    placementSettings: params.defaultPlacement,
+    ...params,
+    notInitializedYet: true,
   }
-
   yield reduceState(['workspace', 'panels', 'byId', id], () => panelProperties)
   yield reduceState(['workspace', 'panels', 'listOfVisibles'], (value) => value.concat(id))
+  return id
+}
+
+export function* initializePanel(panelId: PanelId): Generator<*, void, *> {
+  yield reduceState(['workspace', 'panels', 'byId', panelId], (value) => {
+    const {notInitializedYet, ...initializedPanel} = value
+    return initializedPanel
+  })
 }
 
 export function* setPanelPosition(panelId: PanelId, pos: XY): Generator<*, void, *> {

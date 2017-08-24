@@ -1,10 +1,16 @@
 // @flow
 import React from 'react'
 
-const ElementTree = (props: Object) => {
-  console.log(props)
+export const componentConfig = {
+  name: {
+    value: 'Tree of Elements',
+    type: 'text',
+  },
+}
+
+const ElementTree = (props: $FlowFixMe) => {
   return (
-    <div>element tree here!</div>
+    <div>{props.name.value}</div>
   )
 }
 
