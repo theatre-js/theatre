@@ -116,6 +116,7 @@ module.exports = (options: Options) => {
       historyApiFallback: true,
       inline: true,
       clientLogLevel: 'error',
+      public: 'localhost:9091',
       noInfo: false,
       quiet: false,
       stats: false,

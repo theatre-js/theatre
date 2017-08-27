@@ -19,5 +19,5 @@ export type Panels = {
 
 export type WorkspaceNamespaceState = {
   panels: Panels,
-  currentCanvasCommponentID: ?ComponentID,
+  componentIDToBeRenderedAsCurrentCanvas: ?ComponentID,
 }

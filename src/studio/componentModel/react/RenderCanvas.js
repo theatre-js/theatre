@@ -1,26 +1,34 @@
 // @flow
 import * as React from 'react'
 import compose from 'ramda/src/compose'
-import {connect} from '$studio/common/utils'
 import {type ComponentID} from '$studio/componentModel/types'
-import createReactElement from '$studio/componentModel/utils/createReactElement'
+import componentInstantiationDescriptorToReactNode from './componentInstantiationDescriptorToReactNode'
+import ReactiveComponent from './ReactiveComponent'
+import {withStudio, withSubscriptions, type WithStudioProps} from '$studio/utils'
 
-type Props = {
+type Props = WithStudioProps & {
   children: React.Node,
-  currentCanvasCommponentID: ?ComponentID,
+  componentIDToBeRenderedAsCurrentCanvas: ?ComponentID,
 }
 
 const RenderCanvas = (props: Props) => {
-  const currentCanvasCommponentID =
-    props.currentCanvasCommponentID || 'PassThroughCanvas'
+  const componentIDToBeRenderedAsCurrentCanvas =
+    props.componentIDToBeRenderedAsCurrentCanvas || 'PassThroughCanvas'
 
-  return createReactElement(currentCanvasCommponentID, {children: props.children})
+  return componentInstantiationDescriptorToReactNode({
+    componentID: componentIDToBeRenderedAsCurrentCanvas,
+    props: {children: props.children},
+  })
 }
 
 export default compose(
-  connect((appState) => {
-    return {
-      currentCanvasCommponentID: appState.workspace.currentCanvasCommponentID,
-    }
+  withSubscriptions(({studio}: Props): any => {
+    return {}
   }),
+  withStudio,
+  // connect((appState) => {
+  //   return {
+  //     componentIDToBeRenderedAsCurrentCanvas: appState.workspace.componentIDToBeRenderedAsCurrentCanvas,
+  //   }
+  // }),
 )(RenderCanvas)

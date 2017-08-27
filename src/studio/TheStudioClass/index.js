@@ -2,18 +2,21 @@
 import * as React from 'react'
 import {render} from 'react-dom'
 import StudioRootComponent from './components/StudioRootComponent'
-import configureStore from './configureStore'
 import LBCommunicator from './LBCommunicator'
-import StandardStore from '$lb/bootstrap/StandardStore'
+import initialState from './initialState'
+import DataVerse from '$shared/DataVerse'
+import {runSaga} from 'redux-saga'
+import rootSaga from './rootSaga'
 
 export default class TheStudioClass {
-  _store: StandardStore<*, *>
+  atom: *
   _lbCommunicator: *
 
   constructor() {
-    this._store = configureStore()
+    this.atom = DataVerse.fromJS(initialState)
     this._lbCommunicator = new LBCommunicator({
-      backendUrl: `${window.location.protocol}//${window.location.hostname}:${process.env.studio.socketPort}`})
+      backendUrl: `${window.location.protocol}//${window.location.hostname}:${process.env.studio.socketPort}`,
+    })
   }
 
   run() {
@@ -22,7 +25,20 @@ export default class TheStudioClass {
     //     console.log(res)
     //   })
     // })
-    this._store.runRootSaga()
+    runSaga(
+      // $FlowFixMe
+      {
+        subscribe(): Function {
+          return () => {}
+        },
+        dispatch() {},
+        getState() {},
+      },
+      rootSaga,
+      // $FlowFixMe
+      this,
+    )
+
     this._mountElement()
   }
 
@@ -37,6 +53,6 @@ export default class TheStudioClass {
       throw new Error(`Where is the <body> tag?`)
     }
 
-    render(<StudioRootComponent store={this._store} />, rootEl)
+    render(<StudioRootComponent studio={this} />, rootEl)
   }
 }
