@@ -1,5 +1,4 @@
-// @flow
-import React from 'react'
+import * as React from 'react'
 import css from './Settings.css'
 import DraggableArea from '$studio/common/components/DraggableArea'
 

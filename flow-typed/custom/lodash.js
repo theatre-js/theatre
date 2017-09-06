@@ -21,3 +21,13 @@ declare module 'lodash/forEachRight' {
     (<ValueType, KeyType, Iteratee: _Iteratee<ValueType, KeyType>>(collection: Array<ValueType>, iteratee: ?Iteratee) => Array<ValueType>)
   )
 }
+
+// declare module 'lodash/forEach' {
+//   declare type ForEachObjectFn =
+//     <O: {}, K: $Keys<O>, V: $ElementType<O, K>, FN: (v: V, k: K) => ?false>(obj: O, fn: FN) => void;
+
+//   declare type ForEachArrayFn =
+//     <V, A: Array<V>, FN: (v: V, i: number) => ?false>(array: A, fn: FN) => void;
+
+//   declare module.exports: ForEachObjectFn & ForEachArrayFn
+// }

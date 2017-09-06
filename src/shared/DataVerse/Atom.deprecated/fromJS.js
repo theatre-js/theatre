@@ -1,6 +1,6 @@
 // @flow
 import isPlainObject from 'lodash/isPlainObject'
-type Atom = $FlowFixMe
+type Atom = $FixMe
 
 export const fromJS = (jsValue: mixed): Atom => {
   if (Array.isArray(jsValue)) {

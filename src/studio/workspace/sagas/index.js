@@ -1,4 +1,3 @@
-// @flow
 import {type PanelId, type XY} from '$studio/workspace/types'
 import {reduceState} from '$shared/utils'
 

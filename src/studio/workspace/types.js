@@ -1,23 +1,24 @@
 // @flow
 import {type ComponentID} from '$studio/componentModel/types'
+import * as D from '$shared/DataVerse'
 
 export type PanelId = string
 
-export type XY = {x: number, y: number}
+export type XY = D.MapOfReferences<{x: D.Reference<number>, y: D.Reference<number>}>
 
-export type PanelSettings = {
+export type PanelSettings = D.MapOfReferences<{
   pos: XY,
   dim: XY,
-}
+}>
 
-export type visiblePanelsList = Array<string>
+export type visiblePanelsList = D.ArrayOfReferences<D.Reference<PanelId>>
 
-export type Panels = {
-  byId: {[id: PanelId]: PanelSettings},
+export type Panels = D.MapOfReferences<{
+  byId: D.MapOfReferences<{[key: PanelId]: PanelSettings}>,
   listOfVisibles: visiblePanelsList,
-}
+}>
 
-export type WorkspaceNamespaceState = {
+export type WorkspaceNamespaceState = D.MapOfReferences<{
   panels: Panels,
-  componentIDToBeRenderedAsCurrentCanvas: ?ComponentID,
-}
+  componentIDToBeRenderedAsCurrentCanvas: D.Reference<?ComponentID>,
+}>

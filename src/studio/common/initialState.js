@@ -1,7 +1,7 @@
 // @flow
 import {type CommonNamespaceState} from './types'
 
-const initialState: CommonNamespaceState = {
+const initialState = {
   temp: {
     bootstrapped: false,
   },

@@ -1,4 +1,4 @@
-// @flow
+
 import {type Selector} from '$studio/types'
 import {type visiblePanelsList, type PanelSettings} from '$studio/workspace/types'
 

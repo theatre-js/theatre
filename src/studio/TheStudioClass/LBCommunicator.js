@@ -6,7 +6,7 @@ type Options = {
   backendUrl: string,
 }
 
-type Socket = $FlowFixMe
+type Socket = $FixMe
 
 export default class LBCommunicator {
   options: Options

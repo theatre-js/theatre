@@ -1,5 +1,5 @@
-// @flow
-import React from 'react'
+
+import * as React from 'react'
 import css from './index.css'
 import Settings from './Settings'
 import compose from 'ramda/src/compose'

@@ -1,8 +1,9 @@
 // @flow
+import {type ComponentDescriptor} from '$studio/componentModel/types'
 
-const PassThroughCanvas = {
-  componentID: 'PassThroughCanvas',
-  type: 'AliasForAnotherComponent',
+const PassThroughCanvas: ComponentDescriptor = {
+  componentID: 'TheaterJS/Core/PassThroughCanvas',
+  componentType: 'Alias',
   aliasedComponentID: 'TheaterJS/Core/PassThroughComponent',
 }
 

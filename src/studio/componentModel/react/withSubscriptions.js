@@ -4,9 +4,9 @@ import * as React from 'react'
 
 type Subscription = () => void
 
-const withSubscriptions = (getSubscriptions: (p: {}) => Array<Subscription>): $IntentionalAny => (OriginalComponent: React.ComponentType<*>): $FlowFixMe => {
+const withSubscriptions = (getSubscriptions: (p: {}) => Array<Subscription>): $IntentionalAny => (OriginalComponent: React.ComponentType<*>): $FixMe => {
   class FinalComponent extends React.PureComponent<any> {
-    // $FlowFixMe
+    // $FixMe
     static displayName = `withSubscriptions(${OriginalComponent.displayName || OriginalComponent.name || 'Component'})`
     _subscriptions: Array<Subscription>
     _getSubscriptions: typeof getSubscriptions

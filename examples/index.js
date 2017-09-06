@@ -5,6 +5,6 @@
 
 import React from 'react'
 import {render} from 'react-dom'
-import App from './SampleApp'
+import SampleApp from './SampleApp'
 
-render(<App />, document.getElementById('root'))
+render(<SampleApp />, document.getElementById('root'))

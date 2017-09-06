@@ -3,8 +3,8 @@ import * as React from 'react'
 // import RenderCanvas from './RenderCanvas'
 import TheStudioClass from '$studio/TheStudioClass'
 import {provideTheaterJSStudio} from './studioContext'
-import TheaterJSComponent from './TheaterJSComponent'
-import DataVerse from '$shared/DataVerse'
+// import Elementify from './Elementify'
+import * as D from '$shared/DataVerse'
 import {type ComponentInstantiationDescriptor} from '$studio/componentModel/types'
 
 type Props = {
@@ -12,15 +12,28 @@ type Props = {
 }
 
 const createRootComponentForReact = (studio: TheStudioClass) => {
-  const TheaterJSRoot = (props: Props) => {
-    const descriptor: ComponentInstantiationDescriptor = {
-      componentID: 'TheaterJS/RenderCurrentCanvas',
-      props: {
-        children: props.children,
-      },
+  class TheaterJSRoot extends React.PureComponent<Props, {descriptor: *}> {
+    constructor(props: Props) {
+      super(props)
+
+      this.state = {descriptor: new D.MapOfReferences({
+        componentID: new D.Reference('TheaterJS/RenderCurrentCanvas'),
+        props: new D.MapOfReferences({
+          children: new D.Reference(props.children),
+        }),
+      })};
+
+      // (this.state: ComponentInstantiationDescriptor)
     }
 
-    return <TheaterJSComponent descriptor={DataVerse.fromJS(descriptor)} />
+    componentWillReceiveProps(props) {
+      this.state.descriptor.get('props').get('children').set(props.children)
+    }
+
+    render() {
+      return <div>{this.props.children}</div>
+      // return <Elementify descriptor={this.state.descriptor} />
+    }
   }
 
   return provideTheaterJSStudio(studio)(TheaterJSRoot)

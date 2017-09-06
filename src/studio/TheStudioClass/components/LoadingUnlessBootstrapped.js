@@ -1,4 +1,4 @@
-// @flow
+
 // This will be some sort of loading indicator to show before the studio is ready to function
 import * as React from 'react'
 import compose from 'ramda/src/compose'

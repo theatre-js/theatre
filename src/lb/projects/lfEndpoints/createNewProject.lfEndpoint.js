@@ -25,7 +25,7 @@ export default function* createNewProject(params: {folderPath: string, name: str
   }
 
   const filePath = path.join(params.folderPath, 'theaterjs.json')
-  const state: StoreState = (yield select(): $FlowFixMe)
+  const state: StoreState = (yield select(): $FixMe)
 
   if (state.projects.listOfPaths.indexOf(filePath) !== -1) {
     return {type: 'error', errorType: 'projectAlreadyRecognised'}

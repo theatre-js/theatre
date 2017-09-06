@@ -1,9 +1,9 @@
 // @flow
 import {type Channel, eventChannel, END} from 'redux-saga'
 
-export type Socket = $FlowFixMe
-export type SocketServer = $FlowFixMe
-export type ServerEvent = {type: 'connection', socket: Socket} | {type: 'error', error: $FlowFixMe}
+export type Socket = $FixMe
+export type SocketServer = $FixMe
+export type ServerEvent = {type: 'connection', socket: Socket} | {type: 'error', error: $FixMe}
 
 export const getChannelFromSocketServer = (server: SocketServer): Channel => {
   return eventChannel((emitToChannel) => {
@@ -22,11 +22,11 @@ export const getChannelFromSocketServer = (server: SocketServer): Channel => {
   })
 }
 
-export type SocketHandshake = $FlowFixMe
+export type SocketHandshake = $FixMe
 export type Request = {handshake: SocketHandshake, type: 'request', endpoint: string, payload: mixed, respond: (payload: mixed) => void}
 
 export type SocketEvent =
-  {handshake: SocketHandshake, type: 'error', error: $FlowFixMe} |
+  {handshake: SocketHandshake, type: 'error', error: $FixMe} |
   Request
 
 export type ResponseToSocketRequest =

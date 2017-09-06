@@ -29,7 +29,7 @@ module.name_mapper='^exec-loader!\(.*\)$' -> '\1'
 ;; a different emaning:
 
 ; Signals a TODO to fix the type error
-suppress_comment= \\(.\\|\n\\)*\\$FlowFixMe
+suppress_comment= \\(.\\|\n\\)*\\$FixMe
 ; Signals a bug error that's caused by flow's own bugs
 suppress_comment= \\(.\\|\n\\)*\\$BugOfFlowItself
 ; Signals a type error that wer're sure we can ignore and won't need to fix later
@@ -39,7 +39,7 @@ suppress_comment= \\(.\\|\n\\)*\\$FlowExpectError
 
 ;; We avoid using `any`, and instead use these more descriptive aliases for it:
 ; Signals a TODO to come up with a more precise annotation
-suppress_type=$FlowFixMe
+suppress_type=$FixMe
 ; Siagnals an `any` type that we won't need to refine latera
 suppress_type=$IntentionalAny
 ; Siagnals an `any` type where we don't care about type correctness (obvs should be used sparingly)

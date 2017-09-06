@@ -42,7 +42,7 @@ export default function withRunSaga(): HigherOrderComponent<{}, {runSaga: RunSag
   return function connectedToSagas(component: any): any {
     const finalComponent = (props: Object, {store}: {store: {runSaga: Function}}) => {
       const ownProps = {
-        // $FlowFixMe
+        // $FixMe
         runSaga: (fn, ...args) => store.sagaMiddleware.run(preventToThrow(fn), ...args).done,
       }
       return React.createElement(component, {...props, ...ownProps})

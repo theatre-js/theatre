@@ -29,7 +29,7 @@ class SingleInputForm extends React.Component<Props> {
   render() {
     return (
       <input
-        // $FlowFixMe
+        // $FixMe
         ref={(input) => {this.input = input}}
         placeholder={this.props.placeholder}
         onKeyDown={this.handleKeyDown}
