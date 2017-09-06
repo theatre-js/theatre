@@ -11,23 +11,32 @@ type Props = {
   children: React.Node,
 }
 
+type State = {
+  childInstantiationDescriptor: D.ReferencifyDeepObject<{
+    componentID: 'TheaterJS/RenderCurrentCanvas',
+    props: {
+      children: D.Reference<React.Node>,
+    },
+  }>,
+}
+
+
+
 const createRootComponentForReact = (studio: TheStudioClass) => {
-  class TheaterJSRoot extends React.PureComponent<Props, {descriptor: *}> {
+  class TheaterJSRoot extends React.PureComponent<Props, State> {
     constructor(props: Props) {
       super(props)
 
-      this.state = {descriptor: new D.MapOfReferences({
-        componentID: new D.Reference('TheaterJS/RenderCurrentCanvas'),
-        props: new D.MapOfReferences({
+      this.state = {childInstantiationDescriptor: D.referencifyDeep({
+        componentID: 'TheaterJS/RenderCurrentCanvas',
+        props: {
           children: new D.Reference(props.children),
-        }),
-      })};
-
-      // (this.state: ComponentInstantiationDescriptor)
+        },
+      })}
     }
 
     componentWillReceiveProps(props) {
-      this.state.descriptor.get('props').get('children').set(props.children)
+      this.state.childInstantiationDescriptor.get('props').get('children').set(props.children)
     }
 
     render() {

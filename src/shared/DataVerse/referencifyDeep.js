@@ -3,9 +3,11 @@ import isPlainObject from 'lodash/isPlainObject'
 import Reference from './Reference'
 import MapOfReferences from './MapOfReferences'
 import mapValues from 'lodash/mapValues'
+import AbstractReference from './utils/AbstractReference'
 
 type Mapper =
-  (<V: {+constructor: mixed}>(v: V) => Reference<V>) &
+  (<V: AbstractReference>(v: V) => V) &
+  (<V: {+constructor: any}>(v: V) => Reference<V>) &
   (<V: {}>(v: V) => MapOfReferences<$ObjMap<V, Mapper>>) &
   (<V>(v: V) => Reference<V>)
 
@@ -18,6 +20,8 @@ export const referencifyDeep: ReferencifyDeepDeep = (jsValue: mixed) => {
     return fromJSArray(jsValue)
   } else if (isPlainObject(jsValue)) {
     return fromJSObject((jsValue: $IntentionalAny))
+  } else if (jsValue instanceof AbstractReference) {
+    return jsValue
   } else {
     return fromJSPrimitive(jsValue)
   }

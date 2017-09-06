@@ -1,14 +1,13 @@
 // @flow
 import {type ComponentType as ReactComponentType} from 'react'
-import * as D from '$shared/DataVerse'
 
 // @todo maybe this should be an opaque type given that not any string is a valid ComponentID
 export type ComponentID = string
 
-export type ComponentInstantiationDescriptor = D.MapOfReferences<{
-  componentID: D.Reference<ComponentID>,
-  props?: D.MapOfReferences<{[key: string]: $FixMe}>,
-}>
+export type ComponentInstantiationDescriptor = {
+  componentID: ComponentID,
+  props?: {[key: string]: $FixMe},
+}
 
 export type UserDefinedComponentDescriptor = {|
   componentID: ComponentID,
