@@ -1,7 +1,7 @@
 // @flow
 import * as React from 'react'
 import {render} from 'react-dom'
-import StudioRootComponent from './components/StudioRootComponent'
+// import StudioRootComponent from './components/StudioRootComponent'
 import LBCommunicator from './LBCommunicator'
 import initialState from './initialState'
 import * as DataVerse from '$shared/DataVerse'
@@ -55,7 +55,8 @@ export default class TheStudioClass {
       this,
     )
 
-    this._mountElement()
+    // @todo
+    // this._mountElement()
   }
 
   _mountElement() {
@@ -69,7 +70,7 @@ export default class TheStudioClass {
       throw new Error(`Where is the <body> tag?`)
     }
 
-    render(<StudioRootComponent studio={this} />, rootEl)
+    // render(<StudioRootComponent studio={this} />, rootEl)
   }
 
   getComponentDescriptor(componentID: string) {

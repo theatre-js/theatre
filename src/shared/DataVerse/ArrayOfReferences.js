@@ -4,7 +4,7 @@ import {forEach} from 'lodash'
 import AbstractReference from './utils/AbstractReference'
 
 export default class ArrayOfReferences<V: AbstractReference> extends AbstractCompositeReference {
-  _internalArray: Array<V>
+  _internalArray: Array<$FixMe>
 
   constructor(a: Array<V>) {
     super()
