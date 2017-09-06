@@ -1,5 +1,5 @@
 // @flow
-import referencifyDeep from './referencifyDeep'
+import {default as referencifyDeep, type ReferencifyDeepObject} from './referencifyDeep'
 import * as D from './index'
 
 describe('DataVerse.referencifyDeep', () => {
@@ -25,5 +25,9 @@ describe('DataVerse.referencifyDeep', () => {
     // $FlowExpectError
     (referencifyDeep({a: 'foo', b: 12}): D.MapOfReferences<{a: D.Reference<string>}>);
     (referencifyDeep({a: 'foo', b: {bar: 'bar', baz: true}}): D.MapOfReferences<{a: D.Reference<string>, b: D.MapOfReferences<{bar: D.Reference<string>, baz: D.Reference<boolean>}>}>);
+
+    type A = {a: string, b: number, c: boolean}
+    type AR = ReferencifyDeepObject<A>
+    (referencifyDeep({a: 'hi', b: 10, c: true}): AR)
   }
 })

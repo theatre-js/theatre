@@ -1,12 +1,12 @@
 // @flow
 import type {CommonNamespaceState} from '$studio/common/types'
 import type {WorkspaceNamespaceState} from '$studio/workspace/types'
-import * as DataVerse from '$shared/DataVerse'
+import coreComponents from '$studio/componentModel/coreComponents'
 
-export type CoreState = DataVerse.MapOfReferences<{
-  persistentState: DataVerse.MapOfReferences<{
+export type CoreState = {
+  persistentState: {
     common: CommonNamespaceState,
     workspace: WorkspaceNamespaceState,
-  }>,
-  coreComponents: DataVerse.MapOfReferences<$FixMe>,
-}>
+  },
+  coreComponents: typeof coreComponents,
+}

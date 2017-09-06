@@ -11,7 +11,7 @@ import {type CoreState} from '$studio/types'
 import coreComponents from '$studio/componentModel/coreComponents'
 
 export default class TheStudioClass {
-  _state: CoreState
+  _state: DataVerse.ReferencifyDeepObject<CoreState>
   _lbCommunicator: *
 
   constructor() {

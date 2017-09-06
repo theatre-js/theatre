@@ -11,6 +11,8 @@ type Mapper =
 
 type ReferencifyDeepDeep = Mapper
 
+export type ReferencifyDeepObject<V: {}> = MapOfReferences<$ObjMap<V, Mapper>>
+
 export const referencifyDeep: ReferencifyDeepDeep = (jsValue: mixed) => {
   if (Array.isArray(jsValue)) {
     return fromJSArray(jsValue)
