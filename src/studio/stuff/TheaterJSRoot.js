@@ -16,9 +16,7 @@ class TheaterJSRoot extends React.Component<Props, State> {
 
   render() {
     return (
-      <div id='theater-root'>
-        {this.props.children}
-      </div>
+      this.props.children
     )
   }
 }
