@@ -11,9 +11,25 @@
 </head>
 <body>
   <div id="root"></div>
+  <script>
+    const blockedPrefixes = ['Warning: Accessing PropTypes', 'Warning: Accessing createClass']
+    const originalConsoleWarn = console.warn.bind(console)
+    console.warn = (msg, ...rest) => {
+      let shouldBlock = false
+      blockedPrefixes.forEach((prefix) => {
+        if (msg.startsWith(prefix)) {
+          shouldBlock = true
+          return false
+        }
+      })
+      if (!shouldBlock) {
+        originalConsoleWarn(msg, ...rest)
+      }
+    }
+  </script>
   <!-- the studio -->
   <script src="http://localhost:9091/index.js"></script>
   <!-- the entry file of examples/ -->
-  <script src="http://localhost:9092/index.js"></script>
+  <script src="/index.js"></script>
 </body>
 </html>

@@ -6,6 +6,7 @@ const defaultState: WorkspaceNamespaceState = {
     byId: {},
     listOfVisibles: [],
   },
+  currentCanvasCommponentID: undefined,
 }
 
 export default (state: WorkspaceNamespaceState = defaultState) => state

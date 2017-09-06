@@ -115,9 +115,11 @@ module.exports = (options: Options) => {
       hot: true,
       historyApiFallback: true,
       inline: true,
-      noInfo: true,
-      quiet: true,
+      clientLogLevel: 'error',
+      noInfo: false,
+      quiet: false,
       stats: false,
+      headers: {'Access-Control-Allow-Origin': '*'},
       port: envConfig.devSpecific.studio.devServerPort,
     }
   }

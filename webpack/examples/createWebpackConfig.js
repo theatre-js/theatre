@@ -93,8 +93,9 @@ module.exports = (options: Options) => {
       hot: true,
       historyApiFallback: true,
       inline: true,
-      noInfo: true,
-      quiet: true,
+      clientLogLevel: 'error',
+      noInfo: false,
+      quiet: false,
       stats: false,
       port: envConfig.devSpecific.examples.devServerPort,
     }

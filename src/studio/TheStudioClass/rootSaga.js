@@ -6,6 +6,5 @@ export default function* errorCatchingRootSaga(): Generator<> {
 }
 
 function* rootSaga(): Generator<> {
-  console.log('root saga here')
   return yield null
 }
