@@ -157,15 +157,16 @@ class Panel extends React.Component {
           </div>
         </div>
         <div className={css.content}>
-          {isInSettings
-            ?
+          <div className={isInSettings ? css.displayNone : null}>
+            <this.ContentElement {...configuration} />
+          </div>
+          {isInSettings &&
             <Settings
               onPanelDrag={this.movePanel}
               onPanelDragEnd={this.setPanelPosition}
               onPanelResize={this.resizePanel}
               onPanelResizeEnd={this.setPanelSize}/>
-            :
-            <this.ContentElement {...configuration} />}
+          }
         </div>
       </div>
     )

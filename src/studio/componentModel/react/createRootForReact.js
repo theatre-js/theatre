@@ -14,7 +14,9 @@ type Props = {
 export default (store: Store<any, any, any>) => {
   const TheaterJSRoot = (props: Props) => {
     return <ReduxStoreProvider store={store}>
-      <RenderCanvas>{props.children}</RenderCanvas>
+      <RenderCanvas>
+        <div id='theaterjs-root'>{props.children}</div>
+      </RenderCanvas>
     </ReduxStoreProvider>
   }
 

@@ -30,7 +30,7 @@ class SamplePlayground extends React.Component<*, *, State> {
           <div>second child</div>
         </div>
         <button onClick={this.toggleDiv}>toggle div</button>
-        {this.state.showDiv && <div>div that toggles</div>}
+        {this.state.showDiv && <div><div><div>div that toggles</div></div></div>}
       </div>
     )    
   }

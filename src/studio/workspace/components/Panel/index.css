@@ -28,3 +28,7 @@
   height: calc(100% - 30px);
   overflow: scroll;
 }
+
+.displayNone {
+  display: none;
+}
