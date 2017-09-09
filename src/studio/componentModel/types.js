@@ -6,33 +6,41 @@ export type ComponentID = string
 
 export type ComponentInstantiationDescriptor = {
   componentID: ComponentID,
-  props?: {[key: string]: $FixMe},
+  props: {[key: string]: $FixMe},
+  modifierInstantiationDescriptorsByKey: {[key: string]: ModifierInstantiationDescriptor},
+  modifierInstantiationDescriptorKeysInOrder: Array<string>,
 }
 
-export type UserDefinedComponentDescriptor = {|
-  componentID: ComponentID,
-  componentType: 'UserDefined',
-  valuesByLocalValueUniqueID?: {[localUniqueID: string]: ValueDescriptor},
-  childrenInTree?: ReferenceToLocalValue,
-  props?: {[propKey: string]: PropDefinition},
-|}
+type ModifierInstantiationDescriptor = {
+  modifierID: string,
+  props: {[key: string]: $FixMe},
+}
+
+export type DeclarativeComponentDescriptor = {
+  id: ComponentID,
+  type: 'Declarative',
+  valuesByLocalValueUniqueID: {[localUniqueID: string]: ValueDescriptor},
+  childrenInTree: ?ReferenceToLocalValue,
+  // propTypes: {[propKey: string]: PropType},
+}
+
+// export type PropType = {}
 
 export type AliasComponentDescriptor = {|
-  componentID: ComponentID,
-  componentType: 'Alias',
+  id: ComponentID,
+  type: 'Alias',
   aliasedComponentID: ComponentID,
 |}
 
-export type PrimitiveComponentDescriptor = {|
-  componentID: ComponentID,
-  componentType: 'Primitive',
+export type HardCodedComponentDescriptor = {|
+  id: ComponentID,
+  type: 'HardCoded',
   reactComponent: ReactComponentType<$FixMe>,
 |}
 
 export type ComponentDescriptor =
-  UserDefinedComponentDescriptor | AliasComponentDescriptor | PrimitiveComponentDescriptor
+  DeclarativeComponentDescriptor | AliasComponentDescriptor | HardCodedComponentDescriptor
 
-export type PropDefinition = {}
 
 export type ReferenceToLocalValue = {
   type: 'ReferenceToLocalValue',
@@ -73,3 +81,7 @@ export type ComponentInstantiationDecriptor = {
 //     localValueUniqueID: 'sld1',
 //   },
 // }
+
+export type ComponentModelNamespaceState = {
+  componentDescriptorsById: {[id: ComponentID]: ComponentDescriptor},
+}

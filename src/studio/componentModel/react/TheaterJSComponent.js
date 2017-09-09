@@ -32,6 +32,6 @@ class TheaterJSComponent<Props, State> extends React.PureComponent<Props & WithS
   }
 }
 
-export default compose(
+export default (compose(
   withStudio,
-)(TheaterJSComponent)
+)(TheaterJSComponent): typeof TheaterJSComponent)

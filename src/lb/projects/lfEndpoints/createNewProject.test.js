@@ -48,7 +48,7 @@ describe('createNewProject()', () => {
   })
 
   it('should error for a project that\'s already recognised', async () => {
-    const {task} = await runSingleSaga(function* (): Generator<> {
+    const {task} = await runSingleSaga(function* (): Generator<*, *, *> {
       yield call(createNewProject, {folderPath: '/foo/bar', name: 'baz'})
       return yield call(createNewProject, {folderPath: '/foo/bar', name: 'baz'})
     })

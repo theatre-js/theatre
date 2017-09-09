@@ -1,4 +1,4 @@
-// @flow
+
 import {type ComponentDescriptor} from '$studio/componentModel/types'
 import * as React from 'react'
 import TheaterJSComponent from '$studio/componentModel/react/TheaterJSComponent'

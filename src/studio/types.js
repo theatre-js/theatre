@@ -1,12 +1,10 @@
 // @flow
 import type {CommonNamespaceState} from '$studio/common/types'
 import type {WorkspaceNamespaceState} from '$studio/workspace/types'
-import coreComponents from '$studio/componentModel/coreComponents'
+import type {ComponentModelNamespaceState} from '$studio/componentmodel/types'
 
 export type CoreState = {
-  persistentState: {
-    common: CommonNamespaceState,
-    workspace: WorkspaceNamespaceState,
-  },
-  coreComponents: typeof coreComponents,
+  common: CommonNamespaceState,
+  workspace: WorkspaceNamespaceState,
+  componentmodel: ComponentModelNamespaceState,
 }

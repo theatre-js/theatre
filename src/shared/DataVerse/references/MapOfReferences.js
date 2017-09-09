@@ -1,23 +1,30 @@
 // @flow
-import AbstractCompositeReference from './utils/AbstractCompositeReference'
+import {default as AbstractCompositeReference, type IAbstractCompositeReference} from './utils/AbstractCompositeReference'
 import {forEach} from 'lodash'
-import AbstractReference from './utils/AbstractReference'
+import {type IAbstractReference} from './utils/AbstractReference'
 
 type Key = string | number
 
-export default class MapOfReferences<O: {}> extends AbstractCompositeReference {
+export interface IMapOfReferences<O: {}> extends IAbstractCompositeReference, IAbstractReference {
+  isMapOfReferences: true,
+  set<K: $Keys<O>, V: $ElementType<O, K>>(key: K, value: V): MapOfReferences<O>,
+  get<K: $Keys<O>>(key: K): $ElementType<O, K>,
+}
+
+export default class MapOfReferences<O: {}> extends AbstractCompositeReference implements IMapOfReferences<O> {
+  isMapOfReferences = true
   _internalMap: O
 
-  constructor(o: O & {[key: Key]: AbstractReference}) {
+  constructor(o: O & {[key: Key]: IAbstractReference}) {
     super()
     this._internalMap = ({}: $IntentionalAny)
 
-    forEach(o, (value: AbstractReference, key: Key) => {
+    forEach(o, (value: IAbstractReference, key: Key) => {
       this._setWithoutInvokingEvents(key, value)
     })
   }
 
-  _setWithoutInvokingEvents(key: Key, value: AbstractReference) {
+  _setWithoutInvokingEvents(key: Key, value: IAbstractReference) {
     this._internalMap[key] = value
     this._adopt(key, value)
   }

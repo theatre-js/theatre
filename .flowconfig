@@ -45,6 +45,8 @@ suppress_type=$IntentionalAny
 ; Siagnals an `any` type where we don't care about type correctness (obvs should be used sparingly)
 suppress_type=$UnimportantAny
 
+include_warnings=true
+
 [lints]
 # all=off by default
-all=warn
+all=error

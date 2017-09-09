@@ -16,7 +16,7 @@ const installDevtoolsExtensions = () => {
 if (app)
   app.dock.hide()
 
-function waitForElectron() {
+function waitForElectron(): $FixMe {
   if (!app) return Promise.resolve()
   const d = wn.defer()
   // @note we might have to increase the maxListeners on ipcMain if we get maxListeners warnings
@@ -25,7 +25,7 @@ function waitForElectron() {
   return d.promise
 }
 
-export default waitForElectron().then(() => {
+export default waitForElectron().then((): $FixMe => {
   if (process.env.NODE_ENV === 'development')
     return installDevtoolsExtensions()
 })

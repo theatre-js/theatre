@@ -5,7 +5,7 @@ import {type ComponentInstantiationDescriptor} from '$studio/componentModel/type
 import * as D from '$shared/DataVerse'
 
 type Props = {
-  descriptor: D.ReferencifyDeepObject<ComponentInstantiationDescriptor>,
+  descriptor: $Call<typeof D.referencifyDeep, ComponentInstantiationDescriptor>,
 }
 
 class Elementify extends React.Component<Props, void> {
@@ -14,7 +14,8 @@ class Elementify extends React.Component<Props, void> {
   }
 
   render() {
-    return <div>Elementify here, {JSON.stringify(this.props.descriptor.unboxDeep())}</div>
+    console.log('desc', this.props.descriptor.unboxDeep())
+    return <div>Elementify here, {JSON.stringify('this')}</div>
   }
 }
 

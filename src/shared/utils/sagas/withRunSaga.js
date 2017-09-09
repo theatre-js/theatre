@@ -5,8 +5,8 @@ import type {HigherOrderComponent} from 'react-flow-types'
 import {PropTypes} from 'prop-types'
 import {call} from 'redux-saga/effects'
 
-function preventToThrow(fn: () => Generator<>) {
-  return function* callAndCatch(...args): Generator<> {
+function preventToThrow(fn: () => Generator<*, *, *>) {
+  return function* callAndCatch(...args): Generator<*, *, *> {
     try {
       return yield call(fn, ...args)
     } catch (e) {

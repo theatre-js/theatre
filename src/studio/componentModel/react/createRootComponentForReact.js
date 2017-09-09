@@ -1,50 +1,49 @@
 // @flow
 import * as React from 'react'
-// import RenderCanvas from './RenderCanvas'
 import TheStudioClass from '$studio/TheStudioClass'
 import {provideTheaterJSStudio} from './studioContext'
 import Elementify from './Elementify'
 import * as D from '$shared/DataVerse'
-import {type ComponentInstantiationDescriptor} from '$studio/componentModel/types'
+import compose from 'ramda/src/compose'
 
 type Props = {
   children: React.Node,
 }
 
-type ChildInstantiationDescriptor = D.ReferencifyDeepObject<{
-  componentID: 'TheaterJS/RenderCurrentCanvas',
+type ChildInstantiationDescriptor = $Call<typeof D.referencifyDeep, {
+  componentID: 'TheaterJS/Core/RenderCurrentCanvas',
   props: {
     children: D.Reference<React.Node>,
   },
 }>
 
-type State = {
-  childInstantiationDescriptor: ChildInstantiationDescriptor,
-}
-
 const createRootComponentForReact = (studio: TheStudioClass) => {
-  class TheaterJSRoot extends React.PureComponent<Props, State> {
+  class TheaterJSRoot extends React.PureComponent<Props, void> {
+    childInstantiationDescriptor: ChildInstantiationDescriptor
+
     constructor(props: Props) {
       super(props)
 
-      this.state = {childInstantiationDescriptor: D.referencifyDeep({
-        componentID: 'TheaterJS/RenderCurrentCanvas',
+      this.childInstantiationDescriptor = D.referencifyDeep({
+        componentID: 'TheaterJS/Core/RenderCurrentCanvas',
         props: {
           children: new D.Reference(props.children),
         },
-      })}
+      })
     }
 
     componentWillReceiveProps(props) {
-      this.state.childInstantiationDescriptor.get('props').get('children').set(props.children)
+      this.childInstantiationDescriptor.get('props').get('children').set(props.children)
     }
 
     render() {
-      return <Elementify descriptor={this.state.childInstantiationDescriptor} />
+      return <Elementify descriptor={this.childInstantiationDescriptor} />
     }
   }
 
-  return provideTheaterJSStudio(studio)(TheaterJSRoot)
+  return compose(
+    provideTheaterJSStudio(studio),
+  )(TheaterJSRoot)
 }
 
 export default createRootComponentForReact

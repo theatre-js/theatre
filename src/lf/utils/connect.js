@@ -2,8 +2,7 @@
 // import {type StoreState} from '$studio/types'
 import originalConnect from 'react-redux/es/connect/connect'
 import {type HigherOrderComponent} from 'react-flow-types'
-
-type StoreState = $FixMe
+import {type StoreState} from '$lf/types'
 
 export const storeKey = 'theaterJSReduxStore'
 

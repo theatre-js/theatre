@@ -25,7 +25,7 @@ export default class LBCommunicator {
     }
   }
 
-  request(endpoint: string, payload: mixed) {
+  request(endpoint: string, payload: mixed): $FixMe {
     return this.getSocket().then((socket) => {
       return emit('request', {endpoint, payload}, socket)
     })

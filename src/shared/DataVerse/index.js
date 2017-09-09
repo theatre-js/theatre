@@ -1,17 +1,14 @@
 // @flow
-import Reference from './Reference'
-import MapOfReferences from './MapOfReferences'
-import ArrayOfReferences from './ArrayOfReferences'
-import {
-  default as referencifyDeep,
-  type ReferencifyDeepObject as _ReferencifyDeepObject,
-} from './referencifyDeep'
-
-export type ReferencifyDeepObject<V> = _ReferencifyDeepObject<V>
+import Reference from './references/Reference'
+import MapOfReferences from './references/MapOfReferences'
+import ArrayOfReferences from './references/ArrayOfReferences'
+import referencifyDeep from './references/referencifyDeep'
+import DerivationContext from './derivations/DerivationContext'
 
 export {
   Reference,
   MapOfReferences,
   referencifyDeep,
   ArrayOfReferences,
+  DerivationContext,
 }

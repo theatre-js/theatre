@@ -1,4 +1,3 @@
-// @flow
 import {type ComponentDescriptor} from '$studio/componentModel/types'
 
 const PassThroughCanvas: ComponentDescriptor = {

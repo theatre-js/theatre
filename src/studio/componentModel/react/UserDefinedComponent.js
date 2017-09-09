@@ -4,7 +4,7 @@ import compose from 'ramda/src/compose'
 import {
   type ComponentInstantiationDescriptor,
 } from '$studio/componentModel/types'
-import {withStudio, type WithStudioProps} from '$studio/utils'
+import {withStudio, type WithStudioProps} from '$studio/handy'
 
 type Wire<T> = {
   map<X>(fn: (a: T) => X): X,

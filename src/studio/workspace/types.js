@@ -10,11 +10,11 @@ export type PanelSettings = {
   dim: XY,
 }
 
-export type visiblePanelsList = PanelId
+export type VisiblePanelsList = Array<PanelId>
 
 export type Panels = {
   byId: {[key: PanelId]: PanelSettings},
-  listOfVisibles: visiblePanelsList,
+  listOfVisibles: VisiblePanelsList,
 }
 
 export type WorkspaceNamespaceState = {

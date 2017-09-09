@@ -1,7 +1,7 @@
 // @flow
 import * as React from 'react'
 import compose from 'ramda/src/compose'
-import {connect} from 'react-redux'
+import {connect} from '$lf/utils'
 import {type StoreState} from '$lf/types'
 import ProjectsList from './ProjectsList'
 import css from './index.css'

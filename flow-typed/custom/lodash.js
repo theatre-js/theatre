@@ -22,12 +22,12 @@ declare module 'lodash/forEachRight' {
   )
 }
 
-// declare module 'lodash/forEach' {
-//   declare type ForEachObjectFn =
-//     <O: {}, K: $Keys<O>, V: $ElementType<O, K>, FN: (v: V, k: K) => ?false>(obj: O, fn: FN) => void;
+declare module 'lodash/without' {
+  declare module.exports:  <V, A: Array<V>>(a: A, V) => Array<V>
+}
 
-//   declare type ForEachArrayFn =
-//     <V, A: Array<V>, FN: (v: V, i: number) => ?false>(array: A, fn: FN) => void;
-
-//   declare module.exports: ForEachObjectFn & ForEachArrayFn
-// }
+declare module 'lodash/forEach' {
+  declare module.exports:
+    (<O: {}, K: $Keys<O>, V: $ElementType<O, K>, FN: (v: V, k: K) => ?false>(obj: O, fn: FN) => void) &
+    (<V, A: Array<V>, FN: (v: V, i: number) => ?false>(array: A, fn: FN) => void)
+}

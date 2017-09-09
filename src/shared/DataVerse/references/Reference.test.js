@@ -8,7 +8,8 @@ describe('DataVerse.Reference', () => {
     r.set('bar')
     expect(r.get()).toEqual('bar')
     const diffs = []
-    r.events.addEventListener('diff', (diff) => {
+    // r.diffs()
+    r.diffs().tap((diff) => {
       diffs.push(diff)
     })
     r.set('baz')

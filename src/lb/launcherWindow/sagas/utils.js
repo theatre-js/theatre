@@ -22,7 +22,7 @@ export type Request = {
   respond: (payload: mixed) => void,
 }
 
-export function* autoRetryOnTimeout(callee: Function, args: Array<mixed>, numberOfRetries: number = 10): Generator<> {
+export function* autoRetryOnTimeout(callee: Function, args: Array<mixed>, numberOfRetries: number = 10): Generator<*, *, *> {
   let retries = -1
   while(true) {
     retries++

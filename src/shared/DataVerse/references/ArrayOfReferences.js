@@ -1,9 +1,16 @@
 // @flow
-import AbstractCompositeReference from './utils/AbstractCompositeReference'
+import {default as AbstractCompositeReference, type IAbstractCompositeReference} from './utils/AbstractCompositeReference'
 import {forEach} from 'lodash'
-import AbstractReference from './utils/AbstractReference'
+import {type IAbstractReference} from './utils/AbstractReference'
 
-export default class ArrayOfReferences<V: AbstractReference> extends AbstractCompositeReference {
+export interface IArrayOfReferences<V: IAbstractReference> extends IAbstractReference, IAbstractCompositeReference {
+  isArrayOfReferences: true,
+  set(key: number, v: V): $FixMe,
+  get(index: number): V,
+}
+
+export default class ArrayOfReferences<V: IAbstractReference> extends AbstractCompositeReference implements IArrayOfReferences<V> {
+  isArrayOfReferences = true
   _internalArray: Array<$FixMe>
 
   constructor(a: Array<V>) {

@@ -1,8 +1,8 @@
 
 import {type Selector} from '$studio/types'
-import {type visiblePanelsList, type PanelSettings} from '$studio/workspace/types'
+import {type VisiblePanelsList, type PanelSettings} from '$studio/workspace/types'
 
-export const getVisiblePanelsList: Selector<visiblePanelsList, void> =
+export const getVisiblePanelsList: Selector<VisiblePanelsList, void> =
   (state) => state.workspace.panels.listOfVisibles
 
 export const getPanelById: Selector<PanelSettings, string> =

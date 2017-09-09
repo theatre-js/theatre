@@ -9,13 +9,13 @@ import {type Reducer} from '$shared/types'
  */
 export default function wrapRootReducer<State, Action>(reducer: Reducer<State, Action>): Reducer<State, Action> {
   return (state: State | void, action: Action): State => {
-    if (typeof action === 'object' && action) {
+    if (typeof action === 'object' && action !== null) {
       // mergeStateAction
       if (action.type === mergeStateAction.type) {
-        if (!(action.payload && typeof action.payload === 'object'))
+        if (!(action.payload !== null && typeof action.payload === 'object'))
           throw new Error(`Action ${mergeStateAction.type}'s payload must only be an object. ${JSON.stringify(action.payload)} given`)
 
-        if (!(state && typeof state === 'object') || typeof state === 'undefined')
+        if (!(state !== null && typeof state === 'object') || typeof state === 'undefined')
           throw new Error(`When dispatching a ${mergeStateAction.type}, the initial state must either be an object or void.  ${JSON.stringify(state)} given`)
         return {...(state || {}), ...action.payload}
 
@@ -26,7 +26,7 @@ export default function wrapRootReducer<State, Action>(reducer: Reducer<State, A
       // resetStateAction
       } else if (action.type === resetStateAction.type) {
         const initialState = reducer(undefined, action)
-        if (!(state && typeof state === 'object') || typeof state === 'undefined')
+        if (!(state !== null && typeof state === 'object') || typeof state === 'undefined')
           throw new Error(`When dispatching a ${resetStateAction.type}, the initial state must either be an object or void.  ${JSON.stringify(state)} given`)
 
         return Array.isArray(action.payload) ? {...(state || {}), ...pick(initialState, action.payload)} : initialState

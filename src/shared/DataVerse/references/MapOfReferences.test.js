@@ -11,7 +11,7 @@ describe('DataVerse.MapOfReferences', () => {
     map.set('foo', new Reference('foo2'))
     expect(map.unboxDeep()).toMatchObject({foo: 'foo2'})
     const diffs = []
-    map.events.addEventListener('diff', (diff) => {diffs.push(diff)})
+    map.diffs().tap((diff) => {diffs.push(diff)})
     map.get('foo').set('foo3')
     expect(diffs).toHaveLength(1)
     expect(diffs[0]).toMatchObject({address: ['foo'], oldValue: 'foo2', newValue: 'foo3'})

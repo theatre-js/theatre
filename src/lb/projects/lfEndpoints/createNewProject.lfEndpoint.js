@@ -12,7 +12,7 @@ export default function* createNewProject(params: {folderPath: string, name: str
     return {type: 'error', errorType: 'folderDoesntExist'}
   }
 
-  let pathStat
+  let pathStat: $FixMe
   try {
     pathStat = yield call(fse.stat, params.folderPath)
   } catch (e) {
@@ -20,7 +20,7 @@ export default function* createNewProject(params: {folderPath: string, name: str
     return {type: 'error', errorType: 'pathUnreadable'}
   }
 
-  if (!pathStat.isDirectory()) {
+  if (!(pathStat: any).isDirectory()) {
     return {type: 'error', errorType: 'pathIsNotAFolder'}
   }
 
