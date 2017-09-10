@@ -3,7 +3,7 @@ import React from 'react'
 import compose from 'ramda/src/compose'
 import {connect} from 'react-redux'
 import {type StoreState} from '$studio/types'
-import {type PanelPlacementSettings} from '$studio/workspace/types'
+import {type PanelPlacementSettings, type PanelPersistentState} from '$studio/workspace/types'
 import {getVisiblePanelsList} from '$studio/workspace/selectors'
 import {withRunSaga, type WithRunSagaProps} from '$shared/utils'
 import {createPanel} from '$studio/workspace/sagas'
@@ -30,6 +30,12 @@ class TheUI extends React.Component {
     }
   }
 
+  static getDefaultPanelPersistentState(): PanelPersistentState {
+    return {
+      isInSettings: true,
+    }
+  }
+
   static getDefaultPanelConfig(): Object {
     return {}
   }
@@ -49,6 +55,7 @@ class TheUI extends React.Component {
   createNewPanel = (type: string) => {
     const panelProperties = {
       type,
+      persistentState: TheUI.getDefaultPanelPersistentState(),
       configuration: TheUI.getDefaultPanelConfig(),
       placementSettings: TheUI.getDefaultPanelPlacement(),
     }

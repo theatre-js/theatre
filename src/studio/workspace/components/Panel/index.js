@@ -1,14 +1,14 @@
 // @flow
-import React from 'react'
+import * as React from 'react'
 import css from './index.css'
 import Settings from './Settings'
 import compose from 'ramda/src/compose'
 import {connect} from 'react-redux'
 import {withRunSaga, type WithRunSagaProps} from '$shared/utils'
 import {type StoreState} from '$studio/types'
-import {type XY, type PanelPlacementSettings, type PanelType, type PanelConfiguration} from '$studio/workspace/types'
+import {type XY, type PanelPlacementSettings, type PanelType, type PanelConfiguration, type PanelPersistentState} from '$studio/workspace/types'
 import {getPanelById} from '$studio/workspace/selectors'
-import {setPanelPosition, setPanelSize} from '$studio/workspace/sagas'
+import {setPanelPosition, setPanelSize, updatePanelData} from '$studio/workspace/sagas'
 import panelTypes from '$studio/workspace/panelTypes'
 import _ from 'lodash'
 
@@ -16,10 +16,14 @@ type OwnProps = {
   panelId: string,
 }
 
-type Props = WithRunSagaProps & OwnProps & PanelPlacementSettings & {
-  type: PanelType,
-  configuration: PanelConfiguration,
-}
+type Props = WithRunSagaProps
+  & OwnProps 
+  & PanelPlacementSettings 
+  & PanelPersistentState 
+  & {
+    type: PanelType,
+    configuration: PanelConfiguration,
+  }
 
 type Boundary = {xlow: number, xhigh: number, ylow: number, yhigh: number}
 
@@ -30,16 +34,14 @@ type PanelPlacementState = {
   resizeBoundaries: Boundary,
 }
 
-type State = PanelPlacementState & {
-  isInSettings: boolean,
-}
+type State = PanelPlacementState
 
 class Panel extends React.Component {
   props: Props
   state: State
   panelComponents: {
-    Content: $FlowFixMe,
-    Settings: $FlowFixMe,
+    Content: React.Node,
+    Settings: React.Node,
   }
 
   static getZeroXY() {
@@ -50,7 +52,6 @@ class Panel extends React.Component {
     super(props)
     this.panelComponents = panelTypes[props.type].requireFn()
     this.state = {
-      isInSettings: true,
       ...this.getPanelPlacementSettings(props.pos, props.dim),
     }
   }
@@ -70,8 +71,7 @@ class Panel extends React.Component {
     }
   }
 
-  calculatePanelBoundaries(pos: XY, dim: XY): {moveBoundaries: Boundary, resizeBoundaries: Boundary}
-  {
+  calculatePanelBoundaries(pos: XY, dim: XY): {moveBoundaries: Boundary, resizeBoundaries: Boundary} {
     const distanceToRight = 100 - pos.x - dim.x
     const distanceToBottom = 100 - pos.y - dim.y
     return {
@@ -88,10 +88,6 @@ class Panel extends React.Component {
         yhigh: distanceToBottom,
       },
     }
-  }
-
-  toggleSettings = () => {
-    this.setState((state) => ({isInSettings: !state.isInSettings}))
   }
 
   movePanel = (dx: number, dy: number) => {
@@ -137,15 +133,28 @@ class Panel extends React.Component {
     this.props.runSaga(setPanelSize, panelId, newDim)
   }
 
+  toggleSettings = () => {
+    const isInSettings = !this.props.isInSettings
+    this.updatePanelData('persistentState', {isInSettings})
+  }
+
+  updatePanelData(propertyToUpdate: string, newData: Object) {
+    this.props.runSaga(updatePanelData, this.props.panelId, propertyToUpdate, newData)
+  }
+
   render() {
-    const {pos, dim, configuration} = this.props
-    const {isInSettings, move, resize} = this.state
+    const {isInSettings, pos, dim, configuration} = this.props
+    const {move, resize} = this.state
     const style = {
       left: `${pos.x}%`,
       top: `${pos.y}%`,
       width: `${dim.x + resize.x}%`,
       height: `${dim.y + resize.y}%`,
       transform: `translate3d(${move.x}px, ${move.y}px, 0)`,
+    }
+    const componentsProps = {
+      ...configuration,
+      updatePanelData: this.updatePanelData,
     }
 
     return (
@@ -159,7 +168,7 @@ class Panel extends React.Component {
         </div>
         <div className={css.content}>
           <div className={isInSettings ? css.displayNone : null}>
-            <this.panelComponents.Content {...configuration} />
+            <this.panelComponents.Content {...componentsProps} />
           </div>
           {isInSettings &&
             <Settings
@@ -167,7 +176,7 @@ class Panel extends React.Component {
               onPanelDragEnd={this.setPanelPosition}
               onPanelResize={this.resizePanel}
               onPanelResizeEnd={this.setPanelSize}>
-              <this.panelComponents.Settings />
+              <this.panelComponents.Settings {...componentsProps}/>
             </Settings>
           }
         </div>
@@ -179,10 +188,11 @@ class Panel extends React.Component {
 export default compose(
   connect(
     (state: StoreState, ownProps: OwnProps) => {
-      const {type, configuration, placementSettings} = getPanelById(state, ownProps.panelId)
+      const {type, configuration, placementSettings, persistentState} = getPanelById(state, ownProps.panelId)
       return {
         type,
         configuration,
+        ...persistentState,
         ...placementSettings,
       }
     }

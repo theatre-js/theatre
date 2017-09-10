@@ -21,3 +21,7 @@ export function* setPanelPosition(panelId: PanelId, pos: XY): Generator<*, void,
 export function* setPanelSize(panelId: PanelId, dim: XY): Generator<*, void, *> {
   yield reduceState(['workspace', 'panels', 'byId', panelId, 'placementSettings', 'dim'], () => dim)
 }
+
+export function* updatePanelData(panelId: PanelId, property: string, newData: Object): Generator<*, void, *> {
+  yield reduceState(['workspace', 'panels', 'byId', panelId, property], (data) => ({...data, ...newData}))
+}

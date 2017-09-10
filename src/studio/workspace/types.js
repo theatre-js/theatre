@@ -7,6 +7,10 @@ export type PanelType = string
 
 export type PanelConfiguration = Object
 
+export type PanelPersistentState = {
+  isInSettings: boolean,
+}
+
 export type XY = {x: number, y: number}
 
 export type PanelPlacementSettings = {
@@ -18,6 +22,7 @@ export type PanelProps = {
   type: PanelType,
   configuration: PanelConfiguration,
   placementSettings: PanelPlacementSettings,
+  persistentState: PanelPersistentState,
 }
 
 export type PanelObject = PanelProps & {
