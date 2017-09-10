@@ -19,7 +19,6 @@ type OwnProps = {
 type Props = WithRunSagaProps & OwnProps & PanelPlacementSettings & {
   type: PanelType,
   configuration: PanelConfiguration,
-  notInitializedYet?: boolean,
 }
 
 type Boundary = {xlow: number, xhigh: number, ylow: number, yhigh: number}
@@ -38,7 +37,10 @@ type State = PanelPlacementState & {
 class Panel extends React.Component {
   props: Props
   state: State
-  ContentElement: $FlowFixMe
+  panelComponents: {
+    Content: $FlowFixMe,
+    Settings: $FlowFixMe,
+  }
 
   static getZeroXY() {
     return {x: 0, y: 0}
@@ -46,10 +48,9 @@ class Panel extends React.Component {
 
   constructor(props: Props) {
     super(props)
-
-    this.ContentElement = panelTypes[props.type].requireFn()
+    this.panelComponents = panelTypes[props.type].requireFn()
     this.state = {
-      isInSettings: (props.notInitializedYet != null) ? true : false,
+      isInSettings: true,
       ...this.getPanelPlacementSettings(props.pos, props.dim),
     }
   }
@@ -158,14 +159,16 @@ class Panel extends React.Component {
         </div>
         <div className={css.content}>
           <div className={isInSettings ? css.displayNone : null}>
-            <this.ContentElement {...configuration} />
+            <this.panelComponents.Content {...configuration} />
           </div>
           {isInSettings &&
             <Settings
               onPanelDrag={this.movePanel}
               onPanelDragEnd={this.setPanelPosition}
               onPanelResize={this.resizePanel}
-              onPanelResizeEnd={this.setPanelSize}/>
+              onPanelResizeEnd={this.setPanelSize}>
+              <this.panelComponents.Settings />
+            </Settings>
           }
         </div>
       </div>
@@ -176,12 +179,11 @@ class Panel extends React.Component {
 export default compose(
   connect(
     (state: StoreState, ownProps: OwnProps) => {
-      const {type, configuration, placementSettings, notInitializedYet} = getPanelById(state, ownProps.panelId)
+      const {type, configuration, placementSettings} = getPanelById(state, ownProps.panelId)
       return {
         type,
         configuration,
         ...placementSettings,
-        notInitializedYet,
       }
     }
   ),

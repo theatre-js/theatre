@@ -1,5 +1,5 @@
 // @flow
-import React from 'react'
+import * as React from 'react'
 import css from './Settings.css'
 import DraggableArea from '$studio/common/components/DraggableArea'
 
@@ -8,6 +8,7 @@ type Props = {
   onPanelDragEnd: Function,
   onPanelResize: Function,
   onPanelResizeEnd: Function,
+  children: React.Node,
 }
 
 const Settings = (props: Props) => {
@@ -18,6 +19,9 @@ const Settings = (props: Props) => {
         onDragEnd={() => props.onPanelDragEnd()}>
         <div className={css.dragHandler}>Move Panel</div>
       </DraggableArea>
+      <div>
+        {props.children}
+      </div>
       <DraggableArea
         onDrag={(dx, dy) => props.onPanelResize(dx, dy)}
         onDragEnd={() => props.onPanelResizeEnd()}>

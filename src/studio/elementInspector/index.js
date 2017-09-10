@@ -1,17 +1,5 @@
 // @flow
-import React from 'react' 
+import Content from './components/Content'
+import Settings from './components/Settings'
 
-export const componentConfig = {
-  name: {
-    value: 'Element Inspector',
-    type: 'text',
-  },
-}
-
-const ElementInspector = (props: $FlowFixMe) => {
-  return (
-    <div>{props.name.value}</div>
-  )
-}
-
-export default ElementInspector
+export {Content, Settings}

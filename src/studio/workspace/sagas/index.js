@@ -8,18 +8,10 @@ export function* createPanel(params: PanelProps): Generator<*, PanelId, *> {
   const panelProperties = {
     id,
     ...params,
-    notInitializedYet: true,
   }
   yield reduceState(['workspace', 'panels', 'byId', id], () => panelProperties)
   yield reduceState(['workspace', 'panels', 'listOfVisibles'], (value) => value.concat(id))
   return id
-}
-
-export function* initializePanel(panelId: PanelId): Generator<*, void, *> {
-  yield reduceState(['workspace', 'panels', 'byId', panelId], (value) => {
-    const {notInitializedYet, ...initializedPanel} = value
-    return initializedPanel
-  })
 }
 
 export function* setPanelPosition(panelId: PanelId, pos: XY): Generator<*, void, *> {

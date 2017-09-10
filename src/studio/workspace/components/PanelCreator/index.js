@@ -24,7 +24,7 @@ const PanelCreator = ({onCreatingPanel, pos, dim}: Props) => {
           <div
             className={css.item}
             key={key}
-            onClick={() => onCreatingPanel(key, value.defaultConfig)}>
+            onClick={() => onCreatingPanel(key)}>
             {value.label}
           </div>
         ))

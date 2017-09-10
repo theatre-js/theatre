@@ -16,7 +16,9 @@ type State = {
   },
 }
 
-class DraggableArea extends React.Component<Props, State> {
+class DraggableArea extends React.Component {
+  props: Props
+  state: State
 
   constructor(props: Props) {
     super(props)

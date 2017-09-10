@@ -22,7 +22,6 @@ export type PanelProps = {
 
 export type PanelObject = PanelProps & {
   id: PanelId,
-  notInitializedYet?: boolean,
 }
 
 export type visiblePanelsList = Array<string>

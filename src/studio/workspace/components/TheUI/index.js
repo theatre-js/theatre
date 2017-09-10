@@ -30,6 +30,10 @@ class TheUI extends React.Component {
     }
   }
 
+  static getDefaultPanelConfig(): Object {
+    return {}
+  }
+
   constructor(props: Props) {
     super(props)
 
@@ -42,10 +46,10 @@ class TheUI extends React.Component {
     this.setState(() => ({isCreatingNewPanel: true}))
   }
 
-  createNewPanel = (type: string, defaultConfig: $FlowFixMe) => {
+  createNewPanel = (type: string) => {
     const panelProperties = {
       type,
-      configuration: defaultConfig,
+      configuration: TheUI.getDefaultPanelConfig(),
       placementSettings: TheUI.getDefaultPanelPlacement(),
     }
     this.setState(() => ({isCreatingNewPanel: false}))
