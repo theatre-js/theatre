@@ -1,6 +1,6 @@
 // @flow
 // import {TheaterJSComponent} from '$studio/handy'
-import {type ComponentDescriptor} from '$studio/componentModel/types'
+// import {type ComponentDescriptor, type ComponentInstantiationDescriptor} from '$studio/componentModel/types'
 
 // class RenderCurrentCanvas extends TheaterJSComponent<{}, void> {
 
@@ -14,14 +14,5 @@ import {type ComponentDescriptor} from '$studio/componentModel/types'
 
 // export default descriptor
 
-const fakeDescriptor: ComponentDescriptor = {
-  id: 'TheaterJS/Core/RenderCurrentCanvas',
-  type: 'Declarative',
-  valuesByLocalValueUniqueID: {},
-  childrenInTree: {
-    type: 'ReferenceToLocalValue',
-    localValueUniqueID: 'hala',
-  },
-}
-
-export default fakeDescriptor
+import fakeDeclarativeButton from './fakeDeclarativeButton'
+export default fakeDeclarativeButton

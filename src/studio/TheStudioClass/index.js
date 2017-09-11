@@ -1,8 +1,8 @@
 // @flow
-// import * as React from 'react'
+import * as React from 'react'
 // import {render} from 'react-dom'
 // import StudioRootComponent from './components/StudioRootComponent'
-import LBCommunicator from './LBCommunicator'
+// import LBCommunicator from './LBCommunicator'
 import initialState from './initialState'
 import * as DataVerse from '$shared/DataVerse'
 import {runSaga} from 'redux-saga'
@@ -13,9 +13,11 @@ import coreComponentDescriptors from '$studio/componentModel/coreComponentDescri
 export default class TheStudioClass {
   atom: $Call<typeof DataVerse.referencifyDeep, {state: CoreState, coreComponentDescriptors: typeof coreComponentDescriptors}>
   derivationContext: DataVerse.DerivationContext
+  _lastComponentInstanceId: number
   // _lbCommunicator: LBCommunicator
 
   constructor() {
+    this._lastComponentInstanceId = 0
     this.derivationContext = new DataVerse.DerivationContext()
     this.atom = DataVerse.referencifyDeep({
       state: initialState,
@@ -82,4 +84,16 @@ export default class TheStudioClass {
   //     return this.atom.getDeep(['state', 'componentDescriptors', 'custom', componentID])
   //   }
   // }
+
+  _getNewComponentInstanceId() {
+    return this._lastComponentInstanceId++
+  }
+
+  registerComponentInstance(isntanceId: number, componentInstance: React.Component<any, any>) {
+    // @todo
+  }
+
+  unregisterComponentInstance(isntanceId: number) {
+    // @todo
+  }
 }
