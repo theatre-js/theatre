@@ -39,9 +39,9 @@ class Content extends React.Component {
   _setRendererAndRoot() {
     let rendererID, renderRoot
     const nativeRoot = document.getElementById('theaterjs-root')
-    const {helpers} = this.hook
-    for (let key in helpers) {
-      const reactRoot = helpers[key].getReactElementFromNative(nativeRoot)
+    const {_renderers: renderers} = this.hook
+    for (let key in renderers) {
+      const reactRoot = renderers[key].ComponentTree.getClosestInstanceFromNode(nativeRoot)
       if (reactRoot !== null) {
         rendererID = key
         renderRoot = reactRoot
