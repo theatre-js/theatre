@@ -2,6 +2,7 @@
 import React from 'react'
 import cx from 'classnames'
 import css from './Node.css'
+import {type Path} from '$studio/elementTree/types'
 
 type Props = {
   data: {
@@ -9,10 +10,10 @@ type Props = {
   },
   isExpanded: boolean,
   children: Object,
-  path: Array<string>,
+  path: Path,
   toggleExpansion: Function,
   selectNode: Function,
-  selectedNodePath: $FlowFixMe,
+  selectedNodePath: Path,
 }
 
 const Node = (props: Props) => {

@@ -3,8 +3,13 @@ import React from 'react'
 import css from './index.css'
 import SettingsDivision from '$studio/common/components/SettingsDivision'
 import PanelInput from '$studio/common/components/PanelInput'
+import {type DraggingOutput} from '$studio/workspace/types'
 
-type Props = $FlowFixMe
+type Props = {
+  currentlyDraggingOutput: DraggingOutput,
+  inputs: Object,
+  updatePanelInput: Function,
+}
 
 const Settings = (props: Props) => {
   const {currentlyDraggingOutput, inputs, updatePanelInput} = props

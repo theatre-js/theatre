@@ -6,7 +6,7 @@ import compose from 'ramda/src/compose'
 import {connect} from 'react-redux'
 import {withRunSaga, type WithRunSagaProps} from '$shared/utils'
 import {type StoreState} from '$studio/types'
-import {type XY, type PanelPlacementSettings, type PanelType, type PanelConfiguration, type PanelPersistentState} from '$studio/workspace/types'
+import {type XY, type PanelPlacementSettings, type PanelType, type PanelConfiguration, type PanelPersistentState, type PanelOutput, type DraggingOutput} from '$studio/workspace/types'
 import {getPanelById, getCurrentlyDraggingOutput, getPanelInputs} from '$studio/workspace/selectors'
 import {setPanelPosition, setPanelSize, updatePanelData, setCurrentlyDraggingOutput, clearCurrentlyDraggingOutput} from '$studio/workspace/sagas'
 import panelTypes from '$studio/workspace/panelTypes'
@@ -23,6 +23,9 @@ type Props = WithRunSagaProps
     type: PanelType,
     configuration: PanelConfiguration,
     persistentState: PanelPersistentState,
+    currentlyDraggingOutput: DraggingOutput,
+    outputs: PanelOutput,
+    inputs: {[string]: Object},
   }
 
 type Boundary = {xlow: number, xhigh: number, ylow: number, yhigh: number}

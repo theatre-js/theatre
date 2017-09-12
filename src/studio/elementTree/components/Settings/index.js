@@ -4,7 +4,10 @@ import css from './index.css'
 import SettingsDivision from '$studio/common/components/SettingsDivision'
 import PanelOutput from '$studio/common/components/PanelOutput'
 
-type Props = $FlowFixMe
+type Props = {
+  setCurrentlyDraggingOutput: Function,
+  clearCurrentlyDraggingOutput: Function,
+}
 
 const Settings = (props: Props) => {
   return (

@@ -3,19 +3,27 @@ import React from 'react'
 import generateUniqueID from 'uuid/v4'
 import _ from 'lodash'
 import Node from './Node'
+import {type PanelOutput} from '$studio/workspace/types'
+import {type Path} from '$studio/elementTree/types'
+
+type Props = {
+  outputs: PanelOutput,
+  updatePanelOutput: Function,
+}
 
 type State = {
   nodes: Object,
 }
 
 class Content extends React.Component {
+  props: Props
   state: State
   hook: Object
   rendererID: ?string
   renderRoot: ?Object
   _refMap: Object
 
-  constructor(props: $FlowFixMe) {
+  constructor(props: Props) {
     super(props)
 
     this.hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__
@@ -119,7 +127,7 @@ class Content extends React.Component {
     return [nodes, refMap]
   }
 
-  _addNodeData(component: Object, containerPath: Array<string>, nodes: Object, refMap: Object) {
+  _addNodeData(component: Object, containerPath: Path, nodes: Object, refMap: Object) {
     const path = (refMap.has(component)) ? containerPath : containerPath.concat(generateUniqueID())
     const data = this._prepareNodeData(component, path)
     _.set(nodes, path, data)
@@ -127,7 +135,7 @@ class Content extends React.Component {
     return [nodes, refMap, path]
   }
 
-  _prepareNodeData(reactObject: Object, path: Array<string>) {
+  _prepareNodeData(reactObject: Object, path: Path) {
     const {_currentElement: {type}} = reactObject
     return {
       data: {
@@ -150,7 +158,7 @@ class Content extends React.Component {
     return children
   }
 
-  toggleNodeExpansionState = (path: Array<string>) => {
+  toggleNodeExpansionState = (path: Path) => {
     this.setState((state) => {
       const isExpandedPath = path.concat('isExpanded')
       _.set(state.nodes, isExpandedPath, !_.get(state.nodes, isExpandedPath))
@@ -158,7 +166,7 @@ class Content extends React.Component {
     })
   }
 
-  selectNode = (path: Array<string>) => {
+  selectNode = (path: Path) => {
     const {children, isExpanded, ...selectedNode} = _.get(this.state.nodes, path)
     this.props.updatePanelOutput({selectedNode})
   }

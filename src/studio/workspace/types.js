@@ -18,11 +18,22 @@ export type PanelPlacementSettings = {
   dim: XY,
 }
 
+export type PanelOutput = {[string]: Object}
+
+export type PanelInput = {[string]: PanelId}
+
+export type DraggingOutput = {
+  type: string,
+  panel: PanelId,
+}
+
 export type PanelProps = {
   type: PanelType,
   configuration: PanelConfiguration,
   placementSettings: PanelPlacementSettings,
   persistentState: PanelPersistentState,
+  inputs: PanelInput,
+  outputs: PanelOutput,
 }
 
 export type PanelObject = PanelProps & {
@@ -34,7 +45,7 @@ export type visiblePanelsList = Array<string>
 export type Panels = {
   byId: {[id: PanelId]: PanelObject},
   listOfVisibles: visiblePanelsList,
-  currentlyDraggingOutput: $FlowFixMe,
+  currentlyDraggingOutput: DraggingOutput,
 }
 
 export type WorkspaceNamespaceState = {
