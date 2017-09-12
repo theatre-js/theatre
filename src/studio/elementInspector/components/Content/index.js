@@ -1,10 +1,24 @@
 // @flow
-import React from 'react' 
+import React from 'react'
+import css from './index.css'
 
-const Content = (props) => {
+type Props = {
+  inputs: {
+    selectedNode: Object,
+  },
+}
+
+const Content = (props: Props) => {
   const {inputs: {selectedNode}} = props
   return (
-    <div>{selectedNode ? selectedNode.data.name : 'no element selected yet'}</div>
+    <div className={css.container}>
+      {selectedNode
+        ?
+        <div className={css.name}>{selectedNode.data.name}</div>
+        : 
+        <div className={css.noElement}>No element selected</div>
+      }
+    </div>
   )
 }
 
