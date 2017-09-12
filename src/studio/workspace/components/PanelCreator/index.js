@@ -7,9 +7,10 @@ import css from './index.css'
 
 type Props = PanelPlacementSettings & {
   onCreatingPanel: Function,
+  onCancel: Function,
 }
 
-const PanelCreator = ({onCreatingPanel, pos, dim}: Props) => {
+const PanelCreator = ({onCreatingPanel, pos, dim, onCancel}: Props) => {
   const style = {
     left: `${pos.x}%`,
     top: `${pos.y}%`,
@@ -18,6 +19,11 @@ const PanelCreator = ({onCreatingPanel, pos, dim}: Props) => {
   }
   return (
     <div className={css.container} style={style}>
+      <div className={css.topBar}>
+        <div
+          className={css.cancel}
+          onClick={() => onCancel()}>Cancel</div>
+      </div>
       <div className={css.title}>Choose type of the panel:</div>
       {
         _.map(panelTypes, (value, key) => (

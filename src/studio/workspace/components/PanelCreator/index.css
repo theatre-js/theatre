@@ -36,3 +36,20 @@
     background: #555;
   }
 }
+
+.topBar {
+  height: 30px;
+  text-align: left;
+}
+
+.cancel {
+  display: inline-block;
+  font-size: 14px;
+  color: rgba(150, 150, 150, .3);
+  cursor: pointer;
+
+  &:hover {
+    color: rgba(150, 150, 150, .8);
+    text-decoration: underline;
+  }
+}

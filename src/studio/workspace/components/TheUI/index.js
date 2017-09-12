@@ -65,6 +65,10 @@ class TheUI extends React.Component {
     this.props.runSaga(createPanel, panelProperties)
   }
 
+  cancelCreatingNewPanel = () => {
+    this.setState(() => ({isCreatingNewPanel: false}))
+  }
+
   render() {
     const {visiblePanels} = this.props
     const {isCreatingNewPanel} = this.state
@@ -78,6 +82,7 @@ class TheUI extends React.Component {
         {isCreatingNewPanel &&
           <PanelCreator
             onCreatingPanel={this.createNewPanel}
+            onCancel={this.cancelCreatingNewPanel}
             {...TheUI.getDefaultPanelPlacement()}/>
         }
         <button
