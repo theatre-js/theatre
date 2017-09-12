@@ -2,9 +2,10 @@
   cursor: pointer;
   opacity: .5;
   font-size: 13px;
+  color: #FFF;
 
   &:hover {
-    opacity: 1;
+    opacity: .8;
   }
 }
 
@@ -15,6 +16,11 @@
 
 .name {
   composes: clickable-text;
+
+  &.selected {
+    font-weight: bold;
+    opacity: .8;
+  }
 }
 
 .expandButton {

@@ -1,20 +1,26 @@
 // @flow
 import React from 'react'
+import cx from 'classnames'
 import css from './Node.css'
 
 type Props = {
   data: {
     name: string,
-    isExpanded: boolean,
   },
+  isExpanded: boolean,
   children: Object,
   path: Array<string>,
   toggleExpansion: Function,
+  selectNode: Function,
+  selectedNodePath: $FlowFixMe,
 }
 
 const Node = (props: Props) => {
-  const {data: {name, isExpanded}, children, path, toggleExpansion} = props
+  const {data: {name}, isExpanded, selectedNodePath, children, path, toggleExpansion, selectNode} = props
   const hasChildren = (children != null)
+  const nameClasses = cx(css.name, {
+    [css.selected]: (selectedNodePath === path),
+  })
   return (
     <div className={css.container}>
       {hasChildren &&
@@ -24,7 +30,9 @@ const Node = (props: Props) => {
           {isExpanded ? '-' : '+'}
         </div>
       }
-      <div className={css.name}>
+      <div
+        className={nameClasses}
+        onClick={() => selectNode(path)}>
         {name}
       </div>
       {isExpanded && hasChildren &&
@@ -33,6 +41,8 @@ const Node = (props: Props) => {
             <Node
               key={key}
               toggleExpansion={toggleExpansion}
+              selectNode={selectNode}
+              selectedNodePath={selectedNodePath}
               {...children[key]} />
           )}
         </div>

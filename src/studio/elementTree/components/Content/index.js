@@ -8,7 +8,7 @@ type State = {
   nodes: Object,
 }
 
-class ElementTree extends React.Component {
+class Content extends React.Component {
   state: State
   hook: Object
   rendererID: ?string
@@ -132,9 +132,10 @@ class ElementTree extends React.Component {
     return {
       data: {
         name: (typeof type === 'string') ? type : type.name,
-        isExpanded: true,
       },
+      isExpanded: true,
       path,
+      _ref: reactObject,
     }
   }
 
@@ -151,14 +152,21 @@ class ElementTree extends React.Component {
 
   toggleNodeExpansionState = (path: Array<string>) => {
     this.setState((state) => {
-      const isExpandedPath = path.concat('data', 'isExpanded')
+      const isExpandedPath = path.concat('isExpanded')
       _.set(state.nodes, isExpandedPath, !_.get(state.nodes, isExpandedPath))
       return {nodes: state.nodes}
     })
   }
 
+  selectNode = (path: Array<string>) => {
+    const {children, isExpanded, ...selectedNode} = _.get(this.state.nodes, path)
+    this.props.updatePanelOutput({selectedNode})
+  }
+
   render() {
     const {nodes} = this.state
+    const {outputs: {selectedNode}} = this.props
+    const selectedNodePath = (selectedNode != null) ? selectedNode.path : null
     return (
       <div>
         {
@@ -166,6 +174,8 @@ class ElementTree extends React.Component {
             <Node
               key={key}
               toggleExpansion={this.toggleNodeExpansionState}
+              selectNode={this.selectNode}
+              selectedNodePath={selectedNodePath}
               {...nodes[key]} />
           )
         }
@@ -174,4 +184,4 @@ class ElementTree extends React.Component {
   }
 }
 
-export default ElementTree
+export default Content

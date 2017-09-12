@@ -58,6 +58,8 @@ class TheUI extends React.Component {
       persistentState: TheUI.getDefaultPanelPersistentState(),
       configuration: TheUI.getDefaultPanelConfig(),
       placementSettings: TheUI.getDefaultPanelPlacement(),
+      inputs: {},
+      outputs: {},
     }
     this.setState(() => ({isCreatingNewPanel: false}))
     this.props.runSaga(createPanel, panelProperties)

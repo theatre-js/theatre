@@ -25,3 +25,15 @@ export function* setPanelSize(panelId: PanelId, dim: XY): Generator<*, void, *> 
 export function* updatePanelData(panelId: PanelId, property: string, newData: Object): Generator<*, void, *> {
   yield reduceState(['workspace', 'panels', 'byId', panelId, property], (data) => ({...data, ...newData}))
 }
+
+export function* setCurrentlyDraggingOutput(panelId: PanelId, type: string): Generator<*, void, *> {
+  const data = {
+    type,
+    panel: panelId,
+  }
+  yield reduceState(['workspace', 'panels', 'currentlyDraggingOutput'], () => data)
+}
+
+export function* clearCurrentlyDraggingOutput(): Generator<*, void, *> {
+  yield reduceState(['workspace', 'panels', 'currentlyDraggingOutput'], () => null)
+}

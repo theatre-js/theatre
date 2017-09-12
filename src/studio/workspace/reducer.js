@@ -5,6 +5,7 @@ const defaultState: WorkspaceNamespaceState = {
   panels: {
     byId: {},
     listOfVisibles: [],
+    currentlyDraggingOutput: null,
   },
   currentCanvasCommponentID: undefined,
 }

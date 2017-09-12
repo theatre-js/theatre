@@ -34,6 +34,7 @@ export type visiblePanelsList = Array<string>
 export type Panels = {
   byId: {[id: PanelId]: PanelObject},
   listOfVisibles: visiblePanelsList,
+  currentlyDraggingOutput: $FlowFixMe,
 }
 
 export type WorkspaceNamespaceState = {

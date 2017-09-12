@@ -1,10 +1,11 @@
 // @flow
 import React from 'react' 
 
-const ElementInspector = () => {
+const Content = (props) => {
+  const {inputs: {selectedNode}} = props
   return (
-    <div>Element Inspector</div>
+    <div>{selectedNode ? selectedNode.data.name : 'no element selected yet'}</div>
   )
 }
 
-export default ElementInspector
+export default Content
