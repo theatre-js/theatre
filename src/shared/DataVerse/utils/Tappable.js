@@ -1,5 +1,4 @@
 // @flow
-import forEach from 'lodash/forEach'
 
 type Untap = () => void
 type UntapFromSource = () => void

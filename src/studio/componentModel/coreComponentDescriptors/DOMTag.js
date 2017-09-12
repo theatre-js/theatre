@@ -1,4 +1,4 @@
-// @flow
+k// @flow
 import {TheaterJSComponent, typeSystem} from '$studio/handy'
 import * as D from '$shared/DataVerse'
 import * as React from 'react'
@@ -52,7 +52,7 @@ const base = {
     return upperWire.get('componentDidMountHooks').map((theHooks: $FixMe) => {
       return theHooks.concat([
         // dragons
-        ])
+      ])
     })
   },
 
@@ -69,6 +69,7 @@ const base = {
 }
 
 class DOMTag extends TheaterJSComponent<{}> {
+
   modifyInitialWire(initialWire: $FixMe) {
     const extendedWithBase = initialWire.extend(base)
     const extendedWithModifiers = applyModifiers(extendedWithBase)

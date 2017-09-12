@@ -6,6 +6,7 @@ import * as D from '$shared/DataVerse'
 
 type Props<WiredProps> = {wiredProps: WiredProps, key: string} & WithStudioProps
 
+// $FixMe
 const emptyIterableArrayWire = new D.IterableArrayWire([])
 
 const initialWireLookupTable = {
@@ -42,8 +43,9 @@ class TheaterJSComponent<WiredProps> extends React.PureComponent<Props<WiredProp
   constructor(...args: $IntentionalAny) {
     super(...args)
     this._instanceId = this.props.studio._getNewComponentInstanceId()
+    // this._state = new
 
-    this._initialWire = new D.NonIterableMapWire(initialWireLookupTable).extend({componentInstance: this})
+    this._initialWire = null //new D.NonIterableMapWire(initialWireLookupTable).extend({componentInstance: this})
     this._wire = this.modifyInitialWire(this._initialWire)
 
     this.props.studio.registerComponentInstance(this._instanceId, this)

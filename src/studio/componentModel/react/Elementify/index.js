@@ -6,7 +6,7 @@ import * as D from '$shared/DataVerse'
 // import {TheaterJSComponent} from '$studio/handy'
 
 type Props = {
-  descriptor: $Call<typeof D.referencifyDeep, ComponentInstantiationDescriptor>,
+  descriptor: $Call<typeof D.atomifyDeep, ComponentInstantiationDescriptor>,
 }
 
 class Elementify extends React.PureComponent<Props, void> {

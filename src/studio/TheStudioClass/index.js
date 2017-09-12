@@ -11,15 +11,15 @@ import {type CoreState} from '$studio/types'
 import coreComponentDescriptors from '$studio/componentModel/coreComponentDescriptors'
 
 export default class TheStudioClass {
-  atom: $Call<typeof DataVerse.referencifyDeep, {state: CoreState, coreComponentDescriptors: typeof coreComponentDescriptors}>
-  derivationContext: DataVerse.DerivationContext
+  atom: $Call<typeof DataVerse.atomifyDeep, {state: CoreState, coreComponentDescriptors: typeof coreComponentDescriptors}>
+  dataverseContext: DataVerse.Context
   _lastComponentInstanceId: number
   // _lbCommunicator: LBCommunicator
 
   constructor() {
     this._lastComponentInstanceId = 0
-    this.derivationContext = new DataVerse.DerivationContext()
-    this.atom = DataVerse.referencifyDeep({
+    this.dataverseContext = new DataVerse.Context()
+    this.atom = DataVerse.atomifyDeep({
       state: initialState,
       coreComponentDescriptors,
     })
@@ -29,7 +29,7 @@ export default class TheStudioClass {
         '$studio/componentModel/coreComponentDescriptors',
         () => {
           const newCoreComponentDescriptors = require('$studio/componentModel/coreComponentDescriptors').default
-          this.atom.set('coreComponentDescriptors', DataVerse.referencifyDeep(newCoreComponentDescriptors))
+          this.atom.set('coreComponentDescriptors', DataVerse.atomifyDeep(newCoreComponentDescriptors))
         }
       )
     }

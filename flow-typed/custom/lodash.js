@@ -31,3 +31,10 @@ declare module 'lodash/forEach' {
     (<O: {}, K: $Keys<O>, V: $ElementType<O, K>, FN: (v: V, k: K) => ?false>(obj: O, fn: FN) => void) &
     (<V, A: Array<V>, FN: (v: V, i: number) => ?false>(array: A, fn: FN) => void)
 }
+
+declare module 'lodash/mapValues' {
+  declare type Fn<T> = () => T
+
+  declare module.exports:
+    <O: {}, K: $Keys<O>, V: $ElementType<O, K>, T>(o: O, mapper: (value: V, k: K) => T) => $ObjMap<O, Fn<T>>
+}

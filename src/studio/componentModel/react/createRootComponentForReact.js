@@ -10,10 +10,10 @@ type Props = {
   children: React.Node,
 }
 
-type ChildInstantiationDescriptor = $Call<typeof D.referencifyDeep, {
+type ChildInstantiationDescriptor = $Call<typeof D.atomifyDeep, {
   componentID: 'TheaterJS/Core/RenderCurrentCanvas',
   props: {
-    children: D.Reference<React.Node>,
+    children: D.Atom<React.Node>,
   },
 }>
 
@@ -24,10 +24,10 @@ const createRootComponentForReact = (studio: TheStudioClass) => {
     constructor(props: Props) {
       super(props)
 
-      this.childInstantiationDescriptor = D.referencifyDeep({
+      this.childInstantiationDescriptor = D.atomifyDeep({
         componentID: 'TheaterJS/Core/RenderCurrentCanvas',
         props: {
-          children: new D.Reference(props.children),
+          children: new D.Atom(props.children),
         },
       })
     }
