@@ -13,7 +13,7 @@ type Props = {
 type ChildInstantiationDescriptor = $Call<typeof D.atomifyDeep, {
   componentID: 'TheaterJS/Core/RenderCurrentCanvas',
   props: {
-    children: D.Atom<React.Node>,
+    children: D.BoxAtom<React.Node>,
   },
 }>
 
@@ -27,6 +27,7 @@ const createRootComponentForReact = (studio: TheStudioClass) => {
       this.childInstantiationDescriptor = D.atomifyDeep({
         componentID: 'TheaterJS/Core/RenderCurrentCanvas',
         props: {
+          // $FixMe
           children: new D.Atom(props.children),
         },
       })

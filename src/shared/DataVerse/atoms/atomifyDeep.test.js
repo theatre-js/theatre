@@ -1,8 +1,8 @@
 // @flow
 import {default as atomifyDeep} from './atomifyDeep'
-import {type IArrayAtom} from './ArrayAtom'
-import {type IMapAtom} from './MapAtom'
-import {type IAtom} from './Atom'
+import type {IArrayAtom} from './ArrayAtom'
+import type {IMapAtom} from './MapAtom'
+import type {IBoxAtom} from './BoxAtom'
 
 describe('DataVerse.atomifyDeep', () => {
   it('shoudl work', () => {
@@ -22,13 +22,13 @@ describe('DataVerse.atomifyDeep', () => {
   function typeTests() { // eslint-disable-line no-unused-vars
     const a = atomifyDeep('hi');
 
-    (atomifyDeep({a: 'foo'}): IMapAtom<{a: IAtom<string>}>);
+    (atomifyDeep({a: 'foo'}): IMapAtom<{a: IBoxAtom<string>}>);
     // $FlowExpectError
     (atomifyDeep({a: 'foo'}): IMapAtom<{a: IAtom<number>}>);
     (atomifyDeep({a: 'foo', b: 12}): IMapAtom<{a: IAtom<string>, b: IAtom<number>}>);
 
     (atomifyDeep({a: 'foo', b: 12}): IMapAtom<{a: IAtom<string>, b: IAtom<number>}>);
-    (atomifyDeep({a: 'foo', b: {bar: 'bar', baz: true}}): IMapAtom<{a: IAtom<string>, b: IMapAtom<{bar: IAtom<string>, baz: IAtom<boolean>}>}>);
+    (atomifyDeep({a: 'foo', b: {bar: 'bar', baz: true}}): IMapAtom<{a: IAtom<string>, b: IMapAtom<{bar: IAtom<string>, baz: IAtom<boolean>}>}>)
 
     type A = {a: string, b: number, c: boolean}
     type AR = $Call<typeof atomifyDeep, A>

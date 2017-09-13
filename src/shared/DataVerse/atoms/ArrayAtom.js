@@ -1,48 +1,49 @@
 // @flow
+
 import {default as CompositeAtom, type ICompositeAtom} from './utils/CompositeAtom'
 import {forEach} from 'lodash'
-import {type IAtom} from './utils/Atom'
+import type {IAtom} from './utils/Atom'
 import Tappable from '$shared/DataVerse/utils/Tappable'
 import Emitter from '$shared/DataVerse/utils/Emitter'
+import type {AddressedChangeset} from '$shared/DataVerse/types'
+
+type Unboxed<O> = $FixMe // eslint-disable-line no-unused-vars
+
+export type ChangeType<V> = {
+  startIndex: number,
+  deleteCount: number,
+  addedRefs: Array<V>,
+}
+
+export type DeepChangeType<V> = AddressedChangeset & {type: 'ArrayChange'} &  ChangeType<V>
+export type DeepDiffType<V> = AddressedChangeset & {type: 'ArrayDiff', startIndex: number, deepUnboxOfDeletedRows: Array<Unboxed<V>>, deepUnboxOfAddedRows: Array<Unboxed<V>>}
 
 export interface IArrayAtom<V: IAtom> extends IAtom, ICompositeAtom {
   isArrayAtom: true,
   set(key: number, v: V): $FixMe,
   get(index: number): ?V,
-  diffs: () => Tappable<ArrayDiff<V>>,
-  deepDiffs: () => Tappable<ArrayDeepDiff<V>>,
-  push(...rows: Array<V>): void,
+  push(rows: Array<V>): void,
+  splice(startIndex: number, deleteCount: number, toAdd: Array<V>): void,
   pop(): ?V,
   shift(): ?V,
   head(): ?V,
   last(): ?V,
   unshift(row: V): void,
-}
 
-type ArrayDiff<V> = {
-  startIndex: number,
-  deleteCount: number,
-  additions: Array<V>,
-}
-
-type ArrayDeepDiff<T> = {
-  type: 'ArrayDeepDiff',
-  startIndex: number,
-  deletedRows: Array<$FixMe>,
-  addedRows: Array<$FixMe>,
+  chnages: () => Tappable<ChangeType<V>>,
 }
 
 export default class ArrayAtom<V: IAtom> extends CompositeAtom implements IArrayAtom<V> {
   isArrayAtom = true
   _internalArray: Array<$FixMe>
-  _deepDiffEmitter: Emitter<ArrayDeepDiff<V>>
-  _diffEmitter: Emitter<ArrayDiff<V>>
-  diffs: () => Tappable<ArrayDiff<V>>
-  deepDiffs: () => Tappable<ArrayDeepDiff<V>>
+  chnages: () => Tappable<ChangeType<V>>
+  _changeEmitter: Emitter<ChangeType<V>>
+  _refToIndex: *
 
   constructor(a: Array<V>) {
     super()
     this._internalArray = []
+    this._refToIndex = new Map()
 
     forEach(a, (value: V) => {
       this._pushWithoutInvokingEvents(value)
@@ -51,12 +52,8 @@ export default class ArrayAtom<V: IAtom> extends CompositeAtom implements IArray
 
   _pushWithoutInvokingEvents(value: V) {
     this._internalArray.push(value)
+    this._refToIndex.set(value, this._internalArray.length - 1)
     this._adopt(this._internalArray.length - 1, value)
-  }
-
-  _setWithoutInvokingEvents(index: number, value: V) {
-    this._internalArray[index] = value
-    this._adopt(index, value)
   }
 
   unboxDeep(): $FixMe {
@@ -71,47 +68,75 @@ export default class ArrayAtom<V: IAtom> extends CompositeAtom implements IArray
     return this._internalArray.length
   }
 
-  splice(startIndex: number, deleteCount: number, ...refsToAdd: Array<V>) {
-    const removedRefs = new Array(deleteCount).map((i) => i + startIndex).map((i) => this.get(i))
+  _keyOf(key: string | number, ref: IAtom) {
+    return this._refToIndex.get(ref)
+  }
 
-    removedRefs.forEach((r) => {
-      if (r) r._unsetParent()
+  splice(startIndex: number, deleteCount: number, refsToAdd: Array<V>) {
+    const removedRefs = (new Array(deleteCount)).fill(null).map((_, i) => i + startIndex).map((i) => this.get(i))
+
+    removedRefs.forEach((r, i) => {
+      if (r) {
+        this._unadopt(i + startIndex, r)
+        this._refToIndex.delete(r)
+      }
     })
 
-    this._internalArray.splice(startIndex, deleteCount, refsToAdd)
-    refsToAdd.forEach((ref) => {
-      ref._setParent(this)
+    this._internalArray.splice(startIndex, deleteCount, ...refsToAdd)
+    refsToAdd.forEach((ref, i) => {
+      const index = i + startIndex
+      this._refToIndex.set(ref, index)
+      this._adopt(index, ref)
     })
+
+    if (deleteCount !== refsToAdd.length) {
+      for (let i = startIndex + refsToAdd.length; i < this._internalArray.length; i++) {
+        this._refToIndex.set(this._internalArray[i], i)
+      }
+    }
 
     if (this._deepDiffEmitter.hasTappers()) {
-      const removedRefsDeeplyUnboxed = removedRefs.map((r) => r ? r.unboxDeep() : undefined)
+      const deletedRefsDeeplyUnboxed = removedRefs.map((r) => r ? r.unboxDeep() : undefined)
       const addedRefsDeeplyUnboxed = refsToAdd.map((r) => r.unboxDeep())
       this._deepDiffEmitter.emit({
-        type: 'ArrayDeepDiff',
+        address: [],
+        type: 'ArrayDiff',
         startIndex,
-        deletedRows: removedRefsDeeplyUnboxed,
-        addedRows: addedRefsDeeplyUnboxed,
+        deepUnboxOfDeletedRows: deletedRefsDeeplyUnboxed,
+        deepUnboxOfAddedRows: addedRefsDeeplyUnboxed,
       })
     }
 
-    if (this._diffEmitter.hasTappers()) {
-      this._diffEmitter.emit({
-        startIndex, deleteCount, additions: refsToAdd,
+    if (this._deepChangeEmitter.hasTappers()) {
+      this._deepChangeEmitter.emit({
+        address: [],
+        type: 'ArrayChange',
+        startIndex,
+        deleteCount: deleteCount,
+        addedRefs: refsToAdd,
+      })
+    }
+
+    if (this._changeEmitter.hasTappers()) {
+      this._changeEmitter.emit({
+        startIndex,
+        deleteCount: deleteCount,
+        addedRefs: refsToAdd,
       })
     }
   }
 
   set(index: number, value: V) {
-    return this.splice(index, 1, value)
+    return this.splice(index, 1, [value])
   }
 
-  push(...rows: Array<V>) {
-    return this.splice(this.length(), 0, ...rows)
+  push(rows: Array<V>) {
+    return this.splice(this.length(), 0, rows)
   }
 
   pop() {
     const last = this.last()
-    this.splice(this.length() - 1, 1)
+    this.splice(this.length() - 1, 1, [])
     return last
   }
 
@@ -125,12 +150,12 @@ export default class ArrayAtom<V: IAtom> extends CompositeAtom implements IArray
 
   shift() {
     const head = this.head()
-    this.splice(0, 1)
+    this.splice(0, 1, [])
     return head
   }
 
   unshift(row: V) {
-    this.splice(0, 0, row)
+    this.splice(0, 0, [row])
   }
 
   get(index: number): ?V {

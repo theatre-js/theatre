@@ -2,17 +2,18 @@
 import {default as Atom, type IAtom} from './utils/Atom'
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import Tappable from '$shared/DataVerse/utils/Tappable'
-import {type AddressedChangeset} from '$shared/DataVerse/types'
+import type {AddressedChangeset} from '$shared/DataVerse/types'
 
-type DeepChangeType<V> = AddressedChangeset & {type: 'AtomChange', newValue: V}
-type DeepDiffType<V> = AddressedChangeset & {type: 'AtomDiff', oldValue: V, newValue: V}
+export type ChangeType<V> = V
+export type DeepChangeType<V> = AddressedChangeset & {type: 'BoxChange', newValue: ChangeType<V>}
+export type DeepDiffType<V> = AddressedChangeset & {type: 'BoxDiff', oldValue: V, newValue: V}
 
 export interface IBoxAtom<V> extends IAtom {
   isSingleAtom: true,
   unboxDeep(): V,
   set(v: V): IBoxAtom<V>,
   get(): V,
-  chnages: () => Tappable<V>,
+  chnages: () => Tappable<ChangeType<V>>,
   deepChanges: () => Tappable<DeepChangeType<V>>,
   deepDiffs: () => Tappable<DeepDiffType<V>>,
 }
@@ -21,11 +22,14 @@ export interface IBoxAtom<V> extends IAtom {
 export default class BoxAtom<V> extends Atom implements IBoxAtom<V> {
   isSingleAtom = true
   _value: V
-  _changeEmitter: Emitter<V>
+
+  _changeEmitter: Emitter<ChangeType<V>>
+  chnages: () => Tappable<ChangeType<V>>
+
   _deepChangeEmitter: Emitter<DeepChangeType<V>>
-  _deepDiffEmitter: Emitter<DeepDiffType<V>>
-  chnages: () => Tappable<V>
   deepChanges: () => Tappable<DeepChangeType<V>>
+
+  _deepDiffEmitter: Emitter<DeepDiffType<V>>
   deepDiffs: () => Tappable<DeepDiffType<V>>
 
   constructor(v: V) {
@@ -37,7 +41,7 @@ export default class BoxAtom<V> extends Atom implements IBoxAtom<V> {
     return this._value
   }
 
-  set(value: V): Atom<V> {
+  set(value: V): this {
     const oldValue = this._value
     this._value = value
 
@@ -46,11 +50,11 @@ export default class BoxAtom<V> extends Atom implements IBoxAtom<V> {
     }
 
     if (this._deepChangeEmitter.hasTappers()) {
-      this._deepChangeEmitter.emit({address: [], type: 'AtomChange', newValue: value})
+      this._deepChangeEmitter.emit({address: [], type: 'BoxChange', newValue: value})
     }
 
     if (this._deepDiffEmitter.hasTappers()) {
-      this._deepDiffEmitter.emit({address: [], type: 'AtomDiff', oldValue: oldValue, newValue: value})
+      this._deepDiffEmitter.emit({address: [], type: 'BoxDiff', oldValue: oldValue, newValue: value})
     }
 
     return this

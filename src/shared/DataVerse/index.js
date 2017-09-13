@@ -1,6 +1,6 @@
 // @flow
 import Context from './Context'
-import Atom from './atoms/Atom'
+import BoxAtom from './atoms/BoxAtom'
 import MapAtom from './atoms/MapAtom'
 import ArrayAtom from './atoms/ArrayAtom'
 import Derivation from './derivations/Derivation'
@@ -10,7 +10,7 @@ import atomifyDeep from './atoms/atomifyDeep'
 
 export {
   Context,
-  Atom,
+  BoxAtom,
   MapAtom,
   ArrayAtom,
   Derivation,

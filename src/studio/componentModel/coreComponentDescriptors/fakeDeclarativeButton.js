@@ -53,7 +53,7 @@ const fakeDescriptor: ComponentDescriptor = {
               type: 'ReferenceToValue',
               location: {
                 type: 'LocalVariableInOwner',
-                valueName: ''
+                valueName: '',
               },
             },
           },

@@ -19,8 +19,8 @@ export default class Atom implements IAtom {
   isAtom = true
   _changeEmitter: Emitter<*>
   _deepChangeEmitter: Emitter<*>
-  _parent: ?IAtom
   _deepDiffEmitter: Emitter<*>
+  _parent: ?IAtom
   +unboxDeep: () => mixed
 
   constructor() {

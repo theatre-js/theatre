@@ -1,9 +1,9 @@
 // @flow
 import isPlainObject from 'lodash/isPlainObject'
-import {type IAtom, default as $Atom} from './Atom'
+import {type IBoxAtom, default as BoxAtom} from './BoxAtom'
 import {type IMapAtom, default as MapAtom} from './MapAtom'
-import mapValues from 'lodash/mapValues'
 import {type IArrayAtom, default as ArrayAtom} from './ArrayAtom'
+import mapValues from 'lodash/mapValues'
 import {type IAtom, default as Atom} from './utils/Atom'
 
 type InstanceOfAnyClass = {+constructor: Function}
@@ -12,9 +12,9 @@ type AtomifyDeepFn =
   (<V: IAtom>(v: V) => V) &
   // (<V, A: Array<V>>(a: A) => IArrayAtom<AtomifyDeepType<V>>) &
   (<V, A: Array<V>>(a: A) => IArrayAtom<$Call<AtomifyDeepFn, V>>) &
-  (<V: InstanceOfAnyClass>(v: V) => IAtom<V>) &
+  (<V: InstanceOfAnyClass>(v: V) => IBoxAtom<V>) &
   (<V: {}>(v: V) => IMapAtom<$ObjMap<V, AtomifyDeepFn>>) &
-  (<V>(v: V) => IAtom<V>)
+  (<V>(v: V) => IBoxAtom<V>)
 
 // export type AtomifyDeepType<V> = $Call<AtomifyDeepFn, V>
 
@@ -46,7 +46,7 @@ export const fromJSObject = (jsObject: {[key: number | string]: mixed}): $FixMe 
 }
 
 export const fromJSPrimitive = (jsPrimitive: mixed): $FixMe => {
-  return new $Atom(jsPrimitive)
+  return new BoxAtom(jsPrimitive)
 }
 
 export default atomifyDeep

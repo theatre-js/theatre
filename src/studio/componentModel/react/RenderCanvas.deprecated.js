@@ -25,7 +25,7 @@ export default compose(
     return {
       $componentIDToBeRenderedAsCurrentCanvas:
         props.studio.atom.getDeepWithPlaceholder(['workspace', 'componentIDToBeRenderedAsCurrentCanvas'])
-        .changesToSelf().map((a) => a.getValue() || 'TheaterJS/Core/PassThroughCanvas'),
+          .changesToSelf().map((a) => a.getValue() || 'TheaterJS/Core/PassThroughCanvas'),
     }
   }),
   withStudio,

@@ -35,9 +35,9 @@ describe('DataVerse.BoxAtom', () => {
 
     expect(deepChanges).toHaveLength(3)
     expect(deepChanges).toMatchObject([
-      {address: [], newValue: 'bar'},
-      {address: [], newValue: 'bar'},
-      {address: [], newValue: 'baz'},
+      {address: [], type: 'BoxChange', newValue: 'bar'},
+      {address: [], type: 'BoxChange', newValue: 'bar'},
+      {address: [], type: 'BoxChange', newValue: 'baz'},
     ])
   })
 
@@ -51,9 +51,9 @@ describe('DataVerse.BoxAtom', () => {
 
     expect(deepDiffs).toHaveLength(3)
     expect(deepDiffs).toMatchObject([
-      {address: [], oldValue: 'foo', newValue: 'bar'},
-      {address: [], oldValue: 'bar', newValue: 'bar'},
-      {address: [], oldValue: 'bar', newValue: 'baz'},
+      {address: [], type: 'BoxDiff', oldValue: 'foo', newValue: 'bar'},
+      {address: [], type: 'BoxDiff', oldValue: 'bar', newValue: 'bar'},
+      {address: [], type: 'BoxDiff', oldValue: 'bar', newValue: 'baz'},
     ])
   })
 })

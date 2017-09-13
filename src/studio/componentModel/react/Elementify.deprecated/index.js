@@ -33,14 +33,14 @@ class Elementify extends React.Component<Props, State> {
 
     const RendererComponent =
       componentType === 'UserDefinedComponent' ? UserDefinedComponent :
-      componentType === 'TheaterJSCodedComponent' ? TheaterJSCodedComponent :
-      componentType === 'UserCodedComponent' ? UserCodedComponent : null
+        componentType === 'TheaterJSCodedComponent' ? TheaterJSCodedComponent :
+          componentType === 'UserCodedComponent' ? UserCodedComponent : null
 
     if (RendererComponent) {
       return <RendererComponent
         instantiationDescriptor$={this.props.instantiationDescriptor$}
         componentDescriptor$={componentDescriptor$$.getValue()}
-        />
+      />
     } else {
       // @todo
       return null
