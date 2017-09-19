@@ -8,6 +8,10 @@ const panelTypes = {
     label: 'Element Inspector',
     requireFn: () => require('$studio/elementInspector'),
   },
+  animationTimeline: {
+    label: 'Animation Timeline',
+    requireFn: () => require('$studio/animationTimeline'),
+  },
 }
 
 export default panelTypes
