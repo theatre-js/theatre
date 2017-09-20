@@ -3,7 +3,6 @@ import type {Address, IReactive} from '$shared/DataVerse/types'
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import Tappable from '$shared/DataVerse/utils/Tappable'
 import type {ICompositeAtom} from './CompositeAtom'
-import Pointer from '$shared/DataVerse/utils/Pointer'
 
 export interface IAtom extends IReactive {
   isAtom: true,
@@ -75,6 +74,8 @@ export default class Atom implements IAtom {
   }
 
   pointer() {
-    return new Pointer(this.getAddress())
+    return new Pointer.default(this.getAddress())
   }
 }
+
+const Pointer = require('$shared/DataVerse/utils/Pointer')

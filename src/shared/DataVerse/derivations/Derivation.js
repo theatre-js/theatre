@@ -1,7 +1,6 @@
 // @flow
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import Context from '$shared/DataVerse/Context'
-import SimpleDerivation from './SimpleDerivation'
 
 export default class Derivation {
   _changeEmitter: *
@@ -89,9 +88,9 @@ export default class Derivation {
   }
 
   _reactToNumberOfTappersChange() {
-    if (this._changeEmitter.hasTappers() && !this._isUptodate && this._dataVerseContext) {
-      this._dataVerseContext.addDerivationToUpdate(this)
-    }
+    // if (this._changeEmitter.hasTappers() && !this._isUptodate && this._dataVerseContext) {
+    //   this._dataVerseContext.addDerivationToUpdate(this)
+    // }
 
     this._reevaluateWhetherPeopleCare()
   }
@@ -107,25 +106,21 @@ export default class Derivation {
   }
 
   map(fn: (oldVal: $FixMe) => $FixMe): Derivation {
-    return new SimpleDerivation({dep: this}, (deps) => fn(deps.dep.getValue()))
+    return new SimpleDerivation.default({dep: this}, (deps) => fn(deps.dep.getValue()))
   }
 
-  flatMap(fn: (oldVal: $FixMe) => Derivation) {
+  flatMap(fn: (oldVal: $FixMe) => Derivation | mixed) {
     return this.map(fn).flatten()
   }
 
-  flatMapDeep(fn: (oldVal: $FixMe) => Derivation) {
-    return this.map(fn).flattenDeep()
-  }
-
   flatten() {
-    return new FlattenDerivation(this)
+    return this.flattenDeep(1)
   }
 
-  flattenDeep() {
-    return new FlattenDeepDerivation(this)
+  flattenDeep(levels?: number) {
+    return new FlattenDeepDerivation.default(this, levels)
   }
 }
 
-const FlattenDerivation = require('./FlattenDerivation').default
-const FlattenDeepDerivation = require('./FlattenDeepDerivation').default
+const FlattenDeepDerivation = require('./FlattenDeepDerivation')
+const SimpleDerivation = require('./SimpleDerivation')

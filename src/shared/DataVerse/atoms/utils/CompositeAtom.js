@@ -58,6 +58,7 @@ export default class CompositeAtom extends Atom implements ICompositeAtom {
   }
 
   _unadopt(key: string | number, ref: IAtom) {
+    if (!isAtom(ref)) return
     ref._unsetParent()
     // $FlowIgnore
     this._deepChangeUntappersForEachChild.get(ref)()

@@ -10,7 +10,7 @@ describe('FlattenDeepDerivation', () => {
     const b = new D.BoxAtom(3)
     const aD = new DerivationOfABoxAtom(a)
     const bD = new DerivationOfABoxAtom(b)
-    const final = aD.flatMapDeep((n) => bD.map((m) => m + n))
+    const final = aD.map((n) => bD.map((m) => m + n)).flattenDeep()
 
     expect(final.getValue()).toEqual(4)
     a.set(2)
@@ -62,16 +62,24 @@ describe('FlattenDeepDerivation', () => {
     const aD = a.derivation()
     const b = new D.BoxAtom('b')
     const bD = b.derivation()
-    const cD = aD.flatMapDeep((aValue) => bD.map((bValue) => aValue + bValue))
+    const cD = aD.map((aValue) => bD.map((bValue) => d({}, () => aValue + bValue))).flattenDeep()
 
     expect(cD.getValue()).toEqual('ab')
     cD.setDataVerseContext(context)
     const changes = []
-    // debugger
     cD.changes().tap((c) => {changes.push(c)})
 
     b.set('bb')
     context.tick()
     expect(changes).toMatchObject(['abb'])
+  })
+
+  it('depth', () => {
+    const a = new D.BoxAtom(1)
+    const b = new D.BoxAtom(3)
+    const aD = new DerivationOfABoxAtom(a)
+    const bD = new DerivationOfABoxAtom(b)
+    expect(aD.map(() => bD).flattenDeep(0).getValue()).toEqual(bD)
+    expect(aD.map(() => bD).flattenDeep(1).getValue()).toEqual(3)
   })
 })

@@ -4,10 +4,12 @@ import Derivation from './Derivation'
 export default class FlattenDeepDerivation extends Derivation {
   _stack: Array<Derivation>
   _updateNeededFromIndex: number
+  _maxDepth: number
 
-  constructor(depDerivation: Derivation) {
+  constructor(depDerivation: Derivation, maxDepth: number = 200) {
     super()
     this._stack = [depDerivation]
+    this._maxDepth = maxDepth
     this._updateNeededFromIndex = 0
 
     depDerivation._addDependent(this)
@@ -28,12 +30,13 @@ export default class FlattenDeepDerivation extends Derivation {
 
     let i = updateFromIndex
     while(true) {
-      if (i > 200) {
-        console.error(`Infinite loop here`)
-        return undefined
-      }
+      const currentDepth = i
       const topDerivation = this._stack[i]
       const innerValue = topDerivation.getValue()
+      if (currentDepth === this._maxDepth) {
+        return innerValue
+      }
+
       if (innerValue instanceof Derivation) {
         this._stack.push(innerValue)
         innerValue._addDependent(this)
@@ -59,6 +62,12 @@ export default class FlattenDeepDerivation extends Derivation {
     } else {
       this._updateNeededFromIndex = indexOfDep
       Derivation.prototype._youMayNeedToUpdateYourself.call(this)
+    }
+  }
+
+  _onWhetherPeopleCareAboutMeStateChange(peopleCare: boolean) {
+    if (peopleCare) {
+      this.getValue()
     }
   }
 }
