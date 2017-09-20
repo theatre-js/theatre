@@ -1,40 +1,24 @@
 // @flow
 
-// export type DeepDiff = {
-//   oldValue: mixed,
-//   newValue: mixed,
-//   address: Array<string | number>,
-// }
-
-// export type AtomChangeset = AddressedChangeset &
-
 export type AddressedChangeset = {address: Array<string | number>}
-// export type AnyChangeset = AtomChangeset
 
-export interface Pointer<V> {
+export type Address = {root: IReactive, path: Array<string | number>}
 
-}
-
-
-export interface IAbstractWire {
+export interface IReactive {
 
 }
 
-export interface ICompositeWire extends IAbstractWire {
+export interface IReactiveBox<T> extends IReactive {
 
 }
 
-export interface IMapWire<O: {}> extends ICompositeWire {
-  get<K: $Keys<O>, V: $ElementType<O, K>>(key: K): V,
-  pointer(): $FixMe,
+export type MapAtomChangeType<O: {}> = {overriddenRefs: $Shape<O>, deletedKeys: Array<$Keys<O>>}
+
+export interface IReactiveMap<O> extends IReactive {
+
 }
 
-export interface IArrayWire<T> extends ICompositeWire {
-  get<I: number>(index: I): ?T,
-  pointer(): $FixMe,
+export interface IReactiveArray<T> extends IReactive {
+
 }
 
-
-export interface IWire<T> extends IAbstractWire {
-  get(): T,
-}

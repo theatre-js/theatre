@@ -48,17 +48,31 @@ export default class Tappable<V> {
     return () => {this._removeTapperById(tapperId)}
   }
 
+  tapImmediate(cb: Listener<V>): Untap {
+    return (null: $FixMe)
+  }
+
   _removeTapperById(id: number) {
     this._tappers.delete(id)
   }
 
-  map<T>(fn: (v: V) => T): Tappable<T> {
+  map<T>(transform: (v: V) => T): Tappable<T> {
     return new Tappable({
       tapToSource: (cb: (v: T) => void) => {
         return this.tap((v) => {
-          return cb(fn(v))
+          return cb(transform(v))
         })
       },
     })
   }
+
+  // flatMap<T>(transform: (v: V) => Tappable<T>): Tappable<T> {
+  //   return new Tappable({
+  //     tapToSource: (cb: (v: T) => void) => {
+  //       return this.tap((v) => {
+
+  //       })
+  //     }
+  //   })
+  // }
 }

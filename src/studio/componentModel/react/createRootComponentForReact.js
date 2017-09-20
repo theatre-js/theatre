@@ -10,11 +10,11 @@ type Props = {
   children: React.Node,
 }
 
-type ChildInstantiationDescriptor = $Call<typeof D.atomifyDeep, {
+type ChildInstantiationDescriptor = D.IMapAtom<{
   componentID: 'TheaterJS/Core/RenderCurrentCanvas',
-  props: {
-    children: D.BoxAtom<React.Node>,
-  },
+  props: D.IMapAtom<{
+    children: React.Node,
+  }>,
 }>
 
 const createRootComponentForReact = (studio: TheStudioClass) => {
@@ -24,17 +24,16 @@ const createRootComponentForReact = (studio: TheStudioClass) => {
     constructor(props: Props) {
       super(props)
 
-      this.childInstantiationDescriptor = D.atomifyDeep({
+      this.childInstantiationDescriptor = new D.MapAtom({
         componentID: 'TheaterJS/Core/RenderCurrentCanvas',
-        props: {
-          // $FixMe
-          children: new D.Atom(props.children),
-        },
+        props: new D.MapAtom({
+          children: props.children,
+        }),
       })
     }
 
     componentWillReceiveProps(props) {
-      this.childInstantiationDescriptor.get('props').get('children').set(props.children)
+      this.childInstantiationDescriptor.prop('props').setProp('children', props.children)
     }
 
     render() {

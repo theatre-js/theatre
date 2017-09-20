@@ -4,18 +4,18 @@ import Emitter from '$shared/DataVerse/utils/Emitter'
 import Tappable from '$shared/DataVerse/utils/Tappable'
 import type {AddressedChangeset} from '$shared/DataVerse/types'
 
-export type ChangeType<V> = V
-export type DeepChangeType<V> = AddressedChangeset & {type: 'BoxChange', newValue: ChangeType<V>}
-export type DeepDiffType<V> = AddressedChangeset & {type: 'BoxDiff', oldValue: V, newValue: V}
+export type BoxAtomChangeType<V> = V
+export type BoxAtomDeepChangeType<V> = AddressedChangeset & {type: 'BoxChange', newValue: BoxAtomChangeType<V>}
+export type BoxAtomDeepDiffType<V> = AddressedChangeset & {type: 'BoxDiff', oldValue: V, newValue: V}
 
 export interface IBoxAtom<V> extends IAtom {
   isSingleAtom: true,
   unboxDeep(): V,
   set(v: V): IBoxAtom<V>,
-  get(): V,
-  chnages: () => Tappable<ChangeType<V>>,
-  deepChanges: () => Tappable<DeepChangeType<V>>,
-  deepDiffs: () => Tappable<DeepDiffType<V>>,
+  unbox(): V,
+  chnages: () => Tappable<BoxAtomChangeType<V>>,
+  deepChanges: () => Tappable<BoxAtomDeepChangeType<V>>,
+  deepDiffs: () => Tappable<BoxAtomDeepDiffType<V>>,
 }
 
 
@@ -23,14 +23,14 @@ export default class BoxAtom<V> extends Atom implements IBoxAtom<V> {
   isSingleAtom = true
   _value: V
 
-  _changeEmitter: Emitter<ChangeType<V>>
-  chnages: () => Tappable<ChangeType<V>>
+  _changeEmitter: Emitter<BoxAtomChangeType<V>>
+  chnages: () => Tappable<BoxAtomChangeType<V>>
 
-  _deepChangeEmitter: Emitter<DeepChangeType<V>>
-  deepChanges: () => Tappable<DeepChangeType<V>>
+  _deepChangeEmitter: Emitter<BoxAtomDeepChangeType<V>>
+  deepChanges: () => Tappable<BoxAtomDeepChangeType<V>>
 
-  _deepDiffEmitter: Emitter<DeepDiffType<V>>
-  deepDiffs: () => Tappable<DeepDiffType<V>>
+  _deepDiffEmitter: Emitter<BoxAtomDeepDiffType<V>>
+  deepDiffs: () => Tappable<BoxAtomDeepDiffType<V>>
 
   constructor(v: V) {
     super()
@@ -60,7 +60,11 @@ export default class BoxAtom<V> extends Atom implements IBoxAtom<V> {
     return this
   }
 
-  get(): V {
+  unbox(): V {
     return this._value
+  }
+
+  changesWithInitial(): $FixMe {
+
   }
 }

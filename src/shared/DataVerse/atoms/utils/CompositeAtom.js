@@ -1,10 +1,12 @@
 // @flow
 import {default as Atom, type IAtom} from './Atom'
-import type {DeepChangeType as BoxAtomDeepChangeType, DeepDiffType as BoxAtomDeepDiffType} from '../BoxAtom'
-import type {DeepChangeType as MapAtomDeepChangeType, DeepDiffType as MapAtomDeepDiffType} from '../MapAtom'
-import type {DeepChangeType as ArrayAtomDeepChangeType, DeepDiffType as ArrayAtomDeepDiffType} from '../ArrayAtom'
+import type {BoxAtomDeepChangeType, BoxAtomDeepDiffType} from '../BoxAtom'
+import type {MapAtomDeepChangeType, MapAtomDeepDiffType} from '../MapAtom'
+import type {ArrayAtomDeepChangeType, ArrayAtomDeepDiffType} from '../ArrayAtom'
 import Tappable from '$shared/DataVerse/utils/Tappable'
 import Emitter from '$shared/DataVerse/utils/Emitter'
+import isAtom from './isAtom'
+import type {Address} from '$shared/DataVerse'
 
 export type AllDeepChangeTypes = BoxAtomDeepChangeType<any> | MapAtomDeepChangeType<any> | ArrayAtomDeepChangeType<any>
 export type AllDeepDiffTypes = BoxAtomDeepDiffType<any> | MapAtomDeepDiffType<any> | ArrayAtomDeepDiffType<any>
@@ -15,6 +17,7 @@ export interface ICompositeAtom extends IAtom {
   deepDiffs(): Tappable<AllDeepDiffTypes>, // Unboxed changeset, from oldValue to newValue, including an address, deep
   _adopt(key: string | number, value: IAtom): void,
   _unadopt(key: string | number, value: IAtom): void,
+  getAddressTo(addressSoFar?: Array<string | number>): Address,
 }
 
 export default class CompositeAtom extends Atom implements ICompositeAtom {
@@ -27,6 +30,7 @@ export default class CompositeAtom extends Atom implements ICompositeAtom {
 
   _deepDiffEmitter: Emitter<AllDeepDiffTypes>
   deepDiffs: () => Tappable<AllDeepDiffTypes>
+  _keyOfValue: () => string | number | void
 
   constructor() {
     super()
@@ -34,12 +38,14 @@ export default class CompositeAtom extends Atom implements ICompositeAtom {
     this._deepDiffUntappersForEachChild = new Map()
   }
 
-  _keyOf(key: string | number, ref: IAtom) {
+  _keyOf(key: string | number, ref: IAtom | mixed) {
     return key
   }
 
-  _adopt(key: string | number, ref: IAtom) {
-    ref._setParent(this)
+  _adopt(key: string | number, ref: mixed | IAtom) {
+    if (!isAtom(ref)) return
+
+    ref._setParent(this, key)
 
     this._deepChangeUntappersForEachChild.set(ref, ref.deepChanges().tap((change) => {
       this._deepChangeEmitter.emit({...change, address: [this._keyOf(key, ref), ...change.address]})
@@ -59,5 +65,13 @@ export default class CompositeAtom extends Atom implements ICompositeAtom {
     // $FlowIgnore
     this._deepDiffUntappersForEachChild.get(ref)()
     this._deepDiffUntappersForEachChild.delete(ref)
+  }
+
+  getAddressTo(pathSoFar: Array<string | number> = []): Address {
+    if (!this._parent) {
+      return {root: this, path: pathSoFar}
+    } else {
+      return this._parent.atom.getAddressTo([this._parent.key, ...pathSoFar])
+    }
   }
 }

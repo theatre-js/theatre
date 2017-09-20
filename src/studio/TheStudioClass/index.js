@@ -11,7 +11,7 @@ import {type CoreState} from '$studio/types'
 import coreComponentDescriptors from '$studio/componentModel/coreComponentDescriptors'
 
 export default class TheStudioClass {
-  atom: $Call<typeof DataVerse.atomifyDeep, {state: CoreState, coreComponentDescriptors: typeof coreComponentDescriptors}>
+  atom: $FixMe // $Call<typeof DataVerse.atomifyDeep, {state: CoreState, coreComponentDescriptors: typeof coreComponentDescriptors}>
   dataverseContext: DataVerse.Context
   _lastComponentInstanceId: number
   // _lbCommunicator: LBCommunicator
@@ -22,6 +22,7 @@ export default class TheStudioClass {
     this.atom = DataVerse.atomifyDeep({
       state: initialState,
       coreComponentDescriptors,
+      instances: {},
     })
 
     if (process.env.NODE_ENV === 'development' && module.hot) {
@@ -89,11 +90,11 @@ export default class TheStudioClass {
     return this._lastComponentInstanceId++
   }
 
-  registerComponentInstance(isntanceId: number, componentInstance: React.Component<any, any>) {
-    // @todo
+  registerComponentInstance(isntanceId: number, componentInstance: React.Component<mixed, mixed>) {
+    this.atom.get('instances').set(isntanceId, componentInstance)
   }
 
   unregisterComponentInstance(isntanceId: number) {
-    // @todo
+    this.atom.get('instances').delete(isntanceId)
   }
 }

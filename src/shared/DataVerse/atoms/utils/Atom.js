@@ -1,26 +1,29 @@
 // @flow
-// import {type DeepDiff} from '$shared/DataVerse/types'
+import type {Address, IReactive} from '$shared/DataVerse/types'
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import Tappable from '$shared/DataVerse/utils/Tappable'
+import type {ICompositeAtom} from './CompositeAtom'
+import Pointer from '$shared/DataVerse/utils/Pointer'
 
-export interface IAtom {
+export interface IAtom extends IReactive {
   isAtom: true,
   +unboxDeep: () => mixed,
-  _setParent(p: IAtom): void,
+  _setParent(p: ICompositeAtom, key: number | string): void,
   _unsetParent(): void,
-  changes(): Tappable<*>, // shallow changes. Does not include what's removed
-  deepChanges(): Tappable<*>, // deep changes. Includes an address
-  deepDiffs(): Tappable<*>, // Unboxed changeset, from oldValue to newValue, including an address, deep
+  changes(): Tappable<$IntentionalAny>, // shallow changes. Does not include what's removed
+  deepChanges(): Tappable<$IntentionalAny>, // deep changes. Includes an address
+  deepDiffs(): Tappable<$IntentionalAny>, // Unboxed changeset, from oldValue to newValue, including an address, deep
   isAtom: true,
+  getAddress(): Address,
+  getParent(): ?ICompositeAtom,
 }
 
 export default class Atom implements IAtom {
   isAtom = true
-  isAtom = true
   _changeEmitter: Emitter<*>
   _deepChangeEmitter: Emitter<*>
   _deepDiffEmitter: Emitter<*>
-  _parent: ?IAtom
+  _parent: ?{atom: ICompositeAtom, key: string | number}
   +unboxDeep: () => mixed
 
   constructor() {
@@ -42,11 +45,11 @@ export default class Atom implements IAtom {
     return this._deepDiffEmitter.tappable
   }
 
-  _setParent(p: IAtom) {
+  _setParent(p: ICompositeAtom, key: string | number) {
     if (this._parent)
       throw new Error(`This Atom already does have a parent`)
 
-    this._parent = p
+    this._parent = {atom: p, key}
   }
 
   _unsetParent() {
@@ -55,5 +58,23 @@ export default class Atom implements IAtom {
     }
 
     this._parent = undefined
+  }
+
+  getParent() {
+    if (this._parent) {
+      return this._parent.atom
+    }
+  }
+
+  getAddress() {
+    if (!this._parent) {
+      return {root: this, path: []}
+    } else {
+      return this._parent.atom.getAddressTo([this._parent.key])
+    }
+  }
+
+  pointer() {
+    return new Pointer(this.getAddress())
   }
 }

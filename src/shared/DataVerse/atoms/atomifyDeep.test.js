@@ -12,11 +12,11 @@ describe('DataVerse.atomifyDeep', () => {
     expect(atomifyDeep({a: 'a', b: {a: {b: 'hi'}}}).unboxDeep()).toMatchObject({a: 'a', b: {a: {b: 'hi'}}})
 
     const ref = atomifyDeep({a: 'a', b: {c: 2, d: new Error()}});
-    (ref.get('b').get('d').get(): Error)
-    expect(ref.get('a').get()).toEqual('a')
-    expect(ref.get('b').isAtom).toEqual(true)
-    expect(ref.get('b').get('c').get()).toEqual(2)
-    expect(ref.get('b').get('d').get()).toBeInstanceOf(Error)
+    (ref.prop('b').prop('d').unbox(): Error)
+    expect(ref.prop('a').unbox()).toEqual('a')
+    expect(ref.prop('b').isAtom).toEqual(true)
+    expect(ref.prop('b').prop('c').unbox()).toEqual(2)
+    expect(ref.prop('b').prop('d').unbox()).toBeInstanceOf(Error)
   })
 
   function typeTests() { // eslint-disable-line no-unused-vars
