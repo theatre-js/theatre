@@ -67,4 +67,9 @@ export default class BoxAtom<V> extends Atom implements IBoxAtom<V> {
   changesWithInitial(): $FixMe {
 
   }
+
+  derivation() {
+    const DerivationOfABoxAtom = require('$shared/DataVerse/derivations/DerivationOfABoxAtom').default
+    return new DerivationOfABoxAtom(this)
+  }
 }

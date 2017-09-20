@@ -1,40 +1,16 @@
 // @flow
-
 import SimpleDerivation from './SimpleDerivation'
 import DerivationOfABoxAtom from './DerivationOfABoxAtom'
 import * as D from '$shared/DataVerse'
 
 const d = (...args) => new SimpleDerivation(...args)
-
-describe('SimpleDerivation', () => {
-  it('should work', () => {
-    const a = d({}, () => 1)
-    const b = d({}, () => 2)
-    const sum = d({a, b}, ({a, b}) => a.getValue() + b.getValue())
-    expect(sum.getValue()).toEqual(3)
-
-    const sumSquared = d({sum}, ({sum}) => Math.pow(sum.getValue(), 2))
-    expect(sumSquared.getValue()).toEqual(9)
-
-    const sumSquaredTimesTwo = sumSquared.map((s) => s * 2)
-    expect(sumSquaredTimesTwo.getValue()).toEqual(18)
-
-
-  })
-
-  it('should still work', () => {
-    const a = d({}, () => 2)
-    const b = d({}, () => 3)
-    const c = a.flatMap((thisGonnaBeTwo) => d({b}, ({b}) => b.getValue() + thisGonnaBeTwo))
-    expect(c.getValue()).toEqual(5)
-  })
-
+describe('FlattenDeepDerivation', () => {
   it('events should work', (done) => {
     const a = new D.BoxAtom(1)
     const b = new D.BoxAtom(3)
     const aD = new DerivationOfABoxAtom(a)
     const bD = new DerivationOfABoxAtom(b)
-    const final = aD.flatMap((n) => bD.map((m) => m + n))
+    const final = aD.flatMapDeep((n) => bD.map((m) => m + n))
 
     expect(final.getValue()).toEqual(4)
     a.set(2)
@@ -86,7 +62,7 @@ describe('SimpleDerivation', () => {
     const aD = a.derivation()
     const b = new D.BoxAtom('b')
     const bD = b.derivation()
-    const cD = aD.flatMap((aValue) => bD.map((bValue) => aValue + bValue))
+    const cD = aD.flatMapDeep((aValue) => bD.map((bValue) => aValue + bValue))
 
     expect(cD.getValue()).toEqual('ab')
     cD.setDataVerseContext(context)

@@ -114,9 +114,18 @@ export default class Derivation {
     return this.map(fn).flatten()
   }
 
+  flatMapDeep(fn: (oldVal: $FixMe) => Derivation) {
+    return this.map(fn).flattenDeep()
+  }
+
   flatten() {
     return new FlattenDerivation(this)
+  }
+
+  flattenDeep() {
+    return new FlattenDeepDerivation(this)
   }
 }
 
 const FlattenDerivation = require('./FlattenDerivation').default
+const FlattenDeepDerivation = require('./FlattenDeepDerivation').default
