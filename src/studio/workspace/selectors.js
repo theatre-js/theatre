@@ -8,7 +8,7 @@ export const getVisiblePanelsList: Selector<visiblePanelsList, void> =
 export const getPanelById: Selector<PanelObject, string> =
   (state, panelId) => state.workspace.panels.byId[panelId]
 
-export const getCurrentlyDraggingOutput: Selector<DraggingOutput, void> =
+export const getCurrentlyDraggingOutput: Selector<?DraggingOutput, void> =
   (state) => state.workspace.panels.currentlyDraggingOutput
 
 export const getPanelInputs: Selector<Object, PanelInput> = (state, inputs) => {
