@@ -1,17 +1,17 @@
 // @flow
 import Derivation from './Derivation'
-import type {IArrayAtom} from '$shared/DataVerse'
+import type {IArrayAtom, IAtom} from '$shared/DataVerse'
 
 const noop = () => {}
 
-export default class DerivationOfAnIndexOfAnArrayAtom extends Derivation {
-  _arrayAtom: IArrayAtom<Object>
+export default class DerivationOfAnIndexOfAnArrayAtom<V: IAtom> extends Derivation<V> {
+  _arrayAtom: IArrayAtom<V>
   _untapFromMapAtomChanges: Function
-  _index: number | string
+  _index: number
 
-  constructor(mapAtom: IArrayAtom<Object>, index: number | string) {
+  constructor(arrayAtom: IArrayAtom<V>, index: number) {
     super()
-    this._arrayAtom = mapAtom
+    this._arrayAtom = arrayAtom
     this._index = index
     this._untapFromMapAtomChanges = noop
   }
@@ -21,7 +21,7 @@ export default class DerivationOfAnIndexOfAnArrayAtom extends Derivation {
     return this._recalculate()
   }
 
-  _recalculate() {
+  _recalculate(): $FixMe {
     return this._arrayAtom.index((this._index: $FixMe))
   }
 

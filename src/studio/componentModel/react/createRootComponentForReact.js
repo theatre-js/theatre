@@ -1,7 +1,7 @@
 // @flow
 import * as React from 'react'
 import TheStudioClass from '$studio/TheStudioClass'
-import {provideTheaterJSStudio} from './studioContext'
+import {provideStudio} from './studioContext'
 import Elementify from './Elementify'
 import * as D from '$shared/DataVerse'
 import compose from 'ramda/src/compose'
@@ -10,39 +10,41 @@ type Props = {
   children: React.Node,
 }
 
-type ChildInstantiationDescriptor = D.IMapAtom<{
+type ElementifyProps = D.IMapAtom<{
   componentID: 'TheaterJS/Core/RenderCurrentCanvas',
   props: D.IMapAtom<{
-    children: React.Node,
+    children: D.IBoxAtom<React.Node>,
   }>,
 }>
 
 const createRootComponentForReact = (studio: TheStudioClass) => {
   class TheaterJSRoot extends React.PureComponent<Props, void> {
-    childInstantiationDescriptor: ChildInstantiationDescriptor
+    elementifyProps: ElementifyProps
 
     constructor(props: Props) {
       super(props)
 
-      this.childInstantiationDescriptor = new D.MapAtom({
-        componentID: 'TheaterJS/Core/RenderCurrentCanvas',
-        props: new D.MapAtom({
-          children: props.children,
+      this.elementifyProps = new D.MapAtom({
+        descriptor: new D.MapAtom({
+          componentID: 'TheaterJS/Core/RenderCurrentCanvas',
+          props: new D.MapAtom({
+            children: new D.BoxAtom(props.children),
+          }),
         }),
       })
     }
 
     componentWillReceiveProps(props) {
-      this.childInstantiationDescriptor.prop('props').setProp('children', props.children)
+      this.elementifyProps.prop('props').prop('children').set(props.children)
     }
 
     render() {
-      return <Elementify descriptor={this.childInstantiationDescriptor} />
+      return <Elementify key="RenderCurrentCanvas" props={this.elementifyProps}  />
     }
   }
 
   return compose(
-    provideTheaterJSStudio(studio),
+    provideStudio(studio),
   )(TheaterJSRoot)
 }
 

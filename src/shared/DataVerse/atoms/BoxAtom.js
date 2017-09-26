@@ -2,18 +2,18 @@
 import {default as Atom, type IAtom} from './utils/Atom'
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import Tappable from '$shared/DataVerse/utils/Tappable'
-import type {AddressedChangeset} from '$shared/DataVerse/types'
+import type {AddressedChangeset, IReactiveBox} from '$shared/DataVerse/types'
 
 export type BoxAtomChangeType<V> = V
 export type BoxAtomDeepChangeType<V> = AddressedChangeset & {type: 'BoxChange', newValue: BoxAtomChangeType<V>}
 export type BoxAtomDeepDiffType<V> = AddressedChangeset & {type: 'BoxDiff', oldValue: V, newValue: V}
 
-export interface IBoxAtom<V> extends IAtom {
+import type {default as TDerivationOfABoxAtom} from '$shared/DataVerse/derivations/DerivationOfABoxAtom'
+
+export interface IBoxAtom<V> extends IAtom, IReactiveBox<V>  {
   isSingleAtom: true,
   unboxDeep(): V,
   set(v: V): IBoxAtom<V>,
-  unbox(): V,
-  chnages: () => Tappable<BoxAtomChangeType<V>>,
   deepChanges: () => Tappable<BoxAtomDeepChangeType<V>>,
   deepDiffs: () => Tappable<BoxAtomDeepDiffType<V>>,
 }
@@ -24,7 +24,7 @@ export default class BoxAtom<V> extends Atom implements IBoxAtom<V> {
   _value: V
 
   _changeEmitter: Emitter<BoxAtomChangeType<V>>
-  chnages: () => Tappable<BoxAtomChangeType<V>>
+  changes: () => Tappable<BoxAtomChangeType<V>>
 
   _deepChangeEmitter: Emitter<BoxAtomDeepChangeType<V>>
   deepChanges: () => Tappable<BoxAtomDeepChangeType<V>>
@@ -60,15 +60,11 @@ export default class BoxAtom<V> extends Atom implements IBoxAtom<V> {
     return this
   }
 
-  unbox(): V {
+  getValue(): V {
     return this._value
   }
 
-  changesWithInitial(): $FixMe {
-
-  }
-
-  derivation() {
+  derivation(): TDerivationOfABoxAtom<V> {
     const DerivationOfABoxAtom = require('$shared/DataVerse/derivations/DerivationOfABoxAtom').default
     return new DerivationOfABoxAtom(this)
   }

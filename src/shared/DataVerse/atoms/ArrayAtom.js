@@ -5,7 +5,7 @@ import {forEach} from 'lodash'
 import type {IAtom} from './utils/Atom'
 import Tappable from '$shared/DataVerse/utils/Tappable'
 import Emitter from '$shared/DataVerse/utils/Emitter'
-import type {AddressedChangeset} from '$shared/DataVerse/types'
+import type {AddressedChangeset, MapKey} from '$shared/DataVerse/types'
 import range from 'lodash/range'
 
 type Unboxed<O> = $FixMe // eslint-disable-line no-unused-vars
@@ -91,7 +91,7 @@ export default class ArrayAtom<V: IAtom> extends CompositeAtom implements IArray
     return this._internalArray.length
   }
 
-  _keyOf(key: string | number, ref: mixed) {
+  _keyOf(key: MapKey, ref: mixed) {
     return this._refToIndex.get(ref)
   }
 

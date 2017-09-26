@@ -4,9 +4,9 @@ import BoxAtom from './BoxAtom'
 describe('DataVerse.BoxAtom', () => {
   it('should allow getting and setting values', () => {
     const r = new BoxAtom('foo')
-    expect(r.unbox()).toEqual('foo')
+    expect(r.getValue()).toEqual('foo')
     r.set('bar')
-    expect(r.unbox()).toEqual('bar')
+    expect(r.getValue()).toEqual('bar')
   })
 
   it('should correctly report changes', () => {

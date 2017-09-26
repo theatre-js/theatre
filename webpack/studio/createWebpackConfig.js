@@ -27,7 +27,7 @@ module.exports = (options: Options) => {
     // target: '',
     devtool: isDev ? 'source-map' : 'source-map',
     entry: {
-      index: isDev ? ['react-hot-loader/patch', './src/studio/index.js'] : ['./src/studio/index.js'],
+      index: false ? ['react-hot-loader/patch', './src/studio/index.js'] : ['./src/studio/index.js'],
     },
     // externals: ['electron'],
     output: {

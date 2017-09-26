@@ -1,57 +1,53 @@
 
 // @flow
-import {type IReactiveMap} from '../types'
-// import Derivation from './Derivation'
-import Tappable from '../utils/Tappable'
-import type {MapAtomChangeType} from '$shared/DataVerse'
+import DerivedMapFace from './DerivedMapFace'
+import type {MapKey} from '$shared/DataVerse/types'
+import Context from '$shared/DataVerse/Context'
+import Emitter from '$shared/DataVerse/utils/Emitter'
 
-export interface IDerivedMap<O: {}> extends IReactiveMap<O> {
+export interface IDerivedMap {
 
 }
 
-type Key = string | number
+type Constructor = $FixMe
 
-// type Constructors<O: {}> = $ObjMap<O, (m: DerivedMap<O>) => >
+let lastId = 0
 
-export default class DerivedMap<O: {}> implements IDerivedMap<O> {
-  _constructors: $FixMe
-  _delegationMap: ?DerivedMap<{}>
-  _wires: Map<Key, $FixMe>
+export default class DerivedMap {
+  _id: number
+  _constructors: {[key: MapKey]: Constructor}
+  _parent: ?DerivedMap
+  _parentChagnesEmitter: *
 
-  constructor(constructors: $FixMe, delegationMap?: DerivedMap<$FixMe>) {
+  constructor(constructors: {}, delegateTo?: DerivedMap) {
+    this._id = lastId++
     this._constructors = constructors
-    this._delegationMap = delegationMap
-    this._wires = new Map()
+    this._parent = delegateTo
+    this._parentChagnesEmitter = new Emitter()
   }
 
-  extend<OO: {}>(oo: OO): DerivedMap<{...O, ...OO}> {
-    return new DerivedMap(oo, this)
+  parentChanges() {
+    return this._parentChagnesEmitter.tappable
   }
 
-  prop(key: Key) {
-    if (this._wires.has(key)) {
-      // $FixMe
-      return this._wires.get(key).get()
-    } else if (this._constructors[key]) {
-      return this._getUnboxed(key)
-    } else if (this._delegationMap) {
-      return this._delegationMap._getDelegated(key, this)
-    }
+  extend(constructors: {}) {
+    return new DerivedMap(constructors, this)
   }
 
-  _getUnboxed(key: Key) {
-    return this._constructors[key]()
+  face(context: Context) {
+    return new DerivedMapFace(this, context)
   }
 
-  _getDelegated(key: Key, frontMap: DerivedMap<any>) {
-
+  _getConstructor(key: MapKey): Constructor {
+    return this._constructors[key]
   }
 
-  delegateTo(target: $FixMe) {
-
+  getParent() {
+    return this._parent
   }
 
-  changes(): Tappable<MapAtomChangeType<O>> {
-    return (null: $FixMe)
+  setParent(p: DerivedMap) {
+    this._parent = p
+    this._parentChagnesEmitter.emit(p)
   }
 }

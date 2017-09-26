@@ -21,7 +21,7 @@ module.exports = (options: Options) => {
     context: context,
     devtool: isDev ? 'source-map' : 'source-map',
     entry: {
-      index: isDev ? ['react-hot-loader/patch', './examples/index.js'] : ['./examples/index.js'],
+      index: false ? ['react-hot-loader/patch', './examples/index.js'] : ['./examples/index.js'],
     },
     output: {
       path: bundlesDir,

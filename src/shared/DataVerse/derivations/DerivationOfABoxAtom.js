@@ -4,11 +4,11 @@ import type {IBoxAtom} from '$shared/DataVerse'
 
 const noop = () => {}
 
-export default class DerivationOfABoxAtom extends Derivation {
-  _boxAtom: IBoxAtom<any>
+export default class DerivationOfABoxAtom<V> extends Derivation<V> {
+  _boxAtom: IBoxAtom<V>
   _untapFromBoxAtomChanges: Function
 
-  constructor(boxAtom: IBoxAtom<any>) {
+  constructor(boxAtom: IBoxAtom<V>) {
     super()
     this._boxAtom = boxAtom
     this._untapFromBoxAtomChanges = noop
@@ -20,8 +20,8 @@ export default class DerivationOfABoxAtom extends Derivation {
     return this._recalculate()
   }
 
-  _recalculate() {
-    return this._boxAtom.unbox()
+  _recalculate(): $FixMe {
+    return this._boxAtom.getValue()
   }
 
   _onWhetherPeopleCareAboutMeStateChange(peopleCare: boolean) {

@@ -1,6 +1,6 @@
 // @flow
-import Derivation from './Derivation'
+import SimpleDerivation from './SimpleDerivation'
 
 export default function derive(...args: $FixMe) {
-  return new Derivation(...args)
+  return new SimpleDerivation(...args)
 }

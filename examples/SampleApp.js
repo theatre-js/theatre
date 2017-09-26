@@ -1,9 +1,11 @@
 // @flow
 import React from 'react'
 import compose from 'ramda/src/compose'
-import {AppContainer} from 'react-hot-loader'
+// import {AppContainer} from 'react-hot-loader'
 import './SampleApp.css'
 import SamplePlayground from './playground/SamplePlayground'
+
+// const AppContainer =
 
 const TheaterJSRoot = window.TheaterJS.react.Root
 
@@ -43,11 +45,11 @@ class SampleApp extends React.Component<Props, State> {
   render() {
     const {SamplePlayground} = this.state
     return (
-      <AppContainer>
+      <div>
         <TheaterJSRoot>
           <SamplePlayground />
         </TheaterJSRoot>
-      </AppContainer>
+      </div>
     )
   }
 }

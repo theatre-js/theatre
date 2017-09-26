@@ -1,18 +1,25 @@
 // @flow
-// import {TheaterJSComponent} from '$studio/handy'
-// import {type ComponentDescriptor, type ComponentInstantiationDescriptor} from '$studio/componentModel/types'
+import {type ComponentDescriptor} from '$studio/componentModel/types'
+import {makeReactiveComponent} from '$studio/handy'
+import * as React from 'react'
 
-// class RenderCurrentCanvas extends TheaterJSComponent<{}, void> {
+const RenderCurrentCanvas = makeReactiveComponent({
+  modifyBaseDerivation: (d) => d.extend({
+    render() {
+      return <div>RenderCurrentCanvas here :D</div>
+    },
+  }),
+})
 
-// }
+const descriptor: ComponentDescriptor = {
+  id: 'TheaterJS/Core/RenderCurrentCanvas',
+  type: 'HardCoded',
+  reactComponent: RenderCurrentCanvas,
+}
 
-// const descriptor: ComponentDescriptor = {
-//   id: 'TheaterJS/Core/RenderCurrentCanvas',
-//   type: 'HardCoded',
-//   hardCodedReactComponent: RenderCurrentCanvas,
-// }
+export default descriptor
 
-// export default descriptor
+// import fakeDeclarativeButton from './fakeDeclarativeButton'
+// export default fakeDeclarativeButton
+//
 
-import fakeDeclarativeButton from './fakeDeclarativeButton'
-export default fakeDeclarativeButton

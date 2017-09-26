@@ -1,15 +1,19 @@
 // @flow
+import Tappable from '$shared/DataVerse/utils/Tappable'
 
-export type AddressedChangeset = {address: Array<string | number>}
+export type MapKey = string | number
 
-export type Address = {root: IReactive, path: Array<string | number>}
+export type AddressedChangeset = {address: Array<MapKey>}
+
+export type Address = {root: IReactive, path: Array<MapKey>}
 
 export interface IReactive {
 
 }
 
-export interface IReactiveBox<T> extends IReactive {
-
+export interface IReactiveBox<V> extends IReactive {
+  getValue(): V,
+  changes: () => Tappable<V>,
 }
 
 export type MapAtomChangeType<O: {}> = {overriddenRefs: $Shape<O>, deletedKeys: Array<$Keys<O>>}

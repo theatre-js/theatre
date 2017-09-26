@@ -7,6 +7,7 @@ import Tappable from '$shared/DataVerse/utils/Tappable'
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import isAtom from './isAtom'
 import type {Address} from '$shared/DataVerse'
+import type {MapKey} from '$shared/DataVerse/types'
 
 export type AllDeepChangeTypes = BoxAtomDeepChangeType<any> | MapAtomDeepChangeType<any> | ArrayAtomDeepChangeType<any>
 export type AllDeepDiffTypes = BoxAtomDeepDiffType<any> | MapAtomDeepDiffType<any> | ArrayAtomDeepDiffType<any>
@@ -15,9 +16,9 @@ export interface ICompositeAtom extends IAtom {
   isCompositeAtom: true,
   deepChanges(): Tappable<AllDeepChangeTypes>, // deep changes. Includes an address
   deepDiffs(): Tappable<AllDeepDiffTypes>, // Unboxed changeset, from oldValue to newValue, including an address, deep
-  _adopt(key: string | number, value: IAtom): void,
-  _unadopt(key: string | number, value: IAtom): void,
-  getAddressTo(addressSoFar?: Array<string | number>): Address,
+  _adopt(key: MapKey, value: IAtom): void,
+  _unadopt(key: MapKey, value: IAtom): void,
+  getAddressTo(addressSoFar?: Array<MapKey>): Address,
 }
 
 export default class CompositeAtom extends Atom implements ICompositeAtom {
@@ -30,7 +31,7 @@ export default class CompositeAtom extends Atom implements ICompositeAtom {
 
   _deepDiffEmitter: Emitter<AllDeepDiffTypes>
   deepDiffs: () => Tappable<AllDeepDiffTypes>
-  _keyOfValue: () => string | number | void
+  _keyOfValue: () => MapKey | void
 
   constructor() {
     super()
@@ -38,11 +39,11 @@ export default class CompositeAtom extends Atom implements ICompositeAtom {
     this._deepDiffUntappersForEachChild = new Map()
   }
 
-  _keyOf(key: string | number, ref: IAtom | mixed) {
+  _keyOf(key: MapKey, ref: IAtom | mixed) {
     return key
   }
 
-  _adopt(key: string | number, ref: mixed | IAtom) {
+  _adopt(key: MapKey, ref: mixed | IAtom) {
     if (!isAtom(ref)) return
 
     ref._setParent(this, key)
@@ -57,7 +58,7 @@ export default class CompositeAtom extends Atom implements ICompositeAtom {
 
   }
 
-  _unadopt(key: string | number, ref: IAtom) {
+  _unadopt(key: MapKey, ref: IAtom) {
     if (!isAtom(ref)) return
     ref._unsetParent()
     // $FlowIgnore
@@ -68,7 +69,7 @@ export default class CompositeAtom extends Atom implements ICompositeAtom {
     this._deepDiffUntappersForEachChild.delete(ref)
   }
 
-  getAddressTo(pathSoFar: Array<string | number> = []): Address {
+  getAddressTo(pathSoFar: Array<MapKey> = []): Address {
     if (!this._parent) {
       return {root: this, path: pathSoFar}
     } else {

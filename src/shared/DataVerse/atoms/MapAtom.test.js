@@ -9,9 +9,9 @@ describe('DataVerse.MapAtom', () => {
     o = atomifyDeep({foo: 'foo', bar: 'bar', obj: {str: 'str', innerObj: {a: 1, b: [1, 2, 3]}}})
   })
   it('should allow getting and setting values', () => {
-    expect(o.prop('foo').unbox()).toEqual('foo')
+    expect(o.prop('foo').getValue()).toEqual('foo')
     o.setProp('foo', new BoxAtom('foo2'))
-    expect(o.prop('foo').unbox()).toEqual('foo2')
+    expect(o.prop('foo').getValue()).toEqual('foo2')
   })
   it('should allow correctly set itself as parent of inner children', () => {
     expect(o.prop('foo').getParent()).toEqual(o)

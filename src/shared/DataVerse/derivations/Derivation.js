@@ -2,17 +2,25 @@
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import Context from '$shared/DataVerse/Context'
 
-export default class Derivation {
+let lastDerivationId = 0
+const weakMapOfDerivations = new WeakMap()
+
+export default class Derivation<V> {
+  _id: {id: number}
   _changeEmitter: *
   _dataVerseContext: ?Context
   _isUptodate: *
-  _lastValue: *
-  _dependents: *
-  +_recalculate: () => mixed
+  _lastValue: ?V
+  _idsOfDependents: *
+  +_recalculate: () => V
   +_onWhetherPeopleCareAboutMeStateChange: ?(peopleCare: boolean) => void
   _peopleCare: boolean
+  +getValue: () => V
 
   constructor() {
+    this._id = {id: lastDerivationId++}
+    weakMapOfDerivations.set(this._id, this)
+
     this._dataVerseContext = null
     this._changeEmitter = new Emitter()
     this._changeEmitter.onNumberOfTappersChange(() => {
@@ -20,8 +28,8 @@ export default class Derivation {
     })
     this._isUptodate = false
     this._lastValue = undefined
-    this._dependents = new Set()
     this._peopleCare = false
+    this._idsOfDependents = new Set()
   }
 
   changes() {
@@ -35,9 +43,11 @@ export default class Derivation {
     if (!this._dataVerseContext) {
       this._dataVerseContext = dv
     } else {
-      if (this._dataVerseContext === dv) return
+      if (this._dataVerseContext === dv) return this
       throw new Error(`This derivation already has a DataVerseContext, and it doesn't match what you're providing here`)
     }
+
+    return this
   }
 
   _tick() {
@@ -45,22 +55,37 @@ export default class Derivation {
   }
 
   _hasDependents() {
-    return this._dependents.size !== 0
+    return this._idsOfDependents.size !== 0
   }
 
-  _addDependent(d: Derivation) {
-    const hadDepsBefore = this._dependents.size > 0
-    this._dependents.add(d)
-    const hasDepsNow = this._dependents.size > 0
+  _addDependent(d: Derivation<$IntentionalAny>) {
+    const hadDepsBefore = this._idsOfDependents.size > 0
+    this._idsOfDependents.add(d._id)
+    const hasDepsNow = this._idsOfDependents.size > 0
     if (hadDepsBefore !== hasDepsNow) {
       this._reevaluateWhetherPeopleCare()
     }
   }
 
-  _removeDependent(d: Derivation) {
-    const hadDepsBefore = this._dependents.size > 0
-    this._dependents.delete(d)
-    const hasDepsNow = this._dependents.size > 0
+  _garbageCollectDependents() {
+    const hadDepsBefore = this._idsOfDependents.size > 0
+
+    this._idsOfDependents.forEach((id) => {
+      if (!weakMapOfDerivations.get(id)) {
+        this._idsOfDependents.delete(id)
+      }
+    })
+
+    const hasDepsNow = this._idsOfDependents.size > 0
+    if (hadDepsBefore !== hasDepsNow) {
+      this._reevaluateWhetherPeopleCare()
+    }
+  }
+
+  _removeDependent(d: Derivation<$IntentionalAny>) {
+    const hadDepsBefore = this._idsOfDependents.size > 0
+    this._idsOfDependents.delete(d._id)
+    const hasDepsNow = this._idsOfDependents.size > 0
     if (hadDepsBefore !== hasDepsNow) {
       this._reevaluateWhetherPeopleCare()
     }
@@ -71,20 +96,32 @@ export default class Derivation {
 
     this._isUptodate = false
     if (this._hasDependents()) {
-      this._dependents.forEach((d) => {d._youMayNeedToUpdateYourself(this)})
+      let shouldGarbageCollectDependents = false
+      this._idsOfDependents.forEach((idd) => {
+        const dependent = weakMapOfDerivations.get(idd)
+        if (dependent) {
+          dependent._youMayNeedToUpdateYourself(this)
+        } else {
+          shouldGarbageCollectDependents = true
+        }
+      })
+      if (shouldGarbageCollectDependents) {
+        this._garbageCollectDependents()
+      }
+
     }
     if (this._changeEmitter.hasTappers() && this._dataVerseContext) {
       this._dataVerseContext.addDerivationToUpdate(this)
     }
   }
 
-  getValue(): $FixMe {
+  getValue(): V {
     if (!this._isUptodate) {
       const unboxed = this._recalculate()
       this._lastValue = unboxed
       this._isUptodate = true
     }
-    return this._lastValue
+    return (this._lastValue: $IntentionalAny)
   }
 
   _reactToNumberOfTappersChange() {
@@ -96,7 +133,7 @@ export default class Derivation {
   }
 
   _reevaluateWhetherPeopleCare() {
-    const theyCare = this._changeEmitter.hasTappers() || this._dependents.size > 0
+    const theyCare = this._changeEmitter.hasTappers() || this._idsOfDependents.size > 0
     if (theyCare !== this._peopleCare) {
       this._peopleCare = theyCare
       if (this._onWhetherPeopleCareAboutMeStateChange) {
@@ -105,19 +142,19 @@ export default class Derivation {
     }
   }
 
-  map(fn: (oldVal: $FixMe) => $FixMe): Derivation {
-    return new SimpleDerivation.default({dep: this}, (deps) => fn(deps.dep.getValue()))
+  map<T>(fn: (oldVal: Derivation<V>) => T): Derivation<T> {
+    return (new SimpleDerivation.default({dep: this}, (deps) => fn(deps.dep)): $FixMe)
   }
 
-  flatMap(fn: (oldVal: $FixMe) => Derivation | mixed) {
+  flatMap<T, P>(fn: (oldVal: V) => Derivation<T> | P): Derivation<T | P> {
     return this.map(fn).flatten()
   }
 
-  flatten() {
+  flatten(): Derivation<$FixMe> {
     return this.flattenDeep(1)
   }
 
-  flattenDeep(levels?: number) {
+  flattenDeep(levels?: number): Derivation<$FixMe> {
     return new FlattenDeepDerivation.default(this, levels)
   }
 }

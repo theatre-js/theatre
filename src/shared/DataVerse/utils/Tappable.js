@@ -49,7 +49,9 @@ export default class Tappable<V> {
   }
 
   tapImmediate(cb: Listener<V>): Untap {
-    return (null: $FixMe)
+    const ret = this.tap(cb)
+    // cb(this.)
+    return ret
   }
 
   _removeTapperById(id: number) {

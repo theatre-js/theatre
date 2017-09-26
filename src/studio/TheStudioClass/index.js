@@ -7,11 +7,11 @@ import initialState from './initialState'
 import * as DataVerse from '$shared/DataVerse'
 import {runSaga} from 'redux-saga'
 import rootSaga from './rootSaga'
-import {type CoreState} from '$studio/types'
+// import {type CoreState} from '$studio/types'
 import coreComponentDescriptors from '$studio/componentModel/coreComponentDescriptors'
 
 export default class TheStudioClass {
-  atom: $FixMe // $Call<typeof DataVerse.atomifyDeep, {state: CoreState, coreComponentDescriptors: typeof coreComponentDescriptors}>
+  atom: * // $Call<typeof DataVerse.atomifyDeep, {state: CoreState, coreComponentDescriptors: typeof coreComponentDescriptors}>
   dataverseContext: DataVerse.Context
   _lastComponentInstanceId: number
   // _lbCommunicator: LBCommunicator
@@ -30,7 +30,7 @@ export default class TheStudioClass {
         '$studio/componentModel/coreComponentDescriptors',
         () => {
           const newCoreComponentDescriptors = require('$studio/componentModel/coreComponentDescriptors').default
-          this.atom.set('coreComponentDescriptors', DataVerse.atomifyDeep(newCoreComponentDescriptors))
+          this.atom.setProp('coreComponentDescriptors', DataVerse.atomifyDeep(newCoreComponentDescriptors))
         }
       )
     }
@@ -41,6 +41,11 @@ export default class TheStudioClass {
   }
 
   run() {
+    const onAnimationFrame = () => {
+      this.dataverseContext.tick()
+      window.requestAnimationFrame(onAnimationFrame)
+    }
+    window.requestAnimationFrame(onAnimationFrame)
     // this._lbCommunicator.getSocket().then(() => {
     //   this._lbCommunicator.request('ping', 'pingalu').then((res) => {
     //     console.log(res)
@@ -91,10 +96,12 @@ export default class TheStudioClass {
   }
 
   registerComponentInstance(isntanceId: number, componentInstance: React.Component<mixed, mixed>) {
-    this.atom.get('instances').set(isntanceId, componentInstance)
+    // $FixMe
+    this.atom.prop('instances').setProp(isntanceId, componentInstance)
   }
 
   unregisterComponentInstance(isntanceId: number) {
-    this.atom.get('instances').delete(isntanceId)
+    // $FixMe
+    this.atom.prop('instances').deleteProp(isntanceId)
   }
 }

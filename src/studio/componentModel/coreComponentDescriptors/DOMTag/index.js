@@ -1,5 +1,5 @@
-// @flow
-import {TheaterJSComponent, typeSystem} from '$studio/handy'
+
+// import {TheaterJSComponent, typeSystem} from '$studio/handy'
 import * as D from '$shared/DataVerse'
 import * as React from 'react'
 import {type ComponentDescriptor} from '$studio/componentModel/types'
@@ -26,13 +26,13 @@ const lookupTable = {
       atom: ctx.front.pointer().prop('atom').derivation(),
     }, (d) => {
       return (el) => {
-        d.atom.setProp('elRef', el)
+        d.atom.getValue().setProp('elRef', el)
       }
     })
   },
 
   domAttributes: () => {
-    return new D.DerivedMap()
+    return new D.DerivedMap({})
   },
 
   componentDidMountCallbacks: (ctx: Context) => {
@@ -46,7 +46,7 @@ const lookupTable = {
     return ctx.up.pointer().prop('componendWillUnmountCallbacks').derivation()
       .map((callbacks: D.DerivedArray<any>) => callbacks.concat([
         () => () => {
-          const stopApplyingAtributes = ctx.front.pointer().prop('atom').prop('stopApplyingAtributes').resolve()
+          const stopApplyingAtributes = ctx.front.pointer().prop('atom').prop('stopApplyingAtributes').derivation().getValue()
           stopApplyingAtributes()
         },
       ]))

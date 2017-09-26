@@ -15,11 +15,11 @@ export const contextTypes = {
 
 export const withStudio =
   (compose(
+    getContext(contextTypes),
     withProps((ownProps) => ({studio: ownProps[contextName]})),
-    getContext(contextTypes)
   ): HigherOrderComponent<{}, WithStudioProps>)
 
-export const provideTheaterJSStudio = (theaterJSStudio: TheStudioClass) =>
+export const provideStudio = (theaterJSStudio: TheStudioClass) =>
   withContext(contextTypes, () => ({theaterJSStudio}))
 
 export type WithStudioProps = {

@@ -98,7 +98,11 @@ export default class MapAtom<O: {}> extends CompositeAtom implements IMapAtom<O>
   }
 
   prop<K: $Keys<O>>(key: K): $ElementType<O, K> {
-    return (this._internalMap[key]: $IntentionalAny)
+    if (this._internalMap.hasOwnProperty(key)) {
+      return (this._internalMap[key]: $IntentionalAny)
+    } else {
+      return undefined
+    }
   }
 
   deleteProp<K: $Keys<O>>(key: K): this {

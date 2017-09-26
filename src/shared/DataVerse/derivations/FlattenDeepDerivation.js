@@ -1,12 +1,12 @@
 // @flow
 import Derivation from './Derivation'
 
-export default class FlattenDeepDerivation extends Derivation {
-  _stack: Array<Derivation>
+export default class FlattenDeepDerivation extends Derivation<$FixMe> {
+  _stack: Array<Derivation<mixed>>
   _updateNeededFromIndex: number
   _maxDepth: number
 
-  constructor(depDerivation: Derivation, maxDepth: number = 200) {
+  constructor(depDerivation: Derivation<$FixMe>, maxDepth: number = 200) {
     super()
     this._stack = [depDerivation]
     this._maxDepth = maxDepth

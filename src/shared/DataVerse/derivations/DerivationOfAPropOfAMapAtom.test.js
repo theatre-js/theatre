@@ -11,7 +11,7 @@ describe('DerivationOfAPropOfAMapAtom', () => {
 
     const aD = new DerivationOfAPropOfAMapAtom(m, 'a')
     const bD = new DerivationOfAPropOfAMapAtom(m, 'b')
-    const final = aD.map((n) => bD.map((m) => m.unbox() + n.unbox())).flattenDeep()
+    const final = aD.map((n) => bD.map((m) => m.getValue() + n.getValue())).flattenDeep()
 
     expect(final.getValue()).toEqual(4)
     m.setProp('a', new D.BoxAtom(2))
@@ -27,7 +27,7 @@ describe('DerivationOfAPropOfAMapAtom', () => {
     aD.setDataVerseContext(context)
 
     aD.changes().tap((newBox) => {
-      adEvents.push(newBox.unbox())
+      adEvents.push(newBox.getValue())
     })
 
     expect(adEvents).toHaveLength(0)

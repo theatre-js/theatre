@@ -1,4 +1,4 @@
-// @flow
+
 import * as D from '$shared/DataVerse'
 import forEach from 'lodash/forEach'
 
@@ -12,14 +12,15 @@ class AttributeApplier {
     this._key = key
     this._box = box
     this._el = el
-    // $FixMe
-    this._untap = box.changes().tapImmediate((newValue) => {
+    const reactToValueChange = (newValue) => {
       if (typeof newValue === 'string') {
         el.setAttribute(key, newValue)
       } else {
         el.removeAttribute(key)
       }
-    })
+    }
+    this._untap = box.changes().tap(reactToValueChange)
+    reactToValueChange(box.getValue())
   }
 
   remove() {
@@ -28,22 +29,22 @@ class AttributeApplier {
   }
 }
 
-export default function createDidMountHookForAttributes(ctx: $FixMe) {
+export default function createDidMountHookForAttributes(d: $FixMe, context: $FixMe) {
   () => {
     const fnsToCallForStoppingThis = []
-    ctx.front.prop('atom').setProp('stopApplyingAtributes', () => fnsToCallForStoppingThis.forEach((fn) => {fn()}))
+    d.front.prop('atom').setProp('stopApplyingAtributes', () => fnsToCallForStoppingThis.forEach((fn) => {fn()}))
 
-    fnsToCallForStoppingThis.push(ctx.front.pointer().prop('atom').prop('elRef').derivative().tapImmediate((el: ?Element) => {
+    fnsToCallForStoppingThis.push(d.front.pointer().prop('atom').prop('elRef').derivative().tapImmediate((el: ?Element) => {
       if (!el) return
 
-      const attrs = new D.DerivedMap()
-      fnsToCallForStoppingThis.push(ctx.front.pointer().prop('domAttributes').derivative().tapImmediate((domAttributes) => {
-        attrs.delegateTo(domAttributes)
+      const attrs = new D.DerivedMap({}).face(context)
+      fnsToCallForStoppingThis.push(d.front.pointer().prop('domAttributes').derivative().tapImmediate((domAttributes) => {
+        attrs.setHead(domAttributes)
       }))
 
       const appliers = {}
 
-      fnsToCallForStoppingThis.push(attrs.changes().tapImmediate((change: D.MapAtomChangeType<any>) => {
+      const reactToAttributeChange = (change: D.MapAtomChangeType<any>) => {
         change.deletedKeys.forEach((key) => {
           appliers[key].remove()
           delete appliers[key]
@@ -55,7 +56,8 @@ export default function createDidMountHookForAttributes(ctx: $FixMe) {
 
           appliers[key] = new AttributeApplier(key, v, (el: $FixMe))
         })
-      }))
+      }
+      fnsToCallForStoppingThis.push(attrs.changes().tap(reactToAttributeChange))
 
       fnsToCallForStoppingThis.push(() => {
         forEach(appliers, (applier) => {
@@ -66,3 +68,6 @@ export default function createDidMountHookForAttributes(ctx: $FixMe) {
 
   }
 }
+
+// type Theme = { [className: string]: string };
+// export type MergeThemeHOC = <T: {}>(injectedTheme: T) => HigherOrderComponent<{theme?: $Shape<T>}, {theme: T}>

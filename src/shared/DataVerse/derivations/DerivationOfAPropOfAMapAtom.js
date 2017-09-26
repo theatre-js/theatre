@@ -4,12 +4,12 @@ import type {IMapAtom} from '$shared/DataVerse'
 
 const noop = () => {}
 
-export default class DerivationOfAPropOfAMapAtom extends Derivation {
-  _mapAtom: IMapAtom<Object>
+export default class DerivationOfAPropOfAMapAtom<O: {}, K: $Keys<O>> extends Derivation<$ElementType<O, K>> {
+  _mapAtom: IMapAtom<O>
   _untapFromMapAtomChanges: Function
-  _propName: number | string
+  _propName: $Keys<O>
 
-  constructor(mapAtom: IMapAtom<Object>, propName: number | string) {
+  constructor(mapAtom: IMapAtom<O>, propName: $Keys<O>) {
     super()
     this._mapAtom = mapAtom
     this._propName = propName

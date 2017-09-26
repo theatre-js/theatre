@@ -1,5 +1,5 @@
 // @flow
-import type {Address, IReactive} from '$shared/DataVerse/types'
+import type {Address, IReactive, MapKey} from '$shared/DataVerse/types'
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import Tappable from '$shared/DataVerse/utils/Tappable'
 import type {ICompositeAtom} from './CompositeAtom'
@@ -7,7 +7,7 @@ import type {ICompositeAtom} from './CompositeAtom'
 export interface IAtom extends IReactive {
   isAtom: true,
   +unboxDeep: () => mixed,
-  _setParent(p: ICompositeAtom, key: number | string): void,
+  _setParent(p: ICompositeAtom, key: MapKey): void,
   _unsetParent(): void,
   changes(): Tappable<$IntentionalAny>, // shallow changes. Does not include what's removed
   deepChanges(): Tappable<$IntentionalAny>, // deep changes. Includes an address
@@ -22,7 +22,7 @@ export default class Atom implements IAtom {
   _changeEmitter: Emitter<*>
   _deepChangeEmitter: Emitter<*>
   _deepDiffEmitter: Emitter<*>
-  _parent: ?{atom: ICompositeAtom, key: string | number}
+  _parent: ?{atom: ICompositeAtom, key: MapKey}
   +unboxDeep: () => mixed
 
   constructor() {
@@ -44,7 +44,7 @@ export default class Atom implements IAtom {
     return this._deepDiffEmitter.tappable
   }
 
-  _setParent(p: ICompositeAtom, key: string | number) {
+  _setParent(p: ICompositeAtom, key: MapKey) {
     if (this._parent)
       throw new Error(`This Atom already does have a parent`)
 
@@ -74,8 +74,8 @@ export default class Atom implements IAtom {
   }
 
   pointer() {
-    return new Pointer.default(this.getAddress())
+    return new PointerDerivation.default(this.getAddress())
   }
 }
 
-const Pointer = require('$shared/DataVerse/utils/Pointer')
+const PointerDerivation = require('$shared/DataVerse/derivations/PointerDerivation')

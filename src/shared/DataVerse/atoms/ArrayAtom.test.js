@@ -6,9 +6,9 @@ import atomifyDeep from './atomifyDeep'
 describe('DataVerse.ArrayAtom', () => {
   it('should allow initial values', () => {
     const o = atomifyDeep([1, 2, 3])
-    expect(o.index(0).unbox()).toEqual(1)
-    expect(o.index(1).unbox()).toEqual(2)
-    expect(o.index(2).unbox()).toEqual(3)
+    expect(o.index(0).getValue()).toEqual(1)
+    expect(o.index(1).getValue()).toEqual(2)
+    expect(o.index(2).getValue()).toEqual(3)
   })
 
 
