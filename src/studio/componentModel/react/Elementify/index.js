@@ -22,13 +22,13 @@ const getComponentDescriptorById = (id: D.Derivation<string>, studio: D.Derivati
       : studio.getValue().atom.pointer().prop('state').prop('componentModel').prop('componentDescriptorsById').prop(idString)
   })
 
-const getFinalComponentescriptor = (initialComponentId: D.Derivation<string>, studio: D.Derivation<Studio>): Derivation<?D.AtomifyDeepType<ComponentDescriptor>> => {
+const getAliasLessComponentDescriptor = (initialComponentId: D.Derivation<string>, studio: D.Derivation<Studio>): Derivation<?D.AtomifyDeepType<ComponentDescriptor>> => {
   return getComponentDescriptorById(initialComponentId, studio).flatMap((des): $FixMe => {
     if (!des) return
 
     return des.pointer().prop('type').flatMap((type) => {
       if (type === 'Alias') {
-        return des.pointer().prop('aliasedComponentID').flatMap((aliasedComponentID) => getFinalComponentescriptor(new D.ConstantDerivation(aliasedComponentID), studio))
+        return des.pointer().prop('aliasedComponentID').flatMap((aliasedComponentID) => getAliasLessComponentDescriptor(new D.ConstantDerivation(aliasedComponentID), studio))
       } else {
         return des
       }
@@ -37,13 +37,18 @@ const getFinalComponentescriptor = (initialComponentId: D.Derivation<string>, st
 }
 
 export default makeReactiveComponent({
+  displayName: 'Elementify',
   modifyBaseDerivation: (d) => d.extend({
     render(d) {
       const instantiationDescriptorPointer = d.pointer().prop('props').prop('instantiationDescriptor')
-      return getFinalComponentescriptor(
-        instantiationDescriptorPointer.prop('componentID'), d.pointer().prop('studio')
+      const componentIDPointer = instantiationDescriptorPointer.prop('componentID')
+      return getAliasLessComponentDescriptor(
+        componentIDPointer, d.pointer().prop('studio')
       ).flatMap((componentDescriptor) => {
-        if (!componentDescriptor) return <div>cannot find this component</div>
+        if (!componentDescriptor) return D.autoDerive(() => {
+
+          return <div>Cannot find component {componentIDPointer.getValue()}</div>
+        })
 
         const componentDescriptorPointer = componentDescriptor.pointer()
         const componentDescriptorTypePointer = componentDescriptorPointer.prop('type')

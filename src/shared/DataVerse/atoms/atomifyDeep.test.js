@@ -32,16 +32,16 @@ describe('DataVerse.atomifyDeep', () => {
     (atomifyDeep({a: 'foo', b: 12}): IMapAtom<{a: IBoxAtom<string>, b: IBoxAtom<number>}>);
     (atomifyDeep({a: 'foo', b: {bar: 'bar', baz: true}}): IMapAtom<{a: IBoxAtom<string>, b: IMapAtom<{bar: IBoxAtom<string>, baz: IBoxAtom<boolean>}>}>)
 
-    type A = {a: string, b: number, c: boolean}
-    type AR = $Call<typeof atomifyDeep, A>
-    (atomifyDeep({a: 'hi', b: 10, c: true}): AR);
+    // type A = {a: string, b: number, c: boolean}
+    // type AR = $Call<typeof atomifyDeep, A>
+    // (atomifyDeep({a: 'hi', b: 10, c: true}): AR);
 
-    (atomifyDeep({str: 'str', num: 1}): IMapAtom<{str: IBoxAtom<string>, num: IBoxAtom<number>}>);
-    (atomifyDeep({str: 'str', num: 1}): $Call<typeof atomifyDeep, {str: string, num: number}>);
-    (atomifyDeep({str: 'str', num: 1}): $Call<typeof atomifyDeep, {str: string, num: number, p: number}>);
-    (atomifyDeep([1, 2]): IArrayAtom<IBoxAtom<number>>);
-    (atomifyDeep([1, 2]): $Call<typeof atomifyDeep, Array<number>>);
-    (atomifyDeep([{foo: 'bar'}]): IArrayAtom<IMapAtom<{foo: IBoxAtom<string>}>>);
-    (atomifyDeep([{foo: 'bar'}]): $Call<typeof atomifyDeep, Array<{foo: string}>>)
+    // (atomifyDeep({str: 'str', num: 1}): IMapAtom<{str: IBoxAtom<string>, num: IBoxAtom<number>}>);
+    // (atomifyDeep({str: 'str', num: 1}): $Call<typeof atomifyDeep, {str: string, num: number}>);
+    // (atomifyDeep({str: 'str', num: 1}): $Call<typeof atomifyDeep, {str: string, num: number, p: number}>);
+    // (atomifyDeep([1, 2]): IArrayAtom<IBoxAtom<number>>);
+    // (atomifyDeep([1, 2]): $Call<typeof atomifyDeep, Array<number>>);
+    // (atomifyDeep([{foo: 'bar'}]): IArrayAtom<IMapAtom<{foo: IBoxAtom<string>}>>);
+    // (atomifyDeep([{foo: 'bar'}]): $Call<typeof atomifyDeep, Array<{foo: string}>>)
   }
 })

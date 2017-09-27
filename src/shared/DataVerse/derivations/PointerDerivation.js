@@ -48,13 +48,15 @@ export default class PointerDerivation extends Derivation<$FixMe> {
       })
     })
 
-    finalDerivation = finalDerivation.flatMap((possibleBoxAtom) => {
-      if (possibleBoxAtom instanceof D.BoxAtom) {
-        return new DerivationOfABoxAtom.default(possibleBoxAtom)
+    const flattenFinalDerivation = (finalThing) => {
+      if (finalThing instanceof D.BoxAtom) {
+        return new DerivationOfABoxAtom.default(finalThing)
       } else {
-        return new ConstantDerivation.default(possibleBoxAtom)
+        return finalThing
       }
-    })
+    }
+
+    finalDerivation = finalDerivation.flatMap(flattenFinalDerivation).flatten()
 
     finalDerivation._addDependent(this)
 
@@ -77,7 +79,7 @@ export default class PointerDerivation extends Derivation<$FixMe> {
 }
 
 const SimpleDerivation = require('./SimpleDerivation')
-const ConstantDerivation = require('./ConstantDerivation')
+// const ConstantDerivation = require('./ConstantDerivation')
 const DerivationOfAPropOfAMapAtom = require('./DerivationOfAPropOfAMapAtom')
 const DerivationOfAnIndexOfAnArrayAtom = require('./DerivationOfAnIndexOfAnArrayAtom')
 // const DerivationOfAPropOfADerivedMapFace = require('./DerivationOfAPropOfADerivedMapFace')

@@ -6,12 +6,14 @@ import * as D from '$shared/DataVerse'
 
 type Args = {
   modifyBaseDerivation: (D.DerivedMap<$FixMe>) => D.DerivedMap<$FixMe>,
+  displayName?: string,
 }
 
-export default function makeReactiveComponent({modifyBaseDerivation}: Args) {
+export default function makeReactiveComponent({modifyBaseDerivation, displayName}: Args) {
   type Props = {key: string, props: $FixMe} & WithStudioProps
 
   class TheaterJSComponent extends React.PureComponent<Props, void> {
+    static displayName = displayName
     _finalFace: $FixMe
     _atom: $FixMe
     _baseDerivation: $FixMe
