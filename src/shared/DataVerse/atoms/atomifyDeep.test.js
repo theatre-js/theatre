@@ -20,38 +20,28 @@ describe('DataVerse.atomifyDeep', () => {
   })
 
   function typeTests() { // eslint-disable-line no-unused-vars
-    const a = atomifyDeep('hi');
+    // const a = atomifyDeep('hi');
 
     (atomifyDeep({a: 'foo'}): IMapAtom<{a: IBoxAtom<string>}>);
-    // $FlowExpectError
-    (atomifyDeep({a: 'foo'}): IMapAtom<{a: IAtom<number>}>);
-    (atomifyDeep({a: 'foo', b: 12}): IMapAtom<{a: IAtom<string>, b: IAtom<number>}>);
 
-    (atomifyDeep({a: 'foo', b: 12}): IMapAtom<{a: IAtom<string>, b: IAtom<number>}>);
-    (atomifyDeep({a: 'foo', b: {bar: 'bar', baz: true}}): IMapAtom<{a: IAtom<string>, b: IMapAtom<{bar: IAtom<string>, baz: IAtom<boolean>}>}>)
+    // $FixMe
+    (atomifyDeep({a: 'foo'}): IMapAtom<{a: IBoxAtom<number>}>);
+
+    (atomifyDeep({a: 'foo', b: 12}): IMapAtom<{a: IBoxAtom<string>, b: IBoxAtom<number>}>);
+
+    (atomifyDeep({a: 'foo', b: 12}): IMapAtom<{a: IBoxAtom<string>, b: IBoxAtom<number>}>);
+    (atomifyDeep({a: 'foo', b: {bar: 'bar', baz: true}}): IMapAtom<{a: IBoxAtom<string>, b: IMapAtom<{bar: IBoxAtom<string>, baz: IBoxAtom<boolean>}>}>)
 
     type A = {a: string, b: number, c: boolean}
     type AR = $Call<typeof atomifyDeep, A>
     (atomifyDeep({a: 'hi', b: 10, c: true}): AR);
 
-    (atomifyDeep({str: 'str', num: 1}): IMapAtom<{str: IAtom<string>, num: IAtom<number>}>);
+    (atomifyDeep({str: 'str', num: 1}): IMapAtom<{str: IBoxAtom<string>, num: IBoxAtom<number>}>);
     (atomifyDeep({str: 'str', num: 1}): $Call<typeof atomifyDeep, {str: string, num: number}>);
     (atomifyDeep({str: 'str', num: 1}): $Call<typeof atomifyDeep, {str: string, num: number, p: number}>);
-    (atomifyDeep([1, 2]): IArrayAtom<IAtom<number>>);
+    (atomifyDeep([1, 2]): IArrayAtom<IBoxAtom<number>>);
     (atomifyDeep([1, 2]): $Call<typeof atomifyDeep, Array<number>>);
-    (atomifyDeep([{foo: 'bar'}]): IArrayAtom<IMapAtom<{foo: IAtom<string>}>>);
-    (atomifyDeep([{foo: 'bar'}]): $Call<typeof atomifyDeep, Array<{foo: string}>>);
-
-    (function() {
-      // type AtomifyFn =
-      //   (<V: IAtom>(v: V) => V) &
-      //   (<V, A: Array<V>>(a: A) => IArrayAtom<$Call<AtomifyDeepFn, V>>) &
-      //   (<V: {+constructor: Function}>(v: V) => IAtom<V>) &
-      //   (<V: {}>(v: V) => IMapAtom<$ObjMap<V, AtomifyDeepFn>>) &
-      //   (<V>(v: V) => IAtom<V>)
-
-      // export type $Call<typeof atomifyDeep, V> = $Call<AtomifyDeepFn, V>
-
-    })
+    (atomifyDeep([{foo: 'bar'}]): IArrayAtom<IMapAtom<{foo: IBoxAtom<string>}>>);
+    (atomifyDeep([{foo: 'bar'}]): $Call<typeof atomifyDeep, Array<{foo: string}>>)
   }
 })

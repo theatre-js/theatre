@@ -25,7 +25,7 @@ const createRootComponentForReact = (studio: TheStudioClass) => {
       super(props)
 
       this.elementifyProps = new D.MapAtom({
-        descriptor: new D.MapAtom({
+        instantiationDescriptor: new D.MapAtom({
           componentID: 'TheaterJS/Core/RenderCurrentCanvas',
           props: new D.MapAtom({
             children: new D.BoxAtom(props.children),
@@ -39,7 +39,7 @@ const createRootComponentForReact = (studio: TheStudioClass) => {
     }
 
     render() {
-      return <Elementify key="RenderCurrentCanvas" props={this.elementifyProps}  />
+      return <Elementify key="RenderCurrentCanvas" props={this.elementifyProps.pointer()}  />
     }
   }
 

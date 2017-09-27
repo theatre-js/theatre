@@ -16,7 +16,7 @@ export default class DerivationOfAnIndexOfAnArrayAtom<V: IAtom> extends Derivati
     this._untapFromMapAtomChanges = noop
   }
 
-  getValue() {
+  _getValue() {
     this._isUptodate = true
     return this._recalculate()
   }

@@ -5,7 +5,7 @@ import {withStudio, type WithStudioProps} from './studioContext'
 import * as D from '$shared/DataVerse'
 
 type Args = {
-  modifyBaseDerivation: (D.DerivedMap) => D.DerivedMap,
+  modifyBaseDerivation: (D.DerivedMap<$FixMe>) => D.DerivedMap<$FixMe>,
 }
 
 export default function makeReactiveComponent({modifyBaseDerivation}: Args) {
@@ -30,8 +30,8 @@ export default function makeReactiveComponent({modifyBaseDerivation}: Args) {
       componentWillUpdateCallbacks: () => new D.DerivedArray(),
 
       props: (d) => d.prop('atom').map((atom) => atom.prop('_props')),
-      studio: (d) => d.prop('atom').prop('studio'),
-      key: (d) => d.prop('atom').prop('key'),
+      studio: (d) => d.pointer().prop('atom').prop('studio'),
+      key: (d) => d.pointer().prop('atom').prop('key'),
     }
 
     constructor(props: Props) {

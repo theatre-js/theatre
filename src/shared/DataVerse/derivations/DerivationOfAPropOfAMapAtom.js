@@ -16,7 +16,7 @@ export default class DerivationOfAPropOfAMapAtom<O: {}, K: $Keys<O>> extends Der
     this._untapFromMapAtomChanges = noop
   }
 
-  getValue() {
+  _getValue() {
     this._isUptodate = true
     return this._recalculate()
   }

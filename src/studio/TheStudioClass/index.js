@@ -8,7 +8,7 @@ import * as DataVerse from '$shared/DataVerse'
 import {runSaga} from 'redux-saga'
 import rootSaga from './rootSaga'
 // import {type CoreState} from '$studio/types'
-import coreComponentDescriptors from '$studio/componentModel/coreComponentDescriptors'
+import coreComponentDescriptorsById from '$studio/componentModel/coreComponentDescriptors'
 
 export default class TheStudioClass {
   atom: * // $Call<typeof DataVerse.atomifyDeep, {state: CoreState, coreComponentDescriptors: typeof coreComponentDescriptors}>
@@ -21,7 +21,7 @@ export default class TheStudioClass {
     this.dataverseContext = new DataVerse.Context()
     this.atom = DataVerse.atomifyDeep({
       state: initialState,
-      coreComponentDescriptors,
+      coreComponentDescriptorsById,
       instances: {},
     })
 
@@ -30,7 +30,7 @@ export default class TheStudioClass {
         '$studio/componentModel/coreComponentDescriptors',
         () => {
           const newCoreComponentDescriptors = require('$studio/componentModel/coreComponentDescriptors').default
-          this.atom.setProp('coreComponentDescriptors', DataVerse.atomifyDeep(newCoreComponentDescriptors))
+          this.atom.setProp('coreComponentDescriptorsById', DataVerse.atomifyDeep(newCoreComponentDescriptors))
         }
       )
     }

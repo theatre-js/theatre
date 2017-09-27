@@ -52,7 +52,7 @@ export default class PointerDerivation extends Derivation<$FixMe> {
       if (possibleBoxAtom instanceof D.BoxAtom) {
         return new DerivationOfABoxAtom.default(possibleBoxAtom)
       } else {
-        return possibleBoxAtom
+        return new ConstantDerivation.default(possibleBoxAtom)
       }
     })
 
@@ -70,9 +70,14 @@ export default class PointerDerivation extends Derivation<$FixMe> {
       this.getValue()
     }
   }
+
+  pointer() {
+    return this
+  }
 }
 
 const SimpleDerivation = require('./SimpleDerivation')
+const ConstantDerivation = require('./ConstantDerivation')
 const DerivationOfAPropOfAMapAtom = require('./DerivationOfAPropOfAMapAtom')
 const DerivationOfAnIndexOfAnArrayAtom = require('./DerivationOfAnIndexOfAnArrayAtom')
 // const DerivationOfAPropOfADerivedMapFace = require('./DerivationOfAPropOfADerivedMapFace')

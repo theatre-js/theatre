@@ -26,7 +26,7 @@ export type LayerID = 'face' | 'tail' | number
 type Layer = {
   id: number,
   initiatingWiresByKey: {[propName: MapKey]: Wire},
-  derivedMap: DerivedMap,
+  derivedMap: DerivedMap<$FixMe>,
   sourceDerivationsByKey: {[propName: MapKey]: Derivation<$FixMe>},
   untapFromParentChanges: () => void,
 }
@@ -54,13 +54,13 @@ const makeEmptyStructure = (): Structure => ({
 })
 
 export default class DerivedMapFace {
-  _head: DerivedMap
+  _head: DerivedMap<$FixMe>
   _changeEmitter: Emitter<$FixMe>
   _dataVerseContext: Context
   _structure: Structure
   _updateStructure: () => void
 
-  constructor(head: DerivedMap, context: Context) {
+  constructor(head: DerivedMap<$FixMe>, context: Context) {
     this._head = head
     this._changeEmitter = new Emitter
     this._dataVerseContext = context
@@ -69,7 +69,7 @@ export default class DerivedMapFace {
     this._updateStructure()
   }
 
-  setHead(head: DerivedMap) {
+  setHead(head: DerivedMap<$FixMe>) {
     this._head = head
     this._updateStructure()
   }

@@ -14,8 +14,7 @@ export default class DerivationOfABoxAtom<V> extends Derivation<V> {
     this._untapFromBoxAtomChanges = noop
   }
 
-  getValue() {
-    //
+  _getValue() {
     this._isUptodate = true
     return this._recalculate()
   }

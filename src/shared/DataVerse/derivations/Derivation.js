@@ -1,6 +1,7 @@
 // @flow
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import Context from '$shared/DataVerse/Context'
+import goog from './autoDerivationGogool'
 
 let lastDerivationId = 0
 const weakMapOfDerivations = new WeakMap()
@@ -15,7 +16,9 @@ export default class Derivation<V> {
   +_recalculate: () => V
   +_onWhetherPeopleCareAboutMeStateChange: ?(peopleCare: boolean) => void
   _peopleCare: boolean
-  +getValue: () => V
+  getValue: () => V
+  +_getValue: () => V
+
 
   constructor() {
     this._id = {id: lastDerivationId++}
@@ -116,6 +119,11 @@ export default class Derivation<V> {
   }
 
   getValue(): V {
+    goog.addObservedDepToCurrentStackTop(this)
+    return this._getValue()
+  }
+
+  _getValue(): V {
     if (!this._isUptodate) {
       const unboxed = this._recalculate()
       this._lastValue = unboxed
@@ -142,8 +150,8 @@ export default class Derivation<V> {
     }
   }
 
-  map<T>(fn: (oldVal: Derivation<V>) => T): Derivation<T> {
-    return (new SimpleDerivation.default({dep: this}, (deps) => fn(deps.dep)): $FixMe)
+  map<T>(fn: (oldVal: V) => T): Derivation<T> {
+    return (new SimpleDerivation.default({dep: this}, (deps) => fn(deps.dep.getValue())): $FixMe)
   }
 
   flatMap<T, P>(fn: (oldVal: V) => Derivation<T> | P): Derivation<T | P> {

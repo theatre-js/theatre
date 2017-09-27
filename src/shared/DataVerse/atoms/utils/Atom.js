@@ -3,6 +3,7 @@ import type {Address, IReactive, MapKey} from '$shared/DataVerse/types'
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import Tappable from '$shared/DataVerse/utils/Tappable'
 import type {ICompositeAtom} from './CompositeAtom'
+import type {default as PointerDerivationType} from '$shared/DataVerse/derivations/PointerDerivation'
 
 export interface IAtom extends IReactive {
   isAtom: true,
@@ -15,6 +16,7 @@ export interface IAtom extends IReactive {
   isAtom: true,
   getAddress(): Address,
   getParent(): ?ICompositeAtom,
+  pointer() : PointerDerivationType,
 }
 
 export default class Atom implements IAtom {

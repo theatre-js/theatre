@@ -87,7 +87,7 @@ describe('SimpleDerivation', () => {
     const aD = a.derivation()
     const b = new D.BoxAtom('b')
     const bD = b.derivation()
-    const cD = aD.flatMap((aD) => bD.map((bD) => aD.getValue() + bD.getValue()))
+    const cD = aD.flatMap((a) => bD.map((b) => a + b))
 
     expect(cD.getValue()).toEqual('ab')
     cD.setDataVerseContext(context)
