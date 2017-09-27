@@ -57,7 +57,7 @@ class LaneBox extends React.Component {
   }
 
   onResize = (dy: number) => {
-    const ylow = (40 - this.props.height)
+    const ylow = (60 - this.props.height)
     this.setState(() => ({
       resizeY: dy > ylow ? dy : ylow,
     }))

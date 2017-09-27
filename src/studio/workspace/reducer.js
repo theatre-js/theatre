@@ -15,11 +15,11 @@ const defaultState: WorkspaceNamespaceState = {
         },
         placementSettings: {
           pos: {
-            x: 35,
+            x: 20,
             y: 25,
           },
           dim: {
-            x: 30,
+            x: 60,
             y: 50,
           },
         },

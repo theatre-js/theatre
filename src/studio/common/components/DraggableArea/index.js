@@ -31,6 +31,10 @@ class DraggableArea extends React.Component {
     }
   }
 
+  componentWillUnmount() {
+    this.removeDragListeners()
+  }
+
   addDragListeners() {
     document.addEventListener('mousemove', this.dragHandler)
     document.addEventListener('mouseup', this.dragEndHandler)
@@ -54,11 +58,17 @@ class DraggableArea extends React.Component {
     this.props.onDragStart && this.props.onDragStart()
   }
 
-  dragEndHandler = () => {
+  dragEndHandler = (e: MouseEvent) => {
     if (this.state.isDragging) {
       this.setState(() => ({isDragging: false}))
       this.removeDragListeners()
-      this.props.onDragEnd && this.props.onDragEnd()
+      if (this.props.onDragEnd) {
+        const {screenX, screenY} = e
+        const {startPos: {x, y}} = this.state
+        if (!(x === screenX && y === screenY)) {
+          this.props.onDragEnd()
+        }
+      }
     }
   }
 
@@ -66,14 +76,12 @@ class DraggableArea extends React.Component {
     if (!this.state.isDragging) return
 
     const {startPos} = this.state
-    this.props.onDrag && this.props.onDrag(e.screenX - startPos.x, e.screenY - startPos.y)
+    this.props.onDrag && this.props.onDrag(e.screenX - startPos.x, e.screenY - startPos.y, e)
   }
 
   render() {
     return (
-      <div onMouseDown={this.dragStartHandler}>
-        {this.props.children}
-      </div>
+      React.cloneElement(this.props.children, {onMouseDown: this.dragStartHandler})
     )
   }
 }

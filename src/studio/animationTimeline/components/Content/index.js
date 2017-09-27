@@ -7,7 +7,7 @@ import {withRunSaga, type WithRunSagaProps} from '$shared/utils'
 import {moveBox, mergeBoxes, splitLane, resizeBox} from '$studio/animationTimeline/sagas'
 import css from './index.css'
 import SortableBox from './SortableBox'
-import LaneViewer from './LaneViewer'
+import LanesViewer from './LanesViewer'
 
 type Props = WithRunSagaProps & $FlowFixMe
 
@@ -62,37 +62,27 @@ class Content extends React.Component {
       const height = props.boxes[id].height
       return {
         isDragging: true,
-        boxBeingDragged: {
-          index,
-          offset,
-          height,
-        },
+        boxBeingDragged: {index, offset, height},
       }
     })
   }
 
   onBoxMove = (dy: number) => {
     const {boxBeingDragged: {index, offset, height}, boundaries} = this.state
-    let edge, boundaryIndex, mergeIndexOffset, moveIndexOffset
-    if (dy >= 0) {
-      edge = offset + height + dy
-      boundaryIndex = boundaries.findIndex((element) => edge < element) - 1
-      moveIndexOffset = -1
-      mergeIndexOffset = 0
+    const [edge, moveIndexOffset] = (dy >= 0) ? [offset + height + dy, -1] : [offset + dy, 0]
+    const lowerBoundaryIndex = boundaries.findIndex((element) => edge < element)
+    const upperBoundaryIndex = lowerBoundaryIndex - 1
+    if (lowerBoundaryIndex === -1) {
+      const moveTo = (index !== boundaries.length - 2) ? boundaries.length - 2 : null
+      this._setBoxBeingDraggedToMoveTo(moveTo)
+    } else if (edge < 0) {
+      this._setBoxBeingDraggedToMoveTo(0)
     } else {
-      edge = offset + dy
-      boundaryIndex = boundaries.findIndex((element) => edge < element)
-      moveIndexOffset = 0
-      mergeIndexOffset = -1
-    }
-
-    if (boundaryIndex === -2) {
-      const moveIndex = (index !== boundaries.length - 2) ? boundaries.length - 2 : null
-      this._setBoxBeingDraggedToMoveTo(moveIndex)
-    } else if (Math.abs(edge - boundaries[boundaryIndex]) < 20 || edge < 0) {
-      this._setBoxBeingDraggedToMoveTo(boundaryIndex + moveIndexOffset)
-    } else {
-      this._setBoxBeingDraggedToMergeWith(boundaryIndex + mergeIndexOffset)
+      const lowerBoundDistance = boundaries[lowerBoundaryIndex] - edge
+      const upperBoundDistance = edge - boundaries[upperBoundaryIndex]
+      if (lowerBoundDistance < 15) return this._setBoxBeingDraggedToMoveTo(lowerBoundaryIndex + moveIndexOffset)
+      if (upperBoundDistance < 15) return this._setBoxBeingDraggedToMoveTo(upperBoundaryIndex + moveIndexOffset)
+      return this._setBoxBeingDraggedToMergeWith(upperBoundaryIndex)
     }
   }
 
@@ -176,8 +166,9 @@ class Content extends React.Component {
                 onMove={this.onBoxMove}
                 onResize={(newSize) => this.onBoxResize(id, newSize)}>
                 {
-                  <LaneViewer
-                    lanes={box.lanes}
+                  <LanesViewer
+                    boxHeight={box.height}
+                    laneIds={box.lanes}
                     splitLane={(laneId) => this.splitLane(index, laneId)}/>
                 }
               </SortableBox>

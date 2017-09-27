@@ -23,10 +23,19 @@ class TheUI extends React.Component {
   props: Props
   state: State
 
-  static getDefaultPanelPlacement(): PanelPlacementSettings {
-    return {
-      pos: {x: 35, y: 25},
-      dim: {x: 30, y: 50},
+  static getDefaultPanelPlacement(type): PanelPlacementSettings {
+    // ??
+    switch (type) {
+      case 'animationTimeline':
+        return {
+          pos: {x: 20, y: 25},
+          dim: {x: 60, y: 50},
+        }
+      default:
+        return {
+          pos: {x: 35, y: 25},
+          dim: {x: 30, y: 50},
+        }
     }
   }
 
@@ -57,7 +66,7 @@ class TheUI extends React.Component {
       type,
       persistentState: TheUI.getDefaultPanelPersistentState(),
       configuration: TheUI.getDefaultPanelConfig(),
-      placementSettings: TheUI.getDefaultPanelPlacement(),
+      placementSettings: TheUI.getDefaultPanelPlacement(type),
       inputs: {},
       outputs: {},
     }

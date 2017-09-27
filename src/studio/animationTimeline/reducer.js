@@ -2,35 +2,153 @@
 import type {AnimationTimelineNamespaceState} from './types'
 
 const defaultState: AnimationTimelineNamespaceState = {
-  curves: {
-    byId: {},
-  },
   lanes: {
     byId: {
       '8daa7380-9b43-475a-8352-dc564a58c717': {
         id: '8daa7380-9b43-475a-8352-dc564a58c717',
-        name: 'button-bottom',
-        curves: [],
+        component: 'button',
+        property: 'bottom',
+        points: [
+          {
+            id: '1',
+            t: 50,
+            value: 20,
+            isConnected: true,
+            handles: [-25, 0, 25, 0],
+          },
+          {
+            id: '2',
+            t: 170,
+            value: 10,
+            isConnected: true,
+            handles: [-25, 0, 25, 0],
+          },
+          {
+            id: '3',
+            t: 290,
+            value: 30,
+            isConnected: true,
+            handles: [-25, 0, 25, 0],
+          },
+          {
+            id: '4',
+            t: 400,
+            value: 5,
+            isConnected: false,
+            handles: [-25, 0, 25, 0],
+          },
+        ],
       },
       '8daa7380-9b43-475a-8352-dc564a58c716': {
         id: '8daa7380-9b43-475a-8352-dc564a58c716',
-        name: 'button-left',
-        curves: [],
+        component: 'button',
+        property: 'left',
+        points: [
+          {
+            id: '1',
+            t: 30,
+            value: 20,
+            isConnected: true,
+            handles: [-25, 0, 25, 0],
+          },
+          {
+            id: '2',
+            t: 120,
+            value: 10,
+            isConnected: true,
+            handles: [-25, 0, 25, 0],
+          },
+          {
+            id: '3',
+            t: 240,
+            value: 30,
+            isConnected: true,
+            handles: [-25, 0, 25, 0],
+          },
+          {
+            id: '4',
+            t: 350,
+            value: 5,
+            isConnected: false,
+            handles: [-25, 0, 25, 0],
+          },
+        ],
       },
       '8daa7380-9b43-475a-8352-dc564a58c715': {
         id: '8daa7380-9b43-475a-8352-dc564a58c715',
-        name: 'SamplePlayground-top',
-        curves: [],
+        component: 'SamplePlayground',
+        property: 'top',
+        points: [
+          {
+            id: '1',
+            t: 100,
+            value: 50,
+            isConnected: true,
+            handles: [-25, 0, 25, 0],
+          },
+          {
+            id: '2',
+            t: 200,
+            value: 10,
+            isConnected: true,
+            handles: [-25, 0, 25, 0],
+          },
+          {
+            id: '3',
+            t: 310,
+            value: 50,
+            isConnected: true,
+            handles: [-25, 0, 25, 0],
+          },
+          {
+            id: '4',
+            t: 430,
+            value: 5,
+            isConnected: false,
+            handles: [-25, 0, 25, 0],
+          },
+        ],
       },
       '8daa7380-9b43-475a-8352-dc564a58c714': {
         id: '8daa7380-9b43-475a-8352-dc564a58c714',
-        name: 'SamplePlayground-left',
-        curves: [],
+        component: 'SamplePlayground',
+        property: 'left',
+        points: [
+          {
+            id: '1',
+            t: 50,
+            value: 25,
+            isConnected: true,
+            handles: [-25, 0, 25, 0],
+          },
+          {
+            id: '2',
+            t: 170,
+            value: 15,
+            isConnected: true,
+            handles: [-25, 0, 25, 0],
+          },
+          {
+            id: '3',
+            t: 290,
+            value: 35,
+            isConnected: true,
+            handles: [-25, 0, 25, 0],
+          },
+          {
+            id: '4',
+            t: 400,
+            value: 10,
+            isConnected: false,
+            handles: [-25, 0, 25, 0],
+          },
+        ],
       },
       '8daa7380-9b43-475a-8352-dc564a58c713': {
         id: '8daa7380-9b43-475a-8352-dc564a58c713',
-        name: 'div-top',
-        curves: [],
+        component: 'div',
+        property: 'top',
+        points: [],
       },
     },
   },
@@ -44,12 +162,12 @@ const defaultState: AnimationTimelineNamespaceState = {
         boxes: {
           '8daa7380-9b43-475a-8352-dc564a58c726': {
             id: '8daa7380-9b43-475a-8352-dc564a58c726',
-            height: 50,
+            height: 60,
             lanes: ['8daa7380-9b43-475a-8352-dc564a58c716', '8daa7380-9b43-475a-8352-dc564a58c717'],
           },
           '8daa7380-9b43-475a-8352-dc564a58c725': {
             id: '8daa7380-9b43-475a-8352-dc564a58c725',
-            height: 40,
+            height: 80,
             lanes: ['8daa7380-9b43-475a-8352-dc564a58c715'],
           },
           '8daa7380-9b43-475a-8352-dc564a58c724': {
