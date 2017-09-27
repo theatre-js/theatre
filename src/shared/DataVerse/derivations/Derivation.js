@@ -4,15 +4,14 @@ import Context from '$shared/DataVerse/Context'
 import goog from './autoDerivationGogool'
 
 let lastDerivationId = 0
-const weakMapOfDerivations = new WeakMap()
 
 export default class Derivation<V> {
-  _id: {id: number}
+  _id: number
   _changeEmitter: *
   _dataVerseContext: ?Context
   _isUptodate: *
   _lastValue: ?V
-  _idsOfDependents: *
+  _dependents: Set<Derivation<$IntentionalAny>>
   +_recalculate: () => V
   +_onWhetherPeopleCareAboutMeStateChange: ?(peopleCare: boolean) => void
   _peopleCare: boolean
@@ -21,8 +20,7 @@ export default class Derivation<V> {
 
 
   constructor() {
-    this._id = {id: lastDerivationId++}
-    weakMapOfDerivations.set(this._id, this)
+    this._id = lastDerivationId++
 
     this._dataVerseContext = null
     this._changeEmitter = new Emitter()
@@ -32,7 +30,7 @@ export default class Derivation<V> {
     this._isUptodate = false
     this._lastValue = undefined
     this._peopleCare = false
-    this._idsOfDependents = new Set()
+    this._dependents = new Set()
   }
 
   changes() {
@@ -58,59 +56,35 @@ export default class Derivation<V> {
   }
 
   _hasDependents() {
-    return this._idsOfDependents.size !== 0
+    return this._dependents.size !== 0
   }
 
   _addDependent(d: Derivation<$IntentionalAny>) {
-    const hadDepsBefore = this._idsOfDependents.size > 0
-    this._idsOfDependents.add(d._id)
-    const hasDepsNow = this._idsOfDependents.size > 0
-    if (hadDepsBefore !== hasDepsNow) {
-      this._reevaluateWhetherPeopleCare()
-    }
-  }
-
-  _garbageCollectDependents() {
-    const hadDepsBefore = this._idsOfDependents.size > 0
-
-    this._idsOfDependents.forEach((id) => {
-      if (!weakMapOfDerivations.get(id)) {
-        this._idsOfDependents.delete(id)
-      }
-    })
-
-    const hasDepsNow = this._idsOfDependents.size > 0
+    const hadDepsBefore = this._dependents.size > 0
+    this._dependents.add(d)
+    const hasDepsNow = this._dependents.size > 0
     if (hadDepsBefore !== hasDepsNow) {
       this._reevaluateWhetherPeopleCare()
     }
   }
 
   _removeDependent(d: Derivation<$IntentionalAny>) {
-    const hadDepsBefore = this._idsOfDependents.size > 0
-    this._idsOfDependents.delete(d._id)
-    const hasDepsNow = this._idsOfDependents.size > 0
+    const hadDepsBefore = this._dependents.size > 0
+    this._dependents.delete(d)
+    const hasDepsNow = this._dependents.size > 0
     if (hadDepsBefore !== hasDepsNow) {
       this._reevaluateWhetherPeopleCare()
     }
   }
 
-  _youMayNeedToUpdateYourself(msgComingFrom?: mixed) {
+  _youMayNeedToUpdateYourself(msgComingFrom?: Derivation<$IntentionalAny>) {
     if (!this._isUptodate) return
 
     this._isUptodate = false
     if (this._hasDependents()) {
-      let shouldGarbageCollectDependents = false
-      this._idsOfDependents.forEach((idd) => {
-        const dependent = weakMapOfDerivations.get(idd)
-        if (dependent) {
-          dependent._youMayNeedToUpdateYourself(this)
-        } else {
-          shouldGarbageCollectDependents = true
-        }
+      this._dependents.forEach((dependent) => {
+        dependent._youMayNeedToUpdateYourself(this)
       })
-      if (shouldGarbageCollectDependents) {
-        this._garbageCollectDependents()
-      }
 
     }
     if (this._changeEmitter.hasTappers() && this._dataVerseContext) {
@@ -141,7 +115,7 @@ export default class Derivation<V> {
   }
 
   _reevaluateWhetherPeopleCare() {
-    const theyCare = this._changeEmitter.hasTappers() || this._idsOfDependents.size > 0
+    const theyCare = this._changeEmitter.hasTappers() || this._dependents.size > 0
     if (theyCare !== this._peopleCare) {
       this._peopleCare = theyCare
       if (this._onWhetherPeopleCareAboutMeStateChange) {
