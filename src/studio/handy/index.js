@@ -5,6 +5,9 @@ export type {WithStudioProps as WithStudioProps} from '$studio/componentModel/re
 export {default as typeSystem} from '$studio/componentModel/typeSystem'
 export {default as Elementify} from '$studio/componentModel/react/Elementify'
 export type {default as Studio} from '$studio/TheStudioClass'
+import * as D from '$shared/DataVerse'
+
+export {D}
 
 // export {
 //   withStudio,

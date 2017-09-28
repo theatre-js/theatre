@@ -3,8 +3,8 @@ import Derivation from './Derivation'
 import {collectObservedDependencies} from './autoDerivationDependentDiscoveryMechanism'
 
 export default class AutoDerivation<V> extends Derivation<V> {
-  _dependencies: *
-  _fn: *
+  _dependencies: Set<Derivation<$IntentionalAny>>
+  _fn: () => V
 
   constructor(fn: () => V) {
     super()
@@ -12,7 +12,7 @@ export default class AutoDerivation<V> extends Derivation<V> {
   }
 
   _recalculate() {
-    let value
+    let value: V
     const newDeps: Set<Derivation<$IntentionalAny>> = collectObservedDependencies(() => {
       value = this._fn()
     })
@@ -26,7 +26,7 @@ export default class AutoDerivation<V> extends Derivation<V> {
       this._addDependency(d)
     })
 
-    return value
+    return (value: $FixMe)
   }
 
   _keepUptodate() {

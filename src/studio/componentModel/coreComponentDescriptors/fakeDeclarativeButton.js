@@ -5,8 +5,8 @@ const fakeDescriptor: ComponentDescriptor = {
   id: 'TheaterJS/Core/RenderCurrentCanvas',
   type: 'Declarative',
   /**
-   * <div style={{background: 'rgba(10, 20, 30, 0.4)'}}>
-   *   <label style={{color: 'rebeccapurple'>{children}</label>
+   * <div style={{background: 'rgba(10, 20, 30, 0.4)'}}> // theDiv
+   *   <label style={{color: 'rebeccapurple'>{children}</label> // theLabel
    * </div>
    */
   ownedComponentInstantiationDescriptors: {

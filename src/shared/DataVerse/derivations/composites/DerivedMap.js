@@ -18,7 +18,7 @@ export default class DerivedMap<O: {}> {
   _parent: ?DerivedMap<$FixMe>
   _parentChagnesEmitter: *
 
-  constructor(constructors: O, delegateTo?: DerivedMap<$FixMe>) : void{
+  constructor(constructors: O, delegateTo?: DerivedMap<$FixMe>): void{
     this._id = lastId++
     this._constructors = constructors
     this._parent = delegateTo
@@ -33,7 +33,7 @@ export default class DerivedMap<O: {}> {
     return new DerivedMap(constructors, this)
   }
 
-  face(context: Context) : DerivedMapFace{
+  face(context: Context): DerivedMapFace{
     return new DerivedMapFace(this, context)
   }
 
@@ -41,11 +41,11 @@ export default class DerivedMap<O: {}> {
     return this._constructors[key]
   }
 
-  getParent() : ?(DerivedMap<any>){
+  getParent(): ?(DerivedMap<any>){
     return this._parent
   }
 
-  setParent(p: DerivedMap<$FixMe>) : void{
+  setParent(p: DerivedMap<$FixMe>): void{
     this._parent = p
     this._parentChagnesEmitter.emit(p)
   }

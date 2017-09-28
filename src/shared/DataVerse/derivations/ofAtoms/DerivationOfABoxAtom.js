@@ -1,5 +1,5 @@
 // @flow
-import Derivation from './Derivation'
+import Derivation from '../Derivation'
 import type {IBoxAtom} from '$shared/DataVerse'
 
 const noop = () => {}
@@ -20,7 +20,7 @@ export default class DerivationOfABoxAtom<V> extends Derivation<V> {
 
   _keepUptodate() {
     this._untapFromBoxAtomChanges = this._boxAtom.changes().tap(() => {
-      this._youMayNeedToUpdateYourself()
+      this._youMayNeedToUpdateYourself(this)
     })
   }
 

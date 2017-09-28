@@ -21,9 +21,9 @@ export interface IAtom extends IReactive {
 
 export default class Atom implements IAtom {
   isAtom = true
-  _changeEmitter: Emitter<*>
-  _deepChangeEmitter: Emitter<*>
-  _deepDiffEmitter: Emitter<*>
+  _changeEmitter: *
+  _deepChangeEmitter: *
+  _deepDiffEmitter: *
   _parent: ?{atom: ICompositeAtom, key: MapKey}
   +unboxDeep: () => mixed
 

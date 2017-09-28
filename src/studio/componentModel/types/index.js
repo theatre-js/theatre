@@ -1,5 +1,6 @@
 // @flow
 import {type ComponentType as ReactComponentType} from 'react'
+import type {DeclarativeComponentDescriptor} from './declarative'
 
 // @todo maybe this should be an opaque type given that not any string is a valid ComponentID
 export type ComponentID = string
@@ -20,16 +21,6 @@ export type ModifierDescriptor = {
   modifierID: string,
 }
 
-export type DeclarativeComponentDescriptor = {
-  id: ComponentID,
-  type: 'Declarative',
-  ownedComponentInstantiationDescriptors: {[instantiationId: string]: ComponentInstantiationDescriptor},
-  childrenInTree: ?ReferenceToLocalValue,
-  // propTypes: {[propKey: string]: PropType},
-}
-
-// export type PropType = {}
-
 export type AliasComponentDescriptor = {|
   id: ComponentID,
   type: 'Alias',
@@ -44,21 +35,6 @@ export type HardCodedComponentDescriptor = {
 
 export type ComponentDescriptor =
   DeclarativeComponentDescriptor | AliasComponentDescriptor | HardCodedComponentDescriptor
-
-
-export type ReferenceToLocalValue = {
-  type: 'ReferenceToLocalValue',
-  localValueUniqueID: string,
-}
-
-export type ValueDescriptor =
-  | ComponentInstantiationDescriptor
-  | URLStringDescriptor
-
-export type URLStringDescriptor = {
-  type: 'TheaterJS/URLString',
-  url: string,
-}
 
 export type ComponentModelNamespaceState = {
   componentDescriptorsById: {[id: ComponentID]: ComponentDescriptor},

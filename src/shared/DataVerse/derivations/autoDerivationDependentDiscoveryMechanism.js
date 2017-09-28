@@ -2,7 +2,7 @@
 import type {default as Derivation} from './Derivation'
 const stack = []
 
-export const collectObservedDependencies = (cb) => {
+export const collectObservedDependencies = (cb: () => void) => {
   const foundDeps: Set<Derivation<$IntentionalAny>> = new Set()
   stack.push(foundDeps)
   cb()

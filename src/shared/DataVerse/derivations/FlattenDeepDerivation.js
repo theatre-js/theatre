@@ -44,7 +44,7 @@ export default class FlattenDeepDerivation extends Derivation<$FixMe> {
     }
   }
 
-  _youMayNeedToUpdateYourself(msgComingFrom: mixed) {
+  _youMayNeedToUpdateYourself(msgComingFrom: Derivation<$IntentionalAny>) {
     const indexOfDep = this._stackOfDependencies.indexOf((msgComingFrom: $FixMe))
 
     if (indexOfDep === -1) {

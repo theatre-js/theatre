@@ -1,5 +1,5 @@
 // @flow
-import Derivation from './Derivation'
+import Derivation from '../Derivation'
 import type {IArrayAtom, IAtom} from '$shared/DataVerse'
 
 const noop = () => {}
@@ -27,15 +27,15 @@ export default class DerivationOfAnIndexOfAnArrayAtom<V: IAtom> extends Derivati
       const countOfAddedItems = changes.addedRefs.length - changes.deleteCount
       if (countOfAddedItems === 0) {
         if (changes.startIndex + changes.deleteCount >= this._index) {
-          this._youMayNeedToUpdateYourself()
+          this._youMayNeedToUpdateYourself(this)
         }
       } else {
-        this._youMayNeedToUpdateYourself()
+        this._youMayNeedToUpdateYourself(this)
       }
     })
   }
 
-  stopKeepingUptodate() {
+  _stopKeepingUptodate() {
     this._untapFromMapAtomChanges()
     this._untapFromMapAtomChanges = noop
   }

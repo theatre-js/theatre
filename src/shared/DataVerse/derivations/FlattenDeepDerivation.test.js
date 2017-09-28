@@ -1,6 +1,6 @@
 // @flow
 import SimpleDerivation from './SimpleDerivation'
-import DerivationOfABoxAtom from './DerivationOfABoxAtom'
+import DerivationOfABoxAtom from './ofAtoms/DerivationOfABoxAtom'
 import * as D from '$shared/DataVerse'
 
 const d = (...args) => new SimpleDerivation(...args)

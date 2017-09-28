@@ -78,8 +78,8 @@ export default class PointerDerivation extends Derivation<$FixMe> {
 
 const SimpleDerivation = require('./SimpleDerivation')
 // const ConstantDerivation = require('./ConstantDerivation')
-const DerivationOfAPropOfAMapAtom = require('./DerivationOfAPropOfAMapAtom')
-const DerivationOfAnIndexOfAnArrayAtom = require('./DerivationOfAnIndexOfAnArrayAtom')
+const DerivationOfAPropOfAMapAtom = require('./ofAtoms/DerivationOfAPropOfAMapAtom')
+const DerivationOfAnIndexOfAnArrayAtom = require('./ofAtoms/DerivationOfAnIndexOfAnArrayAtom')
 // const DerivationOfAPropOfADerivedMapFace = require('./DerivationOfAPropOfADerivedMapFace')
-const DerivationOfABoxAtom = require('./DerivationOfABoxAtom')
-const DerivedMapFace = require('./DerivedMapFace')
+const DerivationOfABoxAtom = require('./ofAtoms/DerivationOfABoxAtom')
+const DerivedMapFace = require('./composites/DerivedMapFace')

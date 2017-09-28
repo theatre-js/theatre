@@ -12,18 +12,21 @@ let lastDerivationId = 0
 
 export default class Derivation<V> {
   _id: number
-  _changeEmitter: *
+  _didNotifyDownstreamOfUpcomingUpdate: boolean
+  _thereAreMoreThanOneTappersOrDependents: boolean
+
+  _changeEmitter: Emitter<V>
   _dataVerseContext: ?Context
   _freshnessState: FreshnessState
   _lastValue: ?V
   _dependents: Set<Derivation<$IntentionalAny>>
   _dependencies: Set<Derivation<$IntentionalAny>>
-  +_recalculate: () => V
-  _thereAreMoreThanOneTappersOrDependents: boolean
+
   getValue: () => V
+  +_recalculate: () => V
   +_keepUptodate: () => void
   +_stopKeepingUptodate: () => void
-  _didNotifyDownstreamOfUpcomingUpdate: boolean
+  +_youMayNeedToUpdateYourself: (msgComingFrom: Derivation<$IntentionalAny>) => void
 
   constructor() {
     this._didNotifyDownstreamOfUpcomingUpdate = false
@@ -97,7 +100,7 @@ export default class Derivation<V> {
     }
   }
 
-  _youMayNeedToUpdateYourself(msgComingFrom?: Derivation<$IntentionalAny>) {
+  _youMayNeedToUpdateYourself(msgComingFrom: Derivation<$IntentionalAny>) {
     if (this._didNotifyDownstreamOfUpcomingUpdate) return
 
     this._didNotifyDownstreamOfUpcomingUpdate = true

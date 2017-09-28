@@ -1,5 +1,5 @@
 // @flow
-import SimpleDerivation from './SimpleDerivation'
+import SimpleDerivation from '../SimpleDerivation'
 import DerivationOfAPropOfAMapAtom from './DerivationOfAPropOfAMapAtom'
 // import DerivationOfAPropOfAMapAtom from './DerivationOfAPropOfAMapAtom'
 import * as D from '$shared/DataVerse'

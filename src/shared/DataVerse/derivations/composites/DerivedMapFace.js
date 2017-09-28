@@ -1,15 +1,15 @@
 // @flow
-/*::import DerivedMap from './DerivedMap' */
+/*::import type {default as DerivedMap} from './DerivedMap' */
 import Emitter from '$shared/DataVerse/utils/Emitter'
 // import DerivationOfAPropOfADerivedMap from './DerivationOfAPropOfADerivedMap'
 import Context from '$shared/DataVerse/Context'
 import type {MapKey} from '$shared/DataVerse/types'
-import Derivation from './Derivation'
+import Derivation from '../Derivation'
 import DerivationOfAPropOfADerivedMapFace from './DerivationOfAPropOfADerivedMapFace'
-import ConstantDerivation from './ConstantDerivation'
+import ConstantDerivation from '../ConstantDerivation'
 // import StabilizedDerivation from './StabilizedDerivation'
 import forEach from 'lodash/forEach'
-import PointerDerivation from './PointerDerivation'
+import PointerDerivation from '../PointerDerivation'
 
 const NOTFOUND = Symbol('notfound')
 const notFoundDerivation = new ConstantDerivation(NOTFOUND)

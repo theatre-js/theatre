@@ -50,4 +50,4 @@ export const fromJSPrimitive = (jsPrimitive: mixed): $FixMe => {
 
 export default atomifyDeep
 
-export type AtomifyDeepType<V> = $Call<typeof atomifyDeep, V>
+// export type AtomifyDeepType<V> = $Call<typeof atomifyDeep, V>

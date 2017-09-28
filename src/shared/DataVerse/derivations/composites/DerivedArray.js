@@ -1,6 +1,6 @@
 
 // @flow
-import {type IReactiveArray} from '../types'
+import {type IReactiveArray} from '../../types'
 
 export interface IDerivedArray<T> extends IReactiveArray<T> {
 

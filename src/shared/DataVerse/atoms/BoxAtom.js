@@ -8,7 +8,7 @@ export type BoxAtomChangeType<V> = V
 export type BoxAtomDeepChangeType<V> = AddressedChangeset & {type: 'BoxChange', newValue: BoxAtomChangeType<V>}
 export type BoxAtomDeepDiffType<V> = AddressedChangeset & {type: 'BoxDiff', oldValue: V, newValue: V}
 
-import type {default as TDerivationOfABoxAtom} from '$shared/DataVerse/derivations/DerivationOfABoxAtom'
+import type {default as TDerivationOfABoxAtom} from '$shared/DataVerse/derivations/ofAtoms/DerivationOfABoxAtom'
 
 export interface IBoxAtom<V> extends IAtom, IReactiveBox<V>  {
   isSingleAtom: true,
@@ -65,7 +65,7 @@ export default class BoxAtom<V> extends Atom implements IBoxAtom<V> {
   }
 
   derivation(): TDerivationOfABoxAtom<V> {
-    const DerivationOfABoxAtom = require('$shared/DataVerse/derivations/DerivationOfABoxAtom').default
+    const DerivationOfABoxAtom = require('$shared/DataVerse/derivations/ofAtoms/DerivationOfABoxAtom').default
     return new DerivationOfABoxAtom(this)
   }
 }

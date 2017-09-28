@@ -1,5 +1,5 @@
 // @flow
-import Derivation from './Derivation'
+import Derivation from '../Derivation'
 import type {IMapAtom} from '$shared/DataVerse'
 
 const noop = () => {}
@@ -23,7 +23,7 @@ export default class DerivationOfAPropOfAMapAtom<O: {}, K: $Keys<O>> extends Der
   _keepUptodate() {
     this._untapFromMapAtomChanges = this._mapAtom.changes().tap((changes) => {
       if (changes.overriddenRefs.hasOwnProperty(this._propName) || changes.deletedKeys.indexOf(this._propName) !== -1)
-        this._youMayNeedToUpdateYourself()
+        this._youMayNeedToUpdateYourself(this)
     })
   }
 

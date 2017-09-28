@@ -1,4 +1,5 @@
 {
+  "plugins": ["transform-export-extensions"],
   "env": {
     "test": {
       "presets": [
