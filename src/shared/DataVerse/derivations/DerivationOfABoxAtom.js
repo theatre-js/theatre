@@ -14,23 +14,18 @@ export default class DerivationOfABoxAtom<V> extends Derivation<V> {
     this._untapFromBoxAtomChanges = noop
   }
 
-  _getValue() {
-    this._isUptodate = true
-    return this._recalculate()
-  }
-
   _recalculate(): $FixMe {
     return this._boxAtom.getValue()
   }
 
-  _onWhetherPeopleCareAboutMeStateChange(peopleCare: boolean) {
-    if (peopleCare) {
-      this._untapFromBoxAtomChanges = this._boxAtom.changes().tap(() => {
-        this._youMayNeedToUpdateYourself()
-      })
-    } else {
-      this._untapFromBoxAtomChanges()
-      this._untapFromBoxAtomChanges = noop
-    }
+  _keepUptodate() {
+    this._untapFromBoxAtomChanges = this._boxAtom.changes().tap(() => {
+      this._youMayNeedToUpdateYourself()
+    })
+  }
+
+  _stopKeepingUptodate() {
+    this._untapFromBoxAtomChanges()
+    this._untapFromBoxAtomChanges = noop
   }
 }

@@ -16,26 +16,20 @@ export default class DerivationOfAPropOfAMapAtom<O: {}, K: $Keys<O>> extends Der
     this._untapFromMapAtomChanges = noop
   }
 
-  _getValue() {
-    this._isUptodate = true
-    return this._recalculate()
-  }
-
   _recalculate() {
     return this._mapAtom.prop((this._propName: $FixMe))
   }
 
-  _onWhetherPeopleCareAboutMeStateChange(peopleCare: boolean) {
-    if (peopleCare) {
-      this.getValue()
-      this._untapFromMapAtomChanges = this._mapAtom.changes().tap((changes) => {
+  _keepUptodate() {
+    this._untapFromMapAtomChanges = this._mapAtom.changes().tap((changes) => {
+      if (changes.overriddenRefs.hasOwnProperty(this._propName) || changes.deletedKeys.indexOf(this._propName) !== -1)
+        this._youMayNeedToUpdateYourself()
+    })
+  }
 
-        if (changes.overriddenRefs.hasOwnProperty(this._propName) || changes.deletedKeys.indexOf(this._propName) !== -1)
-          this._youMayNeedToUpdateYourself()
-      })
-    } else {
-      this._untapFromMapAtomChanges()
-      this._untapFromMapAtomChanges = noop
-    }
+  stopKeepingUptodate() {
+    this._untapFromMapAtomChanges()
+    this._untapFromMapAtomChanges = noop
+
   }
 }

@@ -1,4 +1,4 @@
-// @flow
+
 import * as React from 'react'
 import {type ComponentInstantiationDescriptor, type ComponentDescriptor} from '$studio/componentModel/types'
 import * as D from '$shared/DataVerse'

@@ -30,6 +30,7 @@ describe('SimpleDerivation', () => {
   })
 
   it('events should work', (done) => {
+    // debugger
     const a = new D.BoxAtom(1)
     const b = new D.BoxAtom(3)
     const aD = new DerivationOfABoxAtom(a)
@@ -94,6 +95,7 @@ describe('SimpleDerivation', () => {
     const changes = []
     // debugger
     cD.changes().tap((c) => {changes.push(c)})
+
 
     b.set('bb')
     context.tick()

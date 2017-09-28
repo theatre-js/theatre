@@ -67,10 +67,8 @@ export default class PointerDerivation extends Derivation<$FixMe> {
     return this._getInternalDerivation().getValue()
   }
 
-  _onWhetherPeopleCareAboutMeStateChange(peopleCare: boolean) {
-    if (peopleCare) {
-      this.getValue()
-    }
+  _keepUptodate() {
+    this.getValue()
   }
 
   pointer() {

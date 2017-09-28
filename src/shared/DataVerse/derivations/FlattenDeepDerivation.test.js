@@ -5,7 +5,38 @@ import * as D from '$shared/DataVerse'
 
 const d = (...args) => new SimpleDerivation(...args)
 describe('FlattenDeepDerivation', () => {
-  it('events should work', (done) => {
+  let context
+  beforeEach(() => {
+    context = new D.Context()
+  })
+  it('simple case', () => {
+    const a = new D.BoxAtom(1)
+    const aD = a.derivation()
+    const b = new D.BoxAtom(3)
+    const bD = b.derivation()
+    const f = aD.flatMap((aValue) => bD.map((bValue) => aValue + bValue))
+    expect(f.getValue()).toEqual(4)
+    a.set(2)
+    expect(f.getValue()).toEqual(5)
+
+    const changes = []
+
+    f.setDataVerseContext(context).changes().tap((c) => {
+      changes.push(c)
+    })
+
+    context.tick()
+    expect(changes).toHaveLength(0)
+    a.set(3)
+    expect(changes).toHaveLength(0)
+    context.tick()
+    expect(changes).toMatchObject([6])
+    b.set(4)
+    context.tick()
+    expect(changes).toMatchObject([6, 7])
+  })
+
+  it('events should work', () => {
     const a = new D.BoxAtom(1)
     const b = new D.BoxAtom(3)
     const aD = new DerivationOfABoxAtom(a)
@@ -52,8 +83,6 @@ describe('FlattenDeepDerivation', () => {
     expect(adEvents).toHaveLength(2)
     expect(finalEvents).toHaveLength(2)
     expect(finalEvents).toMatchObject([8, 9])
-
-    done()
   })
 
   it('more', () => {
@@ -81,5 +110,24 @@ describe('FlattenDeepDerivation', () => {
     const bD = new DerivationOfABoxAtom(b)
     expect(aD.map(() => bD).flattenDeep(0).getValue()).toEqual(bD)
     expect(aD.map(() => bD).flattenDeep(1).getValue()).toEqual(3)
+  })
+  it('blah', () => {
+    const a = new D.BoxAtom('a')
+    const aD = a.derivation()
+    const c = new D.ConstantDerivation(new D.ConstantDerivation(aD))
+    const f = c.flattenDeep(3)
+    // expect(f.getValue()).toEqual('a')
+    // a.set('a2')
+    // expect(f.getValue()).toEqual('a2')
+
+    const changes = []
+    f.setDataVerseContext(context).changes().tap((c) => {
+      changes.push(c)
+    })
+
+    a.set('a32')
+    a.set('a3')
+    context.tick()
+    expect(changes).toMatchObject(['a3'])
   })
 })

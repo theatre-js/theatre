@@ -4,20 +4,20 @@ import Derivation from './Derivation'
 type Deps<O> = $ObjMap<O, <V>(v: V) => Derivation<V>>
 
 export default class SimpleDerivation<V, O: {}> extends Derivation<V> {
-  _dependencies: Deps<O>
+  _deps: Deps<O>
   _fn: *
 
   constructor(dependencies: Deps<O>, fn: (dependencies: O) => V) {
     super()
-    this._dependencies = dependencies
+    this._deps = dependencies
     this._fn = fn
 
     for (let dependencyKey in dependencies) {
-      dependencies[dependencyKey]._addDependent(this)
+      this._addDependency(dependencies[dependencyKey])
     }
   }
 
   _recalculate() {
-    return this._fn(this._dependencies)
+    return this._fn(this._deps)
   }
 }

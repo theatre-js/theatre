@@ -16,32 +16,27 @@ export default class DerivationOfAnIndexOfAnArrayAtom<V: IAtom> extends Derivati
     this._untapFromMapAtomChanges = noop
   }
 
-  _getValue() {
-    this._isUptodate = true
-    return this._recalculate()
-  }
-
   _recalculate(): $FixMe {
     return this._arrayAtom.index((this._index: $FixMe))
   }
 
-  _onWhetherPeopleCareAboutMeStateChange(peopleCare: boolean) {
-    if (peopleCare) {
-      this.getValue()
-      this._untapFromMapAtomChanges = this._arrayAtom.changes().tap((changes) => {
-        if (changes.startIndex > this._index) return
-        const countOfAddedItems = changes.addedRefs.length - changes.deleteCount
-        if (countOfAddedItems === 0) {
-          if (changes.startIndex + changes.deleteCount >= this._index) {
-            this._youMayNeedToUpdateYourself()
-          }
-        } else {
+  _keepUptodate() {
+    // this.getValue()
+    this._untapFromMapAtomChanges = this._arrayAtom.changes().tap((changes) => {
+      if (changes.startIndex > this._index) return
+      const countOfAddedItems = changes.addedRefs.length - changes.deleteCount
+      if (countOfAddedItems === 0) {
+        if (changes.startIndex + changes.deleteCount >= this._index) {
           this._youMayNeedToUpdateYourself()
         }
-      })
-    } else {
-      this._untapFromMapAtomChanges()
-      this._untapFromMapAtomChanges = noop
-    }
+      } else {
+        this._youMayNeedToUpdateYourself()
+      }
+    })
+  }
+
+  stopKeepingUptodate() {
+    this._untapFromMapAtomChanges()
+    this._untapFromMapAtomChanges = noop
   }
 }

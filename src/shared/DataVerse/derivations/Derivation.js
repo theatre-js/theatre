@@ -1,7 +1,12 @@
 // @flow
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import Context from '$shared/DataVerse/Context'
-import goog from './autoDerivationGogool'
+import {reportObservedDependency} from './autoDerivationDependentDiscoveryMechanism'
+
+const FRESHNESS_STATE_NOT_APPLICABLE = 0
+const FRESHNESS_STATE_STALE = 1
+const FRESHNESS_STATE_FRESH = 2
+type FreshnessState = typeof FRESHNESS_STATE_NOT_APPLICABLE | typeof FRESHNESS_STATE_STALE | typeof FRESHNESS_STATE_FRESH
 
 let lastDerivationId = 0
 
@@ -9,28 +14,43 @@ export default class Derivation<V> {
   _id: number
   _changeEmitter: *
   _dataVerseContext: ?Context
-  _isUptodate: *
+  _freshnessState: FreshnessState
   _lastValue: ?V
   _dependents: Set<Derivation<$IntentionalAny>>
+  _dependencies: Set<Derivation<$IntentionalAny>>
   +_recalculate: () => V
-  +_onWhetherPeopleCareAboutMeStateChange: ?(peopleCare: boolean) => void
-  _peopleCare: boolean
+  _thereAreMoreThanOneTappersOrDependents: boolean
   getValue: () => V
-  +_getValue: () => V
-
+  +_keepUptodate: () => void
+  +_stopKeepingUptodate: () => void
+  _didNotifyDownstreamOfUpcomingUpdate: boolean
 
   constructor() {
+    this._didNotifyDownstreamOfUpcomingUpdate = false
+    this._dependencies = new Set()
     this._id = lastDerivationId++
 
     this._dataVerseContext = null
     this._changeEmitter = new Emitter()
     this._changeEmitter.onNumberOfTappersChange(() => {
-      this._reactToNumberOfTappersChange()
+      this._reactToNumberOfTappersOrDependentsChange()
     })
-    this._isUptodate = false
+    this._freshnessState = FRESHNESS_STATE_NOT_APPLICABLE
     this._lastValue = undefined
-    this._peopleCare = false
+    this._thereAreMoreThanOneTappersOrDependents = false
     this._dependents = new Set()
+  }
+
+  _addDependency(d: Derivation<$IntentionalAny>) {
+    if (this._dependencies.has(d)) return
+    this._dependencies.add(d)
+    if (this._thereAreMoreThanOneTappersOrDependents) d._addDependent(this)
+  }
+
+  _removeDependency(d: Derivation<$IntentionalAny>) {
+    if (!this._dependencies.has(d)) return
+    this._dependencies.delete(d)
+    if (this._thereAreMoreThanOneTappersOrDependents) d._removeDependent(this)
   }
 
   changes() {
@@ -64,7 +84,7 @@ export default class Derivation<V> {
     this._dependents.add(d)
     const hasDepsNow = this._dependents.size > 0
     if (hadDepsBefore !== hasDepsNow) {
-      this._reevaluateWhetherPeopleCare()
+      this._reactToNumberOfTappersOrDependentsChange()
     }
   }
 
@@ -73,14 +93,16 @@ export default class Derivation<V> {
     this._dependents.delete(d)
     const hasDepsNow = this._dependents.size > 0
     if (hadDepsBefore !== hasDepsNow) {
-      this._reevaluateWhetherPeopleCare()
+      this._reactToNumberOfTappersOrDependentsChange()
     }
   }
 
   _youMayNeedToUpdateYourself(msgComingFrom?: Derivation<$IntentionalAny>) {
-    if (!this._isUptodate) return
+    if (this._didNotifyDownstreamOfUpcomingUpdate) return
 
-    this._isUptodate = false
+    this._didNotifyDownstreamOfUpcomingUpdate = true
+    this._freshnessState = FRESHNESS_STATE_STALE
+
     if (this._hasDependents()) {
       this._dependents.forEach((dependent) => {
         dependent._youMayNeedToUpdateYourself(this)
@@ -93,36 +115,41 @@ export default class Derivation<V> {
   }
 
   getValue(): V {
-    goog.addObservedDepToCurrentStackTop(this)
-    return this._getValue()
-  }
+    reportObservedDependency(this)
 
-  _getValue(): V {
-    if (!this._isUptodate) {
+    if (this._freshnessState !== FRESHNESS_STATE_FRESH) {
       const unboxed = this._recalculate()
       this._lastValue = unboxed
-      this._isUptodate = true
+      if (this._freshnessState === FRESHNESS_STATE_STALE) {
+        this._freshnessState = FRESHNESS_STATE_FRESH
+        this._didNotifyDownstreamOfUpcomingUpdate = false
+      }
     }
     return (this._lastValue: $IntentionalAny)
   }
 
-  _reactToNumberOfTappersChange() {
-    // if (this._changeEmitter.hasTappers() && !this._isUptodate && this._dataVerseContext) {
-    //   this._dataVerseContext.addDerivationToUpdate(this)
-    // }
+  _reactToNumberOfTappersOrDependentsChange() {
+    const thereAreMoreThanOneTappersOrDependents =
+      this._changeEmitter.hasTappers() || this._dependents.size > 0
 
-    this._reevaluateWhetherPeopleCare()
-  }
+    if (thereAreMoreThanOneTappersOrDependents === this._thereAreMoreThanOneTappersOrDependents) return
+    this._thereAreMoreThanOneTappersOrDependents = thereAreMoreThanOneTappersOrDependents
+    this._didNotifyDownstreamOfUpcomingUpdate = false
 
-  _reevaluateWhetherPeopleCare() {
-    const theyCare = this._changeEmitter.hasTappers() || this._dependents.size > 0
-    if (theyCare !== this._peopleCare) {
-      this._peopleCare = theyCare
-      if (this._onWhetherPeopleCareAboutMeStateChange) {
-        this._onWhetherPeopleCareAboutMeStateChange(theyCare)
-      }
+    if (thereAreMoreThanOneTappersOrDependents) {
+      this._freshnessState = FRESHNESS_STATE_STALE
+      this._keepUptodate()
+      this._dependencies.forEach((d) => {d._addDependent(this)})
+    } else {
+      this._freshnessState = FRESHNESS_STATE_NOT_APPLICABLE
+      this._stopKeepingUptodate()
+      this._dependencies.forEach((d) => {d._removeDependent(this)})
     }
   }
+
+  _keepUptodate() {}
+
+  _stopKeepingUptodate() {}
 
   map<T>(fn: (oldVal: V) => T): Derivation<T> {
     return (new SimpleDerivation.default({dep: this}, (deps) => fn(deps.dep.getValue())): $FixMe)

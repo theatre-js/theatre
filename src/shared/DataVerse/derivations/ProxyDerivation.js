@@ -8,13 +8,14 @@ export default class ProxyDerivation<V> extends Derivation<V> {
     super()
     this._target = target
 
-    target._addDependent(this)
+    this._addDependency(target)
   }
 
   setTarget(target: Derivation<V>) {
-    this._target._removeDependent(this)
+    if (target === this._target) return
+    this._removeDependency(this._target)
     this._target = target
-    target._addDependent(this)
+    this._addDependency(this._target)
   }
 
   _recalculate(): $FixMe {
