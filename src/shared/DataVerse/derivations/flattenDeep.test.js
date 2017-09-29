@@ -1,9 +1,6 @@
 // @flow
-import SimpleDerivation from './SimpleDerivation'
-import DerivationOfABoxAtom from './ofAtoms/DerivationOfABoxAtom'
 import * as D from '$shared/DataVerse'
 
-const d = (...args) => new SimpleDerivation(...args)
 describe('FlattenDeepDerivation', () => {
   let context
   beforeEach(() => {
@@ -39,8 +36,8 @@ describe('FlattenDeepDerivation', () => {
   it('events should work', () => {
     const a = new D.BoxAtom(1)
     const b = new D.BoxAtom(3)
-    const aD = new DerivationOfABoxAtom(a)
-    const bD = new DerivationOfABoxAtom(b)
+    const aD = D.deriveFromBoxAtom(a)
+    const bD = D.deriveFromBoxAtom(b)
     const final = aD.map((n) => bD.map((m) => m + n)).flattenDeep()
 
     expect(final.getValue()).toEqual(4)
@@ -91,7 +88,7 @@ describe('FlattenDeepDerivation', () => {
     const aD = a.derivation()
     const b = new D.BoxAtom('b')
     const bD = b.derivation()
-    const cD = aD.map((aValue) => bD.map((bValue) => d({}, () => aValue + bValue))).flattenDeep()
+    const cD = aD.map((aValue) => bD.map((bValue) => D.withDeps({}, () => aValue + bValue))).flattenDeep()
 
     expect(cD.getValue()).toEqual('ab')
     cD.setDataVerseContext(context)
@@ -106,19 +103,19 @@ describe('FlattenDeepDerivation', () => {
   it('depth', () => {
     const a = new D.BoxAtom(1)
     const b = new D.BoxAtom(3)
-    const aD = new DerivationOfABoxAtom(a)
-    const bD = new DerivationOfABoxAtom(b)
+    const aD = D.deriveFromBoxAtom(a)
+    const bD = D.deriveFromBoxAtom(b)
     expect(aD.map(() => bD).flattenDeep(0).getValue()).toEqual(bD)
     expect(aD.map(() => bD).flattenDeep(1).getValue()).toEqual(3)
   })
   it('blah', () => {
     const a = new D.BoxAtom('a')
     const aD = a.derivation()
-    const c = new D.ConstantDerivation(new D.ConstantDerivation(aD))
+    const c = D.constant(D.constant(aD))
     const f = c.flattenDeep(3)
-    // expect(f.getValue()).toEqual('a')
-    // a.set('a2')
-    // expect(f.getValue()).toEqual('a2')
+    expect(f.getValue()).toEqual('a')
+    a.set('a2')
+    expect(f.getValue()).toEqual('a2')
 
     const changes = []
     f.setDataVerseContext(context).changes().tap((c) => {

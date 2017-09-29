@@ -1,13 +1,13 @@
 // @flow
-import DerivationOfAnIndexOfAnArrayAtom from './DerivationOfAnIndexOfAnArrayAtom'
+import deriveFromIndexOfArrayAtom from './deriveFromIndexOfArrayAtom'
 import * as D from '$shared/DataVerse'
 
-describe('DerivationOfAnIndexOfAnArrayAtom', () => {
+describe('deriveFromIndexOfArrayAtom', () => {
   it('should work', () => {
     const originals = [new D.BoxAtom(0), new D.BoxAtom(1), new D.BoxAtom(2), new D.BoxAtom(3), new D.BoxAtom(4)]
     const a = new D.ArrayAtom(originals)
     const context = new D.Context()
-    const index3 = new DerivationOfAnIndexOfAnArrayAtom(a, 3).map((val) => val.getValue())
+    const index3 = deriveFromIndexOfArrayAtom(a, 3).map((val) => val.getValue())
     index3.setDataVerseContext(context)
     const changes = []
     // debugger

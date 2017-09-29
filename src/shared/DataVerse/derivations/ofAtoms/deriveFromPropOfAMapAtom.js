@@ -1,15 +1,16 @@
 // @flow
 import Derivation from '../Derivation'
 import type {IMapAtom} from '$shared/DataVerse'
+import type {IDerivation} from '../types'
 
 const noop = () => {}
 
-export default class DerivationOfAPropOfAMapAtom<O: {}, K: $Keys<O>> extends Derivation<$ElementType<O, K>> {
-  _mapAtom: IMapAtom<O>
+export class DerivationOfAPropOfAMapAtom extends Derivation implements IDerivation<$FixMe> {
+  _mapAtom: IMapAtom<$FixMe>
   _untapFromMapAtomChanges: Function
-  _propName: $Keys<O>
+  _propName: string | number
 
-  constructor(mapAtom: IMapAtom<O>, propName: $Keys<O>) {
+  constructor(mapAtom: IMapAtom<$FixMe>, propName: string | number) {
     super()
     this._mapAtom = mapAtom
     this._propName = propName
@@ -32,4 +33,8 @@ export default class DerivationOfAPropOfAMapAtom<O: {}, K: $Keys<O>> extends Der
     this._untapFromMapAtomChanges = noop
 
   }
+}
+
+export default function deriveFromPropOfAMapAtom<O: {}, M: IMapAtom<O>, K: $Keys<O>>(m: M, propName: $Keys<O>): IDerivation<$ElementType<O, K>> {
+  return new DerivationOfAPropOfAMapAtom(m, propName)
 }

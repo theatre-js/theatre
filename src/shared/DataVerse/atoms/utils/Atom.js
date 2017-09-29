@@ -3,7 +3,7 @@ import type {Address, IReactive, MapKey} from '$shared/DataVerse/types'
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import Tappable from '$shared/DataVerse/utils/Tappable'
 import type {ICompositeAtom} from './CompositeAtom'
-import type {default as PointerDerivationType} from '$shared/DataVerse/derivations/PointerDerivation'
+import type {IPointer} from '$shared/DataVerse/derivations/pointer'
 
 export interface IAtom extends IReactive {
   isAtom: true,
@@ -16,7 +16,7 @@ export interface IAtom extends IReactive {
   isAtom: true,
   getAddress(): Address,
   getParent(): ?ICompositeAtom,
-  pointer() : PointerDerivationType,
+  pointer() : IPointer<$FixMe>,
 }
 
 export default class Atom implements IAtom {
@@ -76,8 +76,8 @@ export default class Atom implements IAtom {
   }
 
   pointer() {
-    return new PointerDerivation.default(this.getAddress())
+    return pointer.default(this.getAddress())
   }
 }
 
-const PointerDerivation = require('$shared/DataVerse/derivations/PointerDerivation')
+const pointer = require('$shared/DataVerse/derivations/pointer')

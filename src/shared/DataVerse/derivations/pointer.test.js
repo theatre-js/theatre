@@ -1,8 +1,8 @@
 // @flow
-import PointerDerivation from './PointerDerivation'
+import pointer from './pointer'
 import * as D from '$shared/DataVerse'
 
-describe('PointerDerivation', () => {
+describe('pointer', () => {
   let context
   beforeEach(() => {
     context = new D.Context()
@@ -19,7 +19,7 @@ describe('PointerDerivation', () => {
     root.prop('a').prop('aa').set('aa2')
     expect(aaP.getValue()).toEqual('aa2')
     root.prop('a').deleteProp('aa')
-    expect(aaP.getValue()).toEqual(PointerDerivation.NOTFOUND)
+    expect(aaP.getValue()).toEqual(undefined)
     root.prop('a').setProp('aa', new D.MapAtom({}))
     expect(aaP.getValue()).toBeInstanceOf(D.MapAtom)
     root.prop('a').setProp('aa', new D.MapAtom({aa: new D.BoxAtom('aa3')}))
@@ -45,7 +45,7 @@ describe('PointerDerivation', () => {
     expect(aaP.getValue()).toEqual('aa2')
     root.prop('a').deleteProp('aa')
     context.tick()
-    expect(aaP.getValue()).toEqual(PointerDerivation.NOTFOUND)
+    expect(aaP.getValue()).toEqual(undefined)
     root.prop('a').setProp('aa', new D.MapAtom({}))
     context.tick()
     expect(aaP.getValue()).toBeInstanceOf(D.MapAtom)

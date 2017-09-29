@@ -1,12 +1,13 @@
 // @flow
 import Derivation from './Derivation'
+import type {IDerivation} from './types'
 
-export default class FlattenDeepDerivation extends Derivation<$FixMe> {
-  _stackOfDependencies: Array<Derivation<$IntentionalAny>>
+export class FlattenDeepDerivation extends Derivation implements IDerivation<$FixMe> {
+  _stackOfDependencies: Array<IDerivation<$IntentionalAny>>
   _updateNeededFromIndex: number
   _maxDepth: number
 
-  constructor(depDerivation: Derivation<$FixMe>, maxDepth: number = 200) {
+  constructor(depDerivation: IDerivation<$FixMe>, maxDepth: number = 200): IDerivation<$FixMe> {
     super()
     this._stackOfDependencies = [depDerivation]
     this._maxDepth = maxDepth
@@ -14,6 +15,7 @@ export default class FlattenDeepDerivation extends Derivation<$FixMe> {
 
     this._addDependency(depDerivation)
     // depDerivation._addDependent(this)
+    return this
   }
 
   _recalculate() {
@@ -44,7 +46,7 @@ export default class FlattenDeepDerivation extends Derivation<$FixMe> {
     }
   }
 
-  _youMayNeedToUpdateYourself(msgComingFrom: Derivation<$IntentionalAny>) {
+  _youMayNeedToUpdateYourself(msgComingFrom: IDerivation<$IntentionalAny>) {
     const indexOfDep = this._stackOfDependencies.indexOf((msgComingFrom: $FixMe))
 
     if (indexOfDep === -1) {
@@ -65,4 +67,8 @@ export default class FlattenDeepDerivation extends Derivation<$FixMe> {
   _keepUptodate() {
     this.getValue()
   }
+}
+
+export default function flattenDeep<V>(depDerivation: IDerivation<V>, maxDepth: number = 200): IDerivation<$FixMe> {
+  return new FlattenDeepDerivation(depDerivation, maxDepth)
 }

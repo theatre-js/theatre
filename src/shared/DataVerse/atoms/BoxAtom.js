@@ -3,12 +3,11 @@ import {default as Atom, type IAtom} from './utils/Atom'
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import Tappable from '$shared/DataVerse/utils/Tappable'
 import type {AddressedChangeset, IReactiveBox} from '$shared/DataVerse/types'
+import type {IDerivation} from '$shared/DataVerse/derivations/types'
 
 export type BoxAtomChangeType<V> = V
 export type BoxAtomDeepChangeType<V> = AddressedChangeset & {type: 'BoxChange', newValue: BoxAtomChangeType<V>}
 export type BoxAtomDeepDiffType<V> = AddressedChangeset & {type: 'BoxDiff', oldValue: V, newValue: V}
-
-import type {default as TDerivationOfABoxAtom} from '$shared/DataVerse/derivations/ofAtoms/DerivationOfABoxAtom'
 
 export interface IBoxAtom<V> extends IAtom, IReactiveBox<V>  {
   isSingleAtom: true,
@@ -64,8 +63,8 @@ export default class BoxAtom<V> extends Atom implements IBoxAtom<V> {
     return this._value
   }
 
-  derivation(): TDerivationOfABoxAtom<V> {
-    const DerivationOfABoxAtom = require('$shared/DataVerse/derivations/ofAtoms/DerivationOfABoxAtom').default
-    return new DerivationOfABoxAtom(this)
+  derivation(): IDerivation<V> {
+    const deriveFromBoxAtom = require('$shared/DataVerse/derivations/ofAtoms/deriveFromBoxAtom').default
+    return deriveFromBoxAtom(this)
   }
 }

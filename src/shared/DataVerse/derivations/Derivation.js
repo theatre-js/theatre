@@ -1,7 +1,8 @@
 // @flow
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import Context from '$shared/DataVerse/Context'
-import {reportObservedDependency} from './autoDerivationDependentDiscoveryMechanism'
+import {reportObservedDependency} from './autoDerive/discoveryMechanism'
+import type {IDerivation} from './types'
 
 const FRESHNESS_STATE_NOT_APPLICABLE = 0
 const FRESHNESS_STATE_STALE = 1
@@ -10,23 +11,23 @@ type FreshnessState = typeof FRESHNESS_STATE_NOT_APPLICABLE | typeof FRESHNESS_S
 
 let lastDerivationId = 0
 
-export default class Derivation<V> {
+class Derivation {
   _id: number
   _didNotifyDownstreamOfUpcomingUpdate: boolean
   _thereAreMoreThanOneTappersOrDependents: boolean
 
-  _changeEmitter: Emitter<V>
+  _changeEmitter: Emitter<*>
   _dataVerseContext: ?Context
   _freshnessState: FreshnessState
-  _lastValue: ?V
-  _dependents: Set<Derivation<$IntentionalAny>>
-  _dependencies: Set<Derivation<$IntentionalAny>>
+  _lastValue: $FixMe
+  _dependents: *
+  _dependencies: *
+  setDataVerseContext: *
 
-  getValue: () => V
-  +_recalculate: () => V
+  +_recalculate: () => $FixMe
   +_keepUptodate: () => void
   +_stopKeepingUptodate: () => void
-  +_youMayNeedToUpdateYourself: (msgComingFrom: Derivation<$IntentionalAny>) => void
+  +_youMayNeedToUpdateYourself: (msgComingFrom: IDerivation<$IntentionalAny>) => void
 
   constructor() {
     this._didNotifyDownstreamOfUpcomingUpdate = false
@@ -44,16 +45,16 @@ export default class Derivation<V> {
     this._dependents = new Set()
   }
 
-  _addDependency(d: Derivation<$IntentionalAny>) {
+  _addDependency(d: IDerivation<$IntentionalAny>) {
     if (this._dependencies.has(d)) return
     this._dependencies.add(d)
-    if (this._thereAreMoreThanOneTappersOrDependents) d._addDependent(this)
+    if (this._thereAreMoreThanOneTappersOrDependents) d._addDependent((this: $FixMe))
   }
 
-  _removeDependency(d: Derivation<$IntentionalAny>) {
+  _removeDependency(d: IDerivation<$IntentionalAny>) {
     if (!this._dependencies.has(d)) return
     this._dependencies.delete(d)
-    if (this._thereAreMoreThanOneTappersOrDependents) d._removeDependent(this)
+    if (this._thereAreMoreThanOneTappersOrDependents) d._removeDependent((this: $FixMe))
   }
 
   changes() {
@@ -63,7 +64,7 @@ export default class Derivation<V> {
     return this._changeEmitter.tappable
   }
 
-  setDataVerseContext(dv: Context) {
+  setDataVerseContext(dv: Context): $FixMe {
     if (!this._dataVerseContext) {
       this._dataVerseContext = dv
     } else {
@@ -82,7 +83,7 @@ export default class Derivation<V> {
     return this._dependents.size !== 0
   }
 
-  _addDependent(d: Derivation<$IntentionalAny>) {
+  _addDependent(d: IDerivation<$IntentionalAny>) {
     const hadDepsBefore = this._dependents.size > 0
     this._dependents.add(d)
     const hasDepsNow = this._dependents.size > 0
@@ -91,7 +92,7 @@ export default class Derivation<V> {
     }
   }
 
-  _removeDependent(d: Derivation<$IntentionalAny>) {
+  _removeDependent(d: IDerivation<$IntentionalAny>) {
     const hadDepsBefore = this._dependents.size > 0
     this._dependents.delete(d)
     const hasDepsNow = this._dependents.size > 0
@@ -100,7 +101,7 @@ export default class Derivation<V> {
     }
   }
 
-  _youMayNeedToUpdateYourself(msgComingFrom: Derivation<$IntentionalAny>) {
+  _youMayNeedToUpdateYourself(msgComingFrom: IDerivation<$IntentionalAny>) {
     if (this._didNotifyDownstreamOfUpcomingUpdate) return
 
     this._didNotifyDownstreamOfUpcomingUpdate = true
@@ -108,17 +109,17 @@ export default class Derivation<V> {
 
     if (this._hasDependents()) {
       this._dependents.forEach((dependent) => {
-        dependent._youMayNeedToUpdateYourself(this)
+        dependent._youMayNeedToUpdateYourself((this: $FixMe))
       })
 
     }
     if (this._changeEmitter.hasTappers() && this._dataVerseContext) {
-      this._dataVerseContext.addDerivationToUpdate(this)
+      this._dataVerseContext.addDerivationToUpdate((this: $FixMe))
     }
   }
 
-  getValue(): V {
-    reportObservedDependency(this)
+  getValue() {
+    reportObservedDependency((this: $FixMe))
 
     if (this._freshnessState !== FRESHNESS_STATE_FRESH) {
       const unboxed = this._recalculate()
@@ -142,11 +143,11 @@ export default class Derivation<V> {
     if (thereAreMoreThanOneTappersOrDependents) {
       this._freshnessState = FRESHNESS_STATE_STALE
       this._keepUptodate()
-      this._dependencies.forEach((d) => {d._addDependent(this)})
+      this._dependencies.forEach((d) => {d._addDependent((this: $FixMe))})
     } else {
       this._freshnessState = FRESHNESS_STATE_NOT_APPLICABLE
       this._stopKeepingUptodate()
-      this._dependencies.forEach((d) => {d._removeDependent(this)})
+      this._dependencies.forEach((d) => {d._removeDependent((this: $FixMe))})
     }
   }
 
@@ -154,22 +155,24 @@ export default class Derivation<V> {
 
   _stopKeepingUptodate() {}
 
-  map<T>(fn: (oldVal: V) => T): Derivation<T> {
-    return (new SimpleDerivation.default({dep: this}, (deps) => fn(deps.dep.getValue())): $FixMe)
+  map<T>(fn: $FixMe): IDerivation<T> {
+    return withDeps.default({dep: (this: $FixMe)}, (deps) => fn(deps.dep.getValue()))
   }
 
-  flatMap<T, P>(fn: (oldVal: V) => Derivation<T> | P): Derivation<T | P> {
+  flatMap<T, P>(fn: $FixMe): IDerivation<T | P> {
     return this.map(fn).flatten()
   }
 
-  flatten(): Derivation<$FixMe> {
+  flatten(): IDerivation<$FixMe> {
     return this.flattenDeep(1)
   }
 
-  flattenDeep(levels?: number): Derivation<$FixMe> {
-    return new FlattenDeepDerivation.default(this, levels)
+  flattenDeep(levels?: number): IDerivation<$FixMe> {
+    return flattenDeep.default((this: $FixMe), levels)
   }
 }
 
-const FlattenDeepDerivation = require('./FlattenDeepDerivation')
-const SimpleDerivation = require('./SimpleDerivation')
+export default (Derivation: $FixMe)
+
+const flattenDeep = require('./flattenDeep')
+const withDeps = require('./withDeps')

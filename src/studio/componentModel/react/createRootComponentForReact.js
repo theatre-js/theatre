@@ -1,4 +1,4 @@
-// @flow
+
 import * as React from 'react'
 import TheStudioClass from '$studio/TheStudioClass'
 import {provideStudio} from './studioContext'

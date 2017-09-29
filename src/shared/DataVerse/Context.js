@@ -1,5 +1,5 @@
 // @flow
-import Derivation from '$shared/DataVerse/derivations/Derivation'
+import type {IDerivation} from '$shared/DataVerse/derivations/types'
 
 interface ObjectWhoseStructureShouldBeUpdated {
   _updateStructure: () => void,
@@ -14,7 +14,7 @@ export default class Context {
     this._objectsWhoseStructureShouldBeUpdated = new Set()
   }
 
-  addDerivationToUpdate(d: Derivation<$IntentionalAny>) {
+  addDerivationToUpdate(d: IDerivation<$IntentionalAny>) {
     this._derivationsToUpdate.add(d)
   }
 

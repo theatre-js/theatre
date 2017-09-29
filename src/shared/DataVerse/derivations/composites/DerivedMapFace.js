@@ -4,21 +4,21 @@ import Emitter from '$shared/DataVerse/utils/Emitter'
 // import DerivationOfAPropOfADerivedMap from './DerivationOfAPropOfADerivedMap'
 import Context from '$shared/DataVerse/Context'
 import type {MapKey} from '$shared/DataVerse/types'
-import Derivation from '../Derivation'
-import DerivationOfAPropOfADerivedMapFace from './DerivationOfAPropOfADerivedMapFace'
-import ConstantDerivation from '../ConstantDerivation'
+import type {IDerivation} from '../types'
+import {type IDerivationOfAPropOfADerivedMapFace, default as propOfDerivedMapFace} from './propOfDerivedMapFace'
+import constant from '../constant'
 // import StabilizedDerivation from './StabilizedDerivation'
 import forEach from 'lodash/forEach'
-import PointerDerivation from '../PointerDerivation'
+import pointer from '../pointer'
 
 const NOTFOUND = Symbol('notfound')
-const notFoundDerivation = new ConstantDerivation(NOTFOUND)
+const notFoundDerivation = constant(NOTFOUND)
 
 type Wire = {
   key: MapKey,
   startsInLayer: LayerID,
   endsInLayerId: LayerID,
-  proxyDerivation: DerivationOfAPropOfADerivedMapFace<$FixMe>,
+  proxyDerivation: IDerivationOfAPropOfADerivedMapFace<$FixMe>,
 }
 
 export type LayerID = 'face' | 'tail' | number
@@ -27,7 +27,7 @@ type Layer = {
   id: number,
   initiatingWiresByKey: {[propName: MapKey]: Wire},
   derivedMap: DerivedMap<$FixMe>,
-  sourceDerivationsByKey: {[propName: MapKey]: Derivation<$FixMe>},
+  sourceDerivationsByKey: {[propName: MapKey]: IDerivation<$FixMe>},
   untapFromParentChanges: () => void,
 }
 
@@ -35,12 +35,12 @@ type Layers = {
   byId: {[id: LayerID]: Layer},
   list: Array<number>,
   face: {initiatingWiresByKey: {[propName: MapKey]: Wire}},
-  tail: {sourceDerivationsByKey: {[propName: MapKey]: Derivation<$FixMe>}},
+  tail: {sourceDerivationsByKey: {[propName: MapKey]: IDerivation<$FixMe>}},
 }
 
 type Structure = {
   layers: Layers,
-  derivationsByLayerAndKey: {[lk: string]: Derivation<$FixMe>},
+  derivationsByLayerAndKey: {[lk: string]: IDerivation<$FixMe>},
 }
 
 const makeEmptyStructure = (): Structure => ({
@@ -114,14 +114,14 @@ export default class DerivedMapFace {
   }
 
   pointer() {
-    return new PointerDerivation({root: this, path: []})
+    return pointer({root: this, path: []})
   }
 
   prop(key: MapKey): $FixMe {
     return this.propFromLayer(key, 'face')
   }
 
-  propFromLayer(key: MapKey, initiatingLayerId: 'face' | number): Derivation<$FixMe> {
+  propFromLayer(key: MapKey, initiatingLayerId: 'face' | number): IDerivation<$FixMe> {
     const layer = initiatingLayerId === 'face' ? this._structure.layers.face : this._structure.layers.byId[initiatingLayerId]
     if (!layer)
       throw new Error(`Layer ${initiatingLayerId} doesn't exist. This should never happen`)
@@ -138,7 +138,7 @@ export default class DerivedMapFace {
     const endsInLayerId = this._findALayerThatHasProp(key, startsInLayer)
 
     const sourceDerivation = this._makeSourceDerivation(key, endsInLayerId)
-    const proxyDerivation = new DerivationOfAPropOfADerivedMapFace(sourceDerivation)
+    const proxyDerivation = propOfDerivedMapFace(sourceDerivation)
     const wire =  {key, startsInLayer, endsInLayerId, proxyDerivation}
 
     const layer = startsInLayer === 'face' ? this._structure.layers.face : this._structure.layers.byId[startsInLayer]
@@ -146,7 +146,7 @@ export default class DerivedMapFace {
     return wire
   }
 
-  _makeSourceDerivation(key: MapKey, layerId: 'tail' | number): Derivation<$FixMe> {
+  _makeSourceDerivation(key: MapKey, layerId: 'tail' | number): IDerivation<$FixMe> {
     // if (layerId === 'tail')  return notFoundDerivation
     const layer = layerId === 'tail' ? this._structure.layers.tail : this._structure.layers.byId[layerId]
     const possibleSourceDerivation = layer.sourceDerivationsByKey[key]

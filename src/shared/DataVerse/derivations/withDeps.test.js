@@ -1,19 +1,16 @@
 // @flow
 
-import SimpleDerivation from './SimpleDerivation'
-import DerivationOfABoxAtom from './ofAtoms/DerivationOfABoxAtom'
+import withDeps from './withDeps'
 import * as D from '$shared/DataVerse'
 
-const d = (...args) => new SimpleDerivation(...args)
-
-describe('SimpleDerivation', () => {
+describe('withDeps', () => {
   it('should work', () => {
-    const a = d({}, () => 1)
-    const b = d({}, () => 2)
-    const sum = d({a, b}, ({a, b}) => a.getValue() + b.getValue())
+    const a = withDeps({}, () => 1)
+    const b = withDeps({}, () => 2)
+    const sum = withDeps({a, b}, ({a, b}) => a.getValue() + b.getValue())
     expect(sum.getValue()).toEqual(3)
 
-    const sumSquared = d({sum}, ({sum}) => Math.pow(sum.getValue(), 2))
+    const sumSquared = withDeps({sum}, ({sum}) => Math.pow(sum.getValue(), 2))
     expect(sumSquared.getValue()).toEqual(9)
 
     const sumSquaredTimesTwo = sumSquared.map((s) => s * 2)
@@ -23,9 +20,9 @@ describe('SimpleDerivation', () => {
   })
 
   it('should still work', () => {
-    const a = d({}, () => 2)
-    const b = d({}, () => 3)
-    const c = a.flatMap((thisGonnaBeTwo) => d({b}, ({b}) => b.getValue() + thisGonnaBeTwo))
+    const a = withDeps({}, () => 2)
+    const b = withDeps({}, () => 3)
+    const c = a.flatMap((thisGonnaBeTwo) => withDeps({b}, ({b}) => b.getValue() + thisGonnaBeTwo))
     expect(c.getValue()).toEqual(5)
   })
 
@@ -33,8 +30,8 @@ describe('SimpleDerivation', () => {
     // debugger
     const a = new D.BoxAtom(1)
     const b = new D.BoxAtom(3)
-    const aD = new DerivationOfABoxAtom(a)
-    const bD = new DerivationOfABoxAtom(b)
+    const aD = D.deriveFromBoxAtom(a)
+    const bD = D.deriveFromBoxAtom(b)
     const final = aD.flatMap((n) => bD.map((m) => m + n))
 
     expect(final.getValue()).toEqual(4)
@@ -100,5 +97,21 @@ describe('SimpleDerivation', () => {
     b.set('bb')
     context.tick()
     expect(changes).toMatchObject(['abb'])
+  });
+
+  (function() {
+    // $FlowExpectError
+    withDeps({a: 'hi'}, () => {})
+    const f = withDeps({a: D.constant('hi')}, ({a}) => {
+      // $FlowExpectError
+      (a.getValue(): number);
+      (a.getValue(): string)
+
+      return a.getValue()
+    });
+
+    // $FlowExpectError
+    (f.getValue(): number);
+    (f.getValue(): string)
   })
 })

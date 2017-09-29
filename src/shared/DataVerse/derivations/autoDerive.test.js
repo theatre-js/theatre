@@ -1,8 +1,9 @@
 // @flow
 
 import * as D from '$shared/DataVerse'
+import {AutoDerivation} from './autoDerive'
 
-describe('AutoDerivation', () => {
+describe('autoDerive', () => {
   let context
   beforeEach(() => {
     context = new D.Context()
@@ -13,7 +14,7 @@ describe('AutoDerivation', () => {
       foo: new D.BoxAtom('foo'),
     })
     const fooPointer = o.pointer().prop('foo')
-    const d = new D.AutoDerivation(() => {
+    const d = new AutoDerivation(() => {
       return fooPointer.getValue() + 'boo'
     })
     expect(d.getValue()).toEqual('fooboo')
@@ -27,5 +28,27 @@ describe('AutoDerivation', () => {
     context.tick()
     expect(changes).toMatchObject(['foo2boo'])
 
-  })
+  });
+
+  (function(){
+    const a = new AutoDerivation(() => {
+      return 'hi'
+    })
+
+    a.getValue();
+
+    (a.getValue(): string);
+    // $FlowExpectError
+    (a.getValue(): number)
+
+    const changes: Array<string> = []
+    const wrongChanges: Array<number> = []
+
+    a.changes().tap((c) => {
+      changes.push(c)
+      // $FlowExpectError
+      wrongChanges.push(c)
+    })
+
+  });
 })

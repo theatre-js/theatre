@@ -15,7 +15,7 @@ const initialState: WorkspaceNamespaceState = {
     },
     listOfVisibles: ['1', '2'],
   },
-  componentIDToBeRenderedAsCurrentCanvas: undefined,
+  componentIDToBeRenderedAsCurrentCanvas: 'TheaterJS/Core/FakeDeclarativeButton',
 }
 
 export default initialState

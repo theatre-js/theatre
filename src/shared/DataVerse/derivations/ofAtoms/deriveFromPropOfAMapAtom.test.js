@@ -1,16 +1,15 @@
 // @flow
-import SimpleDerivation from '../SimpleDerivation'
-import DerivationOfAPropOfAMapAtom from './DerivationOfAPropOfAMapAtom'
-// import DerivationOfAPropOfAMapAtom from './DerivationOfAPropOfAMapAtom'
+import withDeps from '../withDeps'
+import deriveFromPropOfAMapAtom from './deriveFromPropOfAMapAtom'
+// import deriveFromPropOfAMapAtom from './deriveFromPropOfAMapAtom'
 import * as D from '$shared/DataVerse'
 
-const d = (...args) => new SimpleDerivation(...args)
-describe('DerivationOfAPropOfAMapAtom', () => {
+describe('deriveFromPropOfAMapAtom', () => {
   it('events should work', (done) => {
     const m = new D.MapAtom({a: new D.BoxAtom(1), b: new D.BoxAtom(3)})
 
-    const aD = new DerivationOfAPropOfAMapAtom(m, 'a')
-    const bD = new DerivationOfAPropOfAMapAtom(m, 'b')
+    const aD = deriveFromPropOfAMapAtom(m, 'a')
+    const bD = deriveFromPropOfAMapAtom(m, 'b')
     const final = aD.map((n) => bD.map((m) => m.getValue() + n.getValue())).flattenDeep()
 
     expect(final.getValue()).toEqual(4)
@@ -63,7 +62,7 @@ describe('DerivationOfAPropOfAMapAtom', () => {
     const aD = a.derivation()
     const b = new D.BoxAtom('b')
     const bD = b.derivation()
-    const cD = aD.map((aValue) => bD.map((bValue) => d({}, () => aValue + bValue))).flattenDeep()
+    const cD = aD.map((aValue) => bD.map((bValue) => withDeps({}, () => aValue + bValue))).flattenDeep()
 
     expect(cD.getValue()).toEqual('ab')
     cD.setDataVerseContext(context)
@@ -73,5 +72,9 @@ describe('DerivationOfAPropOfAMapAtom', () => {
     b.set('bb')
     context.tick()
     expect(changes).toMatchObject(['abb'])
+  });
+
+  (function() {
+
   })
 })
