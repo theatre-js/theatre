@@ -38,9 +38,9 @@ class Content extends React.Component<Props, State> {
       moveRatios: new Array(layout.length).fill(0),
       boundaries: this._getBoundaries(boxes, layout),
       panelWidth: this._getPanelWidth(props.panelDimensions.x),
-      duration: 60,
-      focus: [10, 50],
-      currentTime: 20,
+      duration: 60000,
+      focus: [10000, 50000],
+      currentTime: 20000,
     }
   }
 
@@ -187,6 +187,30 @@ class Content extends React.Component<Props, State> {
     this.setState(() => ({currentTime}))
   }
 
+  changeDuration = (newDuration: number) => {
+    const {focus, duration, currentTime} = this.state
+    let newFocus = focus
+    let newCurrentTime = currentTime
+    if (newDuration < currentTime) newCurrentTime = newDuration
+    if (newDuration < duration) {
+      if (focus[1] > newDuration && focus[0] < newDuration) {
+        newFocus[1] = newDuration
+      } else if (focus[0] >= newDuration) {
+        const focusLength = focus[1] - focus[0]
+        if (focusLength < newDuration) {
+          newFocus = [newDuration - focusLength, focusLength]
+        } else {
+          newFocus = [0, newDuration]
+        }
+      }
+    }
+    this.setState(() => ({
+      currentTime: newCurrentTime,
+      duration: newDuration,
+      focus: newFocus,
+    }))
+  }
+
   render() {
     const {isDragging, boxBeingDragged, moveRatios, panelWidth, duration, focus, currentTime} = this.state
     const {boxes, layout} = this.props
@@ -199,7 +223,8 @@ class Content extends React.Component<Props, State> {
             currentTime={currentTime}
             focus={focus}
             changeFocusTo={this.changeFocusTo}
-            changeCurrentTimeTo={this.changeCurrentTimeTo}/>
+            changeCurrentTimeTo={this.changeCurrentTimeTo}
+            changeDuration={this.changeDuration}/>
         </div>
         <div className={css.lanes}>
           {

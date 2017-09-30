@@ -99,39 +99,47 @@ class Point extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const {point: {t, value, handles}} = this.props
+    const {point: {t, value, handles}, prevPoint, nextPoint} = this.props
     const {isChanging, handlesMove} = this.state
     const leftHandle = [t + handles[0] + handlesMove[0], value + handles[1] + handlesMove[1]]
     const rightHandle = [t + handles[2] + handlesMove[2], value + handles[3] + handlesMove[3]]
     return (
       <g>
         {isChanging && this._renderTransformedPoint()}
-        <line
-          stroke='dimgrey'
-          x1={t} y1={value}
-          x2={leftHandle[0]} y2={leftHandle[1]}/>
-        <line
-          stroke='dimgrey'
-          x1={t} y1={value}
-          x2={rightHandle[0]} y2={rightHandle[1]}/>
-        <DraggableArea
-          onDrag={this.leftHandleDragHandler}
-          onDragEnd={this.updatePointProps}>
-          <circle
-            fill='dimgrey'
-            stroke='transparent'
-            cx={leftHandle[0]} cy={leftHandle[1]} r={2}
-            className={css.handle}/>
-        </DraggableArea>
-        <DraggableArea
-          onDrag={this.rightHandleDragHandler}
-          onDragEnd={this.updatePointProps}>
-          <circle
-            fill='dimgrey'
-            stroke='transparent'
-            cx={rightHandle[0]} cy={rightHandle[1]} r={2}
-            className={css.handle}/>
-        </DraggableArea> 
+        {(prevPoint != null) &&
+          <g>
+            <line
+              stroke='dimgrey'
+              x1={t} y1={value}
+              x2={leftHandle[0]} y2={leftHandle[1]}/>
+            <DraggableArea
+              onDrag={this.leftHandleDragHandler}
+              onDragEnd={this.updatePointProps}>
+              <circle
+                fill='dimgrey'
+                stroke='transparent'
+                cx={leftHandle[0]} cy={leftHandle[1]} r={2}
+                className={css.handle}/>
+            </DraggableArea>
+          </g>
+        }
+        {nextPoint &&
+          <g>
+            <line
+              stroke='dimgrey'
+              x1={t} y1={value}
+              x2={rightHandle[0]} y2={rightHandle[1]}/>
+            <DraggableArea
+              onDrag={this.rightHandleDragHandler}
+              onDragEnd={this.updatePointProps}>
+              <circle
+                fill='dimgrey'
+                stroke='transparent'
+                cx={rightHandle[0]} cy={rightHandle[1]} r={2}
+                className={css.handle}/>
+            </DraggableArea>    
+          </g>
+        }
         <DraggableArea
           onDrag={this.pointDragHandler}
           onDragEnd={this.updatePointProps}>

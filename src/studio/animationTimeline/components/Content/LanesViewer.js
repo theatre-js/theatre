@@ -64,11 +64,17 @@ class LanesViewer extends React.PureComponent<Props, State> {
     return {svgHeight, svgWidth, svgTransform, svgExtremums}
   }
 
-  addPoint = (e: SyntheticMouseEvent) => {
+  addPoint = (e: SyntheticMouseEvent<>) => {
     const {top, left} = this.svgArea.getBoundingClientRect()
     const t = e.clientX - left
     const value = e.clientY - top
-    this.props.runSaga(addPointToLane, this.props.laneIds[0], this._deNormalizeX(t), this._deNormalizeValue(value))
+    const handleLength = (this.props.focus[1] - this.props.focus[0]) / 30
+    const pointProps: PointProps = {
+      t: this._deNormalizeX(t),
+      value: this._deNormalizeValue(value),
+      handles: [-handleLength, 0, handleLength, 0],
+    }
+    this.props.runSaga(addPointToLane, this.props.laneIds[0], pointProps)
   }
 
   updatePointProps = (laneId: number, pointIndex: number, newProps: PointProps) => {

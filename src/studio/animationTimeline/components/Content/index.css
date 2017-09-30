@@ -2,11 +2,11 @@
 }
 
 .timeBar {
-  height: 35px;
+  height: 40px;
 }
 
 .lanes {
-  height: calc(100% - 35px);
+  height: calc(100% - 40px);
   overflow: scroll;
 
   &::-webkit-scrollbar {

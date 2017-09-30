@@ -2,6 +2,7 @@
 import React from 'react'
 import css from './TimeBar.css'
 import DraggableArea from '$studio/common/components/DraggableArea'
+import SingleInputForm from '$lf/common/components/SingleInputForm'
 
 type Props = {
   duration: number,
@@ -10,11 +11,13 @@ type Props = {
   panelWidth: number,
   changeCurrentTimeTo: Function,
   changeFocusTo: Function,
+  changeDuration: Function,
 }
 
 type State = {
   timeBeforeMove: number,
   focusBeforeMove: [number, number],
+  isChangingDuration: boolean,
 }
 
 class TimeBar extends React.PureComponent<Props, State> {
@@ -24,6 +27,7 @@ class TimeBar extends React.PureComponent<Props, State> {
     this.state = {
       timeBeforeMove: props.currentTime,
       focusBeforeMove: props.focus,
+      isChangingDuration: false,
     }
   }
 
@@ -105,39 +109,69 @@ class TimeBar extends React.PureComponent<Props, State> {
     return x * (focus[1] - focus[0]) / panelWidth + focus[0]
   }
 
+  enableChangingDuration = () => {
+    this.setState(() => ({isChangingDuration: true}))
+  }
+
+  disableChangingDuration = () => {
+    this.setState(() => ({isChangingDuration: false}))
+  }
+
+  changeDuration = (newDuration: string) => {
+    this.props.changeDuration(Number(newDuration) * 1000)
+    this.disableChangingDuration()
+  }
+
   render() {
-    const {currentTime, focus, duration} = this.props
+    const {isChangingDuration} = this.state
+    let {currentTime, focus, duration} = this.props
     const focusLeft = this._timeToX(focus[0])
     const focusRight = this._timeToX(focus[1])
     const currentX = this._focusedTimeToX(currentTime, focus)
+    currentTime = currentTime / 1000
+    focus = focus.map((f) => (f / 1000))
+    duration = duration / 1000
     return (
       <div className={css.container}>
         <div className={css.timeStart}>{0}</div>
-        <div className={css.timeEnd}>{duration.toFixed(0)}</div>
+        {isChangingDuration
+          ?
+          <div className={css.timeEnd}>
+            <SingleInputForm
+              customStyle={true}
+              value={String(duration)}
+              onSubmit={this.changeDuration}
+              onCancel={this.disableChangingDuration} />
+          </div>
+          :
+          <div className={css.timeEnd} title='Double click to change' onDoubleClick={this.enableChangingDuration}>
+            {duration.toFixed(0)}
+          </div>
+        }
         <div className={css.timeThread}>
           <DraggableArea 
-            onDrag={(dx) => this.moveFocus(dx)}
-            onDragEnd={this._setBeforeMoveState}>
+            onDragStart={this._setBeforeMoveState}
+            onDrag={(dx) => this.moveFocus(dx)}>
             <div className={css.focusBar} style={{width: `${focusRight - focusLeft}px`, transform: `translateX(${focusLeft}px)`}}/>
           </DraggableArea>
           <DraggableArea
-            onDrag={(dx) => this.moveFocusLeft(dx)}
-            onDragEnd={this._setBeforeMoveState}>
+            onDragStart={this._setBeforeMoveState}
+            onDrag={(dx) => this.moveFocusLeft(dx)}>
             <div className={css.leftFocusHandle} style={{transform: `translateX(${focusLeft}px)`}}>
               <div className={css.timeTip}>{focus[0].toFixed(1)}</div>
             </div>
           </DraggableArea>
           <DraggableArea
-            onDrag={(dx) => this.moveFocusRight(dx)}
-            onDragEnd={this._setBeforeMoveState}>
+            onDragStart={this._setBeforeMoveState}
+            onDrag={(dx) => this.moveFocusRight(dx)}>
             <div className={css.rightFocusHandle} style={{transform: `translateX(${focusRight}px)`}}>
               <div className={css.timeTip}>{focus[1].toFixed(1)}</div>
             </div>  
           </DraggableArea>
         </div>
         <DraggableArea
-          onDrag={(dx) => this.changeCurrentTime(dx)}
-          onDragEnd={this._setBeforeMoveState}>
+          onDragStart={this._setBeforeMoveState}
+          onDrag={(dx) => this.changeCurrentTime(dx)}>
           <div className={css.currentTime} style={{transform: `translateX(${currentX}px)`}}>
             <div className={css.timeTip}>{currentTime.toFixed(1)}</div>
           </div>
