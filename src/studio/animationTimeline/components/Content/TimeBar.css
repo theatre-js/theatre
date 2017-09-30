@@ -2,6 +2,7 @@
   position: relative;
   width: 100%;
   height: 20px;
+  top: 5px;
 }
 
 .time {
@@ -9,11 +10,7 @@
   line-height: 18px;
   position: absolute;
   text-align: center;
-  opacity: .3;
-
-  &:hover{
-    opacity: 1;
-  }
+  color: #888;
 }
 
 .timeStart {
@@ -57,6 +54,8 @@
 
   &:after {
     display: block;
+    position: absolute;
+    top: 12px;
     content: '';
     width: 0;
     height: 0;
@@ -76,7 +75,7 @@
 .focusHandle {
   position: absolute;
   height: 4px;
-  width: 6px;
+  width: 8px;
   background: #0AA;
   cursor: ew-resize;
 }
@@ -87,5 +86,25 @@
 
 .rightFocusHandle {
   composes: focusHandle;
-  left: -6px;
+  left: -8px;
+}
+
+.timeTip {
+  composes: time;
+  top: -18px;
+  background: #333;
+  left: 4px;
+  transform: translateX(-50%);
+  opacity: 0;
+}
+
+.leftFocusHandle:hover .timeTip,
+.leftFocusHandle:active .timeTip,
+.rightFocusHandle:hover .timeTip,
+.rightFocusHandle:active .timeTip,
+.currentTime:hover .timeTip,
+.currentTime:active .timeTip,
+.focusBar:active ~ .leftFocusHandle .timeTip,
+.focusBar:active ~ .rightFocusHandle .timeTip{
+  opacity: 1;
 }

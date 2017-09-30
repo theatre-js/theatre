@@ -10,7 +10,7 @@ export function* addPointToLane(laneId: $FlowFixMe, t: number, value: number): G
       id: generateUniqueId(),
       t, value,
       isConnected: false,
-      handles: [-25, 0, 25, 0],
+      handles: [-1, 0, 1, 0],
     }
     return points.slice(0, atIndex).concat(point, points.slice(atIndex))
   })

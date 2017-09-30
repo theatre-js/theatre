@@ -68,7 +68,7 @@ class LanesViewer extends React.PureComponent<Props, State> {
     const {top, left} = this.svgArea.getBoundingClientRect()
     const t = e.clientX - left
     const value = e.clientY - top
-    this.props.runSaga(addPointToLane, this.props.laneIds[0], t * this.props.duration/this.props.panelWidth, value)
+    this.props.runSaga(addPointToLane, this.props.laneIds[0], this._deNormalizeX(t), this._deNormalizeValue(value))
   }
 
   updatePointProps = (laneId: number, pointIndex: number, newProps: PointProps) => {
@@ -154,8 +154,8 @@ class LanesViewer extends React.PureComponent<Props, State> {
             height={svgHeight}
             width={svgWidth}
             style={{transform: `translateX(${-svgTransform}px)`}}
-            ref={(svg) => {this.svgArea = svg}}>
-            {/*onDoubleClick={this.addPoint}>*/}
+            ref={(svg) => {this.svgArea = svg}}
+            onDoubleClick={this.addPoint}>
             {
               lanes.map(({id, points}, index) => (
                 <Lane

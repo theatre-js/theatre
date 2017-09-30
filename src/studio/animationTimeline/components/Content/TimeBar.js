@@ -106,14 +106,14 @@ class TimeBar extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const {currentTime, focus} = this.props
+    const {currentTime, focus, duration} = this.props
     const focusLeft = this._timeToX(focus[0])
     const focusRight = this._timeToX(focus[1])
     const currentX = this._focusedTimeToX(currentTime, focus)
     return (
       <div className={css.container}>
-        <div className={css.timeStart}>{focus[0].toFixed(1)}</div>
-        <div className={css.timeEnd}>{focus[1].toFixed(1)}</div>
+        <div className={css.timeStart}>{0}</div>
+        <div className={css.timeEnd}>{duration.toFixed(0)}</div>
         <div className={css.timeThread}>
           <DraggableArea 
             onDrag={(dx) => this.moveFocus(dx)}
@@ -123,18 +123,24 @@ class TimeBar extends React.PureComponent<Props, State> {
           <DraggableArea
             onDrag={(dx) => this.moveFocusLeft(dx)}
             onDragEnd={this._setBeforeMoveState}>
-            <div className={css.leftFocusHandle} style={{transform: `translateX(${focusLeft}px)`}}/>
+            <div className={css.leftFocusHandle} style={{transform: `translateX(${focusLeft}px)`}}>
+              <div className={css.timeTip}>{focus[0].toFixed(1)}</div>
+            </div>
           </DraggableArea>
           <DraggableArea
             onDrag={(dx) => this.moveFocusRight(dx)}
             onDragEnd={this._setBeforeMoveState}>
-            <div className={css.rightFocusHandle} style={{transform: `translateX(${focusRight}px)`}}/>  
+            <div className={css.rightFocusHandle} style={{transform: `translateX(${focusRight}px)`}}>
+              <div className={css.timeTip}>{focus[1].toFixed(1)}</div>
+            </div>  
           </DraggableArea>
         </div>
         <DraggableArea
           onDrag={(dx) => this.changeCurrentTime(dx)}
           onDragEnd={this._setBeforeMoveState}>
-          <div className={css.currentTime} style={{transform: `translateX(${currentX}px)`}}/>
+          <div className={css.currentTime} style={{transform: `translateX(${currentX}px)`}}>
+            <div className={css.timeTip}>{currentTime.toFixed(1)}</div>
+          </div>
         </DraggableArea>
       </div>
     )
