@@ -10,6 +10,8 @@ type Props = {
   normalizePointProps: Function,
   updatePointProps: Function,
   removePointFromLane: Function,
+  addConnector: Function,
+  removeConnector: Function,
 }
 
 type State = $FlowFixMe
@@ -24,11 +26,15 @@ class Lane extends React.PureComponent<Props, State> {
 
   _normalizePointProps(point: $FlowFixMe) {
     if (point == null) return point
-    return this.props.normalizePointProps(point)
+    return {
+      originalT: point.t,
+      originalValue: point.value,
+      ...this.props.normalizePointProps(point),
+    }
   }
 
   render() {
-    const {points, color, updatePointProps, removePointFromLane} = this.props
+    const {points, color, updatePointProps, removePointFromLane, addConnector, removeConnector} = this.props
     return (
       <g fill={color} stroke={color}>
         {
@@ -42,7 +48,8 @@ class Lane extends React.PureComponent<Props, State> {
                 {isConnected && normNextPoint &&
                   <Connector
                     leftPoint={normPoint}
-                    rightPoint={normNextPoint}/>
+                    rightPoint={normNextPoint}
+                    removeConnector={() => removeConnector(index)}/>
                 }
                 <Point
                   key={id}
@@ -50,7 +57,8 @@ class Lane extends React.PureComponent<Props, State> {
                   nextPoint={normNextPoint}
                   point={normPoint}
                   updatePointProps={(newProps) => updatePointProps(index, newProps)}
-                  removePoint={() => removePointFromLane(index)}/>
+                  removePoint={() => removePointFromLane(index)}
+                  addConnector={() => addConnector(index)}/>
               </g>
             )
           })

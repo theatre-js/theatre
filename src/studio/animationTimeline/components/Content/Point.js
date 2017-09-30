@@ -10,10 +10,12 @@ type Props = {
   nextPoint: $FlowFixMe,
   updatePointProps: Function,
   removePoint: Function,
+  addConnector: Function,
 }
 
 type State = {
-  isChanging: boolean,
+  isMoving: boolean,
+  isEnteringProps: boolean,
   pointMove: [number, number],
   handlesMove: [number, number, number, number],
 }
@@ -26,7 +28,8 @@ class Point extends React.PureComponent<Props, State> {
     super(props)
 
     this.state = {
-      isChanging: false,
+      isMoving: false,
+      isEnteringProps: false,
       pointMove: [0, 0],
       handlesMove: [0, 0, 0, 0],
     }
@@ -34,14 +37,20 @@ class Point extends React.PureComponent<Props, State> {
 
   pointClickHandler = (e: SyntheticMouseEvent<>) => {
     if (e.altKey) {
-      this.props.removePoint()
+      return this.props.removePoint()
+    }
+    if (e.ctrlKey || e.metaKey) {
+      return this.props.addConnector()
     }
   }
 
-  pointDragHandler = (dx: number, dy: number) => {
+  pointDragHandler = (dx: number, dy: number, e: SyntheticMouseEvent<>) => {
+    let x = dx, y = dy
+    if (e.altKey) y = this.state.pointMove[1]
+    if (e.shiftKey) x = this.state.pointMove[0]
     this.setState(() => ({
-      isChanging: true,
-      pointMove: [dx, dy],
+      isMoving: true,
+      pointMove: [x, y],
     }))
   }
 
@@ -49,7 +58,7 @@ class Point extends React.PureComponent<Props, State> {
     this.setState((state) => {
       const {handlesMove} = state
       return {
-        isChanging: true,
+        isMoving: true,
         handlesMove: [dx, dy, handlesMove[2], handlesMove[3]],
       }
     })
@@ -59,7 +68,7 @@ class Point extends React.PureComponent<Props, State> {
     this.setState((state) => {
       const {handlesMove} = state
       return {
-        isChanging: true,
+        isMoving: true,
         handlesMove: [handlesMove[0], handlesMove[1], dx, dy],
       }
     })
@@ -74,7 +83,7 @@ class Point extends React.PureComponent<Props, State> {
       value: point.value + pointMove[1],
       handles: point.handles.map((handle, index) => (handle + handlesMove[index]))})
     this.setState(() => ({
-      isChanging: false,
+      isMoving: false,
       pointMove: [0, 0],
       handlesMove: [0, 0, 0, 0],
     }))
@@ -107,12 +116,12 @@ class Point extends React.PureComponent<Props, State> {
 
   render() {
     const {point: {t, value, handles}, prevPoint, nextPoint} = this.props
-    const {isChanging, handlesMove} = this.state
+    const {isMoving, handlesMove, isEnteringProps} = this.state
     const leftHandle = [t + handles[0] + handlesMove[0], value + handles[1] + handlesMove[1]]
     const rightHandle = [t + handles[2] + handlesMove[2], value + handles[3] + handlesMove[3]]
     return (
       <g>
-        {isChanging && this._renderTransformedPoint()}
+        {isMoving && this._renderTransformedPoint()}
         {(prevPoint != null) &&
           <g>
             <line
@@ -146,6 +155,9 @@ class Point extends React.PureComponent<Props, State> {
                 className={css.handle}/>
             </DraggableArea>    
           </g>
+        }
+        {!isEnteringProps &&
+          <text>hello</text>
         }
         <DraggableArea
           onDrag={this.pointDragHandler}

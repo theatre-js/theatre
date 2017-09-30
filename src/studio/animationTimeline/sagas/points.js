@@ -31,6 +31,13 @@ export function* updatePointProps(laneId: $FlowFixMe, atIndex: number, newProps:
   yield * resetExtremums(laneId)
 }
 
+export function* updatePointConnector(laneId: $FlowFixMe, atIndex: number, isConnected: boolean): Generator<*, void, *> {
+  yield reduceState(['animationTimeline', 'lanes', 'byId', laneId, 'points', atIndex], (point) => ({
+    ...point,
+    isConnected,
+  }))
+}
+
 function* resetExtremums(laneId: $FlowFixMe): Generator<*, void, *> {
   yield reduceState(['animationTimeline', 'lanes', 'byId', laneId], (lane) => {
     const {points} = lane

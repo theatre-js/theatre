@@ -4,7 +4,7 @@ import compose from 'ramda/src/compose'
 import {connect} from 'react-redux'
 import {withRunSaga, type WithRunSagaProps} from '$shared/utils'
 import {getLanesByIds} from '$studio/animationTimeline/selectors'
-import {addPointToLane, updatePointProps, removePointFromLane} from '$studio/animationTimeline/sagas'
+import {addPointToLane, updatePointProps, removePointFromLane, updatePointConnector} from '$studio/animationTimeline/sagas'
 import css from './LanesViewer.css'
 import Lane from './Lane'
 import cx from 'classnames'
@@ -97,6 +97,10 @@ class LanesViewer extends React.PureComponent<Props, State> {
 
   removePoint = (laneId: number, pointIndex: number) => {
     this.props.runSaga(removePointFromLane, laneId, pointIndex)
+  }
+
+  updatePointConnector = (laneId: number, pointIndex: number, isConnected: boolean) => {
+    this.props.runSaga(updatePointConnector, laneId, pointIndex, isConnected)
   }
 
   updatePointProps = (laneId: number, pointIndex: number, newProps: PointProps) => {
@@ -193,7 +197,9 @@ class LanesViewer extends React.PureComponent<Props, State> {
                   color={LanesViewer.colors[index%4]}
                   normalizePointProps={this.normalizePointProps}
                   updatePointProps={(index, newProps) => this.updatePointProps(id, index, newProps)}
-                  removePointFromLane={(index) => this.removePoint(id, index)}/>
+                  removePointFromLane={(index) => this.removePoint(id, index)}
+                  addConnector={(index) => this.updatePointConnector(id, index, true)}
+                  removeConnector={(index) => this.updatePointConnector(id, index, false)}/>
               ))
             }
           </svg>
