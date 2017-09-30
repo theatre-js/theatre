@@ -20,6 +20,7 @@ export function* removePointFromLane(laneId: $FlowFixMe, atIndex: number): Gener
   yield reduceState(['animationTimeline', 'lanes', 'byId', laneId, 'points'], (points) => (
     points.slice(0, atIndex).concat(points.slice(atIndex + 1))
   ))
+  yield * resetExtremums(laneId)
 }
 
 export function* updatePointProps(laneId: $FlowFixMe, atIndex: number, newProps: Object): Generator<*, void, *> {

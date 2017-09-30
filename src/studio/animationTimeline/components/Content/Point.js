@@ -9,6 +9,7 @@ type Props = {
   prevPoint: $FlowFixMe,
   nextPoint: $FlowFixMe,
   updatePointProps: Function,
+  removePoint: Function,
 }
 
 type State = {
@@ -31,29 +32,10 @@ class Point extends React.PureComponent<Props, State> {
     }
   }
 
-  _renderTransformedPoint() {
-    const {point, prevPoint, nextPoint} = this.props
-    const {pointMove, handlesMove} = this.state
-    const movedPoint = {
-      ...point,
-      t: point.t + pointMove[0],
-      value: point.value + pointMove[1],
-      handles: point.handles.map((handle, index) => (handle + handlesMove[index]))}
-    return (
-      <g opacity={.5}>
-        {point.isConnected && nextPoint &&
-          <Connector leftPoint={movedPoint} rightPoint={nextPoint} />
-        }
-        {prevPoint && prevPoint.isConnected &&
-          <Connector leftPoint={prevPoint} rightPoint={movedPoint} />
-        }
-        <circle
-          fill='#222'
-          strokeWidth={2}
-          cx={movedPoint.t} cy={movedPoint.value} r={3}
-          className={css.point}/>
-      </g>
-    )
+  pointClickHandler = (e: SyntheticMouseEvent<>) => {
+    if (e.altKey) {
+      this.props.removePoint()
+    }
   }
 
   pointDragHandler = (dx: number, dy: number) => {
@@ -96,6 +78,31 @@ class Point extends React.PureComponent<Props, State> {
       pointMove: [0, 0],
       handlesMove: [0, 0, 0, 0],
     }))
+  }
+
+  _renderTransformedPoint() {
+    const {point, prevPoint, nextPoint} = this.props
+    const {pointMove, handlesMove} = this.state
+    const movedPoint = {
+      ...point,
+      t: point.t + pointMove[0],
+      value: point.value + pointMove[1],
+      handles: point.handles.map((handle, index) => (handle + handlesMove[index]))}
+    return (
+      <g opacity={.5}>
+        {point.isConnected && nextPoint &&
+          <Connector leftPoint={movedPoint} rightPoint={nextPoint} />
+        }
+        {prevPoint && prevPoint.isConnected &&
+          <Connector leftPoint={prevPoint} rightPoint={movedPoint} />
+        }
+        <circle
+          fill='#222'
+          strokeWidth={2}
+          cx={movedPoint.t} cy={movedPoint.value} r={3}
+          className={css.point}/>
+      </g>
+    )
   }
 
   render() {
@@ -147,7 +154,8 @@ class Point extends React.PureComponent<Props, State> {
             fill='#222'
             strokeWidth={2}
             cx={t} cy={value} r={3}
-            className={css.point}/>
+            className={css.point}
+            onClick={this.pointClickHandler}/>
         </DraggableArea>
       </g>
     )

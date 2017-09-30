@@ -20,6 +20,10 @@
   margin-right: 10px;
 }
 
+.activeTitle {
+  border-bottom: 1px solid #444;
+}
+
 .componentName {
   display: inline-block;
   vertical-align: top;

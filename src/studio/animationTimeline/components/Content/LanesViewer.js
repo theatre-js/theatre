@@ -4,9 +4,10 @@ import compose from 'ramda/src/compose'
 import {connect} from 'react-redux'
 import {withRunSaga, type WithRunSagaProps} from '$shared/utils'
 import {getLanesByIds} from '$studio/animationTimeline/selectors'
-import {addPointToLane, updatePointProps} from '$studio/animationTimeline/sagas'
+import {addPointToLane, updatePointProps, removePointFromLane} from '$studio/animationTimeline/sagas'
 import css from './LanesViewer.css'
 import Lane from './Lane'
+import cx from 'classnames'
 
 type Props = WithRunSagaProps & {
   boxHeight: number,
@@ -24,6 +25,7 @@ type State = {
   svgHeight: number,
   svgTransform: number,
   svgExtremums: [number, number],
+  activeLaneId: string,
 }
 
 type PointProps = {
@@ -43,11 +45,27 @@ class LanesViewer extends React.PureComponent<Props, State> {
 
     this.state = {
       ...this._getSvgState(props),
+      activeLaneId: props.laneIds[0],
     }
   }
 
   componentWillReceiveProps(newProps) {
-    this.setState(() => ({...this._getSvgState(newProps)}))    
+    let activeLaneId = this.state.activeLaneId
+    if (newProps.laneIds.find((id) => (id === activeLaneId)) == null) {
+      activeLaneId = newProps.laneIds[0]
+    }
+    this.setState(() => ({...this._getSvgState(newProps), activeLaneId}))
+  }
+
+  titleClickHandler(e: SyntheticMouseEvent<>, laneId: string) {
+    if (e.altKey) {
+      return this.props.splitLane(laneId)
+    }
+    this.setActiveLane(laneId)
+  }
+
+  setActiveLane(activeLaneId: string) {
+    this.setState(() => ({activeLaneId}))
   }
 
   _getSvgState(props) {
@@ -74,7 +92,11 @@ class LanesViewer extends React.PureComponent<Props, State> {
       value: this._deNormalizeValue(value),
       handles: [-handleLength, 0, handleLength, 0],
     }
-    this.props.runSaga(addPointToLane, this.props.laneIds[0], pointProps)
+    this.props.runSaga(addPointToLane, this.state.activeLaneId, pointProps)
+  }
+
+  removePoint = (laneId: number, pointIndex: number) => {
+    this.props.runSaga(removePointFromLane, laneId, pointIndex)
   }
 
   updatePointProps = (laneId: number, pointIndex: number, newProps: PointProps) => {
@@ -138,8 +160,8 @@ class LanesViewer extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const {lanes, splitLane} = this.props
-    const {svgHeight, svgWidth, svgTransform} = this.state
+    const {lanes} = this.props
+    const {svgHeight, svgWidth, svgTransform, activeLaneId} = this.state
     const shouldSplit = (lanes.length > 1)
     return (
       <div className={css.container}>
@@ -147,8 +169,8 @@ class LanesViewer extends React.PureComponent<Props, State> {
           {lanes.map(({id, component, property}, index) => (
             <div
               key={id}
-              className={css.title}
-              {...(shouldSplit ? {onClick: () => splitLane(id)} : {})}>
+              className={cx(css.title, {[css.activeTitle]: shouldSplit && id === activeLaneId})}
+              {...(shouldSplit ? {onClick: (e) => this.titleClickHandler(e, id)} : {})}>
               <div className={css.componentName}>{component}</div>
               <div className={css.propertyName} style={{color: LanesViewer.colors[index%4]}}>{property}</div>
             </div>
@@ -170,7 +192,8 @@ class LanesViewer extends React.PureComponent<Props, State> {
                   points={points}
                   color={LanesViewer.colors[index%4]}
                   normalizePointProps={this.normalizePointProps}
-                  updatePointProps={(index, newProps) => this.updatePointProps(id, index, newProps)}/>
+                  updatePointProps={(index, newProps) => this.updatePointProps(id, index, newProps)}
+                  removePointFromLane={(index) => this.removePoint(id, index)}/>
               ))
             }
           </svg>

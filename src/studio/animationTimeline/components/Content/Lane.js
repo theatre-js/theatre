@@ -9,6 +9,7 @@ type Props = {
   color: string,
   normalizePointProps: Function,
   updatePointProps: Function,
+  removePointFromLane: Function,
 }
 
 type State = $FlowFixMe
@@ -27,7 +28,7 @@ class Lane extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const {points, color, updatePointProps} = this.props
+    const {points, color, updatePointProps, removePointFromLane} = this.props
     return (
       <g fill={color} stroke={color}>
         {
@@ -48,7 +49,8 @@ class Lane extends React.PureComponent<Props, State> {
                   prevPoint={normPrevPoint}
                   nextPoint={normNextPoint}
                   point={normPoint}
-                  updatePointProps={(newProps) => updatePointProps(index, newProps)}/>
+                  updatePointProps={(newProps) => updatePointProps(index, newProps)}
+                  removePoint={() => removePointFromLane(index)}/>
               </g>
             )
           })

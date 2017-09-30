@@ -31,6 +31,8 @@
   text-align: center;
   width: 100%;
   line-height: 18px;
+  background: #111;
+  border-radius: 10%;
 }
 
 .timeThread {
