@@ -41,4 +41,5 @@
   position: absolute;
   top: 14px;
   width: 100%;
+  overflow: hidden;
 }

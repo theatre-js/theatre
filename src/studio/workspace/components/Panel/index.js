@@ -200,15 +200,8 @@ class Panel extends React.Component {
           </div>
         </div>
         <div className={css.content}>
-          <div className={isInSettings ? css.displayNone : null}>
-            <this.panelComponents.Content 
-              {...configuration}
-              {...componentState}
-              outputs={outputs}
-              inputs={inputs}
-              updatePanelOutput={(newData) => this.updatePanelData('outputs', newData)}/>
-          </div>
-          {isInSettings &&
+          {isInSettings
+            ?
             <Settings
               onPanelDrag={this.movePanel}
               onPanelDragEnd={this.setPanelPosition}
@@ -223,6 +216,14 @@ class Panel extends React.Component {
                 updatePanelInput={(newData) => this.updatePanelData('inputs', newData)}
                 updatePanelConfig={(newData) => this.updatePanelData('configuration', newData)} />
             </Settings>
+            :
+            <this.panelComponents.Content
+              {...configuration}
+              {...componentState}
+              panelDimensions={dim}
+              outputs={outputs}
+              inputs={inputs}
+              updatePanelOutput={(newData) => this.updatePanelData('outputs', newData)}/>
           }
         </div>
       </div>

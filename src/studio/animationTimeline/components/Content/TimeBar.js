@@ -1,0 +1,144 @@
+// @flow
+import React from 'react'
+import css from './TimeBar.css'
+import DraggableArea from '$studio/common/components/DraggableArea'
+
+type Props = {
+  duration: number,
+  currentTime: number,
+  focus: [number, number],
+  panelWidth: number,
+  changeCurrentTimeTo: Function,
+  changeFocusTo: Function,
+}
+
+type State = {
+  timeBeforeMove: number,
+  focusBeforeMove: [number, number],
+}
+
+class TimeBar extends React.PureComponent<Props, State> {
+  constructor(props: Props) {
+    super(props)
+
+    this.state = {
+      timeBeforeMove: props.currentTime,
+      focusBeforeMove: props.focus,
+    }
+  }
+
+  changeCurrentTime(dx: number) {
+    const {panelWidth, focus} = this.props
+    const {timeBeforeMove} = this.state
+    const currentTime = this._focusedTimeToX(timeBeforeMove, focus)
+    let x = currentTime + dx
+    if (x < 0) x = 0
+    if (x > panelWidth) x = panelWidth
+    this.props.changeCurrentTimeTo(this._xToFocusedTime(x, focus))
+  }
+
+  moveFocus(dx: number) {
+    const {panelWidth} = this.props
+    const {focusBeforeMove} = this.state
+    const dt = this._xToTime(dx)
+    const panelTime = this._xToTime(panelWidth)
+    const newFocusLeft = focusBeforeMove[0] + dt
+    const newFocusRight = focusBeforeMove[1] + dt
+    const focusDuration = focusBeforeMove[1] - focusBeforeMove[0]
+    let newFocus = [newFocusLeft, newFocusRight]
+    if (newFocusLeft < 0) newFocus = [0, focusDuration]
+    if (newFocusRight > panelTime) newFocus = [panelTime - focusDuration, panelTime]
+    this.changeFocus(newFocus)
+  }
+
+  moveFocusRight(dx: number) {
+    const {focus, panelWidth} = this.props
+    const {focusBeforeMove} = this.state
+    const panelTime = this._xToTime(panelWidth)
+    let newFocusRight = focusBeforeMove[1] + this._xToTime(dx)
+    if (newFocusRight - focus[0] < 1) newFocusRight = focus[0] + 1
+    if (newFocusRight > panelTime) newFocusRight = panelTime 
+    this.changeFocus([focus[0], newFocusRight])
+  }
+
+  moveFocusLeft(dx: number) {
+    const {focus} = this.props
+    const {focusBeforeMove} = this.state
+    let newFocusLeft = focusBeforeMove[0] + this._xToTime(dx)
+    if (focus[1] - newFocusLeft < 1) newFocusLeft = focus[1] - 1
+    if (this._timeToX(newFocusLeft) < 0) newFocusLeft = 0 
+    this.changeFocus([newFocusLeft, focus[1]])
+  }
+
+  changeFocus(newFocus: [number, number]) {
+    const {timeBeforeMove, focusBeforeMove} = this.state
+    const newTime = this._focusedTimeToX(timeBeforeMove, focusBeforeMove)
+    this.props.changeFocusTo(newFocus)
+    this.props.changeCurrentTimeTo(this._xToFocusedTime(newTime, newFocus))
+  }
+
+  _setBeforeMoveState = () => {
+    const {currentTime, focus} = this.props
+    this.setState(() => ({
+      timeBeforeMove: currentTime,
+      focusBeforeMove: focus,
+    }))
+  }
+
+  _timeToX(t: number) {
+    const {panelWidth, duration} = this.props
+    return t * panelWidth / duration
+  }
+
+  _xToTime(x: number) {
+    const {panelWidth, duration} = this.props
+    return x * duration / panelWidth
+  }
+
+  _focusedTimeToX(t: number, focus: [number, number]) {
+    const {panelWidth} = this.props
+    return (t - focus[0]) / (focus[1] - focus[0]) * panelWidth
+  }
+
+  _xToFocusedTime(x: number, focus: [number, number]) {
+    const {panelWidth} = this.props
+    return x * (focus[1] - focus[0]) / panelWidth + focus[0]
+  }
+
+  render() {
+    const {currentTime, focus} = this.props
+    const focusLeft = this._timeToX(focus[0])
+    const focusRight = this._timeToX(focus[1])
+    const currentX = this._focusedTimeToX(currentTime, focus)
+    return (
+      <div className={css.container}>
+        <div className={css.timeStart}>{focus[0].toFixed(1)}</div>
+        <div className={css.timeEnd}>{focus[1].toFixed(1)}</div>
+        <div className={css.timeThread}>
+          <DraggableArea 
+            onDrag={(dx) => this.moveFocus(dx)}
+            onDragEnd={this._setBeforeMoveState}>
+            <div className={css.focusBar} style={{width: `${focusRight - focusLeft}px`, transform: `translateX(${focusLeft}px)`}}/>
+          </DraggableArea>
+          <DraggableArea
+            onDrag={(dx) => this.moveFocusLeft(dx)}
+            onDragEnd={this._setBeforeMoveState}>
+            <div className={css.leftFocusHandle} style={{transform: `translateX(${focusLeft}px)`}}/>
+          </DraggableArea>
+          <DraggableArea
+            onDrag={(dx) => this.moveFocusRight(dx)}
+            onDragEnd={this._setBeforeMoveState}>
+            <div className={css.rightFocusHandle} style={{transform: `translateX(${focusRight}px)`}}/>  
+          </DraggableArea>
+        </div>
+        <DraggableArea
+          onDrag={(dx) => this.changeCurrentTime(dx)}
+          onDragEnd={this._setBeforeMoveState}>
+          <div className={css.currentTime} style={{transform: `translateX(${currentX}px)`}}/>
+        </DraggableArea>
+      </div>
+    )
+  }
+}
+
+export default TimeBar

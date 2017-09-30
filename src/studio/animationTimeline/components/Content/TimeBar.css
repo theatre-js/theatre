@@ -1,0 +1,91 @@
+.container {
+  position: relative;
+  width: 100%;
+  height: 20px;
+}
+
+.time {
+  font-size: 10px;
+  line-height: 18px;
+  position: absolute;
+  text-align: center;
+  opacity: .3;
+
+  &:hover{
+    opacity: 1;
+  }
+}
+
+.timeStart {
+  composes: time;
+  width: 10px;
+  left: -5px;
+  cursor: default;
+}
+
+.timeEnd {
+  composes: time;
+  width: 30px;
+  right: -15px;
+  cursor: default;
+}
+
+.timeThread {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: #444;
+}
+
+.currentTime {
+  width: 8px;
+  height: 16px;
+  bottom: 0;
+  left: -4px;
+  position: absolute;
+  cursor: pointer;
+
+  &:before {
+    display: block;
+    content: '';
+    width: 100%;
+    height: 12px;
+    background: #0AA;
+  }
+
+  &:after {
+    display: block;
+    content: '';
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 4px solid #0AA;
+  }
+}
+
+.focusBar {
+  position: absolute;
+  height: 100%;
+  background: rgba(0, 150, 150, .3);
+  cursor: pointer;
+}
+
+.focusHandle {
+  position: absolute;
+  height: 4px;
+  width: 6px;
+  background: #0AA;
+  cursor: ew-resize;
+}
+
+.leftFocusHandle {
+  composes: focusHandle;
+}
+
+.rightFocusHandle {
+  composes: focusHandle;
+  left: -6px;
+}

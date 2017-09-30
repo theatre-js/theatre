@@ -1,19 +1,19 @@
 // @flow
 import React from 'react'
-import compose from 'ramda/src/compose'
-import {withRunSaga, type WithRunSagaProps} from '$shared/utils'
-import {updatePointProps, removePointFromLane} from '$studio/animationTimeline/sagas'
-import PointAndConnector from './PointAndConnector'
+import Point from './Point'
+import Connector from './Connector'
 
-type Props = WithRunSagaProps & {
+type Props = {
   laneId: string,
   points: Object,
   color: string,
+  normalizePointProps: Function,
+  updatePointProps: Function,
 }
 
 type State = $FlowFixMe
 
-class Lane extends React.PureComponent {
+class Lane extends React.PureComponent<Props, State> {
   props: Props
   state: State
 
@@ -21,36 +21,35 @@ class Lane extends React.PureComponent {
     super(props)
   }
 
-  pointClickHandler = (point) => {
-    console.log('point', point)
-  }
-
-  connectorClickHandler = (point) => {
-    console.log('connector', point)
-  }
-
-  updatePointProps = (index: number, newProps: Object) => {
-    this.props.runSaga(updatePointProps, this.props.laneId, index, newProps)
-  }
-
-  removePointFromLane = (index: number) => {
-    this.props.runSaga(removePointFromLane, this.props.laneId, index)
+  _normalizePointProps(point: $FlowFixMe) {
+    if (point == null) return point
+    return this.props.normalizePointProps(point)
   }
 
   render() {
-    const {points, color} = this.props
+    const {points, color, updatePointProps} = this.props
     return (
       <g fill={color} stroke={color}>
         {
           points.map((point, index) => {
+            const normPoint = this._normalizePointProps(point)
+            const normPrevPoint = this._normalizePointProps(points[index - 1])
+            const normNextPoint = this._normalizePointProps(points[index + 1])
+            const {id, isConnected} = point
             return (
-              <PointAndConnector
-                key={point.id}
-                point={point}
-                prevPoint={points[index - 1] || {t: 0}}
-                nextPoint={points[index + 1] || {t: 420}}
-                updatePointProps={(newProps) => this.updatePointProps(index, newProps)}
-                removePointFromLane={() => this.removePointFromLane(index)}/>
+              <g key={id}>
+                {isConnected && normNextPoint &&
+                  <Connector
+                    leftPoint={normPoint}
+                    rightPoint={normNextPoint}/>
+                }
+                <Point
+                  key={id}
+                  prevPoint={normPrevPoint}
+                  nextPoint={normNextPoint}
+                  point={normPoint}
+                  updatePointProps={(newProps) => updatePointProps(index, newProps)}/>
+              </g>
             )
           })
         }
@@ -59,4 +58,4 @@ class Lane extends React.PureComponent {
   }
 }
 
-export default compose (withRunSaga())(Lane)
+export default Lane

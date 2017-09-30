@@ -12,14 +12,14 @@
 
 .moveHandle {
   position: absolute;
-  right: -10px;
-  top: -10px;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: #666;
+  right: 0;
+  top: 0;
+  width: 14px;
+  height: 14px;
+  /*border-radius: 50%;*/
+  /*background: #666;*/
   text-align: center;
-  line-height: 20px;
+  line-height: 14px;
   font-size: 12px;
   opacity: 0;
   z-index: 2;

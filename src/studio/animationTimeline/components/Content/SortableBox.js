@@ -20,7 +20,7 @@ type State = {
   resizeY: number,
 }
 
-class LaneBox extends React.Component {
+class LaneBox extends React.Component<Props, State> {
   props: Props
   state: State
 

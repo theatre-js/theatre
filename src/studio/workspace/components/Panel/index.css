@@ -26,11 +26,6 @@
 
 .content {
   height: calc(100% - 30px);
-  overflow: scroll;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
 }
 
 .displayNone {

@@ -8,6 +8,7 @@ import {moveBox, mergeBoxes, splitLane, resizeBox} from '$studio/animationTimeli
 import css from './index.css'
 import SortableBox from './SortableBox'
 import LanesViewer from './LanesViewer'
+import TimeBar from './TimeBar'
 
 type Props = WithRunSagaProps & $FlowFixMe
 
@@ -16,9 +17,13 @@ type State = {
   boxBeingDragged: $FlowFixMe,
   moveRatios: number[],
   boundaries: number[],
+  panelWidth: number,
+  duration: number,
+  currentTime: number,
+  focus: [number, number],
 }
 
-class Content extends React.Component {
+class Content extends React.Component<Props, State> {
   props: Props
   state: State
 
@@ -32,13 +37,42 @@ class Content extends React.Component {
       boxBeingDragged: null,
       moveRatios: new Array(layout.length).fill(0),
       boundaries: this._getBoundaries(boxes, layout),
+      panelWidth: this._getPanelWidth(props.panelDimensions.x),
+      duration: 60,
+      focus: [10, 50],
+      currentTime: 20,
     }
+  }
+
+  componentDidMount() {
+    window.addEventListener('resize', this._resetPanelWidthOnWindowResize)
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._resetPanelWidthOnWindowResize)
   }
 
   componentWillReceiveProps(newProps) {
     if (JSON.stringify(newProps.layout) !== JSON.stringify(this.props.layout)) {
       this._resetBoundariesAndRatios(newProps.layout, newProps.boxes)
     }
+    if(newProps.panelDimensions.x !== this.props.panelDimensions.x) {
+      this._resetPanelWidth(newProps.panelDimensions.x)
+    }
+  }
+
+  _resetPanelWidthOnWindowResize = () => {
+    this._resetPanelWidth(this.props.panelDimensions.x)
+  }
+
+  _getPanelWidth(xDim) {
+    return (xDim / 100) * window.innerWidth - 40
+  }
+
+  _resetPanelWidth(xDim) {
+    this.setState(() => ({
+      panelWidth: this._getPanelWidth(xDim),
+    }))
   }
 
   _resetBoundariesAndRatios(layout = this.props.layout, boxes = this.props.boxes) {
@@ -145,36 +179,59 @@ class Content extends React.Component {
     this._resetBoundariesAndRatios()
   }
 
+  changeFocusTo = (focus) => {
+    this.setState(() => ({focus}))
+  }
+
+  changeCurrentTimeTo = (currentTime) => {
+    this.setState(() => ({currentTime}))
+  }
+
   render() {
-    const {isDragging, boxBeingDragged, moveRatios} = this.state
+    const {isDragging, boxBeingDragged, moveRatios, panelWidth, duration, focus, currentTime} = this.state
     const {boxes, layout} = this.props
     return (
       <div className={css.container}>
-        {
-          layout.map((id, index) => {
-            const box = boxes[id]
-            const boxTranslateY = moveRatios[index] * (isDragging ? boxBeingDragged.height : 0)
-            const boxShowMergeOverlay = (isDragging && boxBeingDragged.index === index && boxBeingDragged.mergeWith != null)
-            return (
-              <SortableBox
-                key={id}
-                height={box.height}
-                translateY={boxTranslateY}
-                showMergeOverlay={boxShowMergeOverlay}
-                onMoveStart={() => this.onBoxStartMove(index)}
-                onMoveEnd={() => this.onBoxEndMove()}
-                onMove={this.onBoxMove}
-                onResize={(newSize) => this.onBoxResize(id, newSize)}>
-                {
-                  <LanesViewer
-                    boxHeight={box.height}
-                    laneIds={box.lanes}
-                    splitLane={(laneId) => this.splitLane(index, laneId)}/>
-                }
-              </SortableBox>
-            )
-          })
-        }
+        <div className={css.timeBar}>
+          <TimeBar
+            panelWidth={panelWidth}
+            duration={duration}
+            currentTime={currentTime}
+            focus={focus}
+            changeFocusTo={this.changeFocusTo}
+            changeCurrentTimeTo={this.changeCurrentTimeTo}/>
+        </div>
+        <div className={css.lanes}>
+          {
+            layout.map((id, index) => {
+              const box = boxes[id]
+              const boxTranslateY = moveRatios[index] * (isDragging ? boxBeingDragged.height : 0)
+              const boxShowMergeOverlay = (isDragging && boxBeingDragged.index === index && boxBeingDragged.mergeWith != null)
+              return (
+                <SortableBox
+                  key={id}
+                  height={box.height}
+                  translateY={boxTranslateY}
+                  showMergeOverlay={boxShowMergeOverlay}
+                  onMoveStart={() => this.onBoxStartMove(index)}
+                  onMoveEnd={() => this.onBoxEndMove()}
+                  onMove={this.onBoxMove}
+                  onResize={(newSize) => this.onBoxResize(id, newSize)}>
+                  {
+                    <LanesViewer
+                      boxHeight={box.height}
+                      laneIds={box.lanes}
+                      splitLane={(laneId) => this.splitLane(index, laneId)}
+                      panelWidth={panelWidth}
+                      duration={duration}
+                      currentTime={currentTime}
+                      focus={focus}/>
+                  }
+                </SortableBox>
+              )
+            })
+          }
+        </div>
       </div>
     )
   }
