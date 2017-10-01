@@ -4,8 +4,18 @@ import compose from 'ramda/src/compose'
 import {connect} from 'react-redux'
 import {withRunSaga, type WithRunSagaProps} from '$shared/utils'
 import {getLanesByIds} from '$studio/animationTimeline/selectors'
-import {addPointToLane, updatePointProps, removePointFromLane, updatePointConnector} from '$studio/animationTimeline/sagas'
-import {type Point} from '$studio/animationTimeline/types'
+import {
+  addPointToLane,
+  removePointFromLane,
+  setPointPositionTo,
+  changePointPositionBy,
+  changePointHandlesBy,
+  addConnector,
+  removeConnector,
+  makeHandleHorizontal,
+  makeHandlesParallel,
+  makeHandlesEqual} from '$studio/animationTimeline/sagas'
+import {type LaneID, type Point, type PointPosition, type PointHandles} from '$studio/animationTimeline/types'
 import css from './LanesViewer.css'
 import Lane from './Lane'
 import cx from 'classnames'
@@ -27,10 +37,6 @@ type State = {
   svgTransform: number,
   svgExtremums: [number, number],
   activeLaneId: string,
-}
-
-type PointProps = Point & {
-  _isNormalized?: boolean,
 }
 
 class LanesViewer extends React.PureComponent<Props, State> {
@@ -87,59 +93,49 @@ class LanesViewer extends React.PureComponent<Props, State> {
     const t = e.clientX - left
     const value = e.clientY - top
     const handleLength = (this.props.focus[1] - this.props.focus[0]) / 30
-    const pointProps: PointProps = {
+    const pointProps: Point = {
       t: this._deNormalizeX(t),
       value: this._deNormalizeValue(value),
       handles: [-handleLength, 0, handleLength, 0],
-      isConnected: false,
+      isConnected: true,
     }
     this.props.runSaga(addPointToLane, this.state.activeLaneId, pointProps)
   }
 
-  removePoint = (laneId: number, pointIndex: number) => {
+  removePoint = (laneId: LaneID, pointIndex: number) => {
     this.props.runSaga(removePointFromLane, laneId, pointIndex)
   }
 
-  updatePointConnector = (laneId: number, pointIndex: number, isConnected: boolean) => {
-    this.props.runSaga(updatePointConnector, laneId, pointIndex, isConnected)
+  setPointPositionTo = (laneId: LaneID, pointIndex: number, newPosition: PointPosition) => {
+    this.props.runSaga(setPointPositionTo, laneId, pointIndex, newPosition)
   }
 
-  updatePointProps = (laneId: number, pointIndex: number, newProps: PointProps) => {
-    let {_isNormalized, ...props} = newProps
-    if (_isNormalized) props = this.deNormalizePointProps(props)
-    this.props.runSaga(updatePointProps, laneId, pointIndex, props)
+  changePointPositionBy = (laneId: LaneID, pointIndex: number, change: PointPosition) => {
+    this.props.runSaga(changePointPositionBy, laneId, pointIndex, this.deNormalizePositionChange(change))
   }
 
-  normalizePointProps = (pointProps: PointProps): PointProps => {
-    const {t, value, handles} = pointProps
-    return {
-      ...pointProps,
-      t: this._normalizeX(t),
-      value: this._normalizeValue(value),
-      handles: [
-        this._normalizeX(handles[0]),
-        this._normalizeY(handles[1]),
-        this._normalizeX(handles[2]),
-        this._normalizeY(handles[3]),
-      ],
-      _isNormalized: true,
-    }
+  changePointHandlesBy = (laneId: LaneID, pointIndex: number, change: PointHandles) => {
+    this.props.runSaga(changePointHandlesBy, laneId, pointIndex, this.deNormalizeHandles(change))
+  }
+  
+  addConnector = (laneId: LaneID, pointIndex: number) => {
+    this.props.runSaga(addConnector, laneId, pointIndex)
   }
 
-  deNormalizePointProps = (pointProps: PointProps): Point => {
-    const {_isNormalized, ...props} = pointProps
-    const {t, value, handles} = props
-    return {
-      ...props,
-      t: this._deNormalizeX(t),
-      value: this._deNormalizeValue(value),
-      handles: [
-        this._deNormalizeX(handles[0]),
-        this._deNormalizeY(handles[1]),
-        this._deNormalizeX(handles[2]),
-        this._deNormalizeY(handles[3]),
-      ],
-    }
+  removeConnector = (laneId: LaneID, pointIndex: number) => {
+    this.props.runSaga(removeConnector, laneId, pointIndex)
+  }
+  
+  makeHandleHorizontal = (laneId: LaneID, pointIndex: number, side: 'left' | 'right') => {
+    this.props.runSaga(makeHandleHorizontal, laneId, pointIndex, side)
+  }
+
+  makeHandlesParallel = (laneId: LaneID, pointIndex: number, side: 'left' | 'right') => {
+    this.props.runSaga(makeHandlesParallel, laneId, pointIndex, side)
+  }
+
+  makeHandlesEqual = (laneId: LaneID, pointIndex: number, side: 'left' | 'right') => {
+    this.props.runSaga(makeHandlesEqual, laneId, pointIndex, side)
   }
 
   _normalizeX(x: number) {
@@ -168,18 +164,64 @@ class LanesViewer extends React.PureComponent<Props, State> {
     return this.state.svgExtremums[1] + this._deNormalizeY(value)
   }
 
+  normalizePositionChange = (position: PointPosition): PointPosition => {
+    return {
+      t: this._normalizeX(position.t),
+      value: this._normalizeY(position.value),
+    }
+  }
+
+  deNormalizePositionChange = (position: PointPosition): PointPosition => {
+    return {
+      t: this._deNormalizeX(position.t),
+      value: this._deNormalizeY(position.value),
+    }
+  }
+
+  _normalizeHandles = (handles: PointHandles): PointHandles => {
+    return [
+      this._normalizeX(handles[0]),
+      this._normalizeY(handles[1]),
+      this._normalizeX(handles[2]),
+      this._normalizeY(handles[3]),
+    ]
+  }
+
+  deNormalizeHandles = (handles: PointHandles): PointHandles => {
+    return [
+      this._deNormalizeX(handles[0]),
+      this._deNormalizeY(handles[1]),
+      this._deNormalizeX(handles[2]),
+      this._deNormalizeY(handles[3]),
+    ]
+  }
+
+  _normalizePoints(points: Point[]) {
+    return points.map((point) => {
+      const {t, value, handles, ...rest} = point
+      return {
+        _t: t,
+        _value: value,
+        t: this._normalizeX(t),
+        value: this._normalizeValue(value),
+        handles: this._normalizeHandles(handles),
+        ...rest,
+      }
+    })
+  }
+
   render() {
     const {lanes} = this.props
     const {svgHeight, svgWidth, svgTransform, activeLaneId} = this.state
-    const shouldSplit = (lanes.length > 1)
+    const multiLanes = (lanes.length > 1)
     return (
       <div className={css.container}>
         <div className={css.titleBar}>
           {lanes.map(({id, component, property}, index) => (
             <div
               key={id}
-              className={cx(css.title, {[css.activeTitle]: shouldSplit && id === activeLaneId})}
-              {...(shouldSplit ? {onClick: (e) => this.titleClickHandler(e, id)} : {})}>
+              className={cx(css.title, {[css.activeTitle]: multiLanes && id === activeLaneId})}
+              {...(multiLanes ? {onClick: (e) => this.titleClickHandler(e, id)} : {})}>
               <div className={css.componentName}>{component}</div>
               <div className={css.propertyName} style={{color: LanesViewer.colors[index%4]}}>{property}</div>
             </div>
@@ -198,13 +240,17 @@ class LanesViewer extends React.PureComponent<Props, State> {
                 <Lane
                   key={id}
                   laneId={id}
-                  points={points}
+                  points={this._normalizePoints(points)}
                   color={LanesViewer.colors[index%4]}
-                  normalizePointProps={this.normalizePointProps}
-                  updatePointProps={(index, newProps) => this.updatePointProps(id, index, newProps)}
-                  removePointFromLane={(index) => this.removePoint(id, index)}
-                  addConnector={(index) => this.updatePointConnector(id, index, true)}
-                  removeConnector={(index) => this.updatePointConnector(id, index, false)}/>
+                  changePointPositionBy={(index, change) => this.changePointPositionBy(id, index, change)}
+                  changePointHandlesBy={(index, change) => this.changePointHandlesBy(id, index, change)}
+                  setPointPositionTo={(index, newPosition) => this.setPointPositionTo(id, index, newPosition)}
+                  removePoint={(index) => this.removePoint(id, index)}
+                  addConnector={(index) => this.addConnector(id, index)}
+                  removeConnector={(index) => this.removeConnector(id, index)}
+                  makeHandleHorizontal={(index, side) => this.makeHandleHorizontal(id, index, side)}
+                  makeHandlesEqual={(index, side) => this.makeHandlesEqual(id, index, side)}
+                  makeHandlesParallel={(index, side) => this.makeHandlesParallel(id, index, side)}/>
               ))
             }
           </svg>

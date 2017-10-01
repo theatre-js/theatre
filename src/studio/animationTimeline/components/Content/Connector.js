@@ -1,9 +1,10 @@
 // @flow
 import React from 'react'
+import {type NormalizedPoint} from '$studio/animationTimeline/types'
 
 type Props = {
-  leftPoint: $FlowFixMe,
-  rightPoint: $FlowFixMe,
+  leftPoint: NormalizedPoint,
+  rightPoint: NormalizedPoint,
   removeConnector?: Function,
 }
 

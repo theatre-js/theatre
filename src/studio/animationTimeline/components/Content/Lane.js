@@ -2,46 +2,53 @@
 import React from 'react'
 import Point from './Point'
 import Connector from './Connector'
+import {type NormalizedPoint} from '$studio/animationTimeline/types'
 
 type Props = {
   laneId: string,
-  points: Object,
+  points: NormalizedPoint[],
   color: string,
-  normalizePointProps: Function,
-  updatePointProps: Function,
-  removePointFromLane: Function,
+  changePointPositionBy: Function,
+  changePointHandlesBy: Function,
+  setPointPositionTo: Function,
+  removePoint: Function,
   addConnector: Function,
   removeConnector: Function,
+  makeHandleHorizontal: Function,
+  makeHandlesEqual: Function,
+  makeHandlesParallel: Function,
 }
 
 const Lane = (props: Props) => {
-  const {points, color, normalizePointProps, updatePointProps, removePointFromLane, addConnector, removeConnector} = props
+  const {points, color} = props
   return (
     <g fill={color} stroke={color}>
       {
         points.map((point, index) => {
-          const normPoint = normalizePointProps(point)
-          const normPrevPoint = points[index - 1] && normalizePointProps(points[index - 1])
-          const normNextPoint = points[index + 1] && normalizePointProps(points[index + 1])
+          const prevPoint = points[index - 1]
+          const nextPoint = points[index + 1]
           const {isConnected} = point
           return (
             <g key={index}>
-              {isConnected && normNextPoint &&
+              {isConnected && (nextPoint != null) &&
                 <Connector
-                  leftPoint={normPoint}
-                  rightPoint={normNextPoint}
-                  removeConnector={() => removeConnector(index)}/>
+                  leftPoint={point}
+                  rightPoint={nextPoint}
+                  removeConnector={() => props.removeConnector(index)}/>
               }
               <Point
                 key={index}
-                prevPoint={normPrevPoint}
-                nextPoint={normNextPoint}
-                point={normPoint}
-                originalT={point.t}
-                originalValue={point.value}
-                updatePointProps={(newProps) => updatePointProps(index, newProps)}
-                removePoint={() => removePointFromLane(index)}
-                addConnector={() => addConnector(index)}/>
+                prevPoint={prevPoint}
+                nextPoint={nextPoint}
+                point={point}
+                changePointPositionBy={(change) => props.changePointPositionBy(index, change)}
+                changePointHandlesBy={(change) => props.changePointHandlesBy(index, change)}
+                setPointPositionTo={(newPosition) => props.setPointPositionTo(index, newPosition)}
+                addConnector={() => props.addConnector(index)}
+                removePoint={() => props.removePoint(index)}
+                makeHandleHorizontal={(side) => props.makeHandleHorizontal(index, side)}
+                makeHandlesEqual={(side) => props.makeHandlesEqual(index, side)}
+                makeHandlesParallel={(side) => props.makeHandlesParallel(index, side)}/>
             </g>
           )
         })
