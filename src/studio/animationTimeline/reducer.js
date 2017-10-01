@@ -137,20 +137,7 @@ const defaultState: AnimationTimelineNamespaceState = {
         component: 'div',
         property: 'top',
         extremums: [-10, 60],
-        points: [
-          {
-            t: 10000,
-            value: 0,
-            isConnected: false,
-            handles: [-5000, 0, 5000, 0],
-          },
-          {
-            t: 10000,
-            value: 50,
-            isConnected: false,
-            handles: [-5000, 0, 5000, 0],
-          },
-        ],
+        points: [],
       },
     },
   },

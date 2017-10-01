@@ -10,6 +10,7 @@ type Props = {
   point: NormalizedPoint,
   prevPoint: ?NormalizedPoint,
   nextPoint: ?NormalizedPoint,
+  laneWidth: number,
   addConnector: Function,
   changePointPositionBy: Function,
   changePointHandlesBy: Function,
@@ -83,6 +84,10 @@ class Point extends React.PureComponent<Props, State> {
     if (e.altKey) {
       return this.props.makeHandleHorizontal(side)
     }
+    
+    if (side === 'right' && this.props.prevPoint == null) return
+    if (side === 'left' && this.props.nextPoint == null) return
+    
     if (e.ctrlKey || e.metaKey) {
       return this.props.makeHandlesParallel(side)
     }
@@ -93,8 +98,17 @@ class Point extends React.PureComponent<Props, State> {
 
   pointDragHandler = (dx: number, dy: number, e: SyntheticMouseEvent<>) => {
     let x = dx, y = dy
+    
     if (e.altKey) y = this.state.pointMove[1]
     if (e.shiftKey) x = this.state.pointMove[0]
+    
+    const {point, prevPoint, nextPoint, laneWidth} = this.props
+    const limitLeft = (prevPoint == null) ? 0 : prevPoint.t
+    const limitRight = (nextPoint == null) ? laneWidth : nextPoint.t
+    const newT = point.t + x
+    if (newT >= limitRight) x = limitRight - point.t - 1
+    if (newT <= limitLeft) x = limitLeft - point.t + 1
+
     this.setState(() => ({
       isMoving: true,
       isEnteringProps: false,
@@ -226,7 +240,7 @@ class Point extends React.PureComponent<Props, State> {
             </DraggableArea>
           </g>
         }
-        {nextPoint &&
+        {(nextPoint != null) &&
           <g>
             <line
               stroke='dimgrey'

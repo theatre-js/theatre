@@ -18,14 +18,6 @@ export function* removePointFromLane(laneId: LaneID, atIndex: number): Generator
   yield * resetExtremums(laneId)
 }
 
-// export function* updatePointProps(laneId: LaneID, atIndex: number, newProps: Point): Generator<*, void, *> {
-//   yield reduceState(['animationTimeline', 'lanes', 'byId', laneId, 'points', atIndex], (point) => ({
-//     ...point,
-//     ...newProps,  
-//   }))
-//   yield * resetExtremums(laneId)
-// }
-
 export function* setPointPositionTo(laneId: LaneID, atIndex: number, newPosition: PointPosition): Generator<*, void, *> {
   yield reduceState(['animationTimeline', 'lanes', 'byId', laneId, 'points', atIndex], (point) => ({
     ...point,

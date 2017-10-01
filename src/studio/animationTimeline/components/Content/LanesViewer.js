@@ -15,7 +15,7 @@ import {
   makeHandleHorizontal,
   makeHandlesParallel,
   makeHandlesEqual} from '$studio/animationTimeline/sagas'
-import {type LaneID, type Point, type PointPosition, type PointHandles} from '$studio/animationTimeline/types'
+import {type LaneID, type Point, type PointPosition, type PointHandles, type NormalizedPoint} from '$studio/animationTimeline/types'
 import css from './LanesViewer.css'
 import Lane from './Lane'
 import cx from 'classnames'
@@ -196,16 +196,16 @@ class LanesViewer extends React.PureComponent<Props, State> {
     ]
   }
 
-  _normalizePoints(points: Point[]) {
+  _normalizePoints(points: Point[]): NormalizedPoint[] {
     return points.map((point) => {
-      const {t, value, handles, ...rest} = point
+      const {t, value, handles, isConnected} = point
       return {
         _t: t,
         _value: value,
         t: this._normalizeX(t),
         value: this._normalizeValue(value),
         handles: this._normalizeHandles(handles),
-        ...rest,
+        isConnected,
       }
     })
   }
@@ -242,6 +242,7 @@ class LanesViewer extends React.PureComponent<Props, State> {
                   laneId={id}
                   points={this._normalizePoints(points)}
                   color={LanesViewer.colors[index%4]}
+                  width={svgWidth}
                   changePointPositionBy={(index, change) => this.changePointPositionBy(id, index, change)}
                   changePointHandlesBy={(index, change) => this.changePointHandlesBy(id, index, change)}
                   setPointPositionTo={(index, newPosition) => this.setPointPositionTo(id, index, newPosition)}
