@@ -14,58 +14,40 @@ type Props = {
   removeConnector: Function,
 }
 
-type State = $FlowFixMe
-
-class Lane extends React.PureComponent<Props, State> {
-  props: Props
-  state: State
-
-  constructor(props: Props) {
-    super(props)
-  }
-
-  _normalizePointProps(point: $FlowFixMe) {
-    if (point == null) return point
-    return {
-      originalT: point.t,
-      originalValue: point.value,
-      ...this.props.normalizePointProps(point),
-    }
-  }
-
-  render() {
-    const {points, color, updatePointProps, removePointFromLane, addConnector, removeConnector} = this.props
-    return (
-      <g fill={color} stroke={color}>
-        {
-          points.map((point, index) => {
-            const normPoint = this._normalizePointProps(point)
-            const normPrevPoint = this._normalizePointProps(points[index - 1])
-            const normNextPoint = this._normalizePointProps(points[index + 1])
-            const {id, isConnected} = point
-            return (
-              <g key={id}>
-                {isConnected && normNextPoint &&
-                  <Connector
-                    leftPoint={normPoint}
-                    rightPoint={normNextPoint}
-                    removeConnector={() => removeConnector(index)}/>
-                }
-                <Point
-                  key={id}
-                  prevPoint={normPrevPoint}
-                  nextPoint={normNextPoint}
-                  point={normPoint}
-                  updatePointProps={(newProps) => updatePointProps(index, newProps)}
-                  removePoint={() => removePointFromLane(index)}
-                  addConnector={() => addConnector(index)}/>
-              </g>
-            )
-          })
-        }
-      </g>
-    )
-  }
+const Lane = (props: Props) => {
+  const {points, color, normalizePointProps, updatePointProps, removePointFromLane, addConnector, removeConnector} = props
+  return (
+    <g fill={color} stroke={color}>
+      {
+        points.map((point, index) => {
+          const normPoint = normalizePointProps(point)
+          const normPrevPoint = points[index - 1] && normalizePointProps(points[index - 1])
+          const normNextPoint = points[index + 1] && normalizePointProps(points[index + 1])
+          const {isConnected} = point
+          return (
+            <g key={index}>
+              {isConnected && normNextPoint &&
+                <Connector
+                  leftPoint={normPoint}
+                  rightPoint={normNextPoint}
+                  removeConnector={() => removeConnector(index)}/>
+              }
+              <Point
+                key={index}
+                prevPoint={normPrevPoint}
+                nextPoint={normNextPoint}
+                point={normPoint}
+                originalT={point.t}
+                originalValue={point.value}
+                updatePointProps={(newProps) => updatePointProps(index, newProps)}
+                removePoint={() => removePointFromLane(index)}
+                addConnector={() => addConnector(index)}/>
+            </g>
+          )
+        })
+      }
+    </g>
+  )
 }
 
 export default Lane

@@ -136,13 +136,11 @@ class TimeBar extends React.PureComponent<Props, State> {
         <div className={css.timeStart}>{0}</div>
         {isChangingDuration
           ?
-          <div className={css.timeEnd}>
-            <SingleInputForm
-              customStyle={true}
-              value={String(duration)}
-              onSubmit={this.changeDuration}
-              onCancel={this.disableChangingDuration} />
-          </div>
+          <SingleInputForm
+            className={css.timeEndInput}
+            value={String(duration)}
+            onSubmit={this.changeDuration}
+            onCancel={this.disableChangingDuration} />
           :
           <div className={css.timeEnd} title='Double click to change' onDoubleClick={this.enableChangingDuration}>
             {duration.toFixed(0)}

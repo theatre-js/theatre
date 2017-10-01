@@ -27,9 +27,9 @@
   cursor: pointer;
 }
 
-.timeEnd > input {
+.timeEndInput {
+  composes: timeEnd;
   text-align: center;
-  width: 100%;
   line-height: 18px;
   background: #111;
   border-radius: 10%;
@@ -103,7 +103,7 @@
   background: #333;
   left: 4px;
   transform: translateX(-50%);
-  opacity: 0;
+  display: none;
 }
 
 .leftFocusHandle:hover .timeTip,
@@ -114,5 +114,5 @@
 .currentTime:active .timeTip,
 .focusBar:active ~ .leftFocusHandle .timeTip,
 .focusBar:active ~ .rightFocusHandle .timeTip{
-  opacity: 1;
+  display: block;
 }

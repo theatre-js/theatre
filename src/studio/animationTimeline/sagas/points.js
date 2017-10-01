@@ -1,15 +1,15 @@
 // @flow
 import {reduceState} from '$shared/utils'
 import generateUniqueId from 'uuid/v4'
+import {type Point} from '$studio/animationTimeline/types'
 
-export function* addPointToLane(laneId: $FlowFixMe, newPointProps: $FlowFixMe): Generator<*, void, *> {
+export function* addPointToLane(laneId: $FlowFixMe, newPointProps: Point): Generator<*, void, *> {
   yield reduceState(['animationTimeline', 'lanes', 'byId', laneId, 'points'], (points) => {
     let atIndex = points.findIndex((point) => point.t > newPointProps.t)
     if (atIndex === -1) atIndex = points.length
     const point = {
       id: generateUniqueId(),
       ...newPointProps,
-      isConnected: false,
     }
     return points.slice(0, atIndex).concat(point, points.slice(atIndex))
   })
@@ -23,7 +23,7 @@ export function* removePointFromLane(laneId: $FlowFixMe, atIndex: number): Gener
   yield * resetExtremums(laneId)
 }
 
-export function* updatePointProps(laneId: $FlowFixMe, atIndex: number, newProps: Object): Generator<*, void, *> {
+export function* updatePointProps(laneId: $FlowFixMe, atIndex: number, newProps: Point): Generator<*, void, *> {
   yield reduceState(['animationTimeline', 'lanes', 'byId', laneId, 'points', atIndex], (point) => ({
     ...point,
     ...newProps,  

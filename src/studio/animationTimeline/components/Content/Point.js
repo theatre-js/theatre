@@ -3,6 +3,7 @@ import React from 'react'
 import css from './Point.css'
 import Connector from './Connector'
 import DraggableArea from '$studio/common/components/DraggableArea'
+import SingleInputForm from '$lf/common/components/SingleInputForm'
 
 type Props = {
   point: $FlowFixMe,
@@ -11,6 +12,8 @@ type Props = {
   updatePointProps: Function,
   removePoint: Function,
   addConnector: Function,
+  originalT: number,
+  originalValue: number,
 }
 
 type State = {
@@ -23,6 +26,8 @@ type State = {
 class Point extends React.PureComponent<Props, State> {
   props: Props
   state: State
+  valueForm: SingleInputForm
+  timeForm: SingleInputForm
 
   constructor(props: Props) {
     super(props)
@@ -36,12 +41,27 @@ class Point extends React.PureComponent<Props, State> {
   }
 
   pointClickHandler = (e: SyntheticMouseEvent<>) => {
+    e.preventDefault()
+    e.stopPropagation()
     if (e.altKey) {
       return this.props.removePoint()
     }
     if (e.ctrlKey || e.metaKey) {
       return this.props.addConnector()
     }
+    if (this.state.isEnteringProps) {
+      this.disableEnteringProps()
+    } else {
+      this.enableEnteringProps()
+    }
+  }
+
+  disableEnteringProps = () => {
+    this.setState(() => ({isEnteringProps: false}))
+  }
+
+  enableEnteringProps = () => {
+    this.setState(() => ({isEnteringProps: true}))
   }
 
   pointDragHandler = (dx: number, dy: number, e: SyntheticMouseEvent<>) => {
@@ -50,6 +70,7 @@ class Point extends React.PureComponent<Props, State> {
     if (e.shiftKey) x = this.state.pointMove[0]
     this.setState(() => ({
       isMoving: true,
+      isEnteringProps: false,
       pointMove: [x, y],
     }))
   }
@@ -59,6 +80,7 @@ class Point extends React.PureComponent<Props, State> {
       const {handlesMove} = state
       return {
         isMoving: true,
+        isEnteringProps: false,
         handlesMove: [dx, dy, handlesMove[2], handlesMove[3]],
       }
     })
@@ -69,6 +91,7 @@ class Point extends React.PureComponent<Props, State> {
       const {handlesMove} = state
       return {
         isMoving: true,
+        isEnteringProps: false,
         handlesMove: [handlesMove[0], handlesMove[1], dx, dy],
       }
     })
@@ -87,6 +110,13 @@ class Point extends React.PureComponent<Props, State> {
       pointMove: [0, 0],
       handlesMove: [0, 0, 0, 0],
     }))
+  }
+
+  updatePointTimeAndValue = () => {
+    const value = Number(this.valueForm.input.value)
+    const t = Number(this.timeForm.input.value)
+    this.props.updatePointProps({t, value})
+    this.disableEnteringProps()
   }
 
   _renderTransformedPoint() {
@@ -111,6 +141,44 @@ class Point extends React.PureComponent<Props, State> {
           cx={movedPoint.t} cy={movedPoint.value} r={3}
           className={css.point}/>
       </g>
+    )
+  }
+
+  _renderInputs() {
+    const {point: {t, value}, originalT, originalValue} = this.props
+    return (
+      <foreignObject>
+        <div
+          className={css.pointTip}
+          style={{
+            left: `${t > 25 ? t - 25 : 0}px`,
+            top: `${value >= 37 ? value - 37 : value + 5}px`,
+          }}>
+          <div className={css.pointTipRow}>
+            <span className={css.pointTipIcon}>
+              {String.fromCharCode(0x25b2)}
+            </span>
+            <SingleInputForm
+              ref={(c) => {if (c != null) this.valueForm = c}}
+              className={css.pointTipInput}
+              value={String(originalValue)}
+              onCancel={this.disableEnteringProps}
+              onSubmit={this.updatePointTimeAndValue}/>
+          </div>
+          <div className={css.pointTipRow}>
+            <span className={css.pointTipIcon}>
+              {String.fromCharCode(0x25ba)}
+            </span>
+            <SingleInputForm
+              autoFocus={false}
+              ref={(c) => {if(c != null) this.timeForm = c}}
+              className={css.pointTipInput}
+              value={String(originalT)}
+              onCancel={this.disableEnteringProps}
+              onSubmit={this.updatePointTimeAndValue}/>
+          </div>
+        </div>
+      </foreignObject>
     )
   }
 
@@ -156,9 +224,6 @@ class Point extends React.PureComponent<Props, State> {
             </DraggableArea>    
           </g>
         }
-        {!isEnteringProps &&
-          <text>hello</text>
-        }
         <DraggableArea
           onDrag={this.pointDragHandler}
           onDragEnd={this.updatePointProps}>
@@ -169,6 +234,7 @@ class Point extends React.PureComponent<Props, State> {
             className={css.point}
             onClick={this.pointClickHandler}/>
         </DraggableArea>
+        {isEnteringProps && this._renderInputs()}
       </g>
     )
   }

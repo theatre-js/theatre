@@ -11,28 +11,24 @@ const defaultState: AnimationTimelineNamespaceState = {
         extremums: [0, 60],
         points: [
           {
-            id: '1',
             t: 10000,
             value: 20,
             isConnected: true,
             handles: [-5000, 0, 5000, 0],
           },
           {
-            id: '2',
             t: 20000,
             value: 10,
             isConnected: true,
             handles: [-5000, 0, 5000, 0],
           },
           {
-            id: '3',
             t: 30000,
             value: 30,
             isConnected: true,
             handles: [-5000, 0, 5000, 0],
           },
           {
-            id: '4',
             t: 50000,
             value: 5,
             isConnected: false,
@@ -47,28 +43,24 @@ const defaultState: AnimationTimelineNamespaceState = {
         extremums: [-20, 40],
         points: [
           {
-            id: '1',
             t: 30000,
             value: 20,
             isConnected: true,
             handles: [-5000, 0, 5000, 0],
           },
           {
-            id: '2',
             t: 40000,
             value: 10,
             isConnected: true,
             handles: [-5000, 0, 5000, 0],
           },
           {
-            id: '3',
             t: 50000,
             value: 30,
             isConnected: true,
             handles: [-5000, 0, 5000, 0],
           },
           {
-            id: '4',
             t: 55000,
             value: -5,
             isConnected: false,
@@ -83,28 +75,24 @@ const defaultState: AnimationTimelineNamespaceState = {
         extremums: [0, 60],
         points: [
           {
-            id: '1',
             t: 10000,
             value: 50,
             isConnected: true,
             handles: [-5000, 0, 5000, 0],
           },
           {
-            id: '2',
             t: 20000,
             value: 10,
             isConnected: true,
             handles: [-5000, 0, 5000, 0],
           },
           {
-            id: '3',
             t: 31000,
             value: 50,
             isConnected: true,
             handles: [-5000, 0, 5000, 0],
           },
           {
-            id: '4',
             t: 43000,
             value: 5,
             isConnected: false,
@@ -119,28 +107,24 @@ const defaultState: AnimationTimelineNamespaceState = {
         extremums: [0, 60],
         points: [
           {
-            id: '1',
             t: 5000,
             value: 25,
             isConnected: true,
             handles: [-5000, 0, 5000, 0],
           },
           {
-            id: '2',
             t: 17000,
             value: 15,
             isConnected: true,
             handles: [-5000, 0, 5000, 0],
           },
           {
-            id: '3',
             t: 29000,
             value: 35,
             isConnected: true,
             handles: [-5000, 0, 5000, 0],
           },
           {
-            id: '4',
             t: 40000,
             value: 10,
             isConnected: false,
@@ -155,14 +139,12 @@ const defaultState: AnimationTimelineNamespaceState = {
         extremums: [-10, 60],
         points: [
           {
-            id: '1',
             t: 10000,
             value: 0,
             isConnected: false,
             handles: [-5000, 0, 5000, 0],
           },
           {
-            id: '2',
             t: 10000,
             value: 50,
             isConnected: false,

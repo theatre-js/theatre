@@ -7,7 +7,8 @@ type Props = {
   onSubmit: Function,
   onCancel: Function,
   value?: string,
-  customStyle?: boolean,
+  className?: Object,
+  autoFocus: boolean,
 }
 
 type State = {
@@ -16,6 +17,10 @@ type State = {
 
 class SingleInputForm extends React.Component<Props, State> {
   input: $FlowFixMe
+
+  static defaultProps = {
+    autoFocus: true,
+  }
 
   constructor(props: Props) {
     super(props)
@@ -26,7 +31,11 @@ class SingleInputForm extends React.Component<Props, State> {
   }
 
   componentDidMount() {
-    this.input.focus()
+    if (this.props.autoFocus) {
+      const {value} = this.input
+      this.input.focus()
+      this.input.setSelectionRange(value.length, value.length)
+    }
   }
 
   handleKeyDown = (e: SyntheticKeyboardEvent<*>) => {
@@ -52,7 +61,7 @@ class SingleInputForm extends React.Component<Props, State> {
         placeholder={this.props.placeholder}
         value={this.state.value}
         onKeyDown={this.handleKeyDown}
-        {...(!this.props.customStyle ? {className: css.input} : {})}
+        className={this.props.className ? this.props.className : css.input}
         onChange={this.onChange}
         type='text' />
     )

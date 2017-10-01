@@ -5,6 +5,7 @@ import {connect} from 'react-redux'
 import {withRunSaga, type WithRunSagaProps} from '$shared/utils'
 import {getLanesByIds} from '$studio/animationTimeline/selectors'
 import {addPointToLane, updatePointProps, removePointFromLane, updatePointConnector} from '$studio/animationTimeline/sagas'
+import {type Point} from '$studio/animationTimeline/types'
 import css from './LanesViewer.css'
 import Lane from './Lane'
 import cx from 'classnames'
@@ -28,10 +29,8 @@ type State = {
   activeLaneId: string,
 }
 
-type PointProps = {
-  t: number,
-  value: number,
-  handles: [number, number, number, number],
+type PointProps = Point & {
+  _isNormalized?: boolean,
 }
 
 class LanesViewer extends React.PureComponent<Props, State> {
@@ -83,6 +82,7 @@ class LanesViewer extends React.PureComponent<Props, State> {
   }
 
   addPoint = (e: SyntheticMouseEvent<>) => {
+    if (!(e.ctrlKey || e.metaKey)) return
     const {top, left} = this.svgArea.getBoundingClientRect()
     const t = e.clientX - left
     const value = e.clientY - top
@@ -91,6 +91,7 @@ class LanesViewer extends React.PureComponent<Props, State> {
       t: this._deNormalizeX(t),
       value: this._deNormalizeValue(value),
       handles: [-handleLength, 0, handleLength, 0],
+      isConnected: false,
     }
     this.props.runSaga(addPointToLane, this.state.activeLaneId, pointProps)
   }
@@ -104,10 +105,12 @@ class LanesViewer extends React.PureComponent<Props, State> {
   }
 
   updatePointProps = (laneId: number, pointIndex: number, newProps: PointProps) => {
-    this.props.runSaga(updatePointProps, laneId, pointIndex, this.deNormalizePointProps(newProps))
+    let {_isNormalized, ...props} = newProps
+    if (_isNormalized) props = this.deNormalizePointProps(props)
+    this.props.runSaga(updatePointProps, laneId, pointIndex, props)
   }
 
-  normalizePointProps = (pointProps: PointProps) => {
+  normalizePointProps = (pointProps: PointProps): PointProps => {
     const {t, value, handles} = pointProps
     return {
       ...pointProps,
@@ -119,13 +122,15 @@ class LanesViewer extends React.PureComponent<Props, State> {
         this._normalizeX(handles[2]),
         this._normalizeY(handles[3]),
       ],
+      _isNormalized: true,
     }
   }
 
-  deNormalizePointProps = (pointProps: PointProps) => {
-    const {t, value, handles} = pointProps
+  deNormalizePointProps = (pointProps: PointProps): Point => {
+    const {_isNormalized, ...props} = pointProps
+    const {t, value, handles} = props
     return {
-      ...pointProps,
+      ...props,
       t: this._deNormalizeX(t),
       value: this._deNormalizeValue(value),
       handles: [
@@ -187,7 +192,7 @@ class LanesViewer extends React.PureComponent<Props, State> {
             width={svgWidth}
             style={{transform: `translateX(${-svgTransform}px)`}}
             ref={(svg) => {this.svgArea = svg}}
-            onDoubleClick={this.addPoint}>
+            onClick={this.addPoint}>
             {
               lanes.map(({id, points}, index) => (
                 <Lane
