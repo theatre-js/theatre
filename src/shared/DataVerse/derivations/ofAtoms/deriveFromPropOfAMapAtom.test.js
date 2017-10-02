@@ -10,7 +10,7 @@ describe('deriveFromPropOfAMapAtom', () => {
 
     const aD = deriveFromPropOfAMapAtom(m, 'a')
     const bD = deriveFromPropOfAMapAtom(m, 'b')
-    const final = aD.map((n) => bD.map((m) => m.getValue() + n.getValue())).flattenDeep()
+    const final = aD.map((n) => bD.map((m) => m.getValue() + n.getValue())).flattenDeep(7)
 
     expect(final.getValue()).toEqual(4)
     m.setProp('a', new D.BoxAtom(2))
@@ -62,7 +62,7 @@ describe('deriveFromPropOfAMapAtom', () => {
     const aD = a.derivation()
     const b = new D.BoxAtom('b')
     const bD = b.derivation()
-    const cD = aD.map((aValue) => bD.map((bValue) => withDeps({}, () => aValue + bValue))).flattenDeep()
+    const cD = aD.map((aValue) => bD.map((bValue) => withDeps({}, () => aValue + bValue))).flattenDeep(7)
 
     expect(cD.getValue()).toEqual('ab')
     cD.setDataVerseContext(context)

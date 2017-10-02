@@ -1,12 +1,8 @@
 
 // @flow
-import {type IReactiveArray} from '../../types'
 
-export interface IDerivedArray<T> extends IReactiveArray<T> {
 
-}
-
-export default class DerivedArray<T> implements IDerivedArray<T> {
+export default class DerivedArray<T> {
   constructor() {
 
   }

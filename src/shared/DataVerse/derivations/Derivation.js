@@ -159,7 +159,7 @@ class Derivation {
     return withDeps.default({dep: (this: $FixMe)}, (deps) => fn(deps.dep.getValue()))
   }
 
-  flatMap<T, P>(fn: $FixMe): IDerivation<T | P> {
+  flatMap(fn: $FixMe): $FixMe {
     return this.map(fn).flatten()
   }
 
@@ -168,6 +168,7 @@ class Derivation {
   }
 
   flattenDeep(levels?: number): IDerivation<$FixMe> {
+    // $FixMe
     return flattenDeep.default((this: $FixMe), levels)
   }
 }

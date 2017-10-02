@@ -56,7 +56,7 @@ export class PointerDerivation extends Derivation implements IPointer<$FixMe> {
       })
     })
 
-    const flattenFinalDerivation = (finalThing) => {
+    const flattenFinalDerivation = (finalThing: $FixMe) => {
       if (finalThing instanceof D.BoxAtom) {
         return deriveFromBoxAtom.default(finalThing)
       } else {

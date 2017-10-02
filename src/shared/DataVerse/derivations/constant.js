@@ -3,9 +3,8 @@ import Derivation from './Derivation'
 import type {IDerivation} from './types'
 
 export class ConstantDerivation<V> extends Derivation implements IDerivation<V> {
-  getValue: () => V
-
   _v: V
+
   constructor(v: V): IDerivation<V> {
     super()
     this._v = v

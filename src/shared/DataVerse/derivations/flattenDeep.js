@@ -69,6 +69,62 @@ export class FlattenDeepDerivation extends Derivation implements IDerivation<$Fi
   }
 }
 
-export default function flattenDeep<V>(depDerivation: IDerivation<V>, maxDepth: number = 200): IDerivation<$FixMe> {
+export type FlattenDeepFn =
+  (<Ret, V1: IDerivation<Ret>, D: 0>(outer: V1, D) => IDerivation<Ret>) &
+
+  (<Ret, V2: IDerivation<Ret>, V1: IDerivation<V2>, D: 1>(outer: V1, D) => IDerivation<Ret>) &
+  (<Ret, V1: IDerivation<Ret>, D: 1>(outer: V1, D) => IDerivation<Ret>) &
+
+  (<Ret, V3: IDerivation<Ret>, V2: IDerivation<V3>, V1: IDerivation<V2>, D: 2>(outer: V1, D) => IDerivation<Ret>) &
+  (<Ret, V2: IDerivation<Ret>, V1: IDerivation<V2>, D: 2>(outer: V1, D) => IDerivation<Ret>) &
+  (<Ret, V1: IDerivation<Ret>, D: 2>(outer: V1, D) => IDerivation<Ret>) &
+
+  (<Ret, V4: IDerivation<Ret>, V3: IDerivation<V4>, V2: IDerivation<V3>, V1: IDerivation<V2>, D: 3>(outer: V1, D) => IDerivation<Ret>) &
+  (<Ret, V3: IDerivation<Ret>, V2: IDerivation<V3>, V1: IDerivation<V2>, D: 3>(outer: V1, D) => IDerivation<Ret>) &
+  (<Ret, V2: IDerivation<Ret>, V1: IDerivation<V2>, D: 3>(outer: V1, D) => IDerivation<Ret>) &
+  (<Ret, V1: IDerivation<Ret>, D: 3>(outer: V1, D) => IDerivation<Ret>) &
+
+  (<Ret, V5: IDerivation<Ret>, V4: IDerivation<V5>, V3: IDerivation<V4>, V2: IDerivation<V3>, V1: IDerivation<V2>, D: 4>(outer: V1, D) => IDerivation<Ret>) &
+  (<Ret, V4: IDerivation<Ret>, V3: IDerivation<V4>, V2: IDerivation<V3>, V1: IDerivation<V2>, D: 4>(outer: V1, D) => IDerivation<Ret>) &
+  (<Ret, V3: IDerivation<Ret>, V2: IDerivation<V3>, V1: IDerivation<V2>, D: 4>(outer: V1, D) => IDerivation<Ret>) &
+  (<Ret, V2: IDerivation<Ret>, V1: IDerivation<V2>, D: 4>(outer: V1, D) => IDerivation<Ret>) &
+  (<Ret, V1: IDerivation<Ret>, D: 4>(outer: V1, D) => IDerivation<Ret>) &
+
+  (<Ret, V6: IDerivation<Ret>, V5: IDerivation<V6>, V4: IDerivation<V5>, V3: IDerivation<V4>, V2: IDerivation<V3>, V1: IDerivation<V2>, D: 5>(outer: V1, D) => IDerivation<Ret>) &
+  (<Ret, V5: IDerivation<Ret>, V4: IDerivation<V5>, V3: IDerivation<V4>, V2: IDerivation<V3>, V1: IDerivation<V2>, D: 5>(outer: V1, D) => IDerivation<Ret>) &
+  (<Ret, V4: IDerivation<Ret>, V3: IDerivation<V4>, V2: IDerivation<V3>, V1: IDerivation<V2>, D: 5>(outer: V1, D) => IDerivation<Ret>) &
+  (<Ret, V3: IDerivation<Ret>, V2: IDerivation<V3>, V1: IDerivation<V2>, D: 5>(outer: V1, D) => IDerivation<Ret>) &
+  (<Ret, V2: IDerivation<Ret>, V1: IDerivation<V2>, D: 5>(outer: V1, D) => IDerivation<Ret>) &
+  (<Ret, V1: IDerivation<Ret>, D: 5>(outer: V1, D) => IDerivation<Ret>) &
+
+  (<Ret, V7: IDerivation<Ret>, V6: IDerivation<V7>, V5: IDerivation<V6>, V4: IDerivation<V5>, V3: IDerivation<V4>, V2: IDerivation<V3>, V1: IDerivation<V2>, D: 6>(outer: V1, D) => IDerivation<Ret>) &
+  (<Ret, V6: IDerivation<Ret>, V5: IDerivation<V6>, V4: IDerivation<V5>, V3: IDerivation<V4>, V2: IDerivation<V3>, V1: IDerivation<V2>, D: 6>(outer: V1, D) => IDerivation<Ret>) &
+  (<Ret, V5: IDerivation<Ret>, V4: IDerivation<V5>, V3: IDerivation<V4>, V2: IDerivation<V3>, V1: IDerivation<V2>, D: 6>(outer: V1, D) => IDerivation<Ret>) &
+  (<Ret, V4: IDerivation<Ret>, V3: IDerivation<V4>, V2: IDerivation<V3>, V1: IDerivation<V2>, D: 6>(outer: V1, D) => IDerivation<Ret>) &
+  (<Ret, V3: IDerivation<Ret>, V2: IDerivation<V3>, V1: IDerivation<V2>, D: 6>(outer: V1, D) => IDerivation<Ret>) &
+  (<Ret, V2: IDerivation<Ret>, V1: IDerivation<V2>, D: 6>(outer: V1, D) => IDerivation<Ret>) &
+  (<Ret, V1: IDerivation<Ret>, D: 6>(outer: V1, D) => IDerivation<Ret>) &
+
+  (<Ret, V8: IDerivation<Ret>, V7: IDerivation<V8>, V6: IDerivation<V7>, V5: IDerivation<V6>, V4: IDerivation<V5>, V3: IDerivation<V4>, V2: IDerivation<V3>, V1: IDerivation<V2>, D: 7>(outer: V1, D) => IDerivation<Ret>) &
+  (<Ret, V7: IDerivation<Ret>, V6: IDerivation<V7>, V5: IDerivation<V6>, V4: IDerivation<V5>, V3: IDerivation<V4>, V2: IDerivation<V3>, V1: IDerivation<V2>, D: 7>(outer: V1, D) => IDerivation<Ret>) &
+  (<Ret, V6: IDerivation<Ret>, V5: IDerivation<V6>, V4: IDerivation<V5>, V3: IDerivation<V4>, V2: IDerivation<V3>, V1: IDerivation<V2>, D: 7>(outer: V1, D) => IDerivation<Ret>) &
+  (<Ret, V5: IDerivation<Ret>, V4: IDerivation<V5>, V3: IDerivation<V4>, V2: IDerivation<V3>, V1: IDerivation<V2>, D: 7>(outer: V1, D) => IDerivation<Ret>) &
+  (<Ret, V4: IDerivation<Ret>, V3: IDerivation<V4>, V2: IDerivation<V3>, V1: IDerivation<V2>, D: 7>(outer: V1, D) => IDerivation<Ret>) &
+  (<Ret, V3: IDerivation<Ret>, V2: IDerivation<V3>, V1: IDerivation<V2>, D: 7>(outer: V1, D) => IDerivation<Ret>) &
+  (<Ret, V2: IDerivation<Ret>, V1: IDerivation<V2>, D: 7>(outer: V1, D) => IDerivation<Ret>) &
+  (<Ret, V1: IDerivation<Ret>, D: 7>(outer: V1, D) => IDerivation<Ret>) &
+
+  (<Ret, V8: IDerivation<Ret>, V7: IDerivation<V8>, V6: IDerivation<V7>, V5: IDerivation<V6>, V4: IDerivation<V5>, V3: IDerivation<V4>, V2: IDerivation<V3>, V1: IDerivation<V2>>(outer: V1) => IDerivation<Ret>) &
+  (<Ret, V7: IDerivation<Ret>, V6: IDerivation<V7>, V5: IDerivation<V6>, V4: IDerivation<V5>, V3: IDerivation<V4>, V2: IDerivation<V3>, V1: IDerivation<V2>>(outer: V1) => IDerivation<Ret>) &
+  (<Ret, V6: IDerivation<Ret>, V5: IDerivation<V6>, V4: IDerivation<V5>, V3: IDerivation<V4>, V2: IDerivation<V3>, V1: IDerivation<V2>>(outer: V1) => IDerivation<Ret>) &
+  (<Ret, V5: IDerivation<Ret>, V4: IDerivation<V5>, V3: IDerivation<V4>, V2: IDerivation<V3>, V1: IDerivation<V2>>(outer: V1) => IDerivation<Ret>) &
+  (<Ret, V4: IDerivation<Ret>, V3: IDerivation<V4>, V2: IDerivation<V3>, V1: IDerivation<V2>>(outer: V1) => IDerivation<Ret>) &
+  (<Ret, V3: IDerivation<Ret>, V2: IDerivation<V3>, V1: IDerivation<V2>>(outer: V1) => IDerivation<Ret>) &
+  (<Ret, V2: IDerivation<Ret>, V1: IDerivation<V2>>(outer: V1) => IDerivation<Ret>) &
+  (<Ret, V1: IDerivation<Ret>>(outer: V1) => IDerivation<Ret>)
+
+function flattenDeep<V>(depDerivation: IDerivation<V>, maxDepth: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 = 7): IDerivation<$FixMe> {
   return new FlattenDeepDerivation(depDerivation, maxDepth)
 }
+
+export default ((flattenDeep: $IntentionalAny): FlattenDeepFn)
