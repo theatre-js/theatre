@@ -41,12 +41,10 @@ type State = PanelPlacementState & {
   isMoving: boolean,
 }
 
-class Panel extends React.Component {
-  props: Props
-  state: State
+class Panel extends React.Component<Props, State> {
   panelComponents: {
-    Content: React.Node,
-    Settings: React.Node,
+    Content: React$ComponentType<*>,
+    Settings: React$ComponentType<*>,
   }
 
   static defaultProps = {
@@ -169,6 +167,7 @@ class Panel extends React.Component {
   }
 
   render() {
+    const {panelComponents} = this
     const {
       persistentState: {isInSettings,...componentState},
       pos,
@@ -177,7 +176,6 @@ class Panel extends React.Component {
       currentlyDraggingOutput, 
       outputs,
       inputs} = this.props
-
     const {move, resize, isMoving} = this.state
     const style = {
       left: `${pos.x}%`,
@@ -207,7 +205,7 @@ class Panel extends React.Component {
               onPanelDragEnd={this.setPanelPosition}
               onPanelResize={this.resizePanel}
               onPanelResizeEnd={this.setPanelSize}>
-              <this.panelComponents.Settings
+              <panelComponents.Settings
                 {...configuration}
                 inputs={inputs}
                 currentlyDraggingOutput={currentlyDraggingOutput}
@@ -217,7 +215,7 @@ class Panel extends React.Component {
                 updatePanelConfig={(newData) => this.updatePanelData('configuration', newData)} />
             </Settings>
             :
-            <this.panelComponents.Content
+            <panelComponents.Content
               {...configuration}
               {...componentState}
               panelDimensions={dim}

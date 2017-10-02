@@ -7,9 +7,7 @@ type State = {
   showDiv: boolean,
 }
 
-class SamplePlayground extends React.Component<*, *, State> {
-  state: State
-
+class SamplePlayground extends React.Component<*, State> {
   constructor(props) {
     super(props)
 

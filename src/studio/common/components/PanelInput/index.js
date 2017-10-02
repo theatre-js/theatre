@@ -14,10 +14,7 @@ type State = {
   isActive: boolean,
 }
 
-class PanelInput extends React.Component {
-  props: Props
-  state: State
-
+class PanelInput extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
 

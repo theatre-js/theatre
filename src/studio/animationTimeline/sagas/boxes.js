@@ -1,8 +1,9 @@
 // @flow
 import {reduceState} from '$shared/utils'
 import generateUniqueId from 'uuid/v4'
+import {type TimelineID, type BoxID} from '$studio/animationTimeline/types'
 
-export function* moveBox(timelineId: $FlowFixMe, fromIndex: number, toIndex: number): Generator<*, void, *> {
+export function* moveBox(timelineId: TimelineID, fromIndex: number, toIndex: number): Generator<*, void, *> {
   yield reduceState(['animationTimeline', 'timelines', 'byId', timelineId, 'layout'], (layout) => {
     const newLayout = layout.slice()
     newLayout.splice(toIndex, 0, newLayout.splice(fromIndex, 1)[0])
@@ -10,7 +11,7 @@ export function* moveBox(timelineId: $FlowFixMe, fromIndex: number, toIndex: num
   })
 }
 
-export function* mergeBoxes(timelineId: $FlowFixMe, fromIndex: number, toIndex: number): Generator<*, void, *> {
+export function* mergeBoxes(timelineId: TimelineID, fromIndex: number, toIndex: number): Generator<*, void, *> {
   yield reduceState(['animationTimeline', 'timelines', 'byId', timelineId], ({layout, boxes}) => {
     const fromId = layout[fromIndex]
     const toId = layout[toIndex]
@@ -28,11 +29,11 @@ export function* mergeBoxes(timelineId: $FlowFixMe, fromIndex: number, toIndex: 
   })
 }
 
-export function* resizeBox(timelineId: $FlowFixMe, boxId: $FlowFixMe, newSize: number): Generator<*, void, *> {
+export function* resizeBox(timelineId: TimelineID, boxId: BoxID, newSize: number): Generator<*, void, *> {
   yield reduceState(['animationTimeline', 'timelines', 'byId', timelineId, 'boxes', boxId, 'height'], () => newSize)
 }
 
-export function* splitLane(timelineId: $FlowFixMe, fromIndex: number, laneId: string): Generator<*, void, *> {
+export function* splitLane(timelineId: TimelineID, fromIndex: number, laneId: string): Generator<*, void, *> {
   yield reduceState(['animationTimeline', 'timelines', 'byId', timelineId], ({layout, boxes}) => {
     const fromId = layout[fromIndex]
     const newBoxId = generateUniqueId()

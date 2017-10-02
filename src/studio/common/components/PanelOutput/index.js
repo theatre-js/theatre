@@ -17,9 +17,7 @@ type State = {
   },
 }
 
-class PanelOutput extends React.Component {
-  props: Props
-  state: State
+class PanelOutput extends React.Component<Props, State> {
   container: HTMLDivElement
 
   constructor(props: Props) {
@@ -73,7 +71,7 @@ class PanelOutput extends React.Component {
     const {type} = this.props
     const {isBeingDragged} = this.state
     return (
-      <div ref={(div) => {this.container = div}} className={css.container}>
+      <div ref={(div) => {if (div != null) this.container = div}} className={css.container}>
         <DraggableArea
           onDragStart={this.onDragStart}
           onDrag={this.onDrag}

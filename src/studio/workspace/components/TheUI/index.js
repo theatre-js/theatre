@@ -19,9 +19,7 @@ type State = {
   isCreatingNewPanel: boolean,
 }
 
-class TheUI extends React.Component {
-  props: Props
-  state: State
+class TheUI extends React.Component<Props, State> {
 
   static getDefaultPanelPlacement(type): PanelPlacementSettings {
     // ??

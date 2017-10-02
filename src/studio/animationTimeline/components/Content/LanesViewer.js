@@ -15,20 +15,24 @@ import {
   makeHandleHorizontal,
   makeHandlesParallel,
   makeHandlesEqual} from '$studio/animationTimeline/sagas'
-import {type LaneID, type Point, type PointPosition, type PointHandles, type NormalizedPoint} from '$studio/animationTimeline/types'
+import {type LaneID, type LaneObject, type Point, type PointPosition, type PointHandles, type NormalizedPoint} from '$studio/animationTimeline/types'
+import {type StoreState} from '$studio/types'
 import css from './LanesViewer.css'
 import Lane from './Lane'
 import cx from 'classnames'
 
-type Props = WithRunSagaProps & {
-  boxHeight: number,
-  lanes: $FlowFixMe,
-  laneIds: $FlowFixMe,
+type OwnProps = {
+  laneIds: LaneID[],
   splitLane: Function,
   panelWidth: number,
   duration: number,
   currentTime: number,
   focus: [number, number],
+  boxHeight: number,
+}
+
+type Props = WithRunSagaProps & OwnProps & {
+  lanes: LaneObject[],
 }
 
 type State = {
@@ -40,7 +44,7 @@ type State = {
 }
 
 class LanesViewer extends React.PureComponent<Props, State> {
-  svgArea: $FlowFixMe
+  svgArea: HTMLElement
 
   // ??
   static colors = ['darkturquoise', 'orchid', 'mediumspringgreen', 'gold']
@@ -233,7 +237,7 @@ class LanesViewer extends React.PureComponent<Props, State> {
             height={svgHeight}
             width={svgWidth}
             style={{transform: `translateX(${-svgTransform}px)`}}
-            ref={(svg) => {this.svgArea = svg}}
+            ref={(svg) => {if (svg != null) this.svgArea = svg}}
             onClick={this.addPoint}>
             {
               lanes.map(({id, points}, index) => (
@@ -263,7 +267,7 @@ class LanesViewer extends React.PureComponent<Props, State> {
 
 export default compose(
   connect(
-    (state: $FlowFixMe, ownProps: $FlowFixMe) => {
+    (state: StoreState, ownProps: OwnProps) => {
       return {
         lanes: getLanesByIds(state, ownProps.laneIds),
       }

@@ -1,4 +1,8 @@
 // @flow
+type UniqueID = string
+export type LaneID = UniqueID
+export type TimelineID = UniqueID
+export type BoxID = UniqueID
 
 export type PointPosition = {
   t: number,
@@ -19,6 +23,36 @@ export type NormalizedPoint = Point & {
   _value: number,
 }
 
-export type LaneID = string
 
-export type AnimationTimelineNamespaceState = $FlowFixMe
+export type BoxObject = {
+  id: BoxID,
+  height: number,
+  lanes: LaneID[],
+}
+
+export type LayoutArray = BoxID[]
+export type BoxesObject = {[id: BoxID]: BoxObject}
+export type TimelineObject = {
+  layout: LayoutArray,
+  boxes: BoxesObject,
+}
+
+export type LaneObject = {
+  id: LaneID,
+  extremums: [number, number],
+  points: Point[],
+  component: string,
+  property: string,
+}
+export type Lanes = {
+  byId: {[id: LaneID]: LaneObject},
+}
+
+export type Timelines = {
+  byId: {[id: TimelineID]: TimelineObject},
+}
+
+export type AnimationTimelineNamespaceState = {
+  lanes: Lanes,
+  timelines: Timelines,
+}

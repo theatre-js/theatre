@@ -9,12 +9,25 @@ import css from './index.css'
 import SortableBox from './SortableBox'
 import LanesViewer from './LanesViewer'
 import TimeBar from './TimeBar'
+import {type StoreState} from '$studio/types'
+import {type TimelineID, type TimelineObject, type BoxID, type BoxesObject, type LayoutArray} from '$studio/animationTimeline/types'
+import {type XY} from '$studio/workspace/types'
 
-type Props = WithRunSagaProps & $FlowFixMe
+type OwnProps = TimelineObject & {
+  timelineId: TimelineID,
+  panelDimensions: XY,
+}
+
+type Props = WithRunSagaProps & OwnProps
 
 type State = {
-  isDragging: boolean,
-  boxBeingDragged: $FlowFixMe,
+  boxBeingDragged: ?{
+    index: number,
+    offset: number,
+    height: number,
+    mergeWith?: ?number,
+    moveTo?: ?number,
+  },
   moveRatios: number[],
   boundaries: number[],
   panelWidth: number,
@@ -33,7 +46,6 @@ class Content extends React.Component<Props, State> {
     const {boxes, layout} = props
 
     this.state = {
-      isDragging: false,
       boxBeingDragged: null,
       moveRatios: new Array(layout.length).fill(0),
       boundaries: this._getBoundaries(boxes, layout),
@@ -82,7 +94,7 @@ class Content extends React.Component<Props, State> {
     }))
   }
 
-  _getBoundaries(boxes: $FlowFixMe, layout: $FlowFixMe) {
+  _getBoundaries(boxes: BoxesObject, layout: LayoutArray) {
     return layout.reduce((boundaries, value, index) => {
       const {height} = boxes[value]
       return boundaries.concat(boundaries[index] + height)
@@ -95,14 +107,15 @@ class Content extends React.Component<Props, State> {
       const id = props.layout[index]
       const height = props.boxes[id].height
       return {
-        isDragging: true,
         boxBeingDragged: {index, offset, height},
       }
     })
   }
 
   onBoxMove = (dy: number) => {
-    const {boxBeingDragged: {index, offset, height}, boundaries} = this.state
+    if (this.state.boxBeingDragged == null) return
+    const {boxBeingDragged, boundaries} = this.state
+    const {index, offset, height} = boxBeingDragged
     const [edge, moveIndexOffset] = (dy >= 0) ? [offset + height + dy, -1] : [offset + dy, 0]
     const lowerBoundaryIndex = boundaries.findIndex((element) => edge < element)
     const upperBoundaryIndex = lowerBoundaryIndex - 1
@@ -121,6 +134,7 @@ class Content extends React.Component<Props, State> {
   }
 
   _setBoxBeingDraggedToMoveTo(index: ?number){
+    if (this.state.boxBeingDragged == null) return
     const draggedIndex = this.state.boxBeingDragged.index
     if (index === draggedIndex) index = null
     const moveRatios = this.props.layout.map((_, laneIndex) => {
@@ -145,13 +159,14 @@ class Content extends React.Component<Props, State> {
       boxBeingDragged: {
         ...state.boxBeingDragged,
         moveTo: null,
-        mergeWith: (index === state.boxBeingDragged.index) ? null : index,
+        mergeWith: (state.boxBeingDragged != null && index === state.boxBeingDragged.index) ? null : index,
       },
     }))
   }
 
   async onBoxEndMove() {
-    const {boxBeingDragged: {index, moveTo, mergeWith}} = this.state
+    if (this.state.boxBeingDragged == null) return
+    const {index, moveTo, mergeWith} = this.state.boxBeingDragged
     const {timelineId, runSaga} = this.props
     if (moveTo != null) {
       await runSaga(moveBox, timelineId, index, moveTo)
@@ -162,7 +177,6 @@ class Content extends React.Component<Props, State> {
     
     this.setState(() => {
       return {
-        isDragging: false,
         boxBeingDragged: null,
       }
     })
@@ -173,7 +187,7 @@ class Content extends React.Component<Props, State> {
     await runSaga(splitLane, timelineId, index, laneId)
   }
 
-  async onBoxResize(boxId: $FlowFixMe, newSize) {
+  async onBoxResize(boxId: BoxID, newSize) {
     const {timelineId, runSaga} = this.props
     await runSaga(resizeBox, timelineId, boxId, newSize)
     this._resetBoundariesAndRatios()
@@ -212,7 +226,7 @@ class Content extends React.Component<Props, State> {
   }
 
   render() {
-    const {isDragging, boxBeingDragged, moveRatios, panelWidth, duration, focus, currentTime} = this.state
+    const {boxBeingDragged, moveRatios, panelWidth, duration, focus, currentTime} = this.state
     const {boxes, layout} = this.props
     return (
       <div className={css.container}>
@@ -230,8 +244,8 @@ class Content extends React.Component<Props, State> {
           {
             layout.map((id, index) => {
               const box = boxes[id]
-              const boxTranslateY = moveRatios[index] * (isDragging ? boxBeingDragged.height : 0)
-              const boxShowMergeOverlay = (isDragging && boxBeingDragged.index === index && boxBeingDragged.mergeWith != null)
+              const boxTranslateY = moveRatios[index] * (boxBeingDragged != null ? boxBeingDragged.height : 0)
+              const boxShowMergeOverlay = (boxBeingDragged != null && boxBeingDragged.index === index && boxBeingDragged.mergeWith != null)
               return (
                 <SortableBox
                   key={id}
@@ -264,7 +278,7 @@ class Content extends React.Component<Props, State> {
 
 export default compose(
   connect(
-    (state: $FlowFixMe, ownProps: $FlowFixMe) => {
+    (state: StoreState, ownProps: OwnProps) => {
       const timeline = getTimelineById(state, ownProps.timelineId)
       return {...timeline}
     }

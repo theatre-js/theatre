@@ -15,9 +15,7 @@ type State = {
   nodes: Object,
 }
 
-class Content extends React.Component {
-  props: Props
-  state: State
+class Content extends React.Component<Props, State> {
   hook: Object
   rendererID: ?string
   renderRoot: ?Object
