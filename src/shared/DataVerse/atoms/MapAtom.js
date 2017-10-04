@@ -6,6 +6,7 @@ import type {IAtom} from './utils/Atom'
 import Tappable from '$shared/DataVerse/utils/Tappable'
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import type {AddressedChangeset, MapAtomChangeType} from '$shared/DataVerse/types'
+import derivedMapOfMapAtom from '$shared/DataVerse/derivations/mapLikes/derivedMapOfMapAtom'
 
 type Unboxed<O> = $FixMe // eslint-disable-line no-unused-vars
 export type MapAtomDeepChangeType<O> = AddressedChangeset & {type: 'MapChange'} & MapAtomChangeType<O>
@@ -18,6 +19,8 @@ export interface IMapAtom<O: {}> extends ICompositeAtom {
   deleteProp<K: $Keys<O>>(key: K): MapAtom<O>,
 
   chnages: () => Tappable<MapAtomChangeType<O>>,
+  forEach: <K: $Keys<O>>(fn: ($ElementType<O, K>, K) => void | false) => void,
+  keys: () => Array<$Keys<O>>,
 }
 
 export default class MapAtom<O: {}> extends CompositeAtom implements IMapAtom<O> {
@@ -25,6 +28,8 @@ export default class MapAtom<O: {}> extends CompositeAtom implements IMapAtom<O>
   _internalMap: O
   chnages: () => Tappable<MapAtomChangeType<O>>
   _changeEmitter: Emitter<MapAtomChangeType<O>>
+  keys: () => Array<$Keys<O>>
+  forEach: <K: $Keys<O>>(fn: ($ElementType<O, K>, K) => void | false) => void
 
   constructor(o: O) {
     super()
@@ -48,12 +53,21 @@ export default class MapAtom<O: {}> extends CompositeAtom implements IMapAtom<O>
     return this._change(o, [])
   }
 
-  _change(o: $Shape<O>, propsNamesToDelete: Array<$Keys<O>>): this {
+  _change(o: $Shape<O>, keysToDelete: Array<$Keys<O>>): this {
+    const addedKeys: Array<$Keys<O>> = []
+    // $FixMe
+    forEach(o, (v, k) => {
+      if (!this._internalMap.hasOwnProperty(k)) {
+        addedKeys.push(k)
+      }
+    })
+
     const overriddenRefs = mapValues(o, (v, k) => {
       return this.prop(k)
     })
 
-    propsNamesToDelete.forEach((propName) => {
+    const deletedKeys = keysToDelete
+    deletedKeys.forEach((propName) => {
       overriddenRefs[propName] = this.prop(propName)
     })
 
@@ -63,7 +77,7 @@ export default class MapAtom<O: {}> extends CompositeAtom implements IMapAtom<O>
       }
     })
 
-    propsNamesToDelete.forEach((key) => {
+    deletedKeys.forEach((key) => {
       delete this._internalMap[key]
     })
 
@@ -73,11 +87,11 @@ export default class MapAtom<O: {}> extends CompositeAtom implements IMapAtom<O>
     })
 
     if (this._changeEmitter.hasTappers()) {
-      this._changeEmitter.emit({overriddenRefs: o, deletedKeys: propsNamesToDelete})
+      this._changeEmitter.emit({overriddenRefs: o, deletedKeys: deletedKeys, addedKeys})
     }
 
     if (this._deepChangeEmitter.hasTappers()) {
-      this._deepChangeEmitter.emit({address: [], type: 'MapChange', overriddenRefs: o, deletedKeys: propsNamesToDelete})
+      this._deepChangeEmitter.emit({address: [], type: 'MapChange', overriddenRefs: o, deletedKeys, addedKeys})
     }
 
     if (this._deepDiffEmitter.hasTappers()) {
@@ -86,7 +100,7 @@ export default class MapAtom<O: {}> extends CompositeAtom implements IMapAtom<O>
         type: 'MapDiff',
         deepUnboxOfNewRefs: mapValues(o, (v) => v ? v.unboxDeep() : v),
         deepUnboxOfOldRefs: mapValues(overriddenRefs, (v) => v ? v.unboxDeep() : v),
-        deletedKeys: propsNamesToDelete,
+        deletedKeys,
       })
     }
 
@@ -105,12 +119,20 @@ export default class MapAtom<O: {}> extends CompositeAtom implements IMapAtom<O>
     }
   }
 
+  forEach<K: $Keys<O>>(fn: ($ElementType<O, K>, K) => void | false): void {
+    forEach(this._internalMap, fn)
+  }
+
   deleteProp<K: $Keys<O>>(key: K): this {
     return this._change({}, [key])
   }
 
   pointerTo(key: $Keys<O>) {
     return this.pointer().prop(key)
+  }
+
+  keys() {
+    return Object.keys(this._internalMap)
   }
 }
 

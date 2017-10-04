@@ -66,7 +66,7 @@ describe('pointer', () => {
       }),
     })
 
-    const o = new D.DerivedMap({
+    const o = new D.WiryMap({
       a() {
         return atom
       },

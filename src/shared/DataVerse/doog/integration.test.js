@@ -1,4 +1,4 @@
-// @flow
+
 import {default as container, type IContainer} from './container'
 import {prop, type IObjectPointer} from './pointers'
 

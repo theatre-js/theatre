@@ -10,6 +10,14 @@ export interface IPointer<V> extends IDerivation<V> {
   pointer(): IPointer<V>,
 }
 
+const noBoxAtoms = (v) => {
+  if (v instanceof D.BoxAtom) {
+    return deriveFromBoxAtom.default(v).flatMap(noBoxAtoms)
+  } else {
+    return v
+  }
+}
+
 export class PointerDerivation extends Derivation implements IPointer<$FixMe> {
   static NOTFOUND = undefined //Symbol('notfound')
   _address: Address
@@ -48,23 +56,13 @@ export class PointerDerivation extends Derivation implements IPointer<$FixMe> {
           return deriveFromPropOfAMapAtom.default(possibleReactiveValue, (key: $FixMe))
         } else if (possibleReactiveValue instanceof D.ArrayAtom && typeof key === 'number') {
           return deriveFromIndexOfArrayAtom.default(possibleReactiveValue, key)
-        } else if (possibleReactiveValue instanceof DerivedMapFace.default || possibleReactiveValue instanceof PointerDerivation) {
+        } else if (possibleReactiveValue instanceof WiryMapFace.default || possibleReactiveValue instanceof PointerDerivation) {
           return possibleReactiveValue.prop(key)
         } else {
           return undefined
         }
-      })
+      }).flatMap(noBoxAtoms)
     })
-
-    const flattenFinalDerivation = (finalThing: $FixMe) => {
-      if (finalThing instanceof D.BoxAtom) {
-        return deriveFromBoxAtom.default(finalThing)
-      } else {
-        return finalThing
-      }
-    }
-
-    finalDerivation = finalDerivation.flatMap(flattenFinalDerivation).flatten()
 
     finalDerivation._addDependent(this)
 
@@ -92,6 +90,6 @@ const withDeps = require('./withDeps')
 // const ConstantDerivation = require('./ConstantDerivation')
 const deriveFromPropOfAMapAtom = require('./ofAtoms/deriveFromPropOfAMapAtom')
 const deriveFromIndexOfArrayAtom = require('./ofAtoms/deriveFromIndexOfArrayAtom')
-// const DerivationOfAPropOfADerivedMapFace = require('./DerivationOfAPropOfADerivedMapFace')
+// const DerivationOfAPropOfAWiryMapFace = require('./DerivationOfAPropOfAWiryMapFace')
 const deriveFromBoxAtom = require('./ofAtoms/deriveFromBoxAtom')
-const DerivedMapFace = require('./composites/DerivedMapFace')
+const WiryMapFace = require('./composites/WiryMapFace')

@@ -15,7 +15,7 @@ type Props = {
 }
 
 const getComponentDescriptorById = (id: D.Derivation<string>, studio: D.Derivation<Studio>): D.Derivation<?D.AtomifyDeepType<ComponentDescriptor>> =>
-  D.derive({id, studio}, identity).flatMap(({id, studio}): $FixMe => {
+  D.withDeps({id, studio}, identity).flatMap(({id, studio}): $FixMe => {
     const idString = id.getValue()
     return stringStartsWith(idString, 'TheaterJS/Core/')
       ? studio.getValue().atom.pointer().prop('coreComponentDescriptorsById').prop(idString)

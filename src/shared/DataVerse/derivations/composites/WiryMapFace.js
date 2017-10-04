@@ -1,5 +1,5 @@
 // @flow
-/*::import type {default as DerivedMap} from './DerivedMap' */
+/*::import type {default as WiryMap} from './WiryMap' */
 import Emitter from '$shared/DataVerse/utils/Emitter'
 // import DerivationOfAPropOfADerivedMap from './DerivationOfAPropOfADerivedMap'
 import Context from '$shared/DataVerse/Context'
@@ -26,7 +26,7 @@ export type LayerID = 'face' | 'tail' | number
 type Layer = {
   id: number,
   initiatingWiresByKey: {[propName: MapKey]: Wire},
-  derivedMap: DerivedMap<$FixMe>,
+  derivedMap: WiryMap<$FixMe>,
   sourceDerivationsByKey: {[propName: MapKey]: IDerivation<$FixMe>},
   untapFromParentChanges: () => void,
 }
@@ -54,13 +54,13 @@ const makeEmptyStructure = (): Structure => ({
 })
 
 export default class DerivedMapFace {
-  _head: DerivedMap<$FixMe>
+  _head: WiryMap<$FixMe>
   _changeEmitter: Emitter<$FixMe>
   _dataVerseContext: Context
   _structure: Structure
   _updateStructure: () => void
 
-  constructor(head: DerivedMap<$FixMe>, context: Context) {
+  constructor(head: WiryMap<$FixMe>, context: Context) {
     this._head = head
     this._changeEmitter = new Emitter
     this._dataVerseContext = context
@@ -69,7 +69,7 @@ export default class DerivedMapFace {
     this._updateStructure()
   }
 
-  setHead(head: DerivedMap<$FixMe>) {
+  setHead(head: WiryMap<$FixMe>) {
     this._head = head
     this._updateStructure()
   }

@@ -5,7 +5,7 @@ import {withStudio, type WithStudioProps} from './studioContext'
 import * as D from '$shared/DataVerse'
 
 type Args = {
-  modifyBaseDerivation: (D.DerivedMap<$FixMe>) => D.DerivedMap<$FixMe>,
+  modifyBaseDerivation: (D.WiryMap<$FixMe>) => D.WiryMap<$FixMe>,
   displayName?: string,
 }
 
@@ -17,7 +17,7 @@ export default function makeReactiveComponent({modifyBaseDerivation, displayName
     _finalFace: $FixMe
     _atom: $FixMe
     _baseDerivation: $FixMe
-    // +modifyBaseDerivation: (D.DerivedMap) => D.DerivedMap
+    // +modifyBaseDerivation: (D.WiryMap) => D.WiryMap
     _whatToRender: $FixMe
     _fnsToCallOnDidUnmount: Array<() => void>
 
@@ -25,11 +25,11 @@ export default function makeReactiveComponent({modifyBaseDerivation, displayName
       render() {
         return null
       },
-      componentWillMountCallbacks: () => new D.DerivedArray(),
-      componentDidMountCallbacks: () => new D.DerivedArray(),
-      componentWillUnmountCallbacks: () => new D.DerivedArray(),
-      componentDidUnmountCallbacks: () => new D.DerivedArray(),
-      componentWillUpdateCallbacks: () => new D.DerivedArray(),
+      // componentWillMountCallbacks: () => new D.DerivedArray(),
+      // componentDidMountCallbacks: () => new D.DerivedArray(),
+      // componentWillUnmountCallbacks: () => new D.DerivedArray(),
+      // componentDidUnmountCallbacks: () => new D.DerivedArray(),
+      // componentWillUpdateCallbacks: () => new D.DerivedArray(),
 
       props: (d) => d.prop('atom').map((atom) => atom.prop('_props')),
       studio: (d) => d.pointer().prop('atom').prop('studio'),
@@ -42,7 +42,7 @@ export default function makeReactiveComponent({modifyBaseDerivation, displayName
       const instanceId = new D.BoxAtom(this.props.studio._getNewComponentInstanceId())
       this._atom = new D.MapAtom({instanceId, _props: (props.props: $FixMe), studio: props.studio, key: props.key})
 
-      this._baseDerivation = new D.DerivedMap({
+      this._baseDerivation = new D.WiryMap({
         atom: () => this._atom,
       }).extend(TheaterJSComponent._baseLookupTable)
 

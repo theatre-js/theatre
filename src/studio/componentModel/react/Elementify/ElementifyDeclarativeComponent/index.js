@@ -15,7 +15,6 @@ export default makeReactiveComponent({
         if (type === 'ReferenceToLocalHiddenValue') {
           return resolveReferenceToHiddenLocalValue(whatToRenderP.prop('which'), d)
         } else {
-          console.log(type)
           throw new Error(`Not implemented`)
         }
       })
