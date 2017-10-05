@@ -11,7 +11,7 @@ type FreshnessState = typeof FRESHNESS_STATE_NOT_APPLICABLE | typeof FRESHNESS_S
 
 let lastDerivationId = 0
 
-class Derivation {
+class AbstractDerivation {
   _id: number
   _didNotifyDownstreamOfUpcomingUpdate: boolean
   _thereAreMoreThanOneTappersOrDependents: boolean
@@ -173,7 +173,7 @@ class Derivation {
   }
 }
 
-export default (Derivation: $FixMe)
+export default (AbstractDerivation: $FixMe)
 
 const flattenDeep = require('./flattenDeep')
 const withDeps = require('./withDeps')

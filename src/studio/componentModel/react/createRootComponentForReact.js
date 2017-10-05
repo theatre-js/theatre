@@ -10,36 +10,37 @@ type Props = {
   children: React.Node,
 }
 
-type ElementifyProps = D.IMapAtom<{
+type ElementifyProps = D.IDictAtom<{
   componentID: 'TheaterJS/Core/RenderCurrentCanvas',
-  props: D.IMapAtom<{
+  props: D.IDictAtom<{
     children: D.IBoxAtom<React.Node>,
   }>,
 }>
 
 const createRootComponentForReact = (studio: TheStudioClass) => {
   class TheaterJSRoot extends React.PureComponent<Props, void> {
-    elementifyProps: ElementifyProps
+    mapAtomOfPropsOfElementify: ElementifyProps
 
     constructor(props: Props) {
       super(props)
 
-      this.elementifyProps = new D.MapAtom({
-        instantiationDescriptor: new D.MapAtom({
+      this.mapAtomOfPropsOfElementify =D.atoms.dict({
+        instantiationDescriptor:D.atoms.dict({
           componentID: 'TheaterJS/Core/RenderCurrentCanvas',
-          props: new D.MapAtom({
-            children: new D.BoxAtom(props.children),
+          props:D.atoms.dict({
+            children: D.atoms.box(props.children),
           }),
         }),
       })
+      this.propsOfElementify = this.mapAtomOfPropsOfElementify.derivedDict().pointer()
     }
 
     componentWillReceiveProps(props) {
-      this.elementifyProps.prop('props').prop('children').set(props.children)
+      this.mapAtomOfPropsOfElementify.prop('props').prop('children').set(props.children)
     }
 
     render() {
-      return <Elementify key="RenderCurrentCanvas" props={this.elementifyProps.pointer()}  />
+      return <Elementify key="RenderCurrentCanvas" props={this.propsOfElementify}  />
     }
   }
 

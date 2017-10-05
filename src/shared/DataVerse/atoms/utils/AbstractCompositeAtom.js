@@ -1,16 +1,16 @@
 // @flow
-import {default as Atom, type IAtom} from './Atom'
-import type {BoxAtomDeepChangeType, BoxAtomDeepDiffType} from '../BoxAtom'
-import type {MapAtomDeepChangeType, MapAtomDeepDiffType} from '../MapAtom'
-import type {ArrayAtomDeepChangeType, ArrayAtomDeepDiffType} from '../ArrayAtom'
+import {default as AbstractAtom, type IAtom} from './AbstractAtom'
+import type {BoxAtomDeepChangeType, BoxAtomDeepDiffType} from '../box'
+import type {DictAtomDeepChangeType, DictAtomDeepDiffType} from '../dict'
+import type {ArrayAtomDeepChangeType, ArrayAtomDeepDiffType} from '../array'
 import Tappable from '$shared/DataVerse/utils/Tappable'
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import isAtom from './isAtom'
 import type {Address} from '$shared/DataVerse'
 import type {MapKey} from '$shared/DataVerse/types'
 
-export type AllDeepChangeTypes = BoxAtomDeepChangeType<any> | MapAtomDeepChangeType<any> | ArrayAtomDeepChangeType<any>
-export type AllDeepDiffTypes = BoxAtomDeepDiffType<any> | MapAtomDeepDiffType<any> | ArrayAtomDeepDiffType<any>
+export type AllDeepChangeTypes = BoxAtomDeepChangeType<any> | DictAtomDeepChangeType<any> | ArrayAtomDeepChangeType<any>
+export type AllDeepDiffTypes = BoxAtomDeepDiffType<any> | DictAtomDeepDiffType<any> | ArrayAtomDeepDiffType<any>
 
 export interface ICompositeAtom extends IAtom {
   isCompositeAtom: true,
@@ -21,7 +21,7 @@ export interface ICompositeAtom extends IAtom {
   getAddressTo(addressSoFar?: Array<MapKey>): Address,
 }
 
-export default class CompositeAtom extends Atom implements ICompositeAtom {
+export default class AbstractCompositeAtom extends AbstractAtom implements ICompositeAtom {
   isCompositeAtom = true
   _deepChangeUntappersForEachChild: *
   _deepDiffUntappersForEachChild: *

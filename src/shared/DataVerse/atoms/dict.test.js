@@ -1,21 +1,21 @@
 // @flow
-// import MapAtom from './MapAtom'
-import BoxAtom from './BoxAtom'
+// import DictAtom from './DictAtom'
+import box from './box'
 import atomifyDeep from './atomifyDeep'
 
-describe('DataVerse.MapAtom', () => {
+describe('DataVerse.atoms.dict', () => {
   let o
   beforeEach(() => {
     o = atomifyDeep({foo: 'foo', bar: 'bar', obj: {str: 'str', innerObj: {a: 1, b: [1, 2, 3]}}})
   })
   it('should allow getting and setting values', () => {
     expect(o.prop('foo').getValue()).toEqual('foo')
-    o.setProp('foo', new BoxAtom('foo2'))
+    o.setProp('foo', box('foo2'))
     expect(o.prop('foo').getValue()).toEqual('foo2')
   })
   it('should allow correctly set itself as parent of inner children', () => {
     expect(o.prop('foo').getParent()).toEqual(o)
-    const foo2 = new BoxAtom('foo2')
+    const foo2 = box('foo2')
     o.setProp('foo', foo2)
     expect(foo2.getParent()).toEqual(o)
   })
@@ -33,18 +33,18 @@ describe('DataVerse.MapAtom', () => {
     expect(changes).toHaveLength(1)
     expect(changes[0].overriddenRefs.foo).toEqual(oldFoo)
 
-    const foo2 = new BoxAtom('foo2')
+    const foo2 = box('foo2')
     o.setProp('foo', foo2)
     expect(changes).toHaveLength(2)
     expect(changes[1].overriddenRefs.foo).toEqual(foo2)
 
-    o.setProp('bar', new BoxAtom('bar2'))
+    o.setProp('bar', box('bar2'))
     expect(changes).toHaveLength(3)
 
     o.prop('bar').set('bar3')
     expect(changes).toHaveLength(3)
 
-    o.prop('obj').setProp('str', new BoxAtom('str2'))
+    o.prop('obj').setProp('str', box('str2'))
     expect(changes).toHaveLength(3)
 
     o.deleteProp('obj')
@@ -65,13 +65,13 @@ describe('DataVerse.MapAtom', () => {
     // $FixMe
     expect(deepChanges[0].overriddenRefs.foo).toEqual(oldFoo)
 
-    const foo2 = new BoxAtom('foo2')
+    const foo2 = box('foo2')
     o.setProp('foo', foo2)
     expect(deepChanges).toHaveLength(2)
     // $FixMe
     expect(deepChanges[1].overriddenRefs.foo).toEqual(foo2)
 
-    o.setProp('bar', new BoxAtom('bar2'))
+    o.setProp('bar', box('bar2'))
     expect(deepChanges).toHaveLength(3)
 
     o.prop('bar').set('bar3')
@@ -101,7 +101,7 @@ describe('DataVerse.MapAtom', () => {
       deepUnboxOfNewRefs: {foo: 'foo'},
     })
 
-    const foo2 = new BoxAtom('foo2')
+    const foo2 = box('foo2')
     o.setProp('foo', foo2)
     expect(deepDiffs).toHaveLength(2)
     expect(deepDiffs[1]).toMatchObject({
@@ -111,7 +111,7 @@ describe('DataVerse.MapAtom', () => {
       deepUnboxOfNewRefs: {foo: 'foo2'},
     })
 
-    o.setProp('bar', new BoxAtom('bar2'))
+    o.setProp('bar', box('bar2'))
     expect(deepDiffs).toHaveLength(3)
 
     o.prop('bar').set('bar3')

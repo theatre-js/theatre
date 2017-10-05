@@ -1,35 +1,37 @@
 // @flow
-import {default as CompositeAtom, type ICompositeAtom} from './utils/CompositeAtom'
+import {default as AbstractCompositeAtom, type ICompositeAtom} from './utils/AbstractCompositeAtom'
 import forEach from 'lodash/forEach'
 import mapValues from 'lodash/mapValues'
-import type {IAtom} from './utils/Atom'
+import type {IAtom} from './utils/AbstractAtom'
 import Tappable from '$shared/DataVerse/utils/Tappable'
 import Emitter from '$shared/DataVerse/utils/Emitter'
-import type {AddressedChangeset, MapAtomChangeType} from '$shared/DataVerse/types'
-import derivedMapOfMapAtom from '$shared/DataVerse/derivations/mapLikes/derivedMapOfMapAtom'
+import type {AddressedChangeset, DictAtomChangeType} from '$shared/DataVerse/types'
+import deriveFromDictAtom from '$shared/DataVerse/derivations/dicts/deriveFromDictAtom'
 
 type Unboxed<O> = $FixMe // eslint-disable-line no-unused-vars
-export type MapAtomDeepChangeType<O> = AddressedChangeset & {type: 'MapChange'} & MapAtomChangeType<O>
-export type MapAtomDeepDiffType<O> = AddressedChangeset & {type: 'MapDiff', deepUnboxOfOldRefs: Unboxed<O>, deepUnboxOfNewRefs: Unboxed<O>, deletedKeys: Array<$Keys<O>>}
+export type DictAtomDeepChangeType<O> = AddressedChangeset & {type: 'MapChange'} & DictAtomChangeType<O>
+export type DictAtomDeepDiffType<O> = AddressedChangeset & {type: 'MapDiff', deepUnboxOfOldRefs: Unboxed<O>, deepUnboxOfNewRefs: Unboxed<O>, deletedKeys: Array<$Keys<O>>}
 
-export interface IMapAtom<O: {}> extends ICompositeAtom {
-  isMapAtom: true,
-  setProp<K: $Keys<O>, V: $ElementType<O, K>>(key: K, value: V): MapAtom<O>,
+export interface IDictAtom<O: {}> extends ICompositeAtom {
+  isDictAtom: true,
+  setProp<K: $Keys<O>, V: $ElementType<O, K>>(key: K, value: V): DictAtom<O>,
   prop<K: $Keys<O>>(key: K): $ElementType<O, K>,
-  deleteProp<K: $Keys<O>>(key: K): MapAtom<O>,
+  deleteProp<K: $Keys<O>>(key: K): DictAtom<O>,
 
-  chnages: () => Tappable<MapAtomChangeType<O>>,
+  chnages: () => Tappable<DictAtomChangeType<O>>,
   forEach: <K: $Keys<O>>(fn: ($ElementType<O, K>, K) => void | false) => void,
   keys: () => Array<$Keys<O>>,
+  derivedDict: () => $FixMe,
 }
 
-export default class MapAtom<O: {}> extends CompositeAtom implements IMapAtom<O> {
-  isMapAtom = true
+export class DictAtom<O: {}> extends AbstractCompositeAtom implements IDictAtom<O> {
+  isDictAtom = true
   _internalMap: O
-  chnages: () => Tappable<MapAtomChangeType<O>>
-  _changeEmitter: Emitter<MapAtomChangeType<O>>
+  chnages: () => Tappable<DictAtomChangeType<O>>
+  _changeEmitter: Emitter<DictAtomChangeType<O>>
   keys: () => Array<$Keys<O>>
   forEach: <K: $Keys<O>>(fn: ($ElementType<O, K>, K) => void | false) => void
+  derivedDict: () => $FixMe
 
   constructor(o: O) {
     super()
@@ -134,5 +136,12 @@ export default class MapAtom<O: {}> extends CompositeAtom implements IMapAtom<O>
   keys() {
     return Object.keys(this._internalMap)
   }
+
+  derivedDict() {
+    return deriveFromDictAtom(this)
+  }
 }
 
+export default function dict<O: {}>(o: O): IDictAtom<O> {
+  return new DictAtom(o)
+}

@@ -10,8 +10,8 @@ describe('autoDerive', () => {
   })
 
   it('should work', () => {
-    const o = new D.MapAtom({
-      foo: new D.BoxAtom('foo'),
+    const o =D.atoms.dict({
+      foo: D.atoms.box('foo'),
     })
     const fooPointer = o.pointer().prop('foo')
     const d = new AutoDerivation(() => {

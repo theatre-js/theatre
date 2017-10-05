@@ -28,10 +28,10 @@ describe('withDeps', () => {
 
   it('events should work', (done) => {
     // debugger
-    const a = new D.BoxAtom(1)
-    const b = new D.BoxAtom(3)
-    const aD = D.deriveFromBoxAtom(a)
-    const bD = D.deriveFromBoxAtom(b)
+    const a = D.atoms.box(1)
+    const b = D.atoms.box(3)
+    const aD = a.derivation()
+    const bD = b.derivation()
     const final = aD.flatMap((n) => bD.map((m) => m + n))
 
     expect(final.getValue()).toEqual(4)
@@ -81,9 +81,9 @@ describe('withDeps', () => {
 
   it('more', () => {
     const context = new D.Context()
-    const a = new D.BoxAtom('a')
+    const a = D.atoms.box('a')
     const aD = a.derivation()
-    const b = new D.BoxAtom('b')
+    const b = D.atoms.box('b')
     const bD = b.derivation()
     const cD = aD.flatMap((a) => bD.map((b) => a + b))
 
@@ -102,7 +102,7 @@ describe('withDeps', () => {
   (function() {
     // $FlowExpectError
     withDeps({a: 'hi'}, () => {})
-    const f = withDeps({a: D.constant('hi')}, ({a}) => {
+    const f = withDeps({a: D.derivations.constant('hi')}, ({a}) => {
       // $FlowExpectError
       (a.getValue(): number);
       (a.getValue(): string)

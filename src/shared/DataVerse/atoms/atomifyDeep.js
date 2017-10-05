@@ -1,10 +1,10 @@
 // @flow
 import isPlainObject from 'lodash/isPlainObject'
-import {type IBoxAtom, default as BoxAtom} from './BoxAtom'
-import {type IMapAtom, default as MapAtom} from './MapAtom'
-import {type IArrayAtom, default as ArrayAtom} from './ArrayAtom'
+import {type IBoxAtom, default as box} from './box'
+import {type IDictAtom, default as dict} from './dict'
+import {type IArrayAtom, default as array} from './array'
 import mapValues from 'lodash/mapValues'
-import {type IAtom, default as Atom} from './utils/Atom'
+import {type IAtom, default as AbstractAtom} from './utils/AbstractAtom'
 
 type InstanceOfAnyClass = {+constructor: Function}
 
@@ -13,14 +13,14 @@ type AtomifyDeepFn =
   // (<V, A: Array<V>>(a: A) => IArrayAtom<AtomifyDeepType<V>>) &
   (<V, A: Array<V>>(a: A) => IArrayAtom<$Call<AtomifyDeepFn, V>>) &
   (<V: InstanceOfAnyClass>(v: V) => IBoxAtom<V>) &
-  (<V: {}>(v: V) => IMapAtom<$ObjMap<V, AtomifyDeepFn>>) &
+  (<V: {}>(v: V) => IDictAtom<$ObjMap<V, AtomifyDeepFn>>) &
   (<V>(v: V) => IBoxAtom<V>)
 
 
 // type AtomifyDeepArray<V, A: Array<V>> = IArrayAtom<AtomifyDeepType<V>>
 // type AtomifyDeepAtom<V: IAtom> = V
 // type AtomifyDeepConstructedObject<V: {+constructor: $IntentionalAny}> = IBoxAtom<V>
-// type AtomifyDeepObject<V: {}> = IMapAtom<$ObjMap<V, AtomifyDeepFn>>
+// type AtomifyDeepObject<V: {}> = IDictAtom<$ObjMap<V, AtomifyDeepFn>>
 // type AtomifyDeepPrimitive<V> = IBoxAtom<V>
 // export type AtomifyDeepType<V> = AtomifyDeepArray<*, V> | AtomifyDeepAtom<V> | AtomifyDeepConstructedObject<V> | AtomifyDeepObject<V> | AtomifyDeepPrimitive<V>
 
@@ -29,7 +29,7 @@ export const atomifyDeep: AtomifyDeepFn = (jsValue: mixed) => {
     return fromJSArray(jsValue)
   } else if (isPlainObject(jsValue)) {
     return fromJSObject((jsValue: $IntentionalAny))
-  } else if (jsValue instanceof Atom) {
+  } else if (jsValue instanceof AbstractAtom) {
     return jsValue
   } else {
     return fromJSPrimitive(jsValue)
@@ -37,15 +37,15 @@ export const atomifyDeep: AtomifyDeepFn = (jsValue: mixed) => {
 }
 
 export const fromJSArray = (jsArray: $FixMe): $FixMe => {
-  return new ArrayAtom(jsArray.map(atomifyDeep))
+  return array(jsArray.map(atomifyDeep))
 }
 
 export const fromJSObject = (jsObject: {[key: number | string]: mixed}): $FixMe => {
-  return new MapAtom(mapValues(jsObject, atomifyDeep))
+  return dict(mapValues(jsObject, atomifyDeep))
 }
 
 export const fromJSPrimitive = (jsPrimitive: mixed): $FixMe => {
-  return new BoxAtom(jsPrimitive)
+  return box(jsPrimitive)
 }
 
 export default atomifyDeep

@@ -7,8 +7,11 @@ import * as React from 'react'
 const RenderSomethingStupid = makeReactiveComponent({
   displayName: 'TheaterJS/Core/RenderSomethingStupid',
   modifyBaseDerivation: (d) => d.extend({
-    render() {
-      return <div>I'm stupid</div>
+    render(d) {
+      return d.pointer().prop('props').prop('foo').map((foo) => {
+        console.log('foo is', foo)
+        return <div>I'm stupid {foo}</div>
+      })
     },
   }),
 })

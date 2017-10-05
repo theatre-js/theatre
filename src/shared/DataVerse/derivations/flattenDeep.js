@@ -1,8 +1,8 @@
 // @flow
-import Derivation from './Derivation'
+import AbstractDerivation from './AbstractDerivation'
 import type {IDerivation} from './types'
 
-export class FlattenDeepDerivation extends Derivation implements IDerivation<$FixMe> {
+export class FlattenDeepDerivation extends AbstractDerivation implements IDerivation<$FixMe> {
   _stackOfDependencies: Array<IDerivation<$IntentionalAny>>
   _updateNeededFromIndex: number
   _maxDepth: number
@@ -36,7 +36,7 @@ export class FlattenDeepDerivation extends Derivation implements IDerivation<$Fi
         return innerValue
       }
 
-      if (innerValue instanceof Derivation) {
+      if (innerValue instanceof AbstractDerivation) {
         this._stackOfDependencies.push(innerValue)
         this._addDependency(innerValue)
       } else {
@@ -55,12 +55,12 @@ export class FlattenDeepDerivation extends Derivation implements IDerivation<$Fi
 
     if (this._updateNeededFromIndex === -1) {
       this._updateNeededFromIndex = indexOfDep
-      Derivation.prototype._youMayNeedToUpdateYourself.call(this, msgComingFrom)
+      AbstractDerivation.prototype._youMayNeedToUpdateYourself.call(this, msgComingFrom)
     } else if (this._updateNeededFromIndex <= indexOfDep) {
       return
     } else {
       this._updateNeededFromIndex = indexOfDep
-      Derivation.prototype._youMayNeedToUpdateYourself.call(this, msgComingFrom)
+      AbstractDerivation.prototype._youMayNeedToUpdateYourself.call(this, msgComingFrom)
     }
   }
 

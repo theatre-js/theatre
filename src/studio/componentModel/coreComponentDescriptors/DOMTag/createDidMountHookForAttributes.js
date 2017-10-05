@@ -37,14 +37,14 @@ export default function createDidMountHookForAttributes(d: $FixMe, context: $Fix
     fnsToCallForStoppingThis.push(d.front.pointer().prop('atom').prop('elRef').derivative().tapImmediate((el: ?Element) => {
       if (!el) return
 
-      const attrs = new D.DerivedMap({}).face(context)
+      const attrs = new D.DerivedDict({}).face(context)
       fnsToCallForStoppingThis.push(d.front.pointer().prop('domAttributes').derivative().tapImmediate((domAttributes) => {
         attrs.setHead(domAttributes)
       }))
 
       const appliers = {}
 
-      const reactToAttributeChange = (change: D.MapAtomChangeType<any>) => {
+      const reactToAttributeChange = (change: D.DictAtomChangeType<any>) => {
         change.deletedKeys.forEach((key) => {
           appliers[key].remove()
           delete appliers[key]

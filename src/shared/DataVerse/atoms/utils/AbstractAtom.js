@@ -2,7 +2,7 @@
 import type {Address, IReactive, MapKey} from '$shared/DataVerse/types'
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import Tappable from '$shared/DataVerse/utils/Tappable'
-import type {ICompositeAtom} from './CompositeAtom'
+import type {ICompositeAtom} from './AbstractCompositeAtom'
 import type {IPointer} from '$shared/DataVerse/derivations/pointer'
 
 export interface IAtom extends IReactive {
@@ -19,7 +19,7 @@ export interface IAtom extends IReactive {
   pointer() : IPointer<$FixMe>,
 }
 
-export default class Atom implements IAtom {
+export default class AbstractAtom implements IAtom {
   isAtom = true
   _changeEmitter: *
   _deepChangeEmitter: *

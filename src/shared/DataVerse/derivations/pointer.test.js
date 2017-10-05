@@ -1,6 +1,7 @@
 // @flow
 import pointer from './pointer'
 import * as D from '$shared/DataVerse'
+import {DictAtom} from '$shared/DataVerse/atoms/dict'
 
 describe('pointer', () => {
   let context
@@ -8,10 +9,10 @@ describe('pointer', () => {
     context = new D.Context()
   })
   it('should work', () => {
-    const root = new D.MapAtom({
-      a: new D.MapAtom({
-        aa: new D.BoxAtom('aa'),
-        bb: new D.BoxAtom('bb'),
+    const root =D.atoms.dict({
+      a:D.atoms.dict({
+        aa: D.atoms.box('aa'),
+        bb: D.atoms.box('bb'),
       }),
     })
     const aaP = root.prop('a').prop('aa').pointer()
@@ -20,19 +21,19 @@ describe('pointer', () => {
     expect(aaP.getValue()).toEqual('aa2')
     root.prop('a').deleteProp('aa')
     expect(aaP.getValue()).toEqual(undefined)
-    root.prop('a').setProp('aa', new D.MapAtom({}))
-    expect(aaP.getValue()).toBeInstanceOf(D.MapAtom)
-    root.prop('a').setProp('aa', new D.MapAtom({aa: new D.BoxAtom('aa3')}))
-    expect(aaP.getValue()).toBeInstanceOf(D.MapAtom)
-    root.prop('a').setProp('aa', new D.BoxAtom('aa3'))
+    root.prop('a').setProp('aa',D.atoms.dict({}))
+    expect(aaP.getValue()).toBeInstanceOf(DictAtom)
+    root.prop('a').setProp('aa',D.atoms.dict({aa: D.atoms.box('aa3')}))
+    expect(aaP.getValue()).toBeInstanceOf(DictAtom)
+    root.prop('a').setProp('aa', D.atoms.box('aa3'))
     expect(aaP.getValue()).toEqual('aa3')
   })
 
   it('should work', () => {
-    const root = new D.MapAtom({
-      a: new D.MapAtom({
-        aa: new D.BoxAtom('aa'),
-        bb: new D.BoxAtom('bb'),
+    const root =D.atoms.dict({
+      a:D.atoms.dict({
+        aa: D.atoms.box('aa'),
+        bb: D.atoms.box('bb'),
       }),
     })
     const aaP = root.prop('a').prop('aa').pointer()
@@ -46,27 +47,27 @@ describe('pointer', () => {
     root.prop('a').deleteProp('aa')
     context.tick()
     expect(aaP.getValue()).toEqual(undefined)
-    root.prop('a').setProp('aa', new D.MapAtom({}))
+    root.prop('a').setProp('aa',D.atoms.dict({}))
     context.tick()
-    expect(aaP.getValue()).toBeInstanceOf(D.MapAtom)
-    root.prop('a').setProp('aa', new D.MapAtom({aa: new D.BoxAtom('aa3')}))
+    expect(aaP.getValue()).toBeInstanceOf(DictAtom)
+    root.prop('a').setProp('aa',D.atoms.dict({aa: D.atoms.box('aa3')}))
     context.tick()
-    expect(aaP.getValue()).toBeInstanceOf(D.MapAtom)
-    root.prop('a').setProp('aa', new D.BoxAtom('aa3'))
+    expect(aaP.getValue()).toBeInstanceOf(DictAtom)
+    root.prop('a').setProp('aa', D.atoms.box('aa3'))
     context.tick()
     expect(aaP.getValue()).toEqual('aa3')
   })
 
   it('should work with derived stuff too', () => {
     const context = new D.Context()
-    const foo = new D.BoxAtom('foo')
-    const atom = new D.MapAtom({
-      a: new D.MapAtom({
+    const foo = D.atoms.box('foo')
+    const atom =D.atoms.dict({
+      a:D.atoms.dict({
         foo,
       }),
     })
 
-    const o = new D.WiryMap({
+    const o = D.derivations.prototypalDict({
       a() {
         return atom
       },

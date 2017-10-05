@@ -1,16 +1,16 @@
 // @flow
-import BoxAtom from './BoxAtom'
+import box from './box'
 
-describe('DataVerse.BoxAtom', () => {
+describe('DataVerse.atoms.box', () => {
   it('should allow getting and setting values', () => {
-    const r = new BoxAtom('foo')
+    const r = box('foo')
     expect(r.getValue()).toEqual('foo')
     r.set('bar')
     expect(r.getValue()).toEqual('bar')
   })
 
   it('should correctly report changes', () => {
-    const r = new BoxAtom('foo')
+    const r = box('foo')
     const changes = []
     r.changes().tap((change) => {changes.push(change)})
     r.set('bar')
@@ -26,7 +26,7 @@ describe('DataVerse.BoxAtom', () => {
   })
 
   it('should correctly report deep changes', () => {
-    const r = new BoxAtom('foo')
+    const r = box('foo')
     const deepChanges = []
     r.deepChanges().tap((change) => {deepChanges.push(change)})
     r.set('bar')
@@ -42,7 +42,7 @@ describe('DataVerse.BoxAtom', () => {
   })
 
   it('should correctly report deep diffs', () => {
-    const r = new BoxAtom('foo')
+    const r = box('foo')
     const deepDiffs = []
     r.deepDiffs().tap((change) => {deepDiffs.push(change)})
     r.set('bar')

@@ -16,7 +16,7 @@ export interface IReactiveBox<V> extends IReactive {
   changes: () => Tappable<V>,
 }
 
-export type MapAtomChangeType<O: {}> = {overriddenRefs: $Shape<O>, deletedKeys: Array<$Keys<O>>, addedKeys: Array<$Keys<O>>}
+export type DictAtomChangeType<O: {}> = {overriddenRefs: $Shape<O>, deletedKeys: Array<$Keys<O>>, addedKeys: Array<$Keys<O>>}
 
 export interface IReactiveMap<O> extends IReactive {
 

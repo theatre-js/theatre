@@ -1,10 +1,10 @@
 // @flow
-import Derivation from './Derivation'
+import AbstractDerivation from './AbstractDerivation'
 import type {IDerivation} from './types'
 
 // type Deps<O> = $ObjMap<O, <V>(v: V) => IDerivation<V>>
 
-export class WithDepsDerivation<V, O: {}> extends Derivation implements IDerivation<V> {
+export class WithDepsDerivation<V, O: {}> extends AbstractDerivation implements IDerivation<V> {
   getValue: () => V
 
   _deps: O

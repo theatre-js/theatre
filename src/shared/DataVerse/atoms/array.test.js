@@ -1,9 +1,9 @@
 // @flow
 // import ArrayAtom from './ArrayAtom'
-import BoxAtom from './BoxAtom'
+import box from './box'
 import atomifyDeep from './atomifyDeep'
 
-describe('DataVerse.ArrayAtom', () => {
+describe('DataVerse.atoms.array', () => {
   it('should allow initial values', () => {
     const o = atomifyDeep([1, 2, 3])
     expect(o.index(0).getValue()).toEqual(1)
@@ -17,7 +17,7 @@ describe('DataVerse.ArrayAtom', () => {
 
     expect(o.index(1).getParent()).toEqual(o)
 
-    const foo2 = new BoxAtom(2)
+    const foo2 = box(2)
     o.setIndex(2, foo2)
     expect(foo2.getParent()).toEqual(o)
   })
@@ -32,9 +32,9 @@ describe('DataVerse.ArrayAtom', () => {
     expect(changes).toHaveLength(1)
     expect(changes[0].addedRefs[0]).toEqual(the1)
 
-    const the11 = new BoxAtom(11)
-    const the9 = o.index(9)
-    o.splice(1, 2, [the11, new BoxAtom(12), new BoxAtom(13)])
+    const the11 = box(11)
+    // const the9 = o.index(9)
+    o.splice(1, 2, [the11, box(12), box(13)])
 
     expect(changes).toHaveLength(2)
     expect(changes[1]).toMatchObject({
@@ -55,9 +55,9 @@ describe('DataVerse.ArrayAtom', () => {
 
     expect(deepChanges[0].addedRefs[0]).toEqual(the1)
 
-    const theNewOne = new BoxAtom(11)
+    const theNewOne = box(11)
     const the9 = o.index(9)
-    o.splice(1, 2, [theNewOne, new BoxAtom(12), new BoxAtom(13)])
+    o.splice(1, 2, [theNewOne, box(12), box(13)])
 
     expect(deepChanges).toHaveLength(2)
     expect(deepChanges[1]).toMatchObject({
@@ -96,7 +96,7 @@ describe('DataVerse.ArrayAtom', () => {
     const deepDiffs = []
     o.deepDiffs().tap((change) => {deepDiffs.push(change)})
 
-    o.splice(1, 2, [new BoxAtom(11), new BoxAtom(12), new BoxAtom(13)])
+    o.splice(1, 2, [box(11), box(12), box(13)])
 
     expect(deepDiffs).toHaveLength(1)
     expect(deepDiffs[0]).toMatchObject({

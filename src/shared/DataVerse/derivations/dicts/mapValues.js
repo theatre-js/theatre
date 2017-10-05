@@ -2,17 +2,17 @@
 import type {IDerivation} from '../types'
 import Emitter from '$shared/DataVerse/utils/Emitter'
 // import lodashMapValues from 'lodash/mapValues'
-import type {IDerivedMap, ChangeType} from './types'
-import DerivedMap from './DerivedMap'
+import type {IDerivedDict, ChangeType} from './types'
+import DerivedDict from './AbstractDerivedDict'
 import noop from 'lodash/noop'
 
-export class MapValues extends DerivedMap implements IDerivedMap<$FixMe> {
+export class MapValues extends DerivedDict implements IDerivedDict<$FixMe> {
   _changeEmitter: Emitter<ChangeType<$FixMe>>
-  _source: IDerivedMap<$FixMe>
+  _source: IDerivedDict<$FixMe>
   _fn: $FixMe
   _untapFromSourceChanges: Function
 
-  constructor<O: {}, K: $Keys<O>, V: $ElementType<O, K>, T, FN: (V, K) => $FixMe>(source: IDerivedMap<O>, fn: FN): IDerivedMap<$FixMe> {
+  constructor<O: {}, K: $Keys<O>, V: $ElementType<O, K>, T, FN: (V, K) => $FixMe>(source: IDerivedDict<O>, fn: FN): IDerivedDict<$FixMe> {
     super()
     this._source = source
     this._fn = fn
@@ -36,7 +36,7 @@ export class MapValues extends DerivedMap implements IDerivedMap<$FixMe> {
   }
 
   prop<K: $Keys<$FixMe>>(k: K): IDerivation<$FixMe> {
-    return this._source.prop(k).map(this._fn)
+    return this._fn(this._source.prop(k), k)
   }
 
   keys() {
@@ -49,7 +49,7 @@ export class MapValues extends DerivedMap implements IDerivedMap<$FixMe> {
 }
 
 
-const mapValues = <O: {}, K: $Keys<O>, V: $ElementType<O, K>, T, FN: (V, K) => $FixMe>(source: IDerivedMap<O>, fn: FN): IDerivedMap<$FixMe> => {
+const mapValues = <O: {}, K: $Keys<O>, V: $ElementType<O, K>, T, FN: (V, K) => $FixMe>(source: IDerivedDict<O>, fn: FN): IDerivedDict<$FixMe> => {
   return new MapValues(source, fn)
 }
 

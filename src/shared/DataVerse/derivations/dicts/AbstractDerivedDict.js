@@ -1,8 +1,8 @@
 // @flow
-// import type {IDerivedMap} from './types'
+// import type {IDerivedDict} from './types'
 import Emitter from '$shared/DataVerse/utils/Emitter'
 
-export default class DerivedMap {
+export default class AbstractDerivedDict {
   _changeEmitter: *
   _untapFromSourceChanges: *
   _changeEmitterHasTappers: boolean
@@ -30,4 +30,10 @@ export default class DerivedMap {
   changes() {
     return this._changeEmitter.tappable
   }
+
+  pointer() {
+    return pointer.default({root: this, path: []})
+  }
 }
+
+const pointer = require('$shared/DataVerse/derivations/pointer')

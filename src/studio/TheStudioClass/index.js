@@ -19,7 +19,7 @@ export default class TheStudioClass {
   constructor() {
     this._lastComponentInstanceId = 0
     this.dataverseContext = new DataVerse.Context()
-    this.atom = DataVerse.atomifyDeep({
+    this.atom = DataVerse.atoms.atomifyDeep({
       state: initialState,
       coreComponentDescriptorsById,
       instances: {},
@@ -30,7 +30,7 @@ export default class TheStudioClass {
         '$studio/componentModel/coreComponentDescriptors',
         () => {
           const newCoreComponentDescriptors = require('$studio/componentModel/coreComponentDescriptors').default
-          this.atom.setProp('coreComponentDescriptorsById', DataVerse.atomifyDeep(newCoreComponentDescriptors))
+          this.atom.setProp('coreComponentDescriptorsById', DataVerse.atoms.atomifyDeep(newCoreComponentDescriptors))
         }
       )
     }

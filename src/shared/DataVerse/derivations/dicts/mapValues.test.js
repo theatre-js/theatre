@@ -1,6 +1,6 @@
 // @flow
 import mapValues from './mapValues'
-import derivedMapOfMapAtom from './derivedMapOfMapAtom'
+import deriveFromDictAtom from './deriveFromDictAtom'
 import * as D from '$shared/DataVerse'
 
 describe('mapValues', () => {
@@ -9,14 +9,14 @@ describe('mapValues', () => {
     context = new D.Context()
   })
   it('should work', () => {
-    const o = new D.MapAtom({
-      foo: new D.BoxAtom('foo'),
-      bar: new D.BoxAtom('bar'),
+    const o =D.atoms.dict({
+      foo: D.atoms.box('foo'),
+      bar: D.atoms.box('bar'),
     })
 
-    const mapLike = derivedMapOfMapAtom(o)
+    const mapLike = deriveFromDictAtom(o)
 
-    const mapped = mapValues(mapLike, (st: string) => st + 'B')
+    const mapped = mapValues(mapLike, (prop) => prop.map((s: string) => s + 'B'))
 
     const fooD = mapped.prop('foo')
     expect(fooD.getValue()).toEqual('fooB')
@@ -42,10 +42,12 @@ describe('mapValues', () => {
     expect(mappedChanges).toHaveLength(0)
 
     // $FlowIgnore
-    o.setProp('doo', new D.BoxAtom('blah'))
+    o.setProp('doo', D.atoms.box('blah'))
     expect(mappedChanges).toMatchObject([{
       addedKeys: ['doo'],
       deletedKeys: [],
     }])
+
+    expect(mapped.pointer().prop('foo').getValue()).toEqual('zooB')
   })
 })

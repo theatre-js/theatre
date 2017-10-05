@@ -1,22 +1,22 @@
 // @flow
-import Derivation from '../Derivation'
+import AbstractDerivation from '../AbstractDerivation'
 import type {IArrayAtom, IAtom} from '$shared/DataVerse'
 import type {IDerivation} from '../types'
 
 const noop = () => {}
 
-export class DerivationOfAnIndexOfAnArrayAtom<V: IAtom> extends Derivation implements IDerivation<V> {
+export class DerivationOfAnIndexOfAnArrayAtom<V: IAtom> extends AbstractDerivation implements IDerivation<V> {
   getValue: () => V
 
   _arrayAtom: IArrayAtom<V>
-  _untapFromMapAtomChanges: Function
+  _untapFromDictAtomChanges: Function
   _index: number
 
   constructor(arrayAtom: IArrayAtom<V>, index: number): IDerivation<V> {
     super()
     this._arrayAtom = arrayAtom
     this._index = index
-    this._untapFromMapAtomChanges = noop
+    this._untapFromDictAtomChanges = noop
     return this
   }
 
@@ -26,7 +26,7 @@ export class DerivationOfAnIndexOfAnArrayAtom<V: IAtom> extends Derivation imple
 
   _keepUptodate() {
     // this.getValue()
-    this._untapFromMapAtomChanges = this._arrayAtom.changes().tap((changes) => {
+    this._untapFromDictAtomChanges = this._arrayAtom.changes().tap((changes) => {
       if (changes.startIndex > this._index) return
       const countOfAddedItems = changes.addedRefs.length - changes.deleteCount
       if (countOfAddedItems === 0) {
@@ -40,8 +40,8 @@ export class DerivationOfAnIndexOfAnArrayAtom<V: IAtom> extends Derivation imple
   }
 
   _stopKeepingUptodate() {
-    this._untapFromMapAtomChanges()
-    this._untapFromMapAtomChanges = noop
+    this._untapFromDictAtomChanges()
+    this._untapFromDictAtomChanges = noop
   }
 }
 

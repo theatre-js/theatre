@@ -1,5 +1,5 @@
 // @flow
-import {default as Atom, type IAtom} from './utils/Atom'
+import {default as AbstractAtom, type IAtom} from './utils/AbstractAtom'
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import Tappable from '$shared/DataVerse/utils/Tappable'
 import type {AddressedChangeset, IReactiveBox} from '$shared/DataVerse/types'
@@ -15,10 +15,11 @@ export interface IBoxAtom<V> extends IAtom, IReactiveBox<V>  {
   set(v: V): IBoxAtom<V>,
   deepChanges: () => Tappable<BoxAtomDeepChangeType<V>>,
   deepDiffs: () => Tappable<BoxAtomDeepDiffType<V>>,
+  derivation: () => IDerivation<V>,
 }
 
 
-export default class BoxAtom<V> extends Atom implements IBoxAtom<V> {
+export class BoxAtom<V> extends AbstractAtom implements IBoxAtom<V> {
   isSingleAtom = true
   _value: V
 
@@ -30,6 +31,8 @@ export default class BoxAtom<V> extends Atom implements IBoxAtom<V> {
 
   _deepDiffEmitter: Emitter<BoxAtomDeepDiffType<V>>
   deepDiffs: () => Tappable<BoxAtomDeepDiffType<V>>
+
+  derivation: () => IDerivation<V>
 
   constructor(v: V) {
     super()
@@ -67,4 +70,8 @@ export default class BoxAtom<V> extends Atom implements IBoxAtom<V> {
     const deriveFromBoxAtom = require('$shared/DataVerse/derivations/ofAtoms/deriveFromBoxAtom').default
     return deriveFromBoxAtom(this)
   }
+}
+
+export default function box<V>(v: V): IBoxAtom<V> {
+  return new BoxAtom(v)
 }

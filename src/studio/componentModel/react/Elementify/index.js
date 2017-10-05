@@ -1,4 +1,4 @@
-
+// @flow
 import * as React from 'react'
 import {type ComponentInstantiationDescriptor, type ComponentDescriptor} from '$studio/componentModel/types'
 import * as D from '$shared/DataVerse'
@@ -10,25 +10,25 @@ import stringStartsWith from 'lodash/startsWith'
 
 const identity = (a) => a
 
-type Props = {
-  instantiationDescriptor: ComponentInstantiationDescriptor,
-}
+// type Props = {
+//   instantiationDescriptor: ComponentInstantiationDescriptor,
+// }
 
-const getComponentDescriptorById = (id: D.Derivation<string>, studio: D.Derivation<Studio>): D.Derivation<?D.AtomifyDeepType<ComponentDescriptor>> =>
-  D.withDeps({id, studio}, identity).flatMap(({id, studio}): $FixMe => {
+const getComponentDescriptorById = (id: D.IDerivation<string>, studio: D.IDerivation<$FixMe>): $FixMe =>
+  D.derivations.withDeps({id, studio}, identity).flatMap(({id, studio}): $FixMe => {
     const idString = id.getValue()
     return stringStartsWith(idString, 'TheaterJS/Core/')
       ? studio.getValue().atom.pointer().prop('coreComponentDescriptorsById').prop(idString)
       : studio.getValue().atom.pointer().prop('state').prop('componentModel').prop('componentDescriptorsById').prop(idString)
   })
 
-const getAliasLessComponentDescriptor = (initialComponentId: D.Derivation<string>, studio: D.Derivation<Studio>): Derivation<?D.AtomifyDeepType<ComponentDescriptor>> => {
+const getAliasLessComponentDescriptor = (initialComponentId: D.IDerivation<string>, studio: D.IDerivation<Studio>): $FixMe => {
   return getComponentDescriptorById(initialComponentId, studio).flatMap((des): $FixMe => {
     if (!des) return
 
     return des.pointer().prop('type').flatMap((type) => {
       if (type === 'Alias') {
-        return des.pointer().prop('aliasedComponentID').flatMap((aliasedComponentID) => getAliasLessComponentDescriptor(new D.ConstantDerivation(aliasedComponentID), studio))
+        return des.pointer().prop('aliasedComponentID').flatMap((aliasedComponentID) => getAliasLessComponentDescriptor(D.derivations.constant(aliasedComponentID), studio))
       } else {
         return des
       }
@@ -45,7 +45,7 @@ export default makeReactiveComponent({
       return getAliasLessComponentDescriptor(
         componentIDPointer, d.pointer().prop('studio')
       ).flatMap((componentDescriptor) => {
-        if (!componentDescriptor) return D.autoDerive(() => {
+        if (!componentDescriptor) return D.derivations.autoDerive(() => {
 
           return <div>Cannot find component {componentIDPointer.getValue()}</div>
         })
@@ -53,12 +53,12 @@ export default makeReactiveComponent({
         const componentDescriptorPointer = componentDescriptor.pointer()
         const componentDescriptorTypePointer = componentDescriptorPointer.prop('type')
         const keyPointer = d.pointer().prop('key')
-        const innerProps = new D.MapAtom({
+        const innerProps =D.atoms.dict({
           componentDescriptor: componentDescriptorPointer,
           props: instantiationDescriptorPointer.prop('props'),
-        })
+        }).derivedDict()
 
-        return D.autoDerive(() => {
+        return D.derivations.autoDerive(() => {
           if (componentDescriptorTypePointer.getValue() === 'HardCoded') {
             return <ElementifyHardCodedComponent key={keyPointer.getValue()} props={innerProps} />
           } else {

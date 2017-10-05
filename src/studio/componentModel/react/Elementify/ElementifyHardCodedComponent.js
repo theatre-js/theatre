@@ -19,7 +19,7 @@ export default makeReactiveComponent({
       const props = d.pointer().prop('props').prop('props')
       const key = d.pointer().prop('key')
 
-      return D.autoDerive(() => {
+      return D.derivations.autoDerive(() => {
         const Comp = reactComponentPointer.getValue()
         return <Comp key={key.getValue()} props={props} />
       })

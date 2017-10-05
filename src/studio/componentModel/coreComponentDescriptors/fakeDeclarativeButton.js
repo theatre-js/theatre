@@ -17,7 +17,9 @@ const fakeDescriptor: DeclarativeComponentDescriptor = {
       componentID: 'TheaterJS/Core/RenderSomethingStupid',
       props: {
         type: 'MapDescriptor',
-        values: {},
+        values: {
+          foo: 'foo is here',
+        },
       },
     },
     theDiv: {

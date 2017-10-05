@@ -1,11 +1,11 @@
 // @flow
-/*::import type {default as WiryMap} from './WiryMap' */
+import type {IPrototypalDict} from './PrototypalDict'
 import Emitter from '$shared/DataVerse/utils/Emitter'
-// import DerivationOfAPropOfADerivedMap from './DerivationOfAPropOfADerivedMap'
+// import DerivationOfAPropOfADerivedDict from './DerivationOfAPropOfADerivedDict'
 import Context from '$shared/DataVerse/Context'
 import type {MapKey} from '$shared/DataVerse/types'
 import type {IDerivation} from '../types'
-import {type IDerivationOfAPropOfADerivedMapFace, default as propOfDerivedMapFace} from './propOfDerivedMapFace'
+import {type IDerivationOfAPropOfADerivedDictFace, default as propOfDerivedDictFace} from './propOfDerivedDictFace'
 import constant from '../constant'
 // import StabilizedDerivation from './StabilizedDerivation'
 import forEach from 'lodash/forEach'
@@ -18,7 +18,7 @@ type Wire = {
   key: MapKey,
   startsInLayer: LayerID,
   endsInLayerId: LayerID,
-  proxyDerivation: IDerivationOfAPropOfADerivedMapFace<$FixMe>,
+  proxyDerivation: IDerivationOfAPropOfADerivedDictFace<$FixMe>,
 }
 
 export type LayerID = 'face' | 'tail' | number
@@ -26,7 +26,7 @@ export type LayerID = 'face' | 'tail' | number
 type Layer = {
   id: number,
   initiatingWiresByKey: {[propName: MapKey]: Wire},
-  derivedMap: WiryMap<$FixMe>,
+  derivedDict: IPrototypalDict<$FixMe>,
   sourceDerivationsByKey: {[propName: MapKey]: IDerivation<$FixMe>},
   untapFromParentChanges: () => void,
 }
@@ -53,14 +53,14 @@ const makeEmptyStructure = (): Structure => ({
   derivationsByLayerAndKey: {},
 })
 
-export default class DerivedMapFace {
-  _head: WiryMap<$FixMe>
+export default class DerivedDictFace {
+  _head: IPrototypalDict<$FixMe>
   _changeEmitter: Emitter<$FixMe>
   _dataVerseContext: Context
   _structure: Structure
   _updateStructure: () => void
 
-  constructor(head: WiryMap<$FixMe>, context: Context) {
+  constructor(head: IPrototypalDict<$FixMe>, context: Context) {
     this._head = head
     this._changeEmitter = new Emitter
     this._dataVerseContext = context
@@ -69,7 +69,7 @@ export default class DerivedMapFace {
     this._updateStructure()
   }
 
-  setHead(head: WiryMap<$FixMe>) {
+  setHead(head: IPrototypalDict<$FixMe>) {
     this._head = head
     this._updateStructure()
   }
@@ -86,27 +86,31 @@ export default class DerivedMapFace {
 
     const newStructure = makeEmptyStructure()
 
-    let currentDerivedMap = this._head
+    let currentDerivedDict = this._head
     while (true) { // eslint-disable-line no-constant-condition
-      if (!currentDerivedMap) break
+      if (!currentDerivedDict) break
 
-      const id = currentDerivedMap._id
+      const id = currentDerivedDict._id
       const layer = {
         id,
         initiatingWiresByKey: {},
-        derivedMap: currentDerivedMap,
+        derivedDict: currentDerivedDict,
         sourceDerivationsByKey: {},
-        untapFromParentChanges: currentDerivedMap.parentChanges().tap(this._notifyStructureNeedsUpdating),
+        untapFromParentChanges: currentDerivedDict.parentChanges().tap(this._notifyStructureNeedsUpdating),
       }
       newStructure.layers.list.unshift(id)
       newStructure.layers.byId[id] = layer
 
-      currentDerivedMap = currentDerivedMap.getParent()
+      currentDerivedDict = currentDerivedDict.getParent()
     }
 
-    // dragons
-
     this._structure = newStructure
+
+    // dragons
+    forEach(oldStructure.layers.face.initiatingWiresByKey, (oldWire, key) => {
+      this._createWire(key, 'face', oldWire.proxyDerivation)
+    })
+
   }
 
   changes() {
@@ -134,11 +138,11 @@ export default class DerivedMapFace {
     return this._createWire(key, initiatingLayerId).proxyDerivation
   }
 
-  _createWire(key: MapKey, startsInLayer: 'face' | number): Wire {
+  _createWire(key: MapKey, startsInLayer: 'face' | number, reusableProxy?: IDerivationOfAPropOfADerivedDictFace<$FixMe>): Wire {
     const endsInLayerId = this._findALayerThatHasProp(key, startsInLayer)
 
     const sourceDerivation = this._makeSourceDerivation(key, endsInLayerId)
-    const proxyDerivation = propOfDerivedMapFace(sourceDerivation)
+    const proxyDerivation = reusableProxy ? reusableProxy.setTarget(sourceDerivation) : propOfDerivedDictFace(sourceDerivation)
     const wire =  {key, startsInLayer, endsInLayerId, proxyDerivation}
 
     const layer = startsInLayer === 'face' ? this._structure.layers.face : this._structure.layers.byId[startsInLayer]
@@ -158,7 +162,7 @@ export default class DerivedMapFace {
       derivation = notFoundDerivation
     } else {
       const lid = layerId
-      const constructor = (layer: $FixMe).derivedMap._getConstructor(key)
+      const constructor = (layer: $FixMe).derivedDict._getConstructor(key)
       derivation = notFoundDerivation.flatMap(() => constructor(new ConstructorArg(this, lid)))
     }
 
@@ -174,8 +178,8 @@ export default class DerivedMapFace {
       const layerId = this._structure.layers.list[i]
 
       const layer: Layer = (this._structure.layers.byId[layerId]: $FixMe)
-      const derivedMap = layer.derivedMap
-      const constructor = derivedMap._getConstructor(key)
+      const derivedDict = layer.derivedDict
+      const constructor = derivedDict._getConstructor(key)
       if (constructor) {
         return layerId
       }
@@ -189,7 +193,7 @@ export default class DerivedMapFace {
 class ConstructorArg {
   _front: *
   _sourceLayerId: number
-  constructor(front: DerivedMapFace, sourceLayerId: number) {
+  constructor(front: DerivedDictFace, sourceLayerId: number) {
     this._front = front
     this._sourceLayerId = sourceLayerId
   }
@@ -207,4 +211,4 @@ class ConstructorArg {
   }
 }
 
-export type Face = DerivedMapFace
+export type Face = DerivedDictFace

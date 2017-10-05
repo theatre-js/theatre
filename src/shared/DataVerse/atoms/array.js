@@ -1,8 +1,8 @@
 // @flow
 
-import {default as CompositeAtom, type ICompositeAtom} from './utils/CompositeAtom'
+import {default as AbstractCompositeAtom, type ICompositeAtom} from './utils/AbstractCompositeAtom'
 import {forEach} from 'lodash'
-import type {IAtom} from './utils/Atom'
+import type {IAtom} from './utils/AbstractAtom'
 import Tappable from '$shared/DataVerse/utils/Tappable'
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import type {AddressedChangeset, MapKey} from '$shared/DataVerse/types'
@@ -56,7 +56,7 @@ export interface IArrayAtom<V: IAtom> extends IAtom, ICompositeAtom {
   chnages: () => Tappable<ArrayAtomChangeType<V>>,
 }
 
-export default class ArrayAtom<V: IAtom> extends CompositeAtom implements IArrayAtom<V> {
+export class ArrayAtom<V: IAtom> extends AbstractCompositeAtom implements IArrayAtom<V> {
   isArrayAtom = true
   _internalArray: Array<$FixMe>
   chnages: () => Tappable<ArrayAtomChangeType<V>>
@@ -168,4 +168,8 @@ export default class ArrayAtom<V: IAtom> extends CompositeAtom implements IArray
   index(index: number): V {
     return this._internalArray[index]
   }
+}
+
+export default function array<V: IAtom>(a: Array<V>): IArrayAtom<V> {
+  return new ArrayAtom(a)
 }

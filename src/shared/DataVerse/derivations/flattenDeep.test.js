@@ -8,9 +8,9 @@ describe('FlattenDeepDerivation', () => {
     context = new D.Context()
   })
   it('simple case', () => {
-    const a = new D.BoxAtom(1)
+    const a = D.atoms.box(1)
     const aD = a.derivation()
-    const b = new D.BoxAtom(3)
+    const b = D.atoms.box(3)
     const bD = b.derivation()
     const f = aD.flatMap((aValue) => bD.map((bValue) => aValue + bValue))
     expect(f.getValue()).toEqual(4)
@@ -35,10 +35,10 @@ describe('FlattenDeepDerivation', () => {
   })
 
   it('events should work', () => {
-    const a = new D.BoxAtom(1)
-    const b = new D.BoxAtom(3)
-    const aD = D.deriveFromBoxAtom(a)
-    const bD = D.deriveFromBoxAtom(b)
+    const a = D.atoms.box(1)
+    const b = D.atoms.box(3)
+    const aD = a.derivation()
+    const bD = b.derivation()
     const final = aD.map((n) => bD.map((m) => m + n)).flattenDeep(7)
 
     expect(final.getValue()).toEqual(4)
@@ -85,11 +85,11 @@ describe('FlattenDeepDerivation', () => {
 
   it('more', () => {
     const context = new D.Context()
-    const a = new D.BoxAtom('a')
+    const a = D.atoms.box('a')
     const aD = a.derivation()
-    const b = new D.BoxAtom('b')
+    const b = D.atoms.box('b')
     const bD = b.derivation()
-    const cD = aD.map((aValue) => bD.map((bValue) => D.withDeps({}, () => aValue + bValue))).flattenDeep(7)
+    const cD = aD.map((aValue) => bD.map((bValue) => D.derivations.withDeps({}, () => aValue + bValue))).flattenDeep(7)
 
     expect(cD.getValue()).toEqual('ab')
     cD.setDataVerseContext(context)
@@ -102,18 +102,18 @@ describe('FlattenDeepDerivation', () => {
   })
 
   it('depth', () => {
-    const a = new D.BoxAtom(1)
-    const b = new D.BoxAtom(3)
-    const aD = D.deriveFromBoxAtom(a)
-    const bD = D.deriveFromBoxAtom(b)
+    const a = D.atoms.box(1)
+    const b = D.atoms.box(3)
+    const aD = a.derivation()
+    const bD = b.derivation()
     expect(aD.map(() => bD).flattenDeep(0).getValue()).toEqual(bD)
     expect(aD.map(() => bD).flattenDeep(1).getValue()).toEqual(3)
   })
   it('blah', () => {
-    const a = new D.BoxAtom('a')
+    const a = D.atoms.box('a')
     const aD = a.derivation()
 
-    const c = D.constant(D.constant(aD));
+    const c = D.derivations.constant(D.derivations.constant(aD));
     (c.getValue().getValue().getValue(): string);
     // $FlowExpectError
     (c.getValue().getValue().getValue(): number);
@@ -137,11 +137,11 @@ describe('FlattenDeepDerivation', () => {
   });
 
   (function(){
-    const num = D.constant(1)
-    const ofNum = D.constant(num)
-    const ofNumOfNum = D.constant(ofNum)
-    const ofNumOfNumofNum = D.constant(ofNumOfNum)
-    const ofNumOfNumofNumOfNum = D.constant(ofNumOfNumofNum);
+    const num = D.derivations.constant(1)
+    const ofNum = D.derivations.constant(num)
+    const ofNumOfNum = D.derivations.constant(ofNum)
+    const ofNumOfNumofNum = D.derivations.constant(ofNumOfNum)
+    const ofNumOfNumofNumOfNum = D.derivations.constant(ofNumOfNumofNum);
 
     (ofNum.getValue().getValue(): number);
     // $FlowExpectError

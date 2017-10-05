@@ -14,6 +14,7 @@ flow-typed/custom ; custom takes precedence over the others
 esproposal.class_static_fields=enable
 esproposal.class_instance_fields=enable
 unsafe.enable_getters_and_setters=true
+esproposal.export_star_as=enable
 
 module.name_mapper.extension='css' -> 'CSSModule'
 module.name_mapper='.*\.\(svg\|png\|jpg\|gif\)$' -> 'EmptyModule'

@@ -1,8 +1,8 @@
 // @flow
-import Derivation from './Derivation'
+import AbstractDerivation from './AbstractDerivation'
 import type {IDerivation} from './types'
 
-export class ConstantDerivation<V> extends Derivation implements IDerivation<V> {
+export class ConstantDerivation<V> extends AbstractDerivation implements IDerivation<V> {
   _v: V
 
   constructor(v: V): IDerivation<V> {

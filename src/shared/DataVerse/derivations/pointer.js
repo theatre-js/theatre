@@ -1,7 +1,7 @@
 // @flow
 import type {Address, MapKey} from '$shared/DataVerse/types'
-import Derivation from './Derivation'
-import * as D from '$shared/DataVerse'
+import AbstractDerivation from './AbstractDerivation'
+// import * as D from '$shared/DataVerse'
 import type {IDerivation} from './types'
 
 export interface IPointer<V> extends IDerivation<V> {
@@ -11,14 +11,14 @@ export interface IPointer<V> extends IDerivation<V> {
 }
 
 const noBoxAtoms = (v) => {
-  if (v instanceof D.BoxAtom) {
-    return deriveFromBoxAtom.default(v).flatMap(noBoxAtoms)
+  if (v instanceof modules.box.BoxAtom) {
+    return modules.deriveFromBoxAtom.default(v).flatMap(noBoxAtoms)
   } else {
     return v
   }
 }
 
-export class PointerDerivation extends Derivation implements IPointer<$FixMe> {
+export class PointerDerivation extends AbstractDerivation implements IPointer<$FixMe> {
   static NOTFOUND = undefined //Symbol('notfound')
   _address: Address
   _internalDerivation: ?IDerivation<$FixMe>
@@ -47,16 +47,18 @@ export class PointerDerivation extends Derivation implements IPointer<$FixMe> {
   }
 
   _makeDerivation() {
-    let finalDerivation = withDeps.default({}, () => this._address.root)
+    let finalDerivation = modules.withDeps.default({}, () => this._address.root)
     this._address.path.forEach((key) => {
+      // $FixMe
       finalDerivation = finalDerivation.flatMap((possibleReactiveValue) => {
         if (possibleReactiveValue === PointerDerivation.NOTFOUND || possibleReactiveValue === undefined) {
           return PointerDerivation.NOTFOUND
-        } else if (possibleReactiveValue instanceof D.MapAtom) {
-          return deriveFromPropOfAMapAtom.default(possibleReactiveValue, (key: $FixMe))
-        } else if (possibleReactiveValue instanceof D.ArrayAtom && typeof key === 'number') {
-          return deriveFromIndexOfArrayAtom.default(possibleReactiveValue, key)
-        } else if (possibleReactiveValue instanceof WiryMapFace.default || possibleReactiveValue instanceof PointerDerivation) {
+        } else if (possibleReactiveValue instanceof modules.dict.DictAtom) {
+          return modules.deriveFromPropOfADictAtom.default(possibleReactiveValue, (key: $FixMe))
+        } else if (possibleReactiveValue instanceof modules.array.ArrayAtom && typeof key === 'number') {
+          return modules.deriveFromIndexOfArrayAtom.default(possibleReactiveValue, key)
+        } else if (possibleReactiveValue instanceof modules.PrototypalDictFace.default || possibleReactiveValue instanceof PointerDerivation || possibleReactiveValue instanceof modules.AbstractDerivedDict.default) {
+          // $FixMe
           return possibleReactiveValue.prop(key)
         } else {
           return undefined
@@ -86,10 +88,16 @@ export default function pointer(address: Address): IPointer<$FixMe> {
   return new PointerDerivation(address)
 }
 
-const withDeps = require('./withDeps')
-// const ConstantDerivation = require('./ConstantDerivation')
-const deriveFromPropOfAMapAtom = require('./ofAtoms/deriveFromPropOfAMapAtom')
-const deriveFromIndexOfArrayAtom = require('./ofAtoms/deriveFromIndexOfArrayAtom')
-// const DerivationOfAPropOfAWiryMapFace = require('./DerivationOfAPropOfAWiryMapFace')
-const deriveFromBoxAtom = require('./ofAtoms/deriveFromBoxAtom')
-const WiryMapFace = require('./composites/WiryMapFace')
+const modules = {
+  withDeps: require('./withDeps'),
+  constant: require('./constant'),
+  deriveFromPropOfADictAtom: require('./ofAtoms/deriveFromPropOfADictAtom'),
+  deriveFromIndexOfArrayAtom: require('./ofAtoms/deriveFromIndexOfArrayAtom'),
+  propOfDerivedDictFace: require('./dicts/propOfDerivedDictFace'),
+  deriveFromBoxAtom: require('./ofAtoms/deriveFromBoxAtom'),
+  PrototypalDictFace: require('./dicts/PrototypalDictFace'),
+  AbstractDerivedDict: require('./dicts/AbstractDerivedDict'),
+  box: require('$shared/DataVerse/atoms/box'),
+  dict: require('$shared/DataVerse/atoms/dict'),
+  array: require('$shared/DataVerse/atoms/array'),
+}

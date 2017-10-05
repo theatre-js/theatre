@@ -1,11 +1,11 @@
 // @flow
-import Derivation from '../Derivation'
+import AbstractDerivation from '../AbstractDerivation'
 import type {IBoxAtom} from '$shared/DataVerse'
 import type {IDerivation} from '../types'
 
 const noop = () => {}
 
-export class DerivationOfABoxAtom<V> extends Derivation implements IDerivation<V> {
+export class DerivationOfABoxAtom<V> extends AbstractDerivation implements IDerivation<V> {
   getValue: () => V
 
   _boxAtom: IBoxAtom<V>

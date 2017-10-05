@@ -11,18 +11,18 @@ const RenderCurrentCanvas = makeReactiveComponent({
       const studioAtom = d.prop('studio').getValue().atom
       const componentIDToBeRenderedAsCurrentCanvasPointer = studioAtom.pointer().prop('state').prop('workspace').prop('componentIDToBeRenderedAsCurrentCanvas')
       const children = d.pointer().prop('props').prop('children')
-      const props = new D.MapAtom({
-        instantiationDescriptor: new D.MapAtom({
-          componentID: new D.BoxAtom(componentIDToBeRenderedAsCurrentCanvasPointer),
-          props: new D.MapAtom({}),
+      const props =D.atoms.dict({
+        instantiationDescriptor:D.atoms.dict({
+          componentID: D.atoms.box(componentIDToBeRenderedAsCurrentCanvasPointer),
+          props:D.atoms.dict({}),
         }),
-      })
+      }).derivedDict().pointer()
 
-      return D.autoDerive(() => {
+      return D.derivations.autoDerive(() => {
         const C = componentIDToBeRenderedAsCurrentCanvasPointer.getValue()
 
         if (typeof C === 'string') {
-          return <Elementify key="currentCanvas" props={props.pointer()} />
+          return <Elementify key="currentCanvas" props={props} />
         } else {
           return children.getValue()
         }

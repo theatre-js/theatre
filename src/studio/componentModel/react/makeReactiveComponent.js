@@ -5,7 +5,7 @@ import {withStudio, type WithStudioProps} from './studioContext'
 import * as D from '$shared/DataVerse'
 
 type Args = {
-  modifyBaseDerivation: (D.WiryMap<$FixMe>) => D.WiryMap<$FixMe>,
+  modifyBaseDerivation: (D.IPrototypalDict<$FixMe>) => D.IPrototypalDict<$FixMe>,
   displayName?: string,
 }
 
@@ -17,7 +17,6 @@ export default function makeReactiveComponent({modifyBaseDerivation, displayName
     _finalFace: $FixMe
     _atom: $FixMe
     _baseDerivation: $FixMe
-    // +modifyBaseDerivation: (D.WiryMap) => D.WiryMap
     _whatToRender: $FixMe
     _fnsToCallOnDidUnmount: Array<() => void>
 
@@ -31,7 +30,7 @@ export default function makeReactiveComponent({modifyBaseDerivation, displayName
       // componentDidUnmountCallbacks: () => new D.DerivedArray(),
       // componentWillUpdateCallbacks: () => new D.DerivedArray(),
 
-      props: (d) => d.prop('atom').map((atom) => atom.prop('_props')),
+      props: (d) => d.pointer().prop('atom').prop('_props'),
       studio: (d) => d.pointer().prop('atom').prop('studio'),
       key: (d) => d.pointer().prop('atom').prop('key'),
     }
@@ -39,10 +38,10 @@ export default function makeReactiveComponent({modifyBaseDerivation, displayName
     constructor(props: Props) {
       super(props)
 
-      const instanceId = new D.BoxAtom(this.props.studio._getNewComponentInstanceId())
-      this._atom = new D.MapAtom({instanceId, _props: (props.props: $FixMe), studio: props.studio, key: props.key})
+      const instanceId = D.atoms.box(this.props.studio._getNewComponentInstanceId())
+      this._atom =D.atoms.dict({instanceId, _props: (props.props: $FixMe), studio: props.studio, key: props.key})
 
-      this._baseDerivation = new D.WiryMap({
+      this._baseDerivation = D.derivations.prototypalDict({
         atom: () => this._atom,
       }).extend(TheaterJSComponent._baseLookupTable)
 

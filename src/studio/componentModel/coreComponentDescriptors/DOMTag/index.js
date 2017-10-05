@@ -32,7 +32,7 @@ const lookupTable = {
   },
 
   domAttributes: () => {
-    return new D.DerivedMap({})
+    return new D.DerivedDict({})
   },
 
   componentDidMountCallbacks: (ctx: Context) => {

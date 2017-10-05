@@ -1,5 +1,5 @@
 // @flow
-import type IAtom from './Atom'
+import type {IAtom} from './AbstractAtom'
 
 type IsAtomFn =
   (<V: IAtom>(v: V) => true) &
