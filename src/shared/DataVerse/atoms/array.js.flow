@@ -2,7 +2,6 @@
 import type {IAtom} from './utils/AbstractAtom'
 import type {AddressedChangeset, MapKey, True, False, Address} from '$shared/DataVerse/types'
 import type {default as Tappable} from '$shared/DataVerse/utils/Tappable'
-import type {AllDeepChangeTypes, AllDeepDiffTypes} from './utils/AbstractCompositeAtom'
 
 type Unboxed<O> = $FixMe // eslint-disable-line no-unused-vars
 
@@ -23,6 +22,7 @@ export type IArrayAtom<V> = {
   isArrayAtom: True,
   isAtom: True,
   isCompositeAtom: True,
+  isPointer: False,
 
   _v: V,
   setIndex(key: number, v: V): $FixMe,
@@ -37,10 +37,8 @@ export type IArrayAtom<V> = {
 
   changes(): Tappable<ArrayAtomChangeType<V>>,
   unboxDeep(): mixed,
-  deepChanges(): Tappable<AllDeepChangeTypes>,
-
-  deepDiffs(): Tappable<AllDeepDiffTypes>,
-
+  deepChanges(): Tappable<$FixMe>,
+  deepDiffs(): Tappable<$FixMe>,
 
   _setParent(p: $FixMe, key: MapKey): void,
   _unsetParent(): void,

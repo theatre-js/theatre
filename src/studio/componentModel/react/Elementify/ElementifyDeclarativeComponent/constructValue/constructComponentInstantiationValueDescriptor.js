@@ -3,7 +3,7 @@ import {D, Elementify} from '$studio/handy'
 import constructMapDescriptor from './constructMapDescriptor'
 import * as React from 'react'
 
-const constructComponentInstantiationValueDescriptor = (des: D.IPointer<$FixMe>, d: $FixMe) => {
+const constructComponentInstantiationValueDescriptor = (des: $FixMe, d: $FixMe) => {
   const propsToFinalComponent = constructMapDescriptor(des.pointer().prop('props'), d)
   // console.log('---', des.pointer().prop('props').getValue(), des.pointer().prop('modifierInstantiationDescriptorsByID').getValue())
   const modifierInstantiationDescriptorsByID = constructMapDescriptor(des.pointer().prop('modifierInstantiationDescriptorsByID'), d)

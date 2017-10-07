@@ -82,13 +82,13 @@ describe('DataVerse.atoms.dict', () => {
       address: [],
       type: 'MapChange',
     })
-    // $FixMe
+
     expect(deepChanges[0].overriddenRefs.foo).toEqual(oldFoo)
 
     const foo2 = box('foo2')
     o.setProp('foo', foo2)
     expect(deepChanges).toHaveLength(2)
-    // $FixMe
+
     expect(deepChanges[1].overriddenRefs.foo).toEqual(foo2)
 
     o.setProp('bar', box('bar2'))

@@ -16,6 +16,7 @@ export type IBoxAtom<V> = {
   isArrayAtom: False,
   isAtom: True,
   isCompositeAtom: False,
+  isPointer: False,
 
   _value: V,
   unboxDeep(): mixed,

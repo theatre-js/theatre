@@ -96,12 +96,10 @@ export default class TheStudioClass {
   }
 
   registerComponentInstance(isntanceId: number, componentInstance: React.Component<mixed, mixed>) {
-    // $FixMe
     this.atom.prop('instances').setProp(isntanceId, componentInstance)
   }
 
   unregisterComponentInstance(isntanceId: number) {
-    // $FixMe
     this.atom.prop('instances').deleteProp(isntanceId)
   }
 }
