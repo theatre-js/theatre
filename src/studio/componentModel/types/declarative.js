@@ -14,13 +14,14 @@ export type WhatToRender = ReferenceToLocalHiddenValue | ReferenceToProp
 
 export type RuleSet = {|
   selector: string, // better to have a more structured type for this
-  modifiersByKey: {[key: string]: ModifierInstantiationDescriptor},
+  modifiersByKey: {[key: string]: ModifierInstantiationValueDescriptor},
   listOfModifiers: Array<string>,
 |}
 
-type ModifierInstantiationDescriptor = {|
+type ModifierInstantiationValueDescriptor = {|
+  type: 'ModifierInstantiationValueDescriptor',
   modifierID: string,
-  props: {[key: string]: $FixMe},
+  props: MapDescriptor,
 |}
 
 export type ModifierDescriptor = {|
@@ -38,7 +39,7 @@ export type ReferenceToProp = {|
 |}
 
 export type MapDescriptor = {|type: 'MapDescriptor', values: {[key: string | number]: ValueDescriptor}|}
-export type ArrayDescriptor = {|type: 'ArrayDescriptor', values: Array<ValueDescriptor>|}
+export type ArrayDescriptor = Array<ValueDescriptor>
 export type StringLiteralDescriptor = string
 export type NumberLiteralDescriptor = number
 export type BooleanLiteralDescriptor = boolean
@@ -55,17 +56,19 @@ export type ComponentInstantiationValueDescriptor = {|
   type: 'ComponentInstantiationValueDescriptor',
   componentID: ComponentID,
   props: MapDescriptor,
+  modifierInstantiationDescriptorsByID: MapDescriptor,
+  listOfModifierInstantiationDescriptorIDs: ArrayDescriptor,
 |}
 
 export type ValueDescriptorDescribedInAnObject =
-  | ComponentInstantiationValueDescriptor
   | MapDescriptor
   | ReferenceToLocalHiddenValue
   | ReferenceToProp
-  | ArrayDescriptor
-
+  | ComponentInstantiationValueDescriptor
+  | ModifierInstantiationValueDescriptor
 
 export type ValueDescriptor =
   | ValueDescriptorDescribedInAnObject
   | StringLiteralDescriptor
   | BooleanLiteralDescriptor
+  | ArrayDescriptor

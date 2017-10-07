@@ -47,7 +47,7 @@ export class PointerDerivation extends AbstractDerivation implements IPointer<$F
   }
 
   _makeDerivation() {
-    let finalDerivation = modules.withDeps.default({}, () => this._address.root)
+    let finalDerivation = modules.constant.default(this._address.root)
     this._address.path.forEach((key) => {
       // $FixMe
       finalDerivation = finalDerivation.flatMap((possibleReactiveValue) => {
@@ -66,7 +66,8 @@ export class PointerDerivation extends AbstractDerivation implements IPointer<$F
       }).flatMap(noBoxAtoms)
     })
 
-    finalDerivation._addDependent(this)
+    this._addDependency(finalDerivation)
+    // finalDerivation._addDependent(this)
 
     return finalDerivation
   }

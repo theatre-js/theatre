@@ -36,7 +36,12 @@ export class DerivedDictFromDictAtom<O: {}> extends DerivedDict implements IDeri
   }
 
   prop(k: $Keys<O>) {
-    return this._mapAtom.pointer().prop(k).flatMap(ensureNoAtoms)
+    const b = this._mapAtom.pointer().prop(k).flatMap(ensureNoAtoms)
+    // if (k === '0') {
+    //   b.unpropable = true
+    //   debugger
+    // }
+    return b
   }
 
   _reactToHavingTappers() {

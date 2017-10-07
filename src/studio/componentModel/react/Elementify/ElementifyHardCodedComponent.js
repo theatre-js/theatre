@@ -12,16 +12,24 @@ type Props = {
 
 export default makeReactiveComponent({
   displayName: 'HardCodedComponent',
-  modifyBaseDerivation: (d) => d.extend({
+  modifyPrototypalDict: (d) => d.extend({
     render(d) {
       const componentDescriptor = d.pointer().prop('props').prop('componentDescriptor')
       const reactComponentPointer = componentDescriptor.prop('reactComponent')
       const props = d.pointer().prop('props').prop('props')
+      const modifierInstantiationDescriptorsByID = d.pointer().prop('props').prop('modifierInstantiationDescriptorsByID')
+      const listOfModifierInstantiationDescriptorIDs = d.pointer().prop('props').prop('listOfModifierInstantiationDescriptorIDs')
+
       const key = d.pointer().prop('key')
 
       return D.derivations.autoDerive(() => {
         const Comp = reactComponentPointer.getValue()
-        return <Comp key={key.getValue()} props={props} />
+        return <Comp
+          key={key.getValue()}
+          props={props}
+          modifierInstantiationDescriptorsByID={modifierInstantiationDescriptorsByID}
+          listOfModifierInstantiationDescriptorIDs={listOfModifierInstantiationDescriptorIDs}
+        />
       })
     },
   }),

@@ -21,7 +21,6 @@ export default class AbstractDerivedDict {
     this._changeEmitterHasTappers = hasTappers
     if (hasTappers) {
       this._reactToHavingTappers()
-
     } else {
       this._reactToNotHavingTappers()
     }

@@ -5,6 +5,8 @@ import {type IDictAtom, default as dict} from './dict'
 import {type IArrayAtom, default as array} from './array'
 import mapValues from 'lodash/mapValues'
 import {type IAtom, default as AbstractAtom} from './utils/AbstractAtom'
+// import type {If} from '../types'
+// import type {} from '../literals'
 
 type InstanceOfAnyClass = {+constructor: Function}
 
@@ -23,6 +25,7 @@ type AtomifyDeepFn =
 // type AtomifyDeepObject<V: {}> = IDictAtom<$ObjMap<V, AtomifyDeepFn>>
 // type AtomifyDeepPrimitive<V> = IBoxAtom<V>
 // export type AtomifyDeepType<V> = AtomifyDeepArray<*, V> | AtomifyDeepAtom<V> | AtomifyDeepConstructedObject<V> | AtomifyDeepObject<V> | AtomifyDeepPrimitive<V>
+
 
 export const atomifyDeep: AtomifyDeepFn = (jsValue: mixed) => {
   if (Array.isArray(jsValue)) {

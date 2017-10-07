@@ -1,28 +1,12 @@
 // @flow
-import Tappable from '$shared/DataVerse/utils/Tappable'
-
 export type MapKey = string | number
 
 export type AddressedChangeset = {address: Array<MapKey>}
 
-export type Address = {root: IReactive, path: Array<MapKey>}
+export type Address = {root: $FixMe, path: Array<MapKey>}
 
-export interface IReactive {
-
-}
-
-export interface IReactiveBox<V> extends IReactive {
-  getValue(): V,
-  changes: () => Tappable<V>,
-}
-
-export type DictAtomChangeType<O: {}> = {overriddenRefs: $Shape<O>, deletedKeys: Array<$Keys<O>>, addedKeys: Array<$Keys<O>>}
-
-export interface IReactiveMap<O> extends IReactive {
-
-}
-
-export interface IReactiveArray<T> extends IReactive {
-
-}
-
+// These come from this awesome SO answer: https://stackoverflow.com/a/46333906/607997
+export type False = 'False'
+export type True = 'True'
+export type Bool = True | False
+export type If<Cond: Bool, Then, Else> = $ElementType<{'False': Else, 'True': Then}, Cond>

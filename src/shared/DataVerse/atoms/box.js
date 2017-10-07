@@ -2,16 +2,17 @@
 import {default as AbstractAtom, type IAtom} from './utils/AbstractAtom'
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import Tappable from '$shared/DataVerse/utils/Tappable'
-import type {AddressedChangeset, IReactiveBox} from '$shared/DataVerse/types'
+import type {AddressedChangeset} from '$shared/DataVerse/types'
 import type {IDerivation} from '$shared/DataVerse/derivations/types'
 
 export type BoxAtomChangeType<V> = V
 export type BoxAtomDeepChangeType<V> = AddressedChangeset & {type: 'BoxChange', newValue: BoxAtomChangeType<V>}
 export type BoxAtomDeepDiffType<V> = AddressedChangeset & {type: 'BoxDiff', oldValue: V, newValue: V}
 
-export interface IBoxAtom<V> extends IAtom, IReactiveBox<V>  {
+export interface IBoxAtom<V> extends IAtom  {
   isSingleAtom: true,
   unboxDeep(): V,
+  getValue(): V,
   set(v: V): IBoxAtom<V>,
   deepChanges: () => Tappable<BoxAtomDeepChangeType<V>>,
   deepDiffs: () => Tappable<BoxAtomDeepDiffType<V>>,

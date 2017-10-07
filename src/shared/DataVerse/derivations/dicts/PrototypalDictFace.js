@@ -54,13 +54,13 @@ const makeEmptyStructure = (): Structure => ({
 })
 
 export default class DerivedDictFace {
-  _head: IPrototypalDict<$FixMe>
+  _head: ?IPrototypalDict<$FixMe>
   _changeEmitter: Emitter<$FixMe>
   _dataVerseContext: Context
   _structure: Structure
   _updateStructure: () => void
 
-  constructor(head: IPrototypalDict<$FixMe>, context: Context) {
+  constructor(head: ?IPrototypalDict<$FixMe>, context: Context) {
     this._head = head
     this._changeEmitter = new Emitter
     this._dataVerseContext = context
@@ -69,9 +69,9 @@ export default class DerivedDictFace {
     this._updateStructure()
   }
 
-  setHead(head: IPrototypalDict<$FixMe>) {
+  setHead(head: ?IPrototypalDict<$FixMe>) {
     this._head = head
-    this._updateStructure()
+    this._notifyStructureNeedsUpdating()
   }
 
   _notifyStructureNeedsUpdating = () => {
@@ -106,7 +106,6 @@ export default class DerivedDictFace {
 
     this._structure = newStructure
 
-    // dragons
     forEach(oldStructure.layers.face.initiatingWiresByKey, (oldWire, key) => {
       this._createWire(key, 'face', oldWire.proxyDerivation)
     })

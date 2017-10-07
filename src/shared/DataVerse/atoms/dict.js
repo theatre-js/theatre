@@ -5,10 +5,11 @@ import mapValues from 'lodash/mapValues'
 import type {IAtom} from './utils/AbstractAtom'
 import Tappable from '$shared/DataVerse/utils/Tappable'
 import Emitter from '$shared/DataVerse/utils/Emitter'
-import type {AddressedChangeset, DictAtomChangeType} from '$shared/DataVerse/types'
+import type {AddressedChangeset} from '$shared/DataVerse/types'
 import deriveFromDictAtom from '$shared/DataVerse/derivations/dicts/deriveFromDictAtom'
 
 type Unboxed<O> = $FixMe // eslint-disable-line no-unused-vars
+export type DictAtomChangeType<O: {}> = {overriddenRefs: $Shape<O>, deletedKeys: Array<$Keys<O>>, addedKeys: Array<$Keys<O>>}
 export type DictAtomDeepChangeType<O> = AddressedChangeset & {type: 'MapChange'} & DictAtomChangeType<O>
 export type DictAtomDeepDiffType<O> = AddressedChangeset & {type: 'MapDiff', deepUnboxOfOldRefs: Unboxed<O>, deepUnboxOfNewRefs: Unboxed<O>, deletedKeys: Array<$Keys<O>>}
 

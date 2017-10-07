@@ -156,7 +156,8 @@ class AbstractDerivation {
   _stopKeepingUptodate() {}
 
   map<T>(fn: $FixMe): IDerivation<T> {
-    return withDeps.default({dep: (this: $FixMe)}, (deps) => fn(deps.dep.getValue()))
+    // $FixMe
+    return mapDerivation.default(this, fn)
   }
 
   flatMap(fn: $FixMe): $FixMe {
@@ -174,6 +175,5 @@ class AbstractDerivation {
 }
 
 export default (AbstractDerivation: $FixMe)
-
 const flattenDeep = require('./flattenDeep')
-const withDeps = require('./withDeps')
+const mapDerivation = require('./mapDerivation')

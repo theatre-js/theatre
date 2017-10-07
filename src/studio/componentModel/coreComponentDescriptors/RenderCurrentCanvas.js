@@ -6,7 +6,7 @@ import * as D from '$shared/DataVerse'
 
 const RenderCurrentCanvas = makeReactiveComponent({
   displayName: 'TheaterJS/Core/RenderCurrentCanvas',
-  modifyBaseDerivation: (d) => d.extend({
+  modifyPrototypalDict: (d) => d.extend({
     render(d) {
       const studioAtom = d.prop('studio').getValue().atom
       const componentIDToBeRenderedAsCurrentCanvasPointer = studioAtom.pointer().prop('state').prop('workspace').prop('componentIDToBeRenderedAsCurrentCanvas')

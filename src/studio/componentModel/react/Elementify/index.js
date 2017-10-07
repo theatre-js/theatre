@@ -38,7 +38,7 @@ const getAliasLessComponentDescriptor = (initialComponentId: D.IDerivation<strin
 
 export default makeReactiveComponent({
   displayName: 'Elementify',
-  modifyBaseDerivation: (d) => d.extend({
+  modifyPrototypalDict: (d) => d.extend({
     render(d) {
       const instantiationDescriptorPointer = d.pointer().prop('props').prop('instantiationDescriptor')
       const componentIDPointer = instantiationDescriptorPointer.prop('componentID')
@@ -53,9 +53,11 @@ export default makeReactiveComponent({
         const componentDescriptorPointer = componentDescriptor.pointer()
         const componentDescriptorTypePointer = componentDescriptorPointer.prop('type')
         const keyPointer = d.pointer().prop('key')
-        const innerProps =D.atoms.dict({
+        const innerProps = D.atoms.dict({
           componentDescriptor: componentDescriptorPointer,
           props: instantiationDescriptorPointer.prop('props'),
+          modifierInstantiationDescriptorsByID: instantiationDescriptorPointer.prop('modifierInstantiationDescriptorsByID'),
+          listOfModifierInstantiationDescriptorIDs: instantiationDescriptorPointer.prop('listOfModifierInstantiationDescriptorIDs'),
         }).derivedDict()
 
         return D.derivations.autoDerive(() => {

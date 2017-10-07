@@ -5,7 +5,8 @@ import {makeReactiveComponent} from '$studio/handy'
 import resolveReferenceToHiddenLocalValue from './resolveReferenceToHiddenLocalValue'
 
 export default makeReactiveComponent({
-  modifyBaseDerivation: (d) => d.extend({
+  displayName: 'ElementifyDeclarativeComponent',
+  modifyPrototypalDict: (d) => d.extend({
     render(d) {
       const componentDescriptorP = d.pointer().prop('props').prop('componentDescriptor')
 

@@ -9,6 +9,8 @@ export type ComponentID = string
 export type ComponentInstantiationDescriptor = {|
   componentID: ComponentID,
   props: {[key: string]: $FixMe},
+  modifierInstantiationDescriptorsByID: {[id: string]: $FixMe},
+  listOfModifierInstantiationDescriptorIDs: Array<string>,
 |}
 
 export type AliasComponentDescriptor = {|

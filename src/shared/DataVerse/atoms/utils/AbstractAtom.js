@@ -1,11 +1,11 @@
 // @flow
-import type {Address, IReactive, MapKey} from '$shared/DataVerse/types'
+import type {Address, MapKey} from '$shared/DataVerse/types'
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import Tappable from '$shared/DataVerse/utils/Tappable'
 import type {ICompositeAtom} from './AbstractCompositeAtom'
 import type {IPointer} from '$shared/DataVerse/derivations/pointer'
 
-export interface IAtom extends IReactive {
+export interface IAtom {
   isAtom: true,
   +unboxDeep: () => mixed,
   _setParent(p: ICompositeAtom, key: MapKey): void,

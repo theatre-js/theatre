@@ -12,29 +12,73 @@ const fakeDescriptor: DeclarativeComponentDescriptor = {
    * </div>
    */
   localHiddenValuesByID: {
+    // alaki: {
+    //   type: 'ComponentInstantiationValueDescriptor',
+    //   componentID: 'TheaterJS/Core/RenderSomethingStupid',
+    //   props: {
+    //     type: 'MapDescriptor',
+    //     values: {
+    //       foo: 'foo is here',
+    //     },
+    //   },
+    //   modifierInstantiationDescriptorsByID: {
+    //     type: 'MapDescriptor',
+    //     values: {
+    //       '0': {
+    //         type: 'ModifierInstantiationValueDescriptor',
+    //         modifierID: 'TheaterJS/Core/DOMTag/SetAttribute',
+    //         props: {
+    //           type: 'MapDescriptor',
+    //           values: {
+    //             attributeName: 'id',
+    //             value: 'hihi',
+    //           },
+    //         },
+    //       },
+    //     },
+    //   },
+    //   listOfModifierInstantiationDescriptorIDs: [],
+    // },
     alaki: {
-      type: 'ComponentInstantiationValueDescriptor',
-      componentID: 'TheaterJS/Core/RenderSomethingStupid',
-      props: {
-        type: 'MapDescriptor',
-        values: {
-          foo: 'foo is here',
-        },
-      },
-    },
-    theDiv: {
       type: 'ComponentInstantiationValueDescriptor',
       componentID: 'TheaterJS/Core/DOMTag',
       props: {
         type: 'MapDescriptor',
         values: {
           tagName: 'div',
-          children: {
-            type: 'ReferenceToLocalHiddenValue',
-            which: 'theLabel',
+        },
+      },
+      modifierInstantiationDescriptorsByID: {
+        type: 'MapDescriptor',
+        values: {
+          '0': {
+            type: 'ModifierInstantiationValueDescriptor',
+            modifierID: 'TheaterJS/Core/DOMTag/SetAttribute',
+            props: {
+              type: 'MapDescriptor',
+              values: {
+                attributeName: 'id',
+                value: 'hihi',
+              },
+            },
           },
         },
       },
+      listOfModifierInstantiationDescriptorIDs: [],
+    },
+    // theDiv: {
+    //   type: 'ComponentInstantiationValueDescriptor',
+    //   componentID: 'TheaterJS/Core/DOMTag',
+      // props: {
+      //   type: 'MapDescriptor',
+      //   values: {
+      //     tagName: 'div',
+      //     children: {
+      //       type: 'ReferenceToLocalHiddenValue',
+      //       which: 'theLabel',
+      //     },
+      //   },
+      // },
       // modifiersByKey: {
       //   theBG: {
       //     modifierID: 'TheaterJS/HTML/Style/BackgroundColor',
@@ -48,7 +92,7 @@ const fakeDescriptor: DeclarativeComponentDescriptor = {
       //   },
       // },
       // listOfModifiers: [],
-    },
+    // },
     // theLabel: {
     //   type: 'ComponentInstantiationValueDescriptor',
     //   componentID: 'TheaterJS/Core/DOMTag',

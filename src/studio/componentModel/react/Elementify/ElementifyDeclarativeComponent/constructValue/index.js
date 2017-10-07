@@ -1,4 +1,4 @@
-
+// @flow
 import constructComponentInstantiationValueDescriptor from './constructComponentInstantiationValueDescriptor'
 import type {ValueDescriptorDescribedInAnObject} from '$studio/componentModel/types'
 
@@ -11,15 +11,17 @@ const constructors: {[key: $ElementType<ValueDescriptorDescribedInAnObject, 'typ
 const isLiteral = (s) =>
   typeof s === 'string' || typeof s === 'number' || typeof s === 'boolean' || typeof s === 'undefined' || s === null
 
-const constructValue = (des, d) => {
+const constructValue = (des: $FixMe, d: $FixMe) => {
   return des.flatMap((val) => {
     if (isLiteral(val)) {
       return val
+    } else if (Array.isArray(val)) {
+      return val.map((v) => constructValue(v, d))
     } else {
-      return des.prop('type').flatMap((type: $ElementType<ValueDescriptorDescribedInAnObject, 'type'>) => {
+      return val.prop('type').flatMap((type: $ElementType<ValueDescriptorDescribedInAnObject, 'type'>) => {
         const constructor = constructors[type]
         if (constructor)
-          return constructor(des, d)
+          return constructor(val, d)
         else
           throw new Error(`Value constructor type ${type} is unsupported`)
       })

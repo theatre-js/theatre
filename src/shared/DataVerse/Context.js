@@ -23,16 +23,37 @@ export default class Context {
   }
 
   tick() {
-    this._objectsWhoseStructureShouldBeUpdated.forEach((d) => {
+    return this._tick(0)
+  }
+
+  _tick(n: number) {
+    if (n > 3) {
+      console.warn('tick() recursing for 3 times')
+    }
+
+    if (n > 100) {
+      throw new Error(`Maximum recursion limit for tick()`)
+    }
+
+    const oldS = this._objectsWhoseStructureShouldBeUpdated
+    this._objectsWhoseStructureShouldBeUpdated = new Set()
+
+    oldS.forEach((d) => {
       d._updateStructure()
     })
 
-    this._objectsWhoseStructureShouldBeUpdated.clear()
+    if (this._objectsWhoseStructureShouldBeUpdated.size > 0) {
+      return this._tick(n + 1)
+    }
 
-    this._derivationsToUpdate.forEach((d) => {
+    const oldD = this._derivationsToUpdate
+    this._derivationsToUpdate = new Set()
+    oldD.forEach((d) => {
       d._tick()
     })
 
-    this._derivationsToUpdate.clear()
+    if (this._objectsWhoseStructureShouldBeUpdated.size > 0 || this._derivationsToUpdate.size > 0) {
+      return this._tick(n + 1)
+    }
   }
 }

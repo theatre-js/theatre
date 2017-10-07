@@ -65,8 +65,6 @@ describe('prototypalDict', () => {
       context.tick()
       expect(o.prop('a').getValue()).toEqual('newLayer0layer1')
       expect(o.prop('a')).toEqual(a)
-
-
     })
   })
 })
