@@ -23,20 +23,20 @@ const ensureNoAtoms = (d: mixed) => {
 }
 
 export class DerivedDictFromDictAtom<O: {}> extends DerivedDict implements IDerivedDict<$FixMe> {
-  _mapAtom: IDictAtom<O>
+  _dictAtom: IDictAtom<O>
   prop: $FixMe
   changes: $FixMe
   _untapFromDictAtomChangeEmitter: () => void
 
   constructor(m: IDictAtom<O>): IDerivedDict<$FixMe> {
     super()
-    this._mapAtom = m
+    this._dictAtom = m
     this._untapFromDictAtomChangeEmitter = noop
     return this
   }
 
   prop(k: $Keys<O>) {
-    const b = this._mapAtom.pointer().prop(k).flatMap(ensureNoAtoms)
+    const b = this._dictAtom.pointer().prop(k).flatMap(ensureNoAtoms)
     // if (k === '0') {
     //   b.unpropable = true
     //   debugger
@@ -45,7 +45,7 @@ export class DerivedDictFromDictAtom<O: {}> extends DerivedDict implements IDeri
   }
 
   _reactToHavingTappers() {
-    this._untapFromDictAtomChangeEmitter = this._mapAtom.changes().tap((c) => {
+    this._untapFromDictAtomChangeEmitter = this._dictAtom.changes().tap((c) => {
       if (c.addedKeys.length > 0 || c.deletedKeys.length > 0)
         this._changeEmitter.emit({addedKeys: c.addedKeys, deletedKeys: c.deletedKeys})
     })
@@ -57,7 +57,7 @@ export class DerivedDictFromDictAtom<O: {}> extends DerivedDict implements IDeri
   }
 
   keys() {
-    return this._mapAtom.keys()
+    return this._dictAtom.keys()
   }
 }
 

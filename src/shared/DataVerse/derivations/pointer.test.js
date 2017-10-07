@@ -9,13 +9,13 @@ describe('pointer', () => {
     context = new D.Context()
   })
   it('should work', () => {
-    const root =D.atoms.dict({
+    const root = D.atoms.dict({
       a:D.atoms.dict({
         aa: D.atoms.box('aa'),
         bb: D.atoms.box('bb'),
       }),
     })
-    const aaP = root.prop('a').prop('aa').pointer()
+    const aaP = root.pointer().prop('a').prop('aa')
     expect(aaP.getValue()).toEqual('aa')
     root.prop('a').prop('aa').set('aa2')
     expect(aaP.getValue()).toEqual('aa2')
@@ -36,7 +36,7 @@ describe('pointer', () => {
         bb: D.atoms.box('bb'),
       }),
     })
-    const aaP = root.prop('a').prop('aa').pointer()
+    const aaP = root.pointer().prop('a').prop('aa')
     aaP.setDataVerseContext(context)
     const changes = []
     aaP.changes().tap((c) => {changes.push(c)})
@@ -87,6 +87,29 @@ describe('pointer', () => {
     foo.set('foo2')
     context.tick()
     expect(changes).toMatchObject(['foo2'])
+  });
+
+  (function(){
+    type RootType = D.IDictAtom<{
+      str: D.IBoxAtom<string>,
+      obj: D.IDictAtom<{
+        objStr: D.IBoxAtom<string>,
+      }>,
+    }>
+    const root: RootType = D.atoms.dict({
+      str: D.atoms.box('str'),
+      obj: D.atoms.dict({
+        objStr: D.atoms.box('str'),
+      }),
+    });
+
+    (root.prop('str').getValue(): string);
+    // $FlowExpectError
+    // (root.prop('str').getValue(): number);
+
+    // (root.pointer().getValue(): D.IDictAtom<{str: D.IBoxAtom<string>}>);
+    // (root.pointer().getValue(): number);
+    // (root.pointer().getValue(): D.IDictAtom<{str: D.IBoxAtom<number>}>);
 
   })
 })

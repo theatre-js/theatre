@@ -1,4 +1,4 @@
-// @flow
+
 import {default as atomifyDeep} from './atomifyDeep'
 import type {IArrayAtom} from './array'
 import type {IDictAtom} from './dict'

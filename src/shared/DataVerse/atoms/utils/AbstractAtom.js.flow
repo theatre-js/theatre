@@ -1,0 +1,16 @@
+// @flow
+import type {True, MapKey, Address} from '$shared/DataVerse/types'
+import type {ICompositeAtom} from './AbstractCompositeAtom'
+import type {default as Tappable} from '$shared/DataVerse/utils/Tappable'
+
+export type IAtom = {
+  isAtom: True,
+  unboxDeep(): mixed,
+  _setParent(p: ICompositeAtom, key: MapKey): void,
+  _unsetParent(): void,
+  changes(): Tappable<$IntentionalAny>, // shallow changes. Does not include what's removed
+  deepChanges(): Tappable<$IntentionalAny>, // deep changes. Includes an address
+  deepDiffs(): Tappable<$IntentionalAny>, // Unboxed changeset, from oldValue to newValue, including an address, deep
+  getAddress(): Address,
+  getParent(): ?ICompositeAtom,
+}

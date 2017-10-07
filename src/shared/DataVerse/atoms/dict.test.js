@@ -1,12 +1,32 @@
 // @flow
-// import DictAtom from './DictAtom'
 import box from './box'
 import atomifyDeep from './atomifyDeep'
+import * as D from '$shared/DataVerse'
 
 describe('DataVerse.atoms.dict', () => {
-  let o
+  let o: D.IDictAtom<{
+    foo: D.IBoxAtom<string>,
+    bar: D.IBoxAtom<string>,
+    obj: D.IDictAtom<{
+      str: D.IBoxAtom<string>,
+      innerObj: D.IDictAtom<{
+        a: D.IBoxAtom<number>,
+        b: D.IArrayAtom<D.IBoxAtom<number>>,
+      }>,
+    }>,
+  }>
   beforeEach(() => {
-    o = atomifyDeep({foo: 'foo', bar: 'bar', obj: {str: 'str', innerObj: {a: 1, b: [1, 2, 3]}}})
+    o = atomifyDeep({
+      foo: 'foo',
+      bar: 'bar',
+      obj: {
+        str: 'str',
+        innerObj: {
+          a: 1,
+          b: [1, 2, 3],
+        },
+      },
+    })
   })
   it('should allow getting and setting values', () => {
     expect(o.prop('foo').getValue()).toEqual('foo')

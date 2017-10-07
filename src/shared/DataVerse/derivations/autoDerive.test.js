@@ -10,7 +10,7 @@ describe('autoDerive', () => {
   })
 
   it('should work', () => {
-    const o =D.atoms.dict({
+    const o = D.atoms.dict({
       foo: D.atoms.box('foo'),
     })
     const fooPointer = o.pointer().prop('foo')

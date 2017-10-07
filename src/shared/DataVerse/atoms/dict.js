@@ -1,44 +1,67 @@
-// @flow
+
 import {default as AbstractCompositeAtom, type ICompositeAtom} from './utils/AbstractCompositeAtom'
 import forEach from 'lodash/forEach'
 import mapValues from 'lodash/mapValues'
 import type {IAtom} from './utils/AbstractAtom'
 import Tappable from '$shared/DataVerse/utils/Tappable'
-import Emitter from '$shared/DataVerse/utils/Emitter'
-import type {AddressedChangeset} from '$shared/DataVerse/types'
+// import Emitter from '$shared/DataVerse/utils/Emitter'
+import type {AddressedChangeset, True, False} from '$shared/DataVerse/types'
 import deriveFromDictAtom from '$shared/DataVerse/derivations/dicts/deriveFromDictAtom'
+import {type DecidePointerType, default as pointer} from '$shared/DataVerse/derivations/pointer'
 
 type Unboxed<O> = $FixMe // eslint-disable-line no-unused-vars
 export type DictAtomChangeType<O: {}> = {overriddenRefs: $Shape<O>, deletedKeys: Array<$Keys<O>>, addedKeys: Array<$Keys<O>>}
 export type DictAtomDeepChangeType<O> = AddressedChangeset & {type: 'MapChange'} & DictAtomChangeType<O>
 export type DictAtomDeepDiffType<O> = AddressedChangeset & {type: 'MapDiff', deepUnboxOfOldRefs: Unboxed<O>, deepUnboxOfNewRefs: Unboxed<O>, deletedKeys: Array<$Keys<O>>}
 
-export interface IDictAtom<O: {}> extends ICompositeAtom {
-  isDictAtom: true,
+export type IsDictAtom<V> = $ElementType<V, 'isDictAtom'>
+
+export type IDictAtom<O: {}> = {
+  isDictAtom: True,
+  isBoxAtom: False,
+  isArrayAtom: False,
+  _internalMap: O,
   setProp<K: $Keys<O>, V: $ElementType<O, K>>(key: K, value: V): DictAtom<O>,
   prop<K: $Keys<O>>(key: K): $ElementType<O, K>,
   deleteProp<K: $Keys<O>>(key: K): DictAtom<O>,
 
-  chnages: () => Tappable<DictAtomChangeType<O>>,
+  changes: () => Tappable<DictAtomChangeType<O>>,
   forEach: <K: $Keys<O>>(fn: ($ElementType<O, K>, K) => void | false) => void,
   keys: () => Array<$Keys<O>>,
   derivedDict: () => $FixMe,
+  pointer(): DecidePointerType<IDictAtom<O>>,
 }
 
-export class DictAtom<O: {}> extends AbstractCompositeAtom implements IDictAtom<O> {
-  isDictAtom = true
-  _internalMap: O
-  chnages: () => Tappable<DictAtomChangeType<O>>
-  _changeEmitter: Emitter<DictAtomChangeType<O>>
-  keys: () => Array<$Keys<O>>
-  forEach: <K: $Keys<O>>(fn: ($ElementType<O, K>, K) => void | false) => void
-  derivedDict: () => $FixMe
+interface _IDictAtom<O: {}> {
+  // isDictAtom: True,
+  // _internalMap: O,
+  // setProp<K: $Keys<O>, V: $ElementType<O, K>>(key: K, value: V): DictAtom<O>,
+  // prop<K: $Keys<O>>(key: K): $ElementType<O, K>,
+  // deleteProp<K: $Keys<O>>(key: K): DictAtom<O>,
 
-  constructor(o: O) {
+  // changes: () => Tappable<DictAtomChangeType<O>>,
+  // forEach: <K: $Keys<O>>(fn: ($ElementType<O, K>, K) => void | false) => void,
+  // keys: () => Array<$Keys<O>>,
+  // derivedDict: () => $FixMe,
+  // pointer(): DecidePointerType<IDictAtom<O>>,
+}
+
+export class DictAtom<O: {}> extends AbstractCompositeAtom implements _IDictAtom<O> {
+  isDictAtom = 'True'
+  _internalMap: O
+  // pointer: () => DecidePointerType<IDictAtom<O>>
+  // chnages: () => Tappable<DictAtomChangeType<O>>
+  // _changeEmitter: Emitter<DictAtomChangeType<O>>
+  // keys: () => Array<$Keys<O>>
+  // forEach: <K: $Keys<O>>(fn: ($ElementType<O, K>, K) => void | false) => void
+  // derivedDict: () => $FixMe
+
+  constructor(o: O): _IDictAtom<O> {
     super()
     this._internalMap = ({}: $IntentionalAny)
 
     this._assignInitialValue(o)
+    return this
   }
 
   unboxDeep(): $FixMe {
@@ -139,10 +162,18 @@ export class DictAtom<O: {}> extends AbstractCompositeAtom implements IDictAtom<
   }
 
   derivedDict() {
-    return deriveFromDictAtom(this)
+    return deriveFromDictAtom(((this: $IntentionalAny): IDictAtom<O>))
+  }
+
+  pointer() {
+    return (pointer({root: this, path: []}): $IntentionalAny)
   }
 }
 
 export default function dict<O: {}>(o: O): IDictAtom<O> {
-  return new DictAtom(o)
+  return (new DictAtom(o): $IntentionalAny)
+}
+
+export function isDictAtom(v) {
+  return v instanceof DictAtom
 }

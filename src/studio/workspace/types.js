@@ -1,23 +1,24 @@
 // @flow
 import {type ComponentID} from '$studio/componentModel/types'
+import * as D from '$shared/DataVerse'
 
 export type PanelId = string
 
-export type XY = {x: number, y: number}
+export type XY = D.ObjectLiteral<{x: D.PrimitiveLiteral<number>, y: D.PrimitiveLiteral<number>}>
 
-export type PanelSettings = {
+export type PanelSettings = D.ObjectLiteral<{
   pos: XY,
   dim: XY,
-}
+}>
 
-export type VisiblePanelsList = Array<PanelId>
+export type VisiblePanelsList = D.ArrayLiteral<D.PrimitiveLiteral<PanelId>>
 
-export type Panels = {
-  byId: {[key: PanelId]: PanelSettings},
+export type Panels = D.ObjectLiteral<{
+  byId: D.ObjectLiteral<{[key: PanelId]: PanelSettings}>,
   listOfVisibles: VisiblePanelsList,
-}
+}>
 
-export type WorkspaceNamespaceState = {
+export type WorkspaceNamespaceState = D.ObjectLiteral<{
   panels: Panels,
-  componentIDToBeRenderedAsCurrentCanvas: ?ComponentID,
-}
+  componentIDToBeRenderedAsCurrentCanvas: D.PrimitiveLiteral<?ComponentID>,
+}>

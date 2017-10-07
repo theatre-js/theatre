@@ -1,0 +1,39 @@
+// @flow
+import type {IAtom} from './utils/AbstractAtom'
+import type {AddressedChangeset, MapKey, True, False, Address} from '$shared/DataVerse/types'
+import type {default as Tappable} from '$shared/DataVerse/utils/Tappable'
+import type {IDerivation} from '$shared/DataVerse/derivations/types'
+
+export type BoxAtomChangeType<V> = V
+export type BoxAtomDeepChangeType<V> = AddressedChangeset & {type: 'BoxChange', newValue: BoxAtomChangeType<V>}
+export type BoxAtomDeepDiffType<V> = AddressedChangeset & {type: 'BoxDiff', oldValue: V, newValue: V}
+
+export type IsBoxAtom<V> = $ElementType<V, 'isBoxAtom'>
+
+export type IBoxAtom<V> = {
+  isDictAtom: False,
+  isBoxAtom: True,
+  isArrayAtom: False,
+  isAtom: True,
+  isCompositeAtom: False,
+
+  _value: V,
+  unboxDeep(): mixed,
+  getValue(): V,
+  set(v: V): IBoxAtom<V>,
+  deepChanges(): Tappable<BoxAtomDeepChangeType<V>>,
+  deepDiffs(): Tappable<BoxAtomDeepDiffType<V>>,
+  derivation(): IDerivation<V>,
+  changes(): Tappable<V>,
+
+  _setParent(p: $FixMe, key: MapKey): void,
+  _unsetParent(): void,
+  getAddress(): Address,
+  getParent(): ?$FixMe,
+}
+
+declare function box<V>(V): IBoxAtom<V>
+export default box
+
+declare var BoxAtom: Class<$FixMe>
+export {BoxAtom}

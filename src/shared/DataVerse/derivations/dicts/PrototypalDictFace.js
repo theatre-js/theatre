@@ -116,7 +116,7 @@ export default class DerivedDictFace {
     return this._changeEmitter
   }
 
-  pointer() {
+  pointer(): $FixMe {
     return pointer({root: this, path: []})
   }
 

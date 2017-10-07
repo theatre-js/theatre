@@ -4,33 +4,33 @@ import * as React from 'react'
 // import StudioRootComponent from './components/StudioRootComponent'
 // import LBCommunicator from './LBCommunicator'
 import initialState from './initialState'
-import * as DataVerse from '$shared/DataVerse'
+import * as D from '$shared/DataVerse'
 import {runSaga} from 'redux-saga'
 import rootSaga from './rootSaga'
 // import {type CoreState} from '$studio/types'
 import coreComponentDescriptorsById from '$studio/componentModel/coreComponentDescriptors'
 
 export default class TheStudioClass {
-  atom: * // $Call<typeof DataVerse.atomifyDeep, {state: CoreState, coreComponentDescriptors: typeof coreComponentDescriptors}>
-  dataverseContext: DataVerse.Context
+  atom: * // $Call<typeof D.atomifyDeep, {state: CoreState, coreComponentDescriptors: typeof coreComponentDescriptors}>
+  dataverseContext: D.Context
   _lastComponentInstanceId: number
   // _lbCommunicator: LBCommunicator
 
   constructor() {
     this._lastComponentInstanceId = 0
-    this.dataverseContext = new DataVerse.Context()
-    this.atom = DataVerse.atoms.atomifyDeep({
+    this.dataverseContext = new D.Context()
+    this.atom = D.atoms.atomifyDeep(D.literals.object({
       state: initialState,
       coreComponentDescriptorsById,
-      instances: {},
-    })
+      instances: D.literals.object({}),
+    }))
 
     if (process.env.NODE_ENV === 'development' && module.hot) {
       module.hot.accept(
         '$studio/componentModel/coreComponentDescriptors',
         () => {
           const newCoreComponentDescriptors = require('$studio/componentModel/coreComponentDescriptors').default
-          this.atom.setProp('coreComponentDescriptorsById', DataVerse.atoms.atomifyDeep(newCoreComponentDescriptors))
+          this.atom.setProp('coreComponentDescriptorsById', D.atoms.atomifyDeep(newCoreComponentDescriptors))
         }
       )
     }

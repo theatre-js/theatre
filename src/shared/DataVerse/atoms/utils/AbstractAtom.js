@@ -1,30 +1,41 @@
-// @flow
-import type {Address, MapKey} from '$shared/DataVerse/types'
+
+import type {Address, MapKey, True} from '$shared/DataVerse/types'
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import Tappable from '$shared/DataVerse/utils/Tappable'
 import type {ICompositeAtom} from './AbstractCompositeAtom'
 import type {IPointer} from '$shared/DataVerse/derivations/pointer'
 
-export interface IAtom {
-  isAtom: true,
-  +unboxDeep: () => mixed,
+export type IAtom = {
+  isAtom: True,
+  unboxDeep: () => mixed,
   _setParent(p: ICompositeAtom, key: MapKey): void,
   _unsetParent(): void,
   changes(): Tappable<$IntentionalAny>, // shallow changes. Does not include what's removed
   deepChanges(): Tappable<$IntentionalAny>, // deep changes. Includes an address
   deepDiffs(): Tappable<$IntentionalAny>, // Unboxed changeset, from oldValue to newValue, including an address, deep
-  isAtom: true,
   getAddress(): Address,
   getParent(): ?ICompositeAtom,
-  pointer() : IPointer<$FixMe>,
 }
 
-export default class AbstractAtom implements IAtom {
-  isAtom = true
+interface _IAtom {
+  // isAtom: True,
+  // +unboxDeep: () => mixed,
+  // _setParent(p: ICompositeAtom, key: MapKey): void,
+  // _unsetParent(): void,
+  // changes(): Tappable<$IntentionalAny>, // shallow changes. Does not include what's removed
+  // deepChanges(): Tappable<$IntentionalAny>, // deep changes. Includes an address
+  // deepDiffs(): Tappable<$IntentionalAny>, // Unboxed changeset, from oldValue to newValue, including an address, deep
+  // getAddress(): Address,
+  // getParent(): ?ICompositeAtom,
+}
+
+export default class AbstractAtom implements _IAtom {
+  isAtom = 'True'
   _changeEmitter: *
   _deepChangeEmitter: *
   _deepDiffEmitter: *
-  _parent: ?{atom: ICompositeAtom, key: MapKey}
+  _parent: $FixMe
+  // _parent: ?{atom: ICompositeAtom, key: MapKey}
   +unboxDeep: () => mixed
 
   constructor() {
@@ -75,9 +86,9 @@ export default class AbstractAtom implements IAtom {
     }
   }
 
-  pointer() {
-    return pointer.default(this.getAddress())
-  }
+  // pointer() {
+  //   return pointer.default(this.getAddress())
+  // }
 }
 
 const pointer = require('$shared/DataVerse/derivations/pointer')

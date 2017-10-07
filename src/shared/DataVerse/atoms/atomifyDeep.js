@@ -5,19 +5,41 @@ import {type IDictAtom, default as dict} from './dict'
 import {type IArrayAtom, default as array} from './array'
 import mapValues from 'lodash/mapValues'
 import {type IAtom, default as AbstractAtom} from './utils/AbstractAtom'
-// import type {If} from '../types'
-// import type {} from '../literals'
+import type {If} from '../types'
+import type {
+  IsArrayLiteral,
+  IsObjectLiteral,
+  ValueOfObjectLiteral,
+  IsPrimitiveLiteral,
+  ValueOfPrimitiveLiteral,
+  ValueOfArrayLiteral,
+} from '../literals'
 
-type InstanceOfAnyClass = {+constructor: Function}
+// type InstanceOfAnyClass = {+constructor: Function}
 
-type AtomifyDeepFn =
-  (<V: IAtom>(v: V) => V) &
-  // (<V, A: Array<V>>(a: A) => IArrayAtom<AtomifyDeepType<V>>) &
-  (<V, A: Array<V>>(a: A) => IArrayAtom<$Call<AtomifyDeepFn, V>>) &
-  (<V: InstanceOfAnyClass>(v: V) => IBoxAtom<V>) &
-  (<V: {}>(v: V) => IDictAtom<$ObjMap<V, AtomifyDeepFn>>) &
-  (<V>(v: V) => IBoxAtom<V>)
+// type AtomifyDeepFn =
+//   (<V: IAtom>(v: V) => V) &
+//   // (<V, A: Array<V>>(a: A) => IArrayAtom<AtomifyDeepType<V>>) &
+//   (<V, A: Array<V>>(a: A) => IArrayAtom<$Call<AtomifyDeepFn, V>>) &
+//   (<V: InstanceOfAnyClass>(v: V) => IBoxAtom<V>) &
+//   (<V: {}>(v: V) => IDictAtom<$ObjMap<V, AtomifyDeepFn>>) &
+//   (<V>(v: V) => IBoxAtom<V>)
 
+// type AtomifyDeepFn =
+//   <V>(V) => AtomifyDeepType<V>
+
+// type AtomifyDeepType<V> =
+//   If<
+//     IsObjectLiteral<V>, AtomifyDeepObject<ValueOfObjectLiteral<V>>,
+//     If<
+//       IsArrayLiteral<V>, IArrayAtom<AtomifyDeepType<ValueOfArrayLiteral<V>>>,
+//       If<
+//         IsPrimitiveLiteral<V>, IBoxAtom<ValueOfPrimitiveLiteral<V>>,
+//   IBoxAtom<V>>>>
+
+// type AtomifyDeepObject<O: {}> = IDictAtom<$ObjMap<O, AtomifyDeepFn>>
+
+export type AtomifyDeepFn = $FixMe
 
 // type AtomifyDeepArray<V, A: Array<V>> = IArrayAtom<AtomifyDeepType<V>>
 // type AtomifyDeepAtom<V: IAtom> = V

@@ -1,10 +1,46 @@
 // @flow
-import type {Address, MapKey} from '$shared/DataVerse/types'
+import type {Address, MapKey, If} from '$shared/DataVerse/types'
+import type {IsDictAtom, IDictAtom} from '$shared/DataVerse/atoms/dict'
+import type {IsBoxAtom} from '$shared/DataVerse/atoms/box'
+import type {IsArrayAtom, IArrayAtom} from '$shared/DataVerse/atoms/array'
 import AbstractDerivation from './AbstractDerivation'
-// import * as D from '$shared/DataVerse'
 import type {IDerivation} from './types'
 
-export interface IPointer<V> extends IDerivation<V> {
+export type DecidePointerType<V> =
+  If<IsDictAtom<V>, IPointerToDictAtom<$ElementType<V, '_internalMap'>>,
+  If<IsArrayAtom<V>, IPointerToArrayAtom<$ElementType<V, '_v'>>,
+  If<IsBoxAtom<V>, IPointerToBoxAtom<$ElementType<V, '_value'>>,
+  IPointerToVoid>>>
+
+type DecideDerivationType<V> =
+  If<IsDictAtom<V>, V, void>
+
+type IPointerToDictAtom<O: {}> = IDerivation<IDictAtom<O>> & {
+  prop<K: $Keys<O>>(K): DecidePointerType<$ElementType<O, K>>,
+  pointer(): IPointerToDictAtom<O>,
+  index(?number): IPointerToVoid,
+}
+
+type IPointerToArrayAtom<V> = IDerivation<IArrayAtom<V>> & {
+  prop(?MapKey): IPointerToVoid,
+  pointer(): IPointerToArrayAtom<V>,
+  index(number): DecidePointerType<V>,
+}
+
+type IPointerToVoid = IDerivation<void> & {
+  prop(?MapKey): IPointerToVoid,
+  pointer(): IPointerToVoid,
+  index(?number): IPointerToVoid,
+}
+
+type IPointerToBoxAtom<V> = IDerivation<V> & {
+  prop(?MapKey): IPointerToVoid,
+  pointer(): IPointerToVoid,
+  index(?number): IPointerToVoid,
+  getValue(): V,
+}
+
+export interface IPointer<V> extends IDerivation<DecideDerivationType<V>> {
   prop(key: MapKey): IPointer<$FixMe>,
   index(key: number): IPointer<$FixMe>,
   pointer(): IPointer<V>,
@@ -49,7 +85,6 @@ export class PointerDerivation extends AbstractDerivation implements IPointer<$F
   _makeDerivation() {
     let finalDerivation = modules.constant.default(this._address.root)
     this._address.path.forEach((key) => {
-      // $FixMe
       finalDerivation = finalDerivation.flatMap((possibleReactiveValue) => {
         if (possibleReactiveValue === PointerDerivation.NOTFOUND || possibleReactiveValue === undefined) {
           return PointerDerivation.NOTFOUND
@@ -85,7 +120,7 @@ export class PointerDerivation extends AbstractDerivation implements IPointer<$F
   }
 }
 
-export default function pointer(address: Address): IPointer<$FixMe> {
+export default function pointer(address: Address): mixed {
   return new PointerDerivation(address)
 }
 

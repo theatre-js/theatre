@@ -1,11 +1,11 @@
-// @flow
+
 
 import {default as AbstractCompositeAtom, type ICompositeAtom} from './utils/AbstractCompositeAtom'
 import {forEach} from 'lodash'
 import type {IAtom} from './utils/AbstractAtom'
 import Tappable from '$shared/DataVerse/utils/Tappable'
 import Emitter from '$shared/DataVerse/utils/Emitter'
-import type {AddressedChangeset, MapKey} from '$shared/DataVerse/types'
+import type {AddressedChangeset, MapKey, True, False, Address} from '$shared/DataVerse/types'
 import range from 'lodash/range'
 
 type Unboxed<O> = $FixMe // eslint-disable-line no-unused-vars
@@ -41,8 +41,11 @@ const deepDiffDescriptor = (startIndex: number, deletedRefsDeeplyUnboxed: Array<
   deepUnboxOfAddedRows: addedRefsDeeplyUnboxed,
 })
 
-export interface IArrayAtom<V: IAtom> extends IAtom, ICompositeAtom {
-  isArrayAtom: true,
+export type IArrayAtom<V: IAtom> = {
+  isDictAtom: False,
+  isBoxAtom: False,
+  isArrayAtom: True,
+  _v: V,
   setIndex(key: number, v: V): $FixMe,
   index(index: number): V,
   push(rows: Array<V>): void,
@@ -54,16 +57,40 @@ export interface IArrayAtom<V: IAtom> extends IAtom, ICompositeAtom {
   unshift(row: V): void,
 
   chnages: () => Tappable<ArrayAtomChangeType<V>>,
+  deepChanges: () => Tappable<$FixMe>,
+  deepDiffs: () => Tappable<$FixMe>,
+
+  _setParent(p: $FixMe, key: MapKey): void,
+  _unsetParent(): void,
+  getAddress(): Address,
+  getParent(): ?$FixMe,
 }
 
-export class ArrayAtom<V: IAtom> extends AbstractCompositeAtom implements IArrayAtom<V> {
-  isArrayAtom = true
+interface _IArrayAtom<V: IAtom> {
+  // isArrayAtom: True,
+  // _v: V,
+  // setIndex(key: number, v: V): $FixMe,
+  // index(index: number): V,
+  // push(rows: Array<V>): void,
+  // splice(startIndex: number, deleteCount: number, toAdd: Array<V>): void,
+  // pop(): ?V,
+  // shift(): ?V,
+  // head(): ?V,
+  // last(): ?V,
+  // unshift(row: V): void,
+
+  // chnages: () => Tappable<ArrayAtomChangeType<V>>,
+}
+
+export class ArrayAtom<V: IAtom> extends AbstractCompositeAtom implements _IArrayAtom<V> {
+  isArrayAtom = 'True'
+  _v: V
   _internalArray: Array<$FixMe>
   chnages: () => Tappable<ArrayAtomChangeType<V>>
   _changeEmitter: Emitter<ArrayAtomChangeType<V>>
   _refToIndex: *
 
-  constructor(a: Array<V>) {
+  constructor(a: Array<V>): _IArrayAtom<V> {
     super()
     this._internalArray = []
     this._refToIndex = new Map()
@@ -71,6 +98,7 @@ export class ArrayAtom<V: IAtom> extends AbstractCompositeAtom implements IArray
     forEach(a, (value: V) => {
       this._pushWithoutInvokingEvents(value)
     })
+    return this
   }
 
   _pushWithoutInvokingEvents(value: V) {
@@ -171,5 +199,5 @@ export class ArrayAtom<V: IAtom> extends AbstractCompositeAtom implements IArray
 }
 
 export default function array<V: IAtom>(a: Array<V>): IArrayAtom<V> {
-  return new ArrayAtom(a)
+  return (new ArrayAtom(a): $IntentionalAny)
 }

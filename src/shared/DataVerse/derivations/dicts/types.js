@@ -12,5 +12,5 @@ export interface IDerivedDict<O: {}> {
   prop<K: $Keys<O>>(K): IDerivation<$FixMe>,
   changes(): Tappable<ChangeType<O>>,
   keys(): Array<$Keys<O>>,
-  pointer(): IPointer<$FixMe>,
+  pointer(): $FixMe,
 }

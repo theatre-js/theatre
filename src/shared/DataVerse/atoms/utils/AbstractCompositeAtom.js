@@ -1,4 +1,4 @@
-// @flow
+
 import {default as AbstractAtom, type IAtom} from './AbstractAtom'
 import type {BoxAtomDeepChangeType, BoxAtomDeepDiffType} from '../box'
 import type {DictAtomDeepChangeType, DictAtomDeepDiffType} from '../dict'
@@ -12,7 +12,7 @@ import type {MapKey} from '$shared/DataVerse/types'
 export type AllDeepChangeTypes = BoxAtomDeepChangeType<any> | DictAtomDeepChangeType<any> | ArrayAtomDeepChangeType<any>
 export type AllDeepDiffTypes = BoxAtomDeepDiffType<any> | DictAtomDeepDiffType<any> | ArrayAtomDeepDiffType<any>
 
-export interface ICompositeAtom extends IAtom {
+export type ICompositeAtom = IAtom & {
   isCompositeAtom: true,
   deepChanges(): Tappable<AllDeepChangeTypes>, // deep changes. Includes an address
   deepDiffs(): Tappable<AllDeepDiffTypes>, // Unboxed changeset, from oldValue to newValue, including an address, deep
@@ -21,7 +21,16 @@ export interface ICompositeAtom extends IAtom {
   getAddressTo(addressSoFar?: Array<MapKey>): Address,
 }
 
-export default class AbstractCompositeAtom extends AbstractAtom implements ICompositeAtom {
+interface _ICompositeAtom {
+  // isCompositeAtom: true,
+  // deepChanges(): Tappable<AllDeepChangeTypes>, // deep changes. Includes an address
+  // deepDiffs(): Tappable<AllDeepDiffTypes>, // Unboxed changeset, from oldValue to newValue, including an address, deep
+  // _adopt(key: MapKey, value: IAtom): void,
+  // _unadopt(key: MapKey, value: IAtom): void,
+  // getAddressTo(addressSoFar?: Array<MapKey>): Address,
+}
+
+export default class AbstractCompositeAtom extends AbstractAtom implements _ICompositeAtom {
   isCompositeAtom = true
   _deepChangeUntappersForEachChild: *
   _deepDiffUntappersForEachChild: *

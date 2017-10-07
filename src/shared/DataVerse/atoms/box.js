@@ -1,27 +1,46 @@
-// @flow
 import {default as AbstractAtom, type IAtom} from './utils/AbstractAtom'
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import Tappable from '$shared/DataVerse/utils/Tappable'
-import type {AddressedChangeset} from '$shared/DataVerse/types'
+import type {AddressedChangeset, True, False, MapKey, Address} from '$shared/DataVerse/types'
 import type {IDerivation} from '$shared/DataVerse/derivations/types'
 
 export type BoxAtomChangeType<V> = V
 export type BoxAtomDeepChangeType<V> = AddressedChangeset & {type: 'BoxChange', newValue: BoxAtomChangeType<V>}
 export type BoxAtomDeepDiffType<V> = AddressedChangeset & {type: 'BoxDiff', oldValue: V, newValue: V}
 
-export interface IBoxAtom<V> extends IAtom  {
-  isSingleAtom: true,
+export type IBoxAtom<V> = {
+  isDictAtom: False,
+  isBoxAtom: True,
+  isArrayAtom: False,
+  _value: V,
   unboxDeep(): V,
   getValue(): V,
-  set(v: V): IBoxAtom<V>,
+  set(v: V): _IBoxAtom<V>,
   deepChanges: () => Tappable<BoxAtomDeepChangeType<V>>,
   deepDiffs: () => Tappable<BoxAtomDeepDiffType<V>>,
   derivation: () => IDerivation<V>,
+  changes: () => Tappable<V>,
+
+  _setParent(p: $FixMe, key: MapKey): void,
+  _unsetParent(): void,
+  getAddress(): Address,
+  getParent(): ?$FixMe,
+}
+
+interface _IBoxAtom<V> {
+  // isBoxAtom: True,
+  // _value: V,
+  // unboxDeep(): V,
+  // getValue(): V,
+  // set(v: V): _IBoxAtom<V>,
+  // deepChanges: () => Tappable<BoxAtomDeepChangeType<V>>,
+  // deepDiffs: () => Tappable<BoxAtomDeepDiffType<V>>,
+  // derivation: () => IDerivation<V>,
 }
 
 
-export class BoxAtom<V> extends AbstractAtom implements IBoxAtom<V> {
-  isSingleAtom = true
+export class BoxAtom<V> extends AbstractAtom implements _IBoxAtom<V> {
+  isBoxAtom = 'True'
   _value: V
 
   _changeEmitter: Emitter<BoxAtomChangeType<V>>
@@ -35,9 +54,10 @@ export class BoxAtom<V> extends AbstractAtom implements IBoxAtom<V> {
 
   derivation: () => IDerivation<V>
 
-  constructor(v: V) {
+  constructor(v: V): _IBoxAtom<V> {
     super()
     this._value = v
+    return this
   }
 
   unboxDeep(): V {
@@ -74,5 +94,5 @@ export class BoxAtom<V> extends AbstractAtom implements IBoxAtom<V> {
 }
 
 export default function box<V>(v: V): IBoxAtom<V> {
-  return new BoxAtom(v)
+  return (new BoxAtom(v): $IntentionalAny)
 }

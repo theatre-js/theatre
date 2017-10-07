@@ -5,24 +5,24 @@ import type {IDerivation} from '../types'
 
 const noop = () => {}
 
-export class DerivationOfAPropOfADictAtom extends AbstractDerivation implements IDerivation<$FixMe> {
-  _mapAtom: IDictAtom<$FixMe>
+export class DerivationOfAPropOfADictAtom<O: {}> extends AbstractDerivation implements IDerivation<$FixMe> {
+  _dictAtom: IDictAtom<O>
   _untapFromDictAtomChanges: Function
-  _propName: string | number
+  _propName: $Keys<O>
 
-  constructor(mapAtom: IDictAtom<$FixMe>, propName: string | number) {
+  constructor(dictAtom: IDictAtom<O>, propName: $Keys<O>) {
     super()
-    this._mapAtom = mapAtom
+    this._dictAtom = dictAtom
     this._propName = propName
     this._untapFromDictAtomChanges = noop
   }
 
   _recalculate() {
-    return this._mapAtom.prop((this._propName: $FixMe))
+    return this._dictAtom.prop((this._propName: $FixMe))
   }
 
   _keepUptodate() {
-    this._untapFromDictAtomChanges = this._mapAtom.changes().tap((changes) => {
+    this._untapFromDictAtomChanges = this._dictAtom.changes().tap((changes) => {
       if (changes.overriddenRefs.hasOwnProperty(this._propName) || changes.deletedKeys.indexOf(this._propName) !== -1)
         this._youMayNeedToUpdateYourself(this)
     })
