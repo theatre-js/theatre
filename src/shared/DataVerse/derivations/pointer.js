@@ -76,7 +76,7 @@ const noBoxAtoms = (v) => {
 }
 
 export class PointerDerivation extends AbstractDerivation implements _IPointer<$FixMe> {
-  static NOTFOUND = undefined //Symbol('notfound')
+  static NOTFOUND: void = undefined //Symbol('notfound')
   _address: Address
   _internalDerivation: ?IDerivation<$FixMe>
   getValue: () => $FixMe
@@ -114,6 +114,7 @@ export class PointerDerivation extends AbstractDerivation implements _IPointer<$
         } else if (possibleReactiveValue instanceof modules.array.ArrayAtom && typeof key === 'number') {
           return modules.deriveFromIndexOfArrayAtom.default(possibleReactiveValue, key)
         } else if (possibleReactiveValue instanceof modules.PrototypalDictFace.default || possibleReactiveValue instanceof PointerDerivation || possibleReactiveValue instanceof modules.AbstractDerivedDict.default) {
+          // $FixMe
           return possibleReactiveValue.prop(key)
         } else {
           return undefined

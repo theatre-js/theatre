@@ -26,9 +26,15 @@ export interface IDerivation<V> {
 
   changes(): Tappable<V>,
 
-  map<T>(fn: (V) => T): IDerivation<T>,
-  flatMap<T>(fn: (V) => T): $Call<FlattenDeepFn, IDerivation<T>, 1>,
-  flatten: () => $Call<FlattenDeepFn, IDerivation<V>, 1>,
+  map<R, Fn: (V) => R>(Fn): IDerivation<R>,
+  flatMap<R, T: IDerivation<R>, Fn: (V) => R | T>(fn: Fn): IDerivation<R>,
+  // flatMap<R, Fn: (V) => R>(fn: Fn): IDerivation<R>,
+  // flatMap<R, T: IDerivation<R>, Fn: (V) => T>(fn: Fn): IDerivation<R>,
+  // flatMap: (
+  //   & (<R, T: IDerivation<R>, Fn: (V) => T>(fn: Fn) => IDerivation<R>)
+  //   & (<R, Fn: (V) => R>(fn: Fn) => IDerivation<R>)
+  //   ),
+  flatten(): $Call<FlattenDeepFn, IDerivation<V>, 1>,
 
   // This is byggy. Flow can't handle all these cases properly
   flattenDeep<D: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7, P: IDerivation<V>>(depth: D): $Call<FlattenDeepFn, P, D>,

@@ -74,7 +74,7 @@ export default function makeReactiveComponent({modifyPrototypalDict, displayName
 
       const finalPrototypalDict =
         this._basePrototypalDictD
-        // $FixMe
+
         .flatMap((basePrototypalDict) => modifyPrototypalDict(basePrototypalDict, props.studio.dataverseContext))
         .flatMap((prototypalDictWithoutModifiers) => {
           return this._atom.prop('listOfModifierInstantiationDescriptorIDs').flatMap((listOfModifierInstantiationDescriptorIDs: D.IDerivedArray<$FixMe>) => {
@@ -90,7 +90,7 @@ export default function makeReactiveComponent({modifyPrototypalDict, displayName
         })
 
       this._finalFace =
-        // $FixMe
+
         new D.derivations.PrototypalDictFace(finalPrototypalDict.getValue(), props.studio.dataverseContext)
 
       const untapFromPrototypalMapChanges = finalPrototypalDict.setDataVerseContext(props.studio.dataverseContext).changes().tap((newFinalPrototypalDict) => {

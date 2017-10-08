@@ -24,8 +24,9 @@ export type IBoxAtom<V> = {
   set(v: V): IBoxAtom<V>,
   deepChanges(): Tappable<BoxAtomDeepChangeType<V>>,
   deepDiffs(): Tappable<BoxAtomDeepDiffType<V>>,
-  derivation(): IDerivation<V>,
   changes(): Tappable<V>,
+
+  derivation(): IDerivation<V>,
 
   _setParent(p: $FixMe, key: MapKey): void,
   _unsetParent(): void,

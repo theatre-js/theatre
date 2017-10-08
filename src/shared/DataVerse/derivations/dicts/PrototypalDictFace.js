@@ -162,6 +162,7 @@ export default class DerivedDictFace {
     } else {
       const lid = layerId
       const constructor = (layer: $FixMe).derivedDict._getConstructor(key)
+
       derivation = notFoundDerivation.flatMap(() => constructor(new ConstructorArg(this, lid)))
     }
 

@@ -22,7 +22,7 @@ describe('withDeps', () => {
   it('should still work', () => {
     const a = withDeps({}, () => 2)
     const b = withDeps({}, () => 3)
-    const c = a.flatMap((thisGonnaBeTwo) => withDeps({b}, ({b}) => b.getValue() + thisGonnaBeTwo))
+    const c = a.flatMap((thisGonnaBeTwo): D.IDerivation<number> => withDeps({b}, ({b}) => b.getValue() + thisGonnaBeTwo))
     expect(c.getValue()).toEqual(5)
   })
 
@@ -30,9 +30,25 @@ describe('withDeps', () => {
     // debugger
     const a = D.atoms.box(1)
     const b = D.atoms.box(3)
-    const aD = a.derivation()
-    const bD = b.derivation()
-    const final = aD.flatMap((n) => bD.map((m) => m + n))
+    const aD = a.derivation();
+    (aD.getValue(): number);
+    // $FlowExpectError
+    (aD.getValue(): string)
+
+    const bD = b.derivation();
+    (bD.map((m) => m + 1).getValue(): number);
+    // $FlowExpectError
+    (bD.map((m) => m + 1).getValue(): string);
+    // $FlowExpectError
+    (bD.map((m: string) => m + 'hi'));
+
+    (bD.flatMap((m) => m + 1).getValue(): number);
+    // $FlowExpectError
+    (bD.flatMap((m) => m + 1).getValue(): string);
+
+    (bD.flatMap((m) => D.derivations.constant(m + 1)).getValue(): number);
+
+    const final = aD.flatMap((n): D.IDerivation<number> => bD.map((m) => m + n))
 
     expect(final.getValue()).toEqual(4)
     a.set(2)
