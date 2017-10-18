@@ -1,6 +1,6 @@
 // @flow
 import * as React from 'react'
-import {type ComponentInstantiationDescriptor, type ComponentDescriptor} from '$studio/componentModel/types'
+// import {type ComponentInstantiationDescriptor, type ComponentDescriptor} from '$studio/componentModel/types'
 import * as D from '$shared/DataVerse'
 import {makeReactiveComponent} from '$studio/handy'
 import ElementifyHardCodedComponent from './ElementifyHardCodedComponent'
@@ -28,7 +28,7 @@ const getAliasLessComponentDescriptor = (initialComponentId: D.IDerivation<strin
 
     return des.pointer().prop('type').flatMap((type) => {
       if (type === 'Alias') {
-        return des.pointer().prop('aliasedComponentID').flatMap((aliasedComponentID) => getAliasLessComponentDescriptor(D.derivations.constant(aliasedComponentID), studio))
+        return des.pointer().prop('aliasedComponentId').flatMap((aliasedComponentId) => getAliasLessComponentDescriptor(D.derivations.constant(aliasedComponentId), studio))
       } else {
         return des
       }
@@ -41,23 +41,28 @@ export default makeReactiveComponent({
   modifyPrototypalDict: (d) => d.extend({
     render(d) {
       const instantiationDescriptorPointer = d.pointer().prop('props').prop('instantiationDescriptor')
-      const componentIDPointer = instantiationDescriptorPointer.prop('componentID')
+      const componentIdP = instantiationDescriptorPointer.prop('componentId')
       return getAliasLessComponentDescriptor(
-        componentIDPointer, d.pointer().prop('studio')
+        componentIdP, d.pointer().prop('studio')
       ).flatMap((componentDescriptor) => {
         if (!componentDescriptor) return D.derivations.autoDerive(() => {
 
-          return <div>Cannot find component {componentIDPointer.getValue()}</div>
+          return <div>Cannot find component {componentIdP.getValue()}</div>
         })
 
-        const componentDescriptorPointer = componentDescriptor.pointer()
-        const componentDescriptorTypePointer = componentDescriptorPointer.prop('type')
+        // console.log(componentIdP.getValue(), instantiationDescriptorPointer.prop('modifierInstantiationDescriptors').getValue())
+        // setTimeout(() => {
+        //   console.log(instantiationDescriptorPointer._trace)
+        // }, 200)
+        console.log(instantiationDescriptorPointer)
+
+        const componentDescriptorP = componentDescriptor.pointer()
+        const componentDescriptorTypePointer = componentDescriptorP.prop('type')
         const keyPointer = d.pointer().prop('key')
         const innerProps = D.atoms.dict({
-          componentDescriptor: componentDescriptorPointer,
+          componentDescriptor: componentDescriptorP,
           props: instantiationDescriptorPointer.prop('props'),
-          modifierInstantiationDescriptorsByID: instantiationDescriptorPointer.prop('modifierInstantiationDescriptorsByID'),
-          listOfModifierInstantiationDescriptorIDs: instantiationDescriptorPointer.prop('listOfModifierInstantiationDescriptorIDs'),
+          modifierInstantiationDescriptors: instantiationDescriptorPointer.prop('modifierInstantiationDescriptors'),
         }).derivedDict()
 
         return D.derivations.autoDerive(() => {

@@ -25,6 +25,6 @@ export class WithDepsDerivation<V, O: {}> extends AbstractDerivation implements 
   }
 }
 
-export default function withDeps<V, O: {[key: mixed]: IDerivation<*>}>(deps: O, fn: (dependencies: O) => V): IDerivation<V> {
+export default function withDeps<V, O: {}>(deps: O, fn: (dependencies: O) => V): IDerivation<V> {
   return new WithDepsDerivation(deps, fn)
 }

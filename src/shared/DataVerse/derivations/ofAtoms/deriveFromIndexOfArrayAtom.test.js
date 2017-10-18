@@ -18,6 +18,7 @@ describe('deriveFromIndexOfArrayAtom', () => {
     a.setIndex(4, D.atoms.box('41'))
     context.tick()
     expect(changes).toHaveLength(0)
+
     a.setIndex(3, D.atoms.box('31'))
     context.tick()
     expect(changes).toMatchObject(['31'])
@@ -28,7 +29,5 @@ describe('deriveFromIndexOfArrayAtom', () => {
     a.splice(2, 0, [D.atoms.box('blah')])
     context.tick()
     expect(changes).toHaveLength(3)
-
-    expect(changes[0]).toEqual(a.index(0))
   })
 })

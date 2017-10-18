@@ -1,7 +1,6 @@
 // @flow
 import type {Address, MapKey, If, True, False} from '$shared/DataVerse/types'
 import type {IsDictAtom, IDictAtom} from '$shared/DataVerse/atoms/dict'
-import type {IsBoxAtom} from '$shared/DataVerse/atoms/box'
 import type {IsArrayAtom, IArrayAtom} from '$shared/DataVerse/atoms/array'
 import AbstractDerivation from './AbstractDerivation'
 import type {IDerivation} from './types'
@@ -34,21 +33,21 @@ type BasePointer = {
   isAtom: False,
 }
 
-type IPointerToDictAtom<O: {}> = BasePointer & IDerivation<IDictAtom<O>> & {
+export type IPointerToDictAtom<O: {}> = BasePointer & IDerivation<IDictAtom<O>> & {
   _type: O,
   prop<K: $Keys<O>>(K): DecidePointerType<$ElementType<O, K>>,
   pointer(): IPointerToDictAtom<O>,
   index(?number): IPointerToVoid,
 }
 
-type IPointerToArrayAtom<V> = BasePointer & IDerivation<IArrayAtom<V>> & {
+export type IPointerToArrayAtom<V> = BasePointer & IDerivation<IArrayAtom<V>> & {
   _type: V,
   prop($IntentionalAny): IPointerToVoid,
   pointer(): IPointerToArrayAtom<V>,
   index(number): DecidePointerType<V>,
 }
 
-type IPointerToVoid = BasePointer & IDerivation<void> & {
+export type IPointerToVoid = BasePointer & IDerivation<void> & {
   prop($IntentionalAny): IPointerToVoid,
   pointer(): IPointerToVoid,
   index(?number): IPointerToVoid,
@@ -57,7 +56,7 @@ type IPointerToVoid = BasePointer & IDerivation<void> & {
 export type IPointerToBoxAtom<V> = BasePointer & IDerivation<V> & {
   _type: V,
   prop($IntentionalAny): IPointerToVoid,
-  pointer(): IPointerToVoid,
+  pointer(): IPointerToBoxAtom<V>,
   index(?number): IPointerToVoid,
 }
 
@@ -65,6 +64,7 @@ interface _IPointer<V> {
   prop(key: MapKey): _IPointer<$FixMe>,
   index(key: number): _IPointer<$FixMe>,
   pointer(): _IPointer<V>,
+  // derivation(): IDerivation<V>,
 }
 
 const noBoxAtoms = (v) => {
@@ -75,6 +75,14 @@ const noBoxAtoms = (v) => {
   }
 }
 
+let lastPointerId = 0
+let pointerFlatMaps = 0
+
+setTimeout(() => {
+  console.log('pointers:', lastPointerId)
+  console.log('pointerFlatMaps:', pointerFlatMaps)
+}, 200)
+
 export class PointerDerivation extends AbstractDerivation implements _IPointer<$FixMe> {
   static NOTFOUND: void = undefined //Symbol('notfound')
   _address: Address
@@ -83,30 +91,28 @@ export class PointerDerivation extends AbstractDerivation implements _IPointer<$
 
   constructor(address: Address) {
     super()
+    lastPointerId++
     this._address = address
     this._internalDerivation = undefined
-    // this._internalDerivation._addDependent(this)
+    this._props = {}
   }
 
   prop(key: MapKey) {
-    return new PointerDerivation({...this._address, path: [...this._address.path, key]})
+    if (!this._props[key]) {
+      this._props[key] = new PointerDerivation({...this._address, path: [...this._address.path, key]})
+    }
+    return this._props[key]
   }
 
   index(key: number) {
     return new PointerDerivation({...this._address, path: [...this._address.path, key]})
   }
 
-  _getInternalDerivation(): IDerivation<$FixMe> {
-    if (!this._internalDerivation) {
-      this._internalDerivation = this._makeDerivation()
-    }
-    return this._internalDerivation
-  }
-
   _makeDerivation() {
     let finalDerivation = modules.constant.default(this._address.root)
     this._address.path.forEach((key) => {
       finalDerivation = finalDerivation.flatMap((possibleReactiveValue) => {
+        pointerFlatMaps++
         if (possibleReactiveValue === PointerDerivation.NOTFOUND || possibleReactiveValue === undefined) {
           return PointerDerivation.NOTFOUND
         } else if (possibleReactiveValue instanceof modules.dict.DictAtom) {
@@ -119,13 +125,21 @@ export class PointerDerivation extends AbstractDerivation implements _IPointer<$
         } else {
           return undefined
         }
-      }).flatMap(noBoxAtoms)
+      })//.flatMap(noBoxAtoms)
     })
 
+    finalDerivation = finalDerivation.flatMap(noBoxAtoms)
+
     this._addDependency(finalDerivation)
-    // finalDerivation._addDependent(this)
 
     return finalDerivation
+  }
+
+  _getInternalDerivation(): IDerivation<$FixMe> {
+    if (!this._internalDerivation) {
+      this._internalDerivation = this._makeDerivation()
+    }
+    return this._internalDerivation
   }
 
   _recalculate() {
@@ -150,9 +164,8 @@ const modules = {
   constant: require('./constant'),
   deriveFromPropOfADictAtom: require('./ofAtoms/deriveFromPropOfADictAtom'),
   deriveFromIndexOfArrayAtom: require('./ofAtoms/deriveFromIndexOfArrayAtom'),
-  propOfDerivedDictFace: require('./dicts/propOfDerivedDictFace'),
   deriveFromBoxAtom: require('./ofAtoms/deriveFromBoxAtom'),
-  PrototypalDictFace: require('./dicts/PrototypalDictFace'),
+  PrototypalDictFace: require('./prototypalDict/PrototypalDictFace'),
   AbstractDerivedDict: require('./dicts/AbstractDerivedDict'),
   box: require('$shared/DataVerse/atoms/box'),
   dict: require('$shared/DataVerse/atoms/dict'),

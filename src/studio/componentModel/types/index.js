@@ -4,24 +4,24 @@ import type {DeclarativeComponentDescriptor} from './declarative'
 /*:: export type * from './declarative' */
 import * as D from '$shared/DataVerse'
 
-// @todo maybe this should be an opaque type given that not any string is a valid ComponentID
-export type ComponentID = string
+// @todo maybe this should be an opaque type given that not any string is a valid ComponentId
+export type ComponentId = string
 
 export type ComponentInstantiationDescriptor = {|
-  componentID: ComponentID,
+  componentId: ComponentId,
   props: {[key: string]: $FixMe},
-  modifierInstantiationDescriptorsByID: {[id: string]: $FixMe},
-  listOfModifierInstantiationDescriptorIDs: Array<string>,
+  modifierInstantiationDescriptorsById: {[id: string]: $FixMe},
+  listOfModifierInstantiationDescriptorIds: Array<string>,
 |}
 
 export type AliasComponentDescriptor = {|
-  id: ComponentID,
+  id: ComponentId,
   type: 'Alias',
-  aliasedComponentID: ComponentID,
+  aliasedComponentId: ComponentId,
 |}
 
 export type HardCodedComponentDescriptor = {|
-  id: ComponentID,
+  id: ComponentId,
   type: 'HardCoded',
   reactComponent: ReactComponentType<$FixMe>,
 |}
@@ -30,9 +30,9 @@ export type ComponentDescriptor =
   DeclarativeComponentDescriptor | AliasComponentDescriptor | HardCodedComponentDescriptor
 
 // export type ComponentModelNamespaceState = {|
-//   componentDescriptorsById: {[id: ComponentID]: ComponentDescriptor},
+//   componentDescriptorsById: {[id: ComponentId]: ComponentDescriptor},
 // |}
 
 export type ComponentModelNamespaceState = D.ObjectLiteral<{|
-  componentDescriptorsById: D.ObjectLiteral<{[id: ComponentID]: ComponentDescriptor}>,
+  componentDescriptorsById: D.ObjectLiteral<{[id: ComponentId]: ComponentDescriptor}>,
 |}>

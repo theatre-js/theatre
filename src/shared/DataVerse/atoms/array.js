@@ -62,7 +62,7 @@ export type IArrayAtom<V: IAtom> = {
 
   _setParent(p: $FixMe, key: MapKey): void,
   _unsetParent(): void,
-  getAddress(): Address,
+  // getAddress(): Address,
   getParent(): ?$FixMe,
 }
 

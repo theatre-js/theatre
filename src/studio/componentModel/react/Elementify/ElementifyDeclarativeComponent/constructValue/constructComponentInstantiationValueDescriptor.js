@@ -1,19 +1,21 @@
 // @flow
 import {D, Elementify} from '$studio/handy'
 import constructMapDescriptor from './constructMapDescriptor'
+// import constructListDescriptor from './constructListDescriptor'
 import * as React from 'react'
 
 const constructComponentInstantiationValueDescriptor = (des: $FixMe, d: $FixMe) => {
   const propsToFinalComponent = constructMapDescriptor(des.pointer().prop('props'), d)
-  // console.log('---', des.pointer().prop('props').getValue(), des.pointer().prop('modifierInstantiationDescriptorsByID').getValue())
-  const modifierInstantiationDescriptorsByID = constructMapDescriptor(des.pointer().prop('modifierInstantiationDescriptorsByID'), d)
-  // console.log(modifierInstantiationDescriptorsByID, 'bb')
+  const modifierInstantiationDescriptors = des.pointer().prop('modifierInstantiationDescriptors')
 
   const propsToElementifyP = D.atoms.dict({
     instantiationDescriptor:D.atoms.dict({
-      componentID: D.atoms.box(des.pointer().prop('componentID')),
+      componentId: D.atoms.box(des.pointer().prop('componentId')),
       props: propsToFinalComponent,
-      modifierInstantiationDescriptorsByID,
+      modifierInstantiationDescriptors: D.atoms.dict({
+        byId: constructMapDescriptor(modifierInstantiationDescriptors.prop('byId'), d),
+        // list: constructListDescriptor(modifierInstantiationDescriptors.prop('byId'), d)
+      }),
     }),
   }).derivedDict().pointer()
 

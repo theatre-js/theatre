@@ -13,4 +13,6 @@ export interface IDerivedDict<O: {}> {
   changes(): Tappable<ChangeType<O>>,
   keys(): Array<$Keys<O>>,
   pointer(): $FixMe,
+  mapValues($FixMe): IDerivedDict<$FixMe>,
+  extend($FixMe): IDerivedDict<$FixMe>,
 }

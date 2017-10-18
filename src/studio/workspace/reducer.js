@@ -15,7 +15,7 @@
 //     },
 //     listOfVisibles: ['1', '2'],
 //   },
-//   componentIDToBeRenderedAsCurrentCanvas: undefined,
+//   componentIdToBeRenderedAsCurrentCanvas: undefined,
 // }
 
 // export default (state: WorkspaceNamespaceState = defaultState) => state

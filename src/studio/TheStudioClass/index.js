@@ -7,11 +7,20 @@ import initialState from './initialState'
 import * as D from '$shared/DataVerse'
 import {runSaga} from 'redux-saga'
 import rootSaga from './rootSaga'
+import type {CoreState} from '../types'
 // import {type CoreState} from '$studio/types'
 import coreComponentDescriptorsById from '$studio/componentModel/coreComponentDescriptors'
+import coreModifierDescriptorsById from '$studio/componentModel/coreModifierDescriptors'
+
+type Atom = D.AtomifyDeepType<D.ObjectLiteral<{
+  state: CoreState,
+  coreComponentDescriptorsById: D.ObjectLiteral<{[key: string]: $FixMe}>,
+  coreModifierDescriptorsById: D.ObjectLiteral<{[key: string]: $FixMe}>,
+  instances: D.ObjectLiteral<{[key: string | number]: $FixMe}>,
+}>>
 
 export default class TheStudioClass {
-  atom: * // $Call<typeof D.atomifyDeep, {state: CoreState, coreComponentDescriptors: typeof coreComponentDescriptors}>
+  atom: Atom
   dataverseContext: D.Context
   _lastComponentInstanceId: number
   // _lbCommunicator: LBCommunicator
@@ -22,6 +31,7 @@ export default class TheStudioClass {
     this.atom = D.atoms.atomifyDeep(D.literals.object({
       state: initialState,
       coreComponentDescriptorsById,
+      coreModifierDescriptorsById,
       instances: D.literals.object({}),
     }))
 
@@ -31,6 +41,15 @@ export default class TheStudioClass {
         () => {
           const newCoreComponentDescriptors = require('$studio/componentModel/coreComponentDescriptors').default
           this.atom.setProp('coreComponentDescriptorsById', D.atoms.atomifyDeep(newCoreComponentDescriptors))
+        }
+      )
+
+      // $FixMe
+      module.hot.accept(
+        '$studio/componentModel/coreModifierDescriptors',
+        () => {
+          const newModifierDescriptors = require('$studio/componentModel/coreModifierDescriptors').default
+          this.atom.setProp('coreModifierDescriptorsById', D.atoms.atomifyDeep(newModifierDescriptors))
         }
       )
     }
@@ -83,11 +102,11 @@ export default class TheStudioClass {
     // render(<StudioRootComponent studio={this} />, rootEl)
   }
 
-  // getComponentDescriptor(componentID: string) {
-  //   if (componentID.startsWith('TheaterJS/Core/')) {
-  //     return this.atom.getDeep(['state', 'componentDescriptors', 'core', componentID])
+  // getComponentDescriptor(componentId: string) {
+  //   if (componentId.startsWith('TheaterJS/Core/')) {
+  //     return this.atom.getDeep(['state', 'componentDescriptors', 'core', componentId])
   //   } else {
-  //     return this.atom.getDeep(['state', 'componentDescriptors', 'custom', componentID])
+  //     return this.atom.getDeep(['state', 'componentDescriptors', 'custom', componentId])
   //   }
   // }
 

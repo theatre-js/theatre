@@ -116,7 +116,7 @@ describe('FlattenDeepDerivation', () => {
     const c = D.derivations.constant(D.derivations.constant(aD));
     (c.getValue().getValue().getValue(): string);
     // $FlowExpectError
-    (c.getValue().getValue().getValue(): number);
+    (c.getValue().getValue().getValue(): number)
 
     // const f = flattenDeep(c, 3)
     const f = c.flattenDeep(3)
@@ -300,9 +300,9 @@ describe('FlattenDeepDerivation', () => {
 
     (box.flattenDeep().unbox(): number);
     // $FlowExpectError
-    (box.flattenDeep().unbox(): string);
+    (box.flattenDeep().unbox(): string)
 
     box.unbox().unbox().set(10)
     // box.unbox().unbox().set('hi')
 
-});
+})

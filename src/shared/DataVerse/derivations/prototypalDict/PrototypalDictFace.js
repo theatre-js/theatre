@@ -5,7 +5,7 @@ import Emitter from '$shared/DataVerse/utils/Emitter'
 import Context from '$shared/DataVerse/Context'
 import type {MapKey} from '$shared/DataVerse/types'
 import type {IDerivation} from '../types'
-import {type IDerivationOfAPropOfADerivedDictFace, default as propOfDerivedDictFace} from './propOfDerivedDictFace'
+import {type IDerivationOfAPropOfPrototypalDictFace, default as propOfPrototypalDictFace} from './propOfPrototypalDictFace'
 import constant from '../constant'
 // import StabilizedDerivation from './StabilizedDerivation'
 import forEach from 'lodash/forEach'
@@ -16,12 +16,12 @@ const notFoundDerivation = constant(NOTFOUND)
 
 type Wire = {
   key: MapKey,
-  startsInLayer: LayerID,
-  endsInLayerId: LayerID,
-  proxyDerivation: IDerivationOfAPropOfADerivedDictFace<$FixMe>,
+  startsInLayer: LayerId,
+  endsInLayerId: LayerId,
+  proxyDerivation: IDerivationOfAPropOfPrototypalDictFace<$FixMe>,
 }
 
-export type LayerID = 'face' | 'tail' | number
+export type LayerId = 'face' | 'tail' | number
 
 type Layer = {
   id: number,
@@ -32,7 +32,7 @@ type Layer = {
 }
 
 type Layers = {
-  byId: {[id: LayerID]: Layer},
+  byId: {[id: LayerId]: Layer},
   list: Array<number>,
   face: {initiatingWiresByKey: {[propName: MapKey]: Wire}},
   tail: {sourceDerivationsByKey: {[propName: MapKey]: IDerivation<$FixMe>}},
@@ -117,7 +117,10 @@ export default class DerivedDictFace {
   }
 
   pointer(): $FixMe {
-    return pointer({root: this, path: []})
+    if (!this._pointer) {
+      this._pointer = pointer({root: this, path: []})
+    }
+    return this._pointer
   }
 
   prop(key: MapKey): $FixMe {
@@ -137,11 +140,11 @@ export default class DerivedDictFace {
     return this._createWire(key, initiatingLayerId).proxyDerivation
   }
 
-  _createWire(key: MapKey, startsInLayer: 'face' | number, reusableProxy?: IDerivationOfAPropOfADerivedDictFace<$FixMe>): Wire {
+  _createWire(key: MapKey, startsInLayer: 'face' | number, reusableProxy?: IDerivationOfAPropOfPrototypalDictFace<$FixMe>): Wire {
     const endsInLayerId = this._findALayerThatHasProp(key, startsInLayer)
 
     const sourceDerivation = this._makeSourceDerivation(key, endsInLayerId)
-    const proxyDerivation = reusableProxy ? reusableProxy.setTarget(sourceDerivation) : propOfDerivedDictFace(sourceDerivation)
+    const proxyDerivation = reusableProxy ? reusableProxy.setTarget(sourceDerivation) : propOfPrototypalDictFace(sourceDerivation)
     const wire =  {key, startsInLayer, endsInLayerId, proxyDerivation}
 
     const layer = startsInLayer === 'face' ? this._structure.layers.face : this._structure.layers.byId[startsInLayer]

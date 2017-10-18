@@ -68,7 +68,8 @@
     "fs-extra": "^4.0.0",
     "html-webpack-plugin": "^2.29.0",
     "husky": "^0.14.3",
-    "jest": "^20.0.4",
+    "jest": "^21.2.1",
+    "json2csv": "^3.11.4",
     "lodash": "^4.17.4",
     "mock-fs": "^4.4.1",
     "npm-run-all": "^4.0.2",
@@ -98,5 +99,8 @@
     "webpack-dev-server": "^2.7.1",
     "webpack-notifier": "^1.5.0",
     "when": "^3.7.8"
+  },
+  "dependencies": {
+    "source-map-support": "^0.5.0"
   }
 }

@@ -25,6 +25,7 @@ export interface IDerivation<V> {
   _tick(): void,
 
   changes(): Tappable<V>,
+  tapImmediate((V) => void): () => void,
 
   map<R, Fn: (V) => R>(Fn): IDerivation<R>,
   flatMap<R, T: IDerivation<R>, Fn: (V) => R | T>(fn: Fn): IDerivation<R>,

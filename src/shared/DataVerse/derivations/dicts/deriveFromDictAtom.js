@@ -3,15 +3,15 @@ import type {IDictAtom} from '$shared/DataVerse/atoms/dict'
 import type {IDerivedDict} from './types'
 import DerivedDict from './AbstractDerivedDict'
 import noop from 'lodash/noop'
-// import type {IDerivation} from '../types'
+import AbstractDerivation from '../AbstractDerivation'
 
 const ensureNoAtoms = (d: mixed) => {
   if (typeof d === 'object' && d !== null && !Array.isArray(d)) {
-    if (d.isDictAtom === true) {
+    if (d.isDictAtom === 'True') {
       return deriveFromDictAtom((d: $FixMe))
-    } else if (d.isArrayAtom === true) {
+    } else if (d.isArrayAtom === 'True') {
       throw new Error(`Unimplemented`)
-    } else if (d instanceof DerivedDict) {
+    } else if (d instanceof DerivedDict || d instanceof AbstractDerivation) {
       return d
     } else {
       console.warn('check this')
@@ -36,12 +36,7 @@ export class DerivedDictFromDictAtom<O: {}> extends DerivedDict implements IDeri
   }
 
   prop(k: $Keys<O>) {
-    const b = this._dictAtom.pointer().prop(k).flatMap(ensureNoAtoms)
-    // if (k === '0') {
-    //   b.unpropable = true
-    //   debugger
-    // }
-    return b
+    return this._dictAtom.pointer().prop(k).flatMap(ensureNoAtoms)
   }
 
   _reactToHavingTappers() {

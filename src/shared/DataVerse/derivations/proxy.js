@@ -19,6 +19,7 @@ export class ProxyDerivation<V> extends AbstractDerivation implements IProxyDeri
     this._removeDependency(this._target)
     this._target = target
     this._addDependency(this._target)
+    this._youMayNeedToUpdateYourself(this)
     return this
   }
 

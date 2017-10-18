@@ -1,5 +1,18 @@
 // @flow
 
+declare module 'lodash' {
+  declare module.exports: {
+    noop: () => void,
+    identity: <T>(T) => T,
+    difference: <V>(Array<V>, Array<V>) => Array<V>,
+    uniq: <V>(Array<V>) => Array<V>,
+    mapValues: <K, V, T, O: {[k: K]: V}, Fn: (V, K) => T>(O, Fn) => {[k: K]: T},
+    keyBy: $FixMe,
+    without: <V>(Array<V>, V) => Array<V>,
+    endsWith: (string, string) => boolean,
+  }
+}
+
 declare module 'lodash/flatten' {
   declare type DeepArrayOf<T> = Array<T | DeepArrayOf<T>>
   declare module.exports: (<T>(input: DeepArrayOf<T>) => Array<T>)

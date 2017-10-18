@@ -2,7 +2,8 @@
 import {type ComponentDescriptor} from '$studio/componentModel/types'
 import {makeReactiveComponent} from '$studio/handy'
 import * as React from 'react'
-// import * as D from '$shared/DataVerse'
+import * as D from '$shared/DataVerse'
+
 
 const RenderSomethingStupid = makeReactiveComponent({
   displayName: 'TheaterJS/Core/RenderSomethingStupid',
@@ -16,10 +17,12 @@ const RenderSomethingStupid = makeReactiveComponent({
   }),
 })
 
-const descriptor: ComponentDescriptor = {
-  id: 'TheaterJS/Core/RenderSomethingStupid',
-  type: 'HardCoded',
-  reactComponent: RenderSomethingStupid,
-}
+const {object, primitive} = D.literals
+
+const descriptor: ComponentDescriptor = object({
+  id: primitive('TheaterJS/Core/RenderSomethingStupid'),
+  type: primitive('HardCoded'),
+  reactComponent: primitive(RenderSomethingStupid),
+})
 
 export default descriptor

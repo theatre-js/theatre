@@ -3,6 +3,8 @@ import Emitter from '$shared/DataVerse/utils/Emitter'
 import Context from '$shared/DataVerse/Context'
 import {reportObservedDependency} from './autoDerive/discoveryMechanism'
 import type {IDerivation} from './types'
+import toCsv from 'json2csv'
+// import {mapStackTrace} from 'sourcemapped-stacktrace'
 
 const FRESHNESS_STATE_NOT_APPLICABLE = 0
 const FRESHNESS_STATE_STALE = 1
@@ -10,6 +12,42 @@ const FRESHNESS_STATE_FRESH = 2
 type FreshnessState = typeof FRESHNESS_STATE_NOT_APPLICABLE | typeof FRESHNESS_STATE_STALE | typeof FRESHNESS_STATE_FRESH
 
 let lastDerivationId = 0
+let activeDs = new Set()
+
+// setTimeout(() => {console.log('allDs', lastDerivationId)}, 1500)
+setTimeout(() => {
+  console.log('activeDs  ', activeDs.size)
+  console.log('allDs', lastDerivationId)
+  const nodes = []
+  const edges = []
+  // connections
+  // activeDs.forEach((d) => {
+  //   const node = {
+  //     id: d._id,
+  //     type: d.constructor.name,
+  //     hasTappers: d._changeEmitter.hasTappers(),
+  //   }
+
+  //   nodes.push(node)
+
+  //   d._dependents.forEach((dep) => {
+  //     edges.push({from: d._id, to: dep._id})
+  //   })
+  // })
+
+  // const nodesBlob = new Blob(
+  //   [toCsv({data: nodes, fields: ['id', 'type', 'hasTappers']})],
+  //   {type: 'text/plain'},
+  // )
+
+  // const edgesBlob = new Blob(
+  //   [toCsv({data: edges, fields: ['from', 'to']})],
+  //   {type: 'text/plain'},
+  // )
+
+  // window.open(window.URL.createObjectURL(nodesBlob))
+  // window.open(window.URL.createObjectURL(edgesBlob))
+}, 200)
 
 class AbstractDerivation {
   _id: number
@@ -23,13 +61,22 @@ class AbstractDerivation {
   _dependents: *
   _dependencies: *
   setDataVerseContext: *
-
+  _trace: $FixMe
   +_recalculate: () => $FixMe
   +_keepUptodate: () => void
   +_stopKeepingUptodate: () => void
   +_youMayNeedToUpdateYourself: (msgComingFrom: IDerivation<$IntentionalAny>) => void
 
   constructor() {
+    // debugger
+    this._trace = new Error('trace')
+    // console.log(lastDerivationId)
+    // debugger
+    // mapStackTrace(unmappedStack, (ss) => {
+    //   this._trace = ss.join('\n')
+    // }, {cacheGlobally: true})
+    // console.log(this)
+    // console.log(lastDerivationId)
     this._didNotifyDownstreamOfUpcomingUpdate = false
     this._dependencies = new Set()
     this._id = lastDerivationId++
@@ -137,6 +184,12 @@ class AbstractDerivation {
       this._changeEmitter.hasTappers() || this._dependents.size > 0
 
     if (thereAreMoreThanOneTappersOrDependents === this._thereAreMoreThanOneTappersOrDependents) return
+    if (thereAreMoreThanOneTappersOrDependents) {
+      activeDs.add(this)
+    } else {
+      activeDs.delete(this)
+    }
+    // activeDs = thereAreMoreThanOneTappersOrDependents ? activeDs + 1 : activeDs - 1
     this._thereAreMoreThanOneTappersOrDependents = thereAreMoreThanOneTappersOrDependents
     this._didNotifyDownstreamOfUpcomingUpdate = false
 
@@ -161,7 +214,8 @@ class AbstractDerivation {
   }
 
   flatMap(fn: $FixMe): $FixMe {
-    return this.map(fn).flatten()
+    return flatMapDerivation.default(this, fn)
+    // return  this.map(fn).flatten()
   }
 
   flatten(): IDerivation<$FixMe> {
@@ -172,8 +226,15 @@ class AbstractDerivation {
     // $FixMe
     return flattenDeep.default((this: $FixMe), levels)
   }
+
+  tapImmediate(fn: ($FixMe) => void): $FixMe {
+    const untap = this.changes().tap(fn)
+    fn(this.getValue())
+    return untap
+  }
 }
 
 export default (AbstractDerivation: $FixMe)
 const flattenDeep = require('./flattenDeep')
+const flatMapDerivation = require('./flatMapDerivation')
 const mapDerivation = require('./mapDerivation')

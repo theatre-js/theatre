@@ -1,12 +1,12 @@
 // @flow
-import type {ComponentID} from './index'
+import type {ComponentId} from './index'
 
 export type DeclarativeComponentDescriptor = {|
-  id: ComponentID,
+  id: ComponentId,
   type: 'Declarative',
-  localHiddenValuesByID: {[localID: string]: ValueDescriptor},
+  localHiddenValuesById: {[localid: string]: ValueDescriptor},
   whatToRender: WhatToRender,
-  ruleSetsByID: {[id: string]: RuleSet}, // later
+  ruleSetsById: {[id: string]: RuleSet}, // later
   listOfRulesets: Array<string>,
 |}
 
@@ -14,18 +14,16 @@ export type WhatToRender = ReferenceToLocalHiddenValue | ReferenceToProp
 
 export type RuleSet = {|
   selector: string, // better to have a more structured type for this
-  modifiersByKey: {[key: string]: ModifierInstantiationValueDescriptor},
-  listOfModifiers: Array<string>,
 |}
 
 type ModifierInstantiationValueDescriptor = {|
   type: 'ModifierInstantiationValueDescriptor',
-  modifierID: string,
+  modifierId: string,
   props: MapDescriptor,
 |}
 
 export type ModifierDescriptor = {|
-  modifierID: string,
+  modifierId: string,
 |}
 
 export type ReferenceToLocalHiddenValue = {|
@@ -35,7 +33,7 @@ export type ReferenceToLocalHiddenValue = {|
 
 export type ReferenceToProp = {|
   type: 'ReferenceToProp',
-  propID: string,
+  propid: string,
 |}
 
 export type MapDescriptor = {|type: 'MapDescriptor', values: {[key: string | number]: ValueDescriptor}|}
@@ -54,10 +52,12 @@ export type BooleanLiteralDescriptor = boolean
  */
 export type ComponentInstantiationValueDescriptor = {|
   type: 'ComponentInstantiationValueDescriptor',
-  componentID: ComponentID,
+  componentId: ComponentId,
   props: MapDescriptor,
-  modifierInstantiationDescriptorsByID: MapDescriptor,
-  listOfModifierInstantiationDescriptorIDs: ArrayDescriptor,
+  modifierInstantiationDescriptors: {
+    list: ArrayDescriptor,
+    byId: MapDescriptor,
+  },
 |}
 
 export type ValueDescriptorDescribedInAnObject =

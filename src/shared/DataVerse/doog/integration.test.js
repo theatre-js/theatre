@@ -47,10 +47,9 @@ describe('doog', () => {
       (prop(prop(p, 'obj'), 'objStr').getValue(): number);
 
       (prop(prop(p, 'u'), 'uStr').getValue(): string | void);
-      (prop(prop(p, 'u'), 'b').getValue(): string | void);
+      (prop(prop(p, 'u'), 'b').getValue(): string | void)
 
     })
-
 
 
   })

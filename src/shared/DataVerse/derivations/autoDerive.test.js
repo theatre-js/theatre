@@ -50,5 +50,5 @@ describe('autoDerive', () => {
       wrongChanges.push(c)
     })
 
-  });
+  })
 })

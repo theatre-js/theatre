@@ -1,4 +1,4 @@
-
+// @flow
 import {default as atomifyDeep} from './atomifyDeep'
 import type {IArrayAtom} from './array'
 import type {IDictAtom} from './dict'
@@ -14,7 +14,7 @@ describe('DataVerse.atomifyDeep', () => {
     const ref = atomifyDeep({a: 'a', b: {c: 2, d: new Error()}});
     (ref.prop('b').prop('d').getValue(): Error)
     expect(ref.prop('a').getValue()).toEqual('a')
-    expect(ref.prop('b').isAtom).toEqual(true)
+    expect(ref.prop('b').isAtom).toEqual('True')
     expect(ref.prop('b').prop('c').getValue()).toEqual(2)
     expect(ref.prop('b').prop('d').getValue()).toBeInstanceOf(Error)
   })
@@ -24,7 +24,6 @@ describe('DataVerse.atomifyDeep', () => {
 
     (atomifyDeep({a: 'foo'}): IDictAtom<{a: IBoxAtom<string>}>);
 
-    // $FixMe
     (atomifyDeep({a: 'foo'}): IDictAtom<{a: IBoxAtom<number>}>);
 
     (atomifyDeep({a: 'foo', b: 12}): IDictAtom<{a: IBoxAtom<string>, b: IBoxAtom<number>}>);

@@ -11,7 +11,7 @@ type Props = {
 }
 
 type ElementifyProps = D.IDictAtom<{
-  componentID: 'TheaterJS/Core/RenderCurrentCanvas',
+  componentId: 'TheaterJS/Core/RenderCurrentCanvas',
   props: D.IDictAtom<{
     children: D.IBoxAtom<React.Node>,
   }>,
@@ -24,11 +24,18 @@ const createRootComponentForReact = (studio: TheStudioClass) => {
     constructor(props: Props) {
       super(props)
 
-      this.mapAtomOfPropsOfElementify =D.atoms.dict({
-        instantiationDescriptor:D.atoms.dict({
-          componentID: 'TheaterJS/Core/RenderCurrentCanvas',
-          props:D.atoms.dict({
+      this.mapAtomOfPropsOfElementify = D.atoms.dict({
+        instantiationDescriptor: D.atoms.dict({
+          componentId: 'TheaterJS/Core/RenderCurrentCanvas',
+          props: D.atoms.dict({
             children: D.atoms.box(props.children),
+          }),
+          modifierInstantiationDescriptors: D.atoms.dict({
+            byId: D.atoms.dict({
+              // type: 'MapDescriptor',
+              // values: D.atoms.dict({}),
+            }),
+            list: D.atoms.array([]),
           }),
         }),
       })

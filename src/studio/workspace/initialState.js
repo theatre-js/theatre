@@ -16,7 +16,7 @@ const initialState: WorkspaceNamespaceState = D.literals.object({
     }),
     listOfVisibles: D.literals.array([D.literals.primitive('1'), D.literals.primitive('2')]),
   }),
-  componentIDToBeRenderedAsCurrentCanvas: D.literals.primitive('TheaterJS/Core/FakeDeclarativeButton'),
+  componentIdToBeRenderedAsCurrentCanvas: D.literals.primitive('TheaterJS/Core/FakeDeclarativeButton'),
 })
 
 export default initialState

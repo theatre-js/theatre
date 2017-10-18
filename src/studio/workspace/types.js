@@ -1,5 +1,5 @@
 // @flow
-import {type ComponentID} from '$studio/componentModel/types'
+import {type ComponentId} from '$studio/componentModel/types'
 import * as D from '$shared/DataVerse'
 
 export type PanelId = string
@@ -20,5 +20,5 @@ export type Panels = D.ObjectLiteral<{
 
 export type WorkspaceNamespaceState = D.ObjectLiteral<{
   panels: Panels,
-  componentIDToBeRenderedAsCurrentCanvas: D.PrimitiveLiteral<?ComponentID>,
+  componentIdToBeRenderedAsCurrentCanvas: D.PrimitiveLiteral<?ComponentId>,
 }>

@@ -49,6 +49,7 @@ interface _IDictAtom<O: {}> {
 export class DictAtom<O: {}> extends AbstractCompositeAtom implements _IDictAtom<O> {
   isDictAtom = 'True'
   _internalMap: O
+  _pointer: ?$FixMe
   // pointer: () => DecidePointerType<IDictAtom<O>>
   // chnages: () => Tappable<DictAtomChangeType<O>>
   // _changeEmitter: Emitter<DictAtomChangeType<O>>
@@ -59,6 +60,7 @@ export class DictAtom<O: {}> extends AbstractCompositeAtom implements _IDictAtom
   constructor(o: O): _IDictAtom<O> {
     super()
     this._internalMap = ({}: $IntentionalAny)
+    this._pointer = undefined
 
     this._assignInitialValue(o)
     return this
@@ -166,7 +168,10 @@ export class DictAtom<O: {}> extends AbstractCompositeAtom implements _IDictAtom
   }
 
   pointer() {
-    return (pointer({root: this, path: []}): $IntentionalAny)
+    if (!this._pointer) {
+      this._pointer = (pointer({root: this, path: []}): $IntentionalAny)
+    }
+    return this._pointer
   }
 }
 

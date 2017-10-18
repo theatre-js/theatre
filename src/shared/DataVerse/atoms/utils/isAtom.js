@@ -6,7 +6,7 @@ type IsAtomFn =
   (<V>(v: V) => false)
 
 const isAtom = (v: mixed) => {
-  return typeof v === 'object' && v !== null && v.isAtom === true
+  return typeof v === 'object' && v !== null && v.isAtom === 'True'
 }
 
 export default ((isAtom: $IntentionalAny): IsAtomFn)

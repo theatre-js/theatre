@@ -5,9 +5,9 @@ import constructValue from './constructValue'
 
 const resolveReferenceToHiddenLocalValue = (whichP, d) => {
   const componentDescriptorP = d.pointer().prop('props').prop('componentDescriptor')
-  const localHiddenValuesByIDP = componentDescriptorP.prop('localHiddenValuesByID')
+  const localHiddenValuesByIdP = componentDescriptorP.prop('localHiddenValuesById')
 
-  return whichP.map((id: string) => localHiddenValuesByIDP.prop(id)).flattenDeep().flatMap((valueDescriptor) => {
+  return whichP.map((id: string) => localHiddenValuesByIdP.prop(id)).flattenDeep().flatMap((valueDescriptor) => {
     if (!valueDescriptor) return
     return constructValue(valueDescriptor.pointer(), d)
   })

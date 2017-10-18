@@ -120,7 +120,7 @@ module.exports = (options: Options) => {
       noInfo: false,
       quiet: false,
       stats: false,
-      headers: {'Access-Control-Allow-Origin': '*'},
+      headers: {'Access-Control-Allow-Origin': '*', 'Access-Control-Expose-Headers': 'SourceMap,X-SourceMap'},
       port: envConfig.devSpecific.studio.devServerPort,
     }
   }

@@ -1,4 +1,7 @@
 // @flow
+// import 'source-map-support/browser-source-map-support'
+// $FixMe
+// sourceMapSupport.install()
 // @todo only one instance of babel-polyfill is allowed per window, so we can't ship
 // with this global polyfill
 import 'babel-polyfill'

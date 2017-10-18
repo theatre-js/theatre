@@ -19,12 +19,34 @@ const ensureDomAttributes = (a) => {
   })
 }
 
+const sideEffectsForApplyAttributes = {
+  applyAttributes(dict) {
+    console.log('started applying attributes')
+    const stop = () => {
+      console.log('stopped applying attributes')
+    }
+
+    return stop
+  },
+}
+
 const dictModifier = (instantiationDescriptorP, dict) => {
   return dict.extend({
-    domAttributes(a) {
-      return ensureDomAttributes(a).flatMap((domAtrributes) => {
+    domAttributes(d) {
+      return ensureDomAttributes(d).flatMap((domAtrributes) => {
         return instantiationDescriptorP.prop('props').prop('name').flatMap((name: string) => {
           return domAtrributes.extend({[name]: instantiationDescriptorP.prop('props').prop('value')})
+        })
+      })
+    },
+    sideEffects(d) {
+      return d.propFromAbove('sideEffects').flatMap((sideEffects: D.IDerivedDict<$FixMe>) => {
+        return sideEffects.pointer().prop('applyAttributes').map((applyAttributes) => {
+          if (applyAttributes) {
+            return sideEffects
+          } else {
+            return sideEffects.extend(sideEffectsForApplyAttributes)
+          }
         })
       })
     },

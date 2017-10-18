@@ -17,8 +17,7 @@ export default makeReactiveComponent({
       const componentDescriptor = d.pointer().prop('props').prop('componentDescriptor')
       const reactComponentPointer = componentDescriptor.prop('reactComponent')
       const props = d.pointer().prop('props').prop('props')
-      const modifierInstantiationDescriptorsByID = d.pointer().prop('props').prop('modifierInstantiationDescriptorsByID')
-      const listOfModifierInstantiationDescriptorIDs = d.pointer().prop('props').prop('listOfModifierInstantiationDescriptorIDs')
+      const modifierInstantiationDescriptors = d.pointer().prop('props').prop('modifierInstantiationDescriptors')
 
       const key = d.pointer().prop('key')
 
@@ -27,8 +26,7 @@ export default makeReactiveComponent({
         return <Comp
           key={key.getValue()}
           props={props}
-          modifierInstantiationDescriptorsByID={modifierInstantiationDescriptorsByID}
-          listOfModifierInstantiationDescriptorIDs={listOfModifierInstantiationDescriptorIDs}
+          modifierInstantiationDescriptors={modifierInstantiationDescriptors}
         />
       })
     },

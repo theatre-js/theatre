@@ -22,19 +22,20 @@ describe('pointer', () => {
       }),
     })
     const aaP = root.pointer().prop('a').prop('aa')
-    expect(aaP.getValue()).toEqual('aa')
+    const aaD = aaP
+    expect(aaD.getValue()).toEqual('aa')
     root.prop('a').prop('aa').set('aa2')
-    expect(aaP.getValue()).toEqual('aa2')
+    expect(aaD.getValue()).toEqual('aa2')
     root.prop('a').deleteProp('aa')
-    expect(aaP.getValue()).toEqual(undefined)
+    expect(aaD.getValue()).toEqual(undefined)
     // $FlowIgnore
     root.prop('a').setProp('aa',D.atoms.dict({}))
-    expect(aaP.getValue()).toBeInstanceOf(DictAtom)
+    expect(aaD.getValue()).toBeInstanceOf(DictAtom)
     // $FlowIgnore
     root.prop('a').setProp('aa',D.atoms.dict({aa: D.atoms.box('aa3')}))
-    expect(aaP.getValue()).toBeInstanceOf(DictAtom)
+    expect(aaD.getValue()).toBeInstanceOf(DictAtom)
     root.prop('a').setProp('aa', D.atoms.box('aa3'))
-    expect(aaP.getValue()).toEqual('aa3')
+    expect(aaD.getValue()).toEqual('aa3')
   })
 
   it('should work', () => {
@@ -45,25 +46,27 @@ describe('pointer', () => {
       }),
     })
     const aaP = root.pointer().prop('a').prop('aa')
-    aaP.setDataVerseContext(context)
+    const aaD = aaP
+
+    aaD.setDataVerseContext(context)
     const changes = []
-    aaP.changes().tap((c) => {changes.push(c)})
-    expect(aaP.getValue()).toEqual('aa')
+    aaD.changes().tap((c) => {changes.push(c)})
+    expect(aaD.getValue()).toEqual('aa')
     root.prop('a').prop('aa').set('aa2')
     context.tick()
-    expect(aaP.getValue()).toEqual('aa2')
+    expect(aaD.getValue()).toEqual('aa2')
     root.prop('a').deleteProp('aa')
     context.tick()
-    expect(aaP.getValue()).toEqual(undefined)
+    expect(aaD.getValue()).toEqual(undefined)
     root.prop('a').setProp('aa',D.atoms.dict({}))
     context.tick()
-    expect(aaP.getValue()).toBeInstanceOf(DictAtom)
+    expect(aaD.getValue()).toBeInstanceOf(DictAtom)
     root.prop('a').setProp('aa',D.atoms.dict({aa: D.atoms.box('aa3')}))
     context.tick()
-    expect(aaP.getValue()).toBeInstanceOf(DictAtom)
+    expect(aaD.getValue()).toBeInstanceOf(DictAtom)
     root.prop('a').setProp('aa', D.atoms.box('aa3'))
     context.tick()
-    expect(aaP.getValue()).toEqual('aa3')
+    expect(aaD.getValue()).toEqual('aa3')
   })
 
   it('should work with derived stuff too', () => {
@@ -140,7 +143,7 @@ describe('pointer', () => {
 
     (root.pointer().prop('obj').prop('objObj').prop('objObjStr').getValue(): string);
     // $FlowExpectError
-    (root.pointer().prop('obj').prop('objObj').prop('objObjStr').getValue(): number);
+    (root.pointer().prop('obj').prop('objObj').prop('objObjStr').getValue(): number)
 
   });
 
@@ -160,8 +163,9 @@ describe('pointer', () => {
     })
 
     const pointerToRootStr = root.pointer().prop('str');
+    // const pointerToRootObj = root.pointer().prop('obj');
 
-    (pointerToRootStr: IPointerToBoxAtom<string>);
+    (pointerToRootStr: IPointerToBoxAtom<string>)
 
     type DictOfPointers = D.IDictAtom<{
       unboxedStr: IPointerToBoxAtom<string>,
@@ -175,7 +179,37 @@ describe('pointer', () => {
 
     (dictOfPointers.pointer().prop('unboxedStr').getValue(): string);
     // $FlowExpectError
-    (dictOfPointers.pointer().prop('unboxedStr').getValue(): number);
+    (dictOfPointers.pointer().prop('unboxedStr').getValue(): number)
+
+    // (dictOfPointers.pointer().prop('boxedStr').getValue(): string);
+    // (dictOfPointers.pointer().prop('boxedStr').getValue(): number);
+  });
+
+  (function(){
+    type RootType = D.IDictAtom<{
+      str: D.IBoxAtom<string>,
+      obj: D.IDictAtom<{
+        objStr: D.IBoxAtom<string>,
+      }>,
+    }>
+
+    const root: RootType = D.atoms.dict({
+      str: D.atoms.box('str'),
+      obj: D.atoms.dict({
+        objStr: D.atoms.box('str'),
+      }),
+    })
+
+    const pointerToRootStr = root.pointer().prop('str')
+
+    const dictOfPointers = D.atoms.dict({
+      unboxedStr: (pointerToRootStr: IPointerToBoxAtom<string>),
+      // boxedStr: D.atoms.box(pointerToRootStr),
+    });
+
+    (dictOfPointers.pointer().prop('unboxedStr').getValue(): string);
+    // $FlowExpectError
+    (dictOfPointers.pointer().prop('unboxedStr').getValue(): number)
 
     // (dictOfPointers.pointer().prop('boxedStr').getValue(): string);
     // (dictOfPointers.pointer().prop('boxedStr').getValue(): number);

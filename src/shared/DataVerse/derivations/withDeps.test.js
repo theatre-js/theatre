@@ -46,7 +46,7 @@ describe('withDeps', () => {
     // $FlowExpectError
     (bD.flatMap((m) => m + 1).getValue(): string);
 
-    (bD.flatMap((m) => D.derivations.constant(m + 1)).getValue(): number);
+    (bD.flatMap((m) => D.derivations.constant(m + 1)).getValue(): number)
 
     const final = aD.flatMap((n): D.IDerivation<number> => bD.map((m) => m + n))
 
@@ -116,7 +116,7 @@ describe('withDeps', () => {
   });
 
   (function() {
-    // $FlowExpectError
+    // @todo this should be a flow error since 'hi' is not an IDerivation
     withDeps({a: 'hi'}, () => {})
     const f = withDeps({a: D.derivations.constant('hi')}, ({a}) => {
       // $FlowExpectError

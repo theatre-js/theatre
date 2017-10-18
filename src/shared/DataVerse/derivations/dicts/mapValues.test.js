@@ -9,14 +9,14 @@ describe('mapValues', () => {
     context = new D.Context()
   })
   it('should work', () => {
-    const o =D.atoms.dict({
+    const o = D.atoms.dict({
       foo: D.atoms.box('foo'),
       bar: D.atoms.box('bar'),
     })
 
     const mapLike = deriveFromDictAtom(o)
 
-    const mapped = mapValues(mapLike, (prop) => prop.map((s: string) => s + 'B'))
+    const mapped = mapValues(mapLike, (d) => d.flatMap((s) => s + 'B'))
 
     const fooD = mapped.prop('foo')
     expect(fooD.getValue()).toEqual('fooB')

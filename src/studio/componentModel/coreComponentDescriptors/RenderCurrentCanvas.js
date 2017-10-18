@@ -9,17 +9,22 @@ const RenderCurrentCanvas = makeReactiveComponent({
   modifyPrototypalDict: (d) => d.extend({
     render(d) {
       const studioAtom = d.prop('studio').getValue().atom
-      const componentIDToBeRenderedAsCurrentCanvasPointer = studioAtom.pointer().prop('state').prop('workspace').prop('componentIDToBeRenderedAsCurrentCanvas')
+      const componentIdToBeRenderedAsCurrentCanvasPointer = studioAtom.pointer().prop('state').prop('workspace').prop('componentIdToBeRenderedAsCurrentCanvas')
       const children = d.pointer().prop('props').prop('children')
       const props =D.atoms.dict({
         instantiationDescriptor:D.atoms.dict({
-          componentID: D.atoms.box(componentIDToBeRenderedAsCurrentCanvasPointer),
+          componentId: D.atoms.box(componentIdToBeRenderedAsCurrentCanvasPointer),
           props:D.atoms.dict({}),
+          modifierInstantiationDescriptors: D.atoms.dict({
+            byId: D.atoms.dict({
+            }),
+            list: D.atoms.array([]),
+          }),
         }),
       }).derivedDict().pointer()
 
       return D.derivations.autoDerive(() => {
-        const C = componentIDToBeRenderedAsCurrentCanvasPointer.getValue()
+        const C = componentIdToBeRenderedAsCurrentCanvasPointer.getValue()
 
         if (typeof C === 'string') {
           return <Elementify key="currentCanvas" props={props} />
@@ -31,10 +36,12 @@ const RenderCurrentCanvas = makeReactiveComponent({
   }),
 })
 
-const descriptor: ComponentDescriptor = {
-  id: 'TheaterJS/Core/RenderCurrentCanvas',
-  type: 'HardCoded',
-  reactComponent: RenderCurrentCanvas,
-}
+const {object, primitive} = D.literals
+
+const descriptor: ComponentDescriptor = object({
+  id: primitive('TheaterJS/Core/RenderCurrentCanvas'),
+  type: primitive('HardCoded'),
+  reactComponent: primitive(RenderCurrentCanvas),
+})
 
 export default descriptor
