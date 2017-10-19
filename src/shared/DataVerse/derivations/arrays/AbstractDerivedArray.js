@@ -42,7 +42,12 @@ export default class AbstractDerivedArray {
   reduce(fn, acc) {
     return reduceDerivedArray.default(this, fn, acc)
   }
+
+  map(fn) {
+    return mapDerivedArray.default(this, fn)
+  }
 }
 
 const concatDerivedArray = require('./concatDerivedArray')
 const reduceDerivedArray = require('./reduceDerivedArray')
+const mapDerivedArray = require('./mapDerivedArray')
