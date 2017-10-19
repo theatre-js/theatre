@@ -5,8 +5,11 @@ import {forEach} from 'lodash'
 import type {IAtom} from './utils/AbstractAtom'
 import Tappable from '$shared/DataVerse/utils/Tappable'
 import Emitter from '$shared/DataVerse/utils/Emitter'
-import type {AddressedChangeset, MapKey, True, False, Address} from '$shared/DataVerse/types'
+import type {AddressedChangeset, MapKey, True, False} from '$shared/DataVerse/types'
+import deriveFromArrayAtom from '$shared/DataVerse/derivations/arrays/deriveFromArrayAtom'
 import range from 'lodash/range'
+import {type DecidePointerType, default as pointer} from '$shared/DataVerse/derivations/pointer'
+
 
 type Unboxed<O> = $FixMe // eslint-disable-line no-unused-vars
 
@@ -45,6 +48,7 @@ export type IArrayAtom<V: IAtom> = {
   isDictAtom: False,
   isBoxAtom: False,
   isArrayAtom: True,
+  _pointer: ?$FixMe,
   _v: V,
   setIndex(key: number, v: V): $FixMe,
   index(index: number): V,
@@ -62,7 +66,6 @@ export type IArrayAtom<V: IAtom> = {
 
   _setParent(p: $FixMe, key: MapKey): void,
   _unsetParent(): void,
-  // getAddress(): Address,
   getParent(): ?$FixMe,
 }
 
@@ -85,6 +88,7 @@ interface _IArrayAtom<V: IAtom> {
 export class ArrayAtom<V: IAtom> extends AbstractCompositeAtom implements _IArrayAtom<V> {
   isArrayAtom = 'True'
   _v: V
+  _pointer: ?$FixMe
   _internalArray: Array<$FixMe>
   chnages: () => Tappable<ArrayAtomChangeType<V>>
   _changeEmitter: Emitter<ArrayAtomChangeType<V>>
@@ -94,6 +98,7 @@ export class ArrayAtom<V: IAtom> extends AbstractCompositeAtom implements _IArra
     super()
     this._internalArray = []
     this._refToIndex = new Map()
+    this._pointer = undefined
 
     forEach(a, (value: V) => {
       this._pushWithoutInvokingEvents(value)
@@ -195,6 +200,17 @@ export class ArrayAtom<V: IAtom> extends AbstractCompositeAtom implements _IArra
 
   index(index: number): V {
     return this._internalArray[index]
+  }
+
+  derivedArray() {
+    return deriveFromArrayAtom(this)
+  }
+
+  pointer() {
+    if (!this._pointer) {
+      this._pointer = (pointer({root: this, path: []}): $IntentionalAny)
+    }
+    return this._pointer
   }
 }
 

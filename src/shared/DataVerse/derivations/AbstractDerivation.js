@@ -51,6 +51,7 @@ setTimeout(() => {
 
 class AbstractDerivation {
   _id: number
+  isDerivation = 'True'
   _didNotifyDownstreamOfUpcomingUpdate: boolean
   _thereAreMoreThanOneTappersOrDependents: boolean
 

@@ -1,9 +1,9 @@
 
-import type {Address, MapKey, True} from '$shared/DataVerse/types'
+import type {MapKey, True} from '$shared/DataVerse/types'
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import Tappable from '$shared/DataVerse/utils/Tappable'
 import type {ICompositeAtom} from './AbstractCompositeAtom'
-import type {IPointer} from '$shared/DataVerse/derivations/pointer'
+// import type {IPointer} from '$shared/DataVerse/derivations/pointer'
 
 export type IAtom = {
   isAtom: True,
@@ -13,7 +13,6 @@ export type IAtom = {
   changes(): Tappable<$IntentionalAny>, // shallow changes. Does not include what's removed
   deepChanges(): Tappable<$IntentionalAny>, // deep changes. Includes an address
   deepDiffs(): Tappable<$IntentionalAny>, // Unboxed changeset, from oldValue to newValue, including an address, deep
-  getAddress(): Address,
   getParent(): ?ICompositeAtom,
 }
 
@@ -77,18 +76,6 @@ export default class AbstractAtom implements _IAtom {
       return this._parent.atom
     }
   }
-
-  getAddress() {
-    if (!this._parent) {
-      return {root: this, path: []}
-    } else {
-      return this._parent.atom.getAddressTo([this._parent.key])
-    }
-  }
-
-  // pointer() {
-  //   return pointer.default(this.getAddress())
-  // }
 }
 
 const pointer = require('$shared/DataVerse/derivations/pointer')

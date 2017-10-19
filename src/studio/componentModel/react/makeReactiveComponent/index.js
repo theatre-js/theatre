@@ -96,17 +96,17 @@ export default function makeReactiveComponent({modifyPrototypalDict, displayName
 
       const modifierInstantiationDescriptorsByIdP = this._atom.pointer().prop('modifierInstantiationDescriptors').prop('byId')
       // console.log('----', modifierInstantiationDescriptorsByIdP.getValue())
-      return D.derivations.constant(prototypalDictWithoutModifiers)
+      // return D.derivations.constant(prototypalDictWithoutModifiers)
 
       const finalPrototypalDictD =
         this._atom.pointer().prop('modifierInstantiationDescriptors').prop('list').flatMap((list: D.IDerivedArray<$FixMe>) => {
           return list.map((id: string) => modifierInstantiationDescriptorsByIdP.prop(id))
-          .reduce(
-            (dictD, modifierInstantiationDescriptorP) => {
-              return dictD.flatMap((dict) => this._applyModifier(modifierInstantiationDescriptorP, dict))
-            },
-            D.derivations.constant(prototypalDictWithoutModifiers),
-          )
+            .reduce(
+              (dictD, modifierInstantiationDescriptorP) => {
+                return dictD.flatMap((dict) => this._applyModifier(modifierInstantiationDescriptorP, dict))
+              },
+              D.derivations.constant(prototypalDictWithoutModifiers),
+            )
         })
 
       return finalPrototypalDictD

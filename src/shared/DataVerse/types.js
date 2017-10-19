@@ -3,8 +3,6 @@ export type MapKey = string | number
 
 export type AddressedChangeset = {address: Array<MapKey>}
 
-export type Address = {root: $FixMe, path: Array<MapKey>}
-
 // These come from this awesome SO answer: https://stackoverflow.com/a/46333906/607997
 export type False = 'False'
 export type True = 'True'

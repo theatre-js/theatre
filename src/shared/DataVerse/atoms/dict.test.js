@@ -39,10 +39,6 @@ describe('DataVerse.atoms.dict', () => {
     o.setProp('foo', foo2)
     expect(foo2.getParent()).toEqual(o)
   })
-  it('.getAddress() should work', () => {
-    expect(o.prop('obj').prop('innerObj').prop('b').index(2).getAddress()).toMatchObject({path: ['obj', 'innerObj', 'b', 2]})
-    expect(o.prop('obj').prop('innerObj').prop('b').index(2).getAddress().root).toEqual(o)
-  })
 
   it('should correctly report changes', () => {
     const changes = []

@@ -1,4 +1,4 @@
-import {default as AbstractAtom, type IAtom} from './utils/AbstractAtom'
+import {default as AbstractAtom} from './utils/AbstractAtom'
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import Tappable from '$shared/DataVerse/utils/Tappable'
 import type {AddressedChangeset, True, False, MapKey, Address} from '$shared/DataVerse/types'

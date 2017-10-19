@@ -102,14 +102,6 @@ export default class TheStudioClass {
     // render(<StudioRootComponent studio={this} />, rootEl)
   }
 
-  // getComponentDescriptor(componentId: string) {
-  //   if (componentId.startsWith('TheaterJS/Core/')) {
-  //     return this.atom.getDeep(['state', 'componentDescriptors', 'core', componentId])
-  //   } else {
-  //     return this.atom.getDeep(['state', 'componentDescriptors', 'custom', componentId])
-  //   }
-  // }
-
   _getNewComponentInstanceId() {
     return this._lastComponentInstanceId++
   }

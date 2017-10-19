@@ -21,21 +21,21 @@ describe('pointer', () => {
         bb: D.atoms.box('bb') ,
       }),
     })
+    // debugger
     const aaP = root.pointer().prop('a').prop('aa')
-    const aaD = aaP
-    expect(aaD.getValue()).toEqual('aa')
+    expect(aaP.getValue()).toEqual('aa')
     root.prop('a').prop('aa').set('aa2')
-    expect(aaD.getValue()).toEqual('aa2')
+    expect(aaP.getValue()).toEqual('aa2')
     root.prop('a').deleteProp('aa')
-    expect(aaD.getValue()).toEqual(undefined)
+    expect(aaP.getValue()).toEqual(undefined)
     // $FlowIgnore
     root.prop('a').setProp('aa',D.atoms.dict({}))
-    expect(aaD.getValue()).toBeInstanceOf(DictAtom)
+    expect(aaP.getValue()).toBeInstanceOf(DictAtom)
     // $FlowIgnore
     root.prop('a').setProp('aa',D.atoms.dict({aa: D.atoms.box('aa3')}))
-    expect(aaD.getValue()).toBeInstanceOf(DictAtom)
+    expect(aaP.getValue()).toBeInstanceOf(DictAtom)
     root.prop('a').setProp('aa', D.atoms.box('aa3'))
-    expect(aaD.getValue()).toEqual('aa3')
+    expect(aaP.getValue()).toEqual('aa3')
   })
 
   it('should work', () => {

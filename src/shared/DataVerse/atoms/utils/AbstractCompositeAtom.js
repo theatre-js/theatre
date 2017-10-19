@@ -6,7 +6,6 @@ import type {ArrayAtomDeepChangeType, ArrayAtomDeepDiffType} from '../array'
 import Tappable from '$shared/DataVerse/utils/Tappable'
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import isAtom from './isAtom'
-import type {Address} from '$shared/DataVerse'
 import type {MapKey} from '$shared/DataVerse/types'
 
 export type AllDeepChangeTypes = BoxAtomDeepChangeType<any> | DictAtomDeepChangeType<any> | ArrayAtomDeepChangeType<any>
@@ -18,7 +17,6 @@ export type ICompositeAtom = IAtom & {
   deepDiffs(): Tappable<AllDeepDiffTypes>, // Unboxed changeset, from oldValue to newValue, including an address, deep
   _adopt(key: MapKey, value: IAtom): void,
   _unadopt(key: MapKey, value: IAtom): void,
-  getAddressTo(addressSoFar?: Array<MapKey>): Address,
 }
 
 interface _ICompositeAtom {
@@ -76,13 +74,5 @@ export default class AbstractCompositeAtom extends AbstractAtom implements _ICom
     // $FlowIgnore
     this._deepDiffUntappersForEachChild.get(ref)()
     this._deepDiffUntappersForEachChild.delete(ref)
-  }
-
-  getAddressTo(pathSoFar: Array<MapKey> = []): Address {
-    if (!this._parent) {
-      return {root: this, path: pathSoFar}
-    } else {
-      return this._parent.atom.getAddressTo([this._parent.key, ...pathSoFar])
-    }
   }
 }

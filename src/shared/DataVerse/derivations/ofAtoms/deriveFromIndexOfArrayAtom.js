@@ -1,11 +1,11 @@
 // @flow
 import AbstractDerivation from '../AbstractDerivation'
-import type {IArrayAtom, IAtom} from '$shared/DataVerse'
+import type {IArrayAtom} from '$shared/DataVerse'
 import type {IDerivation} from '../types'
 
 const noop = () => {}
 
-export class DerivationOfAnIndexOfAnArrayAtom<V: IAtom> extends AbstractDerivation implements IDerivation<V> {
+export class DerivationOfAnIndexOfAnArrayAtom<V> extends AbstractDerivation implements IDerivation<V> {
   getValue: () => V
 
   _arrayAtom: IArrayAtom<V>
@@ -45,6 +45,6 @@ export class DerivationOfAnIndexOfAnArrayAtom<V: IAtom> extends AbstractDerivati
   }
 }
 
-export default function deriveFromIndexOfArrayAtom<V: IAtom, A: IArrayAtom<V>>(a: A, index: number): IDerivation<V> {
+export default function deriveFromIndexOfArrayAtom<V, A: IArrayAtom<V>>(a: A, index: number): IDerivation<V> {
   return new DerivationOfAnIndexOfAnArrayAtom(a, index)
 }

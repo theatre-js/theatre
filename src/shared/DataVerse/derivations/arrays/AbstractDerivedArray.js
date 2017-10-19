@@ -1,16 +1,13 @@
 // @flow
-// import type {IDerivedDict} from './types'
+import type {IDerivedArray} from './types'
 import Emitter from '$shared/DataVerse/utils/Emitter'
 
-export default class AbstractDerivedDict {
-  _changeEmitter: Emitter<$FixMe>
-  _untapFromSourceChanges: *
-  _changeEmitterHasTappers: boolean
-  +_reactToHavingTappers: () => void
-  +_reactToNotHavingTappers: () => void
-  isDerivedDict = 'True'
+let lastId: number = 0
 
+export default class AbstractDerivedArray {
+  _id: number
   constructor() {
+    this._id = lastId++
     this._changeEmitter = new Emitter()
     this._changeEmitterHasTappers = false
     this._changeEmitter.onNumberOfTappersChange(() => {this._reactToNumberOfChangeTappersChange()})
@@ -38,20 +35,14 @@ export default class AbstractDerivedDict {
     return this._pointer
   }
 
-  proxy(): $IntentionalAny {
-    return proxyDerivedDict.default((this: $IntentionalAny))
+  concat(right: IDerivedArray<$FixMe>) {
+    return concatDerivedArray.default(this, right)
   }
 
-  extend(x: $IntentionalAny): $IntentionalAny {
-    return extend.default((this: $IntentionalAny), x)
-  }
-
-  mapValues(fn: $IntentionalAny): $IntentionalAny {
-    return mapValues.default((this: $IntentionalAny), fn)
+  reduce(fn, acc) {
+    return reduceDerivedArray.default(this, fn, acc)
   }
 }
 
-const pointer = require('$shared/DataVerse/derivations/pointer')
-const proxyDerivedDict = require('./proxyDerivedDict')
-const extend = require('./extend')
-const mapValues = require('./mapValues')
+const concatDerivedArray = require('./concatDerivedArray')
+const reduceDerivedArray = require('./reduceDerivedArray')

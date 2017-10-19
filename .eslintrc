@@ -25,6 +25,7 @@
     "display-name": 0,
     "flowtype/delimiter-dangle": [2, "always-multiline"],
     "flowtype/require-valid-file-annotation": [2, "always"],
+    "flowtype/no-types-missing-file-annotation": [0, "never"],
     "flowtype/semi": [2, "never"],
     "react/prop-types": 0
   },

@@ -1,5 +1,5 @@
 // @flow
-import type {Address, MapKey, If, True, False} from '$shared/DataVerse/types'
+import type {MapKey, If, True, False} from '$shared/DataVerse/types'
 import type {IsDictAtom, IDictAtom} from '$shared/DataVerse/atoms/dict'
 import type {IsArrayAtom, IArrayAtom} from '$shared/DataVerse/atoms/array'
 import AbstractDerivation from './AbstractDerivation'
@@ -83,6 +83,8 @@ setTimeout(() => {
   console.log('pointerFlatMaps:', pointerFlatMaps)
 }, 200)
 
+type Address = {root: $FixMe, path: Array<MapKey>} | {type: 'fromParentPointer', parentPointer: _IPointer<$FixMe>, keyOrIndex: number | string}
+
 export class PointerDerivation extends AbstractDerivation implements _IPointer<$FixMe> {
   static NOTFOUND: void = undefined //Symbol('notfound')
   _address: Address
@@ -99,39 +101,43 @@ export class PointerDerivation extends AbstractDerivation implements _IPointer<$
 
   prop(key: MapKey) {
     if (!this._props[key]) {
-      this._props[key] = new PointerDerivation({...this._address, path: [...this._address.path, key]})
+      this._props[key] = new PointerDerivation({type: 'fromParentPointer', parentPointer: this, keyOrIndex: key})// {...this._address, path: [...this._address.path, key]})
     }
     return this._props[key]
   }
 
   index(key: number) {
-    return new PointerDerivation({...this._address, path: [...this._address.path, key]})
+    if (!this._props[key]) {
+      this._props[key] = new PointerDerivation({type: 'fromParentPointer', parentPointer: this, keyOrIndex: key})// {...this._address, path: [...this._address.path, key]})
+    }
+    return this._props[key]
+    // return new PointerDerivation({...this._address, path: [...this._address.path, key]})
   }
 
   _makeDerivation() {
-    let finalDerivation = modules.constant.default(this._address.root)
-    this._address.path.forEach((key) => {
-      finalDerivation = finalDerivation.flatMap((possibleReactiveValue) => {
-        pointerFlatMaps++
-        if (possibleReactiveValue === PointerDerivation.NOTFOUND || possibleReactiveValue === undefined) {
-          return PointerDerivation.NOTFOUND
-        } else if (possibleReactiveValue instanceof modules.dict.DictAtom) {
-          return modules.deriveFromPropOfADictAtom.default(possibleReactiveValue, (key: $FixMe))
-        } else if (possibleReactiveValue instanceof modules.array.ArrayAtom && typeof key === 'number') {
-          return modules.deriveFromIndexOfArrayAtom.default(possibleReactiveValue, key)
-        } else if (possibleReactiveValue instanceof modules.PrototypalDictFace.default || possibleReactiveValue instanceof PointerDerivation || possibleReactiveValue instanceof modules.AbstractDerivedDict.default) {
-          // $FixMe
-          return possibleReactiveValue.prop(key)
-        } else {
-          return undefined
-        }
-      })//.flatMap(noBoxAtoms)
+    const address = this._address
+    const d =
+      address.type === 'fromParentPointer' ?
+      // $FixMe
+      this._makeDerivationForParentPointer(address.parentPointer, address.keyOrIndex) :
+      this._makeDerivationForPath(address.root, address.path)
+
+    this._addDependency(d)
+
+    return d
+  }
+
+  _makeDerivationForParentPointer(parentPointer: $FixMe, keyOrIndex: string | number) {
+    return parentPointer.flatMap((p) => propify(p, keyOrIndex)).flatMap(noBoxAtoms)
+  }
+
+  _makeDerivationForPath(root: $FixMe, path: Array<string | number>) {
+    let finalDerivation = modules.constant.default(root)
+    path.forEach((key) => {
+      finalDerivation = finalDerivation.flatMap((p) => propify(p, key))
     })
 
     finalDerivation = finalDerivation.flatMap(noBoxAtoms)
-
-    this._addDependency(finalDerivation)
-
     return finalDerivation
   }
 
@@ -152,6 +158,22 @@ export class PointerDerivation extends AbstractDerivation implements _IPointer<$
 
   pointer() {
     return this
+  }
+}
+
+const propify = (possibleReactiveValue, key) => {
+  pointerFlatMaps++
+  if (possibleReactiveValue === PointerDerivation.NOTFOUND || possibleReactiveValue === undefined) {
+    return PointerDerivation.NOTFOUND
+  } else if (possibleReactiveValue instanceof modules.dict.DictAtom) {
+    return modules.deriveFromPropOfADictAtom.default(possibleReactiveValue, (key: $FixMe))
+  } else if (possibleReactiveValue instanceof modules.array.ArrayAtom && typeof key === 'number') {
+    return modules.deriveFromIndexOfArrayAtom.default(possibleReactiveValue, key)
+  } else if (possibleReactiveValue instanceof modules.PrototypalDictFace.default || possibleReactiveValue instanceof PointerDerivation || possibleReactiveValue instanceof modules.AbstractDerivedDict.default) {
+    // $FixMe
+    return possibleReactiveValue.prop(key)
+  } else {
+    return undefined
   }
 }
 

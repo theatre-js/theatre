@@ -1,5 +1,5 @@
 // @flow
-import type {AddressedChangeset, MapKey, True, False, Address} from '$shared/DataVerse/types'
+import type {AddressedChangeset, MapKey, True, False} from '$shared/DataVerse/types'
 import type {default as Tappable} from '$shared/DataVerse/utils/Tappable'
 import {type DecidePointerType} from '$shared/DataVerse/derivations/pointer'
 
@@ -34,7 +34,6 @@ export type IDictAtom<O: {}> = {
 
   _setParent(p: $FixMe, key: MapKey): void,
   _unsetParent(): void,
-  getAddress(): Address,
   getParent(): ?$FixMe,
 }
 

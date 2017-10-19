@@ -1,28 +1,12 @@
 // @flow
 import type {IDictAtom} from '$shared/DataVerse/atoms/dict'
 import type {IDerivedDict} from './types'
-import DerivedDict from './AbstractDerivedDict'
+import AbstractDerivedDict from './AbstractDerivedDict'
 import noop from 'lodash/noop'
-import AbstractDerivation from '../AbstractDerivation'
+// import AbstractDerivation from '../AbstractDerivation'
+import {ensureNoAtoms} from './utils'
 
-const ensureNoAtoms = (d: mixed) => {
-  if (typeof d === 'object' && d !== null && !Array.isArray(d)) {
-    if (d.isDictAtom === 'True') {
-      return deriveFromDictAtom((d: $FixMe))
-    } else if (d.isArrayAtom === 'True') {
-      throw new Error(`Unimplemented`)
-    } else if (d instanceof DerivedDict || d instanceof AbstractDerivation) {
-      return d
-    } else {
-      console.warn('check this')
-      return d
-    }
-  } else {
-    return d
-  }
-}
-
-export class DerivedDictFromDictAtom<O: {}> extends DerivedDict implements IDerivedDict<$FixMe> {
+export class DerivedDictFromDictAtom<O: {}> extends AbstractDerivedDict implements IDerivedDict<$FixMe> {
   _dictAtom: IDictAtom<O>
   prop: $FixMe
   changes: $FixMe
