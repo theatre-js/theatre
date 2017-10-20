@@ -6,7 +6,10 @@ let lastId: number = 0
 
 export default class AbstractDerivedArray {
   _id: number
+  isDerivedArray = 'True'
+
   constructor() {
+    this._trace = new Error('Trace')
     this._id = lastId++
     this._changeEmitter = new Emitter()
     this._changeEmitterHasTappers = false
@@ -48,6 +51,7 @@ export default class AbstractDerivedArray {
   }
 }
 
+const pointer = require('$shared/DataVerse/derivations/pointer')
 const concatDerivedArray = require('./concatDerivedArray')
 const reduceDerivedArray = require('./reduceDerivedArray')
 const mapDerivedArray = require('./mapDerivedArray')

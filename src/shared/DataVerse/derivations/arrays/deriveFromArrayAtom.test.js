@@ -7,7 +7,7 @@ describe('DataVerse.derivations.deriveFromArrayAtom', () => {
   it('should work', () => {
     const arrayAtom = D.atoms.array(['0', '1'])
     const prefix = D.atoms.box('(prefix)')
-    const d = arrayAtom.derivedArray().map((s) => s.map((s) => `(${s})`))
+    const d = arrayAtom.derivedArray().map((sD) => sD.map((s) => `(${s})`))
     expect(d.index(0).getValue()).toEqual('(0)')
     arrayAtom.setIndex(0, '0-1')
     expect(d.index(0).getValue()).toEqual('(0-1)')
@@ -38,5 +38,6 @@ describe('DataVerse.derivations.deriveFromArrayAtom', () => {
     expect(changes[2]).toEqual('(prefix-2)(0-3)(1)(2)')
     expect(d.length()).toEqual(3)
 
+    expect(D.atoms.array([]).derivedArray().reduce(() => {}, 'blah').getValue()).toEqual('blah')
   })
 })

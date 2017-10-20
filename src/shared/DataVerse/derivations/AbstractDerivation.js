@@ -18,8 +18,8 @@ let activeDs = new Set()
 setTimeout(() => {
   console.log('activeDs  ', activeDs.size)
   console.log('allDs', lastDerivationId)
-  const nodes = []
-  const edges = []
+  // const nodes = []
+  // const edges = []
   // connections
   // activeDs.forEach((d) => {
   //   const node = {
@@ -69,15 +69,7 @@ class AbstractDerivation {
   +_youMayNeedToUpdateYourself: (msgComingFrom: IDerivation<$IntentionalAny>) => void
 
   constructor() {
-    // debugger
     this._trace = new Error('trace')
-    // console.log(lastDerivationId)
-    // debugger
-    // mapStackTrace(unmappedStack, (ss) => {
-    //   this._trace = ss.join('\n')
-    // }, {cacheGlobally: true})
-    // console.log(this)
-    // console.log(lastDerivationId)
     this._didNotifyDownstreamOfUpcomingUpdate = false
     this._dependencies = new Set()
     this._id = lastDerivationId++
@@ -103,6 +95,10 @@ class AbstractDerivation {
     if (!this._dependencies.has(d)) return
     this._dependencies.delete(d)
     if (this._thereAreMoreThanOneTappersOrDependents) d._removeDependent((this: $FixMe))
+  }
+
+  _removeAllDependencies() {
+    this._dependencies.forEach((d) => {this._removeDependency(d)})
   }
 
   changes() {

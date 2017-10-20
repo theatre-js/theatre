@@ -15,7 +15,7 @@ const constructValue = (des: $FixMe, d: $FixMe) => {
   return des.flatMap((val) => {
     if (isLiteral(val)) {
       return val
-    } else if (Array.isArray(val)) {
+    } else if (val && val.isDerivedArray === 'True') {
       return val.map((v) => constructValue(v, d))
     } else {
       return val.prop('type').flatMap((type: $ElementType<ValueDescriptorDescribedInAnObject, 'type'>) => {

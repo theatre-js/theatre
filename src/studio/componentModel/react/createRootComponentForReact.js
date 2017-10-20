@@ -1,10 +1,11 @@
-
+// @flow
 import * as React from 'react'
 import TheStudioClass from '$studio/TheStudioClass'
 import {provideStudio} from './studioContext'
-import Elementify from './Elementify'
 import * as D from '$shared/DataVerse'
 import compose from 'ramda/src/compose'
+import {elementify} from '$studio/handy'
+import DerivationAsReactElement from './DerivationAsReactElement'
 
 type Props = {
   children: React.Node,
@@ -24,30 +25,34 @@ const createRootComponentForReact = (studio: TheStudioClass) => {
     constructor(props: Props) {
       super(props)
 
-      this.mapAtomOfPropsOfElementify = D.atoms.dict({
-        instantiationDescriptor: D.atoms.dict({
-          componentId: 'TheaterJS/Core/RenderCurrentCanvas',
-          props: D.atoms.dict({
-            children: D.atoms.box(props.children),
-          }),
-          modifierInstantiationDescriptors: D.atoms.dict({
-            byId: D.atoms.dict({
-              // type: 'MapDescriptor',
-              // values: D.atoms.dict({}),
-            }),
-            list: D.atoms.array([]),
-          }),
+      this.instantiationDescriptor = D.atoms.dict({
+        componentId: 'TheaterJS/Core/RenderCurrentCanvas',
+        props: D.atoms.dict({
+          children: D.atoms.box(props.children),
+        }),
+        modifierInstantiationDescriptors: D.atoms.dict({
+          byId: D.atoms.dict({}),
+          list: D.atoms.array([]),
         }),
       })
-      this.propsOfElementify = this.mapAtomOfPropsOfElementify.derivedDict().pointer()
+      this.elementD = elementify(
+        D.derivations.constant(`RenderCurrentCanvas`),
+        this.instantiationDescriptor.derivedDict().pointer(),
+        D.derivations.constant(studio)
+      )
     }
 
     componentWillReceiveProps(props) {
-      this.mapAtomOfPropsOfElementify.prop('props').prop('children').set(props.children)
+      this.instantiationDescriptor.prop('props').prop('children').set(props.children)
+    }
+
+    shouldComponentUpdate() {
+      return false
     }
 
     render() {
-      return <Elementify key="RenderCurrentCanvas" props={this.propsOfElementify}  />
+      return <DerivationAsReactElement key="RenderCurrentCanvas" derivation={this.elementD} />
+      // return <Elementify key="RenderCurrentCanvas" props={this.propsOfElementify}  />
     }
   }
 

@@ -30,6 +30,7 @@ interface _IAtom {
 
 export default class AbstractAtom implements _IAtom {
   isAtom = 'True'
+  _trace: $FixMe
   _changeEmitter: *
   _deepChangeEmitter: *
   _deepDiffEmitter: *
@@ -38,6 +39,7 @@ export default class AbstractAtom implements _IAtom {
   +unboxDeep: () => mixed
 
   constructor() {
+    this._trace = new Error('Trace')
     this._deepChangeEmitter = new Emitter()
     this._changeEmitter = new Emitter()
     this._deepDiffEmitter = new Emitter()

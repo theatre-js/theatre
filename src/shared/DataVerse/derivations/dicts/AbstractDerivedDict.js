@@ -11,6 +11,7 @@ export default class AbstractDerivedDict {
   isDerivedDict = 'True'
 
   constructor() {
+    this._trace = new Error('Trace')
     this._changeEmitter = new Emitter()
     this._changeEmitterHasTappers = false
     this._changeEmitter.onNumberOfTappersChange(() => {this._reactToNumberOfChangeTappersChange()})

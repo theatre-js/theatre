@@ -2,12 +2,9 @@
 import AbstractDerivation from '../AbstractDerivation'
 import type {IDerivation} from '../types'
 import type {IDerivedArray} from './types'
-import constant from '../constant'
 import of from '../of'
-// import proxy from '../proxy'
 
 const noop = () => {}
-// const none = constant(undefined)
 
 export class DerivedArrayReduction<T, V> extends AbstractDerivation implements IDerivation<V> {
   getValue: () => V
@@ -36,9 +33,7 @@ export class DerivedArrayReduction<T, V> extends AbstractDerivation implements I
     const updateFromIndex = this._updateNeededFromIndex
     this._updateNeededFromIndex = -1
 
-    if (this._stack.length > 0) {
-      this._removeDependency(this._stack[this._stack.length - 1])
-    }
+    this._removeAllDependencies()
 
     for (let i = this._stack.length - 1; i >= updateFromIndex; i--) {
       this._stack.pop()
@@ -54,10 +49,15 @@ export class DerivedArrayReduction<T, V> extends AbstractDerivation implements I
       this._stack.push(curDerivation)
     }
 
-    const topDerivation = this._stack[this._stack.length - 1]
+
+    const topDerivation = this._getTopDerivation()
 
     this._addDependency(topDerivation)
     return topDerivation.getValue()
+  }
+
+  _getTopDerivation() {
+    return this._stack.length > 0 ? this._stack[this._stack.length - 1] : this._seed
   }
 
   _keepUptodate() {

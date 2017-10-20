@@ -1,12 +1,16 @@
 // @flow
 import {type WhatToRender} from '$studio/componentModel/types'
-import * as D from '$shared/DataVerse'
 import {makeReactiveComponent} from '$studio/handy'
 import resolveReferenceToHiddenLocalValue from './resolveReferenceToHiddenLocalValue'
 
 export default makeReactiveComponent({
-  displayName: 'ElementifyDeclarativeComponent',
   modifyPrototypalDict: (d) => d.extend({
+    displayName(d) {
+      const componentDescriptorP = d.pointer().prop('props').prop('componentDescriptor')
+
+      return componentDescriptorP.prop('id')
+    },
+
     render(d) {
       const componentDescriptorP = d.pointer().prop('props').prop('componentDescriptor')
 

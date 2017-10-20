@@ -1,13 +1,12 @@
 // @flow
 import * as React from 'react'
-import compose from 'ramda/src/compose'
-import {withStudio, type WithStudioProps} from '../studioContext'
+import {type WithStudioProps, contextTypes, contextName} from '../studioContext'
 import * as D from '$shared/DataVerse'
 import SideEffectsHandler from './SideEffectsHandler'
 
 type MakeReactiveComponentArgs = {
   modifyPrototypalDict: (D.IPrototypalDict<$FixMe>) => D.IPrototypalDict<$FixMe>,
-  displayName: string,
+  displayName: ?string,
   getInitialState?: () => D.IDictAtom<$FixMe>,
 }
 
@@ -19,7 +18,7 @@ export default function makeReactiveComponent({modifyPrototypalDict, displayName
   } & WithStudioProps
 
   class TheaterJSComponent extends React.PureComponent<Props, void> {
-    static displayName = displayName
+    static displayName = displayName ? displayName : undefined
     _finalFace: $FixMe
     _atom: $FixMe
     _whatToRender: $FixMe
@@ -44,46 +43,51 @@ export default function makeReactiveComponent({modifyPrototypalDict, displayName
       props: (d) => d.pointer().prop('_atom').prop('props'),
       studio: (d) => d.pointer().prop('_atom').prop('studio'),
       dataVerseContext: (d) => d.pointer().prop('studio').getValue().dataVerseContext,
-      key: (d) => d.pointer().prop('_atom').prop('key'),
+      // key: (d) => d.pointer().prop('_atom').prop('key'),
       modifierInstantiationDescriptors: (d) => d.pointer().prop('_atom').prop('modifierInstantiationDescriptors'),
       state: (d) => d.pointer().prop('_atom').prop('state'),
     }
 
-    constructor(props: Props) {
+    constructor(props: Props, context) {
       super(props)
+      this.studio = context[contextName]
+
       this._fnsToCallOnWillUnmount = []
 
       this._atom = this._createAtom()
       this._prototypalDictD = this._makePrototypalDictD()
 
       this._finalFace =
-        new D.derivations.PrototypalDictFace(this._prototypalDictD.getValue(), props.studio.dataverseContext)
+        new D.derivations.PrototypalDictFace(this._prototypalDictD.getValue(), this.studio.dataverseContext)
 
-      const untapFromPrototypalMapChanges = this._prototypalDictD.setDataVerseContext(props.studio.dataverseContext).changes().tap((newFinalPrototypalDict) => {
+      if (!displayName)
+        TheaterJSComponent.displayName = this._finalFace.prop('displayName').getValue()
+
+      const untapFromPrototypalMapChanges = this._prototypalDictD.setDataVerseContext(this.studio.dataverseContext).changes().tap((newFinalPrototypalDict) => {
         this._finalFace.setHead(newFinalPrototypalDict)
       })
 
       this._fnsToCallOnWillUnmount.push(untapFromPrototypalMapChanges)
 
       this._whatToRender = null
-      const untapFromRender = this._finalFace.prop('render').setDataVerseContext(props.studio.dataverseContext).changes().tap((whatToRender) => {
+      const untapFromRender = this._finalFace.prop('render').setDataVerseContext(this.studio.dataverseContext).changes().tap((whatToRender) => {
         this._whatToRender = whatToRender
         this.forceUpdate()
       })
       this._fnsToCallOnWillUnmount.push(untapFromRender)
 
       const sideEffectsDictP = this._finalFace.pointer().prop('sideEffects')
-      this._sideEffetsHandler = new SideEffectsHandler(props.studio.dataverseContext, this._finalFace, sideEffectsDictP)
+      this._sideEffetsHandler = new SideEffectsHandler(this.studio.dataverseContext, this._finalFace, sideEffectsDictP)
 
     }
 
     _createAtom() {
       return D.atoms.dict({
-        instanceId: this.props.studio._getNewComponentInstanceId(),
+        instanceId: this.studio._getNewComponentInstanceId(),
         props: this.props.props,
         modifierInstantiationDescriptors: this.props.modifierInstantiationDescriptors,
-        studio: this.props.studio,
-        key: this.props.key,
+        studio: this.studio,
+        // key: this.props.key,
         state: getInitialState ? getInitialState(): D.atoms.dict({}),
       })
     }
@@ -94,13 +98,17 @@ export default function makeReactiveComponent({modifyPrototypalDict, displayName
 
       const prototypalDictWithoutModifiers = modifyPrototypalDict(basePrototypalDict)
 
-      const modifierInstantiationDescriptorsByIdP = this._atom.pointer().prop('modifierInstantiationDescriptors').prop('byId')
-      // console.log('----', modifierInstantiationDescriptorsByIdP.getValue())
       // return D.derivations.constant(prototypalDictWithoutModifiers)
 
+      const modifierInstantiationDescriptorsByIdP = this._atom.pointer().prop('modifierInstantiationDescriptors').prop('byId')
       const finalPrototypalDictD =
         this._atom.pointer().prop('modifierInstantiationDescriptors').prop('list').flatMap((list: D.IDerivedArray<$FixMe>) => {
-          return list.map((id: string) => modifierInstantiationDescriptorsByIdP.prop(id))
+          if (!list)
+            return prototypalDictWithoutModifiers
+
+          // return prototypalDictWithoutModifiers
+
+          return list.map((idD) => idD.flatMap((id: string) => modifierInstantiationDescriptorsByIdP.prop(id)))
             .reduce(
               (dictD, modifierInstantiationDescriptorP) => {
                 return dictD.flatMap((dict) => this._applyModifier(modifierInstantiationDescriptorP, dict))
@@ -113,11 +121,12 @@ export default function makeReactiveComponent({modifyPrototypalDict, displayName
     }
 
     _applyModifier(modifierInstantiationDescriptorP, dict): D.IDerivation<$FixMe> {
+      return dict
       return modifierInstantiationDescriptorP.prop('disabled').flatMap((disabled: boolean) => {
         if (disabled) return dict
 
         return modifierInstantiationDescriptorP.prop('modifierId').flatMap((modifierId: string) => {
-          return this.props.studio.atom.pointer().prop('coreModifierDescriptorsById').prop(modifierId).prop('modifyPrototypalDict').flatMap((possibleFn: ?Function) => {
+          return this.studio.atom.pointer().prop('coreModifierDescriptorsById').prop(modifierId).prop('modifyPrototypalDict').flatMap((possibleFn: ?Function) => {
             if (!possibleFn) console.warn('this shouldnt happen')
             return possibleFn ? possibleFn(modifierInstantiationDescriptorP.prop('props'), dict) : dict
           })
@@ -155,7 +164,7 @@ export default function makeReactiveComponent({modifyPrototypalDict, displayName
     }
   }
 
-  return compose(
-    withStudio,
-  )(TheaterJSComponent)
+  TheaterJSComponent.contextTypes = contextTypes
+
+  return TheaterJSComponent
 }

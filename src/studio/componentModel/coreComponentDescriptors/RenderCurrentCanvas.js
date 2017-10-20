@@ -1,7 +1,7 @@
 // @flow
 import {type ComponentDescriptor} from '$studio/componentModel/types'
-import {makeReactiveComponent, Elementify} from '$studio/handy'
-import * as React from 'react'
+import {makeReactiveComponent, elementify} from '$studio/handy'
+// import * as React from 'react'
 import * as D from '$shared/DataVerse'
 
 const RenderCurrentCanvas = makeReactiveComponent({
@@ -11,23 +11,18 @@ const RenderCurrentCanvas = makeReactiveComponent({
       const studioAtom = d.prop('studio').getValue().atom
       const componentIdToBeRenderedAsCurrentCanvasPointer = studioAtom.pointer().prop('state').prop('workspace').prop('componentIdToBeRenderedAsCurrentCanvas')
       const children = d.pointer().prop('props').prop('children')
-      const props =D.atoms.dict({
-        instantiationDescriptor:D.atoms.dict({
-          componentId: D.atoms.box(componentIdToBeRenderedAsCurrentCanvasPointer),
-          props:D.atoms.dict({}),
-          modifierInstantiationDescriptors: D.atoms.dict({
-            byId: D.atoms.dict({
-            }),
-            list: D.atoms.array([]),
-          }),
-        }),
+      const instantiationDescriptorP = D.atoms.dict({
+        componentId: D.atoms.box(componentIdToBeRenderedAsCurrentCanvasPointer),
+        props: D.atoms.dict({}),
       }).derivedDict().pointer()
 
-      return D.derivations.autoDerive(() => {
-        const C = componentIdToBeRenderedAsCurrentCanvasPointer.getValue()
-
+      return componentIdToBeRenderedAsCurrentCanvasPointer.flatMap((C) => {
         if (typeof C === 'string') {
-          return <Elementify key="currentCanvas" props={props} />
+          return elementify(
+            D.derivations.constant('currentCanvas'),
+            instantiationDescriptorP,
+            d.prop('studio'),
+          )
         } else {
           return children.getValue()
         }
