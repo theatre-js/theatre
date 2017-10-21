@@ -1,8 +1,6 @@
 // @flow
-import * as React from 'react'
-import {type WithStudioProps, contextTypes, contextName} from '../studioContext'
-import * as D from '$shared/DataVerse'
 import SideEffectsHandler from './SideEffectsHandler'
+import {type Studio, PureComponentWithStudio, D} from '$studio/handy'
 
 type MakeReactiveComponentArgs = {
   modifyPrototypalDict: (D.IPrototypalDict<$FixMe>) => D.IPrototypalDict<$FixMe>,
@@ -15,9 +13,9 @@ export default function makeReactiveComponent({modifyPrototypalDict, displayName
     key: string,
     props: $FixMe,
     modifierInstantiationDescriptors: $FixMe,
-  } & WithStudioProps
+  }
 
-  class TheaterJSComponent extends React.PureComponent<Props, void> {
+  class TheaterJSComponent extends PureComponentWithStudio<Props, void> {
     static displayName = displayName ? displayName : undefined
     _finalFace: $FixMe
     _atom: $FixMe
@@ -29,7 +27,7 @@ export default function makeReactiveComponent({modifyPrototypalDict, displayName
     _atom: D.IDictAtom<{
       instanceId: string | number,
       props: $ElementType<Props, 'props'>,
-      studio: $ElementType<WithStudioProps, 'studio'>,
+      studio: Studio,
       key: string,
       state: $FixMe,
       modifierInstantiationDescriptors: $ElementType<Props, 'modifierInstantiationDescriptors'>,
@@ -49,8 +47,7 @@ export default function makeReactiveComponent({modifyPrototypalDict, displayName
     }
 
     constructor(props: Props, context) {
-      super(props)
-      this.studio = context[contextName]
+      super(props, context)
 
       this._fnsToCallOnWillUnmount = []
 
@@ -98,7 +95,7 @@ export default function makeReactiveComponent({modifyPrototypalDict, displayName
 
       const prototypalDictWithoutModifiers = modifyPrototypalDict(basePrototypalDict)
 
-      // return D.derivations.constant(prototypalDictWithoutModifiers)
+      return D.derivations.constant(prototypalDictWithoutModifiers)
 
       const modifierInstantiationDescriptorsByIdP = this._atom.pointer().prop('modifierInstantiationDescriptors').prop('byId')
       const finalPrototypalDictD =
@@ -164,7 +161,6 @@ export default function makeReactiveComponent({modifyPrototypalDict, displayName
     }
   }
 
-  TheaterJSComponent.contextTypes = contextTypes
 
   return TheaterJSComponent
 }

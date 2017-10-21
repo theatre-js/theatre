@@ -1,11 +1,10 @@
 // @flow
 import * as React from 'react'
 import TheStudioClass from '$studio/TheStudioClass'
-import {provideStudio} from './studioContext'
+import {contextTypes, contextName} from './utils/studioContext'
 import * as D from '$shared/DataVerse'
-import compose from 'ramda/src/compose'
 import {elementify} from '$studio/handy'
-import DerivationAsReactElement from './DerivationAsReactElement'
+import DerivationAsReactElement from './utils/DerivationAsReactElement'
 
 type Props = {
   children: React.Node,
@@ -54,11 +53,16 @@ const createRootComponentForReact = (studio: TheStudioClass) => {
       return <DerivationAsReactElement key="RenderCurrentCanvas" derivation={this.elementD} />
       // return <Elementify key="RenderCurrentCanvas" props={this.propsOfElementify}  />
     }
+
+    getChildContext() {
+      return {[contextName]: studio}
+    }
+
   }
 
-  return compose(
-    provideStudio(studio),
-  )(TheaterJSRoot)
+  TheaterJSRoot.childContextTypes = contextTypes
+
+  return TheaterJSRoot
 }
 
 export default createRootComponentForReact

@@ -1,15 +1,14 @@
 // @flow
-import {React, D, withStudio, type WithStudioProps} from '$studio/handy'
-import compose from 'ramda/src/compose'
+import {React, D, PureComponentWithStudio} from '$studio/handy'
 import _ from 'lodash'
 
 type Props = {derivation: D.IDerivation<React.Node<any>>, key: string} & WithStudioProps
 type State = {|lastValue: React.Node<any>|}
 
-export class DerivationAsReactElement extends React.PureComponent<Props, State> {
+export default class DerivationAsReactElement extends PureComponentWithStudio<Props, State> {
   props: Props
-  constructor(props: Props) {
-    super(props)
+  constructor(props: Props, context) {
+    super(props, context)
     this._untapFromDerivationChanges = _.noop
   }
 
@@ -19,7 +18,7 @@ export class DerivationAsReactElement extends React.PureComponent<Props, State> 
 
   listen(props: Props) {
     this._untapFromDerivationChanges =
-      props.derivation.setDataVerseContext(props.studio.dataverseContext).changes(() => {this.forceUpdate()})
+      props.derivation.setDataVerseContext(this.studio.dataverseContext).changes(() => {this.forceUpdate()})
   }
 
   componentWillUnmount() {
@@ -35,7 +34,3 @@ export class DerivationAsReactElement extends React.PureComponent<Props, State> 
     return this.props.derivation.getValue()
   }
 }
-
-export default compose(
-  withStudio,
-)(DerivationAsReactElement)
