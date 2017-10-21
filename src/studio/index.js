@@ -11,6 +11,8 @@ import createRootComponentForReact from './componentModel/react/createRootCompon
 const theaterStudioInstance = new TheStudioClass()
 theaterStudioInstance.run()
 
+window.studio = theaterStudioInstance
+
 module.exports = {
   studio: theaterStudioInstance,
   react: {

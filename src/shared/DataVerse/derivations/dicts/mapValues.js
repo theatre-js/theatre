@@ -37,7 +37,7 @@ export class MapValues extends DerivedDict implements IDerivedDict<$FixMe> {
   }
 
   prop<K: $Keys<$FixMe>>(k: K): IDerivation<$FixMe> {
-    return this._fn(this._source.prop(k))
+    return this._fn(this._source.pointer().prop(k))
   }
 
   keys() {

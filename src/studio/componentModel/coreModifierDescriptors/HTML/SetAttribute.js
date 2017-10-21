@@ -30,12 +30,12 @@ const sideEffectsForApplyAttributes = {
   },
 }
 
-const dictModifier = (instantiationDescriptorP, dict) => {
+const modifyPrototypalDict = (propsP, dict) => {
   return dict.extend({
     domAttributes(d) {
       return ensureDomAttributes(d).flatMap((domAtrributes) => {
-        return instantiationDescriptorP.prop('props').prop('name').flatMap((name: string) => {
-          return domAtrributes.extend({[name]: instantiationDescriptorP.prop('props').prop('value')})
+        return propsP.prop('attributeName').flatMap((attributeName: string) => {
+          return domAtrributes.extend(D.atoms.dict({[attributeName]: propsP.prop('value')}).derivedDict())
         })
       })
     },
@@ -56,7 +56,7 @@ const dictModifier = (instantiationDescriptorP, dict) => {
 // $FixMe
 const descriptor: ComponentDescriptor = {
   id: 'TheaterJS/Core/HTML/SetAttribute',
-  dictModifier,
+  modifyPrototypalDict,
 }
 
 export default descriptor

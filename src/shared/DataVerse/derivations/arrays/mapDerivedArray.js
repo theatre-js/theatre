@@ -30,7 +30,7 @@ export class MappedDerivedArray extends AbstractDerivedArray implements IDerived
   }
 
   index(i: number): IDerivation<$FixMe> {
-    return this._fn(this._source.index(i))
+    return this._fn(this._source.pointer().index(i))
   }
 
   length() {

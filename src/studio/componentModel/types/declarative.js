@@ -20,6 +20,7 @@ type ModifierInstantiationValueDescriptor = {|
   type: 'ModifierInstantiationValueDescriptor',
   modifierId: string,
   props: MapDescriptor,
+  enabled: boolean,
 |}
 
 export type ModifierDescriptor = {|

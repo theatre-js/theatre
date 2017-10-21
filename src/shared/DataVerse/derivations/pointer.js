@@ -87,6 +87,7 @@ type Address = {root: $FixMe, path: Array<MapKey>} | {type: 'fromParentPointer',
 
 export class PointerDerivation extends AbstractDerivation implements _IPointer<$FixMe> {
   static NOTFOUND: void = undefined //Symbol('notfound')
+  isPointer = 'True'
   _address: Address
   _internalDerivation: ?IDerivation<$FixMe>
   getValue: () => $FixMe
@@ -172,6 +173,8 @@ const propify = (possibleReactiveValue, key) => {
   } else if (possibleReactiveValue instanceof modules.PrototypalDictFace.default || possibleReactiveValue instanceof PointerDerivation || possibleReactiveValue instanceof modules.AbstractDerivedDict.default) {
     // $FixMe
     return possibleReactiveValue.prop(key)
+  } else if (possibleReactiveValue.isDerivedArray === 'True') {
+    return possibleReactiveValue.index(key)
   } else {
     return undefined
   }

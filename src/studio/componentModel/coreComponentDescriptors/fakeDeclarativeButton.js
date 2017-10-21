@@ -22,7 +22,7 @@ const fakeDescriptor: DeclarativeComponentDescriptor = {
           values: {
             '0': {
               type: 'ModifierInstantiationValueDescriptor',
-              modifierId: 'TheaterJS/Core/DOMTag/SetAttribute',
+              modifierId: 'TheaterJS/Core/HTML/SetAttribute',
               props: {
                 type: 'MapDescriptor',
                 values: {

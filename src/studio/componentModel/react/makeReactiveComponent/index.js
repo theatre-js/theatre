@@ -95,7 +95,7 @@ export default function makeReactiveComponent({modifyPrototypalDict, displayName
 
       const prototypalDictWithoutModifiers = modifyPrototypalDict(basePrototypalDict)
 
-      return D.derivations.constant(prototypalDictWithoutModifiers)
+      // return D.derivations.constant(prototypalDictWithoutModifiers)
 
       const modifierInstantiationDescriptorsByIdP = this._atom.pointer().prop('modifierInstantiationDescriptors').prop('byId')
       const finalPrototypalDictD =
@@ -103,12 +103,14 @@ export default function makeReactiveComponent({modifyPrototypalDict, displayName
           if (!list)
             return prototypalDictWithoutModifiers
 
+          // if (list.length() > 0) debugger
+
           // return prototypalDictWithoutModifiers
 
           return list.map((idD) => idD.flatMap((id: string) => modifierInstantiationDescriptorsByIdP.prop(id)))
             .reduce(
-              (dictD, modifierInstantiationDescriptorP) => {
-                return dictD.flatMap((dict) => this._applyModifier(modifierInstantiationDescriptorP, dict))
+              (dict, modifierInstantiationDescriptor) => {
+                return this._applyModifier(modifierInstantiationDescriptor, dict)
               },
               D.derivations.constant(prototypalDictWithoutModifiers),
             )
@@ -117,15 +119,14 @@ export default function makeReactiveComponent({modifyPrototypalDict, displayName
       return finalPrototypalDictD
     }
 
-    _applyModifier(modifierInstantiationDescriptorP, dict): D.IDerivation<$FixMe> {
-      return dict
-      return modifierInstantiationDescriptorP.prop('disabled').flatMap((disabled: boolean) => {
+    _applyModifier(modifierInstantiationDescriptor, dict): D.IDerivation<$FixMe> {
+      return modifierInstantiationDescriptor.prop('disabled').flatMap((disabled: boolean) => {
         if (disabled) return dict
 
-        return modifierInstantiationDescriptorP.prop('modifierId').flatMap((modifierId: string) => {
+        return modifierInstantiationDescriptor.prop('modifierId').flatMap((modifierId: string) => {
           return this.studio.atom.pointer().prop('coreModifierDescriptorsById').prop(modifierId).prop('modifyPrototypalDict').flatMap((possibleFn: ?Function) => {
             if (!possibleFn) console.warn('this shouldnt happen')
-            return possibleFn ? possibleFn(modifierInstantiationDescriptorP.prop('props'), dict) : dict
+            return possibleFn ? possibleFn(modifierInstantiationDescriptor.pointer().prop('props'), dict) : dict
           })
         })
       })
