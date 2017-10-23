@@ -39,9 +39,9 @@ export default class StandardStore<State: Object, Action: Object> {
       (typeof window === 'object' && window.devToolsExtension) ? window.devToolsExtension() : (f) => f
     )
 
-    const store = createStore(this.rootReducer, this._initialState || (undefined: $FlowFixMe), enhancer)
+    const store = createStore(this.rootReducer, this._initialState || (undefined: $FixMe), enhancer)
 
-    // $FlowFixMe
+    // $FixMe
     store.sagaMiddleware = this.sagaMiddleware
 
     return store

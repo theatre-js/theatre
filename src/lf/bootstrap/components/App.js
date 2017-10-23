@@ -1,5 +1,5 @@
 // @flow
-import React from 'react'
+import * as React from 'react'
 import compose from 'ramda/src/compose'
 import {AppContainer} from 'react-hot-loader'
 import configureStore from '$lf/bootstrap/configureStore'
@@ -15,7 +15,8 @@ type State = {
   store: Store<any, any>,
 }
 
-class App extends React.Component<*, Props, *> {
+class App extends React.Component<Props, *> {
+  static defaultProps: *;
   state: State
 
   constructor(props: Props) {

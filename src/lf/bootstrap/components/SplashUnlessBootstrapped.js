@@ -1,8 +1,8 @@
 // @flow
 
-import React from 'react'
+import * as React from 'react'
 import compose from 'ramda/src/compose'
-import {connect} from 'react-redux'
+import {connect} from '$lf/utils'
 import {getIsBootstrapped} from '$lf/common/selectors'
 import SplashScreen from '$lf/common/components/SplashScreen'
 

@@ -1,5 +1,5 @@
 // @flow
-import React from 'react'
+import * as React from 'react'
 import compose from 'ramda/src/compose'
 import css from './ProjectItem.css'
 import {type ProjectDescription} from '$lb/projects/types'

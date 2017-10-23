@@ -1,5 +1,5 @@
 // @flow
-import React from 'react'
+import * as React from 'react'
 import css from './index.css'
 
 type Props = {
@@ -8,15 +8,14 @@ type Props = {
   onCancel: Function,
 }
 
-class SingleInputForm extends React.Component {
-  props: Props
+class SingleInputForm extends React.Component<Props> {
   input: HTMLInputElement
 
   componentDidMount() {
     this.input.focus()
   }
 
-  handleKeyDown = (e: SyntheticKeyboardEvent) => {
+  handleKeyDown = (e: SyntheticKeyboardEvent<>) => {
     switch (e.keyCode) {
       case 13:
         this.props.onSubmit(this.input.value)
@@ -30,6 +29,7 @@ class SingleInputForm extends React.Component {
   render() {
     return (
       <input
+        // $FixMe
         ref={(input) => {this.input = input}}
         placeholder={this.props.placeholder}
         onKeyDown={this.handleKeyDown}

@@ -4,7 +4,7 @@ import {call} from 'redux-saga/effects'
 
 type Path = Array<string | number>
 
-function* _reduceState(path: Path, reducer: Function, providedState?: $IntentionalAny): Generator<> {
+function* _reduceState(path: Path, reducer: Function, providedState?: $IntentionalAny): Generator<*, *, *> {
   return yield call(_multiReduceState, [{path, reducer}], providedState)
 }
 

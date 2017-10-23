@@ -1,7 +1,7 @@
 // @flow
-import React from 'react'
+import * as React from 'react'
 import compose from 'ramda/src/compose'
-import {connect} from 'react-redux'
+import {connect} from '$lf/utils'
 import {type StoreState} from '$lf/types'
 import ProjectsList from './ProjectsList'
 import css from './index.css'
@@ -25,10 +25,7 @@ type State = {
   error: ?string,
 }
 
-class ProjectsPage extends React.Component {
-  props: Props
-  state: State
-
+class ProjectsPage extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
     this.state = {
@@ -74,11 +71,11 @@ class ProjectsPage extends React.Component {
     }))
   }
 
-  dragOverHandler = (e: SyntheticDragEvent) => {
+  dragOverHandler = (e: SyntheticDragEvent<>) => {
     e.preventDefault()
   }
 
-  dropHandler = (e: SyntheticDragEvent) => {
+  dropHandler = (e: SyntheticDragEvent<>) => {
     e.preventDefault()
     const path = e.dataTransfer.files[0].path
     this.setState(() => ({
@@ -173,7 +170,6 @@ class ProjectsPage extends React.Component {
 }
 
 export default compose(
-  withRunSaga(),
   connect(
     (state: StoreState) => {
       return {

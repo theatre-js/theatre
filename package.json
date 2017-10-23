@@ -5,7 +5,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "flow-typed:install": "flow-typed install --flowVersion=0.51.0",
+    "flow-typed:install": "flow-typed install --flowVersion=0.53.0",
     "lint": "eslint ./src",
     "flow": "flow",
     "test": "jest",
@@ -14,7 +14,10 @@
     "lb:dev": "nodemon -e jade --exec \"electron\" ./bundles/lb/index.js",
     "lb:run": "electron ./bundles/lb/index.js",
     "lf:webpack:dev": "webpack-dev-server --progress --config webpack/lf/development.babel.js",
-    "build:dev": "npm-run-all --parallel lb:webpack:dev lf:webpack:dev"
+    "studio:webpack:dev": "webpack-dev-server --progress --config webpack/studio/development.babel.js",
+    "examples:webpack:dev": "webpack-dev-server --progress --config webpack/examples/development.babel.js",
+    "build:dev": "npm-run-all --parallel lb:webpack:dev lf:webpack:dev studio:webpack:dev examples:webpack:dev",
+    "open-examples": "opn http://localhost:9092/examples"
   },
   "jest": {
     "moduleNameMapper": {
@@ -22,6 +25,7 @@
       "\\$src/(.*)": "<rootDir>/src/$1",
       "\\$lb/(.*)": "<rootDir>/src/lb/$1",
       "\\$lf/(.*)": "<rootDir>/src/lf/$1",
+      "\\$studio/(.*)": "<rootDir>/src/studio/$1",
       "\\$shared/(.*)": "<rootDir>/src/shared/$1"
     },
     "setupFiles": [
@@ -37,13 +41,16 @@
   "license": "Proprietary",
   "devDependencies": {
     "autoprefixer": "^7.1.2",
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
     "babel-eslint": "^7.2.3",
-    "babel-loader": "^7.1.1",
+    "babel-loader": "^7.1.2",
+    "babel-plugin-transform-export-extensions": "^6.22.0",
     "babel-preset-env": "^1.6.0",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-1": "^6.24.1",
-    "babel-register": "^6.24.1",
+    "babel-register": "^6.26.0",
     "clean-webpack-plugin": "^0.1.16",
     "css-loader": "^0.28.4",
     "deep-equal": "^1.0.1",
@@ -56,13 +63,17 @@
     "eslint-plugin-react": "^7.1.0",
     "exec-loader": "^3.0.0",
     "file-loader": "^0.11.2",
+    "flow-bin": "^0.53.1",
+    "flow-typed": "^2.1.5",
     "fs-extra": "^4.0.0",
     "html-webpack-plugin": "^2.29.0",
     "husky": "^0.14.3",
-    "jest": "^20.0.4",
+    "jest": "^21.2.1",
+    "json2csv": "^3.11.4",
     "lodash": "^4.17.4",
     "mock-fs": "^4.4.1",
     "npm-run-all": "^4.0.2",
+    "opn-cli": "^3.1.0",
     "postcss": "^6.0.8",
     "postcss-hexrgba": "^1.0.0",
     "postcss-loader": "^2.0.6",
@@ -71,26 +82,25 @@
     "ramda": "^0.24.1",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
-    "react-flow-types": "^0.1.1",
+    "react-flow-types": "0.2.0-beta.2",
     "react-hot-loader": "^3.0.0-beta.7",
-    "react-redux": "^5.0.5",
+    "react-redux": "^5.0.6",
     "react-router-dom": "^4.1.2",
     "recompose": "^0.24.0",
+    "redux": "^3.7.2",
     "redux-actions": "^2.2.1",
+    "redux-saga": "^0.15.6",
+    "socket.io": "^2.0.3",
     "style-loader": "^0.18.2",
     "svg-inline-loader": "^0.8.0",
     "url-loader": "^0.5.9",
     "uuid": "^3.1.0",
-    "webpack": "^3.4.1",
-    "webpack-dev-server": "^2.6.1",
+    "webpack": "^3.5.5",
+    "webpack-dev-server": "^2.7.1",
     "webpack-notifier": "^1.5.0",
     "when": "^3.7.8"
   },
   "dependencies": {
-    "babel-core": "^6.25.0",
-    "flow-bin": "^0.51.0",
-    "flow-typed": "^2.1.5",
-    "redux": "^3.7.2",
-    "redux-saga": "^0.15.5"
+    "source-map-support": "^0.5.0"
   }
 }

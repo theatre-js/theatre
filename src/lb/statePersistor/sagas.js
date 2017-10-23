@@ -15,13 +15,15 @@ const whitelistOfPartsOfStateToPersist = [
   ['projects'],
 ]
 
-export default function* statePersistorRootSaga(): Generator<> {
+export default function* statePersistorRootSaga(): Generator<*, *, *> {
   yield call(loadState)
   yield fork(persistStateChanges)
   yield null
 }
 
-function* loadState(): Generator<> {
+function* loadState(): Generator<*, *, *> {
+  // return yield put(bootstrapAction())
+
   const fileExists: boolean = yield call(fse.pathExists, pathToPersistenceFile)
   if (!fileExists)
     return yield put(bootstrapAction())
@@ -41,11 +43,11 @@ function* loadState(): Generator<> {
   return yield put(bootstrapAction())
 }
 
-function* persistStateChanges(): Generator<> {
-  let lastState = pickPathsFromObject(yield select(), whitelistOfPartsOfStateToPersist)
-  yield takeLatest('*', function* (): Generator<> {
+function* persistStateChanges(): Generator<*, *, *> {
+  let lastState = pickPathsFromObject((yield select()), whitelistOfPartsOfStateToPersist)
+  yield takeLatest('*', function* (): Generator<*, *, *> {
     yield delay(2)
-    const newState = pickPathsFromObject(yield select(), whitelistOfPartsOfStateToPersist)
+    const newState = pickPathsFromObject((yield select()), whitelistOfPartsOfStateToPersist)
     if (!deepEqual(lastState, newState)) {
       yield call(persistNewState, newState)
       lastState = newState
@@ -53,7 +55,7 @@ function* persistStateChanges(): Generator<> {
   })
 }
 
-function* persistNewState(newState: {}): Generator<> {
+function* persistNewState(newState: {}): Generator<*, *, *> {
   yield call(fse.ensureFile, pathToPersistenceFile)
   const stringified = JSON.stringify(newState)
   yield call(fse.writeFile, pathToPersistenceFile, stringified, {encoding: 'utf-8'})

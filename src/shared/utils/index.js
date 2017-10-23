@@ -4,6 +4,7 @@ import reduceState from './sagas/reduceState'
 import actionCreator from './redux/actionCreator'
 import multiReduceState from './sagas/multiReduceState'
 import onlyUpdateForKeysDeep from './onlyUpdateForKeysDeep'
+import invariant from './invariant'
 
 import {
   default as withRouter,
@@ -28,4 +29,5 @@ export {
   actionCreator,
   multiReduceState,
   onlyUpdateForKeysDeep,
+  invariant,
 }

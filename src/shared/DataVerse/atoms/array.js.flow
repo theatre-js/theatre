@@ -1,0 +1,56 @@
+// @flow
+import type {IAtom} from './utils/AbstractAtom'
+import type {AddressedChangeset, MapKey, True, False} from '$shared/DataVerse/types'
+import type {default as Tappable} from '$shared/DataVerse/utils/Tappable'
+import type {IDerivedArray} from '$shared/DataVerse/derivations/arrays/types'
+
+type Unboxed<O> = $FixMe // eslint-disable-line no-unused-vars
+
+export type ArrayAtomChangeType<V: IAtom> = {
+  startIndex: number,
+  deleteCount: number,
+  addedRefs: Array<V>,
+}
+
+export type ArrayAtomDeepChangeType<V> = AddressedChangeset & {type: 'ArrayChange'} &  ArrayAtomChangeType<V>
+export type ArrayAtomDeepDiffType<V> = AddressedChangeset & {type: 'ArrayDiff', startIndex: number, deepUnboxOfDeletedRows: Array<Unboxed<V>>, deepUnboxOfAddedRows: Array<Unboxed<V>>}
+
+export type IsArrayAtom<V> = $ElementType<V, 'isArrayAtom'>
+
+export type IArrayAtom<V> = {
+  isDictAtom: False,
+  isBoxAtom: False,
+  isArrayAtom: True,
+  isAtom: True,
+  isCompositeAtom: True,
+  isPointer: False,
+
+  _v: V,
+  setIndex(key: number, v: V): $FixMe,
+  index(index: number): V,
+  push(rows: Array<V>): void,
+  splice(startIndex: number, deleteCount: number, toAdd: Array<V>): void,
+  pop(): ?V,
+  shift(): ?V,
+  head(): ?V,
+  last(): ?V,
+  unshift(row: V): void,
+
+  changes(): Tappable<ArrayAtomChangeType<V>>,
+  unboxDeep(): mixed,
+  deepChanges(): Tappable<$FixMe>,
+  deepDiffs(): Tappable<$FixMe>,
+
+  _setParent(p: $FixMe, key: MapKey): void,
+  _unsetParent(): void,
+  getParent(): ?$FixMe,
+  derivedArray(): IDerivedArray<V>,
+}
+
+declare function array<V, A: Array<V>>(a: A): IArrayAtom<V>
+
+export default array
+
+declare var ArrayAtom: Class<$FixMe>
+
+export {ArrayAtom}

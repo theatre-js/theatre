@@ -1,12 +1,12 @@
 // @flow
-import React from 'react'
+import * as React from 'react'
 import hoistNonReactStatics from 'hoist-non-react-statics'
 import type {HigherOrderComponent} from 'react-flow-types'
 import {PropTypes} from 'prop-types'
 import {call} from 'redux-saga/effects'
 
-function preventToThrow(fn: () => Generator<>) {
-  return function* callAndCatch(...args): Generator<> {
+function preventToThrow(fn: () => Generator<*, *, *>) {
+  return function* callAndCatch(...args): Generator<*, *, *> {
     try {
       return yield call(fn, ...args)
     } catch (e) {
@@ -42,7 +42,7 @@ export default function withRunSaga(): HigherOrderComponent<{}, {runSaga: RunSag
   return function connectedToSagas(component: any): any {
     const finalComponent = (props: Object, {store}: {store: {runSaga: Function}}) => {
       const ownProps = {
-        // $FlowFixMe
+        // $FixMe
         runSaga: (fn, ...args) => store.sagaMiddleware.run(preventToThrow(fn), ...args).done,
       }
       return React.createElement(component, {...props, ...ownProps})

@@ -122,7 +122,7 @@ declare module ramda {
   * Type
   */
 
-  declare var compose: Compose;
+  declare var compose: $Compose;
   declare var pipe: Pipe;
   declare var curry: Curry;
   declare function curryN(length: number, fn: (...args: Array<any>) => any): Function

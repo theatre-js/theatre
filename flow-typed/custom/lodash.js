@@ -1,5 +1,18 @@
 // @flow
 
+declare module 'lodash' {
+  declare module.exports: {
+    noop: () => void,
+    identity: <T>(T) => T,
+    difference: <V>(Array<V>, Array<V>) => Array<V>,
+    uniq: <V>(Array<V>) => Array<V>,
+    mapValues: <K, V, T, O: {[k: K]: V}, Fn: (V, K) => T>(O, Fn) => {[k: K]: T},
+    keyBy: $FixMe,
+    without: <V>(Array<V>, V) => Array<V>,
+    endsWith: (string, string) => boolean,
+  }
+}
+
 declare module 'lodash/flatten' {
   declare type DeepArrayOf<T> = Array<T | DeepArrayOf<T>>
   declare module.exports: (<T>(input: DeepArrayOf<T>) => Array<T>)
@@ -20,4 +33,21 @@ declare module 'lodash/forEachRight' {
   declare module.exports: (
     (<ValueType, KeyType, Iteratee: _Iteratee<ValueType, KeyType>>(collection: Array<ValueType>, iteratee: ?Iteratee) => Array<ValueType>)
   )
+}
+
+declare module 'lodash/without' {
+  declare module.exports:  <V, A: Array<V>>(a: A, V) => Array<V>
+}
+
+declare module 'lodash/forEach' {
+  declare module.exports:
+    (<O: {}, K: $Keys<O>, V: $ElementType<O, K>, FN: (v: V, k: K) => ?false>(obj: O, fn: FN) => void) &
+    (<V, A: Array<V>, FN: (v: V, i: number) => ?false>(array: A, fn: FN) => void)
+}
+
+declare module 'lodash/mapValues' {
+  declare type Fn<T> = () => T
+
+  declare module.exports:
+    <O: {}, K: $Keys<O>, V: $ElementType<O, K>, T>(o: O, mapper: (value: V, k: K) => T) => $ObjMap<O, Fn<T>>
 }

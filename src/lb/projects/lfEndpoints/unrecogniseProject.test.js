@@ -19,7 +19,7 @@ describe('unrecogniseProject()', () => {
   })
 
   it('should work for recognised paths', async () => {
-    const {task, store} = await runSingleSaga(function* (): Generator<> {
+    const {task, store} = await runSingleSaga(function* (): Generator<*, *, *> {
       yield call(recogniseProject, {filePath: '/foo/bar/theaterjs.json'})
       return yield call(unrecogniseProject, {filePath: '/foo/bar/theaterjs.json'})
     })
@@ -31,7 +31,7 @@ describe('unrecogniseProject()', () => {
   })
 
   it('should error for non-recognised paths', async () => {
-    const {task} = await runSingleSaga(function* (): Generator<> {
+    const {task} = await runSingleSaga(function* (): Generator<*, *, *> {
       yield call(recogniseProject, {filePath: '/foo/bar/theaterjs.json'})
       return yield call(unrecogniseProject, {filePath: '/non/existing/theaterjs.json'})
     })

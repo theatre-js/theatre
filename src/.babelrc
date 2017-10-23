@@ -1,4 +1,5 @@
 {
+  "plugins": ["transform-export-extensions"],
   "env": {
     "test": {
       "presets": [
@@ -29,13 +30,20 @@
         ["env", {"targets": {"chrome": "56", "modules": false}}],
         "react", "stage-1",
       ],
-      "plugins": ["react-hot-loader/babel"]
+      // "plugins": ["react-hot-loader/babel"]
     },
     "lf:production": {
       "presets": [
         ["env", {"targets": {"chrome": "56", "modules": false}}],
         "react", "stage-1",
       ]
-    }
+    },
+    "studio:development": {
+      "presets": [
+        ["env", {"targets": {"chrome": "56", "modules": false}}],
+        "react", "stage-1",
+      ],
+      // "plugins": ["react-hot-loader/babel"]
+    },
   }
 }

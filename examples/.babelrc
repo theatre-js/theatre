@@ -1,0 +1,17 @@
+{
+  "env": {
+    "development": {
+      "presets": [
+        ["env", {"targets": {"chrome": "56", "modules": false}}],
+        "react", "stage-1",
+      ],
+      // "plugins": ["react-hot-loader/babel"]
+    },
+    "production": {
+      "presets": [
+        ["env", {"targets": {"chrome": "56", "modules": false}}],
+        "react", "stage-1",
+      ]
+    }
+  }
+}

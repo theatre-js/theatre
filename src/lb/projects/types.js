@@ -2,7 +2,7 @@
 
 // @todo maybe opaque types here would be more suitable?
 
-export type ProjectID = string
+export type ProjectId = string
 
 export type ProjectPath = string
 
@@ -15,7 +15,7 @@ export type ProjectDescription =
   ProjectLoadingStateErrors |
   {
     loadingState: 'loaded',
-    projectID: ProjectID,
+    projectId: ProjectId,
     name: string,
   }
 

@@ -12,7 +12,7 @@ export default function* createNewProject(params: {folderPath: string, name: str
     return {type: 'error', errorType: 'folderDoesntExist'}
   }
 
-  let pathStat
+  let pathStat: $FixMe
   try {
     pathStat = yield call(fse.stat, params.folderPath)
   } catch (e) {
@@ -20,12 +20,12 @@ export default function* createNewProject(params: {folderPath: string, name: str
     return {type: 'error', errorType: 'pathUnreadable'}
   }
 
-  if (!pathStat.isDirectory()) {
+  if (!(pathStat: any).isDirectory()) {
     return {type: 'error', errorType: 'pathIsNotAFolder'}
   }
 
   const filePath = path.join(params.folderPath, 'theaterjs.json')
-  const state: StoreState = (yield select(): $FlowFixMe)
+  const state: StoreState = (yield select(): $FixMe)
 
   if (state.projects.listOfPaths.indexOf(filePath) !== -1) {
     return {type: 'error', errorType: 'projectAlreadyRecognised'}

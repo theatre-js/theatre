@@ -28,7 +28,7 @@ declare type CallFn =
  * Note that you need to do it like this:
  * const result = yield * callfn, arg0, arg1, ...)
  */
-export const call: CallFn = (function* call(...args): Generator<> {return yield io.call(...args)}: any)
+export const call: CallFn = (function* call(...args): Generator<*, *, *> {return yield io.call(...args)}: any)
 
 export const select = io.select
 
