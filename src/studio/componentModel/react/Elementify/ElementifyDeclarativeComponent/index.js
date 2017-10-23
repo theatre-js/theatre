@@ -18,7 +18,7 @@ export default makeReactiveComponent({
 
       const whatToRenderP = componentDescriptorP.prop('whatToRender')
 
-      return whatToRenderP.prop('type').flatMap((type: $ElementType<WhatToRender, 'type'>) => {
+      return whatToRenderP.prop('__descriptorType').flatMap((type: $ElementType<WhatToRender, 'type'>) => {
         if (type === 'ReferenceToLocalHiddenValue') {
           return resolveReferenceToHiddenLocalValue(whatToRenderP.prop('which'), d)
         } else {

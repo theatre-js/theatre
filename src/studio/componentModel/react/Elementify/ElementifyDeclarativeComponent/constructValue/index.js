@@ -3,6 +3,7 @@ import constructModifierInstantiationValueDescriptor from './constructModifierIn
 import constructComponentInstantiationValueDescriptor from './constructComponentInstantiationValueDescriptor'
 import type {ValueDescriptorDescribedInAnObject} from '$studio/componentModel/types'
 import constructListDescriptor from './constructListDescriptor'
+import constructMapDescriptor from './constructMapDescriptor'
 
 type Constructor = (desP: $FixMe, d: $FixMe) => $FixMe
 
@@ -23,14 +24,16 @@ const constructValue = (desP: $FixMe, d: $FixMe) => {
       return val
     } else if (val && val.isDerivedArray === 'True') {
       return constructListDescriptor(desP, d)
-    } else {
-      return val.prop('type').flatMap((type: $ElementType<ValueDescriptorDescribedInAnObject, 'type'>) => {
+    } else if (val && val.isDerivedDict === 'True') {
+      return val.prop('__descriptorType').flatMap((type: $ElementType<ValueDescriptorDescribedInAnObject, 'type'>) => {
         const constructor = constructors[type]
         if (constructor)
           return constructor(desP, d)
         else
-          throw new Error(`Value constructor type ${type} is unsupported`)
+          return constructMapDescriptor(desP, d)
       })
+    } else {
+      throw new Error('Unkown value type')
     }
   })
 }

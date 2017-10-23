@@ -17,7 +17,7 @@ export type RuleSet = {|
 |}
 
 type ModifierInstantiationValueDescriptor = {|
-  type: 'ModifierInstantiationValueDescriptor',
+  __descriptorType: 'ModifierInstantiationValueDescriptor',
   modifierId: string,
   props: MapDescriptor,
   enabled: boolean,
@@ -28,16 +28,16 @@ export type ModifierDescriptor = {|
 |}
 
 export type ReferenceToLocalHiddenValue = {|
-  type: 'ReferenceToLocalHiddenValue',
+  __descriptorType: 'ReferenceToLocalHiddenValue',
   which: string,
 |}
 
 export type ReferenceToProp = {|
-  type: 'ReferenceToProp',
+  __descriptorType: 'ReferenceToProp',
   propid: string,
 |}
 
-export type MapDescriptor = {|type: 'MapDescriptor', values: {[key: string | number]: ValueDescriptor}|}
+export type MapDescriptor = {|...{__descriptorType: 'MapDescriptor'}, ...{|[key: string | number]: ValueDescriptor|}|}
 export type ArrayDescriptor = Array<ValueDescriptor>
 export type StringLiteralDescriptor = string
 export type NumberLiteralDescriptor = number
@@ -52,7 +52,7 @@ export type BooleanLiteralDescriptor = boolean
  * be constructed first.
  */
 export type ComponentInstantiationValueDescriptor = {|
-  type: 'ComponentInstantiationValueDescriptor',
+  __descriptorType: 'ComponentInstantiationValueDescriptor',
   componentId: ComponentId,
   props: MapDescriptor,
   modifierInstantiationDescriptors: {

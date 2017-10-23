@@ -8,29 +8,20 @@ const fakeDescriptor: DeclarativeComponentDescriptor = {
   ruleSetsById: {},
   localHiddenValuesById: {
     alaki: {
-      type: 'ComponentInstantiationValueDescriptor',
+      __descriptorType: 'ComponentInstantiationValueDescriptor',
       componentId: 'TheaterJS/Core/DOMTag',
       props: {
-        type: 'MapDescriptor',
-        values: {
-          tagName: 'div',
-          key: 'theDiv',
-        },
+        tagName: 'div',
+        key: 'theDiv',
       },
       modifierInstantiationDescriptors: {
         byId: {
-          type: 'MapDescriptor',
-          values: {
-            '0': {
-              type: 'ModifierInstantiationValueDescriptor',
-              modifierId: 'TheaterJS/Core/HTML/SetAttribute',
-              props: {
-                type: 'MapDescriptor',
-                values: {
-                  attributeName: 'id',
-                  value: 'hihi',
-                },
-              },
+          '0': {
+            __descriptorType: 'ModifierInstantiationValueDescriptor',
+            modifierId: 'TheaterJS/Core/HTML/SetAttribute',
+            props: {
+              attributeName: 'id',
+              value: 'hihi',
             },
           },
         },
@@ -39,7 +30,7 @@ const fakeDescriptor: DeclarativeComponentDescriptor = {
     },
   },
   whatToRender: {
-    type: 'ReferenceToLocalHiddenValue',
+    __descriptorType: 'ReferenceToLocalHiddenValue',
     which: 'alaki',
   },
 }
