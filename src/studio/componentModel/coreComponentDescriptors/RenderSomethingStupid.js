@@ -8,6 +8,8 @@ const componentId = 'TheaterJS/Core/RenderSomethingStupid'
 
 const RenderSomethingStupid = makeReactiveComponent({
   displayName: componentId,
+  componentType: 'HardCoded',
+  componentId,
   modifyPrototypalDict: (d) => d.extend({
     render(d) {
       return d.pointer().prop('props').prop('foo').map((foo) => {

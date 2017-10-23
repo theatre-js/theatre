@@ -13,6 +13,10 @@ export default makeReactiveComponent({
       return d.pointer().prop('props').prop('componentDescriptor').prop('id')
     },
 
+    componentType() {
+      return 'Declarative'
+    },
+
     render(d) {
       const componentDescriptorP = d.pointer().prop('props').prop('componentDescriptor')
 

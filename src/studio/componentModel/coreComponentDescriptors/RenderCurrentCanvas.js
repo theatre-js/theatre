@@ -9,6 +9,7 @@ const componentId = 'TheaterJS/Core/RenderCurrentCanvas'
 const RenderCurrentCanvas = makeReactiveComponent({
   componentId,
   displayName: componentId,
+  componentType: 'HardCoded',
   modifyPrototypalDict: (d) => d.extend({
     render(d) {
       const studioAtom = d.prop('studio').getValue().atom

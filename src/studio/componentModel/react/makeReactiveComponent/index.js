@@ -5,10 +5,12 @@ import {type Studio, PureComponentWithStudio, D} from '$studio/handy'
 type MakeReactiveComponentArgs = {
   modifyPrototypalDict: (D.IPrototypalDict<$FixMe>) => D.IPrototypalDict<$FixMe>,
   displayName: ?string,
+  componentId: ?string,
+  componentType: ?string,
   getInitialState?: () => D.IDictAtom<$FixMe>,
 }
 
-export default function makeReactiveComponent({modifyPrototypalDict, displayName, getInitialState}: MakeReactiveComponentArgs) {
+export default function makeReactiveComponent({modifyPrototypalDict, displayName, getInitialState, componentId, componentType}: MakeReactiveComponentArgs) {
   type Props = {
     key: string,
     props: $FixMe,
@@ -58,9 +60,8 @@ export default function makeReactiveComponent({modifyPrototypalDict, displayName
         new D.derivations.PrototypalDictFace(this._prototypalDictD.getValue(), this.studio.dataverseContext)
 
       this.isTheaterJSComponent = true
-      this.componentType = this._finalFace.prop('componentType').getValue()
-      this.comopnentId = this._finalFace.prop('componentId').getValue()
-      // console.log(this._atom.prop('instanceId').unbox())
+      this.componentType = componentType || this._finalFace.prop('componentType').getValue()
+      this.componentId = componentId || this._finalFace.prop('componentId').getValue()
       this.elementId = this._atom.prop('instanceId')
 
       if (!displayName)
