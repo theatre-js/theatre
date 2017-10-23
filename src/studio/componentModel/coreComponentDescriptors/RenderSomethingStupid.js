@@ -4,9 +4,10 @@ import {makeReactiveComponent} from '$studio/handy'
 import * as React from 'react'
 import * as D from '$shared/DataVerse'
 
+const componentId = 'TheaterJS/Core/RenderSomethingStupid'
 
 const RenderSomethingStupid = makeReactiveComponent({
-  displayName: 'TheaterJS/Core/RenderSomethingStupid',
+  displayName: componentId,
   modifyPrototypalDict: (d) => d.extend({
     render(d) {
       return d.pointer().prop('props').prop('foo').map((foo) => {
@@ -20,7 +21,7 @@ const RenderSomethingStupid = makeReactiveComponent({
 const {object, primitive} = D.literals
 
 const descriptor: ComponentDescriptor = object({
-  id: primitive('TheaterJS/Core/RenderSomethingStupid'),
+  id: primitive(componentId),
   type: primitive('HardCoded'),
   reactComponent: primitive(RenderSomethingStupid),
 })

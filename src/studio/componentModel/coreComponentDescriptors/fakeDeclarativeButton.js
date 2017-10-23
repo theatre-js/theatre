@@ -14,6 +14,7 @@ const fakeDescriptor: DeclarativeComponentDescriptor = {
         type: 'MapDescriptor',
         values: {
           tagName: 'div',
+          key: 'theDiv',
         },
       },
       modifierInstantiationDescriptors: {

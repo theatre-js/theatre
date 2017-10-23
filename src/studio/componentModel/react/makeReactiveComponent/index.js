@@ -40,7 +40,7 @@ export default function makeReactiveComponent({modifyPrototypalDict, displayName
       sideEffects: () => D.derivations.emptyDict,
       props: (d) => d.pointer().prop('_atom').prop('props'),
       studio: (d) => d.pointer().prop('_atom').prop('studio'),
-      dataVerseContext: (d) => d.pointer().prop('studio').getValue().dataVerseContext,
+      // dataVerseContext: (d) => d.pointer().prop('studio').getValue().dataVerseContext,
       // key: (d) => d.pointer().prop('_atom').prop('key'),
       modifierInstantiationDescriptors: (d) => d.pointer().prop('_atom').prop('modifierInstantiationDescriptors'),
       state: (d) => d.pointer().prop('_atom').prop('state'),
@@ -56,6 +56,12 @@ export default function makeReactiveComponent({modifyPrototypalDict, displayName
 
       this._finalFace =
         new D.derivations.PrototypalDictFace(this._prototypalDictD.getValue(), this.studio.dataverseContext)
+
+      this.isTheaterJSComponent = true
+      this.componentType = this._finalFace.prop('componentType').getValue()
+      this.comopnentId = this._finalFace.prop('componentId').getValue()
+      // console.log(this._atom.prop('instanceId').unbox())
+      this.elementId = this._atom.prop('instanceId')
 
       if (!displayName)
         TheaterJSComponent.displayName = this._finalFace.prop('displayName').getValue()

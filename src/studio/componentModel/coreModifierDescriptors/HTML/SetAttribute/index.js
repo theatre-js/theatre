@@ -1,16 +1,10 @@
 // @flow
 import {type ComponentDescriptor} from '$studio/componentModel/types'
-import {makeReactiveComponent} from '$studio/handy'
-import * as React from 'react'
+import AttributesApplier from './AttributesApplier'
 import * as D from '$shared/DataVerse'
 
-type Props = {
-  name: string,
-  value: string,
-}
-
-const ensureDomAttributes = (a) => {
-  return a.propFromAbove('domAttributes').flatMap((possibleDomAttributes) => {
+const ensureDomAttributes = (d) => {
+  return d.propFromAbove('domAttributes').flatMap((possibleDomAttributes) => {
     if (!possibleDomAttributes) {
       return D.derivations.emptyDict
     } else {
@@ -19,16 +13,16 @@ const ensureDomAttributes = (a) => {
   })
 }
 
-const sideEffectsForApplyAttributes = {
-  applyAttributes(dict) {
-    console.log('started applying attributes')
-    const stop = () => {
-      console.log('stopped applying attributes')
-    }
+const sideEffectsForApplyAttributes = D.atoms.dict({
+  applyAttributes: D.atoms.box((dict, dvContext) => {
+    const applier = new AttributesApplier(dict, dvContext)
+    applier.start()
 
-    return stop
-  },
-}
+    return () => {
+      applier.stop()
+    }
+  }),
+}).derivedDict()
 
 const modifyPrototypalDict = (propsP, dict) => {
   return dict.extend({

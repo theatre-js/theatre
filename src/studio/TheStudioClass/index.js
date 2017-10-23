@@ -35,6 +35,11 @@ export default class TheStudioClass {
       instances: D.literals.object({}),
     }))
 
+    // debugger
+    this.atom.deepChanges().tap((dc) => {
+      console.log(dc)
+    })
+
     if (process.env.NODE_ENV === 'development' && module.hot) {
       module.hot.accept(
         '$studio/componentModel/coreComponentDescriptors',

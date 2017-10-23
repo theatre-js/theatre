@@ -4,8 +4,11 @@ import {makeReactiveComponent, elementify} from '$studio/handy'
 // import * as React from 'react'
 import * as D from '$shared/DataVerse'
 
+const componentId = 'TheaterJS/Core/RenderCurrentCanvas'
+
 const RenderCurrentCanvas = makeReactiveComponent({
-  displayName: 'TheaterJS/Core/RenderCurrentCanvas',
+  componentId,
+  displayName: componentId,
   modifyPrototypalDict: (d) => d.extend({
     render(d) {
       const studioAtom = d.prop('studio').getValue().atom
@@ -34,7 +37,7 @@ const RenderCurrentCanvas = makeReactiveComponent({
 const {object, primitive} = D.literals
 
 const descriptor: ComponentDescriptor = object({
-  id: primitive('TheaterJS/Core/RenderCurrentCanvas'),
+  id: primitive(componentId),
   type: primitive('HardCoded'),
   reactComponent: primitive(RenderCurrentCanvas),
 })

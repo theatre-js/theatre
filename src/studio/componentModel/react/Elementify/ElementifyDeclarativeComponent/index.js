@@ -6,9 +6,11 @@ import resolveReferenceToHiddenLocalValue from './resolveReferenceToHiddenLocalV
 export default makeReactiveComponent({
   modifyPrototypalDict: (d) => d.extend({
     displayName(d) {
-      const componentDescriptorP = d.pointer().prop('props').prop('componentDescriptor')
+      return d.pointer().prop('componentId')
+    },
 
-      return componentDescriptorP.prop('id')
+    componentId(d) {
+      return d.pointer().prop('props').prop('componentDescriptor').prop('id')
     },
 
     render(d) {

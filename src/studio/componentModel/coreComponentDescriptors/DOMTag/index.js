@@ -3,10 +3,9 @@ import * as D from '$shared/DataVerse'
 import * as React from 'react'
 import {type ComponentDescriptor} from '$studio/componentModel/types'
 import {makeReactiveComponent} from '$studio/handy'
-import AttributesApplier from './AttributesApplier'
 import noop from 'lodash/noop'
 
-const blah = D.atoms.box('blah')
+// const blah = D.atoms.box('blah')
 
 // let n = 0
 // setInterval(() => {
@@ -14,21 +13,12 @@ const blah = D.atoms.box('blah')
 //   blah.set('blah' + n)
 // }, 10)
 
-const dd = D.atoms.dict({
-  'class': blah,
-}).derivedDict()
+// const dd = D.atoms.dict({
+//   'class': blah,
+// }).derivedDict()
 
 
-const sideEffects = D.atoms.dict({
-  applyAttributes: D.atoms.box((dict, dvContext) => {
-    const applier = new AttributesApplier(dict, dvContext)
-    applier.start()
 
-    return () => {
-      applier.stop()
-    }
-  }),
-}).derivedDict()
 
 const lookupTable = {
   render: (d) => {
@@ -51,14 +41,12 @@ const lookupTable = {
     })
   },
 
-  domAttributes: () => {
-    return dd
-    // return D.derivations.emptyDict
-  },
+  // domAttributes: () => {
+  //   return dd
+  //   // return D.derivations.emptyDict
+  // },
 
-  sideEffects(d) {
-    return d.propFromAbove('sideEffects').map((sf: D.IDerivedDict<$FixMe>) => sf.extend(sideEffects))
-  },
+
 }
 
 type State = D.IDictAtom<{
@@ -66,8 +54,11 @@ type State = D.IDictAtom<{
   stopApplyingAtributes: D.IBoxAtom<(derivation: $FixMe) => void>,
 }>
 
+const componentId = 'TheaterJS/Core/DOMTag'
+
 const DOMTag = makeReactiveComponent({
-  displayName: 'TheaterJS/Core/DOMTag',
+  componentId,
+  displayName: componentId,
   getInitialState(): State {
     return D.atoms.dict({
       elRef: D.atoms.box(null),
@@ -80,7 +71,7 @@ const DOMTag = makeReactiveComponent({
 const {object, primitive} = D.literals
 
 const descriptor: ComponentDescriptor = object({
-  id: primitive('TheaterJS/Core/DOMTag'),
+  id: primitive(componentId),
   type: primitive('HardCoded'),
   reactComponent: primitive(DOMTag),
 })

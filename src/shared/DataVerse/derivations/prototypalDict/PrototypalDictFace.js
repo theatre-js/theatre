@@ -11,7 +11,7 @@ import constant from '../constant'
 import forEach from 'lodash/forEach'
 import pointer from '../pointer'
 
-const NOTFOUND = Symbol('notfound')
+const NOTFOUND = undefined // Symbol('notfound')
 const notFoundDerivation = constant(NOTFOUND)
 
 type Wire = {

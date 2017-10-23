@@ -37,11 +37,6 @@ const elementify = (keyD, instantiationDescriptorP, studioD) => {
     })
 
     const componentDescriptorP = componentDescriptor.pointer()
-    // const innerProps = D.atoms.dict({
-    //   componentDescriptor: componentDescriptorP,
-    //   props: instantiationDescriptorP.prop('props'),
-    //   modifierInstantiationDescriptors: instantiationDescriptorP.prop('modifierInstantiationDescriptors'),
-    // }).derivedDict()
 
     const componentDescriptorTypeP = componentDescriptorP.prop('type')
     return componentDescriptorTypeP.flatMap((type: string) => {
@@ -49,13 +44,10 @@ const elementify = (keyD, instantiationDescriptorP, studioD) => {
         return elementifyHardCodedComponent(
           keyD, componentDescriptorP, instantiationDescriptorP.prop('props'), instantiationDescriptorP.prop('modifierInstantiationDescriptors'),
         )
-        // return <ElementifyHardCodedComponent key={keyD.getValue()} props={innerProps} />
-        // return <ElementifyHardCodedComponent key={keyD.getValue()} props={innerProps} />
       } else {
         return elementifyDeclarativeComponent(
           keyD, componentDescriptorP, instantiationDescriptorP.prop('props'), instantiationDescriptorP.prop('modifierInstantiationDescriptors'),
         )
-        // return <ElementifyDeclarativeComponent key={keyD.getValue()} props={innerProps} />
       }
     })
   })
@@ -65,12 +57,16 @@ export default elementify
 
 const elementifyHardCodedComponent = (keyD, componentDescriptorP, propsP, modifierInstantiationDescriptorsP) => {
   const reactComponentP = componentDescriptorP.prop('reactComponent')
-  // debugger
+  const componentIdD = componentDescriptorP.prop('id')
+  const finalKeyD = D.derivations.autoDerive(() => {
+    return `${componentIdD.getValue()}#${keyD.getValue()}`
+  })
 
   return D.derivations.autoDerive(() => {
     const Comp = reactComponentP.getValue()
     return <Comp
-      key={keyD.getValue()}
+      key={finalKeyD.getValue()}
+      keyD={keyD}
       props={propsP}
       modifierInstantiationDescriptors={modifierInstantiationDescriptorsP}
     />
@@ -78,15 +74,21 @@ const elementifyHardCodedComponent = (keyD, componentDescriptorP, propsP, modifi
 }
 
 const elementifyDeclarativeComponent = (keyD, componentDescriptorP, propsP, modifierInstantiationDescriptorsP) => {
+  const componentIdD = componentDescriptorP.prop('id')
+  const finalKeyD = D.derivations.autoDerive(() => {
+    return `${componentIdD.getValue()}#${keyD.getValue()}`
+  })
+
   const innerPropsP = D.atoms.dict({
     componentDescriptor: componentDescriptorP,
     props: propsP,
     modifierInstantiationDescriptors: modifierInstantiationDescriptorsP,
   }).derivedDict().pointer()
 
-  return keyD.flatMap((key) => {
+  return finalKeyD.flatMap((key) => {
     return <ElementifyDeclarativeComponent
       key={key}
+      keyD={keyD}
       props={innerPropsP}
     />
   })
