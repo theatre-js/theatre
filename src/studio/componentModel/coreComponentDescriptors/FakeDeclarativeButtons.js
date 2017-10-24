@@ -13,6 +13,7 @@ const fakeDescriptor: DeclarativeComponentDescriptor = {
       props: {
         tagName: 'div',
         key: 'theDiv',
+        children: 'blahblah',
       },
       modifierInstantiationDescriptors: {
         byId: {
@@ -21,7 +22,7 @@ const fakeDescriptor: DeclarativeComponentDescriptor = {
             modifierId: 'TheaterJS/Core/HTML/SetAttribute',
             props: {
               attributeName: 'id',
-              value: 'hihi',
+              value: '6',
             },
           },
         },

@@ -61,7 +61,7 @@ export default class SideEffectsHandler {
   }
 
   _stopApplyingCurrentDict() {
-    for (let key in this._mapOfUntapFromEachSideEffectKeyPChagnes.keys()) {
+    for (let key in this._mapOfUntapFromEachSideEffectKeyPChagnes) {
       this._stopObservingKey(key)
     }
 

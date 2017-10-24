@@ -90,9 +90,9 @@ module.exports = (options: Options) => {
   if (isDev) {
     config.devServer = {
       host: '0.0.0.0',
-      hot: true,
+      hot: false,
       historyApiFallback: true,
-      inline: true,
+      inline: false,
       clientLogLevel: 'error',
       noInfo: false,
       quiet: false,
