@@ -1,7 +1,4 @@
-
-import {D} from '$studio/handy'
-import * as React from 'react'
-import constructValue from './constructValue'
+import constructValue from './constructValue'  // eslint-disable-line flowtype/require-valid-file-annotation
 
 const resolveReferenceToHiddenLocalValue = (whichP, d) => {
   const componentDescriptorP = d.pointer().prop('props').prop('componentDescriptor')

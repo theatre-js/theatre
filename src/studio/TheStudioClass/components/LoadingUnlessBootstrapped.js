@@ -3,7 +3,7 @@
 
 import * as React from 'react'
 import compose from 'ramda/src/compose'
-import {connect} from 'react-redux'
+import {connect} from '$studio/handy'
 import {getIsBootstrapped} from '$studio/common/selectors'
 
 import type {StoreState} from '$studio/types'

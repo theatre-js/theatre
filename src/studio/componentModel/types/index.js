@@ -2,7 +2,6 @@
 import {type ComponentType as ReactComponentType} from 'react'
 import type {DeclarativeComponentDescriptor} from './declarative'
 /*:: export type * from './declarative' */
-import * as D from '$shared/DataVerse'
 
 // @todo maybe this should be an opaque type given that not any string is a valid ComponentId
 export type ComponentId = string
@@ -33,6 +32,6 @@ export type ComponentDescriptor =
 //   componentDescriptorsById: {[id: ComponentId]: ComponentDescriptor},
 // |}
 
-export type ComponentModelNamespaceState = D.ObjectLiteral<{|
-  componentDescriptorsById: D.ObjectLiteral<{[id: ComponentId]: ComponentDescriptor}>,
-|}>
+export type ComponentModelNamespaceState = {|
+  componentDescriptorsById: {[id: ComponentId]: ComponentDescriptor},
+|}

@@ -12,7 +12,7 @@ export class ExtendDerivedDict extends DerivedDict implements IDerivedDict<$FixM
   _untapFromBaseChanges: () => void
   _untapFromOverriderChanges: () => void
 
-  constructor<B: {}, OV: {}, O: {...B, ...OV}, K: $Keys<O>, V: $ElementType<O, K>>(base: IDerivedDict<B>, overrider: IDerivedDict<OV>): IDerivedDict<O> {
+  constructor<B: {}, OV: {}, O: {...B, ...OV}>(base: IDerivedDict<B>, overrider: IDerivedDict<OV>): IDerivedDict<O> {
     super()
     this._base = base
     this._overrider = overrider

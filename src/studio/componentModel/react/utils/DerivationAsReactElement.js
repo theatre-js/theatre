@@ -2,12 +2,12 @@
 import {React, D, PureComponentWithStudio} from '$studio/handy'
 import _ from 'lodash'
 
-type Props = {derivation: D.IDerivation<React.Node<any>>, key: string} & WithStudioProps
-type State = {|lastValue: React.Node<any>|}
+type Props = {derivation: D.IDerivation<React.Node>}
 
-export default class DerivationAsReactElement extends PureComponentWithStudio<Props, State> {
-  props: Props
-  constructor(props: Props, context) {
+export default class DerivationAsReactElement extends PureComponentWithStudio<Props, void> {
+  _untapFromDerivationChanges: () => void
+
+  constructor(props: Props, context: $FixMe) {
     super(props, context)
     this._untapFromDerivationChanges = _.noop
   }
@@ -18,14 +18,14 @@ export default class DerivationAsReactElement extends PureComponentWithStudio<Pr
 
   listen(props: Props) {
     this._untapFromDerivationChanges =
-      props.derivation.setDataVerseContext(this.studio.dataverseContext).changes(() => {this.forceUpdate()})
+      props.derivation.setDataVerseContext(this.studio.dataverseContext).changes().tap(() => {this.forceUpdate()})
   }
 
   componentWillUnmount() {
     this._untapFromDerivationChanges()
   }
 
-  componentWillReceiveProps(newProps) {
+  componentWillReceiveProps(newProps: Props) {
     this._untapFromDerivationChanges()
     this.listen(newProps)
   }

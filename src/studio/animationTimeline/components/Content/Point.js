@@ -84,10 +84,10 @@ class Point extends React.PureComponent<Props, State> {
     if (e.altKey) {
       return this.props.makeHandleHorizontal(side)
     }
-    
+
     if (side === 'right' && this.props.prevPoint == null) return
     if (side === 'left' && this.props.nextPoint == null) return
-    
+
     if (e.ctrlKey || e.metaKey) {
       return this.props.makeHandlesParallel(side)
     }
@@ -98,10 +98,10 @@ class Point extends React.PureComponent<Props, State> {
 
   pointDragHandler = (dx: number, dy: number, e: SyntheticMouseEvent<>) => {
     let x = dx, y = dy
-    
+
     if (e.altKey) y = this.state.pointMove[1]
     if (e.shiftKey) x = this.state.pointMove[0]
-    
+
     const {point, prevPoint, nextPoint, laneWidth} = this.props
     const limitLeft = (prevPoint == null) ? 0 : prevPoint.t
     const limitRight = (nextPoint == null) ? laneWidth : nextPoint.t
@@ -158,7 +158,7 @@ class Point extends React.PureComponent<Props, State> {
       ...point,
       t: point.t + pointMove[0],
       value: point.value + pointMove[1],
-      handles: (point.handles.map((handle, index) => (handle + handlesMove[index])): $FlowFixMe)}
+      handles: (point.handles.map((handle, index) => (handle + handlesMove[index])): $FixMe)}
     return (
       <g opacity={.5}>
         {point.isConnected && (nextPoint != null) &&
@@ -255,7 +255,7 @@ class Point extends React.PureComponent<Props, State> {
                 cx={rightHandle[0]} cy={rightHandle[1]} r={2}
                 className={css.handle}
                 onClick={(e) => this.handleClickHandler(e, 'right')}/>
-            </DraggableArea>    
+            </DraggableArea>
           </g>
         }
         <DraggableArea

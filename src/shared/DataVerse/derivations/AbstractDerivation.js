@@ -3,7 +3,6 @@ import Emitter from '$shared/DataVerse/utils/Emitter'
 import Context from '$shared/DataVerse/Context'
 import {reportObservedDependency} from './autoDerive/discoveryMechanism'
 import type {IDerivation} from './types'
-import toCsv from 'json2csv'
 // import {mapStackTrace} from 'sourcemapped-stacktrace'
 
 const FRESHNESS_STATE_NOT_APPLICABLE = 0
@@ -107,7 +106,7 @@ class AbstractDerivation {
     }
   }
 
-  _youMayNeedToUpdateYourself(msgComingFrom: IDerivation<$IntentionalAny>) {
+  _youMayNeedToUpdateYourself() {
     if (this._didNotifyDownstreamOfUpcomingUpdate) return
 
     this._didNotifyDownstreamOfUpcomingUpdate = true
@@ -143,11 +142,11 @@ class AbstractDerivation {
       this._changeEmitter.hasTappers() || this._dependents.size > 0
 
     if (thereAreMoreThanOneTappersOrDependents === this._thereAreMoreThanOneTappersOrDependents) return
-    if (thereAreMoreThanOneTappersOrDependents) {
-      activeDs.add(this)
-    } else {
-      activeDs.delete(this)
-    }
+    // if (thereAreMoreThanOneTappersOrDependents) {
+    //   activeDs.add(this)
+    // } else {
+    //   activeDs.delete(this)
+    // }
     // activeDs = thereAreMoreThanOneTappersOrDependents ? activeDs + 1 : activeDs - 1
     this._thereAreMoreThanOneTappersOrDependents = thereAreMoreThanOneTappersOrDependents
     this._didNotifyDownstreamOfUpcomingUpdate = false
@@ -200,39 +199,40 @@ const mapDerivation = require('./mapDerivation')
 
 
 let lastDerivationId = 0
-let activeDs = new Set()
+// let activeDs = new Set()
+// import toCsv from 'json2csv'
 
 // setTimeout(() => {console.log('allDs', lastDerivationId)}, 1500)
 // setTimeout(() => {
 //   console.log('activeDs  ', activeDs.size)
 //   console.log('allDs', lastDerivationId)
-  // const nodes = []
-  // const edges = []
-  // connections
-  // activeDs.forEach((d) => {
-  //   const node = {
-  //     id: d._id,
-  //     type: d.constructor.name,
-  //     hasTappers: d._changeEmitter.hasTappers(),
-  //   }
+//   const nodes = []
+//   const edges = []
 
-  //   nodes.push(node)
+//   activeDs.forEach((d) => {
+//     const node = {
+//       id: d._id,
+//       type: d.constructor.name,
+//       hasTappers: d._changeEmitter.hasTappers(),
+//     }
 
-  //   d._dependents.forEach((dep) => {
-  //     edges.push({from: d._id, to: dep._id})
-  //   })
-  // })
+//     nodes.push(node)
 
-  // const nodesBlob = new Blob(
-  //   [toCsv({data: nodes, fields: ['id', 'type', 'hasTappers']})],
-  //   {type: 'text/plain'},
-  // )
+//     d._dependents.forEach((dep) => {
+//       edges.push({from: d._id, to: dep._id})
+//     })
+//   })
 
-  // const edgesBlob = new Blob(
-  //   [toCsv({data: edges, fields: ['from', 'to']})],
-  //   {type: 'text/plain'},
-  // )
+//   const nodesBlob = new Blob(
+//     [toCsv({data: nodes, fields: ['id', 'type', 'hasTappers']})],
+//     {type: 'text/plain'},
+//   )
 
-  // window.open(window.URL.createObjectURL(nodesBlob))
-  // window.open(window.URL.createObjectURL(edgesBlob))
+//   const edgesBlob = new Blob(
+//     [toCsv({data: edges, fields: ['from', 'to']})],
+//     {type: 'text/plain'},
+//   )
+
+//   window.open(window.URL.createObjectURL(nodesBlob))
+//   window.open(window.URL.createObjectURL(edgesBlob))
 // }, 2000)

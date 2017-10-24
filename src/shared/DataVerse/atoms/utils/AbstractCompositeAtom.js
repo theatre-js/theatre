@@ -1,5 +1,5 @@
 
-import {default as AbstractAtom, type IAtom} from './AbstractAtom'
+import {default as AbstractAtom, type IAtom} from './AbstractAtom'  // eslint-disable-line flowtype/require-valid-file-annotation
 import type {BoxAtomDeepChangeType, BoxAtomDeepDiffType} from '../box'
 import type {DictAtomDeepChangeType, DictAtomDeepDiffType} from '../dict'
 import type {ArrayAtomDeepChangeType, ArrayAtomDeepDiffType} from '../array'
@@ -46,7 +46,7 @@ export default class AbstractCompositeAtom extends AbstractAtom implements _ICom
     this._deepDiffUntappersForEachChild = new Map()
   }
 
-  _keyOf(key: MapKey, ref: IAtom | mixed) {
+  _keyOf(key: MapKey) {
     return key
   }
 

@@ -19,7 +19,9 @@ type ElementifyProps = D.IDictAtom<{
 
 const createRootComponentForReact = (studio: TheStudioClass) => {
   class TheaterJSRoot extends React.PureComponent<Props, void> {
+    elementD: $FixMe
     mapAtomOfPropsOfElementify: ElementifyProps
+    instantiationDescriptor: $FixMe
 
     constructor(props: Props) {
       super(props)
@@ -41,7 +43,7 @@ const createRootComponentForReact = (studio: TheStudioClass) => {
       )
     }
 
-    componentWillReceiveProps(props) {
+    componentWillReceiveProps(props: Props) {
       this.instantiationDescriptor.prop('props').prop('children').set(props.children)
     }
 

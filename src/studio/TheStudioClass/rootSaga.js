@@ -6,6 +6,6 @@ export default function* errorCatchingRootSaga(): Generator<*, *, *> {
   return yield call(rootSaga)
 }
 
-function* rootSaga(studio: TheStudioClass): Generator<*, *, *> {
+function* rootSaga(studio: TheStudioClass): Generator<*, *, *> { // eslint-disable-line no-unused-vars
   return yield null
 }

@@ -1,5 +1,4 @@
-// @flow
-import * as React from 'react'
+import * as React from 'react'  // eslint-disable-line flowtype/require-valid-file-annotation
 import * as D from '$shared/DataVerse'
 import ElementifyDeclarativeComponent from './ElementifyDeclarativeComponent'
 import type {Studio} from '$studio/handy'

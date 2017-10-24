@@ -1,5 +1,5 @@
 
-import {default as AbstractCompositeAtom, type ICompositeAtom} from './utils/AbstractCompositeAtom'
+import {default as AbstractCompositeAtom} from './utils/AbstractCompositeAtom'  // eslint-disable-line flowtype/require-valid-file-annotation
 import forEach from 'lodash/forEach'
 import mapValues from 'lodash/mapValues'
 import type {IAtom} from './utils/AbstractAtom'
@@ -32,21 +32,7 @@ export type IDictAtom<O: {}> = {
   pointer(): DecidePointerType<IDictAtom<O>>,
 }
 
-interface _IDictAtom<O: {}> {
-  // isDictAtom: True,
-  // _internalMap: O,
-  // setProp<K: $Keys<O>, V: $ElementType<O, K>>(key: K, value: V): DictAtom<O>,
-  // prop<K: $Keys<O>>(key: K): $ElementType<O, K>,
-  // deleteProp<K: $Keys<O>>(key: K): DictAtom<O>,
-
-  // changes: () => Tappable<DictAtomChangeType<O>>,
-  // forEach: <K: $Keys<O>>(fn: ($ElementType<O, K>, K) => void | false) => void,
-  // keys: () => Array<$Keys<O>>,
-  // derivedDict: () => $FixMe,
-  // pointer(): DecidePointerType<IDictAtom<O>>,
-}
-
-export class DictAtom<O: {}> extends AbstractCompositeAtom implements _IDictAtom<O> {
+export class DictAtom<O: {}> extends AbstractCompositeAtom {
   isDictAtom = 'True'
   _internalMap: O
   _pointer: ?$FixMe

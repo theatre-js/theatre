@@ -1,17 +1,9 @@
 // @flow
-import {combineReducers} from 'redux'
 import type {StoreState} from '$studio/types'
 import wrapRootReducer from '$shared/utils/redux/wrapRootReducer'
-import commonReducer from '$studio/common/reducer'
-import workspaceReducer from '$studio/workspace/reducer'
-import animationTimelineReducer from '$studio/animationTimeline/reducer'
 import {type Reducer} from '$shared/types'
+import initialState from './initialState'
 
-const mainReducer: Reducer<StoreState, any> =
-  combineReducers({
-    common: commonReducer,
-    workspace: workspaceReducer,
-    animationTimeline: animationTimelineReducer,
-  })
+const mainReducer: Reducer<StoreState, any> = (s: StoreState = initialState) => s
 
 export default wrapRootReducer(mainReducer)

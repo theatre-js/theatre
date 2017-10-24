@@ -3,7 +3,7 @@ import * as React from 'react'
 import css from './index.css'
 import Settings from './Settings'
 import compose from 'ramda/src/compose'
-import {connect} from 'react-redux'
+import {connect} from '$studio/handy'
 import {withRunSaga, type WithRunSagaProps} from '$shared/utils'
 import {type StoreState} from '$studio/types'
 import {type XY, type PanelPlacementSettings, type PanelType, type PanelConfiguration, type PanelPersistentState, type PanelOutput, type DraggingOutput} from '$studio/workspace/types'
@@ -17,8 +17,8 @@ type OwnProps = {
 }
 
 type Props = WithRunSagaProps
-  & OwnProps 
-  & PanelPlacementSettings  
+  & OwnProps
+  & PanelPlacementSettings
   & {
     type: PanelType,
     configuration: PanelConfiguration,
@@ -172,8 +172,8 @@ class Panel extends React.Component<Props, State> {
       persistentState: {isInSettings,...componentState},
       pos,
       dim,
-      configuration, 
-      currentlyDraggingOutput, 
+      configuration,
+      currentlyDraggingOutput,
       outputs,
       inputs} = this.props
     const {move, resize, isMoving} = this.state

@@ -1,12 +1,11 @@
 // @flow
-import type {IAtom} from './utils/AbstractAtom'
 import type {AddressedChangeset, MapKey, True, False} from '$shared/DataVerse/types'
 import type {default as Tappable} from '$shared/DataVerse/utils/Tappable'
 import type {IDerivedArray} from '$shared/DataVerse/derivations/arrays/types'
 
 type Unboxed<O> = $FixMe // eslint-disable-line no-unused-vars
 
-export type ArrayAtomChangeType<V: IAtom> = {
+export type ArrayAtomChangeType<V> = {
   startIndex: number,
   deleteCount: number,
   addedRefs: Array<V>,

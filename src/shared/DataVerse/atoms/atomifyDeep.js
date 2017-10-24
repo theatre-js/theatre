@@ -4,7 +4,7 @@ import {type IBoxAtom, default as box} from './box'
 import {type IDictAtom, default as dict} from './dict'
 import {type IArrayAtom, default as array} from './array'
 import mapValues from 'lodash/mapValues'
-import {type IAtom, default as AbstractAtom} from './utils/AbstractAtom'
+import {default as AbstractAtom} from './utils/AbstractAtom'
 import type {If} from '../types'
 import type {
   IsArrayLiteral,

@@ -25,11 +25,11 @@ export class MappedDerivedArray extends AbstractDerivedArray implements IDerived
     this._untapFromSourceChanges = noop
   }
 
-  _reactToChangeFromSource(c: ChangeType<$FixMe>) {
+  _reactToChangeFromSource(c: $FixMe) {
     this._changeEmitter.emit(c)
   }
 
-  index(i: number): IDerivation<$FixMe> {
+  index(i: number): $FixMe {
     return this._fn(this._source.pointer().index(i))
   }
 

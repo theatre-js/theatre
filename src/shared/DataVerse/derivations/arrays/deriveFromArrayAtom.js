@@ -6,7 +6,7 @@ import {ensureNoAtoms} from '../dicts/utils'
 import noop from 'lodash/noop'
 
 export class DerivedArrayFromArrayAtom extends AbstractDerivedArray implements IDerivedArray<$FixMe> {
-  _arrayAtom: IArrayAtom<V>
+  _arrayAtom: $FixMe
   _untapFromArrayAtomChangeEmitter: () => void
 
   constructor<V>(a: IArrayAtom<V>): IDerivedArray<$FixMe> {

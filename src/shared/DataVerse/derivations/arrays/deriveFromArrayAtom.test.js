@@ -7,14 +7,13 @@ describe('DataVerse.derivations.deriveFromArrayAtom', () => {
   it('should work', () => {
     const arrayAtom = D.atoms.array(['0', '1'])
     const prefix = D.atoms.box('(prefix)')
+    // $FixMe
     const d = arrayAtom.derivedArray().map((sD) => sD.map((s) => `(${s})`))
     expect(d.index(0).getValue()).toEqual('(0)')
     arrayAtom.setIndex(0, '0-1')
     expect(d.index(0).getValue()).toEqual('(0-1)')
     const reducedD = d.reduce(
-      (acc: string, cur: string) => {
-        return acc + cur
-      },
+      (acc: string, cur: string) => acc + cur,
       prefix.derivation(),
     )
 

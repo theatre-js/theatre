@@ -11,7 +11,7 @@ import type {default as TheStudioClass} from '$studio/TheStudioClass'
 export default class PureComponentWithStudio<Props, State> extends React.PureComponent<Props, State> {
   studio: TheStudioClass
 
-  constructor(props: Props, context) {
+  constructor(props: Props, context: $FixMe) {
     super(props, context)
     this.studio = context[contextName]
   }

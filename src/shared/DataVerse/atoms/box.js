@@ -1,4 +1,4 @@
-import {default as AbstractAtom} from './utils/AbstractAtom'
+import {default as AbstractAtom} from './utils/AbstractAtom' // eslint-disable-line flowtype/require-valid-file-annotation
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import Tappable from '$shared/DataVerse/utils/Tappable'
 import type {AddressedChangeset, True, False, MapKey, Address} from '$shared/DataVerse/types'
@@ -27,19 +27,7 @@ export type IBoxAtom<V> = {
   getParent(): ?$FixMe,
 }
 
-interface _IBoxAtom<V> {
-  // isBoxAtom: True,
-  // _value: V,
-  // unboxDeep(): V,
-  // getValue(): V,
-  // set(v: V): _IBoxAtom<V>,
-  // deepChanges: () => Tappable<BoxAtomDeepChangeType<V>>,
-  // deepDiffs: () => Tappable<BoxAtomDeepDiffType<V>>,
-  // derivation: () => IDerivation<V>,
-}
-
-
-export class BoxAtom<V> extends AbstractAtom implements _IBoxAtom<V> {
+export class BoxAtom<V> extends AbstractAtom {
   isBoxAtom = 'True'
   _value: V
 

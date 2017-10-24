@@ -9,12 +9,15 @@ export default class AbstractDerivedDict {
   +_reactToHavingTappers: () => void
   +_reactToNotHavingTappers: () => void
   isDerivedDict = 'True'
+  _trace: $FixMe
+  _pointer: $FixMe
 
   constructor() {
     this._trace = new Error('Trace')
     this._changeEmitter = new Emitter()
     this._changeEmitterHasTappers = false
     this._changeEmitter.onNumberOfTappersChange(() => {this._reactToNumberOfChangeTappersChange()})
+    this._pointer = undefined
   }
 
   _reactToNumberOfChangeTappersChange() {

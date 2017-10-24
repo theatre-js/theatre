@@ -6,18 +6,11 @@ import LBCommunicator from './LBCommunicator'
 import initialState from './initialState'
 import * as D from '$shared/DataVerse'
 import configureStore from './configureStore'
-import type {CoreState} from '../types'
-// import {type CoreState} from '$studio/types'
 import type {default as StandardStore} from '$lb/bootstrap/StandardStore'
 import coreComponentDescriptorsById from '$studio/componentModel/coreComponentDescriptors'
 import coreModifierDescriptorsById from '$studio/componentModel/coreModifierDescriptors'
 
-type Atom = D.AtomifyDeepType<D.ObjectLiteral<{
-  state: CoreState,
-  coreComponentDescriptorsById: D.ObjectLiteral<{[key: string]: $FixMe}>,
-  coreModifierDescriptorsById: D.ObjectLiteral<{[key: string]: $FixMe}>,
-  instances: D.ObjectLiteral<{[key: string | number]: $FixMe}>,
-}>>
+type Atom = $FixMe
 
 export default class TheStudioClass {
   atom: Atom
@@ -84,12 +77,12 @@ export default class TheStudioClass {
 }
 
 const configureAtom = () => {
-  const atom = D.atoms.atomifyDeep(D.literals.object({
+  const atom = D.atoms.atomifyDeep({
     state: initialState,
     coreComponentDescriptorsById,
     coreModifierDescriptorsById,
-    instances: D.literals.object({}),
-  }))
+    instances: {},
+  })
 
   // debugger
   atom.deepChanges().tap((dc) => {

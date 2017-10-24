@@ -2,6 +2,7 @@
 .*/src/
 
 [ignore]
+.*/xeno
 .*/node_modules/fbjs
 .*/node_modules/editions/source
 .*/node_modules/react-render-hook/src/react-devtools
@@ -52,3 +53,4 @@ include_warnings=true
 [lints]
 # all=off by default
 all=error
+sketchy-null=off

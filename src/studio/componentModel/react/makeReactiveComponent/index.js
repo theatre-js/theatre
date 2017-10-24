@@ -1,12 +1,11 @@
-// @flow
-import SideEffectsHandler from './SideEffectsHandler'
+import SideEffectsHandler from './SideEffectsHandler'  // eslint-disable-line flowtype/require-valid-file-annotation
 import {type Studio, PureComponentWithStudio, D} from '$studio/handy'
 
 type MakeReactiveComponentArgs = {
   modifyPrototypalDict: (D.IPrototypalDict<$FixMe>) => D.IPrototypalDict<$FixMe>,
-  displayName: ?string,
-  componentId: ?string,
-  componentType: ?string,
+  displayName?: string,
+  componentId?: string,
+  componentType?: string,
   getInitialState?: () => D.IDictAtom<$FixMe>,
 }
 
@@ -18,13 +17,18 @@ export default function makeReactiveComponent({modifyPrototypalDict, displayName
   }
 
   class TheaterJSComponent extends PureComponentWithStudio<Props, void> {
-    static displayName = displayName ? displayName : undefined
+    static displayName = typeof displayName === 'string' ? displayName : undefined
+
     _finalFace: $FixMe
     _atom: $FixMe
     _whatToRender: $FixMe
     _fnsToCallOnWillUnmount: Array<() => void>
     _prototypalDictD: D.IDerivation<$FixMe>
     _sideEffetsHandler: SideEffectsHandler
+    isTheaterJSComponent: boolean
+    componentType: string
+    componentId: string
+    elementId: string | number
 
     _atom: D.IDictAtom<{
       instanceId: string | number,
@@ -48,7 +52,7 @@ export default function makeReactiveComponent({modifyPrototypalDict, displayName
       state: (d) => d.pointer().prop('_atom').prop('state'),
     }
 
-    constructor(props: Props, context) {
+    constructor(props: Props, context: $FixMe) {
       super(props, context)
 
       this._fnsToCallOnWillUnmount = []

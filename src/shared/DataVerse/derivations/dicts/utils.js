@@ -1,6 +1,6 @@
 // @flow
 
-export const ensureNoAtoms = (d: mixed) => {
+export const ensureNoAtoms = (d: $IntentionalAny) => {
   if (typeof d === 'object' && d !== null && !Array.isArray(d)) {
     if (d.isDictAtom === 'True') {
       return d.derivedDict()
@@ -9,7 +9,7 @@ export const ensureNoAtoms = (d: mixed) => {
     } else if (d.isDerivedDict === 'True' || d.isDerivedArray === 'True' || d.isDerivation === 'True') {
       return d
     } else {
-      console.warn('check this')
+      // console.warn('check this')
       return d
     }
   } else {

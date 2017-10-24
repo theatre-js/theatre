@@ -145,7 +145,7 @@ class Content extends React.Component<Props, State> {
     }
   }
 
-  _getRenderedSubcomponents(component: Object): Array<$FlowFixMe> {
+  _getRenderedSubcomponents(component: Object): Array<$FixMe> {
     let children = []
     if (component._renderedChildren != null) {
       children = Object.values(component._renderedChildren)

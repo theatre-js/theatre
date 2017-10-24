@@ -2,13 +2,14 @@
 import {default as common} from '$studio/common/initialState'
 import {default as workspace} from '$studio/workspace/initialState'
 import {default as componentModel} from '$studio/componentModel/initialState'
-import {type CoreState} from '../types'
-import * as D from '$shared/DataVerse'
+import {default as animationTimeline} from '$studio/animationTimeline/initialState'
+import {type StoreState} from '../types'
 
-const initialState: CoreState = D.literals.object({
+const initialState: StoreState = {
   common,
   workspace,
   componentModel,
-})
+  animationTimeline,
+}
 
 export default initialState

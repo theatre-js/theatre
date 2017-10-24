@@ -1,22 +1,36 @@
 // @flow
 import {type WorkspaceNamespaceState} from './types'
-import * as D from '$shared/DataVerse'
 
-const initialState: WorkspaceNamespaceState = D.literals.object({
-  panels: D.literals.object({
-    byId: D.literals.object({
-      '1': D.literals.object({
-        pos: D.literals.object({x: D.literals.primitive(5), y: D.literals.primitive(10)}),
-        dim: D.literals.object({x: D.literals.primitive(30), y: D.literals.primitive(40)}),
-      }),
-      '2': D.literals.object({
-        pos: D.literals.object({x: D.literals.primitive(50), y: D.literals.primitive(30)}),
-        dim: D.literals.object({x: D.literals.primitive(30), y: D.literals.primitive(40)}),
-      }),
-    }),
-    listOfVisibles: D.literals.array([D.literals.primitive('1'), D.literals.primitive('2')]),
-  }),
-  componentIdToBeRenderedAsCurrentCanvas: D.literals.primitive('TheaterJS/Core/FakeDeclarativeButton'),
-})
+const initialState: WorkspaceNamespaceState = {
+  panels: {
+    byId: {
+      '8daa7380-9b43-475a-8352-dc564a58c719': {
+        id: '8daa7380-9b43-475a-8352-dc564a58c719',
+        type: 'animationTimeline',
+        persistentState: {
+          isInSettings: false,
+        },
+        configuration: {
+          timelineId: '8daa7380-9b43-475a-8352-dc564a58c710',
+        },
+        placementSettings: {
+          pos: {
+            x: 20,
+            y: 25,
+          },
+          dim: {
+            x: 60,
+            y: 50,
+          },
+        },
+        inputs: {},
+        outputs: {},
+      },
+    },
+    listOfVisibles: ['8daa7380-9b43-475a-8352-dc564a58c719'],
+    currentlyDraggingOutput: null,
+  },
+  componentIdToBeRenderedAsCurrentCanvas: undefined,
+}
 
 export default initialState

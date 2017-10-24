@@ -1,7 +1,7 @@
 // @flow
 import type {AnimationTimelineNamespaceState} from './types'
 
-const defaultState: AnimationTimelineNamespaceState = {
+const initialState: AnimationTimelineNamespaceState = {
   lanes: {
     byId: {
       '8daa7380-9b43-475a-8352-dc564a58c717': {
@@ -175,4 +175,4 @@ const defaultState: AnimationTimelineNamespaceState = {
   },
 }
 
-export default (state: AnimationTimelineNamespaceState = defaultState) => state
+export default initialState

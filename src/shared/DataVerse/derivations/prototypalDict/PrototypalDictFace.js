@@ -59,6 +59,7 @@ export default class DerivedDictFace {
   _dataVerseContext: Context
   _structure: Structure
   _updateStructure: () => void
+  _pointer: ?$FixMe
 
   constructor(head: ?IPrototypalDict<$FixMe>, context: Context) {
     this._head = head

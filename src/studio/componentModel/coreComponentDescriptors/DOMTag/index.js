@@ -1,5 +1,4 @@
-// @flow
-import * as D from '$shared/DataVerse'
+import * as D from '$shared/DataVerse'  // eslint-disable-line flowtype/require-valid-file-annotation
 import * as React from 'react'
 import {type ComponentDescriptor} from '$studio/componentModel/types'
 import {makeReactiveComponent} from '$studio/handy'
@@ -44,12 +43,10 @@ const DOMTag = makeReactiveComponent({
   modifyPrototypalDict: (dict: D.IPrototypalDict<$FixMe>) => dict.extend(lookupTable),
 })
 
-const {object, primitive} = D.literals
-
-const descriptor: ComponentDescriptor = object({
-  id: primitive(componentId),
-  type: primitive('HardCoded'),
-  reactComponent: primitive(DOMTag),
-})
+const descriptor: ComponentDescriptor = {
+  id: componentId,
+  type: 'HardCoded',
+  reactComponent: DOMTag,
+}
 
 export default descriptor

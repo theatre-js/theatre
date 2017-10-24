@@ -35,12 +35,10 @@ const RenderCurrentCanvas = makeReactiveComponent({
   }),
 })
 
-const {object, primitive} = D.literals
-
-const descriptor: ComponentDescriptor = object({
-  id: primitive(componentId),
-  type: primitive('HardCoded'),
-  reactComponent: primitive(RenderCurrentCanvas),
-})
+const descriptor: ComponentDescriptor = {
+  id: componentId,
+  type: 'HardCoded',
+  reactComponent: RenderCurrentCanvas,
+}
 
 export default descriptor

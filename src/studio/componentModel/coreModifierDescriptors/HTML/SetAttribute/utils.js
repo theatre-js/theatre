@@ -25,7 +25,7 @@ export function domAttrSetter(node: Element, name: string, isSvg: boolean /*, ol
     }
   }
   else {
-    let ns = isSvg && (name !== (name = name.replace(/^xlink\:?/, '')))
+    let ns = isSvg && (name !== (name = name.replace(/^xlink:?/, '')))
     return (value: $FixMe) => {
       if (value==null || value===false) {
         if (ns) node.removeAttributeNS('http://www.w3.org/1999/xlink', name.toLowerCase())
@@ -47,7 +47,7 @@ function setProperty(node: Element, name: string, value: $FixMe) {
   try {
     // $FixMe
     node[name] = value
-  } catch (e) { }
+  } catch (e) { } // eslint-disable-line no-empty
 }
 
 

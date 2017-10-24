@@ -10,6 +10,13 @@ declare module 'lodash' {
     keyBy: $FixMe,
     without: <V>(Array<V>, V) => Array<V>,
     endsWith: (string, string) => boolean,
+    unset: <O: {}>(O, Array<string | number>) => O,
+    set: $FixMe,
+    clamp: (number, number, ?number) => number,
+    get: $FixMe, //({}, Array<string | number> | Object | string | number) => $FixMe,
+    map:
+      (<V, A: Array<V>, T, Fn: (V, number) => T>(A, Fn) => Array<T>) &
+      (<K, V, O: {[k: K]: V}, T, Fn: (V, K) => T>(O, Fn) => Array<T>),
   }
 }
 

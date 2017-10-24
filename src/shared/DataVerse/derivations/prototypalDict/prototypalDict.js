@@ -9,7 +9,7 @@ type Constructor = $FixMe
 
 let lastId: number = 0
 
-export interface IPrototypalDict<O: {}> {
+export interface IPrototypalDict<O: {}> { // eslint-disable-line no-unused-vars
   _id: number,
   parentChanges(): Tappable<*>,
   extend(constructors: {}): IPrototypalDict<$FixMe>,

@@ -28,7 +28,7 @@ export class FlattenDeepDerivation extends AbstractDerivation implements IDeriva
     }
 
     let i = updateFromIndex
-    while(true) {
+    while(true) { // eslint-disable-line no-constant-condition
       const currentDepth = i
       const topDerivation = this._stackOfDependencies[i]
       const innerValue = topDerivation.getValue()

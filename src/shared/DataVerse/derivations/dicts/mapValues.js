@@ -12,7 +12,7 @@ export class MapValues extends DerivedDict implements IDerivedDict<$FixMe> {
   _fn: $FixMe
   _untapFromSourceChanges: Function
 
-  constructor<O: {}, K: $Keys<O>, V: $ElementType<O, K>, T, FN: (V, K) => $FixMe>(source: IDerivedDict<O>, fn: FN): IDerivedDict<$FixMe> {
+  constructor<O: {}, K: $Keys<O>, V: $ElementType<O, K>, FN: (V, K) => $FixMe>(source: IDerivedDict<O>, fn: FN): IDerivedDict<$FixMe> {
     super()
     this._source = source
     this._fn = fn
@@ -50,7 +50,7 @@ export class MapValues extends DerivedDict implements IDerivedDict<$FixMe> {
 }
 
 
-const mapValues = <O: {}, K: $Keys<O>, V: $ElementType<O, K>, T, FN: (V, K) => $FixMe>(source: IDerivedDict<O>, fn: FN): IDerivedDict<$FixMe> => {
+const mapValues = <O: {}, K: $Keys<O>, V: $ElementType<O, K>, FN: (V, K) => $FixMe>(source: IDerivedDict<O>, fn: FN): IDerivedDict<$FixMe> => {
   return new MapValues(source, fn)
 }
 

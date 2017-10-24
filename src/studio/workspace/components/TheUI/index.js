@@ -1,6 +1,6 @@
-import * as React from 'react'
+import * as React from 'react' // eslint-disable-line flowtype/require-valid-file-annotation
 import compose from 'ramda/src/compose'
-import {connect} from 'react-redux'
+import {connect} from '$studio/handy'
 import {type StoreState} from '$studio/types'
 import {type PanelPlacementSettings, type PanelPersistentState} from '$studio/workspace/types'
 import {getVisiblePanelsList} from '$studio/workspace/selectors'

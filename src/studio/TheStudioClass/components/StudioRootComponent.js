@@ -1,15 +1,19 @@
 // @flow
 
 import HotReloadablePart from './HotReloadablePart'
-import {Provider as StoreProvider} from 'react-redux'
+// $FixMe
+import {createProvider} from 'react-redux'
 import {AppContainer} from 'react-hot-loader'
 import compose from 'ramda/src/compose'
 import './StudioRootComponent.css'
 import * as React from 'react'
-import type {default as StandardStore} from '$lb/bootstrap/StandardStore'
+import type {default as TheStudioClass} from '$studio/TheStudioClass'
+import {storeKey} from '$studio/handy/connect'
+
+const StoreProvider = createProvider(storeKey)
 
 type Props = {
-  studio: StandardStore<any, any>,
+  studio: TheStudioClass,
 }
 
 type State = {

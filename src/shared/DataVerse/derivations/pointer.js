@@ -86,7 +86,7 @@ export class PointerDerivation extends AbstractDerivation implements _IPointer<$
 
   constructor(address: Address) {
     super()
-    lastPointerId++
+    // lastPointerId++
     this._address = address
     this._internalDerivation = undefined
     this._props = {}
@@ -112,8 +112,8 @@ export class PointerDerivation extends AbstractDerivation implements _IPointer<$
     const d =
       address.type === 'fromParentPointer' ?
       // $FixMe
-      this._makeDerivationForParentPointer(address.parentPointer, address.keyOrIndex) :
-      this._makeDerivationForPath(address.root, address.path)
+        this._makeDerivationForParentPointer(address.parentPointer, address.keyOrIndex) :
+        this._makeDerivationForPath(address.root, address.path)
 
     this._addDependency(d)
 
@@ -155,7 +155,7 @@ export class PointerDerivation extends AbstractDerivation implements _IPointer<$
 }
 
 const propify = (possibleReactiveValue, key) => {
-  pointerFlatMaps++
+  // pointerFlatMaps++
   if (possibleReactiveValue === PointerDerivation.NOTFOUND || possibleReactiveValue === undefined) {
     return PointerDerivation.NOTFOUND
   } else if (possibleReactiveValue instanceof modules.dict.DictAtom) {
@@ -166,6 +166,7 @@ const propify = (possibleReactiveValue, key) => {
     // $FixMe
     return possibleReactiveValue.prop(key)
   } else if (possibleReactiveValue.isDerivedArray === 'True') {
+    // $FixMe
     return possibleReactiveValue.index(key)
   } else {
     return undefined
@@ -189,8 +190,8 @@ const modules = {
   array: require('$shared/DataVerse/atoms/array'),
 }
 
-let lastPointerId = 0
-let pointerFlatMaps = 0
+// let lastPointerId = 0
+// let pointerFlatMaps = 0
 
 // setTimeout(() => {
 //   console.log('pointers:', lastPointerId)

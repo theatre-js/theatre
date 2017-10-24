@@ -8,7 +8,7 @@ const noop = () => {}
 
 export class DerivedArrayReduction<T, V> extends AbstractDerivation implements IDerivation<V> {
   getValue: () => V
-  _derivedArray: IArrayAtom<V>
+  _derivedArray: IDerivedArray<T>
   _fn: $FixMe
   _untapFromDerivedArrayChanges: Function
   _updateNeededFromIndex: number // `-1` means update comes from the top flatMap derivation. 0,1,2,... mean update is required because the derivedArray has had a change

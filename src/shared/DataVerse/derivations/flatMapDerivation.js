@@ -31,7 +31,7 @@ export class FlatMapDerivation extends AbstractDerivation implements IDerivation
     }
 
     let i = updateFromIndex
-    while(true) {
+    while(true) { // eslint-disable-line no-constant-condition
       const currentDepth = i
       const topDerivation = this._stackOfDependencies[i]
       const innerValue = i === 1 ? topDerivation.getValue() : this._fn(topDerivation.getValue())

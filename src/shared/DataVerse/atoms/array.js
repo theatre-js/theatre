@@ -1,6 +1,4 @@
-
-
-import {default as AbstractCompositeAtom, type ICompositeAtom} from './utils/AbstractCompositeAtom'
+import {default as AbstractCompositeAtom} from './utils/AbstractCompositeAtom' // eslint-disable-line flowtype/require-valid-file-annotation
 import {forEach} from 'lodash'
 import type {IAtom} from './utils/AbstractAtom'
 import Tappable from '$shared/DataVerse/utils/Tappable'
@@ -8,7 +6,7 @@ import Emitter from '$shared/DataVerse/utils/Emitter'
 import type {AddressedChangeset, MapKey, True, False} from '$shared/DataVerse/types'
 import deriveFromArrayAtom from '$shared/DataVerse/derivations/arrays/deriveFromArrayAtom'
 import range from 'lodash/range'
-import {type DecidePointerType, default as pointer} from '$shared/DataVerse/derivations/pointer'
+import {default as pointer} from '$shared/DataVerse/derivations/pointer'
 
 
 type Unboxed<O> = $FixMe // eslint-disable-line no-unused-vars
@@ -69,23 +67,7 @@ export type IArrayAtom<V: IAtom> = {
   getParent(): ?$FixMe,
 }
 
-interface _IArrayAtom<V: IAtom> {
-  // isArrayAtom: True,
-  // _v: V,
-  // setIndex(key: number, v: V): $FixMe,
-  // index(index: number): V,
-  // push(rows: Array<V>): void,
-  // splice(startIndex: number, deleteCount: number, toAdd: Array<V>): void,
-  // pop(): ?V,
-  // shift(): ?V,
-  // head(): ?V,
-  // last(): ?V,
-  // unshift(row: V): void,
-
-  // chnages: () => Tappable<ArrayAtomChangeType<V>>,
-}
-
-export class ArrayAtom<V: IAtom> extends AbstractCompositeAtom implements _IArrayAtom<V> {
+export class ArrayAtom<V: IAtom> extends AbstractCompositeAtom {
   isArrayAtom = 'True'
   _v: V
   _pointer: ?$FixMe

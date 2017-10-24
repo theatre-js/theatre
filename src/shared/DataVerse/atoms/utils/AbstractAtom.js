@@ -1,5 +1,5 @@
 
-import type {MapKey, True} from '$shared/DataVerse/types'
+import type {MapKey, True} from '$shared/DataVerse/types'  // eslint-disable-line flowtype/require-valid-file-annotation
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import Tappable from '$shared/DataVerse/utils/Tappable'
 import type {ICompositeAtom} from './AbstractCompositeAtom'
@@ -79,5 +79,3 @@ export default class AbstractAtom implements _IAtom {
     }
   }
 }
-
-const pointer = require('$shared/DataVerse/derivations/pointer')

@@ -1,5 +1,4 @@
-// @flow
-import {type WhatToRender} from '$studio/componentModel/types'
+import {type WhatToRender} from '$studio/componentModel/types'  // eslint-disable-line flowtype/require-valid-file-annotation
 import {makeReactiveComponent} from '$studio/handy'
 import resolveReferenceToHiddenLocalValue from './resolveReferenceToHiddenLocalValue'
 

@@ -1,7 +1,7 @@
 // @flow
 import React from 'react'
 import compose from 'ramda/src/compose'
-import {connect} from 'react-redux'
+import {connect} from '$studio/handy'
 import {getTimelineById} from '$studio/animationTimeline/selectors'
 import {withRunSaga, type WithRunSagaProps} from '$shared/utils'
 import {moveBox, mergeBoxes, splitLane, resizeBox} from '$studio/animationTimeline/sagas'
@@ -174,7 +174,7 @@ class Content extends React.Component<Props, State> {
     else if (mergeWith != null) {
       await runSaga(mergeBoxes, timelineId, index, mergeWith)
     }
-    
+
     this.setState(() => {
       return {
         boxBeingDragged: null,

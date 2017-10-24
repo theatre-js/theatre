@@ -1,7 +1,7 @@
 // @flow
 import React from 'react'
 import compose from 'ramda/src/compose'
-import {connect} from 'react-redux'
+import {connect} from '$studio/handy'
 import {withRunSaga, type WithRunSagaProps} from '$shared/utils'
 import {getLanesByIds} from '$studio/animationTimeline/selectors'
 import {
@@ -16,7 +16,6 @@ import {
   makeHandlesParallel,
   makeHandlesEqual} from '$studio/animationTimeline/sagas'
 import {type LaneID, type LaneObject, type Point, type PointPosition, type PointHandles, type NormalizedPoint} from '$studio/animationTimeline/types'
-import {type StoreState} from '$studio/types'
 import css from './LanesViewer.css'
 import Lane from './Lane'
 import cx from 'classnames'
@@ -87,7 +86,7 @@ class LanesViewer extends React.PureComponent<Props, State> {
       if (extremums[1] > reducer[1]) reducer[1] = extremums[1]
       return reducer
     }, [0, 0])
-    
+
     return {svgHeight, svgWidth, svgTransform, svgExtremums}
   }
 
@@ -121,7 +120,7 @@ class LanesViewer extends React.PureComponent<Props, State> {
   changePointHandlesBy = (laneId: LaneID, pointIndex: number, change: PointHandles) => {
     this.props.runSaga(changePointHandlesBy, laneId, pointIndex, this.deNormalizeHandles(change))
   }
-  
+
   addConnector = (laneId: LaneID, pointIndex: number) => {
     this.props.runSaga(addConnector, laneId, pointIndex)
   }
@@ -129,7 +128,7 @@ class LanesViewer extends React.PureComponent<Props, State> {
   removeConnector = (laneId: LaneID, pointIndex: number) => {
     this.props.runSaga(removeConnector, laneId, pointIndex)
   }
-  
+
   makeHandleHorizontal = (laneId: LaneID, pointIndex: number, side: 'left' | 'right') => {
     this.props.runSaga(makeHandleHorizontal, laneId, pointIndex, side)
   }
@@ -267,7 +266,7 @@ class LanesViewer extends React.PureComponent<Props, State> {
 
 export default compose(
   connect(
-    (state: StoreState, ownProps: OwnProps) => {
+    (state, ownProps: OwnProps) => {
       return {
         lanes: getLanesByIds(state, ownProps.laneIds),
       }

@@ -16,7 +16,7 @@ type State = {
 }
 
 class SingleInputForm extends React.Component<Props, State> {
-  input: $FlowFixMe
+  input: $FixMe
 
   static defaultProps = {
     autoFocus: true,
@@ -57,7 +57,6 @@ class SingleInputForm extends React.Component<Props, State> {
   render() {
     return (
       <input
-        // $FixMe
         ref={(input) => {this.input = input}}
         placeholder={this.props.placeholder}
         value={this.state.value}
