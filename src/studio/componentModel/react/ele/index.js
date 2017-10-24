@@ -10,8 +10,8 @@ const getComponentDescriptorById = (id: D.IDerivation<string>, studio: D.IDeriva
   D.derivations.withDeps({id, studio}, identity).flatMap(({id, studio}): $FixMe => {
     const idString = id.getValue()
     return stringStartsWith(idString, 'TheaterJS/Core/')
-      ? studio.getValue().atom.pointer().prop('coreComponentDescriptorsById').prop(idString)
-      : studio.getValue().atom.pointer().prop('state').prop('componentModel').prop('componentDescriptorsById').prop(idString)
+      ? studio.getValue().atom.pointer().prop('componentModel').prop('componentDescriptors').prop('core').prop(idString)
+      : studio.getValue().atom.pointer().prop('componentModel').prop('componentDescriptors').prop('custom').prop(idString)
   })
 
 export const getAliasLessComponentDescriptor = (initialComponentId: D.IDerivation<string>, studio: D.IDerivation<Studio>): $FixMe => {

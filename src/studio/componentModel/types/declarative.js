@@ -24,7 +24,8 @@ type ModifierInstantiationValueDescriptor = {|
 |}
 
 export type ModifierDescriptor = {|
-  modifierId: string,
+  id: string,
+  modifyPrototypalDict: $FixMe,
 |}
 
 export type ReferenceToLocalHiddenValue = {|

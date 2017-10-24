@@ -13,7 +13,7 @@ const RenderCurrentCanvas = makeReactiveComponent({
   modifyPrototypalDict: (d) => d.extend({
     render(d) {
       const studioAtom = d.prop('studio').getValue().atom
-      const componentIdToBeRenderedAsCurrentCanvasPointer = studioAtom.pointer().prop('state').prop('workspace').prop('componentIdToBeRenderedAsCurrentCanvas')
+      const componentIdToBeRenderedAsCurrentCanvasPointer = studioAtom.pointer().prop('workspace').prop('componentIdToBeRenderedAsCurrentCanvas')
       const children = d.pointer().prop('props').prop('children')
       const instantiationDescriptorP = D.atoms.dict({
         componentId: D.atoms.box(componentIdToBeRenderedAsCurrentCanvasPointer),

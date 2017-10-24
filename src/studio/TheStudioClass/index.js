@@ -1,14 +1,11 @@
 // @flow
 import * as React from 'react'
 import {render} from 'react-dom'
-import StudioRootComponent from './components/StudioRootComponent'
-import LBCommunicator from './LBCommunicator'
-import initialState from './initialState'
 import * as D from '$shared/DataVerse'
+import LBCommunicator from './LBCommunicator'
 import configureStore from './configureStore'
+import StudioRootComponent from './components/StudioRootComponent'
 import type {default as StandardStore} from '$lb/bootstrap/StandardStore'
-import coreComponentDescriptorsById from '$studio/componentModel/coreComponentDescriptors'
-import coreModifierDescriptorsById from '$studio/componentModel/coreModifierDescriptors'
 
 type Atom = $FixMe
 
@@ -23,7 +20,7 @@ export default class TheStudioClass {
     this._lastComponentInstanceId = 0
     this.dataverseContext = new D.Context()
     this.store = configureStore()
-    this.atom = configureAtom()
+    this.atom = this._configureAtom()
 
     // this._lbCommunicator = new LBCommunicator({
     //   backendUrl: `${window.location.protocol}//${window.location.hostname}:${process.env.studio.socketPort}`,
@@ -43,8 +40,6 @@ export default class TheStudioClass {
     // })
     this.store.runRootSaga()
 
-
-    // @todo
     this._mountElement()
   }
 
@@ -66,47 +61,25 @@ export default class TheStudioClass {
     return this._lastComponentInstanceId++
   }
 
-  registerComponentInstance(isntanceId: number, componentInstance: React.Component<mixed, mixed>) {
-    this.atom.prop('instances').setProp(isntanceId, componentInstance)
-  }
+  _configureAtom() {
+    let lastState = this.store.reduxStore.getState()
+    const atom = D.atoms.atomifyDeep(lastState)
 
-  unregisterComponentInstance(isntanceId: number) {
-    this.atom.prop('instances').deleteProp(isntanceId)
-  }
-
-}
-
-const configureAtom = () => {
-  const atom = D.atoms.atomifyDeep({
-    state: initialState,
-    coreComponentDescriptorsById,
-    coreModifierDescriptorsById,
-    instances: {},
-  })
-
-  // debugger
-  atom.deepChanges().tap((dc) => {
-    console.log('deepChangeFromAtom', dc)
-  })
-
-  if (process.env.NODE_ENV === 'development' && module.hot) {
-    module.hot.accept(
-      '$studio/componentModel/coreComponentDescriptors',
-      () => {
-        const newCoreComponentDescriptors = require('$studio/componentModel/coreComponentDescriptors').default
-        atom.setProp('coreComponentDescriptorsById', D.atoms.atomifyDeep(newCoreComponentDescriptors))
+    this.store.reduxStore.subscribe(() => {
+      const newState = this.store.reduxStore.getState()
+      for (let key in newState) {
+        const value = newState[key]
+        if (value !== lastState[key]) atom.setProp(key, D.atoms.atomifyDeep(value))
       }
-    )
 
-    // $FixMe
-    module.hot.accept(
-      '$studio/componentModel/coreModifierDescriptors',
-      () => {
-        const newModifierDescriptors = require('$studio/componentModel/coreModifierDescriptors').default
-        atom.setProp('coreModifierDescriptorsById', D.atoms.atomifyDeep(newModifierDescriptors))
+      for (let key in lastState) {
+        if (!newState.hasOwnProperty(key)) {
+          atom.deleteProp(key)
+        }
       }
-    )
-  }
+      lastState = newState
+    })
 
-  return atom
+    return atom
+  }
 }

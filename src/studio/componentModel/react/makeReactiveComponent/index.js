@@ -135,7 +135,7 @@ export default function makeReactiveComponent({modifyPrototypalDict, displayName
         if (disabled) return dict
 
         return modifierInstantiationDescriptor.prop('modifierId').flatMap((modifierId: string) => {
-          return this.studio.atom.pointer().prop('coreModifierDescriptorsById').prop(modifierId).prop('modifyPrototypalDict').flatMap((possibleFn: ?Function) => {
+          return this.studio.atom.pointer().prop('componentModel').prop('modifierDescriptors').prop('core').prop(modifierId).prop('modifyPrototypalDict').flatMap((possibleFn: ?Function) => {
             if (!possibleFn) console.warn('this shouldnt happen')
             return possibleFn ? possibleFn(modifierInstantiationDescriptor.pointer().prop('props'), dict) : dict
           })

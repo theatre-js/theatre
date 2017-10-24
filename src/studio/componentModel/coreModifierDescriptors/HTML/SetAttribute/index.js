@@ -1,5 +1,5 @@
 // @flow
-import {type ComponentDescriptor} from '$studio/componentModel/types'
+import {type ModifierDescriptor} from '$studio/componentModel/types'
 import AttributesApplier from './AttributesApplier'
 import * as D from '$shared/DataVerse'
 
@@ -47,8 +47,7 @@ const modifyPrototypalDict = (propsP, dict) => {
   })
 }
 
-// $FixMe
-const descriptor: ComponentDescriptor = {
+const descriptor: ModifierDescriptor = {
   id: 'TheaterJS/Core/HTML/SetAttribute',
   modifyPrototypalDict,
 }
