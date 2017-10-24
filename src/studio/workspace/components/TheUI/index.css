@@ -1,0 +1,9 @@
+.button {
+  background: #000;
+  cursor: pointer;
+  box-shadow: 0 0px 15px 1px #222;
+  position: fixed;
+  left: 10px;
+  bottom: 10px;
+  padding: 10px;
+}

@@ -1,0 +1,34 @@
+.clickable-text {
+  cursor: pointer;
+  opacity: .5;
+  font-size: 13px;
+  color: #FFF;
+
+  &:hover {
+    opacity: .8;
+  }
+}
+
+.container {
+  position: relative;
+  left: 10px;
+}
+
+.name {
+  composes: clickable-text;
+
+  &.selected {
+    font-weight: bold;
+    opacity: .8;
+  }
+}
+
+.expandButton {
+  position: absolute;
+  width: 10px;
+  left: -10px;
+  composes: clickable-text;
+  font-size: 15px;
+  text-align: left;
+  line-height: 25px;
+}

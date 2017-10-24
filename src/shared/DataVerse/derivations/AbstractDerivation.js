@@ -11,44 +11,6 @@ const FRESHNESS_STATE_STALE = 1
 const FRESHNESS_STATE_FRESH = 2
 type FreshnessState = typeof FRESHNESS_STATE_NOT_APPLICABLE | typeof FRESHNESS_STATE_STALE | typeof FRESHNESS_STATE_FRESH
 
-let lastDerivationId = 0
-let activeDs = new Set()
-
-// setTimeout(() => {console.log('allDs', lastDerivationId)}, 1500)
-setTimeout(() => {
-  console.log('activeDs  ', activeDs.size)
-  console.log('allDs', lastDerivationId)
-  // const nodes = []
-  // const edges = []
-  // connections
-  // activeDs.forEach((d) => {
-  //   const node = {
-  //     id: d._id,
-  //     type: d.constructor.name,
-  //     hasTappers: d._changeEmitter.hasTappers(),
-  //   }
-
-  //   nodes.push(node)
-
-  //   d._dependents.forEach((dep) => {
-  //     edges.push({from: d._id, to: dep._id})
-  //   })
-  // })
-
-  // const nodesBlob = new Blob(
-  //   [toCsv({data: nodes, fields: ['id', 'type', 'hasTappers']})],
-  //   {type: 'text/plain'},
-  // )
-
-  // const edgesBlob = new Blob(
-  //   [toCsv({data: edges, fields: ['from', 'to']})],
-  //   {type: 'text/plain'},
-  // )
-
-  // window.open(window.URL.createObjectURL(nodesBlob))
-  // window.open(window.URL.createObjectURL(edgesBlob))
-}, 200)
-
 class AbstractDerivation {
   _id: number
   isDerivation = 'True'
@@ -235,3 +197,42 @@ export default (AbstractDerivation: $FixMe)
 const flattenDeep = require('./flattenDeep')
 const flatMapDerivation = require('./flatMapDerivation')
 const mapDerivation = require('./mapDerivation')
+
+
+let lastDerivationId = 0
+let activeDs = new Set()
+
+// setTimeout(() => {console.log('allDs', lastDerivationId)}, 1500)
+// setTimeout(() => {
+//   console.log('activeDs  ', activeDs.size)
+//   console.log('allDs', lastDerivationId)
+  // const nodes = []
+  // const edges = []
+  // connections
+  // activeDs.forEach((d) => {
+  //   const node = {
+  //     id: d._id,
+  //     type: d.constructor.name,
+  //     hasTappers: d._changeEmitter.hasTappers(),
+  //   }
+
+  //   nodes.push(node)
+
+  //   d._dependents.forEach((dep) => {
+  //     edges.push({from: d._id, to: dep._id})
+  //   })
+  // })
+
+  // const nodesBlob = new Blob(
+  //   [toCsv({data: nodes, fields: ['id', 'type', 'hasTappers']})],
+  //   {type: 'text/plain'},
+  // )
+
+  // const edgesBlob = new Blob(
+  //   [toCsv({data: edges, fields: ['from', 'to']})],
+  //   {type: 'text/plain'},
+  // )
+
+  // window.open(window.URL.createObjectURL(nodesBlob))
+  // window.open(window.URL.createObjectURL(edgesBlob))
+// }, 2000)

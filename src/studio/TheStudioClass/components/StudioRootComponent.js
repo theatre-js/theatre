@@ -1,15 +1,15 @@
 // @flow
 
 import HotReloadablePart from './HotReloadablePart'
+import {Provider as StoreProvider} from 'react-redux'
 import {AppContainer} from 'react-hot-loader'
 import compose from 'ramda/src/compose'
 import './StudioRootComponent.css'
 import * as React from 'react'
-import TheStudioClass from '$studio/TheStudioClass'
-import {contextName, contextTypes} from '$studio/componentModel/react/studioContext'
+import type {default as StandardStore} from '$lb/bootstrap/StandardStore'
 
 type Props = {
-  studio: TheStudioClass,
+  studio: StandardStore<any, any>,
 }
 
 type State = {
@@ -18,19 +18,12 @@ type State = {
 
 class StudioRootComponent extends React.Component<Props, *> {
   state: State
-  static childContextTypes = contextTypes
 
   constructor(props: Props) {
     super(props)
 
     this.state = {
       HotReloadablePart,
-    }
-  }
-
-  getChildContext() {
-    return {
-      [contextName]: this.props.studio,
     }
   }
 
@@ -52,7 +45,9 @@ class StudioRootComponent extends React.Component<Props, *> {
     const {HotReloadablePart} = this.state
     return (
       <AppContainer>
-        <HotReloadablePart />
+        <StoreProvider store={this.props.studio.store.reduxStore}>
+          <HotReloadablePart />
+        </StoreProvider>
       </AppContainer>
     )
   }

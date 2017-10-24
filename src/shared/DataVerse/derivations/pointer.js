@@ -75,14 +75,6 @@ const noBoxAtoms = (v) => {
   }
 }
 
-let lastPointerId = 0
-let pointerFlatMaps = 0
-
-setTimeout(() => {
-  console.log('pointers:', lastPointerId)
-  console.log('pointerFlatMaps:', pointerFlatMaps)
-}, 200)
-
 type Address = {root: $FixMe, path: Array<MapKey>} | {type: 'fromParentPointer', parentPointer: _IPointer<$FixMe>, keyOrIndex: number | string}
 
 export class PointerDerivation extends AbstractDerivation implements _IPointer<$FixMe> {
@@ -196,3 +188,11 @@ const modules = {
   dict: require('$shared/DataVerse/atoms/dict'),
   array: require('$shared/DataVerse/atoms/array'),
 }
+
+let lastPointerId = 0
+let pointerFlatMaps = 0
+
+// setTimeout(() => {
+//   console.log('pointers:', lastPointerId)
+//   console.log('pointerFlatMaps:', pointerFlatMaps)
+// }, 200)

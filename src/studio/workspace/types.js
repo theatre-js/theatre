@@ -1,24 +1,54 @@
 // @flow
-import {type ComponentId} from '$studio/componentModel/types'
-import * as D from '$shared/DataVerse'
+import {type ComponentID} from '$studio/componentModel/types'
 
 export type PanelId = string
 
-export type XY = D.ObjectLiteral<{x: D.PrimitiveLiteral<number>, y: D.PrimitiveLiteral<number>}>
+export type PanelType = string
 
-export type PanelSettings = D.ObjectLiteral<{
+export type PanelConfiguration = Object
+
+export type PanelPersistentState = {
+  isInSettings: boolean,
+}
+
+export type XY = {x: number, y: number}
+
+export type PanelPlacementSettings = {
   pos: XY,
   dim: XY,
-}>
+}
 
-export type VisiblePanelsList = D.ArrayLiteral<D.PrimitiveLiteral<PanelId>>
+export type PanelOutput = {[string]: Object}
 
-export type Panels = D.ObjectLiteral<{
-  byId: D.ObjectLiteral<{[key: PanelId]: PanelSettings}>,
-  listOfVisibles: VisiblePanelsList,
-}>
+export type PanelInput = {[string]: PanelId}
 
-export type WorkspaceNamespaceState = D.ObjectLiteral<{
+export type DraggingOutput = {
+  type: string,
+  panel: PanelId,
+}
+
+export type PanelProps = {
+  type: PanelType,
+  configuration: PanelConfiguration,
+  placementSettings: PanelPlacementSettings,
+  persistentState: PanelPersistentState,
+  inputs: PanelInput,
+  outputs: PanelOutput,
+}
+
+export type PanelObject = PanelProps & {
+  id: PanelId,
+}
+
+export type visiblePanelsList = Array<string>
+
+export type Panels = {
+  byId: {[id: PanelId]: PanelObject},
+  listOfVisibles: visiblePanelsList,
+  currentlyDraggingOutput: ?DraggingOutput,
+}
+
+export type WorkspaceNamespaceState = {
   panels: Panels,
-  componentIdToBeRenderedAsCurrentCanvas: D.PrimitiveLiteral<?ComponentId>,
-}>
+  componentIdToBeRenderedAsCurrentCanvas: ?ComponentID,
+}

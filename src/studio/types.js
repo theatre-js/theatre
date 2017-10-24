@@ -8,5 +8,8 @@ export type CoreState = D.ObjectLiteral<{
   common: CommonNamespaceState,
   workspace: WorkspaceNamespaceState,
   componentModel: ComponentModelNamespaceState,
-  // componentModel: D.ObjectLiteral<{}>,
+  animationTimeline: AnimationTimelineNamespaceState,
 }>
+
+export type Selector<ReturnType, ParamsType> =
+  (state: StoreState, params: ParamsType) => ReturnType

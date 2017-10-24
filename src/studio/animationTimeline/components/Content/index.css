@@ -1,0 +1,15 @@
+.container {
+}
+
+.timeBar {
+  height: 40px;
+}
+
+.lanes {
+  height: calc(100% - 40px);
+  overflow: scroll;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}

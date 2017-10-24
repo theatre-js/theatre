@@ -1,14 +1,14 @@
 // @flow
 import * as React from 'react'
-// import {render} from 'react-dom'
-// import StudioRootComponent from './components/StudioRootComponent'
-// import LBCommunicator from './LBCommunicator'
+import {render} from 'react-dom'
+import StudioRootComponent from './components/StudioRootComponent'
+import LBCommunicator from './LBCommunicator'
 import initialState from './initialState'
 import * as D from '$shared/DataVerse'
-import {runSaga} from 'redux-saga'
-import rootSaga from './rootSaga'
+import configureStore from './configureStore'
 import type {CoreState} from '../types'
 // import {type CoreState} from '$studio/types'
+import type {default as StandardStore} from '$lb/bootstrap/StandardStore'
 import coreComponentDescriptorsById from '$studio/componentModel/coreComponentDescriptors'
 import coreModifierDescriptorsById from '$studio/componentModel/coreModifierDescriptors'
 
@@ -23,41 +23,14 @@ export default class TheStudioClass {
   atom: Atom
   dataverseContext: D.Context
   _lastComponentInstanceId: number
-  // _lbCommunicator: LBCommunicator
+  _lbCommunicator: LBCommunicator
+  store: StandardStore<*, *>
 
   constructor() {
     this._lastComponentInstanceId = 0
     this.dataverseContext = new D.Context()
-    this.atom = D.atoms.atomifyDeep(D.literals.object({
-      state: initialState,
-      coreComponentDescriptorsById,
-      coreModifierDescriptorsById,
-      instances: D.literals.object({}),
-    }))
-
-    // debugger
-    this.atom.deepChanges().tap((dc) => {
-      console.log(dc)
-    })
-
-    if (process.env.NODE_ENV === 'development' && module.hot) {
-      module.hot.accept(
-        '$studio/componentModel/coreComponentDescriptors',
-        () => {
-          const newCoreComponentDescriptors = require('$studio/componentModel/coreComponentDescriptors').default
-          this.atom.setProp('coreComponentDescriptorsById', D.atoms.atomifyDeep(newCoreComponentDescriptors))
-        }
-      )
-
-      // $FixMe
-      module.hot.accept(
-        '$studio/componentModel/coreModifierDescriptors',
-        () => {
-          const newModifierDescriptors = require('$studio/componentModel/coreModifierDescriptors').default
-          this.atom.setProp('coreModifierDescriptorsById', D.atoms.atomifyDeep(newModifierDescriptors))
-        }
-      )
-    }
+    this.store = configureStore()
+    this.atom = configureAtom()
 
     // this._lbCommunicator = new LBCommunicator({
     //   backendUrl: `${window.location.protocol}//${window.location.hostname}:${process.env.studio.socketPort}`,
@@ -75,22 +48,11 @@ export default class TheStudioClass {
     //     console.log(res)
     //   })
     // })
-    runSaga(
-      // $FixMe
-      {
-        subscribe(): Function {
-          return () => {}
-        },
-        dispatch() {},
-        getState() {},
-      },
-      rootSaga,
-      // $FixMe
-      this,
-    )
+    this.store.runRootSaga()
+
 
     // @todo
-    // this._mountElement()
+    this._mountElement()
   }
 
   _mountElement() {
@@ -104,7 +66,7 @@ export default class TheStudioClass {
       throw new Error(`Where is the <body> tag?`)
     }
 
-    // render(<StudioRootComponent studio={this} />, rootEl)
+    render(<StudioRootComponent studio={this} />, rootEl)
   }
 
   _getNewComponentInstanceId() {
@@ -118,4 +80,40 @@ export default class TheStudioClass {
   unregisterComponentInstance(isntanceId: number) {
     this.atom.prop('instances').deleteProp(isntanceId)
   }
+
+}
+
+const configureAtom = () => {
+  const atom = D.atoms.atomifyDeep(D.literals.object({
+    state: initialState,
+    coreComponentDescriptorsById,
+    coreModifierDescriptorsById,
+    instances: D.literals.object({}),
+  }))
+
+  // debugger
+  atom.deepChanges().tap((dc) => {
+    console.log('deepChangeFromAtom', dc)
+  })
+
+  if (process.env.NODE_ENV === 'development' && module.hot) {
+    module.hot.accept(
+      '$studio/componentModel/coreComponentDescriptors',
+      () => {
+        const newCoreComponentDescriptors = require('$studio/componentModel/coreComponentDescriptors').default
+        atom.setProp('coreComponentDescriptorsById', D.atoms.atomifyDeep(newCoreComponentDescriptors))
+      }
+    )
+
+    // $FixMe
+    module.hot.accept(
+      '$studio/componentModel/coreModifierDescriptors',
+      () => {
+        const newModifierDescriptors = require('$studio/componentModel/coreModifierDescriptors').default
+        atom.setProp('coreModifierDescriptorsById', D.atoms.atomifyDeep(newModifierDescriptors))
+      }
+    )
+  }
+
+  return atom
 }

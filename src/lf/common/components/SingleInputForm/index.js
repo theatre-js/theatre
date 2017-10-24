@@ -3,19 +3,42 @@ import * as React from 'react'
 import css from './index.css'
 
 type Props = {
-  placeholder: ?string,
+  placeholder?: string,
   onSubmit: Function,
   onCancel: Function,
+  value?: string,
+  className?: Object,
+  autoFocus: boolean,
 }
 
-class SingleInputForm extends React.Component<Props> {
-  input: HTMLInputElement
+type State = {
+  value: string,
+}
 
-  componentDidMount() {
-    this.input.focus()
+class SingleInputForm extends React.Component<Props, State> {
+  input: $FlowFixMe
+
+  static defaultProps = {
+    autoFocus: true,
   }
 
-  handleKeyDown = (e: SyntheticKeyboardEvent<>) => {
+  constructor(props: Props) {
+    super(props)
+
+    this.state = {
+      value: props.value ? props.value : '',
+    }
+  }
+
+  componentDidMount() {
+    if (this.props.autoFocus) {
+      const {value} = this.input
+      this.input.focus()
+      this.input.setSelectionRange(value.length, value.length)
+    }
+  }
+
+  handleKeyDown = (e: SyntheticKeyboardEvent<*>) => {
     switch (e.keyCode) {
       case 13:
         this.props.onSubmit(this.input.value)
@@ -26,14 +49,21 @@ class SingleInputForm extends React.Component<Props> {
     }
   }
 
+  onChange = (e: SyntheticInputEvent<*>) => {
+    const {value} = e.target
+    this.setState(() => ({value}))
+  }
+
   render() {
     return (
       <input
         // $FixMe
         ref={(input) => {this.input = input}}
         placeholder={this.props.placeholder}
+        value={this.state.value}
         onKeyDown={this.handleKeyDown}
-        className={css.input}
+        className={this.props.className ? this.props.className : css.input}
+        onChange={this.onChange}
         type='text' />
     )
   }

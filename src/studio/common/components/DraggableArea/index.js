@@ -17,7 +17,6 @@ type State = {
 }
 
 class DraggableArea extends React.Component<Props, State> {
-
   constructor(props: Props) {
     super(props)
     this.state = {
@@ -27,6 +26,10 @@ class DraggableArea extends React.Component<Props, State> {
         y: 0,
       },
     }
+  }
+
+  componentWillUnmount() {
+    this.removeDragListeners()
   }
 
   addDragListeners() {
@@ -40,11 +43,10 @@ class DraggableArea extends React.Component<Props, State> {
   }
 
   dragStartHandler = (e: SyntheticMouseEvent<*>) => {
-    if (e.button !== 0 || this.state.isDragging) return
+    if (e.button !== 0) return
 
     const {screenX, screenY} = e
     this.setState(() => ({
-      isDragging: true,
       startPos: {x: screenX, y: screenY},
     }))
 
@@ -53,25 +55,23 @@ class DraggableArea extends React.Component<Props, State> {
   }
 
   dragEndHandler = () => {
+    this.removeDragListeners()
     if (this.state.isDragging) {
       this.setState(() => ({isDragging: false}))
-      this.removeDragListeners()
       this.props.onDragEnd && this.props.onDragEnd()
     }
   }
 
   dragHandler = (e: MouseEvent) => {
-    if (!this.state.isDragging) return
+    if (!this.state.isDragging) this.setState(() => ({isDragging: true}))
 
     const {startPos} = this.state
-    this.props.onDrag && this.props.onDrag(e.screenX - startPos.x, e.screenY - startPos.y)
+    this.props.onDrag && this.props.onDrag(e.screenX - startPos.x, e.screenY - startPos.y, e)
   }
 
   render() {
     return (
-      <div onMouseDown={this.dragStartHandler}>
-        {this.props.children}
-      </div>
+      React.cloneElement(this.props.children, {onMouseDown: this.dragStartHandler})
     )
   }
 }

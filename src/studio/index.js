@@ -1,7 +1,7 @@
 // @flow
-// import 'source-map-support/browser-source-map-support'
-// $FixMe
-// sourceMapSupport.install()
+if (!window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
+  require('react-render-hook')
+}
 // @todo only one instance of babel-polyfill is allowed per window, so we can't ship
 // with this global polyfill
 import 'babel-polyfill'

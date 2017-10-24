@@ -4,6 +4,7 @@
 [ignore]
 .*/node_modules/fbjs
 .*/node_modules/editions/source
+.*/node_modules/react-render-hook/src/react-devtools
 
 [libs]
 ; ./node_modules/@flow-atom/electron/sig/v0.37.8/

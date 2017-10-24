@@ -3,22 +3,6 @@ import * as D from '$shared/DataVerse'
 import * as React from 'react'
 import {type ComponentDescriptor} from '$studio/componentModel/types'
 import {makeReactiveComponent} from '$studio/handy'
-import noop from 'lodash/noop'
-
-// const blah = D.atoms.box('blah')
-
-// let n = 0
-// setInterval(() => {
-//   n++
-//   blah.set('blah' + n)
-// }, 10)
-
-// const dd = D.atoms.dict({
-//   'class': blah,
-// }).derivedDict()
-
-
-
 
 const lookupTable = {
   render: (d) => {
@@ -40,13 +24,6 @@ const lookupTable = {
       }
     })
   },
-
-  // domAttributes: () => {
-  //   return dd
-  //   // return D.derivations.emptyDict
-  // },
-
-
 }
 
 type State = D.IDictAtom<{
@@ -62,7 +39,6 @@ const DOMTag = makeReactiveComponent({
   getInitialState(): State {
     return D.atoms.dict({
       elRef: D.atoms.box(null),
-      stopApplyingAtributes: D.atoms.box(noop),
     })
   },
   modifyPrototypalDict: (dict: D.IPrototypalDict<$FixMe>) => dict.extend(lookupTable),
