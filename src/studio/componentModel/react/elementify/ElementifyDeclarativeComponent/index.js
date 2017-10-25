@@ -1,6 +1,6 @@
 import {type WhatToRender} from '$studio/componentModel/types'  // eslint-disable-line flowtype/require-valid-file-annotation
 import {makeReactiveComponent} from '$studio/handy'
-import resolveReferenceToHiddenLocalValue from './resolveReferenceToHiddenLocalValue'
+import constructValue from './constructValue'
 
 export default makeReactiveComponent({
   modifyPrototypalDict: (d) => d.extend({
@@ -23,9 +23,9 @@ export default makeReactiveComponent({
 
       return whatToRenderP.prop('__descriptorType').flatMap((type: $ElementType<WhatToRender, 'type'>) => {
         if (type === 'ReferenceToLocalHiddenValue') {
-          return resolveReferenceToHiddenLocalValue(whatToRenderP.prop('which'), d)
+          return constructValue(whatToRenderP, d)
         } else {
-          throw new Error(`Not implemented`)
+          throw new Error(`A declarative component's whatToRender should only be of type ReferenceToLocalHiddenValue.`)
         }
       })
     },

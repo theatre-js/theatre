@@ -7,13 +7,36 @@ const fakeDescriptor: DeclarativeComponentDescriptor = {
   listOfRulesets: [],
   ruleSetsById: {},
   localHiddenValuesById: {
+    palaki: {
+      __descriptorType: 'ComponentInstantiationValueDescriptor',
+      componentId: 'TheaterJS/Core/DOMTag',
+      props: {
+        tagName: 'div',
+        key: 'palaki',
+        children: 'palaki',
+      },
+      modifierInstantiationDescriptors: {byId: {}, list: []},
+    },
+    dalaki: {
+      __descriptorType: 'ComponentInstantiationValueDescriptor',
+      componentId: 'TheaterJS/Core/DOMTag',
+      props: {
+        tagName: 'div',
+        key: 'dalaki',
+        children: 'dalaki',
+      },
+      modifierInstantiationDescriptors: {byId: {}, list: []},
+    },
+    talaki: 'talaki here',
     alaki: {
       __descriptorType: 'ComponentInstantiationValueDescriptor',
       componentId: 'TheaterJS/Core/DOMTag',
       props: {
         tagName: 'div',
-        key: 'theDiv',
-        children: 'blahblah',
+        class: 'Alaki',
+        key: 'alaki',
+        children: {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'talaki'},
+        // children: [{__descriptorType: 'ReferenceToLocalHiddenValue', which: 'palaki'}, {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'dalaki'}],
       },
       modifierInstantiationDescriptors: {
         byId: {
@@ -22,7 +45,7 @@ const fakeDescriptor: DeclarativeComponentDescriptor = {
             modifierId: 'TheaterJS/Core/HTML/SetAttribute',
             props: {
               attributeName: 'id',
-              value: '6',
+              value: '7',
             },
           },
         },

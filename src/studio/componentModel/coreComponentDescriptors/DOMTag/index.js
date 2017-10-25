@@ -6,6 +6,7 @@ import {makeReactiveComponent} from '$studio/handy'
 const lookupTable = {
   render: (d) => {
     const children = d.pointer().prop('props').prop('children')
+    // const children = d.pointer().prop('props').prop('children').unbox()
     const refFn = d.pointer().prop('refFn')
     const tagName = d.pointer().prop('props').prop('tagName')
     return D.derivations.autoDerive(() => {

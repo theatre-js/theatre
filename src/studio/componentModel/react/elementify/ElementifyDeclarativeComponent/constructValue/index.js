@@ -4,12 +4,14 @@ import constructComponentInstantiationValueDescriptor from './constructComponent
 import type {ValueDescriptorDescribedInAnObject} from '$studio/componentModel/types'
 import constructListDescriptor from './constructListDescriptor'
 import constructMapDescriptor from './constructMapDescriptor'
+import constructReferenceToLocalHiddenValue from './constructReferenceToLocalHiddenValue'
 
 type Constructor = (desP: $FixMe, d: $FixMe) => $FixMe
 
 const constructors: {[key: $ElementType<ValueDescriptorDescribedInAnObject, 'type'>]: Constructor} = {
   ComponentInstantiationValueDescriptor: constructComponentInstantiationValueDescriptor,
   ModifierInstantiationValueDescriptor: constructModifierInstantiationValueDescriptor,
+  ReferenceToLocalHiddenValue: constructReferenceToLocalHiddenValue,
 }
 
 const isLiteral = (s) =>
@@ -26,11 +28,14 @@ const constructValue = (desP: $FixMe, d: $FixMe) => {
       return constructListDescriptor(desP, d)
     } else if (val && val.isDerivedDict === 'True') {
       return val.prop('__descriptorType').flatMap((type: $ElementType<ValueDescriptorDescribedInAnObject, 'type'>) => {
-        const constructor = constructors[type]
-        if (constructor)
-          return constructor(desP, d)
-        else
-          return constructMapDescriptor(desP, d)
+        if (typeof type === 'string') {
+          const constructor = constructors[type]
+          if (constructor)
+            return constructor(desP, d)
+          else
+            throw new Error(`Unkown __descriptorType '${type}'`)
+        }
+        return constructMapDescriptor(desP, d)
       })
     } else {
       throw new Error('Unkown value type')

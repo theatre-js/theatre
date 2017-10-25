@@ -13,8 +13,4 @@ const initialState: ComponentModelNamespaceState = {
   },
 }
 
-const a = `
-saaasssasdf
-`
-
 export default initialState

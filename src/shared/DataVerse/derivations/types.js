@@ -29,6 +29,7 @@ export interface IDerivation<V> {
 
   map<R, Fn: (V) => R>(Fn): IDerivation<R>,
   flatMap<R, T: IDerivation<R>, Fn: (V) => R | T>(fn: Fn): IDerivation<R>,
+  unbox(): IDerivation<$FixMe>,
   // flatMap<R, Fn: (V) => R>(fn: Fn): IDerivation<R>,
   // flatMap<R, T: IDerivation<R>, Fn: (V) => T>(fn: Fn): IDerivation<R>,
   // flatMap: (
