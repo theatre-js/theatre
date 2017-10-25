@@ -35,8 +35,8 @@ const fakeDescriptor: DeclarativeComponentDescriptor = {
         tagName: 'div',
         class: 'Alaki',
         key: 'alaki',
-        children: {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'talaki'},
-        // children: [{__descriptorType: 'ReferenceToLocalHiddenValue', which: 'palaki'}, {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'dalaki'}],
+        // children: {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'talaki'},
+        children: [{__descriptorType: 'ReferenceToLocalHiddenValue', which: 'palaki'}, {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'dalaki'}],
       },
       modifierInstantiationDescriptors: {
         byId: {

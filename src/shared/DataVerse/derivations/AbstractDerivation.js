@@ -190,13 +190,17 @@ class AbstractDerivation {
     fn(this.getValue())
     return untap
   }
+
+  toJS() {
+    return this.flatMap(toJS.default)
+  }
 }
 
 export default (AbstractDerivation: $FixMe)
 const flattenDeep = require('./flattenDeep')
 const flatMapDerivation = require('./flatMapDerivation')
 const mapDerivation = require('./mapDerivation')
-
+const toJS = require('./toJS')
 
 let lastDerivationId = 0
 // let activeDs = new Set()

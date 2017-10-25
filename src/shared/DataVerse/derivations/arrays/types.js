@@ -10,4 +10,5 @@ export interface IDerivedArray<V> {
   reduce<Acc, Fn: (Acc, V, number) => Acc | IDerivation<Acc>, Seed: Acc | IDerivation<Acc>>(Fn, Seed): IDerivation<Acc>,
   length(): number,
   changes(): Tappable<{startIndex: number, deleteCount: number, addCount: number}>,
+  toJS(): IDerivation<Array<V>>,
 }

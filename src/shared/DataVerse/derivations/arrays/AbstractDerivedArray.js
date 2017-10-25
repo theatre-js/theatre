@@ -49,6 +49,10 @@ export default class AbstractDerivedArray {
   map(fn) {
     return mapDerivedArray.default(this, fn)
   }
+
+  toJS() {
+    return this.reduce((acc, cur) => (acc.push(cur), acc), [])
+  }
 }
 
 const pointer = require('$shared/DataVerse/derivations/pointer')

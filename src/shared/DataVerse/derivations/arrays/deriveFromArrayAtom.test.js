@@ -38,5 +38,7 @@ describe('DataVerse.derivations.deriveFromArrayAtom', () => {
     expect(d.length()).toEqual(3)
 
     expect(D.atoms.array([]).derivedArray().reduce(() => {}, 'blah').getValue()).toEqual('blah')
+
+    expect(d.toJS().getValue()).toMatchObject(['(0-3)', '(1)', '(2)'])
   })
 })

@@ -5,12 +5,12 @@ import {makeReactiveComponent} from '$studio/handy'
 
 const lookupTable = {
   render: (d) => {
-    const children = d.pointer().prop('props').prop('children')
-    // const children = d.pointer().prop('props').prop('children').unbox()
+    // const children = d.pointer().prop('props').prop('children')
+    const childrenD = d.pointer().prop('props').prop('children').toJS()
     const refFn = d.pointer().prop('refFn')
     const tagName = d.pointer().prop('props').prop('tagName')
     return D.derivations.autoDerive(() => {
-      return React.createElement(tagName.getValue(), {ref: refFn.getValue()}, children.getValue())
+      return React.createElement(tagName.getValue(), {ref: refFn.getValue()}, childrenD.getValue())
     })
   },
 

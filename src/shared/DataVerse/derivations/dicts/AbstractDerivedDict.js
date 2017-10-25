@@ -53,6 +53,10 @@ export default class AbstractDerivedDict {
   mapValues(fn: $IntentionalAny): $IntentionalAny {
     return mapValues.default((this: $IntentionalAny), fn)
   }
+
+  toJS() {
+    throw new Error('Not implemented') // @todo
+  }
 }
 
 const pointer = require('$shared/DataVerse/derivations/pointer')
