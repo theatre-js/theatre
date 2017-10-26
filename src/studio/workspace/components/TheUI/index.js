@@ -77,7 +77,7 @@ class TheUI extends React.Component<Props, State> {
 
   render() {
     const {visiblePanels} = this.props
-    const {isCreatingNewPanel} = this.state
+    // const {isCreatingNewPanel} = this.state
     return (
       <div>
         {
@@ -85,17 +85,21 @@ class TheUI extends React.Component<Props, State> {
             <Panel key={panelId} panelId={panelId} />
           ))
         }
-        {isCreatingNewPanel &&
-          <PanelCreator
-            onCreatingPanel={this.createNewPanel}
-            onCancel={this.cancelCreatingNewPanel}
-            {...TheUI.getDefaultPanelPlacement()}/>
+        {
+          /*
+          {isCreatingNewPanel &&
+            <PanelCreator
+              onCreatingPanel={this.createNewPanel}
+              onCancel={this.cancelCreatingNewPanel}
+              {...TheUI.getDefaultPanelPlacement()}/>
+          }
+          <button
+            className={css.button}
+            onClick={this.showPanelCreator}>
+            Create a new Panel!
+          </button>
+          */
         }
-        <button
-          className={css.button}
-          onClick={this.showPanelCreator}>
-          Create a new Panel!
-        </button>
       </div>
     )
   }
