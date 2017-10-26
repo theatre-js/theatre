@@ -191,11 +191,11 @@ class Panel extends React.Component<Props, State> {
     return (
       <div className={css.container} style={style}>
         <div className={css.topBar}>
-          <div
+          {/*<div
             className={css.settings}
             onClick={this.toggleSettings}>
             {isInSettings ? 'Show Content' : 'Show Settings'}
-          </div>
+          </div>*/}
         </div>
         <div className={css.content}>
           {isInSettings

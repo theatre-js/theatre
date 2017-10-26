@@ -1,14 +1,14 @@
 .container {
   position: absolute;
-  background: #333;
-  padding: 20px;
+  background: #202021;
+  /*padding: 20px;*/
   box-sizing: border-box;
   font-family: 'Montserrat', sans-serif;
-  box-shadow: 0 0px 15px 1px #222;
+  /*box-shadow: 0 0px 15px 1px #222;*/
 }
 
 .topBar {
-  height: 30px;
+  /*height: 30px;*/
   text-align: right;
 }
 
@@ -25,7 +25,7 @@
 }
 
 .content {
-  height: calc(100% - 30px);
+  /*height: calc(100% - 30px);*/
 }
 
 .displayNone {
