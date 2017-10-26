@@ -1,0 +1,42 @@
+.point {
+  cursor: pointer;
+}
+
+.handle {
+  cursor: pointer;
+}
+
+.pointTip {
+  position: relative;
+  width: 50px;
+  height: 32px;
+  background: #101010;
+  border-radius: 10%;
+  padding: 0 4px;
+  box-sizing: border-box;
+  box-shadow: 0 0px 15px 1px #101010;
+}
+
+.pointTipRow {
+  height: 15px;
+  font-size: 10px;
+  line-height: 15px;
+  color: #888;
+  &:first-child {
+    margin-bottom: 2px;
+  }
+}
+
+.pointTipIcon {
+  font-size: 7px;
+  line-height: 14px;
+  color: #444;
+  margin-right: 2px;
+  vertical-align: middle;
+}
+
+.pointTipInput {
+  max-width: 32px;
+  display: inline-block;
+  font-size: 10px;
+}

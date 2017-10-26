@@ -1,0 +1,118 @@
+.container {
+  position: relative;
+  width: 100%;
+  height: 20px;
+}
+
+.time {
+  top: 100%;
+  font-size: 10px;
+  line-height: 18px;
+  position: absolute;
+  text-align: center;
+  color: #888;
+}
+
+.timeStart {
+  composes: time;
+  width: 10px;
+  left: -5px;
+  cursor: default;
+}
+
+.timeEnd {
+  composes: time;
+  width: 30px;
+  right: -15px;
+  cursor: pointer;
+}
+
+.timeEndInput {
+  composes: timeEnd;
+  text-align: center;
+  line-height: 18px;
+  background: #111;
+  border-radius: 10%;
+}
+
+.timeThread {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: #444;
+}
+
+.currentTime {
+  width: 8px;
+  height: 5px;
+  bottom: 4px;
+  left: -4px;
+  position: absolute;
+  cursor: pointer;
+
+  &:before {
+    display: block;
+    content: '';
+    width: 100%;
+    height: 1px;
+    background: #0AA;
+  }
+
+  &:after {
+    display: block;
+    position: absolute;
+    top: 1px;
+    content: '';
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 4px solid #0AA;
+  }
+}
+
+.focusBar {
+  position: absolute;
+  height: 100%;
+  background: rgba(0, 150, 150, .3);
+  cursor: pointer;
+}
+
+.focusHandle {
+  position: absolute;
+  height: 4px;
+  width: 8px;
+  background: #0AA;
+  cursor: ew-resize;
+}
+
+.leftFocusHandle {
+  composes: focusHandle;
+}
+
+.rightFocusHandle {
+  composes: focusHandle;
+  left: -8px;
+}
+
+.timeTip {
+  composes: time;
+  top: -18px;
+  background: #333;
+  left: 4px;
+  transform: translateX(-50%);
+  display: none;
+}
+
+.leftFocusHandle:hover .timeTip,
+.leftFocusHandle:active .timeTip,
+.rightFocusHandle:hover .timeTip,
+.rightFocusHandle:active .timeTip,
+.currentTime:hover .timeTip,
+.currentTime:active .timeTip,
+.focusBar:active ~ .leftFocusHandle .timeTip,
+.focusBar:active ~ .rightFocusHandle .timeTip{
+  display: block;
+}

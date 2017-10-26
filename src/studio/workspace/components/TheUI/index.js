@@ -7,8 +7,8 @@ import {getVisiblePanelsList} from '$studio/workspace/selectors'
 import {withRunSaga, type WithRunSagaProps} from '$shared/utils'
 import {createPanel} from '$studio/workspace/sagas'
 import Panel from '../Panel'
-import PanelCreator from '../PanelCreator'
-import css from './index.css'
+// import PanelCreator from '../PanelCreator'
+// import css from './index.css'
 
 type Props = WithRunSagaProps & {
   visiblePanels: Array<string>,

@@ -1,0 +1,49 @@
+.container {
+  position: relative;
+}
+
+.titleBar {
+  padding: 2px;
+  white-space: nowrap;
+  height: 10px;
+  background: #222;
+  z-index: 10;
+}
+
+.title {
+  display: inline-block;
+  vertical-align: top;
+  font-size: 10px;
+  line-height: 10px;
+  height: 10px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.activeTitle {
+  border-bottom: 1px solid #444;
+}
+
+.componentName {
+  display: inline-block;
+  vertical-align: top;
+  color: #999;
+
+  &:after {
+    display: inline-block;
+    content: '/';
+  }
+}
+
+.propertyName {
+  display: inline-block;
+  vertical-align: top;
+  color: #0AA;
+}
+
+.svgArea {
+  position: absolute;
+  top: 14px;
+  width: 100%;
+  overflow: hidden;
+}
