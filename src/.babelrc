@@ -43,7 +43,7 @@
         ["env", {"targets": {"chrome": "56", "modules": false}}],
         "react", "stage-1",
       ],
-      // "plugins": ["react-hot-loader/babel"]
+      "plugins": ["react-hot-loader/babel"]
     },
   }
 }

@@ -27,8 +27,8 @@ export default class Context {
   }
 
   _tick(n: number) {
-    if (n > 3) {
-      console.warn('tick() recursing for 3 times')
+    if (n > 10) {
+      console.warn('tick() recursing for 10 times')
     }
 
     if (n > 100) {

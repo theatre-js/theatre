@@ -18,7 +18,7 @@ type ElementifyProps = D.IDictAtom<{
 }>
 
 const createRootComponentForReact = (studio: TheStudioClass) => {
-  class TheaterJSRoot extends React.PureComponent<Props, void> {
+  class TheaterJSRoot extends React.Component<Props, void> {
     elementD: $FixMe
     mapAtomOfPropsOfElementify: ElementifyProps
     instantiationDescriptor: $FixMe

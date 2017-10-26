@@ -7,14 +7,14 @@ type Props = {}
 
 type State = {}
 
-class index extends React.PureComponent<Props, State> {
+export class index extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props)
     this.state = {}
   }
 
   render() {
-    return <div className={css.container}>X2 here</div>
+    return <div className={css.container}>X2 s here</div>
   }
 }
 
