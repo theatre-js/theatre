@@ -51,7 +51,7 @@ export default class AbstractDerivedArray {
   }
 
   toJS() {
-    return this.reduce((acc, cur) => (acc.push(cur), acc), [])
+    return this.reduce((acc, cur) => [...acc, cur], [])
   }
 }
 
