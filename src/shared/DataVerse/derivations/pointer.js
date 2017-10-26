@@ -163,10 +163,8 @@ const propify = (possibleReactiveValue, key) => {
   } else if (possibleReactiveValue instanceof modules.array.ArrayAtom && typeof key === 'number') {
     return modules.deriveFromIndexOfArrayAtom.default(possibleReactiveValue, key)
   } else if (possibleReactiveValue instanceof modules.PrototypalDictFace.default || possibleReactiveValue instanceof PointerDerivation || possibleReactiveValue instanceof modules.AbstractDerivedDict.default) {
-    // $FixMe
     return possibleReactiveValue.prop(key)
   } else if (possibleReactiveValue.isDerivedArray === 'True') {
-    // $FixMe
     return possibleReactiveValue.index(key)
   } else {
     return undefined

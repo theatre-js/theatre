@@ -8,8 +8,7 @@ const toJS = (val: $IntentionalAny) => {
     } else {
       return isAtom(val) ? val.unboxDeep() :
         val.isDerivedArray === 'True' ? val.toJS() :
-        val.isDerivedDict === 'True' ? val.toJS() :
-        val
+          val.isDerivedDict === 'True' ? val.toJS() : val
     }
   } else {
     return val
