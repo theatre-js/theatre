@@ -142,12 +142,12 @@ class AbstractDerivation {
       this._changeEmitter.hasTappers() || this._dependents.size > 0
 
     if (thereAreMoreThanOneTappersOrDependents === this._thereAreMoreThanOneTappersOrDependents) return
-    // if (thereAreMoreThanOneTappersOrDependents) {
-    //   activeDs.add(this)
-    // } else {
-    //   activeDs.delete(this)
-    // }
-    // activeDs = thereAreMoreThanOneTappersOrDependents ? activeDs + 1 : activeDs - 1
+    if (thereAreMoreThanOneTappersOrDependents) {
+      activeDs.add(this)
+    } else {
+      activeDs.delete(this)
+    }
+
     this._thereAreMoreThanOneTappersOrDependents = thereAreMoreThanOneTappersOrDependents
     this._didNotifyDownstreamOfUpcomingUpdate = false
 
@@ -203,13 +203,15 @@ const mapDerivation = require('./mapDerivation')
 const toJS = require('./toJS')
 
 let lastDerivationId = 0
-// let activeDs = new Set()
+let activeDs = new Set()
 // import toCsv from 'json2csv'
 
 // setTimeout(() => {console.log('allDs', lastDerivationId)}, 1500)
 // setTimeout(() => {
+//   // debugger
 //   console.log('activeDs  ', activeDs.size)
 //   console.log('allDs', lastDerivationId)
+// }, 1000)
 //   const nodes = []
 //   const edges = []
 

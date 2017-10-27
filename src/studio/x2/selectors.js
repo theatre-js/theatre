@@ -1,11 +1,13 @@
 // @flow
-import {type Selector} from '$studio/types'
-import {type TimelineID, type LaneID, type TimelineObject, type LaneObject} from '$studio/animationTimeline/types'
+import type {Selector} from '$studio/types'
+import type {PathToInspectable} from './types'
+import * as componentModelSelectors from '$studio/componentModel/selectors'
 
-export const getTimelineById: Selector<TimelineObject, TimelineID> = (state, id) => (
-  state.animationTimeline.timelines.byId[id]
-)
+export const pathToInspectable: Selector<*, *> = (state) => state.x2.pathToInspectable
 
-export const getLanesByIds: Selector<LaneObject[], LaneID[]> = (state, ids) => (
-  ids.map((id) => state.animationTimeline.lanes.byId[id])
-)
+export const getInspectableByPath: Selector<*, *> = (state, path: PathToInspectable) => {
+  if (path.localHiddenValueId)
+    componentModelSelectors.getLocalHiddenValueDescriptorByPath(state, path)
+  else
+    throw new Error(`Not implemented`)
+}

@@ -38,7 +38,9 @@ const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
         tagName: 'div',
         class: 'Alaki',
         key: 'alaki',
+        // children: {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'palaki'},
         // children: {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'talaki'},
+        // children: 'hello there',
         children: [{__descriptorType: 'ReferenceToLocalHiddenValue', which: 'palaki'}, {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'dalaki'}],
       },
       modifierInstantiationDescriptors: {
