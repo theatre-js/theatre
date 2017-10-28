@@ -1,16 +1,15 @@
 // @flow
-import type {default as TheStudioClass} from '$studio/TheStudioClass'
 import * as D from '$shared/DataVerse'
 import noop from 'lodash/noop'
 
 type FinalFace = $FixMe
-type DVContext = $FixMe
 
 export default class SideEffectsHandler {
-  _dataverseContext: TheStudioClass
+  _ticker: D.ITicker
   _mapOfStopEffectFnBySideEffectKey: {[key: string | number]: () => void}
   _mapOfUntapFromEachSideEffectKeyPChagnes: {[key: string | number]: () => void}
   _sideEffectsDictP: D.IDerivation<D.IDerivedDict<$FixMe>>
+  _sideEffectsDictPChanges: $FixMe
   _finalFace: $FixMe
   _currentDict: D.IDerivedDict<$FixMe>
   _mapOfuntapFnsForEachSideEffect: {[key: string | number]: () => void}
@@ -18,11 +17,12 @@ export default class SideEffectsHandler {
   _untapFromDictChanges: () => void
   _started: boolean
 
-  constructor(dataVerseContext: DVContext, finalface: $FixMe, sideEffectsDictP: D.IPointerToBoxAtom<D.IDerivedDict<$FixMe>>) {
-    this._dataverseContext = dataVerseContext
+  constructor(ticker: D.ITicker, finalface: $FixMe, sideEffectsDictP: D.IPointerToBoxAtom<D.IDerivedDict<$FixMe>>) {
+    this._ticker = ticker
     this._mapOfStopEffectFnBySideEffectKey = {}
     this._mapOfUntapFromEachSideEffectKeyPChagnes = {}
-    this._sideEffectsDictP = sideEffectsDictP.pointer().setDataVerseContext(dataVerseContext)
+    this._sideEffectsDictP = sideEffectsDictP.pointer()
+    this._sideEffectsDictPChanges = this._sideEffectsDictP.changes(ticker)
     this._finalFace = finalface
     // $FixMe
     this._currentDict = null
@@ -40,7 +40,7 @@ export default class SideEffectsHandler {
 
     this._started = true
 
-    this._untapFromSideEffectsDictPChanges = this._sideEffectsDictP.changes().tap((newDict) => {
+    this._untapFromSideEffectsDictPChanges = this._sideEffectsDictPChanges.tap((newDict) => {
       this._stopApplyingCurrentDict()
       this._useNewDict(newDict)
     })
@@ -71,9 +71,9 @@ export default class SideEffectsHandler {
 
   _startObservingKey = (key: string) => {
     const pointerToSideEffectFn =
-      this._currentDict.pointer().prop(key).setDataVerseContext(this._dataverseContext)
+      this._currentDict.pointer().prop(key)
 
-    this._mapOfUntapFromEachSideEffectKeyPChagnes[key] = pointerToSideEffectFn.changes().tap((newFn) => {
+    this._mapOfUntapFromEachSideEffectKeyPChagnes[key] = pointerToSideEffectFn.changes(this._ticker).tap((newFn) => {
       this._stopSideEffect(key)
       this._startSideEffect(key, newFn)
     })
@@ -111,8 +111,8 @@ export default class SideEffectsHandler {
     }
   }
 
-  _startSideEffect(key: string, fn: (FinalFace, DVContext) => () => void) {
+  _startSideEffect(key: string, fn: (FinalFace, D.ITicker) => () => void) {
     this._stopSideEffect(key)
-    this._mapOfStopEffectFnBySideEffectKey[key] = fn(this._finalFace, this._dataverseContext)
+    this._mapOfStopEffectFnBySideEffectKey[key] = fn(this._finalFace, this._ticker)
   }
 }

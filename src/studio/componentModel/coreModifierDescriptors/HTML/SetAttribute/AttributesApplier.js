@@ -3,7 +3,6 @@ import * as D from '$shared/DataVerse'
 import _ from 'lodash'
 import {domAttrSetter} from './utils'
 
-type DVContext = $FixMe
 type Dict = $FixMe
 type EmptyFn = () => void
 
@@ -11,7 +10,7 @@ declare var SVGElement: Element
 
 export default class AttributesApplier {
   _dict: Dict
-  _dvContext: DVContext
+  _ticker: D.ITicker
   _domAttributesProxy: $FixMe
   _untapFromProxy: () => void
   _started: boolean
@@ -19,11 +18,11 @@ export default class AttributesApplier {
   _isElSvgD: D.IDerivation<boolean>
   _activeKeys: {[key: string]: {remove: EmptyFn, stopObserving: EmptyFn}}
 
-  constructor(dict: Dict, dvContext: DVContext) {
+  constructor(dict: Dict, ticker: D.ITicker) {
     this._dict = dict
-    this._dvContext = dvContext
-    const domAttributesP = this._dict.pointer().prop('domAttributes').setDataVerseContext(this._dvContext)
-    this._domAttributesProxy = D.derivations.autoProxyDerivedDict(domAttributesP)
+    this._ticker = ticker
+    const domAttributesP = this._dict.pointer().prop('domAttributes')
+    this._domAttributesProxy = D.derivations.autoProxyDerivedDict(domAttributesP, ticker)
     this._elRefD = dict.pointer().prop('state').prop('elRef')
     this._isElSvgD = (this._elRefD.map((el) => !!(typeof el !== 'undefined' && el instanceof SVGElement)): D.IDerivation<boolean>)
     this._untapFromProxy = _.noop
@@ -77,7 +76,7 @@ export default class AttributesApplier {
     const untap =
       D.derivations.withDeps(
         {valueD, setterD}, _.identity
-      ).setDataVerseContext(this._dvContext).tapImmediate(({valueD, setterD}) => {
+      ).tapImmediate(this._ticker, ({valueD, setterD}) => {
         lastSetter = setterD.getValue()
         lastSetter(valueD.getValue())
       })

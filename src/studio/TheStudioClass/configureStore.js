@@ -12,9 +12,10 @@ export default function createStore(config: typeof defaultConfig = defaultConfig
   if (process.env.NODE_ENV === 'development' && module.hot) {
     module.hot.accept('./rootReducer', () => {
       store.runSaga(function*(): Generator<*, *, *> {
+        const r: $IntentionalAny = require
         yield multiReduceState([
-          {path: ['componentModel', 'modifierDescriptors', 'core'], reducer: () =>  require('$studio/componentModel/coreModifierDescriptors').default} ,
-          {path: ['componentModel', 'componentDescriptors', 'core'], reducer: () =>  require('$studio/componentModel/coreComponentDescriptors').default},
+          {path: ['componentModel', 'modifierDescriptors', 'core'], reducer: () =>  r('$studio/componentModel/coreModifierDescriptors').default} ,
+          {path: ['componentModel', 'componentDescriptors', 'core'], reducer: () =>  r('$studio/componentModel/coreComponentDescriptors').default},
         ])
       })
     })

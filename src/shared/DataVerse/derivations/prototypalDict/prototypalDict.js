@@ -1,7 +1,7 @@
 // @flow
 import PrototypalDictFace from './PrototypalDictFace'
 import type {MapKey} from '$shared/DataVerse/types'
-import Context from '$shared/DataVerse/Context'
+import Ticker from '$shared/DataVerse/Ticker'
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import type {default as Tappable} from '$shared/DataVerse/utils/Tappable'
 
@@ -13,7 +13,7 @@ export interface IPrototypalDict<O: {}> { // eslint-disable-line no-unused-vars
   _id: number,
   parentChanges(): Tappable<*>,
   extend(constructors: {}): IPrototypalDict<$FixMe>,
-  face(context: Context): PrototypalDictFace,
+  face(ticker: Ticker): PrototypalDictFace,
   _getConstructor(key: MapKey): Constructor,
   getParent(): ?IPrototypalDict<any>,
   setParent(p: IPrototypalDict<$FixMe>): void,
@@ -41,8 +41,8 @@ export class PrototypalDict<O: {}> implements IPrototypalDict<O> {
     return new PrototypalDict(constructors, this)
   }
 
-  face(context: Context): PrototypalDictFace {
-    return new PrototypalDictFace(this, context)
+  face(ticker: Ticker): PrototypalDictFace {
+    return new PrototypalDictFace(this, ticker)
   }
 
   _getConstructor(key: MapKey): Constructor {

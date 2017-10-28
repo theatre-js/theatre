@@ -4,9 +4,9 @@ import * as D from '$shared/DataVerse'
 import {DictAtom} from '$shared/DataVerse/atoms/dict'
 
 describe('pointer', () => {
-  let context
+  let ticker
   beforeEach(() => {
-    context = new D.Context()
+    ticker = new D.Ticker()
   })
   it('should work', () => {
     type Root = D.IDictAtom<{
@@ -48,29 +48,28 @@ describe('pointer', () => {
     const aaP = root.pointer().prop('a').prop('aa')
     const aaD = aaP
 
-    aaD.setDataVerseContext(context)
     const changes = []
-    aaD.changes().tap((c) => {changes.push(c)})
+    aaD.changes(ticker).tap((c) => {changes.push(c)})
     expect(aaD.getValue()).toEqual('aa')
     root.prop('a').prop('aa').set('aa2')
-    context.tick()
+    ticker.tick()
     expect(aaD.getValue()).toEqual('aa2')
     root.prop('a').deleteProp('aa')
-    context.tick()
+    ticker.tick()
     expect(aaD.getValue()).toEqual(undefined)
     root.prop('a').setProp('aa',D.atoms.dict({}))
-    context.tick()
+    ticker.tick()
     expect(aaD.getValue()).toBeInstanceOf(DictAtom)
     root.prop('a').setProp('aa',D.atoms.dict({aa: D.atoms.box('aa3')}))
-    context.tick()
+    ticker.tick()
     expect(aaD.getValue()).toBeInstanceOf(DictAtom)
     root.prop('a').setProp('aa', D.atoms.box('aa3'))
-    context.tick()
+    ticker.tick()
     expect(aaD.getValue()).toEqual('aa3')
   })
 
   it('should work with derived stuff too', () => {
-    const context = new D.Context()
+    const ticker = new D.Ticker()
     const foo = D.atoms.box('foo')
     const atom =D.atoms.dict({
       a:D.atoms.dict({
@@ -86,17 +85,17 @@ describe('pointer', () => {
         return 'hi'
       },
     })
-    const f = o.face(context)
+    const f = o.face(ticker)
     expect(f.pointer().prop('b').getValue()).toEqual('hi')
     expect(f.pointer().prop('a').prop('a').prop('foo').getValue()).toEqual('foo')
 
     const changes = []
-    f.pointer().prop('a').prop('a').prop('foo').setDataVerseContext(context).changes().tap((c) => {
+    f.pointer().prop('a').prop('a').prop('foo').changes(ticker).tap((c) => {
       changes.push(c)
     })
 
     foo.set('foo2')
-    context.tick()
+    ticker.tick()
     expect(changes).toMatchObject(['foo2'])
   });
 

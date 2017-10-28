@@ -4,9 +4,9 @@ import * as D from '$shared/DataVerse'
 import {AutoDerivation} from './autoDerive'
 
 describe('autoDerive', () => {
-  let context
+  let ticker
   beforeEach(() => {
-    context = new D.Context()
+    ticker = new D.Ticker()
   })
 
   it('should work', () => {
@@ -20,18 +20,18 @@ describe('autoDerive', () => {
     expect(d.getValue()).toEqual('fooboo')
 
     const changes = []
-    d.setDataVerseContext(context).changes().tap((c) => {
+    d.changes(ticker).tap((c) => {
       changes.push(c)
     })
 
     o.prop('foo').set('foo2')
-    context.tick()
+    ticker.tick()
     expect(changes).toMatchObject(['foo2boo'])
 
   });
 
   (function(){
-    const a = new AutoDerivation(() => {
+    const a = D.derivations.autoDerive(() => {
       return 'hi'
     })
 
@@ -44,7 +44,7 @@ describe('autoDerive', () => {
     const changes: Array<string> = []
     const wrongChanges: Array<number> = []
 
-    a.changes().tap((c) => {
+    a.changes((null: $IntentionalAny)).tap((c) => {
       changes.push(c)
       // $FlowExpectError
       wrongChanges.push(c)

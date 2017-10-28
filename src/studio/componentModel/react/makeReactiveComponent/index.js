@@ -46,7 +46,6 @@ export default function makeReactiveComponent({modifyPrototypalDict, displayName
       sideEffects: () => D.derivations.emptyDict,
       props: (d) => d.pointer().prop('_atom').prop('props'),
       studio: (d) => d.pointer().prop('_atom').prop('studio'),
-      // dataVerseContext: (d) => d.pointer().prop('studio').getValue().dataVerseContext,
       // key: (d) => d.pointer().prop('_atom').prop('key'),
       modifierInstantiationDescriptors: (d) => d.pointer().prop('_atom').prop('modifierInstantiationDescriptors'),
       state: (d) => d.pointer().prop('_atom').prop('state'),
@@ -60,8 +59,9 @@ export default function makeReactiveComponent({modifyPrototypalDict, displayName
       this._atom = this._createAtom()
       this._prototypalDictD = this._makePrototypalDictD()
 
+      // @todo perf: this._prototypalDictD's value is read cold, and a few lines later, hot. Let's read it only when it's hot
       this._finalFace =
-        new D.derivations.PrototypalDictFace(this._prototypalDictD.getValue(), this.studio.dataverseContext)
+        new D.derivations.PrototypalDictFace(this._prototypalDictD.getValue(), this.studio.ticker)
 
       this.isTheaterJSComponent = true
       this.componentType = componentType || this._finalFace.prop('componentType').getValue()
@@ -71,21 +71,21 @@ export default function makeReactiveComponent({modifyPrototypalDict, displayName
       if (!displayName)
         TheaterJSComponent.displayName = this._finalFace.prop('displayName').getValue()
 
-      const untapFromPrototypalMapChanges = this._prototypalDictD.setDataVerseContext(this.studio.dataverseContext).changes().tap((newFinalPrototypalDict) => {
+      const untapFromPrototypalMapChanges = this._prototypalDictD.changes(this.studio.ticker).tap((newFinalPrototypalDict) => {
         this._finalFace.setHead(newFinalPrototypalDict)
       })
 
       this._fnsToCallOnWillUnmount.push(untapFromPrototypalMapChanges)
 
       this._whatToRender = null
-      const untapFromRender = this._finalFace.prop('render').setDataVerseContext(this.studio.dataverseContext).changes().tap((whatToRender) => {
+      const untapFromRender = this._finalFace.prop('render').changes(this.studio.ticker).tap((whatToRender) => {
         this._whatToRender = whatToRender
         this.forceUpdate()
       })
       this._fnsToCallOnWillUnmount.push(untapFromRender)
 
       const sideEffectsDictP = this._finalFace.pointer().prop('sideEffects')
-      this._sideEffetsHandler = new SideEffectsHandler(this.studio.dataverseContext, this._finalFace, sideEffectsDictP)
+      this._sideEffetsHandler = new SideEffectsHandler(this.studio.ticker, this._finalFace, sideEffectsDictP)
 
     }
 

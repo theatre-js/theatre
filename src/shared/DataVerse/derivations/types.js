@@ -1,13 +1,18 @@
 // @flow
-import type {default as Emitter} from '$shared/DataVerse/utils/Emitter'
+// import type {default as Emitter} from '$shared/DataVerse/utils/Emitter'
 import type {default as Tappable} from '$shared/DataVerse/utils/Tappable'
-import type {default as Context} from '$shared/DataVerse/Context'
+// import type {default as Ticker} from '$shared/DataVerse/Ticker'
 import {type FlattenDeepFn} from './flattenDeep'
+import type {ITicker} from '$shared/DataVerse/Ticker'
+
+interface Dependent {
+  _youMayNeedToUpdateYourself(): void,
+}
 
 export interface IDerivation<V> {
   _id: number,
 
-  _changeEmitter: Emitter<V>,
+  // _changeEmitter: Emitter<V>,
   _dependents: Set<IDerivation<$IntentionalAny>>,
   _dependencies: Set<IDerivation<$IntentionalAny>>,
 
@@ -16,16 +21,15 @@ export interface IDerivation<V> {
   +_keepUptodate: () => void,
   +_stopKeepingUptodate: () => void,
   +_youMayNeedToUpdateYourself: (msgComingFrom: IDerivation<$IntentionalAny>) => void,
-  setDataVerseContext: (Context) => IDerivation<V>,
 
-  _addDependent(IDerivation<$IntentionalAny>): void,
-  _removeDependent(IDerivation<$IntentionalAny>): void,
+  _addDependent(Dependent): void,
+  _removeDependent(Dependent): void,
   _addDependency(IDerivation<$IntentionalAny>): void,
   _removeDependency(IDerivation<$IntentionalAny>): void,
   _tick(): void,
 
-  changes(): Tappable<V>,
-  tapImmediate((V) => void): () => void,
+  changes(ticker: ITicker): Tappable<V>,
+  tapImmediate(ticker: ITicker, fn: (V) => void): () => void,
 
   map<R, Fn: (V) => R>(Fn): IDerivation<R>,
   flatMap<R, T: IDerivation<R>, Fn: (V) => R | T>(fn: Fn): IDerivation<R>,
@@ -37,6 +41,7 @@ export interface IDerivation<V> {
   //   & (<R, Fn: (V) => R>(fn: Fn) => IDerivation<R>)
   //   ),
   flatten(): $Call<FlattenDeepFn, IDerivation<V>, 1>,
+  inPointer: boolean,
 
   // This is byggy. Flow can't handle all these cases properly
   flattenDeep<D: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7, P: IDerivation<V>>(depth: D): $Call<FlattenDeepFn, P, D>,

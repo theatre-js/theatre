@@ -2,9 +2,9 @@
 import * as D from '$shared/DataVerse'
 
 describe('extend()', () => {
-  let context
+  let ticker
   beforeEach(() => {
-    context = new D.Context()
+    ticker = new D.Ticker()
   })
   it('should work', () => {
     const o1 = D.atoms.dict({
@@ -29,15 +29,15 @@ describe('extend()', () => {
     expect(aP.getValue()).toEqual('a2')
 
     const aPChanges: Array<string> = []
-    aP.setDataVerseContext(context).changes().tap((c) => {
+    aP.changes(ticker).tap((c) => {
       aPChanges.push(c)
     })
 
     o2.prop('a').set('aa2')
-    context.tick()
+    ticker.tick()
     expect(aPChanges).toMatchObject(['aa2'])
     o1.prop('a').set('aaa')
-    context.tick()
+    ticker.tick()
     expect(aPChanges).toHaveLength(1)
 
     expect(x.keys()).toHaveLength(2)

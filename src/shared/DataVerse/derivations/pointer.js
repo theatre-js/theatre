@@ -83,6 +83,7 @@ export class PointerDerivation extends AbstractDerivation implements _IPointer<$
   _address: Address
   _internalDerivation: ?IDerivation<$FixMe>
   getValue: () => $FixMe
+  inPointer = true
 
   constructor(address: Address) {
     super()
@@ -121,16 +122,21 @@ export class PointerDerivation extends AbstractDerivation implements _IPointer<$
   }
 
   _makeDerivationForParentPointer(parentPointer: $FixMe, keyOrIndex: string | number) {
-    return parentPointer.flatMap((p) => propify(p, keyOrIndex)).flatMap(noBoxAtoms)
+    const d = parentPointer.flatMap((p) => propify(p, keyOrIndex)).flatMap(noBoxAtoms)
+    d.inPointer = true
+    return d
   }
 
   _makeDerivationForPath(root: $FixMe, path: Array<string | number>) {
     let finalDerivation = modules.constant.default(root)
+    finalDerivation.inPointer = true
     path.forEach((key) => {
       finalDerivation = finalDerivation.flatMap((p) => propify(p, key))
+      finalDerivation.inPointer = true
     })
 
     finalDerivation = finalDerivation.flatMap(noBoxAtoms)
+    finalDerivation.inPointer = true
     return finalDerivation
   }
 
@@ -154,7 +160,7 @@ export class PointerDerivation extends AbstractDerivation implements _IPointer<$
   }
 }
 
-const propify = (possibleReactiveValue, key) => {
+const _propify = (possibleReactiveValue, key) => {
   // pointerFlatMaps++
   if (possibleReactiveValue === PointerDerivation.NOTFOUND || possibleReactiveValue === undefined) {
     return PointerDerivation.NOTFOUND
@@ -171,12 +177,19 @@ const propify = (possibleReactiveValue, key) => {
   }
 }
 
+const propify = (possibleReactiveValue, key) => {
+  const d = _propify(possibleReactiveValue, key)
+  if (typeof d === 'object' && d.isDerivation === 'True') {
+    d.inPointer = true
+  }
+  return d
+}
+
 export default function pointer(address: Address): mixed {
   return new PointerDerivation(address)
 }
 
 const modules = {
-  withDeps: require('./withDeps'),
   constant: require('./constant'),
   deriveFromPropOfADictAtom: require('./ofAtoms/deriveFromPropOfADictAtom'),
   deriveFromIndexOfArrayAtom: require('./ofAtoms/deriveFromIndexOfArrayAtom'),

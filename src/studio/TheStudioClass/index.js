@@ -11,14 +11,14 @@ type Atom = $FixMe
 
 export default class TheStudioClass {
   atom: Atom
-  dataverseContext: D.Context
+  ticker: D.Ticker
   _lastComponentInstanceId: number
   _lbCommunicator: LBCommunicator
   store: StandardStore<*, *>
 
   constructor() {
     this._lastComponentInstanceId = 0
-    this.dataverseContext = new D.Context()
+    this.ticker = new D.Ticker()
     this.store = configureStore()
     this.atom = this._configureAtom()
 
@@ -29,7 +29,7 @@ export default class TheStudioClass {
 
   run() {
     const onAnimationFrame = () => {
-      this.dataverseContext.tick()
+      this.ticker.tick()
       window.requestAnimationFrame(onAnimationFrame)
     }
     window.requestAnimationFrame(onAnimationFrame)

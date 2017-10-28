@@ -4,9 +4,9 @@ import deriveFromDictAtom from './deriveFromDictAtom'
 import * as D from '$shared/DataVerse'
 
 describe('mapValues', () => {
-  let context
+  let ticker
   beforeEach(() => {
-    context = new D.Context()
+    ticker = new D.Ticker()
   })
   it('should work', () => {
     const o = D.atoms.dict({
@@ -24,12 +24,12 @@ describe('mapValues', () => {
     expect(fooD.getValue()).toEqual('foo2B')
 
     const fooDChanges = []
-    fooD.setDataVerseContext(context).changes().tap((c) => {
+    fooD.changes(ticker).tap((c) => {
       fooDChanges.push(c)
     })
 
     o.prop('foo').set('foo3')
-    context.tick()
+    ticker.tick()
     expect(fooDChanges).toMatchObject(['foo3B'])
 
     const mappedChanges = []

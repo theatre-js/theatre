@@ -14,8 +14,8 @@ const ensureDomAttributes = (d) => {
 }
 
 const sideEffectsForApplyAttributes = D.atoms.dict({
-  applyAttributes: D.atoms.box((dict, dvContext) => {
-    const applier = new AttributesApplier(dict, dvContext)
+  applyAttributes: D.atoms.box((dict, ticker) => {
+    const applier = new AttributesApplier(dict, ticker)
     applier.start()
 
     return () => {

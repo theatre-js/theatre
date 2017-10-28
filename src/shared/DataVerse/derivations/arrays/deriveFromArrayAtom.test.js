@@ -2,8 +2,8 @@
 import * as D from '$shared/DataVerse'
 
 describe('DataVerse.derivations.deriveFromArrayAtom', () => {
-  let context
-  beforeEach(() => {context = new D.Context()})
+  let ticker
+  beforeEach(() => {ticker = new D.Ticker()})
   it('should work', () => {
     const arrayAtom = D.atoms.array(['0', '1'])
     const prefix = D.atoms.box('(prefix)')
@@ -22,18 +22,18 @@ describe('DataVerse.derivations.deriveFromArrayAtom', () => {
     expect(reducedD.getValue()).toEqual('(prefix)(0-2)(1)')
 
     const changes = []
-    reducedD.setDataVerseContext(context).changes().tap((c) => {
+    reducedD.changes(ticker).tap((c) => {
       changes.push(c)
     })
 
     arrayAtom.setIndex(0, '0-3')
-    context.tick()
+    ticker.tick()
     expect(changes).toMatchObject(['(prefix)(0-3)(1)'])
     arrayAtom.push(['2'])
-    context.tick()
+    ticker.tick()
     expect(changes[1]).toEqual('(prefix)(0-3)(1)(2)')
     prefix.set('(prefix-2)')
-    context.tick()
+    ticker.tick()
     expect(changes[2]).toEqual('(prefix-2)(0-3)(1)(2)')
     expect(d.length()).toEqual(3)
 

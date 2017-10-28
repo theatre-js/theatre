@@ -3,8 +3,8 @@ import proxyDerivedDict from './proxyDerivedDict'
 import * as D from '$shared/DataVerse'
 
 describe('DerivedDictStabilizer', () => {
-  let context
-  beforeEach(() => {context = new D.Context()})
+  let ticker
+  beforeEach(() => {ticker = new D.Ticker()})
 
   it('should work', () => {
     const o = D.atoms.dict({foo: '1'})
@@ -16,14 +16,14 @@ describe('DerivedDictStabilizer', () => {
     expect(d.getValue()).toEqual('1')
 
     const dChanges: Array<string> = []
-    d.setDataVerseContext(context).changes().tap((c) => {dChanges.push(c)})
+    d.changes(ticker).tap((c) => {dChanges.push(c)})
 
-    context.tick()
+    ticker.tick()
     expect(dChanges).toHaveLength(0)
 
     o.setProp('foo', '1-1')
     expect(dChanges).toHaveLength(0)
-    context.tick()
+    ticker.tick()
     expect(dChanges).toMatchObject(['1-1'])
 
     const o2 = D.atoms.dict({foo: '2'})
@@ -31,7 +31,7 @@ describe('DerivedDictStabilizer', () => {
 
     proxy.setSource(o2D)
     expect(dChanges).toHaveLength(1)
-    context.tick()
+    ticker.tick()
     expect(dChanges).toMatchObject(['1-1', '2'])
 
   })

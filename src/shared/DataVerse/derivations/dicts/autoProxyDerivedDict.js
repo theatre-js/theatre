@@ -1,6 +1,7 @@
 // @flow
 import AbstractDerivedDict from './AbstractDerivedDict'
 import type {IDerivedDict} from './types'
+import type {ITicker} from '$shared/DataVerse/Ticker'
 import _ from 'lodash'
 import type {IDerivation} from '../types'
 import {default as proxyDerivedDict, type IProxyDerivedDict} from './proxyDerivedDict'
@@ -8,11 +9,13 @@ import {default as proxyDerivedDict, type IProxyDerivedDict} from './proxyDerive
 class AutoProxyDerivedDict<O: {}> extends AbstractDerivedDict implements IDerivedDict<O> {
   _proxy: IProxyDerivedDict<O>
   _sourceD: IDerivation<IDerivedDict<O>>
+  _ticker: ITicker
   _untapFromProxyChanges: () => void
   _untapFromSourceChanges: () => void
 
-  constructor(sourceD: IDerivation<IDerivedDict<O>>): IDerivedDict<O> {
+  constructor(sourceD: IDerivation<IDerivedDict<O>>, ticker: ITicker): IDerivedDict<O> {
     super()
+    this._ticker = ticker
     this._sourceD  = sourceD
     this._untapFromProxyChanges  = _.noop
     this._untapFromSourceChanges = _.noop
@@ -22,7 +25,7 @@ class AutoProxyDerivedDict<O: {}> extends AbstractDerivedDict implements IDerive
   }
 
   _reactToHavingTappers() {
-    this._untapFromSourceChanges = this._sourceD.changes().tap((newDerivedDict) => {
+    this._untapFromSourceChanges = this._sourceD.changes(this._ticker).tap((newDerivedDict) => {
       this._proxy.setSource(newDerivedDict)
     })
 
@@ -57,6 +60,6 @@ class AutoProxyDerivedDict<O: {}> extends AbstractDerivedDict implements IDerive
   }
 }
 
-export default function autoProxyDerivedDict<O: {}>(initialSource: IDerivation<IDerivedDict<O>>): IDerivedDict<O> {
-  return new AutoProxyDerivedDict(initialSource)
+export default function autoProxyDerivedDict<O: {}>(initialSource: IDerivation<IDerivedDict<O>>, ticker: ITicker): IDerivedDict<O> {
+  return new AutoProxyDerivedDict(initialSource, ticker)
 }

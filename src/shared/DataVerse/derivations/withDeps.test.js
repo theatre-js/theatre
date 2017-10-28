@@ -57,13 +57,12 @@ describe('withDeps', () => {
     b.set(4)
     expect(final.getValue()).toEqual(6)
 
-    expect(() => aD.changes()).toThrow()
-    const context = new D.Context()
+    // expect(() => aD.changes()).toThrow()
+    const ticker = new D.Ticker()
 
     const adEvents = []
-    aD.setDataVerseContext(context)
 
-    aD.changes().tap((newVal) => {
+    aD.changes(ticker).tap((newVal) => {
       adEvents.push(newVal)
     })
 
@@ -71,23 +70,22 @@ describe('withDeps', () => {
     a.set(3)
     expect(adEvents).toHaveLength(0)
 
-    context.tick()
+    ticker.tick()
     expect(adEvents).toMatchObject([3])
 
     const finalEvents = []
-    final.setDataVerseContext(context)
     // debugger
-    final.changes().tap((v) => {finalEvents.push(v)})
+    final.changes(ticker).tap((v) => {finalEvents.push(v)})
     a.set(4)
 
     expect(finalEvents).toHaveLength(0)
-    context.tick()
+    ticker.tick()
     expect(finalEvents).toMatchObject([8])
     expect(adEvents).toMatchObject([3, 4])
 
     b.set(5)
     expect(finalEvents).toHaveLength(1)
-    context.tick()
+    ticker.tick()
     expect(adEvents).toHaveLength(2)
     expect(finalEvents).toHaveLength(2)
     expect(finalEvents).toMatchObject([8, 9])
@@ -96,7 +94,7 @@ describe('withDeps', () => {
   })
 
   it('more', () => {
-    const context = new D.Context()
+    const ticker = new D.Ticker()
     const a = D.atoms.box('a')
     const aD = a.derivation()
     const b = D.atoms.box('b')
@@ -104,14 +102,13 @@ describe('withDeps', () => {
     const cD = aD.flatMap((a) => bD.map((b) => a + b))
 
     expect(cD.getValue()).toEqual('ab')
-    cD.setDataVerseContext(context)
     const changes = []
     // debugger
-    cD.changes().tap((c) => {changes.push(c)})
+    cD.changes(ticker).tap((c) => {changes.push(c)})
 
 
     b.set('bb')
-    context.tick()
+    ticker.tick()
     expect(changes).toMatchObject(['abb'])
   });
 

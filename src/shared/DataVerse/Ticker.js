@@ -1,21 +1,28 @@
 // @flow
-import type {IDerivation} from '$shared/DataVerse/derivations/types'
-
 interface ObjectWhoseStructureShouldBeUpdated {
-  _updateStructure: () => void,
+  _updateStructure(): void,
 }
 
-export default class Context {
-  _derivationsToUpdate: *
+interface ObjectWhoseComputationShouldBeUpdated {
+  _updateComputation(): void,
+}
+
+export interface ITicker {
+  registerComputationUpdate(ObjectWhoseComputationShouldBeUpdated): void,
+  addObjectWhoseStructureShouldBeUpdated(ObjectWhoseStructureShouldBeUpdated): void,
+}
+
+export default class Ticker implements ITicker {
+  _computationsToUpdate: *
   _objectsWhoseStructureShouldBeUpdated: *
 
   constructor() {
-    this._derivationsToUpdate = new Set()
+    this._computationsToUpdate = new Set()
     this._objectsWhoseStructureShouldBeUpdated = new Set()
   }
 
-  addDerivationToUpdate(d: IDerivation<$IntentionalAny>) {
-    this._derivationsToUpdate.add(d)
+  registerComputationUpdate(d: $FixMe) {
+    this._computationsToUpdate.add(d)
   }
 
   addObjectWhoseStructureShouldBeUpdated(d: ObjectWhoseStructureShouldBeUpdated) {
@@ -46,13 +53,13 @@ export default class Context {
       return this._tick(n + 1)
     }
 
-    const oldD = this._derivationsToUpdate
-    this._derivationsToUpdate = new Set()
+    const oldD = this._computationsToUpdate
+    this._computationsToUpdate = new Set()
     oldD.forEach((d) => {
-      d._tick()
+      d._updateComputation()
     })
 
-    if (this._objectsWhoseStructureShouldBeUpdated.size > 0 || this._derivationsToUpdate.size > 0) {
+    if (this._objectsWhoseStructureShouldBeUpdated.size > 0 || this._computationsToUpdate.size > 0) {
       return this._tick(n + 1)
     }
   }

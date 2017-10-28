@@ -3,7 +3,8 @@
 
 /*:: export type * from './types' */
 
-export {default as Context} from './Context'
+export {default as Ticker} from './Ticker'
+/*:: export type * from './Ticker' */
 
 export * as atoms from './atoms'
 /*:: export type * from './atoms' */

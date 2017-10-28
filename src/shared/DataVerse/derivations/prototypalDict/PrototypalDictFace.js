@@ -2,7 +2,7 @@
 import type {IPrototypalDict} from './PrototypalDict'
 import Emitter from '$shared/DataVerse/utils/Emitter'
 // import DerivationOfAPropOfADerivedDict from './DerivationOfAPropOfADerivedDict'
-import Context from '$shared/DataVerse/Context'
+import Ticker from '$shared/DataVerse/Ticker'
 import type {MapKey} from '$shared/DataVerse/types'
 import type {IDerivation} from '../types'
 import {type IDerivationOfAPropOfPrototypalDictFace, default as propOfPrototypalDictFace} from './propOfPrototypalDictFace'
@@ -56,15 +56,15 @@ const makeEmptyStructure = (): Structure => ({
 export default class DerivedDictFace {
   _head: ?IPrototypalDict<$FixMe>
   _changeEmitter: Emitter<$FixMe>
-  _dataVerseContext: Context
+  _ticker: Ticker
   _structure: Structure
   _updateStructure: () => void
   _pointer: ?$FixMe
 
-  constructor(head: ?IPrototypalDict<$FixMe>, context: Context) {
+  constructor(head: ?IPrototypalDict<$FixMe>, ticker: Ticker) {
     this._head = head
     this._changeEmitter = new Emitter
-    this._dataVerseContext = context
+    this._ticker = ticker
     this._structure = makeEmptyStructure()
     this._updateStructure = this._updateStructure.bind(this)
     this._updateStructure()
@@ -76,7 +76,7 @@ export default class DerivedDictFace {
   }
 
   _notifyStructureNeedsUpdating = () => {
-    this._dataVerseContext.addObjectWhoseStructureShouldBeUpdated(this)
+    this._ticker.addObjectWhoseStructureShouldBeUpdated(this)
   }
 
   _updateStructure() {

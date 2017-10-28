@@ -1,9 +1,9 @@
 // @flow
-import Emitter from '$shared/DataVerse/utils/Emitter'
-import Context from '$shared/DataVerse/Context'
+import type {ITicker} from '$shared/DataVerse/Ticker'
 import {reportObservedDependency} from './autoDerive/discoveryMechanism'
 import type {IDerivation} from './types'
 // import {mapStackTrace} from 'sourcemapped-stacktrace'
+import {default as DerivationEmitter} from './DerivationEmitter'
 
 const FRESHNESS_STATE_NOT_APPLICABLE = 0
 const FRESHNESS_STATE_STALE = 1
@@ -14,15 +14,12 @@ class AbstractDerivation {
   _id: number
   isDerivation = 'True'
   _didNotifyDownstreamOfUpcomingUpdate: boolean
-  _thereAreMoreThanOneTappersOrDependents: boolean
+  _thereAreMoreThanOneDependents: boolean
 
-  _changeEmitter: Emitter<*>
-  _dataVerseContext: ?Context
   _freshnessState: FreshnessState
   _lastValue: $FixMe
   _dependents: *
   _dependencies: *
-  setDataVerseContext: *
   _trace: $FixMe
   +_recalculate: () => $FixMe
   +_keepUptodate: () => void
@@ -30,58 +27,41 @@ class AbstractDerivation {
   +_youMayNeedToUpdateYourself: (msgComingFrom: IDerivation<$IntentionalAny>) => void
 
   constructor() {
-    this._trace = new Error('trace')
+    // this._trace = new Error('trace')
     this._didNotifyDownstreamOfUpcomingUpdate = false
     this._dependencies = new Set()
     this._id = lastDerivationId++
 
-    this._dataVerseContext = null
-    this._changeEmitter = new Emitter()
-    this._changeEmitter.onNumberOfTappersChange(() => {
-      this._reactToNumberOfTappersOrDependentsChange()
-    })
     this._freshnessState = FRESHNESS_STATE_NOT_APPLICABLE
     this._lastValue = undefined
-    this._thereAreMoreThanOneTappersOrDependents = false
+    this._thereAreMoreThanOneDependents = false
     this._dependents = new Set()
   }
 
   _addDependency(d: IDerivation<$IntentionalAny>) {
     if (this._dependencies.has(d)) return
     this._dependencies.add(d)
-    if (this._thereAreMoreThanOneTappersOrDependents) d._addDependent((this: $FixMe))
+    if (this._thereAreMoreThanOneDependents) d._addDependent((this: $FixMe))
   }
 
   _removeDependency(d: IDerivation<$IntentionalAny>) {
     if (!this._dependencies.has(d)) return
     this._dependencies.delete(d)
-    if (this._thereAreMoreThanOneTappersOrDependents) d._removeDependent((this: $FixMe))
+    if (this._thereAreMoreThanOneDependents) d._removeDependent((this: $FixMe))
   }
 
   _removeAllDependencies() {
     this._dependencies.forEach((d) => {this._removeDependency(d)})
   }
 
-  changes() {
-    if (!this._dataVerseContext)
-      throw new Error(`Can't have tappers without a DataVerseContext set first`)
-
-    return this._changeEmitter.tappable
+  changes(ticker: ITicker) {
+    return (new DerivationEmitter((this: $IntentionalAny), ticker)).tappable()
   }
 
-  setDataVerseContext(dv: Context): $FixMe {
-    if (!this._dataVerseContext) {
-      this._dataVerseContext = dv
-    } else {
-      if (this._dataVerseContext === dv) return this
-      throw new Error(`This derivation already has a DataVerseContext, and it doesn't match what you're providing here`)
-    }
-
-    return this
-  }
-
-  _tick() {
-    this._changeEmitter.emit(this.getValue())
+  tapImmediate(ticker: ITicker, fn: ($FixMe) => void): $FixMe {
+    const untap = this.changes(ticker).tap(fn)
+    fn(this.getValue())
+    return untap
   }
 
   _hasDependents() {
@@ -93,7 +73,7 @@ class AbstractDerivation {
     this._dependents.add(d)
     const hasDepsNow = this._dependents.size > 0
     if (hadDepsBefore !== hasDepsNow) {
-      this._reactToNumberOfTappersOrDependentsChange()
+      this._reactToNumberOfDependentsChange()
     }
   }
 
@@ -102,7 +82,7 @@ class AbstractDerivation {
     this._dependents.delete(d)
     const hasDepsNow = this._dependents.size > 0
     if (hadDepsBefore !== hasDepsNow) {
-      this._reactToNumberOfTappersOrDependentsChange()
+      this._reactToNumberOfDependentsChange()
     }
   }
 
@@ -117,9 +97,6 @@ class AbstractDerivation {
         dependent._youMayNeedToUpdateYourself((this: $FixMe))
       })
 
-    }
-    if (this._changeEmitter.hasTappers() && this._dataVerseContext) {
-      this._dataVerseContext.addDerivationToUpdate((this: $FixMe))
     }
   }
 
@@ -137,21 +114,21 @@ class AbstractDerivation {
     return (this._lastValue: $IntentionalAny)
   }
 
-  _reactToNumberOfTappersOrDependentsChange() {
-    const thereAreMoreThanOneTappersOrDependents =
-      this._changeEmitter.hasTappers() || this._dependents.size > 0
+  _reactToNumberOfDependentsChange() {
+    const thereAreMoreThanOneDependents =
+      this._dependents.size > 0
 
-    if (thereAreMoreThanOneTappersOrDependents === this._thereAreMoreThanOneTappersOrDependents) return
-    if (thereAreMoreThanOneTappersOrDependents) {
-      activeDs.add(this)
-    } else {
-      activeDs.delete(this)
-    }
+    if (thereAreMoreThanOneDependents === this._thereAreMoreThanOneDependents) return
+    // if (thereAreMoreThanOneDependents) {
+    //   activeDs.add(this)
+    // } else {
+    //   activeDs.delete(this)
+    // }
 
-    this._thereAreMoreThanOneTappersOrDependents = thereAreMoreThanOneTappersOrDependents
+    this._thereAreMoreThanOneDependents = thereAreMoreThanOneDependents
     this._didNotifyDownstreamOfUpcomingUpdate = false
 
-    if (thereAreMoreThanOneTappersOrDependents) {
+    if (thereAreMoreThanOneDependents) {
       this._freshnessState = FRESHNESS_STATE_STALE
       this._keepUptodate()
       this._dependencies.forEach((d) => {d._addDependent((this: $FixMe))})
@@ -185,12 +162,6 @@ class AbstractDerivation {
     return flattenDeep.default((this: $FixMe), levels)
   }
 
-  tapImmediate(fn: ($FixMe) => void): $FixMe {
-    const untap = this.changes().tap(fn)
-    fn(this.getValue())
-    return untap
-  }
-
   toJS() {
     return this.flatMap(toJS.default)
   }
@@ -203,7 +174,7 @@ const mapDerivation = require('./mapDerivation')
 const toJS = require('./toJS')
 
 let lastDerivationId = 0
-let activeDs = new Set()
+// let activeDs = new Set()
 // import toCsv from 'json2csv'
 
 // setTimeout(() => {console.log('allDs', lastDerivationId)}, 1500)
@@ -211,6 +182,11 @@ let activeDs = new Set()
 //   // debugger
 //   console.log('activeDs  ', activeDs.size)
 //   console.log('allDs', lastDerivationId)
+//   let activePointerDs = 0
+//   activeDs.forEach((d) => {
+//     if (d.inPointer === true) activePointerDs++
+//   })
+//   console.log('activePointerDs', activePointerDs)
 // }, 1000)
 //   const nodes = []
 //   const edges = []

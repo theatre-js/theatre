@@ -3,21 +3,21 @@ import prototypalDict from './prototypalDict'
 import * as D from '$shared/DataVerse'
 
 describe('prototypalDict', () => {
-  let context
-  beforeEach(() => {context = new D.Context()})
+  let ticker
+  beforeEach(() => {ticker = new D.Ticker()})
 
   describe('examples', () => {
     const example = it
     example('{a}', () => {
       const o = prototypalDict({
         a() {return 'a'},
-      }).face(context)
+      }).face(ticker)
       expect(o.prop('a').getValue()).toEqual('a')
     })
     example('{a} => {b}', () => {
       const o = prototypalDict({
         a() {return 'a'},
-      }).extend({b() {return 'b'}}).face(context)
+      }).extend({b() {return 'b'}}).face(ticker)
       expect(o.prop('a').getValue()).toEqual('a')
       expect(o.prop('b').getValue()).toEqual('b')
     })
@@ -25,7 +25,7 @@ describe('prototypalDict', () => {
       const o = prototypalDict({
         a() {return 'a'},
         b() {return 'b'},
-      }).extend({a() {return 'a2'}}).face(context)
+      }).extend({a() {return 'a2'}}).face(ticker)
       expect(o.prop('a').getValue()).toEqual('a2')
       expect(o.prop('b').getValue()).toEqual('b')
     })
@@ -33,7 +33,7 @@ describe('prototypalDict', () => {
     example('{a} => {a\'}', () => {
       const o = prototypalDict({
         a() {return 'a1'},
-      }).extend({a(ps) {return ps.propFromAbove('a').map((s) => s + '2')}}).face(context)
+      }).extend({a(ps) {return ps.propFromAbove('a').map((s) => s + '2')}}).face(ticker)
 
       expect(o.prop('a').getValue()).toEqual('a12')
       expect(o.prop('a')).toEqual(o.prop('a'))
@@ -49,7 +49,7 @@ describe('prototypalDict', () => {
       })
 
       layer1.setParent(layer0)
-      const o = layer1.face(context)
+      const o = layer1.face(ticker)
 
       expect(o.prop('a').getValue()).toEqual('layer0layer1')
       const a = o.prop('a')
@@ -62,7 +62,7 @@ describe('prototypalDict', () => {
       layer1.setParent(newLayer0)
       expect(o.prop('a').getValue()).toEqual('layer0layer1')
 
-      context.tick()
+      ticker.tick()
       expect(o.prop('a').getValue()).toEqual('newLayer0layer1')
       expect(o.prop('a')).toEqual(a)
     })

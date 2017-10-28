@@ -32,7 +32,7 @@ export class MapValues extends DerivedDict implements IDerivedDict<$FixMe> {
   }
 
   _reactToChangeFromSource(c: ChangeType<$FixMe>) {
-    // @todo we should defer these until D.Context.tick(), but this will do for now
+    // @todo we should defer these until D.Ticker.tick(), but this will do for now
     this._changeEmitter.emit(c)
   }
 

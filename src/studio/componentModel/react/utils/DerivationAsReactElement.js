@@ -18,7 +18,7 @@ export default class DerivationAsReactElement extends PureComponentWithStudio<Pr
 
   listen(props: Props) {
     this._untapFromDerivationChanges =
-      props.derivation.setDataVerseContext(this.studio.dataverseContext).changes().tap(() => {this.forceUpdate()})
+      props.derivation.changes(this.studio.ticker).tap(() => {this.forceUpdate()})
   }
 
   componentWillUnmount() {
