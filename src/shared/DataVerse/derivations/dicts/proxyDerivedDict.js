@@ -6,10 +6,11 @@ import {default as box, type IBoxAtom} from '$shared/DataVerse/atoms/box'
 import type {IDerivation} from '../types'
 
 export interface IProxyDerivedDict<O: {}> extends IDerivedDict<O> {
-  setSource(IDerivedDict<O>): IProxyDerivedDict<O>,
+  setSource(IDerivedDict<O>): IProxyDerivedDict<O>;
 }
 
-class ProxyDerivedDict<O: {}> extends AbstractDerivedDict implements IProxyDerivedDict<O> {
+class ProxyDerivedDict<O: {}> extends AbstractDerivedDict
+  implements IProxyDerivedDict<O> {
   _sourceBox: IBoxAtom<IDerivedDict<O>>
   _sourceBoxD: IDerivation<IDerivedDict<O>>
 
@@ -45,9 +46,12 @@ class ProxyDerivedDict<O: {}> extends AbstractDerivedDict implements IProxyDeriv
   }
 
   _reactToHavingTappers() {
-    this._untapFromSourceChanges = this._sourceBox.getValue().changes().tap((c) => {
-      this._changeEmitter.emit(c)
-    })
+    this._untapFromSourceChanges = this._sourceBox
+      .getValue()
+      .changes()
+      .tap(c => {
+        this._changeEmitter.emit(c)
+      })
   }
 
   _reactToNotHavingTappers() {
@@ -60,7 +64,7 @@ class ProxyDerivedDict<O: {}> extends AbstractDerivedDict implements IProxyDeriv
   }
 
   prop(key) {
-    return this._sourceBoxD.flatMap((source) => source.prop(key))
+    return this._sourceBoxD.flatMap(source => source.prop(key))
   }
 
   // _directProp(key) {
@@ -68,6 +72,8 @@ class ProxyDerivedDict<O: {}> extends AbstractDerivedDict implements IProxyDeriv
   // }
 }
 
-export default function proxyDerivedDict<O: {}>(initialSource: IDerivedDict<O>): IProxyDerivedDict<O> {
+export default function proxyDerivedDict<O: {}>(
+  initialSource: IDerivedDict<O>,
+): IProxyDerivedDict<O> {
   return new ProxyDerivedDict(initialSource)
 }

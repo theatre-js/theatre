@@ -1,4 +1,3 @@
-
 import type {IDerivedArray} from './types' // eslint-disable-line flowtype/require-valid-file-annotation
 import Emitter from '$shared/DataVerse/utils/Emitter'
 
@@ -13,7 +12,9 @@ export default class AbstractDerivedArray {
     this._id = lastId++
     this._changeEmitter = new Emitter()
     this._changeEmitterHasTappers = false
-    this._changeEmitter.onNumberOfTappersChange(() => {this._reactToNumberOfChangeTappersChange()})
+    this._changeEmitter.onNumberOfTappersChange(() => {
+      this._reactToNumberOfChangeTappersChange()
+    })
   }
 
   _reactToNumberOfChangeTappersChange() {

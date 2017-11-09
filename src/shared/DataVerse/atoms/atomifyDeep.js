@@ -25,14 +25,21 @@ import type {
 //   (<V: {}>(v: V) => IDictAtom<$ObjMap<V, AtomifyDeepFn>>) &
 //   (<V>(v: V) => IBoxAtom<V>)
 
-type AtomifyDeepFn =
-  <V>(V) => AtomifyDeepType<V>
+type AtomifyDeepFn = <V>(V) => AtomifyDeepType<V>
 
-export type AtomifyDeepType<V> =
-  If<IsObjectLiteral<V>, AtomifyDeepObject<ValueOfObjectLiteral<V>>,
-    If<IsArrayLiteral<V>, IArrayAtom<AtomifyDeepType<ValueOfArrayLiteral<V>>>,
-      If<IsPrimitiveLiteral<V>, IBoxAtom<ValueOfPrimitiveLiteral<V>>,
-  IBoxAtom<V>>>>
+export type AtomifyDeepType<V> = If<
+  IsObjectLiteral<V>,
+  AtomifyDeepObject<ValueOfObjectLiteral<V>>,
+  If<
+    IsArrayLiteral<V>,
+    IArrayAtom<AtomifyDeepType<ValueOfArrayLiteral<V>>>,
+    If<
+      IsPrimitiveLiteral<V>,
+      IBoxAtom<ValueOfPrimitiveLiteral<V>>,
+      IBoxAtom<V>,
+    >,
+  >,
+>
 
 type AtomifyDeepObject<O: {}> = IDictAtom<$ObjMap<O, AtomifyDeepFn>>
 
@@ -42,7 +49,6 @@ type AtomifyDeepObject<O: {}> = IDictAtom<$ObjMap<O, AtomifyDeepFn>>
 // type AtomifyDeepObject<V: {}> = IDictAtom<$ObjMap<V, AtomifyDeepFn>>
 // type AtomifyDeepPrimitive<V> = IBoxAtom<V>
 // export type AtomifyDeepType<V> = AtomifyDeepArray<*, V> | AtomifyDeepAtom<V> | AtomifyDeepConstructedObject<V> | AtomifyDeepObject<V> | AtomifyDeepPrimitive<V>
-
 
 export const atomifyDeep: $FixMe = (jsValue: mixed) => {
   if (Array.isArray(jsValue)) {
@@ -60,7 +66,9 @@ export const fromJSArray = (jsArray: $FixMe): $FixMe => {
   return array(jsArray.map(atomifyDeep))
 }
 
-export const fromJSObject = (jsObject: {[key: number | string]: mixed}): $FixMe => {
+export const fromJSObject = (jsObject: {
+  [key: number | string]: mixed,
+}): $FixMe => {
   return dict(mapValues(jsObject, atomifyDeep))
 }
 

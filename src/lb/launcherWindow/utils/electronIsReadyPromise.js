@@ -7,14 +7,16 @@ const installDevtoolsExtensions = () => {
 
   const {
     default: installExtension,
-    REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS,
+    REACT_DEVELOPER_TOOLS,
+    REDUX_DEVTOOLS,
   } = require('electron-devtools-installer')
 
-  return installExtension(REACT_DEVELOPER_TOOLS).then(installExtension(REDUX_DEVTOOLS))
+  return installExtension(REACT_DEVELOPER_TOOLS).then(
+    installExtension(REDUX_DEVTOOLS),
+  )
 }
 
-if (app)
-  app.dock.hide()
+if (app) app.dock.hide()
 
 function waitForElectron(): $FixMe {
   if (!app) return Promise.resolve()
@@ -26,6 +28,5 @@ function waitForElectron(): $FixMe {
 }
 
 export default waitForElectron().then((): $FixMe => {
-  if (process.env.NODE_ENV === 'development')
-    return installDevtoolsExtensions()
+  if (process.env.NODE_ENV === 'development') return installDevtoolsExtensions()
 })

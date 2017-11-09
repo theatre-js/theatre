@@ -22,17 +22,27 @@ export class SetAttributeInspector extends React.PureComponent<Props, void> {
     const {list} = this.props
     // @todo ux - sort these alphabetically
     return map(list, (id, index) => {
-      return <SingleAttributeInspector key={id} id={id} index={index} pathToPairings={[...this.props.pathToModifierInstantiationDescriptor, 'props', 'pairings']}  />
+      return (
+        <SingleAttributeInspector
+          key={id}
+          id={id}
+          index={index}
+          pathToPairings={[
+            ...this.props.pathToModifierInstantiationDescriptor,
+            'props',
+            'pairings',
+          ]}
+        />
+      )
     })
   }
-
-
 }
 
 export default compose(
   connect((s, op: any) => {
     return {
-      list: get(s, op.pathToModifierInstantiationDescriptor).props.pairings.list,
+      list: get(s, op.pathToModifierInstantiationDescriptor).props.pairings
+        .list,
     }
   }),
 )(SetAttributeInspector)

@@ -14,20 +14,20 @@ const ProjectsList = (props: Props) => {
   const hasItems = listOfPaths.length > 0
   return (
     <div>
-      { hasItems
-        ?
-        listOfPaths.map((path) => {
+      {hasItems ? (
+        listOfPaths.map(path => {
           return (
             <ProjectItem
               key={path}
               path={path}
               projectDesc={byPath[path]}
-              onForget={() => props.forgetHandler(path)} />
+              onForget={() => props.forgetHandler(path)}
+            />
           )
         })
-        :
+      ) : (
         <div className={css.noItem}>No project added/created yet!</div>
-      }
+      )}
     </div>
   )
 }

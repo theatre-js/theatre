@@ -86,10 +86,14 @@ class ProjectsPage extends React.Component<Props, State> {
   }
 
   async addOrRecogniseProject(path: string) {
-    const isProjectResult = await this.props.runSaga(isPathAProject, {fileOrFolderPath: path})
+    const isProjectResult = await this.props.runSaga(isPathAProject, {
+      fileOrFolderPath: path,
+    })
     if (isProjectResult.type === 'ok') {
       if (isProjectResult.isIt) {
-        const recogniseResult = await this.props.runSaga(recogniseProject, {filePath: isProjectResult.filePath})
+        const recogniseResult = await this.props.runSaga(recogniseProject, {
+          filePath: isProjectResult.filePath,
+        })
         if (recogniseResult.type === 'error') {
           this.setState(() => ({
             error: errorMessages[recogniseResult.errorType],
@@ -111,7 +115,10 @@ class ProjectsPage extends React.Component<Props, State> {
   async createProject(name: string) {
     if (this.state.lastDroppedPath != null) {
       const folderPath: string = this.state.lastDroppedPath
-      const createResult = await this.props.runSaga(createNewProject, {folderPath, name})
+      const createResult = await this.props.runSaga(createNewProject, {
+        folderPath,
+        name,
+      })
       this.setState(() => ({
         isCreatingNewProject: false,
       }))
@@ -124,7 +131,9 @@ class ProjectsPage extends React.Component<Props, State> {
   }
 
   async forgetProject(path: string) {
-    const unrecogniseResult = await this.props.runSaga(unrecogniseProject, {filePath: path})
+    const unrecogniseResult = await this.props.runSaga(unrecogniseProject, {
+      filePath: path,
+    })
     if (unrecogniseResult.type === 'error') {
       this.setState(() => ({
         error: errorMessages[unrecogniseResult.errorType],
@@ -138,46 +147,53 @@ class ProjectsPage extends React.Component<Props, State> {
       <div className={css.container}>
         <div className={css.title}>Projects</div>
         <div
-          className={this.state.isDropzoneActive ? css.activeDropzone : css.dropzone}
+          className={
+            this.state.isDropzoneActive ? css.activeDropzone : css.dropzone
+          }
           onDragStart={this.dragStartHandler}
           onDragEnter={this.dragEnterHandler}
           onDragLeave={this.dragLeaveHandler}
           onDragOver={this.dragOverHandler}
-          onDrop={this.dropHandler}>
+          onDrop={this.dropHandler}
+        >
           <ProjectsList
             projects={this.props.projects}
-            forgetHandler={(path) => this.forgetProject(path)}/>
-          {this.state.isCreatingNewProject &&
+            forgetHandler={path => this.forgetProject(path)}
+          />
+          {this.state.isCreatingNewProject && (
             <div className={css.nameInput}>
               <SingleInputForm
-                placeholder='Project name (return to add/esc to cancel)'
-                onSubmit={(value) => {this.createProject(value)}}
-                onCancel={this.cancelCreatingProject}/>
+                placeholder="Project name (return to add/esc to cancel)"
+                onSubmit={value => {
+                  this.createProject(value)
+                }}
+                onCancel={this.cancelCreatingProject}
+              />
             </div>
-          }
+          )}
         </div>
-        {
-          (error != null) ?
-            <div className={css.error}>
-              <ErrorLogger closeHandler={this.clearError} >{error}</ErrorLogger>
-            </div>
-            :
-            <div className={css.dropHint}>Drop a Folder/File to Create/Add a new Project.</div>
-        }
+        {error != null ? (
+          <div className={css.error}>
+            <ErrorLogger closeHandler={this.clearError}>{error}</ErrorLogger>
+          </div>
+        ) : (
+          <div className={css.dropHint}>
+            Drop a Folder/File to Create/Add a new Project.
+          </div>
+        )}
       </div>
     )
   }
 }
 
 export default compose(
-  connect(
-    (state: StoreState) => {
-      return {
-        projects: state.mirrorOfLBState
-          && state.mirrorOfLBState.projects
-          && state.mirrorOfLBState.projects,
-      }
+  connect((state: StoreState) => {
+    return {
+      projects:
+        state.mirrorOfLBState &&
+        state.mirrorOfLBState.projects &&
+        state.mirrorOfLBState.projects,
     }
-  ),
+  }),
   withRunSaga(),
 )(ProjectsPage)

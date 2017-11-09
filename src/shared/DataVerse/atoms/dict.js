@@ -1,5 +1,4 @@
-
-import {default as AbstractCompositeAtom} from './utils/AbstractCompositeAtom'  // eslint-disable-line flowtype/require-valid-file-annotation
+import {default as AbstractCompositeAtom} from './utils/AbstractCompositeAtom' // eslint-disable-line flowtype/require-valid-file-annotation
 import forEach from 'lodash/forEach'
 import mapValues from 'lodash/mapValues'
 import type {IAtom} from './utils/AbstractAtom'
@@ -7,12 +6,26 @@ import Tappable from '$shared/DataVerse/utils/Tappable'
 // import Emitter from '$shared/DataVerse/utils/Emitter'
 import type {AddressedChangeset, True, False} from '$shared/DataVerse/types'
 import deriveFromDictAtom from '$shared/DataVerse/derivations/dicts/deriveFromDictAtom'
-import {type DecidePointerType, default as pointer} from '$shared/DataVerse/derivations/pointer'
+import {
+  type DecidePointerType,
+  default as pointer,
+} from '$shared/DataVerse/derivations/pointer'
 
 type Unboxed<O> = $FixMe // eslint-disable-line no-unused-vars
-export type DictAtomChangeType<O: {}> = {overriddenRefs: $Shape<O>, deletedKeys: Array<$Keys<O>>, addedKeys: Array<$Keys<O>>}
-export type DictAtomDeepChangeType<O> = AddressedChangeset & {type: 'MapChange'} & DictAtomChangeType<O>
-export type DictAtomDeepDiffType<O> = AddressedChangeset & {type: 'MapDiff', deepUnboxOfOldRefs: Unboxed<O>, deepUnboxOfNewRefs: Unboxed<O>, deletedKeys: Array<$Keys<O>>}
+export type DictAtomChangeType<O: {}> = {
+  overriddenRefs: $Shape<O>,
+  deletedKeys: Array<$Keys<O>>,
+  addedKeys: Array<$Keys<O>>,
+}
+export type DictAtomDeepChangeType<O> = AddressedChangeset & {
+  type: 'MapChange',
+} & DictAtomChangeType<O>
+export type DictAtomDeepDiffType<O> = AddressedChangeset & {
+  type: 'MapDiff',
+  deepUnboxOfOldRefs: Unboxed<O>,
+  deepUnboxOfNewRefs: Unboxed<O>,
+  deletedKeys: Array<$Keys<O>>,
+}
 
 export type IsDictAtom<V> = $ElementType<V, 'isDictAtom'>
 
@@ -53,7 +66,7 @@ export class DictAtom<O: {}> extends AbstractCompositeAtom {
   }
 
   unboxDeep(): $FixMe {
-    return mapValues(this._internalMap, (v) => v ? v.unboxDeep() : v)
+    return mapValues(this._internalMap, v => (v ? v.unboxDeep() : v))
   }
 
   _assignInitialValue(o: O) {
@@ -81,7 +94,7 @@ export class DictAtom<O: {}> extends AbstractCompositeAtom {
     })
 
     const deletedKeys = keysToDelete
-    deletedKeys.forEach((propName) => {
+    deletedKeys.forEach(propName => {
       overriddenRefs[propName] = this.prop(propName)
     })
 
@@ -91,7 +104,7 @@ export class DictAtom<O: {}> extends AbstractCompositeAtom {
       }
     })
 
-    deletedKeys.forEach((key) => {
+    deletedKeys.forEach(key => {
       delete this._internalMap[key]
     })
 
@@ -101,19 +114,32 @@ export class DictAtom<O: {}> extends AbstractCompositeAtom {
     })
 
     if (this._changeEmitter.hasTappers()) {
-      this._changeEmitter.emit({overriddenRefs: o, deletedKeys: deletedKeys, addedKeys})
+      this._changeEmitter.emit({
+        overriddenRefs: o,
+        deletedKeys: deletedKeys,
+        addedKeys,
+      })
     }
 
     if (this._deepChangeEmitter.hasTappers()) {
-      this._deepChangeEmitter.emit({address: [], type: 'MapChange', overriddenRefs: o, deletedKeys, addedKeys})
+      this._deepChangeEmitter.emit({
+        address: [],
+        type: 'MapChange',
+        overriddenRefs: o,
+        deletedKeys,
+        addedKeys,
+      })
     }
 
     if (this._deepDiffEmitter.hasTappers()) {
       this._deepDiffEmitter.emit({
         address: [],
         type: 'MapDiff',
-        deepUnboxOfNewRefs: mapValues(o, (v) => v ? v.unboxDeep() : v),
-        deepUnboxOfOldRefs: mapValues(overriddenRefs, (v) => v ? v.unboxDeep() : v),
+        deepUnboxOfNewRefs: mapValues(o, v => (v ? v.unboxDeep() : v)),
+        deepUnboxOfOldRefs: mapValues(
+          overriddenRefs,
+          v => (v ? v.unboxDeep() : v),
+        ),
         deletedKeys,
       })
     }

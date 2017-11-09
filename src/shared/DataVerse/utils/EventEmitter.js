@@ -11,7 +11,8 @@ export default class EventEmitter {
 
   addEventListener(eventName: string, listener: Listener) {
     const listeners =
-      this._listenersByType[eventName] || (this._listenersByType[eventName] = [])
+      this._listenersByType[eventName] ||
+      (this._listenersByType[eventName] = [])
 
     listeners.push(listener)
 
@@ -35,7 +36,9 @@ export default class EventEmitter {
   emit(eventName: string, payload: mixed) {
     const listeners = this.getListenersFor(eventName)
     if (listeners) {
-      forEach(listeners, (listener) => {listener(payload)})
+      forEach(listeners, listener => {
+        listener(payload)
+      })
     }
   }
 

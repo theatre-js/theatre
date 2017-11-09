@@ -6,45 +6,49 @@ import {type FlattenDeepFn} from './flattenDeep'
 import type {ITicker} from '$shared/DataVerse/Ticker'
 
 interface Dependent {
-  _youMayNeedToUpdateYourself(): void,
+  _youMayNeedToUpdateYourself(): void;
 }
 
 export interface IDerivation<V> {
-  _id: number,
+  _id: number;
 
   // _changeEmitter: Emitter<V>,
-  _dependents: Set<IDerivation<$IntentionalAny>>,
-  _dependencies: Set<IDerivation<$IntentionalAny>>,
+  _dependents: Set<IDerivation<$IntentionalAny>>;
+  _dependencies: Set<IDerivation<$IntentionalAny>>;
 
-  getValue: () => V,
-  +_recalculate: () => V,
-  +_keepUptodate: () => void,
-  +_stopKeepingUptodate: () => void,
-  +_youMayNeedToUpdateYourself: (msgComingFrom: IDerivation<$IntentionalAny>) => void,
+  getValue: () => V;
+  +_recalculate: () => V;
+  +_keepUptodate: () => void;
+  +_stopKeepingUptodate: () => void;
+  +_youMayNeedToUpdateYourself: (
+    msgComingFrom: IDerivation<$IntentionalAny>,
+  ) => void;
 
-  _addDependent(Dependent): void,
-  _removeDependent(Dependent): void,
-  _addDependency(IDerivation<$IntentionalAny>): void,
-  _removeDependency(IDerivation<$IntentionalAny>): void,
-  _tick(): void,
+  _addDependent(Dependent): void;
+  _removeDependent(Dependent): void;
+  _addDependency(IDerivation<$IntentionalAny>): void;
+  _removeDependency(IDerivation<$IntentionalAny>): void;
+  _tick(): void;
 
-  changes(ticker: ITicker): Tappable<V>,
-  tapImmediate(ticker: ITicker, fn: (V) => void): () => void,
+  changes(ticker: ITicker): Tappable<V>;
+  tapImmediate(ticker: ITicker, fn: (V) => void): () => void;
 
-  map<R, Fn: (V) => R>(Fn): IDerivation<R>,
-  flatMap<R, T: IDerivation<R>, Fn: (V) => R | T>(fn: Fn): IDerivation<R>,
-  toJS(): IDerivation<$FixMe>,
+  map<R, Fn: V => R>(Fn): IDerivation<R>;
+  flatMap<R, T: IDerivation<R>, Fn: V => R | T>(fn: Fn): IDerivation<R>;
+  toJS(): IDerivation<$FixMe>;
   // flatMap<R, Fn: (V) => R>(fn: Fn): IDerivation<R>,
   // flatMap<R, T: IDerivation<R>, Fn: (V) => T>(fn: Fn): IDerivation<R>,
   // flatMap: (
   //   & (<R, T: IDerivation<R>, Fn: (V) => T>(fn: Fn) => IDerivation<R>)
   //   & (<R, Fn: (V) => R>(fn: Fn) => IDerivation<R>)
   //   ),
-  flatten(): $Call<FlattenDeepFn, IDerivation<V>, 1>,
-  inPointer: boolean,
+  flatten(): $Call<FlattenDeepFn, IDerivation<V>, 1>;
+  inPointer: boolean;
 
   // This is byggy. Flow can't handle all these cases properly
-  flattenDeep<D: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7, P: IDerivation<V>>(depth: D): $Call<FlattenDeepFn, P, D>,
+  flattenDeep<D: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7, P: IDerivation<V>>(
+    depth: D,
+  ): $Call<FlattenDeepFn, P, D>;
   // flattenDeep: (
   //   (<Ret: V, D: 0>(D) => IDerivation<Ret>) &
 
@@ -102,6 +106,5 @@ export interface IDerivation<V> {
   //   (<Ret: V>() => IDerivation<Ret>)
   // ),
 }
-
 
 export type Changes<V> = () => Tappable<V>

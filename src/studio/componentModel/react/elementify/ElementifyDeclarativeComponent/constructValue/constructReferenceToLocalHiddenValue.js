@@ -1,7 +1,12 @@
-
-const resolveReferenceToHiddenLocalValue = (whichP, d) => { // eslint-disable-line flowtype/require-valid-file-annotation
-  const componentDescriptorP = d.pointer().prop('props').prop('componentDescriptor')
-  const localHiddenValuesByIdP = componentDescriptorP.prop('localHiddenValuesById')
+/* eslint-disable flowtype/require-valid-file-annotation */
+const resolveReferenceToHiddenLocalValue = (whichP, d) => {
+  const componentDescriptorP = d
+    .pointer()
+    .prop('props')
+    .prop('componentDescriptor')
+  const localHiddenValuesByIdP = componentDescriptorP.prop(
+    'localHiddenValuesById',
+  )
 
   return whichP.flatMap((id: string) => {
     const valueDescP = localHiddenValuesByIdP.prop(id)

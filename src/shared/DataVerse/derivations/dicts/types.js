@@ -9,10 +9,10 @@ export type ChangeType<O: {}> = {
 }
 
 export interface IDerivedDict<O: {}> {
-  prop<K: $Keys<O>>(K): IDerivation<$FixMe>,
-  changes(): Tappable<ChangeType<O>>,
-  keys(): Array<$Keys<O>>,
-  pointer(): $FixMe,
-  mapValues($FixMe): IDerivedDict<$FixMe>,
-  extend($FixMe): IDerivedDict<$FixMe>,
+  prop<K: $Keys<O>>(K): IDerivation<$FixMe>;
+  changes(): Tappable<ChangeType<O>>;
+  keys(): Array<$Keys<O>>;
+  pointer(): $FixMe;
+  mapValues($FixMe): IDerivedDict<$FixMe>;
+  extend($FixMe): IDerivedDict<$FixMe>;
 }

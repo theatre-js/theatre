@@ -12,7 +12,6 @@ describe('DataVerse.atoms.array', () => {
     expect(o.index(2).getValue()).toEqual(3)
   })
 
-
   it('should allow correctly set itself as parent of inner children', () => {
     const o: D.IArrayAtom<D.IBoxAtom<number>> = atomifyDeep([1, 2, 3])
 
@@ -23,10 +22,23 @@ describe('DataVerse.atoms.array', () => {
     expect(foo2.getParent()).toEqual(o)
   })
   it('should correctly report changes', () => {
-    const o: D.IArrayAtom<D.IBoxAtom<number>> = atomifyDeep([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+    const o: D.IArrayAtom<D.IBoxAtom<number>> = atomifyDeep([
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+    ])
 
     const changes = []
-    o.changes().tap((change) => {changes.push(change)})
+    o.changes().tap(change => {
+      changes.push(change)
+    })
     const the1 = o.index(1)
 
     o.setIndex(1, the1)
@@ -44,10 +56,23 @@ describe('DataVerse.atoms.array', () => {
     })
   })
   it('should correctly report deep changes', () => {
-    const o: D.IArrayAtom<D.IBoxAtom<string>> = atomifyDeep(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'])
+    const o: D.IArrayAtom<D.IBoxAtom<string>> = atomifyDeep([
+      '0',
+      '1',
+      '2',
+      '3',
+      '4',
+      '5',
+      '6',
+      '7',
+      '8',
+      '9',
+    ])
 
     const deepChanges: Array<$IntentionalAny> = []
-    o.deepChanges().tap((change) => {deepChanges.push(change)})
+    o.deepChanges().tap(change => {
+      deepChanges.push(change)
+    })
     const the0 = o.index(0)
     const the1 = o.index(1)
 
@@ -92,10 +117,23 @@ describe('DataVerse.atoms.array', () => {
     })
   })
   it('should correctly report deep diffs', () => {
-    const o: D.IArrayAtom<D.IBoxAtom<number>> = atomifyDeep([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+    const o: D.IArrayAtom<D.IBoxAtom<number>> = atomifyDeep([
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+    ])
 
     const deepDiffs = []
-    o.deepDiffs().tap((change) => {deepDiffs.push(change)})
+    o.deepDiffs().tap(change => {
+      deepDiffs.push(change)
+    })
 
     o.splice(1, 2, [box(11), box(12), box(13)])
 

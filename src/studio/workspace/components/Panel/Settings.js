@@ -16,15 +16,15 @@ const Settings = (props: Props) => {
     <div>
       <DraggableArea
         onDrag={(dx, dy) => props.onPanelDrag(dx, dy)}
-        onDragEnd={() => props.onPanelDragEnd()}>
+        onDragEnd={() => props.onPanelDragEnd()}
+      >
         <div className={css.dragHandler}>Move Panel</div>
       </DraggableArea>
-      <div>
-        {props.children}
-      </div>
+      <div>{props.children}</div>
       <DraggableArea
         onDrag={(dx, dy) => props.onPanelResize(dx, dy)}
-        onDragEnd={() => props.onPanelResizeEnd()}>
+        onDragEnd={() => props.onPanelResizeEnd()}
+      >
         <div className={css.resizeHandler} title={'Resize Panel'} />
       </DraggableArea>
     </div>

@@ -14,7 +14,7 @@ export default function* mirrorOfLBStateRootSaga(): Generator<*, *, *> {
 function* handleRequestsFromMain(): Generator<*, *, *> {
   const requestsFromLB = yield call(getChannelOfRequestsFromMain)
 
-  while(true) {
+  while (true) {
     const request = yield take(requestsFromLB)
     if (request.type === 'receiveNewState') {
       yield fork(receiveNewState, request)

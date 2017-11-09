@@ -5,7 +5,8 @@ import type {IDerivation} from '../types'
 
 const noop = () => {}
 
-export class DerivationOfAnIndexOfAnArrayAtom<V> extends AbstractDerivation implements IDerivation<V> {
+export class DerivationOfAnIndexOfAnArrayAtom<V> extends AbstractDerivation
+  implements IDerivation<V> {
   getValue: () => V
 
   _arrayAtom: IArrayAtom<V>
@@ -26,7 +27,7 @@ export class DerivationOfAnIndexOfAnArrayAtom<V> extends AbstractDerivation impl
 
   _keepUptodate() {
     // this.getValue()
-    this._untapFromDictAtomChanges = this._arrayAtom.changes().tap((changes) => {
+    this._untapFromDictAtomChanges = this._arrayAtom.changes().tap(changes => {
       if (changes.startIndex > this._index) return
       const countOfAddedItems = changes.addedRefs.length - changes.deleteCount
       if (countOfAddedItems === 0) {
@@ -45,6 +46,9 @@ export class DerivationOfAnIndexOfAnArrayAtom<V> extends AbstractDerivation impl
   }
 }
 
-export default function deriveFromIndexOfArrayAtom<V, A: IArrayAtom<V>>(a: A, index: number): IDerivation<V> {
+export default function deriveFromIndexOfArrayAtom<V, A: IArrayAtom<V>>(
+  a: A,
+  index: number,
+): IDerivation<V> {
   return new DerivationOfAnIndexOfAnArrayAtom(a, index)
 }

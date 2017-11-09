@@ -66,13 +66,14 @@ class DraggableArea extends React.Component<Props, State> {
     if (!this.state.isDragging) this.setState(() => ({isDragging: true}))
 
     const {startPos} = this.state
-    this.props.onDrag && this.props.onDrag(e.screenX - startPos.x, e.screenY - startPos.y, e)
+    this.props.onDrag &&
+      this.props.onDrag(e.screenX - startPos.x, e.screenY - startPos.y, e)
   }
 
   render() {
-    return (
-      React.cloneElement(this.props.children, {onMouseDown: this.dragStartHandler})
-    )
+    return React.cloneElement(this.props.children, {
+      onMouseDown: this.dragStartHandler,
+    })
   }
 }
 

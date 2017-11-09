@@ -15,12 +15,8 @@ class TheaterJSRoot extends React.Component<Props, State> {
   }
 
   render() {
-    return (
-      this.props.children
-    )
+    return this.props.children
   }
 }
 
-export default compose(
-  (a) => a
-)(TheaterJSRoot)
+export default compose(a => a)(TheaterJSRoot)

@@ -1,5 +1,4 @@
-
-import {default as AbstractAtom, type IAtom} from './AbstractAtom'  // eslint-disable-line flowtype/require-valid-file-annotation
+import {default as AbstractAtom, type IAtom} from './AbstractAtom' // eslint-disable-line flowtype/require-valid-file-annotation
 import type {BoxAtomDeepChangeType, BoxAtomDeepDiffType} from '../box'
 import type {DictAtomDeepChangeType, DictAtomDeepDiffType} from '../dict'
 import type {ArrayAtomDeepChangeType, ArrayAtomDeepDiffType} from '../array'
@@ -8,8 +7,14 @@ import Emitter from '$shared/DataVerse/utils/Emitter'
 import isAtom from './isAtom'
 import type {MapKey} from '$shared/DataVerse/types'
 
-export type AllDeepChangeTypes = BoxAtomDeepChangeType<any> | DictAtomDeepChangeType<any> | ArrayAtomDeepChangeType<any>
-export type AllDeepDiffTypes = BoxAtomDeepDiffType<any> | DictAtomDeepDiffType<any> | ArrayAtomDeepDiffType<any>
+export type AllDeepChangeTypes =
+  | BoxAtomDeepChangeType<any>
+  | DictAtomDeepChangeType<any>
+  | ArrayAtomDeepChangeType<any>
+export type AllDeepDiffTypes =
+  | BoxAtomDeepDiffType<any>
+  | DictAtomDeepDiffType<any>
+  | ArrayAtomDeepDiffType<any>
 
 export type ICompositeAtom = IAtom & {
   isCompositeAtom: true,
@@ -28,7 +33,8 @@ interface _ICompositeAtom {
   // getAddressTo(addressSoFar?: Array<MapKey>): Address,
 }
 
-export default class AbstractCompositeAtom extends AbstractAtom implements _ICompositeAtom {
+export default class AbstractCompositeAtom extends AbstractAtom
+  implements _ICompositeAtom {
   isCompositeAtom = true
   _deepChangeUntappersForEachChild: *
   _deepDiffUntappersForEachChild: *
@@ -55,14 +61,25 @@ export default class AbstractCompositeAtom extends AbstractAtom implements _ICom
 
     ref._setParent(this, key)
 
-    this._deepChangeUntappersForEachChild.set(ref, ref.deepChanges().tap((change) => {
-      this._deepChangeEmitter.emit({...change, address: [this._keyOf(key, ref), ...change.address]})
-    }))
+    this._deepChangeUntappersForEachChild.set(
+      ref,
+      ref.deepChanges().tap(change => {
+        this._deepChangeEmitter.emit({
+          ...change,
+          address: [this._keyOf(key, ref), ...change.address],
+        })
+      }),
+    )
 
-    this._deepDiffUntappersForEachChild.set(ref, ref.deepDiffs().tap((diff) => {
-      this._deepDiffEmitter.emit({...diff, address: [this._keyOf(key, ref), ...diff.address]})
-    }))
-
+    this._deepDiffUntappersForEachChild.set(
+      ref,
+      ref.deepDiffs().tap(diff => {
+        this._deepDiffEmitter.emit({
+          ...diff,
+          address: [this._keyOf(key, ref), ...diff.address],
+        })
+      }),
+    )
   }
 
   _unadopt(key: MapKey, ref: IAtom) {

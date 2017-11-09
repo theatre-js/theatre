@@ -11,7 +11,11 @@ describe('extend()', () => {
       a: D.atoms.box('a'),
     })
 
-    const o2: D.IDictAtom<{b: D.IBoxAtom<string>, a: D.IBoxAtom<?string>, c?: D.IBoxAtom<string>}> = D.atoms.dict({
+    const o2: D.IDictAtom<{
+      b: D.IBoxAtom<string>,
+      a: D.IBoxAtom<?string>,
+      c?: D.IBoxAtom<string>,
+    }> = D.atoms.dict({
       b: D.atoms.box('b'),
       a: D.atoms.box(undefined),
     })
@@ -29,7 +33,7 @@ describe('extend()', () => {
     expect(aP.getValue()).toEqual('a2')
 
     const aPChanges: Array<string> = []
-    aP.changes(ticker).tap((c) => {
+    aP.changes(ticker).tap(c => {
       aPChanges.push(c)
     })
 
@@ -46,7 +50,7 @@ describe('extend()', () => {
 
     const cChanges = []
     // debugger
-    x.changes().tap((c) => {
+    x.changes().tap(c => {
       cChanges.push(c)
     })
 

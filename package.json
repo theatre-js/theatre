@@ -9,14 +9,21 @@
     "lint": "eslint ./src",
     "flow": "flow",
     "test": "jest",
-    "prepush": "run-p lint flow test",
-    "lb:webpack:dev": "webpack --progress --config webpack/lb/development.babel.js --watch",
+    "prettify-and-lint": "run-s prettify lint",
+    "prettify": "prettier --write \"src/**/*.js\"",
+    "prepush": "run-p prettify-and-lint flow test",
+    "lb:webpack:dev":
+      "webpack --progress --config webpack/lb/development.babel.js --watch",
     "lb:dev": "nodemon -e jade --exec \"electron\" ./bundles/lb/index.js",
     "lb:run": "electron ./bundles/lb/index.js",
-    "lf:webpack:dev": "webpack-dev-server --progress --config webpack/lf/development.babel.js",
-    "studio:webpack:dev": "webpack-dev-server --progress --config webpack/studio/development.babel.js",
-    "examples:webpack:dev": "webpack-dev-server --progress --config webpack/examples/development.babel.js",
-    "build:dev": "npm-run-all --parallel lb:webpack:dev lf:webpack:dev studio:webpack:dev examples:webpack:dev",
+    "lf:webpack:dev":
+      "webpack-dev-server --progress --config webpack/lf/development.babel.js",
+    "studio:webpack:dev":
+      "webpack-dev-server --progress --config webpack/studio/development.babel.js",
+    "examples:webpack:dev":
+      "webpack-dev-server --progress --config webpack/examples/development.babel.js",
+    "build:dev":
+      "npm-run-all --parallel lb:webpack:dev lf:webpack:dev studio:webpack:dev examples:webpack:dev",
     "open-examples": "opn http://localhost:9092/examples"
   },
   "jest": {
@@ -28,9 +35,7 @@
       "\\$studio/(.*)": "<rootDir>/src/studio/$1",
       "\\$shared/(.*)": "<rootDir>/src/shared/$1"
     },
-    "setupFiles": [
-      "./src/test/env.js"
-    ],
+    "setupFiles": ["./src/test/env.js"],
     "automock": false
   },
   "repository": {
@@ -62,6 +67,7 @@
     "electron-prebuilt": "^1.4.13",
     "eslint": "^4.9.0",
     "eslint-plugin-flowtype": "^2.39.1",
+    "eslint-plugin-prettier": "^2.3.1",
     "eslint-plugin-react": "^7.4.0",
     "exec-loader": "^3.0.0",
     "fast-json-patch": "^2.0.6",
@@ -82,7 +88,7 @@
     "postcss-loader": "^2.0.6",
     "postcss-nesting": "^4.0.1",
     "postcss-short": "^4.1.0",
-    "prettier": "^1.8.2",
+    "prettier": "1.8.2",
     "ramda": "^0.24.1",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",

@@ -17,7 +17,11 @@ export default class SideEffectsHandler {
   _untapFromDictChanges: () => void
   _started: boolean
 
-  constructor(ticker: D.ITicker, finalface: $FixMe, sideEffectsDictP: D.IPointerToBoxAtom<D.IDerivedDict<$FixMe>>) {
+  constructor(
+    ticker: D.ITicker,
+    finalface: $FixMe,
+    sideEffectsDictP: D.IPointerToBoxAtom<D.IDerivedDict<$FixMe>>,
+  ) {
     this._ticker = ticker
     this._mapOfStopEffectFnBySideEffectKey = {}
     this._mapOfUntapFromEachSideEffectKeyPChagnes = {}
@@ -40,10 +44,12 @@ export default class SideEffectsHandler {
 
     this._started = true
 
-    this._untapFromSideEffectsDictPChanges = this._sideEffectsDictPChanges.tap((newDict) => {
-      this._stopApplyingCurrentDict()
-      this._useNewDict(newDict)
-    })
+    this._untapFromSideEffectsDictPChanges = this._sideEffectsDictPChanges.tap(
+      newDict => {
+        this._stopApplyingCurrentDict()
+        this._useNewDict(newDict)
+      },
+    )
 
     this._useNewDict(this._sideEffectsDictP.getValue())
   }
@@ -51,10 +57,9 @@ export default class SideEffectsHandler {
   _useNewDict(dict: D.IDerivedDict<$FixMe>) {
     this._currentDict = dict
 
-
     dict.keys().forEach(this._startObservingKey)
 
-    this._untapFromDictChanges = dict.changes().tap((changes) => {
+    this._untapFromDictChanges = dict.changes().tap(changes => {
       changes.deletedKeys.forEach(this._stopObservingKey)
       changes.addedKeys.forEach(this._startObservingKey)
     })
@@ -70,10 +75,11 @@ export default class SideEffectsHandler {
   }
 
   _startObservingKey = (key: string) => {
-    const pointerToSideEffectFn =
-      this._currentDict.pointer().prop(key)
+    const pointerToSideEffectFn = this._currentDict.pointer().prop(key)
 
-    this._mapOfUntapFromEachSideEffectKeyPChagnes[key] = pointerToSideEffectFn.changes(this._ticker).tap((newFn) => {
+    this._mapOfUntapFromEachSideEffectKeyPChagnes[
+      key
+    ] = pointerToSideEffectFn.changes(this._ticker).tap(newFn => {
       this._stopSideEffect(key)
       this._startSideEffect(key, newFn)
     })
@@ -113,6 +119,9 @@ export default class SideEffectsHandler {
 
   _startSideEffect(key: string, fn: (FinalFace, D.ITicker) => () => void) {
     this._stopSideEffect(key)
-    this._mapOfStopEffectFnBySideEffectKey[key] = fn(this._finalFace, this._ticker)
+    this._mapOfStopEffectFnBySideEffectKey[key] = fn(
+      this._finalFace,
+      this._ticker,
+    )
   }
 }

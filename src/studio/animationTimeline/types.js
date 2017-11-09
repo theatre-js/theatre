@@ -23,7 +23,6 @@ export type NormalizedPoint = Point & {
   _value: number,
 }
 
-
 export type BoxObject = {
   id: BoxID,
   height: number,

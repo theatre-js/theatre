@@ -59,7 +59,7 @@ class PanelInput extends React.Component<Props, State> {
   render() {
     const {type, isConnected, shouldAcceptDraggedOutput} = this.props
     const {isActive} = this.state
-    const classes = cx(css.container,{
+    const classes = cx(css.container, {
       [css.highlight]: shouldAcceptDraggedOutput,
       [css.active]: isActive,
     })
@@ -68,18 +68,18 @@ class PanelInput extends React.Component<Props, State> {
         onMouseEnter={this.onMouseEnter}
         onMouseLeave={this.onMouseLeave}
         onMouseUp={this.onMouseUp}
-        className={classes}>
-        {isActive
-          ?
+        className={classes}
+      >
+        {isActive ? (
           <div className={css.dropHint}>Drop the output to connect to</div>
-          :
+        ) : (
           <div>
             <div className={css.type}>{type}</div>
             <div className={css.hint}>
               {isConnected ? 'Connected' : 'Drop an output'}
             </div>
           </div>
-        }
+        )}
       </div>
     )
   }

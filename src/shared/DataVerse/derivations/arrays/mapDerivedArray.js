@@ -3,7 +3,8 @@ import noop from 'lodash/noop'
 import AbstractDerivedArray from './AbstractDerivedArray'
 import type {IDerivedArray} from './types'
 
-export class MappedDerivedArray extends AbstractDerivedArray implements IDerivedArray<$FixMe> {
+export class MappedDerivedArray extends AbstractDerivedArray
+  implements IDerivedArray<$FixMe> {
   _untapFromSourceChanges: Function
 
   constructor(source: $FixMe, fn: $FixMe): IDerivedArray<$FixMe> {
@@ -15,7 +16,7 @@ export class MappedDerivedArray extends AbstractDerivedArray implements IDerived
   }
 
   _reactToHavingTappers() {
-    this._untapFromSourceChanges = this._source.changes().tap((c) => {
+    this._untapFromSourceChanges = this._source.changes().tap(c => {
       this._reactToChangeFromSource(c)
     })
   }
@@ -38,6 +39,9 @@ export class MappedDerivedArray extends AbstractDerivedArray implements IDerived
   }
 }
 
-export default function mapDerivedArray<T, V, Fn: (T) => V>(source: IDerivedArray<T>, fn: Fn): IDerivedArray<V> {
+export default function mapDerivedArray<T, V, Fn: T => V>(
+  source: IDerivedArray<T>,
+  fn: Fn,
+): IDerivedArray<V> {
   return new MappedDerivedArray(source, fn)
 }

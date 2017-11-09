@@ -4,7 +4,9 @@ import * as D from '$shared/DataVerse'
 
 describe('DerivedDictStabilizer', () => {
   let ticker
-  beforeEach(() => {ticker = new D.Ticker()})
+  beforeEach(() => {
+    ticker = new D.Ticker()
+  })
 
   it('should work', () => {
     const o = D.atoms.dict({foo: '1'})
@@ -16,7 +18,9 @@ describe('DerivedDictStabilizer', () => {
     expect(d.getValue()).toEqual('1')
 
     const dChanges: Array<string> = []
-    d.changes(ticker).tap((c) => {dChanges.push(c)})
+    d.changes(ticker).tap(c => {
+      dChanges.push(c)
+    })
 
     ticker.tick()
     expect(dChanges).toHaveLength(0)
@@ -33,6 +37,5 @@ describe('DerivedDictStabilizer', () => {
     expect(dChanges).toHaveLength(1)
     ticker.tick()
     expect(dChanges).toMatchObject(['1-1', '2'])
-
   })
 })

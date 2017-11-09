@@ -1,6 +1,4 @@
 // @flow
 import makeLFCaller from './makeLFCaller'
 
-export {
-  makeLFCaller,
-}
+export {makeLFCaller}

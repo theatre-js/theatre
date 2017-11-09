@@ -13,5 +13,7 @@ export type StoreState = {
   x2: X2NamespaceState,
 }
 
-export type Selector<ReturnType, ParamsType> =
-  (state: StoreState, params: ParamsType) => ReturnType
+export type Selector<ReturnType, ParamsType> = (
+  state: StoreState,
+  params: ParamsType,
+) => ReturnType

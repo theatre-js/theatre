@@ -1,12 +1,25 @@
 import {default as AbstractAtom} from './utils/AbstractAtom' // eslint-disable-line flowtype/require-valid-file-annotation
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import Tappable from '$shared/DataVerse/utils/Tappable'
-import type {AddressedChangeset, True, False, MapKey, Address} from '$shared/DataVerse/types'
+import type {
+  AddressedChangeset,
+  True,
+  False,
+  MapKey,
+  Address,
+} from '$shared/DataVerse/types'
 import type {IDerivation} from '$shared/DataVerse/derivations/types'
 
 export type BoxAtomChangeType<V> = V
-export type BoxAtomDeepChangeType<V> = AddressedChangeset & {type: 'BoxChange', newValue: BoxAtomChangeType<V>}
-export type BoxAtomDeepDiffType<V> = AddressedChangeset & {type: 'BoxDiff', oldValue: V, newValue: V}
+export type BoxAtomDeepChangeType<V> = AddressedChangeset & {
+  type: 'BoxChange',
+  newValue: BoxAtomChangeType<V>,
+}
+export type BoxAtomDeepDiffType<V> = AddressedChangeset & {
+  type: 'BoxDiff',
+  oldValue: V,
+  newValue: V,
+}
 
 export type IBoxAtom<V> = {
   isDictAtom: False,
@@ -61,11 +74,20 @@ export class BoxAtom<V> extends AbstractAtom {
     }
 
     if (this._deepChangeEmitter.hasTappers()) {
-      this._deepChangeEmitter.emit({address: [], type: 'BoxChange', newValue: value})
+      this._deepChangeEmitter.emit({
+        address: [],
+        type: 'BoxChange',
+        newValue: value,
+      })
     }
 
     if (this._deepDiffEmitter.hasTappers()) {
-      this._deepDiffEmitter.emit({address: [], type: 'BoxDiff', oldValue: oldValue, newValue: value})
+      this._deepDiffEmitter.emit({
+        address: [],
+        type: 'BoxDiff',
+        oldValue: oldValue,
+        newValue: value,
+      })
     }
 
     return this
@@ -76,7 +98,8 @@ export class BoxAtom<V> extends AbstractAtom {
   }
 
   derivation(): IDerivation<V> {
-    const deriveFromBoxAtom = require('$shared/DataVerse/derivations/ofAtoms/deriveFromBoxAtom').default
+    const deriveFromBoxAtom = require('$shared/DataVerse/derivations/ofAtoms/deriveFromBoxAtom')
+      .default
     return deriveFromBoxAtom(this)
   }
 }

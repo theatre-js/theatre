@@ -6,7 +6,8 @@ import noop from 'lodash/noop'
 // import AbstractDerivation from '../AbstractDerivation'
 import {ensureNoAtoms} from './utils'
 
-export class DerivedDictFromDictAtom<O: {}> extends AbstractDerivedDict implements IDerivedDict<$FixMe> {
+export class DerivedDictFromDictAtom<O: {}> extends AbstractDerivedDict
+  implements IDerivedDict<$FixMe> {
   _dictAtom: IDictAtom<O>
   prop: $FixMe
   changes: $FixMe
@@ -20,13 +21,19 @@ export class DerivedDictFromDictAtom<O: {}> extends AbstractDerivedDict implemen
   }
 
   prop(k: $Keys<O>) {
-    return this._dictAtom.pointer().prop(k).flatMap(ensureNoAtoms)
+    return this._dictAtom
+      .pointer()
+      .prop(k)
+      .flatMap(ensureNoAtoms)
   }
 
   _reactToHavingTappers() {
-    this._untapFromDictAtomChangeEmitter = this._dictAtom.changes().tap((c) => {
+    this._untapFromDictAtomChangeEmitter = this._dictAtom.changes().tap(c => {
       if (c.addedKeys.length > 0 || c.deletedKeys.length > 0)
-        this._changeEmitter.emit({addedKeys: c.addedKeys, deletedKeys: c.deletedKeys})
+        this._changeEmitter.emit({
+          addedKeys: c.addedKeys,
+          deletedKeys: c.deletedKeys,
+        })
     })
   }
 
@@ -40,6 +47,8 @@ export class DerivedDictFromDictAtom<O: {}> extends AbstractDerivedDict implemen
   }
 }
 
-export default function deriveFromDictAtom<O: {}>(m: IDictAtom<O>): IDerivedDict<$FixMe> {
+export default function deriveFromDictAtom<O: {}>(
+  m: IDictAtom<O>,
+): IDerivedDict<$FixMe> {
   return new DerivedDictFromDictAtom(m)
 }

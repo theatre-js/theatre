@@ -6,10 +6,9 @@ import commonReducer from '$lb/common/reducer'
 import projectsReducer from '$lb/projects/reducer'
 import {type Reducer} from '$shared/types'
 
-const mainReducer: Reducer<StoreState, any> =
-  combineReducers({
-    common: commonReducer,
-    projects: projectsReducer,
-  })
+const mainReducer: Reducer<StoreState, any> = combineReducers({
+  common: commonReducer,
+  projects: projectsReducer,
+})
 
 export default wrapRootReducer(mainReducer)

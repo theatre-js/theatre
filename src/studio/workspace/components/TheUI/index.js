@@ -2,7 +2,10 @@ import * as React from 'react' // eslint-disable-line flowtype/require-valid-fil
 import compose from 'ramda/src/compose'
 import {connect} from '$studio/handy'
 import {type StoreState} from '$studio/types'
-import {type PanelPlacementSettings, type PanelPersistentState} from '$studio/workspace/types'
+import {
+  type PanelPlacementSettings,
+  type PanelPersistentState,
+} from '$studio/workspace/types'
 import {getVisiblePanelsList} from '$studio/workspace/selectors'
 import {withRunSaga, type WithRunSagaProps} from '$shared/utils'
 import {createPanel} from '$studio/workspace/sagas'
@@ -19,7 +22,6 @@ type State = {
 }
 
 export class TheUI extends React.Component<Props, State> {
-
   static getDefaultPanelPlacement(type): PanelPlacementSettings {
     // ??
     switch (type) {
@@ -80,13 +82,10 @@ export class TheUI extends React.Component<Props, State> {
     // const {isCreatingNewPanel} = this.state
     return (
       <div>
-        {
-          visiblePanels.map((panelId) => (
-            <Panel key={panelId} panelId={panelId} />
-          ))
-        }
-        {
-          /*
+        {visiblePanels.map(panelId => (
+          <Panel key={panelId} panelId={panelId} />
+        ))}
+        {/*
           {isCreatingNewPanel &&
             <PanelCreator
               onCreatingPanel={this.createNewPanel}
@@ -98,20 +97,17 @@ export class TheUI extends React.Component<Props, State> {
             onClick={this.showPanelCreator}>
             Create a new Panel!
           </button>
-          */
-        }
+          */}
       </div>
     )
   }
 }
 
 export default compose(
-  connect(
-    (state: StoreState) => {
-      return {
-        visiblePanels: getVisiblePanelsList(state),
-      }
+  connect((state: StoreState) => {
+    return {
+      visiblePanels: getVisiblePanelsList(state),
     }
-  ),
+  }),
   withRunSaga(),
 )(TheUI)

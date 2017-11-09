@@ -7,5 +7,7 @@ export type StoreState = {
   mirrorOfLBState: MirrorOfLBStateNamespace,
 }
 
-export type Selector<ReturnType, ParamsType> =
-  (state: StoreState, params: ParamsType) => ReturnType
+export type Selector<ReturnType, ParamsType> = (
+  state: StoreState,
+  params: ParamsType,
+) => ReturnType

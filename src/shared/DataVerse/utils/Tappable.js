@@ -36,7 +36,7 @@ export default class Tappable<V> {
   }
 
   _cb: any = (arg: any): void => {
-    this._tappers.forEach((cb) => {
+    this._tappers.forEach(cb => {
       cb(arg)
     })
   }
@@ -45,7 +45,9 @@ export default class Tappable<V> {
     const tapperId = this._lastTapperId++
     this._tappers.set(tapperId, cb)
     this._check()
-    return () => {this._removeTapperById(tapperId)}
+    return () => {
+      this._removeTapperById(tapperId)
+    }
   }
 
   tapImmediate(cb: Listener<V>): Untap {
@@ -61,7 +63,7 @@ export default class Tappable<V> {
   map<T>(transform: (v: V) => T): Tappable<T> {
     return new Tappable({
       tapToSource: (cb: (v: T) => void) => {
-        return this.tap((v) => {
+        return this.tap(v => {
           return cb(transform(v))
         })
       },

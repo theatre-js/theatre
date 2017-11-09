@@ -5,14 +5,18 @@ import type {IDerivedDict, ChangeType} from './types'
 import DerivedDict from './AbstractDerivedDict'
 import _ from 'lodash'
 
-export class ExtendDerivedDict extends DerivedDict implements IDerivedDict<$FixMe> {
+export class ExtendDerivedDict extends DerivedDict
+  implements IDerivedDict<$FixMe> {
   _changeEmitter: Emitter<ChangeType<$FixMe>>
   _base: IDerivedDict<$FixMe>
   _overrider: IDerivedDict<$FixMe>
   _untapFromBaseChanges: () => void
   _untapFromOverriderChanges: () => void
 
-  constructor<B: {}, OV: {}, O: {...B, ...OV}>(base: IDerivedDict<B>, overrider: IDerivedDict<OV>): IDerivedDict<O> {
+  constructor<B: {}, OV: {}, O: {...B, ...OV}>(
+    base: IDerivedDict<B>,
+    overrider: IDerivedDict<OV>,
+  ): IDerivedDict<O> {
     super()
     this._base = base
     this._overrider = overrider
@@ -21,8 +25,12 @@ export class ExtendDerivedDict extends DerivedDict implements IDerivedDict<$FixM
   }
 
   _reactToHavingTappers() {
-    this._untapFromBaseChanges = this._base.changes().tap((c) => {this._reactToChangeFromBase(c)})
-    this._untapFromOverriderChanges = this._overrider.changes().tap((c) => {this._reactToChangeFromOverrider(c)})
+    this._untapFromBaseChanges = this._base.changes().tap(c => {
+      this._reactToChangeFromBase(c)
+    })
+    this._untapFromOverriderChanges = this._overrider.changes().tap(c => {
+      this._reactToChangeFromOverrider(c)
+    })
   }
 
   _reactToNotHavingTappers() {
@@ -54,7 +62,7 @@ export class ExtendDerivedDict extends DerivedDict implements IDerivedDict<$FixM
   }
 
   prop<K: $Keys<$FixMe>>(k: K): IDerivation<$FixMe> {
-    return this._overrider.prop(k).flatMap((v) => v ? v : this._base.prop(k))
+    return this._overrider.prop(k).flatMap(v => (v ? v : this._base.prop(k)))
   }
 
   keys() {
@@ -62,6 +70,9 @@ export class ExtendDerivedDict extends DerivedDict implements IDerivedDict<$FixM
   }
 }
 
-export default function extend<B: {}, OV: {}, O: {...B, ...OV}>(base: IDerivedDict<B>, overrider: IDerivedDict<OV>): IDerivedDict<O> {
+export default function extend<B: {}, OV: {}, O: {...B, ...OV}>(
+  base: IDerivedDict<B>,
+  overrider: IDerivedDict<OV>,
+): IDerivedDict<O> {
   return new ExtendDerivedDict(base, overrider)
 }

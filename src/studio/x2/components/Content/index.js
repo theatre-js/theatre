@@ -10,12 +10,11 @@ import ListOfModifierInstantiationDescriptorsInspector from './ListOfModifierIns
 
 export type PathToInspectableInX2 = Array<string> // For now, must point to a PathToLocalHiddenValueDescriptor
 
-export type InspectableInX2 =
-  | ComponentInstantiationValueDescriptor // later, we'll also be able to inspect a style selector's rules
+export type InspectableInX2 = ComponentInstantiationValueDescriptor // later, we'll also be able to inspect a style selector's rules
 
 type Props =
-  {thePath: void, inspectable: void} |
-  {thePath: PathToInspectableInX2, inspectable: ?InspectableInX2}
+  | {thePath: void, inspectable: void}
+  | {thePath: PathToInspectableInX2, inspectable: ?InspectableInX2}
 
 type State = {}
 
@@ -30,24 +29,41 @@ export class Content extends React.PureComponent<Props, State> {
     if (!thePath || !inspectable)
       return <div className={css.container}>Nothing to inspect</div>
 
-    switch(inspectable.__descriptorType) {
+    switch (inspectable.__descriptorType) {
       case 'ComponentInstantiationValueDescriptor':
-        return this._renderCaseComponentInstantiationValueDescriptor(inspectable, thePath)
+        return this._renderCaseComponentInstantiationValueDescriptor(
+          inspectable,
+          thePath,
+        )
       default:
-        console.error(`Inspectable type '${inspectable.__descriptorType}' not supported`)
-        return <div className={css.container}>Error occured. Logged into console</div>
+        console.error(
+          `Inspectable type '${inspectable.__descriptorType}' not supported`,
+        )
+        return (
+          <div className={css.container}>
+            Error occured. Logged into console
+          </div>
+        )
     }
   }
 
-  _renderCaseComponentInstantiationValueDescriptor(des: ComponentInstantiationValueDescriptor, path: Array<string>) {
+  _renderCaseComponentInstantiationValueDescriptor(
+    des: ComponentInstantiationValueDescriptor,
+    path: Array<string>,
+  ) {
     const {modifierInstantiationDescriptors} = des
 
-    return <ListOfModifierInstantiationDescriptorsInspector thePath={[...path, 'modifierInstantiationDescriptors']} modifierInstantiationDescriptors={modifierInstantiationDescriptors} />
+    return (
+      <ListOfModifierInstantiationDescriptorsInspector
+        thePath={[...path, 'modifierInstantiationDescriptors']}
+        modifierInstantiationDescriptors={modifierInstantiationDescriptors}
+      />
+    )
   }
 }
 
 export default compose(
-  connect((s) => {
+  connect(s => {
     const thepath = s.x2.pathToInspectableInX2
     const inspectable = get(s, thepath)
     return {

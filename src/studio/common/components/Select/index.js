@@ -18,10 +18,13 @@ const Select = ({label, options, disabled, value, onChange}: Props) => {
         onChange={onChange}
         value={value}
         disabled={disabled}
-        className={css.select}>
-        {
-          options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)
-        }
+        className={css.select}
+      >
+        {options.map(o => (
+          <option key={o.value} value={o.value}>
+            {o.label}
+          </option>
+        ))}
       </select>
     </div>
   )

@@ -5,12 +5,14 @@ import deriveFromPropOfADictAtom from './deriveFromPropOfADictAtom'
 import * as D from '$shared/DataVerse'
 
 describe('deriveFromPropOfADictAtom', () => {
-  it('events should work', (done) => {
+  it('events should work', done => {
     const m = D.atoms.dict({a: D.atoms.box(1), b: D.atoms.box(3)})
 
     const aD = deriveFromPropOfADictAtom(m, 'a')
     const bD = deriveFromPropOfADictAtom(m, 'b')
-    const final = aD.map((n) => bD.map((m) => m.getValue() + n.getValue())).flattenDeep(7)
+    const final = aD
+      .map(n => bD.map(m => m.getValue() + n.getValue()))
+      .flattenDeep(7)
 
     expect(final.getValue()).toEqual(4)
     m.setProp('a', D.atoms.box(2))
@@ -23,7 +25,7 @@ describe('deriveFromPropOfADictAtom', () => {
 
     const adEvents = []
 
-    aD.changes(ticker).tap((newBox) => {
+    aD.changes(ticker).tap(newBox => {
       adEvents.push(newBox.getValue())
     })
 
@@ -35,7 +37,9 @@ describe('deriveFromPropOfADictAtom', () => {
     expect(adEvents).toMatchObject([3])
 
     const finalEvents = []
-    final.changes(ticker).tap((v) => {finalEvents.push(v)})
+    final.changes(ticker).tap(v => {
+      finalEvents.push(v)
+    })
     m.setProp('a', D.atoms.box(4))
 
     expect(finalEvents).toHaveLength(0)
@@ -59,18 +63,19 @@ describe('deriveFromPropOfADictAtom', () => {
     const aD = a.derivation()
     const b = D.atoms.box('b')
     const bD = b.derivation()
-    const cD = aD.map((aValue) => bD.map((bValue) => withDeps({}, () => aValue + bValue))).flattenDeep(7)
+    const cD = aD
+      .map(aValue => bD.map(bValue => withDeps({}, () => aValue + bValue)))
+      .flattenDeep(7)
 
     expect(cD.getValue()).toEqual('ab')
     const changes = []
-    cD.changes(ticker).tap((c) => {changes.push(c)})
+    cD.changes(ticker).tap(c => {
+      changes.push(c)
+    })
 
     b.set('bb')
     ticker.tick()
     expect(changes).toMatchObject(['abb'])
-  });
-
-  (function() {
-
   })
+  ;(function() {})
 })

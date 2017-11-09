@@ -12,7 +12,8 @@ const connect = (mapStateToProps: mixed) => {
 
 type SelectorFn<P: {}> = (storeState: StoreState, ownProps?: $FixMe) => P
 
-type ConnectFn =
-  <ProvidedProps: {}>(selectorFn: SelectorFn<ProvidedProps>) => HigherOrderComponent<{}, {}>
+type ConnectFn = <ProvidedProps: {}>(
+  selectorFn: SelectorFn<ProvidedProps>,
+) => HigherOrderComponent<{}, {}>
 
 export default ((connect: any): ConnectFn)

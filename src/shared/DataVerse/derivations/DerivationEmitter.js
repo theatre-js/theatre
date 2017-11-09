@@ -5,7 +5,7 @@ import type {IDerivation} from './types'
 import type {ITicker} from '$shared/DataVerse/Ticker'
 
 interface IDerivationEmitter<V> {
-  tappable(): Tappable<V>,
+  tappable(): Tappable<V>;
 }
 
 export default class DerivationEmitter<V> implements IDerivationEmitter<V> {
@@ -16,7 +16,10 @@ export default class DerivationEmitter<V> implements IDerivationEmitter<V> {
   _lastValueRecorded: boolean
   _hadTappers: boolean
 
-  constructor(derivation: IDerivation<V>, ticker: ITicker): IDerivationEmitter<V> {
+  constructor(
+    derivation: IDerivation<V>,
+    ticker: ITicker,
+  ): IDerivationEmitter<V> {
     this._derivation = derivation
     this._ticker = ticker
     this._emitter = new Emitter()

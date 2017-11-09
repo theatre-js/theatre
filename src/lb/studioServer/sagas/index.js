@@ -37,7 +37,7 @@ export default function* studioServerRootSaga(): Generator<*, *, *> {
 function* handleServer(server: SocketServer): Generator<*, *, *> {
   const eventsChannel = yield call(getChannelFromSocketServer, server)
   try {
-    while(true) {
+    while (true) {
       const serverEvent: ServerEvent = yield take(eventsChannel)
       if (serverEvent.type === 'error') {
         // @todo
@@ -49,14 +49,13 @@ function* handleServer(server: SocketServer): Generator<*, *, *> {
   } finally {
     eventsChannel.close()
   }
-
 }
 
 function* handleSocket(socket: Socket): Generator<*, *, *> {
   const socketChannel = yield call(getChannelFromSocket, socket)
 
   try {
-    while(true) {
+    while (true) {
       const socketEvent: SocketEvent = yield take(socketChannel)
       if (socketEvent.type === 'error') {
         // @todo

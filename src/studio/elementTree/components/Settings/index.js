@@ -12,11 +12,12 @@ type Props = {
 const Settings = (props: Props) => {
   return (
     <div className={css.container}>
-      <SettingsDivision title='Outputs'>
+      <SettingsDivision title="Outputs">
         <PanelOutput
-          type='Selected Node'
+          type="Selected Node"
           onDragStart={() => props.setCurrentlyDraggingOutput('selectedNode')}
-          onDragEnd={() => props.clearCurrentlyDraggingOutput()}/>
+          onDragEnd={() => props.clearCurrentlyDraggingOutput()}
+        />
       </SettingsDivision>
     </div>
   )

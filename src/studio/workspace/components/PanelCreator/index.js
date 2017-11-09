@@ -20,21 +20,20 @@ const PanelCreator = ({onCreatingPanel, pos, dim, onCancel}: Props) => {
   return (
     <div className={css.container} style={style}>
       <div className={css.topBar}>
-        <div
-          className={css.cancel}
-          onClick={() => onCancel()}>Cancel</div>
+        <div className={css.cancel} onClick={() => onCancel()}>
+          Cancel
+        </div>
       </div>
       <div className={css.title}>Choose type of the panel:</div>
-      {
-        _.map(panelTypes, (value, key) => (
-          <div
-            className={css.item}
-            key={key}
-            onClick={() => onCreatingPanel(key)}>
-            {value.label}
-          </div>
-        ))
-      }
+      {_.map(panelTypes, (value, key) => (
+        <div
+          className={css.item}
+          key={key}
+          onClick={() => onCreatingPanel(key)}
+        >
+          {value.label}
+        </div>
+      ))}
     </div>
   )
 }

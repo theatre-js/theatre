@@ -19,23 +19,32 @@ describe('unrecogniseProject()', () => {
   })
 
   it('should work for recognised paths', async () => {
-    const {task, store} = await runSingleSaga(function* (): Generator<*, *, *> {
+    const {task, store} = await runSingleSaga(function*(): Generator<*, *, *> {
       yield call(recogniseProject, {filePath: '/foo/bar/theaterjs.json'})
-      return yield call(unrecogniseProject, {filePath: '/foo/bar/theaterjs.json'})
+      return yield call(unrecogniseProject, {
+        filePath: '/foo/bar/theaterjs.json',
+      })
     })
     const result = await task.done
     expect(result).toMatchObject({type: 'ok'})
-    expect(store.reduxStore.getState()).toMatchObject({projects: {
-      listOfPaths: [],
-    }})
+    expect(store.reduxStore.getState()).toMatchObject({
+      projects: {
+        listOfPaths: [],
+      },
+    })
   })
 
   it('should error for non-recognised paths', async () => {
-    const {task} = await runSingleSaga(function* (): Generator<*, *, *> {
+    const {task} = await runSingleSaga(function*(): Generator<*, *, *> {
       yield call(recogniseProject, {filePath: '/foo/bar/theaterjs.json'})
-      return yield call(unrecogniseProject, {filePath: '/non/existing/theaterjs.json'})
+      return yield call(unrecogniseProject, {
+        filePath: '/non/existing/theaterjs.json',
+      })
     })
     const result = await task.done
-    expect(result).toMatchObject({type: 'error', errorType: 'projectNotRecognised'})
+    expect(result).toMatchObject({
+      type: 'error',
+      errorType: 'projectNotRecognised',
+    })
   })
 })

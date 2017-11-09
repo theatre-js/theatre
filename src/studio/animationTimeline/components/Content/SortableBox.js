@@ -57,7 +57,7 @@ class LaneBox extends React.Component<Props, State> {
   }
 
   onResize = (dy: number) => {
-    const ylow = (60 - this.props.height)
+    const ylow = 60 - this.props.height
     this.setState(() => ({
       resizeY: dy > ylow ? dy : ylow,
     }))
@@ -79,27 +79,33 @@ class LaneBox extends React.Component<Props, State> {
     }
     const containerStyle = {
       height: `${height + resizeY}px`,
-      ...(isMoving ? {zIndex: 10, transform: `translateY(${moveY}px)`}: {}),
-      ...((!isMoving && translateY !== 0) ? {transform: `translateY(${translateY}px)`} : {}),
+      ...(isMoving ? {zIndex: 10, transform: `translateY(${moveY}px)`} : {}),
+      ...(!isMoving && translateY !== 0
+        ? {transform: `translateY(${translateY}px)`}
+        : {}),
     }
     return (
       <div className={css.container} style={containerStyle}>
         <DraggableArea
           onDragStart={this.onMoveStart}
           onDrag={(_, dy) => this.onMove(dy)}
-          onDragEnd={this.onMoveEnd}>
+          onDragEnd={this.onMoveEnd}
+        >
           <div className={css.moveHandle} style={moveHandleStyle}>
             {String.fromCharCode(0x2630)}
           </div>
         </DraggableArea>
         <div className={css.content}>
           {children}
-          {showMergeOverlay && <div className={css.mergeOverlay}>Drop to merge.</div>}
+          {showMergeOverlay && (
+            <div className={css.mergeOverlay}>Drop to merge.</div>
+          )}
         </div>
         <DraggableArea
           onDrag={(_, dy) => this.onResize(dy)}
-          onDragEnd={this.onResizeEnd}>
-          <div className={css.resizeHandle} />  
+          onDragEnd={this.onResizeEnd}
+        >
+          <div className={css.resizeHandle} />
         </DraggableArea>
       </div>
     )

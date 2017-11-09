@@ -12,23 +12,23 @@ describe('DataVerse.atoms.box', () => {
   it('should correctly report changes', () => {
     const r = box('foo')
     const changes = []
-    r.changes().tap((change) => {changes.push(change)})
+    r.changes().tap(change => {
+      changes.push(change)
+    })
     r.set('bar')
     r.set('bar')
     r.set('baz')
 
     expect(changes).toHaveLength(3)
-    expect(changes).toMatchObject([
-      'bar',
-      'bar',
-      'baz',
-    ])
+    expect(changes).toMatchObject(['bar', 'bar', 'baz'])
   })
 
   it('should correctly report deep changes', () => {
     const r = box('foo')
     const deepChanges = []
-    r.deepChanges().tap((change) => {deepChanges.push(change)})
+    r.deepChanges().tap(change => {
+      deepChanges.push(change)
+    })
     r.set('bar')
     r.set('bar')
     r.set('baz')
@@ -44,7 +44,9 @@ describe('DataVerse.atoms.box', () => {
   it('should correctly report deep diffs', () => {
     const r = box('foo')
     const deepDiffs = []
-    r.deepDiffs().tap((change) => {deepDiffs.push(change)})
+    r.deepDiffs().tap(change => {
+      deepDiffs.push(change)
+    })
     r.set('bar')
     r.set('bar')
     r.set('baz')

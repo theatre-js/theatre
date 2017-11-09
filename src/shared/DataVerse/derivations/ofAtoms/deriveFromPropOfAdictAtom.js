@@ -5,7 +5,8 @@ import type {IDerivation} from '../types'
 
 const noop = () => {}
 
-export class DerivationOfAPropOfADictAtom<O: {}> extends AbstractDerivation implements IDerivation<$FixMe> {
+export class DerivationOfAPropOfADictAtom<O: {}> extends AbstractDerivation
+  implements IDerivation<$FixMe> {
   _dictAtom: IDictAtom<O>
   _untapFromDictAtomChanges: Function
   _propName: $Keys<O>
@@ -22,8 +23,11 @@ export class DerivationOfAPropOfADictAtom<O: {}> extends AbstractDerivation impl
   }
 
   _keepUptodate() {
-    this._untapFromDictAtomChanges = this._dictAtom.changes().tap((changes) => {
-      if (changes.overriddenRefs.hasOwnProperty(this._propName) || changes.deletedKeys.indexOf(this._propName) !== -1)
+    this._untapFromDictAtomChanges = this._dictAtom.changes().tap(changes => {
+      if (
+        changes.overriddenRefs.hasOwnProperty(this._propName) ||
+        changes.deletedKeys.indexOf(this._propName) !== -1
+      )
         this._youMayNeedToUpdateYourself(this)
     })
   }
@@ -31,10 +35,13 @@ export class DerivationOfAPropOfADictAtom<O: {}> extends AbstractDerivation impl
   stopKeepingUptodate() {
     this._untapFromDictAtomChanges()
     this._untapFromDictAtomChanges = noop
-
   }
 }
 
-export default function deriveFromPropOfADictAtom<O: {}, M: IDictAtom<O>, K: $Keys<O>>(m: M, propName: $Keys<O>): IDerivation<$ElementType<O, K>> {
+export default function deriveFromPropOfADictAtom<
+  O: {},
+  M: IDictAtom<O>,
+  K: $Keys<O>,
+>(m: M, propName: $Keys<O>): IDerivation<$ElementType<O, K>> {
   return new DerivationOfAPropOfADictAtom(m, propName)
 }

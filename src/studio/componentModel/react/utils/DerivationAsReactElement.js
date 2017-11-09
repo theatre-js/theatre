@@ -4,7 +4,10 @@ import _ from 'lodash'
 
 type Props = {derivation: D.IDerivation<React.Node>}
 
-export default class DerivationAsReactElement extends PureComponentWithStudio<Props, void> {
+export default class DerivationAsReactElement extends PureComponentWithStudio<
+  Props,
+  void,
+> {
   _untapFromDerivationChanges: () => void
 
   constructor(props: Props, context: $FixMe) {
@@ -17,8 +20,11 @@ export default class DerivationAsReactElement extends PureComponentWithStudio<Pr
   }
 
   listen(props: Props) {
-    this._untapFromDerivationChanges =
-      props.derivation.changes(this.studio.ticker).tap(() => {this.forceUpdate()})
+    this._untapFromDerivationChanges = props.derivation
+      .changes(this.studio.ticker)
+      .tap(() => {
+        this.forceUpdate()
+      })
   }
 
   componentWillUnmount() {

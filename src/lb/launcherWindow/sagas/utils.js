@@ -22,9 +22,13 @@ export type Request = {
   respond: (payload: mixed) => void,
 }
 
-export function* autoRetryOnTimeout(callee: Function, args: Array<mixed>, numberOfRetries: number = 10): Generator<*, *, *> {
+export function* autoRetryOnTimeout(
+  callee: Function,
+  args: Array<mixed>,
+  numberOfRetries: number = 10,
+): Generator<*, *, *> {
   let retries = -1
-  while(true) {
+  while (true) {
     retries++
     try {
       return yield call(callee, ...args)
@@ -42,10 +46,16 @@ export function* autoRetryOnTimeout(callee: Function, args: Array<mixed>, number
  * @note If you set the timeout arg to a big number (say 10000ms), then we'll have a memory leak caused
  * by having set up too many listeners on ipcMain
  */
-export function sendRequestToWindow(window: BrowserWindow, type: string, payload: mixed, timeout: number = 4000): Promise<mixed> {
+export function sendRequestToWindow(
+  window: BrowserWindow,
+  type: string,
+  payload: mixed,
+  timeout: number = 4000,
+): Promise<mixed> {
   const request = {
     id: generateUniqueId(),
-    type, payload,
+    type,
+    payload,
   }
 
   // @todo implement a timeout
@@ -65,19 +75,22 @@ export function sendRequestToWindow(window: BrowserWindow, type: string, payload
 
   // if the response doesn't come within the specified timeout period, then we'll remove
   // listneer from ipcMain, and reject with 'timeout' being the reason
-  const timeoutAndGCPromise = wn().delay(timeout).then(() => {
-    if (!responded) {
-      ipcMain.removeListener('response', listener)
-      return wn.reject('timeout')
-    }
-  })
+  const timeoutAndGCPromise = wn()
+    .delay(timeout)
+    .then(() => {
+      if (!responded) {
+        ipcMain.removeListener('response', listener)
+        return wn.reject('timeout')
+      }
+    })
 
   return wn.race([payloadDeferred.promise, timeoutAndGCPromise])
-
 }
 
-export const getChannelOfRequestsFromWindow = (window: BrowserWindow): Channel => {
-  return eventChannel((emitToChannel) => {
+export const getChannelOfRequestsFromWindow = (
+  window: BrowserWindow,
+): Channel => {
+  return eventChannel(emitToChannel => {
     const listener = (event, request: RawRequest) => {
       if (event.sender !== window.webContents) {
         console.log('got st but not from this window')
@@ -87,17 +100,23 @@ export const getChannelOfRequestsFromWindow = (window: BrowserWindow): Channel =
       let alreadyResponded = false
       const respond = (payload: mixed) => {
         if (alreadyResponded)
-          throw new Error(`Request '${request.id}' to '${request.type}' is already responded to`)
+          throw new Error(
+            `Request '${request.id}' to '${
+              request.type
+            }' is already responded to`,
+          )
 
         alreadyResponded = true
         event.sender.send('response', {id: request.id, payload})
       }
 
-      emitToChannel(({
-        type: request.type,
-        payload: request.payload,
-        respond,
-      }: Request))
+      emitToChannel(
+        ({
+          type: request.type,
+          payload: request.payload,
+          respond,
+        }: Request),
+      )
     }
 
     ipcMain.on('request', listener)

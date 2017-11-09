@@ -1,15 +1,17 @@
 // @flow
 interface ObjectWhoseStructureShouldBeUpdated {
-  _updateStructure(): void,
+  _updateStructure(): void;
 }
 
 interface ObjectWhoseComputationShouldBeUpdated {
-  _updateComputation(): void,
+  _updateComputation(): void;
 }
 
 export interface ITicker {
-  registerComputationUpdate(ObjectWhoseComputationShouldBeUpdated): void,
-  addObjectWhoseStructureShouldBeUpdated(ObjectWhoseStructureShouldBeUpdated): void,
+  registerComputationUpdate(ObjectWhoseComputationShouldBeUpdated): void;
+  addObjectWhoseStructureShouldBeUpdated(
+    ObjectWhoseStructureShouldBeUpdated,
+  ): void;
 }
 
 export default class Ticker implements ITicker {
@@ -25,7 +27,9 @@ export default class Ticker implements ITicker {
     this._computationsToUpdate.add(d)
   }
 
-  addObjectWhoseStructureShouldBeUpdated(d: ObjectWhoseStructureShouldBeUpdated) {
+  addObjectWhoseStructureShouldBeUpdated(
+    d: ObjectWhoseStructureShouldBeUpdated,
+  ) {
     this._objectsWhoseStructureShouldBeUpdated.add(d)
   }
 
@@ -45,7 +49,7 @@ export default class Ticker implements ITicker {
     const oldS = this._objectsWhoseStructureShouldBeUpdated
     this._objectsWhoseStructureShouldBeUpdated = new Set()
 
-    oldS.forEach((d) => {
+    oldS.forEach(d => {
       d._updateStructure()
     })
 
@@ -55,11 +59,14 @@ export default class Ticker implements ITicker {
 
     const oldD = this._computationsToUpdate
     this._computationsToUpdate = new Set()
-    oldD.forEach((d) => {
+    oldD.forEach(d => {
       d._updateComputation()
     })
 
-    if (this._objectsWhoseStructureShouldBeUpdated.size > 0 || this._computationsToUpdate.size > 0) {
+    if (
+      this._objectsWhoseStructureShouldBeUpdated.size > 0 ||
+      this._computationsToUpdate.size > 0
+    ) {
       return this._tick(n + 1)
     }
   }

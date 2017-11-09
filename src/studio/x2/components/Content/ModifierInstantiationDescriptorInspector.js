@@ -12,7 +12,10 @@ type Props = {
 
 type State = {}
 
-export class ModifierInstantiationDescriptorInspector extends React.PureComponent<Props, State> {
+export class ModifierInstantiationDescriptorInspector extends React.PureComponent<
+  Props,
+  State,
+> {
   constructor(props: Props) {
     super(props)
     this.state = {}
@@ -28,19 +31,29 @@ export class ModifierInstantiationDescriptorInspector extends React.PureComponen
     }
     const {InspectorComponent} = modifierDescriptor
     if (!InspectorComponent) {
-      console.error(`ModifierId '${modifierId}' doesn't have an InspectorComponent`)
+      console.error(
+        `ModifierId '${modifierId}' doesn't have an InspectorComponent`,
+      )
       return 'No inspector comopnent'
     }
-    return <InspectorComponent modifierId={modifierId} pathToModifierInstantiationDescriptor={this.props.pathToModifierInstantiationDescriptor} />
+    return (
+      <InspectorComponent
+        modifierId={modifierId}
+        pathToModifierInstantiationDescriptor={
+          this.props.pathToModifierInstantiationDescriptor
+        }
+      />
+    )
   }
-
-
 }
 
 export default compose(
   connect((s, op) => {
     return {
-      modifierId: get(s, [...op.pathToModifierInstantiationDescriptor, 'modifierId']),
+      modifierId: get(s, [
+        ...op.pathToModifierInstantiationDescriptor,
+        'modifierId',
+      ]),
     }
-  })
+  }),
 )(ModifierInstantiationDescriptorInspector)

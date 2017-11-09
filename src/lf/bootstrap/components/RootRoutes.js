@@ -10,24 +10,39 @@ if (process.env.NODE_ENV === 'development') {
   PlaygroundPage = require('$lf/playground/components/PlaygroundPage').default
 }
 
-const routes =
-  [
-    ...projectsRoutes,
-    process.env.NODE_ENV === 'development' && <Route key="playgroundRoute" path={`/playground`} component={PlaygroundPage} />,
-    <Route key="toIndex" path={`/`} exact component={() => <Redirect to="/projects" />} />,
-    <Route key="404" component={() => <div>Route not found</div>} />,
-  ].map((el, i) => {
-    return el && <el.type {...el.props} children={el.children && el.children} key={i} /> // eslint-disable-line
-  })
+const routes = [
+  ...projectsRoutes,
+  process.env.NODE_ENV === 'development' && (
+    <Route
+      key="playgroundRoute"
+      path={`/playground`}
+      component={PlaygroundPage}
+    />
+  ),
+  <Route
+    key="toIndex"
+    path={`/`}
+    exact
+    component={() => <Redirect to="/projects" />}
+  />,
+  <Route key="404" component={() => <div>Route not found</div>} />,
+].map((el, i) => {
+  return (
+    el && (
+      // eslint-disable-next-line react/no-children-prop
+      <el.type {...el.props} children={el.children && el.children} key={i} />
+    )
+  )
+})
 
 const RootRoutes = () => {
   return (
     <SplashUnlessBootstrapped>
-      <Router><Switch>{[...routes]}</Switch></Router>
+      <Router>
+        <Switch>{[...routes]}</Switch>
+      </Router>
     </SplashUnlessBootstrapped>
   )
 }
 
-export default compose(
-  (a) => a
-)(RootRoutes)
+export default compose(a => a)(RootRoutes)

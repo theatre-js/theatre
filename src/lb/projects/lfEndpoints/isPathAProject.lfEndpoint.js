@@ -5,12 +5,14 @@ import _ from 'lodash'
 import path from 'path'
 
 type ReturnType =
-  {type: 'ok', isIt: false} |
-  {type: 'ok', isIt: true, filePath: string} |
-  {type: 'error', message: string}
+  | {type: 'ok', isIt: false}
+  | {type: 'ok', isIt: true, filePath: string}
+  | {type: 'error', message: string}
 
-export default function* isPathAProject(params: {fileOrFolderPath: string}): Generator<*, ReturnType, *> {
-  if ((yield * call(fse.pathExists, params.fileOrFolderPath)) !== true) {
+export default function* isPathAProject(params: {
+  fileOrFolderPath: string,
+}): Generator<*, ReturnType, *> {
+  if ((yield* call(fse.pathExists, params.fileOrFolderPath)) !== true) {
     return {type: 'ok', isIt: false}
   }
 
@@ -20,7 +22,7 @@ export default function* isPathAProject(params: {fileOrFolderPath: string}): Gen
 
   let pathStat
   try {
-    pathStat = yield * call(fse.stat, params.fileOrFolderPath)
+    pathStat = yield* call(fse.stat, params.fileOrFolderPath)
   } catch (e) {
     console.error(e)
     return {type: 'error', message: `Path couldn't be read`}
@@ -28,7 +30,7 @@ export default function* isPathAProject(params: {fileOrFolderPath: string}): Gen
 
   if (pathStat.isDirectory()) {
     const pathToFile = path.join(params.fileOrFolderPath, 'theaterjs.json')
-    if ((yield * call(fse.pathExists, pathToFile)) === true)
+    if ((yield* call(fse.pathExists, pathToFile)) === true)
       return {type: 'ok', isIt: true, filePath: pathToFile}
   }
 

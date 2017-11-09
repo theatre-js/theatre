@@ -90,23 +90,30 @@ export default class TheStudioClass {
         }
 
         switch (diff.op) {
-          case 'replace':
+          case 'replace': {
             const components = diff.path.split('/')
             components.shift()
             const lastComponent = components.pop()
-            let curAtom = atom
+            let curAtom: $FixMe = atom
             // debugger
             for (let component of components) {
               component = jsonPatchLib.unescapePathComponent(component)
-              curAtom = curAtom.isDictAtom === 'True' ? curAtom.prop(component) : console.error(`not implemented`)
+              curAtom =
+                curAtom.isDictAtom === 'True'
+                  ? curAtom.prop(component)
+                  : console.error(`not implemented`)
             }
             // debugger
             if (curAtom.isDictAtom === 'True') {
-              curAtom.setProp(jsonPatchLib.unescapePathComponent(lastComponent), D.atoms.atomifyDeep(diff.value))
+              curAtom.setProp(
+                jsonPatchLib.unescapePathComponent(lastComponent),
+                D.atoms.atomifyDeep(diff.value),
+              )
             } else {
               throw new Error(`@todo implement me`)
             }
             break
+          }
           default:
             console.error(`@todo Diff op '${diff.op}' not yet supported`)
             break

@@ -14,13 +14,15 @@ export default function(pairs: Array<Pair>, providedState?: $IntentionalAny) {
   return call(_multiReduceState, pairs, providedState)
 }
 
-export function* _multiReduceState(pairs: Array<Pair>, providedState?: $IntentionalAny): Generator<*, *, *> {
+export function* _multiReduceState(
+  pairs: Array<Pair>,
+  providedState?: $IntentionalAny,
+): Generator<*, *, *> {
   const appState = yield select()
   const state: $IntentionalAny = providedState || appState
 
   const newState = pairs.reduce(
-    (acc: $IntentionalAny, pair: Pair) =>
-      update(pair.path, pair.reducer, acc),
+    (acc: $IntentionalAny, pair: Pair) => update(pair.path, pair.reducer, acc),
     state,
   )
 

@@ -21,10 +21,14 @@ type RequestFromWindow = {
   respond: (payload: mixed) => void,
 }
 
-export function sendRequestToMain(type: string, payload: mixed): Promise<mixed> {
+export function sendRequestToMain(
+  type: string,
+  payload: mixed,
+): Promise<mixed> {
   const request = {
     id: generateUniqueId(),
-    type, payload,
+    type,
+    payload,
   }
 
   const payloadDeferred = wn.defer()
@@ -43,22 +47,28 @@ export function sendRequestToMain(type: string, payload: mixed): Promise<mixed> 
 }
 
 export const getChannelOfRequestsFromMain = (): Channel => {
-  return eventChannel((emitToChannel) => {
+  return eventChannel(emitToChannel => {
     const listener = (event, request: Request) => {
       let alreadyResponded = false
       const respond = (payload: mixed) => {
         if (alreadyResponded)
-          throw new Error(`Request '${request.id}' to '${request.type}' is already responded to`)
+          throw new Error(
+            `Request '${request.id}' to '${
+              request.type
+            }' is already responded to`,
+          )
 
         alreadyResponded = true
         ipcRenderer.send('response', {id: request.id, payload})
       }
 
-      emitToChannel(({
-        type: request.type,
-        payload: request.payload,
-        respond,
-      }: RequestFromWindow))
+      emitToChannel(
+        ({
+          type: request.type,
+          payload: request.payload,
+          respond,
+        }: RequestFromWindow),
+      )
     }
 
     ipcRenderer.on('request', listener)

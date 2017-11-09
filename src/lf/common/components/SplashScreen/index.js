@@ -6,13 +6,7 @@ import css from './index.css'
 // type Props = {}
 
 const SplashScreen = () => {
-  return (
-    <div className={css.container}>
-      Splash screen here
-    </div>
-  )
+  return <div className={css.container}>Splash screen here</div>
 }
 
-export default compose(
-  (a) => a
-)(SplashScreen)
+export default compose(a => a)(SplashScreen)

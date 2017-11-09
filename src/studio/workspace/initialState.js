@@ -1,7 +1,6 @@
 // @flow
 import {type WorkspaceNamespaceState} from './types'
 
-
 const initialState: WorkspaceNamespaceState = {
   panels: {
     byId: {

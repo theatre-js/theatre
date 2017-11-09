@@ -3,12 +3,14 @@ import * as D from '$shared/DataVerse'
 
 describe('DataVerse.derivations.deriveFromArrayAtom', () => {
   let ticker
-  beforeEach(() => {ticker = new D.Ticker()})
+  beforeEach(() => {
+    ticker = new D.Ticker()
+  })
   it('should work', () => {
     const arrayAtom = D.atoms.array(['0', '1'])
     const prefix = D.atoms.box('(prefix)')
     // $FixMe
-    const d = arrayAtom.derivedArray().map((sD) => sD.map((s) => `(${s})`))
+    const d = arrayAtom.derivedArray().map(sD => sD.map(s => `(${s})`))
     expect(d.index(0).getValue()).toEqual('(0)')
     arrayAtom.setIndex(0, '0-1')
     expect(d.index(0).getValue()).toEqual('(0-1)')
@@ -22,7 +24,7 @@ describe('DataVerse.derivations.deriveFromArrayAtom', () => {
     expect(reducedD.getValue()).toEqual('(prefix)(0-2)(1)')
 
     const changes = []
-    reducedD.changes(ticker).tap((c) => {
+    reducedD.changes(ticker).tap(c => {
       changes.push(c)
     })
 
@@ -37,7 +39,13 @@ describe('DataVerse.derivations.deriveFromArrayAtom', () => {
     expect(changes[2]).toEqual('(prefix-2)(0-3)(1)(2)')
     expect(d.length()).toEqual(3)
 
-    expect(D.atoms.array([]).derivedArray().reduce(() => {}, 'blah').getValue()).toEqual('blah')
+    expect(
+      D.atoms
+        .array([])
+        .derivedArray()
+        .reduce(() => {}, 'blah')
+        .getValue(),
+    ).toEqual('blah')
 
     expect(d.toJS().getValue()).toMatchObject(['(0-3)', '(1)', '(2)'])
   })

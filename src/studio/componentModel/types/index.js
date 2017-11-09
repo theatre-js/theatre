@@ -1,6 +1,9 @@
 // @flow
 import {type ComponentType as ReactComponentType} from 'react'
-import type {DeclarativeComponentDescriptor, ModifierDescriptor} from './declarative'
+import type {
+  DeclarativeComponentDescriptor,
+  ModifierDescriptor,
+} from './declarative'
 /*:: export type * from './declarative' */
 
 // @todo maybe this should be an opaque type given that not any string is a valid ComponentId
@@ -26,7 +29,9 @@ export type HardCodedComponentDescriptor = {|
 |}
 
 export type ComponentDescriptor =
-  DeclarativeComponentDescriptor | AliasComponentDescriptor | HardCodedComponentDescriptor
+  | DeclarativeComponentDescriptor
+  | AliasComponentDescriptor
+  | HardCodedComponentDescriptor
 
 // export type ComponentModelNamespaceState = {|
 //   componentDescriptorsById: {[id: ComponentId]: ComponentDescriptor},

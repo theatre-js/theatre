@@ -5,7 +5,8 @@ import constantDerivation from '../constant'
 
 const emptyArray = []
 
-export class EmptyDict extends AbstractDerivedDict implements IDerivedDict<$FixMe> {
+export class EmptyDict extends AbstractDerivedDict
+  implements IDerivedDict<$FixMe> {
   prop: $FixMe
   changes: $FixMe
 
@@ -14,7 +15,8 @@ export class EmptyDict extends AbstractDerivedDict implements IDerivedDict<$FixM
     return this
   }
 
-  prop(k: mixed) { // eslint-disable-line no-unused-vars
+  // eslint-disable-next-line no-unused-vars
+  prop(k: mixed) {
     return constantDerivation(undefined)
   }
 

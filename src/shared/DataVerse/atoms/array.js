@@ -3,11 +3,15 @@ import {forEach} from 'lodash'
 import type {IAtom} from './utils/AbstractAtom'
 import Tappable from '$shared/DataVerse/utils/Tappable'
 import Emitter from '$shared/DataVerse/utils/Emitter'
-import type {AddressedChangeset, MapKey, True, False} from '$shared/DataVerse/types'
+import type {
+  AddressedChangeset,
+  MapKey,
+  True,
+  False,
+} from '$shared/DataVerse/types'
 import deriveFromArrayAtom from '$shared/DataVerse/derivations/arrays/deriveFromArrayAtom'
 import range from 'lodash/range'
 import {default as pointer} from '$shared/DataVerse/derivations/pointer'
-
 
 type Unboxed<O> = $FixMe // eslint-disable-line no-unused-vars
 
@@ -17,16 +21,31 @@ export type ArrayAtomChangeType<V: IAtom> = {
   addedRefs: Array<V>,
 }
 
-export type ArrayAtomDeepChangeType<V> = AddressedChangeset & {type: 'ArrayChange'} &  ArrayAtomChangeType<V>
-export type ArrayAtomDeepDiffType<V> = AddressedChangeset & {type: 'ArrayDiff', startIndex: number, deepUnboxOfDeletedRows: Array<Unboxed<V>>, deepUnboxOfAddedRows: Array<Unboxed<V>>}
+export type ArrayAtomDeepChangeType<V> = AddressedChangeset & {
+  type: 'ArrayChange',
+} & ArrayAtomChangeType<V>
+export type ArrayAtomDeepDiffType<V> = AddressedChangeset & {
+  type: 'ArrayDiff',
+  startIndex: number,
+  deepUnboxOfDeletedRows: Array<Unboxed<V>>,
+  deepUnboxOfAddedRows: Array<Unboxed<V>>,
+}
 
-const changeDescriptor = <V: IAtom>(startIndex: number, deleteCount: number, refsToAdd: Array<V>): ArrayAtomChangeType<V> => ({
+const changeDescriptor = <V: IAtom>(
+  startIndex: number,
+  deleteCount: number,
+  refsToAdd: Array<V>,
+): ArrayAtomChangeType<V> => ({
   startIndex,
   deleteCount: deleteCount,
   addedRefs: refsToAdd,
 })
 
-const deepChangeDescriptor = <V: IAtom>(startIndex: number, deleteCount: number, refsToAdd: Array<V>): ArrayAtomDeepChangeType<V> => ({
+const deepChangeDescriptor = <V: IAtom>(
+  startIndex: number,
+  deleteCount: number,
+  refsToAdd: Array<V>,
+): ArrayAtomDeepChangeType<V> => ({
   address: [],
   type: 'ArrayChange',
   startIndex,
@@ -34,7 +53,11 @@ const deepChangeDescriptor = <V: IAtom>(startIndex: number, deleteCount: number,
   addedRefs: refsToAdd,
 })
 
-const deepDiffDescriptor = (startIndex: number, deletedRefsDeeplyUnboxed: Array<$FixMe>, addedRefsDeeplyUnboxed: Array<$FixMe>) => ({
+const deepDiffDescriptor = (
+  startIndex: number,
+  deletedRefsDeeplyUnboxed: Array<$FixMe>,
+  addedRefsDeeplyUnboxed: Array<$FixMe>,
+) => ({
   address: [],
   type: 'ArrayDiff',
   startIndex,
@@ -95,7 +118,7 @@ export class ArrayAtom<V: IAtom> extends AbstractCompositeAtom {
   }
 
   unboxDeep(): $FixMe {
-    return this._internalArray.map((value) => {
+    return this._internalArray.map(value => {
       if (value !== undefined) {
         return value.unboxDeep()
       }
@@ -111,7 +134,9 @@ export class ArrayAtom<V: IAtom> extends AbstractCompositeAtom {
   }
 
   splice(startIndex: number, deleteCount: number, refsToAdd: Array<V>) {
-    const removedRefs = range(startIndex, startIndex + deleteCount).map((i) => this.index(i))
+    const removedRefs = range(startIndex, startIndex + deleteCount).map(i =>
+      this.index(i),
+    )
 
     removedRefs.forEach((r, i) => {
       if (r) {
@@ -128,23 +153,39 @@ export class ArrayAtom<V: IAtom> extends AbstractCompositeAtom {
     })
 
     if (deleteCount !== refsToAdd.length) {
-      for (let i = startIndex + refsToAdd.length; i < this._internalArray.length; i++) {
+      for (
+        let i = startIndex + refsToAdd.length;
+        i < this._internalArray.length;
+        i++
+      ) {
         this._refToIndex.set(this._internalArray[i], i)
       }
     }
 
     if (this._deepDiffEmitter.hasTappers()) {
-      const deletedRefsDeeplyUnboxed = removedRefs.map((r) => r ? r.unboxDeep() : undefined)
-      const addedRefsDeeplyUnboxed = refsToAdd.map((r) => r.unboxDeep())
-      this._deepDiffEmitter.emit(deepDiffDescriptor(startIndex, deletedRefsDeeplyUnboxed, addedRefsDeeplyUnboxed))
+      const deletedRefsDeeplyUnboxed = removedRefs.map(
+        r => (r ? r.unboxDeep() : undefined),
+      )
+      const addedRefsDeeplyUnboxed = refsToAdd.map(r => r.unboxDeep())
+      this._deepDiffEmitter.emit(
+        deepDiffDescriptor(
+          startIndex,
+          deletedRefsDeeplyUnboxed,
+          addedRefsDeeplyUnboxed,
+        ),
+      )
     }
 
     if (this._deepChangeEmitter.hasTappers()) {
-      this._deepChangeEmitter.emit(deepChangeDescriptor(startIndex, deleteCount, refsToAdd))
+      this._deepChangeEmitter.emit(
+        deepChangeDescriptor(startIndex, deleteCount, refsToAdd),
+      )
     }
 
     if (this._changeEmitter.hasTappers()) {
-      this._changeEmitter.emit(changeDescriptor(startIndex, deleteCount, refsToAdd))
+      this._changeEmitter.emit(
+        changeDescriptor(startIndex, deleteCount, refsToAdd),
+      )
     }
   }
 

@@ -5,7 +5,8 @@ import type {IDerivation} from '../types'
 
 const noop = () => {}
 
-export class DerivationOfABoxAtom<V> extends AbstractDerivation implements IDerivation<V> {
+export class DerivationOfABoxAtom<V> extends AbstractDerivation
+  implements IDerivation<V> {
   getValue: () => V
 
   _boxAtom: IBoxAtom<V>
@@ -34,6 +35,8 @@ export class DerivationOfABoxAtom<V> extends AbstractDerivation implements IDeri
   }
 }
 
-export default function deriveFromBoxAtom<V, B: IBoxAtom<V>>(b: B): IDerivation<V> {
+export default function deriveFromBoxAtom<V, B: IBoxAtom<V>>(
+  b: B,
+): IDerivation<V> {
   return new DerivationOfABoxAtom(b)
 }

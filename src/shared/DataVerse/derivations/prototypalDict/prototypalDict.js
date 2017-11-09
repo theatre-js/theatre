@@ -9,14 +9,15 @@ type Constructor = $FixMe
 
 let lastId: number = 0
 
-export interface IPrototypalDict<O: {}> { // eslint-disable-line no-unused-vars
-  _id: number,
-  parentChanges(): Tappable<*>,
-  extend(constructors: {}): IPrototypalDict<$FixMe>,
-  face(ticker: Ticker): PrototypalDictFace,
-  _getConstructor(key: MapKey): Constructor,
-  getParent(): ?IPrototypalDict<any>,
-  setParent(p: IPrototypalDict<$FixMe>): void,
+// eslint-disable-next-line no-unused-vars
+export interface IPrototypalDict<O: {}> {
+  _id: number;
+  parentChanges(): Tappable<*>;
+  extend(constructors: {}): IPrototypalDict<$FixMe>;
+  face(ticker: Ticker): PrototypalDictFace;
+  _getConstructor(key: MapKey): Constructor;
+  getParent(): ?IPrototypalDict<any>;
+  setParent(p: IPrototypalDict<$FixMe>): void;
 }
 
 export class PrototypalDict<O: {}> implements IPrototypalDict<O> {
@@ -25,7 +26,10 @@ export class PrototypalDict<O: {}> implements IPrototypalDict<O> {
   _parent: ?IPrototypalDict<$FixMe>
   _parentChagnesEmitter: *
 
-  constructor(constructors: O, delegateTo?: IPrototypalDict<$FixMe>): IPrototypalDict<O> {
+  constructor(
+    constructors: O,
+    delegateTo?: IPrototypalDict<$FixMe>,
+  ): IPrototypalDict<O> {
     this._id = lastId++
     this._constructors = constructors
     this._parent = delegateTo
@@ -49,11 +53,11 @@ export class PrototypalDict<O: {}> implements IPrototypalDict<O> {
     return this._constructors[key]
   }
 
-  getParent(): ?(IPrototypalDict<any>){
+  getParent(): ?IPrototypalDict<any> {
     return this._parent
   }
 
-  setParent(p: IPrototypalDict<$FixMe>): void{
+  setParent(p: IPrototypalDict<$FixMe>): void {
     this._parent = p
     this._parentChagnesEmitter.emit(p)
   }

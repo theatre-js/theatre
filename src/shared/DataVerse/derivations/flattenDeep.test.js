@@ -12,14 +12,14 @@ describe('FlattenDeepDerivation', () => {
     const aD = a.derivation()
     const b = D.atoms.box(3)
     const bD = b.derivation()
-    const f = aD.flatMap((aValue) => bD.map((bValue) => aValue + bValue))
+    const f = aD.flatMap(aValue => bD.map(bValue => aValue + bValue))
     expect(f.getValue()).toEqual(4)
     a.set(2)
     expect(f.getValue()).toEqual(5)
 
     const changes = []
 
-    f.changes(ticker).tap((c) => {
+    f.changes(ticker).tap(c => {
       changes.push(c)
     })
 
@@ -39,7 +39,7 @@ describe('FlattenDeepDerivation', () => {
     const b = D.atoms.box(3)
     const aD = a.derivation()
     const bD = b.derivation()
-    const final = aD.map((n) => bD.map((m) => m + n)).flattenDeep(7)
+    const final = aD.map(n => bD.map(m => m + n)).flattenDeep(7)
 
     expect(final.getValue()).toEqual(4)
     a.set(2)
@@ -52,7 +52,7 @@ describe('FlattenDeepDerivation', () => {
 
     const adEvents = []
 
-    aD.changes(ticker).tap((newVal) => {
+    aD.changes(ticker).tap(newVal => {
       adEvents.push(newVal)
     })
 
@@ -64,7 +64,9 @@ describe('FlattenDeepDerivation', () => {
     expect(adEvents).toMatchObject([3])
 
     const finalEvents = []
-    final.changes(ticker).tap((v) => {finalEvents.push(v)})
+    final.changes(ticker).tap(v => {
+      finalEvents.push(v)
+    })
     a.set(4)
 
     expect(finalEvents).toHaveLength(0)
@@ -86,11 +88,17 @@ describe('FlattenDeepDerivation', () => {
     const aD = a.derivation()
     const b = D.atoms.box('b')
     const bD = b.derivation()
-    const cD = aD.map((aValue) => bD.map((bValue) => D.derivations.withDeps({}, () => aValue + bValue))).flattenDeep(7)
+    const cD = aD
+      .map(aValue =>
+        bD.map(bValue => D.derivations.withDeps({}, () => aValue + bValue)),
+      )
+      .flattenDeep(7)
 
     expect(cD.getValue()).toEqual('ab')
     const changes = []
-    cD.changes(ticker).tap((c) => {changes.push(c)})
+    cD.changes(ticker).tap(c => {
+      changes.push(c)
+    })
 
     b.set('bb')
     ticker.tick()
@@ -102,17 +110,33 @@ describe('FlattenDeepDerivation', () => {
     const b = D.atoms.box(3)
     const aD = a.derivation()
     const bD = b.derivation()
-    expect(aD.map(() => bD).flattenDeep(0).getValue()).toEqual(bD)
-    expect(aD.map(() => bD).flattenDeep(1).getValue()).toEqual(3)
+    expect(
+      aD
+        .map(() => bD)
+        .flattenDeep(0)
+        .getValue(),
+    ).toEqual(bD)
+    expect(
+      aD
+        .map(() => bD)
+        .flattenDeep(1)
+        .getValue(),
+    ).toEqual(3)
   })
   it('blah', () => {
     const a = D.atoms.box('a')
     const aD = a.derivation()
 
-    const c = D.derivations.constant(D.derivations.constant(aD));
-    (c.getValue().getValue().getValue(): string);
+    const c = D.derivations.constant(D.derivations.constant(aD))
+    ;(c
+      .getValue()
+      .getValue()
+      .getValue(): string)
     // $FlowExpectError
-    (c.getValue().getValue().getValue(): number)
+    ;(c
+      .getValue()
+      .getValue()
+      .getValue(): number)
 
     // const f = flattenDeep(c, 3)
     const f = c.flattenDeep(3)
@@ -122,7 +146,7 @@ describe('FlattenDeepDerivation', () => {
     expect(f.getValue()).toEqual('a2')
 
     const changes = []
-    f.changes(ticker).tap((c) => {
+    f.changes(ticker).tap(c => {
       changes.push(c)
     })
 
@@ -130,137 +154,125 @@ describe('FlattenDeepDerivation', () => {
     a.set('a3')
     ticker.tick()
     expect(changes).toMatchObject(['a3'])
-  });
-
-  (function(){
+  })
+  ;(function() {
     const num = D.derivations.constant(1)
     const ofNum = D.derivations.constant(num)
     const ofNumOfNum = D.derivations.constant(ofNum)
     const ofNumOfNumofNum = D.derivations.constant(ofNumOfNum)
-    const ofNumOfNumofNumOfNum = D.derivations.constant(ofNumOfNumofNum);
-
-    (ofNum.getValue().getValue(): number);
+    const ofNumOfNumofNumOfNum = D.derivations.constant(ofNumOfNumofNum)
+    ;(ofNum.getValue().getValue(): number)
     // $FlowExpectError
-    (ofNum.getValue().getValue(): string);
+    ;(ofNum.getValue().getValue(): string)
 
     // Depth 1
-    (function(){
-      (flattenDeep(ofNumOfNum, 1).getValue().getValue(): number);
+    ;(function() {
+      ;(flattenDeep(ofNumOfNum, 1)
+        .getValue()
+        .getValue(): number)
       // $FlowExpectError
-      (flattenDeep(ofNumOfNum, 1).getValue().getValue(): string);
-
-      (flattenDeep(ofNum, 1).getValue(): number);
+      ;(flattenDeep(ofNumOfNum, 1)
+        .getValue()
+        .getValue(): string)
+      ;(flattenDeep(ofNum, 1).getValue(): number)
       // $FlowExpectError
-      (flattenDeep(ofNum, 1).getValue(): string);
-
-      (flattenDeep(num, 1).getValue(): number);
+      ;(flattenDeep(ofNum, 1).getValue(): string)
+      ;(flattenDeep(num, 1).getValue(): number)
       // $FlowExpectError
-      (flattenDeep(num, 1).getValue(): string);
-
-      (ofNumOfNum.flattenDeep(1).getValue().getValue(): number);
+      ;(flattenDeep(num, 1).getValue(): string)
+      ;(ofNumOfNum
+        .flattenDeep(1)
+        .getValue()
+        .getValue(): number)
       // @todo flow should catch this, but can't atm
-      (ofNumOfNum.flattenDeep(1).getValue().getValue(): string);
-
-      (ofNum.flattenDeep(1).getValue(): number);
+      ;(ofNumOfNum
+        .flattenDeep(1)
+        .getValue()
+        .getValue(): string)
+      ;(ofNum.flattenDeep(1).getValue(): number)
       // @flow flow should catch this, but can't atm
-      (ofNum.flattenDeep(1).getValue(): string);
-
-      (num.flattenDeep(1).getValue(): number);
+      ;(ofNum.flattenDeep(1).getValue(): string)
+      ;(num.flattenDeep(1).getValue(): number)
       // @flow flow should catch this, but can't atm
-      (num.flattenDeep(1).getValue(): string)
-    });
-
-    // Depth 2
-    (function(){
-      (flattenDeep(ofNumOfNum, 2).getValue(): number);
-      // $FlowExpectError
-      (flattenDeep(ofNumOfNum, 2).getValue(): string);
-
-      (flattenDeep(ofNum, 2).getValue(): number);
-      // $FlowExpectError
-      (flattenDeep(ofNum, 2).getValue(): string);
-
-      (flattenDeep(num, 2).getValue(): number);
-      // $FlowExpectError
-      (flattenDeep(num, 2).getValue(): string)
-    });
-
-    // Depth 3
-    (function(){
-      (flattenDeep(ofNumOfNumofNum, 3).getValue(): number);
-      // $FlowExpectError
-      (flattenDeep(ofNumOfNumofNum, 3).getValue(): string);
-
-      (flattenDeep(ofNumOfNum, 3).getValue(): number);
-      // $FlowExpectError
-      (flattenDeep(ofNumOfNum, 3).getValue(): string);
-
-      (flattenDeep(ofNum, 3).getValue(): number);
-      // $FlowExpectError
-      (flattenDeep(ofNum, 3).getValue(): string);
-
-      (flattenDeep(num, 3).getValue(): number);
-      // $FlowExpectError
-      (flattenDeep(num, 3).getValue(): string);
-
-      // $FlowExpectError
-      (ofNumOfNum.plattenDeep(3).getValue(): string)
-    });
-
-    // Depth 4
-    (function(){
-      (flattenDeep(ofNumOfNumofNumOfNum, 4).getValue(): number);
-      // $FlowExpectError
-      (flattenDeep(ofNumOfNumofNumOfNum, 4).getValue(): string);
-
-      (flattenDeep(ofNumOfNumofNum, 4).getValue(): number);
-      // $FlowExpectError
-      (flattenDeep(ofNumOfNumofNum, 4).getValue(): string);
-
-      (flattenDeep(ofNumOfNum, 4).getValue(): number);
-      // $FlowExpectError
-      (flattenDeep(ofNumOfNum, 4).getValue(): string);
-
-      (flattenDeep(ofNum, 4).getValue(): number);
-      // $FlowExpectError
-      (flattenDeep(ofNum, 4).getValue(): string);
-
-      (flattenDeep(num, 4).getValue(): number);
-      // $FlowExpectError
-      (flattenDeep(num, 4).getValue(): string)
-    });
-
-    // No depth given
-    (function(){
-      (flattenDeep(ofNumOfNumofNumOfNum).getValue(): number);
-      // $FlowExpectError
-      (flattenDeep(ofNumOfNumofNumOfNum).getValue(): string);
-
-      (flattenDeep(ofNumOfNumofNum).getValue(): number);
-      // $FlowExpectError
-      (flattenDeep(ofNumOfNumofNum).getValue(): string);
-
-      (flattenDeep(ofNumOfNum).getValue(): number);
-      // $FlowExpectError
-      (flattenDeep(ofNumOfNum).getValue(): string);
-
-      (flattenDeep(ofNum).getValue(): number);
-      // $FlowExpectError
-      (flattenDeep(ofNum).getValue(): string);
-
-      (flattenDeep(num).getValue(): number);
-      // $FlowExpectError
-      (flattenDeep(num).getValue(): string)
+      ;(num.flattenDeep(1).getValue(): string)
     })
 
-  })
-});
+    // Depth 2
+    ;(function() {
+      ;(flattenDeep(ofNumOfNum, 2).getValue(): number)
+      // $FlowExpectError
+      ;(flattenDeep(ofNumOfNum, 2).getValue(): string)
+      ;(flattenDeep(ofNum, 2).getValue(): number)
+      // $FlowExpectError
+      ;(flattenDeep(ofNum, 2).getValue(): string)
+      ;(flattenDeep(num, 2).getValue(): number)
+      // $FlowExpectError
+      ;(flattenDeep(num, 2).getValue(): string)
+    })
 
-(function(){
+    // Depth 3
+    ;(function() {
+      ;(flattenDeep(ofNumOfNumofNum, 3).getValue(): number)
+      // $FlowExpectError
+      ;(flattenDeep(ofNumOfNumofNum, 3).getValue(): string)
+      ;(flattenDeep(ofNumOfNum, 3).getValue(): number)
+      // $FlowExpectError
+      ;(flattenDeep(ofNumOfNum, 3).getValue(): string)
+      ;(flattenDeep(ofNum, 3).getValue(): number)
+      // $FlowExpectError
+      ;(flattenDeep(ofNum, 3).getValue(): string)
+      ;(flattenDeep(num, 3).getValue(): number)
+      // $FlowExpectError
+      ;(flattenDeep(num, 3).getValue(): string)
+
+      // $FlowExpectError
+      ;(ofNumOfNum.plattenDeep(3).getValue(): string)
+    })
+
+    // Depth 4
+    ;(function() {
+      ;(flattenDeep(ofNumOfNumofNumOfNum, 4).getValue(): number)
+      // $FlowExpectError
+      ;(flattenDeep(ofNumOfNumofNumOfNum, 4).getValue(): string)
+      ;(flattenDeep(ofNumOfNumofNum, 4).getValue(): number)
+      // $FlowExpectError
+      ;(flattenDeep(ofNumOfNumofNum, 4).getValue(): string)
+      ;(flattenDeep(ofNumOfNum, 4).getValue(): number)
+      // $FlowExpectError
+      ;(flattenDeep(ofNumOfNum, 4).getValue(): string)
+      ;(flattenDeep(ofNum, 4).getValue(): number)
+      // $FlowExpectError
+      ;(flattenDeep(ofNum, 4).getValue(): string)
+      ;(flattenDeep(num, 4).getValue(): number)
+      // $FlowExpectError
+      ;(flattenDeep(num, 4).getValue(): string)
+    })
+
+    // No depth given
+    ;(function() {
+      ;(flattenDeep(ofNumOfNumofNumOfNum).getValue(): number)
+      // $FlowExpectError
+      ;(flattenDeep(ofNumOfNumofNumOfNum).getValue(): string)
+      ;(flattenDeep(ofNumOfNumofNum).getValue(): number)
+      // $FlowExpectError
+      ;(flattenDeep(ofNumOfNumofNum).getValue(): string)
+      ;(flattenDeep(ofNumOfNum).getValue(): number)
+      // $FlowExpectError
+      ;(flattenDeep(ofNumOfNum).getValue(): string)
+      ;(flattenDeep(ofNum).getValue(): number)
+      // $FlowExpectError
+      ;(flattenDeep(ofNum).getValue(): string)
+      ;(flattenDeep(num).getValue(): number)
+      // $FlowExpectError
+      ;(flattenDeep(num).getValue(): string)
+    })
+  })
+})
+;(function() {
   interface IBox<V> {
-    unbox(): V,
-    flattenDeep: () => $Call<FlattenDeep, IBox<V>>,
-    set: (V) => void,
+    unbox(): V;
+    flattenDeep: () => $Call<FlattenDeep, IBox<V>>;
+    set: V => void;
   }
 
   class Box<V> implements IBox<V> {
@@ -276,29 +288,38 @@ describe('FlattenDeepDerivation', () => {
     unbox(): V {
       return this._value
     }
-
   }
 
   const box = new Box(new Box(new Box(10)))
 
-  type FlattenDeep =
-    (<Ret, V5: IBox<Ret>, V4: IBox<V5>, V3: IBox<V4>, V2: IBox<V3>, V1: IBox<V2>>(outer: V1) => IBox<Ret>) &
-    (<Ret, V4: IBox<Ret>, V3: IBox<V4>, V2: IBox<V3>, V1: IBox<V2>>(outer: V1) => IBox<Ret>) &
+  type FlattenDeep = (<
+    Ret,
+    V5: IBox<Ret>,
+    V4: IBox<V5>,
+    V3: IBox<V4>,
+    V2: IBox<V3>,
+    V1: IBox<V2>,
+  >(
+    outer: V1,
+  ) => IBox<Ret>) &
+    (<Ret, V4: IBox<Ret>, V3: IBox<V4>, V2: IBox<V3>, V1: IBox<V2>>(
+      outer: V1,
+    ) => IBox<Ret>) &
     (<Ret, V3: IBox<Ret>, V2: IBox<V3>, V1: IBox<V2>>(outer: V1) => IBox<Ret>) &
     (<Ret, V2: IBox<Ret>, V1: IBox<V2>>(outer: V1) => IBox<Ret>) &
     (<Ret, V1: IBox<Ret>>(outer: V1) => IBox<Ret>)
 
-    declare var flattenDeep: FlattenDeep;
+  declare var flattenDeep: FlattenDeep
+  ;(flattenDeep(box).unbox(): number)
+  // $FlowExpectError
+  ;(flattenDeep(box).unbox(): string)
+  ;(box.flattenDeep().unbox(): number)
+  // $FlowExpectError
+  ;(box.flattenDeep().unbox(): string)
 
-    (flattenDeep(box).unbox(): number);
-    // $FlowExpectError
-    (flattenDeep(box).unbox(): string);
-
-    (box.flattenDeep().unbox(): number);
-    // $FlowExpectError
-    (box.flattenDeep().unbox(): string)
-
-    box.unbox().unbox().set(10)
-    // box.unbox().unbox().set('hi')
-
+  box
+    .unbox()
+    .unbox()
+    .set(10)
+  // box.unbox().unbox().set('hi')
 })

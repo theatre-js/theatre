@@ -1,5 +1,4 @@
-
-import type {MapKey, True} from '$shared/DataVerse/types'  // eslint-disable-line flowtype/require-valid-file-annotation
+import type {MapKey, True} from '$shared/DataVerse/types' // eslint-disable-line flowtype/require-valid-file-annotation
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import Tappable from '$shared/DataVerse/utils/Tappable'
 import type {ICompositeAtom} from './AbstractCompositeAtom'
@@ -59,8 +58,7 @@ export default class AbstractAtom implements _IAtom {
   }
 
   _setParent(p: ICompositeAtom, key: MapKey) {
-    if (this._parent)
-      throw new Error(`This Atom already does have a parent`)
+    if (this._parent) throw new Error(`This Atom already does have a parent`)
 
     this._parent = {atom: p, key}
   }

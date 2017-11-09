@@ -8,7 +8,10 @@ import {default as DerivationEmitter} from './DerivationEmitter'
 const FRESHNESS_STATE_NOT_APPLICABLE = 0
 const FRESHNESS_STATE_STALE = 1
 const FRESHNESS_STATE_FRESH = 2
-type FreshnessState = typeof FRESHNESS_STATE_NOT_APPLICABLE | typeof FRESHNESS_STATE_STALE | typeof FRESHNESS_STATE_FRESH
+type FreshnessState =
+  | typeof FRESHNESS_STATE_NOT_APPLICABLE
+  | typeof FRESHNESS_STATE_STALE
+  | typeof FRESHNESS_STATE_FRESH
 
 class AbstractDerivation {
   _id: number
@@ -24,7 +27,9 @@ class AbstractDerivation {
   +_recalculate: () => $FixMe
   +_keepUptodate: () => void
   +_stopKeepingUptodate: () => void
-  +_youMayNeedToUpdateYourself: (msgComingFrom: IDerivation<$IntentionalAny>) => void
+  +_youMayNeedToUpdateYourself: (
+    msgComingFrom: IDerivation<$IntentionalAny>,
+  ) => void
 
   constructor() {
     // this._trace = new Error('trace')
@@ -50,14 +55,16 @@ class AbstractDerivation {
   }
 
   _removeAllDependencies() {
-    this._dependencies.forEach((d) => {this._removeDependency(d)})
+    this._dependencies.forEach(d => {
+      this._removeDependency(d)
+    })
   }
 
   changes(ticker: ITicker) {
-    return (new DerivationEmitter((this: $IntentionalAny), ticker)).tappable()
+    return new DerivationEmitter((this: $IntentionalAny), ticker).tappable()
   }
 
-  tapImmediate(ticker: ITicker, fn: ($FixMe) => void): $FixMe {
+  tapImmediate(ticker: ITicker, fn: $FixMe => void): $FixMe {
     const untap = this.changes(ticker).tap(fn)
     fn(this.getValue())
     return untap
@@ -92,10 +99,9 @@ class AbstractDerivation {
     this._freshnessState = FRESHNESS_STATE_STALE
 
     if (this._hasDependents()) {
-      this._dependents.forEach((dependent) => {
+      this._dependents.forEach(dependent => {
         dependent._youMayNeedToUpdateYourself((this: $FixMe))
       })
-
     }
   }
 
@@ -114,10 +120,10 @@ class AbstractDerivation {
   }
 
   _reactToNumberOfDependentsChange() {
-    const thereAreMoreThanOneDependents =
-      this._dependents.size > 0
+    const thereAreMoreThanOneDependents = this._dependents.size > 0
 
-    if (thereAreMoreThanOneDependents === this._thereAreMoreThanOneDependents) return
+    if (thereAreMoreThanOneDependents === this._thereAreMoreThanOneDependents)
+      return
     // if (thereAreMoreThanOneDependents) {
     //   activeDs.add(this)
     // } else {
@@ -130,11 +136,15 @@ class AbstractDerivation {
     if (thereAreMoreThanOneDependents) {
       this._freshnessState = FRESHNESS_STATE_STALE
       this._keepUptodate()
-      this._dependencies.forEach((d) => {d._addDependent((this: $FixMe))})
+      this._dependencies.forEach(d => {
+        d._addDependent((this: $FixMe))
+      })
     } else {
       this._freshnessState = FRESHNESS_STATE_NOT_APPLICABLE
       this._stopKeepingUptodate()
-      this._dependencies.forEach((d) => {d._removeDependent((this: $FixMe))})
+      this._dependencies.forEach(d => {
+        d._removeDependent((this: $FixMe))
+      })
     }
   }
 

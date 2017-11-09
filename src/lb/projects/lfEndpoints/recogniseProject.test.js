@@ -18,26 +18,35 @@ describe('recogniseProject()', () => {
   })
 
   it('should work for existing theaterjs.json file', async () => {
-    const {task, store} = await runSingleSaga(recogniseProject, {filePath: '/foo/bar/theaterjs.json'})
+    const {task, store} = await runSingleSaga(recogniseProject, {
+      filePath: '/foo/bar/theaterjs.json',
+    })
     const result = await task.done
     expect(result).toMatchObject({type: 'ok'})
-    expect(store.reduxStore.getState()).toMatchObject({projects: {
-      listOfPaths: ['/foo/bar/theaterjs.json'],
-    }})
+    expect(store.reduxStore.getState()).toMatchObject({
+      projects: {
+        listOfPaths: ['/foo/bar/theaterjs.json'],
+      },
+    })
   })
 
   it('should error for non-existing theaterjs.json file', async () => {
-    const {task} = await runSingleSaga(recogniseProject, {filePath: '/non/existing/theaterjs.json'})
+    const {task} = await runSingleSaga(recogniseProject, {
+      filePath: '/non/existing/theaterjs.json',
+    })
     const result = await task.done
     expect(result).toMatchObject({type: 'error', errorType: 'fileDoesntExist'})
   })
 
   it('should error for already-recognized projects', async () => {
-    const {task} = await runSingleSaga(function* (): Generator<*, *, *> {
+    const {task} = await runSingleSaga(function*(): Generator<*, *, *> {
       yield call(recogniseProject, {filePath: '/foo/bar/theaterjs.json'})
       return yield call(recogniseProject, {filePath: '/foo/bar/theaterjs.json'})
     })
     const result = await task.done
-    expect(result).toMatchObject({type: 'error', errorType: 'projectAlreadyRecognised'})
+    expect(result).toMatchObject({
+      type: 'error',
+      errorType: 'projectAlreadyRecognised',
+    })
   })
 })

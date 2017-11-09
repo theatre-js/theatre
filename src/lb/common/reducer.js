@@ -7,8 +7,11 @@ import {type Reducer} from 'redux'
 
 export default (combineReducers({
   temp: combineReducers({
-    bootstrapped: handleActions({
-      [bootstrapAction.type]: () => true,
-    }, false),
+    bootstrapped: handleActions(
+      {
+        [bootstrapAction.type]: () => true,
+      },
+      false,
+    ),
   }),
 }): Reducer<CommonNamespaceState, any>)

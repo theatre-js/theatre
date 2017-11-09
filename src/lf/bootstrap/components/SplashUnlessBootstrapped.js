@@ -14,18 +14,14 @@ type Props = {
 }
 
 const SplashUnlessBootstrapped = (props: Props) => {
-  return (
-    !props.isBootstrapped ? <SplashScreen /> : props.children
-  )
+  return !props.isBootstrapped ? <SplashScreen /> : props.children
 }
 
 /**
  * Shows a splash screen, unless we're bootstrapped (see bootstrapped in $common/reducer)
  */
 export default compose(
-  connect(
-    (state: StoreState) => ({
-      isBootstrapped: getIsBootstrapped(state),
-    }),
-  ),
+  connect((state: StoreState) => ({
+    isBootstrapped: getIsBootstrapped(state),
+  })),
 )(SplashUnlessBootstrapped)

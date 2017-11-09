@@ -14,18 +14,14 @@ type Props = {
 }
 
 const LoadingUnlessBootstrapped = (props: Props) => {
-  return (
-    !props.isBootstrapped ? <div>Loading...</div> : props.children
-  )
+  return !props.isBootstrapped ? <div>Loading...</div> : props.children
 }
 
 /**
  * Shows a splash screen, unless we're bootstrapped (see bootstrapped in $common/reducer)
  */
 export default compose(
-  connect(
-    (state: StoreState) => ({
-      isBootstrapped: getIsBootstrapped(state) || true,
-    }),
-  ),
+  connect((state: StoreState) => ({
+    isBootstrapped: getIsBootstrapped(state) || true,
+  })),
 )(LoadingUnlessBootstrapped)

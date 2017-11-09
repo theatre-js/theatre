@@ -6,7 +6,9 @@ import rootReducer from './rootReducer'
 
 export const defaultConfig = {rootReducer, rootSaga}
 
-export default function createStore(config: typeof defaultConfig = defaultConfig): StandardStore<*, *> {
+export default function createStore(
+  config: typeof defaultConfig = defaultConfig,
+): StandardStore<*, *> {
   const store = new StandardStore(config)
 
   if (process.env.NODE_ENV === 'development' && module.hot) {
@@ -14,8 +16,16 @@ export default function createStore(config: typeof defaultConfig = defaultConfig
       store.runSaga(function*(): Generator<*, *, *> {
         const r: $IntentionalAny = require
         yield multiReduceState([
-          {path: ['componentModel', 'modifierDescriptors', 'core'], reducer: () =>  r('$studio/componentModel/coreModifierDescriptors').default} ,
-          {path: ['componentModel', 'componentDescriptors', 'core'], reducer: () =>  r('$studio/componentModel/coreComponentDescriptors').default},
+          {
+            path: ['componentModel', 'modifierDescriptors', 'core'],
+            reducer: () =>
+              r('$studio/componentModel/coreModifierDescriptors').default,
+          },
+          {
+            path: ['componentModel', 'componentDescriptors', 'core'],
+            reducer: () =>
+              r('$studio/componentModel/coreComponentDescriptors').default,
+          },
         ])
       })
     })

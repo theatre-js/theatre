@@ -18,6 +18,12 @@ export const mergeStateAction = actionCreator('@@root/MERGE_STATE')
 export const setStateAction = actionCreator('@@root/SET_STATE')
 
 // Reset the store back to the initial state
-export const resetStateAction = actionCreator('@@root/RESET_STATE', (namespacesToReset: ?Array<string>) => namespacesToReset)
+export const resetStateAction = actionCreator(
+  '@@root/RESET_STATE',
+  (namespacesToReset: ?Array<string>) => namespacesToReset,
+)
 
-export const reduceStateAction = actionCreator('@@root/REDUCE_STATE', (a: Array<Pair>) => a)
+export const reduceStateAction = actionCreator(
+  '@@root/REDUCE_STATE',
+  (a: Array<Pair>) => a,
+)

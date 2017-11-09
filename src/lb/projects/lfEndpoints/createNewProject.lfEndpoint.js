@@ -3,11 +3,27 @@ import fse from 'fs-extra'
 import {call, select} from '$shared/utils/sagas'
 import path from 'path'
 import {type StoreState} from '$lb/types'
-import {default as recogniseProject, type ErrorTypes as RecognizeProjectErrorTypes} from './recogniseProject.lfEndpoint'
+import {
+  default as recogniseProject,
+  type ErrorTypes as RecognizeProjectErrorTypes,
+} from './recogniseProject.lfEndpoint'
 
-type ErrorTypes = 'folderDoesntExist' | 'pathUnreadable' | 'pathIsNotAFolder' | 'projectAlreadyRecognised' | 'theaterjsDotJsonFileAlreadyExists' | RecognizeProjectErrorTypes
+type ErrorTypes =
+  | 'folderDoesntExist'
+  | 'pathUnreadable'
+  | 'pathIsNotAFolder'
+  | 'projectAlreadyRecognised'
+  | 'theaterjsDotJsonFileAlreadyExists'
+  | RecognizeProjectErrorTypes
 
-export default function* createNewProject(params: {folderPath: string, name: string}): Generator<*, {type: 'ok', filePath: string} | {type: 'error', errorType: ErrorTypes}, *> {
+export default function* createNewProject(params: {
+  folderPath: string,
+  name: string,
+}): Generator<
+  *,
+  {type: 'ok', filePath: string} | {type: 'error', errorType: ErrorTypes},
+  *,
+> {
   if (!(yield call(fse.pathExists, params.folderPath))) {
     return {type: 'error', errorType: 'folderDoesntExist'}
   }
@@ -37,11 +53,10 @@ export default function* createNewProject(params: {folderPath: string, name: str
 
   const fileContent = JSON.stringify({name: params.name})
   yield call(fse.writeFile, filePath, fileContent, {encoding: 'utf-8'})
-  const resultOfRecognise = yield * call(recogniseProject, {filePath})
+  const resultOfRecognise = yield* call(recogniseProject, {filePath})
   if (resultOfRecognise.type === 'ok') {
     return {...resultOfRecognise, filePath}
   } else {
     return {type: 'error', errorType: resultOfRecognise.errorType}
   }
 }
-

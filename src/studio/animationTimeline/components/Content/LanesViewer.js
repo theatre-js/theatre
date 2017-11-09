@@ -14,8 +14,16 @@ import {
   removeConnector,
   makeHandleHorizontal,
   makeHandlesParallel,
-  makeHandlesEqual} from '$studio/animationTimeline/sagas'
-import {type LaneID, type LaneObject, type Point, type PointPosition, type PointHandles, type NormalizedPoint} from '$studio/animationTimeline/types'
+  makeHandlesEqual,
+} from '$studio/animationTimeline/sagas'
+import {
+  type LaneID,
+  type LaneObject,
+  type Point,
+  type PointPosition,
+  type PointHandles,
+  type NormalizedPoint,
+} from '$studio/animationTimeline/types'
 import css from './LanesViewer.css'
 import Lane from './Lane'
 import cx from 'classnames'
@@ -30,9 +38,10 @@ type OwnProps = {
   boxHeight: number,
 }
 
-type Props = WithRunSagaProps & OwnProps & {
-  lanes: LaneObject[],
-}
+type Props = WithRunSagaProps &
+  OwnProps & {
+    lanes: LaneObject[],
+  }
 
 type State = {
   svgWidth: number,
@@ -59,7 +68,7 @@ class LanesViewer extends React.PureComponent<Props, State> {
 
   componentWillReceiveProps(newProps) {
     let activeLaneId = this.state.activeLaneId
-    if (newProps.laneIds.find((id) => (id === activeLaneId)) == null) {
+    if (newProps.laneIds.find(id => id === activeLaneId) == null) {
       activeLaneId = newProps.laneIds[0]
     }
     this.setState(() => ({...this._getSvgState(newProps), activeLaneId}))
@@ -79,13 +88,16 @@ class LanesViewer extends React.PureComponent<Props, State> {
   _getSvgState(props) {
     const {boxHeight, duration, focus, panelWidth, lanes} = props
     const svgHeight = boxHeight - 14
-    const svgWidth = duration / (focus[1] - focus[0]) * (panelWidth)
+    const svgWidth = duration / (focus[1] - focus[0]) * panelWidth
     const svgTransform = svgWidth * focus[0] / duration
-    const svgExtremums = lanes.reduce((reducer, {extremums}) => {
-      if (extremums[0] < reducer[0]) reducer[0] = extremums[0]
-      if (extremums[1] > reducer[1]) reducer[1] = extremums[1]
-      return reducer
-    }, [0, 0])
+    const svgExtremums = lanes.reduce(
+      (reducer, {extremums}) => {
+        if (extremums[0] < reducer[0]) reducer[0] = extremums[0]
+        if (extremums[1] > reducer[1]) reducer[1] = extremums[1]
+        return reducer
+      },
+      [0, 0],
+    )
 
     return {svgHeight, svgWidth, svgTransform, svgExtremums}
   }
@@ -109,16 +121,38 @@ class LanesViewer extends React.PureComponent<Props, State> {
     this.props.runSaga(removePointFromLane, laneId, pointIndex)
   }
 
-  setPointPositionTo = (laneId: LaneID, pointIndex: number, newPosition: PointPosition) => {
+  setPointPositionTo = (
+    laneId: LaneID,
+    pointIndex: number,
+    newPosition: PointPosition,
+  ) => {
     this.props.runSaga(setPointPositionTo, laneId, pointIndex, newPosition)
   }
 
-  changePointPositionBy = (laneId: LaneID, pointIndex: number, change: PointPosition) => {
-    this.props.runSaga(changePointPositionBy, laneId, pointIndex, this.deNormalizePositionChange(change))
+  changePointPositionBy = (
+    laneId: LaneID,
+    pointIndex: number,
+    change: PointPosition,
+  ) => {
+    this.props.runSaga(
+      changePointPositionBy,
+      laneId,
+      pointIndex,
+      this.deNormalizePositionChange(change),
+    )
   }
 
-  changePointHandlesBy = (laneId: LaneID, pointIndex: number, change: PointHandles) => {
-    this.props.runSaga(changePointHandlesBy, laneId, pointIndex, this.deNormalizeHandles(change))
+  changePointHandlesBy = (
+    laneId: LaneID,
+    pointIndex: number,
+    change: PointHandles,
+  ) => {
+    this.props.runSaga(
+      changePointHandlesBy,
+      laneId,
+      pointIndex,
+      this.deNormalizeHandles(change),
+    )
   }
 
   addConnector = (laneId: LaneID, pointIndex: number) => {
@@ -129,15 +163,27 @@ class LanesViewer extends React.PureComponent<Props, State> {
     this.props.runSaga(removeConnector, laneId, pointIndex)
   }
 
-  makeHandleHorizontal = (laneId: LaneID, pointIndex: number, side: 'left' | 'right') => {
+  makeHandleHorizontal = (
+    laneId: LaneID,
+    pointIndex: number,
+    side: 'left' | 'right',
+  ) => {
     this.props.runSaga(makeHandleHorizontal, laneId, pointIndex, side)
   }
 
-  makeHandlesParallel = (laneId: LaneID, pointIndex: number, side: 'left' | 'right') => {
+  makeHandlesParallel = (
+    laneId: LaneID,
+    pointIndex: number,
+    side: 'left' | 'right',
+  ) => {
     this.props.runSaga(makeHandlesParallel, laneId, pointIndex, side)
   }
 
-  makeHandlesEqual = (laneId: LaneID, pointIndex: number, side: 'left' | 'right') => {
+  makeHandlesEqual = (
+    laneId: LaneID,
+    pointIndex: number,
+    side: 'left' | 'right',
+  ) => {
     this.props.runSaga(makeHandlesEqual, laneId, pointIndex, side)
   }
 
@@ -151,12 +197,12 @@ class LanesViewer extends React.PureComponent<Props, State> {
 
   _normalizeY(y: number) {
     const {svgHeight, svgExtremums} = this.state
-    return - y * svgHeight / (svgExtremums[1] - svgExtremums[0])
+    return -y * svgHeight / (svgExtremums[1] - svgExtremums[0])
   }
 
   _deNormalizeY(y: number) {
     const {svgHeight, svgExtremums} = this.state
-    return - y * (svgExtremums[1] - svgExtremums[0]) / svgHeight
+    return -y * (svgExtremums[1] - svgExtremums[0]) / svgHeight
   }
 
   _normalizeValue(value: number) {
@@ -200,7 +246,7 @@ class LanesViewer extends React.PureComponent<Props, State> {
   }
 
   _normalizePoints(points: Point[]): NormalizedPoint[] {
-    return points.map((point) => {
+    return points.map(point => {
       const {t, value, handles, isConnected} = point
       return {
         _t: t,
@@ -216,47 +262,70 @@ class LanesViewer extends React.PureComponent<Props, State> {
   render() {
     const {lanes} = this.props
     const {svgHeight, svgWidth, svgTransform, activeLaneId} = this.state
-    const multiLanes = (lanes.length > 1)
+    const multiLanes = lanes.length > 1
     return (
       <div className={css.container}>
         <div className={css.titleBar}>
           {lanes.map(({id, component, property}, index) => (
             <div
               key={id}
-              className={cx(css.title, {[css.activeTitle]: multiLanes && id === activeLaneId})}
-              {...(multiLanes ? {onClick: (e) => this.titleClickHandler(e, id)} : {})}>
+              className={cx(css.title, {
+                [css.activeTitle]: multiLanes && id === activeLaneId,
+              })}
+              {...(multiLanes
+                ? {onClick: e => this.titleClickHandler(e, id)}
+                : {})}
+            >
               <div className={css.componentName}>{component}</div>
-              <div className={css.propertyName} style={{color: LanesViewer.colors[index%4]}}>{property}</div>
+              <div
+                className={css.propertyName}
+                style={{color: LanesViewer.colors[index % 4]}}
+              >
+                {property}
+              </div>
             </div>
-          ))
-          }
+          ))}
         </div>
         <div className={css.svgArea}>
           <svg
             height={svgHeight}
             width={svgWidth}
             style={{transform: `translateX(${-svgTransform}px)`}}
-            ref={(svg) => {if (svg != null) this.svgArea = svg}}
-            onClick={this.addPoint}>
-            {
-              lanes.map(({id, points}, index) => (
-                <Lane
-                  key={id}
-                  laneId={id}
-                  points={this._normalizePoints(points)}
-                  color={LanesViewer.colors[index%4]}
-                  width={svgWidth}
-                  changePointPositionBy={(index, change) => this.changePointPositionBy(id, index, change)}
-                  changePointHandlesBy={(index, change) => this.changePointHandlesBy(id, index, change)}
-                  setPointPositionTo={(index, newPosition) => this.setPointPositionTo(id, index, newPosition)}
-                  removePoint={(index) => this.removePoint(id, index)}
-                  addConnector={(index) => this.addConnector(id, index)}
-                  removeConnector={(index) => this.removeConnector(id, index)}
-                  makeHandleHorizontal={(index, side) => this.makeHandleHorizontal(id, index, side)}
-                  makeHandlesEqual={(index, side) => this.makeHandlesEqual(id, index, side)}
-                  makeHandlesParallel={(index, side) => this.makeHandlesParallel(id, index, side)}/>
-              ))
-            }
+            ref={svg => {
+              if (svg != null) this.svgArea = svg
+            }}
+            onClick={this.addPoint}
+          >
+            {lanes.map(({id, points}, index) => (
+              <Lane
+                key={id}
+                laneId={id}
+                points={this._normalizePoints(points)}
+                color={LanesViewer.colors[index % 4]}
+                width={svgWidth}
+                changePointPositionBy={(index, change) =>
+                  this.changePointPositionBy(id, index, change)
+                }
+                changePointHandlesBy={(index, change) =>
+                  this.changePointHandlesBy(id, index, change)
+                }
+                setPointPositionTo={(index, newPosition) =>
+                  this.setPointPositionTo(id, index, newPosition)
+                }
+                removePoint={index => this.removePoint(id, index)}
+                addConnector={index => this.addConnector(id, index)}
+                removeConnector={index => this.removeConnector(id, index)}
+                makeHandleHorizontal={(index, side) =>
+                  this.makeHandleHorizontal(id, index, side)
+                }
+                makeHandlesEqual={(index, side) =>
+                  this.makeHandlesEqual(id, index, side)
+                }
+                makeHandlesParallel={(index, side) =>
+                  this.makeHandlesParallel(id, index, side)
+                }
+              />
+            ))}
           </svg>
         </div>
       </div>
@@ -265,12 +334,10 @@ class LanesViewer extends React.PureComponent<Props, State> {
 }
 
 export default compose(
-  connect(
-    (state, ownProps: OwnProps) => {
-      return {
-        lanes: getLanesByIds(state, ownProps.laneIds),
-      }
+  connect((state, ownProps: OwnProps) => {
+    return {
+      lanes: getLanesByIds(state, ownProps.laneIds),
     }
-  ),
+  }),
   withRunSaga(),
 )(LanesViewer)

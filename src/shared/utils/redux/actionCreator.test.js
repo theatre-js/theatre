@@ -26,7 +26,8 @@ describe('$shared/utils/redux/actionCreator()', () => {
     })
   })
 
-  function typeTests() { // eslint-disable-line
+  // eslint-disable-next-line
+  function typeTests() {
     const creator = actionCreator(actionType)
     let a: any = (creator.type: 'Bootstrap') // eslint-disable-line
     // $FlowExpectError

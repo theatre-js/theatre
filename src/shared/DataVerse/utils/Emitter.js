@@ -23,8 +23,11 @@ export default class Emitter<V> {
   _tap(cb: Tapper<V>): Untap {
     const tapperId = this._lastTapperId++
     this._tappers.set(tapperId, cb)
-    this._onNumberOfTappersChangeListener && this._onNumberOfTappersChangeListener(this._tappers.size)
-    return () => {this._removeTapperById(tapperId)}
+    this._onNumberOfTappersChangeListener &&
+      this._onNumberOfTappersChangeListener(this._tappers.size)
+    return () => {
+      this._removeTapperById(tapperId)
+    }
   }
 
   _removeTapperById(id: number) {
@@ -32,12 +35,15 @@ export default class Emitter<V> {
     this._tappers.delete(id)
     const newSize = this._tappers.size
     if (oldSize !== newSize) {
-      this._onNumberOfTappersChangeListener && this._onNumberOfTappersChangeListener(this._tappers.size)
+      this._onNumberOfTappersChangeListener &&
+        this._onNumberOfTappersChangeListener(this._tappers.size)
     }
   }
 
   emit(payload: V) {
-    this._tappers.forEach((cb) => {cb(payload)})
+    this._tappers.forEach(cb => {
+      cb(payload)
+    })
   }
 
   hasTappers() {

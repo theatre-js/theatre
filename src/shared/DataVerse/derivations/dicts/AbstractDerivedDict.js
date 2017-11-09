@@ -16,7 +16,9 @@ export default class AbstractDerivedDict {
     this._trace = new Error('Trace')
     this._changeEmitter = new Emitter()
     this._changeEmitterHasTappers = false
-    this._changeEmitter.onNumberOfTappersChange(() => {this._reactToNumberOfChangeTappersChange()})
+    this._changeEmitter.onNumberOfTappersChange(() => {
+      this._reactToNumberOfChangeTappersChange()
+    })
     this._pointer = undefined
   }
 

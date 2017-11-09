@@ -5,7 +5,10 @@ import Emitter from '$shared/DataVerse/utils/Emitter'
 import Ticker from '$shared/DataVerse/Ticker'
 import type {MapKey} from '$shared/DataVerse/types'
 import type {IDerivation} from '../types'
-import {type IDerivationOfAPropOfPrototypalDictFace, default as propOfPrototypalDictFace} from './propOfPrototypalDictFace'
+import {
+  type IDerivationOfAPropOfPrototypalDictFace,
+  default as propOfPrototypalDictFace,
+} from './propOfPrototypalDictFace'
 import constant from '../constant'
 // import StabilizedDerivation from './StabilizedDerivation'
 import forEach from 'lodash/forEach'
@@ -63,7 +66,7 @@ export default class DerivedDictFace {
 
   constructor(head: ?IPrototypalDict<$FixMe>, ticker: Ticker) {
     this._head = head
-    this._changeEmitter = new Emitter
+    this._changeEmitter = new Emitter()
     this._ticker = ticker
     this._structure = makeEmptyStructure()
     this._updateStructure = this._updateStructure.bind(this)
@@ -81,14 +84,15 @@ export default class DerivedDictFace {
 
   _updateStructure() {
     const oldStructure = this._structure
-    forEach(oldStructure.layers.byId, (layer) => {
+    forEach(oldStructure.layers.byId, layer => {
       layer.untapFromParentChanges()
     })
 
     const newStructure = makeEmptyStructure()
 
     let currentDerivedDict = this._head
-    while (true) { // eslint-disable-line no-constant-condition
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
       if (!currentDerivedDict) break
 
       const id = currentDerivedDict._id
@@ -97,7 +101,9 @@ export default class DerivedDictFace {
         initiatingWiresByKey: {},
         derivedDict: currentDerivedDict,
         sourceDerivationsByKey: {},
-        untapFromParentChanges: currentDerivedDict.parentChanges().tap(this._notifyStructureNeedsUpdating),
+        untapFromParentChanges: currentDerivedDict
+          .parentChanges()
+          .tap(this._notifyStructureNeedsUpdating),
       }
       newStructure.layers.list.unshift(id)
       newStructure.layers.byId[id] = layer
@@ -110,7 +116,6 @@ export default class DerivedDictFace {
     forEach(oldStructure.layers.face.initiatingWiresByKey, (oldWire, key) => {
       this._createWire(key, 'face', oldWire.proxyDerivation)
     })
-
   }
 
   changes() {
@@ -128,10 +133,18 @@ export default class DerivedDictFace {
     return this.propFromLayer(key, 'face')
   }
 
-  propFromLayer(key: MapKey, initiatingLayerId: 'face' | number): IDerivation<$FixMe> {
-    const layer = initiatingLayerId === 'face' ? this._structure.layers.face : this._structure.layers.byId[initiatingLayerId]
+  propFromLayer(
+    key: MapKey,
+    initiatingLayerId: 'face' | number,
+  ): IDerivation<$FixMe> {
+    const layer =
+      initiatingLayerId === 'face'
+        ? this._structure.layers.face
+        : this._structure.layers.byId[initiatingLayerId]
     if (!layer)
-      throw new Error(`Layer ${initiatingLayerId} doesn't exist. This should never happen`)
+      throw new Error(
+        `Layer ${initiatingLayerId} doesn't exist. This should never happen`,
+      )
 
     const possibleWireInLayer = layer.initiatingWiresByKey[key]
     if (possibleWireInLayer) {
@@ -141,21 +154,36 @@ export default class DerivedDictFace {
     return this._createWire(key, initiatingLayerId).proxyDerivation
   }
 
-  _createWire(key: MapKey, startsInLayer: 'face' | number, reusableProxy?: IDerivationOfAPropOfPrototypalDictFace<$FixMe>): Wire {
+  _createWire(
+    key: MapKey,
+    startsInLayer: 'face' | number,
+    reusableProxy?: IDerivationOfAPropOfPrototypalDictFace<$FixMe>,
+  ): Wire {
     const endsInLayerId = this._findALayerThatHasProp(key, startsInLayer)
 
     const sourceDerivation = this._makeSourceDerivation(key, endsInLayerId)
-    const proxyDerivation = reusableProxy ? reusableProxy.setTarget(sourceDerivation) : propOfPrototypalDictFace(sourceDerivation)
-    const wire =  {key, startsInLayer, endsInLayerId, proxyDerivation}
+    const proxyDerivation = reusableProxy
+      ? reusableProxy.setTarget(sourceDerivation)
+      : propOfPrototypalDictFace(sourceDerivation)
+    const wire = {key, startsInLayer, endsInLayerId, proxyDerivation}
 
-    const layer = startsInLayer === 'face' ? this._structure.layers.face : this._structure.layers.byId[startsInLayer]
+    const layer =
+      startsInLayer === 'face'
+        ? this._structure.layers.face
+        : this._structure.layers.byId[startsInLayer]
     layer.initiatingWiresByKey[key] = wire
     return wire
   }
 
-  _makeSourceDerivation(key: MapKey, layerId: 'tail' | number): IDerivation<$FixMe> {
+  _makeSourceDerivation(
+    key: MapKey,
+    layerId: 'tail' | number,
+  ): IDerivation<$FixMe> {
     // if (layerId === 'tail')  return notFoundDerivation
-    const layer = layerId === 'tail' ? this._structure.layers.tail : this._structure.layers.byId[layerId]
+    const layer =
+      layerId === 'tail'
+        ? this._structure.layers.tail
+        : this._structure.layers.byId[layerId]
     const possibleSourceDerivation = layer.sourceDerivationsByKey[key]
 
     if (possibleSourceDerivation) return possibleSourceDerivation
@@ -167,7 +195,9 @@ export default class DerivedDictFace {
       const lid = layerId
       const constructor = (layer: $FixMe).derivedDict._getConstructor(key)
 
-      derivation = notFoundDerivation.flatMap(() => constructor(new ConstructorArg(this, lid)))
+      derivation = notFoundDerivation.flatMap(() =>
+        constructor(new ConstructorArg(this, lid)),
+      )
     }
 
     layer.sourceDerivationsByKey[key] = derivation
@@ -175,7 +205,10 @@ export default class DerivedDictFace {
   }
 
   _findALayerThatHasProp(key: MapKey, above: 'face' | number): number | 'tail' {
-    const startingIndex = above === 'face' ? this._structure.layers.list.length - 1 : this._structure.layers.list.indexOf(above) - 1
+    const startingIndex =
+      above === 'face'
+        ? this._structure.layers.list.length - 1
+        : this._structure.layers.list.indexOf(above) - 1
     if (startingIndex < 0) return 'tail'
 
     for (let i = startingIndex; i >= 0; i--) {
@@ -191,7 +224,6 @@ export default class DerivedDictFace {
 
     return 'tail'
   }
-
 }
 
 class ConstructorArg {

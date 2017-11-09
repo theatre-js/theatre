@@ -6,7 +6,11 @@ export const ensureNoAtoms = (d: $IntentionalAny) => {
       return d.derivedDict()
     } else if (d.isArrayAtom === 'True') {
       return d.derivedArray()
-    } else if (d.isDerivedDict === 'True' || d.isDerivedArray === 'True' || d.isDerivation === 'True') {
+    } else if (
+      d.isDerivedDict === 'True' ||
+      d.isDerivedArray === 'True' ||
+      d.isDerivation === 'True'
+    ) {
       return d
     } else {
       // console.warn('check this')

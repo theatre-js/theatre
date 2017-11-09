@@ -5,7 +5,8 @@ import AbstractDerivedArray from './AbstractDerivedArray'
 import {ensureNoAtoms} from '../dicts/utils'
 import noop from 'lodash/noop'
 
-export class DerivedArrayFromArrayAtom extends AbstractDerivedArray implements IDerivedArray<$FixMe> {
+export class DerivedArrayFromArrayAtom extends AbstractDerivedArray
+  implements IDerivedArray<$FixMe> {
   _arrayAtom: $FixMe
   _untapFromArrayAtomChangeEmitter: () => void
 
@@ -17,13 +18,20 @@ export class DerivedArrayFromArrayAtom extends AbstractDerivedArray implements I
   }
 
   index(i: number) {
-    return this._arrayAtom.pointer().index(i).flatMap(ensureNoAtoms)
+    return this._arrayAtom
+      .pointer()
+      .index(i)
+      .flatMap(ensureNoAtoms)
   }
 
   _reactToHavingTappers() {
-    this._untapFromArrayAtomChangeEmitter = this._arrayAtom.changes().tap((c) => {
+    this._untapFromArrayAtomChangeEmitter = this._arrayAtom.changes().tap(c => {
       if (c.deleteCount !== c.addedRefs.length) {
-        this._changeEmitter.emit({startIndex: c.startIndex, deleteCount: c.deleteCount, addCount: c.addedRefs.length})
+        this._changeEmitter.emit({
+          startIndex: c.startIndex,
+          deleteCount: c.deleteCount,
+          addCount: c.addedRefs.length,
+        })
       }
     })
   }
@@ -38,6 +46,8 @@ export class DerivedArrayFromArrayAtom extends AbstractDerivedArray implements I
   }
 }
 
-export default function deriveFromArrayAtom<V, A: IArrayAtom<V>>(a: A): IDerivedArray<V> {
+export default function deriveFromArrayAtom<V, A: IArrayAtom<V>>(
+  a: A,
+): IDerivedArray<V> {
   return new DerivedArrayFromArrayAtom(a)
 }

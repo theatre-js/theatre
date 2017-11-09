@@ -1,6 +1,5 @@
 // @flow
 
 describe('dummy', () => {
-  it('should work', () => {
-  })
+  it('should work', () => {})
 })

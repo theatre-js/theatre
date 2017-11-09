@@ -6,27 +6,33 @@ import LoadingUnlessBootstrapped from './LoadingUnlessBootstrapped'
 import {MemoryRouter as Router, Route, Switch, Redirect} from 'react-router-dom'
 import TheUI from '$studio/workspace/components/TheUI'
 
-const mainRoutes = [
-  <Route key="/" path="/" component={TheUI} />,
-]
-    
-const routes =
-  [
-    ...mainRoutes,
-    <Route key="toIndex" path={`/`} exact component={() => <Redirect to="/projects" />} />,
-    <Route key="404" component={() => <div>Route not found</div>} />,
-  ].map((el, i) => {
-    return el && <el.type {...el.props} children={el.children && el.children} key={i} /> // eslint-disable-line
-  })
+const mainRoutes = [<Route key="/" path="/" component={TheUI} />]
+
+const routes = [
+  ...mainRoutes,
+  <Route
+    key="toIndex"
+    path={`/`}
+    exact
+    component={() => <Redirect to="/projects" />}
+  />,
+  <Route key="404" component={() => <div>Route not found</div>} />,
+].map((el, i) => {
+  return (
+    el && (
+      <el.type {...el.props} children={el.children && el.children} key={i} /> // eslint-disable-line
+    )
+  ) // eslint-disable-line
+})
 
 const RootRoutes = () => {
   return (
     <LoadingUnlessBootstrapped>
-      <Router><Switch>{[...routes]}</Switch></Router>
+      <Router>
+        <Switch>{[...routes]}</Switch>
+      </Router>
     </LoadingUnlessBootstrapped>
   )
 }
 
-export default compose(
-  (a) => a
-)(RootRoutes)
+export default compose(a => a)(RootRoutes)

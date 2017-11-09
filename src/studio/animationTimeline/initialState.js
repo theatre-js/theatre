@@ -144,15 +144,20 @@ const initialState: AnimationTimelineNamespaceState = {
   timelines: {
     byId: {
       '8daa7380-9b43-475a-8352-dc564a58c710': {
-        layout: ['8daa7380-9b43-475a-8352-dc564a58c726',
+        layout: [
+          '8daa7380-9b43-475a-8352-dc564a58c726',
           '8daa7380-9b43-475a-8352-dc564a58c725',
           '8daa7380-9b43-475a-8352-dc564a58c724',
-          '8daa7380-9b43-475a-8352-dc564a58c723'],
+          '8daa7380-9b43-475a-8352-dc564a58c723',
+        ],
         boxes: {
           '8daa7380-9b43-475a-8352-dc564a58c726': {
             id: '8daa7380-9b43-475a-8352-dc564a58c726',
             height: 60,
-            lanes: ['8daa7380-9b43-475a-8352-dc564a58c716', '8daa7380-9b43-475a-8352-dc564a58c717'],
+            lanes: [
+              '8daa7380-9b43-475a-8352-dc564a58c716',
+              '8daa7380-9b43-475a-8352-dc564a58c717',
+            ],
           },
           '8daa7380-9b43-475a-8352-dc564a58c725': {
             id: '8daa7380-9b43-475a-8352-dc564a58c725',

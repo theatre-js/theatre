@@ -17,28 +17,42 @@ export class SingleAttributeInspector extends React.PureComponent<Props, void> {
   }
 
   _onKeyChange = (key: string) => {
-    this.props.dispatch(reduceStateAction([
-      {path: [...this.props.pathToPairings, 'byId', this.props.id, 'key'], reducer: () => key},
-      ]))
+    this.props.dispatch(
+      reduceStateAction([
+        {
+          path: [...this.props.pathToPairings, 'byId', this.props.id, 'key'],
+          reducer: () => key,
+        },
+      ]),
+    )
   }
 
   _onValueChange = (value: string) => {
-    this.props.dispatch(reduceStateAction([
-      {path: [...this.props.pathToPairings, 'byId', this.props.id, 'value'], reducer: () => value},
-      ]))
+    this.props.dispatch(
+      reduceStateAction([
+        {
+          path: [...this.props.pathToPairings, 'byId', this.props.id, 'value'],
+          reducer: () => value,
+        },
+      ]),
+    )
   }
 
   render() {
     const {pairing} = this.props
     // @todo ux - sort these alphabetically
-      // const pairing = byId[id]
-    return <div key="container">
-      <TextInput key="key" value={pairing.key} onChange={this._onKeyChange} />
-      <TextInput key="value" value={pairing.value} onChange={this._onValueChange} />
+    // const pairing = byId[id]
+    return (
+      <div key="container">
+        <TextInput key="key" value={pairing.key} onChange={this._onKeyChange} />
+        <TextInput
+          key="value"
+          value={pairing.value}
+          onChange={this._onValueChange}
+        />
       </div>
+    )
   }
-
-
 }
 
 export default compose(

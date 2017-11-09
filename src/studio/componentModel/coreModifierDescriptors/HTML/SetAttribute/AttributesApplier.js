@@ -22,9 +22,17 @@ export default class AttributesApplier {
     this._dict = dict
     this._ticker = ticker
     const domAttributesP = this._dict.pointer().prop('domAttributes')
-    this._domAttributesProxy = D.derivations.autoProxyDerivedDict(domAttributesP, ticker)
-    this._elRefD = dict.pointer().prop('state').prop('elRef')
-    this._isElSvgD = (this._elRefD.map((el) => !!(typeof el !== 'undefined' && el instanceof SVGElement)): D.IDerivation<boolean>)
+    this._domAttributesProxy = D.derivations.autoProxyDerivedDict(
+      domAttributesP,
+      ticker,
+    )
+    this._elRefD = dict
+      .pointer()
+      .prop('state')
+      .prop('elRef')
+    this._isElSvgD = (this._elRefD.map(
+      el => !!(typeof el !== 'undefined' && el instanceof SVGElement),
+    ): D.IDerivation<boolean>)
     this._untapFromProxy = _.noop
     this._started = false
     this._activeKeys = {}
@@ -37,7 +45,7 @@ export default class AttributesApplier {
 
     this._started = true
 
-    this._untapFromProxy = this._domAttributesProxy.changes().tap((changes) => {
+    this._untapFromProxy = this._domAttributesProxy.changes().tap(changes => {
       changes.deletedKeys.forEach(this._stopObservingKey)
       changes.addedKeys.forEach(this._removeKey)
     })
@@ -64,19 +72,21 @@ export default class AttributesApplier {
 
     const valueD = this._domAttributesProxy.prop(key)
 
-    const setterD: D.IDerivation<($FixMe) => void> = D.derivations.withDeps({elRefD: this._elRefD, isElSvgD: this._isElSvgD}, ({elRefD, isElSvgD}) => {
-      const elRef = elRefD.getValue()
+    const setterD: D.IDerivation<($FixMe) => void> = D.derivations.withDeps(
+      {elRefD: this._elRefD, isElSvgD: this._isElSvgD},
+      ({elRefD, isElSvgD}) => {
+        const elRef = elRefD.getValue()
 
-      if (!elRef) return () => {}
-      return domAttrSetter(elRef, key, isElSvgD.getValue())
-    })
+        if (!elRef) return () => {}
+        return domAttrSetter(elRef, key, isElSvgD.getValue())
+      },
+    )
 
-    let lastSetter: ($FixMe) => void = _.noop
+    let lastSetter: $FixMe => void = _.noop
 
-    const untap =
-      D.derivations.withDeps(
-        {valueD, setterD}, _.identity
-      ).tapImmediate(this._ticker, ({valueD, setterD}) => {
+    const untap = D.derivations
+      .withDeps({valueD, setterD}, _.identity)
+      .tapImmediate(this._ticker, ({valueD, setterD}) => {
         lastSetter = setterD.getValue()
         lastSetter(valueD.getValue())
       })

@@ -17,33 +17,117 @@ function preventToThrow(fn: () => Generator<*, *, *>) {
 
 // type FnSpread<T, R> = (...args: Array<T>) => Generator<mixed,R,mixed>
 
-type Fn0<R> = (...rest: Array<void>) => Generator<mixed,R,mixed>
-type Fn1<T1, R> = (t1: T1, ...rest: Array<void>) => Generator<mixed,R,mixed>
-type Fn2<T1, T2, R> = (t1: T1, t2: T2, ...rest: Array<void>) => Generator<mixed,R,mixed>
-type Fn3<T1, T2, T3, R> = (t1: T1, t2: T2, t3: T3, ...rest: Array<void>) => Generator<mixed,R,mixed>
-type Fn4<T1, T2, T3, T4, R> = (t1: T1, t2: T2, t3: T3, t4: T4, ...rest: Array<void>) => Generator<mixed,R,mixed>
-type Fn5<T1, T2, T3, T4, T5, R> = (t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, ...rest: Array<void>) => Generator<mixed,R,mixed>
-type Fn6<T1, T2, T3, T4, T5, T6, R> = (t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, t6: T6, ...rest: Array<void>) => Generator<mixed,R,mixed>
+type Fn0<R> = (...rest: Array<void>) => Generator<mixed, R, mixed>
+type Fn1<T1, R> = (t1: T1, ...rest: Array<void>) => Generator<mixed, R, mixed>
+type Fn2<T1, T2, R> = (
+  t1: T1,
+  t2: T2,
+  ...rest: Array<void>
+) => Generator<mixed, R, mixed>
+type Fn3<T1, T2, T3, R> = (
+  t1: T1,
+  t2: T2,
+  t3: T3,
+  ...rest: Array<void>
+) => Generator<mixed, R, mixed>
+type Fn4<T1, T2, T3, T4, R> = (
+  t1: T1,
+  t2: T2,
+  t3: T3,
+  t4: T4,
+  ...rest: Array<void>
+) => Generator<mixed, R, mixed>
+type Fn5<T1, T2, T3, T4, T5, R> = (
+  t1: T1,
+  t2: T2,
+  t3: T3,
+  t4: T4,
+  t5: T5,
+  ...rest: Array<void>
+) => Generator<mixed, R, mixed>
+type Fn6<T1, T2, T3, T4, T5, T6, R> = (
+  t1: T1,
+  t2: T2,
+  t3: T3,
+  t4: T4,
+  t5: T5,
+  t6: T6,
+  ...rest: Array<void>
+) => Generator<mixed, R, mixed>
 
-export type RunSagaFn =
-  & (<T1, T2, T3, T4, T5, T6, R, Fn: Fn6<T1, T2, T3, T4, T5, T6, R>>(fn: Fn, t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, t6: T6, ...rest: Array<void>) => Promise<R>)
-  & (<T1, T2, T3, T4, T5, R, Fn: Fn5<T1, T2, T3, T4, T5, R>>(fn: Fn, t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, ...rest: Array<void>) => Promise<R>)
-  & (<T1, T2, T3, T4, R, Fn: Fn4<T1, T2, T3, T4, R>>(fn: Fn, t1: T1, t2: T2, t3: T3, t4: T4, ...rest: Array<void>) => Promise<R>)
-  & (<T1, T2, T3, R, Fn: Fn3<T1, T2, T3, R>>(fn: Fn, t1: T1, t2: T2, t3: T3, ...rest: Array<void>) => Promise<R>)
-  & (<T1, T2, R, Fn: Fn2<T1, T2, R>>(fn: Fn, t1: T1, t2: T2, ...rest: Array<void>) => Promise<R>)
-  & (<T1, R, Fn: Fn1<T1, R>>(fn: Fn, t1: T1, ...rest: Array<void>) => Promise<R>)
-  & (<R, Fn: Fn0<R>>(fn: Fn, ...rest: Array<void>) => Promise<R>)
-  // @todo for some reason, including the FnSpread case causes flow to use it instead of FN0. So, no spread support for the time being
-  // & (<T, R, Fn: FnSpread<T, R>>(fn: Fn, ...args: Array<T>) => Promise<R>)
+export type RunSagaFn = (<
+  T1,
+  T2,
+  T3,
+  T4,
+  T5,
+  T6,
+  R,
+  Fn: Fn6<T1, T2, T3, T4, T5, T6, R>,
+>(
+  fn: Fn,
+  t1: T1,
+  t2: T2,
+  t3: T3,
+  t4: T4,
+  t5: T5,
+  t6: T6,
+  ...rest: Array<void>
+) => Promise<R>) &
+  (<T1, T2, T3, T4, T5, R, Fn: Fn5<T1, T2, T3, T4, T5, R>>(
+    fn: Fn,
+    t1: T1,
+    t2: T2,
+    t3: T3,
+    t4: T4,
+    t5: T5,
+    ...rest: Array<void>
+  ) => Promise<R>) &
+  (<T1, T2, T3, T4, R, Fn: Fn4<T1, T2, T3, T4, R>>(
+    fn: Fn,
+    t1: T1,
+    t2: T2,
+    t3: T3,
+    t4: T4,
+    ...rest: Array<void>
+  ) => Promise<R>) &
+  (<T1, T2, T3, R, Fn: Fn3<T1, T2, T3, R>>(
+    fn: Fn,
+    t1: T1,
+    t2: T2,
+    t3: T3,
+    ...rest: Array<void>
+  ) => Promise<R>) &
+  (<T1, T2, R, Fn: Fn2<T1, T2, R>>(
+    fn: Fn,
+    t1: T1,
+    t2: T2,
+    ...rest: Array<void>
+  ) => Promise<R>) &
+  (<T1, R, Fn: Fn1<T1, R>>(
+    fn: Fn,
+    t1: T1,
+    ...rest: Array<void>
+  ) => Promise<R>) &
+  (<R, Fn: Fn0<R>>(fn: Fn, ...rest: Array<void>) => Promise<R>)
+// @todo for some reason, including the FnSpread case causes flow to use it instead of FN0. So, no spread support for the time being
+// & (<T, R, Fn: FnSpread<T, R>>(fn: Fn, ...args: Array<T>) => Promise<R>)
 
 export type WithRunSagaProps = {runSaga: RunSagaFn}
 
-export default function withRunSaga(): HigherOrderComponent<{}, {runSaga: RunSagaFn}> {
+export default function withRunSaga(): HigherOrderComponent<
+  {},
+  {runSaga: RunSagaFn},
+> {
   return function connectedToSagas(component: any): any {
-    const finalComponent = (props: Object, {store}: {store: {runSaga: Function}}) => {
+    const finalComponent = (
+      props: Object,
+      {store}: {store: {runSaga: Function}},
+    ) => {
       const ownProps = {
         // $FixMe
-        runSaga: (fn, ...args) => store.sagaMiddleware.run(preventToThrow(fn), ...args).done,
+        runSaga: (fn, ...args) =>
+          store.sagaMiddleware.run(preventToThrow(fn), ...args).done,
       }
       return React.createElement(component, {...props, ...ownProps})
     }
@@ -52,8 +136,9 @@ export default function withRunSaga(): HigherOrderComponent<{}, {runSaga: RunSag
       store: PropTypes.any,
     }
 
-    finalComponent.displayName =
-      `withRunSaga(${component.displayName || component.name || 'Component'})`
+    finalComponent.displayName = `withRunSaga(${component.displayName ||
+      component.name ||
+      'Component'})`
 
     hoistNonReactStatics(finalComponent, component)
 

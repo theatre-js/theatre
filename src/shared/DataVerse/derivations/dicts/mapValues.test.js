@@ -16,7 +16,7 @@ describe('mapValues', () => {
 
     const mapLike = deriveFromDictAtom(o)
 
-    const mapped = mapValues(mapLike, (d) => d.flatMap((s) => s + 'B'))
+    const mapped = mapValues(mapLike, d => d.flatMap(s => s + 'B'))
 
     const fooD = mapped.prop('foo')
     expect(fooD.getValue()).toEqual('fooB')
@@ -24,7 +24,7 @@ describe('mapValues', () => {
     expect(fooD.getValue()).toEqual('foo2B')
 
     const fooDChanges = []
-    fooD.changes(ticker).tap((c) => {
+    fooD.changes(ticker).tap(c => {
       fooDChanges.push(c)
     })
 
@@ -33,7 +33,7 @@ describe('mapValues', () => {
     expect(fooDChanges).toMatchObject(['foo3B'])
 
     const mappedChanges = []
-    mapped.changes().tap((c) => {
+    mapped.changes().tap(c => {
       mappedChanges.push(c)
     })
 
@@ -43,11 +43,18 @@ describe('mapValues', () => {
 
     // $FlowIgnore
     o.setProp('doo', D.atoms.box('blah'))
-    expect(mappedChanges).toMatchObject([{
-      addedKeys: ['doo'],
-      deletedKeys: [],
-    }])
+    expect(mappedChanges).toMatchObject([
+      {
+        addedKeys: ['doo'],
+        deletedKeys: [],
+      },
+    ])
 
-    expect(mapped.pointer().prop('foo').getValue()).toEqual('zooB')
+    expect(
+      mapped
+        .pointer()
+        .prop('foo')
+        .getValue(),
+    ).toEqual('zooB')
   })
 })

@@ -8,7 +8,7 @@ describe.only('DataVerse.Emitter', () => {
     e.emit('nor this')
 
     const tappedEvents = []
-    const untap = e.tappable.tap((payload) => {
+    const untap = e.tappable.tap(payload => {
       tappedEvents.push(payload)
     })
     e.emit('foo')

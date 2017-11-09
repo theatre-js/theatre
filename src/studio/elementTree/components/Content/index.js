@@ -39,7 +39,9 @@ class Content extends React.Component<Props, State> {
     const nativeRoot = document.getElementById('theaterjs-root')
     const {_renderers: renderers} = this.hook
     for (let key in renderers) {
-      const reactRoot = renderers[key].ComponentTree.getClosestInstanceFromNode(nativeRoot)
+      const reactRoot = renderers[key].ComponentTree.getClosestInstanceFromNode(
+        nativeRoot,
+      )
       if (reactRoot !== null) {
         rendererID = key
         renderRoot = reactRoot
@@ -51,15 +53,15 @@ class Content extends React.Component<Props, State> {
   }
 
   _subscribeToHookEvents() {
-    this.hook.sub('mount', (data) => {
+    this.hook.sub('mount', data => {
       if (data.renderer !== this.rendererID) return
       this._mountComponent(data.internalInstance)
     })
-    this.hook.sub('update', (data) => {
+    this.hook.sub('update', data => {
       if (data.renderer !== this.rendererID) return
       this._updateComponent(data)
     })
-    this.hook.sub('unmount', (data) => {
+    this.hook.sub('unmount', data => {
       if (data.renderer !== this.rendererID) return
       this._unmountComponent(data.internalInstance)
     })
@@ -73,9 +75,14 @@ class Content extends React.Component<Props, State> {
       newComponent = hostParent
       hostParent = hostParent._hostParent
     }
-    this.setState((state) => {
+    this.setState(state => {
       const containerPath = this._refMap.get(hostParent).concat('children')
-      const [nodes, refMap] = this._addComponentAndChildren(newComponent, containerPath, state.nodes, this._refMap)
+      const [nodes, refMap] = this._addComponentAndChildren(
+        newComponent,
+        containerPath,
+        state.nodes,
+        this._refMap,
+      )
       this._refMap = refMap
       return {nodes}
     })
@@ -83,9 +90,14 @@ class Content extends React.Component<Props, State> {
 
   _updateComponent(component: Object) {
     if (!this._refMap.has(component)) return
-    this.setState((state) => {
+    this.setState(state => {
       const path = this._refMap.get(component)
-      const [nodes, refMap] = this._addNodeData(component, path, state.nodes, this._refMap)
+      const [nodes, refMap] = this._addNodeData(
+        component,
+        path,
+        state.nodes,
+        this._refMap,
+      )
       this._refMap = refMap
       return {nodes}
     })
@@ -93,7 +105,7 @@ class Content extends React.Component<Props, State> {
 
   _unmountComponent(component: Object) {
     if (this._refMap.has(component)) {
-      this.setState((state) => {
+      this.setState(state => {
         const path = this._refMap.get(component)
         this._refMap.delete(component)
         _.unset(state.nodes, path)
@@ -104,29 +116,57 @@ class Content extends React.Component<Props, State> {
 
   _traverseTree() {
     if (this.renderRoot == null) return {}
-    let nodes = {}, refMap = new WeakMap()
+    let nodes = {},
+      refMap = new WeakMap()
     const rootChildren = this._getRenderedSubcomponents(this.renderRoot)
-    rootChildren.forEach((rootChild) => {
-      [nodes, refMap] = this._addComponentAndChildren(rootChild, [], nodes, refMap)
+    rootChildren.forEach(rootChild => {
+      ;[nodes, refMap] = this._addComponentAndChildren(
+        rootChild,
+        [],
+        nodes,
+        refMap,
+      )
     })
     this._refMap = refMap
     return nodes
   }
 
-  _addComponentAndChildren(component: Object, containerPath: string[], currentNodes: Object, currentRefMap: Object) {
-    let [nodes, refMap, componentPath] = this._addNodeData(component, containerPath, currentNodes, currentRefMap)
+  _addComponentAndChildren(
+    component: Object,
+    containerPath: string[],
+    currentNodes: Object,
+    currentRefMap: Object,
+  ) {
+    let [nodes, refMap, componentPath] = this._addNodeData(
+      component,
+      containerPath,
+      currentNodes,
+      currentRefMap,
+    )
     const children = this._getRenderedSubcomponents(component)
     if (children.length > 0) {
-      children.forEach((child) => {
-        const childPath = componentPath.concat('children');
-        [nodes, refMap] = this._addComponentAndChildren(child, childPath, nodes, refMap)
+      children.forEach(child => {
+        const childPath = componentPath.concat('children')
+        ;[nodes, refMap] = this._addComponentAndChildren(
+          child,
+          childPath,
+          nodes,
+          refMap,
+        )
       })
     }
     return [nodes, refMap]
   }
 
-  _addNodeData(component: Object, containerPath: Path, nodes: Object, refMap: Object) {
-    const path = (refMap.has(component)) ? containerPath : containerPath.concat(generateUniqueID())
+  _addNodeData(
+    component: Object,
+    containerPath: Path,
+    nodes: Object,
+    refMap: Object,
+  ) {
+    const path = refMap.has(component)
+      ? containerPath
+      : containerPath.concat(generateUniqueID())
     const data = this._prepareNodeData(component, path)
     _.set(nodes, path, data)
     refMap.set(component, path)
@@ -137,7 +177,7 @@ class Content extends React.Component<Props, State> {
     const {_currentElement: {type}} = reactObject
     return {
       data: {
-        name: (typeof type === 'string') ? type : type.name,
+        name: typeof type === 'string' ? type : type.name,
       },
       isExpanded: true,
       path,
@@ -157,7 +197,7 @@ class Content extends React.Component<Props, State> {
   }
 
   toggleNodeExpansionState = (path: Path) => {
-    this.setState((state) => {
+    this.setState(state => {
       const isExpandedPath = path.concat('isExpanded')
       _.set(state.nodes, isExpandedPath, !_.get(state.nodes, isExpandedPath))
       return {nodes: state.nodes}
@@ -165,26 +205,28 @@ class Content extends React.Component<Props, State> {
   }
 
   selectNode = (path: Path) => {
-    const {children, isExpanded, ...selectedNode} = _.get(this.state.nodes, path)
+    const {children, isExpanded, ...selectedNode} = _.get(
+      this.state.nodes,
+      path,
+    )
     this.props.updatePanelOutput({selectedNode})
   }
 
   render() {
     const {nodes} = this.state
     const {outputs: {selectedNode}} = this.props
-    const selectedNodePath = (selectedNode != null) ? selectedNode.path : null
+    const selectedNodePath = selectedNode != null ? selectedNode.path : null
     return (
       <div>
-        {
-          Object.keys(nodes).map((key) =>
-            <Node
-              key={key}
-              toggleExpansion={this.toggleNodeExpansionState}
-              selectNode={this.selectNode}
-              selectedNodePath={selectedNodePath}
-              {...nodes[key]} />
-          )
-        }
+        {Object.keys(nodes).map(key => (
+          <Node
+            key={key}
+            toggleExpansion={this.toggleNodeExpansionState}
+            selectNode={this.selectNode}
+            selectedNodePath={selectedNodePath}
+            {...nodes[key]}
+          />
+        ))}
       </div>
     )
   }

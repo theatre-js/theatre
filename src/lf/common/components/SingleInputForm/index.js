@@ -57,13 +57,16 @@ class SingleInputForm extends React.Component<Props, State> {
   render() {
     return (
       <input
-        ref={(input) => {this.input = input}}
+        ref={input => {
+          this.input = input
+        }}
         placeholder={this.props.placeholder}
         value={this.state.value}
         onKeyDown={this.handleKeyDown}
         className={this.props.className ? this.props.className : css.input}
         onChange={this.onChange}
-        type='text' />
+        type="text"
+      />
     )
   }
 }

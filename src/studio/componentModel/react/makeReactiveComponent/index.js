@@ -1,15 +1,23 @@
-import SideEffectsHandler from './SideEffectsHandler'  // eslint-disable-line flowtype/require-valid-file-annotation
+import SideEffectsHandler from './SideEffectsHandler' // eslint-disable-line flowtype/require-valid-file-annotation
 import {type Studio, PureComponentWithStudio, D} from '$studio/handy'
 
 type MakeReactiveComponentArgs = {
-  modifyPrototypalDict: (D.IPrototypalDict<$FixMe>) => D.IPrototypalDict<$FixMe>,
+  modifyPrototypalDict: (
+    D.IPrototypalDict<$FixMe>,
+  ) => D.IPrototypalDict<$FixMe>,
   displayName?: string,
   componentId?: string,
   componentType?: string,
   getInitialState?: () => D.IDictAtom<$FixMe>,
 }
 
-export default function makeReactiveComponent({modifyPrototypalDict, displayName, getInitialState, componentId, componentType}: MakeReactiveComponentArgs) {
+export default function makeReactiveComponent({
+  modifyPrototypalDict,
+  displayName,
+  getInitialState,
+  componentId,
+  componentType,
+}: MakeReactiveComponentArgs) {
   type Props = {
     key: string,
     props: $FixMe,
@@ -17,7 +25,9 @@ export default function makeReactiveComponent({modifyPrototypalDict, displayName
   }
 
   class TheaterJSComponent extends PureComponentWithStudio<Props, void> {
-    static displayName = typeof displayName === 'string' ? displayName : undefined
+    static displayName = typeof displayName === 'string'
+      ? displayName
+      : undefined
 
     _finalFace: $FixMe
     _atom: $FixMe
@@ -36,7 +46,10 @@ export default function makeReactiveComponent({modifyPrototypalDict, displayName
       studio: Studio,
       key: string,
       state: $FixMe,
-      modifierInstantiationDescriptors: $ElementType<Props, 'modifierInstantiationDescriptors'>,
+      modifierInstantiationDescriptors: $ElementType<
+        Props,
+        'modifierInstantiationDescriptors',
+      >,
     }>
 
     static _baseLookupTable = {
@@ -44,11 +57,27 @@ export default function makeReactiveComponent({modifyPrototypalDict, displayName
         return null
       },
       sideEffects: () => D.derivations.emptyDict,
-      props: (d) => d.pointer().prop('_atom').prop('props'),
-      studio: (d) => d.pointer().prop('_atom').prop('studio'),
+      props: d =>
+        d
+          .pointer()
+          .prop('_atom')
+          .prop('props'),
+      studio: d =>
+        d
+          .pointer()
+          .prop('_atom')
+          .prop('studio'),
       // key: (d) => d.pointer().prop('_atom').prop('key'),
-      modifierInstantiationDescriptors: (d) => d.pointer().prop('_atom').prop('modifierInstantiationDescriptors'),
-      state: (d) => d.pointer().prop('_atom').prop('state'),
+      modifierInstantiationDescriptors: d =>
+        d
+          .pointer()
+          .prop('_atom')
+          .prop('modifierInstantiationDescriptors'),
+      state: d =>
+        d
+          .pointer()
+          .prop('_atom')
+          .prop('state'),
     }
 
     constructor(props: Props, context: $FixMe) {
@@ -60,88 +89,131 @@ export default function makeReactiveComponent({modifyPrototypalDict, displayName
       this._prototypalDictD = this._makePrototypalDictD()
 
       // @todo perf: this._prototypalDictD's value is read cold, and a few lines later, hot. Let's read it only when it's hot
-      this._finalFace =
-        new D.derivations.PrototypalDictFace(this._prototypalDictD.getValue(), this.studio.ticker)
+      this._finalFace = new D.derivations.PrototypalDictFace(
+        this._prototypalDictD.getValue(),
+        this.studio.ticker,
+      )
 
       this.isTheaterJSComponent = true
-      this.componentType = componentType || this._finalFace.prop('componentType').getValue()
-      this.componentId = componentId || this._finalFace.prop('componentId').getValue()
+      this.componentType =
+        componentType || this._finalFace.prop('componentType').getValue()
+      this.componentId =
+        componentId || this._finalFace.prop('componentId').getValue()
       this.elementId = this._atom.prop('instanceId')
 
       if (!displayName)
-        TheaterJSComponent.displayName = this._finalFace.prop('displayName').getValue()
+        TheaterJSComponent.displayName = this._finalFace
+          .prop('displayName')
+          .getValue()
 
-      const untapFromPrototypalMapChanges = this._prototypalDictD.changes(this.studio.ticker).tap((newFinalPrototypalDict) => {
-        this._finalFace.setHead(newFinalPrototypalDict)
-      })
+      const untapFromPrototypalMapChanges = this._prototypalDictD
+        .changes(this.studio.ticker)
+        .tap(newFinalPrototypalDict => {
+          this._finalFace.setHead(newFinalPrototypalDict)
+        })
 
       this._fnsToCallOnWillUnmount.push(untapFromPrototypalMapChanges)
 
       this._whatToRender = null
-      const untapFromRender = this._finalFace.prop('render').changes(this.studio.ticker).tap((whatToRender) => {
-        this._whatToRender = whatToRender
-        this.forceUpdate()
-      })
+      const untapFromRender = this._finalFace
+        .prop('render')
+        .changes(this.studio.ticker)
+        .tap(whatToRender => {
+          this._whatToRender = whatToRender
+          this.forceUpdate()
+        })
       this._fnsToCallOnWillUnmount.push(untapFromRender)
 
       const sideEffectsDictP = this._finalFace.pointer().prop('sideEffects')
-      this._sideEffetsHandler = new SideEffectsHandler(this.studio.ticker, this._finalFace, sideEffectsDictP)
-
+      this._sideEffetsHandler = new SideEffectsHandler(
+        this.studio.ticker,
+        this._finalFace,
+        sideEffectsDictP,
+      )
     }
 
     _createAtom() {
       return D.atoms.dict({
         instanceId: this.studio._getNewComponentInstanceId(),
         props: this.props.props,
-        modifierInstantiationDescriptors: this.props.modifierInstantiationDescriptors,
+        modifierInstantiationDescriptors: this.props
+          .modifierInstantiationDescriptors,
         studio: this.studio,
         // key: this.props.key,
-        state: getInitialState ? getInitialState(): D.atoms.dict({}),
+        state: getInitialState ? getInitialState() : D.atoms.dict({}),
       })
     }
 
     _makePrototypalDictD() {
-      const basePrototypalDict =
-        D.derivations.prototypalDict({_atom: () => this._atom}).extend(TheaterJSComponent._baseLookupTable)
+      const basePrototypalDict = D.derivations
+        .prototypalDict({_atom: () => this._atom})
+        .extend(TheaterJSComponent._baseLookupTable)
 
-      const prototypalDictWithoutModifiers = modifyPrototypalDict(basePrototypalDict)
+      const prototypalDictWithoutModifiers = modifyPrototypalDict(
+        basePrototypalDict,
+      )
 
       // return D.derivations.constant(prototypalDictWithoutModifiers)
 
-      const modifierInstantiationDescriptorsByIdP = this._atom.pointer().prop('modifierInstantiationDescriptors').prop('byId')
-      const finalPrototypalDictD =
-        this._atom.pointer().prop('modifierInstantiationDescriptors').prop('list').flatMap((list: D.IDerivedArray<$FixMe>) => {
-          if (!list)
-            return prototypalDictWithoutModifiers
+      const modifierInstantiationDescriptorsByIdP = this._atom
+        .pointer()
+        .prop('modifierInstantiationDescriptors')
+        .prop('byId')
+      const finalPrototypalDictD = this._atom
+        .pointer()
+        .prop('modifierInstantiationDescriptors')
+        .prop('list')
+        .flatMap((list: D.IDerivedArray<$FixMe>) => {
+          if (!list) return prototypalDictWithoutModifiers
 
           // if (list.length() > 0) debugger
 
           // return prototypalDictWithoutModifiers
 
-          return list.map((idD) => idD.flatMap((id: string) => modifierInstantiationDescriptorsByIdP.prop(id)))
-            .reduce(
-              (dict, modifierInstantiationDescriptor) => {
-                return this._applyModifier(modifierInstantiationDescriptor, dict)
-              },
-              D.derivations.constant(prototypalDictWithoutModifiers),
+          return list
+            .map(idD =>
+              idD.flatMap((id: string) =>
+                modifierInstantiationDescriptorsByIdP.prop(id),
+              ),
             )
+            .reduce((dict, modifierInstantiationDescriptor) => {
+              return this._applyModifier(modifierInstantiationDescriptor, dict)
+            }, D.derivations.constant(prototypalDictWithoutModifiers))
         })
 
       return finalPrototypalDictD
     }
 
-    _applyModifier(modifierInstantiationDescriptor, dict): D.IDerivation<$FixMe> {
-      return modifierInstantiationDescriptor.prop('disabled').flatMap((disabled: boolean) => {
-        if (disabled) return dict
+    _applyModifier(
+      modifierInstantiationDescriptor,
+      dict,
+    ): D.IDerivation<$FixMe> {
+      return modifierInstantiationDescriptor
+        .prop('disabled')
+        .flatMap((disabled: boolean) => {
+          if (disabled) return dict
 
-        return modifierInstantiationDescriptor.prop('modifierId').flatMap((modifierId: string) => {
-          return this.studio.atom.pointer().prop('componentModel').prop('modifierDescriptors').prop('core').prop(modifierId).prop('modifyPrototypalDict').flatMap((possibleFn: ?Function) => {
-            if (!possibleFn) console.warn('this shouldnt happen')
-            return possibleFn ? possibleFn(modifierInstantiationDescriptor.pointer().prop('props'), dict) : dict
-          })
+          return modifierInstantiationDescriptor
+            .prop('modifierId')
+            .flatMap((modifierId: string) => {
+              return this.studio.atom
+                .pointer()
+                .prop('componentModel')
+                .prop('modifierDescriptors')
+                .prop('core')
+                .prop(modifierId)
+                .prop('modifyPrototypalDict')
+                .flatMap((possibleFn: ?Function) => {
+                  if (!possibleFn) console.warn('this shouldnt happen')
+                  return possibleFn
+                    ? possibleFn(
+                        modifierInstantiationDescriptor.pointer().prop('props'),
+                        dict,
+                      )
+                    : dict
+                })
+            })
         })
-      })
-
     }
 
     componentWillReceiveProps(newProps: Props) {
@@ -149,8 +221,14 @@ export default function makeReactiveComponent({modifyPrototypalDict, displayName
         this._atom.setProp('props', newProps.props)
       }
 
-      if (newProps.modifierInstantiationDescriptors !== this.props.modifierInstantiationDescriptors) {
-        this._atom.setProp('modifierInstantiationDescriptors', newProps.modifierInstantiationDescriptors)
+      if (
+        newProps.modifierInstantiationDescriptors !==
+        this.props.modifierInstantiationDescriptors
+      ) {
+        this._atom.setProp(
+          'modifierInstantiationDescriptors',
+          newProps.modifierInstantiationDescriptors,
+        )
       }
     }
 
@@ -165,14 +243,15 @@ export default function makeReactiveComponent({modifyPrototypalDict, displayName
 
     componentWillUnmount() {
       this._sideEffetsHandler.stopApplying()
-      this._fnsToCallOnWillUnmount.forEach((fn) => {fn()})
+      this._fnsToCallOnWillUnmount.forEach(fn => {
+        fn()
+      })
     }
 
     render() {
       return this._whatToRender
     }
   }
-
 
   return TheaterJSComponent
 }

@@ -2,7 +2,8 @@
 import AbstractDerivation from './AbstractDerivation'
 import type {IDerivation} from './types'
 
-export class ProxyDerivation<V> extends AbstractDerivation implements IProxyDerivation<V> {
+export class ProxyDerivation<V> extends AbstractDerivation
+  implements IProxyDerivation<V> {
   getValue: () => V
   _target: IDerivation<V>
 
@@ -29,9 +30,11 @@ export class ProxyDerivation<V> extends AbstractDerivation implements IProxyDeri
 }
 
 export interface IProxyDerivation<V> extends IDerivation<V> {
-  setTarget(target: IDerivation<V>): IProxyDerivation<V>,
+  setTarget(target: IDerivation<V>): IProxyDerivation<V>;
 }
 
-export default function proxy<V, D: IDerivation<V>>(target: D): IProxyDerivation<V> {
+export default function proxy<V, D: IDerivation<V>>(
+  target: D,
+): IProxyDerivation<V> {
   return new ProxyDerivation(target)
 }

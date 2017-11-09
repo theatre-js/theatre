@@ -1,4 +1,6 @@
 // @flow
 
 // @todo
-export default (...args: Array<$FixMe>) => {args}
+export default (...args: Array<$FixMe>) => {
+  args
+}

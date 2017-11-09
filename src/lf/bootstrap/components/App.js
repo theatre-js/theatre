@@ -16,7 +16,7 @@ type State = {
 }
 
 class App extends React.Component<Props, *> {
-  static defaultProps: *;
+  static defaultProps: *
   state: State
 
   constructor(props: Props) {
@@ -36,13 +36,11 @@ class App extends React.Component<Props, *> {
     const self = this
 
     if (process.env.NODE_ENV === 'development' && module.hot) {
-      module.hot.accept(
-        './HotReloadablePartOfApp',
-        () => {
-          const HotReloadablePartOfApp = require('./HotReloadablePartOfApp').default
-          self.setState({HotReloadablePartOfApp})
-        }
-      )
+      module.hot.accept('./HotReloadablePartOfApp', () => {
+        const HotReloadablePartOfApp = require('./HotReloadablePartOfApp')
+          .default
+        self.setState({HotReloadablePartOfApp})
+      })
     }
   }
 
@@ -58,6 +56,4 @@ class App extends React.Component<Props, *> {
   }
 }
 
-export default compose(
-  (a) => a
-)(App)
+export default compose(a => a)(App)

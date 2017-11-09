@@ -4,13 +4,24 @@ import compose from 'ramda/src/compose'
 import {connect} from '$studio/handy'
 import {getTimelineById} from '$studio/animationTimeline/selectors'
 import {withRunSaga, type WithRunSagaProps} from '$shared/utils'
-import {moveBox, mergeBoxes, splitLane, resizeBox} from '$studio/animationTimeline/sagas'
+import {
+  moveBox,
+  mergeBoxes,
+  splitLane,
+  resizeBox,
+} from '$studio/animationTimeline/sagas'
 import css from './index.css'
 import SortableBox from './SortableBox'
 import LanesViewer from './LanesViewer'
 import TimeBar from './TimeBar'
 import {type StoreState} from '$studio/types'
-import {type TimelineID, type TimelineObject, type BoxID, type BoxesObject, type LayoutArray} from '$studio/animationTimeline/types'
+import {
+  type TimelineID,
+  type TimelineObject,
+  type BoxID,
+  type BoxesObject,
+  type LayoutArray,
+} from '$studio/animationTimeline/types'
 import {type XY} from '$studio/workspace/types'
 
 type OwnProps = TimelineObject & {
@@ -68,7 +79,7 @@ class Content extends React.Component<Props, State> {
     if (JSON.stringify(newProps.layout) !== JSON.stringify(this.props.layout)) {
       this._resetBoundariesAndRatios(newProps.layout, newProps.boxes)
     }
-    if(newProps.panelDimensions.x !== this.props.panelDimensions.x) {
+    if (newProps.panelDimensions.x !== this.props.panelDimensions.x) {
       this._resetPanelWidth(newProps.panelDimensions.x)
     }
   }
@@ -78,7 +89,7 @@ class Content extends React.Component<Props, State> {
   }
 
   _getPanelWidth(xDim) {
-    return (xDim / 100) * window.innerWidth - 40
+    return xDim / 100 * window.innerWidth - 40
   }
 
   _resetPanelWidth(xDim) {
@@ -87,7 +98,10 @@ class Content extends React.Component<Props, State> {
     }))
   }
 
-  _resetBoundariesAndRatios(layout = this.props.layout, boxes = this.props.boxes) {
+  _resetBoundariesAndRatios(
+    layout = this.props.layout,
+    boxes = this.props.boxes,
+  ) {
     this.setState(() => ({
       moveRatios: new Array(layout.length).fill(0),
       boundaries: this._getBoundaries(boxes, layout),
@@ -95,10 +109,13 @@ class Content extends React.Component<Props, State> {
   }
 
   _getBoundaries(boxes: BoxesObject, layout: LayoutArray) {
-    return layout.reduce((boundaries, value, index) => {
-      const {height} = boxes[value]
-      return boundaries.concat(boundaries[index] + height)
-    }, [0])
+    return layout.reduce(
+      (boundaries, value, index) => {
+        const {height} = boxes[value]
+        return boundaries.concat(boundaries[index] + height)
+      },
+      [0],
+    )
   }
 
   onBoxStartMove(index: number) {
@@ -116,24 +133,32 @@ class Content extends React.Component<Props, State> {
     if (this.state.boxBeingDragged == null) return
     const {boxBeingDragged, boundaries} = this.state
     const {index, offset, height} = boxBeingDragged
-    const [edge, moveIndexOffset] = (dy >= 0) ? [offset + height + dy, -1] : [offset + dy, 0]
-    const lowerBoundaryIndex = boundaries.findIndex((element) => edge < element)
+    const [edge, moveIndexOffset] =
+      dy >= 0 ? [offset + height + dy, -1] : [offset + dy, 0]
+    const lowerBoundaryIndex = boundaries.findIndex(element => edge < element)
     const upperBoundaryIndex = lowerBoundaryIndex - 1
     if (lowerBoundaryIndex === -1) {
-      const moveTo = (index !== boundaries.length - 2) ? boundaries.length - 2 : null
+      const moveTo =
+        index !== boundaries.length - 2 ? boundaries.length - 2 : null
       this._setBoxBeingDraggedToMoveTo(moveTo)
     } else if (edge < 0) {
       this._setBoxBeingDraggedToMoveTo(0)
     } else {
       const lowerBoundDistance = boundaries[lowerBoundaryIndex] - edge
       const upperBoundDistance = edge - boundaries[upperBoundaryIndex]
-      if (lowerBoundDistance < 15) return this._setBoxBeingDraggedToMoveTo(lowerBoundaryIndex + moveIndexOffset)
-      if (upperBoundDistance < 15) return this._setBoxBeingDraggedToMoveTo(upperBoundaryIndex + moveIndexOffset)
+      if (lowerBoundDistance < 15)
+        return this._setBoxBeingDraggedToMoveTo(
+          lowerBoundaryIndex + moveIndexOffset,
+        )
+      if (upperBoundDistance < 15)
+        return this._setBoxBeingDraggedToMoveTo(
+          upperBoundaryIndex + moveIndexOffset,
+        )
       return this._setBoxBeingDraggedToMergeWith(upperBoundaryIndex)
     }
   }
 
-  _setBoxBeingDraggedToMoveTo(index: ?number){
+  _setBoxBeingDraggedToMoveTo(index: ?number) {
     if (this.state.boxBeingDragged == null) return
     const draggedIndex = this.state.boxBeingDragged.index
     if (index === draggedIndex) index = null
@@ -144,7 +169,7 @@ class Content extends React.Component<Props, State> {
       return 0
     })
 
-    this.setState((state) => ({
+    this.setState(state => ({
       boxBeingDragged: {
         ...state.boxBeingDragged,
         moveTo: index,
@@ -154,12 +179,15 @@ class Content extends React.Component<Props, State> {
     }))
   }
 
-  _setBoxBeingDraggedToMergeWith(index: ?number){
-    this.setState((state) => ({
+  _setBoxBeingDraggedToMergeWith(index: ?number) {
+    this.setState(state => ({
       boxBeingDragged: {
         ...state.boxBeingDragged,
         moveTo: null,
-        mergeWith: (state.boxBeingDragged != null && index === state.boxBeingDragged.index) ? null : index,
+        mergeWith:
+          state.boxBeingDragged != null && index === state.boxBeingDragged.index
+            ? null
+            : index,
       },
     }))
   }
@@ -170,8 +198,7 @@ class Content extends React.Component<Props, State> {
     const {timelineId, runSaga} = this.props
     if (moveTo != null) {
       await runSaga(moveBox, timelineId, index, moveTo)
-    }
-    else if (mergeWith != null) {
+    } else if (mergeWith != null) {
       await runSaga(mergeBoxes, timelineId, index, mergeWith)
     }
 
@@ -193,11 +220,11 @@ class Content extends React.Component<Props, State> {
     this._resetBoundariesAndRatios()
   }
 
-  changeFocusTo = (focus) => {
+  changeFocusTo = focus => {
     this.setState(() => ({focus}))
   }
 
-  changeCurrentTimeTo = (currentTime) => {
+  changeCurrentTimeTo = currentTime => {
     this.setState(() => ({currentTime}))
   }
 
@@ -226,7 +253,14 @@ class Content extends React.Component<Props, State> {
   }
 
   render() {
-    const {boxBeingDragged, moveRatios, panelWidth, duration, focus, currentTime} = this.state
+    const {
+      boxBeingDragged,
+      moveRatios,
+      panelWidth,
+      duration,
+      focus,
+      currentTime,
+    } = this.state
     const {boxes, layout} = this.props
     return (
       <div className={css.container}>
@@ -238,38 +272,44 @@ class Content extends React.Component<Props, State> {
             focus={focus}
             changeFocusTo={this.changeFocusTo}
             changeCurrentTimeTo={this.changeCurrentTimeTo}
-            changeDuration={this.changeDuration}/>
+            changeDuration={this.changeDuration}
+          />
         </div>
         <div className={css.lanes}>
-          {
-            layout.map((id, index) => {
-              const box = boxes[id]
-              const boxTranslateY = moveRatios[index] * (boxBeingDragged != null ? boxBeingDragged.height : 0)
-              const boxShowMergeOverlay = (boxBeingDragged != null && boxBeingDragged.index === index && boxBeingDragged.mergeWith != null)
-              return (
-                <SortableBox
-                  key={id}
-                  height={box.height}
-                  translateY={boxTranslateY}
-                  showMergeOverlay={boxShowMergeOverlay}
-                  onMoveStart={() => this.onBoxStartMove(index)}
-                  onMoveEnd={() => this.onBoxEndMove()}
-                  onMove={this.onBoxMove}
-                  onResize={(newSize) => this.onBoxResize(id, newSize)}>
-                  {
-                    <LanesViewer
-                      boxHeight={box.height}
-                      laneIds={box.lanes}
-                      splitLane={(laneId) => this.splitLane(index, laneId)}
-                      panelWidth={panelWidth}
-                      duration={duration}
-                      currentTime={currentTime}
-                      focus={focus}/>
-                  }
-                </SortableBox>
-              )
-            })
-          }
+          {layout.map((id, index) => {
+            const box = boxes[id]
+            const boxTranslateY =
+              moveRatios[index] *
+              (boxBeingDragged != null ? boxBeingDragged.height : 0)
+            const boxShowMergeOverlay =
+              boxBeingDragged != null &&
+              boxBeingDragged.index === index &&
+              boxBeingDragged.mergeWith != null
+            return (
+              <SortableBox
+                key={id}
+                height={box.height}
+                translateY={boxTranslateY}
+                showMergeOverlay={boxShowMergeOverlay}
+                onMoveStart={() => this.onBoxStartMove(index)}
+                onMoveEnd={() => this.onBoxEndMove()}
+                onMove={this.onBoxMove}
+                onResize={newSize => this.onBoxResize(id, newSize)}
+              >
+                {
+                  <LanesViewer
+                    boxHeight={box.height}
+                    laneIds={box.lanes}
+                    splitLane={laneId => this.splitLane(index, laneId)}
+                    panelWidth={panelWidth}
+                    duration={duration}
+                    currentTime={currentTime}
+                    focus={focus}
+                  />
+                }
+              </SortableBox>
+            )
+          })}
         </div>
       </div>
     )
@@ -277,11 +317,9 @@ class Content extends React.Component<Props, State> {
 }
 
 export default compose(
-  connect(
-    (state: StoreState, ownProps: OwnProps) => {
-      const timeline = getTimelineById(state, ownProps.timelineId)
-      return {...timeline}
-    }
-  ),
+  connect((state: StoreState, ownProps: OwnProps) => {
+    const timeline = getTimelineById(state, ownProps.timelineId)
+    return {...timeline}
+  }),
   withRunSaga(),
 )(Content)

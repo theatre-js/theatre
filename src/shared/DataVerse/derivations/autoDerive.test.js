@@ -20,35 +20,31 @@ describe('autoDerive', () => {
     expect(d.getValue()).toEqual('fooboo')
 
     const changes = []
-    d.changes(ticker).tap((c) => {
+    d.changes(ticker).tap(c => {
       changes.push(c)
     })
 
     o.prop('foo').set('foo2')
     ticker.tick()
     expect(changes).toMatchObject(['foo2boo'])
-
-  });
-
-  (function(){
+  })
+  ;(function() {
     const a = D.derivations.autoDerive(() => {
       return 'hi'
     })
 
-    a.getValue();
-
-    (a.getValue(): string);
+    a.getValue()
+    ;(a.getValue(): string)
     // $FlowExpectError
-    (a.getValue(): number)
+    ;(a.getValue(): number)
 
     const changes: Array<string> = []
     const wrongChanges: Array<number> = []
 
-    a.changes((null: $IntentionalAny)).tap((c) => {
+    a.changes((null: $IntentionalAny)).tap(c => {
       changes.push(c)
       // $FlowExpectError
       wrongChanges.push(c)
     })
-
   })
 })

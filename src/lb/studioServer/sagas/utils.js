@@ -3,54 +3,79 @@ import {type Channel, eventChannel, END} from 'redux-saga'
 
 export type Socket = $FixMe
 export type SocketServer = $FixMe
-export type ServerEvent = {type: 'connection', socket: Socket} | {type: 'error', error: $FixMe}
+export type ServerEvent =
+  | {type: 'connection', socket: Socket}
+  | {type: 'error', error: $FixMe}
 
 export const getChannelFromSocketServer = (server: SocketServer): Channel => {
-  return eventChannel((emitToChannel) => {
-    server.on('connection', (socket) => {
+  return eventChannel(emitToChannel => {
+    server.on('connection', socket => {
       emitToChannel(({type: 'connection', socket}: ServerEvent))
     })
 
-    server.on('error', (error) => {
+    server.on('error', error => {
       emitToChannel(({type: 'error', error}: ServerEvent))
     })
 
-    const unsubscribe = () => {
-    }
+    const unsubscribe = () => {}
 
     return unsubscribe
   })
 }
 
 export type SocketHandshake = $FixMe
-export type Request = {handshake: SocketHandshake, type: 'request', endpoint: string, payload: mixed, respond: (payload: mixed) => void}
+export type Request = {
+  handshake: SocketHandshake,
+  type: 'request',
+  endpoint: string,
+  payload: mixed,
+  respond: (payload: mixed) => void,
+}
 
 export type SocketEvent =
-  {handshake: SocketHandshake, type: 'error', error: $FixMe} |
-  Request
+  | {handshake: SocketHandshake, type: 'error', error: $FixMe}
+  | Request
 
 export type ResponseToSocketRequest =
-  {type: 'error', errorType: 'malformedRequest'} |
-  mixed
+  | {type: 'error', errorType: 'malformedRequest'}
+  | mixed
 
 export const getChannelFromSocket = (socket: Socket): Channel => {
-  return eventChannel((emitToChannel) => {
-    const errorListener = (error) => {
-      emitToChannel(({type: 'error', error, handshake: socket.handshake}: SocketEvent))
+  return eventChannel(emitToChannel => {
+    const errorListener = error => {
+      emitToChannel(
+        ({type: 'error', error, handshake: socket.handshake}: SocketEvent),
+      )
     }
     socket.on('error', errorListener)
 
-    const requestListener = (request: {endpoint: string, payload: mixed}, respond: Function) => {
+    const requestListener = (
+      request: {endpoint: string, payload: mixed},
+      respond: Function,
+    ) => {
       let endpoint, payload
       try {
         endpoint = request.endpoint
         payload = request.payload
       } catch (e) {
-        respond(({type: 'error', errorType: 'malformedRequest'}: ResponseToSocketRequest))
+        respond(
+          ({
+            type: 'error',
+            errorType: 'malformedRequest',
+          }: ResponseToSocketRequest),
+        )
         return
       }
 
-      emitToChannel(({type: 'request', endpoint, payload, respond, handshake: socket.handshake}: SocketEvent))
+      emitToChannel(
+        ({
+          type: 'request',
+          endpoint,
+          payload,
+          respond,
+          handshake: socket.handshake,
+        }: SocketEvent),
+      )
     }
     socket.on('request', requestListener)
     socket.on('disconnect', () => {

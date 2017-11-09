@@ -13,7 +13,8 @@ type State = {
   isBeingDragged: boolean,
   ghostImageTop: number,
   ghostImageMove: {
-    x: number, y: number,
+    x: number,
+    y: number,
   },
 }
 
@@ -63,7 +64,9 @@ class PanelOutput extends React.Component<Props, State> {
       transform: `translate3d(${x}px, ${y + ghostImageTop}px, 0)`,
     }
     return (
-      <div className={css.ghostImage} style={style}>{type}</div>
+      <div className={css.ghostImage} style={style}>
+        {type}
+      </div>
     )
   }
 
@@ -71,11 +74,17 @@ class PanelOutput extends React.Component<Props, State> {
     const {type} = this.props
     const {isBeingDragged} = this.state
     return (
-      <div ref={(div) => {if (div != null) this.container = div}} className={css.container}>
+      <div
+        ref={div => {
+          if (div != null) this.container = div
+        }}
+        className={css.container}
+      >
         <DraggableArea
           onDragStart={this.onDragStart}
           onDrag={this.onDrag}
-          onDragEnd={this.onDragEnd}>
+          onDragEnd={this.onDragEnd}
+        >
           <div className={css.type}>{type}</div>
         </DraggableArea>
         {isBeingDragged && this._renderGhostImage()}

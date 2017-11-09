@@ -18,12 +18,18 @@ export class TextInput extends React.PureComponent<Props, void> {
   }
 
   render() {
-    return <div key="container" className={css.container}>
-      <input type="text" key="input" className={css.input} value={this.props.value} onChange={this._onChange} />
-    </div>
+    return (
+      <div key="container" className={css.container}>
+        <input
+          type="text"
+          key="input"
+          className={css.input}
+          value={this.props.value}
+          onChange={this._onChange}
+        />
+      </div>
+    )
   }
 }
 
-export default compose(
-  (a) => a,
-)(TextInput)
+export default compose(a => a)(TextInput)

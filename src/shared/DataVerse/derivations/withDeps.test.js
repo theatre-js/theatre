@@ -13,42 +13,40 @@ describe('withDeps', () => {
     const sumSquared = withDeps({sum}, ({sum}) => Math.pow(sum.getValue(), 2))
     expect(sumSquared.getValue()).toEqual(9)
 
-    const sumSquaredTimesTwo = sumSquared.map((s) => s * 2)
+    const sumSquaredTimesTwo = sumSquared.map(s => s * 2)
     expect(sumSquaredTimesTwo.getValue()).toEqual(18)
-
-
   })
 
   it('should still work', () => {
     const a = withDeps({}, () => 2)
     const b = withDeps({}, () => 3)
-    const c = a.flatMap((thisGonnaBeTwo): D.IDerivation<number> => withDeps({b}, ({b}) => b.getValue() + thisGonnaBeTwo))
+    const c = a.flatMap((thisGonnaBeTwo): D.IDerivation<number> =>
+      withDeps({b}, ({b}) => b.getValue() + thisGonnaBeTwo),
+    )
     expect(c.getValue()).toEqual(5)
   })
 
-  it('events should work', (done) => {
+  it('events should work', done => {
     // debugger
     const a = D.atoms.box(1)
     const b = D.atoms.box(3)
-    const aD = a.derivation();
-    (aD.getValue(): number);
+    const aD = a.derivation()
+    ;(aD.getValue(): number)
     // $FlowExpectError
-    (aD.getValue(): string)
+    ;(aD.getValue(): string)
 
-    const bD = b.derivation();
-    (bD.map((m) => m + 1).getValue(): number);
+    const bD = b.derivation()
+    ;(bD.map(m => m + 1).getValue(): number)
     // $FlowExpectError
-    (bD.map((m) => m + 1).getValue(): string);
+    ;(bD.map(m => m + 1).getValue(): string)
     // $FlowExpectError
-    (bD.map((m: string) => m + 'hi'));
-
-    (bD.flatMap((m) => m + 1).getValue(): number);
+    bD.map((m: string) => m + 'hi')
+    ;(bD.flatMap(m => m + 1).getValue(): number)
     // $FlowExpectError
-    (bD.flatMap((m) => m + 1).getValue(): string);
+    ;(bD.flatMap(m => m + 1).getValue(): string)
+    ;(bD.flatMap(m => D.derivations.constant(m + 1)).getValue(): number)
 
-    (bD.flatMap((m) => D.derivations.constant(m + 1)).getValue(): number)
-
-    const final = aD.flatMap((n): D.IDerivation<number> => bD.map((m) => m + n))
+    const final = aD.flatMap((n): D.IDerivation<number> => bD.map(m => m + n))
 
     expect(final.getValue()).toEqual(4)
     a.set(2)
@@ -62,7 +60,7 @@ describe('withDeps', () => {
 
     const adEvents = []
 
-    aD.changes(ticker).tap((newVal) => {
+    aD.changes(ticker).tap(newVal => {
       adEvents.push(newVal)
     })
 
@@ -75,7 +73,9 @@ describe('withDeps', () => {
 
     const finalEvents = []
     // debugger
-    final.changes(ticker).tap((v) => {finalEvents.push(v)})
+    final.changes(ticker).tap(v => {
+      finalEvents.push(v)
+    })
     a.set(4)
 
     expect(finalEvents).toHaveLength(0)
@@ -99,32 +99,32 @@ describe('withDeps', () => {
     const aD = a.derivation()
     const b = D.atoms.box('b')
     const bD = b.derivation()
-    const cD = aD.flatMap((a) => bD.map((b) => a + b))
+    const cD = aD.flatMap(a => bD.map(b => a + b))
 
     expect(cD.getValue()).toEqual('ab')
     const changes = []
     // debugger
-    cD.changes(ticker).tap((c) => {changes.push(c)})
-
+    cD.changes(ticker).tap(c => {
+      changes.push(c)
+    })
 
     b.set('bb')
     ticker.tick()
     expect(changes).toMatchObject(['abb'])
-  });
-
-  (function() {
+  })
+  ;(function() {
     // @todo this should be a flow error since 'hi' is not an IDerivation
     withDeps({a: 'hi'}, () => {})
     const f = withDeps({a: D.derivations.constant('hi')}, ({a}) => {
       // $FlowExpectError
-      (a.getValue(): number);
-      (a.getValue(): string)
+      ;(a.getValue(): number)
+      ;(a.getValue(): string)
 
       return a.getValue()
-    });
+    })
 
     // $FlowExpectError
-    (f.getValue(): number);
-    (f.getValue(): string)
+    ;(f.getValue(): number)
+    ;(f.getValue(): string)
   })
 })

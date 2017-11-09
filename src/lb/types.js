@@ -7,5 +7,7 @@ export type StoreState = {
   projects: ProjectsNamespaceState,
 }
 
-export type Selector<ReturnType, ParamsType> =
-  (state: StoreState, params: ParamsType) => ReturnType
+export type Selector<ReturnType, ParamsType> = (
+  state: StoreState,
+  params: ParamsType,
+) => ReturnType

@@ -35,13 +35,10 @@ class StudioRootComponent extends React.Component<Props, *> {
     const self = this
 
     if (process.env.NODE_ENV === 'development' && module.hot) {
-      module.hot.accept(
-        './HotReloadablePart',
-        () => {
-          const HotReloadablePart = require('./HotReloadablePart').default
-          self.setState({HotReloadablePart})
-        }
-      )
+      module.hot.accept('./HotReloadablePart', () => {
+        const HotReloadablePart = require('./HotReloadablePart').default
+        self.setState({HotReloadablePart})
+      })
     }
   }
 
@@ -57,6 +54,4 @@ class StudioRootComponent extends React.Component<Props, *> {
   }
 }
 
-export default compose(
-  (a) => a
-)(StudioRootComponent)
+export default compose(a => a)(StudioRootComponent)

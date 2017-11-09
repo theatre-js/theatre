@@ -39,12 +39,15 @@ const createRootComponentForReact = (studio: TheStudioClass) => {
       this.elementD = elementify(
         D.derivations.constant(`RenderCurrentCanvas`),
         this.instantiationDescriptor.derivedDict().pointer(),
-        D.derivations.constant(studio)
+        D.derivations.constant(studio),
       )
     }
 
     componentWillReceiveProps(props: Props) {
-      this.instantiationDescriptor.prop('props').prop('children').set(props.children)
+      this.instantiationDescriptor
+        .prop('props')
+        .prop('children')
+        .set(props.children)
     }
 
     shouldComponentUpdate() {
@@ -52,14 +55,18 @@ const createRootComponentForReact = (studio: TheStudioClass) => {
     }
 
     render() {
-      return <DerivationAsReactElement key="RenderCurrentCanvas" derivation={this.elementD} />
+      return (
+        <DerivationAsReactElement
+          key="RenderCurrentCanvas"
+          derivation={this.elementD}
+        />
+      )
       // return <Elementify key="RenderCurrentCanvas" props={this.propsOfElementify}  />
     }
 
     getChildContext() {
       return {[contextName]: studio}
     }
-
   }
 
   TheaterJSRoot.childContextTypes = contextTypes

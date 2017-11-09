@@ -2,7 +2,10 @@
 import {type ComponentModelNamespaceState} from './types'
 import coreComponentDescriptors from './coreComponentDescriptors'
 import coreModifierDescriptors from './coreModifierDescriptors'
-import {type DeclarativeComponentDescriptor, type ComponentInstantiationValueDescriptor} from '$studio/componentModel/types'
+import {
+  type DeclarativeComponentDescriptor,
+  type ComponentInstantiationValueDescriptor,
+} from '$studio/componentModel/types'
 
 const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
   id: 'FakeDeclarativeButton',
@@ -11,15 +14,15 @@ const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
   ruleSetsById: {},
   localHiddenValuesById: {
     palaki: ({
-        __descriptorType: 'ComponentInstantiationValueDescriptor',
-        componentId: 'TheaterJS/Core/DOMTag',
-        props: {
-          tagName: 'div',
-          key: 'palaki',
-          children: 'palaki',
-        },
-        modifierInstantiationDescriptors: {byId: {}, list: []},
-      }: ComponentInstantiationValueDescriptor),
+      __descriptorType: 'ComponentInstantiationValueDescriptor',
+      componentId: 'TheaterJS/Core/DOMTag',
+      props: {
+        tagName: 'div',
+        key: 'palaki',
+        children: 'palaki',
+      },
+      modifierInstantiationDescriptors: {byId: {}, list: []},
+    }: ComponentInstantiationValueDescriptor),
     dalaki: {
       __descriptorType: 'ComponentInstantiationValueDescriptor',
       componentId: 'TheaterJS/Core/DOMTag',
@@ -41,7 +44,10 @@ const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
         // children: {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'palaki'},
         // children: {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'talaki'},
         // children: 'hello there',
-        children: [{__descriptorType: 'ReferenceToLocalHiddenValue', which: 'palaki'}, {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'dalaki'}],
+        children: [
+          {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'palaki'},
+          {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'dalaki'},
+        ],
       },
       modifierInstantiationDescriptors: {
         byId: {
