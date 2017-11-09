@@ -1,0 +1,17 @@
+.container {
+  padding: 20px;
+  border-top: 1px solid #303030 ;
+  border-bottom: 1px solid #303030 ;
+}
+
+.titleContainer {
+  margin-bottom: 10px;
+}
+
+.title {
+  font-size: 12px;
+}
+
+.bodyContainer {
+  box-sizing: border-box;
+}

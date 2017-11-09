@@ -1,0 +1,17 @@
+.container {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.keyContainer, .valueContainer {
+  width: 46%;
+}
+
+.colon {
+  width: 8%;
+  box-sizing: border-box;
+  font-size: 10px;
+  text-align: left;
+  line-height: 29px;
+  padding-left: 7px;
+}

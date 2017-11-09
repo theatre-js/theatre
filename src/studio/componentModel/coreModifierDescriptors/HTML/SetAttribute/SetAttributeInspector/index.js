@@ -3,6 +3,8 @@ import {compose, React, connect} from '$studio/handy'
 import map from 'lodash/map'
 import get from 'lodash/get'
 import SingleAttributeInspector from './SingleAttributeInspector'
+import css from './index.css'
+import ModifierInspectorWrapper from '$studio/common/components/ModifierInspectorWrapper'
 
 type Props = {
   list: $FixMe,
@@ -21,7 +23,7 @@ export class SetAttributeInspector extends React.PureComponent<Props, void> {
   render() {
     const {list} = this.props
     // @todo ux - sort these alphabetically
-    return map(list, (id, index) => {
+    const body = map(list, (id, index) => {
       return (
         <SingleAttributeInspector
           key={id}
@@ -35,6 +37,8 @@ export class SetAttributeInspector extends React.PureComponent<Props, void> {
         />
       )
     })
+
+    return <ModifierInspectorWrapper title="Custom Attributes" body={body} />
   }
 }
 
