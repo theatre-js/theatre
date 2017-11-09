@@ -64,8 +64,21 @@ const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
               },
             },
           },
+          '1': {
+            __descriptorType: 'ModifierInstantiationValueDescriptor',
+            modifierId: 'TheaterJS/Core/HTML/SetCustomStyle',
+            props: {
+              pairings: {
+                list: ['1', '2'],
+                byId: {
+                  '1': {key: 'color', value: 'red'},
+                  '2': {key: 'font-size', value: '12px'},
+                },
+              },
+            },
+          },
         },
-        list: ['0'],
+        list: ['0', '1'],
       },
     },
   },

@@ -12,7 +12,10 @@ type Props = {
   id: string,
 }
 
-export class SingleAttributeInspector extends React.PureComponent<Props, void> {
+export class SingleCustomStyleInspector extends React.PureComponent<
+  Props,
+  void,
+> {
   constructor(props: Props) {
     super(props)
   }
@@ -69,4 +72,4 @@ export default compose(
       pairing: get(s, op.pathToPairings).byId[op.id],
     }
   }),
-)(SingleAttributeInspector)
+)(SingleCustomStyleInspector)

@@ -2,7 +2,7 @@
 import {compose, React, connect} from '$studio/handy'
 import map from 'lodash/map'
 import get from 'lodash/get'
-import SingleAttributeInspector from './SingleAttributeInspector'
+import SingleCustomStyleInspector from './SingleCustomStyleInspector'
 import ModifierInspectorWrapper from '$studio/common/components/ModifierInspectorWrapper'
 
 type Props = {
@@ -10,7 +10,7 @@ type Props = {
   pathToModifierInstantiationDescriptor: Array<string>,
 }
 
-export class SetAttributeInspector extends React.PureComponent<Props, void> {
+export class SetCustomStyleInspector extends React.PureComponent<Props, void> {
   constructor(props: Props) {
     super(props)
   }
@@ -20,7 +20,7 @@ export class SetAttributeInspector extends React.PureComponent<Props, void> {
     // @todo ux - sort these alphabetically
     const body = map(list, (id, index) => {
       return (
-        <SingleAttributeInspector
+        <SingleCustomStyleInspector
           key={id}
           id={id}
           index={index}
@@ -33,7 +33,7 @@ export class SetAttributeInspector extends React.PureComponent<Props, void> {
       )
     })
 
-    return <ModifierInspectorWrapper title="Custom Attributes" body={body} />
+    return <ModifierInspectorWrapper title="Custom Styles" body={body} />
   }
 }
 
@@ -44,4 +44,4 @@ export default compose(
         .list,
     }
   }),
-)(SetAttributeInspector)
+)(SetCustomStyleInspector)

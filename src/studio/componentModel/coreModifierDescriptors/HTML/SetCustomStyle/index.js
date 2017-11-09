@@ -7,6 +7,7 @@ const modifyPrototypalDict = (propsP, dict) => {
   return dict.extend(commonStylesPrototype).extend({
     reifiedStyles(d) {
       return d.propFromAbove('reifiedStyles').flatMap(reifiedStyles => {
+        console.log('reifiedStyles')
         const ret = propsP
           .prop('pairings')
           .prop('list')
@@ -36,7 +37,7 @@ const modifyPrototypalDict = (propsP, dict) => {
 const descriptor: ModifierDescriptor = {
   id: 'TheaterJS/Core/HTML/SetCustomStyle',
   modifyPrototypalDict,
-  // InspectorComponent: require('./SetCustomStyleInspector').default,
+  InspectorComponent: require('./SetCustomStyleInspector').default,
 }
 
 export default descriptor

@@ -15,7 +15,7 @@ const ensureReifiedStyles = d => {
 
 const sideEffectsForApplyReifiedStyles = D.atoms
   .dict({
-    applyAttributes: D.atoms.box((dict, ticker) => {
+    applyReifiedStyles: D.atoms.box((dict, ticker) => {
       const applier = new ReifiedStyleApplier(dict, ticker)
       applier.start()
 
@@ -36,9 +36,9 @@ export default {
       .flatMap((sideEffects: D.IDerivedDict<$FixMe>) => {
         return sideEffects
           .pointer()
-          .prop('applyAttributes')
-          .map(applyAttributes => {
-            if (applyAttributes) {
+          .prop('applyReifiedStyles')
+          .map(applyReifiedStyles => {
+            if (applyReifiedStyles) {
               return sideEffects
             } else {
               return sideEffects.extend(sideEffectsForApplyReifiedStyles)
