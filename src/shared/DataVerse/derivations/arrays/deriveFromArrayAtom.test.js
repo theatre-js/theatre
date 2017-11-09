@@ -13,7 +13,7 @@ describe('DataVerse.derivations.deriveFromArrayAtom', () => {
     arrayAtom.setIndex(0, '0-1')
     expect(d.index(0).getValue()).toEqual('(0-1)')
     const reducedD = d.reduce(
-      (acc: string, cur: string) => acc + cur,
+      (acc: string, cur: string) => D.derivations.constant(acc + cur),
       prefix.derivation(),
     )
 

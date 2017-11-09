@@ -1,9 +1,6 @@
 // @flow
-import type {PathToLocalHiddenValueDescriptor, ComponentInstantiationValueDescriptor} from '$studio/componentModel/types'
+import type {PathToInspectableInX2} from '$studio/x2/components/Content'
 
-export type PathToInspectable = PathToLocalHiddenValueDescriptor
-export type Inspectable = ComponentInstantiationValueDescriptor // later, we'll also be able to inspect a style selector's rules
-
-export type X2NamespaceState = {
-  pathToInspectable: ?PathToInspectable,
-}
+export type X2NamespaceState = {|
+  pathToInspectableInX2: ?PathToInspectableInX2,
+|}

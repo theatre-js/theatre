@@ -8,5 +8,6 @@ export {default as connect} from './connect'
 import * as D from '$shared/DataVerse'
 export {default as compose} from 'ramda/src/compose'
 import * as React from 'react'
+export * from '$studio/common/actions'
 
 export {D, React}

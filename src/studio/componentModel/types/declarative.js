@@ -1,4 +1,5 @@
 // @flow
+import * as React from 'react'
 import type {ComponentId} from './index'
 
 export type DeclarativeComponentDescriptor = {|
@@ -16,7 +17,7 @@ export type RuleSet = {|
   selector: string, // better to have a more structured type for this
 |}
 
-type ModifierInstantiationValueDescriptor = {|
+export type ModifierInstantiationValueDescriptor = {|
   __descriptorType: 'ModifierInstantiationValueDescriptor',
   modifierId: string,
   props: MapDescriptor,
@@ -26,6 +27,7 @@ type ModifierInstantiationValueDescriptor = {|
 export type ModifierDescriptor = {|
   id: string,
   modifyPrototypalDict: $FixMe,
+  InspectorComponent?: React.Component<$FixMe>,
 |}
 
 export type ReferenceToLocalHiddenValue = {|
@@ -38,8 +40,8 @@ export type ReferenceToProp = {|
   propid: string,
 |}
 
-export type MapDescriptor = {|...{__descriptorType: 'MapDescriptor'}, ...{|[key: string | number]: ValueDescriptor|}|}
-export type ArrayDescriptor = Array<ValueDescriptor>
+export type MapDescriptor = {[key: string | number]: $FixMe}
+export type ArrayDescriptor = Array<$FixMe>
 export type StringLiteralDescriptor = string
 export type NumberLiteralDescriptor = number
 export type BooleanLiteralDescriptor = boolean
@@ -56,10 +58,12 @@ export type ComponentInstantiationValueDescriptor = {|
   __descriptorType: 'ComponentInstantiationValueDescriptor',
   componentId: ComponentId,
   props: MapDescriptor,
-  modifierInstantiationDescriptors: {
-    list: ArrayDescriptor,
-    byId: MapDescriptor,
-  },
+  modifierInstantiationDescriptors: ModifierInstantiationValueDescriptors,
+|}
+
+export type ModifierInstantiationValueDescriptors = {|
+  list: ArrayDescriptor,
+  byId: MapDescriptor,
 |}
 
 export type ValueDescriptorDescribedInAnObject =

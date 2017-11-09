@@ -25,7 +25,7 @@ module.exports = (options: Options) => {
   const config: Object = {
     context: context,
     // target: '',
-    devtool: isDev ? 'source-map' : 'source-map',
+    devtool: isDev ? 'eval-source-map' : 'source-map',
     entry: {
       index: isDev ? ['react-hot-loader/patch', './src/studio/index.js'] : ['./src/studio/index.js'],
     },
@@ -41,10 +41,12 @@ module.exports = (options: Options) => {
     resolve: {
       // fallback: path.join(context, 'node_modules'),
       alias: aliases,
+      extensions: ['.ts', '.tsx', '.js', '.json'],
     },
     module: {
       rules: [
         {test: /\.js$/, use: {loader: `babel-loader`, options: {forceEnv: `studio:${options.env}`}}, exclude: /node_modules/},
+        {test: /\.tsx?$/, use: {loader: `awesome-typescript-loader`, options: {transpileOnly: true}}, exclude: /node_modules/},
         {
           test: /\.css$/,
           use: [

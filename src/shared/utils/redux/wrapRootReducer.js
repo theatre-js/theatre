@@ -1,7 +1,9 @@
 // @flow
-import {mergeStateAction, setStateAction, resetStateAction} from './commonActions'
+import {mergeStateAction, setStateAction, resetStateAction, reduceStateAction} from './commonActions'
 import pick from 'lodash/pick'
 import {type Reducer} from '$shared/types'
+import update from 'lodash/fp/update'
+import type {Pair} from '$shared/utils/sagas/multiReduceState.js'
 
 /**
  * Takes a reducer and returns a new reducer that acts the same as the original reducer, but
@@ -31,6 +33,14 @@ export default function wrapRootReducer<State, Action>(reducer: Reducer<State, A
 
         return Array.isArray(action.payload) ? {...(state || {}), ...pick(initialState, action.payload)} : initialState
 
+      } else if (action.type === reduceStateAction.type) {
+        const pairs: Array<Pair> = (action.payload: $IntentionalAny)
+        // $FlowIgnore
+        return pairs.reduce(
+          (acc: $IntentionalAny, pair: Pair) =>
+            update(pair.path, pair.reducer, acc),
+          state,
+        )
       // fallback to inner reducer
       } else {
         return reducer(state, action)

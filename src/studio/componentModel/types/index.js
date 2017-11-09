@@ -41,5 +41,3 @@ export type ComponentModelNamespaceState = {|
     core: {[id: string]: ModifierDescriptor},
   |},
 |}
-
-export type PathToLocalHiddenValueDescriptor = {|componentId: string, localHiddenValueId: string|}

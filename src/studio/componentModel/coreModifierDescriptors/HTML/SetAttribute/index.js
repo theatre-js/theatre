@@ -28,9 +28,18 @@ const modifyPrototypalDict = (propsP, dict) => {
   return dict.extend({
     domAttributes(d) {
       return ensureDomAttributes(d).flatMap((domAtrributes) => {
-        return propsP.prop('attributeName').flatMap((attributeName: string) => {
-          return domAtrributes.extend(D.atoms.dict({[attributeName]: propsP.prop('value')}).derivedDict())
+        const ret = propsP.prop('pairings').prop('list').flatMap((list) => {
+          return list.reduce((accDict, pairingId) => {
+            const pairingP = propsP.prop('pairings').prop('byId').prop(pairingId)
+            const keyP = pairingP.prop('key')
+            const valueP = pairingP.prop('value')
+            return keyP.flatMap((key: string) => {
+              return accDict.extend(D.atoms.dict({[key]: valueP}).derivedDict())
+            })
+          }, domAtrributes)
         })
+
+        return ret
       })
     },
     sideEffects(d) {
@@ -50,6 +59,7 @@ const modifyPrototypalDict = (propsP, dict) => {
 const descriptor: ModifierDescriptor = {
   id: 'TheaterJS/Core/HTML/SetAttribute',
   modifyPrototypalDict,
+  InspectorComponent: require('./SetAttributeInspector').default,
 }
 
 export default descriptor

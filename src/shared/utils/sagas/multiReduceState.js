@@ -5,7 +5,7 @@ import update from 'lodash/fp/update'
 
 type Path = Array<string | number>
 
-type Pair = {
+export type Pair = {
   path: Path,
   reducer: Function,
 }

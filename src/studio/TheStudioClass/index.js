@@ -6,6 +6,7 @@ import LBCommunicator from './LBCommunicator'
 import configureStore from './configureStore'
 import StudioRootComponent from './components/StudioRootComponent'
 import type {default as StandardStore} from '$lb/bootstrap/StandardStore'
+import jsonPatchLib from 'fast-json-patch'
 
 type Atom = $FixMe
 
@@ -65,19 +66,64 @@ export default class TheStudioClass {
     let lastState = this.store.reduxStore.getState()
     const atom = D.atoms.atomifyDeep(lastState)
 
+    // this.store.reduxStore.subscribe(() => {
+    //   const newState = this.store.reduxStore.getState()
+    //   for (let key in newState) {
+    //     const value = newState[key]
+    //     if (value !== lastState[key]) atom.setProp(key, D.atoms.atomifyDeep(value))
+    //   }
+
+    //   for (let key in lastState) {
+    //     if (!newState.hasOwnProperty(key)) {
+    //       atom.deleteProp(key)
+    //     }
+    //   }
+    //   lastState = newState
+    // })
+
     this.store.reduxStore.subscribe(() => {
       const newState = this.store.reduxStore.getState()
-      for (let key in newState) {
-        const value = newState[key]
-        if (value !== lastState[key]) atom.setProp(key, D.atoms.atomifyDeep(value))
-      }
+      const diffs: Array<Object> = jsonPatchLib.compare(lastState, newState)
+      for (let diff of diffs) {
+        if (diff.path.length === 0) {
+          throw new Error(`@todo Can't handle zero-length diff paths yet`)
+        }
 
-      for (let key in lastState) {
-        if (!newState.hasOwnProperty(key)) {
-          atom.deleteProp(key)
+        switch (diff.op) {
+          case 'replace':
+            const components = diff.path.split('/')
+            components.shift()
+            const lastComponent = components.pop()
+            let curAtom = atom
+            // debugger
+            for (let component of components) {
+              component = jsonPatchLib.unescapePathComponent(component)
+              curAtom = curAtom.isDictAtom === 'True' ? curAtom.prop(component) : console.error(`not implemented`)
+            }
+            // debugger
+            if (curAtom.isDictAtom === 'True') {
+              curAtom.setProp(jsonPatchLib.unescapePathComponent(lastComponent), D.atoms.atomifyDeep(diff.value))
+            } else {
+              throw new Error(`@todo implement me`)
+            }
+            break
+          default:
+            console.error(`@todo Diff op '${diff.op}' not yet supported`)
+            break
         }
       }
       lastState = newState
+      // for (let key in newState) {
+      //   const value = newState[key]
+      //   if (value !== lastState[key]) atom.setProp(key, D.atoms.atomifyDeep(value))
+      // }
+
+      // for (let key in lastState) {
+      //   if (!newState.hasOwnProperty(key)) {
+      //     atom.deleteProp(key)
+      //   }
+      // }
+      // lastState = newState
     })
 
     return atom

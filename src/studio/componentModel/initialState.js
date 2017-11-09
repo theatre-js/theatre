@@ -2,7 +2,7 @@
 import {type ComponentModelNamespaceState} from './types'
 import coreComponentDescriptors from './coreComponentDescriptors'
 import coreModifierDescriptors from './coreModifierDescriptors'
-import {type DeclarativeComponentDescriptor} from '$studio/componentModel/types'
+import {type DeclarativeComponentDescriptor, type ComponentInstantiationValueDescriptor} from '$studio/componentModel/types'
 
 const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
   id: 'FakeDeclarativeButton',
@@ -10,16 +10,16 @@ const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
   listOfRulesets: [],
   ruleSetsById: {},
   localHiddenValuesById: {
-    palaki: {
-      __descriptorType: 'ComponentInstantiationValueDescriptor',
-      componentId: 'TheaterJS/Core/DOMTag',
-      props: {
-        tagName: 'div',
-        key: 'palaki',
-        children: 'palaki',
-      },
-      modifierInstantiationDescriptors: {byId: {}, list: []},
-    },
+    palaki: ({
+        __descriptorType: 'ComponentInstantiationValueDescriptor',
+        componentId: 'TheaterJS/Core/DOMTag',
+        props: {
+          tagName: 'div',
+          key: 'palaki',
+          children: 'palaki',
+        },
+        modifierInstantiationDescriptors: {byId: {}, list: []},
+      }: ComponentInstantiationValueDescriptor),
     dalaki: {
       __descriptorType: 'ComponentInstantiationValueDescriptor',
       componentId: 'TheaterJS/Core/DOMTag',
@@ -49,8 +49,13 @@ const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
             __descriptorType: 'ModifierInstantiationValueDescriptor',
             modifierId: 'TheaterJS/Core/HTML/SetAttribute',
             props: {
-              attributeName: 'id',
-              value: '7',
+              pairings: {
+                list: ['1', '2'],
+                byId: {
+                  '1': {key: 'id', value: '7'},
+                  '2': {key: 'title', value: 'some title'},
+                },
+              },
             },
           },
         },

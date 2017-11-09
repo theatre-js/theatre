@@ -29,12 +29,11 @@ class AbstractDerivation {
   constructor() {
     // this._trace = new Error('trace')
     this._didNotifyDownstreamOfUpcomingUpdate = false
-    this._dependencies = new Set()
     this._id = lastDerivationId++
-
     this._freshnessState = FRESHNESS_STATE_NOT_APPLICABLE
     this._lastValue = undefined
     this._thereAreMoreThanOneDependents = false
+    this._dependencies = new Set()
     this._dependents = new Set()
   }
 
