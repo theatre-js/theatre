@@ -137,9 +137,11 @@ export class PointerDerivation extends AbstractDerivation
     const address = this._address
     const d =
       address.type === 'fromParentPointer'
-        ? // $FixMe
+        ?
           this._makeDerivationForParentPointer(
+            // $FixMe
             address.parentPointer,
+            // $FixMe
             address.keyOrIndex,
           )
         : this._makeDerivationForPath(address.root, address.path)

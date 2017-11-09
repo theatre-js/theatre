@@ -125,8 +125,8 @@ export default function withRunSaga(): HigherOrderComponent<
       {store}: {store: {runSaga: Function}},
     ) => {
       const ownProps = {
-        // $FixMe
         runSaga: (fn, ...args) =>
+        // $FixMe
           store.sagaMiddleware.run(preventToThrow(fn), ...args).done,
       }
       return React.createElement(component, {...props, ...ownProps})
