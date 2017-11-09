@@ -17,13 +17,20 @@ export interface ITicker {
 export default class Ticker implements ITicker {
   _computationsToUpdate: *
   _objectsWhoseStructureShouldBeUpdated: *
+  _traces: *
 
   constructor() {
     this._computationsToUpdate = new Set()
     this._objectsWhoseStructureShouldBeUpdated = new Set()
+    this._traces = new WeakMap()
   }
 
   registerComputationUpdate(d: $FixMe) {
+    if (this._computationsToUpdate.has(d)) {
+      console.error('This should never happen')
+    }
+
+    // this._traces.set(d, new Error('Trace'))
     this._computationsToUpdate.add(d)
   }
 
@@ -60,6 +67,8 @@ export default class Ticker implements ITicker {
     const oldD = this._computationsToUpdate
     this._computationsToUpdate = new Set()
     oldD.forEach(d => {
+      // const trace = this._traces.get(d)
+      // this._traces.delete(d)
       d._updateComputation()
     })
 

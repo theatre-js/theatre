@@ -26,13 +26,16 @@ export default class AttributesApplier {
       domAttributesP,
       ticker,
     )
+
     this._elRefD = dict
       .pointer()
       .prop('state')
       .prop('elRef')
+
     this._isElSvgD = (this._elRefD.map(
       el => !!(typeof el !== 'undefined' && el instanceof SVGElement),
     ): D.IDerivation<boolean>)
+
     this._untapFromProxy = _.noop
     this._started = false
     this._activeKeys = {}
@@ -46,8 +49,8 @@ export default class AttributesApplier {
     this._started = true
 
     this._untapFromProxy = this._domAttributesProxy.changes().tap(changes => {
-      changes.deletedKeys.forEach(this._stopObservingKey)
-      changes.addedKeys.forEach(this._removeKey)
+      changes.deletedKeys.forEach(this._removeKey)
+      changes.addedKeys.forEach(this._startObservingKey)
     })
 
     this._domAttributesProxy.keys().forEach(this._startObservingKey)
@@ -85,7 +88,7 @@ export default class AttributesApplier {
     let lastSetter: $FixMe => void = _.noop
 
     const untap = D.derivations
-      .withDeps({valueD, setterD}, _.identity)
+      .withDeps({valueD, setterD}, ({valueD, setterD}) => ({valueD, setterD}))
       .tapImmediate(this._ticker, ({valueD, setterD}) => {
         lastSetter = setterD.getValue()
         lastSetter(valueD.getValue())

@@ -32,7 +32,7 @@ class AbstractDerivation {
   ) => void
 
   constructor() {
-    // this._trace = new Error('trace')
+    this._trace = new Error('trace')
     this._didNotifyDownstreamOfUpcomingUpdate = false
     this._id = lastDerivationId++
     this._freshnessState = FRESHNESS_STATE_NOT_APPLICABLE
@@ -183,6 +183,9 @@ const mapDerivation = require('./mapDerivation')
 const toJS = require('./toJS')
 
 let lastDerivationId = 0
+// setInterval(() => {
+//   console.log(lastDerivationId)
+// }, 2000)
 // let activeDs = new Set()
 // import toCsv from 'json2csv'
 
