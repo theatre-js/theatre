@@ -48,8 +48,8 @@ export default class AbstractCompositeAtom extends AbstractAtom
 
   constructor() {
     super()
-    this._deepChangeUntappersForEachChild = new Map()
-    this._deepDiffUntappersForEachChild = new Map()
+    // this._deepChangeUntappersForEachChild = new Map()
+    // this._deepDiffUntappersForEachChild = new Map()
   }
 
   _keyOf(key: MapKey) {
@@ -61,35 +61,35 @@ export default class AbstractCompositeAtom extends AbstractAtom
 
     ref._setParent(this, key)
 
-    this._deepChangeUntappersForEachChild.set(
-      ref,
-      ref.deepChanges().tap(change => {
-        this._deepChangeEmitter.emit({
-          ...change,
-          address: [this._keyOf(key, ref), ...change.address],
-        })
-      }),
-    )
+    // this._deepChangeUntappersForEachChild.set(
+    //   ref,
+    //   ref.deepChanges().tap(change => {
+    //     this._deepChangeEmitter.emit({
+    //       ...change,
+    //       address: [this._keyOf(key, ref), ...change.address],
+    //     })
+    //   }),
+    // )
 
-    this._deepDiffUntappersForEachChild.set(
-      ref,
-      ref.deepDiffs().tap(diff => {
-        this._deepDiffEmitter.emit({
-          ...diff,
-          address: [this._keyOf(key, ref), ...diff.address],
-        })
-      }),
-    )
+    // this._deepDiffUntappersForEachChild.set(
+    //   ref,
+    //   ref.deepDiffs().tap(diff => {
+    //     this._deepDiffEmitter.emit({
+    //       ...diff,
+    //       address: [this._keyOf(key, ref), ...diff.address],
+    //     })
+    //   }),
+    // )
   }
 
   _unadopt(key: MapKey, ref: IAtom) {
     if (!isAtom(ref)) return
     ref._unsetParent()
     // $FlowIgnore
-    this._deepChangeUntappersForEachChild.get(ref)()
-    this._deepChangeUntappersForEachChild.delete(ref)
+    // this._deepChangeUntappersForEachChild.get(ref)()
+    // this._deepChangeUntappersForEachChild.delete(ref)
     // $FlowIgnore
-    this._deepDiffUntappersForEachChild.get(ref)()
-    this._deepDiffUntappersForEachChild.delete(ref)
+    // this._deepDiffUntappersForEachChild.get(ref)()
+    // this._deepDiffUntappersForEachChild.delete(ref)
   }
 }

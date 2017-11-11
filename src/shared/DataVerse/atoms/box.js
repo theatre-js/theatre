@@ -66,29 +66,29 @@ export class BoxAtom<V> extends AbstractAtom {
   }
 
   set(value: V): this {
-    const oldValue = this._value
+    // const oldValue = this._value
     this._value = value
 
     if (this._changeEmitter.hasTappers()) {
       this._changeEmitter.emit(value)
     }
 
-    if (this._deepChangeEmitter.hasTappers()) {
-      this._deepChangeEmitter.emit({
-        address: [],
-        type: 'BoxChange',
-        newValue: value,
-      })
-    }
+    // if (this._deepChangeEmitter.hasTappers()) {
+    //   this._deepChangeEmitter.emit({
+    //     address: [],
+    //     type: 'BoxChange',
+    //     newValue: value,
+    //   })
+    // }
 
-    if (this._deepDiffEmitter.hasTappers()) {
-      this._deepDiffEmitter.emit({
-        address: [],
-        type: 'BoxDiff',
-        oldValue: oldValue,
-        newValue: value,
-      })
-    }
+    // if (this._deepDiffEmitter.hasTappers()) {
+    //   this._deepDiffEmitter.emit({
+    //     address: [],
+    //     type: 'BoxDiff',
+    //     oldValue: oldValue,
+    //     newValue: value,
+    //   })
+    // }
 
     return this
   }

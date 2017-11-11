@@ -69,7 +69,7 @@ describe('DataVerse.atoms.dict', () => {
     expect(changes).toHaveLength(4)
     expect(changes[3]).toMatchObject({overriddenRefs: {}, deletedKeys: ['obj']})
   })
-  it('should correctly report deep changes', () => {
+  it.skip('should correctly report deep changes', () => {
     const deepChanges = []
     o.deepChanges().tap(change => {
       deepChanges.push(change)
@@ -120,7 +120,7 @@ describe('DataVerse.atoms.dict', () => {
     })
   })
 
-  it('should correctly report deep diffs', () => {
+  it.skip('should correctly report deep diffs', () => {
     const deepDiffs = []
     o.deepDiffs().tap(change => {
       deepDiffs.push(change)

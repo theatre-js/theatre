@@ -121,28 +121,28 @@ export class DictAtom<O: {}> extends AbstractCompositeAtom {
       })
     }
 
-    if (this._deepChangeEmitter.hasTappers()) {
-      this._deepChangeEmitter.emit({
-        address: [],
-        type: 'MapChange',
-        overriddenRefs: o,
-        deletedKeys,
-        addedKeys,
-      })
-    }
+    // if (this._deepChangeEmitter.hasTappers()) {
+    //   this._deepChangeEmitter.emit({
+    //     address: [],
+    //     type: 'MapChange',
+    //     overriddenRefs: o,
+    //     deletedKeys,
+    //     addedKeys,
+    //   })
+    // }
 
-    if (this._deepDiffEmitter.hasTappers()) {
-      this._deepDiffEmitter.emit({
-        address: [],
-        type: 'MapDiff',
-        deepUnboxOfNewRefs: mapValues(o, v => (v ? v.unboxDeep() : v)),
-        deepUnboxOfOldRefs: mapValues(
-          overriddenRefs,
-          v => (v ? v.unboxDeep() : v),
-        ),
-        deletedKeys,
-      })
-    }
+    // if (this._deepDiffEmitter.hasTappers()) {
+    //   this._deepDiffEmitter.emit({
+    //     address: [],
+    //     type: 'MapDiff',
+    //     deepUnboxOfNewRefs: mapValues(o, v => (v ? v.unboxDeep() : v)),
+    //     deepUnboxOfOldRefs: mapValues(
+    //       overriddenRefs,
+    //       v => (v ? v.unboxDeep() : v),
+    //     ),
+    //     deletedKeys,
+    //   })
+    // }
 
     return this
   }

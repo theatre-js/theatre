@@ -162,25 +162,25 @@ export class ArrayAtom<V: IAtom> extends AbstractCompositeAtom {
       }
     }
 
-    if (this._deepDiffEmitter.hasTappers()) {
-      const deletedRefsDeeplyUnboxed = removedRefs.map(
-        r => (r ? r.unboxDeep() : undefined),
-      )
-      const addedRefsDeeplyUnboxed = refsToAdd.map(r => r.unboxDeep())
-      this._deepDiffEmitter.emit(
-        deepDiffDescriptor(
-          startIndex,
-          deletedRefsDeeplyUnboxed,
-          addedRefsDeeplyUnboxed,
-        ),
-      )
-    }
+    // if (this._deepDiffEmitter.hasTappers()) {
+    //   const deletedRefsDeeplyUnboxed = removedRefs.map(
+    //     r => (r ? r.unboxDeep() : undefined),
+    //   )
+    //   const addedRefsDeeplyUnboxed = refsToAdd.map(r => r.unboxDeep())
+    //   this._deepDiffEmitter.emit(
+    //     deepDiffDescriptor(
+    //       startIndex,
+    //       deletedRefsDeeplyUnboxed,
+    //       addedRefsDeeplyUnboxed,
+    //     ),
+    //   )
+    // }
 
-    if (this._deepChangeEmitter.hasTappers()) {
-      this._deepChangeEmitter.emit(
-        deepChangeDescriptor(startIndex, deleteCount, refsToAdd),
-      )
-    }
+    // if (this._deepChangeEmitter.hasTappers()) {
+    //   this._deepChangeEmitter.emit(
+    //     deepChangeDescriptor(startIndex, deleteCount, refsToAdd),
+    //   )
+    // }
 
     if (this._changeEmitter.hasTappers()) {
       this._changeEmitter.emit(

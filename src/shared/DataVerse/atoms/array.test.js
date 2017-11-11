@@ -55,7 +55,7 @@ describe('DataVerse.atoms.array', () => {
       deleteCount: 2,
     })
   })
-  it('should correctly report deep changes', () => {
+  it.skip('should correctly report deep changes', () => {
     const o: D.IArrayAtom<D.IBoxAtom<string>> = atomifyDeep([
       '0',
       '1',
@@ -116,7 +116,7 @@ describe('DataVerse.atoms.array', () => {
       address: [1],
     })
   })
-  it('should correctly report deep diffs', () => {
+  it.skip('should correctly report deep diffs', () => {
     const o: D.IArrayAtom<D.IBoxAtom<number>> = atomifyDeep([
       0,
       1,

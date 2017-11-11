@@ -39,9 +39,9 @@ export default class AbstractAtom implements _IAtom {
 
   constructor() {
     this._trace = new Error('Trace')
-    this._deepChangeEmitter = new Emitter()
+    // this._deepChangeEmitter = new Emitter()
     this._changeEmitter = new Emitter()
-    this._deepDiffEmitter = new Emitter()
+    // this._deepDiffEmitter = new Emitter()
     this._parent = null
   }
 
@@ -49,13 +49,13 @@ export default class AbstractAtom implements _IAtom {
     return this._changeEmitter.tappable
   }
 
-  deepChanges() {
-    return this._deepChangeEmitter.tappable
-  }
+  // deepChanges() {
+  //   return this._deepChangeEmitter.tappable
+  // }
 
-  deepDiffs() {
-    return this._deepDiffEmitter.tappable
-  }
+  // deepDiffs() {
+  //   return this._deepDiffEmitter.tappable
+  // }
 
   _setParent(p: ICompositeAtom, key: MapKey) {
     if (this._parent) throw new Error(`This Atom already does have a parent`)

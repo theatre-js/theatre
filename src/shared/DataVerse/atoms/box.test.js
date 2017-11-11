@@ -23,7 +23,7 @@ describe('DataVerse.atoms.box', () => {
     expect(changes).toMatchObject(['bar', 'bar', 'baz'])
   })
 
-  it('should correctly report deep changes', () => {
+  it.skip('should correctly report deep changes', () => {
     const r = box('foo')
     const deepChanges = []
     r.deepChanges().tap(change => {
@@ -41,7 +41,7 @@ describe('DataVerse.atoms.box', () => {
     ])
   })
 
-  it('should correctly report deep diffs', () => {
+  it.skip('should correctly report deep diffs', () => {
     const r = box('foo')
     const deepDiffs = []
     r.deepDiffs().tap(change => {
