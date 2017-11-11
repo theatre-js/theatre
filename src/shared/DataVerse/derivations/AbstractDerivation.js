@@ -4,6 +4,7 @@ import {reportObservedDependency} from './autoDerive/discoveryMechanism'
 import type {IDerivation} from './types'
 // import {mapStackTrace} from 'sourcemapped-stacktrace'
 import {default as DerivationEmitter} from './DerivationEmitter'
+import * as debug from '$shared/debug'
 
 const FRESHNESS_STATE_NOT_APPLICABLE = 0
 const FRESHNESS_STATE_STALE = 1
@@ -32,7 +33,9 @@ class AbstractDerivation {
   ) => void
 
   constructor() {
-    this._trace = new Error('trace')
+    if (process.env.KEEPING_DERIVATION_TRACES === true) {
+      this._trace = new Error('trace')
+    }
     this._didNotifyDownstreamOfUpcomingUpdate = false
     this._id = lastDerivationId++
     this._freshnessState = FRESHNESS_STATE_NOT_APPLICABLE
@@ -108,6 +111,14 @@ class AbstractDerivation {
   getValue() {
     reportObservedDependency((this: $FixMe))
 
+    if (
+      debug.findingColdDerivations &&
+      !debug.skippingColdDerivations &&
+      this._freshnessState === FRESHNESS_STATE_NOT_APPLICABLE
+    ) {
+      console.warn(`Perf regression: Unexpected cold derivation read`)
+    }
+
     if (this._freshnessState !== FRESHNESS_STATE_FRESH) {
       const unboxed = this._recalculate()
       this._lastValue = unboxed
@@ -135,16 +146,16 @@ class AbstractDerivation {
 
     if (thereAreMoreThanOneDependents) {
       this._freshnessState = FRESHNESS_STATE_STALE
-      this._keepUptodate()
       this._dependencies.forEach(d => {
         d._addDependent((this: $FixMe))
       })
+      this._keepUptodate()
     } else {
       this._freshnessState = FRESHNESS_STATE_NOT_APPLICABLE
-      this._stopKeepingUptodate()
       this._dependencies.forEach(d => {
         d._removeDependent((this: $FixMe))
       })
+      this._stopKeepingUptodate()
     }
   }
 

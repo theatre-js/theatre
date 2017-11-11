@@ -1,5 +1,5 @@
 {
-  "plugins": ["transform-export-extensions"],
+  "plugins": ["transform-export-extensions", "lodash"],
   "env": {
     "test": {
       "presets": [

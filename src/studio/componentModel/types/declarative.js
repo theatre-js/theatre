@@ -9,6 +9,10 @@ export type DeclarativeComponentDescriptor = {|
   whatToRender: WhatToRender,
   ruleSetsById: {[id: string]: RuleSet}, // later
   listOfRulesets: Array<string>,
+  timelines: {
+    byId: {[id: string]: TimelineDescriptor},
+    list: Array<string>,
+  },
 |}
 
 export type WhatToRender = ReferenceToLocalHiddenValue | ReferenceToProp
@@ -78,3 +82,41 @@ export type ValueDescriptor =
   | StringLiteralDescriptor
   | BooleanLiteralDescriptor
   | ArrayDescriptor
+
+export type TimelineDescriptor = {|
+  __descriptorType: 'TimelineDescriptor',
+  id: string,
+  vars: {[varId: string]: TimelineVarDescriptor},
+|}
+
+export type PointerThroughLocalHiddenValue = {|
+  type: 'PointerThroughLocalHiddenValue',
+  localHiddenValueId: string,
+  rest: Array<string>,
+|}
+
+export type TimelineVarDescriptor = {|
+  __descriptorType: 'TimelineVarDescriptor',
+  id: string,
+  backPointer: PointerThroughLocalHiddenValue,
+  points: {
+    list: Array<string>,
+    byId: {[id: string]: TimelineVarPoint},
+  },
+|}
+
+export type TimelinePointInterpolator = {|
+  type: 'QubicBezier',
+  lx: number,
+  ly: number,
+  rx: number,
+  ry: number,
+  connected: boolean,
+|}
+
+export type TimelineVarPoint = {|
+  __descriptorType: 'TimelineVarPoint',
+  time: number,
+  value: number,
+  interpolator: TimelinePointInterpolator,
+|}

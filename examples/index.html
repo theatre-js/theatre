@@ -11,6 +11,7 @@
 </head>
 <body>
   <div id="root"></div>
+
   <script>
     const blockedPrefixes = ['Warning: Accessing PropTypes', 'Warning: Accessing createClass']
     const originalConsoleWarn = console.warn.bind(console)
@@ -26,10 +27,16 @@
         originalConsoleWarn(msg, ...rest)
       }
     }
+    console.time('whole')
+    console.time('theater')
   </script>
+
+
   <!-- the studio -->
   <script src="http://localhost:9091/index.js"></script>
+  <script>console.timeEnd('theater')</script>
   <!-- the entry file of examples/ -->
   <script src="/index.js"></script>
+  <script>console.timeEnd('whole')</script>
 </body>
 </html>

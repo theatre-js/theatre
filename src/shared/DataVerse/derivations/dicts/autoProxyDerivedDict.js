@@ -8,6 +8,7 @@ import {
   default as proxyDerivedDict,
   type IProxyDerivedDict,
 } from './proxyDerivedDict'
+import emptyDict from './emptyDict'
 
 class AutoProxyDerivedDict<O: {}> extends AbstractDerivedDict
   implements IDerivedDict<O> {
@@ -26,17 +27,18 @@ class AutoProxyDerivedDict<O: {}> extends AbstractDerivedDict
     this._sourceD = sourceD
     this._untapFromProxyChanges = _.noop
     this._untapFromSourceChanges = _.noop
-    this._proxy = proxyDerivedDict(sourceD.getValue())
+    this._proxy = proxyDerivedDict(emptyDict)
 
     return this
   }
 
   _reactToHavingTappers() {
-    this._untapFromSourceChanges = this._sourceD
-      .changes(this._ticker)
-      .tap(newDerivedDict => {
+    this._untapFromSourceChanges = this._sourceD.tapImmediate(
+      this._ticker,
+      newDerivedDict => {
         this._proxy.setSource(newDerivedDict)
-      })
+      },
+    )
 
     this._untapFromProxyChanges = this._proxy.changes().tap(c => {
       this._changeEmitter.emit(c)

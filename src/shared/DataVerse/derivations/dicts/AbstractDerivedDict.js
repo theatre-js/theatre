@@ -13,7 +13,9 @@ export default class AbstractDerivedDict {
   _pointer: $FixMe
 
   constructor() {
-    this._trace = new Error('Trace')
+    if (process.env.KEEPING_DERIVATION_TRACES === true) {
+      this._trace = new Error('trace')
+    }
     this._changeEmitter = new Emitter()
     this._changeEmitterHasTappers = false
     this._changeEmitter.onNumberOfTappersChange(() => {

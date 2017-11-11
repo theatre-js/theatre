@@ -22,7 +22,9 @@ export default class Ticker implements ITicker {
   constructor() {
     this._computationsToUpdate = new Set()
     this._objectsWhoseStructureShouldBeUpdated = new Set()
-    this._traces = new WeakMap()
+    if (process.env.KEEPING_DERIVATION_TRACES === true) {
+      this._traces = new WeakMap()
+    }
   }
 
   registerComputationUpdate(d: $FixMe) {
@@ -30,7 +32,9 @@ export default class Ticker implements ITicker {
       console.error('This should never happen')
     }
 
-    // this._traces.set(d, new Error('Trace'))
+    if (process.env.KEEPING_DERIVATION_TRACES === true) {
+      this._traces.set(d, new Error('Trace'))
+    }
     this._computationsToUpdate.add(d)
   }
 
@@ -67,8 +71,12 @@ export default class Ticker implements ITicker {
     const oldD = this._computationsToUpdate
     this._computationsToUpdate = new Set()
     oldD.forEach(d => {
-      // const trace = this._traces.get(d)
-      // this._traces.delete(d)
+      if (process.env.KEEPING_DERIVATION_TRACES === true) {
+        // This const is just there for debugging purposes
+        // eslint-disable-next-line no-unused-vars
+        const trace = this._traces.get(d)
+        this._traces.delete(d)
+      }
       d._updateComputation()
     })
 

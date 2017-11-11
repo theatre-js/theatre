@@ -1,5 +1,6 @@
 import SideEffectsHandler from './SideEffectsHandler' // eslint-disable-line flowtype/require-valid-file-annotation
 import {type Studio, PureComponentWithStudio, D} from '$studio/handy'
+import * as debug from '$shared/debug'
 
 type MakeReactiveComponentArgs = {
   modifyPrototypalDict: (
@@ -89,22 +90,6 @@ export default function makeReactiveComponent({
       this._prototypalDictD = this._makePrototypalDictD()
 
       // @todo perf: this._prototypalDictD's value is read cold, and a few lines later, hot. Let's read it only when it's hot
-      this._finalFace = new D.derivations.PrototypalDictFace(
-        this._prototypalDictD.getValue(),
-        this.studio.ticker,
-      )
-
-      this.isTheaterJSComponent = true
-      this.componentType =
-        componentType || this._finalFace.prop('componentType').getValue()
-      this.componentId =
-        componentId || this._finalFace.prop('componentId').getValue()
-      this.elementId = this._atom.prop('instanceId')
-
-      if (!displayName)
-        TheaterJSComponent.displayName = this._finalFace
-          .prop('displayName')
-          .getValue()
 
       const untapFromPrototypalMapChanges = this._prototypalDictD
         .changes(this.studio.ticker)
@@ -113,6 +98,29 @@ export default function makeReactiveComponent({
         })
 
       this._fnsToCallOnWillUnmount.push(untapFromPrototypalMapChanges)
+
+      this._finalFace = new D.derivations.PrototypalDictFace(
+        this._prototypalDictD.getValue(),
+        this.studio.ticker,
+      )
+
+      this.isTheaterJSComponent = true
+
+      debug.skipFindingColdDerivations()
+      this.componentType =
+        componentType || this._finalFace.prop('componentType').getValue()
+
+      this.componentId =
+        componentId || this._finalFace.prop('componentId').getValue()
+
+      if (!displayName)
+        TheaterJSComponent.displayName = this._finalFace
+          .prop('displayName')
+          .getValue()
+
+      debug.endSkippingColdDerivations()
+
+      this.elementId = this._atom.prop('instanceId')
 
       this._whatToRender = null
       const untapFromRender = this._finalFace
@@ -159,16 +167,13 @@ export default function makeReactiveComponent({
         .pointer()
         .prop('modifierInstantiationDescriptors')
         .prop('byId')
+
       const finalPrototypalDictD = this._atom
         .pointer()
         .prop('modifierInstantiationDescriptors')
         .prop('list')
         .flatMap((list: D.IDerivedArray<$FixMe>) => {
           if (!list) return prototypalDictWithoutModifiers
-
-          // if (list.length() > 0) debugger
-
-          // return prototypalDictWithoutModifiers
 
           return list
             .map(idD =>

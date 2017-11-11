@@ -2,9 +2,12 @@
 import type {IDerivation} from '../types'
 const stack = []
 
-export const collectObservedDependencies = (cb: () => void) => {
+export const collectObservedDependencies = (
+  cb: () => void,
+  collector: (IDerivation<$IntentionalAny>) => void,
+) => {
   const foundDeps: Set<IDerivation<$IntentionalAny>> = new Set()
-  stack.push(foundDeps)
+  stack.push({foundDeps, collector})
   cb()
   stack.pop()
   return foundDeps
@@ -12,5 +15,8 @@ export const collectObservedDependencies = (cb: () => void) => {
 
 export const reportObservedDependency = (d: IDerivation<$IntentionalAny>) => {
   if (stack.length === 0) return
-  stack[stack.length - 1].add(d)
+  const top = stack[stack.length - 1]
+
+  top.foundDeps.add(d)
+  top.collector(d)
 }

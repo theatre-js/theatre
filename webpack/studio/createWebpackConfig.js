@@ -27,14 +27,18 @@ module.exports = (options: Options) => {
     // target: '',
     devtool: isDev ? 'eval-source-map' : 'source-map',
     entry: {
-      index: isDev ? ['react-hot-loader/patch', './src/studio/index.js'] : ['./src/studio/index.js'],
+      index: isDev
+        ? ['react-hot-loader/patch', './src/studio/index.js']
+        : ['./src/studio/index.js'],
     },
     // externals: ['electron'],
     output: {
       path: bundlesDir,
       libraryTarget: 'umd',
       library: 'TheaterJS',
-      publicPath: `http://localhost:${envConfig.devSpecific.studio.devServerPort}/`,
+      publicPath: `http://localhost:${
+        envConfig.devSpecific.studio.devServerPort
+      }/`,
       filename: '[name].js',
       sourceMapFilename: '[file].map.js',
     },
@@ -45,8 +49,22 @@ module.exports = (options: Options) => {
     },
     module: {
       rules: [
-        {test: /\.js$/, use: {loader: `babel-loader`, options: {forceEnv: `studio:${options.env}`}}, exclude: /node_modules/},
-        {test: /\.tsx?$/, use: {loader: `awesome-typescript-loader`, options: {transpileOnly: true}}, exclude: /node_modules/},
+        {
+          test: /\.js$/,
+          use: {
+            loader: `babel-loader`,
+            options: {forceEnv: `studio:${options.env}`},
+          },
+          exclude: /node_modules/,
+        },
+        {
+          test: /\.tsx?$/,
+          use: {
+            loader: `awesome-typescript-loader`,
+            options: {transpileOnly: true},
+          },
+          exclude: /node_modules/,
+        },
         {
           test: /\.css$/,
           use: [
@@ -75,7 +93,10 @@ module.exports = (options: Options) => {
           include: path.join(context, 'src'),
         },
         {test: /\.svg$/, use: 'svg-inline-loader'},
-        {test: /\.(png|jpg|jpeg|gif)$/, use: [{loader: 'url-loader', options: {'prefix': 'img/', limit: 5000}}]},
+        {
+          test: /\.(png|jpg|jpeg|gif)$/,
+          use: [{loader: 'url-loader', options: {prefix: 'img/', limit: 5000}}],
+        },
       ],
     },
     plugins: [
@@ -83,7 +104,7 @@ module.exports = (options: Options) => {
       new webpack.DefinePlugin({
         // This is only used inside `$root/webpack/env/index.js` and there it is
         // mirrored in process.env.NODE_ENV. So read this value from process.env.NODE_ENV.
-        '$$$NODE_ENV': JSON.stringify(options.env),
+        $$$NODE_ENV: JSON.stringify(options.env),
       }),
       new webpack.ProvidePlugin({
         'process.env': '$root/webpack/env/index.js',
@@ -107,7 +128,7 @@ module.exports = (options: Options) => {
     config.plugins.push(
       new webpack.optimize.UglifyJsPlugin({
         compressor: {warnings: false},
-      })
+      }),
     )
   }
 
@@ -122,7 +143,10 @@ module.exports = (options: Options) => {
       noInfo: false,
       quiet: false,
       stats: false,
-      headers: {'Access-Control-Allow-Origin': '*', 'Access-Control-Expose-Headers': 'SourceMap,X-SourceMap'},
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Expose-Headers': 'SourceMap,X-SourceMap',
+      },
       port: envConfig.devSpecific.studio.devServerPort,
     }
   }

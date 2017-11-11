@@ -17,6 +17,7 @@ type CommonEnvironmentVariables = {
   studio: {
     socketPort: number,
   },
+  KEEPING_DERIVATION_TRACES: boolean,
 }
 
 // Some environment variables are specific to NODE_ENV='development'

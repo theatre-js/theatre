@@ -8,7 +8,9 @@ export default class AbstractDerivedArray {
   isDerivedArray = 'True'
 
   constructor() {
-    this._trace = new Error('Trace')
+    if (process.env.KEEPING_DERIVATION_TRACES === true) {
+      this._trace = new Error('trace')
+    }
     this._id = lastId++
     this._changeEmitter = new Emitter()
     this._changeEmitterHasTappers = false

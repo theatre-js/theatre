@@ -18,18 +18,25 @@ export class AutoDerivation<V> extends AbstractDerivation
     let value: V
     const newDeps: Set<
       IDerivation<$IntentionalAny>,
-    > = collectObservedDependencies(() => {
-      value = this._fn()
-    })
+    > = collectObservedDependencies(
+      () => {
+        value = this._fn()
+      },
+      observedDep => {
+        this._addDependency(observedDep)
+      },
+    )
+
     this._dependencies.forEach(d => {
       if (!newDeps.has(d)) {
         this._removeDependency(d)
       }
     })
+
     this._dependencies = newDeps
-    newDeps.forEach(d => {
-      this._addDependency(d)
-    })
+    // newDeps.forEach(d => {
+    //   this._addDependency(d)
+    // })
 
     return (value: $FixMe)
   }

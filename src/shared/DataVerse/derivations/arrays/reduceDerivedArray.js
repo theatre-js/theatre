@@ -67,6 +67,7 @@ export class DerivedArrayReduction<T, V> extends AbstractDerivation
   }
 
   _keepUptodate() {
+    this._updateNeededFromIndex = 0
     this._untapFromDerivedArrayChanges = this._derivedArray.changes().tap(c => {
       if (this._updateNeededFromIndex === -1) {
         this._updateNeededFromIndex = c.startIndex
@@ -84,6 +85,7 @@ export class DerivedArrayReduction<T, V> extends AbstractDerivation
   _stopKeepingUptodate() {
     this._untapFromDerivedArrayChanges()
     this._untapFromDerivedArrayChanges = noop
+    this._updateNeededFromIndex = 0
   }
 }
 

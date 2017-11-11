@@ -29,7 +29,6 @@
     "flowtype/generic-spacing": [0, "never"],
     "flowtype/semi": [0, "never"],
     "react/prop-types": 0,
-    "prettier/prettier": "error",
     "no-extra-semi": [0]
   },
   "plugins": [

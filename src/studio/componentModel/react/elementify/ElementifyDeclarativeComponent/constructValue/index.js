@@ -5,6 +5,7 @@ import type {ValueDescriptorDescribedInAnObject} from '$studio/componentModel/ty
 import constructListDescriptor from './constructListDescriptor'
 import constructMapDescriptor from './constructMapDescriptor'
 import constructReferenceToLocalHiddenValue from './constructReferenceToLocalHiddenValue'
+import constructReferenceToTimelineVar from './constructReferenceToTimelineVar'
 
 type Constructor = (desP: $FixMe, d: $FixMe) => $FixMe
 
@@ -14,6 +15,7 @@ const constructors: {
   ComponentInstantiationValueDescriptor: constructComponentInstantiationValueDescriptor,
   ModifierInstantiationValueDescriptor: constructModifierInstantiationValueDescriptor,
   ReferenceToLocalHiddenValue: constructReferenceToLocalHiddenValue,
+  ReferenceToTimelineVar: constructReferenceToTimelineVar,
 }
 
 const isLiteral = s =>

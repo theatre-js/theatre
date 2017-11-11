@@ -12,18 +12,13 @@
     "prettify-and-lint": "run-s prettify lint",
     "prettify": "prettier --write \"src/**/*.js\"",
     "prepush": "run-p prettify-and-lint flow test",
-    "lb:webpack:dev":
-      "webpack --progress --config webpack/lb/development.babel.js --watch",
+    "lb:webpack:dev": "webpack --progress --config webpack/lb/development.babel.js --watch",
     "lb:dev": "nodemon -e jade --exec \"electron\" ./bundles/lb/index.js",
     "lb:run": "electron ./bundles/lb/index.js",
-    "lf:webpack:dev":
-      "webpack-dev-server --progress --config webpack/lf/development.babel.js",
-    "studio:webpack:dev":
-      "webpack-dev-server --progress --config webpack/studio/development.babel.js",
-    "examples:webpack:dev":
-      "webpack-dev-server --progress --config webpack/examples/development.babel.js",
-    "build:dev":
-      "npm-run-all --parallel lb:webpack:dev lf:webpack:dev studio:webpack:dev examples:webpack:dev",
+    "lf:webpack:dev": "webpack-dev-server --progress --config webpack/lf/development.babel.js",
+    "studio:webpack:dev": "webpack-dev-server --progress --config webpack/studio/development.babel.js",
+    "examples:webpack:dev": "webpack-dev-server --progress --config webpack/examples/development.babel.js",
+    "build:dev": "npm-run-all --parallel lb:webpack:dev lf:webpack:dev studio:webpack:dev examples:webpack:dev",
     "open-examples": "opn http://localhost:9092/examples"
   },
   "jest": {
@@ -35,7 +30,9 @@
       "\\$studio/(.*)": "<rootDir>/src/studio/$1",
       "\\$shared/(.*)": "<rootDir>/src/shared/$1"
     },
-    "setupFiles": ["./src/test/env.js"],
+    "setupFiles": [
+      "./src/test/env.js"
+    ],
     "automock": false
   },
   "repository": {
@@ -51,6 +48,7 @@
     "babel-core": "^6.26.0",
     "babel-eslint": "^7.2.3",
     "babel-loader": "^7.1.2",
+    "babel-plugin-lodash": "^3.2.11",
     "babel-plugin-transform-export-extensions": "^6.22.0",
     "babel-preset-env": "^1.6.1",
     "babel-preset-es2015": "^6.24.1",

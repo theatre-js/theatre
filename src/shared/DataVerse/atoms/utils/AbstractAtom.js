@@ -38,7 +38,9 @@ export default class AbstractAtom implements _IAtom {
   +unboxDeep: () => mixed
 
   constructor() {
-    this._trace = new Error('Trace')
+    if (process.env.KEEPING_DERIVATION_TRACES === true) {
+      this._trace = new Error('trace')
+    }
     // this._deepChangeEmitter = new Emitter()
     this._changeEmitter = new Emitter()
     // this._deepDiffEmitter = new Emitter()

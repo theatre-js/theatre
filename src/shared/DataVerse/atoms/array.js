@@ -41,29 +41,29 @@ const changeDescriptor = <V: IAtom>(
   addedRefs: refsToAdd,
 })
 
-const deepChangeDescriptor = <V: IAtom>(
-  startIndex: number,
-  deleteCount: number,
-  refsToAdd: Array<V>,
-): ArrayAtomDeepChangeType<V> => ({
-  address: [],
-  type: 'ArrayChange',
-  startIndex,
-  deleteCount: deleteCount,
-  addedRefs: refsToAdd,
-})
+// const deepChangeDescriptor = <V: IAtom>(
+//   startIndex: number,
+//   deleteCount: number,
+//   refsToAdd: Array<V>,
+// ): ArrayAtomDeepChangeType<V> => ({
+//   address: [],
+//   type: 'ArrayChange',
+//   startIndex,
+//   deleteCount: deleteCount,
+//   addedRefs: refsToAdd,
+// })
 
-const deepDiffDescriptor = (
-  startIndex: number,
-  deletedRefsDeeplyUnboxed: Array<$FixMe>,
-  addedRefsDeeplyUnboxed: Array<$FixMe>,
-) => ({
-  address: [],
-  type: 'ArrayDiff',
-  startIndex,
-  deepUnboxOfDeletedRows: deletedRefsDeeplyUnboxed,
-  deepUnboxOfAddedRows: addedRefsDeeplyUnboxed,
-})
+// const deepDiffDescriptor = (
+//   startIndex: number,
+//   deletedRefsDeeplyUnboxed: Array<$FixMe>,
+//   addedRefsDeeplyUnboxed: Array<$FixMe>,
+// ) => ({
+//   address: [],
+//   type: 'ArrayDiff',
+//   startIndex,
+//   deepUnboxOfDeletedRows: deletedRefsDeeplyUnboxed,
+//   deepUnboxOfAddedRows: addedRefsDeeplyUnboxed,
+// })
 
 export type IArrayAtom<V: IAtom> = {
   isDictAtom: False,
