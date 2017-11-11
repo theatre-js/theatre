@@ -18,6 +18,7 @@ type CommonEnvironmentVariables = {
     socketPort: number,
   },
   KEEPING_DERIVATION_TRACES: boolean,
+  TRACKING_COLD_DERIVATIONS: boolean,
 }
 
 // Some environment variables are specific to NODE_ENV='development'

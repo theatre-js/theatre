@@ -112,6 +112,7 @@ class AbstractDerivation {
     reportObservedDependency((this: $FixMe))
 
     if (
+      process.env.TRACKING_COLD_DERIVATIONS === true &&
       debug.findingColdDerivations &&
       !debug.skippingColdDerivations &&
       this._freshnessState === FRESHNESS_STATE_NOT_APPLICABLE
