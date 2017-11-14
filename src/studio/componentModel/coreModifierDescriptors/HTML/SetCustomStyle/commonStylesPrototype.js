@@ -1,7 +1,7 @@
 // @flow
 import * as D from '$shared/DataVerse'
 
-import ReifiedStyleApplier from './ReifiedStyleApplier'
+import reifiedStyleApplier from './reifiedStyleApplier'
 
 const ensureReifiedStyles = d => {
   return d.propFromAbove('reifiedStyles').flatMap(possibleReifiedStyles => {
@@ -16,7 +16,7 @@ const ensureReifiedStyles = d => {
 const sideEffectsForApplyReifiedStyles = D.atoms
   .dict({
     applyReifiedStyles: D.atoms.box((dict, ticker) => {
-      const applier = new ReifiedStyleApplier(dict, ticker)
+      const applier = reifiedStyleApplier(dict, ticker)
       applier.start()
 
       return () => {

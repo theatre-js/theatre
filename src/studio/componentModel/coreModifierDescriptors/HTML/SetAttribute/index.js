@@ -1,6 +1,6 @@
 // @flow
 import {type ModifierDescriptor} from '$studio/componentModel/types'
-import AttributesApplier from './AttributesApplier'
+import attributesApplier from './attributeApplier'
 import * as D from '$shared/DataVerse'
 
 const ensureDomAttributes = d => {
@@ -16,7 +16,7 @@ const ensureDomAttributes = d => {
 const sideEffectsForApplyAttributes = D.atoms
   .dict({
     applyAttributes: D.atoms.box((dict, ticker) => {
-      const applier = new AttributesApplier(dict, ticker)
+      const applier = attributesApplier(dict, ticker)
       applier.start()
 
       return () => {
