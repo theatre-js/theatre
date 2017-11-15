@@ -21,6 +21,15 @@ export default makeReactiveComponent({
         return 'Declarative'
       },
 
+      timelineDescriptors(d) {
+        const componentDescriptorP = d
+          .pointer()
+          .prop('props')
+          .prop('componentDescriptor')
+
+        return componentDescriptorP.prop('timelineDescriptors').prop('byId')
+      },
+
       render(d) {
         const componentDescriptorP = d
           .pointer()

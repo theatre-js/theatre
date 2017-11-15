@@ -1,22 +1,21 @@
 /* eslint-disable flowtype/require-valid-file-annotation */
-const resolveReferenceToHiddenLocalValue = (whichP, d) => {
-  const componentDescriptorP = d
-    .pointer()
-    .prop('props')
-    .prop('componentDescriptor')
-  const localHiddenValuesByIdP = componentDescriptorP.prop(
-    'localHiddenValuesById',
-  )
-
-  return whichP.flatMap((id: string) => {
-    const valueDescP = localHiddenValuesByIdP.prop(id)
-    return constructValue.default(valueDescP, d)
-  })
-}
+import type {default as TimelineInstance} from '$studio/componentModel/react/makeReactiveComponent/TimelineInstance'
 
 const constructReferenceToTimelineVar = (descP, d) => {
-  return '0.5'
-  // return resolveReferenceToHiddenLocalValue(descP.prop('which'), d)
+  const timelineIdP = descP.prop('timelineId')
+  const varIdP = descP.prop('varId')
+
+  return timelineIdP.flatMap((timelineId: string) =>
+    varIdP.flatMap((varId: string) => {
+      return d
+        .pointer()
+        .prop('timelineInstances')
+        .prop(timelineId)
+        .flatMap((timelineInstance: TimelineInstance) => {
+          return timelineInstance.valueFor(varId)
+        })
+    }),
+  )
 }
 
 export default constructReferenceToTimelineVar

@@ -29,7 +29,6 @@ const ops = {
   },
   array: {
     remove(diff: Diff, {curAtom, lastComponent}: Stuff) {
-      // console.log(lastComponent)
       curAtom.splice(lastComponent, 1, [])
     },
     replace(diff: Diff, {curAtom, lastComponent}) {
@@ -52,7 +51,6 @@ export default function applyJsonDiffToAtom(diff: Diff, atom: $FixMe) {
   const lastComponent = components.pop()
 
   let curAtom: $FixMe = atom
-  // debugger
   for (let component of components) {
     component = jsonPatchLib.unescapePathComponent(component)
     curAtom =

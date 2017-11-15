@@ -9,7 +9,7 @@ export type DeclarativeComponentDescriptor = {|
   whatToRender: WhatToRender,
   ruleSetsById: {[id: string]: RuleSet}, // later
   listOfRulesets: Array<string>,
-  timelines: {
+  timelineDescriptors: {
     byId: {[id: string]: TimelineDescriptor},
     list: Array<string>,
   },
@@ -100,7 +100,7 @@ export type TimelineVarDescriptor = {|
   id: string,
   backPointer: PointerThroughLocalHiddenValue,
   points: {
-    list: Array<string>,
+    // list: Array<string>,
     byId: {[id: string]: TimelineVarPoint},
   },
 |}

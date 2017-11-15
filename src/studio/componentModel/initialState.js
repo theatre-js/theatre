@@ -12,7 +12,7 @@ const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
   type: 'Declarative',
   listOfRulesets: [],
   ruleSetsById: {},
-  timelines: {
+  timelineDescriptors: {
     byId: {
       timeline1: {
         __descriptorType: 'TimelineDescriptor',
@@ -36,7 +36,7 @@ const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
               ],
             },
             points: {
-              list: ['1', '2'],
+              // list: ['1', '2'],
               byId: {
                 '1': {
                   __descriptorType: 'TimelineVarPoint',

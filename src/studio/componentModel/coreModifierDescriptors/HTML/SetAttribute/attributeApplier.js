@@ -1,6 +1,5 @@
 // @flow
 import * as D from '$shared/DataVerse'
-import _ from 'lodash'
 import {domAttrSetter} from './utils'
 import KeyedSideEffectRunner from '$shared/utils/KeyedSideEffectRunner'
 

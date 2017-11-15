@@ -1,6 +1,8 @@
-import SideEffectsHandler from './SideEffectsHandler' // eslint-disable-line flowtype/require-valid-file-annotation
+// @flow
+import SideEffectsHandler from './SideEffectsHandler'
 import {type Studio, PureComponentWithStudio, D} from '$studio/handy'
 import * as debug from '$shared/debug'
+import TimelinesHandler from './TimelinesHandler'
 
 type MakeReactiveComponentArgs = {
   modifyPrototypalDict: (
@@ -40,6 +42,7 @@ export default function makeReactiveComponent({
     componentType: string
     componentId: string
     elementId: string | number
+    _timelinesHandler: TimelinesHandler
 
     _atom: D.IDictAtom<{
       instanceId: string | number,
@@ -54,31 +57,41 @@ export default function makeReactiveComponent({
     }>
 
     static _baseLookupTable = {
-      render() {
-        return null
-      },
+      render: () => null,
+
       sideEffects: () => D.derivations.emptyDict,
+
       props: d =>
         d
           .pointer()
           .prop('_atom')
           .prop('props'),
+
       studio: d =>
         d
           .pointer()
           .prop('_atom')
           .prop('studio'),
-      // key: (d) => d.pointer().prop('_atom').prop('key'),
+
       modifierInstantiationDescriptors: d =>
         d
           .pointer()
           .prop('_atom')
           .prop('modifierInstantiationDescriptors'),
+
       state: d =>
         d
           .pointer()
           .prop('_atom')
           .prop('state'),
+
+      timelineDescriptors: () => D.derivations.emptyDict,
+
+      timelineInstances: d =>
+        d
+          .pointer()
+          .prop('_atom')
+          .prop('timelineInstances'),
     }
 
     constructor(props: Props, context: $FixMe) {
@@ -86,6 +99,7 @@ export default function makeReactiveComponent({
 
       this._fnsToCallOnWillUnmount = []
 
+      // $FixMe
       this._atom = this._createAtom()
       this._prototypalDictD = this._makePrototypalDictD()
 
@@ -138,6 +152,9 @@ export default function makeReactiveComponent({
         this._finalFace,
         sideEffectsDictP,
       )
+
+      this._timelinesHandler = new TimelinesHandler((this: $IntentionalAny))
+      this._timelinesHandler.start()
     }
 
     _createAtom() {
@@ -149,6 +166,7 @@ export default function makeReactiveComponent({
         studio: this.studio,
         // key: this.props.key,
         state: getInitialState ? getInitialState() : D.atoms.dict({}),
+        timelineInstances: D.atoms.dict({}),
       })
     }
 
@@ -172,6 +190,7 @@ export default function makeReactiveComponent({
         .pointer()
         .prop('modifierInstantiationDescriptors')
         .prop('list')
+        // $FixMe
         .flatMap((list: D.IDerivedArray<$FixMe>) => {
           if (!list) return prototypalDictWithoutModifiers
 
@@ -190,7 +209,9 @@ export default function makeReactiveComponent({
     }
 
     _applyModifier(
+      // $FixMe
       modifierInstantiationDescriptor,
+      // $FixMe
       dict,
     ): D.IDerivation<$FixMe> {
       return modifierInstantiationDescriptor
@@ -260,3 +281,5 @@ export default function makeReactiveComponent({
 
   return TheaterJSComponent
 }
+
+export type TheaterJSComponent = $FixMe
