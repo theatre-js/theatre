@@ -10,3 +10,10 @@ export const getComponentDescriptor: Selector<*, *> = (
   state.componentModel.componentDescriptors[
     stringStartsWith(id, 'TheaterJS/Core/') ? 'core' : 'custom'
   ][id]
+
+export const getPathToComponentDescriptor = (id: ComponentId) => [
+  'componentModel',
+  'componentDescriptors',
+  stringStartsWith(id, 'TheaterJS/Core/') ? 'core' : 'custom',
+  id,
+]

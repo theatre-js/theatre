@@ -100,13 +100,16 @@ export type TimelineVarDescriptor = {|
   id: string,
   backPointer: PointerThroughLocalHiddenValue,
   points: {
+    firstId: ?string,
+    lastId: ?string,
     // list: Array<string>,
     byId: {[id: string]: TimelineVarPoint},
   },
 |}
 
-export type TimelinePointInterpolator = {|
-  type: 'QubicBezier',
+export type TimelinePointInterpolationDescriptor = {|
+  __descriptorType: 'TimelinePointInterpolationDescriptor',
+  interpolationType: 'CubicBezier',
   lx: number,
   ly: number,
   rx: number,
@@ -116,7 +119,10 @@ export type TimelinePointInterpolator = {|
 
 export type TimelineVarPoint = {|
   __descriptorType: 'TimelineVarPoint',
+  id: string,
   time: number,
   value: number,
-  interpolator: TimelinePointInterpolator,
+  interpolationDescriptor: TimelinePointInterpolationDescriptor,
+  prevId: string, // 'head' means we're the first point
+  nextId: string, // 'end' means we're the last point
 |}

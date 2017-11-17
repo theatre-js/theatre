@@ -62,7 +62,9 @@ export class ExtendDerivedDict extends DerivedDict
   }
 
   prop<K: $Keys<$FixMe>>(k: K): IDerivation<$FixMe> {
-    return this._overrider.prop(k).flatMap(v => (v ? v : this._base.prop(k)))
+    return this._overrider
+      .prop(k)
+      .flatMap(v => (v !== undefined ? v : this._base.prop(k)))
   }
 
   keys() {

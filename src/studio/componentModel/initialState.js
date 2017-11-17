@@ -36,14 +36,19 @@ const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
               ],
             },
             points: {
-              // list: ['1', '2'],
+              firstId: '1',
+              lastId: '2',
               byId: {
                 '1': {
                   __descriptorType: 'TimelineVarPoint',
-                  time: 0,
-                  value: 1,
-                  interpolator: {
-                    type: 'QubicBezier',
+                  id: '1',
+                  time: 0.5,
+                  value: 0,
+                  prevId: 'head',
+                  nextId: '2',
+                  interpolationDescriptor: {
+                    __descriptorType: 'TimelinePointInterpolationDescriptor',
+                    interpolationType: 'CubicBezier',
                     lx: 0.5,
                     ly: 0,
                     rx: 0,
@@ -53,10 +58,14 @@ const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
                 },
                 '2': {
                   __descriptorType: 'TimelineVarPoint',
-                  time: 0,
-                  value: 0,
-                  interpolator: {
-                    type: 'QubicBezier',
+                  id: '2',
+                  time: 1,
+                  value: 1,
+                  prevId: '1',
+                  nextId: 'end',
+                  interpolationDescriptor: {
+                    __descriptorType: 'TimelinePointInterpolationDescriptor',
+                    interpolationType: 'CubicBezier',
                     lx: 0.5,
                     ly: 0,
                     rx: 0,
@@ -73,6 +82,7 @@ const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
     list: ['timeline1'],
   },
   localHiddenValuesById: {
+    fontSize: '18px',
     palaki: ({
       __descriptorType: 'ComponentInstantiationValueDescriptor',
       componentId: 'TheaterJS/Core/DOMTag',
@@ -132,7 +142,13 @@ const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
                 list: ['1', '2', '3'],
                 byId: {
                   '1': {key: 'color', value: 'red'},
-                  '2': {key: 'font-size', value: '12px'},
+                  '2': {
+                    key: 'font-size',
+                    value: {
+                      __descriptorType: 'ReferenceToLocalHiddenValue',
+                      which: 'fontSize',
+                    },
+                  },
                   '3': {
                     key: 'opacity',
                     value: {

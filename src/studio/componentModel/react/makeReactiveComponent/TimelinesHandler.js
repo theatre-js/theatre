@@ -3,6 +3,7 @@ import type {TheaterJSComponent} from './index'
 import * as _ from 'lodash'
 import {D} from '$studio/handy'
 import TimelineInstance from './TimelineInstance'
+import {getPathToComponentDescriptor} from '$studio/componentModel/selectors'
 
 export default class TimelinesHandler {
   _element: TheaterJSComponent
@@ -39,7 +40,16 @@ export default class TimelinesHandler {
   _startKey = (key: string) => {
     this._timelineInstancesAtom.setProp(
       key,
-      new TimelineInstance(this._timelineDescriptorsProxy.pointer().prop(key)),
+      new TimelineInstance(
+        this._timelineDescriptorsProxy.pointer().prop(key),
+        this._element.studio,
+        [
+          ...getPathToComponentDescriptor(this._element.componentId),
+          'timelineDescriptors',
+          'byId',
+          key,
+        ],
+      ),
     )
   }
 

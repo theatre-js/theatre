@@ -19,5 +19,3 @@ const constructReferenceToTimelineVar = (descP, d) => {
 }
 
 export default constructReferenceToTimelineVar
-
-const constructValue = require('../constructValue')

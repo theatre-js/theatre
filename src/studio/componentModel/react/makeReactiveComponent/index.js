@@ -103,8 +103,6 @@ export default function makeReactiveComponent({
       this._atom = this._createAtom()
       this._prototypalDictD = this._makePrototypalDictD()
 
-      // @todo perf: this._prototypalDictD's value is read cold, and a few lines later, hot. Let's read it only when it's hot
-
       const untapFromPrototypalMapChanges = this._prototypalDictD
         .changes(this.studio.ticker)
         .tap(newFinalPrototypalDict => {

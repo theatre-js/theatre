@@ -88,19 +88,19 @@ export class FlatMapDerivation extends AbstractDerivation
       if (updateNeededFrom === UPDATE_NEEDED_FROM.dep) {
         this._removeInnerDerivation()
       }
-
-      AbstractDerivation.prototype._youMayNeedToUpdateYourself.call(
-        this,
-        msgComingFrom,
-      )
     } else if (this._updateNeededFrom === UPDATE_NEEDED_FROM.dep) {
-      return
+      // nothing
     } else {
       if (updateNeededFrom === UPDATE_NEEDED_FROM.dep) {
         this._updateNeededFrom = UPDATE_NEEDED_FROM.dep
         this._removeInnerDerivation()
       }
     }
+
+    AbstractDerivation.prototype._youMayNeedToUpdateYourself.call(
+      this,
+      msgComingFrom,
+    )
   }
 
   _removeInnerDerivation() {

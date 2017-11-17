@@ -102,6 +102,7 @@
     "socket.io": "^2.0.3",
     "style-loader": "^0.18.2",
     "svg-inline-loader": "^0.8.0",
+    "timing-function": "^0.2.3",
     "typescript": "^2.6.1",
     "url-loader": "^0.5.9",
     "uuid": "^3.1.0",
