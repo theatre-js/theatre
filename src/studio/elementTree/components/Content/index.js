@@ -34,19 +34,17 @@ class ElementTreePanelContent extends React.PureComponent<Props, State> {
 
   _subscribeToHookEvents(hook: ?Object) {
     if (hook == null) throw Error('Dev tools hook not found!')
-
-    hook.sub('renderer-attached', ({id}) => {
-      // $FixMe
-      const root = hook
-        .getFiberRoots(id)
-        .values()
-        .next().value
-
-      if (root.containerInfo.id !== 'theaterjs-studio') {
-        this.rendererID = id
-      }
-    })
-
+    // hook.sub('renderer-attached', ({id}) => {
+    //   // $FixMe
+    //   const root = hook
+    //     .getFiberRoots(id)
+    //     .values()
+    //     .next().value
+    //   if (root.containerInfo.id !== 'theaterjs-studio') {
+    //     this.rendererID = id
+    //   }
+    // })
+    hook.sub('renderer', ({id}) => (this.rendererID = id))
     hook.sub('mount', data => {
       if (data.renderer !== this.rendererID) return
       this._mountNode(data.internalInstance)
@@ -191,7 +189,6 @@ class ElementTreePanelContent extends React.PureComponent<Props, State> {
       this.state.nodes,
       path,
     )
-    // debugger
     this.props.updatePanelOutput({selectedNode})
   }
 
