@@ -13,7 +13,7 @@ const Content = (props: Props) => {
   return (
     <div className={css.container}>
       {selectedNode ? (
-        <div className={css.name}>{selectedNode.data.name}</div>
+        <div className={css.name}>{selectedNode.componentId}</div>
       ) : (
         <div className={css.noElement}>No element selected</div>
       )}

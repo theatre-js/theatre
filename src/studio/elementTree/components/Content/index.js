@@ -165,7 +165,12 @@ class ElementTreePanelContent extends React.PureComponent<Props, State> {
   }
 
   _prepareNodeData(reactObject: Object, path: Path) {
+    const {type, stateNode} = reactObject
     return {
+      data: {
+        name: typeof type === 'string' ? type : type.displayName,
+        componentId: stateNode.componentId,
+      },
       isExpanded: true,
       path,
       _ref: reactObject,
@@ -185,14 +190,7 @@ class ElementTreePanelContent extends React.PureComponent<Props, State> {
   }
 
   selectNode = (path: Path) => {
-<<<<<<< HEAD
-    const {children, isExpanded, _ref, ...selectedNode} = get(
-      this.state.nodes,
-      path,
-    )
-=======
-    const {children, isExpanded, _ref, ...selectedNode} = get(this.state.nodes, path)
->>>>>>> show x1 panel
+    const {data: selectedNode} = get(this.state.nodes, path)
     this.props.updatePanelOutput({selectedNode})
   }
 
