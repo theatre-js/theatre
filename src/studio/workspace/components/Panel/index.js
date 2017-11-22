@@ -3,7 +3,7 @@ import {React, reduceStateAction, connect, compose} from '$studio/handy'
 import css from './index.css'
 import Settings from './Settings'
 import cx from 'classnames'
-
+import {compose, connect, reduceStateAction} from '$studio/handy'
 import {
   type XY,
   type PanelPlacementSettings,
@@ -297,7 +297,7 @@ class Panel extends React.Component<Props, State> {
 }
 
 export default compose(
-  connect((state, ownProps: OwnProps) => {
+  connect((s, op: OwnProps) => {
     const {
       type,
       configuration,
@@ -305,8 +305,8 @@ export default compose(
       persistentState,
       outputs,
       inputs,
-    } = getPanelById(state, ownProps.panelId)
-    const currentlyDraggingOutput = getCurrentlyDraggingOutput(state)
+    } = getPanelById(s, op.panelId)
+    const currentlyDraggingOutput = getCurrentlyDraggingOutput(s)
 
     return {
       type,
@@ -315,8 +315,8 @@ export default compose(
       ...placementSettings,
       currentlyDraggingOutput,
       outputs,
-      inputs: getPanelInputs(state, inputs),
-      isActive: getActivePanelId(state) === ownProps.panelId,
+      inputs: getPanelInputs(s, inputs),
+      isActive: getActivePanelId(s) === op.panelId,
     }
   }),
 )(Panel)

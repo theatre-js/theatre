@@ -48,6 +48,30 @@ const initialState: WorkspaceNamespaceState = {
         inputs: {},
         outputs: {},
       },
+      theX1: {
+        id: 'theX1',
+        type: 'x1',
+        persistentState: {
+          isInSettings: false,
+        },
+        configuration: {
+          foo: 'bar',
+        },
+        placementSettings: {
+          pos: {
+            x: 21,
+            y: 0,
+          },
+          dim: {
+            x: 20,
+            y: 100,
+          },
+        },
+        inputs: {
+          selectedNode: 'elementTree',
+        },
+        outputs: {},
+      },
       theX2: {
         id: 'theX2',
         type: 'x2',
@@ -71,8 +95,8 @@ const initialState: WorkspaceNamespaceState = {
         outputs: {},
       },
     },
-    listOfVisibles: ['theX2', 'elementTree'],
     idOfActivePanel: 'elementTree',
+    listOfVisibles: ['theX2', 'elementTree', 'theX1'],
     currentlyDraggingOutput: null,
   },
   componentIdToBeRenderedAsCurrentCanvas: 'FakeDeclarativeButton',

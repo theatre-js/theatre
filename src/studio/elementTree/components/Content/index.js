@@ -185,10 +185,14 @@ class ElementTreePanelContent extends React.PureComponent<Props, State> {
   }
 
   selectNode = (path: Path) => {
+<<<<<<< HEAD
     const {children, isExpanded, _ref, ...selectedNode} = get(
       this.state.nodes,
       path,
     )
+=======
+    const {children, isExpanded, _ref, ...selectedNode} = get(this.state.nodes, path)
+>>>>>>> show x1 panel
     this.props.updatePanelOutput({selectedNode})
   }
 

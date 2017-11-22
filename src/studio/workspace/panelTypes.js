@@ -16,6 +16,10 @@ const panelTypes = {
     label: 'Modifiers',
     components: require('$studio/x2'),
   },
+  x1: {
+    label: 'X1',
+    requireFn: () => require('$studio/x1'),
+  },
 }
 
 export default panelTypes
