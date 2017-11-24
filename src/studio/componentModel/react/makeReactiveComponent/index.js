@@ -1,18 +1,21 @@
 // @flow
 import SideEffectsHandler from './SideEffectsHandler'
 import {type Studio, PureComponentWithStudio, D} from '$studio/handy'
-import * as debug from '$shared/debug'
+// import * as debug from '$shared/debug'
 import TimelinesHandler from './TimelinesHandler'
 
 type MakeReactiveComponentArgs = {
   modifyPrototypalDict: (
     D.IPrototypalDict<$FixMe>,
   ) => D.IPrototypalDict<$FixMe>,
-  displayName?: string,
-  componentId?: string,
-  componentType?: string,
   getInitialState?: () => D.IDictAtom<$FixMe>,
-}
+} & (
+  | {
+      componentType: 'HardCoded',
+      displayName: string,
+      componentId: string,
+    }
+  | {componentType: 'Declarative', componentId: void, displayName: void})
 
 export default function makeReactiveComponent({
   modifyPrototypalDict,
@@ -25,12 +28,15 @@ export default function makeReactiveComponent({
     key: string,
     props: $FixMe,
     modifierInstantiationDescriptors: $FixMe,
+    componentId: string,
   }
 
   class TheaterJSComponent extends PureComponentWithStudio<Props, void> {
     static displayName = typeof displayName === 'string'
       ? displayName
-      : undefined
+      : 'TheaterJSDeclarativeComponent'
+
+    static componentId = componentId
 
     _finalFace: $FixMe
     _atom: $FixMe
@@ -39,8 +45,8 @@ export default function makeReactiveComponent({
     _prototypalDictD: D.IDerivation<$FixMe>
     _sideEffetsHandler: SideEffectsHandler
     isTheaterJSComponent: boolean
-    componentType: string
-    componentId: string
+    componentType: ?string
+    componentId: ?string
     elementId: string | number
     _timelinesHandler: TimelinesHandler
 
@@ -118,19 +124,17 @@ export default function makeReactiveComponent({
 
       this.isTheaterJSComponent = true
 
-      debug.skipFindingColdDerivations()
-      this.componentType =
-        componentType || this._finalFace.prop('componentType').getValue()
+      // debug.skipFindingColdDerivations()
+      this.componentType = componentType // || this._finalFace.prop('componentType').getValue()
 
-      this.componentId =
-        componentId || this._finalFace.prop('componentId').getValue()
+      this.componentId = componentId // || this._finalFace.prop('componentId').getValue()
 
-      if (!displayName)
-        TheaterJSComponent.displayName = this._finalFace
-          .prop('displayName')
-          .getValue()
+      // if (!displayName)
+      //   TheaterJSComponent.displayName = this._finalFace
+      //     .prop('displayName')
+      //     .getValue()
 
-      debug.endSkippingColdDerivations()
+      // debug.endSkippingColdDerivations()
 
       this.elementId = this._atom.prop('instanceId')
 
@@ -153,6 +157,15 @@ export default function makeReactiveComponent({
 
       this._timelinesHandler = new TimelinesHandler((this: $IntentionalAny))
       this._timelinesHandler.start()
+    }
+
+    getComponentId() {
+      if (componentType === 'Declarative') {
+        // throw Error('implement me')
+        return this.props.componentId
+      } else {
+        return componentId
+      }
     }
 
     _createAtom() {

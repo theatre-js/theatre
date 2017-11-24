@@ -1,10 +1,12 @@
 // @flow
-import React from 'react'
+import * as React from 'react'
 import generateUniqueID from 'uuid/v4'
-import {set, unset, get} from 'lodash'
+import {get} from 'lodash'
+import {set, unset} from 'lodash/fp'
+import type {PanelOutput} from '$studio/workspace/types'
+import type {Path} from '$studio/elementTree/types'
+import css from './index.css'
 import Node from './Node'
-import {type PanelOutput} from '$studio/workspace/types'
-import {type Path} from '$studio/elementTree/types'
 
 type Props = {
   outputs: PanelOutput,
@@ -15,17 +17,19 @@ type State = {
   nodes: Object,
 }
 
-class Content extends React.Component<Props, State> {
+class ElementTreePanelContent extends React.PureComponent<Props, State> {
   rendererID: ?string
   _refMap: Object
 
   constructor(props: Props) {
     super(props)
 
+    // debugger
     this._subscribeToHookEvents(window.__REACT_DEVTOOLS_GLOBAL_HOOK__)
 
     this._refMap = new WeakMap()
     this.state = {nodes: {}}
+    this.rendererID = undefined
   }
 
   _subscribeToHookEvents(hook: ?Object) {
@@ -37,18 +41,22 @@ class Content extends React.Component<Props, State> {
         .getFiberRoots(id)
         .values()
         .next().value
+
       if (root.containerInfo.id !== 'theaterjs-studio') {
         this.rendererID = id
       }
     })
+
     hook.sub('mount', data => {
       if (data.renderer !== this.rendererID) return
       this._mountNode(data.internalInstance)
     })
+
     hook.sub('update', data => {
       if (data.renderer !== this.rendererID) return
       this._updateNode(data.internalInstance)
     })
+
     hook.sub('unmount', data => {
       if (data.renderer !== this.rendererID) return
       this._unmountNode(data.internalInstance)
@@ -139,8 +147,8 @@ class Content extends React.Component<Props, State> {
       this.setState(state => {
         const path = this._refMap.get(node)
         this._refMap.delete(node)
-        unset(state.nodes, path)
-        return {nodes: state.nodes}
+        const modifiedNodes = unset(path, state.nodes)
+        return {nodes: modifiedNodes}
       })
     }
   }
@@ -148,22 +156,18 @@ class Content extends React.Component<Props, State> {
   _addNodeData(
     node: Object,
     containerPath: Path,
-    nodes: Object,
+    originalNodes: Object,
     refMap: Object,
   ) {
     const path = containerPath.concat(generateUniqueID())
     const data = this._prepareNodeData(node, path)
-    set(nodes, path, data)
+    const modifiedNodes = set(path, data, originalNodes)
     refMap.set(node, path)
-    return {nodes, refMap, path}
+    return {nodes: modifiedNodes, refMap, path}
   }
 
   _prepareNodeData(reactObject: Object, path: Path) {
-    const {type} = reactObject
     return {
-      data: {
-        name: typeof type === 'string' ? type : type.displayName,
-      },
       isExpanded: true,
       path,
       _ref: reactObject,
@@ -173,16 +177,21 @@ class Content extends React.Component<Props, State> {
   toggleNodeExpansionState = (path: Path) => {
     this.setState(state => {
       const isExpandedPath = path.concat('isExpanded')
-      set(state.nodes, isExpandedPath, !get(state.nodes, isExpandedPath))
-      return {nodes: state.nodes}
+      const modifiedNodes = set(
+        isExpandedPath,
+        !get(state.nodes, isExpandedPath),
+        state.nodes,
+      )
+      return {nodes: modifiedNodes}
     })
   }
 
   selectNode = (path: Path) => {
-    const {children, isExpanded, ...selectedNode} = get(
+    const {children, isExpanded, _ref, ...selectedNode} = get(
       this.state.nodes,
       path,
     )
+    // debugger
     this.props.updatePanelOutput({selectedNode})
   }
 
@@ -191,19 +200,21 @@ class Content extends React.Component<Props, State> {
     const {outputs: {selectedNode}} = this.props
     const selectedNodePath = selectedNode != null ? selectedNode.path : null
     return (
-      <div>
-        {Object.keys(nodes).map(key => (
-          <Node
-            key={key}
-            toggleExpansion={this.toggleNodeExpansionState}
-            selectNode={this.selectNode}
-            selectedNodePath={selectedNodePath}
-            {...nodes[key]}
-          />
-        ))}
+      <div className={css.container}>
+        {Object.keys(nodes).map(key => {
+          return (
+            <Node
+              key={key}
+              toggleExpansion={this.toggleNodeExpansionState}
+              selectNode={this.selectNode}
+              selectedNodePath={selectedNodePath}
+              {...nodes[key]}
+            />
+          )
+        })}
       </div>
     )
   }
 }
 
-export default Content
+export default ElementTreePanelContent

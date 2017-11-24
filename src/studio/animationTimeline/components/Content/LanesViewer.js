@@ -2,7 +2,6 @@
 import React from 'react'
 import compose from 'ramda/src/compose'
 import {connect} from '$studio/handy'
-import {withRunSaga, type WithRunSagaProps} from '$shared/utils'
 import {getLanesByIds} from '$studio/animationTimeline/selectors'
 import {
   addPointToLane,
@@ -38,9 +37,10 @@ type OwnProps = {
   boxHeight: number,
 }
 
-type Props = WithRunSagaProps &
+type Props =
   OwnProps & {
     lanes: LaneObject[],
+    dispatch: Function,
   }
 
 type State = {
@@ -114,11 +114,11 @@ class LanesViewer extends React.PureComponent<Props, State> {
       handles: [-handleLength, 0, handleLength, 0],
       isConnected: true,
     }
-    this.props.runSaga(addPointToLane, this.state.activeLaneId, pointProps)
+    this.props.dispatch(addPointToLane, this.state.activeLaneId, pointProps)
   }
 
   removePoint = (laneId: LaneID, pointIndex: number) => {
-    this.props.runSaga(removePointFromLane, laneId, pointIndex)
+    this.props.dispatch(removePointFromLane, laneId, pointIndex)
   }
 
   setPointPositionTo = (
@@ -126,7 +126,7 @@ class LanesViewer extends React.PureComponent<Props, State> {
     pointIndex: number,
     newPosition: PointPosition,
   ) => {
-    this.props.runSaga(setPointPositionTo, laneId, pointIndex, newPosition)
+    this.props.dispatch(setPointPositionTo, laneId, pointIndex, newPosition)
   }
 
   changePointPositionBy = (
@@ -134,7 +134,7 @@ class LanesViewer extends React.PureComponent<Props, State> {
     pointIndex: number,
     change: PointPosition,
   ) => {
-    this.props.runSaga(
+    this.props.dispatch(
       changePointPositionBy,
       laneId,
       pointIndex,
@@ -147,7 +147,7 @@ class LanesViewer extends React.PureComponent<Props, State> {
     pointIndex: number,
     change: PointHandles,
   ) => {
-    this.props.runSaga(
+    this.props.dispatch(
       changePointHandlesBy,
       laneId,
       pointIndex,
@@ -156,11 +156,11 @@ class LanesViewer extends React.PureComponent<Props, State> {
   }
 
   addConnector = (laneId: LaneID, pointIndex: number) => {
-    this.props.runSaga(addConnector, laneId, pointIndex)
+    this.props.dispatch(addConnector, laneId, pointIndex)
   }
 
   removeConnector = (laneId: LaneID, pointIndex: number) => {
-    this.props.runSaga(removeConnector, laneId, pointIndex)
+    this.props.dispatch(removeConnector, laneId, pointIndex)
   }
 
   makeHandleHorizontal = (
@@ -168,7 +168,7 @@ class LanesViewer extends React.PureComponent<Props, State> {
     pointIndex: number,
     side: 'left' | 'right',
   ) => {
-    this.props.runSaga(makeHandleHorizontal, laneId, pointIndex, side)
+    this.props.dispatch(makeHandleHorizontal, laneId, pointIndex, side)
   }
 
   makeHandlesParallel = (
@@ -176,7 +176,7 @@ class LanesViewer extends React.PureComponent<Props, State> {
     pointIndex: number,
     side: 'left' | 'right',
   ) => {
-    this.props.runSaga(makeHandlesParallel, laneId, pointIndex, side)
+    this.props.dispatch(makeHandlesParallel, laneId, pointIndex, side)
   }
 
   makeHandlesEqual = (
@@ -184,7 +184,7 @@ class LanesViewer extends React.PureComponent<Props, State> {
     pointIndex: number,
     side: 'left' | 'right',
   ) => {
-    this.props.runSaga(makeHandlesEqual, laneId, pointIndex, side)
+    this.props.dispatch(makeHandlesEqual, laneId, pointIndex, side)
   }
 
   _normalizeX(x: number) {
@@ -339,5 +339,4 @@ export default compose(
       lanes: getLanesByIds(state, ownProps.laneIds),
     }
   }),
-  withRunSaga(),
 )(LanesViewer)

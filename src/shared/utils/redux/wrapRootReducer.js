@@ -3,7 +3,7 @@ import {
   mergeStateAction,
   setStateAction,
   resetStateAction,
-  reduceStateAction,
+  multiReduceStateAction,
 } from './commonActions'
 import pick from 'lodash/pick'
 import {type Reducer} from '$shared/types'
@@ -65,7 +65,8 @@ export default function wrapRootReducer<State, Action>(
         return Array.isArray(action.payload)
           ? {...(state || {}), ...pick(initialState, action.payload)}
           : initialState
-      } else if (action.type === reduceStateAction.type) {
+      } else if (action.type === multiReduceStateAction.type) {
+        // debugger
         const pairs: Array<Pair> = (action.payload: $IntentionalAny)
         // $FlowIgnore
         return pairs.reduce(

@@ -144,6 +144,7 @@ const elementifyDeclarativeComponent = (
   return finalKeyD.flatMap(key => {
     return (
       <ElementifyDeclarativeComponent
+        componentId={componentIdD.getValue()}
         key={key}
         keyD={keyD}
         props={innerPropsP}

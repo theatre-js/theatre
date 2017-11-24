@@ -3,23 +3,24 @@ import {makeReactiveComponent} from '$studio/handy'
 import constructValue from './constructValue'
 
 export default makeReactiveComponent({
+  componentType: 'Declarative',
   modifyPrototypalDict: d =>
     d.extend({
-      displayName(d) {
-        return d.pointer().prop('componentId')
-      },
+      // displayName(d) {
+      //   return d.pointer().prop('componentId')
+      // },
 
-      componentId(d) {
-        return d
-          .pointer()
-          .prop('props')
-          .prop('componentDescriptor')
-          .prop('id')
-      },
+      // componentId(d) {
+      //   return d
+      //     .pointer()
+      //     .prop('props')
+      //     .prop('componentDescriptor')
+      //     .prop('id')
+      // },
 
-      componentType() {
-        return 'Declarative'
-      },
+      // componentType() {
+      //   return 'Declarative'
+      // },
 
       timelineDescriptors(d) {
         const componentDescriptorP = d

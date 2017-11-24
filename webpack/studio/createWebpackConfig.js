@@ -25,7 +25,7 @@ module.exports = (options: Options) => {
   const config: Object = {
     context: context,
     // target: '',
-    devtool: isDev ? 'eval-source-map' : 'source-map',
+    devtool: isDev ? 'cheap-module-eval-source-map' : 'source-map',
     entry: {
       index: isDev
         ? ['react-hot-loader/patch', './src/studio/index.js']
@@ -58,14 +58,6 @@ module.exports = (options: Options) => {
           exclude: /node_modules/,
         },
         {
-          test: /\.tsx?$/,
-          use: {
-            loader: `awesome-typescript-loader`,
-            options: {transpileOnly: true},
-          },
-          exclude: /node_modules/,
-        },
-        {
           test: /\.css$/,
           use: [
             `style-loader`,
@@ -74,21 +66,11 @@ module.exports = (options: Options) => {
               options: {
                 sourceMap: isDev,
                 modules: true,
-                localIdentName: '[name]_[local]_[hash:4]',
+                localIdentName: '[hash:6]_[path]_[name]_[local]',
+                importLoaders: 1,
               },
             },
-            {
-              loader: 'postcss-loader',
-              options: {
-                plugins: () => {
-                  return [
-                    require('postcss-hexrgba'),
-                    require('postcss-nesting'),
-                    require('postcss-short'),
-                  ]
-                },
-              },
-            },
+            'postcss-loader',
           ],
           include: path.join(context, 'src'),
         },
@@ -138,7 +120,7 @@ module.exports = (options: Options) => {
       hot: true,
       historyApiFallback: true,
       inline: true,
-      clientLogLevel: 'error',
+      // clientLogLevel: 'error',
       public: `localhost:${envConfig.devSpecific.studio.devServerPort}`,
       noInfo: false,
       quiet: false,

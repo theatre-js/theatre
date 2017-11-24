@@ -7,3 +7,7 @@
   bottom: 10px;
   padding: 10px;
 }
+
+.container {
+  position: fixed 0;
+}

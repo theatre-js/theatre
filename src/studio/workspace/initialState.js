@@ -72,6 +72,7 @@ const initialState: WorkspaceNamespaceState = {
       },
     },
     listOfVisibles: ['theX2', 'elementTree'],
+    idOfActivePanel: 'elementTree',
     currentlyDraggingOutput: null,
   },
   componentIdToBeRenderedAsCurrentCanvas: 'FakeDeclarativeButton',

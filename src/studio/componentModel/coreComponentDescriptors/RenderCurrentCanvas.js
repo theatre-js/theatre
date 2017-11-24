@@ -1,15 +1,14 @@
 // @flow
 import {type ComponentDescriptor} from '$studio/componentModel/types'
 import {makeReactiveComponent, elementify} from '$studio/handy'
-// import * as React from 'react'
 import * as D from '$shared/DataVerse'
 
 const componentId = 'TheaterJS/Core/RenderCurrentCanvas'
 
 const RenderCurrentCanvas = makeReactiveComponent({
   componentId,
-  displayName: componentId,
   componentType: 'HardCoded',
+  displayName: 'RenderCurrentCanvas',
   modifyPrototypalDict: d =>
     d.extend({
       render(d) {
@@ -52,6 +51,7 @@ const RenderCurrentCanvas = makeReactiveComponent({
 
 const descriptor: ComponentDescriptor = {
   id: componentId,
+  displayName: componentId,
   type: 'HardCoded',
   reactComponent: RenderCurrentCanvas,
 }

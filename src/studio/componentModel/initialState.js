@@ -6,9 +6,65 @@ import {
   type DeclarativeComponentDescriptor,
   type ComponentInstantiationValueDescriptor,
 } from '$studio/componentModel/types'
+import * as _ from 'lodash'
+
+const tags = ['div', 'header', 'span', 'footer', 'picture', 'video']
+
+const generateFakeTree = (maxDepth = 7, maxChildrenPerNode = 3) => {
+  return generate('', maxDepth, maxChildrenPerNode, maxChildrenPerNode)
+}
+
+const generate = (
+  keyPrefix,
+  maxDepth,
+  maxChildrenPerNode,
+  minChildrenPerNode,
+) => {
+  const allNodes = {}
+  const rootKeys = []
+  if (maxDepth === 0) {
+    return {allNodes, rootKeys}
+  }
+  const nOfChildren = _.random(minChildrenPerNode, maxChildrenPerNode)
+
+  for (let i = 0; i < nOfChildren; i++) {
+    const key = keyPrefix + String(i)
+    const {allNodes: allChildNodes, rootKeys: childrenKeys} = generate(
+      key,
+      maxDepth - 1,
+      maxChildrenPerNode,
+      0,
+    )
+
+    Object.assign(allNodes, allChildNodes)
+
+    const node = ({
+      __descriptorType: 'ComponentInstantiationValueDescriptor',
+      componentId: 'TheaterJS/Core/HTML/' + tags[_.random(0, tags.length - 1)],
+      props: {
+        key: key,
+        children: childrenKeys.map(k => ({
+          __descriptorType: 'ReferenceToLocalHiddenValue',
+          which: k,
+        })),
+      },
+      modifierInstantiationDescriptors: {byId: {}, list: []},
+    }: ComponentInstantiationValueDescriptor)
+
+    allNodes[key] = node
+    rootKeys.push(key)
+  }
+
+  return {allNodes, rootKeys}
+}
+
+// debugger
+const fakeNodes = generateFakeTree()
+console.log(fakeNodes)
 
 const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
   id: 'FakeDeclarativeButton',
+  displayName: 'FakeDeclarativeButton',
   type: 'Declarative',
   listOfRulesets: [],
   ruleSetsById: {},
@@ -83,9 +139,10 @@ const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
   },
   localHiddenValuesById: {
     fontSize: '18px',
+    ...fakeNodes.allNodes,
     palaki: ({
       __descriptorType: 'ComponentInstantiationValueDescriptor',
-      componentId: 'TheaterJS/Core/DOMTag',
+      componentId: 'TheaterJS/Core/HTML/div',
       props: {
         tagName: 'div',
         key: 'palaki',
@@ -95,7 +152,7 @@ const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
     }: ComponentInstantiationValueDescriptor),
     dalaki: {
       __descriptorType: 'ComponentInstantiationValueDescriptor',
-      componentId: 'TheaterJS/Core/DOMTag',
+      componentId: 'TheaterJS/Core/HTML/div',
       props: {
         tagName: 'div',
         key: 'dalaki',
@@ -106,7 +163,7 @@ const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
     talaki: 'talaki here',
     alaki: {
       __descriptorType: 'ComponentInstantiationValueDescriptor',
-      componentId: 'TheaterJS/Core/DOMTag',
+      componentId: 'TheaterJS/Core/HTML/div',
       props: {
         tagName: 'div',
         class: 'Alaki',
@@ -117,6 +174,10 @@ const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
         children: [
           {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'palaki'},
           {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'dalaki'},
+          ...fakeNodes.rootKeys.map(k => ({
+            __descriptorType: 'ReferenceToLocalHiddenValue',
+            which: k,
+          })),
         ],
       },
       modifierInstantiationDescriptors: {
@@ -151,11 +212,7 @@ const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
                   },
                   '3': {
                     key: 'opacity',
-                    value: {
-                      __descriptorType: 'ReferenceToTimelineVar',
-                      timelineId: 'timeline1',
-                      varId: 'theOpacity',
-                    },
+                    value: '0.2',
                   },
                 },
               },

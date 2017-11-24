@@ -7,14 +7,14 @@ import {
   type PanelPersistentState,
 } from '$studio/workspace/types'
 import {getVisiblePanelsList} from '$studio/workspace/selectors'
-import {withRunSaga, type WithRunSagaProps} from '$shared/utils'
 import {createPanel} from '$studio/workspace/sagas'
 import Panel from '../Panel'
 // import PanelCreator from '../PanelCreator'
-// import css from './index.css'
+import css from './index.css'
 
-type Props = WithRunSagaProps & {
+type Props = {
   visiblePanels: Array<string>,
+  dispatch: Function,
 }
 
 type State = {
@@ -70,7 +70,7 @@ export class TheUI extends React.Component<Props, State> {
       outputs: {},
     }
     this.setState(() => ({isCreatingNewPanel: false}))
-    this.props.runSaga(createPanel, panelProperties)
+    this.props.dispatch(createPanel, panelProperties)
   }
 
   cancelCreatingNewPanel = () => {
@@ -81,7 +81,7 @@ export class TheUI extends React.Component<Props, State> {
     const {visiblePanels} = this.props
     // const {isCreatingNewPanel} = this.state
     return (
-      <div>
+      <div className={css.container}>
         {visiblePanels.map(panelId => (
           <Panel key={panelId} panelId={panelId} />
         ))}
@@ -109,5 +109,4 @@ export default compose(
       visiblePanels: getVisiblePanelsList(state),
     }
   }),
-  withRunSaga(),
 )(TheUI)

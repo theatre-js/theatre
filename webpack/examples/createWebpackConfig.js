@@ -44,18 +44,7 @@ module.exports = (options: Options) => {
                 localIdentName: '[name]_[local]_[hash:4]',
               },
             },
-            {
-              loader: 'postcss-loader',
-              options: {
-                plugins: () => {
-                  return [
-                    require('postcss-hexrgba'),
-                    require('postcss-nesting'),
-                    require('postcss-short'),
-                  ]
-                },
-              },
-            },
+            'postcss-loader',
           ],
           exclude: /node_modules/,
         },

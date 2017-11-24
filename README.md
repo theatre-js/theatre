@@ -11,6 +11,35 @@ We'll have very few aliases in this project. All you need to remember are:
 * `$lf` points to 'app/src/lf'
 * `$shared` points to 'app/src/shared'
 
+### Common practices
+
+#### Put code close to where it is primarily used
+
+We *used* to put the sagas of a module in a `[module]/sagas.js` file, or the action creators in `[module]/actions.js` file. Same way with selectors: `[module]/selectors.js`. We'd then import each of the stuff from each file, into the module that uses them.
+
+This is how things *used* to be:
+
+```javascript
+// [module]/selectors.js
+
+export const getPanelPosition = (state, id) => state.panels[id].position
+
+// [module]/components/Panel.js
+import {getPanelPosition} from '[module]/selectors'
+```
+
+This is all good and well _IF_ `getPanelPosition()` is bound to be imported from multiple different files. _BUT_, if `getPanelPosition()` is only used from inside `[module]/components/Panel.js`, then it's better to just defined it there and not put it in `selectors.js`.
+
+This is the better way to do it:
+
+```javascript
+// [module]/components/Panel.js
+
+export const selectors = {
+  getPanelPosition: (state, id) => state.panels[id].position,
+}
+```
+
 ### A note about all the classes
 
 If you've taken a look at the code, you've noticed a bunch of opportunities to do away with classes and use observables instead. Examples are 'AttributesApplier`, `SideEffectsApplier', etc.

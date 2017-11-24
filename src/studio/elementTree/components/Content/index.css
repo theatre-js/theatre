@@ -1,0 +1,8 @@
+.container {
+  /*background: linear-gradient(
+    to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.1) 50%, rgba(0, 0, 0, 0.1)
+    );*/
+  background-size: 100% 60px;
+  /*padding: 0 12px;*/
+  /*color: blue;*/
+}

@@ -10,6 +10,9 @@ import {
 export const getVisiblePanelsList: Selector<visiblePanelsList, void> = state =>
   state.workspace.panels.listOfVisibles
 
+export const getActivePanelId: Selector<*, *> = state =>
+  state.workspace.panels.idOfActivePanel
+
 export const getPanelById: Selector<PanelObject, string> = (state, panelId) =>
   state.workspace.panels.byId[panelId]
 

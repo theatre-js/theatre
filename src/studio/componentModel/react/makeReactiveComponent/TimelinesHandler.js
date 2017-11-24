@@ -44,7 +44,7 @@ export default class TimelinesHandler {
         this._timelineDescriptorsProxy.pointer().prop(key),
         this._element.studio,
         [
-          ...getPathToComponentDescriptor(this._element.componentId),
+          ...getPathToComponentDescriptor(this._element.getComponentId()),
           'timelineDescriptors',
           'byId',
           key,

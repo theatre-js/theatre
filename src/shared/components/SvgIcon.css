@@ -1,0 +1,10 @@
+.container {
+}
+
+.container.em {
+  width: 1em;
+}
+
+.container.fill {
+  width: 100%;
+}

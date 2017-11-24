@@ -1,0 +1,7 @@
+{
+  "plugins": {
+    "postcss-hexrgba": {},
+    "postcss-nesting": {},
+    "postcss-short": {}
+  }
+}

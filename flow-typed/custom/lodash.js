@@ -13,6 +13,7 @@ declare module 'lodash' {
     unset: <O: {}>(O, Array<string | number>) => O,
     set: $FixMe,
     clamp: (number, number, ?number) => number,
+    random: any,
     get: $FixMe, //({}, Array<string | number> | Object | string | number) => $FixMe,
     map:
       (<V, A: Array<V>, T, Fn: (V, number) => T>(A, Fn) => Array<T>) &

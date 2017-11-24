@@ -46,6 +46,7 @@ export type Panels = {
   byId: {[id: PanelId]: PanelObject},
   listOfVisibles: visiblePanelsList,
   currentlyDraggingOutput: ?DraggingOutput,
+  idOfActivePanel: ?string,
 }
 
 export type WorkspaceNamespaceState = {

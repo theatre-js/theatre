@@ -22,23 +22,19 @@ export class SingleCustomStyleInspector extends React.PureComponent<
 
   _onKeyChange = (key: string) => {
     this.props.dispatch(
-      reduceStateAction([
-        {
-          path: [...this.props.pathToPairings, 'byId', this.props.id, 'key'],
-          reducer: () => key,
-        },
-      ]),
+      reduceStateAction(
+        [...this.props.pathToPairings, 'byId', this.props.id, 'key'],
+        () => key,
+      ),
     )
   }
 
   _onValueChange = (value: string) => {
     this.props.dispatch(
-      reduceStateAction([
-        {
-          path: [...this.props.pathToPairings, 'byId', this.props.id, 'value'],
-          reducer: () => value,
-        },
-      ]),
+      reduceStateAction(
+        [...this.props.pathToPairings, 'byId', this.props.id, 'value'],
+        () => value,
+      ),
     )
   }
 

@@ -1,34 +1,189 @@
-.clickable-text {
-  cursor: pointer;
-  opacity: .5;
-  font-size: 13px;
-  color: #FFF;
-
-  &:hover {
-    opacity: .8;
-  }
-}
+@import url('https://fonts.googleapis.com/css?family=Roboto+Mono:300,400,500,700');
 
 .container {
   position: relative;
-  left: 10px;
+  --indent: calc(18px + var(--depth) * 16px);
+  /*left: var(--indent);*/
+}
+
+.top {
+  height: 30px;
+  line-height: 30px;
+  position: relative;
+  /*border-bottom: 1px solid #404040;*/
+}
+
+.selected > .top {
+  background: #11a4d6;
+
+  & > .name {
+    & > .tagOpen,
+    & > .tagClose {
+      color: white;
+    }
+
+    & > .tagName {
+      color: white;
+    }
+
+    & > .dot {
+      color: white;
+      /*font-weight: bold;*/
+    }
+
+    & > .className {
+      color: white;
+      /*font-weight: bold;*/
+    }
+  }
 }
 
 .name {
-  composes: clickable-text;
+  position: absolute 0 0 0 calc(var(--indent) - 10px);
+}
 
-  &.selected {
-    font-weight: bold;
-    opacity: .8;
-  }
+.highlighter {
+  position: absolute 0;
+  pointer-events: none;
+  z-index: -1;
+  /*border: 1px solid transparent;*/
+}
+
+.name:hover ~ .highlighter {
+  background: #ffffff21;
+}
+
+.selected > .top > .highlighter {
+  background: blue !important;
+}
+
+.selected > .top > .name {
+  /*font-weight: bold;*/
+  opacity: 1;
+}
+
+.selected > .top > .bullet {
+  color: white;
 }
 
 .expandButton {
   position: absolute;
   width: 10px;
   left: -10px;
-  composes: clickable-text;
   font-size: 15px;
   text-align: left;
   line-height: 25px;
+}
+
+.tagOpen {
+  color: grey;
+}
+
+.tagName {
+  color: #d8d8d8;
+}
+
+.tagClose {
+  color: grey;
+}
+
+.dot {
+  /*margin: 0 0 0 2px;*/
+  color: #dadada;
+}
+
+.className {
+  color: #65eeff;
+  font-weight: 500;
+  /*font-family: "Roboto Mono";*/
+}
+
+.container {
+  position: relative;
+  &:before {
+    pointer-events: none;
+    top: 0;
+    right: auto;
+    bottom: 0;
+    left: calc(var(--indent) - 10px);
+    position: absolute;
+    width: 1px;
+    display: none;
+    content: ' ';
+    /* background: white; */
+    z-index: 5;
+    border-left: 1px solid #ffffff3d;
+  }
+
+  &:first-child:before {
+    top: 14px;
+  }
+
+  &:last-child:before {
+    bottom: 14px;
+  }
+}
+
+.bullet {
+  cursor: default;
+  user-select: none;
+  /*border-radius: 50%;*/
+  display: none;
+  /*background: #00cbff;*/
+  /*border: 1px solid transparent;*/
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: calc(var(--indent) - 16px);
+  z-index: 10;
+  color: grey;
+}
+
+.bulletIcon {
+  position: absolute;
+  top: 12px;
+  width: 8px;
+  height: 8px;
+  /* top: 11px; */
+  right: 0;
+  transition: transform 0.2s;
+  /* transform-origin: 100% 100%; */
+  line-height: 10px;
+}
+
+.bullet:hover > .bulletIcon {
+  transform: rotateZ(20deg) !important;
+  fill: white;
+  color: white;
+}
+
+.hasChildren > .top > .bullet {
+  display: block;
+}
+
+.expanded > .top > .bullet > .bulletIcon {
+  transform: rotateZ(90deg);
+}
+
+.expanded > .top > .bullet:hover > .bulletIcon {
+  transform: rotateZ(75deg) !important;
+}
+
+.subNodes {
+  position: relative;
+  &:before {
+    pointer-events: none;
+    bottom: 13px;
+    left: calc(var(--indent) - 12px);
+    position: absolute;
+    width: 1px;
+    display: none;
+    height: 1px;
+    content: ' ';
+    /* background: white; */
+    z-index: 23;
+    border-radius: 50%;
+    border: 2px solid #5a5a5a;
+  }
 }

@@ -1,11 +1,9 @@
 // @flow
-import * as React from 'react'
+import {React, reduceStateAction, connect, compose} from '$studio/handy'
 import css from './index.css'
 import Settings from './Settings'
-import compose from 'ramda/src/compose'
-import {connect} from '$studio/handy'
-import {withRunSaga, type WithRunSagaProps} from '$shared/utils'
-import {type StoreState} from '$studio/types'
+import cx from 'classnames'
+
 import {
   type XY,
   type PanelPlacementSettings,
@@ -15,18 +13,14 @@ import {
   type PanelOutput,
   type DraggingOutput,
 } from '$studio/workspace/types'
+
 import {
   getPanelById,
   getCurrentlyDraggingOutput,
   getPanelInputs,
+  getActivePanelId,
 } from '$studio/workspace/selectors'
-import {
-  setPanelPosition,
-  setPanelSize,
-  updatePanelData,
-  setCurrentlyDraggingOutput,
-  clearCurrentlyDraggingOutput,
-} from '$studio/workspace/sagas'
+
 import panelTypes from '$studio/workspace/panelTypes'
 import _ from 'lodash'
 
@@ -34,15 +28,16 @@ type OwnProps = {
   panelId: string,
 }
 
-type Props = WithRunSagaProps &
-  OwnProps &
+type Props = OwnProps &
   PanelPlacementSettings & {
+    dispatch: Function,
     type: PanelType,
     configuration: PanelConfiguration,
     persistentState: PanelPersistentState,
     currentlyDraggingOutput: DraggingOutput,
     outputs: PanelOutput,
     inputs: {[string]: Object},
+    isActive: boolean,
   }
 
 type Boundary = {xlow: number, xhigh: number, ylow: number, yhigh: number}
@@ -77,7 +72,7 @@ class Panel extends React.Component<Props, State> {
 
   constructor(props: Props) {
     super(props)
-    this.panelComponents = panelTypes[props.type].requireFn()
+    this.panelComponents = panelTypes[props.type].components
     this.state = {
       ...this.getPanelPlacementSettings(props.pos, props.dim),
       isMoving: false,
@@ -144,7 +139,13 @@ class Panel extends React.Component<Props, State> {
       x: pos.x + move.x / window.innerWidth * 100,
       y: pos.y + move.y / window.innerHeight * 100,
     }
-    this.props.runSaga(setPanelPosition, panelId, newPos)
+
+    this.props.dispatch(
+      reduceStateAction(
+        ['workspace', 'panels', 'byId', panelId, 'placementSettings', 'pos'],
+        () => newPos,
+      ),
+    )
     this.setState(() => ({isMoving: false}))
   }
 
@@ -167,7 +168,12 @@ class Panel extends React.Component<Props, State> {
       x: dim.x + resize.x,
       y: dim.y + resize.y,
     }
-    this.props.runSaga(setPanelSize, panelId, newDim)
+    this.props.dispatch(
+      reduceStateAction(
+        ['workspace', 'panels', 'byId', panelId, 'placementSettings', 'dim'],
+        () => newDim,
+      ),
+    )
   }
 
   toggleSettings = () => {
@@ -176,20 +182,35 @@ class Panel extends React.Component<Props, State> {
   }
 
   updatePanelData(propertyToUpdate: string, newData: Object) {
-    this.props.runSaga(
-      updatePanelData,
-      this.props.panelId,
-      propertyToUpdate,
-      newData,
+    this.props.dispatch(
+      reduceStateAction(
+        ['workspace', 'panels', 'byId', this.props.panelId, propertyToUpdate],
+        data => ({...data, ...newData}),
+      ),
     )
   }
 
   setCurrentlyDraggingOutput = (type: string) => {
-    this.props.runSaga(setCurrentlyDraggingOutput, this.props.panelId, type)
+    const data = {
+      type,
+      panel: this.props.panelId,
+    }
+
+    this.props.dispatch(
+      reduceStateAction(
+        ['workspace', 'panels', 'currentlyDraggingOutput'],
+        () => data,
+      ),
+    )
   }
 
   clearCurrentlyDraggingOutput = () => {
-    this.props.runSaga(clearCurrentlyDraggingOutput)
+    this.props.dispatch(
+      reduceStateAction(
+        ['workspace', 'panels', 'currentlyDraggingOutput'],
+        () => null,
+      ),
+    )
   }
 
   render() {
@@ -218,48 +239,57 @@ class Panel extends React.Component<Props, State> {
     }
 
     return (
-      <div className={css.container} style={style}>
-        <div className={css.topBar}>
-          {/*<div
+      <div
+        className={cx(css.container, {[css.isActive]: this.props.isActive})}
+        style={style}
+      >
+        <div className={css.innerWrapper}>
+          <div className={css.topBar}>
+            <div className={css.title}>{panelTypes[this.props.type].label}</div>
+            {/*<div
             className={css.settings}
             onClick={this.toggleSettings}>
             {isInSettings ? 'Show Content' : 'Show Settings'}
           </div>*/}
-        </div>
-        <div className={css.content}>
-          {isInSettings ? (
-            <Settings
-              onPanelDrag={this.movePanel}
-              onPanelDragEnd={this.setPanelPosition}
-              onPanelResize={this.resizePanel}
-              onPanelResizeEnd={this.setPanelSize}
-            >
-              <panelComponents.Settings
+          </div>
+
+          <div className={css.content}>
+            {isInSettings ? (
+              <Settings
+                onPanelDrag={this.movePanel}
+                onPanelDragEnd={this.setPanelPosition}
+                onPanelResize={this.resizePanel}
+                onPanelResizeEnd={this.setPanelSize}
+              >
+                <panelComponents.Settings
+                  {...configuration}
+                  inputs={inputs}
+                  currentlyDraggingOutput={currentlyDraggingOutput}
+                  setCurrentlyDraggingOutput={this.setCurrentlyDraggingOutput}
+                  clearCurrentlyDraggingOutput={
+                    this.clearCurrentlyDraggingOutput
+                  }
+                  updatePanelInput={newData =>
+                    this.updatePanelData('inputs', newData)
+                  }
+                  updatePanelConfig={newData =>
+                    this.updatePanelData('configuration', newData)
+                  }
+                />
+              </Settings>
+            ) : (
+              <panelComponents.Content
                 {...configuration}
+                {...componentState}
+                panelDimensions={dim}
+                outputs={outputs}
                 inputs={inputs}
-                currentlyDraggingOutput={currentlyDraggingOutput}
-                setCurrentlyDraggingOutput={this.setCurrentlyDraggingOutput}
-                clearCurrentlyDraggingOutput={this.clearCurrentlyDraggingOutput}
-                updatePanelInput={newData =>
-                  this.updatePanelData('inputs', newData)
-                }
-                updatePanelConfig={newData =>
-                  this.updatePanelData('configuration', newData)
+                updatePanelOutput={newData =>
+                  this.updatePanelData('outputs', newData)
                 }
               />
-            </Settings>
-          ) : (
-            <panelComponents.Content
-              {...configuration}
-              {...componentState}
-              panelDimensions={dim}
-              outputs={outputs}
-              inputs={inputs}
-              updatePanelOutput={newData =>
-                this.updatePanelData('outputs', newData)
-              }
-            />
-          )}
+            )}
+          </div>
         </div>
       </div>
     )
@@ -267,7 +297,7 @@ class Panel extends React.Component<Props, State> {
 }
 
 export default compose(
-  connect((state: StoreState, ownProps: OwnProps) => {
+  connect((state, ownProps: OwnProps) => {
     const {
       type,
       configuration,
@@ -277,6 +307,7 @@ export default compose(
       inputs,
     } = getPanelById(state, ownProps.panelId)
     const currentlyDraggingOutput = getCurrentlyDraggingOutput(state)
+
     return {
       type,
       configuration,
@@ -285,7 +316,7 @@ export default compose(
       currentlyDraggingOutput,
       outputs,
       inputs: getPanelInputs(state, inputs),
+      isActive: getActivePanelId(state) === ownProps.panelId,
     }
   }),
-  withRunSaga(),
 )(Panel)

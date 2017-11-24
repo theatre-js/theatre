@@ -10,6 +10,7 @@ import type {
 export type ComponentId = string
 
 export type ComponentInstantiationDescriptor = {|
+  displayName: string,
   componentId: ComponentId,
   props: {[key: string]: $FixMe},
   modifierInstantiationDescriptorsById: {[id: string]: $FixMe},
@@ -23,6 +24,7 @@ export type AliasComponentDescriptor = {|
 |}
 
 export type HardCodedComponentDescriptor = {|
+  displayName: string,
   id: ComponentId,
   type: 'HardCoded',
   reactComponent: ReactComponentType<$FixMe>,

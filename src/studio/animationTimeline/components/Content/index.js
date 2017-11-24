@@ -3,7 +3,7 @@ import React from 'react'
 import compose from 'ramda/src/compose'
 import {connect} from '$studio/handy'
 import {getTimelineById} from '$studio/animationTimeline/selectors'
-import {withRunSaga, type WithRunSagaProps} from '$shared/utils'
+
 import {
   moveBox,
   mergeBoxes,
@@ -29,7 +29,7 @@ type OwnProps = TimelineObject & {
   panelDimensions: XY,
 }
 
-type Props = WithRunSagaProps & OwnProps
+type Props = {dispatch: Function} & OwnProps
 
 type State = {
   boxBeingDragged: ?{
@@ -195,11 +195,11 @@ class Content extends React.Component<Props, State> {
   async onBoxEndMove() {
     if (this.state.boxBeingDragged == null) return
     const {index, moveTo, mergeWith} = this.state.boxBeingDragged
-    const {timelineId, runSaga} = this.props
+    const {timelineId, dispatch} = this.props
     if (moveTo != null) {
-      await runSaga(moveBox, timelineId, index, moveTo)
+      await dispatch(moveBox, timelineId, index, moveTo)
     } else if (mergeWith != null) {
-      await runSaga(mergeBoxes, timelineId, index, mergeWith)
+      await dispatch(mergeBoxes, timelineId, index, mergeWith)
     }
 
     this.setState(() => {
@@ -210,13 +210,13 @@ class Content extends React.Component<Props, State> {
   }
 
   async splitLane(index: number, laneId: string) {
-    const {timelineId, runSaga} = this.props
-    await runSaga(splitLane, timelineId, index, laneId)
+    const {timelineId, dispatch} = this.props
+    await dispatch(splitLane, timelineId, index, laneId)
   }
 
   async onBoxResize(boxId: BoxID, newSize) {
-    const {timelineId, runSaga} = this.props
-    await runSaga(resizeBox, timelineId, boxId, newSize)
+    const {timelineId, dispatch} = this.props
+    await dispatch(resizeBox, timelineId, boxId, newSize)
     this._resetBoundariesAndRatios()
   }
 
@@ -321,5 +321,4 @@ export default compose(
     const timeline = getTimelineById(state, ownProps.timelineId)
     return {...timeline}
   }),
-  withRunSaga(),
 )(Content)
