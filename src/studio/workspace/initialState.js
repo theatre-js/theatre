@@ -59,11 +59,11 @@ const initialState: WorkspaceNamespaceState = {
         },
         placementSettings: {
           pos: {
-            x: 21,
+            x: 20,
             y: 0,
           },
           dim: {
-            x: 20,
+            x: 30,
             y: 100,
           },
         },

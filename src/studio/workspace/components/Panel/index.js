@@ -3,7 +3,6 @@ import {React, reduceStateAction, connect, compose} from '$studio/handy'
 import css from './index.css'
 import Settings from './Settings'
 import cx from 'classnames'
-import {compose, connect, reduceStateAction} from '$studio/handy'
 import {
   type XY,
   type PanelPlacementSettings,

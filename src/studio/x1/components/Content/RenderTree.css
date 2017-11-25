@@ -1,0 +1,10 @@
+.container {
+  background: #000;
+  position: relative;
+  width: 100%;
+  top: 20%;
+  height: auto;
+  padding: 10px;
+  height: fit-content;
+  max-height: 50%;
+}
