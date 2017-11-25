@@ -74,7 +74,6 @@ const modifyPrototypalDict = (propsP, dict) => {
 const descriptor: ModifierDescriptor = {
   id: 'TheaterJS/Core/HTML/SetAttribute',
   modifyPrototypalDict,
-  InspectorComponent: require('./SetAttributeInspector').default,
 }
 
 export default descriptor

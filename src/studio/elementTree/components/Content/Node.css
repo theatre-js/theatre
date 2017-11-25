@@ -38,6 +38,10 @@
   }
 }
 
+.ancestorOfSelectedNode > .top {
+  background: #47d5ff14;
+}
+
 .name {
   position: absolute 0 0 0 calc(var(--indent) - 10px);
 }
@@ -54,7 +58,7 @@
 }
 
 .selected > .top > .highlighter {
-  background: blue !important;
+  /*background: blue !important;*/
 }
 
 .selected > .top > .name {

@@ -1,7 +1,7 @@
 // @flow
 import {compose, React, connect} from '$studio/handy'
 import get from 'lodash/get'
-import coreModifierDescriptors from '$studio/componentModel/coreModifierDescriptors'
+import inspectorComponents from '$studio/componentModel/coreModifierDescriptors/inspectorComponents'
 
 type Props = {
   id: string,
@@ -23,13 +23,8 @@ export class ModifierInstantiationDescriptorInspector extends React.PureComponen
 
   render() {
     const {modifierId} = this.props
-    const modifierDescriptor = coreModifierDescriptors[modifierId]
+    const InspectorComponent = inspectorComponents[modifierId]
 
-    if (!modifierDescriptor) {
-      console.error(`Invalid modifierId '${modifierId}'`)
-      return 'Invalid modifier'
-    }
-    const {InspectorComponent} = modifierDescriptor
     if (!InspectorComponent) {
       console.error(
         `ModifierId '${modifierId}' doesn't have an InspectorComponent`,

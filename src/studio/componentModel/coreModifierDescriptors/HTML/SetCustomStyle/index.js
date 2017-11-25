@@ -36,7 +36,6 @@ const modifyPrototypalDict = (propsP, dict) => {
 const descriptor: ModifierDescriptor = {
   id: 'TheaterJS/Core/HTML/SetCustomStyle',
   modifyPrototypalDict,
-  InspectorComponent: require('./SetCustomStyleInspector').default,
 }
 
 export default descriptor

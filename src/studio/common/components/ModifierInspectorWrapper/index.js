@@ -7,21 +7,25 @@ type Props = {
   body: React.Node,
 }
 
-const ModifierInspectorWrapper = ({title, body}: Props) => {
-  return (
-    <div className={css.container}>
-      {title ? (
-        <div className={css.titleContainer}>
-          {typeof title === 'string' ? (
-            <div className={css.title}>{title}</div>
-          ) : (
-            title
-          )}
-        </div>
-      ) : null}
-      <div className={css.bodyContainer}>{body}</div>
-    </div>
-  )
+class ModifierInspectorWrapper extends React.PureComponent<Props, void> {
+  render() {
+    const {title, body} = this.props
+    return (
+      <div className={css.container}>
+        {title ? (
+          <div className={css.titleContainer}>
+            <div className={css.triangle}></div>
+            {typeof title === 'string' ? (
+              <div className={css.title}>{title}</div>
+            ) : (
+              title
+            )}
+          </div>
+        ) : null}
+        <div className={css.bodyContainer}>{body}</div>
+      </div>
+    )
+  }
 }
 
 export default compose(a => a)(ModifierInspectorWrapper)

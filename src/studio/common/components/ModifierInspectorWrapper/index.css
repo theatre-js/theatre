@@ -1,6 +1,7 @@
 .container {
-  padding: 20px;
-  border-bottom: 1px solid #303030 ;
+  /*padding: 20px;*/
+  /*border-bottom: 1px solid #303030 ;*/
+  --horizontal-padding: 12px;
 }
 
 .titleContainer {
@@ -8,9 +9,17 @@
 }
 
 .title {
-  font-size: 12px;
+  padding: 0 var(--horizontal-padding);
+  text-transform: uppercase;
+  background: #414141;
+  height: 30px;
+  line-height: 30px;
+  font-weight: 600;
+  font-size: 9px;
+  color: #d5d5d5;
 }
 
 .bodyContainer {
+  padding: 4px var(--horizontal-padding);
   box-sizing: border-box;
 }

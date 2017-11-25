@@ -99,12 +99,16 @@ class Node extends React.PureComponent<Props, void> {
 
     const hasChildren = children != null
     const shouldShowChildren = isExpanded && hasChildren
+    const id = path[path.length - 1]
+    const ancestorOfSelectedNode = selectedNodePath && selectedNodePath.indexOf(id) !== -1 && selectedNodePath[selectedNodePath.length - 1] !== id
+
     return (
       <div
         className={cx(css.container, {
           [css.selected]: selectedNodePath === path,
           [css.expanded]: isExpanded,
           [css.hasChildren]: hasChildren,
+          [css.ancestorOfSelectedNode]: ancestorOfSelectedNode,
         })}
         style={{'--depth': depth}}
       >
