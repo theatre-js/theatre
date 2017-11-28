@@ -37,11 +37,10 @@ type OwnProps = {
   boxHeight: number,
 }
 
-type Props =
-  OwnProps & {
-    lanes: LaneObject[],
-    dispatch: Function,
-  }
+type Props = OwnProps & {
+  lanes: LaneObject[],
+  dispatch: Function,
+}
 
 type State = {
   svgWidth: number,

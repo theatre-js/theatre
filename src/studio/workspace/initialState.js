@@ -63,7 +63,7 @@ const initialState: WorkspaceNamespaceState = {
             y: 0,
           },
           dim: {
-            x: 30,
+            x: 20,
             y: 100,
           },
         },
@@ -95,7 +95,7 @@ const initialState: WorkspaceNamespaceState = {
         outputs: {},
       },
     },
-    idOfActivePanel: 'elementTree',
+    idOfActivePanel: 'theX1',
     listOfVisibles: ['theX2', 'elementTree', 'theX1'],
     currentlyDraggingOutput: null,
   },

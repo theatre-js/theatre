@@ -1,6 +1,5 @@
 // @flow
-import {connect, compose, React} from '$studio/handy'
-import {getComponentDescriptor} from '$studio/componentModel/selectors'
+import {React} from '$studio/handy'
 import RenderTree from './RenderTree'
 import css from './index.css'
 
@@ -41,14 +40,14 @@ class Content extends React.Component<Props, State> {
 
   _getActiveComponentRenderer(props: Props) {
     // ??
-    const {inputs: {selectedNode}, getSelectedNodeDescriptor} = props
+    const {inputs: {selectedNode}} = props
     if (selectedNode == null) {
       return () => <div className={css.noElement}>No element selected.</div>
     }
 
-    const descriptor = getSelectedNodeDescriptor(selectedNode.componentId)
-    if (descriptor && descriptor.type === 'Declarative') {
-      return () => <RenderTree descriptor={descriptor} />
+    const {componentId, componentType} = selectedNode
+    if (componentType === 'Declarative') {
+      return () => <RenderTree rootComponentId={componentId} />
     } else {
       return () => (
         <div className={css.hardCoded}>Selected element is hard coded!</div>
@@ -65,10 +64,4 @@ class Content extends React.Component<Props, State> {
   }
 }
 
-export default compose(
-  connect(s => {
-    return {
-      getSelectedNodeDescriptor: id => getComponentDescriptor(s, id),
-    }
-  }),
-)(Content)
+export default Content

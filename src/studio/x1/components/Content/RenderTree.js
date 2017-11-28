@@ -1,9 +1,43 @@
 // @flow
-import {React} from '$studio/handy'
+import {React, connect} from '$studio/handy'
+import {
+  getComponentDescriptor,
+  getPathToComponentDescriptor,
+} from '$studio/componentModel/selectors'
 import css from './RenderTree.css'
+import RenderTreeNode from './RenderTreeNode'
 
-const RenderTree = (props: $FixMe) => {
-  return <div className={css.container}>render tree here!</div>
+type OwnProps = {
+  rootComponentId: string,
 }
 
-export default RenderTree
+type Props = OwnProps & {
+  rootComponentDescriptor: Object,
+  rootComponentPath: string[],
+}
+
+class RenderTree extends React.PureComponent<Props, void> {
+  getLocalHiddenValue = (id: $FixMe): Object => {
+    return this.props.rootComponentDescriptor.localHiddenValuesById[id]
+  }
+
+  render() {
+    const {rootComponentDescriptor, rootComponentPath} = this.props
+    return (
+      <div className={css.container}>
+        <RenderTreeNode
+          descriptor={rootComponentDescriptor.whatToRender}
+          path={rootComponentPath}
+          getLocalHiddenValue={this.getLocalHiddenValue}
+        />
+      </div>
+    )
+  }
+}
+
+export default connect((s, op) => {
+  return {
+    rootComponentDescriptor: getComponentDescriptor(s, op.rootComponentId),
+    rootComponentPath: getPathToComponentDescriptor(op.rootComponentId),
+  }
+})(RenderTree)

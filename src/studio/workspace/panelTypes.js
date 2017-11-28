@@ -18,7 +18,7 @@ const panelTypes = {
   },
   x1: {
     label: 'X1',
-    requireFn: () => require('$studio/x1'),
+    components: require('$studio/x1'),
   },
 }
 

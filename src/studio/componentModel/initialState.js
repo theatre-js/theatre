@@ -60,7 +60,6 @@ const generate = (
 
 // debugger
 const fakeNodes = generateFakeTree()
-console.log(fakeNodes)
 
 const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
   id: 'FakeDeclarativeButton',

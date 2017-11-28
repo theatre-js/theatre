@@ -1,0 +1,36 @@
+.container {
+  position: relative;
+  --indent: calc(var(--depth) * 8px);
+  --color: calc(var(--depth) * 20);
+  padding: 1px 0;
+  margin: 2px 0;
+
+  &:before {
+    display: block;
+    content: ' ';
+    position: absolute 0 0 0 var(--indent);
+    background: rgb(var(--color), var(--color), var(--color));
+    border-radius: 2px;
+  }
+}
+
+.contentContainer {
+  position: relative;
+  height: 30px;
+}
+
+.content {
+  position: absolute 0 0 0 var(--indent);
+  display: flex;
+  align-items: flex-end;
+  padding-left: 16px;
+  font-weight: 400;
+  color: #eee;
+}
+
+.content > input {
+  width: calc(100% - 16px);
+  display: flex;
+  align-self: center;
+  border-bottom: 1px solid rgba(255, 255, 255, .2);
+}
