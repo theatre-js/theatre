@@ -48,9 +48,9 @@ const initialState: WorkspaceNamespaceState = {
         inputs: {},
         outputs: {},
       },
-      theX2: {
-        id: 'theX2',
-        type: 'x2',
+      'composePanel-imAUUID': {
+        id: 'composePanel-imAUUID',
+        type: 'compose',
         persistentState: {
           isInSettings: false,
         },
@@ -71,7 +71,7 @@ const initialState: WorkspaceNamespaceState = {
         outputs: {},
       },
     },
-    listOfVisibles: ['theX2', 'elementTree'],
+    listOfVisibles: ['composePanel-imAUUID', 'elementTree'],
     idOfActivePanel: 'elementTree',
     currentlyDraggingOutput: null,
   },

@@ -2,7 +2,7 @@
 import React from 'react'
 
 const Settings = () => {
-  return <div>X2 Settings</div>
+  return <div>Compose Panel's Settings</div>
 }
 
 export default Settings

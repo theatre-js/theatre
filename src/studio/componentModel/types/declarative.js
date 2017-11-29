@@ -3,6 +3,7 @@ import * as React from 'react'
 import type {ComponentId} from './index'
 
 export type DeclarativeComponentDescriptor = {|
+  __descriptorType: 'DeclarativeComponentDescriptor',
   id: ComponentId, // this is unique
   displayName: string, // this doesn't have to be
   type: 'Declarative',

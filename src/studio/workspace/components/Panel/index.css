@@ -37,7 +37,7 @@
 }
 
 .content {
-  position: absolute 30px 0 0 0;
+  position: absolute 30px -1px 0 -1px;
   overflow-x: visible;
   overflow-y: scroll;
   z-index: 0;

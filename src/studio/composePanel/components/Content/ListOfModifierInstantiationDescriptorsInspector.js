@@ -1,9 +1,5 @@
 // @flow
 import {compose, React, connect} from '$studio/handy'
-// import css from './index.css'
-// import * as x2Selectors from '$studio/x2/selectors'
-// import * as componentModelSelectors from '$studio/componentModel/selectors'
-// import type {PathToInspectable, Inspectable} from '$studio/x2/types'
 import type {ModifierInstantiationValueDescriptors} from '$studio/componentModel/types'
 import ModifierInstantiationDescriptorInspector from './ModifierInstantiationDescriptorInspector'
 import get from 'lodash/get'
