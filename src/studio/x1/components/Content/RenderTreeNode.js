@@ -1,17 +1,18 @@
 // @flow
-import {React, connect} from '$studio/handy'
+import {React, connect, reduceStateAction} from '$studio/handy'
 import {getComponentDescriptor} from '$studio/componentModel/selectors'
 import css from './RenderTreeNode.css'
 
 type OwnProps = {
   descriptor: Object,
-  path: string[],
+  rootPath: string[],
   getLocalHiddenValue: Function,
-  depth: ?number,
+  depth?: number,
 }
 
 type Props = OwnProps & {
   getComponentDescriptor: Function,
+  dispatch: Function,
 }
 
 class RenderTreeNode extends React.PureComponent<Props, void> {
@@ -19,18 +20,21 @@ class RenderTreeNode extends React.PureComponent<Props, void> {
     const {getLocalHiddenValue, getComponentDescriptor} = this.props
     const {__descriptorType: descriptorType, which} = descriptor
 
-    let nodeType = 'tag'
+    let nodeType
+    let nodePath
     let nodeContent
     let nodeChildren = []
     if (descriptorType != null) {
+      nodeType = 'tag'
       if (descriptorType === 'ReferenceToLocalHiddenValue') {
-        const renderDescriptor = getLocalHiddenValue(which)
+        nodePath = this.props.rootPath.concat('localHiddenValuesById', which)
+        const renderValue = getLocalHiddenValue(which)
         if (
-          renderDescriptor.__descriptorType ===
+          renderValue.__descriptorType ===
           'ComponentInstantiationValueDescriptor'
         ) {
-          nodeChildren = [].concat(renderDescriptor.props.children)
-          nodeContent = getComponentDescriptor(renderDescriptor.componentId)
+          nodeChildren = [].concat(renderValue.props.children)
+          nodeContent = getComponentDescriptor(renderValue.componentId)
             .displayName
         }
       }
@@ -39,7 +43,7 @@ class RenderTreeNode extends React.PureComponent<Props, void> {
       nodeContent = descriptor
     }
 
-    return {nodeType, nodeContent, nodeChildren}
+    return {nodeType, nodeContent, nodeChildren, nodePath}
   }
 
   render() {
@@ -49,13 +53,20 @@ class RenderTreeNode extends React.PureComponent<Props, void> {
       nodeType,
       nodeContent,
       nodeChildren,
+      nodePath,
     } = this._getNodeContentAndChildren(props.descriptor)
     const depth = props.depth || 0
 
     return (
       <div className={css.container} style={{'--depth': depth}}>
         <div className={css.contentContainer}>
-          <div className={css.content}>
+          <div
+            {...((nodePath != null) ? {onClick: () => props.dispatch(
+              reduceStateAction(
+                ['x2', 'pathToInspectableInX2'],
+                () => nodePath,
+              ))} : {})}
+            className={css.content}>
             {nodeType === 'tag' ? (
               nodeContent
             ) : (
@@ -68,7 +79,7 @@ class RenderTreeNode extends React.PureComponent<Props, void> {
             key={i}
             descriptor={cd}
             depth={depth + 1}
-            path={[]}
+            rootPath={props.rootPath}
             getLocalHiddenValue={props.getLocalHiddenValue}
           />
         ))}
@@ -83,4 +94,4 @@ const WrappedRenderTreeNode = connect(s => {
   }
 })(RenderTreeNode)
 
-export default WrappedRenderTreeNode
+export default connect()(WrappedRenderTreeNode)

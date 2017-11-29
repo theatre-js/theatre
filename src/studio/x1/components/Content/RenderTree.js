@@ -12,22 +12,22 @@ type OwnProps = {
 }
 
 type Props = OwnProps & {
-  rootComponentDescriptor: Object,
-  rootComponentPath: string[],
+  rootDescriptor: Object,
+  rootPath: string[],
 }
 
 class RenderTree extends React.PureComponent<Props, void> {
   getLocalHiddenValue = (id: $FixMe): Object => {
-    return this.props.rootComponentDescriptor.localHiddenValuesById[id]
+    return this.props.rootDescriptor.localHiddenValuesById[id]
   }
 
   render() {
-    const {rootComponentDescriptor, rootComponentPath} = this.props
+    const {rootDescriptor, rootPath} = this.props
     return (
       <div className={css.container}>
         <RenderTreeNode
-          descriptor={rootComponentDescriptor.whatToRender}
-          path={rootComponentPath}
+          descriptor={rootDescriptor.whatToRender}
+          rootPath={rootPath}
           getLocalHiddenValue={this.getLocalHiddenValue}
         />
       </div>
@@ -37,7 +37,7 @@ class RenderTree extends React.PureComponent<Props, void> {
 
 export default connect((s, op) => {
   return {
-    rootComponentDescriptor: getComponentDescriptor(s, op.rootComponentId),
-    rootComponentPath: getPathToComponentDescriptor(op.rootComponentId),
+    rootDescriptor: getComponentDescriptor(s, op.rootComponentId),
+    rootPath: getPathToComponentDescriptor(op.rootComponentId),
   }
 })(RenderTree)
