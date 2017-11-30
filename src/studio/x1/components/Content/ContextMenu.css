@@ -5,19 +5,20 @@
   --indent: calc(var(--depth) * 8px);
   
   &.normal, &.text {
-    height: 95px;
+    height: 91px;
   }
 
   &.root {
-    height: 45px;
+    height: 41px;
   }
 }
 
 .menu {
   position: absolute 5px 8px 5px calc(var(--indent) + 8px);
-  background: #3EA1C7;
+  background: white;
+  color: #999;
   border-radius: 2px;
-  padding: 5px;
+  padding: 3px;
   box-sizing: border-box;
 }
 
@@ -30,7 +31,7 @@
 
 .buttonLeftRight {
   flex-grow: 0.33333;
-  border: 1px solid white;
+  border: 1px solid #999;
   height: 50px;
   display: flex;
   align-items: center;
@@ -43,7 +44,7 @@
 
 .buttonUpDown {
   width: 100%;
-  border: 1px solid white;
+  border: 1px solid #999;
   text-align: center;
 }
 
@@ -52,7 +53,7 @@
   box-sizing: border-box;
   display: inline-block;
   text-align: center;
-  border: 1px solid white;
+  border: 1px solid #999;
   white-space: nowrap;
 }
 

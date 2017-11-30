@@ -223,7 +223,6 @@ class RenderTree extends React.PureComponent<Props, State> {
         return node
       }),
     )
-
     this.hideTagsList()
   }
 

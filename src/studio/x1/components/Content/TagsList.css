@@ -1,11 +1,12 @@
 .container {
   position: absolute 0 0 0 0;
-  background: green;
+  background: #eee;
   z-index: 10;
+  color: #333;
 }
 
 .title {
-  border-bottom: 1px solid rgba(255, 255, 255, .2);
+  border-bottom: 1px solid rgba(0, 0, 0, .2);
   padding: 5px;
 }
 
@@ -20,6 +21,6 @@
   cursor: pointer;
 
   &:hover {
-    background: rgba(255, 255, 255, .2);
+    background: rgba(0, 0, 0, .2);
   }
 }
