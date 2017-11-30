@@ -75,9 +75,19 @@ class RenderTreeNode extends React.PureComponent<Props, any> {
     this._toggleContextMenu()
   }
 
+  _deleteNode = id => {
+    this.props.deleteNode(id)
+    this._toggleContextMenu()
+  }
+
+  _addChildToNode = id => {
+    this.props.addChildToNode(id)
+    this._toggleContextMenu()
+  }
+
   render() {
     const {props} = this
-    const {addToRefMap, getLocalHiddenValue, rootPath, descriptor, dispatch, moveNode} = props
+    const {addToRefMap, getLocalHiddenValue, rootPath, descriptor, dispatch, moveNode, deleteNode, addChildToNode} = props
 
     const {
       nodeId,
@@ -125,6 +135,8 @@ class RenderTreeNode extends React.PureComponent<Props, any> {
         {nodeId && depth !== 0 && this.state.isContextMenuVisible &&
           <ContextMenu
             onMove={dir => this._moveNode(nodeId, dir)}
+            onDelete={() => this._deleteNode(nodeId)}
+            onAddChild={() => this._addChildToNode(nodeId)}
             depth={depth}/>
         }
         {nodeChildren.map((cd, i) => {
@@ -137,6 +149,8 @@ class RenderTreeNode extends React.PureComponent<Props, any> {
               getLocalHiddenValue={getLocalHiddenValue}
               addToRefMap={addToRefMap}
               moveNode={moveNode}
+              deleteNode={deleteNode}
+              addChildToNode={addChildToNode}
             />
           )
         })}

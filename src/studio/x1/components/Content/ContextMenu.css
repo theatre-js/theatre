@@ -3,7 +3,7 @@
   position: relative;
   width: 100%;
   --indent: calc(var(--depth) * 8px);
-  height: 70px;
+  height: 95px;
 }
 
 .menu {
@@ -38,4 +38,13 @@
   width: 100%;
   border: 1px solid white;
   text-align: center;
+}
+
+.button {
+  width: 50%;
+  box-sizing: border-box;
+  display: inline-block;
+  text-align: center;
+  border: 1px solid white;
+  white-space: nowrap;
 }

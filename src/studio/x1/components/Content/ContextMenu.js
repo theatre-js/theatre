@@ -5,11 +5,13 @@ import css from './ContextMenu.css'
 type Props = {
   depth: number,
   onMove: Function,
+  onAddChild: Function,
+  onDelete: Function,
 }
 
 class ContextMenu extends React.PureComponent<Props, void> {
   render() {
-    const {depth, onMove} = this.props
+    const {depth, onMove, onDelete, onAddChild} = this.props
 
     return (
       <div className={css.container} style={{'--depth': depth}}>
@@ -30,6 +32,8 @@ class ContextMenu extends React.PureComponent<Props, void> {
               className={css.buttonLeftRight}
               onClick={() => onMove('right')}>{String.fromCharCode(0x25B6)}</div>
           </div>
+          <div className={css.button} onClick={onDelete}>Delete</div>
+          <div className={css.button} onClick={onAddChild}>Add Child</div>
         </div>
       </div>
     )

@@ -129,6 +129,22 @@ class RenderTree extends React.PureComponent<Props, void> {
     }
   }
 
+  deleteNode = id => {
+    const {rootPath, dispatch} = this.props
+    const {parent, index} = this.refMap[id]
+    dispatch(reduceStateAction(
+      rootPath.concat('localHiddenValuesById', parent),
+      parentNode => {
+        parentNode.props.children.splice(index, 1)
+        return parentNode
+      }
+    ))
+  }
+
+  addChildToNode = id => {
+    console.log('add child to', id)
+  }
+
   getLocalHiddenValue = (id: $FixMe): Object => {
     return this.props.rootDescriptor.localHiddenValuesById[id]
   }
@@ -140,6 +156,8 @@ class RenderTree extends React.PureComponent<Props, void> {
         <RenderTreeNode
           descriptor={rootDescriptor.whatToRender}
           moveNode={this.moveNode}
+          deleteNode={this.deleteNode}
+          addChildToNode={this.addChildToNode}
           rootPath={rootPath}
           addToRefMap={this.addToRefMap}
           getLocalHiddenValue={this.getLocalHiddenValue}
