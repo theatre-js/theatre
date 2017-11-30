@@ -58,7 +58,7 @@ export class ComposePanelContent extends React.PureComponent<Props, State> {
       return (
         <ValueEditor
           path={pathToComopnentDescriptor}
-          typeName={typeSystem.DeclarativeComponentDescriptor.typeName}
+          typeName={typeSystem.types.DeclarativeComponentDescriptor.typeName}
         />
       )
     }

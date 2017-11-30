@@ -1,6 +1,7 @@
 // @flow
 import {React, connect, typeSystem} from '$studio/handy'
 import get from 'lodash/get'
+import specialisedEditors from './specialisedEditors'
 
 type Props = {
   path: Array<string>,
@@ -20,16 +21,17 @@ class ValueEditor extends React.PureComponent<Props, State> {
 
   render() {
     const {typeName} = this.props
-    const type = typeSystem[typeName]
+    const type = typeSystem.types[typeName]
     if (!type) {
       throw new Error(`Cannot find a type named '${typeName}'`)
     }
-    const {visualEditorComponent} = type
-    if (!visualEditorComponent) {
+    const EditorComponent = specialisedEditors[typeName]
+
+    if (!EditorComponent) {
       throw new Error(`Type '${typeName}' doesn't have a visual editor yet`)
     }
 
-    return <visualEditorComponent path={this.props.path} />
+    return <EditorComponent path={this.props.path} />
   }
 }
 
@@ -38,13 +40,13 @@ export default connect((s, ownProps) => {
     const {typeName} = ownProps
     if (!typeName) {
       // @todo
-      throw new Error(`This shoudl never happen`)
+      throw new Error(`typeName can only be a string and not empty`)
     }
 
     if (process.env.NODE_ENV === 'development') {
       const value = get(s, ownProps.path)
-      if (!value || value.typeName !== typeName) {
-        throw new Error(`This is a bug`)
+      if (!value || value.__descriptorType !== typeName) {
+        throw new Error(`The value's __descriptorType doesn't match the required typeName`)
       }
     }
 
@@ -52,11 +54,11 @@ export default connect((s, ownProps) => {
   } else {
     const value = get(s, ownProps.path)
     if (value == undefined) {
-      throw new Error(`This should never happen`)
+      throw new Error(`Path doesn't exist`)
     }
 
     return {
-      typeName: value.typeName,
+      typeName: value.__descriptorType,
     }
   }
 })(ValueEditor)
