@@ -1,6 +1,7 @@
 // @flow
 import {React} from '$studio/handy'
 import css from './ContextMenu.css'
+import cx from 'classnames'
 
 type Props = {
   depth: number,
@@ -13,27 +14,45 @@ class ContextMenu extends React.PureComponent<Props, void> {
   render() {
     const {depth, onMove, onDelete, onAddChild} = this.props
 
+    const containerStyle = cx(css.container, {
+      [css.normal]: (onMove && onDelete && onAddChild),
+      [css.text]: (onMove && onDelete && !onAddChild),
+      [css.root]: (!onMove && !onDelete && onAddChild),
+    })
     return (
-      <div className={css.container} style={{'--depth': depth}}>
+      <div className={containerStyle} style={{'--depth': depth}}>
         <div className={css.menu}>
-          <div className={css.pad}>
-            <div
-              className={css.buttonLeftRight}
-              onClick={() => onMove('left')}>{String.fromCharCode(0x25C0)}</div>
-            <div className={css.upDownContainer}>
+          {onMove &&
+            <div className={css.pad}>
+              <div className={css.buttonLeftRight} onClick={() => onMove('left')}>
+                {String.fromCharCode(0x25c0)}
+              </div>
+              <div className={css.upDownContainer}>
+                <div className={css.buttonUpDown} onClick={() => onMove('up')}>
+                  {String.fromCharCode(0x25b2)}
+                </div>
+                <div className={css.buttonUpDown} onClick={() => onMove('down')}>
+                  {String.fromCharCode(0x25bc)}
+                </div>
+              </div>
               <div
-                className={css.buttonUpDown}
-                onClick={() => onMove('up')}>{String.fromCharCode(0x25B2)}</div>
-              <div
-                className={css.buttonUpDown}
-                onClick={() => onMove('down')}>{String.fromCharCode(0x25BC)}</div>
+                className={css.buttonLeftRight}
+                onClick={() => onMove('right')}
+              >
+                {String.fromCharCode(0x25b6)}
+              </div>
             </div>
-            <div
-              className={css.buttonLeftRight}
-              onClick={() => onMove('right')}>{String.fromCharCode(0x25B6)}</div>
-          </div>
-          <div className={css.button} onClick={onDelete}>Delete</div>
-          <div className={css.button} onClick={onAddChild}>Add Child</div>
+          }
+          {onDelete &&
+            <div className={css.button} onClick={onDelete}>
+              Delete
+            </div>
+          }
+          {onAddChild &&
+            <div className={css.button} onClick={onAddChild}>
+              Add Child
+            </div>
+          }
         </div>
       </div>
     )

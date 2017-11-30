@@ -50,60 +50,68 @@ class RenderTree extends React.PureComponent<Props, State> {
       if (index === 0) return
       const parentChildrenCount = this.refMap[parent]
       if (parentChildrenCount === 1) return
-      dispatch(reduceStateAction(
-        rootPath.concat('localHiddenValuesById', parent),
-        parentNode => {
-          let {children} = parentNode.props
-          const nodeToMove = children[index]
-          const nodeToReplace = children[index - 1]
-          children[index - 1] = nodeToMove
-          children[index] = nodeToReplace
-          parentNode.props.children = children
-          return parentNode
-        }
-      ))
+      dispatch(
+        reduceStateAction(
+          rootPath.concat('localHiddenValuesById', parent),
+          parentNode => {
+            let {children} = parentNode.props
+            const nodeToMove = children[index]
+            const nodeToReplace = children[index - 1]
+            children[index - 1] = nodeToMove
+            children[index] = nodeToReplace
+            parentNode.props.children = children
+            return parentNode
+          },
+        ),
+      )
       return
     }
     if (dir === 'down') {
       const parentChildrenCount = this.refMap[parent].noOfChildren
       if (parentChildrenCount === 1) return
       if (index === parentChildrenCount - 1) return
-      dispatch(reduceStateAction(
-        rootPath.concat('localHiddenValuesById', parent),
-        parentNode => {
-          let {children} = parentNode.props
-          const nodeToMove = children[index]
-          const nodeToReplace = children[index + 1]
-          children[index + 1] = nodeToMove
-          children[index] = nodeToReplace
-          parentNode.props.children = children
-          return parentNode
-        }
-      ))
+      dispatch(
+        reduceStateAction(
+          rootPath.concat('localHiddenValuesById', parent),
+          parentNode => {
+            let {children} = parentNode.props
+            const nodeToMove = children[index]
+            const nodeToReplace = children[index + 1]
+            children[index + 1] = nodeToMove
+            children[index] = nodeToReplace
+            parentNode.props.children = children
+            return parentNode
+          },
+        ),
+      )
       return
     }
     if (dir === 'left') {
       const {parent: gParent, index: gIndex} = this.refMap[parent]
       if (gParent == null) return
       let nodeToMove
-      dispatch(reduceStateAction(
-        rootPath.concat('localHiddenValuesById', parent),
-        parentNode => {
-          const {children} = parentNode.props
-          nodeToMove = children.splice(index, 1)
-          return parentNode
-        }
-      ))
-      dispatch(reduceStateAction(
-        rootPath.concat('localHiddenValuesById', gParent),
-        gParent => {
-          const {children} = gParent.props
-          const head = children.slice(0, gIndex)
-          const tail = children.slice(gIndex)
-          gParent.props.children = [...head, ...nodeToMove, ...tail]
-          return gParent
-        }
-      ))
+      dispatch(
+        reduceStateAction(
+          rootPath.concat('localHiddenValuesById', parent),
+          parentNode => {
+            const {children} = parentNode.props
+            nodeToMove = children.splice(index, 1)
+            return parentNode
+          },
+        ),
+      )
+      dispatch(
+        reduceStateAction(
+          rootPath.concat('localHiddenValuesById', gParent),
+          gParent => {
+            const {children} = gParent.props
+            const head = children.slice(0, gIndex)
+            const tail = children.slice(gIndex)
+            gParent.props.children = [...head, ...nodeToMove, ...tail]
+            return gParent
+          },
+        ),
+      )
       return
     }
     if (dir === 'right') {
@@ -112,28 +120,29 @@ class RenderTree extends React.PureComponent<Props, State> {
       if (index === parentChildrenCount - 1) return
       let nodeToMove
       let moveToPath
-      dispatch(reduceStateAction(
-        rootPath.concat('localHiddenValuesById', parent),
-        parentNode => {
-          const {children} = parentNode.props
-          const nextNodeId = children[index + 1].which
-          const nextNode = this.getLocalHiddenValue(nextNodeId)
-          if (Array.isArray(nextNode.props.children)) {
-            nodeToMove = children.splice(index, 1)
-            moveToPath = rootPath.concat('localHiddenValuesById', nextNodeId)
-          }
-          return parentNode
-        }
-      ))
+      dispatch(
+        reduceStateAction(
+          rootPath.concat('localHiddenValuesById', parent),
+          parentNode => {
+            const {children} = parentNode.props
+            const nextNodeId = children[index + 1].which
+            const nextNode = this.getLocalHiddenValue(nextNodeId)
+            if (Array.isArray(nextNode.props.children)) {
+              nodeToMove = children.splice(index, 1)
+              moveToPath = rootPath.concat('localHiddenValuesById', nextNodeId)
+            }
+            return parentNode
+          },
+        ),
+      )
       if (nodeToMove != null) {
-        dispatch(reduceStateAction(
-          moveToPath,
-          node => {
+        dispatch(
+          reduceStateAction(moveToPath, node => {
             const {children} = node.props
             node.props.children = [...nodeToMove, ...children]
             return node
-          }
-        ))
+          }),
+        )
       }
       return
     }
@@ -142,13 +151,15 @@ class RenderTree extends React.PureComponent<Props, State> {
   deleteNode = id => {
     const {rootPath, dispatch} = this.props
     const {parent, index} = this.refMap[id]
-    dispatch(reduceStateAction(
-      rootPath.concat('localHiddenValuesById', parent),
-      parentNode => {
-        parentNode.props.children.splice(index, 1)
-        return parentNode
-      }
-    ))
+    dispatch(
+      reduceStateAction(
+        rootPath.concat('localHiddenValuesById', parent),
+        parentNode => {
+          parentNode.props.children.splice(index, 1)
+          return parentNode
+        },
+      ),
+    )
   }
 
   showTagsList = id => {
@@ -178,9 +189,8 @@ class RenderTree extends React.PureComponent<Props, State> {
     const {parentOfChildBeingAdded: id} = this.state
     const {dispatch, rootPath} = this.props
     const childId = generateUniqueId()
-    dispatch(reduceStateAction(
-      rootPath.concat('localHiddenValuesById'),
-      values => {
+    dispatch(
+      reduceStateAction(rootPath.concat('localHiddenValuesById'), values => {
         const child = {
           __descriptorType: 'ComponentInstantiationValueDescriptor',
           componentId: 'TheaterJS/Core/HTML/' + tag,
@@ -194,11 +204,10 @@ class RenderTree extends React.PureComponent<Props, State> {
           },
         }
         return {...values, [childId]: child}
-      }
-    ))
-    dispatch(reduceStateAction(
-      rootPath.concat('localHiddenValuesById', id),
-      node => {
+      }),
+    )
+    dispatch(
+      reduceStateAction(rootPath.concat('localHiddenValuesById', id), node => {
         const child = {
           __descriptorType: 'ReferenceToLocalHiddenValue',
           which: childId,
@@ -206,8 +215,8 @@ class RenderTree extends React.PureComponent<Props, State> {
         const {children} = node.props
         node.props.children = [child, ...children]
         return node
-      }
-    ))
+      }),
+    )
 
     this.hideTagsList()
   }
@@ -220,8 +229,11 @@ class RenderTree extends React.PureComponent<Props, State> {
     const {rootDescriptor, rootPath} = this.props
     const {isAddingNewChild} = this.state
     return (
-      <div ref={(c) => this.container = c} className={cx(css.container, {[css.noScroll]: isAddingNewChild})}>
-        {isAddingNewChild && <TagsList onClick={this.addChildToNode}/>}
+      <div
+        ref={c => (this.container = c)}
+        className={cx(css.container, {[css.noScroll]: isAddingNewChild})}
+      >
+        {isAddingNewChild && <TagsList onClick={this.addChildToNode} />}
         <RenderTreeNode
           descriptor={rootDescriptor.whatToRender}
           moveNode={this.moveNode}

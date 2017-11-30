@@ -3,7 +3,14 @@
   position: relative;
   width: 100%;
   --indent: calc(var(--depth) * 8px);
-  height: 95px;
+  
+  &.normal, &.text {
+    height: 95px;
+  }
+
+  &.root {
+    height: 45px;
+  }
 }
 
 .menu {
@@ -47,4 +54,8 @@
   text-align: center;
   border: 1px solid white;
   white-space: nowrap;
+}
+
+.root .button, .text .button{
+  width: 100%;
 }

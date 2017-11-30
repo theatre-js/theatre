@@ -65,9 +65,9 @@ class RenderTreeNode extends React.PureComponent<Props, any> {
   }
 
   _toggleContextMenu() {
-    this.setState(state => (
-      {isContextMenuVisible: !state.isContextMenuVisible}
-    ))
+    this.setState(state => ({
+      isContextMenuVisible: !state.isContextMenuVisible,
+    }))
   }
 
   _moveNode = (id, dir) => {
@@ -87,7 +87,16 @@ class RenderTreeNode extends React.PureComponent<Props, any> {
 
   render() {
     const {props} = this
-    const {addToRefMap, getLocalHiddenValue, rootPath, descriptor, dispatch, moveNode, deleteNode, addChildToNode} = props
+    const {
+      addToRefMap,
+      getLocalHiddenValue,
+      rootPath,
+      descriptor,
+      dispatch,
+      moveNode,
+      deleteNode,
+      addChildToNode,
+    } = props
 
     const {
       nodeId,
@@ -101,7 +110,10 @@ class RenderTreeNode extends React.PureComponent<Props, any> {
     if (nodeId != null) {
       addToRefMap(nodeId, {noOfChildren: nodeChildren.length})
       nodeChildren.forEach((child, index) => {
-        if (child.__descriptorType != null && child.__descriptorType === 'ReferenceToLocalHiddenValue') {
+        if (
+          child.__descriptorType != null &&
+          child.__descriptorType === 'ReferenceToLocalHiddenValue'
+        ) {
           addToRefMap(child.which, {parent: nodeId, index})
         }
       })
@@ -111,7 +123,7 @@ class RenderTreeNode extends React.PureComponent<Props, any> {
       <div className={css.container} style={{'--depth': depth}}>
         <div className={css.contentContainer}>
           <div
-            {...((nodePath != null)
+            {...(nodePath != null
               ? {
                   onClick: () =>
                     dispatch(
@@ -132,16 +144,18 @@ class RenderTreeNode extends React.PureComponent<Props, any> {
             )}
           </div>
         </div>
-        {nodeId && depth !== 0 && this.state.isContextMenuVisible &&
-          <ContextMenu
-            onMove={dir => this._moveNode(nodeId, dir)}
-            onDelete={() => this._deleteNode(nodeId)}
-            onAddChild={() => this._addChildToNode(nodeId)}
-            depth={depth}/>
-        }
+        {nodeId &&
+          this.state.isContextMenuVisible && (
+            <ContextMenu
+              {...(depth !== 0 ? {onMove: dir => this._moveNode(nodeId, dir)} : {})}
+              {...(depth !== 0 ? {onDelete: () => this._deleteNode(nodeId)} : {})}
+              {...(nodeChildren.length === 0 || typeof nodeChildren[0] !== 'string' ? {onAddChild: () => this._addChildToNode(nodeId)} : {})}
+              depth={depth}
+            />
+          )}
         {nodeChildren.map((cd, i) => {
           return (
-              <WrappedRenderTreeNode
+            <WrappedRenderTreeNode
               key={i}
               descriptor={cd}
               depth={depth + 1}
