@@ -1,0 +1,41 @@
+.container {
+  z-index: 1;
+  position: relative;
+  width: 100%;
+  --indent: calc(var(--depth) * 8px);
+  height: 70px;
+}
+
+.menu {
+  position: absolute 5px 8px 5px calc(var(--indent) + 8px);
+  background: #3EA1C7;
+  border-radius: 2px;
+  padding: 5px;
+  box-sizing: border-box;
+}
+
+.pad {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 50px;
+}
+
+.buttonLeftRight {
+  flex-grow: 0.33333;
+  border: 1px solid white;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.upDownContainer {
+  flex-grow: 0.33333;
+}
+
+.buttonUpDown {
+  width: 100%;
+  border: 1px solid white;
+  text-align: center;
+}
