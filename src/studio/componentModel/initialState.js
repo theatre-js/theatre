@@ -58,10 +58,10 @@ const generate = (
   return {allNodes, rootKeys}
 }
 
-// debugger
 const fakeNodes = generateFakeTree()
 
 const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
+  __descriptorType: 'DeclarativeComponentDescriptor',
   id: 'FakeDeclarativeButton',
   displayName: 'FakeDeclarativeButton',
   type: 'Declarative',
@@ -143,7 +143,6 @@ const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
       __descriptorType: 'ComponentInstantiationValueDescriptor',
       componentId: 'TheaterJS/Core/HTML/div',
       props: {
-        tagName: 'div',
         key: 'palaki',
         children: 'palaki',
       },
@@ -153,7 +152,6 @@ const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
       __descriptorType: 'ComponentInstantiationValueDescriptor',
       componentId: 'TheaterJS/Core/HTML/div',
       props: {
-        tagName: 'div',
         key: 'dalaki',
         children: 'dalaki',
       },
@@ -164,7 +162,6 @@ const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
       __descriptorType: 'ComponentInstantiationValueDescriptor',
       componentId: 'TheaterJS/Core/HTML/div',
       props: {
-        tagName: 'div',
         class: 'Alaki',
         key: 'alaki',
         // children: {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'palaki'},
@@ -173,10 +170,10 @@ const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
         children: [
           {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'palaki'},
           {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'dalaki'},
-          ...fakeNodes.rootKeys.map(k => ({
-            __descriptorType: 'ReferenceToLocalHiddenValue',
-            which: k,
-          })),
+          // ...fakeNodes.rootKeys.map(k => ({
+          //   __descriptorType: 'ReferenceToLocalHiddenValue',
+          //   which: k,
+          // })),
         ],
       },
       modifierInstantiationDescriptors: {

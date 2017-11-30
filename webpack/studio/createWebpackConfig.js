@@ -25,7 +25,7 @@ module.exports = (options: Options) => {
   const config: Object = {
     context: context,
     // target: '',
-    devtool: isDev ? 'cheap-module-eval-source-map' : 'source-map',
+    devtool: isDev ? 'cheap-module-source-map' : 'source-map',
     entry: {
       index: isDev
         ? ['react-hot-loader/patch', './src/studio/index.js']

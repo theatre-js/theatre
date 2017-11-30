@@ -19,7 +19,7 @@ module.exports = (options: Options) => {
 
   const config: Object = {
     context: context,
-    devtool: isDev ? 'source-map' : 'source-map',
+    devtool: isDev ? 'cheap-module-source-map' : 'source-map',
     entry: {
       index: false ? ['react-hot-loader/patch', './examples/index.js'] : ['./examples/index.js'],
     },
@@ -84,6 +84,10 @@ module.exports = (options: Options) => {
       inline: false,
       clientLogLevel: 'error',
       noInfo: false,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Expose-Headers': 'SourceMap,X-SourceMap',
+      },
       quiet: false,
       stats: false,
       port: envConfig.devSpecific.examples.devServerPort,

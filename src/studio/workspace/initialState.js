@@ -48,33 +48,9 @@ const initialState: WorkspaceNamespaceState = {
         inputs: {},
         outputs: {},
       },
-      theX1: {
-        id: 'theX1',
-        type: 'x1',
-        persistentState: {
-          isInSettings: false,
-        },
-        configuration: {
-          foo: 'bar',
-        },
-        placementSettings: {
-          pos: {
-            x: 20,
-            y: 0,
-          },
-          dim: {
-            x: 20,
-            y: 100,
-          },
-        },
-        inputs: {
-          selectedNode: 'elementTree',
-        },
-        outputs: {},
-      },
-      theX2: {
-        id: 'theX2',
-        type: 'x2',
+      'composePanel-imAUUID': {
+        id: 'composePanel-imAUUID',
+        type: 'compose',
         persistentState: {
           isInSettings: false,
         },
@@ -95,8 +71,8 @@ const initialState: WorkspaceNamespaceState = {
         outputs: {},
       },
     },
-    idOfActivePanel: 'theX1',
-    listOfVisibles: ['theX2', 'elementTree', 'theX1'],
+    listOfVisibles: ['composePanel-imAUUID', 'elementTree'],
+    idOfActivePanel: 'elementTree',
     currentlyDraggingOutput: null,
   },
   componentIdToBeRenderedAsCurrentCanvas: 'FakeDeclarativeButton',

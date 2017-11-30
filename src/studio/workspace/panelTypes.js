@@ -12,9 +12,9 @@ const panelTypes = {
     label: 'Animation Timeline',
     components: require('$studio/animationTimeline'),
   },
-  x2: {
-    label: 'Modifiers',
-    components: require('$studio/x2'),
+  compose: {
+    label: 'Compose',
+    components: require('$studio/composePanel'),
   },
   x1: {
     label: 'X1',
