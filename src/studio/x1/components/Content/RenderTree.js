@@ -185,10 +185,16 @@ class RenderTree extends React.PureComponent<Props, State> {
     })
   }
 
-  addChildToNode = tag => {
+  addChildToNode = type => {
     const {parentOfChildBeingAdded: id} = this.state
     const {dispatch, rootPath} = this.props
     const childId = generateUniqueId()
+    let tag = type
+    let children = []
+    if (type === 'div with text') {
+      tag = 'div'
+      children = ''
+    }
     dispatch(
       reduceStateAction(rootPath.concat('localHiddenValuesById'), values => {
         const child = {
@@ -196,7 +202,7 @@ class RenderTree extends React.PureComponent<Props, State> {
           componentId: 'TheaterJS/Core/HTML/' + tag,
           props: {
             key: childId,
-            children: [],
+            children,
           },
           modifierInstantiationDescriptors: {
             byId: {},

@@ -4,6 +4,7 @@ import css from './TagsList.css'
 
 const tags = [
   'div',
+  'div with text',
   'header',
   'span',
   'h1',
