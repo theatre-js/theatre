@@ -7,9 +7,13 @@ import ContextMenu from './ContextMenu'
 type OwnProps = {
   descriptor: Object,
   rootPath: string[],
+  parentPath: string[],
   getLocalHiddenValue: Function,
   addToRefMap: Function,
   moveNode: Function,
+  deleteNode: Function,
+  addChildToNode: Function,
+  updateTextChildContent: Function,
   depth?: number,
 }
 
@@ -96,6 +100,7 @@ class RenderTreeNode extends React.PureComponent<Props, any> {
       moveNode,
       deleteNode,
       addChildToNode,
+      updateTextChildContent,
     } = props
 
     const {
@@ -140,16 +145,31 @@ class RenderTreeNode extends React.PureComponent<Props, any> {
             {nodeType === 'tag' ? (
               nodeContent
             ) : (
-              <input value={nodeContent} onChange={() => {}} />
+              <input
+                value={nodeContent}
+                onChange={e =>
+                  updateTextChildContent(
+                    this.props.parentPath.slice(-1)[0],
+                    e.target.value,
+                  )
+                }
+              />
             )}
           </div>
         </div>
         {nodeId &&
           this.state.isContextMenuVisible && (
             <ContextMenu
-              {...(depth !== 0 ? {onMove: dir => this._moveNode(nodeId, dir)} : {})}
-              {...(depth !== 0 ? {onDelete: () => this._deleteNode(nodeId)} : {})}
-              {...(nodeChildren.length === 0 || typeof nodeChildren[0] !== 'string' ? {onAddChild: () => this._addChildToNode(nodeId)} : {})}
+              {...(depth !== 0
+                ? {onMove: dir => this._moveNode(nodeId, dir)}
+                : {})}
+              {...(depth !== 0
+                ? {onDelete: () => this._deleteNode(nodeId)}
+                : {})}
+              {...(nodeChildren.length === 0 ||
+              typeof nodeChildren[0] !== 'string'
+                ? {onAddChild: () => this._addChildToNode(nodeId)}
+                : {})}
               depth={depth}
             />
           )}
@@ -160,11 +180,13 @@ class RenderTreeNode extends React.PureComponent<Props, any> {
               descriptor={cd}
               depth={depth + 1}
               rootPath={rootPath}
+              parentPath={nodePath}
               getLocalHiddenValue={getLocalHiddenValue}
               addToRefMap={addToRefMap}
               moveNode={moveNode}
               deleteNode={deleteNode}
               addChildToNode={addChildToNode}
+              updateTextChildContent={updateTextChildContent}
             />
           )
         })}
