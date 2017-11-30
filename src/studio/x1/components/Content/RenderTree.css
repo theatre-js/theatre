@@ -9,3 +9,7 @@
   overflow-x: hidden;
   overflow-y: scroll;
 }
+
+.noScroll {
+  overflow: hidden;
+}

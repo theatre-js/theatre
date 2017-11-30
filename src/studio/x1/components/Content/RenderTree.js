@@ -6,6 +6,9 @@ import {
 } from '$studio/componentModel/selectors'
 import css from './RenderTree.css'
 import RenderTreeNode from './RenderTreeNode'
+import TagsList from './TagsList'
+import generateUniqueId from 'uuid/v4'
+import cx from 'classnames'
 
 type OwnProps = {
   rootComponentId: string,
@@ -17,13 +20,23 @@ type Props = OwnProps & {
   dispatch: Function,
 }
 
-class RenderTree extends React.PureComponent<Props, void> {
+type State = {
+  isAddingNewChild: boolean,
+  parentOfChildBeingAdded: ?string,
+  containerScrollTop: number,
+}
+
+class RenderTree extends React.PureComponent<Props, State> {
   refMap: Object
 
   constructor(props: Props) {
     super(props)
 
     this.refMap = {}
+    this.state = {
+      isAddingNewChild: false,
+      parentOfChildBeingAdded: null,
+    }
   }
 
   addToRefMap = (id: string, obj: Object) => {
@@ -40,7 +53,7 @@ class RenderTree extends React.PureComponent<Props, void> {
       dispatch(reduceStateAction(
         rootPath.concat('localHiddenValuesById', parent),
         parentNode => {
-          let children = parentNode.props.children
+          let {children} = parentNode.props
           const nodeToMove = children[index]
           const nodeToReplace = children[index - 1]
           children[index - 1] = nodeToMove
@@ -58,7 +71,7 @@ class RenderTree extends React.PureComponent<Props, void> {
       dispatch(reduceStateAction(
         rootPath.concat('localHiddenValuesById', parent),
         parentNode => {
-          let children = parentNode.props.children
+          let {children} = parentNode.props
           const nodeToMove = children[index]
           const nodeToReplace = children[index + 1]
           children[index + 1] = nodeToMove
@@ -76,16 +89,15 @@ class RenderTree extends React.PureComponent<Props, void> {
       dispatch(reduceStateAction(
         rootPath.concat('localHiddenValuesById', parent),
         parentNode => {
-          let children = parentNode.props.children
+          const {children} = parentNode.props
           nodeToMove = children.splice(index, 1)
-          parentNode.props.children = children
           return parentNode
         }
       ))
       dispatch(reduceStateAction(
         rootPath.concat('localHiddenValuesById', gParent),
         gParent => {
-          let children = gParent.props.children
+          const {children} = gParent.props
           const head = children.slice(0, gIndex)
           const tail = children.slice(gIndex)
           gParent.props.children = [...head, ...nodeToMove, ...tail]
@@ -103,14 +115,13 @@ class RenderTree extends React.PureComponent<Props, void> {
       dispatch(reduceStateAction(
         rootPath.concat('localHiddenValuesById', parent),
         parentNode => {
-          let children = parentNode.props.children
+          const {children} = parentNode.props
           const nextNodeId = children[index + 1].which
           const nextNode = this.getLocalHiddenValue(nextNodeId)
           if (Array.isArray(nextNode.props.children)) {
             nodeToMove = children.splice(index, 1)
             moveToPath = rootPath.concat('localHiddenValuesById', nextNodeId)
           }
-          parentNode.props.children = children
           return parentNode
         }
       ))
@@ -118,9 +129,8 @@ class RenderTree extends React.PureComponent<Props, void> {
         dispatch(reduceStateAction(
           moveToPath,
           node => {
-            let children = node.props.children
-            children = [...nodeToMove, ...children]
-            node.props.children = children
+            const {children} = node.props
+            node.props.children = [...nodeToMove, ...children]
             return node
           }
         ))
@@ -141,8 +151,65 @@ class RenderTree extends React.PureComponent<Props, void> {
     ))
   }
 
-  addChildToNode = id => {
-    console.log('add child to', id)
+  showTagsList = id => {
+    this.setState(() => {
+      const scrollTopValue = this.container.scrollTop
+      this.container.scrollTop = 0
+      return {
+        isAddingNewChild: true,
+        parentOfChildBeingAdded: id,
+        containerScrollTop: scrollTopValue,
+      }
+    })
+  }
+
+  hideTagsList() {
+    this.setState(state => {
+      this.container.scrollTop = state.containerScrollTop
+      return {
+        isAddingNewChild: false,
+        parentOfChildBeingAdded: null,
+        containerScrollTop: 0,
+      }
+    })
+  }
+
+  addChildToNode = tag => {
+    const {parentOfChildBeingAdded: id} = this.state
+    const {dispatch, rootPath} = this.props
+    const childId = generateUniqueId()
+    dispatch(reduceStateAction(
+      rootPath.concat('localHiddenValuesById'),
+      values => {
+        const child = {
+          __descriptorType: 'ComponentInstantiationValueDescriptor',
+          componentId: 'TheaterJS/Core/HTML/' + tag,
+          props: {
+            key: childId,
+            children: [],
+          },
+          modifierInstantiationDescriptors: {
+            byId: {},
+            list: [],
+          },
+        }
+        return {...values, [childId]: child}
+      }
+    ))
+    dispatch(reduceStateAction(
+      rootPath.concat('localHiddenValuesById', id),
+      node => {
+        const child = {
+          __descriptorType: 'ReferenceToLocalHiddenValue',
+          which: childId,
+        }
+        const {children} = node.props
+        node.props.children = [child, ...children]
+        return node
+      }
+    ))
+
+    this.hideTagsList()
   }
 
   getLocalHiddenValue = (id: $FixMe): Object => {
@@ -151,13 +218,15 @@ class RenderTree extends React.PureComponent<Props, void> {
 
   render() {
     const {rootDescriptor, rootPath} = this.props
+    const {isAddingNewChild} = this.state
     return (
-      <div className={css.container}>
+      <div ref={(c) => this.container = c} className={cx(css.container, {[css.noScroll]: isAddingNewChild})}>
+        {isAddingNewChild && <TagsList onClick={this.addChildToNode}/>}
         <RenderTreeNode
           descriptor={rootDescriptor.whatToRender}
           moveNode={this.moveNode}
           deleteNode={this.deleteNode}
-          addChildToNode={this.addChildToNode}
+          addChildToNode={this.showTagsList}
           rootPath={rootPath}
           addToRefMap={this.addToRefMap}
           getLocalHiddenValue={this.getLocalHiddenValue}

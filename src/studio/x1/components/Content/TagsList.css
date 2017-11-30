@@ -1,0 +1,25 @@
+.container {
+  position: absolute 0 0 0 0;
+  background: green;
+  z-index: 10;
+}
+
+.title {
+  border-bottom: 1px solid rgba(255, 255, 255, .2);
+  padding: 5px;
+}
+
+.tags {
+  height: calc(100% - 40px);
+  overflow: scroll;
+}
+
+.tag {
+  font-size: 14px;
+  padding-left: 15px;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(255, 255, 255, .2);
+  }
+}
