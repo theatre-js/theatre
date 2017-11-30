@@ -15,9 +15,26 @@ export type DeclarativeComponentDescriptor = {|
     byId: {[id: string]: TimelineDescriptor},
     list: Array<string>,
   },
+  props: {
+    byId: {[id: string]: PropDescriptor},
+    list: Array<string>,
+  },
 |}
 
 export type WhatToRender = ReferenceToLocalHiddenValue | ReferenceToProp
+
+export type PropDescriptor = {|
+  // each prop has a uniquely generated ID
+  id: string,
+  // names are for humans. they'll be unique per component, but that's only because of humans. the code doesn't need the props to be unqiue.
+  name: string,
+  // if component 'A' has a prop 'foo' and 'foo' is customizable, then any component can do this: <A foo="my custom value for foo" />`
+  customizable: boolean,
+  // each prop MUST have a default value
+  value: $FixMe,
+  // the spec of the prop
+  spec: $FixMe,
+|}
 
 export type RuleSet = {|
   selector: string, // better to have a more structured type for this

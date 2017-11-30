@@ -1,7 +1,7 @@
 .container {
   position: absolute;
   box-sizing: border-box;
-  font-family: 'Montserrat', sans-serif;
+  font-family: Roboto;
   font-size: 12px;
   color: white;
   --body-color: #2d2d2d;
@@ -76,7 +76,7 @@
   background: var(--body-color);
   font-size: 10px;
   text-transform: uppercase;
-  font-weight: 500;
+  font-weight: 400;
   line-height: 30px;
   border-right: 1px solid var(--borders-color);
 }

@@ -1,0 +1,23 @@
+.container {
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.withHorizontalMargin > .body {
+  margin-left: 16px;
+  margin-right: 16px;
+}
+
+.label {
+  background: #242424;
+  padding: 0 16px;
+  height: 32px;
+  margin-bottom: 4px;
+}
+
+.labelText {
+  color: #e5e5e5;
+  font-weight: 400;
+  line-height: 32px;
+
+}

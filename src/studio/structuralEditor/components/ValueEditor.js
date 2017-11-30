@@ -1,7 +1,7 @@
 // @flow
 import {React, connect, typeSystem} from '$studio/handy'
 import get from 'lodash/get'
-import specialisedEditors from './specialisedEditors'
+import editorsPerType from './editorsPerType'
 
 type Props = {
   path: Array<string>,
@@ -25,10 +25,10 @@ class ValueEditor extends React.PureComponent<Props, State> {
     if (!type) {
       throw new Error(`Cannot find a type named '${typeName}'`)
     }
-    const EditorComponent = specialisedEditors[typeName]
+    const EditorComponent = editorsPerType[typeName]
 
     if (!EditorComponent) {
-      throw new Error(`Type '${typeName}' doesn't have a visual editor yet`)
+      throw new Error(`Type '${typeName}' doesn't have a structural editor yet`)
     }
 
     return <EditorComponent path={this.props.path} />

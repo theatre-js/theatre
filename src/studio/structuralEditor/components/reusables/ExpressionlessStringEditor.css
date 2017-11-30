@@ -1,0 +1,23 @@
+.container {
+  position: relative;
+  height: 36px;
+}
+
+.label {
+  position: absolute;
+  top: 0px;
+  left: 0;
+
+  text-transform: uppercase;
+  font-weight: 400;
+  /*font-family: 'Fira Sans';*/
+  font-size: 10px;
+  color: #A89D9D;
+}
+
+.input {
+  position: relative;
+  top: 21px;
+  color: white;
+  font-family: "Fira Mono", monospace;
+}
