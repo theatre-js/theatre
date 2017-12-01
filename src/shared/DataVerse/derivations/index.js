@@ -8,9 +8,7 @@ export {default as constant} from './constant'
 /*:: export type * from './constant' */
 export {default as prototypalDict} from './prototypalDict/prototypalDict'
 /*:: export type * from './prototypalDict/prototypalDict' */
-export {
-  default as PrototypalDictFace,
-} from './prototypalDict/PrototypalDictFace'
+export {default as PrototypalDictFace} from './prototypalDict/PrototypalDictFace'
 /*:: export type * from './prototypalDict/PrototypalDictFace' */
 export {default as autoDerive} from './autoDerive'
 /*:: export type * from './autoDerive' */

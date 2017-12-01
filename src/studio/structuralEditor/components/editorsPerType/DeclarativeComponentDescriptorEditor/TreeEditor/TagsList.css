@@ -1,8 +1,8 @@
 .container {
   position: absolute 0 0 0 0;
-  background: #eee;
+  background: #2D2D2D;
   z-index: 10;
-  color: #333;
+  color: #999;
 }
 
 .title {

@@ -21,9 +21,7 @@ export default class LBCommunicator {
     if (this._socketPromise) {
       return this._socketPromise
     } else {
-      return (this._socketPromise = createSocketPromsie(
-        this.options.backendUrl,
-      ))
+      return (this._socketPromise = createSocketPromsie(this.options.backendUrl))
     }
   }
 
@@ -59,11 +57,7 @@ const createSocketPromsie = (addr: string): Promise<Socket> => {
   return d.promise
 }
 
-const emit = (
-  eventName: string,
-  data: mixed,
-  socket: Socket,
-): Promise<mixed> => {
+const emit = (eventName: string, data: mixed, socket: Socket): Promise<mixed> => {
   return wn.promise(resolve => {
     socket.emit(eventName, data, response => {
       resolve(response)

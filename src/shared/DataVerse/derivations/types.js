@@ -20,9 +20,7 @@ export interface IDerivation<V> {
   +_recalculate: () => V;
   +_keepUptodate: () => void;
   +_stopKeepingUptodate: () => void;
-  +_youMayNeedToUpdateYourself: (
-    msgComingFrom: IDerivation<$IntentionalAny>,
-  ) => void;
+  +_youMayNeedToUpdateYourself: (msgComingFrom: IDerivation<$IntentionalAny>) => void;
 
   _addDependent(Dependent): void;
   _removeDependent(Dependent): void;

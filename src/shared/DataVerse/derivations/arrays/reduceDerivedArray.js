@@ -15,11 +15,7 @@ export class DerivedArrayReduction<T, V> extends AbstractDerivation
   _updateNeededFromIndex: number // `-1` means update comes from the top flatMap derivation. 0,1,2,... mean update is required because the derivedArray has had a change
   _seed: $FixMe
 
-  constructor(
-    derivedArray: IDerivedArray<T>,
-    fn: $FixMe,
-    seed: $FixMe,
-  ): IDerivation<V> {
+  constructor(derivedArray: IDerivedArray<T>, fn: $FixMe, seed: $FixMe): IDerivation<V> {
     super()
     this._derivedArray = derivedArray
     this._fn = fn
@@ -61,9 +57,7 @@ export class DerivedArrayReduction<T, V> extends AbstractDerivation
   }
 
   _getTopDerivation() {
-    return this._stack.length > 0
-      ? this._stack[this._stack.length - 1]
-      : this._seed
+    return this._stack.length > 0 ? this._stack[this._stack.length - 1] : this._seed
   }
 
   _keepUptodate() {
@@ -72,10 +66,7 @@ export class DerivedArrayReduction<T, V> extends AbstractDerivation
       if (this._updateNeededFromIndex === -1) {
         this._updateNeededFromIndex = c.startIndex
       } else {
-        this._updateNeededFromIndex = Math.min(
-          this._updateNeededFromIndex,
-          c.startIndex,
-        )
+        this._updateNeededFromIndex = Math.min(this._updateNeededFromIndex, c.startIndex)
       }
       this._youMayNeedToUpdateYourself(this)
     })

@@ -9,9 +9,7 @@ interface ObjectWhoseComputationShouldBeUpdated {
 
 export interface ITicker {
   registerComputationUpdate(ObjectWhoseComputationShouldBeUpdated): void;
-  addObjectWhoseStructureShouldBeUpdated(
-    ObjectWhoseStructureShouldBeUpdated,
-  ): void;
+  addObjectWhoseStructureShouldBeUpdated(ObjectWhoseStructureShouldBeUpdated): void;
 }
 
 export default class Ticker implements ITicker {
@@ -38,9 +36,7 @@ export default class Ticker implements ITicker {
     this._computationsToUpdate.add(d)
   }
 
-  addObjectWhoseStructureShouldBeUpdated(
-    d: ObjectWhoseStructureShouldBeUpdated,
-  ) {
+  addObjectWhoseStructureShouldBeUpdated(d: ObjectWhoseStructureShouldBeUpdated) {
     this._objectsWhoseStructureShouldBeUpdated.add(d)
   }
 

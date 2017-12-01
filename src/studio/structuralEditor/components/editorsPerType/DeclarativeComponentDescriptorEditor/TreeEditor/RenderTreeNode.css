@@ -1,7 +1,7 @@
 .container {
   position: relative;
   --indent: calc(var(--depth) * 8px);
-  --color: calc(var(--depth) * 20);
+  --color: calc(var(--depth) * 20 + 45);
   padding: 1px 0;
   margin: 2px 0;
 

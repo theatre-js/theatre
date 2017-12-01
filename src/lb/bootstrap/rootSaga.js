@@ -9,9 +9,5 @@ export default function* errorCatchingRootSaga(): Generator<*, *, *> {
 }
 
 function* rootSaga(): Generator<*, *, *> {
-  yield [
-    fork(statePersistorSaga),
-    fork(launcherWindowSaga),
-    fork(studioServerSaga),
-  ]
+  yield [fork(statePersistorSaga), fork(launcherWindowSaga), fork(studioServerSaga)]
 }

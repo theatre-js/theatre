@@ -12,10 +12,7 @@ type Props = {
   id: string,
 }
 
-export class SingleCustomStyleInspector extends React.PureComponent<
-  Props,
-  void,
-> {
+export class SingleCustomStyleInspector extends React.PureComponent<Props, void> {
   constructor(props: Props) {
     super(props)
   }
@@ -43,20 +40,8 @@ export class SingleCustomStyleInspector extends React.PureComponent<
     // @todo ux - sort these alphabetically
     return (
       <KeyValuePair
-        k={
-          <TextInput
-            key="key"
-            value={pairing.key}
-            onChange={this._onKeyChange}
-          />
-        }
-        v={
-          <TextInput
-            key="value"
-            value={pairing.value}
-            onChange={this._onValueChange}
-          />
-        }
+        k={<TextInput key="key" value={pairing.key} onChange={this._onKeyChange} />}
+        v={<TextInput key="value" value={pairing.value} onChange={this._onValueChange} />}
       />
     )
   }

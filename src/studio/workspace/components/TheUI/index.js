@@ -82,9 +82,7 @@ export class TheUI extends React.Component<Props, State> {
     // const {isCreatingNewPanel} = this.state
     return (
       <div className={css.container}>
-        {visiblePanels.map(panelId => (
-          <Panel key={panelId} panelId={panelId} />
-        ))}
+        {visiblePanels.map(panelId => <Panel key={panelId} panelId={panelId} />)}
         {/*
           {isCreatingNewPanel &&
             <PanelCreator

@@ -1,5 +1,16 @@
-.dragStHereMsg {
-  color: grey;
-  text-align: center;
-  margin: 10px 0;
+.container {
+  margin: 0;
+  padding: 0;
+}
+
+.treeContainer {
+  position: relative;
+  width: 100%;
+  max-height: 40%;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+.noScroll {
+  overflow: hidden;
 }

@@ -15,11 +15,7 @@ class ModifierInspectorWrapper extends React.PureComponent<Props, void> {
         {title ? (
           <div className={css.titleContainer}>
             <div className={css.triangle} />
-            {typeof title === 'string' ? (
-              <div className={css.title}>{title}</div>
-            ) : (
-              title
-            )}
+            {typeof title === 'string' ? <div className={css.title}>{title}</div> : title}
           </div>
         ) : null}
         <div className={css.bodyContainer}>{body}</div>

@@ -10,55 +10,51 @@ const getComponentDescriptorById = (
   id: D.IDerivation<string>,
   studio: D.IDerivation<$FixMe>,
 ): $FixMe =>
-  D.derivations
-    .withDeps({id, studio}, identity)
-    .flatMap(({id, studio}): $FixMe => {
-      const idString = id.getValue()
-      return stringStartsWith(idString, 'TheaterJS/Core/')
-        ? studio
-            .getValue()
-            .atom.pointer()
-            .prop('componentModel')
-            .prop('componentDescriptors')
-            .prop('core')
-            .prop(idString)
-        : studio
-            .getValue()
-            .atom.pointer()
-            .prop('componentModel')
-            .prop('componentDescriptors')
-            .prop('custom')
-            .prop(idString)
-    })
+  D.derivations.withDeps({id, studio}, identity).flatMap(({id, studio}): $FixMe => {
+    const idString = id.getValue()
+    return stringStartsWith(idString, 'TheaterJS/Core/')
+      ? studio
+          .getValue()
+          .atom.pointer()
+          .prop('componentModel')
+          .prop('componentDescriptors')
+          .prop('core')
+          .prop(idString)
+      : studio
+          .getValue()
+          .atom.pointer()
+          .prop('componentModel')
+          .prop('componentDescriptors')
+          .prop('custom')
+          .prop(idString)
+  })
 
 export const getAliasLessComponentDescriptor = (
   initialComponentId: D.IDerivation<string>,
   studio: D.IDerivation<Studio>,
 ): $FixMe => {
-  return getComponentDescriptorById(initialComponentId, studio).flatMap(
-    (des): $FixMe => {
-      if (!des) return
+  return getComponentDescriptorById(initialComponentId, studio).flatMap((des): $FixMe => {
+    if (!des) return
 
-      return des
-        .pointer()
-        .prop('type')
-        .flatMap(type => {
-          if (type === 'Alias') {
-            return des
-              .pointer()
-              .prop('aliasedComponentId')
-              .flatMap(aliasedComponentId =>
-                getAliasLessComponentDescriptor(
-                  D.derivations.constant(aliasedComponentId),
-                  studio,
-                ),
-              )
-          } else {
-            return des
-          }
-        })
-    },
-  )
+    return des
+      .pointer()
+      .prop('type')
+      .flatMap(type => {
+        if (type === 'Alias') {
+          return des
+            .pointer()
+            .prop('aliasedComponentId')
+            .flatMap(aliasedComponentId =>
+              getAliasLessComponentDescriptor(
+                D.derivations.constant(aliasedComponentId),
+                studio,
+              ),
+            )
+        } else {
+          return des
+        }
+      })
+  })
 }
 
 const elementify = (keyD, instantiationDescriptorP, studioD) => {

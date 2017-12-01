@@ -67,7 +67,9 @@ const initialState: WorkspaceNamespaceState = {
             y: 100,
           },
         },
-        inputs: {},
+        inputs: {
+          selectedNode: 'elementTree',
+        },
         outputs: {},
       },
     },

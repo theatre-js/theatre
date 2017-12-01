@@ -25,11 +25,12 @@ class PanelSection extends React.PureComponent<Props, State> {
           [css.hasLabel]: hasLabel,
         })}
       >
-        {hasLabel && <div className={css.label}><span className={css.labelText}>{this.props.label}</span></div>}
-        <div className={css.body}>
-          {this.props.children}
-
-        </div>
+        {hasLabel && (
+          <div className={css.label}>
+            <span className={css.labelText}>{this.props.label}</span>
+          </div>
+        )}
+        <div className={css.body}>{this.props.children}</div>
       </div>
     )
   }

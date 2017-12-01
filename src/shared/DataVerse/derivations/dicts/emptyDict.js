@@ -5,8 +5,7 @@ import constantDerivation from '../constant'
 
 const emptyArray = []
 
-export class EmptyDict extends AbstractDerivedDict
-  implements IDerivedDict<$FixMe> {
+export class EmptyDict extends AbstractDerivedDict implements IDerivedDict<$FixMe> {
   prop: $FixMe
   changes: $FixMe
 

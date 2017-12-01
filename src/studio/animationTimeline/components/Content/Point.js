@@ -4,10 +4,7 @@ import css from './Point.css'
 import Connector from './Connector'
 import DraggableArea from '$studio/common/components/DraggableArea'
 import SingleInputForm from '$lf/common/components/SingleInputForm'
-import {
-  type NormalizedPoint,
-  type PointHandles,
-} from '$studio/animationTimeline/types'
+import {type NormalizedPoint, type PointHandles} from '$studio/animationTimeline/types'
 
 type Props = {
   point: NormalizedPoint,
@@ -200,9 +197,7 @@ class Point extends React.PureComponent<Props, State> {
           }}
         >
           <div className={css.pointTipRow}>
-            <span className={css.pointTipIcon}>
-              {String.fromCharCode(0x25b2)}
-            </span>
+            <span className={css.pointTipIcon}>{String.fromCharCode(0x25b2)}</span>
             <SingleInputForm
               ref={c => {
                 if (c != null) this.valueForm = c
@@ -214,9 +209,7 @@ class Point extends React.PureComponent<Props, State> {
             />
           </div>
           <div className={css.pointTipRow}>
-            <span className={css.pointTipIcon}>
-              {String.fromCharCode(0x25ba)}
-            </span>
+            <span className={css.pointTipIcon}>{String.fromCharCode(0x25ba)}</span>
             <SingleInputForm
               autoFocus={false}
               ref={c => {

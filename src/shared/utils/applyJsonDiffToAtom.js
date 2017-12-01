@@ -15,9 +15,7 @@ const ops = {
     },
 
     remove: (diff: Diff, stuff: Stuff) => {
-      stuff.curAtom.deleteProp(
-        jsonPatchLib.unescapePathComponent(stuff.lastComponent),
-      )
+      stuff.curAtom.deleteProp(jsonPatchLib.unescapePathComponent(stuff.lastComponent))
     },
 
     add: (diff: Diff, stuff: Stuff) => {
@@ -73,8 +71,7 @@ export default function applyJsonDiffToAtom(diff: Diff, atom: $FixMe) {
   const stuff = {
     atom,
     components,
-    lastComponent:
-      type === 'array' ? parseInt(lastComponent, 10) : lastComponent,
+    lastComponent: type === 'array' ? parseInt(lastComponent, 10) : lastComponent,
     curAtom,
   }
 
@@ -82,9 +79,7 @@ export default function applyJsonDiffToAtom(diff: Diff, atom: $FixMe) {
   if (opFn) {
     opFn(diff, stuff)
   } else {
-    console.error(
-      `@todo Diff op '${diff.op}' for atom type ${type} not yet supported`,
-    )
+    console.error(`@todo Diff op '${diff.op}' for atom type ${type} not yet supported`)
     return
   }
 }

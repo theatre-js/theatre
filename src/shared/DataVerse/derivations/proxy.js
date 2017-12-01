@@ -33,8 +33,6 @@ export interface IProxyDerivation<V> extends IDerivation<V> {
   setTarget(target: IDerivation<V>): IProxyDerivation<V>;
 }
 
-export default function proxy<V, D: IDerivation<V>>(
-  target: D,
-): IProxyDerivation<V> {
+export default function proxy<V, D: IDerivation<V>>(target: D): IProxyDerivation<V> {
   return new ProxyDerivation(target)
 }

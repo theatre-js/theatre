@@ -36,16 +36,14 @@ const constructValue = (desP: $FixMe, d: $FixMe) => {
     } else if (val && val.isDerivedDict === 'True') {
       return val
         .prop('__descriptorType')
-        .flatMap(
-          (type: $ElementType<ValueDescriptorDescribedInAnObject, 'type'>) => {
-            if (typeof type === 'string') {
-              const constructor = constructors[type]
-              if (constructor) return constructor(desP, d)
-              else throw new Error(`Unkown __descriptorType '${type}'`)
-            }
-            return constructMapDescriptor(desP, d)
-          },
-        )
+        .flatMap((type: $ElementType<ValueDescriptorDescribedInAnObject, 'type'>) => {
+          if (typeof type === 'string') {
+            const constructor = constructors[type]
+            if (constructor) return constructor(desP, d)
+            else throw new Error(`Unkown __descriptorType '${type}'`)
+          }
+          return constructMapDescriptor(desP, d)
+        })
     } else {
       throw new Error('Unkown value type')
     }

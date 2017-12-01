@@ -38,10 +38,9 @@ export class DerivationOfAPropOfADictAtom<O: {}> extends AbstractDerivation
   }
 }
 
-export default function deriveFromPropOfADictAtom<
-  O: {},
-  M: IDictAtom<O>,
-  K: $Keys<O>,
->(m: M, propName: $Keys<O>): IDerivation<$ElementType<O, K>> {
+export default function deriveFromPropOfADictAtom<O: {}, M: IDictAtom<O>, K: $Keys<O>>(
+  m: M,
+  propName: $Keys<O>,
+): IDerivation<$ElementType<O, K>> {
   return new DerivationOfAPropOfADictAtom(m, propName)
 }

@@ -5,7 +5,6 @@ import * as _ from 'lodash'
 import ExpressionlessStringEditor from '$studio/structuralEditor/components/reusables/ExpressionlessStringEditor'
 import PanelSection from '$studio/structuralEditor/components/reusables/PanelSection'
 
-
 type Props = {
   pathToComponentDescriptor: Array<string>,
 }
@@ -22,15 +21,17 @@ class ComponentNameEditor extends React.PureComponent<Props, State> {
   }
 
   render() {
-    return <div className={css.container}>
-      <PanelSection>
-
-      <ExpressionlessStringEditor label="Component Name" path={[...this.props.pathToComponentDescriptor, 'displayName']} />
-      </PanelSection>
-    </div>
+    return (
+      <div className={css.container}>
+        <PanelSection>
+          <ExpressionlessStringEditor
+            label="Component Name"
+            path={[...this.props.pathToComponentDescriptor, 'displayName']}
+          />
+        </PanelSection>
+      </div>
+    )
   }
 }
 
-export default compose(
-  (a) => a
-)(ComponentNameEditor)
+export default compose(a => a)(ComponentNameEditor)

@@ -14,12 +14,7 @@ const generateFakeTree = (maxDepth = 7, maxChildrenPerNode = 3) => {
   return generate('', maxDepth, maxChildrenPerNode, maxChildrenPerNode)
 }
 
-const generate = (
-  keyPrefix,
-  maxDepth,
-  maxChildrenPerNode,
-  minChildrenPerNode,
-) => {
+const generate = (keyPrefix, maxDepth, maxChildrenPerNode, minChildrenPerNode) => {
   const allNodes = {}
   const rootKeys = []
   if (maxDepth === 0) {

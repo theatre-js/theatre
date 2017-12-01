@@ -11,8 +11,7 @@ export default class EventEmitter {
 
   addEventListener(eventName: string, listener: Listener) {
     const listeners =
-      this._listenersByType[eventName] ||
-      (this._listenersByType[eventName] = [])
+      this._listenersByType[eventName] || (this._listenersByType[eventName] = [])
 
     listeners.push(listener)
 

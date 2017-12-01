@@ -24,27 +24,18 @@ class ContextMenu extends React.PureComponent<Props, void> {
         <div className={css.menu}>
           {onMove && (
             <div className={css.pad}>
-              <div
-                className={css.buttonLeftRight}
-                onClick={() => onMove('left')}
-              >
+              <div className={css.buttonLeftRight} onClick={() => onMove('left')}>
                 {String.fromCharCode(0x25c0)}
               </div>
               <div className={css.upDownContainer}>
                 <div className={css.buttonUpDown} onClick={() => onMove('up')}>
                   {String.fromCharCode(0x25b2)}
                 </div>
-                <div
-                  className={css.buttonUpDown}
-                  onClick={() => onMove('down')}
-                >
+                <div className={css.buttonUpDown} onClick={() => onMove('down')}>
                   {String.fromCharCode(0x25bc)}
                 </div>
               </div>
-              <div
-                className={css.buttonLeftRight}
-                onClick={() => onMove('right')}
-              >
+              <div className={css.buttonLeftRight} onClick={() => onMove('right')}>
                 {String.fromCharCode(0x25b6)}
               </div>
             </div>

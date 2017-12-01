@@ -3,7 +3,6 @@ import {React, compose} from '$studio/handy'
 import css from './index.css'
 import PanelSection from '$studio/structuralEditor/components/reusables/PanelSection'
 
-
 type Props = {
   pathToComponentDescriptor: Array<string>,
 }
@@ -20,17 +19,14 @@ class PropsEditor extends React.PureComponent<Props, State> {
   }
 
   render() {
-    return <div className={css.container}>
-      <PanelSection label="Props">
-        <div className={css.dragStHereMsg}>
-          Drag a value here to define a new prop
-
-        </div>
-      </PanelSection>
-    </div>
+    return (
+      <div className={css.container}>
+        <PanelSection label="Props">
+          <div className={css.dragStHereMsg}>Drag a value here to define a new prop</div>
+        </PanelSection>
+      </div>
+    )
   }
 }
 
-export default compose(
-  (a) => a
-)(PropsEditor)
+export default compose(a => a)(PropsEditor)

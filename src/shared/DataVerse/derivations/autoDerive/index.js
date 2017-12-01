@@ -3,8 +3,7 @@ import AbstractDerivation from '../AbstractDerivation'
 import type {IDerivation} from '../types'
 import {collectObservedDependencies} from './discoveryMechanism'
 
-export class AutoDerivation<V> extends AbstractDerivation
-  implements IDerivation<V> {
+export class AutoDerivation<V> extends AbstractDerivation implements IDerivation<V> {
   _dependencies: Set<IDerivation<$IntentionalAny>>
   _fn: () => V
 
@@ -16,9 +15,7 @@ export class AutoDerivation<V> extends AbstractDerivation
 
   _recalculate() {
     let value: V
-    const newDeps: Set<
-      IDerivation<$IntentionalAny>,
-    > = collectObservedDependencies(
+    const newDeps: Set<IDerivation<$IntentionalAny>> = collectObservedDependencies(
       () => {
         value = this._fn()
       },

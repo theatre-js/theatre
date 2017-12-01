@@ -3,12 +3,7 @@ import {forEach} from 'lodash'
 import type {IAtom} from './utils/AbstractAtom'
 import Tappable from '$shared/DataVerse/utils/Tappable'
 import Emitter from '$shared/DataVerse/utils/Emitter'
-import type {
-  AddressedChangeset,
-  MapKey,
-  True,
-  False,
-} from '$shared/DataVerse/types'
+import type {AddressedChangeset, MapKey, True, False} from '$shared/DataVerse/types'
 import deriveFromArrayAtom from '$shared/DataVerse/derivations/arrays/deriveFromArrayAtom'
 import range from 'lodash/range'
 import {default as pointer} from '$shared/DataVerse/derivations/pointer'
@@ -153,11 +148,7 @@ export class ArrayAtom<V: IAtom> extends AbstractCompositeAtom {
     })
 
     if (deleteCount !== refsToAdd.length) {
-      for (
-        let i = startIndex + refsToAdd.length;
-        i < this._internalArray.length;
-        i++
-      ) {
+      for (let i = startIndex + refsToAdd.length; i < this._internalArray.length; i++) {
         this._refToIndex.set(this._internalArray[i], i)
       }
     }
@@ -183,9 +174,7 @@ export class ArrayAtom<V: IAtom> extends AbstractCompositeAtom {
     // }
 
     if (this._changeEmitter.hasTappers()) {
-      this._changeEmitter.emit(
-        changeDescriptor(startIndex, deleteCount, refsToAdd),
-      )
+      this._changeEmitter.emit(changeDescriptor(startIndex, deleteCount, refsToAdd))
     }
   }
 

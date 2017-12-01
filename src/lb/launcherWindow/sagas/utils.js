@@ -87,9 +87,7 @@ export function sendRequestToWindow(
   return wn.race([payloadDeferred.promise, timeoutAndGCPromise])
 }
 
-export const getChannelOfRequestsFromWindow = (
-  window: BrowserWindow,
-): Channel => {
+export const getChannelOfRequestsFromWindow = (window: BrowserWindow): Channel => {
   return eventChannel(emitToChannel => {
     const listener = (event, request: RawRequest) => {
       if (event.sender !== window.webContents) {
@@ -101,9 +99,7 @@ export const getChannelOfRequestsFromWindow = (
       const respond = (payload: mixed) => {
         if (alreadyResponded)
           throw new Error(
-            `Request '${request.id}' to '${
-              request.type
-            }' is already responded to`,
+            `Request '${request.id}' to '${request.type}' is already responded to`,
           )
 
         alreadyResponded = true

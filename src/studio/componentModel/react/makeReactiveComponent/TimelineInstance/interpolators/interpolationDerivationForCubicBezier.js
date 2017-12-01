@@ -20,8 +20,7 @@ export default function interpolationDerivationForCubicBezier(
 ): D.IDerivation<$FixMe> {
   // debugger
   return isConnected(config).flatMap(
-    isConnected =>
-      isConnected ? interpolatedValue(config) : config.leftPointValueD,
+    isConnected => (isConnected ? interpolatedValue(config) : config.leftPointValueD),
   )
 }
 

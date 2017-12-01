@@ -10,9 +10,7 @@ describe('deriveFromPropOfADictAtom', () => {
 
     const aD = deriveFromPropOfADictAtom(m, 'a')
     const bD = deriveFromPropOfADictAtom(m, 'b')
-    const final = aD
-      .map(n => bD.map(m => m.getValue() + n.getValue()))
-      .flattenDeep(7)
+    const final = aD.map(n => bD.map(m => m.getValue() + n.getValue())).flattenDeep(7)
 
     expect(final.getValue()).toEqual(4)
     m.setProp('a', D.atoms.box(2))

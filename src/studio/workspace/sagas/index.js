@@ -10,16 +10,11 @@ export function* createPanel(params: PanelProps): Generator<*, PanelId, *> {
     ...params,
   }
   yield reduceState(['workspace', 'panels', 'byId', id], () => panelProperties)
-  yield reduceState(['workspace', 'panels', 'listOfVisibles'], value =>
-    value.concat(id),
-  )
+  yield reduceState(['workspace', 'panels', 'listOfVisibles'], value => value.concat(id))
   return id
 }
 
-export function* setPanelSize(
-  panelId: PanelId,
-  dim: XY,
-): Generator<*, void, *> {
+export function* setPanelSize(panelId: PanelId, dim: XY): Generator<*, void, *> {
   yield reduceState(
     ['workspace', 'panels', 'byId', panelId, 'placementSettings', 'dim'],
     () => dim,

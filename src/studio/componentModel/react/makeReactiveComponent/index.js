@@ -5,9 +5,7 @@ import {type Studio, PureComponentWithStudio, D} from '$studio/handy'
 import TimelinesHandler from './TimelinesHandler'
 
 type MakeReactiveComponentArgs = {
-  modifyPrototypalDict: (
-    D.IPrototypalDict<$FixMe>,
-  ) => D.IPrototypalDict<$FixMe>,
+  modifyPrototypalDict: (D.IPrototypalDict<$FixMe>) => D.IPrototypalDict<$FixMe>,
   getInitialState?: () => D.IDictAtom<$FixMe>,
 } & (
   | {
@@ -172,8 +170,7 @@ export default function makeReactiveComponent({
       return D.atoms.dict({
         instanceId: this.studio._getNewComponentInstanceId(),
         props: this.props.props,
-        modifierInstantiationDescriptors: this.props
-          .modifierInstantiationDescriptors,
+        modifierInstantiationDescriptors: this.props.modifierInstantiationDescriptors,
         studio: this.studio,
         // key: this.props.key,
         state: getInitialState ? getInitialState() : D.atoms.dict({}),
@@ -186,9 +183,7 @@ export default function makeReactiveComponent({
         .prototypalDict({_atom: () => this._atom})
         .extend(TheaterJSComponent._baseLookupTable)
 
-      const prototypalDictWithoutModifiers = modifyPrototypalDict(
-        basePrototypalDict,
-      )
+      const prototypalDictWithoutModifiers = modifyPrototypalDict(basePrototypalDict)
 
       // return D.derivations.constant(prototypalDictWithoutModifiers)
 
@@ -207,9 +202,7 @@ export default function makeReactiveComponent({
 
           return list
             .map(idD =>
-              idD.flatMap((id: string) =>
-                modifierInstantiationDescriptorsByIdP.prop(id),
-              ),
+              idD.flatMap((id: string) => modifierInstantiationDescriptorsByIdP.prop(id)),
             )
             .reduce((dict, modifierInstantiationDescriptor) => {
               return this._applyModifier(modifierInstantiationDescriptor, dict)

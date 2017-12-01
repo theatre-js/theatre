@@ -47,8 +47,6 @@ export class DerivedDictFromDictAtom<O: {}> extends AbstractDerivedDict
   }
 }
 
-export default function deriveFromDictAtom<O: {}>(
-  m: IDictAtom<O>,
-): IDerivedDict<$FixMe> {
+export default function deriveFromDictAtom<O: {}>(m: IDictAtom<O>): IDerivedDict<$FixMe> {
   return new DerivedDictFromDictAtom(m)
 }

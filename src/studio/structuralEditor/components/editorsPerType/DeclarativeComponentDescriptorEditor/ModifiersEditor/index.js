@@ -22,18 +22,18 @@ class ModifiersEditor extends React.PureComponent<Props, State> {
   render() {
     const {componentDescriptor} = this.props
 
-    return <div className={css.container}>
-      <PanelSection label="Modifiers">
-
-      </PanelSection>
-    </div>
+    return (
+      <div className={css.container}>
+        <PanelSection label="Modifiers" />
+      </div>
+    )
   }
 }
 
 export default compose(
   connect((s, op) => {
     return {
-      componentDescriptor: _.get(s, op.pathToComponentDescriptor)
+      componentDescriptor: _.get(s, op.pathToComponentDescriptor),
     }
-  })
+  }),
 )(ModifiersEditor)

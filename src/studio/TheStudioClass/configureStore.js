@@ -18,13 +18,11 @@ export default function createStore(
         yield multiReduceState([
           {
             path: ['componentModel', 'modifierDescriptors', 'core'],
-            reducer: () =>
-              r('$studio/componentModel/coreModifierDescriptors').default,
+            reducer: () => r('$studio/componentModel/coreModifierDescriptors').default,
           },
           {
             path: ['componentModel', 'componentDescriptors', 'core'],
-            reducer: () =>
-              r('$studio/componentModel/coreComponentDescriptors').default,
+            reducer: () => r('$studio/componentModel/coreComponentDescriptors').default,
           },
         ])
       })

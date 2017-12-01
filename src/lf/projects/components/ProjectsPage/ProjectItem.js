@@ -19,8 +19,7 @@ const ProjectItem = (props: Props) => {
             <div className={css.title}>{props.projectDesc.name}</div>
           )}
         {(!(props.projectDesc != null) ||
-          (props.projectDesc &&
-            props.projectDesc.loadingState === 'loading')) && (
+          (props.projectDesc && props.projectDesc.loadingState === 'loading')) && (
           <div className={css.loading}>
             <span>L</span>
             <span>o</span>

@@ -2,17 +2,13 @@
 import AbstractDerivation from './AbstractDerivation'
 import type {IDerivation} from './types'
 
-export class FlatMapDerivation extends AbstractDerivation
-  implements IDerivation<$FixMe> {
+export class FlatMapDerivation extends AbstractDerivation implements IDerivation<$FixMe> {
   _updateNeededFromIndex: number
   _stackOfDependencies: Array<IDerivation<$IntentionalAny>>
   _fn: $FixMe
   _depDerivation: $FixMe
 
-  constructor(
-    depDerivation: IDerivation<$FixMe>,
-    fn: $FixMe,
-  ): IDerivation<$FixMe> {
+  constructor(depDerivation: IDerivation<$FixMe>, fn: $FixMe): IDerivation<$FixMe> {
     super()
     this._stackOfDependencies = [depDerivation]
     this._fn = fn
@@ -29,11 +25,7 @@ export class FlatMapDerivation extends AbstractDerivation
       this._updateNeededFromIndex === -1 ? 0 : this._updateNeededFromIndex
     this._updateNeededFromIndex = -1
 
-    for (
-      let i = this._stackOfDependencies.length - 1;
-      i > updateFromIndex;
-      i--
-    ) {
+    for (let i = this._stackOfDependencies.length - 1; i > updateFromIndex; i--) {
       const d = this._stackOfDependencies.pop()
       this._removeDependency(d)
     }
@@ -60,9 +52,7 @@ export class FlatMapDerivation extends AbstractDerivation
   }
 
   _youMayNeedToUpdateYourself(msgComingFrom: IDerivation<$IntentionalAny>) {
-    const indexOfDep = this._stackOfDependencies.indexOf(
-      (msgComingFrom: $FixMe),
-    )
+    const indexOfDep = this._stackOfDependencies.indexOf((msgComingFrom: $FixMe))
 
     if (indexOfDep === -1) {
       throw Error(
@@ -72,18 +62,12 @@ export class FlatMapDerivation extends AbstractDerivation
 
     if (this._updateNeededFromIndex === -1) {
       this._updateNeededFromIndex = indexOfDep
-      AbstractDerivation.prototype._youMayNeedToUpdateYourself.call(
-        this,
-        msgComingFrom,
-      )
+      AbstractDerivation.prototype._youMayNeedToUpdateYourself.call(this, msgComingFrom)
     } else if (this._updateNeededFromIndex <= indexOfDep) {
       return
     } else {
       this._updateNeededFromIndex = indexOfDep
-      AbstractDerivation.prototype._youMayNeedToUpdateYourself.call(
-        this,
-        msgComingFrom,
-      )
+      AbstractDerivation.prototype._youMayNeedToUpdateYourself.call(this, msgComingFrom)
     }
   }
 

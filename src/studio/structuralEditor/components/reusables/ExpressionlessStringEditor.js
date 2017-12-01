@@ -20,7 +20,7 @@ class ExpressionlessStringEditor extends React.PureComponent<Props, State> {
     this.state = undefined
   }
 
-  onChange = (e) => {
+  onChange = e => {
     const {value} = e.target
     this.props.dispatch(reduceStateAction(this.props.path, () => value))
   }
@@ -28,17 +28,24 @@ class ExpressionlessStringEditor extends React.PureComponent<Props, State> {
   render() {
     const {props} = this
 
-    return <div className={css.container}>
-      <label className={css.label}>{props.label}</label>
-      <input className={css.input} type="text" value={typeof props.value === 'string' ? props.value : ''} onChange={this.onChange} />
-    </div>
+    return (
+      <div className={css.container}>
+        <label className={css.label}>{props.label}</label>
+        <input
+          className={css.input}
+          type="text"
+          value={typeof props.value === 'string' ? props.value : ''}
+          onChange={this.onChange}
+        />
+      </div>
+    )
   }
 }
 
 export default compose(
   connect((s, op) => {
     return {
-      value: _.get(s, op.path)
+      value: _.get(s, op.path),
     }
-  })
+  }),
 )(ExpressionlessStringEditor)

@@ -23,10 +23,8 @@ export const resetStateAction = actionCreator(
   (namespacesToReset: ?Array<string>) => namespacesToReset,
 )
 
-export const reduceStateAction = (
-  path: Array<string | number>,
-  reducer: any => any,
-) => multiReduceStateAction([{path, reducer}])
+export const reduceStateAction = (path: Array<string | number>, reducer: any => any) =>
+  multiReduceStateAction([{path, reducer}])
 
 export const multiReduceStateAction = actionCreator(
   '@@root/REDUCE_STATE',

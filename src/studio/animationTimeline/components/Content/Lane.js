@@ -43,24 +43,16 @@ const Lane = (props: Props) => {
               nextPoint={nextPoint}
               point={point}
               laneWidth={width}
-              changePointPositionBy={change =>
-                props.changePointPositionBy(index, change)
-              }
-              changePointHandlesBy={change =>
-                props.changePointHandlesBy(index, change)
-              }
+              changePointPositionBy={change => props.changePointPositionBy(index, change)}
+              changePointHandlesBy={change => props.changePointHandlesBy(index, change)}
               setPointPositionTo={newPosition =>
                 props.setPointPositionTo(index, newPosition)
               }
               addConnector={() => props.addConnector(index)}
               removePoint={() => props.removePoint(index)}
-              makeHandleHorizontal={side =>
-                props.makeHandleHorizontal(index, side)
-              }
+              makeHandleHorizontal={side => props.makeHandleHorizontal(index, side)}
               makeHandlesEqual={side => props.makeHandlesEqual(index, side)}
-              makeHandlesParallel={side =>
-                props.makeHandlesParallel(index, side)
-              }
+              makeHandlesParallel={side => props.makeHandlesParallel(index, side)}
             />
           </g>
         )

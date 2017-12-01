@@ -46,13 +46,9 @@ class RenderTreeNode extends React.PureComponent<Props, any> {
         nodePath = this.props.rootPath.concat('localHiddenValuesById', which)
         nodeId = which
         const renderValue = getLocalHiddenValue(which)
-        if (
-          renderValue.__descriptorType ===
-          'ComponentInstantiationValueDescriptor'
-        ) {
+        if (renderValue.__descriptorType === 'ComponentInstantiationValueDescriptor') {
           nodeChildren = [].concat(renderValue.props.children)
-          nodeContent = getComponentDescriptor(renderValue.componentId)
-            .displayName
+          nodeContent = getComponentDescriptor(renderValue.componentId).displayName
         }
       }
     } else {
@@ -132,10 +128,7 @@ class RenderTreeNode extends React.PureComponent<Props, any> {
               ? {
                   onClick: () =>
                     dispatch(
-                      reduceStateAction(
-                        ['x2', 'pathToInspectableInX2'],
-                        () => nodePath,
-                      ),
+                      reduceStateAction(['x2', 'pathToInspectableInX2'], () => nodePath),
                     ),
                 }
               : {})}
@@ -160,14 +153,9 @@ class RenderTreeNode extends React.PureComponent<Props, any> {
         {nodeId &&
           this.state.isContextMenuVisible && (
             <ContextMenu
-              {...(depth !== 0
-                ? {onMove: dir => this._moveNode(nodeId, dir)}
-                : {})}
-              {...(depth !== 0
-                ? {onDelete: () => this._deleteNode(nodeId)}
-                : {})}
-              {...(nodeChildren.length === 0 ||
-              typeof nodeChildren[0] !== 'string'
+              {...(depth !== 0 ? {onMove: dir => this._moveNode(nodeId, dir)} : {})}
+              {...(depth !== 0 ? {onDelete: () => this._deleteNode(nodeId)} : {})}
+              {...(nodeChildren.length === 0 || typeof nodeChildren[0] !== 'string'
                 ? {onAddChild: () => this._addChildToNode(nodeId)}
                 : {})}
               depth={depth}

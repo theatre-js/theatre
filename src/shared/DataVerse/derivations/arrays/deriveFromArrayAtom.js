@@ -46,8 +46,6 @@ export class DerivedArrayFromArrayAtom extends AbstractDerivedArray
   }
 }
 
-export default function deriveFromArrayAtom<V, A: IArrayAtom<V>>(
-  a: A,
-): IDerivedArray<V> {
+export default function deriveFromArrayAtom<V, A: IArrayAtom<V>>(a: A): IDerivedArray<V> {
   return new DerivedArrayFromArrayAtom(a)
 }

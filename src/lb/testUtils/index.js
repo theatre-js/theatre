@@ -7,11 +7,7 @@ import {type StoreState} from '$lb/types'
 
 type Fn0<R> = (...rest: Array<void>) => Generator<mixed, R, mixed>
 type Fn1<T1, R> = (t1: T1, ...rest: Array<void>) => Generator<mixed, R, mixed>
-type Fn2<T1, T2, R> = (
-  t1: T1,
-  t2: T2,
-  ...rest: Array<void>
-) => Generator<mixed, R, mixed>
+type Fn2<T1, T2, R> = (t1: T1, t2: T2, ...rest: Array<void>) => Generator<mixed, R, mixed>
 type Fn3<T1, T2, T3, R> = (
   t1: T1,
   t2: T2,

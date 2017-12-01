@@ -20,9 +20,7 @@ const modifyPrototypalDict = (propsP, dict) => {
               const keyP = pairingP.prop('key')
               const valueP = pairingP.prop('value')
               return keyP.flatMap((key: string) => {
-                return accDict.extend(
-                  D.atoms.dict({[key]: valueP}).derivedDict(),
-                )
+                return accDict.extend(D.atoms.dict({[key]: valueP}).derivedDict())
               })
             }, reifiedStyles)
           })

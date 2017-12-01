@@ -40,20 +40,8 @@ export class SingleAttributeInspector extends React.PureComponent<Props, void> {
     // @todo ux - sort these alphabetically
     return (
       <KeyValuePair
-        k={
-          <TextInput
-            key="key"
-            value={pairing.key}
-            onChange={this._onKeyChange}
-          />
-        }
-        v={
-          <TextInput
-            key="value"
-            value={pairing.value}
-            onChange={this._onValueChange}
-          />
-        }
+        k={<TextInput key="key" value={pairing.key} onChange={this._onKeyChange} />}
+        v={<TextInput key="value" value={pairing.value} onChange={this._onValueChange} />}
       />
     )
   }

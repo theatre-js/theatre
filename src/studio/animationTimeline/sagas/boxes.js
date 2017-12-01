@@ -49,15 +49,7 @@ export function* resizeBox(
   newSize: number,
 ): Generator<*, void, *> {
   yield reduceState(
-    [
-      'animationTimeline',
-      'timelines',
-      'byId',
-      timelineId,
-      'boxes',
-      boxId,
-      'height',
-    ],
+    ['animationTimeline', 'timelines', 'byId', timelineId, 'boxes', boxId, 'height'],
     () => newSize,
   )
 }

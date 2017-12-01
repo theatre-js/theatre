@@ -13,18 +13,9 @@ if (process.env.NODE_ENV === 'development') {
 const routes = [
   ...projectsRoutes,
   process.env.NODE_ENV === 'development' && (
-    <Route
-      key="playgroundRoute"
-      path={`/playground`}
-      component={PlaygroundPage}
-    />
+    <Route key="playgroundRoute" path={`/playground`} component={PlaygroundPage} />
   ),
-  <Route
-    key="toIndex"
-    path={`/`}
-    exact
-    component={() => <Redirect to="/projects" />}
-  />,
+  <Route key="toIndex" path={`/`} exact component={() => <Redirect to="/projects" />} />,
   <Route key="404" component={() => <div>Route not found</div>} />,
 ].map((el, i) => {
   return (

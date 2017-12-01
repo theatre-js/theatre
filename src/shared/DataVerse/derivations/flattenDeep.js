@@ -27,11 +27,7 @@ export class FlattenDeepDerivation extends AbstractDerivation
       this._updateNeededFromIndex === -1 ? 0 : this._updateNeededFromIndex
     this._updateNeededFromIndex = -1
 
-    for (
-      let i = this._stackOfDependencies.length - 1;
-      i > updateFromIndex;
-      i--
-    ) {
+    for (let i = this._stackOfDependencies.length - 1; i > updateFromIndex; i--) {
       const d = this._stackOfDependencies.pop()
       this._removeDependency(d)
     }
@@ -57,9 +53,7 @@ export class FlattenDeepDerivation extends AbstractDerivation
   }
 
   _youMayNeedToUpdateYourself(msgComingFrom: IDerivation<$IntentionalAny>) {
-    const indexOfDep = this._stackOfDependencies.indexOf(
-      (msgComingFrom: $FixMe),
-    )
+    const indexOfDep = this._stackOfDependencies.indexOf((msgComingFrom: $FixMe))
 
     if (indexOfDep === -1) {
       throw Error(
@@ -69,18 +63,12 @@ export class FlattenDeepDerivation extends AbstractDerivation
 
     if (this._updateNeededFromIndex === -1) {
       this._updateNeededFromIndex = indexOfDep
-      AbstractDerivation.prototype._youMayNeedToUpdateYourself.call(
-        this,
-        msgComingFrom,
-      )
+      AbstractDerivation.prototype._youMayNeedToUpdateYourself.call(this, msgComingFrom)
     } else if (this._updateNeededFromIndex <= indexOfDep) {
       return
     } else {
       this._updateNeededFromIndex = indexOfDep
-      AbstractDerivation.prototype._youMayNeedToUpdateYourself.call(
-        this,
-        msgComingFrom,
-      )
+      AbstractDerivation.prototype._youMayNeedToUpdateYourself.call(this, msgComingFrom)
     }
   }
 
@@ -395,9 +383,7 @@ export type FlattenDeepFn = (<Ret, V1: IDerivation<Ret>, D: 0>(
   (<Ret, V3: IDerivation<Ret>, V2: IDerivation<V3>, V1: IDerivation<V2>>(
     outer: V1,
   ) => IDerivation<Ret>) &
-  (<Ret, V2: IDerivation<Ret>, V1: IDerivation<V2>>(
-    outer: V1,
-  ) => IDerivation<Ret>) &
+  (<Ret, V2: IDerivation<Ret>, V1: IDerivation<V2>>(outer: V1) => IDerivation<Ret>) &
   (<Ret, V1: IDerivation<Ret>>(outer: V1) => IDerivation<Ret>)
 
 function flattenDeep<V>(

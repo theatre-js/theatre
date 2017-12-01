@@ -35,8 +35,6 @@ export class DerivationOfABoxAtom<V> extends AbstractDerivation
   }
 }
 
-export default function deriveFromBoxAtom<V, B: IBoxAtom<V>>(
-  b: B,
-): IDerivation<V> {
+export default function deriveFromBoxAtom<V, B: IBoxAtom<V>>(b: B): IDerivation<V> {
   return new DerivationOfABoxAtom(b)
 }

@@ -178,10 +178,7 @@ const WrappedNode = connect((s, op) => {
 
   let classNames
   if (!fakeClassesWeakMap.has(_ref)) {
-    fakeClassesWeakMap.set(
-      _ref,
-      dummyClasses[_.random(0, dummyClasses.length - 1)],
-    )
+    fakeClassesWeakMap.set(_ref, dummyClasses[_.random(0, dummyClasses.length - 1)])
   }
   classNames = fakeClassesWeakMap.get(_ref)
 

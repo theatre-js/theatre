@@ -67,10 +67,7 @@ class ElementTreePanelContent extends React.PureComponent<Props, State> {
     let root = node
     while (!this._refMap.has(root.return)) {
       if (root.return == null) return
-      if (
-        root.return.key ===
-        'TheaterJS/Core/RenderCurrentCanvas#RenderCurrentCanvas'
-      ) {
+      if (root.return.key === 'TheaterJS/Core/RenderCurrentCanvas#RenderCurrentCanvas') {
         break
       }
       root = root.return
@@ -80,11 +77,7 @@ class ElementTreePanelContent extends React.PureComponent<Props, State> {
       const containerPath = this._refMap.get(root.return)
         ? this._refMap.get(root.return).concat('children')
         : []
-      const {nodes, refMap} = this._addNodeAndChildren(
-        root,
-        containerPath,
-        state.nodes,
-      )
+      const {nodes, refMap} = this._addNodeAndChildren(root, containerPath, state.nodes)
       this._refMap = refMap
       return {nodes}
     })
@@ -129,12 +122,7 @@ class ElementTreePanelContent extends React.PureComponent<Props, State> {
     if (!this._refMap.has(node)) return
     this.setState(state => {
       const path = this._refMap.get(node)
-      const {nodes, refMap} = this._addNodeData(
-        node,
-        path,
-        state.nodes,
-        this._refMap,
-      )
+      const {nodes, refMap} = this._addNodeData(node, path, state.nodes, this._refMap)
       this._refMap = refMap
       return {nodes}
     })
@@ -151,12 +139,7 @@ class ElementTreePanelContent extends React.PureComponent<Props, State> {
     }
   }
 
-  _addNodeData(
-    node: Object,
-    containerPath: Path,
-    originalNodes: Object,
-    refMap: Object,
-  ) {
+  _addNodeData(node: Object, containerPath: Path, originalNodes: Object, refMap: Object) {
     const path = containerPath.concat(generateUniqueID())
     const data = this._prepareNodeData(node, path)
     const modifiedNodes = set(path, data, originalNodes)
@@ -168,10 +151,7 @@ class ElementTreePanelContent extends React.PureComponent<Props, State> {
     const {stateNode} = reactObject
     return {
       data: {
-        componentId: stateNode.getComponentId
-          ? stateNode.getComponentId()
-          : null,
-        componentType: stateNode.componentType,
+        componentId: stateNode.getComponentId ? stateNode.getComponentId() : null,
       },
       isExpanded: true,
       path,

@@ -51,8 +51,7 @@ class TimeBar extends React.PureComponent<Props, State> {
     const focusDuration = focusBeforeMove[1] - focusBeforeMove[0]
     let newFocus = [newFocusLeft, newFocusRight]
     if (newFocusLeft < 0) newFocus = [0, focusDuration]
-    if (newFocusRight > panelTime)
-      newFocus = [panelTime - focusDuration, panelTime]
+    if (newFocusRight > panelTime) newFocus = [panelTime - focusDuration, panelTime]
     this.changeFocus(newFocus)
   }
 

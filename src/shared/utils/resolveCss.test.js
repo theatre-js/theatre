@@ -40,11 +40,7 @@ describe('common/utils/resolveCss()', () => {
       ['container', 'hover'],
       'c1 c2 h1',
     )
-    example(
-      [{container: 'c1'}, {container: '!override'}],
-      ['container', 'hover'],
-      '',
-    )
+    example([{container: 'c1'}, {container: '!override'}], ['container', 'hover'], '')
     example(
       [{container: 'c1'}, {container: 'c2 !override'}],
       ['container', 'hover'],

@@ -37,8 +37,7 @@ class App extends React.Component<Props, *> {
 
     if (process.env.NODE_ENV === 'development' && module.hot) {
       module.hot.accept('./HotReloadablePartOfApp', () => {
-        const HotReloadablePartOfApp = require('./HotReloadablePartOfApp')
-          .default
+        const HotReloadablePartOfApp = require('./HotReloadablePartOfApp').default
         self.setState({HotReloadablePartOfApp})
       })
     }

@@ -60,8 +60,7 @@ export const propsTomakeReactiveComponent = {
       elRef: D.atoms.box(null),
     })
   },
-  modifyPrototypalDict: (dict: D.IPrototypalDict<$FixMe>) =>
-    dict.extend(lookupTable),
+  modifyPrototypalDict: (dict: D.IPrototypalDict<$FixMe>) => dict.extend(lookupTable),
 }
 
 const DOMTag = makeReactiveComponent(propsTomakeReactiveComponent)

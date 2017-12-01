@@ -8,8 +8,7 @@ const UPDATE_NEEDED_FROM = {
   inner: 2,
 }
 
-export class FlatMapDerivation extends AbstractDerivation
-  implements IDerivation<$FixMe> {
+export class FlatMapDerivation extends AbstractDerivation implements IDerivation<$FixMe> {
   _updateNeededFromIndex: number
   _stackOfDependencies: Array<IDerivation<$IntentionalAny>>
   _fn: $FixMe
@@ -17,10 +16,7 @@ export class FlatMapDerivation extends AbstractDerivation
   _innerDerivation: ?IDerivation<$IntentionalAny>
   _updateNeededFrom: $Values<typeof UPDATE_NEEDED_FROM>
 
-  constructor(
-    depDerivation: IDerivation<$FixMe>,
-    fn: $FixMe,
-  ): IDerivation<$FixMe> {
+  constructor(depDerivation: IDerivation<$FixMe>, fn: $FixMe): IDerivation<$FixMe> {
     super()
     this._fn = fn
     this._depDerivation = depDerivation
@@ -97,10 +93,7 @@ export class FlatMapDerivation extends AbstractDerivation
       }
     }
 
-    AbstractDerivation.prototype._youMayNeedToUpdateYourself.call(
-      this,
-      msgComingFrom,
-    )
+    AbstractDerivation.prototype._youMayNeedToUpdateYourself.call(this, msgComingFrom)
   }
 
   _removeInnerDerivation() {

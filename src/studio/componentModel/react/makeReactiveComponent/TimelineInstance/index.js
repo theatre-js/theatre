@@ -37,12 +37,11 @@ export default class TimelineInstance {
 
   valueFor(varId: string) {
     const varDescP = this._descriptorP.prop('vars').prop(varId)
-    const valueInstance = new ValueInstance(
-      varDescP,
-      this._timeP,
-      this._studio,
-      [...this._pathToTimelineDescriptor, 'vars', varId],
-    )
+    const valueInstance = new ValueInstance(varDescP, this._timeP, this._studio, [
+      ...this._pathToTimelineDescriptor,
+      'vars',
+      varId,
+    ])
     return valueInstance.derivation()
   }
 }

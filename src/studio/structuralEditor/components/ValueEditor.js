@@ -46,7 +46,9 @@ export default connect((s, ownProps) => {
     if (process.env.NODE_ENV === 'development') {
       const value = get(s, ownProps.path)
       if (!value || value.__descriptorType !== typeName) {
-        throw new Error(`The value's __descriptorType doesn't match the required typeName`)
+        throw new Error(
+          `The value's __descriptorType doesn't match the required typeName`,
+        )
       }
     }
 

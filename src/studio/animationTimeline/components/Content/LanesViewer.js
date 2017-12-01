@@ -128,11 +128,7 @@ class LanesViewer extends React.PureComponent<Props, State> {
     this.props.dispatch(setPointPositionTo, laneId, pointIndex, newPosition)
   }
 
-  changePointPositionBy = (
-    laneId: LaneID,
-    pointIndex: number,
-    change: PointPosition,
-  ) => {
+  changePointPositionBy = (laneId: LaneID, pointIndex: number, change: PointPosition) => {
     this.props.dispatch(
       changePointPositionBy,
       laneId,
@@ -141,11 +137,7 @@ class LanesViewer extends React.PureComponent<Props, State> {
     )
   }
 
-  changePointHandlesBy = (
-    laneId: LaneID,
-    pointIndex: number,
-    change: PointHandles,
-  ) => {
+  changePointHandlesBy = (laneId: LaneID, pointIndex: number, change: PointHandles) => {
     this.props.dispatch(
       changePointHandlesBy,
       laneId,
@@ -162,27 +154,15 @@ class LanesViewer extends React.PureComponent<Props, State> {
     this.props.dispatch(removeConnector, laneId, pointIndex)
   }
 
-  makeHandleHorizontal = (
-    laneId: LaneID,
-    pointIndex: number,
-    side: 'left' | 'right',
-  ) => {
+  makeHandleHorizontal = (laneId: LaneID, pointIndex: number, side: 'left' | 'right') => {
     this.props.dispatch(makeHandleHorizontal, laneId, pointIndex, side)
   }
 
-  makeHandlesParallel = (
-    laneId: LaneID,
-    pointIndex: number,
-    side: 'left' | 'right',
-  ) => {
+  makeHandlesParallel = (laneId: LaneID, pointIndex: number, side: 'left' | 'right') => {
     this.props.dispatch(makeHandlesParallel, laneId, pointIndex, side)
   }
 
-  makeHandlesEqual = (
-    laneId: LaneID,
-    pointIndex: number,
-    side: 'left' | 'right',
-  ) => {
+  makeHandlesEqual = (laneId: LaneID, pointIndex: number, side: 'left' | 'right') => {
     this.props.dispatch(makeHandlesEqual, laneId, pointIndex, side)
   }
 
@@ -271,9 +251,7 @@ class LanesViewer extends React.PureComponent<Props, State> {
               className={cx(css.title, {
                 [css.activeTitle]: multiLanes && id === activeLaneId,
               })}
-              {...(multiLanes
-                ? {onClick: e => this.titleClickHandler(e, id)}
-                : {})}
+              {...(multiLanes ? {onClick: e => this.titleClickHandler(e, id)} : {})}
             >
               <div className={css.componentName}>{component}</div>
               <div
@@ -317,9 +295,7 @@ class LanesViewer extends React.PureComponent<Props, State> {
                 makeHandleHorizontal={(index, side) =>
                   this.makeHandleHorizontal(id, index, side)
                 }
-                makeHandlesEqual={(index, side) =>
-                  this.makeHandlesEqual(id, index, side)
-                }
+                makeHandlesEqual={(index, side) => this.makeHandlesEqual(id, index, side)}
                 makeHandlesParallel={(index, side) =>
                   this.makeHandlesParallel(id, index, side)
                 }

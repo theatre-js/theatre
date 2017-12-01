@@ -196,19 +196,13 @@ class Panel extends React.Component<Props, State> {
     }
 
     this.props.dispatch(
-      reduceStateAction(
-        ['workspace', 'panels', 'currentlyDraggingOutput'],
-        () => data,
-      ),
+      reduceStateAction(['workspace', 'panels', 'currentlyDraggingOutput'], () => data),
     )
   }
 
   clearCurrentlyDraggingOutput = () => {
     this.props.dispatch(
-      reduceStateAction(
-        ['workspace', 'panels', 'currentlyDraggingOutput'],
-        () => null,
-      ),
+      reduceStateAction(['workspace', 'panels', 'currentlyDraggingOutput'], () => null),
     )
   }
 
@@ -265,12 +259,8 @@ class Panel extends React.Component<Props, State> {
                   inputs={inputs}
                   currentlyDraggingOutput={currentlyDraggingOutput}
                   setCurrentlyDraggingOutput={this.setCurrentlyDraggingOutput}
-                  clearCurrentlyDraggingOutput={
-                    this.clearCurrentlyDraggingOutput
-                  }
-                  updatePanelInput={newData =>
-                    this.updatePanelData('inputs', newData)
-                  }
+                  clearCurrentlyDraggingOutput={this.clearCurrentlyDraggingOutput}
+                  updatePanelInput={newData => this.updatePanelData('inputs', newData)}
                   updatePanelConfig={newData =>
                     this.updatePanelData('configuration', newData)
                   }
@@ -283,9 +273,7 @@ class Panel extends React.Component<Props, State> {
                 panelDimensions={dim}
                 outputs={outputs}
                 inputs={inputs}
-                updatePanelOutput={newData =>
-                  this.updatePanelData('outputs', newData)
-                }
+                updatePanelOutput={newData => this.updatePanelData('outputs', newData)}
               />
             )}
           </div>

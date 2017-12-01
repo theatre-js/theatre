@@ -33,19 +33,11 @@ export function domAttrSetter(
     let ns = isSvg && name !== (name = name.replace(/^xlink:?/, ''))
     return (value: $FixMe) => {
       if (value == null || value === false) {
-        if (ns)
-          node.removeAttributeNS(
-            'http://www.w3.org/1999/xlink',
-            name.toLowerCase(),
-          )
+        if (ns) node.removeAttributeNS('http://www.w3.org/1999/xlink', name.toLowerCase())
         else node.removeAttribute(name)
       } else if (typeof value !== 'function') {
         if (ns)
-          node.setAttributeNS(
-            'http://www.w3.org/1999/xlink',
-            name.toLowerCase(),
-            value,
-          )
+          node.setAttributeNS('http://www.w3.org/1999/xlink', name.toLowerCase(), value)
         else node.setAttribute(name, value)
       }
     }
