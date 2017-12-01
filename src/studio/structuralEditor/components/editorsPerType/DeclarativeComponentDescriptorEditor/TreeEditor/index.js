@@ -253,7 +253,7 @@ class TreeEditor extends React.PureComponent<Props, State> {
     const {isAddingNewChild} = this.state
     return (
       <div className={css.container}>
-        <PanelSection withHorizontalMargin={false} label="RenderTree">
+        <PanelSection withHorizontalMargin={false} label="Render Tree">
           <div
             ref={c => (this.container = c)}
             className={cx(css.treeContainer, {[css.noScroll]: isAddingNewChild})}
