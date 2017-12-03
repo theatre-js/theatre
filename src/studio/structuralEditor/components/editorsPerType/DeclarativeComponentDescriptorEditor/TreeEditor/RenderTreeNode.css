@@ -1,36 +1,41 @@
+@value gap: 3px;
+@value indent: 8px;
+
 .container {
   position: relative;
-  --indent: calc(var(--depth) * 8px);
   --color: calc(var(--depth) * 20 + 45);
-  padding: 1px 0;
-  margin: 2px 0;
+  background: rgb(var(--color), var(--color), var(--color));
+  border-radius: 2px;
 
-  &:before {
-    display: block;
-    content: ' ';
-    position: absolute 0 0 0 var(--indent);
-    background: rgb(var(--color), var(--color), var(--color));
-    border-radius: 2px;
+  &.notRoot {
+    left: 16px;
+    width: calc(100% - 17px);
   }
 }
 
 .contentContainer {
   position: relative;
-  height: 30px;
 }
 
 .content {
-  position: absolute 0 0 0 var(--indent);
+  position: relative;
+  left: indent;
+  width: calc(100% - indent);
+  height: 30px;
   display: flex;
   align-items: flex-end;
-  padding-left: 16px;
   font-weight: 400;
   color: #eee;
 }
 
 .content > input {
-  width: calc(100% - 16px);
+  width: calc(100% - indent);
   display: flex;
   align-self: center;
   border-bottom: 1px solid rgba(255, 255, 255, .2);
+}
+
+.childContainer {
+  width: 100%;
+  padding-bottom: gap;
 }
