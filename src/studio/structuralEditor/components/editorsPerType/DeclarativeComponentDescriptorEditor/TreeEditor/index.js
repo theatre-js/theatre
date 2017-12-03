@@ -1,12 +1,10 @@
 // @flow
-import {React, compose, connect, reduceStateAction} from '$studio/handy'
+import {React, compose, connect, reduceStateAction, multiReduceStateAction} from '$studio/handy'
 import css from './index.css'
 import PanelSection from '$studio/structuralEditor/components/reusables/PanelSection'
 import * as _ from 'lodash'
 import generateUniqueId from 'uuid/v4'
-import cx from 'classnames'
 import RenderTreeNode from './RenderTreeNode'
-import TagsList from './TagsList'
 
 type Props = {
   pathToComponentDescriptor: Array<string>,
@@ -15,9 +13,7 @@ type Props = {
 }
 
 type State = {
-  isAddingNewChild: boolean,
-  parentOfChildBeingAdded: ?string,
-  containerScrollTop: number,
+  isCommandPressed: boolean,
 }
 
 class TreeEditor extends React.PureComponent<Props, State> {
@@ -30,9 +26,36 @@ class TreeEditor extends React.PureComponent<Props, State> {
 
     this.refMap = {}
     this.state = {
-      isAddingNewChild: false,
-      parentOfChildBeingAdded: null,
+      isCommandPressed: false,
     }
+  }
+
+  componentDidMount() {
+    document.addEventListener('keyup', this.keyUpHandler)
+    document.addEventListener('keydown', this.keyDownHandler)
+    document.addEventListener('visibilitychange', this.visibilityChangeHandler)
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('keyup', this.keyUpHandler)
+    document.removeEventListener('keydown', this.keyDownHandler)
+    document.removeEventListener('visibilitychange', this.visibilityChangeHandler)
+  }
+
+  keyUpHandler = e => {
+    if (e.key === 'Meta' || e.key === 'Control') {
+      this.setState(() => ({isCommandPressed: false}))
+    }
+  }
+
+  keyDownHandler = e => {
+    if (e.key === 'Meta' || e.key === 'Control') {
+      this.setState(() => ({isCommandPressed: true}))
+    }
+  }
+
+  visibilityChangeHandler = () => {
+    this.setState(() => ({isCommandPressed: false}))
   }
 
   addToRefMap = (id: string, obj: Object) => {
@@ -161,43 +184,21 @@ class TreeEditor extends React.PureComponent<Props, State> {
     )
   }
 
-  showTagsList = id => {
-    this.setState(() => {
-      const scrollTopValue = this.container.scrollTop
-      this.container.scrollTop = 0
-      return {
-        isAddingNewChild: true,
-        parentOfChildBeingAdded: id,
-        containerScrollTop: scrollTopValue,
-      }
-    })
-  }
-
-  hideTagsList() {
-    this.setState(state => {
-      this.container.scrollTop = state.containerScrollTop
-      return {
-        isAddingNewChild: false,
-        parentOfChildBeingAdded: null,
-        containerScrollTop: 0,
-      }
-    })
-  }
-
-  addChildToNode = type => {
-    const {parentOfChildBeingAdded: id} = this.state
+  addChildToNode = (id, index) => {
     const {dispatch, pathToComponentDescriptor} = this.props
     const childId = generateUniqueId()
-    let tag = type
+    // let tag = type
+    let tag = 'div'
     let children = []
-    if (type === 'div with text') {
-      tag = 'div'
-      children = ''
-    }
+    // if (type === 'div with text') {
+    //   tag = 'div'
+    //   children = ''
+    // }
     dispatch(
-      reduceStateAction(
-        pathToComponentDescriptor.concat('localHiddenValuesById'),
-        values => {
+      multiReduceStateAction(
+      [{
+        path: pathToComponentDescriptor.concat('localHiddenValuesById'),
+        reducer: values => {
           const child = {
             __descriptorType: 'ComponentInstantiationValueDescriptor',
             componentId: 'TheaterJS/Core/HTML/' + tag,
@@ -212,23 +213,21 @@ class TreeEditor extends React.PureComponent<Props, State> {
           }
           return {...values, [childId]: child}
         },
-      ),
-    )
-    dispatch(
-      reduceStateAction(
-        pathToComponentDescriptor.concat('localHiddenValuesById', id),
-        node => {
+      },
+      {
+        path: pathToComponentDescriptor.concat('localHiddenValuesById', id),
+        reducer: node => {
           const child = {
             __descriptorType: 'ReferenceToLocalHiddenValue',
             which: childId,
           }
           const {children} = node.props
-          node.props.children = [child, ...children]
+          node.props.children = [...children.slice(0, index), child, ...children.slice(index)]
           return node
         },
-      ),
+      }]
+      )
     )
-    this.hideTagsList()
   }
 
   updateTextChildContent = (id, newContent) => {
@@ -250,25 +249,25 @@ class TreeEditor extends React.PureComponent<Props, State> {
 
   render() {
     const {componentDescriptor, pathToComponentDescriptor} = this.props
-    const {isAddingNewChild} = this.state
+    const {isCommandPressed} = this.state
     return (
       <div className={css.container}>
         <PanelSection withHorizontalMargin={false} label="Render Tree">
           <div
             ref={c => (this.container = c)}
-            className={cx(css.treeContainer, {[css.noScroll]: isAddingNewChild})}
+            className={css.treeContainer}
           >
-            {isAddingNewChild && <TagsList onClick={this.addChildToNode} />}
             <RenderTreeNode
               descriptor={componentDescriptor.whatToRender}
               moveNode={this.moveNode}
               deleteNode={this.deleteNode}
-              addChildToNode={this.showTagsList}
+              addChildToNode={this.addChildToNode}
               updateTextChildContent={this.updateTextChildContent}
               rootPath={pathToComponentDescriptor}
               parentPath={pathToComponentDescriptor}
               addToRefMap={this.addToRefMap}
               getLocalHiddenValue={this.getLocalHiddenValue}
+              isCommandPressed={isCommandPressed}
             />
           </div>
         </PanelSection>

@@ -3,10 +3,13 @@
 
 .container {
   position: relative;
+  left: 1px;
+  width: calc(100% - 2px);
+
   --color: calc(var(--depth) * 20 + 45);
   background: rgb(var(--color), var(--color), var(--color));
   border-radius: 2px;
-
+  
   &.notRoot {
     left: 16px;
     width: calc(100% - 17px);
@@ -15,13 +18,14 @@
 
 .contentContainer {
   position: relative;
+  padding-bottom: gap;
 }
 
 .content {
   position: relative;
   left: indent;
   width: calc(100% - indent);
-  height: 30px;
+  height: 27px;
   display: flex;
   align-items: flex-end;
   font-weight: 400;

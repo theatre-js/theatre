@@ -27,7 +27,6 @@ type Props = OwnProps & {
 type State = {
   isContextMenuVisible: boolean,
   newChildIndex: ?number,
-  isCommandPressed: boolean,
 }
 
 class RenderTreeNode extends React.PureComponent<Props, State> {
@@ -37,28 +36,13 @@ class RenderTreeNode extends React.PureComponent<Props, State> {
     this.state = {
       isContextMenuVisible: false,
       newChildIndex: null,
-      isCommandPressed: false,
     }
   }
 
-  componentDidMount() {
-    document.addEventListener('keyup', e => {
-      if (e.key === 'Meta' || e.key === 'Control') {
-        this.setState(() => ({isCommandPressed: false, newChildIndex: null}))
-      }
-    })
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Meta' || e.key === 'Control') {
-        this.setState(() => ({isCommandPressed: true}))
-      }
-    })
-    document.addEventListener('visibilitychange', () => {
-      this.setState(() => ({isCommandPressed: false, newChildIndex: null}))
-    })
-  }
-
-  componentWillUnmount() {
-    // remove listeners!
+  componentWillReceiveProps(nextProps) {
+    if (!nextProps.isCommandPressed) {
+      this.setState(() => ({newChildIndex: null}))
+    }
   }
 
   _getNodeContentAndChildren(descriptor) {
@@ -76,7 +60,7 @@ class RenderTreeNode extends React.PureComponent<Props, State> {
         nodePath = this.props.rootPath.concat('localHiddenValuesById', which)
         nodeId = which
         const renderValue = getLocalHiddenValue(which)
-        if (renderValue.__descriptorType === 'ComponentInstantiationValueDescriptor') {
+        if (renderValue && renderValue.__descriptorType === 'ComponentInstantiationValueDescriptor') {
           nodeChildren = [].concat(renderValue.props.children)
           nodeContent = getComponentDescriptor(renderValue.componentId).displayName
         }
@@ -111,8 +95,12 @@ class RenderTreeNode extends React.PureComponent<Props, State> {
   }
 
   _addChildToNode = id => {
-    this.props.addChildToNode(id)
-    this._toggleContextMenu()
+    this.setState(state => {
+      this.props.addChildToNode(id, state.newChildIndex)
+      return {
+        newChildIndex: null,
+      }
+    })
   }
 
   resetNewChildIndex = () => {
@@ -131,6 +119,7 @@ class RenderTreeNode extends React.PureComponent<Props, State> {
 
   render() {
     const {props, state} = this
+    const {newChildIndex} = state
     const {
       addToRefMap,
       getLocalHiddenValue,
@@ -141,8 +130,8 @@ class RenderTreeNode extends React.PureComponent<Props, State> {
       deleteNode,
       addChildToNode,
       updateTextChildContent,
+      isCommandPressed,
     } = props
-    const {newChildIndex, isCommandPressed} = state
 
     const {
       nodeId,
@@ -165,13 +154,22 @@ class RenderTreeNode extends React.PureComponent<Props, State> {
       })
     }
 
+    const acceptsChild =
+      isCommandPressed &&
+      nodeType === 'tag' &&
+      typeof nodeChildren[0] !== 'string'
+
     return (
-      <div className={cx(css.container, {[css.notRoot]: depth > 0})} style={{'--depth': depth}}>
+      <div
+        className={cx(css.container, {[css.notRoot]: depth > 0})}
+        style={{'--depth': depth}}
+      >
         <div
           className={css.contentContainer}
           onMouseEnter={this.mouseEnterHandler}
           onMouseMove={e => this.mouseMoveHandler(e, 0)}
-          onMouseLeave={this.resetNewChildIndex}>
+          onMouseLeave={this.resetNewChildIndex}
+        >
           <div
             {...(nodePath != null
               ? {
@@ -186,7 +184,13 @@ class RenderTreeNode extends React.PureComponent<Props, State> {
             style={{cursor: 'pointer'}}
           >
             {nodeType === 'tag' ? (
-              nodeContent
+              <div>
+                <span>&lt;</span>
+                <span>{nodeContent}</span>
+                <span>&gt;</span>
+                <span>&nbsp;</span>
+                <span><i>class</i></span>
+              </div>
             ) : (
               <input
                 value={nodeContent}
@@ -199,48 +203,44 @@ class RenderTreeNode extends React.PureComponent<Props, State> {
               />
             )}
           </div>
-          {isCommandPressed && newChildIndex === 0 && <AddBar />}
+          <AddBar shouldRender={acceptsChild && newChildIndex === 0} depth={depth + 1} onClick={() => this._addChildToNode(nodeId)}/>
         </div>
         {nodeId &&
           this.state.isContextMenuVisible && (
             <ContextMenu
               {...(depth !== 0 ? {onMove: dir => this._moveNode(nodeId, dir)} : {})}
               {...(depth !== 0 ? {onDelete: () => this._deleteNode(nodeId)} : {})}
-              {...(nodeChildren.length === 0 || typeof nodeChildren[0] !== 'string'
-                ? {onAddChild: () => this._addChildToNode(nodeId)}
-                : {})}
               depth={depth}
             />
           )}
         {nodeChildren.length > 0 &&
-            nodeChildren.map((cd, i) => {
-              return (
-                <div
-                  key={i}
-                  className={css.childContainer}
-                  onMouseEnter={this.mouseEnterHandler}
-                  onMouseMove={e => this.mouseMoveHandler(e, i + 1)}
-                  onMouseLeave={this.resetNewChildIndex}>
-                  <WrappedRenderTreeNode
-                    descriptor={cd}
-                    depth={depth + 1}
-                    rootPath={rootPath}
-                    parentPath={nodePath}
-                    getLocalHiddenValue={getLocalHiddenValue}
-                    addToRefMap={addToRefMap}
-                    moveNode={moveNode}
-                    deleteNode={deleteNode}
-                    addChildToNode={addChildToNode}
-                    updateTextChildContent={updateTextChildContent}
-                    onMouseEnter={this.resetNewChildIndex}
-                  />
-                  {isCommandPressed && i + 1 === newChildIndex &&
-                    <AddBar />
-                  }
-                </div>
-              )
-            })
-        }
+          nodeChildren.map((cd, i) => {
+            return (
+              <div
+                key={i}
+                className={css.childContainer}
+                onMouseEnter={this.mouseEnterHandler}
+                onMouseMove={e => this.mouseMoveHandler(e, i + 1)}
+                onMouseLeave={this.resetNewChildIndex}
+              >
+                <WrappedRenderTreeNode
+                  descriptor={cd}
+                  depth={depth + 1}
+                  rootPath={rootPath}
+                  parentPath={nodePath}
+                  getLocalHiddenValue={getLocalHiddenValue}
+                  addToRefMap={addToRefMap}
+                  moveNode={moveNode}
+                  deleteNode={deleteNode}
+                  addChildToNode={addChildToNode}
+                  updateTextChildContent={updateTextChildContent}
+                  onMouseEnter={this.resetNewChildIndex}
+                  isCommandPressed={isCommandPressed}
+                />
+                <AddBar shouldRender={acceptsChild && newChildIndex === i + 1} depth={depth + 1} onClick={() => this._addChildToNode(nodeId)}/>
+              </div>
+            )
+          })}
       </div>
     )
   }

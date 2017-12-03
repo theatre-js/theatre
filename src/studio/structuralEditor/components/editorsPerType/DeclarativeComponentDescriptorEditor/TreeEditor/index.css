@@ -9,6 +9,7 @@
   max-height: 40%;
   overflow-x: hidden;
   overflow-y: scroll;
+  padding-bottom: 10px;
 }
 
 .noScroll {
