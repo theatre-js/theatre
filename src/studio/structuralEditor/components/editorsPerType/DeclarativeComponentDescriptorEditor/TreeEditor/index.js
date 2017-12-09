@@ -1,10 +1,17 @@
 // @flow
-import {React, compose, connect, reduceStateAction, multiReduceStateAction} from '$studio/handy'
+import {
+  React,
+  compose,
+  connect,
+  reduceStateAction,
+  multiReduceStateAction,
+} from '$studio/handy'
 import css from './index.css'
 import PanelSection from '$studio/structuralEditor/components/reusables/PanelSection'
 import * as _ from 'lodash'
 import generateUniqueId from 'uuid/v4'
 import RenderTreeNode from './RenderTreeNode'
+import cx from 'classnames'
 
 type Props = {
   pathToComponentDescriptor: Array<string>,
@@ -14,6 +21,7 @@ type Props = {
 
 type State = {
   isCommandPressed: boolean,
+  isInFront: boolean,
 }
 
 class TreeEditor extends React.PureComponent<Props, State> {
@@ -27,6 +35,7 @@ class TreeEditor extends React.PureComponent<Props, State> {
     this.refMap = {}
     this.state = {
       isCommandPressed: false,
+      isInFront: false,
     }
   }
 
@@ -59,6 +68,10 @@ class TreeEditor extends React.PureComponent<Props, State> {
   }
 
   addToRefMap = (id: string, obj: Object) => {
+    // if (this.container && this.refMap[id] == null) {
+    //   const currentHeight = parseInt(this.container.style.minHeight) || 0
+    //   this.container.style.minHeight = `${currentHeight + 30}px`
+    // }
     this.refMap[id] = {...this.refMap[id], ...obj}
   }
 
@@ -195,38 +208,42 @@ class TreeEditor extends React.PureComponent<Props, State> {
     //   children = ''
     // }
     dispatch(
-      multiReduceStateAction(
-      [{
-        path: pathToComponentDescriptor.concat('localHiddenValuesById'),
-        reducer: values => {
-          const child = {
-            __descriptorType: 'ComponentInstantiationValueDescriptor',
-            componentId: 'TheaterJS/Core/HTML/' + tag,
-            props: {
-              key: childId,
-              children,
-            },
-            modifierInstantiationDescriptors: {
-              byId: {},
-              list: [],
-            },
-          }
-          return {...values, [childId]: child}
+      multiReduceStateAction([
+        {
+          path: pathToComponentDescriptor.concat('localHiddenValuesById'),
+          reducer: values => {
+            const child = {
+              __descriptorType: 'ComponentInstantiationValueDescriptor',
+              componentId: 'TheaterJS/Core/HTML/' + tag,
+              props: {
+                key: childId,
+                children,
+              },
+              modifierInstantiationDescriptors: {
+                byId: {},
+                list: [],
+              },
+            }
+            return {...values, [childId]: child}
+          },
         },
-      },
-      {
-        path: pathToComponentDescriptor.concat('localHiddenValuesById', id),
-        reducer: node => {
-          const child = {
-            __descriptorType: 'ReferenceToLocalHiddenValue',
-            which: childId,
-          }
-          const {children} = node.props
-          node.props.children = [...children.slice(0, index), child, ...children.slice(index)]
-          return node
+        {
+          path: pathToComponentDescriptor.concat('localHiddenValuesById', id),
+          reducer: node => {
+            const child = {
+              __descriptorType: 'ReferenceToLocalHiddenValue',
+              which: childId,
+            }
+            const {children} = node.props
+            node.props.children = [
+              ...children.slice(0, index),
+              child,
+              ...children.slice(index),
+            ]
+            return node
+          },
         },
-      }]
-      )
+      ]),
     )
   }
 
@@ -247,28 +264,37 @@ class TreeEditor extends React.PureComponent<Props, State> {
     return this.props.componentDescriptor.localHiddenValuesById[id]
   }
 
+  bringToFront = () => {
+    this.setState(() => ({isInFront: true}))
+  }
+
+  sendToBack = () => {
+    this.setState(() => ({isInFront: false}))
+  }
+
   render() {
     const {componentDescriptor, pathToComponentDescriptor} = this.props
-    const {isCommandPressed} = this.state
+    const {isCommandPressed, isInFront} = this.state
     return (
       <div className={css.container}>
         <PanelSection withHorizontalMargin={false} label="Render Tree">
-          <div
-            ref={c => (this.container = c)}
-            className={css.treeContainer}
-          >
-            <RenderTreeNode
-              descriptor={componentDescriptor.whatToRender}
-              moveNode={this.moveNode}
-              deleteNode={this.deleteNode}
-              addChildToNode={this.addChildToNode}
-              updateTextChildContent={this.updateTextChildContent}
-              rootPath={pathToComponentDescriptor}
-              parentPath={pathToComponentDescriptor}
-              addToRefMap={this.addToRefMap}
-              getLocalHiddenValue={this.getLocalHiddenValue}
-              isCommandPressed={isCommandPressed}
-            />
+          <div className={css.treeWrapper}>
+            <div ref={c => this.container = c} className={cx(css.treeContainer, {[css.inFront]: isInFront})}>
+              <RenderTreeNode
+                descriptor={componentDescriptor.whatToRender}
+                moveNode={this.moveNode}
+                deleteNode={this.deleteNode}
+                addChildToNode={this.addChildToNode}
+                updateTextChildContent={this.updateTextChildContent}
+                rootPath={pathToComponentDescriptor}
+                parentPath={pathToComponentDescriptor}
+                addToRefMap={this.addToRefMap}
+                getLocalHiddenValue={this.getLocalHiddenValue}
+                isCommandPressed={isCommandPressed}
+                bringParentToFront={this.bringToFront}
+                sendParentToBack={this.sendToBack}
+              />
+            </div>
           </div>
         </PanelSection>
       </div>

@@ -3,13 +3,21 @@
   padding: 0;
 }
 
-.treeContainer {
+.treeWrapper {
   position: relative;
   width: 100%;
-  max-height: 40%;
+  height: 25%;
+  overflow-y: auto;
   overflow-x: hidden;
-  overflow-y: scroll;
-  padding-bottom: 10px;
+}
+
+.treeContainer {
+  position: relative;
+  padding-bottom: 30px;
+
+  &.inFront {
+    padding-bottom: 100%;
+  }
 }
 
 .noScroll {

@@ -3,6 +3,7 @@ import * as React from 'react'
 
 type Props = {
   children: any,
+  withShift: boolean,
   onDragStart?: Function,
   onDragEnd?: Function,
   onDrag?: Function,
@@ -43,7 +44,10 @@ class DraggableArea extends React.Component<Props, State> {
   }
 
   dragStartHandler = (e: SyntheticMouseEvent<*>) => {
+    if (this.props.withShift && !e.shiftKey) return
     if (e.button !== 0) return
+    e.preventDefault()
+    e.stopPropagation()
 
     const {screenX, screenY} = e
     this.setState(() => ({
@@ -56,9 +60,9 @@ class DraggableArea extends React.Component<Props, State> {
 
   dragEndHandler = () => {
     this.removeDragListeners()
+    this.props.onDragEnd && this.props.onDragEnd()
     if (this.state.isDragging) {
       this.setState(() => ({isDragging: false}))
-      this.props.onDragEnd && this.props.onDragEnd()
     }
   }
 

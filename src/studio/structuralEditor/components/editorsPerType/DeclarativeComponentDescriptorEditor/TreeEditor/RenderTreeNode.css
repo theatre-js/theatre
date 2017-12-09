@@ -10,9 +10,28 @@
   background: rgb(var(--color), var(--color), var(--color));
   border-radius: 2px;
   
+  --height: auto;
+  /*max-height: calc(var(--height) + 32px);*/
+  /*max-height: 200px;*/
+  transition: max-height .3s;
+  
+  pointer-events: auto;
+
   &.notRoot {
     left: 16px;
     width: calc(100% - 17px);
+  }
+
+  &.collapsed {
+    max-height: 30px;
+    overflow: hidden;
+    
+    --shadow: calc(var(--depth) * 20 + 10);
+    box-shadow: 0 0 50px 1px rgb(var(--shadow), var(--shadow), var(--shadow));
+  }
+
+  &.inFront {
+    z-index: 100;
   }
 }
 

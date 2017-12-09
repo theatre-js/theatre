@@ -44,17 +44,17 @@ class ElementTreePanelContent extends React.PureComponent<Props, State> {
     //     this.rendererID = id
     //   }
     // })
-    hook.sub('renderer', ({id}) => (this.rendererID = id))
+    hook.sub('renderer', ({id}) => {
+      this.rendererID = id
+    })
     hook.sub('mount', data => {
       if (data.renderer !== this.rendererID) return
       this._mountNode(data.internalInstance)
     })
-
     hook.sub('update', data => {
       if (data.renderer !== this.rendererID) return
       this._updateNode(data.internalInstance)
     })
-
     hook.sub('unmount', data => {
       if (data.renderer !== this.rendererID) return
       this._unmountNode(data.internalInstance)

@@ -16,10 +16,6 @@ const panelTypes = {
     label: 'Compose',
     components: require('$studio/composePanel'),
   },
-  x1: {
-    label: 'X1',
-    components: require('$studio/x1'),
-  },
 }
 
 export default panelTypes

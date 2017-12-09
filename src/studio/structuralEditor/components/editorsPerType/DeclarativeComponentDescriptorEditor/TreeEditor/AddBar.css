@@ -1,7 +1,7 @@
 .container {
   width: 100%;
   padding: 0;
-  height: 12px;
+  height: 30px;
   cursor: pointer;
   margin-top: 3px;
   border-radius: 2px;
@@ -22,7 +22,7 @@
   text-align: center;
   width: 16px;
   font-size: 14px;
-  line-height: 12px;
+  line-height: 30px;
   font-weight: 400;
   vertical-align: top;
   border-radius: 2px;
@@ -41,7 +41,7 @@
   display: inline-block;
   width: calc(100% - 17px);
   transform: scaleY(0.1);
-  transition: transform .25s cubic-bezier(0.175, 0.885, 0.32, 1.375);
+  transition: transform .2s cubic-bezier(0.175, 0.885, 0.32, 1.375);
   border-radius: 2px;
   background: rgb(var(--color), var(--color), var(--color));
 }

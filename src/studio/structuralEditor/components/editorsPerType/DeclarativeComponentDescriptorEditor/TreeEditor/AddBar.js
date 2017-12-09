@@ -5,6 +5,9 @@ import cx from 'classnames'
 
 type Props = {
   shouldRender: boolean,
+  depth: number,
+  onClick: Function,
+  onAnimationStart: Function,
 }
 
 type State = {
@@ -26,6 +29,7 @@ class AddBar extends React.Component<Props, State> {
 
   clickHandler = () => {
     if (this.state.isExpanding) return
+    this.props.onAnimationStart()
     this.toggleExpansionState()
     setTimeout(() => {
       this.toggleExpansionState()
@@ -37,15 +41,17 @@ class AddBar extends React.Component<Props, State> {
     const {props, state} = this
     const {shouldRender, depth} = props
     const {isExpanding} = state
-    
-    return (shouldRender || isExpanding) ? (
-      <div className={cx(css.container, {[css.expanded]: isExpanding})} style={{'--depth': depth}} onClick={this.clickHandler}>
+
+    return shouldRender || isExpanding ? (
+      <div
+        className={cx(css.container, {[css.expanded]: isExpanding})}
+        style={{'--depth': depth}}
+        onClick={this.clickHandler}
+      >
         {!isExpanding && <div className={css.plusSign}>&#x2b;</div>}
-        <div className={css.nodePlaceholder}></div>
+        <div className={css.nodePlaceholder} />
       </div>
-    ) : (
-      null
-    )
+    ) : null
   }
 }
 
