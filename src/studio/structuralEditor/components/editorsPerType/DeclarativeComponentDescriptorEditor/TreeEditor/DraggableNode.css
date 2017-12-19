@@ -1,0 +1,43 @@
+.staticContainer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 10000;
+  
+  height: 27px;
+  width: 100%;
+
+  pointer-events: none;
+}
+
+.dynamicContainer {
+  border-radius: 2px;
+  position: absolute;
+  height: 100%;
+  width: calc(100% - var(--depth) * 17px - 19px);
+  left: calc(var(--depth) * 16px + 17px);
+
+  --color: calc(var(--depth) * 20 + 65);
+  background: rgb(var(--color), var(--color), var(--color));
+
+  --shadow: calc(var(--depth) * 20 + 10);
+  box-shadow: 0 0 50px 5px rgb(var(--shadow), var(--shadow), var(--shadow));
+
+  transition: all ease-in-out .2s .1s;
+}
+
+.treeContainer {
+  position: absolute;
+  width: calc(100% + 16px);
+  top: 0;
+  left: -16px;
+  overflow: hidden;
+
+  animation: retract .5s forwards;
+  animation-timing-function: ease-in-out;
+}
+
+@keyframes retract {
+  from {height: var(--height);}
+  to {height: 0;}
+}

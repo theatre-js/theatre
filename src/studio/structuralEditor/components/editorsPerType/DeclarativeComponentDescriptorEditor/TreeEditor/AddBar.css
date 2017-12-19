@@ -1,47 +1,66 @@
 .container {
   width: 100%;
   padding: 0;
-  height: 30px;
+  /*height: 30px;*/
+  height: 0;
   cursor: pointer;
-  margin-top: 3px;
+  /*margin-top: 3px;*/
+  /*margin-bottom: 3px;*/
+  /*padding-bottom: 3px;*/
   border-radius: 2px;
   --color: calc(var(--depth) * 20 + 45);
+    
+  /*transition: height 5s;*/
 
-  &.expanded {
+  overflow: hidden;
+
+  /*&.visible {
     height: 30px;
   }
+/*  &.visible {
+    height: 30px;
+  }*/
+  animation: expand .2s .1s ease-in-out forwards;
 }
 
-.container:hover > .plusSign {
-  color: #FFF;
-  transform: scale(1.1);
+@keyframes expand {
+  from {height: 0}
+  to {height: 31px}
 }
 
-.plusSign {
+.sign {
   display: inline-block;
   text-align: center;
   width: 16px;
-  font-size: 14px;
-  line-height: 30px;
+  font-size: 10px;
+  line-height: 28px;
   font-weight: 400;
   vertical-align: top;
   border-radius: 2px;
   color: #DDD;
-  transition: transform .15s ease-in-out;
+}
+
+.plusSign {
+  font-size: 12px;
+  composes: sign;
+}
+
+.container:hover > .plusSign {
+  color: #FFF;
 }
 
 .expanded .nodePlaceholder {
-  transform: scale(1);
+  transform: scaleY(1);
   left: 16px;
 }
 
 .nodePlaceholder {
-  height: 100%;
+  height: 28px;
   position: relative;
   display: inline-block;
   width: calc(100% - 17px);
-  transform: scaleY(0.1);
-  transition: transform .2s cubic-bezier(0.175, 0.885, 0.32, 1.375);
+  transform: scaleY(0.11);
+  transition: transform .25s cubic-bezier(0.86, 0, 0.07, 1);
   border-radius: 2px;
   background: rgb(var(--color), var(--color), var(--color));
 }

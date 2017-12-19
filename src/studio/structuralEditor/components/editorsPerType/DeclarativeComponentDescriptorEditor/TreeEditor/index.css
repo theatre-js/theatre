@@ -6,7 +6,7 @@
 .treeWrapper {
   position: relative;
   width: 100%;
-  height: 25%;
+  height: 30%;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -15,11 +15,7 @@
   position: relative;
   padding-bottom: 30px;
 
-  &.inFront {
+  &.isDragging {
     padding-bottom: 100%;
   }
-}
-
-.noScroll {
-  overflow: hidden;
 }

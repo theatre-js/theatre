@@ -133,7 +133,7 @@ const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
   },
   localHiddenValuesById: {
     fontSize: '18px',
-    ...fakeNodes.allNodes,
+    // ...fakeNodes.allNodes,
     palaki: ({
       __descriptorType: 'ComponentInstantiationValueDescriptor',
       componentId: 'TheaterJS/Core/HTML/div',

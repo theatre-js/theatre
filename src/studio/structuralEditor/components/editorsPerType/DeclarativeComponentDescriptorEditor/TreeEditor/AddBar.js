@@ -4,10 +4,11 @@ import css from './AddBar.css'
 import cx from 'classnames'
 
 type Props = {
-  shouldRender: boolean,
   depth: number,
   onClick: Function,
   onAnimationStart: Function,
+  shouldRenderDropZone: boolean,
+  shouldRenderNodePlaceholder: boolean,
 }
 
 type State = {
@@ -38,18 +39,20 @@ class AddBar extends React.Component<Props, State> {
   }
 
   render() {
-    const {props, state} = this
-    const {shouldRender, depth} = props
-    const {isExpanding} = state
+    const {shouldRenderNodePlaceholder, shouldRenderDropZone, depth} = this.props
+    const {isExpanding} = this.state
 
-    return shouldRender || isExpanding ? (
+    const shouldRender = shouldRenderNodePlaceholder || shouldRenderDropZone || isExpanding
+
+    return shouldRender ? (
       <div
         className={cx(css.container, {[css.expanded]: isExpanding})}
         style={{'--depth': depth}}
         onClick={this.clickHandler}
       >
-        {!isExpanding && <div className={css.plusSign}>&#x2b;</div>}
-        <div className={css.nodePlaceholder} />
+        {!isExpanding && shouldRenderNodePlaceholder && <div className={css.plusSign}>&#x2b;</div>}
+        {!isExpanding && shouldRenderDropZone && <div className={css.sign}>&#x2192;</div>}
+        {!shouldRenderDropZone && <div className={css.nodePlaceholder} />}
       </div>
     ) : null
   }

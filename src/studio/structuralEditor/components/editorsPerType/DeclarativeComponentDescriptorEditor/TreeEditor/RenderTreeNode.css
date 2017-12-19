@@ -9,35 +9,38 @@
   --color: calc(var(--depth) * 20 + 45);
   background: rgb(var(--color), var(--color), var(--color));
   border-radius: 2px;
+  overflow: hidden;
   
-  --height: auto;
-  /*max-height: calc(var(--height) + 32px);*/
-  /*max-height: 200px;*/
-  transition: max-height .3s;
-  
-  pointer-events: auto;
-
   &.notRoot {
     left: 16px;
     width: calc(100% - 17px);
   }
+  
+  margin-bottom: gap;
+  padding-bottom: 1px;
+  max-height: auto;
 
   &.collapsed {
-    max-height: 30px;
-    overflow: hidden;
-    
-    --shadow: calc(var(--depth) * 20 + 10);
-    box-shadow: 0 0 50px 1px rgb(var(--shadow), var(--shadow), var(--shadow));
+    transition: all .5s ease-in-out, opacity 0s;
+    max-height: 0 !important;
+    padding: 0;
+    margin: 0;
+    pointer-events: none;
   }
 
-  &.inFront {
-    z-index: 100;
+  &.isExpanding {
+    animation: expand .3s;
+    animation-timing-function: ease-in-out;
   }
+}
+
+@keyframes expand {
+  from {max-height: 26px;}
+  to {max-height: var(--maxHeight);}
 }
 
 .contentContainer {
   position: relative;
-  padding-bottom: gap;
 }
 
 .content {
@@ -49,6 +52,13 @@
   align-items: flex-end;
   font-weight: 400;
   color: #eee;
+
+  /*animation: appear .1s;*/
+}
+
+@keyframes appear {
+  from {opacity: 0;}
+  to {opacity: 1;}
 }
 
 .content > input {
@@ -60,5 +70,4 @@
 
 .childContainer {
   width: 100%;
-  padding-bottom: gap;
 }

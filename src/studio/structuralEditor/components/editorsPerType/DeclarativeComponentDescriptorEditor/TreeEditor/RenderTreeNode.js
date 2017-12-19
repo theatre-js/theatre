@@ -1,11 +1,10 @@
 // @flow
-import {React, connect, reduceStateAction} from '$studio/handy'
+import {React, connect} from '$studio/handy'
 import {getComponentDescriptor} from '$studio/componentModel/selectors'
 import css from './RenderTreeNode.css'
 import ContextMenu from './ContextMenu'
 import AddBar from './AddBar'
 import cx from 'classnames'
-import DraggableArea from '$studio/common/components/DraggableArea'
 
 type OwnProps = {
   descriptor: Object,
@@ -16,10 +15,12 @@ type OwnProps = {
   moveNode: Function,
   deleteNode: Function,
   addChildToNode: Function,
-  updateTextChildContent: Function,
+  updateTextNodeContent: Function,
   depth?: number,
-  bringParentToFront?: Function,
-  sendParentToBack?: Function,
+  isANodeBeingDragged: boolean,
+  setActiveDropZone: Function,
+  unsetActiveDropZone: Function,
+  setNodeBeingDragged: Function,
 }
 
 type Props = OwnProps & {
@@ -32,8 +33,6 @@ type State = {
   isContextMenuVisible: boolean,
   newChildIndex: ?number,
   isBeingDragged: boolean,
-  isInFront: boolean,
-  moveY: number,
 }
 
 class RenderTreeNode extends React.PureComponent<Props, State> {
@@ -45,14 +44,31 @@ class RenderTreeNode extends React.PureComponent<Props, State> {
       isContextMenuVisible: false,
       newChildIndex: null,
       isBeingDragged: false,
-      moveY: 0,
-      isInFront: false,
+      height: 0,
+      top: 0,
+    }
+  }
+
+  componentDidMount() {
+    if (this.props.isANodeBeingDragged) {
+      this.setState(() => ({isExpanding: true, height: this.container.scrollHeight + 30}))  
     }
   }
 
   componentWillReceiveProps(nextProps) {
+    if (this.state.isExpanding && !nextProps.isANodeBeingDragged) {
+      setTimeout(() => {
+        this.container.style.maxHeight = 'auto'
+        this.setState(() => ({isExpanding: false, height: 0}))
+      }, 500)
+    }
+
     if (!nextProps.isCommandPressed && !this.state.isAddingNewChild) {
       this.setState(() => ({newChildIndex: null}))
+    }
+
+    if (!nextProps.isANodeBeingDragged && this.state.isBeingDragged) {
+      this.setState(() => ({isBeingDragged: false}))
     }
   }
 
@@ -67,17 +83,23 @@ class RenderTreeNode extends React.PureComponent<Props, State> {
     let nodeChildren = []
     if (descriptorType != null) {
       nodeType = 'tag'
+      let renderValue
       if (descriptorType === 'ReferenceToLocalHiddenValue') {
         nodePath = this.props.rootPath.concat('localHiddenValuesById', which)
         nodeId = which
-        const renderValue = getLocalHiddenValue(which)
-        if (
-          renderValue &&
-          renderValue.__descriptorType === 'ComponentInstantiationValueDescriptor'
-        ) {
-          nodeChildren = [].concat(renderValue.props.children)
-          nodeContent = getComponentDescriptor(renderValue.componentId).displayName
-        }
+        renderValue = getLocalHiddenValue(which)
+      }
+      if (descriptorType === 'ComponentInstantiationValueDescriptor') {
+        nodePath = this.props.rootPath
+        nodeId = descriptor.props.key
+        renderValue = descriptor
+      }
+      if (
+        renderValue &&
+        renderValue.__descriptorType === 'ComponentInstantiationValueDescriptor'
+      ) {
+        nodeChildren = [].concat(renderValue.props.children)
+        nodeContent = getComponentDescriptor(renderValue.componentId).displayName
       }
     } else {
       nodeType = 'text'
@@ -121,6 +143,7 @@ class RenderTreeNode extends React.PureComponent<Props, State> {
 
   resetNewChildIndex = () => {
     if (this.state.isAddingNewChild) return
+    this.props.unsetActiveDropZone()
     this.setState(() => ({newChildIndex: null}))
   }
 
@@ -129,36 +152,41 @@ class RenderTreeNode extends React.PureComponent<Props, State> {
     if (this.props.onMouseEnter) this.props.onMouseEnter()
   }
 
-  mouseMoveHandler = (e, newChildIndex) => {
+  mouseMoveHandler = (e, newChildIndex, nodeId) => {
     e.stopPropagation()
     if (this.state.newChildIndex === newChildIndex) return
+    if (this.props.isANodeBeingDragged) this.props.setActiveDropZone(nodeId, newChildIndex, this.props.depth || 0)
     this.setState(() => ({newChildIndex}))
   }
 
-  bringToFront = () => {
-    this.setState(() => ({isInFront: true}))
-    this.props.bringParentToFront()
-  }
+  mouseDownHandler = (e, nodeId, nodePath) => {
+    e.stopPropagation()
+    if (!e.shiftKey) return
+    const {setNodeBeingDragged, depth} = this.props
+    const {top, height} = this.container.getBoundingClientRect()
 
-  sendToBack = () => {
-    this.setState(() => ({isInFront: false}))
-    this.props.sendParentToBack()
+    this.container.style.maxHeight = `${height}px`
+    this.setState(() => ({isBeingDragged: true}))
+    setNodeBeingDragged({nodeId, nodePath, top, height, offsetY: e.nativeEvent.offsetY, depth})
   }
 
   render() {
     const {props, state} = this
-    const {newChildIndex, isBeingDragged, moveY, isInFront} = state
+    const {newChildIndex, isBeingDragged, height} = state
     const {
+      descriptor,
       addToRefMap,
       getLocalHiddenValue,
       rootPath,
-      descriptor,
-      dispatch,
       moveNode,
       deleteNode,
       addChildToNode,
-      updateTextChildContent,
+      updateTextNodeContent,
       isCommandPressed,
+      isANodeBeingDragged,
+      setNodeBeingDragged,
+      setActiveDropZone,
+      unsetActiveDropZone,
     } = props
 
     const {
@@ -183,59 +211,44 @@ class RenderTreeNode extends React.PureComponent<Props, State> {
       })
     }
 
-    const acceptsChild =
-      isCommandPressed && nodeType === 'tag' && typeof nodeChildren[0] !== 'string'
+    const acceptsChild = nodeType === 'tag' && typeof nodeChildren[0] !== 'string'
+    const isDraggable = depth > 0
 
     return (
-      <DraggableArea
-        withShift={true}
-        onDragStart={() => {
-          document.styleSheets[0].insertRule('* {cursor: -webkit-grab !important; pointer-events: none}', document.styleSheets[0].cssRules.length)
-          this.bringToFront()
-          this.setState(() => ({isBeingDragged: true}))
-        }}
-        onDrag={(_, y) => this.setState(() => ({moveY: y}))}
-        onDragEnd={() => {
-          document.styleSheets[0].deleteRule(document.styleSheets[0].cssRules.length - 1)
-          this.sendToBack()
-          this.setState(() => ({isBeingDragged: false, moveY: 0}))
-        }}
-      >
         <div
-        className={cx(css.container, {[css.collapsed]: isBeingDragged, [css.inFront]: isInFront, [css.notRoot]: depth > 0})}
-          style={{'--depth': depth, transform: `translateY(${moveY}px)`}}
-          // onMouseOver={() => console.log('over', nodeId)}
-          // onClick={e => {
-          //   e.stopPropagation()
-          //   if (e.shiftKey) return
-          //   e.persist()
-          //   // console.log('clicked', nodeId, e)
-          // }}
-          // onDrag={e => {
-          //   e.persist()
-          //   console.log(e.clientY)}}
-          // draggable={true}
-          // onDragOver={e => {
-          //   e.preventDefault()
-          //   e.stopPropagation()
-          //   console.log(nodeId)}
-          // }
+          className={cx(css.container, {
+            [css.collapsed]: (isBeingDragged && isANodeBeingDragged),
+            [css.isExpanding]: this.state.isExpanding,
+            [css.notRoot]: depth > 0,
+          })}
+          ref={c => this.container = c}
+          style={{
+            '--depth': depth,
+            // '--height': height > 0 ? height - 30 : 'auto',
+            '--maxHeight': height > 0 ? height : 'auto',
+          }}
         >
           <div
             className={css.contentContainer}
             onMouseEnter={this.mouseEnterHandler}
-            onMouseMove={e => this.mouseMoveHandler(e, 0)}
+            onMouseMove={e => this.mouseMoveHandler(e, 0, nodeId)}
             onMouseLeave={this.resetNewChildIndex}
+            {...(isDraggable ? {
+              onMouseDown: e => this.mouseDownHandler(e, nodeId, nodePath),
+            } : {})}
           >
             <div
-              {...(nodePath != null
-                ? {
-                    onClick: () =>
-                      dispatch(
-                        reduceStateAction(['x2', 'pathToInspectableInX2'], () => nodePath),
-                      ),
-                  }
-                : {})}
+              // {...(nodePath != null
+              //   ? {
+              //       onClick: () =>
+              //         dispatch(
+              //           reduceStateAction(
+              //             ['x2', 'pathToInspectableInX2'],
+              //             () => nodePath,
+              //           ),
+              //         ),
+              //     }
+              //   : {})}
               className={css.content}
               // onContextMenu={this.contextMenuHandler}
               style={{cursor: 'pointer'}}
@@ -254,7 +267,7 @@ class RenderTreeNode extends React.PureComponent<Props, State> {
                 <input
                   value={nodeContent}
                   onChange={e =>
-                    updateTextChildContent(
+                    updateTextNodeContent(
                       this.props.parentPath.slice(-1)[0],
                       e.target.value,
                     )
@@ -263,7 +276,8 @@ class RenderTreeNode extends React.PureComponent<Props, State> {
               )}
             </div>
             <AddBar
-              shouldRender={acceptsChild && newChildIndex === 0}
+              shouldRenderNodePlaceholder={isCommandPressed && acceptsChild && newChildIndex === 0}
+              shouldRenderDropZone={isANodeBeingDragged && acceptsChild && newChildIndex === 0}
               depth={depth + 1}
               onAnimationStart={() => this.setState(() => ({isAddingNewChild: true}))}
               onClick={() => this._addChildToNode(nodeId)}
@@ -272,23 +286,23 @@ class RenderTreeNode extends React.PureComponent<Props, State> {
           {nodeId &&
             this.state.isContextMenuVisible && (
               <ContextMenu
-                {...(depth !== 0 ? {onMove: dir => this._moveNode(nodeId, dir)} : {})}
                 {...(depth !== 0 ? {onDelete: () => this._deleteNode(nodeId)} : {})}
                 depth={depth}
               />
             )}
           {nodeChildren.length > 0 &&
-            nodeChildren.map((cd, i) => {
+            nodeChildren.map((descriptor, i) => {
+              const key = descriptor.which ? descriptor.which : i
               return (
                 <div
-                  key={i}
+                  key={key}
                   className={css.childContainer}
                   onMouseEnter={this.mouseEnterHandler}
-                  onMouseMove={e => this.mouseMoveHandler(e, i + 1)}
+                  onMouseMove={e => this.mouseMoveHandler(e, i + 1, nodeId)}
                   onMouseLeave={this.resetNewChildIndex}
                 >
                   <WrappedRenderTreeNode
-                    descriptor={cd}
+                    descriptor={descriptor}
                     depth={depth + 1}
                     rootPath={rootPath}
                     parentPath={nodePath}
@@ -297,23 +311,28 @@ class RenderTreeNode extends React.PureComponent<Props, State> {
                     moveNode={moveNode}
                     deleteNode={deleteNode}
                     addChildToNode={addChildToNode}
-                    updateTextChildContent={updateTextChildContent}
+                    updateTextNodeContent={updateTextNodeContent}
                     onMouseEnter={this.resetNewChildIndex}
                     isCommandPressed={isCommandPressed}
-                    bringParentToFront={this.bringToFront}
-                    sendParentToBack={this.sendToBack}
+                    isANodeBeingDragged={isANodeBeingDragged}
+                    setNodeBeingDragged={setNodeBeingDragged}
+                    setActiveDropZone={setActiveDropZone}
+                    unsetActiveDropZone={unsetActiveDropZone}
+                    parentSetHeight={this.setHeight}
                   />
                   <AddBar
-                    shouldRender={acceptsChild && newChildIndex === i + 1}
+                    shouldRenderNodePlaceholder={isCommandPressed && acceptsChild && newChildIndex === i + 1}
+                    shouldRenderDropZone={isANodeBeingDragged && acceptsChild && newChildIndex === i + 1}
                     depth={depth + 1}
-                    onAnimationStart={() => this.setState(() => ({isAddingNewChild: true}))}
+                    onAnimationStart={() =>
+                      this.setState(() => ({isAddingNewChild: true}))
+                    }
                     onClick={() => this._addChildToNode(nodeId)}
                   />
                 </div>
               )
             })}
         </div>
-      </DraggableArea>
     )
   }
 }

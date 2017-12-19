@@ -11,6 +11,7 @@ import PanelSection from '$studio/structuralEditor/components/reusables/PanelSec
 import * as _ from 'lodash'
 import generateUniqueId from 'uuid/v4'
 import RenderTreeNode from './RenderTreeNode'
+import DraggableNode from './DraggableNode'
 import cx from 'classnames'
 
 type Props = {
@@ -21,7 +22,19 @@ type Props = {
 
 type State = {
   isCommandPressed: boolean,
-  isInFront: boolean,
+  activeDropZoneProps: ?{
+    atId: string,
+    atIndex: number,
+    atDepth: number,
+  },
+  nodeBeingDraggedProps: ?{
+    id: string,
+    path: string[],
+    depth: number,
+    top: number,
+    height: number,
+    clickOffsetY: number,
+  },
 }
 
 class TreeEditor extends React.PureComponent<Props, State> {
@@ -35,7 +48,8 @@ class TreeEditor extends React.PureComponent<Props, State> {
     this.refMap = {}
     this.state = {
       isCommandPressed: false,
-      isInFront: false,
+      nodeBeingDraggedProps: null,
+      activeDropZoneProps: null,
     }
   }
 
@@ -67,131 +81,86 @@ class TreeEditor extends React.PureComponent<Props, State> {
     this.setState(() => ({isCommandPressed: false}))
   }
 
+  dropHandler = () => {
+    this.makeTheMoveHappen()
+    this.unsetNodeBeingDragged()
+  }
+
+  setNodeBeingDragged = props => {
+    document.styleSheets[0].insertRule(
+      '* {cursor: -webkit-grab !important;}',
+      document.styleSheets[0].cssRules.length,
+    )
+    const {nodeId: id, nodePath: path, depth, top, height, offsetY: clickOffsetY} = props
+    this.setState(() => ({nodeBeingDraggedProps: {id, path, depth, top, height, clickOffsetY}}))
+  }
+
+  unsetNodeBeingDragged = () => {
+    document.styleSheets[0].removeRule(document.styleSheets[0].cssRules.length - 1)
+    this.setState(() => ({nodeBeingDraggedProps: null}))
+  }
+
+  setActiveDropZone = (atId, atIndex, atDepth) => {
+    this.setState(() => ({activeDropZoneProps: {atId, atIndex, atDepth}}))
+  }
+
+  unsetActiveDropZone = () => {
+    this.setState(() => ({activeDropZoneProps: null}))
+  }
+
   addToRefMap = (id: string, obj: Object) => {
-    // if (this.container && this.refMap[id] == null) {
-    //   const currentHeight = parseInt(this.container.style.minHeight) || 0
-    //   this.container.style.minHeight = `${currentHeight + 30}px`
-    // }
     this.refMap[id] = {...this.refMap[id], ...obj}
   }
 
-  moveNode = (id: string, dir: 'up' | 'down' | 'left' | 'right') => {
+  makeTheMoveHappen = () => {
     const {dispatch, pathToComponentDescriptor} = this.props
-    const {parent, index} = this.refMap[id]
-    if (dir === 'up') {
-      if (index === 0) return
-      const parentChildrenCount = this.refMap[parent]
-      if (parentChildrenCount === 1) return
-      dispatch(
-        reduceStateAction(
-          pathToComponentDescriptor.concat('localHiddenValuesById', parent),
-          parentNode => {
-            let {children} = parentNode.props
-            const nodeToMove = children[index]
-            const nodeToReplace = children[index - 1]
-            children[index - 1] = nodeToMove
-            children[index] = nodeToReplace
-            parentNode.props.children = children
-            return parentNode
-          },
-        ),
-      )
+    const {activeDropZoneProps, nodeBeingDraggedProps} = this.state
+
+    if (activeDropZoneProps == null) {
+      console.log('null drop zone')
       return
     }
-    if (dir === 'down') {
-      const parentChildrenCount = this.refMap[parent].noOfChildren
-      if (parentChildrenCount === 1) return
-      if (index === parentChildrenCount - 1) return
-      dispatch(
-        reduceStateAction(
-          pathToComponentDescriptor.concat('localHiddenValuesById', parent),
-          parentNode => {
-            let {children} = parentNode.props
-            const nodeToMove = children[index]
-            const nodeToReplace = children[index + 1]
-            children[index + 1] = nodeToMove
-            children[index] = nodeToReplace
-            parentNode.props.children = children
-            return parentNode
-          },
-        ),
-      )
-      return
-    }
-    if (dir === 'left') {
-      const {parent: gParent, index: gIndex} = this.refMap[parent]
-      if (gParent == null) return
-      let nodeToMove
-      dispatch(
-        reduceStateAction(
-          pathToComponentDescriptor.concat('localHiddenValuesById', parent),
-          parentNode => {
-            const {children} = parentNode.props
-            nodeToMove = children.splice(index, 1)
-            return parentNode
-          },
-        ),
-      )
-      dispatch(
-        reduceStateAction(
-          pathToComponentDescriptor.concat('localHiddenValuesById', gParent),
-          gParent => {
-            const {children} = gParent.props
-            const head = children.slice(0, gIndex)
-            const tail = children.slice(gIndex)
-            gParent.props.children = [...head, ...nodeToMove, ...tail]
-            return gParent
-          },
-        ),
-      )
-      return
-    }
-    if (dir === 'right') {
-      const parentChildrenCount = this.refMap[parent].noOfChildren
-      if (parentChildrenCount === 1) return
-      if (index === parentChildrenCount - 1) return
-      let nodeToMove
-      let moveToPath
-      dispatch(
-        reduceStateAction(
-          pathToComponentDescriptor.concat('localHiddenValuesById', parent),
-          parentNode => {
-            const {children} = parentNode.props
-            const nextNodeId = children[index + 1].which
-            const nextNode = this.getLocalHiddenValue(nextNodeId)
-            if (Array.isArray(nextNode.props.children)) {
-              nodeToMove = children.splice(index, 1)
-              moveToPath = pathToComponentDescriptor.concat(
-                'localHiddenValuesById',
-                nextNodeId,
-              )
-            }
-            return parentNode
-          },
-        ),
-      )
-      if (nodeToMove != null) {
-        dispatch(
-          reduceStateAction(moveToPath, node => {
-            const {children} = node.props
-            node.props.children = [...nodeToMove, ...children]
-            return node
-          }),
-        )
-      }
-      return
-    }
+
+    let dropAtIndex = activeDropZoneProps.atIndex
+    const dropAtId = activeDropZoneProps.atId
+    const {id: nodeId} = nodeBeingDraggedProps
+    const {parent: currentParentId, index: currentIndex} = this.refMap[nodeId]
+    if (currentParentId === dropAtId && currentIndex < dropAtIndex) dropAtIndex--
+    
+    let nodeToMove
+    dispatch(
+      reduceStateAction(
+        pathToComponentDescriptor.concat('localHiddenValuesById', currentParentId),
+        currentParent => {
+          nodeToMove = currentParent.props.children.splice(currentIndex, 1)
+          return currentParent
+        },
+      ),
+    )
+    dispatch(
+      reduceStateAction(
+        pathToComponentDescriptor.concat('localHiddenValuesById', dropAtId),
+        newParent => {
+          const {children} = newParent.props
+          newParent.props.children = [
+            ...children.slice(0, dropAtIndex),
+            ...nodeToMove,
+            ...children.slice(dropAtIndex),
+          ]
+          return newParent
+      }),
+    )
   }
 
   deleteNode = id => {
     const {pathToComponentDescriptor, dispatch} = this.props
-    const {parent, index} = this.refMap[id]
+    const {parent: parentId, index} = this.refMap[id]
     dispatch(
       reduceStateAction(
-        pathToComponentDescriptor.concat('localHiddenValuesById', parent),
-        parentNode => {
-          parentNode.props.children.splice(index, 1)
-          return parentNode
+        pathToComponentDescriptor.concat('localHiddenValuesById', parentId),
+        parent => {
+          parent.props.children.splice(index, 1)
+          return parent
         },
       ),
     )
@@ -247,7 +216,7 @@ class TreeEditor extends React.PureComponent<Props, State> {
     )
   }
 
-  updateTextChildContent = (id, newContent) => {
+  updateTextNodeContent = (id, newContent) => {
     const {dispatch, pathToComponentDescriptor} = this.props
     dispatch(
       reduceStateAction(
@@ -264,35 +233,37 @@ class TreeEditor extends React.PureComponent<Props, State> {
     return this.props.componentDescriptor.localHiddenValuesById[id]
   }
 
-  bringToFront = () => {
-    this.setState(() => ({isInFront: true}))
-  }
-
-  sendToBack = () => {
-    this.setState(() => ({isInFront: false}))
-  }
-
   render() {
     const {componentDescriptor, pathToComponentDescriptor} = this.props
-    const {isCommandPressed, isInFront} = this.state
+    const {isCommandPressed, nodeBeingDraggedProps, activeDropZoneProps} = this.state
+    const isANodeBeingDragged = nodeBeingDraggedProps != null
     return (
       <div className={css.container}>
         <PanelSection withHorizontalMargin={false} label="Render Tree">
           <div className={css.treeWrapper}>
-            <div ref={c => this.container = c} className={cx(css.treeContainer, {[css.inFront]: isInFront})}>
+            <div className={cx(css.treeContainer, {[css.isDragging]: isANodeBeingDragged})}>
+              {isANodeBeingDragged &&
+                <DraggableNode
+                  depth={activeDropZoneProps != null ? activeDropZoneProps.atDepth : nodeBeingDraggedProps.depth}
+                  onDrop={this.dropHandler}
+                  nodeProps={nodeBeingDraggedProps}
+                  getLocalHiddenValue={this.getLocalHiddenValue}/>
+              }
               <RenderTreeNode
                 descriptor={componentDescriptor.whatToRender}
                 moveNode={this.moveNode}
                 deleteNode={this.deleteNode}
                 addChildToNode={this.addChildToNode}
-                updateTextChildContent={this.updateTextChildContent}
+                updateTextNodeContent={this.updateTextNodeContent}
                 rootPath={pathToComponentDescriptor}
                 parentPath={pathToComponentDescriptor}
                 addToRefMap={this.addToRefMap}
                 getLocalHiddenValue={this.getLocalHiddenValue}
                 isCommandPressed={isCommandPressed}
-                bringParentToFront={this.bringToFront}
-                sendParentToBack={this.sendToBack}
+                isANodeBeingDragged={isANodeBeingDragged}
+                setNodeBeingDragged={this.setNodeBeingDragged}
+                setActiveDropZone={this.setActiveDropZone}
+                unsetActiveDropZone={this.unsetActiveDropZone}
               />
             </div>
           </div>
