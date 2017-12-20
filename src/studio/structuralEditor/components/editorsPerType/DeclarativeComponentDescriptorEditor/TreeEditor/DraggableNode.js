@@ -3,6 +3,7 @@ import {React} from '$studio/handy'
 import css from './DraggableNode.css'
 import rcss from './RenderTreeNode.css'
 import RenderTreeNode from './RenderTreeNode'
+import NodeContent from './NodeContent'
 
 type Props = any
 
@@ -47,7 +48,7 @@ class DraggableNode extends React.Component<Props, State> {
     this.setState(() => ({moveY: e.clientY - clickOffsetY - top}))
     // const {startPos} = this.state
     // this.props.onDrag &&
-      // this.props.onDrag(e.screenX - startPos.x, e.screenY - startPos.y, e)
+    // this.props.onDrag(e.screenX - startPos.x, e.screenY - startPos.y, e)
   }
 
   dragEndHandler = () => {
@@ -66,46 +67,41 @@ class DraggableNode extends React.Component<Props, State> {
   render() {
     const {moveY, offsetTop, depth} = this.state
     const {getLocalHiddenValue, nodeProps} = this.props
-    const {id: nodeId, path: nodePath, top, height} = nodeProps
+    const {id: nodeId, path: nodePath, content: nodeContent, top, height} = nodeProps
 
     return (
       <div
-        ref={c => this.container = c}
+        ref={c => (this.container = c)}
         className={css.staticContainer}
-        style={{'--height': height, transform: `translate3d(0, ${top - offsetTop + moveY}px, 0)`}}
-        >
-          <div className={css.dynamicContainer} style={{'--depth': depth}}>
-            <div className={rcss.content}>
-              <div>
-                <span>&lt;</span>
-                <span>div</span>
-                <span>&gt;</span>
-                <span>&nbsp;</span>
-                <span>
-                  <i>class</i>
-                </span>
-              </div>
-            </div>
-            <div className={css.treeContainer}>
-              <RenderTreeNode
-                descriptor={getLocalHiddenValue(nodeId)}
-                moveNode={() => {}}
-                deleteNode={() => {}}
-                addChildToNode={() => {}}
-                updateTextNodeContent={() => {}}
-                rootPath={nodePath}
-                parentPath={nodePath}
-                addToRefMap={() => {}}
-                depth={depth + 1}
-                getLocalHiddenValue={getLocalHiddenValue}
-                isCommandPressed={false}
-                isANodeBeingDragged={false}
-                setNodeBeingDragged={() => {}}
-                setActiveDropZone={() => {}}
-              />
-            </div>
+        style={{
+          '--height': height,
+          transform: `translate3d(0, ${top - offsetTop + moveY}px, 0)`,
+        }}
+      >
+        <div className={css.dynamicContainer} style={{'--depth': depth}}>
+          <div className={css.contentWrapper}>
+            <NodeContent content={nodeContent} renderTags={false}/>
+          </div>
+          <div className={css.treeContainer}>
+            <RenderTreeNode
+              descriptor={getLocalHiddenValue(nodeId)}
+              moveNode={() => {}}
+              deleteNode={() => {}}
+              addChildToNode={() => {}}
+              updateTextNodeContent={() => {}}
+              rootPath={nodePath}
+              parentPath={nodePath}
+              addToRefMap={() => {}}
+              depth={depth + 1}
+              getLocalHiddenValue={getLocalHiddenValue}
+              isCommandPressed={false}
+              isANodeBeingDragged={false}
+              setNodeBeingDragged={() => {}}
+              setActiveDropZone={() => {}}
+            />
           </div>
         </div>
+      </div>
     )
   }
 }

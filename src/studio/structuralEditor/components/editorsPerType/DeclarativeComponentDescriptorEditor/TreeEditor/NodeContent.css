@@ -1,0 +1,114 @@
+@value indent from './RenderTreeNode.css';
+
+.container {
+  position: relative;
+  left: indent;
+  /*padding-left: indent;*/
+  width: calc(100% - 2 * indent);
+  height: 27px;
+  display: flex;
+  align-items: flex-end;
+  font-weight: 400;
+  color: #eee;
+}
+
+.content {
+  cursor: pointer;
+  transition: all .15s ease-in-out;
+  
+  &:active {
+    transform: scale(.95);
+  }
+
+  &.isHidden {
+    opacity: 0;
+    transform: scale(.95);
+  }
+}
+
+.container > input {
+  width: calc(100% - indent);
+  display: flex;
+  align-self: center;
+  border-bottom: 1px solid rgba(255, 255, 255, .2);
+}
+
+.tagsWrapper {
+  position: fixed 0 0 0 0;
+  z-index: 10000;
+  
+  pointer-events: none;
+
+  &.isVisible {
+    pointer-events: auto;
+  }
+}
+
+.tagSelector {
+  background: #FFF;
+  color: #000;
+  position: absolute;
+  margin-top: indent;
+  height: 90px;
+  border-radius: 2px;
+  padding: 4px;
+  box-sizing: border-box;
+
+  transition: opacity .2s ease-in-out, transform .2s ease-in-out;
+  opacity: 0;
+  transform: translateY(2px);
+
+  box-shadow: 0 0 200px 2px #333;
+
+  &.isVisible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tagInput {
+  width: 100%;
+  height: 20px;
+}
+
+.tagInput > input {
+  width: 100%;
+  height: 100%;
+  border-bottom: 1px solid black;
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.tagsList {
+  margin-top: 5px;
+  height: calc(100% - 25px);
+  overflow: auto;
+  /*padding: indent;*/
+  /*box-sizing: border-box;*/
+}
+
+.tagBlock {
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+  cursor: pointer;
+  /*background: red;*/
+  /*margin: 2px;*/
+  padding: 1px 6px;
+  text-align: center;
+  color: white;
+  transition: transform .15s;
+
+  &:active {
+    transform: translateY(1px);
+  }
+
+  &:before {
+    border-radius: 2px;
+    position: absolute 1px;
+    background: red;
+    display: block;
+    content: ' ';
+    z-index: -1;
+  }
+}

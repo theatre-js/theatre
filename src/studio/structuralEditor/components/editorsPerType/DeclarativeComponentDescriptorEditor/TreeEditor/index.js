@@ -91,8 +91,10 @@ class TreeEditor extends React.PureComponent<Props, State> {
       '* {cursor: -webkit-grab !important;}',
       document.styleSheets[0].cssRules.length,
     )
-    const {nodeId: id, nodePath: path, depth, top, height, offsetY: clickOffsetY} = props
-    this.setState(() => ({nodeBeingDraggedProps: {id, path, depth, top, height, clickOffsetY}}))
+    const {nodeId: id, nodePath: path, nodeContent: content, depth, top, height, offsetY: clickOffsetY} = props
+    this.setState(() => ({
+      nodeBeingDraggedProps: {id, path, depth, content, top, height, clickOffsetY},
+    }))
   }
 
   unsetNodeBeingDragged = () => {
@@ -126,7 +128,7 @@ class TreeEditor extends React.PureComponent<Props, State> {
     const {id: nodeId} = nodeBeingDraggedProps
     const {parent: currentParentId, index: currentIndex} = this.refMap[nodeId]
     if (currentParentId === dropAtId && currentIndex < dropAtIndex) dropAtIndex--
-    
+
     let nodeToMove
     dispatch(
       reduceStateAction(
@@ -148,7 +150,8 @@ class TreeEditor extends React.PureComponent<Props, State> {
             ...children.slice(dropAtIndex),
           ]
           return newParent
-      }),
+        },
+      ),
     )
   }
 
@@ -241,14 +244,21 @@ class TreeEditor extends React.PureComponent<Props, State> {
       <div className={css.container}>
         <PanelSection withHorizontalMargin={false} label="Render Tree">
           <div className={css.treeWrapper}>
-            <div className={cx(css.treeContainer, {[css.isDragging]: isANodeBeingDragged})}>
-              {isANodeBeingDragged &&
+            <div
+              className={cx(css.treeContainer, {[css.isDragging]: isANodeBeingDragged})}
+            >
+              {isANodeBeingDragged && (
                 <DraggableNode
-                  depth={activeDropZoneProps != null ? activeDropZoneProps.atDepth : nodeBeingDraggedProps.depth}
+                  depth={
+                    activeDropZoneProps != null
+                      ? activeDropZoneProps.atDepth
+                      : nodeBeingDraggedProps.depth
+                  }
                   onDrop={this.dropHandler}
                   nodeProps={nodeBeingDraggedProps}
-                  getLocalHiddenValue={this.getLocalHiddenValue}/>
-              }
+                  getLocalHiddenValue={this.getLocalHiddenValue}
+                />
+              )}
               <RenderTreeNode
                 descriptor={componentDescriptor.whatToRender}
                 moveNode={this.moveNode}

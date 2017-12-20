@@ -42,7 +42,8 @@ class AddBar extends React.Component<Props, State> {
     const {shouldRenderNodePlaceholder, shouldRenderDropZone, depth} = this.props
     const {isExpanding} = this.state
 
-    const shouldRender = shouldRenderNodePlaceholder || shouldRenderDropZone || isExpanding
+    const shouldRender =
+      shouldRenderNodePlaceholder || shouldRenderDropZone || isExpanding
 
     return shouldRender ? (
       <div
@@ -50,7 +51,8 @@ class AddBar extends React.Component<Props, State> {
         style={{'--depth': depth}}
         onClick={this.clickHandler}
       >
-        {!isExpanding && shouldRenderNodePlaceholder && <div className={css.plusSign}>&#x2b;</div>}
+        {!isExpanding &&
+          shouldRenderNodePlaceholder && <div className={css.plusSign}>&#x2b;</div>}
         {!isExpanding && shouldRenderDropZone && <div className={css.sign}>&#x2192;</div>}
         {!shouldRenderDropZone && <div className={css.nodePlaceholder} />}
       </div>

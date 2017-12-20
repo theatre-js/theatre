@@ -4,6 +4,7 @@ import {getComponentDescriptor} from '$studio/componentModel/selectors'
 import css from './RenderTreeNode.css'
 import ContextMenu from './ContextMenu'
 import AddBar from './AddBar'
+import NodeContent from './NodeContent'
 import cx from 'classnames'
 
 type OwnProps = {
@@ -51,7 +52,7 @@ class RenderTreeNode extends React.PureComponent<Props, State> {
 
   componentDidMount() {
     if (this.props.isANodeBeingDragged) {
-      this.setState(() => ({isExpanding: true, height: this.container.scrollHeight + 30}))  
+      this.setState(() => ({isExpanding: true, height: this.container.scrollHeight + 30}))
     }
   }
 
@@ -155,11 +156,12 @@ class RenderTreeNode extends React.PureComponent<Props, State> {
   mouseMoveHandler = (e, newChildIndex, nodeId) => {
     e.stopPropagation()
     if (this.state.newChildIndex === newChildIndex) return
-    if (this.props.isANodeBeingDragged) this.props.setActiveDropZone(nodeId, newChildIndex, this.props.depth || 0)
+    if (this.props.isANodeBeingDragged)
+      this.props.setActiveDropZone(nodeId, newChildIndex, this.props.depth || 0)
     this.setState(() => ({newChildIndex}))
   }
 
-  mouseDownHandler = (e, nodeId, nodePath) => {
+  mouseDownHandler = (e, nodeId, nodePath, nodeContent) => {
     e.stopPropagation()
     if (!e.shiftKey) return
     const {setNodeBeingDragged, depth} = this.props
@@ -167,7 +169,15 @@ class RenderTreeNode extends React.PureComponent<Props, State> {
 
     this.container.style.maxHeight = `${height}px`
     this.setState(() => ({isBeingDragged: true}))
-    setNodeBeingDragged({nodeId, nodePath, top, height, offsetY: e.nativeEvent.offsetY, depth})
+    setNodeBeingDragged({
+      nodeId,
+      nodePath,
+      nodeContent,
+      top,
+      height,
+      offsetY: e.nativeEvent.offsetY,
+      depth,
+    })
   }
 
   render() {
@@ -215,124 +225,118 @@ class RenderTreeNode extends React.PureComponent<Props, State> {
     const isDraggable = depth > 0
 
     return (
+      <div
+        className={cx(css.container, {
+          [css.collapsed]: isBeingDragged && isANodeBeingDragged,
+          [css.isExpanding]: this.state.isExpanding,
+          [css.notRoot]: depth > 0,
+        })}
+        ref={c => (this.container = c)}
+        style={{
+          '--depth': depth,
+          '--maxHeight': height > 0 ? height : 'auto',
+        }}
+      >
         <div
-          className={cx(css.container, {
-            [css.collapsed]: (isBeingDragged && isANodeBeingDragged),
-            [css.isExpanding]: this.state.isExpanding,
-            [css.notRoot]: depth > 0,
-          })}
-          ref={c => this.container = c}
-          style={{
-            '--depth': depth,
-            // '--height': height > 0 ? height - 30 : 'auto',
-            '--maxHeight': height > 0 ? height : 'auto',
-          }}
+          className={css.contentContainer}
+          onMouseEnter={this.mouseEnterHandler}
+          onMouseMove={e => this.mouseMoveHandler(e, 0, nodeId)}
+          onMouseLeave={this.resetNewChildIndex}
+          {...(isDraggable
+            ? {
+                onMouseDown: e => this.mouseDownHandler(e, nodeId, nodePath, nodeContent),
+              }
+            : {})}
         >
           <div
-            className={css.contentContainer}
-            onMouseEnter={this.mouseEnterHandler}
-            onMouseMove={e => this.mouseMoveHandler(e, 0, nodeId)}
-            onMouseLeave={this.resetNewChildIndex}
-            {...(isDraggable ? {
-              onMouseDown: e => this.mouseDownHandler(e, nodeId, nodePath),
-            } : {})}
+            // {...(nodePath != null
+            //   ? {
+            //       onClick: () =>
+            //         dispatch(
+            //           reduceStateAction(
+            //             ['x2', 'pathToInspectableInX2'],
+            //             () => nodePath,
+            //           ),
+            //         ),
+            //     }
+            //   : {})}
+            className={css.content}
+            // onContextMenu={this.contextMenuHandler}
           >
-            <div
-              // {...(nodePath != null
-              //   ? {
-              //       onClick: () =>
-              //         dispatch(
-              //           reduceStateAction(
-              //             ['x2', 'pathToInspectableInX2'],
-              //             () => nodePath,
-              //           ),
-              //         ),
-              //     }
-              //   : {})}
-              className={css.content}
-              // onContextMenu={this.contextMenuHandler}
-              style={{cursor: 'pointer'}}
-            >
-              {nodeType === 'tag' ? (
-                <div>
-                  <span>&lt;</span>
-                  <span>{nodeContent}</span>
-                  <span>&gt;</span>
-                  <span>&nbsp;</span>
-                  <span>
-                    <i>class</i>
-                  </span>
-                </div>
-              ) : (
-                <input
-                  value={nodeContent}
-                  onChange={e =>
-                    updateTextNodeContent(
-                      this.props.parentPath.slice(-1)[0],
-                      e.target.value,
-                    )
-                  }
-                />
-              )}
-            </div>
-            <AddBar
-              shouldRenderNodePlaceholder={isCommandPressed && acceptsChild && newChildIndex === 0}
-              shouldRenderDropZone={isANodeBeingDragged && acceptsChild && newChildIndex === 0}
-              depth={depth + 1}
-              onAnimationStart={() => this.setState(() => ({isAddingNewChild: true}))}
-              onClick={() => this._addChildToNode(nodeId)}
+            <NodeContent
+              type={nodeType}
+              content={nodeContent}
+              nodePath={nodePath}
+              ignoreClick={isCommandPressed}
+              updateText={text =>
+                updateTextNodeContent(this.props.parentPath.slice(-1)[0], text)
+              }
             />
           </div>
-          {nodeId &&
-            this.state.isContextMenuVisible && (
-              <ContextMenu
-                {...(depth !== 0 ? {onDelete: () => this._deleteNode(nodeId)} : {})}
-                depth={depth}
-              />
-            )}
-          {nodeChildren.length > 0 &&
-            nodeChildren.map((descriptor, i) => {
-              const key = descriptor.which ? descriptor.which : i
-              return (
-                <div
-                  key={key}
-                  className={css.childContainer}
-                  onMouseEnter={this.mouseEnterHandler}
-                  onMouseMove={e => this.mouseMoveHandler(e, i + 1, nodeId)}
-                  onMouseLeave={this.resetNewChildIndex}
-                >
-                  <WrappedRenderTreeNode
-                    descriptor={descriptor}
-                    depth={depth + 1}
-                    rootPath={rootPath}
-                    parentPath={nodePath}
-                    getLocalHiddenValue={getLocalHiddenValue}
-                    addToRefMap={addToRefMap}
-                    moveNode={moveNode}
-                    deleteNode={deleteNode}
-                    addChildToNode={addChildToNode}
-                    updateTextNodeContent={updateTextNodeContent}
-                    onMouseEnter={this.resetNewChildIndex}
-                    isCommandPressed={isCommandPressed}
-                    isANodeBeingDragged={isANodeBeingDragged}
-                    setNodeBeingDragged={setNodeBeingDragged}
-                    setActiveDropZone={setActiveDropZone}
-                    unsetActiveDropZone={unsetActiveDropZone}
-                    parentSetHeight={this.setHeight}
-                  />
-                  <AddBar
-                    shouldRenderNodePlaceholder={isCommandPressed && acceptsChild && newChildIndex === i + 1}
-                    shouldRenderDropZone={isANodeBeingDragged && acceptsChild && newChildIndex === i + 1}
-                    depth={depth + 1}
-                    onAnimationStart={() =>
-                      this.setState(() => ({isAddingNewChild: true}))
-                    }
-                    onClick={() => this._addChildToNode(nodeId)}
-                  />
-                </div>
-              )
-            })}
+          <AddBar
+            shouldRenderNodePlaceholder={
+              isCommandPressed && acceptsChild && newChildIndex === 0
+            }
+            shouldRenderDropZone={
+              isANodeBeingDragged && acceptsChild && newChildIndex === 0
+            }
+            depth={depth + 1}
+            onAnimationStart={() => this.setState(() => ({isAddingNewChild: true}))}
+            onClick={() => this._addChildToNode(nodeId)}
+          />
         </div>
+        {nodeId &&
+          this.state.isContextMenuVisible && (
+            <ContextMenu
+              {...(depth !== 0 ? {onDelete: () => this._deleteNode(nodeId)} : {})}
+              depth={depth}
+            />
+          )}
+        {nodeChildren.length > 0 &&
+          nodeChildren.map((descriptor, i) => {
+            const key = descriptor.which ? descriptor.which : i
+            return (
+              <div
+                key={key}
+                className={css.childContainer}
+                onMouseEnter={this.mouseEnterHandler}
+                onMouseMove={e => this.mouseMoveHandler(e, i + 1, nodeId)}
+                onMouseLeave={this.resetNewChildIndex}
+              >
+                <WrappedRenderTreeNode
+                  descriptor={descriptor}
+                  depth={depth + 1}
+                  rootPath={rootPath}
+                  parentPath={nodePath}
+                  getLocalHiddenValue={getLocalHiddenValue}
+                  addToRefMap={addToRefMap}
+                  moveNode={moveNode}
+                  deleteNode={deleteNode}
+                  addChildToNode={addChildToNode}
+                  updateTextNodeContent={updateTextNodeContent}
+                  onMouseEnter={this.resetNewChildIndex}
+                  isCommandPressed={isCommandPressed}
+                  isANodeBeingDragged={isANodeBeingDragged}
+                  setNodeBeingDragged={setNodeBeingDragged}
+                  setActiveDropZone={setActiveDropZone}
+                  unsetActiveDropZone={unsetActiveDropZone}
+                  parentSetHeight={this.setHeight}
+                />
+                <AddBar
+                  shouldRenderNodePlaceholder={
+                    isCommandPressed && acceptsChild && newChildIndex === i + 1
+                  }
+                  shouldRenderDropZone={
+                    isANodeBeingDragged && acceptsChild && newChildIndex === i + 1
+                  }
+                  depth={depth + 1}
+                  onAnimationStart={() => this.setState(() => ({isAddingNewChild: true}))}
+                  onClick={() => this._addChildToNode(nodeId)}
+                />
+              </div>
+            )
+          })}
+      </div>
     )
   }
 }

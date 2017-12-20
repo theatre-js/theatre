@@ -25,6 +25,7 @@
     max-height: 0 !important;
     padding: 0;
     margin: 0;
+    opacity: 0;
     pointer-events: none;
   }
 
@@ -45,13 +46,13 @@
 
 .content {
   position: relative;
-  left: indent;
-  width: calc(100% - indent);
-  height: 27px;
+  /*left: indent;
+  width: calc(100% - indent);*/
+  /*height: 27px;
   display: flex;
   align-items: flex-end;
   font-weight: 400;
-  color: #eee;
+  color: #eee;*/
 
   /*animation: appear .1s;*/
 }
@@ -59,13 +60,6 @@
 @keyframes appear {
   from {opacity: 0;}
   to {opacity: 1;}
-}
-
-.content > input {
-  width: calc(100% - indent);
-  display: flex;
-  align-self: center;
-  border-bottom: 1px solid rgba(255, 255, 255, .2);
 }
 
 .childContainer {
