@@ -222,7 +222,7 @@ class RenderTreeNode extends React.PureComponent<Props, State> {
     }
 
     const acceptsChild = nodeType === 'tag' && typeof nodeChildren[0] !== 'string'
-    const isDraggable = depth > 0
+    const isRoot = depth === 0
 
     return (
       <div
@@ -242,7 +242,7 @@ class RenderTreeNode extends React.PureComponent<Props, State> {
           onMouseEnter={this.mouseEnterHandler}
           onMouseMove={e => this.mouseMoveHandler(e, 0, nodeId)}
           onMouseLeave={this.resetNewChildIndex}
-          {...(isDraggable
+          {...(!isRoot
             ? {
                 onMouseDown: e => this.mouseDownHandler(e, nodeId, nodePath, nodeContent),
               }
@@ -268,6 +268,7 @@ class RenderTreeNode extends React.PureComponent<Props, State> {
               content={nodeContent}
               nodePath={nodePath}
               ignoreClick={isCommandPressed}
+              renderTags={!isRoot}
               updateText={text =>
                 updateTextNodeContent(this.props.parentPath.slice(-1)[0], text)
               }

@@ -80,7 +80,7 @@ class DraggableNode extends React.Component<Props, State> {
       >
         <div className={css.dynamicContainer} style={{'--depth': depth}}>
           <div className={css.contentWrapper}>
-            <NodeContent content={nodeContent} renderTags={false}/>
+            <NodeContent content={nodeContent} renderTags={false} />
           </div>
           <div className={css.treeContainer}>
             <RenderTreeNode

@@ -91,7 +91,15 @@ class TreeEditor extends React.PureComponent<Props, State> {
       '* {cursor: -webkit-grab !important;}',
       document.styleSheets[0].cssRules.length,
     )
-    const {nodeId: id, nodePath: path, nodeContent: content, depth, top, height, offsetY: clickOffsetY} = props
+    const {
+      nodeId: id,
+      nodePath: path,
+      nodeContent: content,
+      depth,
+      top,
+      height,
+      offsetY: clickOffsetY,
+    } = props
     this.setState(() => ({
       nodeBeingDraggedProps: {id, path, depth, content, top, height, clickOffsetY},
     }))

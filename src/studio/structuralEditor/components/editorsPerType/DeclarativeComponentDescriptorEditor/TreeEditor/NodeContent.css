@@ -9,13 +9,15 @@
   display: flex;
   align-items: flex-end;
   font-weight: 400;
-  color: #eee;
+  /*color: #eee;*/
 }
 
 .content {
   cursor: pointer;
   transition: all .15s ease-in-out;
-  
+}
+
+.changeable {
   &:active {
     transform: scale(.95);
   }
@@ -45,7 +47,7 @@
 }
 
 .tagSelector {
-  background: #FFF;
+  background: #EEE;
   color: #000;
   position: absolute;
   margin-top: indent;
@@ -58,7 +60,7 @@
   opacity: 0;
   transform: translateY(2px);
 
-  box-shadow: 0 0 200px 2px #333;
+  box-shadow: 0 0 200px 3px #333;
 
   &.isVisible {
     opacity: 1;
@@ -72,10 +74,11 @@
 }
 
 .tagInput > input {
+  color: #333;
   width: 100%;
   height: 100%;
-  border-bottom: 1px solid black;
-  opacity: .5;
+  border-bottom: 1px solid #333;
+  opacity: .2;
   cursor: not-allowed;
 }
 
@@ -106,7 +109,7 @@
   &:before {
     border-radius: 2px;
     position: absolute 1px;
-    background: red;
+    background: #3EA2C8;
     display: block;
     content: ' ';
     z-index: -1;
