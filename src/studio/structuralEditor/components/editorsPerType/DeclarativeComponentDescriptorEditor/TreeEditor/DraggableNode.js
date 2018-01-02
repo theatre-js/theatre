@@ -1,7 +1,6 @@
 // @flow
 import {React} from '$studio/handy'
 import css from './DraggableNode.css'
-import rcss from './RenderTreeNode.css'
 import RenderTreeNode from './RenderTreeNode'
 import NodeContent from './NodeContent'
 

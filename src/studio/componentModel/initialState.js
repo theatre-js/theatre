@@ -148,7 +148,37 @@ const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
       componentId: 'TheaterJS/Core/HTML/div',
       props: {
         key: 'dalaki',
-        children: 'dalaki',
+        children: [{__descriptorType: 'ReferenceToLocalHiddenValue', which: 'yaru'}],
+      },
+      modifierInstantiationDescriptors: {byId: {}, list: []},
+    },
+    yaru: {
+      __descriptorType: 'ComponentInstantiationValueDescriptor',
+      componentId: 'TheaterJS/Core/HTML/div',
+      props: {
+        key: 'yaru',
+        children: [
+          {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'dchch'},
+          {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'dchchp'},
+        ],
+      },
+      modifierInstantiationDescriptors: {byId: {}, list: []},
+    },
+    dchch: {
+      __descriptorType: 'ComponentInstantiationValueDescriptor',
+      componentId: 'TheaterJS/Core/HTML/div',
+      props: {
+        key: 'dchch',
+        children: 'dalaki dchch',
+      },
+      modifierInstantiationDescriptors: {byId: {}, list: []},
+    },
+    dchchp: {
+      __descriptorType: 'ComponentInstantiationValueDescriptor',
+      componentId: 'TheaterJS/Core/HTML/div',
+      props: {
+        key: 'dchchp',
+        children: 'dalaki dchchp',
       },
       modifierInstantiationDescriptors: {byId: {}, list: []},
     },

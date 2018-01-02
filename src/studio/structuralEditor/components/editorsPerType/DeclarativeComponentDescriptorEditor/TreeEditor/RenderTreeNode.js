@@ -268,7 +268,8 @@ class RenderTreeNode extends React.PureComponent<Props, State> {
               content={nodeContent}
               nodePath={nodePath}
               ignoreClick={isCommandPressed}
-              renderTags={!isRoot}
+              // renderTags={!isRoot}
+              renderTags={true}
               updateText={text =>
                 updateTextNodeContent(this.props.parentPath.slice(-1)[0], text)
               }
