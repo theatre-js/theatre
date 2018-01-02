@@ -93,7 +93,7 @@ class ElementTreePanelContent extends React.PureComponent<Props, State> {
         if (fiber.sibling) {
           branches = [...branches, {fiber: fiber.sibling, path}]
         }
-        
+
         path = path.concat(generateUniqueID())
         const shouldBreak = cb(fiber, path) || false
         if (shouldBreak) break outer
@@ -107,84 +107,6 @@ class ElementTreePanelContent extends React.PureComponent<Props, State> {
       }
     }
   }
-
-  // _mountNode(node: Object) {
-  //   if (this._refMap.has(node)) return
-
-  //   let root = node
-  //   while (!this._refMap.has(root.return)) {
-  //     if (root.return == null) return
-  //     if (root.return.key === 'TheaterJS/Core/RenderCurrentCanvas#RenderCurrentCanvas') {
-  //       break
-  //     }
-  //     root = root.return
-  //   }
-
-  //   this.setState(state => {
-  //     const containerPath = this._refMap.get(root.return)
-  //       ? this._refMap.get(root.return).concat('children')
-  //       : []
-  //     const {nodes, refMap} = this._addNodeAndChildren(root, containerPath, state.nodes)
-  //     this._refMap = refMap
-  //     return {nodes}
-  //   })
-  // }
-
-  // _addNodeAndChildren(root: Object, containerPath: Path, currentNodes: Object) {
-  //   let node = root
-  //   let nodePath = containerPath
-  //   let nodes = currentNodes
-  //   let refMap = this._refMap
-  //   // eslint-disable-next-line no-constant-condition
-  //   outer: while (true) {
-  //     ;({nodes, refMap, path: nodePath} = this._addNodeData(
-  //       node,
-  //       nodePath,
-  //       nodes,
-  //       refMap,
-  //     ))
-
-  //     if (node.child) {
-  //       node = node.child
-  //       nodePath = nodePath.concat('children')
-  //       continue
-  //     }
-
-  //     if (node === root) break
-
-  //     while (!node.sibling) {
-  //       if (!node.return || node.return === root) {
-  //         break outer
-  //       }
-  //       node = node.return
-  //       nodePath = nodePath.slice(0, -3)
-  //     }
-  //     node = node.sibling
-  //   }
-
-  //   return {nodes, refMap}
-  // }
-
-  // _updateNode(node: Object) {
-  //   if (!this._refMap.has(node)) return
-  //   this.setState(state => {
-  //     const path = this._refMap.get(node)
-  //     const {nodes, refMap} = this._addNodeData(node, path, state.nodes, this._refMap)
-  //     this._refMap = refMap
-  //     return {nodes}
-  //   })
-  // }
-
-  // _unmountNode(node: Object) {
-  //   if (this._refMap.has(node)) {
-  //     this.setState(state => {
-  //       const path = this._refMap.get(node)
-  //       this._refMap.delete(node)
-  //       const modifiedNodes = unset(path, state.nodes)
-  //       return {nodes: modifiedNodes}
-  //     })
-  //   }
-  // }
 
   _addNodeData(node: Object, path: Path, originalNodes: Object, refMap: Object) {
     const data = this._prepareNodeData(node, path)
