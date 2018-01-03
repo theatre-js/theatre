@@ -252,7 +252,10 @@ class TreeEditor extends React.PureComponent<Props, State> {
   startScroll = dir => {
     if (this.state.nodeBeingDraggedProps == null) return
     const delta = dir === 'up' ? -1 : dir === 'down' ? 1 : 0
-    const maxScroll = this.treeWrapper.scrollHeight - parseFloat(getComputedStyle(this.treeContainer).paddingBottom) - this.treeWrapper.clientHeight + 30
+    const maxScroll =
+      this.treeWrapper.scrollHeight -
+      parseFloat(getComputedStyle(this.treeContainer).paddingBottom) -
+      this.treeWrapper.clientHeight
     this.scrollInterval = setInterval(() => {
       const scrollTo = parseInt(_.clamp(this.treeWrapper.scrollTop + delta, 0, maxScroll))
       if (this.treeWrapper.scrollTop !== scrollTo) {
@@ -275,10 +278,11 @@ class TreeEditor extends React.PureComponent<Props, State> {
         <PanelSection withHorizontalMargin={false} label="Render Tree">
           <MouseDetector
             mouseOverCallback={() => this.startScroll('up')}
-            mouseLeaveCallback={() => this.stopScroll()}/>
-          <div className={css.treeWrapper} ref={c => this.treeWrapper = c}>
+            mouseLeaveCallback={() => this.stopScroll()}
+          />
+          <div className={css.treeWrapper} ref={c => (this.treeWrapper = c)}>
             <div
-              ref={c => this.treeContainer = c}
+              ref={c => (this.treeContainer = c)}
               className={cx(css.treeContainer, {[css.isDragging]: isANodeBeingDragged})}
             >
               {isANodeBeingDragged && (
@@ -314,7 +318,8 @@ class TreeEditor extends React.PureComponent<Props, State> {
           </div>
           <MouseDetector
             mouseOverCallback={() => this.startScroll('down')}
-            mouseLeaveCallback={() => this.stopScroll()}/>
+            mouseLeaveCallback={() => this.stopScroll()}
+          />
         </PanelSection>
       </div>
     )

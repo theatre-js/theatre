@@ -17,7 +17,7 @@
 
 .treeContainer {
   position: relative;
-  padding-bottom: 30px;
+  /*padding-bottom: 30px;*/
 
   &.isDragging {
     padding-bottom: 100%;

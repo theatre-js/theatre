@@ -35,6 +35,10 @@
   }
 }
 
+.container:not(.notRoot) > .childContainer:last-child {
+  padding-bottom: 30px;
+}
+
 @keyframes expand {
   from {max-height: 26px;}
   to {max-height: var(--maxHeight);}
