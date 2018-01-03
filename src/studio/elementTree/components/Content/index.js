@@ -34,8 +34,8 @@ class ElementTreePanelContent extends React.PureComponent<Props, State> {
 
   _subscribeToHookEvents(hook: ?Object) {
     if (hook == null) throw Error('Dev tools hook not found!')
-    hook.sub('renderer', ({id}) => {
-      this.rendererID = id
+    hook.sub('renderer', data => {
+      this.rendererID = data.id
       this.debouncedAddNodes(hook)
     })
     hook.sub('mount', data => {

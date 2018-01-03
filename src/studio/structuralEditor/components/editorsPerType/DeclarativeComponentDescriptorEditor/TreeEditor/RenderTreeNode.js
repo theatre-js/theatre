@@ -153,8 +153,9 @@ class RenderTreeNode extends React.PureComponent<Props, State> {
     if (this.props.onMouseEnter) this.props.onMouseEnter()
   }
 
-  mouseMoveHandler = (e, newChildIndex, nodeId) => {
+  mouseMoveHandler = (e, newChildIndex, nodeId, acceptsChild) => {
     e.stopPropagation()
+    if (!acceptsChild) return
     if (this.state.newChildIndex === newChildIndex) return
     if (this.props.isANodeBeingDragged)
       this.props.setActiveDropZone(nodeId, newChildIndex, this.props.depth || 0)
@@ -240,7 +241,7 @@ class RenderTreeNode extends React.PureComponent<Props, State> {
         <div
           className={css.contentContainer}
           onMouseEnter={this.mouseEnterHandler}
-          onMouseMove={e => this.mouseMoveHandler(e, 0, nodeId)}
+          onMouseMove={e => this.mouseMoveHandler(e, 0, nodeId, acceptsChild)}
           onMouseLeave={this.resetNewChildIndex}
           {...(!isRoot
             ? {
@@ -302,7 +303,7 @@ class RenderTreeNode extends React.PureComponent<Props, State> {
                 key={key}
                 className={css.childContainer}
                 onMouseEnter={this.mouseEnterHandler}
-                onMouseMove={e => this.mouseMoveHandler(e, i + 1, nodeId)}
+                onMouseMove={e => this.mouseMoveHandler(e, i + 1, nodeId, acceptsChild)}
                 onMouseLeave={this.resetNewChildIndex}
               >
                 <WrappedRenderTreeNode

@@ -12,6 +12,7 @@ import * as _ from 'lodash'
 import generateUniqueId from 'uuid/v4'
 import RenderTreeNode from './RenderTreeNode'
 import DraggableNode from './DraggableNode'
+import MouseDetector from './MouseDetector'
 import cx from 'classnames'
 
 type Props = {
@@ -21,6 +22,7 @@ type Props = {
 }
 
 type State = {
+  deltaScroll: number,
   isCommandPressed: boolean,
   activeDropZoneProps: ?{
     atId: string,
@@ -45,8 +47,10 @@ class TreeEditor extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props)
 
+    this.scrollInterval = null
     this.refMap = {}
     this.state = {
+      deltaScroll: 0,
       isCommandPressed: false,
       nodeBeingDraggedProps: null,
       activeDropZoneProps: null,
@@ -127,7 +131,7 @@ class TreeEditor extends React.PureComponent<Props, State> {
     const {activeDropZoneProps, nodeBeingDraggedProps} = this.state
 
     if (activeDropZoneProps == null) {
-      console.log('null drop zone')
+      this.setState(() => ({deltaScroll: 0}))
       return
     }
 
@@ -161,6 +165,7 @@ class TreeEditor extends React.PureComponent<Props, State> {
         },
       ),
     )
+    this.setState(() => ({deltaScroll: 0}))
   }
 
   deleteNode = id => {
@@ -244,6 +249,23 @@ class TreeEditor extends React.PureComponent<Props, State> {
     return this.props.componentDescriptor.localHiddenValuesById[id]
   }
 
+  startScroll = dir => {
+    if (this.state.nodeBeingDraggedProps == null) return
+    const delta = dir === 'up' ? -1 : dir === 'down' ? 1 : 0
+    const maxScroll = this.treeWrapper.scrollHeight - parseFloat(getComputedStyle(this.treeContainer).paddingBottom) - this.treeWrapper.clientHeight + 30
+    this.scrollInterval = setInterval(() => {
+      const scrollTo = parseInt(_.clamp(this.treeWrapper.scrollTop + delta, 0, maxScroll))
+      if (this.treeWrapper.scrollTop !== scrollTo) {
+        this.treeWrapper.scrollTop = scrollTo
+        this.setState(state => ({deltaScroll: state.deltaScroll + delta}))
+      }
+    }, 10)
+  }
+
+  stopScroll = () => {
+    clearInterval(this.scrollInterval)
+  }
+
   render() {
     const {componentDescriptor, pathToComponentDescriptor} = this.props
     const {isCommandPressed, nodeBeingDraggedProps, activeDropZoneProps} = this.state
@@ -251,16 +273,21 @@ class TreeEditor extends React.PureComponent<Props, State> {
     return (
       <div className={css.container}>
         <PanelSection withHorizontalMargin={false} label="Render Tree">
-          <div className={css.treeWrapper}>
+          <MouseDetector
+            mouseOverCallback={() => this.startScroll('up')}
+            mouseLeaveCallback={() => this.stopScroll()}/>
+          <div className={css.treeWrapper} ref={c => this.treeWrapper = c}>
             <div
+              ref={c => this.treeContainer = c}
               className={cx(css.treeContainer, {[css.isDragging]: isANodeBeingDragged})}
             >
               {isANodeBeingDragged && (
                 <DraggableNode
+                  deltaScroll={this.state.deltaScroll}
                   depth={
                     activeDropZoneProps != null
                       ? activeDropZoneProps.atDepth
-                      : nodeBeingDraggedProps.depth
+                      : nodeBeingDraggedProps.depth - 1
                   }
                   onDrop={this.dropHandler}
                   nodeProps={nodeBeingDraggedProps}
@@ -285,6 +312,9 @@ class TreeEditor extends React.PureComponent<Props, State> {
               />
             </div>
           </div>
+          <MouseDetector
+            mouseOverCallback={() => this.startScroll('down')}
+            mouseLeaveCallback={() => this.stopScroll()}/>
         </PanelSection>
       </div>
     )

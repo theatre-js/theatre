@@ -9,6 +9,10 @@
   height: 30%;
   overflow-y: auto;
   overflow-x: hidden;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .treeContainer {

@@ -65,7 +65,7 @@ class DraggableNode extends React.Component<Props, State> {
 
   render() {
     const {moveY, offsetTop, depth} = this.state
-    const {getLocalHiddenValue, nodeProps} = this.props
+    const {getLocalHiddenValue, nodeProps, deltaScroll} = this.props
     const {id: nodeId, path: nodePath, content: nodeContent, top, height} = nodeProps
 
     return (
@@ -74,7 +74,7 @@ class DraggableNode extends React.Component<Props, State> {
         className={css.staticContainer}
         style={{
           '--height': height,
-          transform: `translate3d(0, ${top - offsetTop + moveY}px, 0)`,
+          transform: `translate3d(0, ${top - offsetTop + moveY + deltaScroll}px, 0)`,
         }}
       >
         <div className={css.dynamicContainer} style={{'--depth': depth}}>
