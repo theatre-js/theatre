@@ -128,7 +128,7 @@ class RenderTreeNode extends React.PureComponent<Props, State> {
 
   _deleteNode = id => {
     this.props.deleteNode(id)
-    this._toggleContextMenu()
+    // this._toggleContextMenu()
   }
 
   _addChildToNode = nodeId => {
@@ -274,6 +274,14 @@ class RenderTreeNode extends React.PureComponent<Props, State> {
               updateText={text =>
                 updateTextNodeContent(this.props.parentPath.slice(-1)[0], text)
               }
+              renderContextMenu={depth !== 0}
+              onDelete={() => this.props.deleteNode(nodeId)}
+              {...(acceptsChild && nodeChildren.length === 0
+                ? {onAddText: () => this.props.addTextChild(nodeId)}
+                : {})}
+              {...(nodeType === 'tag' && typeof nodeChildren[0] === 'string'
+                ? {onDeleteText: () => this.props.deleteTextChild(nodeId)}
+                : {})}
             />
           </div>
           <AddBar
@@ -324,6 +332,8 @@ class RenderTreeNode extends React.PureComponent<Props, State> {
                   setActiveDropZone={setActiveDropZone}
                   unsetActiveDropZone={unsetActiveDropZone}
                   parentSetHeight={this.setHeight}
+                  addTextChild={this.props.addTextChild}
+                  deleteTextChild={this.props.deleteTextChild}
                 />
                 <AddBar
                   shouldRenderNodePlaceholder={

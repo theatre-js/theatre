@@ -182,6 +182,32 @@ class TreeEditor extends React.PureComponent<Props, State> {
     )
   }
 
+  addTextChild = id => {
+    const {pathToComponentDescriptor, dispatch} = this.props
+    dispatch(
+      reduceStateAction(
+        pathToComponentDescriptor.concat('localHiddenValuesById', id),
+        node => {
+          node.props.children = ''
+          return node
+        },
+      ),
+    )
+  }
+
+  deleteTextChild = id => {
+    const {pathToComponentDescriptor, dispatch} = this.props
+    dispatch(
+      reduceStateAction(
+        pathToComponentDescriptor.concat('localHiddenValuesById', id),
+        node => {
+          node.props.children = []
+          return node
+        },
+      ),
+    )
+  }
+
   addChildToNode = (id, index) => {
     const {dispatch, pathToComponentDescriptor} = this.props
     const childId = generateUniqueId()
@@ -313,6 +339,8 @@ class TreeEditor extends React.PureComponent<Props, State> {
                 setNodeBeingDragged={this.setNodeBeingDragged}
                 setActiveDropZone={this.setActiveDropZone}
                 unsetActiveDropZone={this.unsetActiveDropZone}
+                addTextChild={this.addTextChild}
+                deleteTextChild={this.deleteTextChild}
               />
             </div>
           </div>
