@@ -85,14 +85,15 @@ class Point extends React.Component<Props, State> {
   }
 
   pointDragHandler = (dx: number, dy: number, e: SyntheticMouseEvent<>) => {
-    let x = dx, y = dy
-    
+    let x = dx,
+      y = dy
+
     if (e.altKey) y = this.state.pointMove[1]
     if (e.shiftKey) x = this.state.pointMove[0]
-    
+
     const {point, prevPoint, nextPoint, laneWidth} = this.props
-    const limitLeft = (prevPoint == null) ? 0 : prevPoint.t
-    const limitRight = (nextPoint == null) ? laneWidth : nextPoint.t
+    const limitLeft = prevPoint == null ? 0 : prevPoint.t
+    const limitRight = nextPoint == null ? laneWidth : nextPoint.t
     const newT = point.t + x
     if (newT >= limitRight) x = limitRight - point.t - 1
     if (newT <= limitLeft) x = limitLeft - point.t + 1
@@ -157,32 +158,46 @@ class Point extends React.Component<Props, State> {
       t: newT,
       value: newValue,
       // $FlowFixMe
-      handles: point.handles.map((handle, index) => handleFactors[index] * (handle + handlesMove[index]))}
+      handles: point.handles.map(
+        (handle, index) => handleFactors[index] * (handle + handlesMove[index]),
+      ),
+    }
     return (
-      <g opacity={.5}>
-        {point.isConnected && (nextPoint != null) &&
-          <Connector
-            leftPoint={movedPoint}
-            rightPoint={{
-              ...nextPoint,
-              // $FlowFixMe
-              handles: nextPoint.handles.map((handle, index) => handleFactors[index % 2 + 2] * handle),
-            }} />
-        }
-        {(prevPoint != null) && prevPoint.isConnected &&
-          <Connector
-            leftPoint={{
-              ...prevPoint,
-              // $FlowFixMe
-              handles: prevPoint.handles.map((handle, index) => handleFactors[index % 2] * handle),
-            }}
-            rightPoint={movedPoint} />
-        }
+      <g opacity={0.5}>
+        {point.isConnected &&
+          nextPoint != null && (
+            <Connector
+              leftPoint={movedPoint}
+              rightPoint={{
+                ...nextPoint,
+                // $FlowFixMe
+                handles: nextPoint.handles.map(
+                  (handle, index) => handleFactors[index % 2 + 2] * handle,
+                ),
+              }}
+            />
+          )}
+        {prevPoint != null &&
+          prevPoint.isConnected && (
+            <Connector
+              leftPoint={{
+                ...prevPoint,
+                // $FlowFixMe
+                handles: prevPoint.handles.map(
+                  (handle, index) => handleFactors[index % 2] * handle,
+                ),
+              }}
+              rightPoint={movedPoint}
+            />
+          )}
         <circle
-          fill='#222'
+          fill="#222"
           strokeWidth={2}
-          cx={movedPoint.t} cy={movedPoint.value} r={3}
-          className={css.point}/>
+          cx={movedPoint.t}
+          cy={movedPoint.value}
+          r={3}
+          className={css.point}
+        />
       </g>
     )
   }
@@ -196,29 +211,32 @@ class Point extends React.Component<Props, State> {
           style={{
             left: `${t > 25 ? t - 25 : 0}px`,
             top: `${value >= 37 ? value - 37 : value + 5}px`,
-          }}>
+          }}
+        >
           <div className={css.pointTipRow}>
-            <span className={css.pointTipIcon}>
-              {String.fromCharCode(0x25b2)}
-            </span>
+            <span className={css.pointTipIcon}>{String.fromCharCode(0x25b2)}</span>
             <SingleInputForm
-              ref={(c) => {if (c != null) this.valueForm = c}}
+              ref={c => {
+                if (c != null) this.valueForm = c
+              }}
               className={css.pointTipInput}
               value={String(_value)}
               onCancel={this.disableEnteringProps}
-              onSubmit={this.setPointPosition}/>
+              onSubmit={this.setPointPosition}
+            />
           </div>
           <div className={css.pointTipRow}>
-            <span className={css.pointTipIcon}>
-              {String.fromCharCode(0x25ba)}
-            </span>
+            <span className={css.pointTipIcon}>{String.fromCharCode(0x25ba)}</span>
             <SingleInputForm
               autoFocus={false}
-              ref={(c) => {if(c != null) this.timeForm = c}}
+              ref={c => {
+                if (c != null) this.timeForm = c
+              }}
               className={css.pointTipInput}
               value={String(_t)}
               onCancel={this.disableEnteringProps}
-              onSubmit={this.setPointPosition}/>
+              onSubmit={this.setPointPosition}
+            />
           </div>
         </div>
       </foreignObject>
@@ -229,56 +247,82 @@ class Point extends React.Component<Props, State> {
     const {point, prevPoint, nextPoint} = this.props
     const {t, value, handles} = point
     const {isMoving, handlesMove, isEnteringProps} = this.state
-    const leftHandle = [t + handles[0] + handlesMove[0], value + handles[1] + handlesMove[1]]
-    const rightHandle = [t + handles[2] + handlesMove[2], value + handles[3] + handlesMove[3]]
+    const leftHandle = [
+      t + handles[0] + handlesMove[0],
+      value + handles[1] + handlesMove[1],
+    ]
+    const rightHandle = [
+      t + handles[2] + handlesMove[2],
+      value + handles[3] + handlesMove[3],
+    ]
     return (
       <g>
         {isMoving && this._renderTransformedPoint()}
-        {(prevPoint != null) && prevPoint.isConnected &&
-          <g>
-            <line
-              stroke='dimgrey'
-              x1={t} y1={value}
-              x2={leftHandle[0]} y2={leftHandle[1]}/>
-            <DraggableArea
-              onDrag={this.leftHandleDragHandler}
-              onDragEnd={this.changePointHandles}>
-              <circle
-                fill='dimgrey'
-                stroke='transparent'
-                cx={leftHandle[0]} cy={leftHandle[1]} r={2}
-                className={css.handle}
-                onClick={(e) => this.handleClickHandler(e, 'left')}/>
-            </DraggableArea>
-          </g>
-        }
-        {(nextPoint != null) && point.isConnected &&
-          <g>
-            <line
-              stroke='dimgrey'
-              x1={t} y1={value}
-              x2={rightHandle[0]} y2={rightHandle[1]}/>
-            <DraggableArea
-              onDrag={this.rightHandleDragHandler}
-              onDragEnd={this.changePointHandles}>
-              <circle
-                fill='dimgrey'
-                stroke='transparent'
-                cx={rightHandle[0]} cy={rightHandle[1]} r={2}
-                className={css.handle}
-                onClick={(e) => this.handleClickHandler(e, 'right')}/>
-            </DraggableArea>    
-          </g>
-        }
+        {prevPoint != null &&
+          prevPoint.isConnected && (
+            <g>
+              <line
+                stroke="dimgrey"
+                x1={t}
+                y1={value}
+                x2={leftHandle[0]}
+                y2={leftHandle[1]}
+              />
+              <DraggableArea
+                onDrag={this.leftHandleDragHandler}
+                onDragEnd={this.changePointHandles}
+              >
+                <circle
+                  fill="dimgrey"
+                  stroke="transparent"
+                  cx={leftHandle[0]}
+                  cy={leftHandle[1]}
+                  r={2}
+                  className={css.handle}
+                  onClick={e => this.handleClickHandler(e, 'left')}
+                />
+              </DraggableArea>
+            </g>
+          )}
+        {nextPoint != null &&
+          point.isConnected && (
+            <g>
+              <line
+                stroke="dimgrey"
+                x1={t}
+                y1={value}
+                x2={rightHandle[0]}
+                y2={rightHandle[1]}
+              />
+              <DraggableArea
+                onDrag={this.rightHandleDragHandler}
+                onDragEnd={this.changePointHandles}
+              >
+                <circle
+                  fill="dimgrey"
+                  stroke="transparent"
+                  cx={rightHandle[0]}
+                  cy={rightHandle[1]}
+                  r={2}
+                  className={css.handle}
+                  onClick={e => this.handleClickHandler(e, 'right')}
+                />
+              </DraggableArea>
+            </g>
+          )}
         <DraggableArea
           onDrag={this.pointDragHandler}
-          onDragEnd={this.changePointPosition}>
+          onDragEnd={this.changePointPosition}
+        >
           <circle
-            fill='#222'
+            fill="#222"
             strokeWidth={2}
-            cx={t} cy={value} r={3}
+            cx={t}
+            cy={value}
+            r={3}
             className={css.point}
-            onClick={this.pointClickHandler}/>
+            onClick={this.pointClickHandler}
+          />
         </DraggableArea>
         {isEnteringProps && this._renderInputs()}
       </g>

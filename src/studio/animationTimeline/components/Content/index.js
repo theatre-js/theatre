@@ -189,7 +189,7 @@ class Content extends React.Component<Props, State> {
             newLayout.splice(index, 0, newLayout.splice(moveTo, 1)[0])
             return newLayout
           },
-        )
+        ),
       )
     } else if (mergeWith != null) {
       dispatch(
@@ -209,8 +209,8 @@ class Content extends React.Component<Props, State> {
               layout: newLayout,
               boxes: newBoxes,
             }
-          }
-        )
+          },
+        ),
       )
     }
 
@@ -255,7 +255,7 @@ class Content extends React.Component<Props, State> {
             boxes: newBoxes,
           }
         },
-      )
+      ),
     )
   }
 
@@ -265,9 +265,25 @@ class Content extends React.Component<Props, State> {
       reduceStateAction(
         ['animationTimeline', 'timelines', 'byId', timelineId, 'boxes', boxId, 'height'],
         () => newSize,
-      )
+      ),
     )
     this._resetBoundariesAndRatios()
+  }
+
+  changeFocusRightTo = (newFocusRight: number) => {
+    const {focus, duration} = this.state
+    if (newFocusRight > duration) newFocusRight = duration
+    if (newFocusRight - focus[0] < 1000) newFocusRight = focus[0] + 1000
+
+    this._changeFocusTo(focus[0], newFocusRight)
+  }
+
+  changeFocusLeftTo = (newFocusLeft: number) => {
+    const {focus} = this.state
+    if (newFocusLeft < 0) newFocusLeft = 0
+    if (focus[1] - newFocusLeft < 1000) newFocusLeft = focus[1] - 1000
+
+    this._changeFocusTo(newFocusLeft, focus[1])
   }
 
   changeFocusTo = (newFocusLeft: number, newFocusRight: number) => {
@@ -328,7 +344,7 @@ class Content extends React.Component<Props, State> {
 
   handleScroll = (e: SyntheticWheelEvent<>) => {
     if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) return
-    
+
     e.preventDefault()
     const {panelWidth, focus} = this.state
     const change = e.deltaX / panelWidth * (focus[1] - focus[0])
@@ -381,7 +397,8 @@ class Content extends React.Component<Props, State> {
             changeFocusRightTo={this.changeFocusRightTo}
             changeFocusLeftTo={this.changeFocusLeftTo}
             changeCurrentTimeTo={this.changeCurrentTimeTo}
-            changeDuration={this.changeDuration}/>
+            changeDuration={this.changeDuration}
+          />
         </div>
         <div className={css.lanes}>
           {layout.map((id, index) => {

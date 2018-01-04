@@ -78,7 +78,10 @@ export default function applyJsonDiffToAtom(diff: Diff, atom: $FixMe) {
   const stuff = {
     atom,
     components,
-    lastComponent: type === 'array' ? (lastComponent === '-' ? curAtom.length() : parseInt(lastComponent, 10)) : lastComponent,
+    lastComponent:
+      type === 'array'
+        ? lastComponent === '-' ? curAtom.length() : parseInt(lastComponent, 10)
+        : lastComponent,
     curAtom,
   }
 

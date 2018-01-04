@@ -37,29 +37,37 @@ type State = {
 }
 
 const resetExtremums = laneId => {
-  return reduceStateAction(
-    ['animationTimeline', 'lanes', 'byId', laneId],
-    lane => {
-      const {points} = lane
-      if (points.length === 0) return lane
-      const newExtremums = points.reduce((reducer, point, index) => {
+  return reduceStateAction(['animationTimeline', 'lanes', 'byId', laneId], lane => {
+    const {points} = lane
+    if (points.length === 0) return lane
+    const newExtremums = points.reduce(
+      (reducer, point, index) => {
         const {value} = point
         const prevValue = points[index - 1] ? points[index - 1].value : 0
         const nextValue = points[index + 1] ? points[index + 1].value : 0
-        const handles = [point.handles[1] * Math.abs(prevValue - value), point.handles[3] * Math.abs(nextValue - value)]
-        return [
-          Math.min(reducer[0], Math.min(value, value + handles[0] - 15, value + handles[1]) - 15),
-          Math.max(reducer[1], Math.max(value, value + handles[0] + 15, value + handles[1]) + 15),
+        const handles = [
+          point.handles[1] * Math.abs(prevValue - value),
+          point.handles[3] * Math.abs(nextValue - value),
         ]
-      }, [0, 60])
-      return {
-        ...lane,
-        extremums: newExtremums,
-      }
-    } 
-  )
+        return [
+          Math.min(
+            reducer[0],
+            Math.min(value, value + handles[0] - 15, value + handles[1]) - 15,
+          ),
+          Math.max(
+            reducer[1],
+            Math.max(value, value + handles[0] + 15, value + handles[1]) + 15,
+          ),
+        ]
+      },
+      [0, 60],
+    )
+    return {
+      ...lane,
+      extremums: newExtremums,
+    }
+  })
 }
-
 
 class LanesViewer extends React.PureComponent<Props, State> {
   svgArea: HTMLElement
@@ -117,12 +125,11 @@ class LanesViewer extends React.PureComponent<Props, State> {
     const {top, left} = this.svgArea.getBoundingClientRect()
     const t = e.clientX - left
     const value = e.clientY - top
-    const handleLength = (this.props.focus[1] - this.props.focus[0]) / 30
     const pointProps: Point = {
       t: this._deNormalizeX(t),
       value: this._deNormalizeValue(value),
       isConnected: true,
-      handles: [-handleLength, 0, handleLength, 0],
+      handles: [-0.2, 0, 0.2, 0],
     }
     this.props.dispatch(
       reduceStateAction(
@@ -135,8 +142,8 @@ class LanesViewer extends React.PureComponent<Props, State> {
             ...lane,
             points: points.slice(0, atIndex).concat(pointProps, points.slice(atIndex)),
           }
-        }
-      )
+        },
+      ),
     )
     this.props.dispatch(resetExtremums(this.state.activeLaneId))
   }
@@ -145,9 +152,8 @@ class LanesViewer extends React.PureComponent<Props, State> {
     this.props.dispatch(
       reduceStateAction(
         ['animationTimeline', 'lanes', 'byId', laneId, 'points'],
-        points =>
-          points.slice(0, pointIndex).concat(points.slice(pointIndex + 1))
-      )
+        points => points.slice(0, pointIndex).concat(points.slice(pointIndex + 1)),
+      ),
     )
     this.props.dispatch(resetExtremums(laneId))
   }
@@ -163,8 +169,8 @@ class LanesViewer extends React.PureComponent<Props, State> {
         point => ({
           ...point,
           ...newPosition,
-        })
-      )
+        }),
+      ),
     )
     this.props.dispatch(resetExtremums(laneId))
   }
@@ -178,21 +184,27 @@ class LanesViewer extends React.PureComponent<Props, State> {
           ...point,
           t: point.t + deNormalizedChange.t,
           value: point.value + deNormalizedChange.value,
-        })
-      )
+        }),
+      ),
     )
     this.props.dispatch(resetExtremums(laneId))
   }
 
   changePointHandlesBy = (laneId: LaneID, pointIndex: number, change: PointHandles) => {
-    const deNormalizedChange = this.deNormalizeHandles(change)
+    const {points} = this.props.lanes.find(({id}) => id === laneId)
+    const deNormalizedChange = this._deNormalizeHandles(
+      change,
+      points[pointIndex],
+      points[pointIndex - 1],
+      points[pointIndex + 1],
+    )
     this.props.dispatch(
       reduceStateAction(
         ['animationTimeline', 'lanes', 'byId', laneId, 'points', pointIndex, 'handles'],
         handles => {
           return handles.map((handle, index) => handle + deNormalizedChange[index])
-        }
-      )
+        },
+      ),
     )
     this.props.dispatch(resetExtremums(laneId))
   }
@@ -205,7 +217,7 @@ class LanesViewer extends React.PureComponent<Props, State> {
           ...point,
           isConnected: true,
         }),
-      )
+      ),
     )
   }
 
@@ -217,7 +229,7 @@ class LanesViewer extends React.PureComponent<Props, State> {
           ...point,
           isConnected: false,
         }),
-      )
+      ),
     )
   }
 
@@ -233,8 +245,8 @@ class LanesViewer extends React.PureComponent<Props, State> {
             handles[3] = 0
           }
           return handles
-        }
-      )
+        },
+      ),
     )
     this.props.dispatch(resetExtremums(laneId))
   }
@@ -279,51 +291,61 @@ class LanesViewer extends React.PureComponent<Props, State> {
     }
   }
 
-  _normalizeHandles = (handles: PointHandles, point: Point, prevPoint: ?Point, nextPoint: ?Point): PointHandles => {
-      const handlesInPixels = [
-        ...(prevPoint != null
-          ?
-          [handles[0] * Math.abs(prevPoint.t - point.t), handles[1] * Math.abs(prevPoint.value - point.value)]
-          :
-          handles.slice(0, 2)
-        ),
-        ...(nextPoint != null
-          ?
-          [handles[2] * Math.abs(nextPoint.t - point.t), handles[3] * Math.abs(nextPoint.value - point.value)]
-          :
-          handles.slice(2)
-        ),
-      ]
-      return [
-        this._normalizeX(handlesInPixels[0]),
-        this._normalizeY(handlesInPixels[1]),
-        this._normalizeX(handlesInPixels[2]),
-        this._normalizeY(handlesInPixels[3]),
-      ]
-    }
+  _normalizeHandles = (
+    handles: PointHandles,
+    point: Point,
+    prevPoint: ?Point,
+    nextPoint: ?Point,
+  ): PointHandles => {
+    const handlesInPixels = [
+      ...(prevPoint != null
+        ? [
+            handles[0] * Math.abs(prevPoint.t - point.t),
+            handles[1] * Math.abs(prevPoint.value - point.value),
+          ]
+        : handles.slice(0, 2)),
+      ...(nextPoint != null
+        ? [
+            handles[2] * Math.abs(nextPoint.t - point.t),
+            handles[3] * Math.abs(nextPoint.value - point.value),
+          ]
+        : handles.slice(2)),
+    ]
+    return [
+      this._normalizeX(handlesInPixels[0]),
+      this._normalizeY(handlesInPixels[1]),
+      this._normalizeX(handlesInPixels[2]),
+      this._normalizeY(handlesInPixels[3]),
+    ]
+  }
 
-    _deNormalizeHandles = (handles: PointHandles, point: Point, prevPoint: ?Point, nextPoint: ?Point): PointHandles => {
-      const deNormalizedHandles : PointHandles = [
-        this._deNormalizeX(handles[0]),
-        this._deNormalizeY(handles[1]),
-        this._deNormalizeX(handles[2]),
-        this._deNormalizeY(handles[3]),
-      ]
-      return [
-        ...(prevPoint != null
-          ?
-          [deNormalizedHandles[0] / Math.abs(prevPoint.t - point.t), deNormalizedHandles[1] / Math.abs(prevPoint.value - point.value)]
-          :
-          [deNormalizedHandles[0], deNormalizedHandles[1]]
-        ),
-        ...(nextPoint != null
-          ?
-          [deNormalizedHandles[2] / Math.abs(nextPoint.t - point.t), deNormalizedHandles[3] / Math.abs(nextPoint.value - point.value)]
-          :
-          [deNormalizedHandles[2], deNormalizedHandles[3]]
-        ),
-      ]
-    }
+  _deNormalizeHandles = (
+    handles: PointHandles,
+    point: Point,
+    prevPoint: ?Point,
+    nextPoint: ?Point,
+  ): PointHandles => {
+    const deNormalizedHandles: PointHandles = [
+      this._deNormalizeX(handles[0]),
+      this._deNormalizeY(handles[1]),
+      this._deNormalizeX(handles[2]),
+      this._deNormalizeY(handles[3]),
+    ]
+    return [
+      ...(prevPoint != null
+        ? [
+            deNormalizedHandles[0] / Math.abs(prevPoint.t - point.t),
+            deNormalizedHandles[1] / Math.abs(prevPoint.value - point.value),
+          ]
+        : [deNormalizedHandles[0], deNormalizedHandles[1]]),
+      ...(nextPoint != null
+        ? [
+            deNormalizedHandles[2] / Math.abs(nextPoint.t - point.t),
+            deNormalizedHandles[3] / Math.abs(nextPoint.value - point.value),
+          ]
+        : [deNormalizedHandles[2], deNormalizedHandles[3]]),
+    ]
+  }
 
   _normalizePoints(points: Point[]): NormalizedPoint[] {
     return points.map((point, index) => {
@@ -333,7 +355,12 @@ class LanesViewer extends React.PureComponent<Props, State> {
         _value: value,
         t: this._normalizeX(t),
         value: this._normalizeValue(value),
-        handles: this._normalizeHandles(handles, point, points[index - 1], points[index + 1]),
+        handles: this._normalizeHandles(
+          handles,
+          point,
+          points[index - 1],
+          points[index + 1],
+        ),
         isConnected,
       }
     })

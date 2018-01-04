@@ -73,7 +73,11 @@ const initialState: WorkspaceNamespaceState = {
         outputs: {},
       },
     },
-    listOfVisibles: ['8daa7380-9b43-475a-8352-dc564a58c719', 'composePanel-imAUUID', 'elementTree'],
+    listOfVisibles: [
+      '8daa7380-9b43-475a-8352-dc564a58c719',
+      'composePanel-imAUUID',
+      'elementTree',
+    ],
     idOfActivePanel: 'elementTree',
     currentlyDraggingOutput: null,
   },

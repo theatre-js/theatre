@@ -90,48 +90,71 @@ class TimeBar extends React.Component<Props, State> {
     const focusRight = timeToX(focus[1])
     const currentX = focusedTimeToX(currentTime, focus)
     currentTime = currentTime / 1000
-    focus = focus.map((f) => (f / 1000))
+    focus = focus.map(f => f / 1000)
     duration = duration / 1000
     return (
       <div className={css.container}>
         <div className={css.timeStart}>{0}</div>
-        {isChangingDuration
-          ?
+        {isChangingDuration ? (
           <SingleInputForm
             className={css.timeEndInput}
             value={String(duration)}
             onSubmit={this.changeDuration}
-            onCancel={this.disableChangingDuration} />
-          :
-          <div className={css.timeEnd} title='Double click to change' onDoubleClick={this.enableChangingDuration}>
+            onCancel={this.disableChangingDuration}
+          />
+        ) : (
+          <div
+            className={css.timeEnd}
+            title="Double click to change"
+            onDoubleClick={this.enableChangingDuration}
+          >
             {duration.toFixed(0)}
           </div>
-        }
+        )}
         <div className={css.timeThread}>
-          <DraggableArea 
+          <DraggableArea
             onDragStart={this._setBeforeMoveState}
-            onDrag={(dx) => this.moveFocus(dx)}>
-            <div className={css.focusBar} style={{width: `${focusRight - focusLeft}px`, transform: `translateX(${focusLeft}px)`}}/>
+            onDrag={dx => this.moveFocus(dx)}
+          >
+            <div
+              className={css.focusBar}
+              style={{
+                width: `${focusRight - focusLeft}px`,
+                transform: `translateX(${focusLeft}px)`,
+              }}
+            />
           </DraggableArea>
           <DraggableArea
             onDragStart={this._setBeforeMoveState}
-            onDrag={(dx) => this.moveFocusLeft(dx)}>
-            <div className={css.leftFocusHandle} style={{transform: `translateX(${focusLeft}px)`}}>
+            onDrag={dx => this.moveFocusLeft(dx)}
+          >
+            <div
+              className={css.leftFocusHandle}
+              style={{transform: `translateX(${focusLeft}px)`}}
+            >
               <div className={css.timeTip}>{focus[0].toFixed(1)}</div>
             </div>
           </DraggableArea>
           <DraggableArea
             onDragStart={this._setBeforeMoveState}
-            onDrag={(dx) => this.moveFocusRight(dx)}>
-            <div className={css.rightFocusHandle} style={{transform: `translateX(${focusRight}px)`}}>
+            onDrag={dx => this.moveFocusRight(dx)}
+          >
+            <div
+              className={css.rightFocusHandle}
+              style={{transform: `translateX(${focusRight}px)`}}
+            >
               <div className={css.timeTip}>{focus[1].toFixed(1)}</div>
-            </div>  
+            </div>
           </DraggableArea>
         </div>
         <DraggableArea
           onDragStart={this._setBeforeMoveState}
-          onDrag={(dx) => this.changeCurrentTime(dx)}>
-          <div className={css.currentTime} style={{transform: `translateX(${currentX}px)`}}>
+          onDrag={dx => this.changeCurrentTime(dx)}
+        >
+          <div
+            className={css.currentTime}
+            style={{transform: `translateX(${currentX}px)`}}
+          >
             <div className={css.timeTip}>{currentTime.toFixed(1)}</div>
           </div>
         </DraggableArea>
