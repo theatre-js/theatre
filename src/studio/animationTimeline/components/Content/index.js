@@ -270,11 +270,35 @@ class Content extends React.Component<Props, State> {
     this._resetBoundariesAndRatios()
   }
 
-  changeFocusTo = focus => {
-    this.setState(() => ({focus}))
+  changeFocusTo = (newFocusLeft: number, newFocusRight: number) => {
+    const {focus, duration} = this.state
+    if (newFocusLeft < 0) {
+      newFocusLeft = 0
+      newFocusRight = focus[1] - focus[0]
+    }
+    if (newFocusRight > duration) {
+      newFocusLeft = duration - (focus[1] - focus[0])
+      newFocusRight = duration
+    }
+
+    this._changeFocusTo(newFocusLeft, newFocusRight)
   }
 
-  changeCurrentTimeTo = currentTime => {
+  _changeFocusTo(newFocusLeft: number, newFocusRight: number) {
+    const {focus, currentTime} = this.state
+    const newTimeX = this.focusedTimeToX(currentTime, focus)
+    const newCurrentTime = this.xToFocusedTime(newTimeX, [newFocusLeft, newFocusRight])
+
+    this.setState(() => ({
+      currentTime: newCurrentTime,
+      focus: [newFocusLeft, newFocusRight],
+    }))
+  }
+
+  changeCurrentTimeTo = (currentTime: number) => {
+    const {focus} = this.state
+    if (currentTime < focus[0]) currentTime = focus[0]
+    if (currentTime > focus[1]) currentTime = focus[1]
     this.setState(() => ({currentTime}))
   }
 
