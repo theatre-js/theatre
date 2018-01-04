@@ -2,7 +2,6 @@
 import {React, connect, reduceStateAction} from '$studio/handy'
 import {getTimelineById} from '$studio/animationTimeline/selectors'
 import generateUniqueId from 'uuid/v4'
-import {resizeBox} from '$studio/animationTimeline/sagas'
 import css from './index.css'
 import SortableBox from './SortableBox'
 import LanesViewer from './LanesViewer'
