@@ -1,7 +1,7 @@
 .container {
   position: relative;
   width: 100%;
-  height: 20px;
+  height: 25px;
 }
 
 .time {
@@ -16,14 +16,17 @@
 .timeStart {
   composes: time;
   width: 10px;
-  left: -5px;
+  left: -2px;
+  text-aling: left;
   cursor: default;
 }
 
 .timeEnd {
   composes: time;
   width: 30px;
-  right: -15px;
+  /*right: -15px;*/
+  right: 0;
+  text-align: right;
   cursor: pointer;
 }
 

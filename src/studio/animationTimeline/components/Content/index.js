@@ -1,15 +1,12 @@
 // @flow
-import React from 'react'
-import compose from 'ramda/src/compose'
-import {connect} from '$studio/handy'
+import {React, connect, reduceStateAction} from '$studio/handy'
 import {getTimelineById} from '$studio/animationTimeline/selectors'
-
-import {moveBox, mergeBoxes, splitLane, resizeBox} from '$studio/animationTimeline/sagas'
+import generateUniqueId from 'uuid/v4'
+import {resizeBox} from '$studio/animationTimeline/sagas'
 import css from './index.css'
 import SortableBox from './SortableBox'
 import LanesViewer from './LanesViewer'
 import TimeBar from './TimeBar'
-import {type StoreState} from '$studio/types'
 import {
   type TimelineID,
   type TimelineObject,
@@ -84,7 +81,8 @@ class Content extends React.Component<Props, State> {
   }
 
   _getPanelWidth(xDim) {
-    return xDim / 100 * window.innerWidth - 40
+    return xDim / 100 * window.innerWidth - 16
+    // return xDim / 100 * window.innerWidth - 40
   }
 
   _resetPanelWidth(xDim) {
@@ -179,14 +177,42 @@ class Content extends React.Component<Props, State> {
     }))
   }
 
-  async onBoxEndMove() {
+  onBoxEndMove() {
     if (this.state.boxBeingDragged == null) return
     const {index, moveTo, mergeWith} = this.state.boxBeingDragged
     const {timelineId, dispatch} = this.props
     if (moveTo != null) {
-      await dispatch(moveBox, timelineId, index, moveTo)
+      dispatch(
+        reduceStateAction(
+          ['animationTimeline', 'timelines', 'byId', timelineId, 'layout'],
+          layout => {
+            const newLayout = layout.slice()
+            newLayout.splice(index, 0, newLayout.splice(moveTo, 1)[0])
+            return newLayout
+          },
+        )
+      )
     } else if (mergeWith != null) {
-      await dispatch(mergeBoxes, timelineId, index, mergeWith)
+      dispatch(
+        reduceStateAction(
+          ['animationTimeline', 'timelines', 'byId', timelineId],
+          ({layout, boxes}) => {
+            const fromId = layout[index]
+            const toId = layout[mergeWith]
+
+            const newLayout = layout.slice()
+            newLayout.splice(index, 1)
+
+            const {[fromId]: mergedBox, ...newBoxes} = boxes
+            newBoxes[toId].lanes = newBoxes[toId].lanes.concat(mergedBox.lanes)
+
+            return {
+              layout: newLayout,
+              boxes: newBoxes,
+            }
+          }
+        )
+      )
     }
 
     this.setState(() => {
@@ -196,14 +222,52 @@ class Content extends React.Component<Props, State> {
     })
   }
 
-  async splitLane(index: number, laneId: string) {
+  splitLane(index: number, laneId: string) {
     const {timelineId, dispatch} = this.props
-    await dispatch(splitLane, timelineId, index, laneId)
+    dispatch(
+      reduceStateAction(
+        ['animationTimeline', 'timelines', 'byId', timelineId],
+        ({layout, boxes}) => {
+          const fromId = layout[index]
+          const newBoxId = generateUniqueId()
+
+          const fromBox = boxes[fromId]
+          const newLanes = fromBox.lanes.slice()
+          newLanes.splice(newLanes.indexOf(laneId), 1)
+
+          const newBoxes = {
+            ...boxes,
+            [fromId]: {
+              ...fromBox,
+              lanes: newLanes,
+            },
+            [newBoxId]: {
+              id: newBoxId,
+              height: fromBox.height,
+              lanes: [laneId],
+            },
+          }
+
+          const newLayout = layout.slice()
+          newLayout.splice(index + 1, 0, newBoxId)
+
+          return {
+            layout: newLayout,
+            boxes: newBoxes,
+          }
+        },
+      )
+    )
   }
 
-  async onBoxResize(boxId: BoxID, newSize) {
+  onBoxResize(boxId: BoxID, newSize) {
     const {timelineId, dispatch} = this.props
-    await dispatch(resizeBox, timelineId, boxId, newSize)
+    dispatch(
+      reduceStateAction(
+        ['animationTimeline', 'timelines', 'byId', timelineId, 'boxes', boxId, 'height'],
+        () => newSize,
+      )
+    )
     this._resetBoundariesAndRatios()
   }
 
@@ -302,9 +366,7 @@ class Content extends React.Component<Props, State> {
   }
 }
 
-export default compose(
-  connect((state: StoreState, ownProps: OwnProps) => {
-    const timeline = getTimelineById(state, ownProps.timelineId)
-    return {...timeline}
-  }),
-)(Content)
+export default connect((s, op) => {
+  const timeline = getTimelineById(s, op.timelineId)
+  return {...timeline}
+})(Content)

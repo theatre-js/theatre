@@ -137,10 +137,6 @@ class NodeContent extends React.PureComponent<Props, State> {
                         e.preventDefault()
                       }}
                     >
-                      <div className={cx(css.contextMenuItem)} onClick={this.onDelete}>
-                        Delete this node
-                      </div>
-                      <div className={css.menuSeparator} />
                       <div
                         className={cx(css.contextMenuItem, {
                           [css.disabled]: !this.props.onAddText,
@@ -157,6 +153,10 @@ class NodeContent extends React.PureComponent<Props, State> {
                         onClick={this.onDeleteText}
                       >
                         Delete text child
+                      </div>
+                      <div className={css.menuSeparator} />
+                      <div className={cx(css.contextMenuItem)} onClick={this.onDelete}>
+                        Delete this node
                       </div>
                     </div>
                   </div>,

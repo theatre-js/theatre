@@ -24,6 +24,8 @@ const ops = {
         D.atoms.atomifyDeep(diff.value),
       )
     },
+
+    move(diff: Diff, stuff: Stuff) {},
   },
   array: {
     remove(diff: Diff, {curAtom, lastComponent}: Stuff) {
@@ -33,7 +35,7 @@ const ops = {
       curAtom.setIndex(lastComponent, D.atoms.atomifyDeep(diff.value))
     },
     add(diff: Diff, {curAtom, lastComponent}) {
-      curAtom.setIndex(lastComponent, D.atoms.atomifyDeep(diff.value))
+      curAtom.splice(lastComponent, 0, [D.atoms.atomifyDeep(diff.value)])
     },
   },
   box: {},
@@ -51,10 +53,15 @@ export default function applyJsonDiffToAtom(diff: Diff, atom: $FixMe) {
   let curAtom: $FixMe = atom
   for (let component of components) {
     component = jsonPatchLib.unescapePathComponent(component)
+    // if (curAtom.isDictAtom !== 'True') debugger
     curAtom =
       curAtom.isDictAtom === 'True'
         ? curAtom.prop(component)
-        : console.error(`not implemented`)
+        : curAtom.isArrayAtom === 'True'
+          ? curAtom.index(parseInt(component, 10))
+          : () => {
+              throw new Error('Not implemented')
+            }
   }
 
   const type =
@@ -71,7 +78,7 @@ export default function applyJsonDiffToAtom(diff: Diff, atom: $FixMe) {
   const stuff = {
     atom,
     components,
-    lastComponent: type === 'array' ? parseInt(lastComponent, 10) : lastComponent,
+    lastComponent: type === 'array' ? (lastComponent === '-' ? curAtom.length() : parseInt(lastComponent, 10)) : lastComponent,
     curAtom,
   }
 
@@ -79,7 +86,6 @@ export default function applyJsonDiffToAtom(diff: Diff, atom: $FixMe) {
   if (opFn) {
     opFn(diff, stuff)
   } else {
-    console.error(`@todo Diff op '${diff.op}' for atom type ${type} not yet supported`)
-    return
+    throw Error(`@todo Diff op '${diff.op}' for atom type ${type} not yet supported`)
   }
 }

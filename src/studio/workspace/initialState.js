@@ -15,12 +15,12 @@ const initialState: WorkspaceNamespaceState = {
         },
         placementSettings: {
           pos: {
-            x: 20,
-            y: 25,
+            x: 15,
+            y: 60,
           },
           dim: {
-            x: 60,
-            y: 50,
+            x: 70,
+            y: 40,
           },
         },
         inputs: {},
@@ -41,7 +41,7 @@ const initialState: WorkspaceNamespaceState = {
             y: 0,
           },
           dim: {
-            x: 20,
+            x: 15,
             y: 100,
           },
         },
@@ -59,11 +59,11 @@ const initialState: WorkspaceNamespaceState = {
         },
         placementSettings: {
           pos: {
-            x: 80,
+            x: 85,
             y: 0,
           },
           dim: {
-            x: 20,
+            x: 15,
             y: 100,
           },
         },
@@ -73,7 +73,7 @@ const initialState: WorkspaceNamespaceState = {
         outputs: {},
       },
     },
-    listOfVisibles: ['composePanel-imAUUID', 'elementTree'],
+    listOfVisibles: ['8daa7380-9b43-475a-8352-dc564a58c719', 'composePanel-imAUUID', 'elementTree'],
     idOfActivePanel: 'elementTree',
     currentlyDraggingOutput: null,
   },
