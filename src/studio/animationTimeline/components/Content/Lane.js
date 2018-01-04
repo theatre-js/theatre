@@ -16,8 +16,6 @@ type Props = {
   addConnector: Function,
   removeConnector: Function,
   makeHandleHorizontal: Function,
-  makeHandlesEqual: Function,
-  makeHandlesParallel: Function,
 }
 
 const Lane = (props: Props) => {
@@ -51,8 +49,6 @@ const Lane = (props: Props) => {
               addConnector={() => props.addConnector(index)}
               removePoint={() => props.removePoint(index)}
               makeHandleHorizontal={side => props.makeHandleHorizontal(index, side)}
-              makeHandlesEqual={side => props.makeHandlesEqual(index, side)}
-              makeHandlesParallel={side => props.makeHandlesParallel(index, side)}
             />
           </g>
         )

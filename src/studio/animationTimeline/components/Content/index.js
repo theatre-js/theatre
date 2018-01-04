@@ -302,6 +302,35 @@ class Content extends React.Component<Props, State> {
     }))
   }
 
+  handleScroll = (e: SyntheticWheelEvent<>) => {
+    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) return
+    
+    e.preventDefault()
+    const {panelWidth, focus} = this.state
+    const change = e.deltaX / panelWidth * (focus[1] - focus[0])
+    this.changeFocusTo(focus[0] + change, focus[1] + change)
+  }
+
+  timeToX = (t: number) => {
+    const {panelWidth, duration} = this.state
+    return t * panelWidth / duration
+  }
+
+  xToTime = (x: number) => {
+    const {panelWidth, duration} = this.state
+    return x * duration / panelWidth
+  }
+
+  focusedTimeToX = (t: number, focus: [number, number]) => {
+    const {panelWidth} = this.state
+    return (t - focus[0]) / (focus[1] - focus[0]) * panelWidth
+  }
+
+  xToFocusedTime = (x: number, focus: [number, number]) => {
+    const {panelWidth} = this.state
+    return x * (focus[1] - focus[0]) / panelWidth + focus[0]
+  }
+
   render() {
     const {
       boxBeingDragged,
@@ -313,17 +342,22 @@ class Content extends React.Component<Props, State> {
     } = this.state
     const {boxes, layout} = this.props
     return (
-      <div className={css.container}>
+      <div className={css.container} onWheel={this.handleScroll}>
         <div className={css.timeBar}>
           <TimeBar
             panelWidth={panelWidth}
             duration={duration}
             currentTime={currentTime}
             focus={focus}
+            timeToX={this.timeToX}
+            xToTime={this.xToTime}
+            focusedTimeToX={this.focusedTimeToX}
+            xToFocusedTime={this.xToFocusedTime}
             changeFocusTo={this.changeFocusTo}
+            changeFocusRightTo={this.changeFocusRightTo}
+            changeFocusLeftTo={this.changeFocusLeftTo}
             changeCurrentTimeTo={this.changeCurrentTimeTo}
-            changeDuration={this.changeDuration}
-          />
+            changeDuration={this.changeDuration}/>
         </div>
         <div className={css.lanes}>
           {layout.map((id, index) => {
