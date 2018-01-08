@@ -34,6 +34,7 @@ type State = {
   isContextMenuVisible: boolean,
   newChildIndex: ?number,
   isBeingDragged: boolean,
+  isActive: boolean,
 }
 
 class RenderTreeNode extends React.PureComponent<Props, State> {
@@ -47,6 +48,7 @@ class RenderTreeNode extends React.PureComponent<Props, State> {
       isBeingDragged: false,
       height: 0,
       top: 0,
+      isActive: false,
     }
   }
 
@@ -64,12 +66,16 @@ class RenderTreeNode extends React.PureComponent<Props, State> {
       }, 500)
     }
 
-    if (!nextProps.isCommandPressed && !this.state.isAddingNewChild) {
+    if (!nextProps.isCommandPressed && !this.state.isAddingNewChild && !nextProps.isANodeBeingDragged) {
       this.setState(() => ({newChildIndex: null}))
     }
 
     if (!nextProps.isANodeBeingDragged && this.state.isBeingDragged) {
       this.setState(() => ({isBeingDragged: false}))
+    }
+
+    if (nextProps.activeDropZoneProps != null && nextProps.activeDropZoneProps.atId !== this.nodeId && this.state.isActive) {
+      this.setState(() => ({isActive: false}))
     }
   }
 
@@ -157,9 +163,9 @@ class RenderTreeNode extends React.PureComponent<Props, State> {
     e.stopPropagation()
     if (!acceptsChild) return
     if (this.state.newChildIndex === newChildIndex) return
-    if (this.props.isANodeBeingDragged)
-      this.props.setActiveDropZone(nodeId, newChildIndex, this.props.depth || 0)
-    this.setState(() => ({newChildIndex}))
+    // if (this.props.isANodeBeingDragged)
+    this.props.setActiveDropZone(nodeId, newChildIndex, this.props.depth || 0)
+    this.setState(() => ({newChildIndex, isActive: true}))
   }
 
   mouseDownHandler = (e, nodeId, nodePath, nodeContent) => {
@@ -199,7 +205,6 @@ class RenderTreeNode extends React.PureComponent<Props, State> {
       setActiveDropZone,
       unsetActiveDropZone,
     } = props
-
     const {
       nodeId,
       nodeType,
@@ -207,7 +212,7 @@ class RenderTreeNode extends React.PureComponent<Props, State> {
       nodeChildren,
       nodePath,
     } = this._getNodeContentAndChildren(descriptor)
-
+    this.nodeId = nodeId
     const depth = props.depth || 0
 
     if (nodeId != null) {
@@ -272,10 +277,10 @@ class RenderTreeNode extends React.PureComponent<Props, State> {
           </div>
           <AddBar
             shouldRenderNodePlaceholder={
-              isCommandPressed && acceptsChild && newChildIndex === 0
+              this.state.isActive && isCommandPressed && acceptsChild && newChildIndex === 0
             }
             shouldRenderDropZone={
-              isANodeBeingDragged && acceptsChild && newChildIndex === 0
+              this.state.isActive && isANodeBeingDragged && acceptsChild && newChildIndex === 0
             }
             depth={depth + 1}
             onAnimationStart={() => this.setState(() => ({isAddingNewChild: true}))}
@@ -320,13 +325,14 @@ class RenderTreeNode extends React.PureComponent<Props, State> {
                   parentSetHeight={this.setHeight}
                   addTextChild={this.props.addTextChild}
                   deleteTextChild={this.props.deleteTextChild}
+                  activeDropZoneProps={this.props.activeDropZoneProps}
                 />
                 <AddBar
                   shouldRenderNodePlaceholder={
-                    isCommandPressed && acceptsChild && newChildIndex === i + 1
+                    this.state.isActive && isCommandPressed && acceptsChild && newChildIndex === i + 1
                   }
                   shouldRenderDropZone={
-                    isANodeBeingDragged && acceptsChild && newChildIndex === i + 1
+                    this.state.isActive && isANodeBeingDragged && acceptsChild && newChildIndex === i + 1
                   }
                   depth={depth + 1}
                   onAnimationStart={() => this.setState(() => ({isAddingNewChild: true}))}

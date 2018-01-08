@@ -347,6 +347,7 @@ class TreeEditor extends React.PureComponent<Props, State> {
                 unsetActiveDropZone={this.unsetActiveDropZone}
                 addTextChild={this.addTextChild}
                 deleteTextChild={this.deleteTextChild}
+                activeDropZoneProps={this.state.activeDropZoneProps}
               />
             </div>
           </div>
