@@ -249,21 +249,7 @@ class RenderTreeNode extends React.PureComponent<Props, State> {
               }
             : {})}
         >
-          <div
-            // {...(nodePath != null
-            //   ? {
-            //       onClick: () =>
-            //         dispatch(
-            //           reduceStateAction(
-            //             ['x2', 'pathToInspectableInX2'],
-            //             () => nodePath,
-            //           ),
-            //         ),
-            //     }
-            //   : {})}
-            className={css.content}
-            // onContextMenu={this.contextMenuHandler}
-          >
+          <div className={css.content}>
             <NodeContent
               type={nodeType}
               content={nodeContent}

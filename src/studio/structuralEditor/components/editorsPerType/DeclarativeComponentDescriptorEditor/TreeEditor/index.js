@@ -23,6 +23,7 @@ type Props = {
 
 type State = {
   deltaScroll: number,
+  maxScroll: number,
   isCommandPressed: boolean,
   activeDropZoneProps: ?{
     atId: string,
@@ -51,6 +52,7 @@ class TreeEditor extends React.PureComponent<Props, State> {
     this.refMap = {}
     this.state = {
       deltaScroll: 0,
+      maxScroll: 0,
       isCommandPressed: false,
       nodeBeingDraggedProps: null,
       activeDropZoneProps: null,
@@ -95,6 +97,7 @@ class TreeEditor extends React.PureComponent<Props, State> {
       '* {cursor: -webkit-grab !important;}',
       document.styleSheets[0].cssRules.length,
     )
+
     const {
       nodeId: id,
       nodePath: path,
@@ -104,7 +107,9 @@ class TreeEditor extends React.PureComponent<Props, State> {
       height,
       offsetY: clickOffsetY,
     } = props
+    const maxScroll = this.treeContainer.clientHeight - this.treeWrapper.clientHeight - height
     this.setState(() => ({
+      maxScroll,
       nodeBeingDraggedProps: {id, path, depth, content, top, height, clickOffsetY},
     }))
   }
@@ -278,17 +283,18 @@ class TreeEditor extends React.PureComponent<Props, State> {
   startScroll = dir => {
     if (this.state.nodeBeingDraggedProps == null) return
     const delta = dir === 'up' ? -1 : dir === 'down' ? 1 : 0
-    const maxScroll =
-      this.treeWrapper.scrollHeight -
-      parseFloat(getComputedStyle(this.treeContainer).paddingBottom) -
-      this.treeWrapper.clientHeight
+    const {maxScroll: stateMaxScroll} = this.state
+    const maxScroll = {
+      'up': Math.max(this.treeWrapper.scrollTop, stateMaxScroll),
+      'down': stateMaxScroll,
+    }
     this.scrollInterval = setInterval(() => {
-      const scrollTo = parseInt(_.clamp(this.treeWrapper.scrollTop + delta, 0, maxScroll))
+      const scrollTo = parseInt(_.clamp(this.treeWrapper.scrollTop + delta, 0, maxScroll[dir]))
       if (this.treeWrapper.scrollTop !== scrollTo) {
         this.treeWrapper.scrollTop = scrollTo
         this.setState(state => ({deltaScroll: state.deltaScroll + delta}))
       }
-    }, 10)
+    }, 5)
   }
 
   stopScroll = () => {
