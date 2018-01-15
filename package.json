@@ -16,7 +16,7 @@
     "lb:dev": "nodemon -e jade --exec \"electron\" ./bundles/lb/index.js",
     "lb:run": "electron ./bundles/lb/index.js",
     "lf:webpack:dev": "webpack-dev-server --progress --config webpack/lf/development.babel.js",
-    "studio:webpack:dev": "webpack-dev-server --progress --config webpack/studio/development.babel.js",
+    "studio:webpack:dev": "webpack-dev-server --progress --config webpack/studio/development.js",
     "examples:webpack:dev": "webpack-dev-server --progress --config webpack/examples/development.babel.js",
     "build:dev": "npm-run-all --parallel lb:webpack:dev lf:webpack:dev studio:webpack:dev examples:webpack:dev",
     "open-examples": "opn http://localhost:9092/examples"
@@ -42,6 +42,7 @@
   "author": "TheaterJS Oy",
   "license": "Proprietary",
   "devDependencies": {
+    "@types/webpack": "^3.8.2",
     "autoprefixer": "^7.1.2",
     "awesome-typescript-loader": "^3.3.0",
     "babel-cli": "^6.26.0",
@@ -75,6 +76,7 @@
     "fs-extra": "^4.0.0",
     "html-webpack-plugin": "^2.29.0",
     "husky": "^0.14.3",
+    "immer": "^0.7.0",
     "jest": "^21.2.1",
     "json2csv": "^3.11.4",
     "lodash": "^4.17.4",
@@ -102,7 +104,10 @@
     "style-loader": "^0.19.0",
     "svg-inline-loader": "^0.8.0",
     "timing-function": "^0.2.3",
+    "ts-node": "^4.1.0",
+    "tsconfig-paths-webpack-plugin": "^2.0.0",
     "typescript": "^2.6.1",
+    "typings-for-css-modules-loader": "^1.7.0",
     "url-loader": "^0.5.9",
     "uuid": "^3.1.0",
     "webpack": "^3.5.5",
@@ -111,6 +116,7 @@
     "when": "^3.7.8"
   },
   "dependencies": {
+    "@ariaminaei/react-devtools-mirror": "github:AriaMinaei/react-devtools-mirror",
     "source-map-support": "^0.5.0"
   }
 }

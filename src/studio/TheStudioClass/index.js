@@ -5,7 +5,7 @@ import * as D from '$shared/DataVerse'
 import LBCommunicator from './LBCommunicator'
 import configureStore from './configureStore'
 import StudioRootComponent from './components/StudioRootComponent'
-import type {default as StandardStore} from '$lb/bootstrap/StandardStore'
+import {default as StandardStore} from '$lb/bootstrap/StandardStore'
 import configureAtom from './configureAtom'
 
 type Atom = $FixMe

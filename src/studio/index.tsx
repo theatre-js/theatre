@@ -1,9 +1,9 @@
 // @flow
 if (!window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
-  const globalHook = require('../react-devtools/backend/installGlobalHook')
+  const globalHook = require('@ariaminaei/react-devtools-mirror/backend/installGlobalHook')
   globalHook(window)
 }
-const backend = require('../react-devtools/backend/backend')
+const backend = require('@ariaminaei/react-devtools-mirror/backend/backend')
 backend(window.__REACT_DEVTOOLS_GLOBAL_HOOK__)
 
 // @todo only one instance of babel-polyfill is allowed per window, so we can't ship
