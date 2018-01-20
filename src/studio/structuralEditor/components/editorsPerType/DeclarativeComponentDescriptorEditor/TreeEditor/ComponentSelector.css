@@ -1,0 +1,103 @@
+@value indent from './ComponentNode.css';
+
+.wrapper {
+  position: fixed 0 0 0 0;
+  z-index: 1000;
+
+  background-color: rgba(0, 0, 0, .5);
+
+  animation: wrapper-appear .2s ease-in-out forwards;
+
+  &.willUnmount {
+    animation: wrapper-disappear .2s ease-in-out forwards;
+  }
+}
+
+@keyframes wrapper-appear {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
+@keyframes wrapper-disappear {
+  from {opacity: 1;}
+  to {opacity: 0;}
+}
+
+.container {
+  position: relative;
+}
+
+.input {
+  position: relative;
+  width: 100%;
+  height: 27px;
+
+  --color: calc(var(--depth) * 20 + 45);
+  background-color: rgb(var(--color), var(--color), var(--color));
+  border-radius: 2px;
+
+  &:after {
+    display: block;
+    content: ' ';
+    position: absolute 26px 0 0 0;
+
+    background-color: #6BEEFE;
+    
+    transform-origin: 0 0;
+    transform: scaleX(0);
+    animation: underline-appear .15s .05s ease-in-out forwards;
+  }
+}
+
+.willUnmount .input {
+  &:after {
+    animation: underline-disappear .15s ease-in-out forwards;
+  }
+}
+
+@keyframes underline-appear {
+  to {transform: scaleX(1);}
+}
+
+@keyframes underline-disappear {
+  from {transform: scaleX(1);}
+  to {transform: scaleX(0);}
+}
+
+.input > input {
+  width: 100%;
+  height: 100%;
+  padding: 0 indent;
+}
+
+.list {
+  max-height: 100px;
+  overflow: hidden scroll;
+  
+  --color: calc(var(--depth) * 20 + 25);
+  background-color: rgb(var(--color), var(--color), var(--color));
+  
+  opacity: 0;
+  transform: translateY(10px);
+  animation: list-appear .3s ease-in-out forwards;
+}
+
+@keyframes list-appear {
+  to {opacity: 1; transform: translateY(0);}
+}
+
+.option {
+  padding: 0 indent;
+  height: 25px;
+  color: #AAA;
+  font-weight: 300;
+
+  &.isSelected {
+    font-weight: 500;
+    background-color: rgba(255, 255, 255, .1);
+  }
+
+  &:not(:last-child) {
+    border-bottom: 1px solid rgba(255, 255, 255, .1);
+  }
+}

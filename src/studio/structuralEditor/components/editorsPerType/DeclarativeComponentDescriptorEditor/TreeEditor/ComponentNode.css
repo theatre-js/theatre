@@ -1,0 +1,23 @@
+@value indent: 8px;
+
+.container {
+  position: relative;
+  left: indent;
+  width: calc(100% - 2 * indent);
+  height: 27px;
+  display: flex;
+  align-items: flex-end;
+  font-weight: 400;
+  white-space: nowrap;
+  
+  opacity: 1;
+  transition: opacity .15s ease-in-out;
+  
+  &.isContentHidden {
+    opacity: 0;
+  }
+}
+
+.displayName {
+  cursor: pointer;
+}

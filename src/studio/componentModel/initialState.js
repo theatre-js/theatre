@@ -134,12 +134,13 @@ const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
   localHiddenValuesById: {
     fontSize: '18px',
     // ...fakeNodes.allNodes,
+    palakiText: 'palaki',
     palaki: ({
       __descriptorType: 'ComponentInstantiationValueDescriptor',
       componentId: 'TheaterJS/Core/HTML/div',
       props: {
         key: 'palaki',
-        children: 'palaki',
+        children: {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'palakiText'},
       },
       modifierInstantiationDescriptors: {byId: {}, list: []},
     }: ComponentInstantiationValueDescriptor),
@@ -164,21 +165,23 @@ const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
       },
       modifierInstantiationDescriptors: {byId: {}, list: []},
     },
+    dchchText: 'dalaki dchch',
     dchch: {
       __descriptorType: 'ComponentInstantiationValueDescriptor',
       componentId: 'TheaterJS/Core/HTML/div',
       props: {
         key: 'dchch',
-        children: 'dalaki dchch',
+        children: {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'dchchText'},
       },
       modifierInstantiationDescriptors: {byId: {}, list: []},
     },
+    dchchpText: 'dalaki dchchp',
     dchchp: {
       __descriptorType: 'ComponentInstantiationValueDescriptor',
       componentId: 'TheaterJS/Core/HTML/div',
       props: {
         key: 'dchchp',
-        children: 'dalaki dchchp',
+        children: {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'dchchpText'},
       },
       modifierInstantiationDescriptors: {byId: {}, list: []},
     },

@@ -1,0 +1,14 @@
+@value indent from './ComponentNode.css';
+
+.container {
+  position: relative;
+  /*left: indent;*/
+  /*width: calc(100% - 2 * indent);*/
+  padding: 0 indent;
+  height: 27px;
+  display: flex;
+  align-items: flex-end;
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+}

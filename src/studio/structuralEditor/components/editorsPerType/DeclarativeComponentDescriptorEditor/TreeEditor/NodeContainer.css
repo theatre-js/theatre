@@ -1,0 +1,62 @@
+.container {
+  display: grid;
+  grid-template-columns: 16px 1fr 1px;
+  grid-tempalte-row: 27px;
+  position: relative;
+  margin-bottom: 2px;
+  border-radius: 2px;
+  overflow: hidden;
+  --color: calc(var(--depth) * 20 + 45);
+  background-color: rgb(var(--color), var(--color), var(--color));
+  top: 0;
+  will-change: max-height, transform;
+
+  &.isCreated {
+    animation: expand .15s ease-in-out;
+  }
+
+  &.isRelocated {
+    --shadow: calc(var(--depth) * 20 + 10);
+    z-index: 1000;
+    animation: drop .3s ease-in-out forwards;
+  }
+
+  &.isCollapsed {
+    animation: collapse .3s ease-in-out forwards;
+  }
+}
+
+@keyframes collapse {
+  from {max-height: var(--maxHeight);}
+  to {max-height: 0; margin-bottom: 0;}
+}
+
+@keyframes expand {
+  from {transform: scaleY(0.1);}
+  to {transform: scaleY(1);}
+}
+
+@keyframes drop {
+  from {
+    top: var(--initialTopOffset);
+    max-height: 27px;
+    box-shadow: 0 0 20px 5px rgb(var(--shadow), var(--shadow), var(--shadow));
+  }
+  to {
+    top: 0;
+    max-height: var(--maxHeight);
+    box-shadow: none;
+  }
+}
+
+.root {
+  grid-column: 1 / span 2;
+}
+
+.hoverSensor {
+  grid-column: 1;
+}
+
+.child {
+  grid-column: 2;
+}

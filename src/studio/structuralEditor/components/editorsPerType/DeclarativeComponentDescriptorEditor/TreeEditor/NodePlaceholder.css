@@ -1,0 +1,45 @@
+.wrapper {
+  grid-column: 1 / span 2;
+  max-height: 29px;
+  height: auto;
+}
+
+.container {
+  position: relative;
+
+  animation: appear .15s ease-in-out forwards;
+}
+
+@keyframes appear {
+  from {height: 0; opacity: 0;}
+  to {height: 29px; opacity: 1;}
+}
+
+.sign {
+  display: inline-block;
+  text-align: center;
+  width: 16px;
+  font-size: 10px;
+  line-height: 27px;
+  font-weight: 400;
+  vertical-align: top;
+  border-radius: 2px;
+  color: #FFF;
+}
+
+.addButton {
+  composes: sign;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.node {
+  height: 27px;
+  position: relative;
+  display: inline-block;
+  width: calc(100% - 16px);
+  transform: scaleY(0.1);
+  border-radius: 2px;
+  --color: calc(var(--depth) * 20 + 65);
+  background: rgb(var(--color), var(--color), var(--color));
+}
