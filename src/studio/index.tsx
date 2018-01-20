@@ -17,9 +17,10 @@ theaterStudioInstance.run()
 
 window.studio = theaterStudioInstance
 
-export default {
-  studio: theaterStudioInstance,
-  react: {
-    Root: createRootComponentForReact(theaterStudioInstance),
-  },
+const reactExport = {
+  Root: createRootComponentForReact(theaterStudioInstance),
+}
+export {
+  theaterStudioInstance as studio,
+  reactExport as react,
 }

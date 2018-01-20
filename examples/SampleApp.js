@@ -7,7 +7,7 @@ import SamplePlayground from './playground/SamplePlayground'
 
 // const AppContainer =
 
-const TheaterJSRoot = window.TheaterJS.default.react.Root
+const TheaterJSRoot = window.TheaterJS.react.Root
 
 type Props = {}
 
