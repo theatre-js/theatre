@@ -1,7 +1,7 @@
 // @flow
 import WebpackNotifierPlugin from 'webpack-notifier'
 import CleanPlugin from 'clean-webpack-plugin'
-import {context} from '../commons'
+import {context} from '../commons.ts'
 import webpack from 'webpack'
 import path from 'path'
 

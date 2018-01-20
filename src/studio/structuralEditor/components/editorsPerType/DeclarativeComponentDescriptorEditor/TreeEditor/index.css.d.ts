@@ -1,8 +1,8 @@
 export interface IIndexCss {
-  'container': string;
   'treeWrapper': string;
   'treeContainer': string;
-  'isDragging': string;
+  'stretch': string;
+  'scroller': string;
 }
 
 export const locals: IIndexCss;

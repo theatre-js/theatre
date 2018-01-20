@@ -20,9 +20,9 @@ type PackageName = 'studio'
 export type Envs = 'development' | 'production'
 
 export type Options = {
-  env: 'development' | 'production'
-  withReactHotLoading?: boolean
-  packageName: PackageName
+  env: 'development' | 'production',
+  withReactHotLoading?: boolean,
+  packageName: PackageName,
 }
 
 const babelForTsHotReloading = () => ({
@@ -46,10 +46,10 @@ export const makeConfigParts = (options: Options) => {
   global.$$$NODE_ENV = options.env
 
   const config: webpack.Configuration & {
-    output: webpack.Output
-    plugins: webpack.Plugin[]
-    module: webpack.Module
-    resolve: webpack.Resolve
+    output: webpack.Output,
+    plugins: webpack.Plugin[],
+    module: webpack.Module,
+    resolve: webpack.Resolve,
   } = {
     entry: {},
     output: {

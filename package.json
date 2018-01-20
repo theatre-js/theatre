@@ -118,6 +118,7 @@
   "dependencies": {
     "@ariaminaei/react-devtools-mirror": "github:AriaMinaei/react-devtools-mirror",
     "fuzzaldrin-plus": "^0.6.0",
-    "source-map-support": "^0.5.0"
+    "source-map-support": "^0.5.0",
+    "ts-loader": "^3.2.0"
   }
 }

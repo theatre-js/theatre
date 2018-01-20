@@ -17,7 +17,7 @@ theaterStudioInstance.run()
 
 window.studio = theaterStudioInstance
 
-module.exports = {
+export default {
   studio: theaterStudioInstance,
   react: {
     Root: createRootComponentForReact(theaterStudioInstance),
