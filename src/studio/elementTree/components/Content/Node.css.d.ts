@@ -16,6 +16,8 @@ export interface INodeCss {
   'hasChildren': string;
   'expanded': string;
   'subNodes': string;
+  'textLogo': string;
+  'textContent': string;
 }
 
 export const locals: INodeCss;

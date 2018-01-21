@@ -44,6 +44,7 @@
 
 .name {
   position: absolute 0 0 0 calc(var(--indent) - 10px);
+  white-space: nowrap;
 }
 
 .highlighter {
@@ -189,4 +190,21 @@
     border-radius: 50%;
     border: 2px solid #5a5a5a;
   }
+}
+
+.textLogo {
+  position: relative;
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-right: 4px;
+  border-radius: 2px;
+  background-color: #000;
+  line-height: 16px;
+  text-align: center;
+}
+
+.textContent {
+  white-space: nowrap;
+  display: inline-block;  
 }

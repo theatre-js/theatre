@@ -117,6 +117,7 @@ class ElementTreePanelContent extends React.PureComponent<Props, State> {
 
   _prepareNodeData(reactObject: Object, path: Path) {
     const {stateNode} = reactObject
+
     return {
       data: {
         componentId: stateNode.getComponentId ? stateNode.getComponentId() : null,

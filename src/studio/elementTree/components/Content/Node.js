@@ -83,6 +83,8 @@ class Node extends React.PureComponent<Props, void> {
     const {
       // data: {name},
       displayName,
+      textContent,
+      textChild,
       isExpanded,
       selectedNodePath,
       path,
@@ -97,7 +99,7 @@ class Node extends React.PureComponent<Props, void> {
 
     const depth = props.depth || 1
 
-    const hasChildren = children != null
+    const hasChildren = children != null || textChild != null
     const shouldShowChildren = isExpanded && hasChildren
     const id = path[path.length - 1]
     const ancestorOfSelectedNode =
@@ -122,33 +124,56 @@ class Node extends React.PureComponent<Props, void> {
             </div>
           </div>
 
-          <div
-            className={css.name}
-            onClick={() => {
-              selectNode(path)
-            }}
-          >
-            <span className={css.tagOpen}>&lt;</span>
-            <span className={css.tagName}>{displayName}</span>
-            <span className={css.dot}>.</span>
-            <span className={css.className}>{props.classNames}</span>
-            <span className={css.tagClose}>&gt;</span>
-          </div>
-          <div className={css.highlighter} />
+          {displayName !== 'null' && [
+            <div
+              key="name"
+              className={css.name}
+              onClick={() => {
+                selectNode(path)
+              }}
+            >
+              <span className={css.tagOpen}>&lt;</span>
+              <span className={css.tagName}>{displayName}</span>
+              <span className={css.dot}>.</span>
+              <span className={css.className}>{props.classNames}</span>
+              <span className={css.tagClose}>&gt;</span>
+            </div>,
+            <div key="highlighter" className={css.highlighter} />,
+          ]}
+          {textContent != null && (
+            <div
+              className={css.name}
+              onClick={() => {
+                selectNode(path)
+              }}
+            >
+              <div className={css.textLogo}>t</div>
+              <div className={css.textContent}>{textContent}</div>
+            </div>
+          )}
         </div>
         {shouldShowChildren && (
           <div className={css.subNodes}>
-            {Object.keys(children).map((key, index) => (
-              <WrappedNode
-                depth={depth + 1}
-                index={index}
-                key={key}
-                toggleExpansion={toggleExpansion}
-                selectNode={selectNode}
-                selectedNodePath={selectedNodePath}
-                {...children[key]}
-              />
-            ))}
+            {children != null &&
+              Object.keys(children).map((key, index) => (
+                <WrappedNode
+                  depth={depth + 1}
+                  index={index}
+                  key={key}
+                  toggleExpansion={toggleExpansion}
+                  selectNode={selectNode}
+                  selectedNodePath={selectedNodePath}
+                  {...children[key]}
+                />
+              ))}
+            {textChild != null && (
+              <div className={css.top}>
+                <div className={css.name}>
+                  <div className={css.textLogo}>t</div>
+                  <div className={css.textContent}>{textChild}</div>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -158,7 +183,7 @@ class Node extends React.PureComponent<Props, void> {
 
 const WrappedNode = connect((s, op) => {
   const {_ref} = op
-  const {type} = _ref
+  const {type, stateNode} = _ref
 
   const displayName =
     typeof type === 'string'
@@ -169,6 +194,19 @@ const WrappedNode = connect((s, op) => {
           ? (getComponentDescriptor(s, _ref.stateNode.getComponentId()): $FixMe)
               .displayName
           : type.displayName
+
+  const textContent = stateNode.nodeName === '#text' ? stateNode.textContent : null
+
+  const childRef = _ref.child
+  const textChild =
+    childRef != null &&
+    childRef.child == null &&
+    childRef.stateNode.firstChild &&
+    childRef.stateNode.firstChild.nodeName === '#text' &&
+    childRef.stateNode.lastChild &&
+    childRef.stateNode.lastChild.nodeName === '#text'
+      ? childRef.stateNode.textContent
+      : null
 
   const shouldSwallowChild =
     (type &&
@@ -186,6 +224,8 @@ const WrappedNode = connect((s, op) => {
     displayName,
     shouldSwallowChild,
     classNames,
+    textContent,
+    textChild,
   }
 })(Node)
 
