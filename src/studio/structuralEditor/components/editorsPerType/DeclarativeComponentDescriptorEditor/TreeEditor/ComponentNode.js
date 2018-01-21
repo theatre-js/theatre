@@ -1,7 +1,7 @@
 // @flow
 import {React} from '$studio/handy'
 import css from './ComponentNode.css'
-import {CREATED, TYPE_CHANGED} from './'
+import * as constants from './constants'
 import cx from 'classnames'
 
 type Props = {
@@ -18,7 +18,7 @@ class Node extends React.PureComponent<Props, State> {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.nodeProps.status === TYPE_CHANGED && this.state.isContentHidden) {
+    if (nextProps.nodeProps.status === constants.TYPE_CHANGED && this.state.isContentHidden) {
       this.setState(() => ({isContentHidden: false}))
     }
   }
@@ -34,7 +34,7 @@ class Node extends React.PureComponent<Props, State> {
     return (
       <div
         className={cx(css.container, {
-          [css.isContentHidden]: isContentHidden || nodeProps.status === CREATED,
+          [css.isContentHidden]: isContentHidden || nodeProps.status === constants.CREATED,
         })}
         onMouseDown={e => {
           if (!e.shiftKey) e.stopPropagation()
@@ -42,6 +42,9 @@ class Node extends React.PureComponent<Props, State> {
       >
         <div className={css.displayName} onClick={this.setAsComponentBeingChanged}>
           {`<${nodeProps.displayName}>`}
+        </div>
+        <div className={css.class}>
+          <input type='text' placeholder='Class' />
         </div>
       </div>
     )

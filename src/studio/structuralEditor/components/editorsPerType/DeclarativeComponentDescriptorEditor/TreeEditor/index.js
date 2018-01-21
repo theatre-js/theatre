@@ -15,6 +15,7 @@ import css from './index.css'
 import generateUniqueId from 'uuid/v4'
 import * as _ from 'lodash'
 import cx from 'classnames'
+import * as constants from './constants'
 
 type Props = {
   pathToComponentDescriptor: Array<string>,
@@ -44,27 +45,6 @@ type State = {
     width: number,
   },
   deltaScroll: number,
-}
-
-const REF_TO_LOCAL_HIDDEN_VALUE = 'ReferenceToLocalHiddenValue'
-const COMPONENT_INSTANTIATION_VALUE_DESCRIPTOR = 'ComponentInstantiationValueDescriptor'
-const CHANGE_TYPE = 'CHANGE_TYPE'
-export const CHILD_ADD = 'CHILD_ADD'
-export const NODE_MOVE = 'NODE_MOVE'
-export const NODE_MOVE_CANCEL = 'NODE_MOVE_CANCEL'
-export const COMPONENT = 'COMPONENT'
-export const TEXT = 'TEXT'
-export const UNCHANGED = 'UNCHANGED'
-export const CREATED = 'CREATED'
-export const TYPE_CHANGED = 'TYPE_CHANGED'
-export const RELOCATED = 'RELOCATED'
-export const RELOCATION_CANCELED = 'RELOCATION_CANCELED'
-const STATUS = {
-  DEFAULT: UNCHANGED,
-  CHILD_ADD: CREATED,
-  NODE_MOVE: RELOCATED,
-  NODE_MOVE_CANCEL: RELOCATION_CANCELED,
-  CHANGE_TYPE: TYPE_CHANGED,
 }
 
 class TreeEditor extends React.PureComponent<Props, State> {
@@ -97,7 +77,7 @@ class TreeEditor extends React.PureComponent<Props, State> {
   _setNodes(rootComponentDescriptor) {
     let nodes = {}
     if (
-      rootComponentDescriptor.whatToRender.__descriptorType === REF_TO_LOCAL_HIDDEN_VALUE
+      rootComponentDescriptor.whatToRender.__descriptorType === constants.REF_TO_LOCAL_HIDDEN_VALUE
     ) {
       const {localHiddenValuesById, whatToRender} = rootComponentDescriptor
       nodes = this._getComponentData(
@@ -120,12 +100,12 @@ class TreeEditor extends React.PureComponent<Props, State> {
     let data = {}
     if (descriptor.__descriptorType != null) {
       let which
-      while (descriptor.__descriptorType === REF_TO_LOCAL_HIDDEN_VALUE) {
+      while (descriptor.__descriptorType === constants.REF_TO_LOCAL_HIDDEN_VALUE) {
         which = descriptor.which
         descriptor = localHiddenValuesById[which]
       }
 
-      if (descriptor.__descriptorType === COMPONENT_INSTANTIATION_VALUE_DESCRIPTOR) {
+      if (descriptor.__descriptorType === constants.COMPONENT_INSTANTIATION_VALUE_DESCRIPTOR) {
         const {type: componentType, displayName: displayName} = getComponentDescriptor(
           descriptor.componentId,
         )
@@ -136,7 +116,7 @@ class TreeEditor extends React.PureComponent<Props, State> {
           id,
           status: status,
           ...(actionPayload != null ? {actionPayload} : {}),
-          type: COMPONENT,
+          type: constants.COMPONENT,
           componentType,
           displayName,
           index,
@@ -153,10 +133,19 @@ class TreeEditor extends React.PureComponent<Props, State> {
           id: which,
           status: status,
           ...(actionPayload != null ? {actionPayload} : {}),
-          type: TEXT,
+          type: constants.TEXT,
           value: descriptor,
           index,
           parentId,
+        }
+      }
+
+      if (descriptor === null) {
+        const {status, actionPayload} = this._getComponentStatusAndActionPayload(which)        
+        data = {
+          id: which,
+          status: status,
+          ...(actionPayload != null ? {actionPayload} : {}),          
         }
       }
     }
@@ -167,11 +156,11 @@ class TreeEditor extends React.PureComponent<Props, State> {
   _getComponentStatusAndActionPayload(
     id: string,
   ): {stauts: string, actionPayload: ?Object} {
-    let status = STATUS.DEFAULT,
+    let status = constants.STATUS.DEFAULT,
       actionPayload
     if (this.lastAction.payload != null && this.lastAction.payload.id === id) {
       const {id, ...payload} = this.lastAction.payload
-      status = STATUS[this.lastAction.type]
+      status = constants.STATUS[this.lastAction.type]
       actionPayload = payload
     }
     return {status, actionPayload}
@@ -197,16 +186,16 @@ class TreeEditor extends React.PureComponent<Props, State> {
 
   dispatchAction = (actionType: string, payload: Object) => {
     switch (actionType) {
-      case CHILD_ADD: {
+      case constants.CHILD_ADD: {
         const id = this._addChildToNode(payload)
-        this._setLastAction(CHILD_ADD, {id})
+        this._setLastAction(constants.CHILD_ADD, {id})
         break
       }
-      case NODE_MOVE: {
+      case constants.NODE_MOVE: {
         this.dropHandler(payload)
         break
       }
-      case CHANGE_TYPE: {
+      case constants.CHANGE_TYPE: {
         this._changeTypeOfComponent(payload)
         break
       }
@@ -222,27 +211,28 @@ class TreeEditor extends React.PureComponent<Props, State> {
       multiReduceStateAction([
         {
           path: pathToComponentDescriptor.concat('localHiddenValuesById'),
-          reducer: values => {
-            const child = {
-              __descriptorType: COMPONENT_INSTANTIATION_VALUE_DESCRIPTOR,
-              componentId: 'TheaterJS/Core/HTML/div',
-              props: {
-                key: childId,
-                children: [],
-              },
-              modifierInstantiationDescriptors: {
-                byId: {},
-                list: [],
-              },
-            }
-            return {...values, [childId]: child}
-          },
+          reducer: values => ({...values, [childId]: null}),
+          // reducer: values => {
+          //   const child = {
+          //     __descriptorType: COMPONENT_INSTANTIATION_VALUE_DESCRIPTOR,
+          //     componentId: 'TheaterJS/Core/HTML/div',
+          //     props: {
+          //       key: childId,
+          //       children: [],
+          //     },
+          //     modifierInstantiationDescriptors: {
+          //       byId: {},
+          //       list: [],
+          //     },
+          //   }
+          //   return {...values, [childId]: child}
+          // },
         },
         {
           path: pathToComponentDescriptor.concat('localHiddenValuesById', nodeId),
           reducer: node => {
             const child = {
-              __descriptorType: REF_TO_LOCAL_HIDDEN_VALUE,
+              __descriptorType: constants.REF_TO_LOCAL_HIDDEN_VALUE,
               which: childId,
             }
             const children = [].concat(node.props.children || [])
@@ -275,7 +265,7 @@ class TreeEditor extends React.PureComponent<Props, State> {
         newParentId === currentParentId && currentIndex < dropZoneProps.index
           ? dropZoneProps.index - 1
           : dropZoneProps.index
-      this._setLastAction(NODE_MOVE, {
+      this._setLastAction(constants.NODE_MOVE, {
         id: nodeId,
         height,
         droppedAt: dropZoneProps.mouseY - offsetY,
@@ -283,7 +273,7 @@ class TreeEditor extends React.PureComponent<Props, State> {
     } else {
       newParentId = currentParentId
       newIndex = currentIndex
-      this._setLastAction(NODE_MOVE_CANCEL, {id: nodeId})
+      this._setLastAction(constants.NODE_MOVE_CANCEL, {id: nodeId})
     }
     this._moveNode(currentParentId, newParentId, currentIndex, newIndex)
 
@@ -355,7 +345,7 @@ class TreeEditor extends React.PureComponent<Props, State> {
       c => c.displayName === displayName,
     ).id
 
-    this._setLastAction(CHANGE_TYPE, {id})
+    this._setLastAction(constants.CHANGE_TYPE, {id})
     this.setState(() => ({componentBeingChanged: null}))
 
     dispatch(
@@ -401,7 +391,7 @@ class TreeEditor extends React.PureComponent<Props, State> {
               listOfDisplayNames={Object.entries(this.props.componentTypes).map(
                 ([, value]) => value.displayName,
               )}
-              onSelect={displayName => this.dispatchAction(CHANGE_TYPE, {displayName})}
+              onSelect={displayName => this.dispatchAction(constants.CHANGE_TYPE, {displayName})}
             />
           )}
           {isANodeBeingDragged && (
@@ -443,19 +433,6 @@ class TreeEditor extends React.PureComponent<Props, State> {
 export default compose(
   connect((s, op) => {
     const componentDescriptors = _.get(s, ['componentModel', 'componentDescriptors'])
-    // const listOfComponents = Object.entries(componentDescriptors.core)
-    //   .filter(
-    //     ([key]) =>
-    //       key !== 'TheaterJS/Core/RenderCurrentCanvas' && key !== 'TheaterJS/Core/DOMTag',
-    //   )
-    //   .concat(Object.entries(componentDescriptors.custom))
-    //   .map(([key, value]) => ({
-    //     id: key,
-    //     displayName: value.displayName,
-    //     type: value.type,
-    //   }))
-
-    // const listOfComponents = Object.keys(componentDescriptors.core).filter(key => key !== 'TheaterJS/Core/RenderCurrentCanvas' && key !== 'TheaterJS/Core/DOMTag')
     const {
       core: {
         'TheaterJS/Core/RenderCurrentCanvas': rcc,
@@ -464,12 +441,6 @@ export default compose(
       },
       custom,
     } = componentDescriptors
-    // const _componentTypes = {...core, ...custom}
-    // const componentTypes = Object.keys(_componentTypes).reduce((reducer, key) => {
-    //   const value = _componentTypes[key]
-    //   reducer[value.displayName] = value
-    //   return reducer
-    // }, {})
     const componentTypes = Object.entries({...core, ...custom}).reduce(
       (reducer, [key, value]) => {
         reducer[key] = {

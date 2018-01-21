@@ -36,12 +36,13 @@ class NodePlaceholder extends React.PureComponent<Props, State> {
             onMouseEnter={this.mouseEnterHandler}
             onMouseLeave={this.mouseLeaveHandler}
             onMouseUp={this.mouseUpHandler}
+            onClick={this.props.onAdd}
           >
             {renderDropZone ? (
               <div className={css.sign}>&#x2192;</div>
             ) : (
               <div>
-                <div onClick={this.props.onAdd} className={css.addButton}>
+                <div className={css.addButton}>
                   &#x2b;
                 </div>
                 <div className={css.node} style={{'--depth': depth}} />

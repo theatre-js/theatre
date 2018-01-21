@@ -3,6 +3,7 @@ export interface IComponentNodeCss {
   'container': string;
   'isContentHidden': string;
   'displayName': string;
+  'class': string;
 }
 
 export const locals: IComponentNodeCss;

@@ -45,7 +45,7 @@
     
     transform-origin: 0 0;
     transform: scaleX(0);
-    animation: underline-appear .15s .05s ease-in-out forwards;
+    animation: underline-appear .2s .1s ease-in-out forwards;
   }
 }
 

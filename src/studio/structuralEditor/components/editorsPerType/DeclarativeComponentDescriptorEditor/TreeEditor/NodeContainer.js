@@ -5,15 +5,7 @@ import ComponentNode from './ComponentNode'
 import TextNode from './TextNode'
 import NodePlaceholder from './NodePlaceholder'
 import cx from 'classnames'
-import {
-  TEXT,
-  COMPONENT,
-  CHILD_ADD,
-  NODE_MOVE,
-  CREATED,
-  RELOCATED,
-  RELOCATION_CANCELED,
-} from './'
+import * as constants from './constants'
 
 type Props = {
   nodeData: Object,
@@ -35,7 +27,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
   }
 
   componentDidMount() {
-    if (this.props.nodeData.status === RELOCATED) {
+    if (this.props.nodeData.status === constants.RELOCATED) {
       const {nodeData: {actionPayload}} = this.props
       const {droppedAt} = actionPayload
       const {top} = this.wrapper.getBoundingClientRect()
@@ -48,15 +40,15 @@ class NodeContainer extends React.PureComponent<Props, State> {
     }
 
     if (
-      this.props.nodeData.status === CREATED &&
-      this.props.nodeData.type === COMPONENT
+      this.props.nodeData.status === constants.CREATED &&
+      this.props.nodeData.type === constants.COMPONENT
     ) {
       setTimeout(this.setAsComponentBeingChanged, 150)
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.nodeData.status === RELOCATED) {
+    if (nextProps.nodeData.status === constants.RELOCATED) {
       const {nodeData: {actionPayload}} = nextProps
       const {droppedAt} = actionPayload
       const {nodeData: {actionPayload: currentPayload}} = this.props
@@ -112,7 +104,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
     e.preventDefault()
     if (this.props.isANodeBeingDragged && this.state.newChildIndex != null) {
       this.unsetPlaceholderAsActive()
-      this.props.dispatchAction(NODE_MOVE, {
+      this.props.dispatchAction(constants.NODE_MOVE, {
         id: this.props.nodeData.id,
         index: this.state.newChildIndex,
         mouseY: e.clientY,
@@ -165,7 +157,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
   }
 
   addChild = atIndex => {
-    this.props.dispatchAction(CHILD_ADD, {nodeId: this.props.nodeData.id, atIndex})
+    this.props.dispatchAction(constants.CHILD_ADD, {nodeId: this.props.nodeData.id, atIndex})
   }
 
   renderNodePlaceholder(atIndex, depth) {
@@ -186,9 +178,9 @@ class NodeContainer extends React.PureComponent<Props, State> {
     const {nodeData: {children, ...nodeProps}, isANodeBeingDragged} = this.props
     const {isCollapsed, maxHeight} = this.state
 
-    const isText = nodeProps.type === TEXT
+    const isText = nodeProps.type === constants.TEXT
     const depth = this.props.depth || 0
-    const isRelocated = nodeProps.status === RELOCATED
+    const isRelocated = nodeProps.status === constants.RELOCATED
     return (
       <div ref={c => (this.wrapper = c)}>
         <div
@@ -198,8 +190,8 @@ class NodeContainer extends React.PureComponent<Props, State> {
             '--initialTopOffset': isRelocated ? this.state.initialTopOffset : 0,
           }}
           className={cx(css.container, {
-            [css.isRelocated]: isRelocated || nodeProps.status === RELOCATION_CANCELED,
-            [css.isCreated]: nodeProps.status === CREATED,
+            [css.isRelocated]: isRelocated || nodeProps.status === constants.RELOCATION_CANCELED,
+            [css.isCreated]: nodeProps.status === constants.CREATED,
             [css.isCollapsed]: isCollapsed,
           })}
           onMouseUp={this.mouseUpHandler}
@@ -214,13 +206,13 @@ class NodeContainer extends React.PureComponent<Props, State> {
                 }
               : {})}
           >
-            {nodeProps.type === COMPONENT && (
+            {nodeProps.type === constants.COMPONENT && (
               <ComponentNode
                 nodeProps={nodeProps}
                 setAsComponentBeingChanged={this.setAsComponentBeingChanged}
               />
             )}
-            {nodeProps.type === TEXT && <TextNode nodeProps={nodeProps} />}
+            {nodeProps.type === constants.TEXT && <TextNode nodeProps={nodeProps} />}
           </div>
           {this.renderNodePlaceholder(0, depth)}
           {children &&

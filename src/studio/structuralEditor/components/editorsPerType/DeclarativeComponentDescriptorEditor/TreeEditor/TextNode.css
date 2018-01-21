@@ -4,11 +4,34 @@
   position: relative;
   /*left: indent;*/
   /*width: calc(100% - 2 * indent);*/
-  padding: 0 indent;
+  // padding: 0 indent;
   height: 27px;
   display: flex;
   align-items: flex-end;
+  overflow: hidden;
+
+  &:after {
+    display: block;
+    content: ' ';
+    position: absolute * indent 3px indent;
+    height: 1px;
+    // background-color: white;
+  }
+}
+
+.textLogo {
+  position: relative;
+  align-self: center;
+  width: 14px;
+  height: 14px;
+  margin: 0 indent;
+  border-radius: 2px;
+  background-color: #333;
+  line-height: 16px;
+  text-align: center;
+}
+
+.text {
   font-weight: 400;
   white-space: nowrap;
-  overflow: hidden;
 }

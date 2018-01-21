@@ -1,6 +1,7 @@
 .treeWrapper {
   position: relative;
-  width: 100%;
+  width: calc(100% - 2px);
+  left: 1px;
   height: 30%;
   overflow: hidden auto;
 

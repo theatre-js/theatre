@@ -5,14 +5,17 @@
   left: indent;
   width: calc(100% - 2 * indent);
   height: 27px;
-  display: flex;
-  align-items: flex-end;
   font-weight: 400;
   white-space: nowrap;
   
   opacity: 1;
   transition: opacity .15s ease-in-out;
   
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-column-gap: 5px;
+  align-items: end;
+
   &.isContentHidden {
     opacity: 0;
   }
@@ -20,4 +23,24 @@
 
 .displayName {
   cursor: pointer;
+  grid-column: 1;
+}
+
+.class {
+  position: relative;
+  grid-column: 2;
+}
+
+.class > input {
+  position: relative;
+  bottom: 5px;
+  width: 100%;
+  color: rgba(255, 255, 255, .6);
+  font-style: italic;
+  border-bottom: 1px solid transparent;
+  transition: border-bottom-color .15s ease-in-out;
+
+  &:focus {
+    border-bottom-color: rgba(255, 255, 255, .3);
+  }
 }

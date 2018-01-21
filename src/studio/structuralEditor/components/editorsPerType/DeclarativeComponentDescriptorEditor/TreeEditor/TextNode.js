@@ -10,7 +10,10 @@ type State = void
 class Node extends React.PureComponent<Props, State> {
   render() {
     const {nodeProps} = this.props
-    return <div className={css.container}>__{nodeProps.value}__</div>
+    return <div className={css.container}>
+      <div className={css.textLogo}>t</div>
+      <div className={css.text}>{nodeProps.value}</div>
+    </div>
   }
 }
 
