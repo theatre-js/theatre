@@ -16,8 +16,8 @@
 .dynamicContainer {
   position: absolute;
   height: 100%;
-  width: calc(100% - var(--depth) * 17px);
-  left: calc(var(--depth) * 16px);
+  width: calc(100% - var(--depth) * 17px - 2px);
+  left: calc(var(--depth) * 16px + 1px);
   --color: calc(var(--depth) * 20 + 45);
   background-color: rgb(var(--color), var(--color), var(--color));
   border-radius: 2px;
