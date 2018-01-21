@@ -1,4 +1,4 @@
-export interface IComponentSelectorCss {
+export interface ITypeSelectorCss {
   'indent': string;
   'wrapper': string;
   'wrapper-appear': string;
@@ -14,4 +14,4 @@ export interface IComponentSelectorCss {
   'isSelected': string;
 }
 
-export const locals: IComponentSelectorCss;
+export const locals: ITypeSelectorCss;

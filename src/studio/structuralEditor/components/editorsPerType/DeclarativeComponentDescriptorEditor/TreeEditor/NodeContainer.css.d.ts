@@ -1,6 +1,5 @@
 export interface INodeContainerCss {
   'container': string;
-  'isCreated': string;
   'expand': string;
   'isRelocated': string;
   'drop': string;

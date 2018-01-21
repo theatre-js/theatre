@@ -2,29 +2,34 @@
 
 .container {
   position: relative;
-  /*left: indent;*/
-  /*width: calc(100% - 2 * indent);*/
-  // padding: 0 indent;
+  padding: 0 indent;
   height: 27px;
   display: flex;
   align-items: flex-end;
-  overflow: hidden;
 
   &:after {
     display: block;
     content: ' ';
     position: absolute * indent 3px indent;
     height: 1px;
-    // background-color: white;
+    background-color: rgba(255, 255, 255, .4);
+    transform-origin: 0 0;
+    transform: scaleX(0);
+    transition: transform .15s ease-in-out;
+  }
+
+  &.isFocused:after {
+    transform: scaleX(1);
   }
 }
 
 .textLogo {
+  flex-shrink: 0;
   position: relative;
   align-self: center;
   width: 14px;
   height: 14px;
-  margin: 0 indent;
+  margin-right: calc(indent / 2);
   border-radius: 2px;
   background-color: #333;
   line-height: 16px;
@@ -32,6 +37,9 @@
 }
 
 .text {
+  overflow: hidden;
+  flex-grow: 1;
+  height: 100%;
   font-weight: 400;
   white-space: nowrap;
 }

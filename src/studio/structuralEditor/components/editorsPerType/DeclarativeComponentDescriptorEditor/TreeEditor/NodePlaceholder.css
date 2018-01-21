@@ -6,7 +6,7 @@
 
 .container {
   position: relative;
-
+  cursor: pointer;
   animation: appear .15s ease-in-out forwards;
 }
 
@@ -30,7 +30,6 @@
 .addButton {
   composes: sign;
   font-size: 12px;
-  cursor: pointer;
 }
 
 .node {
@@ -40,7 +39,6 @@
   width: calc(100% - 16px);
   transform: scaleY(0.1);
   border-radius: 2px;
-  cursor: pointer;  
   --color: calc(var(--depth) * 20 + 65);
   background: rgb(var(--color), var(--color), var(--color));
 }

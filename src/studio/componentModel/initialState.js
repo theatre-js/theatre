@@ -135,12 +135,24 @@ const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
     fontSize: '18px',
     // ...fakeNodes.allNodes,
     palakiText: 'palaki',
+    palakiChild: {
+      __descriptorType: 'ComponentInstantiationValueDescriptor',
+      componentId: 'TheaterJS/Core/HTML/div',
+      props: {
+        key: 'palakiChild',
+        children: [],
+      },
+      modifierInstantiationDescriptors: {byId: {}, list: []},
+    },
     palaki: ({
       __descriptorType: 'ComponentInstantiationValueDescriptor',
       componentId: 'TheaterJS/Core/HTML/div',
       props: {
         key: 'palaki',
-        children: {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'palakiText'},
+        children: [
+          {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'palakiChild'},
+          {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'palakiText'},
+        ],
       },
       modifierInstantiationDescriptors: {byId: {}, list: []},
     }: ComponentInstantiationValueDescriptor),

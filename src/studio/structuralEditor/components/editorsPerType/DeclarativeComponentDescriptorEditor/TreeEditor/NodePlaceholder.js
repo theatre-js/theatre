@@ -42,9 +42,7 @@ class NodePlaceholder extends React.PureComponent<Props, State> {
               <div className={css.sign}>&#x2192;</div>
             ) : (
               <div>
-                <div className={css.addButton}>
-                  &#x2b;
-                </div>
+                <div className={css.addButton}>&#x2b;</div>
                 <div className={css.node} style={{'--depth': depth}} />
               </div>
             )}

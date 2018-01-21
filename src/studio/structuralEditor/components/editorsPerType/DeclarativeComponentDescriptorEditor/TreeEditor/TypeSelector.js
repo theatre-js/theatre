@@ -1,9 +1,10 @@
 // @flow
 import {React} from '$studio/handy'
-import css from './ComponentSelector.css'
+import css from './TypeSelector.css'
 import {filter} from 'fuzzaldrin-plus'
 import cx from 'classnames'
 import * as _ from 'lodash'
+import {NODE_TYPE} from './constants'
 
 type Props = {
   listOfDisplayNames: string[],
@@ -16,7 +17,7 @@ type State = {
   willUnmount: boolean,
 }
 
-class ComponentSelector extends React.Component<Props, State> {
+class TypeSelector extends React.Component<Props, State> {
   state = {
     matchedDisplayNames: [],
     query: '',
@@ -57,13 +58,20 @@ class ComponentSelector extends React.Component<Props, State> {
 
   onInputChange = e => {
     const {value} = e.target
-    const matchedDisplayNames = filter(this.props.listOfDisplayNames, value)
+    if (value.toLowerCase() === 't ' && !this.props.nodeProps.hasChildren) {
+      this.setState(() => ({willUnmount: true}))
+      setTimeout(() => {
+        this.props.onSelect({nodeType: NODE_TYPE.TEXT})
+      }, 200)
+    } else {
+      const matchedDisplayNames = filter(this.props.listOfDisplayNames, value)
 
-    this.setState(() => ({
-      query: value,
-      matchedDisplayNames,
-      focusedIndex: 0,
-    }))
+      this.setState(() => ({
+        query: value,
+        matchedDisplayNames,
+        focusedIndex: 0,
+      }))
+    }
   }
 
   selectNameAtIndex(index: number) {
@@ -72,7 +80,7 @@ class ComponentSelector extends React.Component<Props, State> {
 
     this.setState(() => ({willUnmount: true}))
     setTimeout(() => {
-      this.props.onSelect(displayName)
+      this.props.onSelect({nodeType: NODE_TYPE.COMPONENT, displayName})
     }, 200)
   }
 
@@ -113,4 +121,4 @@ class ComponentSelector extends React.Component<Props, State> {
   }
 }
 
-export default ComponentSelector
+export default TypeSelector

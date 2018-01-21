@@ -1,11 +1,10 @@
 // @flow
 import {React} from '$studio/handy'
-// import Node from './TextNode'
 import css from './MovableNode.css'
 import cx from 'classnames'
 import componentStyles from './ComponentNode.css'
 import textStyles from './TextNode.css'
-import * as constants from './constants'
+import {NODE_TYPE} from './constants'
 
 type Props = {
   nodeBeingDragged: Object,
@@ -83,12 +82,12 @@ class MovableNode extends React.Component<Props, State> {
         {...(isGlued ? {onMouseLeave: this.dragEndHandler} : {})}
       >
         <div className={css.dynamicContainer} style={{'--depth': depth}}>
-          {nodeProps.type === constants.COMPONENT && (
+          {nodeProps.type === NODE_TYPE.COMPONENT && (
             <div className={componentStyles.container}>{`<${
               nodeProps.displayName
             }>`}</div>
           )}
-          {nodeProps.type === constants.TEXT && (
+          {nodeProps.type === NODE_TYPE.TEXT && (
             <div className={textStyles.container}>__{nodeProps.value}__</div>
           )}
         </div>

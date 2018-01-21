@@ -11,7 +11,8 @@
   top: 0;
   will-change: max-height, transform;
 
-  &.isCreated {
+  &.expand {
+    height: 27px;
     animation: expand .15s ease-in-out;
   }
 

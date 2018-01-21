@@ -1,6 +1,7 @@
 export interface ITextNodeCss {
   'indent': string;
   'container': string;
+  'isFocused': string;
   'textLogo': string;
   'text': string;
 }

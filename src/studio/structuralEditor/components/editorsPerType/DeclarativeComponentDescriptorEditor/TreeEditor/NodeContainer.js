@@ -5,7 +5,7 @@ import ComponentNode from './ComponentNode'
 import TextNode from './TextNode'
 import NodePlaceholder from './NodePlaceholder'
 import cx from 'classnames'
-import * as constants from './constants'
+import {ACTION, STATUS, NODE_TYPE} from './constants'
 
 type Props = {
   nodeData: Object,
@@ -27,7 +27,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
   }
 
   componentDidMount() {
-    if (this.props.nodeData.status === constants.RELOCATED) {
+    if (this.props.nodeData.status === STATUS.RELOCATED) {
       const {nodeData: {actionPayload}} = this.props
       const {droppedAt} = actionPayload
       const {top} = this.wrapper.getBoundingClientRect()
@@ -39,16 +39,13 @@ class NodeContainer extends React.PureComponent<Props, State> {
       this._setMaxHeight()
     }
 
-    if (
-      this.props.nodeData.status === constants.CREATED &&
-      this.props.nodeData.type === constants.COMPONENT
-    ) {
-      setTimeout(this.setAsComponentBeingChanged, 150)
+    if (this.props.nodeData.status === STATUS.UNINITIALIZED) {
+      setTimeout(this.setAsComponentBeingSet, 150)
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.nodeData.status === constants.RELOCATED) {
+    if (nextProps.nodeData.status === STATUS.RELOCATED) {
       const {nodeData: {actionPayload}} = nextProps
       const {droppedAt} = actionPayload
       const {nodeData: {actionPayload: currentPayload}} = this.props
@@ -70,6 +67,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
 
     if (
       this.props.nodeData.children &&
+      nextProps.nodeData.children &&
       nextProps.nodeData.children.length !== this.props.nodeData.children.length
     ) {
       setTimeout(() => {
@@ -104,7 +102,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
     e.preventDefault()
     if (this.props.isANodeBeingDragged && this.state.newChildIndex != null) {
       this.unsetPlaceholderAsActive()
-      this.props.dispatchAction(constants.NODE_MOVE, {
+      this.props.dispatchAction(ACTION.NODE_MOVE, {
         id: this.props.nodeData.id,
         index: this.state.newChildIndex,
         mouseY: e.clientY,
@@ -146,18 +144,21 @@ class NodeContainer extends React.PureComponent<Props, State> {
     }
   }
 
-  setAsComponentBeingChanged = () => {
-    const {
-      setComponentBeingChanged,
-      depth,
-      nodeData: {children, ...nodeProps},
-    } = this.props
+  setAsComponentBeingSet = () => {
+    const {setComponentBeingSet, depth, nodeData: {children, ...nodeProps}} = this.props
     const {top, left, width} = this.wrapper.getBoundingClientRect()
-    setComponentBeingChanged({nodeProps, depth, top, left, width})
+    setComponentBeingSet({nodeProps, depth, top, left, width, hasChildren: children != null && children.length > 0})
   }
 
   addChild = atIndex => {
-    this.props.dispatchAction(constants.CHILD_ADD, {nodeId: this.props.nodeData.id, atIndex})
+    this.props.dispatchAction(ACTION.NODE_ADD, {nodeId: this.props.nodeData.id, atIndex})
+  }
+
+  changeTextNodeValue = value => {
+    this.props.dispatchAction(ACTION.NODE_TEXT_CHANGE, {
+      nodeId: this.props.nodeData.id,
+      value,
+    })
   }
 
   renderNodePlaceholder(atIndex, depth) {
@@ -178,9 +179,9 @@ class NodeContainer extends React.PureComponent<Props, State> {
     const {nodeData: {children, ...nodeProps}, isANodeBeingDragged} = this.props
     const {isCollapsed, maxHeight} = this.state
 
-    const isText = nodeProps.type === constants.TEXT
+    const isText = nodeProps.type === NODE_TYPE.TEXT
     const depth = this.props.depth || 0
-    const isRelocated = nodeProps.status === constants.RELOCATED
+    const isRelocated = nodeProps.status === STATUS.RELOCATED
     return (
       <div ref={c => (this.wrapper = c)}>
         <div
@@ -190,8 +191,9 @@ class NodeContainer extends React.PureComponent<Props, State> {
             '--initialTopOffset': isRelocated ? this.state.initialTopOffset : 0,
           }}
           className={cx(css.container, {
-            [css.isRelocated]: isRelocated || nodeProps.status === constants.RELOCATION_CANCELED,
-            [css.isCreated]: nodeProps.status === constants.CREATED,
+            [css.isRelocated]:
+              isRelocated || nodeProps.status === STATUS.RELOCATION_CANCELED,
+            [css.expand]: nodeProps.status === STATUS.UNINITIALIZED,
             [css.isCollapsed]: isCollapsed,
           })}
           onMouseUp={this.mouseUpHandler}
@@ -206,13 +208,19 @@ class NodeContainer extends React.PureComponent<Props, State> {
                 }
               : {})}
           >
-            {nodeProps.type === constants.COMPONENT && (
+            {nodeProps.type === NODE_TYPE.COMPONENT && (
               <ComponentNode
                 nodeProps={nodeProps}
-                setAsComponentBeingChanged={this.setAsComponentBeingChanged}
+                setAsComponentBeingSet={this.setAsComponentBeingSet}
               />
             )}
-            {nodeProps.type === constants.TEXT && <TextNode nodeProps={nodeProps} />}
+            {isText && (
+              <TextNode
+                nodeProps={nodeProps}
+                onChange={this.changeTextNodeValue}
+                setAsComponentBeingSet={this.setAsComponentBeingSet}
+              />
+            )}
           </div>
           {this.renderNodePlaceholder(0, depth)}
           {children &&
@@ -233,7 +241,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
                   setNodeBeingDragged={this.props.setNodeBeingDragged}
                   setActiveDropZone={this.props.setActiveDropZone}
                   unsetActiveDropZone={this.props.unsetActiveDropZone}
-                  setComponentBeingChanged={this.props.setComponentBeingChanged}
+                  setComponentBeingSet={this.props.setComponentBeingSet}
                 />
               </div>,
               this.renderNodePlaceholder(index + 1, depth),

@@ -1,12 +1,12 @@
 // @flow
 import {React} from '$studio/handy'
 import css from './ComponentNode.css'
-import * as constants from './constants'
+import {STATUS} from './constants'
 import cx from 'classnames'
 
 type Props = {
   nodeProps: Object,
-  setAsComponentBeingChanged: Function,
+  setAsComponentBeingSet: Function,
 }
 type State = {
   isContentHidden: boolean,
@@ -18,14 +18,14 @@ class Node extends React.PureComponent<Props, State> {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.nodeProps.status === constants.TYPE_CHANGED && this.state.isContentHidden) {
+    if (nextProps.nodeProps.status === STATUS.CHANGED && this.state.isContentHidden) {
       this.setState(() => ({isContentHidden: false}))
     }
   }
 
-  setAsComponentBeingChanged = () => {
+  setAsComponentBeingSet = () => {
     this.setState(() => ({isContentHidden: true}))
-    this.props.setAsComponentBeingChanged()
+    this.props.setAsComponentBeingSet()
   }
 
   render() {
@@ -34,17 +34,17 @@ class Node extends React.PureComponent<Props, State> {
     return (
       <div
         className={cx(css.container, {
-          [css.isContentHidden]: isContentHidden || nodeProps.status === constants.CREATED,
+          [css.isContentHidden]: isContentHidden,
         })}
         onMouseDown={e => {
           if (!e.shiftKey) e.stopPropagation()
         }}
       >
-        <div className={css.displayName} onClick={this.setAsComponentBeingChanged}>
+        <div className={css.displayName} onClick={this.setAsComponentBeingSet}>
           {`<${nodeProps.displayName}>`}
         </div>
         <div className={css.class}>
-          <input type='text' placeholder='Class' />
+          <input type="text" placeholder="Class" />
         </div>
       </div>
     )
