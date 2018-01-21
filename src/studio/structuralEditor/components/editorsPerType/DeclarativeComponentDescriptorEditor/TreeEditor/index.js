@@ -405,7 +405,13 @@ class TreeEditor extends React.PureComponent<Props, State> {
         <PanelSection withHorizontalMargin={false} label="Template">
           {componentBeingSet != null && (
             <TypeSelector
-              nodeProps={_.pick(componentBeingSet, ['depth', 'top', 'left', 'width', 'hasChildren'])}
+              nodeProps={_.pick(componentBeingSet, [
+                'depth',
+                'top',
+                'left',
+                'width',
+                'hasChildren',
+              ])}
               listOfDisplayNames={Object.entries(this.props.componentTypes).map(
                 ([, value]) => value.displayName,
               )}

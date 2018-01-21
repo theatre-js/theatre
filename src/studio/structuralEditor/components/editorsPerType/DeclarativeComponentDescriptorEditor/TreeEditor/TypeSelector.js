@@ -97,7 +97,8 @@ class TypeSelector extends React.Component<Props, State> {
               value={query}
               onChange={this.onInputChange}
               onKeyDown={e => {
-                if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 9) e.preventDefault()
+                if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 9)
+                  e.preventDefault()
               }}
             />
           </div>

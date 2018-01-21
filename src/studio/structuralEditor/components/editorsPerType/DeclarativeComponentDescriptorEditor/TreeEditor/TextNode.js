@@ -35,7 +35,8 @@ class Node extends React.PureComponent<Props, State> {
 
   handleKeyDown = e => {
     if (e.keyCode === 13 || e.keyCode === 27) this.input.blur()
-    if (e.keyCode === 8 && this.props.nodeProps.value === '') this.setAsComponentBeingSet()
+    if (e.keyCode === 8 && this.props.nodeProps.value === '')
+      this.setAsComponentBeingSet()
   }
 
   setAsComponentBeingSet = () => {
@@ -46,7 +47,10 @@ class Node extends React.PureComponent<Props, State> {
   render() {
     return (
       <div
-        className={cx(css.container, {[css.isFocused]: this.state.isFocused, [css.isContentHidden]: this.state.isContentHidden})}
+        className={cx(css.container, {
+          [css.isFocused]: this.state.isFocused,
+          [css.isContentHidden]: this.state.isContentHidden,
+        })}
         onMouseDown={e => {
           if (!e.shiftKey) e.stopPropagation()
         }}
@@ -71,7 +75,12 @@ export const presentationOnlyComponent = ({nodeProps}) => {
   return (
     <div className={css.container}>
       <div className={css.textLogo}>t</div>
-      <input type="text" className={css.text} value={nodeProps.value} onChange={() => {}}/> 
+      <input
+        type="text"
+        className={css.text}
+        value={nodeProps.value}
+        onChange={() => {}}
+      />
     </div>
   )
 }

@@ -54,9 +54,7 @@ class Node extends React.PureComponent<Props, State> {
 export const presentationOnlyComponent = ({nodeProps}) => {
   return (
     <div className={css.container}>
-      <div className={css.displayName}>
-        {`<${nodeProps.displayName}>`}
-      </div>
+      <div className={css.displayName}>{`<${nodeProps.displayName}>`}</div>
       <div className={css.class}>
         <input type="text" placeholder="Class" />
       </div>

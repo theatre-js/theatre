@@ -147,7 +147,14 @@ class NodeContainer extends React.PureComponent<Props, State> {
   setAsComponentBeingSet = () => {
     const {setComponentBeingSet, depth, nodeData: {children, ...nodeProps}} = this.props
     const {top, left, width} = this.wrapper.getBoundingClientRect()
-    setComponentBeingSet({nodeProps, depth, top, left, width, hasChildren: children != null && children.length > 0})
+    setComponentBeingSet({
+      nodeProps,
+      depth,
+      top,
+      left,
+      width,
+      hasChildren: children != null && children.length > 0,
+    })
   }
 
   addChild = atIndex => {
