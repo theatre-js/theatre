@@ -11,11 +11,13 @@ type Props = {
 }
 type State = {
   isFocused: boolean,
+  isContentHidden: boolean,
 }
 
 class Node extends React.PureComponent<Props, State> {
   state = {
     isFocused: false,
+    isContentHidden: false,
   }
 
   componentDidMount() {
@@ -24,15 +26,27 @@ class Node extends React.PureComponent<Props, State> {
     }
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.nodeProps.status === STATUS.CHANGED && this.state.isContentHidden) {
+      this.setState(() => ({isContentHidden: false}))
+      this.input.focus()
+    }
+  }
+
   handleKeyDown = e => {
     if (e.keyCode === 13 || e.keyCode === 27) this.input.blur()
-    if (e.keyCode === 8 && this.props.nodeProps.value === '') this.props.setAsComponentBeingSet()
+    if (e.keyCode === 8 && this.props.nodeProps.value === '') this.setAsComponentBeingSet()
+  }
+
+  setAsComponentBeingSet = () => {
+    this.setState(() => ({isContentHidden: true}))
+    this.props.setAsComponentBeingSet()
   }
 
   render() {
     return (
       <div
-        className={cx(css.container, {[css.isFocused]: this.state.isFocused})}
+        className={cx(css.container, {[css.isFocused]: this.state.isFocused, [css.isContentHidden]: this.state.isContentHidden})}
         onMouseDown={e => {
           if (!e.shiftKey) e.stopPropagation()
         }}
