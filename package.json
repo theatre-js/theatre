@@ -5,13 +5,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "flow-typed:install": "flow-typed install --flowVersion=0.53.0",
     "lint": "eslint ./src",
-    "flow": "flow",
     "test": "jest",
     "prettify-and-lint": "run-s prettify lint",
     "prettify": "prettier --write \"src/**/*.js\"",
-    "prepush": "run-p prettify-and-lint flow test",
+    "prepush": "run-p prettify-and-lint test",
     "lb:webpack:dev": "webpack --progress --config webpack/lb/development.babel.js --watch",
     "lb:dev": "nodemon -e jade --exec \"electron\" ./bundles/lb/index.js",
     "lb:run": "electron ./bundles/lb/index.js",
@@ -42,6 +40,8 @@
   "author": "TheaterJS Oy",
   "license": "Proprietary",
   "devDependencies": {
+    "@types/html-webpack-plugin": "^2.30.1",
+    "@types/lodash": "^4.14.93",
     "@types/webpack": "^3.8.2",
     "autoprefixer": "^7.1.2",
     "awesome-typescript-loader": "^3.3.0",
@@ -52,7 +52,6 @@
     "babel-plugin-lodash": "^3.2.11",
     "babel-plugin-transform-export-extensions": "^6.22.0",
     "babel-preset-env": "^1.6.1",
-    "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-1": "^6.24.1",
     "babel-register": "^6.26.0",
@@ -63,7 +62,6 @@
     "electron": "^1.6.11",
     "electron-debug": "^1.3.0",
     "electron-devtools-installer": "^2.2.0",
-    "electron-prebuilt": "^1.4.13",
     "eslint": "^4.9.0",
     "eslint-plugin-flowtype": "^2.39.1",
     "eslint-plugin-prettier": "^2.3.1",
@@ -71,8 +69,6 @@
     "exec-loader": "^3.0.0",
     "fast-json-patch": "^2.0.6",
     "file-loader": "^0.11.2",
-    "flow-bin": "^0.53.1",
-    "flow-typed": "^2.1.5",
     "fs-extra": "^4.0.0",
     "html-webpack-plugin": "^2.29.0",
     "husky": "^0.14.3",
@@ -104,6 +100,7 @@
     "style-loader": "^0.19.0",
     "svg-inline-loader": "^0.8.0",
     "timing-function": "^0.2.3",
+    "ts-loader": "^3.3.0",
     "ts-node": "^4.1.0",
     "tsconfig-paths-webpack-plugin": "^2.0.0",
     "typescript": "^2.6.1",
@@ -113,12 +110,9 @@
     "webpack": "^3.5.5",
     "webpack-dev-server": "^2.7.1",
     "webpack-notifier": "^1.5.0",
-    "when": "^3.7.8"
-  },
-  "dependencies": {
-    "@ariaminaei/react-devtools-mirror": "github:AriaMinaei/react-devtools-mirror",
-    "fuzzaldrin-plus": "^0.6.0",
+    "when": "^3.7.8",
     "source-map-support": "^0.5.0",
-    "ts-loader": "^3.2.0"
-  }
+    "fuzzaldrin-plus": "^0.6.0"
+  },
+  "dependencies": {}
 }

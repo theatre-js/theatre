@@ -5,15 +5,17 @@ import {default as immer, setAutoFreeze} from 'immer'
 setAutoFreeze(false)
 
 module.exports = (env: Envs) => {
-  const parts = makeConfigParts({env, withReactHotLoading: true, packageName: 'studio'})
+  const parts = makeConfigParts({
+    env,
+    withReactHotLoading: true,
+    packageName: 'studio',
+    withReactHotLoader: true,
+    entries: {
+      index: ['./src/studio/index.tsx'],
+    },
+  })
 
   return immer(parts.config, c => {
-    c.entry = {
-      index: parts.isDev
-        ? ['react-hot-loader/patch', './src/studio/index.tsx']
-        : ['./src/studio/index.tsx'],
-    }
-
     c.output.libraryTarget = 'umd'
     c.output.library = 'TheaterJS'
     c.output.publicPath = `http://localhost:${

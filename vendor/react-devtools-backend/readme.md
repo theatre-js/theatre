@@ -1,0 +1,1 @@
+Taken from `https://github.com/facebook/react-devtools/tree/master/backend`, the code was not available under any package name. We need to keep our version up-to-date with the source, especially because the devtools interface changes more rapidly than react's public interface.

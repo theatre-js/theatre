@@ -1,31 +1,31 @@
 // @flow
-import {type ComponentType as ReactComponentType} from 'react'
-import type {DeclarativeComponentDescriptor, ModifierDescriptor} from './declarative'
+import {ComponentType as ReactComponentType} from 'react'
+import {DeclarativeComponentDescriptor, ModifierDescriptor} from './declarative'
 /*:: export type * from './declarative' */
 
 // @todo maybe this should be an opaque type given that not any string is a valid ComponentId
 export type ComponentId = string
 
-export type ComponentInstantiationDescriptor = {|
+export type ComponentInstantiationDescriptor = {
   displayName: string,
   componentId: ComponentId,
   props: {[key: string]: $FixMe},
   modifierInstantiationDescriptorsById: {[id: string]: $FixMe},
   listOfModifierInstantiationDescriptorIds: Array<string>,
-|}
+}
 
-export type AliasComponentDescriptor = {|
+export type AliasComponentDescriptor = {
   id: ComponentId,
   type: 'Alias',
   aliasedComponentId: ComponentId,
-|}
+}
 
-export type HardCodedComponentDescriptor = {|
+export type HardCodedComponentDescriptor = {
   displayName: string,
   id: ComponentId,
   type: 'HardCoded',
   reactComponent: ReactComponentType<$FixMe>,
-|}
+}
 
 export type ComponentDescriptor =
   | DeclarativeComponentDescriptor
@@ -36,12 +36,12 @@ export type ComponentDescriptor =
 //   componentDescriptorsById: {[id: ComponentId]: ComponentDescriptor},
 // |}
 
-export type ComponentModelNamespaceState = {|
-  componentDescriptors: {|
+export type ComponentModelNamespaceState = {
+  componentDescriptors: {
     core: {[id: ComponentId]: ComponentDescriptor},
     custom: {[id: ComponentId]: ComponentDescriptor},
-  |},
-  modifierDescriptors: {|
+  },
+  modifierDescriptors: {
     core: {[id: string]: ModifierDescriptor},
-  |},
-|}
+  },
+}

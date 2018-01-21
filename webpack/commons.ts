@@ -3,6 +3,7 @@ import * as CleanPlugin from 'clean-webpack-plugin'
 import * as WebpackNotifierPlugin from 'webpack-notifier'
 import * as webpack from 'webpack'
 import * as TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
+import {mapValues} from 'lodash'
 
 export const context = path.resolve(__dirname, '..')
 
@@ -20,9 +21,11 @@ type PackageName = 'studio'
 export type Envs = 'development' | 'production'
 
 export type Options = {
-  env: 'development' | 'production',
-  withReactHotLoading?: boolean,
-  packageName: PackageName,
+  env: 'development' | 'production'
+  withReactHotLoading?: boolean
+  packageName: PackageName
+  entries?: {[key: string]: string[]}
+  withReactHotLoader: boolean
 }
 
 const babelForTsHotReloading = () => ({
@@ -51,7 +54,13 @@ export const makeConfigParts = (options: Options) => {
     module: webpack.Module,
     resolve: webpack.Resolve,
   } = {
-    entry: {},
+    entry: mapValues(
+      options.entries || {},
+      ent =>
+        options.withReactHotLoader && isDev
+          ? ['react-hot-loader/patch'].concat(ent)
+          : ent,
+    ),
     output: {
       path: bundlesDir,
       filename: '[name].js',
@@ -64,7 +73,9 @@ export const makeConfigParts = (options: Options) => {
       extensions: ['.tsx', '.ts', '.js', '.json'],
     },
     plugins: [
-      new TsconfigPathsPlugin({configFile: require.resolve('../tsconfig.json')}),
+      new TsconfigPathsPlugin({
+        configFile: require.resolve('../tsconfig.json'),
+      }),
       new CleanPlugin([bundlesDir], {root: context}),
       new webpack.DefinePlugin({
         // This is only used inside `$root/webpack/env/index.js` and there it is
@@ -83,6 +94,7 @@ export const makeConfigParts = (options: Options) => {
           ]
         : [
             new webpack.optimize.UglifyJsPlugin({
+              // @ts-ignore @todo 0
               compressor: {warnings: false},
             }),
           ]),
@@ -114,7 +126,9 @@ export const makeConfigParts = (options: Options) => {
         {
           test: /\.js$/,
           use: require.resolve('babel-loader'),
-          include: /node_modules/,
+          include: [
+            path.resolve(__dirname, '../vendor'),
+          ],
         },
         {
           test: /\.css$/,
