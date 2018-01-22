@@ -51,7 +51,7 @@ class TypeSelector extends React.Component<Props, State> {
   }
 
   keyUpHandler = e => {
-    if (e.keyCode === 13) {
+    if (e.keyCode === 13 || e.keyCode === 9) {
       this.selectNameAtIndex(this.state.focusedIndex)
     }
   }
