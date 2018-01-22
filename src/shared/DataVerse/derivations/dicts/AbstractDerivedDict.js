@@ -11,6 +11,7 @@ export default class AbstractDerivedDict {
   isDerivedDict = 'True'
   _trace: $FixMe
   _pointer: $FixMe
+  keys: () => Array<string>
 
   constructor() {
     if (process.env.KEEPING_DERIVATION_TRACES === true) {

@@ -7,7 +7,9 @@ export interface IDerivationOfAPropOfPrototypalDictFace<V>
 
 export class DerivationOfAPropOfAPrototypalDictFace<V> extends ProxyDerivation<
   V,
-> implements IDerivationOfAPropOfPrototypalDictFace<V> {}
+> implements IDerivationOfAPropOfPrototypalDictFace<V> {
+  static displayName = 'PDF.Prop'
+}
 
 export default function propOfPrototypalDictFace<V, D: IDerivation<V>>(
   target: D,

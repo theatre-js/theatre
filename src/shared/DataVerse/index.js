@@ -14,3 +14,7 @@ import * as literals from './literals'
 /*:: import type * from './literals' */
 
 export {atoms, derivations, literals}
+
+if (process.env.NODE_ENV === 'development') {
+  require('./devtoolsFormatters/setup')
+}

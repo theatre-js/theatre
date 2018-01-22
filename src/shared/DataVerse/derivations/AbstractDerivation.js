@@ -9,6 +9,7 @@ import * as debug from '$shared/debug'
 const FRESHNESS_STATE_NOT_APPLICABLE = 0
 const FRESHNESS_STATE_STALE = 1
 const FRESHNESS_STATE_FRESH = 2
+
 type FreshnessState =
   | typeof FRESHNESS_STATE_NOT_APPLICABLE
   | typeof FRESHNESS_STATE_STALE

@@ -16,6 +16,7 @@ export class FlatMapDerivation extends AbstractDerivation
   _depDerivation: $FixMe
   _innerDerivation: ?IDerivation<$IntentionalAny>
   _updateNeededFrom: $Values<typeof UPDATE_NEEDED_FROM>
+  static displayName = 'flatMap'
 
   constructor(
     depDerivation: IDerivation<$FixMe>,

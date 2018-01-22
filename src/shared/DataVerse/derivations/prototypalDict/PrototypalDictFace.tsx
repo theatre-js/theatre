@@ -1,12 +1,11 @@
 // @flow
-import type {IPrototypalDict} from './PrototypalDict'
+import {IPrototypalDict} from './prototypalDict'
 import Emitter from '$shared/DataVerse/utils/Emitter'
 // import DerivationOfAPropOfADerivedDict from './DerivationOfAPropOfADerivedDict'
 import Ticker from '$shared/DataVerse/Ticker'
-import type {MapKey} from '$shared/DataVerse/types'
-import type {IDerivation} from '../types'
+import {IDerivation} from '../types'
 import {
-  type IDerivationOfAPropOfPrototypalDictFace,
+  IDerivationOfAPropOfPrototypalDictFace,
   default as propOfPrototypalDictFace,
 } from './propOfPrototypalDictFace'
 import constant from '../constant'
@@ -18,32 +17,32 @@ const NOTFOUND = undefined // Symbol('notfound')
 const notFoundDerivation = constant(NOTFOUND)
 
 type Wire = {
-  key: MapKey,
-  startsInLayer: LayerId,
-  endsInLayerId: LayerId,
-  proxyDerivation: IDerivationOfAPropOfPrototypalDictFace<$FixMe>,
+  key: string
+  startsInLayer: LayerId
+  endsInLayerId: LayerId
+  proxyDerivation: IDerivationOfAPropOfPrototypalDictFace<$FixMe>
 }
 
 export type LayerId = 'face' | 'tail' | number
 
 type Layer = {
-  id: number,
-  initiatingWiresByKey: {[propName: MapKey]: Wire},
-  derivedDict: IPrototypalDict<$FixMe>,
-  sourceDerivationsByKey: {[propName: MapKey]: IDerivation<$FixMe>},
-  untapFromParentChanges: () => void,
+  id: number
+  initiatingWiresByKey: {[propName: string]: Wire}
+  derivedDict: IPrototypalDict<$FixMe>
+  sourceDerivationsByKey: {[propName: string]: IDerivation<$FixMe>}
+  untapFromParentChanges: () => void
 }
 
 type Layers = {
-  byId: {[id: LayerId]: Layer},
-  list: Array<number>,
-  face: {initiatingWiresByKey: {[propName: MapKey]: Wire}},
-  tail: {sourceDerivationsByKey: {[propName: MapKey]: IDerivation<$FixMe>}},
+  byId: {[id: LayerId]: Layer}
+  list: Array<number>
+  face: {initiatingWiresByKey: {[propName: string]: Wire}}
+  tail: {sourceDerivationsByKey: {[propName: string]: IDerivation<$FixMe>}}
 }
 
 type Structure = {
-  layers: Layers,
-  derivationsByLayerAndKey: {[lk: string]: IDerivation<$FixMe>},
+  layers: Layers
+  derivationsByLayerAndKey: {[lk: string]: IDerivation<$FixMe>}
 }
 
 const makeEmptyStructure = (): Structure => ({
@@ -56,15 +55,15 @@ const makeEmptyStructure = (): Structure => ({
   derivationsByLayerAndKey: {},
 })
 
-export default class DerivedDictFace {
-  _head: ?IPrototypalDict<$FixMe>
+export default class PrototypalDictFace {
+  isPrototypalDictFace = 'True'
+  _head: void | IPrototypalDict<$FixMe>
   _changeEmitter: Emitter<$FixMe>
   _ticker: Ticker
   _structure: Structure
-  _updateStructure: () => void
-  _pointer: ?$FixMe
+  _pointer: void | $FixMe
 
-  constructor(head: ?IPrototypalDict<$FixMe>, ticker: Ticker) {
+  constructor(head: void | IPrototypalDict<$FixMe>, ticker: Ticker) {
     this._head = head
     this._changeEmitter = new Emitter()
     this._ticker = ticker
@@ -73,7 +72,7 @@ export default class DerivedDictFace {
     this._updateStructure()
   }
 
-  setHead(head: ?IPrototypalDict<$FixMe>) {
+  setHead(head: void | IPrototypalDict<$FixMe>) {
     this._head = head
     this._notifyStructureNeedsUpdating()
   }
@@ -129,12 +128,12 @@ export default class DerivedDictFace {
     return this._pointer
   }
 
-  prop(key: MapKey): $FixMe {
+  prop(key: string): $FixMe {
     return this.propFromLayer(key, 'face')
   }
 
   propFromLayer(
-    key: MapKey,
+    key: string,
     initiatingLayerId: 'face' | number,
   ): IDerivation<$FixMe> {
     const layer =
@@ -155,7 +154,7 @@ export default class DerivedDictFace {
   }
 
   _createWire(
-    key: MapKey,
+    key: string,
     startsInLayer: 'face' | number,
     reusableProxy?: IDerivationOfAPropOfPrototypalDictFace<$FixMe>,
   ): Wire {
@@ -176,7 +175,7 @@ export default class DerivedDictFace {
   }
 
   _makeSourceDerivation(
-    key: MapKey,
+    key: string,
     layerId: 'tail' | number,
   ): IDerivation<$FixMe> {
     // if (layerId === 'tail')  return notFoundDerivation
@@ -193,7 +192,7 @@ export default class DerivedDictFace {
       derivation = notFoundDerivation
     } else {
       const lid = layerId
-      const constructor = (layer: $FixMe).derivedDict._getConstructor(key)
+      const constructor = (layer as $FixMe).derivedDict._getConstructor(key)
 
       derivation = notFoundDerivation.flatMap(() =>
         constructor(new ConstructorArg(this, lid)),
@@ -204,7 +203,7 @@ export default class DerivedDictFace {
     return derivation
   }
 
-  _findALayerThatHasProp(key: MapKey, above: 'face' | number): number | 'tail' {
+  _findALayerThatHasProp(key: string, above: 'face' | number): number | 'tail' {
     const startingIndex =
       above === 'face'
         ? this._structure.layers.list.length - 1
@@ -214,7 +213,7 @@ export default class DerivedDictFace {
     for (let i = startingIndex; i >= 0; i--) {
       const layerId = this._structure.layers.list[i]
 
-      const layer: Layer = (this._structure.layers.byId[layerId]: $FixMe)
+      const layer: Layer = this._structure.layers.byId[layerId] as $FixMe
       const derivedDict = layer.derivedDict
       const constructor = derivedDict._getConstructor(key)
       if (constructor) {
@@ -224,17 +223,21 @@ export default class DerivedDictFace {
 
     return 'tail'
   }
+
+  keys() {
+    return this._head ? this._head.keys() : {}
+  }
 }
 
 class ConstructorArg {
-  _front: *
+  _front: $FixMe
   _sourceLayerId: number
-  constructor(front: DerivedDictFace, sourceLayerId: number) {
+  constructor(front: PrototypalDictFace, sourceLayerId: number) {
     this._front = front
     this._sourceLayerId = sourceLayerId
   }
 
-  prop(key: MapKey) {
+  prop(key: string) {
     return this._front.prop(key)
   }
 
@@ -247,4 +250,4 @@ class ConstructorArg {
   }
 }
 
-export type Face = DerivedDictFace
+export type Face = PrototypalDictFace

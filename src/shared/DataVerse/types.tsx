@@ -1,4 +1,4 @@
-export type MapKey = string | number
+export type MapKey = string
 
 export type AddressedChangeset = {address: Array<MapKey>}
 

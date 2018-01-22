@@ -16,6 +16,10 @@ export class ConcatenatedDerivedArray<V> extends AbstractDerivedArray
     this._right = right
     return this
   }
+
+  length() {
+    return this._left.length() + this._right.length()
+  }
 }
 
 export default function concatDerivedArray<V>(

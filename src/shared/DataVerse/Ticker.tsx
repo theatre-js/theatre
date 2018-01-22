@@ -1,23 +1,22 @@
-// @flow
 interface ObjectWhoseStructureShouldBeUpdated {
-  _updateStructure(): void;
+  _updateStructure(): void
 }
 
 interface ObjectWhoseComputationShouldBeUpdated {
-  _updateComputation(): void;
+  _updateComputation(): void
 }
 
 export interface ITicker {
-  registerComputationUpdate(ObjectWhoseComputationShouldBeUpdated): void;
+  registerComputationUpdate(o: ObjectWhoseComputationShouldBeUpdated): void
   addObjectWhoseStructureShouldBeUpdated(
-    ObjectWhoseStructureShouldBeUpdated,
-  ): void;
+    o: ObjectWhoseStructureShouldBeUpdated,
+  ): void
 }
 
 export default class Ticker implements ITicker {
-  _computationsToUpdate: *
-  _objectsWhoseStructureShouldBeUpdated: *
-  _traces: *
+  _computationsToUpdate: $FixMe
+  _objectsWhoseStructureShouldBeUpdated: $FixMe
+  _traces: $FixMe
 
   constructor() {
     this._computationsToUpdate = new Set()
@@ -48,7 +47,7 @@ export default class Ticker implements ITicker {
     return this._tick(0)
   }
 
-  _tick(n: number) {
+  _tick(n: number): void {
     if (n > 10) {
       console.warn('tick() recursing for 10 times')
     }
