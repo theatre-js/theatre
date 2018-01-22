@@ -133,7 +133,10 @@ export default class DerivedDictFace {
     return this.propFromLayer(key, 'face')
   }
 
-  propFromLayer(key: MapKey, initiatingLayerId: 'face' | number): IDerivation<$FixMe> {
+  propFromLayer(
+    key: MapKey,
+    initiatingLayerId: 'face' | number,
+  ): IDerivation<$FixMe> {
     const layer =
       initiatingLayerId === 'face'
         ? this._structure.layers.face
@@ -172,7 +175,10 @@ export default class DerivedDictFace {
     return wire
   }
 
-  _makeSourceDerivation(key: MapKey, layerId: 'tail' | number): IDerivation<$FixMe> {
+  _makeSourceDerivation(
+    key: MapKey,
+    layerId: 'tail' | number,
+  ): IDerivation<$FixMe> {
     // if (layerId === 'tail')  return notFoundDerivation
     const layer =
       layerId === 'tail'

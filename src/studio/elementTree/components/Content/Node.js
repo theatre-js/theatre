@@ -195,7 +195,8 @@ const WrappedNode = connect((s, op) => {
               .displayName
           : type.displayName
 
-  const textContent = stateNode.nodeName === '#text' ? stateNode.textContent : null
+  const textContent =
+    stateNode.nodeName === '#text' ? stateNode.textContent : null
 
   const childRef = _ref.child
   const textChild =
@@ -216,7 +217,10 @@ const WrappedNode = connect((s, op) => {
 
   let classNames
   if (!fakeClassesWeakMap.has(_ref)) {
-    fakeClassesWeakMap.set(_ref, dummyClasses[_.random(0, dummyClasses.length - 1)])
+    fakeClassesWeakMap.set(
+      _ref,
+      dummyClasses[_.random(0, dummyClasses.length - 1)],
+    )
   }
   classNames = fakeClassesWeakMap.get(_ref)
 

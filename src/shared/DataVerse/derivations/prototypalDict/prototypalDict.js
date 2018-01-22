@@ -26,7 +26,10 @@ export class PrototypalDict<O: {}> implements IPrototypalDict<O> {
   _parent: ?IPrototypalDict<$FixMe>
   _parentChagnesEmitter: *
 
-  constructor(constructors: O, delegateTo?: IPrototypalDict<$FixMe>): IPrototypalDict<O> {
+  constructor(
+    constructors: O,
+    delegateTo?: IPrototypalDict<$FixMe>,
+  ): IPrototypalDict<O> {
     this._id = lastId++
     this._constructors = constructors
     this._parent = delegateTo

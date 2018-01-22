@@ -4,17 +4,24 @@ import type {IDerivedDict} from './types'
 import type {ITicker} from '$shared/DataVerse/Ticker'
 import _ from 'lodash'
 import type {IDerivation} from '../types'
-import {default as proxyDerivedDict, type IProxyDerivedDict} from './proxyDerivedDict'
+import {
+  default as proxyDerivedDict,
+  type IProxyDerivedDict,
+} from './proxyDerivedDict'
 import emptyDict from './emptyDict'
 
-class AutoProxyDerivedDict<O: {}> extends AbstractDerivedDict implements IDerivedDict<O> {
+class AutoProxyDerivedDict<O: {}> extends AbstractDerivedDict
+  implements IDerivedDict<O> {
   _proxy: IProxyDerivedDict<O>
   _sourceD: IDerivation<IDerivedDict<O>>
   _ticker: ITicker
   _untapFromProxyChanges: () => void
   _untapFromSourceChanges: () => void
 
-  constructor(sourceD: IDerivation<IDerivedDict<O>>, ticker: ITicker): IDerivedDict<O> {
+  constructor(
+    sourceD: IDerivation<IDerivedDict<O>>,
+    ticker: ITicker,
+  ): IDerivedDict<O> {
     super()
     this._ticker = ticker
     this._sourceD = sourceD

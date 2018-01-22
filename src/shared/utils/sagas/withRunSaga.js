@@ -19,7 +19,11 @@ function preventToThrow(fn: () => Generator<*, *, *>) {
 
 type Fn0<R> = (...rest: Array<void>) => Generator<mixed, R, mixed>
 type Fn1<T1, R> = (t1: T1, ...rest: Array<void>) => Generator<mixed, R, mixed>
-type Fn2<T1, T2, R> = (t1: T1, t2: T2, ...rest: Array<void>) => Generator<mixed, R, mixed>
+type Fn2<T1, T2, R> = (
+  t1: T1,
+  t2: T2,
+  ...rest: Array<void>
+) => Generator<mixed, R, mixed>
 type Fn3<T1, T2, T3, R> = (
   t1: T1,
   t2: T2,
@@ -51,7 +55,16 @@ type Fn6<T1, T2, T3, T4, T5, T6, R> = (
   ...rest: Array<void>
 ) => Generator<mixed, R, mixed>
 
-export type RunSagaFn = (<T1, T2, T3, T4, T5, T6, R, Fn: Fn6<T1, T2, T3, T4, T5, T6, R>>(
+export type RunSagaFn = (<
+  T1,
+  T2,
+  T3,
+  T4,
+  T5,
+  T6,
+  R,
+  Fn: Fn6<T1, T2, T3, T4, T5, T6, R>,
+>(
   fn: Fn,
   t1: T1,
   t2: T2,
@@ -91,16 +104,26 @@ export type RunSagaFn = (<T1, T2, T3, T4, T5, T6, R, Fn: Fn6<T1, T2, T3, T4, T5,
     t2: T2,
     ...rest: Array<void>
   ) => Promise<R>) &
-  (<T1, R, Fn: Fn1<T1, R>>(fn: Fn, t1: T1, ...rest: Array<void>) => Promise<R>) &
+  (<T1, R, Fn: Fn1<T1, R>>(
+    fn: Fn,
+    t1: T1,
+    ...rest: Array<void>
+  ) => Promise<R>) &
   (<R, Fn: Fn0<R>>(fn: Fn, ...rest: Array<void>) => Promise<R>)
 // @todo for some reason, including the FnSpread case causes flow to use it instead of FN0. So, no spread support for the time being
 // & (<T, R, Fn: FnSpread<T, R>>(fn: Fn, ...args: Array<T>) => Promise<R>)
 
 export type WithRunSagaProps = {runSaga: RunSagaFn}
 
-export default function withRunSaga(): HigherOrderComponent<{}, {runSaga: RunSagaFn}> {
+export default function withRunSaga(): HigherOrderComponent<
+  {},
+  {runSaga: RunSagaFn},
+> {
   return function connectedToSagas(component: any): any {
-    const finalComponent = (props: Object, {store}: {store: {runSaga: Function}}) => {
+    const finalComponent = (
+      props: Object,
+      {store}: {store: {runSaga: Function}},
+    ) => {
       const ownProps = {
         runSaga: (fn, ...args) =>
           // $FixMe

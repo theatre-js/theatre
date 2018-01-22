@@ -10,7 +10,8 @@ export type ArrayLiteral<V> = Array<V> & {
 }
 export type IsArrayLiteral<A> = $ElementType<A, '**isArrayLiteral**'>
 export type ValueOfArrayLiteral<A> = $ElementType<A, '___arrayElementType'>
-export const array = <V, A: Array<V>>(a: A): ArrayLiteral<V> => (a: $IntentionalAny)
+export const array = <V, A: Array<V>>(a: A): ArrayLiteral<V> =>
+  (a: $IntentionalAny)
 
 export type ObjectLiteral<O: {}> = O & {
   '**isArrayLiteral**': False,

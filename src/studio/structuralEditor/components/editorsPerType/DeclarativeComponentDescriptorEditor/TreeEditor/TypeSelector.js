@@ -89,7 +89,10 @@ class TypeSelector extends React.Component<Props, State> {
     const {matchedDisplayNames, query, focusedIndex, willUnmount} = this.state
     return (
       <div className={cx(css.wrapper, {[css.willUnmount]: willUnmount})}>
-        <div className={css.container} style={{'--depth': depth, top, left, width}}>
+        <div
+          className={css.container}
+          style={{'--depth': depth, top, left, width}}
+        >
           <div className={css.input}>
             <input
               ref={c => (this.input = c)}
@@ -107,8 +110,12 @@ class TypeSelector extends React.Component<Props, State> {
               return (
                 <div
                   key={displayName}
-                  className={cx(css.option, {[css.isSelected]: index === focusedIndex})}
-                  onMouseEnter={() => this.setState(() => ({focusedIndex: index}))}
+                  className={cx(css.option, {
+                    [css.isSelected]: index === focusedIndex,
+                  })}
+                  onMouseEnter={() =>
+                    this.setState(() => ({focusedIndex: index}))
+                  }
                   onClick={() => this.selectNameAtIndex(index)}
                 >
                   {displayName}

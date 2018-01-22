@@ -61,7 +61,10 @@ const handlersByState = {
       }
     },
 
-    _transitionOutAndRecalculateValue(state: TimelineIsEmptyState, d: ValueDerivation) {
+    _transitionOutAndRecalculateValue(
+      state: TimelineIsEmptyState,
+      d: ValueDerivation,
+    ) {
       d._removeDependency(state.firstIdP)
       d._determineNewState()
       return d._recalculate()
@@ -81,7 +84,8 @@ const handlersByState = {
         )
 
       const timeOfFirstPointD = firstPointD.flatMap(
-        (firstPoint: ?$FixMe) => firstPoint && firstPoint.pointer().prop('time'),
+        (firstPoint: ?$FixMe) =>
+          firstPoint && firstPoint.pointer().prop('time'),
       )
       d._addDependency(timeOfFirstPointD)
 
@@ -161,7 +165,10 @@ const handlersByState = {
       }
     },
 
-    _transitionOutAndRecalculateValue(state: ObservingKeyState, d: ValueDerivation) {
+    _transitionOutAndRecalculateValue(
+      state: ObservingKeyState,
+      d: ValueDerivation,
+    ) {
       d._removeDependency(state.leftPointTimeP)
       d._removeDependency(state.isLastPointD)
       d._removeDependency(state.possibleRightPointTimeD)
@@ -188,11 +195,13 @@ const handlersByState = {
       })
 
       const possibleRightPointTimeD = possibleRightPointD.flatMap(
-        (rightPoint: ?$FixMe) => rightPoint && rightPoint.pointer().prop('time'),
+        (rightPoint: ?$FixMe) =>
+          rightPoint && rightPoint.pointer().prop('time'),
       )
 
       const possibleRightPointValueD = possibleRightPointD.flatMap(
-        (rightPoint: ?$FixMe) => rightPoint && rightPoint.pointer().prop('value'),
+        (rightPoint: ?$FixMe) =>
+          rightPoint && rightPoint.pointer().prop('value'),
       )
 
       // we'll bypass the interpolator if the left point goes out of existense,
@@ -203,26 +212,32 @@ const handlersByState = {
 
       // const leftPointInterpolatorTypeP = leftPointP.prop('interpolator').prop('type')
 
-      const interpolationDescriptorP = leftPointP.prop('interpolationDescriptor')
-      const interpolationTypeP = interpolationDescriptorP.prop('interpolationType')
-      const interpolatorD = interpolationTypeP.flatMap((interpolationType: ?string) => {
-        // $FlowIgnore
-        const interpolator = interpolators[interpolationType]
-        if (interpolator) {
-          return interpolator({
-            timeD: d._timeD,
-            interpolationDescriptorP,
-            leftPointTimeD: leftPointP.prop('time'),
-            leftPointValueD: leftPointP.prop('value'),
-            rightPointTimeD: possibleRightPointTimeD,
-            rightPointValueD: possibleRightPointValueD,
-          })
-        } else {
-          throw new Error(
-            `Unkown interpolationType '${interpolationType || 'undefined'}'`,
-          )
-        }
-      })
+      const interpolationDescriptorP = leftPointP.prop(
+        'interpolationDescriptor',
+      )
+      const interpolationTypeP = interpolationDescriptorP.prop(
+        'interpolationType',
+      )
+      const interpolatorD = interpolationTypeP.flatMap(
+        (interpolationType: ?string) => {
+          // $FlowIgnore
+          const interpolator = interpolators[interpolationType]
+          if (interpolator) {
+            return interpolator({
+              timeD: d._timeD,
+              interpolationDescriptorP,
+              leftPointTimeD: leftPointP.prop('time'),
+              leftPointValueD: leftPointP.prop('value'),
+              rightPointTimeD: possibleRightPointTimeD,
+              rightPointValueD: possibleRightPointValueD,
+            })
+          } else {
+            throw new Error(
+              `Unkown interpolationType '${interpolationType || 'undefined'}'`,
+            )
+          }
+        },
+      )
 
       d._addDependency(leftPointTimeP)
       d._addDependency(isLastPointD)

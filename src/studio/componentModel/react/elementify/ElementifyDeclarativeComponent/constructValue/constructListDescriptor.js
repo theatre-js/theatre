@@ -4,7 +4,9 @@
 const constructListDescriptor = (desP: $FixMe, d: $FixMe) => {
   if (desP.isPointer !== 'True') throw Error('Pointers only')
 
-  return desP.flatMap(derivedArray => derivedArray.map(v => constructValue.default(v, d)))
+  return desP.flatMap(derivedArray =>
+    derivedArray.map(v => constructValue.default(v, d)),
+  )
 }
 
 const constructValue = require('./index')

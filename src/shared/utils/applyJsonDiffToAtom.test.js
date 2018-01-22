@@ -7,7 +7,9 @@ const example = (input, output) => {
   const diffs: Array<Object> = jsonPatchLib.compare(input, output)
   const atom = D.atoms.atomifyDeep(input)
 
-  return it(`Case: ${JSON.stringify(input)} ==> ${JSON.stringify(output)}`, () => {
+  return it(`Case: ${JSON.stringify(input)} ==> ${JSON.stringify(
+    output,
+  )}`, () => {
     // console.log('diffs', diffs)
     for (let diff of diffs) {
       applyJsonDiffToAtom(diff, atom)

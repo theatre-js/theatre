@@ -33,7 +33,11 @@ export type AtomifyDeepType<V> = If<
   If<
     IsArrayLiteral<V>,
     IArrayAtom<AtomifyDeepType<ValueOfArrayLiteral<V>>>,
-    If<IsPrimitiveLiteral<V>, IBoxAtom<ValueOfPrimitiveLiteral<V>>, IBoxAtom<V>>,
+    If<
+      IsPrimitiveLiteral<V>,
+      IBoxAtom<ValueOfPrimitiveLiteral<V>>,
+      IBoxAtom<V>,
+    >,
   >,
 >
 
@@ -62,7 +66,9 @@ export const fromJSArray = (jsArray: $FixMe): $FixMe => {
   return array(jsArray.map(atomifyDeep))
 }
 
-export const fromJSObject = (jsObject: {[key: number | string]: mixed}): $FixMe => {
+export const fromJSObject = (jsObject: {
+  [key: number | string]: mixed,
+}): $FixMe => {
   return dict(mapValues(jsObject, atomifyDeep))
 }
 

@@ -28,7 +28,9 @@ class AbstractDerivation {
   +_recalculate: () => $FixMe
   +_keepUptodate: () => void
   +_stopKeepingUptodate: () => void
-  +_youMayNeedToUpdateYourself: (msgComingFrom: IDerivation<$IntentionalAny>) => void
+  +_youMayNeedToUpdateYourself: (
+    msgComingFrom: IDerivation<$IntentionalAny>,
+  ) => void
 
   constructor() {
     if (process.env.KEEPING_DERIVATION_TRACES === true) {
@@ -132,7 +134,8 @@ class AbstractDerivation {
   _reactToNumberOfDependentsChange() {
     const thereAreMoreThanOneDependents = this._dependents.size > 0
 
-    if (thereAreMoreThanOneDependents === this._thereAreMoreThanOneDependents) return
+    if (thereAreMoreThanOneDependents === this._thereAreMoreThanOneDependents)
+      return
     // if (thereAreMoreThanOneDependents) {
     //   activeDs.add(this)
     // } else {

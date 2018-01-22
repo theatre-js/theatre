@@ -24,8 +24,8 @@ export class ListOfModifierInstantiationDescriptorsInspector extends React.PureC
   render() {
     const {thePath} = this.props
     return this.props.list.map((id: string, index: number) => {
-      const modifierInstantiationDescriptor = this.props.modifierInstantiationDescriptors
-        .byId[id]
+      const modifierInstantiationDescriptor = this.props
+        .modifierInstantiationDescriptors.byId[id]
       return (
         <ModifierInstantiationDescriptorInspector
           pathToModifierInstantiationDescriptor={[...thePath, 'byId', id]}

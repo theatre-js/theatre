@@ -25,7 +25,9 @@ export default function wrapRootReducer<State, Action>(
           throw new Error(
             `Action ${
               mergeStateAction.type
-            }'s payload must only be an object. ${JSON.stringify(action.payload)} given`,
+            }'s payload must only be an object. ${JSON.stringify(
+              action.payload,
+            )} given`,
           )
 
         if (
@@ -68,7 +70,8 @@ export default function wrapRootReducer<State, Action>(
         const pairs: Array<Pair> = (action.payload: $IntentionalAny)
         // $FlowIgnore
         return pairs.reduce(
-          (acc: $IntentionalAny, pair: Pair) => update(pair.path, pair.reducer, acc),
+          (acc: $IntentionalAny, pair: Pair) =>
+            update(pair.path, pair.reducer, acc),
           state,
         )
         // fallback to inner reducer

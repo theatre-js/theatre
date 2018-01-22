@@ -15,7 +15,9 @@ const ops = {
     },
 
     remove: (diff: Diff, stuff: Stuff) => {
-      stuff.curAtom.deleteProp(jsonPatchLib.unescapePathComponent(stuff.lastComponent))
+      stuff.curAtom.deleteProp(
+        jsonPatchLib.unescapePathComponent(stuff.lastComponent),
+      )
     },
 
     add: (diff: Diff, stuff: Stuff) => {
@@ -89,6 +91,8 @@ export default function applyJsonDiffToAtom(diff: Diff, atom: $FixMe) {
   if (opFn) {
     opFn(diff, stuff)
   } else {
-    throw Error(`@todo Diff op '${diff.op}' for atom type ${type} not yet supported`)
+    throw Error(
+      `@todo Diff op '${diff.op}' for atom type ${type} not yet supported`,
+    )
   }
 }

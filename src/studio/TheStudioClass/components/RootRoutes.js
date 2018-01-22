@@ -10,7 +10,12 @@ const mainRoutes = [<Route key="/" path="/" component={TheUI} />]
 
 const routes = [
   ...mainRoutes,
-  <Route key="toIndex" path={`/`} exact component={() => <Redirect to="/projects" />} />,
+  <Route
+    key="toIndex"
+    path={`/`}
+    exact
+    component={() => <Redirect to="/projects" />}
+  />,
   <Route key="404" component={() => <div>Route not found</div>} />,
 ].map((el, i) => {
   return (

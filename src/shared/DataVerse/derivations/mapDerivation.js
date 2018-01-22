@@ -4,7 +4,8 @@ import type {IDerivation} from './types'
 
 // type Deps<O> = $ObjMap<O, <V>(v: V) => IDerivation<V>>
 
-export class MapDerivation<T, V> extends AbstractDerivation implements IDerivation<V> {
+export class MapDerivation<T, V> extends AbstractDerivation
+  implements IDerivation<V> {
   getValue: () => V
   _fn: *
   _dep: IDerivation<T>

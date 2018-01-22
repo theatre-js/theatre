@@ -77,12 +77,12 @@ export default class SideEffectsHandler {
   _startObservingKey = (key: string) => {
     const pointerToSideEffectFn = this._currentDict.pointer().prop(key)
 
-    this._mapOfUntapFromEachSideEffectKeyPChagnes[key] = pointerToSideEffectFn
-      .changes(this._ticker)
-      .tap(newFn => {
-        this._stopSideEffect(key)
-        this._startSideEffect(key, newFn)
-      })
+    this._mapOfUntapFromEachSideEffectKeyPChagnes[
+      key
+    ] = pointerToSideEffectFn.changes(this._ticker).tap(newFn => {
+      this._stopSideEffect(key)
+      this._startSideEffect(key, newFn)
+    })
 
     this._startSideEffect(key, pointerToSideEffectFn.getValue())
   }
@@ -119,6 +119,9 @@ export default class SideEffectsHandler {
 
   _startSideEffect(key: string, fn: (FinalFace, D.ITicker) => () => void) {
     this._stopSideEffect(key)
-    this._mapOfStopEffectFnBySideEffectKey[key] = fn(this._finalFace, this._ticker)
+    this._mapOfStopEffectFnBySideEffectKey[key] = fn(
+      this._finalFace,
+      this._ticker,
+    )
   }
 }

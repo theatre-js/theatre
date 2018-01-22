@@ -13,7 +13,10 @@ type Props = {
 
 type State = void
 
-class DeclarativeComponentDescriptorEditor extends React.PureComponent<Props, State> {
+class DeclarativeComponentDescriptorEditor extends React.PureComponent<
+  Props,
+  State,
+> {
   state: State
   props: Props
 

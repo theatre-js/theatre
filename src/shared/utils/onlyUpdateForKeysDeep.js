@@ -7,7 +7,8 @@ type Ident = <T>(a: T) => T
 
 const onlyUpdateForKeysDeep = (keys: Array<string>): Ident =>
   (shouldUpdate(
-    (prev: Object, next: Object) => !deepEqual(pick(prev, keys), pick(next, keys)),
+    (prev: Object, next: Object) =>
+      !deepEqual(pick(prev, keys), pick(next, keys)),
   ): any)
 
 export default onlyUpdateForKeysDeep

@@ -2,7 +2,10 @@
 import {createAction} from 'redux-actions'
 
 type Reducer<ActionType, Payload> = <State>(
-  callback: (state: State, action: {type: ActionType, payload: Payload}) => State,
+  callback: (
+    state: State,
+    action: {type: ActionType, payload: Payload},
+  ) => State,
 ) => {
   (state: State, action: {type: ActionType, payload: Payload}): State,
   type: ActionType,
@@ -35,7 +38,10 @@ type ActionCreatorCreator = (<
  * action creator.
  */
 const actionCreator: ActionCreatorCreator = (actionType, transformer) => {
-  const originalActionCreator = (createAction(actionType, transformer): $IntentionalAny)
+  const originalActionCreator = (createAction(
+    actionType,
+    transformer,
+  ): $IntentionalAny)
   originalActionCreator.type = actionType
   originalActionCreator.reducer = (cb: Function) => {
     const fn = (state, action) => cb(state, action)

@@ -75,7 +75,9 @@ class PanelInput extends React.Component<Props, State> {
         ) : (
           <div>
             <div className={css.type}>{type}</div>
-            <div className={css.hint}>{isConnected ? 'Connected' : 'Drop an output'}</div>
+            <div className={css.hint}>
+              {isConnected ? 'Connected' : 'Drop an output'}
+            </div>
           </div>
         )}
       </div>

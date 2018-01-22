@@ -3,7 +3,11 @@ import forEachRight from 'lodash/forEachRight'
 import flattenDeep from 'lodash/flattenDeep'
 
 type StylesToClassName = {[key: string]: string}
-type StylesToClassNames = StylesToClassName | null | void | Array<StylesToClassNames>
+type StylesToClassNames =
+  | StylesToClassName
+  | null
+  | void
+  | Array<StylesToClassNames>
 
 const resolveCss = (...stylesToClassNames: Array<StylesToClassNames>) => (
   ...classNameOrClassNames: Array<string | void | null | false>

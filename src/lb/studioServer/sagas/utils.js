@@ -43,7 +43,9 @@ export type ResponseToSocketRequest =
 export const getChannelFromSocket = (socket: Socket): Channel => {
   return eventChannel(emitToChannel => {
     const errorListener = error => {
-      emitToChannel(({type: 'error', error, handshake: socket.handshake}: SocketEvent))
+      emitToChannel(
+        ({type: 'error', error, handshake: socket.handshake}: SocketEvent),
+      )
     }
     socket.on('error', errorListener)
 

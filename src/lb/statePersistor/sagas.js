@@ -32,7 +32,9 @@ function* loadState(): Generator<*, *, *> {
   try {
     jsonData = JSON.parse(content)
   } catch (e) {
-    console.error(`could not parse json content in state file '${pathToPersistenceFile}'`)
+    console.error(
+      `could not parse json content in state file '${pathToPersistenceFile}'`,
+    )
     return yield put(bootstrapAction())
     // @todo report this
   }
@@ -42,10 +44,16 @@ function* loadState(): Generator<*, *, *> {
 }
 
 function* persistStateChanges(): Generator<*, *, *> {
-  let lastState = pickPathsFromObject(yield select(), whitelistOfPartsOfStateToPersist)
+  let lastState = pickPathsFromObject(
+    yield select(),
+    whitelistOfPartsOfStateToPersist,
+  )
   yield takeLatest('*', function*(): Generator<*, *, *> {
     yield delay(2)
-    const newState = pickPathsFromObject(yield select(), whitelistOfPartsOfStateToPersist)
+    const newState = pickPathsFromObject(
+      yield select(),
+      whitelistOfPartsOfStateToPersist,
+    )
     if (!deepEqual(lastState, newState)) {
       yield call(persistNewState, newState)
       lastState = newState

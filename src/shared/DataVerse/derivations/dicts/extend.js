@@ -5,7 +5,8 @@ import type {IDerivedDict, ChangeType} from './types'
 import DerivedDict from './AbstractDerivedDict'
 import _ from 'lodash'
 
-export class ExtendDerivedDict extends DerivedDict implements IDerivedDict<$FixMe> {
+export class ExtendDerivedDict extends DerivedDict
+  implements IDerivedDict<$FixMe> {
   _changeEmitter: Emitter<ChangeType<$FixMe>>
   _base: IDerivedDict<$FixMe>
   _overrider: IDerivedDict<$FixMe>

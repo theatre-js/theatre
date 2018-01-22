@@ -11,7 +11,9 @@ const installDevtoolsExtensions = () => {
     REDUX_DEVTOOLS,
   } = require('electron-devtools-installer')
 
-  return installExtension(REACT_DEVELOPER_TOOLS).then(installExtension(REDUX_DEVTOOLS))
+  return installExtension(REACT_DEVELOPER_TOOLS).then(
+    installExtension(REDUX_DEVTOOLS),
+  )
 }
 
 if (app) app.dock.hide()

@@ -1,6 +1,7 @@
 export const DESCRIPTOR_TYPE = {
   REF_TO_LOCAL_HIDDEN_VALUE: 'ReferenceToLocalHiddenValue',
-  COMPONENT_INSTANTIATION_VALUE_DESCRIPTOR: 'ComponentInstantiationValueDescriptor',
+  COMPONENT_INSTANTIATION_VALUE_DESCRIPTOR:
+    'ComponentInstantiationValueDescriptor',
 }
 
 export const NODE_TYPE = {

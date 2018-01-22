@@ -2,7 +2,10 @@
 import {React, connect, shouldUpdate, typeSystem} from '$studio/handy'
 import css from './index.css'
 import {ValueEditor} from '$studio/structuralEditor'
-import type {ComponentDescriptor, ComponentId} from '$studio/componentModel/types'
+import type {
+  ComponentDescriptor,
+  ComponentId,
+} from '$studio/componentModel/types'
 import * as componentModelSelectors from '$studio/componentModel/selectors'
 // import ListOfModifierInstantiationDescriptorsInspector from './ListOfModifierInstantiationDescriptorsInspector'
 
@@ -27,7 +30,11 @@ export class ComposePanelContent extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const {componentId, pathToComopnentDescriptor, componentDescriptor} = this.props
+    const {
+      componentId,
+      pathToComopnentDescriptor,
+      componentDescriptor,
+    } = this.props
 
     if (!componentId || !pathToComopnentDescriptor || !componentDescriptor)
       return (
@@ -42,7 +49,11 @@ export class ComposePanelContent extends React.PureComponent<Props, State> {
       return <div className={css.container}>Some message for aliases here</div>
     } else if (componentDescriptor.type === 'HardCoded') {
       // @todo
-      return <div className={css.container}>Some message for hardCoded ones here</div>
+      return (
+        <div className={css.container}>
+          Some message for hardCoded ones here
+        </div>
+      )
     } else {
       return (
         <ValueEditor
@@ -73,7 +84,8 @@ export class ComposePanelContent extends React.PureComponent<Props, State> {
 
 const connected = connect((s, op) => {
   // const possibleComponentId = s.composePanel.componentId || 'FakeDeclarativeButton'
-  const possibleComponentId = op.inputs.selectedNode && op.inputs.selectedNode.componentId
+  const possibleComponentId =
+    op.inputs.selectedNode && op.inputs.selectedNode.componentId
   if (!possibleComponentId) {
     return {
       pathToComopnentDescriptor: undefined,

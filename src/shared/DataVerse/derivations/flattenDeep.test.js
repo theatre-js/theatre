@@ -89,7 +89,9 @@ describe('FlattenDeepDerivation', () => {
     const b = D.atoms.box('b')
     const bD = b.derivation()
     const cD = aD
-      .map(aValue => bD.map(bValue => D.derivations.withDeps({}, () => aValue + bValue)))
+      .map(aValue =>
+        bD.map(bValue => D.derivations.withDeps({}, () => aValue + bValue)),
+      )
       .flattenDeep(7)
 
     expect(cD.getValue()).toEqual('ab')

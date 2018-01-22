@@ -11,7 +11,10 @@ type EventEmitter = {
  * Takes a regular EventEmitter, and a list of event names, and returns a saga channel that emits
  * those events originating from the emitter.
  */
-const channelFromEmitter = (emitter: EventEmitter, eventNames: Array<string>): Channel =>
+const channelFromEmitter = (
+  emitter: EventEmitter,
+  eventNames: Array<string>,
+): Channel =>
   eventChannel(emitToChannel => {
     const putFor = eventName => payload => {
       emitToChannel({type: eventName, payload})

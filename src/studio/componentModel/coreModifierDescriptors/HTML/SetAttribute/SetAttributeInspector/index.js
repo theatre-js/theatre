@@ -40,7 +40,8 @@ export class SetAttributeInspector extends React.PureComponent<Props, void> {
 export default compose(
   connect((s, op: any) => {
     return {
-      list: get(s, op.pathToModifierInstantiationDescriptor).props.pairings.list,
+      list: get(s, op.pathToModifierInstantiationDescriptor).props.pairings
+        .list,
     }
   }),
 )(SetAttributeInspector)

@@ -21,7 +21,10 @@ type RequestFromWindow = {
   respond: (payload: mixed) => void,
 }
 
-export function sendRequestToMain(type: string, payload: mixed): Promise<mixed> {
+export function sendRequestToMain(
+  type: string,
+  payload: mixed,
+): Promise<mixed> {
   const request = {
     id: generateUniqueId(),
     type,
@@ -50,7 +53,9 @@ export const getChannelOfRequestsFromMain = (): Channel => {
       const respond = (payload: mixed) => {
         if (alreadyResponded)
           throw new Error(
-            `Request '${request.id}' to '${request.type}' is already responded to`,
+            `Request '${request.id}' to '${
+              request.type
+            }' is already responded to`,
           )
 
         alreadyResponded = true

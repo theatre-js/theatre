@@ -4,7 +4,9 @@ const resolveReferenceToHiddenLocalValue = (whichP, d) => {
     .pointer()
     .prop('props')
     .prop('componentDescriptor')
-  const localHiddenValuesByIdP = componentDescriptorP.prop('localHiddenValuesById')
+  const localHiddenValuesByIdP = componentDescriptorP.prop(
+    'localHiddenValuesById',
+  )
 
   return whichP.flatMap((id: string) => {
     const valueDescP = localHiddenValuesByIdP.prop(id)

@@ -147,7 +147,9 @@ class ProjectsPage extends React.Component<Props, State> {
       <div className={css.container}>
         <div className={css.title}>Projects</div>
         <div
-          className={this.state.isDropzoneActive ? css.activeDropzone : css.dropzone}
+          className={
+            this.state.isDropzoneActive ? css.activeDropzone : css.dropzone
+          }
           onDragStart={this.dragStartHandler}
           onDragEnter={this.dragEnterHandler}
           onDragLeave={this.dragLeaveHandler}

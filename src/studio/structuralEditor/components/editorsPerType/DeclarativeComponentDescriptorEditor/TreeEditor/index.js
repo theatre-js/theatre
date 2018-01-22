@@ -110,14 +110,18 @@ class TreeEditor extends React.PureComponent<Props, State> {
       let which
       while (
         descriptor &&
-        descriptor.__descriptorType === DESCRIPTOR_TYPE.REF_TO_LOCAL_HIDDEN_VALUE
+        descriptor.__descriptorType ===
+          DESCRIPTOR_TYPE.REF_TO_LOCAL_HIDDEN_VALUE
       ) {
         which = descriptor.which
         descriptor = localHiddenValuesById[which]
       }
 
       if (descriptor === null) {
-        const {status, actionPayload} = this._getComponentStatusAndActionPayload(which)
+        const {
+          status,
+          actionPayload,
+        } = this._getComponentStatusAndActionPayload(which)
         return {
           id: which,
           status: status,
@@ -126,7 +130,10 @@ class TreeEditor extends React.PureComponent<Props, State> {
       }
 
       if (typeof descriptor === 'string') {
-        const {status, actionPayload} = this._getComponentStatusAndActionPayload(which)
+        const {
+          status,
+          actionPayload,
+        } = this._getComponentStatusAndActionPayload(which)
         return {
           id: which,
           status: status,
@@ -142,12 +149,16 @@ class TreeEditor extends React.PureComponent<Props, State> {
         descriptor.__descriptorType ===
         DESCRIPTOR_TYPE.COMPONENT_INSTANTIATION_VALUE_DESCRIPTOR
       ) {
-        const {type: componentType, displayName: displayName} = getComponentDescriptor(
-          descriptor.componentId,
-        )
+        const {
+          type: componentType,
+          displayName: displayName,
+        } = getComponentDescriptor(descriptor.componentId)
 
         const id = descriptor.props.key
-        const {status, actionPayload} = this._getComponentStatusAndActionPayload(id)
+        const {
+          status,
+          actionPayload,
+        } = this._getComponentStatusAndActionPayload(id)
         return {
           id,
           status: status,
@@ -160,7 +171,9 @@ class TreeEditor extends React.PureComponent<Props, State> {
           parentId,
           children: []
             .concat(descriptor.props.children || [])
-            .map((c, i) => this._getComponentData(c, localHiddenValuesById, i, id)),
+            .map((c, i) =>
+              this._getComponentData(c, localHiddenValuesById, i, id),
+            ),
         }
       }
     }
@@ -227,7 +240,10 @@ class TreeEditor extends React.PureComponent<Props, State> {
           reducer: values => ({...values, [childId]: null}),
         },
         {
-          path: pathToComponentDescriptor.concat('localHiddenValuesById', nodeId),
+          path: pathToComponentDescriptor.concat(
+            'localHiddenValuesById',
+            nodeId,
+          ),
           reducer: node => {
             const child = {
               __descriptorType: DESCRIPTOR_TYPE.REF_TO_LOCAL_HIDDEN_VALUE,
@@ -251,7 +267,10 @@ class TreeEditor extends React.PureComponent<Props, State> {
     dispatch(
       multiReduceStateAction([
         {
-          path: pathToComponentDescriptor.concat('localHiddenValuesById', parentId),
+          path: pathToComponentDescriptor.concat(
+            'localHiddenValuesById',
+            parentId,
+          ),
           reducer: parentNode => {
             const children = [].concat(parentNode.props.children)
             parentNode.props.children = [
@@ -310,7 +329,9 @@ class TreeEditor extends React.PureComponent<Props, State> {
   }
 
   dropHandler = (dropZoneProps: ?Object) => {
-    document.styleSheets[0].removeRule(document.styleSheets[0].cssRules.length - 1)
+    document.styleSheets[0].removeRule(
+      document.styleSheets[0].cssRules.length - 1,
+    )
     const {nodeBeingDragged} = this.state
     this.setState(() => ({nodeBeingDragged: null, activeDropZone: null}))
     const {
@@ -361,7 +382,10 @@ class TreeEditor extends React.PureComponent<Props, State> {
           },
         },
         {
-          path: pathToComponentDescriptor.concat('localHiddenValuesById', newParentId),
+          path: pathToComponentDescriptor.concat(
+            'localHiddenValuesById',
+            newParentId,
+          ),
           reducer: newParent => {
             const children = [].concat(newParent.props.children || [])
             newParent.props.children = [
@@ -392,9 +416,12 @@ class TreeEditor extends React.PureComponent<Props, State> {
           if (newType.nodeType === NODE_TYPE.COMPONENT) {
             return {
               ...TreeEditor.getDefaultComponentProps(nodeProps.id),
-              ...(nodeProps.type === NODE_TYPE.COMPONENT ? localHiddenValue : {}),
-              componentId: this._getComponentDescriptorByDisplayName(newType.displayName)
-                .id,
+              ...(nodeProps.type === NODE_TYPE.COMPONENT
+                ? localHiddenValue
+                : {}),
+              componentId: this._getComponentDescriptorByDisplayName(
+                newType.displayName,
+              ).id,
             }
           }
         },
@@ -437,7 +464,12 @@ class TreeEditor extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const {nodes, nodeBeingDragged, activeDropZone, componentBeingSet} = this.state
+    const {
+      nodes,
+      nodeBeingDragged,
+      activeDropZone,
+      componentBeingSet,
+    } = this.state
     const isANodeBeingDragged = nodeBeingDragged != null
 
     return (
@@ -467,7 +499,10 @@ class TreeEditor extends React.PureComponent<Props, State> {
             />
           )}
           <div ref={c => (this.treeWrapper = c)} className={css.treeWrapper}>
-            <div ref={c => (this.treeContainer = c)} className={css.treeContainer}>
+            <div
+              ref={c => (this.treeContainer = c)}
+              className={css.treeContainer}
+            >
               <NodeContainer
                 key={nodes.id}
                 nodeData={nodes}
@@ -477,7 +512,9 @@ class TreeEditor extends React.PureComponent<Props, State> {
                 setActiveDropZone={activeDropZone =>
                   this.setState(() => ({activeDropZone}))
                 }
-                unsetActiveDropZone={() => this.setState(() => ({activeDropZone: null}))}
+                unsetActiveDropZone={() =>
+                  this.setState(() => ({activeDropZone: null}))
+                }
                 setComponentBeingSet={componentBeingSet =>
                   this.setState(() => ({componentBeingSet}))
                 }
@@ -493,7 +530,10 @@ class TreeEditor extends React.PureComponent<Props, State> {
 
 export default compose(
   connect((s, op) => {
-    const componentDescriptors = _.get(s, ['componentModel', 'componentDescriptors'])
+    const componentDescriptors = _.get(s, [
+      'componentModel',
+      'componentDescriptors',
+    ])
     const {
       core: {
         'TheaterJS/Core/RenderCurrentCanvas': rcc,

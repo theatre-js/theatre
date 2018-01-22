@@ -97,9 +97,14 @@ class LaneBox extends React.Component<Props, State> {
         </DraggableArea>
         <div className={css.content}>
           {children}
-          {showMergeOverlay && <div className={css.mergeOverlay}>Drop to merge.</div>}
+          {showMergeOverlay && (
+            <div className={css.mergeOverlay}>Drop to merge.</div>
+          )}
         </div>
-        <DraggableArea onDrag={(_, dy) => this.onResize(dy)} onDragEnd={this.onResizeEnd}>
+        <DraggableArea
+          onDrag={(_, dy) => this.onResize(dy)}
+          onDragEnd={this.onResizeEnd}
+        >
           <div className={css.resizeHandle} />
         </DraggableArea>
       </div>

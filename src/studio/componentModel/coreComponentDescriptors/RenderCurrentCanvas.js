@@ -25,7 +25,9 @@ const RenderCurrentCanvas = makeReactiveComponent({
             .prop('children')
           const instantiationDescriptorP = D.atoms
             .dict({
-              componentId: D.atoms.box(componentIdToBeRenderedAsCurrentCanvasPointer),
+              componentId: D.atoms.box(
+                componentIdToBeRenderedAsCurrentCanvasPointer,
+              ),
               props: D.atoms.dict({}),
             })
             .derivedDict()

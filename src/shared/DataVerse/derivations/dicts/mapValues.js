@@ -52,7 +52,12 @@ export class MapValues extends DerivedDict implements IDerivedDict<$FixMe> {
   }
 }
 
-const mapValues = <O: {}, K: $Keys<O>, V: $ElementType<O, K>, FN: (V, K) => $FixMe>(
+const mapValues = <
+  O: {},
+  K: $Keys<O>,
+  V: $ElementType<O, K>,
+  FN: (V, K) => $FixMe,
+>(
   source: IDerivedDict<O>,
   fn: FN,
 ): IDerivedDict<$FixMe> => {

@@ -37,36 +37,39 @@ type State = {
 }
 
 const resetExtremums = laneId => {
-  return reduceStateAction(['animationTimeline', 'lanes', 'byId', laneId], lane => {
-    const {points} = lane
-    if (points.length === 0) return lane
-    const newExtremums = points.reduce(
-      (reducer, point, index) => {
-        const {value} = point
-        const prevValue = points[index - 1] ? points[index - 1].value : 0
-        const nextValue = points[index + 1] ? points[index + 1].value : 0
-        const handles = [
-          point.handles[1] * Math.abs(prevValue - value),
-          point.handles[3] * Math.abs(nextValue - value),
-        ]
-        return [
-          Math.min(
-            reducer[0],
-            Math.min(value, value + handles[0] - 15, value + handles[1]) - 15,
-          ),
-          Math.max(
-            reducer[1],
-            Math.max(value, value + handles[0] + 15, value + handles[1]) + 15,
-          ),
-        ]
-      },
-      [0, 60],
-    )
-    return {
-      ...lane,
-      extremums: newExtremums,
-    }
-  })
+  return reduceStateAction(
+    ['animationTimeline', 'lanes', 'byId', laneId],
+    lane => {
+      const {points} = lane
+      if (points.length === 0) return lane
+      const newExtremums = points.reduce(
+        (reducer, point, index) => {
+          const {value} = point
+          const prevValue = points[index - 1] ? points[index - 1].value : 0
+          const nextValue = points[index + 1] ? points[index + 1].value : 0
+          const handles = [
+            point.handles[1] * Math.abs(prevValue - value),
+            point.handles[3] * Math.abs(nextValue - value),
+          ]
+          return [
+            Math.min(
+              reducer[0],
+              Math.min(value, value + handles[0] - 15, value + handles[1]) - 15,
+            ),
+            Math.max(
+              reducer[1],
+              Math.max(value, value + handles[0] + 15, value + handles[1]) + 15,
+            ),
+          ]
+        },
+        [0, 60],
+      )
+      return {
+        ...lane,
+        extremums: newExtremums,
+      }
+    },
+  )
 }
 
 class LanesViewer extends React.PureComponent<Props, State> {
@@ -140,7 +143,9 @@ class LanesViewer extends React.PureComponent<Props, State> {
           if (atIndex === -1) atIndex = points.length
           return {
             ...lane,
-            points: points.slice(0, atIndex).concat(pointProps, points.slice(atIndex)),
+            points: points
+              .slice(0, atIndex)
+              .concat(pointProps, points.slice(atIndex)),
           }
         },
       ),
@@ -152,7 +157,8 @@ class LanesViewer extends React.PureComponent<Props, State> {
     this.props.dispatch(
       reduceStateAction(
         ['animationTimeline', 'lanes', 'byId', laneId, 'points'],
-        points => points.slice(0, pointIndex).concat(points.slice(pointIndex + 1)),
+        points =>
+          points.slice(0, pointIndex).concat(points.slice(pointIndex + 1)),
       ),
     )
     this.props.dispatch(resetExtremums(laneId))
@@ -175,7 +181,11 @@ class LanesViewer extends React.PureComponent<Props, State> {
     this.props.dispatch(resetExtremums(laneId))
   }
 
-  changePointPositionBy = (laneId: LaneID, pointIndex: number, change: PointPosition) => {
+  changePointPositionBy = (
+    laneId: LaneID,
+    pointIndex: number,
+    change: PointPosition,
+  ) => {
     const deNormalizedChange = this.deNormalizePositionChange(change)
     this.props.dispatch(
       reduceStateAction(
@@ -190,7 +200,11 @@ class LanesViewer extends React.PureComponent<Props, State> {
     this.props.dispatch(resetExtremums(laneId))
   }
 
-  changePointHandlesBy = (laneId: LaneID, pointIndex: number, change: PointHandles) => {
+  changePointHandlesBy = (
+    laneId: LaneID,
+    pointIndex: number,
+    change: PointHandles,
+  ) => {
     const {points} = this.props.lanes.find(({id}) => id === laneId)
     const deNormalizedChange = this._deNormalizeHandles(
       change,
@@ -200,9 +214,19 @@ class LanesViewer extends React.PureComponent<Props, State> {
     )
     this.props.dispatch(
       reduceStateAction(
-        ['animationTimeline', 'lanes', 'byId', laneId, 'points', pointIndex, 'handles'],
+        [
+          'animationTimeline',
+          'lanes',
+          'byId',
+          laneId,
+          'points',
+          pointIndex,
+          'handles',
+        ],
         handles => {
-          return handles.map((handle, index) => handle + deNormalizedChange[index])
+          return handles.map(
+            (handle, index) => handle + deNormalizedChange[index],
+          )
         },
       ),
     )
@@ -233,10 +257,22 @@ class LanesViewer extends React.PureComponent<Props, State> {
     )
   }
 
-  makeHandleHorizontal = (laneId: LaneID, pointIndex: number, side: 'left' | 'right') => {
+  makeHandleHorizontal = (
+    laneId: LaneID,
+    pointIndex: number,
+    side: 'left' | 'right',
+  ) => {
     this.props.dispatch(
       reduceStateAction(
-        ['animationTimeline', 'lanes', 'byId', laneId, 'points', pointIndex, 'handles'],
+        [
+          'animationTimeline',
+          'lanes',
+          'byId',
+          laneId,
+          'points',
+          pointIndex,
+          'handles',
+        ],
         handles => {
           if (side === 'left') {
             handles[1] = 0
@@ -379,7 +415,9 @@ class LanesViewer extends React.PureComponent<Props, State> {
               className={cx(css.title, {
                 [css.activeTitle]: multiLanes && id === activeLaneId,
               })}
-              {...(multiLanes ? {onClick: e => this.titleClickHandler(e, id)} : {})}
+              {...(multiLanes
+                ? {onClick: e => this.titleClickHandler(e, id)}
+                : {})}
             >
               <div className={css.componentName}>{component}</div>
               <div

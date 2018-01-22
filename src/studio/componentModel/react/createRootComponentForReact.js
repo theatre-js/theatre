@@ -56,7 +56,10 @@ const createRootComponentForReact = (studio: TheStudioClass) => {
 
     render() {
       return (
-        <DerivationAsReactElement key="RenderCurrentCanvas" derivation={this.elementD} />
+        <DerivationAsReactElement
+          key="RenderCurrentCanvas"
+          derivation={this.elementD}
+        />
       )
       // return <Elementify key="RenderCurrentCanvas" props={this.propsOfElementify}  />
     }

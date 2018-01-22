@@ -67,7 +67,9 @@ class ElementTreePanelContent extends React.PureComponent<Props, State> {
       .next().value.current
     this.walkTree(fiberRoot, node => {
       let shouldBreak = false
-      if (node.key === 'TheaterJS/Core/RenderCurrentCanvas#RenderCurrentCanvas') {
+      if (
+        node.key === 'TheaterJS/Core/RenderCurrentCanvas#RenderCurrentCanvas'
+      ) {
         theaterCurrentCanvasFiber = node.child
         shouldBreak = true
       }
@@ -108,7 +110,12 @@ class ElementTreePanelContent extends React.PureComponent<Props, State> {
     }
   }
 
-  _addNodeData(node: Object, path: Path, originalNodes: Object, refMap: Object) {
+  _addNodeData(
+    node: Object,
+    path: Path,
+    originalNodes: Object,
+    refMap: Object,
+  ) {
     const data = this._prepareNodeData(node, path)
     const modifiedNodes = set(path, data, originalNodes)
     refMap.set(node, path)
@@ -120,7 +127,9 @@ class ElementTreePanelContent extends React.PureComponent<Props, State> {
 
     return {
       data: {
-        componentId: stateNode.getComponentId ? stateNode.getComponentId() : null,
+        componentId: stateNode.getComponentId
+          ? stateNode.getComponentId()
+          : null,
       },
       isExpanded: true,
       path,

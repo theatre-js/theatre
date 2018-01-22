@@ -14,7 +14,12 @@ const generateFakeTree = (maxDepth = 7, maxChildrenPerNode = 3) => {
   return generate('', maxDepth, maxChildrenPerNode, maxChildrenPerNode)
 }
 
-const generate = (keyPrefix, maxDepth, maxChildrenPerNode, minChildrenPerNode) => {
+const generate = (
+  keyPrefix,
+  maxDepth,
+  maxChildrenPerNode,
+  minChildrenPerNode,
+) => {
   const allNodes = {}
   const rootKeys = []
   if (maxDepth === 0) {
@@ -150,8 +155,14 @@ const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
       props: {
         key: 'palaki',
         children: [
-          {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'palakiChild'},
-          {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'palakiText'},
+          {
+            __descriptorType: 'ReferenceToLocalHiddenValue',
+            which: 'palakiChild',
+          },
+          {
+            __descriptorType: 'ReferenceToLocalHiddenValue',
+            which: 'palakiText',
+          },
         ],
       },
       modifierInstantiationDescriptors: {byId: {}, list: []},
@@ -161,7 +172,9 @@ const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
       componentId: 'TheaterJS/Core/HTML/div',
       props: {
         key: 'dalaki',
-        children: [{__descriptorType: 'ReferenceToLocalHiddenValue', which: 'yaru'}],
+        children: [
+          {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'yaru'},
+        ],
       },
       modifierInstantiationDescriptors: {byId: {}, list: []},
     },
@@ -183,7 +196,10 @@ const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
       componentId: 'TheaterJS/Core/HTML/div',
       props: {
         key: 'dchch',
-        children: {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'dchchText'},
+        children: {
+          __descriptorType: 'ReferenceToLocalHiddenValue',
+          which: 'dchchText',
+        },
       },
       modifierInstantiationDescriptors: {byId: {}, list: []},
     },
@@ -193,7 +209,10 @@ const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
       componentId: 'TheaterJS/Core/HTML/div',
       props: {
         key: 'dchchp',
-        children: {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'dchchpText'},
+        children: {
+          __descriptorType: 'ReferenceToLocalHiddenValue',
+          which: 'dchchpText',
+        },
       },
       modifierInstantiationDescriptors: {byId: {}, list: []},
     },

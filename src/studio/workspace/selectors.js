@@ -16,8 +16,10 @@ export const getActivePanelId: Selector<*, *> = state =>
 export const getPanelById: Selector<PanelObject, string> = (state, panelId) =>
   state.workspace.panels.byId[panelId]
 
-export const getCurrentlyDraggingOutput: Selector<?DraggingOutput, void> = state =>
-  state.workspace.panels.currentlyDraggingOutput
+export const getCurrentlyDraggingOutput: Selector<
+  ?DraggingOutput,
+  void,
+> = state => state.workspace.panels.currentlyDraggingOutput
 
 export const getPanelInputs: Selector<Object, PanelInput> = (state, inputs) => {
   return Object.keys(inputs).reduce((obj, key) => {

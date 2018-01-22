@@ -54,7 +54,8 @@ class MovableNode extends React.Component<Props, State> {
   }
 
   dragHandler = (e: MouseEvent) => {
-    if (!this.state.isBeingDragged) this.setState(() => ({isBeingDragged: true}))
+    if (!this.state.isBeingDragged)
+      this.setState(() => ({isBeingDragged: true}))
     const {top, offsetY} = this.props.nodeBeingDragged
     this.setState(() => ({moveY: e.clientY - offsetY - top}))
   }
@@ -67,7 +68,8 @@ class MovableNode extends React.Component<Props, State> {
     const {nodeBeingDragged, activeDropZone} = this.props
     const {nodeProps, top} = nodeBeingDragged
     const {offsetTop, moveY, isGlued} = this.state
-    const depth = (activeDropZone && activeDropZone.depth) || nodeBeingDragged.depth
+    const depth =
+      (activeDropZone && activeDropZone.depth) || nodeBeingDragged.depth
 
     return (
       <div
@@ -85,7 +87,9 @@ class MovableNode extends React.Component<Props, State> {
           {nodeProps.type === NODE_TYPE.COMPONENT && (
             <ComponentNode nodeProps={nodeProps} />
           )}
-          {nodeProps.type === NODE_TYPE.TEXT && <TextNode nodeProps={nodeProps} />}
+          {nodeProps.type === NODE_TYPE.TEXT && (
+            <TextNode nodeProps={nodeProps} />
+          )}
         </div>
       </div>
     )

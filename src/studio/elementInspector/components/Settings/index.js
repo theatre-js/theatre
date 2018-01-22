@@ -18,10 +18,13 @@ const Settings = (props: Props) => {
       <SettingsDivision title="Inputs">
         <PanelInput
           type={'Selected Node'}
-          setInput={() => updatePanelInput({selectedNode: currentlyDraggingOutput.panel})}
+          setInput={() =>
+            updatePanelInput({selectedNode: currentlyDraggingOutput.panel})
+          }
           isConnected={inputs.hasOwnProperty('selectedNode')}
           shouldAcceptDraggedOutput={
-            currentlyDraggingOutput && currentlyDraggingOutput.type === 'selectedNode'
+            currentlyDraggingOutput &&
+            currentlyDraggingOutput.type === 'selectedNode'
           }
         />
       </SettingsDivision>

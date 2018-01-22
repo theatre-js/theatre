@@ -1,5 +1,11 @@
 // @flow
-import {applyMiddleware, createStore, compose, type Reducer, type Store} from 'redux'
+import {
+  applyMiddleware,
+  createStore,
+  compose,
+  type Reducer,
+  type Store,
+} from 'redux'
 import {call} from 'redux-saga/effects'
 import createSagaMiddleware from 'redux-saga'
 
@@ -22,7 +28,11 @@ export default class StandardStore<State: Object, Action: Object> {
   reduxStore: Store<State, Action>
   rootSaga: RootSaga<State, Action>
 
-  constructor({initialState, rootReducer, rootSaga}: ConstructorProps<State, Action>) {
+  constructor({
+    initialState,
+    rootReducer,
+    rootSaga,
+  }: ConstructorProps<State, Action>) {
     this._initialState = initialState
     this.sagaMiddleware = createSagaMiddleware()
 
@@ -78,7 +88,11 @@ function preventToThrow(fn: () => Generator<*, *, *>) {
 
 type Fn0<R> = (...rest: Array<void>) => Generator<mixed, R, mixed>
 type Fn1<T1, R> = (t1: T1, ...rest: Array<void>) => Generator<mixed, R, mixed>
-type Fn2<T1, T2, R> = (t1: T1, t2: T2, ...rest: Array<void>) => Generator<mixed, R, mixed>
+type Fn2<T1, T2, R> = (
+  t1: T1,
+  t2: T2,
+  ...rest: Array<void>
+) => Generator<mixed, R, mixed>
 type Fn3<T1, T2, T3, R> = (
   t1: T1,
   t2: T2,
@@ -110,7 +124,16 @@ type Fn6<T1, T2, T3, T4, T5, T6, R> = (
   ...rest: Array<void>
 ) => Generator<mixed, R, mixed>
 
-export type RunSagaFn = (<T1, T2, T3, T4, T5, T6, R, Fn: Fn6<T1, T2, T3, T4, T5, T6, R>>(
+export type RunSagaFn = (<
+  T1,
+  T2,
+  T3,
+  T4,
+  T5,
+  T6,
+  R,
+  Fn: Fn6<T1, T2, T3, T4, T5, T6, R>,
+>(
   fn: Fn,
   t1: T1,
   t2: T2,
@@ -150,5 +173,9 @@ export type RunSagaFn = (<T1, T2, T3, T4, T5, T6, R, Fn: Fn6<T1, T2, T3, T4, T5,
     t2: T2,
     ...rest: Array<void>
   ) => Promise<R>) &
-  (<T1, R, Fn: Fn1<T1, R>>(fn: Fn, t1: T1, ...rest: Array<void>) => Promise<R>) &
+  (<T1, R, Fn: Fn1<T1, R>>(
+    fn: Fn,
+    t1: T1,
+    ...rest: Array<void>
+  ) => Promise<R>) &
   (<R, Fn: Fn0<R>>(fn: Fn, ...rest: Array<void>) => Promise<R>)

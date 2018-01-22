@@ -86,7 +86,9 @@ class NodeContainer extends React.PureComponent<Props, State> {
   }
 
   _setMaxHeight() {
-    this.setState(() => ({maxHeight: this.wrapper.getBoundingClientRect().height + 30}))
+    this.setState(() => ({
+      maxHeight: this.wrapper.getBoundingClientRect().height + 30,
+    }))
   }
 
   mouseDownHandler = e => {
@@ -94,7 +96,11 @@ class NodeContainer extends React.PureComponent<Props, State> {
     e.preventDefault()
     if (!e.shiftKey || !this.props.depth) return
 
-    const {setNodeBeingDragged, depth, nodeData: {children, ...nodeProps}} = this.props
+    const {
+      setNodeBeingDragged,
+      depth,
+      nodeData: {children, ...nodeProps},
+    } = this.props
     const {maxHeight: height} = this.state
     const {top} = this.wrapper.getBoundingClientRect()
     const {offsetY} = e.nativeEvent
@@ -157,7 +163,11 @@ class NodeContainer extends React.PureComponent<Props, State> {
   }
 
   setAsComponentBeingSet = () => {
-    const {setComponentBeingSet, depth, nodeData: {children, ...nodeProps}} = this.props
+    const {
+      setComponentBeingSet,
+      depth,
+      nodeData: {children, ...nodeProps},
+    } = this.props
     const {top, left, width} = this.wrapper.getBoundingClientRect()
     setComponentBeingSet({
       nodeProps,
@@ -170,7 +180,10 @@ class NodeContainer extends React.PureComponent<Props, State> {
   }
 
   addChild = atIndex => {
-    this.props.dispatchAction(ACTION.NODE_ADD, {nodeId: this.props.nodeData.id, atIndex})
+    this.props.dispatchAction(ACTION.NODE_ADD, {
+      nodeId: this.props.nodeData.id,
+      atIndex,
+    })
   }
 
   deleteNode = () => {

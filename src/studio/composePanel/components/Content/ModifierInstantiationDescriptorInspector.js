@@ -26,7 +26,9 @@ export class ModifierInstantiationDescriptorInspector extends React.PureComponen
     const InspectorComponent = inspectorComponents[modifierId]
 
     if (!InspectorComponent) {
-      console.error(`ModifierId '${modifierId}' doesn't have an InspectorComponent`)
+      console.error(
+        `ModifierId '${modifierId}' doesn't have an InspectorComponent`,
+      )
       return 'No inspector comopnent'
     }
     return (
@@ -43,7 +45,10 @@ export class ModifierInstantiationDescriptorInspector extends React.PureComponen
 export default compose(
   connect((s, op) => {
     return {
-      modifierId: get(s, [...op.pathToModifierInstantiationDescriptor, 'modifierId']),
+      modifierId: get(s, [
+        ...op.pathToModifierInstantiationDescriptor,
+        'modifierId',
+      ]),
     }
   }),
 )(ModifierInstantiationDescriptorInspector)

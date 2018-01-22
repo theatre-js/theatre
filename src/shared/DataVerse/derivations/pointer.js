@@ -93,7 +93,8 @@ type Address =
       keyOrIndex: number | string,
     }
 
-export class PointerDerivation extends AbstractDerivation implements _IPointer<$FixMe> {
+export class PointerDerivation extends AbstractDerivation
+  implements _IPointer<$FixMe> {
   static NOTFOUND: void = undefined //Symbol('notfound')
   isPointer = 'True'
   _address: Address
@@ -149,8 +150,13 @@ export class PointerDerivation extends AbstractDerivation implements _IPointer<$
     return d
   }
 
-  _makeDerivationForParentPointer(parentPointer: $FixMe, keyOrIndex: string | number) {
-    const d = parentPointer.flatMap(p => propify(p, keyOrIndex)).flatMap(noBoxAtoms)
+  _makeDerivationForParentPointer(
+    parentPointer: $FixMe,
+    keyOrIndex: string | number,
+  ) {
+    const d = parentPointer
+      .flatMap(p => propify(p, keyOrIndex))
+      .flatMap(noBoxAtoms)
     d.inPointer = true
     return d
   }
@@ -196,12 +202,18 @@ const _propify = (possibleReactiveValue, key) => {
   ) {
     return PointerDerivation.NOTFOUND
   } else if (possibleReactiveValue instanceof modules.dict.DictAtom) {
-    return modules.deriveFromPropOfADictAtom.default(possibleReactiveValue, (key: $FixMe))
+    return modules.deriveFromPropOfADictAtom.default(
+      possibleReactiveValue,
+      (key: $FixMe),
+    )
   } else if (
     possibleReactiveValue instanceof modules.array.ArrayAtom &&
     typeof key === 'number'
   ) {
-    return modules.deriveFromIndexOfArrayAtom.default(possibleReactiveValue, key)
+    return modules.deriveFromIndexOfArrayAtom.default(
+      possibleReactiveValue,
+      key,
+    )
   } else if (
     possibleReactiveValue instanceof modules.PrototypalDictFace.default ||
     possibleReactiveValue instanceof PointerDerivation ||

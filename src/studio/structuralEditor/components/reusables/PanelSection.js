@@ -3,7 +3,11 @@ import {React, compose} from '$studio/handy'
 import css from './PanelSection.css'
 import cx from 'classnames'
 
-type Props = {children: React.Node, withHorizontalMargin: ?boolean, label?: string}
+type Props = {
+  children: React.Node,
+  withHorizontalMargin: ?boolean,
+  label?: string,
+}
 
 type State = void
 

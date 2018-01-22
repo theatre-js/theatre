@@ -90,7 +90,10 @@ class Content extends React.Component<Props, State> {
     }))
   }
 
-  _resetBoundariesAndRatios(layout = this.props.layout, boxes = this.props.boxes) {
+  _resetBoundariesAndRatios(
+    layout = this.props.layout,
+    boxes = this.props.boxes,
+  ) {
     this.setState(() => ({
       moveRatios: new Array(layout.length).fill(0),
       boundaries: this._getBoundaries(boxes, layout),
@@ -127,7 +130,8 @@ class Content extends React.Component<Props, State> {
     const lowerBoundaryIndex = boundaries.findIndex(element => edge < element)
     const upperBoundaryIndex = lowerBoundaryIndex - 1
     if (lowerBoundaryIndex === -1) {
-      const moveTo = index !== boundaries.length - 2 ? boundaries.length - 2 : null
+      const moveTo =
+        index !== boundaries.length - 2 ? boundaries.length - 2 : null
       this._setBoxBeingDraggedToMoveTo(moveTo)
     } else if (edge < 0) {
       this._setBoxBeingDraggedToMoveTo(0)
@@ -135,9 +139,13 @@ class Content extends React.Component<Props, State> {
       const lowerBoundDistance = boundaries[lowerBoundaryIndex] - edge
       const upperBoundDistance = edge - boundaries[upperBoundaryIndex]
       if (lowerBoundDistance < 15)
-        return this._setBoxBeingDraggedToMoveTo(lowerBoundaryIndex + moveIndexOffset)
+        return this._setBoxBeingDraggedToMoveTo(
+          lowerBoundaryIndex + moveIndexOffset,
+        )
       if (upperBoundDistance < 15)
-        return this._setBoxBeingDraggedToMoveTo(upperBoundaryIndex + moveIndexOffset)
+        return this._setBoxBeingDraggedToMoveTo(
+          upperBoundaryIndex + moveIndexOffset,
+        )
       return this._setBoxBeingDraggedToMergeWith(upperBoundaryIndex)
     }
   }
@@ -263,7 +271,15 @@ class Content extends React.Component<Props, State> {
     const {timelineId, dispatch} = this.props
     dispatch(
       reduceStateAction(
-        ['animationTimeline', 'timelines', 'byId', timelineId, 'boxes', boxId, 'height'],
+        [
+          'animationTimeline',
+          'timelines',
+          'byId',
+          timelineId,
+          'boxes',
+          boxId,
+          'height',
+        ],
         () => newSize,
       ),
     )
@@ -303,7 +319,10 @@ class Content extends React.Component<Props, State> {
   _changeFocusTo(newFocusLeft: number, newFocusRight: number) {
     const {focus, currentTime} = this.state
     const newTimeX = this.focusedTimeToX(currentTime, focus)
-    const newCurrentTime = this.xToFocusedTime(newTimeX, [newFocusLeft, newFocusRight])
+    const newCurrentTime = this.xToFocusedTime(newTimeX, [
+      newFocusLeft,
+      newFocusRight,
+    ])
 
     this.setState(() => ({
       currentTime: newCurrentTime,
@@ -404,7 +423,8 @@ class Content extends React.Component<Props, State> {
           {layout.map((id, index) => {
             const box = boxes[id]
             const boxTranslateY =
-              moveRatios[index] * (boxBeingDragged != null ? boxBeingDragged.height : 0)
+              moveRatios[index] *
+              (boxBeingDragged != null ? boxBeingDragged.height : 0)
             const boxShowMergeOverlay =
               boxBeingDragged != null &&
               boxBeingDragged.index === index &&

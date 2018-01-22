@@ -5,18 +5,26 @@ import electronIsReadyPromise from '$lb/launcherWindow/utils/electronIsReadyProm
 import temporaryTrayIcon from '$lb/launcherWindow/assets/temporaryTrayIcon.png'
 import {Tray, BrowserWindow} from 'electron'
 import deepEqual from 'deep-equal'
-import {sendRequestToWindow, getChannelOfRequestsFromWindow, type Request} from './utils'
+import {
+  sendRequestToWindow,
+  getChannelOfRequestsFromWindow,
+  type Request,
+} from './utils'
 import allLfEndpoints from './allLfEndpoints'
 
 function createWindow() {
   let win = new BrowserWindow({width: 1200, height: 920, show: false})
   if (process.env.NODE_ENV === 'development') {
     win.loadURL(
-      `http://localhost:${process.env.devSpecific.launcherFrontend.devServerPort}/`,
+      `http://localhost:${
+        process.env.devSpecific.launcherFrontend.devServerPort
+      }/`,
     )
   } else {
     // @todo
-    throw new Error(`Implement a way to launch an lf window in production mode.`)
+    throw new Error(
+      `Implement a way to launch an lf window in production mode.`,
+    )
   }
 
   win.once('ready-to-show', () => {
@@ -33,7 +41,13 @@ function* sendStateUpdatesToWindow(window: BrowserWindow): Generator<*, *, *> {
     const newState = yield select()
     if (!deepEqual(lastState, newState)) {
       try {
-        yield call(sendRequestToWindow, window, 'receiveNewState', newState, 500)
+        yield call(
+          sendRequestToWindow,
+          window,
+          'receiveNewState',
+          newState,
+          500,
+        )
       } catch (e) {
         if (e !== 'timeout') {
           throw e

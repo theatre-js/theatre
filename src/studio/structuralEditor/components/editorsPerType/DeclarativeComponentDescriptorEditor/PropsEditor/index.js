@@ -22,7 +22,9 @@ class PropsEditor extends React.PureComponent<Props, State> {
     return (
       <div className={css.container}>
         <PanelSection label="Props">
-          <div className={css.dragStHereMsg}>Drag a value here to define a new prop</div>
+          <div className={css.dragStHereMsg}>
+            Drag a value here to define a new prop
+          </div>
         </PanelSection>
       </div>
     )

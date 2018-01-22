@@ -10,7 +10,12 @@ export default class ValueInstance {
     studio: $FixMe,
     pathToValueDescriptor: Array<string>,
   ) {
-    this._derivation = new ValueDerivation(descP, timeD, studio, pathToValueDescriptor)
+    this._derivation = new ValueDerivation(
+      descP,
+      timeD,
+      studio,
+      pathToValueDescriptor,
+    )
   }
 
   derivation() {
