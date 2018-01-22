@@ -1,5 +1,5 @@
 {
   "presets": [
-    "react", "flow"
+    "react", "flow", "stage-1"
   ]
 }

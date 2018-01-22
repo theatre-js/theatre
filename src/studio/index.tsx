@@ -1,4 +1,3 @@
-
 if (!window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
   const globalHook = require('$root/vendor/react-devtools-backend/installGlobalHook')
   globalHook(window)
@@ -15,7 +14,10 @@ import createRootComponentForReact from './componentModel/react/createRootCompon
 const theaterStudioInstance = new TheStudioClass()
 theaterStudioInstance.run()
 
-window.studio = theaterStudioInstance
+if (process.env.NODE_ENV === 'development') {
+  // @ts-ignore
+  window.studio = theaterStudioInstance
+}
 
 const reactExport = {
   Root: createRootComponentForReact(theaterStudioInstance),

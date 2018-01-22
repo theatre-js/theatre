@@ -19,7 +19,7 @@ module.exports = (env: Envs) => {
   return immer(parts.config, c => {
     c.output.libraryTarget = 'umd'
     c.output.library = 'TheaterJS'
-    c.output.libraryExport = 'default'
+    // c.output.libraryExport = 'default'
     // c.output.publicPath = `http://localhost:${
     //   parts.envConfig.devSpecific.studio.devServerPort
     // }/`
