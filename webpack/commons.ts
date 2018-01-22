@@ -2,6 +2,8 @@ import * as path from 'path'
 import * as CleanPlugin from 'clean-webpack-plugin'
 import * as WebpackNotifierPlugin from 'webpack-notifier'
 import * as webpack from 'webpack'
+import * as CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin'
+import * as WatchMissingNodeModulesPlugin from 'react-dev-utils/WatchMissingNodeModulesPlugin'
 import * as TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
 import {mapValues} from 'lodash'
 
@@ -16,7 +18,7 @@ export const aliases: {[alias: string]: string} = {
   $shared: path.join(context, './src/shared/'),
 }
 
-type PackageName = 'studio'
+type PackageName = 'studio' | 'playground' | 'examples'
 
 export type Envs = 'development' | 'production'
 
@@ -26,6 +28,7 @@ export type Options = {
   packageName: PackageName
   entries?: {[key: string]: string[]}
   withReactHotLoader: boolean
+  withDevServer?: boolean
 }
 
 const babelForTsHotReloading = () => ({
@@ -33,6 +36,10 @@ const babelForTsHotReloading = () => ({
   options: {
     babelrc: false,
     plugins: ['react-hot-loader/babel'],
+    // This is a feature of `babel-loader` for webpack (not Babel itself).
+    // It enables caching results in ./node_modules/.cache/babel-loader/
+    // directory for faster rebuilds.
+    cacheDirectory: true,
   },
 })
 
@@ -42,6 +49,7 @@ export const makeConfigParts = (options: Options) => {
   const envConfig = require(path.join(context, `${options.env}.env.json`))
   const bundlesDir = path.join(context, `./bundles/${packageName}`)
   const srcDir = path.join(context, 'src')
+  const packageDevSpecificConfig = envConfig.devSpecific[packageName]
 
   // Don't let this global bother you. It's just a hack to make $root/webpack/env/dotEnvFile.js work
   // both inside a webpack bundle and outside. And that is the only place this global is used.
@@ -58,13 +66,18 @@ export const makeConfigParts = (options: Options) => {
       options.entries || {},
       ent =>
         options.withReactHotLoader && isDev
-          ? ['react-hot-loader/patch'].concat(ent)
+          ? [
+              require.resolve('react-dev-utils/webpackHotDevClient'),
+              require.resolve('react-hot-loader/patch'),
+            ].concat(ent)
           : ent,
     ),
     output: {
       path: bundlesDir,
       filename: '[name].js',
       sourceMapFilename: '[file].map.js',
+      devtoolModuleFilenameTemplate: info =>
+        path.resolve(info.absoluteResourcePath).replace(/\\/g, '/'),
     },
     context: context,
     devtool: isDev ? 'cheap-module-source-map' : 'source-map',
@@ -85,12 +98,20 @@ export const makeConfigParts = (options: Options) => {
       new webpack.ProvidePlugin({
         'process.env': '$root/webpack/env/index.js',
       }),
+      new CaseSensitivePathsPlugin(),
       ...(isDev
         ? [
             new webpack.HotModuleReplacementPlugin(),
             new WebpackNotifierPlugin(),
             // new webpack.NoEmitOnErrorsPlugin(),
             new webpack.NamedModulesPlugin(),
+            // If you require a missing module and then `npm install` it, you still have
+            // to restart the development server for Webpack to discover it. This plugin
+            // makes the discovery automatic so you don't have to restart.
+            // See https://github.com/facebookincubator/create-react-app/issues/186
+            new WatchMissingNodeModulesPlugin(
+              path.resolve(__dirname, '../node_modules'),
+            ),
           ]
         : [
             new webpack.optimize.UglifyJsPlugin({
@@ -103,7 +124,7 @@ export const makeConfigParts = (options: Options) => {
       rules: [
         {
           test: /\.tsx?$/,
-          include: srcDir,
+          exclude: /node_modules/,
           use: [
             ...(options.withReactHotLoading ? [babelForTsHotReloading()] : []),
             {
@@ -111,6 +132,7 @@ export const makeConfigParts = (options: Options) => {
               options: {
                 // useTranspileModule: true,
                 transpileOnly: true,
+                configFile: require.resolve('../tsconfig.json'),
               },
             },
           ],
@@ -119,16 +141,21 @@ export const makeConfigParts = (options: Options) => {
           test: /\.js$/,
           use: {
             loader: require.resolve(`babel-loader`),
-            options: {forceEnv: `${packageName}:${options.env}`},
+            options: {
+              forceEnv: `${packageName}:${options.env}`,
+              // This is a feature of `babel-loader` for webpack (not Babel itself).
+              // It enables caching results in ./node_modules/.cache/babel-loader/
+              // directory for faster rebuilds.
+              cacheDirectory: true,
+              babelrc: true,
+            },
           },
           exclude: /node_modules/,
         },
         {
           test: /\.js$/,
           use: require.resolve('babel-loader'),
-          include: [
-            path.resolve(__dirname, '../vendor'),
-          ],
+          include: [path.resolve(__dirname, '../vendor')],
         },
         {
           test: /\.css$/,
@@ -145,20 +172,50 @@ export const makeConfigParts = (options: Options) => {
             },
             require.resolve('postcss-loader'),
           ],
-          include: srcDir,
+          exclude: /node_modules/,
         },
         {test: /\.svg$/, use: require.resolve('svg-inline-loader')},
+        // "file" loader makes sure those assets get served by WebpackDevServer.
+        // When you `import` an asset, you get its (virtual) filename.
+        // In production, they would get copied to the `build` folder.
+        // This loader don't uses a "test" so it will catch all modules
+        // that fall through the other loaders.
         {
-          test: /\.(png|jpg|jpeg|gif)$/,
-          use: [
-            {
-              loader: require.resolve('url-loader'),
-              options: {prefix: 'img/', limit: 5000},
-            },
-          ],
+          // Exclude `js` files to keep "css" loader working as it injects
+          // it's runtime that would otherwise processed through "file" loader.
+          // Also exclude `html` and `json` extensions so they get processed
+          // by webpacks internal loaders.
+          exclude: [/\.js$/, /\.tsx?$/, /\.html$/, /\.json$/, /\.css$/, /\.svg$/],
+          loader: require.resolve('file-loader'),
+          options: {
+            name: 'static/media/[name].[hash:8].[ext]',
+          },
         },
       ],
     },
+  }
+
+  if (isDev && options.withDevServer === true) {
+    config.output.publicPath = `http://localhost:${
+      packageDevSpecificConfig.devServerPort
+    }/`
+
+    config.devServer = {
+      host: '0.0.0.0',
+      hot: true,
+      historyApiFallback: true,
+      // inline: true,
+      // clientLogLevel: 'error',
+      public: `localhost:${packageDevSpecificConfig.devServerPort}`,
+      noInfo: false,
+      quiet: true,
+      stats: false,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Expose-Headers': 'SourceMap,X-SourceMap',
+      },
+      port: packageDevSpecificConfig.devServerPort,
+    }
   }
 
   return {

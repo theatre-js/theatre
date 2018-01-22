@@ -8,26 +8,23 @@ module.exports = (env: Envs) => {
   const parts = makeConfigParts({
     env,
     withReactHotLoading: true,
-    packageName: 'studio',
+    packageName: 'playground',
     withDevServer: true,
     withReactHotLoader: true,
     entries: {
-      index: ['./src/studio/index.tsx'],
+      index: ['./src/playground/index.tsx'],
     },
   })
 
   return immer(parts.config, c => {
-    c.output.libraryTarget = 'umd'
-    c.output.library = 'TheaterJS'
-    c.output.libraryExport = 'default'
     // c.output.publicPath = `http://localhost:${
-    //   parts.envConfig.devSpecific.studio.devServerPort
+    //   parts.envConfig.devSpecific.playground.devServerPort
     // }/`
 
     c.plugins.push(
       new HtmlWebpackPlugin({
         inject: 'body',
-        template: 'src/studio/index.html',
+        template: 'src/playground/index.html',
       }),
     )
   })

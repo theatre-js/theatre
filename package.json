@@ -15,7 +15,8 @@
     "lb:run": "electron ./bundles/lb/index.js",
     "lf:webpack:dev": "webpack-dev-server --progress --config webpack/lf/development.babel.js",
     "studio:webpack:dev": "webpack-dev-server --progress --config webpack/studio/development.js",
-    "examples:webpack:dev": "webpack-dev-server --progress --config webpack/examples/development.babel.js",
+    "playground:webpack:dev": "webpack-dev-server --progress --config webpack/playground/development.js",
+    "examples:webpack:dev": "webpack-dev-server --progress --config webpack/examples/development.js",
     "build:dev": "npm-run-all --parallel lb:webpack:dev lf:webpack:dev studio:webpack:dev examples:webpack:dev",
     "open-examples": "opn http://localhost:9092/examples"
   },
@@ -31,7 +32,23 @@
     "setupFiles": [
       "./src/test/env.js"
     ],
-    "automock": false
+    "automock": false,
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "globals": {
+      "ts-jest": {
+        "tsConfigFile": "tsconfig.jest.json"
+      }
+    }
   },
   "repository": {
     "type": "git",
@@ -42,6 +59,7 @@
   "devDependencies": {
     "@types/html-webpack-plugin": "^2.30.1",
     "@types/lodash": "^4.14.93",
+    "@types/react-router-dom": "^4.2.3",
     "@types/webpack": "^3.8.2",
     "autoprefixer": "^7.1.2",
     "awesome-typescript-loader": "^3.3.0",
@@ -50,11 +68,14 @@
     "babel-eslint": "^7.2.3",
     "babel-loader": "^7.1.2",
     "babel-plugin-lodash": "^3.2.11",
+    "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-export-extensions": "^6.22.0",
+    "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-1": "^6.24.1",
     "babel-register": "^6.26.0",
+    "case-sensitive-paths-webpack-plugin": "^2.1.1",
     "classnames": "^2.2.5",
     "clean-webpack-plugin": "^0.1.16",
     "css-loader": "^0.28.7",
@@ -87,8 +108,8 @@
     "prettier": "1.8.2",
     "ramda": "^0.24.1",
     "react": "^16.0.0",
+    "react-dev-utils": "^5.0.0",
     "react-dom": "^16.0.0",
-    "react-flow-types": "0.2.0-beta.2",
     "react-hot-loader": "^3.1.1",
     "react-redux": "^5.0.6",
     "react-router-dom": "^4.1.2",
@@ -97,6 +118,7 @@
     "redux-actions": "^2.2.1",
     "redux-saga": "^0.15.6",
     "socket.io": "^2.0.3",
+    "source-map-support": "^0.5.0",
     "style-loader": "^0.19.0",
     "svg-inline-loader": "^0.8.0",
     "timing-function": "^0.2.3",
@@ -111,7 +133,6 @@
     "webpack-dev-server": "^2.7.1",
     "webpack-notifier": "^1.5.0",
     "when": "^3.7.8",
-    "source-map-support": "^0.5.0",
     "fuzzaldrin-plus": "^0.6.0"
   },
   "dependencies": {}
