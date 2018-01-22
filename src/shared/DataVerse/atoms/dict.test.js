@@ -4,17 +4,7 @@ import atomifyDeep from './atomifyDeep'
 import * as D from '$shared/DataVerse'
 
 describe('DataVerse.atoms.dict', () => {
-  let o: D.IDictAtom<{
-    foo: D.IBoxAtom<string>,
-    bar: D.IBoxAtom<string>,
-    obj: D.IDictAtom<{
-      str: D.IBoxAtom<string>,
-      innerObj: D.IDictAtom<{
-        a: D.IBoxAtom<number>,
-        b: D.IArrayAtom<D.IBoxAtom<number>>,
-      }>,
-    }>,
-  }>
+  let o
   beforeEach(() => {
     o = atomifyDeep({
       foo: 'foo',

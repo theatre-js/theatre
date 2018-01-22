@@ -5,16 +5,8 @@ import type {IDerivedArray} from '$shared/DataVerse/derivations/arrays/types'
 
 type Unboxed<O> = $FixMe // eslint-disable-line no-unused-vars
 
-export type ArrayAtomChangeType<V> = {
-  startIndex: number,
-  deleteCount: number,
-  addedRefs: Array<V>,
-}
 
-export type ArrayAtomDeepChangeType<V> = AddressedChangeset & {type: 'ArrayChange'} &  ArrayAtomChangeType<V>
-export type ArrayAtomDeepDiffType<V> = AddressedChangeset & {type: 'ArrayDiff', startIndex: number, deepUnboxOfDeletedRows: Array<Unboxed<V>>, deepUnboxOfAddedRows: Array<Unboxed<V>>}
-
-export type IsArrayAtom<V> = $ElementType<V, 'isArrayAtom'>
+// export type IsArrayAtom<V> = $ElementType<V, 'isArrayAtom'>
 
 export type IArrayAtom<V> = {
   isDictAtom: False,

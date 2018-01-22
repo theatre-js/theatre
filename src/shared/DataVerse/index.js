@@ -6,9 +6,11 @@
 export {default as Ticker} from './Ticker'
 /*:: export type * from './Ticker' */
 
-export * as atoms from './atoms'
-/*:: export type * from './atoms' */
-export * as derivations from './derivations'
-/*:: export type * from './derivations' */
-export * as literals from './literals'
-/*:: export type * from './literals' */
+import * as atoms from './atoms'
+/*:: import type * from './atoms' */
+import * as derivations from './derivations'
+/*:: import type * from './derivations' */
+import * as literals from './literals'
+/*:: import type * from './literals' */
+
+export {atoms, derivations, literals}

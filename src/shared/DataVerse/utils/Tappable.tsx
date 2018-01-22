@@ -1,5 +1,3 @@
-// @flow
-
 type Untap = () => void
 type UntapFromSource = () => void
 
@@ -11,8 +9,8 @@ type Listener<V> = ((v: V) => void) | (() => void)
 
 export default class Tappable<V> {
   _props: Props<V>
-  _tappers: *
-  _untapFromSource: ?UntapFromSource
+  _tappers: Map<any, (v: V) => void>
+  _untapFromSource: null | UntapFromSource
   _lastTapperId: number
 
   constructor(props: Props<V>) {
@@ -52,7 +50,6 @@ export default class Tappable<V> {
 
   tapImmediate(cb: Listener<V>): Untap {
     const ret = this.tap(cb)
-    // cb(this.)
     return ret
   }
 
@@ -63,20 +60,10 @@ export default class Tappable<V> {
   map<T>(transform: (v: V) => T): Tappable<T> {
     return new Tappable({
       tapToSource: (cb: (v: T) => void) => {
-        return this.tap(v => {
+        return this.tap((v: $IntentionalAny) => {
           return cb(transform(v))
         })
       },
     })
   }
-
-  // flatMap<T>(transform: (v: V) => Tappable<T>): Tappable<T> {
-  //   return new Tappable({
-  //     tapToSource: (cb: (v: T) => void) => {
-  //       return this.tap((v) => {
-
-  //       })
-  //     }
-  //   })
-  // }
 }

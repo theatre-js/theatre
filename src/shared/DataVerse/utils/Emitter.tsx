@@ -1,14 +1,13 @@
-// @flow
 import Tappable from './Tappable'
 
 type Tapper<V> = (v: V) => void
 type Untap = () => void
 
 export default class Emitter<V> {
-  _tappers: *
+  _tappers: Map<any, (v: V) => void>
   _lastTapperId: number
   tappable: Tappable<V>
-  _onNumberOfTappersChangeListener: ?(n: number) => void
+  _onNumberOfTappersChangeListener: undefined | ((n: number) => void)
 
   constructor() {
     this._lastTapperId = 0
