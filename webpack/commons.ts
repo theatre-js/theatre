@@ -23,12 +23,12 @@ type PackageName = 'studio' | 'playground' | 'examples'
 export type Envs = 'development' | 'production'
 
 export type Options = {
-  env: 'development' | 'production'
-  withReactHotLoading?: boolean
-  packageName: PackageName
-  entries?: {[key: string]: string[]}
-  withReactHotLoader: boolean
-  withDevServer?: boolean
+  env: 'development' | 'production',
+  withReactHotLoading?: boolean,
+  packageName: PackageName,
+  entries?: {[key: string]: string[]},
+  withReactHotLoader: boolean,
+  withDevServer?: boolean,
 }
 
 const babelForTsHotReloading = () => ({
