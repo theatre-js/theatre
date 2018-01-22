@@ -155,6 +155,7 @@ class TreeEditor extends React.PureComponent<Props, State> {
           type: NODE_TYPE.COMPONENT,
           componentType,
           displayName,
+          class: descriptor.props.class || '',
           index,
           parentId,
           children: []
@@ -206,6 +207,9 @@ class TreeEditor extends React.PureComponent<Props, State> {
         break
       case ACTION.NODE_DELETE:
         this._deleteNode(payload)
+        break
+      case ACTION.NODE_CLASS_SET:
+        this._setNodeClassValue(payload)
         break
       default:
         throw Error('This should never happen!')
@@ -261,25 +265,48 @@ class TreeEditor extends React.PureComponent<Props, State> {
           path: pathToComponentDescriptor.concat('localHiddenValuesById'),
           reducer: values => {
             const deletedNodeValue = values[nodeId]
-            const idsToDelete = [].concat(nodeId, this._getLocalHiddenValueIdsOfSubNodes(deletedNodeValue))
+            const idsToDelete = [].concat(
+              nodeId,
+              this._getLocalHiddenValueIdsOfSubNodes(deletedNodeValue),
+            )
             return _.omit(values, idsToDelete)
           },
         },
-      ])
-    )    
+      ]),
+    )
   }
 
   _getLocalHiddenValueIdsOfSubNodes(deletedNodeValue) {
     let ids = []
     if (deletedNodeValue.props != null) {
-      [].concat(deletedNodeValue.props.children).forEach(c => {
-        if (c.__descriptorType && c.__descriptorType === DESCRIPTOR_TYPE.REF_TO_LOCAL_HIDDEN_VALUE) {
+      ;[].concat(deletedNodeValue.props.children).forEach(c => {
+        if (
+          c.__descriptorType &&
+          c.__descriptorType === DESCRIPTOR_TYPE.REF_TO_LOCAL_HIDDEN_VALUE
+        ) {
           ids = ids.concat(c.which)
-          ids = ids.concat(this._getLocalHiddenValueIdsOfSubNodes(this.props.rootComponentDescriptor.localHiddenValuesById[c.which]))
+          ids = ids.concat(
+            this._getLocalHiddenValueIdsOfSubNodes(
+              this.props.rootComponentDescriptor.localHiddenValuesById[c.which],
+            ),
+          )
         }
       })
     }
     return ids
+  }
+
+  _setNodeClassValue({nodeId, value}) {
+    const {dispatch, pathToComponentDescriptor} = this.props
+    dispatch(
+      reduceStateAction(
+        pathToComponentDescriptor.concat('localHiddenValuesById', nodeId),
+        node => {
+          node.props.class = value
+          return node
+        },
+      ),
+    )
   }
 
   dropHandler = (dropZoneProps: ?Object) => {
@@ -389,7 +416,9 @@ class TreeEditor extends React.PureComponent<Props, State> {
   _startScroll = dir => {
     if (this.state.nodeBeingDragged == null) return
     const delta = dir === 'up' ? -1 : dir === 'down' ? 1 : 0
-    this.scrollInterval = setInterval(() => {this.treeWrapper.scrollTop += 2*delta}, 5)
+    this.scrollInterval = setInterval(() => {
+      this.treeWrapper.scrollTop += 2 * delta
+    }, 5)
   }
 
   _stopScroll = () => {
@@ -408,12 +437,7 @@ class TreeEditor extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const {
-      nodes,
-      nodeBeingDragged,
-      activeDropZone,
-      componentBeingSet,
-    } = this.state
+    const {nodes, nodeBeingDragged, activeDropZone, componentBeingSet} = this.state
     const isANodeBeingDragged = nodeBeingDragged != null
 
     return (
@@ -443,10 +467,7 @@ class TreeEditor extends React.PureComponent<Props, State> {
             />
           )}
           <div ref={c => (this.treeWrapper = c)} className={css.treeWrapper}>
-            <div
-              ref={c => (this.treeContainer = c)}
-              className={css.treeContainer}
-            >
+            <div ref={c => (this.treeContainer = c)} className={css.treeContainer}>
               <NodeContainer
                 key={nodes.id}
                 nodeData={nodes}
@@ -463,7 +484,7 @@ class TreeEditor extends React.PureComponent<Props, State> {
               />
             </div>
           </div>
-          {this._renderScroller('down')}          
+          {this._renderScroller('down')}
         </PanelSection>
       </div>
     )

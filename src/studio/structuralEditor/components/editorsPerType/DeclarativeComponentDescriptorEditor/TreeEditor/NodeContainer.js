@@ -178,11 +178,18 @@ class NodeContainer extends React.PureComponent<Props, State> {
     setTimeout(() => {
       const {id: nodeId, parentId, index} = this.props.nodeData
       this.props.dispatchAction(ACTION.NODE_DELETE, {nodeId, parentId, index})
-    }, 300);
+    }, 300)
   }
 
   changeTextNodeValue = value => {
     this.props.dispatchAction(ACTION.NODE_TEXT_CHANGE, {
+      nodeId: this.props.nodeData.id,
+      value,
+    })
+  }
+
+  setNodeClassValue = value => {
+    this.props.dispatchAction(ACTION.NODE_CLASS_SET, {
       nodeId: this.props.nodeData.id,
       value,
     })
@@ -239,6 +246,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
             {nodeProps.type === NODE_TYPE.COMPONENT && (
               <ComponentNode
                 nodeProps={nodeProps}
+                setClassValue={this.setNodeClassValue}
                 setAsComponentBeingSet={this.setAsComponentBeingSet}
               />
             )}
@@ -275,15 +283,18 @@ class NodeContainer extends React.PureComponent<Props, State> {
               this.renderNodePlaceholder(index + 1, depth),
             ])}
         </div>
-        {contextMenuProps != null &&
+        {contextMenuProps != null && (
           <ContextMenu
             menuProps={contextMenuProps}
             close={() => this.setState(() => ({contextMenuProps: null}))}
-            render={() => ([
-              <ContextMenuItem key='delete' onClick={this.deleteNode}>Delete</ContextMenuItem>,
+            render={() => [
+              <ContextMenuItem key="delete" onClick={this.deleteNode}>
+                Delete
+              </ContextMenuItem>,
               // <ContextMenuItem key='convert' onClick={() => console.log('convert')}>Convert</ContextMenuItem>,
-            ])}/>
-        }
+            ]}
+          />
+        )}
       </div>
     )
   }

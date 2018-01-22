@@ -30,9 +30,12 @@ class ContextMenu extends React.Component<Props, State> {
     const {offsetLeft} = this.state
     return (
       <div className={css.container} onClick={close}>
-        <div className={css.menu} style={{width: this.width, left: left + offsetLeft, top}}>
+        <div
+          className={css.menu}
+          style={{width: this.width, left: left + offsetLeft, top}}
+        >
           {render()}
-        </div>  
+        </div>
       </div>
     )
   }
