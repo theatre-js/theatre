@@ -9,7 +9,7 @@
   --color: calc(var(--depth) * 20 + 45);
   background-color: rgb(var(--color), var(--color), var(--color));
   top: 0;
-  will-change: max-height, transform;
+  // will-change: max-height, transform;
 
   &.expand {
     height: 27px;

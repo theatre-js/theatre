@@ -44,7 +44,11 @@ class Node extends React.PureComponent<Props, State> {
           {`<${nodeProps.displayName}>`}
         </div>
         <div className={css.class}>
-          <input type="text" placeholder="Class" />
+          <input
+            ref={c => this.input = c}
+            type="text"
+            placeholder="Class"
+            onContextMenu={() => this.input.blur()}/>
         </div>
       </div>
     )

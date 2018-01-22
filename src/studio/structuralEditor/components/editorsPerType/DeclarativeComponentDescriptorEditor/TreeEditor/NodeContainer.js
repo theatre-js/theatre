@@ -4,6 +4,8 @@ import css from './NodeContainer.css'
 import ComponentNode from './ComponentNode'
 import TextNode from './TextNode'
 import NodePlaceholder from './NodePlaceholder'
+import ContextMenu from './ContextMenu'
+import ContextMenuItem from './ContextMenuItem'
 import cx from 'classnames'
 import {ACTION, STATUS, NODE_TYPE} from './constants'
 
@@ -15,6 +17,8 @@ type State = {
   newChildIndex: ?number,
   isCollapsed: boolean,
   maxHeight: ?number,
+  initialTopOffset: number,
+  contextMenuProps: ?Object,
 }
 
 class NodeContainer extends React.PureComponent<Props, State> {
@@ -24,6 +28,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
     isCollapsed: false,
     maxHeight: null,
     initialTopOffset: 0,
+    contextMenuProps: null,
   }
 
   componentDidMount() {
@@ -110,6 +115,13 @@ class NodeContainer extends React.PureComponent<Props, State> {
     }
   }
 
+  contextMenuHandler = e => {
+    e.stopPropagation()
+    e.preventDefault()
+    const {clientX, clientY} = e
+    this.setState(() => ({contextMenuProps: {left: clientX, top: clientY}}))
+  }
+
   setPlaceholderAsActive = (onIndex, e) => {
     if (e != null && !e.metaKey && !this.props.isANodeBeingDragged) {
       if (this.state.newChildIndex != null) this.unsetPlaceholderAsActive()
@@ -161,6 +173,14 @@ class NodeContainer extends React.PureComponent<Props, State> {
     this.props.dispatchAction(ACTION.NODE_ADD, {nodeId: this.props.nodeData.id, atIndex})
   }
 
+  deleteNode = () => {
+    this.setState(() => ({contextMenuProps: null, isCollapsed: true}))
+    setTimeout(() => {
+      const {id: nodeId, parentId, index} = this.props.nodeData
+      this.props.dispatchAction(ACTION.NODE_DELETE, {nodeId, parentId, index})
+    }, 300);
+  }
+
   changeTextNodeValue = value => {
     this.props.dispatchAction(ACTION.NODE_TEXT_CHANGE, {
       nodeId: this.props.nodeData.id,
@@ -184,7 +204,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
 
   render() {
     const {nodeData: {children, ...nodeProps}, isANodeBeingDragged} = this.props
-    const {isCollapsed, maxHeight} = this.state
+    const {isCollapsed, maxHeight, contextMenuProps} = this.state
 
     const isText = nodeProps.type === NODE_TYPE.TEXT
     const depth = this.props.depth || 0
@@ -207,6 +227,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
         >
           <div
             className={css.root}
+            onContextMenu={this.contextMenuHandler}
             onMouseDown={this.mouseDownHandler}
             {...(!isText
               ? {
@@ -254,6 +275,15 @@ class NodeContainer extends React.PureComponent<Props, State> {
               this.renderNodePlaceholder(index + 1, depth),
             ])}
         </div>
+        {contextMenuProps != null &&
+          <ContextMenu
+            menuProps={contextMenuProps}
+            close={() => this.setState(() => ({contextMenuProps: null}))}
+            render={() => ([
+              <ContextMenuItem key='delete' onClick={this.deleteNode}>Delete</ContextMenuItem>,
+              // <ContextMenuItem key='convert' onClick={() => console.log('convert')}>Convert</ContextMenuItem>,
+            ])}/>
+        }
       </div>
     )
   }

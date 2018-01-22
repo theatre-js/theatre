@@ -65,6 +65,7 @@ class Node extends React.PureComponent<Props, State> {
           onFocus={() => this.setState(() => ({isFocused: true}))}
           onBlur={() => this.setState(() => ({isFocused: false}))}
           onKeyDown={this.handleKeyDown}
+          onContextMenu={() => this.input.blur()}
         />
       </div>
     )

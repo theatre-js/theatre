@@ -204,6 +204,9 @@ class TreeEditor extends React.PureComponent<Props, State> {
       case ACTION.NODE_TEXT_CHANGE:
         this._changeNodeTextValue(payload)
         break
+      case ACTION.NODE_DELETE:
+        this._deleteNode(payload)
+        break
       default:
         throw Error('This should never happen!')
     }
@@ -237,6 +240,46 @@ class TreeEditor extends React.PureComponent<Props, State> {
         },
       ]),
     )
+  }
+
+  _deleteNode = ({nodeId, parentId, index}) => {
+    const {dispatch, pathToComponentDescriptor} = this.props
+    dispatch(
+      multiReduceStateAction([
+        {
+          path: pathToComponentDescriptor.concat('localHiddenValuesById', parentId),
+          reducer: parentNode => {
+            const children = [].concat(parentNode.props.children)
+            parentNode.props.children = [
+              ...children.slice(0, index),
+              ...children.slice(index + 1),
+            ]
+            return parentNode
+          },
+        },
+        {
+          path: pathToComponentDescriptor.concat('localHiddenValuesById'),
+          reducer: values => {
+            const deletedNodeValue = values[nodeId]
+            const idsToDelete = [].concat(nodeId, this._getLocalHiddenValueIdsOfSubNodes(deletedNodeValue))
+            return _.omit(values, idsToDelete)
+          },
+        },
+      ])
+    )    
+  }
+
+  _getLocalHiddenValueIdsOfSubNodes(deletedNodeValue) {
+    let ids = []
+    if (deletedNodeValue.props != null) {
+      [].concat(deletedNodeValue.props.children).forEach(c => {
+        if (c.__descriptorType && c.__descriptorType === DESCRIPTOR_TYPE.REF_TO_LOCAL_HIDDEN_VALUE) {
+          ids = ids.concat(c.which)
+          ids = ids.concat(this._getLocalHiddenValueIdsOfSubNodes(this.props.rootComponentDescriptor.localHiddenValuesById[c.which]))
+        }
+      })
+    }
+    return ids
   }
 
   dropHandler = (dropZoneProps: ?Object) => {
