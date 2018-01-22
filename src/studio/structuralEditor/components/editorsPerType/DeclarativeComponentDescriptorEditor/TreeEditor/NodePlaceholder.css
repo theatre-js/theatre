@@ -7,7 +7,7 @@
 .container {
   position: relative;
   cursor: pointer;
-  animation: appear .15s ease-in-out forwards;
+  animation: appear .2s ease-in-out forwards;
 }
 
 @keyframes appear {

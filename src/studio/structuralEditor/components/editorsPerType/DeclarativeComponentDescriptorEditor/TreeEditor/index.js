@@ -14,7 +14,6 @@ import TypeSelector from './TypeSelector'
 import css from './index.css'
 import generateUniqueId from 'uuid/v4'
 import * as _ from 'lodash'
-import cx from 'classnames'
 import {DESCRIPTOR_TYPE, ACTION, STATUS_BY_ACTION, NODE_TYPE} from './constants'
 
 type Props = {
@@ -44,7 +43,6 @@ type State = {
     left: number,
     width: number,
   },
-  deltaScroll: number,
 }
 
 class TreeEditor extends React.PureComponent<Props, State> {
@@ -67,7 +65,6 @@ class TreeEditor extends React.PureComponent<Props, State> {
     nodeBeingDragged: null,
     activeDropZone: null,
     componentBeingSet: null,
-    deltaScroll: 0,
   }
 
   componentDidMount() {
@@ -193,16 +190,7 @@ class TreeEditor extends React.PureComponent<Props, State> {
       document.styleSheets[0].cssRules.length,
     )
 
-    const maxScroll =
-      this.treeContainer.clientHeight -
-      this.treeWrapper.clientHeight -
-      nodeBeingDragged.height +
-      30
-    this.setState(() => ({
-      nodeBeingDragged,
-      shouldStretch: true,
-      maxScroll,
-    }))
+    this.setState(() => ({nodeBeingDragged}))
   }
 
   dispatchActionFromNode = (actionType: string, payload: Object) => {
@@ -278,10 +266,6 @@ class TreeEditor extends React.PureComponent<Props, State> {
       this._setLastAction(ACTION.NODE_MOVE_CANCEL, {id: nodeId})
     }
     this._moveNode(currentParentId, newParentId, currentIndex, newIndex)
-
-    setTimeout(() => {
-      this.setState(() => ({shouldStretch: false, deltaScroll: 0}))
-    }, 500)
   }
 
   _moveNode(
@@ -362,23 +346,12 @@ class TreeEditor extends React.PureComponent<Props, State> {
   _startScroll = dir => {
     if (this.state.nodeBeingDragged == null) return
     const delta = dir === 'up' ? -1 : dir === 'down' ? 1 : 0
-    const {maxScroll: stateMaxScroll} = this.state
-    const maxScroll = {
-      up: Math.max(this.treeWrapper.scrollTop, stateMaxScroll),
-      down: stateMaxScroll,
-    }
-    this.scrollInterval = setInterval(() => {
-      const scrollTop = this.treeWrapper.scrollTop
-      const scrollTo = parseInt(_.clamp(scrollTop + delta, 0, maxScroll[dir]))
-      if (scrollTop !== scrollTo) {
-        this.treeWrapper.scrollTop = scrollTo
-        this.setState(state => ({deltaScroll: state.deltaScroll + delta}))
-      }
-    }, 5)
+    this.scrollInterval = setInterval(() => {this.treeWrapper.scrollTop += 2*delta}, 5)
   }
 
   _stopScroll = () => {
     clearInterval(this.scrollInterval)
+    this.scrollInterval = null
   }
 
   _renderScroller(direction: 'up' | 'down') {
@@ -397,12 +370,13 @@ class TreeEditor extends React.PureComponent<Props, State> {
       nodeBeingDragged,
       activeDropZone,
       componentBeingSet,
-      shouldStretch,
     } = this.state
     const isANodeBeingDragged = nodeBeingDragged != null
+
     return (
       <div>
         <PanelSection withHorizontalMargin={false} label="Template">
+          {this._renderScroller('up')}
           {componentBeingSet != null && (
             <TypeSelector
               nodeProps={_.pick(componentBeingSet, [
@@ -428,9 +402,7 @@ class TreeEditor extends React.PureComponent<Props, State> {
           <div ref={c => (this.treeWrapper = c)} className={css.treeWrapper}>
             <div
               ref={c => (this.treeContainer = c)}
-              className={cx(css.treeContainer, {
-                [css.stretch]: shouldStretch,
-              })}
+              className={css.treeContainer}
             >
               <NodeContainer
                 key={nodes.id}
@@ -448,6 +420,7 @@ class TreeEditor extends React.PureComponent<Props, State> {
               />
             </div>
           </div>
+          {this._renderScroller('down')}          
         </PanelSection>
       </div>
     )

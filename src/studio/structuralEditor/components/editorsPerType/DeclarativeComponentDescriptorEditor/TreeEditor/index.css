@@ -12,11 +12,7 @@
 
 .treeContainer {
   position: relative;
-  padding-bottom: 30px;
-
-  &.stretch {
-    padding-bottom: 200%;
-  }
+  padding-bottom: 30px; 
 }
 
 .scroller {
