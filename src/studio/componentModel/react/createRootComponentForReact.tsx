@@ -1,4 +1,3 @@
-// @flow
 import * as React from 'react'
 import TheStudioClass from '$studio/TheStudioClass'
 import {contextTypes, contextName} from './utils/studioContext'
@@ -6,19 +5,20 @@ import * as D from '$shared/DataVerse'
 import {elementify} from '$studio/handy'
 import DerivationAsReactElement from './utils/DerivationAsReactElement'
 
-type Props = {
-  children: React.Node,
+interface Props {
+  children: React.ReactNode,
 }
 
-type ElementifyProps = D.IDictAtom<{
-  componentId: 'TheaterJS/Core/RenderCurrentCanvas',
-  props: D.IDictAtom<{
-    children: D.IBoxAtom<React.Node>,
-  }>,
-}>
+// type ElementifyProps = D.IDictAtom<{
+//   componentId: 'TheaterJS/Core/RenderCurrentCanvas',
+//   props: D.IDictAtom<{
+//     children: D.IBoxAtom<React.Node>,
+//   }>,
+// }>
+type ElementifyProps = $FixMe
 
 const createRootComponentForReact = (studio: TheStudioClass) => {
-  class TheaterJSRoot extends React.Component<Props, void> {
+  class TheaterJSRoot extends React.Component<Props, {}> {
     elementD: $FixMe
     mapAtomOfPropsOfElementify: ElementifyProps
     instantiationDescriptor: $FixMe
@@ -67,9 +67,9 @@ const createRootComponentForReact = (studio: TheStudioClass) => {
     getChildContext() {
       return {[contextName]: studio}
     }
-  }
 
-  TheaterJSRoot.childContextTypes = contextTypes
+    static childContextTypes = contextTypes
+  }
 
   return TheaterJSRoot
 }

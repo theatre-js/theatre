@@ -1,21 +1,23 @@
 // @flow
 import SideEffectsHandler from './SideEffectsHandler'
-import {type Studio, PureComponentWithStudio, D} from '$studio/handy'
+import {PureComponentWithStudio, D} from '$studio/handy'
 // import * as debug from '$shared/debug'
 import TimelinesHandler from './TimelinesHandler'
+import { IDerivation } from '$src/shared/DataVerse/derivations/types';
 
-type MakeReactiveComponentArgs = {
-  modifyPrototypalDict: (
-    D.IPrototypalDict<$FixMe>,
-  ) => D.IPrototypalDict<$FixMe>,
-  getInitialState?: () => D.IDictAtom<$FixMe>,
-} & (
-  | {
-      componentType: 'HardCoded',
-      displayName: string,
-      componentId: string,
-    }
-  | {componentType: 'Declarative', componentId: void, displayName: void})
+// type MakeReactiveComponentArgs = {
+//   modifyPrototypalDict: (
+//     D.IPrototypalDict<$FixMe>,
+//   ) => D.IPrototypalDict<$FixMe>,
+//   getInitialState?: () => D.IDictAtom<$FixMe>,
+// } & (
+//   | {
+//       componentType: 'HardCoded',
+//       displayName: string,
+//       componentId: string,
+//     }
+//   | {componentType: 'Declarative', componentId: void, displayName: void})
+type MakeReactiveComponentArgs = $FixMe
 
 export default function makeReactiveComponent({
   modifyPrototypalDict,
@@ -39,28 +41,27 @@ export default function makeReactiveComponent({
     static componentId = componentId
 
     _finalFace: $FixMe
-    _atom: $FixMe
     _whatToRender: $FixMe
     _fnsToCallOnWillUnmount: Array<() => void>
-    _prototypalDictD: D.IDerivation<$FixMe>
+    _prototypalDictD: IDerivation<$FixMe>
     _sideEffetsHandler: SideEffectsHandler
     isTheaterJSComponent: boolean
-    componentType: ?string
-    componentId: ?string
+    componentType: undefined | string
+    componentId: undefined | string
     elementId: string | number
     _timelinesHandler: TimelinesHandler
 
-    _atom: D.IDictAtom<{
-      instanceId: string | number,
-      props: $ElementType<Props, 'props'>,
-      studio: Studio,
-      key: string,
-      state: $FixMe,
-      modifierInstantiationDescriptors: $ElementType<
-        Props,
-        'modifierInstantiationDescriptors',
-      >,
-    }>
+    _atom: $FixMe // D.IDictAtom<{
+    //   instanceId: string | number,
+    //   props: $ElementType<Props, 'props'>,
+    //   studio: Studio,
+    //   key: string,
+    //   state: $FixMe,
+    //   modifierInstantiationDescriptors: $ElementType<
+    //     Props,
+    //     'modifierInstantiationDescriptors',
+    //   >,
+    // }>
 
     static _baseLookupTable = {
       render: () => null,
@@ -142,7 +143,7 @@ export default function makeReactiveComponent({
       const untapFromRender = this._finalFace
         .prop('render')
         .changes(this.studio.ticker)
-        .tap(whatToRender => {
+        .tap((whatToRender: $FixMe) => {
           this._whatToRender = whatToRender
           this.forceUpdate()
         })
@@ -155,7 +156,7 @@ export default function makeReactiveComponent({
         sideEffectsDictP,
       )
 
-      this._timelinesHandler = new TimelinesHandler((this: $IntentionalAny))
+      this._timelinesHandler = new TimelinesHandler((this as $IntentionalAny))
       this._timelinesHandler.start()
     }
 

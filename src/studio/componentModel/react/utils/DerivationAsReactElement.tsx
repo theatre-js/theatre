@@ -1,12 +1,14 @@
-// @flow
 import {React, D, PureComponentWithStudio} from '$studio/handy'
 import _ from 'lodash'
+import {IDerivation} from '$src/shared/DataVerse/derivations/types'
 
-type Props = {derivation: D.IDerivation<React.Node>}
+interface Props {
+  derivation: IDerivation<React.ReactNode>
+}
 
 export default class DerivationAsReactElement extends PureComponentWithStudio<
   Props,
-  void,
+  void
 > {
   _untapFromDerivationChanges: () => void
 

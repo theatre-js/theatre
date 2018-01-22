@@ -1,7 +1,7 @@
 // @flow
 import {contextTypes, contextName} from './studioContext'
 import * as React from 'react'
-import type {default as TheStudioClass} from '$studio/TheStudioClass'
+import TheStudioClass from '$studio/TheStudioClass'
 
 /**
  * The main reason I made this as a component instead of just providing a HOC called `withStudio()` is that
@@ -10,14 +10,14 @@ import type {default as TheStudioClass} from '$studio/TheStudioClass'
  */
 export default class PureComponentWithStudio<
   Props,
-  State,
+  State
 > extends React.PureComponent<Props, State> {
   studio: TheStudioClass
 
-  constructor(props: Props, context: $FixMe) {
+  constructor(props: Props, context: $IntentionalAny) {
     super(props, context)
     this.studio = context[contextName]
   }
-}
 
-PureComponentWithStudio.contextTypes = contextTypes
+  static contextTypes = contextTypes
+}
