@@ -17,10 +17,6 @@ module.exports = (env: Envs) => {
   })
 
   return immer(parts.config, c => {
-    // c.output.publicPath = `http://localhost:${
-    //   parts.envConfig.devSpecific.examples.devServerPort
-    // }/`
-
     c.plugins.push(
       new HtmlWebpackPlugin({
         inject: 'body',
