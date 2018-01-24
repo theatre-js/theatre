@@ -76,7 +76,7 @@ class LanesViewer extends React.PureComponent<Props, State> {
   svgArea: HTMLElement
 
   // ??
-  static colors = ['darkturquoise', 'orchid', 'mediumspringgreen', 'gold']
+  static colors = ['#0FF', '#FF0', '#F0F', '#FFF']
 
   constructor(props: Props) {
     super(props)

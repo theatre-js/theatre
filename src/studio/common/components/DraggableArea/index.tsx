@@ -61,9 +61,9 @@ class DraggableArea extends React.Component<Props, State> {
   dragEndHandler = () => {
     this.removeDragListeners()
     this.props.onDragEnd && this.props.onDragEnd()
-    if (this.state.isDragging) {
-      this.setState(() => ({isDragging: false}))
-    }
+    // if (this.state.isDragging) {
+    //   this.setState(() => ({isDragging: false}))
+    // }
   }
 
   dragHandler = (e: MouseEvent) => {
