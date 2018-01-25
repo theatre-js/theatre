@@ -6,7 +6,7 @@ export {
   default as makeReactiveComponent,
 } from '$studio/componentModel/react/makeReactiveComponent'
 export {default as elementify} from '$studio/componentModel/react/elementify'
-export type {default as Studio} from '$studio/TheStudioClass'
+export {default as Studio} from '$studio/TheStudioClass'
 export {default as connect} from './connect'
 import * as D from '$shared/DataVerse'
 export {default as compose} from 'ramda/src/compose'

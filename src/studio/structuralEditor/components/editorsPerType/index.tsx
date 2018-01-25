@@ -9,7 +9,7 @@ const components = _.mapValues(
   _.keyBy(listOfModulePaths, s => {
     const matches: Array<string> = (s.match(
       /\/([a-zA-Z]+)Editor\/index\.js$/,
-    ): $IntentionalAny)
+    ) as $IntentionalAny)
     return matches[1]
   }),
   localePath => requireModuleByPath(localePath).default,

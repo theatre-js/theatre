@@ -1,5 +1,5 @@
 // @flow
-import {Channel,eventChannel, END} from 'redux-saga'
+import {Channel, eventChannel, END} from 'redux-saga'
 import {call} from 'redux-saga/effects'
 import generateUniqueId from 'uuid/v4'
 import wn from 'when'

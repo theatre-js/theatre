@@ -1,6 +1,6 @@
 // @flow
 import {put} from 'redux-saga/effects'
-import {Channel} from 'redux-saga'
+import {Channel from 'redux-saga'
 
 export default function* putToChannel(
   channel: Channel,

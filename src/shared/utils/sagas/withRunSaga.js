@@ -1,80 +1,9 @@
 // @flow
-import {
-  applyMiddleware,
-  createStore,
-  compose,
-  Reducer,
-  Store,
-} from 'redux'
+import * as React from 'react'
+import hoistNonReactStatics from 'hoist-non-react-statics'
+import {HigherOrderComponent} from 'react-flow-types'
+import {PropTypes} from 'prop-types'
 import {call} from 'redux-saga/effects'
-import createSagaMiddleware from 'redux-saga'
-
-type RootSaga<State, Action> = (
-  store: StandardStore<State, Action>,
-) => Generator_<mixed, mixed, mixed>
-type ConstructorProps<State, Action> = {
-  initialState?: State,
-  rootSaga: RootSaga<State, Action>,
-  rootReducer: Reducer<State, Action>,
-}
-
-/**
- * StandardStore is basically just a standard configuration of redux store and sagas. Nothing special really.
- */
-export default class StandardStore<State: Object, Action: Object> {
-  sagaMiddleware: *
-  _initialState: undefined | null | State
-  rootReducer: Reducer<State, Action>
-  reduxStore: Store<State, Action>
-  rootSaga: RootSaga<State, Action>
-
-  constructor({
-    initialState,
-    rootReducer,
-    rootSaga,
-  }: ConstructorProps<State, Action>) {
-    this._initialState = initialState
-    this.sagaMiddleware = createSagaMiddleware()
-
-    this.rootSaga = rootSaga
-    this.rootReducer = rootReducer
-
-    this.reduxStore = this._createReduxStore()
-  }
-
-  _createReduxStore(): Store<State, Action> {
-    const middlewares = []
-
-    middlewares.push(this.sagaMiddleware)
-
-    const enhancer = compose(
-      applyMiddleware(...middlewares),
-      typeof window === 'object' && window.devToolsExtension
-        ? window.devToolsExtension()
-        : f => f,
-    )
-
-    const store = createStore(
-      this.rootReducer,
-      this._initialState || (undefined: $FixMe),
-      enhancer,
-    )
-
-    // $FixMe
-    store.sagaMiddleware = this.sagaMiddleware
-
-    return store
-  }
-
-  runRootSaga() {
-    return this.sagaMiddleware.run(this.rootSaga, this)
-  }
-
-  runSaga: RunSagaFn = (fn: $IntentionalAny, ...args): $FixMe => {
-    // $FlowIgnore
-    return this.reduxStore.sagaMiddleware.run(preventToThrow(fn), ...args).done
-  }
-}
 
 function preventToThrow(fn: () => Generator_<$FixMe, $FixMe, $FixMe>) {
   return function* callAndCatch(...args): Generator_<$FixMe, $FixMe, $FixMe> {
@@ -85,6 +14,8 @@ function preventToThrow(fn: () => Generator_<$FixMe, $FixMe, $FixMe>) {
     }
   }
 }
+
+// type FnSpread<T, R> = (...args: Array<T>) => Generator_<mixed,R,mixed>
 
 type Fn0<R> = (...rest: Array<void>) => Generator_<mixed, R, mixed>
 type Fn1<T1, R> = (t1: T1, ...rest: Array<void>) => Generator_<mixed, R, mixed>
@@ -179,3 +110,38 @@ export type RunSagaFn = (<
     ...rest: Array<void>
   ) => Promise<R>) &
   (<R, Fn: Fn0<R>>(fn: Fn, ...rest: Array<void>) => Promise<R>)
+// @todo for some reason, including the FnSpread case causes flow to use it instead of FN0. So, no spread support for the time being
+// & (<T, R, Fn: FnSpread<T, R>>(fn: Fn, ...args: Array<T>) => Promise<R>)
+
+export type WithRunSagaProps = {runSaga: RunSagaFn}
+
+export default function withRunSaga(): HigherOrderComponent<
+  {},
+  {runSaga: RunSagaFn},
+> {
+  return function connectedToSagas(component: any): any {
+    const finalComponent = (
+      props: Object,
+      {store}: {store: {runSaga: Function}},
+    ) => {
+      const ownProps = {
+        runSaga: (fn, ...args) =>
+          // $FixMe
+          store.sagaMiddleware.run(preventToThrow(fn), ...args).done,
+      }
+      return React.createElement(component, {...props, ...ownProps})
+    }
+
+    finalComponent.contextTypes = {
+      store: PropTypes.any,
+    }
+
+    finalComponent.displayName = `withRunSaga(${component.displayName ||
+      component.name ||
+      'Component'})`
+
+    hoistNonReactStatics(finalComponent, component)
+
+    return finalComponent
+  }
+}
