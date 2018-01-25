@@ -1,5 +1,5 @@
 // @flow
-import {type ComponentId} from '$studio/componentModel/types'
+import {ComponentId} from '$studio/componentModel/types'
 
 export type PanelId = string
 

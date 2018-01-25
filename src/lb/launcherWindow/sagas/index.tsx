@@ -8,7 +8,7 @@ import deepEqual from 'deep-equal'
 import {
   sendRequestToWindow,
   getChannelOfRequestsFromWindow,
-  type Request,
+  Request,
 } from './utils'
 import allLfEndpoints from './allLfEndpoints'
 

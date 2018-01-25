@@ -2,11 +2,11 @@
 import {
   getChannelFromSocketServer,
   getChannelFromSocket,
-  type SocketServer,
-  type ServerEvent,
-  type Socket,
-  type SocketEvent,
-  type Request,
+  SocketServer,
+  ServerEvent,
+  Socket,
+  SocketEvent,
+  Request,
 } from './utils'
 import {fork, take, call} from 'redux-saga/effects'
 import Server from 'socket.io'

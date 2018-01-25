@@ -2,7 +2,7 @@
 import fse from 'fs-extra'
 import {call, select} from '$shared/utils/sagas'
 import path from 'path'
-import {type StoreState} from '$lb/types'
+import {StoreState} from '$lb/types'
 import {
   default as recogniseProject,
   type ErrorTypes as RecognizeProjectErrorTypes,

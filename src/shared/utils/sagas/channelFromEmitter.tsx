@@ -1,6 +1,6 @@
 // @flow
 import forEach from 'lodash/forEach'
-import {type Channel, eventChannel} from 'redux-saga'
+import {Channel,eventChannel} from 'redux-saga'
 
 type EventEmitter = {
   +on: (eventName: string, listener: Function) => mixed,

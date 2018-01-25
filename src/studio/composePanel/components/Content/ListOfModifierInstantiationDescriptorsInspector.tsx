@@ -1,6 +1,6 @@
 // @flow
 import {compose, React, connect} from '$studio/handy'
-import type {ModifierInstantiationValueDescriptors} from '$studio/componentModel/types'
+import {ModifierInstantiationValueDescriptors} from '$studio/componentModel/types'
 import ModifierInstantiationDescriptorInspector from './ModifierInstantiationDescriptorInspector'
 import get from 'lodash/get'
 

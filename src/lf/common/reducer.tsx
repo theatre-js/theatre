@@ -1,9 +1,9 @@
 // @flow
-import {type CommonNamespaceState} from './types'
+import {CommonNamespaceState} from './types'
 import {handleActions} from 'redux-actions'
 import {combineReducers} from 'redux'
 import {bootstrapAction} from './actions'
-import {type Reducer} from 'redux'
+import {Reducer} from 'redux'
 
 export default (combineReducers({
   temp: combineReducers({

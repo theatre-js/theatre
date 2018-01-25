@@ -1,5 +1,5 @@
 // @flow
-import type {IDerivedDict} from './types'
+import {IDerivedDict} from './types'
 import AbstractDerivedDict from './AbstractDerivedDict'
 import constantDerivation from '../constant'
 

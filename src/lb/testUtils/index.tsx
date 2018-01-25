@@ -3,7 +3,7 @@
 import StandardStore from '$lb/bootstrap/StandardStore'
 import rootReducer from '$lb/bootstrap/rootReducer'
 // import rootSaga from '$lb/bootstrap/rootSaga'
-import {type StoreState} from '$lb/types'
+import {StoreState} from '$lb/types'
 
 type Fn0<R> = (...rest: Array<void>) => Generator_<mixed, R, mixed>
 type Fn1<T1, R> = (t1: T1, ...rest: Array<void>) => Generator_<mixed, R, mixed>

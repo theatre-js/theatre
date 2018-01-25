@@ -3,7 +3,7 @@ import React from 'react'
 import css from './index.css'
 import SettingsDivision from '$studio/common/components/SettingsDivision'
 import PanelInput from '$studio/common/components/PanelInput'
-import {type DraggingOutput} from '$studio/workspace/types'
+import {DraggingOutput} from '$studio/workspace/types'
 
 type Props = {
   currentlyDraggingOutput: DraggingOutput,

@@ -2,12 +2,12 @@
 import {React, connect, reduceStateAction} from '$studio/handy'
 import {getLanesByIds} from '$studio/animationTimeline/selectors'
 import {
-  type LaneID,
-  type LaneObject,
-  type Point,
-  type PointPosition,
-  type PointHandles,
-  type NormalizedPoint,
+  LaneID,
+  LaneObject,
+  Point,
+  PointPosition,
+  PointHandles,
+  NormalizedPoint,
 } from '$studio/animationTimeline/types'
 import css from './LanesViewer.css'
 import Lane from './Lane'

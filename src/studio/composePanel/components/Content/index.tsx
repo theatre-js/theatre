@@ -2,7 +2,7 @@
 import {React, connect, shouldUpdate, typeSystem} from '$studio/handy'
 import css from './index.css'
 import {ValueEditor} from '$studio/structuralEditor'
-import type {
+import {
   ComponentDescriptor,
   ComponentId,
 } from '$studio/componentModel/types'

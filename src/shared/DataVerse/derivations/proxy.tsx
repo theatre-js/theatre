@@ -1,6 +1,6 @@
 // @flow
 import AbstractDerivation from './AbstractDerivation'
-import type {AbstractDerivation} from './types'
+import {AbstractDerivation} from './types'
 
 export class ProxyDerivation<V> extends AbstractDerivation
   implements IProxyDerivation<V> {

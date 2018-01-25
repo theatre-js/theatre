@@ -1,10 +1,10 @@
 // @flow
-import type {IAtom} from './AbstractAtom'
-import type {BoxAtomDeepChangeType, BoxAtomDeepDiffType} from '../box'
-import type {DictAtomDeepChangeType, DictAtomDeepDiffType} from '../dict'
-import type {ArrayAtomDeepChangeType, ArrayAtomDeepDiffType} from '../array'
-import type {True, MapKey} from '$shared/DataVerse/types'
-import type {default as Tappable} from '$shared/DataVerse/utils/Tappable'
+import {IAtom} from './AbstractAtom'
+import {BoxAtomDeepChangeType, BoxAtomDeepDiffType} from '../box'
+import {DictAtomDeepChangeType, DictAtomDeepDiffType} from '../dict'
+import {ArrayAtomDeepChangeType, ArrayAtomDeepDiffType} from '../array'
+import {True, MapKey} from '$shared/DataVerse/types'
+import {default as Tappable} from '$shared/DataVerse/utils/Tappable'
 
 export type AllDeepChangeTypes = BoxAtomDeepChangeType<any> | DictAtomDeepChangeType<any> | ArrayAtomDeepChangeType<any>
 export type AllDeepDiffTypes = BoxAtomDeepDiffType<any> | DictAtomDeepDiffType<any> | ArrayAtomDeepDiffType<any>

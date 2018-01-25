@@ -7,7 +7,7 @@ import {AppContainer} from 'react-hot-loader'
 import compose from 'ramda/src/compose'
 import './StudioRootComponent.css'
 import * as React from 'react'
-import type {default as TheStudioClass} from '$studio/TheStudioClass'
+import {default as TheStudioClass} from '$studio/TheStudioClass'
 import {storeKey} from '$studio/handy/connect'
 
 const StoreProvider = createProvider(storeKey)

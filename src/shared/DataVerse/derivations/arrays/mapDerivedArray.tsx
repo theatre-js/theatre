@@ -1,7 +1,7 @@
 // @flow
 import noop from 'lodash/noop'
 import AbstractDerivedArray from './AbstractDerivedArray'
-import type {IDerivedArray} from './types'
+import {IDerivedArray} from './types'
 
 export class MappedDerivedArray extends AbstractDerivedArray
   implements IDerivedArray<$FixMe> {

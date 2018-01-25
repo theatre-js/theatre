@@ -1,5 +1,5 @@
 // @flow
-import {type Channel, eventChannel, END} from 'redux-saga'
+import {Channel,eventChannel, END} from 'redux-saga'
 
 export type Socket = $FixMe
 export type SocketServer = $FixMe

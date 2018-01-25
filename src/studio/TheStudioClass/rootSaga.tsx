@@ -1,6 +1,6 @@
 // @flow
 import {call} from 'redux-saga/effects'
-import type {default as TheStudioClass} from '$studio/TheStudioClass'
+import {default as TheStudioClass} from '$studio/TheStudioClass'
 
 export default function* errorCatchingRootSaga(): Generator_<*, *, *> {
   return yield call(rootSaga)

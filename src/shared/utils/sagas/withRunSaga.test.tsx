@@ -1,5 +1,5 @@
 // @flow
-import {type RunSagaFn} from './withRunSaga'
+import {RunSagaFn} from './withRunSaga'
 
 describe('withRunSaga()', () => {
   it('should work')

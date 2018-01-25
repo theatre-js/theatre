@@ -1,7 +1,7 @@
 // @flow
 import React from 'react'
 import css from './Node.css'
-import type {Path} from '$studio/elementTree/types'
+import {Path} from '$studio/elementTree/types'
 import * as _ from 'lodash'
 import cx from 'classnames'
 import arrowIcon from './arrow.svg'

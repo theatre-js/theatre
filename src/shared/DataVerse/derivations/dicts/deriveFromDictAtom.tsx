@@ -1,6 +1,6 @@
 // @flow
-import type {IDictAtom} from '$shared/DataVerse/atoms/dict'
-import type {IDerivedDict} from './types'
+import {IDictAtom} from '$shared/DataVerse/atoms/dict'
+import {IDerivedDict} from './types'
 import AbstractDerivedDict from './AbstractDerivedDict'
 import noop from 'lodash/noop'
 // import AbstractDerivation from '../AbstractDerivation'

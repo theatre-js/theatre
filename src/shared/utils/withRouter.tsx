@@ -1,6 +1,6 @@
 // @flow
 import {withRouter} from 'react-router-dom'
-// import {type HigherOrderComponent} from 'react-flow-types'
+// import {HigherOrderComponent} from 'react-flow-types'
 
 export type WithRouterProps = {
   history: {

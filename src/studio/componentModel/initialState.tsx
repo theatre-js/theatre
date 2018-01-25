@@ -1,10 +1,10 @@
 // @flow
-import {type ComponentModelNamespaceState} from './types'
+import {ComponentModelNamespaceState} from './types'
 import coreComponentDescriptors from './coreComponentDescriptors'
 import coreModifierDescriptors from './coreModifierDescriptors'
 import {
-  type DeclarativeComponentDescriptor,
-  type ComponentInstantiationValueDescriptor,
+  DeclarativeComponentDescriptor,
+  ComponentInstantiationValueDescriptor,
 } from '$studio/componentModel/types'
 import * as _ from 'lodash'
 

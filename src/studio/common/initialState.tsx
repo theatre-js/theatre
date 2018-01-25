@@ -1,5 +1,5 @@
 // @flow
-import {type CommonNamespaceState} from './types'
+import {CommonNamespaceState} from './types'
 
 const initialState: CommonNamespaceState = {
   temp: {

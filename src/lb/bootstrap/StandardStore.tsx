@@ -3,8 +3,8 @@ import {
   applyMiddleware,
   createStore,
   compose,
-  type Reducer,
-  type Store,
+  Reducer,
+  Store,
 } from 'redux'
 import {call} from 'redux-saga/effects'
 import createSagaMiddleware from 'redux-saga'

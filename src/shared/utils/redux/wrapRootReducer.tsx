@@ -6,9 +6,9 @@ import {
   multiReduceStateAction,
 } from './commonActions'
 import pick from 'lodash/pick'
-import {type Reducer} from '$shared/types'
+import {Reducer} from '$shared/types'
 import update from 'lodash/fp/update'
-import type {Pair} from '$shared/utils/sagas/multiReduceState.js'
+import {Pair} from '$shared/utils/sagas/multiReduceState.js'
 
 /**
  * Takes a reducer and returns a new reducer that acts the same as the original reducer, but

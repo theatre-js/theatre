@@ -2,7 +2,7 @@
 import React from 'react'
 import Point from './Point'
 import Connector from './Connector'
-import {type NormalizedPoint} from '$studio/animationTimeline/types'
+import {NormalizedPoint} from '$studio/animationTimeline/types'
 
 type Props = {
   laneId: string,

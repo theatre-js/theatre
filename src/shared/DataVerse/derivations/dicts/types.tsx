@@ -1,7 +1,7 @@
 // @flow
 import {AbstractDerivation} from '../types'
 import {default as Tappable} from '$shared/DataVerse/utils/Tappable'
-// import type {IPointer} from '../pointer'
+// import {IPointer} from '../pointer'
 
 export type ChangeType<O> = {
   addedKeys: Array<keyof O>

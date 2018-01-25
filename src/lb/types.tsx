@@ -1,6 +1,6 @@
 // @flow
-import type {CommonNamespaceState} from '$lb/common/types'
-import type {ProjectsNamespaceState} from '$lb/projects/types'
+import {CommonNamespaceState} from '$lb/common/types'
+import {ProjectsNamespaceState} from '$lb/projects/types'
 
 export type StoreState = {
   common: CommonNamespaceState,

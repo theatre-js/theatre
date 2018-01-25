@@ -3,7 +3,7 @@ import {fork, call, put, take, select} from 'redux-saga/effects'
 import {bootstrapAction} from '$lf/common/actions'
 import {getChannelOfRequestsFromMain, sendRequestToMain} from './utils'
 import {reduceState} from '$shared/utils'
-import {type StoreState} from '$lf/types'
+import {StoreState} from '$lf/types'
 
 export default function* mirrorOfLBStateRootSaga(): Generator_<*, *, *> {
   yield fork(handleRequestsFromMain)

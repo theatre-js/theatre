@@ -1,12 +1,12 @@
 // @flow
 import isPlainObject from 'lodash/isPlainObject'
-import {type IBoxAtom, default as box} from './box'
-import {type IDictAtom, default as dict} from './dict'
-import {type IArrayAtom, default as array} from './array'
+import {IBoxAtom,default as box} from './box'
+import {IDictAtom,default as dict} from './dict'
+import {IArrayAtom,default as array} from './array'
 import mapValues from 'lodash/mapValues'
 import {default as AbstractAtom} from './utils/AbstractAtom'
-import type {If} from '../types'
-import type {
+import {If} from '../types'
+import {
   IsArrayLiteral,
   IsObjectLiteral,
   ValueOfObjectLiteral,

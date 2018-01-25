@@ -1,5 +1,5 @@
 /* eslint-disable flowtype/require-valid-file-annotation */
-import type {default as TimelineInstance} from '$studio/componentModel/react/makeReactiveComponent/TimelineInstance'
+import {default as TimelineInstance} from '$studio/componentModel/react/makeReactiveComponent/TimelineInstance'
 
 const constructReferenceToTimelineVar = (descP, d) => {
   const timelineIdP = descP.prop('timelineId')

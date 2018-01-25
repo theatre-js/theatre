@@ -1,5 +1,5 @@
 // @flow
-import {type ModifierDescriptor} from '$studio/componentModel/types'
+import {ModifierDescriptor} from '$studio/componentModel/types'
 import attributesApplier from './attributeApplier'
 import * as D from '$shared/DataVerse'
 

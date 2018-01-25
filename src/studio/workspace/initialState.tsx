@@ -1,5 +1,5 @@
 // @flow
-import {type WorkspaceNamespaceState} from './types'
+import {WorkspaceNamespaceState} from './types'
 
 const initialState: WorkspaceNamespaceState = {
   panels: {

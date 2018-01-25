@@ -1,6 +1,6 @@
 // @flow
-import type {Selector} from '$studio/types'
-import type {ComponentId} from './types'
+import {Selector} from '$studio/types'
+import {ComponentId} from './types'
 import stringStartsWith from 'lodash/startsWith'
 
 export const getComponentDescriptor: Selector<*, *> = (

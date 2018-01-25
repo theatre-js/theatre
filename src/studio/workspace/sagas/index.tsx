@@ -1,5 +1,5 @@
 // @flow
-import {type PanelId, type XY, type PanelProps} from '$studio/workspace/types'
+import {PanelId,XY,PanelProps} from '$studio/workspace/types'
 import {reduceState} from '$shared/utils'
 import generateUniqueId from 'uuid/v4'
 

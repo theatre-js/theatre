@@ -1,5 +1,5 @@
 // @flow
-// import type {IDerivedDict} from './types'
+// import {IDerivedDict} from './types'
 import Emitter from '$shared/DataVerse/utils/Emitter'
 
 export default class AbstractDerivedDict {

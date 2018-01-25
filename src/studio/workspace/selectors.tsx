@@ -1,10 +1,10 @@
 // @flow
-import {type Selector} from '$studio/types'
+import {Selector} from '$studio/types'
 import {
-  type visiblePanelsList,
-  type PanelObject,
-  type DraggingOutput,
-  type PanelInput,
+  visiblePanelsList,
+  PanelObject,
+  DraggingOutput,
+  PanelInput,
 } from '$studio/workspace/types'
 
 export const getVisiblePanelsList: Selector<visiblePanelsList, void> = state =>

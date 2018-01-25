@@ -1,7 +1,7 @@
 
-import type {AbstractDerivation} from '../types'
+import {AbstractDerivation} from '../types'
 import Emitter from '$shared/DataVerse/utils/Emitter'
-import type {IDerivedDict, ChangeType} from './types'
+import {IDerivedDict, ChangeType} from './types'
 import DerivedDict from './AbstractDerivedDict'
 import _ from 'lodash'
 

@@ -5,8 +5,8 @@ import Connector from './Connector'
 import DraggableArea from '$studio/common/components/DraggableArea'
 import SingleInputForm from '$lf/common/components/SingleInputForm'
 import {
-  type NormalizedPoint,
-  type PointHandles,
+  NormalizedPoint,
+  PointHandles,
 } from '$studio/animationTimeline/types'
 
 type Props = {

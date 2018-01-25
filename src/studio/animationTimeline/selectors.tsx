@@ -1,10 +1,10 @@
 // @flow
-import {type Selector} from '$studio/types'
+import {Selector} from '$studio/types'
 import {
-  type TimelineID,
-  type LaneID,
-  type TimelineObject,
-  type LaneObject,
+  TimelineID,
+  LaneID,
+  TimelineObject,
+  LaneObject,
 } from '$studio/animationTimeline/types'
 
 export const getTimelineById: Selector<TimelineObject, TimelineID> = (

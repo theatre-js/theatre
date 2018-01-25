@@ -1,6 +1,6 @@
 // @flow
 import {select} from '$shared/utils/sagas'
-import {type StoreState} from '$lb/types'
+import {StoreState} from '$lb/types'
 import {multiReduceState} from '$shared/utils'
 import _ from 'lodash'
 

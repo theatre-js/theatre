@@ -3,7 +3,7 @@ import * as D from '$shared/DataVerse'
 import ElementifyDeclarativeComponent from './ElementifyDeclarativeComponent'
 import {Studio} from '$studio/handy'
 import stringStartsWith from 'lodash/startsWith'
-import { AbstractDerivation } from '$src/shared/DataVerse/derivations/types';
+import {AbstractDerivation} from '$src/shared/DataVerse/derivations/types'
 
 const identity = a => a
 
@@ -23,7 +23,6 @@ const getComponentDescriptorById = (
             .prop('componentDescriptors')
             .prop('core')
             .prop(idString)
-
         : studioD
             .getValue()
             .atom.pointer()

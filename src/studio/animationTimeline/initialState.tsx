@@ -1,5 +1,5 @@
 // @flow
-import type {AnimationTimelineNamespaceState} from './types'
+import {AnimationTimelineNamespaceState} from './types'
 
 const initialState: AnimationTimelineNamespaceState = {
   lanes: {

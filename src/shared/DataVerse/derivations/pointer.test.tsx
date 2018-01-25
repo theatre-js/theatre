@@ -1,5 +1,5 @@
 // @flow
-import type {IPointerToBoxAtom} from './pointer'
+import {IPointerToBoxAtom} from './pointer'
 import * as D from '$shared/DataVerse'
 import {DictAtom} from '$shared/DataVerse/atoms/dict'
 

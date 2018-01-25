@@ -7,13 +7,13 @@ import SortableBox from './SortableBox'
 import LanesViewer from './LanesViewer'
 import TimeBar from './TimeBar'
 import {
-  type TimelineID,
-  type TimelineObject,
-  type BoxID,
-  type BoxesObject,
-  type LayoutArray,
+  TimelineID,
+  TimelineObject,
+  BoxID,
+  BoxesObject,
+  LayoutArray,
 } from '$studio/animationTimeline/types'
-import {type XY} from '$studio/workspace/types'
+import {XY} from '$studio/workspace/types'
 
 type OwnProps = TimelineObject & {
   timelineId: TimelineID,

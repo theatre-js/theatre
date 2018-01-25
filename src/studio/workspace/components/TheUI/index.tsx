@@ -1,10 +1,10 @@
 import * as React from 'react' // eslint-disable-line flowtype/require-valid-file-annotation
 import compose from 'ramda/src/compose'
 import {connect} from '$studio/handy'
-import {type StoreState} from '$studio/types'
+import {StoreState} from '$studio/types'
 import {
-  type PanelPlacementSettings,
-  type PanelPersistentState,
+  PanelPlacementSettings,
+  PanelPersistentState,
 } from '$studio/workspace/types'
 import {getVisiblePanelsList} from '$studio/workspace/selectors'
 import {createPanel} from '$studio/workspace/sagas'

@@ -6,7 +6,7 @@ import compose from 'ramda/src/compose'
 import {connect} from '$studio/handy'
 import {getIsBootstrapped} from '$studio/common/selectors'
 
-import type {StoreState} from '$studio/types'
+import {StoreState} from '$studio/types'
 
 type Props = {
   isBootstrapped: boolean,

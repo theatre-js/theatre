@@ -1,5 +1,5 @@
 // @flow
-import {type ModifierDescriptor} from '$studio/componentModel/types'
+import {ModifierDescriptor} from '$studio/componentModel/types'
 import * as D from '$shared/DataVerse'
 import commonStylesPrototype from './commonStylesPrototype'
 

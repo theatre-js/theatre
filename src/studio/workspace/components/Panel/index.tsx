@@ -4,13 +4,13 @@ import css from './index.css'
 import Settings from './Settings'
 import cx from 'classnames'
 import {
-  type XY,
-  type PanelPlacementSettings,
-  type PanelType,
-  type PanelConfiguration,
-  type PanelPersistentState,
-  type PanelOutput,
-  type DraggingOutput,
+  XY,
+  PanelPlacementSettings,
+  PanelType,
+  PanelConfiguration,
+  PanelPersistentState,
+  PanelOutput,
+  DraggingOutput,
 } from '$studio/workspace/types'
 
 import {

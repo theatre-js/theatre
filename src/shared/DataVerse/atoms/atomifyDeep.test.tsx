@@ -1,7 +1,7 @@
 // @flow
 import {default as atomifyDeep} from './atomifyDeep'
-import type {IDictAtom} from './dict'
-import type {IBoxAtom} from './box'
+import {IDictAtom} from './dict'
+import {IBoxAtom} from './box'
 
 describe('DataVerse.atomifyDeep', () => {
   it('shoudl work', () => {

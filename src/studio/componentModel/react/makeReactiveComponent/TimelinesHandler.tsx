@@ -1,5 +1,5 @@
 // @flow
-import type {TheaterJSComponent} from './index'
+import {TheaterJSComponent} from './index'
 import * as _ from 'lodash'
 import {D} from '$studio/handy'
 import TimelineInstance from './TimelineInstance'

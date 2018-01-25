@@ -1,7 +1,7 @@
 // @flow
 import React from 'react'
 import panelTypes from '$studio/workspace/panelTypes'
-import {type PanelPlacementSettings} from '$studio/workspace/types'
+import {PanelPlacementSettings} from '$studio/workspace/types'
 import _ from 'lodash'
 import css from './index.css'
 

@@ -6,7 +6,7 @@ import {connect} from '$lf/utils'
 import {getIsBootstrapped} from '$lf/common/selectors'
 import SplashScreen from '$lf/common/components/SplashScreen'
 
-import type {StoreState} from '$lf/types'
+import {StoreState} from '$lf/types'
 
 type Props = {
   isBootstrapped: boolean,

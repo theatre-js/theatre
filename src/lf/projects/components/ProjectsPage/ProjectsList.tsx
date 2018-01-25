@@ -2,7 +2,7 @@
 import * as React from 'react'
 import ProjectItem from './ProjectItem'
 import css from './ProjectsList.css'
-import {type ProjectsNamespaceState} from '$lb/projects/types'
+import {ProjectsNamespaceState} from '$lb/projects/types'
 
 type Props = {
   projects: ProjectsNamespaceState,

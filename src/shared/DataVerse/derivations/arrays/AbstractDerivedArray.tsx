@@ -1,4 +1,4 @@
-import type {IDerivedArray} from './types' // eslint-disable-line flowtype/require-valid-file-annotation
+import {IDerivedArray} from './types' // eslint-disable-line flowtype/require-valid-file-annotation
 import Emitter from '$shared/DataVerse/utils/Emitter'
 
 let lastId: number = 0

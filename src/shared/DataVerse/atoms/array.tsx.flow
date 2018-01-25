@@ -1,7 +1,7 @@
 
-import type {AddressedChangeset, MapKey, True, False} from '$shared/DataVerse/types'
-import type {default as Tappable} from '$shared/DataVerse/utils/Tappable'
-import type {IDerivedArray} from '$shared/DataVerse/derivations/arrays/types'
+import {AddressedChangeset, MapKey, True, False} from '$shared/DataVerse/types'
+import {default as Tappable} from '$shared/DataVerse/utils/Tappable'
+import {IDerivedArray} from '$shared/DataVerse/derivations/arrays/types'
 
 type Unboxed<O> = $FixMe // eslint-disable-line no-unused-vars
 

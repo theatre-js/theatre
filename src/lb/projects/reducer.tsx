@@ -1,5 +1,5 @@
 // @flow
-import type {ProjectsNamespaceState} from './types'
+import {ProjectsNamespaceState} from './types'
 
 const defaultState: ProjectsNamespaceState = {
   listOfPaths: [],

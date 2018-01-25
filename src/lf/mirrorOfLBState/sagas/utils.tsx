@@ -1,5 +1,5 @@
 // @flow
-import {type Channel, eventChannel} from 'redux-saga'
+import {Channel,eventChannel} from 'redux-saga'
 import generateUniqueId from 'uuid/v4'
 import wn from 'when'
 import {ipcRenderer} from 'electron'

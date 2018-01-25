@@ -1,5 +1,5 @@
 // @flow
-import type {IDerivedArray} from './types'
+import {IDerivedArray} from './types'
 import AbstractDerivedArray from './AbstractDerivedArray'
 
 export class ConcatenatedDerivedArray<V> extends AbstractDerivedArray

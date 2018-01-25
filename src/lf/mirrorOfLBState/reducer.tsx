@@ -1,5 +1,5 @@
 // @flow
-import type {MirrorOfLBStateNamespace} from './types'
+import {MirrorOfLBStateNamespace} from './types'
 
 const defaultState: MirrorOfLBStateNamespace = null
 

@@ -1,6 +1,6 @@
 // @flow
 import React from 'react'
-import {type NormalizedPoint} from '$studio/animationTimeline/types'
+import {NormalizedPoint} from '$studio/animationTimeline/types'
 
 type Props = {
   leftPoint: NormalizedPoint,
