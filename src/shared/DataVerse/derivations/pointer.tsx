@@ -1,73 +1,73 @@
 
-import {MapKey, If, True, False} from '$shared/DataVerse/types'
-import {IsDictAtom, IDictAtom} from '$shared/DataVerse/atoms/dict'
-import {IsArrayAtom, IArrayAtom} from '$shared/DataVerse/atoms/array'
+import {MapKey, /*If, True, False*/} from '$shared/DataVerse/types'
+// import {IsDictAtom, IDictAtom} from '$shared/DataVerse/atoms/dict'
+// import {IsArrayAtom, IArrayAtom} from '$shared/DataVerse/atoms/array'
 import AbstractDerivation from './AbstractDerivation'
 
-type IsPointer<V> = V['isPointer']
-type IsAtom<V> = V['isAtom']
+// type IsPointer<V> = V['isPointer']
+// type IsAtom<V> = V['isAtom']
 
-export type DecidePointerType<V> = If<
-  IsAtom<V>,
-  DecideAtomPointerType<V>,
-  If<IsPointer<V>, V, void>,
->
+// export type DecidePointerType<V> = If<
+//   IsAtom<V>,
+//   DecideAtomPointerType<V>,
+//   If<IsPointer<V>, V, void>,
+// >
 
-// type DecideBoxAtomPointerType<V> =
-//   If<IsPointer<V>, V,
-//   IPointerToBoxAtom<V>>
+// // type DecideBoxAtomPointerType<V> =
+// //   If<IsPointer<V>, V,
+// //   IPointerToBoxAtom<V>>
 
-type DecideAtomPointerType<V> = If<
-  IsDictAtom<V>,
-  IPointerToDictAtom<V['_internalMap']>,
-  If<
-    IsArrayAtom<V>,
-    IPointerToArrayAtom<V['_v']>,
-    IPointerToBoxAtom<V['_value']>,
-  >,
->
+// type DecideAtomPointerType<V> = If<
+//   IsDictAtom<V>,
+//   IPointerToDictAtom<V['_internalMap']>,
+//   If<
+//     IsArrayAtom<V>,
+//     IPointerToArrayAtom<V['_v']>,
+//     IPointerToBoxAtom<V['_value']>,
+//   >,
+// >
 
-// type DecideDerivationType<V> =
-//   If<IsDictAtom<V>, V, void>
+// // type DecideDerivationType<V> =
+// //   If<IsDictAtom<V>, V, void>
 
-type BasePointer = {
-  isPointer: True,
-  isDictAtom: False,
-  isBoxAtom: False,
-  isArrayAtom: False,
-  isAtom: False,
-}
+// type BasePointer = {
+//   isPointer: True,
+//   isDictAtom: False,
+//   isBoxAtom: False,
+//   isArrayAtom: False,
+//   isAtom: False,
+// }
 
-export type IPointerToDictAtom<O> = BasePointer &
-  AbstractDerivation<IDictAtom<O>> & {
-    _type: O,
-    prop<K extends keyof O>(K): DecidePointerType<O[K]>,
-    pointer(): IPointerToDictAtom<O>,
-    index(i: undefined | null | number): IPointerToVoid,
-  }
+// export type IPointerToDictAtom<O> = BasePointer &
+//   AbstractDerivation<IDictAtom<O>> & {
+//     _type: O,
+//     prop<K extends keyof O>(K): DecidePointerType<O[K]>,
+//     pointer(): IPointerToDictAtom<O>,
+//     index(i: undefined | null | number): IPointerToVoid,
+//   }
 
-export type IPointerToArrayAtom<V> = BasePointer &
-  AbstractDerivation<IArrayAtom<V>> & {
-    _type: V,
-    prop(k: $IntentionalAny): IPointerToVoid,
-    pointer(): IPointerToArrayAtom<V>,
-    index(i: number): DecidePointerType<V>,
-  }
+// export type IPointerToArrayAtom<V> = BasePointer &
+//   AbstractDerivation<IArrayAtom<V>> & {
+//     _type: V,
+//     prop(k: $IntentionalAny): IPointerToVoid,
+//     pointer(): IPointerToArrayAtom<V>,
+//     index(i: number): DecidePointerType<V>,
+//   }
 
-export type IPointerToVoid = BasePointer &
-  AbstractDerivation<void> & {
-    prop(k: $IntentionalAny): IPointerToVoid,
-    pointer(): IPointerToVoid,
-    index(i: undefined | null | number): IPointerToVoid,
-  }
+// export type IPointerToVoid = BasePointer &
+//   AbstractDerivation<void> & {
+//     prop(k: $IntentionalAny): IPointerToVoid,
+//     pointer(): IPointerToVoid,
+//     index(i: undefined | null | number): IPointerToVoid,
+//   }
 
-export type IPointerToBoxAtom<V> = BasePointer &
-  AbstractDerivation<V> & {
-    _type: V,
-    prop(k: $IntentionalAny): IPointerToVoid,
-    pointer(): IPointerToBoxAtom<V>,
-    index(i: undefined | null | number): IPointerToVoid,
-  }
+// export type IPointerToBoxAtom<V> = BasePointer &
+//   AbstractDerivation<V> & {
+//     _type: V,
+//     prop(k: $IntentionalAny): IPointerToVoid,
+//     pointer(): IPointerToBoxAtom<V>,
+//     index(i: undefined | null | number): IPointerToVoid,
+//   }
 
 interface _IPointer<V> {
   prop(key: MapKey): _IPointer<$FixMe>;
@@ -214,7 +214,7 @@ const _propify = (possibleReactiveValue, key) => {
       key,
     )
   } else if (
-    possibleReactiveValue instanceof modules.PrototypalDictFace.default ||
+    possibleReactiveValue instanceof modules.DerivedInstance.default ||
     possibleReactiveValue instanceof PointerDerivation ||
     possibleReactiveValue instanceof modules.AbstractDerivedDict.default
   ) {
@@ -243,7 +243,7 @@ const modules = {
   deriveFromPropOfADictAtom: require('./ofAtoms/deriveFromPropOfADictAtom'),
   deriveFromIndexOfArrayAtom: require('./ofAtoms/deriveFromIndexOfArrayAtom'),
   deriveFromBoxAtom: require('./ofAtoms/deriveFromBoxAtom'),
-  PrototypalDictFace: require('./prototypalDict/PrototypalDictFace'),
+  DerivedInstance: require('$shared/DataVerse/derivedClass/DerivedClassInstance'),
   AbstractDerivedDict: require('./dicts/AbstractDerivedDict'),
   box: require('$shared/DataVerse/atoms/box'),
   dict: require('$shared/DataVerse/atoms/dict'),

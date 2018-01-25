@@ -1,14 +1,15 @@
 // @flow
 import SideEffectsHandler from './SideEffectsHandler'
 import {PureComponentWithStudio, D} from '$studio/handy'
-// import * as debug from '$shared/debug'
 import TimelinesHandler from './TimelinesHandler'
-import { AbstractDerivation } from '$src/shared/DataVerse/derivations/types';
+import {AbstractDerivation} from '$src/shared/DataVerse/derivations/types'
+import derivedClass from '$src/shared/DataVerse/derivedClass/derivedClass'
+import DerivedClassInstance from '$src/shared/DataVerse/derivedClass/DerivedClassInstance';
 
 // type MakeReactiveComponentArgs = {
-//   modifyPrototypalDict: (
-//     D.IPrototypalDict<$FixMe>,
-//   ) => D.IPrototypalDict<$FixMe>,
+//   getClass: (
+//     DerivedClass<$FixMe>,
+//   ) => DerivedClass<$FixMe>,
 //   getInitialState?: () => D.IDictAtom<$FixMe>,
 // } & (
 //   | {
@@ -20,17 +21,17 @@ import { AbstractDerivation } from '$src/shared/DataVerse/derivations/types';
 type MakeReactiveComponentArgs = $FixMe
 
 export default function makeReactiveComponent({
-  modifyPrototypalDict,
+  getClass,
   displayName,
   getInitialState,
   componentId,
   componentType,
 }: MakeReactiveComponentArgs) {
   type Props = {
-    key: string,
-    props: $FixMe,
-    modifierInstantiationDescriptors: $FixMe,
-    componentId: string,
+    key: string
+    props: $FixMe
+    modifierInstantiationDescriptors: $FixMe
+    componentId: string
   }
 
   class TheaterJSComponent extends PureComponentWithStudio<Props, void> {
@@ -40,10 +41,10 @@ export default function makeReactiveComponent({
 
     static componentId = componentId
 
-    _finalFace: $FixMe
+    _derivedClassInstance: $FixMe
     _whatToRender: $FixMe
     _fnsToCallOnWillUnmount: Array<() => void>
-    _prototypalDictD: AbstractDerivation<$FixMe>
+    _derivedClassD: AbstractDerivation<$FixMe>
     _sideEffetsHandler: SideEffectsHandler
     isTheaterJSComponent: boolean
     componentType: undefined | string
@@ -108,18 +109,18 @@ export default function makeReactiveComponent({
 
       // $FixMe
       this._atom = this._createAtom()
-      this._prototypalDictD = this._makePrototypalDictD()
+      this._derivedClassD = this._makeDerivedClassD()
 
-      const untapFromPrototypalMapChanges = this._prototypalDictD
+      const untapFromDerivedClassDChanges = this._derivedClassD
         .changes(this.studio.ticker)
-        .tap(newFinalPrototypalDict => {
-          this._finalFace.setHead(newFinalPrototypalDict)
+        .tap(newFinalDerivedClass => {
+          this._derivedClassInstance.setClass(newFinalDerivedClass)
         })
 
-      this._fnsToCallOnWillUnmount.push(untapFromPrototypalMapChanges)
+      this._fnsToCallOnWillUnmount.push(untapFromDerivedClassDChanges)
 
-      this._finalFace = new D.derivations.PrototypalDictFace(
-        this._prototypalDictD.getValue(),
+      this._derivedClassInstance = new DerivedClassInstance(
+        this._derivedClassD.getValue(),
         this.studio.ticker,
       )
 
@@ -140,24 +141,24 @@ export default function makeReactiveComponent({
       this.elementId = this._atom.prop('instanceId')
 
       this._whatToRender = null
-      const untapFromRender = this._finalFace
+      const untapFromRender = this._derivedClassInstance
         .prop('render')
         .changes(this.studio.ticker)
         .tap((whatToRender: $FixMe) => {
           this._whatToRender = whatToRender
           this.forceUpdate()
         })
-        
+
       this._fnsToCallOnWillUnmount.push(untapFromRender)
 
-      const sideEffectsDictP = this._finalFace.pointer().prop('sideEffects')
+      const sideEffectsDictP = this._derivedClassInstance.pointer().prop('sideEffects')
       this._sideEffetsHandler = new SideEffectsHandler(
         this.studio.ticker,
-        this._finalFace,
+        this._derivedClassInstance,
         sideEffectsDictP,
       )
 
-      this._timelinesHandler = new TimelinesHandler((this as $IntentionalAny))
+      this._timelinesHandler = new TimelinesHandler(this as $IntentionalAny)
       this._timelinesHandler.start()
     }
 
@@ -183,29 +184,25 @@ export default function makeReactiveComponent({
       })
     }
 
-    _makePrototypalDictD() {
-      const basePrototypalDict = D.derivations
-        .prototypalDict({_atom: () => this._atom})
-        .extend(TheaterJSComponent._baseLookupTable)
-
-      const prototypalDictWithoutModifiers = modifyPrototypalDict(
-        basePrototypalDict,
+    _makeDerivedClassD() {
+      const baseDerivedClass = derivedClass({_atom: () => this._atom}).extend(
+        TheaterJSComponent._baseLookupTable,
       )
 
-      // return D.derivations.constant(prototypalDictWithoutModifiers)
+      const derivedClassWithoutModifiers = getClass(baseDerivedClass)
 
       const modifierInstantiationDescriptorsByIdP = this._atom
         .pointer()
         .prop('modifierInstantiationDescriptors')
         .prop('byId')
 
-      const finalPrototypalDictD = this._atom
+      const finalDerivedClassD = this._atom
         .pointer()
         .prop('modifierInstantiationDescriptors')
         .prop('list')
         // $FixMe
         .flatMap((list: D.IDerivedArray<$FixMe>) => {
-          if (!list) return prototypalDictWithoutModifiers
+          if (!list) return derivedClassWithoutModifiers
 
           return list
             .map(idD =>
@@ -215,10 +212,10 @@ export default function makeReactiveComponent({
             )
             .reduce((dict, modifierInstantiationDescriptor) => {
               return this._applyModifier(modifierInstantiationDescriptor, dict)
-            }, D.derivations.constant(prototypalDictWithoutModifiers))
+            }, D.derivations.constant(derivedClassWithoutModifiers))
         })
 
-      return finalPrototypalDictD
+      return finalDerivedClassD
     }
 
     _applyModifier(
@@ -241,7 +238,7 @@ export default function makeReactiveComponent({
                 .prop('modifierDescriptors')
                 .prop('core')
                 .prop(modifierId)
-                .prop('modifyPrototypalDict')
+                .prop('getClass')
                 .flatMap((possibleFn: undefined | null | Function) => {
                   if (!possibleFn) console.warn('this shouldnt happen')
                   return possibleFn
@@ -272,7 +269,7 @@ export default function makeReactiveComponent({
     }
 
     componentWillMount() {
-      this._whatToRender = this._finalFace.prop('render').getValue()
+      this._whatToRender = this._derivedClassInstance.prop('render').getValue()
       // this._finalFace.prop('componentWillMountCallbacks').getValue().face().forEach((fn) => fn(this._finalFace))
     }
 

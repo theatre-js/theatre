@@ -4,7 +4,7 @@ import * as D from '$shared/DataVerse'
 import reifiedStyleApplier from './reifiedStyleApplier'
 
 const ensureReifiedStyles = d => {
-  return d.propFromAbove('reifiedStyles').flatMap(possibleReifiedStyles => {
+  return d.propFromSuper('reifiedStyles').flatMap(possibleReifiedStyles => {
     if (!possibleReifiedStyles) {
       return D.derivations.emptyDict
     } else {
@@ -32,7 +32,7 @@ export default {
   },
   sideEffects(d: $FixMe) {
     return d
-      .propFromAbove('sideEffects')
+      .propFromSuper('sideEffects')
       .flatMap((sideEffects: D.IDerivedDict<$FixMe>) => {
         return sideEffects
           .pointer()

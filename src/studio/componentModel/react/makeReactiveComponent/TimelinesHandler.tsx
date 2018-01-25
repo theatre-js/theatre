@@ -8,15 +8,15 @@ import {getPathToComponentDescriptor} from '$studio/componentModel/selectors'
 export default class TimelinesHandler {
   _element: TheaterJSComponent
   _untap: () => void
-  _timelineDescriptorsP: *
-  _timelineDescriptorsProxy: *
-  _timelineInstancesAtom: *
+  _timelineDescriptorsP: $FixMe
+  _timelineDescriptorsProxy: $FixMe
+  _timelineInstancesAtom: $FixMe
 
   constructor(element: TheaterJSComponent) {
     this._element = element
     this._timelineInstancesAtom = this._element._atom.prop('timelineInstances')
 
-    this._timelineDescriptorsP = this._element._finalFace
+    this._timelineDescriptorsP = this._element._derivedClassInstance
       .pointer()
       .prop('timelineDescriptors')
 

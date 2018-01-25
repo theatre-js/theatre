@@ -3,10 +3,10 @@ import {ModifierDescriptor} from '$studio/componentModel/types'
 import * as D from '$shared/DataVerse'
 import commonStylesPrototype from './commonStylesPrototype'
 
-const modifyPrototypalDict = (propsP, dict) => {
+const getClass = (propsP, dict) => {
   return dict.extend(commonStylesPrototype).extend({
     reifiedStyles(d) {
-      return d.propFromAbove('reifiedStyles').flatMap(reifiedStyles => {
+      return d.propFromSuper('reifiedStyles').flatMap(reifiedStyles => {
         const ret = propsP
           .prop('pairings')
           .prop('list')
@@ -35,7 +35,7 @@ const modifyPrototypalDict = (propsP, dict) => {
 
 const descriptor: ModifierDescriptor = {
   id: 'TheaterJS/Core/HTML/SetCustomStyle',
-  modifyPrototypalDict,
+  getClass,
 }
 
 export default descriptor

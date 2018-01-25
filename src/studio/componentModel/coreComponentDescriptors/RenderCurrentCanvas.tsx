@@ -8,7 +8,7 @@ const RenderCurrentCanvas = makeReactiveComponent({
   componentId,
   componentType: 'HardCoded',
   displayName: 'RenderCurrentCanvas',
-  modifyPrototypalDict: baseClass =>
+  getClass: baseClass =>
     baseClass.extend({
       render(d) {
         return d.prop('studio').flatMap(studio => {

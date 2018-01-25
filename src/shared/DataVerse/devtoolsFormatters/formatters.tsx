@@ -133,7 +133,7 @@ makeFormatter({
 })
 
 makeFormatter({
-  test: o => o && o.isPrototypalDictFace === 'True',
+  test: o => o && o.isDerivedClassInstance === 'True',
   renderHeader: o => {
     return [
       'div',
@@ -141,7 +141,7 @@ makeFormatter({
       [
         'span',
         {style: styles.header, title: 'ptf'},
-        `PrototypalDictFace(${Object.keys(o.keys()).length})`,
+        `DerivedClassInstance(${Object.keys(o.keys()).length})`,
       ],
       // ['object', {object: v}],
     ]

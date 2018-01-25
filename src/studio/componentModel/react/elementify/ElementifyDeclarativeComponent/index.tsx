@@ -4,7 +4,7 @@ import constructValue from './constructValue'
 
 export default makeReactiveComponent({
   componentType: 'Declarative',
-  modifyPrototypalDict: d =>
+  getClass: d =>
     d.extend({
       // displayName(d) {
       //   return d.pointer().prop('componentId')

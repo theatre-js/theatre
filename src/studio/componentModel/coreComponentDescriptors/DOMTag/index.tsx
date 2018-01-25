@@ -3,24 +3,25 @@ import * as D from '$shared/DataVerse' // eslint-disable-line flowtype/require-v
 import * as React from 'react'
 import {ComponentDescriptor} from '$studio/componentModel/types'
 import {makeReactiveComponent} from '$studio/handy'
+import {DerivedClass} from '$src/shared/DataVerse/derivedClass/derivedClass'
 
 const lookupTable = {
-  tagName: d => {
-    return d
+  tagName: self => {
+    return self
       .pointer()
       .prop('props')
       .prop('tagName')
   },
 
-  render: d => {
-    const childrenD = d
+  render: self => {
+    const childrenD = self
       .pointer()
       .prop('props')
       .prop('children')
       .toJS()
 
-    const refFn = d.pointer().prop('refFn')
-    const tagName = d.pointer().prop('tagName')
+    const refFn = self.pointer().prop('refFn')
+    const tagName = self.pointer().prop('tagName')
 
     return D.derivations.autoDerive(() => {
       return React.createElement(
@@ -31,11 +32,11 @@ const lookupTable = {
     })
   },
 
-  refFn: d => {
-    const stateP = d.pointer().prop('state')
+  refFn: self => {
+    const stateP = self.pointer().prop('state')
     return D.derivations.autoDerive(() => {
       const state: D.IDictAtom<{
-        elRef: D.IBoxAtom<undefined | null | HTMLElement>,
+        elRef: D.IBoxAtom<undefined | null | HTMLElement>
       }> = stateP.getValue()
 
       return function setElRef(el) {
@@ -46,7 +47,7 @@ const lookupTable = {
 }
 
 type State = D.IDictAtom<{
-  elRef: D.IBoxAtom<undefined | null | HTMLElement>,
+  elRef: D.IBoxAtom<undefined | null | HTMLElement>
 }>
 
 const componentId = 'TheaterJS/Core/DOMTag'
@@ -60,8 +61,7 @@ export const propsTomakeReactiveComponent = {
       elRef: D.atoms.box(null),
     })
   },
-  modifyPrototypalDict: (dict: D.IPrototypalDict<$FixMe>) =>
-    dict.extend(lookupTable),
+  getClass: (dict: DerivedClass<$FixMe>) => dict.extend(lookupTable),
 }
 
 const DOMTag = makeReactiveComponent(propsTomakeReactiveComponent)
@@ -107,7 +107,7 @@ const makeSeparateComponentForEachDomTag = () => {
         ...propsTomakeReactiveComponent,
         componentId: id,
         displayName: tagName,
-        modifyPrototypalDict: (dict: D.IPrototypalDict<$FixMe>) =>
+        getClass: (dict: DerivedClass<$FixMe>) =>
           dict.extend({
             ...lookupTable,
             tagName() {

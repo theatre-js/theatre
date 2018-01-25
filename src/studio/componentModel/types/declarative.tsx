@@ -49,7 +49,7 @@ export type ModifierInstantiationValueDescriptor = {
 
 export type ModifierDescriptor = {
   id: string,
-  modifyPrototypalDict: $FixMe,
+  getClass: $FixMe,
   InspectorComponent?: React.Component<$FixMe>,
 }
 

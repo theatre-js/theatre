@@ -2,6 +2,7 @@
 import {IPointerToBoxAtom} from './pointer'
 import * as D from '$shared/DataVerse'
 import {DictAtom} from '$shared/DataVerse/atoms/dict'
+import derivedClass from '$src/shared/DataVerse/derivedClass/derivedClass'
 
 describe('pointer', () => {
   let ticker
@@ -11,9 +12,9 @@ describe('pointer', () => {
   it('should work', () => {
     type Root = D.IDictAtom<{
       a: D.IDictAtom<{
-        aa: D.IBoxAtom<string>,
-        bb: D.IBoxAtom<string>,
-      }>,
+        aa: D.IBoxAtom<string>
+        bb: D.IBoxAtom<string>
+      }>
     }>
     const root: Root = D.atoms.dict({
       a: D.atoms.dict({
@@ -91,7 +92,7 @@ describe('pointer', () => {
       }),
     })
 
-    const o = D.derivations.prototypalDict({
+    const o = derivedClass({
       a() {
         return atom
       },
@@ -99,7 +100,7 @@ describe('pointer', () => {
         return 'hi'
       },
     })
-    const f = o.face(ticker)
+    const f = o.instance(ticker)
     expect(
       f
         .pointer()
@@ -132,13 +133,13 @@ describe('pointer', () => {
   })
   ;(function() {
     type RootType = D.IDictAtom<{
-      str: D.IBoxAtom<string>,
+      str: D.IBoxAtom<string>
       obj: D.IDictAtom<{
-        objStr: D.IBoxAtom<string>,
+        objStr: D.IBoxAtom<string>
         objObj: D.IDictAtom<{
-          objObjStr: D.IBoxAtom<string>,
-        }>,
-      }>,
+          objObjStr: D.IBoxAtom<string>
+        }>
+      }>
     }>
     const root: RootType = D.atoms.dict({
       str: D.atoms.box('str'),
@@ -149,73 +150,73 @@ describe('pointer', () => {
         }),
       }),
     })
-    ;(root.prop('str').getValue() as string)
+    root.prop('str').getValue() as string
     // $FlowExpectError
-    ;(root.prop('str').getValue() as number)
-    ;(root.pointer().getValue() as RootType)
-    ;(root
+    root.prop('str').getValue() as number
+    root.pointer().getValue() as RootType
+    root
       .pointer()
       .prop('str')
-      .getValue() as string)
+      .getValue() as string
     // $FlowExpectError
-    ;(root
+    root
       .pointer()
       .prop('str')
-      .getValue() as number)
-    ;(root
+      .getValue() as number
+    root
       .pointer()
       .prop('obj')
       .getValue() as D.IDictAtom<{
-      objStr: D.IBoxAtom<string>,
-      objObj: D.IDictAtom<{objObjStr: D.IBoxAtom<string>}>,
-    }>)
+      objStr: D.IBoxAtom<string>
+      objObj: D.IDictAtom<{objObjStr: D.IBoxAtom<string>}>
+    }>
     // $FlowExpectError
-    ;(root
+    root
       .pointer()
       .prop('obj')
-      .getValue() as D.IDictAtom<{objStr: D.IBoxAtom<number>}>)
-    ;(root
+      .getValue() as D.IDictAtom<{objStr: D.IBoxAtom<number>}>
+    root
       .pointer()
       .prop('obj')
       .prop('objStr')
-      .getValue() as string)
+      .getValue() as string
     // $FlowExpectError
-    ;(root
+    root
       .pointer()
       .prop('obj')
       .prop('objStr')
-      .getValue() as number)
-    ;(root
+      .getValue() as number
+    root
       .pointer()
       .prop('obj')
       .prop('objObj')
-      .getValue() as D.IDictAtom<{objObjStr: D.IBoxAtom<string>}>)
+      .getValue() as D.IDictAtom<{objObjStr: D.IBoxAtom<string>}>
     // $FlowExpectError
-    ;(root
+    root
       .pointer()
       .prop('obj')
       .prop('objObj')
-      .getValue() as D.IDictAtom<{objObjStr: D.IBoxAtom<number>}>)
-    ;(root
+      .getValue() as D.IDictAtom<{objObjStr: D.IBoxAtom<number>}>
+    root
       .pointer()
       .prop('obj')
       .prop('objObj')
       .prop('objObjStr')
-      .getValue() as string)
+      .getValue() as string
     // $FlowExpectError
-    ;(root
+    root
       .pointer()
       .prop('obj')
       .prop('objObj')
       .prop('objObjStr')
-      .getValue() as number)
+      .getValue() as number
   })
   ;(function() {
     type RootType = D.IDictAtom<{
-      str: D.IBoxAtom<string>,
+      str: D.IBoxAtom<string>
       obj: D.IDictAtom<{
-        objStr: D.IBoxAtom<string>,
-      }>,
+        objStr: D.IBoxAtom<string>
+      }>
     }>
 
     const root: RootType = D.atoms.dict({
@@ -227,10 +228,10 @@ describe('pointer', () => {
 
     const pointerToRootStr = root.pointer().prop('str')
     // const pointerToRootObj = root.pointer().prop('obj');
-    ;(pointerToRootStr as IPointerToBoxAtom<string>)
+    pointerToRootStr as IPointerToBoxAtom<string>
 
     type DictOfPointers = D.IDictAtom<{
-      unboxedStr: IPointerToBoxAtom<string>,
+      unboxedStr: IPointerToBoxAtom<string>
       // boxedStr: D.IBoxAtom<D.IPointerToBoxAtom<string>>,
     }>
 
@@ -238,25 +239,25 @@ describe('pointer', () => {
       unboxedStr: pointerToRootStr,
       // boxedStr: D.atoms.box(pointerToRootStr),
     })
-    ;(dictOfPointers
+    dictOfPointers
       .pointer()
       .prop('unboxedStr')
-      .getValue() as string)
+      .getValue() as string
     // $FlowExpectError
-    ;(dictOfPointers
+    dictOfPointers
       .pointer()
       .prop('unboxedStr')
-      .getValue() as number)
+      .getValue() as number
 
     // (dictOfPointers.pointer().prop('boxedStr').getValue(): string);
     // (dictOfPointers.pointer().prop('boxedStr').getValue(): number);
   })
   ;(function() {
     type RootType = D.IDictAtom<{
-      str: D.IBoxAtom<string>,
+      str: D.IBoxAtom<string>
       obj: D.IDictAtom<{
-        objStr: D.IBoxAtom<string>,
-      }>,
+        objStr: D.IBoxAtom<string>
+      }>
     }>
 
     const root: RootType = D.atoms.dict({
@@ -269,18 +270,18 @@ describe('pointer', () => {
     const pointerToRootStr = root.pointer().prop('str')
 
     const dictOfPointers = D.atoms.dict({
-      unboxedStr: (pointerToRootStr as IPointerToBoxAtom<string>),
+      unboxedStr: pointerToRootStr as IPointerToBoxAtom<string>,
       // boxedStr: D.atoms.box(pointerToRootStr),
     })
-    ;(dictOfPointers
+    dictOfPointers
       .pointer()
       .prop('unboxedStr')
-      .getValue() as string)
+      .getValue() as string
     // $FlowExpectError
-    ;(dictOfPointers
+    dictOfPointers
       .pointer()
       .prop('unboxedStr')
-      .getValue() as number)
+      .getValue() as number
 
     // (dictOfPointers.pointer().prop('boxedStr').getValue(): string);
     // (dictOfPointers.pointer().prop('boxedStr').getValue(): number);

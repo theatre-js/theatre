@@ -1,8 +1,8 @@
 // @flow
-import prototypalDict from './prototypalDict'
+import derivedClass from '$src/shared/DataVerse/derivedClass/derivedClass'
 import * as D from '$shared/DataVerse'
 
-describe('prototypalDict', () => {
+describe('derivedClass', () => {
   let ticker
   beforeEach(() => {
     ticker = new D.Ticker()
@@ -11,15 +11,15 @@ describe('prototypalDict', () => {
   describe('examples', () => {
     const example = it
     example('{a}', () => {
-      const o = prototypalDict({
+      const o = derivedClass({
         a() {
           return 'a'
         },
-      }).face(ticker)
+      }).instance(ticker)
       expect(o.prop('a').getValue()).toEqual('a')
     })
     example('{a} => {b}', () => {
-      const o = prototypalDict({
+      const o = derivedClass({
         a() {
           return 'a'
         },
@@ -29,12 +29,12 @@ describe('prototypalDict', () => {
             return 'b'
           },
         })
-        .face(ticker)
+        .instance(ticker)
       expect(o.prop('a').getValue()).toEqual('a')
       expect(o.prop('b').getValue()).toEqual('b')
     })
     example('{a} => {a}', () => {
-      const o = prototypalDict({
+      const o = derivedClass({
         a() {
           return 'a'
         },
@@ -47,53 +47,53 @@ describe('prototypalDict', () => {
             return 'a2'
           },
         })
-        .face(ticker)
+        .instance(ticker)
       expect(o.prop('a').getValue()).toEqual('a2')
       expect(o.prop('b').getValue()).toEqual('b')
     })
 
     example("{a} => {a'}", () => {
-      const o = prototypalDict({
+      const o = derivedClass({
         a() {
           return 'a1'
         },
       })
         .extend({
           a(ps) {
-            return ps.propFromAbove('a').map(s => s + '2')
+            return ps.propFromSuper('a').map(s => s + '2')
           },
         })
-        .face(ticker)
+        .instance(ticker)
 
       expect(o.prop('a').getValue()).toEqual('a12')
       expect(o.prop('a')).toEqual(o.prop('a'))
     })
     example("{a}(replaced) => {a'}", () => {
-      const layer0 = prototypalDict({
+      const layer0 = derivedClass({
         a() {
           return 'layer0'
         },
       })
-      const layer1 = prototypalDict({
+      const layer1 = derivedClass({
         a(ps) {
-          return ps.propFromAbove('a').map(s => s + 'layer1')
+          return ps.propFromSuper('a').map(s => s + 'layer1')
         },
       })
 
-      layer1.setParent(layer0)
-      const o = layer1.face(ticker)
+      layer1.setPrototype(layer0)
+      const o = layer1.instance(ticker)
 
       expect(o.prop('a').getValue()).toEqual('layer0layer1')
       const a = o.prop('a')
       expect(o.prop('a')).toEqual(a)
 
-      const newLayer0 = prototypalDict({
+      const newLayer0 = derivedClass({
         a() {
           return 'newLayer0'
         },
       })
 
-      layer1.setParent(newLayer0)
+      layer1.setPrototype(newLayer0)
       expect(o.prop('a').getValue()).toEqual('layer0layer1')
 
       ticker.tick()

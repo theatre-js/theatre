@@ -4,7 +4,7 @@ import attributesApplier from './attributeApplier'
 import * as D from '$shared/DataVerse'
 
 const ensureDomAttributes = d => {
-  return d.propFromAbove('domAttributes').flatMap(possibleDomAttributes => {
+  return d.propFromSuper('domAttributes').flatMap(possibleDomAttributes => {
     if (!possibleDomAttributes) {
       return D.derivations.emptyDict
     } else {
@@ -26,7 +26,7 @@ const sideEffectsForApplyAttributes = D.atoms
   })
   .derivedDict()
 
-const modifyPrototypalDict = (propsP, dict) => {
+const getClass = (propsP, dict) => {
   return dict.extend({
     domAttributes(d) {
       return ensureDomAttributes(d).flatMap(domAtrributes => {
@@ -54,7 +54,7 @@ const modifyPrototypalDict = (propsP, dict) => {
     },
     sideEffects(d) {
       return d
-        .propFromAbove('sideEffects')
+        .propFromSuper('sideEffects')
         .flatMap((sideEffects: D.IDerivedDict<$FixMe>) => {
           return sideEffects
             .pointer()
@@ -73,7 +73,7 @@ const modifyPrototypalDict = (propsP, dict) => {
 
 const descriptor: ModifierDescriptor = {
   id: 'TheaterJS/Core/HTML/SetAttribute',
-  modifyPrototypalDict,
+  getClass,
 }
 
 export default descriptor
