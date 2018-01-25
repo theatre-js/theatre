@@ -1,4 +1,4 @@
-// @flow
+
 import type {AddressedChangeset, MapKey, True, False} from '$shared/DataVerse/types'
 import type {default as Tappable} from '$shared/DataVerse/utils/Tappable'
 import type {IDerivedArray} from '$shared/DataVerse/derivations/arrays/types'

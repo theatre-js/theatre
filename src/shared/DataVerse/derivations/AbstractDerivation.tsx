@@ -1,7 +1,6 @@
-// @flow
-import type {ITicker} from '$shared/DataVerse/Ticker'
+
+import {ITicker} from '$shared/DataVerse/Ticker'
 import {reportObservedDependency} from './autoDerive/discoveryMechanism'
-import type {AbstractDerivation} from './types'
 // import {mapStackTrace} from 'sourcemapped-stacktrace'
 import {default as DerivationEmitter} from './DerivationEmitter'
 import * as debug from '$shared/debug'
@@ -15,7 +14,7 @@ type FreshnessState =
   | typeof FRESHNESS_STATE_STALE
   | typeof FRESHNESS_STATE_FRESH
 
-class AbstractDerivation {
+export default class AbstractDerivation<V> {
   _id: number
   isDerivation = 'True'
   _didNotifyDownstreamOfUpcomingUpdate: boolean
@@ -23,15 +22,14 @@ class AbstractDerivation {
 
   _freshnessState: FreshnessState
   _lastValue: $FixMe
-  _dependents: *
-  _dependencies: *
+
+  _dependents: Set<AbstractDerivation<$IntentionalAny>>
+  _dependencies: Set<AbstractDerivation<$IntentionalAny>>
+
   _trace: $FixMe
-  +_recalculate: () => $FixMe
-  +_keepUptodate: () => void
-  +_stopKeepingUptodate: () => void
-  +_youMayNeedToUpdateYourself: (
-    msgComingFrom: AbstractDerivation<$IntentionalAny>,
-  ) => void
+  abstract _recalculate(): V
+  abstract _keepUptodate(): void
+  abstract _stopKeepingUptodate(): void
 
   constructor() {
     if (process.env.KEEPING_DERIVATION_TRACES === true) {
@@ -49,13 +47,13 @@ class AbstractDerivation {
   _addDependency(d: AbstractDerivation<$IntentionalAny>) {
     if (this._dependencies.has(d)) return
     this._dependencies.add(d)
-    if (this._thereAreMoreThanOneDependents) d._addDependent((this: $FixMe))
+    if (this._thereAreMoreThanOneDependents) d._addDependent((this as $FixMe))
   }
 
   _removeDependency(d: AbstractDerivation<$IntentionalAny>) {
     if (!this._dependencies.has(d)) return
     this._dependencies.delete(d)
-    if (this._thereAreMoreThanOneDependents) d._removeDependent((this: $FixMe))
+    if (this._thereAreMoreThanOneDependents) d._removeDependent((this as $FixMe))
   }
 
   _removeAllDependencies() {
@@ -65,10 +63,10 @@ class AbstractDerivation {
   }
 
   changes(ticker: ITicker) {
-    return new DerivationEmitter((this: $IntentionalAny), ticker).tappable()
+    return new DerivationEmitter((this as $IntentionalAny), ticker).tappable()
   }
 
-  tapImmediate(ticker: ITicker, fn: $FixMe => void): $FixMe {
+  tapImmediate(ticker: ITicker, fn: ((cb as $FixMe) => void)): $FixMe {
     const untap = this.changes(ticker).tap(fn)
     fn(this.getValue())
     return untap
@@ -104,13 +102,13 @@ class AbstractDerivation {
 
     if (this._hasDependents()) {
       this._dependents.forEach(dependent => {
-        dependent._youMayNeedToUpdateYourself((this: $FixMe))
+        dependent._youMayNeedToUpdateYourself((this  as $FixMe))
       })
     }
   }
 
-  getValue() {
-    reportObservedDependency((this: $FixMe))
+  getValue(): V {
+    reportObservedDependency((this as $FixMe))
 
     if (
       process.env.TRACKING_COLD_DERIVATIONS === true &&
@@ -129,7 +127,7 @@ class AbstractDerivation {
         this._didNotifyDownstreamOfUpcomingUpdate = false
       }
     }
-    return (this._lastValue: $IntentionalAny)
+    return (this._lastValue as $IntentionalAny)
   }
 
   _reactToNumberOfDependentsChange() {
@@ -137,11 +135,6 @@ class AbstractDerivation {
 
     if (thereAreMoreThanOneDependents === this._thereAreMoreThanOneDependents)
       return
-    // if (thereAreMoreThanOneDependents) {
-    //   activeDs.add(this)
-    // } else {
-    //   activeDs.delete(this)
-    // }
 
     this._thereAreMoreThanOneDependents = thereAreMoreThanOneDependents
     this._didNotifyDownstreamOfUpcomingUpdate = false
@@ -149,13 +142,13 @@ class AbstractDerivation {
     if (thereAreMoreThanOneDependents) {
       this._freshnessState = FRESHNESS_STATE_STALE
       this._dependencies.forEach(d => {
-        d._addDependent((this: $FixMe))
+        d._addDependent((this as $FixMe))
       })
       this._keepUptodate()
     } else {
       this._freshnessState = FRESHNESS_STATE_NOT_APPLICABLE
       this._dependencies.forEach(d => {
-        d._removeDependent((this: $FixMe))
+        d._removeDependent((this as $FixMe))
       })
       this._stopKeepingUptodate()
     }
@@ -181,7 +174,7 @@ class AbstractDerivation {
 
   flattenDeep(levels?: number): AbstractDerivation<$FixMe> {
     // $FixMe
-    return flattenDeep.default((this: $FixMe), levels)
+    return flattenDeep.default((this as $FixMe), levels)
   }
 
   toJS() {
@@ -189,7 +182,6 @@ class AbstractDerivation {
   }
 }
 
-export default (AbstractDerivation: $FixMe)
 const flattenDeep = require('./flattenDeep')
 const flatMapDerivation = require('./flatMapDerivation')
 const mapDerivation = require('./mapDerivation')

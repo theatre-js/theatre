@@ -1,13 +1,13 @@
 // @flow
 import AbstractDerivation from './AbstractDerivation'
-import type {IDerivation} from './types'
+import type {AbstractDerivation} from './types'
 
 export class ProxyDerivation<V> extends AbstractDerivation
   implements IProxyDerivation<V> {
   getValue: () => V
-  _target: IDerivation<V>
+  _target: AbstractDerivation<V>
 
-  constructor(target: IDerivation<V>): IProxyDerivation<V> {
+  constructor(target: AbstractDerivation<V>): IProxyDerivation<V> {
     super()
     this._target = target
 
@@ -15,7 +15,7 @@ export class ProxyDerivation<V> extends AbstractDerivation
     return this
   }
 
-  setTarget(target: IDerivation<V>): this {
+  setTarget(target: AbstractDerivation<V>): this {
     if (target === this._target) return this
     this._removeDependency(this._target)
     this._target = target
@@ -29,11 +29,11 @@ export class ProxyDerivation<V> extends AbstractDerivation
   }
 }
 
-export interface IProxyDerivation<V> extends IDerivation<V> {
-  setTarget(target: IDerivation<V>): IProxyDerivation<V>;
+export interface IProxyDerivation<V> extends AbstractDerivation<V> {
+  setTarget(target: AbstractDerivation<V>): IProxyDerivation<V>;
 }
 
-export default function proxy<V, D: IDerivation<V>>(
+export default function proxy<V, D: AbstractDerivation<V>>(
   target: D,
 ): IProxyDerivation<V> {
   return new ProxyDerivation(target)

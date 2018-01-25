@@ -1,8 +1,8 @@
 // @flow
-import type {IDerivation} from './types'
+import type {AbstractDerivation} from './types'
 import constant from './constant'
 
-export default function of<V>(d: V | IDerivation<V>): IDerivation<V> {
+export default function of<V>(d: V | AbstractDerivation<V>): AbstractDerivation<V> {
   if (d && d.isDerivation === 'True') {
     return (d: $IntentionalAny)
   } else {

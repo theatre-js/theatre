@@ -3,13 +3,13 @@ import * as D from '$shared/DataVerse'
 import ElementifyDeclarativeComponent from './ElementifyDeclarativeComponent'
 import {Studio} from '$studio/handy'
 import stringStartsWith from 'lodash/startsWith'
-import { IDerivation } from '$src/shared/DataVerse/derivations/types';
+import { AbstractDerivation } from '$src/shared/DataVerse/derivations/types';
 
 const identity = a => a
 
 const getComponentDescriptorById = (
-  idD: IDerivation<string>,
-  studioD: IDerivation<$FixMe>,
+  idD: AbstractDerivation<string>,
+  studioD: AbstractDerivation<$FixMe>,
 ): $FixMe =>
   D.derivations
     .withDeps({idD, studioD}, identity)
@@ -34,8 +34,8 @@ const getComponentDescriptorById = (
     })
 
 export const getAliasLessComponentDescriptor = (
-  initialComponentIdD: IDerivation<string>,
-  studioD: IDerivation<Studio>,
+  initialComponentIdD: AbstractDerivation<string>,
+  studioD: AbstractDerivation<Studio>,
 ): $FixMe => {
   return getComponentDescriptorById(initialComponentIdD, studioD).flatMap(
     (des): $FixMe => {
@@ -99,7 +99,7 @@ const elementify = (keyD, instantiationDescriptorP, studioD) => {
 export default elementify
 
 const elementifyHardCodedComponent = (
-  keyD: IDerivation<string>,
+  keyD: AbstractDerivation<string>,
   componentDescriptorP: $FixMe,
   propsP: $FixMe,
   modifierInstantiationDescriptorsP: $FixMe,
@@ -124,7 +124,7 @@ const elementifyHardCodedComponent = (
 }
 
 const elementifyDeclarativeComponent = (
-  keyD: IDerivation<string>,
+  keyD: AbstractDerivation<string>,
   componentDescriptorP: $FixMe,
   propsP: $FixMe,
   modifierInstantiationDescriptorsP: $FixMe,

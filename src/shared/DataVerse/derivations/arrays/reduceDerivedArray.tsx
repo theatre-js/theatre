@@ -1,7 +1,7 @@
-// @flow
+
 import AbstractDerivation from '../AbstractDerivation'
-import type {AbstractDerivation} from '../types'
-import type {IDerivedArray} from './types'
+import {AbstractDerivation} from '../types'
+import {IDerivedArray} from './types'
 import of from '../of'
 
 const noop = () => {}

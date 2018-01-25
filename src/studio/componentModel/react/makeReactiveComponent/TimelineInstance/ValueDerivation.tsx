@@ -1,4 +1,4 @@
-// @flow
+
 import * as D from '$shared/DataVerse'
 import * as _ from 'lodash'
 import * as interpolators from './interpolators'
@@ -309,7 +309,7 @@ export default class ValueDerivation extends D.derivations.AbstractDerivation {
     const state = this._state
 
     const value = handlersByState[state.type].recalculateValue(
-      (state: $IntentionalAny),
+      (state as $IntentionalAny),
       this,
     )
 
@@ -322,7 +322,7 @@ export default class ValueDerivation extends D.derivations.AbstractDerivation {
     const baseState = this._determinNewBaseState(startSearchingFromPointId)
 
     this._state = handlersByState[baseState.type].transitionIn(
-      (baseState: $IntentionalAny),
+      (baseState as $IntentionalAny),
       this,
     )
   }

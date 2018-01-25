@@ -1,9 +1,9 @@
-// @flow
+
 import AbstractDerivedDict from './AbstractDerivedDict'
-import type {IDerivedDict} from './types'
+import {IDerivedDict} from './types'
 import _ from 'lodash'
-import {default as box, type IBoxAtom} from '$shared/DataVerse/atoms/box'
-import type {AbstractDerivation} from '../types'
+import {default as box, IBoxAtom} from '$shared/DataVerse/atoms/box'
+import {AbstractDerivation} from '../types'
 
 export interface IProxyDerivedDict<O: {}> extends IDerivedDict<O> {
   setSource(IDerivedDict<O>): IProxyDerivedDict<O>;

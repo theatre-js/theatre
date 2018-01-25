@@ -3,9 +3,9 @@ import {IPrototypalDict} from './prototypalDict'
 import Emitter from '$shared/DataVerse/utils/Emitter'
 // import DerivationOfAPropOfADerivedDict from './DerivationOfAPropOfADerivedDict'
 import Ticker from '$shared/DataVerse/Ticker'
-import {IDerivation} from '../types'
+import {AbstractDerivation} from '../types'
 import {
-  IDerivationOfAPropOfPrototypalDictFace,
+  AbstractDerivationOfAPropOfPrototypalDictFace,
   default as propOfPrototypalDictFace,
 } from './propOfPrototypalDictFace'
 import constant from '../constant'
@@ -20,7 +20,7 @@ type Wire = {
   key: string
   startsInLayer: LayerId
   endsInLayerId: LayerId
-  proxyDerivation: IDerivationOfAPropOfPrototypalDictFace<$FixMe>
+  proxyDerivation: AbstractDerivationOfAPropOfPrototypalDictFace<$FixMe>
 }
 
 export type LayerId = 'face' | 'tail' | number
@@ -29,7 +29,7 @@ type Layer = {
   id: number
   initiatingWiresByKey: {[propName: string]: Wire}
   derivedDict: IPrototypalDict<$FixMe>
-  sourceDerivationsByKey: {[propName: string]: IDerivation<$FixMe>}
+  sourceDerivationsByKey: {[propName: string]: AbstractDerivation<$FixMe>}
   untapFromParentChanges: () => void
 }
 
@@ -37,12 +37,12 @@ type Layers = {
   byId: {[id: LayerId]: Layer}
   list: Array<number>
   face: {initiatingWiresByKey: {[propName: string]: Wire}}
-  tail: {sourceDerivationsByKey: {[propName: string]: IDerivation<$FixMe>}}
+  tail: {sourceDerivationsByKey: {[propName: string]: AbstractDerivation<$FixMe>}}
 }
 
 type Structure = {
   layers: Layers
-  derivationsByLayerAndKey: {[lk: string]: IDerivation<$FixMe>}
+  derivationsByLayerAndKey: {[lk: string]: AbstractDerivation<$FixMe>}
 }
 
 const makeEmptyStructure = (): Structure => ({
@@ -135,7 +135,7 @@ export default class PrototypalDictFace {
   propFromLayer(
     key: string,
     initiatingLayerId: 'face' | number,
-  ): IDerivation<$FixMe> {
+  ): AbstractDerivation<$FixMe> {
     const layer =
       initiatingLayerId === 'face'
         ? this._structure.layers.face
@@ -156,7 +156,7 @@ export default class PrototypalDictFace {
   _createWire(
     key: string,
     startsInLayer: 'face' | number,
-    reusableProxy?: IDerivationOfAPropOfPrototypalDictFace<$FixMe>,
+    reusableProxy?: AbstractDerivationOfAPropOfPrototypalDictFace<$FixMe>,
   ): Wire {
     const endsInLayerId = this._findALayerThatHasProp(key, startsInLayer)
 
@@ -177,7 +177,7 @@ export default class PrototypalDictFace {
   _makeSourceDerivation(
     key: string,
     layerId: 'tail' | number,
-  ): IDerivation<$FixMe> {
+  ): AbstractDerivation<$FixMe> {
     // if (layerId === 'tail')  return notFoundDerivation
     const layer =
       layerId === 'tail'

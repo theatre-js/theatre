@@ -1,12 +1,12 @@
 // @flow
 import AbstractDerivation from './AbstractDerivation'
-import type {IDerivation} from './types'
+import type {AbstractDerivation} from './types'
 
 export class ConstantDerivation<V> extends AbstractDerivation
-  implements IDerivation<V> {
+  implements AbstractDerivation<V> {
   _v: V
 
-  constructor(v: V): IDerivation<V> {
+  constructor(v: V): AbstractDerivation<V> {
     super()
     this._v = v
     return this
@@ -17,6 +17,6 @@ export class ConstantDerivation<V> extends AbstractDerivation
   }
 }
 
-export default function constant<V>(v: V): IDerivation<V> {
+export default function constant<V>(v: V): AbstractDerivation<V> {
   return new ConstantDerivation(v)
 }

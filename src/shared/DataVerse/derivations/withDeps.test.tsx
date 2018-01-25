@@ -1,4 +1,4 @@
-// @flow
+
 
 import withDeps from './withDeps'
 import * as D from '$shared/DataVerse'

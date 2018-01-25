@@ -1,5 +1,5 @@
-// @flow
-import type {AbstractDerivation} from '../types'
+
+import {AbstractDerivation} from '../types'
 const stack = []
 
 export const collectObservedDependencies = (

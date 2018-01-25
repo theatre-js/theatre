@@ -1,14 +1,14 @@
-// @flow
 import Emitter from '$shared/DataVerse/utils/Emitter'
-import type {default as Tappable} from '$shared/DataVerse/utils/Tappable'
-import type {AbstractDerivation} from './types'
-import type {ITicker} from '$shared/DataVerse/Ticker'
+import {default as Tappable} from '$shared/DataVerse/utils/Tappable'
+import {ITicker} from '$shared/DataVerse/Ticker'
+import {AbstractDerivation} from '$src/shared/DataVerse/derivations'
 
 interface AbstractDerivationEmitter<V> {
-  tappable(): Tappable<V>;
+  tappable(): Tappable<V>
 }
 
-export default class DerivationEmitter<V> implements AbstractDerivationEmitter<V> {
+export default class DerivationEmitter<V>
+  implements AbstractDerivationEmitter<V> {
   _derivation: AbstractDerivation<V>
   _ticker: ITicker
   _emitter: Emitter<V>
@@ -16,10 +16,7 @@ export default class DerivationEmitter<V> implements AbstractDerivationEmitter<V
   _lastValueRecorded: boolean
   _hadTappers: boolean
 
-  constructor(
-    derivation: AbstractDerivation<V>,
-    ticker: ITicker,
-  ): AbstractDerivationEmitter<V> {
+  constructor(derivation: AbstractDerivation<V>, ticker: ITicker) {
     this._derivation = derivation
     this._ticker = ticker
     this._emitter = new Emitter()
@@ -50,7 +47,7 @@ export default class DerivationEmitter<V> implements AbstractDerivationEmitter<V
   }
 
   tappable() {
-    return (this._emitter.tappable: $IntentionalAny)
+    return this._emitter.tappable as $IntentionalAny
   }
 
   _updateComputation() {

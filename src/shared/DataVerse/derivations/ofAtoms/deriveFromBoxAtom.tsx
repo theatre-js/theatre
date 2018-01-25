@@ -1,7 +1,7 @@
-// @flow
+
 import AbstractDerivation from '../AbstractDerivation'
-import type {IBoxAtom} from '$shared/DataVerse'
-import type {AbstractDerivation} from '../types'
+import {IBoxAtom} from '$shared/DataVerse'
+import {AbstractDerivation} from '../types'
 
 const noop = () => {}
 

@@ -1,7 +1,7 @@
-// @flow
+
 import AbstractDerivation from '../AbstractDerivation'
-import type {IDictAtom} from '$shared/DataVerse'
-import type {AbstractDerivation} from '../types'
+import {IDictAtom} from '$shared/DataVerse'
+import {AbstractDerivation} from '../types'
 
 const noop = () => {}
 
@@ -9,9 +9,9 @@ export class DerivationOfAPropOfADictAtom<O: {}> extends AbstractDerivation
   implements AbstractDerivation<$FixMe> {
   _dictAtom: IDictAtom<O>
   _untapFromDictAtomChanges: Function
-  _propName: $Keys<O>
+  _propName: keyof O
 
-  constructor(dictAtom: IDictAtom<O>, propName: $Keys<O>) {
+  constructor(dictAtom: IDictAtom<O>, propName: keyof O) {
     super()
     this._dictAtom = dictAtom
     this._propName = propName
@@ -19,7 +19,7 @@ export class DerivationOfAPropOfADictAtom<O: {}> extends AbstractDerivation
   }
 
   _recalculate() {
-    return this._dictAtom.prop((this._propName: $FixMe))
+    return this._dictAtom.prop((this._propName as $FixMe))
   }
 
   _keepUptodate() {
@@ -41,7 +41,7 @@ export class DerivationOfAPropOfADictAtom<O: {}> extends AbstractDerivation
 export default function deriveFromPropOfADictAtom<
   O: {},
   M: IDictAtom<O>,
-  K: $Keys<O>,
->(m: M, propName: $Keys<O>): AbstractDerivation<O[K]> {
+  K: keyof O,
+>(m: M, propName: keyof O): AbstractDerivation<O[K]> {
   return new DerivationOfAPropOfADictAtom(m, propName)
 }

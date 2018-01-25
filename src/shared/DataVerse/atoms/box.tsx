@@ -28,7 +28,7 @@ export class BoxAtom<V> extends AbstractAtom<V> {
     return this._value
   }
 
-  derivation(): IDerivation<V> {
+  derivation(): AbstractDerivation<V> {
     const deriveFromBoxAtom = require('$shared/DataVerse/derivations/ofAtoms/deriveFromBoxAtom')
       .default
     return deriveFromBoxAtom(this)

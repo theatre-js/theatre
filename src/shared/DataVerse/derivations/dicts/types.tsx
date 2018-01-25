@@ -1,5 +1,5 @@
 // @flow
-import {IDerivation} from '../types'
+import {AbstractDerivation} from '../types'
 import {default as Tappable} from '$shared/DataVerse/utils/Tappable'
 // import type {IPointer} from '../pointer'
 
@@ -9,7 +9,7 @@ export type ChangeType<O> = {
 }
 
 export interface IDerivedDict<O> {
-  prop<K extends keyof O>(k: K): IDerivation<$FixMe>
+  prop<K extends keyof O>(k: K): AbstractDerivation<$FixMe>
   changes(): Tappable<ChangeType<O>>
   keys(): Array<keyof O>
   pointer(): $FixMe

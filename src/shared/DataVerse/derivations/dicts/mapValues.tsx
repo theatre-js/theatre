@@ -1,8 +1,8 @@
-// @flow
-import type {AbstractDerivation} from '../types'
+
+import {AbstractDerivation} from '../types'
 import Emitter from '$shared/DataVerse/utils/Emitter'
 // import lodashMapValues from 'lodash/mapValues'
-import type {IDerivedDict, ChangeType} from './types'
+import {IDerivedDict, ChangeType} from './types'
 import DerivedDict from './AbstractDerivedDict'
 import noop from 'lodash/noop'
 
@@ -12,7 +12,7 @@ export class MapValues extends DerivedDict implements IDerivedDict<$FixMe> {
   _fn: $FixMe
   _untapFromSourceChanges: Function
 
-  constructor<O: {}, K: $Keys<O>, V: O[K], FN: (V, K) => $FixMe>(
+  constructor<O: {}, K: keyof O, V: O[K], FN: (V, K) => $FixMe>(
     source: IDerivedDict<O>,
     fn: FN,
   ): IDerivedDict<$FixMe> {
@@ -54,7 +54,7 @@ export class MapValues extends DerivedDict implements IDerivedDict<$FixMe> {
 
 const mapValues = <
   O: {},
-  K: $Keys<O>,
+  K: keyof O,
   V: O[K],
   FN: (V, K) => $FixMe,
 >(

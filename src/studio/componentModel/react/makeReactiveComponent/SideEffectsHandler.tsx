@@ -1,4 +1,4 @@
-// @flow
+
 import * as D from '$shared/DataVerse'
 import noop from 'lodash/noop'
 

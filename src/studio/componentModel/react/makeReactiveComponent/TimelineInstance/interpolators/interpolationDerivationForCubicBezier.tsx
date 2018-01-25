@@ -1,4 +1,4 @@
-// @flow
+
 import * as D from '$shared/DataVerse'
 import UnitBezier from 'timing-function/lib/UnitBezier'
 
@@ -25,7 +25,7 @@ export default function interpolationDerivationForCubicBezier(
   )
 }
 
-const unitBezier = (interpolationDescriptorP: $FixMe) => {
+const unitBezier = (interpolationDescriptorP as $FixMe) => {
   return D.derivations.withDeps(
     {
       lxD: interpolationDescriptorP.prop('lx'),

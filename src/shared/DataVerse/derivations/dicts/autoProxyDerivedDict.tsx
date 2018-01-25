@@ -3,7 +3,7 @@ import AbstractDerivedDict from './AbstractDerivedDict'
 import {IDerivedDict} from './types'
 import {ITicker} from '$shared/DataVerse/Ticker'
 import _ from 'lodash'
-import {IDerivation} from '../types'
+import {AbstractDerivation} from '../types'
 import {
   default as proxyDerivedDict,
   IProxyDerivedDict,
@@ -13,13 +13,13 @@ import emptyDict from './emptyDict'
 class AutoProxyDerivedDict<O> extends AbstractDerivedDict
   implements IDerivedDict<O> {
   _proxy: IProxyDerivedDict<O>
-  _sourceD: IDerivation<IDerivedDict<O>>
+  _sourceD: AbstractDerivation<IDerivedDict<O>>
   _ticker: ITicker
   _untapFromProxyChanges: () => void
   _untapFromSourceChanges: () => void
 
   constructor(
-    sourceD: IDerivation<IDerivedDict<O>>,
+    sourceD: AbstractDerivation<IDerivedDict<O>>,
     ticker: ITicker,
   ): IDerivedDict<O> {
     super()
@@ -72,7 +72,7 @@ class AutoProxyDerivedDict<O> extends AbstractDerivedDict
 }
 
 export default function autoProxyDerivedDict<O>(
-  initialSource: IDerivation<IDerivedDict<O>>,
+  initialSource: AbstractDerivation<IDerivedDict<O>>,
   ticker: ITicker,
 ): IDerivedDict<O> {
   return new AutoProxyDerivedDict(initialSource, ticker)

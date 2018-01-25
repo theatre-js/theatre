@@ -1,18 +1,18 @@
 // @flow
 import AbstractDerivation from './AbstractDerivation'
-import type {IDerivation} from './types'
+import type {AbstractDerivation} from './types'
 
 export class FlatMapDerivation extends AbstractDerivation
-  implements IDerivation<$FixMe> {
+  implements AbstractDerivation<$FixMe> {
   _updateNeededFromIndex: number
-  _stackOfDependencies: Array<IDerivation<$IntentionalAny>>
+  _stackOfDependencies: Array<AbstractDerivation<$IntentionalAny>>
   _fn: $FixMe
   _depDerivation: $FixMe
 
   constructor(
-    depDerivation: IDerivation<$FixMe>,
+    depDerivation: AbstractDerivation<$FixMe>,
     fn: $FixMe,
-  ): IDerivation<$FixMe> {
+  ): AbstractDerivation<$FixMe> {
     super()
     this._stackOfDependencies = [depDerivation]
     this._fn = fn
@@ -59,7 +59,7 @@ export class FlatMapDerivation extends AbstractDerivation
     }
   }
 
-  _youMayNeedToUpdateYourself(msgComingFrom: IDerivation<$IntentionalAny>) {
+  _youMayNeedToUpdateYourself(msgComingFrom: AbstractDerivation<$IntentionalAny>) {
     const indexOfDep = this._stackOfDependencies.indexOf(
       (msgComingFrom: $FixMe),
     )

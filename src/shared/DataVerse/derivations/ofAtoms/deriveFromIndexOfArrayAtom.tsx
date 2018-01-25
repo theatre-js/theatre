@@ -1,7 +1,7 @@
-// @flow
+
 import AbstractDerivation from '../AbstractDerivation'
-import type {IArrayAtom} from '$shared/DataVerse'
-import type {AbstractDerivation} from '../types'
+import {IArrayAtom} from '$shared/DataVerse'
+import {AbstractDerivation} from '../types'
 
 const noop = () => {}
 
@@ -22,7 +22,7 @@ export class DerivationOfAnIndexOfAnArrayAtom<V> extends AbstractDerivation
   }
 
   _recalculate(): $FixMe {
-    return this._arrayAtom.index((this._index: $FixMe))
+    return this._arrayAtom.index((this._index as $FixMe))
   }
 
   _keepUptodate() {

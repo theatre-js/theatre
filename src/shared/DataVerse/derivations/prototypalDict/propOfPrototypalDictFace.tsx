@@ -1,6 +1,6 @@
-// @flow
-import {ProxyDerivation, type IProxyDerivation} from '../proxy'
-import {type AbstractDerivation} from '../types'
+
+import {ProxyDerivation, IProxyDerivation} from '../proxy'
+import {AbstractDerivation} from '../types'
 
 export interface AbstractDerivationOfAPropOfPrototypalDictFace<V>
   extends IProxyDerivation<V> {}

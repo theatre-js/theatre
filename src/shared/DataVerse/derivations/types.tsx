@@ -5,42 +5,42 @@ interface Dependent {
   _youMayNeedToUpdateYourself(): void
 }
 
-export interface IDerivation<V> {
+export interface AbstractDerivation<V> {
   _id: number
 
   // _changeEmitter: Emitter<V>,
-  _dependents: Set<IDerivation<$IntentionalAny>>
-  _dependencies: Set<IDerivation<$IntentionalAny>>
+  _dependents: Set<AbstractDerivation<$IntentionalAny>>
+  _dependencies: Set<AbstractDerivation<$IntentionalAny>>
 
   getValue: () => V
   _recalculate: () => V
   _keepUptodate: () => void
   _stopKeepingUptodate: () => void
   _youMayNeedToUpdateYourself: (
-    msgComingFrom: IDerivation<$IntentionalAny>,
+    msgComingFrom: AbstractDerivation<$IntentionalAny>,
   ) => void
 
   _addDependent(d: Dependent): void
   _removeDependent(d: Dependent): void
-  _addDependency(d: IDerivation<$IntentionalAny>): void
-  _removeDependency(d: IDerivation<$IntentionalAny>): void
+  _addDependency(d: AbstractDerivation<$IntentionalAny>): void
+  _removeDependency(d: AbstractDerivation<$IntentionalAny>): void
   _tick(): void
 
   changes(ticker: ITicker): Tappable<V>
   tapImmediate(ticker: ITicker, fn: ((v: V) => void)): () => void
 
-  map<R, Fn extends (v: V) => R>(fn: Fn): IDerivation<R>
-  flatMap<R, T extends IDerivation<R>, Fn extends (v: V) => R | T>(
+  map<R, Fn extends (v: V) => R>(fn: Fn): AbstractDerivation<R>
+  flatMap<R, T extends AbstractDerivation<R>, Fn extends (v: V) => R | T>(
     fn: Fn,
-  ): IDerivation<R>
-  toJS(): IDerivation<$FixMe>
+  ): AbstractDerivation<R>
+  toJS(): AbstractDerivation<$FixMe>
 
-  flatten(): IDerivation<$FixMe> // $Call<FlattenDeepFn, IDerivation<V>, 1>;
+  flatten(): AbstractDerivation<$FixMe> // $Call<FlattenDeepFn, AbstractDerivation<V>, 1>;
   inPointer: boolean
 
   flattenDeep<D extends 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>(
     depth: D,
-  ): IDerivation<$FixMe> // $Call<FlattenDeepFn, P, D>;
+  ): AbstractDerivation<$FixMe> // $Call<FlattenDeepFn, P, D>;
 }
 
 export type Changes<V> = () => Tappable<V>

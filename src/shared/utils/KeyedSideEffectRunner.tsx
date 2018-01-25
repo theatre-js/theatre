@@ -1,6 +1,6 @@
 import * as D from '$shared/DataVerse'
 import _ from 'lodash'
-import {IDerivation} from '$src/shared/DataVerse/derivations/types'
+import {AbstractDerivation} from '$src/shared/DataVerse/derivations/types'
 
 type Dict = $FixMe
 type EmptyFn = () => void
@@ -10,7 +10,7 @@ type Xigulu = {
   unapply: () => void
 }
 
-type GetXiguluForKey = (key: string) => IDerivation<Xigulu>
+type GetXiguluForKey = (key: string) => AbstractDerivation<Xigulu>
 
 export default class KeyedSideEffectRunner {
   _dict: Dict
@@ -19,7 +19,7 @@ export default class KeyedSideEffectRunner {
   _untapFromDict: () => void
   _started: boolean
   _activeKeys: {[key: string]: {remove: EmptyFn; stopObserving: EmptyFn}}
-  _getXiguluForKey: (key: string) => IDerivation<Xigulu>
+  _getXiguluForKey: (key: string) => AbstractDerivation<Xigulu>
 
   constructor(
     sideEffectsDict: Dict,
@@ -69,7 +69,7 @@ export default class KeyedSideEffectRunner {
 
     const valueD = this._sideEffectsDict.prop(key)
 
-    const xigulu: IDerivation<Xigulu> = this._getXiguluForKey(key)
+    const xigulu: AbstractDerivation<Xigulu> = this._getXiguluForKey(key)
 
     const untap = D.derivations
       .withDeps({valueD, xigulu}, ({valueD, xigulu}) => ({valueD, xigulu}))

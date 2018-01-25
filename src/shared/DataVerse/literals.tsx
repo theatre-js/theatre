@@ -1,6 +1,6 @@
-// @flow
 
-import type {True, False} from './types'
+
+import {True, False} from './types'
 
 export type ArrayLiteral<V> = Array<V> & {
   '**isArrayLiteral**': True,
@@ -11,7 +11,7 @@ export type ArrayLiteral<V> = Array<V> & {
 export type IsArrayLiteral<A> = A['**isArrayLiteral**']
 export type ValueOfArrayLiteral<A> = A['___arrayElementType']
 export const array = <V, A: Array<V>>(a: A): ArrayLiteral<V> =>
-  (a: $IntentionalAny)
+  (a as $IntentionalAny)
 
 export type ObjectLiteral<O: {}> = O & {
   '**isArrayLiteral**': False,
@@ -21,7 +21,7 @@ export type ObjectLiteral<O: {}> = O & {
 }
 export type IsObjectLiteral<V> = V['**isObjectLiteral**']
 export type ValueOfObjectLiteral<V> = V['___objectType']
-export const object = <O: {}>(o: O): ObjectLiteral<O> => (o: $IntentionalAny)
+export const object = <O: {}>(o: O): ObjectLiteral<O> => (o as $IntentionalAny)
 
 export type PrimitiveLiteral<V> = V & {
   '**isArrayLiteral**': False,
@@ -31,4 +31,4 @@ export type PrimitiveLiteral<V> = V & {
 }
 export type IsPrimitiveLiteral<V> = V['**isPrimitiveLiteral**']
 export type ValueOfPrimitiveLiteral<V> = V['___literalType']
-export const primitive = <V>(v: V): PrimitiveLiteral<V> => (v: $IntentionalAny)
+export const primitive = <V>(v: V): PrimitiveLiteral<V> => (v as $IntentionalAny)

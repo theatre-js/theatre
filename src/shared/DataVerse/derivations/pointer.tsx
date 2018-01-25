@@ -1,9 +1,8 @@
-// @flow
-import type {MapKey, If, True, False} from '$shared/DataVerse/types'
-import type {IsDictAtom, IDictAtom} from '$shared/DataVerse/atoms/dict'
-import type {IsArrayAtom, IArrayAtom} from '$shared/DataVerse/atoms/array'
+
+import {MapKey, If, True, False} from '$shared/DataVerse/types'
+import {IsDictAtom, IDictAtom} from '$shared/DataVerse/atoms/dict'
+import {IsArrayAtom, IArrayAtom} from '$shared/DataVerse/atoms/array'
 import AbstractDerivation from './AbstractDerivation'
-import type {AbstractDerivation} from './types'
 
 type IsPointer<V> = V['isPointer']
 type IsAtom<V> = V['isAtom']
@@ -39,35 +38,35 @@ type BasePointer = {
   isAtom: False,
 }
 
-export type IPointerToDictAtom<O: {}> = BasePointer &
+export type IPointerToDictAtom<O> = BasePointer &
   AbstractDerivation<IDictAtom<O>> & {
     _type: O,
-    prop<K: $Keys<O>>(K): DecidePointerType<O[K]>,
+    prop<K extends keyof O>(K): DecidePointerType<O[K]>,
     pointer(): IPointerToDictAtom<O>,
-    index(undefined | null | number): IPointerToVoid,
+    index(i: undefined | null | number): IPointerToVoid,
   }
 
 export type IPointerToArrayAtom<V> = BasePointer &
   AbstractDerivation<IArrayAtom<V>> & {
     _type: V,
-    prop($IntentionalAny): IPointerToVoid,
+    prop(k: $IntentionalAny): IPointerToVoid,
     pointer(): IPointerToArrayAtom<V>,
-    index(number): DecidePointerType<V>,
+    index(i: number): DecidePointerType<V>,
   }
 
 export type IPointerToVoid = BasePointer &
   AbstractDerivation<void> & {
-    prop($IntentionalAny): IPointerToVoid,
+    prop(k: $IntentionalAny): IPointerToVoid,
     pointer(): IPointerToVoid,
-    index(undefined | null | number): IPointerToVoid,
+    index(i: undefined | null | number): IPointerToVoid,
   }
 
 export type IPointerToBoxAtom<V> = BasePointer &
   AbstractDerivation<V> & {
     _type: V,
-    prop($IntentionalAny): IPointerToVoid,
+    prop(k: $IntentionalAny): IPointerToVoid,
     pointer(): IPointerToBoxAtom<V>,
-    index(undefined | null | number): IPointerToVoid,
+    index(i: undefined | null | number): IPointerToVoid,
   }
 
 interface _IPointer<V> {
@@ -93,7 +92,7 @@ type Address =
       keyOrIndex: number | string,
     }
 
-export class PointerDerivation extends AbstractDerivation
+export class PointerDerivation extends AbstractDerivation<$FixMe>
   implements _IPointer<$FixMe> {
   static NOTFOUND: void = undefined //Symbol('notfound')
   isPointer = 'True'
@@ -204,7 +203,7 @@ const _propify = (possibleReactiveValue, key) => {
   } else if (possibleReactiveValue instanceof modules.dict.DictAtom) {
     return modules.deriveFromPropOfADictAtom.default(
       possibleReactiveValue,
-      (key: $FixMe),
+      (key as $FixMe),
     )
   } else if (
     possibleReactiveValue instanceof modules.array.ArrayAtom &&

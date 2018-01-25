@@ -1,4 +1,4 @@
-// @flow
+
 import * as D from '$shared/DataVerse'
 import {domAttrSetter} from './utils'
 import KeyedSideEffectRunner from '$shared/utils/KeyedSideEffectRunner'

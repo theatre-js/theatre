@@ -1,6 +1,6 @@
-// @flow
+
 import AbstractDerivation from '../AbstractDerivation'
-import type {AbstractDerivation} from '../types'
+import {AbstractDerivation} from '../types'
 import {collectObservedDependencies} from './discoveryMechanism'
 
 export class AutoDerivation<V> extends AbstractDerivation
@@ -38,7 +38,7 @@ export class AutoDerivation<V> extends AbstractDerivation
     //   this._addDependency(d)
     // })
 
-    return (value: $FixMe)
+    return (value as $FixMe)
   }
 
   _keepUptodate() {

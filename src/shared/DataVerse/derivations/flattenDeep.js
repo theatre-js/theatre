@@ -1,17 +1,17 @@
 // @flow
 import AbstractDerivation from './AbstractDerivation'
-import type {IDerivation} from './types'
+import type {AbstractDerivation} from './types'
 
 export class FlattenDeepDerivation extends AbstractDerivation
-  implements IDerivation<$FixMe> {
-  _stackOfDependencies: Array<IDerivation<$IntentionalAny>>
+  implements AbstractDerivation<$FixMe> {
+  _stackOfDependencies: Array<AbstractDerivation<$IntentionalAny>>
   _updateNeededFromIndex: number
   _maxDepth: number
 
   constructor(
-    depDerivation: IDerivation<$FixMe>,
+    depDerivation: AbstractDerivation<$FixMe>,
     maxDepth: number = 200,
-  ): IDerivation<$FixMe> {
+  ): AbstractDerivation<$FixMe> {
     super()
     this._stackOfDependencies = [depDerivation]
     this._maxDepth = maxDepth
@@ -56,7 +56,7 @@ export class FlattenDeepDerivation extends AbstractDerivation
     }
   }
 
-  _youMayNeedToUpdateYourself(msgComingFrom: IDerivation<$IntentionalAny>) {
+  _youMayNeedToUpdateYourself(msgComingFrom: AbstractDerivation<$IntentionalAny>) {
     const indexOfDep = this._stackOfDependencies.indexOf(
       (msgComingFrom: $FixMe),
     )
@@ -89,321 +89,321 @@ export class FlattenDeepDerivation extends AbstractDerivation
   }
 }
 
-export type FlattenDeepFn = (<Ret, V1: IDerivation<Ret>, D: 0>(
+export type FlattenDeepFn = (<Ret, V1: AbstractDerivation<Ret>, D: 0>(
   outer: V1,
   D,
-) => IDerivation<Ret>) &
-  (<Ret, V2: IDerivation<Ret>, V1: IDerivation<V2>, D: 1>(
+) => AbstractDerivation<Ret>) &
+  (<Ret, V2: AbstractDerivation<Ret>, V1: AbstractDerivation<V2>, D: 1>(
     outer: V1,
     D,
-  ) => IDerivation<Ret>) &
-  (<Ret, V1: IDerivation<Ret>, D: 1>(outer: V1, D) => IDerivation<Ret>) &
-  (<Ret, V3: IDerivation<Ret>, V2: IDerivation<V3>, V1: IDerivation<V2>, D: 2>(
+  ) => AbstractDerivation<Ret>) &
+  (<Ret, V1: AbstractDerivation<Ret>, D: 1>(outer: V1, D) => AbstractDerivation<Ret>) &
+  (<Ret, V3: AbstractDerivation<Ret>, V2: AbstractDerivation<V3>, V1: AbstractDerivation<V2>, D: 2>(
     outer: V1,
     D,
-  ) => IDerivation<Ret>) &
-  (<Ret, V2: IDerivation<Ret>, V1: IDerivation<V2>, D: 2>(
+  ) => AbstractDerivation<Ret>) &
+  (<Ret, V2: AbstractDerivation<Ret>, V1: AbstractDerivation<V2>, D: 2>(
     outer: V1,
     D,
-  ) => IDerivation<Ret>) &
-  (<Ret, V1: IDerivation<Ret>, D: 2>(outer: V1, D) => IDerivation<Ret>) &
+  ) => AbstractDerivation<Ret>) &
+  (<Ret, V1: AbstractDerivation<Ret>, D: 2>(outer: V1, D) => AbstractDerivation<Ret>) &
   (<
     Ret,
-    V4: IDerivation<Ret>,
-    V3: IDerivation<V4>,
-    V2: IDerivation<V3>,
-    V1: IDerivation<V2>,
+    V4: AbstractDerivation<Ret>,
+    V3: AbstractDerivation<V4>,
+    V2: AbstractDerivation<V3>,
+    V1: AbstractDerivation<V2>,
     D: 3,
   >(
     outer: V1,
     D,
-  ) => IDerivation<Ret>) &
-  (<Ret, V3: IDerivation<Ret>, V2: IDerivation<V3>, V1: IDerivation<V2>, D: 3>(
+  ) => AbstractDerivation<Ret>) &
+  (<Ret, V3: AbstractDerivation<Ret>, V2: AbstractDerivation<V3>, V1: AbstractDerivation<V2>, D: 3>(
     outer: V1,
     D,
-  ) => IDerivation<Ret>) &
-  (<Ret, V2: IDerivation<Ret>, V1: IDerivation<V2>, D: 3>(
+  ) => AbstractDerivation<Ret>) &
+  (<Ret, V2: AbstractDerivation<Ret>, V1: AbstractDerivation<V2>, D: 3>(
     outer: V1,
     D,
-  ) => IDerivation<Ret>) &
-  (<Ret, V1: IDerivation<Ret>, D: 3>(outer: V1, D) => IDerivation<Ret>) &
+  ) => AbstractDerivation<Ret>) &
+  (<Ret, V1: AbstractDerivation<Ret>, D: 3>(outer: V1, D) => AbstractDerivation<Ret>) &
   (<
     Ret,
-    V5: IDerivation<Ret>,
-    V4: IDerivation<V5>,
-    V3: IDerivation<V4>,
-    V2: IDerivation<V3>,
-    V1: IDerivation<V2>,
+    V5: AbstractDerivation<Ret>,
+    V4: AbstractDerivation<V5>,
+    V3: AbstractDerivation<V4>,
+    V2: AbstractDerivation<V3>,
+    V1: AbstractDerivation<V2>,
     D: 4,
   >(
     outer: V1,
     D,
-  ) => IDerivation<Ret>) &
+  ) => AbstractDerivation<Ret>) &
   (<
     Ret,
-    V4: IDerivation<Ret>,
-    V3: IDerivation<V4>,
-    V2: IDerivation<V3>,
-    V1: IDerivation<V2>,
+    V4: AbstractDerivation<Ret>,
+    V3: AbstractDerivation<V4>,
+    V2: AbstractDerivation<V3>,
+    V1: AbstractDerivation<V2>,
     D: 4,
   >(
     outer: V1,
     D,
-  ) => IDerivation<Ret>) &
-  (<Ret, V3: IDerivation<Ret>, V2: IDerivation<V3>, V1: IDerivation<V2>, D: 4>(
+  ) => AbstractDerivation<Ret>) &
+  (<Ret, V3: AbstractDerivation<Ret>, V2: AbstractDerivation<V3>, V1: AbstractDerivation<V2>, D: 4>(
     outer: V1,
     D,
-  ) => IDerivation<Ret>) &
-  (<Ret, V2: IDerivation<Ret>, V1: IDerivation<V2>, D: 4>(
+  ) => AbstractDerivation<Ret>) &
+  (<Ret, V2: AbstractDerivation<Ret>, V1: AbstractDerivation<V2>, D: 4>(
     outer: V1,
     D,
-  ) => IDerivation<Ret>) &
-  (<Ret, V1: IDerivation<Ret>, D: 4>(outer: V1, D) => IDerivation<Ret>) &
+  ) => AbstractDerivation<Ret>) &
+  (<Ret, V1: AbstractDerivation<Ret>, D: 4>(outer: V1, D) => AbstractDerivation<Ret>) &
   (<
     Ret,
-    V6: IDerivation<Ret>,
-    V5: IDerivation<V6>,
-    V4: IDerivation<V5>,
-    V3: IDerivation<V4>,
-    V2: IDerivation<V3>,
-    V1: IDerivation<V2>,
+    V6: AbstractDerivation<Ret>,
+    V5: AbstractDerivation<V6>,
+    V4: AbstractDerivation<V5>,
+    V3: AbstractDerivation<V4>,
+    V2: AbstractDerivation<V3>,
+    V1: AbstractDerivation<V2>,
     D: 5,
   >(
     outer: V1,
     D,
-  ) => IDerivation<Ret>) &
+  ) => AbstractDerivation<Ret>) &
   (<
     Ret,
-    V5: IDerivation<Ret>,
-    V4: IDerivation<V5>,
-    V3: IDerivation<V4>,
-    V2: IDerivation<V3>,
-    V1: IDerivation<V2>,
+    V5: AbstractDerivation<Ret>,
+    V4: AbstractDerivation<V5>,
+    V3: AbstractDerivation<V4>,
+    V2: AbstractDerivation<V3>,
+    V1: AbstractDerivation<V2>,
     D: 5,
   >(
     outer: V1,
     D,
-  ) => IDerivation<Ret>) &
+  ) => AbstractDerivation<Ret>) &
   (<
     Ret,
-    V4: IDerivation<Ret>,
-    V3: IDerivation<V4>,
-    V2: IDerivation<V3>,
-    V1: IDerivation<V2>,
+    V4: AbstractDerivation<Ret>,
+    V3: AbstractDerivation<V4>,
+    V2: AbstractDerivation<V3>,
+    V1: AbstractDerivation<V2>,
     D: 5,
   >(
     outer: V1,
     D,
-  ) => IDerivation<Ret>) &
-  (<Ret, V3: IDerivation<Ret>, V2: IDerivation<V3>, V1: IDerivation<V2>, D: 5>(
+  ) => AbstractDerivation<Ret>) &
+  (<Ret, V3: AbstractDerivation<Ret>, V2: AbstractDerivation<V3>, V1: AbstractDerivation<V2>, D: 5>(
     outer: V1,
     D,
-  ) => IDerivation<Ret>) &
-  (<Ret, V2: IDerivation<Ret>, V1: IDerivation<V2>, D: 5>(
+  ) => AbstractDerivation<Ret>) &
+  (<Ret, V2: AbstractDerivation<Ret>, V1: AbstractDerivation<V2>, D: 5>(
     outer: V1,
     D,
-  ) => IDerivation<Ret>) &
-  (<Ret, V1: IDerivation<Ret>, D: 5>(outer: V1, D) => IDerivation<Ret>) &
+  ) => AbstractDerivation<Ret>) &
+  (<Ret, V1: AbstractDerivation<Ret>, D: 5>(outer: V1, D) => AbstractDerivation<Ret>) &
   (<
     Ret,
-    V7: IDerivation<Ret>,
-    V6: IDerivation<V7>,
-    V5: IDerivation<V6>,
-    V4: IDerivation<V5>,
-    V3: IDerivation<V4>,
-    V2: IDerivation<V3>,
-    V1: IDerivation<V2>,
+    V7: AbstractDerivation<Ret>,
+    V6: AbstractDerivation<V7>,
+    V5: AbstractDerivation<V6>,
+    V4: AbstractDerivation<V5>,
+    V3: AbstractDerivation<V4>,
+    V2: AbstractDerivation<V3>,
+    V1: AbstractDerivation<V2>,
     D: 6,
   >(
     outer: V1,
     D,
-  ) => IDerivation<Ret>) &
+  ) => AbstractDerivation<Ret>) &
   (<
     Ret,
-    V6: IDerivation<Ret>,
-    V5: IDerivation<V6>,
-    V4: IDerivation<V5>,
-    V3: IDerivation<V4>,
-    V2: IDerivation<V3>,
-    V1: IDerivation<V2>,
+    V6: AbstractDerivation<Ret>,
+    V5: AbstractDerivation<V6>,
+    V4: AbstractDerivation<V5>,
+    V3: AbstractDerivation<V4>,
+    V2: AbstractDerivation<V3>,
+    V1: AbstractDerivation<V2>,
     D: 6,
   >(
     outer: V1,
     D,
-  ) => IDerivation<Ret>) &
+  ) => AbstractDerivation<Ret>) &
   (<
     Ret,
-    V5: IDerivation<Ret>,
-    V4: IDerivation<V5>,
-    V3: IDerivation<V4>,
-    V2: IDerivation<V3>,
-    V1: IDerivation<V2>,
+    V5: AbstractDerivation<Ret>,
+    V4: AbstractDerivation<V5>,
+    V3: AbstractDerivation<V4>,
+    V2: AbstractDerivation<V3>,
+    V1: AbstractDerivation<V2>,
     D: 6,
   >(
     outer: V1,
     D,
-  ) => IDerivation<Ret>) &
+  ) => AbstractDerivation<Ret>) &
   (<
     Ret,
-    V4: IDerivation<Ret>,
-    V3: IDerivation<V4>,
-    V2: IDerivation<V3>,
-    V1: IDerivation<V2>,
+    V4: AbstractDerivation<Ret>,
+    V3: AbstractDerivation<V4>,
+    V2: AbstractDerivation<V3>,
+    V1: AbstractDerivation<V2>,
     D: 6,
   >(
     outer: V1,
     D,
-  ) => IDerivation<Ret>) &
-  (<Ret, V3: IDerivation<Ret>, V2: IDerivation<V3>, V1: IDerivation<V2>, D: 6>(
+  ) => AbstractDerivation<Ret>) &
+  (<Ret, V3: AbstractDerivation<Ret>, V2: AbstractDerivation<V3>, V1: AbstractDerivation<V2>, D: 6>(
     outer: V1,
     D,
-  ) => IDerivation<Ret>) &
-  (<Ret, V2: IDerivation<Ret>, V1: IDerivation<V2>, D: 6>(
+  ) => AbstractDerivation<Ret>) &
+  (<Ret, V2: AbstractDerivation<Ret>, V1: AbstractDerivation<V2>, D: 6>(
     outer: V1,
     D,
-  ) => IDerivation<Ret>) &
-  (<Ret, V1: IDerivation<Ret>, D: 6>(outer: V1, D) => IDerivation<Ret>) &
+  ) => AbstractDerivation<Ret>) &
+  (<Ret, V1: AbstractDerivation<Ret>, D: 6>(outer: V1, D) => AbstractDerivation<Ret>) &
   (<
     Ret,
-    V8: IDerivation<Ret>,
-    V7: IDerivation<V8>,
-    V6: IDerivation<V7>,
-    V5: IDerivation<V6>,
-    V4: IDerivation<V5>,
-    V3: IDerivation<V4>,
-    V2: IDerivation<V3>,
-    V1: IDerivation<V2>,
+    V8: AbstractDerivation<Ret>,
+    V7: AbstractDerivation<V8>,
+    V6: AbstractDerivation<V7>,
+    V5: AbstractDerivation<V6>,
+    V4: AbstractDerivation<V5>,
+    V3: AbstractDerivation<V4>,
+    V2: AbstractDerivation<V3>,
+    V1: AbstractDerivation<V2>,
     D: 7,
   >(
     outer: V1,
     D,
-  ) => IDerivation<Ret>) &
+  ) => AbstractDerivation<Ret>) &
   (<
     Ret,
-    V7: IDerivation<Ret>,
-    V6: IDerivation<V7>,
-    V5: IDerivation<V6>,
-    V4: IDerivation<V5>,
-    V3: IDerivation<V4>,
-    V2: IDerivation<V3>,
-    V1: IDerivation<V2>,
+    V7: AbstractDerivation<Ret>,
+    V6: AbstractDerivation<V7>,
+    V5: AbstractDerivation<V6>,
+    V4: AbstractDerivation<V5>,
+    V3: AbstractDerivation<V4>,
+    V2: AbstractDerivation<V3>,
+    V1: AbstractDerivation<V2>,
     D: 7,
   >(
     outer: V1,
     D,
-  ) => IDerivation<Ret>) &
+  ) => AbstractDerivation<Ret>) &
   (<
     Ret,
-    V6: IDerivation<Ret>,
-    V5: IDerivation<V6>,
-    V4: IDerivation<V5>,
-    V3: IDerivation<V4>,
-    V2: IDerivation<V3>,
-    V1: IDerivation<V2>,
+    V6: AbstractDerivation<Ret>,
+    V5: AbstractDerivation<V6>,
+    V4: AbstractDerivation<V5>,
+    V3: AbstractDerivation<V4>,
+    V2: AbstractDerivation<V3>,
+    V1: AbstractDerivation<V2>,
     D: 7,
   >(
     outer: V1,
     D,
-  ) => IDerivation<Ret>) &
+  ) => AbstractDerivation<Ret>) &
   (<
     Ret,
-    V5: IDerivation<Ret>,
-    V4: IDerivation<V5>,
-    V3: IDerivation<V4>,
-    V2: IDerivation<V3>,
-    V1: IDerivation<V2>,
+    V5: AbstractDerivation<Ret>,
+    V4: AbstractDerivation<V5>,
+    V3: AbstractDerivation<V4>,
+    V2: AbstractDerivation<V3>,
+    V1: AbstractDerivation<V2>,
     D: 7,
   >(
     outer: V1,
     D,
-  ) => IDerivation<Ret>) &
+  ) => AbstractDerivation<Ret>) &
   (<
     Ret,
-    V4: IDerivation<Ret>,
-    V3: IDerivation<V4>,
-    V2: IDerivation<V3>,
-    V1: IDerivation<V2>,
+    V4: AbstractDerivation<Ret>,
+    V3: AbstractDerivation<V4>,
+    V2: AbstractDerivation<V3>,
+    V1: AbstractDerivation<V2>,
     D: 7,
   >(
     outer: V1,
     D,
-  ) => IDerivation<Ret>) &
-  (<Ret, V3: IDerivation<Ret>, V2: IDerivation<V3>, V1: IDerivation<V2>, D: 7>(
+  ) => AbstractDerivation<Ret>) &
+  (<Ret, V3: AbstractDerivation<Ret>, V2: AbstractDerivation<V3>, V1: AbstractDerivation<V2>, D: 7>(
     outer: V1,
     D,
-  ) => IDerivation<Ret>) &
-  (<Ret, V2: IDerivation<Ret>, V1: IDerivation<V2>, D: 7>(
+  ) => AbstractDerivation<Ret>) &
+  (<Ret, V2: AbstractDerivation<Ret>, V1: AbstractDerivation<V2>, D: 7>(
     outer: V1,
     D,
-  ) => IDerivation<Ret>) &
-  (<Ret, V1: IDerivation<Ret>, D: 7>(outer: V1, D) => IDerivation<Ret>) &
+  ) => AbstractDerivation<Ret>) &
+  (<Ret, V1: AbstractDerivation<Ret>, D: 7>(outer: V1, D) => AbstractDerivation<Ret>) &
   (<
     Ret,
-    V8: IDerivation<Ret>,
-    V7: IDerivation<V8>,
-    V6: IDerivation<V7>,
-    V5: IDerivation<V6>,
-    V4: IDerivation<V5>,
-    V3: IDerivation<V4>,
-    V2: IDerivation<V3>,
-    V1: IDerivation<V2>,
+    V8: AbstractDerivation<Ret>,
+    V7: AbstractDerivation<V8>,
+    V6: AbstractDerivation<V7>,
+    V5: AbstractDerivation<V6>,
+    V4: AbstractDerivation<V5>,
+    V3: AbstractDerivation<V4>,
+    V2: AbstractDerivation<V3>,
+    V1: AbstractDerivation<V2>,
   >(
     outer: V1,
-  ) => IDerivation<Ret>) &
+  ) => AbstractDerivation<Ret>) &
   (<
     Ret,
-    V7: IDerivation<Ret>,
-    V6: IDerivation<V7>,
-    V5: IDerivation<V6>,
-    V4: IDerivation<V5>,
-    V3: IDerivation<V4>,
-    V2: IDerivation<V3>,
-    V1: IDerivation<V2>,
+    V7: AbstractDerivation<Ret>,
+    V6: AbstractDerivation<V7>,
+    V5: AbstractDerivation<V6>,
+    V4: AbstractDerivation<V5>,
+    V3: AbstractDerivation<V4>,
+    V2: AbstractDerivation<V3>,
+    V1: AbstractDerivation<V2>,
   >(
     outer: V1,
-  ) => IDerivation<Ret>) &
+  ) => AbstractDerivation<Ret>) &
   (<
     Ret,
-    V6: IDerivation<Ret>,
-    V5: IDerivation<V6>,
-    V4: IDerivation<V5>,
-    V3: IDerivation<V4>,
-    V2: IDerivation<V3>,
-    V1: IDerivation<V2>,
+    V6: AbstractDerivation<Ret>,
+    V5: AbstractDerivation<V6>,
+    V4: AbstractDerivation<V5>,
+    V3: AbstractDerivation<V4>,
+    V2: AbstractDerivation<V3>,
+    V1: AbstractDerivation<V2>,
   >(
     outer: V1,
-  ) => IDerivation<Ret>) &
+  ) => AbstractDerivation<Ret>) &
   (<
     Ret,
-    V5: IDerivation<Ret>,
-    V4: IDerivation<V5>,
-    V3: IDerivation<V4>,
-    V2: IDerivation<V3>,
-    V1: IDerivation<V2>,
+    V5: AbstractDerivation<Ret>,
+    V4: AbstractDerivation<V5>,
+    V3: AbstractDerivation<V4>,
+    V2: AbstractDerivation<V3>,
+    V1: AbstractDerivation<V2>,
   >(
     outer: V1,
-  ) => IDerivation<Ret>) &
+  ) => AbstractDerivation<Ret>) &
   (<
     Ret,
-    V4: IDerivation<Ret>,
-    V3: IDerivation<V4>,
-    V2: IDerivation<V3>,
-    V1: IDerivation<V2>,
+    V4: AbstractDerivation<Ret>,
+    V3: AbstractDerivation<V4>,
+    V2: AbstractDerivation<V3>,
+    V1: AbstractDerivation<V2>,
   >(
     outer: V1,
-  ) => IDerivation<Ret>) &
-  (<Ret, V3: IDerivation<Ret>, V2: IDerivation<V3>, V1: IDerivation<V2>>(
+  ) => AbstractDerivation<Ret>) &
+  (<Ret, V3: AbstractDerivation<Ret>, V2: AbstractDerivation<V3>, V1: AbstractDerivation<V2>>(
     outer: V1,
-  ) => IDerivation<Ret>) &
-  (<Ret, V2: IDerivation<Ret>, V1: IDerivation<V2>>(
+  ) => AbstractDerivation<Ret>) &
+  (<Ret, V2: AbstractDerivation<Ret>, V1: AbstractDerivation<V2>>(
     outer: V1,
-  ) => IDerivation<Ret>) &
-  (<Ret, V1: IDerivation<Ret>>(outer: V1) => IDerivation<Ret>)
+  ) => AbstractDerivation<Ret>) &
+  (<Ret, V1: AbstractDerivation<Ret>>(outer: V1) => AbstractDerivation<Ret>)
 
 function flattenDeep<V>(
-  depDerivation: IDerivation<V>,
+  depDerivation: AbstractDerivation<V>,
   maxDepth: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 = 7,
-): IDerivation<$FixMe> {
+): AbstractDerivation<$FixMe> {
   return new FlattenDeepDerivation(depDerivation, maxDepth)
 }
 

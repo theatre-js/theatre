@@ -3,7 +3,7 @@ import SideEffectsHandler from './SideEffectsHandler'
 import {PureComponentWithStudio, D} from '$studio/handy'
 // import * as debug from '$shared/debug'
 import TimelinesHandler from './TimelinesHandler'
-import { IDerivation } from '$src/shared/DataVerse/derivations/types';
+import { AbstractDerivation } from '$src/shared/DataVerse/derivations/types';
 
 // type MakeReactiveComponentArgs = {
 //   modifyPrototypalDict: (
@@ -43,7 +43,7 @@ export default function makeReactiveComponent({
     _finalFace: $FixMe
     _whatToRender: $FixMe
     _fnsToCallOnWillUnmount: Array<() => void>
-    _prototypalDictD: IDerivation<$FixMe>
+    _prototypalDictD: AbstractDerivation<$FixMe>
     _sideEffetsHandler: SideEffectsHandler
     isTheaterJSComponent: boolean
     componentType: undefined | string
@@ -53,7 +53,7 @@ export default function makeReactiveComponent({
 
     _atom: $FixMe // D.IDictAtom<{
     //   instanceId: string | number,
-    //   props: $ElementType<Props, 'props'>,
+    //   props: Props['props'],
     //   studio: Studio,
     //   key: string,
     //   state: $FixMe,
@@ -226,7 +226,7 @@ export default function makeReactiveComponent({
       modifierInstantiationDescriptor,
       // $FixMe
       dict,
-    ): IDerivation<$FixMe> {
+    ): AbstractDerivation<$FixMe> {
       return modifierInstantiationDescriptor
         .prop('disabled')
         .flatMap((disabled: boolean) => {

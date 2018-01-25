@@ -1,6 +1,5 @@
-// @flow
+
 import AbstractDerivation from './AbstractDerivation'
-import type {AbstractDerivation} from './types'
 
 const UPDATE_NEEDED_FROM = {
   none: 0,
@@ -8,20 +7,19 @@ const UPDATE_NEEDED_FROM = {
   inner: 2,
 }
 
-export class FlatMapDerivation extends AbstractDerivation
-  implements AbstractDerivation<$FixMe> {
+export class FlatMapDerivation extends AbstractDerivation<$FixMe> {
   _updateNeededFromIndex: number
   _stackOfDependencies: Array<AbstractDerivation<$IntentionalAny>>
   _fn: $FixMe
   _depDerivation: $FixMe
   _innerDerivation: undefined | null | AbstractDerivation<$IntentionalAny>
-  _updateNeededFrom: $Values<typeof UPDATE_NEEDED_FROM>
+  _updateNeededFrom: (typeof UPDATE_NEEDED_FROM)[keyof typeof UPDATE_NEEDED_FROM]
   static displayName = 'flatMap'
 
   constructor(
     depDerivation: AbstractDerivation<$FixMe>,
     fn: $FixMe,
-  ): AbstractDerivation<$FixMe> {
+  ) {
     super()
     this._fn = fn
     this._depDerivation = depDerivation
