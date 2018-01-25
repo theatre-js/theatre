@@ -17,7 +17,7 @@ export default function(pairs: Array<Pair>, providedState?: $IntentionalAny) {
 export function* _multiReduceState(
   pairs: Array<Pair>,
   providedState?: $IntentionalAny,
-): Generator<*, *, *> {
+): Generator_<*, *, *> {
   const appState = yield select()
   const state: $IntentionalAny = providedState || appState
 

@@ -75,3 +75,5 @@ declare var module: {
     dispose: (() => mixed),
   },
 }
+
+type Generator_<A, ReturnType, YieldType> = Generator

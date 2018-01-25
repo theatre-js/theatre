@@ -5,13 +5,13 @@ import {getChannelOfRequestsFromMain, sendRequestToMain} from './utils'
 import {reduceState} from '$shared/utils'
 import {type StoreState} from '$lf/types'
 
-export default function* mirrorOfLBStateRootSaga(): Generator<*, *, *> {
+export default function* mirrorOfLBStateRootSaga(): Generator_<*, *, *> {
   yield fork(handleRequestsFromMain)
   yield call(getInitialStateFromLB)
   yield put(bootstrapAction())
 }
 
-function* handleRequestsFromMain(): Generator<*, *, *> {
+function* handleRequestsFromMain(): Generator_<*, *, *> {
   const requestsFromLB = yield call(getChannelOfRequestsFromMain)
 
   while (true) {
@@ -24,11 +24,11 @@ function* handleRequestsFromMain(): Generator<*, *, *> {
   }
 }
 
-function* receiveNewState(request): Generator<*, *, *> {
+function* receiveNewState(request): Generator_<*, *, *> {
   yield reduceState(['mirrorOfLBState'], () => request.payload)
 }
 
-function* getInitialStateFromLB(): Generator<*, *, *> {
+function* getInitialStateFromLB(): Generator_<*, *, *> {
   const state: StoreState = yield select()
   if (state.mirrorOfLBState) return
   const result = yield call(sendRequestToMain, 'getCurrentState', null)

@@ -14,7 +14,7 @@ describe('combineChannels()', () => {
     const emitterB = new EventEmitter()
 
     const record = []
-    middleware.run(function*(): Generator<*, *, *> {
+    middleware.run(function*(): Generator_<*, *, *> {
       const channelA = yield channelFromEmitter(emitterA, ['a'])
       const channelB = yield channelFromEmitter(emitterB, ['b'])
       const combined = yield call(channel)

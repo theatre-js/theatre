@@ -8,7 +8,7 @@ function* _reduceState(
   path: Path,
   reducer: Function,
   providedState?: $IntentionalAny,
-): Generator<*, *, *> {
+): Generator_<*, *, *> {
   return yield call(_multiReduceState, [{path, reducer}], providedState)
 }
 

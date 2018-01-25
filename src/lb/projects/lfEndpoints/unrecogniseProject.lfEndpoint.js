@@ -8,7 +8,7 @@ type ErrorTypes = 'projectNotRecognised'
 
 export default function* unrecogniseProject(params: {
   filePath: string,
-}): Generator<*, {type: 'ok'} | {type: 'error', errorType: ErrorTypes}, *> {
+}): Generator_<*, {type: 'ok'} | {type: 'error', errorType: ErrorTypes}, *> {
   const state: StoreState = (yield select(): $FixMe)
 
   if (state.projects.listOfPaths.indexOf(params.filePath) === -1) {

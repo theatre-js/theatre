@@ -19,7 +19,7 @@ type ErrorTypes =
 export default function* createNewProject(params: {
   folderPath: string,
   name: string,
-}): Generator<
+}): Generator_<
   *,
   {type: 'ok', filePath: string} | {type: 'error', errorType: ErrorTypes},
   *,

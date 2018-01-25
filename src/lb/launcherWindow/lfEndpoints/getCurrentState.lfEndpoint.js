@@ -2,6 +2,6 @@
 import {select} from 'redux-saga/effects'
 import {type StoreState} from '$lb/types'
 
-export default function* getCurrentState(): Generator<*, StoreState, *> {
+export default function* getCurrentState(): Generator_<*, StoreState, *> {
   return yield select()
 }

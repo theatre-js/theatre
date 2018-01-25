@@ -13,7 +13,7 @@ export default function createStore(
 
   if (process.env.NODE_ENV === 'development' && module.hot) {
     module.hot.accept('./rootReducer', () => {
-      store.runSaga(function*(): Generator<*, *, *> {
+      store.runSaga(function*(): Generator_<*, *, *> {
         const r: $IntentionalAny = require
         yield multiReduceState([
           {

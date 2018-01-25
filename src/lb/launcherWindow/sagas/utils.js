@@ -26,7 +26,7 @@ export function* autoRetryOnTimeout(
   callee: Function,
   args: Array<mixed>,
   numberOfRetries: number = 10,
-): Generator<*, *, *> {
+): Generator_<*, *, *> {
   let retries = -1
   while (true) {
     retries++

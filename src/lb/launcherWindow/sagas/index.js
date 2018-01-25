@@ -34,9 +34,9 @@ function createWindow() {
   return win
 }
 
-function* sendStateUpdatesToWindow(window: BrowserWindow): Generator<*, *, *> {
+function* sendStateUpdatesToWindow(window: BrowserWindow): Generator_<*, *, *> {
   let lastState = yield select()
-  yield takeLatest('*', function*(): Generator<*, *, *> {
+  yield takeLatest('*', function*(): Generator_<*, *, *> {
     yield delay(2)
     const newState = yield select()
     if (!deepEqual(lastState, newState)) {
@@ -58,7 +58,7 @@ function* sendStateUpdatesToWindow(window: BrowserWindow): Generator<*, *, *> {
   })
 }
 
-export default function* laucnherWindowSaga(): Generator<*, *, *> {
+export default function* laucnherWindowSaga(): Generator_<*, *, *> {
   yield electronIsReadyPromise
   let tray = new Tray(temporaryTrayIcon)
   let window = createWindow()
@@ -74,7 +74,7 @@ export default function* laucnherWindowSaga(): Generator<*, *, *> {
   }
 }
 
-function* listenToWindowRequests(window: BrowserWindow): Generator<*, *, *> {
+function* listenToWindowRequests(window: BrowserWindow): Generator_<*, *, *> {
   const requestsFromWindow = yield call(getChannelOfRequestsFromWindow, window)
 
   while (true) {
@@ -91,7 +91,7 @@ function* listenToWindowRequests(window: BrowserWindow): Generator<*, *, *> {
 function* handleRequestFromWindow(
   handler: Function,
   request: Request,
-): Generator<*, *, *> {
+): Generator_<*, *, *> {
   try {
     const result = yield call(handler, request.payload)
     request.respond(result)

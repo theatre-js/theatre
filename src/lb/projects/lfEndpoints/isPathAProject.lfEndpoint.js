@@ -11,7 +11,7 @@ type ReturnType =
 
 export default function* isPathAProject(params: {
   fileOrFolderPath: string,
-}): Generator<*, ReturnType, *> {
+}): Generator_<*, ReturnType, *> {
   if ((yield* call(fse.pathExists, params.fileOrFolderPath)) !== true) {
     return {type: 'ok', isIt: false}
   }
