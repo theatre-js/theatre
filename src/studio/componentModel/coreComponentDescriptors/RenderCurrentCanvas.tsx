@@ -1,5 +1,4 @@
-// @flow
-import {type ComponentDescriptor} from '$studio/componentModel/types'
+import {ComponentDescriptor} from '$studio/componentModel/types'
 import {makeReactiveComponent, elementify} from '$studio/handy'
 import * as D from '$shared/DataVerse'
 
@@ -9,31 +8,31 @@ const RenderCurrentCanvas = makeReactiveComponent({
   componentId,
   componentType: 'HardCoded',
   displayName: 'RenderCurrentCanvas',
-  modifyPrototypalDict: d =>
-    d.extend({
+  modifyPrototypalDict: baseClass =>
+    baseClass.extend({
       render(d) {
         return d.prop('studio').flatMap(studio => {
           const studioAtom = studio.atom
 
-          const componentIdToBeRenderedAsCurrentCanvasPointer = studioAtom
+          const componentIdToBeRenderedAsCurrentCanvasP = studioAtom
             .pointer()
             .prop('workspace')
             .prop('componentIdToBeRenderedAsCurrentCanvas')
-          const children = d
+
+          const childrenP = d
             .pointer()
             .prop('props')
             .prop('children')
+
           const instantiationDescriptorP = D.atoms
             .dict({
-              componentId: D.atoms.box(
-                componentIdToBeRenderedAsCurrentCanvasPointer,
-              ),
+              componentId: D.atoms.box(componentIdToBeRenderedAsCurrentCanvasP),
               props: D.atoms.dict({}),
             })
             .derivedDict()
             .pointer()
 
-          return componentIdToBeRenderedAsCurrentCanvasPointer.flatMap(C => {
+          return componentIdToBeRenderedAsCurrentCanvasP.flatMap(C => {
             if (typeof C === 'string') {
               return elementify(
                 D.derivations.constant('currentCanvas'),
@@ -41,7 +40,7 @@ const RenderCurrentCanvas = makeReactiveComponent({
                 d.prop('studio'),
               )
             } else {
-              return children.getValue()
+              return childrenP.getValue()
             }
           })
         })

@@ -1,8 +1,8 @@
 // @flow
 import * as React from 'react'
-import type {ComponentId} from './index'
+import {ComponentId} from './index'
 
-export type DeclarativeComponentDescriptor = {|
+export type DeclarativeComponentDescriptor = {
   __descriptorType: 'DeclarativeComponentDescriptor',
   id: ComponentId, // this is unique
   displayName: string, // this doesn't have to be
@@ -19,11 +19,11 @@ export type DeclarativeComponentDescriptor = {|
     byId: {[id: string]: PropDescriptor},
     list: Array<string>,
   },
-|}
+}
 
 export type WhatToRender = ReferenceToLocalHiddenValue | ReferenceToProp
 
-export type PropDescriptor = {|
+export type PropDescriptor = {
   // each prop has a uniquely generated ID
   id: string,
   // names are for humans. they'll be unique per component, but that's only because of humans. the code doesn't need the props to be unqiue.
@@ -34,36 +34,36 @@ export type PropDescriptor = {|
   value: $FixMe,
   // the spec of the prop
   spec: $FixMe,
-|}
+}
 
-export type RuleSet = {|
+export type RuleSet = {
   selector: string, // better to have a more structured type for this
-|}
+}
 
-export type ModifierInstantiationValueDescriptor = {|
+export type ModifierInstantiationValueDescriptor = {
   __descriptorType: 'ModifierInstantiationValueDescriptor',
   modifierId: string,
   props: MapDescriptor,
   enabled: boolean,
-|}
+}
 
-export type ModifierDescriptor = {|
+export type ModifierDescriptor = {
   id: string,
   modifyPrototypalDict: $FixMe,
   InspectorComponent?: React.Component<$FixMe>,
-|}
+}
 
-export type ReferenceToLocalHiddenValue = {|
+export type ReferenceToLocalHiddenValue = {
   __descriptorType: 'ReferenceToLocalHiddenValue',
   which: string,
-|}
+}
 
-export type ReferenceToProp = {|
+export type ReferenceToProp = {
   __descriptorType: 'ReferenceToProp',
   propid: string,
-|}
+}
 
-export type MapDescriptor = {[key: string | number]: $FixMe}
+export type MapDescriptor = {[key: string]: $FixMe}
 export type ArrayDescriptor = Array<$FixMe>
 export type StringLiteralDescriptor = string
 export type NumberLiteralDescriptor = number
@@ -77,17 +77,17 @@ export type BooleanLiteralDescriptor = boolean
  * and is already constructed, while ComponentInstantiationValueDescriptor must
  * be constructed first.
  */
-export type ComponentInstantiationValueDescriptor = {|
+export type ComponentInstantiationValueDescriptor = {
   __descriptorType: 'ComponentInstantiationValueDescriptor',
   componentId: ComponentId,
   props: MapDescriptor,
   modifierInstantiationDescriptors: ModifierInstantiationValueDescriptors,
-|}
+}
 
-export type ModifierInstantiationValueDescriptors = {|
+export type ModifierInstantiationValueDescriptors = {
   list: ArrayDescriptor,
   byId: MapDescriptor,
-|}
+}
 
 export type ValueDescriptorDescribedInAnObject =
   | MapDescriptor
@@ -102,31 +102,31 @@ export type ValueDescriptor =
   | BooleanLiteralDescriptor
   | ArrayDescriptor
 
-export type TimelineDescriptor = {|
+export type TimelineDescriptor = {
   __descriptorType: 'TimelineDescriptor',
   id: string,
   vars: {[varId: string]: TimelineVarDescriptor},
-|}
+}
 
-export type PointerThroughLocalHiddenValue = {|
+export type PointerThroughLocalHiddenValue = {
   type: 'PointerThroughLocalHiddenValue',
   localHiddenValueId: string,
   rest: Array<string>,
-|}
+}
 
-export type TimelineVarDescriptor = {|
+export type TimelineVarDescriptor = {
   __descriptorType: 'TimelineVarDescriptor',
   id: string,
   backPointer: PointerThroughLocalHiddenValue,
   points: {
-    firstId: ?string,
-    lastId: ?string,
+    firstId: undefined | null | string,
+    lastId: undefined | null | string,
     // list: Array<string>,
     byId: {[id: string]: TimelineVarPoint},
   },
-|}
+}
 
-export type TimelinePointInterpolationDescriptor = {|
+export type TimelinePointInterpolationDescriptor = {
   __descriptorType: 'TimelinePointInterpolationDescriptor',
   interpolationType: 'CubicBezier',
   lx: number,
@@ -134,9 +134,9 @@ export type TimelinePointInterpolationDescriptor = {|
   rx: number,
   ry: number,
   connected: boolean,
-|}
+}
 
-export type TimelineVarPoint = {|
+export type TimelineVarPoint = {
   __descriptorType: 'TimelineVarPoint',
   id: string,
   time: number,
@@ -144,4 +144,4 @@ export type TimelineVarPoint = {|
   interpolationDescriptor: TimelinePointInterpolationDescriptor,
   prevId: string, // 'head' means we're the first point
   nextId: string, // 'end' means we're the last point
-|}
+}

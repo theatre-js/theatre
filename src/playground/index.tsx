@@ -1,1 +1,1 @@
-import '$shared/DataVerse/devtoolsFormatters/setup'
+import './sixth'

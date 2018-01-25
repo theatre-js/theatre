@@ -14,7 +14,7 @@ export class FlatMapDerivation extends AbstractDerivation
   _stackOfDependencies: Array<IDerivation<$IntentionalAny>>
   _fn: $FixMe
   _depDerivation: $FixMe
-  _innerDerivation: ?IDerivation<$IntentionalAny>
+  _innerDerivation: undefined | null | IDerivation<$IntentionalAny>
   _updateNeededFrom: $Values<typeof UPDATE_NEEDED_FROM>
   static displayName = 'flatMap'
 

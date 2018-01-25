@@ -11,5 +11,5 @@ export type IAtom = {
   changes(): Tappable<$IntentionalAny>, // shallow changes. Does not include what's removed
   deepChanges(): Tappable<$IntentionalAny>, // deep changes. Includes an address
   deepDiffs(): Tappable<$IntentionalAny>, // Unboxed changeset, from oldValue to newValue, including an address, deep
-  getParent(): ?ICompositeAtom,
+  getParent(): undefined | null | ICompositeAtom,
 }

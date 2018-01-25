@@ -14,11 +14,11 @@ type Props = {
   depth?: number,
 }
 type State = {
-  newChildIndex: ?number,
+  newChildIndex: undefined | null | number,
   isCollapsed: boolean,
-  maxHeight: ?number,
+  maxHeight: undefined | null | number,
   initialTopOffset: number,
-  contextMenuProps: ?Object,
+  contextMenuProps: undefined | null | Object,
 }
 
 class NodeContainer extends React.PureComponent<Props, State> {

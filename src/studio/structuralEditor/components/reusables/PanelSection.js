@@ -5,7 +5,7 @@ import cx from 'classnames'
 
 type Props = {
   children: React.Node,
-  withHorizontalMargin: ?boolean,
+  withHorizontalMargin: undefined | null | boolean,
   label?: string,
 }
 

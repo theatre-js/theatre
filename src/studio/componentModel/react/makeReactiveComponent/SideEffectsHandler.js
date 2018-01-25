@@ -8,7 +8,7 @@ export default class SideEffectsHandler {
   _ticker: D.ITicker
   _mapOfStopEffectFnBySideEffectKey: {[key: string | number]: () => void}
   _mapOfUntapFromEachSideEffectKeyPChagnes: {[key: string | number]: () => void}
-  _sideEffectsDictP: D.IDerivation<D.IDerivedDict<$FixMe>>
+  _sideEffectsDictP: IDerivation<D.IDerivedDict<$FixMe>>
   _sideEffectsDictPChanges: $FixMe
   _finalFace: $FixMe
   _currentDict: D.IDerivedDict<$FixMe>

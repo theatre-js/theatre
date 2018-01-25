@@ -21,8 +21,8 @@ type Props = WithRunSagaProps & {
 type State = {
   isCreatingNewProject: boolean,
   isDropzoneActive: boolean,
-  lastDroppedPath: ?string,
-  error: ?string,
+  lastDroppedPath: undefined | null | string,
+  error: undefined | null | string,
 }
 
 class ProjectsPage extends React.Component<Props, State> {

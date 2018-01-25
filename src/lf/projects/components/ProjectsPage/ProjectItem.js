@@ -6,7 +6,7 @@ import {type ProjectDescription} from '$lb/projects/types'
 
 type Props = {
   path: String,
-  projectDesc: ?ProjectDescription,
+  projectDesc: undefined | null | ProjectDescription,
   onForget: Function,
 }
 

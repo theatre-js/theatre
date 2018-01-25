@@ -3,28 +3,28 @@ import * as D from '$shared/DataVerse'
 import * as _ from 'lodash'
 import * as interpolators from './interpolators'
 
-type TimelineIsEmptyBaseState = {|type: 'TimelineIsEmpty'|}
+type TimelineIsEmptyBaseState = {type: 'TimelineIsEmpty'}
 type TimelineIsEmptyState = {
   ...TimelineIsEmptyBaseState,
-  firstIdP: D.IDerivation<null | string>,
+  firstIdP: IDerivation<null | string>,
 }
 
-type ErrorBaseState = {|type: 'Error'|}
+type ErrorBaseState = {type: 'Error'}
 type ErrorState = {...ErrorBaseState}
 
-type TimeIsBeforeFirstPointBaseState = {|type: 'TimeIsBeforeFirstPoint'|}
+type TimeIsBeforeFirstPointBaseState = {type: 'TimeIsBeforeFirstPoint'}
 type TimeIsBeforeFirstPointState = {
   ...TimeIsBeforeFirstPointBaseState,
-  timeOfFirstPointD: D.IDerivation<?number>,
+  timeOfFirstPointD: IDerivation<undefined | null | number>,
 }
 
-type ObservingKeyBaseState = {|type: 'ObservingKey', key: string|}
+type ObservingKeyBaseState = {type: 'ObservingKey', key: string}
 type ObservingKeyState = {
   ...ObservingKeyBaseState,
-  leftPointTimeP: D.IDerivation<?number>,
-  isLastPointD: D.IDerivation<?boolean>,
-  possibleRightPointTimeD: D.IDerivation<?number>,
-  interpolatorD: D.IDerivation<$FixMe>,
+  leftPointTimeP: IDerivation<undefined | null | number>,
+  isLastPointD: IDerivation<undefined | null | boolean>,
+  possibleRightPointTimeD: IDerivation<undefined | null | number>,
+  interpolatorD: IDerivation<$FixMe>,
 }
 
 type PossibleBaseStates =
@@ -79,7 +79,7 @@ const handlersByState = {
       const firstPointD = d._pointsP
         .prop('firstId')
         .flatMap(
-          (firstId: ?string) =>
+          (firstId: undefined | null | string) =>
             firstId ? d._pointsP.prop('byId').prop(firstId) : undefined,
         )
 
@@ -188,7 +188,7 @@ const handlersByState = {
           typeof rightPointId === 'string' ? rightPointId === 'end' : undefined,
       )
 
-      const possibleRightPointD = rightPointIdP.flatMap((nextId: ?string) => {
+      const possibleRightPointD = rightPointIdP.flatMap((nextId: undefined | null | string) => {
         if (typeof nextId === 'string' && nextId !== 'end') {
           return d._pointsP.prop('byId').prop(nextId)
         }
@@ -219,7 +219,7 @@ const handlersByState = {
         'interpolationType',
       )
       const interpolatorD = interpolationTypeP.flatMap(
-        (interpolationType: ?string) => {
+        (interpolationType: undefined | null | string) => {
           // $FlowIgnore
           const interpolator = interpolators[interpolationType]
           if (interpolator) {
@@ -389,7 +389,7 @@ export default class ValueDerivation extends D.derivations.AbstractDerivation {
     return baseStates.error
   }
 
-  _youMayNeedToUpdateYourself(msgComingFrom: D.IDerivation<$FixMe>) {
+  _youMayNeedToUpdateYourself(msgComingFrom: IDerivation<$FixMe>) {
     this._changeObservedIn.add(msgComingFrom)
 
     D.derivations.AbstractDerivation.prototype._youMayNeedToUpdateYourself.call(

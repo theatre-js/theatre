@@ -27,8 +27,8 @@ type State = {
     index: number,
     offset: number,
     height: number,
-    mergeWith?: ?number,
-    moveTo?: ?number,
+    mergeWith?: undefined | null | number,
+    moveTo?: undefined | null | number,
   },
   moveRatios: number[],
   boundaries: number[],
@@ -150,7 +150,7 @@ class Content extends React.Component<Props, State> {
     }
   }
 
-  _setBoxBeingDraggedToMoveTo(index: ?number) {
+  _setBoxBeingDraggedToMoveTo(index: undefined | null | number) {
     if (this.state.boxBeingDragged == null) return
     const draggedIndex = this.state.boxBeingDragged.index
     if (index === draggedIndex) index = null
@@ -171,7 +171,7 @@ class Content extends React.Component<Props, State> {
     }))
   }
 
-  _setBoxBeingDraggedToMergeWith(index: ?number) {
+  _setBoxBeingDraggedToMergeWith(index: undefined | null | number) {
     this.setState(state => ({
       boxBeingDragged: {
         ...state.boxBeingDragged,

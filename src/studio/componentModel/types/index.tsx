@@ -1,4 +1,3 @@
-// @flow
 import {ComponentType as ReactComponentType} from 'react'
 import {DeclarativeComponentDescriptor, ModifierDescriptor} from './declarative'
 /*:: export type * from './declarative' */
@@ -7,24 +6,24 @@ import {DeclarativeComponentDescriptor, ModifierDescriptor} from './declarative'
 export type ComponentId = string
 
 export type ComponentInstantiationDescriptor = {
-  displayName: string,
-  componentId: ComponentId,
-  props: {[key: string]: $FixMe},
-  modifierInstantiationDescriptorsById: {[id: string]: $FixMe},
-  listOfModifierInstantiationDescriptorIds: Array<string>,
+  displayName: string
+  componentId: ComponentId
+  props: {[key: string]: $FixMe}
+  modifierInstantiationDescriptorsById: {[id: string]: $FixMe}
+  listOfModifierInstantiationDescriptorIds: Array<string>
 }
 
 export type AliasComponentDescriptor = {
-  id: ComponentId,
-  type: 'Alias',
-  aliasedComponentId: ComponentId,
+  id: ComponentId
+  type: 'Alias'
+  aliasedComponentId: ComponentId
 }
 
 export type HardCodedComponentDescriptor = {
-  displayName: string,
-  id: ComponentId,
-  type: 'HardCoded',
-  reactComponent: ReactComponentType<$FixMe>,
+  displayName: string
+  id: ComponentId
+  type: 'HardCoded'
+  reactComponent: ReactComponentType<$FixMe>
 }
 
 export type ComponentDescriptor =
@@ -32,16 +31,16 @@ export type ComponentDescriptor =
   | AliasComponentDescriptor
   | HardCodedComponentDescriptor
 
-// export type ComponentModelNamespaceState = {|
+// export type ComponentModelNamespaceState = {
 //   componentDescriptorsById: {[id: ComponentId]: ComponentDescriptor},
-// |}
+// }
 
 export type ComponentModelNamespaceState = {
   componentDescriptors: {
-    core: {[id: ComponentId]: ComponentDescriptor},
-    custom: {[id: ComponentId]: ComponentDescriptor},
-  },
+    core: {[id: string]: ComponentDescriptor}
+    custom: {[id: string]: ComponentDescriptor}
+  }
   modifierDescriptors: {
-    core: {[id: string]: ModifierDescriptor},
-  },
+    core: {[id: string]: ModifierDescriptor}
+  }
 }

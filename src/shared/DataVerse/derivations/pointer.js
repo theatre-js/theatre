@@ -44,7 +44,7 @@ export type IPointerToDictAtom<O: {}> = BasePointer &
     _type: O,
     prop<K: $Keys<O>>(K): DecidePointerType<$ElementType<O, K>>,
     pointer(): IPointerToDictAtom<O>,
-    index(?number): IPointerToVoid,
+    index(undefined | null | number): IPointerToVoid,
   }
 
 export type IPointerToArrayAtom<V> = BasePointer &
@@ -59,7 +59,7 @@ export type IPointerToVoid = BasePointer &
   IDerivation<void> & {
     prop($IntentionalAny): IPointerToVoid,
     pointer(): IPointerToVoid,
-    index(?number): IPointerToVoid,
+    index(undefined | null | number): IPointerToVoid,
   }
 
 export type IPointerToBoxAtom<V> = BasePointer &
@@ -67,7 +67,7 @@ export type IPointerToBoxAtom<V> = BasePointer &
     _type: V,
     prop($IntentionalAny): IPointerToVoid,
     pointer(): IPointerToBoxAtom<V>,
-    index(?number): IPointerToVoid,
+    index(undefined | null | number): IPointerToVoid,
   }
 
 interface _IPointer<V> {
@@ -98,7 +98,7 @@ export class PointerDerivation extends AbstractDerivation
   static NOTFOUND: void = undefined //Symbol('notfound')
   isPointer = 'True'
   _address: Address
-  _internalDerivation: ?IDerivation<$FixMe>
+  _internalDerivation: undefined | null | IDerivation<$FixMe>
   getValue: () => $FixMe
   inPointer = true
 

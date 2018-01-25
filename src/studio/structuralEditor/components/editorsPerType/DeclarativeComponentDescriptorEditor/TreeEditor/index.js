@@ -103,7 +103,7 @@ class TreeEditor extends React.PureComponent<Props, State> {
     descriptor: Object,
     localHiddenValuesById: Object,
     index: number = 0,
-    parentId: ?string = null,
+    parentId: undefined | null | string = null,
   ): Object {
     const {getComponentDescriptor} = this.props
     if (descriptor.__descriptorType != null) {
@@ -181,7 +181,7 @@ class TreeEditor extends React.PureComponent<Props, State> {
 
   _getComponentStatusAndActionPayload(
     id: string,
-  ): {stauts: string, actionPayload: ?Object} {
+  ): {stauts: string, actionPayload: undefined | null | Object} {
     let status = STATUS_BY_ACTION.DEFAULT,
       actionPayload
     if (this.lastAction.payload != null && this.lastAction.payload.id === id) {
@@ -328,7 +328,7 @@ class TreeEditor extends React.PureComponent<Props, State> {
     )
   }
 
-  dropHandler = (dropZoneProps: ?Object) => {
+  dropHandler = (dropZoneProps: undefined | null | Object) => {
     document.styleSheets[0].removeRule(
       document.styleSheets[0].cssRules.length - 1,
     )

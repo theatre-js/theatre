@@ -13,7 +13,7 @@ describe('extend()', () => {
 
     const o2: D.IDictAtom<{
       b: D.IBoxAtom<string>,
-      a: D.IBoxAtom<?string>,
+      a: D.IBoxAtom<undefined | null | string>,
       c?: D.IBoxAtom<string>,
     }> = D.atoms.dict({
       b: D.atoms.box('b'),

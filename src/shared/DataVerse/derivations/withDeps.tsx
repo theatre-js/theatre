@@ -1,15 +1,15 @@
 // @flow
 import AbstractDerivation from './AbstractDerivation'
-import type {IDerivation} from './types'
+import {IDerivation} from './types'
 
 // type Deps<O> = $ObjMap<O, <V>(v: V) => IDerivation<V>>
 
-export class WithDepsDerivation<V, O: {}> extends AbstractDerivation
+export class WithDepsDerivation<V, O> extends AbstractDerivation
   implements IDerivation<V> {
   getValue: () => V
 
   _deps: O
-  _fn: *
+  _fn: $FixMe
 
   constructor(dependencies: O, fn: (dependencies: O) => V) {
     super()
@@ -26,7 +26,7 @@ export class WithDepsDerivation<V, O: {}> extends AbstractDerivation
   }
 }
 
-export default function withDeps<V, O: {}>(
+export default function withDeps<V, O>(
   deps: O,
   fn: (dependencies: O) => V,
 ): IDerivation<V> {

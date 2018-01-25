@@ -147,6 +147,7 @@ export default function makeReactiveComponent({
           this._whatToRender = whatToRender
           this.forceUpdate()
         })
+        
       this._fnsToCallOnWillUnmount.push(untapFromRender)
 
       const sideEffectsDictP = this._finalFace.pointer().prop('sideEffects')
@@ -225,7 +226,7 @@ export default function makeReactiveComponent({
       modifierInstantiationDescriptor,
       // $FixMe
       dict,
-    ): D.IDerivation<$FixMe> {
+    ): IDerivation<$FixMe> {
       return modifierInstantiationDescriptor
         .prop('disabled')
         .flatMap((disabled: boolean) => {
@@ -241,7 +242,7 @@ export default function makeReactiveComponent({
                 .prop('core')
                 .prop(modifierId)
                 .prop('modifyPrototypalDict')
-                .flatMap((possibleFn: ?Function) => {
+                .flatMap((possibleFn: undefined | null | Function) => {
                   if (!possibleFn) console.warn('this shouldnt happen')
                   return possibleFn
                     ? possibleFn(

@@ -330,8 +330,8 @@ class LanesViewer extends React.PureComponent<Props, State> {
   _normalizeHandles = (
     handles: PointHandles,
     point: Point,
-    prevPoint: ?Point,
-    nextPoint: ?Point,
+    prevPoint: undefined | null | Point,
+    nextPoint: undefined | null | Point,
   ): PointHandles => {
     const handlesInPixels = [
       ...(prevPoint != null
@@ -358,8 +358,8 @@ class LanesViewer extends React.PureComponent<Props, State> {
   _deNormalizeHandles = (
     handles: PointHandles,
     point: Point,
-    prevPoint: ?Point,
-    nextPoint: ?Point,
+    prevPoint: undefined | null | Point,
+    nextPoint: undefined | null | Point,
   ): PointHandles => {
     const deNormalizedHandles: PointHandles = [
       this._deNormalizeX(handles[0]),

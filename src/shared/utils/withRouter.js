@@ -4,7 +4,7 @@ import {withRouter} from 'react-router-dom'
 
 export type WithRouterProps = {
   history: {
-    push: (path: string, options: ?Object) => void,
+    push: (path: string, options: undefined | null | Object) => void,
     goBack: Function,
     replace: (path: string) => void,
   },

@@ -11,8 +11,8 @@ import {
 
 type Props = {
   point: NormalizedPoint,
-  prevPoint: ?NormalizedPoint,
-  nextPoint: ?NormalizedPoint,
+  prevPoint: undefined | null | NormalizedPoint,
+  nextPoint: undefined | null | NormalizedPoint,
   laneWidth: number,
   addConnector: Function,
   changePointPositionBy: Function,

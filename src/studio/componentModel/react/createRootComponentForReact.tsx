@@ -54,7 +54,7 @@ const createRootComponentForReact = (studio: TheStudioClass) => {
       return false
     }
 
-    render() {
+    render() {      
       return (
         <DerivationAsReactElement
           key="RenderCurrentCanvas"

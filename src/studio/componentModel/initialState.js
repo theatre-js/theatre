@@ -282,6 +282,7 @@ const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
     __descriptorType: 'ReferenceToLocalHiddenValue',
     which: 'alaki',
   },
+  // whatToRender: 'hi',
 }
 
 const initialState: ComponentModelNamespaceState = {

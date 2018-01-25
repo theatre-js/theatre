@@ -5,7 +5,7 @@ import css from './index.css'
 type Props = {
   value: string,
   onChange: ({k: string, v: string}) => boolean,
-  validationError: ?string,
+  validationError: undefined | null | string,
 }
 
 export class TextInput extends React.PureComponent<Props, void> {

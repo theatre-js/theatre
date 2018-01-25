@@ -1,10 +1,10 @@
-// @flow
 import * as D from '$shared/DataVerse'
 import KeyedSideEffectRunner from '$shared/utils/KeyedSideEffectRunner'
+import Ticker from '$src/shared/DataVerse/Ticker'
 
 const styleSetter = (elRef: HTMLElement, unprefixedKey: string) => {
   const key = unprefixedKey // @todo add vendor prefixes
-  return (value: ?string) => {
+  return (value: undefined | null | string) => {
     const finalValue = value === null || value === undefined ? '' : value
     // $FixMe
     elRef.style[key] = finalValue
@@ -16,7 +16,7 @@ const blank = {
   unapply: () => {},
 }
 
-export default function reifiedStyleApplier(dict: $FixMe, ticker: D.ITicker) {
+export default function reifiedStyleApplier(dict: $FixMe, ticker: Ticker) {
   const reifiedStylesP = dict.pointer().prop('reifiedStyles')
   const proxy = D.derivations.autoProxyDerivedDict(reifiedStylesP, ticker)
 
@@ -25,7 +25,7 @@ export default function reifiedStyleApplier(dict: $FixMe, ticker: D.ITicker) {
     .prop('state')
     .prop('elRef')
 
-  const getXiguluForKey = key => {
+  const getApplyAndUnapplyForKey = (key: string) => {
     return D.derivations.withDeps({elRefD: elRefD}, ({elRefD}) => {
       const elRef = elRefD.getValue()
 
@@ -35,6 +35,10 @@ export default function reifiedStyleApplier(dict: $FixMe, ticker: D.ITicker) {
     })
   }
 
-  const runner = new KeyedSideEffectRunner(proxy, ticker, getXiguluForKey)
+  const runner = new KeyedSideEffectRunner(
+    proxy,
+    ticker,
+    getApplyAndUnapplyForKey,
+  )
   return runner
 }

@@ -1,16 +1,16 @@
-// @flow
 import * as D from '$shared/DataVerse'
 import _ from 'lodash'
+import {IDerivation} from '$src/shared/DataVerse/derivations/types'
 
 type Dict = $FixMe
 type EmptyFn = () => void
 
 type Xigulu = {
-  apply: (value: $FixMe) => void,
-  unapply: () => void,
+  apply: (value: $FixMe) => void
+  unapply: () => void
 }
 
-type GetXiguluForKey = (key: string) => D.IDerivation<Xigulu>
+type GetXiguluForKey = (key: string) => IDerivation<Xigulu>
 
 export default class KeyedSideEffectRunner {
   _dict: Dict
@@ -18,8 +18,8 @@ export default class KeyedSideEffectRunner {
   _sideEffectsDict: $FixMe
   _untapFromDict: () => void
   _started: boolean
-  _activeKeys: {[key: string]: {remove: EmptyFn, stopObserving: EmptyFn}}
-  _getXiguluForKey: (key: string) => D.IDerivation<Xigulu>
+  _activeKeys: {[key: string]: {remove: EmptyFn; stopObserving: EmptyFn}}
+  _getXiguluForKey: (key: string) => IDerivation<Xigulu>
 
   constructor(
     sideEffectsDict: Dict,
@@ -69,7 +69,7 @@ export default class KeyedSideEffectRunner {
 
     const valueD = this._sideEffectsDict.prop(key)
 
-    const xigulu: D.IDerivation<Xigulu> = this._getXiguluForKey(key)
+    const xigulu: IDerivation<Xigulu> = this._getXiguluForKey(key)
 
     const untap = D.derivations
       .withDeps({valueD, xigulu}, ({valueD, xigulu}) => ({valueD, xigulu}))

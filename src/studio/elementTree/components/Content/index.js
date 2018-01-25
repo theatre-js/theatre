@@ -17,8 +17,8 @@ type State = {
   nodes: Object,
 }
 
-class ElementTreePanelContent extends React.PureComponent<Props, State> {
-  rendererID: ?string
+class ExplorerPanel extends React.PureComponent<Props, State> {
+  rendererID: undefined | null | string
   _refMap: Object
 
   constructor(props: Props) {
@@ -32,7 +32,7 @@ class ElementTreePanelContent extends React.PureComponent<Props, State> {
     this.updateTimeout = null
   }
 
-  _subscribeToHookEvents(hook: ?Object) {
+  _subscribeToHookEvents(hook: undefined | null | Object) {
     if (hook == null) throw Error('Dev tools hook not found!')
     hook.sub('renderer', data => {
       this.rendererID = data.id
@@ -176,4 +176,4 @@ class ElementTreePanelContent extends React.PureComponent<Props, State> {
   }
 }
 
-export default ElementTreePanelContent
+export default ExplorerPanel

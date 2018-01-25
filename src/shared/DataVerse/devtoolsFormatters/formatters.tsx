@@ -26,7 +26,7 @@ makeFormatter({
     return [
       'div',
       {},
-      ['span', {style: styles.header}, 'BoxAtom'],
+      ['span', {style: styles.header}, 'BoxAtom '],
       ['object', {object: o._value}],
     ]
   },

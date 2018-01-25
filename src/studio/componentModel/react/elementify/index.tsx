@@ -1,28 +1,30 @@
-import * as React from 'react' // eslint-disable-line flowtype/require-valid-file-annotation
+import * as React from 'react'
 import * as D from '$shared/DataVerse'
 import ElementifyDeclarativeComponent from './ElementifyDeclarativeComponent'
-import type {Studio} from '$studio/handy'
+import {Studio} from '$studio/handy'
 import stringStartsWith from 'lodash/startsWith'
+import { IDerivation } from '$src/shared/DataVerse/derivations/types';
 
 const identity = a => a
 
 const getComponentDescriptorById = (
-  id: D.IDerivation<string>,
-  studio: D.IDerivation<$FixMe>,
+  idD: IDerivation<string>,
+  studioD: IDerivation<$FixMe>,
 ): $FixMe =>
   D.derivations
-    .withDeps({id, studio}, identity)
-    .flatMap(({id, studio}): $FixMe => {
-      const idString = id.getValue()
+    .withDeps({idD, studioD}, identity)
+    .flatMap(({idD, studioD}): $FixMe => {
+      const idString = idD.getValue()
       return stringStartsWith(idString, 'TheaterJS/Core/')
-        ? studio
+        ? studioD
             .getValue()
             .atom.pointer()
             .prop('componentModel')
             .prop('componentDescriptors')
             .prop('core')
             .prop(idString)
-        : studio
+
+        : studioD
             .getValue()
             .atom.pointer()
             .prop('componentModel')
@@ -32,12 +34,12 @@ const getComponentDescriptorById = (
     })
 
 export const getAliasLessComponentDescriptor = (
-  initialComponentId: D.IDerivation<string>,
-  studio: D.IDerivation<Studio>,
+  initialComponentIdD: IDerivation<string>,
+  studioD: IDerivation<Studio>,
 ): $FixMe => {
-  return getComponentDescriptorById(initialComponentId, studio).flatMap(
+  return getComponentDescriptorById(initialComponentIdD, studioD).flatMap(
     (des): $FixMe => {
-      if (!des) return
+      if (!des) return des
 
       return des
         .pointer()
@@ -50,7 +52,7 @@ export const getAliasLessComponentDescriptor = (
               .flatMap(aliasedComponentId =>
                 getAliasLessComponentDescriptor(
                   D.derivations.constant(aliasedComponentId),
-                  studio,
+                  studioD,
                 ),
               )
           } else {
@@ -64,7 +66,7 @@ export const getAliasLessComponentDescriptor = (
 const elementify = (keyD, instantiationDescriptorP, studioD) => {
   const componentIdP = instantiationDescriptorP.prop('componentId')
   return getAliasLessComponentDescriptor(componentIdP, studioD).flatMap(
-    componentDescriptor => {
+    (componentDescriptor: $FixMe) => {
       if (!componentDescriptor)
         return D.derivations.autoDerive(() => {
           return <div>Cannot find component {componentIdP.getValue()}</div>
@@ -97,10 +99,10 @@ const elementify = (keyD, instantiationDescriptorP, studioD) => {
 export default elementify
 
 const elementifyHardCodedComponent = (
-  keyD,
-  componentDescriptorP,
-  propsP,
-  modifierInstantiationDescriptorsP,
+  keyD: IDerivation<string>,
+  componentDescriptorP: $FixMe,
+  propsP: $FixMe,
+  modifierInstantiationDescriptorsP: $FixMe,
 ) => {
   const reactComponentP = componentDescriptorP.prop('reactComponent')
   const componentIdD = componentDescriptorP.prop('id')
@@ -122,10 +124,10 @@ const elementifyHardCodedComponent = (
 }
 
 const elementifyDeclarativeComponent = (
-  keyD,
-  componentDescriptorP,
-  propsP,
-  modifierInstantiationDescriptorsP,
+  keyD: IDerivation<string>,
+  componentDescriptorP: $FixMe,
+  propsP: $FixMe,
+  modifierInstantiationDescriptorsP: $FixMe,
 ) => {
   const componentIdD = componentDescriptorP.prop('id')
   const finalKeyD = D.derivations.autoDerive(() => {

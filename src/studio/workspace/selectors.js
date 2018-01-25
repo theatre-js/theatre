@@ -17,7 +17,7 @@ export const getPanelById: Selector<PanelObject, string> = (state, panelId) =>
   state.workspace.panels.byId[panelId]
 
 export const getCurrentlyDraggingOutput: Selector<
-  ?DraggingOutput,
+  undefined | null | DraggingOutput,
   void,
 > = state => state.workspace.panels.currentlyDraggingOutput
 

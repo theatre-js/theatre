@@ -9,7 +9,7 @@ export interface IProxyDerivedDict<O: {}> extends IDerivedDict<O> {
   setSource(IDerivedDict<O>): IProxyDerivedDict<O>;
 }
 
-class ProxyDerivedDict<O: {}> extends AbstractDerivedDict
+class ProxyDerivedDict<O> extends AbstractDerivedDict
   implements IProxyDerivedDict<O> {
   _sourceBox: IBoxAtom<IDerivedDict<O>>
   _sourceBoxD: IDerivation<IDerivedDict<O>>

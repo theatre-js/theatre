@@ -1,16 +1,16 @@
 // @flow
 import AbstractDerivedDict from './AbstractDerivedDict'
-import type {IDerivedDict} from './types'
-import type {ITicker} from '$shared/DataVerse/Ticker'
+import {IDerivedDict} from './types'
+import {ITicker} from '$shared/DataVerse/Ticker'
 import _ from 'lodash'
-import type {IDerivation} from '../types'
+import {IDerivation} from '../types'
 import {
   default as proxyDerivedDict,
-  type IProxyDerivedDict,
+  IProxyDerivedDict,
 } from './proxyDerivedDict'
 import emptyDict from './emptyDict'
 
-class AutoProxyDerivedDict<O: {}> extends AbstractDerivedDict
+class AutoProxyDerivedDict<O> extends AbstractDerivedDict
   implements IDerivedDict<O> {
   _proxy: IProxyDerivedDict<O>
   _sourceD: IDerivation<IDerivedDict<O>>
@@ -71,7 +71,7 @@ class AutoProxyDerivedDict<O: {}> extends AbstractDerivedDict
   }
 }
 
-export default function autoProxyDerivedDict<O: {}>(
+export default function autoProxyDerivedDict<O>(
   initialSource: IDerivation<IDerivedDict<O>>,
   ticker: ITicker,
 ): IDerivedDict<O> {

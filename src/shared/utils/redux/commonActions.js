@@ -20,7 +20,7 @@ export const setStateAction = actionCreator('@@root/SET_STATE')
 // Reset the store back to the initial state
 export const resetStateAction = actionCreator(
   '@@root/RESET_STATE',
-  (namespacesToReset: ?Array<string>) => namespacesToReset,
+  (namespacesToReset: undefined | null | Array<string>) => namespacesToReset,
 )
 
 export const reduceStateAction = (

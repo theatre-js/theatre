@@ -3,12 +3,12 @@ import * as D from '$shared/DataVerse'
 import UnitBezier from 'timing-function/lib/UnitBezier'
 
 type Config = {
-  timeD: D.IDerivation<number>,
+  timeD: IDerivation<number>,
   interpolationDescriptorP: $FixMe,
-  leftPointTimeD: D.IDerivation<number>,
-  leftPointValueD: D.IDerivation<$FixMe>,
-  rightPointTimeD: D.IDerivation<?number>,
-  rightPointValueD: D.IDerivation<$FixMe>,
+  leftPointTimeD: IDerivation<number>,
+  leftPointValueD: IDerivation<$FixMe>,
+  rightPointTimeD: IDerivation<undefined | null | number>,
+  rightPointValueD: IDerivation<$FixMe>,
 }
 
 type Solver = {
@@ -17,7 +17,7 @@ type Solver = {
 
 export default function interpolationDerivationForCubicBezier(
   config: Config,
-): D.IDerivation<$FixMe> {
+): IDerivation<$FixMe> {
   // debugger
   return isConnected(config).flatMap(
     isConnected =>

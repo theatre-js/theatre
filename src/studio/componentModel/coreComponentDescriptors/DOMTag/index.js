@@ -1,7 +1,7 @@
 // @flow
 import * as D from '$shared/DataVerse' // eslint-disable-line flowtype/require-valid-file-annotation
 import * as React from 'react'
-import {type ComponentDescriptor} from '$studio/componentModel/types'
+import {ComponentDescriptor} from '$studio/componentModel/types'
 import {makeReactiveComponent} from '$studio/handy'
 
 const lookupTable = {
@@ -35,7 +35,7 @@ const lookupTable = {
     const stateP = d.pointer().prop('state')
     return D.derivations.autoDerive(() => {
       const state: D.IDictAtom<{
-        elRef: D.IBoxAtom<?HTMLElement>,
+        elRef: D.IBoxAtom<undefined | null | HTMLElement>,
       }> = stateP.getValue()
 
       return function setElRef(el) {
@@ -46,7 +46,7 @@ const lookupTable = {
 }
 
 type State = D.IDictAtom<{
-  elRef: D.IBoxAtom<?HTMLElement>,
+  elRef: D.IBoxAtom<undefined | null | HTMLElement>,
 }>
 
 const componentId = 'TheaterJS/Core/DOMTag'

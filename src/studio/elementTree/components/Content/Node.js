@@ -33,7 +33,7 @@ type Props = {
   selectNode: Function,
   selectedNodePath: Path,
   displayName: string,
-  shouldSwallowChild: ?boolean,
+  shouldSwallowChild: undefined | null | boolean,
   depth?: number,
   classNames: string,
 }

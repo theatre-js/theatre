@@ -23,7 +23,7 @@ type ConstructorProps<State, Action> = {
  */
 export default class StandardStore<State: Object, Action: Object> {
   sagaMiddleware: *
-  _initialState: ?State
+  _initialState: undefined | null | State
   rootReducer: Reducer<State, Action>
   reduxStore: Store<State, Action>
   rootSaga: RootSaga<State, Action>

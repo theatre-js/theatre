@@ -27,12 +27,10 @@ export class ArrayAtom<V> extends AbstractCompositeAtom<
   isArrayAtom = 'True'
   _pointer: undefined | $FixMe
   _internalArray: V[]
-  _refToIndex: Map<$FixMe, $FixMe>
 
   constructor(a: V[]) {
     super()
     this._internalArray = []
-    this._refToIndex = new Map()
     this._pointer = undefined
 
     forEach(a, (value: V) => {
@@ -43,7 +41,6 @@ export class ArrayAtom<V> extends AbstractCompositeAtom<
 
   _pushWithoutInvokingEvents(value: V) {
     this._internalArray.push(value)
-    this._refToIndex.set(value, this._internalArray.length - 1)
     this._adopt(this._internalArray.length - 1, value)
   }
 
@@ -69,26 +66,14 @@ export class ArrayAtom<V> extends AbstractCompositeAtom<
     removedRefs.forEach((r, i) => {
       if (r) {
         this._unadopt(i + startIndex, r)
-        this._refToIndex.delete(r)
       }
     })
 
     this._internalArray.splice(startIndex, deleteCount, ...refsToAdd)
     refsToAdd.forEach((ref, i) => {
       const index = i + startIndex
-      this._refToIndex.set(ref, index)
       this._adopt(index, ref)
     })
-
-    if (deleteCount !== refsToAdd.length) {
-      for (
-        let i = startIndex + refsToAdd.length;
-        i < this._internalArray.length;
-        i++
-      ) {
-        this._refToIndex.set(this._internalArray[i], i)
-      }
-    }
 
     if (this._changeEmitter.hasTappers()) {
       this._changeEmitter.emit(
