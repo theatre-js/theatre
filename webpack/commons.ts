@@ -23,19 +23,24 @@ type PackageName = 'studio' | 'playground' | 'examples'
 export type Envs = 'development' | 'production'
 
 export type Options = {
-  env: 'development' | 'production',
-  withReactHotLoading?: boolean,
-  packageName: PackageName,
-  entries?: {[key: string]: string[]},
-  withReactHotLoader: boolean,
-  withDevServer?: boolean,
+  env: 'development' | 'production'
+  withReactHotLoading?: boolean
+  packageName: PackageName
+  entries?: {[key: string]: string[]}
+  withReactHotLoader: boolean
+  withDevServer?: boolean
 }
 
 const babelForTsHotReloading = () => ({
   loader: require.resolve('babel-loader'),
   options: {
     babelrc: false,
-    plugins: ['react-hot-loader/babel'],
+    plugins: [
+      'react-hot-loader/babel',
+      // this one is needed if we want to avoid the 'setState() cannot be called un an unmounted component' errors
+      'transform-es2015-classes',
+    ],
+
     // This is a feature of `babel-loader` for webpack (not Babel itself).
     // It enables caching results in ./node_modules/.cache/babel-loader/
     // directory for faster rebuilds.
@@ -57,10 +62,10 @@ export const makeConfigParts = (options: Options) => {
   global.$$$NODE_ENV = options.env
 
   const config: webpack.Configuration & {
-    output: webpack.Output,
-    plugins: webpack.Plugin[],
-    module: webpack.Module,
-    resolve: webpack.Resolve,
+    output: webpack.Output
+    plugins: webpack.Plugin[]
+    module: webpack.Module
+    resolve: webpack.Resolve
   } = {
     entry: mapValues(
       options.entries || {},
@@ -185,7 +190,14 @@ export const makeConfigParts = (options: Options) => {
           // it's runtime that would otherwise processed through "file" loader.
           // Also exclude `html` and `json` extensions so they get processed
           // by webpacks internal loaders.
-          exclude: [/\.js$/, /\.tsx?$/, /\.html$/, /\.json$/, /\.css$/, /\.svg$/],
+          exclude: [
+            /\.js$/,
+            /\.tsx?$/,
+            /\.html$/,
+            /\.json$/,
+            /\.css$/,
+            /\.svg$/,
+          ],
           loader: require.resolve('file-loader'),
           options: {
             name: 'static/media/[name].[hash:8].[ext]',

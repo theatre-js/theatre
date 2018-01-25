@@ -37,7 +37,7 @@
     },
     "studio:development": {
       "presets": [
-        ["env", {"targets": {"chrome": "56", "modules": false}}],
+        ["env", {"targets": {"chrome": "56", "modules": false}, "include": ["transform-es2015-classes"]}],
         "react",
         "stage-1"
       ],

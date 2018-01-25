@@ -12,7 +12,6 @@ export class EmptyDict extends AbstractDerivedDict<$FixMe> {
     return this
   }
 
-  // eslint-disable-next-line no-unused-vars
   prop(k: mixed) {
     return constantDerivation(undefined)
   }
