@@ -8,7 +8,7 @@
     "lint": "eslint ./src",
     "test": "jest",
     "prettify-and-lint": "run-s prettify lint",
-    "prettify": "prettier --write \"src/**/*.js\"",
+    "prettify": "prettier --write \"src/**/*.tsx\"",
     "prepush": "run-p prettify-and-lint test",
     "lb:webpack:dev": "webpack --progress --config webpack/lb/development.babel.js --watch",
     "lb:dev": "nodemon -e jade --exec \"electron\" ./bundles/lb/index.js",
@@ -21,6 +21,7 @@
     "open-examples": "opn http://localhost:9092/examples"
   },
   "jest": {
+    "testMatch": ["**/?(*.)(spec|test).ts?(x)"],
     "moduleNameMapper": {
       "\\$root/(.*)": "<rootDir>/$1",
       "\\$src/(.*)": "<rootDir>/src/$1",
@@ -30,7 +31,7 @@
       "\\$shared/(.*)": "<rootDir>/src/shared/$1"
     },
     "setupFiles": [
-      "./src/test/env.js"
+      "./src/test/env.tsx"
     ],
     "automock": false,
     "transform": {
@@ -124,6 +125,7 @@
     "style-loader": "^0.19.0",
     "svg-inline-loader": "^0.8.0",
     "timing-function": "^0.2.3",
+    "ts-jest": "^22.0.1",
     "ts-loader": "^3.3.0",
     "ts-node": "^4.1.0",
     "tsconfig-paths-webpack-plugin": "^2.0.0",
