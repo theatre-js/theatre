@@ -11,7 +11,7 @@ export class DerivationOfAPropOfAPrototypalDictFace<V> extends ProxyDerivation<
   static displayName = 'PDF.Prop'
 }
 
-export default function propOfPrototypalDictFace<V, D: AbstractDerivation<V>>(
+export default function propOfPrototypalDictFace<V, D extends AbstractDerivation<V>>(
   target: D,
 ): AbstractDerivationOfAPropOfPrototypalDictFace<V> {
   return new DerivationOfAPropOfAPrototypalDictFace(target)

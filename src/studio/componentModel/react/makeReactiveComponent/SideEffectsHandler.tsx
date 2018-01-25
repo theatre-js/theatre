@@ -1,17 +1,19 @@
 
 import * as D from '$shared/DataVerse'
 import noop from 'lodash/noop'
+import Ticker from '$src/shared/DataVerse/Ticker';
+import AbstractDerivedDict from '$src/shared/DataVerse/derivations/dicts/AbstractDerivedDict';
 
 type FinalFace = $FixMe
 
 export default class SideEffectsHandler {
-  _ticker: D.ITicker
+  _ticker: Ticker
   _mapOfStopEffectFnBySideEffectKey: {[key: string | number]: () => void}
   _mapOfUntapFromEachSideEffectKeyPChagnes: {[key: string | number]: () => void}
-  _sideEffectsDictP: AbstractDerivation<D.IDerivedDict<$FixMe>>
+  _sideEffectsDictP: AbstractDerivation<AbstractDerivedDict<$FixMe>>
   _sideEffectsDictPChanges: $FixMe
   _finalFace: $FixMe
-  _currentDict: D.IDerivedDict<$FixMe>
+  _currentDict: AbstractDerivedDict<$FixMe>
   _mapOfuntapFnsForEachSideEffect: {[key: string | number]: () => void}
   _untapFromSideEffectsDictPChanges: () => void
   _untapFromDictChanges: () => void
@@ -117,7 +119,7 @@ export default class SideEffectsHandler {
     }
   }
 
-  _startSideEffect(key: string, fn: (FinalFace, D.ITicker) => () => void) {
+  _startSideEffect(key: string, fn: (f: FinalFace, t: D.ITicker) => () => void) {
     this._stopSideEffect(key)
     this._mapOfStopEffectFnBySideEffectKey[key] = fn(
       this._finalFace,

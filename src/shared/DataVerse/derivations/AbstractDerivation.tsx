@@ -66,7 +66,7 @@ export default class AbstractDerivation<V> {
     return new DerivationEmitter((this as $IntentionalAny), ticker).tappable()
   }
 
-  tapImmediate(ticker: ITicker, fn: ((cb as $FixMe) => void)): $FixMe {
+  tapImmediate(ticker: ITicker, fn: ((cb: $FixMe) => void)): $FixMe {
     const untap = this.changes(ticker).tap(fn)
     fn(this.getValue())
     return untap

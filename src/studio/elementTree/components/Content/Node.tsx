@@ -191,7 +191,7 @@ const WrappedNode = connect((s, op) => {
       : type === null
         ? 'null'
         : _ref.stateNode.getComponentId
-          ? (getComponentDescriptor(s, _ref.stateNode.getComponentId()): $FixMe)
+          ? (getComponentDescriptor(s, _ref.stateNode.getComponentId()) as $FixMe)
               .displayName
           : type.displayName
 

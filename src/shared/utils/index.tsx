@@ -8,13 +8,13 @@ import invariant from './invariant'
 
 import {
   default as withRouter,
-  type WithRouterProps as _WithRouterProps,
+  WithRouterProps as _WithRouterProps,
 } from './withRouter'
 
 import {
   default as withRunSaga,
-  type RunSagaFn as _RunSagaFn,
-  type WithRunSagaProps as _WithRunSagaProps,
+  RunSagaFn as _RunSagaFn,
+  WithRunSagaProps as _WithRunSagaProps,
 } from './sagas/withRunSaga'
 
 export type RunSagaFn = _RunSagaFn

@@ -17,7 +17,7 @@ describe('DataVerse.atomifyDeep', () => {
     ;(ref
       .prop('b')
       .prop('d')
-      .getValue(): Error)
+      .getValue() as Error)
     expect(ref.prop('a').getValue()).toEqual('a')
     expect(ref.prop('b').isAtom).toEqual('True')
     expect(
@@ -38,17 +38,17 @@ describe('DataVerse.atomifyDeep', () => {
   function typeTests() {
     // const a = atomifyDeep('hi');
 
-    ;(atomifyDeep({a: 'foo'}): IDictAtom<{a: IBoxAtom<string>}>)
-    ;(atomifyDeep({a: 'foo'}): IDictAtom<{a: IBoxAtom<number>}>)
-    ;(atomifyDeep({a: 'foo', b: 12}): IDictAtom<{
+    ;(atomifyDeep({a: 'foo'}) as IDictAtom<{a: IBoxAtom<string>}>)
+    ;(atomifyDeep({a: 'foo'}) as IDictAtom<{a: IBoxAtom<number>}>)
+    ;(atomifyDeep({a: 'foo', b: 12}) as IDictAtom<{
       a: IBoxAtom<string>,
       b: IBoxAtom<number>,
     }>)
-    ;(atomifyDeep({a: 'foo', b: 12}): IDictAtom<{
+    ;(atomifyDeep({a: 'foo', b: 12}) as IDictAtom<{
       a: IBoxAtom<string>,
       b: IBoxAtom<number>,
     }>)
-    ;(atomifyDeep({a: 'foo', b: {bar: 'bar', baz: true}}): IDictAtom<{
+    ;(atomifyDeep({a: 'foo', b: {bar: 'bar', baz: true}}) as IDictAtom<{
       a: IBoxAtom<string>,
       b: IDictAtom<{bar: IBoxAtom<string>, baz: IBoxAtom<boolean>}>,
     }>)

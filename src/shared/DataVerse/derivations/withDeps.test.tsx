@@ -31,20 +31,20 @@ describe('withDeps', () => {
     const a = D.atoms.box(1)
     const b = D.atoms.box(3)
     const aD = a.derivation()
-    ;(aD.getValue(): number)
+    ;(aD.getValue() as number)
     // $FlowExpectError
-    ;(aD.getValue(): string)
+    ;(aD.getValue() as string)
 
     const bD = b.derivation()
-    ;(bD.map(m => m + 1).getValue(): number)
+    ;(bD.map(m => m + 1).getValue() as number)
     // $FlowExpectError
-    ;(bD.map(m => m + 1).getValue(): string)
+    ;(bD.map(m => m + 1).getValue() as string)
     // $FlowExpectError
     bD.map((m: string) => m + 'hi')
-    ;(bD.flatMap(m => m + 1).getValue(): number)
+    ;(bD.flatMap(m => m + 1).getValue() as number)
     // $FlowExpectError
-    ;(bD.flatMap(m => m + 1).getValue(): string)
-    ;(bD.flatMap(m => D.derivations.constant(m + 1)).getValue(): number)
+    ;(bD.flatMap(m => m + 1).getValue() as string)
+    ;(bD.flatMap(m => D.derivations.constant(m + 1)).getValue() as number)
 
     const final = aD.flatMap((n): AbstractDerivation<number> => bD.map(m => m + n))
 
@@ -117,14 +117,14 @@ describe('withDeps', () => {
     withDeps({a: 'hi'}, () => {})
     const f = withDeps({a: D.derivations.constant('hi')}, ({a}) => {
       // $FlowExpectError
-      ;(a.getValue(): number)
-      ;(a.getValue(): string)
+      ;(a.getValue() as number)
+      ;(a.getValue() as string)
 
       return a.getValue()
     })
 
     // $FlowExpectError
-    ;(f.getValue(): number)
-    ;(f.getValue(): string)
+    ;(f.getValue() as number)
+    ;(f.getValue() as string)
   })
 })

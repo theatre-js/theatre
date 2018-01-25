@@ -56,7 +56,7 @@ export type RunSingleSagaFn = (<
   T5,
   T6,
   R,
-  Fn: Fn6<T1, T2, T3, T4, T5, T6, R>,
+  Fn extends Fn6<T1, T2, T3, T4, T5, T6, R>,
 >(
   fn: Fn,
   t1: T1,
@@ -67,7 +67,7 @@ export type RunSingleSagaFn = (<
   t6: T6,
   ...rest: Array<void>
 ) => Return<R>) &
-  (<T1, T2, T3, T4, T5, R, Fn: Fn5<T1, T2, T3, T4, T5, R>>(
+  (<T1, T2, T3, T4, T5, R, Fn extends Fn5<T1, T2, T3, T4, T5, R>>(
     fn: Fn,
     t1: T1,
     t2: T2,
@@ -76,7 +76,7 @@ export type RunSingleSagaFn = (<
     t5: T5,
     ...rest: Array<void>
   ) => Return<R>) &
-  (<T1, T2, T3, T4, R, Fn: Fn4<T1, T2, T3, T4, R>>(
+  (<T1, T2, T3, T4, R, Fn extends Fn4<T1, T2, T3, T4, R>>(
     fn: Fn,
     t1: T1,
     t2: T2,
@@ -84,29 +84,29 @@ export type RunSingleSagaFn = (<
     t4: T4,
     ...rest: Array<void>
   ) => Return<R>) &
-  (<T1, T2, T3, R, Fn: Fn3<T1, T2, T3, R>>(
+  (<T1, T2, T3, R, Fn extends Fn3<T1, T2, T3, R>>(
     fn: Fn,
     t1: T1,
     t2: T2,
     t3: T3,
     ...rest: Array<void>
   ) => Return<R>) &
-  (<T1, T2, R, Fn: Fn2<T1, T2, R>>(
+  (<T1, T2, R, Fn extends Fn2<T1, T2, R>>(
     fn: Fn,
     t1: T1,
     t2: T2,
     ...rest: Array<void>
   ) => Return<R>) &
-  (<T1, R, Fn: Fn1<T1, R>>(fn: Fn, t1: T1, ...rest: Array<void>) => Return<R>) &
-  (<R, Fn: Fn0<R>>(fn: Fn, ...rest: Array<void>) => Return<R>)
+  (<T1, R, Fn extends Fn1<T1, R>>(fn: Fn, t1: T1, ...rest: Array<void>) => Return<R>) &
+  (<R, Fn extends Fn0<R>>(fn: Fn, ...rest: Array<void>) => Return<R>)
 
 export const runSingleSaga: RunSingleSagaFn = (
   customRootSaga: $IntentionalAny,
-  ...args: $IntentionalAny
+  ...args: $IntentionalAny[]
 ): $IntentionalAny => {
   const store = new StandardStore({
     rootReducer,
-    rootSaga: (null: $IntentionalAny),
+    rootSaga: (null as $IntentionalAny),
   })
 
   return {store, task: store.sagaMiddleware.run(customRootSaga, ...args)}

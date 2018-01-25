@@ -9,6 +9,6 @@ const onlyUpdateForKeysDeep = (keys: Array<string>): Ident =>
   (shouldUpdate(
     (prev: Object, next: Object) =>
       !deepEqual(pick(prev, keys), pick(next, keys)),
-  ): any)
+  ) as $FixMe)
 
 export default onlyUpdateForKeysDeep

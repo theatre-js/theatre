@@ -1,16 +1,13 @@
 // @flow
-import {IDerivedDict} from './types'
 import AbstractDerivedDict from './AbstractDerivedDict'
 import constantDerivation from '../constant'
 
-const emptyArray = []
+const emptyArray: Array<never> = []
 
-export class EmptyDict extends AbstractDerivedDict
-  implements IDerivedDict<$FixMe> {
-  prop: $FixMe
+export class EmptyDict extends AbstractDerivedDict<$FixMe> {
   changes: $FixMe
 
-  constructor(): IDerivedDict<$FixMe> {
+  constructor() {
     super()
     return this
   }

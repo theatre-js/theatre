@@ -1,12 +1,10 @@
 
 import AbstractDerivation from '../AbstractDerivation'
 import {IDictAtom} from '$shared/DataVerse'
-import {AbstractDerivation} from '../types'
 
 const noop = () => {}
 
-export class DerivationOfAPropOfADictAtom<O: {}> extends AbstractDerivation
-  implements AbstractDerivation<$FixMe> {
+export class DerivationOfAPropOfADictAtom<O> extends AbstractDerivation<$FixMe> {
   _dictAtom: IDictAtom<O>
   _untapFromDictAtomChanges: Function
   _propName: keyof O
@@ -39,9 +37,9 @@ export class DerivationOfAPropOfADictAtom<O: {}> extends AbstractDerivation
 }
 
 export default function deriveFromPropOfADictAtom<
-  O: {},
-  M: IDictAtom<O>,
-  K: keyof O,
+  O,
+  M extends IDictAtom<O>,
+  K extends keyof O,
 >(m: M, propName: keyof O): AbstractDerivation<O[K]> {
   return new DerivationOfAPropOfADictAtom(m, propName)
 }

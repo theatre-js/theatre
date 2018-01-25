@@ -34,14 +34,14 @@ describe('autoDerive', () => {
     })
 
     a.getValue()
-    ;(a.getValue(): string)
+    ;(a.getValue() as string)
     // $FlowExpectError
-    ;(a.getValue(): number)
+    ;(a.getValue() as number)
 
     const changes: Array<string> = []
     const wrongChanges: Array<number> = []
 
-    a.changes((null: $IntentionalAny)).tap(c => {
+    a.changes((null as $IntentionalAny)).tap(c => {
       changes.push(c)
       // $FlowExpectError
       wrongChanges.push(c)

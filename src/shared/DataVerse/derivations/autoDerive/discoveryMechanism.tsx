@@ -4,7 +4,7 @@ const stack = []
 
 export const collectObservedDependencies = (
   cb: () => void,
-  collector: (AbstractDerivation<$IntentionalAny>) => void,
+  collector: (d: AbstractDerivation<$IntentionalAny>) => void,
 ) => {
   const foundDeps: Set<AbstractDerivation<$IntentionalAny>> = new Set()
   stack.push({foundDeps, collector})

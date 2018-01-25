@@ -92,10 +92,10 @@ export class DerivedArrayReduction<T, V> extends AbstractDerivation
 export default function reduceDerivedArray<
   T,
   V,
-  Acc: V,
-  Seed: Acc,
-  A: IDerivedArray<T>,
-  Fn: (Acc, T, number) => Acc,
->(a: A, fn: Fn, seed: Seed): AbstractDerivation<V> {
+  Acc extends V,
+  Seed extends Acc,
+  A extends IDerivedArray<T>,
+  Fn extends (acc: Acc, t: T, i: number) => Acc,
+>(a: A, fn: Fn, seed: Seed) {
   return new DerivedArrayReduction(a, fn, seed)
 }

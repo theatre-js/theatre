@@ -77,3 +77,5 @@ declare var module: {
 }
 
 type Generator_<A, ReturnType, YieldType> = Generator
+
+type Spread<A, B> = $FixMe

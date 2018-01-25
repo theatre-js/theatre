@@ -6,14 +6,13 @@ import noop from 'lodash/noop'
 // import AbstractDerivation from '../AbstractDerivation'
 import {ensureNoAtoms} from './utils'
 
-export class DerivedDictFromDictAtom<O: {}> extends AbstractDerivedDict
-  implements IDerivedDict<$FixMe> {
+export class DerivedDictFromDictAtom<O> extends AbstractDerivedDict<$FixMe> {
   _dictAtom: IDictAtom<O>
   prop: $FixMe
   changes: $FixMe
   _untapFromDictAtomChangeEmitter: () => void
 
-  constructor(m: IDictAtom<O>): IDerivedDict<$FixMe> {
+  constructor(m: IDictAtom<O>) {
     super()
     this._dictAtom = m
     this._untapFromDictAtomChangeEmitter = noop
@@ -47,7 +46,7 @@ export class DerivedDictFromDictAtom<O: {}> extends AbstractDerivedDict
   }
 }
 
-export default function deriveFromDictAtom<O: {}>(
+export default function deriveFromDictAtom<O>(
   m: IDictAtom<O>,
 ): IDerivedDict<$FixMe> {
   return new DerivedDictFromDictAtom(m)

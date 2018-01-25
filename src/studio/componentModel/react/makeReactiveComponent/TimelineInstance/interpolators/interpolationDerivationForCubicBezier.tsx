@@ -1,6 +1,7 @@
 
 import * as D from '$shared/DataVerse'
 import UnitBezier from 'timing-function/lib/UnitBezier'
+import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation';
 
 type Config = {
   timeD: AbstractDerivation<number>,
@@ -25,7 +26,7 @@ export default function interpolationDerivationForCubicBezier(
   )
 }
 
-const unitBezier = (interpolationDescriptorP as $FixMe) => {
+const unitBezier = (interpolationDescriptorP: $FixMe) => {
   return D.derivations.withDeps(
     {
       lxD: interpolationDescriptorP.prop('lx'),

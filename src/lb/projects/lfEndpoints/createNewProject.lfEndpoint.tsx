@@ -5,7 +5,7 @@ import path from 'path'
 import {StoreState} from '$lb/types'
 import {
   default as recogniseProject,
-  type ErrorTypes as RecognizeProjectErrorTypes,
+ ErrorTypes as RecognizeProjectErrorTypes,
 } from './recogniseProject.lfEndpoint'
 
 type ErrorTypes =
@@ -20,9 +20,9 @@ export default function* createNewProject(params: {
   folderPath: string,
   name: string,
 }): Generator_<
-  *,
+  $FixMe,
   {type: 'ok', filePath: string} | {type: 'error', errorType: ErrorTypes},
-  *,
+  $FixMe
 > {
   if (!(yield call(fse.pathExists, params.folderPath))) {
     return {type: 'error', errorType: 'folderDoesntExist'}
@@ -36,12 +36,12 @@ export default function* createNewProject(params: {
     return {type: 'error', errorType: 'pathUnreadable'}
   }
 
-  if (!(pathStat: any).isDirectory()) {
+  if (!(pathStat as $FixMe).isDirectory()) {
     return {type: 'error', errorType: 'pathIsNotAFolder'}
   }
 
   const filePath = path.join(params.folderPath, 'theaterjs.json')
-  const state: StoreState = (yield select(): $FixMe)
+  const state: StoreState = (yield select() as $FixMe)
 
   if (state.projects.listOfPaths.indexOf(filePath) !== -1) {
     return {type: 'error', errorType: 'projectAlreadyRecognised'}

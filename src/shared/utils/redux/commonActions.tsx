@@ -25,7 +25,7 @@ export const resetStateAction = actionCreator(
 
 export const reduceStateAction = (
   path: Array<string | number>,
-  reducer: any => any,
+  reducer: (s: any) => any,
 ) => multiReduceStateAction([{path, reducer}])
 
 export const multiReduceStateAction = actionCreator(

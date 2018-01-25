@@ -7,14 +7,14 @@ export type ServerEvent =
   | {type: 'connection', socket: Socket}
   | {type: 'error', error: $FixMe}
 
-export const getChannelFromSocketServer = (server: SocketServer): Channel => {
+export const getChannelFromSocketServer = (server: SocketServer): Channel<$FixMe> => {
   return eventChannel(emitToChannel => {
     server.on('connection', socket => {
-      emitToChannel(({type: 'connection', socket}: ServerEvent))
+      emitToChannel(({type: 'connection', socket} as ServerEvent))
     })
 
     server.on('error', error => {
-      emitToChannel(({type: 'error', error}: ServerEvent))
+      emitToChannel(({type: 'error', error} as ServerEvent))
     })
 
     const unsubscribe = () => {}
@@ -40,11 +40,11 @@ export type ResponseToSocketRequest =
   | {type: 'error', errorType: 'malformedRequest'}
   | mixed
 
-export const getChannelFromSocket = (socket: Socket): Channel => {
+export const getChannelFromSocket = (socket: Socket): Channel<$FixMe> => {
   return eventChannel(emitToChannel => {
     const errorListener = error => {
       emitToChannel(
-        ({type: 'error', error, handshake: socket.handshake}: SocketEvent),
+        ({type: 'error', error, handshake: socket.handshake} as SocketEvent),
       )
     }
     socket.on('error', errorListener)
@@ -62,7 +62,7 @@ export const getChannelFromSocket = (socket: Socket): Channel => {
           ({
             type: 'error',
             errorType: 'malformedRequest',
-          }: ResponseToSocketRequest),
+          } as ResponseToSocketRequest),
         )
         return
       }
@@ -74,7 +74,7 @@ export const getChannelFromSocket = (socket: Socket): Channel => {
           payload,
           respond,
           handshake: socket.handshake,
-        }: SocketEvent),
+        } as SocketEvent),
       )
     }
     socket.on('request', requestListener)

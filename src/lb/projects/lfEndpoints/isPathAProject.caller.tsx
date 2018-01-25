@@ -1,7 +1,7 @@
 // @flow
-import typeof FnType from './isPathAProject.lfEndpoint'
+import isPathAProject from './isPathAProject.lfEndpoint'
 import {makeLFCaller} from '$lb/common/utils'
 
-const fn: FnType = makeLFCaller('isPathAProject')
+const fn: typeof isPathAProject = makeLFCaller('isPathAProject')
 
 export default fn

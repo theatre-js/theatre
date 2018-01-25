@@ -57,10 +57,16 @@
   "author": "TheaterJS Oy",
   "license": "Proprietary",
   "devDependencies": {
+    "@types/fs-extra": "^5.0.0",
     "@types/html-webpack-plugin": "^2.30.1",
+    "@types/jest": "^22.1.0",
     "@types/lodash": "^4.14.93",
+    "@types/react-dom": "^16.0.3",
     "@types/react-router-dom": "^4.2.3",
+    "@types/redux-actions": "^2.2.3",
+    "@types/uuid": "^3.4.3",
     "@types/webpack": "^3.8.2",
+    "@types/when": "^2.4.29",
     "autoprefixer": "^7.1.2",
     "awesome-typescript-loader": "^3.3.0",
     "babel-cli": "^6.26.0",
@@ -91,6 +97,7 @@
     "fast-json-patch": "^2.0.6",
     "file-loader": "^0.11.2",
     "fs-extra": "^4.0.0",
+    "fuzzaldrin-plus": "^0.6.0",
     "html-webpack-plugin": "^2.29.0",
     "husky": "^0.14.3",
     "immer": "^0.7.0",
@@ -132,8 +139,7 @@
     "webpack": "^3.5.5",
     "webpack-dev-server": "^2.7.1",
     "webpack-notifier": "^1.5.0",
-    "when": "^3.7.8",
-    "fuzzaldrin-plus": "^0.6.0"
+    "when": "^3.7.8"
   },
   "dependencies": {}
 }

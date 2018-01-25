@@ -49,7 +49,7 @@ const generate = (
         })),
       },
       modifierInstantiationDescriptors: {byId: {}, list: []},
-    }: ComponentInstantiationValueDescriptor)
+    } as ComponentInstantiationValueDescriptor)
 
     allNodes[key] = node
     rootKeys.push(key)
@@ -166,7 +166,7 @@ const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
         ],
       },
       modifierInstantiationDescriptors: {byId: {}, list: []},
-    }: ComponentInstantiationValueDescriptor),
+    } as ComponentInstantiationValueDescriptor),
     dalaki: {
       __descriptorType: 'ComponentInstantiationValueDescriptor',
       componentId: 'TheaterJS/Core/HTML/div',

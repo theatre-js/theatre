@@ -4,7 +4,7 @@ export function domAttrSetter(
   node: Element,
   name: string,
   isSvg: boolean /*, old: $FixMe*/,
-): $FixMe => void {
+): (f: $FixMe) => void {
   if (name === 'class' && !isSvg) {
     return (value: $FixMe) => {
       node.className = value || ''

@@ -2,30 +2,28 @@
 import * as D from '$shared/DataVerse'
 import * as _ from 'lodash'
 import * as interpolators from './interpolators'
+import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation';
 
 type TimelineIsEmptyBaseState = {type: 'TimelineIsEmpty'}
-type TimelineIsEmptyState = {
-  ...TimelineIsEmptyBaseState,
+type TimelineIsEmptyState = Spread<TimelineIsEmptyBaseState, {
   firstIdP: AbstractDerivation<null | string>,
-}
+}>
 
 type ErrorBaseState = {type: 'Error'}
-type ErrorState = {...ErrorBaseState}
+type ErrorState = ErrorBaseState
 
 type TimeIsBeforeFirstPointBaseState = {type: 'TimeIsBeforeFirstPoint'}
-type TimeIsBeforeFirstPointState = {
-  ...TimeIsBeforeFirstPointBaseState,
+type TimeIsBeforeFirstPointState = Spread<TimeIsBeforeFirstPointBaseState,{
   timeOfFirstPointD: AbstractDerivation<undefined | null | number>,
-}
+}>
 
 type ObservingKeyBaseState = {type: 'ObservingKey', key: string}
-type ObservingKeyState = {
-  ...ObservingKeyBaseState,
+type ObservingKeyState = Spread<ObservingKeyBaseState, {
   leftPointTimeP: AbstractDerivation<undefined | null | number>,
   isLastPointD: AbstractDerivation<undefined | null | boolean>,
   possibleRightPointTimeD: AbstractDerivation<undefined | null | number>,
   interpolatorD: AbstractDerivation<$FixMe>,
-}
+}>
 
 type PossibleBaseStates =
   | TimelineIsEmptyBaseState
@@ -256,10 +254,10 @@ const handlersByState = {
 }
 
 export default class ValueDerivation extends D.derivations.AbstractDerivation {
-  _descP: *
-  _timeD: *
-  _pointsP: *
-  _pointsProxy: *
+  _descP: $FixMe
+  _timeD: $FixMe
+  _pointsP: $FixMe
+  _pointsProxy: $FixMe
   _studio: $FixMe
   _pathToValueDescriptor: Array<string>
   _pathToPointsById: Array<string>

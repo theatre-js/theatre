@@ -1,7 +1,7 @@
 // @flow
-import typeof FnType from './createNewProject.lfEndpoint'
+import createNewProject from './createNewProject.lfEndpoint'
 import {makeLFCaller} from '$lb/common/utils'
 
-const fn: FnType = makeLFCaller('createNewProject')
+const fn: typeof createNewProject = makeLFCaller('createNewProject')
 
 export default fn

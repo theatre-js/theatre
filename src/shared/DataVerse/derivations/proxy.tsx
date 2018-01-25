@@ -33,7 +33,7 @@ export interface IProxyDerivation<V> extends AbstractDerivation<V> {
   setTarget(target: AbstractDerivation<V>): IProxyDerivation<V>;
 }
 
-export default function proxy<V, D: AbstractDerivation<V>>(
+export default function proxy<V, D extends AbstractDerivation<V>>(
   target: D,
 ): IProxyDerivation<V> {
   return new ProxyDerivation(target)

@@ -14,4 +14,4 @@ export default (combineReducers({
       false,
     ),
   }),
-}): Reducer<CommonNamespaceState, any>)
+}) as Reducer<CommonNamespaceState>)

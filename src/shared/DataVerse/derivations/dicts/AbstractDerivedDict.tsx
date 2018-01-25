@@ -4,10 +4,10 @@ import Emitter from '$shared/DataVerse/utils/Emitter'
 
 export default class AbstractDerivedDict {
   _changeEmitter: Emitter<$FixMe>
-  _untapFromSourceChanges: *
+  _untapFromSourceChanges: $FixMe
   _changeEmitterHasTappers: boolean
-  +_reactToHavingTappers: () => void
-  +_reactToNotHavingTappers: () => void
+  abstract _reactToHavingTappers(): void
+  abstract _reactToNotHavingTappers(): void
   isDerivedDict = 'True'
   _trace: $FixMe
   _pointer: $FixMe
@@ -48,15 +48,15 @@ export default class AbstractDerivedDict {
   }
 
   proxy(): $IntentionalAny {
-    return proxyDerivedDict.default((this: $IntentionalAny))
+    return proxyDerivedDict.default((this as $IntentionalAny))
   }
 
   extend(x: $IntentionalAny): $IntentionalAny {
-    return extend.default((this: $IntentionalAny), x)
+    return extend.default((this as $IntentionalAny), x)
   }
 
   mapValues(fn: $IntentionalAny): $IntentionalAny {
-    return mapValues.default((this: $IntentionalAny), fn)
+    return mapValues.default((this as $IntentionalAny), fn)
   }
 
   toJS() {

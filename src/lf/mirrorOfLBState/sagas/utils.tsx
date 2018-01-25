@@ -46,7 +46,7 @@ export function sendRequestToMain(
   return payloadDeferred.promise
 }
 
-export const getChannelOfRequestsFromMain = (): Channel => {
+export const getChannelOfRequestsFromMain = (): Channel<$FixMe> => {
   return eventChannel(emitToChannel => {
     const listener = (event, request: Request) => {
       let alreadyResponded = false
@@ -67,7 +67,7 @@ export const getChannelOfRequestsFromMain = (): Channel => {
           type: request.type,
           payload: request.payload,
           respond,
-        }: RequestFromWindow),
+        } as RequestFromWindow),
       )
     }
 

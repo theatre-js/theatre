@@ -109,7 +109,7 @@ export type RunSagaFn = (<
     t1: T1,
     ...rest: Array<void>
   ) => Promise<R>) &
-  (<R, Fn: Fn0<R>>(fn: Fn, ...rest: Array<void>) => Promise<R>)
+  (<R, Fn extends Fn0<R>>(fn: Fn, ...rest: Array<void>) => Promise<R>)
 // @todo for some reason, including the FnSpread case causes flow to use it instead of FN0. So, no spread support for the time being
 // & (<T, R, Fn: FnSpread<T, R>>(fn: Fn, ...args: Array<T>) => Promise<R>)
 
@@ -117,7 +117,7 @@ export type WithRunSagaProps = {runSaga: RunSagaFn}
 
 export default function withRunSaga(): HigherOrderComponent<
   {},
-  {runSaga: RunSagaFn},
+  {runSaga: RunSagaFn}
 > {
   return function connectedToSagas(component: any): any {
     const finalComponent = (

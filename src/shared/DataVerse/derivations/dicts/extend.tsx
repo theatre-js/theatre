@@ -13,7 +13,7 @@ export class ExtendDerivedDict extends DerivedDict
   _untapFromBaseChanges: () => void
   _untapFromOverriderChanges: () => void
 
-  constructor<B: {}, OV: {}, O: {...B, ...OV}>(
+  constructor<B extends {}, OV extends {}, O extends Spread<B, OV>>(
     base: IDerivedDict<B>,
     overrider: IDerivedDict<OV>,
   ): IDerivedDict<O> {
@@ -61,7 +61,7 @@ export class ExtendDerivedDict extends DerivedDict
       this._changeEmitter.emit(change)
   }
 
-  prop<K: $Keys<$FixMe>>(k: K): AbstractDerivation<$FixMe> {
+  prop<K extends keyof $FixMe>(k: K): AbstractDerivation<$FixMe> {
     return this._overrider
       .prop(k)
       .flatMap(v => (v !== undefined ? v : this._base.prop(k)))
@@ -72,7 +72,7 @@ export class ExtendDerivedDict extends DerivedDict
   }
 }
 
-export default function extend<B: {}, OV: {}, O: {...B, ...OV}>(
+export default function extend<B, OV, O extends Spread<B, OV>>(
   base: IDerivedDict<B>,
   overrider: IDerivedDict<OV>,
 ): IDerivedDict<O> {

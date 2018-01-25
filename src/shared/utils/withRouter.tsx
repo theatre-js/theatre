@@ -12,4 +12,4 @@ export type WithRouterProps = {
   location: Object,
 }
 
-export default ((withRouter: any): HigherOrderComponent<{}, WithRouterProps>)
+export default ((withRouter as any) as HigherOrderComponent<{}, WithRouterProps>)

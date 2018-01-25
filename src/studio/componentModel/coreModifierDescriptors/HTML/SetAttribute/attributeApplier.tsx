@@ -21,7 +21,7 @@ export default function attributeApplier(dict: $FixMe, ticker: D.ITicker) {
 
   const isElSvgD = (elRefD.map(
     el => !!(typeof el !== 'undefined' && el instanceof SVGElement),
-  ): AbstractDerivation<boolean>)
+  ) as AbstractDerivation<boolean>)
 
   const getXiguluForKey = key => {
     return D.derivations.withDeps(

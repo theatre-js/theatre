@@ -12,7 +12,7 @@ export class MapValues extends DerivedDict implements IDerivedDict<$FixMe> {
   _fn: $FixMe
   _untapFromSourceChanges: Function
 
-  constructor<O: {}, K: keyof O, V: O[K], FN: (V, K) => $FixMe>(
+  constructor<O, K extends keyof O, V extends O[K], FN extends (v: V, k: K) => $FixMe>(
     source: IDerivedDict<O>,
     fn: FN,
   ): IDerivedDict<$FixMe> {
@@ -39,7 +39,7 @@ export class MapValues extends DerivedDict implements IDerivedDict<$FixMe> {
     this._changeEmitter.emit(c)
   }
 
-  prop<K: $Keys<$FixMe>>(k: K): AbstractDerivation<$FixMe> {
+  prop<K extends keyof $FixMe>(k: K): AbstractDerivation<$FixMe> {
     return this._fn(this._source.pointer().prop(k))
   }
 
@@ -53,10 +53,10 @@ export class MapValues extends DerivedDict implements IDerivedDict<$FixMe> {
 }
 
 const mapValues = <
-  O: {},
-  K: keyof O,
-  V: O[K],
-  FN: (V, K) => $FixMe,
+  O,
+  K extends keyof O,
+  V extends O[K],
+  FN extends (v: V, k: K) => $FixMe,
 >(
   source: IDerivedDict<O>,
   fn: FN,

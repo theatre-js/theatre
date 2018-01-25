@@ -15,7 +15,7 @@ type ActionCreatorCreator = (<
   ActionType,
   Payload,
   Input,
-  Transformer: (input: Input) => Payload,
+  Transformer extends (input: Input) => Payload,
 >(
   actionType: ActionType,
   transformer: Transformer,
@@ -41,7 +41,7 @@ const actionCreator: ActionCreatorCreator = (actionType, transformer) => {
   const originalActionCreator = (createAction(
     actionType,
     transformer,
-  ): $IntentionalAny)
+  ) as $IntentionalAny)
   originalActionCreator.type = actionType
   originalActionCreator.reducer = (cb: Function) => {
     const fn = (state, action) => cb(state, action)
@@ -51,4 +51,4 @@ const actionCreator: ActionCreatorCreator = (actionType, transformer) => {
   return originalActionCreator
 }
 
-export default ((actionCreator: $IntentionalAny): ActionCreatorCreator)
+export default ((actionCreator as $IntentionalAny) as ActionCreatorCreator)

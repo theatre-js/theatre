@@ -3,8 +3,8 @@ import forEach from 'lodash/forEach'
 import {Channel,eventChannel} from 'redux-saga'
 
 type EventEmitter = {
-  +on: (eventName: string, listener: Function) => mixed,
-  +removeListener: (eventName: string, listener: Function) => mixed,
+  readonly on: (eventName: string, listener: Function) => mixed,
+  readonly removeListener: (eventName: string, listener: Function) => mixed,
 }
 
 /**
@@ -14,7 +14,7 @@ type EventEmitter = {
 const channelFromEmitter = (
   emitter: EventEmitter,
   eventNames: Array<string>,
-): Channel =>
+): Channel<$FixMe> =>
   eventChannel(emitToChannel => {
     const putFor = eventName => payload => {
       emitToChannel({type: eventName, payload})

@@ -5,8 +5,8 @@ import _ from 'lodash'
 import {default as box, IBoxAtom} from '$shared/DataVerse/atoms/box'
 import {AbstractDerivation} from '../types'
 
-export interface IProxyDerivedDict<O: {}> extends IDerivedDict<O> {
-  setSource(IDerivedDict<O>): IProxyDerivedDict<O>;
+export interface IProxyDerivedDict<O> extends IDerivedDict<O> {
+  setSource(s: IDerivedDict<O>): IProxyDerivedDict<O>;
 }
 
 class ProxyDerivedDict<O> extends AbstractDerivedDict
@@ -72,7 +72,7 @@ class ProxyDerivedDict<O> extends AbstractDerivedDict
   // }
 }
 
-export default function proxyDerivedDict<O: {}>(
+export default function proxyDerivedDict<O>(
   initialSource: IDerivedDict<O>,
 ): IProxyDerivedDict<O> {
   return new ProxyDerivedDict(initialSource)

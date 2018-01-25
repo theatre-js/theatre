@@ -3,7 +3,7 @@ import {Channel,eventChannel, END} from 'redux-saga'
 import {call} from 'redux-saga/effects'
 import generateUniqueId from 'uuid/v4'
 import wn from 'when'
-import {typeof BrowserWindow, ipcMain} from 'electron'
+import {BrowserWindow, ipcMain} from 'electron'
 
 type RawRequest = {
   type: string,
@@ -47,7 +47,7 @@ export function* autoRetryOnTimeout(
  * by having set up too many listeners on ipcMain
  */
 export function sendRequestToWindow(
-  window: BrowserWindow,
+  window: typeof BrowserWindow,
   type: string,
   payload: mixed,
   timeout: number = 4000,
@@ -89,7 +89,7 @@ export function sendRequestToWindow(
 
 export const getChannelOfRequestsFromWindow = (
   window: BrowserWindow,
-): Channel => {
+): Channel<$FixMe> => {
   return eventChannel(emitToChannel => {
     const listener = (event, request: RawRequest) => {
       if (event.sender !== window.webContents) {
@@ -115,7 +115,7 @@ export const getChannelOfRequestsFromWindow = (
           type: request.type,
           payload: request.payload,
           respond,
-        }: Request),
+        } as Request),
       )
     }
 

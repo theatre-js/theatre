@@ -149,23 +149,23 @@ describe('pointer', () => {
         }),
       }),
     })
-    ;(root.prop('str').getValue(): string)
+    ;(root.prop('str').getValue() as string)
     // $FlowExpectError
-    ;(root.prop('str').getValue(): number)
-    ;(root.pointer().getValue(): RootType)
+    ;(root.prop('str').getValue() as number)
+    ;(root.pointer().getValue() as RootType)
     ;(root
       .pointer()
       .prop('str')
-      .getValue(): string)
+      .getValue() as string)
     // $FlowExpectError
     ;(root
       .pointer()
       .prop('str')
-      .getValue(): number)
+      .getValue() as number)
     ;(root
       .pointer()
       .prop('obj')
-      .getValue(): D.IDictAtom<{
+      .getValue() as D.IDictAtom<{
       objStr: D.IBoxAtom<string>,
       objObj: D.IDictAtom<{objObjStr: D.IBoxAtom<string>}>,
     }>)
@@ -173,42 +173,42 @@ describe('pointer', () => {
     ;(root
       .pointer()
       .prop('obj')
-      .getValue(): D.IDictAtom<{objStr: D.IBoxAtom<number>}>)
+      .getValue() as D.IDictAtom<{objStr: D.IBoxAtom<number>}>)
     ;(root
       .pointer()
       .prop('obj')
       .prop('objStr')
-      .getValue(): string)
+      .getValue() as string)
     // $FlowExpectError
     ;(root
       .pointer()
       .prop('obj')
       .prop('objStr')
-      .getValue(): number)
+      .getValue() as number)
     ;(root
       .pointer()
       .prop('obj')
       .prop('objObj')
-      .getValue(): D.IDictAtom<{objObjStr: D.IBoxAtom<string>}>)
+      .getValue() as D.IDictAtom<{objObjStr: D.IBoxAtom<string>}>)
     // $FlowExpectError
     ;(root
       .pointer()
       .prop('obj')
       .prop('objObj')
-      .getValue(): D.IDictAtom<{objObjStr: D.IBoxAtom<number>}>)
+      .getValue() as D.IDictAtom<{objObjStr: D.IBoxAtom<number>}>)
     ;(root
       .pointer()
       .prop('obj')
       .prop('objObj')
       .prop('objObjStr')
-      .getValue(): string)
+      .getValue() as string)
     // $FlowExpectError
     ;(root
       .pointer()
       .prop('obj')
       .prop('objObj')
       .prop('objObjStr')
-      .getValue(): number)
+      .getValue() as number)
   })
   ;(function() {
     type RootType = D.IDictAtom<{
@@ -227,7 +227,7 @@ describe('pointer', () => {
 
     const pointerToRootStr = root.pointer().prop('str')
     // const pointerToRootObj = root.pointer().prop('obj');
-    ;(pointerToRootStr: IPointerToBoxAtom<string>)
+    ;(pointerToRootStr as IPointerToBoxAtom<string>)
 
     type DictOfPointers = D.IDictAtom<{
       unboxedStr: IPointerToBoxAtom<string>,
@@ -241,12 +241,12 @@ describe('pointer', () => {
     ;(dictOfPointers
       .pointer()
       .prop('unboxedStr')
-      .getValue(): string)
+      .getValue() as string)
     // $FlowExpectError
     ;(dictOfPointers
       .pointer()
       .prop('unboxedStr')
-      .getValue(): number)
+      .getValue() as number)
 
     // (dictOfPointers.pointer().prop('boxedStr').getValue(): string);
     // (dictOfPointers.pointer().prop('boxedStr').getValue(): number);
@@ -269,18 +269,18 @@ describe('pointer', () => {
     const pointerToRootStr = root.pointer().prop('str')
 
     const dictOfPointers = D.atoms.dict({
-      unboxedStr: (pointerToRootStr: IPointerToBoxAtom<string>),
+      unboxedStr: (pointerToRootStr as IPointerToBoxAtom<string>),
       // boxedStr: D.atoms.box(pointerToRootStr),
     })
     ;(dictOfPointers
       .pointer()
       .prop('unboxedStr')
-      .getValue(): string)
+      .getValue() as string)
     // $FlowExpectError
     ;(dictOfPointers
       .pointer()
       .prop('unboxedStr')
-      .getValue(): number)
+      .getValue() as number)
 
     // (dictOfPointers.pointer().prop('boxedStr').getValue(): string);
     // (dictOfPointers.pointer().prop('boxedStr').getValue(): number);

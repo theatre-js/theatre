@@ -3,11 +3,10 @@ import noop from 'lodash/noop'
 import AbstractDerivedArray from './AbstractDerivedArray'
 import {IDerivedArray} from './types'
 
-export class MappedDerivedArray extends AbstractDerivedArray
-  implements IDerivedArray<$FixMe> {
+export class MappedDerivedArray extends AbstractDerivedArray<$FixMe> {
   _untapFromSourceChanges: Function
 
-  constructor(source: $FixMe, fn: $FixMe): IDerivedArray<$FixMe> {
+  constructor(source: $FixMe, fn: $FixMe) {
     super()
     this._source = source
     this._fn = fn
@@ -39,9 +38,9 @@ export class MappedDerivedArray extends AbstractDerivedArray
   }
 }
 
-export default function mapDerivedArray<T, V, Fn: T => V>(
+export default function mapDerivedArray<T, V, Fn extends (t: T) => V>(
   source: IDerivedArray<T>,
   fn: Fn,
-): IDerivedArray<V> {
+) {
   return new MappedDerivedArray(source, fn)
 }

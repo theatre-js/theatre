@@ -5,15 +5,15 @@ import {IDictAtom,default as dict} from './dict'
 import {IArrayAtom,default as array} from './array'
 import mapValues from 'lodash/mapValues'
 import {default as AbstractAtom} from './utils/AbstractAtom'
-import {If} from '../types'
-import {
-  IsArrayLiteral,
-  IsObjectLiteral,
-  ValueOfObjectLiteral,
-  IsPrimitiveLiteral,
-  ValueOfPrimitiveLiteral,
-  ValueOfArrayLiteral,
-} from '../literals'
+// import {If} from '../types'
+// import {
+//   IsArrayLiteral,
+//   IsObjectLiteral,
+//   ValueOfObjectLiteral,
+//   IsPrimitiveLiteral,
+//   ValueOfPrimitiveLiteral,
+//   ValueOfArrayLiteral,
+// } from '../literals'
 
 // type InstanceOfAnyClass = {+constructor: Function}
 
@@ -25,23 +25,23 @@ import {
 //   (<V: {}>(v: V) => IDictAtom<$ObjMap<V, AtomifyDeepFn>>) &
 //   (<V>(v: V) => IBoxAtom<V>)
 
-type AtomifyDeepFn = <V>(V) => AtomifyDeepType<V>
+// type AtomifyDeepFn = <V>(V) => AtomifyDeepType<V>
 
-export type AtomifyDeepType<V> = If<
-  IsObjectLiteral<V>,
-  AtomifyDeepObject<ValueOfObjectLiteral<V>>,
-  If<
-    IsArrayLiteral<V>,
-    IArrayAtom<AtomifyDeepType<ValueOfArrayLiteral<V>>>,
-    If<
-      IsPrimitiveLiteral<V>,
-      IBoxAtom<ValueOfPrimitiveLiteral<V>>,
-      IBoxAtom<V>,
-    >,
-  >,
->
+// export type AtomifyDeepType<V> = If<
+//   IsObjectLiteral<V>,
+//   AtomifyDeepObject<ValueOfObjectLiteral<V>>,
+//   If<
+//     IsArrayLiteral<V>,
+//     IArrayAtom<AtomifyDeepType<ValueOfArrayLiteral<V>>>,
+//     If<
+//       IsPrimitiveLiteral<V>,
+//       IBoxAtom<ValueOfPrimitiveLiteral<V>>,
+//       IBoxAtom<V>,
+//     >,
+//   >,
+// >
 
-type AtomifyDeepObject<O: {}> = IDictAtom<$ObjMap<O, AtomifyDeepFn>>
+// type AtomifyDeepObject<O: {}> = IDictAtom<$ObjMap<O, AtomifyDeepFn>>
 
 // type AtomifyDeepArray<V, A: Array<V>> = IArrayAtom<AtomifyDeepType<V>>
 // type AtomifyDeepAtom<V: IAtom> = V
@@ -54,7 +54,7 @@ export const atomifyDeep: $FixMe = (jsValue: mixed) => {
   if (Array.isArray(jsValue)) {
     return fromJSArray(jsValue)
   } else if (isPlainObject(jsValue)) {
-    return fromJSObject((jsValue: $IntentionalAny))
+    return fromJSObject((jsValue as $IntentionalAny))
   } else if (jsValue instanceof AbstractAtom) {
     return jsValue
   } else {
@@ -67,7 +67,7 @@ export const fromJSArray = (jsArray: $FixMe): $FixMe => {
 }
 
 export const fromJSObject = (jsObject: {
-  [key: number | string]: mixed,
+  [key: string]: mixed,
 }): $FixMe => {
   return dict(mapValues(jsObject, atomifyDeep))
 }
