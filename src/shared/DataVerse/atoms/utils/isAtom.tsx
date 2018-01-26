@@ -5,7 +5,7 @@ import AbstractAtom from "$src/shared/DataVerse/atoms/utils/AbstractAtom";
 
 const isAtom = (v: mixed): v is AbstractAtom<{}> => {
   // @ts-ignore
-  return typeof v === 'object' && v !== null && v.isAtom === 'True'
+  return typeof v === 'object' && v !== null && v.isAtom === true
 }
 
 export default isAtom

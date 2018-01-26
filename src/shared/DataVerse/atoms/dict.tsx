@@ -9,7 +9,7 @@ import {
 type DictAtomChangeType<O> = {overriddenRefs: Partial<O>, deletedKeys: Array<keyof O>, addedKeys: Array<keyof O>}
 
 export class DictAtom<O> extends AbstractCompositeAtom<DictAtomChangeType<O>> {
-  isDictAtom = 'True'
+  isDictAtom = true
   _internalMap: O
   _pointer: $FixMe
 
@@ -114,7 +114,7 @@ export class DictAtom<O> extends AbstractCompositeAtom<DictAtomChangeType<O>> {
 
   pointer() {
     if (!this._pointer) {
-      this._pointer = pointer({root: this, path: []})
+      this._pointer = pointer({type: 'WithPath', root: this, path: []})
     }
     return this._pointer
   }

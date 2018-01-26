@@ -6,16 +6,9 @@ interface ObjectWhoseComputationShouldBeUpdated {
   _updateComputation(): void
 }
 
-export interface ITicker {
-  registerComputationUpdate(o: ObjectWhoseComputationShouldBeUpdated): void
-  addObjectWhoseStructureShouldBeUpdated(
-    o: ObjectWhoseStructureShouldBeUpdated,
-  ): void
-}
-
-export default class Ticker implements ITicker {
-  _computationsToUpdate: $FixMe
-  _objectsWhoseStructureShouldBeUpdated: $FixMe
+export default class Ticker {
+  _computationsToUpdate: Set<ObjectWhoseComputationShouldBeUpdated>
+  _objectsWhoseStructureShouldBeUpdated: Set<ObjectWhoseStructureShouldBeUpdated>
   _traces: $FixMe
 
   constructor() {
@@ -26,7 +19,7 @@ export default class Ticker implements ITicker {
     }
   }
 
-  registerComputationUpdate(d: $FixMe) {
+  registerComputationUpdate(d: ObjectWhoseComputationShouldBeUpdated): void {
     if (this._computationsToUpdate.has(d)) {
       console.error('This should never happen')
     }
@@ -73,7 +66,7 @@ export default class Ticker implements ITicker {
       if (process.env.KEEPING_DERIVATION_TRACES === true) {
         // This const is just there for debugging purposes
         // eslint-disable-next-line no-unused-vars
-        const trace = this._traces.get(d)
+        // const trace = this._traces.get(d)
         this._traces.delete(d)
       }
       d._updateComputation()

@@ -1,7 +1,8 @@
-import {default as AbstractAtom} from './utils/AbstractAtom'
+import AbstractAtom from './utils/AbstractAtom'
+import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
 
 export class BoxAtom<V> extends AbstractAtom<V> {
-  isBoxAtom = 'True'
+  isBoxAtom = true
   _value: V
 
   constructor(v: V) {

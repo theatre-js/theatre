@@ -24,7 +24,7 @@ const changeDescriptor = <V extends {}>(
 export class ArrayAtom<V> extends AbstractCompositeAtom<
   ArrayAtomChangeType<V>
 > {
-  isArrayAtom = 'True'
+  isArrayAtom = true
   _pointer: undefined | $FixMe
   _internalArray: V[]
 
@@ -124,7 +124,7 @@ export class ArrayAtom<V> extends AbstractCompositeAtom<
 
   pointer() {
     if (!this._pointer) {
-      this._pointer = pointer({root: this, path: []}) as $IntentionalAny
+      this._pointer = pointer({type: 'WithPath', root: this, path: []})
     }
     return this._pointer
   }

@@ -7,7 +7,7 @@ const constructComponentInstantiationValueDescriptor = (
   desP: $FixMe,
   d: $FixMe,
 ) => {
-  if (desP.isPointer !== 'True') throw Error('Pointers only')
+  if (desP.isPointer !== true) throw Error('Pointers only')
 
   const propsToFinalComponent = constructMapDescriptor(desP.prop('props'), d)
   const modifierInstantiationDescriptors = desP.prop(

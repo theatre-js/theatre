@@ -55,11 +55,11 @@ export default function applyJsonDiffToAtom(diff: Diff, atom: $FixMe) {
   let curAtom: $FixMe = atom
   for (let component of components) {
     component = jsonPatchLib.unescapePathComponent(component)
-    // if (curAtom.isDictAtom !== 'True') debugger
+    // if (curAtom.isDictAtom !== true) debugger
     curAtom =
-      curAtom.isDictAtom === 'True'
+      curAtom.isDictAtom === true
         ? curAtom.prop(component)
-        : curAtom.isArrayAtom === 'True'
+        : curAtom.isArrayAtom === true
           ? curAtom.index(parseInt(component, 10))
           : () => {
               throw new Error('Not implemented')
@@ -67,11 +67,11 @@ export default function applyJsonDiffToAtom(diff: Diff, atom: $FixMe) {
   }
 
   const type =
-    curAtom.isDictAtom === 'True'
+    curAtom.isDictAtom === true
       ? 'dict'
-      : curAtom.isArrayAtom === 'True'
+      : curAtom.isArrayAtom === true
         ? 'array'
-        : curAtom.isBoxAtom === 'True'
+        : curAtom.isBoxAtom === true
           ? 'box'
           : (function() {
               throw new Error(`Unrecognizable atom type '${atom}'`)

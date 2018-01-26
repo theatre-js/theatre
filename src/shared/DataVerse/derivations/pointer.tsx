@@ -1,82 +1,7 @@
-
-import {MapKey, /*If, True, False*/} from '$shared/DataVerse/types'
-// import {IsDictAtom, IDictAtom} from '$shared/DataVerse/atoms/dict'
-// import {IsArrayAtom, IArrayAtom} from '$shared/DataVerse/atoms/array'
+import {MapKey} from '$shared/DataVerse/types'
 import AbstractDerivation from './AbstractDerivation'
 
-// type IsPointer<V> = V['isPointer']
-// type IsAtom<V> = V['isAtom']
-
-// export type DecidePointerType<V> = If<
-//   IsAtom<V>,
-//   DecideAtomPointerType<V>,
-//   If<IsPointer<V>, V, void>,
-// >
-
-// // type DecideBoxAtomPointerType<V> =
-// //   If<IsPointer<V>, V,
-// //   IPointerToBoxAtom<V>>
-
-// type DecideAtomPointerType<V> = If<
-//   IsDictAtom<V>,
-//   IPointerToDictAtom<V['_internalMap']>,
-//   If<
-//     IsArrayAtom<V>,
-//     IPointerToArrayAtom<V['_v']>,
-//     IPointerToBoxAtom<V['_value']>,
-//   >,
-// >
-
-// // type DecideDerivationType<V> =
-// //   If<IsDictAtom<V>, V, void>
-
-// type BasePointer = {
-//   isPointer: True,
-//   isDictAtom: False,
-//   isBoxAtom: False,
-//   isArrayAtom: False,
-//   isAtom: False,
-// }
-
-// export type IPointerToDictAtom<O> = BasePointer &
-//   AbstractDerivation<IDictAtom<O>> & {
-//     _type: O,
-//     prop<K extends keyof O>(K): DecidePointerType<O[K]>,
-//     pointer(): IPointerToDictAtom<O>,
-//     index(i: undefined | null | number): IPointerToVoid,
-//   }
-
-// export type IPointerToArrayAtom<V> = BasePointer &
-//   AbstractDerivation<IArrayAtom<V>> & {
-//     _type: V,
-//     prop(k: $IntentionalAny): IPointerToVoid,
-//     pointer(): IPointerToArrayAtom<V>,
-//     index(i: number): DecidePointerType<V>,
-//   }
-
-// export type IPointerToVoid = BasePointer &
-//   AbstractDerivation<void> & {
-//     prop(k: $IntentionalAny): IPointerToVoid,
-//     pointer(): IPointerToVoid,
-//     index(i: undefined | null | number): IPointerToVoid,
-//   }
-
-// export type IPointerToBoxAtom<V> = BasePointer &
-//   AbstractDerivation<V> & {
-//     _type: V,
-//     prop(k: $IntentionalAny): IPointerToVoid,
-//     pointer(): IPointerToBoxAtom<V>,
-//     index(i: undefined | null | number): IPointerToVoid,
-//   }
-
-interface _IPointer<V> {
-  prop(key: MapKey): _IPointer<$FixMe>;
-  index(key: number): _IPointer<$FixMe>;
-  pointer(): _IPointer<V>;
-  // derivation(): AbstractDerivation<V>,
-}
-
-const noBoxAtoms = v => {
+const noBoxAtoms = (v: $IntentionalAny) => {
   if (v instanceof modules.box.BoxAtom) {
     return modules.deriveFromBoxAtom.default(v).flatMap(noBoxAtoms)
   } else {
@@ -85,21 +10,24 @@ const noBoxAtoms = v => {
 }
 
 type Address =
-  | {root: $FixMe, path: Array<MapKey>}
   | {
-      type: 'fromParentPointer',
-      parentPointer: _IPointer<$FixMe>,
-      keyOrIndex: number | string,
+      type: 'WithPath'
+      root: $FixMe
+      path: Array<MapKey>
+    }
+  | {
+      type: 'fromParentPointer'
+      parentPointer: PointerDerivation<$FixMe>
+      keyOrIndex: number | string
     }
 
-export class PointerDerivation extends AbstractDerivation<$FixMe>
-  implements _IPointer<$FixMe> {
+export class PointerDerivation<V> extends AbstractDerivation<$FixMe> {
   static NOTFOUND: void = undefined //Symbol('notfound')
-  isPointer = 'True'
+  isPointer = true
   _address: Address
   _internalDerivation: undefined | null | AbstractDerivation<$FixMe>
-  getValue: () => $FixMe
-  inPointer = true
+  // inPointer = true
+  _props: {[key: string]: PointerDerivation<$FixMe>}
 
   constructor(address: Address) {
     super()
@@ -150,26 +78,27 @@ export class PointerDerivation extends AbstractDerivation<$FixMe>
   }
 
   _makeDerivationForParentPointer(
-    parentPointer: $FixMe,
+    parentPointer: PointerDerivation<$FixMe>,
     keyOrIndex: string | number,
   ) {
     const d = parentPointer
       .flatMap(p => propify(p, keyOrIndex))
       .flatMap(noBoxAtoms)
-    d.inPointer = true
+
+    // d.inPointer = true
     return d
   }
 
   _makeDerivationForPath(root: $FixMe, path: Array<string | number>) {
-    let finalDerivation = modules.constant.default(root)
-    finalDerivation.inPointer = true
+    let finalDerivation = modules.constant.default(root) as AbstractDerivation<$FixMe>
+    // finalDerivation.inPointer = true
     path.forEach(key => {
       finalDerivation = finalDerivation.flatMap(p => propify(p, key))
-      finalDerivation.inPointer = true
+      // finalDerivation.inPointer = true
     })
 
     finalDerivation = finalDerivation.flatMap(noBoxAtoms)
-    finalDerivation.inPointer = true
+    // finalDerivation.inPointer = true
     return finalDerivation
   }
 
@@ -193,7 +122,7 @@ export class PointerDerivation extends AbstractDerivation<$FixMe>
   }
 }
 
-const _propify = (possibleReactiveValue, key) => {
+const _propify = (possibleReactiveValue: $FixMe, key: string | number) => {
   // pointerFlatMaps++
   if (
     possibleReactiveValue === PointerDerivation.NOTFOUND ||
@@ -203,7 +132,7 @@ const _propify = (possibleReactiveValue, key) => {
   } else if (possibleReactiveValue instanceof modules.dict.DictAtom) {
     return modules.deriveFromPropOfADictAtom.default(
       possibleReactiveValue,
-      (key as $FixMe),
+      key as $FixMe,
     )
   } else if (
     possibleReactiveValue instanceof modules.array.ArrayAtom &&
@@ -219,17 +148,17 @@ const _propify = (possibleReactiveValue, key) => {
     possibleReactiveValue instanceof modules.AbstractDerivedDict.default
   ) {
     return possibleReactiveValue.prop(key)
-  } else if (possibleReactiveValue.isDerivedArray === 'True') {
+  } else if (possibleReactiveValue.isDerivedArray === true) {
     return possibleReactiveValue.index(key)
   } else {
     return undefined
   }
 }
 
-const propify = (possibleReactiveValue, key) => {
+const propify = (possibleReactiveValue: $FixMe, key: string | number) => {
   const d = _propify(possibleReactiveValue, key)
-  if (typeof d === 'object' && d.isDerivation === 'True') {
-    d.inPointer = true
+  if (typeof d === 'object' && d.isDerivation === true) {
+    // d.inPointer = true
   }
   return d
 }

@@ -5,7 +5,7 @@ let lastId: number = 0
 
 export default class AbstractDerivedArray {
   _id: number
-  isDerivedArray = 'True'
+  isDerivedArray = true
 
   constructor() {
     if (process.env.KEEPING_DERIVATION_TRACES === true) {
@@ -36,7 +36,7 @@ export default class AbstractDerivedArray {
 
   pointer() {
     if (!this._pointer) {
-      this._pointer = pointer.default({root: this, path: []})
+      this._pointer = pointer.default({type: 'WithPath', root: this, path: []})
     }
     return this._pointer
   }

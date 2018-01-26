@@ -8,7 +8,7 @@ export default class AbstractDerivedDict {
   _changeEmitterHasTappers: boolean
   abstract _reactToHavingTappers(): void
   abstract _reactToNotHavingTappers(): void
-  isDerivedDict = 'True'
+  isDerivedDict = true
   _trace: $FixMe
   _pointer: $FixMe
   keys: () => Array<string>
@@ -42,7 +42,7 @@ export default class AbstractDerivedDict {
 
   pointer() {
     if (!this._pointer) {
-      this._pointer = pointer.default({root: this, path: []})
+      this._pointer = pointer.default({type: 'WithPath', root: this, path: []})
     }
     return this._pointer
   }

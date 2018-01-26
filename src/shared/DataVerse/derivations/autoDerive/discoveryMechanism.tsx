@@ -1,10 +1,15 @@
+import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
 
-import {AbstractDerivation} from '../types'
-const stack = []
+type Collector = (d: AbstractDerivation<$IntentionalAny>) => void
+
+const stack: {
+  foundDeps: Set<AbstractDerivation<mixed>>
+  collector: Collector
+}[] = []
 
 export const collectObservedDependencies = (
   cb: () => void,
-  collector: (d: AbstractDerivation<$IntentionalAny>) => void,
+  collector: Collector,
 ) => {
   const foundDeps: Set<AbstractDerivation<$IntentionalAny>> = new Set()
   stack.push({foundDeps, collector})
@@ -13,7 +18,9 @@ export const collectObservedDependencies = (
   return foundDeps
 }
 
-export const reportObservedDependency = (d: AbstractDerivation<$IntentionalAny>) => {
+export const reportObservedDependency = (
+  d: AbstractDerivation<$IntentionalAny>,
+) => {
   if (stack.length === 0) return
   const top = stack[stack.length - 1]
 

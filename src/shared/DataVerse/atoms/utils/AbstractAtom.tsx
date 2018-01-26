@@ -3,7 +3,7 @@ import Emitter from '$shared/DataVerse/utils/Emitter'
 import AbstractCompositeAtom from './AbstractCompositeAtom'
 
 export default abstract class AbstractAtom<ChangeType> {
-  isAtom = 'True'
+  isAtom = true
   _trace: $FixMe
   _changeEmitter: Emitter<ChangeType>
   _parent: null | {atom: AbstractCompositeAtom<$IntentionalAny>, key: MapKey}

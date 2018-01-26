@@ -2,14 +2,14 @@
 
 export const ensureNoAtoms = (d: $IntentionalAny) => {
   if (typeof d === 'object' && d !== null && !Array.isArray(d)) {
-    if (d.isDictAtom === 'True') {
+    if (d.isDictAtom === true) {
       return d.derivedDict()
-    } else if (d.isArrayAtom === 'True') {
+    } else if (d.isArrayAtom === true) {
       return d.derivedArray()
     } else if (
-      d.isDerivedDict === 'True' ||
-      d.isDerivedArray === 'True' ||
-      d.isDerivation === 'True'
+      d.isDerivedDict === true ||
+      d.isDerivedArray === true ||
+      d.isDerivation === true
     ) {
       return d
     } else {

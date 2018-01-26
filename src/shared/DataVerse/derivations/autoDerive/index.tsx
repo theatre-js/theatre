@@ -1,24 +1,16 @@
-
 import AbstractDerivation from '../AbstractDerivation'
-import {AbstractDerivation} from '../types'
 import {collectObservedDependencies} from './discoveryMechanism'
 
-export class AutoDerivation<V> extends AbstractDerivation
-  implements AbstractDerivation<V> {
-  _dependencies: Set<AbstractDerivation<$IntentionalAny>>
-  _fn: () => V
+export class AutoDerivation<V> extends AbstractDerivation<V> {
+  _dependencies: Set<AbstractDerivation<mixed>>
 
-  constructor(fn: () => V): AbstractDerivation<V> {
+  constructor(readonly _fn: () => V) {
     super()
-    this._fn = fn
-    return this
   }
 
   _recalculate() {
     let value: V
-    const newDeps: Set<
-      AbstractDerivation<$IntentionalAny>,
-    > = collectObservedDependencies(
+    const newDeps: Set<AbstractDerivation<mixed>> = collectObservedDependencies(
       () => {
         value = this._fn()
       },
@@ -34,11 +26,9 @@ export class AutoDerivation<V> extends AbstractDerivation
     })
 
     this._dependencies = newDeps
-    // newDeps.forEach(d => {
-    //   this._addDependency(d)
-    // })
 
-    return (value as $FixMe)
+    // @ts-ignore
+    return value
   }
 
   _keepUptodate() {
@@ -46,6 +36,6 @@ export class AutoDerivation<V> extends AbstractDerivation
   }
 }
 
-export default function autoDerive<T>(fn: () => T): AbstractDerivation<T> {
+export default function autoDerive<T>(fn: () => T) {
   return new AutoDerivation(fn)
 }

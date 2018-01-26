@@ -2,11 +2,12 @@
 
 import * as D from '$shared/DataVerse'
 import {AutoDerivation} from './autoDerive'
+import Ticker from '$src/shared/DataVerse/Ticker'
 
 describe('autoDerive', () => {
-  let ticker
+  let ticker: Ticker
   beforeEach(() => {
-    ticker = new D.Ticker()
+    ticker = new Ticker()
   })
 
   it('should work', () => {
@@ -34,14 +35,14 @@ describe('autoDerive', () => {
     })
 
     a.getValue()
-    ;(a.getValue() as string)
+    a.getValue() as string
     // $FlowExpectError
-    ;(a.getValue() as number)
+    // ;(a.getValue() as number)
 
     const changes: Array<string> = []
     const wrongChanges: Array<number> = []
 
-    a.changes((null as $IntentionalAny)).tap(c => {
+    a.changes(null as $IntentionalAny).tap(c => {
       changes.push(c)
       // $FlowExpectError
       wrongChanges.push(c)

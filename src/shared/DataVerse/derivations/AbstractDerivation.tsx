@@ -1,9 +1,7 @@
-
-import {ITicker} from '$shared/DataVerse/Ticker'
 import {reportObservedDependency} from './autoDerive/discoveryMechanism'
-// import {mapStackTrace} from 'sourcemapped-stacktrace'
 import {default as DerivationEmitter} from './DerivationEmitter'
 import * as debug from '$shared/debug'
+import Ticker from '$src/shared/DataVerse/Ticker'
 
 const FRESHNESS_STATE_NOT_APPLICABLE = 0
 const FRESHNESS_STATE_STALE = 1
@@ -14,22 +12,24 @@ type FreshnessState =
   | typeof FRESHNESS_STATE_STALE
   | typeof FRESHNESS_STATE_FRESH
 
-export default class AbstractDerivation<V> {
+export interface ObjectWhoListensToAtomicUpdateNotices {
+  _youMayNeedToUpdateYourself(msgComingFrom: AbstractDerivation<mixed>): void
+}
+
+export default abstract class AbstractDerivation<V> implements ObjectWhoListensToAtomicUpdateNotices {
   _id: number
-  isDerivation = 'True'
+  isDerivation: true = true
   _didNotifyDownstreamOfUpcomingUpdate: boolean
   _thereAreMoreThanOneDependents: boolean
 
   _freshnessState: FreshnessState
   _lastValue: $FixMe
 
-  _dependents: Set<AbstractDerivation<$IntentionalAny>>
+  _dependents: Set<ObjectWhoListensToAtomicUpdateNotices>
   _dependencies: Set<AbstractDerivation<$IntentionalAny>>
 
   _trace: $FixMe
   abstract _recalculate(): V
-  abstract _keepUptodate(): void
-  abstract _stopKeepingUptodate(): void
 
   constructor() {
     if (process.env.KEEPING_DERIVATION_TRACES === true) {
@@ -47,13 +47,13 @@ export default class AbstractDerivation<V> {
   _addDependency(d: AbstractDerivation<$IntentionalAny>) {
     if (this._dependencies.has(d)) return
     this._dependencies.add(d)
-    if (this._thereAreMoreThanOneDependents) d._addDependent((this as $FixMe))
+    if (this._thereAreMoreThanOneDependents) d._addDependent(this as $FixMe)
   }
 
   _removeDependency(d: AbstractDerivation<$IntentionalAny>) {
     if (!this._dependencies.has(d)) return
     this._dependencies.delete(d)
-    if (this._thereAreMoreThanOneDependents) d._removeDependent((this as $FixMe))
+    if (this._thereAreMoreThanOneDependents) d._removeDependent(this as $FixMe)
   }
 
   _removeAllDependencies() {
@@ -62,11 +62,11 @@ export default class AbstractDerivation<V> {
     })
   }
 
-  changes(ticker: ITicker) {
-    return new DerivationEmitter((this as $IntentionalAny), ticker).tappable()
+  changes(ticker: Ticker) {
+    return new DerivationEmitter(this as $IntentionalAny, ticker).tappable()
   }
 
-  tapImmediate(ticker: ITicker, fn: ((cb: $FixMe) => void)): $FixMe {
+  tapImmediate(ticker: Ticker, fn: ((cb: $FixMe) => void)): $FixMe {
     const untap = this.changes(ticker).tap(fn)
     fn(this.getValue())
     return untap
@@ -76,7 +76,7 @@ export default class AbstractDerivation<V> {
     return this._dependents.size !== 0
   }
 
-  _addDependent(d: AbstractDerivation<$IntentionalAny>) {
+  _addDependent(d: ObjectWhoListensToAtomicUpdateNotices) {
     const hadDepsBefore = this._dependents.size > 0
     this._dependents.add(d)
     const hasDepsNow = this._dependents.size > 0
@@ -85,7 +85,7 @@ export default class AbstractDerivation<V> {
     }
   }
 
-  _removeDependent(d: AbstractDerivation<$IntentionalAny>) {
+  _removeDependent(d: ObjectWhoListensToAtomicUpdateNotices) {
     const hadDepsBefore = this._dependents.size > 0
     this._dependents.delete(d)
     const hasDepsNow = this._dependents.size > 0
@@ -94,6 +94,7 @@ export default class AbstractDerivation<V> {
     }
   }
 
+  _youMayNeedToUpdateYourself(msgComingFrom: AbstractDerivation<mixed>): void
   _youMayNeedToUpdateYourself() {
     if (this._didNotifyDownstreamOfUpcomingUpdate) return
 
@@ -102,13 +103,13 @@ export default class AbstractDerivation<V> {
 
     if (this._hasDependents()) {
       this._dependents.forEach(dependent => {
-        dependent._youMayNeedToUpdateYourself((this  as $FixMe))
+        dependent._youMayNeedToUpdateYourself(this)
       })
     }
   }
 
   getValue(): V {
-    reportObservedDependency((this as $FixMe))
+    reportObservedDependency(this as $FixMe)
 
     if (
       process.env.TRACKING_COLD_DERIVATIONS === true &&
@@ -127,7 +128,7 @@ export default class AbstractDerivation<V> {
         this._didNotifyDownstreamOfUpcomingUpdate = false
       }
     }
-    return (this._lastValue as $IntentionalAny)
+    return this._lastValue as $IntentionalAny
   }
 
   _reactToNumberOfDependentsChange() {
@@ -142,13 +143,13 @@ export default class AbstractDerivation<V> {
     if (thereAreMoreThanOneDependents) {
       this._freshnessState = FRESHNESS_STATE_STALE
       this._dependencies.forEach(d => {
-        d._addDependent((this as $FixMe))
+        d._addDependent(this as $FixMe)
       })
       this._keepUptodate()
     } else {
       this._freshnessState = FRESHNESS_STATE_NOT_APPLICABLE
       this._dependencies.forEach(d => {
-        d._removeDependent((this as $FixMe))
+        d._removeDependent(this as $FixMe)
       })
       this._stopKeepingUptodate()
     }
@@ -158,14 +159,14 @@ export default class AbstractDerivation<V> {
 
   _stopKeepingUptodate() {}
 
-  map<T>(fn: $FixMe): AbstractDerivation<T> {
-    // $FixMe
+  map<T>(fn: (v: V) => T): AbstractDerivation<T> {
     return mapDerivation.default(this, fn)
   }
 
-  flatMap(fn: $FixMe): $FixMe {
+  flatMap<T, R extends AbstractDerivation<T>>(
+    fn: (v: V) => R,
+  ): AbstractDerivation<T> {
     return flatMapDerivation.default(this, fn)
-    // return  this.map(fn).flatten()
   }
 
   flatten(): AbstractDerivation<$FixMe> {
@@ -174,12 +175,16 @@ export default class AbstractDerivation<V> {
 
   flattenDeep(levels?: number): AbstractDerivation<$FixMe> {
     // $FixMe
-    return flattenDeep.default((this as $FixMe), levels)
+    return flattenDeep.default(this as $FixMe, levels)
   }
 
   toJS() {
     return this.flatMap(toJS.default)
   }
+}
+
+export function isDerivation(d: any): d is AbstractDerivation<mixed>  {
+  return d && d.isDerivation && d.isDerivation === true
 }
 
 const flattenDeep = require('./flattenDeep')

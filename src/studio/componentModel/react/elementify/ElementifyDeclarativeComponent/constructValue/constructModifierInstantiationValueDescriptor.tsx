@@ -7,7 +7,7 @@ const constructModifierInstantiationValueDescriptor = (
   desP: $FixMe,
   d: $FixMe,
 ) => {
-  if (desP.isPointer !== 'True') throw Error('Pointers only')
+  if (desP.isPointer !== true) throw Error('Pointers only')
 
   return D.atoms
     .dict({

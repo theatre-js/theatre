@@ -55,7 +55,7 @@ const makeEmptyStructure = (): Structure => ({
 })
 
 export default class DerivedClassInstance {
-  isDerivedClassInstance = 'True'
+  isDerivedClassInstance = true
   _head: void | DerivedClass<$FixMe>
   _changeEmitter: Emitter<$FixMe>
   _ticker: Ticker
@@ -120,9 +120,9 @@ export default class DerivedClassInstance {
     return this._changeEmitter
   }
 
-  pointer(): $FixMe {
+  pointer() {
     if (!this._pointer) {
-      this._pointer = pointer({root: this, path: []})
+      this._pointer = pointer({type: 'WithPath', root: this, path: []})
     }
     return this._pointer
   }

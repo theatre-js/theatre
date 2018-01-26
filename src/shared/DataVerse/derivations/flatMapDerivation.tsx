@@ -7,27 +7,23 @@ const UPDATE_NEEDED_FROM = {
   inner: 2,
 }
 
-export class FlatMapDerivation extends AbstractDerivation<$FixMe> {
-  _updateNeededFromIndex: number
-  _stackOfDependencies: Array<AbstractDerivation<$IntentionalAny>>
-  _fn: $FixMe
-  _depDerivation: $FixMe
-  _innerDerivation: undefined | null | AbstractDerivation<$IntentionalAny>
+export class FlatMapDerivation<V, DepType, FnType extends (v: DepType) => AbstractDerivation<V>> extends AbstractDerivation<V> {
+  _innerDerivation: undefined | null | AbstractDerivation<V>
   _updateNeededFrom: (typeof UPDATE_NEEDED_FROM)[keyof typeof UPDATE_NEEDED_FROM]
+  _hot: boolean
+
   static displayName = 'flatMap'
 
   constructor(
-    depDerivation: AbstractDerivation<$FixMe>,
-    fn: $FixMe,
+    readonly _depDerivation: AbstractDerivation<DepType>,
+    readonly _fn: FnType,
   ) {
     super()
-    this._fn = fn
-    this._depDerivation = depDerivation
     this._innerDerivation = undefined
     this._updateNeededFrom = UPDATE_NEEDED_FROM.dep
     this._hot = false
 
-    this._addDependency(depDerivation)
+    this._addDependency(_depDerivation)
 
     return this
   }
@@ -37,7 +33,7 @@ export class FlatMapDerivation extends AbstractDerivation<$FixMe> {
     this._updateNeededFrom = UPDATE_NEEDED_FROM.none
 
     if (updateNeededFrom === UPDATE_NEEDED_FROM.inner) {
-      // $FlowIgnore
+      // @ts-ignore
       return this._innerDerivation.getValue()
     }
 
@@ -66,7 +62,7 @@ export class FlatMapDerivation extends AbstractDerivation<$FixMe> {
     return this._hot ? this._recalculateHot() : this._recalculateCold()
   }
 
-  _youMayNeedToUpdateYourself(msgComingFrom: AbstractDerivation<$IntentionalAny>) {
+  _youMayNeedToUpdateYourself(msgComingFrom: AbstractDerivation<mixed>) {
     const updateNeededFrom =
       msgComingFrom === this._depDerivation
         ? UPDATE_NEEDED_FROM.dep
@@ -122,6 +118,6 @@ export class FlatMapDerivation extends AbstractDerivation<$FixMe> {
   }
 }
 
-export default function flatMap(de: $FixMe, fn: $FixMe) {
-  return new FlatMapDerivation(de, fn)
+export default function flatMap<T, R extends AbstractDerivation<T>>(depDerivation: AbstractDerivation<T>, fn: (t: T) => R) {
+  return new FlatMapDerivation(depDerivation, fn)
 }

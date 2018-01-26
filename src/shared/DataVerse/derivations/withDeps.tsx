@@ -1,23 +1,15 @@
 // @flow
 import AbstractDerivation from './AbstractDerivation'
-import {AbstractDerivation} from './types'
 
-// type Deps<O> = $ObjMap<O, <V>(v: V) => AbstractDerivation<V>>
-
-export class WithDepsDerivation<V, O> extends AbstractDerivation
-  implements AbstractDerivation<V> {
-  getValue: () => V
-
-  _deps: O
-  _fn: $FixMe
-
-  constructor(dependencies: O, fn: (dependencies: O) => V) {
+export class WithDepsDerivation<
+  V,
+  O extends {[key: string]: AbstractDerivation<mixed>}
+> extends AbstractDerivation<V> {
+  constructor(readonly _deps: O, readonly _fn: (dependencies: O) => V) {
     super()
-    this._deps = dependencies
-    this._fn = fn
 
-    for (let dependencyKey in dependencies) {
-      this._addDependency(dependencies[dependencyKey])
+    for (let dependencyKey in _deps) {
+      this._addDependency(_deps[dependencyKey])
     }
   }
 
@@ -26,9 +18,9 @@ export class WithDepsDerivation<V, O> extends AbstractDerivation
   }
 }
 
-export default function withDeps<V, O>(
-  deps: O,
-  fn: (dependencies: O) => V,
-): AbstractDerivation<V> {
+export default function withDeps<
+  V,
+  O extends {[key: string]: AbstractDerivation<mixed>}
+>(deps: O, fn: (dependencies: O) => V): AbstractDerivation<V> {
   return new WithDepsDerivation(deps, fn)
 }

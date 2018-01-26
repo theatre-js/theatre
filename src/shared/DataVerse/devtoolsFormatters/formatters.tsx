@@ -1,11 +1,9 @@
-import * as D from '$shared/DataVerse'
 import {makeFormatter} from '$src/shared/DataVerse/devtoolsFormatters/common'
 import {
   skipFindingColdDerivations,
   endSkippingColdDerivations,
 } from '$src/shared/debug'
 import {map, times} from 'lodash'
-import constant from '$src/shared/DataVerse/derivations/constant';
 
 const styles = {
   header: 'color: #7F7F7F; font-style: italic;',
@@ -13,7 +11,7 @@ const styles = {
   indent: 'margin-left: 1em;',
 }
 
-const obj = (v) =>
+const obj = (v: mixed) =>
   typeof v === 'undefined' ? ['span', {}, 'undefined'] : ['object', {object: v}]
 
 // const pairing = (k, v) => ({
@@ -21,7 +19,7 @@ const obj = (v) =>
 // })
 
 makeFormatter({
-  test: o => o && o.isBoxAtom === 'True',
+  test: o => o && o.isBoxAtom === true,
   renderHeader: o => {
     return [
       'div',
@@ -34,7 +32,7 @@ makeFormatter({
 })
 
 makeFormatter({
-  test: o => o && o.isDictAtom === 'True',
+  test: o => o && o.isDictAtom === true,
   renderHeader: o => {
     return [
       'div',
@@ -61,7 +59,7 @@ makeFormatter({
 })
 
 makeFormatter({
-  test: o => o && o.isArrayAtom === 'True',
+  test: o => o && o.isArrayAtom === true,
   renderHeader: o => {
     return [
       'div',
@@ -74,7 +72,7 @@ makeFormatter({
 })
 
 makeFormatter({
-  test: o => o && o.isPointer === 'True',
+  test: o => o && o.isPointer === true,
   renderHeader: o => {
     const name = 'Pointer'
     return ['div', {}, ['span', {style: styles.header}, `${name} `]]
@@ -88,14 +86,24 @@ makeFormatter({
     return [
       'div',
       {},
-      ['div', {style: styles.indent}, ['span', {style: styles.key}, 'address: '], ['object', {object: o._address}]],
-      ['div', {style: styles.indent}, ['span', {style: styles.key}, 'value: '], obj(v)]
+      [
+        'div',
+        {style: styles.indent},
+        ['span', {style: styles.key}, 'address: '],
+        ['object', {object: o._address}],
+      ],
+      [
+        'div',
+        {style: styles.indent},
+        ['span', {style: styles.key}, 'value: '],
+        obj(v),
+      ],
     ]
   },
 })
 
 makeFormatter({
-  test: o => o && o.isDerivation === 'True',
+  test: o => o && o.isDerivation === true,
   renderHeader: o => {
     const name = o.constructor.displayName || o.constructor.name || 'Unkown'
 
@@ -104,20 +112,20 @@ makeFormatter({
     endSkippingColdDerivations()
 
     let val: any[] = []
-    
+
     if (typeof v !== 'object' || v === null) {
       val = [obj(v)]
     }
 
     return ['div', {}, ['span', {style: styles.header}, `${name} `], ...val]
   },
-  hasBody: (o) => {
+  hasBody: o => {
     skipFindingColdDerivations()
     const v = o.getValue()
     endSkippingColdDerivations()
 
     let val: any[] = []
-    
+
     if (typeof v !== 'object' || v === null) {
       return false
     } else {
@@ -133,7 +141,7 @@ makeFormatter({
 })
 
 makeFormatter({
-  test: o => o && o.isDerivedClassInstance === 'True',
+  test: o => o && o.isDerivedClassInstance === true,
   renderHeader: o => {
     return [
       'div',
@@ -164,7 +172,7 @@ makeFormatter({
 })
 
 makeFormatter({
-  test: o => o && o.isDerivedDict === 'True',
+  test: o => o && o.isDerivedDict === true,
   renderHeader: o => {
     return [
       'div',
@@ -193,7 +201,7 @@ makeFormatter({
 })
 
 makeFormatter({
-  test: o => o && o.isDerivedArray === 'True',
+  test: o => o && o.isDerivedArray === true,
   renderHeader: o => {
     return [
       'div',
@@ -210,7 +218,7 @@ makeFormatter({
         'div',
         {},
         ['span', {style: styles.key}, `${i}: `],
-        ['object', {object: o.index(i)}]
+        ['object', {object: o.index(i)}],
       ]
       // return ['li', {}, k]
     })

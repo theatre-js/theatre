@@ -26,14 +26,14 @@ const isLiteral = s =>
   s === null
 
 const constructValue = (desP: $FixMe, self: $FixMe) => {
-  if (desP.isPointer !== 'True') throw Error('Pointers only')
+  if (desP.isPointer !== true) throw Error('Pointers only')
 
   return desP.flatMap(val => {
     if (isLiteral(val)) {
       return val
-    } else if (val && val.isDerivedArray === 'True') {
+    } else if (val && val.isDerivedArray === true) {
       return constructListDescriptor(desP, self)
-    } else if (val && val.isDerivedDict === 'True') {
+    } else if (val && val.isDerivedDict === true) {
       return val
         .prop('__descriptorType')
         .flatMap((type: ValueDescriptorDescribedInAnObject['type']) => {

@@ -1,22 +1,20 @@
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import {default as Tappable} from '$shared/DataVerse/utils/Tappable'
-import {ITicker} from '$shared/DataVerse/Ticker'
-import {AbstractDerivation} from '$src/shared/DataVerse/derivations'
-
-interface AbstractDerivationEmitter<V> {
-  tappable(): Tappable<V>
-}
+import AbstractDerivation, {
+  ObjectWhoListensToAtomicUpdateNotices,
+} from '$src/shared/DataVerse/derivations/AbstractDerivation'
+import Ticker from '$src/shared/DataVerse/Ticker'
 
 export default class DerivationEmitter<V>
-  implements AbstractDerivationEmitter<V> {
+  implements ObjectWhoListensToAtomicUpdateNotices {
   _derivation: AbstractDerivation<V>
-  _ticker: ITicker
+  _ticker: Ticker
   _emitter: Emitter<V>
-  _lastValue: V
+  _lastValue: undefined | V
   _lastValueRecorded: boolean
   _hadTappers: boolean
 
-  constructor(derivation: AbstractDerivation<V>, ticker: ITicker) {
+  constructor(derivation: AbstractDerivation<V>, ticker: Ticker) {
     this._derivation = derivation
     this._ticker = ticker
     this._emitter = new Emitter()
@@ -46,8 +44,8 @@ export default class DerivationEmitter<V>
     }
   }
 
-  tappable() {
-    return this._emitter.tappable as $IntentionalAny
+  tappable(): Tappable<V> {
+    return this._emitter.tappable
   }
 
   _updateComputation() {

@@ -1,19 +1,13 @@
-
 import AbstractDerivation from './AbstractDerivation'
 
-// type Deps<O> = $ObjMap<O, <V>(v: V) => AbstractDerivation<V>>
-
-export class MapDerivation<T, V> extends AbstractDerivation<V> {
-  getValue: () => V
-  _fn: $FixMe
-  _dep: AbstractDerivation<T>
-
-  constructor(dep: AbstractDerivation<T>, fn: (t: T) => V) {
+export class MapDerivation<
+  T,
+  V,
+  Fn extends (t: T) => V
+> extends AbstractDerivation<V> {
+  constructor(readonly _dep: AbstractDerivation<T>, readonly _fn: Fn) {
     super()
-    this._dep = dep
-    this._fn = fn
-
-    this._addDependency(dep)
+    this._addDependency(_dep)
   }
 
   _recalculate() {

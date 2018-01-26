@@ -10,7 +10,7 @@ export class ConstantDerivation<V> extends AbstractDerivation<V> {
     return this
   }
 
-  _recalculate(): $FixMe {
+  _recalculate() {
     return this._v
   }
 }

@@ -2,7 +2,7 @@
 // import * as D from '$shared/DataVerse'
 
 const constructMapDescriptor = (desP: $FixMe, d: $FixMe) => {
-  if (desP.isPointer !== 'True') throw Error('Pointers only')
+  if (desP.isPointer !== true) throw Error('Pointers only')
 
   return desP.flatMap(m => {
     return m.mapValues(v => {
