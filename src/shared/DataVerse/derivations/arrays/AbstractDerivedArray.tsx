@@ -1,11 +1,27 @@
-import {IDerivedArray} from './types' // eslint-disable-line flowtype/require-valid-file-annotation
 import Emitter from '$shared/DataVerse/utils/Emitter'
+import {PointerDerivation} from '$src/shared/DataVerse/derivations/pointer'
+import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
+import Tappable from '$src/shared/DataVerse/utils/Tappable'
 
 let lastId: number = 0
 
-export default class AbstractDerivedArray {
-  _id: number
+interface IDerivedArrayChangeType {
+  startIndex: number
+  deleteCount: number
+  addCount: number
+}
+
+export default abstract class AbstractDerivedArray<V> {
   isDerivedArray = true
+  readonly _id: number
+  _trace: $IntentionalAny
+  readonly _changeEmitter: Emitter<IDerivedArrayChangeType>
+  _changeEmitterHasTappers: boolean
+  abstract _reactToHavingTappers(): void
+  abstract _reactToNotHavingTappers(): void
+  _pointer: undefined | PointerDerivation<AbstractDerivedArray<V>>
+  abstract index(i: number): AbstractDerivation<V>
+  abstract length(): number
 
   constructor() {
     if (process.env.KEEPING_DERIVATION_TRACES === true) {
@@ -30,30 +46,37 @@ export default class AbstractDerivedArray {
     }
   }
 
-  changes() {
+  changes(): Tappable<IDerivedArrayChangeType> {
     return this._changeEmitter.tappable
   }
 
-  pointer() {
+  pointer(): PointerDerivation<this> {
     if (!this._pointer) {
       this._pointer = pointer.default({type: 'WithPath', root: this, path: []})
     }
+    // @ts-ignore
     return this._pointer
   }
 
-  concat(right: IDerivedArray<$FixMe>) {
+  concat(right: AbstractDerivedArray<V>): AbstractDerivedArray<V> {
     return concatDerivedArray.default(this, right)
   }
 
-  reduce(fn, acc) {
-    return reduceDerivedArray.default(this, fn, acc)
+  reduce<
+    Acc,
+    Fn extends ((acc: Acc, v: V, n: number) => Acc | AbstractDerivation<Acc>),
+    Seed extends Acc | AbstractDerivation<Acc>
+  >(fn: Fn, seed: Seed): AbstractDerivation<Acc> {
+    return reduceDerivedArray.default(this, fn, seed)
   }
 
-  map(fn) {
+  map<T, Fn extends ((d: AbstractDerivation<V>) => T)>(
+    fn: Fn,
+  ): AbstractDerivedArray<T> {
     return mapDerivedArray.default(this, fn)
   }
 
-  toJS() {
+  toJS(): AbstractDerivation<Array<V>> {
     return this.reduce((acc, cur) => [...acc, cur], [])
   }
 }

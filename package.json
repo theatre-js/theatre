@@ -5,7 +5,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint ./src",
+    "lint": "tslint -p . -c tslint.json ./src/**/*.tsx",
     "test": "jest",
     "prettify-and-lint": "run-s prettify lint",
     "prettify": "prettier --write \"src/**/*.tsx\"",
@@ -133,6 +133,7 @@
     "ts-node": "^4.1.0",
     "tsconfig-paths-webpack-plugin": "^2.0.0",
     "tslint": "^5.9.1",
+    "tslint-sonarts": "^1.4.0",
     "typescript": "^2.6.2",
     "typings-for-css-modules-loader": "^1.7.0",
     "url-loader": "^0.5.9",

@@ -6,7 +6,7 @@ export default abstract class AbstractAtom<ChangeType> {
   isAtom = true
   _trace: $FixMe
   _changeEmitter: Emitter<ChangeType>
-  _parent: null | {atom: AbstractCompositeAtom<$IntentionalAny>, key: MapKey}
+  _parent: null | {atom: AbstractCompositeAtom<$IntentionalAny>, key: string | number}
   abstract unboxDeep(): mixed
 
   constructor() {
@@ -21,7 +21,7 @@ export default abstract class AbstractAtom<ChangeType> {
     return this._changeEmitter.tappable
   }
 
-  _setParent(p: AbstractCompositeAtom<$IntentionalAny>, key: MapKey) {
+  _setParent(p: AbstractCompositeAtom<$IntentionalAny>, key: string | number) {
     if (this._parent) throw new Error(`This Atom already does have a parent`)
 
     this._parent = {atom: p, key}

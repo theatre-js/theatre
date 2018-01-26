@@ -49,8 +49,6 @@ describe('FlattenDeepDerivation', () => {
     b.set(4)
     expect(final.getValue()).toEqual(6)
 
-    const ticker = new D.Ticker()
-
     const adEvents: $IntentionalAny[] = []
 
     aD.changes(ticker).tap(newVal => {
@@ -84,7 +82,6 @@ describe('FlattenDeepDerivation', () => {
   })
 
   it('more', () => {
-    const ticker = new D.Ticker()
     const a = D.atoms.box('a')
     const aD = a.derivation()
     const b = D.atoms.box('b')
@@ -128,8 +125,8 @@ describe('FlattenDeepDerivation', () => {
     const a = D.atoms.box('a')
     const aD = a.derivation()
 
-    const c = D.derivations.constant(D.derivations.constant(aD))
-    c
+    const b = D.derivations.constant(D.derivations.constant(aD))
+    b
       .getValue()
       .getValue()
       .getValue() as string
@@ -140,7 +137,7 @@ describe('FlattenDeepDerivation', () => {
     //   .getValue() as number
 
     // const f = flattenDeep(c, 3)
-    const f = c.flattenDeep(3)
+    const f = b.flattenDeep(3)
 
     expect(f.getValue()).toEqual('a')
     a.set('a2')

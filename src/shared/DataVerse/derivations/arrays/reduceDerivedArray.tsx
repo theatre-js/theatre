@@ -1,25 +1,18 @@
-
 import AbstractDerivation from '../AbstractDerivation'
-import {AbstractDerivation} from '../types'
-import {IDerivedArray} from './types'
 import of from '../of'
+import AbstractDerivedArray from '$src/shared/DataVerse/derivations/arrays/AbstractDerivedArray'
 
 const noop = () => {}
 
-export class DerivedArrayReduction<T, V> extends AbstractDerivation
-  implements AbstractDerivation<V> {
-  getValue: () => V
-  _derivedArray: IDerivedArray<T>
+export class DerivedArrayReduction<T, V> extends AbstractDerivation<V> {
+  _derivedArray: AbstractDerivedArray<T>
   _fn: $FixMe
   _untapFromDerivedArrayChanges: Function
   _updateNeededFromIndex: number // `-1` means update comes from the top flatMap derivation. 0,1,2,... mean update is required because the derivedArray has had a change
-  _seed: $FixMe
+  _seed: AbstractDerivation<mixed>
+  _stack: AbstractDerivation<mixed>[]
 
-  constructor(
-    derivedArray: IDerivedArray<T>,
-    fn: $FixMe,
-    seed: $FixMe,
-  ): AbstractDerivation<V> {
+  constructor(derivedArray: AbstractDerivedArray<T>, fn: $FixMe, seed: $FixMe) {
     super()
     this._derivedArray = derivedArray
     this._fn = fn
@@ -94,8 +87,8 @@ export default function reduceDerivedArray<
   V,
   Acc extends V,
   Seed extends Acc,
-  A extends IDerivedArray<T>,
-  Fn extends (acc: Acc, t: T, i: number) => Acc,
+  A extends AbstractDerivedArray<T>,
+  Fn extends (acc: Acc, t: T, i: number) => Acc
 >(a: A, fn: Fn, seed: Seed) {
   return new DerivedArrayReduction(a, fn, seed)
 }

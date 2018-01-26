@@ -1,4 +1,8 @@
 {
+  "rulesDirectory": [
+    "./node_modules/dtslint/bin/rules",
+    "./node_modules/tslint-sonarts/lib/rules"
+  ],
   "rules": {
     "expect": true,
     "no-implicit-dependencies": false,
@@ -16,7 +20,6 @@
       "allow-undefined-union"
     ],
     "strict-type-predicates": true,
-    "typeof-compare": true,
     "use-default-type-parameter": true,
     "use-isnan": true,
     "no-duplicate-imports": true,

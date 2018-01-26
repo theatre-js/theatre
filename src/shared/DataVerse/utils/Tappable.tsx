@@ -1,19 +1,19 @@
 type Untap = () => void
 type UntapFromSource = () => void
 
-type Props<V> = {
+interface IProps<V> {
   tapToSource: (cb: (payload: V) => void) => UntapFromSource,
 }
 
 type Listener<V> = ((v: V) => void) | (() => void)
 
 export default class Tappable<V> {
-  _props: Props<V>
+  _props: IProps<V>
   _tappers: Map<any, (v: V) => void>
   _untapFromSource: null | UntapFromSource
   _lastTapperId: number
 
-  constructor(props: Props<V>) {
+  constructor(props: IProps<V>) {
     this._lastTapperId = 0
     this._untapFromSource = null
     this._props = props

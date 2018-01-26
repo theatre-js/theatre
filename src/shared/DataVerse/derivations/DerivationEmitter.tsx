@@ -1,12 +1,12 @@
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import {default as Tappable} from '$shared/DataVerse/utils/Tappable'
 import AbstractDerivation, {
-  ObjectWhoListensToAtomicUpdateNotices,
+  IObjectWhoListensToAtomicUpdateNotices,
 } from '$src/shared/DataVerse/derivations/AbstractDerivation'
 import Ticker from '$src/shared/DataVerse/Ticker'
 
 export default class DerivationEmitter<V>
-  implements ObjectWhoListensToAtomicUpdateNotices {
+  implements IObjectWhoListensToAtomicUpdateNotices {
   _derivation: AbstractDerivation<V>
   _ticker: Ticker
   _emitter: Emitter<V>

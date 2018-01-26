@@ -4,8 +4,9 @@ import deriveFromArrayAtom from '$shared/DataVerse/derivations/arrays/deriveFrom
 import range from 'lodash/range'
 import {default as pointer} from '$shared/DataVerse/derivations/pointer'
 import isAtom from '$src/shared/DataVerse/atoms/utils/isAtom'
+import AbstractDerivedArray from '$src/shared/DataVerse/derivations/arrays/AbstractDerivedArray'
 
-export type ArrayAtomChangeType<V> = {
+export interface IArrayAtomChangeType<V> {
   startIndex: number
   deleteCount: number
   addedRefs: Array<V>
@@ -15,14 +16,14 @@ const changeDescriptor = <V extends {}>(
   startIndex: number,
   deleteCount: number,
   refsToAdd: Array<V>,
-): ArrayAtomChangeType<V> => ({
+): IArrayAtomChangeType<V> => ({
   startIndex,
   deleteCount: deleteCount,
   addedRefs: refsToAdd,
 })
 
 export class ArrayAtom<V> extends AbstractCompositeAtom<
-  ArrayAtomChangeType<V>
+  IArrayAtomChangeType<V>
 > {
   isArrayAtom = true
   _pointer: undefined | $FixMe
@@ -65,7 +66,7 @@ export class ArrayAtom<V> extends AbstractCompositeAtom<
 
     removedRefs.forEach((r, i) => {
       if (r) {
-        this._unadopt(i + startIndex, r)
+        this._unadopt(i + startIndex, r as $FixMe)
       }
     })
 
@@ -118,7 +119,7 @@ export class ArrayAtom<V> extends AbstractCompositeAtom<
     return this._internalArray[index]
   }
 
-  derivedArray() {
+  derivedArray(): AbstractDerivedArray<V> {
     return deriveFromArrayAtom(this)
   }
 

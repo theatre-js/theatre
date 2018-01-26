@@ -12,13 +12,13 @@ export default abstract class AbstractCompositeAtom<
     super()
   }
 
-  _adopt(key: MapKey, ref: mixed | AbstractAtom<$IntentionalAny>) {
+  _adopt(key: string | number, ref: mixed | AbstractAtom<$IntentionalAny>) {
     if (!isAtom(ref)) return
 
     ref._setParent(this, key)
   }
 
-  _unadopt(key: MapKey, ref: AbstractAtom<$IntentionalAny>) {
+  _unadopt(key: string | number, ref: AbstractAtom<$IntentionalAny>) {
     if (!isAtom(ref)) return
     ref._unsetParent()
   }

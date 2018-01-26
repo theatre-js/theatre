@@ -2,6 +2,7 @@ import {reportObservedDependency} from './autoDerive/discoveryMechanism'
 import {default as DerivationEmitter} from './DerivationEmitter'
 import * as debug from '$shared/debug'
 import Ticker from '$src/shared/DataVerse/Ticker'
+import Tappable from '$src/shared/DataVerse/utils/Tappable'
 
 const FRESHNESS_STATE_NOT_APPLICABLE = 0
 const FRESHNESS_STATE_STALE = 1
@@ -12,11 +13,12 @@ type FreshnessState =
   | typeof FRESHNESS_STATE_STALE
   | typeof FRESHNESS_STATE_FRESH
 
-export interface ObjectWhoListensToAtomicUpdateNotices {
+export interface IObjectWhoListensToAtomicUpdateNotices {
   _youMayNeedToUpdateYourself(msgComingFrom: AbstractDerivation<mixed>): void
 }
 
-export default abstract class AbstractDerivation<V> implements ObjectWhoListensToAtomicUpdateNotices {
+export default abstract class AbstractDerivation<V>
+  implements IObjectWhoListensToAtomicUpdateNotices {
   _id: number
   isDerivation: true = true
   _didNotifyDownstreamOfUpcomingUpdate: boolean
@@ -25,11 +27,13 @@ export default abstract class AbstractDerivation<V> implements ObjectWhoListensT
   _freshnessState: FreshnessState
   _lastValue: $FixMe
 
-  _dependents: Set<ObjectWhoListensToAtomicUpdateNotices>
+  _dependents: Set<IObjectWhoListensToAtomicUpdateNotices>
   _dependencies: Set<AbstractDerivation<$IntentionalAny>>
 
   _trace: $FixMe
   abstract _recalculate(): V
+  Type: V
+  ChangeType: V
 
   constructor() {
     if (process.env.KEEPING_DERIVATION_TRACES === true) {
@@ -62,8 +66,8 @@ export default abstract class AbstractDerivation<V> implements ObjectWhoListensT
     })
   }
 
-  changes(ticker: Ticker) {
-    return new DerivationEmitter(this as $IntentionalAny, ticker).tappable()
+  changes(ticker: Ticker): Tappable<V> {
+    return new DerivationEmitter(this, ticker).tappable()
   }
 
   tapImmediate(ticker: Ticker, fn: ((cb: $FixMe) => void)): $FixMe {
@@ -76,7 +80,7 @@ export default abstract class AbstractDerivation<V> implements ObjectWhoListensT
     return this._dependents.size !== 0
   }
 
-  _addDependent(d: ObjectWhoListensToAtomicUpdateNotices) {
+  _addDependent(d: IObjectWhoListensToAtomicUpdateNotices) {
     const hadDepsBefore = this._dependents.size > 0
     this._dependents.add(d)
     const hasDepsNow = this._dependents.size > 0
@@ -85,7 +89,7 @@ export default abstract class AbstractDerivation<V> implements ObjectWhoListensT
     }
   }
 
-  _removeDependent(d: ObjectWhoListensToAtomicUpdateNotices) {
+  _removeDependent(d: IObjectWhoListensToAtomicUpdateNotices) {
     const hadDepsBefore = this._dependents.size > 0
     this._dependents.delete(d)
     const hasDepsNow = this._dependents.size > 0
@@ -109,7 +113,7 @@ export default abstract class AbstractDerivation<V> implements ObjectWhoListensT
   }
 
   getValue(): V {
-    reportObservedDependency(this as $FixMe)
+    reportObservedDependency(this)
 
     if (
       process.env.TRACKING_COLD_DERIVATIONS === true &&
@@ -128,7 +132,7 @@ export default abstract class AbstractDerivation<V> implements ObjectWhoListensT
         this._didNotifyDownstreamOfUpcomingUpdate = false
       }
     }
-    return this._lastValue as $IntentionalAny
+    return this._lastValue
   }
 
   _reactToNumberOfDependentsChange() {
@@ -183,7 +187,7 @@ export default abstract class AbstractDerivation<V> implements ObjectWhoListensT
   }
 }
 
-export function isDerivation(d: any): d is AbstractDerivation<mixed>  {
+export function isDerivation(d: any): d is AbstractDerivation<mixed> {
   return d && d.isDerivation && d.isDerivation === true
 }
 

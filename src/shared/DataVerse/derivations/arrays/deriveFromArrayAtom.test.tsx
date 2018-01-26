@@ -1,15 +1,16 @@
 // @flow
 import * as D from '$shared/DataVerse'
+import Ticker from '$src/shared/DataVerse/Ticker'
 
 describe('DataVerse.derivations.deriveFromArrayAtom', () => {
-  let ticker
+  let ticker: Ticker
   beforeEach(() => {
     ticker = new D.Ticker()
   })
   it('should work', () => {
     const arrayAtom = D.atoms.array(['0', '1'])
     const prefix = D.atoms.box('(prefix)')
-    // $FixMe
+
     const d = arrayAtom.derivedArray().map(sD => sD.map(s => `(${s})`))
     expect(d.index(0).getValue()).toEqual('(0)')
     arrayAtom.setIndex(0, '0-1')
@@ -23,7 +24,7 @@ describe('DataVerse.derivations.deriveFromArrayAtom', () => {
     arrayAtom.setIndex(0, '0-2')
     expect(reducedD.getValue()).toEqual('(prefix)(0-2)(1)')
 
-    const changes = []
+    const changes: $FixMe[] = []
     reducedD.changes(ticker).tap(c => {
       changes.push(c)
     })

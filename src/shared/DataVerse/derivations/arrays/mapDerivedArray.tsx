@@ -1,15 +1,16 @@
 // @flow
 import noop from 'lodash/noop'
 import AbstractDerivedArray from './AbstractDerivedArray'
-import {IDerivedArray} from './types'
+import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
 
-export class MappedDerivedArray extends AbstractDerivedArray<$FixMe> {
+export class MappedDerivedArray<T, V> extends AbstractDerivedArray<V> {
   _untapFromSourceChanges: Function
 
-  constructor(source: $FixMe, fn: $FixMe) {
+  constructor(
+    readonly _source: AbstractDerivedArray<T>,
+    readonly _fn: (t: AbstractDerivation<T>) => AbstractDerivation<V>,
+  ) {
     super()
-    this._source = source
-    this._fn = fn
     this._untapFromSourceChanges = noop
     return this
   }
@@ -38,9 +39,10 @@ export class MappedDerivedArray extends AbstractDerivedArray<$FixMe> {
   }
 }
 
-export default function mapDerivedArray<T, V, Fn extends (t: T) => V>(
-  source: IDerivedArray<T>,
-  fn: Fn,
-) {
+export default function mapDerivedArray<
+  T,
+  V,
+  Fn extends (t: AbstractDerivation<T>) => AbstractDerivation<V>
+>(source: AbstractDerivedArray<T>, fn: Fn) {
   return new MappedDerivedArray(source, fn)
 }
