@@ -29,7 +29,7 @@ export default abstract class AbstractAtom<ChangeType> {
 
   _unsetParent() {
     if (!this._parent) {
-      throw new Error(`This Atom does not have a parrent`)
+      throw new Error(`This Atom does not have a parent`)
     }
 
     this._parent = null
