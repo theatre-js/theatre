@@ -1,5 +1,5 @@
 // @flow
-import {ComponentModelNamespaceState} from './types'
+import {IComponentModelNamespaceState} from './types'
 import coreComponentDescriptors from './coreComponentDescriptors'
 import coreModifierDescriptors from './coreModifierDescriptors'
 import {
@@ -285,7 +285,7 @@ const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
   // whatToRender: 'hi',
 }
 
-const initialState: ComponentModelNamespaceState = {
+const initialState: IComponentModelNamespaceState = {
   componentDescriptors: {
     core: coreComponentDescriptors,
     custom: {

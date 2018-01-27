@@ -4,11 +4,11 @@
   font-family: Roboto;
   font-size: 12px;
   color: white;
-  --body-color: #2d2d2d;
+  --body-color: #263238;
   --borders-color: #312424;
-  --shadows: #232323;
+  --shadows: #263238;
 
-  &:before {
+  /* &:before {
     position: absolute 0;
     content: ' ';
     display: block;
@@ -27,12 +27,12 @@
 
   &.isActive:after {
     opacity: 1;
-  }
+  } */
 }
 
 .innerWrapper {
   background: var(--body-color);
-  position: absolute 4px;
+  position: absolute 0px;
   z-index: 0;
 }
 
@@ -64,7 +64,7 @@
   height: 30px;
   display: flex;
   justify-content: flex-start;
-  background: var(--shadows);
+  /* background: var(--shadows); */
   border-bottom: 1px solid var(--borders-color);
   z-index: 1;
   box-shadow: 0 2px 9px -6px black;

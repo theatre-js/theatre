@@ -1,4 +1,3 @@
-// @flow
 export {
   default as PureComponentWithStudio,
 } from '$studio/componentModel/react/utils/PureComponentWithStudio'
@@ -9,10 +8,12 @@ export {default as elementify} from '$studio/componentModel/react/elementify'
 export {default as Studio} from '$studio/TheStudioClass'
 export {default as connect} from './connect'
 import * as D from '$shared/DataVerse'
-export {default as compose} from 'ramda/src/compose'
+export {compose} from 'ramda'
 import * as React from 'react'
 export * from '$studio/common/actions'
-export {default as shouldUpdate} from 'recompose/shouldUpdate'
+export {shouldUpdate} from 'recompose'
 import * as typeSystem from '$studio/typeSystem'
+export {default as StudioComponent} from './StudioComponent'
+export * from '$shared/utils'
 
 export {D, React, typeSystem}

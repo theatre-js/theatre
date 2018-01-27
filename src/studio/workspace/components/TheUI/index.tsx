@@ -1,7 +1,7 @@
 import * as React from 'react' // eslint-disable-line flowtype/require-valid-file-annotation
 import compose from 'ramda/src/compose'
 import {connect} from '$studio/handy'
-import {StoreState} from '$studio/types'
+import {IStoreState} from '$studio/types'
 import {
   PanelPlacementSettings,
   PanelPersistentState,
@@ -104,7 +104,7 @@ export class TheUI extends React.Component<Props, State> {
 }
 
 export default compose(
-  connect((state: StoreState) => {
+  connect((state: IStoreState) => {
     return {
       visiblePanels: getVisiblePanelsList(state),
     }

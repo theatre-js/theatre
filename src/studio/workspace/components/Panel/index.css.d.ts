@@ -1,6 +1,5 @@
 export interface IIndexCss {
   'container': string;
-  'isActive': string;
   'innerWrapper': string;
   'content': string;
   'displayNone': string;

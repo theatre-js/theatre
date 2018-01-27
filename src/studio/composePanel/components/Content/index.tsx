@@ -2,28 +2,26 @@
 import {React, connect, shouldUpdate, typeSystem} from '$studio/handy'
 import css from './index.css'
 import {ValueEditor} from '$studio/structuralEditor'
-import {
-  ComponentDescriptor,
-  ComponentId,
-} from '$studio/componentModel/types'
+import {ComponentDescriptor, ComponentId} from '$studio/componentModel/types'
 import * as componentModelSelectors from '$studio/componentModel/selectors'
+import PaleMessage from '$src/studio/common/components/PaleMessage'
 // import ListOfModifierInstantiationDescriptorsInspector from './ListOfModifierInstantiationDescriptorsInspector'
 
 type Props =
   | {
-      componentId: void,
-      pathToComopnentDescriptor: void,
-      componentDescriptor: void,
+      componentId: void
+      pathToComopnentDescriptor: void
+      componentDescriptor: void
     }
   | {
-      componentId: ComponentId,
-      pathToComopnentDescriptor: Array<string>,
-      componentDescriptor: ComponentDescriptor,
+      componentId: ComponentId
+      pathToComopnentDescriptor: Array<string>
+      componentDescriptor: ComponentDescriptor
     }
 
-type State = {}
+interface IState {}
 
-export class ComposePanelContent extends React.PureComponent<Props, State> {
+export class ComposePanelContent extends React.PureComponent<Props, IState> {
   constructor(props: Props) {
     super(props)
     this.state = {}
@@ -38,21 +36,15 @@ export class ComposePanelContent extends React.PureComponent<Props, State> {
 
     if (!componentId || !pathToComopnentDescriptor || !componentDescriptor)
       return (
-        // @todo
-        <div className={css.container}>
-          Some message for "please select a component" here
-        </div>
+        <PaleMessage message={`Select an element from the Explorer pane`} />
       )
 
-    if (componentDescriptor.type === 'Alias') {
-      // @todo
-      return <div className={css.container}>Some message for aliases here</div>
-    } else if (componentDescriptor.type === 'HardCoded') {
-      // @todo
+    if (componentDescriptor.type === 'HardCoded') {
       return (
-        <div className={css.container}>
-          Some message for hardCoded ones here
-        </div>
+        // @todo we should either direct the user to select the owner of this component, OR,
+        // in the case of user-provided hard-coded components, allow the user to navigate to
+        // the code of that component (in their own code editor – we don't provide a JS editor)
+        <PaleMessage message={`${componentDescriptor.displayName} is hard-coded component`} />
       )
     } else {
       return (
@@ -110,5 +102,5 @@ const connected = connect((s, op) => {
 })(ComposePanelContent)
 
 export default shouldUpdate(
-  (prev, next) => prev.inputs.selectedNode !== next.inputs.selectedNode,
+  (prev: $FixMe, next: $FixMe) => prev.inputs.selectedNode !== next.inputs.selectedNode,
 )(connected)

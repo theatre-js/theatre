@@ -1,7 +1,7 @@
 // @flow
 import originalConnect from 'react-redux/es/connect/connect'
 // import {HigherOrderComponent} from 'react-flow-types'
-import {StoreState} from '$studio/types'
+import {IStoreState} from '$studio/types'
 
 export const storeKey = 'theaterJSReduxStore'
 
@@ -9,7 +9,7 @@ const connect = (mapStateToProps: mixed) => {
   return originalConnect(mapStateToProps, undefined, undefined, {storeKey})
 }
 
-type SelectorFn<P> = (storeState: StoreState, ownProps: $FixMe) => P
+type SelectorFn<P> = (storeState: IStoreState, ownProps: $FixMe) => P
 
 type ConnectFn = <ProvidedProps>(
   selectorFn: SelectorFn<ProvidedProps>,
