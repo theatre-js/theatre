@@ -27,7 +27,8 @@ class Node extends React.PureComponent<Props, State> {
 
   componentWillReceiveProps(nextProps) {
     if (
-      nextProps.nodeProps.status === STATUS.CHANGED &&
+      (nextProps.nodeProps.status === STATUS.CHANGED ||
+        nextProps.nodeProps.status === STATUS.UNCHANGED) &&
       this.state.isContentHidden
     ) {
       this.setState(() => ({isContentHidden: false}))

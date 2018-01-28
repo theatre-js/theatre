@@ -30,7 +30,8 @@ class Node extends React.PureComponent<Props, State> {
 
   componentWillReceiveProps(nextProps) {
     if (
-      nextProps.nodeProps.status === STATUS.CHANGED &&
+      (nextProps.nodeProps.status === STATUS.CHANGED ||
+        nextProps.nodeProps.status === STATUS.UNCHANGED) &&
       this.state.isContentHidden
     ) {
       this.setState(() => ({isContentHidden: false}))
@@ -41,11 +42,14 @@ class Node extends React.PureComponent<Props, State> {
   handleKeyDown = e => {
     this.setState(() => ({previousValue: this.input.value}))
     if (e.keyCode === 13 || e.keyCode === 27) this.input.blur()
-    
   }
 
   handleKeyUp = e => {
-    if (e.keyCode === 8 && this.props.nodeProps.value === '' && this.state.previousValue === '')
+    if (
+      e.keyCode === 8 &&
+      this.props.nodeProps.value === '' &&
+      this.state.previousValue === ''
+    )
       this.setAsComponentBeingSet()
   }
 

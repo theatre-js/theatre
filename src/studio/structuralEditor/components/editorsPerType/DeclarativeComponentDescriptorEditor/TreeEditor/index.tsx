@@ -14,7 +14,7 @@ import TypeSelector from './TypeSelector'
 import css from './index.css'
 import generateUniqueId from 'uuid/v4'
 import * as _ from 'lodash'
-import {DESCRIPTOR_TYPE, ACTION, STATUS_BY_ACTION, NODE_TYPE} from './constants'
+import {DESCRIPTOR_TYPE, ACTION, STATUS_BY_ACTION, NODE_TYPE, STATUS} from './constants'
 
 type Props = {
   pathToComponentDescriptor: Array<string>,
@@ -126,6 +126,8 @@ class TreeEditor extends React.PureComponent<Props, State> {
           id: which,
           status: status,
           ...(actionPayload != null ? {actionPayload} : {}),
+          index,
+          parentId,
         }
       }
 
@@ -284,10 +286,12 @@ class TreeEditor extends React.PureComponent<Props, State> {
           path: pathToComponentDescriptor.concat('localHiddenValuesById'),
           reducer: values => {
             const deletedNodeValue = values[nodeId]
-            const idsToDelete = [].concat(
-              nodeId,
-              this._getLocalHiddenValueIdsOfSubNodes(deletedNodeValue),
-            )
+            const idsToDelete =  [].concat(nodeId)
+            if (deletedNodeValue != null) {
+              idsToDelete.concat(
+                this._getLocalHiddenValueIdsOfSubNodes(deletedNodeValue),              
+              )
+            }
             return _.omit(values, idsToDelete)
           },
         },
@@ -429,6 +433,15 @@ class TreeEditor extends React.PureComponent<Props, State> {
     )
   }
 
+  _cancelSettingComponentType = () => {
+    const {nodeProps} = this.state.componentBeingSet
+    this.setState(() => ({componentBeingSet: null}))    
+    if (nodeProps.status === STATUS.UNINITIALIZED) {
+      this._setLastAction(ACTION.NODE_ADD_CANCEL, {id: nodeProps.id})
+      this._setNodes(this.props.rootComponentDescriptor)
+    }
+  }
+
   _changeNodeTextValue({nodeId, value}: {nodeId: string, value: string}) {
     const {dispatch, pathToComponentDescriptor} = this.props
     this._setLastAction(ACTION.NODE_TEXT_CHANGE, {id: nodeId})
@@ -489,6 +502,7 @@ class TreeEditor extends React.PureComponent<Props, State> {
                 ([, value]) => value.displayName,
               )}
               onSelect={this._setTypeOfComponent}
+              onCancel={this._cancelSettingComponentType}
             />
           )}
           {isANodeBeingDragged && (

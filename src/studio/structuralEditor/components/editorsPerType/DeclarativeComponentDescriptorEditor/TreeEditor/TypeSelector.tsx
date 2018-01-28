@@ -61,15 +61,19 @@ class TypeSelector extends React.Component<Props, State> {
     if (e.keyCode === 13 || e.keyCode === 9) {
       this.selectNameAtIndex(this.state.focusedIndex)
     }
+    if (e.keyCode === 27) {
+      this._unmount(() => {
+        this.props.onCancel()
+      })
+    }
   }
 
   onInputChange = e => {
     const {value} = e.target
     if (value.toLowerCase() === 't ' && !this.props.nodeProps.hasChildren) {
-      this.setState(() => ({willUnmount: true}))
-      setTimeout(() => {
+      this._unmount(() => {
         this.props.onSelect({nodeType: NODE_TYPE.TEXT})
-      }, 200)
+      })
     } else {
       const {listOfDisplayNames} = this.props
       const matchedDisplayNames =
@@ -87,11 +91,14 @@ class TypeSelector extends React.Component<Props, State> {
   selectNameAtIndex(index: number) {
     const displayName = this.state.matchedDisplayNames[index]
     if (displayName == null) return
-
-    this.setState(() => ({willUnmount: true}))
-    setTimeout(() => {
+    this._unmount(() => {
       this.props.onSelect({nodeType: NODE_TYPE.COMPONENT, displayName})
-    }, 200)
+    })
+  }
+
+  _unmount(cb) {
+    this.setState(() => ({willUnmount: true}))
+    setTimeout(cb, 200)
   }
 
   render() {

@@ -79,6 +79,10 @@ class NodeContainer extends React.PureComponent<Props, State> {
         this._setMaxHeight()
       }, 500)
     }
+    
+    if (nextProps.nodeData.status === STATUS.CREATION_CANCELED) {
+      this.deleteNode()
+    }
   }
 
   componentWillUnmount() {
@@ -229,6 +233,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
     const isText = nodeProps.type === NODE_TYPE.TEXT
     const depth = this.props.depth || 0
     const isRelocated = nodeProps.status === STATUS.RELOCATED
+
     return (
       <div ref={c => (this.wrapper = c)}>
         <div
@@ -240,7 +245,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
           className={cx(css.container, {
             [css.isRelocated]:
               isRelocated || nodeProps.status === STATUS.RELOCATION_CANCELED,
-            [css.expand]: nodeProps.status === STATUS.UNINITIALIZED,
+            [css.expand]: nodeProps.status === STATUS.UNINITIALIZED || nodeProps.status === STATUS.CREATION_CANCELED,
             [css.isCollapsed]: isCollapsed,
           })}
           onMouseUp={this.mouseUpHandler}
