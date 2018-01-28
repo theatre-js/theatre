@@ -1,6 +1,7 @@
 // @flow
 import jsonPatchLib from 'fast-json-patch'
 import * as D from '$shared/DataVerse'
+import * as _ from 'lodash'
 import applyJsonDiffToAtom from '$shared/utils/applyJsonDiffToAtom'
 
 export default function configureAtom(reduxStore: $FixMe) {
@@ -14,7 +15,7 @@ export default function configureAtom(reduxStore: $FixMe) {
       applyJsonDiffToAtom(diff, atom)
     }
 
-    lastState = newState
+    lastState = _.cloneDeep(newState)
   })
 
   return atom
