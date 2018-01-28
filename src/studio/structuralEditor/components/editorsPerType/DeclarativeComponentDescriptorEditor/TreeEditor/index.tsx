@@ -478,13 +478,13 @@ class TreeEditor extends React.PureComponent<Props, State> {
           {this._renderScroller('up')}
           {componentBeingSet != null && (
             <TypeSelector
-              nodeProps={_.pick(componentBeingSet, [
+              nodeProps={{...(_.pick(componentBeingSet, [
                 'depth',
                 'top',
                 'left',
                 'width',
                 'hasChildren',
-              ])}
+              ])), displayName: componentBeingSet.nodeProps.displayName}}
               listOfDisplayNames={Object.entries(this.props.componentTypes).map(
                 ([, value]) => value.displayName,
               )}

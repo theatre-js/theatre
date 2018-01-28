@@ -18,15 +18,22 @@ type State = {
 }
 
 class TypeSelector extends React.Component<Props, State> {
-  state = {
-    matchedDisplayNames: this.props.listOfDisplayNames,
-    query: '',
-    focusedIndex: 0,
-    willUnmount: false,
+  constructor(props: Props) {
+    super(props)
+
+    const query = this.props.nodeProps.displayName || 'div'
+    const matchedDisplayNames = filter(props.listOfDisplayNames, query)
+    this.state = {
+      matchedDisplayNames,
+      query,
+      focusedIndex: 0,
+      willUnmount: false,
+    }
   }
 
   componentDidMount() {
     this.input.focus()
+    this.input.select()
     document.addEventListener('keydown', this.keyDownHandler)
     document.addEventListener('keyup', this.keyUpHandler)
   }
@@ -65,9 +72,10 @@ class TypeSelector extends React.Component<Props, State> {
       }, 200)
     } else {
       const {listOfDisplayNames} = this.props
-      const matchedDisplayNames = value.length > 0
-        ? filter(listOfDisplayNames, value)
-        : listOfDisplayNames
+      const matchedDisplayNames =
+        value.length > 0
+          ? filter(listOfDisplayNames, value)
+          : listOfDisplayNames
       this.setState(() => ({
         query: value,
         matchedDisplayNames,

@@ -12,12 +12,14 @@ type Props = {
 type State = {
   isFocused: boolean
   isContentHidden: boolean
+  previousValue: string
 }
 
 class Node extends React.PureComponent<Props, State> {
   state = {
     isFocused: false,
     isContentHidden: false,
+    previousValue: this.props.nodeProps.value,
   }
 
   componentDidMount() {
@@ -37,8 +39,13 @@ class Node extends React.PureComponent<Props, State> {
   }
 
   handleKeyDown = e => {
+    this.setState(() => ({previousValue: this.input.value}))
     if (e.keyCode === 13 || e.keyCode === 27) this.input.blur()
-    if (e.keyCode === 8 && this.props.nodeProps.value === '')
+    
+  }
+
+  handleKeyUp = e => {
+    if (e.keyCode === 8 && this.props.nodeProps.value === '' && this.state.previousValue === '')
       this.setAsComponentBeingSet()
   }
 
@@ -68,6 +75,7 @@ class Node extends React.PureComponent<Props, State> {
           onFocus={() => this.setState(() => ({isFocused: true}))}
           onBlur={() => this.setState(() => ({isFocused: false}))}
           onKeyDown={this.handleKeyDown}
+          onKeyUp={this.handleKeyUp}
           onContextMenu={() => this.input.blur()}
         />
       </div>
