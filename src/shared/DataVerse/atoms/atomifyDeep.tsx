@@ -1,8 +1,8 @@
 // @flow
 import isPlainObject from 'lodash/isPlainObject'
-import {IBoxAtom,default as box} from './box'
-import {IDictAtom,default as dict} from './dict'
-import {IArrayAtom,default as array} from './array'
+import {IBoxAtom, default as box} from './box'
+import {IDictAtom, default as dict} from './dict'
+import {IArrayAtom, default as array} from './array'
 import mapValues from 'lodash/mapValues'
 import {default as AbstractAtom} from './utils/AbstractAtom'
 // import {If} from '../types'
@@ -54,7 +54,7 @@ export const atomifyDeep: $FixMe = (jsValue: mixed) => {
   if (Array.isArray(jsValue)) {
     return fromJSArray(jsValue)
   } else if (isPlainObject(jsValue)) {
-    return fromJSObject((jsValue as $IntentionalAny))
+    return fromJSObject(jsValue as $IntentionalAny)
   } else if (jsValue instanceof AbstractAtom) {
     return jsValue
   } else {
@@ -66,9 +66,7 @@ export const fromJSArray = (jsArray: $FixMe): $FixMe => {
   return array(jsArray.map(atomifyDeep))
 }
 
-export const fromJSObject = (jsObject: {
-  [key: string]: mixed,
-}): $FixMe => {
+export const fromJSObject = (jsObject: {[key: string]: mixed}): $FixMe => {
   return dict(mapValues(jsObject, atomifyDeep))
 }
 

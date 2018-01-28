@@ -26,16 +26,16 @@ const dummyClasses = [
 // console.log('blah')
 
 type Props = {
-  isExpanded: boolean,
-  children: Object,
-  path: Path,
-  toggleExpansion: Function,
-  selectNode: Function,
-  selectedNodePath: Path,
-  displayName: string,
-  shouldSwallowChild: undefined | null | boolean,
-  depth?: number,
-  classNames: string,
+  isExpanded: boolean
+  children: Object
+  path: Path
+  toggleExpansion: Function
+  selectNode: Function
+  selectedNodePath: Path
+  displayName: string
+  shouldSwallowChild: undefined | null | boolean
+  depth?: number
+  classNames: string
 }
 
 /**
@@ -191,8 +191,10 @@ const WrappedNode = connect((s, op) => {
       : type === null
         ? 'null'
         : _ref.stateNode.getComponentId
-          ? (getComponentDescriptor(s, _ref.stateNode.getComponentId()) as $FixMe)
-              .displayName
+          ? (getComponentDescriptor(
+              s,
+              _ref.stateNode.getComponentId(),
+            ) as $FixMe).displayName
           : type.displayName
 
   const textContent =

@@ -4,7 +4,7 @@ import {PureComponentWithStudio, D} from '$studio/handy'
 import TimelinesHandler from './TimelinesHandler'
 import {AbstractDerivation} from '$src/shared/DataVerse/derivations/types'
 import derivedClass from '$src/shared/DataVerse/derivedClass/derivedClass'
-import DerivedClassInstance from '$src/shared/DataVerse/derivedClass/DerivedClassInstance';
+import DerivedClassInstance from '$src/shared/DataVerse/derivedClass/DerivedClassInstance'
 
 // type MakeReactiveComponentArgs = {
 //   getClass: (
@@ -151,7 +151,9 @@ export default function makeReactiveComponent({
 
       this._fnsToCallOnWillUnmount.push(untapFromRender)
 
-      const sideEffectsDictP = this._derivedClassInstance.pointer().prop('sideEffects')
+      const sideEffectsDictP = this._derivedClassInstance
+        .pointer()
+        .prop('sideEffects')
       this._sideEffetsHandler = new SideEffectsHandler(
         this.studio.ticker,
         this._derivedClassInstance,

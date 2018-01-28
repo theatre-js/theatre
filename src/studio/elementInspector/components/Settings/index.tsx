@@ -6,9 +6,9 @@ import PanelInput from '$studio/common/components/PanelInput'
 import {DraggingOutput} from '$studio/workspace/types'
 
 type Props = {
-  currentlyDraggingOutput: DraggingOutput,
-  inputs: Object,
-  updatePanelInput: Function,
+  currentlyDraggingOutput: DraggingOutput
+  inputs: Object
+  updatePanelInput: Function
 }
 
 const Settings = (props: Props) => {

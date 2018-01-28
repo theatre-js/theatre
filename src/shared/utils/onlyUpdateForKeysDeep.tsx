@@ -6,9 +6,9 @@ import pick from 'lodash/pick'
 type Ident = <T>(a: T) => T
 
 const onlyUpdateForKeysDeep = (keys: Array<string>): Ident =>
-  (shouldUpdate(
+  shouldUpdate(
     (prev: Object, next: Object) =>
       !deepEqual(pick(prev, keys), pick(next, keys)),
-  ) as $FixMe)
+  ) as $FixMe
 
 export default onlyUpdateForKeysDeep

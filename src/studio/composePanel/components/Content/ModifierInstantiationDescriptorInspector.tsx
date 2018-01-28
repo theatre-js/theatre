@@ -4,17 +4,17 @@ import get from 'lodash/get'
 import inspectorComponents from '$studio/componentModel/coreModifierDescriptors/inspectorComponents'
 
 type Props = {
-  id: string,
-  index: number,
-  pathToModifierInstantiationDescriptor: Array<string>,
-  modifierId: string,
+  id: string
+  index: number
+  pathToModifierInstantiationDescriptor: Array<string>
+  modifierId: string
 }
 
 type State = {}
 
 export class ModifierInstantiationDescriptorInspector extends React.PureComponent<
   Props,
-  State,
+  State
 > {
   constructor(props: Props) {
     super(props)

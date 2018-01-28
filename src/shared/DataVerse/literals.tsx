@@ -1,5 +1,3 @@
-
-
 // import {True, False} from './types'
 
 // export type ArrayLiteral<V> = Array<V> & {

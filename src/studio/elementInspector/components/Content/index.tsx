@@ -4,8 +4,8 @@ import css from './index.css'
 
 type Props = {
   inputs: {
-    selectedNode: Object,
-  },
+    selectedNode: Object
+  }
 }
 
 const Content = (props: Props) => {

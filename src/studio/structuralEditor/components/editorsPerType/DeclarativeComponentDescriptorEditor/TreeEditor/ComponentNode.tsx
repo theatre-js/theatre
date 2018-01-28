@@ -5,13 +5,13 @@ import {STATUS} from './constants'
 import cx from 'classnames'
 
 type Props = {
-  nodeProps: Object,
-  setAsComponentBeingSet: Function,
-  setClassValue: Function,
+  nodeProps: Object
+  setAsComponentBeingSet: Function
+  setClassValue: Function
 }
 type State = {
-  isContentHidden: boolean,
-  classValue: string,
+  isContentHidden: boolean
+  classValue: string
 }
 
 class Node extends React.PureComponent<Props, State> {

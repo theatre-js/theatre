@@ -44,23 +44,21 @@ class ToDom {
 
     const stylesD = autoProxyDerivedDict(this.defD.prop('style'), ticker)
     // console.log(stylesD);
-    
+
     const untaps: {[k: string]: $IntentionalAny} = {}
     stylesD.keys().forEach(addStyleKey)
 
-    stylesD.changes(ticker).tap((c) => {
+    stylesD.changes(ticker).tap(c => {
       c.addedKeys.forEach(addStyleKey)
       c.deletedKeys.forEach(deleteStyleKey)
     })
 
-
     function addStyleKey(k: string) {
       const valD = stylesD.prop(k)
-      
 
       const untap = valD.tapImmediate(ticker, applyStyle)
       untaps[k] = untap
-      
+
       function applyStyle(newValue) {
         el.style[k] = newValue
       }
@@ -69,7 +67,6 @@ class ToDom {
     function deleteStyleKey(k: string) {
       untaps[k]()
       delete untaps[k]
-      
     }
 
     return el

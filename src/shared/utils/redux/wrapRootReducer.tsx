@@ -45,7 +45,7 @@ export default function wrapRootReducer<State, Action>(
 
         // setStateAction
       } else if (action.type === setStateAction.type) {
-        return (action.payload as $IntentionalAny)
+        return action.payload as $IntentionalAny
 
         // resetStateAction
       } else if (action.type === resetStateAction.type) {
@@ -67,7 +67,7 @@ export default function wrapRootReducer<State, Action>(
           : initialState
       } else if (action.type === multiReduceStateAction.type) {
         // debugger
-        const pairs: Array<Pair> = (action.payload as $IntentionalAny)
+        const pairs: Array<Pair> = action.payload as $IntentionalAny
         // $FlowIgnore
         return pairs.reduce(
           (acc: $IntentionalAny, pair: Pair) =>

@@ -3,10 +3,10 @@ import {React} from '$studio/handy'
 import css from './NodePlaceholder.css'
 
 type Props = {
-  shouldRender: boolean,
+  shouldRender: boolean
 }
 type State = {
-  shouldRemainVisible: boolean,
+  shouldRemainVisible: boolean
 }
 
 class NodePlaceholder extends React.PureComponent<Props, State> {

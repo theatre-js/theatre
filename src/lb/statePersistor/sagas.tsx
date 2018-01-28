@@ -12,7 +12,11 @@ const pathToPersistenceFile = path.join(app.getPath('userData'), 'state.json')
 
 const whitelistOfPartsOfStateToPersist = [['projects']]
 
-export default function* statePersistorRootSaga(): Generator_<$FixMe, $FixMe, $FixMe> {
+export default function* statePersistorRootSaga(): Generator_<
+  $FixMe,
+  $FixMe,
+  $FixMe
+> {
   yield call(loadState)
   yield fork(persistStateChanges)
   yield null

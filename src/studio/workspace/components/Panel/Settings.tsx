@@ -4,11 +4,11 @@ import css from './Settings.css'
 import DraggableArea from '$studio/common/components/DraggableArea'
 
 type Props = {
-  onPanelDrag: Function,
-  onPanelDragEnd: Function,
-  onPanelResize: Function,
-  onPanelResizeEnd: Function,
-  children: React.Node,
+  onPanelDrag: Function
+  onPanelDragEnd: Function
+  onPanelResize: Function
+  onPanelResizeEnd: Function
+  children: React.Node
 }
 
 const Settings = (props: Props) => {

@@ -7,10 +7,7 @@ export class ConcatenatedDerivedArray<V> extends AbstractDerivedArray
   _left: IDerivedArray<V>
   _right: IDerivedArray<V>
 
-  constructor(
-    left: IDerivedArray<V>,
-    right: IDerivedArray<V>,
-  ): IDerivedArray<V> {
+  constructor(left: IDerivedArray<V>, right: IDerivedArray<V>) {
     super()
     this._left = left
     this._right = right

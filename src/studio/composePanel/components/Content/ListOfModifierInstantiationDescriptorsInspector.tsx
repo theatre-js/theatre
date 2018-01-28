@@ -5,16 +5,16 @@ import ModifierInstantiationDescriptorInspector from './ModifierInstantiationDes
 import get from 'lodash/get'
 
 type Props = {
-  modifierInstantiationDescriptors: ModifierInstantiationValueDescriptors,
-  thePath: Array<string>,
-  list: Array<string>,
+  modifierInstantiationDescriptors: ModifierInstantiationValueDescriptors
+  thePath: Array<string>
+  list: Array<string>
 }
 
 type State = {}
 
 export class ListOfModifierInstantiationDescriptorsInspector extends React.PureComponent<
   Props,
-  State,
+  State
 > {
   constructor(props: Props) {
     super(props)

@@ -10,15 +10,15 @@ import cx from 'classnames'
 import {ACTION, STATUS, NODE_TYPE} from './constants'
 
 type Props = {
-  nodeData: Object,
-  depth?: number,
+  nodeData: Object
+  depth?: number
 }
 type State = {
-  newChildIndex: undefined | null | number,
-  isCollapsed: boolean,
-  maxHeight: undefined | null | number,
-  initialTopOffset: number,
-  contextMenuProps: undefined | null | Object,
+  newChildIndex: undefined | null | number
+  isCollapsed: boolean
+  maxHeight: undefined | null | number
+  initialTopOffset: number
+  contextMenuProps: undefined | null | Object
 }
 
 class NodeContainer extends React.PureComponent<Props, State> {

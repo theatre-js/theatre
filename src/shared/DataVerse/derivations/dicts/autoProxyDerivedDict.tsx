@@ -18,10 +18,7 @@ class AutoProxyDerivedDict<O> extends AbstractDerivedDict
   _untapFromProxyChanges: () => void
   _untapFromSourceChanges: () => void
 
-  constructor(
-    sourceD: AbstractDerivation<IDerivedDict<O>>,
-    ticker: ITicker,
-  ): IDerivedDict<O> {
+  constructor(sourceD: AbstractDerivation<IDerivedDict<O>>, ticker: ITicker) {
     super()
     this._ticker = ticker
     this._sourceD = sourceD

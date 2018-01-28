@@ -13,12 +13,12 @@ import Panel from '../Panel'
 import css from './index.css'
 
 type Props = {
-  visiblePanels: Array<string>,
-  dispatch: Function,
+  visiblePanels: Array<string>
+  dispatch: Function
 }
 
 type State = {
-  isCreatingNewPanel: boolean,
+  isCreatingNewPanel: boolean
 }
 
 export class TheUI extends React.Component<Props, State> {

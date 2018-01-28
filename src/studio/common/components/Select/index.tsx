@@ -3,11 +3,11 @@ import React from 'react'
 import css from './index.css'
 
 type Props = {
-  label: string,
-  options: Array<{value: string, label: string}>,
-  disabled?: boolean,
-  value?: string,
-  onChange: Function,
+  label: string
+  options: Array<{value: string; label: string}>
+  disabled?: boolean
+  value?: string
+  onChange: Function
 }
 
 const Select = ({label, options, disabled, value, onChange}: Props) => {

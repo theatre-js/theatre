@@ -6,7 +6,9 @@ import {PropTypes} from 'prop-types'
 import {call} from 'redux-saga/effects'
 
 function preventToThrow(fn: () => Generator_<$FixMe, $FixMe, $FixMe>) {
-  return function* callAndCatch(...args: $IntentionalAny[]): Generator_<$FixMe, $FixMe, $FixMe> {
+  return function* callAndCatch(
+    ...args: $IntentionalAny[]
+  ): Generator_<$FixMe, $FixMe, $FixMe> {
     try {
       return yield call(fn, ...args)
     } catch (e) {
@@ -63,7 +65,7 @@ export type RunSagaFn = (<
   T5,
   T6,
   R,
-  Fn extends Fn6<T1, T2, T3, T4, T5, T6, R>,
+  Fn extends Fn6<T1, T2, T3, T4, T5, T6, R>
 >(
   fn: Fn,
   t1: T1,

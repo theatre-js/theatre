@@ -9,8 +9,8 @@ import {getIsBootstrapped} from '$studio/common/selectors'
 import {StoreState} from '$studio/types'
 
 type Props = {
-  isBootstrapped: boolean,
-  children?: any,
+  isBootstrapped: boolean
+  children?: any
 }
 
 const LoadingUnlessBootstrapped = (props: Props) => {

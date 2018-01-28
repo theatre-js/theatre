@@ -7,9 +7,13 @@ import _ from 'lodash'
 type ErrorTypes = 'projectNotRecognised'
 
 export default function* unrecogniseProject(params: {
-  filePath: string,
-}): Generator_<$FixMe, {type: 'ok'} | {type: 'error', errorType: ErrorTypes}, $FixMe> {
-  const state: StoreState = (yield select() as $FixMe)
+  filePath: string
+}): Generator_<
+  $FixMe,
+  {type: 'ok'} | {type: 'error'; errorType: ErrorTypes},
+  $FixMe
+> {
+  const state: StoreState = yield select() as $FixMe
 
   if (state.projects.listOfPaths.indexOf(params.filePath) === -1) {
     return {type: 'error', errorType: 'projectNotRecognised'}

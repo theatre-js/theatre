@@ -1,4 +1,3 @@
-
 import {AbstractDerivation} from '../types'
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import {IDerivedDict, ChangeType} from './types'
@@ -13,10 +12,7 @@ export class ExtendDerivedDict extends DerivedDict
   _untapFromBaseChanges: () => void
   _untapFromOverriderChanges: () => void
 
-  constructor<B extends {}, OV extends {}, O extends Spread<B, OV>>(
-    base: IDerivedDict<B>,
-    overrider: IDerivedDict<OV>,
-  ): IDerivedDict<O> {
+  constructor(base: IDerivedDict<B>, overrider: IDerivedDict<OV>) {
     super()
     this._base = base
     this._overrider = overrider

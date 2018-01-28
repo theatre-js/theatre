@@ -6,7 +6,11 @@ export default abstract class AbstractAtom<ChangeType> {
   isAtom = true
   _trace: $FixMe
   _changeEmitter: Emitter<ChangeType>
+<<<<<<< HEAD
   _parent: null | {atom: AbstractCompositeAtom<$IntentionalAny>, key: string | number}
+=======
+  _parent: null | {atom: AbstractCompositeAtom<$IntentionalAny>; key: MapKey}
+>>>>>>> show all element types when query is empty on template's type selector's suggestions list
   abstract unboxDeep(): mixed
 
   constructor() {

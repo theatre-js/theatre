@@ -2,23 +2,20 @@
 import {React, connect, shouldUpdate, typeSystem} from '$studio/handy'
 import css from './index.css'
 import {ValueEditor} from '$studio/structuralEditor'
-import {
-  ComponentDescriptor,
-  ComponentId,
-} from '$studio/componentModel/types'
+import {ComponentDescriptor, ComponentId} from '$studio/componentModel/types'
 import * as componentModelSelectors from '$studio/componentModel/selectors'
 // import ListOfModifierInstantiationDescriptorsInspector from './ListOfModifierInstantiationDescriptorsInspector'
 
 type Props =
   | {
-      componentId: void,
-      pathToComopnentDescriptor: void,
-      componentDescriptor: void,
+      componentId: void
+      pathToComopnentDescriptor: void
+      componentDescriptor: void
     }
   | {
-      componentId: ComponentId,
-      pathToComopnentDescriptor: Array<string>,
-      componentDescriptor: ComponentDescriptor,
+      componentId: ComponentId
+      pathToComopnentDescriptor: Array<string>
+      componentDescriptor: ComponentDescriptor
     }
 
 type State = {}

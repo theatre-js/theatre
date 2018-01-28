@@ -1,4 +1,3 @@
-
 import AbstractDerivation from '../AbstractDerivation'
 import {IArrayAtom} from '$shared/DataVerse'
 
@@ -20,7 +19,7 @@ export class DerivationOfAnIndexOfAnArrayAtom<V> extends AbstractDerivation<V> {
   }
 
   _recalculate(): $FixMe {
-    return this._arrayAtom.index((this._index as $FixMe))
+    return this._arrayAtom.index(this._index as $FixMe)
   }
 
   _keepUptodate() {

@@ -7,19 +7,19 @@ import * as _ from 'lodash'
 import {NODE_TYPE} from './constants'
 
 type Props = {
-  listOfDisplayNames: string[],
-  nodeProps: Object,
+  listOfDisplayNames: string[]
+  nodeProps: Object
 }
 type State = {
-  matchedDisplayNames: string[],
-  query: string,
-  focusedIndex: number,
-  willUnmount: boolean,
+  matchedDisplayNames: string[]
+  query: string
+  focusedIndex: number
+  willUnmount: boolean
 }
 
 class TypeSelector extends React.Component<Props, State> {
   state = {
-    matchedDisplayNames: [],
+    matchedDisplayNames: this.props.listOfDisplayNames,
     query: '',
     focusedIndex: 0,
     willUnmount: false,
@@ -64,8 +64,10 @@ class TypeSelector extends React.Component<Props, State> {
         this.props.onSelect({nodeType: NODE_TYPE.TEXT})
       }, 200)
     } else {
-      const matchedDisplayNames = filter(this.props.listOfDisplayNames, value)
-
+      const {listOfDisplayNames} = this.props
+      const matchedDisplayNames = value.length > 0
+        ? filter(listOfDisplayNames, value)
+        : listOfDisplayNames
       this.setState(() => ({
         query: value,
         matchedDisplayNames,

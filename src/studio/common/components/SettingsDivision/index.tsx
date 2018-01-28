@@ -3,8 +3,8 @@ import React from 'react'
 import css from './index.css'
 
 type Props = {
-  title: string,
-  children: Object,
+  title: string
+  children: Object
 }
 
 const SettingsDivision = (props: Props) => {

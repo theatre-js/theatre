@@ -8,14 +8,14 @@ export type PanelType = string
 export type PanelConfiguration = Object
 
 export type PanelPersistentState = {
-  isInSettings: boolean,
+  isInSettings: boolean
 }
 
-export type XY = {x: number, y: number}
+export type XY = {x: number; y: number}
 
 export type PanelPlacementSettings = {
-  pos: XY,
-  dim: XY,
+  pos: XY
+  dim: XY
 }
 
 export type PanelOutput = {[string]: Object}
@@ -23,33 +23,33 @@ export type PanelOutput = {[string]: Object}
 export type PanelInput = {[string]: PanelId}
 
 export type DraggingOutput = {
-  type: string,
-  panel: PanelId,
+  type: string
+  panel: PanelId
 }
 
 export type PanelProps = {
-  type: PanelType,
-  configuration: PanelConfiguration,
-  placementSettings: PanelPlacementSettings,
-  persistentState: PanelPersistentState,
-  inputs: PanelInput,
-  outputs: PanelOutput,
+  type: PanelType
+  configuration: PanelConfiguration
+  placementSettings: PanelPlacementSettings
+  persistentState: PanelPersistentState
+  inputs: PanelInput
+  outputs: PanelOutput
 }
 
 export type PanelObject = PanelProps & {
-  id: PanelId,
+  id: PanelId
 }
 
 export type visiblePanelsList = Array<string>
 
 export type Panels = {
-  byId: {[id: PanelId]: PanelObject},
-  listOfVisibles: visiblePanelsList,
-  currentlyDraggingOutput: undefined | null | DraggingOutput,
-  idOfActivePanel: undefined | null | string,
+  byId: {[id: PanelId]: PanelObject}
+  listOfVisibles: visiblePanelsList
+  currentlyDraggingOutput: undefined | null | DraggingOutput
+  idOfActivePanel: undefined | null | string
 }
 
 export type WorkspaceNamespaceState = {
-  panels: Panels,
-  componentIdToBeRenderedAsCurrentCanvas: undefined | null | ComponentId,
+  panels: Panels
+  componentIdToBeRenderedAsCurrentCanvas: undefined | null | ComponentId
 }

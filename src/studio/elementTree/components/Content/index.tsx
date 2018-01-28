@@ -9,12 +9,12 @@ import css from './index.css'
 import Node from './Node'
 
 type Props = {
-  outputs: PanelOutput,
-  updatePanelOutput: Function,
+  outputs: PanelOutput
+  updatePanelOutput: Function
 }
 
 type State = {
-  nodes: Object,
+  nodes: Object
 }
 
 class ExplorerPanel extends React.PureComponent<Props, State> {

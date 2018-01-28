@@ -5,9 +5,9 @@ import css from './ProjectItem.css'
 import {ProjectDescription} from '$lb/projects/types'
 
 type Props = {
-  path: String,
-  projectDesc: undefined | null | ProjectDescription,
-  onForget: Function,
+  path: String
+  projectDesc: undefined | null | ProjectDescription
+  onForget: Function
 }
 
 const ProjectItem = (props: Props) => {

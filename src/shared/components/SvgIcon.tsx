@@ -5,9 +5,9 @@ import css from './SvgIcon.css'
 import {resolveCss} from '$shared/utils'
 
 type Props = {
-  css?: any,
-  src: string,
-  sizing?: 'em' | 'fill' | 'none',
+  css?: any
+  src: string
+  sizing?: 'em' | 'fill' | 'none'
 }
 
 const SvgIcon = (props: Props) => {

@@ -1,4 +1,3 @@
-
 import {AbstractDerivation} from '../types'
 import Emitter from '$shared/DataVerse/utils/Emitter'
 // import lodashMapValues from 'lodash/mapValues'
@@ -12,10 +11,7 @@ export class MapValues extends DerivedDict implements IDerivedDict<$FixMe> {
   _fn: $FixMe
   _untapFromSourceChanges: Function
 
-  constructor<O, K extends keyof O, V extends O[K], FN extends (v: V, k: K) => $FixMe>(
-    source: IDerivedDict<O>,
-    fn: FN,
-  ): IDerivedDict<$FixMe> {
+  constructor(source: IDerivedDict<O>, fn: FN) {
     super()
     this._source = source
     this._fn = fn
@@ -56,7 +52,7 @@ const mapValues = <
   O,
   K extends keyof O,
   V extends O[K],
-  FN extends (v: V, k: K) => $FixMe,
+  FN extends (v: V, k: K) => $FixMe
 >(
   source: IDerivedDict<O>,
   fn: FN,

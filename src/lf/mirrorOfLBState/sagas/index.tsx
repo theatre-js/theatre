@@ -5,7 +5,11 @@ import {getChannelOfRequestsFromMain, sendRequestToMain} from './utils'
 import {reduceState} from '$shared/utils'
 import {StoreState} from '$lf/types'
 
-export default function* mirrorOfLBStateRootSaga(): Generator_<$FixMe, $FixMe, $FixMe> {
+export default function* mirrorOfLBStateRootSaga(): Generator_<
+  $FixMe,
+  $FixMe,
+  $FixMe
+> {
   yield fork(handleRequestsFromMain)
   yield call(getInitialStateFromLB)
   yield put(bootstrapAction())

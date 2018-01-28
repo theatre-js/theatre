@@ -39,7 +39,11 @@ describe('recogniseProject()', () => {
   })
 
   it('should error for already-recognized projects', async () => {
-    const {task} = await runSingleSaga(function*(): Generator_<$FixMe, $FixMe, $FixMe> {
+    const {task} = await runSingleSaga(function*(): Generator_<
+      $FixMe,
+      $FixMe,
+      $FixMe
+    > {
       yield call(recogniseProject, {filePath: '/foo/bar/theaterjs.json'})
       return yield call(recogniseProject, {filePath: '/foo/bar/theaterjs.json'})
     })

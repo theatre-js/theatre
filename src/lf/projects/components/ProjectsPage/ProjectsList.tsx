@@ -5,8 +5,8 @@ import css from './ProjectsList.css'
 import {ProjectsNamespaceState} from '$lb/projects/types'
 
 type Props = {
-  projects: ProjectsNamespaceState,
-  forgetHandler: Function,
+  projects: ProjectsNamespaceState
+  forgetHandler: Function
 }
 
 const ProjectsList = (props: Props) => {

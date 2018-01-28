@@ -5,25 +5,25 @@ import DraggableArea from '$studio/common/components/DraggableArea'
 import SingleInputForm from '$lf/common/components/SingleInputForm'
 
 type Props = {
-  duration: number,
-  currentTime: number,
-  focus: [number, number],
-  panelWidth: number,
-  changeCurrentTimeTo: Function,
-  changeFocusTo: Function,
-  changeFocusRightTo: Function,
-  changeFocusLeftTo: Function,
-  changeDuration: Function,
-  timeToX: Function,
-  xToTime: Function,
-  focusedTimeToX: Function,
-  xToFocusedTime: Function,
+  duration: number
+  currentTime: number
+  focus: [number, number]
+  panelWidth: number
+  changeCurrentTimeTo: Function
+  changeFocusTo: Function
+  changeFocusRightTo: Function
+  changeFocusLeftTo: Function
+  changeDuration: Function
+  timeToX: Function
+  xToTime: Function
+  focusedTimeToX: Function
+  xToFocusedTime: Function
 }
 
 type State = {
-  timeBeforeMove: number,
-  focusBeforeMove: [number, number],
-  isChangingDuration: boolean,
+  timeBeforeMove: number
+  focusBeforeMove: [number, number]
+  isChangingDuration: boolean
 }
 
 class TimeBar extends React.Component<Props, State> {

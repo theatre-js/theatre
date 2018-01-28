@@ -4,18 +4,18 @@ import css from './index.css'
 import DraggableArea from '$studio/common/components/DraggableArea'
 
 type Props = {
-  type: string,
-  onDragStart: Function,
-  onDragEnd: Function,
+  type: string
+  onDragStart: Function
+  onDragEnd: Function
 }
 
 type State = {
-  isBeingDragged: boolean,
-  ghostImageTop: number,
+  isBeingDragged: boolean
+  ghostImageTop: number
   ghostImageMove: {
-    x: number,
-    y: number,
-  },
+    x: number
+    y: number
+  }
 }
 
 class PanelOutput extends React.Component<Props, State> {

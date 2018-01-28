@@ -1,24 +1,24 @@
 // @flow
-import {Channel,eventChannel} from 'redux-saga'
+import {Channel, eventChannel} from 'redux-saga'
 import generateUniqueId from 'uuid/v4'
 import wn from 'when'
 import {ipcRenderer} from 'electron'
 
 type Request = {
-  type: string,
-  id: string,
-  payload: mixed,
+  type: string
+  id: string
+  payload: mixed
 }
 
 type Response = {
-  id: string,
-  payload: mixed,
+  id: string
+  payload: mixed
 }
 
 type RequestFromWindow = {
-  type: string,
-  payload: mixed,
-  respond: (payload: mixed) => void,
+  type: string
+  payload: mixed
+  respond: (payload: mixed) => void
 }
 
 export function sendRequestToMain(
@@ -62,13 +62,11 @@ export const getChannelOfRequestsFromMain = (): Channel<$FixMe> => {
         ipcRenderer.send('response', {id: request.id, payload})
       }
 
-      emitToChannel(
-        ({
-          type: request.type,
-          payload: request.payload,
-          respond,
-        } as RequestFromWindow),
-      )
+      emitToChannel({
+        type: request.type,
+        payload: request.payload,
+        respond,
+      } as RequestFromWindow)
     }
 
     ipcRenderer.on('request', listener)

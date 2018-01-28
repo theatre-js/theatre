@@ -4,9 +4,9 @@ import css from './ExpressionlessStringEditor.css'
 import * as _ from 'lodash'
 
 type Props = {
-  label: string,
-  path: Array<string>,
-  dispatch: Function,
+  label: string
+  path: Array<string>
+  dispatch: Function
 }
 
 type State = void

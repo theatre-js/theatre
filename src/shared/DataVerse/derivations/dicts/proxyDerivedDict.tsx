@@ -1,4 +1,3 @@
-
 import AbstractDerivedDict from './AbstractDerivedDict'
 import {IDerivedDict} from './types'
 import _ from 'lodash'
@@ -6,7 +5,7 @@ import {default as box, IBoxAtom} from '$shared/DataVerse/atoms/box'
 import {AbstractDerivation} from '../types'
 
 export interface IProxyDerivedDict<O> extends IDerivedDict<O> {
-  setSource(s: IDerivedDict<O>): IProxyDerivedDict<O>;
+  setSource(s: IDerivedDict<O>): IProxyDerivedDict<O>
 }
 
 class ProxyDerivedDict<O> extends AbstractDerivedDict
@@ -14,7 +13,7 @@ class ProxyDerivedDict<O> extends AbstractDerivedDict
   _sourceBox: IBoxAtom<IDerivedDict<O>>
   _sourceBoxD: AbstractDerivation<IDerivedDict<O>>
 
-  constructor(source: IDerivedDict<O>): IProxyDerivedDict<O> {
+  constructor(source: IDerivedDict<O>) {
     super()
     this._sourceBox = box(source)
     this._sourceBoxD = this._sourceBox.derivation()

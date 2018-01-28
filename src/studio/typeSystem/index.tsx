@@ -1,8 +1,8 @@
 // @flow
 
 type Type = {
-  typeName: string,
-  schema: null,
+  typeName: string
+  schema: null
 }
 
 const defineType = (t: Type) => {

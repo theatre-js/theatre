@@ -5,13 +5,13 @@ import cx from 'classnames'
 import {STATUS} from './constants'
 
 type Props = {
-  nodeProps: Object,
-  onChange: Function,
-  setAsComponentBeingSet: Function,
+  nodeProps: Object
+  onChange: Function
+  setAsComponentBeingSet: Function
 }
 type State = {
-  isFocused: boolean,
-  isContentHidden: boolean,
+  isFocused: boolean
+  isContentHidden: boolean
 }
 
 class Node extends React.PureComponent<Props, State> {

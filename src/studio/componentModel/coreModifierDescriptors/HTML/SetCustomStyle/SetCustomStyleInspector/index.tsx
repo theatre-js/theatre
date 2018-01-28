@@ -6,8 +6,8 @@ import SingleCustomStyleInspector from './SingleCustomStyleInspector'
 import ModifierInspectorWrapper from '$studio/common/components/ModifierInspectorWrapper'
 
 type Props = {
-  list: $FixMe,
-  pathToModifierInstantiationDescriptor: Array<string>,
+  list: $FixMe
+  pathToModifierInstantiationDescriptor: Array<string>
 }
 
 export class SetCustomStyleInspector extends React.PureComponent<Props, void> {

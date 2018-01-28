@@ -29,13 +29,13 @@ describe('$shared/utils/redux/actionCreator()', () => {
   // eslint-disable-next-line
   function typeTests() {
     const creator = actionCreator(actionType)
-    let a: any = (creator.type as 'Bootstrap') // eslint-disable-line
+    let a: any = creator.type as 'Bootstrap' // eslint-disable-line
     // $FlowExpectError
-    a = (creator.type as 's')
+    a = creator.type as 's'
     const action = creator(payload)
-    a = (action.payload.a as 1)
+    a = action.payload.a as 1
     // $FlowExpectError
-    a = (action.payload.a as 2)
-    a = (action.payload as {a: number, b: number})
+    a = action.payload.a as 2
+    a = action.payload as {a: number; b: number}
   }
 })

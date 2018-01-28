@@ -44,8 +44,8 @@ type Fn6<T1, T2, T3, T4, T5, T6, R> = (
 ) => Generator_<mixed, R, mixed>
 
 type Return<R> = {
-  store: StandardStore<StoreState, any>,
-  task: {done: Promise<R>},
+  store: StandardStore<StoreState, any>
+  task: {done: Promise<R>}
 }
 
 export type RunSingleSagaFn = (<
@@ -56,7 +56,7 @@ export type RunSingleSagaFn = (<
   T5,
   T6,
   R,
-  Fn extends Fn6<T1, T2, T3, T4, T5, T6, R>,
+  Fn extends Fn6<T1, T2, T3, T4, T5, T6, R>
 >(
   fn: Fn,
   t1: T1,
@@ -97,7 +97,11 @@ export type RunSingleSagaFn = (<
     t2: T2,
     ...rest: Array<void>
   ) => Return<R>) &
-  (<T1, R, Fn extends Fn1<T1, R>>(fn: Fn, t1: T1, ...rest: Array<void>) => Return<R>) &
+  (<T1, R, Fn extends Fn1<T1, R>>(
+    fn: Fn,
+    t1: T1,
+    ...rest: Array<void>
+  ) => Return<R>) &
   (<R, Fn extends Fn0<R>>(fn: Fn, ...rest: Array<void>) => Return<R>)
 
 export const runSingleSaga: RunSingleSagaFn = (
@@ -106,7 +110,7 @@ export const runSingleSaga: RunSingleSagaFn = (
 ): $IntentionalAny => {
   const store = new StandardStore({
     rootReducer,
-    rootSaga: (null as $IntentionalAny),
+    rootSaga: null as $IntentionalAny,
   })
 
   return {store, task: store.sagaMiddleware.run(customRootSaga, ...args)}

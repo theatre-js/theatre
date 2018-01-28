@@ -23,7 +23,11 @@ const makeSocketServer = (): Promise<SocketServer> => {
   return deferred.promise
 }
 
-export default function* studioServerRootSaga(): Generator_<$FixMe, $FixMe, $FixMe> {
+export default function* studioServerRootSaga(): Generator_<
+  $FixMe,
+  $FixMe,
+  $FixMe
+> {
   const server = yield call(makeSocketServer)
 
   try {
@@ -34,7 +38,9 @@ export default function* studioServerRootSaga(): Generator_<$FixMe, $FixMe, $Fix
   }
 }
 
-function* handleServer(server: SocketServer): Generator_<$FixMe, $FixMe, $FixMe> {
+function* handleServer(
+  server: SocketServer,
+): Generator_<$FixMe, $FixMe, $FixMe> {
   const eventsChannel = yield call(getChannelFromSocketServer, server)
   try {
     while (true) {

@@ -1,10 +1,10 @@
 // @flow
 import forEach from 'lodash/forEach'
-import {Channel,eventChannel} from 'redux-saga'
+import {Channel, eventChannel} from 'redux-saga'
 
 type EventEmitter = {
-  readonly on: (eventName: string, listener: Function) => mixed,
-  readonly removeListener: (eventName: string, listener: Function) => mixed,
+  readonly on: (eventName: string, listener: Function) => mixed
+  readonly removeListener: (eventName: string, listener: Function) => mixed
 }
 
 /**

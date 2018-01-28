@@ -3,8 +3,8 @@ import {React, compose} from '$studio/handy'
 import css from './index.css'
 
 type Props = {
-  title: React.Node,
-  body: React.Node,
+  title: React.Node
+  body: React.Node
 }
 
 class ModifierInspectorWrapper extends React.PureComponent<Props, void> {

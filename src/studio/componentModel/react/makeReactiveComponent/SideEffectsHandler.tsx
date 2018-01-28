@@ -1,8 +1,7 @@
-
 import * as D from '$shared/DataVerse'
 import noop from 'lodash/noop'
-import Ticker from '$src/shared/DataVerse/Ticker';
-import AbstractDerivedDict from '$src/shared/DataVerse/derivations/dicts/AbstractDerivedDict';
+import Ticker from '$src/shared/DataVerse/Ticker'
+import AbstractDerivedDict from '$src/shared/DataVerse/derivations/dicts/AbstractDerivedDict'
 
 type FinalFace = $FixMe
 
@@ -119,7 +118,10 @@ export default class SideEffectsHandler {
     }
   }
 
-  _startSideEffect(key: string, fn: (f: FinalFace, t: D.ITicker) => () => void) {
+  _startSideEffect(
+    key: string,
+    fn: (f: FinalFace, t: D.ITicker) => () => void,
+  ) {
     this._stopSideEffect(key)
     this._mapOfStopEffectFnBySideEffectKey[key] = fn(
       this._finalFace,

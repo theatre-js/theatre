@@ -3,9 +3,9 @@ import {compose, React} from '$studio/handy'
 import css from './index.css'
 
 type Props = {
-  value: string,
-  onChange: ({k: string, v: string}) => boolean,
-  validationError: undefined | null | string,
+  value: string
+  onChange: ({k: string, v: string}) => boolean
+  validationError: undefined | null | string
 }
 
 export class TextInput extends React.PureComponent<Props, void> {

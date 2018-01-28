@@ -3,8 +3,8 @@ import {compose, React} from '$studio/handy'
 import css from './index.css'
 
 type Props = {
-  k: React.Node,
-  v: React.Node,
+  k: React.Node
+  v: React.Node
 }
 
 const KeyValuePair = (props: Props) => {

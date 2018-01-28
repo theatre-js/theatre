@@ -7,16 +7,16 @@ import {presentationOnlyComponent as ComponentNode} from './ComponentNode'
 import {presentationOnlyComponent as TextNode} from './TextNode'
 
 type Props = {
-  nodeBeingDragged: Object,
-  activeDropZone: Object,
-  onCancel: Function,
+  nodeBeingDragged: Object
+  activeDropZone: Object
+  onCancel: Function
 }
 
 type State = {
-  offsetTop: number,
-  isBeingDragged: boolean,
-  isGlued: boolean,
-  moveY: number,
+  offsetTop: number
+  isBeingDragged: boolean
+  isGlued: boolean
+  moveY: number
 }
 
 class MovableNode extends React.Component<Props, State> {
@@ -78,7 +78,7 @@ class MovableNode extends React.Component<Props, State> {
           [css.isGlued]: isGlued,
         })}
         style={{
-          ...(!isGlued ? {transform: `translateY(${moveY}px)`} : {}),
+          ...!isGlued ? {transform: `translateY(${moveY}px)`} : {},
           top: `${top - offsetTop}px`,
         }}
         {...(isGlued ? {onMouseLeave: this.dragEndHandler} : {})}

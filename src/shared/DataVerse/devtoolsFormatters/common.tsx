@@ -1,4 +1,3 @@
-
 interface Config extends $IntentionalAny {}
 
 type HasBody = (o: any, config: Config) => boolean
@@ -20,7 +19,7 @@ export const makeFormatter = (f: F) => {
       }
     },
     hasBody: typeof f.hasBody === 'boolean' ? () => f.hasBody : f.hasBody,
-    body: f.body
+    body: f.body,
   }
 
   // @ts-ignore

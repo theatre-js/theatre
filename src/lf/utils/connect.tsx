@@ -16,4 +16,4 @@ type ConnectFn = <ProvidedProps>(
   selectorFn: SelectorFn<ProvidedProps>,
 ) => HigherOrderComponent<{}, {}>
 
-export default ((connect as any) as ConnectFn)
+export default (connect as any) as ConnectFn

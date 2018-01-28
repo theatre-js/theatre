@@ -3,7 +3,7 @@ import * as React from 'react'
 import compose from 'ramda/src/compose'
 
 type Props = {
-  children: React.Node,
+  children: React.Node
 }
 
 type State = {}

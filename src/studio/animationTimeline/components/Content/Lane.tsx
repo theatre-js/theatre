@@ -5,17 +5,17 @@ import Connector from './Connector'
 import {NormalizedPoint} from '$studio/animationTimeline/types'
 
 type Props = {
-  laneId: string,
-  points: NormalizedPoint[],
-  color: string,
-  width: number,
-  changePointPositionBy: Function,
-  changePointHandlesBy: Function,
-  setPointPositionTo: Function,
-  removePoint: Function,
-  addConnector: Function,
-  removeConnector: Function,
-  makeHandleHorizontal: Function,
+  laneId: string
+  points: NormalizedPoint[]
+  color: string
+  width: number
+  changePointPositionBy: Function
+  changePointHandlesBy: Function
+  setPointPositionTo: Function
+  removePoint: Function
+  addConnector: Function
+  removeConnector: Function
+  makeHandleHorizontal: Function
 }
 
 const Lane = (props: Props) => {

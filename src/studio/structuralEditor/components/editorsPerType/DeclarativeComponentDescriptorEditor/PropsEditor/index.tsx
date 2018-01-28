@@ -4,7 +4,7 @@ import css from './index.css'
 import PanelSection from '$studio/structuralEditor/components/reusables/PanelSection'
 
 type Props = {
-  pathToComponentDescriptor: Array<string>,
+  pathToComponentDescriptor: Array<string>
 }
 
 type State = void

@@ -1,19 +1,18 @@
-
 import * as D from '$shared/DataVerse'
 import UnitBezier from 'timing-function/lib/UnitBezier'
-import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation';
+import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
 
 type Config = {
-  timeD: AbstractDerivation<number>,
-  interpolationDescriptorP: $FixMe,
-  leftPointTimeD: AbstractDerivation<number>,
-  leftPointValueD: AbstractDerivation<$FixMe>,
-  rightPointTimeD: AbstractDerivation<undefined | null | number>,
-  rightPointValueD: AbstractDerivation<$FixMe>,
+  timeD: AbstractDerivation<number>
+  interpolationDescriptorP: $FixMe
+  leftPointTimeD: AbstractDerivation<number>
+  leftPointValueD: AbstractDerivation<$FixMe>
+  rightPointTimeD: AbstractDerivation<undefined | null | number>
+  rightPointValueD: AbstractDerivation<$FixMe>
 }
 
 type Solver = {
-  solveSimple(progression: number): number,
+  solveSimple(progression: number): number
 }
 
 export default function interpolationDerivationForCubicBezier(

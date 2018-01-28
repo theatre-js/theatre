@@ -3,14 +3,14 @@ import css from './ContextMenu.css'
 
 type Props = {
   menuProps: {
-    left: number,
-    top: number,
-  },
-  close: Function,
-  render: Function,
+    left: number
+    top: number
+  }
+  close: Function
+  render: Function
 }
 type State = {
-  offsetLeft: number,
+  offsetLeft: number
 }
 
 class ContextMenu extends React.Component<Props, State> {

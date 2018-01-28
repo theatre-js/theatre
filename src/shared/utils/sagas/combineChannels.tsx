@@ -7,7 +7,9 @@ export default function combineChannels(
   inputChannels: Array<Channel>,
 ) {
   return fork(function*(): Generator_<$FixMe, $FixMe, $FixMe> {
-    yield inputChannels.map(function*(inChannel: Channel): Generator_<$FixMe, $FixMe, $FixMe> {
+    yield inputChannels.map(function*(
+      inChannel: Channel,
+    ): Generator_<$FixMe, $FixMe, $FixMe> {
       while (true) {
         // $FixMe
         const e = yield take(inChannel)

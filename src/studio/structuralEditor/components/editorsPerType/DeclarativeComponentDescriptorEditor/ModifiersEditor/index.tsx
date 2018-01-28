@@ -5,7 +5,7 @@ import PanelSection from '$studio/structuralEditor/components/reusables/PanelSec
 import * as _ from 'lodash'
 
 type Props = {
-  pathToComponentDescriptor: Array<string>,
+  pathToComponentDescriptor: Array<string>
 }
 
 type State = void

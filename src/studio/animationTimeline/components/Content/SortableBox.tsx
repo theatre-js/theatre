@@ -4,20 +4,20 @@ import css from './SortableBox.css'
 import DraggableArea from '$studio/common/components/DraggableArea'
 
 type Props = {
-  showMergeOverlay: boolean,
-  translateY: number,
-  height: number,
-  onMoveStart: Function,
-  onMove: Function,
-  onMoveEnd: Function,
-  onResize: Function,
-  children: React.Node,
+  showMergeOverlay: boolean
+  translateY: number
+  height: number
+  onMoveStart: Function
+  onMove: Function
+  onMoveEnd: Function
+  onResize: Function
+  children: React.Node
 }
 
 type State = {
-  isMoving: boolean,
-  moveY: number,
-  resizeY: number,
+  isMoving: boolean
+  moveY: number
+  resizeY: number
 }
 
 class LaneBox extends React.Component<Props, State> {
@@ -75,14 +75,14 @@ class LaneBox extends React.Component<Props, State> {
     const {height, translateY, children, showMergeOverlay} = this.props
     const {isMoving, moveY, resizeY} = this.state
     const moveHandleStyle = {
-      ...(isMoving ? {opacity: 1, zIndex: 100} : {}),
+      ...isMoving ? {opacity: 1, zIndex: 100} : {},
     }
     const containerStyle = {
       height: `${height + resizeY}px`,
-      ...(isMoving ? {zIndex: 10, transform: `translateY(${moveY}px)`} : {}),
-      ...(!isMoving && translateY !== 0
+      ...isMoving ? {zIndex: 10, transform: `translateY(${moveY}px)`} : {},
+      ...!isMoving && translateY !== 0
         ? {transform: `translateY(${translateY}px)`}
-        : {}),
+        : {},
     }
     return (
       <div className={css.container} style={containerStyle}>

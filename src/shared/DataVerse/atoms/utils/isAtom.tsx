@@ -1,5 +1,4 @@
-import AbstractAtom from "$src/shared/DataVerse/atoms/utils/AbstractAtom";
-
+import AbstractAtom from '$src/shared/DataVerse/atoms/utils/AbstractAtom'
 
 // type IsAtomFn = (<V: IAtom>(v: V) => true) & (<V>(v: V) => false)
 

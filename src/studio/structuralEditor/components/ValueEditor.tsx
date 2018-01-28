@@ -4,8 +4,8 @@ import get from 'lodash/get'
 import editorsPerType from './editorsPerType'
 
 type Props = {
-  path: Array<string>,
-  typeName: string,
+  path: Array<string>
+  typeName: string
 }
 
 type State = void

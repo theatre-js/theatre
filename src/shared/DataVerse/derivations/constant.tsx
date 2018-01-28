@@ -1,4 +1,3 @@
-
 import AbstractDerivation from './AbstractDerivation'
 
 export class ConstantDerivation<V> extends AbstractDerivation<V> {

@@ -1,4 +1,3 @@
-
 import AbstractDerivation from './AbstractDerivation'
 
 const UPDATE_NEEDED_FROM = {

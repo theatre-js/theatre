@@ -34,7 +34,9 @@ function createWindow() {
   return win
 }
 
-function* sendStateUpdatesToWindow(window: BrowserWindow): Generator_<$FixMe, $FixMe, $FixMe> {
+function* sendStateUpdatesToWindow(
+  window: BrowserWindow,
+): Generator_<$FixMe, $FixMe, $FixMe> {
   let lastState = yield select()
   yield takeLatest('*', function*(): Generator_<$FixMe, $FixMe, $FixMe> {
     yield delay(2)
@@ -58,7 +60,11 @@ function* sendStateUpdatesToWindow(window: BrowserWindow): Generator_<$FixMe, $F
   })
 }
 
-export default function* laucnherWindowSaga(): Generator_<$FixMe, $FixMe, $FixMe> {
+export default function* laucnherWindowSaga(): Generator_<
+  $FixMe,
+  $FixMe,
+  $FixMe
+> {
   yield electronIsReadyPromise
   let tray = new Tray(temporaryTrayIcon)
   let window = createWindow()
@@ -74,7 +80,9 @@ export default function* laucnherWindowSaga(): Generator_<$FixMe, $FixMe, $FixMe
   }
 }
 
-function* listenToWindowRequests(window: BrowserWindow): Generator_<$FixMe, $FixMe, $FixMe> {
+function* listenToWindowRequests(
+  window: BrowserWindow,
+): Generator_<$FixMe, $FixMe, $FixMe> {
   const requestsFromWindow = yield call(getChannelOfRequestsFromWindow, window)
 
   while (true) {

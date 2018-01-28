@@ -6,8 +6,8 @@ import SingleAttributeInspector from './SingleAttributeInspector'
 import ModifierInspectorWrapper from '$studio/common/components/ModifierInspectorWrapper'
 
 type Props = {
-  list: $FixMe,
-  pathToModifierInstantiationDescriptor: Array<string>,
+  list: $FixMe
+  pathToModifierInstantiationDescriptor: Array<string>
 }
 
 export class SetAttributeInspector extends React.PureComponent<Props, void> {

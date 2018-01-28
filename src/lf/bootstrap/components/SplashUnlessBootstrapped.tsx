@@ -9,8 +9,8 @@ import SplashScreen from '$lf/common/components/SplashScreen'
 import {StoreState} from '$lf/types'
 
 type Props = {
-  isBootstrapped: boolean,
-  children?: any,
+  isBootstrapped: boolean
+  children?: any
 }
 
 const SplashUnlessBootstrapped = (props: Props) => {

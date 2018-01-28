@@ -48,15 +48,15 @@ export default class AbstractDerivedDict {
   }
 
   proxy(): $IntentionalAny {
-    return proxyDerivedDict.default((this as $IntentionalAny))
+    return proxyDerivedDict.default(this as $IntentionalAny)
   }
 
   extend(x: $IntentionalAny): $IntentionalAny {
-    return extend.default((this as $IntentionalAny), x)
+    return extend.default(this as $IntentionalAny, x)
   }
 
   mapValues(fn: $IntentionalAny): $IntentionalAny {
-    return mapValues.default((this as $IntentionalAny), fn)
+    return mapValues.default(this as $IntentionalAny, fn)
   }
 
   toJS() {

@@ -6,10 +6,10 @@ import get from 'lodash/get'
 import KeyValuePair from '$studio/common/components/KeyValuePair'
 
 type Props = {
-  pathToPairings: Array<string>,
-  pairing: {key: string, value: string},
-  dispatch: Function,
-  id: string,
+  pathToPairings: Array<string>
+  pairing: {key: string; value: string}
+  dispatch: Function
+  id: string
 }
 
 export class SingleAttributeInspector extends React.PureComponent<Props, void> {

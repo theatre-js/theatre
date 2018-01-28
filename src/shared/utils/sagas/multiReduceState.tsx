@@ -6,8 +6,8 @@ import update from 'lodash/fp/update'
 type Path = Array<string | number>
 
 export type Pair = {
-  path: Path,
-  reducer: Function,
+  path: Path
+  reducer: Function
 }
 
 export default function(pairs: Array<Pair>, providedState?: $IntentionalAny) {

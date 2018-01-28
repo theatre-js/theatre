@@ -4,8 +4,13 @@ import combineChannels from './combineChannels'
 import channelFromEmitter from './channelFromEmitter'
 import * as io from 'redux-saga/effects'
 
-declare type Fn0<R> = () => Generator_<$FixMe, R, $FixMe> | Promise<R> | Generator_<$FixMe, R, $FixMe>
-declare type Fn1<T1, R> = (t1: T1) => R | Promise<R> | Generator_<$FixMe, R, $FixMe>
+declare type Fn0<R> = () =>
+  | Generator_<$FixMe, R, $FixMe>
+  | Promise<R>
+  | Generator_<$FixMe, R, $FixMe>
+declare type Fn1<T1, R> = (
+  t1: T1,
+) => R | Promise<R> | Generator_<$FixMe, R, $FixMe>
 declare type Fn2<T1, T2, R> = (
   t1: T1,
   t2: T2,
@@ -78,9 +83,11 @@ declare type CallFn = (<R, Fn extends Fn0<R>>(fn: Fn) => R) &
  * Note that you need to do it like this:
  * const result = yield * callfn, arg0, arg1, ...)
  */
-export const call: CallFn = (function* call(...args): Generator_<$FixMe, $FixMe, $FixMe> {
+export const call: CallFn = function* call(
+  ...args
+): Generator_<$FixMe, $FixMe, $FixMe> {
   return yield io.call(...args)
-} as any)
+} as any
 
 export const select = io.select
 

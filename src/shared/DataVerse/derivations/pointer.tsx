@@ -1,7 +1,88 @@
+<<<<<<< HEAD
 import {MapKey} from '$shared/DataVerse/types'
 import AbstractDerivation from './AbstractDerivation'
 
 const noBoxAtoms = (v: $IntentionalAny) => {
+=======
+import {MapKey /*If, True, False*/} from '$shared/DataVerse/types'
+// import {IsDictAtom, IDictAtom} from '$shared/DataVerse/atoms/dict'
+// import {IsArrayAtom, IArrayAtom} from '$shared/DataVerse/atoms/array'
+import AbstractDerivation from './AbstractDerivation'
+
+// type IsPointer<V> = V['isPointer']
+// type IsAtom<V> = V['isAtom']
+
+// export type DecidePointerType<V> = If<
+//   IsAtom<V>,
+//   DecideAtomPointerType<V>,
+//   If<IsPointer<V>, V, void>,
+// >
+
+// // type DecideBoxAtomPointerType<V> =
+// //   If<IsPointer<V>, V,
+// //   IPointerToBoxAtom<V>>
+
+// type DecideAtomPointerType<V> = If<
+//   IsDictAtom<V>,
+//   IPointerToDictAtom<V['_internalMap']>,
+//   If<
+//     IsArrayAtom<V>,
+//     IPointerToArrayAtom<V['_v']>,
+//     IPointerToBoxAtom<V['_value']>,
+//   >,
+// >
+
+// // type DecideDerivationType<V> =
+// //   If<IsDictAtom<V>, V, void>
+
+// type BasePointer = {
+//   isPointer: True,
+//   isDictAtom: False,
+//   isBoxAtom: False,
+//   isArrayAtom: False,
+//   isAtom: False,
+// }
+
+// export type IPointerToDictAtom<O> = BasePointer &
+//   AbstractDerivation<IDictAtom<O>> & {
+//     _type: O,
+//     prop<K extends keyof O>(K): DecidePointerType<O[K]>,
+//     pointer(): IPointerToDictAtom<O>,
+//     index(i: undefined | null | number): IPointerToVoid,
+//   }
+
+// export type IPointerToArrayAtom<V> = BasePointer &
+//   AbstractDerivation<IArrayAtom<V>> & {
+//     _type: V,
+//     prop(k: $IntentionalAny): IPointerToVoid,
+//     pointer(): IPointerToArrayAtom<V>,
+//     index(i: number): DecidePointerType<V>,
+//   }
+
+// export type IPointerToVoid = BasePointer &
+//   AbstractDerivation<void> & {
+//     prop(k: $IntentionalAny): IPointerToVoid,
+//     pointer(): IPointerToVoid,
+//     index(i: undefined | null | number): IPointerToVoid,
+//   }
+
+// export type IPointerToBoxAtom<V> = BasePointer &
+//   AbstractDerivation<V> & {
+//     _type: V,
+//     prop(k: $IntentionalAny): IPointerToVoid,
+//     pointer(): IPointerToBoxAtom<V>,
+//     index(i: undefined | null | number): IPointerToVoid,
+//   }
+
+interface _IPointer<V> {
+  prop(key: MapKey): _IPointer<$FixMe>
+  index(key: number): _IPointer<$FixMe>
+  pointer(): _IPointer<V>
+  // derivation(): AbstractDerivation<V>,
+}
+
+const noBoxAtoms = v => {
+>>>>>>> show all element types when query is empty on template's type selector's suggestions list
   if (v instanceof modules.box.BoxAtom) {
     return modules.deriveFromBoxAtom.default(v).flatMap(noBoxAtoms)
   } else {

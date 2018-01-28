@@ -1,4 +1,3 @@
-
 import AbstractDerivation from '../AbstractDerivation'
 import {IBoxAtom} from '$shared/DataVerse'
 import {AbstractDerivation} from '../types'
@@ -6,7 +5,6 @@ import {AbstractDerivation} from '../types'
 const noop = () => {}
 
 export class DerivationOfABoxAtom<V> extends AbstractDerivation<V> {
-
   _boxAtom: IBoxAtom<V>
   _untapFromBoxAtomChanges: Function
 

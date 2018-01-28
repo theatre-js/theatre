@@ -2,7 +2,11 @@
 import {call} from 'redux-saga/effects'
 import {default as TheStudioClass} from '$studio/TheStudioClass'
 
-export default function* errorCatchingRootSaga(): Generator_<$FixMe, $FixMe, $FixMe> {
+export default function* errorCatchingRootSaga(): Generator_<
+  $FixMe,
+  $FixMe,
+  $FixMe
+> {
   return yield call(rootSaga)
 }
 

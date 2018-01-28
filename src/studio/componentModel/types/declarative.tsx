@@ -3,64 +3,64 @@ import * as React from 'react'
 import {ComponentId} from './index'
 
 export type DeclarativeComponentDescriptor = {
-  __descriptorType: 'DeclarativeComponentDescriptor',
-  id: ComponentId, // this is unique
-  displayName: string, // this doesn't have to be
-  type: 'Declarative',
-  localHiddenValuesById: {[localid: string]: ValueDescriptor},
-  whatToRender: WhatToRender,
-  ruleSetsById: {[id: string]: RuleSet}, // later
-  listOfRulesets: Array<string>,
+  __descriptorType: 'DeclarativeComponentDescriptor'
+  id: ComponentId // this is unique
+  displayName: string // this doesn't have to be
+  type: 'Declarative'
+  localHiddenValuesById: {[localid: string]: ValueDescriptor}
+  whatToRender: WhatToRender
+  ruleSetsById: {[id: string]: RuleSet} // later
+  listOfRulesets: Array<string>
   timelineDescriptors: {
-    byId: {[id: string]: TimelineDescriptor},
-    list: Array<string>,
-  },
+    byId: {[id: string]: TimelineDescriptor}
+    list: Array<string>
+  }
   props: {
-    byId: {[id: string]: PropDescriptor},
-    list: Array<string>,
-  },
+    byId: {[id: string]: PropDescriptor}
+    list: Array<string>
+  }
 }
 
 export type WhatToRender = ReferenceToLocalHiddenValue | ReferenceToProp
 
 export type PropDescriptor = {
   // each prop has a uniquely generated ID
-  id: string,
+  id: string
   // names are for humans. they'll be unique per component, but that's only because of humans. the code doesn't need the props to be unqiue.
-  name: string,
+  name: string
   // if component 'A' has a prop 'foo' and 'foo' is customizable, then any component can do this: <A foo="my custom value for foo" />`
-  customizable: boolean,
+  customizable: boolean
   // each prop MUST have a default value
-  value: $FixMe,
+  value: $FixMe
   // the spec of the prop
-  spec: $FixMe,
+  spec: $FixMe
 }
 
 export type RuleSet = {
-  selector: string, // better to have a more structured type for this
+  selector: string // better to have a more structured type for this
 }
 
 export type ModifierInstantiationValueDescriptor = {
-  __descriptorType: 'ModifierInstantiationValueDescriptor',
-  modifierId: string,
-  props: MapDescriptor,
-  enabled: boolean,
+  __descriptorType: 'ModifierInstantiationValueDescriptor'
+  modifierId: string
+  props: MapDescriptor
+  enabled: boolean
 }
 
 export type ModifierDescriptor = {
-  id: string,
-  getClass: $FixMe,
-  InspectorComponent?: React.Component<$FixMe>,
+  id: string
+  getClass: $FixMe
+  InspectorComponent?: React.Component<$FixMe>
 }
 
 export type ReferenceToLocalHiddenValue = {
-  __descriptorType: 'ReferenceToLocalHiddenValue',
-  which: string,
+  __descriptorType: 'ReferenceToLocalHiddenValue'
+  which: string
 }
 
 export type ReferenceToProp = {
-  __descriptorType: 'ReferenceToProp',
-  propid: string,
+  __descriptorType: 'ReferenceToProp'
+  propid: string
 }
 
 export type MapDescriptor = {[key: string]: $FixMe}
@@ -78,15 +78,15 @@ export type BooleanLiteralDescriptor = boolean
  * be constructed first.
  */
 export type ComponentInstantiationValueDescriptor = {
-  __descriptorType: 'ComponentInstantiationValueDescriptor',
-  componentId: ComponentId,
-  props: MapDescriptor,
-  modifierInstantiationDescriptors: ModifierInstantiationValueDescriptors,
+  __descriptorType: 'ComponentInstantiationValueDescriptor'
+  componentId: ComponentId
+  props: MapDescriptor
+  modifierInstantiationDescriptors: ModifierInstantiationValueDescriptors
 }
 
 export type ModifierInstantiationValueDescriptors = {
-  list: ArrayDescriptor,
-  byId: MapDescriptor,
+  list: ArrayDescriptor
+  byId: MapDescriptor
 }
 
 export type ValueDescriptorDescribedInAnObject =
@@ -103,45 +103,45 @@ export type ValueDescriptor =
   | ArrayDescriptor
 
 export type TimelineDescriptor = {
-  __descriptorType: 'TimelineDescriptor',
-  id: string,
-  vars: {[varId: string]: TimelineVarDescriptor},
+  __descriptorType: 'TimelineDescriptor'
+  id: string
+  vars: {[varId: string]: TimelineVarDescriptor}
 }
 
 export type PointerThroughLocalHiddenValue = {
-  type: 'PointerThroughLocalHiddenValue',
-  localHiddenValueId: string,
-  rest: Array<string>,
+  type: 'PointerThroughLocalHiddenValue'
+  localHiddenValueId: string
+  rest: Array<string>
 }
 
 export type TimelineVarDescriptor = {
-  __descriptorType: 'TimelineVarDescriptor',
-  id: string,
-  backPointer: PointerThroughLocalHiddenValue,
+  __descriptorType: 'TimelineVarDescriptor'
+  id: string
+  backPointer: PointerThroughLocalHiddenValue
   points: {
-    firstId: undefined | null | string,
-    lastId: undefined | null | string,
+    firstId: undefined | null | string
+    lastId: undefined | null | string
     // list: Array<string>,
-    byId: {[id: string]: TimelineVarPoint},
-  },
+    byId: {[id: string]: TimelineVarPoint}
+  }
 }
 
 export type TimelinePointInterpolationDescriptor = {
-  __descriptorType: 'TimelinePointInterpolationDescriptor',
-  interpolationType: 'CubicBezier',
-  lx: number,
-  ly: number,
-  rx: number,
-  ry: number,
-  connected: boolean,
+  __descriptorType: 'TimelinePointInterpolationDescriptor'
+  interpolationType: 'CubicBezier'
+  lx: number
+  ly: number
+  rx: number
+  ry: number
+  connected: boolean
 }
 
 export type TimelineVarPoint = {
-  __descriptorType: 'TimelineVarPoint',
-  id: string,
-  time: number,
-  value: number,
-  interpolationDescriptor: TimelinePointInterpolationDescriptor,
-  prevId: string, // 'head' means we're the first point
-  nextId: string, // 'end' means we're the last point
+  __descriptorType: 'TimelineVarPoint'
+  id: string
+  time: number
+  value: number
+  interpolationDescriptor: TimelinePointInterpolationDescriptor
+  prevId: string // 'head' means we're the first point
+  nextId: string // 'end' means we're the last point
 }

@@ -5,8 +5,8 @@ import SettingsDivision from '$studio/common/components/SettingsDivision'
 import PanelOutput from '$studio/common/components/PanelOutput'
 
 type Props = {
-  setCurrentlyDraggingOutput: Function,
-  clearCurrentlyDraggingOutput: Function,
+  setCurrentlyDraggingOutput: Function
+  clearCurrentlyDraggingOutput: Function
 }
 
 const Settings = (props: Props) => {

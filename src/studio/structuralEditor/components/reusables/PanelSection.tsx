@@ -4,9 +4,9 @@ import css from './PanelSection.css'
 import cx from 'classnames'
 
 type Props = {
-  children: React.Node,
-  withHorizontalMargin: undefined | null | boolean,
-  label?: string,
+  children: React.Node
+  withHorizontalMargin: undefined | null | boolean
+  label?: string
 }
 
 type State = void

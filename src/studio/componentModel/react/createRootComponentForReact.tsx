@@ -6,7 +6,7 @@ import {elementify} from '$studio/handy'
 import DerivationAsReactElement from './utils/DerivationAsReactElement'
 
 interface Props {
-  children: React.ReactNode,
+  children: React.ReactNode
 }
 
 // type ElementifyProps = D.IDictAtom<{
@@ -54,7 +54,7 @@ const createRootComponentForReact = (studio: TheStudioClass) => {
       return false
     }
 
-    render() {      
+    render() {
       return (
         <DerivationAsReactElement
           key="RenderCurrentCanvas"

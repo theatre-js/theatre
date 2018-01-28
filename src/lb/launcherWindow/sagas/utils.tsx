@@ -1,25 +1,25 @@
 // @flow
-import {Channel,eventChannel, END} from 'redux-saga'
+import {Channel, eventChannel, END} from 'redux-saga'
 import {call} from 'redux-saga/effects'
 import generateUniqueId from 'uuid/v4'
 import wn from 'when'
 import {BrowserWindow, ipcMain} from 'electron'
 
 type RawRequest = {
-  type: string,
-  id: string,
-  payload: mixed,
+  type: string
+  id: string
+  payload: mixed
 }
 
 type Response = {
-  id: string,
-  payload: mixed,
+  id: string
+  payload: mixed
 }
 
 export type Request = {
-  type: string,
-  payload: mixed,
-  respond: (payload: mixed) => void,
+  type: string
+  payload: mixed
+  respond: (payload: mixed) => void
 }
 
 export function* autoRetryOnTimeout(
@@ -110,13 +110,11 @@ export const getChannelOfRequestsFromWindow = (
         event.sender.send('response', {id: request.id, payload})
       }
 
-      emitToChannel(
-        ({
-          type: request.type,
-          payload: request.payload,
-          respond,
-        } as Request),
-      )
+      emitToChannel({
+        type: request.type,
+        payload: request.payload,
+        respond,
+      } as Request)
     }
 
     ipcMain.on('request', listener)

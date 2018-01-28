@@ -4,14 +4,14 @@ import cx from 'classnames'
 import css from './index.css'
 
 type Props = {
-  type: string,
-  isConnected: boolean,
-  shouldAcceptDraggedOutput: boolean,
-  setInput: Function,
+  type: string
+  isConnected: boolean
+  shouldAcceptDraggedOutput: boolean
+  setInput: Function
 }
 
 type State = {
-  isActive: boolean,
+  isActive: boolean
 }
 
 class PanelInput extends React.Component<Props, State> {

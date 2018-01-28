@@ -3,8 +3,8 @@ import * as React from 'react'
 import css from './index.css'
 
 type Props = {
-  children: string,
-  closeHandler: Function,
+  children: string
+  closeHandler: Function
 }
 
 const ErrorLogger = (props: Props) => {

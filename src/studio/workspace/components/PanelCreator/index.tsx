@@ -6,8 +6,8 @@ import _ from 'lodash'
 import css from './index.css'
 
 type Props = PanelPlacementSettings & {
-  onCreatingPanel: Function,
-  onCancel: Function,
+  onCreatingPanel: Function
+  onCancel: Function
 }
 
 const PanelCreator = ({onCreatingPanel, pos, dim, onCancel}: Props) => {

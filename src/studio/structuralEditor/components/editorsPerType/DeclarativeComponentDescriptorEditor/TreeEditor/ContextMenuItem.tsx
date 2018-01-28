@@ -2,8 +2,8 @@ import {React} from '$studio/handy'
 import css from './ContextMenuItem.css'
 
 type Props = {
-  children: React.Node,
-  onClick: Function,
+  children: React.Node
+  onClick: Function
 }
 type State = void
 

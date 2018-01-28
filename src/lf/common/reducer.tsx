@@ -5,7 +5,7 @@ import {combineReducers} from 'redux'
 import {bootstrapAction} from './actions'
 import {Reducer} from 'redux'
 
-export default (combineReducers({
+export default combineReducers({
   temp: combineReducers({
     bootstrapped: handleActions(
       {
@@ -14,4 +14,4 @@ export default (combineReducers({
       false,
     ),
   }),
-}) as Reducer<CommonNamespaceState>)
+}) as Reducer<CommonNamespaceState>

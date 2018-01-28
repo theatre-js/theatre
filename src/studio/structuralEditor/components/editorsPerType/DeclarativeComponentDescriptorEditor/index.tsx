@@ -8,14 +8,14 @@ import ModifiersEditor from './ModifiersEditor'
 
 type Props = {
   // path to comopnent descriptor
-  path: Array<string>,
+  path: Array<string>
 }
 
 type State = void
 
 class DeclarativeComponentDescriptorEditor extends React.PureComponent<
   Props,
-  State,
+  State
 > {
   state: State
   props: Props

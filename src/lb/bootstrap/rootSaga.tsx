@@ -4,7 +4,11 @@ import launcherWindowSaga from '$lb/launcherWindow/sagas'
 import statePersistorSaga from '$lb/statePersistor/sagas'
 import studioServerSaga from '$lb/studioServer/sagas'
 
-export default function* errorCatchingRootSaga(): Generator_<$FixMe, $FixMe, $FixMe> {
+export default function* errorCatchingRootSaga(): Generator_<
+  $FixMe,
+  $FixMe,
+  $FixMe
+> {
   return yield call(rootSaga)
 }
 

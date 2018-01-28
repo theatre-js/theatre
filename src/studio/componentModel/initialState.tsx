@@ -38,7 +38,7 @@ const generate = (
 
     Object.assign(allNodes, allChildNodes)
 
-    const node = ({
+    const node = {
       __descriptorType: 'ComponentInstantiationValueDescriptor',
       componentId: 'TheaterJS/Core/HTML/' + tags[_.random(0, tags.length - 1)],
       props: {
@@ -49,7 +49,7 @@ const generate = (
         })),
       },
       modifierInstantiationDescriptors: {byId: {}, list: []},
-    } as ComponentInstantiationValueDescriptor)
+    } as ComponentInstantiationValueDescriptor
 
     allNodes[key] = node
     rootKeys.push(key)
@@ -149,7 +149,7 @@ const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
       },
       modifierInstantiationDescriptors: {byId: {}, list: []},
     },
-    palaki: ({
+    palaki: {
       __descriptorType: 'ComponentInstantiationValueDescriptor',
       componentId: 'TheaterJS/Core/HTML/div',
       props: {
@@ -166,7 +166,7 @@ const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
         ],
       },
       modifierInstantiationDescriptors: {byId: {}, list: []},
-    } as ComponentInstantiationValueDescriptor),
+    } as ComponentInstantiationValueDescriptor,
     dalaki: {
       __descriptorType: 'ComponentInstantiationValueDescriptor',
       componentId: 'TheaterJS/Core/HTML/div',

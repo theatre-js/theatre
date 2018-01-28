@@ -2,11 +2,13 @@ import {default as AbstractCompositeAtom} from './utils/AbstractCompositeAtom'
 import forEach from 'lodash/forEach'
 import mapValues from 'lodash/mapValues'
 import deriveFromDictAtom from '$shared/DataVerse/derivations/dicts/deriveFromDictAtom'
-import {
-  default as pointer,
-} from '$shared/DataVerse/derivations/pointer'
+import {default as pointer} from '$shared/DataVerse/derivations/pointer'
 
-type DictAtomChangeType<O> = {overriddenRefs: Partial<O>, deletedKeys: Array<keyof O>, addedKeys: Array<keyof O>}
+type DictAtomChangeType<O> = {
+  overriddenRefs: Partial<O>
+  deletedKeys: Array<keyof O>
+  addedKeys: Array<keyof O>
+}
 
 export class DictAtom<O> extends AbstractCompositeAtom<DictAtomChangeType<O>> {
   isDictAtom = true
@@ -15,7 +17,7 @@ export class DictAtom<O> extends AbstractCompositeAtom<DictAtomChangeType<O>> {
 
   constructor(o: O) {
     super()
-    this._internalMap = ({} as $IntentionalAny)
+    this._internalMap = {} as $IntentionalAny
     this._pointer = undefined
 
     this._assignInitialValue(o)
@@ -64,7 +66,7 @@ export class DictAtom<O> extends AbstractCompositeAtom<DictAtomChangeType<O>> {
       delete this._internalMap[key]
     })
 
-    forEach((o as O), (v, k: keyof O) => {
+    forEach(o as O, (v, k: keyof O) => {
       this._internalMap[k] = v
       this._adopt(k, v)
     })
@@ -86,9 +88,9 @@ export class DictAtom<O> extends AbstractCompositeAtom<DictAtomChangeType<O>> {
 
   prop<K extends keyof O>(key: K): O[K] {
     if (this._internalMap.hasOwnProperty(key)) {
-      return (this._internalMap[key] as $IntentionalAny)
+      return this._internalMap[key] as $IntentionalAny
     } else {
-      return (undefined as any)
+      return undefined as any
     }
   }
 

@@ -17,7 +17,7 @@ const aaaP = dD
   .pointer()
   .prop('a')
   .prop('aa')
-  // .prop('aaa')
+// .prop('aaa')
 
 // d.deleteProp('a')
 // d.setProp('a', dict({aa: dict({aaa: 'bye'})}))

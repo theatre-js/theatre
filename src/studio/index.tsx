@@ -22,7 +22,4 @@ if (process.env.NODE_ENV === 'development') {
 const reactExport = {
   Root: createRootComponentForReact(theaterStudioInstance),
 }
-export {
-  theaterStudioInstance as studio,
-  reactExport as react,
-}
+export {theaterStudioInstance as studio, reactExport as react}
