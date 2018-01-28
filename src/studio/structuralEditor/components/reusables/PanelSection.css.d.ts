@@ -1,9 +1,5 @@
-export interface IPanelSectionCss {
-  'container': string;
-  'withHorizontalMargin': string;
-  'body': string;
-  'label': string;
-  'labelText': string;
-}
-
-export const locals: IPanelSectionCss;
+export const container: string;
+export const withHorizontalMargin: string;
+export const body: string;
+export const label: string;
+export const labelText: string;

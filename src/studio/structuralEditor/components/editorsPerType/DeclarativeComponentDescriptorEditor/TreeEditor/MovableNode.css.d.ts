@@ -1,8 +1,4 @@
-export interface IMovableNodeCss {
-  'staticContainer': string;
-  'isGlued': string;
-  'dynamicContainer': string;
-  'popout': string;
-}
-
-export const locals: IMovableNodeCss;
+export const staticContainer: string;
+export const isGlued: string;
+export const dynamicContainer: string;
+export const popout: string;

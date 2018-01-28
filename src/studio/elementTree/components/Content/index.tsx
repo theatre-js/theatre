@@ -157,6 +157,7 @@ class ExplorerPanel extends React.PureComponent<Props, State> {
   render() {
     const {nodes} = this.state
     const {outputs: {selectedNode}} = this.props
+    
     const selectedNodePath = selectedNode != null ? selectedNode.path : null
     return (
       <div className={css.container}>

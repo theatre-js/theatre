@@ -1,10 +1,6 @@
-export interface IIndexCss {
-  'container': string;
-  'highlight': string;
-  'active': string;
-  'type': string;
-  'hint': string;
-  'dropHint': string;
-}
-
-export const locals: IIndexCss;
+export const container: string;
+export const highlight: string;
+export const active: string;
+export const type: string;
+export const hint: string;
+export const dropHint: string;

@@ -1,5 +1,5 @@
 .container {
-  margin-top: 16px;
+  /* margin-top: 16px; */
   margin-bottom: 16px;
 }
 
@@ -13,6 +13,7 @@
   padding: 0 16px;
   height: 32px;
   margin-bottom: 4px;
+  display: none;
 }
 
 .labelText {

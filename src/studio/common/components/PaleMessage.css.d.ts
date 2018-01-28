@@ -1,5 +1,1 @@
-export interface IPaleMessageCss {
-  'container': string;
-}
-
-export const locals: IPaleMessageCss;
+export const container: string;

@@ -1,8 +1,7 @@
 import {ComponentType as ReactComponentType} from 'react'
 import {IDeclarativeComponentDescriptor, IModifierDescriptor} from './declarative'
-/*:: export type * from './declarative' */
+export * from './declarative'
 
-// @todo maybe this should be an opaque type given that not any string is a valid ComponentId
 export type ComponentId = string
 
 export interface IComponentInstantiationDescriptor {
@@ -23,10 +22,6 @@ export interface IHardCodedComponentDescriptor {
 export type ComponentDescriptor =
   | IDeclarativeComponentDescriptor
   | IHardCodedComponentDescriptor
-
-// export type ComponentModelNamespaceState = {
-//   componentDescriptorsById: {[id: ComponentId]: ComponentDescriptor},
-// }
 
 export interface IComponentModelNamespaceState {
   componentDescriptors: {

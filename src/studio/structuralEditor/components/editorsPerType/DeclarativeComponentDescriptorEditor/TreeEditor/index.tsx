@@ -24,19 +24,19 @@ type Props = {
 
 type State = {
   nodes: Object,
-  nodeBeingDragged: ?{
+  nodeBeingDragged: undefined | null | {
     nodeProps: Object,
     depth: number,
     top: number,
     height: number,
     offsetY: number,
   },
-  activeDropZone: ?{
+  activeDropZone: undefined | null | {
     id: string,
     index: number,
     depth: number,
   },
-  componentBeingSet: ?{
+  componentBeingSet: undefined | null | {
     nodeProps: Object,
     depth: number,
     top: number,

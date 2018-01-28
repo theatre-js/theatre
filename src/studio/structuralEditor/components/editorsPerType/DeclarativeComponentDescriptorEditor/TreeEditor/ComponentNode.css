@@ -1,10 +1,10 @@
-@value indent: 8px;
+@value indent: 18px;
 
 .container {
   position: relative;
   left: indent;
   width: calc(100% - 2 * indent);
-  height: 27px;
+  height: 30px;
   font-weight: 400;
   white-space: nowrap;
   
@@ -26,12 +26,12 @@
   grid-column: 1;
 }
 
-.class {
+.className {
   position: relative;
   grid-column: 2;
 }
 
-.class > input {
+.className > input {
   position: relative;
   bottom: 5px;
   width: 100%;
@@ -44,3 +44,23 @@
     border-bottom-color: rgba(255, 255, 255, .3);
   }
 }
+
+
+
+.tagOpen, .tagClose {
+  color: #d8d8d8;
+}
+
+.tagName {
+  color: #d8d8d8;
+}
+
+.dot {
+  /*margin: 0 0 0 2px;*/
+  color: #dadada;
+}
+
+/* .className {
+  color: #65eeff;
+  font-weight: 500;
+} */

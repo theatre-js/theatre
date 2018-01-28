@@ -1,7 +1,6 @@
-// @flow
+
 import * as _ from 'lodash'
 
-// $FlowIgnore
 const context = require.context('./', true, /\.\/([a-zA-Z]+)Editor\/index\.tsx$/)
 const listOfModulePaths: Array<string> = context.keys()
 const requireModuleByPath: typeof require = context

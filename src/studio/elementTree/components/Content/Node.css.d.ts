@@ -1,23 +1,19 @@
-export interface INodeCss {
-  'container': string;
-  'top': string;
-  'selected': string;
-  'name': string;
-  'tagOpen': string;
-  'tagClose': string;
-  'tagName': string;
-  'dot': string;
-  'className': string;
-  'ancestorOfSelectedNode': string;
-  'highlighter': string;
-  'bullet': string;
-  'expandButton': string;
-  'bulletIcon': string;
-  'hasChildren': string;
-  'expanded': string;
-  'subNodes': string;
-  'textLogo': string;
-  'textContent': string;
-}
-
-export const locals: INodeCss;
+export const container: string;
+export const top: string;
+export const selected: string;
+export const name: string;
+export const tagOpen: string;
+export const tagClose: string;
+export const tagName: string;
+export const dot: string;
+export const className: string;
+export const ancestorOfSelectedNode: string;
+export const highlighter: string;
+export const bullet: string;
+export const expandButton: string;
+export const bulletIcon: string;
+export const hasChildren: string;
+export const expanded: string;
+export const subNodes: string;
+export const textLogo: string;
+export const textContent: string;

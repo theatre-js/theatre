@@ -3,8 +3,8 @@ import {IComponentModelNamespaceState} from './types'
 import coreComponentDescriptors from './coreComponentDescriptors'
 import coreModifierDescriptors from './coreModifierDescriptors'
 import {
-  DeclarativeComponentDescriptor,
-  ComponentInstantiationValueDescriptor,
+  IDeclarativeComponentDescriptor,
+  IComponentInstantiationValueDescriptor,
 } from '$studio/componentModel/types'
 import * as _ from 'lodash'
 
@@ -38,7 +38,7 @@ const generate = (
 
     Object.assign(allNodes, allChildNodes)
 
-    const node = ({
+    const node = {
       __descriptorType: 'ComponentInstantiationValueDescriptor',
       componentId: 'TheaterJS/Core/HTML/' + tags[_.random(0, tags.length - 1)],
       props: {
@@ -49,7 +49,7 @@ const generate = (
         })),
       },
       modifierInstantiationDescriptors: {byId: {}, list: []},
-    } as ComponentInstantiationValueDescriptor)
+    } as IComponentInstantiationValueDescriptor
 
     allNodes[key] = node
     rootKeys.push(key)
@@ -60,7 +60,7 @@ const generate = (
 
 const fakeNodes = generateFakeTree()
 
-const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
+const FakeDeclarativeButton: IDeclarativeComponentDescriptor = {
   __descriptorType: 'DeclarativeComponentDescriptor',
   id: 'FakeDeclarativeButton',
   displayName: 'FakeDeclarativeButton',
@@ -147,9 +147,13 @@ const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
         key: 'palakiChild',
         children: [],
       },
-      modifierInstantiationDescriptors: {byId: {}, list: []},
+      modifierInstantiationDescriptors: {
+        byId: {
+        },
+        list: [],
+      },
     },
-    palaki: ({
+    palaki: {
       __descriptorType: 'ComponentInstantiationValueDescriptor',
       componentId: 'TheaterJS/Core/HTML/div',
       props: {
@@ -166,7 +170,7 @@ const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
         ],
       },
       modifierInstantiationDescriptors: {byId: {}, list: []},
-    } as ComponentInstantiationValueDescriptor),
+    } as IComponentInstantiationValueDescriptor,
     dalaki: {
       __descriptorType: 'ComponentInstantiationValueDescriptor',
       componentId: 'TheaterJS/Core/HTML/div',
@@ -223,16 +227,9 @@ const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
       props: {
         class: 'Alaki',
         key: 'alaki',
-        // children: {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'palaki'},
-        // children: {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'talaki'},
-        // children: 'hello there',
         children: [
           {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'palaki'},
           {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'dalaki'},
-          // ...fakeNodes.rootKeys.map(k => ({
-          //   __descriptorType: 'ReferenceToLocalHiddenValue',
-          //   which: k,
-          // })),
         ],
       },
       modifierInstantiationDescriptors: {
@@ -267,7 +264,7 @@ const FakeDeclarativeButton: DeclarativeComponentDescriptor = {
                   },
                   '3': {
                     key: 'opacity',
-                    value: '0.2',
+                    value: '0.0',
                   },
                 },
               },

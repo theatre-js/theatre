@@ -11,6 +11,10 @@ import {connect} from '$studio/handy'
 import {getComponentDescriptor} from '$studio/componentModel/selectors'
 import stringStartsWith from 'lodash/startsWith'
 
+console.log(css);
+
+
+
 const dummyClasses = [
   'container',
   'form',
@@ -25,17 +29,17 @@ const dummyClasses = [
 
 // console.log('blah')
 
-type Props = {
-  isExpanded: boolean,
-  children: Object,
-  path: Path,
-  toggleExpansion: Function,
-  selectNode: Function,
-  selectedNodePath: Path,
-  displayName: string,
-  shouldSwallowChild: undefined | null | boolean,
-  depth?: number,
-  classNames: string,
+interface IProps {
+  isExpanded: boolean
+  children: Object
+  path: Path
+  toggleExpansion: Function
+  selectNode: Function
+  selectedNodePath: Path
+  displayName: string
+  shouldSwallowChild: undefined | null | boolean
+  depth?: number
+  classNames: string
 }
 
 /**
@@ -76,7 +80,7 @@ const extractChildrenOfChild = children => {
 
 const fakeClassesWeakMap = new WeakMap()
 
-class Node extends React.PureComponent<Props, void> {
+class Node extends React.PureComponent<IProps, void> {
   render() {
     const {props} = this
 
@@ -191,8 +195,10 @@ const WrappedNode = connect((s, op) => {
       : type === null
         ? 'null'
         : _ref.stateNode.getComponentId
-          ? (getComponentDescriptor(s, _ref.stateNode.getComponentId()) as $FixMe)
-              .displayName
+          ? (getComponentDescriptor(
+              s,
+              _ref.stateNode.getComponentId(),
+            ) as $FixMe).displayName
           : type.displayName
 
   const textContent =

@@ -46,7 +46,11 @@ const initialState: WorkspaceNamespaceState = {
           },
         },
         inputs: {},
-        outputs: {},
+        outputs: {
+          selectedNode: {
+            componentId: 'FakeDeclarativeButton'
+          }
+        },
       },
       'composePanel-imAUUID': {
         id: 'composePanel-imAUUID',
@@ -60,10 +64,12 @@ const initialState: WorkspaceNamespaceState = {
         placementSettings: {
           pos: {
             x: 85,
+            // x: 85,
             y: 0,
           },
           dim: {
             x: 15,
+            // x: 15,
             y: 100,
           },
         },
@@ -74,7 +80,7 @@ const initialState: WorkspaceNamespaceState = {
       },
     },
     listOfVisibles: [
-      '8daa7380-9b43-475a-8352-dc564a58c719',
+      // '8daa7380-9b43-475a-8352-dc564a58c719',
       'elementTree',
       'composePanel-imAUUID',
     ],

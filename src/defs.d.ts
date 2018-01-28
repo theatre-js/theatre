@@ -79,3 +79,8 @@ declare var module: {
 type Generator_<A, ReturnType, YieldType> = Generator
 
 type Spread<A, B> = $FixMe
+
+declare module "*.svg" {
+  var s: string
+  export default s
+}

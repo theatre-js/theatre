@@ -1,13 +1,9 @@
-export interface INodeContainerCss {
-  'container': string;
-  'expand': string;
-  'isRelocated': string;
-  'drop': string;
-  'isCollapsed': string;
-  'collapse': string;
-  'root': string;
-  'hoverSensor': string;
-  'child': string;
-}
-
-export const locals: INodeContainerCss;
+export const container: string;
+export const expand: string;
+export const isRelocated: string;
+export const drop: string;
+export const isCollapsed: string;
+export const collapse: string;
+export const root: string;
+export const hoverSensor: string;
+export const child: string;
