@@ -15,6 +15,7 @@ type Props = {
 
 type State = {
   nodes: Object
+  selectedNodePath: undefined | null | string[]
 }
 
 class ExplorerPanel extends React.PureComponent<Props, State> {
@@ -27,7 +28,7 @@ class ExplorerPanel extends React.PureComponent<Props, State> {
     this._subscribeToHookEvents(window.__REACT_DEVTOOLS_GLOBAL_HOOK__)
 
     this._refMap = new WeakMap()
-    this.state = {nodes: {}}
+    this.state = {nodes: {}, selectedNodePath: null}
     this.rendererID = undefined
     this.updateTimeout = null
   }
@@ -152,12 +153,12 @@ class ExplorerPanel extends React.PureComponent<Props, State> {
   selectNode = (path: Path) => {
     const {data: selectedNode} = get(this.state.nodes, path)
     this.props.updatePanelOutput({selectedNode})
+    this.setState(() => ({selectedNodePath: path}))
   }
 
   render() {
-    const {nodes} = this.state
+    const {nodes, selectedNodePath} = this.state
     const {outputs: {selectedNode}} = this.props
-    const selectedNodePath = selectedNode != null ? selectedNode.path : null
     return (
       <div className={css.container}>
         {Object.keys(nodes).map(key => {

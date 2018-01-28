@@ -141,12 +141,7 @@ class Node extends React.PureComponent<Props, void> {
             <div key="highlighter" className={css.highlighter} />,
           ]}
           {textContent != null && (
-            <div
-              className={css.name}
-              onClick={() => {
-                selectNode(path)
-              }}
-            >
+            <div className={css.name}>
               <div className={css.textLogo}>t</div>
               <div className={css.textContent}>{textContent}</div>
             </div>
