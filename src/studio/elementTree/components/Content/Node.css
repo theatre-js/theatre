@@ -26,7 +26,7 @@
   & > .name {
     & > .tagOpen,
     & > .tagClose {
-      color: white;
+      color: rgba(#FFFFFF, 0.5);
     }
 
     & > .tagName {
@@ -67,7 +67,7 @@
 }
 
 .selected > .top > .bullet {
-  color: white;
+  color: rgba(#FFFFFF, 0.6);
 }
 
 .expandButton {
