@@ -6,19 +6,19 @@
 
   background-color: rgba(0, 0, 0, .5);
 
-  animation: wrapper-appear .2s ease-in-out forwards;
+  animation: wrapperAppear .2s ease-in-out forwards;
 
   &.willUnmount {
-    animation: wrapper-disappear .2s ease-in-out forwards;
+    animation: wrapperDisappear .2s ease-in-out forwards;
   }
 }
 
-@keyframes wrapper-appear {
+@keyframes wrapperAppear {
   from {opacity: 0;}
   to {opacity: 1;}
 }
 
-@keyframes wrapper-disappear {
+@keyframes wrapperDisappear {
   from {opacity: 1;}
   to {opacity: 0;}
 }
@@ -45,21 +45,21 @@
     
     transform-origin: 0 0;
     transform: scaleX(0);
-    animation: underline-appear .2s .1s ease-in-out forwards;
+    animation: underlineAppear .2s .1s ease-in-out forwards;
   }
 }
 
 .willUnmount .input {
   &:after {
-    animation: underline-disappear .15s ease-in-out forwards;
+    animation: underlineDisappear .15s ease-in-out forwards;
   }
 }
 
-@keyframes underline-appear {
+@keyframes underlineAppear {
   to {transform: scaleX(1);}
 }
 
-@keyframes underline-disappear {
+@keyframes underlineDisappear {
   from {transform: scaleX(1);}
   to {transform: scaleX(0);}
 }
@@ -79,10 +79,10 @@
   
   opacity: 0;
   transform: translateY(10px);
-  animation: list-appear .3s ease-in-out forwards;
+  animation: listAppear .3s ease-in-out forwards;
 }
 
-@keyframes list-appear {
+@keyframes listAppear {
   to {opacity: 1; transform: translateY(0);}
 }
 

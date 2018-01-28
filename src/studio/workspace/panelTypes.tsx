@@ -1,7 +1,7 @@
 // @flow
 const panelTypes = {
   elementTree: {
-    label: 'Elements Tree',
+    label: 'Explore',
     components: require('$studio/elementTree'),
   },
   elementInspector: {

@@ -11,6 +11,7 @@ import {connect} from '$studio/handy'
 import {getComponentDescriptor} from '$studio/componentModel/selectors'
 import stringStartsWith from 'lodash/startsWith'
 
+
 const dummyClasses = [
   'container',
   'form',
@@ -25,7 +26,7 @@ const dummyClasses = [
 
 // console.log('blah')
 
-type Props = {
+interface IProps {
   isExpanded: boolean
   children: Object
   path: Path
@@ -76,7 +77,7 @@ const extractChildrenOfChild = children => {
 
 const fakeClassesWeakMap = new WeakMap()
 
-class Node extends React.PureComponent<Props, void> {
+class Node extends React.PureComponent<IProps, void> {
   render() {
     const {props} = this
 

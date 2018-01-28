@@ -28,10 +28,10 @@ class DeclarativeComponentDescriptorEditor extends React.PureComponent<
   render() {
     return (
       <div className={css.container}>
-        <ComponentNameEditor pathToComponentDescriptor={this.props.path} />
-        <PropsEditor pathToComponentDescriptor={this.props.path} />
+        {/* <ComponentNameEditor pathToComponentDescriptor={this.props.path} /> */}
+        {/* <PropsEditor pathToComponentDescriptor={this.props.path} /> */}
         <TreeEditor pathToComponentDescriptor={this.props.path} />
-        <ModifiersEditor pathToComponentDescriptor={this.props.path} />
+        {/* <ModifiersEditor pathToComponentDescriptor={this.props.path} /> */}
       </div>
     )
   }

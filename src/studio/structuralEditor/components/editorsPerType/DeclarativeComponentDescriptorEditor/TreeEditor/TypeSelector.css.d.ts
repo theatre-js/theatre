@@ -1,17 +1,13 @@
-export interface ITypeSelectorCss {
-  'indent': string;
-  'wrapper': string;
-  'wrapper-appear': string;
-  'willUnmount': string;
-  'wrapper-disappear': string;
-  'container': string;
-  'input': string;
-  'underline-appear': string;
-  'underline-disappear': string;
-  'list': string;
-  'list-appear': string;
-  'option': string;
-  'isSelected': string;
-}
-
-export const locals: ITypeSelectorCss;
+export const indent: string;
+export const wrapper: string;
+export const wrapperAppear: string;
+export const willUnmount: string;
+export const wrapperDisappear: string;
+export const container: string;
+export const input: string;
+export const underlineAppear: string;
+export const underlineDisappear: string;
+export const list: string;
+export const listAppear: string;
+export const option: string;
+export const isSelected: string;

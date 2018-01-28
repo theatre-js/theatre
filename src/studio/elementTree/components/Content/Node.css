@@ -1,20 +1,27 @@
-@import url('https://fonts.googleapis.com/cssundefined | null | family=Roboto+Mono:300,400,500,700');
-
 .container {
   position: relative;
   --indent: calc(18px + var(--depth) * 16px);
-  /*left: var(--indent);*/
 }
 
 .top {
   height: 30px;
-  line-height: 30px;
+  line-height: 32px;
   position: relative;
-  /*border-bottom: 1px solid #404040;*/
+
+  &:before {
+    display: block;
+    position: absolute 0 -1px 0 0;  
+    content: ' ';
+    background: #11a4d6;
+    opacity: 0;
+    pointer-events: none;
+  }
 }
 
 .selected > .top {
-  background: #11a4d6;
+  &:before {
+    opacity: 1;
+  }
 
   & > .name {
     & > .tagOpen,
@@ -28,12 +35,10 @@
 
     & > .dot {
       color: white;
-      /*font-weight: bold;*/
     }
 
     & > .className {
       color: white;
-      /*font-weight: bold;*/
     }
   }
 }
@@ -51,19 +56,13 @@
   position: absolute 0;
   pointer-events: none;
   z-index: -1;
-  /*border: 1px solid transparent;*/
 }
 
 .name:hover ~ .highlighter {
   background: #ffffff21;
 }
 
-.selected > .top > .highlighter {
-  /*background: blue !important;*/
-}
-
 .selected > .top > .name {
-  /*font-weight: bold;*/
   opacity: 1;
 }
 
@@ -80,26 +79,20 @@
   line-height: 25px;
 }
 
-.tagOpen {
-  color: grey;
+.tagOpen, .tagClose {
+  color: #4f5d77;
 }
 
 .tagName {
   color: #d8d8d8;
 }
 
-.tagClose {
-  color: grey;
-}
-
 .dot {
-  /*margin: 0 0 0 2px;*/
   color: #dadada;
 }
 
 .className {
-  color: #65eeff;
-  font-weight: 500;
+  color: white;
 }
 
 .container {
@@ -114,7 +107,6 @@
     width: 1px;
     display: none;
     content: ' ';
-    /* background: white; */
     z-index: 5;
     border-left: 1px solid #ffffff3d;
   }
@@ -131,28 +123,23 @@
 .bullet {
   cursor: default;
   user-select: none;
-  /*border-radius: 50%;*/
   display: none;
-  /*background: #00cbff;*/
-  /*border: 1px solid transparent;*/
   position: absolute;
   left: 0;
-  top: 0;
+  top: 1px;
   bottom: 0;
   width: calc(var(--indent) - 16px);
   z-index: 10;
-  color: grey;
+  color: #4f5d77;
 }
 
 .bulletIcon {
   position: absolute;
   top: 12px;
-  width: 8px;
-  height: 8px;
-  /* top: 11px; */
+  width: 6px;
+  height: 6px;
   right: 0;
-  transition: transform 0.2s;
-  /* transform-origin: 100% 100%; */
+  transition: transform 0.1s ease-out;
   line-height: 10px;
 }
 
@@ -185,7 +172,6 @@
     display: none;
     height: 1px;
     content: ' ';
-    /* background: white; */
     z-index: 23;
     border-radius: 50%;
     border: 2px solid #5a5a5a;
@@ -199,8 +185,8 @@
   height: 14px;
   margin-right: 4px;
   border-radius: 2px;
-  background-color: #000;
   line-height: 16px;
+  color: #4f5d77;
   text-align: center;
 }
 

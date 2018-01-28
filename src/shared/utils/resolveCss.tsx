@@ -1,33 +1,34 @@
-// @flow
-import forEachRight from 'lodash/forEachRight'
-import flattenDeep from 'lodash/flattenDeep'
+import {forEachRight, flattenDeep} from 'lodash'
 
-type StylesToClassName = {[key: string]: string}
+interface IStylesToClassName {
+  [key: string]: string
+}
+interface IArrayOfStylesToClassNames extends Array<StylesToClassNames> {}
 type StylesToClassNames =
-  | StylesToClassName
+  | IStylesToClassName
   | null
   | void
-  | Array<StylesToClassNames>
+  | IArrayOfStylesToClassNames
 
 const resolveCss = (...stylesToClassNames: Array<StylesToClassNames>) => (
   ...classNameOrClassNames: Array<string | void | null | false>
 ): {className: string} => {
-  // $FlowIgnore
   const styles: Array<string> = classNameOrClassNames.filter(
     s => typeof s === 'string' && s.length > 0,
-  )
+  ) as Array<string>
 
   function resolveSingleStyle(style: string): string {
     const pieces = flattenDeep(
       // voodoo. don't bother
-      flattenDeep(stylesToClassNames)
+      flattenDeep(stylesToClassNames as $FixMe)
         .filter(a => !!a)
-        .map(map => map[style]),
+        .map((map: $FixMe) => map[style]),
     )
 
-    const eligiblePieces = []
+    const eligiblePieces: $FixMe[] = []
 
-    forEachRight(pieces, piece => {
+    // @ts-ignore
+    forEachRight(pieces, (piece) => {
       // get rid of nulls
       if (typeof piece !== 'string') return true
       // sanitize whitespaces
@@ -39,7 +40,7 @@ const resolveCss = (...stylesToClassNames: Array<StylesToClassNames>) => (
         return false
       }
       // take 'class' out of 'class !important'
-      const pieceWithoutOverride = piece.replace(/\s*!override/, '').trim()
+      const pieceWithoutOverride = piece.replace(/\s*\!override/, '').trim()
       // prepend 'class' to the array
       eligiblePieces.unshift(pieceWithoutOverride)
 

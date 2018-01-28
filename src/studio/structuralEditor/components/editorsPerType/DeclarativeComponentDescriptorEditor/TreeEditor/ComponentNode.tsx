@@ -5,7 +5,7 @@ import {STATUS} from './constants'
 import cx from 'classnames'
 
 type Props = {
-  nodeProps: Object
+  nodeProps: $FixMe
   setAsComponentBeingSet: Function
   setClassValue: Function
 }
@@ -25,7 +25,7 @@ class Node extends React.PureComponent<Props, State> {
     if (classValue != null) this.setState(() => ({classValue}))
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps: Props) {
     if (
       (nextProps.nodeProps.status === STATUS.CHANGED ||
         nextProps.nodeProps.status === STATUS.UNCHANGED) &&
@@ -70,9 +70,14 @@ class Node extends React.PureComponent<Props, State> {
         }}
       >
         <div className={css.displayName} onClick={this.setAsComponentBeingSet}>
-          {`<${nodeProps.displayName}>`}
+          <span className={css.tagOpen}>&lt;</span>
+          <span className={css.tagName}>{nodeProps.displayName}</span>
+          {/* <span className={css.dot}>.</span> */}
+          {/* <span className={css.className}>{props.classNames}</span> */}
+          <span className={css.tagClose}>&gt;</span>
+          {/* {`<${nodeProps.displayName}>`} */}
         </div>
-        <div className={css.class}>
+        {/* <div className={css.className}>
           <input
             ref={c => (this.input = c)}
             type="text"
@@ -83,7 +88,7 @@ class Node extends React.PureComponent<Props, State> {
             onKeyDown={this.keyDownHandler}
             onBlur={this.setClassValue}
           />
-        </div>
+        </div> */}
       </div>
     )
   }
@@ -93,7 +98,7 @@ export const presentationOnlyComponent = ({nodeProps}) => {
   return (
     <div className={css.container}>
       <div className={css.displayName}>{`<${nodeProps.displayName}>`}</div>
-      <div className={css.class}>
+      <div className={css.className}>
         <input type="text" placeholder="Class" />
       </div>
     </div>

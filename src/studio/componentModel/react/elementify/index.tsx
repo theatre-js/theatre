@@ -1,9 +1,8 @@
 import * as React from 'react'
 import * as D from '$shared/DataVerse'
 import ElementifyDeclarativeComponent from './ElementifyDeclarativeComponent'
-import {Studio} from '$studio/handy'
 import stringStartsWith from 'lodash/startsWith'
-import {AbstractDerivation} from '$src/shared/DataVerse/derivations/types'
+import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
 
 const identity = a => a
 
@@ -11,60 +10,23 @@ const getComponentDescriptorById = (
   idD: AbstractDerivation<string>,
   studioD: AbstractDerivation<$FixMe>,
 ): $FixMe =>
-  D.derivations
-    .withDeps({idD, studioD}, identity)
-    .flatMap(({idD, studioD}): $FixMe => {
-      const idString = idD.getValue()
-      return stringStartsWith(idString, 'TheaterJS/Core/')
-        ? studioD
-            .getValue()
-            .atom.pointer()
-            .prop('componentModel')
-            .prop('componentDescriptors')
-            .prop('core')
-            .prop(idString)
-        : studioD
-            .getValue()
-            .atom.pointer()
-            .prop('componentModel')
-            .prop('componentDescriptors')
-            .prop('custom')
-            .prop(idString)
-    })
+  D.derivations.withDeps({idD, studioD}, identity).flatMap((): $FixMe => {
+    const idString = idD.getValue()
 
-export const getAliasLessComponentDescriptor = (
-  initialComponentIdD: AbstractDerivation<string>,
-  studioD: AbstractDerivation<Studio>,
-): $FixMe => {
-  return getComponentDescriptorById(initialComponentIdD, studioD).flatMap(
-    (des): $FixMe => {
-      if (!des) return des
+    const componentDescriptorsP = studioD
+      .getValue()
+      .atom.pointer()
+      .prop('componentModel')
+      .prop('componentDescriptors')
 
-      return des
-        .pointer()
-        .prop('type')
-        .flatMap(type => {
-          if (type === 'Alias') {
-            return des
-              .pointer()
-              .prop('aliasedComponentId')
-              .flatMap(aliasedComponentId =>
-                getAliasLessComponentDescriptor(
-                  D.derivations.constant(aliasedComponentId),
-                  studioD,
-                ),
-              )
-          } else {
-            return des
-          }
-        })
-    },
-  )
-}
+    return stringStartsWith(idString, 'TheaterJS/Core/')
+      ? componentDescriptorsP.prop('core').prop(idString)
+      : componentDescriptorsP.prop('custom').prop(idString)
+  })
 
 const elementify = (keyD, instantiationDescriptorP, studioD) => {
   const componentIdP = instantiationDescriptorP.prop('componentId')
-  return getAliasLessComponentDescriptor(componentIdP, studioD).flatMap(
+  return getComponentDescriptorById(componentIdP, studioD).flatMap(
     (componentDescriptor: $FixMe) => {
       if (!componentDescriptor)
         return D.derivations.autoDerive(() => {
@@ -72,24 +34,20 @@ const elementify = (keyD, instantiationDescriptorP, studioD) => {
         })
 
       const componentDescriptorP = componentDescriptor.pointer()
-
       const componentDescriptorTypeP = componentDescriptorP.prop('type')
+
       return componentDescriptorTypeP.flatMap((type: string) => {
-        if (type === 'HardCoded') {
-          return elementifyHardCodedComponent(
-            keyD,
-            componentDescriptorP,
-            instantiationDescriptorP.prop('props'),
-            instantiationDescriptorP.prop('modifierInstantiationDescriptors'),
-          )
-        } else {
-          return elementifyDeclarativeComponent(
-            keyD,
-            componentDescriptorP,
-            instantiationDescriptorP.prop('props'),
-            instantiationDescriptorP.prop('modifierInstantiationDescriptors'),
-          )
-        }
+        const fn =
+          type === 'HardCoded'
+            ? elementifyHardCodedComponent
+            : elementifyDeclarativeComponent
+
+        return fn(
+          keyD,
+          componentDescriptorP,
+          instantiationDescriptorP.prop('props'),
+          instantiationDescriptorP.prop('modifierInstantiationDescriptors'),
+        )
       })
     },
   )

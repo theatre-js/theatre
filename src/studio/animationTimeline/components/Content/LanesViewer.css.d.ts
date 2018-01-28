@@ -1,11 +1,7 @@
-export interface ILanesViewerCss {
-  'container': string;
-  'titleBar': string;
-  'title': string;
-  'activeTitle': string;
-  'componentName': string;
-  'propertyName': string;
-  'svgArea': string;
-}
-
-export const locals: ILanesViewerCss;
+export const container: string;
+export const titleBar: string;
+export const title: string;
+export const activeTitle: string;
+export const componentName: string;
+export const propertyName: string;
+export const svgArea: string;

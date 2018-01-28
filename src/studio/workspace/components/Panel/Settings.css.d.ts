@@ -1,6 +1,2 @@
-export interface ISettingsCss {
-  'dragHandler': string;
-  'resizeHandler': string;
-}
-
-export const locals: ISettingsCss;
+export const dragHandler: string;
+export const resizeHandler: string;

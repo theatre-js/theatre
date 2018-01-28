@@ -1,6 +1,2 @@
-export interface IContextMenuCss {
-  'container': string;
-  'menu': string;
-}
-
-export const locals: IContextMenuCss;
+export const container: string;
+export const menu: string;

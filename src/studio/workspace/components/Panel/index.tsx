@@ -35,20 +35,20 @@ type Props = OwnProps &
     persistentState: PanelPersistentState,
     currentlyDraggingOutput: DraggingOutput,
     outputs: PanelOutput,
-    inputs: {[string]: Object},
+    inputs: {[k: string]: Object},
     isActive: boolean,
   }
 
-type Boundary = {xlow: number, xhigh: number, ylow: number, yhigh: number}
+interface IBoundary {xlow: number, xhigh: number, ylow: number, yhigh: number}
 
-type PanelPlacementState = {
+interface IPanelPlacementState {
   move: XY,
   resize: XY,
-  moveBoundaries: Boundary,
-  resizeBoundaries: Boundary,
+  moveBoundaries: IBoundary,
+  resizeBoundaries: IBoundary,
 }
 
-type State = PanelPlacementState & {
+type State = IPanelPlacementState & {
   isMoving: boolean,
 }
 
@@ -99,7 +99,7 @@ class Panel extends React.Component<Props, State> {
   calculatePanelBoundaries(
     pos: XY,
     dim: XY,
-  ): {moveBoundaries: Boundary, resizeBoundaries: Boundary} {
+  ): {moveBoundaries: IBoundary, resizeBoundaries: IBoundary} {
     const distanceToRight = 100 - pos.x - dim.x
     const distanceToBottom = 100 - pos.y - dim.y
     return {

@@ -6,7 +6,7 @@ import compose from 'ramda/src/compose'
 import {connect} from '$studio/handy'
 import {getIsBootstrapped} from '$studio/common/selectors'
 
-import {StoreState} from '$studio/types'
+import {IStoreState} from '$studio/types'
 
 type Props = {
   isBootstrapped: boolean
@@ -21,7 +21,7 @@ const LoadingUnlessBootstrapped = (props: Props) => {
  * Shows a splash screen, unless we're bootstrapped (see bootstrapped in $common/reducer)
  */
 export default compose(
-  connect((state: StoreState) => ({
+  connect((state: IStoreState) => ({
     isBootstrapped: getIsBootstrapped(state) || true,
   })),
 )(LoadingUnlessBootstrapped)

@@ -1,4 +1,3 @@
-// @flow
 import * as _ from 'lodash'
 
 // $FlowIgnore

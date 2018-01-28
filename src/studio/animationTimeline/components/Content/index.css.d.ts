@@ -1,7 +1,3 @@
-export interface IIndexCss {
-  'container': string;
-  'timeBar': string;
-  'lanes': string;
-}
-
-export const locals: IIndexCss;
+export const container: string;
+export const timeBar: string;
+export const lanes: string;

@@ -4,12 +4,12 @@
   grid-tempalte-row: 27px;
   position: relative;
   margin-bottom: 2px;
-  border-radius: 2px;
+  /* border-radius: 2px; */
   overflow: hidden;
-  --color: calc(var(--depth) * 20 + 45);
-  background-color: rgb(var(--color), var(--color), var(--color));
+  /* --color: calc(var(--depth) * 20 + 45); */
+  /* background-color: rgb(var(--color), var(--color), var(--color)); */
   top: 0;
-  // will-change: max-height, transform;
+  /* will-change: max-height, transform; */
 
   &.expand {
     height: 27px;

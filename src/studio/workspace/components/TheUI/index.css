@@ -10,4 +10,15 @@
 
 .container {
   position: fixed 0;
+
+  /* font-family: Roboto; */
+  /* font-family: "Frutiger Neue 1450 Pro"; */
+  /* font-family: Helvetica; */
+  /* font-family: Helvetica Neue; */
+  /* font-family: Poppins; */
+  /* font-family: Avenir Next; */
+  /* This nice selection comes form VSCode */
+  font-family: -apple-system,BlinkMacSystemFont,Segoe WPC,Segoe UI,HelveticaNeue-Light,Ubuntu,Droid Sans,sans-serif;
+  font-size: 12px;
+  color: white;
 }
