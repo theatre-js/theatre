@@ -48,8 +48,8 @@ const initialState: WorkspaceNamespaceState = {
         inputs: {},
         outputs: {
           selectedNode: {
-            componentId: 'IntroScene'
-          }
+            componentId: 'IntroScene',
+          },
         },
       },
       'composePanel-imAUUID': {

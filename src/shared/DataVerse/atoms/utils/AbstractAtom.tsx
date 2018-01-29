@@ -6,7 +6,10 @@ export default abstract class AbstractAtom<ChangeType> {
   isAtom = true
   _trace: $FixMe
   _changeEmitter: Emitter<ChangeType>
-  _parent: null | {atom: AbstractCompositeAtom<$IntentionalAny>, key: string | number}
+  _parent: null | {
+    atom: AbstractCompositeAtom<$IntentionalAny>
+    key: string | number
+  }
   abstract unboxDeep(): mixed
 
   constructor() {

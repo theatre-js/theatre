@@ -1,76 +1,100 @@
-// @flow
 import {React} from '$studio/handy'
 import css from './TypeSelector.css'
 import {filter} from 'fuzzaldrin-plus'
 import cx from 'classnames'
 import * as _ from 'lodash'
 import {NODE_TYPE} from './constants'
+import {fitInput} from './utils'
 
 type Props = {
+  isActive: boolean
+  initialValue: string
+  onClick: Function
   listOfDisplayNames: string[]
-  nodeProps: Object
 }
 type State = {
-  matchedDisplayNames: string[]
   query: string
+  matchedDisplayNames: string[]
   focusedIndex: number
-  willUnmount: boolean
+  willListUnmount: boolean
 }
 
-class TypeSelector extends React.Component<Props, State> {
+class TypeSelector extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props)
 
-    const query = this.props.nodeProps.displayName || 'div'
+    const query = this.props.initialValue || 'div'
     const matchedDisplayNames = filter(props.listOfDisplayNames, query)
     this.state = {
-      matchedDisplayNames,
       query,
+      matchedDisplayNames,
       focusedIndex: 0,
-      willUnmount: false,
+      willListUnmount: false,
     }
   }
 
   componentDidMount() {
-    this.input.focus()
-    this.input.select()
-    document.addEventListener('keydown', this.keyDownHandler)
-    document.addEventListener('keyup', this.keyUpHandler)
+    fitInput(this.input)
   }
 
-  componentWillUnmount() {
-    document.removeEventListener('keydown', this.keyDownHandler)
-    document.removeEventListener('keyup', this.keyUpHandler)
+  componentWillReceiveProps(nextProps) {
+    if (!this.props.isActive && nextProps.isActive) {
+      this.input.focus()
+      this.input.select()
+    }
+
+    if (this.props.isActive && !nextProps.isActive) {
+      this.setState(() => ({
+        willListUnmount: false,
+        query: nextProps.initialValue,
+      }))
+      this.input.blur()
+    }
   }
 
-  keyDownHandler = e => {
+  componentDidUpdate(prevProps, prevState) {
+    if ((!this.props.isActive && prevProps.isActive) || (this.state.query !== prevState.query)) {
+      fitInput(this.input)
+    }
+  }
+
+  handleKeyDown = e => {
     const maxIndex = this.state.matchedDisplayNames.length - 1
     if (e.keyCode === 38) {
+      e.preventDefault()
       this.setState(state => ({
         focusedIndex: _.clamp(state.focusedIndex - 1, 0, maxIndex),
       }))
     }
     if (e.keyCode === 40) {
+      e.preventDefault()
       this.setState(state => ({
         focusedIndex: _.clamp(state.focusedIndex + 1, 0, maxIndex),
       }))
     }
-  }
-
-  keyUpHandler = e => {
-    if (e.keyCode === 13 || e.keyCode === 9) {
-      this.selectNameAtIndex(this.state.focusedIndex)
+    if (e.keyCode === 13) {
+      this.selectNameAtIndex(this.state.focusedIndex)      
+    }
+    if (e.keyCode === 9) {
+      e.preventDefault()
+      this.selectNameAtIndex(this.state.focusedIndex)      
+      this.props.onTab()
     }
     if (e.keyCode === 27) {
+      if (this.props.initialValue) {
+        this.setState(() => ({query: this.props.initialValue}))      
+      }
       this._unmount(() => {
+        this.input.blur()
         this.props.onCancel()
       })
     }
   }
 
-  onInputChange = e => {
+  onChange = e => {
+    fitInput(this.input)
     const {value} = e.target
-    if (value.toLowerCase() === 't ' && !this.props.nodeProps.hasChildren) {
+    if (value.toLowerCase() === 't ' && !this.props.hasChildren) {
       this._unmount(() => {
         this.props.onSelect({nodeType: NODE_TYPE.TEXT})
       })
@@ -97,32 +121,29 @@ class TypeSelector extends React.Component<Props, State> {
   }
 
   _unmount(cb) {
-    this.setState(() => ({willUnmount: true}))
-    setTimeout(cb, 200)
+    this.setState(() => ({willListUnmount: true}))
+    setTimeout(cb, 100)
   }
 
   render() {
-    const {nodeProps: {depth, top, left, width}} = this.props
-    const {matchedDisplayNames, query, focusedIndex, willUnmount} = this.state
+    const {focusedIndex, matchedDisplayNames, query} = this.state
     return (
-      <div className={cx(css.wrapper, {[css.willUnmount]: willUnmount})}>
-        <div
-          className={css.container}
-          style={{'--depth': depth, top, left, width}}
-        >
-          <div className={css.input}>
-            <input
-              ref={c => (this.input = c)}
-              placeholder="type to filter..."
-              value={query}
-              onChange={this.onInputChange}
-              onKeyDown={e => {
-                if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 9)
-                  e.preventDefault()
-              }}
-            />
-          </div>
-          <div className={css.list}>
+      <div className={css.container} onClick={this.props.onClick}>
+        <input
+          type="text"
+          ref={c => (this.input = c)}
+          className={cx(css.input, {[css.isDisabled]: !this.props.isActive})}
+          value={query}
+          onChange={this.onChange}
+          onKeyDown={this.handleKeyDown}
+        />
+        {this.props.isActive && (
+          <div
+            className={cx(css.list, {
+              [css.willUnmount]: this.state.willListUnmount,
+            })}
+            style={{'--width': this.props.width}}
+          >
             {matchedDisplayNames.map((displayName, index) => {
               return (
                 <div
@@ -140,7 +161,7 @@ class TypeSelector extends React.Component<Props, State> {
               )
             })}
           </div>
-        </div>
+        )}
       </div>
     )
   }

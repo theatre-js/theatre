@@ -1,9 +1,10 @@
 @value indent from './ComponentNode.css';
+@value nodeHeight from './NodeContainer.css';
 
 .container {
   position: relative;
   padding: 0 indent;
-  height: 27px;
+  height: nodeHeight;
   display: flex;
   align-items: flex-end;
   /* display: none; */

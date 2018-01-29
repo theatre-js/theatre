@@ -28,7 +28,7 @@ const resolveCss = (...stylesToClassNames: Array<StylesToClassNames>) => (
     const eligiblePieces: $FixMe[] = []
 
     // @ts-ignore
-    forEachRight(pieces, (piece) => {
+    forEachRight(pieces, piece => {
       // get rid of nulls
       if (typeof piece !== 'string') return true
       // sanitize whitespaces

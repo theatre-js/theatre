@@ -5,7 +5,7 @@ import * as _ from 'lodash'
 import applyJsonDiffToAtom from '$shared/utils/applyJsonDiffToAtom'
 
 export default function configureAtom(reduxStore: $FixMe) {
-  let lastState = reduxStore.reduxStore.getState()
+  let lastState = _.cloneDeep(reduxStore.reduxStore.getState())
   const atom = D.atoms.atomifyDeep(lastState)
 
   reduxStore.reduxStore.subscribe(() => {

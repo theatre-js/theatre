@@ -90,7 +90,9 @@ export class PointerDerivation<V> extends AbstractDerivation<$FixMe> {
   }
 
   _makeDerivationForPath(root: $FixMe, path: Array<string | number>) {
-    let finalDerivation = modules.constant.default(root) as AbstractDerivation<$FixMe>
+    let finalDerivation = modules.constant.default(root) as AbstractDerivation<
+      $FixMe
+    >
     // finalDerivation.inPointer = true
     path.forEach(key => {
       finalDerivation = finalDerivation.flatMap(p => propify(p, key))

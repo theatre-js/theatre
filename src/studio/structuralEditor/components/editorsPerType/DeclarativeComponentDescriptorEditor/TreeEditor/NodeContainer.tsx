@@ -44,9 +44,9 @@ class NodeContainer extends React.PureComponent<Props, State> {
       this._setMaxHeight()
     }
 
-    if (this.props.nodeData.status === STATUS.UNINITIALIZED) {
-      setTimeout(this.setAsComponentBeingSet, 150)
-    }
+    // if (this.props.nodeData.status === STATUS.UNINITIALIZED) {
+    //   setTimeout(this.setAsComponentBeingSet, 150)
+    // }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -60,7 +60,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
       ) {
         const {top} = this.wrapper.getBoundingClientRect()
         this.setState(() => ({
-          initialTopOffset: droppedAt - (top - 29),
+          initialTopOffset: droppedAt - (top - 32),
           maxHeight: actionPayload.height,
         }))
       }
@@ -79,10 +79,10 @@ class NodeContainer extends React.PureComponent<Props, State> {
         this._setMaxHeight()
       }, 500)
     }
-    
-    if (nextProps.nodeData.status === STATUS.CREATION_CANCELED) {
-      this.deleteNode()
-    }
+
+    // if (nextProps.nodeData.status === STATUS.CREATION_CANCELED) {
+    //   this.deleteNode()
+    // }
   }
 
   componentWillUnmount() {
@@ -212,6 +212,14 @@ class NodeContainer extends React.PureComponent<Props, State> {
     })
   }
 
+  setComponentType = newType => {
+    this.props.dispatchAction(ACTION.NODE_TYPE_SET, {
+      nodeId: this.props.nodeData.id,
+      nodeType: this.props.nodeData.type,
+      newType,
+    })
+  }
+
   renderNodePlaceholder(atIndex, depth) {
     return (
       <NodePlaceholder
@@ -227,13 +235,19 @@ class NodeContainer extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const {nodeData: {children, ...nodeProps}, isANodeBeingDragged} = this.props
+    const {
+      nodeData: {children, ...nodeProps},
+      isANodeBeingDragged,
+      selectedNodeId,
+    } = this.props
     const {isCollapsed, maxHeight, contextMenuProps} = this.state
 
     const isText = nodeProps.type === NODE_TYPE.TEXT
     const depth = this.props.depth || 0
     const isRelocated = nodeProps.status === STATUS.RELOCATED
-
+    const isComponent =
+      nodeProps.status === STATUS.UNINITIALIZED ||
+      nodeProps.type === NODE_TYPE.COMPONENT
     return (
       <div ref={c => (this.wrapper = c)}>
         <div
@@ -245,7 +259,9 @@ class NodeContainer extends React.PureComponent<Props, State> {
           className={cx(css.container, {
             [css.isRelocated]:
               isRelocated || nodeProps.status === STATUS.RELOCATION_CANCELED,
-            [css.expand]: nodeProps.status === STATUS.UNINITIALIZED || nodeProps.status === STATUS.CREATION_CANCELED,
+            [css.expand]:
+              nodeProps.status === STATUS.UNINITIALIZED ||
+              nodeProps.status === STATUS.CREATION_CANCELED,
             [css.isCollapsed]: isCollapsed,
           })}
           onMouseUp={this.mouseUpHandler}
@@ -261,11 +277,17 @@ class NodeContainer extends React.PureComponent<Props, State> {
                 }
               : {})}
           >
-            {nodeProps.type === NODE_TYPE.COMPONENT && (
+            {isComponent && (
               <ComponentNode
+                isSelected={nodeProps.id === selectedNodeId}
                 nodeProps={nodeProps}
                 setClassValue={this.setNodeClassValue}
                 setAsComponentBeingSet={this.setAsComponentBeingSet}
+                onSelect={() => this.props.setSelectedNodeId(nodeProps.id)}
+                listOfDisplayNames={this.props.listOfDisplayNames}
+                hasChildren={children && children.length > 0}
+                onSelectComponentType={this.setComponentType}
+                onCancelCreatingNode={this.deleteNode}
               />
             )}
             {isText && (
@@ -288,6 +310,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
               <div key="child" className={css.child}>
                 <NodeContainer
                   key={child.id}
+                  selectedNodeId={this.props.selectedNodeId}
                   nodeData={child}
                   depth={depth + 1}
                   dispatchAction={this.props.dispatchAction}
@@ -295,7 +318,9 @@ class NodeContainer extends React.PureComponent<Props, State> {
                   setNodeBeingDragged={this.props.setNodeBeingDragged}
                   setActiveDropZone={this.props.setActiveDropZone}
                   unsetActiveDropZone={this.props.unsetActiveDropZone}
-                  setComponentBeingSet={this.props.setComponentBeingSet}
+                  // setComponentBeingSet={this.props.setComponentBeingSet}
+                  setSelectedNodeId={this.props.setSelectedNodeId}
+                  listOfDisplayNames={this.props.listOfDisplayNames}
                 />
               </div>,
               this.renderNodePlaceholder(index + 1, depth),

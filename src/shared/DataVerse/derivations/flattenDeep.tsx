@@ -29,7 +29,9 @@ export class FlattenDeepDerivation extends AbstractDerivation<$FixMe> {
       i > updateFromIndex;
       i--
     ) {
-      const d: AbstractDerivation<mixed> = this._stackOfDependencies.pop() as any
+      const d: AbstractDerivation<
+        mixed
+      > = this._stackOfDependencies.pop() as any
       this._removeDependency(d)
     }
 

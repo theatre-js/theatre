@@ -1,20 +1,23 @@
+@value nodeHeight from './NodeContainer.css';
 @value indent: 18px;
 
 .container {
   position: relative;
   left: indent;
   width: calc(100% - 2 * indent);
-  height: 30px;
+  height: nodeHeight;
   font-weight: 400;
   white-space: nowrap;
+  display: flex;
+  align-items: flex-end;
   
   opacity: 1;
   transition: opacity .15s ease-in-out;
   
-  display: grid;
-  grid-template-columns: auto 1fr;
-  grid-column-gap: 5px;
-  align-items: end;
+  // display: grid;
+  // grid-template-columns: auto 1fr;
+  // grid-column-gap: 5px;
+  // align-items: end;
 
   &.isContentHidden {
     opacity: 0;
@@ -23,33 +26,42 @@
 
 .displayName {
   cursor: pointer;
-  grid-column: 1;
+  // grid-column: 1;
 }
 
 .className {
   position: relative;
-  grid-column: 2;
+  // grid-column: 2;
+  display: inline-block;
 }
 
-.className > input {
-  position: relative;
-  bottom: 5px;
-  width: 100%;
+.input {
   color: rgba(255, 255, 255, .6);
   font-style: italic;
   border-bottom: 1px solid transparent;
   transition: border-bottom-color .15s ease-in-out;
+  pointer-events: auto;
 
   &:focus {
     border-bottom-color: rgba(255, 255, 255, .3);
   }
+  
+  &.isDisabled {
+    pointer-events: none;
+  }
 }
-
-
-
 
 .tagOpen, .tagClose {
   color: #4f5d77;
+
+  &.isSelected {
+    color: #9fafcc;
+  }
+}
+
+.tagClose {
+  position: relative;
+  left: -1px;
 }
 
 .tagName {

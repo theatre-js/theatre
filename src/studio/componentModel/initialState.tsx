@@ -148,14 +148,13 @@ const IntroScene: IDeclarativeComponentDescriptor = {
         children: [],
       },
       modifierInstantiationDescriptors: {
-        byId: {
-        },
+        byId: {},
         list: [],
       },
     },
     palaki: {
       __descriptorType: 'ComponentInstantiationValueDescriptor',
-      componentId: 'TheaterJS/Core/HTML/div',
+      componentId: 'TheaterJS/Core/HTML/span',
       props: {
         key: 'palaki',
         children: [
@@ -173,7 +172,7 @@ const IntroScene: IDeclarativeComponentDescriptor = {
     } as IComponentInstantiationValueDescriptor,
     dalaki: {
       __descriptorType: 'ComponentInstantiationValueDescriptor',
-      componentId: 'TheaterJS/Core/HTML/div',
+      componentId: 'TheaterJS/Core/HTML/header',
       props: {
         key: 'dalaki',
         children: [

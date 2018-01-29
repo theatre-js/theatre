@@ -8,7 +8,9 @@ interface ObjectWhoseComputationShouldBeUpdated {
 
 export default class Ticker {
   _computationsToUpdate: Set<ObjectWhoseComputationShouldBeUpdated>
-  _objectsWhoseStructureShouldBeUpdated: Set<ObjectWhoseStructureShouldBeUpdated>
+  _objectsWhoseStructureShouldBeUpdated: Set<
+    ObjectWhoseStructureShouldBeUpdated
+  >
   _traces: $FixMe
 
   constructor() {

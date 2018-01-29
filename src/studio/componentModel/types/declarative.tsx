@@ -3,22 +3,22 @@ import * as React from 'react'
 import {ComponentId} from './index'
 
 export interface IDeclarativeComponentDescriptor {
-  __descriptorType: 'DeclarativeComponentDescriptor',
-  id: ComponentId, // this is unique
-  displayName: string, // this doesn't have to be
-  type: 'Declarative',
-  localHiddenValuesById: {[localid: string]: ValueDescriptor},
-  whatToRender: WhatToRender,
-  ruleSetsById: {[id: string]: IRuleSet}, // later
-  listOfRulesets: Array<string>,
+  __descriptorType: 'DeclarativeComponentDescriptor'
+  id: ComponentId // this is unique
+  displayName: string // this doesn't have to be
+  type: 'Declarative'
+  localHiddenValuesById: {[localid: string]: ValueDescriptor}
+  whatToRender: WhatToRender
+  ruleSetsById: {[id: string]: IRuleSet} // later
+  listOfRulesets: Array<string>
   timelineDescriptors: {
-    byId: {[id: string]: ITimelineDescriptor},
-    list: Array<string>,
-  },
+    byId: {[id: string]: ITimelineDescriptor}
+    list: Array<string>
+  }
   props: {
-    byId: {[id: string]: IPropDescriptor},
-    list: Array<string>,
-  },
+    byId: {[id: string]: IPropDescriptor}
+    list: Array<string>
+  }
 }
 
 export type WhatToRender = IReferenceToLocalHiddenValue | IReferenceToProp
@@ -37,33 +37,35 @@ export interface IPropDescriptor {
 }
 
 export interface IRuleSet {
-  selector: string, // better to have a more structured type for this
+  selector: string // better to have a more structured type for this
 }
 
 export interface IModifierInstantiationValueDescriptor {
-  __descriptorType: 'ModifierInstantiationValueDescriptor',
-  modifierId: string,
-  props: IMapDescriptor,
-  enabled: boolean,
+  __descriptorType: 'ModifierInstantiationValueDescriptor'
+  modifierId: string
+  props: IMapDescriptor
+  enabled: boolean
 }
 
 export interface IModifierDescriptor {
-  id: string,
-  getClass: $FixMe,
-  InspectorComponent?: React.Component<$FixMe>,
+  id: string
+  getClass: $FixMe
+  InspectorComponent?: React.Component<$FixMe>
 }
 
 export interface IReferenceToLocalHiddenValue {
-  __descriptorType: 'ReferenceToLocalHiddenValue',
-  which: string,
+  __descriptorType: 'ReferenceToLocalHiddenValue'
+  which: string
 }
 
 export interface IReferenceToProp {
-  __descriptorType: 'ReferenceToProp',
-  propid: string,
+  __descriptorType: 'ReferenceToProp'
+  propid: string
 }
 
-export interface IMapDescriptor {[key: string]: $FixMe}
+export interface IMapDescriptor {
+  [key: string]: $FixMe
+}
 export type ArrayDescriptor = Array<$FixMe>
 export type StringLiteralDescriptor = string
 export type NumberLiteralDescriptor = number
@@ -78,15 +80,15 @@ export type BooleanLiteralDescriptor = boolean
  * be constructed first.
  */
 export interface IComponentInstantiationValueDescriptor {
-  __descriptorType: 'ComponentInstantiationValueDescriptor',
-  componentId: ComponentId,
-  props: IMapDescriptor,
-  modifierInstantiationDescriptors: IModifierInstantiationValueDescriptors,
+  __descriptorType: 'ComponentInstantiationValueDescriptor'
+  componentId: ComponentId
+  props: IMapDescriptor
+  modifierInstantiationDescriptors: IModifierInstantiationValueDescriptors
 }
 
 export interface IModifierInstantiationValueDescriptors {
-  list: ArrayDescriptor,
-  byId: IMapDescriptor,
+  list: ArrayDescriptor
+  byId: IMapDescriptor
 }
 
 export type ValueDescriptorDescribedInAnObject =
@@ -103,45 +105,45 @@ export type ValueDescriptor =
   | ArrayDescriptor
 
 export interface ITimelineDescriptor {
-  __descriptorType: 'TimelineDescriptor',
-  id: string,
-  vars: {[varId: string]: ITimelineVarDescriptor},
+  __descriptorType: 'TimelineDescriptor'
+  id: string
+  vars: {[varId: string]: ITimelineVarDescriptor}
 }
 
 export interface IPointerThroughLocalHiddenValue {
-  type: 'PointerThroughLocalHiddenValue',
-  localHiddenValueId: string,
-  rest: Array<string>,
+  type: 'PointerThroughLocalHiddenValue'
+  localHiddenValueId: string
+  rest: Array<string>
 }
 
 export interface ITimelineVarDescriptor {
-  __descriptorType: 'TimelineVarDescriptor',
-  id: string,
-  backPointer: IPointerThroughLocalHiddenValue,
+  __descriptorType: 'TimelineVarDescriptor'
+  id: string
+  backPointer: IPointerThroughLocalHiddenValue
   points: {
     firstId: undefined | null | string
     lastId: undefined | null | string
     // list: Array<string>,
-    byId: {[id: string]: ITimelineVarPoint},
-  },
+    byId: {[id: string]: ITimelineVarPoint}
+  }
 }
 
 export interface ITimelinePointInterpolationDescriptor {
-  __descriptorType: 'TimelinePointInterpolationDescriptor',
-  interpolationType: 'CubicBezier',
-  lx: number,
-  ly: number,
-  rx: number,
-  ry: number,
-  connected: boolean,
+  __descriptorType: 'TimelinePointInterpolationDescriptor'
+  interpolationType: 'CubicBezier'
+  lx: number
+  ly: number
+  rx: number
+  ry: number
+  connected: boolean
 }
 
 export interface ITimelineVarPoint {
-  __descriptorType: 'TimelineVarPoint',
-  id: string,
-  time: number,
-  value: number,
-  interpolationDescriptor: ITimelinePointInterpolationDescriptor,
-  prevId: string, // 'head' means we're the first point
-  nextId: string, // 'end' means we're the last point
+  __descriptorType: 'TimelineVarPoint'
+  id: string
+  time: number
+  value: number
+  interpolationDescriptor: ITimelinePointInterpolationDescriptor
+  prevId: string // 'head' means we're the first point
+  nextId: string // 'end' means we're the last point
 }

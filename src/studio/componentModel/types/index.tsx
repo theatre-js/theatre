@@ -1,5 +1,8 @@
 import {ComponentType as ReactComponentType} from 'react'
-import {IDeclarativeComponentDescriptor, IModifierDescriptor} from './declarative'
+import {
+  IDeclarativeComponentDescriptor,
+  IModifierDescriptor,
+} from './declarative'
 export * from './declarative'
 
 export type ComponentId = string

@@ -1,18 +1,21 @@
+@value nodeHeight: 30px;
+@value nodeMargin: 2px;
+
 .container {
   display: grid;
   grid-template-columns: 16px 1fr 1px;
-  grid-tempalte-row: 27px;
+  // grid-tempalte-row: nodeHeight;
   position: relative;
-  margin-bottom: 2px;
+  margin-bottom: nodeMargin;
   /* border-radius: 2px; */
   overflow: hidden;
-  /* --color: calc(var(--depth) * 20 + 45); */
-  /* background-color: rgb(var(--color), var(--color), var(--color)); */
+  // --color: calc(var(--depth) * 20 + 45);
+  // background-color: rgb(var(--color), var(--color), var(--color));
   top: 0;
   /* will-change: max-height, transform; */
 
   &.expand {
-    height: 27px;
+    height: nodeHeight;
     animation: expand .15s ease-in-out;
   }
 
@@ -40,7 +43,7 @@
 @keyframes drop {
   from {
     top: var(--initialTopOffset);
-    max-height: 27px;
+    max-height: nodeHeight;
     box-shadow: 0 0 20px 5px rgb(var(--shadow), var(--shadow), var(--shadow));
   }
   to {

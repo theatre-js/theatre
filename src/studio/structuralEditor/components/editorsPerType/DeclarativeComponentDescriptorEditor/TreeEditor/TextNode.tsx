@@ -54,8 +54,8 @@ class Node extends React.PureComponent<Props, State> {
   }
 
   setAsComponentBeingSet = () => {
-    this.setState(() => ({isContentHidden: true}))
-    this.props.setAsComponentBeingSet()
+    // this.setState(() => ({isContentHidden: true}))
+    // this.props.setAsComponentBeingSet()
   }
 
   render() {

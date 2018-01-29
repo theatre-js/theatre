@@ -44,7 +44,11 @@ export class ComposePanelContent extends React.PureComponent<Props, IState> {
         // @todo we should either direct the user to select the owner of this component, OR,
         // in the case of user-provided hard-coded components, allow the user to navigate to
         // the code of that component (in their own code editor – we don't provide a JS editor)
-        <PaleMessage message={`<${componentDescriptor.displayName}> is a hard-coded component`} />
+        <PaleMessage
+          message={`<${
+            componentDescriptor.displayName
+          }> is a hard-coded component`}
+        />
       )
     } else {
       return (
@@ -102,5 +106,6 @@ const connected = connect((s, op) => {
 })(ComposePanelContent)
 
 export default shouldUpdate(
-  (prev: $FixMe, next: $FixMe) => prev.inputs.selectedNode !== next.inputs.selectedNode,
+  (prev: $FixMe, next: $FixMe) =>
+    prev.inputs.selectedNode !== next.inputs.selectedNode,
 )(connected)

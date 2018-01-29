@@ -1,6 +1,8 @@
+@value nodeHeight, nodeMargin from './NodeContainer.css';
+
 .wrapper {
   grid-column: 1 / span 2;
-  max-height: 29px;
+  max-height: calc(nodeHeight + nodeMargin);
   height: auto;
 }
 
@@ -12,7 +14,7 @@
 
 @keyframes appear {
   from {height: 0; opacity: 0;}
-  to {height: 29px; opacity: 1;}
+  to {height: calc(nodeHeight + nodeMargin); opacity: 1;}
 }
 
 .sign {
@@ -20,7 +22,7 @@
   text-align: center;
   width: 16px;
   font-size: 10px;
-  line-height: 27px;
+  line-height: nodeHeight;
   font-weight: 400;
   vertical-align: top;
   border-radius: 2px;
@@ -33,7 +35,7 @@
 }
 
 .node {
-  height: 27px;
+  height: nodeHeight;
   position: relative;
   display: inline-block;
   width: calc(100% - 16px);
