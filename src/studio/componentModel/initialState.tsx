@@ -78,7 +78,7 @@ const IntroScene: IDeclarativeComponentDescriptor = {
             id: 'theOpacity',
             backPointer: {
               type: 'PointerThroughLocalHiddenValue',
-              localHiddenValueId: 'alaki',
+              localHiddenValueId: 'container',
               rest: [
                 'modifierInstantiationDescriptors',
                 'byId',
@@ -221,12 +221,12 @@ const IntroScene: IDeclarativeComponentDescriptor = {
       modifierInstantiationDescriptors: {byId: {}, list: []},
     },
     talaki: 'talaki here',
-    alaki: {
+    container: {
       __descriptorType: 'ComponentInstantiationValueDescriptor',
       componentId: 'TheaterJS/Core/HTML/div',
       props: {
-        class: 'Alaki',
-        key: 'alaki',
+        class: 'container',
+        key: 'container',
         children: [
           {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'palaki'},
           {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'dalaki'},
@@ -277,7 +277,7 @@ const IntroScene: IDeclarativeComponentDescriptor = {
   },
   whatToRender: {
     __descriptorType: 'ReferenceToLocalHiddenValue',
-    which: 'alaki',
+    which: 'container',
   },
   // whatToRender: 'hi',
 }

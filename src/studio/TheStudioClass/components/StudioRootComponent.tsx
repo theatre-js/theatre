@@ -1,28 +1,27 @@
-// @flow
-
 import HotReloadablePart from './HotReloadablePart'
-// $FixMe
 import {createProvider} from 'react-redux'
 import {AppContainer} from 'react-hot-loader'
-import compose from 'ramda/src/compose'
+import {compose} from 'ramda'
 import './StudioRootComponent.css'
 import * as React from 'react'
 import {default as TheStudioClass} from '$studio/TheStudioClass'
 import {storeKey} from '$studio/handy/connect'
+import {
+  contextName,
+  contextTypes,
+} from '$src/studio/componentModel/react/utils/studioContext'
 
 const StoreProvider = createProvider(storeKey)
 
 type Props = {
-  studio: TheStudioClass,
+  studio: TheStudioClass
 }
 
 type State = {
-  HotReloadablePart: typeof HotReloadablePart,
+  HotReloadablePart: typeof HotReloadablePart
 }
 
-class StudioRootComponent extends React.Component<Props, *> {
-  state: State
-
+class StudioRootComponent extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
 
@@ -52,6 +51,12 @@ class StudioRootComponent extends React.Component<Props, *> {
       </AppContainer>
     )
   }
+
+  getChildContext() {
+    return {[contextName]: this.props.studio}
+  }
+
+  static childContextTypes = contextTypes
 }
 
 export default compose(a => a)(StudioRootComponent)

@@ -1,6 +1,6 @@
 import {React, D, PureComponentWithStudio} from '$studio/handy'
 import _ from 'lodash'
-import {AbstractDerivation} from '$src/shared/DataVerse/derivations/types'
+import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
 
 interface Props {
   derivation: AbstractDerivation<React.ReactNode>
@@ -8,7 +8,7 @@ interface Props {
 
 export default class DerivationAsReactElement extends PureComponentWithStudio<
   Props,
-  void
+  {}
 > {
   _untapFromDerivationChanges: () => void
 

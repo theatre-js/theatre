@@ -40,6 +40,7 @@ export default function makeReactiveComponent({
       : 'TheaterJSDeclarativeComponent'
 
     static componentId = componentId
+    static isTheaterJSComponent = true
 
     _derivedClassInstance: $FixMe
     _whatToRender: $FixMe

@@ -10,20 +10,7 @@ import SvgIcon from '$shared/components/SvgIcon'
 import {connect} from '$studio/handy'
 import {getComponentDescriptor} from '$studio/componentModel/selectors'
 import stringStartsWith from 'lodash/startsWith'
-
-const dummyClasses = [
-  'container',
-  'form',
-  'separator',
-  'input',
-  'underline',
-  'star',
-  'suffix',
-  'superscript',
-  'indentation',
-]
-
-// console.log('blah')
+import DerivationAsReactElement from '$src/studio/componentModel/react/utils/DerivationAsReactElement'
 
 interface IProps {
   isExpanded: boolean
@@ -35,7 +22,7 @@ interface IProps {
   displayName: string
   shouldSwallowChild: undefined | null | boolean
   depth?: number
-  classNames: string
+  stateNode: $FixMe
 }
 
 /**
@@ -74,10 +61,8 @@ const extractChildrenOfChild = children => {
   }
 }
 
-const fakeClassesWeakMap = new WeakMap()
-
 class Node extends React.PureComponent<IProps, void> {
-  render() {
+  render(): React.ReactNode {
     const {props} = this
 
     const {
@@ -134,8 +119,7 @@ class Node extends React.PureComponent<IProps, void> {
             >
               <span className={css.tagOpen}>&lt;</span>
               <span className={css.tagName}>{displayName}</span>
-              <span className={css.dot}>.</span>
-              <span className={css.className}>{props.classNames}</span>
+              <ClassName stateNode={props.stateNode} />
               <span className={css.tagClose}>&gt;</span>
             </div>,
             <div key="highlighter" className={css.highlighter} />,
@@ -189,21 +173,44 @@ class Node extends React.PureComponent<IProps, void> {
   }
 }
 
+const ClassName = ({stateNode}) => {
+  if (stateNode && stateNode.isTheaterJSComponent === true) {
+    const childrenD = stateNode._atom.pointer().prop('props').prop('class').map((possibleClass) => {
+      if (typeof possibleClass === 'string' && possibleClass.trim().length > 0) {
+        return (
+          <span>
+            <span className={css.dot} key="dot">
+              .
+            </span>
+            <span key="className" className={css.className}>
+              {possibleClass}
+            </span>
+          </span>
+        )
+      } else {
+        return null
+      }
+    })
+
+    return <DerivationAsReactElement derivation={childrenD} />
+    
+  } else {
+    return null
+  }
+}
+
 const WrappedNode = connect((s, op) => {
   const {_ref} = op
   const {type, stateNode} = _ref
 
-  const displayName =
-    typeof type === 'string'
-      ? type
-      : type === null
-        ? 'null'
-        : _ref.stateNode.getComponentId
-          ? (getComponentDescriptor(
-              s,
-              _ref.stateNode.getComponentId(),
-            ) as $FixMe).displayName
-          : type.displayName
+  const componentDescriptor =
+    typeof type !== 'string' && type !== null
+      ? (getComponentDescriptor(s, _ref.stateNode.getComponentId()) as $FixMe)
+      : undefined
+
+  const displayName = componentDescriptor
+    ? componentDescriptor.displayName
+    : type === 'string' ? type : type === null ? 'null' : 'null'
 
   const textContent =
     stateNode.nodeName === '#text' ? stateNode.textContent : null
@@ -225,21 +232,12 @@ const WrappedNode = connect((s, op) => {
       stringStartsWith(type.componentId, 'TheaterJS/Core/HTML/')) ||
     false
 
-  let classNames
-  if (!fakeClassesWeakMap.has(_ref)) {
-    fakeClassesWeakMap.set(
-      _ref,
-      dummyClasses[_.random(0, dummyClasses.length - 1)],
-    )
-  }
-  classNames = fakeClassesWeakMap.get(_ref)
-
   return {
     displayName,
     shouldSwallowChild,
-    classNames,
     textContent,
     textChild,
+    stateNode,
   }
 })(Node)
 

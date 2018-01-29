@@ -6,7 +6,7 @@
   height: 27px;
   display: flex;
   align-items: flex-end;
-  display: none;
+  /* display: none; */
 
   opacity: 1;
   transition: opacity .15s ease-in-out;
