@@ -47,8 +47,9 @@
 
 
 
+
 .tagOpen, .tagClose {
-  color: #d8d8d8;
+  color: #4f5d77;
 }
 
 .tagName {
@@ -56,8 +57,11 @@
 }
 
 .dot {
-  /*margin: 0 0 0 2px;*/
   color: #dadada;
+}
+
+.className {
+  color: white;
 }
 
 /* .className {

@@ -24,6 +24,10 @@
   }
 
   & > .name {
+    & > .textLogo {
+      color: rgba(#FFFFFF, 0.5);
+    }
+
     & > .tagOpen,
     & > .tagClose {
       color: rgba(#FFFFFF, 0.5);

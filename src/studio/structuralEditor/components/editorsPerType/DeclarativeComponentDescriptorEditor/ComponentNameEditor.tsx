@@ -4,12 +4,13 @@ import css from './ComponentNameEditor.css'
 import * as _ from 'lodash'
 import ExpressionlessStringEditor from '$studio/structuralEditor/components/reusables/ExpressionlessStringEditor'
 import PanelSection from '$studio/structuralEditor/components/reusables/PanelSection'
+import {identity} from 'ramda'
 
 type Props = {
   pathToComponentDescriptor: Array<string>
 }
 
-type State = void
+type State = {}
 
 class ComponentNameEditor extends React.PureComponent<Props, State> {
   state: State
@@ -17,13 +18,13 @@ class ComponentNameEditor extends React.PureComponent<Props, State> {
 
   constructor(props: Props) {
     super(props)
-    this.state = undefined
+    this.state = {}
   }
 
   render() {
     return (
       <div className={css.container}>
-        <PanelSection>
+        <PanelSection withTopMargin={true}>
           <ExpressionlessStringEditor
             label="Component Name"
             path={[...this.props.pathToComponentDescriptor, 'displayName']}
@@ -34,4 +35,4 @@ class ComponentNameEditor extends React.PureComponent<Props, State> {
   }
 }
 
-export default compose(a => a)(ComponentNameEditor)
+export default ComponentNameEditor

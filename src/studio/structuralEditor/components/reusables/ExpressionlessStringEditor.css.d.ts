@@ -1,7 +1,3 @@
-export interface IExpressionlessStringEditorCss {
-  'container': string;
-  'label': string;
-  'input': string;
-}
-
-export const locals: IExpressionlessStringEditorCss;
+export const container: string;
+export const label: string;
+export const input: string;

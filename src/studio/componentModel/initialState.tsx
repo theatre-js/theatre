@@ -60,10 +60,10 @@ const generate = (
 
 const fakeNodes = generateFakeTree()
 
-const FakeDeclarativeButton: IDeclarativeComponentDescriptor = {
+const IntroScene: IDeclarativeComponentDescriptor = {
   __descriptorType: 'DeclarativeComponentDescriptor',
-  id: 'FakeDeclarativeButton',
-  displayName: 'FakeDeclarativeButton',
+  id: 'IntroScene',
+  displayName: 'IntroScene',
   type: 'Declarative',
   listOfRulesets: [],
   ruleSetsById: {},
@@ -286,7 +286,7 @@ const initialState: IComponentModelNamespaceState = {
   componentDescriptors: {
     core: coreComponentDescriptors,
     custom: {
-      FakeDeclarativeButton,
+      IntroScene,
     },
   },
   modifierDescriptors: {

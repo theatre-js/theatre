@@ -4,7 +4,7 @@
   position: fixed 0 0 0 0;
   z-index: 1000;
 
-  background-color: rgba(0, 0, 0, .5);
+  /* background-color: rgba(0, 0, 0, .5); */
 
   animation: wrapperAppear .2s ease-in-out forwards;
 
@@ -34,9 +34,9 @@
 
   --color: calc(var(--depth) * 20 + 45);
   background-color: rgb(var(--color), var(--color), var(--color));
-  border-radius: 2px;
+  /* border-radius: 2px; */
 
-  &:after {
+  /* &:after {
     display: block;
     content: ' ';
     position: absolute 26px 0 0 0;
@@ -46,23 +46,23 @@
     transform-origin: 0 0;
     transform: scaleX(0);
     animation: underlineAppear .2s .1s ease-in-out forwards;
-  }
+  } */
 }
 
 .willUnmount .input {
-  &:after {
+  /* &:after {
     animation: underlineDisappear .15s ease-in-out forwards;
-  }
+  } */
 }
 
-@keyframes underlineAppear {
+/* @keyframes underlineAppear {
   to {transform: scaleX(1);}
 }
 
 @keyframes underlineDisappear {
   from {transform: scaleX(1);}
   to {transform: scaleX(0);}
-}
+} */
 
 .input > input {
   width: 100%;

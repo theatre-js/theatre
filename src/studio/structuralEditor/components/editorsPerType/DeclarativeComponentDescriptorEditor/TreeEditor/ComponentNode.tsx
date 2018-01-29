@@ -59,7 +59,7 @@ class Node extends React.PureComponent<Props, State> {
 
   render() {
     const {nodeProps} = this.props
-    const {isContentHidden, classValue} = this.state
+    const {isContentHidden, classValue = 'untitled'} = this.state
     return (
       <div
         className={cx(css.container, {
@@ -72,10 +72,9 @@ class Node extends React.PureComponent<Props, State> {
         <div className={css.displayName} onClick={this.setAsComponentBeingSet}>
           <span className={css.tagOpen}>&lt;</span>
           <span className={css.tagName}>{nodeProps.displayName}</span>
-          {/* <span className={css.dot}>.</span> */}
-          {/* <span className={css.className}>{props.classNames}</span> */}
+          <span className={css.dot}>.</span>
+          <span className={css.className}>{classValue}</span>
           <span className={css.tagClose}>&gt;</span>
-          {/* {`<${nodeProps.displayName}>`} */}
         </div>
         {/* <div className={css.className}>
           <input

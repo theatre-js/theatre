@@ -1,6 +1,10 @@
 .container {
   /* margin-top: 16px; */
   margin-bottom: 16px;
+
+  &.withTopMargin {
+    margin-top: 8px;
+  }
 }
 
 .withHorizontalMargin > .body {
@@ -20,5 +24,9 @@
   color: #e5e5e5;
   font-weight: 400;
   line-height: 32px;
+
+}
+
+.hasLabel {
 
 }

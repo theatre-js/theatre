@@ -44,7 +44,7 @@ export class ComposePanelContent extends React.PureComponent<Props, IState> {
         // @todo we should either direct the user to select the owner of this component, OR,
         // in the case of user-provided hard-coded components, allow the user to navigate to
         // the code of that component (in their own code editor – we don't provide a JS editor)
-        <PaleMessage message={`${componentDescriptor.displayName} is hard-coded component`} />
+        <PaleMessage message={`<${componentDescriptor.displayName}> is a hard-coded component`} />
       )
     } else {
       return (
@@ -75,7 +75,7 @@ export class ComposePanelContent extends React.PureComponent<Props, IState> {
 }
 
 const connected = connect((s, op) => {
-  // const possibleComponentId = s.composePanel.componentId || 'FakeDeclarativeButton'
+  // const possibleComponentId = s.composePanel.componentId || 'IntroScene'
   const possibleComponentId =
     op.inputs.selectedNode && op.inputs.selectedNode.componentId
   if (!possibleComponentId) {

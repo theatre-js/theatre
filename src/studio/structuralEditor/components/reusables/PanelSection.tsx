@@ -4,29 +4,29 @@ import css from './PanelSection.css'
 import cx from 'classnames'
 
 type Props = {
-  children: React.Node
-  withHorizontalMargin: undefined | null | boolean
+  children: React.ReactNode,
+  withHorizontalMargin?: boolean
   label?: string
+  withTopMargin?: boolean
 }
 
-type State = void
+type State = {}
 
 class PanelSection extends React.PureComponent<Props, State> {
-  state: State
-  props: Props
-
   constructor(props: Props) {
     super(props)
-    this.state = undefined
+    this.state = {}
   }
 
   render() {
-    const hasLabel = typeof this.props.label === 'string'
+    const {label, withHorizontalMargin, withTopMargin} = this.props
+    const hasLabel = typeof label === 'string'
     return (
       <div
         className={cx(css.container, {
-          [css.withHorizontalMargin]: this.props.withHorizontalMargin !== false,
+          [css.withHorizontalMargin]: withHorizontalMargin !== false,
           [css.hasLabel]: hasLabel,
+          [css.withTopMargin]: withTopMargin === true,
         })}
       >
         {hasLabel && (
@@ -40,4 +40,4 @@ class PanelSection extends React.PureComponent<Props, State> {
   }
 }
 
-export default compose(a => a)(PanelSection)
+export default PanelSection

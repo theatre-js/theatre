@@ -35,7 +35,7 @@
 }
 
 .content {
-  position: absolute var(--panelTopBarHeight) 0;
+  position: absolute var(--panelTopBarHeight) 0 0 0;
   overflow-x: visible;
   overflow-y: scroll;
   z-index: 0;

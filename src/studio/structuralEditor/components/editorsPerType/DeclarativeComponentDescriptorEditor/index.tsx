@@ -5,6 +5,7 @@ import ComponentNameEditor from './ComponentNameEditor'
 import PropsEditor from './PropsEditor'
 import TreeEditor from './TreeEditor'
 import ModifiersEditor from './ModifiersEditor'
+import {identity} from 'ramda'
 
 type Props = {
   // path to comopnent descriptor
@@ -28,7 +29,7 @@ class DeclarativeComponentDescriptorEditor extends React.PureComponent<
   render() {
     return (
       <div className={css.container}>
-        {/* <ComponentNameEditor pathToComponentDescriptor={this.props.path} /> */}
+        <ComponentNameEditor pathToComponentDescriptor={this.props.path} />
         {/* <PropsEditor pathToComponentDescriptor={this.props.path} /> */}
         <TreeEditor pathToComponentDescriptor={this.props.path} />
         {/* <ModifiersEditor pathToComponentDescriptor={this.props.path} /> */}
@@ -37,4 +38,4 @@ class DeclarativeComponentDescriptorEditor extends React.PureComponent<
   }
 }
 
-export default compose(a => a)(DeclarativeComponentDescriptorEditor)
+export default compose(identity)(DeclarativeComponentDescriptorEditor)

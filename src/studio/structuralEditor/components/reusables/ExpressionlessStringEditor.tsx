@@ -9,15 +9,12 @@ type Props = {
   dispatch: Function
 }
 
-type State = void
+type State = {}
 
 class ExpressionlessStringEditor extends React.PureComponent<Props, State> {
-  state: State
-  props: Props
-
   constructor(props: Props) {
     super(props)
-    this.state = undefined
+    this.state = {}
   }
 
   onChange = e => {
@@ -42,10 +39,8 @@ class ExpressionlessStringEditor extends React.PureComponent<Props, State> {
   }
 }
 
-export default compose(
-  connect((s, op) => {
-    return {
-      value: _.get(s, op.path),
-    }
-  }),
-)(ExpressionlessStringEditor)
+export default connect((s, op) => {
+  return {
+    value: _.get(s, op.path),
+  }
+})(ExpressionlessStringEditor)

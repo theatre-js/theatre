@@ -11,7 +11,6 @@ import {connect} from '$studio/handy'
 import {getComponentDescriptor} from '$studio/componentModel/selectors'
 import stringStartsWith from 'lodash/startsWith'
 
-
 const dummyClasses = [
   'container',
   'form',
@@ -141,12 +140,19 @@ class Node extends React.PureComponent<IProps, void> {
             </div>,
             <div key="highlighter" className={css.highlighter} />,
           ]}
-          {textContent != null && (
-            <div className={css.name}>
+          {textContent != null && [
+            <div
+              className={css.name}
+              key="textName"
+              onClick={() => {
+                selectNode(path)
+              }}
+            >
               <div className={css.textLogo}>t</div>
               <div className={css.textContent}>{textContent}</div>
-            </div>
-          )}
+            </div>,
+            <div key="highlighter" className={css.highlighter} />,
+          ]}
         </div>
         {shouldShowChildren && (
           <div className={css.subNodes}>
@@ -164,10 +170,16 @@ class Node extends React.PureComponent<IProps, void> {
               ))}
             {textChild != null && (
               <div className={css.top}>
-                <div className={css.name}>
+                <div
+                  className={css.name}
+                  onClick={() => {
+                    selectNode(path)
+                  }}
+                >
                   <div className={css.textLogo}>t</div>
                   <div className={css.textContent}>{textChild}</div>
                 </div>
+                <div className={css.highlighter} />
               </div>
             )}
           </div>

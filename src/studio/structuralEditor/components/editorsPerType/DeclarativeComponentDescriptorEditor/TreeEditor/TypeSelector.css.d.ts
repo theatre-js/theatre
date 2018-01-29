@@ -5,8 +5,6 @@ export const willUnmount: string;
 export const wrapperDisappear: string;
 export const container: string;
 export const input: string;
-export const underlineAppear: string;
-export const underlineDisappear: string;
 export const list: string;
 export const listAppear: string;
 export const option: string;

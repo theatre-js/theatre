@@ -48,7 +48,7 @@ const initialState: WorkspaceNamespaceState = {
         inputs: {},
         outputs: {
           selectedNode: {
-            componentId: 'FakeDeclarativeButton'
+            componentId: 'IntroScene'
           }
         },
       },
@@ -87,7 +87,7 @@ const initialState: WorkspaceNamespaceState = {
     idOfActivePanel: 'elementTree',
     currentlyDraggingOutput: null,
   },
-  componentIdToBeRenderedAsCurrentCanvas: 'FakeDeclarativeButton',
+  componentIdToBeRenderedAsCurrentCanvas: 'IntroScene',
 }
 
 export default initialState
