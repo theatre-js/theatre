@@ -43,10 +43,6 @@ class NodeContainer extends React.PureComponent<Props, State> {
     } else {
       this._setMaxHeight()
     }
-
-    // if (this.props.nodeData.status === STATUS.UNINITIALIZED) {
-    //   setTimeout(this.setAsComponentBeingSet, 150)
-    // }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -79,10 +75,6 @@ class NodeContainer extends React.PureComponent<Props, State> {
         this._setMaxHeight()
       }, 500)
     }
-
-    // if (nextProps.nodeData.status === STATUS.CREATION_CANCELED) {
-    //   this.deleteNode()
-    // }
   }
 
   componentWillUnmount() {
@@ -164,23 +156,6 @@ class NodeContainer extends React.PureComponent<Props, State> {
       clearTimeout(this.unsetTimeout)
       this.unsetTimeout = null
     }
-  }
-
-  setAsComponentBeingSet = () => {
-    const {
-      setComponentBeingSet,
-      depth,
-      nodeData: {children, ...nodeProps},
-    } = this.props
-    const {top, left, width} = this.wrapper.getBoundingClientRect()
-    setComponentBeingSet({
-      nodeProps,
-      depth,
-      top,
-      left,
-      width,
-      hasChildren: children != null && children.length > 0,
-    })
   }
 
   handleTextNodeTypeChange = () => {
@@ -298,7 +273,6 @@ class NodeContainer extends React.PureComponent<Props, State> {
                 isSelected={nodeProps.id === selectedNodeId}
                 nodeProps={nodeProps}
                 setClassValue={this.setNodeClassValue}
-                setAsComponentBeingSet={this.setAsComponentBeingSet}
                 onSelect={() => this.props.setSelectedNodeId(nodeProps.id)}
                 listOfDisplayNames={this.props.listOfDisplayNames}
                 hasChildren={children && children.length > 0}
@@ -310,7 +284,6 @@ class NodeContainer extends React.PureComponent<Props, State> {
               <TextNode
                 nodeProps={nodeProps}
                 onChange={this.changeTextNodeValue}
-                setAsComponentBeingSet={this.setAsComponentBeingSet}
                 handleTypeChange={this.handleTextNodeTypeChange}
               />
             )}
@@ -335,7 +308,6 @@ class NodeContainer extends React.PureComponent<Props, State> {
                   setNodeBeingDragged={this.props.setNodeBeingDragged}
                   setActiveDropZone={this.props.setActiveDropZone}
                   unsetActiveDropZone={this.props.unsetActiveDropZone}
-                  // setComponentBeingSet={this.props.setComponentBeingSet}
                   setSelectedNodeId={this.props.setSelectedNodeId}
                   listOfDisplayNames={this.props.listOfDisplayNames}
                   handleTextNodeTypeChange={this.props.handleTextNodeTypeChange}

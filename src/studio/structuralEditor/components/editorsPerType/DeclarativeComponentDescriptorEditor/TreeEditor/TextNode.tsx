@@ -7,7 +7,6 @@ import {STATUS} from './constants'
 type Props = {
   nodeProps: Object
   onChange: Function
-  setAsComponentBeingSet: Function
 }
 type State = {
   isFocused: boolean
@@ -15,7 +14,7 @@ type State = {
   previousValue: string
 }
 
-class Node extends React.PureComponent<Props, State> {
+class TextNode extends React.PureComponent<Props, State> {
   state = {
     isFocused: false,
     isContentHidden: false,
@@ -52,13 +51,6 @@ class Node extends React.PureComponent<Props, State> {
     ) {
       this.props.handleTypeChange()
     }
-    // this.setAsComponentBeingSet()
-  }
-
-  setAsComponentBeingSet = () => {
-    this.props.handleTypeChange()
-    // this.setState(() => ({isContentHidden: true}))
-    // this.props.setAsComponentBeingSet()
   }
 
   render() {
@@ -104,4 +96,4 @@ export const presentationOnlyComponent = ({nodeProps}) => {
   )
 }
 
-export default Node
+export default TextNode

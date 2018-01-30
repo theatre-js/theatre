@@ -8,7 +8,6 @@ import {fitInput} from './utils'
 
 type Props = {
   nodeProps: $FixMe
-  setAsComponentBeingSet: Function
   setClassValue: Function
   isSelected: boolean
 }

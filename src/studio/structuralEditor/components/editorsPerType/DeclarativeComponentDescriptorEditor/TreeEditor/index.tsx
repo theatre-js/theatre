@@ -79,7 +79,6 @@ class TreeEditor extends React.PureComponent<Props, State> {
     nodes: {},
     nodeBeingDragged: null,
     activeDropZone: null,
-    componentBeingSet: null,
     selectedNodeId: null,
   }
 
@@ -508,7 +507,6 @@ class TreeEditor extends React.PureComponent<Props, State> {
       nodes,
       nodeBeingDragged,
       activeDropZone,
-      componentBeingSet,
       selectedNodeId,
     } = this.state
     const isANodeBeingDragged = nodeBeingDragged != null
@@ -517,22 +515,6 @@ class TreeEditor extends React.PureComponent<Props, State> {
       <div>
         <PanelSection withHorizontalMargin={false} label="Template">
           {this._renderScroller('up')}
-          {/* {componentBeingSet != null && (
-            <TypeSelector
-              nodeProps={{...(_.pick(componentBeingSet, [
-                'depth',
-                'top',
-                'left',
-                'width',
-                'hasChildren',
-              ])), displayName: componentBeingSet.nodeProps.displayName}}
-              listOfDisplayNames={Object.entries(this.props.componentTypes).map(
-                ([, value]) => value.displayName,
-              )}
-              onSelect={this._setTypeOfComponent}
-              onCancel={this._cancelSettingComponentType}
-            />
-          )} */}
           {isANodeBeingDragged && (
             <MovableNode
               nodeBeingDragged={nodeBeingDragged}
@@ -558,9 +540,6 @@ class TreeEditor extends React.PureComponent<Props, State> {
                 unsetActiveDropZone={() =>
                   this.setState(() => ({activeDropZone: null}))
                 }
-                // setComponentBeingSet={componentBeingSet =>
-                //   this.setState(() => ({componentBeingSet}))
-                // }
                 setSelectedNodeId={(selectedNodeId: string) =>
                   this.setState(() => ({selectedNodeId}))
                 }
