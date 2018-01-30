@@ -106,8 +106,15 @@ class ComponentNode extends React.PureComponent<Props, State> {
   }
 
   setClassValue = () => {
+    let {classValue} = this.state
+    if (classValue === '') {
+      this.setState(() => ({classValue: NO_CLASS}))
+    }
+    if (classValue === NO_CLASS) {
+      classValue = ''
+    }
     if (this.state.classValue !== this.props.nodeProps.class) {
-      this.props.setClassValue(this.state.classValue)
+      this.props.setClassValue(classValue)
     }
   }
 
