@@ -30,10 +30,13 @@ class ComponentNode extends React.PureComponent<Props, State> {
   componentDidMount() {
     this._setClassValueFromProps()
 
-    if (this.props.nodeProps.status === STATUS.UNINITIALIZED) {
+    if (
+      this.props.nodeProps.status === STATUS.UNINITIALIZED ||
+      this.props.nodeProps.status === STATUS.CHANGING_TYPE
+    ) {
       this.setState(() => ({isTypeBeingChanged: true}))
       this._fitClassInput()
-      this.width = this.container.getBoundingClientRect().width      
+      this.width = this.container.getBoundingClientRect().width
     }
   }
 
@@ -74,7 +77,8 @@ class ComponentNode extends React.PureComponent<Props, State> {
 
   _setClassValueFromProps() {
     const classValue = this.props.nodeProps.class
-    if (classValue != null) this.setState(() => ({classValue: classValue || NO_CLASS}))
+    if (classValue != null)
+      this.setState(() => ({classValue: classValue || NO_CLASS}))
   }
 
   _focusOnClassInput = () => {
@@ -100,7 +104,7 @@ class ComponentNode extends React.PureComponent<Props, State> {
     if (e.keyCode === 9) {
       e.preventDefault()
       this.classInput.blur()
-      this.setClassValue()      
+      this.setClassValue()
       this.setState(() => ({isTypeBeingChanged: true}))
     }
   }
@@ -175,7 +179,11 @@ class ComponentNode extends React.PureComponent<Props, State> {
             <span key="dot" className={css.dot}>
               .
             </span>,
-            <div key="classValue" className={css.className} onClick={e => this.handleClick(e, '')}>
+            <div
+              key="classValue"
+              className={css.className}
+              onClick={e => this.handleClick(e, '')}
+            >
               <input
                 type="text"
                 ref={c => (this.classInput = c)}

@@ -183,6 +183,10 @@ class NodeContainer extends React.PureComponent<Props, State> {
     })
   }
 
+  handleTextNodeTypeChange = () => {
+    this.props.handleTextNodeTypeChange(this.props.nodeData.id)
+  }
+
   addChild = atIndex => {
     this.props.dispatchAction(ACTION.NODE_ADD, {
       nodeId: this.props.nodeData.id,
@@ -242,12 +246,15 @@ class NodeContainer extends React.PureComponent<Props, State> {
     } = this.props
     const {isCollapsed, maxHeight, contextMenuProps} = this.state
 
-    const isText = nodeProps.type === NODE_TYPE.TEXT
+    const isText =
+      nodeProps.type === NODE_TYPE.TEXT &&
+      nodeProps.status !== STATUS.CHANGING_TYPE
     const depth = this.props.depth || 0
     const isRelocated = nodeProps.status === STATUS.RELOCATED
     const isComponent =
       nodeProps.status === STATUS.UNINITIALIZED ||
-      nodeProps.type === NODE_TYPE.COMPONENT
+      nodeProps.type === NODE_TYPE.COMPONENT ||
+      nodeProps.status === STATUS.CHANGING_TYPE
     return (
       <div ref={c => (this.wrapper = c)}>
         <div
@@ -295,6 +302,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
                 nodeProps={nodeProps}
                 onChange={this.changeTextNodeValue}
                 setAsComponentBeingSet={this.setAsComponentBeingSet}
+                handleTypeChange={this.handleTextNodeTypeChange}
               />
             )}
           </div>
@@ -321,6 +329,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
                   // setComponentBeingSet={this.props.setComponentBeingSet}
                   setSelectedNodeId={this.props.setSelectedNodeId}
                   listOfDisplayNames={this.props.listOfDisplayNames}
+                  handleTextNodeTypeChange={this.props.handleTextNodeTypeChange}
                 />
               </div>,
               this.renderNodePlaceholder(index + 1, depth),

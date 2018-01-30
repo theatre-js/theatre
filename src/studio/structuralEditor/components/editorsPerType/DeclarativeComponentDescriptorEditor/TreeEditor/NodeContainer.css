@@ -12,11 +12,14 @@
   // --color: calc(var(--depth) * 20 + 45);
   // background-color: rgb(var(--color), var(--color), var(--color));
   top: 0;
+  // opacity: 0;
   /* will-change: max-height, transform; */
 
   &.expand {
+    opacity: 0;
     height: nodeHeight;
-    animation: expand .15s ease-in-out;
+    animation: expand .15s ease-in-out forwards;
+    z-index: 1000;
   }
 
   &.isRelocated {
@@ -36,8 +39,10 @@
 }
 
 @keyframes expand {
-  from {transform: scaleY(0.1);}
-  to {transform: scaleY(1);}
+  // from {transform: scaleY(0.1);}
+  // to {transform: scaleY(1);}
+  from {opacity: 0;}
+  to {opacity: 1;}
 }
 
 @keyframes drop {

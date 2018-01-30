@@ -53,7 +53,10 @@ class TypeSelector extends React.PureComponent<Props, State> {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if ((!this.props.isActive && prevProps.isActive) || (this.state.query !== prevState.query)) {
+    if (
+      (!this.props.isActive && prevProps.isActive) ||
+      this.state.query !== prevState.query
+    ) {
       fitInput(this.input)
     }
   }
@@ -73,16 +76,16 @@ class TypeSelector extends React.PureComponent<Props, State> {
       }))
     }
     if (e.keyCode === 13) {
-      this.selectNameAtIndex(this.state.focusedIndex)      
+      this.selectNameAtIndex(this.state.focusedIndex)
     }
     if (e.keyCode === 9) {
       e.preventDefault()
-      this.selectNameAtIndex(this.state.focusedIndex)      
+      this.selectNameAtIndex(this.state.focusedIndex)
       this.props.onTab()
     }
     if (e.keyCode === 27) {
       if (this.props.initialValue) {
-        this.setState(() => ({query: this.props.initialValue}))      
+        this.setState(() => ({query: this.props.initialValue}))
       }
       this._unmount(() => {
         this.input.blur()

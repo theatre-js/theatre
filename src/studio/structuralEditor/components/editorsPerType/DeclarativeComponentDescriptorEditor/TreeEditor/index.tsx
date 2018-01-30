@@ -10,7 +10,6 @@ import {getComponentDescriptor} from '$studio/componentModel/selectors'
 import PanelSection from '$studio/structuralEditor/components/reusables/PanelSection'
 import NodeContainer from './NodeContainer'
 import MovableNode from './MovableNode'
-import TypeSelector from './TypeSelector'
 import css from './index.css'
 import generateUniqueId from 'uuid/v4'
 import * as _ from 'lodash'
@@ -494,6 +493,11 @@ class TreeEditor extends React.PureComponent<Props, State> {
     )
   }
 
+  handleTextNodeTypeChange = (id: string) => {
+    this._setLastAction(ACTION.NODE_TEXT_TYPE_CHANGE, {id})
+    this._setNodes(this.props.rootComponentDescriptor)
+  }
+
   render() {
     const {
       nodes,
@@ -556,6 +560,7 @@ class TreeEditor extends React.PureComponent<Props, State> {
                   this.setState(() => ({selectedNodeId}))
                 }
                 listOfDisplayNames={this.props.listOfDisplayNames}
+                handleTextNodeTypeChange={this.handleTextNodeTypeChange}
               />
             </div>
           </div>

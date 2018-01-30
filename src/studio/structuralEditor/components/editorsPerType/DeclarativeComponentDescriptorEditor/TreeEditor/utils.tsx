@@ -3,7 +3,7 @@ export const fitInput = input => {
   const max = 300
   const pad_right = 1
   if (!input) return
-  
+
   input.style.width = min + 'px'
 
   const tmp = document.createElement('div')

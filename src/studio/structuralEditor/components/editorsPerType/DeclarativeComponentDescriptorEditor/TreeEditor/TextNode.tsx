@@ -49,11 +49,14 @@ class Node extends React.PureComponent<Props, State> {
       e.keyCode === 8 &&
       this.props.nodeProps.value === '' &&
       this.state.previousValue === ''
-    )
-      this.setAsComponentBeingSet()
+    ) {
+      this.props.handleTypeChange()
+    }
+    // this.setAsComponentBeingSet()
   }
 
   setAsComponentBeingSet = () => {
+    this.props.handleTypeChange()
     // this.setState(() => ({isContentHidden: true}))
     // this.props.setAsComponentBeingSet()
   }
