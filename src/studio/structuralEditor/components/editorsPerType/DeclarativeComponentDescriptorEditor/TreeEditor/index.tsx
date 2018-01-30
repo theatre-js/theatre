@@ -498,6 +498,11 @@ class TreeEditor extends React.PureComponent<Props, State> {
     this._setNodes(this.props.rootComponentDescriptor)
   }
 
+  cancelTextNodeTypeChange = (id: string) => {
+    this._setLastAction(ACTION.NODE_TEXT_TYPE_CHANGE_CANCEL, {id})
+    this._setNodes(this.props.rootComponentDescriptor)    
+  }
+
   render() {
     const {
       nodes,
@@ -561,6 +566,7 @@ class TreeEditor extends React.PureComponent<Props, State> {
                 }
                 listOfDisplayNames={this.props.listOfDisplayNames}
                 handleTextNodeTypeChange={this.handleTextNodeTypeChange}
+                cancelTextNodeTypeChange={this.cancelTextNodeTypeChange}
               />
             </div>
           </div>

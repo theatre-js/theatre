@@ -224,6 +224,15 @@ class NodeContainer extends React.PureComponent<Props, State> {
     })
   }
 
+  onCancelSelectingType = () => {
+    if (this.props.nodeData.status === STATUS.UNINITIALIZED) {
+      this.deleteNode()
+    }
+    if (this.props.nodeData.status === STATUS.TEXT_CHANGING_TYPE) {
+      this.props.cancelTextNodeTypeChange(this.props.nodeData.id)
+    }
+  }
+
   renderNodePlaceholder(atIndex, depth) {
     return (
       <NodePlaceholder
@@ -248,13 +257,13 @@ class NodeContainer extends React.PureComponent<Props, State> {
 
     const isText =
       nodeProps.type === NODE_TYPE.TEXT &&
-      nodeProps.status !== STATUS.CHANGING_TYPE
+      nodeProps.status !== STATUS.TEXT_CHANGING_TYPE
     const depth = this.props.depth || 0
     const isRelocated = nodeProps.status === STATUS.RELOCATED
     const isComponent =
       nodeProps.status === STATUS.UNINITIALIZED ||
       nodeProps.type === NODE_TYPE.COMPONENT ||
-      nodeProps.status === STATUS.CHANGING_TYPE
+      nodeProps.status === STATUS.TEXT_CHANGING_TYPE
     return (
       <div ref={c => (this.wrapper = c)}>
         <div
@@ -294,7 +303,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
                 listOfDisplayNames={this.props.listOfDisplayNames}
                 hasChildren={children && children.length > 0}
                 onSelectComponentType={this.setComponentType}
-                onCancelCreatingNode={this.deleteNode}
+                onCancelSelectingType={this.onCancelSelectingType}
               />
             )}
             {isText && (
@@ -330,6 +339,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
                   setSelectedNodeId={this.props.setSelectedNodeId}
                   listOfDisplayNames={this.props.listOfDisplayNames}
                   handleTextNodeTypeChange={this.props.handleTextNodeTypeChange}
+                  cancelTextNodeTypeChange={this.props.cancelTextNodeTypeChange}
                 />
               </div>,
               this.renderNodePlaceholder(index + 1, depth),

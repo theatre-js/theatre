@@ -32,7 +32,7 @@ class ComponentNode extends React.PureComponent<Props, State> {
 
     if (
       this.props.nodeProps.status === STATUS.UNINITIALIZED ||
-      this.props.nodeProps.status === STATUS.CHANGING_TYPE
+      this.props.nodeProps.status === STATUS.TEXT_CHANGING_TYPE
     ) {
       this.setState(() => ({isTypeBeingChanged: true}))
       this._fitClassInput()
@@ -140,12 +140,6 @@ class ComponentNode extends React.PureComponent<Props, State> {
     this.setState(() => ({typeValue}))
   }
 
-  cancelSelectingType = () => {
-    if (this.props.nodeProps.status === STATUS.UNINITIALIZED) {
-      this.props.onCancelCreatingNode()
-    }
-  }
-
   render() {
     const {nodeProps, isSelected} = this.props
     const {isContentHidden, classValue, isTypeBeingChanged} = this.state
@@ -172,7 +166,7 @@ class ComponentNode extends React.PureComponent<Props, State> {
             hasChildren={this.props.hasChildren}
             width={this.width}
             onSelect={this.props.onSelectComponentType}
-            onCancel={this.cancelSelectingType}
+            onCancel={this.props.onCancelSelectingType}
             onTab={this._focusOnClassInput}
           />
           {((classValue !== NO_CLASS && !isSelected) || isSelected) && [
