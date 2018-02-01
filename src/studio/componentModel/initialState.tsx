@@ -139,7 +139,7 @@ const IntroScene: IDeclarativeComponentDescriptor = {
   localHiddenValuesById: {
     fontSize: '18px',
     // ...fakeNodes.allNodes,
-    palakiText: 'palaki',
+    palakiText: 'Cortana Studios',
     palakiChild: {
       __descriptorType: 'ComponentInstantiationValueDescriptor',
       componentId: 'TheaterJS/Core/HTML/div',
@@ -176,6 +176,19 @@ const IntroScene: IDeclarativeComponentDescriptor = {
       componentId: 'TheaterJS/Core/HTML/div',
       props: {
         key: 'dalaki',
+        class: 'wrapper',
+        children: [
+          {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'yaru'},
+        ],
+      },
+      modifierInstantiationDescriptors: {byId: {}, list: []},
+    },
+    dalaki2: {
+      __descriptorType: 'ComponentInstantiationValueDescriptor',
+      componentId: 'TheaterJS/Core/HTML/div',
+      props: {
+        key: 'dalaki2',
+        class: 'underneath',
         children: [
           {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'yaru'},
         ],
@@ -187,6 +200,7 @@ const IntroScene: IDeclarativeComponentDescriptor = {
       componentId: 'TheaterJS/Core/HTML/div',
       props: {
         key: 'yaru',
+        class: 'parts',
         children: [
           {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'dchch'},
           {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'dchchp'},
@@ -194,7 +208,7 @@ const IntroScene: IDeclarativeComponentDescriptor = {
       },
       modifierInstantiationDescriptors: {byId: {}, list: []},
     },
-    dchchText: 'dalaki dchch',
+    dchchText: 'Our five styles',
     dchch: {
       __descriptorType: 'ComponentInstantiationValueDescriptor',
       componentId: 'TheaterJS/Core/HTML/div',
@@ -207,7 +221,7 @@ const IntroScene: IDeclarativeComponentDescriptor = {
       },
       modifierInstantiationDescriptors: {byId: {}, list: []},
     },
-    dchchpText: 'dalaki dchchp',
+    dchchpText: 'Explore the Tango',
     dchchp: {
       __descriptorType: 'ComponentInstantiationValueDescriptor',
       componentId: 'TheaterJS/Core/HTML/div',
@@ -230,6 +244,8 @@ const IntroScene: IDeclarativeComponentDescriptor = {
         children: [
           {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'palaki'},
           {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'dalaki'},
+          // {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'dalaki2'},
+          // {__descriptorType: 'ReferenceToLocalHiddenValue', which: 'dalaki2'},
         ],
       },
       modifierInstantiationDescriptors: {

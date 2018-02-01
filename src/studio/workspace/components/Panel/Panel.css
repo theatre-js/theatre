@@ -3,6 +3,9 @@
   box-sizing: border-box;
   --panelTopBarHeight: 34px;
   --body-color: #263238;
+  &.isActive {
+    background: red;
+  }
   /* --borders-color: #312424; */
   /* --shadows: #263238; */
 
@@ -39,7 +42,11 @@
   overflow-x: visible;
   overflow-y: scroll;
   z-index: 0;
-  /* display: none; */
+  
+}
+
+.headerLess .content {
+  top: 0;
 }
 
 .displayNone {
@@ -103,4 +110,12 @@
   align-items: center;
 
   /* font-family: "Avenir Next Condensed"; */
+}
+
+.headerLess {
+  & .topBar {
+    display: none;
+  }
+
+
 }

@@ -1,5 +1,4 @@
 .container {
-  padding: 0 5px;
 }
 
 .timeBar {
@@ -7,10 +6,15 @@
 }
 
 .lanes {
+  display: none;
   height: calc(100% - 45px);
   overflow: scroll;
 
   &::-webkit-scrollbar {
     display: none;
   }
+}
+
+.panelContainer {
+  background: #000;
 }

@@ -1,6 +1,5 @@
-import * as React from 'react' // eslint-disable-line flowtype/require-valid-file-annotation
-import compose from 'ramda/src/compose'
-import {connect} from '$studio/handy'
+import * as React from 'react'
+import {connect, compose} from '$studio/handy'
 import {IStoreState} from '$studio/types'
 import {
   PanelPlacementSettings,
@@ -8,8 +7,7 @@ import {
 } from '$studio/workspace/types'
 import {getVisiblePanelsList} from '$studio/workspace/selectors'
 import {createPanel} from '$studio/workspace/sagas'
-import Panel from '../Panel'
-// import PanelCreator from '../PanelCreator'
+import PanelController from '../PanelController'
 import css from './index.css'
 
 type Props = {
@@ -83,7 +81,7 @@ export class TheUI extends React.Component<Props, State> {
     return (
       <div className={css.container}>
         {visiblePanels.map(panelId => (
-          <Panel key={panelId} panelId={panelId} />
+          <PanelController key={panelId} panelId={panelId} />
         ))}
         {/*
           {isCreatingNewPanel &&

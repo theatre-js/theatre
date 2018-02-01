@@ -7,6 +7,7 @@ import {PanelOutput} from '$studio/workspace/types'
 import {Path} from '$studio/elementTree/types'
 import css from './index.css'
 import Node from './Node'
+import Panel from '$src/studio/workspace/components/Panel/Panel'
 
 type Props = {
   outputs: PanelOutput
@@ -160,19 +161,21 @@ class ExplorerPanel extends React.PureComponent<Props, State> {
     const {nodes, selectedNodePath} = this.state
     const {outputs: {selectedNode}} = this.props
     return (
-      <div className={css.container}>
-        {Object.keys(nodes).map(key => {
-          return (
-            <Node
-              key={key}
-              toggleExpansion={this.toggleNodeExpansionState}
-              selectNode={this.selectNode}
-              selectedNodePath={selectedNodePath}
-              {...nodes[key]}
-            />
-          )
-        })}
-      </div>
+      <Panel>
+        <div className={css.container}>
+          {Object.keys(nodes).map(key => {
+            return (
+              <Node
+                key={key}
+                toggleExpansion={this.toggleNodeExpansionState}
+                selectNode={this.selectNode}
+                selectedNodePath={selectedNodePath}
+                {...nodes[key]}
+              />
+            )
+          })}
+        </div>
+      </Panel>
     )
   }
 }
