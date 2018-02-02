@@ -467,16 +467,6 @@ export class TheUI extends React.Component<Props, State> {
     return (
       <div className={css.container}>
         {visiblePanels.map(panelId => (
-// <<<<<<< HEAD
-//           <Panel
-//             key={panelId}
-//             panelId={panelId}
-//             isInEditMode={this.state.isInEditMode}
-//             boundaries={this.state.calculatedBoundaries[panelId]}
-//             gridOfBoundaries={this.state.gridOfBoundaries}
-//             updatePanelBoundaries={this.updatePanelBoundaries}
-//           />
-// =======
           <PanelController
             key={panelId}
             panelId={panelId}
@@ -485,7 +475,6 @@ export class TheUI extends React.Component<Props, State> {
             gridOfBoundaries={this.state.gridOfBoundaries}
             updatePanelBoundaries={this.updatePanelBoundaries}
           />
-
         ))}
         {/*
           {isCreatingNewPanel &&

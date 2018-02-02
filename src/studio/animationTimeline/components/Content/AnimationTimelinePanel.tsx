@@ -63,14 +63,6 @@ class Content extends React.Component<Props, State> {
     }
   }
 
-  // componentDidMount() {
-  //   window.addEventListener('resize', this._resetPanelWidthOnWindowResize)
-  // }
-
-  // componentWillUnmount() {
-  //   window.removeEventListener('resize', this._resetPanelWidthOnWindowResize)
-  // }
-
   componentWillReceiveProps(newProps) {
     if (JSON.stringify(newProps.layout) !== JSON.stringify(this.props.layout)) {
       this._resetBoundariesAndRatios(newProps.layout, newProps.boxes)
@@ -84,16 +76,16 @@ class Content extends React.Component<Props, State> {
   //   this._resetPanelWidth(this.props.panelDimensions.x)
   // }
 
-  _getPanelWidth(xDim) {
-    return xDim - 10
+  // _getPanelWidth(xDim) {
+  //   return xDim - 10
     // return xDim / 100 * window.innerWidth - 16
-  }
+  // }
 
-  _resetPanelWidth(xDim) {
-    this.setState(() => ({
-      panelWidth: this._getPanelWidth(xDim),
-    }))
-  }
+  // _resetPanelWidth(xDim) {
+  //   this.setState(() => ({
+  //     panelWidth: this._getPanelWidth(xDim),
+  //   }))
+  // }
 
   _resetBoundariesAndRatios(
     layout = this.props.layout,
@@ -406,6 +398,7 @@ class Content extends React.Component<Props, State> {
       <Panel headerLess={true} css={{container: css.panelContainer}}>
         <Subscriber channel={PanelWidthChannel}>
           {(panelWidth: number) => {
+            panelWidth -= 10
             return (
               <div className={css.container} onWheel={(e) => this.handleScroll(e, panelWidth)}>
                 <div className={css.timeBar}>
