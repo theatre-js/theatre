@@ -221,16 +221,41 @@ export class TheUI extends React.Component<Props, State> {
   updatePanelBoundaries = (panelId: string, newBoundaries: $FixMe) => {
     this.props.dispatch(
       reduceStateAction(['workspace', 'panels', 'byId'], (panels: $FixMe) => {
+        const newBoundariesKeys: string[] = Object.keys(newBoundaries)
         const stagedChanges = _.compact(
           _.flatMap(newBoundaries, (sideValue: $FixMe, sideKey: string) => {
+            const oppositeSideKey = getOppositeSide(sideKey)
+            if (!newBoundariesKeys.includes(oppositeSideKey)) {
+              const oppositeSideValue =
+                panels[panelId].boundaries[oppositeSideKey]
+              if (
+                oppositeSideValue.type === DIST_FROM_BOUNDARY &&
+                oppositeSideValue.path[0] === panelId &&
+                oppositeSideValue.path[1] === sideKey
+              ) {
+                const newBoundaryValue =
+                  sideValue.type === SAME_AS_BOUNDARY
+                    ? get(sideValue.path, this.boundaryPathToValueRefMap)
+                    : sideValue.value
+                return {
+                  path: [panelId, 'boundaries', oppositeSideKey],
+                  newValue: {
+                    ...oppositeSideValue,
+                    distance:
+                      this.state.calculatedBoundaries[panelId][
+                        oppositeSideKey
+                      ] - newBoundaryValue,
+                  },
+                }
+              }
+            }
             if (
               sideValue.type === SAME_AS_BOUNDARY &&
               sideValue.path[0] === 'window'
             ) {
-              const oppositeSideKey = getOppositeSide(sideKey)
               const oppositeSideValue = newBoundaries[oppositeSideKey]
               if (
-                oppositeSideValue != null &&
+                oppositeSideValue &&
                 oppositeSideValue.type === SAME_AS_BOUNDARY &&
                 oppositeSideValue.path[0] !== 'window'
               ) {
@@ -267,7 +292,6 @@ export class TheUI extends React.Component<Props, State> {
           }),
         )
 
-        const newBoundariesKeys: string[] = Object.keys(newBoundaries)
         const panelsWithoutRefsToUpdatedPanel = _.mapValues(
           panels,
           (panel: $FixMe) => {
@@ -345,9 +369,23 @@ export class TheUI extends React.Component<Props, State> {
                     path: [panel.id, oppositeSideKey],
                     distance: sideValue.value - oppositeSideBoundaryValue,
                   }
-                } else {
-                  return sideValue
                 }
+                if (
+                  newBoundariesKeys.includes(oppositeSideKey) &&
+                  !newBoundariesKeys.includes(sideKey) &&
+                  oppositeSideValue.type === EXACT_VALUE &&
+                  sideValue.type === DIST_FROM_BOUNDARY &&
+                  sideValue.path[0] === panel.id &&
+                  sideValue.path[1] === oppositeSideKey
+                ) {
+                  return {
+                    ...sideValue,
+                    distance:
+                      this.state.calculatedBoundaries[panel.id][sideKey] -
+                      oppositeSideValue.value,
+                  }
+                }
+                return sideValue
               },
             ),
           }
