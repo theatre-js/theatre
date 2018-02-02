@@ -1,9 +1,8 @@
 type Untap = () => void
 type UntapFromSource = () => void
 
-
 interface IProps<V> {
-  tapToSource: (cb: (payload: V) => void) => UntapFromSource,
+  tapToSource: (cb: (payload: V) => void) => UntapFromSource
 }
 
 type Listener<V> = ((v: V) => void) | (() => void)

@@ -1,7 +1,9 @@
+@value nodeHeight from './NodeContainer.css';
+
 .staticContainer {
   position: absolute;
   z-index: 1000;
-  height: 27px;
+  height: nodeHeight;
   width: 100%;
   top: 0;
   left: 0;

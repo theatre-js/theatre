@@ -1,89 +1,40 @@
-@value indent from './ComponentNode.css';
-
-.wrapper {
-  position: fixed 0 0 0 0;
-  z-index: 1000;
-
-  /* background-color: rgba(0, 0, 0, .5); */
-
-  animation: wrapperAppear .2s ease-in-out forwards;
-
-  &.willUnmount {
-    animation: wrapperDisappear .2s ease-in-out forwards;
-  }
-}
-
-@keyframes wrapperAppear {
-  from {opacity: 0;}
-  to {opacity: 1;}
-}
-
-@keyframes wrapperDisappear {
-  from {opacity: 1;}
-  to {opacity: 0;}
-}
-
 .container {
-  position: relative;
+  display: inline-block;
 }
 
 .input {
-  position: relative;
-  width: 100%;
-  height: 27px;
-
-  --color: calc(var(--depth) * 20 + 45);
-  background-color: rgb(var(--color), var(--color), var(--color));
-  /* border-radius: 2px; */
-
-  /* &:after {
-    display: block;
-    content: ' ';
-    position: absolute 26px 0 0 0;
-
-    background-color: #6BEEFE;
-    
-    transform-origin: 0 0;
-    transform: scaleX(0);
-    animation: underlineAppear .2s .1s ease-in-out forwards;
-  } */
-}
-
-.willUnmount .input {
-  /* &:after {
-    animation: underlineDisappear .15s ease-in-out forwards;
-  } */
-}
-
-/* @keyframes underlineAppear {
-  to {transform: scaleX(1);}
-}
-
-@keyframes underlineDisappear {
-  from {transform: scaleX(1);}
-  to {transform: scaleX(0);}
-} */
-
-.input > input {
-  width: 100%;
-  height: 100%;
-  padding: 0 indent;
+  color: #d8d8d8;
+  pointer-events: auto;
+  
+  &.isDisabled {
+    pointer-events: none;
+  }
 }
 
 .list {
+  position: fixed;
+  z-index: 10000;
+  width: var(--width);
   max-height: 100px;
   overflow: hidden scroll;
-  
-  --color: calc(var(--depth) * 20 + 25);
-  background-color: rgb(var(--color), var(--color), var(--color));
+  background: #000;
   
   opacity: 0;
-  transform: translateY(10px);
+  transform: translateY(2px);
   animation: listAppear .3s ease-in-out forwards;
+
+  &.willUnmount {
+    animation: listDisappear .1s ease-in-out forwards;
+  }
 }
 
 @keyframes listAppear {
   to {opacity: 1; transform: translateY(0);}
+}
+
+@keyframes listDisappear {
+  from {opacity: 1; transform: translateY(0);}
+  to {opacity: 0; transform: translateY(2px);}
 }
 
 .option {
@@ -94,7 +45,7 @@
 
   &.isSelected {
     font-weight: 500;
-    background-color: rgba(255, 255, 255, .1);
+    // background-color: rgba(255, 255, 255, .1);
   }
 
   &:not(:last-child) {

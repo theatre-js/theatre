@@ -1,3 +1,5 @@
+export const nodeHeight: string;
+export const nodeMargin: string;
 export const container: string;
 export const expand: string;
 export const isRelocated: string;

@@ -1,9 +1,9 @@
 // @flow
 
 import * as D from '$src/shared/DataVerse'
-import autoDerive, { AutoDerivation } from './autoDerive'
+import autoDerive, {AutoDerivation} from './autoDerive'
 import Ticker from '$src/shared/DataVerse/Ticker'
-import constant from '$src/shared/DataVerse/derivations/constant';
+import constant from '$src/shared/DataVerse/derivations/constant'
 
 describe('autoDerive', () => {
   let ticker: Ticker
@@ -32,13 +32,12 @@ describe('autoDerive', () => {
   })
   it.skip('should only collect immediate dependencies', () => {
     const aD = constant(1)
-    const bD = aD.map((v) => v * 2)
+    const bD = aD.map(v => v * 2)
     const cD = autoDerive(() => {
       return bD.getValue()
     })
     expect(cD.getValue()).toEqual(2)
     expect(cD._dependencies.size).toEqual(1)
-
   })
   ;(function() {
     const a = D.derivations.autoDerive(() => {

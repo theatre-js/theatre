@@ -1,3 +1,5 @@
+export const nodeHeight: string;
+export const nodeMargin: string;
 export const wrapper: string;
 export const container: string;
 export const appear: string;

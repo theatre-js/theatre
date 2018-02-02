@@ -1,19 +1,25 @@
+@value nodeHeight: 24px;
+@value nodeMargin: 2px;
+
 .container {
   display: grid;
   grid-template-columns: 16px 1fr 1px;
-  grid-tempalte-row: 27px;
+  // grid-tempalte-row: nodeHeight;
   position: relative;
-  margin-bottom: 2px;
+  margin-bottom: nodeMargin;
   /* border-radius: 2px; */
   overflow: hidden;
-  /* --color: calc(var(--depth) * 20 + 45); */
-  /* background-color: rgb(var(--color), var(--color), var(--color)); */
+  // --color: calc(var(--depth) * 20 + 45);
+  // background-color: rgb(var(--color), var(--color), var(--color));
   top: 0;
+  // opacity: 0;
   /* will-change: max-height, transform; */
 
   &.expand {
-    height: 27px;
-    animation: expand .15s ease-in-out;
+    opacity: 0;
+    height: nodeHeight;
+    animation: expand .15s ease-in-out forwards;
+    z-index: 1000;
   }
 
   &.isRelocated {
@@ -33,14 +39,16 @@
 }
 
 @keyframes expand {
-  from {transform: scaleY(0.1);}
-  to {transform: scaleY(1);}
+  // from {transform: scaleY(0.1);}
+  // to {transform: scaleY(1);}
+  from {opacity: 0;}
+  to {opacity: 1;}
 }
 
 @keyframes drop {
   from {
     top: var(--initialTopOffset);
-    max-height: 27px;
+    max-height: nodeHeight;
     box-shadow: 0 0 20px 5px rgb(var(--shadow), var(--shadow), var(--shadow));
   }
   to {

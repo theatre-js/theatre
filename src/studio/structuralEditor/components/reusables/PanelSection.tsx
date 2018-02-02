@@ -4,7 +4,7 @@ import css from './PanelSection.css'
 import cx from 'classnames'
 
 type Props = {
-  children: React.ReactNode,
+  children: React.ReactNode
   withHorizontalMargin?: boolean
   label?: string
   withTopMargin?: boolean

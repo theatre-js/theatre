@@ -6,11 +6,11 @@ import {ComposePanelNamespaceState} from '$studio/composePanel/types'
 
 // @ts-ignore @todo
 export interface IStoreState {
-  common: CommonNamespaceState,
-  workspace: WorkspaceNamespaceState,
-  componentModel: IComponentModelNamespaceState,
-  animationTimeline: AnimationTimelineNamespaceState,
-  composePanel: ComposePanelNamespaceState,
+  common: CommonNamespaceState
+  workspace: WorkspaceNamespaceState
+  componentModel: IComponentModelNamespaceState
+  animationTimeline: AnimationTimelineNamespaceState
+  composePanel: ComposePanelNamespaceState
 }
 
 export type Selector<ReturnType, ParamsType> = (

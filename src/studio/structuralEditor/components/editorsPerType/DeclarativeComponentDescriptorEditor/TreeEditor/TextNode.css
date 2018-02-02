@@ -1,9 +1,10 @@
 @value indent from './ComponentNode.css';
+@value nodeHeight from './NodeContainer.css';
 
 .container {
   position: relative;
   padding: 0 indent;
-  height: 27px;
+  height: nodeHeight;
   display: flex;
   align-items: flex-end;
   /* display: none; */
@@ -37,11 +38,18 @@
   align-self: center;
   width: 14px;
   height: 14px;
-  margin-right: calc(indent / 2);
-  border-radius: 2px;
-  background-color: #333;
+  margin-right: calc(indent / 2 - 4px);
   line-height: 16px;
   text-align: center;
+  color: #4f5d77;
+
+  /* position: relative;
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
+  line-height: 16px; */
+  /* text-align: center; */
 }
 
 .text {

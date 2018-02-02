@@ -48,8 +48,8 @@ const initialState: WorkspaceNamespaceState = {
         inputs: {},
         outputs: {
           selectedNode: {
-            componentId: 'IntroScene'
-          }
+            componentId: 'IntroScene',
+          },
         },
       },
       'composePanel-imAUUID': {
@@ -80,7 +80,7 @@ const initialState: WorkspaceNamespaceState = {
       },
     },
     listOfVisibles: [
-      '8daa7380-9b43-475a-8352-dc564a58c719',
+      // '8daa7380-9b43-475a-8352-dc564a58c719',
       'elementTree',
       'composePanel-imAUUID',
     ],

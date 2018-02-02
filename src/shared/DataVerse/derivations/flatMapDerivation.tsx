@@ -6,7 +6,11 @@ const UPDATE_NEEDED_FROM = {
   inner: 2,
 }
 
-export class FlatMapDerivation<V, DepType, FnType extends (v: DepType) => AbstractDerivation<V>> extends AbstractDerivation<V> {
+export class FlatMapDerivation<
+  V,
+  DepType,
+  FnType extends (v: DepType) => AbstractDerivation<V>
+> extends AbstractDerivation<V> {
   _innerDerivation: undefined | null | AbstractDerivation<V>
   _updateNeededFrom: (typeof UPDATE_NEEDED_FROM)[keyof typeof UPDATE_NEEDED_FROM]
   _hot: boolean
@@ -117,6 +121,9 @@ export class FlatMapDerivation<V, DepType, FnType extends (v: DepType) => Abstra
   }
 }
 
-export default function flatMap<T, R extends AbstractDerivation<T>>(depDerivation: AbstractDerivation<T>, fn: (t: T) => R) {
+export default function flatMap<T, R extends AbstractDerivation<T>>(
+  depDerivation: AbstractDerivation<T>,
+  fn: (t: T) => R,
+) {
   return new FlatMapDerivation(depDerivation, fn)
 }

@@ -175,25 +175,31 @@ class Node extends React.PureComponent<IProps, void> {
 
 const ClassName = ({stateNode}) => {
   if (stateNode && stateNode.isTheaterJSComponent === true) {
-    const childrenD = stateNode._atom.pointer().prop('props').prop('class').map((possibleClass) => {
-      if (typeof possibleClass === 'string' && possibleClass.trim().length > 0) {
-        return (
-          <span>
-            <span className={css.dot} key="dot">
-              .
+    const childrenD = stateNode._atom
+      .pointer()
+      .prop('props')
+      .prop('class')
+      .map(possibleClass => {
+        if (
+          typeof possibleClass === 'string' &&
+          possibleClass.trim().length > 0
+        ) {
+          return (
+            <span>
+              <span className={css.dot} key="dot">
+                .
+              </span>
+              <span key="className" className={css.className}>
+                {possibleClass}
+              </span>
             </span>
-            <span key="className" className={css.className}>
-              {possibleClass}
-            </span>
-          </span>
-        )
-      } else {
-        return null
-      }
-    })
+          )
+        } else {
+          return null
+        }
+      })
 
     return <DerivationAsReactElement derivation={childrenD} />
-    
   } else {
     return null
   }
