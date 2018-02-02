@@ -5,6 +5,7 @@ import {ValueEditor} from '$studio/structuralEditor'
 import {ComponentDescriptor, ComponentId} from '$studio/componentModel/types'
 import * as componentModelSelectors from '$studio/componentModel/selectors'
 import PaleMessage from '$src/studio/common/components/PaleMessage'
+import Panel from '$src/studio/workspace/components/Panel/Panel'
 // import ListOfModifierInstantiationDescriptorsInspector from './ListOfModifierInstantiationDescriptorsInspector'
 
 type Props =
@@ -34,48 +35,28 @@ export class ComposePanelContent extends React.PureComponent<Props, IState> {
       componentDescriptor,
     } = this.props
 
-    if (!componentId || !pathToComopnentDescriptor || !componentDescriptor)
-      return (
-        <PaleMessage message={`Select an element from the Explorer pane`} />
-      )
-
-    if (componentDescriptor.type === 'HardCoded') {
-      return (
-        // @todo we should either direct the user to select the owner of this component, OR,
-        // in the case of user-provided hard-coded components, allow the user to navigate to
-        // the code of that component (in their own code editor – we don't provide a JS editor)
-        <PaleMessage
-          message={`<${
-            componentDescriptor.displayName
-          }> is a hard-coded component`}
-        />
-      )
-    } else {
-      return (
-        <ValueEditor
-          path={pathToComopnentDescriptor}
-          typeName={typeSystem.types.DeclarativeComponentDescriptor.typeName}
-        />
-      )
-    }
+    return (
+      <Panel>
+        {!componentId || !pathToComopnentDescriptor || !componentDescriptor ? (
+          <PaleMessage message={`Select an element from the Explorer pane`} />
+        ) : componentDescriptor.type === 'HardCoded' ? (
+          // @todo we should either direct the user to select the owner of this component, OR,
+          // in the case of user-provided hard-coded components, allow the user to navigate to
+          // the code of that component (in their own code editor – we don't provide a JS editor)
+          <PaleMessage
+            message={`<${
+              componentDescriptor.displayName
+            }> is a hard-coded component`}
+          />
+        ) : (
+          <ValueEditor
+            path={pathToComopnentDescriptor}
+            typeName={typeSystem.types.DeclarativeComponentDescriptor.typeName}
+          />
+        )}
+      </Panel>
+    )
   }
-
-  // _renderCaseComponentInstantiationValueDescriptor(
-  //   des: ComponentInstantiationValueDescriptor,
-  //   path: Array<string>,
-  // ) {
-  //   const {modifierInstantiationDescriptors} = des
-
-  //   return (
-  //     <ListOfModifierInstantiationDescriptorsInspector
-  //       pathToComopnentDescriptor={[
-  //         ...path,
-  //         'modifierInstantiationDescriptors',
-  //       ]}
-  //       modifierInstantiationDescriptors={modifierInstantiationDescriptors}
-  //     />
-  //   )
-  // }
 }
 
 const connected = connect((s, op) => {

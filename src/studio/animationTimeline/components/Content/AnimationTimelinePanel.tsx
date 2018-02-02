@@ -1,46 +1,52 @@
-// @flow
-import {React, connect, reduceStateAction} from '$studio/handy'
-import {getTimelineById} from '$studio/animationTimeline/selectors'
+import {React, connect, reduceStateAction} from '$src/studio/handy'
+import {getTimelineById} from '$src/studio/animationTimeline/selectors'
 import generateUniqueId from 'uuid/v4'
-import css from './index.css'
+import css from './AnimationTimelinePanel.css'
 import SortableBox from './SortableBox'
 import LanesViewer from './LanesViewer'
 import TimeBar from './TimeBar'
+import {Subscriber} from 'react-broadcast'
+import {PanelWidthChannel} from '$src/studio/workspace/components/Panel/Panel'
+
 import {
   TimelineID,
   TimelineObject,
   BoxID,
   BoxesObject,
   LayoutArray,
-} from '$studio/animationTimeline/types'
-import {XY} from '$studio/workspace/types'
+} from '$src/studio/animationTimeline/types'
+import {XY} from '$src/studio/workspace/types'
+import Panel from '$src/studio/workspace/components/Panel/Panel'
 
 type OwnProps = TimelineObject & {
-  timelineId: TimelineID,
-  panelDimensions: XY,
+  timelineId: TimelineID
+  panelDimensions: XY
 }
 
 type Props = {dispatch: Function} & OwnProps
 
 type State = {
-  boxBeingDragged: ?{
-    index: number,
-    offset: number,
-    height: number,
-    mergeWith?: undefined | null | number,
-    moveTo?: undefined | null | number,
-  },
-  moveRatios: number[],
-  boundaries: number[],
-  panelWidth: number,
-  duration: number,
-  currentTime: number,
-  focus: [number, number],
+  boxBeingDragged:
+    | undefined
+    | null
+    | {
+        index: number
+        offset: number
+        height: number
+        mergeWith?: undefined | null | number
+        moveTo?: undefined | null | number
+      }
+  moveRatios: number[]
+  boundaries: number[]
+  duration: number
+  currentTime: number
+  focus: [number, number]
 }
 
 class Content extends React.Component<Props, State> {
-  props: Props
-  state: State
+  static panelConfig = {
+    headerLess: true,
+  }
 
   constructor(props: Props) {
     super(props)
@@ -51,28 +57,27 @@ class Content extends React.Component<Props, State> {
       boxBeingDragged: null,
       moveRatios: new Array(layout.length).fill(0),
       boundaries: this._getBoundaries(boxes, layout),
-      panelWidth: this._getPanelWidth(props.panelDimensions.x),
       duration: 60000,
       focus: [10000, 50000],
       currentTime: 20000,
     }
   }
 
-  componentDidMount() {
-    window.addEventListener('resize', this._resetPanelWidthOnWindowResize)
-  }
+  // componentDidMount() {
+  //   window.addEventListener('resize', this._resetPanelWidthOnWindowResize)
+  // }
 
-  componentWillUnmount() {
-    window.removeEventListener('resize', this._resetPanelWidthOnWindowResize)
-  }
+  // componentWillUnmount() {
+  //   window.removeEventListener('resize', this._resetPanelWidthOnWindowResize)
+  // }
 
   componentWillReceiveProps(newProps) {
     if (JSON.stringify(newProps.layout) !== JSON.stringify(this.props.layout)) {
       this._resetBoundariesAndRatios(newProps.layout, newProps.boxes)
     }
-    if (newProps.panelDimensions.x !== this.props.panelDimensions.x) {
-      this._resetPanelWidth(newProps.panelDimensions.x)
-    }
+    // if (newProps.panelDimensions.x !== this.props.panelDimensions.x) {
+    //   this._resetPanelWidth(newProps.panelDimensions.x)
+    // }
   }
 
   // _resetPanelWidthOnWindowResize = () => {
@@ -286,23 +291,23 @@ class Content extends React.Component<Props, State> {
     this._resetBoundariesAndRatios()
   }
 
-  changeFocusRightTo = (newFocusRight: number) => {
+  changeFocusRightTo = (newFocusRight: number, panelWidth: number) => {
     const {focus, duration} = this.state
     if (newFocusRight > duration) newFocusRight = duration
     if (newFocusRight - focus[0] < 1000) newFocusRight = focus[0] + 1000
 
-    this._changeFocusTo(focus[0], newFocusRight)
+    this._changeFocusTo(focus[0], newFocusRight, panelWidth)
   }
 
-  changeFocusLeftTo = (newFocusLeft: number) => {
+  changeFocusLeftTo = (newFocusLeft: number, panelWidth: number) => {
     const {focus} = this.state
     if (newFocusLeft < 0) newFocusLeft = 0
     if (focus[1] - newFocusLeft < 1000) newFocusLeft = focus[1] - 1000
 
-    this._changeFocusTo(newFocusLeft, focus[1])
+    this._changeFocusTo(newFocusLeft, focus[1], panelWidth)
   }
 
-  changeFocusTo = (newFocusLeft: number, newFocusRight: number) => {
+  changeFocusTo = (newFocusLeft: number, newFocusRight: number, panelWidth: number) => {
     const {focus, duration} = this.state
     if (newFocusLeft < 0) {
       newFocusLeft = 0
@@ -313,16 +318,16 @@ class Content extends React.Component<Props, State> {
       newFocusRight = duration
     }
 
-    this._changeFocusTo(newFocusLeft, newFocusRight)
+    this._changeFocusTo(newFocusLeft, newFocusRight, panelWidth)
   }
 
-  _changeFocusTo(newFocusLeft: number, newFocusRight: number) {
+  _changeFocusTo(newFocusLeft: number, newFocusRight: number, panelWidth: number) {
     const {focus, currentTime} = this.state
-    const newTimeX = this.focusedTimeToX(currentTime, focus)
+    const newTimeX = this.focusedTimeToX(currentTime, focus, panelWidth)
     const newCurrentTime = this.xToFocusedTime(newTimeX, [
       newFocusLeft,
       newFocusRight,
-    ])
+    ], panelWidth)
 
     this.setState(() => ({
       currentTime: newCurrentTime,
@@ -361,32 +366,30 @@ class Content extends React.Component<Props, State> {
     }))
   }
 
-  handleScroll = (e: SyntheticWheelEvent<>) => {
+  handleScroll = (e: SyntheticWheelEvent, panelWidth: number) => {
     if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) return
 
     e.preventDefault()
-    const {panelWidth, focus} = this.state
+    const {focus} = this.state
     const change = e.deltaX / panelWidth * (focus[1] - focus[0])
-    this.changeFocusTo(focus[0] + change, focus[1] + change)
+    this.changeFocusTo(focus[0] + change, focus[1] + change, panelWidth)
   }
 
-  timeToX = (t: number) => {
-    const {panelWidth, duration} = this.state
+  timeToX(t: number, panelWidth: number) {
+    const {duration} = this.state
     return t * panelWidth / duration
   }
 
-  xToTime = (x: number) => {
-    const {panelWidth, duration} = this.state
+  xToTime(x: number, panelWidth: number) {
+    const {duration} = this.state
     return x * duration / panelWidth
   }
 
-  focusedTimeToX = (t: number, focus: [number, number]) => {
-    const {panelWidth} = this.state
+  focusedTimeToX(t: number, focus: [number, number], panelWidth: number) {
     return (t - focus[0]) / (focus[1] - focus[0]) * panelWidth
   }
 
-  xToFocusedTime = (x: number, focus: [number, number]) => {
-    const {panelWidth} = this.state
+  xToFocusedTime(x: number, focus: [number, number], panelWidth: number) {
     return x * (focus[1] - focus[0]) / panelWidth + focus[0]
   }
 
@@ -394,68 +397,75 @@ class Content extends React.Component<Props, State> {
     const {
       boxBeingDragged,
       moveRatios,
-      panelWidth,
       duration,
       focus,
       currentTime,
     } = this.state
     const {boxes, layout} = this.props
     return (
-      <div className={css.container} onWheel={this.handleScroll}>
-        <div className={css.timeBar}>
-          <TimeBar
-            panelWidth={panelWidth}
-            duration={duration}
-            currentTime={currentTime}
-            focus={focus}
-            timeToX={this.timeToX}
-            xToTime={this.xToTime}
-            focusedTimeToX={this.focusedTimeToX}
-            xToFocusedTime={this.xToFocusedTime}
-            changeFocusTo={this.changeFocusTo}
-            changeFocusRightTo={this.changeFocusRightTo}
-            changeFocusLeftTo={this.changeFocusLeftTo}
-            changeCurrentTimeTo={this.changeCurrentTimeTo}
-            changeDuration={this.changeDuration}
-          />
-        </div>
-        <div className={css.lanes}>
-          {layout.map((id, index) => {
-            const box = boxes[id]
-            const boxTranslateY =
-              moveRatios[index] *
-              (boxBeingDragged != null ? boxBeingDragged.height : 0)
-            const boxShowMergeOverlay =
-              boxBeingDragged != null &&
-              boxBeingDragged.index === index &&
-              boxBeingDragged.mergeWith != null
+      <Panel headerLess={true} css={{container: css.panelContainer}}>
+        <Subscriber channel={PanelWidthChannel}>
+          {(panelWidth: number) => {
             return (
-              <SortableBox
-                key={id}
-                height={box.height}
-                translateY={boxTranslateY}
-                showMergeOverlay={boxShowMergeOverlay}
-                onMoveStart={() => this.onBoxStartMove(index)}
-                onMoveEnd={() => this.onBoxEndMove()}
-                onMove={this.onBoxMove}
-                onResize={newSize => this.onBoxResize(id, newSize)}
-              >
-                {
-                  <LanesViewer
-                    boxHeight={box.height}
-                    laneIds={box.lanes}
-                    splitLane={laneId => this.splitLane(index, laneId)}
+              <div className={css.container} onWheel={(e) => this.handleScroll(e, panelWidth)}>
+                <div className={css.timeBar}>
+                  <TimeBar
                     panelWidth={panelWidth}
                     duration={duration}
                     currentTime={currentTime}
                     focus={focus}
+                    timeToX={(t: number) => this.timeToX(t, panelWidth)}
+                    xToTime={(x: number) => this.xToTime(x, panelWidth)}
+                    focusedTimeToX={(t: number, focus: [number, number]) => this.focusedTimeToX(t, focus, panelWidth)}
+                    xToFocusedTime={(x: number, focus: [number, number]) => this.xToFocusedTime(x, focus, panelWidth)}
+                    changeFocusTo={(focusLeft: number, focusRight: number) => this.changeFocusTo(focusLeft, focusRight, panelWidth)}
+                    changeFocusRightTo={(focus: number) => this.changeFocusRightTo(focus, panelWidth)}
+                    changeFocusLeftTo={(focus: number) => this.changeFocusLeftTo(focus, panelWidth)}
+                    changeCurrentTimeTo={this.changeCurrentTimeTo}
+                    changeDuration={this.changeDuration}
                   />
-                }
-              </SortableBox>
+                </div>
+                <div className={css.lanes}>
+                  {layout.map((id, index) => {
+                    const box = boxes[id]
+                    const boxTranslateY =
+                      moveRatios[index] *
+                      (boxBeingDragged != null ? boxBeingDragged.height : 0)
+                    const boxShowMergeOverlay =
+                      boxBeingDragged != null &&
+                      boxBeingDragged.index === index &&
+                      boxBeingDragged.mergeWith != null
+                    return (
+                      <SortableBox
+                        key={id}
+                        height={box.height}
+                        translateY={boxTranslateY}
+                        showMergeOverlay={boxShowMergeOverlay}
+                        onMoveStart={() => this.onBoxStartMove(index)}
+                        onMoveEnd={() => this.onBoxEndMove()}
+                        onMove={this.onBoxMove}
+                        onResize={newSize => this.onBoxResize(id, newSize)}
+                      >
+                        {
+                          <LanesViewer
+                            boxHeight={box.height}
+                            laneIds={box.lanes}
+                            splitLane={laneId => this.splitLane(index, laneId)}
+                            panelWidth={panelWidth}
+                            duration={duration}
+                            currentTime={currentTime}
+                            focus={focus}
+                          />
+                        }
+                      </SortableBox>
+                    )
+                  })}
+                </div>
+              </div>
             )
-          })}
-        </div>
-      </div>
+          }}
+        </Subscriber>
+      </Panel>
     )
   }
 }

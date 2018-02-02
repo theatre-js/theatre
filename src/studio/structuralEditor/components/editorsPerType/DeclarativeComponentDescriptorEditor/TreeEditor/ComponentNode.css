@@ -12,7 +12,7 @@
   align-items: flex-end;
   
   opacity: 1;
-  transition: opacity .15s ease-in-out;
+  /* transition: opacity .15s ease-in-out; */
   
   // display: grid;
   // grid-template-columns: auto 1fr;
@@ -22,10 +22,34 @@
   &.isContentHidden {
     opacity: 0;
   }
+
+  &:before {
+    display: block;
+    content: ' ';
+    top: -4px;
+    right: -5px;
+    bottom: -2px;
+    left: -14px;
+    position: absolute;
+    background: black;
+    opacity: 0;
+    border-radius: 2px;
+    z-index: -1;
+  }
+  
+  &:hover:before {
+    opacity: 0.1;
+  }
+  
+  &.isSelected:before {
+    opacity: 1;
+    background: #0e1315;
+
+  }
 }
 
 .displayName {
-  cursor: pointer;
+  /* cursor: pointer; */
   // grid-column: 1;
 }
 
@@ -54,9 +78,9 @@
 .tagOpen, .tagClose {
   color: #4f5d77;
 
-  &.isSelected {
+  /* &.isSelected {
     color: #9fafcc;
-  }
+  } */
 }
 
 .tagClose {

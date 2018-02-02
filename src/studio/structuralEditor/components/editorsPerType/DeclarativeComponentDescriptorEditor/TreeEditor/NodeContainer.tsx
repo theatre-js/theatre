@@ -239,6 +239,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
       nodeProps.status === STATUS.UNINITIALIZED ||
       nodeProps.type === NODE_TYPE.COMPONENT ||
       nodeProps.status === STATUS.TEXT_CHANGING_TYPE
+    const isSelected = nodeProps.id === selectedNodeId
     return (
       <div ref={c => (this.wrapper = c)}>
         <div
@@ -254,6 +255,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
               nodeProps.status === STATUS.UNINITIALIZED ||
               nodeProps.status === STATUS.CREATION_CANCELED,
             [css.isCollapsed]: isCollapsed,
+            [css.isSelected]: isSelected,
           })}
           onMouseUp={this.mouseUpHandler}
         >
@@ -270,7 +272,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
           >
             {isComponent && (
               <ComponentNode
-                isSelected={nodeProps.id === selectedNodeId}
+                isSelected={isSelected}
                 nodeProps={nodeProps}
                 setClassValue={this.setNodeClassValue}
                 onSelect={() => this.props.setSelectedNodeId(nodeProps.id)}

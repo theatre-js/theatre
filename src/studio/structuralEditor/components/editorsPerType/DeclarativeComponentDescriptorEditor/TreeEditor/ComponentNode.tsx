@@ -147,6 +147,7 @@ class ComponentNode extends React.PureComponent<Props, State> {
         ref={c => (this.container = c)}
         className={cx(css.container, {
           [css.isContentHidden]: isContentHidden,
+          [css.isSelected]: isSelected,
         })}
         onMouseDown={e => {
           if (!e.shiftKey) e.stopPropagation()

@@ -8,8 +8,7 @@ import {
   PanelPersistentState,
 } from '$studio/workspace/types'
 import {createPanel} from '$studio/workspace/sagas'
-import Panel from '../Panel'
-// import PanelCreator from '../PanelCreator'
+import PanelController from '../PanelController'
 import css from './index.css'
 
 type Props = {
@@ -468,7 +467,17 @@ export class TheUI extends React.Component<Props, State> {
     return (
       <div className={css.container}>
         {visiblePanels.map(panelId => (
-          <Panel
+// <<<<<<< HEAD
+//           <Panel
+//             key={panelId}
+//             panelId={panelId}
+//             isInEditMode={this.state.isInEditMode}
+//             boundaries={this.state.calculatedBoundaries[panelId]}
+//             gridOfBoundaries={this.state.gridOfBoundaries}
+//             updatePanelBoundaries={this.updatePanelBoundaries}
+//           />
+// =======
+          <PanelController
             key={panelId}
             panelId={panelId}
             isInEditMode={this.state.isInEditMode}
@@ -476,6 +485,7 @@ export class TheUI extends React.Component<Props, State> {
             gridOfBoundaries={this.state.gridOfBoundaries}
             updatePanelBoundaries={this.updatePanelBoundaries}
           />
+
         ))}
         {/*
           {isCreatingNewPanel &&

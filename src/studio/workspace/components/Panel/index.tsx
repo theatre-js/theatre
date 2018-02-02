@@ -27,10 +27,6 @@ import {EXACT_VALUE, SAME_AS_BOUNDARY} from '$src/studio/workspace/components/Th
 
 type OwnProps = {
   panelId: string
-  isInEditMode: boolean
-  boundaries: $FixMe
-  gridOfBoundaries: $FixMe
-  updatePanelBoundaries: Function
 }
 
 type Props = OwnProps &

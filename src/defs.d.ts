@@ -10,7 +10,7 @@ interface Window {
 }
 
 
-type mixed = {}
+type mixed = object | number | string | boolean | symbol | undefined | null
 
 // @flow
 
@@ -78,9 +78,30 @@ declare var module: {
 
 type Generator_<A, ReturnType, YieldType> = Generator
 
-type Spread<A, B> = $FixMe
-
 declare module "*.svg" {
   var s: string
   export default s
 }
+
+// @todo uncomment this once https://github.com/Microsoft/TypeScript/pull/21316 lands
+type Spread<A, B> = $FixMe
+/*
+// Names of properties in T with types that include undefined
+type OptionalPropertyNames<T> =
+    { [K in keyof T]: undefined extends T[K] ? K : never }[keyof T];
+
+// Common properties from L and R with undefined in R[K] replaced by type in L[K]
+type SpreadProperties<L, R, K extends keyof L & keyof R> =
+    { [P in K]: L[P] | Diff<R[P], undefined> };
+
+// Type of { ...L, ...R }
+type Spread<L, R> =
+    // Properties in L that don't exist in R
+    & Pick<L, Diff<keyof L, keyof R>>
+    // Properties in R with types that exclude undefined
+    & Pick<R, Diff<keyof R, OptionalPropertyNames<R>>>
+    // Properties in R, with types that include undefined, that don't exist in L
+    & Pick<R, Diff<OptionalPropertyNames<R>, keyof L>>
+    // Properties in R, with types that include undefined, that exist in L
+    & SpreadProperties<L, R, OptionalPropertyNames<R> & keyof L>;
+  */

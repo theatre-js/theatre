@@ -80,6 +80,9 @@ const makeSeparateComponentForEachDomTag = () => {
     'div',
     'span',
     'header',
+    'footer',
+    'aside',
+    'section',
     'h1',
     'h2',
     'h3',
@@ -87,11 +90,20 @@ const makeSeparateComponentForEachDomTag = () => {
     'h5',
     'h6',
     'a',
+    'nav',
     'button',
-    'footer',
     'input',
     'picture',
     'video',
+    'article',
+    'address',
+    'ul',
+    'ol',
+    'li',
+    'p',
+    'pre',
+    'main',
+    
   ]
 
   const components = {}
