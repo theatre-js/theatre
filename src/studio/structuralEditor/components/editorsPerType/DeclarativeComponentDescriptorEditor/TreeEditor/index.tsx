@@ -499,16 +499,11 @@ class TreeEditor extends React.PureComponent<Props, State> {
 
   cancelTextNodeTypeChange = (id: string) => {
     this._setLastAction(ACTION.NODE_TEXT_TYPE_CHANGE_CANCEL, {id})
-    this._setNodes(this.props.rootComponentDescriptor)    
+    this._setNodes(this.props.rootComponentDescriptor)
   }
 
   render() {
-    const {
-      nodes,
-      nodeBeingDragged,
-      activeDropZone,
-      selectedNodeId,
-    } = this.state
+    const {nodes, nodeBeingDragged, activeDropZone, selectedNodeId} = this.state
     const isANodeBeingDragged = nodeBeingDragged != null
 
     return (

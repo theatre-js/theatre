@@ -13,14 +13,23 @@ const initialState: WorkspaceNamespaceState = {
         configuration: {
           timelineId: '8daa7380-9b43-475a-8352-dc564a58c710',
         },
-        placementSettings: {
-          pos: {
-            x: 15,
-            y: 60,
+        boundaries: {
+          left: {
+            type: 'sameAsBoundary',
+            path: ['elementTree', 'right'],
           },
-          dim: {
-            x: 70,
-            y: 40,
+          right: {
+            type: 'sameAsBoundary',
+            path: ['composePanel-imAUUID', 'left'],
+          },
+          top: {
+            type: 'distanceFromBoundary',
+            path: ['8daa7380-9b43-475a-8352-dc564a58c719', 'bottom'],
+            distance: -300,
+          },
+          bottom: {
+            type: 'sameAsBoundary',
+            path: ['window', 'bottom'],
           },
         },
         inputs: {},
@@ -35,14 +44,23 @@ const initialState: WorkspaceNamespaceState = {
         configuration: {
           foo: 'bar',
         },
-        placementSettings: {
-          pos: {
-            x: 0,
-            y: 0,
+        boundaries: {
+          left: {
+            type: 'sameAsBoundary',
+            path: ['window', 'left'],
           },
-          dim: {
-            x: 15,
-            y: 100,
+          right: {
+            type: 'distanceFromBoundary',
+            path: ['elementTree', 'left'],
+            distance: 300,
+          },
+          top: {
+            type: 'sameAsBoundary',
+            path: ['window', 'top'],
+          },
+          bottom: {
+            type: 'sameAsBoundary',
+            path: ['window', 'bottom'],
           },
         },
         inputs: {},
@@ -61,16 +79,23 @@ const initialState: WorkspaceNamespaceState = {
         configuration: {
           foo: 'bar',
         },
-        placementSettings: {
-          pos: {
-            x: 85,
-            // x: 85,
-            y: 0,
+        boundaries: {
+          left: {
+            type: 'distanceFromBoundary',
+            path: ['composePanel-imAUUID', 'right'],
+            distance: -300,
           },
-          dim: {
-            x: 15,
-            // x: 15,
-            y: 100,
+          right: {
+            type: 'sameAsBoundary',
+            path: ['window', 'right'],
+          },
+          top: {
+            type: 'sameAsBoundary',
+            path: ['window', 'top'],
+          },
+          bottom: {
+            type: 'sameAsBoundary',
+            path: ['window', 'bottom'],
           },
         },
         inputs: {
@@ -80,7 +105,7 @@ const initialState: WorkspaceNamespaceState = {
       },
     },
     listOfVisibles: [
-      // '8daa7380-9b43-475a-8352-dc564a58c719',
+      '8daa7380-9b43-475a-8352-dc564a58c719',
       'elementTree',
       'composePanel-imAUUID',
     ],

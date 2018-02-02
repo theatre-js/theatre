@@ -75,13 +75,13 @@ class Content extends React.Component<Props, State> {
     }
   }
 
-  _resetPanelWidthOnWindowResize = () => {
-    this._resetPanelWidth(this.props.panelDimensions.x)
-  }
+  // _resetPanelWidthOnWindowResize = () => {
+  //   this._resetPanelWidth(this.props.panelDimensions.x)
+  // }
 
   _getPanelWidth(xDim) {
-    return xDim / 100 * window.innerWidth - 16
-    // return xDim / 100 * window.innerWidth - 40
+    return xDim - 10
+    // return xDim / 100 * window.innerWidth - 16
   }
 
   _resetPanelWidth(xDim) {

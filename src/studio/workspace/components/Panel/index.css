@@ -3,6 +3,10 @@
   box-sizing: border-box;
   --panelTopBarHeight: 34px;
   --body-color: #263238;
+
+  &:hover {
+    z-index: 100;
+  }
   /* --borders-color: #312424; */
   /* --shadows: #263238; */
 

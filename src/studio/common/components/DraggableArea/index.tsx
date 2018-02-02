@@ -29,9 +29,9 @@ class DraggableArea extends React.Component<Props, State> {
     }
   }
 
-  componentWillUnmount() {
-    this.removeDragListeners()
-  }
+  // componentWillUnmount() {
+  //   this.removeDragListeners()
+  // }
 
   addDragListeners() {
     document.addEventListener('mousemove', this.dragHandler)

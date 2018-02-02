@@ -22,9 +22,15 @@ import {
 
 import panelTypes from '$studio/workspace/panelTypes'
 import _ from 'lodash'
+import EditOverlay from '$src/studio/workspace/components/Panel/EditOverlay'
+import {EXACT_VALUE, SAME_AS_BOUNDARY} from '$src/studio/workspace/components/TheUI'
 
 type OwnProps = {
-  panelId: string,
+  panelId: string
+  isInEditMode: boolean
+  boundaries: $FixMe
+  gridOfBoundaries: $FixMe
+  updatePanelBoundaries: Function
 }
 
 type Props = OwnProps &
@@ -73,7 +79,8 @@ class Panel extends React.Component<Props, State> {
     super(props)
     this.panelComponents = panelTypes[props.type].components
     this.state = {
-      ...this.getPanelPlacementSettings(props.pos, props.dim),
+      // ...this.getPanelPlacementSettings(props.boundaries),
+      move: Panel.getZeroXY(),
       isMoving: false,
     }
   }
@@ -83,69 +90,167 @@ class Panel extends React.Component<Props, State> {
     if (pos !== this.props.pos || dim !== this.props.dim) {
       this.setState(state => ({
         isMoving: state.isMoving,
-        ...this.getPanelPlacementSettings(pos, dim),
+        move: Panel.getZeroXY(),      
+        // ...this.getPanelPlacementSettings(pos, dim),
       }))
     }
   }
 
-  getPanelPlacementSettings(pos: XY, dim: XY) {
-    return {
-      move: Panel.getZeroXY(),
-      resize: Panel.getZeroXY(),
-      ...this.calculatePanelBoundaries(pos, dim),
-    }
-  }
+  // getPanelPlacementSettings(placementSettings) {
+  //   return {
+  //     move: Panel.getZeroXY(),
+  //     resize: Panel.getZeroXY(),
+  //     ...this.calculatePanelBoundaries(pos, dim),
+  //   }
+  // }
 
-  calculatePanelBoundaries(
-    pos: XY,
-    dim: XY,
-  ): {moveBoundaries: IBoundary, resizeBoundaries: IBoundary} {
-    const distanceToRight = 100 - pos.x - dim.x
-    const distanceToBottom = 100 - pos.y - dim.y
-    return {
-      moveBoundaries: {
-        xlow: -pos.x * window.innerWidth / 100,
-        xhigh: distanceToRight * window.innerWidth / 100,
-        ylow: -pos.y * window.innerHeight / 100,
-        yhigh: distanceToBottom * window.innerHeight / 100,
-      },
-      resizeBoundaries: {
-        xlow: -(dim.x - 10),
-        xhigh: distanceToRight,
-        ylow: -(dim.y - 10),
-        yhigh: distanceToBottom,
-      },
-    }
-  }
+  // calculatePanelBoundaries(
+  //   pos: XY,
+  //   dim: XY,
+  // ): {moveBoundaries: IBoundary, resizeBoundaries: IBoundary} {
+  //   const distanceToRight = 100 - pos.x - dim.x
+  //   const distanceToBottom = 100 - pos.y - dim.y
+  //   return {
+  //     moveBoundaries: {
+  //       xlow: -pos.x * window.innerWidth / 100,
+  //       xhigh: distanceToRight * window.innerWidth / 100,
+  //       ylow: -pos.y * window.innerHeight / 100,
+  //       yhigh: distanceToBottom * window.innerHeight / 100,
+  //     },
+  //     resizeBoundaries: {
+  //       xlow: -(dim.x - 10),
+  //       xhigh: distanceToRight,
+  //       ylow: -(dim.y - 10),
+  //       yhigh: distanceToBottom,
+  //     },
+  //   }
+  // }
 
   movePanel = (dx: number, dy: number) => {
-    this.setState(state => {
-      const {moveBoundaries: {xlow, xhigh, ylow, yhigh}} = state
+    const {boundaries: {left, top, right, bottom}, gridOfBoundaries} = this.props
+    const newLeft = left + dx
+    const newTop = top + dy
+    const leftRef = gridOfBoundaries.x.find((b: number) => (newLeft - 10 < b) && (b < newLeft + 10))
+    if (leftRef != null) {
+      dx = leftRef - left
+    } else {
+      const newRight = right + dx
+      const rightRef = gridOfBoundaries.x.find((b: number) => (newRight - 10 < b) && (b < newRight + 10))
+      if (rightRef != null) {
+        dx = rightRef - right
+      }
+    }
+    const topRef = gridOfBoundaries.y.find((b: number) => (newTop - 10 < b) && (b < newTop + 10))
+    if (topRef != null) {
+      dy = topRef - top
+    } else {
+      const newBottom = bottom + dy
+      const bottomRef = gridOfBoundaries.y.find((b: number) => (newBottom - 10 < b) && (b < newBottom + 10))
+      if (bottomRef != null) {
+        dy = bottomRef - bottom
+      }
+    }
+    this.setState(() => {
       return {
         isMoving: true,
         move: {
-          x: _.clamp(dx, xlow, xhigh),
-          y: _.clamp(dy, ylow, yhigh),
-        },
+          x: dx,
+          y: dy,
+        }
       }
     })
   }
 
   setPanelPosition = () => {
-    const {pos, panelId} = this.props
+    const {boundaries, panelId, gridOfBoundaries} = this.props
     const {move} = this.state
-    const newPos = {
-      x: pos.x + move.x / window.innerWidth * 100,
-      y: pos.y + move.y / window.innerHeight * 100,
+    const newLeft = boundaries.left + move.x
+    const newRight = boundaries.right + move.x
+    const newTop = boundaries.top + move.y
+    const newBottom = boundaries.bottom + move.y
+    const refMapX = _.pickBy(gridOfBoundaries.refMapX, (path: string[]) => path[0] != panelId)
+    const refMapY = _.pickBy(gridOfBoundaries.refMapY, (path: string[]) => path[0] != panelId)
+    const newBoundaries = {
+      left: {
+        ...(refMapX.hasOwnProperty(newLeft)
+          ?
+            {
+              type: SAME_AS_BOUNDARY,
+              path: refMapX[newLeft],
+            }
+          :
+            {
+              type: EXACT_VALUE,
+              value: newLeft,
+            }
+        )
+      },
+      right: {
+        ...(refMapX.hasOwnProperty(newRight)
+        ?
+          {
+            type: SAME_AS_BOUNDARY,
+            path: refMapX[newRight],
+          }
+        :
+          {
+            type: EXACT_VALUE,
+            value: newRight,
+          }
+        )
+      },
+      top: {
+        ...(refMapY.hasOwnProperty(newTop)
+          ?
+            {
+              type: SAME_AS_BOUNDARY,
+              path: refMapY[newTop],
+            }
+          :
+            {
+              type: EXACT_VALUE,
+              value: newTop,
+            }
+        )
+      },
+      bottom: {
+        ...(refMapY.hasOwnProperty(newBottom)
+          ?
+            {
+              type: SAME_AS_BOUNDARY,
+              path: refMapY[newBottom],
+            }
+          :
+            {
+              type: EXACT_VALUE,
+              value: newBottom,
+            }
+        )
+      },
     }
 
-    this.props.dispatch(
-      reduceStateAction(
-        ['workspace', 'panels', 'byId', panelId, 'placementSettings', 'pos'],
-        () => newPos,
-      ),
-    )
+    // this.props.dispatch(
+    //   reduceStateAction(
+    //     ['workspace', 'panels', 'byId', panelId, 'boundaries'],
+    //     () => newBoundaries,
+    //   ),
+    // )
+    this.props.updatePanelBoundaries(panelId, newBoundaries)
     this.setState(() => ({isMoving: false}))
+    // const {pos, panelId} = this.props
+    // const {move} = this.state
+    // const newPos = {
+    //   x: pos.x + move.x / window.innerWidth * 100,
+    //   y: pos.y + move.y / window.innerHeight * 100,
+    // }
+
+    // this.props.dispatch(
+    //   reduceStateAction(
+    //     ['workspace', 'panels', 'byId', panelId, 'placementSettings', 'pos'],
+    //     () => newPos,
+    //   ),
+    // )
+    // this.setState(() => ({isMoving: false}))
   }
 
   resizePanel = (dx: number, dy: number) => {
@@ -216,23 +321,29 @@ class Panel extends React.Component<Props, State> {
     const {panelComponents} = this
     const {
       persistentState: {isInSettings, ...componentState},
-      pos,
-      dim,
+      // pos,
+      // dim,
+      boundaries: {left, top, right, bottom},
       configuration,
       currentlyDraggingOutput,
       outputs,
       inputs,
+      isInEditMode,
     } = this.props
     const {move, resize, isMoving} = this.state
+    const width = right - left
+    const height = bottom - top
     const style = {
-      left: `${pos.x}%`,
-      top: `${pos.y}%`,
-      width: `${dim.x + resize.x}%`,
-      height: `${dim.y + resize.y}%`,
+      // left: `${left}%`,
+      // top: `${pos.y}%`,
+      // width: `${dim.x + resize.x}%`,
+      // height: `${dim.y + resize.y}%`,
+      left, top, width, height,
       ...(isMoving
         ? {
+            transition: 'transform .05s',
             transform: `translate3d(${move.x}px, ${move.y}px, 0)`,
-            zIndex: 1,
+            zIndex: 100,
           }
         : {}),
     }
@@ -280,7 +391,7 @@ class Panel extends React.Component<Props, State> {
               <panelComponents.Content
                 {...configuration}
                 {...componentState}
-                panelDimensions={dim}
+                panelDimensions={{x: width, y: height}}
                 outputs={outputs}
                 inputs={inputs}
                 updatePanelOutput={newData =>
@@ -290,6 +401,14 @@ class Panel extends React.Component<Props, State> {
             )}
           </div>
         </div>
+        {isInEditMode &&
+          <EditOverlay
+            onPanelDrag={this.movePanel}
+            onPanelDragEnd={this.setPanelPosition}
+            // onPanelResize={this.resizePanel}
+            // onPanelResizeEnd={this.setPanelSize}
+          />
+        }
       </div>
     )
   }
@@ -300,7 +419,6 @@ export default compose(
     const {
       type,
       configuration,
-      placementSettings,
       persistentState,
       outputs,
       inputs,
@@ -311,7 +429,6 @@ export default compose(
       type,
       configuration,
       persistentState,
-      ...placementSettings,
       currentlyDraggingOutput,
       outputs,
       inputs: getPanelInputs(s, inputs),

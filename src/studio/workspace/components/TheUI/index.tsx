@@ -1,12 +1,12 @@
 import * as React from 'react' // eslint-disable-line flowtype/require-valid-file-annotation
-import compose from 'ramda/src/compose'
-import {connect} from '$studio/handy'
+import {connect, compose, reduceStateAction} from '$studio/handy'
 import {IStoreState} from '$studio/types'
+import * as _ from 'lodash'
+import {set, get} from 'lodash/fp'
 import {
   PanelPlacementSettings,
   PanelPersistentState,
 } from '$studio/workspace/types'
-import {getVisiblePanelsList} from '$studio/workspace/selectors'
 import {createPanel} from '$studio/workspace/sagas'
 import Panel from '../Panel'
 // import PanelCreator from '../PanelCreator'
@@ -15,13 +15,37 @@ import css from './index.css'
 type Props = {
   visiblePanels: Array<string>
   dispatch: Function
+  panelsBoundaries: $FixMe
 }
 
 type State = {
   isCreatingNewPanel: boolean
+  isInEditMode: boolean
+  calculatedBoundaries: $FixMe
+  gridOfBoundaries: $FixMe
+}
+
+export const EXACT_VALUE = 'exactValue'
+export const SAME_AS_BOUNDARY = 'sameAsBoundary'
+export const DIST_FROM_BOUNDARY = 'distanceFromBoundary'
+
+const getOppositeSide = (side: string): string => {
+  switch (side) {
+    case 'left':
+      return 'right'
+    case 'right':
+      return 'left'
+    case 'top':
+      return 'bottom'
+    case 'bottom':
+      return 'top'
+    default:
+      throw Error('this should not happen!')
+  }
 }
 
 export class TheUI extends React.Component<Props, State> {
+  boundaryPathToValueRefMap: WeakMap<object, any>
   static getDefaultPanelPlacement(type): PanelPlacementSettings {
     // ??
     switch (type) {
@@ -53,6 +77,281 @@ export class TheUI extends React.Component<Props, State> {
 
     this.state = {
       isCreatingNewPanel: false,
+      isInEditMode: false,
+      ...this._getUpdatedBoundaries(props.panelsBoundaries),
+    }
+  }
+
+  componentDidMount() {
+    window.addEventListener('resize', this._handleResize)
+    document.addEventListener('keydown', this._handleKeyDown)
+    document.addEventListener('keyup', this._handleKeyUp)
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._handleResize)
+    document.removeEventListener('keydown', this._handleKeyDown)
+    document.removeEventListener('keyup', this._handleKeyUp)
+  }
+
+  componentWillReceiveProps(nextProps: Props) {
+    this.setState(() => ({
+      ...this._getUpdatedBoundaries(nextProps.panelsBoundaries),
+    }))
+  }
+
+  _handleResize = () => {
+    this.setState(() => ({
+      ...this._getUpdatedBoundaries(this.props.panelsBoundaries),
+    }))
+  }
+
+  _getUpdatedBoundaries(boundariesWithoutWindow: $FixMe) {
+    const boundaries: $FixMe = {
+      window: {
+        left: {type: EXACT_VALUE, value: 0},
+        top: {type: EXACT_VALUE, value: 0},
+        right: {type: EXACT_VALUE, value: window.innerWidth},
+        bottom: {type: EXACT_VALUE, value: window.innerHeight},
+      },
+      ...boundariesWithoutWindow,
+    }
+    return {
+      calculatedBoundaries: this._getCalculatedBoundaries(boundaries),
+      gridOfBoundaries: this._getGridOfBoundaries(boundaries),
+    }
+  }
+
+  _getCalculatedBoundaries(boundaries: $FixMe) {
+    return _.mapValues(boundaries, boundary =>
+      _.mapValues(boundary, side => {
+        if (side.type === EXACT_VALUE) {
+          return side.value
+        } else {
+          let distance = side.distance | 0
+          let ref = _.get(boundaries, side.path)
+          while (ref.type !== EXACT_VALUE) {
+            if (ref.type === DIST_FROM_BOUNDARY) distance += ref.distance
+            ref = _.get(boundaries, ref.path)
+          }
+          return ref.value + distance
+        }
+      }),
+    )
+  }
+
+  _getGridOfBoundaries(boundaries: $FixMe) {
+    let x: number[] = []
+    let y: number[] = []
+    let refMapX: $FixMe = {}
+    let refMapY: $FixMe = {}
+    this.boundaryPathToValueRefMap = {}
+    for (const boundaryId in boundaries) {
+      const boundary = boundaries[boundaryId]
+      for (const side in boundary) {
+        if (side === 'left' || side === 'right') {
+          if (boundary[side].type === EXACT_VALUE) {
+            x = x.concat(boundary[side].value)
+            refMapX = {
+              ...refMapX,
+              [boundary[side].value]: [boundaryId, side],
+            }
+            this.boundaryPathToValueRefMap = set(
+              [boundaryId, side],
+              boundary[side].value,
+              this.boundaryPathToValueRefMap,
+            )
+          }
+          if (boundary[side].type === DIST_FROM_BOUNDARY) {
+            let distance = boundary[side].distance | 0
+            let ref = _.get(boundaries, boundary[side].path)
+            while (ref.type !== EXACT_VALUE) {
+              if (ref.type === DIST_FROM_BOUNDARY) distance += ref.distance
+              ref = _.get(boundaries, ref.path)
+            }
+            x = x.concat(ref.value + distance)
+            refMapX = {
+              ...refMapX,
+              [ref.value + distance]: [boundaryId, side],
+            }
+            this.boundaryPathToValueRefMap = set(
+              [boundaryId, side],
+              ref.value + distance,
+              this.boundaryPathToValueRefMap,
+            )
+          }
+        }
+        if (side === 'top' || side === 'bottom') {
+          if (boundary[side].type === EXACT_VALUE) {
+            y = y.concat(boundary[side].value)
+            refMapY = {
+              ...refMapY,
+              [boundary[side].value]: [boundaryId, side],
+            }
+            this.boundaryPathToValueRefMap = set(
+              [boundaryId, side],
+              boundary[side].value,
+              this.boundaryPathToValueRefMap,
+            )
+          }
+          if (boundary[side].type === DIST_FROM_BOUNDARY) {
+            let distance = boundary[side].distance | 0
+            let ref = _.get(boundaries, boundary[side].path)
+            while (ref.type !== EXACT_VALUE) {
+              if (ref.type === DIST_FROM_BOUNDARY) distance += ref.distance
+              ref = _.get(boundaries, ref.path)
+            }
+            y = y.concat(ref.value + distance)
+            refMapY = {
+              ...refMapY,
+              [ref.value + distance]: [boundaryId, side],
+            }
+            this.boundaryPathToValueRefMap = set(
+              [boundaryId, side],
+              ref.value + distance,
+              this.boundaryPathToValueRefMap,
+            )
+          }
+        }
+      }
+    }
+    return {x, y, refMapX, refMapY}
+  }
+
+  updatePanelBoundaries = (panelId: string, newBoundaries: $FixMe) => {
+    this.props.dispatch(
+      reduceStateAction(['workspace', 'panels', 'byId'], (panels: $FixMe) => {
+        const stagedChanges = _.compact(
+          _.flatMap(newBoundaries, (sideValue: $FixMe, sideKey: string) => {
+            if (
+              sideValue.type === SAME_AS_BOUNDARY &&
+              sideValue.path[0] === 'window'
+            ) {
+              const oppositeSideKey = getOppositeSide(sideKey)
+              const oppositeSideValue = newBoundaries[oppositeSideKey]
+              if (
+                oppositeSideValue.type === SAME_AS_BOUNDARY &&
+                oppositeSideValue.path[0] !== 'window'
+              ) {
+                return [
+                  {
+                    path: [panelId, 'boundaries', oppositeSideKey],
+                    newValue: {
+                      type: DIST_FROM_BOUNDARY,
+                      path: [panelId, sideKey],
+                      distance:
+                        get(
+                          oppositeSideValue.path,
+                          this.boundaryPathToValueRefMap,
+                        ) -
+                        get(
+                          ['window', sideKey],
+                          this.boundaryPathToValueRefMap,
+                        ),
+                    },
+                  },
+                  {
+                    path: [oppositeSideValue.path[0]].concat(
+                      'boundaries',
+                      oppositeSideValue.path[1],
+                    ),
+                    newValue: {
+                      type: SAME_AS_BOUNDARY,
+                      path: [panelId, oppositeSideKey],
+                    },
+                  },
+                ]
+              }
+            }
+          }),
+        )
+
+        const panelsWithoutRefsToUpdatedPanel = _.mapValues(
+          panels,
+          (panel: $FixMe) => {
+            if (panel.id === panelId) {
+              return {
+                ...panel,
+                boundaries: newBoundaries,
+              }
+            } else {
+              return {
+                ...panel,
+                boundaries: _.mapValues(
+                  panel.boundaries,
+                  (sideValue: $FixMe) => {
+                    if (sideValue.path && sideValue.path[0] === panelId) {
+                      return {
+                        type: EXACT_VALUE,
+                        value: this.state.calculatedBoundaries[panelId][
+                          sideValue.path[1]
+                        ],
+                      }
+                    } else {
+                      return sideValue
+                    }
+                  },
+                ),
+              }
+            }
+          },
+        )
+
+        let panelsWithPrioritizedBoundaries = panelsWithoutRefsToUpdatedPanel
+        stagedChanges.forEach((change: $FixMe) => {
+          panelsWithPrioritizedBoundaries = set(
+            change.path,
+            change.newValue,
+            panelsWithPrioritizedBoundaries,
+          )
+        })
+
+        return _.mapValues(panelsWithPrioritizedBoundaries, (panel: $FixMe) => {
+          return {
+            ...panel,
+            boundaries: _.mapValues(
+              panel.boundaries,
+              (sideValue: $FixMe, sideKey: string, boundaries: $FixMe) => {
+                const oppositeSideKey = getOppositeSide(sideKey)
+                const oppositeSideValue = boundaries[oppositeSideKey]
+                if (
+                  sideValue.type === EXACT_VALUE &&
+                  oppositeSideValue.type !== EXACT_VALUE &&
+                  !(
+                    oppositeSideValue.type === DIST_FROM_BOUNDARY &&
+                    oppositeSideValue.path[0] === panel.id &&
+                    oppositeSideValue.path[1] === sideKey
+                  )
+                ) {
+                  const currentPanelBoundaries = this.state
+                    .calculatedBoundaries[panel.id]
+                  return {
+                    type: DIST_FROM_BOUNDARY,
+                    path: [panel.id, oppositeSideKey],
+                    distance:
+                      currentPanelBoundaries[sideKey] -
+                      currentPanelBoundaries[oppositeSideKey],
+                  }
+                } else {
+                  return sideValue
+                }
+              },
+            ),
+          }
+        })
+      }),
+    )
+  }
+
+  _handleKeyDown = (e: $FixMe) => {
+    if (e.keyCode === 18) {
+      this.setState(() => ({isInEditMode: true}))
+    }
+  }
+
+  _handleKeyUp = (e: $FixMe) => {
+    if (e.keyCode === 18) {
+      this.setState(() => ({isInEditMode: false}))
     }
   }
 
@@ -83,7 +382,14 @@ export class TheUI extends React.Component<Props, State> {
     return (
       <div className={css.container}>
         {visiblePanels.map(panelId => (
-          <Panel key={panelId} panelId={panelId} />
+          <Panel
+            key={panelId}
+            panelId={panelId}
+            isInEditMode={this.state.isInEditMode}
+            boundaries={this.state.calculatedBoundaries[panelId]}
+            gridOfBoundaries={this.state.gridOfBoundaries}
+            updatePanelBoundaries={this.updatePanelBoundaries}
+          />
         ))}
         {/*
           {isCreatingNewPanel &&
@@ -105,8 +411,18 @@ export class TheUI extends React.Component<Props, State> {
 
 export default compose(
   connect((state: IStoreState) => {
+    const panelsBoundaries = _.mapValues(
+      _.get(state, ['workspace', 'panels', 'byId']),
+      panel => panel.boundaries,
+    )
+    const visiblePanels = _.get(state, [
+      'workspace',
+      'panels',
+      'listOfVisibles',
+    ])
     return {
-      visiblePanels: getVisiblePanelsList(state),
+      panelsBoundaries,
+      visiblePanels,
     }
   }),
 )(TheUI)
