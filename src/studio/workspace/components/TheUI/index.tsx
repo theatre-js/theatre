@@ -45,7 +45,7 @@ const getOppositeSide = (side: string): string => {
 }
 
 export class TheUI extends React.Component<Props, State> {
-  boundaryPathToValueRefMap: WeakMap<object, any>
+  boundaryPathToValueRefMap: object
   static getDefaultPanelPlacement(type): PanelPlacementSettings {
     // ??
     switch (type) {
@@ -230,6 +230,7 @@ export class TheUI extends React.Component<Props, State> {
               const oppositeSideKey = getOppositeSide(sideKey)
               const oppositeSideValue = newBoundaries[oppositeSideKey]
               if (
+                oppositeSideValue != null &&
                 oppositeSideValue.type === SAME_AS_BOUNDARY &&
                 oppositeSideValue.path[0] !== 'window'
               ) {
@@ -266,13 +267,14 @@ export class TheUI extends React.Component<Props, State> {
           }),
         )
 
+        const newBoundariesKeys: string[] = Object.keys(newBoundaries)
         const panelsWithoutRefsToUpdatedPanel = _.mapValues(
           panels,
           (panel: $FixMe) => {
             if (panel.id === panelId) {
               return {
                 ...panel,
-                boundaries: newBoundaries,
+                boundaries: {...panel.boundaries, ...newBoundaries},
               }
             } else {
               return {
@@ -280,7 +282,11 @@ export class TheUI extends React.Component<Props, State> {
                 boundaries: _.mapValues(
                   panel.boundaries,
                   (sideValue: $FixMe) => {
-                    if (sideValue.path && sideValue.path[0] === panelId) {
+                    if (
+                      sideValue.path &&
+                      sideValue.path[0] === panelId &&
+                      newBoundariesKeys.includes(sideValue.path[1])
+                    ) {
                       return {
                         type: EXACT_VALUE,
                         value: this.state.calculatedBoundaries[panelId][
@@ -323,14 +329,21 @@ export class TheUI extends React.Component<Props, State> {
                     oppositeSideValue.path[1] === sideKey
                   )
                 ) {
-                  const currentPanelBoundaries = this.state
-                    .calculatedBoundaries[panel.id]
+                  let oppositeSideBoundaryValue = this.state
+                    .calculatedBoundaries[panel.id][oppositeSideKey]
+                  if (
+                    panel.id === panelId &&
+                    newBoundariesKeys.includes(oppositeSideKey)
+                  ) {
+                    oppositeSideBoundaryValue = get(
+                      newBoundaries[oppositeSideKey].path,
+                      this.boundaryPathToValueRefMap,
+                    )
+                  }
                   return {
                     type: DIST_FROM_BOUNDARY,
                     path: [panel.id, oppositeSideKey],
-                    distance:
-                      currentPanelBoundaries[sideKey] -
-                      currentPanelBoundaries[oppositeSideKey],
+                    distance: sideValue.value - oppositeSideBoundaryValue,
                   }
                 } else {
                   return sideValue
