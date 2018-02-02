@@ -248,6 +248,41 @@ export class TheUI extends React.Component<Props, State> {
                   },
                 }
               }
+              if (
+                oppositeSideValue.type === SAME_AS_BOUNDARY &&
+                oppositeSideValue.path[0] === 'window' &&
+                sideValue.type === SAME_AS_BOUNDARY &&
+                sideValue.path[0] !== 'window'
+              ) {
+                return [
+                  {
+                    path: [panelId, 'boundaries', sideKey],
+                    newValue: {
+                      type: DIST_FROM_BOUNDARY,
+                      path: [panelId, oppositeSideKey],
+                      distance:
+                        get(
+                          sideValue.path,
+                          this.boundaryPathToValueRefMap,
+                        ) -
+                        get(
+                          ['window', oppositeSideKey],
+                          this.boundaryPathToValueRefMap,
+                        ),
+                    },
+                  },
+                  {
+                    path: [sideValue.path[0]].concat(
+                      'boundaries',
+                      sideValue.path[1],
+                    ),
+                    newValue: {
+                      type: SAME_AS_BOUNDARY,
+                      path: [panelId, sideKey],
+                    },
+                  },
+                ]
+              }
             }
             if (
               sideValue.type === SAME_AS_BOUNDARY &&
