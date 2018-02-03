@@ -11,6 +11,8 @@ import {
 } from '$studio/animationTimeline/types'
 import css from './LanesViewer.css'
 import Lane from './Lane'
+import BoxLegends from './BoxLegends'
+import * as _ from 'lodash'
 import cx from 'classnames'
 
 type OwnProps = {
@@ -100,7 +102,7 @@ class LanesViewer extends React.PureComponent<Props, State> {
     this.setActiveLane(laneId)
   }
 
-  setActiveLane(activeLaneId: string) {
+  setActiveLane = (activeLaneId: string) => {
     this.setState(() => ({activeLaneId}))
   }
 
@@ -399,11 +401,9 @@ class LanesViewer extends React.PureComponent<Props, State> {
       }
     })
   }
-
   render() {
     const {lanes} = this.props
     const {svgHeight, svgWidth, svgTransform, activeLaneId} = this.state
-    const multiLanes = lanes.length > 1
     return (
       <div className={css.container}>
         {/* <div className={css.titleBar}>
@@ -427,7 +427,15 @@ class LanesViewer extends React.PureComponent<Props, State> {
             </div>
           ))}
         </div> */}
-        <div className={css.boxLegends} />
+        <div className={css.boxLegends}>
+          <BoxLegends
+            lanes={lanes.map(lane => _.pick(lane, ['id', 'component', 'property']))}
+            colors={colors}
+            activeLaneId={activeLaneId}
+            setActiveLane={this.setActiveLane}
+            splitLane={this.props.splitLane}
+          />
+        </div>
         <div className={css.svgArea}>
           <svg
             height={svgHeight}
