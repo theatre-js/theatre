@@ -1,10 +1,6 @@
-import {React, reduceStateAction, connect} from '$src/studio/handy'
-// import css from './index.css'
-// import Settings from './Settings'
-import cx from 'classnames'
+import {React, connect, reduceStateAction} from '$src/studio/handy'
 import {
   XY,
-  PanelPlacementSettings,
   PanelType,
   PanelConfiguration,
   PanelPersistentState,
@@ -123,65 +119,15 @@ class PanelController extends React.Component<Props, State> {
         />
       </Broadcast>
     )
+  }
 
-    // return (
-    //   <div
-    //     className={cx(css.container, {
-    //       [css.isActive]: this.props.isActive,
-    //       [css.headerLess]: panelConfig.headerLess === true,
-    //     })}
-    //     style={style}
-    //   >
-    //     <div className={css.innerWrapper}>
-    //       <div className={css.topBar}>
-    //         <div className={css.title}>{panelTypes[this.props.type].label}</div>
-    //         {/*<div
-    //         className={css.settings}
-    //         onClick={this.toggleSettings}>
-    //         {isInSettings ? 'Show Content' : 'Show Settings'}
-    //       </div>*/}
-    //       </div>
-
-    //       <div className={css.content}>
-    //         {isInSettings ? (
-    //           <Settings
-    //             onPanelDrag={this.movePanel}
-    //             onPanelDragEnd={this.setPanelPosition}
-    //             onPanelResize={this.resizePanel}
-    //             onPanelResizeEnd={this.setPanelSize}
-    //           >
-    //             <panelComponents.Settings
-    //               {...configuration}
-    //               inputs={inputs}
-    //               currentlyDraggingOutput={currentlyDraggingOutput}
-    //               setCurrentlyDraggingOutput={this.setCurrentlyDraggingOutput}
-    //               clearCurrentlyDraggingOutput={
-    //                 this.clearCurrentlyDraggingOutput
-    //               }
-    //               updatePanelInput={newData =>
-    //                 this.updatePanelData('inputs', newData)
-    //               }
-    //               updatePanelConfig={newData =>
-    //                 this.updatePanelData('configuration', newData)
-    //               }
-    //             />
-    //           </Settings>
-    //         ) : (
-    //           <panelComponents.Content
-    //             {...configuration}
-    //             {...componentState}
-    //             panelDimensions={dim}
-    //             outputs={outputs}
-    //             inputs={inputs}
-    //             updatePanelOutput={newData =>
-    //               this.updatePanelData('outputs', newData)
-    //             }
-    //           />
-    //         )}
-    //       </div>
-    //     </div>
-    //   </div>
-    // )
+  updatePanelData(propertyToUpdate: string, newData: Object) {
+    this.props.dispatch(
+      reduceStateAction(
+        ['workspace', 'panels', 'byId', this.props.panelId, propertyToUpdate],
+        data => ({...data, ...newData}),
+      ),
+    )
   }
 
   updatePanelOutput = (newData: mixed) => {
