@@ -1,7 +1,7 @@
 .container {
-  position: relative;
-  width: 100%;
-  height: 25px;
+  --threadHeight: 3px;
+  --thumbColor: #00E0FF;
+  --focusBarColor: #005B61;
 }
 
 .time {
@@ -17,7 +17,7 @@
   composes: time;
   width: 10px;
   left: -2px;
-  text-aling: left;
+  text-align: left;
   cursor: default;
 }
 
@@ -39,53 +39,109 @@
 }
 
 .timeThread {
-  position: absolute;
-  bottom: 0;
+  // position: absolute;
+  // bottom: 0;
+  top: 0;
   left: 0;
   right: 0;
-  height: 4px;
-  background: #444;
+  height: var(--threadHeight);
+  background: #23363D;
 }
 
 .currentTime {
-  width: 8px;
-  height: 5px;
-  bottom: 4px;
-  left: -4px;
+  background-color: var(--thumbColor);
   position: absolute;
-  cursor: pointer;
+  z-index: 1000;
+  cursor: pointer;  
+}
+
+.currentTimeThumb {
+  composes: currentTime;
+  width: 5px;
+  height: 10px;
+  top: -2px;
+  border-left: none;
 
   &:before {
+    position: absolute;
     display: block;
-    content: '';
-    width: 100%;
-    height: 1px;
-    background: #0AA;
+    content: ' ';
+    left: -1px;
+    width: 0;
+    height: 0;
+    border-bottom: 2px solid #1F2B2B;
+    border-left: 1px solid transparent;
   }
 
   &:after {
-    display: block;
     position: absolute;
-    top: 1px;
-    content: '';
+    display: block;
+    content: ' ';
+    right: -1px;
     width: 0;
     height: 0;
-    border-left: 4px solid transparent;
-    border-right: 4px solid transparent;
-    border-top: 4px solid #0AA;
+    border-bottom: 2px solid #1F2B2B;
+    border-right: 1px solid transparent;
   }
+}
+
+.thumbSquinch {
+  position: absolute;
+  left: 1px;
+  right: 1px;
+  top: 10px;
+  border-top: 3px solid var(--thumbColor);
+  border-right: 1px solid transparent;
+  border-left: 1px solid transparent;
+
+  &:before {
+    position: absolute;
+    display: block;
+    content: ' ';
+    top: -4px;
+    left: -2px;
+    height: 8px;
+    width: 2px;
+    background: none;
+    border-radius: 0 100% 0 0;    
+    border-top: 1px solid var(--thumbColor);
+    border-right: 1px solid var(--thumbColor);
+  }
+
+  &:after {
+    position: absolute;
+    display: block;
+    content: ' ';
+    top: -4px;
+    right: -2px;
+    height: 8px;
+    width: 2px;
+    background: none;
+    border-radius: 100% 0 0 0;
+    border-top: 1px solid var(--thumbColor);
+    border-left: 1px solid var(--thumbColor);
+  }
+}
+
+.currentTimeNeedle {
+  composes: currentTime;
+  width: 0;
+  border-left: 1px solid var(--thumbColor);
+  height: calc(100% - 8px);
+  top: 8px;
+  left: 2px;
 }
 
 .focusBar {
   position: absolute;
-  height: 100%;
-  background: rgba(0, 150, 150, .3);
+  height: var(--threadHeight);
+  background: var(--focusBarColor);
   cursor: pointer;
 }
 
 .focusHandle {
   position: absolute;
-  height: 4px;
+  height: var(--threadHeight);
   width: 8px;
   background: #0AA;
   cursor: ew-resize;
@@ -113,8 +169,10 @@
 .leftFocusHandle:active .timeTip,
 .rightFocusHandle:hover .timeTip,
 .rightFocusHandle:active .timeTip,
-.currentTime:hover .timeTip,
-.currentTime:active .timeTip,
+.currentTimeThumb:hover .timeTip,
+.currentTimeThumb:active .timeTip,
+.currentTimeNeedle:hover ~ .currentTimeThumb .timeTip,
+.currentTimeNeedle:active ~ .currentTimeThumb .timeTip,
 .focusBar:active ~ .leftFocusHandle .timeTip,
 .focusBar:active ~ .rightFocusHandle .timeTip{
   display: block;

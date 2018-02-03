@@ -1,5 +1,6 @@
 import {React} from '$studio/handy'
 import css from './EditOverlay.css'
+import cx from 'classnames'
 import DraggableArea from '$studio/common/components/DraggableArea'
 
 type Props = any
@@ -8,7 +9,7 @@ type State = any
 class EditOverlay extends React.PureComponent<Props, State> {
   render() {
     return (
-      <div className={css.container}>
+    <div className={cx(css.container, {[css.isPanelHeaderLess]: this.props.isPanelHeaderLess})}>
         <DraggableArea
           onDrag={(dx, dy) => this.props.onBoundaryDrag({left: dx, top: dy})}
           onDragEnd={() => this.props.onBoundaryDragEnd()}

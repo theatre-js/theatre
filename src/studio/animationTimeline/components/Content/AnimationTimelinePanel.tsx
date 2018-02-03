@@ -59,7 +59,7 @@ class Content extends React.Component<Props, State> {
       boundaries: this._getBoundaries(boxes, layout),
       duration: 60000,
       focus: [10000, 50000],
-      currentTime: 20000,
+      currentTime: 30000,
     }
   }
 
@@ -398,11 +398,12 @@ class Content extends React.Component<Props, State> {
       <Panel headerLess={true} css={{container: css.panelContainer}}>
         <Subscriber channel={PanelWidthChannel}>
           {(panelWidth: number) => {
-            panelWidth -= 10
+            panelWidth -= 30
             return (
               <div className={css.container} onWheel={(e) => this.handleScroll(e, panelWidth)}>
                 <div className={css.timeBar}>
                   <TimeBar
+                    offset={30}
                     panelWidth={panelWidth}
                     duration={duration}
                     currentTime={currentTime}

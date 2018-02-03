@@ -85,7 +85,7 @@ class TimeBar extends React.Component<Props, State> {
 
   render() {
     const {isChangingDuration} = this.state
-    let {currentTime, focus, duration, timeToX, focusedTimeToX} = this.props
+    let {currentTime, focus, duration, timeToX, focusedTimeToX, offset} = this.props
     const focusLeft = timeToX(focus[0])
     const focusRight = timeToX(focus[1])
     const currentX = focusedTimeToX(currentTime, focus)
@@ -94,7 +94,7 @@ class TimeBar extends React.Component<Props, State> {
     duration = duration / 1000
     return (
       <div className={css.container}>
-        <div className={css.timeStart}>{0}</div>
+        {/* <div className={css.timeStart}>{0}</div>
         {isChangingDuration ? (
           <SingleInputForm
             className={css.timeEndInput}
@@ -110,7 +110,7 @@ class TimeBar extends React.Component<Props, State> {
           >
             {duration.toFixed(0)}
           </div>
-        )}
+        )} */}
         <div className={css.timeThread}>
           <DraggableArea
             onDragStart={this._setBeforeMoveState}
@@ -120,11 +120,11 @@ class TimeBar extends React.Component<Props, State> {
               className={css.focusBar}
               style={{
                 width: `${focusRight - focusLeft}px`,
-                transform: `translateX(${focusLeft}px)`,
+                transform: `translateX(${focusLeft + offset}px)`,
               }}
             />
           </DraggableArea>
-          <DraggableArea
+          {/* <DraggableArea
             onDragStart={this._setBeforeMoveState}
             onDrag={dx => this.moveFocusLeft(dx)}
           >
@@ -134,8 +134,8 @@ class TimeBar extends React.Component<Props, State> {
             >
               <div className={css.timeTip}>{focus[0].toFixed(1)}</div>
             </div>
-          </DraggableArea>
-          <DraggableArea
+          </DraggableArea> */}
+          {/* <DraggableArea
             onDragStart={this._setBeforeMoveState}
             onDrag={dx => this.moveFocusRight(dx)}
           >
@@ -145,16 +145,27 @@ class TimeBar extends React.Component<Props, State> {
             >
               <div className={css.timeTip}>{focus[1].toFixed(1)}</div>
             </div>
-          </DraggableArea>
+          </DraggableArea> */}
         </div>
         <DraggableArea
           onDragStart={this._setBeforeMoveState}
           onDrag={dx => this.changeCurrentTime(dx)}
         >
           <div
-            className={css.currentTime}
-            style={{transform: `translateX(${currentX}px)`}}
+            className={css.currentTimeNeedle}
+            style={{transform: `translateX(${currentX + offset}px)`}}
           >
+          </div>
+        </DraggableArea>
+        <DraggableArea
+          onDragStart={this._setBeforeMoveState}
+          onDrag={dx => this.changeCurrentTime(dx)}
+        >
+          <div
+            className={css.currentTimeThumb}
+            style={{transform: `translateX(${currentX + offset}px)`}}
+          >
+            <div className={css.thumbSquinch} />
             <div className={css.timeTip}>{currentTime.toFixed(1)}</div>
           </div>
         </DraggableArea>

@@ -408,7 +408,7 @@ class LanesViewer extends React.PureComponent<Props, State> {
     const multiLanes = lanes.length > 1
     return (
       <div className={css.container}>
-        <div className={css.titleBar}>
+        {/* <div className={css.titleBar}>
           {lanes.map(({id, component, property}, index) => (
             <div
               key={id}
@@ -428,7 +428,8 @@ class LanesViewer extends React.PureComponent<Props, State> {
               </div>
             </div>
           ))}
-        </div>
+        </div> */}
+        <div className={css.boxLegends} />
         <div className={css.svgArea}>
           <svg
             height={svgHeight}
