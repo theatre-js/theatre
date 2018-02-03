@@ -11,6 +11,8 @@ import {
 } from '$studio/animationTimeline/types'
 import css from './LanesViewer.css'
 import Lane from './Lane'
+import BoxLegends from './BoxLegends'
+import * as _ from 'lodash'
 import cx from 'classnames'
 
 type OwnProps = {
@@ -72,11 +74,9 @@ const resetExtremums = laneId => {
   )
 }
 
+const colors = ['#3AAFA9', '#575790', '#B76C6C', '#FCE181']
 class LanesViewer extends React.PureComponent<Props, State> {
   svgArea: HTMLElement
-
-  // ??
-  static colors = ['#0FF', '#FF0', '#F0F', '#FFF']
 
   constructor(props: Props) {
     super(props)
@@ -102,7 +102,7 @@ class LanesViewer extends React.PureComponent<Props, State> {
     this.setActiveLane(laneId)
   }
 
-  setActiveLane(activeLaneId: string) {
+  setActiveLane = (activeLaneId: string) => {
     this.setState(() => ({activeLaneId}))
   }
 
@@ -401,14 +401,12 @@ class LanesViewer extends React.PureComponent<Props, State> {
       }
     })
   }
-
   render() {
     const {lanes} = this.props
     const {svgHeight, svgWidth, svgTransform, activeLaneId} = this.state
-    const multiLanes = lanes.length > 1
     return (
       <div className={css.container}>
-        <div className={css.titleBar}>
+        {/* <div className={css.titleBar}>
           {lanes.map(({id, component, property}, index) => (
             <div
               key={id}
@@ -428,6 +426,15 @@ class LanesViewer extends React.PureComponent<Props, State> {
               </div>
             </div>
           ))}
+        </div> */}
+        <div className={css.boxLegends}>
+          <BoxLegends
+            lanes={lanes.map(lane => _.pick(lane, ['id', 'component', 'property']))}
+            colors={colors}
+            activeLaneId={activeLaneId}
+            setActiveLane={this.setActiveLane}
+            splitLane={this.props.splitLane}
+          />
         </div>
         <div className={css.svgArea}>
           <svg
@@ -444,7 +451,7 @@ class LanesViewer extends React.PureComponent<Props, State> {
                 key={id}
                 laneId={id}
                 points={this._normalizePoints(points)}
-                color={LanesViewer.colors[index % 4]}
+                color={colors[index % colors.length]}
                 width={svgWidth}
                 changePointPositionBy={(index, change) =>
                   this.changePointPositionBy(id, index, change)

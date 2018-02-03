@@ -348,6 +348,7 @@ export default class Panel extends StudioComponent<IProps, IState> {
               </div>
               {isInEditMode &&
                 <EditOverlay
+                  isPanelHeaderLess={headerLess}
                   onPanelDrag={(dx: number, dy: number) => this.movePanel(boundaries, gridOfBoundaries, dx, dy)}
                   onPanelDragEnd={() => this.setPanelPosition(panelId, boundaries, gridOfBoundaries, updatePanelBoundaries)}
                   onBoundaryDrag={(deltas: $FixMe) => this.moveBoundaries(boundaries, gridOfBoundaries, deltas)}

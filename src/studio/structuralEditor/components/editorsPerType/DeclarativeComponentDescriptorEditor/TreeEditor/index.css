@@ -3,6 +3,7 @@
   width: calc(100% - 2px);
   left: 1px;
   /* height: 30%; */
+  height: 100%;
   overflow: hidden auto;
 
   &::-webkit-scrollbar {

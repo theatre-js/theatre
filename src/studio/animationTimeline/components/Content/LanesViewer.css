@@ -1,13 +1,31 @@
 .container {
   position: relative;
+  height: 100%;
 }
 
 .titleBar {
   padding: 2px;
   white-space: nowrap;
   height: 10px;
-  background: #222;
+  // background: #222;
   z-index: 10;
+  display: none;
+}
+
+.boxLegends {
+  // display: inline-block;
+  // height: 100%;
+  width: 30px;
+  background: #1F292E;
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 100;
+
+  &:hover {
+    width: auto;
+  }
 }
 
 .title {
@@ -44,6 +62,7 @@
 .svgArea {
   position: absolute;
   top: 14px;
-  width: 100%;
+  left: 30px;
+  width: calc(100% - 30px);
   overflow: hidden;
 }
