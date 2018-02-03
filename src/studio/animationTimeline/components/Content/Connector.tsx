@@ -27,7 +27,7 @@ class Connector extends React.Component<Props, State> {
               ${rp.t + rp.handles[0]} ${rp.value + rp.handles[1]}
               ${rp.t} ${rp.value}`}
         fill="transparent"
-        strokeWidth={1}
+        strokeWidth={2}
         onClick={this.clickHandler}
       />
     )

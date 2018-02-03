@@ -72,11 +72,9 @@ const resetExtremums = laneId => {
   )
 }
 
+const colors = ['#3AAFA9', '#575790', '#B76C6C', '#FCE181']
 class LanesViewer extends React.PureComponent<Props, State> {
   svgArea: HTMLElement
-
-  // ??
-  static colors = ['#0FF', '#FF0', '#F0F', '#FFF']
 
   constructor(props: Props) {
     super(props)
@@ -445,7 +443,7 @@ class LanesViewer extends React.PureComponent<Props, State> {
                 key={id}
                 laneId={id}
                 points={this._normalizePoints(points)}
-                color={LanesViewer.colors[index % 4]}
+                color={colors[index % colors.length]}
                 width={svgWidth}
                 changePointPositionBy={(index, change) =>
                   this.changePointPositionBy(id, index, change)
