@@ -95,6 +95,12 @@ class LanesViewer extends React.PureComponent<Props, State> {
     this.setState(() => ({...this._getSvgState(newProps), activeLaneId}))
   }
 
+  // componentDidUpdate(_, prevState) {
+  //   if (prevState.svgTransform !== this.state.svgTransform) {
+  //     this.container.scrollLeft = this.state.svgTransform
+  //   }
+  // }
+
   titleClickHandler(e: SyntheticMouseEvent<>, laneId: string) {
     if (e.altKey) {
       return this.props.splitLane(laneId)
@@ -405,7 +411,7 @@ class LanesViewer extends React.PureComponent<Props, State> {
     const {lanes} = this.props
     const {svgHeight, svgWidth, svgTransform, activeLaneId} = this.state
     return (
-      <div className={css.container}>
+      <div ref={c => this.container = c} className={css.container} style={{width: svgWidth}}>
         <div className={css.boxLegends}>
           <BoxLegends
             lanes={lanes.map(lane => _.pick(lane, ['id', 'component', 'property']))}
@@ -419,7 +425,7 @@ class LanesViewer extends React.PureComponent<Props, State> {
           <svg
             height={svgHeight}
             width={svgWidth}
-            style={{transform: `translateX(${-svgTransform}px)`}}
+            // style={{transform: `translateX(${-svgTransform}px)`}}
             ref={svg => {
               if (svg != null) this.svgArea = svg
             }}

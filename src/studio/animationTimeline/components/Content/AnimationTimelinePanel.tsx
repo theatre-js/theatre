@@ -72,6 +72,14 @@ class Content extends React.Component<Props, State> {
     // }
   }
 
+  componentDidMount() {
+    const {duration, focus} = this.state
+    const svgWidth = duration / (focus[1] - focus[0]) * (this.container.clientWidth - 30)
+    setTimeout(() => {
+      this.lanesContainer.scrollTo(svgWidth * focus[0] / duration, 0)
+    }, 0)
+  }
+
   // _resetPanelWidthOnWindowResize = () => {
   //   this._resetPanelWidth(this.props.panelDimensions.x)
   // }
@@ -288,7 +296,7 @@ class Content extends React.Component<Props, State> {
     if (newFocusRight > duration) newFocusRight = duration
     if (newFocusRight - focus[0] < 1000) newFocusRight = focus[0] + 1000
 
-    this._changeFocusTo(focus[0], newFocusRight, panelWidth)
+    this._reallyChangeFocusTo(focus[0], newFocusRight, panelWidth)
   }
 
   changeFocusLeftTo = (newFocusLeft: number, panelWidth: number) => {
@@ -296,10 +304,10 @@ class Content extends React.Component<Props, State> {
     if (newFocusLeft < 0) newFocusLeft = 0
     if (focus[1] - newFocusLeft < 1000) newFocusLeft = focus[1] - 1000
 
-    this._changeFocusTo(newFocusLeft, focus[1], panelWidth)
+    this._reallyChangeFocusTo(newFocusLeft, focus[1], panelWidth)
   }
 
-  changeFocusTo = (
+  changeFocusAndScrollLanesContainer = (
     newFocusLeft: number,
     newFocusRight: number,
     panelWidth: number,
@@ -313,11 +321,32 @@ class Content extends React.Component<Props, State> {
       newFocusLeft = duration - (focus[1] - focus[0])
       newFocusRight = duration
     }
+    
+    const svgWidth = duration / (newFocusRight - newFocusLeft) * panelWidth
+    this.lanesContainer.scrollLeft = svgWidth * newFocusLeft / duration
 
-    this._changeFocusTo(newFocusLeft, newFocusRight, panelWidth)
+    this._reallyChangeFocusTo(newFocusLeft, newFocusRight, panelWidth)
   }
 
-  _changeFocusTo(
+  _changeFocusTo = (
+    newFocusLeft: number,
+    newFocusRight: number,
+    panelWidth: number,
+  ) => {
+    const {focus, duration} = this.state
+    if (newFocusLeft < 0) {
+      newFocusLeft = 0
+      newFocusRight = focus[1] - focus[0]
+    }
+    if (newFocusRight > duration) {
+      newFocusLeft = duration - (focus[1] - focus[0])
+      newFocusRight = duration
+    }
+    
+    this._reallyChangeFocusTo(newFocusLeft, newFocusRight, panelWidth)
+  }
+
+  _reallyChangeFocusTo(
     newFocusLeft: number,
     newFocusRight: number,
     panelWidth: number,
@@ -370,10 +399,10 @@ class Content extends React.Component<Props, State> {
   handleScroll = (e: SyntheticWheelEvent, panelWidth: number) => {
     if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) return
 
-    e.preventDefault()
+    // e.preventDefault()
     const {focus} = this.state
     const change = e.deltaX / panelWidth * (focus[1] - focus[0])
-    this.changeFocusTo(focus[0] + change, focus[1] + change, panelWidth)
+    this._changeFocusTo(focus[0] + change, focus[1] + change, panelWidth)
   }
 
   timeToX(t: number, panelWidth: number) {
@@ -410,6 +439,7 @@ class Content extends React.Component<Props, State> {
             panelWidth -= 30
             return (
               <div
+                ref={c => this.container = c}
                 className={css.container}
                 onWheel={e => this.handleScroll(e, panelWidth)}
               >
@@ -428,7 +458,7 @@ class Content extends React.Component<Props, State> {
                       this.xToFocusedTime(x, focus, panelWidth)
                     }
                     changeFocusTo={(focusLeft: number, focusRight: number) =>
-                      this.changeFocusTo(focusLeft, focusRight, panelWidth)
+                      this.changeFocusAndScrollLanesContainer(focusLeft, focusRight, panelWidth)
                     }
                     changeFocusRightTo={(focus: number) =>
                       this.changeFocusRightTo(focus, panelWidth)
@@ -440,7 +470,7 @@ class Content extends React.Component<Props, State> {
                     changeDuration={this.changeDuration}
                   />
                 </div>
-                <div className={css.lanes}>
+                <div ref={c => this.lanesContainer = c} className={css.lanes}>
                   {layout.map((id, index) => {
                     const box = boxes[id]
                     const boxTranslateY =

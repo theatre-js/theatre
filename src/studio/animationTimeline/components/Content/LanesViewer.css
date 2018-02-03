@@ -1,19 +1,21 @@
 .container {
   position: relative;
   height: 100%;
+  background: #1B2226;
+  padding-right: 30px;
 }
 
 .boxLegends {
   width: 30px;
   background: #1F292E;
-  position: absolute;
+  position: sticky;
   left: 0;
   top: 0;
   bottom: 0;
   z-index: 100;
 
   &:hover {
-    width: auto;
+    width: fit-content;
     z-index: 1000;
   }
 }
@@ -22,6 +24,6 @@
   position: absolute;
   top: 14px;
   left: 30px;
-  width: calc(100% - 30px);
+  // width: calc(100% - 30px);
   overflow: hidden;
 }

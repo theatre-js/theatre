@@ -50,6 +50,7 @@
 }
 
 .currentTime {
+  margin-left: 30px;
   background-color: var(--thumbColor);
   position: absolute;
   z-index: 1000;
