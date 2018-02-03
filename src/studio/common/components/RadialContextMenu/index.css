@@ -1,0 +1,20 @@
+.container {
+  position: fixed 0 0 0 0;
+  z-index: 1000;
+}
+
+.item {
+  background: #000;
+  font-size: 11px;
+  padding: 0 2px;
+  position: absolute;
+  cursor: pointer;
+
+  animation: appear .15s ease-in-out forwards;
+}
+
+@keyframes appear {
+  0% {opacity: 0; transform: translate3d(0, 0, 0);}
+  30% {opacity: 0;}
+  100% {opacity: 1; transform: translate3d(calc(var(--left)*1px - 50%), calc(var(--top)*1px), 0);}
+}

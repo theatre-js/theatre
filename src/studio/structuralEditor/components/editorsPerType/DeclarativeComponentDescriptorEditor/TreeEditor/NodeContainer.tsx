@@ -4,8 +4,9 @@ import css from './NodeContainer.css'
 import ComponentNode from './ComponentNode'
 import TextNode from './TextNode'
 import NodePlaceholder from './NodePlaceholder'
-import ContextMenu from './ContextMenu'
-import ContextMenuItem from './ContextMenuItem'
+// import ContextMenu from './ContextMenu'
+// import ContextMenuItem from './ContextMenuItem'
+import RadialContextMenu from '$studio/common/components/RadialContextMenu'
 import cx from 'classnames'
 import {ACTION, STATUS, NODE_TYPE} from './constants'
 
@@ -320,14 +321,40 @@ class NodeContainer extends React.PureComponent<Props, State> {
             ])}
         </div>
         {contextMenuProps != null && (
-          <ContextMenu
-            menuProps={contextMenuProps}
+          // <ContextMenu
+          //   menuProps={contextMenuProps}
+          //   close={() => this.setState(() => ({contextMenuProps: null}))}
+          //   render={() => [
+          //     <ContextMenuItem key="delete" onClick={this.deleteNode}>
+          //       Delete
+          //     </ContextMenuItem>,
+          //     // <ContextMenuItem key='convert' onClick={() => console.log('convert')}>Convert</ContextMenuItem>,
+          //   ]}
+          // />
+          <RadialContextMenu
             close={() => this.setState(() => ({contextMenuProps: null}))}
-            render={() => [
-              <ContextMenuItem key="delete" onClick={this.deleteNode}>
-                Delete
-              </ContextMenuItem>,
-              // <ContextMenuItem key='convert' onClick={() => console.log('convert')}>Convert</ContextMenuItem>,
+            centerPoint={contextMenuProps}
+            items={[
+              {
+                label: 'garply',
+                cb: () => console.log('garply'),
+              },
+              {
+                label: 'waldo',
+                cb: () => console.log('waldo'),
+              },
+              {
+                label: 'delete',
+                cb: this.deleteNode,
+              },
+              {
+                label: 'plugh',
+                cb: () => console.log('plugh'),
+              },
+              {
+                label: 'xyzzy',
+                cb: () => console.log('xyzzy'),
+              },
             ]}
           />
         )}
