@@ -103,7 +103,6 @@ const makeSeparateComponentForEachDomTag = () => {
     'p',
     'pre',
     'main',
-    
   ]
 
   const components = {}

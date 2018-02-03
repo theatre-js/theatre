@@ -6,7 +6,7 @@ import TextNode from './TextNode'
 import NodePlaceholder from './NodePlaceholder'
 // import ContextMenu from './ContextMenu'
 // import ContextMenuItem from './ContextMenuItem'
-import RadialContextMenu from '$studio/common/components/RadialContextMenu'
+import HalfPieContextMenu from '$studio/common/components/HalfPieContextMenu'
 import cx from 'classnames'
 import {ACTION, STATUS, NODE_TYPE} from './constants'
 
@@ -331,9 +331,10 @@ class NodeContainer extends React.PureComponent<Props, State> {
           //     // <ContextMenuItem key='convert' onClick={() => console.log('convert')}>Convert</ContextMenuItem>,
           //   ]}
           // />
-          <RadialContextMenu
+          <HalfPieContextMenu
             close={() => this.setState(() => ({contextMenuProps: null}))}
             centerPoint={contextMenuProps}
+            placement="left"
             items={[
               {
                 label: 'garply',
@@ -355,6 +356,10 @@ class NodeContainer extends React.PureComponent<Props, State> {
                 label: 'xyzzy',
                 cb: () => console.log('xyzzy'),
               },
+              // {
+              //   label: 'xyzzy',
+              //   cb: () => console.log('xyzzy'),
+              // },
             ]}
           />
         )}

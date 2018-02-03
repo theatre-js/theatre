@@ -1,9 +1,15 @@
 import {StudioComponent, React, resolveCss} from '$studio/handy'
 import * as css from './Panel.css'
 import {Subscriber} from 'react-broadcast'
-import {PanelControlChannel, IPanelControlChannelData} from '$src/studio/workspace/components/PanelController'
+import {
+  PanelControlChannel,
+  IPanelControlChannelData,
+} from '$src/studio/workspace/components/PanelController'
 import EditOverlay from '$src/studio/workspace/components/Panel/EditOverlay'
-import {EXACT_VALUE, SAME_AS_BOUNDARY} from '$src/studio/workspace/components/TheUI'
+import {
+  EXACT_VALUE,
+  SAME_AS_BOUNDARY,
+} from '$src/studio/workspace/components/TheUI'
 import _ from 'lodash'
 import {Broadcast} from 'react-broadcast'
 
@@ -16,7 +22,7 @@ interface IProps {
 interface IState {
   isMovingPanel: boolean
   isMovingBoundaries: boolean
-  panelMove: {x: number, y: number}
+  panelMove: {x: number; y: number}
   boundariesMoves: {
     left?: number
     right?: number
@@ -35,30 +41,43 @@ export default class Panel extends StudioComponent<IProps, IState> {
       panelMove: {x: 0, y: 0},
       boundariesMoves: {},
       isMovingPanel: false,
-      isMovingBoundaries: false
+      isMovingBoundaries: false,
     }
   }
 
-  movePanel = (boundaries: $FixMe, gridOfBoundaries: $FixMe, dx: number, dy: number) => {
+  movePanel = (
+    boundaries: $FixMe,
+    gridOfBoundaries: $FixMe,
+    dx: number,
+    dy: number,
+  ) => {
     const {left, right, top, bottom} = boundaries
     const newLeft = left + dx
     const newTop = top + dy
-    const leftRef = gridOfBoundaries.x.find((b: number) => (newLeft - SNAP_RANGE < b) && (b < newLeft + SNAP_RANGE))
+    const leftRef = gridOfBoundaries.x.find(
+      (b: number) => newLeft - SNAP_RANGE < b && b < newLeft + SNAP_RANGE,
+    )
     if (leftRef != null) {
       dx = leftRef - left
     } else {
       const newRight = right + dx
-      const rightRef = gridOfBoundaries.x.find((b: number) => (newRight - SNAP_RANGE < b) && (b < newRight + SNAP_RANGE))
+      const rightRef = gridOfBoundaries.x.find(
+        (b: number) => newRight - SNAP_RANGE < b && b < newRight + SNAP_RANGE,
+      )
       if (rightRef != null) {
         dx = rightRef - right
       }
     }
-    const topRef = gridOfBoundaries.y.find((b: number) => (newTop - SNAP_RANGE < b) && (b < newTop + SNAP_RANGE))
+    const topRef = gridOfBoundaries.y.find(
+      (b: number) => newTop - SNAP_RANGE < b && b < newTop + SNAP_RANGE,
+    )
     if (topRef != null) {
       dy = topRef - top
     } else {
       const newBottom = bottom + dy
-      const bottomRef = gridOfBoundaries.y.find((b: number) => (newBottom - SNAP_RANGE < b) && (b < newBottom + SNAP_RANGE))
+      const bottomRef = gridOfBoundaries.y.find(
+        (b: number) => newBottom - SNAP_RANGE < b && b < newBottom + SNAP_RANGE,
+      )
       if (bottomRef != null) {
         dy = bottomRef - bottom
       }
@@ -69,75 +88,74 @@ export default class Panel extends StudioComponent<IProps, IState> {
         panelMove: {
           x: dx,
           y: dy,
-        }
+        },
       }
     })
   }
 
-  setPanelPosition = (panelId: string, boundaries: $FixMe, gridOfBoundaries: $FixMe, dispatcherFn: Function) => {
+  setPanelPosition = (
+    panelId: string,
+    boundaries: $FixMe,
+    gridOfBoundaries: $FixMe,
+    dispatcherFn: Function,
+  ) => {
     const {panelMove} = this.state
     const newLeft = boundaries.left + panelMove.x
     const newRight = boundaries.right + panelMove.x
     const newTop = boundaries.top + panelMove.y
     const newBottom = boundaries.bottom + panelMove.y
-    const refMapX = _.pickBy(gridOfBoundaries.refMapX, (path: string[]) => path[0] != panelId)
-    const refMapY = _.pickBy(gridOfBoundaries.refMapY, (path: string[]) => path[0] != panelId)
+    const refMapX = _.pickBy(
+      gridOfBoundaries.refMapX,
+      (path: string[]) => path[0] != panelId,
+    )
+    const refMapY = _.pickBy(
+      gridOfBoundaries.refMapY,
+      (path: string[]) => path[0] != panelId,
+    )
     const newBoundaries = {
       left: {
-        ...(refMapX.hasOwnProperty(newLeft)
-          ?
-            {
+        ...refMapX.hasOwnProperty(newLeft)
+          ? {
               type: SAME_AS_BOUNDARY,
               path: refMapX[newLeft],
             }
-          :
-            {
+          : {
               type: EXACT_VALUE,
               value: newLeft,
-            }
-        )
+            },
       },
       right: {
-        ...(refMapX.hasOwnProperty(newRight)
-        ?
-          {
-            type: SAME_AS_BOUNDARY,
-            path: refMapX[newRight],
-          }
-        :
-          {
-            type: EXACT_VALUE,
-            value: newRight,
-          }
-        )
+        ...refMapX.hasOwnProperty(newRight)
+          ? {
+              type: SAME_AS_BOUNDARY,
+              path: refMapX[newRight],
+            }
+          : {
+              type: EXACT_VALUE,
+              value: newRight,
+            },
       },
       top: {
-        ...(refMapY.hasOwnProperty(newTop)
-          ?
-            {
+        ...refMapY.hasOwnProperty(newTop)
+          ? {
               type: SAME_AS_BOUNDARY,
               path: refMapY[newTop],
             }
-          :
-            {
+          : {
               type: EXACT_VALUE,
               value: newTop,
-            }
-        )
+            },
       },
       bottom: {
-        ...(refMapY.hasOwnProperty(newBottom)
-          ?
-            {
+        ...refMapY.hasOwnProperty(newBottom)
+          ? {
               type: SAME_AS_BOUNDARY,
               path: refMapY[newBottom],
             }
-          :
-            {
+          : {
               type: EXACT_VALUE,
               value: newBottom,
-            }
-        )
+            },
       },
     }
 
@@ -148,7 +166,11 @@ export default class Panel extends StudioComponent<IProps, IState> {
     }))
   }
 
-  moveBoundaries = (boundaries: $FixMe, gridOfBoundaries: $FixMe, deltas: $FixMe) => {
+  moveBoundaries = (
+    boundaries: $FixMe,
+    gridOfBoundaries: $FixMe,
+    deltas: $FixMe,
+  ) => {
     let left: undefined | number
     let right: undefined | number
     let top: undefined | number
@@ -156,7 +178,9 @@ export default class Panel extends StudioComponent<IProps, IState> {
 
     if (deltas.left != null) {
       const newLeft = boundaries.left + deltas.left
-      const leftRef = gridOfBoundaries.x.find((b: number) => (newLeft - SNAP_RANGE < b) && (b < newLeft + SNAP_RANGE))
+      const leftRef = gridOfBoundaries.x.find(
+        (b: number) => newLeft - SNAP_RANGE < b && b < newLeft + SNAP_RANGE,
+      )
       if (leftRef != null) {
         left = leftRef - boundaries.left
       } else {
@@ -165,7 +189,9 @@ export default class Panel extends StudioComponent<IProps, IState> {
     }
     if (deltas.right != null) {
       const newRight = boundaries.right + deltas.right
-      const rightRef = gridOfBoundaries.x.find((b: number) => (newRight - SNAP_RANGE < b) && (b < newRight + SNAP_RANGE))
+      const rightRef = gridOfBoundaries.x.find(
+        (b: number) => newRight - SNAP_RANGE < b && b < newRight + SNAP_RANGE,
+      )
       if (rightRef != null) {
         right = rightRef - boundaries.right
       } else {
@@ -174,7 +200,9 @@ export default class Panel extends StudioComponent<IProps, IState> {
     }
     if (deltas.top != null) {
       const newTop = boundaries.top + deltas.top
-      const topRef = gridOfBoundaries.y.find((b: number) => (newTop - SNAP_RANGE < b) && (b < newTop + SNAP_RANGE))
+      const topRef = gridOfBoundaries.y.find(
+        (b: number) => newTop - SNAP_RANGE < b && b < newTop + SNAP_RANGE,
+      )
       if (topRef != null) {
         top = topRef - boundaries.top
       } else {
@@ -183,7 +211,9 @@ export default class Panel extends StudioComponent<IProps, IState> {
     }
     if (deltas.bottom != null) {
       const newBottom = boundaries.bottom + deltas.bottom
-      const bottomRef = gridOfBoundaries.y.find((b: number) => (newBottom - SNAP_RANGE < b) && (b < newBottom + SNAP_RANGE))
+      const bottomRef = gridOfBoundaries.y.find(
+        (b: number) => newBottom - SNAP_RANGE < b && b < newBottom + SNAP_RANGE,
+      )
       if (bottomRef != null) {
         bottom = bottomRef - boundaries.bottom
       } else {
@@ -193,32 +223,43 @@ export default class Panel extends StudioComponent<IProps, IState> {
 
     this.setState(() => ({
       isMovingBoundaries: true,
-      boundariesMoves: _.pickBy({left, right, top, bottom}, (v: undefined | number) => v !== undefined),
+      boundariesMoves: _.pickBy(
+        {left, right, top, bottom},
+        (v: undefined | number) => v !== undefined,
+      ),
     }))
   }
 
-  setBoundariesPositions = (panelId: string, boundaries: $FixMe, gridOfBoundaries: $FixMe, dispatcherFn: Function) => {
+  setBoundariesPositions = (
+    panelId: string,
+    boundaries: $FixMe,
+    gridOfBoundaries: $FixMe,
+    dispatcherFn: Function,
+  ) => {
     const {boundariesMoves} = this.state
-    const refMapX = _.pickBy(gridOfBoundaries.refMapX, (path: string[]) => path[0] != panelId)
-    const refMapY = _.pickBy(gridOfBoundaries.refMapY, (path: string[]) => path[0] != panelId)
+    const refMapX = _.pickBy(
+      gridOfBoundaries.refMapX,
+      (path: string[]) => path[0] != panelId,
+    )
+    const refMapY = _.pickBy(
+      gridOfBoundaries.refMapY,
+      (path: string[]) => path[0] != panelId,
+    )
     let newBoundaries: $FixMe = {}
     if (boundariesMoves.left != null) {
       const newLeft = boundaries.left + boundariesMoves.left
       newBoundaries = {
         ...newBoundaries,
         left: {
-          ...(refMapX.hasOwnProperty(newLeft)
-            ?
-              {
+          ...refMapX.hasOwnProperty(newLeft)
+            ? {
                 type: SAME_AS_BOUNDARY,
                 path: refMapX[newLeft],
               }
-            :
-              {
+            : {
                 type: EXACT_VALUE,
                 value: newLeft,
-              }
-          )
+              },
         },
       }
     }
@@ -227,18 +268,15 @@ export default class Panel extends StudioComponent<IProps, IState> {
       newBoundaries = {
         ...newBoundaries,
         right: {
-          ...(refMapX.hasOwnProperty(newRight)
-          ?
-            {
-              type: SAME_AS_BOUNDARY,
-              path: refMapX[newRight],
-            }
-          :
-            {
-              type: EXACT_VALUE,
-              value: newRight,
-            }
-          )
+          ...refMapX.hasOwnProperty(newRight)
+            ? {
+                type: SAME_AS_BOUNDARY,
+                path: refMapX[newRight],
+              }
+            : {
+                type: EXACT_VALUE,
+                value: newRight,
+              },
         },
       }
     }
@@ -247,18 +285,15 @@ export default class Panel extends StudioComponent<IProps, IState> {
       newBoundaries = {
         ...newBoundaries,
         top: {
-          ...(refMapY.hasOwnProperty(newTop)
-            ?
-              {
+          ...refMapY.hasOwnProperty(newTop)
+            ? {
                 type: SAME_AS_BOUNDARY,
                 path: refMapY[newTop],
               }
-            :
-              {
+            : {
                 type: EXACT_VALUE,
                 value: newTop,
-              }
-          )
+              },
         },
       }
     }
@@ -267,18 +302,15 @@ export default class Panel extends StudioComponent<IProps, IState> {
       newBoundaries = {
         ...newBoundaries,
         bottom: {
-          ...(refMapY.hasOwnProperty(newBottom)
-            ?
-              {
+          ...refMapY.hasOwnProperty(newBottom)
+            ? {
                 type: SAME_AS_BOUNDARY,
                 path: refMapY[newBottom],
               }
-            :
-              {
+            : {
                 type: EXACT_VALUE,
                 value: newBottom,
-              }
-          )
+              },
         },
       }
     }
@@ -293,8 +325,12 @@ export default class Panel extends StudioComponent<IProps, IState> {
     const {props, state} = this
     const classes = resolveCss(css, props.css)
     const {children, label, headerLess} = props
-    const {panelMove, boundariesMoves, isMovingPanel, isMovingBoundaries} = state
-    
+    const {
+      panelMove,
+      boundariesMoves,
+      isMovingPanel,
+      isMovingBoundaries,
+    } = state
 
     return (
       <Subscriber channel={PanelControlChannel}>
@@ -318,15 +354,20 @@ export default class Panel extends StudioComponent<IProps, IState> {
           const height = bottom - top
 
           const style = {
-            left, top, width, height,
-            ...(isMovingPanel
+            left,
+            top,
+            width,
+            height,
+            ...isMovingPanel
               ? {
                   transition: 'transform .05s',
-                  transform: `translate3d(${panelMove.x}px, ${panelMove.y}px, 0)`,
+                  transform: `translate3d(${panelMove.x}px, ${
+                    panelMove.y
+                  }px, 0)`,
                   zIndex: 1000,
                 }
-              : {}),
-            ...(isMovingBoundaries ? {zIndex: 1000} : {})
+              : {},
+            ...isMovingBoundaries ? {zIndex: 1000} : {},
           }
 
           return (
@@ -346,15 +387,33 @@ export default class Panel extends StudioComponent<IProps, IState> {
                   <div className={css.content}>{children}</div>
                 </Broadcast>
               </div>
-              {isInEditMode &&
+              {isInEditMode && (
                 <EditOverlay
                   isPanelHeaderLess={headerLess}
-                  onPanelDrag={(dx: number, dy: number) => this.movePanel(boundaries, gridOfBoundaries, dx, dy)}
-                  onPanelDragEnd={() => this.setPanelPosition(panelId, boundaries, gridOfBoundaries, updatePanelBoundaries)}
-                  onBoundaryDrag={(deltas: $FixMe) => this.moveBoundaries(boundaries, gridOfBoundaries, deltas)}
-                  onBoundaryDragEnd={() => this.setBoundariesPositions(panelId, boundaries, gridOfBoundaries, updatePanelBoundaries)}
+                  onPanelDrag={(dx: number, dy: number) =>
+                    this.movePanel(boundaries, gridOfBoundaries, dx, dy)
+                  }
+                  onPanelDragEnd={() =>
+                    this.setPanelPosition(
+                      panelId,
+                      boundaries,
+                      gridOfBoundaries,
+                      updatePanelBoundaries,
+                    )
+                  }
+                  onBoundaryDrag={(deltas: $FixMe) =>
+                    this.moveBoundaries(boundaries, gridOfBoundaries, deltas)
+                  }
+                  onBoundaryDragEnd={() =>
+                    this.setBoundariesPositions(
+                      panelId,
+                      boundaries,
+                      gridOfBoundaries,
+                      updatePanelBoundaries,
+                    )
+                  }
                 />
-              }
+              )}
             </div>
           )
         }}

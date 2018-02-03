@@ -7,7 +7,7 @@ class StatusBar extends React.PureComponent<any, any> {
     return (
       <div className={css.container}>
         <div className={css.item}>
-          <GoRepoForked className={css.syncedIcon}/>
+          <GoRepoForked className={css.syncedIcon} />
           <span className={css.text}>Synced</span>
         </div>
       </div>

@@ -9,7 +9,11 @@ type State = any
 class EditOverlay extends React.PureComponent<Props, State> {
   render() {
     return (
-    <div className={cx(css.container, {[css.isPanelHeaderLess]: this.props.isPanelHeaderLess})}>
+      <div
+        className={cx(css.container, {
+          [css.isPanelHeaderLess]: this.props.isPanelHeaderLess,
+        })}
+      >
         <DraggableArea
           onDrag={(dx, dy) => this.props.onBoundaryDrag({left: dx, top: dy})}
           onDragEnd={() => this.props.onBoundaryDragEnd()}

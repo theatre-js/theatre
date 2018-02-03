@@ -85,7 +85,14 @@ class TimeBar extends React.Component<Props, State> {
 
   render() {
     const {isChangingDuration} = this.state
-    let {currentTime, focus, duration, timeToX, focusedTimeToX, offset} = this.props
+    let {
+      currentTime,
+      focus,
+      duration,
+      timeToX,
+      focusedTimeToX,
+      offset,
+    } = this.props
     const focusLeft = timeToX(focus[0])
     const focusRight = timeToX(focus[1])
     const currentX = focusedTimeToX(currentTime, focus)
@@ -154,8 +161,7 @@ class TimeBar extends React.Component<Props, State> {
           <div
             className={css.currentTimeNeedle}
             style={{transform: `translateX(${currentX + offset}px)`}}
-          >
-          </div>
+          />
         </DraggableArea>
         <DraggableArea
           onDragStart={this._setBeforeMoveState}

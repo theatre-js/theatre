@@ -261,10 +261,7 @@ export class TheUI extends React.Component<Props, State> {
                       type: DIST_FROM_BOUNDARY,
                       path: [panelId, oppositeSideKey],
                       distance:
-                        get(
-                          sideValue.path,
-                          this.boundaryPathToValueRefMap,
-                        ) -
+                        get(sideValue.path, this.boundaryPathToValueRefMap) -
                         get(
                           ['window', oppositeSideKey],
                           this.boundaryPathToValueRefMap,

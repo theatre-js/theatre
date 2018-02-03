@@ -28,7 +28,7 @@ class ContextMenu extends React.Component<Props, State> {
   render() {
     const {menuProps: {left, top}, close, render} = this.props
     const {offsetLeft} = this.state
-    
+
     return (
       <div className={css.container} onClick={close}>
         <div

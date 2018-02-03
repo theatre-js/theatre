@@ -19,7 +19,11 @@ class BoxLegends extends React.PureComponent<$FixMe, $FixMe> {
               style={{'--color': colors[index % colors.length]}}
               onClick={(e: $FixMe) => this.handleClick(e, id)}
             >
-              <div className={cx(css.legendBar, {[css.isActive]: activeLaneId === id})} />
+              <div
+                className={cx(css.legendBar, {
+                  [css.isActive]: activeLaneId === id,
+                })}
+              />
               <div className={css.legendText}>
                 <span className={css.component}>{component}</span>
                 <span className={css.separator}>&nbsp;/&nbsp;</span>

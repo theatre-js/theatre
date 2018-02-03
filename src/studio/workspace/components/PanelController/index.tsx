@@ -24,7 +24,7 @@ export interface IPanelControlChannelData {
   panelId: string
   isActive: boolean
   label: string
-  isInEditMode: boolean  
+  isInEditMode: boolean
   boundaries: $FixMe
   gridOfBoundaries: $FixMe
   updatePanelBoundaries: Function
@@ -39,15 +39,15 @@ type OwnProps = {
 }
 
 type Props = OwnProps & {
-    dispatch: Function
-    type: PanelType
-    configuration: PanelConfiguration
-    persistentState: PanelPersistentState
-    currentlyDraggingOutput: DraggingOutput
-    outputs: PanelOutput
-    inputs: {[k: string]: Object}
-    isActive: boolean
-  }
+  dispatch: Function
+  type: PanelType
+  configuration: PanelConfiguration
+  persistentState: PanelPersistentState
+  currentlyDraggingOutput: DraggingOutput
+  outputs: PanelOutput
+  inputs: {[k: string]: Object}
+  isActive: boolean
+}
 
 interface IBoundary {
   xlow: number
@@ -131,7 +131,7 @@ class PanelController extends React.Component<Props, State> {
   }
 
   updatePanelOutput = (newData: mixed) => {
-    return this.updatePanelData('outputs', newData);
+    return this.updatePanelData('outputs', newData)
   }
 }
 

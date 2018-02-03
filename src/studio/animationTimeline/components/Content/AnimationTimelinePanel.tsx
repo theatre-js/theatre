@@ -78,7 +78,7 @@ class Content extends React.Component<Props, State> {
 
   // _getPanelWidth(xDim) {
   //   return xDim - 10
-    // return xDim / 100 * window.innerWidth - 16
+  // return xDim / 100 * window.innerWidth - 16
   // }
 
   // _resetPanelWidth(xDim) {
@@ -299,7 +299,11 @@ class Content extends React.Component<Props, State> {
     this._changeFocusTo(newFocusLeft, focus[1], panelWidth)
   }
 
-  changeFocusTo = (newFocusLeft: number, newFocusRight: number, panelWidth: number) => {
+  changeFocusTo = (
+    newFocusLeft: number,
+    newFocusRight: number,
+    panelWidth: number,
+  ) => {
     const {focus, duration} = this.state
     if (newFocusLeft < 0) {
       newFocusLeft = 0
@@ -313,13 +317,18 @@ class Content extends React.Component<Props, State> {
     this._changeFocusTo(newFocusLeft, newFocusRight, panelWidth)
   }
 
-  _changeFocusTo(newFocusLeft: number, newFocusRight: number, panelWidth: number) {
+  _changeFocusTo(
+    newFocusLeft: number,
+    newFocusRight: number,
+    panelWidth: number,
+  ) {
     const {focus, currentTime} = this.state
     const newTimeX = this.focusedTimeToX(currentTime, focus, panelWidth)
-    const newCurrentTime = this.xToFocusedTime(newTimeX, [
-      newFocusLeft,
-      newFocusRight,
-    ], panelWidth)
+    const newCurrentTime = this.xToFocusedTime(
+      newTimeX,
+      [newFocusLeft, newFocusRight],
+      panelWidth,
+    )
 
     this.setState(() => ({
       currentTime: newCurrentTime,
@@ -400,7 +409,10 @@ class Content extends React.Component<Props, State> {
           {(panelWidth: number) => {
             panelWidth -= 30
             return (
-              <div className={css.container} onWheel={(e) => this.handleScroll(e, panelWidth)}>
+              <div
+                className={css.container}
+                onWheel={e => this.handleScroll(e, panelWidth)}
+              >
                 <div className={css.timeBar}>
                   <TimeBar
                     offset={30}
@@ -410,11 +422,21 @@ class Content extends React.Component<Props, State> {
                     focus={focus}
                     timeToX={(t: number) => this.timeToX(t, panelWidth)}
                     xToTime={(x: number) => this.xToTime(x, panelWidth)}
-                    focusedTimeToX={(t: number, focus: [number, number]) => this.focusedTimeToX(t, focus, panelWidth)}
-                    xToFocusedTime={(x: number, focus: [number, number]) => this.xToFocusedTime(x, focus, panelWidth)}
-                    changeFocusTo={(focusLeft: number, focusRight: number) => this.changeFocusTo(focusLeft, focusRight, panelWidth)}
-                    changeFocusRightTo={(focus: number) => this.changeFocusRightTo(focus, panelWidth)}
-                    changeFocusLeftTo={(focus: number) => this.changeFocusLeftTo(focus, panelWidth)}
+                    focusedTimeToX={(t: number, focus: [number, number]) =>
+                      this.focusedTimeToX(t, focus, panelWidth)
+                    }
+                    xToFocusedTime={(x: number, focus: [number, number]) =>
+                      this.xToFocusedTime(x, focus, panelWidth)
+                    }
+                    changeFocusTo={(focusLeft: number, focusRight: number) =>
+                      this.changeFocusTo(focusLeft, focusRight, panelWidth)
+                    }
+                    changeFocusRightTo={(focus: number) =>
+                      this.changeFocusRightTo(focus, panelWidth)
+                    }
+                    changeFocusLeftTo={(focus: number) =>
+                      this.changeFocusLeftTo(focus, panelWidth)
+                    }
                     changeCurrentTimeTo={this.changeCurrentTimeTo}
                     changeDuration={this.changeDuration}
                   />
