@@ -39,11 +39,12 @@
 }
 
 .timeThread {
-  // position: absolute;
+  position: relative;
   // bottom: 0;
   top: 0;
-  left: 0;
-  right: 0;
+  left: 30px;
+  // right: 0;
+  width: calc(100% - 30px);
   height: var(--threadHeight);
   background: #23363D;
 }

@@ -219,6 +219,20 @@ export class TheUI extends React.Component<Props, State> {
   }
 
   updatePanelBoundaries = (panelId: string, newBoundaries: $FixMe) => {
+    const newCalculatedBoundaries = _.mapValues(newBoundaries, side => {
+      if (side.type === EXACT_VALUE) {
+        return side.value
+      } else {
+        return _.get(this.state.calculatedBoundaries, side.path)
+      }
+    })
+    const currentCalculatedBoundaries = this.state.calculatedBoundaries[panelId]
+    let shouldUpdate = false
+    Object.keys(newCalculatedBoundaries).forEach(key => {
+      if (newCalculatedBoundaries[key] !== currentCalculatedBoundaries[key]) shouldUpdate = true
+    })
+    if (!shouldUpdate) return
+
     this.props.dispatch(
       reduceStateAction(['workspace', 'panels', 'byId'], (panels: $FixMe) => {
         const newBoundariesKeys: string[] = Object.keys(newBoundaries)

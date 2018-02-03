@@ -3,18 +3,7 @@
   height: 100%;
 }
 
-.titleBar {
-  padding: 2px;
-  white-space: nowrap;
-  height: 10px;
-  // background: #222;
-  z-index: 10;
-  display: none;
-}
-
 .boxLegends {
-  // display: inline-block;
-  // height: 100%;
   width: 30px;
   background: #1F292E;
   position: absolute;
@@ -27,37 +16,6 @@
     width: auto;
     z-index: 1000;
   }
-}
-
-.title {
-  display: inline-block;
-  vertical-align: top;
-  font-size: 10px;
-  line-height: 10px;
-  height: 10px;
-  cursor: pointer;
-  margin-right: 10px;
-}
-
-.activeTitle {
-  border-bottom: 1px solid #444;
-}
-
-.componentName {
-  display: inline-block;
-  vertical-align: top;
-  color: #999;
-
-  &:after {
-    display: inline-block;
-    content: '/';
-  }
-}
-
-.propertyName {
-  display: inline-block;
-  vertical-align: top;
-  color: #0AA;
 }
 
 .svgArea {

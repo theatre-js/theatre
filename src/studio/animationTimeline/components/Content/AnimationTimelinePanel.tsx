@@ -415,7 +415,6 @@ class Content extends React.Component<Props, State> {
               >
                 <div className={css.timeBar}>
                   <TimeBar
-                    offset={30}
                     panelWidth={panelWidth}
                     duration={duration}
                     currentTime={currentTime}
