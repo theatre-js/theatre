@@ -25,6 +25,7 @@
 
   &:hover {
     width: auto;
+    z-index: 1000;
   }
 }
 
