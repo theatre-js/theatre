@@ -1,13 +1,16 @@
 import {React} from '$studio/handy'
 import css from './index.css'
+import cx from 'classnames'
 import * as _ from 'lodash'
 
 interface IProps {
   close: Function
   centerPoint: {left: number, top: number}
   placement: 'left' | 'right' | 'top' | 'bottom'
-  items: Array<{label: string, cb: Function}>
+  items: Array<{label: string, cb: Function, disabled?: boolean}>
 }
+
+interface IState {}
 
 const getCoordinatesOnVerticalAxis = (
   placement: 'left' | 'right',
@@ -66,7 +69,7 @@ const getCoordinatesOnHorizontalAxis = (
   }
 }
 
-class HalfPieContextMenu extends React.PureComponent<IProps, void> {
+class HalfPieContextMenu extends React.PureComponent<IProps, IState> {
   render() {
     const {centerPoint, items, close, placement} = this.props
     const maxItemWidth = Math.max(
@@ -79,12 +82,12 @@ class HalfPieContextMenu extends React.PureComponent<IProps, void> {
 
     return (
       <div className={css.container} onClick={() => close()}>
-        {items.map(({label, cb}: $FixMe, index: number) => {
+        {items.map(({label, cb, disabled}: $FixMe, index: number) => {
           const {leftTranslate, topTranslate} = translateCalculatorFn(index)
           return (
             <div
               key={index}
-              className={css.item}
+              className={cx(css.item, {[css.disabled]: disabled})}
               style={{
                 left: centerPoint.left,
                 top: centerPoint.top,

@@ -4,8 +4,6 @@ import css from './NodeContainer.css'
 import ComponentNode from './ComponentNode'
 import TextNode from './TextNode'
 import NodePlaceholder from './NodePlaceholder'
-// import ContextMenu from './ContextMenu'
-// import ContextMenuItem from './ContextMenuItem'
 import HalfPieContextMenu from '$studio/common/components/HalfPieContextMenu'
 import cx from 'classnames'
 import {ACTION, STATUS, NODE_TYPE} from './constants'
@@ -321,16 +319,6 @@ class NodeContainer extends React.PureComponent<Props, State> {
             ])}
         </div>
         {contextMenuProps != null && (
-          // <ContextMenu
-          //   menuProps={contextMenuProps}
-          //   close={() => this.setState(() => ({contextMenuProps: null}))}
-          //   render={() => [
-          //     <ContextMenuItem key="delete" onClick={this.deleteNode}>
-          //       Delete
-          //     </ContextMenuItem>,
-          //     // <ContextMenuItem key='convert' onClick={() => console.log('convert')}>Convert</ContextMenuItem>,
-          //   ]}
-          // />
           <HalfPieContextMenu
             close={() => this.setState(() => ({contextMenuProps: null}))}
             centerPoint={contextMenuProps}
@@ -356,10 +344,6 @@ class NodeContainer extends React.PureComponent<Props, State> {
                 label: 'xyzzy',
                 cb: () => console.log('xyzzy'),
               },
-              // {
-              //   label: 'xyzzy',
-              //   cb: () => console.log('xyzzy'),
-              // },
             ]}
           />
         )}
