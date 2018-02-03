@@ -158,8 +158,10 @@
 
 .timeTip {
   composes: time;
-  top: -18px;
-  background: #333;
+  top: -20px;
+  background: #1B2226;
+  padding: 0 2px;
+  border-radius: 4px;
   left: 4px;
   transform: translateX(-50%);
   display: none;

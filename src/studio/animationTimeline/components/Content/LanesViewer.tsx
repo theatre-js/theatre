@@ -406,27 +406,6 @@ class LanesViewer extends React.PureComponent<Props, State> {
     const {svgHeight, svgWidth, svgTransform, activeLaneId} = this.state
     return (
       <div className={css.container}>
-        {/* <div className={css.titleBar}>
-          {lanes.map(({id, component, property}, index) => (
-            <div
-              key={id}
-              className={cx(css.title, {
-                [css.activeTitle]: multiLanes && id === activeLaneId,
-              })}
-              {...(multiLanes
-                ? {onClick: e => this.titleClickHandler(e, id)}
-                : {})}
-            >
-              <div className={css.componentName}>{component}</div>
-              <div
-                className={css.propertyName}
-                style={{color: LanesViewer.colors[index % 4]}}
-              >
-                {property}
-              </div>
-            </div>
-          ))}
-        </div> */}
         <div className={css.boxLegends}>
           <BoxLegends
             lanes={lanes.map(lane => _.pick(lane, ['id', 'component', 'property']))}

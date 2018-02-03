@@ -369,20 +369,20 @@ class Content extends React.Component<Props, State> {
 
   timeToX(t: number, panelWidth: number) {
     const {duration} = this.state
-    return t * panelWidth / duration
+    return t * (panelWidth - 6) / duration
   }
 
   xToTime(x: number, panelWidth: number) {
     const {duration} = this.state
-    return x * duration / panelWidth
+    return x * duration / (panelWidth - 6)
   }
 
   focusedTimeToX(t: number, focus: [number, number], panelWidth: number) {
-    return (t - focus[0]) / (focus[1] - focus[0]) * panelWidth
+    return (t - focus[0]) / (focus[1] - focus[0]) * (panelWidth - 6)
   }
 
   xToFocusedTime(x: number, focus: [number, number], panelWidth: number) {
-    return x * (focus[1] - focus[0]) / panelWidth + focus[0]
+    return x * (focus[1] - focus[0]) / (panelWidth - 6) + focus[0]
   }
 
   render() {

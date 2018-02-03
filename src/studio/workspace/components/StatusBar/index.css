@@ -1,0 +1,31 @@
+.container {
+  position: fixed;
+  z-index: 100000;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 26px;
+  background: #1E2A30;
+  color: #3D666B;
+}
+
+.item {
+  margin-left: 15px;
+  display: inline-block;
+}
+
+.icon {
+  position: relative;
+  bottom: 2px;
+}
+
+.syncedIcon {
+  composes: icon;
+  transform: rotateZ(180deg);  
+}
+
+.text {
+  line-height: 28px;
+  font-size: 11px;
+  font-weight: bold;
+}

@@ -9,6 +9,7 @@ import {
 } from '$studio/workspace/types'
 import {createPanel} from '$studio/workspace/sagas'
 import PanelController from '../PanelController'
+import StatusBar from '../StatusBar'
 import css from './index.css'
 
 type Props = {
@@ -111,7 +112,7 @@ export class TheUI extends React.Component<Props, State> {
         left: {type: EXACT_VALUE, value: 0},
         top: {type: EXACT_VALUE, value: 0},
         right: {type: EXACT_VALUE, value: window.innerWidth},
-        bottom: {type: EXACT_VALUE, value: window.innerHeight},
+        bottom: {type: EXACT_VALUE, value: window.innerHeight - 26},
       },
       ...boundariesWithoutWindow,
     }
@@ -476,6 +477,7 @@ export class TheUI extends React.Component<Props, State> {
             updatePanelBoundaries={this.updatePanelBoundaries}
           />
         ))}
+        <StatusBar />
         {/*
           {isCreatingNewPanel &&
             <PanelCreator

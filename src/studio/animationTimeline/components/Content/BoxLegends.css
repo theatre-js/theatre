@@ -17,7 +17,6 @@
 .legendBar {
   width: 16px;
   height: 4px;
-  // border-radius: 8px;
   background-color: var(--color);
   margin-bottom: 3px;
   transform-origin: 0 0;
