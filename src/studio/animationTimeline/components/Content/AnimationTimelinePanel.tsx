@@ -307,6 +307,25 @@ class Content extends React.Component<Props, State> {
     this._reallyChangeFocusTo(newFocusLeft, focus[1], panelWidth)
   }
 
+  _changeZoomLevel = (
+    newFocusLeft: number,
+    newFocusRight: number,
+    panelWidth: number,
+  ) => {
+    const {duration} = this.state
+    if (newFocusLeft < 0) {
+      newFocusLeft = 0
+    }
+    if (newFocusRight > duration) {
+      newFocusRight = duration
+    }
+    if(newFocusRight - newFocusLeft < 1) return
+    
+    const svgWidth = duration / (newFocusRight - newFocusLeft) * panelWidth
+    this.lanesContainer.scrollLeft = svgWidth * newFocusLeft / duration
+    this._reallyChangeFocusTo(newFocusLeft, newFocusRight, panelWidth)
+  }
+
   changeFocusAndScrollLanesContainer = (
     newFocusLeft: number,
     newFocusRight: number,
@@ -397,12 +416,48 @@ class Content extends React.Component<Props, State> {
   }
 
   handleScroll = (e: SyntheticWheelEvent, panelWidth: number) => {
-    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) return
+    const isHorizontal = Math.abs(e.deltaY) > Math.abs(e.deltaX)
+    if (
+      e.ctrlKey || (isHorizontal && e.shiftKey)
+    ) {
+      e.preventDefault()
+      e.stopPropagation()
+      if (e.nativeEvent.target !== this.lanesContainer) {
+        const {focus, duration} = this.state
+        const svgWidth = duration / (focus[1] - focus[0]) * panelWidth
+        const focusLeftX = focus[0] / duration * svgWidth
+        const focusRightX = focus[1] / duration * svgWidth
+        const fraction = (e.nativeEvent.offsetX - focusLeftX) / (focusRightX - focusLeftX)
+        const change = e.deltaY / panelWidth * (focus[1] - focus[0])
+        this._changeZoomLevel(focus[0] - change * fraction, focus[1] + change * (1 - fraction), panelWidth)
+      }
+      return
+    }
 
-    // e.preventDefault()
-    const {focus} = this.state
-    const change = e.deltaX / panelWidth * (focus[1] - focus[0])
-    this._changeFocusTo(focus[0] + change, focus[1] + change, panelWidth)
+    if (!isHorizontal) {
+      const {focus} = this.state
+      const change = e.deltaX / panelWidth * (focus[1] - focus[0])
+      this._changeFocusTo(focus[0] + change, focus[1] + change, panelWidth)
+    }
+
+    // if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+    //   if (e.shiftKey) {
+    //     if (e.nativeEvent.target !== this.lanesContainer) {
+    //       const {focus, duration} = this.state
+    //       const svgWidth = duration / (focus[1] - focus[0]) * panelWidth
+    //       const focusLeftX = focus[0] / duration * svgWidth
+    //       const focusRightX = focus[1] / duration * svgWidth
+    //       const fraction = (e.nativeEvent.offsetX - focusLeftX) / (focusRightX - focusLeftX)
+    //       const change = e.deltaY / panelWidth * (focus[1] - focus[0])
+    //       this._changeZoomLevel(focus[0] - change * fraction, focus[1] + change * (1 - fraction), panelWidth)
+    //     }
+    //   }
+    // } else {
+    //   const {focus} = this.state
+    //   const change = e.deltaX / panelWidth * (focus[1] - focus[0])
+    //   this._changeFocusTo(focus[0] + change, focus[1] + change, panelWidth)
+    // }
+
   }
 
   timeToX(t: number, panelWidth: number) {
