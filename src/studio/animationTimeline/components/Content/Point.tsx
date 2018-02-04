@@ -72,11 +72,19 @@ class Point extends React.Component<Props, State> {
     if (e.ctrlKey || e.metaKey) {
       return this.props.addConnector()
     }
-    if (this.state.isEnteringProps) {
-      this.disableEnteringProps()
-    } else {
-      this.enableEnteringProps()
-    }
+    const {left, top, width, height} = e.target.getBoundingClientRect()
+
+    this.props.showPointValuesEditor({
+      left: left + width / 2,
+      top: top + height / 2,
+      initialTime: this.props.point._t,
+      initialValue: this.props.point._value,
+    })
+    // if (this.state.isEnteringProps) {
+    //   this.disableEnteringProps()
+    // } else {
+    //   this.enableEnteringProps()
+    // }
   }
 
   handleClickHandler = (e: SyntheticMouseEvent<>, side: 'left' | 'right') => {
@@ -213,41 +221,43 @@ class Point extends React.Component<Props, State> {
     const {point: {t, value, _t, _value}} = this.props
     return (
       <foreignObject>
-        <div
-          className={css.pointTip}
-          style={{
-            left: `${t > 25 ? t - 25 : 0}px`,
-            top: `${value >= 37 ? value - 37 : value + 5}px`,
-          }}
-        >
-          <div className={css.pointTipRow}>
-            <span className={css.pointTipIcon}>
-              {String.fromCharCode(0x25b2)}
-            </span>
-            <SingleInputForm
-              ref={c => {
-                if (c != null) this.valueForm = c
-              }}
-              className={css.pointTipInput}
-              value={String(_value)}
-              onCancel={this.disableEnteringProps}
-              onSubmit={this.setPointPosition}
-            />
-          </div>
-          <div className={css.pointTipRow}>
-            <span className={css.pointTipIcon}>
-              {String.fromCharCode(0x25ba)}
-            </span>
-            <SingleInputForm
-              autoFocus={false}
-              ref={c => {
-                if (c != null) this.timeForm = c
-              }}
-              className={css.pointTipInput}
-              value={String(_t)}
-              onCancel={this.disableEnteringProps}
-              onSubmit={this.setPointPosition}
-            />
+        <div className={css.pointTipContainer}>
+          <div
+            className={css.pointTip}
+            style={{
+              left: `${t > 25 ? t - 25 : 0}px`,
+              top: `${value >= 37 ? value - 37 : value + 5}px`,
+            }}
+          >
+            <div className={css.pointTipRow}>
+              <span className={css.pointTipIcon}>
+                {String.fromCharCode(0x25b2)}
+              </span>
+              <SingleInputForm
+                ref={c => {
+                  if (c != null) this.valueForm = c
+                }}
+                className={css.pointTipInput}
+                value={String(_value)}
+                onCancel={this.disableEnteringProps}
+                onSubmit={this.setPointPosition}
+              />
+            </div>
+            <div className={css.pointTipRow}>
+              <span className={css.pointTipIcon}>
+                {String.fromCharCode(0x25ba)}
+              </span>
+              <SingleInputForm
+                autoFocus={false}
+                ref={c => {
+                  if (c != null) this.timeForm = c
+                }}
+                className={css.pointTipInput}
+                value={String(_t)}
+                onCancel={this.disableEnteringProps}
+                onSubmit={this.setPointPosition}
+              />
+            </div>
           </div>
         </div>
       </foreignObject>
@@ -335,7 +345,7 @@ class Point extends React.Component<Props, State> {
             onClick={this.pointClickHandler}
           />
         </DraggableArea>
-        {isEnteringProps && this._renderInputs()}
+        {/* {isEnteringProps && this._renderInputs()} */}
       </g>
     )
   }

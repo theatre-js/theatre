@@ -12,6 +12,7 @@ import {
 import css from './LanesViewer.css'
 import Lane from './Lane'
 import BoxLegends from './BoxLegends'
+import PointValuesEditor from './PointValuesEditor'
 import * as _ from 'lodash'
 import cx from 'classnames'
 
@@ -36,8 +37,7 @@ type State = {
   svgTransform: number,
   svgExtremums: [number, number],
   activeLaneId: string,
-}
-
+  pointValuesEditorProps: undefined | null | Object,}
 const resetExtremums = laneId => {
   return reduceStateAction(
     ['animationTimeline', 'lanes', 'byId', laneId],
@@ -83,8 +83,7 @@ class LanesViewer extends React.PureComponent<Props, State> {
 
     this.state = {
       ...this._getSvgState(props),
-      activeLaneId: props.laneIds[0],
-    }
+      pointValuesEditorProps: null,activeLaneId: props.laneIds[0],}
   }
 
   componentWillReceiveProps(newProps) {
@@ -185,6 +184,14 @@ class LanesViewer extends React.PureComponent<Props, State> {
       ),
     )
     this.props.dispatch(resetExtremums(laneId))
+  }
+
+  showPointValuesEditor(
+    laneId: LaneID,
+    pointIndex: number,
+    pos: {left: number, top: number},
+  ) {
+    this.setState(() => ({pointValuesEditorProps: {...pos, laneId, pointIndex}}))
   }
 
   changePointPositionBy = (
@@ -407,9 +414,10 @@ class LanesViewer extends React.PureComponent<Props, State> {
       }
     })
   }
+
   render() {
     const {lanes} = this.props
-    const {svgHeight, svgWidth, svgTransform, activeLaneId} = this.state
+    const {svgHeight, svgWidth, svgTransform, activeLaneId, pointValuesEditorProps} = this.state
     return (
       <div ref={c => this.container = c} className={css.container} style={{width: svgWidth}}>
         <div className={css.boxLegends}>
@@ -438,6 +446,9 @@ class LanesViewer extends React.PureComponent<Props, State> {
                 points={this._normalizePoints(points)}
                 color={colors[index % colors.length]}
                 width={svgWidth}
+                showPointValuesEditor={(index, pos) =>
+                  this.showPointValuesEditor(id, index, pos)
+                }
                 changePointPositionBy={(index, change) =>
                   this.changePointPositionBy(id, index, change)
                 }
@@ -457,6 +468,13 @@ class LanesViewer extends React.PureComponent<Props, State> {
             ))}
           </svg>
         </div>
+        {pointValuesEditorProps != null &&
+          <PointValuesEditor
+            {...(_.pick(pointValuesEditorProps, ['left', 'top', 'initialValue', 'initialTime']))}
+            onClose={() => this.setState(() => ({pointValuesEditorProps: null}))}
+            onSubmit={(newPosition) => this.setPointPositionTo(pointValuesEditorProps.laneId, pointValuesEditorProps.pointIndex, newPosition)}
+          />
+        }
       </div>
     )
   }

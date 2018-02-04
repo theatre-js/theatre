@@ -320,7 +320,7 @@ class Content extends React.Component<Props, State> {
       newFocusRight = duration
     }
     if(newFocusRight - newFocusLeft < 1) return
-    
+
     const svgWidth = duration / (newFocusRight - newFocusLeft) * panelWidth
     this.lanesContainer.scrollLeft = svgWidth * newFocusLeft / duration
     this._reallyChangeFocusTo(newFocusLeft, newFocusRight, panelWidth)

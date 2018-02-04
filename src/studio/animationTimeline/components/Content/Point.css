@@ -7,7 +7,7 @@
 }
 
 .pointTip {
-  position: relative;
+  position: fixed;
   width: 50px;
   height: 32px;
   background: #101010;

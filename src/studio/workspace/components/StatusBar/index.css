@@ -1,12 +1,15 @@
 .container {
   position: fixed;
-  z-index: 100000;
   bottom: 0;
   left: 0;
   right: 0;
   height: 26px;
   background: #1E2A30;
   color: #3D666B;
+
+  &.onTop {
+    z-index: 100000;
+  }
 }
 
 .item {
