@@ -122,7 +122,7 @@ class ComponentNode extends React.PureComponent<Props, State> {
   }
 
   handleClick = (e, target) => {
-    e.stopPropagation()
+    // e.stopPropagation()
     if (this.props.isSelected) {
       if (target === 'TYPE') {
         this.width = this.container.getBoundingClientRect().width

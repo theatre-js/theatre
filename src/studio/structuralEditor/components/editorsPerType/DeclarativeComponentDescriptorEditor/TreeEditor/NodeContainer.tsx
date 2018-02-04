@@ -117,6 +117,12 @@ class NodeContainer extends React.PureComponent<Props, State> {
     }
   }
 
+  handleClickToAdd = (e: $FixMe, index: number) => {
+    e.stopPropagation()
+    e.preventDefault()
+    this.addChild(index)
+  }
+
   contextMenuHandler = e => {
     e.stopPropagation()
     e.preventDefault()
@@ -125,7 +131,6 @@ class NodeContainer extends React.PureComponent<Props, State> {
   }
 
   setPlaceholderAsActive = (onIndex, e) => {
-    console.log('yay')
     if (e != null && !e.metaKey && !this.props.isANodeBeingDragged) {
       if (this.state.newChildIndex != null) this.unsetPlaceholderAsActive()
       return
@@ -267,6 +272,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
             className={cx(css.root, {[css.isCommandDown]: shouldReactToCommandDown})}
             onContextMenu={this.contextMenuHandler}
             onMouseDown={this.mouseDownHandler}
+            onClick={(e: $FixMe) => this.handleClickToAdd(e, 0)}
             // {...(!isText
             //   ? {
             //       onMouseMove: e => this.setPlaceholderAsActive(0, e),
@@ -303,6 +309,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
                   // onMouseMove={e => this.setPlaceholderAsActive(index + 1, e)}
                   // onMouseLeave={this.unsetPlaceholderAsActive}
                   // onClick={() => this.props.setSelectedNodeId(nodeProps.id)}
+                  onClick={(e: $FixMe) => this.handleClickToAdd(e, index + 1)}
                 />
                 <div className={css.child}>
                   <NodeContainer
@@ -327,6 +334,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
                   // onMouseMove={e => this.setPlaceholderAsActive(index + 1, e)}
                   // onMouseLeave={this.unsetPlaceholderAsActive}
                   // onClick={() => this.props.setSelectedNodeId(nodeProps.id)}
+                  onClick={(e: $FixMe) => this.handleClickToAdd(e, index + 1)}                  
                 />
               </div>
             )
