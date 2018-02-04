@@ -25,7 +25,7 @@ const initialState: WorkspaceNamespaceState = {
           top: {
             type: 'distanceFromBoundary',
             path: ['8daa7380-9b43-475a-8352-dc564a58c719', 'bottom'],
-            distance: -300,
+            distance: -179,
           },
           bottom: {
             type: 'sameAsBoundary',
@@ -52,7 +52,7 @@ const initialState: WorkspaceNamespaceState = {
           right: {
             type: 'distanceFromBoundary',
             path: ['elementTree', 'left'],
-            distance: 300,
+            distance: 228,
           },
           top: {
             type: 'sameAsBoundary',
@@ -83,7 +83,7 @@ const initialState: WorkspaceNamespaceState = {
           left: {
             type: 'distanceFromBoundary',
             path: ['composePanel-imAUUID', 'right'],
-            distance: -300,
+            distance: -250,
           },
           right: {
             type: 'sameAsBoundary',
