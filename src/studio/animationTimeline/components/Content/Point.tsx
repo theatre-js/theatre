@@ -29,7 +29,7 @@ type State = {
   handlesMove: PointHandles,
 }
 
-class Point extends React.Component<Props, State> {
+class Point extends React.PureComponent<Props, State> {
   props: Props
   state: State
   valueForm: SingleInputForm

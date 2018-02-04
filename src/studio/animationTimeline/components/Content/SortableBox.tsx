@@ -23,7 +23,7 @@ type State = {
 
 export const SortableBoxDragChannel = 'TheaterJS/SortableBoxDragChannel'
 
-class LaneBox extends React.Component<Props, State> {
+class LaneBox extends React.PureComponent<Props, State> {
   props: Props
   state: State
 

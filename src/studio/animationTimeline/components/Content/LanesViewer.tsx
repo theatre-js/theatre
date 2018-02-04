@@ -78,23 +78,42 @@ const resetExtremums = laneId => {
 }
 
 const colors = ['#3AAFA9', '#575790', '#B76C6C', '#FCE181']
-class LanesViewer extends React.PureComponent<Props, State> {
+class LanesViewer extends React.Component<Props, State> {
   svgArea: HTMLElement
 
   constructor(props: Props) {
     super(props)
-
     this.state = {
       ...this._getSvgState(props),
       pointValuesEditorProps: null,activeLaneId: props.laneIds[0],}
   }
 
-  componentWillReceiveProps(newProps) {
+  componentWillReceiveProps(nextProps) {
     let activeLaneId = this.state.activeLaneId
-    if (newProps.laneIds.find(id => id === activeLaneId) == null) {
-      activeLaneId = newProps.laneIds[0]
+    if (nextProps.laneIds.find(id => id === activeLaneId) == null) {
+      activeLaneId = nextProps.laneIds[0]
     }
-    this.setState(() => ({...this._getSvgState(newProps), activeLaneId}))
+    if (
+      this.state.activeLaneId !== activeLaneId ||
+      nextProps.boxHeight !== this.props.boxHeight ||
+      nextProps.duration !== this.props.duration ||
+      nextProps.panelWidth !== this.props.panelWidth ||
+      ((nextProps.focus[1] - nextProps.focus[0]) !== (this.props.focus[1] - this.props.focus[0])) 
+    ) {
+      this.setState(() => ({...this._getSvgState(nextProps), activeLaneId}))
+    }
+    // this.setState(() => ({...this._getSvgState(nextProps), activeLaneId}))
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    if (nextProps.boxHeight !== this.props.boxHeight) return true
+    if (nextProps.canBeMerged !== this.props.canBeMerged) return true
+    if (nextProps.shouldIndicateMerge !== this.props.shouldIndicateMerge) return true
+    if (!_.isEqual(nextProps.lanes, this.props.lanes)) return true
+    if (nextState.svgWidth !== this.state.svgWidth) return true
+    if (nextState.activeLaneId !== this.state.activeLaneId) return true
+    if (nextState.pointValuesEditorProps !== this.state.pointValuesEditorProps) return true
+    return false
   }
 
   // componentDidUpdate(_, prevState) {
@@ -117,7 +136,7 @@ class LanesViewer extends React.PureComponent<Props, State> {
   _getSvgState(props) {
     const {boxHeight, duration, focus, panelWidth, lanes} = props
     const svgHeight = boxHeight - 14
-    const svgWidth = duration / (focus[1] - focus[0]) * panelWidth
+    const svgWidth = Math.floor(duration / (focus[1] - focus[0]) * panelWidth)
     const svgTransform = svgWidth * focus[0] / duration
     const svgExtremums = lanes.reduce(
       (reducer, {extremums}) => {
@@ -417,6 +436,16 @@ class LanesViewer extends React.PureComponent<Props, State> {
       }
     })
   }
+
+
+  // laneIds={box.lanes}
+  // splitLane={laneId => this.splitLane(index, laneId)}
+  // panelWidth={panelWidth}
+  // duration={duration}
+  // currentTime={currentTime}
+  // focus={focus}
+  // canBeMerged={canBeMerged}
+  // shouldIndicateMerge={shouldIndicateMerge}
 
   render() {
     const {lanes, shouldIndicateMerge, canBeMerged} = this.props

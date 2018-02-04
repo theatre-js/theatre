@@ -29,7 +29,7 @@
   }
 
   &.canBeMerged {
-    // z-index: 1000;
+    opacity: .9;
   }
 }
 

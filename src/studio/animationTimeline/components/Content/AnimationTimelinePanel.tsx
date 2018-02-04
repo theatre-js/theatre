@@ -320,7 +320,6 @@ class Content extends React.Component<Props, State> {
       newFocusRight = duration
     }
     if(newFocusRight - newFocusLeft < 1) return
-
     const svgWidth = duration / (newFocusRight - newFocusLeft) * panelWidth
     this.lanesContainer.scrollLeft = svgWidth * newFocusLeft / duration
     this._reallyChangeFocusTo(newFocusLeft, newFocusRight, panelWidth)
@@ -429,6 +428,7 @@ class Content extends React.Component<Props, State> {
         const focusRightX = focus[1] / duration * svgWidth
         const fraction = (e.nativeEvent.offsetX - focusLeftX) / (focusRightX - focusLeftX)
         const change = e.deltaY / panelWidth * (focus[1] - focus[0])
+
         this._changeZoomLevel(focus[0] - change * fraction, focus[1] + change * (1 - fraction), panelWidth)
       }
       return
@@ -479,6 +479,7 @@ class Content extends React.Component<Props, State> {
   }
 
   render() {
+    // console.log('render')
     const {
       boxBeingDragged,
       moveRatios,

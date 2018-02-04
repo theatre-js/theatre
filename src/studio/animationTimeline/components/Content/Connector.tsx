@@ -10,7 +10,7 @@ type Props = {
 
 type State = {}
 
-class Connector extends React.Component<Props, State> {
+class Connector extends React.PureComponent<Props, State> {
   clickHandler = (e: SyntheticMouseEvent<>) => {
     if (!this.props.removeConnector) return
     if (e.altKey) {

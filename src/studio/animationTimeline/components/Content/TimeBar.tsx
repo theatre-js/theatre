@@ -26,7 +26,7 @@ type State = {
   isChangingDuration: boolean
 }
 
-class TimeBar extends React.Component<Props, State> {
+class TimeBar extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props)
 
