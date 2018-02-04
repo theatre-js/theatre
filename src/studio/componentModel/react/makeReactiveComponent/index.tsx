@@ -243,7 +243,7 @@ export default function makeReactiveComponent({
                 .prop(modifierId)
                 .prop('getClass')
                 .flatMap((possibleFn: undefined | null | Function) => {
-                  if (!possibleFn) console.warn('this shouldnt happen')
+                  if (!possibleFn) console.warn(`couldn't find modifier '${modifierId}'. This should never happen`)
                   return possibleFn
                     ? possibleFn(
                         modifierInstantiationDescriptor.pointer().prop('props'),

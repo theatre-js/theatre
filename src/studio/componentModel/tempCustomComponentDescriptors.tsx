@@ -90,7 +90,11 @@ const tempCustomComponentDescriptors = {
             '1': {
               __descriptorType: 'ModifierInstantiationValueDescriptor',
               modifierId: 'TheaterJS/Core/HTML/UberModifier',
-              props: {},
+              props: {
+                translationX: 1,
+                translationY: 2,
+                translationZ: 3,
+              },
               enabled: true,
             },
           },

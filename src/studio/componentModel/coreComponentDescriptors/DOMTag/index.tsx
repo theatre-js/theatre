@@ -4,6 +4,7 @@ import * as React from 'react'
 import {ComponentDescriptor} from '$studio/componentModel/types'
 import {makeReactiveComponent} from '$studio/handy'
 import {DerivedClass} from '$src/shared/DataVerse/derivedClass/derivedClass'
+import withDeps from '$src/shared/DataVerse/derivations/withDeps'
 
 const lookupTable = {
   tagName: self => {
@@ -23,10 +24,15 @@ const lookupTable = {
     const refFn = self.pointer().prop('refFn')
     const tagName = self.pointer().prop('tagName')
 
-    return D.derivations.autoDerive(() => {
+    const classP = self
+      .pointer()
+      .prop('props')
+      .prop('class')
+
+    return withDeps({tagName, refFn, classP, childrenD}, () => {
       return React.createElement(
         tagName.getValue(),
-        {ref: refFn.getValue()},
+        {ref: refFn.getValue(), className: classP.getValue()},
         childrenD.getValue(),
       )
     })

@@ -1,0 +1,19 @@
+.container {
+  display: flex;
+}
+
+.label {
+  margin-right: 1em;
+}
+
+.input {
+  background: #273238;
+  border: 1px solid #1A252B;
+  height: 22px;
+  min-width: 16px;
+  display: block;
+  color: #BAE8E5;
+  font-size: 10px;
+  line-height: 22px;
+  padding: 0 10px;
+}
