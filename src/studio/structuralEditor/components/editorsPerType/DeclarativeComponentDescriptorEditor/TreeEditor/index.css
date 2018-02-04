@@ -3,7 +3,7 @@
   width: calc(100% - 2px);
   left: 1px;
   /* height: 30%; */
-  height: 100%;
+  height: calc(100% - 60px);
   overflow: hidden auto;
 
   &::-webkit-scrollbar {
@@ -14,12 +14,21 @@
 .treeContainer {
   position: relative;
   padding-bottom: 30px;
+
 }
 
 .scroller {
-  position: relative;
+  position: absolute;
   width: 100%;
   height: 10px;
   z-index: 100;
-  margin-bottom: -10px;
+
+  &.top {
+    top: 0;
+  }
+
+  &.bottom {
+    bottom: 0;
+  }
+  // margin-bottom: -10px;
 }
