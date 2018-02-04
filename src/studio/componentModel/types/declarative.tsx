@@ -43,7 +43,7 @@ export interface IRuleSet {
 export interface IModifierInstantiationValueDescriptor {
   __descriptorType: 'ModifierInstantiationValueDescriptor'
   modifierId: string
-  props: IMapDescriptor
+  props: IMapDescriptor<mixed>
   enabled: boolean
 }
 
@@ -63,10 +63,11 @@ export interface IReferenceToProp {
   propid: string
 }
 
-export interface IMapDescriptor {
-  [key: string]: $FixMe
+export type IMapDescriptor<O> = {
+  [K in keyof O]: O[K]
 }
-export type ArrayDescriptor = Array<$FixMe>
+
+export type ArrayDescriptor<T> = Array<T>
 export type StringLiteralDescriptor = string
 export type NumberLiteralDescriptor = number
 export type BooleanLiteralDescriptor = boolean
@@ -87,12 +88,12 @@ export interface IComponentInstantiationValueDescriptor {
 }
 
 export interface IModifierInstantiationValueDescriptors {
-  list: ArrayDescriptor
-  byId: IMapDescriptor
+  list: ArrayDescriptor<string>
+  byId: IMapDescriptor<IModifierInstantiationValueDescriptor>
 }
 
 export type ValueDescriptorDescribedInAnObject =
-  | IMapDescriptor
+  | IMapDescriptor<mixed>
   | IReferenceToLocalHiddenValue
   | IReferenceToProp
   | IComponentInstantiationValueDescriptor

@@ -86,8 +86,15 @@ const tempCustomComponentDescriptors = {
           children: [],
         },
         modifierInstantiationDescriptors: {
-          byId: {},
-          list: [],
+          byId: {
+            '1': {
+              __descriptorType: 'ModifierInstantiationValueDescriptor',
+              modifierId: 'TheaterJS/Core/HTML/UberModifier',
+              props: {},
+              enabled: true,
+            },
+          },
+          list: ['1'],
         },
       },
     },

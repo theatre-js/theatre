@@ -2,33 +2,74 @@ import {React, compose, connect} from '$src/studio/handy'
 import css from './ModifiersEditor.css'
 import PanelSection from '$src/studio/structuralEditor/components/reusables/PanelSection'
 import * as _ from 'lodash'
+import StudioComponent from '$src/studio/handy/StudioComponent'
+import {getSelectedNodeId} from '$src/studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor'
+import {
+  IDeclarativeComponentDescriptor,
+  IComponentInstantiationValueDescriptor,
+} from '$src/studio/componentModel/types'
+import ListOfModifierInstantiationDescriptorsInspector from './ListOfModifierInstantiationDescriptorsInspector'
 
 type Props = {
   pathToComponentDescriptor: Array<string>
+  componentDescriptor: IDeclarativeComponentDescriptor
 }
 
-type State = void
+type State = {}
 
-class ModifiersEditor extends React.PureComponent<Props, State> {
-  state: State
-  props: Props
-
-  constructor(props: Props) {
-    super(props)
-    this.state = undefined
-  }
+class ModifiersEditor extends StudioComponent<Props, State> {
+  state = {}
 
   render() {
-    const {componentDescriptor} = this.props
+    const {componentDescriptor, pathToComponentDescriptor} = this.props
+    const selectedNodeId = getSelectedNodeId(componentDescriptor)
+    const possibleHiddenValue =
+      selectedNodeId &&
+      componentDescriptor.localHiddenValuesById[selectedNodeId]
 
-    return (
-      <div className={css.container}>
-        <PanelSection label="Modifiers">
+    if (
+      !selectedNodeId ||
+      !possibleHiddenValue ||
+      typeof possibleHiddenValue !== 'object' ||
+      Array.isArray(possibleHiddenValue)
+    ) {
+      return null
+    }
 
-        modifiers
-        </PanelSection>
-      </div>
-    )
+    if (
+      // @ts-ignore
+      possibleHiddenValue.__descriptorType ===
+      'ComponentInstantiationValueDescriptor'
+    ) {
+      const instantiationValueDescriptor: IComponentInstantiationValueDescriptor = possibleHiddenValue as $IntentionalAny
+      const pathToLocalHiddenValueId = [
+        ...pathToComponentDescriptor,
+        'localHiddenValuesById',
+        selectedNodeId,
+      ]
+
+      const pathToModifierInstantiationDescriptors = [...pathToLocalHiddenValueId, 'modifierInstantiationDescriptors']
+      const modifierInstantiationDescriptors = instantiationValueDescriptor.modifierInstantiationDescriptors
+
+      return (
+        <div className={css.container}>
+          <PanelSection label="Modifiers">
+            <ListOfModifierInstantiationDescriptorsInspector
+              pathToModifierInstantiationDescriptors={
+                pathToModifierInstantiationDescriptors
+              }
+              modifierInstantiationDescriptors={
+                modifierInstantiationDescriptors
+              }
+            />
+          </PanelSection>
+        </div>
+      )
+    }
+
+    possibleHiddenValue
+
+    return null
   }
 }
 

@@ -3,7 +3,7 @@ const inspectorComponents = {
     .default,
   'TheaterJS/Core/HTML/SetCustomStyle': require('./HTML/SetCustomStyle/SetCustomStyleInspector')
     .default,
-  'TheaterJS/Core/HTML/UberModifier': require('./HTML/SetCustomStyle/UberModifierInspector')
+  'TheaterJS/Core/HTML/UberModifier': require('./HTML/UberModifier/UberModifierInspector/UberModifierInspector')
     .default,
 }
 

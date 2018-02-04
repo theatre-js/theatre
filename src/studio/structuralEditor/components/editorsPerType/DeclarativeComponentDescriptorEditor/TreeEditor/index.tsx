@@ -27,7 +27,7 @@ export const getMeta = (rootComponentDescriptor: $IntentionalAny) => {
   return _.get(rootComponentDescriptor, ['meta', metaKey])
 }
 
-export const getSelectedNodeId = (rootComponentDescriptor: $IntentionalAny) => {
+export const getSelectedNodeId = (rootComponentDescriptor: $IntentionalAny): undefined | null | string => {
   return _.get(getMeta(rootComponentDescriptor), 'selectedNodeId')
 }
 

@@ -12,19 +12,13 @@ type Props = {
   path: Array<string>
 }
 
-type State = void
+type State = {}
 
-class DeclarativeComponentDescriptorEditor extends React.PureComponent<
+export default class DeclarativeComponentDescriptorEditor extends React.PureComponent<
   Props,
   State
 > {
-  state: State
-  props: Props
-
-  constructor(props: Props) {
-    super(props)
-    this.state = undefined
-  }
+  state = {}
 
   render() {
     return (
@@ -37,5 +31,3 @@ class DeclarativeComponentDescriptorEditor extends React.PureComponent<
     )
   }
 }
-
-export default compose(identity)(DeclarativeComponentDescriptorEditor)
