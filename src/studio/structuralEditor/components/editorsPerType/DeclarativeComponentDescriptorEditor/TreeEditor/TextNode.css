@@ -1,4 +1,4 @@
-@value indent from './ComponentNode.css';
+@value indent from './NodeContainer.css';
 @value nodeHeight from './NodeContainer.css';
 
 .container {
@@ -7,6 +7,7 @@
   height: nodeHeight;
   display: flex;
   align-items: flex-end;
+  cursor: default;
   /* display: none; */
 
   opacity: 1;

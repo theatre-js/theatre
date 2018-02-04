@@ -20,6 +20,7 @@ import {
   NODE_TYPE,
   STATUS,
 } from './constants'
+import cx from 'classnames'
 
 export const metaKey = 'composePanel'
 
@@ -39,6 +40,7 @@ type Props = {
 
 type State = {
   nodes: Object
+  isCommandDown: boolean
   nodeBeingDragged:
     | undefined
     | null
@@ -86,6 +88,7 @@ class TreeEditor extends StudioComponent<Props, State> {
   lastAction = {type: null, payload: null}
   state = {
     nodes: {},
+    isCommandDown: false,
     nodeBeingDragged: null,
     activeDropZone: null,
     selectedNodeId: null,
@@ -93,10 +96,37 @@ class TreeEditor extends StudioComponent<Props, State> {
 
   componentDidMount() {
     this._setNodes(this.props.rootComponentDescriptor)
+    document.addEventListener('keydown', this._handleKeyDown)
+    document.addEventListener('keyup', this._handleKeyUp)
+    document.addEventListener('visibilitychange', this._handleVisibilityChange)
+  }
+  
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this._handleKeyDown)
+    document.removeEventListener('keyup', this._handleKeyUp)
+    document.removeEventListener('visibilitychange', this._handleVisibilityChange)
   }
 
   componentWillReceiveProps(nextProps) {
     this._setNodes(nextProps.rootComponentDescriptor)
+  }
+
+  _handleKeyDown = (e: $FixMe) => {
+    if (e.keyCode === 91) {
+      this.setState(() => ({isCommandDown: true}))
+    }
+  }
+
+  _handleKeyUp = (e: $FixMe) => {
+    if (e.keyCode === 91) {
+      this.setState(() => ({isCommandDown: false}))
+    }
+  }
+
+  _handleVisibilityChange = () => {
+    if (document.visibilityState === 'hidden' && this.state.isCommandDown) {
+      this.setState(() => ({isCommandDown: false}))
+    }
   }
 
   _setLastAction(type: string, payload: Object) {
@@ -494,7 +524,7 @@ class TreeEditor extends StudioComponent<Props, State> {
   _renderScroller(direction: 'up' | 'down') {
     return (
       <div
-        className={css.scroller}
+        className={cx(css.scroller, {[css.top]: direction === 'up', [css.bottom]: direction === 'down'})}
         onMouseOver={() => this._startScroll(direction)}
         onMouseLeave={() => this._stopScroll()}
       />
@@ -525,49 +555,48 @@ class TreeEditor extends StudioComponent<Props, State> {
   }
 
   render() {
-    const {nodes, nodeBeingDragged, activeDropZone} = this.state
+    const {nodes, nodeBeingDragged, activeDropZone, isCommandDown} = this.state
     const isANodeBeingDragged = nodeBeingDragged != null
     const selectedNodeId = getSelectedNodeId(this.props.rootComponentDescriptor)
 
     return (
-      <div>
-        <PanelSection withHorizontalMargin={false} label="Template">
-          {this._renderScroller('up')}
-          {isANodeBeingDragged && (
-            <MovableNode
-              nodeBeingDragged={nodeBeingDragged}
-              activeDropZone={activeDropZone}
-              onCancel={this.dropHandler}
+      <PanelSection withHorizontalMargin={false} label="Template">
+        {this._renderScroller('up')}
+        {isANodeBeingDragged && (
+          <MovableNode
+            nodeBeingDragged={nodeBeingDragged}
+            activeDropZone={activeDropZone}
+            onCancel={this.dropHandler}
+          />
+        )}
+        <div ref={c => (this.treeWrapper = c)} className={css.treeWrapper}>
+          <div
+            ref={c => (this.treeContainer = c)}
+            className={css.treeContainer}
+          >
+            <NodeContainer
+              key={nodes.id}
+              isCommandDown={isCommandDown}
+              selectedNodeId={selectedNodeId}
+              nodeData={nodes}
+              dispatchAction={this.dispatchActionFromNode}
+              isANodeBeingDragged={isANodeBeingDragged}
+              setNodeBeingDragged={this.setNodeBeingDragged}
+              setActiveDropZone={activeDropZone =>
+                this.setState(() => ({activeDropZone}))
+              }
+              unsetActiveDropZone={() =>
+                this.setState(() => ({activeDropZone: null}))
+              }
+              setSelectedNodeId={this.setSelectedNodeId}
+              listOfDisplayNames={this.props.listOfDisplayNames}
+              handleTextNodeTypeChange={this.handleTextNodeTypeChange}
+              cancelTextNodeTypeChange={this.cancelTextNodeTypeChange}
             />
-          )}
-          <div ref={c => (this.treeWrapper = c)} className={css.treeWrapper}>
-            <div
-              ref={c => (this.treeContainer = c)}
-              className={css.treeContainer}
-            >
-              <NodeContainer
-                key={nodes.id}
-                selectedNodeId={selectedNodeId}
-                nodeData={nodes}
-                dispatchAction={this.dispatchActionFromNode}
-                isANodeBeingDragged={isANodeBeingDragged}
-                setNodeBeingDragged={this.setNodeBeingDragged}
-                setActiveDropZone={activeDropZone =>
-                  this.setState(() => ({activeDropZone}))
-                }
-                unsetActiveDropZone={() =>
-                  this.setState(() => ({activeDropZone: null}))
-                }
-                setSelectedNodeId={this.setSelectedNodeId}
-                listOfDisplayNames={this.props.listOfDisplayNames}
-                handleTextNodeTypeChange={this.handleTextNodeTypeChange}
-                cancelTextNodeTypeChange={this.cancelTextNodeTypeChange}
-              />
-            </div>
           </div>
-          {this._renderScroller('down')}
-        </PanelSection>
-      </div>
+        </div>
+        {this._renderScroller('down')}
+      </PanelSection>
     )
   }
 }

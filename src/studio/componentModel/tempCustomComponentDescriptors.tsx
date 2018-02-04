@@ -795,6 +795,6 @@ const tempCustomComponentDescriptors = {
       which: 'container',
     },
   },
-}*/
-
+}
+*/
 export default tempCustomComponentDescriptors

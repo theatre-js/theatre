@@ -39,12 +39,11 @@
   background: var(--body-color);
   position: absolute 0px;
   z-index: 0;
+  overflow-y: scroll;
 }
 
 .content {
   position: absolute var(--panelTopBarHeight) 0 0 0;
-  // overflow-x: visible;
-  // overflow-y: scroll;
   z-index: 0;
   
 }
