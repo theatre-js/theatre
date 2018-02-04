@@ -2,7 +2,6 @@ export const nodeHeight: string;
 export const indent: string;
 export const container: string;
 export const isContentHidden: string;
-export const isSelected: string;
 export const displayName: string;
 export const className: string;
 export const input: string;

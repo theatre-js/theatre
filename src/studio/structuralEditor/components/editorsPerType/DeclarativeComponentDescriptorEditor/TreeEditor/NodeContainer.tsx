@@ -297,6 +297,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
                 className={css.hoverSensor}
                 onMouseMove={e => this.setPlaceholderAsActive(index + 1, e)}
                 onMouseLeave={this.unsetPlaceholderAsActive}
+                onClick={() => this.props.setSelectedNodeId(nodeProps.id)}
               />,
               <div key="child" className={css.child}>
                 <NodeContainer

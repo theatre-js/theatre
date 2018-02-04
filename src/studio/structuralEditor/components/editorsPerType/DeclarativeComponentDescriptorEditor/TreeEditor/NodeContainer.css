@@ -1,19 +1,21 @@
-@value nodeHeight: 24px;
+@value nodeHeight: 27px;
 @value nodeMargin: 2px;
 
 .container {
   display: grid;
-  grid-template-columns: 16px 1fr 1px;
-  // grid-tempalte-row: nodeHeight;
+  grid-template-columns: 1px 16px 1fr 1px;
   position: relative;
   margin-bottom: nodeMargin;
-  /* border-radius: 2px; */
   overflow: hidden;
-  // --color: calc(var(--depth) * 20 + 45);
-  // background-color: rgb(var(--color), var(--color), var(--color));
+  --color: rgb(
+    calc(39 - var(--depth) * 4 - 4),
+    calc(50 - var(--depth) * 4 - 4),
+    calc(56 - var(--depth) * 4 - 4)
+  );
   top: 0;
-  // opacity: 0;
-  /* will-change: max-height, transform; */
+  &:hover {
+    background: var(--color);
+  }
 
   &.expand {
     opacity: 0;
@@ -59,13 +61,17 @@
 }
 
 .root {
-  grid-column: 1 / span 2;
+  grid-column: 2 / span 3;
+}
+
+.container.isSelected > .root {
+  background: #0e1315;
 }
 
 .hoverSensor {
-  grid-column: 1;
+  grid-column: 2;
 }
 
 .child {
-  grid-column: 2;
+  grid-column: 3;
 }

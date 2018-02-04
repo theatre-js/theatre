@@ -3,13 +3,15 @@
 
 .container {
   position: relative;
-  left: indent;
-  width: calc(100% - 2 * indent);
+  // left: indent;
+  // width: calc(100% - 2 * indent);
   height: nodeHeight;
   font-weight: 400;
   white-space: nowrap;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 0 indent;
   
   opacity: 1;
   /* transition: opacity .15s ease-in-out; */
@@ -22,15 +24,15 @@
   &.isContentHidden {
     opacity: 0;
   }
-
+/*
   &:before {
     display: block;
     content: ' ';
-    top: -4px;
-    right: -5px;
-    bottom: -2px;
-    left: -14px;
     position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: calc(-1 * indent);
     background: black;
     opacity: 0;
     border-radius: 2px;
@@ -46,6 +48,7 @@
     background: #0e1315;
 
   }
+  */
 }
 
 .displayName {
