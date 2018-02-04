@@ -1,11 +1,11 @@
 // @flow
-import {React, compose} from '$studio/handy'
-import css from './index.css'
-import ComponentNameEditor from './ComponentNameEditor'
-import PropsEditor from './PropsEditor'
-import TreeEditor from './TreeEditor'
-import ModifiersEditor from './ModifiersEditor'
+import {React, compose} from '$src/studio/handy'
+import css from './DeclarativeComponentDescriptorEditor.css'
+import ComponentNameEditor from '$src/studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/ComponentNameEditor'
+import PropsEditor from '$src/studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/PropsEditor'
+import TreeEditor from '$src/studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor'
 import {identity} from 'ramda'
+import ModifiersEditor from './ModifiersEditor/ModifiersEditor'
 
 type Props = {
   // path to comopnent descriptor
@@ -32,7 +32,7 @@ class DeclarativeComponentDescriptorEditor extends React.PureComponent<
         <ComponentNameEditor pathToComponentDescriptor={this.props.path} />
         {/* <PropsEditor pathToComponentDescriptor={this.props.path} /> */}
         <TreeEditor pathToComponentDescriptor={this.props.path} />
-        {/* <ModifiersEditor pathToComponentDescriptor={this.props.path} /> */}
+        <ModifiersEditor pathToComponentDescriptor={this.props.path} />
       </div>
     )
   }

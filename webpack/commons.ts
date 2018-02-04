@@ -172,7 +172,7 @@ export const makeConfigParts = (options: Options) => {
                 sourceMap: isDev,
                 modules: true,
                 namedExport: true,
-                localIdentName: '[local]_[hash:10]',
+                localIdentName: '[name]_[local]_[hash:10]',
                 importLoaders: 1,
               },
             },

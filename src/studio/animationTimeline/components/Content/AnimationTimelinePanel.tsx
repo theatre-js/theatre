@@ -17,6 +17,7 @@ import {
 } from '$src/studio/animationTimeline/types'
 import {XY} from '$src/studio/workspace/types'
 import Panel from '$src/studio/workspace/components/Panel/Panel'
+import { throttle } from 'lodash';
 
 type OwnProps = TimelineObject & {
   timelineId: TimelineID
@@ -52,6 +53,7 @@ class Content extends React.Component<Props, State> {
     super(props)
 
     const {boxes, layout} = props
+    this._handleScroll = throttle(this._handleScroll.bind(this), 200)
 
     this.state = {
       boxBeingDragged: null,
@@ -414,7 +416,12 @@ class Content extends React.Component<Props, State> {
     }))
   }
 
-  handleScroll = (e: SyntheticWheelEvent, panelWidth: number) => {
+  handleScroll(e: SyntheticWheelEvent, panelWidth: number) {
+    e.persist()
+    this._handleScroll(e, panelWidth)
+  }
+
+  _handleScroll(e: SyntheticWheelEvent, panelWidth: number) {
     const isHorizontal = Math.abs(e.deltaY) > Math.abs(e.deltaX)
     if (
       e.ctrlKey || (isHorizontal && e.shiftKey)

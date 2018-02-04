@@ -4,14 +4,14 @@ import * as _ from 'lodash'
 const context = require.context(
   './',
   true,
-  /\.\/([a-zA-Z]+)Editor\/index\.tsx$/,
+  /\.\/([a-zA-Z]+)Editor\/([a-zA-Z]+)Editor\.tsx$/,
 )
 const listOfModulePaths: Array<string> = context.keys()
 const requireModuleByPath: typeof require = context
 const components = _.mapValues(
   _.keyBy(listOfModulePaths, s => {
     const matches: Array<string> = s.match(
-      /\/([a-zA-Z]+)Editor\/index\.tsx$/,
+      /\/([a-zA-Z]+)Editor\/([a-zA-Z]+)Editor\.tsx$/,
     ) as $IntentionalAny
     return matches[1]
   }),

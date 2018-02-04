@@ -1,10 +1,10 @@
-// @flow
 import {
   React,
   compose,
   connect,
   reduceStateAction,
   multiReduceStateAction,
+  StudioComponent,
 } from '$studio/handy'
 import {getComponentDescriptor} from '$studio/componentModel/selectors'
 import PanelSection from '$studio/structuralEditor/components/reusables/PanelSection'
@@ -20,6 +20,16 @@ import {
   NODE_TYPE,
   STATUS,
 } from './constants'
+
+export const metaKey = 'composePanel'
+
+export const getMeta = (rootComponentDescriptor: $IntentionalAny) => {
+  return _.get(rootComponentDescriptor, ['meta', metaKey])
+}
+
+export const getSelectedNodeId = (rootComponentDescriptor: $IntentionalAny) => {
+  return _.get(getMeta(rootComponentDescriptor), 'selectedNodeId')
+}
 
 type Props = {
   pathToComponentDescriptor: Array<string>
@@ -57,10 +67,9 @@ type State = {
         left: number
         width: number
       }
-  selectedNodeId: undefined | null | string
 }
 
-class TreeEditor extends React.PureComponent<Props, State> {
+class TreeEditor extends StudioComponent<Props, State> {
   static getDefaultComponentProps = id => ({
     __descriptorType: DESCRIPTOR_TYPE.COMPONENT_INSTANTIATION_VALUE_DESCRIPTOR,
     props: {
@@ -253,7 +262,7 @@ class TreeEditor extends React.PureComponent<Props, State> {
     const {dispatch, pathToComponentDescriptor} = this.props
     const childId = generateUniqueId()
     this._setLastAction(ACTION.NODE_ADD, {id: childId})
-    this.setState(() => ({selectedNodeId: childId}))
+    this.setSelectedNodeId(childId)
     dispatch(
       multiReduceStateAction([
         {
@@ -502,9 +511,23 @@ class TreeEditor extends React.PureComponent<Props, State> {
     this._setNodes(this.props.rootComponentDescriptor)
   }
 
+  updateMeta = (updateFn: (l: {}) => {}) => {
+    const oldMeta = getMeta(this.props.rootComponentDescriptor)
+    const newMeta = {...oldMeta, ...updateFn(oldMeta)}
+    this.reduceState(
+      [...this.props.pathToComponentDescriptor, 'meta', metaKey],
+      () => newMeta,
+    )
+  }
+
+  setSelectedNodeId = (selectedNodeId: string | null) => {
+    this.updateMeta(() => ({selectedNodeId}))
+  }
+
   render() {
-    const {nodes, nodeBeingDragged, activeDropZone, selectedNodeId} = this.state
+    const {nodes, nodeBeingDragged, activeDropZone} = this.state
     const isANodeBeingDragged = nodeBeingDragged != null
+    const selectedNodeId = getSelectedNodeId(this.props.rootComponentDescriptor)
 
     return (
       <div>
@@ -535,9 +558,7 @@ class TreeEditor extends React.PureComponent<Props, State> {
                 unsetActiveDropZone={() =>
                   this.setState(() => ({activeDropZone: null}))
                 }
-                setSelectedNodeId={(selectedNodeId: string) =>
-                  this.setState(() => ({selectedNodeId}))
-                }
+                setSelectedNodeId={this.setSelectedNodeId}
                 listOfDisplayNames={this.props.listOfDisplayNames}
                 handleTextNodeTypeChange={this.handleTextNodeTypeChange}
                 cancelTextNodeTypeChange={this.cancelTextNodeTypeChange}
@@ -585,6 +606,7 @@ export default compose(
       listOfDisplayNames,
       getComponentDescriptor: id => getComponentDescriptor(s, id),
       rootComponentDescriptor: _.get(s, op.pathToComponentDescriptor),
+      // selectedNodeId,
     }
   }),
 )(TreeEditor)

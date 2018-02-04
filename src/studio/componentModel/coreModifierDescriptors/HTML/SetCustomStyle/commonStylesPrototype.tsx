@@ -27,11 +27,11 @@ const sideEffectsForApplyReifiedStyles = D.atoms
   .derivedDict()
 
 export default {
-  reifiedStyles(d: $FixMe) {
-    return ensureReifiedStyles(d)
+  reifiedStyles(self: $FixMe) {
+    return ensureReifiedStyles(self)
   },
-  sideEffects(d: $FixMe) {
-    return d
+  sideEffects(self: $FixMe) {
+    return self
       .propFromSuper('sideEffects')
       .flatMap((sideEffects: D.IDerivedDict<$FixMe>) => {
         return sideEffects

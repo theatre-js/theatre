@@ -77,6 +77,111 @@ const tempCustomComponentDescriptors = {
     },
     localHiddenValuesById: {
       fontSize: '18px',
+      container: {
+        __descriptorType: 'ComponentInstantiationValueDescriptor',
+        componentId: 'TheaterJS/Core/HTML/div',
+        props: {
+          class: 'container',
+          key: 'container',
+          children: [],
+        },
+        modifierInstantiationDescriptors: {
+          byId: {},
+          list: [],
+        },
+      },
+    },
+    whatToRender: {
+      __descriptorType: 'ReferenceToLocalHiddenValue',
+      which: 'container',
+    },
+    meta: {
+      composePanel: {
+        selectedNodeId: 'container',
+      },
+    },
+  },
+}
+
+/*{
+  IntroScene: {
+    __descriptorType: 'DeclarativeComponentDescriptor',
+    id: 'IntroScene',
+    displayName: 'IntroScene',
+    type: 'Declarative',
+    listOfRulesets: [],
+    ruleSetsById: {},
+    timelineDescriptors: {
+      byId: {
+        timeline1: {
+          __descriptorType: 'TimelineDescriptor',
+          id: 'timeline1',
+          vars: {
+            theOpacity: {
+              __descriptorType: 'TimelineVarDescriptor',
+              id: 'theOpacity',
+              backPointer: {
+                type: 'PointerThroughLocalHiddenValue',
+                localHiddenValueId: 'container',
+                rest: [
+                  'modifierInstantiationDescriptors',
+                  'byId',
+                  '1',
+                  'props',
+                  'pairings',
+                  'byId',
+                  '3',
+                  'value',
+                ],
+              },
+              points: {
+                firstId: '1',
+                lastId: '2',
+                byId: {
+                  '1': {
+                    __descriptorType: 'TimelineVarPoint',
+                    id: '1',
+                    time: 0.5,
+                    value: 0,
+                    prevId: 'head',
+                    nextId: '2',
+                    interpolationDescriptor: {
+                      __descriptorType: 'TimelinePointInterpolationDescriptor',
+                      interpolationType: 'CubicBezier',
+                      lx: 0.5,
+                      ly: 0,
+                      rx: 0,
+                      ry: 1,
+                      connected: true,
+                    },
+                  },
+                  '2': {
+                    __descriptorType: 'TimelineVarPoint',
+                    id: '2',
+                    time: 1,
+                    value: 1,
+                    prevId: '1',
+                    nextId: 'end',
+                    interpolationDescriptor: {
+                      __descriptorType: 'TimelinePointInterpolationDescriptor',
+                      interpolationType: 'CubicBezier',
+                      lx: 0.5,
+                      ly: 0,
+                      rx: 0,
+                      ry: 1,
+                      connected: false,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      list: ['timeline1'],
+    },
+    localHiddenValuesById: {
+      fontSize: '18px',
       palakiText: 'Carona Studios',
       palakiChild: {
         __descriptorType: 'ComponentInstantiationValueDescriptor',
@@ -683,5 +788,6 @@ const tempCustomComponentDescriptors = {
       which: 'container',
     },
   },
-}
+}*/
+
 export default tempCustomComponentDescriptors

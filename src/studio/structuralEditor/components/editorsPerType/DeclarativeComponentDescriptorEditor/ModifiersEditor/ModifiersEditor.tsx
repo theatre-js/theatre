@@ -1,7 +1,6 @@
-// @flow
-import {React, compose, connect} from '$studio/handy'
-import css from './index.css'
-import PanelSection from '$studio/structuralEditor/components/reusables/PanelSection'
+import {React, compose, connect} from '$src/studio/handy'
+import css from './ModifiersEditor.css'
+import PanelSection from '$src/studio/structuralEditor/components/reusables/PanelSection'
 import * as _ from 'lodash'
 
 type Props = {
@@ -24,7 +23,10 @@ class ModifiersEditor extends React.PureComponent<Props, State> {
 
     return (
       <div className={css.container}>
-        <PanelSection label="Modifiers" />
+        <PanelSection label="Modifiers">
+
+        modifiers
+        </PanelSection>
       </div>
     )
   }
