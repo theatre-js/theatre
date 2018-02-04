@@ -2,6 +2,7 @@
 import * as React from 'react'
 import css from './SortableBox.css'
 import DraggableArea from '$studio/common/components/DraggableArea'
+import {Broadcast} from 'react-broadcast'
 
 type Props = {
   showMergeOverlay: boolean
@@ -19,6 +20,8 @@ type State = {
   moveY: number
   resizeY: number
 }
+
+export const SortableBoxDragChannel = 'TheaterJS/SortableBoxDragChannel'
 
 class LaneBox extends React.Component<Props, State> {
   props: Props
@@ -72,21 +75,21 @@ class LaneBox extends React.Component<Props, State> {
   }
 
   render() {
-    const {height, translateY, children, showMergeOverlay} = this.props
+    const {height, translateY, children} = this.props
     const {isMoving, moveY, resizeY} = this.state
     const moveHandleStyle = {
       ...isMoving ? {opacity: 1, zIndex: 100} : {},
     }
     const containerStyle = {
       height: `${height + resizeY}px`,
-      ...isMoving ? {zIndex: 10, transform: `translateY(${moveY}px)`} : {},
+      ...isMoving ? {zIndex: 500, transform: `translateY(${moveY}px)`} : {},
       ...!isMoving && translateY !== 0
         ? {transform: `translateY(${translateY}px)`}
         : {},
     }
     return (
       <div className={css.container} style={containerStyle}>
-        <DraggableArea
+        {/* <DraggableArea
           onDragStart={this.onMoveStart}
           onDrag={(_, dy) => this.onMove(dy)}
           onDragEnd={this.onMoveEnd}
@@ -94,12 +97,20 @@ class LaneBox extends React.Component<Props, State> {
           <div className={css.moveHandle} style={moveHandleStyle}>
             {String.fromCharCode(0x2630)}
           </div>
-        </DraggableArea>
+        </DraggableArea> */}
         <div className={css.content}>
-          {children}
-          {showMergeOverlay && (
+          <Broadcast
+            channel={SortableBoxDragChannel}
+            value={{
+              onDragStart: this.onMoveStart,
+              onDrag: (dy) => this.onMove(dy),
+              onDragEnd: this.onMoveEnd,
+            }}>
+              {children}
+          </Broadcast>
+          {/* {showMergeOverlay && (
             <div className={css.mergeOverlay}>Drop to merge.</div>
-          )}
+          )} */}
         </div>
         <DraggableArea
           onDrag={(_, dy) => this.onResize(dy)}

@@ -15,6 +15,9 @@ import BoxLegends from './BoxLegends'
 import PointValuesEditor from './PointValuesEditor'
 import * as _ from 'lodash'
 import cx from 'classnames'
+import {Subscriber} from 'react-broadcast';
+import {SortableBoxDragChannel} from './SortableBox'
+import DraggableArea from '$studio/common/components/DraggableArea'
 
 type OwnProps = {
   laneIds: LaneID[],
@@ -416,66 +419,83 @@ class LanesViewer extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const {lanes} = this.props
+    const {lanes, shouldIndicateMerge, canBeMerged} = this.props
     const {svgHeight, svgWidth, svgTransform, activeLaneId, pointValuesEditorProps} = this.state
     return (
-      <div ref={c => this.container = c} className={css.container} style={{width: svgWidth}}>
-        <div className={css.boxLegends}>
-          <BoxLegends
-            lanes={lanes.map(lane => _.pick(lane, ['id', 'component', 'property']))}
-            colors={colors}
-            activeLaneId={activeLaneId}
-            setActiveLane={this.setActiveLane}
-            splitLane={this.props.splitLane}
-          />
-        </div>
-        <div className={css.svgArea}>
-          <svg
-            height={svgHeight}
-            width={svgWidth}
-            // style={{transform: `translateX(${-svgTransform}px)`}}
-            ref={svg => {
-              if (svg != null) this.svgArea = svg
-            }}
-            onClick={this.addPoint}
-          >
-            {lanes.map(({id, points}, index) => (
-              <Lane
-                key={id}
-                laneId={id}
-                points={this._normalizePoints(points)}
-                color={colors[index % colors.length]}
-                width={svgWidth}
-                showPointValuesEditor={(index, pos) =>
-                  this.showPointValuesEditor(id, index, pos)
-                }
-                changePointPositionBy={(index, change) =>
-                  this.changePointPositionBy(id, index, change)
-                }
-                changePointHandlesBy={(index, change) =>
-                  this.changePointHandlesBy(id, index, change)
-                }
-                setPointPositionTo={(index, newPosition) =>
-                  this.setPointPositionTo(id, index, newPosition)
-                }
-                removePoint={index => this.removePoint(id, index)}
-                addConnector={index => this.addConnector(id, index)}
-                removeConnector={index => this.removeConnector(id, index)}
-                makeHandleHorizontal={(index, side) =>
-                  this.makeHandleHorizontal(id, index, side)
-                }
-              />
-            ))}
-          </svg>
-        </div>
-        {pointValuesEditorProps != null &&
-          <PointValuesEditor
-            {...(_.pick(pointValuesEditorProps, ['left', 'top', 'initialValue', 'initialTime']))}
-            onClose={() => this.setState(() => ({pointValuesEditorProps: null}))}
-            onSubmit={(newPosition) => this.setPointPositionTo(pointValuesEditorProps.laneId, pointValuesEditorProps.pointIndex, newPosition)}
-          />
-        }
-      </div>
+      <Subscriber channel={SortableBoxDragChannel}>
+        {({onDragStart, onDrag, onDragEnd}) => {
+          return (
+            <div
+              ref={c => this.container = c}
+              className={cx(css.container ,{[css.indicateMerge]: shouldIndicateMerge, [css.canBeMerged]: canBeMerged})}
+              style={{width: svgWidth}}
+            >
+              <DraggableArea
+                withShift={true}
+                onDragStart={onDragStart}
+                onDrag={(_, dy) => onDrag(dy)}
+                onDragEnd={onDragEnd}
+              >
+                <div className={css.boxLegends}>
+                  <BoxLegends
+                    lanes={lanes.map(lane => _.pick(lane, ['id', 'component', 'property']))}
+                    colors={colors}
+                    activeLaneId={activeLaneId}
+                    setActiveLane={this.setActiveLane}
+                    splitLane={this.props.splitLane}
+                  />
+                </div>
+              </DraggableArea>
+              <div className={css.svgArea}>
+                <svg
+                  height={svgHeight}
+                  width={svgWidth}
+                  // style={{transform: `translateX(${-svgTransform}px)`}}
+                  ref={svg => {
+                    if (svg != null) this.svgArea = svg
+                  }}
+                  onClick={this.addPoint}
+                >
+                  {lanes.map(({id, points}, index) => (
+                    <Lane
+                      key={id}
+                      laneId={id}
+                      points={this._normalizePoints(points)}
+                      color={colors[index % colors.length]}
+                      width={svgWidth}
+                      showPointValuesEditor={(index, pos) =>
+                        this.showPointValuesEditor(id, index, pos)
+                      }
+                      changePointPositionBy={(index, change) =>
+                        this.changePointPositionBy(id, index, change)
+                      }
+                      changePointHandlesBy={(index, change) =>
+                        this.changePointHandlesBy(id, index, change)
+                      }
+                      setPointPositionTo={(index, newPosition) =>
+                        this.setPointPositionTo(id, index, newPosition)
+                      }
+                      removePoint={index => this.removePoint(id, index)}
+                      addConnector={index => this.addConnector(id, index)}
+                      removeConnector={index => this.removeConnector(id, index)}
+                      makeHandleHorizontal={(index, side) =>
+                        this.makeHandleHorizontal(id, index, side)
+                      }
+                    />
+                  ))}
+                </svg>
+              </div>
+              {pointValuesEditorProps != null &&
+                <PointValuesEditor
+                  {...(_.pick(pointValuesEditorProps, ['left', 'top', 'initialValue', 'initialTime']))}
+                  onClose={() => this.setState(() => ({pointValuesEditorProps: null}))}
+                  onSubmit={(newPosition) => this.setPointPositionTo(pointValuesEditorProps.laneId, pointValuesEditorProps.pointIndex, newPosition)}
+                />
+              }
+            </div>
+          )
+        }}
+      </Subscriber>
     )
   }
 }

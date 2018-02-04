@@ -531,16 +531,20 @@ class Content extends React.Component<Props, State> {
                     const boxTranslateY =
                       moveRatios[index] *
                       (boxBeingDragged != null ? boxBeingDragged.height : 0)
-                    const boxShowMergeOverlay =
+                    const canBeMerged =
                       boxBeingDragged != null &&
                       boxBeingDragged.index === index &&
                       boxBeingDragged.mergeWith != null
+                    const shouldIndicateMerge =
+                      boxBeingDragged != null &&
+                      boxBeingDragged.mergeWith !== null &&
+                      boxBeingDragged.mergeWith === index
                     return (
                       <SortableBox
                         key={id}
                         height={box.height}
                         translateY={boxTranslateY}
-                        showMergeOverlay={boxShowMergeOverlay}
+                        // showMergeOverlay={boxShowMergeOverlay}
                         onMoveStart={() => this.onBoxStartMove(index)}
                         onMoveEnd={() => this.onBoxEndMove()}
                         onMove={this.onBoxMove}
@@ -555,6 +559,8 @@ class Content extends React.Component<Props, State> {
                             duration={duration}
                             currentTime={currentTime}
                             focus={focus}
+                            canBeMerged={canBeMerged}
+                            shouldIndicateMerge={shouldIndicateMerge}
                           />
                         }
                       </SortableBox>
