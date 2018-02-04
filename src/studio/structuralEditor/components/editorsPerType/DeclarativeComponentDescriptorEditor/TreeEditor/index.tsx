@@ -30,6 +30,7 @@ type Props = {
 
 type State = {
   nodes: Object
+  isCommandDown: boolean
   nodeBeingDragged:
     | undefined
     | null
@@ -78,6 +79,7 @@ class TreeEditor extends React.PureComponent<Props, State> {
   lastAction = {type: null, payload: null}
   state = {
     nodes: {},
+    isCommandDown: false,
     nodeBeingDragged: null,
     activeDropZone: null,
     selectedNodeId: null,
@@ -85,10 +87,37 @@ class TreeEditor extends React.PureComponent<Props, State> {
 
   componentDidMount() {
     this._setNodes(this.props.rootComponentDescriptor)
+    document.addEventListener('keydown', this._handleKeyDown)
+    document.addEventListener('keyup', this._handleKeyUp)
+    document.addEventListener('visibilitychange', this._handleVisibilityChange)
+  }
+  
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this._handleKeyDown)
+    document.removeEventListener('keyup', this._handleKeyUp)
+    document.removeEventListener('visibilitychange', this._handleVisibilityChange)
   }
 
   componentWillReceiveProps(nextProps) {
     this._setNodes(nextProps.rootComponentDescriptor)
+  }
+
+  _handleKeyDown = (e: $FixMe) => {
+    if (e.keyCode === 91) {
+      this.setState(() => ({isCommandDown: true}))
+    }
+  }
+
+  _handleKeyUp = (e: $FixMe) => {
+    if (e.keyCode === 91) {
+      this.setState(() => ({isCommandDown: false}))
+    }
+  }
+
+  _handleVisibilityChange = () => {
+    if (document.visibilityState === 'hidden' && this.state.isCommandDown) {
+      this.setState(() => ({isCommandDown: false}))
+    }
   }
 
   _setLastAction(type: string, payload: Object) {
@@ -504,7 +533,7 @@ class TreeEditor extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const {nodes, nodeBeingDragged, activeDropZone, selectedNodeId} = this.state
+    const {nodes, nodeBeingDragged, activeDropZone, selectedNodeId, isCommandDown} = this.state
     const isANodeBeingDragged = nodeBeingDragged != null
 
     return (
@@ -524,6 +553,7 @@ class TreeEditor extends React.PureComponent<Props, State> {
           >
             <NodeContainer
               key={nodes.id}
+              isCommandDown={isCommandDown}
               selectedNodeId={selectedNodeId}
               nodeData={nodes}
               dispatchAction={this.dispatchActionFromNode}

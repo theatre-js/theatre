@@ -1,20 +1,25 @@
 @value nodeHeight: 27px;
-@value nodeMargin: 2px;
+@value nodeMargin: 3px;
+@value hoverBarColor: #3CDFFF;
+@value indent: 8px;
+@value sensorWidth: 16px;
 
 .container {
-  display: grid;
-  grid-template-columns: 1px 16px 1fr 1px;
   position: relative;
-  margin-bottom: nodeMargin;
   overflow: hidden;
   --color: rgb(
     calc(39 - var(--depth) * 4 - 4),
     calc(50 - var(--depth) * 4 - 4),
     calc(56 - var(--depth) * 4 - 4)
   );
-  top: 0;
+  --highlightColor: rgba(60, 223, 255, .1);
+
   &:hover {
     background: var(--color);
+  }
+
+  &.isCommandDown {
+    cursor: cell;
   }
 
   &.expand {
@@ -61,17 +66,88 @@
 }
 
 .root {
-  grid-column: 2 / span 3;
+  position: relative;
+  height: nodeHeight;
+  width: 100%;
+
+  &.isCommandDown {
+    &:hover {
+      &:after {
+        display: block;
+        position: absolute;
+        content: ' ';
+        height: 2px;
+        bottom: 0;
+        left: calc(sensorWidth + indent);
+        right: 0;
+        background-color: hoverBarColor;
+      }
+    }
+  }
 }
 
 .container.isSelected > .root {
   background: #0e1315;
 }
 
-.hoverSensor {
+.container.isCommandDown:hover > .root.isCommandDown {
+  background: var(--highlightColor);
+}
+
+.childContainer {
+  position: relative;
+  width: 100%;
+  display: grid;
+  grid-template-columns: sensorWidth 1fr;
+  grid-gap: 0;
+  grid-template-rows: 1fr nodeMargin;
+}
+
+.hoverSensorLeft {
+  position: relative;
+  grid-column: 1;
+  grid-row: 1 / span 2;
+
+  &.isCommandDown {
+    &:hover{
+      & ~ .hoverSensorBottom {
+        &:after {
+          display: block;
+          position: absolute;
+          content: ' ';
+          height: 2px;
+          top: 1px;
+          left: indent;
+          right: 0;
+          background-color: hoverBarColor;
+        }
+      }
+    }
+  }
+}
+
+.hoverSensorBottom {
+  position: relative;
   grid-column: 2;
+  grid-row: 2;
+
+  &.isCommandDown {
+    &:hover {
+      &:after {
+        display: block;
+        position: absolute;
+        content: ' ';
+        height: 2px;
+        top: 1px;
+        left: indent;
+        right: 0;
+        background-color: hoverBarColor;
+      }
+    }
+  }
 }
 
 .child {
-  grid-column: 3;
+  grid-column: 2;
+  grid-row: 1;
 }

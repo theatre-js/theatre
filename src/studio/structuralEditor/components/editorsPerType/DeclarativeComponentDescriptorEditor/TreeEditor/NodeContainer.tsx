@@ -11,6 +11,7 @@ import {ACTION, STATUS, NODE_TYPE} from './constants'
 type Props = {
   nodeData: Object
   depth?: number
+  isCommandDown: boolean
 }
 type State = {
   newChildIndex: undefined | null | number
@@ -124,6 +125,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
   }
 
   setPlaceholderAsActive = (onIndex, e) => {
+    console.log('yay')
     if (e != null && !e.metaKey && !this.props.isANodeBeingDragged) {
       if (this.state.newChildIndex != null) this.unsetPlaceholderAsActive()
       return
@@ -226,6 +228,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
       nodeData: {children, ...nodeProps},
       isANodeBeingDragged,
       selectedNodeId,
+      isCommandDown,
     } = this.props
     const {isCollapsed, maxHeight, contextMenuProps} = this.state
 
@@ -239,6 +242,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
       nodeProps.type === NODE_TYPE.COMPONENT ||
       nodeProps.status === STATUS.TEXT_CHANGING_TYPE
     const isSelected = nodeProps.id === selectedNodeId
+    const shouldReactToCommandDown = isCommandDown && nodeProps.type === NODE_TYPE.COMPONENT
     return (
       <div ref={c => (this.wrapper = c)}>
         <div
@@ -255,19 +259,20 @@ class NodeContainer extends React.PureComponent<Props, State> {
               nodeProps.status === STATUS.CREATION_CANCELED,
             [css.isCollapsed]: isCollapsed,
             [css.isSelected]: isSelected,
+            [css.isCommandDown]: shouldReactToCommandDown,
           })}
           onMouseUp={this.mouseUpHandler}
         >
           <div
-            className={css.root}
+            className={cx(css.root, {[css.isCommandDown]: shouldReactToCommandDown})}
             onContextMenu={this.contextMenuHandler}
             onMouseDown={this.mouseDownHandler}
-            {...(!isText
-              ? {
-                  onMouseMove: e => this.setPlaceholderAsActive(0, e),
-                  onMouseLeave: this.unsetPlaceholderAsActive,
-                }
-              : {})}
+            // {...(!isText
+            //   ? {
+            //       onMouseMove: e => this.setPlaceholderAsActive(0, e),
+            //       onMouseLeave: this.unsetPlaceholderAsActive,
+            //     }
+            //   : {})}
           >
             {isComponent && (
               <ComponentNode
@@ -289,35 +294,46 @@ class NodeContainer extends React.PureComponent<Props, State> {
               />
             )}
           </div>
-          {this.renderNodePlaceholder(0, depth)}
+          {/* {this.renderNodePlaceholder(0, depth)} */}
           {children &&
-            children.map((child, index) => [
-              <div
-                key="hoverSensor"
-                className={css.hoverSensor}
-                onMouseMove={e => this.setPlaceholderAsActive(index + 1, e)}
-                onMouseLeave={this.unsetPlaceholderAsActive}
-                onClick={() => this.props.setSelectedNodeId(nodeProps.id)}
-              />,
-              <div key="child" className={css.child}>
-                <NodeContainer
-                  key={child.id}
-                  selectedNodeId={this.props.selectedNodeId}
-                  nodeData={child}
-                  depth={depth + 1}
-                  dispatchAction={this.props.dispatchAction}
-                  isANodeBeingDragged={isANodeBeingDragged}
-                  setNodeBeingDragged={this.props.setNodeBeingDragged}
-                  setActiveDropZone={this.props.setActiveDropZone}
-                  unsetActiveDropZone={this.props.unsetActiveDropZone}
-                  setSelectedNodeId={this.props.setSelectedNodeId}
-                  listOfDisplayNames={this.props.listOfDisplayNames}
-                  handleTextNodeTypeChange={this.props.handleTextNodeTypeChange}
-                  cancelTextNodeTypeChange={this.props.cancelTextNodeTypeChange}
+            children.map((child, index) => (
+              <div className={css.childContainer} key={child.id}>
+                <div
+                  className={cx(css.hoverSensorLeft, {[css.isCommandDown]: shouldReactToCommandDown})}
+                  // onMouseMove={e => this.setPlaceholderAsActive(index + 1, e)}
+                  // onMouseLeave={this.unsetPlaceholderAsActive}
+                  // onClick={() => this.props.setSelectedNodeId(nodeProps.id)}
                 />
-              </div>,
-              this.renderNodePlaceholder(index + 1, depth),
-            ])}
+                <div className={css.child}>
+                  <NodeContainer
+                    key={child.id}
+                    isCommandDown={isCommandDown}
+                    selectedNodeId={this.props.selectedNodeId}
+                    nodeData={child}
+                    depth={depth + 1}
+                    dispatchAction={this.props.dispatchAction}
+                    isANodeBeingDragged={isANodeBeingDragged}
+                    setNodeBeingDragged={this.props.setNodeBeingDragged}
+                    setActiveDropZone={this.props.setActiveDropZone}
+                    unsetActiveDropZone={this.props.unsetActiveDropZone}
+                    setSelectedNodeId={this.props.setSelectedNodeId}
+                    listOfDisplayNames={this.props.listOfDisplayNames}
+                    handleTextNodeTypeChange={this.props.handleTextNodeTypeChange}
+                    cancelTextNodeTypeChange={this.props.cancelTextNodeTypeChange}
+                  />
+                </div>
+                <div
+                  className={cx(css.hoverSensorBottom, {[css.isCommandDown]: shouldReactToCommandDown})}
+                  // onMouseMove={e => this.setPlaceholderAsActive(index + 1, e)}
+                  // onMouseLeave={this.unsetPlaceholderAsActive}
+                  // onClick={() => this.props.setSelectedNodeId(nodeProps.id)}
+                />
+              </div>
+            )
+              
+              // this.renderNodePlaceholder(index + 1, depth),
+            // ]
+            )}
         </div>
         {contextMenuProps != null && (
           <HalfPieContextMenu
