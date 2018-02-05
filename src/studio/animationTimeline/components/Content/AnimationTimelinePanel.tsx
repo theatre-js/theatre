@@ -3,7 +3,7 @@ import {getTimelineById} from '$src/studio/animationTimeline/selectors'
 import generateUniqueId from 'uuid/v4'
 import css from './AnimationTimelinePanel.css'
 import SortableBox from './SortableBox'
-import LanesViewer from './LanesViewer'
+import VariablesViewer from './VariablesViewer'
 import TimeBar from './TimeBar'
 import {Subscriber} from 'react-broadcast'
 import {PanelWidthChannel} from '$src/studio/workspace/components/Panel/Panel'
@@ -80,7 +80,7 @@ class Content extends React.Component<Props, State> {
     const svgWidth =
       duration / (focus[1] - focus[0]) * (this.container.clientWidth - 30)
     setTimeout(() => {
-      this.lanesContainer.scrollTo(svgWidth * focus[0] / duration, 0)
+      this.variablesContainer.scrollTo(svgWidth * focus[0] / duration, 0)
     }, 0)
   }
 
@@ -163,10 +163,10 @@ class Content extends React.Component<Props, State> {
     if (this.state.boxBeingDragged == null) return
     const draggedIndex = this.state.boxBeingDragged.index
     if (index === draggedIndex) index = null
-    const moveRatios = this.props.layout.map((_, laneIndex) => {
+    const moveRatios = this.props.layout.map((_, variableIndex) => {
       if (index == null) return 0
-      if (draggedIndex < laneIndex && laneIndex <= index) return -1
-      if (index <= laneIndex && laneIndex < draggedIndex) return 1
+      if (draggedIndex < variableIndex && variableIndex <= index) return -1
+      if (index <= variableIndex && variableIndex < draggedIndex) return 1
       return 0
     })
 
@@ -220,7 +220,7 @@ class Content extends React.Component<Props, State> {
             newLayout.splice(index, 1)
 
             const {[fromId]: mergedBox, ...newBoxes} = boxes
-            newBoxes[toId].lanes = newBoxes[toId].lanes.concat(mergedBox.lanes)
+            newBoxes[toId].variables = newBoxes[toId].variables.concat(mergedBox.variables)
 
             return {
               layout: newLayout,
@@ -238,7 +238,7 @@ class Content extends React.Component<Props, State> {
     })
   }
 
-  splitLane(index: number, laneId: string) {
+  splitVariable(index: number, variableId: string) {
     const {timelineId, dispatch} = this.props
     dispatch(
       reduceStateAction(
@@ -248,19 +248,19 @@ class Content extends React.Component<Props, State> {
           const newBoxId = generateUniqueId()
 
           const fromBox = boxes[fromId]
-          const newLanes = fromBox.lanes.slice()
-          newLanes.splice(newLanes.indexOf(laneId), 1)
+          const newVariables = fromBox.variables.slice()
+          newVariables.splice(newVariables.indexOf(variableId), 1)
 
           const newBoxes = {
             ...boxes,
             [fromId]: {
               ...fromBox,
-              lanes: newLanes,
+              variables: newVariables,
             },
             [newBoxId]: {
               id: newBoxId,
               height: fromBox.height,
-              lanes: [laneId],
+              variables: [variableId],
             },
           }
 
@@ -325,11 +325,11 @@ class Content extends React.Component<Props, State> {
     }
     if (newFocusRight - newFocusLeft < 1) return
     const svgWidth = duration / (newFocusRight - newFocusLeft) * panelWidth
-    this.lanesContainer.scrollLeft = svgWidth * newFocusLeft / duration
+    this.variablesContainer.scrollLeft = svgWidth * newFocusLeft / duration
     this._reallyChangeFocusTo(newFocusLeft, newFocusRight, panelWidth)
   }
 
-  changeFocusAndScrollLanesContainer = (
+  changeFocusAndScrollVariablesContainer = (
     newFocusLeft: number,
     newFocusRight: number,
     panelWidth: number,
@@ -345,7 +345,7 @@ class Content extends React.Component<Props, State> {
     }
 
     const svgWidth = duration / (newFocusRight - newFocusLeft) * panelWidth
-    this.lanesContainer.scrollLeft = svgWidth * newFocusLeft / duration
+    this.variablesContainer.scrollLeft = svgWidth * newFocusLeft / duration
 
     this._reallyChangeFocusTo(newFocusLeft, newFocusRight, panelWidth)
   }
@@ -428,7 +428,7 @@ class Content extends React.Component<Props, State> {
     if (e.ctrlKey || (isHorizontal && e.shiftKey)) {
       e.preventDefault()
       e.stopPropagation()
-      if (e.nativeEvent.target !== this.lanesContainer) {
+      if (e.nativeEvent.target !== this.variablesContainer) {
         const {focus, duration} = this.state
         const svgWidth = duration / (focus[1] - focus[0]) * panelWidth
         const focusLeftX = focus[0] / duration * svgWidth
@@ -454,7 +454,7 @@ class Content extends React.Component<Props, State> {
 
     // if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
     //   if (e.shiftKey) {
-    //     if (e.nativeEvent.target !== this.lanesContainer) {
+    //     if (e.nativeEvent.target !== this.variablesContainer) {
     //       const {focus, duration} = this.state
     //       const svgWidth = duration / (focus[1] - focus[0]) * panelWidth
     //       const focusLeftX = focus[0] / duration * svgWidth
@@ -531,7 +531,7 @@ class Content extends React.Component<Props, State> {
                       this.xToFocusedTime(x, focus, panelWidth)
                     }
                     changeFocusTo={(focusLeft: number, focusRight: number) =>
-                      this.changeFocusAndScrollLanesContainer(
+                      this.changeFocusAndScrollVariablesContainer(
                         focusLeft,
                         focusRight,
                         panelWidth,
@@ -547,7 +547,7 @@ class Content extends React.Component<Props, State> {
                     changeDuration={this.changeDuration}
                   />
                 </div>
-                <div ref={c => (this.lanesContainer = c)} className={css.lanes}>
+                <div ref={c => (this.variablesContainer = c)} className={css.variables}>
 
                   {layout.map((id, index) => {
                     const box = boxes[id]
@@ -574,11 +574,11 @@ class Content extends React.Component<Props, State> {
                         onResize={newSize => this.onBoxResize(id, newSize)}
                       >
                         {
-                          <LanesViewer
+                          <VariablesViewer
                             tempIncludeTimeGrid={index === 0}
                             boxHeight={box.height}
-                            laneIds={box.lanes}
-                            splitLane={laneId => this.splitLane(index, laneId)}
+                            variableIds={box.variables}
+                            splitVariable={variableId => this.splitVariable(index, variableId)}
                             panelWidth={panelWidth}
                             duration={duration}
                             currentTime={currentTime}

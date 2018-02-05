@@ -13,23 +13,23 @@ class BoxLegends extends React.PureComponent<$FixMe, IState> {
     contextMenuProps: null
   }
 
-  handleClick(e: $FixMe, laneId: string) {
-    this.props.setActiveLane(laneId)
+  handleClick(e: $FixMe, variableId: string) {
+    this.props.setActiveVariable(variableId)
   }
 
-  handleContextMenu(e: $FixMe, laneId: string) {
+  handleContextMenu(e: $FixMe, variableId: string) {
     e.stopPropagation()
     e.preventDefault()
     const {clientX, clientY} = e
-    this.setState(() => ({contextMenuProps: {laneId, left: clientX, top: clientY}}))
+    this.setState(() => ({contextMenuProps: {variableId, left: clientX, top: clientY}}))
   }
 
   render() {
-    const {lanes, colors, activeLaneId} = this.props
+    const {variables, colors, activeVariableId} = this.props
     const {contextMenuProps} = this.state
     return (
       <div className={css.container}>
-        {lanes.map(({id, component, property}: $FixMe, index: number) => {
+        {variables.map(({id, component, property}: $FixMe, index: number) => {
           return (
             <div
               key={id}
@@ -40,7 +40,7 @@ class BoxLegends extends React.PureComponent<$FixMe, IState> {
             >
               <div
                 className={cx(css.legendBar, {
-                  [css.isActive]: activeLaneId === id,
+                  [css.isActive]: activeVariableId === id,
                 })}
               />
               <div className={css.legendText}>
@@ -63,8 +63,8 @@ class BoxLegends extends React.PureComponent<$FixMe, IState> {
               },
               {
                 label: 'split',
-                cb: () => this.props.splitLane(contextMenuProps.laneId),
-                disabled: lanes.length === 1,
+                cb: () => this.props.splitVariable(contextMenuProps.variableId),
+                disabled: variables.length === 1,
               },
               {
                 label: 'garfield',

@@ -13,7 +13,7 @@ type Props = {
   point: NormalizedPoint,
   prevPoint: undefined | null | NormalizedPoint,
   nextPoint: undefined | null | NormalizedPoint,
-  laneWidth: number,
+  variableWidth: number,
   addConnector: Function,
   changePointPositionBy: Function,
   changePointHandlesBy: Function,
@@ -102,9 +102,9 @@ class Point extends React.PureComponent<Props, State> {
     if (e.altKey) y = this.state.pointMove[1]
     if (e.shiftKey) x = this.state.pointMove[0]
 
-    const {point, prevPoint, nextPoint, laneWidth} = this.props
+    const {point, prevPoint, nextPoint, variableWidth} = this.props
     const limitLeft = prevPoint == null ? 0 : prevPoint.t
-    const limitRight = nextPoint == null ? laneWidth : nextPoint.t
+    const limitRight = nextPoint == null ? variableWidth : nextPoint.t
     const newT = point.t + x
     if (newT >= limitRight) x = limitRight - point.t - 1
     if (newT <= limitLeft) x = limitLeft - point.t + 1

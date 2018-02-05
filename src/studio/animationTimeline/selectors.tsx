@@ -2,9 +2,9 @@
 import {Selector} from '$studio/types'
 import {
   TimelineID,
-  LaneID,
+  VariableID,
   TimelineObject,
-  LaneObject,
+  VariableObject,
 } from '$studio/animationTimeline/types'
 
 export const getTimelineById: Selector<TimelineObject, TimelineID> = (
@@ -12,5 +12,5 @@ export const getTimelineById: Selector<TimelineObject, TimelineID> = (
   id,
 ) => state.animationTimeline.timelines.byId[id]
 
-export const getLanesByIds: Selector<LaneObject[], LaneID[]> = (state, ids) =>
-  ids.map(id => state.animationTimeline.lanes.byId[id])
+export const getVariablesByIds: Selector<VariableObject[], VariableID[]> = (state, ids) =>
+  ids.map(id => state.animationTimeline.variables.byId[id])

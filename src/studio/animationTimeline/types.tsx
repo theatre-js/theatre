@@ -1,6 +1,6 @@
 // @flow
 type UniqueID = string
-export type LaneID = UniqueID
+export type VariableID = UniqueID
 export type TimelineID = UniqueID
 export type BoxID = UniqueID
 
@@ -26,7 +26,7 @@ export type NormalizedPoint = Point & {
 export type BoxObject = {
   id: BoxID
   height: number
-  lanes: LaneID[]
+  variables: VariableID[]
 }
 
 export type LayoutArray = BoxID[]
@@ -36,15 +36,15 @@ export type TimelineObject = {
   boxes: BoxesObject
 }
 
-export type LaneObject = {
-  id: LaneID
+export type VariableObject = {
+  id: VariableID
   extremums: [number, number]
   points: Point[]
   component: string
   property: string
 }
-export type Lanes = {
-  byId: {[id: LaneID]: LaneObject}
+export type Variables = {
+  byId: {[id: VariableID]: VariableObject}
 }
 
 export type Timelines = {
@@ -52,6 +52,6 @@ export type Timelines = {
 }
 
 export type AnimationTimelineNamespaceState = {
-  lanes: Lanes
+  variables: Variables
   timelines: Timelines
 }

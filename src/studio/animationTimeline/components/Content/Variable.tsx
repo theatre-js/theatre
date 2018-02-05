@@ -5,7 +5,7 @@ import Connector from './Connector'
 import {NormalizedPoint} from '$studio/animationTimeline/types'
 
 type Props = {
-  laneId: string
+  variableId: string
   points: NormalizedPoint[]
   color: string
   width: number
@@ -18,7 +18,7 @@ type Props = {
   makeHandleHorizontal: Function
 }
 
-class Lane extends React.PureComponent<Props, {}> {
+class Variable extends React.PureComponent<Props, {}> {
   render() {
     const {points, color, width} = this.props
     return (
@@ -41,7 +41,7 @@ class Lane extends React.PureComponent<Props, {}> {
                 prevPoint={prevPoint}
                 nextPoint={nextPoint}
                 point={point}
-                laneWidth={width}
+                variableWidth={width}
                 showPointValuesEditor={(pos: {left: number, top: number}) =>
                   this.props.showPointValuesEditor(index, pos)  
                 }
@@ -68,4 +68,4 @@ class Lane extends React.PureComponent<Props, {}> {
   }
 }
 
-export default Lane
+export default Variable

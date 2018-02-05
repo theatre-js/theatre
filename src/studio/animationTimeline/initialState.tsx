@@ -2,7 +2,7 @@
 import {AnimationTimelineNamespaceState} from './types'
 
 const initialState: AnimationTimelineNamespaceState = {
-  lanes: {
+  variables: {
     byId: {
       '8daa7380-9b43-475a-8352-dc564a58c717': {
         id: '8daa7380-9b43-475a-8352-dc564a58c717',
@@ -149,7 +149,7 @@ const initialState: AnimationTimelineNamespaceState = {
           '8daa7380-9b43-475a-8352-dc564a58c726': {
             id: '8daa7380-9b43-475a-8352-dc564a58c726',
             height: 294,
-            lanes: [
+            variables: [
               '8daa7380-9b43-475a-8352-dc564a58c716',
               '8daa7380-9b43-475a-8352-dc564a58c717',
               '8daa7380-9b43-475a-8352-dc564a58c715',

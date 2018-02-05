@@ -1,16 +1,16 @@
 // @flow
 import {React, connect, reduceStateAction} from '$studio/handy'
-import {getLanesByIds} from '$studio/animationTimeline/selectors'
+import {getVariablesByIds} from '$studio/animationTimeline/selectors'
 import {
-  LaneID,
-  LaneObject,
+  VariableID,
+  VariableObject,
   Point,
   PointPosition,
   PointHandles,
   NormalizedPoint,
 } from '$studio/animationTimeline/types'
-import css from './LanesViewer.css'
-import Lane from './Lane'
+import css from './VariablesViewer.css'
+import Variable from './Variable'
 import BoxLegends from './BoxLegends'
 import PointValuesEditor from './PointValuesEditor'
 import * as _ from 'lodash'
@@ -20,8 +20,8 @@ import {SortableBoxDragChannel} from './SortableBox'
 import DraggableArea from '$studio/common/components/DraggableArea'
 
 type OwnProps = {
-  laneIds: LaneID[],
-  splitLane: Function,
+  variableIds: VariableID[],
+  splitVariable: Function,
   panelWidth: number,
   duration: number,
   currentTime: number,
@@ -31,7 +31,7 @@ type OwnProps = {
 }
 
 type Props = OwnProps & {
-  lanes: LaneObject[],
+  variables: VariableObject[],
   dispatch: Function,
 }
 
@@ -40,14 +40,14 @@ type State = {
   svgHeight: number,
   svgTransform: number,
   svgExtremums: [number, number],
-  activeLaneId: string,
+  activeVariableId: string,
   pointValuesEditorProps: undefined | null | Object,}
-const resetExtremums = laneId => {
+const resetExtremums = variableId => {
   return reduceStateAction(
-    ['animationTimeline', 'lanes', 'byId', laneId],
-    lane => {
-      const {points} = lane
-      if (points.length === 0) return lane
+    ['animationTimeline', 'variables', 'byId', variableId],
+    variable => {
+      const {points} = variable
+      if (points.length === 0) return variable
       const newExtremums = points.reduce(
         (reducer, point, index) => {
           const {value} = point
@@ -71,7 +71,7 @@ const resetExtremums = laneId => {
         [0, 60],
       )
       return {
-        ...lane,
+        ...variable,
         extremums: newExtremums,
       }
     },
@@ -79,40 +79,40 @@ const resetExtremums = laneId => {
 }
 
 const colors = ['#3AAFA9', '#575790', '#B76C6C', '#FCE181']
-class LanesViewer extends React.Component<Props, State> {
+class VariablesViewer extends React.Component<Props, State> {
   svgArea: HTMLElement
 
   constructor(props: Props) {
     super(props)
     this.state = {
       ...this._getSvgState(props),
-      pointValuesEditorProps: null,activeLaneId: props.laneIds[0],}
+      pointValuesEditorProps: null,activeVariableId: props.variableIds[0],}
   }
 
   componentWillReceiveProps(nextProps) {
-    let activeLaneId = this.state.activeLaneId
-    if (nextProps.laneIds.find(id => id === activeLaneId) == null) {
-      activeLaneId = nextProps.laneIds[0]
+    let activeVariableId = this.state.activeVariableId
+    if (nextProps.variableIds.find(id => id === activeVariableId) == null) {
+      activeVariableId = nextProps.variableIds[0]
     }
     if (
-      this.state.activeLaneId !== activeLaneId ||
+      this.state.activeVariableId !== activeVariableId ||
       nextProps.boxHeight !== this.props.boxHeight ||
       nextProps.duration !== this.props.duration ||
       nextProps.panelWidth !== this.props.panelWidth ||
       ((nextProps.focus[1] - nextProps.focus[0]) !== (this.props.focus[1] - this.props.focus[0])) 
     ) {
-      this.setState(() => ({...this._getSvgState(nextProps), activeLaneId}))
+      this.setState(() => ({...this._getSvgState(nextProps), activeVariableId}))
     }
-    // this.setState(() => ({...this._getSvgState(nextProps), activeLaneId}))
+    // this.setState(() => ({...this._getSvgState(nextProps), activeVariableId}))
   }
 
   shouldComponentUpdate(nextProps, nextState) {
     if (nextProps.boxHeight !== this.props.boxHeight) return true
     if (nextProps.canBeMerged !== this.props.canBeMerged) return true
     if (nextProps.shouldIndicateMerge !== this.props.shouldIndicateMerge) return true
-    if (!_.isEqual(nextProps.lanes, this.props.lanes)) return true
+    if (!_.isEqual(nextProps.variables, this.props.variables)) return true
     if (nextState.svgWidth !== this.state.svgWidth) return true
-    if (nextState.activeLaneId !== this.state.activeLaneId) return true
+    if (nextState.activeVariableId !== this.state.activeVariableId) return true
     if (nextState.pointValuesEditorProps !== this.state.pointValuesEditorProps) return true
     return false
   }
@@ -123,23 +123,23 @@ class LanesViewer extends React.Component<Props, State> {
   //   }
   // }
 
-  titleClickHandler(e: SyntheticMouseEvent<>, laneId: string) {
+  titleClickHandler(e: SyntheticMouseEvent<>, variableId: string) {
     if (e.altKey) {
-      return this.props.splitLane(laneId)
+      return this.props.splitVariable(variableId)
     }
-    this.setActiveLane(laneId)
+    this.setActiveVariable(variableId)
   }
 
-  setActiveLane = (activeLaneId: string) => {
-    this.setState(() => ({activeLaneId}))
+  setActiveVariable = (activeVariableId: string) => {
+    this.setState(() => ({activeVariableId}))
   }
 
   _getSvgState(props) {
-    const {boxHeight, duration, focus, panelWidth, lanes} = props
+    const {boxHeight, duration, focus, panelWidth, variables} = props
     const svgHeight = boxHeight - 14
     const svgWidth = Math.floor(duration / (focus[1] - focus[0]) * panelWidth)
     const svgTransform = svgWidth * focus[0] / duration
-    const svgExtremums = lanes.reduce(
+    const svgExtremums = variables.reduce(
       (reducer, {extremums}) => {
         if (extremums[0] < reducer[0]) reducer[0] = extremums[0]
         if (extremums[1] > reducer[1]) reducer[1] = extremums[1]
@@ -164,13 +164,13 @@ class LanesViewer extends React.Component<Props, State> {
     }
     this.props.dispatch(
       reduceStateAction(
-        ['animationTimeline', 'lanes', 'byId', this.state.activeLaneId],
-        lane => {
-          const points = lane.points
+        ['animationTimeline', 'variables', 'byId', this.state.activeVariableId],
+        variable => {
+          const points = variable.points
           let atIndex = points.findIndex(point => point.t > pointProps.t)
           if (atIndex === -1) atIndex = points.length
           return {
-            ...lane,
+            ...variable,
             points: points
               .slice(0, atIndex)
               .concat(pointProps, points.slice(atIndex)),
@@ -178,54 +178,54 @@ class LanesViewer extends React.Component<Props, State> {
         },
       ),
     )
-    this.props.dispatch(resetExtremums(this.state.activeLaneId))
+    this.props.dispatch(resetExtremums(this.state.activeVariableId))
   }
 
-  removePoint = (laneId: LaneID, pointIndex: number) => {
+  removePoint = (variableId: VariableID, pointIndex: number) => {
     this.props.dispatch(
       reduceStateAction(
-        ['animationTimeline', 'lanes', 'byId', laneId, 'points'],
+        ['animationTimeline', 'variables', 'byId', variableId, 'points'],
         points =>
           points.slice(0, pointIndex).concat(points.slice(pointIndex + 1)),
       ),
     )
-    this.props.dispatch(resetExtremums(laneId))
+    this.props.dispatch(resetExtremums(variableId))
   }
 
   setPointPositionTo = (
-    laneId: LaneID,
+    variableId: VariableID,
     pointIndex: number,
     newPosition: PointPosition,
   ) => {
     this.props.dispatch(
       reduceStateAction(
-        ['animationTimeline', 'lanes', 'byId', laneId, 'points', pointIndex],
+        ['animationTimeline', 'variables', 'byId', variableId, 'points', pointIndex],
         point => ({
           ...point,
           ...newPosition,
         }),
       ),
     )
-    this.props.dispatch(resetExtremums(laneId))
+    this.props.dispatch(resetExtremums(variableId))
   }
 
   showPointValuesEditor(
-    laneId: LaneID,
+    variableId: VariableID,
     pointIndex: number,
     pos: {left: number, top: number},
   ) {
-    this.setState(() => ({pointValuesEditorProps: {...pos, laneId, pointIndex}}))
+    this.setState(() => ({pointValuesEditorProps: {...pos, variableId, pointIndex}}))
   }
 
   changePointPositionBy = (
-    laneId: LaneID,
+    variableId: VariableID,
     pointIndex: number,
     change: PointPosition,
   ) => {
     const deNormalizedChange = this.deNormalizePositionChange(change)
     this.props.dispatch(
       reduceStateAction(
-        ['animationTimeline', 'lanes', 'byId', laneId, 'points', pointIndex],
+        ['animationTimeline', 'variables', 'byId', variableId, 'points', pointIndex],
         point => ({
           ...point,
           t: point.t + deNormalizedChange.t,
@@ -233,15 +233,15 @@ class LanesViewer extends React.Component<Props, State> {
         }),
       ),
     )
-    this.props.dispatch(resetExtremums(laneId))
+    this.props.dispatch(resetExtremums(variableId))
   }
 
   changePointHandlesBy = (
-    laneId: LaneID,
+    variableId: VariableID,
     pointIndex: number,
     change: PointHandles,
   ) => {
-    const {points} = this.props.lanes.find(({id}) => id === laneId)
+    const {points} = this.props.variables.find(({id}) => id === variableId)
     const deNormalizedChange = this._deNormalizeHandles(
       change,
       points[pointIndex],
@@ -252,9 +252,9 @@ class LanesViewer extends React.Component<Props, State> {
       reduceStateAction(
         [
           'animationTimeline',
-          'lanes',
+          'variables',
           'byId',
-          laneId,
+          variableId,
           'points',
           pointIndex,
           'handles',
@@ -266,13 +266,13 @@ class LanesViewer extends React.Component<Props, State> {
         },
       ),
     )
-    this.props.dispatch(resetExtremums(laneId))
+    this.props.dispatch(resetExtremums(variableId))
   }
 
-  addConnector = (laneId: LaneID, pointIndex: number) => {
+  addConnector = (variableId: VariableID, pointIndex: number) => {
     this.props.dispatch(
       reduceStateAction(
-        ['animationTimeline', 'lanes', 'byId', laneId, 'points', pointIndex],
+        ['animationTimeline', 'variables', 'byId', variableId, 'points', pointIndex],
         point => ({
           ...point,
           isConnected: true,
@@ -281,10 +281,10 @@ class LanesViewer extends React.Component<Props, State> {
     )
   }
 
-  removeConnector = (laneId: LaneID, pointIndex: number) => {
+  removeConnector = (variableId: VariableID, pointIndex: number) => {
     this.props.dispatch(
       reduceStateAction(
-        ['animationTimeline', 'lanes', 'byId', laneId, 'points', pointIndex],
+        ['animationTimeline', 'variables', 'byId', variableId, 'points', pointIndex],
         point => ({
           ...point,
           isConnected: false,
@@ -294,7 +294,7 @@ class LanesViewer extends React.Component<Props, State> {
   }
 
   makeHandleHorizontal = (
-    laneId: LaneID,
+    variableId: VariableID,
     pointIndex: number,
     side: 'left' | 'right',
   ) => {
@@ -302,9 +302,9 @@ class LanesViewer extends React.Component<Props, State> {
       reduceStateAction(
         [
           'animationTimeline',
-          'lanes',
+          'variables',
           'byId',
-          laneId,
+          variableId,
           'points',
           pointIndex,
           'handles',
@@ -320,7 +320,7 @@ class LanesViewer extends React.Component<Props, State> {
         },
       ),
     )
-    this.props.dispatch(resetExtremums(laneId))
+    this.props.dispatch(resetExtremums(variableId))
   }
 
   _normalizeX(x: number) {
@@ -439,8 +439,8 @@ class LanesViewer extends React.Component<Props, State> {
   }
 
 
-  // laneIds={box.lanes}
-  // splitLane={laneId => this.splitLane(index, laneId)}
+  // variableIds={box.variables}
+  // splitVariable={variableId => this.splitVariable(index, variableId)}
   // panelWidth={panelWidth}
   // duration={duration}
   // currentTime={currentTime}
@@ -449,8 +449,8 @@ class LanesViewer extends React.Component<Props, State> {
   // shouldIndicateMerge={shouldIndicateMerge}
 
   render() {
-    const {lanes, shouldIndicateMerge, canBeMerged, tempIncludeTimeGrid} = this.props
-    const {svgHeight, svgWidth, svgTransform, activeLaneId, pointValuesEditorProps} = this.state
+    const {variables, shouldIndicateMerge, canBeMerged, tempIncludeTimeGrid} = this.props
+    const {svgHeight, svgWidth, svgTransform, activeVariableId, pointValuesEditorProps} = this.state
     return (
       <Subscriber channel={SortableBoxDragChannel}>
         {({onDragStart, onDrag, onDragEnd}) => {
@@ -469,11 +469,11 @@ class LanesViewer extends React.Component<Props, State> {
               >
                 <div className={css.boxLegends}>
                   <BoxLegends
-                    lanes={lanes.map(lane => _.pick(lane, ['id', 'component', 'property']))}
+                    variables={variables.map(variable => _.pick(variable, ['id', 'component', 'property']))}
                     colors={colors}
-                    activeLaneId={activeLaneId}
-                    setActiveLane={this.setActiveLane}
-                    splitLane={this.props.splitLane}
+                    activeVariableId={activeVariableId}
+                    setActiveVariable={this.setActiveVariable}
+                    splitVariable={this.props.splitVariable}
                   />
                 </div>
               </DraggableArea>
@@ -487,10 +487,10 @@ class LanesViewer extends React.Component<Props, State> {
                   }}
                   onClick={this.addPoint}
                 >
-                  {lanes.map(({id, points}, index) => (
-                    <Lane
+                  {variables.map(({id, points}, index) => (
+                    <Variable
                       key={id}
-                      laneId={id}
+                      variableId={id}
                       points={this._normalizePoints(points)}
                       color={colors[index % colors.length]}
                       width={svgWidth}
@@ -520,7 +520,7 @@ class LanesViewer extends React.Component<Props, State> {
                 <PointValuesEditor
                   {...(_.pick(pointValuesEditorProps, ['left', 'top', 'initialValue', 'initialTime']))}
                   onClose={() => this.setState(() => ({pointValuesEditorProps: null}))}
-                  onSubmit={(newPosition) => this.setPointPositionTo(pointValuesEditorProps.laneId, pointValuesEditorProps.pointIndex, newPosition)}
+                  onSubmit={(newPosition) => this.setPointPositionTo(pointValuesEditorProps.variableId, pointValuesEditorProps.pointIndex, newPosition)}
                 />
               }
             </div>
@@ -533,6 +533,6 @@ class LanesViewer extends React.Component<Props, State> {
 
 export default connect((s, op) => {
   return {
-    lanes: getLanesByIds(s, op.laneIds),
+    variables: getVariablesByIds(s, op.variableIds),
   }
-})(LanesViewer)
+})(VariablesViewer)
