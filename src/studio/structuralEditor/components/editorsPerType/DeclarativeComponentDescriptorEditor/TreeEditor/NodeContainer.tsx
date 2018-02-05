@@ -120,7 +120,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
   handleClickToAdd = (e: $FixMe, index: number) => {
     e.stopPropagation()
     e.preventDefault()
-    this.addChild(index)
+    if (this.props.isCommandDown) this.addChild(index)
   }
 
   contextMenuHandler = e => {
@@ -242,12 +242,18 @@ class NodeContainer extends React.PureComponent<Props, State> {
       nodeProps.status !== STATUS.TEXT_CHANGING_TYPE
     const depth = this.props.depth || 0
     const isRelocated = nodeProps.status === STATUS.RELOCATED
-    const isComponent =
+    // const isComponent =
+    //   nodeProps.status === STATUS.UNINITIALIZED ||
+    //   nodeProps.type === NODE_TYPE.COMPONENT ||
+    //   nodeProps.status === STATUS.TEXT_CHANGING_TYPE
+    const isComponent = nodeProps.type === NODE_TYPE.COMPONENT
+    const shouldRenderComponent =
+      isComponent ||
       nodeProps.status === STATUS.UNINITIALIZED ||
-      nodeProps.type === NODE_TYPE.COMPONENT ||
       nodeProps.status === STATUS.TEXT_CHANGING_TYPE
     const isSelected = nodeProps.id === selectedNodeId
-    const shouldReactToCommandDown = isCommandDown && nodeProps.type === NODE_TYPE.COMPONENT
+    const shouldReactToCommandDown = isCommandDown && isComponent
+
     return (
       <div ref={c => (this.wrapper = c)}>
         <div
@@ -272,7 +278,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
             className={cx(css.root, {[css.isCommandDown]: shouldReactToCommandDown})}
             onContextMenu={this.contextMenuHandler}
             onMouseDown={this.mouseDownHandler}
-            onClick={(e: $FixMe) => this.handleClickToAdd(e, 0)}
+            {...(isComponent ? {onClick: (e: $FixMe) => this.handleClickToAdd(e, 0)} : {})}
             // {...(!isText
             //   ? {
             //       onMouseMove: e => this.setPlaceholderAsActive(0, e),
@@ -280,7 +286,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
             //     }
             //   : {})}
           >
-            {isComponent && (
+            {shouldRenderComponent && (
               <ComponentNode
                 isSelected={isSelected}
                 nodeProps={nodeProps}
@@ -309,7 +315,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
                   // onMouseMove={e => this.setPlaceholderAsActive(index + 1, e)}
                   // onMouseLeave={this.unsetPlaceholderAsActive}
                   // onClick={() => this.props.setSelectedNodeId(nodeProps.id)}
-                  onClick={(e: $FixMe) => this.handleClickToAdd(e, index + 1)}
+                  {...(isComponent ? {onClick: (e: $FixMe) => this.handleClickToAdd(e, index + 1)} : {})}
                 />
                 <div className={css.child}>
                   <NodeContainer
@@ -334,7 +340,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
                   // onMouseMove={e => this.setPlaceholderAsActive(index + 1, e)}
                   // onMouseLeave={this.unsetPlaceholderAsActive}
                   // onClick={() => this.props.setSelectedNodeId(nodeProps.id)}
-                  onClick={(e: $FixMe) => this.handleClickToAdd(e, index + 1)}                  
+                  {...(isComponent ? {onClick: (e: $FixMe) => this.handleClickToAdd(e, index + 1)} : {})}
                 />
               </div>
             )

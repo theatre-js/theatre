@@ -558,7 +558,6 @@ class TreeEditor extends StudioComponent<Props, State> {
     const {nodes, nodeBeingDragged, activeDropZone, isCommandDown} = this.state
     const isANodeBeingDragged = nodeBeingDragged != null
     const selectedNodeId = getSelectedNodeId(this.props.rootComponentDescriptor)
-
     return (
       <PanelSection withHorizontalMargin={false} label="Template">
         {this._renderScroller('up')}

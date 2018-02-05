@@ -1,5 +1,5 @@
 @value nodeHeight: 27px;
-@value nodeMargin: 3px;
+@value nodeMargin: 0;
 @value hoverBarColor: #3CDFFF;
 @value indent: 8px;
 @value sensorWidth: 16px;
@@ -23,10 +23,15 @@
   }
 
   &.expand {
-    opacity: 0;
-    height: nodeHeight;
-    animation: expand .15s ease-in-out forwards;
-    z-index: 1000;
+    // opacity: 0;
+    // max-height: nodeHeight;
+    // height: nodeHeight;
+    // visibility: hidden;
+    // will-change: max-height;
+    // transform-origin: 0 0;
+    max-height: 0;
+    animation: expand .25s ease-out forwards;
+    // z-index: 1000;
   }
 
   &.isRelocated {
@@ -48,8 +53,8 @@
 @keyframes expand {
   // from {transform: scaleY(0.1);}
   // to {transform: scaleY(1);}
-  from {opacity: 0;}
-  to {opacity: 1;}
+  from {max-height: 0;}
+  to {max-height: nodeHeight;}
 }
 
 @keyframes drop {
@@ -116,7 +121,7 @@
           position: absolute;
           content: ' ';
           height: 2px;
-          top: 1px;
+          top: -2px;
           left: indent;
           right: 0;
           background-color: hoverBarColor;
@@ -138,7 +143,8 @@
         position: absolute;
         content: ' ';
         height: 2px;
-        top: 1px;
+        // top: 1px;
+        top: -2px;
         left: indent;
         right: 0;
         background-color: hoverBarColor;
