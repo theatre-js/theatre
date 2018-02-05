@@ -379,7 +379,7 @@ export default class Panel extends StudioComponent<IProps, IState> {
               )}
               style={style}
             >
-              <div className={css.innerWrapper}>
+              <div {...classes('innerWrapper')}>
                 <div className={css.topBar}>
                   <div className={css.title}>{label || defaultLabel}</div>
                 </div>

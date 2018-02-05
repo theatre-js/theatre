@@ -27,6 +27,7 @@ type OwnProps = {
   currentTime: number,
   focus: [number, number],
   boxHeight: number,
+  tempIncludeTimeGrid?: boolean
 }
 
 type Props = OwnProps & {
@@ -448,7 +449,7 @@ class LanesViewer extends React.Component<Props, State> {
   // shouldIndicateMerge={shouldIndicateMerge}
 
   render() {
-    const {lanes, shouldIndicateMerge, canBeMerged} = this.props
+    const {lanes, shouldIndicateMerge, canBeMerged, tempIncludeTimeGrid} = this.props
     const {svgHeight, svgWidth, svgTransform, activeLaneId, pointValuesEditorProps} = this.state
     return (
       <Subscriber channel={SortableBoxDragChannel}>
@@ -459,6 +460,7 @@ class LanesViewer extends React.Component<Props, State> {
               className={cx(css.container ,{[css.indicateMerge]: shouldIndicateMerge, [css.canBeMerged]: canBeMerged})}
               style={{width: svgWidth}}
             >
+              {tempIncludeTimeGrid && <div className={css.timeGrid} />}
               <DraggableArea
                 withShift={true}
                 onDragStart={onDragStart}

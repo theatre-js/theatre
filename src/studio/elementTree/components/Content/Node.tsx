@@ -4,7 +4,7 @@ import css from './Node.css'
 import {Path} from '$studio/elementTree/types'
 import * as _ from 'lodash'
 import cx from 'classnames'
-import arrowIcon from './arrow.svg'
+import arrowIcon from 'svg-inline-loader!./arrow.svg'
 import SvgIcon from '$shared/components/SvgIcon'
 
 import {connect} from '$studio/handy'

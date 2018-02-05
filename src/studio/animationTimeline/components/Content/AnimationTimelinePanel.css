@@ -7,7 +7,7 @@
 .lanes {
   height: 100%;
   overflow: scroll;
-  // overflow-y: scroll;
+  position: relative;
 
   &::-webkit-scrollbar {
     display: none;
@@ -17,3 +17,9 @@
 .panelContainer {
   background: #000;
 }
+
+.panelInnerWrapper {
+  overflow: hidden;
+
+}
+

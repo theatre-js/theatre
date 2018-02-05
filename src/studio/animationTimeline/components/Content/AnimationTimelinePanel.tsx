@@ -17,11 +17,12 @@ import {
 } from '$src/studio/animationTimeline/types'
 import {XY} from '$src/studio/workspace/types'
 import Panel from '$src/studio/workspace/components/Panel/Panel'
-import { throttle } from 'lodash';
+import {throttle} from 'lodash'
 
 type OwnProps = TimelineObject & {
   timelineId: TimelineID
   panelDimensions: XY
+  tempShowTimeGrid
 }
 
 type Props = {dispatch: Function} & OwnProps
@@ -53,7 +54,7 @@ class Content extends React.Component<Props, State> {
     super(props)
 
     const {boxes, layout} = props
-    this._handleScroll = throttle(this._handleScroll.bind(this), 200)
+    // this._handleScroll = throttle(this._handleScroll.bind(this), 200)
 
     this.state = {
       boxBeingDragged: null,
@@ -76,7 +77,8 @@ class Content extends React.Component<Props, State> {
 
   componentDidMount() {
     const {duration, focus} = this.state
-    const svgWidth = duration / (focus[1] - focus[0]) * (this.container.clientWidth - 30)
+    const svgWidth =
+      duration / (focus[1] - focus[0]) * (this.container.clientWidth - 30)
     setTimeout(() => {
       this.lanesContainer.scrollTo(svgWidth * focus[0] / duration, 0)
     }, 0)
@@ -321,7 +323,7 @@ class Content extends React.Component<Props, State> {
     if (newFocusRight > duration) {
       newFocusRight = duration
     }
-    if(newFocusRight - newFocusLeft < 1) return
+    if (newFocusRight - newFocusLeft < 1) return
     const svgWidth = duration / (newFocusRight - newFocusLeft) * panelWidth
     this.lanesContainer.scrollLeft = svgWidth * newFocusLeft / duration
     this._reallyChangeFocusTo(newFocusLeft, newFocusRight, panelWidth)
@@ -341,7 +343,7 @@ class Content extends React.Component<Props, State> {
       newFocusLeft = duration - (focus[1] - focus[0])
       newFocusRight = duration
     }
-    
+
     const svgWidth = duration / (newFocusRight - newFocusLeft) * panelWidth
     this.lanesContainer.scrollLeft = svgWidth * newFocusLeft / duration
 
@@ -362,7 +364,7 @@ class Content extends React.Component<Props, State> {
       newFocusLeft = duration - (focus[1] - focus[0])
       newFocusRight = duration
     }
-    
+
     this._reallyChangeFocusTo(newFocusLeft, newFocusRight, panelWidth)
   }
 
@@ -416,16 +418,14 @@ class Content extends React.Component<Props, State> {
     }))
   }
 
-  handleScroll(e: SyntheticWheelEvent, panelWidth: number) {
+  handleScroll(e: React.WheelEvent<$FixMe>, panelWidth: number) {
     e.persist()
     this._handleScroll(e, panelWidth)
   }
 
-  _handleScroll(e: SyntheticWheelEvent, panelWidth: number) {
+  _handleScroll(e: React.WheelEvent<$FixMe>, panelWidth: number) {
     const isHorizontal = Math.abs(e.deltaY) > Math.abs(e.deltaX)
-    if (
-      e.ctrlKey || (isHorizontal && e.shiftKey)
-    ) {
+    if (e.ctrlKey || (isHorizontal && e.shiftKey)) {
       e.preventDefault()
       e.stopPropagation()
       if (e.nativeEvent.target !== this.lanesContainer) {
@@ -433,10 +433,15 @@ class Content extends React.Component<Props, State> {
         const svgWidth = duration / (focus[1] - focus[0]) * panelWidth
         const focusLeftX = focus[0] / duration * svgWidth
         const focusRightX = focus[1] / duration * svgWidth
-        const fraction = (e.nativeEvent.offsetX - focusLeftX) / (focusRightX - focusLeftX)
-        const change = e.deltaY / panelWidth * (focus[1] - focus[0])
+        const fraction =
+          (e.nativeEvent.offsetX - focusLeftX) / (focusRightX - focusLeftX)
+        const change = e.deltaY / panelWidth * (focus[1] - focus[0]) * 3.5
 
-        this._changeZoomLevel(focus[0] - change * fraction, focus[1] + change * (1 - fraction), panelWidth)
+        this._changeZoomLevel(
+          focus[0] - change * fraction,
+          focus[1] + change * (1 - fraction),
+          panelWidth,
+        )
       }
       return
     }
@@ -464,7 +469,6 @@ class Content extends React.Component<Props, State> {
     //   const change = e.deltaX / panelWidth * (focus[1] - focus[0])
     //   this._changeFocusTo(focus[0] + change, focus[1] + change, panelWidth)
     // }
-
   }
 
   timeToX(t: number, panelWidth: number) {
@@ -496,13 +500,19 @@ class Content extends React.Component<Props, State> {
     } = this.state
     const {boxes, layout} = this.props
     return (
-      <Panel headerLess={true} css={{container: css.panelContainer}}>
+      <Panel
+        headerLess={true}
+        css={{
+          container: css.panelContainer,
+          innerWrapper: css.panelInnerWrapper,
+        }}
+      >
         <Subscriber channel={PanelWidthChannel}>
           {(panelWidth: number) => {
             panelWidth -= 30
             return (
               <div
-                ref={c => this.container = c}
+                ref={c => (this.container = c)}
                 className={css.container}
                 onWheel={e => this.handleScroll(e, panelWidth)}
               >
@@ -521,7 +531,11 @@ class Content extends React.Component<Props, State> {
                       this.xToFocusedTime(x, focus, panelWidth)
                     }
                     changeFocusTo={(focusLeft: number, focusRight: number) =>
-                      this.changeFocusAndScrollLanesContainer(focusLeft, focusRight, panelWidth)
+                      this.changeFocusAndScrollLanesContainer(
+                        focusLeft,
+                        focusRight,
+                        panelWidth,
+                      )
                     }
                     changeFocusRightTo={(focus: number) =>
                       this.changeFocusRightTo(focus, panelWidth)
@@ -533,7 +547,8 @@ class Content extends React.Component<Props, State> {
                     changeDuration={this.changeDuration}
                   />
                 </div>
-                <div ref={c => this.lanesContainer = c} className={css.lanes}>
+                <div ref={c => (this.lanesContainer = c)} className={css.lanes}>
+
                   {layout.map((id, index) => {
                     const box = boxes[id]
                     const boxTranslateY =
@@ -560,6 +575,7 @@ class Content extends React.Component<Props, State> {
                       >
                         {
                           <LanesViewer
+                            tempIncludeTimeGrid={index === 0}
                             boxHeight={box.height}
                             laneIds={box.lanes}
                             splitLane={laneId => this.splitLane(index, laneId)}

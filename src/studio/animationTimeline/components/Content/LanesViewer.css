@@ -1,7 +1,11 @@
+
+
 .container {
   position: relative;
   height: 100%;
-  background: #1B2226;
+  background: url('url-loader!./GridBG.svg');
+  background-color: #1B2226;
+  /* background-size: 22px 22px; */
   padding-right: 30px;
 
   &.indicateMerge {
@@ -55,4 +59,14 @@
   // width: calc(100% - 30px);
   overflow: hidden;
   // border: 1px solid white;
+}
+
+.timeGrid {
+  position: absolute;
+  top: 0px;
+  left: 1px;
+  right: 0;
+  height: 8px;
+  z-index: 1;
+  background: url('url-loader!./TimeGridBg.svg');
 }

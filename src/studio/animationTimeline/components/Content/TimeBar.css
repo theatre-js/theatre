@@ -139,6 +139,17 @@
   height: var(--threadHeight);
   background: var(--focusBarColor);
   cursor: pointer;
+  z-index: 2;
+
+  &:hover {
+    background: cyan;
+  }
+
+  &:after {
+    position: absolute -8px;
+    display: block;
+    content: ' ';
+  }
 }
 
 .focusHandle {
