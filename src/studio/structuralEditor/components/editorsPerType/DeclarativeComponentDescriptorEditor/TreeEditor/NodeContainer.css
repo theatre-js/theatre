@@ -23,7 +23,7 @@
 
   &.appear {
     max-height: 0;
-    animation: container-appear .2s ease-out forwards;
+    animation: containerAppear .2s ease-out forwards;
   }
 
   &.isRelocated {
@@ -34,7 +34,7 @@
 
   &.isCollapsed {
     overflow: hidden;
-    animation: container-collapse .25s ease-out forwards;
+    animation: containerCollapse .25s ease-out forwards;
   }
 }
 
@@ -62,7 +62,7 @@
 
 .container.appear > .rootWrapper {
   transform-origin: 0 0;
-  animation: rootWrapper-appear .2s cubic-bezier(0.3, 0, 0.5, 1.5) forwards;
+  animation: rootWrapperAppear .2s cubic-bezier(0.3, 0, 0.5, 1.5) forwards;
 }
 
 .container.isSelected > .rootWrapper {
@@ -76,11 +76,11 @@
 
 .container.appear > .rootWrapper > .root {
   opacity: 0;
-  animation: root-appear .15s .15s ease-in-out forwards;
+  animation: rootAppear .15s .15s ease-in-out forwards;
 }
 
 /*.container.isCollapsed > .rootWrapper {
-  animation: rootWrapper-collapse .15s .15s ease-in-out forwards;  
+  animation: rootWrapperCollapse .15s .15s ease-in-out forwards;  
 }*/
 
 .childContainer {
@@ -128,28 +128,28 @@
   z-index: 1000;
 }
 
-@keyframes container-appear {
+@keyframes containerAppear {
   from {max-height: 0;}
   to {max-height: nodeHeight;}
 }
 
-@keyframes rootWrapper-appear {
+@keyframes rootWrapperAppear {
   from {transform: scaleY(0);}
   to {transform: scaleY(1);}
 }
 
-@keyframes root-appear {
+@keyframes rootAppear {
   from {opacity: 0;}
   to {opacity: 1;}
 }
 
-@keyframes container-collapse {
+@keyframes containerCollapse {
   0% {max-height: var(--maxHeight);}
   // 50% {max-height: nodeHeight;}
   100% {max-height: 0;}
 }
 
-@keyframes rootWrapper-collapse {
+@keyframes rootWrapperCollapse {
   from {max-height: nodeHeight;}
   to {max-height: 0;}
 }
