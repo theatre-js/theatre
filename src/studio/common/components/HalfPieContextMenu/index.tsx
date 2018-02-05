@@ -125,7 +125,7 @@ class HalfPieContextMenu extends React.PureComponent<IProps, IState> {
     const matchedItemIndex = this.preparedLabels.findIndex(({key}: $FixMe) => {
       return key.toLowerCase() === String.fromCharCode(pressedKeyCode).toLowerCase()
     })
-    if (matchedItemIndex) {
+    if (matchedItemIndex !== -1) {
       this.props.items[matchedItemIndex].cb()
       this.props.close()
     } else {
