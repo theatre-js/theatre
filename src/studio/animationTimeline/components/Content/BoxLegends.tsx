@@ -3,6 +3,9 @@ import css from './BoxLegends.css'
 import * as _ from 'lodash'
 import cx from 'classnames'
 import HalfPieContextMenu from '$studio/common/components/HalfPieContextMenu'
+import MdSwapVerticalCircel from 'react-icons/lib/md/swap-vertical-circle'
+import FaBullseye from 'react-icons/lib/fa/bullseye'
+import FaCircleO from 'react-icons/lib/fa/circle-o'
 
 interface IState {
   contextMenuProps: undefined | null | Object
@@ -58,17 +61,20 @@ class BoxLegends extends React.PureComponent<$FixMe, IState> {
             placement='top'
             items={[
               {
-                label: 'holopa',
-                cb: () => console.log('holopa'), 
+                label: 'Hide $O$ther Lanes',
+                cb: () => null,
+                IconComponent: FaBullseye,
               },
               {
-                label: 'split',
+                label: '$S$plit this Lane',
                 cb: () => this.props.splitVariable(contextMenuProps.variableId),
                 disabled: variables.length === 1,
+                IconComponent: MdSwapVerticalCircel,
               },
               {
-                label: 'garfield',
-                cb: () => console.log('garfield'),
+                label: '$H$ide this Lane',
+                cb: () => null,
+                IconComponent: FaCircleO,                
               },
             ]}
           />

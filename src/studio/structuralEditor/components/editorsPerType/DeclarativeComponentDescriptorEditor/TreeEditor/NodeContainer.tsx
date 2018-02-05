@@ -7,6 +7,12 @@ import NodePlaceholder from './NodePlaceholder'
 import HalfPieContextMenu from '$studio/common/components/HalfPieContextMenu'
 import cx from 'classnames'
 import {ACTION, STATUS, NODE_TYPE} from './constants'
+import MdCancel from 'react-icons/lib/md/cancel'
+import MdCamera from 'react-icons/lib/md/camera'
+import MdDonutSmall from 'react-icons/lib/md/donut-small'
+import MdExplore from 'react-icons/lib/md/explore'
+import MdStars from 'react-icons/lib/md/stars'
+
 
 type Props = {
   nodeData: Object
@@ -360,25 +366,30 @@ class NodeContainer extends React.PureComponent<Props, State> {
             placement="right"
             items={[
               {
-                label: 'garply',
-                cb: () => console.log('garply'),
+                label: 'Clone to $A$rtboard',
+                cb: () => null,
+                IconComponent: MdDonutSmall,
               },
               {
-                label: 'waldo',
-                cb: () => console.log('waldo'),
+                label: 'Locate in $E$xplore',
+                cb: () => null,
+                IconComponent: MdExplore,
               },
               {
-                label: 'delete',
+                label: '$D$elete Object',
                 cb: this.deleteNode,
                 disabled: !this.props.depth,
+                IconComponent: MdCancel,
               },
               {
-                label: 'plugh',
-                cb: () => console.log('plugh'),
+                label: 'Add $M$odifier',
+                cb: () => null,
+                IconComponent: MdStars,
               },
               {
-                label: 'xyzzy',
-                cb: () => console.log('xyzzy'),
+                label: '$C$onvert to Component',
+                cb: () => null,
+                IconComponent: MdCamera,
               },
             ]}
           />

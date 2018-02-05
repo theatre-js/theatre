@@ -3,12 +3,35 @@
   z-index: 999999;
 }
 
+.anchor {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: #000;
+  border-radius: 50%;
+  box-shadow: 0 0 10px 1px rgba(60, 223, 255, 1);
+  border: 2px solid rgba(60, 223, 255, 1);
+  transform: translate3d(-50%, -50%, 0);
+}
+
 .item {
   background: #000;
   font-size: 11px;
-  padding: 0 2px;
   position: absolute;
+  border-radius: 12px 12px 12px 12px;
   cursor: pointer;
+  height: 26px;
+  display: grid;
+  grid-template-columns: 4px [icon] 24px [label] 1fr 10px;
+  align-items: center;
+  color: #AAA;
+
+  box-shadow: inset 0 0 0 2px rgba(60, 223, 255, .35);
+
+  &:hover, &.highlight {
+    background: rgba(60, 223, 255, 1);
+    color: #FFF;
+  }
 
   &.disabled {
     pointer-events: none;
@@ -16,6 +39,30 @@
   }
 
   animation: appear .15s ease-in-out forwards;
+}
+
+.icon {
+  grid-column: icon;
+  font-size: 16px;
+  opacity: .7;
+  color: rgba(60, 223, 255, .75);
+}
+
+.item:hover > .icon, .item.highlight > .icon {
+  color: #FFF;
+}
+
+.item:hover .key, .item.highlight .key {
+  color: #FFF;
+}
+
+.label {
+  grid-column: label;
+}
+
+.key {
+  text-decoration: underline;
+  color: rgba(60, 223, 255, .7);
 }
 
 @keyframes appear {
