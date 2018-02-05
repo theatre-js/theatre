@@ -15,11 +15,18 @@ interface IState {}
 const getCoordinatesOnVerticalAxis = (
   placement: 'left' | 'right',
   numberOfItems: number,
+  centerPointLeft: number,
+  maxItemWidth: number,
 ) => {
-  const coeff = placement === 'left' ? -1 : 1
   const halfOfItems = 0.5 * numberOfItems
   const halfOfItemsFloored = Math.floor(halfOfItems)
   const radius = halfOfItemsFloored * 28
+
+  const {innerWidth} = window
+  const menuEdge = centerPointLeft + maxItemWidth
+  const isOutOfWindow = menuEdge > innerWidth
+  const coeff = (isOutOfWindow ? -1 : 1) * (placement === 'left' ? -1 : 1)
+  const leftCoeff = (isOutOfWindow ? (1 - (menuEdge - innerWidth) / radius) : 1) * .5
 
   return (index: number) => {
     let leftTranslate
@@ -34,7 +41,7 @@ const getCoordinatesOnVerticalAxis = (
     }
     const topTranslate = index * 28 - radius
 
-    return {leftTranslate, topTranslate}
+    return {leftTranslate, topTranslate, leftCoeff, topCoeff: .5}
   }
 }
 
@@ -43,11 +50,13 @@ const getCoordinatesOnHorizontalAxis = (
   numberOfItems: number,
   maxItemWidth: number,
 ) => {
-  const coeff = placement === 'top' ? -1 : 1
   const halfOfItems = 0.5 * numberOfItems
   const halfOfItemsFloored = Math.floor(halfOfItems)
   const radiusY = halfOfItemsFloored * 28
   const radiusX = Math.ceil(halfOfItems) * maxItemWidth
+
+  const coeff = placement === 'top' ? -1 : 1
+  
   return (index: number) => {
     let topTranslate
     if (index < halfOfItems) {
@@ -57,15 +66,15 @@ const getCoordinatesOnHorizontalAxis = (
         coeff * ((numberOfItems - 1 - index) / halfOfItemsFloored) * radiusY
     }
     let leftTranslate =
-      (halfOfItemsFloored - index) / halfOfItemsFloored * radiusY
+      (halfOfItemsFloored - index) / halfOfItemsFloored * radiusY * 1.3
     if (
       numberOfItems % 2 === 0 &&
       (index === halfOfItems || index === halfOfItems - 1)
     ) {
       leftTranslate =
-        (halfOfItemsFloored - index) / halfOfItemsFloored * radiusX * 0.7
+        (halfOfItemsFloored - index) / halfOfItemsFloored * radiusX * .7
     }
-    return {leftTranslate, topTranslate}
+    return {leftTranslate, topTranslate, leftCoeff: .5, topCoeff: .5}
   }
 }
 
@@ -77,22 +86,25 @@ class HalfPieContextMenu extends React.PureComponent<IProps, IState> {
     )
     const translateCalculatorFn =
       placement === 'left' || placement === 'right'
-        ? getCoordinatesOnVerticalAxis(placement, items.length)
+        ? getCoordinatesOnVerticalAxis(placement, items.length, centerPoint.left, maxItemWidth)
         : getCoordinatesOnHorizontalAxis(placement, items.length, maxItemWidth)
-
+    
+    const {innerWidth, innerHeight} = window
     return (
       <div className={css.container} onClick={() => close()}>
         {items.map(({label, cb, disabled}: $FixMe, index: number) => {
-          const {leftTranslate, topTranslate} = translateCalculatorFn(index)
+          const {leftTranslate, topTranslate, leftCoeff, topCoeff} = translateCalculatorFn(index)
           return (
             <div
               key={index}
               className={cx(css.item, {[css.disabled]: disabled})}
               style={{
-                left: centerPoint.left,
-                top: centerPoint.top,
+                right: innerWidth - centerPoint.left,
+                bottom: innerHeight - centerPoint.top,
                 '--left': leftTranslate,
                 '--top': topTranslate,
+                '--leftCoeff': leftCoeff,
+                '--topCoeff': topCoeff,
               }}
               onClick={cb}
             >

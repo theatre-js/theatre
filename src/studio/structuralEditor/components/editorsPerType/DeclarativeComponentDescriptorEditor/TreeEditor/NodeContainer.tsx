@@ -360,7 +360,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
           <HalfPieContextMenu
             close={() => this.setState(() => ({contextMenuProps: null}))}
             centerPoint={contextMenuProps}
-            placement="left"
+            placement="right"
             items={[
               {
                 label: 'garply',

@@ -19,7 +19,21 @@
 }
 
 @keyframes appear {
-  0% {opacity: 0; transform: translate3d(0, 0, 0);}
+  0% {
+    opacity: 0;
+    transform: translate3d(
+      calc(var(--leftCoeff) * 100%),
+      calc(var(--topCoeff) * 100%),
+      0);
+    }
+
   30% {opacity: 0;}
-  100% {opacity: 1; transform: translate3d(calc(var(--left)*1px - 50%), calc(var(--top)*1px), 0);}
+
+  100% {
+    opacity: 1;
+    transform: translate3d(
+      calc(var(--left) * 1px + var(--leftCoeff) * 100%),
+      calc(var(--top) * 1px + var(--topCoeff) * 100%),
+      0);
+    }
 }
