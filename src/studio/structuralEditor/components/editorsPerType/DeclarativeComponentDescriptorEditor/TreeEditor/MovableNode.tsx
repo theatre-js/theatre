@@ -15,16 +15,13 @@ type Props = {
 type State = {
   offsetTop: number
   isBeingDragged: boolean
-  isGlued: boolean
   moveY: number
 }
 
 class MovableNode extends React.Component<Props, State> {
-  unglueTimeout = null
   state = {
     offsetTop: this.props.nodeBeingDragged.top,
     isBeingDragged: false,
-    isGlued: true,
     moveY: 0,
   }
 
@@ -33,13 +30,9 @@ class MovableNode extends React.Component<Props, State> {
     this.setState(() => ({offsetTop}))
 
     this.addListeners()
-    this.unglueTimeout = setTimeout(() => {
-      this.setState(() => ({isGlued: false}))
-    }, 300)
   }
 
   componentWillUnmount() {
-    clearTimeout(this.unglueTimeout)
     this.removeListeners()
   }
 
@@ -70,18 +63,15 @@ class MovableNode extends React.Component<Props, State> {
     const {offsetTop, moveY, isGlued} = this.state
     const depth =
       (activeDropZone && activeDropZone.depth) || nodeBeingDragged.depth
-
+    
     return (
       <div
         ref={c => (this.container = c)}
-        className={cx(css.staticContainer, {
-          [css.isGlued]: isGlued,
-        })}
+        className={css.staticContainer}
         style={{
-          ...!isGlued ? {transform: `translateY(${moveY}px)`} : {},
+          transform: `translateY(${moveY}px)`,
           top: `${top - offsetTop}px`,
         }}
-        {...(isGlued ? {onMouseLeave: this.dragEndHandler} : {})}
       >
         <div className={css.dynamicContainer} style={{'--depth': depth}}>
           {nodeProps.type === NODE_TYPE.COMPONENT && (

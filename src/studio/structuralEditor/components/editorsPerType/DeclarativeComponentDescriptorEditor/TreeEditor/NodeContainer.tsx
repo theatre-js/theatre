@@ -52,6 +52,10 @@ class NodeContainer extends React.PureComponent<Props, State> {
   }
 
   componentWillReceiveProps(nextProps) {
+    if (nextProps.nodeData.status === STATUS.CREATION_CANCELED) {
+      this.deleteNode()
+      return
+    }
     if (nextProps.nodeData.status === STATUS.RELOCATED) {
       const {nodeData: {actionPayload}} = nextProps
       const {droppedAt} = actionPayload
@@ -96,7 +100,6 @@ class NodeContainer extends React.PureComponent<Props, State> {
   mouseDownHandler = e => {
     e.stopPropagation()
     e.preventDefault()
-    return
     if (!e.shiftKey || !this.props.depth) return
 
     const {
@@ -218,11 +221,15 @@ class NodeContainer extends React.PureComponent<Props, State> {
 
   onCancelSelectingType = () => {
     if (this.props.nodeData.status === STATUS.UNINITIALIZED) {
-      this.deleteNode()
+      // setTimeout(() => this.deleteNode(), 0)
+      this.props.cancelSettingType(this.props.nodeData)
+      return
     }
     if (this.props.nodeData.status === STATUS.TEXT_CHANGING_TYPE) {
       this.props.cancelTextNodeTypeChange(this.props.nodeData.id)
+      return
     }
+    // this.props.cancelSettingType()
   }
 
   renderNodePlaceholder(atIndex, depth) {
@@ -342,6 +349,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
                     listOfDisplayNames={this.props.listOfDisplayNames}
                     handleTextNodeTypeChange={this.props.handleTextNodeTypeChange}
                     cancelTextNodeTypeChange={this.props.cancelTextNodeTypeChange}
+                    cancelSettingType={this.props.cancelSettingType}
                   />
                 </div>
                 <div

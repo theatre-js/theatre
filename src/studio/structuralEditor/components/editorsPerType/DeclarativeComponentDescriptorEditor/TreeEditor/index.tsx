@@ -100,7 +100,6 @@ class TreeEditor extends StudioComponent<Props, State> {
     document.addEventListener('keydown', this._handleKeyDown)
     document.addEventListener('keyup', this._handleKeyUp)
     document.addEventListener('visibilitychange', this._handleVisibilityChange)
-    // window.addEventListener('scroll', (e) => console.log(e))
   }
   
   componentWillUnmount() {
@@ -130,7 +129,7 @@ class TreeEditor extends StudioComponent<Props, State> {
     }
   }
 
-  _handleVisibilityChange = () => {
+  _handleVisibilityChange = (e) => {
     if (document.visibilityState === 'hidden' && this.state.isCommandDown) {
       this.setState(() => ({isCommandDown: false}))
     }
@@ -340,10 +339,13 @@ class TreeEditor extends StudioComponent<Props, State> {
           ),
           reducer: parentNode => {
             const children = [].concat(parentNode.props.children)
-            parentNode.props.children = [
-              ...children.slice(0, index),
-              ...children.slice(index + 1),
-            ]
+            // console.log(children[index])
+            if (children[index] && children[index].which === nodeId) {
+              parentNode.props.children = [
+                ...children.slice(0, index),
+                ...children.slice(index + 1),
+              ]
+            }
             return parentNode
           },
         },
@@ -495,8 +497,8 @@ class TreeEditor extends StudioComponent<Props, State> {
     )
   }
 
-  _cancelSettingComponentType = () => {
-    const {nodeProps} = this.state.componentBeingSet
+  _cancelSettingComponentType = (nodeProps = this.state.componentBeingSet.nodeProps) => {
+    // const {nodeProps} = this.state.componentBeingSet
     this.setState(() => ({componentBeingSet: null}))
     if (nodeProps.status === STATUS.UNINITIALIZED) {
       this._setLastAction(ACTION.NODE_ADD_CANCEL, {id: nodeProps.id})
@@ -566,6 +568,7 @@ class TreeEditor extends StudioComponent<Props, State> {
     const {nodes, nodeBeingDragged, activeDropZone, isCommandDown} = this.state
     const isANodeBeingDragged = nodeBeingDragged != null
     const selectedNodeId = getSelectedNodeId(this.props.rootComponentDescriptor)
+
     return (
       <PanelSection withHorizontalMargin={false} withoutBottomMargin={true} label="Template">
         {this._renderScroller('up')}
@@ -599,6 +602,7 @@ class TreeEditor extends StudioComponent<Props, State> {
               listOfDisplayNames={this.props.listOfDisplayNames}
               handleTextNodeTypeChange={this.handleTextNodeTypeChange}
               cancelTextNodeTypeChange={this.cancelTextNodeTypeChange}
+              cancelSettingType={this._cancelSettingComponentType}
             />
           </div>
         </div>

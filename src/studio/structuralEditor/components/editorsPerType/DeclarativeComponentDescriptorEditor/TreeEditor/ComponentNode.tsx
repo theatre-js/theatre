@@ -143,11 +143,12 @@ class ComponentNode extends React.PureComponent<Props, State> {
 
   _handleClickOutside = (e: $FixMe, defaultType: $FixMe) => {
     if (!this.container.contains(e.target)) {
-      if (this.props.nodeProps.status === STATUS.UNINITIALIZED) {
-        this.props.onSelectComponentType(defaultType)
-      } else {
-        this.props.onCancelSelectingType()
-      }
+      this.props.onCancelSelectingType()
+      // if (this.props.nodeProps.status === STATUS.UNINITIALIZED) {
+      //   this.props.onSelectComponentType(defaultType)
+      // } else {
+      //   this.props.onCancelSelectingType()
+      // }
     }
   }
 

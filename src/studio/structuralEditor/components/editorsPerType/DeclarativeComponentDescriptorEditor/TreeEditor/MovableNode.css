@@ -9,10 +9,7 @@
   left: 0;
   pointer-events: none;
   border-radius: 2px;
-  
-  &.isGlued {
-    pointer-events: auto;
-  }
+
 }
 
 .dynamicContainer {
