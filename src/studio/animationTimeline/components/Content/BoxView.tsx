@@ -1,6 +1,5 @@
 // @flow
 import {React, connect, reduceStateAction} from '$studio/handy'
-import {getVariablesByIds} from '$studio/animationTimeline/selectors'
 import {
   VariableID,
   VariableObject,
@@ -9,84 +8,87 @@ import {
   PointHandles,
   NormalizedPoint,
 } from '$studio/animationTimeline/types'
-import css from './VariablesViewer.css'
+import css from './BoxView.css'
 import Variable from './Variable'
 import BoxLegends from './BoxLegends'
 import PointValuesEditor from './PointValuesEditor'
 import * as _ from 'lodash'
 import cx from 'classnames'
-import {Subscriber} from 'react-broadcast';
+import {Subscriber} from 'react-broadcast'
 import {SortableBoxDragChannel} from './SortableBox'
 import DraggableArea from '$studio/common/components/DraggableArea'
 
 type OwnProps = {
-  variableIds: VariableID[],
-  splitVariable: Function,
-  panelWidth: number,
-  duration: number,
-  currentTime: number,
-  focus: [number, number],
-  boxHeight: number,
+  variableIds: VariableID[]
+  splitVariable: Function
+  panelWidth: number
+  duration: number
+  currentTime: number
+  focus: [number, number]
+  boxHeight: number
   tempIncludeTimeGrid?: boolean
+  pathToTimeline: string[]
 }
 
 type Props = OwnProps & {
-  variables: VariableObject[],
-  dispatch: Function,
+  variables: VariableObject[]
+  dispatch: Function
+  pathToVariables: string[]
 }
 
 type State = {
-  svgWidth: number,
-  svgHeight: number,
-  svgTransform: number,
-  svgExtremums: [number, number],
-  activeVariableId: string,
-  pointValuesEditorProps: undefined | null | Object,}
-const resetExtremums = variableId => {
-  return reduceStateAction(
-    ['animationTimeline', 'variables', 'byId', variableId],
-    variable => {
-      const {points} = variable
-      if (points.length === 0) return variable
-      const newExtremums = points.reduce(
-        (reducer, point, index) => {
-          const {value} = point
-          const prevValue = points[index - 1] ? points[index - 1].value : 0
-          const nextValue = points[index + 1] ? points[index + 1].value : 0
-          const handles = [
-            point.handles[1] * Math.abs(prevValue - value),
-            point.handles[3] * Math.abs(nextValue - value),
-          ]
-          return [
-            Math.min(
-              reducer[0],
-              Math.min(value, value + handles[0] - 15, value + handles[1]) - 15,
-            ),
-            Math.max(
-              reducer[1],
-              Math.max(value, value + handles[0] + 15, value + handles[1]) + 15,
-            ),
-          ]
-        },
-        [0, 60],
-      )
-      return {
-        ...variable,
-        extremums: newExtremums,
-      }
-    },
-  )
+  svgWidth: number
+  svgHeight: number
+  svgTransform: number
+  svgExtremums: [number, number]
+  activeVariableId: string
+  pointValuesEditorProps: undefined | null | Object
+}
+const resetExtremums = (pathToVariable: string[]) => {
+  return reduceStateAction(pathToVariable, variable => {
+    const {points} = variable
+    if (points.length === 0) return variable
+    const newExtremums = points.reduce(
+      (reducer, point, index) => {
+        const {value} = point
+        const prevValue = points[index - 1] ? points[index - 1].value : 0
+        const nextValue = points[index + 1] ? points[index + 1].value : 0
+        const handles = [
+          point.handles[1] * Math.abs(prevValue - value),
+          point.handles[3] * Math.abs(nextValue - value),
+        ]
+        return [
+          Math.min(
+            reducer[0],
+            Math.min(value, value + handles[0] - 15, value + handles[1]) - 15,
+          ),
+          Math.max(
+            reducer[1],
+            Math.max(value, value + handles[0] + 15, value + handles[1]) + 15,
+          ),
+        ]
+      },
+      [0, 60],
+    )
+    return {
+      ...variable,
+      extremums: newExtremums,
+    }
+  })
 }
 
 const colors = ['#3AAFA9', '#575790', '#B76C6C', '#FCE181']
-class VariablesViewer extends React.Component<Props, State> {
+
+class BoxBiew extends React.Component<Props, State> {
   svgArea: HTMLElement
 
   constructor(props: Props) {
     super(props)
     this.state = {
       ...this._getSvgState(props),
-      pointValuesEditorProps: null,activeVariableId: props.variableIds[0],}
+      pointValuesEditorProps: null,
+      activeVariableId: props.variableIds[0],
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -99,29 +101,25 @@ class VariablesViewer extends React.Component<Props, State> {
       nextProps.boxHeight !== this.props.boxHeight ||
       nextProps.duration !== this.props.duration ||
       nextProps.panelWidth !== this.props.panelWidth ||
-      ((nextProps.focus[1] - nextProps.focus[0]) !== (this.props.focus[1] - this.props.focus[0])) 
+      nextProps.focus[1] - nextProps.focus[0] !==
+        this.props.focus[1] - this.props.focus[0]
     ) {
       this.setState(() => ({...this._getSvgState(nextProps), activeVariableId}))
     }
-    // this.setState(() => ({...this._getSvgState(nextProps), activeVariableId}))
   }
 
   shouldComponentUpdate(nextProps, nextState) {
     if (nextProps.boxHeight !== this.props.boxHeight) return true
     if (nextProps.canBeMerged !== this.props.canBeMerged) return true
-    if (nextProps.shouldIndicateMerge !== this.props.shouldIndicateMerge) return true
+    if (nextProps.shouldIndicateMerge !== this.props.shouldIndicateMerge)
+      return true
     if (!_.isEqual(nextProps.variables, this.props.variables)) return true
     if (nextState.svgWidth !== this.state.svgWidth) return true
     if (nextState.activeVariableId !== this.state.activeVariableId) return true
-    if (nextState.pointValuesEditorProps !== this.state.pointValuesEditorProps) return true
+    if (nextState.pointValuesEditorProps !== this.state.pointValuesEditorProps)
+      return true
     return false
   }
-
-  // componentDidUpdate(_, prevState) {
-  //   if (prevState.svgTransform !== this.state.svgTransform) {
-  //     this.container.scrollLeft = this.state.svgTransform
-  //   }
-  // }
 
   titleClickHandler(e: SyntheticMouseEvent<>, variableId: string) {
     if (e.altKey) {
@@ -164,7 +162,7 @@ class VariablesViewer extends React.Component<Props, State> {
     }
     this.props.dispatch(
       reduceStateAction(
-        ['animationTimeline', 'variables', 'byId', this.state.activeVariableId],
+        [...this.props.pathToVariables, this.state.activeVariableId],
         variable => {
           const points = variable.points
           let atIndex = points.findIndex(point => point.t > pointProps.t)
@@ -178,18 +176,33 @@ class VariablesViewer extends React.Component<Props, State> {
         },
       ),
     )
-    this.props.dispatch(resetExtremums(this.state.activeVariableId))
+    this.props.dispatch(
+      resetExtremums([
+        ...this.props.pathToVariables,
+        this.state.activeVariableId,
+      ]),
+    )
   }
+
+  pathToPoints = (variableId: string) => [
+    ...this.props.pathToVariables,
+    variableId,
+    'points',
+  ]
+  pathToPoint = (variableId: string, pointIndex: number) => [
+    ...this.pathToPoints(variableId),
+    pointIndex,
+  ]
 
   removePoint = (variableId: VariableID, pointIndex: number) => {
     this.props.dispatch(
-      reduceStateAction(
-        ['animationTimeline', 'variables', 'byId', variableId, 'points'],
-        points =>
-          points.slice(0, pointIndex).concat(points.slice(pointIndex + 1)),
+      reduceStateAction(this.pathToPoints(variableId), points =>
+        points.slice(0, pointIndex).concat(points.slice(pointIndex + 1)),
       ),
     )
-    this.props.dispatch(resetExtremums(variableId))
+    this.props.dispatch(
+      resetExtremums([...this.props.pathToVariables, variableId]),
+    )
   }
 
   setPointPositionTo = (
@@ -198,23 +211,24 @@ class VariablesViewer extends React.Component<Props, State> {
     newPosition: PointPosition,
   ) => {
     this.props.dispatch(
-      reduceStateAction(
-        ['animationTimeline', 'variables', 'byId', variableId, 'points', pointIndex],
-        point => ({
-          ...point,
-          ...newPosition,
-        }),
-      ),
+      reduceStateAction(this.pathToPoint(variableId, pointIndex), point => ({
+        ...point,
+        ...newPosition,
+      })),
     )
-    this.props.dispatch(resetExtremums(variableId))
+    this.props.dispatch(
+      resetExtremums([...this.props.pathToVariables, variableId]),
+    )
   }
 
   showPointValuesEditor(
     variableId: VariableID,
     pointIndex: number,
-    pos: {left: number, top: number},
+    pos: {left: number; top: number},
   ) {
-    this.setState(() => ({pointValuesEditorProps: {...pos, variableId, pointIndex}}))
+    this.setState(() => ({
+      pointValuesEditorProps: {...pos, variableId, pointIndex},
+    }))
   }
 
   changePointPositionBy = (
@@ -224,16 +238,15 @@ class VariablesViewer extends React.Component<Props, State> {
   ) => {
     const deNormalizedChange = this.deNormalizePositionChange(change)
     this.props.dispatch(
-      reduceStateAction(
-        ['animationTimeline', 'variables', 'byId', variableId, 'points', pointIndex],
-        point => ({
-          ...point,
-          t: point.t + deNormalizedChange.t,
-          value: point.value + deNormalizedChange.value,
-        }),
-      ),
+      reduceStateAction(this.pathToPoint(variableId, pointIndex), point => ({
+        ...point,
+        t: point.t + deNormalizedChange.t,
+        value: point.value + deNormalizedChange.value,
+      })),
     )
-    this.props.dispatch(resetExtremums(variableId))
+    this.props.dispatch(
+      resetExtremums([...this.props.pathToVariables, variableId]),
+    )
   }
 
   changePointHandlesBy = (
@@ -250,15 +263,7 @@ class VariablesViewer extends React.Component<Props, State> {
     )
     this.props.dispatch(
       reduceStateAction(
-        [
-          'animationTimeline',
-          'variables',
-          'byId',
-          variableId,
-          'points',
-          pointIndex,
-          'handles',
-        ],
+        [...this.pathToPoint(variableId, pointIndex), 'handles'],
         handles => {
           return handles.map(
             (handle, index) => handle + deNormalizedChange[index],
@@ -266,13 +271,15 @@ class VariablesViewer extends React.Component<Props, State> {
         },
       ),
     )
-    this.props.dispatch(resetExtremums(variableId))
+    this.props.dispatch(
+      resetExtremums([...this.props.pathToVariables, variableId]),
+    )
   }
 
   addConnector = (variableId: VariableID, pointIndex: number) => {
     this.props.dispatch(
       reduceStateAction(
-        ['animationTimeline', 'variables', 'byId', variableId, 'points', pointIndex],
+        this.pathToPoint(variableId, pointIndex),
         point => ({
           ...point,
           isConnected: true,
@@ -283,13 +290,10 @@ class VariablesViewer extends React.Component<Props, State> {
 
   removeConnector = (variableId: VariableID, pointIndex: number) => {
     this.props.dispatch(
-      reduceStateAction(
-        ['animationTimeline', 'variables', 'byId', variableId, 'points', pointIndex],
-        point => ({
-          ...point,
-          isConnected: false,
-        }),
-      ),
+      reduceStateAction(this.pathToPoint(variableId, pointIndex), point => ({
+        ...point,
+        isConnected: false,
+      })),
     )
   }
 
@@ -300,15 +304,7 @@ class VariablesViewer extends React.Component<Props, State> {
   ) => {
     this.props.dispatch(
       reduceStateAction(
-        [
-          'animationTimeline',
-          'variables',
-          'byId',
-          variableId,
-          'points',
-          pointIndex,
-          'handles',
-        ],
+        [...this.pathToPoint(variableId, pointIndex), 'handles'],
         handles => {
           if (side === 'left') {
             handles[1] = 0
@@ -320,7 +316,9 @@ class VariablesViewer extends React.Component<Props, State> {
         },
       ),
     )
-    this.props.dispatch(resetExtremums(variableId))
+    this.props.dispatch(
+      resetExtremums([...this.props.pathToVariables, variableId]),
+    )
   }
 
   _normalizeX(x: number) {
@@ -438,26 +436,30 @@ class VariablesViewer extends React.Component<Props, State> {
     })
   }
 
-
-  // variableIds={box.variables}
-  // splitVariable={variableId => this.splitVariable(index, variableId)}
-  // panelWidth={panelWidth}
-  // duration={duration}
-  // currentTime={currentTime}
-  // focus={focus}
-  // canBeMerged={canBeMerged}
-  // shouldIndicateMerge={shouldIndicateMerge}
-
   render() {
-    const {variables, shouldIndicateMerge, canBeMerged, tempIncludeTimeGrid} = this.props
-    const {svgHeight, svgWidth, svgTransform, activeVariableId, pointValuesEditorProps} = this.state
+    const {
+      variables,
+      shouldIndicateMerge,
+      canBeMerged,
+      tempIncludeTimeGrid,
+    } = this.props
+    const {
+      svgHeight,
+      svgWidth,
+      svgTransform,
+      activeVariableId,
+      pointValuesEditorProps,
+    } = this.state
     return (
       <Subscriber channel={SortableBoxDragChannel}>
         {({onDragStart, onDrag, onDragEnd}) => {
           return (
             <div
-              ref={c => this.container = c}
-              className={cx(css.container ,{[css.indicateMerge]: shouldIndicateMerge, [css.canBeMerged]: canBeMerged})}
+              ref={c => (this.container = c)}
+              className={cx(css.container, {
+                [css.indicateMerge]: shouldIndicateMerge,
+                [css.canBeMerged]: canBeMerged,
+              })}
               style={{width: svgWidth}}
             >
               {tempIncludeTimeGrid && <div className={css.timeGrid} />}
@@ -469,7 +471,9 @@ class VariablesViewer extends React.Component<Props, State> {
               >
                 <div className={css.boxLegends}>
                   <BoxLegends
-                    variables={variables.map(variable => _.pick(variable, ['id', 'component', 'property']))}
+                    variables={variables.map(variable =>
+                      _.pick(variable, ['id', 'component', 'property']),
+                    )}
                     colors={colors}
                     activeVariableId={activeVariableId}
                     setActiveVariable={this.setActiveVariable}
@@ -516,13 +520,26 @@ class VariablesViewer extends React.Component<Props, State> {
                   ))}
                 </svg>
               </div>
-              {pointValuesEditorProps != null &&
+              {pointValuesEditorProps != null && (
                 <PointValuesEditor
-                  {...(_.pick(pointValuesEditorProps, ['left', 'top', 'initialValue', 'initialTime']))}
-                  onClose={() => this.setState(() => ({pointValuesEditorProps: null}))}
-                  onSubmit={(newPosition) => this.setPointPositionTo(pointValuesEditorProps.variableId, pointValuesEditorProps.pointIndex, newPosition)}
+                  {..._.pick(pointValuesEditorProps, [
+                    'left',
+                    'top',
+                    'initialValue',
+                    'initialTime',
+                  ])}
+                  onClose={() =>
+                    this.setState(() => ({pointValuesEditorProps: null}))
+                  }
+                  onSubmit={newPosition =>
+                    this.setPointPositionTo(
+                      pointValuesEditorProps.variableId,
+                      pointValuesEditorProps.pointIndex,
+                      newPosition,
+                    )
+                  }
                 />
-              }
+              )}
             </div>
           )
         }}
@@ -531,8 +548,13 @@ class VariablesViewer extends React.Component<Props, State> {
   }
 }
 
-export default connect((s, op) => {
+export default connect((s, op) => {  
+  const pathToVariables = [...op.pathToTimeline, 'variables', 'byId']
+  const variablesState = _.get(s, pathToVariables)
+
+  const variables = op.variableIds.map(id => variablesState[id])
   return {
-    variables: getVariablesByIds(s, op.variableIds),
+    variables,
+    pathToVariables,
   }
-})(VariablesViewer)
+})(BoxBiew)

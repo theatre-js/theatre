@@ -34,6 +34,7 @@ export type BoxesObject = {[id: BoxID]: BoxObject}
 export type TimelineObject = {
   layout: LayoutArray
   boxes: BoxesObject
+  variables: Variables  
 }
 
 export type VariableObject = {
@@ -44,14 +45,13 @@ export type VariableObject = {
   property: string
 }
 export type Variables = {
-  byId: {[id: VariableID]: VariableObject}
+  byId: {[id: string]: VariableObject}
 }
 
 export type Timelines = {
-  byId: {[id: TimelineID]: TimelineObject}
+  byId: {[id: string]: TimelineObject}
 }
 
 export type AnimationTimelineNamespaceState = {
-  variables: Variables
   timelines: Timelines
 }

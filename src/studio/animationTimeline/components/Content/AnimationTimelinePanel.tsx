@@ -3,26 +3,23 @@ import {getTimelineById} from '$src/studio/animationTimeline/selectors'
 import generateUniqueId from 'uuid/v4'
 import css from './AnimationTimelinePanel.css'
 import SortableBox from './SortableBox'
-import VariablesViewer from './VariablesViewer'
+import BoxView from './BoxView'
 import TimeBar from './TimeBar'
 import {Subscriber} from 'react-broadcast'
-import {PanelWidthChannel} from '$src/studio/workspace/components/Panel/Panel'
+import {PanelWidthChannel, default as Panel} from '$src/studio/workspace/components/Panel/Panel'
 
 import {
-  TimelineID,
-  TimelineObject,
   BoxID,
   BoxesObject,
   LayoutArray,
+  TimelineObject,
 } from '$src/studio/animationTimeline/types'
 import {XY} from '$src/studio/workspace/types'
-import Panel from '$src/studio/workspace/components/Panel/Panel'
-import {throttle} from 'lodash'
+import { get } from 'lodash';
 
 type OwnProps = TimelineObject & {
-  timelineId: TimelineID
+  pathToTimeline: string[]
   panelDimensions: XY
-  tempShowTimeGrid
 }
 
 type Props = {dispatch: Function} & OwnProps
@@ -196,11 +193,11 @@ class Content extends React.Component<Props, State> {
   onBoxEndMove() {
     if (this.state.boxBeingDragged == null) return
     const {index, moveTo, mergeWith} = this.state.boxBeingDragged
-    const {timelineId, dispatch} = this.props
+    const {dispatch} = this.props
     if (moveTo != null) {
       dispatch(
         reduceStateAction(
-          ['animationTimeline', 'timelines', 'byId', timelineId, 'layout'],
+          [...this.props.pathToTimeline, 'layout'],
           layout => {
             const newLayout = layout.slice()
             newLayout.splice(index, 0, newLayout.splice(moveTo, 1)[0])
@@ -211,7 +208,7 @@ class Content extends React.Component<Props, State> {
     } else if (mergeWith != null) {
       dispatch(
         reduceStateAction(
-          ['animationTimeline', 'timelines', 'byId', timelineId],
+          this.props.pathToTimeline,
           ({layout, boxes}) => {
             const fromId = layout[index]
             const toId = layout[mergeWith]
@@ -239,11 +236,12 @@ class Content extends React.Component<Props, State> {
   }
 
   splitVariable(index: number, variableId: string) {
-    const {timelineId, dispatch} = this.props
+    const {dispatch} = this.props
     dispatch(
       reduceStateAction(
-        ['animationTimeline', 'timelines', 'byId', timelineId],
-        ({layout, boxes}) => {
+        this.props.pathToTimeline,
+        ({layout, boxes, ...restOfTimeline}) => {
+
           const fromId = layout[index]
           const newBoxId = generateUniqueId()
 
@@ -268,6 +266,7 @@ class Content extends React.Component<Props, State> {
           newLayout.splice(index + 1, 0, newBoxId)
 
           return {
+            ...restOfTimeline,
             layout: newLayout,
             boxes: newBoxes,
           }
@@ -277,14 +276,11 @@ class Content extends React.Component<Props, State> {
   }
 
   onBoxResize(boxId: BoxID, newSize) {
-    const {timelineId, dispatch} = this.props
+    const {dispatch} = this.props
     dispatch(
       reduceStateAction(
         [
-          'animationTimeline',
-          'timelines',
-          'byId',
-          timelineId,
+          ...this.props.pathToTimeline,
           'boxes',
           boxId,
           'height',
@@ -574,7 +570,7 @@ class Content extends React.Component<Props, State> {
                         onResize={newSize => this.onBoxResize(id, newSize)}
                       >
                         {
-                          <VariablesViewer
+                          <BoxView
                             tempIncludeTimeGrid={index === 0}
                             boxHeight={box.height}
                             variableIds={box.variables}
@@ -585,6 +581,7 @@ class Content extends React.Component<Props, State> {
                             focus={focus}
                             canBeMerged={canBeMerged}
                             shouldIndicateMerge={shouldIndicateMerge}
+                            pathToTimeline={this.props.pathToTimeline}
                           />
                         }
                       </SortableBox>
@@ -600,7 +597,7 @@ class Content extends React.Component<Props, State> {
   }
 }
 
-export default connect((s, op) => {
-  const timeline = getTimelineById(s, op.timelineId)
+export default connect((s, op: OwnProps) => {
+  const timeline = get(s, op.pathToTimeline)
   return {...timeline}
 })(Content)
