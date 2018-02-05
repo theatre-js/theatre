@@ -1,7 +1,8 @@
 .container {
-  --threadHeight: 3px;
+  --threadHeight: 6px;
   --thumbColor: #00E0FF;
-  --focusBarColor: #005B61;
+  --focusBarColor: #9DF233;
+  height: 0;
 }
 
 .time {
@@ -128,7 +129,7 @@
 .currentTimeNeedle {
   composes: currentTime;
   width: 0;
-  border-left: 1px solid var(--thumbColor);
+  border-left: 1px solid #616161;
   height: calc(100% - 8px);
   top: 8px;
   left: 2px;
@@ -136,17 +137,18 @@
 
 .focusBar {
   position: absolute;
-  height: var(--threadHeight);
-  background: var(--focusBarColor);
-  cursor: pointer;
+  /* display: none; */
+  height: 5px;
+  background: rgba(#9DF233, 0.2);
+  cursor: ew-resize;
   z-index: 2;
 
-  &:hover {
-    background: cyan;
+  &:hover, &:active {
+    background: rgba(#9DF233, 0.4);
   }
 
   &:after {
-    position: absolute -8px;
+    position: absolute -4px;
     display: block;
     content: ' ';
   }
@@ -154,19 +156,39 @@
 
 .focusHandle {
   position: absolute;
-  height: var(--threadHeight);
+  height: 9px;
   width: 8px;
-  background: #0AA;
-  cursor: ew-resize;
+  /* cursor: ew-resize; */
+  z-index: 2;
+  top: -2px;
+  display: block;
+  
+  &:before {
+    position: absolute 0;
+    display: block;
+    content: ' ';
+    background: url('url-loader!./FocusBarHandle.svg');
+  }
+
+  &:after {
+    position: absolute -4px;
+    display: block;
+    content: ' ';
+  }
 }
 
 .leftFocusHandle {
   composes: focusHandle;
+  cursor: w-resize;
+  &:before {
+    transform: scaleX(-1);
+  }
 }
 
 .rightFocusHandle {
   composes: focusHandle;
-  left: -8px;
+  cursor: e-resize;
+  left: 0px;
 }
 
 .timeTip {

@@ -130,7 +130,7 @@ class TimeBar extends React.PureComponent<Props, State> {
               }}
             />
           </DraggableArea>
-          {/* <DraggableArea
+          <DraggableArea
             onDragStart={this._setBeforeMoveState}
             onDrag={dx => this.moveFocusLeft(dx)}
           >
@@ -140,8 +140,8 @@ class TimeBar extends React.PureComponent<Props, State> {
             >
               <div className={css.timeTip}>{focus[0].toFixed(1)}</div>
             </div>
-          </DraggableArea> */}
-          {/* <DraggableArea
+          </DraggableArea>
+          <DraggableArea
             onDragStart={this._setBeforeMoveState}
             onDrag={dx => this.moveFocusRight(dx)}
           >
@@ -151,7 +151,7 @@ class TimeBar extends React.PureComponent<Props, State> {
             >
               <div className={css.timeTip}>{focus[1].toFixed(1)}</div>
             </div>
-          </DraggableArea> */}
+          </DraggableArea>
         </div>
         <DraggableArea
           onDragStart={this._setBeforeMoveState}

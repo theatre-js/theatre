@@ -15,11 +15,13 @@
 }
 
 .panelContainer {
-  background: #000;
+  /* background: #000; */
+  /* overflow: visible; */
+
 }
 
 .panelInnerWrapper {
-  overflow: hidden;
+  overflow: visible;
 
 }
 

@@ -3,7 +3,7 @@ import * as React from 'react'
 
 type Props = {
   children: any,
-  withShift: boolean,
+  withShift?: boolean,
   onDragStart?: Function,
   onDragEnd?: Function,
   onDrag?: Function,

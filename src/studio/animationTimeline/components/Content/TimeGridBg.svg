@@ -1,92 +1,22 @@
-<svg width="32" height="8" viewBox="0 0 32 8" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<title>Step</title>
-<desc>Created using Figma</desc>
-<g id="Canvas" transform="translate(-94 -153)">
-<g id="Step">
-<g id="Major">
-<g id="Line">
-<use xlink:href="#path0_stroke" transform="matrix(6.12323e-17 1 -1 6.12323e-17 94 153)" fill="#9C9C9C" fill-opacity="0.58"/>
-</g>
-</g>
-<g id="Minor">
-<g id="Line">
-<use xlink:href="#path1_stroke" transform="matrix(6.12323e-17 1 -1 6.12323e-17 96 153)" fill="#D6D6D6" fill-opacity="0.32"/>
-</g>
-</g>
-<g id="Minor">
-<g id="Line">
-<use xlink:href="#path1_stroke" transform="matrix(6.12323e-17 1 -1 6.12323e-17 98 153)" fill="#D6D6D6" fill-opacity="0.32"/>
-</g>
-</g>
-<g id="Minor">
-<g id="Line">
-<use xlink:href="#path1_stroke" transform="matrix(6.12323e-17 1 -1 6.12323e-17 100 153)" fill="#D6D6D6" fill-opacity="0.32"/>
-</g>
-</g>
-<g id="Minor">
-<g id="Line">
-<use xlink:href="#path1_stroke" transform="matrix(6.12323e-17 1 -1 6.12323e-17 102 153)" fill="#D6D6D6" fill-opacity="0.32"/>
-</g>
-</g>
-<g id="Minor">
-<g id="Line">
-<use xlink:href="#path1_stroke" transform="matrix(6.12323e-17 1 -1 6.12323e-17 104 153)" fill="#D6D6D6" fill-opacity="0.32"/>
-</g>
-</g>
-<g id="Minor">
-<g id="Line">
-<use xlink:href="#path1_stroke" transform="matrix(6.12323e-17 1 -1 6.12323e-17 106 153)" fill="#D6D6D6" fill-opacity="0.32"/>
-</g>
-</g>
-<g id="Minor">
-<g id="Line">
-<use xlink:href="#path1_stroke" transform="matrix(6.12323e-17 1 -1 6.12323e-17 108 153)" fill="#D6D6D6" fill-opacity="0.32"/>
-</g>
-</g>
-<g id="Minor">
-<g id="Line">
-<use xlink:href="#path1_stroke" transform="matrix(6.12323e-17 1 -1 6.12323e-17 110 153)" fill="#D6D6D6" fill-opacity="0.32"/>
-</g>
-</g>
-<g id="Minor">
-<g id="Line">
-<use xlink:href="#path1_stroke" transform="matrix(6.12323e-17 1 -1 6.12323e-17 112 153)" fill="#D6D6D6" fill-opacity="0.32"/>
-</g>
-</g>
-<g id="Minor">
-<g id="Line">
-<use xlink:href="#path1_stroke" transform="matrix(6.12323e-17 1 -1 6.12323e-17 114 153)" fill="#D6D6D6" fill-opacity="0.32"/>
-</g>
-</g>
-<g id="Minor">
-<g id="Line">
-<use xlink:href="#path1_stroke" transform="matrix(6.12323e-17 1 -1 6.12323e-17 116 153)" fill="#D6D6D6" fill-opacity="0.32"/>
-</g>
-</g>
-<g id="Minor">
-<g id="Line">
-<use xlink:href="#path1_stroke" transform="matrix(6.12323e-17 1 -1 6.12323e-17 118 153)" fill="#D6D6D6" fill-opacity="0.32"/>
-</g>
-</g>
-<g id="Minor">
-<g id="Line">
-<use xlink:href="#path1_stroke" transform="matrix(6.12323e-17 1 -1 6.12323e-17 120 153)" fill="#D6D6D6" fill-opacity="0.32"/>
-</g>
-</g>
-<g id="Minor">
-<g id="Line">
-<use xlink:href="#path1_stroke" transform="matrix(6.12323e-17 1 -1 6.12323e-17 122 153)" fill="#D6D6D6" fill-opacity="0.32"/>
-</g>
-</g>
-<g id="Minor">
-<g id="Line">
-<use xlink:href="#path1_stroke" transform="matrix(6.12323e-17 1 -1 6.12323e-17 124 153)" fill="#D6D6D6" fill-opacity="0.32"/>
-</g>
-</g>
-</g>
-</g>
-<defs>
-<path id="path0_stroke" d="M 0 0L 6 0L 6 -0.5L 0 -0.5L 0 0Z"/>
-<path id="path1_stroke" d="M 0 0L 3 0L 3 -0.5L 0 -0.5L 0 0Z"/>
-</defs>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="32" height="8" version="1.1" viewBox="0 0 32 8">
+    <use transform="translate(0 0)" xlink:href="#long"/>
+    <use transform="translate(2 0)" xlink:href="#short"/>
+    <use transform="translate(4 0)" xlink:href="#short"/>
+    <use transform="translate(6 0)" xlink:href="#short"/>
+    <use transform="translate(8 0)" xlink:href="#short"/>
+    <use transform="translate(10 0)" xlink:href="#short"/>
+    <use transform="translate(12 0)" xlink:href="#short"/>
+    <use transform="translate(14 0)" xlink:href="#short"/>
+    <use transform="translate(16 0)" xlink:href="#short"/>
+    <use transform="translate(18 0)" xlink:href="#short"/>
+    <use transform="translate(20 0)" xlink:href="#short"/>
+    <use transform="translate(22 0)" xlink:href="#short"/>
+    <use transform="translate(24 0)" xlink:href="#short"/>
+    <use transform="translate(26 0)" xlink:href="#short"/>
+    <use transform="translate(28 0)" xlink:href="#short"/>
+    <use transform="translate(30 0)" xlink:href="#short"/>
+    <defs>
+        <path id="long" stroke="rgba(255, 255, 255, 0.2)" stroke-width="1" d="M 0 0 L 0 7"/>
+        <path id="short" stroke="rgba(255, 255, 255, 0.1)" stroke-width="1" d="M 0 0 L 0 5"/>
+    </defs>
 </svg>
