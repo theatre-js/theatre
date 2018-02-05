@@ -90,6 +90,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
   mouseDownHandler = e => {
     e.stopPropagation()
     e.preventDefault()
+    return
     if (!e.shiftKey || !this.props.depth) return
 
     const {
