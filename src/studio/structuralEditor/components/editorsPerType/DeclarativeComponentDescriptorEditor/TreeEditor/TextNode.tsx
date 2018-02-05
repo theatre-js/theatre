@@ -3,6 +3,7 @@ import {React} from '$studio/handy'
 import css from './TextNode.css'
 import cx from 'classnames'
 import {STATUS} from './constants'
+import {debounce} from 'lodash'
 
 type Props = {
   nodeProps: Object
@@ -12,13 +13,21 @@ type State = {
   isFocused: boolean
   isContentHidden: boolean
   previousValue: string
+  value: string
 }
 
 class TextNode extends React.PureComponent<Props, State> {
-  state = {
-    isFocused: false,
-    isContentHidden: false,
-    previousValue: this.props.nodeProps.value,
+  constructor(props: Props) {
+    super(props)
+
+    this.state = {
+      isFocused: false,
+      isContentHidden: false,
+      previousValue: props.nodeProps.value,
+      value: props.nodeProps.value,
+    }
+
+    this.updateText = debounce(this.updateText, 10, {trailing: true})
   }
 
   componentDidMount() {
@@ -53,6 +62,16 @@ class TextNode extends React.PureComponent<Props, State> {
     }
   }
 
+  handleChange = (e: $FixMe) => {
+    const {value} = e.target
+    this.setState(() => ({value}))
+    this.updateText(value)
+  }
+  
+  updateText(value: string) {
+    this.props.onChange(value)
+  }
+  
   render() {
     return (
       <div
@@ -69,8 +88,8 @@ class TextNode extends React.PureComponent<Props, State> {
           ref={c => (this.input = c)}
           type="text"
           className={css.text}
-          value={this.props.nodeProps.value}
-          onChange={e => this.props.onChange(e.target.value)}
+          value={this.state.value}
+          onChange={this.handleChange}
           onFocus={() => this.setState(() => ({isFocused: true}))}
           onBlur={() => this.setState(() => ({isFocused: false}))}
           onKeyDown={this.handleKeyDown}
