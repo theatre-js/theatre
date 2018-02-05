@@ -246,10 +246,6 @@ class NodeContainer extends React.PureComponent<Props, State> {
       nodeProps.status !== STATUS.TEXT_CHANGING_TYPE
     const depth = this.props.depth || 0
     const isRelocated = nodeProps.status === STATUS.RELOCATED
-    // const isComponent =
-    //   nodeProps.status === STATUS.UNINITIALIZED ||
-    //   nodeProps.type === NODE_TYPE.COMPONENT ||
-    //   nodeProps.status === STATUS.TEXT_CHANGING_TYPE
     const isComponent = nodeProps.type === NODE_TYPE.COMPONENT
     const shouldRenderComponent =
       isComponent ||
@@ -273,7 +269,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
               nodeProps.status === STATUS.UNINITIALIZED ||
               nodeProps.status === STATUS.CREATION_CANCELED,
             [css.isCollapsed]: isCollapsed,
-            [css.isSelected]: isSelected,
+            [css.isSelected]: isSelected && !isText,
             [css.isCommandDown]: shouldReactToCommandDown,
           })}
           onMouseUp={this.mouseUpHandler}

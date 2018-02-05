@@ -23,6 +23,7 @@ import {
 import cx from 'classnames'
 
 export const metaKey = 'composePanel'
+const PLACEHOLDER = '\n'
 
 export const getMeta = (rootComponentDescriptor: $IntentionalAny) => {
   return _.get(rootComponentDescriptor, ['meta', metaKey])
@@ -118,7 +119,7 @@ class TreeEditor extends StudioComponent<Props, State> {
   }
 
   _handleKeyDown = (e: $FixMe) => {
-    if (e.keyCode === 91) {
+    if (e.keyCode === 91 && e.target.tagName !== 'INPUT') {
       this.setState(() => ({isCommandDown: true}))
     }
   }
@@ -201,7 +202,7 @@ class TreeEditor extends StudioComponent<Props, State> {
           status: status,
           ...actionPayload != null ? {actionPayload} : {},
           type: NODE_TYPE.TEXT,
-          value: descriptor,
+          value: (descriptor === PLACEHOLDER) ? '' : descriptor,
           index,
           parentId,
         }
@@ -478,7 +479,7 @@ class TreeEditor extends StudioComponent<Props, State> {
         pathToComponentDescriptor.concat('localHiddenValuesById', nodeId),
         localHiddenValue => {
           if (newType.nodeType === NODE_TYPE.TEXT) {
-            return ''
+            return PLACEHOLDER
           }
           if (newType.nodeType === NODE_TYPE.COMPONENT) {
             return {
@@ -540,6 +541,7 @@ class TreeEditor extends StudioComponent<Props, State> {
   handleTextNodeTypeChange = (id: string) => {
     this._setLastAction(ACTION.NODE_TEXT_TYPE_CHANGE, {id})
     this._setNodes(this.props.rootComponentDescriptor)
+    this.setSelectedNodeId(id)
   }
 
   cancelTextNodeTypeChange = (id: string) => {
