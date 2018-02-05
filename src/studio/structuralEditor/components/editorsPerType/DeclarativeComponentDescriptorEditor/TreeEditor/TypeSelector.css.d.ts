@@ -1,3 +1,6 @@
+export const nodeIndent: string;
+export const nodePadding: string;
+export const nodeHeight: string;
 export const container: string;
 export const input: string;
 export const isDisabled: string;

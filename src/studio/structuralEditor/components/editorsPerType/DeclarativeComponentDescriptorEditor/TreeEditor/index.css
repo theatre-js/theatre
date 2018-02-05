@@ -1,8 +1,9 @@
 .treeWrapper {
   position: relative;
   width: calc(100% - 2px);
+  height: calc(100% - 60px);
   left: 1px;
-  overflow: hidden auto;
+  overflow: hidden scroll;
 
   &::-webkit-scrollbar {
     display: none;
@@ -11,8 +12,7 @@
 
 .treeContainer {
   position: relative;
-  padding-bottom: 30px;
-
+  padding-bottom: 50px;
 }
 
 .scroller {

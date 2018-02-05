@@ -8,6 +8,7 @@ type Props = {
   withHorizontalMargin?: boolean
   label?: string
   withTopMargin?: boolean
+  withoutBottomMargin?: boolean
 }
 
 type State = {}
@@ -19,7 +20,7 @@ class PanelSection extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const {label, withHorizontalMargin, withTopMargin} = this.props
+    const {label, withHorizontalMargin, withTopMargin, withoutBottomMargin} = this.props
     const hasLabel = typeof label === 'string'
     return (
       <div
@@ -27,6 +28,7 @@ class PanelSection extends React.PureComponent<Props, State> {
           [css.withHorizontalMargin]: withHorizontalMargin !== false,
           [css.hasLabel]: hasLabel,
           [css.withTopMargin]: withTopMargin === true,
+          [css.withoutBottomMargin]: withoutBottomMargin === true,
         })}
       >
         {hasLabel && (

@@ -1,9 +1,9 @@
-@value indent from './NodeContainer.css';
+@value nodePadding from './NodeContainer.css';
 @value nodeHeight from './NodeContainer.css';
 
 .container {
   position: relative;
-  padding: 0 indent;
+  padding: 0 nodePadding;
   height: nodeHeight;
   display: flex;
   align-items: flex-end;
@@ -20,7 +20,7 @@
   &:after {
     display: block;
     content: ' ';
-    position: absolute * indent 3px indent;
+    position: absolute * nodePadding 3px nodePadding;
     height: 1px;
     background-color: rgba(255, 255, 255, .4);
     transform-origin: 0 0;
@@ -39,7 +39,7 @@
   align-self: center;
   width: 14px;
   height: 14px;
-  margin-right: calc(indent / 2 - 4px);
+  margin-right: calc(nodePadding / 2 - 4px);
   line-height: 16px;
   text-align: center;
   color: #4f5d77;

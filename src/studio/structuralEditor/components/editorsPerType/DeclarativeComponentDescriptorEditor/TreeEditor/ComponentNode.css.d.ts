@@ -1,5 +1,5 @@
 export const nodeHeight: string;
-export const indent: string;
+export const nodePadding: string;
 export const container: string;
 export const isContentHidden: string;
 export const displayName: string;

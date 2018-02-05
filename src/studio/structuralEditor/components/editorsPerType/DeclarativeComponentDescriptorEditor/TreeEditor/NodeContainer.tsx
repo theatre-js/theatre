@@ -117,10 +117,14 @@ class NodeContainer extends React.PureComponent<Props, State> {
     }
   }
 
-  handleClickToAdd = (e: $FixMe, index: number) => {
+  handleClick = (e: $FixMe, index: number) => {
     e.stopPropagation()
     e.preventDefault()
-    if (this.props.isCommandDown) this.addChild(index)
+    if (this.props.isCommandDown) {
+      this.addChild(index)
+    } else {
+      this.props.setSelectedNodeId(this.props.nodeData.id)
+    }
   }
 
   contextMenuHandler = e => {
@@ -265,7 +269,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
           className={cx(css.container, {
             [css.isRelocated]:
               isRelocated || nodeProps.status === STATUS.RELOCATION_CANCELED,
-            [css.expand]:
+            [css.appear]:
               nodeProps.status === STATUS.UNINITIALIZED ||
               nodeProps.status === STATUS.CREATION_CANCELED,
             [css.isCollapsed]: isCollapsed,
@@ -275,10 +279,10 @@ class NodeContainer extends React.PureComponent<Props, State> {
           onMouseUp={this.mouseUpHandler}
         >
           <div
-            className={cx(css.root, {[css.isCommandDown]: shouldReactToCommandDown})}
+            className={cx(css.rootWrapper, {[css.isCommandDown]: shouldReactToCommandDown})}
             onContextMenu={this.contextMenuHandler}
             onMouseDown={this.mouseDownHandler}
-            {...(isComponent ? {onClick: (e: $FixMe) => this.handleClickToAdd(e, 0)} : {})}
+            {...(isComponent ? {onClick: (e: $FixMe) => this.handleClick(e, 0)} : {})}
             // {...(!isText
             //   ? {
             //       onMouseMove: e => this.setPlaceholderAsActive(0, e),
@@ -286,36 +290,38 @@ class NodeContainer extends React.PureComponent<Props, State> {
             //     }
             //   : {})}
           >
-            {shouldRenderComponent && (
-              <ComponentNode
-                isSelected={isSelected}
-                nodeProps={nodeProps}
-                setClassValue={this.setNodeClassValue}
-                onSelect={() => this.props.setSelectedNodeId(nodeProps.id)}
-                listOfDisplayNames={this.props.listOfDisplayNames}
-                hasChildren={children && children.length > 0}
-                onSelectComponentType={this.setComponentType}
-                onCancelSelectingType={this.onCancelSelectingType}
-              />
-            )}
-            {isText && (
-              <TextNode
-                nodeProps={nodeProps}
-                onChange={this.changeTextNodeValue}
-                handleTypeChange={this.handleTextNodeTypeChange}
-              />
-            )}
+            <div className={css.root}>
+              {shouldRenderComponent && (
+                <ComponentNode
+                  isSelected={isSelected}
+                  nodeProps={nodeProps}
+                  setClassValue={this.setNodeClassValue}
+                  onSelect={() => this.props.setSelectedNodeId(nodeProps.id)}
+                  listOfDisplayNames={this.props.listOfDisplayNames}
+                  hasChildren={children && children.length > 0}
+                  onSelectComponentType={this.setComponentType}
+                  onCancelSelectingType={this.onCancelSelectingType}
+                />
+              )}
+              {isText && (
+                <TextNode
+                  nodeProps={nodeProps}
+                  onChange={this.changeTextNodeValue}
+                  handleTypeChange={this.handleTextNodeTypeChange}
+                />
+              )}
+            </div>
           </div>
           {/* {this.renderNodePlaceholder(0, depth)} */}
           {children &&
             children.map((child, index) => (
               <div className={css.childContainer} key={child.id}>
                 <div
-                  className={cx(css.hoverSensorLeft, {[css.isCommandDown]: shouldReactToCommandDown})}
+                  className={cx(css.hoverSensor, {[css.isCommandDown]: shouldReactToCommandDown})}
                   // onMouseMove={e => this.setPlaceholderAsActive(index + 1, e)}
                   // onMouseLeave={this.unsetPlaceholderAsActive}
                   // onClick={() => this.props.setSelectedNodeId(nodeProps.id)}
-                  {...(isComponent ? {onClick: (e: $FixMe) => this.handleClickToAdd(e, index + 1)} : {})}
+                  {...(isComponent ? {onClick: (e: $FixMe) => this.handleClick(e, index + 1)} : {})}
                 />
                 <div className={css.child}>
                   <NodeContainer
@@ -336,11 +342,12 @@ class NodeContainer extends React.PureComponent<Props, State> {
                   />
                 </div>
                 <div
-                  className={cx(css.hoverSensorBottom, {[css.isCommandDown]: shouldReactToCommandDown})}
+                  // className={cx(css.hoverSensorBottom, {[css.isCommandDown]: shouldReactToCommandDown})}
+                  className={css.siblingIndicator}
                   // onMouseMove={e => this.setPlaceholderAsActive(index + 1, e)}
                   // onMouseLeave={this.unsetPlaceholderAsActive}
                   // onClick={() => this.props.setSelectedNodeId(nodeProps.id)}
-                  {...(isComponent ? {onClick: (e: $FixMe) => this.handleClickToAdd(e, index + 1)} : {})}
+                  // {...(isComponent ? {onClick: (e: $FixMe) => this.handleClick(e, index + 1)} : {})}
                 />
               </div>
             )
@@ -366,6 +373,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
               {
                 label: 'delete',
                 cb: this.deleteNode,
+                disabled: !this.props.depth,
               },
               {
                 label: 'plugh',

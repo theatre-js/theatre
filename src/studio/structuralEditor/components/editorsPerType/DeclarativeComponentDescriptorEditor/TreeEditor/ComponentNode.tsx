@@ -33,9 +33,11 @@ class ComponentNode extends React.PureComponent<Props, State> {
       this.props.nodeProps.status === STATUS.UNINITIALIZED ||
       this.props.nodeProps.status === STATUS.TEXT_CHANGING_TYPE
     ) {
-      this.setState(() => ({isTypeBeingChanged: true}))
       this._fitClassInput()
-      this.width = this.container.getBoundingClientRect().width
+      setTimeout(() => {
+        // this.width = this.container.getBoundingClientRect().width
+        this.setState(() => ({isTypeBeingChanged: true}))
+      }, 25)
     }
   }
 
@@ -125,18 +127,28 @@ class ComponentNode extends React.PureComponent<Props, State> {
     // e.stopPropagation()
     if (this.props.isSelected) {
       if (target === 'TYPE') {
-        this.width = this.container.getBoundingClientRect().width
+        // this.width = this.container.getBoundingClientRect().width
         this.setState(() => ({isTypeBeingChanged: true}))
       }
       // this.setState(() => ({isContentHidden: true}))
     } else {
-      this.props.onSelect()
+      // this.props.onSelect()
     }
   }
 
   onTypeChange = e => {
     const typeValue = e.target.value
     this.setState(() => ({typeValue}))
+  }
+
+  _handleClickOutside = (e: $FixMe, defaultType: $FixMe) => {
+    if (!this.container.contains(e.target)) {
+      if (this.props.nodeProps.status === STATUS.UNINITIALIZED) {
+        this.props.onSelectComponentType(defaultType)
+      } else {
+        this.props.onCancelSelectingType()
+      }
+    }
   }
 
   render() {
@@ -164,7 +176,7 @@ class ComponentNode extends React.PureComponent<Props, State> {
             initialValue={nodeProps.displayName}
             listOfDisplayNames={this.props.listOfDisplayNames}
             hasChildren={this.props.hasChildren}
-            width={this.width}
+            handleClickOutsideList={this._handleClickOutside}
             onSelect={this.props.onSelectComponentType}
             onCancel={this.props.onCancelSelectingType}
             onTab={this._focusOnClassInput}

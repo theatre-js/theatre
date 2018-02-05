@@ -1,12 +1,11 @@
 @value nodeHeight: 27px;
 @value nodeMargin: 0;
 @value hoverBarColor: #3CDFFF;
-@value indent: 8px;
-@value sensorWidth: 16px;
+@value nodePadding: 8px;
+@value nodeIndent: 16px;
 
 .container {
   position: relative;
-  overflow: hidden;
   --color: rgb(
     calc(39 - var(--depth) * 4 - 4),
     calc(50 - var(--depth) * 4 - 4),
@@ -22,16 +21,9 @@
     cursor: cell;
   }
 
-  &.expand {
-    // opacity: 0;
-    // max-height: nodeHeight;
-    // height: nodeHeight;
-    // visibility: hidden;
-    // will-change: max-height;
-    // transform-origin: 0 0;
+  &.appear {
     max-height: 0;
-    animation: expand .25s ease-out forwards;
-    // z-index: 1000;
+    animation: container-appear .2s ease-out forwards;
   }
 
   &.isRelocated {
@@ -41,20 +33,125 @@
   }
 
   &.isCollapsed {
-    animation: collapse .3s ease-in-out forwards;
+    overflow: hidden;
+    animation: container-collapse .25s ease-out forwards;
   }
 }
 
-@keyframes collapse {
-  from {max-height: var(--maxHeight);}
-  to {max-height: 0; margin-bottom: 0;}
+.rootWrapper {
+  position: relative;
+  height: nodeHeight;
+  width: 100%;
+  // overflow: hidden;
+
+  &.isCommandDown {
+    &:hover {
+      &:after {
+        display: block;
+        position: absolute;
+        content: ' ';
+        height: 2px;
+        bottom: 0;
+        left: calc(nodeIndent + nodePadding);
+        right: 0;
+        background-color: hoverBarColor;
+      }
+    }
+  }
 }
 
-@keyframes expand {
-  // from {transform: scaleY(0.1);}
-  // to {transform: scaleY(1);}
+.container.appear > .rootWrapper {
+  transform-origin: 0 0;
+  animation: rootWrapper-appear .2s cubic-bezier(0.3, 0, 0.5, 1.5) forwards;
+}
+
+.container.isSelected > .rootWrapper {
+  background: #0e1315;
+  z-index: 1000;
+}
+
+.container.isCommandDown:hover > .rootWrapper.isCommandDown {
+  background: var(--highlightColor) !important;
+}
+
+.container.appear > .rootWrapper > .root {
+  opacity: 0;
+  animation: root-appear .15s .15s ease-in-out forwards;
+}
+
+/*.container.isCollapsed > .rootWrapper {
+  animation: rootWrapper-collapse .15s .15s ease-in-out forwards;  
+}*/
+
+.childContainer {
+  position: relative;
+  width: 100%;
+  display: grid;
+  grid-template-columns: nodeIndent 1fr;
+  grid-gap: 0;
+  grid-template-rows: 1fr nodeMargin;
+}
+
+.child {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.hoverSensor {
+  position: relative;
+  grid-column: 1;
+  grid-row: 1 / span 2;
+
+  &.isCommandDown {
+    &:hover{
+      & ~ .siblingIndicator {
+        &:after {
+          display: block;
+          position: absolute;
+          content: ' ';
+          height: 2px;
+          top: -1px;
+          left: nodePadding;
+          right: 0;
+          background-color: hoverBarColor;
+        }
+      }
+    }
+  }
+}
+
+.siblingIndicator {
+  position: relative;
+  grid-column: 2;
+  grid-row: 2;
+
+  z-index: 1000;
+}
+
+@keyframes container-appear {
   from {max-height: 0;}
   to {max-height: nodeHeight;}
+}
+
+@keyframes rootWrapper-appear {
+  from {transform: scaleY(0);}
+  to {transform: scaleY(1);}
+}
+
+@keyframes root-appear {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
+@keyframes container-collapse {
+  0% {max-height: var(--maxHeight);}
+  // 50% {max-height: nodeHeight;}
+  100% {max-height: 0;}
+}
+
+@keyframes rootWrapper-collapse {
+  from {max-height: nodeHeight;}
+  to {max-height: 0;}
 }
 
 @keyframes drop {
@@ -68,92 +165,4 @@
     max-height: var(--maxHeight);
     box-shadow: none;
   }
-}
-
-.root {
-  position: relative;
-  height: nodeHeight;
-  width: 100%;
-
-  &.isCommandDown {
-    &:hover {
-      &:after {
-        display: block;
-        position: absolute;
-        content: ' ';
-        height: 2px;
-        bottom: 0;
-        left: calc(sensorWidth + indent);
-        right: 0;
-        background-color: hoverBarColor;
-      }
-    }
-  }
-}
-
-.container.isSelected > .root {
-  background: #0e1315;
-}
-
-.container.isCommandDown:hover > .root.isCommandDown {
-  background: var(--highlightColor);
-}
-
-.childContainer {
-  position: relative;
-  width: 100%;
-  display: grid;
-  grid-template-columns: sensorWidth 1fr;
-  grid-gap: 0;
-  grid-template-rows: 1fr nodeMargin;
-}
-
-.hoverSensorLeft {
-  position: relative;
-  grid-column: 1;
-  grid-row: 1 / span 2;
-
-  &.isCommandDown {
-    &:hover{
-      & ~ .hoverSensorBottom {
-        &:after {
-          display: block;
-          position: absolute;
-          content: ' ';
-          height: 2px;
-          top: -2px;
-          left: indent;
-          right: 0;
-          background-color: hoverBarColor;
-        }
-      }
-    }
-  }
-}
-
-.hoverSensorBottom {
-  position: relative;
-  grid-column: 2;
-  grid-row: 2;
-
-  &.isCommandDown {
-    &:hover {
-      &:after {
-        display: block;
-        position: absolute;
-        content: ' ';
-        height: 2px;
-        // top: 1px;
-        top: -2px;
-        left: indent;
-        right: 0;
-        background-color: hoverBarColor;
-      }
-    }
-  }
-}
-
-.child {
-  grid-column: 2;
-  grid-row: 1;
 }

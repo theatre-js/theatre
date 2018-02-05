@@ -1,17 +1,17 @@
 @value nodeHeight from './NodeContainer.css';
-@value indent from './NodeContainer.css';
+@value nodePadding from './NodeContainer.css';
 
 .container {
   position: relative;
-  // left: indent;
-  // width: calc(100% - 2 * indent);
+  // left: nodePadding;
+  // width: calc(100% - 2 * nodePadding);
   height: nodeHeight;
   font-weight: 400;
   white-space: nowrap;
   display: flex;
   align-items: center;
   box-sizing: border-box;
-  padding: 0 indent;
+  padding: 0 nodePadding;
   
   opacity: 1;
   /* transition: opacity .15s ease-in-out; */
@@ -32,7 +32,7 @@
     top: 0;
     right: 0;
     bottom: 0;
-    left: calc(-1 * indent);
+    left: calc(-1 * nodePadding);
     background: black;
     opacity: 0;
     border-radius: 2px;

@@ -99,6 +99,7 @@ class TreeEditor extends StudioComponent<Props, State> {
     document.addEventListener('keydown', this._handleKeyDown)
     document.addEventListener('keyup', this._handleKeyUp)
     document.addEventListener('visibilitychange', this._handleVisibilityChange)
+    // window.addEventListener('scroll', (e) => console.log(e))
   }
   
   componentWillUnmount() {
@@ -108,7 +109,12 @@ class TreeEditor extends StudioComponent<Props, State> {
   }
 
   componentWillReceiveProps(nextProps) {
-    this._setNodes(nextProps.rootComponentDescriptor)
+    if (!_.isEqual(
+      nextProps.rootComponentDescriptor.localHiddenValuesById,
+      this.props.rootComponentDescriptor.localHiddenValuesById
+    )) {
+      this._setNodes(nextProps.rootComponentDescriptor)
+    }
   }
 
   _handleKeyDown = (e: $FixMe) => {
@@ -559,7 +565,7 @@ class TreeEditor extends StudioComponent<Props, State> {
     const isANodeBeingDragged = nodeBeingDragged != null
     const selectedNodeId = getSelectedNodeId(this.props.rootComponentDescriptor)
     return (
-      <PanelSection withHorizontalMargin={false} label="Template">
+      <PanelSection withHorizontalMargin={false} withoutBottomMargin={true} label="Template">
         {this._renderScroller('up')}
         {isANodeBeingDragged && (
           <MovableNode

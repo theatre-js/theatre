@@ -4,6 +4,10 @@
   &.withTopMargin {
     margin-top: 8px;
   }
+
+  &.withoutBottomMargin {
+    margin-bottom: 0;
+  }
 }
 
 .withHorizontalMargin > .body {

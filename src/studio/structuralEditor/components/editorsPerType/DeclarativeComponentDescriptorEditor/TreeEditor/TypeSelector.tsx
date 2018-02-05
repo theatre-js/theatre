@@ -3,7 +3,7 @@ import css from './TypeSelector.css'
 import {filter} from 'fuzzaldrin-plus'
 import cx from 'classnames'
 import * as _ from 'lodash'
-import {NODE_TYPE} from './constants'
+import {NODE_TYPE, STATUS} from './constants'
 import {fitInput} from './utils'
 
 type Props = {
@@ -35,6 +35,11 @@ class TypeSelector extends React.PureComponent<Props, State> {
 
   componentDidMount() {
     fitInput(this.input)
+    document.addEventListener('mousedown', this._handleMouseDownOutsideList)
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('mousedown', this._handleMouseDownOutsideList)    
   }
 
   componentWillReceiveProps(nextProps) {
@@ -44,11 +49,15 @@ class TypeSelector extends React.PureComponent<Props, State> {
     }
 
     if (this.props.isActive && !nextProps.isActive) {
-      this.setState(() => ({
+      this.setState((state) => ({
         willListUnmount: false,
-        query: nextProps.initialValue,
+        query: nextProps.initialValue || state.query,
       }))
       this.input.blur()
+    }
+
+    if (nextProps.initialValue && (nextProps.initialValue !== this.state.query)) {
+      this.setState(() => ({query: nextProps.initialValue}))
     }
   }
 
@@ -58,6 +67,12 @@ class TypeSelector extends React.PureComponent<Props, State> {
       this.state.query !== prevState.query
     ) {
       fitInput(this.input)
+    }
+  }
+
+  _handleMouseDownOutsideList =  (e: $FixMe) => {
+    if (this.listContainer && !this.listContainer.contains(e.target)) {
+      this.props.handleClickOutsideList(e, {nodeType: NODE_TYPE.COMPONENT, displayName: 'div'})
     }
   }
 
@@ -80,8 +95,12 @@ class TypeSelector extends React.PureComponent<Props, State> {
     }
     if (e.keyCode === 9) {
       e.preventDefault()
-      this.selectNameAtIndex(this.state.focusedIndex)
-      this.props.onTab()
+      const isNameValid = this.selectNameAtIndex(this.state.focusedIndex)
+      if (isNameValid) {
+        this.props.onTab()
+      } else {
+        this.input.focus()
+      }
     }
     if (e.keyCode === 27) {
       if (this.props.initialValue) {
@@ -116,11 +135,15 @@ class TypeSelector extends React.PureComponent<Props, State> {
   }
 
   selectNameAtIndex(index: number) {
+    let isNameValid = false
     const displayName = this.state.matchedDisplayNames[index]
-    if (displayName == null) return
-    this._unmount(() => {
-      this.props.onSelect({nodeType: NODE_TYPE.COMPONENT, displayName})
-    })
+    if (displayName != null) {
+      isNameValid = true
+      this._unmount(() => {
+        this.props.onSelect({nodeType: NODE_TYPE.COMPONENT, displayName})
+      })
+    }
+    return isNameValid
   }
 
   _unmount(cb) {
@@ -142,10 +165,11 @@ class TypeSelector extends React.PureComponent<Props, State> {
         />
         {this.props.isActive && (
           <div
+            ref={c => this.listContainer = c}
             className={cx(css.list, {
               [css.willUnmount]: this.state.willListUnmount,
             })}
-            style={{'--width': this.props.width}}
+            // style={{'--width': this.props.width}}
           >
             {matchedDisplayNames.map((displayName, index) => {
               return (

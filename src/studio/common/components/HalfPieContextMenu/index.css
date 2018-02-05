@@ -12,6 +12,7 @@
 
   &.disabled {
     pointer-events: none;
+    color: #999;
   }
 
   animation: appear .15s ease-in-out forwards;

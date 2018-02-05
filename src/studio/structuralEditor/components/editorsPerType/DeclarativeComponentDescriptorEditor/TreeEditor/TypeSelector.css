@@ -1,3 +1,7 @@
+@value nodeIndent from './NodeContainer.css';
+@value nodePadding from './NodeContainer.css';
+@value nodeHeight from './NodeContainer.css';
+
 .container {
   display: inline-block;
 }
@@ -12,19 +16,37 @@
 }
 
 .list {
-  position: fixed;
-  z-index: 10000;
-  width: var(--width);
-  max-height: 100px;
+  position: absolute;
+  // top: calc(nodeHeight - 4px);
+  top: calc(nodeHeight + 1px);
+  // width: calc(var(--width) - nodeIndent - nodePadding);
+  width: calc(100% - nodeIndent - nodePadding);
+  // max-height: 100px;
   overflow: hidden scroll;
-  background: #000;
+  // background: rgb(10, 10, 40);
+  // background: #0C1620;
+  background: #0e1315;
+  padding: 5px 0;
   
   opacity: 0;
-  transform: translateY(2px);
-  animation: listAppear .3s ease-in-out forwards;
+  transform: translateY(6px);
+  animation: listAppear .2s ease-in-out forwards;
 
   &.willUnmount {
     animation: listDisappear .1s ease-in-out forwards;
+  }
+
+  &:empty {
+    &:after {
+      display: block;
+      position: relative;
+      content: 'No Match Found!';
+      font-size: 10px;
+      height: 20px;
+      line-height: 20px;
+      opacity: .5;
+      text-align: center;
+    }
   }
 }
 
@@ -38,17 +60,14 @@
 }
 
 .option {
-  padding: 0 indent;
-  height: 25px;
+  padding: 0 nodeIndent;
+  height: 20px;
+  line-height: 20px;
   color: #AAA;
   font-weight: 300;
+  font-size: 11px;
 
   &.isSelected {
-    font-weight: 500;
-    // background-color: rgba(255, 255, 255, .1);
-  }
-
-  &:not(:last-child) {
-    border-bottom: 1px solid rgba(255, 255, 255, .1);
+    background-color: rgba(60, 223, 255, .3);
   }
 }
