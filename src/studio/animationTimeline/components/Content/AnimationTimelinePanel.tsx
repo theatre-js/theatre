@@ -19,6 +19,8 @@ import {
 } from '$src/studio/animationTimeline/types'
 import {XY} from '$src/studio/workspace/types'
 import {get} from 'lodash'
+import StudioComponent from '$src/studio/handy/StudioComponent'
+import {BoxAtom} from '$src/shared/DataVerse/atoms/box'
 
 type OwnProps = TimelineObject & {
   pathToTimeline: string[]
@@ -44,15 +46,18 @@ type State = {
   duration: number
   currentTTime: number
   focus: [number, number]
+  thingy?: string
+  timeBox?: BoxAtom<number>
+  untapFromTimeBoxChanges: () => void
 }
 
-class Content extends React.Component<Props, State> {
+class Content extends StudioComponent<Props, State> {
   static panelConfig = {
     headerLess: true,
   }
 
-  constructor(props: Props) {
-    super(props)
+  constructor(props: Props, context: $IntentionalAny) {
+    super(props, context)
 
     const {boxes, layout} = props
     // this._handleScroll = throttle(this._handleScroll.bind(this), 200)
@@ -71,13 +76,38 @@ class Content extends React.Component<Props, State> {
     if (JSON.stringify(newProps.layout) !== JSON.stringify(this.props.layout)) {
       this._resetBoundariesAndRatios(newProps.layout, newProps.boxes)
     }
-    
 
+    this._updateThingy(newProps)
+  }
 
-    // if (newProps)
-    // if (newProps.panelDimensions.x !== this.props.panelDimensions.x) {
-    //   this._resetPanelWidth(newProps.panelDimensions.x)
-    // }
+  _updateThingy(props: Props = this.props) {
+    const thingy = calculateThingy(props.elementId, props.pathToTimeline)
+    if (thingy === this.state.thingy) return
+
+    if (this.state.untapFromTimeBoxChanges) {
+      this.state.untapFromTimeBoxChanges()
+    }
+
+    if (props.elementId && props.pathToTimeline) {
+      const timelineId = props.pathToTimeline[props.pathToTimeline.length - 1]
+      const element = this.studio.componentInstances.get(props.elementId)
+      const timelineInstance = element.getTimelineInstance(timelineId)
+      const timeBox = timelineInstance.atom.prop('time')
+      const untapFromTimeBoxChanges = timeBox.changes().tap(t => {
+        this._updateTimeState(t)
+      })
+
+      this.setState({
+        thingy,
+        timeBox,
+        untapFromTimeBoxChanges,
+        currentTTime: timeBox.getValue(),
+      })
+    }
+  }
+
+  _updateTimeState = (currentTTime: number) => {
+    this.setState({currentTTime})
   }
 
   componentDidMount() {
@@ -382,13 +412,16 @@ class Content extends React.Component<Props, State> {
   }
 
   changeCurrentTimeTo = (currentTTime: number) => {
+    if (this.state.timeBox) {
+      this.state.timeBox.set(currentTTime)
+    }
     // const {focus} = this.state
     // if (currentTTime < focus[0] || currentTTime > focus[1]) {
     //   const newFocusStart = Math.max(currentTTime - 30, 0)
     //   const newFocusEnd = newFocusStart + (focus[1] - focus[0])
     //   this.setState(() => ({currentTTime, focus: [newFocusStart, newFocusEnd]}))
     // } else {
-    this.setState(() => ({currentTTime}))
+    // this.setState(() => ({currentTTime}))
     // }
   }
 
@@ -409,14 +442,14 @@ class Content extends React.Component<Props, State> {
         }
       }
     }
+    if (this.state.timeBox) {
+      this.state.timeBox.set(newCurrentTime)
+    }
     this.setState(() => ({
-      currentTTime: newCurrentTime,
       duration: newDuration,
       focus: newFocus,
     }))
   }
-
-
 
   _changeCurrentTime(newTime: number) {
     if (this.timelineInstance) {
@@ -615,3 +648,11 @@ export default connect((s, op: OwnProps) => {
   const timeline = get(s, op.pathToTimeline)
   return {...timeline}
 })(Content)
+
+function calculateThingy(elementId?: number, pathToTimeline?: string[]) {
+  if (!elementId || !pathToTimeline) {
+    return undefined
+  } else {
+    return JSON.stringify({elementId, pathToTimeline})
+  }
+}

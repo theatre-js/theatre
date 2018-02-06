@@ -48,10 +48,10 @@ export default class Tappable<V> {
     }
   }
 
-  tapImmediate(cb: Listener<V>): Untap {
-    const ret = this.tap(cb)
-    return ret
-  }
+  // tapImmediate(cb: Listener<V>): Untap {
+  //   const ret = this.tap(cb)
+  //   return ret
+  // }
 
   _removeTapperById(id: number) {
     this._tappers.delete(id)
