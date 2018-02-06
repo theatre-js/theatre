@@ -303,15 +303,26 @@ class Point extends React.PureComponent<Props, State> {
                 onDrag={this.leftHandleDragHandler}
                 onDragEnd={this.changePointHandles}
               >
-                <circle
-                  fill="dimgrey"
-                  stroke="transparent"
-                  cx={leftHandle[0]}
-                  cy={leftHandle[1]}
-                  r={2}
-                  className={css.handle}
-                  onClick={e => this.handleClickHandler(e, 'left')}
-                />
+                <g>
+                  <rect
+                    width="10"
+                    height="10"
+                    x={leftHandle[0] - 5}
+                    y={leftHandle[1] - 5}
+                    fill="transparent"
+                    stroke="transparent"
+                    onClick={e => this.handleClickHandler(e, 'left')}
+                    className={css.handleClickRect}
+                  />
+                  <circle
+                    fill="dimgrey"
+                    stroke="transparent"
+                    cx={leftHandle[0]}
+                    cy={leftHandle[1]}
+                    r={2}
+                    className={css.handle}
+                  />
+                </g>
               </DraggableArea>
             </g>
           )}
@@ -329,15 +340,26 @@ class Point extends React.PureComponent<Props, State> {
                 onDrag={this.rightHandleDragHandler}
                 onDragEnd={this.changePointHandles}
               >
-                <circle
-                  fill="dimgrey"
-                  stroke="transparent"
-                  cx={rightHandle[0]}
-                  cy={rightHandle[1]}
-                  r={2}
-                  className={css.handle}
-                  onClick={e => this.handleClickHandler(e, 'right')}
-                />
+                <g>
+                  <rect
+                    width="10"
+                    height="10"
+                    x={rightHandle[0] - 5}
+                    y={rightHandle[1] - 5}
+                    fill="transparent"
+                    stroke="transparent"
+                    onClick={e => this.handleClickHandler(e, 'right')}
+                    className={css.handleClickRect}
+                  />
+                  <circle
+                    fill="dimgrey"
+                    stroke="transparent"
+                    cx={rightHandle[0]}
+                    cy={rightHandle[1]}
+                    r={2}
+                    className={css.handle}
+                  />
+                </g>
               </DraggableArea>
             </g>
           )}
@@ -345,15 +367,26 @@ class Point extends React.PureComponent<Props, State> {
           onDrag={this.pointDragHandler}
           onDragEnd={this.changePointPosition}
         >
-          <circle
-            fill="#222"
-            strokeWidth={2}
-            cx={time}
-            cy={value}
-            r={3}
-            className={css.point}
-            onClick={this.pointClickHandler}
-          />
+          <g>
+            <rect
+              width="14"
+              height="14"
+              x={time - 7}
+              y={value - 7}
+              fill="transparent"
+              stroke="transparent"
+              onClick={this.pointClickHandler}
+              className={css.pointClickRect}
+            />
+            <circle
+              fill="#222"
+              strokeWidth={2}
+              cx={time}
+              cy={value}
+              r={3}
+              className={css.point}
+            />
+          </g>
         </DraggableArea>
         {/* {isEnteringProps && this._renderInputs()} */}
       </g>

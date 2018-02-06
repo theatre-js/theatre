@@ -1,4 +1,12 @@
+.pointClickRect {
+  cursor: pointer;
+}
+
 .point {
+  cursor: pointer;
+}
+
+.handleClickRect {
   cursor: pointer;
 }
 
