@@ -116,7 +116,7 @@ const tempCustomComponentDescriptors = {
                   interpolationDescriptor: {
                     __descriptorType: 'TimelinePointInterpolationDescriptor',
                     interpolationType: 'CubicBezier',
-                    handles: [-0.2, 0, 0.2, 0],
+                    handles: [0, 0, 0.2, 0],
                     connected: true,
                   },
                 },
@@ -126,7 +126,7 @@ const tempCustomComponentDescriptors = {
                   interpolationDescriptor: {
                     __descriptorType: 'TimelinePointInterpolationDescriptor',
                     interpolationType: 'CubicBezier',
-                    handles: [-0.2, 0, 0.2, 0],
+                    handles: [0, 0, 0.2, 0],
                     connected: true,
                   },
                 },
@@ -136,7 +136,7 @@ const tempCustomComponentDescriptors = {
                   interpolationDescriptor: {
                     __descriptorType: 'TimelinePointInterpolationDescriptor',
                     interpolationType: 'CubicBezier',
-                    handles: [-0.2, 0, 0.2, 0],
+                    handles: [0, 0, 0.2, 0],
                     connected: true,
                   },
                 },
@@ -146,7 +146,7 @@ const tempCustomComponentDescriptors = {
                   interpolationDescriptor: {
                     __descriptorType: 'TimelinePointInterpolationDescriptor',
                     interpolationType: 'CubicBezier',
-                    handles: [-0.2, 0, 0.2, 0],
+                    handles: [0, 0, 0.2, 0],
                     connected: false,
                   },
                 },

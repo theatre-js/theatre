@@ -15,17 +15,17 @@ type RootSaga<State, Action> = (
 type ConstructorProps<State, Action> = {
   initialState?: State,
   rootSaga: RootSaga<State, Action>,
-  rootReducer: Reducer<State, Action>,
+  rootReducer: Reducer<State>,
 }
 
 /**
  * StandardStore is basically just a standard configuration of redux store and sagas. Nothing special really.
  */
 export default class StandardStore<State, Action> {
-  sagaMiddleware: *
+  sagaMiddleware: $FixMe
   _initialState: undefined | null | State
-  rootReducer: Reducer<State, Action>
-  reduxStore: Store<State, Action>
+  rootReducer: Reducer<State>
+  reduxStore: Store<State>
   rootSaga: RootSaga<State, Action>
 
   constructor({

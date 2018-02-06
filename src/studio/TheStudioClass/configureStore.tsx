@@ -8,7 +8,7 @@ export const defaultConfig = {rootReducer, rootSaga}
 
 export default function createStore(
   config: typeof defaultConfig = defaultConfig,
-): StandardStore<*, *> {
+): StandardStore<$FixMe, $FixMe> {
   const store = new StandardStore(config)
 
   if (process.env.NODE_ENV === 'development' && module.hot) {
