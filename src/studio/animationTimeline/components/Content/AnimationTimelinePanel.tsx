@@ -467,9 +467,9 @@ class Content extends React.Component<Props, State> {
     // }
   }
 
-  timeToX(t: number, panelWidth: number) {
+  timeToX(time: number, panelWidth: number) {
     const {duration} = this.state
-    return t * (panelWidth - 6) / duration
+    return time * (panelWidth - 6) / duration
   }
 
   xToTime(x: number, panelWidth: number) {
@@ -477,8 +477,8 @@ class Content extends React.Component<Props, State> {
     return x * duration / (panelWidth - 6)
   }
 
-  focusedTimeToX(t: number, focus: [number, number], panelWidth: number) {
-    return (t - focus[0]) / (focus[1] - focus[0]) * (panelWidth - 6)
+  focusedTimeToX(time: number, focus: [number, number], panelWidth: number) {
+    return (time - focus[0]) / (focus[1] - focus[0]) * (panelWidth - 6)
   }
 
   xToFocusedTime(x: number, focus: [number, number], panelWidth: number) {
@@ -518,10 +518,10 @@ class Content extends React.Component<Props, State> {
                     duration={duration}
                     currentTime={currentTime}
                     focus={focus}
-                    timeToX={(t: number) => this.timeToX(t, panelWidth)}
+                    timeToX={(time: number) => this.timeToX(time, panelWidth)}
                     xToTime={(x: number) => this.xToTime(x, panelWidth)}
-                    focusedTimeToX={(t: number, focus: [number, number]) =>
-                      this.focusedTimeToX(t, focus, panelWidth)
+                    focusedTimeToX={(time: number, focus: [number, number]) =>
+                      this.focusedTimeToX(time, focus, panelWidth)
                     }
                     xToFocusedTime={(x: number, focus: [number, number]) =>
                       this.xToFocusedTime(x, focus, panelWidth)

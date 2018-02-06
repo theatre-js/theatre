@@ -30,18 +30,18 @@ export default class TimelineInstance {
     this._timeP = this._atom.pointer().prop('time')
 
     this._descriptorP = descriptorP
-    // console.log('here', descriptorP.prop('vars').getValue())
+    // console.log('here', descriptorP.prop('variables').getValue())
   }
 
   destroy() {}
 
   valueFor(varId: string) {
-    const varDescP = this._descriptorP.prop('vars').prop(varId)
+    const varDescP = this._descriptorP.prop('variables').prop(varId)
     const valueInstance = new ValueInstance(
       varDescP,
       this._timeP,
       this._studio,
-      [...this._pathToTimelineDescriptor, 'vars', varId],
+      [...this._pathToTimelineDescriptor, 'variables', varId],
     )
     return valueInstance.derivation()
   }

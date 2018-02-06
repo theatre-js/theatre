@@ -7,26 +7,27 @@ import SingleInputForm from '$lf/common/components/SingleInputForm'
 import {
   NormalizedPoint,
   PointHandles,
+  Point as IPoint,
 } from '$studio/animationTimeline/types'
 
 type Props = {
-  point: NormalizedPoint,
-  prevPoint: undefined | null | NormalizedPoint,
-  nextPoint: undefined | null | NormalizedPoint,
-  variableWidth: number,
-  addConnector: Function,
-  changePointPositionBy: Function,
-  changePointHandlesBy: Function,
-  setPointPositionTo: Function,
-  removePoint: Function,
-  makeHandleHorizontal: Function,
+  point: NormalizedPoint
+  prevPoint: undefined | null | NormalizedPoint
+  nextPoint: undefined | null | NormalizedPoint
+  variableWidth: number
+  addConnector: Function
+  changePointPositionBy: Function
+  changePointHandlesBy: Function
+  setPointPositionTo: Function
+  removePoint: Function
+  makeHandleHorizontal: Function
 }
 
 type State = {
-  isMoving: boolean,
-  isEnteringProps: boolean,
-  pointMove: [number, number],
-  handlesMove: PointHandles,
+  isMoving: boolean
+  isEnteringProps: boolean
+  pointMove: [number, number]
+  handlesMove: PointHandles
 }
 
 class Point extends React.PureComponent<Props, State> {
@@ -103,11 +104,11 @@ class Point extends React.PureComponent<Props, State> {
     if (e.shiftKey) x = this.state.pointMove[0]
 
     const {point, prevPoint, nextPoint, variableWidth} = this.props
-    const limitLeft = prevPoint == null ? 0 : prevPoint.t
-    const limitRight = nextPoint == null ? variableWidth : nextPoint.t
-    const newT = point.t + x
-    if (newT >= limitRight) x = limitRight - point.t - 1
-    if (newT <= limitLeft) x = limitLeft - point.t + 1
+    const limitLeft = prevPoint == null ? 0 : prevPoint.time
+    const limitRight = nextPoint == null ? variableWidth : nextPoint.time
+    const newT = point.time + x
+    if (newT >= limitRight) x = limitRight - point.time - 1
+    if (newT <= limitLeft) x = limitLeft - point.time + 1
 
     this.setState(() => ({
       isMoving: true,
@@ -118,7 +119,7 @@ class Point extends React.PureComponent<Props, State> {
 
   changePointPosition = () => {
     const {pointMove} = this.state
-    this.props.changePointPositionBy({t: pointMove[0], value: pointMove[1]})
+    this.props.changePointPositionBy({time: pointMove[0], value: pointMove[1]})
     this._resetState()
   }
 
@@ -146,8 +147,8 @@ class Point extends React.PureComponent<Props, State> {
 
   setPointPosition = () => {
     const value = Number(this.valueForm.input.value)
-    const t = Number(this.timeForm.input.value)
-    this.props.setPointPositionTo({t, value})
+    const time = Number(this.timeForm.input.value)
+    this.props.setPointPositionTo({time, value})
     this.disableEnteringProps()
   }
 
@@ -155,52 +156,60 @@ class Point extends React.PureComponent<Props, State> {
     const {point, prevPoint, nextPoint} = this.props
     const {pointMove, handlesMove} = this.state
     const [prevT, prevValue] = prevPoint
-      ? [prevPoint.t, prevPoint.value]
+      ? [prevPoint.time, prevPoint.value]
       : [0, 0]
     const [nextT, nextValue] = nextPoint
-      ? [nextPoint.t, nextPoint.value]
+      ? [nextPoint.time, nextPoint.value]
       : [0, 0]
-    const newT = point.t + pointMove[0]
+    const newT = point.time + pointMove[0]
     const newValue = point.value + pointMove[1]
     const handleFactors = [
-      Math.abs(newT - prevT) / Math.abs(point.t - prevT),
+      Math.abs(newT - prevT) / Math.abs(point.time - prevT),
       Math.abs(newValue - prevValue) / Math.abs(point.value - prevValue),
-      Math.abs(newT - nextT) / Math.abs(point.t - nextT),
+      Math.abs(newT - nextT) / Math.abs(point.time - nextT),
       Math.abs(newValue - nextValue) / Math.abs(point.value - nextValue),
     ]
-    const movedPoint = {
-      ...point,
-      t: newT,
+    const movedPoint: IPoint = {
+      ...(point as any),
+      time: newT,
       value: newValue,
-      // $FlowFixMe
-      handles: point.handles.map(
-        (handle, index) => handleFactors[index] * (handle + handlesMove[index]),
-      ),
+      interpolationDescriptor: {
+        ...point.interpolationDescriptor,
+        handdles: point.interpolationDescriptor.handdles.map(
+          (handdle, index) =>
+            handleFactors[index] * (handdle + handlesMove[index]),
+        ),
+      },
+      // @ts-ignore
     }
     return (
       <g opacity={0.5}>
-        {point.isConnected &&
+        {point.interpolationDescriptor.connocted &&
           nextPoint != null && (
             <Connector
               leftPoint={movedPoint}
               rightPoint={{
                 ...nextPoint,
-                // $FlowFixMe
-                handles: nextPoint.handles.map(
-                  (handle, index) => handleFactors[index % 2 + 2] * handle,
-                ),
+                interpolationDescriptor: {
+                  ...nextPoint.interpolationDescriptor,
+                  handdles: nextPoint.interpolationDescriptor.handdles.map(
+                    (handdle, index) => handleFactors[index % 2 + 2] * handdle,
+                  ),
+                },
               }}
             />
           )}
         {prevPoint != null &&
-          prevPoint.isConnected && (
+          prevPoint.interpolationDescriptor.connocted && (
             <Connector
               leftPoint={{
                 ...prevPoint,
-                // $FlowFixMe
-                handles: prevPoint.handles.map(
-                  (handle, index) => handleFactors[index % 2] * handle,
-                ),
+                interpolationDescriptor: {
+                  ...nextPoint.interpolationDescriptor,
+                  handdles: prevPoint.interpolationDescriptor.handdles.map(
+                    (handdle, index) => handleFactors[index % 2] * handdle,
+                  ),
+                },
               }}
               rightPoint={movedPoint}
             />
@@ -208,7 +217,7 @@ class Point extends React.PureComponent<Props, State> {
         <circle
           fill="#222"
           strokeWidth={2}
-          cx={movedPoint.t}
+          cx={movedPoint.time}
           cy={movedPoint.value}
           r={3}
           className={css.point}
@@ -218,14 +227,14 @@ class Point extends React.PureComponent<Props, State> {
   }
 
   _renderInputs() {
-    const {point: {t, value, _t, _value}} = this.props
+    const {point: {time, value, _t, _value}} = this.props
     return (
       <foreignObject>
         <div className={css.pointTipContainer}>
           <div
             className={css.pointTip}
             style={{
-              left: `${t > 25 ? t - 25 : 0}px`,
+              left: `${time > 25 ? time - 25 : 0}px`,
               top: `${value >= 37 ? value - 37 : value + 5}px`,
             }}
           >
@@ -266,25 +275,26 @@ class Point extends React.PureComponent<Props, State> {
 
   render() {
     const {point, prevPoint, nextPoint} = this.props
-    const {t, value, handles} = point
+    const {time, value, interpolationDescriptor} = point
+    const {handdles} = interpolationDescriptor
     const {isMoving, handlesMove, isEnteringProps} = this.state
     const leftHandle = [
-      t + handles[0] + handlesMove[0],
-      value + handles[1] + handlesMove[1],
+      time + handdles[0] + handlesMove[0],
+      value + handdles[1] + handlesMove[1],
     ]
     const rightHandle = [
-      t + handles[2] + handlesMove[2],
-      value + handles[3] + handlesMove[3],
+      time + handdles[2] + handlesMove[2],
+      value + handdles[3] + handlesMove[3],
     ]
     return (
       <g>
         {isMoving && this._renderTransformedPoint()}
         {prevPoint != null &&
-          prevPoint.isConnected && (
+          prevPoint.interpolationDescriptor.connocted && (
             <g>
               <line
                 stroke="dimgrey"
-                x1={t}
+                x1={time}
                 y1={value}
                 x2={leftHandle[0]}
                 y2={leftHandle[1]}
@@ -299,18 +309,18 @@ class Point extends React.PureComponent<Props, State> {
                   cx={leftHandle[0]}
                   cy={leftHandle[1]}
                   r={2}
-                  className={css.handle}
+                  className={css.handdle}
                   onClick={e => this.handleClickHandler(e, 'left')}
                 />
               </DraggableArea>
             </g>
           )}
         {nextPoint != null &&
-          point.isConnected && (
+          point.interpolationDescriptor.connocted && (
             <g>
               <line
                 stroke="dimgrey"
-                x1={t}
+                x1={time}
                 y1={value}
                 x2={rightHandle[0]}
                 y2={rightHandle[1]}
@@ -325,7 +335,7 @@ class Point extends React.PureComponent<Props, State> {
                   cx={rightHandle[0]}
                   cy={rightHandle[1]}
                   r={2}
-                  className={css.handle}
+                  className={css.handdle}
                   onClick={e => this.handleClickHandler(e, 'right')}
                 />
               </DraggableArea>
@@ -338,7 +348,7 @@ class Point extends React.PureComponent<Props, State> {
           <circle
             fill="#222"
             strokeWidth={2}
-            cx={t}
+            cx={time}
             cy={value}
             r={3}
             className={css.point}

@@ -82,7 +82,7 @@ const handlersByState = {
         )
 
       const timeOfFirstPointD = firstPointD.flatMap(
-        (firstPoint: ?$FixMe) =>
+        (firstPoint?: $FixMe) =>
           firstPoint && firstPoint.pointer().prop('time'),
       )
       d._addDependency(timeOfFirstPointD)
@@ -129,7 +129,7 @@ const handlersByState = {
   },
 
   Error: {
-    // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line no-unused-variables
     transitionIn(baseState: ErrorBaseState, d: ValueDerivation): ErrorState {
       return baseStates.error
     },
@@ -193,12 +193,12 @@ const handlersByState = {
       })
 
       const possibleRightPointTimeD = possibleRightPointD.flatMap(
-        (rightPoint: ?$FixMe) =>
+        (rightPoint?: $FixMe) =>
           rightPoint && rightPoint.pointer().prop('time'),
       )
 
       const possibleRightPointValueD = possibleRightPointD.flatMap(
-        (rightPoint: ?$FixMe) =>
+        (rightPoint?: $FixMe) =>
           rightPoint && rightPoint.pointer().prop('value'),
       )
 
@@ -218,7 +218,7 @@ const handlersByState = {
       )
       const interpolatorD = interpolationTypeP.flatMap(
         (interpolationType: undefined | null | string) => {
-          // $FlowIgnore
+          // @ts-ignore
           const interpolator = interpolators[interpolationType]
           if (interpolator) {
             return interpolator({
@@ -253,7 +253,9 @@ const handlersByState = {
   },
 }
 
-export default class ValueDerivation extends D.derivations.AbstractDerivation {
+export default class ValueDerivation extends AbstractDerivation<$FixMe> {
+  _hot: boolean;
+  _changeObservedIn: Set<$FixMe>;
   _descP: $FixMe
   _timeD: $FixMe
   _pointsP: $FixMe
@@ -283,6 +285,7 @@ export default class ValueDerivation extends D.derivations.AbstractDerivation {
     this._addDependency(timeD)
     this._state = {type: 'started'}
     this._changeObservedIn = new Set()
+    // this._hot = false
   }
 
   _keepUptodate() {
@@ -299,7 +302,7 @@ export default class ValueDerivation extends D.derivations.AbstractDerivation {
     return 0
   }
 
-  _recalculate() {
+  _recalculate(): $FixMe {
     if (!this._hot) {
       throw new Error(`Cold reads aren't supported on Timeline/ValueDerivation`)
     }

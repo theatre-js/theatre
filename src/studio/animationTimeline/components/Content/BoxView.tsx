@@ -53,18 +53,18 @@ const resetExtremums = (pathToVariable: string[]) => {
         const {value} = point
         const prevValue = points[index - 1] ? points[index - 1].value : 0
         const nextValue = points[index + 1] ? points[index + 1].value : 0
-        const handles = [
-          point.handles[1] * Math.abs(prevValue - value),
-          point.handles[3] * Math.abs(nextValue - value),
+        const handdles = [
+          point.interpolationDescriptor.handdles[1] * Math.abs(prevValue - value),
+          point.interpolationDescriptor.handdles[3] * Math.abs(nextValue - value),
         ]
         return [
           Math.min(
             reducer[0],
-            Math.min(value, value + handles[0] - 15, value + handles[1]) - 15,
+            Math.min(value, value + handdles[0] - 15, value + handdles[1]) - 15,
           ),
           Math.max(
             reducer[1],
-            Math.max(value, value + handles[0] + 15, value + handles[1]) + 15,
+            Math.max(value, value + handdles[0] + 15, value + handdles[1]) + 15,
           ),
         ]
       },
@@ -121,7 +121,7 @@ class BoxBiew extends React.Component<Props, State> {
     return false
   }
 
-  titleClickHandler(e: SyntheticMouseEvent<>, variableId: string) {
+  titleClickHandler(e: React.MouseEvent<$FixMe>, variableId: string) {
     if (e.altKey) {
       return this.props.splitVariable(variableId)
     }
@@ -149,23 +149,27 @@ class BoxBiew extends React.Component<Props, State> {
     return {svgHeight, svgWidth, svgTransform, svgExtremums}
   }
 
-  addPoint = (e: SyntheticMouseEvent<>) => {
+  addPoint = (e: React.MouseEvent<$FixMe>) => {
     if (!(e.ctrlKey || e.metaKey)) return
     const {top, left} = this.svgArea.getBoundingClientRect()
-    const t = e.clientX - left
+    const time = e.clientX - left
     const value = e.clientY - top
     const pointProps: Point = {
-      t: this._deNormalizeX(t),
+      time: this._deNormalizeX(time),
       value: this._deNormalizeValue(value),
-      isConnected: true,
-      handles: [-0.2, 0, 0.2, 0],
+      interpolationDescriptor: {
+        connocted: true,
+        __descriptorType: 'TimelinePointInterpolationDescriptor',
+        interpolationType: 'CubicBezier',
+        handdles: [-0.2, 0, 0.2, 0],
+      }
     }
     this.props.dispatch(
       reduceStateAction(
         [...this.props.pathToVariables, this.state.activeVariableId],
         variable => {
           const points = variable.points
-          let atIndex = points.findIndex(point => point.t > pointProps.t)
+          let atIndex = points.findIndex(point => point.time > pointProps.time)
           if (atIndex === -1) atIndex = points.length
           return {
             ...variable,
@@ -240,7 +244,7 @@ class BoxBiew extends React.Component<Props, State> {
     this.props.dispatch(
       reduceStateAction(this.pathToPoint(variableId, pointIndex), point => ({
         ...point,
-        t: point.t + deNormalizedChange.t,
+        time: point.time + deNormalizedChange.time,
         value: point.value + deNormalizedChange.value,
       })),
     )
@@ -263,10 +267,10 @@ class BoxBiew extends React.Component<Props, State> {
     )
     this.props.dispatch(
       reduceStateAction(
-        [...this.pathToPoint(variableId, pointIndex), 'handles'],
-        handles => {
-          return handles.map(
-            (handle, index) => handle + deNormalizedChange[index],
+        [...this.pathToPoint(variableId, pointIndex), 'interpolationDescriptor', 'handdles'],
+        handdles => {
+          return handdles.map(
+            (handdle, index) => handdle + deNormalizedChange[index],
           )
         },
       ),
@@ -282,7 +286,10 @@ class BoxBiew extends React.Component<Props, State> {
         this.pathToPoint(variableId, pointIndex),
         point => ({
           ...point,
-          isConnected: true,
+          interpolationDescriptor: {
+            ...point.interpolationDescriptor,
+            connocted: true,
+          }
         }),
       ),
     )
@@ -292,7 +299,10 @@ class BoxBiew extends React.Component<Props, State> {
     this.props.dispatch(
       reduceStateAction(this.pathToPoint(variableId, pointIndex), point => ({
         ...point,
-        isConnected: false,
+        interpolationDescriptor: {
+          ...point.interpolationDescriptor,
+          connocted: false,
+        }
       })),
     )
   }
@@ -304,15 +314,15 @@ class BoxBiew extends React.Component<Props, State> {
   ) => {
     this.props.dispatch(
       reduceStateAction(
-        [...this.pathToPoint(variableId, pointIndex), 'handles'],
-        handles => {
+        [...this.pathToPoint(variableId, pointIndex), 'interpolationDescriptor', 'handdles'],
+        handdles => {
           if (side === 'left') {
-            handles[1] = 0
+            handdles[1] = 0
           }
           if (side === 'right') {
-            handles[3] = 0
+            handdles[3] = 0
           }
-          return handles
+          return handdles
         },
       ),
     )
@@ -349,20 +359,20 @@ class BoxBiew extends React.Component<Props, State> {
 
   normalizePositionChange = (position: PointPosition): PointPosition => {
     return {
-      t: this._normalizeX(position.t),
+      time: this._normalizeX(position.time),
       value: this._normalizeY(position.value),
     }
   }
 
   deNormalizePositionChange = (position: PointPosition): PointPosition => {
     return {
-      t: this._deNormalizeX(position.t),
+      time: this._deNormalizeX(position.time),
       value: this._deNormalizeY(position.value),
     }
   }
 
   _normalizeHandles = (
-    handles: PointHandles,
+    handdles: PointHandles,
     point: Point,
     prevPoint: undefined | null | Point,
     nextPoint: undefined | null | Point,
@@ -370,16 +380,16 @@ class BoxBiew extends React.Component<Props, State> {
     const handlesInPixels = [
       ...(prevPoint != null
         ? [
-            handles[0] * Math.abs(prevPoint.t - point.t),
-            handles[1] * Math.abs(prevPoint.value - point.value),
+            handdles[0] * Math.abs(prevPoint.time - point.time),
+            handdles[1] * Math.abs(prevPoint.value - point.value),
           ]
-        : handles.slice(0, 2)),
+        : handdles.slice(0, 2)),
       ...(nextPoint != null
         ? [
-            handles[2] * Math.abs(nextPoint.t - point.t),
-            handles[3] * Math.abs(nextPoint.value - point.value),
+            handdles[2] * Math.abs(nextPoint.time - point.time),
+            handdles[3] * Math.abs(nextPoint.value - point.value),
           ]
-        : handles.slice(2)),
+        : handdles.slice(2)),
     ]
     return [
       this._normalizeX(handlesInPixels[0]),
@@ -390,27 +400,27 @@ class BoxBiew extends React.Component<Props, State> {
   }
 
   _deNormalizeHandles = (
-    handles: PointHandles,
+    handdles: PointHandles,
     point: Point,
     prevPoint: undefined | null | Point,
     nextPoint: undefined | null | Point,
   ): PointHandles => {
     const deNormalizedHandles: PointHandles = [
-      this._deNormalizeX(handles[0]),
-      this._deNormalizeY(handles[1]),
-      this._deNormalizeX(handles[2]),
-      this._deNormalizeY(handles[3]),
+      this._deNormalizeX(handdles[0]),
+      this._deNormalizeY(handdles[1]),
+      this._deNormalizeX(handdles[2]),
+      this._deNormalizeY(handdles[3]),
     ]
     return [
       ...(prevPoint != null
         ? [
-            deNormalizedHandles[0] / Math.abs(prevPoint.t - point.t),
+            deNormalizedHandles[0] / Math.abs(prevPoint.time - point.time),
             deNormalizedHandles[1] / Math.abs(prevPoint.value - point.value),
           ]
         : [deNormalizedHandles[0], deNormalizedHandles[1]]),
       ...(nextPoint != null
         ? [
-            deNormalizedHandles[2] / Math.abs(nextPoint.t - point.t),
+            deNormalizedHandles[2] / Math.abs(nextPoint.time - point.time),
             deNormalizedHandles[3] / Math.abs(nextPoint.value - point.value),
           ]
         : [deNormalizedHandles[2], deNormalizedHandles[3]]),
@@ -419,19 +429,21 @@ class BoxBiew extends React.Component<Props, State> {
 
   _normalizePoints(points: Point[]): NormalizedPoint[] {
     return points.map((point, index) => {
-      const {t, value, handles, isConnected} = point
+      const {time, value, interpolationDescriptor} = point
       return {
-        _t: t,
+        _t: time,
         _value: value,
-        t: this._normalizeX(t),
+        time: this._normalizeX(time),
         value: this._normalizeValue(value),
-        handles: this._normalizeHandles(
-          handles,
-          point,
-          points[index - 1],
-          points[index + 1],
-        ),
-        isConnected,
+        interpolationDescriptor: {
+          ...interpolationDescriptor,
+          handdles: this._normalizeHandles(
+            interpolationDescriptor.handdles,
+            point,
+            points[index - 1],
+            points[index + 1],
+          ),
+        },
       }
     })
   }
@@ -549,7 +561,7 @@ class BoxBiew extends React.Component<Props, State> {
 }
 
 export default connect((s, op) => {  
-  const pathToVariables = [...op.pathToTimeline, 'variables', 'byId']
+  const pathToVariables = [...op.pathToTimeline, 'variables']
   const variablesState = _.get(s, pathToVariables)
 
   const variables = op.variableIds.map(id => variablesState[id])

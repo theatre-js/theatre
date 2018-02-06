@@ -13,7 +13,7 @@ class PointValuesEditor extends React.PureComponent<IProps, IState> {
 
   handleSubmit = (input: 'time' | 'value', value) => {
     const newPosition = {
-      t: input === 'time' ? Number(value) : this.props.initialTime,
+      time: input === 'time' ? Number(value) : this.props.initialTime,
       value: input === 'value' ? Number(value) : this.props.initialValue,
     }
     this.props.onSubmit(newPosition)

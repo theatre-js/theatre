@@ -3,15 +3,15 @@ import React from 'react'
 import {NormalizedPoint} from '$studio/animationTimeline/types'
 
 type Props = {
-  leftPoint: NormalizedPoint,
-  rightPoint: NormalizedPoint,
-  removeConnector?: Function,
+  leftPoint: NormalizedPoint
+  rightPoint: NormalizedPoint
+  removeConnector?: Function
 }
 
 type State = {}
 
 class Connector extends React.PureComponent<Props, State> {
-  clickHandler = (e: SyntheticMouseEvent<>) => {
+  clickHandler = (e: React.MouseEvent<$FixMe>) => {
     if (!this.props.removeConnector) return
     if (e.altKey) {
       return this.props.removeConnector()
@@ -22,10 +22,12 @@ class Connector extends React.PureComponent<Props, State> {
     const {leftPoint: lp, rightPoint: rp} = this.props
     return (
       <path
-        d={`M ${lp.t} ${lp.value}
-            C ${lp.t + lp.handles[2]} ${lp.value + lp.handles[3]}
-              ${rp.t + rp.handles[0]} ${rp.value + rp.handles[1]}
-              ${rp.t} ${rp.value}`}
+        d={`M ${lp.time} ${lp.value}
+            C ${lp.time + lp.interpolationDescriptor.handdles[2]} ${lp.value +
+          lp.interpolationDescriptor.handdles[3]}
+              ${rp.time + rp.interpolationDescriptor.handdles[0]} ${rp.value +
+          rp.interpolationDescriptor.handdles[1]}
+              ${rp.time} ${rp.value}`}
         fill="transparent"
         strokeWidth={2}
         onClick={this.clickHandler}

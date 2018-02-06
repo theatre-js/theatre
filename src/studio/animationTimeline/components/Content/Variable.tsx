@@ -1,4 +1,3 @@
-// @flow
 import React from 'react'
 import Point from './Point'
 import Connector from './Connector'
@@ -28,7 +27,7 @@ class Variable extends React.PureComponent<Props, {}> {
           const nextPoint = points[index + 1]
           return (
             <g key={index}>
-              {point.isConnected &&
+              {point.interpolationDescriptor.connocted &&
                 nextPoint != null && (
                   <Connector
                     leftPoint={point}
@@ -42,8 +41,8 @@ class Variable extends React.PureComponent<Props, {}> {
                 nextPoint={nextPoint}
                 point={point}
                 variableWidth={width}
-                showPointValuesEditor={(pos: {left: number, top: number}) =>
-                  this.props.showPointValuesEditor(index, pos)  
+                showPointValuesEditor={(pos: {left: number; top: number}) =>
+                  this.props.showPointValuesEditor(index, pos)
                 }
                 changePointPositionBy={change =>
                   this.props.changePointPositionBy(index, change)

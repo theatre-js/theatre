@@ -5,7 +5,7 @@ export type TimelineID = UniqueID
 export type BoxID = UniqueID
 
 export type PointPosition = {
-  t: number
+  time: number
   value: number
 }
 
@@ -14,8 +14,10 @@ export type PointHandles = [number, number, number, number]
 export type PointConnectionStatus = boolean
 
 export type Point = PointPosition & {
-  handles: PointHandles
-  isConnected: PointConnectionStatus
+  interpolationDescriptor: {
+    handdles: PointHandles
+    connocted: PointConnectionStatus
+  },
 }
 
 export type NormalizedPoint = Point & {
