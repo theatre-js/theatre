@@ -17,7 +17,7 @@ const tempCustomComponentDescriptors = {
               id: 'theOpacity',
               component: 'button', // temp
               property: 'bottom', // temp
-              extremums: [0, 60], // temp
+              extremums: [0, 1000], // temp
               backPointer: {
                 type: 'PointerThroughLocalHiddenValue',
                 localHiddenValueId: 'container',
@@ -36,7 +36,7 @@ const tempCustomComponentDescriptors = {
                 {
                   __descriptorType: 'TimelineVarPoint',
                   id: '1',
-                  time: 0.1,
+                  time: 0,
                   value: 1000,
                   interpolationDescriptor: {
                     __descriptorType: 'TimelinePointInterpolationDescriptor',
@@ -48,7 +48,7 @@ const tempCustomComponentDescriptors = {
                 {
                   __descriptorType: 'TimelineVarPoint',
                   id: '2',
-                  time: 1,
+                  time: 10000,
                   value: 500,
                   interpolationDescriptor: {
                     __descriptorType: 'TimelinePointInterpolationDescriptor',
@@ -93,6 +93,14 @@ const tempCustomComponentDescriptors = {
               // },
             },
           },
+          layout: ['box1'],
+          boxes: {
+            box1: {
+              id: 'box1',
+              height: 300,
+              variables: ['theOpacity']
+            }
+          }
         },
         '8daa7380-9b43-475a-8352-dc564a58c710': {
           variables: {

@@ -34,7 +34,7 @@ export default function makeReactiveComponent({
     componentId: string
   }
 
-  class TheaterJSComponent extends PureComponentWithStudio<Props, void> {
+  class TheaterJSComponent extends PureComponentWithStudio<Props, {}> {
     static displayName = typeof displayName === 'string'
       ? displayName
       : 'TheaterJSDeclarativeComponent'
@@ -50,7 +50,7 @@ export default function makeReactiveComponent({
     isTheaterJSComponent: boolean
     componentType: undefined | string
     componentId: undefined | string
-    elementId: string | number
+    elementId: number
     _timelinesHandler: TimelinesHandler
 
     _atom: $FixMe // D.IDictAtom<{
@@ -110,6 +110,7 @@ export default function makeReactiveComponent({
 
       // $FixMe
       this._atom = this._createAtom()
+      
       this._derivedClassD = this._makeDerivedClassD()
 
       const untapFromDerivedClassDChanges = this._derivedClassD
@@ -131,6 +132,7 @@ export default function makeReactiveComponent({
       this.componentType = componentType // || this._finalFace.prop('componentType').getValue()
 
       this.componentId = componentId // || this._finalFace.prop('componentId').getValue()
+      
 
       // if (!displayName)
       //   TheaterJSComponent.displayName = this._finalFace
@@ -163,6 +165,14 @@ export default function makeReactiveComponent({
 
       this._timelinesHandler = new TimelinesHandler(this as $IntentionalAny)
       this._timelinesHandler.start()
+
+      this.studio.declareComponentInstance(this.elementId, this)
+      
+      if (this.getComponentId() === 'IntroScene') {
+        this.reduceState(['workspace', 'panels', 'byId', '8daa7380-9b43-475a-8352-dc564a58c719', 'configuration', 'elementId'], () => this.elementId)
+      }
+      
+      // if (this.getComponentId() === '')
     }
 
     getComponentId() {
@@ -176,7 +186,7 @@ export default function makeReactiveComponent({
 
     _createAtom() {
       return D.atoms.dict({
-        instanceId: this.studio._getNewComponentInstanceId(),
+        instanceId: this.studio._getNewComponentInstanceId(this.constructor.componentId),
         props: this.props.props,
         modifierInstantiationDescriptors: this.props
           .modifierInstantiationDescriptors,
@@ -285,10 +295,15 @@ export default function makeReactiveComponent({
       this._fnsToCallOnWillUnmount.forEach(fn => {
         fn()
       })
+      this.studio.undeclareComponentInstance(this.elementId)
     }
 
     render() {
       return this._whatToRender
+    }
+
+    getTimelineInstance(timelineId: string) {
+      return this._atom.prop('timelineInstances').prop(timelineId)
     }
   }
 

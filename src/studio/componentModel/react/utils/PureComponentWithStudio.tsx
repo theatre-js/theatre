@@ -1,7 +1,7 @@
-// @flow
 import {contextTypes, contextName} from './studioContext'
 import * as React from 'react'
 import TheStudioClass from '$studio/TheStudioClass'
+import {reduceStateAction} from '$src/studio/common/actions'
 
 /**
  * The main reason I made this as a component instead of just providing a HOC called `withStudio()` is that
@@ -17,6 +17,14 @@ export default class PureComponentWithStudio<
   constructor(props: Props, context: $IntentionalAny) {
     super(props, context)
     this.studio = context[contextName]
+  }
+
+  reduceState = (path: Array<string | number>, reducer: (s: any) => any) => {
+    return this.dispatch(reduceStateAction(path, reducer))
+  }
+
+  dispatch = (action: mixed) => {
+    this.studio.store.reduxStore.dispatch(action)
   }
 
   static contextTypes = contextTypes

@@ -1,4 +1,3 @@
-// @flow
 import * as React from 'react'
 import {render} from 'react-dom'
 import * as D from '$shared/DataVerse'
@@ -11,17 +10,19 @@ import configureAtom from './configureAtom'
 type Atom = $FixMe
 
 export default class TheStudioClass {
+  componentInstances: Map<number, React.ComponentType>
   atom: Atom
   ticker: D.Ticker
   _lastComponentInstanceId: number
   _lbCommunicator: LBCommunicator
-  store: StandardStore<*, *>
+  store: StandardStore<$FixMe, $FixMe>
 
   constructor() {
     this._lastComponentInstanceId = 0
     this.ticker = new D.Ticker()
     this.store = configureStore()
     this.atom = configureAtom(this.store)
+    this.componentInstances = new Map()
 
     // this._lbCommunicator = new LBCommunicator({
     //   backendUrl: `${window.location.protocol}//${window.location.hostname}:${process.env.studio.socketPort}`,
@@ -60,5 +61,13 @@ export default class TheStudioClass {
 
   _getNewComponentInstanceId() {
     return this._lastComponentInstanceId++
+  }
+
+  declareComponentInstance(id: number, instance: React.ComponentType) {
+    this.componentInstances.set(id, instance)
+  }
+
+  undeclareComponentInstance(id: number) {
+    this.componentInstances.delete(id)
   }
 }

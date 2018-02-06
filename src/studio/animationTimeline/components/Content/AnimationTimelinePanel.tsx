@@ -6,7 +6,10 @@ import SortableBox from './SortableBox'
 import BoxView from './BoxView'
 import TimeBar from './TimeBar'
 import {Subscriber} from 'react-broadcast'
-import {PanelWidthChannel, default as Panel} from '$src/studio/workspace/components/Panel/Panel'
+import {
+  PanelWidthChannel,
+  default as Panel,
+} from '$src/studio/workspace/components/Panel/Panel'
 
 import {
   BoxID,
@@ -15,11 +18,12 @@ import {
   TimelineObject,
 } from '$src/studio/animationTimeline/types'
 import {XY} from '$src/studio/workspace/types'
-import { get } from 'lodash';
+import {get} from 'lodash'
 
 type OwnProps = TimelineObject & {
   pathToTimeline: string[]
   panelDimensions: XY
+  elementId?: number
 }
 
 type Props = {dispatch: Function} & OwnProps
@@ -38,7 +42,7 @@ type State = {
   moveRatios: number[]
   boundaries: number[]
   duration: number
-  currentTime: number
+  currentTTime: number
   focus: [number, number]
 }
 
@@ -58,8 +62,8 @@ class Content extends React.Component<Props, State> {
       moveRatios: new Array(layout.length).fill(0),
       boundaries: this._getBoundaries(boxes, layout),
       duration: 60000,
-      focus: [10000, 50000],
-      currentTime: 30000,
+      focus: [0, 50000],
+      currentTTime: 0,
     }
   }
 
@@ -67,6 +71,10 @@ class Content extends React.Component<Props, State> {
     if (JSON.stringify(newProps.layout) !== JSON.stringify(this.props.layout)) {
       this._resetBoundariesAndRatios(newProps.layout, newProps.boxes)
     }
+    
+
+
+    // if (newProps)
     // if (newProps.panelDimensions.x !== this.props.panelDimensions.x) {
     //   this._resetPanelWidth(newProps.panelDimensions.x)
     // }
@@ -196,35 +204,31 @@ class Content extends React.Component<Props, State> {
     const {dispatch} = this.props
     if (moveTo != null) {
       dispatch(
-        reduceStateAction(
-          [...this.props.pathToTimeline, 'layout'],
-          layout => {
-            const newLayout = layout.slice()
-            newLayout.splice(index, 0, newLayout.splice(moveTo, 1)[0])
-            return newLayout
-          },
-        ),
+        reduceStateAction([...this.props.pathToTimeline, 'layout'], layout => {
+          const newLayout = layout.slice()
+          newLayout.splice(index, 0, newLayout.splice(moveTo, 1)[0])
+          return newLayout
+        }),
       )
     } else if (mergeWith != null) {
       dispatch(
-        reduceStateAction(
-          this.props.pathToTimeline,
-          ({layout, boxes}) => {
-            const fromId = layout[index]
-            const toId = layout[mergeWith]
+        reduceStateAction(this.props.pathToTimeline, ({layout, boxes}) => {
+          const fromId = layout[index]
+          const toId = layout[mergeWith]
 
-            const newLayout = layout.slice()
-            newLayout.splice(index, 1)
+          const newLayout = layout.slice()
+          newLayout.splice(index, 1)
 
-            const {[fromId]: mergedBox, ...newBoxes} = boxes
-            newBoxes[toId].variables = newBoxes[toId].variables.concat(mergedBox.variables)
+          const {[fromId]: mergedBox, ...newBoxes} = boxes
+          newBoxes[toId].variables = newBoxes[toId].variables.concat(
+            mergedBox.variables,
+          )
 
-            return {
-              layout: newLayout,
-              boxes: newBoxes,
-            }
-          },
-        ),
+          return {
+            layout: newLayout,
+            boxes: newBoxes,
+          }
+        }),
       )
     }
 
@@ -241,7 +245,6 @@ class Content extends React.Component<Props, State> {
       reduceStateAction(
         this.props.pathToTimeline,
         ({layout, boxes, ...restOfTimeline}) => {
-
           const fromId = layout[index]
           const newBoxId = generateUniqueId()
 
@@ -279,12 +282,7 @@ class Content extends React.Component<Props, State> {
     const {dispatch} = this.props
     dispatch(
       reduceStateAction(
-        [
-          ...this.props.pathToTimeline,
-          'boxes',
-          boxId,
-          'height',
-        ],
+        [...this.props.pathToTimeline, 'boxes', boxId, 'height'],
         () => newSize,
       ),
     )
@@ -369,8 +367,8 @@ class Content extends React.Component<Props, State> {
     newFocusRight: number,
     panelWidth: number,
   ) {
-    const {focus, currentTime} = this.state
-    const newTimeX = this.focusedTimeToX(currentTime, focus, panelWidth)
+    const {focus, currentTTime} = this.state
+    const newTimeX = this.focusedTimeToX(currentTTime, focus, panelWidth)
     const newCurrentTime = this.xToFocusedTime(
       newTimeX,
       [newFocusLeft, newFocusRight],
@@ -378,23 +376,27 @@ class Content extends React.Component<Props, State> {
     )
 
     this.setState(() => ({
-      currentTime: newCurrentTime,
+      currentTTime: newCurrentTime,
       focus: [newFocusLeft, newFocusRight],
     }))
   }
 
-  changeCurrentTimeTo = (currentTime: number) => {
-    const {focus} = this.state
-    if (currentTime < focus[0]) currentTime = focus[0]
-    if (currentTime > focus[1]) currentTime = focus[1]
-    this.setState(() => ({currentTime}))
+  changeCurrentTimeTo = (currentTTime: number) => {
+    // const {focus} = this.state
+    // if (currentTTime < focus[0] || currentTTime > focus[1]) {
+    //   const newFocusStart = Math.max(currentTTime - 30, 0)
+    //   const newFocusEnd = newFocusStart + (focus[1] - focus[0])
+    //   this.setState(() => ({currentTTime, focus: [newFocusStart, newFocusEnd]}))
+    // } else {
+    this.setState(() => ({currentTTime}))
+    // }
   }
 
   changeDuration = (newDuration: number) => {
-    const {focus, duration, currentTime} = this.state
+    const {focus, duration, currentTTime} = this.state
     let newFocus = focus
-    let newCurrentTime = currentTime
-    if (newDuration < currentTime) newCurrentTime = newDuration
+    let newCurrentTime = currentTTime
+    if (newDuration < currentTTime) newCurrentTime = newDuration
     if (newDuration < duration) {
       if (focus[1] > newDuration && focus[0] < newDuration) {
         newFocus[1] = newDuration
@@ -408,10 +410,18 @@ class Content extends React.Component<Props, State> {
       }
     }
     this.setState(() => ({
-      currentTime: newCurrentTime,
+      currentTTime: newCurrentTime,
       duration: newDuration,
       focus: newFocus,
     }))
+  }
+
+
+
+  _changeCurrentTime(newTime: number) {
+    if (this.timelineInstance) {
+      this.timelineInstance.atom.prop('time').set(newTime)
+    }
   }
 
   handleScroll(e: React.WheelEvent<$FixMe>, panelWidth: number) {
@@ -492,7 +502,7 @@ class Content extends React.Component<Props, State> {
       moveRatios,
       duration,
       focus,
-      currentTime,
+      currentTTime,
     } = this.state
     const {boxes, layout} = this.props
     return (
@@ -516,7 +526,7 @@ class Content extends React.Component<Props, State> {
                   <TimeBar
                     panelWidth={panelWidth}
                     duration={duration}
-                    currentTime={currentTime}
+                    currentTime={currentTTime}
                     focus={focus}
                     timeToX={(time: number) => this.timeToX(time, panelWidth)}
                     xToTime={(x: number) => this.xToTime(x, panelWidth)}
@@ -543,8 +553,10 @@ class Content extends React.Component<Props, State> {
                     changeDuration={this.changeDuration}
                   />
                 </div>
-                <div ref={c => (this.variablesContainer = c)} className={css.variables}>
-
+                <div
+                  ref={c => (this.variablesContainer = c)}
+                  className={css.variables}
+                >
                   {layout.map((id, index) => {
                     const box = boxes[id]
                     const boxTranslateY =
@@ -574,10 +586,12 @@ class Content extends React.Component<Props, State> {
                             tempIncludeTimeGrid={index === 0}
                             boxHeight={box.height}
                             variableIds={box.variables}
-                            splitVariable={variableId => this.splitVariable(index, variableId)}
+                            splitVariable={variableId =>
+                              this.splitVariable(index, variableId)
+                            }
                             panelWidth={panelWidth}
                             duration={duration}
-                            currentTime={currentTime}
+                            currentTime={currentTTime}
                             focus={focus}
                             canBeMerged={canBeMerged}
                             shouldIndicateMerge={shouldIndicateMerge}

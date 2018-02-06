@@ -1,12 +1,11 @@
-// @flow
 import {D} from '$studio/handy'
 import ValueInstance from './ValueInstance'
 
 export default class TimelineInstance {
-  _atom: $FixMe
-  _descriptorP: *
-  _timeP: *
-  _studio: *
+  atom: $FixMe
+  _descriptorP: $FixMe
+  _timeP: $FixMe
+  _studio: $FixMe
   _pathToTimelineDescriptor: Array<string>
 
   constructor(
@@ -14,7 +13,7 @@ export default class TimelineInstance {
     studio: $FixMe,
     pathToTimelineDescriptor: Array<string>,
   ) {
-    this._atom = D.atoms.dict({
+    this.atom = D.atoms.dict({
       time: D.atoms.box(0),
     })
 
@@ -27,7 +26,7 @@ export default class TimelineInstance {
     this._pathToTimelineDescriptor = pathToTimelineDescriptor
     this._studio = studio
 
-    this._timeP = this._atom.pointer().prop('time')
+    this._timeP = this.atom.pointer().prop('time')
 
     this._descriptorP = descriptorP
     // console.log('here', descriptorP.prop('variables').getValue())

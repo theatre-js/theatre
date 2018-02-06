@@ -4,6 +4,7 @@ import constructValue from './constructValue'
 
 export default makeReactiveComponent({
   componentType: 'Declarative',
+  componentId: 'ElementifyDeclarativeComponent',
   getClass: d =>
     d.extend({
       // displayName(d) {
