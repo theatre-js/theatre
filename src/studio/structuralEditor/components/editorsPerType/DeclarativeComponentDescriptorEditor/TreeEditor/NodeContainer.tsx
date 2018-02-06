@@ -154,7 +154,8 @@ class NodeContainer extends React.PureComponent<Props, State> {
   }
 
   deleteNode = () => {
-    this.setState(() => ({contextMenuProps: null, isCollapsed: true}))
+    const {height} = this.wrapper.getBoundingClientRect()
+    this.setState(() => ({contextMenuProps: null, isCollapsed: true, maxHeight: height}))
     setTimeout(() => {
       const {id: nodeId, parentId, index} = this.props.nodeData
       this.props.dispatchAction(ACTION.NODE_DELETE, {nodeId, parentId, index})
