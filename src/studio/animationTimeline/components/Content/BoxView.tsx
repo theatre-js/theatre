@@ -513,10 +513,10 @@ class BoxBiew extends React.Component<Props, State> {
                       <feGaussianBlur in="color" stdDeviation=".7" />
                     </filter>
                     <filter id="darken">
-                      <feColorMatrix type="matrix" values={`.5  0  0  0  0
-                                                            0  .5  0  0  0
-                                                            0  0  .5  0  0
-                                                            0  0  0  1  0`} />
+                      <feColorMatrix type="matrix" values={`1  0  0  0  0
+                                                            0  1  0  0  0
+                                                            0  0  1  0  0
+                                                            0  0  0  .5  0`} />
                     </filter>
                   </defs>
                   {variables.map(({id, points}, index) => (

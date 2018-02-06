@@ -6,6 +6,7 @@ export const timeEndInput: string;
 export const timeThread: string;
 export const currentTime: string;
 export const currentTimeThumb: string;
+export const isHidden: string;
 export const thumbSquinch: string;
 export const currentTimeNeedle: string;
 export const focusBar: string;

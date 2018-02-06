@@ -65,6 +65,10 @@
   top: -2px;
   border-left: none;
 
+  &.isHidden {
+    display: none;
+  }
+
   &:before {
     position: absolute;
     display: block;
@@ -133,6 +137,10 @@
   height: calc(100% - 8px);
   top: 8px;
   left: 2px;
+
+  &.isHidden {
+    display: none;
+  }
 }
 
 .focusBar {

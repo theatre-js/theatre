@@ -324,15 +324,15 @@ class Content extends StudioComponent<Props, State> {
     if (newFocusRight > duration) newFocusRight = duration
     if (newFocusRight - focus[0] < 1000) newFocusRight = focus[0] + 1000
 
-    this._reallyChangeFocusTo(focus[0], newFocusRight, panelWidth)
+    this.changeFocusAndScrollVariablesContainer(focus[0], newFocusRight, panelWidth)
   }
-
+  
   changeFocusLeftTo = (newFocusLeft: number, panelWidth: number) => {
     const {focus} = this.state
     if (newFocusLeft < 0) newFocusLeft = 0
     if (focus[1] - newFocusLeft < 1000) newFocusLeft = focus[1] - 1000
-
-    this._reallyChangeFocusTo(newFocusLeft, focus[1], panelWidth)
+    
+    this.changeFocusAndScrollVariablesContainer(newFocusLeft, focus[1], panelWidth)
   }
 
   _changeZoomLevel = (
@@ -350,7 +350,8 @@ class Content extends StudioComponent<Props, State> {
     if (newFocusRight - newFocusLeft < 1) return
     const svgWidth = duration / (newFocusRight - newFocusLeft) * panelWidth
     this.variablesContainer.scrollLeft = svgWidth * newFocusLeft / duration
-    this._reallyChangeFocusTo(newFocusLeft, newFocusRight, panelWidth)
+
+    this.setState(() => ({focus: [newFocusLeft, newFocusRight]}))    
   }
 
   changeFocusAndScrollVariablesContainer = (
@@ -371,13 +372,12 @@ class Content extends StudioComponent<Props, State> {
     const svgWidth = duration / (newFocusRight - newFocusLeft) * panelWidth
     this.variablesContainer.scrollLeft = svgWidth * newFocusLeft / duration
 
-    this._reallyChangeFocusTo(newFocusLeft, newFocusRight, panelWidth)
+    this.setState(() => ({focus: [newFocusLeft, newFocusRight]}))
   }
 
   _changeFocusTo = (
     newFocusLeft: number,
     newFocusRight: number,
-    panelWidth: number,
   ) => {
     const {focus, duration} = this.state
     if (newFocusLeft < 0) {
@@ -389,26 +389,7 @@ class Content extends StudioComponent<Props, State> {
       newFocusRight = duration
     }
 
-    this._reallyChangeFocusTo(newFocusLeft, newFocusRight, panelWidth)
-  }
-
-  _reallyChangeFocusTo(
-    newFocusLeft: number,
-    newFocusRight: number,
-    panelWidth: number,
-  ) {
-    const {focus, currentTTime} = this.state
-    const newTimeX = this.focusedTimeToX(currentTTime, focus, panelWidth)
-    const newCurrentTime = this.xToFocusedTime(
-      newTimeX,
-      [newFocusLeft, newFocusRight],
-      panelWidth,
-    )
-
-    this.setState(() => ({
-      currentTTime: newCurrentTime,
-      focus: [newFocusLeft, newFocusRight],
-    }))
+    this.setState(() => ({focus: [newFocusLeft, newFocusRight]}))    
   }
 
   changeCurrentTimeTo = (currentTTime: number) => {
@@ -488,26 +469,8 @@ class Content extends StudioComponent<Props, State> {
     if (!isHorizontal) {
       const {focus} = this.state
       const change = e.deltaX / panelWidth * (focus[1] - focus[0])
-      this._changeFocusTo(focus[0] + change, focus[1] + change, panelWidth)
+      this._changeFocusTo(focus[0] + change, focus[1] + change)
     }
-
-    // if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-    //   if (e.shiftKey) {
-    //     if (e.nativeEvent.target !== this.variablesContainer) {
-    //       const {focus, duration} = this.state
-    //       const svgWidth = duration / (focus[1] - focus[0]) * panelWidth
-    //       const focusLeftX = focus[0] / duration * svgWidth
-    //       const focusRightX = focus[1] / duration * svgWidth
-    //       const fraction = (e.nativeEvent.offsetX - focusLeftX) / (focusRightX - focusLeftX)
-    //       const change = e.deltaY / panelWidth * (focus[1] - focus[0])
-    //       this._changeZoomLevel(focus[0] - change * fraction, focus[1] + change * (1 - fraction), panelWidth)
-    //     }
-    //   }
-    // } else {
-    //   const {focus} = this.state
-    //   const change = e.deltaX / panelWidth * (focus[1] - focus[0])
-    //   this._changeFocusTo(focus[0] + change, focus[1] + change, panelWidth)
-    // }
   }
 
   timeToX(time: number, panelWidth: number) {

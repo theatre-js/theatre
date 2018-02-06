@@ -308,7 +308,15 @@ class Point extends React.PureComponent<Props, State> {
       <g>
         {isMoving && this._renderTransformedPoint()}
         {renderLeftHandle && (
-          <path strokeWidth="1" d={`M ${time} ${value} L ${leftHandle[0]} ${leftHandle[1]}`}/>
+          <line
+            // stroke="dimgrey"
+            className={css.handleLine}
+            x1={time}
+            y1={value}
+            x2={leftHandle[0]}
+            y2={leftHandle[1]}
+            // filter={`url(#darken)`}
+          />
         )}
         {renderRightHandle && (
             <g>

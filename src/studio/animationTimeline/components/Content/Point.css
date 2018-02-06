@@ -34,7 +34,12 @@
 }
 
 .handle {
+  filter: url('#darken');  
   pointer-events: none;  
+}
+
+.handleLine {
+  filter: url('#darken');
 }
 
 .pointTip {

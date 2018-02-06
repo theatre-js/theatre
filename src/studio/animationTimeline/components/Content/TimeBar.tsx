@@ -2,7 +2,7 @@
 import React from 'react'
 import css from './TimeBar.css'
 import DraggableArea from '$studio/common/components/DraggableArea'
-import SingleInputForm from '$lf/common/components/SingleInputForm'
+import cx from 'classnames'
 
 type Props = {
   duration: number
@@ -91,6 +91,7 @@ class TimeBar extends React.PureComponent<Props, State> {
       duration,
       timeToX,
       focusedTimeToX,
+      panelWidth,
     } = this.props
     const focusLeft = timeToX(focus[0])
     const focusRight = timeToX(focus[1])
@@ -98,6 +99,8 @@ class TimeBar extends React.PureComponent<Props, State> {
     currentTime = currentTime / 1000
     focus = focus.map(f => f / 1000)
     duration = duration / 1000
+    
+    const isSeekerHidden = (currentX < 0 || currentX > panelWidth)
     return (
       <div className={css.container}>
         {/* <div className={css.timeStart}>{0}</div>
@@ -158,7 +161,7 @@ class TimeBar extends React.PureComponent<Props, State> {
           onDrag={dx => this.changeCurrentTime(dx)}
         >
           <div
-            className={css.currentTimeNeedle}
+            className={cx(css.currentTimeNeedle, {[css.isHidden]: isSeekerHidden})}
             style={{transform: `translateX(${currentX}px)`}}
           />
         </DraggableArea>
@@ -167,7 +170,7 @@ class TimeBar extends React.PureComponent<Props, State> {
           onDrag={dx => this.changeCurrentTime(dx)}
         >
           <div
-            className={css.currentTimeThumb}
+            className={cx(css.currentTimeThumb, {[css.isHidden]: isSeekerHidden})}
             style={{transform: `translateX(${currentX}px)`}}
           >
             <div className={css.thumbSquinch} />
