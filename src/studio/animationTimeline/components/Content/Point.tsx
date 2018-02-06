@@ -118,6 +118,7 @@ class Point extends React.PureComponent<Props, State> {
   }
 
   changePointPosition = () => {
+    this._removeGlobalCursorRule()
     const {pointMove} = this.state
     this.props.changePointPositionBy({time: pointMove[0], value: pointMove[1]})
     this._resetState()
@@ -140,6 +141,7 @@ class Point extends React.PureComponent<Props, State> {
   }
 
   changePointHandles = () => {
+    this._removeGlobalCursorRule()    
     const {handlesMove} = this.state
     this.props.changePointHandlesBy(handlesMove)
     this._resetState()
@@ -164,10 +166,10 @@ class Point extends React.PureComponent<Props, State> {
     const newT = point.time + pointMove[0]
     const newValue = point.value + pointMove[1]
     const handleFactors = [
-      Math.abs(newT - prevT) / Math.abs(point.time - prevT),
-      Math.abs(newValue - prevValue) / Math.abs(point.value - prevValue),
-      Math.abs(newT - nextT) / Math.abs(point.time - nextT),
-      Math.abs(newValue - nextValue) / Math.abs(point.value - nextValue),
+      (newT - prevT) / (point.time - prevT),
+      (newValue - prevValue) / (point.value - prevValue),
+      (newT - nextT) / (point.time - nextT),
+      (newValue - nextValue) / (point.value - nextValue),
     ]
     const movedPoint: IPoint = {
       ...(point as any),
@@ -273,6 +275,17 @@ class Point extends React.PureComponent<Props, State> {
     )
   }
 
+  _addGlobalCursorRule() {
+    document.styleSheets[0].insertRule(
+      '* {cursor: move !important;}',
+      document.styleSheets[0].cssRules.length,
+    )
+  }
+
+  _removeGlobalCursorRule() {
+    document.styleSheets[0].deleteRule(document.styleSheets[0].cssRules.length - 1)
+  }
+
   render() {
     const {point, prevPoint, nextPoint} = this.props
     const {time, value, interpolationDescriptor} = point
@@ -286,109 +299,130 @@ class Point extends React.PureComponent<Props, State> {
       time + handles[2] + handlesMove[2],
       value + handles[3] + handlesMove[3],
     ]
+
+    const renderLeftHandle = prevPoint != null &&
+      prevPoint.interpolationDescriptor.connected
+    const renderRightHandle = nextPoint != null &&
+      point.interpolationDescriptor.connected
     return (
       <g>
         {isMoving && this._renderTransformedPoint()}
-        {prevPoint != null &&
-          prevPoint.interpolationDescriptor.connected && (
+        {renderLeftHandle && (
+          <path strokeWidth="1" d={`M ${time} ${value} L ${leftHandle[0]} ${leftHandle[1]}`}/>
+        )}
+        {renderRightHandle && (
             <g>
               <line
-                stroke="dimgrey"
-                x1={time}
-                y1={value}
-                x2={leftHandle[0]}
-                y2={leftHandle[1]}
-              />
-              <DraggableArea
-                onDrag={this.leftHandleDragHandler}
-                onDragEnd={this.changePointHandles}
-              >
-                <g>
-                  <rect
-                    width="10"
-                    height="10"
-                    x={leftHandle[0] - 5}
-                    y={leftHandle[1] - 5}
-                    fill="transparent"
-                    stroke="transparent"
-                    onClick={e => this.handleClickHandler(e, 'left')}
-                    className={css.handleClickRect}
-                  />
-                  <circle
-                    fill="dimgrey"
-                    stroke="transparent"
-                    cx={leftHandle[0]}
-                    cy={leftHandle[1]}
-                    r={2}
-                    className={css.handle}
-                  />
-                </g>
-              </DraggableArea>
-            </g>
-          )}
-        {nextPoint != null &&
-          point.interpolationDescriptor.connected && (
-            <g>
-              <line
-                stroke="dimgrey"
                 x1={time}
                 y1={value}
                 x2={rightHandle[0]}
                 y2={rightHandle[1]}
+                // filter="url(#darken)"                
               />
-              <DraggableArea
-                onDrag={this.rightHandleDragHandler}
-                onDragEnd={this.changePointHandles}
-              >
-                <g>
-                  <rect
-                    width="10"
-                    height="10"
-                    x={rightHandle[0] - 5}
-                    y={rightHandle[1] - 5}
-                    fill="transparent"
-                    stroke="transparent"
-                    onClick={e => this.handleClickHandler(e, 'right')}
-                    className={css.handleClickRect}
-                  />
-                  <circle
-                    fill="dimgrey"
-                    stroke="transparent"
-                    cx={rightHandle[0]}
-                    cy={rightHandle[1]}
-                    r={2}
-                    className={css.handle}
-                  />
-                </g>
-              </DraggableArea>
             </g>
           )}
         <DraggableArea
+          onDragStart={this._addGlobalCursorRule}
           onDrag={this.pointDragHandler}
           onDragEnd={this.changePointPosition}
         >
           <g>
             <rect
-              width="14"
-              height="14"
-              x={time - 7}
-              y={value - 7}
+              width="16"
+              height="16"
+              x={time - 8}
+              y={value - 8}
               fill="transparent"
               stroke="transparent"
               onClick={this.pointClickHandler}
               className={css.pointClickRect}
             />
             <circle
-              fill="#222"
-              strokeWidth={2}
+              // fill="#1C2226"
+              // strokeWidth={1}
               cx={time}
               cy={value}
-              r={3}
-              className={css.point}
+              r={6}
+              className={css.pointGlow}
+            />
+            <circle
+              strokeWidth="2"
+              cx={time}
+              cy={value}
+              r={3.2}
+              className={css.pointStroke}
+              // filter="url(#glow)"
+              />
+            <circle
+              fill="#1C2226"
+              stroke="transparent"
+              cx={time}
+              cy={value}
+              r={2.4}
+              className={css.pointCenter}
             />
           </g>
         </DraggableArea>
-        {/* {isEnteringProps && this._renderInputs()} */}
+        {renderLeftHandle &&
+          <DraggableArea
+            onDragStart={this._addGlobalCursorRule}            
+            onDrag={this.leftHandleDragHandler}
+            onDragEnd={this.changePointHandles}
+          >
+            <g>
+              <rect
+                width="12"
+                height="12"
+                x={leftHandle[0] - 6}
+                y={leftHandle[1] - 6}
+                fill="transparent"
+                stroke="transparent"
+                onClick={e => this.handleClickHandler(e, 'left')}
+                className={css.handleClickRect}
+              />
+              <circle
+                // fill="dimgrey"
+                // stroke="dimgrey"
+                strokeWidth="1"                
+                cx={leftHandle[0]}
+                cy={leftHandle[1]}
+                r={2}
+                className={css.handle}
+                // filter="url(#darken)"                
+              />
+            </g>
+          </DraggableArea>
+        }
+        {renderRightHandle &&
+          <DraggableArea
+            onDragStart={this._addGlobalCursorRule}          
+            onDrag={this.rightHandleDragHandler}
+            onDragEnd={this.changePointHandles}
+          >
+            <g>
+              <rect
+                width="12"
+                height="12"
+                x={rightHandle[0] - 6}
+                y={rightHandle[1] - 6}
+                fill="transparent"
+                stroke="transparent"
+                onClick={e => this.handleClickHandler(e, 'right')}
+                className={css.handleClickRect}
+              />
+              <circle
+                // fill="dimgrey"
+                // stroke="dimgrey"
+                strokeWidth="1"
+                cx={rightHandle[0]}
+                cy={rightHandle[1]}
+                r={2}
+                className={css.handle}
+                filter={`url(#darken)`}
+              />
+            </g>
+          </DraggableArea>
+        }
       </g>
     )
   }

@@ -54,8 +54,8 @@ const resetExtremums = (pathToVariable: string[]) => {
         const prevValue = points[index - 1] ? points[index - 1].value : 0
         const nextValue = points[index + 1] ? points[index + 1].value : 0
         const handles = [
-          point.interpolationDescriptor.handles[1] * Math.abs(prevValue - value),
-          point.interpolationDescriptor.handles[3] * Math.abs(nextValue - value),
+          point.interpolationDescriptor.handles[1] * (value - prevValue),
+          point.interpolationDescriptor.handles[3] * (nextValue - value),
         ]
         return [
           Math.min(
@@ -380,14 +380,14 @@ class BoxBiew extends React.Component<Props, State> {
     const handlesInPixels = [
       ...(prevPoint != null
         ? [
-            handles[0] * Math.abs(prevPoint.time - point.time),
-            handles[1] * Math.abs(prevPoint.value - point.value),
+            handles[0] * (point.time - prevPoint.time),
+            handles[1] * (point.value - prevPoint.value),
           ]
         : handles.slice(0, 2)),
       ...(nextPoint != null
         ? [
-            handles[2] * Math.abs(nextPoint.time - point.time),
-            handles[3] * Math.abs(nextPoint.value - point.value),
+            handles[2] * (nextPoint.time - point.time),
+            handles[3] * (nextPoint.value - point.value),
           ]
         : handles.slice(2)),
     ]
@@ -414,14 +414,14 @@ class BoxBiew extends React.Component<Props, State> {
     return [
       ...(prevPoint != null
         ? [
-            deNormalizedHandles[0] / Math.abs(prevPoint.time - point.time),
-            deNormalizedHandles[1] / Math.abs(prevPoint.value - point.value),
+            deNormalizedHandles[0] / (point.time - prevPoint.time),
+            deNormalizedHandles[1] / (point.value - prevPoint.value),
           ]
         : [deNormalizedHandles[0], deNormalizedHandles[1]]),
       ...(nextPoint != null
         ? [
-            deNormalizedHandles[2] / Math.abs(nextPoint.time - point.time),
-            deNormalizedHandles[3] / Math.abs(nextPoint.value - point.value),
+            deNormalizedHandles[2] / (nextPoint.time - point.time),
+            deNormalizedHandles[3] / (nextPoint.value - point.value),
           ]
         : [deNormalizedHandles[2], deNormalizedHandles[3]]),
     ]
@@ -503,6 +503,22 @@ class BoxBiew extends React.Component<Props, State> {
                   }}
                   onClick={this.addPoint}
                 >
+                  <defs>
+                    <filter id="glow">
+                      <feComponentTransfer id="color">
+                        <feFuncR type="linear" slope="2"/>
+                        <feFuncG type="linear" slope="2"/>
+                        <feFuncB type="linear" slope="2"/>
+                      </feComponentTransfer>
+                      <feGaussianBlur in="color" stdDeviation=".7" />
+                    </filter>
+                    <filter id="darken">
+                      <feColorMatrix type="matrix" values={`.5  0  0  0  0
+                                                            0  .5  0  0  0
+                                                            0  0  .5  0  0
+                                                            0  0  0  1  0`} />
+                    </filter>
+                  </defs>
                   {variables.map(({id, points}, index) => (
                     <Variable
                       key={id}

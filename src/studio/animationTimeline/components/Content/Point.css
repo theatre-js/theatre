@@ -2,16 +2,39 @@
   cursor: pointer;
 }
 
-.point {
-  cursor: pointer;
+.pointClickRect:hover ~ .pointGlow,
+.pointClickRect:active ~ .pointGlow {
+  filter: url('#glow');
+  opacity: 1;
+}
+
+.pointClickRect:hover ~ .pointStroke {
+  stroke-width: 4px;
+}
+
+.pointGlow {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pointStroke {
+  pointer-events: none;
+}
+
+.pointCenter {
+  pointer-events: none;
 }
 
 .handleClickRect {
   cursor: pointer;
 }
 
+.handleClickRect:hover ~ .handle {
+  stroke-width: 2px;
+}
+
 .handle {
-  cursor: pointer;
+  pointer-events: none;  
 }
 
 .pointTip {
