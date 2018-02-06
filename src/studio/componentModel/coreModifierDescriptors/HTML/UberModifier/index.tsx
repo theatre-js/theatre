@@ -45,7 +45,9 @@ const getClass = (propsP, baseClass) => {
             scaleZP,
             opacityP,
           },
-          () => {
+          deps => {
+            console.log(deps)
+
             const d = dict({
               transform: `translate3d(${numeralize(
                 translateXP,

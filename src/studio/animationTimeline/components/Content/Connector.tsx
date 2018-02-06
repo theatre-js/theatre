@@ -23,10 +23,10 @@ class Connector extends React.PureComponent<Props, State> {
     return (
       <path
         d={`M ${lp.time} ${lp.value}
-            C ${lp.time + lp.interpolationDescriptor.handdles[2]} ${lp.value +
-          lp.interpolationDescriptor.handdles[3]}
-              ${rp.time + rp.interpolationDescriptor.handdles[0]} ${rp.value +
-          rp.interpolationDescriptor.handdles[1]}
+            C ${lp.time + lp.interpolationDescriptor.handles[2]} ${lp.value +
+          lp.interpolationDescriptor.handles[3]}
+              ${rp.time + rp.interpolationDescriptor.handles[0]} ${rp.value +
+          rp.interpolationDescriptor.handles[1]}
               ${rp.time} ${rp.value}`}
         fill="transparent"
         strokeWidth={2}

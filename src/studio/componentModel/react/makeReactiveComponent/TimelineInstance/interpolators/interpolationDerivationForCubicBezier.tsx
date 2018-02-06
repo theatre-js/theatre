@@ -28,10 +28,10 @@ export default function interpolationDerivationForCubicBezier(
 const unitBezier = (interpolationDescriptorP: $FixMe) => {
   return D.derivations.withDeps(
     {
-      lxD: interpolationDescriptorP.prop('lx'),
-      lyD: interpolationDescriptorP.prop('ly'),
-      rxD: interpolationDescriptorP.prop('rx'),
-      ryD: interpolationDescriptorP.prop('ry'),
+      lxD: interpolationDescriptorP.prop('handles').index(0),
+      lyD: interpolationDescriptorP.prop('handles').index(1),
+      rxD: interpolationDescriptorP.prop('handles').index(2),
+      ryD: interpolationDescriptorP.prop('handles').index(3),
     },
     ({lxD, lyD, rxD, ryD}) => {
       return new UnitBezier(

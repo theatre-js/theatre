@@ -27,7 +27,7 @@ class Variable extends React.PureComponent<Props, {}> {
           const nextPoint = points[index + 1]
           return (
             <g key={index}>
-              {point.interpolationDescriptor.connocted &&
+              {point.interpolationDescriptor.connected &&
                 nextPoint != null && (
                   <Connector
                     leftPoint={point}

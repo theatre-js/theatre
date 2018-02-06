@@ -132,10 +132,8 @@ export interface ITimelineVarDescriptor {
 export interface ITimelinePointInterpolationDescriptor {
   __descriptorType: 'TimelinePointInterpolationDescriptor'
   interpolationType: 'CubicBezier'
-  lx: number
-  ly: number
-  rx: number
-  ry: number
+  // handles: [lx, ly, rx, ry]
+  handles: [number, number, number, number]
   connected: boolean
 }
 

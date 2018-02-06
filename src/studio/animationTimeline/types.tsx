@@ -15,8 +15,8 @@ export type PointConnectionStatus = boolean
 
 export type Point = PointPosition & {
   interpolationDescriptor: {
-    handdles: PointHandles
-    connocted: PointConnectionStatus
+    handles: PointHandles
+    connected: PointConnectionStatus
   },
 }
 

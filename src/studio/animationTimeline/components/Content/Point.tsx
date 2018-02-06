@@ -175,16 +175,16 @@ class Point extends React.PureComponent<Props, State> {
       value: newValue,
       interpolationDescriptor: {
         ...point.interpolationDescriptor,
-        handdles: point.interpolationDescriptor.handdles.map(
-          (handdle, index) =>
-            handleFactors[index] * (handdle + handlesMove[index]),
+        handles: point.interpolationDescriptor.handles.map(
+          (handle, index) =>
+            handleFactors[index] * (handle + handlesMove[index]),
         ),
       },
       // @ts-ignore
     }
     return (
       <g opacity={0.5}>
-        {point.interpolationDescriptor.connocted &&
+        {point.interpolationDescriptor.connected &&
           nextPoint != null && (
             <Connector
               leftPoint={movedPoint}
@@ -192,22 +192,22 @@ class Point extends React.PureComponent<Props, State> {
                 ...nextPoint,
                 interpolationDescriptor: {
                   ...nextPoint.interpolationDescriptor,
-                  handdles: nextPoint.interpolationDescriptor.handdles.map(
-                    (handdle, index) => handleFactors[index % 2 + 2] * handdle,
+                  handles: nextPoint.interpolationDescriptor.handles.map(
+                    (handle, index) => handleFactors[index % 2 + 2] * handle,
                   ),
                 },
               }}
             />
           )}
         {prevPoint != null &&
-          prevPoint.interpolationDescriptor.connocted && (
+          prevPoint.interpolationDescriptor.connected && (
             <Connector
               leftPoint={{
                 ...prevPoint,
                 interpolationDescriptor: {
                   ...nextPoint.interpolationDescriptor,
-                  handdles: prevPoint.interpolationDescriptor.handdles.map(
-                    (handdle, index) => handleFactors[index % 2] * handdle,
+                  handles: prevPoint.interpolationDescriptor.handles.map(
+                    (handle, index) => handleFactors[index % 2] * handle,
                   ),
                 },
               }}
@@ -276,21 +276,21 @@ class Point extends React.PureComponent<Props, State> {
   render() {
     const {point, prevPoint, nextPoint} = this.props
     const {time, value, interpolationDescriptor} = point
-    const {handdles} = interpolationDescriptor
+    const {handles} = interpolationDescriptor
     const {isMoving, handlesMove, isEnteringProps} = this.state
     const leftHandle = [
-      time + handdles[0] + handlesMove[0],
-      value + handdles[1] + handlesMove[1],
+      time + handles[0] + handlesMove[0],
+      value + handles[1] + handlesMove[1],
     ]
     const rightHandle = [
-      time + handdles[2] + handlesMove[2],
-      value + handdles[3] + handlesMove[3],
+      time + handles[2] + handlesMove[2],
+      value + handles[3] + handlesMove[3],
     ]
     return (
       <g>
         {isMoving && this._renderTransformedPoint()}
         {prevPoint != null &&
-          prevPoint.interpolationDescriptor.connocted && (
+          prevPoint.interpolationDescriptor.connected && (
             <g>
               <line
                 stroke="dimgrey"
@@ -309,14 +309,14 @@ class Point extends React.PureComponent<Props, State> {
                   cx={leftHandle[0]}
                   cy={leftHandle[1]}
                   r={2}
-                  className={css.handdle}
+                  className={css.handle}
                   onClick={e => this.handleClickHandler(e, 'left')}
                 />
               </DraggableArea>
             </g>
           )}
         {nextPoint != null &&
-          point.interpolationDescriptor.connocted && (
+          point.interpolationDescriptor.connected && (
             <g>
               <line
                 stroke="dimgrey"
@@ -335,7 +335,7 @@ class Point extends React.PureComponent<Props, State> {
                   cx={rightHandle[0]}
                   cy={rightHandle[1]}
                   r={2}
-                  className={css.handdle}
+                  className={css.handle}
                   onClick={e => this.handleClickHandler(e, 'right')}
                 />
               </DraggableArea>
