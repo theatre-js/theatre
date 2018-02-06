@@ -164,6 +164,7 @@ class TreeEditor extends StudioComponent<Props, State> {
     localHiddenValuesById: Object,
     index: number = 0,
     parentId: undefined | null | string = null,
+    parentPath: string[] = [],
   ): Object {
     const {getComponentDescriptor} = this.props
     if (descriptor.__descriptorType != null) {
@@ -188,6 +189,7 @@ class TreeEditor extends StudioComponent<Props, State> {
           ...actionPayload != null ? {actionPayload} : {},
           index,
           parentId,
+          path: parentPath,
         }
       }
 
@@ -204,6 +206,7 @@ class TreeEditor extends StudioComponent<Props, State> {
           value: (descriptor === PLACEHOLDER) ? '' : descriptor,
           index,
           parentId,
+          path: parentPath,
         }
       }
 
@@ -231,10 +234,11 @@ class TreeEditor extends StudioComponent<Props, State> {
           class: descriptor.props.class || '',
           index,
           parentId,
+          path: parentPath,
           children: []
             .concat(descriptor.props.children || [])
             .map((c, i) =>
-              this._getComponentData(c, localHiddenValuesById, i, id),
+              this._getComponentData(c, localHiddenValuesById, i, id, parentPath.concat('children', `${i}`)),
             ),
         }
       }
@@ -261,10 +265,10 @@ class TreeEditor extends StudioComponent<Props, State> {
   }
 
   setNodeBeingDragged = nodeBeingDragged => {
-    document.styleSheets[0].insertRule(
-      '* {cursor: -webkit-grab !important;}',
-      document.styleSheets[0].cssRules.length,
-    )
+    // document.styleSheets[0].insertRule(
+    //   '* {cursor: -webkit-grab;}',
+    //   document.styleSheets[0].cssRules.length,
+    // )
 
     this.setState(() => ({nodeBeingDragged}))
   }
@@ -339,7 +343,6 @@ class TreeEditor extends StudioComponent<Props, State> {
           ),
           reducer: parentNode => {
             const children = [].concat(parentNode.props.children)
-            // console.log(children[index])
             if (children[index] && children[index].which === nodeId) {
               parentNode.props.children = [
                 ...children.slice(0, index),
@@ -400,9 +403,9 @@ class TreeEditor extends StudioComponent<Props, State> {
   }
 
   dropHandler = (dropZoneProps: undefined | null | Object) => {
-    document.styleSheets[0].removeRule(
-      document.styleSheets[0].cssRules.length - 1,
-    )
+    // document.styleSheets[0].removeRule(
+    //   document.styleSheets[0].cssRules.length - 1,
+    // )
     const {nodeBeingDragged} = this.state
     this.setState(() => ({nodeBeingDragged: null, activeDropZone: null}))
     const {
@@ -520,8 +523,16 @@ class TreeEditor extends StudioComponent<Props, State> {
   _startScroll = dir => {
     if (this.state.nodeBeingDragged == null) return
     const delta = dir === 'up' ? -1 : dir === 'down' ? 1 : 0
+    const maxScroll = this.treeContainer.scrollHeight - this.treeWrapper.clientHeight
+    const coeffGenerator = dir === 'up'
+      ?
+        (scroll: number) => {return scroll > 100 ? 1 : 1 - Math.pow(1-((scroll)/100), 1.4)}
+      :
+        (scroll: number) => {return (maxScroll - scroll) > 100 ? 1 : 1 - Math.pow(1-(maxScroll - scroll)/100, 1.4)}
+    let scroll = this.treeWrapper.scrollTop
     this.scrollInterval = setInterval(() => {
-      this.treeWrapper.scrollTop += 2 * delta
+      scroll += parseFloat((coeffGenerator(scroll) * delta * 3.5).toFixed(1))
+      this.treeWrapper.scrollTop = scroll
     }, 5)
   }
 
@@ -574,8 +585,9 @@ class TreeEditor extends StudioComponent<Props, State> {
         {this._renderScroller('up')}
         {isANodeBeingDragged && (
           <MovableNode
+            rootNode={_.get(nodes, nodeBeingDragged.nodeProps.path)}
             nodeBeingDragged={nodeBeingDragged}
-            activeDropZone={activeDropZone}
+            // activeDropZone={activeDropZone}
             onCancel={this.dropHandler}
           />
         )}

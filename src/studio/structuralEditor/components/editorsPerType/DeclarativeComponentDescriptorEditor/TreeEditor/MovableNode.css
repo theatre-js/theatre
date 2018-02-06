@@ -1,5 +1,24 @@
 @value nodeHeight from './NodeContainer.css';
 
+.container {
+  position: absolute;
+  z-index: 100000;
+  width: calc(100% - var(--depth) * 17px);
+  left: calc(var(--depth) * 16px + 1px);
+  pointer-events: none;
+  
+  overflow: hidden;
+  animation: containerCollapse .25s ease-out forwards;
+}
+
+
+@keyframes containerCollapse {
+  0% {max-height: var(--height);}
+  90% {opacity: 1}
+  100% {max-height: nodeHeight; opacity: .8}
+}
+
+
 .staticContainer {
   position: absolute;
   z-index: 1000;
@@ -9,7 +28,6 @@
   left: 0;
   pointer-events: none;
   border-radius: 2px;
-
 }
 
 .dynamicContainer {

@@ -2,6 +2,7 @@
   position: relative;
   width: calc(100% - 2px);
   /* height: calc(100% - 60px); */
+  height: 50%;
   left: 1px;
   overflow: hidden scroll;
 
@@ -12,21 +13,21 @@
 
 .treeContainer {
   position: relative;
-  padding-bottom: 50px;
+  padding-bottom: 20px;
 }
 
 .scroller {
   position: absolute;
   width: 100%;
-  height: 10px;
+  height: 20px;
   z-index: 100;
 
   &.top {
-    top: 0;
+    top: -10px;
   }
 
   &.bottom {
-    bottom: 0;
+    height: 30px;
+    bottom: 0px;
   }
-  // margin-bottom: -10px;
 }

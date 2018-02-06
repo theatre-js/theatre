@@ -17,7 +17,7 @@ type State = {
   isTypeBeingChanged: boolean
 }
 
-const NO_CLASS = 'no class'
+export const NO_CLASS = 'no class'
 
 class ComponentNode extends React.PureComponent<Props, State> {
   state = {
@@ -209,17 +209,6 @@ class ComponentNode extends React.PureComponent<Props, State> {
       </div>
     )
   }
-}
-
-export const presentationOnlyComponent = ({nodeProps}) => {
-  return (
-    <div className={css.container}>
-      <div className={css.displayName}>{`<${nodeProps.displayName}>`}</div>
-      <div className={css.className}>
-        <input type="text" placeholder="Class" />
-      </div>
-    </div>
-  )
 }
 
 export default ComponentNode

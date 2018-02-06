@@ -101,18 +101,4 @@ class TextNode extends React.PureComponent<Props, State> {
   }
 }
 
-export const presentationOnlyComponent = ({nodeProps}) => {
-  return (
-    <div className={css.container}>
-      <div className={css.textLogo}>t</div>
-      <input
-        type="text"
-        className={css.text}
-        value={nodeProps.value}
-        onChange={() => {}}
-      />
-    </div>
-  )
-}
-
 export default TextNode

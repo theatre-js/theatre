@@ -3,7 +3,6 @@ import {React} from '$studio/handy'
 import css from './NodeContainer.css'
 import ComponentNode from './ComponentNode'
 import TextNode from './TextNode'
-import NodePlaceholder from './NodePlaceholder'
 import HalfPieContextMenu from '$studio/common/components/HalfPieContextMenu'
 import cx from 'classnames'
 import {ACTION, STATUS, NODE_TYPE} from './constants'
@@ -22,6 +21,7 @@ type Props = {
 type State = {
   newChildIndex: undefined | null | number
   isCollapsed: boolean
+  isBeingDragged: boolean
   maxHeight: undefined | null | number
   initialTopOffset: number
   contextMenuProps: undefined | null | Object
@@ -32,6 +32,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
   state = {
     newChildIndex: null,
     isCollapsed: false,
+    isBeingDragged: false,
     maxHeight: null,
     initialTopOffset: 0,
     contextMenuProps: null,
@@ -93,7 +94,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
 
   _setMaxHeight() {
     this.setState(() => ({
-      maxHeight: this.wrapper.getBoundingClientRect().height + 30,
+      maxHeight: this.wrapper.getBoundingClientRect().height,
     }))
   }
 
@@ -108,10 +109,18 @@ class NodeContainer extends React.PureComponent<Props, State> {
       nodeData: {children, ...nodeProps},
     } = this.props
     const {maxHeight: height} = this.state
-    const {top} = this.wrapper.getBoundingClientRect()
-    const {offsetY} = e.nativeEvent
-    this.setState(() => ({isCollapsed: true}))
-    setNodeBeingDragged({nodeProps, depth, top, height, offsetY})
+    const {top, left} = this.wrapper.getBoundingClientRect()
+    let {offsetY, offsetX} = e.nativeEvent
+    if (e.target !== this.rootWrapper) {
+      let el = e.target
+      while (el.offsetTop > 0 || el.offsetLeft > 0) {
+        offsetY += el.offsetTop
+        offsetX += el.offsetLeft
+        el = el.offsetParent
+      }
+    }
+    this.setState(() => ({isBeingDragged: true}))
+    setNodeBeingDragged({nodeProps, depth, top, left, height, offsetY, offsetX})
   }
 
   mouseUpHandler = e => {
@@ -232,19 +241,19 @@ class NodeContainer extends React.PureComponent<Props, State> {
     // this.props.cancelSettingType()
   }
 
-  renderNodePlaceholder(atIndex, depth) {
-    return (
-      <NodePlaceholder
-        key="placeholder"
-        depth={depth}
-        shouldRender={this.state.newChildIndex === atIndex}
-        renderDropZone={this.props.isANodeBeingDragged}
-        onAdd={() => this.addChild(atIndex)}
-        onMouseEnter={() => this.setPlaceholderAsActive(atIndex)}
-        onMouseLeave={() => this.unsetPlaceholderAsActive()}
-      />
-    )
-  }
+  // renderNodePlaceholder(atIndex, depth) {
+  //   return (
+  //     <NodePlaceholder
+  //       key="placeholder"
+  //       depth={depth}
+  //       shouldRender={this.state.newChildIndex === atIndex}
+  //       renderDropZone={this.props.isANodeBeingDragged}
+  //       onAdd={() => this.addChild(atIndex)}
+  //       onMouseEnter={() => this.setPlaceholderAsActive(atIndex)}
+  //       onMouseLeave={() => this.unsetPlaceholderAsActive()}
+  //     />
+  //   )
+  // }
 
   render() {
     const {
@@ -253,7 +262,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
       selectedNodeId,
       isCommandDown,
     } = this.props
-    const {isCollapsed, maxHeight, contextMenuProps} = this.state
+    const {isCollapsed, maxHeight, contextMenuProps, isBeingDragged} = this.state
 
     const isText =
       nodeProps.type === NODE_TYPE.TEXT &&
@@ -267,7 +276,9 @@ class NodeContainer extends React.PureComponent<Props, State> {
       nodeProps.status === STATUS.TEXT_CHANGING_TYPE
     const isSelected = nodeProps.id === selectedNodeId
     const shouldReactToCommandDown = isCommandDown && isComponent
-
+    const shoudlIndicateDropPossible = isANodeBeingDragged && isComponent
+    const shoudlIndicateDropNotPossible = isANodeBeingDragged && isText
+    
     return (
       <div ref={c => (this.wrapper = c)}>
         <div
@@ -285,11 +296,18 @@ class NodeContainer extends React.PureComponent<Props, State> {
             [css.isCollapsed]: isCollapsed,
             [css.isSelected]: isSelected && !isText,
             [css.isCommandDown]: shouldReactToCommandDown,
+            [css.isBeingDragged]: isBeingDragged,
+            [css.indicateDropPossible]: shoudlIndicateDropPossible,
+            [css.indicateDropNotPossible]: shoudlIndicateDropNotPossible,
           })}
           onMouseUp={this.mouseUpHandler}
         >
           <div
-            className={cx(css.rootWrapper, {[css.isCommandDown]: shouldReactToCommandDown})}
+            ref={c => this.rootWrapper = c}
+            className={cx(css.rootWrapper, {
+              [css.isCommandDown]: shouldReactToCommandDown,
+              [css.isANodeBeingDragged]: shoudlIndicateDropPossible,
+            })}
             onContextMenu={this.contextMenuHandler}
             onMouseDown={this.mouseDownHandler}
             {...(isComponent ? {onClick: (e: $FixMe) => this.handleClick(e, 0)} : {})}
@@ -327,7 +345,10 @@ class NodeContainer extends React.PureComponent<Props, State> {
             children.map((child, index) => (
               <div className={css.childContainer} key={child.id}>
                 <div
-                  className={cx(css.hoverSensor, {[css.isCommandDown]: shouldReactToCommandDown})}
+                  className={cx(css.hoverSensor, {
+                    [css.isCommandDown]: shouldReactToCommandDown,
+                    [css.isANodeBeingDragged]: shoudlIndicateDropPossible,
+                  })}
                   // onMouseMove={e => this.setPlaceholderAsActive(index + 1, e)}
                   // onMouseLeave={this.unsetPlaceholderAsActive}
                   // onClick={() => this.props.setSelectedNodeId(nodeProps.id)}

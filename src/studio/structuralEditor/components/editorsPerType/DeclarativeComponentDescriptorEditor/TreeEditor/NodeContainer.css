@@ -21,6 +21,18 @@
     cursor: cell;
   }
 
+  &.indicateDropPossible {
+    cursor: alias;
+  }
+
+  &.indicateDropNotPossible {
+    cursor: no-drop;
+
+    & * {
+      cursor: no-drop;
+    }
+  }
+
   &.appear {
     max-height: 0;
     animation: containerAppear .2s ease-out forwards;
@@ -36,6 +48,12 @@
     overflow: hidden;
     animation: containerCollapse .25s ease-out forwards;
   }
+
+  &.isBeingDragged {
+    overflow: hidden;
+    opacity: 0;
+    animation: containerCollapse .3s ease-out forwards;
+  }
 }
 
 .rootWrapper {
@@ -44,7 +62,7 @@
   width: 100%;
   // overflow: hidden;
 
-  &.isCommandDown {
+  &.isCommandDown, &.isANodeBeingDragged {
     &:hover {
       &:after {
         display: block;
@@ -70,7 +88,9 @@
   z-index: 1000;
 }
 
-.container.isCommandDown:hover > .rootWrapper.isCommandDown {
+.container.isCommandDown:hover > .rootWrapper.isCommandDown,
+.container.isANodeBeingDragged:hover > .rootWrapper.isANodeBeingDragged,
+{
   background: var(--highlightColor) !important;
 }
 
@@ -102,7 +122,7 @@
   grid-column: 1;
   grid-row: 1 / span 2;
 
-  &.isCommandDown {
+  &.isCommandDown, &.isANodeBeingDragged {
     &:hover{
       & ~ .siblingIndicator {
         &:after {
@@ -125,7 +145,7 @@
   grid-column: 2;
   grid-row: 2;
 
-  z-index: 1000;
+  z-index: 10000;
 }
 
 @keyframes containerAppear {
