@@ -52,13 +52,9 @@ class ComponentNode extends React.PureComponent<Props, State> {
   }
 
   componentWillReceiveProps(nextProps: Props) {
-    // if (
-    //   (nextProps.nodeProps.status === STATUS.CHANGED ||
-    //     nextProps.nodeProps.status === STATUS.UNCHANGED) &&
-    //   this.state.isContentHidden
-    // ) {
-    //   this.setState(() => ({isContentHidden: false}))
-    // }
+    if (nextProps.nodeProps.status === STATUS.RELOCATED) {
+      this._fitClassInput()      
+    }
     if (
       (nextProps.nodeProps.status === STATUS.CHANGED ||
         nextProps.nodeProps.status === STATUS.UNCHANGED) &&
