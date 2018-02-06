@@ -153,7 +153,7 @@ class ComponentNode extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const {nodeProps, isSelected} = this.props
+    const {nodeProps, isSelected, isCommandDown} = this.props
     const {isContentHidden, classValue, isTypeBeingChanged} = this.state
     return (
       <div
@@ -194,7 +194,7 @@ class ComponentNode extends React.PureComponent<Props, State> {
               <input
                 type="text"
                 ref={c => (this.classInput = c)}
-                className={cx(css.input, {[css.isDisabled]: !isSelected})}
+                className={cx(css.input, {[css.isDisabled]: !isSelected || isCommandDown})}
                 value={classValue}
                 onChange={this.handleClassValueChange}
                 onKeyDown={this.handleKeyDown}

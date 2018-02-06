@@ -260,6 +260,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
             <div className={css.root}>
               {shouldRenderComponent && (
                 <ComponentNode
+                  isCommandDown={isCommandDown}
                   isSelected={isSelected}
                   nodeProps={nodeProps}
                   setClassValue={this.setNodeClassValue}
