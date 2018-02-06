@@ -11,7 +11,7 @@
     // "no-shadowed-variable": true,
     "no-string-literal": true,
     "no-var-keyword": true,
-    "prefer-conditional-expression": [true, "check-else-if"],
+    // "prefer-conditional-expression": [true, "check-else-if"],
     "prefer-object-spread": true,
     "restrict-plus-operands": true,
     "strict-boolean-expressions": [

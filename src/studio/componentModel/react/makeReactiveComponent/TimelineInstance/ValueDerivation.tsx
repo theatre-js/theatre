@@ -6,7 +6,7 @@ import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDeriva
 
 type TimelineIsEmptyBaseState = {type: 'TimelineIsEmpty'}
 type TimelineIsEmptyState = Spread<TimelineIsEmptyBaseState, {
-  firstIdP: AbstractDerivation<null | string>,
+  firstIndexP: AbstractDerivation<undefined | mixed>,
 }>
 
 type ErrorBaseState = {type: 'Error'}
@@ -17,7 +17,7 @@ type TimeIsBeforeFirstPointState = Spread<TimeIsBeforeFirstPointBaseState,{
   timeOfFirstPointD: AbstractDerivation<undefined | null | number>,
 }>
 
-type ObservingKeyBaseState = {type: 'ObservingKey', key: string}
+type ObservingKeyBaseState = {type: 'ObservingKey', currentPointIndex: number}
 type ObservingKeyState = Spread<ObservingKeyBaseState, {
   leftPointTimeP: AbstractDerivation<undefined | null | number>,
   isLastPointD: AbstractDerivation<undefined | null | boolean>,
@@ -43,16 +43,16 @@ const handlersByState = {
       baseState: TimelineIsEmptyBaseState,
       d: ValueDerivation,
     ): TimelineIsEmptyState {
-      const firstIdP = d._pointsP.prop('firstId')
-      d._addDependency(firstIdP)
+      const firstIndexP = d._pointsP.index(0)
+      d._addDependency(firstIndexP)
       return {
         ...baseState,
-        firstIdP,
+        firstIndexP,
       }
     },
 
     recalculateValue(state: TimelineIsEmptyState, d: ValueDerivation) {
-      if (d._changeObservedIn.has(state.firstIdP)) {
+      if (d._changeObservedIn.has(state.firstIndexP)) {
         return this._transitionOutAndRecalculateValue(state, d)
       } else {
         return d._emptyValue()
@@ -63,7 +63,7 @@ const handlersByState = {
       state: TimelineIsEmptyState,
       d: ValueDerivation,
     ) {
-      d._removeDependency(state.firstIdP)
+      d._removeDependency(state.firstIndexP)
       d._determineNewState()
       return d._recalculate()
     },
@@ -74,14 +74,9 @@ const handlersByState = {
       baseState: TimeIsBeforeFirstPointBaseState,
       d: ValueDerivation,
     ): TimeIsBeforeFirstPointState {
-      const firstPointD = d._pointsP
-        .prop('firstId')
-        .flatMap(
-          (firstId: undefined | null | string) =>
-            firstId ? d._pointsP.prop('byId').prop(firstId) : undefined,
-        )
+      const firstPointP = d._pointsP.index(0)
 
-      const timeOfFirstPointD = firstPointD.flatMap(
+      const timeOfFirstPointD = firstPointP.flatMap(
         (firstPoint?: $FixMe) =>
           firstPoint && firstPoint.pointer().prop('time'),
       )
@@ -179,36 +174,18 @@ const handlersByState = {
       d: ValueDerivation,
     ): ObservingKeyState {
       // debugger
-      const leftPointP = d._pointsP.prop('byId').prop(baseState.key)
-      const rightPointIdP = leftPointP.prop('nextId')
-      const isLastPointD = rightPointIdP.flatMap(
-        (rightPointId: string | void) =>
-          typeof rightPointId === 'string' ? rightPointId === 'end' : undefined,
-      )
+      const leftPointP = d._pointsP.index(baseState.currentPointIndex)
+      const possibleRightPointP = d._pointsP.index(baseState.currentPointIndex + 1)
+      const isLastPointD = possibleRightPointP.map((possibleRightPoint: mixed) => !possibleRightPoint)
 
-      const possibleRightPointD = rightPointIdP.flatMap((nextId: undefined | null | string) => {
-        if (typeof nextId === 'string' && nextId !== 'end') {
-          return d._pointsP.prop('byId').prop(nextId)
-        }
-      })
+      const possibleRightPointTimeD = possibleRightPointP.prop('time')
 
-      const possibleRightPointTimeD = possibleRightPointD.flatMap(
-        (rightPoint?: $FixMe) =>
-          rightPoint && rightPoint.pointer().prop('time'),
-      )
-
-      const possibleRightPointValueD = possibleRightPointD.flatMap(
-        (rightPoint?: $FixMe) =>
-          rightPoint && rightPoint.pointer().prop('value'),
-      )
+      const possibleRightPointValueD = possibleRightPointP.prop('value')
 
       // we'll bypass the interpolator if the left point goes out of existense,
       // or a point is added between it and the current time, or its time is bigger than
       // the current time
       const leftPointTimeP = leftPointP.prop('time')
-      // const rightPoint
-
-      // const leftPointInterpolatorTypeP = leftPointP.prop('interpolator').prop('type')
 
       const interpolationDescriptorP = leftPointP.prop(
         'interpolationDescriptor',
@@ -216,6 +193,7 @@ const handlersByState = {
       const interpolationTypeP = interpolationDescriptorP.prop(
         'interpolationType',
       )
+
       const interpolatorD = interpolationTypeP.flatMap(
         (interpolationType: undefined | null | string) => {
           // @ts-ignore
@@ -319,8 +297,8 @@ export default class ValueDerivation extends AbstractDerivation<$FixMe> {
     return value
   }
 
-  _determineNewState(startSearchingFromPointId: string = 'head') {
-    const baseState = this._determinNewBaseState(startSearchingFromPointId)
+  _determineNewState(startSearchingFromPointIndex: number = 0) {
+    const baseState = this._determinNewBaseState(startSearchingFromPointIndex)
 
     this._state = handlersByState[baseState.type].transitionIn(
       (baseState as $IntentionalAny),
@@ -328,58 +306,65 @@ export default class ValueDerivation extends AbstractDerivation<$FixMe> {
     )
   }
 
-  _determinNewBaseState(startSearchingFromPointId: string): PossibleBaseStates {
+  _determinNewBaseState(startSearchingFromPointIndex: number): PossibleBaseStates {
     const points = _.get(
       this._studio.store.reduxStore.getState(),
       this._pathToValueDescriptor,
     ).points
 
     // if no points
-    if (!points.firstId) {
-      if (process.env.NODE_ENV === 'development') {
-        if (Object.keys(points.byId).length > 0) {
-          console.error(`Bug here`) // this means there ARE some points in the timline, but points.firstId is null
-        }
-      }
+    if (points.length === 0) {
+      // if (process.env.NODE_ENV === 'development') {
+      //   if (Object.keys(points.byId).length > 0) {
+      //     console.error(`Bug here`) // this means there ARE some points in the timline, but points.firstId is null
+      //   }
+      // }
       return baseStates.timelineIsEmpty
     }
 
-    let currentPoint
-    if (startSearchingFromPointId === 'head') {
-      currentPoint = points.byId[points.firstId]
+    let currentPointIndex: number
+    if (startSearchingFromPointIndex === 0) {
+      currentPointIndex = 0
+      // currentPoint = points[0]
     } else {
-      currentPoint = points.byId[startSearchingFromPointId]
-      if (!currentPoint) currentPoint = points.byId[points.firstId]
+      currentPointIndex = points[startSearchingFromPointIndex] ? startSearchingFromPointIndex : 0
+      // if (!points[startSearchingFromPointIndex]) {
+      //   currentPointIndex = startSearchingFromPointIndex
+      // } else {
+      //   currentPointIndex = 0
+      // }
+      // currentPoint = points[startSearchingFromPointIndex]
+      // if (!currentPoint) currentPoint = points[0]
     }
 
     const time = this._timeD.getValue()
 
-    // eslint-disable-next-line no-constant-condition
     while (true) {
+      const currentPoint = points[currentPointIndex]
       if (!currentPoint) {
-        console.error(`Bug here`) // this means the doubly linked list is broken somewhere
+        console.error(`Bug here`)
         return baseStates.error
       }
 
       if (currentPoint.time > time) {
-        if (currentPoint.prevId === 'head') {
+        if (currentPointIndex === 0) {
           return baseStates.timeIsBeforeFirstPoint
         } else {
-          currentPoint = points.byId[currentPoint.prevId]
+          currentPointIndex--
           continue
         }
       } else if (currentPoint.time === time) {
-        return {type: 'ObservingKey', key: currentPoint.id}
+        return {type: 'ObservingKey', currentPointIndex}
       } else {
-        if (currentPoint.nextId === 'end') {
-          return {type: 'ObservingKey', key: currentPoint.id}
+        if (currentPointIndex === points.length - 1) {
+          return {type: 'ObservingKey', currentPointIndex}
         } else {
-          const nextPoint = points.byId[currentPoint.nextId]
-          if (nextPoint.time <= time) {
-            currentPoint = nextPoint
+          const nextPointIndex = currentPointIndex + 1
+          if (points[nextPointIndex].time <= time) {
+            currentPointIndex = nextPointIndex
             continue
           } else {
-            return {type: 'ObservingKey', key: currentPoint.id}
+            return {type: 'ObservingKey', currentPointIndex}
           }
         }
       }
