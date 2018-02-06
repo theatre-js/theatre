@@ -11,6 +11,7 @@ import MdCamera from 'react-icons/lib/md/camera'
 import MdDonutSmall from 'react-icons/lib/md/donut-small'
 import MdExplore from 'react-icons/lib/md/explore'
 import MdStars from 'react-icons/lib/md/stars'
+import * as _ from 'lodash'
 
 
 type Props = {
@@ -19,36 +20,26 @@ type Props = {
   isCommandDown: boolean
 }
 type State = {
-  newChildIndex: undefined | null | number
   isCollapsed: boolean
   isBeingDragged: boolean
   maxHeight: undefined | null | number
-  initialTopOffset: number
   contextMenuProps: undefined | null | Object
 }
 
 class NodeContainer extends React.PureComponent<Props, State> {
   unsetTimeout = null
+  childContainersRefs = []
   state = {
-    newChildIndex: null,
     isCollapsed: false,
     isBeingDragged: false,
     maxHeight: null,
-    initialTopOffset: 0,
     contextMenuProps: null,
   }
 
   componentDidMount() {
     if (this.props.nodeData.status === STATUS.RELOCATED) {
       const {nodeData: {actionPayload}} = this.props
-      const {droppedAt} = actionPayload
-      const {top} = this.wrapper.getBoundingClientRect()
-      this.setState(() => ({
-        initialTopOffset: droppedAt - top,
-        maxHeight: actionPayload.height,
-      }))
-    } else {
-      this._setMaxHeight()
+      this.setState(() => ({maxHeight: actionPayload.height,}))
     }
   }
 
@@ -59,43 +50,24 @@ class NodeContainer extends React.PureComponent<Props, State> {
     }
     if (nextProps.nodeData.status === STATUS.RELOCATED) {
       const {nodeData: {actionPayload}} = nextProps
-      const {droppedAt} = actionPayload
+      const {dropOffset} = actionPayload
       const {nodeData: {actionPayload: currentPayload}} = this.props
       if (
         currentPayload == null ||
-        (currentPayload != null && currentPayload.droppedAt !== droppedAt)
+        (currentPayload != null && !_.isEqual(currentPayload.dropOffset, dropOffset))
       ) {
-        const {top} = this.wrapper.getBoundingClientRect()
         this.setState(() => ({
-          initialTopOffset: droppedAt - (top - 32),
           maxHeight: actionPayload.height,
+          isBeingDragged: false,
         }))
       }
     }
 
-    if (!nextProps.isANodeBeingDragged) {
-      this.setState(() => ({isCollapsed: false, newChildIndex: null}))
+    if (this.state.isBeingDragged && !nextProps.isANodeBeingDragged) {
+      if (this.state.isCollapsed || this.state.isBeingDragged) {
+        this.setState(() => ({isCollapsed: false, isBeingDragged: false}))
+      }
     }
-
-    if (
-      this.props.nodeData.children &&
-      nextProps.nodeData.children &&
-      nextProps.nodeData.children.length !== this.props.nodeData.children.length
-    ) {
-      setTimeout(() => {
-        this._setMaxHeight()
-      }, 500)
-    }
-  }
-
-  componentWillUnmount() {
-    this._clearUnsetTimeout()
-  }
-
-  _setMaxHeight() {
-    this.setState(() => ({
-      maxHeight: this.wrapper.getBoundingClientRect().height,
-    }))
   }
 
   mouseDownHandler = e => {
@@ -103,37 +75,54 @@ class NodeContainer extends React.PureComponent<Props, State> {
     e.preventDefault()
     if (!e.shiftKey || !this.props.depth) return
 
-    const {
-      setNodeBeingDragged,
-      depth,
-      nodeData: {children, ...nodeProps},
-    } = this.props
-    const {maxHeight: height} = this.state
-    const {top, left} = this.wrapper.getBoundingClientRect()
+    const {setNodeBeingDragged, depth, nodeData} = this.props
+    const {children, ...nodeProps} = nodeData
+    const {top, left, height, width} = this.wrapper.getBoundingClientRect()
+
     let {offsetY, offsetX} = e.nativeEvent
     if (e.target !== this.rootWrapper) {
       let el = e.target
-      while (el.offsetTop > 0 || el.offsetLeft > 0) {
-        offsetY += el.offsetTop
-        offsetX += el.offsetLeft
+      let updateTop = true
+      let updateLeft = true
+      while (updateTop || updateLeft) {
+        const {offsetTop, offsetLeft} = el
+        if (updateTop && offsetTop === 0) updateTop = false
+        if (updateLeft && offsetLeft === 0) updateLeft = false
+        offsetY += updateTop ? offsetTop : 0
+        offsetX += updateLeft ? offsetLeft : 0
         el = el.offsetParent
       }
     }
-    this.setState(() => ({isBeingDragged: true}))
-    setNodeBeingDragged({nodeProps, depth, top, left, height, offsetY, offsetX})
+    this.setState(() => ({isBeingDragged: true, maxHeight: height}))
+    setNodeBeingDragged({nodeProps, depth, top, left, height, width, offsetY, offsetX})
   }
 
-  mouseUpHandler = e => {
+  onDrop = (e: $FixMe, index: number) => {
     e.stopPropagation()
     e.preventDefault()
-    if (this.props.isANodeBeingDragged && this.state.newChildIndex != null) {
-      this.unsetPlaceholderAsActive()
-      this.props.dispatchAction(ACTION.NODE_MOVE, {
-        id: this.props.nodeData.id,
-        index: this.state.newChildIndex,
-        mouseY: e.clientY,
-      })
+    const {id} = this.props.nodeData
+    const {clientX: mouseX, clientY: mouseY} = e
+    const childrenLength = this.props.nodeData.children.length
+    let targetLeft, targetTop, targetWidth
+    if (childrenLength === 0) {
+      const {left, bottom, width} = this.rootWrapper.getBoundingClientRect()
+      targetLeft = left + parseInt(css.nodeIndent)
+      targetTop = bottom
+      targetWidth = width - parseInt(css.nodeIndent)
     }
+    else if (index === childrenLength) {
+      const {left, bottom, width} = this.childContainersRefs[index - 1].getBoundingClientRect()
+      targetLeft = left
+      targetTop = bottom
+      targetWidth = width
+    } else {
+      const {left, top, width} = this.childContainersRefs[index].getBoundingClientRect()
+      targetLeft = left
+      targetTop = top
+      targetWidth = width
+    }
+
+    this.props.dispatchAction(ACTION.NODE_MOVE, {id, index, mouseY, mouseX, targetTop, targetLeft, targetWidth})
   }
 
   handleClick = (e: $FixMe, index: number) => {
@@ -151,40 +140,6 @@ class NodeContainer extends React.PureComponent<Props, State> {
     e.preventDefault()
     const {clientX, clientY} = e
     this.setState(() => ({contextMenuProps: {left: clientX, top: clientY}}))
-  }
-
-  setPlaceholderAsActive = (onIndex, e) => {
-    if (e != null && !e.metaKey && !this.props.isANodeBeingDragged) {
-      if (this.state.newChildIndex != null) this.unsetPlaceholderAsActive()
-      return
-    }
-
-    this._clearUnsetTimeout()
-
-    this.setState(() => ({newChildIndex: onIndex}))
-    if (this.props.isANodeBeingDragged) {
-      this.props.setActiveDropZone({
-        id: this.props.nodeData.id,
-        index: onIndex,
-        depth: this.props.depth + 1 || 1,
-      })
-    }
-  }
-
-  unsetPlaceholderAsActive = () => {
-    if (this.state.newChildIndex == null) return
-
-    this.unsetTimeout = setTimeout(() => {
-      this.setState(() => ({newChildIndex: null}))
-      this.props.unsetActiveDropZone()
-    }, 0)
-  }
-
-  _clearUnsetTimeout() {
-    if (this.unsetTimeout != null) {
-      clearTimeout(this.unsetTimeout)
-      this.unsetTimeout = null
-    }
   }
 
   handleTextNodeTypeChange = () => {
@@ -230,7 +185,6 @@ class NodeContainer extends React.PureComponent<Props, State> {
 
   onCancelSelectingType = () => {
     if (this.props.nodeData.status === STATUS.UNINITIALIZED) {
-      // setTimeout(() => this.deleteNode(), 0)
       this.props.cancelSettingType(this.props.nodeData)
       return
     }
@@ -238,22 +192,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
       this.props.cancelTextNodeTypeChange(this.props.nodeData.id)
       return
     }
-    // this.props.cancelSettingType()
   }
-
-  // renderNodePlaceholder(atIndex, depth) {
-  //   return (
-  //     <NodePlaceholder
-  //       key="placeholder"
-  //       depth={depth}
-  //       shouldRender={this.state.newChildIndex === atIndex}
-  //       renderDropZone={this.props.isANodeBeingDragged}
-  //       onAdd={() => this.addChild(atIndex)}
-  //       onMouseEnter={() => this.setPlaceholderAsActive(atIndex)}
-  //       onMouseLeave={() => this.unsetPlaceholderAsActive()}
-  //     />
-  //   )
-  // }
 
   render() {
     const {
@@ -278,18 +217,21 @@ class NodeContainer extends React.PureComponent<Props, State> {
     const shouldReactToCommandDown = isCommandDown && isComponent
     const shoudlIndicateDropPossible = isANodeBeingDragged && isComponent
     const shoudlIndicateDropNotPossible = isANodeBeingDragged && isText
-    
+
     return (
       <div ref={c => (this.wrapper = c)}>
         <div
           style={{
             '--depth': depth,
             '--maxHeight': maxHeight,
-            '--initialTopOffset': isRelocated ? this.state.initialTopOffset : 0,
+            '--initialLeftOffset': isRelocated ? nodeProps.actionPayload.dropOffset.x : 0,
+            '--initialTopOffset': isRelocated ? nodeProps.actionPayload.dropOffset.y : 0,
+            '--originalWidth': isRelocated ? nodeProps.actionPayload.originalWidth : null,
+            '--targetWidth': isRelocated ? nodeProps.actionPayload.targetWidth : null,
           }}
           className={cx(css.container, {
-            [css.isRelocated]:
-              isRelocated || nodeProps.status === STATUS.RELOCATION_CANCELED,
+            [css.isRelocated]: isRelocated,
+            [css.relocationCanceled]: nodeProps.status === STATUS.RELOCATION_CANCELED,
             [css.appear]:
               nodeProps.status === STATUS.UNINITIALIZED ||
               nodeProps.status === STATUS.CREATION_CANCELED,
@@ -300,8 +242,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
             [css.indicateDropPossible]: shoudlIndicateDropPossible,
             [css.indicateDropNotPossible]: shoudlIndicateDropNotPossible,
           })}
-          onMouseUp={this.mouseUpHandler}
-        >
+          >
           <div
             ref={c => this.rootWrapper = c}
             className={cx(css.rootWrapper, {
@@ -310,13 +251,10 @@ class NodeContainer extends React.PureComponent<Props, State> {
             })}
             onContextMenu={this.contextMenuHandler}
             onMouseDown={this.mouseDownHandler}
-            {...(isComponent ? {onClick: (e: $FixMe) => this.handleClick(e, 0)} : {})}
-            // {...(!isText
-            //   ? {
-            //       onMouseMove: e => this.setPlaceholderAsActive(0, e),
-            //       onMouseLeave: this.unsetPlaceholderAsActive,
-            //     }
-            //   : {})}
+            {...(isComponent ? {
+              onClick: (e: $FixMe) => this.handleClick(e, 0),
+              onMouseUp: (e) => this.onDrop(e, 0),
+            } : {})}
           >
             <div className={css.root}>
               {shouldRenderComponent && (
@@ -340,21 +278,25 @@ class NodeContainer extends React.PureComponent<Props, State> {
               )}
             </div>
           </div>
-          {/* {this.renderNodePlaceholder(0, depth)} */}
           {children &&
             children.map((child, index) => (
-              <div className={css.childContainer} key={child.id}>
+              <div               
+                className={css.childContainer}
+                key={child.id}>
                 <div
                   className={cx(css.hoverSensor, {
                     [css.isCommandDown]: shouldReactToCommandDown,
                     [css.isANodeBeingDragged]: shoudlIndicateDropPossible,
                   })}
-                  // onMouseMove={e => this.setPlaceholderAsActive(index + 1, e)}
-                  // onMouseLeave={this.unsetPlaceholderAsActive}
-                  // onClick={() => this.props.setSelectedNodeId(nodeProps.id)}
-                  {...(isComponent ? {onClick: (e: $FixMe) => this.handleClick(e, index + 1)} : {})}
+                  {...(isComponent ? {
+                    onClick: (e: $FixMe) => this.handleClick(e, index + 1),
+                    onMouseUp: (e) => this.onDrop(e, index + 1),
+                  } : {})}
                 />
-                <div className={css.child}>
+                <div
+                  ref={c => this.childContainersRefs[index] = c} 
+                  className={css.child}
+                >
                   <NodeContainer
                     key={child.id}
                     isCommandDown={isCommandDown}
@@ -364,8 +306,6 @@ class NodeContainer extends React.PureComponent<Props, State> {
                     dispatchAction={this.props.dispatchAction}
                     isANodeBeingDragged={isANodeBeingDragged}
                     setNodeBeingDragged={this.props.setNodeBeingDragged}
-                    setActiveDropZone={this.props.setActiveDropZone}
-                    unsetActiveDropZone={this.props.unsetActiveDropZone}
                     setSelectedNodeId={this.props.setSelectedNodeId}
                     listOfDisplayNames={this.props.listOfDisplayNames}
                     handleTextNodeTypeChange={this.props.handleTextNodeTypeChange}
@@ -373,19 +313,9 @@ class NodeContainer extends React.PureComponent<Props, State> {
                     cancelSettingType={this.props.cancelSettingType}
                   />
                 </div>
-                <div
-                  // className={cx(css.hoverSensorBottom, {[css.isCommandDown]: shouldReactToCommandDown})}
-                  className={css.siblingIndicator}
-                  // onMouseMove={e => this.setPlaceholderAsActive(index + 1, e)}
-                  // onMouseLeave={this.unsetPlaceholderAsActive}
-                  // onClick={() => this.props.setSelectedNodeId(nodeProps.id)}
-                  // {...(isComponent ? {onClick: (e: $FixMe) => this.handleClick(e, index + 1)} : {})}
-                />
+                <div className={css.siblingIndicator}/>
               </div>
             )
-              
-              // this.renderNodePlaceholder(index + 1, depth),
-            // ]
             )}
         </div>
         {contextMenuProps != null && (

@@ -13,7 +13,7 @@
 
 .treeContainer {
   position: relative;
-  padding-bottom: 20px;
+  padding-bottom: 25px;
 }
 
 .scroller {
@@ -27,7 +27,7 @@
   }
 
   &.bottom {
-    height: 30px;
+    height: 25px;
     bottom: 0px;
   }
 }

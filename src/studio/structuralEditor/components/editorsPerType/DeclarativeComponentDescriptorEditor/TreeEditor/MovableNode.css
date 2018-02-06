@@ -13,9 +13,9 @@
 
 
 @keyframes containerCollapse {
-  0% {max-height: var(--height);}
-  90% {opacity: 1}
-  100% {max-height: nodeHeight; opacity: .8}
+  0% {max-height: var(--height); opacity: 1}
+  80% {opacity: 1}
+  100% {max-height: nodeHeight; opacity: .9}
 }
 
 

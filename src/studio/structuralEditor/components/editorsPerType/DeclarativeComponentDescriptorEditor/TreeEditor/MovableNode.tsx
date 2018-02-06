@@ -3,13 +3,11 @@ import {React} from '$studio/handy'
 import css from './MovableNode.css'
 import cx from 'classnames'
 import {NODE_TYPE} from './constants'
-import {presentationOnlyComponent as ComponentNode} from './ComponentNode'
-import {presentationOnlyComponent as TextNode} from './TextNode'
 import PresentationOnlyNode from './PresentationOnlyNode'
 
 type Props = {
+  rootNode: Object
   nodeBeingDragged: Object
-  activeDropZone: Object
   onCancel: Function
 }
 
@@ -59,16 +57,13 @@ class MovableNode extends React.PureComponent<Props, State> {
   }
 
   dragEndHandler = () => {
-    if (this.props.activeDropZone == null) this.props.onCancel()
+    this.props.onDragEnd()
   }
 
   render() {
     const {nodeBeingDragged, rootNode} = this.props
     const {top, depth, height} = nodeBeingDragged
     const {offsetTop, moveY, moveX} = this.state
-    // const depth =
-    //   (activeDropZone && activeDropZone.depth) || nodeBeingDragged.depth
-
     return (
       <div
         ref={c => (this.container = c)}        
@@ -83,26 +78,6 @@ class MovableNode extends React.PureComponent<Props, State> {
         <PresentationOnlyNode nodeData={rootNode} rootNodeId={rootNode.id}/>
       </div>
     )
-
-    // return (
-    //   <div
-    //     ref={c => (this.container = c)}
-    //     className={css.staticContainer}
-    //     style={{
-    //       transform: `translateY(${moveY}px)`,
-    //       top: `${top - offsetTop}px`,
-    //     }}
-    //   >
-    //     {/* <div className={css.dynamicContainer}>
-    //       {nodeProps.type === NODE_TYPE.COMPONENT && (
-    //         <ComponentNode nodeProps={nodeProps} />
-    //       )}
-    //       {nodeProps.type === NODE_TYPE.TEXT && (
-    //         <TextNode nodeProps={nodeProps} />
-    //       )}
-    //     </div> */}
-    //   </div>
-    // )
   }
 }
 

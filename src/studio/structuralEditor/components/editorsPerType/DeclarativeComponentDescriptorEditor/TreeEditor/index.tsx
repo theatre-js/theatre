@@ -52,14 +52,6 @@ type State = {
         height: number
         offsetY: number
       }
-  activeDropZone:
-    | undefined
-    | null
-    | {
-        id: string
-        index: number
-        depth: number
-      }
   componentBeingSet:
     | undefined
     | null
@@ -85,13 +77,12 @@ class TreeEditor extends StudioComponent<Props, State> {
     },
   })
 
-  unsetDropZoneTimeout = null
   lastAction = {type: null, payload: null}
+  queuedDrop = null
   state = {
     nodes: {},
     isCommandDown: false,
     nodeBeingDragged: null,
-    activeDropZone: null,
     selectedNodeId: null,
   }
 
@@ -112,7 +103,7 @@ class TreeEditor extends StudioComponent<Props, State> {
     if (!_.isEqual(
       nextProps.rootComponentDescriptor.localHiddenValuesById,
       this.props.rootComponentDescriptor.localHiddenValuesById
-    )) {
+    ) || this.lastAction.type != null) {
       this._setNodes(nextProps.rootComponentDescriptor)
     }
   }
@@ -141,6 +132,14 @@ class TreeEditor extends StudioComponent<Props, State> {
 
   _unsetLastAction() {
     this.lastAction = {type: null, payload: null}
+  }
+
+  _setQueuedDrop(dropPayload: $FixMe) {
+    this.queuedDrop = {...dropPayload}
+  }
+
+  _unsetQueuedDrop() {
+    this.queuedDrop = null
   }
 
   _setNodes(rootComponentDescriptor) {
@@ -279,7 +278,7 @@ class TreeEditor extends StudioComponent<Props, State> {
         this._addChildToNode(payload)
         break
       case ACTION.NODE_MOVE:
-        this.dropHandler(payload)
+        this._setQueuedDrop(payload)
         break
       case ACTION.NODE_TEXT_CHANGE:
         this._changeNodeTextValue(payload)
@@ -402,28 +401,35 @@ class TreeEditor extends StudioComponent<Props, State> {
     )
   }
 
-  dropHandler = (dropZoneProps: undefined | null | Object) => {
-    // document.styleSheets[0].removeRule(
-    //   document.styleSheets[0].cssRules.length - 1,
-    // )
-    const {nodeBeingDragged} = this.state
-    this.setState(() => ({nodeBeingDragged: null, activeDropZone: null}))
-    const {
-      nodeProps: {parentId: currentParentId, index: currentIndex, id: nodeId},
-      height,
-      offsetY,
-    } = nodeBeingDragged
-    let newParentId, newIndex
-    if (dropZoneProps != null) {
-      newParentId = dropZoneProps.id
+  handleDragEnd = () => {
+    const dropPayload: $FixMe = this.queuedDrop
+    this._unsetQueuedDrop()
+
+    let nodeBeingDragged
+    this.setState((state: $FixMe) => {
+      ({nodeBeingDragged} = state)
+      return {nodeBeingDragged: null}
+    })
+    
+    const {nodeProps, height, offsetY, offsetX} = nodeBeingDragged
+    const {parentId: currentParentId, index: currentIndex, id: nodeId} = nodeProps
+    let newParentId: string, newIndex: number
+    if (dropPayload != null) {
+      const {index: dropIndex} = dropPayload
+      newParentId = dropPayload.id
       newIndex =
-        newParentId === currentParentId && currentIndex < dropZoneProps.index
-          ? dropZoneProps.index - 1
-          : dropZoneProps.index
+        (newParentId === currentParentId && currentIndex < dropIndex)
+          ? (dropIndex - 1)
+          : dropIndex
       this._setLastAction(ACTION.NODE_MOVE, {
         id: nodeId,
         height,
-        droppedAt: dropZoneProps.mouseY - offsetY,
+        originalWidth: nodeBeingDragged.width,
+        targetWidth: dropPayload.targetWidth,
+        dropOffset: {
+          x: dropPayload.mouseX - offsetX - dropPayload.targetLeft,
+          y: dropPayload.mouseY - offsetY - dropPayload.targetTop,
+        }
       })
     } else {
       newParentId = currentParentId
@@ -501,7 +507,6 @@ class TreeEditor extends StudioComponent<Props, State> {
   }
 
   _cancelSettingComponentType = (nodeProps = this.state.componentBeingSet.nodeProps) => {
-    // const {nodeProps} = this.state.componentBeingSet
     this.setState(() => ({componentBeingSet: null}))
     if (nodeProps.status === STATUS.UNINITIALIZED) {
       this._setLastAction(ACTION.NODE_ADD_CANCEL, {id: nodeProps.id})
@@ -576,7 +581,7 @@ class TreeEditor extends StudioComponent<Props, State> {
   }
 
   render() {
-    const {nodes, nodeBeingDragged, activeDropZone, isCommandDown} = this.state
+    const {nodes, nodeBeingDragged, isCommandDown} = this.state
     const isANodeBeingDragged = nodeBeingDragged != null
     const selectedNodeId = getSelectedNodeId(this.props.rootComponentDescriptor)
 
@@ -587,8 +592,7 @@ class TreeEditor extends StudioComponent<Props, State> {
           <MovableNode
             rootNode={_.get(nodes, nodeBeingDragged.nodeProps.path)}
             nodeBeingDragged={nodeBeingDragged}
-            // activeDropZone={activeDropZone}
-            onCancel={this.dropHandler}
+            onDragEnd={this.handleDragEnd}
           />
         )}
         <div ref={c => (this.treeWrapper = c)} className={css.treeWrapper}>
@@ -604,12 +608,6 @@ class TreeEditor extends StudioComponent<Props, State> {
               dispatchAction={this.dispatchActionFromNode}
               isANodeBeingDragged={isANodeBeingDragged}
               setNodeBeingDragged={this.setNodeBeingDragged}
-              setActiveDropZone={activeDropZone =>
-                this.setState(() => ({activeDropZone}))
-              }
-              unsetActiveDropZone={() =>
-                this.setState(() => ({activeDropZone: null}))
-              }
               setSelectedNodeId={this.setSelectedNodeId}
               listOfDisplayNames={this.props.listOfDisplayNames}
               handleTextNodeTypeChange={this.handleTextNodeTypeChange}

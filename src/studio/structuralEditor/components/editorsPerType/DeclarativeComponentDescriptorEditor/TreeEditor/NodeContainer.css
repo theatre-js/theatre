@@ -38,10 +38,18 @@
     animation: containerAppear .2s ease-out forwards;
   }
 
-  &.isRelocated {
-    --shadow: calc(var(--depth) * 20 + 10);
+  &.isRelocated, &.relocationCanceled {
     z-index: 1000;
-    animation: drop .3s ease-in-out forwards;
+    overflow: hidden;
+    max-height: nodeHeight;
+    width: var(--originalWidth);
+    top: var(--initialTopOffset);
+    left: var(--initialLeftOffset);
+    background: var(--color);    
+    animation:
+      containerDropHeightAndTop .3s ease-out forwards,
+      containerDropWidthAndLeft .25s .05s ease-out forwards,
+      containerDropBackground .7s ease-out forwards;
   }
 
   &.isCollapsed {
@@ -60,8 +68,6 @@
   position: relative;
   height: nodeHeight;
   width: 100%;
-  // overflow: hidden;
-
   &.isCommandDown, &.isANodeBeingDragged {
     &:hover {
       &:after {
@@ -88,6 +94,20 @@
   z-index: 1000;
 }
 
+.container.isRelocated > .rootWrapper {
+  opacity: 1;
+  max-height: nodeHeight;
+  &:before {
+    display: block;
+    position: absolute 0 0 0 0;
+    content: ' ';
+    pointer-events: none;
+    background: rgb(46, 166, 190);
+    opacity: 0.9;
+    animation: rootWrapperDrop .2s ease-in forwards;
+  }
+}
+
 .container.isCommandDown:hover > .rootWrapper.isCommandDown,
 .container.isANodeBeingDragged:hover > .rootWrapper.isANodeBeingDragged,
 {
@@ -98,10 +118,6 @@
   opacity: 0;
   animation: rootAppear .15s .15s ease-in-out forwards;
 }
-
-/*.container.isCollapsed > .rootWrapper {
-  animation: rootWrapperCollapse .15s .15s ease-in-out forwards;  
-}*/
 
 .childContainer {
   position: relative;
@@ -174,15 +190,46 @@
   to {max-height: 0;}
 }
 
-@keyframes drop {
-  from {
+@keyframes containerDropHeightAndTop {
+  0% {
     top: var(--initialTopOffset);
     max-height: nodeHeight;
-    box-shadow: 0 0 20px 5px rgb(var(--shadow), var(--shadow), var(--shadow));
   }
-  to {
+  100% {
     top: 0;
     max-height: var(--maxHeight);
-    box-shadow: none;
+  }
+}
+
+@keyframes containerDropWidthAndLeft {
+  0% {
+    left: var(--initialLeftOffset);
+    width: var(--originalWidth);
+  }
+  100% {
+    left: 0;
+    width: var(--targetWidth);
+  }
+}
+
+@keyframes containerDropBackground {
+  0% {
+    background: var(--color);
+  }
+  80% {
+    background: var(--color);
+  }
+  100% {
+    background: none;
+    overflow: visible;
+  }
+}
+
+@keyframes rootWrapperDrop {
+  0% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
   }
 }
