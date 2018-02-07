@@ -117,7 +117,10 @@ export class TheUI extends React.Component<Props, State> {
   }
 
   _handleKeyDown = (e: $FixMe) => {
-    if (e.target.tagName === 'INPUT') return
+    if (
+      e.target.tagName === 'INPUT' &&
+      ![18, 91].includes(e.keyCode)
+    ) return
     switch (e.keyCode) {
       case 18:
         this.setState(() => ({activeMode: MODE_OPTION}))

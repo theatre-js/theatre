@@ -7,6 +7,7 @@ type Props = {
   onDragStart?: Function,
   onDragEnd?: Function,
   onDrag?: Function,
+  shouldRegisterEvents?: boolean,
 }
 
 type State = {
@@ -75,9 +76,15 @@ class DraggableArea extends React.Component<Props, State> {
   }
 
   render() {
-    return React.cloneElement(this.props.children, {
-      onMouseDown: this.dragStartHandler,
-    })
+    const shouldRegisterEvents = (this.props.shouldRegisterEvents != null) ? this.props.shouldRegisterEvents : true
+    return shouldRegisterEvents ? (
+      React.cloneElement(this.props.children, {
+        onMouseDown: this.dragStartHandler,
+      })
+    ) : (
+      this.props.children
+    )
+      
   }
 }
 

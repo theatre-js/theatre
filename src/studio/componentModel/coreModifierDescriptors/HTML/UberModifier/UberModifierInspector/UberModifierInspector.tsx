@@ -31,13 +31,13 @@ export default class UberModifierInspector extends StudioComponent<
             <div {...classes('title')}>Translation</div>
 
             <div {...classes('body')}>
-              <Input
-                label="X"
-                prop="translationX"
-                pathToModifierInstantiationDescriptor={
-                  pathToModifierInstantiationDescriptor
-                }
-              />
+                <Input
+                  label="X"
+                  prop="translationX"
+                  pathToModifierInstantiationDescriptor={
+                    pathToModifierInstantiationDescriptor
+                  }
+                />
               <Input
                 label="Y"
                 prop="translationY"

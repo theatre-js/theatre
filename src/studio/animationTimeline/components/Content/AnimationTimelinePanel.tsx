@@ -399,16 +399,8 @@ class Content extends StudioComponent<Props, State> {
 
   changeCurrentTimeTo = (currentTTime: number) => {
     if (this.state.timeBox) {
-      this.state.timeBox.set(currentTTime)
+      this.state.timeBox.set(_.clamp(currentTTime, 0, this.state.duration))
     }
-    // const {focus} = this.state
-    // if (currentTTime < focus[0] || currentTTime > focus[1]) {
-    //   const newFocusStart = Math.max(currentTTime - 30, 0)
-    //   const newFocusEnd = newFocusStart + (focus[1] - focus[0])
-    //   this.setState(() => ({currentTTime, focus: [newFocusStart, newFocusEnd]}))
-    // } else {
-    // this.setState(() => ({currentTTime}))
-    // }
   }
 
   changeDuration = (newDuration: number) => {
@@ -539,7 +531,7 @@ class Content extends StudioComponent<Props, State> {
       moveRatios,
       duration,
       focus,
-      currentTime,
+      currentTTime: currentTime,
     } = this.state
     const {boxes, layout} = this.props
     const offsetLeft = this.variablesContainer != null ? this.variablesContainer.scrollLeft : 0

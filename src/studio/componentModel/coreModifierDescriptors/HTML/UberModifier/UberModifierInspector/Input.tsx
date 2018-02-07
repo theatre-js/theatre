@@ -1,6 +1,12 @@
 import {StudioComponent, React, resolveCss, connect} from '$studio/handy'
 import * as css from './Input.css'
 import {get} from 'lodash'
+import DraggableArea from '$studio/common/components/DraggableArea'
+import {
+  PanelPropsChannel,
+} from '$src/studio/workspace/components/Panel/Panel'
+import {Subscriber} from 'react-broadcast'
+import {MODE_CMD} from '$studio/workspace/components/TheUI'
 
 interface OP {
   prop: string
@@ -49,10 +55,29 @@ export default class Input extends StudioComponent<IProps, IState> {
     const value = typeof rawValue === 'string' ? rawValue : ''
 
     return (
-      <label {...classes('container')}>
-        {/* <span {...classes('label')}>{label}</span> */}
-        <input {...classes('input')} value={value} onChange={this.onChange} />
-      </label>
+      <Subscriber channel={PanelPropsChannel}>
+        {({activeMode}) => {
+          return (
+            <DraggableArea
+              shouldRegisterEvents={activeMode === MODE_CMD}
+              onDragStart={() => console.log('start')}
+              onDrag={(dx, dy) => console.log(dx, dy)}
+              onDragEnd={() => console.log('end')}
+            >
+              <label {...classes('container')}>
+                {/* <span {...classes('label')}>{label}</span> */}
+                <input
+                  ref={c => this.input = c}
+                  {...classes('input')} 
+                  value={value}
+                  onChange={this.onChange}
+                  onKeyDown={(e) => (e.keyCode === 13) ? this.input.blur() : null}
+                />
+              </label>
+            </DraggableArea>
+          )
+        }}
+      </Subscriber>
     )
   }
 }
