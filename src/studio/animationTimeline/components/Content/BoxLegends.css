@@ -46,6 +46,7 @@
     transform: scaleX(2);
   }
 
+  
   &:after {
     display: block;
     position: absolute;
@@ -61,6 +62,29 @@
   }
 }
 
+.legendItem:hover .legendText .property {
+  text-shadow: 0px 0px 2px var(--color);
+}
+
+.legendItem:hover .legendBar:not(.isActive) {
+  transform: scaleX(0.6);
+}
+/*
+// } {
+//   transform: translateY(-1px);
+// }
+
+// .legendItem:hover .legendBar {
+//   box-shadow: 0 1px 1px 1px var(--color);
+  
+//   &:before {
+//     box-shadow: -1px 1px 1px .5px var(--color);
+//   }
+//   &:after {
+//     box-shadow: 1px 1px 1px .5px var(--color);
+//   }
+// }
+*/
 .legendText {
   font-size: 10px;
   line-height: 10px;

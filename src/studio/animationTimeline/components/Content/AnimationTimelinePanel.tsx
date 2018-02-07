@@ -552,6 +552,7 @@ class Content extends StudioComponent<Props, State> {
                 <div
                   ref={c => (this.variablesContainer = c)}
                   className={css.variables}
+                  onClick={() => console.log('clicked')}                
                 >
                   {layout.map((id, index) => {
                     const box = boxes[id]
