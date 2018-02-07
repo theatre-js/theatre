@@ -12,6 +12,8 @@ import PanelController from '../PanelController'
 import StatusBar from '../StatusBar'
 import css from './index.css'
 
+export type ActiveMode = undefined | null | string
+
 type Props = {
   visiblePanels: Array<string>
   dispatch: Function
@@ -20,14 +22,20 @@ type Props = {
 
 type State = {
   isCreatingNewPanel: boolean
-  isInEditMode: boolean
+  activeMode: ActiveMode
   calculatedBoundaries: $FixMe
   gridOfBoundaries: $FixMe
 }
 
+
 export const EXACT_VALUE = 'exactValue'
 export const SAME_AS_BOUNDARY = 'sameAsBoundary'
 export const DIST_FROM_BOUNDARY = 'distanceFromBoundary'
+
+export const MODE_OPTION = 'option'
+export const MODE_CMD = 'command'
+export const MODE_D = 'd'
+export const MODE_C = 'c'
 
 const getOppositeSide = (side: string): string => {
   switch (side) {
@@ -77,18 +85,20 @@ export class TheUI extends React.Component<Props, State> {
 
     this.state = {
       isCreatingNewPanel: false,
-      isInEditMode: false,
+      activeMode: null,
       ...this._getUpdatedBoundaries(props.panelsBoundaries),
     }
   }
 
   componentDidMount() {
+    window.addEventListener('focus', () => this._handleFocus)
     window.addEventListener('resize', this._handleResize)
     document.addEventListener('keydown', this._handleKeyDown)
     document.addEventListener('keyup', this._handleKeyUp)
   }
-
+  
   componentWillUnmount() {
+    window.addEventListener('focus', () => this._handleFocus)
     window.removeEventListener('resize', this._handleResize)
     document.removeEventListener('keydown', this._handleKeyDown)
     document.removeEventListener('keyup', this._handleKeyUp)
@@ -104,6 +114,39 @@ export class TheUI extends React.Component<Props, State> {
     this.setState(() => ({
       ...this._getUpdatedBoundaries(this.props.panelsBoundaries),
     }))
+  }
+
+  _handleKeyDown = (e: $FixMe) => {
+    if (e.target.tagName === 'INPUT') return
+    switch (e.keyCode) {
+      case 18:
+        this.setState(() => ({activeMode: MODE_OPTION}))
+        break
+      case 91:
+        this.setState(() => ({activeMode: MODE_CMD}))
+        break
+      case 68:
+        this.setState(() => ({activeMode: MODE_D}))
+        break
+      case 67:
+        this.setState(() => ({activeMode: MODE_C}))
+        break
+      default:
+        console.log(e.keyCode)
+        break
+    }
+  }
+
+  _handleKeyUp = () => {
+    if (this.state.activeMode != null) {
+      this.setState(() => ({activeMode: null}))
+    }
+  }
+
+  _handleFocus = () => {
+    if (this.state.activeMode != null) {
+      this.setState(() => ({activeMode: null}))
+    }
   }
 
   _getUpdatedBoundaries(boundariesWithoutWindow: $FixMe) {
@@ -440,18 +483,6 @@ export class TheUI extends React.Component<Props, State> {
     )
   }
 
-  _handleKeyDown = (e: $FixMe) => {
-    if (e.keyCode === 18) {
-      this.setState(() => ({isInEditMode: true}))
-    }
-  }
-
-  _handleKeyUp = (e: $FixMe) => {
-    if (e.keyCode === 18) {
-      this.setState(() => ({isInEditMode: false}))
-    }
-  }
-
   showPanelCreator = () => {
     this.setState(() => ({isCreatingNewPanel: true}))
   }
@@ -482,13 +513,13 @@ export class TheUI extends React.Component<Props, State> {
           <PanelController
           key={panelId}
           panelId={panelId}
-          isInEditMode={this.state.isInEditMode}
+          activeMode={this.state.activeMode}
           boundaries={this.state.calculatedBoundaries[panelId]}
           gridOfBoundaries={this.state.gridOfBoundaries}
           updatePanelBoundaries={this.updatePanelBoundaries}
           />
         ))}
-        <StatusBar isInEditMode={this.state.isInEditMode}/>
+        <StatusBar activeMode={this.state.activeMode}/>
         {/*
           {isCreatingNewPanel &&
             <PanelCreator

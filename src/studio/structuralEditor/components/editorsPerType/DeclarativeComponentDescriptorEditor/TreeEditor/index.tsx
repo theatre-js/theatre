@@ -21,6 +21,11 @@ import {
   STATUS,
 } from './constants'
 import cx from 'classnames'
+import {
+  PanelPropsChannel,
+} from '$src/studio/workspace/components/Panel/Panel'
+import {Subscriber} from 'react-broadcast'
+import {MODE_CMD} from '$studio/workspace/components/TheUI'
 
 export const metaKey = 'composePanel'
 const PLACEHOLDER = '\n'
@@ -88,15 +93,6 @@ class TreeEditor extends StudioComponent<Props, State> {
 
   componentDidMount() {
     this._setNodes(this.props.rootComponentDescriptor)
-    document.addEventListener('keydown', this._handleKeyDown)
-    document.addEventListener('keyup', this._handleKeyUp)
-    document.addEventListener('visibilitychange', this._handleVisibilityChange)
-  }
-  
-  componentWillUnmount() {
-    document.removeEventListener('keydown', this._handleKeyDown)
-    document.removeEventListener('keyup', this._handleKeyUp)
-    document.removeEventListener('visibilitychange', this._handleVisibilityChange)
   }
 
   componentWillReceiveProps(nextProps) {
@@ -105,24 +101,6 @@ class TreeEditor extends StudioComponent<Props, State> {
       this.props.rootComponentDescriptor.localHiddenValuesById
     ) || this.lastAction.type != null) {
       this._setNodes(nextProps.rootComponentDescriptor)
-    }
-  }
-
-  _handleKeyDown = (e: $FixMe) => {
-    if (e.keyCode === 91 && e.target.tagName !== 'INPUT') {
-      this.setState(() => ({isCommandDown: true}))
-    }
-  }
-
-  _handleKeyUp = (e: $FixMe) => {
-    if (e.keyCode === 91) {
-      this.setState(() => ({isCommandDown: false}))
-    }
-  }
-
-  _handleVisibilityChange = (e) => {
-    if (document.visibilityState === 'hidden' && this.state.isCommandDown) {
-      this.setState(() => ({isCommandDown: false}))
     }
   }
 
@@ -583,45 +561,50 @@ class TreeEditor extends StudioComponent<Props, State> {
   }
 
   render() {
-    const {nodes, nodeBeingDragged, isCommandDown} = this.state
+    const {nodes, nodeBeingDragged} = this.state
     const isANodeBeingDragged = nodeBeingDragged != null
     const selectedNodeId = getSelectedNodeId(this.props.rootComponentDescriptor)
 
     return (
-      <PanelSection withHorizontalMargin={false} withoutBottomMargin={true} label="Template">
-        {this._renderScroller('up')}
-        {isANodeBeingDragged && (
-          <MovableNode
-            rootNode={_.get(nodes, nodeBeingDragged.nodeProps.path)}
-            nodeBeingDragged={nodeBeingDragged}
-            onDragEnd={this.handleDragEnd}
-          />
-        )}
-        <div ref={c => (this.treeWrapper = c)} className={css.treeWrapper}>
-          <div
-            ref={c => (this.treeContainer = c)}
-            className={css.treeContainer}
-          >
-            <NodeContainer
-              key={nodes.id}
-              isCommandDown={isCommandDown}
-              selectedNodeId={selectedNodeId}
-              nodeData={nodes}
-              dispatchAction={this.dispatchActionFromNode}
-              isANodeBeingDragged={isANodeBeingDragged}
-              setNodeBeingDragged={this.setNodeBeingDragged}
-              setSelectedNodeId={this.setSelectedNodeId}
-              listOfDisplayNames={this.props.listOfDisplayNames}
-              handleTextNodeTypeChange={this.handleTextNodeTypeChange}
-              cancelTextNodeTypeChange={this.cancelTextNodeTypeChange}
-              cancelSettingType={this._cancelSettingComponentType}
-            />
-          </div>
-        </div>
-        {this._renderScroller('down')}
-      </PanelSection>
-    )
-  }
+      <Subscriber channel={PanelPropsChannel}>
+      {({activeMode}) => {
+        return (
+          <PanelSection withHorizontalMargin={false} withoutBottomMargin={true} label="Template">
+            {this._renderScroller('up')}
+            {isANodeBeingDragged && (
+              <MovableNode
+                rootNode={_.get(nodes, nodeBeingDragged.nodeProps.path)}
+                nodeBeingDragged={nodeBeingDragged}
+                onDragEnd={this.handleDragEnd}
+              />
+            )}
+            <div ref={c => (this.treeWrapper = c)} className={css.treeWrapper}>
+              <div
+                ref={c => (this.treeContainer = c)}
+                className={css.treeContainer}
+              >
+                <NodeContainer
+                  key={nodes.id}
+                  isCommandDown={activeMode === MODE_CMD}
+                  selectedNodeId={selectedNodeId}
+                  nodeData={nodes}
+                  dispatchAction={this.dispatchActionFromNode}
+                  isANodeBeingDragged={isANodeBeingDragged}
+                  setNodeBeingDragged={this.setNodeBeingDragged}
+                  setSelectedNodeId={this.setSelectedNodeId}
+                  listOfDisplayNames={this.props.listOfDisplayNames}
+                  handleTextNodeTypeChange={this.handleTextNodeTypeChange}
+                  cancelTextNodeTypeChange={this.cancelTextNodeTypeChange}
+                  cancelSettingType={this._cancelSettingComponentType}
+                />
+              </div>
+            </div>
+            {this._renderScroller('down')}
+          </PanelSection>
+        )
+      }}
+    </Subscriber>
+  )}
 }
 
 export default compose(

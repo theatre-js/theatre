@@ -1,0 +1,7 @@
+.highlightRedOnHover:hover ~ .connectorPath {
+  stroke: red;
+}
+
+.connectorPath {
+  pointer-events: none;
+}

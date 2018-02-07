@@ -9,7 +9,7 @@ import {Subscriber} from 'react-broadcast'
 import DraggableArea from '$studio/common/components/DraggableArea'
 import * as _ from 'lodash'
 import {
-  PanelWidthChannel,
+  PanelPropsChannel,
   default as Panel,
 } from '$src/studio/workspace/components/Panel/Panel'
 
@@ -551,8 +551,8 @@ class Content extends StudioComponent<Props, State> {
           innerWrapper: css.panelInnerWrapper,
         }}
       >
-        <Subscriber channel={PanelWidthChannel}>
-          {(panelWidth: number) => {
+        <Subscriber channel={PanelPropsChannel}>
+          {({width: panelWidth}: $FixMe) => {
             panelWidth -= 30
             return (
               <div

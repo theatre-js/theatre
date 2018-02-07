@@ -17,6 +17,7 @@ import {
 
 import panelTypes from '$src/studio/workspace/panelTypes'
 import {Broadcast} from 'react-broadcast'
+import {ActiveMode} from '$studio/workspace/components/TheUI'
 
 export const PanelControlChannel = 'TheaterJS/PanelControlChannel'
 
@@ -24,7 +25,7 @@ export interface IPanelControlChannelData {
   panelId: string
   isActive: boolean
   label: string
-  isInEditMode: boolean
+  activeMode: ActiveMode
   boundaries: $FixMe
   gridOfBoundaries: $FixMe
   updatePanelBoundaries: Function
@@ -32,7 +33,7 @@ export interface IPanelControlChannelData {
 
 type OwnProps = {
   panelId: string
-  isInEditMode: boolean
+  activeMode: ActiveMode
   boundaries: $FixMe
   gridOfBoundaries: $FixMe
   updatePanelBoundaries: Function
@@ -101,7 +102,7 @@ class PanelController extends React.Component<Props, State> {
       panelId: props.panelId,
       isActive: props.isActive,
       label: panelType.label,
-      isInEditMode: props.isInEditMode,
+      activeMode: props.activeMode,
       boundaries: props.boundaries,
       gridOfBoundaries: props.gridOfBoundaries,
       updatePanelBoundaries: props.updatePanelBoundaries,

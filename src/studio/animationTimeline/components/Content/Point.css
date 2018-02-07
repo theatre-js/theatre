@@ -2,15 +2,20 @@
   cursor: pointer;
 }
 
-.pointClickRect:hover ~ .pointGlow,
-.pointClickRect:active ~ .pointGlow {
+.pointClickRect:not(.highlightRedOnHover):hover ~ .pointGlow,
+.pointClickRect:not(.highlightRedOnHover):active ~ .pointGlow {
   filter: url('#glow');
   opacity: 1;
 }
 
-.pointClickRect:hover ~ .pointStroke,
-.pointClickRect:active ~ .pointStroke {
+.pointClickRect:not(.highlightRedOnHover):hover ~ .pointStroke,
+.pointClickRect:not(.highlightRedOnHover):active ~ .pointStroke {
   stroke-width: 4px;
+}
+
+.pointClickRect.highlightRedOnHover:hover ~ .pointStroke,
+.pointClickRect.highlightRedOnHover:active ~ .pointStroke {
+  stroke: red;
 }
 
 .pointGlow {

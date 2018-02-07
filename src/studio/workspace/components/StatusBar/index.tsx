@@ -6,11 +6,12 @@ import MdApps from 'react-icons/lib/md/apps'
 import MdLiveHelp from 'react-icons/lib/md/live-help'
 import MdTouchApp from 'react-icons/lib/md/touch-app'
 import MdImportExport from 'react-icons/lib/md/import-export'
+import {MODE_OPTION} from '$studio/workspace/components/TheUI'
 
 class StatusBar extends React.PureComponent<any, any> {
   render() {
     return (
-      <div className={cx(css.container, {[css.onTop]: this.props.isInEditMode})}>
+      <div className={cx(css.container, {[css.onTop]: this.props.activeMode === MODE_OPTION})}>
         <div className={css.leftContainer}>
           <div className={css.item}>
             <MdApps className={css.icon} />

@@ -2,8 +2,14 @@
 import React from 'react'
 import css from './Point.css'
 import Connector from './Connector'
+import cx from 'classnames'
 import DraggableArea from '$studio/common/components/DraggableArea'
 import SingleInputForm from '$lf/common/components/SingleInputForm'
+import {
+  PanelPropsChannel,
+} from '$src/studio/workspace/components/Panel/Panel'
+import {Subscriber} from 'react-broadcast'
+import {MODE_D, MODE_C} from '$studio/workspace/components/TheUI'
 import {
   NormalizedPoint,
   PointHandles,
@@ -64,28 +70,27 @@ class Point extends React.PureComponent<Props, State> {
     this.setState(() => ({isEnteringProps: true}))
   }
 
-  pointClickHandler = (e: SyntheticMouseEvent<>) => {
+  pointClickHandler = (e: $FixMe, activeMode: string) => {
     e.preventDefault()
     e.stopPropagation()
-    if (e.altKey) {
-      return this.props.removePoint()
-    }
-    if (e.ctrlKey || e.metaKey) {
-      return this.props.addConnector()
-    }
-    const {left, top, width, height} = e.target.getBoundingClientRect()
+    switch (activeMode) {
+      case MODE_C:
+        this.props.addConnector()
+        break
+      case MODE_D:
+        this.props.removePoint()
+        break
+      default: {
+        const {left, top, width, height} = e.target.getBoundingClientRect()
 
-    this.props.showPointValuesEditor({
-      left: left + width / 2,
-      top: top + height / 2,
-      initialTime: this.props.point._t,
-      initialValue: this.props.point._value,
-    })
-    // if (this.state.isEnteringProps) {
-    //   this.disableEnteringProps()
-    // } else {
-    //   this.enableEnteringProps()
-    // }
+        this.props.showPointValuesEditor({
+          left: left + width / 2,
+          top: top + height / 2,
+          initialTime: this.props.point._t,
+          initialValue: this.props.point._value,
+        })
+      }
+    }
   }
 
   handleClickHandler = (e: SyntheticMouseEvent<>, side: 'left' | 'right') => {
@@ -305,130 +310,136 @@ class Point extends React.PureComponent<Props, State> {
     const renderRightHandle = nextPoint != null &&
       point.interpolationDescriptor.connected
     return (
-      <g>
-        {isMoving && this._renderTransformedPoint()}
-        {renderLeftHandle && (
-          <line
-            x1={time}
-            y1={value}
-            x2={leftHandle[0]}
-            y2={leftHandle[1]}
-            fill={color.darkened}
-            stroke={color.darkened}
-          />
-        )}
-        {renderRightHandle && (
-            <g>
+      <Subscriber channel={PanelPropsChannel}>
+      {({activeMode}) => {
+        const isInDeleteMode = activeMode === MODE_D
+        return (
+          <g>
+            {isMoving && this._renderTransformedPoint()}
+            {renderLeftHandle && (
               <line
                 x1={time}
                 y1={value}
-                x2={rightHandle[0]}
-                y2={rightHandle[1]}
+                x2={leftHandle[0]}
+                y2={leftHandle[1]}
                 fill={color.darkened}
-                stroke={color.darkened}            
+                stroke={color.darkened}
               />
-            </g>
-          )}
-        <DraggableArea
-          onDragStart={this._addGlobalCursorRule}
-          onDrag={this.pointDragHandler}
-          onDragEnd={this.changePointPosition}
-        >
-          <g>
-            <rect
-              width="16"
-              height="16"
-              x={time - 8}
-              y={value - 8}
-              fill="transparent"
-              stroke="transparent"
-              onClick={this.pointClickHandler}
-              className={css.pointClickRect}
-            />
-            <circle
-              cx={time}
-              cy={value}
-              r={6}
-              className={css.pointGlow}
-            />
-            <circle
-              strokeWidth="2"
-              cx={time}
-              cy={value}
-              r={3.2}
-              className={css.pointStroke}
-              />
-            <circle
-              fill="#1C2226"
-              stroke="transparent"
-              cx={time}
-              cy={value}
-              r={2.4}
-              className={css.pointCenter}
-            />
+            )}
+            {renderRightHandle && (
+                <g>
+                  <line
+                    x1={time}
+                    y1={value}
+                    x2={rightHandle[0]}
+                    y2={rightHandle[1]}
+                    fill={color.darkened}
+                    stroke={color.darkened}            
+                  />
+                </g>
+              )}
+            <DraggableArea
+              onDragStart={this._addGlobalCursorRule}
+              onDrag={this.pointDragHandler}
+              onDragEnd={this.changePointPosition}
+            >
+              <g>
+                <rect
+                  width="16"
+                  height="16"
+                  x={time - 8}
+                  y={value - 8}
+                  fill="transparent"
+                  stroke="transparent"
+                  onClick={(e) => this.pointClickHandler(e, activeMode)}
+                  className={cx(css.pointClickRect, {[css.highlightRedOnHover]: isInDeleteMode})}
+                />
+                <circle
+                  cx={time}
+                  cy={value}
+                  r={6}
+                  className={css.pointGlow}
+                />
+                <circle
+                  strokeWidth="2"
+                  cx={time}
+                  cy={value}
+                  r={3.2}
+                  className={css.pointStroke}
+                  />
+                <circle
+                  fill="#1C2226"
+                  stroke="transparent"
+                  cx={time}
+                  cy={value}
+                  r={2.4}
+                  className={css.pointCenter}
+                />
+              </g>
+            </DraggableArea>
+            {renderLeftHandle &&
+              <DraggableArea
+                onDragStart={this._addGlobalCursorRule}            
+                onDrag={this.leftHandleDragHandler}
+                onDragEnd={this.changePointHandles}
+              >
+                <g>
+                  <rect
+                    width="12"
+                    height="12"
+                    x={leftHandle[0] - 6}
+                    y={leftHandle[1] - 6}
+                    fill="transparent"
+                    stroke="transparent"
+                    onClick={e => this.handleClickHandler(e, 'left')}
+                    className={css.handleClickRect}
+                  />
+                  <circle
+                    strokeWidth="1"                
+                    cx={leftHandle[0]}
+                    cy={leftHandle[1]}
+                    r={2}
+                    className={css.handle}     
+                    stroke={color.darkened}
+                    fill={color.darkened}
+                  />
+                </g>
+              </DraggableArea>
+            }
+            {renderRightHandle &&
+              <DraggableArea
+                onDragStart={this._addGlobalCursorRule}          
+                onDrag={this.rightHandleDragHandler}
+                onDragEnd={this.changePointHandles}
+              >
+                <g>
+                  <rect
+                    width="12"
+                    height="12"
+                    x={rightHandle[0] - 6}
+                    y={rightHandle[1] - 6}
+                    fill="transparent"
+                    stroke="transparent"
+                    onClick={e => this.handleClickHandler(e, 'right')}
+                    className={css.handleClickRect}
+                  />
+                  <circle
+                    strokeWidth="1"
+                    cx={rightHandle[0]}
+                    cy={rightHandle[1]}
+                    r={2}
+                    className={css.handle}
+                    stroke={color.darkened}
+                    fill={color.darkened}                
+                  />
+                </g>
+              </DraggableArea>
+            }
           </g>
-        </DraggableArea>
-        {renderLeftHandle &&
-          <DraggableArea
-            onDragStart={this._addGlobalCursorRule}            
-            onDrag={this.leftHandleDragHandler}
-            onDragEnd={this.changePointHandles}
-          >
-            <g>
-              <rect
-                width="12"
-                height="12"
-                x={leftHandle[0] - 6}
-                y={leftHandle[1] - 6}
-                fill="transparent"
-                stroke="transparent"
-                onClick={e => this.handleClickHandler(e, 'left')}
-                className={css.handleClickRect}
-              />
-              <circle
-                strokeWidth="1"                
-                cx={leftHandle[0]}
-                cy={leftHandle[1]}
-                r={2}
-                className={css.handle}     
-                stroke={color.darkened}
-                fill={color.darkened}
-              />
-            </g>
-          </DraggableArea>
-        }
-        {renderRightHandle &&
-          <DraggableArea
-            onDragStart={this._addGlobalCursorRule}          
-            onDrag={this.rightHandleDragHandler}
-            onDragEnd={this.changePointHandles}
-          >
-            <g>
-              <rect
-                width="12"
-                height="12"
-                x={rightHandle[0] - 6}
-                y={rightHandle[1] - 6}
-                fill="transparent"
-                stroke="transparent"
-                onClick={e => this.handleClickHandler(e, 'right')}
-                className={css.handleClickRect}
-              />
-              <circle
-                strokeWidth="1"
-                cx={rightHandle[0]}
-                cy={rightHandle[1]}
-                r={2}
-                className={css.handle}
-                stroke={color.darkened}
-                fill={color.darkened}                
-              />
-            </g>
-          </DraggableArea>
-        }
-      </g>
-    )
-  }
+        )
+      }}
+    </Subscriber>
+  )}
 }
 
 export default Point

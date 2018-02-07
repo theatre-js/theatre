@@ -12,6 +12,7 @@ import {
 } from '$src/studio/workspace/components/TheUI'
 import _ from 'lodash'
 import {Broadcast} from 'react-broadcast'
+import {MODE_OPTION} from '$studio/workspace/components/TheUI'
 
 interface IProps {
   css?: any
@@ -32,7 +33,7 @@ interface IState {
 }
 
 const SNAP_RANGE = 10
-export const PanelWidthChannel = 'TheaterJS/PanelWidthChannel'
+export const PanelPropsChannel = 'TheaterJS/PanelPropsChannel'
 
 export default class Panel extends StudioComponent<IProps, IState> {
   constructor(props: IProps, context: $IntentionalAny) {
@@ -339,7 +340,7 @@ export default class Panel extends StudioComponent<IProps, IState> {
             panelId,
             isActive,
             label: defaultLabel,
-            isInEditMode,
+            activeMode,
             boundaries,
             gridOfBoundaries,
             updatePanelBoundaries,
@@ -383,11 +384,11 @@ export default class Panel extends StudioComponent<IProps, IState> {
                 <div className={css.topBar}>
                   <div className={css.title}>{label || defaultLabel}</div>
                 </div>
-                <Broadcast channel={PanelWidthChannel} value={width}>
+                <Broadcast channel={PanelPropsChannel} value={{width, activeMode}}>
                   <div className={css.content}>{children}</div>
                 </Broadcast>
               </div>
-              {isInEditMode && (
+              {activeMode === MODE_OPTION && (
                 <EditOverlay
                   isPanelHeaderLess={headerLess}
                   onPanelDrag={(dx: number, dy: number) =>

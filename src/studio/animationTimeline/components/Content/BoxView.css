@@ -7,6 +7,19 @@
   background-color: #1B2226;
   /* background-size: 22px 22px; */
   padding-right: 30px;
+  
+  &.blueAddCursor svg {
+    cursor: url('url-loader!./AddCursorBlue.svg'), auto;
+  }
+  &.redAddCursor svg {
+    cursor: url('url-loader!./AddCursorRed.svg'), auto;
+  }
+  &.purpleAddCursor svg {
+    cursor: url('url-loader!./AddCursorPurple.svg'), auto;
+  }
+  &.yellowAddCursor svg {
+    cursor: url('url-loader!./AddCursorYellow.svg'), auto;
+  }
 
   &.indicateMerge {
     &:after {

@@ -15,6 +15,10 @@ import PointValuesEditor from './PointValuesEditor'
 import * as _ from 'lodash'
 import cx from 'classnames'
 import {Subscriber} from 'react-broadcast'
+import {
+  PanelPropsChannel,
+} from '$src/studio/workspace/components/Panel/Panel'
+import {MODE_CMD,} from '$studio/workspace/components/TheUI'
 import {SortableBoxDragChannel} from './SortableBox'
 import DraggableArea from '$studio/common/components/DraggableArea'
 
@@ -78,10 +82,10 @@ const resetExtremums = (pathToVariable: string[]) => {
 }
 
 const colors = [
-  {normal: '#3AAFA9', darkened: '#345b59'},
-  {normal: '#575790', darkened: '#323253'},
-  {normal: '#B76C6C', darkened: '#4c3434'},
-  {normal: '#FCE181', darkened: '#726a4b'},
+  {name: 'blue', normal: '#3AAFA9', darkened: '#345b59'},
+  {name: 'purple', normal: '#575790', darkened: '#323253'},
+  {name: 'red', normal: '#B76C6C', darkened: '#4c3434'},
+  {name: 'yellow', normal: '#FCE181', darkened: '#726a4b'},
 ]
 
 class BoxBiew extends React.Component<Props, State> {
@@ -154,11 +158,13 @@ class BoxBiew extends React.Component<Props, State> {
     return {svgHeight, svgWidth, svgTransform, svgExtremums}
   }
 
-  addPoint = (e: React.MouseEvent<$FixMe>) => {
-    if (!(e.ctrlKey || e.metaKey)) return
+  addPoint = (e: $FixMe, activeMode: string) => {
+    if (activeMode !== MODE_CMD) return
+    e.stopPropagation()
+
     const {top, left} = this.svgArea.getBoundingClientRect()
-    const time = e.clientX - left
-    const value = e.clientY - top
+    const time = e.clientX - left + 5
+    const value = e.clientY - top + 5
     const pointProps: Point = {
       time: this._deNormalizeX(time),
       value: this._deNormalizeValue(value),
@@ -472,108 +478,119 @@ class BoxBiew extends React.Component<Props, State> {
       variablesColors = {...variablesColors, [variable.id]: colors[index % colors.length]}
     })
     return (
-      <Subscriber channel={SortableBoxDragChannel}>
-        {({onDragStart, onDrag, onDragEnd}) => {
-          return (
-            <div
-              ref={c => (this.container = c)}
-              className={cx(css.container, {
-                [css.indicateMerge]: shouldIndicateMerge,
-                [css.canBeMerged]: canBeMerged,
-              })}
-              style={{width: svgWidth}}
-            >
-              {tempIncludeTimeGrid && <div className={css.timeGrid} />}
-              <DraggableArea
-                withShift={true}
-                onDragStart={onDragStart}
-                onDrag={(_, dy) => onDrag(dy)}
-                onDragEnd={onDragEnd}
-              >
-                <div className={css.boxLegends}>
-                  <BoxLegends
-                    variables={variables.map(variable =>
-                      _.pick(variable, ['id', 'component', 'property']),
-                    )}
-                    colors={colors.map(c => c.normal)}
-                    activeVariableId={activeVariableId}
-                    setActiveVariable={this.setActiveVariable}
-                    splitVariable={this.props.splitVariable}
-                  />
-                </div>
-              </DraggableArea>
-              <div className={css.svgArea}>
-                <svg
-                  height={svgHeight}
-                  width={svgWidth}
-                  // style={{transform: `translateX(${-svgTransform}px)`}}
-                  ref={svg => {
-                    if (svg != null) this.svgArea = svg
-                  }}
-                  onClick={this.addPoint}
+      <Subscriber channel={PanelPropsChannel}>
+      {({activeMode}) => {
+        const isAddingPoint = activeMode === MODE_CMD
+        return (
+          <Subscriber channel={SortableBoxDragChannel}>
+            {({onDragStart, onDrag, onDragEnd}) => {
+              return (
+                <div
+                  ref={c => (this.container = c)}
+                  className={cx(css.container, {
+                    [css.canBeMerged]: canBeMerged,
+                    [css.indicateMerge]: shouldIndicateMerge,
+                    [css.redAddCursor]: isAddingPoint && variablesColors[activeVariableId].name === 'red',
+                    [css.blueAddCursor]: isAddingPoint && variablesColors[activeVariableId].name === 'blue',
+                    [css.yellowAddCursor]: isAddingPoint && variablesColors[activeVariableId].name === 'yellow',
+                    [css.purpleAddCursor]: isAddingPoint && variablesColors[activeVariableId].name === 'purple',
+                  })}
+                  style={{width: svgWidth}}
                 >
-                  <defs>
-                    <filter id="glow">
-                      <feColorMatrix type="matrix" values={`3  0  0  0  0
-                                                            0  3  0  0  0
-                                                            0  0  3  0  0
-                                                            0  0  0  1  0`} />
-                      <feGaussianBlur stdDeviation=".7" />
-                    </filter>
-                  </defs>
-                  {_.sortBy(variables, (variable: $FixMe) => (variable.id === activeVariableId)).map(({id, points}, index) => (
-                    <Variable
-                      key={id}
-                      variableId={id}
-                      points={this._normalizePoints(points)}
-                      // color={colors[index % colors.length]}
-                      color={variablesColors[id]}
+                  {tempIncludeTimeGrid && <div className={css.timeGrid} />}
+                  <DraggableArea
+                    withShift={true}
+                    onDragStart={onDragStart}
+                    onDrag={(_, dy) => onDrag(dy)}
+                    onDragEnd={onDragEnd}
+                  >
+                    <div className={css.boxLegends}>
+                      <BoxLegends
+                        variables={variables.map(variable =>
+                          _.pick(variable, ['id', 'component', 'property']),
+                        )}
+                        colors={colors.map(c => c.normal)}
+                        activeVariableId={activeVariableId}
+                        setActiveVariable={this.setActiveVariable}
+                        splitVariable={this.props.splitVariable}
+                      />
+                    </div>
+                  </DraggableArea>
+                  <div className={css.svgArea}>
+                    <svg
+                      height={svgHeight}
                       width={svgWidth}
-                      showPointValuesEditor={(index, pos) =>
-                        this.showPointValuesEditor(id, index, pos)
+                      // style={{transform: `translateX(${-svgTransform}px)`}}
+                      ref={svg => {
+                        if (svg != null) this.svgArea = svg
+                      }}
+                      onMouseDown={(e: $FixMe) => this.addPoint(e, activeMode)}
+                    >
+                      <defs>
+                        <filter id="glow">
+                          <feColorMatrix type="matrix" values={`3  0  0  0  0
+                                                                0  3  0  0  0
+                                                                0  0  3  0  0
+                                                                0  0  0  1  0`} />
+                          <feGaussianBlur stdDeviation=".7" />
+                        </filter>
+                      </defs>
+                      {_.sortBy(variables, (variable: $FixMe) => (variable.id === activeVariableId)).map(({id, points}, index) => (
+                        <Variable
+                          key={id}
+                          variableId={id}
+                          points={this._normalizePoints(points)}
+                          // color={colors[index % colors.length]}
+                          color={variablesColors[id]}
+                          width={svgWidth}
+                          showPointValuesEditor={(index, pos) =>
+                            this.showPointValuesEditor(id, index, pos)
+                          }
+                          changePointPositionBy={(index, change) =>
+                            this.changePointPositionBy(id, index, change)
+                          }
+                          changePointHandlesBy={(index, change) =>
+                            this.changePointHandlesBy(id, index, change)
+                          }
+                          setPointPositionTo={(index, newPosition) =>
+                            this.setPointPositionTo(id, index, newPosition)
+                          }
+                          removePoint={index => this.removePoint(id, index)}
+                          addConnector={index => this.addConnector(id, index)}
+                          removeConnector={index => this.removeConnector(id, index)}
+                          makeHandleHorizontal={(index, side) =>
+                            this.makeHandleHorizontal(id, index, side)
+                          }
+                        />
+                      ))}
+                    </svg>
+                  </div>
+                  {pointValuesEditorProps != null && (
+                    <PointValuesEditor
+                      {..._.pick(pointValuesEditorProps, [
+                        'left',
+                        'top',
+                        'initialValue',
+                        'initialTime',
+                      ])}
+                      onClose={() =>
+                        this.setState(() => ({pointValuesEditorProps: null}))
                       }
-                      changePointPositionBy={(index, change) =>
-                        this.changePointPositionBy(id, index, change)
-                      }
-                      changePointHandlesBy={(index, change) =>
-                        this.changePointHandlesBy(id, index, change)
-                      }
-                      setPointPositionTo={(index, newPosition) =>
-                        this.setPointPositionTo(id, index, newPosition)
-                      }
-                      removePoint={index => this.removePoint(id, index)}
-                      addConnector={index => this.addConnector(id, index)}
-                      removeConnector={index => this.removeConnector(id, index)}
-                      makeHandleHorizontal={(index, side) =>
-                        this.makeHandleHorizontal(id, index, side)
+                      onSubmit={newPosition =>
+                        this.setPointPositionTo(
+                          pointValuesEditorProps.variableId,
+                          pointValuesEditorProps.pointIndex,
+                          newPosition,
+                        )
                       }
                     />
-                  ))}
-                </svg>
-              </div>
-              {pointValuesEditorProps != null && (
-                <PointValuesEditor
-                  {..._.pick(pointValuesEditorProps, [
-                    'left',
-                    'top',
-                    'initialValue',
-                    'initialTime',
-                  ])}
-                  onClose={() =>
-                    this.setState(() => ({pointValuesEditorProps: null}))
-                  }
-                  onSubmit={newPosition =>
-                    this.setPointPositionTo(
-                      pointValuesEditorProps.variableId,
-                      pointValuesEditorProps.pointIndex,
-                      newPosition,
-                    )
-                  }
-                />
-              )}
-            </div>
-          )
-        }}
+                  )}
+                </div>
+              )
+            }}
+          </Subscriber>
+        )
+      }}
       </Subscriber>
     )
   }
