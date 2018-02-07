@@ -112,11 +112,11 @@ const tempCustomComponentDescriptors = {
               points: [
                 {
                   time: 10000,
-                  value: 20,
+                  value: 40,
                   interpolationDescriptor: {
                     __descriptorType: 'TimelinePointInterpolationDescriptor',
                     interpolationType: 'CubicBezier',
-                    handles: [0, 0, 0.2, 0],
+                    handles: [.5, .25, 0.5, .25],
                     connected: true,
                   },
                 },
@@ -126,7 +126,7 @@ const tempCustomComponentDescriptors = {
                   interpolationDescriptor: {
                     __descriptorType: 'TimelinePointInterpolationDescriptor',
                     interpolationType: 'CubicBezier',
-                    handles: [0, 0, 0.2, 0],
+                    handles: [.5, .25, 0.5, .25],
                     connected: true,
                   },
                 },
@@ -304,14 +304,23 @@ const tempCustomComponentDescriptors = {
               points: [],
             },
           },
-          layout: ['8daa7380-9b43-475a-8352-dc564a58c726'],
+          layout: [
+            '8daa7380-9b43-475a-8352-dc564a58c725',
+            '8daa7380-9b43-475a-8352-dc564a58c726',
+          ],
           boxes: {
+            '8daa7380-9b43-475a-8352-dc564a58c725': {
+              id: '8daa7380-9b43-475a-8352-dc564a58c725',
+              height: 200,
+              variables: [
+                '8daa7380-9b43-475a-8352-dc564a58c717',
+              ],
+            },
             '8daa7380-9b43-475a-8352-dc564a58c726': {
               id: '8daa7380-9b43-475a-8352-dc564a58c726',
               height: 294,
               variables: [
                 '8daa7380-9b43-475a-8352-dc564a58c716',
-                '8daa7380-9b43-475a-8352-dc564a58c717',
                 '8daa7380-9b43-475a-8352-dc564a58c715',
                 '8daa7380-9b43-475a-8352-dc564a58c714',
                 '8daa7380-9b43-475a-8352-dc564a58c713',

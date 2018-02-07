@@ -1,5 +1,5 @@
 // @flow
-import {React, connect, reduceStateAction} from '$studio/handy'
+import {React, connect, reduceStateAction, multiReduceStateAction} from '$studio/handy'
 import {
   VariableID,
   VariableObject,
@@ -111,7 +111,8 @@ class BoxBiew extends React.Component<Props, State> {
       nextProps.duration !== this.props.duration ||
       nextProps.panelWidth !== this.props.panelWidth ||
       nextProps.focus[1] - nextProps.focus[0] !==
-        this.props.focus[1] - this.props.focus[0]
+        this.props.focus[1] - this.props.focus[0] ||
+      !_.isEqual(nextProps.variables, this.props.variables)  
     ) {
       this.setState(() => ({...this._getSvgState(nextProps), activeVariableId}))
     }
@@ -124,6 +125,7 @@ class BoxBiew extends React.Component<Props, State> {
       return true
     if (!_.isEqual(nextProps.variables, this.props.variables)) return true
     if (nextState.svgWidth !== this.state.svgWidth) return true
+    if (nextState.svgExtremums !== this.state.svgExtremums) return true
     if (nextState.activeVariableId !== this.state.activeVariableId) return true
     if (nextState.pointValuesEditorProps !== this.state.pointValuesEditorProps)
       return true
@@ -191,12 +193,12 @@ class BoxBiew extends React.Component<Props, State> {
         },
       ),
     )
-    this.props.dispatch(
-      resetExtremums([
-        ...this.props.pathToVariables,
-        this.state.activeVariableId,
-      ]),
-    )
+    // this.props.dispatch(
+    //   resetExtremums([
+    //     ...this.props.pathToVariables,
+    //     this.state.activeVariableId,
+    //   ]),
+    // )
   }
 
   pathToPoints = (variableId: string) => [
@@ -215,9 +217,9 @@ class BoxBiew extends React.Component<Props, State> {
         points.slice(0, pointIndex).concat(points.slice(pointIndex + 1)),
       ),
     )
-    this.props.dispatch(
-      resetExtremums([...this.props.pathToVariables, variableId]),
-    )
+    // this.props.dispatch(
+    //   resetExtremums([...this.props.pathToVariables, variableId]),
+    // )
   }
 
   setPointPositionTo = (
@@ -231,9 +233,9 @@ class BoxBiew extends React.Component<Props, State> {
         ...newPosition,
       })),
     )
-    this.props.dispatch(
-      resetExtremums([...this.props.pathToVariables, variableId]),
-    )
+    // this.props.dispatch(
+    //   resetExtremums([...this.props.pathToVariables, variableId]),
+    // )
   }
 
   showPointValuesEditor(
@@ -259,9 +261,9 @@ class BoxBiew extends React.Component<Props, State> {
         value: point.value + deNormalizedChange.value,
       })),
     )
-    this.props.dispatch(
-      resetExtremums([...this.props.pathToVariables, variableId]),
-    )
+    // this.props.dispatch(
+    //   resetExtremums([...this.props.pathToVariables, variableId]),
+    // )
   }
 
   changePointHandlesBy = (
@@ -276,19 +278,44 @@ class BoxBiew extends React.Component<Props, State> {
       points[pointIndex - 1],
       points[pointIndex + 1],
     )
-    this.props.dispatch(
-      reduceStateAction(
-        [...this.pathToPoint(variableId, pointIndex), 'interpolationDescriptor', 'handles'],
-        handles => {
-          return handles.map(
-            (handle, index) => handle + deNormalizedChange[index],
-          )
-        },
-      ),
-    )
-    this.props.dispatch(
-      resetExtremums([...this.props.pathToVariables, variableId]),
-    )
+    if (pointIndex === 0) {
+      this.props.dispatch(
+        reduceStateAction(
+          [...this.pathToPoint(variableId, pointIndex), 'interpolationDescriptor', 'handles'],
+          handles => {
+            return (
+              handles.slice(0, 2).map((handle, index) => handle + deNormalizedChange[index + 2])              
+            ).concat(handles.slice(2))
+          }
+        )
+      )
+    } else {
+      this.props.dispatch(
+        multiReduceStateAction([
+          {
+            path: [...this.pathToPoint(variableId, pointIndex), 'interpolationDescriptor', 'handles'],
+            reducer: handles => {
+              return (
+                handles.slice(0, 2).map((handle, index) => handle + deNormalizedChange[index + 2])              
+              ).concat(handles.slice(2))
+            }
+          },
+          {
+            path: [...this.pathToPoint(variableId, pointIndex - 1), 'interpolationDescriptor', 'handles'],          
+            reducer: handles => {
+              return (
+                handles.slice(0, 2).concat(
+                  handles.slice(2).map((handle, index) => handle + deNormalizedChange[index])
+                )
+              )
+            }
+          },
+        ])
+      )
+    }
+    // this.props.dispatch(
+    //   resetExtremums([...this.props.pathToVariables, variableId]),
+    // )
   }
 
   addConnector = (variableId: VariableID, pointIndex: number) => {
@@ -337,9 +364,9 @@ class BoxBiew extends React.Component<Props, State> {
         },
       ),
     )
-    this.props.dispatch(
-      resetExtremums([...this.props.pathToVariables, variableId]),
-    )
+    // this.props.dispatch(
+    //   resetExtremums([...this.props.pathToVariables, variableId]),
+    // )
   }
 
   _normalizeX(x: number) {
@@ -385,22 +412,32 @@ class BoxBiew extends React.Component<Props, State> {
   _normalizeHandles = (
     handles: PointHandles,
     point: Point,
-    prevPoint: undefined | null | Point,
+    // prevPoint: undefined | null | Point,
     nextPoint: undefined | null | Point,
   ): PointHandles => {
+    // const handlesInPixels = [
+    //   ...(prevPoint != null
+    //     ? [
+    //         handles[0] * (point.time - prevPoint.time),
+    //         handles[1] * (point.value - prevPoint.value),
+    //       ]
+    //     : handles.slice(0, 2)),
+    //   ...(nextPoint != null
+    //     ? [
+    //         handles[2] * (nextPoint.time - point.time),
+    //         handles[3] * (nextPoint.value - point.value),
+    //       ]
+    //     : handles.slice(2)),
+    // ]
     const handlesInPixels = [
-      ...(prevPoint != null
-        ? [
-            handles[0] * (point.time - prevPoint.time),
-            handles[1] * (point.value - prevPoint.value),
-          ]
-        : handles.slice(0, 2)),
       ...(nextPoint != null
         ? [
+            handles[0] * (nextPoint.time - point.time),
+            handles[1] * (nextPoint.value - point.value),
             handles[2] * (nextPoint.time - point.time),
             handles[3] * (nextPoint.value - point.value),
           ]
-        : handles.slice(2)),
+        : handles)
     ]
     return [
       this._normalizeX(handlesInPixels[0]),
@@ -422,11 +459,21 @@ class BoxBiew extends React.Component<Props, State> {
       this._deNormalizeX(handles[2]),
       this._deNormalizeY(handles[3]),
     ]
+    // return [
+    //   ...(nextPoint != null
+    //     ? [
+    //         deNormalizedHandles[0] / (prevPoint.time - point.time),
+    //         deNormalizedHandles[1] / (prevPoint.value - point.value),
+    //         deNormalizedHandles[2] / (nextPoint.time - point.time),
+    //         deNormalizedHandles[3] / (nextPoint.value - point.value),
+    //       ]
+    //     : handles)
+    // ]
     return [
       ...(prevPoint != null
         ? [
-            deNormalizedHandles[0] / (point.time - prevPoint.time),
-            deNormalizedHandles[1] / (point.value - prevPoint.value),
+            deNormalizedHandles[0] / (prevPoint.time - point.time),
+            deNormalizedHandles[1] / (prevPoint.value - point.value),
           ]
         : [deNormalizedHandles[0], deNormalizedHandles[1]]),
       ...(nextPoint != null
@@ -451,7 +498,7 @@ class BoxBiew extends React.Component<Props, State> {
           handles: this._normalizeHandles(
             interpolationDescriptor.handles,
             point,
-            points[index - 1],
+            // points[index - 1],
             points[index + 1],
           ),
         },

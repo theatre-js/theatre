@@ -176,50 +176,47 @@ class Point extends React.PureComponent<Props, State> {
       (newT - nextT) / (point.time - nextT),
       (newValue - nextValue) / (point.value - nextValue),
     ]
+
     const movedPoint: IPoint = {
       ...(point as any),
       time: newT,
       value: newValue,
       interpolationDescriptor: {
         ...point.interpolationDescriptor,
-        handles: point.interpolationDescriptor.handles.map(
-          (handle, index) =>
-            handleFactors[index] * (handle + handlesMove[index]),
-        ),
-      },
-      // @ts-ignore
+        handles: point.interpolationDescriptor.handles.slice(0, 2).map(
+          (handle, index) => (
+            handleFactors[index + 2] * (handle + handlesMove[index + 2])
+          )
+        ).concat(point.interpolationDescriptor.handles.slice(2).map(
+          (handle, index) => (handleFactors[index + 2] * handle)
+        ))
+      }
     }
+
+    const newPrevPoint = prevPoint != null ? (
+      {
+        ...(prevPoint as any),
+        interpolationDescriptor: {
+          ...prevPoint.interpolationDescriptor,
+          handles: prevPoint.interpolationDescriptor.handles.slice(0, 2).map(
+            (handle, index) => (handleFactors[index] * handle)
+          ).concat(
+            prevPoint.interpolationDescriptor.handles.slice(2).map((handle, index) => (
+              handleFactors[index] * (handle - handlesMove[index])
+            ))
+          )
+        }
+      }
+    ) : prevPoint
     return (
       <g opacity={0.5}>
         {point.interpolationDescriptor.connected &&
           nextPoint != null && (
-            <Connector
-              leftPoint={movedPoint}
-              rightPoint={{
-                ...nextPoint,
-                interpolationDescriptor: {
-                  ...nextPoint.interpolationDescriptor,
-                  handles: nextPoint.interpolationDescriptor.handles.map(
-                    (handle, index) => handleFactors[index % 2 + 2] * handle,
-                  ),
-                },
-              }}
-            />
+            <Connector leftPoint={movedPoint} rightPoint={nextPoint}/>
           )}
-        {prevPoint != null &&
-          prevPoint.interpolationDescriptor.connected && (
-            <Connector
-              leftPoint={{
-                ...prevPoint,
-                interpolationDescriptor: {
-                  ...nextPoint.interpolationDescriptor,
-                  handles: prevPoint.interpolationDescriptor.handles.map(
-                    (handle, index) => handleFactors[index % 2] * handle,
-                  ),
-                },
-              }}
-              rightPoint={movedPoint}
-            />
+        {newPrevPoint != null &&
+          newPrevPoint.interpolationDescriptor.connected && (
+            <Connector leftPoint={newPrevPoint} rightPoint={movedPoint}/>
           )}
         <circle
           fill="#222"
@@ -230,53 +227,6 @@ class Point extends React.PureComponent<Props, State> {
           className={css.point}
         />
       </g>
-    )
-  }
-
-  _renderInputs() {
-    const {point: {time, value, _t, _value}} = this.props
-    return (
-      <foreignObject>
-        <div className={css.pointTipContainer}>
-          <div
-            className={css.pointTip}
-            style={{
-              left: `${time > 25 ? time - 25 : 0}px`,
-              top: `${value >= 37 ? value - 37 : value + 5}px`,
-            }}
-          >
-            <div className={css.pointTipRow}>
-              <span className={css.pointTipIcon}>
-                {String.fromCharCode(0x25b2)}
-              </span>
-              <SingleInputForm
-                ref={c => {
-                  if (c != null) this.valueForm = c
-                }}
-                className={css.pointTipInput}
-                value={String(_value)}
-                onCancel={this.disableEnteringProps}
-                onSubmit={this.setPointPosition}
-              />
-            </div>
-            <div className={css.pointTipRow}>
-              <span className={css.pointTipIcon}>
-                {String.fromCharCode(0x25ba)}
-              </span>
-              <SingleInputForm
-                autoFocus={false}
-                ref={c => {
-                  if (c != null) this.timeForm = c
-                }}
-                className={css.pointTipInput}
-                value={String(_t)}
-                onCancel={this.disableEnteringProps}
-                onSubmit={this.setPointPosition}
-              />
-            </div>
-          </div>
-        </div>
-      </foreignObject>
     )
   }
 
@@ -294,11 +244,15 @@ class Point extends React.PureComponent<Props, State> {
   render() {
     const {point, prevPoint, nextPoint, color} = this.props
     const {time, value, interpolationDescriptor} = point
-    const {handles} = interpolationDescriptor
+    const handles = 
+      (prevPoint ? prevPoint.interpolationDescriptor.handles.slice(2) : [0, 0])
+      .concat(interpolationDescriptor.handles.slice(0, 2))
+    // const {handles} = interpolationDescriptor
     const {isMoving, handlesMove, isEnteringProps} = this.state
+    
     const leftHandle = [
-      time + handles[0] + handlesMove[0],
-      value + handles[1] + handlesMove[1],
+      time - handles[0] + handlesMove[0],
+      value - handles[1] + handlesMove[1],
     ]
     const rightHandle = [
       time + handles[2] + handlesMove[2],

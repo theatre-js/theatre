@@ -8,6 +8,7 @@ interface IState {}
 
 class PointValuesEditor extends React.PureComponent<IProps, IState> {
   handleClick = (e) => {
+    e.stopPropagation()
     if (e.target === this.wrapper) this.props.onClose()
   }
 
@@ -26,7 +27,7 @@ class PointValuesEditor extends React.PureComponent<IProps, IState> {
       <div
         ref={c => this.wrapper = c}
         className={css.wrapper}
-        onClick={this.handleClick}
+        onMouseDown={this.handleClick}
         onWheel={(e) => e.stopPropagation()}
         >
         <div

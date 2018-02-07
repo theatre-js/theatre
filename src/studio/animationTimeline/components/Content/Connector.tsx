@@ -34,10 +34,10 @@ class Connector extends React.PureComponent<Props, State> {
             <g>
               <path
                 d={`M ${lp.time} ${lp.value}
-                    C ${lp.time + lp.interpolationDescriptor.handles[2]} ${lp.value +
+                    C ${lp.time + lp.interpolationDescriptor.handles[0]} ${lp.value +
+                  lp.interpolationDescriptor.handles[1]}
+                      ${rp.time - lp.interpolationDescriptor.handles[2]} ${rp.value -
                   lp.interpolationDescriptor.handles[3]}
-                      ${rp.time + rp.interpolationDescriptor.handles[0]} ${rp.value +
-                  rp.interpolationDescriptor.handles[1]}
                       ${rp.time} ${rp.value}`}
                 fill="transparent"
                 stroke="transparent"
@@ -47,10 +47,10 @@ class Connector extends React.PureComponent<Props, State> {
               />
               <path
                 d={`M ${lp.time} ${lp.value}
-                    C ${lp.time + lp.interpolationDescriptor.handles[2]} ${lp.value +
+                    C ${lp.time + lp.interpolationDescriptor.handles[0]} ${lp.value +
+                  lp.interpolationDescriptor.handles[1]}
+                      ${rp.time - lp.interpolationDescriptor.handles[2]} ${rp.value -
                   lp.interpolationDescriptor.handles[3]}
-                      ${rp.time + rp.interpolationDescriptor.handles[0]} ${rp.value +
-                  rp.interpolationDescriptor.handles[1]}
                       ${rp.time} ${rp.value}`}
                 fill="transparent"
                 strokeWidth={2}
