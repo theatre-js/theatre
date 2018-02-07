@@ -467,6 +467,10 @@ class BoxBiew extends React.Component<Props, State> {
       activeVariableId,
       pointValuesEditorProps,
     } = this.state
+    let variablesColors = {}
+    variables.forEach((variable: $FixMe, index: number) => {
+      variablesColors = {...variablesColors, [variable.id]: colors[index % colors.length]}
+    })
     return (
       <Subscriber channel={SortableBoxDragChannel}>
         {({onDragStart, onDrag, onDragEnd}) => {
@@ -516,19 +520,14 @@ class BoxBiew extends React.Component<Props, State> {
                                                             0  0  0  1  0`} />
                       <feGaussianBlur stdDeviation=".7" />
                     </filter>
-                    <filter id="darken">
-                      <feColorMatrix type="matrix" values={`.3   0   0  0  0
-                                                             0  .3   0  0  0
-                                                             0   0  .3  0  0
-                                                             0   0   0  1  0`} />                                                            
-                    </filter>
                   </defs>
-                  {variables.map(({id, points}, index) => (
+                  {_.sortBy(variables, (variable: $FixMe) => (variable.id === activeVariableId)).map(({id, points}, index) => (
                     <Variable
                       key={id}
                       variableId={id}
                       points={this._normalizePoints(points)}
-                      color={colors[index % colors.length]}
+                      // color={colors[index % colors.length]}
+                      color={variablesColors[id]}
                       width={svgWidth}
                       showPointValuesEditor={(index, pos) =>
                         this.showPointValuesEditor(id, index, pos)
