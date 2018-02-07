@@ -384,7 +384,7 @@ class TreeEditor extends StudioComponent<Props, State> {
 
     const dropPayload: $FixMe = this.queuedDrop
     this._unsetQueuedDrop()
-
+    console.log(dropPayload)
     let nodeBeingDragged
     this.setState((state: $FixMe) => {
       ({nodeBeingDragged} = state)

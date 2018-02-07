@@ -98,6 +98,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
   }
 
   onDrop = (e: $FixMe, index: number) => {
+    if (!this.props.isANodeBeingDragged) return
     e.stopPropagation()
     e.preventDefault()
     const {id} = this.props.nodeData
