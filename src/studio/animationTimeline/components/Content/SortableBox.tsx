@@ -37,7 +37,8 @@ class VariableBox extends React.PureComponent<Props, State> {
     }
   }
 
-  onMoveStart = () => {
+  onMoveStart = (e) => {
+    e.stopPropagation()
     this.setState(() => ({
       isMoving: true,
     }))

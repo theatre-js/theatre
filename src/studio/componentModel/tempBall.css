@@ -21,4 +21,5 @@
   height: 80px;
   background-size: 80px 80px;
   background-image: url('./theBall.png');
+  transform-origin: 50% 100%;
 }

@@ -1,4 +1,4 @@
-import {React, connect, reduceStateAction} from '$src/studio/handy'
+import {React, connect, reduceStateAction, multiReduceStateAction} from '$src/studio/handy'
 import {getTimelineById} from '$src/studio/animationTimeline/selectors'
 import generateUniqueId from 'uuid/v4'
 import css from './AnimationTimelinePanel.css'
@@ -7,7 +7,9 @@ import BoxView from './BoxView'
 import TimeBar from './TimeBar'
 import {Subscriber} from 'react-broadcast'
 import DraggableArea from '$studio/common/components/DraggableArea'
+import cx from 'classnames'
 import * as _ from 'lodash'
+import {set} from 'lodash/fp'
 import {
   PanelPropsChannel,
   default as Panel,
@@ -266,7 +268,8 @@ class Content extends StudioComponent<Props, State> {
       )
     } else if (mergeWith != null) {
       dispatch(
-        reduceStateAction(this.props.pathToTimeline, ({layout, boxes}) => {
+        reduceStateAction(this.props.pathToTimeline, (timelineObj) => {
+          const {layout, boxes} = timelineObj
           const fromId = layout[index]
           const toId = layout[mergeWith]
 
@@ -279,6 +282,7 @@ class Content extends StudioComponent<Props, State> {
           )
 
           return {
+            ...timelineObj,
             layout: newLayout,
             boxes: newBoxes,
           }
@@ -505,6 +509,71 @@ class Content extends StudioComponent<Props, State> {
     this.setState(() => ({isSeekerBeingDragged: false}))    
   }
 
+  _handleModifierDrop = () => {
+    const {props} = this
+    if(props.panelObjectBeingDragged == null) return
+    const {prop} = props.panelObjectBeingDragged
+    const timelineId = props.pathToTimeline[props.pathToTimeline.length - 1]
+    const varId = generateUniqueId()
+    let componentName
+    this.props.dispatch(
+      multiReduceStateAction([
+        {
+          path: props.activeComponentPath,
+          reducer: (theaterObj) => {
+            componentName = `${theaterObj.componentId.split('/').slice(-1)}.${theaterObj.props.class}`
+            const {modifierInstantiationDescriptors: modifiers} = theaterObj
+            const uberModifierId = modifiers.list[0]
+            const uberModifier = modifiers.byId[uberModifierId]
+            const newProps = {
+              ...uberModifier.props,
+              [prop]: {
+                __descriptorType: 'ReferenceToTimelineVar',
+                timelineId,
+                varId,
+              }
+            }
+            return set(
+              ['modifierInstantiationDescriptors', 'byId', uberModifierId, 'props'], newProps, theaterObj)
+          }
+        },
+        {
+          path: props.pathToTimeline,
+          reducer: (timelineObj) => {
+            const variables = {
+              ...timelineObj.variables,
+              [varId]: {
+                __descriptorType: 'TimelineVarDescriptor',
+                id: varId,
+                component: componentName,
+                property: prop,
+                extremums: [-50,50],
+                points: [],
+              }
+            }
+            const boxId = generateUniqueId()
+            const layout = timelineObj.layout.concat(boxId)
+            const boxes = {
+              ...timelineObj.boxes,
+              [boxId]: {
+                id: boxId,
+                height: 100,
+                variables: [varId]
+              }
+            }
+            return {
+              ...timelineObj,
+              variables,
+              layout,
+              boxes,
+            }
+          }
+        }
+      ]
+      )
+    )
+  }
+
   timeToX(time: number, panelWidth: number) {
     const {duration} = this.state
     return time * (panelWidth) / duration
@@ -552,7 +621,7 @@ class Content extends StudioComponent<Props, State> {
       focus,
       currentTTime: currentTime,
     } = this.state
-    const {boxes, layout} = this.props
+    const {boxes, layout, panelObjectBeingDragged} = this.props
     const offsetLeft = this.variablesContainer != null ? this.variablesContainer.scrollLeft : 0
     return (
       <Panel
@@ -568,8 +637,11 @@ class Content extends StudioComponent<Props, State> {
             return (
               <div
                 ref={c => (this.container = c)}
-                className={css.container}
+                className={cx(css.container, {
+                  [css.showModifierDropOverlay]: panelObjectBeingDragged && panelObjectBeingDragged.type === 'modifier',
+                })}
                 onWheel={e => this.handleScroll(e, panelWidth)}
+                onMouseUp={this._handleModifierDrop}
               >
                 <div className={css.timeBar}>
                   <TimeBar
@@ -672,7 +744,11 @@ class Content extends StudioComponent<Props, State> {
 
 export default connect((s, op: OwnProps) => {
   const timeline = get(s, op.pathToTimeline)
-  return {...timeline}
+  const panelObjectBeingDragged = get(s, ['workspace', 'panels', 'panelObjectBeingDragged'])
+  const selectedComponentId = get(s, ['workspace', 'panels', 'byId', 'elementTree', 'outputs', 'selectedNode', 'componentId'])
+  const selectedElementId = get(s, ['componentModel', 'componentDescriptors', 'custom', selectedComponentId, 'meta', 'composePanel', 'selectedNodeId'])
+  const activeComponentPath = ['componentModel', 'componentDescriptors', 'custom', selectedComponentId, 'localHiddenValuesById', selectedElementId]
+  return {...timeline, panelObjectBeingDragged, activeComponentPath}
 })(Content)
 
 function calculateThingy(elementId?: number, pathToTimeline?: string[]) {

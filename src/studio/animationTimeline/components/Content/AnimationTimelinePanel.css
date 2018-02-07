@@ -1,4 +1,18 @@
 .container {
+  position: relative;
+  
+  &.showModifierDropOverlay {
+    &:after {
+      position: absolute 0;
+      top: -4px;
+      display: block;
+      content: ' ';
+      z-index: 1000;
+      background: rgba(237, 199, 0, .1);
+      border: 2px solid #EDC700;
+      animation: modifierDropOverlayAppear .2s ease-in-out forwards;
+    }
+  }
 }
 
 .timeBar {
@@ -23,5 +37,17 @@
 .panelInnerWrapper {
   overflow: visible;
 
+}
+
+@keyframes modifierDropOverlayAppear {
+  0% {
+    transform: scale(.95);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1);    
+    opacity: 1;
+  }
 }
 

@@ -171,7 +171,7 @@ class BoxBiew extends React.Component<Props, State> {
       time: this._deNormalizeX(time),
       value: this._deNormalizeValue(value),
       interpolationDescriptor: {
-        connected: true,
+        connected: false,
         __descriptorType: 'TimelinePointInterpolationDescriptor',
         interpolationType: 'CubicBezier',
         handles: [.5, 0, .5, 0],

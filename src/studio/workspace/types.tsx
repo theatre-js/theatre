@@ -45,7 +45,8 @@ export type visiblePanelsList = Array<string>
 export type Panels = {
   byId: {[id: PanelId]: PanelObject}
   listOfVisibles: visiblePanelsList
-  currentlyDraggingOutput: undefined | null | DraggingOutput
+  // currentlyDraggingOutput: undefined | null | DraggingOutput
+  panelObjectBeingDragged: undefined | null | $FixMe
   idOfActivePanel: undefined | null | string
 }
 

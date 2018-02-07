@@ -1,5 +1,6 @@
 .container {
   /* display: flex; */
+  position: relative;
   background: #34444D;
   color: #8DBDD6;
   border: 1px solid #252424;
@@ -21,4 +22,22 @@
   width: 100%;
   /* width: 70px; */
   box-sizing: border-box;
+}
+
+.draggable {
+  position: fixed;
+  left: -35px;
+  top: -11px;
+  z-index: 1000;
+  height: 22px;
+  width: 70px;
+  text-align: center;
+  background: #EDC700;
+  border-radius: 2px;
+  color: #000;
+  font-weight: bold;
+  line-height: 22px;
+  font-size: 8px;
+  text-transform: uppercase;
+  pointer-events: none;
 }

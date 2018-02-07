@@ -118,7 +118,8 @@ const initialState: WorkspaceNamespaceState = {
       'composePanel-imAUUID',
     ],
     idOfActivePanel: 'elementTree',
-    currentlyDraggingOutput: null,
+    // currentlyDraggingOutput: null,
+    panelObjectBeingDragged: null,
   },
   componentIdToBeRenderedAsCurrentCanvas: 'IntroScene',
 }

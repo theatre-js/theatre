@@ -232,17 +232,6 @@ class Point extends React.PureComponent<Props, State> {
 
   _addGlobalCursorRule() {
     document.styleSheets[0].insertRule(
-      '* {cursor: move !important;}',
-      document.styleSheets[0].cssRules.length,
-    )
-  }
-
-  _removeGlobalCursorRule() {
-    document.styleSheets[0].deleteRule(document.styleSheets[0].cssRules.length - 1)
-  }
-
-  _addGlobalCursorRule() {
-    document.styleSheets[0].insertRule(
       `* {cursor: move !important;}`,
       document.styleSheets[0].cssRules.length,
     )
