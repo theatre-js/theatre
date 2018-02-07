@@ -2,19 +2,23 @@
   position: fixed 0;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
 }
 
 :global(.scene) {
-  width: 700px;
-  height: 300px;
+  // width: 700px;
+  width: calc(100% - 500px);
+  height: calc(100% - 325px);
 
   background: #242424;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
 }
 
 :global(.ball) {
   width: 80px;
-  height: 20px;
+  height: 80px;
   background-size: 80px 80px;
-  background: url('./theBall.png')
+  background-image: url('./theBall.png');
 }

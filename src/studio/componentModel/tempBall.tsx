@@ -14,6 +14,22 @@ export default {
           __descriptorType: 'TimelineDescriptor',
           id: 'timeline1',
           variables: {
+            ballY: {
+              __descriptorType: 'TimelineVarDescriptor',
+              id: 'ballY',
+              component: 'Ball',
+              property: 'Y',
+              extremums: [-1000, 100],
+              points: [],
+            },
+            ballScaleY: {
+              __descriptorType: 'TimelineVarDescriptor',
+              id: 'ballScaleY',
+              component: 'Ball',
+              property: 'ScaleY',
+              extremums: [-0.5, 1.5],
+              points: [],
+            },
             theOpacity: {
               __descriptorType: 'TimelineVarDescriptor',
               id: 'theOpacity',
@@ -55,7 +71,7 @@ export default {
             box1: {
               id: 'box1',
               height: 300,
-              variables: ['theOpacity'],
+              variables: ['ballY', 'ballScaleY'],
             },
           },
         },
@@ -150,14 +166,22 @@ export default {
               modifierId: 'TheaterJS/Core/HTML/UberModifier',
               props: {
                 translationX: '0',
-                translationY: '0',
+                translationY: {
+                  __descriptorType: 'ReferenceToTimelineVar',
+                  timelineId: 'timeline1',
+                  varId: 'ballY', 
+                },
                 translationZ: '0',
                 opacity: '1',
                 scaleX: '1',
                 scaleY: '1',
                 scaleZ: '1',
                 rotateX: '0',
-                rotateY: '0',
+                scaleY: {
+                  __descriptorType: 'ReferenceToTimelineVar',
+                  timelineId: 'timeline1',
+                  varId: 'ballScaleY', 
+                },
                 rotateZ: '0',
               },
               enabled: true,

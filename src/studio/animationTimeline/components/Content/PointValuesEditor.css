@@ -6,7 +6,7 @@
 .container {
   position: absolute;
   width: 50px;
-  height: 46px;
+  height: 30px;
   padding: 4px;
   box-sizing: border-box;
   transform: translate3d(-50%, -100%, 0);
@@ -28,7 +28,7 @@
     width: 0;
     height: 0;
     left: 21px;
-    top: 40px;
+    bottom: 0px;
     border-top: 6px solid #101010;
     border-left: 4px solid transparent;
     border-right: 4px solid transparent;
@@ -51,10 +51,14 @@
   color: #444;
   margin-right: 2px;
   vertical-align: middle;
+  display: none;
 }
 
 .input {
-  max-width: 32px;
+  // max-width: 32px;
+  width: 42px;
+  height: 16px;
   display: inline-block;
   font-size: 10px;
+  text-align: center;
 }

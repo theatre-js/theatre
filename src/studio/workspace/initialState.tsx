@@ -33,7 +33,7 @@ const initialState: WorkspaceNamespaceState = {
           top: {
             type: 'distanceFromBoundary',
             path: ['8daa7380-9b43-475a-8352-dc564a58c719', 'bottom'],
-            distance: -179,
+            distance: -300,
           },
           bottom: {
             type: 'sameAsBoundary',
@@ -60,7 +60,7 @@ const initialState: WorkspaceNamespaceState = {
           right: {
             type: 'distanceFromBoundary',
             path: ['elementTree', 'left'],
-            distance: 228,
+            distance: 250,
           },
           top: {
             type: 'sameAsBoundary',
