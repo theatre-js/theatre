@@ -39,7 +39,7 @@
   background: var(--body-color);
   position: absolute 0px;
   z-index: 0;
-  overflow-y: scroll;
+  // overflow-y: scroll;
 }
 
 .content {

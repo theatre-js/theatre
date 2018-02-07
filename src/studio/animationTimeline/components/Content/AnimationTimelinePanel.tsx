@@ -7,6 +7,7 @@ import BoxView from './BoxView'
 import TimeBar from './TimeBar'
 import {Subscriber} from 'react-broadcast'
 import DraggableArea from '$studio/common/components/DraggableArea'
+import * as _ from 'lodash'
 import {
   PanelWidthChannel,
   default as Panel,
@@ -517,13 +518,17 @@ class Content extends StudioComponent<Props, State> {
       document.styleSheets[0].cssRules.length,
     )
     document.styleSheets[0].insertRule(
-      // 'div[class^="BoxView_boxLegends_"] {pointer-events: none;}',
-      'div[class^="SortableBox_container_"] {pointer-events: none;}',
+      'div[class^="AnimationTimelinePanel_container_"] {pointer-events: none;}',
+      document.styleSheets[0].cssRules.length,
+    )
+    document.styleSheets[0].insertRule(
+      'div[class*="AnimationTimelinePanel_panelContainer_"] {z-index: 200;}',
       document.styleSheets[0].cssRules.length,
     )
   }
 
   _removeGlobalCursorRule() {
+    document.styleSheets[0].deleteRule(document.styleSheets[0].cssRules.length - 1)
     document.styleSheets[0].deleteRule(document.styleSheets[0].cssRules.length - 1)
     document.styleSheets[0].deleteRule(document.styleSheets[0].cssRules.length - 1)
   }

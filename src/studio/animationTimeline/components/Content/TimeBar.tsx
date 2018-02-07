@@ -90,12 +90,17 @@ class TimeBar extends React.PureComponent<Props, State> {
       document.styleSheets[0].cssRules.length,
     )
     document.styleSheets[0].insertRule(
-      'div[class^="BoxView_boxLegends_"] {pointer-events: none;}',
+      'div[class^="AnimationTimelinePanel_container_"] {pointer-events: none;}',
+      document.styleSheets[0].cssRules.length,
+    )
+    document.styleSheets[0].insertRule(
+      'div[class*="AnimationTimelinePanel_panelContainer_"] {z-index: 200;}',
       document.styleSheets[0].cssRules.length,
     )
   }
 
   _removeGlobalCursorRule() {
+    document.styleSheets[0].deleteRule(document.styleSheets[0].cssRules.length - 1)
     document.styleSheets[0].deleteRule(document.styleSheets[0].cssRules.length - 1)
     document.styleSheets[0].deleteRule(document.styleSheets[0].cssRules.length - 1)
   }
