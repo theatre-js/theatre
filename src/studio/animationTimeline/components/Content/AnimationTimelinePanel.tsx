@@ -23,6 +23,7 @@ import {XY} from '$src/studio/workspace/types'
 import {get} from 'lodash'
 import StudioComponent from '$src/studio/handy/StudioComponent'
 import {BoxAtom} from '$src/shared/DataVerse/atoms/box'
+import TimelineInstance from '$src/studio/componentModel/react/makeReactiveComponent/TimelineInstance';
 
 type OwnProps = TimelineObject & {
   pathToTimeline: string[]
@@ -53,6 +54,7 @@ type State = {
   untapFromTimeBoxChanges: () => void
   isSeekerBeingDragged: boolean
   currentTimeXBeforeDrag: number
+  timelineInstance: undefined | TimelineInstance
 }
 
 class Content extends StudioComponent<Props, State> {
@@ -105,6 +107,7 @@ class Content extends StudioComponent<Props, State> {
       this.setState({
         thingy,
         timeBox,
+        timelineInstance,
         untapFromTimeBoxChanges,
         currentTTime: timeBox.getValue(),
       })
@@ -122,6 +125,22 @@ class Content extends StudioComponent<Props, State> {
     setTimeout(() => {
       this.variablesContainer.scrollTo(svgWidth * focus[0] / duration, 0)
     }, 0)
+
+    window.addEventListener('keypress', this._handleKeyPress)
+  }
+
+  _handleKeyPress = (e: React.KeyboardEvent<$FixMe>) => {
+    // if (keyCode)
+    if (e.keyCode === 32 && e.target === document.body) {
+      if (this.state.thingy) {
+        this.state.timelineInstance.togglePlay()
+      }
+    }
+    
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('keypress', this._handleKeyPress)
   }
 
   // _resetPanelWidthOnWindowResize = () => {

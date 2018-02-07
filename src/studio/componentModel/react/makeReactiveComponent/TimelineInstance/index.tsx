@@ -2,11 +2,16 @@ import {D} from '$studio/handy'
 import ValueInstance from './ValueInstance'
 
 export default class TimelineInstance {
+  _timeLength: number;
+  _playBeginRafTime: number;
+  _playBeginTime: number;
+  playing: boolean
   atom: $FixMe
   _descriptorP: $FixMe
   _timeP: $FixMe
   _studio: $FixMe
   _pathToTimelineDescriptor: Array<string>
+  _af: undefined | number
 
   constructor(
     descriptorP: $FixMe,
@@ -29,6 +34,11 @@ export default class TimelineInstance {
     this._timeP = this.atom.pointer().prop('time')
 
     this._descriptorP = descriptorP
+    this.playing = false
+    this._af = undefined
+    this._timeLength = 40 * 1000
+
+    // setTimeout(this.play.bind(this), 1000)
     // console.log('here', descriptorP.prop('variables').getValue())
   }
 
@@ -43,5 +53,45 @@ export default class TimelineInstance {
       [...this._pathToTimelineDescriptor, 'variables', varId],
     )
     return valueInstance.derivation()
+  }
+
+  play() {
+    if (this.playing) return
+    this.playing = true
+
+    this._playBeginRafTime = performance.now()
+    this._playBeginTime = this.atom.prop('time').getValue()
+    this._af = requestAnimationFrame(this._tick)
+  }
+
+  _tick = () => {
+    this._af = requestAnimationFrame(this._tick)
+
+    const now = performance.now()
+    
+    const deltaRafTime = now - this._playBeginRafTime
+    let newTime = this._playBeginTime + deltaRafTime
+    if (newTime >= this._timeLength) {
+      this.pause()
+      newTime = this._timeLength
+    }
+
+    this.atom.prop('time').set(newTime)
+  }
+
+  pause() {
+    if (!this.playing) return
+
+    cancelAnimationFrame(this._af as $IntentionalAny)
+    this._af = undefined
+    this.playing = false
+  }
+
+  togglePlay() {
+    if (this.playing) {
+      this.pause()
+    } else {
+      this.play()
+    }
   }
 }

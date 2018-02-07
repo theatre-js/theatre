@@ -19,7 +19,7 @@ export default {
               id: 'ballY',
               component: 'Ball',
               property: 'Y',
-              extremums: [-1000, 100],
+              extremums: [-1000, 1000],
               points: [
                 {
                   __descriptorType: 'TimelineVarPoint',
@@ -31,6 +31,18 @@ export default {
                     interpolationType: 'CubicBezier',
                     handles: [0.5, 0, .5, 0],
                     connected: true,
+                  },
+                },
+                {
+                  __descriptorType: 'TimelineVarPoint',
+                  id: '3',
+                  time: 1000,
+                  value: 500,
+                  interpolationDescriptor: {
+                    __descriptorType: 'TimelinePointInterpolationDescriptor',
+                    interpolationType: 'CubicBezier',
+                    handles: [0.5, 0, .5, 0],
+                    connected: false,
                   },
                 },
               ],
@@ -51,7 +63,7 @@ export default {
                     __descriptorType: 'TimelinePointInterpolationDescriptor',
                     interpolationType: 'CubicBezier',
                     handles: [0.5, 0, .5, 0],
-                    connected: true,
+                    connected: false,
                   },
                 },
               ],
