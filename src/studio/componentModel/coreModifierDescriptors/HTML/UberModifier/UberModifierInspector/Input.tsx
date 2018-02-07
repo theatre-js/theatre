@@ -109,7 +109,7 @@ export default class Input extends StudioComponent<IProps, IState> {
     const {move, initialPos} = state
 
     const value = typeof rawValue === 'string' ? rawValue : ''
-    // console.log(value)
+
     return (
       <Subscriber channel={PanelPropsChannel}>
         {({activeMode}) => {
@@ -124,10 +124,11 @@ export default class Input extends StudioComponent<IProps, IState> {
                 {/* <span {...classes('label')}>{label}</span> */}
                 <input
                   ref={c => this.input = c}
-                  {...classes('input')} 
+                  {...classes('input')}
                   value={value}
                   onChange={this.onChange}
                   onKeyDown={(e) => (e.keyCode === 13) ? this.input.blur() : null}
+                  disabled={typeof rawValue === 'object'}
                 />
                 {state.isBeingDragged &&
                   <div
@@ -141,6 +142,9 @@ export default class Input extends StudioComponent<IProps, IState> {
                   >
                     {props.prop}
                   </div>
+                }
+                {typeof rawValue === 'object' &&
+                  <div {...classes('animated')}>Animated</div>
                 }
               </label>
             </DraggableArea>

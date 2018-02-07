@@ -41,3 +41,15 @@
   text-transform: uppercase;
   pointer-events: none;
 }
+
+.animated {
+  position: absolute 2px;
+  text-align: center;
+  background: #EDC700;
+  border-radius: 2px;
+  color: #000;
+  font-weight: bold;
+  line-height: 18px;
+  font-size: 8px;
+  text-transform: uppercase;
+}
