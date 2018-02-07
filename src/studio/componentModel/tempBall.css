@@ -1,0 +1,20 @@
+:global(.container) {
+  position: fixed 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+:global(.scene) {
+  width: 700px;
+  height: 300px;
+
+  background: #242424;
+}
+
+:global(.ball) {
+  width: 80px;
+  height: 20px;
+  background-size: 80px 80px;
+  background: url('./theBall.png')
+}

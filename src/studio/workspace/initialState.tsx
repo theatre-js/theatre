@@ -18,7 +18,7 @@ const initialState: WorkspaceNamespaceState = {
             'IntroScene',
             'timelineDescriptors',
             'byId',
-            '8daa7380-9b43-475a-8352-dc564a58c710',
+            'timeline1',
           ],
         },
         boundaries: {
