@@ -89,9 +89,14 @@ class TimeBar extends React.PureComponent<Props, State> {
       `* {cursor: ${cursor} !important;}`,
       document.styleSheets[0].cssRules.length,
     )
+    document.styleSheets[0].insertRule(
+      'div[class^="BoxView_boxLegends_"] {pointer-events: none;}',
+      document.styleSheets[0].cssRules.length,
+    )
   }
 
   _removeGlobalCursorRule() {
+    document.styleSheets[0].deleteRule(document.styleSheets[0].cssRules.length - 1)
     document.styleSheets[0].deleteRule(document.styleSheets[0].cssRules.length - 1)
   }
 
@@ -196,8 +201,12 @@ class TimeBar extends React.PureComponent<Props, State> {
           />
         </DraggableArea>
         <DraggableArea
-          onDragStart={this._setBeforeMoveState}
+          onDragStart={() => {
+            this._addGlobalCursorRule('ew-resize')
+            this._setBeforeMoveState()
+          }}
           onDrag={dx => this.changeCurrentTime(dx)}
+          onDragEnd={this._removeGlobalCursorRule}          
         >
           <div
             className={cx(css.currentTimeThumb, {[css.isHidden]: isSeekerHidden})}

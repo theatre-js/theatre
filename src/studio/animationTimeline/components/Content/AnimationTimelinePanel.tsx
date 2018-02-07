@@ -45,12 +45,13 @@ type State = {
   moveRatios: number[]
   boundaries: number[]
   duration: number
-  currentTTime: number
+  currentTime: number
   focus: [number, number]
   thingy?: string
   timeBox?: BoxAtom<number>
   untapFromTimeBoxChanges: () => void
   isSeekerBeingDragged: boolean
+  currentTimeXBeforeDrag: number
 }
 
 class Content extends StudioComponent<Props, State> {
@@ -70,7 +71,7 @@ class Content extends StudioComponent<Props, State> {
       boundaries: this._getBoundaries(boxes, layout),
       duration: 60000,
       focus: [0, 50000],
-      currentTTime: 0,
+      currentTime: 0,
       isSeekerBeingDragged: false,
     }
   }
@@ -410,10 +411,10 @@ class Content extends StudioComponent<Props, State> {
   }
 
   changeDuration = (newDuration: number) => {
-    const {focus, duration, currentTTime} = this.state
+    const {focus, duration, currentTime} = this.state
     let newFocus = focus
-    let newCurrentTime = currentTTime
-    if (newDuration < currentTTime) newCurrentTime = newDuration
+    let newCurrentTime = currentTime
+    if (newDuration < currentTime) newCurrentTime = newDuration
     if (newDuration < duration) {
       if (focus[1] > newDuration && focus[0] < newDuration) {
         newFocus[1] = newDuration
@@ -430,6 +431,7 @@ class Content extends StudioComponent<Props, State> {
       this.state.timeBox.set(newCurrentTime)
     }
     this.setState(() => ({
+      currentTime: newCurrentTime,
       duration: newDuration,
       focus: newFocus,
     }))
@@ -478,8 +480,12 @@ class Content extends StudioComponent<Props, State> {
 
   _handleSeekerDragStart = (e: $FixMe, focus: [number, number], panelWidth: number, offsetLeft: number) => {
     this._addGlobalCursorRule()
-    this.setState(() => ({isSeekerBeingDragged: true}))
-    this._changeCurrentTimeOnDrag(e.nativeEvent, focus, panelWidth, offsetLeft)
+    const newTime = this.xToFocusedTime(e.nativeEvent.layerX - offsetLeft, focus, panelWidth)
+    this.setState(() => ({
+      isSeekerBeingDragged: true,
+      currentTimeXBeforeDrag: this.focusedTimeToX(newTime, focus, panelWidth),
+    }))
+    this.changeCurrentTimeTo(newTime)
   }
 
   _handleSeekerDragEnd = () => {
@@ -487,29 +493,22 @@ class Content extends StudioComponent<Props, State> {
     this.setState(() => ({isSeekerBeingDragged: false}))    
   }
 
-  _changeCurrentTimeOnDrag(event: $FixMe, focus: [number, number], panelWidth: number, leftOffset: number) {
-    const {layerX, target} = event
-    if (this.variablesContainer.contains(target) || this.timeBarContainer.contains(target)) {
-      this.changeCurrentTimeTo(this.xToFocusedTime(layerX - leftOffset, focus, panelWidth))
-    }
-  }
-
   timeToX(time: number, panelWidth: number) {
     const {duration} = this.state
-    return time * (panelWidth - 6) / duration
+    return time * (panelWidth) / duration
   }
 
   xToTime(x: number, panelWidth: number) {
     const {duration} = this.state
-    return x * duration / (panelWidth - 6)
+    return x * duration / (panelWidth)
   }
 
   focusedTimeToX(time: number, focus: [number, number], panelWidth: number) {
-    return (time - focus[0]) / (focus[1] - focus[0]) * (panelWidth - 6)
+    return (time - focus[0]) / (focus[1] - focus[0]) * (panelWidth)
   }
 
   xToFocusedTime(x: number, focus: [number, number], panelWidth: number) {
-    return x * (focus[1] - focus[0]) / (panelWidth - 6) + focus[0]
+    return x * (focus[1] - focus[0]) / (panelWidth) + focus[0]
   }
 
   _addGlobalCursorRule() {
@@ -517,9 +516,15 @@ class Content extends StudioComponent<Props, State> {
       '* {cursor: ew-resize !important;}',
       document.styleSheets[0].cssRules.length,
     )
+    document.styleSheets[0].insertRule(
+      // 'div[class^="BoxView_boxLegends_"] {pointer-events: none;}',
+      'div[class^="SortableBox_container_"] {pointer-events: none;}',
+      document.styleSheets[0].cssRules.length,
+    )
   }
 
   _removeGlobalCursorRule() {
+    document.styleSheets[0].deleteRule(document.styleSheets[0].cssRules.length - 1)
     document.styleSheets[0].deleteRule(document.styleSheets[0].cssRules.length - 1)
   }
 
@@ -529,7 +534,7 @@ class Content extends StudioComponent<Props, State> {
       moveRatios,
       duration,
       focus,
-      currentTTime,
+      currentTime,
     } = this.state
     const {boxes, layout} = this.props
     const offsetLeft = this.variablesContainer != null ? this.variablesContainer.scrollLeft : 0
@@ -550,12 +555,12 @@ class Content extends StudioComponent<Props, State> {
                 className={css.container}
                 onWheel={e => this.handleScroll(e, panelWidth)}
               >
-                <div className={css.timeBar} ref={c => this.timeBarContainer = c}>
+                <div className={css.timeBar}>
                   <TimeBar
                     shouldIgnoreMouse={this.state.isSeekerBeingDragged}
                     panelWidth={panelWidth}
                     duration={duration}
-                    currentTime={currentTTime}
+                    currentTime={currentTime}
                     focus={focus}
                     timeToX={(time: number) => this.timeToX(time, panelWidth)}
                     xToTime={(x: number) => this.xToTime(x, panelWidth)}
@@ -584,7 +589,10 @@ class Content extends StudioComponent<Props, State> {
                 </div>
                 <DraggableArea
                   onDragStart={(e: $FixMe) => this._handleSeekerDragStart(e, focus, panelWidth, offsetLeft)}
-                  onDrag={(_, __, e: $FixMe) => this._changeCurrentTimeOnDrag(e, focus, panelWidth, offsetLeft)}
+                  onDrag={(dx: number) => this.changeCurrentTimeTo(
+                    this.xToFocusedTime(
+                      this.state.currentTimeXBeforeDrag + dx, focus, panelWidth
+                  ))}
                   onDragEnd={this._handleSeekerDragEnd}
                 >
                   <div
@@ -625,7 +633,7 @@ class Content extends StudioComponent<Props, State> {
                               }
                               panelWidth={panelWidth}
                               duration={duration}
-                              currentTime={currentTTime}
+                              currentTime={currentTime}
                               focus={focus}
                               canBeMerged={canBeMerged}
                               shouldIndicateMerge={shouldIndicateMerge}
