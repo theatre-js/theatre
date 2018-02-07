@@ -174,7 +174,7 @@ class BoxBiew extends React.Component<Props, State> {
         connected: true,
         __descriptorType: 'TimelinePointInterpolationDescriptor',
         interpolationType: 'CubicBezier',
-        handles: [.5, .5, .5, .5],
+        handles: [.5, 0, .5, 0],
       }
     }
     this.props.dispatch(

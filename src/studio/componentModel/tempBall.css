@@ -8,7 +8,7 @@
 :global(.scene) {
   // width: 700px;
   width: calc(100% - 500px);
-  height: calc(100% - 325px);
+  height: calc(100% - 425px);
 
   background: #242424;
   display: flex;
