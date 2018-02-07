@@ -50,7 +50,7 @@ export default class Input extends StudioComponent<IProps, IState> {
 
     return (
       <label {...classes('container')}>
-        <span {...classes('label')}>{label}</span>
+        {/* <span {...classes('label')}>{label}</span> */}
         <input {...classes('input')} value={value} onChange={this.onChange} />
       </label>
     )

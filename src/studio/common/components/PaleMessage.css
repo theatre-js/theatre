@@ -1,4 +1,9 @@
 .container {
   padding: 2em;
   text-align: center;
+
+  &.paler {
+    color: #4C859B;
+    line-height: 1.4em;
+  }
 }

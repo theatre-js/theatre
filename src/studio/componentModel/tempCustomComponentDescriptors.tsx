@@ -17,7 +17,7 @@ const tempCustomComponentDescriptors = {
               id: 'theOpacity',
               component: 'button', // temp
               property: 'bottom', // temp
-              extremums: [0, 1000], // temp
+              extremums: [-100, 1400], // temp
               backPointer: {
                 type: 'PointerThroughLocalHiddenValue',
                 localHiddenValueId: 'container',
@@ -36,7 +36,7 @@ const tempCustomComponentDescriptors = {
                 {
                   __descriptorType: 'TimelineVarPoint',
                   id: '1',
-                  time: 0,
+                  time: 300,
                   value: 1000,
                   interpolationDescriptor: {
                     __descriptorType: 'TimelinePointInterpolationDescriptor',

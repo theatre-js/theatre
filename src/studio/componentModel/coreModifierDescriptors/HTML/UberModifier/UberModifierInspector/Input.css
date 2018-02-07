@@ -1,19 +1,24 @@
 .container {
-  display: flex;
-}
-
-.label {
-  margin-right: 1em;
+  /* display: flex; */
+  background: #34444D;
+  color: #8DBDD6;
+  border: 1px solid #252424;
+  border-right: none;
+  font-size: 10px;
+  height: 22px;
+  flex-grow: 1;
+  &:last-child {
+    border-right: 1px solid #252424;
+  }
 }
 
 .input {
-  background: #273238;
-  border: 1px solid #1A252B;
-  height: 22px;
-  min-width: 16px;
-  display: block;
-  color: #BAE8E5;
-  font-size: 10px;
-  line-height: 22px;
+  color: inherit;
+  font-size: inherit;
   padding: 0 10px;
+  line-height: 22px;
+  display: block;
+  width: 100%;
+  /* width: 70px; */
+  box-sizing: border-box;
 }

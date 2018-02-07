@@ -9,6 +9,7 @@ import {
   IComponentInstantiationValueDescriptor,
 } from '$src/studio/componentModel/types'
 import ListOfModifierInstantiationDescriptorsInspector from './ListOfModifierInstantiationDescriptorsInspector'
+import PaleMessage from '$src/studio/common/components/PaleMessage';
 
 type Props = {
   pathToComponentDescriptor: Array<string>
@@ -48,12 +49,16 @@ class ModifiersEditor extends StudioComponent<Props, State> {
         selectedNodeId,
       ]
 
-      const pathToModifierInstantiationDescriptors = [...pathToLocalHiddenValueId, 'modifierInstantiationDescriptors']
-      const modifierInstantiationDescriptors = instantiationValueDescriptor.modifierInstantiationDescriptors
+      const pathToModifierInstantiationDescriptors = [
+        ...pathToLocalHiddenValueId,
+        'modifierInstantiationDescriptors',
+      ]
+      const modifierInstantiationDescriptors =
+        instantiationValueDescriptor.modifierInstantiationDescriptors
 
       return (
         <div className={css.container}>
-          <PanelSection label="Modifiers">
+          <PanelSection label="Modifiers" withHorizontalMargin={false}>
             <ListOfModifierInstantiationDescriptorsInspector
               pathToModifierInstantiationDescriptors={
                 pathToModifierInstantiationDescriptors
@@ -61,6 +66,9 @@ class ModifiersEditor extends StudioComponent<Props, State> {
               modifierInstantiationDescriptors={
                 modifierInstantiationDescriptors
               }
+            />
+            <PaleMessage style="paler"
+              message={`Add more modifiers by CMD+Clicking after or in-between other modifiers`}
             />
           </PanelSection>
         </div>

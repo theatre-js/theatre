@@ -25,10 +25,10 @@ class PanelSection extends React.PureComponent<Props, State> {
     return (
       <div
         className={cx(css.container, {
-          [css.withHorizontalMargin]: withHorizontalMargin !== false,
+          [css.withHorizontalMargin]: withHorizontalMargin === true,
           [css.hasLabel]: hasLabel,
           [css.withTopMargin]: withTopMargin === true,
-          [css.withoutBottomMargin]: withoutBottomMargin === true,
+          [css.withoutBottomMargin]: withoutBottomMargin === true
         })}
       >
         {hasLabel && (

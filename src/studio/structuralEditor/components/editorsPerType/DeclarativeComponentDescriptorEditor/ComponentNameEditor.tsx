@@ -24,7 +24,7 @@ class ComponentNameEditor extends React.PureComponent<Props, State> {
   render() {
     return (
       <div className={css.container}>
-        <PanelSection withTopMargin={true}>
+        <PanelSection withTopMargin={true} withHorizontalMargin={true}>
           <ExpressionlessStringEditor
             label="Component Name"
             path={[...this.props.pathToComponentDescriptor, 'displayName']}
