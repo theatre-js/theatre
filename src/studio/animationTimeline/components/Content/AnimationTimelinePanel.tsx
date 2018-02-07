@@ -6,6 +6,7 @@ import SortableBox from './SortableBox'
 import BoxView from './BoxView'
 import TimeBar from './TimeBar'
 import {Subscriber} from 'react-broadcast'
+import DraggableArea from '$studio/common/components/DraggableArea'
 import {
   PanelWidthChannel,
   default as Panel,
@@ -49,6 +50,7 @@ type State = {
   thingy?: string
   timeBox?: BoxAtom<number>
   untapFromTimeBoxChanges: () => void
+  isSeekerBeingDragged: boolean
 }
 
 class Content extends StudioComponent<Props, State> {
@@ -69,6 +71,7 @@ class Content extends StudioComponent<Props, State> {
       duration: 60000,
       focus: [0, 50000],
       currentTTime: 0,
+      isSeekerBeingDragged: false,
     }
   }
 
@@ -473,6 +476,24 @@ class Content extends StudioComponent<Props, State> {
     }
   }
 
+  _handleSeekerDragStart = (e: $FixMe, focus: [number, number], panelWidth: number, offsetLeft: number) => {
+    this._addGlobalCursorRule()
+    this.setState(() => ({isSeekerBeingDragged: true}))
+    this._changeCurrentTimeOnDrag(e.nativeEvent, focus, panelWidth, offsetLeft)
+  }
+
+  _handleSeekerDragEnd = () => {
+    this._removeGlobalCursorRule()
+    this.setState(() => ({isSeekerBeingDragged: false}))    
+  }
+
+  _changeCurrentTimeOnDrag(event: $FixMe, focus: [number, number], panelWidth: number, leftOffset: number) {
+    const {layerX, target} = event
+    if (this.variablesContainer.contains(target) || this.timeBarContainer.contains(target)) {
+      this.changeCurrentTimeTo(this.xToFocusedTime(layerX - leftOffset, focus, panelWidth))
+    }
+  }
+
   timeToX(time: number, panelWidth: number) {
     const {duration} = this.state
     return time * (panelWidth - 6) / duration
@@ -491,8 +512,18 @@ class Content extends StudioComponent<Props, State> {
     return x * (focus[1] - focus[0]) / (panelWidth - 6) + focus[0]
   }
 
+  _addGlobalCursorRule() {
+    document.styleSheets[0].insertRule(
+      '* {cursor: ew-resize !important;}',
+      document.styleSheets[0].cssRules.length,
+    )
+  }
+
+  _removeGlobalCursorRule() {
+    document.styleSheets[0].deleteRule(document.styleSheets[0].cssRules.length - 1)
+  }
+
   render() {
-    // console.log('render')
     const {
       boxBeingDragged,
       moveRatios,
@@ -501,6 +532,7 @@ class Content extends StudioComponent<Props, State> {
       currentTTime,
     } = this.state
     const {boxes, layout} = this.props
+    const offsetLeft = this.variablesContainer != null ? this.variablesContainer.scrollLeft : 0
     return (
       <Panel
         headerLess={true}
@@ -518,8 +550,9 @@ class Content extends StudioComponent<Props, State> {
                 className={css.container}
                 onWheel={e => this.handleScroll(e, panelWidth)}
               >
-                <div className={css.timeBar}>
+                <div className={css.timeBar} ref={c => this.timeBarContainer = c}>
                   <TimeBar
+                    shouldIgnoreMouse={this.state.isSeekerBeingDragged}
                     panelWidth={panelWidth}
                     duration={duration}
                     currentTime={currentTTime}
@@ -549,56 +582,61 @@ class Content extends StudioComponent<Props, State> {
                     changeDuration={this.changeDuration}
                   />
                 </div>
-                <div
-                  ref={c => (this.variablesContainer = c)}
-                  className={css.variables}
-                  onClick={() => console.log('clicked')}                
+                <DraggableArea
+                  onDragStart={(e: $FixMe) => this._handleSeekerDragStart(e, focus, panelWidth, offsetLeft)}
+                  onDrag={(_, __, e: $FixMe) => this._changeCurrentTimeOnDrag(e, focus, panelWidth, offsetLeft)}
+                  onDragEnd={this._handleSeekerDragEnd}
                 >
-                  {layout.map((id, index) => {
-                    const box = boxes[id]
-                    const boxTranslateY =
-                      moveRatios[index] *
-                      (boxBeingDragged != null ? boxBeingDragged.height : 0)
-                    const canBeMerged =
-                      boxBeingDragged != null &&
-                      boxBeingDragged.index === index &&
-                      boxBeingDragged.mergeWith != null
-                    const shouldIndicateMerge =
-                      boxBeingDragged != null &&
-                      boxBeingDragged.mergeWith !== null &&
-                      boxBeingDragged.mergeWith === index
-                    return (
-                      <SortableBox
-                        key={id}
-                        height={box.height}
-                        translateY={boxTranslateY}
-                        // showMergeOverlay={boxShowMergeOverlay}
-                        onMoveStart={() => this.onBoxStartMove(index)}
-                        onMoveEnd={() => this.onBoxEndMove()}
-                        onMove={this.onBoxMove}
-                        onResize={newSize => this.onBoxResize(id, newSize)}
-                      >
-                        {
-                          <BoxView
-                            tempIncludeTimeGrid={index === 0}
-                            boxHeight={box.height}
-                            variableIds={box.variables}
-                            splitVariable={variableId =>
-                              this.splitVariable(index, variableId)
-                            }
-                            panelWidth={panelWidth}
-                            duration={duration}
-                            currentTime={currentTTime}
-                            focus={focus}
-                            canBeMerged={canBeMerged}
-                            shouldIndicateMerge={shouldIndicateMerge}
-                            pathToTimeline={this.props.pathToTimeline}
-                          />
-                        }
-                      </SortableBox>
-                    )
-                  })}
-                </div>
+                  <div
+                    ref={c => (this.variablesContainer = c)}
+                    className={css.variables}
+                  >
+                    {layout.map((id, index) => {
+                      const box = boxes[id]
+                      const boxTranslateY =
+                        moveRatios[index] *
+                        (boxBeingDragged != null ? boxBeingDragged.height : 0)
+                      const canBeMerged =
+                        boxBeingDragged != null &&
+                        boxBeingDragged.index === index &&
+                        boxBeingDragged.mergeWith != null
+                      const shouldIndicateMerge =
+                        boxBeingDragged != null &&
+                        boxBeingDragged.mergeWith !== null &&
+                        boxBeingDragged.mergeWith === index
+                      return (
+                        <SortableBox
+                          key={id}
+                          height={box.height}
+                          translateY={boxTranslateY}
+                          // showMergeOverlay={boxShowMergeOverlay}
+                          onMoveStart={() => this.onBoxStartMove(index)}
+                          onMoveEnd={() => this.onBoxEndMove()}
+                          onMove={this.onBoxMove}
+                          onResize={newSize => this.onBoxResize(id, newSize)}
+                        >
+                          {
+                            <BoxView
+                              tempIncludeTimeGrid={index === 0}
+                              boxHeight={box.height}
+                              variableIds={box.variables}
+                              splitVariable={variableId =>
+                                this.splitVariable(index, variableId)
+                              }
+                              panelWidth={panelWidth}
+                              duration={duration}
+                              currentTime={currentTTime}
+                              focus={focus}
+                              canBeMerged={canBeMerged}
+                              shouldIndicateMerge={shouldIndicateMerge}
+                              pathToTimeline={this.props.pathToTimeline}
+                            />
+                          }
+                        </SortableBox>
+                      )
+                    })}
+                  </div>
+                </DraggableArea>
               </div>
             )
           }}

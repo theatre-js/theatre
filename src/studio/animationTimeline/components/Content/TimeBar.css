@@ -3,6 +3,10 @@
   --thumbColor: #00E0FF;
   --focusBarColor: #9DF233;
   height: 0;
+
+  &.shouldIgnoreMouse {
+    pointer-events: none;
+  }
 }
 
 .time {
@@ -55,7 +59,7 @@
   background-color: var(--thumbColor);
   position: absolute;
   z-index: 1000;
-  cursor: pointer;  
+  cursor: ew-resize;  
 }
 
 .currentTimeThumb {
@@ -64,6 +68,7 @@
   height: 10px;
   top: -2px;
   border-left: none;
+  left: -2px;
 
   &.isHidden {
     display: none;
@@ -136,7 +141,6 @@
   border-left: 1px solid #616161;
   height: calc(100% - 8px);
   top: 8px;
-  left: 2px;
 
   &.isHidden {
     display: none;

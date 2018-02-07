@@ -55,7 +55,7 @@ class DraggableArea extends React.Component<Props, State> {
     }))
 
     this.addDragListeners()
-    this.props.onDragStart && this.props.onDragStart()
+    this.props.onDragStart && this.props.onDragStart(e)
   }
 
   dragEndHandler = () => {

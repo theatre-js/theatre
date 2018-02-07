@@ -32,7 +32,7 @@ class BoxLegends extends React.PureComponent<$FixMe, IState> {
     const {variables, colors, activeVariableId} = this.props
     const {contextMenuProps} = this.state
     return (
-      <div className={css.container} onClick={(e) => {e.stopPropagation()}}>
+      <div className={css.container} onMouseDown={(e) => {e.stopPropagation()}}>
         {variables.map(({id, component, property}: $FixMe, index: number) => {
           return (
             <div

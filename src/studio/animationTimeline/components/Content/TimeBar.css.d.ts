@@ -1,4 +1,5 @@
 export const container: string;
+export const shouldIgnoreMouse: string;
 export const time: string;
 export const timeStart: string;
 export const timeEnd: string;

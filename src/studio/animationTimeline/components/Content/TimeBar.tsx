@@ -5,6 +5,7 @@ import DraggableArea from '$studio/common/components/DraggableArea'
 import cx from 'classnames'
 
 type Props = {
+  shouldIgnoreMouse: boolean
   duration: number
   currentTime: number
   focus: [number, number]
@@ -83,6 +84,17 @@ class TimeBar extends React.PureComponent<Props, State> {
     this.disableChangingDuration()
   }
 
+  _addGlobalCursorRule(cursor: string) {
+    document.styleSheets[0].insertRule(
+      `* {cursor: ${cursor} !important;}`,
+      document.styleSheets[0].cssRules.length,
+    )
+  }
+
+  _removeGlobalCursorRule() {
+    document.styleSheets[0].deleteRule(document.styleSheets[0].cssRules.length - 1)
+  }
+
   render() {
     const {isChangingDuration} = this.state
     let {
@@ -92,6 +104,7 @@ class TimeBar extends React.PureComponent<Props, State> {
       timeToX,
       focusedTimeToX,
       panelWidth,
+      shouldIgnoreMouse,
     } = this.props
     const focusLeft = timeToX(focus[0])
     const focusRight = timeToX(focus[1])
@@ -102,7 +115,8 @@ class TimeBar extends React.PureComponent<Props, State> {
     
     const isSeekerHidden = (currentX < 0 || currentX > panelWidth)
     return (
-      <div className={css.container}>
+      <div className={cx(
+        css.container, {[css.shouldIgnoreMouse]: shouldIgnoreMouse})}>
         {/* <div className={css.timeStart}>{0}</div>
         {isChangingDuration ? (
           <SingleInputForm
@@ -122,8 +136,12 @@ class TimeBar extends React.PureComponent<Props, State> {
         )} */}
         <div className={css.timeThread}>
           <DraggableArea
-            onDragStart={this._setBeforeMoveState}
+            onDragStart={() => {
+              this._addGlobalCursorRule('ew-resize')
+              this._setBeforeMoveState()
+            }}
             onDrag={dx => this.moveFocus(dx)}
+            onDragEnd={this._removeGlobalCursorRule}            
           >
             <div
               className={css.focusBar}
@@ -134,8 +152,12 @@ class TimeBar extends React.PureComponent<Props, State> {
             />
           </DraggableArea>
           <DraggableArea
-            onDragStart={this._setBeforeMoveState}
+            onDragStart={() => {
+              this._addGlobalCursorRule('w-resize')
+              this._setBeforeMoveState()
+            }}
             onDrag={dx => this.moveFocusLeft(dx)}
+            onDragEnd={this._removeGlobalCursorRule}            
           >
             <div
               className={css.leftFocusHandle}
@@ -145,8 +167,12 @@ class TimeBar extends React.PureComponent<Props, State> {
             </div>
           </DraggableArea>
           <DraggableArea
-            onDragStart={this._setBeforeMoveState}
+            onDragStart={() => {
+              this._addGlobalCursorRule('e-resize')
+              this._setBeforeMoveState()
+            }}
             onDrag={dx => this.moveFocusRight(dx)}
+            onDragEnd={this._removeGlobalCursorRule}          
           >
             <div
               className={css.rightFocusHandle}
@@ -157,8 +183,12 @@ class TimeBar extends React.PureComponent<Props, State> {
           </DraggableArea>
         </div>
         <DraggableArea
-          onDragStart={this._setBeforeMoveState}
+          onDragStart={() => {
+            this._addGlobalCursorRule('ew-resize')
+            this._setBeforeMoveState()
+          }}
           onDrag={dx => this.changeCurrentTime(dx)}
+          onDragEnd={this._removeGlobalCursorRule}
         >
           <div
             className={cx(css.currentTimeNeedle, {[css.isHidden]: isSeekerHidden})}
