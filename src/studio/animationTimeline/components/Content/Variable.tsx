@@ -21,7 +21,7 @@ class Variable extends React.PureComponent<Props, {}> {
   render() {
     const {points, color, width} = this.props
     return (
-      <g fill={color} stroke={color}>
+      <g fill={color.normal} stroke={color.normal}>
         {points.map((point, index) => {
           const prevPoint = points[index - 1]
           const nextPoint = points[index + 1]
@@ -36,6 +36,7 @@ class Variable extends React.PureComponent<Props, {}> {
                   />
                 )}
               <Point
+                color={color}
                 key={index}
                 prevPoint={prevPoint}
                 nextPoint={nextPoint}

@@ -8,7 +8,8 @@
   opacity: 1;
 }
 
-.pointClickRect:hover ~ .pointStroke {
+.pointClickRect:hover ~ .pointStroke,
+.pointClickRect:active ~ .pointStroke {
   stroke-width: 4px;
 }
 
@@ -29,17 +30,13 @@
   cursor: pointer;
 }
 
-.handleClickRect:hover ~ .handle {
-  stroke-width: 2px;
+.handleClickRect:hover ~ .handle,
+.handleClickRect:active ~ .handle {
+  stroke-width: 3px;
 }
 
 .handle {
-  filter: url('#darken');  
   pointer-events: none;  
-}
-
-.handleLine {
-  filter: url('#darken');
 }
 
 .pointTip {

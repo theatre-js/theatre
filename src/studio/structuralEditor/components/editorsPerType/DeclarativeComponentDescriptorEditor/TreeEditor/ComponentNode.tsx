@@ -157,6 +157,7 @@ class ComponentNode extends React.PureComponent<Props, State> {
         className={cx(css.container, {
           [css.isContentHidden]: isContentHidden,
           [css.isSelected]: isSelected,
+          [css.isRelocated]: nodeProps.status === STATUS.RELOCATED,
         })}
         onMouseDown={e => {
           if (!e.shiftKey) e.stopPropagation()

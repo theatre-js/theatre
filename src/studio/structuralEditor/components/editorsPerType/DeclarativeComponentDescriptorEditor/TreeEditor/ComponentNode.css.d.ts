@@ -8,5 +8,7 @@ export const input: string;
 export const isDisabled: string;
 export const tagOpen: string;
 export const tagClose: string;
+export const isRelocated: string;
+export const tagColorChange: string;
 export const tagName: string;
 export const dot: string;

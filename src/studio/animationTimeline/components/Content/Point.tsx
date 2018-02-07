@@ -287,7 +287,7 @@ class Point extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const {point, prevPoint, nextPoint} = this.props
+    const {point, prevPoint, nextPoint, color} = this.props
     const {time, value, interpolationDescriptor} = point
     const {handles} = interpolationDescriptor
     const {isMoving, handlesMove, isEnteringProps} = this.state
@@ -309,13 +309,12 @@ class Point extends React.PureComponent<Props, State> {
         {isMoving && this._renderTransformedPoint()}
         {renderLeftHandle && (
           <line
-            // stroke="dimgrey"
-            className={css.handleLine}
             x1={time}
             y1={value}
             x2={leftHandle[0]}
             y2={leftHandle[1]}
-            // filter={`url(#darken)`}
+            fill={color.darkened}
+            stroke={color.darkened}
           />
         )}
         {renderRightHandle && (
@@ -325,7 +324,8 @@ class Point extends React.PureComponent<Props, State> {
                 y1={value}
                 x2={rightHandle[0]}
                 y2={rightHandle[1]}
-                // filter="url(#darken)"                
+                fill={color.darkened}
+                stroke={color.darkened}            
               />
             </g>
           )}
@@ -346,8 +346,6 @@ class Point extends React.PureComponent<Props, State> {
               className={css.pointClickRect}
             />
             <circle
-              // fill="#1C2226"
-              // strokeWidth={1}
               cx={time}
               cy={value}
               r={6}
@@ -359,7 +357,6 @@ class Point extends React.PureComponent<Props, State> {
               cy={value}
               r={3.2}
               className={css.pointStroke}
-              // filter="url(#glow)"
               />
             <circle
               fill="#1C2226"
@@ -389,14 +386,13 @@ class Point extends React.PureComponent<Props, State> {
                 className={css.handleClickRect}
               />
               <circle
-                // fill="dimgrey"
-                // stroke="dimgrey"
                 strokeWidth="1"                
                 cx={leftHandle[0]}
                 cy={leftHandle[1]}
                 r={2}
-                className={css.handle}
-                // filter="url(#darken)"                
+                className={css.handle}     
+                stroke={color.darkened}
+                fill={color.darkened}
               />
             </g>
           </DraggableArea>
@@ -419,14 +415,13 @@ class Point extends React.PureComponent<Props, State> {
                 className={css.handleClickRect}
               />
               <circle
-                // fill="dimgrey"
-                // stroke="dimgrey"
                 strokeWidth="1"
                 cx={rightHandle[0]}
                 cy={rightHandle[1]}
                 r={2}
                 className={css.handle}
-                filter={`url(#darken)`}
+                stroke={color.darkened}
+                fill={color.darkened}                
               />
             </g>
           </DraggableArea>

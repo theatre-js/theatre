@@ -86,6 +86,11 @@
   } */
 }
 
+.container.isRelocated > .displayName > .tagOpen,
+.container.isRelocated > .displayName > .tagClose {
+  animation: tagColorChange .2s ease-in forwards;
+}
+
 .tagClose {
   position: relative;
   left: -1px;
@@ -107,3 +112,13 @@
   color: #65eeff;
   font-weight: 500;
 } */
+
+@keyframes tagColorChange {
+  0% {
+    color: rgb(218, 218, 218);
+  }
+
+  100% {
+    color: #4f5d77;    
+  }
+}

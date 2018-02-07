@@ -22,14 +22,18 @@
   }
 
   &.indicateDropPossible {
-    cursor: alias;
+    cursor: alias !important;
+
+    & * {
+      cursor: alias !important;
+    }
   }
 
   &.indicateDropNotPossible {
-    cursor: no-drop;
+    cursor: no-drop !important;
 
     & * {
-      cursor: no-drop;
+      cursor: no-drop !important;
     }
   }
 
@@ -38,7 +42,7 @@
     animation: containerAppear .2s ease-out forwards;
   }
 
-  &.isRelocated, &.relocationCanceled {
+  &.isRelocated {
     z-index: 1000;
     overflow: hidden;
     max-height: nodeHeight;
@@ -49,6 +53,16 @@
     animation:
       containerDropHeightAndTop .3s ease-out forwards,
       containerDropWidthAndLeft .25s .05s ease-out forwards,
+      containerDropBackground .7s ease-out forwards;
+  }
+
+  &.relocationCanceled {
+    z-index: 1000;
+    overflow: hidden;
+    max-height: 0;
+    background: var(--color);    
+    animation:
+      containerDropCancelHeight .3s ease-out forwards,
       containerDropBackground .7s ease-out forwards;
   }
 
@@ -221,6 +235,15 @@
   100% {
     background: none;
     overflow: visible;
+  }
+}
+
+@keyframes containerDropCancelHeight {
+  0% {
+    max-height: 0;
+  }
+  100% {
+    max-height: var(--maxHeight);
   }
 }
 

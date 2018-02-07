@@ -264,10 +264,10 @@ class TreeEditor extends StudioComponent<Props, State> {
   }
 
   setNodeBeingDragged = nodeBeingDragged => {
-    // document.styleSheets[0].insertRule(
-    //   '* {cursor: -webkit-grab;}',
-    //   document.styleSheets[0].cssRules.length,
-    // )
+    document.styleSheets[0].insertRule(
+      '* {cursor: no-drop;}',
+      document.styleSheets[0].cssRules.length,
+    )
 
     this.setState(() => ({nodeBeingDragged}))
   }
@@ -402,6 +402,8 @@ class TreeEditor extends StudioComponent<Props, State> {
   }
 
   handleDragEnd = () => {
+    document.styleSheets[0].deleteRule(document.styleSheets[0].cssRules.length - 1)
+
     const dropPayload: $FixMe = this.queuedDrop
     this._unsetQueuedDrop()
 

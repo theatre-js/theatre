@@ -41,7 +41,8 @@
 }
 
 .tagOpen, .tagClose {
-  color: #4f5d77;
+  // color: #4f5d77;
+  color: rgb(218, 218, 218);
 }
 
 .displayName > input {

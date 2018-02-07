@@ -4,7 +4,6 @@ export const pointStroke: string;
 export const pointCenter: string;
 export const handleClickRect: string;
 export const handle: string;
-export const handleLine: string;
 export const pointTip: string;
 export const pointTipRow: string;
 export const pointTipIcon: string;

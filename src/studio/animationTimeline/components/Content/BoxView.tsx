@@ -77,7 +77,12 @@ const resetExtremums = (pathToVariable: string[]) => {
   })
 }
 
-const colors = ['#3AAFA9', '#575790', '#B76C6C', '#FCE181']
+const colors = [
+  {normal: '#3AAFA9', darkened: '#345b59'},
+  {normal: '#575790', darkened: '#323253'},
+  {normal: '#B76C6C', darkened: '#4c3434'},
+  {normal: '#FCE181', darkened: '#726a4b'},
+]
 
 class BoxBiew extends React.Component<Props, State> {
   svgArea: HTMLElement
@@ -486,7 +491,7 @@ class BoxBiew extends React.Component<Props, State> {
                     variables={variables.map(variable =>
                       _.pick(variable, ['id', 'component', 'property']),
                     )}
-                    colors={colors}
+                    colors={colors.map(c => c.normal)}
                     activeVariableId={activeVariableId}
                     setActiveVariable={this.setActiveVariable}
                     splitVariable={this.props.splitVariable}
@@ -505,18 +510,17 @@ class BoxBiew extends React.Component<Props, State> {
                 >
                   <defs>
                     <filter id="glow">
-                      <feComponentTransfer id="color">
-                        <feFuncR type="linear" slope="2"/>
-                        <feFuncG type="linear" slope="2"/>
-                        <feFuncB type="linear" slope="2"/>
-                      </feComponentTransfer>
-                      <feGaussianBlur in="color" stdDeviation=".7" />
+                      <feColorMatrix type="matrix" values={`3  0  0  0  0
+                                                            0  3  0  0  0
+                                                            0  0  3  0  0
+                                                            0  0  0  1  0`} />
+                      <feGaussianBlur stdDeviation=".7" />
                     </filter>
                     <filter id="darken">
-                      <feColorMatrix type="matrix" values={`1  0  0  0  0
-                                                            0  1  0  0  0
-                                                            0  0  1  0  0
-                                                            0  0  0  .5  0`} />
+                      <feColorMatrix type="matrix" values={`.3   0   0  0  0
+                                                             0  .3   0  0  0
+                                                             0   0  .3  0  0
+                                                             0   0   0  1  0`} />                                                            
                     </filter>
                   </defs>
                   {variables.map(({id, points}, index) => (
