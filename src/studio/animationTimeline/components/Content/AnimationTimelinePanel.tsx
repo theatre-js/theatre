@@ -24,8 +24,9 @@ import {
 import {XY} from '$src/studio/workspace/types'
 import {get} from 'lodash'
 import StudioComponent from '$src/studio/handy/StudioComponent'
-import {BoxAtom} from '$src/shared/DataVerse/atoms/box'
+import box, { BoxAtom } from '$src/shared/DataVerse/atoms/box'
 import TimelineInstance from '$src/studio/componentModel/react/makeReactiveComponent/TimelineInstance';
+import dict from '$src/shared/DataVerse/atoms/dict';
 
 type OwnProps = TimelineObject & {
   pathToTimeline: string[]
@@ -49,17 +50,18 @@ type State = {
   moveRatios: number[]
   boundaries: number[]
   duration: number
-  currentTime: number
+  // currentTime: number
   focus: [number, number]
   thingy?: string
   timeBox?: BoxAtom<number>
   untapFromTimeBoxChanges: () => void
   isSeekerBeingDragged: boolean
-  currentTimeXBeforeDrag: number
+  // currentTimeXBeforeDrag: number
   timelineInstance: undefined | TimelineInstance
 }
 
 class Content extends StudioComponent<Props, State> {
+  currentTTimeXBeforeDrag: BoxAtom<number>;
   static panelConfig = {
     headerLess: true,
   }
@@ -76,9 +78,11 @@ class Content extends StudioComponent<Props, State> {
       boundaries: this._getBoundaries(boxes, layout),
       duration: 20000,
       focus: [0, 8000],
-      currentTime: 0,
+      // currentTime: 0,
       isSeekerBeingDragged: false,
     }
+
+    this.currentTTimeXBeforeDrag = box(0)
   }
 
   componentDidMount() {
@@ -121,7 +125,7 @@ class Content extends StudioComponent<Props, State> {
       const timelineInstance = element.getTimelineInstance(timelineId)
       const timeBox = timelineInstance.atom.prop('time')
       const untapFromTimeBoxChanges = timeBox.changes().tap(t => {
-        this._updateTimeState(t)
+        // this._updateTimeState(t)
       })
 
       this.setState({
@@ -135,7 +139,7 @@ class Content extends StudioComponent<Props, State> {
   }
 
   _updateTimeState = (currentTTime: number) => {
-    this.setState({currentTTime})
+    // this.setState({currentTTime})
   }
 
   _handleKeyPress = (e: React.KeyboardEvent<$FixMe>) => {
@@ -460,7 +464,7 @@ class Content extends StudioComponent<Props, State> {
       this.state.timeBox.set(newCurrentTime)
     }
     this.setState(() => ({
-      currentTime: newCurrentTime,
+      // currentTime: newCurrentTime,
       duration: newDuration,
       focus: newFocus,
     }))
@@ -510,9 +514,10 @@ class Content extends StudioComponent<Props, State> {
   _handleSeekerDragStart = (e: $FixMe, focus: [number, number], panelWidth: number, offsetLeft: number) => {
     this._addGlobalCursorRule()
     const newTime = this.xToFocusedTime(e.nativeEvent.layerX - offsetLeft, focus, panelWidth)
+    this.currentTTimeXBeforeDrag.set(this.focusedTimeToX(newTime, focus, panelWidth))
     this.setState(() => ({
       isSeekerBeingDragged: true,
-      currentTimeXBeforeDrag: this.focusedTimeToX(newTime, focus, panelWidth),
+      // currentTimeXBeforeDrag: this.focusedTimeToX(newTime, focus, panelWidth),
     }))
     this.changeCurrentTimeTo(newTime)
   }
@@ -637,7 +642,7 @@ class Content extends StudioComponent<Props, State> {
       moveRatios,
       duration,
       focus,
-      currentTTime: currentTime,
+      // currentTTime: currentTime,
     } = this.state
     const {boxes, layout, panelObjectBeingDragged} = this.props
     const offsetLeft = this.variablesContainer != null ? this.variablesContainer.scrollLeft : 0
@@ -666,7 +671,8 @@ class Content extends StudioComponent<Props, State> {
                     shouldIgnoreMouse={this.state.isSeekerBeingDragged}
                     panelWidth={panelWidth}
                     duration={duration}
-                    currentTime={currentTime}
+                    // currentTime={currentTime}
+                    timeBox={this.state.timeBox}
                     focus={focus}
                     timeToX={(time: number) => this.timeToX(time, panelWidth)}
                     xToTime={(x: number) => this.xToTime(x, panelWidth)}
@@ -697,7 +703,8 @@ class Content extends StudioComponent<Props, State> {
                   onDragStart={(e: $FixMe) => this._handleSeekerDragStart(e, focus, panelWidth, offsetLeft)}
                   onDrag={(dx: number) => this.changeCurrentTimeTo(
                     this.xToFocusedTime(
-                      this.state.currentTimeXBeforeDrag + dx, focus, panelWidth
+                      // this.state.currentTimeXBeforeDrag + dx, focus, panelWidth
+                      this.currentTTimeXBeforeDrag.getValue() + dx, focus, panelWidth
                   ))}
                   onDragEnd={this._handleSeekerDragEnd}
                 >
@@ -739,7 +746,7 @@ class Content extends StudioComponent<Props, State> {
                               }
                               panelWidth={panelWidth}
                               duration={duration}
-                              currentTime={currentTime}
+                              // currentTime={currentTime}
                               focus={focus}
                               canBeMerged={canBeMerged}
                               shouldIndicateMerge={shouldIndicateMerge}

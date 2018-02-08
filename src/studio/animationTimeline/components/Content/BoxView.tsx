@@ -32,7 +32,7 @@ type OwnProps = {
   splitVariable: Function
   panelWidth: number
   duration: number
-  currentTime: number
+  // currentTime: number
   focus: [number, number]
   boxHeight: number
   tempIncludeTimeGrid?: boolean

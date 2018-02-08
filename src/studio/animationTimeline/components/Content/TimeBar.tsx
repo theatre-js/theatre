@@ -3,6 +3,8 @@ import React from 'react'
 import css from './TimeBar.css'
 import DraggableArea from '$studio/common/components/DraggableArea'
 import cx from 'classnames'
+import { BoxAtom } from '$src/shared/DataVerse/atoms/box';
+import { noop } from 'lodash';
 
 type Props = {
   shouldIgnoreMouse: boolean
@@ -19,23 +21,49 @@ type Props = {
   xToTime: Function
   focusedTimeToX: Function
   xToFocusedTime: Function
+  timeBox?: BoxAtom<number>
 }
 
 type State = {
   timeBeforeMove: number
   focusBeforeMove: [number, number]
   isChangingDuration: boolean
+  currentTime: number
 }
 
 class TimeBar extends React.PureComponent<Props, State> {
+  untapFromTimeBoxChanges: () => void
   constructor(props: Props) {
     super(props)
 
     this.state = {
+      currentTime: 0,
       timeBeforeMove: props.currentTime,
       focusBeforeMove: props.focus,
       isChangingDuration: false,
     }
+
+    this.untapFromTimeBoxChanges = noop
+  }
+
+  componentWillMount() {
+    this.check()
+  }
+
+  componentWillReceiveProps(newProps: Props) {
+    this.check(newProps)
+  }
+
+  check(props: Props = this.props) {
+    this.untapFromTimeBoxChanges()
+
+    if (props.timeBox) {
+      this.untapFromTimeBoxChanges =  props.timeBox.changes().tap(this._updateFromTimeBox)
+    }
+  }
+
+  _updateFromTimeBox = (currentTime: number) => {
+    this.setState({currentTime})
   }
 
   changeCurrentTime(dx: number) {
@@ -64,7 +92,10 @@ class TimeBar extends React.PureComponent<Props, State> {
   }
 
   _setBeforeMoveState = () => {
-    const {currentTime, focus} = this.props
+    // const {currentTime, focus} = this.props
+    const {focus} = this.props
+    const {currentTime} = this.state
+
     this.setState(() => ({
       timeBeforeMove: currentTime,
       focusBeforeMove: focus,
@@ -108,7 +139,6 @@ class TimeBar extends React.PureComponent<Props, State> {
   render() {
     const {isChangingDuration} = this.state
     let {
-      currentTime,
       focus,
       duration,
       timeToX,
@@ -116,6 +146,7 @@ class TimeBar extends React.PureComponent<Props, State> {
       panelWidth,
       shouldIgnoreMouse,
     } = this.props
+    let {currentTime} = this.state
     const focusLeft = timeToX(focus[0])
     const focusRight = timeToX(focus[1])
     const currentX = focusedTimeToX(currentTime, focus)

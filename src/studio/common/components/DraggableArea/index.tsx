@@ -18,10 +18,11 @@ type State = {
   },
 }
 
-class DraggableArea extends React.Component<Props, State> {
+class DraggableArea extends React.Component<Props, {}> {
+  s: State
   constructor(props: Props) {
     super(props)
-    this.state = {
+    this.s = {
       isDragging: false,
       startPos: {
         x: 0,
@@ -51,9 +52,10 @@ class DraggableArea extends React.Component<Props, State> {
     e.stopPropagation()
 
     const {screenX, screenY} = e
-    this.setState(() => ({
-      startPos: {x: screenX, y: screenY},
-    }))
+    this.s.startPos = {x: screenX, y: screenY}
+    // this.setState(() => ({
+      // startPos: {x: screenX, y: screenY},
+    // }))
 
     this.addDragListeners()
     this.props.onDragStart && this.props.onDragStart(e)
@@ -68,9 +70,10 @@ class DraggableArea extends React.Component<Props, State> {
   }
 
   dragHandler = (e: MouseEvent) => {
-    if (!this.state.isDragging) this.setState(() => ({isDragging: true}))
+    // if (!this.state.isDragging) this.setState(() => ({isDragging: true}))
+    if (!this.s.isDragging) this.s.isDragging = true
 
-    const {startPos} = this.state
+    const {startPos} = this.s
     this.props.onDrag &&
       this.props.onDrag(e.screenX - startPos.x, e.screenY - startPos.y, e)
   }
