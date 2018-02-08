@@ -2,6 +2,10 @@
   stroke: red;
 }
 
+.highlightRedOnHover:hover {
+  cursor: pointer;
+}
+
 .connectorPath {
   pointer-events: none;
 }
