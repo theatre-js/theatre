@@ -49,27 +49,31 @@ type State = {
   pointValuesEditorProps: undefined | null | Object
 }
 const resetExtremums = (pathToVariable: string[]) => {
+  console.log('?')
   return reduceStateAction(pathToVariable, variable => {
     const {points} = variable
     if (points.length === 0) return variable
     const newExtremums = points.reduce(
       (reducer, point, index) => {
         const {value} = point
-        const prevValue = points[index - 1] ? points[index - 1].value : 0
-        const nextValue = points[index + 1] ? points[index + 1].value : 0
-        const handles = [
-          point.interpolationDescriptor.handles[1] * (value - prevValue),
-          point.interpolationDescriptor.handles[3] * (nextValue - value),
-        ]
+        // const prevValue = points[index - 1] ? points[index - 1].value : 0
+        // const nextValue = points[index + 1] ? points[index + 1].value : 0
+        let candids = [0, 0]
+        const nextPoint = points[index + 1]
+        if (nextPoint != null) {
+          candids = [
+            value,
+            value + point.interpolationDescriptor.handles[1] * (nextPoint.value - value),
+            nextPoint.value + point.interpolationDescriptor.handles[3] * (value - nextPoint.value),
+          ]
+        } else {
+          candids = [
+            value,
+          ]
+        }
         return [
-          Math.min(
-            reducer[0],
-            Math.min(value, value + handles[0] - 15, value + handles[1]) - 15,
-          ),
-          Math.max(
-            reducer[1],
-            Math.max(value, value + handles[0] + 15, value + handles[1]) + 15,
-          ),
+          Math.min(reducer[0], Math.min(...candids)) - 10,
+          Math.max(reducer[1], Math.max(...candids)) + 10,
         ]
       },
       [0, 60],
@@ -193,12 +197,12 @@ class BoxBiew extends React.Component<Props, State> {
         },
       ),
     )
-    // this.props.dispatch(
-    //   resetExtremums([
-    //     ...this.props.pathToVariables,
-    //     this.state.activeVariableId,
-    //   ]),
-    // )
+    this.props.dispatch(
+      resetExtremums([
+        ...this.props.pathToVariables,
+        this.state.activeVariableId,
+      ]),
+    )
   }
 
   pathToPoints = (variableId: string) => [
@@ -217,9 +221,9 @@ class BoxBiew extends React.Component<Props, State> {
         points.slice(0, pointIndex).concat(points.slice(pointIndex + 1)),
       ),
     )
-    // this.props.dispatch(
-    //   resetExtremums([...this.props.pathToVariables, variableId]),
-    // )
+    this.props.dispatch(
+      resetExtremums([...this.props.pathToVariables, variableId]),
+    )
   }
 
   setPointPositionTo = (
@@ -233,9 +237,9 @@ class BoxBiew extends React.Component<Props, State> {
         ...newPosition,
       })),
     )
-    // this.props.dispatch(
-    //   resetExtremums([...this.props.pathToVariables, variableId]),
-    // )
+    this.props.dispatch(
+      resetExtremums([...this.props.pathToVariables, variableId]),
+    )
   }
 
   showPointValuesEditor(
@@ -261,9 +265,9 @@ class BoxBiew extends React.Component<Props, State> {
         value: point.value + deNormalizedChange.value,
       })),
     )
-    // this.props.dispatch(
-    //   resetExtremums([...this.props.pathToVariables, variableId]),
-    // )
+    this.props.dispatch(
+      resetExtremums([...this.props.pathToVariables, variableId]),
+    )
   }
 
   changePointHandlesBy = (
@@ -313,9 +317,9 @@ class BoxBiew extends React.Component<Props, State> {
         ])
       )
     }
-    // this.props.dispatch(
-    //   resetExtremums([...this.props.pathToVariables, variableId]),
-    // )
+    this.props.dispatch(
+      resetExtremums([...this.props.pathToVariables, variableId]),
+    )
   }
 
   addConnector = (variableId: VariableID, pointIndex: number) => {
@@ -372,9 +376,9 @@ class BoxBiew extends React.Component<Props, State> {
         ),
       )
     }
-    // this.props.dispatch(
-    //   resetExtremums([...this.props.pathToVariables, variableId]),
-    // )
+    this.props.dispatch(
+      resetExtremums([...this.props.pathToVariables, variableId]),
+    )
   }
 
   _normalizeX(x: number) {
