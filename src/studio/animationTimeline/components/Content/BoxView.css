@@ -67,11 +67,16 @@
 
 .svgArea {
   position: absolute;
-  top: 14px;
+  top: 0;
   left: 30px;
+  padding: 10px;
   // width: calc(100% - 30px);
   overflow: hidden;
   // border: 1px solid white;
+}
+
+.svgArea svg {
+  padding: 10px 0;
 }
 
 .timeGrid {

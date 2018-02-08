@@ -57,34 +57,51 @@ const resetExtremums = (pathToVariable: string[]) => {
   return reduceStateAction(pathToVariable, variable => {
     const {points} = variable
     if (points.length === 0) return variable
-    const newExtremums = points.reduce(
-      (reducer, point, index) => {
-        const {value} = point
-        // const prevValue = points[index - 1] ? points[index - 1].value : 0
-        // const nextValue = points[index + 1] ? points[index + 1].value : 0
-        let candids = [0, 0]
-        const nextPoint = points[index + 1]
-        if (nextPoint != null) {
-          candids = [
-            value,
-            value + point.interpolationDescriptor.handles[1] * (nextPoint.value - value),
-            nextPoint.value + point.interpolationDescriptor.handles[3] * (value - nextPoint.value),
-          ]
-        } else {
-          candids = [
-            value,
-          ]
-        }
-        return [
-          Math.min(reducer[0], Math.min(...candids)) - 10,
-          Math.max(reducer[1], Math.max(...candids)) + 10,
-        ]
-      },
-      [0, 60],
-    )
+    // const newExtremums = points.reduce(
+    //   (reducer, point, index) => {
+    //     const {value} = point
+    //     // const prevValue = points[index - 1] ? points[index - 1].value : 0
+    //     // const nextValue = points[index + 1] ? points[index + 1].value : 0
+    //     let candids = [0, 0]
+    //     const nextPoint = points[index + 1]
+    //     if (nextPoint != null) {
+    //       candids = [
+    //         value,
+    //         value + point.interpolationDescriptor.handles[1] * (nextPoint.value - value),
+    //         nextPoint.value + point.interpolationDescriptor.handles[3] * (value - nextPoint.value),
+    //       ]
+    //     } else {
+    //       candids = [
+    //         value,
+    //       ]
+    //     }
+    //     return [
+    //       Math.min(reducer[0], Math.min(...candids)) * .8,
+    //       Math.max(reducer[1], Math.max(...candids)) * 1.2,
+    //     ]
+    //   },
+    //   [0, 0],
+    // )
+    let min, max
+
+    points.forEach((point, index) => {
+      const {value} = point
+      const nextPoint = points[index + 1]
+      let candids = [value]
+      if (nextPoint != null) {
+        candids = candids.concat(
+          value + point.interpolationDescriptor.handles[1] * (nextPoint.value - value),
+          nextPoint.value + point.interpolationDescriptor.handles[3] * (value - nextPoint.value))
+      }
+      const localMin = Math.min(...candids)
+      const localMax = Math.max(...candids)
+      console.log(candids, localMin, localMax)
+      min = (min == null) ? localMin : Math.min(min, localMin)
+      max = (max == null) ? localMax : Math.max(max, localMax)
+    })
     return {
       ...variable,
-      extremums: newExtremums,
+      extremums: [min, max],
     }
   })
 }
@@ -166,17 +183,26 @@ class BoxBiew extends React.Component<Props, State> {
 
   _getSvgState(props) {
     const {boxHeight, duration, focus, panelWidth, variables} = props
-    const svgHeight = boxHeight - 14
+    const svgHeight = boxHeight - 30
     const svgWidth = Math.floor(duration / (focus[1] - focus[0]) * panelWidth)
     const svgTransform = svgWidth * focus[0] / duration
-    const svgExtremums = variables.reduce(
-      (reducer, {extremums}) => {
-        if (extremums[0] < reducer[0]) reducer[0] = extremums[0]
-        if (extremums[1] > reducer[1]) reducer[1] = extremums[1]
-        return reducer
-      },
-      [0, 0],
-    )
+
+    // const svgExtremums = variables.reduce(
+    //   (reducer, {extremums}) => {
+    //     if (extremums[0] < reducer[0]) reducer[0] = extremums[0]
+    //     if (extremums[1] > reducer[1]) reducer[1] = extremums[1]
+    //     return reducer
+    //   },
+    //   [0, 0],
+    let min, max
+    variables.forEach((variable, index) => {
+      const {extremums} = variable
+      min = (min == null) ? extremums[0] : Math.min(min, extremums[0])
+      max = (max == null) ? extremums[1] : Math.max(max, extremums[1])
+    })
+    const svgExtremums = [min, max]
+
+    // )
 
     return {svgHeight, svgWidth, svgTransform, svgExtremums}
   }
@@ -570,6 +596,7 @@ class BoxBiew extends React.Component<Props, State> {
       activeVariableId,
       pointValuesEditorProps,
     } = this.state
+    // console.log(variables, this.state.svgExtremums)
     let variablesColors = {}
     variables.forEach((variable: $FixMe, index: number) => {
       variablesColors = {...variablesColors, [variable.id]: colors[index % colors.length]}
