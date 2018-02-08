@@ -3,14 +3,20 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
+  background: #242424;
 }
 
 :global(.scene) {
   // width: 700px;
-  width: calc(100% - 500px);
-  height: calc(100% - 425px);
+  // width: calc(100% - 500px);
+  // height: calc(100% - 425px);
+  background: #000;
+  width: 300px;
+  height: 400px;
+  position: absolute;
+  bottom: 425px;
+  overflow: hidden;
 
-  background: #242424;
   display: flex;
   justify-content: center;
   align-items: flex-end;

@@ -74,7 +74,7 @@ class Content extends StudioComponent<Props, State> {
       boxBeingDragged: null,
       moveRatios: new Array(layout.length).fill(0),
       boundaries: this._getBoundaries(boxes, layout),
-      duration: 10000,
+      duration: 20000,
       focus: [0, 8000],
       currentTime: 0,
       isSeekerBeingDragged: false,
