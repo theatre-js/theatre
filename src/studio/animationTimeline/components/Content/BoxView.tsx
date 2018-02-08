@@ -644,7 +644,7 @@ class BoxBiew extends React.Component<Props, State> {
                   </DraggableArea>
                   <div className={css.svgArea}>
                     <svg
-                      height={svgHeight}
+                      height={svgHeight + 20}
                       width={svgWidth}
                       // style={{transform: `translateX(${-svgTransform}px)`}}
                       ref={svg => {
