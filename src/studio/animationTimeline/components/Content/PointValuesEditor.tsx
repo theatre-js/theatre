@@ -7,18 +7,56 @@ interface IProps {}
 interface IState {}
 
 class PointValuesEditor extends React.PureComponent<IProps, IState> {
+  state = {
+    value: String(this.props.initialValue),
+    time: (this.props.initialTime/1000).toFixed(2),
+  }
+
+  componentDidMount() {
+    this.valueInput.focus()
+    this.valueInput.select()
+  }
+
   handleClick = (e) => {
     e.stopPropagation()
     if (e.target === this.wrapper) this.props.onClose()
   }
 
-  handleSubmit = (input: 'time' | 'value', value) => {
-    const newPosition = {
-      time: input === 'time' ? Number(value)*1000 : this.props.initialTime,
-      value: input === 'value' ? Number(value) : this.props.initialValue,
+  handleKeyDown = (e, input: 'time' | 'value') => {
+    if (e.keyCode === 9) {
+      e.preventDefault()
+      this.props.onSubmit({
+        time: Number(this.state.time) * 1000,
+        value: Number(this.state.value),
+      })
+      if (input === 'time') {
+        this.timeInput.blur()
+        this.valueInput.focus()
+        this.valueInput.select()
+      }
+      if (input === 'value') {
+        console.log('hum')
+        this.valueInput.blur()
+        this.timeInput.focus()
+        this.timeInput.select()
+      }
     }
-    this.props.onSubmit(newPosition)
-    this.props.onClose()
+    if (e.keyCode === 13) {
+      this.props.onSubmit({
+        time: Number(this.state.time) * 1000,
+        value: Number(this.state.value),
+      })
+      this.props.onClose()
+    }
+    if (e.keyCode === 27) {
+      this.props.onClose()
+    }
+  }
+  
+  handleChange = (e: $FixMe, input: 'time' | 'value') => {
+    const {value} = e.target
+    if (input === 'time') this.setState(() => ({time: value}))
+    if (input === 'value') this.setState(() => ({value: value}))
   }
 
   render() {
@@ -38,31 +76,25 @@ class PointValuesEditor extends React.PureComponent<IProps, IState> {
             <span className={css.icon}>
               {String.fromCharCode(0x25ba)}
             </span>
-            <SingleInputForm
-              autoFocus={false}
-              ref={c => {
-                if (c != null) this.timeInput = c
-              }}
+            <input
+              ref={c => this.timeInput = c}
               className={css.input}
-              value={(initialTime/1000).toFixed(2)}
-              onCancel={this.props.onClose}
-              onSubmit={(val) => this.handleSubmit('time', val)}
+              value={this.state.time}
+              onKeyDown={(e) => this.handleKeyDown(e, 'time')}
+              onChange={(e) => this.handleChange(e, 'time')}
             />
             </div>
           <div className={css.row}>
             <span className={css.icon}>
               {String.fromCharCode(0x25b2)}
             </span>
-            <SingleInputForm
-              ref={c => {
-                if (c != null) this.valueInput = c
-              }}
-              autoFocus={true}
-              className={css.input}
-              value={String(initialValue)}
-              onCancel={this.props.onClose}
-              onSubmit={(val) => this.handleSubmit('value', val)}
-            />
+              <input
+                ref={c => this.valueInput = c}
+                className={css.input}
+                value={this.state.value}
+                onKeyDown={(e) => this.handleKeyDown(e, 'value')}
+                onChange={(e) => this.handleChange(e, 'value')}              
+              />
           </div>
         </div>
       </div>

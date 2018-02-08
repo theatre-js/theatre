@@ -143,7 +143,7 @@ export class TheUI extends React.Component<Props, State> {
         this.setState(() => ({activeMode: MODE_H}))
         break
       default:
-        console.log(e.keyCode)
+        // console.log(e.keyCode)
         break
     }
   }

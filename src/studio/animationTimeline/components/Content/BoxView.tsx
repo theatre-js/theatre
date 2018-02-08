@@ -49,7 +49,6 @@ type State = {
   pointValuesEditorProps: undefined | null | Object
 }
 const resetExtremums = (pathToVariable: string[]) => {
-  console.log('?')
   return reduceStateAction(pathToVariable, variable => {
     const {points} = variable
     if (points.length === 0) return variable
@@ -102,6 +101,15 @@ class BoxBiew extends React.Component<Props, State> {
       pointValuesEditorProps: null,
       activeVariableId: props.variableIds[0],
     }
+  }
+
+  componentDidMount() {
+    this.props.dispatch(
+      resetExtremums([
+        ...this.props.pathToVariables,
+        this.state.activeVariableId,
+      ]),
+    )
   }
 
   componentWillReceiveProps(nextProps) {

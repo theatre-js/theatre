@@ -91,6 +91,7 @@ class Point extends React.PureComponent<Props, State> {
           top: top + height / 2,
           initialTime: this.props.point._t,
           initialValue: this.props.point._value,
+          activeMode,
         })
       }
     }
