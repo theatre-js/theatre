@@ -95,7 +95,6 @@ const resetExtremums = (pathToVariable: string[]) => {
       }
       const localMin = Math.min(...candids)
       const localMax = Math.max(...candids)
-      console.log(candids, localMin, localMax)
       min = (min == null) ? localMin : Math.min(min, localMin)
       max = (max == null) ? localMax : Math.max(max, localMax)
     })
@@ -596,7 +595,7 @@ class BoxBiew extends React.Component<Props, State> {
       activeVariableId,
       pointValuesEditorProps,
     } = this.state
-    // console.log(variables, this.state.svgExtremums)
+
     let variablesColors = {}
     variables.forEach((variable: $FixMe, index: number) => {
       variablesColors = {...variablesColors, [variable.id]: colors[index % colors.length]}
