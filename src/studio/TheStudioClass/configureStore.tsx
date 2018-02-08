@@ -9,7 +9,7 @@ import set from 'lodash/fp/set'
 
 export const defaultConfig = {rootReducer, rootSaga}
 
-const localStorageKey = 'tjs-componentModel-8';
+const localStorageKey = 'tjs-componentModel-9';
 export default function createStore(
   config: typeof defaultConfig = defaultConfig,
 ): StandardStore<$FixMe, $FixMe> {

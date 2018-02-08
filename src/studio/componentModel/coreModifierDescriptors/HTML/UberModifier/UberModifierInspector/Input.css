@@ -47,14 +47,15 @@
   position: relative;
   margin: 0 auto;
   width: 50px;
-  height: 14px;
-  top: -18px;
+  height: 12px;
+  top: -17px;
+  left: -5px;
   text-align: center;
   background: #EDC700;
   border-radius: 2px;
   color: #000;
   font-weight: bold;
-  line-height: 14px;
+  line-height: 12px;
   font-size: 8px;
   text-transform: uppercase;
 }

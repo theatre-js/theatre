@@ -6,7 +6,7 @@ import coreModifierDescriptors from './coreModifierDescriptors'
 //   IComponentInstantiationValueDescriptor,
 // } from '$studio/componentModel/types'
 import * as _ from 'lodash'
-import tempCustomComponentDescriptors from './tempBall'
+import tempCustomComponentDescriptors from './tempBall2'
 
 // const tags = ['div', 'header', 'span', 'footer', 'picture', 'video']
 

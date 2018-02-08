@@ -3,19 +3,29 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  background: #242424;
+  background-color: #242424;
+  /* background-image: src('/xeno/1.jpg'); */
 }
 
 :global(.scene) {
-  // width: 700px;
-  // width: calc(100% - 500px);
-  // height: calc(100% - 425px);
-  background: #000;
-  width: 300px;
-  height: 400px;
-  position: absolute;
-  bottom: 425px;
-  overflow: hidden;
+  /* background: #000; */
+  width: 600px;
+  height: 500px;
+  position: relative;
+  top: 0px;
+  /* position: absolute; */
+  /* bottom: 425px; */
+  /* overflow: hidden; */
+  
+  &:after {
+    position: absolute 0 -15px -64px 0;
+    content: ' ';
+    display: block;
+    background-image: url('./iphone.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center bottom;
+  }
 
   display: flex;
   justify-content: center;
@@ -28,4 +38,6 @@
   background-size: 80px 80px;
   background-image: url('./theBall.png');
   transform-origin: 50% 100%;
+  position: relative;
+  z-index: 2;
 }
