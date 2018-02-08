@@ -188,6 +188,11 @@ class Content extends StudioComponent<Props, State> {
   }
 
   onBoxStartMove(index: number) {
+    document.styleSheets[0].insertRule(
+      '* {cursor: move !important;}',
+      document.styleSheets[0].cssRules.length,
+    )
+
     this.setState((state, props) => {
       const offset = state.boundaries[index]
       const id = props.layout[index]
@@ -262,6 +267,7 @@ class Content extends StudioComponent<Props, State> {
   }
 
   onBoxEndMove() {
+    document.styleSheets[0].deleteRule(document.styleSheets[0].cssRules.length - 1)    
     if (this.state.boxBeingDragged == null) return
     const {index, moveTo, mergeWith} = this.state.boxBeingDragged
     const {dispatch} = this.props

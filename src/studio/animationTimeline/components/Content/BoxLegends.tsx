@@ -39,7 +39,7 @@ class BoxLegends extends React.PureComponent<$FixMe, IState> {
               key={id}
               className={css.legendItem}
               style={{'--color': colors[index % colors.length]}}
-              onClick={(e: $FixMe) => this.handleClick(e, id)}
+              onMouseDown={(e: $FixMe) => this.handleClick(e, id)}
               onContextMenu={(e: $FixMe) => this.handleContextMenu(e, id)}
             >
               <div

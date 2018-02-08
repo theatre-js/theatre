@@ -165,7 +165,10 @@ class HalfPieContextMenu extends React.PureComponent<IProps, IState> {
                 '--leftCoeff': leftCoeff,
                 '--topCoeff': topCoeff,
               }}
-              onClick={cb}
+              onMouseDown={() => {
+                close()
+                cb()
+              }}
             >
               <span className={css.icon}><IconComponent /></span>
               <span className={css.label}>
