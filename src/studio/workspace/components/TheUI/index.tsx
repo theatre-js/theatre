@@ -36,6 +36,7 @@ export const MODE_OPTION = 'option'
 export const MODE_CMD = 'command'
 export const MODE_D = 'd'
 export const MODE_C = 'c'
+export const MODE_H = 'h'
 
 const getOppositeSide = (side: string): string => {
   switch (side) {
@@ -133,6 +134,9 @@ export class TheUI extends React.Component<Props, State> {
         break
       case 67:
         this.setState(() => ({activeMode: MODE_C}))
+        break
+      case 72:
+        this.setState(() => ({activeMode: MODE_H}))
         break
       default:
         console.log(e.keyCode)

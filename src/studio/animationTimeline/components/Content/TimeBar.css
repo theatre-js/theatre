@@ -203,7 +203,7 @@
   left: 0px;
 }
 
-.timeTip {
+.focusTimeToolTip, .currentTimeToolTip {
   composes: time;
   top: -20px;
   background: #1B2226;
@@ -214,15 +214,17 @@
   display: none;
 }
 
-.leftFocusHandle:hover .timeTip,
-.leftFocusHandle:active .timeTip,
-.rightFocusHandle:hover .timeTip,
-.rightFocusHandle:active .timeTip,
-.currentTimeThumb:hover .timeTip,
-.currentTimeThumb:active .timeTip,
-.currentTimeNeedle:hover ~ .currentTimeThumb .timeTip,
-.currentTimeNeedle:active ~ .currentTimeThumb .timeTip,
-.focusBar:active ~ .leftFocusHandle .timeTip,
-.focusBar:active ~ .rightFocusHandle .timeTip{
+
+
+.leftFocusHandle:hover .focusTimeToolTip,
+.leftFocusHandle:active .focusTimeToolTip,
+.rightFocusHandle:hover .focusTimeToolTip,
+.rightFocusHandle:active .focusTimeToolTip,
+.currentTimeThumb:hover .currentTimeToolTip,
+.currentTimeThumb:active .currentTimeToolTip,
+.currentTimeNeedle:hover ~ .currentTimeThumb .currentTimeToolTip,
+.currentTimeNeedle:active ~ .currentTimeThumb .currentTimeToolTip,
+.focusBar:active ~ .leftFocusHandle .focusTimeToolTip,
+.focusBar:active ~ .rightFocusHandle .focusTimeToolTip{
   display: block;
 }

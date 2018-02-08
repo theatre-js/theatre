@@ -14,7 +14,7 @@ class PointValuesEditor extends React.PureComponent<IProps, IState> {
 
   handleSubmit = (input: 'time' | 'value', value) => {
     const newPosition = {
-      time: input === 'time' ? Number(value) : this.props.initialTime,
+      time: input === 'time' ? Number(value)*1000 : this.props.initialTime,
       value: input === 'value' ? Number(value) : this.props.initialValue,
     }
     this.props.onSubmit(newPosition)
@@ -34,7 +34,7 @@ class PointValuesEditor extends React.PureComponent<IProps, IState> {
           className={css.container}
           style={{left, top}}
         >
-          {/* <div className={css.row}>
+          <div className={css.row}>
             <span className={css.icon}>
               {String.fromCharCode(0x25ba)}
             </span>
@@ -44,11 +44,11 @@ class PointValuesEditor extends React.PureComponent<IProps, IState> {
                 if (c != null) this.timeInput = c
               }}
               className={css.input}
-              value={String(initialTime)}
+              value={(initialTime/1000).toFixed(2)}
               onCancel={this.props.onClose}
               onSubmit={(val) => this.handleSubmit('time', val)}
             />
-            </div>*/}
+            </div>
           <div className={css.row}>
             <span className={css.icon}>
               {String.fromCharCode(0x25b2)}

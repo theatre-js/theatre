@@ -74,11 +74,29 @@ class Content extends StudioComponent<Props, State> {
       boxBeingDragged: null,
       moveRatios: new Array(layout.length).fill(0),
       boundaries: this._getBoundaries(boxes, layout),
-      duration: 60000,
-      focus: [0, 50000],
+      duration: 10000,
+      focus: [0, 8000],
       currentTime: 0,
       isSeekerBeingDragged: false,
     }
+  }
+
+  componentDidMount() {
+    document.addEventListener('keypress', (e) => {
+      if (e.target.tagName !== 'INPUT' && e.keyCode === 32) {
+        e.preventDefault()
+        return false
+      }
+    })
+
+    const {duration, focus} = this.state
+    const svgWidth =
+      duration / (focus[1] - focus[0]) * (this.container.clientWidth - 30)
+    setTimeout(() => {
+      this.variablesContainer.scrollTo(svgWidth * focus[0] / duration, 0)
+    }, 0)
+
+    window.addEventListener('keypress', this._handleKeyPress)
   }
 
   componentWillReceiveProps(newProps) {
@@ -118,17 +136,6 @@ class Content extends StudioComponent<Props, State> {
 
   _updateTimeState = (currentTTime: number) => {
     this.setState({currentTTime})
-  }
-
-  componentDidMount() {
-    const {duration, focus} = this.state
-    const svgWidth =
-      duration / (focus[1] - focus[0]) * (this.container.clientWidth - 30)
-    setTimeout(() => {
-      this.variablesContainer.scrollTo(svgWidth * focus[0] / duration, 0)
-    }, 0)
-
-    window.addEventListener('keypress', this._handleKeyPress)
   }
 
   _handleKeyPress = (e: React.KeyboardEvent<$FixMe>) => {
@@ -547,7 +554,7 @@ class Content extends StudioComponent<Props, State> {
                 id: varId,
                 component: componentName,
                 property: prop,
-                extremums: [-50,50],
+                extremums: [-150, 150],
                 points: [],
               }
             }
@@ -605,9 +612,14 @@ class Content extends StudioComponent<Props, State> {
       'div[class*="AnimationTimelinePanel_panelContainer_"] {z-index: 200;}',
       document.styleSheets[0].cssRules.length,
     )
+    document.styleSheets[0].insertRule(
+      'div[class*="TimeBar_currentTimeToolTip"] {display: block;}',
+      document.styleSheets[0].cssRules.length,
+    )
   }
 
   _removeGlobalCursorRule() {
+    document.styleSheets[0].deleteRule(document.styleSheets[0].cssRules.length - 1)
     document.styleSheets[0].deleteRule(document.styleSheets[0].cssRules.length - 1)
     document.styleSheets[0].deleteRule(document.styleSheets[0].cssRules.length - 1)
     document.styleSheets[0].deleteRule(document.styleSheets[0].cssRules.length - 1)

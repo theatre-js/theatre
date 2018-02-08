@@ -37,8 +37,8 @@ const unitBezier = (interpolationDescriptorP: $FixMe) => {
       return new UnitBezier(
         lxD.getValue(),
         lyD.getValue(),
-        rxD.getValue(),
-        ryD.getValue(),
+        1 - rxD.getValue(),
+        1 - ryD.getValue(),
       )
     },
   )

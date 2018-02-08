@@ -173,7 +173,7 @@ class TimeBar extends React.PureComponent<Props, State> {
               className={css.leftFocusHandle}
               style={{transform: `translateX(${focusLeft}px)`}}
             >
-              <div className={css.timeTip}>{focus[0].toFixed(1)}</div>
+              <div className={css.focusTimeToolTip}>{focus[0].toFixed(1)}</div>
             </div>
           </DraggableArea>
           <DraggableArea
@@ -188,7 +188,7 @@ class TimeBar extends React.PureComponent<Props, State> {
               className={css.rightFocusHandle}
               style={{transform: `translateX(${focusRight}px)`}}
             >
-              <div className={css.timeTip}>{focus[1].toFixed(1)}</div>
+              <div className={css.focusTimeToolTip}>{focus[1].toFixed(1)}</div>
             </div>
           </DraggableArea>
         </div>
@@ -218,7 +218,7 @@ class TimeBar extends React.PureComponent<Props, State> {
             style={{transform: `translateX(${currentX}px)`}}
           >
             <div className={css.thumbSquinch} />
-            <div className={css.timeTip}>{currentTime.toFixed(1)}</div>
+            <div className={css.currentTimeToolTip}>{currentTime.toFixed(1)}</div>
           </div>
         </DraggableArea>
       </div>

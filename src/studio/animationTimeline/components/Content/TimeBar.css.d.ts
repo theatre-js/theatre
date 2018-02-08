@@ -14,4 +14,5 @@ export const focusBar: string;
 export const focusHandle: string;
 export const leftFocusHandle: string;
 export const rightFocusHandle: string;
-export const timeTip: string;
+export const focusTimeToolTip: string;
+export const currentTimeToolTip: string;

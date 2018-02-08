@@ -350,20 +350,28 @@ class BoxBiew extends React.Component<Props, State> {
     pointIndex: number,
     side: 'left' | 'right',
   ) => {
-    this.props.dispatch(
-      reduceStateAction(
-        [...this.pathToPoint(variableId, pointIndex), 'interpolationDescriptor', 'handles'],
-        handles => {
-          if (side === 'left') {
-            handles[1] = 0
-          }
-          if (side === 'right') {
+    if (side === 'left' && pointIndex !== 0) {
+      this.props.dispatch(
+        reduceStateAction(
+          [...this.pathToPoint(variableId, pointIndex - 1), 'interpolationDescriptor', 'handles'],
+          handles => {
             handles[3] = 0
-          }
-          return handles
-        },
-      ),
-    )
+            return handles
+          },
+        ),
+      )
+    }
+    if (side === 'right') {
+      this.props.dispatch(
+        reduceStateAction(
+          [...this.pathToPoint(variableId, pointIndex), 'interpolationDescriptor', 'handles'],
+          handles => {
+            handles[1] = 0
+            return handles
+          },
+        ),
+      )
+    }
     // this.props.dispatch(
     //   resetExtremums([...this.props.pathToVariables, variableId]),
     // )
@@ -469,17 +477,18 @@ class BoxBiew extends React.Component<Props, State> {
     //       ]
     //     : handles)
     // ]
+
     return [
       ...(prevPoint != null
         ? [
             deNormalizedHandles[0] / (prevPoint.time - point.time),
-            deNormalizedHandles[1] / (prevPoint.value - point.value),
+            (prevPoint.value === point.value) ? 0 : deNormalizedHandles[1] / (prevPoint.value - point.value),
           ]
         : [deNormalizedHandles[0], deNormalizedHandles[1]]),
       ...(nextPoint != null
         ? [
             deNormalizedHandles[2] / (nextPoint.time - point.time),
-            deNormalizedHandles[3] / (nextPoint.value - point.value),
+            (nextPoint.value === point.value ) ? 0 : deNormalizedHandles[3] / (nextPoint.value - point.value),
           ]
         : [deNormalizedHandles[2], deNormalizedHandles[3]]),
     ]

@@ -69,19 +69,37 @@ type State = {
       }
 }
 
-class TreeEditor extends StudioComponent<Props, State> {
-  static getDefaultComponentProps = id => ({
-    __descriptorType: DESCRIPTOR_TYPE.COMPONENT_INSTANTIATION_VALUE_DESCRIPTOR,
-    props: {
-      key: id,
-      children: [],
+const getDefaultComponentProps = id => ({
+  __descriptorType: DESCRIPTOR_TYPE.COMPONENT_INSTANTIATION_VALUE_DESCRIPTOR,
+  props: {
+    key: id,
+    children: [],
+  },
+  modifierInstantiationDescriptors: {
+    byId: {
+      '1': {
+        __descriptorType: 'ModifierInstantiationValueDescriptor',
+        modifierId: 'TheaterJS/Core/HTML/UberModifier',
+        props: {
+          translationX: '0',
+          translationY: '0',
+          translationZ: '0',
+          opacity: '1',
+          scaleX: '1',
+          scaleY: '1',
+          scaleZ: '1',
+          rotateX: '0',
+          rotateY: '0',
+          rotateZ: '0',
+        },
+        enabled: true,
+      },
     },
-    modifierInstantiationDescriptors: {
-      byId: {},
-      list: [],
-    },
-  })
+    list: ['1'],
+  },
+})
 
+class TreeEditor extends StudioComponent<Props, State> {
   lastAction = {type: null, payload: null}
   queuedDrop = null
   state = {
@@ -474,7 +492,7 @@ class TreeEditor extends StudioComponent<Props, State> {
           }
           if (newType.nodeType === NODE_TYPE.COMPONENT) {
             return {
-              ...TreeEditor.getDefaultComponentProps(nodeId),
+              ...getDefaultComponentProps(nodeId),
               ...nodeType === NODE_TYPE.COMPONENT ? localHiddenValue : {},
               componentId: this._getComponentDescriptorByDisplayName(
                 newType.displayName,

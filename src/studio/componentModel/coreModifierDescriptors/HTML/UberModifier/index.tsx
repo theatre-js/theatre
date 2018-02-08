@@ -33,6 +33,8 @@ const getClass = (propsP, baseClass) => {
         const scaleYP = propsP.prop('scaleY')
         const scaleZP = propsP.prop('scaleZ')
 
+        const rotateZP = propsP.prop('rotateZ')
+
         const opacityP = propsP.prop('opacity')
 
         return withDeps(
@@ -43,6 +45,7 @@ const getClass = (propsP, baseClass) => {
             scaleXP,
             scaleYP,
             scaleZP,
+            rotateZP,
             opacityP,
           },
           () => {
@@ -53,7 +56,7 @@ const getClass = (propsP, baseClass) => {
                 translateZP,
               )}px) scale3d(${numeralize(scaleXP)}, ${numeralize(
                 scaleYP,
-              )}, ${numeralize(scaleZP)})`,
+              )}, ${numeralize(scaleZP)}) rotateZ(${numeralize(rotateZP)}deg)`,
               opacity: numeralize(opacityP),
             })
 

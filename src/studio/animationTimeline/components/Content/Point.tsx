@@ -9,7 +9,7 @@ import {
   PanelPropsChannel,
 } from '$src/studio/workspace/components/Panel/Panel'
 import {Subscriber} from 'react-broadcast'
-import {MODE_D, MODE_C} from '$studio/workspace/components/TheUI'
+import {MODE_D, MODE_C, MODE_H, MODE_CMD} from '$studio/workspace/components/TheUI'
 import {
   NormalizedPoint,
   PointHandles,
@@ -77,6 +77,9 @@ class Point extends React.PureComponent<Props, State> {
       case MODE_C:
         this.props.addConnector()
         break
+      case MODE_CMD:
+        this.props.addConnector()
+        break
       case MODE_D:
         this.props.removePoint()
         break
@@ -93,10 +96,11 @@ class Point extends React.PureComponent<Props, State> {
     }
   }
 
-  handleClickHandler = (e: SyntheticMouseEvent<>, side: 'left' | 'right') => {
+  handleClickHandler = (e: SyntheticMouseEvent<>, side: 'left' | 'right', activeMode: string) => {
     e.preventDefault()
     e.stopPropagation()
-    if (e.altKey) {
+    // console.log(activeMode)
+    if (activeMode === MODE_H) {
       return this.props.makeHandleHorizontal(side)
     }
   }
@@ -172,9 +176,9 @@ class Point extends React.PureComponent<Props, State> {
     const newValue = point.value + pointMove[1]
     const handleFactors = [
       (newT - prevT) / (point.time - prevT),
-      (newValue - prevValue) / (point.value - prevValue),
+      (point.value === prevValue) ? 1 : (newValue - prevValue) / (point.value - prevValue),
       (newT - nextT) / (point.time - nextT),
-      (newValue - nextValue) / (point.value - nextValue),
+      (point.value === nextValue) ? 1 : (newValue - nextValue) / (point.value - nextValue),
     ]
 
     const movedPoint: IPoint = {
@@ -337,7 +341,7 @@ class Point extends React.PureComponent<Props, State> {
               </g>
             </DraggableArea>
             {renderLeftHandle &&
-              <DraggableArea
+              <DraggableArea             
                 onDragStart={this._addGlobalCursorRule}            
                 onDrag={this.leftHandleDragHandler}
                 onDragEnd={this.changePointHandles}
@@ -350,7 +354,7 @@ class Point extends React.PureComponent<Props, State> {
                     y={leftHandle[1] - 6}
                     fill="transparent"
                     stroke="transparent"
-                    onClick={e => this.handleClickHandler(e, 'left')}
+                    onClick={e => this.handleClickHandler(e, 'left', activeMode)}
                     className={css.handleClickRect}
                   />
                   <circle
@@ -366,7 +370,7 @@ class Point extends React.PureComponent<Props, State> {
               </DraggableArea>
             }
             {renderRightHandle &&
-              <DraggableArea
+              <DraggableArea         
                 onDragStart={this._addGlobalCursorRule}          
                 onDrag={this.rightHandleDragHandler}
                 onDragEnd={this.changePointHandles}
@@ -379,7 +383,7 @@ class Point extends React.PureComponent<Props, State> {
                     y={rightHandle[1] - 6}
                     fill="transparent"
                     stroke="transparent"
-                    onClick={e => this.handleClickHandler(e, 'right')}
+                    onClick={e => this.handleClickHandler(e, 'right', activeMode)}
                     className={css.handleClickRect}
                   />
                   <circle
