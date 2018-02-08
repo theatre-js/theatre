@@ -25,6 +25,7 @@ import HalfPieContextMenu from '$studio/common/components/HalfPieContextMenu'
 import MdCancel from 'react-icons/lib/md/cancel'
 import MdDonutSmall from 'react-icons/lib/md/donut-small'
 import MdStars from 'react-icons/lib/md/stars'
+import MdCamera from 'react-icons/lib/md/camera'
 
 type OwnProps = {
   variableIds: VariableID[]
@@ -146,6 +147,8 @@ class BoxBiew extends React.Component<Props, State> {
     if (nextState.pointValuesEditorProps !== this.state.pointValuesEditorProps)
       return true
     if (!_.isEqual(nextState.pointContextMenuProps, this.state.pointContextMenuProps))
+      return true
+    if (!_.isEqual(nextState.connectorContextMenuProps, this.state.connectorContextMenuProps))
       return true
     return false
   }
@@ -273,6 +276,16 @@ class BoxBiew extends React.Component<Props, State> {
   ) {
     this.setState(() => ({
       pointContextMenuProps: {...pos, variableId, pointIndex}
+    }))
+  }
+
+  showContextMenuForConnector(
+    variableId: VariableID,
+    pointIndex: number,
+    pos: {left: number, top: number},
+  ) {
+    this.setState(() => ({
+      connectorContextMenuProps: {...pos, variableId, pointIndex}
     }))
   }
 
@@ -635,6 +648,9 @@ class BoxBiew extends React.Component<Props, State> {
                           showContextMenu={(index, pos) =>
                             this.showContextMenuForPoint(id, index, pos)
                           }
+                          showContextMenuForConnector={(index, pos) =>
+                            this.showContextMenuForConnector(id, index, pos)
+                          }
                           changePointPositionBy={(index, change) =>
                             this.changePointPositionBy(id, index, change)
                           }
@@ -694,6 +710,30 @@ class BoxBiew extends React.Component<Props, State> {
                           label: '$C$onnect',
                           cb: () => this.addConnector(this.state.pointContextMenuProps.variableId, this.state.pointContextMenuProps.pointIndex),
                           IconComponent: MdStars,
+                        },
+                      ]}
+                    />
+                  )}
+                  {this.state.connectorContextMenuProps != null && (
+                    <HalfPieContextMenu
+                      close={() => this.setState(() => ({connectorContextMenuProps: null}))}
+                      centerPoint={{left: this.state.connectorContextMenuProps.left, top: this.state.connectorContextMenuProps.top}}
+                      placement="top"
+                      items={[
+                        {
+                          label: '$R$eset',
+                          cb: () => null,
+                          IconComponent: MdDonutSmall,
+                        },
+                        {
+                          label: '$D$elete',
+                          cb: () => this.removeConnector(this.state.connectorContextMenuProps.variableId, this.state.connectorContextMenuProps.pointIndex),
+                          IconComponent: MdCancel,
+                        },
+                        {
+                          label: '$S$elect',
+                          cb: () => this.removeConnector(this.state.connectorContextMenuProps.variableId, this.state.connectorContextMenuProps.pointIndex),
+                          IconComponent: MdCamera,
                         },
                       ]}
                     />

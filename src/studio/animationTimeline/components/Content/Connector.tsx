@@ -25,6 +25,16 @@ class Connector extends React.PureComponent<Props, State> {
     }
   }
 
+  contextMenuHandler = e => {
+    e.stopPropagation()
+    e.preventDefault()
+    const {clientX, clientY} = e
+    this.props.showContextMenu({
+      left: clientX,
+      top: clientY,
+    })
+  }
+
   render() {
     const {leftPoint: lp, rightPoint: rp} = this.props
     return (
@@ -43,6 +53,7 @@ class Connector extends React.PureComponent<Props, State> {
                 stroke="transparent"
                 strokeWidth={10}
                 onMouseDown={(e) => this.clickHandler(e, activeMode)}
+                onContextMenu={this.contextMenuHandler}
                 className={cx({[css.highlightRedOnHover]: activeMode === MODE_D})}                
               />
               <path

@@ -33,6 +33,7 @@ class Variable extends React.PureComponent<Props, {}> {
                     leftPoint={point}
                     rightPoint={nextPoint}
                     removeConnector={() => this.props.removeConnector(index)}
+                    showContextMenu={(pos) => this.props.showContextMenuForConnector(index, pos)}                
                   />
                 )}
               <Point

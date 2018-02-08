@@ -255,9 +255,6 @@ class Point extends React.PureComponent<Props, State> {
     e.stopPropagation()
     e.preventDefault()
     const {clientX, clientY} = e
-    // this.setState(() => ({contextMenuProps: {left: clientX, top: clientY}}))
-    const {left, top, width, height} = e.target.getBoundingClientRect()
-
     this.props.showContextMenu({
       left: clientX,
       top: clientY,
