@@ -45,6 +45,7 @@ class Variable extends React.PureComponent<Props, {}> {
                 showPointValuesEditor={(pos: {left: number; top: number}) =>
                   this.props.showPointValuesEditor(index, pos)
                 }
+                showContextMenu={(pos) => this.props.showContextMenu(index, pos)}
                 changePointPositionBy={change =>
                   this.props.changePointPositionBy(index, change)
                 }

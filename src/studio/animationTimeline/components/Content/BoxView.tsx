@@ -21,6 +21,10 @@ import {
 import {MODE_CMD, MODE_SHIFT} from '$studio/workspace/components/TheUI'
 import {SortableBoxDragChannel} from './SortableBox'
 import DraggableArea from '$studio/common/components/DraggableArea'
+import HalfPieContextMenu from '$studio/common/components/HalfPieContextMenu'
+import MdCancel from 'react-icons/lib/md/cancel'
+import MdDonutSmall from 'react-icons/lib/md/donut-small'
+import MdStars from 'react-icons/lib/md/stars'
 
 type OwnProps = {
   variableIds: VariableID[]
@@ -141,6 +145,8 @@ class BoxBiew extends React.Component<Props, State> {
     if (nextState.activeVariableId !== this.state.activeVariableId) return true
     if (nextState.pointValuesEditorProps !== this.state.pointValuesEditorProps)
       return true
+    if (!_.isEqual(nextState.pointContextMenuProps, this.state.pointContextMenuProps))
+      return true
     return false
   }
 
@@ -257,6 +263,16 @@ class BoxBiew extends React.Component<Props, State> {
   ) {
     this.setState(() => ({
       pointValuesEditorProps: {...pos, variableId, pointIndex},
+    }))
+  }
+
+  showContextMenuForPoint(
+    variableId: VariableID,
+    pointIndex: number,
+    pos: {left: number, top: number},
+  ) {
+    this.setState(() => ({
+      pointContextMenuProps: {...pos, variableId, pointIndex}
     }))
   }
 
@@ -616,6 +632,9 @@ class BoxBiew extends React.Component<Props, State> {
                           showPointValuesEditor={(index, pos) =>
                             this.showPointValuesEditor(id, index, pos)
                           }
+                          showContextMenu={(index, pos) =>
+                            this.showContextMenuForPoint(id, index, pos)
+                          }
                           changePointPositionBy={(index, change) =>
                             this.changePointPositionBy(id, index, change)
                           }
@@ -653,6 +672,30 @@ class BoxBiew extends React.Component<Props, State> {
                           newPosition,
                         )
                       }
+                    />
+                  )}
+                  {this.state.pointContextMenuProps != null && (
+                    <HalfPieContextMenu
+                      close={() => this.setState(() => ({pointContextMenuProps: null}))}
+                      centerPoint={{left: this.state.pointContextMenuProps.left, top: this.state.pointContextMenuProps.top}}
+                      placement="top"
+                      items={[
+                        {
+                          label: '$R$eset',
+                          cb: () => null,
+                          IconComponent: MdDonutSmall,
+                        },
+                        {
+                          label: '$D$elete',
+                          cb: () => this.removePoint(this.state.pointContextMenuProps.variableId, this.state.pointContextMenuProps.pointIndex),
+                          IconComponent: MdCancel,
+                        },
+                        {
+                          label: '$C$onnect',
+                          cb: () => this.addConnector(this.state.pointContextMenuProps.variableId, this.state.pointContextMenuProps.pointIndex),
+                          IconComponent: MdStars,
+                        },
+                      ]}
                     />
                   )}
                 </div>

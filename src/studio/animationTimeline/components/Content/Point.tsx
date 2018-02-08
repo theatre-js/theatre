@@ -251,6 +251,19 @@ class Point extends React.PureComponent<Props, State> {
     document.styleSheets[0].deleteRule(document.styleSheets[0].cssRules.length - 1)
   }
 
+  contextMenuHandler = e => {
+    e.stopPropagation()
+    e.preventDefault()
+    const {clientX, clientY} = e
+    // this.setState(() => ({contextMenuProps: {left: clientX, top: clientY}}))
+    const {left, top, width, height} = e.target.getBoundingClientRect()
+
+    this.props.showContextMenu({
+      left: clientX,
+      top: clientY,
+    })
+  }
+
   render() {
     const {point, prevPoint, nextPoint, color} = this.props
     const {time, value, interpolationDescriptor} = point
@@ -315,6 +328,7 @@ class Point extends React.PureComponent<Props, State> {
                   y={value - 8}
                   fill="transparent"
                   stroke="transparent"
+                  onContextMenu={this.contextMenuHandler}
                   onClick={(e) => this.pointClickHandler(e, activeMode)}
                   className={cx(css.pointClickRect, {[css.highlightRedOnHover]: isInDeleteMode})}
                 />

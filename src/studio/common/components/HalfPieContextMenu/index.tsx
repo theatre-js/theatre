@@ -146,7 +146,7 @@ class HalfPieContextMenu extends React.PureComponent<IProps, IState> {
     
     const {innerWidth, innerHeight} = window
     return (
-      <div className={css.container} onClick={() => close()}>
+      <div className={css.container} onMouseDown={() => close()}>
         {items.map(({cb, disabled, IconComponent}: $FixMe, index: number) => {
           const {leftTranslate, topTranslate, leftCoeff, topCoeff} = translateCalculatorFn(index)
           const {key, suffix, prefix} = this.preparedLabels[index]
