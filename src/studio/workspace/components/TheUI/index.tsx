@@ -34,6 +34,7 @@ export const DIST_FROM_BOUNDARY = 'distanceFromBoundary'
 
 export const MODE_OPTION = 'option'
 export const MODE_CMD = 'command'
+export const MODE_SHIFT = 'shift'
 export const MODE_D = 'd'
 export const MODE_C = 'c'
 export const MODE_H = 'h'
@@ -123,6 +124,9 @@ export class TheUI extends React.Component<Props, State> {
       ![18, 91].includes(e.keyCode)
     ) return
     switch (e.keyCode) {
+      case 16:
+        this.setState(() => ({activeMode: MODE_SHIFT}))
+        break
       case 18:
         this.setState(() => ({activeMode: MODE_OPTION}))
         break

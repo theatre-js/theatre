@@ -18,7 +18,7 @@ import {Subscriber} from 'react-broadcast'
 import {
   PanelPropsChannel,
 } from '$src/studio/workspace/components/Panel/Panel'
-import {MODE_CMD,} from '$studio/workspace/components/TheUI'
+import {MODE_CMD, MODE_SHIFT} from '$studio/workspace/components/TheUI'
 import {SortableBoxDragChannel} from './SortableBox'
 import DraggableArea from '$studio/common/components/DraggableArea'
 
@@ -555,13 +555,15 @@ class BoxBiew extends React.Component<Props, State> {
                 >
                   {tempIncludeTimeGrid && <div className={css.timeGrid} />}
                   <DraggableArea
-                    withShift={true}
+                    // withShift={true}
+                    shouldRegisterEvents={activeMode === MODE_SHIFT}
                     onDragStart={onDragStart}
                     onDrag={(_, dy) => onDrag(dy)}
                     onDragEnd={onDragEnd}
                   >
                     <div className={css.boxLegends}>
                       <BoxLegends
+                        activeMode={activeMode}
                         variables={variables.map(variable =>
                           _.pick(variable, ['id', 'component', 'property']),
                         )}

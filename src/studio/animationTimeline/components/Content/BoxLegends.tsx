@@ -6,6 +6,8 @@ import HalfPieContextMenu from '$studio/common/components/HalfPieContextMenu'
 import MdSwapVerticalCircel from 'react-icons/lib/md/swap-vertical-circle'
 import FaBullseye from 'react-icons/lib/fa/bullseye'
 import FaCircleO from 'react-icons/lib/fa/circle-o'
+import {MODE_SHIFT} from '$studio/workspace/components/TheUI'
+
 
 interface IState {
   contextMenuProps: undefined | null | Object
@@ -17,6 +19,7 @@ class BoxLegends extends React.PureComponent<$FixMe, IState> {
   }
 
   handleClick(e: $FixMe, variableId: string) {
+    if (this.props.activeMode === MODE_SHIFT) return
     e.stopPropagation()
     this.props.setActiveVariable(variableId)
   }
