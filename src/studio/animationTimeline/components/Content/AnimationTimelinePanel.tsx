@@ -565,7 +565,7 @@ class Content extends StudioComponent<Props, State> {
                 id: varId,
                 component: componentName,
                 property: prop,
-                extremums: [-150, 150],
+                extremums: [-10, 10],
                 points: [],
               }
             }

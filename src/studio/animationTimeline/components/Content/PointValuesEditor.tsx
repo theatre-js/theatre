@@ -25,10 +25,7 @@ class PointValuesEditor extends React.PureComponent<IProps, IState> {
   handleKeyDown = (e, input: 'time' | 'value') => {
     if (e.keyCode === 9) {
       e.preventDefault()
-      this.props.onSubmit({
-        time: Number(this.state.time) * 1000,
-        value: Number(this.state.value),
-      })
+      this._onSubmit()
       if (input === 'time') {
         this.timeInput.blur()
         this.valueInput.focus()
@@ -42,15 +39,25 @@ class PointValuesEditor extends React.PureComponent<IProps, IState> {
       }
     }
     if (e.keyCode === 13) {
-      this.props.onSubmit({
-        time: Number(this.state.time) * 1000,
-        value: Number(this.state.value),
-      })
+      this._onSubmit()
       this.props.onClose()
     }
     if (e.keyCode === 27) {
       this.props.onClose()
     }
+  }
+
+  _onSubmit() {
+    if (
+      this.state.value === String(this.props.initialValue) &&
+      this.state.time === (this.props.initialTime/1000).toFixed(2)
+    ) {
+      return
+    }
+    this.props.onSubmit({
+      time: Number(this.state.time) * 1000,
+      value: Number(this.state.value),
+    })
   }
   
   handleChange = (e: $FixMe, input: 'time' | 'value') => {

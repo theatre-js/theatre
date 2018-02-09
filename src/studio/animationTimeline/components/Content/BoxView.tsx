@@ -98,6 +98,10 @@ const resetExtremums = (pathToVariable: string[]) => {
       min = (min == null) ? localMin : Math.min(min, localMin)
       max = (max == null) ? localMax : Math.max(max, localMax)
     })
+    if (min === max) {
+      min -= 5
+      max += 5
+    }
     return {
       ...variable,
       extremums: [min, max],
@@ -212,7 +216,7 @@ class BoxBiew extends React.Component<Props, State> {
 
     const {top, left} = this.svgArea.getBoundingClientRect()
     const time = e.clientX - left + 5
-    const value = e.clientY - top + 5
+    const value = e.clientY - top - 10
     const pointProps: Point = {
       time: this._deNormalizeX(time),
       value: this._deNormalizeValue(value),
@@ -239,12 +243,12 @@ class BoxBiew extends React.Component<Props, State> {
         },
       ),
     )
-    this.props.dispatch(
-      resetExtremums([
-        ...this.props.pathToVariables,
-        this.state.activeVariableId,
-      ]),
-    )
+    // this.props.dispatch(
+    //   resetExtremums([
+    //     ...this.props.pathToVariables,
+    //     this.state.activeVariableId,
+    //   ]),
+    // )
   }
 
   pathToPoints = (variableId: string) => [
@@ -643,7 +647,8 @@ class BoxBiew extends React.Component<Props, State> {
                   </DraggableArea>
                   <div className={css.svgArea}>
                     <svg
-                      height={svgHeight + 20}
+                      viewBox={`0 -15 ${svgWidth} ${svgHeight + 30}`}
+                      height={svgHeight + 30}
                       width={svgWidth}
                       // style={{transform: `translateX(${-svgTransform}px)`}}
                       ref={svg => {

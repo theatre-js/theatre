@@ -11,11 +11,12 @@ type Props = {
 }
 
 type State = {
-  isDragging: boolean,
+  dragHappened: boolean,
   startPos: {
     x: number,
     y: number,
   },
+  dragStartTime: number,
 }
 
 class DraggableArea extends React.Component<Props, {}> {
@@ -23,7 +24,8 @@ class DraggableArea extends React.Component<Props, {}> {
   constructor(props: Props) {
     super(props)
     this.s = {
-      isDragging: false,
+      dragHappened: false,
+      dragStartTime: 0,
       startPos: {
         x: 0,
         y: 0,
@@ -53,6 +55,7 @@ class DraggableArea extends React.Component<Props, {}> {
 
     const {screenX, screenY} = e
     this.s.startPos = {x: screenX, y: screenY}
+    this.s.dragStartTime = Date.now()
     // this.setState(() => ({
       // startPos: {x: screenX, y: screenY},
     // }))
@@ -63,15 +66,16 @@ class DraggableArea extends React.Component<Props, {}> {
 
   dragEndHandler = () => {
     this.removeDragListeners()
-    this.props.onDragEnd && this.props.onDragEnd()
-    // if (this.state.isDragging) {
-    //   this.setState(() => ({isDragging: false}))
+
+    this.props.onDragEnd && this.props.onDragEnd(this.s.dragHappened)
+    // if (this.state.dragHappened) {
+    //   this.setState(() => ({dragHappened: false}))
     // }
   }
 
   dragHandler = (e: MouseEvent) => {
-    // if (!this.state.isDragging) this.setState(() => ({isDragging: true}))
-    if (!this.s.isDragging) this.s.isDragging = true
+    // if (!this.state.dragHappened) this.setState(() => ({dragHappened: true}))
+    if (!this.s.dragHappened) this.s.dragHappened = true
 
     const {startPos} = this.s
     this.props.onDrag &&

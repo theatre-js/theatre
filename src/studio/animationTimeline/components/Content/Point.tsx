@@ -127,8 +127,9 @@ class Point extends React.PureComponent<Props, State> {
     }))
   }
 
-  changePointPosition = () => {
+  changePointPosition = (dragHappened: boolean) => {
     this._removeGlobalCursorRule()
+    if (!dragHappened) return
     const {pointMove} = this.state
     this.props.changePointPositionBy({time: pointMove[0], value: pointMove[1]})
     this._resetState()

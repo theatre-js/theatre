@@ -57,7 +57,7 @@
   left: 0;
   top: 0;
   bottom: 0;
-  z-index: 100;
+  z-index: 0;
 
   &:hover {
     width: fit-content;
@@ -69,20 +69,13 @@
   position: absolute;
   top: 0;
   left: 30px;
-  // padding: 10px;
-  // width: calc(100% - 30px);
   overflow: hidden;
-  // border: 1px solid white;
-}
-
-.svgArea svg {
-  padding-top: 10px;
 }
 
 .timeGrid {
   position: absolute;
   top: 0px;
-  left: 1px;
+  left: 33px;
   right: 0;
   height: 8px;
   z-index: 1;

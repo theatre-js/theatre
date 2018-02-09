@@ -187,7 +187,7 @@ class TimeBar extends React.PureComponent<Props, State> {
             <div
               className={css.focusBar}
               style={{
-                width: `${focusRight - focusLeft + 6}px`,
+                width: `${focusRight - focusLeft}px`,
                 transform: `translateX(${focusLeft}px)`,
               }}
             />

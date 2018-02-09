@@ -1,6 +1,7 @@
 .container {
   position: relative;
-  width: 100%;
+  // width: 100%;
+  width: fit-content;
   margin-bottom: 3px;
 }
 
@@ -51,7 +52,7 @@
 .resizeHandle {
   position: absolute;
   width: 100%;
-  height: 5px;
+  height: 10px;
   bottom: 0;
   cursor: row-resize;
 }

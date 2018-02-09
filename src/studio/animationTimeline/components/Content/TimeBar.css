@@ -191,6 +191,7 @@
 
 .leftFocusHandle {
   composes: focusHandle;
+  left: -7px;
   cursor: w-resize;
   &:before {
     transform: scaleX(-1);
