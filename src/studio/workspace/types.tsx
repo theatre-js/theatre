@@ -1,4 +1,4 @@
-// @flow
+
 import {ComponentId} from '$studio/componentModel/types'
 
 export type PanelId = string
@@ -18,14 +18,9 @@ export type PanelPlacementSettings = {
   dim: XY
 }
 
-export type PanelOutput = {[string]: Object}
+export type PanelOutput = {[key: string]: Object}
 
-export type PanelInput = {[string]: PanelId}
-
-export type DraggingOutput = {
-  type: string
-  panel: PanelId
-}
+export type PanelInput = {[key: string]: PanelId}
 
 export type PanelProps = {
   type: PanelType
@@ -43,9 +38,8 @@ export type PanelObject = PanelProps & {
 export type visiblePanelsList = Array<string>
 
 export type Panels = {
-  byId: {[id: PanelId]: PanelObject}
+  byId: {[id: string]: PanelObject}
   listOfVisibles: visiblePanelsList
-  // currentlyDraggingOutput: undefined | null | DraggingOutput
   panelObjectBeingDragged: undefined | null | $FixMe
   idOfActivePanel: undefined | null | string
 }

@@ -5,12 +5,10 @@ import {
   PanelConfiguration,
   PanelPersistentState,
   PanelOutput,
-  DraggingOutput,
 } from '$src/studio/workspace/types'
 
 import {
   getPanelById,
-  getCurrentlyDraggingOutput,
   getPanelInputs,
   getActivePanelId,
 } from '$src/studio/workspace/selectors'
@@ -44,7 +42,6 @@ type Props = OwnProps & {
   type: PanelType
   configuration: PanelConfiguration
   persistentState: PanelPersistentState
-  currentlyDraggingOutput: DraggingOutput
   outputs: PanelOutput
   inputs: {[k: string]: Object}
   isActive: boolean
@@ -90,7 +87,6 @@ class PanelController extends React.Component<Props, State> {
     const {
       persistentState: {isInSettings, ...componentState},
       configuration,
-      // currentlyDraggingOutput,
       outputs,
       inputs,
       type,
@@ -145,14 +141,12 @@ export default connect((s, op: OwnProps) => {
     outputs,
     inputs,
   } = getPanelById(s, op.panelId)
-  const currentlyDraggingOutput = getCurrentlyDraggingOutput(s)
 
   return {
     type,
     configuration,
     persistentState,
     ...placementSettings,
-    currentlyDraggingOutput,
     outputs,
     inputs: getPanelInputs(s, inputs),
     isActive: getActivePanelId(s) === op.panelId,

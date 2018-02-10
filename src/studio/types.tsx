@@ -4,7 +4,6 @@ import {IComponentModelNamespaceState} from '$studio/componentModel/types'
 import {AnimationTimelineNamespaceState} from '$studio/animationTimeline/types'
 import {ComposePanelNamespaceState} from '$studio/composePanel/types'
 
-// @ts-ignore @todo
 export interface IStoreState {
   common: CommonNamespaceState
   workspace: WorkspaceNamespaceState
