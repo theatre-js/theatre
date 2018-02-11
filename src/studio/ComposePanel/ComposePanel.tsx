@@ -1,6 +1,6 @@
 // @flow
 import {React, connect, shouldUpdate, typeSystem} from '$studio/handy'
-import css from './index.css'
+import css from './ComposePanel.css'
 import {ValueEditor} from '$studio/structuralEditor'
 import {ComponentDescriptor, ComponentId} from '$studio/componentModel/types'
 import * as componentModelSelectors from '$studio/componentModel/selectors'
@@ -23,6 +23,8 @@ type Props =
 interface IState {}
 
 export class ComposePanelContent extends React.PureComponent<Props, IState> {
+  static panelName = 'Compose'
+
   constructor(props: Props) {
     super(props)
     this.state = {}
@@ -60,7 +62,6 @@ export class ComposePanelContent extends React.PureComponent<Props, IState> {
 }
 
 const connected = connect((s, op) => {
-  // const possibleComponentId = s.composePanel.componentId || 'IntroScene'
   const possibleComponentId =
     op.inputs.selectedNode && op.inputs.selectedNode.componentId
   if (!possibleComponentId) {
@@ -86,7 +87,10 @@ const connected = connect((s, op) => {
   }
 })(ComposePanelContent)
 
-export default shouldUpdate(
-  (prev: $FixMe, next: $FixMe) =>
-    prev.inputs.selectedNode !== next.inputs.selectedNode,
-)(connected)
+export default connected
+
+// export default shouldUpdate(
+//   (prev: $FixMe, next: $FixMe) =>
+//     prev.inputs.selectedNode !== next.inputs.selectedNode,
+// )(connected)
+

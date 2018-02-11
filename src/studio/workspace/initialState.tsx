@@ -6,7 +6,7 @@ const initialState: WorkspaceNamespaceState = {
     byId: {
       '8daa7380-9b43-475a-8352-dc564a58c719': {
         id: '8daa7380-9b43-475a-8352-dc564a58c719',
-        type: 'animationTimeline',
+        type: 'AnimationTimelinePanel',
         persistentState: {
           isInSettings: false,
         },
@@ -45,7 +45,7 @@ const initialState: WorkspaceNamespaceState = {
       },
       elementTree: {
         id: 'elementTree',
-        type: 'elementTree',
+        type: 'ExplorePanel',
         persistentState: {
           isInSettings: false,
         },
@@ -80,7 +80,7 @@ const initialState: WorkspaceNamespaceState = {
       },
       'composePanel-imAUUID': {
         id: 'composePanel-imAUUID',
-        type: 'compose',
+        type: 'ComposePanel',
         persistentState: {
           isInSettings: false,
         },

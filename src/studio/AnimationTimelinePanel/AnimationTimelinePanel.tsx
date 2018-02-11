@@ -20,13 +20,14 @@ import {
   BoxesObject,
   LayoutArray,
   TimelineObject,
-} from '$src/studio/animationTimeline/types'
+} from '$src/studio/AnimationTimelinePanel/types'
 import {XY} from '$src/studio/workspace/types'
 import {get} from 'lodash'
 import StudioComponent from '$src/studio/handy/StudioComponent'
 import box, { BoxAtom } from '$src/shared/DataVerse/atoms/box'
 import TimelineInstance from '$src/studio/componentModel/react/makeReactiveComponent/TimelineInstance';
 import dict from '$src/shared/DataVerse/atoms/dict';
+import { PanelComponent } from '$src/studio/types';
 
 type OwnProps = TimelineObject & {
   pathToTimeline: string[]
@@ -61,6 +62,8 @@ type State = {
 }
 
 class Content extends StudioComponent<Props, State> {
+  static panelName = 'AnimationTimeline'
+
   currentTTimeXBeforeDrag: BoxAtom<number>;
   static panelConfig = {
     headerLess: true,

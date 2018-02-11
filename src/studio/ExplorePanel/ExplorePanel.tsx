@@ -1,11 +1,10 @@
-// @flow
 import * as React from 'react'
 import generateUniqueID from 'uuid/v4'
 import {get} from 'lodash'
 import {set} from 'lodash/fp'
 import {PanelOutput} from '$studio/workspace/types'
-import {Path} from '$studio/elementTree/types'
-import css from './index.css'
+import {Path} from '$studio/explorePanel/types'
+import css from './ExplorePanel.css'
 import Node from './Node'
 import Panel from '$src/studio/workspace/components/Panel/Panel'
 
@@ -20,6 +19,8 @@ type State = {
 }
 
 class ExplorerPanel extends React.PureComponent<Props, State> {
+  static panelName = 'Explore'
+  
   rendererID: undefined | null | string
   _refMap: Object
 

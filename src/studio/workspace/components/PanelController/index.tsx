@@ -13,7 +13,7 @@ import {
   getActivePanelId,
 } from '$src/studio/workspace/selectors'
 
-import panelTypes from '$src/studio/workspace/panelTypes'
+import * as panelComponents from '$src/studio/workspace/panelComponents'
 import {Broadcast} from 'react-broadcast'
 import {ActiveMode} from '$studio/workspace/components/TheUI'
 
@@ -66,11 +66,6 @@ type State = IPanelPlacementState & {
 }
 
 class PanelController extends React.Component<Props, State> {
-  panelComponents: {
-    Content: React.ComponentType<$FixMe>
-    Settings: React.ComponentType<$FixMe>
-  }
-
   static defaultProps = {
     persistentState: {
       isInSettings: true,
@@ -91,13 +86,13 @@ class PanelController extends React.Component<Props, State> {
       inputs,
       type,
     } = props
-    const panelType = panelTypes[type]
-    const panelComponents = panelType.components
+
+    const PanelComponent = panelComponents[type]
 
     const panelControlChannelData: IPanelControlChannelData = {
       panelId: props.panelId,
       isActive: props.isActive,
-      label: panelType.label,
+      label: PanelComponent.panelName,
       activeMode: props.activeMode,
       boundaries: props.boundaries,
       gridOfBoundaries: props.gridOfBoundaries,
@@ -106,7 +101,7 @@ class PanelController extends React.Component<Props, State> {
 
     return (
       <Broadcast channel={PanelControlChannel} value={panelControlChannelData}>
-        <panelComponents.Content
+        <PanelComponent
           {...configuration}
           {...componentState}
           // panelDimensions={dim}

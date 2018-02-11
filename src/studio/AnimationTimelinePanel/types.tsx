@@ -1,4 +1,4 @@
-// @flow
+
 type UniqueID = string
 export type VariableID = UniqueID
 export type TimelineID = UniqueID
@@ -52,8 +52,4 @@ export type Variables = {
 
 export type Timelines = {
   byId: {[id: string]: TimelineObject}
-}
-
-export type AnimationTimelineNamespaceState = {
-  timelines: Timelines
 }
