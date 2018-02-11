@@ -1,29 +1,37 @@
-
 import * as D from '$shared/DataVerse'
 import * as _ from 'lodash'
 import * as interpolators from './interpolators/interpolators'
-import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation';
+import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
 
 type TimelineIsEmptyBaseState = {type: 'TimelineIsEmpty'}
-type TimelineIsEmptyState = Spread<TimelineIsEmptyBaseState, {
-  firstIndexP: AbstractDerivation<undefined | mixed>,
-}>
+type TimelineIsEmptyState = Spread<
+  TimelineIsEmptyBaseState,
+  {
+    firstIndexP: AbstractDerivation<undefined | mixed>
+  }
+>
 
 type ErrorBaseState = {type: 'Error'}
 type ErrorState = ErrorBaseState
 
 type TimeIsBeforeFirstPointBaseState = {type: 'TimeIsBeforeFirstPoint'}
-type TimeIsBeforeFirstPointState = Spread<TimeIsBeforeFirstPointBaseState,{
-  timeOfFirstPointD: AbstractDerivation<undefined | null | number>,
-}>
+type TimeIsBeforeFirstPointState = Spread<
+  TimeIsBeforeFirstPointBaseState,
+  {
+    timeOfFirstPointD: AbstractDerivation<undefined | null | number>
+  }
+>
 
-type ObservingKeyBaseState = {type: 'ObservingKey', currentPointIndex: number}
-type ObservingKeyState = Spread<ObservingKeyBaseState, {
-  leftPointTimeP: AbstractDerivation<undefined | null | number>,
-  isLastPointD: AbstractDerivation<undefined | null | boolean>,
-  possibleRightPointTimeD: AbstractDerivation<undefined | null | number>,
-  interpolatorD: AbstractDerivation<$FixMe>,
-}>
+type ObservingKeyBaseState = {type: 'ObservingKey'; currentPointIndex: number}
+type ObservingKeyState = Spread<
+  ObservingKeyBaseState,
+  {
+    leftPointTimeP: AbstractDerivation<undefined | null | number>
+    isLastPointD: AbstractDerivation<undefined | null | boolean>
+    possibleRightPointTimeD: AbstractDerivation<undefined | null | number>
+    interpolatorD: AbstractDerivation<$FixMe>
+  }
+>
 
 type PossibleBaseStates =
   | TimelineIsEmptyBaseState
@@ -31,10 +39,18 @@ type PossibleBaseStates =
   | TimeIsBeforeFirstPointBaseState
   | ObservingKeyBaseState
 
+type PossibleStates =
+  | TimelineIsEmptyState
+  | ErrorState
+  | TimeIsBeforeFirstPointState
+  | ObservingKeyState
+
 const baseStates = {
-  timelineIsEmpty: {type: 'TimelineIsEmpty'},
-  error: {type: 'Error'},
-  timeIsBeforeFirstPoint: {type: 'TimeIsBeforeFirstPoint'},
+  timelineIsEmpty: {type: 'TimelineIsEmpty'} as TimelineIsEmptyBaseState,
+  error: {type: 'Error'} as ErrorBaseState,
+  timeIsBeforeFirstPoint: {
+    type: 'TimeIsBeforeFirstPoint',
+  } as TimeIsBeforeFirstPointBaseState,
 }
 
 const handlersByState = {
@@ -124,14 +140,13 @@ const handlersByState = {
   },
 
   Error: {
-    // eslint-disable-next-line no-unused-variables
-    transitionIn(baseState: ErrorBaseState, d: ValueDerivation): ErrorState {
+    transitionIn(_: ErrorBaseState, __: ValueDerivation): ErrorState {
       return baseStates.error
     },
-    recalculateValue(state: ErrorState, d: ValueDerivation) {
+    recalculateValue(_: ErrorState, d: ValueDerivation) {
       return d._emptyValue()
     },
-    _transitionOutAndRecalculateValue(state: ErrorState, d: ValueDerivation) {
+    _transitionOutAndRecalculateValue(_: ErrorState, d: ValueDerivation) {
       d._determineNewState()
       return d._recalculate()
     },
@@ -175,8 +190,12 @@ const handlersByState = {
     ): ObservingKeyState {
       // debugger
       const leftPointP = d._pointsP.index(baseState.currentPointIndex)
-      const possibleRightPointP = d._pointsP.index(baseState.currentPointIndex + 1)
-      const isLastPointD = possibleRightPointP.map((possibleRightPoint: mixed) => !possibleRightPoint)
+      const possibleRightPointP = d._pointsP.index(
+        baseState.currentPointIndex + 1,
+      )
+      const isLastPointD = possibleRightPointP.map(
+        (possibleRightPoint: mixed) => !possibleRightPoint,
+      )
 
       const possibleRightPointTimeD = possibleRightPointP.prop('time')
 
@@ -232,8 +251,8 @@ const handlersByState = {
 }
 
 export default class ValueDerivation extends AbstractDerivation<$FixMe> {
-  _hot: boolean;
-  _changeObservedIn: Set<$FixMe>;
+  _hot: boolean
+  _changeObservedIn: Set<$FixMe>
   _descP: $FixMe
   _timeD: $FixMe
   _pointsP: $FixMe
@@ -241,7 +260,7 @@ export default class ValueDerivation extends AbstractDerivation<$FixMe> {
   _studio: $FixMe
   _pathToValueDescriptor: Array<string>
   _pathToPointsById: Array<string>
-  _state: $FixMe
+  _state: PossibleStates
 
   constructor(
     descP: $FixMe,
@@ -255,15 +274,10 @@ export default class ValueDerivation extends AbstractDerivation<$FixMe> {
     this._pathToValueDescriptor = pathToValueDescriptor
     this._pathToPointsById = [...pathToValueDescriptor, 'points', 'byId']
     this._pointsP = descP.prop('points')
-    // this._pointsProxy = D.derivations.autoProxyDerivedDict(
-    //   this._pointsP,
-    //   this._studio.ticker,
-    // )
     this._timeD = timeD
     this._addDependency(timeD)
     this._state = {type: 'started'}
     this._changeObservedIn = new Set()
-    // this._hot = false
   }
 
   _keepUptodate() {
@@ -276,7 +290,6 @@ export default class ValueDerivation extends AbstractDerivation<$FixMe> {
   }
 
   _emptyValue() {
-    // debugger
     return 0
   }
 
@@ -287,8 +300,8 @@ export default class ValueDerivation extends AbstractDerivation<$FixMe> {
 
     const state = this._state
 
-    const value = handlersByState[state.type].recalculateValue(
-      (state as $IntentionalAny),
+    const value: mixed = (handlersByState as $IntentionalAny)[state.type].recalculateValue(
+      state,
       this,
     )
 
@@ -300,13 +313,15 @@ export default class ValueDerivation extends AbstractDerivation<$FixMe> {
   _determineNewState(startSearchingFromPointIndex: number = 0) {
     const baseState = this._determinNewBaseState(startSearchingFromPointIndex)
 
-    this._state = handlersByState[baseState.type].transitionIn(
-      (baseState as $IntentionalAny),
+    this._state = (handlersByState as $IntentionalAny)[baseState.type].transitionIn(
+      baseState,
       this,
     )
   }
 
-  _determinNewBaseState(startSearchingFromPointIndex: number): PossibleBaseStates {
+  _determinNewBaseState(
+    startSearchingFromPointIndex: number,
+  ): PossibleBaseStates {
     const points = _.get(
       this._studio.store.reduxStore.getState(),
       this._pathToValueDescriptor,
@@ -314,27 +329,16 @@ export default class ValueDerivation extends AbstractDerivation<$FixMe> {
 
     // if no points
     if (points.length === 0) {
-      // if (process.env.NODE_ENV === 'development') {
-      //   if (Object.keys(points.byId).length > 0) {
-      //     console.error(`Bug here`) // this means there ARE some points in the timline, but points.firstId is null
-      //   }
-      // }
       return baseStates.timelineIsEmpty
     }
 
     let currentPointIndex: number
     if (startSearchingFromPointIndex === 0) {
       currentPointIndex = 0
-      // currentPoint = points[0]
     } else {
-      currentPointIndex = points[startSearchingFromPointIndex] ? startSearchingFromPointIndex : 0
-      // if (!points[startSearchingFromPointIndex]) {
-      //   currentPointIndex = startSearchingFromPointIndex
-      // } else {
-      //   currentPointIndex = 0
-      // }
-      // currentPoint = points[startSearchingFromPointIndex]
-      // if (!currentPoint) currentPoint = points[0]
+      currentPointIndex = points[startSearchingFromPointIndex]
+        ? startSearchingFromPointIndex
+        : 0
     }
 
     const time = this._timeD.getValue()
@@ -369,10 +373,6 @@ export default class ValueDerivation extends AbstractDerivation<$FixMe> {
         }
       }
     }
-
-    // (flow is too stupid to recognise this)
-    // eslint-disable-next-line no-unreachable
-    return baseStates.error
   }
 
   _youMayNeedToUpdateYourself(msgComingFrom: AbstractDerivation<$FixMe>) {
