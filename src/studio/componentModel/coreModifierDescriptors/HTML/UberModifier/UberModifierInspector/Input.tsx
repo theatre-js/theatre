@@ -6,7 +6,7 @@ import {
   PanelPropsChannel,
 } from '$src/studio/workspace/components/Panel/Panel'
 import {Subscriber} from 'react-broadcast'
-import {MODE_CMD} from '$studio/workspace/components/TheUI'
+import {MODE_CMD} from '$studio/workspace/components/StudioUI/StudioUI'
 
 interface OP {
   prop: string

@@ -5,7 +5,7 @@ import {
   PanelPropsChannel,
 } from '$src/studio/workspace/components/Panel/Panel'
 import {Subscriber} from 'react-broadcast'
-import {MODE_D} from '$studio/workspace/components/TheUI'
+import {MODE_D} from '$studio/workspace/components/StudioUI/StudioUI'
 import cx from 'classnames'
 import css from './Connector.css'
 

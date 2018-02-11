@@ -18,7 +18,7 @@ import {Subscriber} from 'react-broadcast'
 import {
   PanelPropsChannel,
 } from '$src/studio/workspace/components/Panel/Panel'
-import {MODE_CMD, MODE_SHIFT} from '$studio/workspace/components/TheUI'
+import {MODE_CMD, MODE_SHIFT} from '$studio/workspace/components/StudioUI/StudioUI'
 import {SortableBoxDragChannel} from './SortableBox'
 import DraggableArea from '$studio/common/components/DraggableArea'
 import HalfPieContextMenu from '$studio/common/components/HalfPieContextMenu'

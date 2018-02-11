@@ -1,12 +1,9 @@
-// @flow
 import * as React from 'react'
-import compose from 'ramda/src/compose'
-// import projectsRoutes from '$studio/projects/routes'
 import LoadingUnlessBootstrapped from './LoadingUnlessBootstrapped'
 import {MemoryRouter as Router, Route, Switch, Redirect} from 'react-router-dom'
-import TheUI from '$studio/workspace/components/TheUI'
+import StudioUI from '$studio/workspace/components/StudioUI/StudioUI'
 
-const mainRoutes = [<Route key="/" path="/" component={TheUI} />]
+const mainRoutes = [<Route key="/" path="/" component={StudioUI} />]
 
 const routes = [
   ...mainRoutes,
@@ -20,9 +17,9 @@ const routes = [
 ].map((el, i) => {
   return (
     el && (
-      <el.type {...el.props} children={el.children && el.children} key={i} /> // eslint-disable-line
+      <el.type {...el.props} children={el.children && el.children} key={i} />
     )
-  ) // eslint-disable-line
+  )
 })
 
 const RootRoutes = () => {
@@ -35,4 +32,4 @@ const RootRoutes = () => {
   )
 }
 
-export default compose(a => a)(RootRoutes)
+export default RootRoutes

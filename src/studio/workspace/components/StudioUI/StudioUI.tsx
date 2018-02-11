@@ -1,4 +1,4 @@
-import * as React from 'react' // eslint-disable-line flowtype/require-valid-file-annotation
+import * as React from 'react'
 import {connect, compose, reduceStateAction} from '$studio/handy'
 import {IStoreState} from '$studio/types'
 import * as _ from 'lodash'
@@ -7,10 +7,9 @@ import {
   PanelPlacementSettings,
   PanelPersistentState,
 } from '$studio/workspace/types'
-import {createPanel} from '$studio/workspace/sagas'
-import PanelController from '../PanelController'
+import PanelController from '../PanelController/PanelController'
 import StatusBar from '../StatusBar'
-import css from './index.css'
+import css from './StudioUI.css'
 
 export type ActiveMode = undefined | null | string
 
@@ -54,7 +53,7 @@ const getOppositeSide = (side: string): string => {
   }
 }
 
-export class TheUI extends React.Component<Props, State> {
+export class StudioUI extends React.Component<Props, State> {
   boundaryPathToValueRefMap: object
   static getDefaultPanelPlacement(type): PanelPlacementSettings {
     // ??
@@ -498,18 +497,18 @@ export class TheUI extends React.Component<Props, State> {
     this.setState(() => ({isCreatingNewPanel: true}))
   }
 
-  createNewPanel = (type: string) => {
-    const panelProperties = {
-      type,
-      persistentState: TheUI.getDefaultPanelPersistentState(),
-      configuration: TheUI.getDefaultPanelConfig(),
-      placementSettings: TheUI.getDefaultPanelPlacement(type),
-      inputs: {},
-      outputs: {},
-    }
-    this.setState(() => ({isCreatingNewPanel: false}))
-    this.props.dispatch(createPanel, panelProperties)
-  }
+  // createNewPanel = (type: string) => {
+  //   const panelProperties = {
+  //     type,
+  //     persistentState: TheUI.getDefaultPanelPersistentState(),
+  //     configuration: TheUI.getDefaultPanelConfig(),
+  //     placementSettings: TheUI.getDefaultPanelPlacement(type),
+  //     inputs: {},
+  //     outputs: {},
+  //   }
+  //   this.setState(() => ({isCreatingNewPanel: false}))
+  //   this.props.dispatch(createPanel, panelProperties)
+  // }
 
   cancelCreatingNewPanel = () => {
     this.setState(() => ({isCreatingNewPanel: false}))
@@ -517,7 +516,6 @@ export class TheUI extends React.Component<Props, State> {
 
   render() {
     const {visiblePanels} = this.props
-    // const {isCreatingNewPanel} = this.state
     return (
       <div className={css.container}>
         {visiblePanels.map(panelId => (
@@ -531,19 +529,6 @@ export class TheUI extends React.Component<Props, State> {
           />
         ))}
         <StatusBar activeMode={this.state.activeMode}/>
-        {/*
-          {isCreatingNewPanel &&
-            <PanelCreator
-              onCreatingPanel={this.createNewPanel}
-              onCancel={this.cancelCreatingNewPanel}
-              {...TheUI.getDefaultPanelPlacement()}/>
-          }
-          <button
-            className={css.button}
-            onClick={this.showPanelCreator}>
-            Create a new Panel!
-          </button>
-          */}
       </div>
     )
   }
@@ -565,4 +550,4 @@ export default compose(
       visiblePanels,
     }
   }),
-)(TheUI)
+)(StudioUI)

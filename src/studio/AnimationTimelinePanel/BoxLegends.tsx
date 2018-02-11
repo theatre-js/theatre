@@ -6,7 +6,7 @@ import HalfPieContextMenu from '$studio/common/components/HalfPieContextMenu'
 import MdSwapVerticalCircel from 'react-icons/lib/md/swap-vertical-circle'
 import FaBullseye from 'react-icons/lib/fa/bullseye'
 import FaCircleO from 'react-icons/lib/fa/circle-o'
-import {MODE_SHIFT} from '$studio/workspace/components/TheUI'
+import {MODE_SHIFT} from '$studio/workspace/components/StudioUI/StudioUI'
 
 
 interface IState {

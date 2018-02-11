@@ -4,15 +4,15 @@ import {Subscriber} from 'react-broadcast'
 import {
   PanelControlChannel,
   IPanelControlChannelData,
-} from '$src/studio/workspace/components/PanelController'
+} from '$src/studio/workspace/components/PanelController/PanelController'
 import EditOverlay from '$src/studio/workspace/components/Panel/EditOverlay'
 import {
   EXACT_VALUE,
   SAME_AS_BOUNDARY,
-} from '$src/studio/workspace/components/TheUI'
+} from '$src/studio/workspace/components/StudioUI/StudioUI'
 import _ from 'lodash'
 import {Broadcast} from 'react-broadcast'
-import {MODE_OPTION} from '$studio/workspace/components/TheUI'
+import {MODE_OPTION} from '$studio/workspace/components/StudioUI/StudioUI'
 
 interface IProps {
   css?: any

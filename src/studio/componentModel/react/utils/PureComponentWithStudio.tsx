@@ -1,6 +1,6 @@
 import {contextTypes, contextName} from './studioContext'
 import * as React from 'react'
-import TheStudioClass from '$studio/TheStudioClass'
+import TheaterJSStudio from '$studio/bootstrap/TheaterJSStudio'
 import {reduceStateAction} from '$src/studio/common/actions'
 
 /**
@@ -12,7 +12,7 @@ export default class PureComponentWithStudio<
   Props,
   State
 > extends React.PureComponent<Props, State> {
-  studio: TheStudioClass
+  studio: TheaterJSStudio
 
   constructor(props: Props, context: $IntentionalAny) {
     super(props, context)

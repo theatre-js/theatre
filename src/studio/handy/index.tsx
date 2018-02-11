@@ -5,7 +5,7 @@ export {
   default as makeReactiveComponent,
 } from '$studio/componentModel/react/makeReactiveComponent'
 export {default as elementify} from '$studio/componentModel/react/elementify'
-export {default as Studio} from '$studio/TheStudioClass'
+export {default as Studio} from '$studio/bootstrap/TheaterJSStudio'
 export {default as connect} from './connect'
 import * as D from '$shared/DataVerse'
 export {compose} from 'ramda'

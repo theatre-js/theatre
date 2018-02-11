@@ -9,7 +9,7 @@ import {
   PanelPropsChannel,
 } from '$src/studio/workspace/components/Panel/Panel'
 import {Subscriber} from 'react-broadcast'
-import {MODE_D, MODE_C, MODE_H, MODE_CMD} from '$studio/workspace/components/TheUI'
+import {MODE_D, MODE_C, MODE_H, MODE_CMD} from '$studio/workspace/components/StudioUI/StudioUI'
 import {
   NormalizedPoint,
   PointHandles,

@@ -15,7 +15,7 @@ import {
 
 import * as panelComponents from '$src/studio/workspace/panelComponents'
 import {Broadcast} from 'react-broadcast'
-import {ActiveMode} from '$studio/workspace/components/TheUI'
+import {ActiveMode} from '$src/studio/workspace/components/StudioUI/StudioUI'
 
 export const PanelControlChannel = 'TheaterJS/PanelControlChannel'
 

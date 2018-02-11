@@ -9,7 +9,7 @@ import configureAtom from './configureAtom'
 
 type Atom = $FixMe
 
-export default class TheStudioClass {
+export default class TheaterJSStudio {
   componentInstances: Map<number, React.ComponentType>
   atom: Atom
   ticker: D.Ticker
