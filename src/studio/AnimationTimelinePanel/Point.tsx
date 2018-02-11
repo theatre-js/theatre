@@ -3,7 +3,7 @@ import React from 'react'
 import css from './Point.css'
 import Connector from './Connector'
 import cx from 'classnames'
-import DraggableArea from '$studio/common/components/DraggableArea'
+import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
 import SingleInputForm from '$lf/common/components/SingleInputForm'
 import {
   PanelPropsChannel,

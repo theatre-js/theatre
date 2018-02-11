@@ -1,7 +1,6 @@
-// @flow
-import {ModifierDescriptor} from '$studio/componentModel/types'
-import * as D from '$shared/DataVerse'
-import commonStylesPrototype from './commonStylesPrototype'
+import {ModifierDescriptor} from '$src/studio/componentModel/types'
+import * as D from '$src/shared/DataVerse'
+import commonStylesPrototype from '$src/studio/componentModel/coreModifierDescriptors/HTML/SetCustomStyle/commonStylesPrototype'
 
 const getClass = (propsP, dict) => {
   return dict.extend(commonStylesPrototype).extend({

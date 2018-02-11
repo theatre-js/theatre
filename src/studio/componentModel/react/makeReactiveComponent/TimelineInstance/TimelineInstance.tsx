@@ -1,5 +1,5 @@
-import {D} from '$studio/handy'
-import ValueInstance from './ValueInstance'
+import {D} from '$src/studio/handy'
+import ValueInstance from '$src/studio/componentModel/react/makeReactiveComponent/TimelineInstance/ValueInstance'
 
 export default class TimelineInstance {
   _timeLength: number;

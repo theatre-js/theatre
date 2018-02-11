@@ -3,7 +3,7 @@ import css from './ModifiersEditor.css'
 import PanelSection from '$src/studio/structuralEditor/components/reusables/PanelSection'
 import * as _ from 'lodash'
 import StudioComponent from '$src/studio/handy/StudioComponent'
-import {getSelectedNodeId} from '$src/studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor'
+import {getSelectedNodeId} from '$src/studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor/TreeEditor'
 import {
   IDeclarativeComponentDescriptor,
   IComponentInstantiationValueDescriptor,

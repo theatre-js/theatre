@@ -1,7 +1,7 @@
 // @flow
 import * as React from 'react'
 import css from './SortableBox.css'
-import DraggableArea from '$studio/common/components/DraggableArea'
+import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
 import {Broadcast} from 'react-broadcast'
 
 type Props = {

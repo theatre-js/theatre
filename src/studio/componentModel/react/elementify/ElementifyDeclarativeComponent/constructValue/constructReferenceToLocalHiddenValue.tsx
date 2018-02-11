@@ -1,4 +1,3 @@
-/* eslint-disable flowtype/require-valid-file-annotation */
 const resolveReferenceToHiddenLocalValue = (whichP, d) => {
   const componentDescriptorP = d
     .pointer()
@@ -20,4 +19,4 @@ const constructReferenceToLocalHiddenValue = (descP, d) => {
 
 export default constructReferenceToLocalHiddenValue
 
-const constructValue = require('../constructValue')
+const constructValue = require('./constructValue')

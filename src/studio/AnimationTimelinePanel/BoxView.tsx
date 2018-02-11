@@ -20,7 +20,7 @@ import {
 } from '$src/studio/workspace/components/Panel/Panel'
 import {MODE_CMD, MODE_SHIFT} from '$studio/workspace/components/StudioUI/StudioUI'
 import {SortableBoxDragChannel} from './SortableBox'
-import DraggableArea from '$studio/common/components/DraggableArea'
+import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
 import HalfPieContextMenu from '$studio/common/components/HalfPieContextMenu'
 import MdCancel from 'react-icons/lib/md/cancel'
 import MdDonutSmall from 'react-icons/lib/md/donut-small'

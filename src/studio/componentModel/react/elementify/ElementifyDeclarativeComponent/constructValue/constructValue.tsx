@@ -1,11 +1,10 @@
-// @flow
-import constructModifierInstantiationValueDescriptor from './constructModifierInstantiationValueDescriptor'
-import constructComponentInstantiationValueDescriptor from './constructComponentInstantiationValueDescriptor'
-import {ValueDescriptorDescribedInAnObject} from '$studio/componentModel/types'
-import constructListDescriptor from './constructListDescriptor'
-import constructMapDescriptor from './constructMapDescriptor'
-import constructReferenceToLocalHiddenValue from './constructReferenceToLocalHiddenValue'
-import constructReferenceToTimelineVar from './constructReferenceToTimelineVar'
+import constructModifierInstantiationValueDescriptor from '$src/studio/componentModel/react/elementify/ElementifyDeclarativeComponent/constructValue/constructModifierInstantiationValueDescriptor'
+import constructComponentInstantiationValueDescriptor from '$src/studio/componentModel/react/elementify/ElementifyDeclarativeComponent/constructValue/constructComponentInstantiationValueDescriptor'
+import {ValueDescriptorDescribedInAnObject} from '$src/studio/componentModel/types'
+import constructListDescriptor from '$src/studio/componentModel/react/elementify/ElementifyDeclarativeComponent/constructValue/constructListDescriptor'
+import constructMapDescriptor from '$src/studio/componentModel/react/elementify/ElementifyDeclarativeComponent/constructValue/constructMapDescriptor'
+import constructReferenceToLocalHiddenValue from '$src/studio/componentModel/react/elementify/ElementifyDeclarativeComponent/constructValue/constructReferenceToLocalHiddenValue'
+import constructReferenceToTimelineVar from '$src/studio/componentModel/react/elementify/ElementifyDeclarativeComponent/constructValue/constructReferenceToTimelineVar'
 
 type Constructor = (desP: $FixMe, d: $FixMe) => $FixMe
 

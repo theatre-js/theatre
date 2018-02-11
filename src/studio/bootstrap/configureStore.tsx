@@ -38,12 +38,12 @@ export default function createStore(
           {
             path: ['componentModel', 'modifierDescriptors', 'core'],
             reducer: () =>
-              r('$studio/componentModel/coreModifierDescriptors').default,
+              r('$studio/componentModel/coreModifierDescriptors/coreModifierDescriptors').default,
           },
           {
             path: ['componentModel', 'componentDescriptors', 'core'],
             reducer: () =>
-              r('$studio/componentModel/coreComponentDescriptors').default,
+              r('$studio/componentModel/coreComponentDescriptors/coreComponentDescriptors').default,
           },
         ])
       })

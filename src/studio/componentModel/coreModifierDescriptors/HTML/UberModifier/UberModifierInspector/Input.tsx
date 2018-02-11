@@ -1,7 +1,7 @@
 import {StudioComponent, React, resolveCss, connect, reduceStateAction} from '$studio/handy'
 import * as css from './Input.css'
 import {get} from 'lodash'
-import DraggableArea from '$studio/common/components/DraggableArea'
+import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
 import {
   PanelPropsChannel,
 } from '$src/studio/workspace/components/Panel/Panel'

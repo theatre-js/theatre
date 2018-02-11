@@ -1,6 +1,3 @@
-// @flow
-// import * as D from '$shared/DataVerse'
-
 const constructListDescriptor = (desP: $FixMe, d: $FixMe) => {
   if (desP.isPointer !== true) throw Error('Pointers only')
 
@@ -10,6 +7,6 @@ const constructListDescriptor = (desP: $FixMe, d: $FixMe) => {
   )
 }
 
-const constructValue = require('./index')
+const constructValue = require('./constructValue')
 
 export default constructListDescriptor

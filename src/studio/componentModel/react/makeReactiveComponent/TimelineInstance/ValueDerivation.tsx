@@ -1,7 +1,7 @@
 
 import * as D from '$shared/DataVerse'
 import * as _ from 'lodash'
-import * as interpolators from './interpolators'
+import * as interpolators from './interpolators/interpolators'
 import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation';
 
 type TimelineIsEmptyBaseState = {type: 'TimelineIsEmpty'}

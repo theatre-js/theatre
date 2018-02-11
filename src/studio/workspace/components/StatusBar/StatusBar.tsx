@@ -1,12 +1,12 @@
-import {React} from '$studio/handy'
-import css from './index.css'
+import {React} from '$src/studio/handy'
+import css from './StatusBar.css'
 import cx from 'classnames'
 import GoRepoForked from 'react-icons/lib/go/repo-forked'
 import MdApps from 'react-icons/lib/md/apps'
 import MdLiveHelp from 'react-icons/lib/md/live-help'
 import MdTouchApp from 'react-icons/lib/md/touch-app'
 import MdImportExport from 'react-icons/lib/md/import-export'
-import {MODE_OPTION} from '$studio/workspace/components/StudioUI/StudioUI'
+import {MODE_OPTION} from '$src/studio/workspace/components/StudioUI/StudioUI'
 
 class StatusBar extends React.PureComponent<any, any> {
   render() {

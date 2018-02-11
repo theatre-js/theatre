@@ -1,7 +1,7 @@
 // @flow
 import React from 'react'
 import css from './TimeBar.css'
-import DraggableArea from '$studio/common/components/DraggableArea'
+import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
 import cx from 'classnames'
 import { BoxAtom } from '$src/shared/DataVerse/atoms/box';
 import { noop } from 'lodash';

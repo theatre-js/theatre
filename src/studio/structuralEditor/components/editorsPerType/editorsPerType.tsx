@@ -1,6 +1,5 @@
 import * as _ from 'lodash'
 
-// $FlowIgnore
 const context = require.context(
   './',
   true,

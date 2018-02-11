@@ -1,8 +1,7 @@
-// @flow
-import {TheaterJSComponent} from './index'
+import {TheaterJSComponent} from '$src/studio/componentModel/react/makeReactiveComponent/makeReactiveComponent'
 import * as _ from 'lodash'
 import {D} from '$studio/handy'
-import TimelineInstance from './TimelineInstance'
+import TimelineInstance from './TimelineInstance/TimelineInstance'
 import {getPathToComponentDescriptor} from '$studio/componentModel/selectors'
 
 export default class TimelinesHandler {

@@ -1,23 +1,11 @@
 // @flow
-import SideEffectsHandler from './SideEffectsHandler'
-import {PureComponentWithStudio, D} from '$studio/handy'
-import TimelinesHandler from './TimelinesHandler'
+import SideEffectsHandler from '$src/studio/componentModel/react/makeReactiveComponent/SideEffectsHandler'
+import {PureComponentWithStudio, D} from '$src/studio/handy'
+import TimelinesHandler from '$src/studio/componentModel/react/makeReactiveComponent/TimelinesHandler'
 import {AbstractDerivation} from '$src/shared/DataVerse/derivations/types'
 import derivedClass from '$src/shared/DataVerse/derivedClass/derivedClass'
 import DerivedClassInstance from '$src/shared/DataVerse/derivedClass/DerivedClassInstance'
 
-// type MakeReactiveComponentArgs = {
-//   getClass: (
-//     DerivedClass<$FixMe>,
-//   ) => DerivedClass<$FixMe>,
-//   getInitialState?: () => D.IDictAtom<$FixMe>,
-// } & (
-//   | {
-//       componentType: 'HardCoded',
-//       displayName: string,
-//       componentId: string,
-//     }
-//   | {componentType: 'Declarative', componentId: void, displayName: void})
 type MakeReactiveComponentArgs = $FixMe
 
 export default function makeReactiveComponent({

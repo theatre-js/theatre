@@ -1,7 +1,6 @@
-// @flow
 import {React, connect, typeSystem} from '$studio/handy'
 import get from 'lodash/get'
-import editorsPerType from './editorsPerType'
+import editorsPerType from './editorsPerType/editorsPerType'
 
 type Props = {
   path: Array<string>

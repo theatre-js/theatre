@@ -1,6 +1,6 @@
 import {IComponentModelNamespaceState} from './types'
-import coreComponentDescriptors from './coreComponentDescriptors'
-import coreModifierDescriptors from './coreModifierDescriptors'
+import coreComponentDescriptors from './coreComponentDescriptors/coreComponentDescriptors'
+import coreModifierDescriptors from './coreModifierDescriptors/coreModifierDescriptors'
 // import {
 //   IDeclarativeComponentDescriptor,
 //   IComponentInstantiationValueDescriptor,

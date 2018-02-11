@@ -5,12 +5,12 @@ import {
   reduceStateAction,
   multiReduceStateAction,
   StudioComponent,
-} from '$studio/handy'
-import {getComponentDescriptor} from '$studio/componentModel/selectors'
-import PanelSection from '$studio/structuralEditor/components/reusables/PanelSection'
-import NodeContainer from './NodeContainer'
-import MovableNode from './MovableNode'
-import css from './index.css'
+} from '$src/studio/handy'
+import {getComponentDescriptor} from '$src/studio/componentModel/selectors'
+import PanelSection from '$src/studio/structuralEditor/components/reusables/PanelSection'
+import NodeContainer from '$src/studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor/NodeContainer'
+import MovableNode from '$src/studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor/MovableNode'
+import css from '$src/studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor/index.css'
 import generateUniqueId from 'uuid/v4'
 import * as _ from 'lodash'
 import {
@@ -19,13 +19,13 @@ import {
   STATUS_BY_ACTION,
   NODE_TYPE,
   STATUS,
-} from './constants'
+} from '$src/studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor/constants'
 import cx from 'classnames'
 import {
   PanelPropsChannel,
 } from '$src/studio/workspace/components/Panel/Panel'
 import {Subscriber} from 'react-broadcast'
-import {MODE_CMD} from '$studio/workspace/components/StudioUI/StudioUI'
+import {MODE_CMD} from '$src/studio/workspace/components/StudioUI/StudioUI'
 
 export const metaKey = 'composePanel'
 const PLACEHOLDER = '\n'

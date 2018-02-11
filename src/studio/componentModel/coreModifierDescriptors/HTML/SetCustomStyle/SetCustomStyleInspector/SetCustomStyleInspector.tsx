@@ -1,9 +1,9 @@
 // @flow
-import {compose, React, connect} from '$studio/handy'
+import {compose, React, connect} from '$src/studio/handy'
 import map from 'lodash/map'
 import get from 'lodash/get'
-import SingleCustomStyleInspector from './SingleCustomStyleInspector'
-import ModifierInspectorWrapper from '$studio/common/components/ModifierInspectorWrapper'
+import SingleCustomStyleInspector from '$src/studio/componentModel/coreModifierDescriptors/HTML/SetCustomStyle/SetCustomStyleInspector/SingleCustomStyleInspector'
+import ModifierInspectorWrapper from '$src/studio/common/components/ModifierInspectorWrapper'
 
 type Props = {
   list: $FixMe

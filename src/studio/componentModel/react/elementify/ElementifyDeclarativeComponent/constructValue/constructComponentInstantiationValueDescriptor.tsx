@@ -1,4 +1,3 @@
-// @flow
 import {D, elementify} from '$studio/handy'
 import constructMapDescriptor from './constructMapDescriptor'
 import constructListDescriptor from './constructListDescriptor'

@@ -1,7 +1,6 @@
-// @flow
-import {ModifierDescriptor} from '$studio/componentModel/types'
-import attributesApplier from './attributeApplier'
-import * as D from '$shared/DataVerse'
+import {ModifierDescriptor} from '$src/studio/componentModel/types'
+import attributesApplier from '$src/studio/componentModel/coreModifierDescriptors/HTML/SetAttribute/attributeApplier'
+import * as D from '$src/shared/DataVerse'
 
 const ensureDomAttributes = d => {
   return d.propFromSuper('domAttributes').flatMap(possibleDomAttributes => {

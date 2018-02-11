@@ -1,6 +1,3 @@
-// @flow
-// import * as D from '$shared/DataVerse'
-
 const constructMapDescriptor = (desP: $FixMe, d: $FixMe) => {
   if (desP.isPointer !== true) throw Error('Pointers only')
 
@@ -14,6 +11,6 @@ const constructMapDescriptor = (desP: $FixMe, d: $FixMe) => {
   })
 }
 
-const constructValue = require('./index')
+const constructValue = require('./constructValue')
 
 export default constructMapDescriptor

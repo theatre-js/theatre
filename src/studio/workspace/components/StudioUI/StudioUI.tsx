@@ -8,7 +8,7 @@ import {
   PanelPersistentState,
 } from '$studio/workspace/types'
 import PanelController from '../PanelController/PanelController'
-import StatusBar from '../StatusBar'
+import StatusBar from '../StatusBar/StatusBar'
 import css from './StudioUI.css'
 
 export type ActiveMode = undefined | null | string

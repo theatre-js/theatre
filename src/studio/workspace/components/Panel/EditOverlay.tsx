@@ -1,7 +1,7 @@
 import {React} from '$studio/handy'
 import css from './EditOverlay.css'
 import cx from 'classnames'
-import DraggableArea from '$studio/common/components/DraggableArea'
+import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
 
 type Props = any
 type State = any

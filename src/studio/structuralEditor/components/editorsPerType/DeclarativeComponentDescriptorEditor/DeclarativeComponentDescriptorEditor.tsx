@@ -1,9 +1,8 @@
-// @flow
 import {React, compose} from '$src/studio/handy'
 import css from './DeclarativeComponentDescriptorEditor.css'
 import ComponentNameEditor from '$src/studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/ComponentNameEditor'
 import PropsEditor from '$src/studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/PropsEditor'
-import TreeEditor from '$src/studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor'
+import TreeEditor from '$src/studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor/TreeEditor'
 import {identity} from 'ramda'
 import ModifiersEditor from './ModifiersEditor/ModifiersEditor'
 

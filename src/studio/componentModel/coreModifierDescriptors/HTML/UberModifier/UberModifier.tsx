@@ -1,4 +1,4 @@
-import {IModifierDescriptor} from '$studio/componentModel/types'
+import {IModifierDescriptor} from '$src/studio/componentModel/types'
 import commonStylesPrototype from '$src/studio/componentModel/coreModifierDescriptors/HTML/SetCustomStyle/commonStylesPrototype'
 import dict from '$src/shared/DataVerse/atoms/dict'
 import withDeps from '$src/shared/DataVerse/derivations/withDeps'

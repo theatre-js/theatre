@@ -1,7 +1,5 @@
-// @flow
 import {D} from '$studio/handy'
 import constructMapDescriptor from './constructMapDescriptor'
-// import constructListDescriptor from './constructListDescriptor'
 
 const constructModifierInstantiationValueDescriptor = (
   desP: $FixMe,

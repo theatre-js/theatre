@@ -1,6 +1,6 @@
 import * as React from 'react'
-import * as D from '$shared/DataVerse'
-import ElementifyDeclarativeComponent from './ElementifyDeclarativeComponent'
+import * as D from '$src/shared/DataVerse'
+import ElementifyDeclarativeComponent from '$src/studio/componentModel/react/elementify/ElementifyDeclarativeComponent/ElementifyDeclarativeComponent'
 import stringStartsWith from 'lodash/startsWith'
 import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
 

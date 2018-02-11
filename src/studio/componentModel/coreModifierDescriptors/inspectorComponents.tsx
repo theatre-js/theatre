@@ -1,10 +1,11 @@
+import SetAttributeInspector from './HTML/SetAttribute/SetAttributeInspector/SetAttributeInspector'
+import SetCustomStyleInspector from './HTML/SetCustomStyle/SetCustomStyleInspector/SetCustomStyleInspector'
+import UberModifierInspector from './HTML/UberModifier/UberModifierInspector/UberModifierInspector'
+
 const inspectorComponents = {
-  'TheaterJS/Core/HTML/SetAttribute': require('./HTML/SetAttribute/SetAttributeInspector')
-    .default,
-  'TheaterJS/Core/HTML/SetCustomStyle': require('./HTML/SetCustomStyle/SetCustomStyleInspector')
-    .default,
-  'TheaterJS/Core/HTML/UberModifier': require('./HTML/UberModifier/UberModifierInspector/UberModifierInspector')
-    .default,
+  'TheaterJS/Core/HTML/SetAttribute': SetAttributeInspector,
+  'TheaterJS/Core/HTML/SetCustomStyle': SetCustomStyleInspector,
+  'TheaterJS/Core/HTML/UberModifier': UberModifierInspector,
 }
 
 export default inspectorComponents
