@@ -1,4 +1,3 @@
-// @flow
 import derivedClass from '$src/shared/DataVerse/derivedClass/derivedClass'
 import * as D from '$shared/DataVerse'
 

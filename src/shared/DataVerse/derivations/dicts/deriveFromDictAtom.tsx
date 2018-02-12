@@ -1,5 +1,3 @@
-// @flow
-import {IDictAtom} from '$shared/DataVerse/atoms/dict'
 import {IDerivedDict} from './types'
 import AbstractDerivedDict from './AbstractDerivedDict'
 import noop from 'lodash/noop'

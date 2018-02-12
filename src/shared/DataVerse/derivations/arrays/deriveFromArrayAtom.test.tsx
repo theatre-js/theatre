@@ -1,4 +1,3 @@
-// @flow
 import * as D from '$shared/DataVerse'
 import Ticker from '$src/shared/DataVerse/Ticker'
 

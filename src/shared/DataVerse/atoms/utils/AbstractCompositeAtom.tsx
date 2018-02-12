@@ -1,6 +1,5 @@
 import {default as AbstractAtom} from './AbstractAtom'
 import isAtom from './isAtom'
-import {MapKey} from '$shared/DataVerse/types'
 
 export default abstract class AbstractCompositeAtom<
   ChangeType
@@ -18,7 +17,7 @@ export default abstract class AbstractCompositeAtom<
     ref._setParent(this, key)
   }
 
-  _unadopt(key: string | number, ref: AbstractAtom<$IntentionalAny>) {
+  _unadopt(ref: AbstractAtom<$IntentionalAny>) {
     if (!isAtom(ref)) return
     ref._unsetParent()
   }

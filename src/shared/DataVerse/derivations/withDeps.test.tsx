@@ -1,5 +1,6 @@
 import withDeps from './withDeps'
 import * as D from '$shared/DataVerse'
+import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation';
 
 describe('withDeps', () => {
   it('should work', () => {
@@ -25,22 +26,21 @@ describe('withDeps', () => {
   })
 
   it('events should work', done => {
-    // debugger
     const a = D.atoms.box(1)
     const b = D.atoms.box(3)
     const aD = a.derivation()
     aD.getValue() as number
-    // $FlowExpectError
+    // @ts-ignore expected
     aD.getValue() as string
 
     const bD = b.derivation()
     bD.map(m => m + 1).getValue() as number
-    // $FlowExpectError
+    // @ts-ignore expected
     bD.map(m => m + 1).getValue() as string
-    // $FlowExpectError
+    // @ts-ignore expected
     bD.map((m: string) => m + 'hi')
     bD.flatMap(m => m + 1).getValue() as number
-    // $FlowExpectError
+    // @ts-ignore expected
     bD.flatMap(m => m + 1).getValue() as string
     bD.flatMap(m => D.derivations.constant(m + 1)).getValue() as number
 
@@ -116,14 +116,14 @@ describe('withDeps', () => {
     // @todo this should be a flow error since 'hi' is not an AbstractDerivation
     withDeps({a: 'hi'}, () => {})
     const f = withDeps({a: D.derivations.constant('hi')}, ({a}) => {
-      // $FlowExpectError
+      // @ts-ignore expected
       a.getValue() as number
       a.getValue() as string
 
       return a.getValue()
     })
 
-    // $FlowExpectError
+    // @ts-ignore expected
     f.getValue() as number
     f.getValue() as string
   })

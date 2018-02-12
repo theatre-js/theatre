@@ -17,7 +17,7 @@ export default function* recogniseProject(params: {
   if (state.projects.listOfPaths.indexOf(params.filePath) !== -1) {
     return {type: 'error', errorType: 'projectAlreadyRecognised'}
   }
-
+  // @ts-ignore @todo
   if ((yield* call(fse.pathExists, params.filePath)) !== true) {
     return {type: 'error', errorType: 'fileDoesntExist'}
   }

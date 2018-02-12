@@ -1,4 +1,3 @@
-import {MapKey} from '$shared/DataVerse/types'
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import AbstractCompositeAtom from './AbstractCompositeAtom'
 

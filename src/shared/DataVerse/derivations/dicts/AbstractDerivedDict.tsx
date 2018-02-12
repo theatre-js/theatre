@@ -1,8 +1,6 @@
-// @flow
-// import {IDerivedDict} from './types'
 import Emitter from '$shared/DataVerse/utils/Emitter'
 
-export default class AbstractDerivedDict {
+export default abstract class AbstractDerivedDict<O> {
   _changeEmitter: Emitter<$FixMe>
   _untapFromSourceChanges: $FixMe
   _changeEmitterHasTappers: boolean
@@ -11,7 +9,7 @@ export default class AbstractDerivedDict {
   isDerivedDict = true
   _trace: $FixMe
   _pointer: $FixMe
-  keys: () => Array<string>
+  abstract keys(): string[]
 
   constructor() {
     if (process.env.KEEPING_DERIVATION_TRACES === true) {

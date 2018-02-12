@@ -1,13 +1,10 @@
-// @flow
-import {IDerivedArray} from './types'
 import {ArrayAtom} from '$shared/DataVerse/atoms/array'
 import AbstractDerivedArray from './AbstractDerivedArray'
 import {ensureNoAtoms} from '../dicts/utils'
 import noop from 'lodash/noop'
 
-export class DerivedArrayFromArrayAtom<V> extends AbstractDerivedArray
-  implements IDerivedArray<$FixMe> {
-  _arrayAtom: ArrayAtom<$FixMe>
+export class DerivedArrayFromArrayAtom<V> extends AbstractDerivedArray<$FixMe> {
+  _arrayAtom: ArrayAtom<V>
   _untapFromArrayAtomChangeEmitter: () => void
 
   constructor(a: ArrayAtom<V>) {
@@ -48,6 +45,6 @@ export class DerivedArrayFromArrayAtom<V> extends AbstractDerivedArray
 
 export default function deriveFromArrayAtom<V, A extends ArrayAtom<V>>(
   a: A,
-): IDerivedArray<V> {
+): DerivedArrayFromArrayAtom<V> {
   return new DerivedArrayFromArrayAtom(a)
 }

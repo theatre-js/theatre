@@ -44,4 +44,4 @@ const RootRoutes = () => {
   )
 }
 
-export default compose(a => a)(RootRoutes)
+export default RootRoutes

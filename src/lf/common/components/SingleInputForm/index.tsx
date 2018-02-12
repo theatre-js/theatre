@@ -31,7 +31,7 @@ class SingleInputForm extends React.Component<Props, State> {
 
   componentDidMount() {
     if (this.props.autoFocus) {
-      const {value} = this.input
+      // const {value} = this.input
       this.input.focus()
       this.input.select()
       // this.input.setSelectionRange(value.length, value.length)

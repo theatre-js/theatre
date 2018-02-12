@@ -1,12 +1,9 @@
-// @flow
-
 import * as React from 'react'
-import {compose} from 'ramda'
-import {connect} from '$lf/utils'
 import {getIsBootstrapped} from '$lf/common/selectors'
 import SplashScreen from '$lf/common/components/SplashScreen'
 
 import {StoreState} from '$lf/types'
+import {connect} from 'react-redux'
 
 type Props = {
   isBootstrapped: boolean
@@ -20,8 +17,6 @@ const SplashUnlessBootstrapped = (props: Props) => {
 /**
  * Shows a splash screen, unless we're bootstrapped (see bootstrapped in $common/reducer)
  */
-export default compose(
-  connect((state: StoreState) => ({
-    isBootstrapped: getIsBootstrapped(state),
-  })),
-)(SplashUnlessBootstrapped)
+export default connect((state: StoreState) => ({
+  isBootstrapped: getIsBootstrapped(state, void 0),
+}))(SplashUnlessBootstrapped)
