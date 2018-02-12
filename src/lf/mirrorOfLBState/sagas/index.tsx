@@ -1,7 +1,6 @@
-// @flow
 import {fork, call, put, take, select} from 'redux-saga/effects'
 import {bootstrapAction} from '$lf/common/actions'
-import {getChannelOfRequestsFromMain, sendRequestToMain} from './utils'
+import {getChannelOfRequestsFromMain, sendRequestToMain, RequestFromWindow} from './utils'
 import {reduceState} from '$shared/utils'
 import {StoreState} from '$lf/types'
 
@@ -28,7 +27,7 @@ function* handleRequestsFromMain(): Generator_<$FixMe, $FixMe, $FixMe> {
   }
 }
 
-function* receiveNewState(request): Generator_<$FixMe, $FixMe, $FixMe> {
+function* receiveNewState(request: RequestFromWindow): Generator_<$FixMe, $FixMe, $FixMe> {
   yield reduceState(['mirrorOfLBState'], () => request.payload)
 }
 

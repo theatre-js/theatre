@@ -1,4 +1,3 @@
-// @flow
 import fse from 'fs-extra'
 import {call, select} from '$shared/utils/sagas'
 import {StoreState} from '$lb/types'

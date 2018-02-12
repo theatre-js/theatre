@@ -1,10 +1,8 @@
-// @flow
 import _ from 'lodash'
 
-// $FlowIgnore
 const context = require.context('$lb/', true, /\.studioSocketEndpoint\.tsx$/)
 const listOfModulePaths: Array<string> = context.keys()
-const requireModuleByPath: typeof require = context
+const requireModuleByPath = context
 const handlersByName = _.mapValues(
   _.keyBy(listOfModulePaths, s => {
     const matches: Array<string> = s.match(

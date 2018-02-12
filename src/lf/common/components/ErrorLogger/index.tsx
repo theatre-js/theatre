@@ -1,10 +1,9 @@
-// @flow
 import * as React from 'react'
-import css from './index.css'
+import * as css from './index.css'
 
 type Props = {
   children: string
-  closeHandler: Function
+  closeHandler: $FixMe
 }
 
 const ErrorLogger = (props: Props) => {

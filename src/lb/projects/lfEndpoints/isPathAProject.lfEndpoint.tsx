@@ -1,5 +1,4 @@
-// @flow
-import fse from 'fs-extra'
+import * as fse from 'fs-extra'
 import {call} from '$shared/utils/sagas'
 import _ from 'lodash'
 import path from 'path'
@@ -11,7 +10,8 @@ type ReturnType =
 
 export default function* isPathAProject(params: {
   fileOrFolderPath: string,
-}): Generator_<*, ReturnType, *> {
+}): Generator_<$FixMe, ReturnType, $FixMe> {
+  // @ts-ignore  @todo
   if ((yield* call(fse.pathExists, params.fileOrFolderPath)) !== true) {
     return {type: 'ok', isIt: false}
   }
@@ -22,6 +22,7 @@ export default function* isPathAProject(params: {
 
   let pathStat
   try {
+    // @ts-ignore @todo
     pathStat = yield* call(fse.stat, params.fileOrFolderPath)
   } catch (e) {
     console.error(e)
@@ -30,6 +31,7 @@ export default function* isPathAProject(params: {
 
   if (pathStat.isDirectory()) {
     const pathToFile = path.join(params.fileOrFolderPath, 'theaterjs.json')
+    // @ts-ignore @todo
     if ((yield* call(fse.pathExists, pathToFile)) === true)
       return {type: 'ok', isIt: true, filePath: pathToFile}
   }

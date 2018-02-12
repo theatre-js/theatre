@@ -1,8 +1,7 @@
-// @flow
 import isPlainObject from 'lodash/isPlainObject'
-import {IBoxAtom, default as box} from './box'
-import {IDictAtom, default as dict} from './dict'
-import {IArrayAtom, default as array} from './array'
+import {default as box} from './box'
+import {default as dict} from './dict'
+import {default as array} from './array'
 import mapValues from 'lodash/mapValues'
 import {default as AbstractAtom} from './utils/AbstractAtom'
 // import {If} from '../types'
@@ -75,5 +74,3 @@ export const fromJSPrimitive = (jsPrimitive: mixed): $FixMe => {
 }
 
 export default atomifyDeep
-
-// export type AtomifyDeepType<V> = $Call<typeof atomifyDeep, V>

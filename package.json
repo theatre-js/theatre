@@ -19,7 +19,7 @@
     "examples:webpack:dev": "webpack-dev-server --progress --config webpack/examples/development.js",
     "build:dev": "npm-run-all --parallel lb:webpack:dev lf:webpack:dev studio:webpack:dev examples:webpack:dev",
     "open-examples": "opn http://localhost:9092/examples",
-    "typescript:check": "tsc --noEmit"
+    "typescript:check": "tsc -p ./tsconfig.json --noEmit"
   },
   "jest": {
     "testMatch": [
@@ -62,10 +62,12 @@
   "license": "Proprietary",
   "devDependencies": {
     "@types/classnames": "^2.2.3",
+    "@types/deep-equal": "^1.0.1",
     "@types/fs-extra": "^5.0.0",
     "@types/html-webpack-plugin": "^2.30.1",
     "@types/jest": "^22.1.0",
     "@types/lodash": "^4.14.93",
+    "@types/mock-fs": "^3.6.30",
     "@types/ramda": "^0.25.16",
     "@types/react-broadcast": "^0.6.0",
     "@types/react-dom": "^16.0.3",
@@ -76,6 +78,7 @@
     "@types/redux-actions": "^2.2.3",
     "@types/uuid": "^3.4.3",
     "@types/webpack": "^3.8.2",
+    "@types/webpack-env": "^1.13.5",
     "@types/when": "^2.4.29",
     "autoprefixer": "^7.1.2",
     "awesome-typescript-loader": "^3.3.0",

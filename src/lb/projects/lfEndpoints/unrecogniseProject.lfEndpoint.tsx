@@ -1,4 +1,3 @@
-// @flow
 import {select} from '$shared/utils/sagas'
 import {StoreState} from '$lb/types'
 import {multiReduceState} from '$shared/utils'
@@ -22,7 +21,7 @@ export default function* unrecogniseProject(params: {
   yield multiReduceState([
     {
       path: ['projects', 'listOfPaths'],
-      reducer: paths => _.without(paths, params.filePath),
+      reducer: (paths: string[]) => _.without(paths, params.filePath),
     },
   ])
 

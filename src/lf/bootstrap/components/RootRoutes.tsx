@@ -1,6 +1,5 @@
-// @flow
 import * as React from 'react'
-import compose from 'ramda/src/compose'
+import {compose} from 'ramda'
 import projectsRoutes from '$lf/projects/routes'
 import SplashUnlessBootstrapped from './SplashUnlessBootstrapped'
 import {MemoryRouter as Router, Route, Switch, Redirect} from 'react-router-dom'
@@ -29,7 +28,7 @@ const routes = [
 ].map((el, i) => {
   return (
     el && (
-      // eslint-disable-next-line react/no-children-prop
+      // @ts-ignore @ignore
       <el.type {...el.props} children={el.children && el.children} key={i} />
     )
   )

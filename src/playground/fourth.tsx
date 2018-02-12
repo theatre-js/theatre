@@ -4,6 +4,7 @@ skipFindingColdDerivations()
 
 const firstA = dict({a: 1, b: 2})
 const firstD = firstA.derivedDict()
+// @ts-ignore @ignore
 const firstDPrime = firstD.mapValues(propD => propD.map(propV => propV + 10))
 
 const secondA = dict({a: 'hello', c: 3, d: 4})

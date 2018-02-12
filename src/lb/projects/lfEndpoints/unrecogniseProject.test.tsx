@@ -1,4 +1,3 @@
-// @flow
 import mock from 'mock-fs'
 import unrecogniseProject from './unrecogniseProject.lfEndpoint'
 import recogniseProject from './recogniseProject.lfEndpoint'

@@ -1,13 +1,13 @@
-// @flow
 import * as React from 'react'
-import compose from 'ramda/src/compose'
-import css from './ProjectItem.css'
+import * as _css from './ProjectItem.css'
 import {ProjectDescription} from '$lb/projects/types'
 
+const css: $FixMe = _css
+
 type Props = {
-  path: String
+  path: string
   projectDesc: undefined | null | ProjectDescription
-  onForget: Function
+  onForget: $FixMe
 }
 
 const ProjectItem = (props: Props) => {
@@ -46,4 +46,4 @@ const ProjectItem = (props: Props) => {
   )
 }
 
-export default compose(a => a)(ProjectItem)
+export default ProjectItem

@@ -1,4 +1,3 @@
-// @flow
 import {Channel, eventChannel, END} from 'redux-saga'
 import {call} from 'redux-saga/effects'
 import generateUniqueId from 'uuid/v4'
@@ -31,6 +30,7 @@ export function* autoRetryOnTimeout(
   while (true) {
     retries++
     try {
+      // @ts-ignore
       return yield call(callee, ...args)
     } catch (e) {
       if (e !== 'timeout') {
@@ -47,7 +47,8 @@ export function* autoRetryOnTimeout(
  * by having set up too many listeners on ipcMain
  */
 export function sendRequestToWindow(
-  window: typeof BrowserWindow,
+  // @ts-ignore @todo
+  window: BrowserWindow,
   type: string,
   payload: mixed,
   timeout: number = 4000,
@@ -62,10 +63,11 @@ export function sendRequestToWindow(
   const payloadDeferred = wn.defer()
   let responded = false
 
-  const listener = (event, response: Response) => {
+  const listener = (_event: mixed, response: Response) => {
     if (response.id === request.id) {
       ipcMain.removeListener('response', listener)
       responded = true
+      // @ts-ignore @todo
       payloadDeferred.resolve(response.payload)
     }
   }
@@ -75,8 +77,9 @@ export function sendRequestToWindow(
 
   // if the response doesn't come within the specified timeout period, then we'll remove
   // listneer from ipcMain, and reject with 'timeout' being the reason
-  const timeoutAndGCPromise = wn()
+  const timeoutAndGCPromise = wn(undefined)
     .delay(timeout)
+    // @ts-ignore @todo
     .then(() => {
       if (!responded) {
         ipcMain.removeListener('response', listener)
@@ -84,14 +87,16 @@ export function sendRequestToWindow(
       }
     })
 
+  // @ts-ignore
   return wn.race([payloadDeferred.promise, timeoutAndGCPromise])
 }
 
 export const getChannelOfRequestsFromWindow = (
+  // @ts-ignore @todo
   window: BrowserWindow,
 ): Channel<$FixMe> => {
   return eventChannel(emitToChannel => {
-    const listener = (event, request: RawRequest) => {
+    const listener = (event: {sender: $FixMe}, request: RawRequest) => {
       if (event.sender !== window.webContents) {
         console.log('got st but not from this window')
         return

@@ -15,7 +15,7 @@ type Response = {
   payload: mixed
 }
 
-type RequestFromWindow = {
+export type RequestFromWindow = {
   type: string
   payload: mixed
   respond: (payload: mixed) => void
@@ -31,9 +31,9 @@ export function sendRequestToMain(
     payload,
   }
 
-  const payloadDeferred = wn.defer()
+  const payloadDeferred = wn.defer<mixed>()
 
-  const listener = (event, response: Response) => {
+  const listener = (_event: mixed, response: Response) => {
     if (response.id === request.id) {
       ipcRenderer.removeListener('response', listener)
       payloadDeferred.resolve(response.payload)
@@ -43,12 +43,13 @@ export function sendRequestToMain(
   ipcRenderer.on('response', listener)
   ipcRenderer.send('request', request)
 
+  // @ts-ignore @ignore
   return payloadDeferred.promise
 }
 
-export const getChannelOfRequestsFromMain = (): Channel<$FixMe> => {
+export const getChannelOfRequestsFromMain = (): Channel<RequestFromWindow> => {
   return eventChannel(emitToChannel => {
-    const listener = (event, request: Request) => {
+    const listener = (_event: mixed, request: Request) => {
       let alreadyResponded = false
       const respond = (payload: mixed) => {
         if (alreadyResponded)

@@ -7,6 +7,7 @@ type $IntentionalAny = any
 
 interface Window {
   __REACT_DEVTOOLS_GLOBAL_HOOK__: any
+  devToolsExtension?: Function
 }
 
 
@@ -109,4 +110,14 @@ type Spread<L, R> =
   declare module 'lodash/fp' {
     function set<S extends {}>(path: Array<string | number>, v: mixed, s: S): S
     function get(path: Array<string | number>, s: {}): mixed
+  }
+
+  declare module "*.png" {
+    const s: string
+    export default s
+  }
+
+  declare module 'socket.io' {
+    const a: any
+    export default a
   }

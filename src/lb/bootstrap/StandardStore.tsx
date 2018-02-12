@@ -8,6 +8,7 @@ import {
 } from 'redux'
 import {call} from 'redux-saga/effects'
 import createSagaMiddleware from 'redux-saga'
+import { identity } from 'lodash';
 
 type RootSaga<State, Action> = (
   store: StandardStore<State, Action>,
@@ -42,7 +43,7 @@ export default class StandardStore<State, Action> {
     this.reduxStore = this._createReduxStore()
   }
 
-  _createReduxStore(): Store<State, Action> {
+  _createReduxStore(): Store<State> {
     const middlewares = []
 
     middlewares.push(this.sagaMiddleware)
@@ -51,7 +52,7 @@ export default class StandardStore<State, Action> {
       applyMiddleware(...middlewares),
       typeof window === 'object' && window.devToolsExtension
         ? window.devToolsExtension()
-        : f => f,
+        : identity,
     )
 
     const store = createStore(
@@ -60,7 +61,7 @@ export default class StandardStore<State, Action> {
       enhancer,
     )
 
-    // $FixMe
+    // @ts-ignore ignore
     store.sagaMiddleware = this.sagaMiddleware
 
     return store
@@ -70,15 +71,16 @@ export default class StandardStore<State, Action> {
     return this.sagaMiddleware.run(this.rootSaga, this)
   }
 
-  runSaga: RunSagaFn = (fn: $IntentionalAny, ...args): $FixMe => {
-    // $FlowIgnore
+  runSaga: RunSagaFn = (fn: $IntentionalAny, ...args: $IntentionalAny[]): $FixMe => {
+    // @ts-ignore ignore
     return this.reduxStore.sagaMiddleware.run(preventToThrow(fn), ...args).done
   }
 }
 
 function preventToThrow(fn: () => Generator_<$FixMe, $FixMe, $FixMe>) {
-  return function* callAndCatch(...args): Generator_<$FixMe, $FixMe, $FixMe> {
+  return function* callAndCatch(...args: $IntentionalAny[]): Generator_<$FixMe, $FixMe, $FixMe> {
     try {
+      // @ts-ignore
       return yield call(fn, ...args)
     } catch (e) {
       return Promise.reject(e)

@@ -53,6 +53,7 @@ export default function* createNewProject(params: {
 
   const fileContent = JSON.stringify({name: params.name})
   yield call(fse.writeFile, filePath, fileContent, {encoding: 'utf-8'})
+  // @ts-ignore
   const resultOfRecognise = yield* call(recogniseProject, {filePath})
   if (resultOfRecognise.type === 'ok') {
     return {...resultOfRecognise, filePath}

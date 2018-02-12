@@ -1,6 +1,6 @@
 // @flow
 import * as React from 'react'
-import compose from 'ramda/src/compose'
+import {compose} from 'ramda'
 import css from './SvgIcon.css'
 import {resolveCss} from '$shared/utils'
 

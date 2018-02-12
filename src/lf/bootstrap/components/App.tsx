@@ -1,6 +1,4 @@
-// @flow
 import * as React from 'react'
-import compose from 'ramda/src/compose'
 import {AppContainer} from 'react-hot-loader'
 import configureStore from '$lf/bootstrap/configureStore'
 import {Provider as StoreProvider} from 'react-redux'
@@ -15,10 +13,7 @@ type State = {
   store: Store<any, any>,
 }
 
-class App extends React.Component<Props, *> {
-  static defaultProps: *
-  state: State
-
+class App extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
 
@@ -56,4 +51,4 @@ class App extends React.Component<Props, *> {
   }
 }
 
-export default compose(a => a)(App)
+export default App

@@ -22,5 +22,5 @@ export type ProjectDescription =
 export type ProjectsNamespaceState = {
   // If a project is mentioned in `byPath` but isn't here, it means it is yet to be loaded
   listOfPaths: Array<ProjectPath>
-  byPath: {[id: ProjectPath]: ProjectDescription}
+  byPath: {[id: string]: ProjectDescription}
 }

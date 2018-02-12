@@ -21,6 +21,7 @@ const def = dict({
   children: 'hi',
 })
 
+// @ts-ignore @ignore
 window.def = def
 
 const defD = def.derivedDict()
@@ -48,17 +49,20 @@ class ToDom {
     const untaps: {[k: string]: $IntentionalAny} = {}
     stylesD.keys().forEach(addStyleKey)
 
+    // @ts-ignore @ignore
     stylesD.changes(ticker).tap(c => {
       c.addedKeys.forEach(addStyleKey)
       c.deletedKeys.forEach(deleteStyleKey)
     })
 
     function addStyleKey(k: string) {
+      // @ts-ignore @ignore
       const valD = stylesD.prop(k)
 
       const untap = valD.tapImmediate(ticker, applyStyle)
       untaps[k] = untap
 
+      // @ts-ignore @ignore
       function applyStyle(newValue) {
         el.style[k] = newValue
       }
@@ -81,4 +85,5 @@ document.body.appendChild(el)
 def.setProp('children', 'hi2')
 
 def.prop('style').setProp('background', 'blue')
+// @ts-ignore @ignore
 def.setProp('style', dict({fontFamily: 'Helvetica', background: 'green'}))

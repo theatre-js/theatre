@@ -1,9 +1,8 @@
-// @flow
 import * as React from 'react'
-import compose from 'ramda/src/compose'
+import {compose} from 'ramda'
 
 type Props = {
-  children: React.Node
+  children: React.ReactNode
 }
 
 type State = {}

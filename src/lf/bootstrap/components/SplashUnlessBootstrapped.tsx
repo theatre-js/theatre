@@ -1,7 +1,7 @@
 // @flow
 
 import * as React from 'react'
-import compose from 'ramda/src/compose'
+import {compose} from 'ramda'
 import {connect} from '$lf/utils'
 import {getIsBootstrapped} from '$lf/common/selectors'
 import SplashScreen from '$lf/common/components/SplashScreen'

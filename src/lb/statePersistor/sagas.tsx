@@ -1,4 +1,3 @@
-// @flow
 import {app} from 'electron'
 import path from 'path'
 import {call, put, fork, select, takeLatest} from 'redux-saga/effects'
@@ -50,12 +49,14 @@ function* loadState(): Generator_<$FixMe, $FixMe, $FixMe> {
 function* persistStateChanges(): Generator_<$FixMe, $FixMe, $FixMe> {
   let lastState = pickPathsFromObject(
     yield select(),
+    // @ts-ignore @todo
     whitelistOfPartsOfStateToPersist,
   )
   yield takeLatest('*', function*(): Generator_<$FixMe, $FixMe, $FixMe> {
     yield delay(2)
     const newState = pickPathsFromObject(
       yield select(),
+      // @ts-ignore @todo
       whitelistOfPartsOfStateToPersist,
     )
     if (!deepEqual(lastState, newState)) {

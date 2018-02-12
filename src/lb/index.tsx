@@ -1,11 +1,10 @@
-// @flow
 import 'babel-polyfill'
 import initialConfigureStore from '$lb/bootstrap/configureStore'
 // import 'source-map-support/register'
 
 let configureStore = initialConfigureStore
 let lastStoreSagaTask = configureStore().runRootSaga()
-let lastCancelPromise = null
+let lastCancelPromise: null | Promise<mixed> = null
 
 if (module.hot) {
   module.hot.accept('$lb/bootstrap/configureStore', () => {

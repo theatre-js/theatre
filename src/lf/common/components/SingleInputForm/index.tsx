@@ -1,13 +1,12 @@
-// @flow
 import * as React from 'react'
-import css from './index.css'
+import * as css from './index.css'
 
 type Props = {
   placeholder?: string,
   onSubmit: Function,
   onCancel: Function,
   value?: string,
-  className?: Object,
+  className?: string,
   autoFocus: boolean,
 }
 
@@ -39,7 +38,7 @@ class SingleInputForm extends React.Component<Props, State> {
     }
   }
 
-  handleKeyDown = (e: SyntheticKeyboardEvent<*>) => {
+  handleKeyDown = (e: React.KeyboardEvent<mixed>) => {
     switch (e.keyCode) {
       case 13:
         this.props.onSubmit(this.input.value)
@@ -50,7 +49,7 @@ class SingleInputForm extends React.Component<Props, State> {
     }
   }
 
-  onChange = (e: SyntheticInputEvent<*>) => {
+  onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {value} = e.target
     this.setState(() => ({value}))
   }

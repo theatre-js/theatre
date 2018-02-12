@@ -1,7 +1,6 @@
 import {CommonNamespaceState} from '$studio/common/types'
 import {WorkspaceNamespaceState} from '$studio/workspace/types'
 import {IComponentModelNamespaceState} from '$studio/componentModel/types'
-import React from 'react'
 
 export interface IStoreState {
   common: CommonNamespaceState

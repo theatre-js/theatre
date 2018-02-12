@@ -1,4 +1,3 @@
-// @flow
 import {Channel, eventChannel, END} from 'redux-saga'
 
 export type Socket = $FixMe
@@ -11,11 +10,11 @@ export const getChannelFromSocketServer = (
   server: SocketServer,
 ): Channel<$FixMe> => {
   return eventChannel(emitToChannel => {
-    server.on('connection', socket => {
+    server.on('connection', (socket: $FixMe) => {
       emitToChannel({type: 'connection', socket} as ServerEvent)
     })
 
-    server.on('error', error => {
+    server.on('error', (error: $FixMe) => {
       emitToChannel({type: 'error', error} as ServerEvent)
     })
 
@@ -44,7 +43,7 @@ export type ResponseToSocketRequest =
 
 export const getChannelFromSocket = (socket: Socket): Channel<$FixMe> => {
   return eventChannel(emitToChannel => {
-    const errorListener = error => {
+    const errorListener = (error: $FixMe) => {
       emitToChannel({
         type: 'error',
         error,

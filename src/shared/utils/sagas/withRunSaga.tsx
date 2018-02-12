@@ -4,6 +4,7 @@ import hoistNonReactStatics from 'hoist-non-react-statics'
 // import {HigherOrderComponent} from 'react-flow-types'
 import {PropTypes} from 'prop-types'
 import {call} from 'redux-saga/effects'
+import {InferableComponentEnhancer} from 'react-redux'
 
 function preventToThrow(fn: () => Generator_<$FixMe, $FixMe, $FixMe>) {
   return function* callAndCatch(
@@ -117,27 +118,29 @@ export type RunSagaFn = (<
 
 export type WithRunSagaProps = {runSaga: RunSagaFn}
 
-export default function withRunSaga(): HigherOrderComponent<
-  {},
-  {runSaga: RunSagaFn}
-> {
+export default function withRunSaga(): InferableComponentEnhancer<{
+  runSaga: RunSagaFn
+}> {
   return function connectedToSagas(component: any): any {
     const finalComponent = (
       props: Object,
       {store}: {store: {runSaga: Function}},
     ) => {
       const ownProps = {
+        // @ts-ignore @ignore
         runSaga: (fn, ...args) =>
-          // $FixMe
+          // @ts-ignore @ignore
           store.sagaMiddleware.run(preventToThrow(fn), ...args).done,
       }
       return React.createElement(component, {...props, ...ownProps})
     }
 
+    // @ts-ignore @ignore
     finalComponent.contextTypes = {
       store: PropTypes.any,
     }
 
+    // @ts-ignore @ignore
     finalComponent.displayName = `withRunSaga(${component.displayName ||
       component.name ||
       'Component'})`

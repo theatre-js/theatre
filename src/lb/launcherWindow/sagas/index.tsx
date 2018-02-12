@@ -1,4 +1,3 @@
-// @flow
 import {fork, call, take, takeLatest, select} from 'redux-saga/effects'
 import {delay} from 'redux-saga'
 import electronIsReadyPromise from '$lb/launcherWindow/utils/electronIsReadyPromise'
@@ -13,7 +12,7 @@ import {
 import allLfEndpoints from './allLfEndpoints'
 
 function createWindow() {
-  let win = new BrowserWindow({width: 1200, height: 920, show: false})
+  const win = new BrowserWindow({width: 1200, height: 920, show: false})
   if (process.env.NODE_ENV === 'development') {
     win.loadURL(
       `http://localhost:${
@@ -35,7 +34,7 @@ function createWindow() {
 }
 
 function* sendStateUpdatesToWindow(
-  window: BrowserWindow,
+  window: typeof BrowserWindow,
 ): Generator_<$FixMe, $FixMe, $FixMe> {
   let lastState = yield select()
   yield takeLatest('*', function*(): Generator_<$FixMe, $FixMe, $FixMe> {
@@ -66,12 +65,14 @@ export default function* laucnherWindowSaga(): Generator_<
   $FixMe
 > {
   yield electronIsReadyPromise
-  let tray = new Tray(temporaryTrayIcon)
-  let window = createWindow()
+  const tray = new Tray(temporaryTrayIcon)
+  const window = createWindow()
   window.show()
 
   try {
+    // @ts-ignore
     yield fork(sendStateUpdatesToWindow, window)
+    // @ts-ignore
     yield fork(listenToWindowRequests, window)
     yield new Promise(() => {}) // just prevents the window from being closed right after it's open
   } finally {
@@ -81,7 +82,7 @@ export default function* laucnherWindowSaga(): Generator_<
 }
 
 function* listenToWindowRequests(
-  window: BrowserWindow,
+  window: typeof BrowserWindow,
 ): Generator_<$FixMe, $FixMe, $FixMe> {
   const requestsFromWindow = yield call(getChannelOfRequestsFromWindow, window)
 
@@ -101,6 +102,7 @@ function* handleRequestFromWindow(
   request: Request,
 ): Generator_<$FixMe, $FixMe, $FixMe> {
   try {
+    // @ts-ignore
     const result = yield call(handler, request.payload)
     request.respond(result)
     return

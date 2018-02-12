@@ -1,4 +1,3 @@
-// @flow
 import mock from 'mock-fs'
 import recogniseProject from './recogniseProject.lfEndpoint'
 import {runSingleSaga} from '$lb/testUtils'

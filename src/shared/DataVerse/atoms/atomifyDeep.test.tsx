@@ -34,7 +34,7 @@ describe('DataVerse.atomifyDeep', () => {
     ).toBeInstanceOf(Error)
   })
 
-  // eslint-disable-next-line no-unused-vars
+  // @ts-ignore @ignore
   function typeTests() {
     // const a = atomifyDeep('hi');
 

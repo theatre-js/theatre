@@ -1,10 +1,8 @@
-// @flow
 import * as React from 'react'
-import compose from 'ramda/src/compose'
-import {connect} from '$lf/utils'
+import {compose} from 'ramda'
 import {StoreState} from '$lf/types'
 import ProjectsList from './ProjectsList'
-import css from './index.css'
+import * as _css from './index.css'
 import {withRunSaga, WithRunSagaProps} from '$shared/utils'
 import isPathAProject from '$lb/projects/lfEndpoints/isPathAProject.caller'
 import createNewProject from '$lb/projects/lfEndpoints/createNewProject.caller'
@@ -13,6 +11,9 @@ import unrecogniseProject from '$lb/projects/lfEndpoints/unrecogniseProject.call
 import SingleInputForm from '$lf/common/components/SingleInputForm'
 import ErrorLogger from '$lf/common/components/ErrorLogger'
 import errorMessages from '$lf/projects/errors'
+import { connect } from 'react-redux';
+
+const css: $FixMe = _css
 
 type Props = WithRunSagaProps & {
   projects: Object,
@@ -71,11 +72,11 @@ class ProjectsPage extends React.Component<Props, State> {
     }))
   }
 
-  dragOverHandler = (e: SyntheticDragEvent<>) => {
+  dragOverHandler = (e: React.DragEvent<mixed>) => {
     e.preventDefault()
   }
 
-  dropHandler = (e: SyntheticDragEvent<>) => {
+  dropHandler = (e: React.DragEvent<mixed>) => {
     e.preventDefault()
     const path = e.dataTransfer.files[0].path
     this.setState(() => ({
@@ -86,16 +87,17 @@ class ProjectsPage extends React.Component<Props, State> {
   }
 
   async addOrRecogniseProject(path: string) {
-    const isProjectResult = await this.props.runSaga(isPathAProject, {
+    const isProjectResult: $FixMe = await this.props.runSaga(isPathAProject, {
       fileOrFolderPath: path,
     })
     if (isProjectResult.type === 'ok') {
       if (isProjectResult.isIt) {
-        const recogniseResult = await this.props.runSaga(recogniseProject, {
+        const recogniseResult: $FixMe = await this.props.runSaga(recogniseProject, {
           filePath: isProjectResult.filePath,
         })
         if (recogniseResult.type === 'error') {
           this.setState(() => ({
+            // @ts-ignore @todo
             error: errorMessages[recogniseResult.errorType],
           }))
         }
@@ -115,7 +117,7 @@ class ProjectsPage extends React.Component<Props, State> {
   async createProject(name: string) {
     if (this.state.lastDroppedPath != null) {
       const folderPath: string = this.state.lastDroppedPath
-      const createResult = await this.props.runSaga(createNewProject, {
+      const createResult: $FixMe = await this.props.runSaga(createNewProject, {
         folderPath,
         name,
       })
@@ -124,6 +126,7 @@ class ProjectsPage extends React.Component<Props, State> {
       }))
       if (createResult.type === 'error') {
         this.setState(() => ({
+          // @ts-ignore @todo
           error: errorMessages[createResult.errorType],
         }))
       }
@@ -131,11 +134,12 @@ class ProjectsPage extends React.Component<Props, State> {
   }
 
   async forgetProject(path: string) {
-    const unrecogniseResult = await this.props.runSaga(unrecogniseProject, {
+    const unrecogniseResult: $FixMe = await this.props.runSaga(unrecogniseProject, {
       filePath: path,
     })
     if (unrecogniseResult.type === 'error') {
       this.setState(() => ({
+        // @ts-ignore @todo
         error: errorMessages[unrecogniseResult.errorType],
       }))
     }
@@ -157,13 +161,16 @@ class ProjectsPage extends React.Component<Props, State> {
           onDrop={this.dropHandler}
         >
           <ProjectsList
+            // @ts-ignore @todo
             projects={this.props.projects}
-            forgetHandler={path => this.forgetProject(path)}
+            forgetHandler={(path: $FixMe) => this.forgetProject(path)}
           />
           {this.state.isCreatingNewProject && (
             <div className={css.nameInput}>
               <SingleInputForm
+                // @ts-ignore @todo
                 placeholder="Project name (return to add/esc to cancel)"
+                // @ts-ignore @todo
                 onSubmit={value => {
                   this.createProject(value)
                 }}

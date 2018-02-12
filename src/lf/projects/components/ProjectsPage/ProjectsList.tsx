@@ -1,4 +1,3 @@
-// @flow
 import * as React from 'react'
 import ProjectItem from './ProjectItem'
 import css from './ProjectsList.css'

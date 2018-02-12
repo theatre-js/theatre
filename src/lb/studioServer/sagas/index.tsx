@@ -1,4 +1,4 @@
-// @flow
+
 import {
   getChannelFromSocketServer,
   getChannelFromSocket,
@@ -14,12 +14,13 @@ import allStudioSocketEndpoints from './allStudioSocketEndpoints'
 import wn from 'when'
 
 const makeSocketServer = (): Promise<SocketServer> => {
-  const deferred = wn.defer()
+  const deferred = wn.defer<SocketServer>()
   const server = new Server()
   server.listen(process.env.studio.socketPort, () => {})
 
   deferred.resolve(server)
   console.log('server listening on', process.env.studio.socketPort)
+  // @ts-ignore @ignore
   return deferred.promise
 }
 
