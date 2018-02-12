@@ -7,13 +7,14 @@ import {
 } from '$src/studio/workspace/components/Panel/Panel'
 import {Subscriber} from 'react-broadcast'
 import {MODE_CMD} from '$studio/workspace/components/StudioUI/StudioUI'
+import { IStoreState } from '$studio/types';
 
-interface OP {
+interface IOwnProps {
   prop: string
   pathToModifierInstantiationDescriptor: string[]
 }
 
-interface IProps extends OP {
+interface IProps extends IOwnProps {
   css?: any
   label: string
   value: undefined | number
@@ -26,25 +27,11 @@ interface IState {
   initialPos: {x: number, y: number}
 }
 
-@connect((s, op: OP) => {
-  const pathToProp = [
-    ...op.pathToModifierInstantiationDescriptor,
-    'props',
-    op.prop,
-  ]
-  return {
-    pathToProp,
-    value: get(s, pathToProp),
-  }
-})
-export default class Input extends StudioComponent<IProps, IState> {
-  constructor(props: IProps, context: $IntentionalAny) {
-    super(props, context)
-    this.state = {
-      isBeingDragged: false,
-      move: {x: 0, y: 0},
-      initialPos: {x: 0, y: 0},
-    }
+export class Input extends StudioComponent<IProps, IState> {
+  state = {
+    isBeingDragged: false,
+    move: {x: 0, y: 0},
+    initialPos: {x: 0, y: 0},
   }
 
   onChange = (e: React.ChangeEvent<{value: string}>) => {
@@ -154,3 +141,15 @@ export default class Input extends StudioComponent<IProps, IState> {
     )
   }
 }
+
+export default connect((s: IStoreState, op: IOwnProps) => {
+  const pathToProp = [
+    ...op.pathToModifierInstantiationDescriptor,
+    'props',
+    op.prop,
+  ]
+  return {
+    pathToProp,
+    value: get(s, pathToProp),
+  }
+})(Input)

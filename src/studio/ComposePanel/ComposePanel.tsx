@@ -1,14 +1,16 @@
-// @flow
-import {React, connect, shouldUpdate, typeSystem} from '$studio/handy'
-import css from './ComposePanel.css'
+import {React, connect, typeSystem} from '$studio/handy'
 import {ValueEditor} from '$studio/structuralEditor'
 import {ComponentDescriptor, ComponentId} from '$studio/componentModel/types'
 import * as componentModelSelectors from '$studio/componentModel/selectors'
 import PaleMessage from '$src/studio/common/components/PaleMessage'
 import Panel from '$src/studio/workspace/components/Panel/Panel'
-// import ListOfModifierInstantiationDescriptorsInspector from './ListOfModifierInstantiationDescriptorsInspector'
+import {IStoreState} from '$studio/types'
 
-type Props =
+interface IOwnProps {
+  inputs: $FixMe
+}
+
+type ILP =
   | {
       componentId: void
       pathToComopnentDescriptor: void
@@ -20,16 +22,12 @@ type Props =
       componentDescriptor: ComponentDescriptor
     }
 
+type IProps = IOwnProps & ILP
+
 interface IState {}
 
-export class ComposePanelContent extends React.PureComponent<Props, IState> {
+export class ComposePanelContent extends React.PureComponent<IProps, IState> {
   static panelName = 'Compose'
-
-  constructor(props: Props) {
-    super(props)
-    this.state = {}
-  }
-
   render() {
     const {
       componentId,
@@ -61,13 +59,14 @@ export class ComposePanelContent extends React.PureComponent<Props, IState> {
   }
 }
 
-const connected = connect((s, op) => {
+export default connect((s: IStoreState, op: IOwnProps): ILP => {
   const possibleComponentId =
     op.inputs.selectedNode && op.inputs.selectedNode.componentId
   if (!possibleComponentId) {
     return {
       pathToComopnentDescriptor: undefined,
       componentDescriptor: undefined,
+      componentId: undefined
     }
   }
 
@@ -86,11 +85,3 @@ const connected = connect((s, op) => {
     componentId,
   }
 })(ComposePanelContent)
-
-export default connected
-
-// export default shouldUpdate(
-//   (prev: $FixMe, next: $FixMe) =>
-//     prev.inputs.selectedNode !== next.inputs.selectedNode,
-// )(connected)
-

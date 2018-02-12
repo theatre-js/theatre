@@ -18,7 +18,8 @@
     "playground:webpack:dev": "webpack-dev-server --progress --config webpack/playground/development.js",
     "examples:webpack:dev": "webpack-dev-server --progress --config webpack/examples/development.js",
     "build:dev": "npm-run-all --parallel lb:webpack:dev lf:webpack:dev studio:webpack:dev examples:webpack:dev",
-    "open-examples": "opn http://localhost:9092/examples"
+    "open-examples": "opn http://localhost:9092/examples",
+    "typescript:check": "tsc --noEmit"
   },
   "jest": {
     "testMatch": [

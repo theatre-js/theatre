@@ -2,10 +2,14 @@ import {React, connect} from '$src/studio/handy'
 import {map, get} from 'lodash'
 import SingleCustomStyleInspector from '$src/studio/componentModel/coreModifierDescriptors/HTML/SetCustomStyle/SetCustomStyleInspector/SingleCustomStyleInspector'
 import ModifierInspectorWrapper from '$src/studio/common/components/ModifierInspectorWrapper'
+import {IStoreState} from '$studio/types'
 
-type Props = {
-  list: string[]
+interface IOwnProps {
   pathToModifierInstantiationDescriptor: string[]
+}
+
+interface Props extends IOwnProps {
+  list: string[]
 }
 
 export class SetCustomStyleInspector extends React.PureComponent<Props, {}> {
@@ -35,7 +39,7 @@ export class SetCustomStyleInspector extends React.PureComponent<Props, {}> {
   }
 }
 
-export default connect((s, op: $FixMe): {list: string[]} => {
+export default connect((s: IStoreState, op: IOwnProps) => {
   return {
     list: get(s, op.pathToModifierInstantiationDescriptor).props.pairings.list,
   }

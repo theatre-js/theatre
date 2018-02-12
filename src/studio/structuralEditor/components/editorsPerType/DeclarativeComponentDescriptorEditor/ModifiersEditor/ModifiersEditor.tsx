@@ -1,4 +1,4 @@
-import {React, compose, connect} from '$src/studio/handy'
+import {React, connect} from '$src/studio/handy'
 import css from './ModifiersEditor.css'
 import PanelSection from '$src/studio/structuralEditor/components/reusables/PanelSection'
 import * as _ from 'lodash'
@@ -9,16 +9,20 @@ import {
   IComponentInstantiationValueDescriptor,
 } from '$src/studio/componentModel/types'
 import ListOfModifierInstantiationDescriptorsInspector from './ListOfModifierInstantiationDescriptorsInspector'
-import PaleMessage from '$src/studio/common/components/PaleMessage';
+import PaleMessage from '$src/studio/common/components/PaleMessage'
+import {IStoreState} from '$studio/types'
 
-type Props = {
-  pathToComponentDescriptor: Array<string>
+interface IOwnProps {
+  pathToComponentDescriptor: string[]
+}
+
+interface IProps extends IOwnProps {
   componentDescriptor: IDeclarativeComponentDescriptor
 }
 
 type State = {}
 
-class ModifiersEditor extends StudioComponent<Props, State> {
+class ModifiersEditor extends StudioComponent<IProps, State> {
   state = {}
 
   render() {
@@ -67,7 +71,8 @@ class ModifiersEditor extends StudioComponent<Props, State> {
                 modifierInstantiationDescriptors
               }
             />
-            <PaleMessage style="paler"
+            <PaleMessage
+              style="paler"
               message={`Add more modifiers by CMD+Clicking after or in-between other modifiers`}
             />
           </PanelSection>
@@ -81,10 +86,8 @@ class ModifiersEditor extends StudioComponent<Props, State> {
   }
 }
 
-export default compose(
-  connect((s, op) => {
-    return {
-      componentDescriptor: _.get(s, op.pathToComponentDescriptor),
-    }
-  }),
-)(ModifiersEditor)
+export default connect((s: IStoreState, op: IOwnProps) => {
+  return {
+    componentDescriptor: _.get(s, op.pathToComponentDescriptor),
+  }
+})(ModifiersEditor)

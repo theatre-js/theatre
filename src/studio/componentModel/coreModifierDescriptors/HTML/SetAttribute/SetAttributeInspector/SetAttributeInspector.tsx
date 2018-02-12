@@ -2,18 +2,17 @@ import {compose, React, connect} from '$studio/handy'
 import {map, get} from 'lodash'
 import SingleAttributeInspector from './SingleAttributeInspector'
 import ModifierInspectorWrapper from '$studio/common/components/ModifierInspectorWrapper'
+import {IStoreState} from '$studio/types'
 
-type Props = {
-  list: $FixMe
+interface IOwnProps {
   pathToModifierInstantiationDescriptor: string[]
 }
 
-export class SetAttributeInspector extends React.PureComponent<Props, {}> {
-  constructor(props: Props) {
-    super(props)
-    this.state = {}
-  }
+interface IProps extends IOwnProps {
+  list: string[]
+}
 
+export class SetAttributeInspector extends React.PureComponent<IProps, {}> {
   render() {
     const {list} = this.props
     // @todo ux - sort these alphabetically
@@ -35,11 +34,8 @@ export class SetAttributeInspector extends React.PureComponent<Props, {}> {
   }
 }
 
-export default compose(
-  connect((s, op: any) => {
-    return {
-      list: get(s, op.pathToModifierInstantiationDescriptor).props.pairings
-        .list,
-    }
-  }),
-)(SetAttributeInspector)
+export default connect((s: IStoreState, op: IOwnProps) => {
+  return {
+    list: get(s, op.pathToModifierInstantiationDescriptor).props.pairings.list,
+  }
+})(SetAttributeInspector)

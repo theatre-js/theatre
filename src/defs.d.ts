@@ -105,3 +105,8 @@ type Spread<L, R> =
     // Properties in R, with types that include undefined, that exist in L
     & SpreadProperties<L, R, OptionalPropertyNames<R> & keyof L>;
   */
+
+  declare module 'lodash/fp' {
+    function set<S extends {}>(path: Array<string | number>, v: mixed, s: S): S
+    function get(path: Array<string | number>, s: {}): mixed
+  }

@@ -1,23 +1,20 @@
-import {React, connect, typeSystem} from '$studio/handy'
+import {React, connect, typeSystem, StudioComponent} from '$studio/handy'
 import get from 'lodash/get'
 import editorsPerType from './editorsPerType/editorsPerType'
+import {IStoreState} from '$studio/types'
 
-type Props = {
-  path: Array<string>
+interface IOwnProps {
+  path: string[]
+  typeName?: string
+}
+
+interface IProps extends IOwnProps {
   typeName: string
 }
 
-type State = void
+type State = {}
 
-class ValueEditor extends React.PureComponent<Props, State> {
-  state: State
-  props: Props
-
-  constructor(props: Props) {
-    super(props)
-    this.state = undefined
-  }
-
+class ValueEditor extends StudioComponent<IProps, State> {
   render() {
     const {typeName} = this.props
     const type = typeSystem.types[typeName]
@@ -34,16 +31,16 @@ class ValueEditor extends React.PureComponent<Props, State> {
   }
 }
 
-export default connect((s, ownProps) => {
-  if (ownProps.hasOwnProperty('typeName')) {
-    const {typeName} = ownProps
+export default connect((s: IStoreState, op: IOwnProps) => {
+  if (op.hasOwnProperty('typeName')) {
+    const {typeName} = op
     if (!typeName) {
       // @todo
       throw new Error(`typeName can only be a string and not empty`)
     }
 
     if (process.env.NODE_ENV === 'development') {
-      const value = get(s, ownProps.path)
+      const value = get(s, op.path)
       if (!value || value.__descriptorType !== typeName) {
         throw new Error(
           `The value's __descriptorType doesn't match the required typeName`,
@@ -53,7 +50,7 @@ export default connect((s, ownProps) => {
 
     return {typeName}
   } else {
-    const value = get(s, ownProps.path)
+    const value = get(s, op.path)
     if (value == undefined) {
       throw new Error(`Path doesn't exist`)
     }
