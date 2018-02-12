@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {connect, compose, reduceStateAction} from '$studio/handy'
+import {connect, reduceStateAction, StudioComponent} from '$studio/handy'
 import {IStoreState} from '$studio/types'
 import * as _ from 'lodash'
 import {set, get} from 'lodash/fp'
@@ -13,11 +13,12 @@ import css from './StudioUI.css'
 
 export type ActiveMode = undefined | null | string
 
-type Props = {
+interface IOwnProps {
   visiblePanels: Array<string>
-  dispatch: Function
   panelsBoundaries: $FixMe
 }
+
+interface IProps extends IOwnProps {}
 
 type State = {
   isCreatingNewPanel: boolean
@@ -25,7 +26,6 @@ type State = {
   calculatedBoundaries: $FixMe
   gridOfBoundaries: $FixMe
 }
-
 
 export const EXACT_VALUE = 'exactValue'
 export const SAME_AS_BOUNDARY = 'sameAsBoundary'
@@ -53,7 +53,7 @@ const getOppositeSide = (side: string): string => {
   }
 }
 
-export class StudioUI extends React.Component<Props, State> {
+export class StudioUI extends StudioComponent<IProps, State> {
   boundaryPathToValueRefMap: object
   static getDefaultPanelPlacement(type): PanelPlacementSettings {
     // ??
@@ -81,8 +81,8 @@ export class StudioUI extends React.Component<Props, State> {
     return {}
   }
 
-  constructor(props: Props) {
-    super(props)
+  constructor(props: IProps, context: $IntentionalAny) {
+    super(props, context)
 
     this.state = {
       isCreatingNewPanel: false,
@@ -97,7 +97,7 @@ export class StudioUI extends React.Component<Props, State> {
     document.addEventListener('keydown', this._handleKeyDown)
     document.addEventListener('keyup', this._handleKeyUp)
   }
-  
+
   componentWillUnmount() {
     window.addEventListener('focus', () => this._handleFocus)
     window.removeEventListener('resize', this._handleResize)
@@ -105,7 +105,7 @@ export class StudioUI extends React.Component<Props, State> {
     document.removeEventListener('keyup', this._handleKeyUp)
   }
 
-  componentWillReceiveProps(nextProps: Props) {
+  componentWillReceiveProps(nextProps: IProps) {
     this.setState(() => ({
       ...this._getUpdatedBoundaries(nextProps.panelsBoundaries),
     }))
@@ -118,10 +118,7 @@ export class StudioUI extends React.Component<Props, State> {
   }
 
   _handleKeyDown = (e: $FixMe) => {
-    if (
-      e.target.tagName === 'INPUT' &&
-      ![18, 91].includes(e.keyCode)
-    ) return
+    if (e.target.tagName === 'INPUT' && ![18, 91].includes(e.keyCode)) return
     switch (e.keyCode) {
       case 16:
         this.setState(() => ({activeMode: MODE_SHIFT}))
@@ -282,11 +279,12 @@ export class StudioUI extends React.Component<Props, State> {
     const currentCalculatedBoundaries = this.state.calculatedBoundaries[panelId]
     let shouldUpdate = false
     Object.keys(newCalculatedBoundaries).forEach(key => {
-      if (newCalculatedBoundaries[key] !== currentCalculatedBoundaries[key]) shouldUpdate = true
+      if (newCalculatedBoundaries[key] !== currentCalculatedBoundaries[key])
+        shouldUpdate = true
     })
     if (!shouldUpdate) return
 
-    this.props.dispatch(
+    this.dispatch(
       reduceStateAction(['workspace', 'panels', 'byId'], (panels: $FixMe) => {
         const newBoundariesKeys: string[] = Object.keys(newBoundaries)
         const stagedChanges = _.compact(
@@ -507,7 +505,7 @@ export class StudioUI extends React.Component<Props, State> {
   //     outputs: {},
   //   }
   //   this.setState(() => ({isCreatingNewPanel: false}))
-  //   this.props.dispatch(createPanel, panelProperties)
+  //   this.dispatch(createPanel, panelProperties)
   // }
 
   cancelCreatingNewPanel = () => {
@@ -520,34 +518,28 @@ export class StudioUI extends React.Component<Props, State> {
       <div className={css.container}>
         {visiblePanels.map(panelId => (
           <PanelController
-          key={panelId}
-          panelId={panelId}
-          activeMode={this.state.activeMode}
-          boundaries={this.state.calculatedBoundaries[panelId]}
-          gridOfBoundaries={this.state.gridOfBoundaries}
-          updatePanelBoundaries={this.updatePanelBoundaries}
+            key={panelId}
+            panelId={panelId}
+            activeMode={this.state.activeMode}
+            boundaries={this.state.calculatedBoundaries[panelId]}
+            gridOfBoundaries={this.state.gridOfBoundaries}
+            updatePanelBoundaries={this.updatePanelBoundaries}
           />
         ))}
-        <StatusBar activeMode={this.state.activeMode}/>
+        <StatusBar activeMode={this.state.activeMode} />
       </div>
     )
   }
 }
 
-export default compose(
-  connect((state: IStoreState) => {
-    const panelsBoundaries = _.mapValues(
-      _.get(state, ['workspace', 'panels', 'byId']),
-      panel => panel.boundaries,
-    )
-    const visiblePanels = _.get(state, [
-      'workspace',
-      'panels',
-      'listOfVisibles',
-    ])
-    return {
-      panelsBoundaries,
-      visiblePanels,
-    }
-  }),
-)(StudioUI)
+export default connect((state: IStoreState) => {
+  const panelsBoundaries = _.mapValues(
+    _.get(state, ['workspace', 'panels', 'byId']),
+    panel => panel.boundaries,
+  )
+  const visiblePanels = _.get(state, ['workspace', 'panels', 'listOfVisibles'])
+  return {
+    panelsBoundaries,
+    visiblePanels,
+  }
+})(StudioUI)

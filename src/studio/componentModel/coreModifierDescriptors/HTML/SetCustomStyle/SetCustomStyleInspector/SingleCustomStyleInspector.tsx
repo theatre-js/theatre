@@ -1,27 +1,21 @@
-// @flow
-import {compose, React, connect, reduceStateAction} from '$studio/handy'
+import {React, connect, reduceStateAction, StudioComponent} from '$studio/handy'
 import TextInput from '$studio/common/components/TextInput'
-// import map from 'lodash/map'
-import get from 'lodash/get'
+import {get} from 'lodash'
 import KeyValuePair from '$studio/common/components/KeyValuePair'
+import {IStoreState} from '$studio/types'
 
-type Props = {
-  pathToPairings: Array<string>
-  pairing: {key: string; value: string}
-  dispatch: Function
+interface IOwnProps {
+  pathToPairings: string[]
   id: string
 }
 
-export class SingleCustomStyleInspector extends React.PureComponent<
-  Props,
-  void
-> {
-  constructor(props: Props) {
-    super(props)
-  }
+interface Props extends IOwnProps {
+  pairing: {key: string; value: string}
+}
 
+export class SingleCustomStyleInspector extends StudioComponent<Props, {}> {
   _onKeyChange = (key: string) => {
-    this.props.dispatch(
+    this.dispatch(
       reduceStateAction(
         [...this.props.pathToPairings, 'byId', this.props.id, 'key'],
         () => key,
@@ -30,7 +24,7 @@ export class SingleCustomStyleInspector extends React.PureComponent<
   }
 
   _onValueChange = (value: string) => {
-    this.props.dispatch(
+    this.dispatch(
       reduceStateAction(
         [...this.props.pathToPairings, 'byId', this.props.id, 'value'],
         () => value,
@@ -62,10 +56,8 @@ export class SingleCustomStyleInspector extends React.PureComponent<
   }
 }
 
-export default compose(
-  connect((s, op: any) => {
-    return {
-      pairing: get(s, op.pathToPairings).byId[op.id],
-    }
-  }),
-)(SingleCustomStyleInspector)
+export default connect((s: IStoreState, op: IOwnProps) => {
+  return {
+    pairing: get(s, op.pathToPairings).byId[op.id],
+  }
+})(SingleCustomStyleInspector)

@@ -1,25 +1,23 @@
-// @flow
-import {React, compose, connect, reduceStateAction} from '$studio/handy'
+import {React, connect, reduceStateAction, StudioComponent} from '$studio/handy'
 import css from './ExpressionlessStringEditor.css'
 import * as _ from 'lodash'
+import {IStoreState} from '$studio/types'
 
-type Props = {
+interface IOwnProps {
   label: string
   path: Array<string>
-  dispatch: Function
 }
 
-type State = {}
+interface IProps extends IOwnProps {
+  value: $FixMe
+}
 
-class ExpressionlessStringEditor extends React.PureComponent<Props, State> {
-  constructor(props: Props) {
-    super(props)
-    this.state = {}
-  }
+interface State {}
 
-  onChange = e => {
+class ExpressionlessStringEditor extends StudioComponent<IProps, State> {
+  onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {value} = e.target
-    this.props.dispatch(reduceStateAction(this.props.path, () => value))
+    this.dispatch(reduceStateAction(this.props.path, () => value))
   }
 
   render() {
@@ -39,7 +37,7 @@ class ExpressionlessStringEditor extends React.PureComponent<Props, State> {
   }
 }
 
-export default connect((s, op) => {
+export default connect((s: IStoreState, op: IOwnProps): {value: string} => {
   return {
     value: _.get(s, op.path),
   }

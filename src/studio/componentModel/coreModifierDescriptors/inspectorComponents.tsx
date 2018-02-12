@@ -8,4 +8,6 @@ const inspectorComponents = {
   'TheaterJS/Core/HTML/UberModifier': UberModifierInspector,
 }
 
+export type ModifierIDsWithInspectorComponents = keyof typeof inspectorComponents
+
 export default inspectorComponents

@@ -1,5 +1,4 @@
-// @flow
-import {React, compose} from '$studio/handy'
+import {React} from '$studio/handy'
 import css from './PanelSection.css'
 import cx from 'classnames'
 

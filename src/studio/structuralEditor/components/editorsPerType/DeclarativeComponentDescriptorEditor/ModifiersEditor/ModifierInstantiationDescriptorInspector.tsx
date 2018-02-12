@@ -1,13 +1,18 @@
-// @flow
 import {compose, React, connect} from '$studio/handy'
-import get from 'lodash/get'
-import inspectorComponents from '$studio/componentModel/coreModifierDescriptors/inspectorComponents'
+import {get} from 'lodash'
+import { IStoreState } from '$studio/types';
+import inspectorComponents, {
+  ModifierIDsWithInspectorComponents,
+} from '$studio/componentModel/coreModifierDescriptors/inspectorComponents'
 
-type Props = {
+interface IOwnProps {
   id: string
   index: number
   pathToModifierInstantiationDescriptor: Array<string>
-  modifierId: string
+}
+
+interface Props extends IOwnProps {
+  modifierId: ModifierIDsWithInspectorComponents
 }
 
 type State = {}
@@ -33,7 +38,7 @@ export class ModifierInstantiationDescriptorInspector extends React.PureComponen
     }
     return (
       <InspectorComponent
-        modifierId={modifierId}
+        // modifierId={modifierId}
         pathToModifierInstantiationDescriptor={
           this.props.pathToModifierInstantiationDescriptor
         }
@@ -43,7 +48,7 @@ export class ModifierInstantiationDescriptorInspector extends React.PureComponen
 }
 
 export default compose(
-  connect((s, op) => {
+  connect((s: IStoreState, op: IOwnProps) => {
     return {
       modifierId: get(s, [
         ...op.pathToModifierInstantiationDescriptor,

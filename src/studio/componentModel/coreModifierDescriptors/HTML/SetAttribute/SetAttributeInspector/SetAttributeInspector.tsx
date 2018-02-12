@@ -1,29 +1,27 @@
-// @flow
 import {compose, React, connect} from '$studio/handy'
-import map from 'lodash/map'
-import get from 'lodash/get'
+import {map, get} from 'lodash'
 import SingleAttributeInspector from './SingleAttributeInspector'
 import ModifierInspectorWrapper from '$studio/common/components/ModifierInspectorWrapper'
 
 type Props = {
   list: $FixMe
-  pathToModifierInstantiationDescriptor: Array<string>
+  pathToModifierInstantiationDescriptor: string[]
 }
 
-export class SetAttributeInspector extends React.PureComponent<Props, void> {
+export class SetAttributeInspector extends React.PureComponent<Props, {}> {
   constructor(props: Props) {
     super(props)
+    this.state = {}
   }
 
   render() {
     const {list} = this.props
     // @todo ux - sort these alphabetically
-    const body = map(list, (id, index) => {
+    const body = map(list, (id: string) => {
       return (
         <SingleAttributeInspector
           key={id}
           id={id}
-          index={index}
           pathToPairings={[
             ...this.props.pathToModifierInstantiationDescriptor,
             'props',

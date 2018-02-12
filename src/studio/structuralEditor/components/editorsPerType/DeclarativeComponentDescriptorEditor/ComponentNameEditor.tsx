@@ -1,10 +1,7 @@
-// @flow
-import {React, compose} from '$studio/handy'
+import {React} from '$studio/handy'
 import css from './ComponentNameEditor.css'
-import * as _ from 'lodash'
 import ExpressionlessStringEditor from '$studio/structuralEditor/components/reusables/ExpressionlessStringEditor'
 import PanelSection from '$studio/structuralEditor/components/reusables/PanelSection'
-import {identity} from 'ramda'
 
 type Props = {
   pathToComponentDescriptor: Array<string>

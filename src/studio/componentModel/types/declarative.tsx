@@ -83,7 +83,7 @@ export type BooleanLiteralDescriptor = boolean
 export interface IComponentInstantiationValueDescriptor {
   __descriptorType: 'ComponentInstantiationValueDescriptor'
   componentId: ComponentId
-  props: IMapDescriptor
+  props: IMapDescriptor<{}>
   modifierInstantiationDescriptors: IModifierInstantiationValueDescriptors
 }
 
@@ -103,7 +103,7 @@ export type ValueDescriptor =
   | ValueDescriptorDescribedInAnObject
   | StringLiteralDescriptor
   | BooleanLiteralDescriptor
-  | ArrayDescriptor
+  | ArrayDescriptor<mixed>
 
 export interface ITimelineDescriptor {
   __descriptorType: 'TimelineDescriptor'

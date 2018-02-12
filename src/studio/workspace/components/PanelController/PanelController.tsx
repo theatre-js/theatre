@@ -16,6 +16,8 @@ import {
 import * as panelComponents from '$src/studio/workspace/panelComponents'
 import {Broadcast} from 'react-broadcast'
 import {ActiveMode} from '$src/studio/workspace/components/StudioUI/StudioUI'
+import {StudioComponent} from '$studio/handy'
+import {IStoreState} from '$studio/types'
 
 export const PanelControlChannel = 'TheaterJS/PanelControlChannel'
 
@@ -29,7 +31,7 @@ export interface IPanelControlChannelData {
   updatePanelBoundaries: Function
 }
 
-type OwnProps = {
+interface OwnProps {
   panelId: string
   activeMode: ActiveMode
   boundaries: $FixMe
@@ -37,8 +39,7 @@ type OwnProps = {
   updatePanelBoundaries: Function
 }
 
-type Props = OwnProps & {
-  dispatch: Function
+interface IProps extends OwnProps {
   type: PanelType
   configuration: PanelConfiguration
   persistentState: PanelPersistentState
@@ -65,16 +66,12 @@ type State = IPanelPlacementState & {
   isMoving: boolean
 }
 
-class PanelController extends React.Component<Props, State> {
+class PanelController extends StudioComponent<IProps, State> {
   static defaultProps = {
     persistentState: {
       isInSettings: true,
     },
     outputs: {},
-  }
-
-  constructor(props: Props) {
-    super(props)
   }
 
   render() {
@@ -114,7 +111,7 @@ class PanelController extends React.Component<Props, State> {
   }
 
   updatePanelData(propertyToUpdate: string, newData: Object) {
-    this.props.dispatch(
+    this.dispatch(
       reduceStateAction(
         ['workspace', 'panels', 'byId', this.props.panelId, propertyToUpdate],
         data => ({...data, ...newData}),
@@ -127,7 +124,7 @@ class PanelController extends React.Component<Props, State> {
   }
 }
 
-export default connect((s, op: OwnProps) => {
+export default connect((s: IStoreState, op: OwnProps) => {
   const {
     type,
     configuration,

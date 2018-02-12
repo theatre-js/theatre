@@ -1,5 +1,5 @@
 // @flow
-import {React, connect, reduceStateAction, multiReduceStateAction} from '$studio/handy'
+import {React, connect, reduceStateAction, multiReduceStateAction, StudioComponent} from '$studio/handy'
 import {
   VariableID,
   VariableObject,
@@ -26,8 +26,9 @@ import MdCancel from 'react-icons/lib/md/cancel'
 import MdDonutSmall from 'react-icons/lib/md/donut-small'
 import MdStars from 'react-icons/lib/md/stars'
 import MdCamera from 'react-icons/lib/md/camera'
+import { IStoreState } from '$studio/types';
 
-type OwnProps = {
+interface IOwnProps {
   variableIds: VariableID[]
   splitVariable: Function
   panelWidth: number
@@ -39,13 +40,12 @@ type OwnProps = {
   pathToTimeline: string[]
 }
 
-type Props = OwnProps & {
+interface IProps extends IOwnProps {
   variables: VariableObject[]
-  dispatch: Function
   pathToVariables: string[]
 }
 
-type State = {
+type IState = {
   svgWidth: number
   svgHeight: number
   svgTransform: number
@@ -116,11 +116,11 @@ const colors = [
   {name: 'yellow', normal: '#FCE181', darkened: '#726a4b'},
 ]
 
-class BoxBiew extends React.Component<Props, State> {
+class BoxBiew extends StudioComponent<IProps, IState> {
   svgArea: HTMLElement
 
-  constructor(props: Props) {
-    super(props)
+  constructor(props: IProps, context: $IntentionalAny) {
+    super(props, context)
     this.state = {
       ...this._getSvgState(props),
       pointValuesEditorProps: null,
@@ -129,7 +129,7 @@ class BoxBiew extends React.Component<Props, State> {
   }
 
   componentDidMount() {
-    this.props.dispatch(
+    this.dispatch(
       resetExtremums([
         ...this.props.pathToVariables,
         this.state.activeVariableId,
@@ -227,7 +227,7 @@ class BoxBiew extends React.Component<Props, State> {
         handles: [.5, 0, .5, 0],
       }
     }
-    this.props.dispatch(
+    this.dispatch(
       reduceStateAction(
         [...this.props.pathToVariables, this.state.activeVariableId],
         variable => {
@@ -243,7 +243,7 @@ class BoxBiew extends React.Component<Props, State> {
         },
       ),
     )
-    // this.props.dispatch(
+    // this.dispatch(
     //   resetExtremums([
     //     ...this.props.pathToVariables,
     //     this.state.activeVariableId,
@@ -262,12 +262,12 @@ class BoxBiew extends React.Component<Props, State> {
   ]
 
   removePoint = (variableId: VariableID, pointIndex: number) => {
-    this.props.dispatch(
+    this.dispatch(
       reduceStateAction(this.pathToPoints(variableId), points =>
         points.slice(0, pointIndex).concat(points.slice(pointIndex + 1)),
       ),
     )
-    this.props.dispatch(
+    this.dispatch(
       resetExtremums([...this.props.pathToVariables, variableId]),
     )
   }
@@ -277,13 +277,13 @@ class BoxBiew extends React.Component<Props, State> {
     pointIndex: number,
     newPosition: PointPosition,
   ) => {
-    this.props.dispatch(
+    this.dispatch(
       reduceStateAction(this.pathToPoint(variableId, pointIndex), point => ({
         ...point,
         ...newPosition,
       })),
     )
-    this.props.dispatch(
+    this.dispatch(
       resetExtremums([...this.props.pathToVariables, variableId]),
     )
   }
@@ -324,14 +324,14 @@ class BoxBiew extends React.Component<Props, State> {
     change: PointPosition,
   ) => {
     const deNormalizedChange = this.deNormalizePositionChange(change)
-    this.props.dispatch(
+    this.dispatch(
       reduceStateAction(this.pathToPoint(variableId, pointIndex), point => ({
         ...point,
         time: point.time + deNormalizedChange.time,
         value: point.value + deNormalizedChange.value,
       })),
     )
-    this.props.dispatch(
+    this.dispatch(
       resetExtremums([...this.props.pathToVariables, variableId]),
     )
   }
@@ -349,7 +349,7 @@ class BoxBiew extends React.Component<Props, State> {
       points[pointIndex + 1],
     )
     if (pointIndex === 0) {
-      this.props.dispatch(
+      this.dispatch(
         reduceStateAction(
           [...this.pathToPoint(variableId, pointIndex), 'interpolationDescriptor', 'handles'],
           handles => {
@@ -360,7 +360,7 @@ class BoxBiew extends React.Component<Props, State> {
         )
       )
     } else {
-      this.props.dispatch(
+      this.dispatch(
         multiReduceStateAction([
           {
             path: [...this.pathToPoint(variableId, pointIndex), 'interpolationDescriptor', 'handles'],
@@ -383,13 +383,13 @@ class BoxBiew extends React.Component<Props, State> {
         ])
       )
     }
-    this.props.dispatch(
+    this.dispatch(
       resetExtremums([...this.props.pathToVariables, variableId]),
     )
   }
 
   addConnector = (variableId: VariableID, pointIndex: number) => {
-    this.props.dispatch(
+    this.dispatch(
       reduceStateAction(
         this.pathToPoint(variableId, pointIndex),
         point => ({
@@ -404,7 +404,7 @@ class BoxBiew extends React.Component<Props, State> {
   }
 
   removeConnector = (variableId: VariableID, pointIndex: number) => {
-    this.props.dispatch(
+    this.dispatch(
       reduceStateAction(this.pathToPoint(variableId, pointIndex), point => ({
         ...point,
         interpolationDescriptor: {
@@ -421,7 +421,7 @@ class BoxBiew extends React.Component<Props, State> {
     side: 'left' | 'right',
   ) => {
     if (side === 'left' && pointIndex !== 0) {
-      this.props.dispatch(
+      this.dispatch(
         reduceStateAction(
           [...this.pathToPoint(variableId, pointIndex - 1), 'interpolationDescriptor', 'handles'],
           handles => {
@@ -432,7 +432,7 @@ class BoxBiew extends React.Component<Props, State> {
       )
     }
     if (side === 'right') {
-      this.props.dispatch(
+      this.dispatch(
         reduceStateAction(
           [...this.pathToPoint(variableId, pointIndex), 'interpolationDescriptor', 'handles'],
           handles => {
@@ -442,7 +442,7 @@ class BoxBiew extends React.Component<Props, State> {
         ),
       )
     }
-    this.props.dispatch(
+    this.dispatch(
       resetExtremums([...this.props.pathToVariables, variableId]),
     )
   }
@@ -780,7 +780,7 @@ class BoxBiew extends React.Component<Props, State> {
   }
 }
 
-export default connect((s, op) => {  
+export default connect((s: IStoreState, op: IOwnProps) => {  
   const pathToVariables = [...op.pathToTimeline, 'variables']
   const variablesState = _.get(s, pathToVariables)
 

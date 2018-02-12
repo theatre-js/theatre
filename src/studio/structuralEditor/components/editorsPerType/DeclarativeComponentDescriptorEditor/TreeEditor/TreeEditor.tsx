@@ -21,11 +21,10 @@ import {
   STATUS,
 } from '$src/studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor/constants'
 import cx from 'classnames'
-import {
-  PanelPropsChannel,
-} from '$src/studio/workspace/components/Panel/Panel'
+import {PanelPropsChannel} from '$src/studio/workspace/components/Panel/Panel'
 import {Subscriber} from 'react-broadcast'
 import {MODE_CMD} from '$src/studio/workspace/components/StudioUI/StudioUI'
+import {IStoreState} from '$studio/types'
 
 export const metaKey = 'composePanel'
 const PLACEHOLDER = '\n'
@@ -34,15 +33,18 @@ export const getMeta = (rootComponentDescriptor: $IntentionalAny) => {
   return _.get(rootComponentDescriptor, ['meta', metaKey])
 }
 
-export const getSelectedNodeId = (rootComponentDescriptor: $IntentionalAny): undefined | null | string => {
+export const getSelectedNodeId = (
+  rootComponentDescriptor: $IntentionalAny,
+): undefined | null | string => {
   return _.get(getMeta(rootComponentDescriptor), 'selectedNodeId')
 }
 
-type Props = {
-  pathToComponentDescriptor: Array<string>
+interface IOwnProps {
+  pathToComponentDescriptor: string[]
   rootComponentDescriptor: Object
-  dispatch: Function
 }
+
+interface IProps extends IOwnProps {}
 
 type State = {
   nodes: Object
@@ -99,7 +101,7 @@ const getDefaultComponentProps = id => ({
   },
 })
 
-class TreeEditor extends StudioComponent<Props, State> {
+class TreeEditor extends StudioComponent<IProps, State> {
   lastAction = {type: null, payload: null}
   queuedDrop = null
   state = {
@@ -114,10 +116,13 @@ class TreeEditor extends StudioComponent<Props, State> {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (!_.isEqual(
-      nextProps.rootComponentDescriptor.localHiddenValuesById,
-      this.props.rootComponentDescriptor.localHiddenValuesById
-    ) || this.lastAction.type != null) {
+    if (
+      !_.isEqual(
+        nextProps.rootComponentDescriptor.localHiddenValuesById,
+        this.props.rootComponentDescriptor.localHiddenValuesById,
+      ) ||
+      this.lastAction.type != null
+    ) {
       this._setNodes(nextProps.rootComponentDescriptor)
     }
   }
@@ -181,7 +186,7 @@ class TreeEditor extends StudioComponent<Props, State> {
         return {
           id: which,
           status: status,
-          ...actionPayload != null ? {actionPayload} : {},
+          ...(actionPayload != null ? {actionPayload} : {}),
           index,
           parentId,
           path: parentPath,
@@ -196,9 +201,9 @@ class TreeEditor extends StudioComponent<Props, State> {
         return {
           id: which,
           status: status,
-          ...actionPayload != null ? {actionPayload} : {},
+          ...(actionPayload != null ? {actionPayload} : {}),
           type: NODE_TYPE.TEXT,
-          value: (descriptor === PLACEHOLDER) ? '' : descriptor,
+          value: descriptor === PLACEHOLDER ? '' : descriptor,
           index,
           parentId,
           path: parentPath,
@@ -222,7 +227,7 @@ class TreeEditor extends StudioComponent<Props, State> {
         return {
           id,
           status: status,
-          ...actionPayload != null ? {actionPayload} : {},
+          ...(actionPayload != null ? {actionPayload} : {}),
           type: NODE_TYPE.COMPONENT,
           componentType,
           displayName,
@@ -233,7 +238,13 @@ class TreeEditor extends StudioComponent<Props, State> {
           children: []
             .concat(descriptor.props.children || [])
             .map((c, i) =>
-              this._getComponentData(c, localHiddenValuesById, i, id, parentPath.concat('children', `${i}`)),
+              this._getComponentData(
+                c,
+                localHiddenValuesById,
+                i,
+                id,
+                parentPath.concat('children', `${i}`),
+              ),
             ),
         }
       }
@@ -398,26 +409,32 @@ class TreeEditor extends StudioComponent<Props, State> {
   }
 
   handleDragEnd = () => {
-    document.styleSheets[0].deleteRule(document.styleSheets[0].cssRules.length - 1)
+    document.styleSheets[0].deleteRule(
+      document.styleSheets[0].cssRules.length - 1,
+    )
 
     const dropPayload: $FixMe = this.queuedDrop
     this._unsetQueuedDrop()
     console.log(dropPayload)
     let nodeBeingDragged
     this.setState((state: $FixMe) => {
-      ({nodeBeingDragged} = state)
+      ;({nodeBeingDragged} = state)
       return {nodeBeingDragged: null}
     })
-    
+
     const {nodeProps, height, offsetY, offsetX} = nodeBeingDragged
-    const {parentId: currentParentId, index: currentIndex, id: nodeId} = nodeProps
+    const {
+      parentId: currentParentId,
+      index: currentIndex,
+      id: nodeId,
+    } = nodeProps
     let newParentId: string, newIndex: number
     if (dropPayload != null) {
       const {index: dropIndex} = dropPayload
       newParentId = dropPayload.id
       newIndex =
-        (newParentId === currentParentId && currentIndex < dropIndex)
-          ? (dropIndex - 1)
+        newParentId === currentParentId && currentIndex < dropIndex
+          ? dropIndex - 1
           : dropIndex
       this._setLastAction(ACTION.NODE_MOVE, {
         id: nodeId,
@@ -427,7 +444,7 @@ class TreeEditor extends StudioComponent<Props, State> {
         dropOffset: {
           x: dropPayload.mouseX - offsetX - dropPayload.targetLeft,
           y: dropPayload.mouseY - offsetY - dropPayload.targetTop,
-        }
+        },
       })
     } else {
       newParentId = currentParentId
@@ -493,7 +510,7 @@ class TreeEditor extends StudioComponent<Props, State> {
           if (newType.nodeType === NODE_TYPE.COMPONENT) {
             return {
               ...getDefaultComponentProps(nodeId),
-              ...nodeType === NODE_TYPE.COMPONENT ? localHiddenValue : {},
+              ...(nodeType === NODE_TYPE.COMPONENT ? localHiddenValue : {}),
               componentId: this._getComponentDescriptorByDisplayName(
                 newType.displayName,
               ).id,
@@ -504,7 +521,9 @@ class TreeEditor extends StudioComponent<Props, State> {
     )
   }
 
-  _cancelSettingComponentType = (nodeProps = this.state.componentBeingSet.nodeProps) => {
+  _cancelSettingComponentType = (
+    nodeProps = this.state.componentBeingSet.nodeProps,
+  ) => {
     this.setState(() => ({componentBeingSet: null}))
     if (nodeProps.status === STATUS.UNINITIALIZED) {
       this._setLastAction(ACTION.NODE_ADD_CANCEL, {id: nodeProps.id})
@@ -526,12 +545,18 @@ class TreeEditor extends StudioComponent<Props, State> {
   _startScroll = dir => {
     if (this.state.nodeBeingDragged == null) return
     const delta = dir === 'up' ? -1 : dir === 'down' ? 1 : 0
-    const maxScroll = this.treeContainer.scrollHeight - this.treeWrapper.clientHeight
-    const coeffGenerator = dir === 'up'
-      ?
-        (scroll: number) => {return scroll > 100 ? 1 : 1 - Math.pow(1-((scroll)/100), 1.4)}
-      :
-        (scroll: number) => {return (maxScroll - scroll) > 100 ? 1 : 1 - Math.pow(1-(maxScroll - scroll)/100, 1.4)}
+    const maxScroll =
+      this.treeContainer.scrollHeight - this.treeWrapper.clientHeight
+    const coeffGenerator =
+      dir === 'up'
+        ? (scroll: number) => {
+            return scroll > 100 ? 1 : 1 - Math.pow(1 - scroll / 100, 1.4)
+          }
+        : (scroll: number) => {
+            return maxScroll - scroll > 100
+              ? 1
+              : 1 - Math.pow(1 - (maxScroll - scroll) / 100, 1.4)
+          }
     let scroll = this.treeWrapper.scrollTop
     this.scrollInterval = setInterval(() => {
       scroll += parseFloat((coeffGenerator(scroll) * delta * 3.5).toFixed(1))
@@ -547,7 +572,10 @@ class TreeEditor extends StudioComponent<Props, State> {
   _renderScroller(direction: 'up' | 'down') {
     return (
       <div
-        className={cx(css.scroller, {[css.top]: direction === 'up', [css.bottom]: direction === 'down'})}
+        className={cx(css.scroller, {
+          [css.top]: direction === 'up',
+          [css.bottom]: direction === 'down',
+        })}
         onMouseOver={() => this._startScroll(direction)}
         onMouseLeave={() => this._stopScroll()}
       />
@@ -585,81 +613,87 @@ class TreeEditor extends StudioComponent<Props, State> {
 
     return (
       <Subscriber channel={PanelPropsChannel}>
-      {({activeMode}) => {
-        return (
-          <PanelSection withHorizontalMargin={false} withoutBottomMargin={true} label="Template">
-            {this._renderScroller('up')}
-            {isANodeBeingDragged && (
-              <MovableNode
-                rootNode={_.get(nodes, nodeBeingDragged.nodeProps.path)}
-                nodeBeingDragged={nodeBeingDragged}
-                onDragEnd={this.handleDragEnd}
-              />
-            )}
-            <div ref={c => (this.treeWrapper = c)} className={css.treeWrapper}>
-              <div
-                ref={c => (this.treeContainer = c)}
-                className={css.treeContainer}
-              >
-                <NodeContainer
-                  key={nodes.id}
-                  isCommandDown={activeMode === MODE_CMD}
-                  selectedNodeId={selectedNodeId}
-                  nodeData={nodes}
-                  dispatchAction={this.dispatchActionFromNode}
-                  isANodeBeingDragged={isANodeBeingDragged}
-                  setNodeBeingDragged={this.setNodeBeingDragged}
-                  setSelectedNodeId={this.setSelectedNodeId}
-                  listOfDisplayNames={this.props.listOfDisplayNames}
-                  handleTextNodeTypeChange={this.handleTextNodeTypeChange}
-                  cancelTextNodeTypeChange={this.cancelTextNodeTypeChange}
-                  cancelSettingType={this._cancelSettingComponentType}
+        {({activeMode}) => {
+          return (
+            <PanelSection
+              withHorizontalMargin={false}
+              withoutBottomMargin={true}
+              label="Template"
+            >
+              {this._renderScroller('up')}
+              {isANodeBeingDragged && (
+                <MovableNode
+                  rootNode={_.get(nodes, nodeBeingDragged.nodeProps.path)}
+                  nodeBeingDragged={nodeBeingDragged}
+                  onDragEnd={this.handleDragEnd}
                 />
+              )}
+              <div
+                ref={c => (this.treeWrapper = c)}
+                className={css.treeWrapper}
+              >
+                <div
+                  ref={c => (this.treeContainer = c)}
+                  className={css.treeContainer}
+                >
+                  <NodeContainer
+                    key={nodes.id}
+                    isCommandDown={activeMode === MODE_CMD}
+                    selectedNodeId={selectedNodeId}
+                    nodeData={nodes}
+                    dispatchAction={this.dispatchActionFromNode}
+                    isANodeBeingDragged={isANodeBeingDragged}
+                    setNodeBeingDragged={this.setNodeBeingDragged}
+                    setSelectedNodeId={this.setSelectedNodeId}
+                    listOfDisplayNames={this.props.listOfDisplayNames}
+                    handleTextNodeTypeChange={this.handleTextNodeTypeChange}
+                    cancelTextNodeTypeChange={this.cancelTextNodeTypeChange}
+                    cancelSettingType={this._cancelSettingComponentType}
+                  />
+                </div>
               </div>
-            </div>
-            {this._renderScroller('down')}
-          </PanelSection>
-        )
-      }}
-    </Subscriber>
-  )}
+              {this._renderScroller('down')}
+            </PanelSection>
+          )
+        }}
+      </Subscriber>
+    )
+  }
 }
 
-export default compose(
-  connect((s, op) => {
-    const componentDescriptors = _.get(s, [
-      'componentModel',
-      'componentDescriptors',
-    ])
-    const {
-      core: {
-        'TheaterJS/Core/RenderCurrentCanvas': rcc,
-        'TheaterJS/Core/DOMTag': dt,
-        ...core,
-      },
-      custom,
-    } = componentDescriptors
-    const componentTypes = Object.entries({...core, ...custom}).reduce(
-      (reducer, [key, value]) => {
-        reducer[key] = {
-          id: key,
-          displayName: value.displayName,
-          type: value.type,
-        }
-        return reducer
-      },
-      {},
-    )
-    const listOfDisplayNames = Object.entries(componentTypes).map(
-      ([, value]) => value.displayName,
-    )
+export default connect((s: IStoreState, op: IOwnProps) => {
+  const componentDescriptors = _.get(s, [
+    'componentModel',
+    'componentDescriptors',
+  ])
+  const {
+    core: {
+      'TheaterJS/Core/RenderCurrentCanvas': rcc,
+      'TheaterJS/Core/DOMTag': dt,
+      ...core
+    },
+    custom,
+  } = componentDescriptors
+  const componentTypes = Object.entries({...core, ...custom}).reduce(
+    (reducer, [key, value]) => {
+      reducer[key] = {
+        id: key,
+        displayName: value.displayName,
+        type: value.type,
+      }
+      return reducer
+    },
+    {},
+  )
+  const listOfDisplayNames = Object.entries(componentTypes).map(
+    ([, value]) => value.displayName,
+  )
 
-    return {
-      componentTypes,
-      listOfDisplayNames,
-      getComponentDescriptor: id => getComponentDescriptor(s, id),
-      rootComponentDescriptor: _.get(s, op.pathToComponentDescriptor),
-      // selectedNodeId,
-    }
-  }),
-)(TreeEditor)
+  return {
+    componentTypes,
+    listOfDisplayNames,
+    getComponentDescriptor: id => getComponentDescriptor(s, id),
+    rootComponentDescriptor: _.get(s, op.pathToComponentDescriptor),
+    // selectedNodeId,
+  }
+})(TreeEditor)

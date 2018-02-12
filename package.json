@@ -142,7 +142,7 @@
     "tsconfig-paths-webpack-plugin": "^2.0.0",
     "tslint": "^5.9.1",
     "tslint-sonarts": "^1.4.0",
-    "typescript": "^2.6.2",
+    "typescript": "^2.8.0-dev.20180211",
     "typings-for-css-modules-loader": "^1.7.0",
     "url-loader": "^0.5.9",
     "uuid": "^3.1.0",

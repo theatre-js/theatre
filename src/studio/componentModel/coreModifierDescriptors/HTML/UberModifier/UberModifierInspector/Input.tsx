@@ -61,7 +61,7 @@ export default class Input extends StudioComponent<IProps, IState> {
     const {clientX: x, clientY: y} = e
     this.setState(() => ({isBeingDragged: true, initialPos: {x, y}}))
 
-    this.props.dispatch(
+    this.dispatch(
       reduceStateAction(
         ['workspace', 'panels', 'panelObjectBeingDragged'],
         () => ({type: 'modifier', prop: this.props.prop})
@@ -73,7 +73,7 @@ export default class Input extends StudioComponent<IProps, IState> {
     this._removeGlobalCursorRule()
     this.setState(() => ({isBeingDragged: false, move: {x: 0, y: 0}, initialPos: {x: 0, y: 0}}))
 
-    this.props.dispatch(
+    this.dispatch(
       reduceStateAction(
         ['workspace', 'panels', 'panelObjectBeingDragged'],
         () => null

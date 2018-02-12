@@ -1,13 +1,12 @@
-// @flow
-import {React, compose} from '$studio/handy'
+import {React} from '$studio/handy'
 import css from './index.css'
 
 type Props = {
-  title: React.Node
-  body: React.Node
+  title: React.ReactNode
+  body: React.ReactNode
 }
 
-class ModifierInspectorWrapper extends React.PureComponent<Props, void> {
+class ModifierInspectorWrapper extends React.PureComponent<Props, {}> {
   render() {
     const {title, body} = this.props
     return (
@@ -28,4 +27,4 @@ class ModifierInspectorWrapper extends React.PureComponent<Props, void> {
   }
 }
 
-export default compose(a => a)(ModifierInspectorWrapper)
+export default ModifierInspectorWrapper

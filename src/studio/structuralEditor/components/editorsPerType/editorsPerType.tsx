@@ -1,5 +1,6 @@
 import * as _ from 'lodash'
 
+// @ts-ignore
 const context = require.context(
   './',
   true,

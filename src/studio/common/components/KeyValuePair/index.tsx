@@ -1,10 +1,9 @@
-// @flow
-import {compose, React} from '$studio/handy'
+import {React} from '$studio/handy'
 import css from './index.css'
 
 type Props = {
-  k: React.Node
-  v: React.Node
+  k: React.ReactNode
+  v: React.ReactNode
 }
 
 const KeyValuePair = (props: Props) => {
@@ -17,4 +16,4 @@ const KeyValuePair = (props: Props) => {
   )
 }
 
-export default compose(a => a)(KeyValuePair)
+export default KeyValuePair

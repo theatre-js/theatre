@@ -1,14 +1,12 @@
-// @flow
-import {compose, React} from '$studio/handy'
+import {React} from '$studio/handy'
 import css from './index.css'
 
 type Props = {
   value: string
-  onChange: ({k: string, v: string}) => boolean
-  validationError: undefined | null | string
+  onChange: (v: string) => void
 }
 
-export class TextInput extends React.PureComponent<Props, void> {
+export class TextInput extends React.PureComponent<Props, {}> {
   constructor(props: Props) {
     super(props)
   }
@@ -32,4 +30,4 @@ export class TextInput extends React.PureComponent<Props, void> {
   }
 }
 
-export default compose(a => a)(TextInput)
+export default TextInput

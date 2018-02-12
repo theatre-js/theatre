@@ -1,29 +1,27 @@
-// @flow
-import {compose, React, connect} from '$src/studio/handy'
-import map from 'lodash/map'
-import get from 'lodash/get'
+import {React, connect} from '$src/studio/handy'
+import {map, get} from 'lodash'
 import SingleCustomStyleInspector from '$src/studio/componentModel/coreModifierDescriptors/HTML/SetCustomStyle/SetCustomStyleInspector/SingleCustomStyleInspector'
 import ModifierInspectorWrapper from '$src/studio/common/components/ModifierInspectorWrapper'
 
 type Props = {
-  list: $FixMe
-  pathToModifierInstantiationDescriptor: Array<string>
+  list: string[]
+  pathToModifierInstantiationDescriptor: string[]
 }
 
-export class SetCustomStyleInspector extends React.PureComponent<Props, void> {
-  constructor(props: Props) {
-    super(props)
+export class SetCustomStyleInspector extends React.PureComponent<Props, {}> {
+  constructor(props: Props, context: $IntentionalAny) {
+    super(props, context)
+    this.state = {}
   }
 
   render() {
     const {list} = this.props
     // @todo ux - sort these alphabetically
-    const body = map(list, (id, index) => {
+    const body = map(list, (id: string) => {
       return (
         <SingleCustomStyleInspector
           key={id}
           id={id}
-          index={index}
           pathToPairings={[
             ...this.props.pathToModifierInstantiationDescriptor,
             'props',
@@ -37,11 +35,8 @@ export class SetCustomStyleInspector extends React.PureComponent<Props, void> {
   }
 }
 
-export default compose(
-  connect((s, op: any) => {
-    return {
-      list: get(s, op.pathToModifierInstantiationDescriptor).props.pairings
-        .list,
-    }
-  }),
-)(SetCustomStyleInspector)
+export default connect((s, op: $FixMe): {list: string[]} => {
+  return {
+    list: get(s, op.pathToModifierInstantiationDescriptor).props.pairings.list,
+  }
+})(SetCustomStyleInspector)

@@ -1,5 +1,9 @@
-import {React, connect, reduceStateAction, multiReduceStateAction} from '$src/studio/handy'
-import {getTimelineById} from '$src/studio/animationTimeline/selectors'
+import {
+  React,
+  connect,
+  reduceStateAction,
+  multiReduceStateAction,
+} from '$src/studio/handy'
 import generateUniqueId from 'uuid/v4'
 import css from './AnimationTimelinePanel.css'
 import SortableBox from './SortableBox'
@@ -22,12 +26,10 @@ import {
   TimelineObject,
 } from '$src/studio/AnimationTimelinePanel/types'
 import {XY} from '$src/studio/workspace/types'
-import {get} from 'lodash'
 import StudioComponent from '$src/studio/handy/StudioComponent'
-import box, { BoxAtom } from '$src/shared/DataVerse/atoms/box'
-import TimelineInstance from '$src/studio/componentModel/react/makeReactiveComponent/TimelineInstance';
-import dict from '$src/shared/DataVerse/atoms/dict';
-import { PanelComponent } from '$src/studio/types';
+import box, {BoxAtom} from '$src/shared/DataVerse/atoms/box'
+import TimelineInstance from '$studio/componentModel/react/makeReactiveComponent/TimelineInstance/TimelineInstance'
+import {IStoreState} from '$studio/types'
 
 type OwnProps = TimelineObject & {
   pathToTimeline: string[]
@@ -35,7 +37,7 @@ type OwnProps = TimelineObject & {
   elementId?: number
 }
 
-type Props = {dispatch: Function} & OwnProps
+type Props = OwnProps
 
 type State = {
   boxBeingDragged:
@@ -64,7 +66,7 @@ type State = {
 class Content extends StudioComponent<Props, State> {
   static panelName = 'AnimationTimeline'
 
-  currentTTimeXBeforeDrag: BoxAtom<number>;
+  currentTTimeXBeforeDrag: BoxAtom<number>
   static panelConfig = {
     headerLess: true,
   }
@@ -89,7 +91,7 @@ class Content extends StudioComponent<Props, State> {
   }
 
   componentDidMount() {
-    document.addEventListener('keypress', (e) => {
+    document.addEventListener('keypress', e => {
       if (e.target.tagName !== 'INPUT' && e.keyCode === 32) {
         e.preventDefault()
         return false
@@ -127,9 +129,7 @@ class Content extends StudioComponent<Props, State> {
       const element = this.studio.componentInstances.get(props.elementId)
       const timelineInstance = element.getTimelineInstance(timelineId)
       const timeBox = timelineInstance.atom.prop('time')
-      const untapFromTimeBoxChanges = timeBox.changes().tap(t => {
-        // this._updateTimeState(t)
-      })
+      const untapFromTimeBoxChanges = timeBox.changes().tap(() => {})
 
       this.setState({
         thingy,
@@ -141,9 +141,7 @@ class Content extends StudioComponent<Props, State> {
     }
   }
 
-  _updateTimeState = (currentTTime: number) => {
-    // this.setState({currentTTime})
-  }
+  _updateTimeState = () => {}
 
   _handleKeyPress = (e: React.KeyboardEvent<$FixMe>) => {
     // if (keyCode)
@@ -152,7 +150,6 @@ class Content extends StudioComponent<Props, State> {
         this.state.timelineInstance.togglePlay()
       }
     }
-    
   }
 
   componentWillUnmount() {
@@ -274,7 +271,9 @@ class Content extends StudioComponent<Props, State> {
   }
 
   onBoxEndMove() {
-    document.styleSheets[0].deleteRule(document.styleSheets[0].cssRules.length - 1)    
+    document.styleSheets[0].deleteRule(
+      document.styleSheets[0].cssRules.length - 1,
+    )
     if (this.state.boxBeingDragged == null) return
     const {index, moveTo, mergeWith} = this.state.boxBeingDragged
     const {dispatch} = this.props
@@ -288,7 +287,7 @@ class Content extends StudioComponent<Props, State> {
       )
     } else if (mergeWith != null) {
       dispatch(
-        reduceStateAction(this.props.pathToTimeline, (timelineObj) => {
+        reduceStateAction(this.props.pathToTimeline, timelineObj => {
           const {layout, boxes} = timelineObj
           const fromId = layout[index]
           const toId = layout[mergeWith]
@@ -372,15 +371,23 @@ class Content extends StudioComponent<Props, State> {
     if (newFocusRight > duration) newFocusRight = duration
     if (newFocusRight - focus[0] < 1000) newFocusRight = focus[0] + 1000
 
-    this.changeFocusAndScrollVariablesContainer(focus[0], newFocusRight, panelWidth)
+    this.changeFocusAndScrollVariablesContainer(
+      focus[0],
+      newFocusRight,
+      panelWidth,
+    )
   }
-  
+
   changeFocusLeftTo = (newFocusLeft: number, panelWidth: number) => {
     const {focus} = this.state
     if (newFocusLeft < 0) newFocusLeft = 0
     if (focus[1] - newFocusLeft < 1000) newFocusLeft = focus[1] - 1000
-    
-    this.changeFocusAndScrollVariablesContainer(newFocusLeft, focus[1], panelWidth)
+
+    this.changeFocusAndScrollVariablesContainer(
+      newFocusLeft,
+      focus[1],
+      panelWidth,
+    )
   }
 
   _changeZoomLevel = (
@@ -399,7 +406,7 @@ class Content extends StudioComponent<Props, State> {
     const svgWidth = duration / (newFocusRight - newFocusLeft) * panelWidth
     this.variablesContainer.scrollLeft = svgWidth * newFocusLeft / duration
 
-    this.setState(() => ({focus: [newFocusLeft, newFocusRight]}))    
+    this.setState(() => ({focus: [newFocusLeft, newFocusRight]}))
   }
 
   changeFocusAndScrollVariablesContainer = (
@@ -423,10 +430,7 @@ class Content extends StudioComponent<Props, State> {
     this.setState(() => ({focus: [newFocusLeft, newFocusRight]}))
   }
 
-  _changeFocusTo = (
-    newFocusLeft: number,
-    newFocusRight: number,
-  ) => {
+  _changeFocusTo = (newFocusLeft: number, newFocusRight: number) => {
     const {focus, duration} = this.state
     if (newFocusLeft < 0) {
       newFocusLeft = 0
@@ -437,7 +441,7 @@ class Content extends StudioComponent<Props, State> {
       newFocusRight = duration
     }
 
-    this.setState(() => ({focus: [newFocusLeft, newFocusRight]}))    
+    this.setState(() => ({focus: [newFocusLeft, newFocusRight]}))
   }
 
   changeCurrentTimeTo = (currentTTime: number) => {
@@ -514,10 +518,21 @@ class Content extends StudioComponent<Props, State> {
     }
   }
 
-  _handleSeekerDragStart = (e: $FixMe, focus: [number, number], panelWidth: number, offsetLeft: number) => {
+  _handleSeekerDragStart = (
+    e: $FixMe,
+    focus: [number, number],
+    panelWidth: number,
+    offsetLeft: number,
+  ) => {
     this._addGlobalCursorRule()
-    const newTime = this.xToFocusedTime(e.nativeEvent.layerX - offsetLeft, focus, panelWidth)
-    this.currentTTimeXBeforeDrag.set(this.focusedTimeToX(newTime, focus, panelWidth))
+    const newTime = this.xToFocusedTime(
+      e.nativeEvent.layerX - offsetLeft,
+      focus,
+      panelWidth,
+    )
+    this.currentTTimeXBeforeDrag.set(
+      this.focusedTimeToX(newTime, focus, panelWidth),
+    )
     this.setState(() => ({
       isSeekerBeingDragged: true,
       // currentTimeXBeforeDrag: this.focusedTimeToX(newTime, focus, panelWidth),
@@ -527,22 +542,24 @@ class Content extends StudioComponent<Props, State> {
 
   _handleSeekerDragEnd = () => {
     this._removeGlobalCursorRule()
-    this.setState(() => ({isSeekerBeingDragged: false}))    
+    this.setState(() => ({isSeekerBeingDragged: false}))
   }
 
   _handleModifierDrop = () => {
     const {props} = this
-    if(props.panelObjectBeingDragged == null) return
+    if (props.panelObjectBeingDragged == null) return
     const {prop} = props.panelObjectBeingDragged
     const timelineId = props.pathToTimeline[props.pathToTimeline.length - 1]
     const varId = generateUniqueId()
     let componentName
-    this.props.dispatch(
+    this.dispatch(
       multiReduceStateAction([
         {
           path: props.activeComponentPath,
-          reducer: (theaterObj) => {
-            componentName = `${theaterObj.componentId.split('/').slice(-1)}.${theaterObj.props.class}`
+          reducer: theaterObj => {
+            componentName = `${theaterObj.componentId.split('/').slice(-1)}.${
+              theaterObj.props.class
+            }`
             const {modifierInstantiationDescriptors: modifiers} = theaterObj
             const uberModifierId = modifiers.list[0]
             const uberModifier = modifiers.byId[uberModifierId]
@@ -552,15 +569,23 @@ class Content extends StudioComponent<Props, State> {
                 __descriptorType: 'ReferenceToTimelineVar',
                 timelineId,
                 varId,
-              }
+              },
             }
             return set(
-              ['modifierInstantiationDescriptors', 'byId', uberModifierId, 'props'], newProps, theaterObj)
-          }
+              [
+                'modifierInstantiationDescriptors',
+                'byId',
+                uberModifierId,
+                'props',
+              ],
+              newProps,
+              theaterObj,
+            )
+          },
         },
         {
           path: props.pathToTimeline,
-          reducer: (timelineObj) => {
+          reducer: timelineObj => {
             const variables = {
               ...timelineObj.variables,
               [varId]: {
@@ -570,7 +595,7 @@ class Content extends StudioComponent<Props, State> {
                 property: prop,
                 extremums: [-10, 10],
                 points: [],
-              }
+              },
             }
             const boxId = generateUniqueId()
             const layout = timelineObj.layout.concat(boxId)
@@ -579,8 +604,8 @@ class Content extends StudioComponent<Props, State> {
               [boxId]: {
                 id: boxId,
                 height: 100,
-                variables: [varId]
-              }
+                variables: [varId],
+              },
             }
             return {
               ...timelineObj,
@@ -588,29 +613,28 @@ class Content extends StudioComponent<Props, State> {
               layout,
               boxes,
             }
-          }
-        }
-      ]
-      )
+          },
+        },
+      ]),
     )
   }
 
   timeToX(time: number, panelWidth: number) {
     const {duration} = this.state
-    return time * (panelWidth) / duration
+    return time * panelWidth / duration
   }
 
   xToTime(x: number, panelWidth: number) {
     const {duration} = this.state
-    return x * duration / (panelWidth)
+    return x * duration / panelWidth
   }
 
   focusedTimeToX(time: number, focus: [number, number], panelWidth: number) {
-    return (time - focus[0]) / (focus[1] - focus[0]) * (panelWidth)
+    return (time - focus[0]) / (focus[1] - focus[0]) * panelWidth
   }
 
   xToFocusedTime(x: number, focus: [number, number], panelWidth: number) {
-    return x * (focus[1] - focus[0]) / (panelWidth) + focus[0]
+    return x * (focus[1] - focus[0]) / panelWidth + focus[0]
   }
 
   _addGlobalCursorRule() {
@@ -633,10 +657,18 @@ class Content extends StudioComponent<Props, State> {
   }
 
   _removeGlobalCursorRule() {
-    document.styleSheets[0].deleteRule(document.styleSheets[0].cssRules.length - 1)
-    document.styleSheets[0].deleteRule(document.styleSheets[0].cssRules.length - 1)
-    document.styleSheets[0].deleteRule(document.styleSheets[0].cssRules.length - 1)
-    document.styleSheets[0].deleteRule(document.styleSheets[0].cssRules.length - 1)
+    document.styleSheets[0].deleteRule(
+      document.styleSheets[0].cssRules.length - 1,
+    )
+    document.styleSheets[0].deleteRule(
+      document.styleSheets[0].cssRules.length - 1,
+    )
+    document.styleSheets[0].deleteRule(
+      document.styleSheets[0].cssRules.length - 1,
+    )
+    document.styleSheets[0].deleteRule(
+      document.styleSheets[0].cssRules.length - 1,
+    )
   }
 
   render() {
@@ -648,7 +680,8 @@ class Content extends StudioComponent<Props, State> {
       // currentTTime: currentTime,
     } = this.state
     const {boxes, layout, panelObjectBeingDragged} = this.props
-    const offsetLeft = this.variablesContainer != null ? this.variablesContainer.scrollLeft : 0
+    const offsetLeft =
+      this.variablesContainer != null ? this.variablesContainer.scrollLeft : 0
     return (
       <Panel
         headerLess={true}
@@ -664,7 +697,9 @@ class Content extends StudioComponent<Props, State> {
               <div
                 ref={c => (this.container = c)}
                 className={cx(css.container, {
-                  [css.showModifierDropOverlay]: panelObjectBeingDragged && panelObjectBeingDragged.type === 'modifier',
+                  [css.showModifierDropOverlay]:
+                    panelObjectBeingDragged &&
+                    panelObjectBeingDragged.type === 'modifier',
                 })}
                 onWheel={e => this.handleScroll(e, panelWidth)}
                 onMouseUp={this._handleModifierDrop}
@@ -703,12 +738,24 @@ class Content extends StudioComponent<Props, State> {
                   />
                 </div>
                 <DraggableArea
-                  onDragStart={(e: $FixMe) => this._handleSeekerDragStart(e, focus, panelWidth, offsetLeft)}
-                  onDrag={(dx: number) => this.changeCurrentTimeTo(
-                    this.xToFocusedTime(
-                      // this.state.currentTimeXBeforeDrag + dx, focus, panelWidth
-                      this.currentTTimeXBeforeDrag.getValue() + dx, focus, panelWidth
-                  ))}
+                  onDragStart={(e: $FixMe) =>
+                    this._handleSeekerDragStart(
+                      e,
+                      focus,
+                      panelWidth,
+                      offsetLeft,
+                    )
+                  }
+                  onDrag={(dx: number) =>
+                    this.changeCurrentTimeTo(
+                      this.xToFocusedTime(
+                        // this.state.currentTimeXBeforeDrag + dx, focus, panelWidth
+                        this.currentTTimeXBeforeDrag.getValue() + dx,
+                        focus,
+                        panelWidth,
+                      ),
+                    )
+                  }
                   onDragEnd={this._handleSeekerDragEnd}
                 >
                   <div
@@ -770,12 +817,39 @@ class Content extends StudioComponent<Props, State> {
   }
 }
 
-export default connect((s, op: OwnProps) => {
-  const timeline = get(s, op.pathToTimeline)
-  const panelObjectBeingDragged = get(s, ['workspace', 'panels', 'panelObjectBeingDragged'])
-  const selectedComponentId = get(s, ['workspace', 'panels', 'byId', 'elementTree', 'outputs', 'selectedNode', 'componentId'])
-  const selectedElementId = get(s, ['componentModel', 'componentDescriptors', 'custom', selectedComponentId, 'meta', 'composePanel', 'selectedNodeId'])
-  const activeComponentPath = ['componentModel', 'componentDescriptors', 'custom', selectedComponentId, 'localHiddenValuesById', selectedElementId]
+export default connect((s: IStoreState, op: OwnProps) => {
+  const timeline = _.get(s, op.pathToTimeline)
+  const panelObjectBeingDragged = _.get(s, [
+    'workspace',
+    'panels',
+    'panelObjectBeingDragged',
+  ])
+  const selectedComponentId = _.get(s, [
+    'workspace',
+    'panels',
+    'byId',
+    'elementTree',
+    'outputs',
+    'selectedNode',
+    'componentId',
+  ])
+  const selectedElementId = _.get(s, [
+    'componentModel',
+    'componentDescriptors',
+    'custom',
+    selectedComponentId,
+    'meta',
+    'composePanel',
+    'selectedNodeId',
+  ])
+  const activeComponentPath = [
+    'componentModel',
+    'componentDescriptors',
+    'custom',
+    selectedComponentId,
+    'localHiddenValuesById',
+    selectedElementId,
+  ]
   return {...timeline, panelObjectBeingDragged, activeComponentPath}
 })(Content)
 
