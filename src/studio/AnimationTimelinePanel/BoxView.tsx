@@ -155,23 +155,23 @@ class BoxBiew extends StudioComponent<IProps, IState> {
     }
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    if (nextProps.boxHeight !== this.props.boxHeight) return true
-    if (nextProps.canBeMerged !== this.props.canBeMerged) return true
-    if (nextProps.shouldIndicateMerge !== this.props.shouldIndicateMerge)
-      return true
-    if (!_.isEqual(nextProps.variables, this.props.variables)) return true
-    if (nextState.svgWidth !== this.state.svgWidth) return true
-    if (nextState.svgExtremums !== this.state.svgExtremums) return true
-    if (nextState.activeVariableId !== this.state.activeVariableId) return true
-    if (nextState.pointValuesEditorProps !== this.state.pointValuesEditorProps)
-      return true
-    if (!_.isEqual(nextState.pointContextMenuProps, this.state.pointContextMenuProps))
-      return true
-    if (!_.isEqual(nextState.connectorContextMenuProps, this.state.connectorContextMenuProps))
-      return true
-    return false
-  }
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   if (nextProps.boxHeight !== this.props.boxHeight) return true
+  //   if (nextProps.canBeMerged !== this.props.canBeMerged) return true
+  //   if (nextProps.shouldIndicateMerge !== this.props.shouldIndicateMerge)
+  //     return true
+  //   if (!_.isEqual(nextProps.variables, this.props.variables)) return true
+  //   if (nextState.svgWidth !== this.state.svgWidth) return true
+  //   if (nextState.svgExtremums !== this.state.svgExtremums) return true
+  //   if (nextState.activeVariableId !== this.state.activeVariableId) return true
+  //   if (nextState.pointValuesEditorProps !== this.state.pointValuesEditorProps)
+  //     return true
+  //   if (!_.isEqual(nextState.pointContextMenuProps, this.state.pointContextMenuProps))
+  //     return true
+  //   if (!_.isEqual(nextState.connectorContextMenuProps, this.state.connectorContextMenuProps))
+  //     return true
+  //   return false
+  // }
 
   titleClickHandler(e: React.MouseEvent<$FixMe>, variableId: string) {
     if (e.altKey) {
