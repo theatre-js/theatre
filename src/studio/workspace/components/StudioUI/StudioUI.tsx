@@ -92,17 +92,19 @@ export class StudioUI extends StudioComponent<IProps, State> {
   }
 
   componentDidMount() {
-    window.addEventListener('focus', () => this._handleFocus)
+    window.addEventListener('focus', this._resetActiveMode)
+    document.addEventListener('mouseenter', this._resetActiveMode)
     window.addEventListener('resize', this._handleResize)
     document.addEventListener('keydown', this._handleKeyDown)
-    document.addEventListener('keyup', this._handleKeyUp)
+    document.addEventListener('keyup', this._resetActiveMode)
   }
-
+  
   componentWillUnmount() {
-    window.addEventListener('focus', () => this._handleFocus)
+    window.removeEventListener('focus', this._resetActiveMode)
+    document.removeEventListener('mouseenter', this._resetActiveMode)
     window.removeEventListener('resize', this._handleResize)
     document.removeEventListener('keydown', this._handleKeyDown)
-    document.removeEventListener('keyup', this._handleKeyUp)
+    document.removeEventListener('keyup', this._resetActiveMode)
   }
 
   componentWillReceiveProps(nextProps: IProps) {
@@ -118,7 +120,7 @@ export class StudioUI extends StudioComponent<IProps, State> {
   }
 
   _handleKeyDown = (e: $FixMe) => {
-    if (e.target.tagName === 'INPUT' && ![18, 91].includes(e.keyCode)) return
+    if (e.target.tagName === 'INPUT' && ![91].includes(e.keyCode)) return
     switch (e.keyCode) {
       case 16:
         this.setState(() => ({activeMode: MODE_SHIFT}))
@@ -144,13 +146,7 @@ export class StudioUI extends StudioComponent<IProps, State> {
     }
   }
 
-  _handleKeyUp = () => {
-    if (this.state.activeMode != null) {
-      this.setState(() => ({activeMode: null}))
-    }
-  }
-
-  _handleFocus = () => {
+  _resetActiveMode = () => {
     if (this.state.activeMode != null) {
       this.setState(() => ({activeMode: null}))
     }

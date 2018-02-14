@@ -22,3 +22,45 @@
   font-size: 12px;
   color: white;
 }
+
+:global(.globalMoveCursor) {
+  & * {cursor: move !important;}
+}
+
+:global(.globalNoDropCursor) {
+  & * {cursor: no-drop !important;}
+}
+
+:global(.animationTimelineSeekerDrag) {
+  & * {cursor: ew-resize !important;}
+  & div[class^="AnimationTimelinePanel_container_"] {pointer-events: none;}
+  & div[class*="AnimationTimelinePanel_panelContainer_"] {z-index: 200;}
+  & div[class*="TimeBar_currentTimeToolTip"] {display: block;}
+}
+
+:global(.pointDrag) {
+  & * {cursor: move !important;}
+  & div[class^="BoxView_boxLegends_"] {pointer-events: none;}
+}
+
+:global(.modifierInputDrag) {
+  & * {cursor: move !important;}
+  & div[class^="Panel_container_"] {z-index: 0 !important;}
+  & div[class^="AnimationTimelinePanel_container_"] > * {pointer-events: none !important;}
+}
+
+:global(.timeBarDrag) {
+  & div[class^="AnimationTimelinePanel_container_"] {pointer-events: none;}
+  & div[class*="AnimationTimelinePanel_panelContainer_"] {z-index: 200;}
+}
+:global(.timeBarDragE) {
+  & * {cursor: e-resize !important;}
+}
+
+:global(.timeBarDragW) {
+  & * {cursor: w-resize !important;}  
+}
+
+:global(.timeBarDragEW) {
+  & * {cursor: ew-resize !important;}  
+}

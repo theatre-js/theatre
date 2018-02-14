@@ -69,24 +69,11 @@ export class Input extends StudioComponent<IProps, IState> {
   }
 
   _addGlobalCursorRule() {
-    document.styleSheets[0].insertRule(
-      `* {cursor: move !important;}`,
-      document.styleSheets[0].cssRules.length,
-    )
-    document.styleSheets[0].insertRule(
-      'div[class^="Panel_container_"] {z-index: 0 !important;}',
-      document.styleSheets[0].cssRules.length,
-    )
-    document.styleSheets[0].insertRule(
-      'div[class^="AnimationTimelinePanel_container_"] > * {pointer-events: none !important;}',
-      document.styleSheets[0].cssRules.length,
-    )
+    document.body.classList.add('modifierInputDrag')
   }
 
   _removeGlobalCursorRule() {
-    document.styleSheets[0].deleteRule(document.styleSheets[0].cssRules.length - 1)
-    document.styleSheets[0].deleteRule(document.styleSheets[0].cssRules.length - 1)
-    document.styleSheets[0].deleteRule(document.styleSheets[0].cssRules.length - 1)
+    document.body.classList.remove('modifierInputDrag')
   }
 
   render() {

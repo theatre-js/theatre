@@ -271,10 +271,7 @@ class TreeEditor extends StudioComponent<IProps, State> {
   }
 
   setNodeBeingDragged = nodeBeingDragged => {
-    document.styleSheets[0].insertRule(
-      '* {cursor: no-drop;}',
-      document.styleSheets[0].cssRules.length,
-    )
+    document.body.classList.add('globalNoDropCursor')
 
     this.setState(() => ({nodeBeingDragged}))
   }
@@ -409,13 +406,11 @@ class TreeEditor extends StudioComponent<IProps, State> {
   }
 
   handleDragEnd = () => {
-    document.styleSheets[0].deleteRule(
-      document.styleSheets[0].cssRules.length - 1,
-    )
+    document.body.classList.remove('globalNoDropCursor')    
 
     const dropPayload: $FixMe = this.queuedDrop
     this._unsetQueuedDrop()
-    console.log(dropPayload)
+    // console.log(dropPayload)
     let nodeBeingDragged
     this.setState((state: $FixMe) => {
       ;({nodeBeingDragged} = state)

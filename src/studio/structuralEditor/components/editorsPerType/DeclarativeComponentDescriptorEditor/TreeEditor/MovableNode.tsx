@@ -1,8 +1,6 @@
 // @flow
 import {React} from '$studio/handy'
 import css from './MovableNode.css'
-import cx from 'classnames'
-import {NODE_TYPE} from './constants'
 import PresentationOnlyNode from './PresentationOnlyNode'
 
 type Props = {

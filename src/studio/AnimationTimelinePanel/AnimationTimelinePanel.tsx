@@ -192,10 +192,7 @@ class Content extends StudioComponent<Props, State> {
   }
 
   onBoxStartMove(index: number) {
-    document.styleSheets[0].insertRule(
-      '* {cursor: move !important;}',
-      document.styleSheets[0].cssRules.length,
-    )
+    document.body.classList.add('globalMoveCursor')
 
     this.setState((state, props) => {
       const offset = state.boundaries[index]
@@ -271,9 +268,7 @@ class Content extends StudioComponent<Props, State> {
   }
 
   onBoxEndMove() {
-    document.styleSheets[0].deleteRule(
-      document.styleSheets[0].cssRules.length - 1,
-    )
+    document.body.classList.remove('globalMoveCursor')    
     if (this.state.boxBeingDragged == null) return
     const {index, moveTo, mergeWith} = this.state.boxBeingDragged
     const {dispatch} = this.props
@@ -638,37 +633,11 @@ class Content extends StudioComponent<Props, State> {
   }
 
   _addGlobalCursorRule() {
-    document.styleSheets[0].insertRule(
-      '* {cursor: ew-resize !important;}',
-      document.styleSheets[0].cssRules.length,
-    )
-    document.styleSheets[0].insertRule(
-      'div[class^="AnimationTimelinePanel_container_"] {pointer-events: none;}',
-      document.styleSheets[0].cssRules.length,
-    )
-    document.styleSheets[0].insertRule(
-      'div[class*="AnimationTimelinePanel_panelContainer_"] {z-index: 200;}',
-      document.styleSheets[0].cssRules.length,
-    )
-    document.styleSheets[0].insertRule(
-      'div[class*="TimeBar_currentTimeToolTip"] {display: block;}',
-      document.styleSheets[0].cssRules.length,
-    )
+    document.body.classList.add('animationTimelineSeekerDrag')
   }
 
   _removeGlobalCursorRule() {
-    document.styleSheets[0].deleteRule(
-      document.styleSheets[0].cssRules.length - 1,
-    )
-    document.styleSheets[0].deleteRule(
-      document.styleSheets[0].cssRules.length - 1,
-    )
-    document.styleSheets[0].deleteRule(
-      document.styleSheets[0].cssRules.length - 1,
-    )
-    document.styleSheets[0].deleteRule(
-      document.styleSheets[0].cssRules.length - 1,
-    )
+    document.body.classList.remove('animationTimelineSeekerDrag')    
   }
 
   render() {

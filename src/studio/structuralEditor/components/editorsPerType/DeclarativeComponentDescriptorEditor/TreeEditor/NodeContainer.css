@@ -6,11 +6,12 @@
 
 .container {
   position: relative;
-  --color: rgb(
-    calc(39 - var(--depth) * 4 - 4),
-    calc(50 - var(--depth) * 4 - 4),
-    calc(56 - var(--depth) * 4 - 4)
-  );
+  --colorOffset: var(--depth) * 4 - 4;
+  --colorCoords:
+    calc(39 - var(--colorOffset)),
+    calc(50 - var(--colorOffset)),
+    calc(56 - var(--colorOffset));
+  --color: rgb(var(--colorCoords));
   --highlightColor: rgba(60, 223, 255, .1);
 
   &:hover {

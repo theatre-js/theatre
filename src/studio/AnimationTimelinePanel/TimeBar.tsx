@@ -116,24 +116,16 @@ class TimeBar extends React.PureComponent<Props, State> {
   }
 
   _addGlobalCursorRule(cursor: string) {
-    document.styleSheets[0].insertRule(
-      `* {cursor: ${cursor} !important;}`,
-      document.styleSheets[0].cssRules.length,
-    )
-    document.styleSheets[0].insertRule(
-      'div[class^="AnimationTimelinePanel_container_"] {pointer-events: none;}',
-      document.styleSheets[0].cssRules.length,
-    )
-    document.styleSheets[0].insertRule(
-      'div[class*="AnimationTimelinePanel_panelContainer_"] {z-index: 200;}',
-      document.styleSheets[0].cssRules.length,
-    )
+    document.body.classList.add(...['timeBarDrag', 'timeBarDrag'.concat(cursor.toUpperCase())])
   }
 
   _removeGlobalCursorRule() {
-    document.styleSheets[0].deleteRule(document.styleSheets[0].cssRules.length - 1)
-    document.styleSheets[0].deleteRule(document.styleSheets[0].cssRules.length - 1)
-    document.styleSheets[0].deleteRule(document.styleSheets[0].cssRules.length - 1)
+    document.body.classList.remove(...[
+      'timeBarDrag',
+      'timeBarDragE',
+      'timeBarDragW',
+      'timeBarDragEW',
+    ])    
   }
 
   render() {
@@ -178,7 +170,7 @@ class TimeBar extends React.PureComponent<Props, State> {
         <div className={css.timeThread}>
           <DraggableArea
             onDragStart={() => {
-              this._addGlobalCursorRule('ew-resize')
+              this._addGlobalCursorRule('ew')
               this._setBeforeMoveState()
             }}
             onDrag={dx => this.moveFocus(dx)}
@@ -194,7 +186,7 @@ class TimeBar extends React.PureComponent<Props, State> {
           </DraggableArea>
           <DraggableArea
             onDragStart={() => {
-              this._addGlobalCursorRule('w-resize')
+              this._addGlobalCursorRule('w')
               this._setBeforeMoveState()
             }}
             onDrag={dx => this.moveFocusLeft(dx)}
@@ -209,7 +201,7 @@ class TimeBar extends React.PureComponent<Props, State> {
           </DraggableArea>
           <DraggableArea
             onDragStart={() => {
-              this._addGlobalCursorRule('e-resize')
+              this._addGlobalCursorRule('e')
               this._setBeforeMoveState()
             }}
             onDrag={dx => this.moveFocusRight(dx)}
@@ -225,7 +217,7 @@ class TimeBar extends React.PureComponent<Props, State> {
         </div>
         <DraggableArea
           onDragStart={() => {
-            this._addGlobalCursorRule('ew-resize')
+            this._addGlobalCursorRule('ew')
             this._setBeforeMoveState()
           }}
           onDrag={dx => this.changeCurrentTime(dx)}
@@ -238,7 +230,7 @@ class TimeBar extends React.PureComponent<Props, State> {
         </DraggableArea>
         <DraggableArea
           onDragStart={() => {
-            this._addGlobalCursorRule('ew-resize')
+            this._addGlobalCursorRule('ew')
             this._setBeforeMoveState()
           }}
           onDrag={dx => this.changeCurrentTime(dx)}
