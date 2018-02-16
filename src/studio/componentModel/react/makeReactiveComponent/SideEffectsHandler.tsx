@@ -1,4 +1,3 @@
-import * as D from '$shared/DataVerse'
 import noop from 'lodash/noop'
 import Ticker from '$src/shared/DataVerse/Ticker'
 import AbstractDerivedDict from '$src/shared/DataVerse/derivations/dicts/AbstractDerivedDict'
@@ -21,7 +20,7 @@ export default class SideEffectsHandler {
   constructor(
     ticker: D.ITicker,
     finalface: $FixMe,
-    sideEffectsDictP: D.IPointerToBoxAtom<D.IDerivedDict<$FixMe>>,
+    sideEffectsDictP: D.IPointerToBoxAtom<AbstractDerivedDict<$FixMe>>,
   ) {
     this._ticker = ticker
     this._mapOfStopEffectFnBySideEffectKey = {}
@@ -33,7 +32,7 @@ export default class SideEffectsHandler {
     this._currentDict = null
     this._mapOfuntapFnsForEachSideEffect = {}
     this._untapFromDictChanges = noop
-    // could use D.derivations.autoProxyDerivedDict here
+    // could use autoProxyDerivedDict here
     this._untapFromSideEffectsDictPChanges = noop
     this._started = false
   }
@@ -55,7 +54,7 @@ export default class SideEffectsHandler {
     this._useNewDict(this._sideEffectsDictP.getValue())
   }
 
-  _useNewDict(dict: D.IDerivedDict<$FixMe>) {
+  _useNewDict(dict: AbstractDerivedDict<$FixMe>) {
     this._currentDict = dict
 
     dict.keys().forEach(this._startObservingKey)

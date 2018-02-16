@@ -1,8 +1,10 @@
 import * as React from 'react'
-import * as D from '$src/shared/DataVerse'
 import ElementifyDeclarativeComponent from '$src/studio/componentModel/react/elementify/ElementifyDeclarativeComponent/ElementifyDeclarativeComponent'
 import stringStartsWith from 'lodash/startsWith'
 import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
+import withDeps from '$src/shared/DataVerse/derivations/withDeps'
+import autoDerive from '$src/shared/DataVerse/derivations/autoDerive/autoDerive'
+import dictAtom from '$src/shared/DataVerse/atoms/dict'
 
 const identity = a => a
 
@@ -10,7 +12,7 @@ const getComponentDescriptorById = (
   idD: AbstractDerivation<string>,
   studioD: AbstractDerivation<$FixMe>,
 ): $FixMe =>
-  D.derivations.withDeps({idD, studioD}, identity).flatMap((): $FixMe => {
+  withDeps({idD, studioD}, identity).flatMap((): $FixMe => {
     const idString = idD.getValue()
 
     const componentDescriptorsP = studioD
@@ -29,7 +31,7 @@ const elementify = (keyD, instantiationDescriptorP, studioD) => {
   return getComponentDescriptorById(componentIdP, studioD).flatMap(
     (componentDescriptor: $FixMe) => {
       if (!componentDescriptor)
-        return D.derivations.autoDerive(() => {
+        return autoDerive(() => {
           return <div>Cannot find component {componentIdP.getValue()}</div>
         })
 
@@ -63,11 +65,11 @@ const elementifyHardCodedComponent = (
 ) => {
   const reactComponentP = componentDescriptorP.prop('reactComponent')
   const componentIdD = componentDescriptorP.prop('id')
-  const finalKeyD = D.derivations.autoDerive(() => {
+  const finalKeyD = autoDerive(() => {
     return `${componentIdD.getValue()}#${keyD.getValue()}`
   })
 
-  return D.derivations.autoDerive(() => {
+  return autoDerive(() => {
     const Comp = reactComponentP.getValue()
     return (
       <Comp
@@ -87,16 +89,15 @@ const elementifyDeclarativeComponent = (
   modifierInstantiationDescriptorsP: $FixMe,
 ) => {
   const componentIdD = componentDescriptorP.prop('id')
-  const finalKeyD = D.derivations.autoDerive(() => {
+  const finalKeyD = autoDerive(() => {
     return `${componentIdD.getValue()}#${keyD.getValue()}`
   })
 
-  const innerPropsP = D.atoms
-    .dict({
-      componentDescriptor: componentDescriptorP,
-      props: propsP,
-      modifierInstantiationDescriptors: modifierInstantiationDescriptorsP,
-    })
+  const innerPropsP = dictAtom({
+    componentDescriptor: componentDescriptorP,
+    props: propsP,
+    modifierInstantiationDescriptors: modifierInstantiationDescriptorsP,
+  })
     .derivedDict()
     .pointer()
 

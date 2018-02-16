@@ -1,6 +1,8 @@
 import withDeps from './withDeps'
-import * as D from '$shared/DataVerse'
-import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation';
+import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
+import boxAtom from '$src/shared/DataVerse/atoms/box'
+import constant from '$src/shared/DataVerse/derivations/constant'
+import Ticker from '$src/shared/DataVerse/Ticker'
 
 describe('withDeps', () => {
   it('should work', () => {
@@ -26,8 +28,8 @@ describe('withDeps', () => {
   })
 
   it('events should work', done => {
-    const a = D.atoms.box(1)
-    const b = D.atoms.box(3)
+    const a = boxAtom(1)
+    const b = boxAtom(3)
     const aD = a.derivation()
     aD.getValue() as number
     // @ts-ignore expected
@@ -42,7 +44,7 @@ describe('withDeps', () => {
     bD.flatMap(m => m + 1).getValue() as number
     // @ts-ignore expected
     bD.flatMap(m => m + 1).getValue() as string
-    bD.flatMap(m => D.derivations.constant(m + 1)).getValue() as number
+    bD.flatMap(m => constant(m + 1)).getValue() as number
 
     const final = aD.flatMap((n): AbstractDerivation<number> =>
       bD.map(m => m + n),
@@ -56,7 +58,7 @@ describe('withDeps', () => {
     expect(final.getValue()).toEqual(6)
 
     // expect(() => aD.changes()).toThrow()
-    const ticker = new D.Ticker()
+    const ticker = new Ticker()
 
     const adEvents = []
 
@@ -94,10 +96,10 @@ describe('withDeps', () => {
   })
 
   it('more', () => {
-    const ticker = new D.Ticker()
-    const a = D.atoms.box('a')
+    const ticker = new Ticker()
+    const a = boxAtom('a')
     const aD = a.derivation()
-    const b = D.atoms.box('b')
+    const b = boxAtom('b')
     const bD = b.derivation()
     const cD = aD.flatMap(a => bD.map(b => a + b))
 
@@ -115,7 +117,7 @@ describe('withDeps', () => {
   ;(function() {
     // @todo this should be a flow error since 'hi' is not an AbstractDerivation
     withDeps({a: 'hi'}, () => {})
-    const f = withDeps({a: D.derivations.constant('hi')}, ({a}) => {
+    const f = withDeps({a: constant('hi')}, ({a}) => {
       // @ts-ignore expected
       a.getValue() as number
       a.getValue() as string

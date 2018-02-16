@@ -1,4 +1,3 @@
-import * as D from '$shared/DataVerse'
 import * as _ from 'lodash'
 import * as interpolators from './interpolators/interpolators'
 import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
@@ -378,7 +377,7 @@ export default class ValueDerivation extends AbstractDerivation<$FixMe> {
   _youMayNeedToUpdateYourself(msgComingFrom: AbstractDerivation<$FixMe>) {
     this._changeObservedIn.add(msgComingFrom)
 
-    D.derivations.AbstractDerivation.prototype._youMayNeedToUpdateYourself.call(
+    AbstractDerivation.prototype._youMayNeedToUpdateYourself.call(
       this,
       msgComingFrom,
     )

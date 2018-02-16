@@ -1,5 +1,3 @@
-// @flow
-
 export const ensureNoAtoms = (d: $IntentionalAny) => {
   if (typeof d === 'object' && d !== null && !Array.isArray(d)) {
     if (d.isDictAtom === true) {

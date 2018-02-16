@@ -1,29 +1,29 @@
-import {ModifierDescriptor} from '$src/studio/componentModel/types'
 import attributesApplier from '$src/studio/componentModel/coreModifierDescriptors/HTML/SetAttribute/attributeApplier'
-import * as D from '$src/shared/DataVerse'
+import boxAtom from '$src/shared/DataVerse/atoms/box'
+import emptyDict from '$src/shared/DataVerse/derivations/dicts/emptyDict'
+import dictAtom from '$src/shared/DataVerse/atoms/dict'
+import AbstractDerivedDict from '$src/shared/DataVerse/derivations/dicts/AbstractDerivedDict'
 
 const ensureDomAttributes = d => {
   return d.propFromSuper('domAttributes').flatMap(possibleDomAttributes => {
     if (!possibleDomAttributes) {
-      return D.derivations.emptyDict
+      return emptyDict
     } else {
       return possibleDomAttributes
     }
   })
 }
 
-const sideEffectsForApplyAttributes = D.atoms
-  .dict({
-    applyAttributes: D.atoms.box((dict, ticker) => {
-      const applier = attributesApplier(dict, ticker)
-      applier.start()
+const sideEffectsForApplyAttributes = dictAtom({
+  applyAttributes: boxAtom((dict, ticker) => {
+    const applier = attributesApplier(dict, ticker)
+    applier.start()
 
-      return () => {
-        applier.stop()
-      }
-    }),
-  })
-  .derivedDict()
+    return () => {
+      applier.stop()
+    }
+  }),
+}).derivedDict()
 
 const getClass = (propsP, dict) => {
   return dict.extend({
@@ -41,9 +41,7 @@ const getClass = (propsP, dict) => {
               const keyP = pairingP.prop('key')
               const valueP = pairingP.prop('value')
               return keyP.flatMap((key: string) => {
-                return accDict.extend(
-                  D.atoms.dict({[key]: valueP}).derivedDict(),
-                )
+                return accDict.extend(dict({[key]: valueP}).derivedDict())
               })
             }, domAtrributes)
           })
@@ -54,7 +52,7 @@ const getClass = (propsP, dict) => {
     sideEffects(d) {
       return d
         .propFromSuper('sideEffects')
-        .flatMap((sideEffects: D.IDerivedDict<$FixMe>) => {
+        .flatMap((sideEffects: AbstractDerivedDict<$FixMe>) => {
           return sideEffects
             .pointer()
             .prop('applyAttributes')

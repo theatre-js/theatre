@@ -1,6 +1,7 @@
-import * as D from '$shared/DataVerse'
 import {domAttrSetter} from './utils'
 import KeyedSideEffectRunner from '$shared/utils/KeyedSideEffectRunner'
+import autoProxyDerivedDict from '$src/shared/DataVerse/derivations/dicts/autoProxyDerivedDict'
+import withDeps from '$src/shared/DataVerse/derivations/withDeps'
 
 declare var SVGElement: Element
 
@@ -11,7 +12,7 @@ const blank = {
 
 export default function attributeApplier(dict: $FixMe, ticker: D.ITicker) {
   const domAttributesP = dict.pointer().prop('domAttributes')
-  const proxy = D.derivations.autoProxyDerivedDict(domAttributesP, ticker)
+  const proxy = autoProxyDerivedDict(domAttributesP, ticker)
 
   const elRefD = dict
     .pointer()
@@ -23,7 +24,7 @@ export default function attributeApplier(dict: $FixMe, ticker: D.ITicker) {
   ) as AbstractDerivation<boolean>
 
   const getXiguluForKey = key => {
-    return D.derivations.withDeps(
+    return withDeps(
       {elRefD: elRefD, isElSvgD: isElSvgD},
       ({elRefD, isElSvgD}) => {
         const elRef = elRefD.getValue()

@@ -1,18 +1,21 @@
 import * as React from 'react'
 import TheaterJSStudio from '$studio/bootstrap/TheaterJSStudio'
 import {contextTypes, contextName} from './utils/studioContext'
-import * as D from '$shared/DataVerse'
 import {elementify} from '$studio/handy'
 import DerivationAsReactElement from './utils/DerivationAsReactElement'
+import dictAtom from '$src/shared/DataVerse/atoms/dict'
+import boxAtom from '$src/shared/DataVerse/atoms/box'
+import arrayAtom from '$src/shared/DataVerse/atoms/array'
+import constant from '$src/shared/DataVerse/derivations/constant'
 
 interface Props {
   children: React.ReactNode
 }
 
-// type ElementifyProps = D.IDictAtom<{
+// type ElementifyProps = DictAtom<{
 //   componentId: 'TheaterJS/Core/RenderCurrentCanvas',
-//   props: D.IDictAtom<{
-//     children: D.IBoxAtom<React.Node>,
+//   props: DictAtom<{
+//     children: BoxAtom<React.Node>,
 //   }>,
 // }>
 type ElementifyProps = $FixMe
@@ -26,20 +29,20 @@ const createRootComponentForReact = (studio: TheaterJSStudio) => {
     constructor(props: Props) {
       super(props)
 
-      this.instantiationDescriptor = D.atoms.dict({
+      this.instantiationDescriptor = dictAtom({
         componentId: 'TheaterJS/Core/RenderCurrentCanvas',
-        props: D.atoms.dict({
-          children: D.atoms.box(props.children),
+        props: dictAtom({
+          children: boxAtom(props.children),
         }),
-        modifierInstantiationDescriptors: D.atoms.dict({
-          byId: D.atoms.dict({}),
-          list: D.atoms.array([]),
+        modifierInstantiationDescriptors: dictAtom({
+          byId: dictAtom({}),
+          list: arrayAtom([]),
         }),
       })
       this.elementD = elementify(
-        D.derivations.constant(`RenderCurrentCanvas`),
+        constant(`RenderCurrentCanvas`),
         this.instantiationDescriptor.derivedDict().pointer(),
-        D.derivations.constant(studio),
+        constant(studio),
       )
     }
 

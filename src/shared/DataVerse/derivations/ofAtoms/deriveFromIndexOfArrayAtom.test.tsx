@@ -1,19 +1,20 @@
-// @flow
 import deriveFromIndexOfArrayAtom from './deriveFromIndexOfArrayAtom'
-import * as D from '$shared/DataVerse'
+import boxAtom from '$src/shared/DataVerse/atoms/box'
+import arrayAtom from '$src/shared/DataVerse/atoms/array'
+import Ticker from '$src/shared/DataVerse/Ticker'
 
 describe('deriveFromIndexOfArrayAtom', () => {
   it('should work', () => {
-    const ticker = new D.Ticker()
+    const ticker = new Ticker()
 
-    const originals: Array<D.IBoxAtom<string>> = [
-      D.atoms.box('0'),
-      D.atoms.box('1'),
-      D.atoms.box('2'),
-      D.atoms.box('3'),
-      D.atoms.box('4'),
+    const originals: Array<BoxAtom<string>> = [
+      boxAtom('0'),
+      boxAtom('1'),
+      boxAtom('2'),
+      boxAtom('3'),
+      boxAtom('4'),
     ]
-    const a = D.atoms.array(originals)
+    const a = arrayAtom(originals)
     const index3 = deriveFromIndexOfArrayAtom(a, 3).map(val => val.getValue())
     const changes = []
     // debugger
@@ -21,19 +22,19 @@ describe('deriveFromIndexOfArrayAtom', () => {
       changes.push(c)
     })
 
-    a.setIndex(0, D.atoms.box('01s'))
-    a.setIndex(4, D.atoms.box('41'))
+    a.setIndex(0, boxAtom('01s'))
+    a.setIndex(4, boxAtom('41'))
     ticker.tick()
     expect(changes).toHaveLength(0)
 
-    a.setIndex(3, D.atoms.box('31'))
+    a.setIndex(3, boxAtom('31'))
     ticker.tick()
     expect(changes).toMatchObject(['31'])
     // debugger
     a.splice(2, 1, [])
     ticker.tick()
     expect(changes).toHaveLength(2)
-    a.splice(2, 0, [D.atoms.box('blah')])
+    a.splice(2, 0, [boxAtom('blah')])
     ticker.tick()
     expect(changes).toHaveLength(3)
   })

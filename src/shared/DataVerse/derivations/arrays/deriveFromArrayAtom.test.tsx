@@ -1,26 +1,28 @@
-import * as D from '$shared/DataVerse'
 import Ticker from '$src/shared/DataVerse/Ticker'
+import arrayAtom from '$src/shared/DataVerse/atoms/array'
+import boxAtom from '$src/shared/DataVerse/atoms/box'
+import constant from '$src/shared/DataVerse/derivations/constant'
 
 describe('DataVerse.derivations.deriveFromArrayAtom', () => {
   let ticker: Ticker
   beforeEach(() => {
-    ticker = new D.Ticker()
+    ticker = new Ticker()
   })
   it('should work', () => {
-    const arrayAtom = D.atoms.array(['0', '1'])
-    const prefix = D.atoms.box('(prefix)')
+    const arrayA = arrayAtom(['0', '1'])
+    const prefix = boxAtom('(prefix)')
 
-    const d = arrayAtom.derivedArray().map(sD => sD.map(s => `(${s})`))
+    const d = arrayA.derivedArray().map(sD => sD.map(s => `(${s})`))
     expect(d.index(0).getValue()).toEqual('(0)')
-    arrayAtom.setIndex(0, '0-1')
+    arrayA.setIndex(0, '0-1')
     expect(d.index(0).getValue()).toEqual('(0-1)')
     const reducedD = d.reduce(
-      (acc: string, cur: string) => D.derivations.constant(acc + cur),
+      (acc: string, cur: string) => constant(acc + cur),
       prefix.derivation(),
     )
 
     expect(reducedD.getValue()).toEqual('(prefix)(0-1)(1)')
-    arrayAtom.setIndex(0, '0-2')
+    arrayA.setIndex(0, '0-2')
     expect(reducedD.getValue()).toEqual('(prefix)(0-2)(1)')
 
     const changes: $FixMe[] = []
@@ -28,10 +30,10 @@ describe('DataVerse.derivations.deriveFromArrayAtom', () => {
       changes.push(c)
     })
 
-    arrayAtom.setIndex(0, '0-3')
+    arrayA.setIndex(0, '0-3')
     ticker.tick()
     expect(changes).toMatchObject(['(prefix)(0-3)(1)'])
-    arrayAtom.push(['2'])
+    arrayA.push(['2'])
     ticker.tick()
     expect(changes[1]).toEqual('(prefix)(0-3)(1)(2)')
     prefix.set('(prefix-2)')
@@ -40,8 +42,7 @@ describe('DataVerse.derivations.deriveFromArrayAtom', () => {
     expect(d.length()).toEqual(3)
 
     expect(
-      D.atoms
-        .array([])
+      arrayAtom([])
         .derivedArray()
         .reduce(() => {}, 'blah')
         .getValue(),

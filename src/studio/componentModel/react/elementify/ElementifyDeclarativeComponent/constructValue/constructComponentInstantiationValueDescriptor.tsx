@@ -1,6 +1,8 @@
-import {D, elementify} from '$studio/handy'
+import {elementify} from '$studio/handy'
 import constructMapDescriptor from './constructMapDescriptor'
 import constructListDescriptor from './constructListDescriptor'
+import boxAtom from '$src/shared/DataVerse/atoms/box'
+import dictAtom from '$src/shared/DataVerse/atoms/dict'
 
 const constructComponentInstantiationValueDescriptor = (
   desP: $FixMe,
@@ -13,11 +15,10 @@ const constructComponentInstantiationValueDescriptor = (
     'modifierInstantiationDescriptors',
   )
 
-  const instantiationDescriptorP = D.atoms
-    .dict({
-      componentId: D.atoms.box(desP.prop('componentId')),
+  const instantiationDescriptorP = dictAtom({
+      componentId: boxAtom(desP.prop('componentId')),
       props: propsToFinalComponent,
-      modifierInstantiationDescriptors: D.atoms.dict({
+      modifierInstantiationDescriptors: dictAtom({
         byId: constructMapDescriptor(
           modifierInstantiationDescriptors.prop('byId'),
           d,

@@ -1,8 +1,8 @@
 import {TheaterJSComponent} from '$src/studio/componentModel/react/makeReactiveComponent/makeReactiveComponent'
 import * as _ from 'lodash'
-import {D} from '$studio/handy'
 import TimelineInstance from './TimelineInstance/TimelineInstance'
 import {getPathToComponentDescriptor} from '$studio/componentModel/selectors'
+import autoProxyDerivedDict from '$src/shared/DataVerse/derivations/dicts/autoProxyDerivedDict'
 
 export default class TimelinesHandler {
   _element: TheaterJSComponent
@@ -19,7 +19,7 @@ export default class TimelinesHandler {
       .pointer()
       .prop('timelineDescriptors')
 
-    this._timelineDescriptorsProxy = D.derivations.autoProxyDerivedDict(
+    this._timelineDescriptorsProxy = autoProxyDerivedDict(
       this._timelineDescriptorsP,
       this._element.studio.ticker,
     )

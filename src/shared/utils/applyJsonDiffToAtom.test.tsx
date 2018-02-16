@@ -1,11 +1,10 @@
-// @flow
 import jsonPatchLib from 'fast-json-patch'
-import * as D from '$shared/DataVerse'
 import applyJsonDiffToAtom from './applyJsonDiffToAtom'
+import atomifyDeep from '$src/shared/DataVerse/atoms/atomifyDeep';
 
 const example = (input, output) => {
   const diffs: Array<Object> = jsonPatchLib.compare(input, output)
-  const atom = D.atoms.atomifyDeep(input)
+  const atom = atomifyDeep(input)
 
   return it(`Case: ${JSON.stringify(input)} ==> ${JSON.stringify(
     output,

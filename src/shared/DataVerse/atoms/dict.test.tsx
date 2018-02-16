@@ -1,4 +1,4 @@
-import box from './box'
+import boxAtom from './box'
 import atomifyDeep from './atomifyDeep'
 
 describe('DataVerse.atoms.dict', () => {
@@ -18,12 +18,12 @@ describe('DataVerse.atoms.dict', () => {
   })
   it('should allow getting and setting values', () => {
     expect(o.prop('foo').getValue()).toEqual('foo')
-    o.setProp('foo', box('foo2'))
+    o.setProp('foo', boxAtom('foo2'))
     expect(o.prop('foo').getValue()).toEqual('foo2')
   })
   it('should allow correctly set itself as parent of inner children', () => {
     expect(o.prop('foo').getParent()).toEqual(o)
-    const foo2 = box('foo2')
+    const foo2 = boxAtom('foo2')
     o.setProp('foo', foo2)
     expect(foo2.getParent()).toEqual(o)
   })
@@ -39,18 +39,18 @@ describe('DataVerse.atoms.dict', () => {
     expect(changes).toHaveLength(1)
     expect(changes[0].overriddenRefs.foo).toEqual(oldFoo)
 
-    const foo2 = box('foo2')
+    const foo2 = boxAtom('foo2')
     o.setProp('foo', foo2)
     expect(changes).toHaveLength(2)
     expect(changes[1].overriddenRefs.foo).toEqual(foo2)
 
-    o.setProp('bar', box('bar2'))
+    o.setProp('bar', boxAtom('bar2'))
     expect(changes).toHaveLength(3)
 
     o.prop('bar').set('bar3')
     expect(changes).toHaveLength(3)
 
-    o.prop('obj').setProp('str', box('str2'))
+    o.prop('obj').setProp('str', boxAtom('str2'))
     expect(changes).toHaveLength(3)
 
     o.deleteProp('obj')

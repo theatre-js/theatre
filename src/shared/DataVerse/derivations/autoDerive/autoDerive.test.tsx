@@ -1,9 +1,8 @@
-// @flow
-
-import * as D from '$src/shared/DataVerse'
 import autoDerive, {AutoDerivation} from './autoDerive'
 import Ticker from '$src/shared/DataVerse/Ticker'
 import constant from '$src/shared/DataVerse/derivations/constant'
+import dictAtom from '$src/shared/DataVerse/atoms/dict'
+import boxAtom from '$src/shared/DataVerse/atoms/box'
 
 describe('autoDerive', () => {
   let ticker: Ticker
@@ -12,8 +11,8 @@ describe('autoDerive', () => {
   })
 
   it('should work', () => {
-    const o = D.atoms.dict({
-      foo: D.atoms.box('foo'),
+    const o = dictAtom({
+      foo: boxAtom('foo'),
     })
     const fooPointer = o.pointer().prop('foo')
     const d = new AutoDerivation(() => {
@@ -40,7 +39,7 @@ describe('autoDerive', () => {
     expect(cD._dependencies.size).toEqual(1)
   })
   ;(function() {
-    const a = D.derivations.autoDerive(() => {
+    const a = autoDerive(() => {
       return 'hi'
     })
 

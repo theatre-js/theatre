@@ -1,9 +1,9 @@
 import {ModifierDescriptor} from '$src/studio/componentModel/types'
-import * as D from '$src/shared/DataVerse'
 import commonStylesPrototype from '$src/studio/componentModel/coreModifierDescriptors/HTML/SetCustomStyle/commonStylesPrototype'
+import dictAtom from '$src/shared/DataVerse/atoms/dict'
 
-const getClass = (propsP, dict) => {
-  return dict.extend(commonStylesPrototype).extend({
+const getClass = (propsP, cls) => {
+  return cls.extend(commonStylesPrototype).extend({
     reifiedStyles(d) {
       return d.propFromSuper('reifiedStyles').flatMap(reifiedStyles => {
         const ret = propsP
@@ -19,9 +19,7 @@ const getClass = (propsP, dict) => {
               const keyP = pairingP.prop('key')
               const valueP = pairingP.prop('value')
               return keyP.flatMap((key: string) => {
-                return accDict.extend(
-                  D.atoms.dict({[key]: valueP}).derivedDict(),
-                )
+                return accDict.extend(dictAtom({[key]: valueP}).derivedDict())
               })
             }, reifiedStyles)
           })

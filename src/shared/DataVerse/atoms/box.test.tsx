@@ -1,15 +1,15 @@
-import box from './box'
+import boxAtom from './box'
 
 describe('DataVerse.atoms.box', () => {
   it('should allow getting and setting values', () => {
-    const r = box('foo')
+    const r = boxAtom('foo')
     expect(r.getValue()).toEqual('foo')
     r.set('bar')
     expect(r.getValue()).toEqual('bar')
   })
 
   it('should correctly report changes', () => {
-    const r = box('foo')
+    const r = boxAtom('foo')
     const changes: $FixMe[] = []
     r.changes().tap(change => {
       changes.push(change)

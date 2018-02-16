@@ -1,12 +1,12 @@
-// @flow
 import withDeps from '../withDeps'
 import deriveFromPropOfADictAtom from './deriveFromPropOfADictAtom'
-// import deriveFromPropOfADictAtom from './deriveFromPropOfADictAtom'
-import * as D from '$shared/DataVerse'
+import dictAtom from '$src/shared/DataVerse/atoms/dict'
+import boxAtom from '$src/shared/DataVerse/atoms/box'
+import Ticker from '$src/shared/DataVerse/Ticker'
 
 describe('deriveFromPropOfADictAtom', () => {
   it('events should work', done => {
-    const m = D.atoms.dict({a: D.atoms.box(1), b: D.atoms.box(3)})
+    const m = dictAtom({a: boxAtom(1), b: boxAtom(3)})
 
     const aD = deriveFromPropOfADictAtom(m, 'a')
     const bD = deriveFromPropOfADictAtom(m, 'b')
@@ -15,13 +15,13 @@ describe('deriveFromPropOfADictAtom', () => {
       .flattenDeep(7)
 
     expect(final.getValue()).toEqual(4)
-    m.setProp('a', D.atoms.box(2))
+    m.setProp('a', boxAtom(2))
     expect(final.getValue()).toEqual(5)
 
-    m.setProp('b', D.atoms.box(4))
+    m.setProp('b', boxAtom(4))
     expect(final.getValue()).toEqual(6)
 
-    const ticker = new D.Ticker()
+    const ticker = new Ticker()
 
     const adEvents = []
 
@@ -30,7 +30,7 @@ describe('deriveFromPropOfADictAtom', () => {
     })
 
     expect(adEvents).toHaveLength(0)
-    m.setProp('a', D.atoms.box(3))
+    m.setProp('a', boxAtom(3))
     expect(adEvents).toHaveLength(0)
 
     ticker.tick()
@@ -40,14 +40,14 @@ describe('deriveFromPropOfADictAtom', () => {
     final.changes(ticker).tap(v => {
       finalEvents.push(v)
     })
-    m.setProp('a', D.atoms.box(4))
+    m.setProp('a', boxAtom(4))
 
     expect(finalEvents).toHaveLength(0)
     ticker.tick()
     expect(finalEvents).toMatchObject([8])
     expect(adEvents).toMatchObject([3, 4])
 
-    m.setProp('b', D.atoms.box(5))
+    m.setProp('b', boxAtom(5))
     expect(finalEvents).toHaveLength(1)
     ticker.tick()
     expect(adEvents).toHaveLength(2)
@@ -58,10 +58,10 @@ describe('deriveFromPropOfADictAtom', () => {
   })
 
   it('more', () => {
-    const ticker = new D.Ticker()
-    const a = D.atoms.box('a')
+    const ticker = new Ticker()
+    const a = boxAtom('a')
     const aD = a.derivation()
-    const b = D.atoms.box('b')
+    const b = boxAtom('b')
     const bD = b.derivation()
     const cD = aD
       .map(aValue => bD.map(bValue => withDeps({}, () => aValue + bValue)))

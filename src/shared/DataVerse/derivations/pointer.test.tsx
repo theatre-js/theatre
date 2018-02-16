@@ -1,25 +1,24 @@
-// @flow
-import {IPointerToBoxAtom} from './pointer'
-import * as D from '$shared/DataVerse'
-import {DictAtom} from '$shared/DataVerse/atoms/dict'
+import dictAtom, {DictAtom} from '$shared/DataVerse/atoms/dict'
 import derivedClass from '$src/shared/DataVerse/derivedClass/derivedClass'
+import boxAtom, {BoxAtom} from '$src/shared/DataVerse/atoms/box'
+import Ticker from '$src/shared/DataVerse/Ticker'
 
 describe('pointer', () => {
-  let ticker
+  let ticker: Ticker
   beforeEach(() => {
-    ticker = new D.Ticker()
+    ticker = new Ticker()
   })
   it('should work', () => {
-    type Root = D.IDictAtom<{
-      a: D.IDictAtom<{
-        aa: D.IBoxAtom<string>
-        bb: D.IBoxAtom<string>
+    type Root = DictAtom<{
+      a: DictAtom<{
+        aa: BoxAtom<string>
+        bb: BoxAtom<string>
       }>
     }>
-    const root: Root = D.atoms.dict({
-      a: D.atoms.dict({
-        aa: D.atoms.box('aa'),
-        bb: D.atoms.box('bb'),
+    const root: Root = dictAtom({
+      a: dictAtom({
+        aa: boxAtom('aa'),
+        bb: boxAtom('bb'),
       }),
     })
     // debugger
@@ -36,20 +35,20 @@ describe('pointer', () => {
     root.prop('a').deleteProp('aa')
     expect(aaP.getValue()).toEqual(undefined)
     // $FlowIgnore
-    root.prop('a').setProp('aa', D.atoms.dict({}))
+    root.prop('a').setProp('aa', dictAtom({}))
     expect(aaP.getValue()).toBeInstanceOf(DictAtom)
     // $FlowIgnore
-    root.prop('a').setProp('aa', D.atoms.dict({aa: D.atoms.box('aa3')}))
+    root.prop('a').setProp('aa', dictAtom({aa: boxAtom('aa3')}))
     expect(aaP.getValue()).toBeInstanceOf(DictAtom)
-    root.prop('a').setProp('aa', D.atoms.box('aa3'))
+    root.prop('a').setProp('aa', boxAtom('aa3'))
     expect(aaP.getValue()).toEqual('aa3')
   })
 
   it('should work', () => {
-    const root = D.atoms.dict({
-      a: D.atoms.dict({
-        aa: D.atoms.box('aa'),
-        bb: D.atoms.box('bb'),
+    const root = dictAtom({
+      a: dictAtom({
+        aa: boxAtom('aa'),
+        bb: boxAtom('bb'),
       }),
     })
     const aaP = root
@@ -72,22 +71,22 @@ describe('pointer', () => {
     root.prop('a').deleteProp('aa')
     ticker.tick()
     expect(aaD.getValue()).toEqual(undefined)
-    root.prop('a').setProp('aa', D.atoms.dict({}))
+    root.prop('a').setProp('aa', dictAtom({}))
     ticker.tick()
     expect(aaD.getValue()).toBeInstanceOf(DictAtom)
-    root.prop('a').setProp('aa', D.atoms.dict({aa: D.atoms.box('aa3')}))
+    root.prop('a').setProp('aa', dictAtom({aa: boxAtom('aa3')}))
     ticker.tick()
     expect(aaD.getValue()).toBeInstanceOf(DictAtom)
-    root.prop('a').setProp('aa', D.atoms.box('aa3'))
+    root.prop('a').setProp('aa', boxAtom('aa3'))
     ticker.tick()
     expect(aaD.getValue()).toEqual('aa3')
   })
 
   it('should work with derived stuff too', () => {
-    const ticker = new D.Ticker()
-    const foo = D.atoms.box('foo')
-    const atom = D.atoms.dict({
-      a: D.atoms.dict({
+    const ticker = new Ticker()
+    const foo = boxAtom('foo')
+    const atom = dictAtom({
+      a: dictAtom({
         foo,
       }),
     })
@@ -132,21 +131,21 @@ describe('pointer', () => {
     expect(changes).toMatchObject(['foo2'])
   })
   ;(function() {
-    type RootType = D.IDictAtom<{
-      str: D.IBoxAtom<string>
-      obj: D.IDictAtom<{
-        objStr: D.IBoxAtom<string>
-        objObj: D.IDictAtom<{
-          objObjStr: D.IBoxAtom<string>
+    type RootType = DictAtom<{
+      str: BoxAtom<string>
+      obj: DictAtom<{
+        objStr: BoxAtom<string>
+        objObj: DictAtom<{
+          objObjStr: BoxAtom<string>
         }>
       }>
     }>
-    const root: RootType = D.atoms.dict({
-      str: D.atoms.box('str'),
-      obj: D.atoms.dict({
-        objStr: D.atoms.box('str'),
-        objObj: D.atoms.dict({
-          objObjStr: D.atoms.box('str'),
+    const root: RootType = dictAtom({
+      str: boxAtom('str'),
+      obj: dictAtom({
+        objStr: boxAtom('str'),
+        objObj: dictAtom({
+          objObjStr: boxAtom('str'),
         }),
       }),
     })
@@ -166,15 +165,15 @@ describe('pointer', () => {
     root
       .pointer()
       .prop('obj')
-      .getValue() as D.IDictAtom<{
-      objStr: D.IBoxAtom<string>
-      objObj: D.IDictAtom<{objObjStr: D.IBoxAtom<string>}>
+      .getValue() as DictAtom<{
+      objStr: BoxAtom<string>
+      objObj: DictAtom<{objObjStr: BoxAtom<string>}>
     }>
     // $FlowExpectError
     root
       .pointer()
       .prop('obj')
-      .getValue() as D.IDictAtom<{objStr: D.IBoxAtom<number>}>
+      .getValue() as DictAtom<{objStr: BoxAtom<number>}>
     root
       .pointer()
       .prop('obj')
@@ -190,13 +189,13 @@ describe('pointer', () => {
       .pointer()
       .prop('obj')
       .prop('objObj')
-      .getValue() as D.IDictAtom<{objObjStr: D.IBoxAtom<string>}>
+      .getValue() as DictAtom<{objObjStr: BoxAtom<string>}>
     // $FlowExpectError
     root
       .pointer()
       .prop('obj')
       .prop('objObj')
-      .getValue() as D.IDictAtom<{objObjStr: D.IBoxAtom<number>}>
+      .getValue() as DictAtom<{objObjStr: BoxAtom<number>}>
     root
       .pointer()
       .prop('obj')
@@ -212,17 +211,17 @@ describe('pointer', () => {
       .getValue() as number
   })
   ;(function() {
-    type RootType = D.IDictAtom<{
-      str: D.IBoxAtom<string>
-      obj: D.IDictAtom<{
-        objStr: D.IBoxAtom<string>
+    type RootType = DictAtom<{
+      str: BoxAtom<string>
+      obj: DictAtom<{
+        objStr: BoxAtom<string>
       }>
     }>
 
-    const root: RootType = D.atoms.dict({
-      str: D.atoms.box('str'),
-      obj: D.atoms.dict({
-        objStr: D.atoms.box('str'),
+    const root: RootType = dictAtom({
+      str: boxAtom('str'),
+      obj: dictAtom({
+        objStr: boxAtom('str'),
       }),
     })
 
@@ -230,14 +229,14 @@ describe('pointer', () => {
     // const pointerToRootObj = root.pointer().prop('obj');
     pointerToRootStr as IPointerToBoxAtom<string>
 
-    type DictOfPointers = D.IDictAtom<{
+    type DictOfPointers = DictAtom<{
       unboxedStr: IPointerToBoxAtom<string>
-      // boxedStr: D.IBoxAtom<D.IPointerToBoxAtom<string>>,
+      // boxedStr: BoxAtom<D.IPointerToBoxAtom<string>>,
     }>
 
-    const dictOfPointers: DictOfPointers = D.atoms.dict({
+    const dictOfPointers: DictOfPointers = dictAtom({
       unboxedStr: pointerToRootStr,
-      // boxedStr: D.atoms.box(pointerToRootStr),
+      // boxedStr: box(pointerToRootStr),
     })
     dictOfPointers
       .pointer()
@@ -253,25 +252,25 @@ describe('pointer', () => {
     // (dictOfPointers.pointer().prop('boxedStr').getValue(): number);
   })
   ;(function() {
-    type RootType = D.IDictAtom<{
-      str: D.IBoxAtom<string>
-      obj: D.IDictAtom<{
-        objStr: D.IBoxAtom<string>
+    type RootType = DictAtom<{
+      str: BoxAtom<string>
+      obj: DictAtom<{
+        objStr: BoxAtom<string>
       }>
     }>
 
-    const root: RootType = D.atoms.dict({
-      str: D.atoms.box('str'),
-      obj: D.atoms.dict({
-        objStr: D.atoms.box('str'),
+    const root: RootType = dictAtom({
+      str: boxAtom('str'),
+      obj: dictAtom({
+        objStr: boxAtom('str'),
       }),
     })
 
     const pointerToRootStr = root.pointer().prop('str')
 
-    const dictOfPointers = D.atoms.dict({
+    const dictOfPointers = dictAtom({
       unboxedStr: pointerToRootStr as IPointerToBoxAtom<string>,
-      // boxedStr: D.atoms.box(pointerToRootStr),
+      // boxedStr: box(pointerToRootStr),
     })
     dictOfPointers
       .pointer()

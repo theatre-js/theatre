@@ -1,5 +1,6 @@
 import {MapKey} from '$shared/DataVerse/types'
 import AbstractDerivation from './AbstractDerivation'
+import { DerivationTypeOfPointerType, IndexOfPointer, PropOfPointer } from './pointerTypes';
 
 const noBoxAtoms = (v: $IntentionalAny) => {
   if (v instanceof modules.box.BoxAtom) {
@@ -21,7 +22,8 @@ type Address =
       keyOrIndex: number | string
     }
 
-export class PointerDerivation<V> extends AbstractDerivation<$FixMe> {
+export class PointerDerivation<V> extends AbstractDerivation<DerivationTypeOfPointerType<V>> {
+  v: V
   static NOTFOUND: void = undefined //Symbol('notfound')
   isPointer = true
   _address: Address
@@ -37,7 +39,7 @@ export class PointerDerivation<V> extends AbstractDerivation<$FixMe> {
     this._props = {}
   }
 
-  prop(key: MapKey) {
+  prop<K extends MapKey>(key: K): PropOfPointer<V, K> {
     if (!this._props[key]) {
       this._props[key] = new PointerDerivation({
         type: 'fromParentPointer',
@@ -45,10 +47,10 @@ export class PointerDerivation<V> extends AbstractDerivation<$FixMe> {
         keyOrIndex: key,
       }) // {...this._address, path: [...this._address.path, key]})
     }
-    return this._props[key]
+    return this._props[key] as $IntentionalAny
   }
 
-  index(key: number) {
+  index(key: number): IndexOfPointer<V> {
     if (!this._props[key]) {
       this._props[key] = new PointerDerivation({
         type: 'fromParentPointer',
@@ -56,7 +58,7 @@ export class PointerDerivation<V> extends AbstractDerivation<$FixMe> {
         keyOrIndex: key,
       }) // {...this._address, path: [...this._address.path, key]})
     }
-    return this._props[key]
+    return this._props[key] as $IntentionalAny
     // return new PointerDerivation({...this._address, path: [...this._address.path, key]})
   }
 
@@ -119,7 +121,7 @@ export class PointerDerivation<V> extends AbstractDerivation<$FixMe> {
     this.getValue()
   }
 
-  pointer() {
+  pointer(): this {
     return this
   }
 }

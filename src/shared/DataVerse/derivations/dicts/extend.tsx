@@ -1,21 +1,24 @@
-import {AbstractDerivation} from '../types'
-import Emitter from '$shared/DataVerse/utils/Emitter'
-import {IDerivedDict, ChangeType} from './types'
-import DerivedDict from './AbstractDerivedDict'
-import _ from 'lodash'
+import AbstractDerivedDict, {
+  DerivedDictChangeType,
+  PropOfADD,
+} from './AbstractDerivedDict'
+import _, {noop} from 'lodash'
+import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
 
-export class ExtendDerivedDict extends DerivedDict
-  implements IDerivedDict<$FixMe> {
-  _changeEmitter: Emitter<ChangeType<$FixMe>>
-  _base: IDerivedDict<$FixMe>
-  _overrider: IDerivedDict<$FixMe>
+export class ExtendDerivedDict<L, R> extends AbstractDerivedDict<Spread<L, R>> {
+  _base: AbstractDerivedDict<L>
+  _overrider: AbstractDerivedDict<R>
+  _S: Spread<L, R>
+
   _untapFromBaseChanges: () => void
   _untapFromOverriderChanges: () => void
 
-  constructor(base: IDerivedDict<B>, overrider: IDerivedDict<OV>) {
+  constructor(base: AbstractDerivedDict<L>, overrider: AbstractDerivedDict<R>) {
     super()
     this._base = base
     this._overrider = overrider
+    this._untapFromBaseChanges = noop
+    this._untapFromOverriderChanges = noop
 
     return this
   }
@@ -36,7 +39,7 @@ export class ExtendDerivedDict extends DerivedDict
     this._untapFromOverriderChanges = _.noop
   }
 
-  _reactToChangeFromBase(c: ChangeType<$FixMe>) {
+  _reactToChangeFromBase(c: DerivedDictChangeType<L>) {
     const keysOfOverrider = this._overrider.keys()
     const change = {
       addedKeys: _.difference(c.addedKeys, keysOfOverrider),
@@ -47,7 +50,7 @@ export class ExtendDerivedDict extends DerivedDict
       this._changeEmitter.emit(change)
   }
 
-  _reactToChangeFromOverrider(c: ChangeType<$FixMe>) {
+  _reactToChangeFromOverrider(c: DerivedDictChangeType<R>) {
     const keysOfBase = this._base.keys()
     const change = {
       addedKeys: _.difference(c.addedKeys, keysOfBase),
@@ -57,20 +60,28 @@ export class ExtendDerivedDict extends DerivedDict
       this._changeEmitter.emit(change)
   }
 
-  prop<K extends keyof $FixMe>(k: K): AbstractDerivation<$FixMe> {
+  prop<K extends keyof this['_S']>(
+    key: K,
+  ): AbstractDerivation<PropOfADD<this['_S'][K]>> {
     return this._overrider
-      .prop(k)
-      .flatMap(v => (v !== undefined ? v : this._base.prop(k)))
+      .prop(key as $IntentionalAny)
+      .flatMap(
+        (v: $IntentionalAny) =>
+          v !== undefined ? v : this._base.prop(key as $IntentionalAny),
+      )
   }
 
-  keys() {
-    return _.uniq([...this._base.keys(), ...this._overrider.keys()])
+  keys(): Array<$FixMe> {
+    return _.uniq([
+      ...this._base.keys(),
+      ...this._overrider.keys(),
+    ]) as $IntentionalAny
   }
 }
 
-export default function extend<B, OV, O extends Spread<B, OV>>(
-  base: IDerivedDict<B>,
-  overrider: IDerivedDict<OV>,
-): IDerivedDict<O> {
+export default function extend<L, R, O extends Spread<L, R>>(
+  base: AbstractDerivedDict<L>,
+  overrider: AbstractDerivedDict<R>,
+): ExtendDerivedDict<L, R> {
   return new ExtendDerivedDict(base, overrider)
 }

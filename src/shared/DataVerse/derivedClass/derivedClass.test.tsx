@@ -1,10 +1,10 @@
 import derivedClass from '$src/shared/DataVerse/derivedClass/derivedClass'
-import * as D from '$shared/DataVerse'
+import Ticker from '$src/shared/DataVerse/Ticker'
 
 describe('derivedClass', () => {
-  let ticker
+  let ticker: Ticker
   beforeEach(() => {
-    ticker = new D.Ticker()
+    ticker = new Ticker()
   })
 
   describe('examples', () => {

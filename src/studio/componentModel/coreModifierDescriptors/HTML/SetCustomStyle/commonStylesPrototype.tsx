@@ -1,30 +1,28 @@
-// @flow
-import * as D from '$shared/DataVerse'
-
 import reifiedStyleApplier from './reifiedStyleApplier'
+import boxAtom from '$src/shared/DataVerse/atoms/box'
+import emptyDict from '$src/shared/DataVerse/derivations/dicts/emptyDict'
+import dictAtom from '$src/shared/DataVerse/atoms/dict'
 
 const ensureReifiedStyles = d => {
   return d.propFromSuper('reifiedStyles').flatMap(possibleReifiedStyles => {
     if (!possibleReifiedStyles) {
-      return D.derivations.emptyDict
+      return emptyDict
     } else {
       return possibleReifiedStyles
     }
   })
 }
 
-const sideEffectsForApplyReifiedStyles = D.atoms
-  .dict({
-    applyReifiedStyles: D.atoms.box((dict, ticker) => {
-      const applier = reifiedStyleApplier(dict, ticker)
-      applier.start()
+const sideEffectsForApplyReifiedStyles = dictAtom({
+  applyReifiedStyles: boxAtom((dict, ticker) => {
+    const applier = reifiedStyleApplier(dict, ticker)
+    applier.start()
 
-      return () => {
-        applier.stop()
-      }
-    }),
-  })
-  .derivedDict()
+    return () => {
+      applier.stop()
+    }
+  }),
+}).derivedDict()
 
 export default {
   reifiedStyles(self: $FixMe) {
@@ -33,7 +31,7 @@ export default {
   sideEffects(self: $FixMe) {
     return self
       .propFromSuper('sideEffects')
-      .flatMap((sideEffects: D.IDerivedDict<$FixMe>) => {
+      .flatMap((sideEffects: AbstractDerivedDict<$FixMe>) => {
         return sideEffects
           .pointer()
           .prop('applyReifiedStyles')

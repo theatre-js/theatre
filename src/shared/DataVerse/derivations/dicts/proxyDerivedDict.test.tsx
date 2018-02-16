@@ -1,15 +1,15 @@
-// @flow
 import proxyDerivedDict from './proxyDerivedDict'
-import * as D from '$shared/DataVerse'
+import Ticker from '$src/shared/DataVerse/Ticker'
+import dictAtom from '$src/shared/DataVerse/atoms/dict'
 
 describe('DerivedDictStabilizer', () => {
-  let ticker
+  let ticker: Ticker
   beforeEach(() => {
-    ticker = new D.Ticker()
+    ticker = new Ticker()
   })
 
   it('should work', () => {
-    const o = D.atoms.dict({foo: '1'})
+    const o = dictAtom({foo: '1'})
     const oD = o.derivedDict()
 
     const proxy = proxyDerivedDict(oD)
@@ -30,7 +30,7 @@ describe('DerivedDictStabilizer', () => {
     ticker.tick()
     expect(dChanges).toMatchObject(['1-1'])
 
-    const o2 = D.atoms.dict({foo: '2'})
+    const o2 = dictAtom({foo: '2'})
     const o2D = o2.derivedDict()
 
     proxy.setSource(o2D)

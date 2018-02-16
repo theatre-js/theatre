@@ -1,10 +1,11 @@
-// @flow
-import * as D from '$shared/DataVerse' // eslint-disable-line flowtype/require-valid-file-annotation
 import * as React from 'react'
 import {ComponentDescriptor} from '$studio/componentModel/types'
 import {makeReactiveComponent} from '$studio/handy'
 import {DerivedClass} from '$src/shared/DataVerse/derivedClass/derivedClass'
 import withDeps from '$src/shared/DataVerse/derivations/withDeps'
+import boxAtom from '$src/shared/DataVerse/atoms/box'
+import dictAtom from '$src/shared/DataVerse/atoms/dict'
+import autoDerive from '$src/shared/DataVerse/derivations/autoDerive/autoDerive'
 
 const lookupTable = {
   tagName: self => {
@@ -40,20 +41,20 @@ const lookupTable = {
 
   refFn: self => {
     const stateP = self.pointer().prop('state')
-    return D.derivations.autoDerive(() => {
-      const state: D.IDictAtom<{
-        elRef: D.IBoxAtom<undefined | null | HTMLElement>
+    return autoDerive(() => {
+      const state: DictAtom<{
+        elRef: BoxAtom<undefined | null | HTMLElement>
       }> = stateP.getValue()
 
       return function setElRef(el) {
-        state.setProp('elRef', D.atoms.box(el))
+        state.setProp('elRef', boxAtom(el))
       }
     })
   },
 }
 
-type State = D.IDictAtom<{
-  elRef: D.IBoxAtom<undefined | null | HTMLElement>
+type State = DictAtom<{
+  elRef: BoxAtom<undefined | null | HTMLElement>
 }>
 
 const componentId = 'TheaterJS/Core/DOMTag'
@@ -63,8 +64,8 @@ export const propsTomakeReactiveComponent = {
   displayName: componentId,
   componentType: 'HardCoded',
   getInitialState(): State {
-    return D.atoms.dict({
-      elRef: D.atoms.box(null),
+    return dictAtom({
+      elRef: boxAtom(null),
     })
   },
   getClass: (dict: DerivedClass<$FixMe>) => dict.extend(lookupTable),

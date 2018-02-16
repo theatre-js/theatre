@@ -1,26 +1,27 @@
-import {IDerivedDict} from './types'
-import AbstractDerivedDict from './AbstractDerivedDict'
+import AbstractDerivedDict, { PropOfADD } from './AbstractDerivedDict'
 import noop from 'lodash/noop'
 // import AbstractDerivation from '../AbstractDerivation'
 import {ensureNoAtoms} from './utils'
+import {DictAtom} from '$src/shared/DataVerse/atoms/dict'
+import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation';
 
-export class DerivedDictFromDictAtom<O> extends AbstractDerivedDict<$FixMe> {
-  _dictAtom: IDictAtom<O>
-  prop: $FixMe
-  changes: $FixMe
+export class DerivedDictFromDictAtom<O> extends AbstractDerivedDict<O> {
+  _dictAtom: DictAtom<O>
+  isDerivedFromDictAtom = true
+
   _untapFromDictAtomChangeEmitter: () => void
 
-  constructor(m: IDictAtom<O>) {
+  constructor(m: DictAtom<O>) {
     super()
     this._dictAtom = m
     this._untapFromDictAtomChangeEmitter = noop
     return this
   }
-
-  prop(k: $Keys<O>) {
+  
+  prop<K extends keyof O>(key: K): AbstractDerivation<PropOfADD<O[K]>> {
     return this._dictAtom
       .pointer()
-      .prop(k)
+      .prop(key)
       .flatMap(ensureNoAtoms)
   }
 
@@ -39,13 +40,13 @@ export class DerivedDictFromDictAtom<O> extends AbstractDerivedDict<$FixMe> {
     this._untapFromDictAtomChangeEmitter = noop
   }
 
-  keys() {
+  keys(): Array<keyof O> {
     return this._dictAtom.keys()
   }
 }
 
 export default function deriveFromDictAtom<O>(
-  m: IDictAtom<O>,
-): IDerivedDict<$FixMe> {
+  m: DictAtom<O>,
+): DerivedDictFromDictAtom<O> {
   return new DerivedDictFromDictAtom(m)
 }

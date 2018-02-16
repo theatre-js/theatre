@@ -1,15 +1,35 @@
 import Emitter from '$shared/DataVerse/utils/Emitter'
+import {PointerDerivation} from '../pointer'
+import {PropOfPointer} from '../pointerTypes'
+import {DictAtom} from '$src/shared/DataVerse/atoms/dict'
+import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
+import {BoxAtom} from '$src/shared/DataVerse/atoms/box'
+import { ExtendDerivedDict } from './extend';
+
+export type DerivedDictChangeType<O> = {
+  addedKeys: Array<keyof O>
+  deletedKeys: Array<keyof O>
+}
+
+// @todo also support ArrayAtom
+export type PropOfADD<V> =
+  V extends DictAtom<infer O> ? AbstractDerivedDict<O> :
+  V extends BoxAtom<infer T> ? T :
+  V
 
 export default abstract class AbstractDerivedDict<O> {
-  _changeEmitter: Emitter<$FixMe>
-  _untapFromSourceChanges: $FixMe
+  isDerivedDict = true
+  _o: O
+  _changeEmitter: Emitter<DerivedDictChangeType<O>>
   _changeEmitterHasTappers: boolean
+
+  _trace: $IntentionalAny
+  _pointer: undefined | PointerDerivation<this>
+
   abstract _reactToHavingTappers(): void
   abstract _reactToNotHavingTappers(): void
-  isDerivedDict = true
-  _trace: $FixMe
-  _pointer: $FixMe
-  abstract keys(): string[]
+  abstract keys(): Array<keyof O>
+  abstract prop<K extends keyof O>(key: K): AbstractDerivation<PropOfADD<O[K]>>
 
   constructor() {
     if (process.env.KEEPING_DERIVATION_TRACES === true) {
@@ -38,18 +58,22 @@ export default abstract class AbstractDerivedDict<O> {
     return this._changeEmitter.tappable
   }
 
-  pointer() {
-    if (!this._pointer) {
-      this._pointer = pointer.default({type: 'WithPath', root: this, path: []})
+  pointer(): PointerDerivation<AbstractDerivedDict<O>> {
+    const cachedPointer = this._pointer
+    if (!cachedPointer) {
+      const p = pointer.default({type: 'WithPath', root: this, path: []})
+      this._pointer = p
+      return p
+    } else {
+      return cachedPointer
     }
-    return this._pointer
   }
 
   proxy(): $IntentionalAny {
     return proxyDerivedDict.default(this as $IntentionalAny)
   }
 
-  extend(x: $IntentionalAny): $IntentionalAny {
+  extend<R>(x: AbstractDerivedDict<R>): ExtendDerivedDict<O, R> {
     return extend.default(this as $IntentionalAny, x)
   }
 

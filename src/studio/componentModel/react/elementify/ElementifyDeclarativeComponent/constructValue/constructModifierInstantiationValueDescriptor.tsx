@@ -1,5 +1,5 @@
-import {D} from '$studio/handy'
 import constructMapDescriptor from './constructMapDescriptor'
+import dictAtom from '$src/shared/DataVerse/atoms/dict'
 
 const constructModifierInstantiationValueDescriptor = (
   desP: $FixMe,
@@ -7,13 +7,11 @@ const constructModifierInstantiationValueDescriptor = (
 ) => {
   if (desP.isPointer !== true) throw Error('Pointers only')
 
-  return D.atoms
-    .dict({
-      modifierId: desP.prop('modifierId'),
-      enabled: desP.prop('enabled'),
-      props: constructMapDescriptor(desP.prop('props'), d),
-    })
-    .derivedDict()
+  return dictAtom({
+    modifierId: desP.prop('modifierId'),
+    enabled: desP.prop('enabled'),
+    props: constructMapDescriptor(desP.prop('props'), d),
+  }).derivedDict()
 }
 
 export default constructModifierInstantiationValueDescriptor

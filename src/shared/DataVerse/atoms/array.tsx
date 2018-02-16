@@ -2,9 +2,13 @@ import {default as AbstractCompositeAtom} from './utils/AbstractCompositeAtom'
 import {forEach} from 'lodash'
 import deriveFromArrayAtom from '$shared/DataVerse/derivations/arrays/deriveFromArrayAtom'
 import range from 'lodash/range'
-import {default as pointer} from '$shared/DataVerse/derivations/pointer'
+import {
+  default as pointer,
+  PointerDerivation,
+} from '$shared/DataVerse/derivations/pointer'
 import isAtom from '$src/shared/DataVerse/atoms/utils/isAtom'
 import AbstractDerivedArray from '$src/shared/DataVerse/derivations/arrays/AbstractDerivedArray'
+import {UnatomifyDeep} from './utils/types'
 
 export interface IArrayAtomChangeType<V> {
   startIndex: number
@@ -45,17 +49,17 @@ export class ArrayAtom<V> extends AbstractCompositeAtom<
     this._adopt(this._internalArray.length - 1, value)
   }
 
-  unboxDeep(): $FixMe {
+  unboxDeep(): UnatomifyDeep<V> {
     return this._internalArray.map(value => {
       if (isAtom(value)) {
         return value.unboxDeep()
       } else {
         return value
       }
-    })
+    }) as $IntentionalAny
   }
 
-  length() {
+  length(): number {
     return this._internalArray.length
   }
 
@@ -64,9 +68,9 @@ export class ArrayAtom<V> extends AbstractCompositeAtom<
       this.index(i),
     )
 
-    removedRefs.forEach((r, i) => {
+    removedRefs.forEach(r => {
       if (r) {
-        this._unadopt(i + startIndex, r as $FixMe)
+        this._unadopt(r)
       }
     })
 
@@ -123,7 +127,7 @@ export class ArrayAtom<V> extends AbstractCompositeAtom<
     return deriveFromArrayAtom(this)
   }
 
-  pointer() {
+  pointer(): PointerDerivation<this> {
     if (!this._pointer) {
       this._pointer = pointer({type: 'WithPath', root: this, path: []})
     }
@@ -131,6 +135,6 @@ export class ArrayAtom<V> extends AbstractCompositeAtom<
   }
 }
 
-export default function array<V>(a: Array<V>): ArrayAtom<V> {
+export default function arrayAtom<V>(a: Array<V>): ArrayAtom<V> {
   return new ArrayAtom(a)
 }

@@ -17,7 +17,7 @@ export default abstract class AbstractCompositeAtom<
     ref._setParent(this, key)
   }
 
-  _unadopt(ref: AbstractAtom<$IntentionalAny>) {
+  _unadopt(ref: AbstractAtom<$IntentionalAny> | mixed) {
     if (!isAtom(ref)) return
     ref._unsetParent()
   }

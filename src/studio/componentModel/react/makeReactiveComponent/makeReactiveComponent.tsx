@@ -1,10 +1,12 @@
-// @flow
 import SideEffectsHandler from '$src/studio/componentModel/react/makeReactiveComponent/SideEffectsHandler'
-import {PureComponentWithStudio, D} from '$src/studio/handy'
+import {PureComponentWithStudio} from '$src/studio/handy'
 import TimelinesHandler from '$src/studio/componentModel/react/makeReactiveComponent/TimelinesHandler'
-import {AbstractDerivation} from '$src/shared/DataVerse/derivations/types'
 import derivedClass from '$src/shared/DataVerse/derivedClass/derivedClass'
 import DerivedClassInstance from '$src/shared/DataVerse/derivedClass/DerivedClassInstance'
+import dictAtom from '$src/shared/DataVerse/atoms/dict'
+import emptyDict from '$src/shared/DataVerse/derivations/dicts/emptyDict'
+import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
+import constant from '$src/shared/DataVerse/derivations/constant'
 
 type MakeReactiveComponentArgs = $FixMe
 
@@ -41,7 +43,7 @@ export default function makeReactiveComponent({
     elementId: number
     _timelinesHandler: TimelinesHandler
 
-    _atom: $FixMe // D.IDictAtom<{
+    _atom: $FixMe // DictAtom<{
     //   instanceId: string | number,
     //   props: Props['props'],
     //   studio: Studio,
@@ -56,7 +58,7 @@ export default function makeReactiveComponent({
     static _baseLookupTable = {
       render: () => null,
 
-      sideEffects: () => D.derivations.emptyDict,
+      sideEffects: () => emptyDict,
 
       props: d =>
         d
@@ -82,7 +84,7 @@ export default function makeReactiveComponent({
           .prop('_atom')
           .prop('state'),
 
-      timelineDescriptors: () => D.derivations.emptyDict,
+      timelineDescriptors: () => emptyDict,
 
       timelineInstances: d =>
         d
@@ -98,7 +100,7 @@ export default function makeReactiveComponent({
 
       // $FixMe
       this._atom = this._createAtom()
-      
+
       this._derivedClassD = this._makeDerivedClassD()
 
       const untapFromDerivedClassDChanges = this._derivedClassD
@@ -120,7 +122,6 @@ export default function makeReactiveComponent({
       this.componentType = componentType // || this._finalFace.prop('componentType').getValue()
 
       this.componentId = componentId // || this._finalFace.prop('componentId').getValue()
-      
 
       // if (!displayName)
       //   TheaterJSComponent.displayName = this._finalFace
@@ -155,11 +156,21 @@ export default function makeReactiveComponent({
       this._timelinesHandler.start()
 
       this.studio.declareComponentInstance(this.elementId, this)
-      
+
       if (this.getComponentId() === 'IntroScene') {
-        this.reduceState(['workspace', 'panels', 'byId', '8daa7380-9b43-475a-8352-dc564a58c719', 'configuration', 'elementId'], () => this.elementId)
+        this.reduceState(
+          [
+            'workspace',
+            'panels',
+            'byId',
+            '8daa7380-9b43-475a-8352-dc564a58c719',
+            'configuration',
+            'elementId',
+          ],
+          () => this.elementId,
+        )
       }
-      
+
       // if (this.getComponentId() === '')
     }
 
@@ -173,15 +184,17 @@ export default function makeReactiveComponent({
     }
 
     _createAtom() {
-      return D.atoms.dict({
-        instanceId: this.studio._getNewComponentInstanceId(this.constructor.componentId),
+      return dictAtom({
+        instanceId: this.studio._getNewComponentInstanceId(
+          this.constructor.componentId,
+        ),
         props: this.props.props,
         modifierInstantiationDescriptors: this.props
           .modifierInstantiationDescriptors,
         studio: this.studio,
         // key: this.props.key,
-        state: getInitialState ? getInitialState() : D.atoms.dict({}),
-        timelineInstances: D.atoms.dict({}),
+        state: getInitialState ? getInitialState() : dictAtom({}),
+        timelineInstances: dictAtom({}),
       })
     }
 
@@ -213,7 +226,7 @@ export default function makeReactiveComponent({
             )
             .reduce((dict, modifierInstantiationDescriptor) => {
               return this._applyModifier(modifierInstantiationDescriptor, dict)
-            }, D.derivations.constant(derivedClassWithoutModifiers))
+            }, constant(derivedClassWithoutModifiers))
         })
 
       return finalDerivedClassD
@@ -241,7 +254,10 @@ export default function makeReactiveComponent({
                 .prop(modifierId)
                 .prop('getClass')
                 .flatMap((possibleFn: undefined | null | Function) => {
-                  if (!possibleFn) console.warn(`couldn't find modifier '${modifierId}'. This should never happen`)
+                  if (!possibleFn)
+                    console.warn(
+                      `couldn't find modifier '${modifierId}'. This should never happen`,
+                    )
                   return possibleFn
                     ? possibleFn(
                         modifierInstantiationDescriptor.pointer().prop('props'),

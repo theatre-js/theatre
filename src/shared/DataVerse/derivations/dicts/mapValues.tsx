@@ -1,17 +1,18 @@
-import {AbstractDerivation} from '../types'
-import Emitter from '$shared/DataVerse/utils/Emitter'
-// import lodashMapValues from 'lodash/mapValues'
-import {IDerivedDict, ChangeType} from './types'
-import DerivedDict from './AbstractDerivedDict'
+import AbstractDerivedDict, {DerivedDictChangeType} from './AbstractDerivedDict'
 import noop from 'lodash/noop'
+import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
 
-export class MapValues extends DerivedDict implements IDerivedDict<$FixMe> {
-  _changeEmitter: Emitter<ChangeType<$FixMe>>
-  _source: IDerivedDict<$FixMe>
-  _fn: $FixMe
-  _untapFromSourceChanges: Function
+type FunctionMapping<V, Fn extends (v: V) => $IntentionalAny> = Fn extends (v: V) => infer R ? R : any
 
-  constructor(source: IDerivedDict<O>, fn: FN) {
+export class MapValues<
+  S,
+  Fn extends (v: S[keyof S]) => AbstractDerivation<$IntentionalAny>
+> extends AbstractDerivedDict<{[K in keyof S]: FunctionMapping<S[K], Fn>}> {
+  _source: AbstractDerivedDict<S>
+  _fn: Fn
+  _untapFromSourceChanges: () => void
+
+  constructor(source: AbstractDerivedDict<S>, fn: Fn) {
     super()
     this._source = source
     this._fn = fn
@@ -30,8 +31,8 @@ export class MapValues extends DerivedDict implements IDerivedDict<$FixMe> {
     this._untapFromSourceChanges = noop
   }
 
-  _reactToChangeFromSource(c: ChangeType<$FixMe>) {
-    // @todo we should defer these until D.Ticker.tick(), but this will do for now
+  _reactToChangeFromSource(c: DerivedDictChangeType<S>) {
+    // @todo we should defer these until Ticker.tick(), but this will do for now
     this._changeEmitter.emit(c)
   }
 
@@ -41,10 +42,6 @@ export class MapValues extends DerivedDict implements IDerivedDict<$FixMe> {
 
   keys() {
     return this._source.keys()
-  }
-
-  changes() {
-    return this._changeEmitter.tappable
   }
 }
 

@@ -1,10 +1,11 @@
-import {D} from '$src/studio/handy'
 import ValueInstance from '$src/studio/componentModel/react/makeReactiveComponent/TimelineInstance/ValueInstance'
+import dictAtom from '$src/shared/DataVerse/atoms/dict'
+import boxAtom from '$src/shared/DataVerse/atoms/box'
 
 export default class TimelineInstance {
-  _timeLength: number;
-  _playBeginRafTime: number;
-  _playBeginTime: number;
+  _timeLength: number
+  _playBeginRafTime: number
+  _playBeginTime: number
   playing: boolean
   atom: $FixMe
   _descriptorP: $FixMe
@@ -18,8 +19,8 @@ export default class TimelineInstance {
     studio: $FixMe,
     pathToTimelineDescriptor: Array<string>,
   ) {
-    this.atom = D.atoms.dict({
-      time: D.atoms.box(0),
+    this.atom = dictAtom({
+      time: boxAtom(0),
     })
 
     // setInterval(() => {
@@ -68,7 +69,7 @@ export default class TimelineInstance {
     this._af = requestAnimationFrame(this._tick)
 
     const now = performance.now()
-    
+
     const deltaRafTime = now - this._playBeginRafTime
     let newTime = this._playBeginTime + deltaRafTime
     if (newTime >= this._timeLength) {

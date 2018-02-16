@@ -2,9 +2,11 @@ import {default as AbstractCompositeAtom} from './utils/AbstractCompositeAtom'
 import forEach from 'lodash/forEach'
 import mapValues from 'lodash/mapValues'
 import deriveFromDictAtom from '$shared/DataVerse/derivations/dicts/deriveFromDictAtom'
-import {default as pointer} from '$shared/DataVerse/derivations/pointer'
+import {default as pointer, PointerDerivation} from '$shared/DataVerse/derivations/pointer'
+import {UnatomifyDeep} from './utils/types'
+import AbstractDerivedDict from '$src/shared/DataVerse/derivations/dicts/AbstractDerivedDict';
 
-type DictAtomChangeType<O> = {
+interface DictAtomChangeType<O> {
   overriddenRefs: Partial<O>
   deletedKeys: Array<keyof O>
   addedKeys: Array<keyof O>
@@ -12,6 +14,7 @@ type DictAtomChangeType<O> = {
 
 export class DictAtom<O> extends AbstractCompositeAtom<DictAtomChangeType<O>> {
   isDictAtom = true
+  Type: O
   _internalMap: O
   _pointer: $FixMe
 
@@ -24,8 +27,8 @@ export class DictAtom<O> extends AbstractCompositeAtom<DictAtomChangeType<O>> {
     return this
   }
 
-  unboxDeep(): $FixMe {
-    return mapValues(this._internalMap, v => (v ? v.unboxDeep() : v))
+  unboxDeep(): UnatomifyDeep<O> {
+    return mapValues(this._internalMap, v => (v ? v.unboxDeep() : v)) as $IntentionalAny
   }
 
   _assignInitialValue(o: O) {
@@ -56,9 +59,9 @@ export class DictAtom<O> extends AbstractCompositeAtom<DictAtomChangeType<O>> {
       overriddenRefs[propName] = this.prop(propName)
     })
 
-    forEach(overriddenRefs, (v, k: keyof O) => {
+    forEach(overriddenRefs, (v) => {
       if (v) {
-        this._unadopt(k, v as $IntentionalAny)
+        this._unadopt(v as $IntentionalAny)
       }
     })
 
@@ -102,19 +105,19 @@ export class DictAtom<O> extends AbstractCompositeAtom<DictAtomChangeType<O>> {
     return this._change({}, [key])
   }
 
-  pointerTo(key: keyof O) {
-    return this.pointer().prop(key)
+  // pointerTo(key: keyof O) {
+  //   return this.pointer().prop(key)
+  // }
+
+  keys(): Array<keyof O> {
+    return Object.keys(this._internalMap) as $IntentionalAny
   }
 
-  keys() {
-    return Object.keys(this._internalMap)
+  derivedDict(): AbstractDerivedDict<O> {
+    return deriveFromDictAtom(this) as $IntentionalAny
   }
 
-  derivedDict() {
-    return deriveFromDictAtom(this)
-  }
-
-  pointer() {
+  pointer(): PointerDerivation<this> {
     if (!this._pointer) {
       this._pointer = pointer({type: 'WithPath', root: this, path: []})
     }
@@ -122,7 +125,7 @@ export class DictAtom<O> extends AbstractCompositeAtom<DictAtomChangeType<O>> {
   }
 }
 
-export default function dict<O>(o: O): DictAtom<O> {
+export default function dictAtom<O>(o: O): DictAtom<O> {
   return new DictAtom(o)
 }
 

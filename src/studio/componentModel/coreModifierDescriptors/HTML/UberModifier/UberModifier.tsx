@@ -1,6 +1,6 @@
 import {IModifierDescriptor} from '$src/studio/componentModel/types'
 import commonStylesPrototype from '$src/studio/componentModel/coreModifierDescriptors/HTML/SetCustomStyle/commonStylesPrototype'
-import dict from '$src/shared/DataVerse/atoms/dict'
+import dictAtom from '$src/shared/DataVerse/atoms/dict'
 import withDeps from '$src/shared/DataVerse/derivations/withDeps'
 import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
 
@@ -49,7 +49,7 @@ const getClass = (propsP, baseClass) => {
             opacityP,
           },
           () => {
-            const d = dict({
+            const d = dictAtom({
               transform: `translate3d(${numeralize(
                 translateXP,
               )}px, ${numeralize(translateYP)}px, ${numeralize(

@@ -36,6 +36,6 @@ export class BoxAtom<V> extends AbstractAtom<V> {
   }
 }
 
-export default function box<V>(v: V): BoxAtom<V> {
+export default function boxAtom<V>(v: V): BoxAtom<V> {
   return new BoxAtom(v)
 }

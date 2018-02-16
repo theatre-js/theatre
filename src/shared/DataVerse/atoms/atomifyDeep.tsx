@@ -1,75 +1,41 @@
 import isPlainObject from 'lodash/isPlainObject'
-import {default as box} from './box'
-import {default as dict} from './dict'
-import {default as array} from './array'
+import {default as box, BoxAtom} from './box'
+import {default as dict, DictAtom} from './dict'
+import {default as array, ArrayAtom} from './array'
 import mapValues from 'lodash/mapValues'
 import {default as AbstractAtom} from './utils/AbstractAtom'
-// import {If} from '../types'
-// import {
-//   IsArrayLiteral,
-//   IsObjectLiteral,
-//   ValueOfObjectLiteral,
-//   IsPrimitiveLiteral,
-//   ValueOfPrimitiveLiteral,
-//   ValueOfArrayLiteral,
-// } from '../literals'
 
-// type InstanceOfAnyClass = {+constructor: Function}
+export type Atomify<V> = {
+  '1': 
+  V extends Array<infer T> ? ArrayAtom<Atomify<T>> :
+  V extends AbstractAtom<$IntentionalAny> ? V :
+  // following is commented out as I don't know how to detect plain objects in TS
+  // V extends {constructor: Function} ? BoxAtom<V> :
+  V extends object ? DictAtom<{[K in keyof V]: Atomify<V[K]>}> :
+  BoxAtom<V>
+}[V extends number ? '1' : '1']
 
-// type AtomifyDeepFn =
-//   (<V: IAtom>(v: V) => V) &
-//   // (<V, A: Array<V>>(a: A) => IArrayAtom<AtomifyDeepType<V>>) &
-//   (<V, A: Array<V>>(a: A) => IArrayAtom<$Call<AtomifyDeepFn, V>>) &
-//   (<V: InstanceOfAnyClass>(v: V) => IBoxAtom<V>) &
-//   (<V: {}>(v: V) => IDictAtom<$ObjMap<V, AtomifyDeepFn>>) &
-//   (<V>(v: V) => IBoxAtom<V>)
-
-// type AtomifyDeepFn = <V>(V) => AtomifyDeepType<V>
-
-// export type AtomifyDeepType<V> = If<
-//   IsObjectLiteral<V>,
-//   AtomifyDeepObject<ValueOfObjectLiteral<V>>,
-//   If<
-//     IsArrayLiteral<V>,
-//     IArrayAtom<AtomifyDeepType<ValueOfArrayLiteral<V>>>,
-//     If<
-//       IsPrimitiveLiteral<V>,
-//       IBoxAtom<ValueOfPrimitiveLiteral<V>>,
-//       IBoxAtom<V>,
-//     >,
-//   >,
-// >
-
-// type AtomifyDeepObject<O: {}> = IDictAtom<$ObjMap<O, AtomifyDeepFn>>
-
-// type AtomifyDeepArray<V, A: Array<V>> = IArrayAtom<AtomifyDeepType<V>>
-// type AtomifyDeepAtom<V: IAtom> = V
-// type AtomifyDeepConstructedObject<V: {+constructor: $IntentionalAny}> = IBoxAtom<V>
-// type AtomifyDeepObject<V: {}> = IDictAtom<$ObjMap<V, AtomifyDeepFn>>
-// type AtomifyDeepPrimitive<V> = IBoxAtom<V>
-// export type AtomifyDeepType<V> = AtomifyDeepArray<*, V> | AtomifyDeepAtom<V> | AtomifyDeepConstructedObject<V> | AtomifyDeepObject<V> | AtomifyDeepPrimitive<V>
-
-export const atomifyDeep: $FixMe = (jsValue: mixed) => {
+const atomifyDeep = <V extends {}>(jsValue: V): Atomify<V> => {
   if (Array.isArray(jsValue)) {
     return fromJSArray(jsValue)
   } else if (isPlainObject(jsValue)) {
     return fromJSObject(jsValue as $IntentionalAny)
   } else if (jsValue instanceof AbstractAtom) {
-    return jsValue
+    return jsValue as $IntentionalAny
   } else {
     return fromJSPrimitive(jsValue)
   }
 }
 
-export const fromJSArray = (jsArray: $FixMe): $FixMe => {
+const fromJSArray = (jsArray: $IntentionalAny): $IntentionalAny => {
   return array(jsArray.map(atomifyDeep))
 }
 
-export const fromJSObject = (jsObject: {[key: string]: mixed}): $FixMe => {
+const fromJSObject = (jsObject: {[key: string]: mixed}): $IntentionalAny => {
   return dict(mapValues(jsObject, atomifyDeep))
 }
 
-export const fromJSPrimitive = (jsPrimitive: mixed): $FixMe => {
+const fromJSPrimitive = (jsPrimitive: mixed): $IntentionalAny => {
   return box(jsPrimitive)
 }
 

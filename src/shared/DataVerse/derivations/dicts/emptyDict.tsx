@@ -1,19 +1,16 @@
-// @flow
 import AbstractDerivedDict from './AbstractDerivedDict'
 import constantDerivation from '../constant'
 
 const emptyArray: Array<never> = []
 
-export class EmptyDict extends AbstractDerivedDict<$FixMe> {
-  changes: $FixMe
-
+export class EmptyDict extends AbstractDerivedDict<{}> {
   constructor() {
     super()
     return this
   }
 
-  prop(k: mixed) {
-    return constantDerivation(undefined)
+  prop(_k: void) {
+    return constantDerivation(undefined) as $IntentionalAny
   }
 
   _reactToHavingTappers() {}
@@ -25,4 +22,6 @@ export class EmptyDict extends AbstractDerivedDict<$FixMe> {
   }
 }
 
-export default new EmptyDict()
+const emptyDict = new EmptyDict
+
+export default emptyDict

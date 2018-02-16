@@ -1,6 +1,6 @@
-import * as D from '$shared/DataVerse'
 import UnitBezier from 'timing-function/lib/UnitBezier'
 import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
+import withDeps from '$src/shared/DataVerse/derivations/withDeps'
 
 type Config = {
   timeD: AbstractDerivation<number>
@@ -26,7 +26,7 @@ export default function interpolationDerivationForCubicBezier(
 }
 
 const unitBezier = (interpolationDescriptorP: $FixMe) => {
-  return D.derivations.withDeps(
+  return withDeps(
     {
       lxD: interpolationDescriptorP.prop('handles').index(0),
       lyD: interpolationDescriptorP.prop('handles').index(1),
@@ -45,7 +45,7 @@ const unitBezier = (interpolationDescriptorP: $FixMe) => {
 }
 
 const progression = ({timeD, leftPointTimeD, rightPointTimeD}: Config) => {
-  return D.derivations.withDeps(
+  return withDeps(
     {timeD, leftPointTimeD, rightPointTimeD},
     ({timeD, leftPointTimeD, rightPointTimeD}) => {
       const rightPointTime = rightPointTimeD.getValue()
@@ -67,7 +67,7 @@ const interpolatedValue = (config: Config) => {
   const solverD = unitBezier(config.interpolationDescriptorP)
   const {leftPointValueD, rightPointValueD} = config
 
-  return D.derivations.withDeps(
+  return withDeps(
     {progressionD, solverD, leftPointValueD, rightPointValueD},
     () => {
       // console.log('here')

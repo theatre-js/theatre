@@ -1,17 +1,18 @@
-// @flow
 import mapValues from './mapValues'
 import deriveFromDictAtom from './deriveFromDictAtom'
-import * as D from '$shared/DataVerse'
+import Ticker from '$src/shared/DataVerse/Ticker';
+import dictAtom from '$src/shared/DataVerse/atoms/dict';
+import boxAtom from '$src/shared/DataVerse/atoms/box';
 
 describe('mapValues', () => {
-  let ticker
+  let ticker: Ticker
   beforeEach(() => {
-    ticker = new D.Ticker()
+    ticker = new Ticker()
   })
   it('should work', () => {
-    const o = D.atoms.dict({
-      foo: D.atoms.box('foo'),
-      bar: D.atoms.box('bar'),
+    const o = dictAtom({
+      foo: boxAtom('foo'),
+      bar: boxAtom('bar'),
     })
 
     const mapLike = deriveFromDictAtom(o)
@@ -42,7 +43,7 @@ describe('mapValues', () => {
     expect(mappedChanges).toHaveLength(0)
 
     // $FlowIgnore
-    o.setProp('doo', D.atoms.box('blah'))
+    o.setProp('doo', boxAtom('blah'))
     expect(mappedChanges).toMatchObject([
       {
         addedKeys: ['doo'],

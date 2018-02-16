@@ -27,7 +27,7 @@ import {
 } from '$src/studio/AnimationTimelinePanel/types'
 import {XY} from '$src/studio/workspace/types'
 import StudioComponent from '$src/studio/handy/StudioComponent'
-import box, {BoxAtom} from '$src/shared/DataVerse/atoms/box'
+import boxAtom, {BoxAtom} from '$src/shared/DataVerse/atoms/box'
 import TimelineInstance from '$studio/componentModel/react/makeReactiveComponent/TimelineInstance/TimelineInstance'
 import {IStoreState} from '$studio/types'
 
@@ -87,7 +87,7 @@ class Content extends StudioComponent<Props, State> {
       isSeekerBeingDragged: false,
     }
 
-    this.currentTTimeXBeforeDrag = box(0)
+    this.currentTTimeXBeforeDrag = boxAtom(0)
   }
 
   componentDidMount() {

@@ -1,23 +1,24 @@
-// @flow
-import * as D from '$shared/DataVerse'
+import dictAtom, {DictAtom} from '$src/shared/DataVerse/atoms/dict'
+import boxAtom from '$src/shared/DataVerse/atoms/box'
+import Ticker from '$src/shared/DataVerse/Ticker'
 
 describe('extend()', () => {
-  let ticker
+  let ticker: Ticker
   beforeEach(() => {
-    ticker = new D.Ticker()
+    ticker = new Ticker()
   })
   it('should work', () => {
-    const o1 = D.atoms.dict({
-      a: D.atoms.box('a'),
+    const o1 = dictAtom({
+      a: boxAtom('a'),
     })
 
-    const o2: D.IDictAtom<{
-      b: D.IBoxAtom<string>
-      a: D.IBoxAtom<undefined | null | string>
-      c?: D.IBoxAtom<string>
-    }> = D.atoms.dict({
-      b: D.atoms.box('b'),
-      a: D.atoms.box(undefined),
+    const o2: DictAtom<{
+      b: BoxAtom<string>
+      a: BoxAtom<undefined | null | string>
+      c?: BoxAtom<string>
+    }> = dictAtom({
+      b: boxAtom('b'),
+      a: boxAtom(undefined),
     })
 
     const x = o1.derivedDict().extend(o2.derivedDict())
@@ -29,7 +30,7 @@ describe('extend()', () => {
 
     o1.prop('a').set('aa')
     expect(aP.getValue()).toEqual('aa')
-    o2.setProp('a', D.atoms.box('a2'))
+    o2.setProp('a', boxAtom('a2'))
     expect(aP.getValue()).toEqual('a2')
 
     const aPChanges: Array<string> = []
@@ -48,13 +49,13 @@ describe('extend()', () => {
     expect(x.keys()).toContain('a')
     expect(x.keys()).toContain('b')
 
-    const cChanges = []
+    const cChanges: $FixMe[] = []
     // debugger
     x.changes().tap(c => {
       cChanges.push(c)
     })
 
-    o2.setProp('c', D.atoms.box('c'))
+    o2.setProp('c', boxAtom('c'))
     expect(x.keys()).toHaveLength(3)
     expect(x.keys()).toContain('a')
     expect(x.keys()).toContain('b')
@@ -67,8 +68,8 @@ describe('extend()', () => {
     expect(cChanges).toHaveLength(2)
     o1.deleteProp('a')
     expect(cChanges[2]).toMatchObject({addedKeys: [], deletedKeys: ['a']})
-    // $FlowIgnore
-    o1.setProp('b', D.atoms.box('bb'))
+    // @ts-ignore @expected
+    o1.setProp('b', boxAtom('bb'))
     expect(cChanges).toHaveLength(3)
   })
 })

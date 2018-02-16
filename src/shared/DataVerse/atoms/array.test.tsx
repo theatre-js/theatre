@@ -1,4 +1,4 @@
-import box from './box'
+import boxAtom from './box'
 import atomifyDeep from './atomifyDeep'
 import {ArrayAtom} from '$src/shared/DataVerse/atoms/array'
 import {BoxAtom} from '$src/shared/DataVerse/atoms/box'
@@ -16,7 +16,7 @@ describe('DataVerse.atoms.array', () => {
 
     expect(o.index(1).getParent()).toEqual(o)
 
-    const foo2 = box(2)
+    const foo2 = boxAtom(2)
     o.setIndex(2, foo2)
     expect(foo2.getParent()).toEqual(o)
   })
@@ -38,15 +38,15 @@ describe('DataVerse.atoms.array', () => {
     o.changes().tap(change => {
       changes.push(change)
     })
-    const the1 = o.index(1)
+    const the1 = boxAtom(1)
 
     o.setIndex(1, the1)
     expect(changes).toHaveLength(1)
     expect(changes[0].addedRefs[0]).toEqual(the1)
 
-    const the11 = box(11)
+    const the11 = boxAtom(11)
     // const the9 = o.index(9)
-    o.splice(1, 2, [the11, box(12), box(13)])
+    o.splice(1, 2, [the11, boxAtom(12), boxAtom(13)])
 
     expect(changes).toHaveLength(2)
     expect(changes[1]).toMatchObject({

@@ -1,6 +1,7 @@
-import * as D from '$shared/DataVerse'
 import _ from 'lodash'
-import {AbstractDerivation} from '$src/shared/DataVerse/derivations/types'
+import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
+import Ticker from '$src/shared/DataVerse/Ticker'
+import withDeps from '$src/shared/DataVerse/derivations/withDeps'
 
 type Dict = $FixMe
 type EmptyFn = () => void
@@ -14,7 +15,7 @@ type GetXiguluForKey = (key: string) => AbstractDerivation<Xigulu>
 
 export default class KeyedSideEffectRunner {
   _dict: Dict
-  _ticker: D.ITicker
+  _ticker: Ticker
   _sideEffectsDict: $FixMe
   _untapFromDict: () => void
   _started: boolean
@@ -23,7 +24,7 @@ export default class KeyedSideEffectRunner {
 
   constructor(
     sideEffectsDict: Dict,
-    ticker: D.ITicker,
+    ticker: Ticker,
     getXiguluForKey: GetXiguluForKey,
   ) {
     this._sideEffectsDict = sideEffectsDict
@@ -71,11 +72,12 @@ export default class KeyedSideEffectRunner {
 
     const xigulu: AbstractDerivation<Xigulu> = this._getXiguluForKey(key)
 
-    const untap = D.derivations
-      .withDeps({valueD, xigulu}, ({valueD, xigulu}) => ({valueD, xigulu}))
-      .tapImmediate(this._ticker, ({valueD, xigulu}) => {
-        xigulu.getValue().apply(valueD.getValue())
-      })
+    const untap = withDeps({valueD, xigulu}, ({valueD, xigulu}) => ({
+      valueD,
+      xigulu,
+    })).tapImmediate(this._ticker, ({valueD, xigulu}) => {
+      xigulu.getValue().apply(valueD.getValue())
+    })
 
     const stopObserving = () => {
       untap()

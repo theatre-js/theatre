@@ -1,25 +1,25 @@
 import * as React from 'react'
 import {render} from 'react-dom'
-import * as D from '$shared/DataVerse'
 import LBCommunicator from './LBCommunicator'
 import configureStore from './configureStore'
 import StudioRootComponent from './components/StudioRootComponent'
 import {default as StandardStore} from '$lb/bootstrap/StandardStore'
 import configureAtom from './configureAtom'
+import Ticker from '$src/shared/DataVerse/Ticker'
 
 type Atom = $FixMe
 
 export default class TheaterJSStudio {
   componentInstances: Map<number, React.ComponentType>
   atom: Atom
-  ticker: D.Ticker
+  ticker: Ticker
   _lastComponentInstanceId: number
   _lbCommunicator: LBCommunicator
   store: StandardStore<$FixMe, $FixMe>
 
   constructor() {
     this._lastComponentInstanceId = 0
-    this.ticker = new D.Ticker()
+    this.ticker = new Ticker()
     this.store = configureStore()
     this.atom = configureAtom(this.store)
     this.componentInstances = new Map()

@@ -1,6 +1,7 @@
-import * as D from '$shared/DataVerse'
 import KeyedSideEffectRunner from '$shared/utils/KeyedSideEffectRunner'
 import Ticker from '$src/shared/DataVerse/Ticker'
+import autoProxyDerivedDict from '$src/shared/DataVerse/derivations/dicts/autoProxyDerivedDict'
+import withDeps from '$src/shared/DataVerse/derivations/withDeps'
 
 const styleSetter = (elRef: HTMLElement, unprefixedKey: string) => {
   const key = unprefixedKey // @todo add vendor prefixes
@@ -18,7 +19,7 @@ const blank = {
 
 export default function reifiedStyleApplier(dict: $FixMe, ticker: Ticker) {
   const reifiedStylesP = dict.pointer().prop('reifiedStyles')
-  const proxy = D.derivations.autoProxyDerivedDict(reifiedStylesP, ticker)
+  const proxy = autoProxyDerivedDict(reifiedStylesP, ticker)
 
   const elRefD = dict
     .pointer()
@@ -26,7 +27,7 @@ export default function reifiedStyleApplier(dict: $FixMe, ticker: Ticker) {
     .prop('elRef')
 
   const getApplyAndUnapplyForKey = (key: string) => {
-    return D.derivations.withDeps({elRefD: elRefD}, ({elRefD}) => {
+    return withDeps({elRefD: elRefD}, ({elRefD}) => {
       const elRef = elRefD.getValue()
 
       if (!elRef) return blank

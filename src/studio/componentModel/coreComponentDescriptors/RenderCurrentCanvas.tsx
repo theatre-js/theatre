@@ -1,6 +1,8 @@
 import {ComponentDescriptor} from '$studio/componentModel/types'
 import {makeReactiveComponent, elementify} from '$studio/handy'
-import * as D from '$shared/DataVerse'
+import boxAtom from '$src/shared/DataVerse/atoms/box'
+import dictAtom from '$src/shared/DataVerse/atoms/dict'
+import constant from '$src/shared/DataVerse/derivations/constant'
 
 const componentId = 'TheaterJS/Core/RenderCurrentCanvas'
 
@@ -24,10 +26,9 @@ const RenderCurrentCanvas = makeReactiveComponent({
             .prop('props')
             .prop('children')
 
-          const instantiationDescriptorP = D.atoms
-            .dict({
-              componentId: D.atoms.box(componentIdToBeRenderedAsCurrentCanvasP),
-              props: D.atoms.dict({}),
+          const instantiationDescriptorP = dictAtom({
+              componentId: boxAtom(componentIdToBeRenderedAsCurrentCanvasP),
+              props: dictAtom({}),
             })
             .derivedDict()
             .pointer()
@@ -35,7 +36,7 @@ const RenderCurrentCanvas = makeReactiveComponent({
           return componentIdToBeRenderedAsCurrentCanvasP.flatMap(C => {
             if (typeof C === 'string') {
               return elementify(
-                D.derivations.constant('currentCanvas'),
+                constant('currentCanvas'),
                 instantiationDescriptorP,
                 d.prop('studio'),
               )

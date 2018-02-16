@@ -1,4 +1,4 @@
-import {React, D, PureComponentWithStudio} from '$studio/handy'
+import {React, PureComponentWithStudio} from '$studio/handy'
 import _ from 'lodash'
 import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
 

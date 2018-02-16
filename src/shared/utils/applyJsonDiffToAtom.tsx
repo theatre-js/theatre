@@ -1,6 +1,5 @@
-// @flow
 import jsonPatchLib from 'fast-json-patch'
-import * as D from '$shared/DataVerse'
+import atomifyDeep from '$src/shared/DataVerse/atoms/atomifyDeep'
 
 type Diff = $FixMe
 type Stuff = $FixMe
@@ -10,7 +9,7 @@ const ops = {
     replace: (diff: Diff, stuff: Stuff) => {
       stuff.curAtom.setProp(
         jsonPatchLib.unescapePathComponent(stuff.lastComponent),
-        D.atoms.atomifyDeep(diff.value),
+        atomifyDeep(diff.value),
       )
     },
 
@@ -23,7 +22,7 @@ const ops = {
     add: (diff: Diff, stuff: Stuff) => {
       stuff.curAtom.setProp(
         jsonPatchLib.unescapePathComponent(stuff.lastComponent),
-        D.atoms.atomifyDeep(diff.value),
+        atomifyDeep(diff.value),
       )
     },
 
@@ -34,10 +33,10 @@ const ops = {
       curAtom.splice(lastComponent, 1, [])
     },
     replace(diff: Diff, {curAtom, lastComponent}) {
-      curAtom.setIndex(lastComponent, D.atoms.atomifyDeep(diff.value))
+      curAtom.setIndex(lastComponent, atomifyDeep(diff.value))
     },
     add(diff: Diff, {curAtom, lastComponent}) {
-      curAtom.splice(lastComponent, 0, [D.atoms.atomifyDeep(diff.value)])
+      curAtom.splice(lastComponent, 0, [atomifyDeep(diff.value)])
     },
   },
   box: {},
