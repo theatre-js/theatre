@@ -6,7 +6,7 @@ type FunctionMapping<V, Fn extends (v: V) => $IntentionalAny> = Fn extends (v: V
 
 export class MapValues<
   S,
-  Fn extends (v: S[keyof S]) => AbstractDerivation<$IntentionalAny>
+  Fn extends (v: S[keyof S]) => $IntentionalAny
 > extends AbstractDerivedDict<{[K in keyof S]: FunctionMapping<S[K], Fn>}> {
   _source: AbstractDerivedDict<S>
   _fn: Fn
@@ -37,7 +37,7 @@ export class MapValues<
   }
 
   prop<K extends keyof $FixMe>(k: K): AbstractDerivation<$FixMe> {
-    return this._fn(this._source.pointer().prop(k))
+    return this._source.pointer().prop(k).flatMap(this._fn)
   }
 
   keys() {
@@ -45,15 +45,10 @@ export class MapValues<
   }
 }
 
-const mapValues = <
-  O,
-  K extends keyof O,
-  V extends O[K],
-  FN extends (v: V, k: K) => $FixMe
->(
-  source: IDerivedDict<O>,
-  fn: FN,
-): IDerivedDict<$FixMe> => {
+const mapValues = <S extends {}, Fn extends (v: S[keyof S]) => $IntentionalAny>(
+  source: AbstractDerivedDict<S>,
+  fn: Fn,
+) => {
   return new MapValues(source, fn)
 }
 

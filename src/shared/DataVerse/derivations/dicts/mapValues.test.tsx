@@ -1,8 +1,9 @@
 import mapValues from './mapValues'
 import deriveFromDictAtom from './deriveFromDictAtom'
-import Ticker from '$src/shared/DataVerse/Ticker';
-import dictAtom from '$src/shared/DataVerse/atoms/dict';
-import boxAtom from '$src/shared/DataVerse/atoms/box';
+import Ticker from '$src/shared/DataVerse/Ticker'
+import dictAtom from '$src/shared/DataVerse/atoms/dict'
+import boxAtom from '$src/shared/DataVerse/atoms/box'
+import {DerivedDictChangeType} from './AbstractDerivedDict'
 
 describe('mapValues', () => {
   let ticker: Ticker
@@ -17,14 +18,14 @@ describe('mapValues', () => {
 
     const mapLike = deriveFromDictAtom(o)
 
-    const mapped = mapValues(mapLike, d => d.flatMap(s => s + 'B'))
+    const mapped = mapValues(mapLike, s => s + 'B')
 
     const fooD = mapped.prop('foo')
     expect(fooD.getValue()).toEqual('fooB')
     o.prop('foo').set('foo2')
     expect(fooD.getValue()).toEqual('foo2B')
 
-    const fooDChanges = []
+    const fooDChanges: string[] = []
     fooD.changes(ticker).tap(c => {
       fooDChanges.push(c)
     })
@@ -33,8 +34,11 @@ describe('mapValues', () => {
     ticker.tick()
     expect(fooDChanges).toMatchObject(['foo3B'])
 
-    const mappedChanges = []
-    mapped.changes().tap(c => {
+    const mappedChanges: {
+      addedKeys: string[]
+      deletedKeys: string[]
+    }[] = []
+    mapped.changes().tap((c: DerivedDictChangeType<$IntentionalAny>) => {
       mappedChanges.push(c)
     })
 
@@ -42,7 +46,7 @@ describe('mapValues', () => {
 
     expect(mappedChanges).toHaveLength(0)
 
-    // $FlowIgnore
+    // @ts-ignore expected
     o.setProp('doo', boxAtom('blah'))
     expect(mappedChanges).toMatchObject([
       {

@@ -2,10 +2,11 @@ import constructMapDescriptor from './constructMapDescriptor'
 import dictAtom from '$src/shared/DataVerse/atoms/dict'
 
 const constructModifierInstantiationValueDescriptor = (
-  desP: $FixMe,
+  des: $FixMe,
   d: $FixMe,
 ) => {
-  if (desP.isPointer !== true) throw Error('Pointers only')
+  // if (desP.isPointer !== true) throw Error('Pointers only')
+  const desP = des
 
   return dictAtom({
     modifierId: desP.prop('modifierId'),

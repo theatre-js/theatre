@@ -10,6 +10,7 @@ backend(window.__REACT_DEVTOOLS_GLOBAL_HOOK__)
 import 'babel-polyfill'
 import TheaterJSStudio from '$studio/bootstrap/TheaterJSStudio'
 import createRootComponentForReact from './componentModel/react/createRootComponentForReact'
+import '$shared/DataVerse/devtoolsFormatters/setup'
 
 const theaterStudioInstance = new TheaterJSStudio()
 theaterStudioInstance.run()

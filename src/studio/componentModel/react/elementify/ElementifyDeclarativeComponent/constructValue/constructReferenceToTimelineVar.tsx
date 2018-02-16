@@ -1,11 +1,11 @@
 import {default as TimelineInstance} from '$studio/componentModel/react/makeReactiveComponent/TimelineInstance/TimelineInstance'
 
-const constructReferenceToTimelineVar = (descP, d) => {
-  const timelineIdP = descP.prop('timelineId')
-  const varIdP = descP.prop('varId')
+const constructReferenceToTimelineVar = (desD, d) => {
+  const timelineIdD = desD.prop('timelineId')
+  const varIdD = desD.prop('varId')
 
-  return timelineIdP.flatMap((timelineId: string) =>
-    varIdP.flatMap((varId: string) => {
+  return timelineIdD.flatMap((timelineId: string) =>
+    varIdD.flatMap((varId: string) => {
       return d
         .pointer()
         .prop('timelineInstances')

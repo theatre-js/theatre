@@ -12,7 +12,7 @@ describe('DataVerse.derivations.deriveFromArrayAtom', () => {
     const arrayA = arrayAtom(['0', '1'])
     const prefix = boxAtom('(prefix)')
 
-    const d = arrayA.derivedArray().map(sD => sD.map(s => `(${s})`))
+    const d = arrayA.derivedArray().map(s => `(${s})`)
     expect(d.index(0).getValue()).toEqual('(0)')
     arrayA.setIndex(0, '0-1')
     expect(d.index(0).getValue()).toEqual('(0-1)')

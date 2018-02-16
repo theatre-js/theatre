@@ -5,28 +5,30 @@ import boxAtom from '$src/shared/DataVerse/atoms/box'
 import dictAtom from '$src/shared/DataVerse/atoms/dict'
 
 const constructComponentInstantiationValueDescriptor = (
-  desP: $FixMe,
+  des: $FixMe,
   d: $FixMe,
 ) => {
-  if (desP.isPointer !== true) throw Error('Pointers only')
+  // if (desP.isPointer !== true) throw Error('Pointers only')
+  // const desP = des.pointer()
+  // debugger
 
-  const propsToFinalComponent = constructMapDescriptor(desP.prop('props'), d)
-  const modifierInstantiationDescriptors = desP.prop(
+  const propsToFinalComponent = des.prop('props').flatMap((v) => constructMapDescriptor(v, d))
+  const modifierInstantiationDescriptors = des.pointer().prop(
     'modifierInstantiationDescriptors',
   )
 
   const instantiationDescriptorP = dictAtom({
-      componentId: boxAtom(desP.prop('componentId')),
+      componentId: boxAtom(des.prop('componentId')),
       props: propsToFinalComponent,
       modifierInstantiationDescriptors: dictAtom({
-        byId: constructMapDescriptor(
-          modifierInstantiationDescriptors.prop('byId'),
-          d,
-        ),
-        list: constructListDescriptor(
-          modifierInstantiationDescriptors.prop('list'),
-          d,
-        ),
+        byId: 
+          modifierInstantiationDescriptors.prop('byId').flatMap((v) => constructMapDescriptor(v, d)),
+          // d,
+        // ),
+        list: 
+          modifierInstantiationDescriptors.prop('list').flatMap((v) => constructListDescriptor(v, d)),
+          // d,
+        // ),
       }),
     })
     .derivedDict()

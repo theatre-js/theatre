@@ -31,7 +31,7 @@ export class MappedDerivedArray<T, V> extends AbstractDerivedArray<V> {
   }
 
   index(i: number): $FixMe {
-    return this._fn(this._source.pointer().index(i))
+    return this._source.pointer().index(i).flatMap(this._fn)
   }
 
   length() {

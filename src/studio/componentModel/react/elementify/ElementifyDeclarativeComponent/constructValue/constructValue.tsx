@@ -24,29 +24,33 @@ const isLiteral = s =>
   typeof s === 'undefined' ||
   s === null
 
-const constructValue = (desP: $FixMe, self: $FixMe) => {
-  if (desP.isPointer !== true) throw Error('Pointers only')
+const constructValue = (val: $FixMe, self: $FixMe) => {
+  // if (desP.isPointer !== true) {
+    // debugger
+    // throw Error('Pointers only')
+  // }
+  // debugger
 
-  return desP.flatMap(val => {
+  // return desP.flatMap(val => {
     if (isLiteral(val)) {
       return val
     } else if (val && val.isDerivedArray === true) {
-      return constructListDescriptor(desP, self)
+      return constructListDescriptor(val, self)
     } else if (val && val.isDerivedDict === true) {
       return val
         .prop('__descriptorType')
         .flatMap((type: ValueDescriptorDescribedInAnObject['type']) => {
           if (typeof type === 'string') {
             const constructor = constructors[type]
-            if (constructor) return constructor(desP, self)
+            if (constructor) return constructor(val, self)
             else throw new Error(`Unkown __descriptorType '${type}'`)
           }
-          return constructMapDescriptor(desP, self)
+          return constructMapDescriptor(val, self)
         })
     } else {
       throw new Error('Unkown value type')
     }
-  })
+  // })
 }
 
 export default constructValue

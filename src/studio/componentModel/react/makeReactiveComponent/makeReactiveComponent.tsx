@@ -286,6 +286,7 @@ export default function makeReactiveComponent({
     }
 
     componentWillMount() {
+      // debugger
       this._whatToRender = this._derivedClassInstance.prop('render').getValue()
       // this._finalFace.prop('componentWillMountCallbacks').getValue().face().forEach((fn) => fn(this._finalFace))
     }

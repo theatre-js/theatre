@@ -22,7 +22,8 @@ export default makeReactiveComponent({
           .prop('componentDescriptor')
 
         const whatToRenderP = componentDescriptorP.prop('whatToRender')
-        return constructValue(whatToRenderP, self)
+        return whatToRenderP.flatMap((v) => constructValue(v, self))
+        // return constructValue(whatToRenderP, self)
       },
     }),
 })

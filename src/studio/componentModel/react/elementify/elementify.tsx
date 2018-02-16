@@ -65,11 +65,12 @@ const elementifyHardCodedComponent = (
 ) => {
   const reactComponentP = componentDescriptorP.prop('reactComponent')
   const componentIdD = componentDescriptorP.prop('id')
-  const finalKeyD = autoDerive(() => {
+  const finalKeyD = withDeps({componentIdD, keyD}, () => {
+    // debugger
     return `${componentIdD.getValue()}#${keyD.getValue()}`
   })
 
-  return autoDerive(() => {
+  return withDeps({reactComponentP, finalKeyD}, () => {
     const Comp = reactComponentP.getValue()
     return (
       <Comp
