@@ -5,13 +5,10 @@ const constructModifierInstantiationValueDescriptor = (
   des: $FixMe,
   d: $FixMe,
 ) => {
-  // if (desP.isPointer !== true) throw Error('Pointers only')
-  const desP = des
-
   return dictAtom({
-    modifierId: desP.prop('modifierId'),
-    enabled: desP.prop('enabled'),
-    props: constructMapDescriptor(desP.prop('props'), d),
+    modifierId: des.prop('modifierId'),
+    enabled: des.prop('enabled'),
+    props: des.prop('props').flatMap((v) => constructMapDescriptor(v, d)),
   }).derivedDict()
 }
 

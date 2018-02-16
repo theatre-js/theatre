@@ -1,4 +1,4 @@
-import AbstractDerivedDict, {DerivedDictChangeType} from './AbstractDerivedDict'
+import AbstractDerivedDict, {DerivedDictChangeType, PropOfADD} from './AbstractDerivedDict'
 import noop from 'lodash/noop'
 import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
 
@@ -36,8 +36,8 @@ export class MapValues<
     this._changeEmitter.emit(c)
   }
 
-  prop<K extends keyof $FixMe>(k: K): AbstractDerivation<$FixMe> {
-    return this._source.pointer().prop(k).flatMap(this._fn)
+  prop<K extends keyof this['_o']>(key: K): AbstractDerivation<PropOfADD<this['_o'][K]>> {
+    return this._source.pointer().prop(key).flatMap(this._fn) as $IntentionalAny
   }
 
   keys() {

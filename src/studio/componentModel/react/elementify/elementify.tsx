@@ -31,7 +31,7 @@ const elementify = (keyD, instantiationDescriptorP, studioD) => {
   return getComponentDescriptorById(componentIdP, studioD).flatMap(
     (componentDescriptor: $FixMe) => {
       if (!componentDescriptor)
-        return autoDerive(() => {
+        return withDeps({componentIdP}, () => {
           return <div>Cannot find component {componentIdP.getValue()}</div>
         })
 

@@ -218,15 +218,18 @@ export default function makeReactiveComponent({
         .flatMap((list: D.IDerivedArray<$FixMe>) => {
           if (!list) return derivedClassWithoutModifiers
 
-          return list
-            .map(idD =>
-              idD.flatMap((id: string) =>
+          return (
+            list
+              .map((id: string) =>
                 modifierInstantiationDescriptorsByIdP.prop(id),
-              ),
-            )
-            .reduce((dict, modifierInstantiationDescriptor) => {
-              return this._applyModifier(modifierInstantiationDescriptor, dict)
-            }, constant(derivedClassWithoutModifiers))
+              )
+              .reduce((dict, modifierInstantiationDescriptor) => {
+                return this._applyModifier(
+                  modifierInstantiationDescriptor,
+                  dict,
+                )
+              }, constant(derivedClassWithoutModifiers))
+          )
         })
 
       return finalDerivedClassD
