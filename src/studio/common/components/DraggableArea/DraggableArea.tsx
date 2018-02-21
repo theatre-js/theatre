@@ -18,7 +18,7 @@ type State = {
   dragStartTime: number,
 }
 
-class DraggableArea extends React.Component<Props, {}> {
+class DraggableArea extends React.PureComponent<Props, {}> {
   s: State
   constructor(props: Props) {
     super(props)

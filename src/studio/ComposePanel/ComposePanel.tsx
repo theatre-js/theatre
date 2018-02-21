@@ -26,7 +26,7 @@ type IProps = IOwnProps & ILP
 
 interface IState {}
 
-export class ComposePanelContent extends React.PureComponent<IProps, IState> {
+class ComposePanelContent extends React.PureComponent<IProps, IState> {
   static panelName = 'Compose'
   render() {
     const {

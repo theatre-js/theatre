@@ -484,10 +484,9 @@ class Content extends StudioComponent<Props, State> {
   }
 
   _handleScroll(e: React.WheelEvent<$FixMe>, panelWidth: number) {
-    const isHorizontal = Math.abs(e.deltaY) > Math.abs(e.deltaX)
-    if (e.ctrlKey || (isHorizontal && e.shiftKey)) {
+    const isHorizontal = Math.abs(e.deltaY) < Math.abs(e.deltaX)
+    if (e.ctrlKey || (!isHorizontal && e.shiftKey)) {
       e.preventDefault()
-      e.stopPropagation()
       if (e.nativeEvent.target !== this.variablesContainer) {
         const {focus, duration} = this.state
         const svgWidth = duration / (focus[1] - focus[0]) * panelWidth
@@ -506,7 +505,7 @@ class Content extends StudioComponent<Props, State> {
       return
     }
 
-    if (!isHorizontal) {
+    if (isHorizontal) {
       const {focus} = this.state
       const change = e.deltaX / panelWidth * (focus[1] - focus[0])
       this._changeFocusTo(focus[0] + change, focus[1] + change)

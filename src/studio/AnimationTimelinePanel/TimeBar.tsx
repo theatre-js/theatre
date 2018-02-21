@@ -63,6 +63,11 @@ class TimeBar extends React.PureComponent<Props, State> {
   }
 
   _updateFromTimeBox = (currentTime: number) => {
+    // const {focus, duration, changeFocusTo} = this.props
+    // if (currentTime > focus[1] && currentTime <= duration) {
+    //   const dt = Math.min(1000, duration - focus[1])
+    //   changeFocusTo(focus[0] + dt, focus[1] + dt)
+    // }
     this.setState({currentTime})
   }
 
@@ -190,7 +195,7 @@ class TimeBar extends React.PureComponent<Props, State> {
               this._setBeforeMoveState()
             }}
             onDrag={dx => this.moveFocusLeft(dx)}
-            onDragEnd={this._removeGlobalCursorRule}            
+            onDragEnd={this._removeGlobalCursorRule}
           >
             <div
               className={css.leftFocusHandle}
