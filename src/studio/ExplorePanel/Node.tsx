@@ -23,6 +23,7 @@ interface IProps {
   shouldSwallowChild: undefined | null | boolean
   depth?: number
   stateNode: $FixMe
+  elementId: undefined | number
 }
 
 /**
@@ -114,7 +115,7 @@ class Node extends React.PureComponent<IProps, void> {
               key="name"
               className={css.name}
               onClick={() => {
-                selectNode(path)
+                selectNode(path, props.elementId)
               }}
             >
               <span className={css.tagOpen}>&lt;</span>
@@ -207,12 +208,15 @@ const ClassName = ({stateNode}) => {
 
 const WrappedNode = connect((s, op) => {
   const {_ref} = op
+  
   const {type, stateNode} = _ref
 
   const componentDescriptor =
     typeof type !== 'string' && type !== null
       ? (getComponentDescriptor(s, _ref.stateNode.getComponentId()) as $FixMe)
       : undefined
+
+  const elementId = _ref && _ref.stateNode && _ref.stateNode.elementId
 
   const displayName = componentDescriptor
     ? componentDescriptor.displayName
@@ -244,6 +248,7 @@ const WrappedNode = connect((s, op) => {
     textContent,
     textChild,
     stateNode,
+    elementId,
   }
 })(Node)
 

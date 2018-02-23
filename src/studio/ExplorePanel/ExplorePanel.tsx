@@ -7,6 +7,7 @@ import {Path} from '$studio/explorePanel/types'
 import css from './ExplorePanel.css'
 import Node from './Node'
 import Panel from '$src/studio/workspace/components/Panel/Panel'
+import {StudioComponent} from '$studio/handy'
 
 type Props = {
   outputs: PanelOutput
@@ -18,14 +19,14 @@ type State = {
   selectedNodePath: undefined | null | string[]
 }
 
-class ExplorerPanel extends React.PureComponent<Props, State> {
+class ExplorerPanel extends StudioComponent<Props, State> {
   static panelName = 'Explore'
-  
+
   rendererID: undefined | null | string
   _refMap: Object
 
-  constructor(props: Props) {
-    super(props)
+  constructor(props: Props, context: $IntentionalAny) {
+    super(props, context)
 
     this._subscribeToHookEvents(window.__REACT_DEVTOOLS_GLOBAL_HOOK__)
 
@@ -99,7 +100,15 @@ class ExplorerPanel extends React.PureComponent<Props, State> {
           branches = [...branches, {fiber: fiber.sibling, path}]
         }
 
-        path = path.concat(generateUniqueID())
+        const elementId =
+          fiber.stateNode && typeof fiber.stateNode.elementId === 'number'
+            ? generateUniqueID()
+            : // ? String(fiber.stateNode.elementId + Math.random())
+              generateUniqueID()
+
+        // console.log(elementId)
+
+        path = path.concat(elementId)
         const shouldBreak = cb(fiber, path) || false
         if (shouldBreak) break outer
 
@@ -152,9 +161,20 @@ class ExplorerPanel extends React.PureComponent<Props, State> {
     })
   }
 
-  selectNode = (path: Path) => {
+  selectNode = (path: Path, elementId: undefined | number) => {
     const {data: selectedNode} = get(this.state.nodes, path)
     this.props.updatePanelOutput({selectedNode})
+    this.reduceState(
+      [
+        'workspace',
+        'panels',
+        'byId',
+        'timelinePanel',
+        'configuration',
+        'elementId',
+      ],
+      () => elementId,
+    )
     this.setState(() => ({selectedNodePath: path}))
   }
 

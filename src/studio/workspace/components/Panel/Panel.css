@@ -88,7 +88,6 @@
   justify-content: flex-start;
   border-bottom: 1px solid #202b32;
   z-index: 1;
-  box-shadow: 0 2px 9px -6px black;
 }
 
 .title {

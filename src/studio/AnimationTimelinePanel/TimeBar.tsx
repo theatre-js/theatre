@@ -59,6 +59,7 @@ class TimeBar extends React.PureComponent<Props, State> {
 
     if (props.timeBox) {
       this.untapFromTimeBoxChanges =  props.timeBox.changes().tap(this._updateFromTimeBox)
+      this._updateFromTimeBox(props.timeBox.getValue())
     }
   }
 

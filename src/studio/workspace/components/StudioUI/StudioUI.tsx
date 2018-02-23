@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {connect, reduceStateAction, StudioComponent} from '$studio/handy'
+import {connect, reduceStateAction, StudioComponent, resolveCss} from '$studio/handy'
 import {IStoreState} from '$studio/types'
 import * as _ from 'lodash'
 import {set, get} from 'lodash/fp'
@@ -10,6 +10,8 @@ import {
 import PanelController from '../PanelController/PanelController'
 import StatusBar from '../StatusBar/StatusBar'
 import css from './StudioUI.css'
+
+const classes = resolveCss(css)
 
 export type ActiveMode = undefined | null | string
 
@@ -25,6 +27,7 @@ type State = {
   activeMode: ActiveMode
   calculatedBoundaries: $FixMe
   gridOfBoundaries: $FixMe
+  uiVisible: boolean
 }
 
 export const EXACT_VALUE = 'exactValue'
@@ -87,6 +90,7 @@ export class StudioUI extends StudioComponent<IProps, State> {
     this.state = {
       isCreatingNewPanel: false,
       activeMode: null,
+      uiVisible: true,
       ...this._getUpdatedBoundaries(props.panelsBoundaries),
     }
   }
@@ -105,6 +109,13 @@ export class StudioUI extends StudioComponent<IProps, State> {
     window.removeEventListener('resize', this._handleResize)
     document.removeEventListener('keydown', this._handleKeyDown)
     document.removeEventListener('keyup', this._resetActiveMode)
+  }
+
+  _handleKeyPress = (e: KeyboardEvent) => {
+    if (e.keyCode === 96) {
+      this.setState({uiVisible: !this.state.uiVisible})
+    }
+    
   }
 
   componentWillReceiveProps(nextProps: IProps) {
@@ -511,7 +522,7 @@ export class StudioUI extends StudioComponent<IProps, State> {
   render() {
     const {visiblePanels} = this.props
     return (
-      <div className={css.container}>
+      <div {...classes('container', this.state.uiVisible && 'uiVisible')}>
         {visiblePanels.map(panelId => (
           <PanelController
             key={panelId}

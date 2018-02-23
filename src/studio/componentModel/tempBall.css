@@ -1,4 +1,4 @@
-:global(.container) {
+:global(.scene) {
   position: fixed 0;
   display: flex;
   justify-content: center;
@@ -7,7 +7,7 @@
   /* background-image: src('/xeno/1.jpg'); */
 }
 
-:global(.scene) {
+:global(.phone) {
   /* background: #000; */
   width: 600px;
   height: 500px;

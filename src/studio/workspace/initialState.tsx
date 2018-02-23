@@ -1,11 +1,10 @@
-// @flow
 import {WorkspaceNamespaceState} from './types'
 
 const initialState: WorkspaceNamespaceState = {
   panels: {
     byId: {
-      '8daa7380-9b43-475a-8352-dc564a58c719': {
-        id: '8daa7380-9b43-475a-8352-dc564a58c719',
+      'timelinePanel': {
+        id: 'timelinePanel',
         type: 'AnimationTimelinePanel',
         persistentState: {
           isInSettings: false,
@@ -15,11 +14,12 @@ const initialState: WorkspaceNamespaceState = {
             'componentModel',
             'componentDescriptors',
             'custom',
-            'IntroScene',
+            'BouncyBall',
             'timelineDescriptors',
             'byId',
-            'timeline1',
+            'defaultTimeline',
           ],
+          // elementId: 1,
         },
         boundaries: {
           left: {
@@ -32,8 +32,8 @@ const initialState: WorkspaceNamespaceState = {
           },
           top: {
             type: 'distanceFromBoundary',
-            path: ['8daa7380-9b43-475a-8352-dc564a58c719', 'bottom'],
-            distance: -400,
+            path: ['timelinePanel', 'bottom'],
+            distance: -188,
           },
           bottom: {
             type: 'sameAsBoundary',
@@ -113,7 +113,7 @@ const initialState: WorkspaceNamespaceState = {
       },
     },
     listOfVisibles: [
-      '8daa7380-9b43-475a-8352-dc564a58c719',
+      'timelinePanel',
       'elementTree',
       'composePanel-imAUUID',
     ],

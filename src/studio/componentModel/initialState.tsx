@@ -69,9 +69,9 @@ import tempCustomComponentDescriptors from './tempBall2'
 //   ruleSetsById: {},
 //   timelineDescriptors: {
 //     byId: {
-//       timeline1: {
+//       defaultTimeline: {
 //         __descriptorType: 'TimelineDescriptor',
-//         id: 'timeline1',
+//         id: 'defaultTimeline',
 //         vars: {
 //           theOpacity: {
 //             __descriptorType: 'TimelineVarDescriptor',
@@ -134,7 +134,7 @@ import tempCustomComponentDescriptors from './tempBall2'
 //         },
 //       },
 //     },
-//     list: ['timeline1'],
+//     list: ['defaultTimeline'],
 //   },
 //   localHiddenValuesById: {
 //     fontSize: '18px',

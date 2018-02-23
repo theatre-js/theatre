@@ -50,7 +50,7 @@ describe('AbstractDerivedDict', () => {
 
     const o2 = atomifyDeep({
       foo: 10,
-      baz: 'hi'
+      baz: 'baz'
     })
 
     const o2DD = o2.derivedDict()
