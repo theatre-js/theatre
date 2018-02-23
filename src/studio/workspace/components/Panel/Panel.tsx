@@ -33,7 +33,8 @@ interface IState {
 }
 
 const SNAP_RANGE = 10
-export const PanelPropsChannel = 'TheaterJS/PanelPropsChannel'
+export const PanelWidthChannel = 'TheaterJS/PanelWidthChannel'
+export const PanelActiveModeChannel = 'TheaterJS/PanelActiveModeChannel'
 
 export default class Panel extends StudioComponent<IProps, IState> {
   constructor(props: IProps, context: $IntentionalAny) {
@@ -385,10 +386,15 @@ export default class Panel extends StudioComponent<IProps, IState> {
                   <div className={css.title}>{label || defaultLabel}</div>
                 </div>
                 <Broadcast
-                  channel={PanelPropsChannel}
-                  value={{width, activeMode}}
+                  channel={PanelWidthChannel}
+                  value={{width}}
                   compareValues={(prevValue: $FixMe, nextValue: $FixMe) => (_.isEqual(prevValue, nextValue))}>
-                  <div className={css.content}>{children}</div>
+                  <Broadcast
+                    channel={PanelActiveModeChannel}
+                    compareValues={(prevValue: $FixMe, nextValue: $FixMe) => (_.isEqual(prevValue, nextValue))}
+                    value={{activeMode}}>
+                      <div className={css.content}>{children}</div>
+                    </Broadcast>
                 </Broadcast>
               </div>
               {activeMode === MODE_OPTION && (

@@ -21,7 +21,7 @@ import {
   STATUS,
 } from '$src/studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor/constants'
 import cx from 'classnames'
-import {PanelPropsChannel} from '$src/studio/workspace/components/Panel/Panel'
+import {PanelActiveModeChannel} from '$src/studio/workspace/components/Panel/Panel'
 import {Subscriber} from 'react-broadcast'
 import {MODE_CMD} from '$src/studio/workspace/components/StudioUI/StudioUI'
 import {IStoreState} from '$studio/types'
@@ -607,7 +607,7 @@ class TreeEditor extends StudioComponent<IProps, State> {
     const selectedNodeId = getSelectedNodeId(this.props.rootComponentDescriptor)
 
     return (
-      <Subscriber channel={PanelPropsChannel}>
+      <Subscriber channel={PanelActiveModeChannel}>
         {({activeMode}) => {
           return (
             <PanelSection

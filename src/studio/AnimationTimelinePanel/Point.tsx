@@ -5,7 +5,7 @@ import Connector from './Connector'
 import cx from 'classnames'
 import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
 import SingleInputForm from '$lf/common/components/SingleInputForm'
-import {PanelPropsChannel} from '$src/studio/workspace/components/Panel/Panel'
+import {PanelActiveModeChannel} from '$src/studio/workspace/components/Panel/Panel'
 import {Subscriber} from 'react-broadcast'
 import {
   MODE_D,
@@ -41,7 +41,7 @@ type State = {
   handlesMove: PointHandles
 }
 
-class Point extends React.Component<Props, State> {
+class Point extends React.PureComponent<Props, State> {
   svgSize: {width: number, height: number}
   leftHandleNormalizers: {xNormalizer: number, yNormalizer: number}
   rightHandleNormalizers: {xNormalizer: number, yNormalizer: number}
@@ -102,7 +102,6 @@ class Point extends React.Component<Props, State> {
   ) => {
     e.preventDefault()
     e.stopPropagation()
-    // console.log(activeMode)
     if (activeMode === MODE_H) {
       return this.props.makeHandleHorizontal(this.props.pointIndex, side)
     }
@@ -287,7 +286,7 @@ class Point extends React.Component<Props, State> {
       `${value + (handles[3] + handlesMove[3]) * (nextPoint.value - value)}%`,
     ]
     return (
-      <Subscriber channel={PanelPropsChannel}>
+      <Subscriber channel={PanelActiveModeChannel}>
         {({activeMode}) => {
           const isInDeleteMode = activeMode === MODE_D
           return (

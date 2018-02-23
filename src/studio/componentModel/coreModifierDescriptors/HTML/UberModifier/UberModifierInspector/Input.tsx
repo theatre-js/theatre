@@ -3,7 +3,7 @@ import * as css from './Input.css'
 import {get} from 'lodash'
 import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
 import {
-  PanelPropsChannel,
+  PanelActiveModeChannel,
 } from '$src/studio/workspace/components/Panel/Panel'
 import {Subscriber} from 'react-broadcast'
 import {MODE_CMD} from '$studio/workspace/components/StudioUI/StudioUI'
@@ -85,7 +85,7 @@ export class Input extends StudioComponent<IProps, IState> {
     const value = typeof rawValue === 'string' ? rawValue : ''
 
     return (
-      <Subscriber channel={PanelPropsChannel}>
+      <Subscriber channel={PanelActiveModeChannel}>
         {({activeMode}) => {
           return (
             <DraggableArea

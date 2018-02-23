@@ -98,7 +98,7 @@ export class StudioUI extends StudioComponent<IProps, State> {
     document.addEventListener('keydown', this._handleKeyDown)
     document.addEventListener('keyup', this._resetActiveMode)
   }
-  
+
   componentWillUnmount() {
     window.removeEventListener('focus', this._resetActiveMode)
     document.removeEventListener('mouseenter', this._resetActiveMode)

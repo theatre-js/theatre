@@ -1,5 +1,5 @@
 // @flow
-import {React, connect, reduceStateAction, multiReduceStateAction} from '$studio/handy'
+import {React, connect, reduceStateAction, multiReduceStateAction, StudioComponent} from '$studio/handy'
 import {
   VariableID,
   VariableObject,
@@ -16,7 +16,7 @@ import * as _ from 'lodash'
 import cx from 'classnames'
 import {Subscriber} from 'react-broadcast'
 import {
-  PanelPropsChannel,
+  PanelActiveModeChannel,
 } from '$src/studio/workspace/components/Panel/Panel'
 import {MODE_CMD, MODE_SHIFT} from '$studio/workspace/components/StudioUI/StudioUI'
 import {SortableBoxDragChannel} from './SortableBox'
@@ -94,7 +94,6 @@ const colors = [
 
 class BoxView extends React.PureComponent<IProps, IState> {
   svgArea: HTMLElement
-  _normalizedPoints: $FixMe
 
   constructor(props: IProps, context: $IntentionalAny) {
     super(props, context)
@@ -104,8 +103,6 @@ class BoxView extends React.PureComponent<IProps, IState> {
       pointValuesEditorProps: null,
       activeVariableId: props.variableIds[0],
     }
-    this._normalizedPoints = this._getNormalizedPoints(props)
-    console.log(this._normalizedPoints)
   }
 
   componentDidMount() {
@@ -128,29 +125,6 @@ class BoxView extends React.PureComponent<IProps, IState> {
     ) {
       this.setState(() => ({svgExtremums: newSvgExtremums}))
     }
-
-    this._normalizedPoints = this._getNormalizedPoints(nextProps)
-  }
-
-  _getNormalizedPoints(props: IProps): NormalizedPoint[] {
-    const {svgExtremums} = this.state
-    const extDiff = svgExtremums[1] - svgExtremums[0]
-
-    return props.variables.reduce((normalizedPoints, variable) => {
-      return {
-        ...normalizedPoints,
-        [variable.id]:  variable.points.map((point) => {
-          const {time, value, interpolationDescriptor} = point
-          return {
-            _t: time,
-            _value: value,
-            time: time / this.props.duration * 100,
-            value: (svgExtremums[1] - value) / extDiff * 100,
-            interpolationDescriptor: {...interpolationDescriptor},
-          }
-        })
-      }
-    }, {})
   }
 
   titleClickHandler(e: React.MouseEvent<$FixMe>, variableId: string) {
@@ -403,6 +377,21 @@ class BoxView extends React.PureComponent<IProps, IState> {
     )
   }
 
+  _normalizePoints(points: Point[]): NormalizedPoint[] {
+    const {svgExtremums} = this.state
+    const extDiff = svgExtremums[1] - svgExtremums[0]
+    return points.map((point: $FixMe) => {
+      const {time, value, interpolationDescriptor} = point
+      return {
+        _t: time,
+        _value: value,
+        time: time / this.props.duration * 100,
+        value: (svgExtremums[1] - value) / extDiff * 100,
+        interpolationDescriptor: {...interpolationDescriptor},
+      }
+    })
+  }
+
   getSvgSize = () => {
     return {width: this.props.svgWidth, height: this.props.svgHeight - svgPaddingY}
   }
@@ -426,7 +415,7 @@ class BoxView extends React.PureComponent<IProps, IState> {
       variablesColors = {...variablesColors, [variable.id]: colors[index % colors.length]}
     })
     return (
-      <Subscriber channel={PanelPropsChannel}>
+      <Subscriber channel={PanelActiveModeChannel}>
       {({activeMode}) => {
         const isAddingPoint = activeMode === MODE_CMD
         return (
@@ -492,12 +481,11 @@ class BoxView extends React.PureComponent<IProps, IState> {
                           <feGaussianBlur stdDeviation=".7" />
                         </filter>
                       </defs>
-                      {_.sortBy(variables, (variable: $FixMe) => (variable.id === activeVariableId)).map(({id}) => (
+                      {_.sortBy(variables, (variable: $FixMe) => (variable.id === activeVariableId)).map(({id, points}) => (
                         <Variable
                           key={id}
                           variableId={id}
-                          // points={this._normalizePoints(points)}
-                          points={this._normalizedPoints[id]}
+                          points={this._normalizePoints(points)}
                           color={variablesColors[id]}
                           getSvgSize={this.getSvgSize}
                           showPointValuesEditor={this.showPointValuesEditor}

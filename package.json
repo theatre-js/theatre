@@ -154,8 +154,5 @@
     "webpack-dev-server": "^2.7.1",
     "webpack-notifier": "^1.5.0",
     "when": "^3.7.8"
-  },
-  "dependencies": {
-    "react-render-debugger": "^1.0.2"
   }
 }

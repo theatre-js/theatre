@@ -15,7 +15,7 @@ import cx from 'classnames'
 import * as _ from 'lodash'
 import {set} from 'lodash/fp'
 import {
-  PanelPropsChannel,
+  PanelWidthChannel,
   default as Panel,
 } from '$src/studio/workspace/components/Panel/Panel'
 
@@ -645,7 +645,7 @@ class Content extends StudioComponent<Props, State> {
         innerWrapper: css.panelInnerWrapper,
       }}
       >
-        <Subscriber channel={PanelPropsChannel}>
+        <Subscriber channel={PanelWidthChannel}>
           {({width: panelWidth}: $FixMe) => {
             panelWidth -= 30
             const svgWidth: number = Math.floor(duration / Math.floor(focus[1] - focus[0]) * panelWidth)

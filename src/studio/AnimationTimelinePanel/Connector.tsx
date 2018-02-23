@@ -2,7 +2,7 @@
 import React from 'react'
 import {NormalizedPoint} from '$studio/animationTimeline/types'
 import {
-  PanelPropsChannel,
+  PanelActiveModeChannel,
 } from '$src/studio/workspace/components/Panel/Panel'
 import {Subscriber} from 'react-broadcast'
 import {MODE_D} from '$studio/workspace/components/StudioUI/StudioUI'
@@ -38,7 +38,7 @@ class Connector extends React.PureComponent<Props, State> {
   render() {
     const {leftPoint: lp, rightPoint: rp} = this.props
     return (
-      <Subscriber channel={PanelPropsChannel}>
+      <Subscriber channel={PanelActiveModeChannel}>
         {({activeMode}) => {
           const valueAbsDiff = Math.abs(rp.value - lp.value)
           const x = `${lp.time}%`

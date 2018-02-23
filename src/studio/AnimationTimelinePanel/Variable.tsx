@@ -3,6 +3,7 @@ import Point from './Point'
 import Connector from './Connector'
 import {NormalizedPoint} from '$studio/animationTimeline/types'
 import {isEqual} from 'lodash'
+import * as _ from 'lodash'
 
 type Props = {
   variableId: string
