@@ -8,7 +8,6 @@ type Props = {
   variableId: string
   points: NormalizedPoint[]
   color: string
-  // width: number
   getSvgSize: Function
   showPointValuesEditor: Function
   showContextMenuForPoint: Function
@@ -63,7 +62,6 @@ class Variable extends React.Component<Props, {}> {
   }
 
   render() {
-    // const {points, color, width} = this.props
     const {points, color} = this.props
     return (
       <g fill={color.normal} stroke={color.normal}>
@@ -88,7 +86,6 @@ class Variable extends React.Component<Props, {}> {
                 prevPoint={prevPoint}
                 nextPoint={nextPoint}
                 point={point}
-                // variableWidth={width}
                 getSvgSize={this.props.getSvgSize}
                 pointIndex={index}
                 showPointValuesEditor={this.showPointValuesEditor}

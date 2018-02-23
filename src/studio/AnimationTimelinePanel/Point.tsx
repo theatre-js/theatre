@@ -124,8 +124,8 @@ class Point extends React.Component<Props, State> {
     const limitRight = nextPoint == null ? 100 : nextPoint.time
 
     const newT = point.time + x
-    if (newT >= limitRight) x = limitRight - point.time - (1 / width)
-    if (newT <= limitLeft) x = limitLeft - point.time + (1 / width)
+    if (newT >= limitRight) x = limitRight - point.time - (100 / width)
+    if (newT <= limitLeft) x = limitLeft - point.time + (100 / width)
 
     this.setState(() => ({
       isMoving: true,

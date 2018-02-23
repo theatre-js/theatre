@@ -1,5 +1,5 @@
 // @flow
-import {React, connect, reduceStateAction, multiReduceStateAction, StudioComponent} from '$studio/handy'
+import {React, connect, reduceStateAction, multiReduceStateAction} from '$studio/handy'
 import {
   VariableID,
   VariableObject,
@@ -84,7 +84,7 @@ const resetExtremums = (pathToVariable: string[]) => {
   })
 }
 
-const svgHeightPadding = 20
+const svgPaddingY = 20
 const colors = [
   {name: 'blue', normal: '#3AAFA9', darkened: '#345b59'},
   {name: 'purple', normal: '#575790', darkened: '#323253'},
@@ -94,6 +94,7 @@ const colors = [
 
 class BoxView extends React.PureComponent<IProps, IState> {
   svgArea: HTMLElement
+  _normalizedPoints: $FixMe
 
   constructor(props: IProps, context: $IntentionalAny) {
     super(props, context)
@@ -103,6 +104,8 @@ class BoxView extends React.PureComponent<IProps, IState> {
       pointValuesEditorProps: null,
       activeVariableId: props.variableIds[0],
     }
+    this._normalizedPoints = this._getNormalizedPoints(props)
+    console.log(this._normalizedPoints)
   }
 
   componentDidMount() {
@@ -125,28 +128,30 @@ class BoxView extends React.PureComponent<IProps, IState> {
     ) {
       this.setState(() => ({svgExtremums: newSvgExtremums}))
     }
-    // svgHeight, svgWidth, svgTransform, svgExtremums
-    // this.state = {
-    //   ...this.state, ...this._getSvgState(nextProps), activeVariableId
-    // }
 
-    // if (
-    //   this.state.activeVariableId !== activeVariableId ||
-    //   nextProps.boxHeight !== this.props.boxHeight ||
-    //   nextProps.duration !== this.props.duration ||
-    //   nextProps.panelWidth !== this.props.panelWidth ||
-    //   nextProps.focus[1] - nextProps.focus[0] !==
-    //     this.props.focus[1] - this.props.focus[0] ||
-    //   !_.isEqual(nextProps.variables, this.props.variables)
-    // ) {
-    //   this.setState(() => ({...this._getSvgState(nextProps), activeVariableId}))
-    // }
+    this._normalizedPoints = this._getNormalizedPoints(nextProps)
   }
 
-  // shouldComponentUpdate(nextProps: IProps, nextState: IState) {
-  //   console.log(!_.isEqual(nextProps, this.props), !_.isEqual(nextState, this.state))
-  //   return !_.isEqual(nextProps, this.props) || !_.isEqual(nextState, this.state)
-  // }
+  _getNormalizedPoints(props: IProps): NormalizedPoint[] {
+    const {svgExtremums} = this.state
+    const extDiff = svgExtremums[1] - svgExtremums[0]
+
+    return props.variables.reduce((normalizedPoints, variable) => {
+      return {
+        ...normalizedPoints,
+        [variable.id]:  variable.points.map((point) => {
+          const {time, value, interpolationDescriptor} = point
+          return {
+            _t: time,
+            _value: value,
+            time: time / this.props.duration * 100,
+            value: (svgExtremums[1] - value) / extDiff * 100,
+            interpolationDescriptor: {...interpolationDescriptor},
+          }
+        })
+      }
+    }, {})
+  }
 
   titleClickHandler(e: React.MouseEvent<$FixMe>, variableId: string) {
     if (e.altKey) {
@@ -161,10 +166,6 @@ class BoxView extends React.PureComponent<IProps, IState> {
 
   _getSvgExtremums(props: IProps) {
     const {variables} = props
-    // const svgHeight = boxHeight - 30
-    // const svgWidth = Math.floor(duration / (focus[1] - focus[0]) * panelWidth)
-    // const svgTransform = svgWidth * focus[0] / duration
-
     let min: undefined | null | number, max: undefined | null | number
     variables.forEach((variable: $FixMe) => {
       const {extremums} = variable
@@ -179,12 +180,14 @@ class BoxView extends React.PureComponent<IProps, IState> {
     if (activeMode !== MODE_CMD) return
     e.stopPropagation()
 
+    const {svgHeight, svgWidth, duration} = this.props
+    const {svgExtremums} = this.state
     const {top, left} = this.svgArea.getBoundingClientRect()
     const time = e.clientX - left + 5
-    const value = e.clientY - top - 10
+    const value = e.clientY - top - 5
     const pointProps: Point = {
-      time: this._deNormalizeX(time),
-      value: this.deNormalizeY(value),
+      time: time * duration / svgWidth,
+      value: -value * (svgExtremums[1] - svgExtremums[0]) / (svgHeight - svgPaddingY),
       interpolationDescriptor: {
         connected: false,
         __descriptorType: 'TimelinePointInterpolationDescriptor',
@@ -282,12 +285,13 @@ class BoxView extends React.PureComponent<IProps, IState> {
     pointIndex: number,
     change: PointPosition,
   ) => {
-    const deNormalizedChange = this.deNormalizePositionChange(change)
+    const {svgExtremums} = this.state
+    const extDiff = svgExtremums[1] - svgExtremums[0]
     this.props.dispatch(
       reduceStateAction(this.pathToPoint(variableId, pointIndex), point => ({
         ...point,
-        time: point.time + deNormalizedChange.time,
-        value: point.value + deNormalizedChange.value,
+        time: point.time + change.time * this.props.duration / 100,
+        value: point.value + svgExtremums[1] - change.value * extDiff / 100
       })),
     )
     this.props.dispatch(
@@ -300,20 +304,13 @@ class BoxView extends React.PureComponent<IProps, IState> {
     pointIndex: number,
     change: PointHandles,
   ) => {
-    const {points} = this.props.variables.find(({id}) => id === variableId)
-    const deNormalizedChange = this._deNormalizeHandles(
-      change,
-      points[pointIndex],
-      points[pointIndex - 1],
-      points[pointIndex + 1],
-    )
     if (pointIndex === 0) {
       this.props.dispatch(
         reduceStateAction(
           [...this.pathToPoint(variableId, pointIndex), 'interpolationDescriptor', 'handles'],
           handles => {
             return (
-              handles.slice(0, 2).map((handle, index) => handle + deNormalizedChange[index + 2])
+              handles.slice(0, 2).map((handle, index) => handle + change[index + 2])
             ).concat(handles.slice(2))
           }
         )
@@ -325,7 +322,7 @@ class BoxView extends React.PureComponent<IProps, IState> {
             path: [...this.pathToPoint(variableId, pointIndex), 'interpolationDescriptor', 'handles'],
             reducer: handles => {
               return (
-                handles.slice(0, 2).map((handle, index) => handle + deNormalizedChange[index + 2])
+                handles.slice(0, 2).map((handle, index) => handle + change[index + 2])
               ).concat(handles.slice(2))
             }
           },
@@ -334,7 +331,7 @@ class BoxView extends React.PureComponent<IProps, IState> {
             reducer: handles => {
               return (
                 handles.slice(0, 2).concat(
-                  handles.slice(2).map((handle, index) => handle + deNormalizedChange[index])
+                  handles.slice(2).map((handle, index) => handle + change[index])
                 )
               )
             }
@@ -406,48 +403,8 @@ class BoxView extends React.PureComponent<IProps, IState> {
     )
   }
 
-  _normalizeX(x: number) {
-    return x / this.props.duration * 100
-  }
-
-  _deNormalizeX(x: number) {
-    return x * this.props.duration / 100
-  }
-
-  _normalizeY(y: number) {
-    const {svgExtremums} = this.state
-    const extDiff = svgExtremums[1] - svgExtremums[0]
-    return (svgExtremums[1] - y) / extDiff * 100
-  }
-
-  _deNormalizeY(y: number) {
-    const {svgExtremums} = this.state
-    const extDiff = svgExtremums[1] - svgExtremums[0]
-    return svgExtremums[1] - y * extDiff / 100
-  }
-
-  deNormalizePositionChange = (position: PointPosition): PointPosition => {
-    return {
-      time: this._deNormalizeX(position.time),
-      value: this._deNormalizeY(position.value),
-    }
-  }
-
-  _normalizePoints(points: Point[]): NormalizedPoint[] {
-    return points.map((point: $FixMe) => {
-      const {time, value, interpolationDescriptor} = point
-      return {
-        _t: time,
-        _value: value,
-        time: this._normalizeX(time),
-        value: this._normalizeY(value),
-        interpolationDescriptor: {...interpolationDescriptor},
-      }
-    })
-  }
-
   getSvgSize = () => {
-    return {width: this.props.svgWidth, height: this.props.svgHeight - svgHeightPadding}
+    return {width: this.props.svgWidth, height: this.props.svgHeight - svgPaddingY}
   }
 
   render() {
@@ -518,14 +475,13 @@ class BoxView extends React.PureComponent<IProps, IState> {
                         if (svg != null) this.svgArea = svg
                       }}
                       onMouseDown={(e: $FixMe) => this.addPoint(e, activeMode)}
-                      preserveAspectRatio='xMaxYMax'
                     >
                       <svg
-                        viewBox={`0 0 ${svgWidth} ${svgHeight - svgHeightPadding}`}
+                        viewBox={`0 0 ${svgWidth} ${svgHeight - svgPaddingY}`}
                         x={0}
-                        y={10}
+                        y={svgPaddingY / 2}
                         width={svgWidth}
-                        height={svgHeight - svgHeightPadding}
+                        height={svgHeight - svgPaddingY}
                         style={{overflow: 'visible'}}>
                       <defs>
                         <filter id="glow">
@@ -536,11 +492,12 @@ class BoxView extends React.PureComponent<IProps, IState> {
                           <feGaussianBlur stdDeviation=".7" />
                         </filter>
                       </defs>
-                      {_.sortBy(variables, (variable: $FixMe) => (variable.id === activeVariableId)).map(({id, points}, index) => (
+                      {_.sortBy(variables, (variable: $FixMe) => (variable.id === activeVariableId)).map(({id}) => (
                         <Variable
                           key={id}
                           variableId={id}
-                          points={this._normalizePoints(points)}
+                          // points={this._normalizePoints(points)}
+                          points={this._normalizedPoints[id]}
                           color={variablesColors[id]}
                           getSvgSize={this.getSvgSize}
                           showPointValuesEditor={this.showPointValuesEditor}

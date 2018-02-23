@@ -43,7 +43,7 @@ class Connector extends React.PureComponent<Props, State> {
           const valueAbsDiff = Math.abs(rp.value - lp.value)
           const x = `${lp.time}%`
           const y = `${Math.min(rp.value, lp.value)}%`
-          const width = `${rp.time - lp.time}%`
+          const width = `${Math.abs(rp.time - lp.time)}%`
           const height = valueAbsDiff === 0 ? '100%' : `${valueAbsDiff}%`
 
           let pathD
