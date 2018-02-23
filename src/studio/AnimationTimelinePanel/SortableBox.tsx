@@ -3,6 +3,7 @@ import * as React from 'react'
 import css from './SortableBox.css'
 import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
 import {Broadcast} from 'react-broadcast'
+import {isEqual} from 'lodash'
 
 type Props = {
   showMergeOverlay: boolean
@@ -45,7 +46,7 @@ class VariableBox extends React.PureComponent<Props, State> {
     this.props.onMoveStart()
   }
 
-  onMove = (dy: number) => {
+  onMove = (_:number, dy: number) => {
     this.setState(() => ({
       moveY: dy,
     }))
@@ -102,9 +103,10 @@ class VariableBox extends React.PureComponent<Props, State> {
         <div className={css.content}>
           <Broadcast
             channel={SortableBoxDragChannel}
+            compareValues={(prevValue: $FixMe, nextValue: $FixMe) => (isEqual(prevValue, nextValue))}
             value={{
               onDragStart: this.onMoveStart,
-              onDrag: (dy) => this.onMove(dy),
+              onDrag: this.onMove,
               onDragEnd: this.onMoveEnd,
             }}>
               {children}

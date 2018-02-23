@@ -76,6 +76,7 @@ class Content extends StudioComponent<Props, State> {
 
     const {boxes, layout} = props
     // this._handleScroll = throttle(this._handleScroll.bind(this), 200)
+    // this.changeFocusAndScrollVariablesContainer = _.throttle(this.changeFocusAndScrollVariablesContainer, 30)
 
     this.state = {
       boxBeingDragged: null,
@@ -155,21 +156,6 @@ class Content extends StudioComponent<Props, State> {
   componentWillUnmount() {
     window.removeEventListener('keypress', this._handleKeyPress)
   }
-
-  // _resetPanelWidthOnWindowResize = () => {
-  //   this._resetPanelWidth(this.props.panelDimensions.x)
-  // }
-
-  // _getPanelWidth(xDim) {
-  //   return xDim - 10
-  // return xDim / 100 * window.innerWidth - 16
-  // }
-
-  // _resetPanelWidth(xDim) {
-  //   this.setState(() => ({
-  //     panelWidth: this._getPanelWidth(xDim),
-  //   }))
-  // }
 
   _resetBoundariesAndRatios(
     layout = this.props.layout,
@@ -268,7 +254,7 @@ class Content extends StudioComponent<Props, State> {
   }
 
   onBoxEndMove() {
-    document.body.classList.remove('globalMoveCursor')    
+    document.body.classList.remove('globalMoveCursor')
     if (this.state.boxBeingDragged == null) return
     const {index, moveTo, mergeWith} = this.state.boxBeingDragged
     const {dispatch} = this.props
@@ -636,7 +622,7 @@ class Content extends StudioComponent<Props, State> {
   }
 
   _removeGlobalCursorRule() {
-    document.body.classList.remove('animationTimelineSeekerDrag')    
+    document.body.classList.remove('animationTimelineSeekerDrag')
   }
 
   render() {
@@ -650,17 +636,19 @@ class Content extends StudioComponent<Props, State> {
     const {boxes, layout, panelObjectBeingDragged} = this.props
     const offsetLeft =
       this.variablesContainer != null ? this.variablesContainer.scrollLeft : 0
+
     return (
       <Panel
-        headerLess={true}
-        css={{
-          container: css.panelContainer,
-          innerWrapper: css.panelInnerWrapper,
-        }}
+      headerLess={true}
+      css={{
+        container: css.panelContainer,
+        innerWrapper: css.panelInnerWrapper,
+      }}
       >
         <Subscriber channel={PanelPropsChannel}>
           {({width: panelWidth}: $FixMe) => {
             panelWidth -= 30
+            const svgWidth: number = Math.floor(duration / Math.floor(focus[1] - focus[0]) * panelWidth)
             return (
               <div
                 ref={c => (this.container = c)}
@@ -757,15 +745,12 @@ class Content extends StudioComponent<Props, State> {
                           {
                             <BoxView
                               tempIncludeTimeGrid={index === 0}
-                              boxHeight={box.height}
+                              svgHeight={box.height}
+                              svgWidth={svgWidth}
                               variableIds={box.variables}
-                              splitVariable={variableId =>
-                                this.splitVariable(index, variableId)
-                              }
-                              panelWidth={panelWidth}
+                              boxIndex={index}
+                              splitVariable={this.splitVariable}
                               duration={duration}
-                              // currentTime={currentTime}
-                              focus={focus}
                               canBeMerged={canBeMerged}
                               shouldIndicateMerge={shouldIndicateMerge}
                               pathToTimeline={this.props.pathToTimeline}

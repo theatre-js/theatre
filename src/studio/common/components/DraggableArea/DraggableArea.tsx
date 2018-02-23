@@ -90,7 +90,6 @@ class DraggableArea extends React.PureComponent<Props, {}> {
     ) : (
       this.props.children
     )
-      
   }
 }
 

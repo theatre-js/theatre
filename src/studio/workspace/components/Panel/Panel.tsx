@@ -384,7 +384,10 @@ export default class Panel extends StudioComponent<IProps, IState> {
                 <div className={css.topBar}>
                   <div className={css.title}>{label || defaultLabel}</div>
                 </div>
-                <Broadcast channel={PanelPropsChannel} value={{width, activeMode}}>
+                <Broadcast
+                  channel={PanelPropsChannel}
+                  value={{width, activeMode}}
+                  compareValues={(prevValue: $FixMe, nextValue: $FixMe) => (_.isEqual(prevValue, nextValue))}>
                   <div className={css.content}>{children}</div>
                 </Broadcast>
               </div>

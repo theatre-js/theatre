@@ -10,9 +10,11 @@ import cx from 'classnames'
 import css from './Connector.css'
 
 type Props = {
+  pointIndex: number
   leftPoint: NormalizedPoint
   rightPoint: NormalizedPoint
   removeConnector?: Function
+  showContextMenu: Function
 }
 
 type State = {}
@@ -21,7 +23,7 @@ class Connector extends React.PureComponent<Props, State> {
   clickHandler = (e: $FixMe, activeMode: string) => {
     e.stopPropagation()
     if (activeMode === MODE_D) {
-      return this.props.removeConnector && this.props.removeConnector()
+      return this.props.removeConnector && this.props.removeConnector(this.props.pointIndex)
     }
   }
 
@@ -29,10 +31,8 @@ class Connector extends React.PureComponent<Props, State> {
     e.stopPropagation()
     e.preventDefault()
     const {clientX, clientY} = e
-    this.props.showContextMenu({
-      left: clientX,
-      top: clientY,
-    })
+    const pos = {left: clientX, top: clientY}
+    this.props.showContextMenu(this.props.pointIndex, pos)
   }
 
   render() {
@@ -40,34 +40,58 @@ class Connector extends React.PureComponent<Props, State> {
     return (
       <Subscriber channel={PanelPropsChannel}>
         {({activeMode}) => {
+          const valueAbsDiff = Math.abs(rp.value - lp.value)
+          const x = `${lp.time}%`
+          const y = `${Math.min(rp.value, lp.value)}%`
+          const width = `${rp.time - lp.time}%`
+          const height = valueAbsDiff === 0 ? '100%' : `${valueAbsDiff}%`
+
+          let pathD
+          if (rp.value > lp.value) {
+            pathD = `M 0 0
+                     C ${lp.interpolationDescriptor.handles[0] * 100}
+                       ${lp.interpolationDescriptor.handles[1] * 100}
+                       ${100 - lp.interpolationDescriptor.handles[2] * 100}
+                       ${100 - lp.interpolationDescriptor.handles[3] * 100} 100 100`
+          }
+          if (rp.value < lp.value) {
+            pathD = `M 0 100
+                     C ${lp.interpolationDescriptor.handles[0] * 100}
+                       ${100 - lp.interpolationDescriptor.handles[1] * 100}
+                       ${100 - lp.interpolationDescriptor.handles[2] * 100}
+                       ${lp.interpolationDescriptor.handles[3] * 100} 100 0`
+          }
+          if (rp.value === lp.value) {
+            pathD = `M 0 0
+                     C ${lp.interpolationDescriptor.handles[0] * 100} 0
+                       ${lp.interpolationDescriptor.handles[2] * 100} 0 100 0`
+          }
+
           return (
-            <g>
+            <svg
+              x={x}
+              y={y}
+              width={width}
+              height={height}
+              viewBox='0 0 100 100'
+              preserveAspectRatio='none'
+              className={css.curveContainer}>
               <path
-                d={`M ${lp.time} ${lp.value}
-                    C ${lp.time + lp.interpolationDescriptor.handles[0]} ${lp.value +
-                  lp.interpolationDescriptor.handles[1]}
-                      ${rp.time - lp.interpolationDescriptor.handles[2]} ${rp.value -
-                  lp.interpolationDescriptor.handles[3]}
-                      ${rp.time} ${rp.value}`}
-                fill="transparent"
-                stroke="transparent"
+                d={pathD}
+                fill='transparent'
+                stroke='transparent'
                 strokeWidth={10}
+                vectorEffect='non-scaling-stroke'
                 onMouseDown={(e) => this.clickHandler(e, activeMode)}
                 onContextMenu={this.contextMenuHandler}
-                className={cx({[css.highlightRedOnHover]: activeMode === MODE_D})}                
-              />
+                className={cx({[css.highlightRedOnHover]: activeMode === MODE_D})}/>
               <path
-                d={`M ${lp.time} ${lp.value}
-                    C ${lp.time + lp.interpolationDescriptor.handles[0]} ${lp.value +
-                  lp.interpolationDescriptor.handles[1]}
-                      ${rp.time - lp.interpolationDescriptor.handles[2]} ${rp.value -
-                  lp.interpolationDescriptor.handles[3]}
-                      ${rp.time} ${rp.value}`}
-                fill="transparent"
+                d={pathD}
+                fill='transparent'
                 strokeWidth={2}
-                className={css.connectorPath}
-              />
-            </g>
+                vectorEffect='non-scaling-stroke'
+                className={css.connectorPath}/>
+            </svg>
           )
         }}
       </Subscriber>

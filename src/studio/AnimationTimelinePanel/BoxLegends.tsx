@@ -78,7 +78,7 @@ class BoxLegends extends React.PureComponent<$FixMe, IState> {
               {
                 label: '$H$ide this Lane',
                 cb: () => null,
-                IconComponent: FaCircleO,                
+                IconComponent: FaCircleO,
               },
             ]}
           />

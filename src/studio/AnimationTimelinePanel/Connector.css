@@ -9,3 +9,7 @@
 .connectorPath {
   pointer-events: none;
 }
+
+.curveContainer {
+  overflow: visible;
+}

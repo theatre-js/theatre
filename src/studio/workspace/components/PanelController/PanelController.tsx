@@ -18,6 +18,7 @@ import {Broadcast} from 'react-broadcast'
 import {ActiveMode} from '$src/studio/workspace/components/StudioUI/StudioUI'
 import {StudioComponent} from '$studio/handy'
 import {IStoreState} from '$studio/types'
+import {isEqual} from 'lodash'
 
 export const PanelControlChannel = 'TheaterJS/PanelControlChannel'
 
@@ -97,7 +98,10 @@ class PanelController extends StudioComponent<IProps, State> {
     }
 
     return (
-      <Broadcast channel={PanelControlChannel} value={panelControlChannelData}>
+      <Broadcast
+        channel={PanelControlChannel}
+        value={panelControlChannelData}
+        compareValues={(prevValue: $FixMe, nextValue: $FixMe) => (isEqual(prevValue, nextValue))}>
         <PanelComponent
           {...configuration}
           {...componentState}
