@@ -8,8 +8,7 @@ import {
   PointHandles,
   NormalizedPoint,
 } from '$studio/animationTimeline/types'
-import css, { canBeMerged } from './BoxView.css'
-import Variable from './Variable'
+import css from './BoxView.css'
 import Variables from './Variables'
 import BoxLegends from './BoxLegends'
 import PointValuesEditor from './PointValuesEditor'
@@ -95,7 +94,7 @@ export const colors = [
   {name: 'yellow', normal: '#FCE181', darkened: '#726a4b'},
 ]
 
-class BoxView extends React.PureComponent<IProps, IState> {
+class BoxView extends StudioComponent<IProps, IState> {
   svgArea: HTMLElement
   variablesShouldReRender: boolean
 
@@ -508,6 +507,7 @@ class BoxView extends React.PureComponent<IProps, IState> {
                         if (svg != null) this.svgArea = svg
                       }}
                       onMouseDown={(e: $FixMe) => this.addPoint(e, activeMode)}
+                      transform={`translate(${this.props.scrollLeft} 0)`}
                     >
                       <svg
                         viewBox={`0 0 ${svgWidth} ${svgHeight - svgPaddingY}`}
