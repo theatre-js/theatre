@@ -385,7 +385,8 @@ class Content extends StudioComponent<Props, State> {
     }
     if (newFocusRight - newFocusLeft < 1) return
     const svgWidth = duration / (newFocusRight - newFocusLeft) * panelWidth
-    this.variablesContainer.scrollLeft = svgWidth * newFocusLeft / duration
+    // this.variablesContainer.scrollLeft = svgWidth * newFocusLeft / duration
+    this.variablesContainer.style.transform = `translateX(${-svgWidth * newFocusLeft / duration}px)`
 
     this.setState(() => ({focus: [newFocusLeft, newFocusRight]}))
   }
@@ -406,7 +407,8 @@ class Content extends StudioComponent<Props, State> {
     }
 
     const svgWidth = duration / (newFocusRight - newFocusLeft) * panelWidth
-    this.variablesContainer.scrollLeft = svgWidth * newFocusLeft / duration
+    // this.variablesContainer.scrollLeft = svgWidth * newFocusLeft / duration
+    this.variablesContainer.style.transform = `translateX(${-svgWidth * newFocusLeft / duration}px)`
 
     this.setState(() => ({focus: [newFocusLeft, newFocusRight]}))
   }

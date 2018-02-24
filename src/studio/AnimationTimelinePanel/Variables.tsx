@@ -1,13 +1,14 @@
 import {React} from '$studio/handy'
 import Variable from './Variable'
 import * as _ from 'lodash'
+import {colors} from './BoxView'
 
 interface IProps {
   shouldReRenderVariables: boolean
   resetReRenderVariablesFlag: Function
   activeVariableId: string
+  variableIdToColorIndexMap: {[variableId: string]: number}
   getVariables: Function
-  colors: {[id: string]: string}
   getSvgSize: Function
   showPointValuesEditor: Function
   showContextMenuForPoint: Function
@@ -21,7 +22,7 @@ interface IProps {
 }
 interface IState {}
 
-class Variables extends React.Component<IProps, IState> {
+class Variables extends React.PureComponent<IProps, IState> {
   variablesObject: $FixMe
   constructor(props: IProps) {
     super(props)
@@ -31,25 +32,20 @@ class Variables extends React.Component<IProps, IState> {
 
   componentWillReceiveProps(nextProps: IProps) {
     if (nextProps.shouldReRenderVariables) {
-      this.variablesObject = this.props.getVariables()
       this.props.resetReRenderVariablesFlag()
+      this.variablesObject = this.props.getVariables()
     }
   }
 
-  shouldComponentUpdate(nextProps: IProps) {
-    return !_.isEqual(nextProps, this.props)
-  }
-
   render() {
-    console.log('render')
-    const {colors, activeVariableId} = this.props
+    const {activeVariableId, variableIdToColorIndexMap} = this.props
     return (
       _.sortBy(this.variablesObject, (variable: $FixMe) => (variable.id === activeVariableId)).map(({id, points}) => (
         <Variable
           key={id}
           variableId={id}
           points={points}
-          color={colors[id]}
+          color={colors[variableIdToColorIndexMap[id]]}
           getSvgSize={this.props.getSvgSize}
           showPointValuesEditor={this.props.showPointValuesEditor}
           showContextMenuForPoint={this.props.showContextMenuForPoint}

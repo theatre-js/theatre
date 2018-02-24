@@ -28,6 +28,7 @@ import MdDonutSmall from 'react-icons/lib/md/donut-small'
 import MdStars from 'react-icons/lib/md/stars'
 import MdCamera from 'react-icons/lib/md/camera'
 import { IStoreState } from '$studio/types'
+import { VariableObject } from '$src/studio/AnimationTimelinePanel/types';
 
 interface IOwnProps {
   variableIds: VariableID[]
@@ -52,6 +53,7 @@ type IState = {
   svgExtremums: [number, number]
   activeVariableId: string
   pointValuesEditorProps: undefined | null | Object
+  variableIdToColorIndexMap: {[variableId: string]: number}
 }
 const resetExtremums = (pathToVariable: string[]) => {
   return reduceStateAction(pathToVariable, variable => {
@@ -86,7 +88,7 @@ const resetExtremums = (pathToVariable: string[]) => {
 }
 
 const svgPaddingY = 20
-const colors = [
+export const colors = [
   {name: 'blue', normal: '#3AAFA9', darkened: '#345b59'},
   {name: 'purple', normal: '#575790', darkened: '#323253'},
   {name: 'red', normal: '#B76C6C', darkened: '#4c3434'},
@@ -104,6 +106,7 @@ class BoxView extends React.PureComponent<IProps, IState> {
       svgExtremums: this._getSvgExtremums(props),
       pointValuesEditorProps: null,
       activeVariableId: props.variableIds[0],
+      variableIdToColorIndexMap: this._getVariableIdToColorIndexMap(props.variables)
     }
     this.variablesShouldReRender = false
   }
@@ -122,6 +125,13 @@ class BoxView extends React.PureComponent<IProps, IState> {
     if (nextProps.variableIds.find(id => id === activeVariableId) == null) {
       activeVariableId = nextProps.variableIds[0]
     }
+
+    if (nextProps.variableIds !== this.props.variableIds) {
+      this.setState(() => ({
+        variableIdToColorIndexMap: this._getVariableIdToColorIndexMap(nextProps.variables)
+      }))
+    }
+
     const newSvgExtremums = this._getSvgExtremums(nextProps)
     if (
       !_.isEqual(newSvgExtremums, this.state.svgExtremums)
@@ -129,6 +139,17 @@ class BoxView extends React.PureComponent<IProps, IState> {
       this.setVariablesShouldReRenderToTrue()
       this.setState(() => ({svgExtremums: newSvgExtremums}))
     }
+  }
+
+  _getVariableIdToColorIndexMap(variables: VariableObject[]): {[variableId: string]: number} {
+    const colorsLength = colors.length
+    return variables.reduce(
+      (reducer, variable, index) => {
+        return {
+          ...reducer,
+          [variable.id]: index % colorsLength,
+        }
+      }, {})
   }
 
   setVariablesShouldReRenderToFalse = () => {
@@ -162,11 +183,17 @@ class BoxView extends React.PureComponent<IProps, IState> {
     return [min, max]
   }
 
+  _resetExtremumsOfVariable(variableId: string) {
+    this.setVariablesShouldReRenderToTrue()
+    this.props.dispatch(
+      resetExtremums([...this.props.pathToVariables, variableId]),
+    )
+  }
+
   addPoint = (e: $FixMe, activeMode: string) => {
     if (activeMode !== MODE_CMD) return
     e.stopPropagation()
 
-    this.setVariablesShouldReRenderToTrue()
     const {svgHeight, svgWidth, duration} = this.props
     const {svgExtremums} = this.state
     const {top, left} = this.svgArea.getBoundingClientRect()
@@ -198,6 +225,7 @@ class BoxView extends React.PureComponent<IProps, IState> {
         },
       ),
     )
+    this._resetExtremumsOfVariable(this.state.activeVariableId)
   }
 
   pathToPoints = (variableId: string) => [
@@ -211,15 +239,12 @@ class BoxView extends React.PureComponent<IProps, IState> {
   ]
 
   removePoint = (variableId: VariableID, pointIndex: number) => {
-    this.setVariablesShouldReRenderToTrue()
     this.props.dispatch(
       reduceStateAction(this.pathToPoints(variableId), points =>
         points.slice(0, pointIndex).concat(points.slice(pointIndex + 1)),
       ),
     )
-    this.props.dispatch(
-      resetExtremums([...this.props.pathToVariables, variableId]),
-    )
+    this._resetExtremumsOfVariable(variableId)
   }
 
   setPointPositionTo = (
@@ -227,16 +252,14 @@ class BoxView extends React.PureComponent<IProps, IState> {
     pointIndex: number,
     newPosition: PointPosition,
   ) => {
-    this.setVariablesShouldReRenderToTrue()
     this.props.dispatch(
       reduceStateAction(this.pathToPoint(variableId, pointIndex), point => ({
         ...point,
         ...newPosition,
       })),
     )
-    this.props.dispatch(
-      resetExtremums([...this.props.pathToVariables, variableId]),
-    )
+
+    this._resetExtremumsOfVariable(variableId)
   }
 
   changePointPositionBy = (
@@ -244,7 +267,6 @@ class BoxView extends React.PureComponent<IProps, IState> {
     pointIndex: number,
     change: PointPosition,
   ) => {
-    this.setVariablesShouldReRenderToTrue()
     const {svgExtremums} = this.state
     const extDiff = svgExtremums[1] - svgExtremums[0]
     this.props.dispatch(
@@ -254,9 +276,8 @@ class BoxView extends React.PureComponent<IProps, IState> {
         value: point.value + svgExtremums[1] - change.value * extDiff / 100
       })),
     )
-    this.props.dispatch(
-      resetExtremums([...this.props.pathToVariables, variableId]),
-    )
+
+    this._resetExtremumsOfVariable(variableId)
   }
 
   changePointHandlesBy = (
@@ -264,7 +285,6 @@ class BoxView extends React.PureComponent<IProps, IState> {
     pointIndex: number,
     change: PointHandles,
   ) => {
-    this.setVariablesShouldReRenderToTrue()
     if (pointIndex === 0) {
       this.props.dispatch(
         reduceStateAction(
@@ -300,9 +320,8 @@ class BoxView extends React.PureComponent<IProps, IState> {
         ])
       )
     }
-    this.props.dispatch(
-      resetExtremums([...this.props.pathToVariables, variableId]),
-    )
+
+    this._resetExtremumsOfVariable(variableId)
   }
 
   addConnector = (variableId: VariableID, pointIndex: number) => {
@@ -339,7 +358,6 @@ class BoxView extends React.PureComponent<IProps, IState> {
     pointIndex: number,
     side: 'left' | 'right',
   ) => {
-    this.setVariablesShouldReRenderToTrue()
     if (side === 'left' && pointIndex !== 0) {
       this.props.dispatch(
         reduceStateAction(
@@ -362,9 +380,8 @@ class BoxView extends React.PureComponent<IProps, IState> {
         ),
       )
     }
-    this.props.dispatch(
-      resetExtremums([...this.props.pathToVariables, variableId]),
-    )
+
+    this._resetExtremumsOfVariable(variableId)
   }
 
   showPointValuesEditor = (
@@ -437,12 +454,9 @@ class BoxView extends React.PureComponent<IProps, IState> {
     const {
       activeVariableId,
       pointValuesEditorProps,
+      variableIdToColorIndexMap,
     } = this.state
 
-    let variablesColors: $FixMe = {}
-    variables.forEach((variable: $FixMe, index: number) => {
-      variablesColors = {...variablesColors, [variable.id]: colors[index % colors.length]}
-    })
     return (
       <Subscriber channel={PanelActiveModeChannel}>
       {({activeMode}) => {
@@ -450,16 +464,17 @@ class BoxView extends React.PureComponent<IProps, IState> {
         return (
           <Subscriber channel={SortableBoxDragChannel}>
             {({onDragStart, onDrag, onDragEnd}) => {
+              const activeVariableColorName = colors[variableIdToColorIndexMap[activeVariableId]].name
               return (
                 <div
                   ref={c => (this.container = c)}
                   className={cx(css.container, {
                     [css.canBeMerged]: canBeMerged,
                     [css.indicateMerge]: shouldIndicateMerge,
-                    [css.redAddCursor]: isAddingPoint && variablesColors[activeVariableId].name === 'red',
-                    [css.blueAddCursor]: isAddingPoint && variablesColors[activeVariableId].name === 'blue',
-                    [css.yellowAddCursor]: isAddingPoint && variablesColors[activeVariableId].name === 'yellow',
-                    [css.purpleAddCursor]: isAddingPoint && variablesColors[activeVariableId].name === 'purple',
+                    [css.redAddCursor]: isAddingPoint && activeVariableColorName === 'red',
+                    [css.blueAddCursor]: isAddingPoint && activeVariableColorName === 'blue',
+                    [css.yellowAddCursor]: isAddingPoint && activeVariableColorName === 'yellow',
+                    [css.purpleAddCursor]: isAddingPoint && activeVariableColorName === 'purple',
                   })}
                   style={{width: svgWidth}}
                 >
@@ -501,38 +516,21 @@ class BoxView extends React.PureComponent<IProps, IState> {
                         width={svgWidth}
                         height={svgHeight - svgPaddingY}
                         style={{overflow: 'visible'}}>
-                      <defs>
-                        <filter id="glow">
-                          <feColorMatrix type="matrix" values={`3  0  0  0  0
-                                                                0  3  0  0  0
-                                                                0  0  3  0  0
-                                                                0  0  0  1  0`} />
-                          <feGaussianBlur stdDeviation=".7" />
-                        </filter>
-                      </defs>
-                      <Variables
-                        shouldReRenderVariables={this.variablesShouldReRender}
-                        resetReRenderVariablesFlag={this.setVariablesShouldReRenderToFalse}
-                        activeVariableId={activeVariableId}
-                        getVariables={this.getNormalizedVariables}
-                        colors={variablesColors}
-                        getSvgSize={this.getSvgSize}
-                        showPointValuesEditor={this.showPointValuesEditor}
-                        showContextMenuForPoint={this.showContextMenuForPoint}
-                        showContextMenuForConnector={this.showContextMenuForConnector}
-                        changePointPositionBy={this.changePointPositionBy}
-                        changePointHandlesBy={this.changePointHandlesBy}
-                        removePoint={this.removePoint}
-                        addConnector={this.addConnector}
-                        removeConnector={this.removeConnector}
-                        makeHandleHorizontal={this.makeHandleHorizontal}
-                      />
-                      {/* {_.sortBy(variables, (variable: $FixMe) => (variable.id === activeVariableId)).map(({id, points}) => (
-                        <Variable
-                          key={id}
-                          variableId={id}
-                          points={this._normalizePoints(points)}
-                          color={variablesColors[id]}
+                        <defs>
+                          <filter id="glow">
+                            <feColorMatrix type="matrix" values={`3  0  0  0  0
+                                                                  0  3  0  0  0
+                                                                  0  0  3  0  0
+                                                                  0  0  0  1  0`} />
+                            <feGaussianBlur stdDeviation=".7" />
+                          </filter>
+                        </defs>
+                        <Variables
+                          shouldReRenderVariables={this.variablesShouldReRender}
+                          resetReRenderVariablesFlag={this.setVariablesShouldReRenderToFalse}
+                          activeVariableId={activeVariableId}
+                          getVariables={this.getNormalizedVariables}
+                          variableIdToColorIndexMap={variableIdToColorIndexMap}
                           getSvgSize={this.getSvgSize}
                           showPointValuesEditor={this.showPointValuesEditor}
                           showContextMenuForPoint={this.showContextMenuForPoint}
@@ -544,7 +542,6 @@ class BoxView extends React.PureComponent<IProps, IState> {
                           removeConnector={this.removeConnector}
                           makeHandleHorizontal={this.makeHandleHorizontal}
                         />
-                      ))} */}
                       </svg>
                     </svg>
                   </div>

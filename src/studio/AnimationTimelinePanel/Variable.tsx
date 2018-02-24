@@ -2,12 +2,11 @@ import React from 'react'
 import Point from './Point'
 import Connector from './Connector'
 import {NormalizedPoint} from '$studio/animationTimeline/types'
-import {isEqual} from 'lodash'
 
 type Props = {
   variableId: string
   points: NormalizedPoint[]
-  color: string
+  color: {name: string, normal: string, darkened: string}
   getSvgSize: Function
   showPointValuesEditor: Function
   showContextMenuForPoint: Function

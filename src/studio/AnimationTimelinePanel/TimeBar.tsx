@@ -131,7 +131,7 @@ class TimeBar extends React.PureComponent<Props, State> {
       'timeBarDragE',
       'timeBarDragW',
       'timeBarDragEW',
-    ])    
+    ])
   }
 
   render() {
@@ -151,7 +151,7 @@ class TimeBar extends React.PureComponent<Props, State> {
     currentTime = currentTime / 1000
     focus = focus.map(f => f / 1000)
     duration = duration / 1000
-    
+
     const isSeekerHidden = (currentX < 0 || currentX > panelWidth)
     return (
       <div className={cx(
