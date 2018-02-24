@@ -10,7 +10,7 @@
     "prettify-and-lint": "run-s prettify lint",
     "prettify": "prettier --write \"src/**/*.tsx\"",
     "prepush": "run-p prettify-and-lint test",
-    "lb:webpack:dev": "webpack --progress --config webpack/lb/development.babel.js --watch",
+    "lb:webpack:dev": "webpack --progress --config webpack/lb/development.js --watch",
     "lb:dev": "nodemon -e jade --exec \"electron\" ./bundles/lb/index.js",
     "lb:run": "electron ./bundles/lb/index.js",
     "lf:webpack:dev": "webpack-dev-server --progress --config webpack/lf/development.babel.js",

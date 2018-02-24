@@ -10,7 +10,6 @@ module.exports = (env: Envs) => {
     withReactHotLoading: true,
     packageName: 'studio',
     withDevServer: true,
-    withReactHotLoader: true,
     entries: {
       index: ['./src/studio/index.tsx'],
     },

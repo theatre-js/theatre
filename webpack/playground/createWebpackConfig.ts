@@ -10,7 +10,6 @@ module.exports = (env: Envs) => {
     withReactHotLoading: true,
     packageName: 'playground',
     withDevServer: true,
-    withReactHotLoader: true,
     entries: {
       index: ['./src/playground/index.tsx'],
     },

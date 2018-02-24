@@ -18,7 +18,7 @@ export const aliases: {[alias: string]: string} = {
   $shared: path.join(context, './src/shared/'),
 }
 
-type PackageName = 'studio' | 'playground' | 'examples'
+type PackageName = 'studio' | 'playground' | 'examples' | 'lb'
 
 export type Envs = 'development' | 'production'
 
@@ -27,8 +27,8 @@ export type Options = {
   withReactHotLoading?: boolean
   packageName: PackageName
   entries?: {[key: string]: string[]}
-  withReactHotLoader: boolean
   withDevServer?: boolean
+  withServerSideHotLoading?: boolean
 }
 
 const babelForTsHotReloading = () => ({
@@ -70,11 +70,13 @@ export const makeConfigParts = (options: Options) => {
     entry: mapValues(
       options.entries || {},
       ent =>
-        options.withReactHotLoader && isDev
+        options.withReactHotLoading && isDev
           ? [
               require.resolve('react-dev-utils/webpackHotDevClient'),
               require.resolve('react-hot-loader/patch'),
             ].concat(ent)
+          : options.withServerSideHotLoading ?
+          ['webpack/hot/poll?100'].concat(ent)
           : ent,
     ),
     output: {

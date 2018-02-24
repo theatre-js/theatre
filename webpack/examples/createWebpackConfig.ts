@@ -10,7 +10,6 @@ module.exports = (env: Envs) => {
     withReactHotLoading: true,
     packageName: 'examples',
     withDevServer: true,
-    withReactHotLoader: true,
     entries: {
       index: ['./examples/index.js'],
     },
