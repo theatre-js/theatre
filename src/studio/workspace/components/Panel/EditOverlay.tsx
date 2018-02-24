@@ -6,7 +6,11 @@ import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea
 type Props = any
 type State = any
 
-class EditOverlay extends React.PureComponent<Props, State> {
+class EditOverlay extends React.Component<Props, State> {
+  shouldComponentUpdate() {
+    return false
+  }
+
   render() {
     return (
       <div

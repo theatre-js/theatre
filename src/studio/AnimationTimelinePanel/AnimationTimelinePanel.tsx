@@ -718,6 +718,7 @@ class Content extends StudioComponent<Props, State> {
                     ref={c => (this.variablesContainer = c)}
                     className={css.variables}
                   >
+                    <div>
                     {layout.map((id, index) => {
                       const box = boxes[id]
                       const boxTranslateY =
@@ -759,6 +760,7 @@ class Content extends StudioComponent<Props, State> {
                         </SortableBox>
                       )
                     })}
+                    </div>
                   </div>
                 </DraggableArea>
               </div>

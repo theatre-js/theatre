@@ -104,7 +104,7 @@ class PanelController extends StudioComponent<IProps, State> {
         compareValues={(prevValue: $FixMe, nextValue: $FixMe) => (isEqual(prevValue, nextValue))}>
         <PanelComponent
           {...configuration}
-          {...componentState}
+          // {...componentState}
           // panelDimensions={dim}
           outputs={outputs}
           inputs={inputs}

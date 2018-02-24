@@ -130,6 +130,7 @@
     "react-hot-loader": "^4.0.0-beta.18",
     "react-icons": "^2.2.7",
     "react-redux": "^5.0.6",
+    "react-render-debugger": "^1.0.2",
     "react-router-dom": "^4.1.2",
     "recompose": "^0.24.0",
     "redux": "^3.7.2",

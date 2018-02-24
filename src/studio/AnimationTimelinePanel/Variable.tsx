@@ -3,7 +3,6 @@ import Point from './Point'
 import Connector from './Connector'
 import {NormalizedPoint} from '$studio/animationTimeline/types'
 import {isEqual} from 'lodash'
-import * as _ from 'lodash'
 
 type Props = {
   variableId: string
@@ -21,11 +20,7 @@ type Props = {
   makeHandleHorizontal: Function
 }
 
-class Variable extends React.Component<Props, {}> {
-  shouldComponentUpdate(nextProps) {
-    return !isEqual(nextProps, this.props)
-  }
-
+class Variable extends React.PureComponent<Props, {}> {
   showPointValuesEditor = (pointIndex: number, params: $FixMe) => {
     this.props.showPointValuesEditor(this.props.variableId, pointIndex, params)
   }

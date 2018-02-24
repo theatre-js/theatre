@@ -10,6 +10,7 @@ import {
 } from '$studio/animationTimeline/types'
 import css, { canBeMerged } from './BoxView.css'
 import Variable from './Variable'
+import Variables from './Variables'
 import BoxLegends from './BoxLegends'
 import PointValuesEditor from './PointValuesEditor'
 import * as _ from 'lodash'
@@ -94,6 +95,7 @@ const colors = [
 
 class BoxView extends React.PureComponent<IProps, IState> {
   svgArea: HTMLElement
+  variablesShouldReRender: boolean
 
   constructor(props: IProps, context: $IntentionalAny) {
     super(props, context)
@@ -103,6 +105,7 @@ class BoxView extends React.PureComponent<IProps, IState> {
       pointValuesEditorProps: null,
       activeVariableId: props.variableIds[0],
     }
+    this.variablesShouldReRender = false
   }
 
   componentDidMount() {
@@ -123,8 +126,17 @@ class BoxView extends React.PureComponent<IProps, IState> {
     if (
       !_.isEqual(newSvgExtremums, this.state.svgExtremums)
     ) {
+      this.setVariablesShouldReRenderToTrue()
       this.setState(() => ({svgExtremums: newSvgExtremums}))
     }
+  }
+
+  setVariablesShouldReRenderToFalse = () => {
+    this.variablesShouldReRender = false
+  }
+
+  setVariablesShouldReRenderToTrue = () => {
+    this.variablesShouldReRender = true
   }
 
   titleClickHandler(e: React.MouseEvent<$FixMe>, variableId: string) {
@@ -154,11 +166,12 @@ class BoxView extends React.PureComponent<IProps, IState> {
     if (activeMode !== MODE_CMD) return
     e.stopPropagation()
 
+    this.setVariablesShouldReRenderToTrue()
     const {svgHeight, svgWidth, duration} = this.props
     const {svgExtremums} = this.state
     const {top, left} = this.svgArea.getBoundingClientRect()
     const time = e.clientX - left + 5
-    const value = e.clientY - top - 5
+    const value = e.clientY - top + 5 - .5 * svgPaddingY
     const pointProps: Point = {
       time: time * duration / svgWidth,
       value: -value * (svgExtremums[1] - svgExtremums[0]) / (svgHeight - svgPaddingY),
@@ -198,6 +211,7 @@ class BoxView extends React.PureComponent<IProps, IState> {
   ]
 
   removePoint = (variableId: VariableID, pointIndex: number) => {
+    this.setVariablesShouldReRenderToTrue()
     this.props.dispatch(
       reduceStateAction(this.pathToPoints(variableId), points =>
         points.slice(0, pointIndex).concat(points.slice(pointIndex + 1)),
@@ -213,6 +227,7 @@ class BoxView extends React.PureComponent<IProps, IState> {
     pointIndex: number,
     newPosition: PointPosition,
   ) => {
+    this.setVariablesShouldReRenderToTrue()
     this.props.dispatch(
       reduceStateAction(this.pathToPoint(variableId, pointIndex), point => ({
         ...point,
@@ -224,41 +239,12 @@ class BoxView extends React.PureComponent<IProps, IState> {
     )
   }
 
-  showPointValuesEditor = (
-    variableId: VariableID,
-    pointIndex: number,
-    params: $FixMe,
-  ) => {
-    this.setState(() => ({
-      pointValuesEditorProps: {...params, variableId, pointIndex},
-    }))
-  }
-
-  showContextMenuForPoint = (
-    variableId: VariableID,
-    pointIndex: number,
-    pos: {left: number, top: number},
-  ) => {
-    this.setState(() => ({
-      pointContextMenuProps: {...pos, variableId, pointIndex}
-    }))
-  }
-
-  showContextMenuForConnector = (
-    variableId: VariableID,
-    pointIndex: number,
-    pos: {left: number, top: number},
-  ) => {
-    this.setState(() => ({
-      connectorContextMenuProps: {...pos, variableId, pointIndex}
-    }))
-  }
-
   changePointPositionBy = (
     variableId: VariableID,
     pointIndex: number,
     change: PointPosition,
   ) => {
+    this.setVariablesShouldReRenderToTrue()
     const {svgExtremums} = this.state
     const extDiff = svgExtremums[1] - svgExtremums[0]
     this.props.dispatch(
@@ -278,6 +264,7 @@ class BoxView extends React.PureComponent<IProps, IState> {
     pointIndex: number,
     change: PointHandles,
   ) => {
+    this.setVariablesShouldReRenderToTrue()
     if (pointIndex === 0) {
       this.props.dispatch(
         reduceStateAction(
@@ -319,6 +306,7 @@ class BoxView extends React.PureComponent<IProps, IState> {
   }
 
   addConnector = (variableId: VariableID, pointIndex: number) => {
+    this.setVariablesShouldReRenderToTrue()
     this.props.dispatch(
       reduceStateAction(
         this.pathToPoint(variableId, pointIndex),
@@ -334,6 +322,7 @@ class BoxView extends React.PureComponent<IProps, IState> {
   }
 
   removeConnector = (variableId: VariableID, pointIndex: number) => {
+    this.setVariablesShouldReRenderToTrue()
     this.props.dispatch(
       reduceStateAction(this.pathToPoint(variableId, pointIndex), point => ({
         ...point,
@@ -350,6 +339,7 @@ class BoxView extends React.PureComponent<IProps, IState> {
     pointIndex: number,
     side: 'left' | 'right',
   ) => {
+    this.setVariablesShouldReRenderToTrue()
     if (side === 'left' && pointIndex !== 0) {
       this.props.dispatch(
         reduceStateAction(
@@ -377,6 +367,36 @@ class BoxView extends React.PureComponent<IProps, IState> {
     )
   }
 
+  showPointValuesEditor = (
+    variableId: VariableID,
+    pointIndex: number,
+    params: $FixMe,
+  ) => {
+    this.setState(() => ({
+      pointValuesEditorProps: {...params, variableId, pointIndex},
+    }))
+  }
+
+  showContextMenuForPoint = (
+    variableId: VariableID,
+    pointIndex: number,
+    pos: {left: number, top: number},
+  ) => {
+    this.setState(() => ({
+      pointContextMenuProps: {...pos, variableId, pointIndex}
+    }))
+  }
+
+  showContextMenuForConnector = (
+    variableId: VariableID,
+    pointIndex: number,
+    pos: {left: number, top: number},
+  ) => {
+    this.setState(() => ({
+      connectorContextMenuProps: {...pos, variableId, pointIndex}
+    }))
+  }
+
   _normalizePoints(points: Point[]): NormalizedPoint[] {
     const {svgExtremums} = this.state
     const extDiff = svgExtremums[1] - svgExtremums[0]
@@ -394,6 +414,15 @@ class BoxView extends React.PureComponent<IProps, IState> {
 
   getSvgSize = () => {
     return {width: this.props.svgWidth, height: this.props.svgHeight - svgPaddingY}
+  }
+
+  getNormalizedVariables = () => {
+    return this.props.variables.map((variable: $FixMe) => (
+      {
+        ...variable,
+        points: this._normalizePoints(variable.points),
+      }
+    ))
   }
 
   render() {
@@ -481,7 +510,24 @@ class BoxView extends React.PureComponent<IProps, IState> {
                           <feGaussianBlur stdDeviation=".7" />
                         </filter>
                       </defs>
-                      {_.sortBy(variables, (variable: $FixMe) => (variable.id === activeVariableId)).map(({id, points}) => (
+                      <Variables
+                        shouldReRenderVariables={this.variablesShouldReRender}
+                        resetReRenderVariablesFlag={this.setVariablesShouldReRenderToFalse}
+                        activeVariableId={activeVariableId}
+                        getVariables={this.getNormalizedVariables}
+                        colors={variablesColors}
+                        getSvgSize={this.getSvgSize}
+                        showPointValuesEditor={this.showPointValuesEditor}
+                        showContextMenuForPoint={this.showContextMenuForPoint}
+                        showContextMenuForConnector={this.showContextMenuForConnector}
+                        changePointPositionBy={this.changePointPositionBy}
+                        changePointHandlesBy={this.changePointHandlesBy}
+                        removePoint={this.removePoint}
+                        addConnector={this.addConnector}
+                        removeConnector={this.removeConnector}
+                        makeHandleHorizontal={this.makeHandleHorizontal}
+                      />
+                      {/* {_.sortBy(variables, (variable: $FixMe) => (variable.id === activeVariableId)).map(({id, points}) => (
                         <Variable
                           key={id}
                           variableId={id}
@@ -498,7 +544,7 @@ class BoxView extends React.PureComponent<IProps, IState> {
                           removeConnector={this.removeConnector}
                           makeHandleHorizontal={this.makeHandleHorizontal}
                         />
-                      ))}
+                      ))} */}
                       </svg>
                     </svg>
                   </div>
