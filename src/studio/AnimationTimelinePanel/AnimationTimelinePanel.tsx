@@ -299,7 +299,7 @@ class Content extends StudioComponent<Props, State> {
     })
   }
 
-  splitVariable(index: number, variableId: string) {
+  splitVariable = (index: number, variableId: string) => {
     const {dispatch} = this.props
     dispatch(
       reduceStateAction(
@@ -490,16 +490,10 @@ class Content extends StudioComponent<Props, State> {
     return -svgWidth * focusLeft / duration
   }
 
-  handleScroll(e: React.WheelEvent<$FixMe>, panelWidth: number) {
-    e.persist()
-    e.preventDefault()
-    this._handleScroll(e, panelWidth)
-  }
-
   _handleScroll(e: React.WheelEvent<$FixMe>, panelWidth: number) {
     const isHorizontal = Math.abs(e.deltaY) < Math.abs(e.deltaX)
     if (e.ctrlKey || (!isHorizontal && e.shiftKey)) {
-      // e.preventDefault()
+      e.preventDefault()
       if (e.nativeEvent.target !== this.variablesContainer) {
         const {focus, duration} = this.state
         const svgWidth = duration / (focus[1] - focus[0]) * panelWidth
@@ -519,9 +513,9 @@ class Content extends StudioComponent<Props, State> {
     }
 
     if (isHorizontal) {
+      e.preventDefault()
       const {focus} = this.state
       const change = e.deltaX / panelWidth * (focus[1] - focus[0])
-      // this.changeFocusTo(focus[0] + change, focus[1] + change)
       this.changeFocusTo(focus[0] + change, focus[1] + change, panelWidth)
     }
   }
@@ -681,7 +675,7 @@ class Content extends StudioComponent<Props, State> {
                     panelObjectBeingDragged &&
                     panelObjectBeingDragged.type === 'modifier',
                 })}
-                onWheel={e => this.handleScroll(e, panelWidth)}
+                onWheel={e => this._handleScroll(e, panelWidth)}
                 onMouseUp={this._handleModifierDrop}
               >
                 <div className={css.timeBar}>

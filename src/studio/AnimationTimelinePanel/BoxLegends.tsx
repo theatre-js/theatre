@@ -71,7 +71,7 @@ class BoxLegends extends React.PureComponent<$FixMe, IState> {
               },
               {
                 label: '$S$plit this Lane',
-                cb: () => this.props.splitVariable(contextMenuProps.variableId),
+                cb: () => this.props.splitVariable(this.props.boxIndex, contextMenuProps.variableId),
                 disabled: variables.length === 1,
                 IconComponent: MdSwapVerticalCircel,
               },

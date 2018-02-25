@@ -120,9 +120,10 @@ class BoxView extends StudioComponent<IProps, IState> {
   }
 
   componentWillReceiveProps(nextProps) {
-    let activeVariableId = this.state.activeVariableId
+    const {activeVariableId} = this.state
     if (nextProps.variableIds.find(id => id === activeVariableId) == null) {
-      activeVariableId = nextProps.variableIds[0]
+      // activeVariableId = nextProps.variableIds[0]
+      this.setState(() => ({activeVariableId: nextProps.variableIds[0]}))
     }
 
     if (nextProps.variableIds !== this.props.variableIds) {
@@ -495,6 +496,7 @@ class BoxView extends StudioComponent<IProps, IState> {
                         activeVariableId={activeVariableId}
                         setActiveVariable={this.setActiveVariable}
                         splitVariable={this.props.splitVariable}
+                        boxIndex={this.props.boxIndex}
                       />
                     </div>
                   </DraggableArea>

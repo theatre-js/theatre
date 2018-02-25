@@ -1,6 +1,6 @@
 .container {
   position: relative;
-  
+
   &.showModifierDropOverlay {
     &:after {
       position: absolute 0;
@@ -45,7 +45,7 @@
   }
 
   100% {
-    transform: scale(1);    
+    transform: scale(1);
     opacity: 1;
   }
 }
