@@ -1,5 +1,5 @@
 import React from 'react'
-import {PointHandles as IHandles} from '$studio/animationTimeline/types'
+import {PointHandles as IHandles} from '$studio/AnimationTimelinePanel/types'
 import {
   PanelActiveModeChannel,
 } from '$src/studio/workspace/components/Panel/Panel'
@@ -31,7 +31,7 @@ class Connector extends React.PureComponent<IProps, IState> {
     }
   }
 
-  contextMenuHandler = e => {
+  contextMenuHandler = (e: $FixMe) => {
     e.stopPropagation()
     e.preventDefault()
     const {clientX, clientY} = e

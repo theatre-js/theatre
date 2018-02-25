@@ -53,6 +53,7 @@ type IState = {
   activeVariableId: string
   pointValuesEditorProps: undefined | null | Object
   variableIdToColorIndexMap: {[variableId: string]: number}
+  variablesShouldReRender: boolean
 }
 const resetExtremums = (pathToVariable: string[]) => {
   return reduceStateAction(pathToVariable, variable => {
@@ -96,7 +97,6 @@ export const colors = [
 
 class BoxView extends StudioComponent<IProps, IState> {
   svgArea: HTMLElement
-  variablesShouldReRender: boolean
 
   constructor(props: IProps, context: $IntentionalAny) {
     super(props, context)
@@ -105,9 +105,9 @@ class BoxView extends StudioComponent<IProps, IState> {
       svgExtremums: this._getSvgExtremums(props),
       pointValuesEditorProps: null,
       activeVariableId: props.variableIds[0],
-      variableIdToColorIndexMap: this._getVariableIdToColorIndexMap(props.variables)
+      variableIdToColorIndexMap: this._getVariableIdToColorIndexMap(props.variables),
+      variablesShouldReRender: false,
     }
-    this.variablesShouldReRender = false
   }
 
   componentDidMount() {
@@ -152,11 +152,11 @@ class BoxView extends StudioComponent<IProps, IState> {
   }
 
   setVariablesShouldReRenderToFalse = () => {
-    this.variablesShouldReRender = false
+    this.setState(() => ({variablesShouldReRender: false}))
   }
 
   setVariablesShouldReRenderToTrue = () => {
-    this.variablesShouldReRender = true
+    this.setState(() => ({variablesShouldReRender: true}))
   }
 
   titleClickHandler(e: React.MouseEvent<$FixMe>, variableId: string) {
@@ -324,7 +324,7 @@ class BoxView extends StudioComponent<IProps, IState> {
   }
 
   addConnector = (variableId: VariableID, pointIndex: number) => {
-    this.setVariablesShouldReRenderToTrue()
+    this._resetExtremumsOfVariable(variableId)
     this.props.dispatch(
       reduceStateAction(
         this.pathToPoint(variableId, pointIndex),
@@ -340,7 +340,7 @@ class BoxView extends StudioComponent<IProps, IState> {
   }
 
   removeConnector = (variableId: VariableID, pointIndex: number) => {
-    this.setVariablesShouldReRenderToTrue()
+    this._resetExtremumsOfVariable(variableId)
     this.props.dispatch(
       reduceStateAction(this.pathToPoint(variableId, pointIndex), point => ({
         ...point,
@@ -357,6 +357,7 @@ class BoxView extends StudioComponent<IProps, IState> {
     pointIndex: number,
     side: 'left' | 'right',
   ) => {
+    this._resetExtremumsOfVariable(variableId)
     if (side === 'left' && pointIndex !== 0) {
       this.props.dispatch(
         reduceStateAction(
@@ -379,8 +380,6 @@ class BoxView extends StudioComponent<IProps, IState> {
         ),
       )
     }
-
-    this._resetExtremumsOfVariable(variableId)
   }
 
   showPointValuesEditor = (
@@ -482,7 +481,8 @@ class BoxView extends StudioComponent<IProps, IState> {
                     // withShift={true}
                     shouldRegisterEvents={activeMode === MODE_SHIFT}
                     onDragStart={onDragStart}
-                    onDrag={(_, dy) => onDrag(dy)}
+                    // onDrag={(_, dy) => onDrag(dy)}
+                    onDrag={onDrag}
                     onDragEnd={onDragEnd}
                   >
                     <div className={css.boxLegends}>
@@ -509,7 +509,6 @@ class BoxView extends StudioComponent<IProps, IState> {
                         if (svg != null) this.svgArea = svg
                       }}
                       onMouseDown={(e: $FixMe) => this.addPoint(e, activeMode)}
-                      // transform={`translate(${this.props.scrollLeft} 0)`}
                     >
                       <svg
                         viewBox={`0 0 ${svgWidth} ${svgHeight - svgPaddingY}`}
@@ -528,7 +527,7 @@ class BoxView extends StudioComponent<IProps, IState> {
                           </filter>
                         </defs>
                         <Variables
-                          shouldReRenderVariables={this.variablesShouldReRender}
+                          shouldReRenderVariables={this.state.variablesShouldReRender}
                           resetReRenderVariablesFlag={this.setVariablesShouldReRenderToFalse}
                           activeVariableId={activeVariableId}
                           getVariables={this.getNormalizedVariables}

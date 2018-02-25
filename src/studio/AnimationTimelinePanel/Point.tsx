@@ -12,7 +12,7 @@ import {
   MODE_H,
   MODE_CMD,
 } from '$studio/workspace/components/StudioUI/StudioUI'
-import {PointHandles as IHandles} from '$studio/animationTimeline/types'
+import {PointHandles as IHandles} from '$studio/AnimationTimelinePanel/types'
 
 interface IProps {
   color: $FixMe
@@ -48,9 +48,9 @@ interface IState {
 class Point extends React.PureComponent<IProps, IState> {
   pointClickRect: SVGRectElement | null
   activeMode: string
-  svgSize: {width: number, height: number}
-  leftHandleNormalizers: {xNormalizer: number, yNormalizer: number}
-  rightHandleNormalizers: {xNormalizer: number, yNormalizer: number}
+  svgSize: {width: number; height: number}
+  leftHandleNormalizers: {xNormalizer: number; yNormalizer: number}
+  rightHandleNormalizers: {xNormalizer: number; yNormalizer: number}
   valueForm: SingleInputForm
   timeForm: SingleInputForm
 
@@ -99,10 +99,7 @@ class Point extends React.PureComponent<IProps, IState> {
     }
   }
 
-  handleClickHandler = (
-    e: $FixMe,
-    side: 'left' | 'right',
-  ) => {
+  handleClickHandler = (e: $FixMe, side: 'left' | 'right') => {
     e.preventDefault()
     e.stopPropagation()
     if (this.activeMode === MODE_H) {
@@ -115,19 +112,19 @@ class Point extends React.PureComponent<IProps, IState> {
     this.svgSize = this.props.getSvgSize()
   }
 
-  pointDragHandler = (dx: number, dy: number, e: SyntheticMouseEvent<>) => {
+  pointDragHandler = (dx: number, dy: number) => {
     const {width, height} = this.svgSize
     let x = dx / width * 100
     // if (e.altKey) y = this.state.pointMove[1]
     // if (e.shiftKey) x = this.state.pointMove[0]
 
     const {pointTime, prevPointTime, nextPointTime} = this.props
-    const limitLeft = prevPointTime == null ? 0 :prevPointTime
+    const limitLeft = prevPointTime == null ? 0 : prevPointTime
     const limitRight = nextPointTime == null ? 100 : nextPointTime
 
     const newT = pointTime + x
-    if (newT >= limitRight) x = limitRight - pointTime - (100 / width)
-    if (newT <= limitLeft) x = limitLeft - pointTime + (100 / width)
+    if (newT >= limitRight) x = limitRight - pointTime - 100 / width
+    if (newT <= limitLeft) x = limitLeft - pointTime + 100 / width
 
     this.setState(() => ({
       isMoving: true,
@@ -211,9 +208,16 @@ class Point extends React.PureComponent<IProps, IState> {
 
   _renderTransformedPoint() {
     const {
-      pointTime, pointValue, pointHandles, pointConnected,
-      prevPointTime, prevPointValue, prevPointHandles, prevPointConnected,
-      nextPointTime, nextPointValue,
+      pointTime,
+      pointValue,
+      pointHandles,
+      pointConnected,
+      prevPointTime,
+      prevPointValue,
+      prevPointHandles,
+      prevPointConnected,
+      nextPointTime,
+      nextPointValue,
     } = this.props
     const {pointMove, handlesMove} = this.state
 
@@ -221,28 +225,33 @@ class Point extends React.PureComponent<IProps, IState> {
     const newValue = pointValue + pointMove[1]
     const newHandles = pointHandles
       .slice(0, 2)
-      .map((handle: number, index: number) => (handle + handlesMove[index + 2]))
-      .concat(pointHandles.slice(2))
+      .map((handle: number, index: number) => handle + handlesMove[index + 2])
+      .concat(pointHandles.slice(2)) as IHandles
 
-    const newPrevPointHandles = prevPointHandles
-      .slice(0, 2)
-      .concat(
-        prevPointHandles
-          .slice(2)
-          .map((handle: number, index: number) => handle + handlesMove[index]))
+    // @ts-ignore
+    const newPrevPointHandles = prevPointHandles.slice(0, 2).concat(
+      // @ts-ignore
+      prevPointHandles
+        .slice(2)
+        .map((handle: number, index: number) => handle + handlesMove[index]),
+    ) as IHandles
 
     return (
       <g opacity={0.5}>
-        {pointConnected && nextPointValue && nextPointTime && (
+        {pointConnected &&
+          nextPointValue &&
+          nextPointTime && (
             <Connector
               leftPointTime={newTime}
               leftPointValue={newValue}
               rightPointTime={nextPointTime}
               rightPointValue={nextPointValue}
               handles={newHandles}
-              />
+            />
           )}
-        {prevPointConnected && prevPointTime && prevPointValue && (
+        {prevPointConnected &&
+          prevPointTime &&
+          prevPointValue && (
             <Connector
               leftPointTime={prevPointTime}
               leftPointValue={prevPointValue}
@@ -275,9 +284,16 @@ class Point extends React.PureComponent<IProps, IState> {
   render() {
     const {
       color,
-      pointTime, pointValue, pointHandles, pointConnected,
-      prevPointTime, prevPointValue, prevPointHandles, prevPointConnected,
-      nextPointTime, nextPointValue,
+      pointTime,
+      pointValue,
+      pointHandles,
+      pointConnected,
+      prevPointTime,
+      prevPointValue,
+      prevPointHandles,
+      prevPointConnected,
+      nextPointTime,
+      nextPointValue,
     } = this.props
     const handles = (prevPointHandles != null
       ? prevPointHandles.slice(2)
@@ -286,34 +302,39 @@ class Point extends React.PureComponent<IProps, IState> {
     const {isMoving, handlesMove} = this.state
 
     const renderLeftHandle =
-      prevPointValue != null && prevPointValue !== pointValue && prevPointConnected
+      prevPointValue != null &&
+      prevPointValue !== pointValue &&
+      prevPointConnected
     const renderRightHandle =
       nextPointValue != null && nextPointValue !== pointValue && pointConnected
 
     const x = `${pointTime}%`
     const y = `${pointValue}%`
     const leftHandle = renderLeftHandle && [
-      // @ts-ignore
-      `${pointTime + (handles[0] + handlesMove[0]) * (prevPointTime - pointTime)}%`,
-      // @ts-ignore
-      `${pointValue + (handles[1] + handlesMove[1]) * (prevPointValue - pointValue)}%`,
+      `${pointTime +
+        // @ts-ignore
+        (handles[0] + handlesMove[0]) * (prevPointTime - pointTime)}%`,
+        `${pointValue +
+        // @ts-ignore
+        (handles[1] + handlesMove[1]) * (prevPointValue - pointValue)}%`,
     ]
     const rightHandle = renderRightHandle && [
-      // @ts-ignore
-      `${pointTime + (handles[2] + handlesMove[2]) * (nextPointTime - pointTime)}%`,
-      // @ts-ignore
-      `${pointValue + (handles[3] + handlesMove[3]) * (nextPointValue - pointValue)}%`,
+      `${pointTime +
+        // @ts-ignore
+        (handles[2] + handlesMove[2]) * (nextPointTime - pointTime)}%`,
+        `${pointValue +
+        // @ts-ignore
+        (handles[3] + handlesMove[3]) * (nextPointValue - pointValue)}%`,
     ]
 
-    return ([
-      <Subscriber key='subscriber' channel={PanelActiveModeChannel}>
+    return [
+      <Subscriber key="subscriber" channel={PanelActiveModeChannel}>
         {({activeMode}: {activeMode: string}) => {
           this._setActiveMode(activeMode)
           return null
         }}
-      </Subscriber>
-      ,
-      <g key='point'>
+      </Subscriber>,
+      <g key="point">
         {isMoving && this._renderTransformedPoint()}
         {renderLeftHandle && (
           <line
@@ -358,21 +379,16 @@ class Point extends React.PureComponent<IProps, IState> {
               onContextMenu={this.contextMenuHandler}
               onClick={this.pointClickHandler}
               className={css.pointClickRect}
-              ref={c => this.pointClickRect = c}
+              ref={c => (this.pointClickRect = c)}
             />
-            <circle
-              cx={x}
-              cy={y}
-              r={6}
-              className={css.pointGlow}
-            />
+            <circle cx={x} cy={y} r={6} className={css.pointGlow} />
             <circle
               strokeWidth="2"
               cx={x}
               cy={y}
               r={3.2}
               className={css.pointStroke}
-              vectorEffect='non-scaling-stroke'
+              vectorEffect="non-scaling-stroke"
             />
             <circle
               fill="#1C2226"
@@ -400,10 +416,9 @@ class Point extends React.PureComponent<IProps, IState> {
                 y={leftHandle[1]}
                 fill="transparent"
                 stroke="transparent"
-                transform={`translate(${handlesMove[0] - 6} ${handlesMove[1] - 6})`}
-                onClick={e =>
-                  this.handleClickHandler(e, 'left')
-                }
+                transform={`translate(${handlesMove[0] - 6} ${handlesMove[1] -
+                  6})`}
+                onClick={e => this.handleClickHandler(e, 'left')}
                 className={css.handleClickRect}
               />
               <circle
@@ -436,10 +451,9 @@ class Point extends React.PureComponent<IProps, IState> {
                 y={rightHandle[1]}
                 fill="transparent"
                 stroke="transparent"
-                onClick={e =>
-                  this.handleClickHandler(e, 'right')
-                }
-                transform={`translate(${handlesMove[2] - 6} ${handlesMove[3] - 6})`}
+                onClick={e => this.handleClickHandler(e, 'right')}
+                transform={`translate(${handlesMove[2] - 6} ${handlesMove[3] -
+                  6})`}
                 className={css.handleClickRect}
               />
               <circle
@@ -456,8 +470,8 @@ class Point extends React.PureComponent<IProps, IState> {
             </g>
           </DraggableArea>
         )}
-      </g>
-    ])
+      </g>,
+    ]
   }
 }
 

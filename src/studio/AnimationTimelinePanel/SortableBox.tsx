@@ -46,7 +46,8 @@ class VariableBox extends React.PureComponent<Props, State> {
     this.props.onMoveStart(this.props.boxIndex)
   }
 
-  onMove = (_:number, dy: number) => {
+  onMove = (_: number, dy: number) => {
+    console.log(dy)
     this.setState(() => ({
       moveY: dy,
     }))
