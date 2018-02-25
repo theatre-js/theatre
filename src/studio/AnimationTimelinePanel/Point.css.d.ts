@@ -1,5 +1,4 @@
 export const pointClickRect: string;
-export const highlightRedOnHover: string;
 export const pointGlow: string;
 export const pointStroke: string;
 export const pointCenter: string;

@@ -68,21 +68,37 @@ class Variable extends React.PureComponent<Props, {}> {
               {point.interpolationDescriptor.connected &&
                 nextPoint != null && (
                   <Connector
-                    pointIndex={index}
-                    leftPoint={point}
-                    rightPoint={nextPoint}
+                    leftPointIndex={index}
+                    leftPointTime={point.time}
+                    leftPointValue={point.value}
+                    rightPointTime={nextPoint.time}
+                    rightPointValue={nextPoint.value}
+                    handles={point.interpolationDescriptor.handles}
                     removeConnector={this.removeConnector}
                     showContextMenu={this.showContextMenuForConnector}
                   />
                 )}
               <Point
                 color={color}
-                key={index}
-                prevPoint={prevPoint}
-                nextPoint={nextPoint}
-                point={point}
-                getSvgSize={this.props.getSvgSize}
+                key={`${point._value}${point._t}`}
+                {...(prevPoint ? {
+                  prevPointTime: prevPoint.time,
+                  prevPointValue: prevPoint.value,
+                  prevPointHandles: prevPoint.interpolationDescriptor.handles,
+                  prevPointConnected: prevPoint.interpolationDescriptor.connected,
+                } : {})}
+                {...(nextPoint ? {
+                  nextPointTime: nextPoint.time,
+                  nextPointValue: nextPoint.value,
+                } : {})}
+                pointTime={point.time}
+                pointValue={point.value}
+                pointHandles={point.interpolationDescriptor.handles}
+                pointConnected={point.interpolationDescriptor.connected}
+                pointAbsoluteTime={point._t}
+                pointAbsoluteValue={point._value}
                 pointIndex={index}
+                getSvgSize={this.props.getSvgSize}
                 showPointValuesEditor={this.showPointValuesEditor}
                 showContextMenu={this.showContextMenuForPoint}
                 changePointPositionBy={this.changePointPositionBy}

@@ -84,6 +84,7 @@ class Content extends StudioComponent<Props, State> {
       boundaries: this._getBoundaries(boxes, layout),
       duration: 20000,
       focus: [0, 8000],
+      resizeY: {},
       // currentTime: 0,
       isSeekerBeingDragged: false,
       scrollLeft: 0,
@@ -178,7 +179,7 @@ class Content extends StudioComponent<Props, State> {
     )
   }
 
-  onBoxStartMove(index: number) {
+  onBoxStartMove = (index: number) => {
     document.body.classList.add('globalMoveCursor')
 
     this.setState((state, props) => {
@@ -254,7 +255,7 @@ class Content extends StudioComponent<Props, State> {
     }))
   }
 
-  onBoxEndMove() {
+  onBoxEndMove = () => {
     document.body.classList.remove('globalMoveCursor')
     if (this.state.boxBeingDragged == null) return
     const {index, moveTo, mergeWith} = this.state.boxBeingDragged
@@ -337,8 +338,18 @@ class Content extends StudioComponent<Props, State> {
     )
   }
 
-  onBoxResize(boxId: BoxID, newSize) {
+  onBoxResize = (boxId, dy) => {
+    this.setState((state) => ({
+      resizeY: {
+        ...state.resizeY,
+        [boxId]: dy,
+      }
+    }))
+  }
+
+  onBoxResizeEnd = (boxId: BoxID, newSize) => {
     const {dispatch} = this.props
+    this.setState(() => ({resizeY: {}}))
     dispatch(
       reduceStateAction(
         [...this.props.pathToTimeline, 'boxes', boxId, 'height'],
@@ -519,11 +530,10 @@ class Content extends StudioComponent<Props, State> {
     e: $FixMe,
     focus: [number, number],
     panelWidth: number,
-    offsetLeft: number,
   ) => {
     this._addGlobalCursorRule()
     const newTime = this.xToFocusedTime(
-      e.nativeEvent.layerX - offsetLeft,
+      e.nativeEvent.layerX,
       focus,
       panelWidth,
     )
@@ -651,9 +661,6 @@ class Content extends StudioComponent<Props, State> {
       // currentTTime: currentTime,
     } = this.state
     const {boxes, layout, panelObjectBeingDragged} = this.props
-    // const offsetLeft =
-    //   this.variablesContainer != null ? this.variablesContainer.scrollLeft : 0
-    const offsetLeft = this.state.scrollLeft
     return (
       <Panel
       headerLess={true}
@@ -716,7 +723,6 @@ class Content extends StudioComponent<Props, State> {
                       e,
                       focus,
                       panelWidth,
-                      offsetLeft,
                     )
                   }
                   onDrag={(dx: number) =>
@@ -749,21 +755,26 @@ class Content extends StudioComponent<Props, State> {
                         boxBeingDragged != null &&
                         boxBeingDragged.mergeWith !== null &&
                         boxBeingDragged.mergeWith === index
+                      const height = box.height + (this.state.resizeY[id] || 0)
                       return (
                         <SortableBox
                           key={id}
-                          height={box.height}
+                          height={height}
                           translateY={boxTranslateY}
                           // showMergeOverlay={boxShowMergeOverlay}
-                          onMoveStart={() => this.onBoxStartMove(index)}
-                          onMoveEnd={() => this.onBoxEndMove()}
+                          boxIndex={index}
+                          boxId={id}
+                          onMoveStart={this.onBoxStartMove}
+                          onMoveEnd={this.onBoxEndMove}
                           onMove={this.onBoxMove}
-                          onResize={newSize => this.onBoxResize(id, newSize)}
+                          // onResize={newSize => this.onBoxResize = (id, newSize =>)}
+                          onResize={this.onBoxResize}
+                          onResizeEnd={this.onBoxResizeEnd}
                         >
                           {
                             <BoxView
                               tempIncludeTimeGrid={index === 0}
-                              svgHeight={box.height}
+                              svgHeight={height}
                               svgWidth={svgWidth}
                               variableIds={box.variables}
                               boxIndex={index}

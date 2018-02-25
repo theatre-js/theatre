@@ -36,7 +36,7 @@ export type BoxesObject = {[id: BoxID]: BoxObject}
 export type TimelineObject = {
   layout: LayoutArray
   boxes: BoxesObject
-  variables: Variables  
+  variables: Variables
 }
 
 export type VariableObject = {

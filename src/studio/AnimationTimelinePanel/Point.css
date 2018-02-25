@@ -2,19 +2,19 @@
   cursor: pointer;
 }
 
-.pointClickRect:not(.highlightRedOnHover):hover ~ .pointGlow,
-.pointClickRect:not(.highlightRedOnHover):active ~ .pointGlow {
+.pointClickRect:not(:global(.point-highlightRedOnHover)):hover ~ .pointGlow,
+.pointClickRect:not(:global(.point-highlightRedOnHover)):active ~ .pointGlow {
   filter: url('#glow');
   opacity: 1;
 }
 
-.pointClickRect:not(.highlightRedOnHover):hover ~ .pointStroke,
-.pointClickRect:not(.highlightRedOnHover):active ~ .pointStroke {
+.pointClickRect:not(:global(.point-highlightRedOnHover)):hover ~ .pointStroke,
+.pointClickRect:not(:global(.point-highlightRedOnHover)):active ~ .pointStroke {
   stroke-width: 4px;
 }
 
-.pointClickRect.highlightRedOnHover:hover ~ .pointStroke,
-.pointClickRect.highlightRedOnHover:active ~ .pointStroke {
+.pointClickRect:global(.point-highlightRedOnHover):hover ~ .pointStroke,
+.pointClickRect:global(.point-highlightRedOnHover):active ~ .pointStroke {
   stroke: red;
 }
 

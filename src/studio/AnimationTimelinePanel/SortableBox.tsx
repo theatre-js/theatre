@@ -43,7 +43,7 @@ class VariableBox extends React.PureComponent<Props, State> {
     this.setState(() => ({
       isMoving: true,
     }))
-    this.props.onMoveStart()
+    this.props.onMoveStart(this.props.boxIndex)
   }
 
   onMove = (_:number, dy: number) => {
@@ -61,16 +61,19 @@ class VariableBox extends React.PureComponent<Props, State> {
     this.props.onMoveEnd()
   }
 
-  onResize = (dy: number) => {
-    const ylow = 60 - this.props.height
-    this.setState(() => ({
-      resizeY: dy > ylow ? dy : ylow,
-    }))
+  onResize = (_:number, dy: number) => {
+    const ylow = 40 - this.props.height
+    // const ylow = -this.props.height
+    // this.setState(() => ({
+    //   resizeY: dy > ylow ? dy : ylow,
+    // }))
+    const resizeY = dy > ylow ? dy : ylow
+    this.props.onResize(this.props.boxId, resizeY)
   }
 
   onResizeEnd = () => {
     const newHeight = this.props.height + this.state.resizeY
-    this.props.onResize(newHeight)
+    this.props.onResizeEnd(this.props.boxId, newHeight)
     this.setState(() => ({
       resizeY: 0,
     }))
@@ -116,7 +119,7 @@ class VariableBox extends React.PureComponent<Props, State> {
           )} */}
         </div>
         <DraggableArea
-          onDrag={(_, dy) => this.onResize(dy)}
+          onDrag={this.onResize}
           onDragEnd={this.onResizeEnd}
         >
           <div className={css.resizeHandle} />

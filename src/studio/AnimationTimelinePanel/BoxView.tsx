@@ -498,7 +498,9 @@ class BoxView extends StudioComponent<IProps, IState> {
                       />
                     </div>
                   </DraggableArea>
-                  <div className={css.svgArea}>
+                  <div
+                    className={css.svgArea}
+                    style={{transform: `translate3d(${this.props.scrollLeft}px, 0, 0)`}}>
                     <svg
                       viewBox={`0 0 ${svgWidth} ${svgHeight}`}
                       height={svgHeight}
@@ -507,7 +509,7 @@ class BoxView extends StudioComponent<IProps, IState> {
                         if (svg != null) this.svgArea = svg
                       }}
                       onMouseDown={(e: $FixMe) => this.addPoint(e, activeMode)}
-                      transform={`translate(${this.props.scrollLeft} 0)`}
+                      // transform={`translate(${this.props.scrollLeft} 0)`}
                     >
                       <svg
                         viewBox={`0 0 ${svgWidth} ${svgHeight - svgPaddingY}`}

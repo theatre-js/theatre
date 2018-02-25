@@ -1,8 +1,8 @@
-.highlightRedOnHover:hover ~ .connectorPath {
+:global(.connector-highlightRedOnHover):hover ~ .connectorPath {
   stroke: red;
 }
 
-.highlightRedOnHover:hover {
+:global(.connector-highlightRedOnHover):hover {
   cursor: pointer;
 }
 
