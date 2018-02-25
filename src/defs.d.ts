@@ -22,7 +22,7 @@ type mixed = object | number | string | boolean | symbol | undefined | null
 type CommonEnvironmentVariables = {
   // The hash of the last git commit the moment webpack last started running
   commitHash: string
-  launcherFrontend: {
+  lf: {
     statePersistencePrefix: string
   }
   launcherBackend: {}
@@ -37,7 +37,7 @@ type CommonEnvironmentVariables = {
 type DevSpecificEnvironmentVariables = {
   NODE_ENV: 'development'
   devSpecific: {
-    launcherFrontend: {
+    lf: {
       devServerPort: number
     }
     studio: {

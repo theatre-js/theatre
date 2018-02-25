@@ -11,19 +11,19 @@ import unrecogniseProject from '$lb/projects/lfEndpoints/unrecogniseProject.call
 import SingleInputForm from '$lf/common/components/SingleInputForm'
 import ErrorLogger from '$lf/common/components/ErrorLogger'
 import errorMessages from '$lf/projects/errors'
-import { connect } from 'react-redux';
+import {connect} from 'react-redux'
 
 const css: $FixMe = _css
 
 type Props = WithRunSagaProps & {
-  projects: Object,
+  projects: Object
 }
 
 type State = {
-  isCreatingNewProject: boolean,
-  isDropzoneActive: boolean,
-  lastDroppedPath: undefined | null | string,
-  error: undefined | null | string,
+  isCreatingNewProject: boolean
+  isDropzoneActive: boolean
+  lastDroppedPath: undefined | null | string
+  error: undefined | null | string
 }
 
 class ProjectsPage extends React.Component<Props, State> {
@@ -92,9 +92,12 @@ class ProjectsPage extends React.Component<Props, State> {
     })
     if (isProjectResult.type === 'ok') {
       if (isProjectResult.isIt) {
-        const recogniseResult: $FixMe = await this.props.runSaga(recogniseProject, {
-          filePath: isProjectResult.filePath,
-        })
+        const recogniseResult: $FixMe = await this.props.runSaga(
+          recogniseProject,
+          {
+            filePath: isProjectResult.filePath,
+          },
+        )
         if (recogniseResult.type === 'error') {
           this.setState(() => ({
             // @ts-ignore @todo
@@ -134,9 +137,12 @@ class ProjectsPage extends React.Component<Props, State> {
   }
 
   async forgetProject(path: string) {
-    const unrecogniseResult: $FixMe = await this.props.runSaga(unrecogniseProject, {
-      filePath: path,
-    })
+    const unrecogniseResult: $FixMe = await this.props.runSaga(
+      unrecogniseProject,
+      {
+        filePath: path,
+      },
+    )
     if (unrecogniseResult.type === 'error') {
       this.setState(() => ({
         // @ts-ignore @todo

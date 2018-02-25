@@ -1,4 +1,4 @@
-.centered-text {
+.centeredText {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -10,7 +10,7 @@
 }
 
 .title {
-  composes: centered-text;
+  composes: centeredText;
   width: 100%;
   color: #555;
   font-weight: 100;
@@ -57,7 +57,7 @@
 }
 
 .dropHint {
-  composes: centered-text;
+  composes: centeredText;
   position: relative;
   width: 100%;
   min-height: 30px;

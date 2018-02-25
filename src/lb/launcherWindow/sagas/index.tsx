@@ -16,7 +16,7 @@ function createWindow() {
   if (process.env.NODE_ENV === 'development') {
     win.loadURL(
       `http://localhost:${
-        process.env.devSpecific.launcherFrontend.devServerPort
+        process.env.devSpecific.lf.devServerPort
       }/`,
     )
   } else {
@@ -59,7 +59,7 @@ function* sendStateUpdatesToWindow(
   })
 }
 
-export default function* laucnherWindowSaga(): Generator_<
+export default function* launcherWindowSaga(): Generator_<
   $FixMe,
   $FixMe,
   $FixMe

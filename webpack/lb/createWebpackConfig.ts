@@ -20,9 +20,11 @@ module.exports = (env: Envs) => {
     withServerSideHotLoading: true,
   })
 
-  return immer(parts.config, c => {
+  const customized = immer(parts.config, c => {
     c.target = 'electron-main'
     c.recordsPath = path.join(parts.bundlesDir, '.temp/records')
+    c.output.libraryTarget = 'commonjs2'
+    c.output.publicPath = './bundles/lb/'
     c.node = {
       __dirname: true,
       __filename: true,
@@ -36,4 +38,6 @@ module.exports = (env: Envs) => {
     }
     c.plugins.push(new webpack.HotModuleReplacementPlugin())
   })
+
+  return customized
 }

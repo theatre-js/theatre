@@ -18,7 +18,7 @@ export const aliases: {[alias: string]: string} = {
   $shared: path.join(context, './src/shared/'),
 }
 
-type PackageName = 'studio' | 'playground' | 'examples' | 'lb'
+type PackageName = 'studio' | 'playground' | 'examples' | 'lb' | 'lf'
 
 export type Envs = 'development' | 'production'
 
