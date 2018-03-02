@@ -108,3 +108,7 @@
     cursor: ew-resize !important;
   }
 }
+
+body {
+  overscroll-behavior: none
+}
