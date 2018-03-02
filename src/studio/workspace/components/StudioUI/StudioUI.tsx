@@ -103,13 +103,13 @@ export class StudioUI extends StudioComponent<IProps, State> {
     document.addEventListener('keyup', this._resetActiveMode)
   }
 
-  componentWillUnmount() {
-    window.removeEventListener('focus', this._resetActiveMode)
-    document.removeEventListener('mouseenter', this._resetActiveMode)
-    window.removeEventListener('resize', this._handleResize)
-    document.removeEventListener('keydown', this._handleKeyDown)
-    document.removeEventListener('keyup', this._resetActiveMode)
-  }
+  // componentWillUnmount() {
+  //   window.removeEventListener('focus', this._resetActiveMode)
+  //   document.removeEventListener('mouseenter', this._resetActiveMode)
+  //   window.removeEventListener('resize', this._handleResize)
+  //   document.removeEventListener('keydown', this._handleKeyDown)
+  //   document.removeEventListener('keyup', this._resetActiveMode)
+  // }
 
   _handleKeyPress = (e: KeyboardEvent) => {
     if (e.keyCode === 96) {

@@ -75,8 +75,6 @@ class Content extends StudioComponent<Props, State> {
     super(props, context)
 
     const {boxes, layout} = props
-    // this._handleScroll = throttle(this._handleScroll.bind(this), 200)
-    // this.changeFocusTo = _.throttle(this.changeFocusTo, 30)
 
     this.state = {
       boxBeingDragged: null,
@@ -397,7 +395,6 @@ class Content extends StudioComponent<Props, State> {
     }
     if (newFocusRight - newFocusLeft < 1) return
 
-    // this._scrollVariables(duration, newFocusLeft, newFocusRight, panelWidth)
     this.setState(() => ({
       focus: [newFocusLeft, newFocusRight],
       scrollLeft: this._getScrollLeft(duration, newFocusLeft, newFocusRight, panelWidth)
@@ -419,27 +416,11 @@ class Content extends StudioComponent<Props, State> {
       newFocusRight = duration
     }
 
-    // this._scrollVariables(duration, newFocusLeft, newFocusRight, panelWidth)
-    // this.setState(() => ({focus: [newFocusLeft, newFocusRight]}))
     this.setState(() => ({
       focus: [newFocusLeft, newFocusRight],
       scrollLeft: this._getScrollLeft(duration, newFocusLeft, newFocusRight, panelWidth)
     }))
   }
-
-  // changeFocusTo = (newFocusLeft: number, newFocusRight: number) => {
-  //   const {focus, duration} = this.state
-  //   if (newFocusLeft < 0) {
-  //     newFocusLeft = 0
-  //     newFocusRight = focus[1] - focus[0]
-  //   }
-  //   if (newFocusRight > duration) {
-  //     newFocusLeft = duration - (focus[1] - focus[0])
-  //     newFocusRight = duration
-  //   }
-
-  //   this.setState(() => ({focus: [newFocusLeft, newFocusRight]}))
-  // }
 
   changeCurrentTimeTo = (currentTTime: number) => {
     if (this.state.timeBox) {
@@ -480,11 +461,6 @@ class Content extends StudioComponent<Props, State> {
     }
   }
 
-  // _scrollVariables(duration: number, focusLeft: number, focusRight: number, panelWidth: number) {
-  //   // this.variablesContainer.scrollLeft = svgWidth * newFocusLeft / duration
-  //   this.variablesContainer.style.transform = `translateX(${-svgWidth * focusLeft / duration}px)`
-  // }
-
   _getScrollLeft(duration: number, focusLeft: number, focusRight: number, panelWidth: number) {
     const svgWidth = duration / (focusRight - focusLeft) * panelWidth
     return -svgWidth * focusLeft / duration
@@ -492,9 +468,10 @@ class Content extends StudioComponent<Props, State> {
 
   _handleScroll(e: React.WheelEvent<$FixMe>, panelWidth: number) {
     const isHorizontal = Math.abs(e.deltaY) < Math.abs(e.deltaX)
-    if (e.ctrlKey || (!isHorizontal && e.shiftKey)) {
-      e.preventDefault()
+
+    if ((e.ctrlKey) || (e.shiftKey && !isHorizontal)) {
       if (e.nativeEvent.target !== this.variablesContainer) {
+        e.preventDefault()
         const {focus, duration} = this.state
         const svgWidth = duration / (focus[1] - focus[0]) * panelWidth
         const focusLeftX = focus[0] / duration * svgWidth
