@@ -11,7 +11,7 @@
     "prettify": "prettier --write \"src/**/*.tsx\"",
     "prepush": "run-p prettify-and-lint test",
     "lb:webpack:dev": "webpack --progress --config webpack/lb/development.js --watch",
-    "lb:dev": "nodemon -e jade --exec \"electron\" ./bundles/lb/index.js",
+    "lb:dev": "nodemon -e jade --watch ./bundles/lb/index.js --exec \"electron\" ./bundles/lb/index.js",
     "lb:run": "electron ./bundles/lb/index.js",
     "lf:webpack:dev": "webpack-dev-server --progress --config webpack/lf/development.js",
     "studio:webpack:dev": "webpack-dev-server --progress --config webpack/studio/development.js",

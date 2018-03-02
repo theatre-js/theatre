@@ -1,6 +1,9 @@
 import 'babel-polyfill'
 import initialConfigureStore from '$lb/bootstrap/configureStore'
 // import 'source-map-support/register'
+import electron from 'electron'
+
+// console.log(electron.app.getPath('userData'))
 
 let configureStore = initialConfigureStore
 let lastStoreSagaTask = configureStore().runRootSaga()

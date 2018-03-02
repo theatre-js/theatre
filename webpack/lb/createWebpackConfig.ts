@@ -17,12 +17,12 @@ module.exports = (env: Envs) => {
     entries: {
       index: ['./src/lb/index.tsx'],
     },
-    withServerSideHotLoading: true,
+    withServerSideHotLoading: false,
   })
 
   const customized = immer(parts.config, c => {
     c.target = 'electron-main'
-    c.recordsPath = path.join(parts.bundlesDir, '.temp/records')
+    // c.recordsPath = path.join(parts.bundlesDir, '.temp/records')
     c.output.libraryTarget = 'commonjs2'
     c.output.publicPath = './bundles/lb/'
     c.node = {
@@ -36,7 +36,7 @@ module.exports = (env: Envs) => {
         callback(null, !!request.match(/^[a-z\-@0-9]+[^!]*$/))
       }
     }
-    c.plugins.push(new webpack.HotModuleReplacementPlugin())
+    // c.plugins.push(new webpack.HotModuleReplacementPlugin())
   })
 
   return customized
