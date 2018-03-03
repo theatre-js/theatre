@@ -14,9 +14,9 @@ const two = {
           __descriptorType: 'TimelineDescriptor',
           id: 'defaultTimeline',
           variables: {
-            'b4edb7c6-68c7-46c1-9310-f481a85e25e1': {
+            'translationY': {
               __descriptorType: 'TimelineVarDescriptor',
-              id: 'b4edb7c6-68c7-46c1-9310-f481a85e25e1',
+              id: 'translationY',
               component: 'div.ball',
               property: 'translationY',
               extremums: [-100, 0],
@@ -43,9 +43,9 @@ const two = {
                 },
               ],
             },
-            'b4edb7c6-68c7-46c1-9310-f481a85e25e2': {
+            'translationYP': {
               __descriptorType: 'TimelineVarDescriptor',
-              id: 'b4edb7c6-68c7-46c1-9310-f481a85e25e2',
+              id: 'translationYP',
               component: 'div.ball',
               property: 'translationYP',
               extremums: [-100, 0],
@@ -72,9 +72,9 @@ const two = {
                 },
               ],
             },
-            'b4edb7c6-68c7-46c1-9310-f481a85e25e3': {
+            'translationYZ': {
               __descriptorType: 'TimelineVarDescriptor',
-              id: 'b4edb7c6-68c7-46c1-9310-f481a85e25e3',
+              id: 'translationYZ',
               component: 'div.ball',
               property: 'translationYZ',
               extremums: [-100, 0],
@@ -102,22 +102,22 @@ const two = {
               ],
             },
           },
-          layout: ['ef52adb7-55ad-4b0d-8d8e-becb38aee635', 'ef52adb7-55ad-4b0d-8d8e-becb38aee636', 'ef52adb7-55ad-4b0d-8d8e-becb38aee637'],
+          layout: ['box-translateY', 'box-translateYP', 'box-translateYZ'],
           boxes: {
-            'ef52adb7-55ad-4b0d-8d8e-becb38aee635': {
-              id: 'ef52adb7-55ad-4b0d-8d8e-becb38aee635',
+            'box-translateY': {
+              id: 'box-translateY',
               height: 126,
-              variables: ['b4edb7c6-68c7-46c1-9310-f481a85e25e1'],
+              variables: ['translationY'],
             },
-            'ef52adb7-55ad-4b0d-8d8e-becb38aee636': {
-              id: 'ef52adb7-55ad-4b0d-8d8e-becb38aee635',
+            'box-translateYP': {
+              id: 'box-translateYP',
               height: 126,
-              variables: ['b4edb7c6-68c7-46c1-9310-f481a85e25e2'],
+              variables: ['translationYP'],
             },
-            'ef52adb7-55ad-4b0d-8d8e-becb38aee637': {
-              id: 'ef52adb7-55ad-4b0d-8d8e-becb38aee635',
+            'box-translateYZ': {
+              id: 'box-translateYZ',
               height: 126,
-              variables: ['b4edb7c6-68c7-46c1-9310-f481a85e25e3'],
+              variables: ['translationYZ'],
             },
           },
         },
@@ -142,7 +142,7 @@ const two = {
                 translationY: {
                   __descriptorType: 'ReferenceToTimelineVar',
                   timelineId: 'defaultTimeline',
-                  varId: 'b4edb7c6-68c7-46c1-9310-f481a85e25e1',
+                  varId: 'translationY',
                 },
                 translationZ: '0',
                 opacity: '1',

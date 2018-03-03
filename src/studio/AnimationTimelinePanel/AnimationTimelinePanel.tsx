@@ -260,7 +260,7 @@ class Content extends StudioComponent<Props, State> {
       dispatch(
         reduceStateAction([...this.props.pathToTimeline, 'layout'], layout => {
           const newLayout = layout.slice()
-          newLayout.splice(index, 0, newLayout.splice(moveTo, 1)[0])
+          newLayout.splice(moveTo, 0, newLayout.splice(index, 1)[0])
           return newLayout
         }),
       )
@@ -340,9 +340,16 @@ class Content extends StudioComponent<Props, State> {
       reduceStateAction(
         [...this.props.pathToTimeline, 'boxes', boxId, 'height'],
         () => newHeight,
-      )
+      ),
     )
-    this._resetBoundariesAndRatios()
+    const boxes = {
+      ...this.props.boxes,
+      [boxId]: {
+        ...this.props.boxes[boxId],
+        height: newHeight,
+      }
+    }
+    this._resetBoundariesAndRatios(this.props.layout, boxes)
   }
 
   changeFocusRightTo = (newFocusRight: number, panelWidth: number) => {
