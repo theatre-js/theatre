@@ -10,9 +10,9 @@ import {
   VariableObject,
   VariableID,
 } from '$src/studio/AnimationTimelinePanel/types'
-import * as _ from 'lodash'
 import BoxView, {colors} from '$src/studio/AnimationTimelinePanel/BoxView'
 import cx from 'classnames'
+import _, {clamp} from 'lodash'
 
 interface IOwnProps {
   boxIndex: number
@@ -28,7 +28,6 @@ interface IOwnProps {
   pathToTimeline: string[]
   scrollLeft: number
   isABoxBeingDragged: boolean
-  isABoxBeingResized: boolean
   onMoveStart: Function
   onMoveEnd: Function
   onMove: Function
@@ -47,10 +46,13 @@ interface IState {
   activeVariableId: VariableID
   isMoving: boolean
   moveY: number
+  resizeY: number
+  shouldDisableResizeHandle: boolean
 }
 
+const minBoxHeight = 40
+
 class VariablesBox extends React.PureComponent<IProps, IState> {
-  tempResizeY: number
   resizeEndTimeout: $FixMe
 
   constructor(props: IProps) {
@@ -60,6 +62,8 @@ class VariablesBox extends React.PureComponent<IProps, IState> {
       activeVariableId: props.variableIds[0],
       isMoving: false,
       moveY: 0,
+      resizeY: 0,
+      shouldDisableResizeHandle: false,
     }
   }
 
@@ -89,33 +93,42 @@ class VariablesBox extends React.PureComponent<IProps, IState> {
     this.props.onMoveEnd()
   }
 
-  onResizeStart = () => {
-    this.props.onResizeStart(this.props.boxId)
+  onResize = (_: number, dy: number) => {
+    const resizeY = clamp(dy, minBoxHeight - this.props.svgHeight, dy)
+    this.setState(() => ({resizeY}))
   }
 
-  onResize = (_: number, dy: number) => {
-    return this.props.onResize(dy)
+  onResizeEnd = () => {
+    this.setState(state => {
+      this.props.onResize(
+        this.props.boxId,
+        this.props.svgHeight + state.resizeY,
+      )
+      return {
+        resizeY: 0,
+        shouldDisableResizeHandle: false,
+      }
+    })
+  }
+
+  _handleResizeOnPinch = (e: $FixMe) => {
+    if (e.ctrlKey && e.shiftKey) {
+      clearTimeout(this.resizeEndTimeout)
+      e.preventDefault()
+      e.stopPropagation()
+
+      const dy = this.state.resizeY - 3 * e.deltaY
+      this.setState(() => ({
+        resizeY: _.clamp(dy, minBoxHeight - this.props.svgHeight, dy),
+        shouldDisableResizeHandle: true,
+      }))
+
+      this.resizeEndTimeout = setTimeout(this.onResizeEnd, 100)
+    }
   }
 
   setActiveVariable = (activeVariableId: string) => {
     this.setState(() => ({activeVariableId}))
-  }
-
-  _handleResizeOnPinch = (e: $FixMe) => {
-      if (e.ctrlKey && e.shiftKey) {
-        e.preventDefault()
-        e.stopPropagation()
-        if (this.props.isABoxBeingResized) {
-          const {deltaY} = e
-          clearTimeout(this.resizeEndTimeout)
-          this.tempResizeY -= 3 * deltaY
-          this.onResize(0, this.tempResizeY)
-          this.resizeEndTimeout = setTimeout(this.props.onResizeEnd, 100)
-        } else {
-          this.tempResizeY = 0
-          this.onResizeStart()
-        }
-      }
   }
 
   render() {
@@ -125,12 +138,12 @@ class VariablesBox extends React.PureComponent<IProps, IState> {
       boxIndex,
       splitVariable,
       translateY,
-      svgHeight,
       canBeMerged,
       shouldIndicateMerge,
       isABoxBeingDragged,
     } = props
-    const {activeVariableId, moveY, isMoving} = state
+    const {activeVariableId, moveY, isMoving, shouldDisableResizeHandle} = state
+    const svgHeight = props.svgHeight + state.resizeY
 
     const containerStyle = {
       height: svgHeight,
@@ -162,7 +175,9 @@ class VariablesBox extends React.PureComponent<IProps, IState> {
                   onDrag={this.onMove}
                   onDragEnd={this.onMoveEnd}
                 >
-                  <div className={cx(css.boxLegends, {[css.isMoving]: isMoving})}>
+                  <div
+                    className={cx(css.boxLegends, {[css.isMoving]: isMoving})}
+                  >
                     <BoxLegends
                       activeMode={activeMode}
                       variables={variables.map(variable =>
@@ -189,16 +204,17 @@ class VariablesBox extends React.PureComponent<IProps, IState> {
                     duration={props.duration}
                     activeMode={activeMode}
                     pathToVariables={props.pathToVariables}
-                    scrollLeft={this.props.scrollLeft}
+                    scrollLeft={props.scrollLeft}
                   />
                 </div>
-                <DraggableArea
-                  onDragStart={this.onResizeStart}
-                  onDrag={this.onResize}
-                  onDragEnd={props.onResizeEnd}
-                >
-                  <div className={css.resizeHandle} />
-                </DraggableArea>
+                {!shouldDisableResizeHandle && (
+                  <DraggableArea
+                    onDrag={this.onResize}
+                    onDragEnd={this.onResizeEnd}
+                  >
+                    <div className={css.resizeHandle} />
+                  </DraggableArea>
+                )}
               </div>
             </div>
           )

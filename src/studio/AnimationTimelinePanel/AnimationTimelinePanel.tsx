@@ -49,14 +49,6 @@ type State = {
         mergeWith?: undefined | null | number
         moveTo?: undefined | null | number
       }
-  boxBeingResized:
-    | undefined
-    | null
-    | {
-        id: string
-        originalHeight: number
-        heightChange: number
-      }
   moveRatios: number[]
   boundaries: number[]
   duration: number
@@ -85,7 +77,6 @@ class Content extends StudioComponent<Props, State> {
 
     this.state = {
       boxBeingDragged: null,
-      boxBeingResized: null,
       moveRatios: new Array(layout.length).fill(0),
       boundaries: this._getBoundaries(boxes, layout),
       duration: 20000,
@@ -343,39 +334,12 @@ class Content extends StudioComponent<Props, State> {
     )
   }
 
-  onBoxResizeStart = (boxId: string) => {
-    this.setState(() => ({
-      boxBeingResized: {
-        id: boxId,
-        originalHeight: this.props.boxes[boxId].height,
-        heightChange: 0,
-      }
-    }))
-  }
-
-  onBoxResize = (dy: number) => {
-    this.setState((state: State) => {
-      const {boxBeingResized} = state
-      if (boxBeingResized == null) return state
-      return {
-        boxBeingResized: {
-          ...boxBeingResized,
-          heightChange: _.clamp(dy, 40 - boxBeingResized.originalHeight, dy),
-        }
-      }
-    })
-  }
-
-  onBoxResizeEnd = () => {
+  onBoxResize = (boxId: BoxID, newHeight: number) => {
     const {dispatch} = this.props
-    const {boxBeingResized} = this.state
-    if (boxBeingResized == null) return
-    const {id, heightChange} = boxBeingResized
-    this.setState(() => ({boxBeingResized: null}))
     dispatch(
       reduceStateAction(
-        [...this.props.pathToTimeline, 'boxes', id, 'height'],
-        (height) => height + heightChange
+        [...this.props.pathToTimeline, 'boxes', boxId, 'height'],
+        () => newHeight,
       )
     )
     this._resetBoundariesAndRatios()
@@ -653,7 +617,6 @@ class Content extends StudioComponent<Props, State> {
   render() {
     const {
       boxBeingDragged,
-      boxBeingResized,
       moveRatios,
       duration,
       focus,
@@ -662,7 +625,6 @@ class Content extends StudioComponent<Props, State> {
     const {boxes, layout, panelObjectBeingDragged} = this.props
 
     const isABoxBeingDragged = boxBeingDragged != null
-    const isABoxBeingResized = boxBeingResized != null
     return (
       <Panel
         headerLess={true}
@@ -752,9 +714,6 @@ class Content extends StudioComponent<Props, State> {
                           boxBeingDragged.mergeWith !== null &&
                           boxBeingDragged.mergeWith === index
                         let height = box.height
-                        if (isABoxBeingResized && boxBeingResized.id === id) {
-                          height += boxBeingResized.heightChange
-                        }
                         return (
                           <VariablesBox
                             key={id}
@@ -771,13 +730,10 @@ class Content extends StudioComponent<Props, State> {
                             pathToTimeline={this.props.pathToTimeline}
                             scrollLeft={this.state.scrollLeft}
                             isABoxBeingDragged={isABoxBeingDragged}
-                            isABoxBeingResized={isABoxBeingResized}
                             onMoveStart={this.onBoxStartMove}
                             onMoveEnd={this.onBoxEndMove}
                             onMove={this.onBoxMove}
-                            onResizeStart={this.onBoxResizeStart}
                             onResize={this.onBoxResize}
-                            onResizeEnd={this.onBoxResizeEnd}
                           />
                         )
                       })}
