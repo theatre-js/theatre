@@ -115,7 +115,6 @@ export class StudioUI extends StudioComponent<IProps, State> {
     if (e.keyCode === 96) {
       this.setState({uiVisible: !this.state.uiVisible})
     }
-    
   }
 
   componentWillReceiveProps(nextProps: IProps) {
