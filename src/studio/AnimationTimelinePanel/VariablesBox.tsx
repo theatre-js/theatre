@@ -28,9 +28,11 @@ interface IOwnProps {
   pathToTimeline: string[]
   scrollLeft: number
   isABoxBeingDragged: boolean
+  isABoxBeingResized: boolean
   onMoveStart: Function
   onMoveEnd: Function
   onMove: Function
+  onResizeStart: Function
   onResize: Function
   onResizeEnd: Function
 }
@@ -48,6 +50,9 @@ interface IState {
 }
 
 class VariablesBox extends React.PureComponent<IProps, IState> {
+  tempResizeY: number
+  resizeEndTimeout: $FixMe
+
   constructor(props: IProps) {
     super(props)
 
@@ -84,22 +89,33 @@ class VariablesBox extends React.PureComponent<IProps, IState> {
     this.props.onMoveEnd()
   }
 
-  onResize = (_: number, dy: number) => {
-    // const ylow = 40 - this.props.height
-    // // const ylow = -this.props.height
-    // // this.setState(() => ({
-    // //   resizeY: dy > ylow ? dy : ylow,
-    // // }))
-    // const resizeY = dy > ylow ? dy : ylow
-    this.props.onResize(this.props.boxId, dy)
+  onResizeStart = () => {
+    this.props.onResizeStart(this.props.boxId)
   }
 
-  onResizeEnd = () => {
-    this.props.onResizeEnd(this.props.boxId, this.props.svgHeight)
+  onResize = (_: number, dy: number) => {
+    return this.props.onResize(dy)
   }
 
   setActiveVariable = (activeVariableId: string) => {
     this.setState(() => ({activeVariableId}))
+  }
+
+  _handleResizeOnPinch = (e: $FixMe) => {
+      if (e.ctrlKey && e.shiftKey) {
+        e.preventDefault()
+        e.stopPropagation()
+        if (this.props.isABoxBeingResized) {
+          const {deltaY} = e
+          clearTimeout(this.resizeEndTimeout)
+          this.tempResizeY -= 3 * deltaY
+          this.onResize(0, this.tempResizeY)
+          this.resizeEndTimeout = setTimeout(this.props.onResizeEnd, 100)
+        } else {
+          this.tempResizeY = 0
+          this.onResizeStart()
+        }
+      }
   }
 
   render() {
@@ -107,9 +123,9 @@ class VariablesBox extends React.PureComponent<IProps, IState> {
     const {
       variables,
       boxIndex,
-      svgHeight,
       splitVariable,
       translateY,
+      svgHeight,
       canBeMerged,
       shouldIndicateMerge,
       isABoxBeingDragged,
@@ -122,12 +138,10 @@ class VariablesBox extends React.PureComponent<IProps, IState> {
         ? {transform: `translateY(${translateY}px)`}
         : {}),
     }
-
     const wrapperStyle = {
       '--height': svgHeight,
       ...(isMoving ? {transform: `translateY(${moveY}px)`} : {}),
     }
-
     return (
       <Subscriber channel={PanelActiveModeChannel}>
         {({activeMode}) => {
@@ -148,7 +162,7 @@ class VariablesBox extends React.PureComponent<IProps, IState> {
                   onDrag={this.onMove}
                   onDragEnd={this.onMoveEnd}
                 >
-                  <div className={css.boxLegends}>
+                  <div className={cx(css.boxLegends, {[css.isMoving]: isMoving})}>
                     <BoxLegends
                       activeMode={activeMode}
                       variables={variables.map(variable =>
@@ -162,7 +176,10 @@ class VariablesBox extends React.PureComponent<IProps, IState> {
                     />
                   </div>
                 </DraggableArea>
-                <div className={css.boxView}>
+                <div
+                  className={css.boxView}
+                  onWheel={this._handleResizeOnPinch}
+                >
                   <BoxView
                     variables={variables}
                     variableIds={props.variableIds}
@@ -176,8 +193,9 @@ class VariablesBox extends React.PureComponent<IProps, IState> {
                   />
                 </div>
                 <DraggableArea
+                  onDragStart={this.onResizeStart}
                   onDrag={this.onResize}
-                  onDragEnd={this.onResizeEnd}
+                  onDragEnd={props.onResizeEnd}
                 >
                   <div className={css.resizeHandle} />
                 </DraggableArea>

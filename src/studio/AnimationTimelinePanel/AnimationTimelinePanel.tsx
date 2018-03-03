@@ -49,20 +49,28 @@ type State = {
         mergeWith?: undefined | null | number
         moveTo?: undefined | null | number
       }
+  boxBeingResized:
+    | undefined
+    | null
+    | {
+        id: string
+        originalHeight: number
+        heightChange: number
+      }
   moveRatios: number[]
   boundaries: number[]
   duration: number
-  // currentTime: number
   focus: [number, number]
   thingy?: string
   timeBox?: BoxAtom<number>
-  untapFromTimeBoxChanges: () => void
+  untapFromTimeBoxChanges?: () => void
   isSeekerBeingDragged: boolean
-  // currentTimeXBeforeDrag: number
   timelineInstance: undefined | TimelineInstance
+  scrollLeft: number
 }
 
 class Content extends StudioComponent<Props, State> {
+  variablesContainer: any
   static panelName = 'AnimationTimeline'
 
   currentTTimeXBeforeDrag: BoxAtom<number>
@@ -77,13 +85,13 @@ class Content extends StudioComponent<Props, State> {
 
     this.state = {
       boxBeingDragged: null,
+      boxBeingResized: null,
       moveRatios: new Array(layout.length).fill(0),
       boundaries: this._getBoundaries(boxes, layout),
       duration: 20000,
       focus: [0, 8000],
-      resizeY: {},
-      // currentTime: 0,
       isSeekerBeingDragged: false,
+      timelineInstance: undefined,
       scrollLeft: 0,
     }
 
@@ -91,7 +99,7 @@ class Content extends StudioComponent<Props, State> {
   }
 
   componentDidMount() {
-    document.addEventListener('keypress', e => {
+    document.addEventListener('keypress', (e: $FixMe): void | false => {
       if (e.target.tagName !== 'INPUT' && e.keyCode === 32) {
         e.preventDefault()
         return false
@@ -108,7 +116,7 @@ class Content extends StudioComponent<Props, State> {
     window.addEventListener('keypress', this._handleKeyPress)
   }
 
-  componentWillReceiveProps(newProps) {
+  componentWillReceiveProps(newProps: IProps) {
     if (JSON.stringify(newProps.layout) !== JSON.stringify(this.props.layout)) {
       this._resetBoundariesAndRatios(newProps.layout, newProps.boxes)
     }
@@ -335,23 +343,40 @@ class Content extends StudioComponent<Props, State> {
     )
   }
 
-  onBoxResize = (boxId, dy) => {
-    this.setState((state) => ({
-      resizeY: {
-        ...state.resizeY,
-        [boxId]: dy,
+  onBoxResizeStart = (boxId: string) => {
+    this.setState(() => ({
+      boxBeingResized: {
+        id: boxId,
+        originalHeight: this.props.boxes[boxId].height,
+        heightChange: 0,
       }
     }))
   }
 
-  onBoxResizeEnd = (boxId: BoxID, newSize) => {
+  onBoxResize = (dy: number) => {
+    this.setState((state: State) => {
+      const {boxBeingResized} = state
+      if (boxBeingResized == null) return state
+      return {
+        boxBeingResized: {
+          ...boxBeingResized,
+          heightChange: _.clamp(dy, 40 - boxBeingResized.originalHeight, dy),
+        }
+      }
+    })
+  }
+
+  onBoxResizeEnd = () => {
     const {dispatch} = this.props
-    this.setState(() => ({resizeY: {}}))
+    const {boxBeingResized} = this.state
+    if (boxBeingResized == null) return
+    const {id, heightChange} = boxBeingResized
+    this.setState(() => ({boxBeingResized: null}))
     dispatch(
       reduceStateAction(
-        [...this.props.pathToTimeline, 'boxes', boxId, 'height'],
-        () => newSize,
-      ),
+        [...this.props.pathToTimeline, 'boxes', id, 'height'],
+        (height) => height + heightChange
+      )
     )
     this._resetBoundariesAndRatios()
   }
@@ -361,11 +386,7 @@ class Content extends StudioComponent<Props, State> {
     if (newFocusRight > duration) newFocusRight = duration
     if (newFocusRight - focus[0] < 1000) newFocusRight = focus[0] + 1000
 
-    this.changeFocusTo(
-      focus[0],
-      newFocusRight,
-      panelWidth,
-    )
+    this.changeFocusTo(focus[0], newFocusRight, panelWidth)
   }
 
   changeFocusLeftTo = (newFocusLeft: number, panelWidth: number) => {
@@ -373,11 +394,7 @@ class Content extends StudioComponent<Props, State> {
     if (newFocusLeft < 0) newFocusLeft = 0
     if (focus[1] - newFocusLeft < 1000) newFocusLeft = focus[1] - 1000
 
-    this.changeFocusTo(
-      newFocusLeft,
-      focus[1],
-      panelWidth,
-    )
+    this.changeFocusTo(newFocusLeft, focus[1], panelWidth)
   }
 
   _changeZoomLevel = (
@@ -396,7 +413,12 @@ class Content extends StudioComponent<Props, State> {
 
     this.setState(() => ({
       focus: [newFocusLeft, newFocusRight],
-      scrollLeft: this._getScrollLeft(duration, newFocusLeft, newFocusRight, panelWidth)
+      scrollLeft: this._getScrollLeft(
+        duration,
+        newFocusLeft,
+        newFocusRight,
+        panelWidth,
+      ),
     }))
   }
 
@@ -417,7 +439,12 @@ class Content extends StudioComponent<Props, State> {
 
     this.setState(() => ({
       focus: [newFocusLeft, newFocusRight],
-      scrollLeft: this._getScrollLeft(duration, newFocusLeft, newFocusRight, panelWidth)
+      scrollLeft: this._getScrollLeft(
+        duration,
+        newFocusLeft,
+        newFocusRight,
+        panelWidth,
+      ),
     }))
   }
 
@@ -460,7 +487,12 @@ class Content extends StudioComponent<Props, State> {
     }
   }
 
-  _getScrollLeft(duration: number, focusLeft: number, focusRight: number, panelWidth: number) {
+  _getScrollLeft(
+    duration: number,
+    focusLeft: number,
+    focusRight: number,
+    panelWidth: number,
+  ) {
     const svgWidth = duration / (focusRight - focusLeft) * panelWidth
     return -svgWidth * focusLeft / duration
   }
@@ -468,7 +500,7 @@ class Content extends StudioComponent<Props, State> {
   _handleScroll(e: React.WheelEvent<$FixMe>, panelWidth: number) {
     const isHorizontal = Math.abs(e.deltaY) < Math.abs(e.deltaX)
 
-    if ((e.ctrlKey) || (e.shiftKey && !isHorizontal)) {
+    if (e.ctrlKey || (e.shiftKey && !isHorizontal)) {
       if (e.nativeEvent.target !== this.variablesContainer) {
         e.preventDefault()
         const {focus, duration} = this.state
@@ -502,11 +534,7 @@ class Content extends StudioComponent<Props, State> {
     panelWidth: number,
   ) => {
     this._addGlobalCursorRule()
-    const newTime = this.xToFocusedTime(
-      e.nativeEvent.layerX,
-      focus,
-      panelWidth,
-    )
+    const newTime = this.xToFocusedTime(e.nativeEvent.layerX, focus, panelWidth)
     this.currentTTimeXBeforeDrag.set(
       this.focusedTimeToX(newTime, focus, panelWidth),
     )
@@ -625,6 +653,7 @@ class Content extends StudioComponent<Props, State> {
   render() {
     const {
       boxBeingDragged,
+      boxBeingResized,
       moveRatios,
       duration,
       focus,
@@ -633,18 +662,21 @@ class Content extends StudioComponent<Props, State> {
     const {boxes, layout, panelObjectBeingDragged} = this.props
 
     const isABoxBeingDragged = boxBeingDragged != null
+    const isABoxBeingResized = boxBeingResized != null
     return (
       <Panel
-      headerLess={true}
-      css={{
-        container: css.panelContainer,
-        innerWrapper: css.panelInnerWrapper,
-      }}
+        headerLess={true}
+        css={{
+          container: css.panelContainer,
+          innerWrapper: css.panelInnerWrapper,
+        }}
       >
         <Subscriber channel={PanelWidthChannel}>
           {({width: panelWidth}: $FixMe) => {
             panelWidth -= 30
-            const svgWidth: number = Math.floor(duration / Math.floor(focus[1] - focus[0]) * panelWidth)
+            const svgWidth: number = Math.floor(
+              duration / Math.floor(focus[1] - focus[0]) * panelWidth,
+            )
             return (
               <div
                 ref={c => (this.container = c)}
@@ -673,11 +705,7 @@ class Content extends StudioComponent<Props, State> {
                       this.xToFocusedTime(x, focus, panelWidth)
                     }
                     changeFocusTo={(focusLeft: number, focusRight: number) =>
-                      this.changeFocusTo(
-                        focusLeft,
-                        focusRight,
-                        panelWidth,
-                      )
+                      this.changeFocusTo(focusLeft, focusRight, panelWidth)
                     }
                     changeFocusRightTo={(focus: number) =>
                       this.changeFocusRightTo(focus, panelWidth)
@@ -691,11 +719,7 @@ class Content extends StudioComponent<Props, State> {
                 </div>
                 <DraggableArea
                   onDragStart={(e: $FixMe) =>
-                    this._handleSeekerDragStart(
-                      e,
-                      focus,
-                      panelWidth,
-                    )
+                    this._handleSeekerDragStart(e, focus, panelWidth)
                   }
                   onDrag={(dx: number) =>
                     this.changeCurrentTimeTo(
@@ -714,44 +738,49 @@ class Content extends StudioComponent<Props, State> {
                     className={css.variables}
                   >
                     <div>
-                    {layout.map((id, index) => {
-                      const box = boxes[id]
-                      const boxTranslateY =
-                        moveRatios[index] *
-                        (isABoxBeingDragged ? boxBeingDragged.height : 0)
-                      const canBeMerged =
-                        isABoxBeingDragged &&
-                        boxBeingDragged.index === index &&
-                        boxBeingDragged.mergeWith != null
-                      const shouldIndicateMerge =
-                        isABoxBeingDragged &&
-                        boxBeingDragged.mergeWith !== null &&
-                        boxBeingDragged.mergeWith === index
-                      const height = box.height + (this.state.resizeY[id] || 0)
-                      return (
-                        <VariablesBox
-                          key={id}
-                          boxIndex={index}
-                          boxId={id}
-                          translateY={boxTranslateY}
-                          svgHeight={height}
-                          svgWidth={svgWidth}
-                          variableIds={box.variables}
-                          splitVariable={this.splitVariable}
-                          duration={duration}
-                          canBeMerged={canBeMerged}
-                          shouldIndicateMerge={shouldIndicateMerge}
-                          pathToTimeline={this.props.pathToTimeline}
-                          scrollLeft={this.state.scrollLeft}
-                          isABoxBeingDragged={isABoxBeingDragged}
-                          onMoveStart={this.onBoxStartMove}
-                          onMoveEnd={this.onBoxEndMove}
-                          onMove={this.onBoxMove}
-                          onResize={this.onBoxResize}
-                          onResizeEnd={this.onBoxResizeEnd}
-                        />
-                      )
-                    })}
+                      {layout.map((id, index) => {
+                        const box = boxes[id]
+                        const boxTranslateY =
+                          moveRatios[index] *
+                          (isABoxBeingDragged ? boxBeingDragged.height : 0)
+                        const canBeMerged =
+                          isABoxBeingDragged &&
+                          boxBeingDragged.index === index &&
+                          boxBeingDragged.mergeWith != null
+                        const shouldIndicateMerge =
+                          isABoxBeingDragged &&
+                          boxBeingDragged.mergeWith !== null &&
+                          boxBeingDragged.mergeWith === index
+                        let height = box.height
+                        if (isABoxBeingResized && boxBeingResized.id === id) {
+                          height += boxBeingResized.heightChange
+                        }
+                        return (
+                          <VariablesBox
+                            key={id}
+                            boxIndex={index}
+                            boxId={id}
+                            translateY={boxTranslateY}
+                            svgHeight={height}
+                            svgWidth={svgWidth}
+                            variableIds={box.variables}
+                            splitVariable={this.splitVariable}
+                            duration={duration}
+                            canBeMerged={canBeMerged}
+                            shouldIndicateMerge={shouldIndicateMerge}
+                            pathToTimeline={this.props.pathToTimeline}
+                            scrollLeft={this.state.scrollLeft}
+                            isABoxBeingDragged={isABoxBeingDragged}
+                            isABoxBeingResized={isABoxBeingResized}
+                            onMoveStart={this.onBoxStartMove}
+                            onMoveEnd={this.onBoxEndMove}
+                            onMove={this.onBoxMove}
+                            onResizeStart={this.onBoxResizeStart}
+                            onResize={this.onBoxResize}
+                            onResizeEnd={this.onBoxResizeEnd}
+                          />
+                        )
+                      })}
                     </div>
                   </div>
                 </DraggableArea>

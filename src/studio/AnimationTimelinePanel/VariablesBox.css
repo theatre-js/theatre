@@ -53,11 +53,14 @@
   width: 30px;
   position: absolute;
   background: #1c2227;
-  // position: sticky;
   left: 0;
   top: 0;
   bottom: 0;
   z-index: 1;
+
+  &.isMoving {
+    pointer-events: none;
+  }
 
   &:hover {
     width: fit-content;
@@ -77,6 +80,6 @@
   position: absolute;
   width: 100%;
   height: 5px;
-  bottom: 0;
+  bottom: calc(-1*var(--boxMargin));
   cursor: row-resize;
 }
