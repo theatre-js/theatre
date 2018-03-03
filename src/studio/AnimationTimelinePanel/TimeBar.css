@@ -3,6 +3,7 @@
   --thumbColor: #00E0FF;
   --focusBarColor: #9DF233;
   height: 0;
+  position: relative;
 
   &.shouldIgnoreMouse {
     pointer-events: none;
@@ -59,7 +60,7 @@
   background-color: var(--thumbColor);
   position: absolute;
   z-index: 1000;
-  cursor: ew-resize;  
+  cursor: ew-resize;
 }
 
 .currentTimeThumb {
@@ -115,7 +116,7 @@
     height: 8px;
     width: 2px;
     background: none;
-    border-radius: 0 100% 0 0;    
+    border-radius: 0 100% 0 0;
     border-top: 1px solid var(--thumbColor);
     border-right: 1px solid var(--thumbColor);
   }
@@ -174,7 +175,7 @@
   z-index: 2;
   top: -2px;
   display: block;
-  
+
   &:before {
     position: absolute 0;
     display: block;
@@ -215,7 +216,15 @@
   display: none;
 }
 
-
+.timeGrid {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  right: 0;
+  height: 8px;
+  z-index: 1;
+  background: url('url-loader!./TimeGridBg.svg');
+}
 
 .leftFocusHandle:hover .focusTimeToolTip,
 .leftFocusHandle:active .focusTimeToolTip,

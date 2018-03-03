@@ -16,3 +16,4 @@ export const leftFocusHandle: string;
 export const rightFocusHandle: string;
 export const focusTimeToolTip: string;
 export const currentTimeToolTip: string;
+export const timeGrid: string;

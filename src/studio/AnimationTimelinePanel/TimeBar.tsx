@@ -173,6 +173,7 @@ class TimeBar extends React.PureComponent<Props, State> {
             {duration.toFixed(0)}
           </div>
         )} */}
+        <div className={css.timeGrid} />
         <div className={css.timeThread}>
           <DraggableArea
             onDragStart={() => {
@@ -180,7 +181,7 @@ class TimeBar extends React.PureComponent<Props, State> {
               this._setBeforeMoveState()
             }}
             onDrag={dx => this.moveFocus(dx)}
-            onDragEnd={this._removeGlobalCursorRule}            
+            onDragEnd={this._removeGlobalCursorRule}
           >
             <div
               className={css.focusBar}
@@ -211,7 +212,7 @@ class TimeBar extends React.PureComponent<Props, State> {
               this._setBeforeMoveState()
             }}
             onDrag={dx => this.moveFocusRight(dx)}
-            onDragEnd={this._removeGlobalCursorRule}          
+            onDragEnd={this._removeGlobalCursorRule}
           >
             <div
               className={css.rightFocusHandle}
@@ -240,7 +241,7 @@ class TimeBar extends React.PureComponent<Props, State> {
             this._setBeforeMoveState()
           }}
           onDrag={dx => this.changeCurrentTime(dx)}
-          onDragEnd={this._removeGlobalCursorRule}          
+          onDragEnd={this._removeGlobalCursorRule}
         >
           <div
             className={cx(css.currentTimeThumb, {[css.isHidden]: isSeekerHidden})}

@@ -46,7 +46,7 @@
     transform: scaleX(2);
   }
 
-  
+
   &:after {
     display: block;
     position: absolute;
@@ -108,5 +108,5 @@
 }
 
 .legendText .property {
-  color: var(--color);  
+  color: var(--color);
 }

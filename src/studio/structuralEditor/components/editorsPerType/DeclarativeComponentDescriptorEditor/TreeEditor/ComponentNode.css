@@ -12,10 +12,10 @@
   align-items: center;
   box-sizing: border-box;
   padding: 0 nodePadding;
-  
+
   opacity: 1;
   /* transition: opacity .15s ease-in-out; */
-  
+
   // display: grid;
   // grid-template-columns: auto 1fr;
   // grid-column-gap: 5px;

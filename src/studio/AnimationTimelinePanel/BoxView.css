@@ -1,13 +1,12 @@
-
-
 .container {
   position: relative;
+  // left: 30px;
   height: 100%;
   background: url('url-loader!./GridBG.svg');
   background-color: #1B2226;
   /* background-size: 22px 22px; */
-  padding-right: 30px;
-  
+  // padding-right: 30px;
+
   &.blueAddCursor svg {
     cursor: url('url-loader!./AddCursorBlue.svg'), auto;
   }
@@ -20,65 +19,11 @@
   &.yellowAddCursor svg {
     cursor: url('url-loader!./AddCursorYellow.svg'), auto;
   }
-
-  &.indicateMerge {
-    &:after {
-      position: absolute;
-      z-index: 200;
-      display: block;
-      content: ' ';
-      width: 100%;
-      height: 2px;
-      top: 0;
-      background: yellow;
-    }
-
-    &:before {
-      position: absolute;
-      z-index: 200;
-      display: block;
-      content: ' ';
-      width: 100%;
-      height: 2px;
-      bottom: 0;
-      background: yellow;
-    }
-  }
-
-  &.canBeMerged {
-    opacity: .9;
-  }
-}
-
-.boxLegends {
-  width: 30px;
-  background: #1c2227;
-  position: sticky;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  z-index: 1;
-
-  &:hover {
-    width: fit-content;
-    z-index: 1000;
-  }
 }
 
 .svgArea {
   position: absolute;
   top: 0;
-  left: 30px;
   overflow: hidden;
   z-index: 0;
-}
-
-.timeGrid {
-  position: absolute;
-  top: 0px;
-  left: 33px;
-  right: 0;
-  height: 8px;
-  z-index: 1;
-  background: url('url-loader!./TimeGridBg.svg');
 }

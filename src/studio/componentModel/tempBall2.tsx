@@ -43,13 +43,81 @@ const two = {
                 },
               ],
             },
+            'b4edb7c6-68c7-46c1-9310-f481a85e25e2': {
+              __descriptorType: 'TimelineVarDescriptor',
+              id: 'b4edb7c6-68c7-46c1-9310-f481a85e25e2',
+              component: 'div.ball',
+              property: 'translationYP',
+              extremums: [-100, 0],
+              points: [
+                {
+                  time: 1550,
+                  value: 0,
+                  interpolationDescriptor: {
+                    connected: true,
+                    __descriptorType: 'TimelinePointInterpolationDescriptor',
+                    interpolationType: 'CubicBezier',
+                    handles: [0.5, 0, 0.5, 0],
+                  },
+                },
+                {
+                  time: 4190,
+                  value: -100,
+                  interpolationDescriptor: {
+                    connected: false,
+                    __descriptorType: 'TimelinePointInterpolationDescriptor',
+                    interpolationType: 'CubicBezier',
+                    handles: [0.5, 0, 0.5, 0],
+                  },
+                },
+              ],
+            },
+            'b4edb7c6-68c7-46c1-9310-f481a85e25e3': {
+              __descriptorType: 'TimelineVarDescriptor',
+              id: 'b4edb7c6-68c7-46c1-9310-f481a85e25e3',
+              component: 'div.ball',
+              property: 'translationYZ',
+              extremums: [-100, 0],
+              points: [
+                {
+                  time: 1550,
+                  value: 0,
+                  interpolationDescriptor: {
+                    connected: true,
+                    __descriptorType: 'TimelinePointInterpolationDescriptor',
+                    interpolationType: 'CubicBezier',
+                    handles: [0.5, 0, 0.5, 0],
+                  },
+                },
+                {
+                  time: 4190,
+                  value: -100,
+                  interpolationDescriptor: {
+                    connected: false,
+                    __descriptorType: 'TimelinePointInterpolationDescriptor',
+                    interpolationType: 'CubicBezier',
+                    handles: [0.5, 0, 0.5, 0],
+                  },
+                },
+              ],
+            },
           },
-          layout: ['ef52adb7-55ad-4b0d-8d8e-becb38aee635'],
+          layout: ['ef52adb7-55ad-4b0d-8d8e-becb38aee635', 'ef52adb7-55ad-4b0d-8d8e-becb38aee636', 'ef52adb7-55ad-4b0d-8d8e-becb38aee637'],
           boxes: {
             'ef52adb7-55ad-4b0d-8d8e-becb38aee635': {
               id: 'ef52adb7-55ad-4b0d-8d8e-becb38aee635',
               height: 126,
               variables: ['b4edb7c6-68c7-46c1-9310-f481a85e25e1'],
+            },
+            'ef52adb7-55ad-4b0d-8d8e-becb38aee636': {
+              id: 'ef52adb7-55ad-4b0d-8d8e-becb38aee635',
+              height: 126,
+              variables: ['b4edb7c6-68c7-46c1-9310-f481a85e25e2'],
+            },
+            'ef52adb7-55ad-4b0d-8d8e-becb38aee637': {
+              id: 'ef52adb7-55ad-4b0d-8d8e-becb38aee635',
+              height: 126,
+              variables: ['b4edb7c6-68c7-46c1-9310-f481a85e25e3'],
             },
           },
         },

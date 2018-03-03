@@ -1,0 +1,82 @@
+.container {
+  --boxMargin: 2px;
+  position: relative;
+  display: flex;
+
+  &.isABoxBeingDragged {
+    transition: all .2s;
+  }
+
+  &.isMoving {
+    z-index: 1000;
+    opacity: .9;
+  }
+
+  &:not(.isMoving) {
+    &:after {
+      display: block;
+      position: absolute;
+      content: ' ';
+      height: var(--boxMargin);
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--body-color);
+      z-index: 100;
+      pointer-events: none;
+    }
+  }
+
+  transform-origin: 50% 50%;
+  &.canBeMerged {
+    transform: scale3d(.95, .95, 1);
+  }
+
+  &.indicateMerge {
+    &:before {
+      position: absolute 0;
+      display: block;
+      content: ' ';
+      z-index: 400;
+      box-shadow: inset 0 0 0 2px yellow;
+    }
+  }
+}
+
+.wrapper {
+  position: relative;
+  width: 100%;
+  height: calc(var(--height)*1px - var(--boxMargin));
+}
+
+.boxLegends {
+  width: 30px;
+  position: absolute;
+  background: #1c2227;
+  // position: sticky;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+
+  &:hover {
+    width: fit-content;
+    z-index: 1000;
+  }
+}
+
+.boxView {
+  position: absolute;
+  width: calc(100% - 30px);
+  height: 100%;
+  overflow: hidden;
+  left: 30px;
+}
+
+.resizeHandle {
+  position: absolute;
+  width: 100%;
+  height: 5px;
+  bottom: 0;
+  cursor: row-resize;
+}

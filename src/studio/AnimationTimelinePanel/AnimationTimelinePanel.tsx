@@ -6,8 +6,7 @@ import {
 } from '$src/studio/handy'
 import generateUniqueId from 'uuid/v4'
 import css from './AnimationTimelinePanel.css'
-import SortableBox from './SortableBox'
-import BoxView from './BoxView'
+import VariablesBox from './VariablesBox'
 import TimeBar from './TimeBar'
 import {Subscriber} from 'react-broadcast'
 import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
@@ -632,6 +631,8 @@ class Content extends StudioComponent<Props, State> {
       // currentTTime: currentTime,
     } = this.state
     const {boxes, layout, panelObjectBeingDragged} = this.props
+
+    const isABoxBeingDragged = boxBeingDragged != null
     return (
       <Panel
       headerLess={true}
@@ -717,47 +718,38 @@ class Content extends StudioComponent<Props, State> {
                       const box = boxes[id]
                       const boxTranslateY =
                         moveRatios[index] *
-                        (boxBeingDragged != null ? boxBeingDragged.height : 0)
+                        (isABoxBeingDragged ? boxBeingDragged.height : 0)
                       const canBeMerged =
-                        boxBeingDragged != null &&
+                        isABoxBeingDragged &&
                         boxBeingDragged.index === index &&
                         boxBeingDragged.mergeWith != null
                       const shouldIndicateMerge =
-                        boxBeingDragged != null &&
+                        isABoxBeingDragged &&
                         boxBeingDragged.mergeWith !== null &&
                         boxBeingDragged.mergeWith === index
                       const height = box.height + (this.state.resizeY[id] || 0)
                       return (
-                        <SortableBox
+                        <VariablesBox
                           key={id}
-                          height={height}
-                          translateY={boxTranslateY}
-                          // showMergeOverlay={boxShowMergeOverlay}
                           boxIndex={index}
                           boxId={id}
+                          translateY={boxTranslateY}
+                          svgHeight={height}
+                          svgWidth={svgWidth}
+                          variableIds={box.variables}
+                          splitVariable={this.splitVariable}
+                          duration={duration}
+                          canBeMerged={canBeMerged}
+                          shouldIndicateMerge={shouldIndicateMerge}
+                          pathToTimeline={this.props.pathToTimeline}
+                          scrollLeft={this.state.scrollLeft}
+                          isABoxBeingDragged={isABoxBeingDragged}
                           onMoveStart={this.onBoxStartMove}
                           onMoveEnd={this.onBoxEndMove}
                           onMove={this.onBoxMove}
-                          // onResize={newSize => this.onBoxResize = (id, newSize =>)}
                           onResize={this.onBoxResize}
                           onResizeEnd={this.onBoxResizeEnd}
-                        >
-                          {
-                            <BoxView
-                              tempIncludeTimeGrid={index === 0}
-                              svgHeight={height}
-                              svgWidth={svgWidth}
-                              variableIds={box.variables}
-                              boxIndex={index}
-                              splitVariable={this.splitVariable}
-                              duration={duration}
-                              canBeMerged={canBeMerged}
-                              shouldIndicateMerge={shouldIndicateMerge}
-                              pathToTimeline={this.props.pathToTimeline}
-                              scrollLeft={this.state.scrollLeft}
-                            />
-                          }
-                        </SortableBox>
+                        />
                       )
                     })}
                     </div>

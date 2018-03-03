@@ -7,50 +7,37 @@ import {
   PointPosition,
   PointHandles,
   NormalizedPoint,
-} from '$studio/animationTimeline/types'
+} from '$studio/animationTimelinePanel/types'
 import css from './BoxView.css'
 import Variables from './Variables'
-import BoxLegends from './BoxLegends'
 import PointValuesEditor from './PointValuesEditor'
 import * as _ from 'lodash'
 import cx from 'classnames'
-import {Subscriber} from 'react-broadcast'
-import {
-  PanelActiveModeChannel,
-} from '$src/studio/workspace/components/Panel/Panel'
-import {MODE_CMD, MODE_SHIFT} from '$studio/workspace/components/StudioUI/StudioUI'
-import {SortableBoxDragChannel} from './SortableBox'
-import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
+import {MODE_CMD} from '$studio/workspace/components/StudioUI/StudioUI'
 import HalfPieContextMenu from '$studio/common/components/HalfPieContextMenu'
 import MdCancel from 'react-icons/lib/md/cancel'
 import MdDonutSmall from 'react-icons/lib/md/donut-small'
 import MdStars from 'react-icons/lib/md/stars'
 import MdCamera from 'react-icons/lib/md/camera'
-import { IStoreState } from '$studio/types'
-import { VariableObject } from '$src/studio/AnimationTimelinePanel/types';
 
 interface IOwnProps {
+  variables: VariableObject[]
   variableIds: VariableID[]
-  splitVariable: Function
-  duration: number
+  activeVariableId: VariableID
   svgHeight: number
   svgWidth: number
-  tempIncludeTimeGrid?: boolean
-  pathToTimeline: string[]
-  boxIndex: number
-  canBeMerged: boolean
-  shouldIndicateMerge: boolean
+  duration: number
+  activeMode: string
+  pathToVariables: string[]
+  scrollLeft: number
 }
 
 interface IProps extends IOwnProps {
-  variables: VariableObject[]
-  pathToVariables: string[]
   dispatch: Function
 }
 
 type IState = {
   svgExtremums: [number, number]
-  activeVariableId: string
   pointValuesEditorProps: undefined | null | Object
   variableIdToColorIndexMap: {[variableId: string]: number}
   variablesShouldReRender: boolean
@@ -104,7 +91,6 @@ class BoxView extends StudioComponent<IProps, IState> {
     this.state = {
       svgExtremums: this._getSvgExtremums(props),
       pointValuesEditorProps: null,
-      activeVariableId: props.variableIds[0],
       variableIdToColorIndexMap: this._getVariableIdToColorIndexMap(props.variables),
       variablesShouldReRender: false,
     }
@@ -114,19 +100,14 @@ class BoxView extends StudioComponent<IProps, IState> {
     this.props.dispatch(
       resetExtremums([
         ...this.props.pathToVariables,
-        this.state.activeVariableId,
+        this.props.activeVariableId,
       ]),
     )
   }
 
-  componentWillReceiveProps(nextProps) {
-    const {activeVariableId} = this.state
-    if (nextProps.variableIds.find(id => id === activeVariableId) == null) {
-      // activeVariableId = nextProps.variableIds[0]
-      this.setState(() => ({activeVariableId: nextProps.variableIds[0]}))
-    }
-
+  componentWillReceiveProps(nextProps: IProps) {
     if (nextProps.variableIds !== this.props.variableIds) {
+      this.setVariablesShouldReRenderToTrue()
       this.setState(() => ({
         variableIdToColorIndexMap: this._getVariableIdToColorIndexMap(nextProps.variables)
       }))
@@ -158,17 +139,6 @@ class BoxView extends StudioComponent<IProps, IState> {
 
   setVariablesShouldReRenderToTrue = () => {
     this.setState(() => ({variablesShouldReRender: true}))
-  }
-
-  titleClickHandler(e: React.MouseEvent<$FixMe>, variableId: string) {
-    if (e.altKey) {
-      return this.props.splitVariable(this.props.boxIndex, variableId)
-    }
-    this.setActiveVariable(variableId)
-  }
-
-  setActiveVariable = (activeVariableId: string) => {
-    this.setState(() => ({activeVariableId}))
   }
 
   _getSvgExtremums(props: IProps) {
@@ -225,7 +195,7 @@ class BoxView extends StudioComponent<IProps, IState> {
         },
       ),
     )
-    this._resetExtremumsOfVariable(this.state.activeVariableId)
+    this._resetExtremumsOfVariable(this.props.activeVariableId)
   }
 
   pathToPoints = (variableId: string) => [
@@ -443,197 +413,148 @@ class BoxView extends StudioComponent<IProps, IState> {
 
   render() {
     const {
-      variables,
-      shouldIndicateMerge,
-      canBeMerged,
-      tempIncludeTimeGrid,
       svgHeight,
       svgWidth,
+      activeVariableId,
+      activeMode,
     } = this.props
     const {
-      activeVariableId,
       pointValuesEditorProps,
       variableIdToColorIndexMap,
     } = this.state
 
+    const activeVariableColorName = colors[variableIdToColorIndexMap[activeVariableId]].name
+    const isAddingPoint = activeMode === MODE_CMD
     return (
-      <Subscriber channel={PanelActiveModeChannel}>
-      {({activeMode}) => {
-        const isAddingPoint = activeMode === MODE_CMD
-        return (
-          <Subscriber channel={SortableBoxDragChannel}>
-            {({onDragStart, onDrag, onDragEnd}) => {
-              const activeVariableColorName = colors[variableIdToColorIndexMap[activeVariableId]].name
-              return (
-                <div
-                  ref={c => (this.container = c)}
-                  className={cx(css.container, {
-                    [css.canBeMerged]: canBeMerged,
-                    [css.indicateMerge]: shouldIndicateMerge,
-                    [css.redAddCursor]: isAddingPoint && activeVariableColorName === 'red',
-                    [css.blueAddCursor]: isAddingPoint && activeVariableColorName === 'blue',
-                    [css.yellowAddCursor]: isAddingPoint && activeVariableColorName === 'yellow',
-                    [css.purpleAddCursor]: isAddingPoint && activeVariableColorName === 'purple',
-                  })}
-                  style={{width: svgWidth}}
-                >
-                  {tempIncludeTimeGrid && <div className={css.timeGrid} />}
-                  <DraggableArea
-                    // withShift={true}
-                    shouldRegisterEvents={activeMode === MODE_SHIFT}
-                    onDragStart={onDragStart}
-                    // onDrag={(_, dy) => onDrag(dy)}
-                    onDrag={onDrag}
-                    onDragEnd={onDragEnd}
-                  >
-                    <div className={css.boxLegends}>
-                      <BoxLegends
-                        activeMode={activeMode}
-                        variables={variables.map(variable =>
-                          _.pick(variable, ['id', 'component', 'property']),
-                        )}
-                        colors={colors.map(c => c.normal)}
-                        activeVariableId={activeVariableId}
-                        setActiveVariable={this.setActiveVariable}
-                        splitVariable={this.props.splitVariable}
-                        boxIndex={this.props.boxIndex}
-                      />
-                    </div>
-                  </DraggableArea>
-                  <div
-                    className={css.svgArea}
-                    style={{transform: `translate3d(${this.props.scrollLeft}px, 0, 0)`}}>
-                    <svg
-                      viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-                      height={svgHeight}
-                      width={svgWidth}
-                      ref={svg => {
-                        if (svg != null) this.svgArea = svg
-                      }}
-                      onMouseDown={(e: $FixMe) => this.addPoint(e, activeMode)}
-                    >
-                      <svg
-                        viewBox={`0 0 ${svgWidth} ${svgHeight - svgPaddingY}`}
-                        x={0}
-                        y={svgPaddingY / 2}
-                        width={svgWidth}
-                        height={svgHeight - svgPaddingY}
-                        style={{overflow: 'visible'}}>
-                        <defs>
-                          <filter id="glow">
-                            <feColorMatrix type="matrix" values={`3  0  0  0  0
-                                                                  0  3  0  0  0
-                                                                  0  0  3  0  0
-                                                                  0  0  0  1  0`} />
-                            <feGaussianBlur stdDeviation=".7" />
-                          </filter>
-                        </defs>
-                        <Variables
-                          shouldReRenderVariables={this.state.variablesShouldReRender}
-                          resetReRenderVariablesFlag={this.setVariablesShouldReRenderToFalse}
-                          activeVariableId={activeVariableId}
-                          getVariables={this.getNormalizedVariables}
-                          variableIdToColorIndexMap={variableIdToColorIndexMap}
-                          getSvgSize={this.getSvgSize}
-                          showPointValuesEditor={this.showPointValuesEditor}
-                          showContextMenuForPoint={this.showContextMenuForPoint}
-                          showContextMenuForConnector={this.showContextMenuForConnector}
-                          changePointPositionBy={this.changePointPositionBy}
-                          changePointHandlesBy={this.changePointHandlesBy}
-                          removePoint={this.removePoint}
-                          addConnector={this.addConnector}
-                          removeConnector={this.removeConnector}
-                          makeHandleHorizontal={this.makeHandleHorizontal}
-                        />
-                      </svg>
-                    </svg>
-                  </div>
-                  {pointValuesEditorProps != null && (
-                    <PointValuesEditor
-                      {..._.pick(pointValuesEditorProps, [
-                        'left',
-                        'top',
-                        'initialValue',
-                        'initialTime',
-                      ])}
-                      onClose={() =>
-                        this.setState(() => ({pointValuesEditorProps: null}))
-                      }
-                      onSubmit={newPosition =>
-                        this.setPointPositionTo(
-                          pointValuesEditorProps.variableId,
-                          pointValuesEditorProps.pointIndex,
-                          newPosition,
-                        )
-                      }
-                    />
-                  )}
-                  {this.state.pointContextMenuProps != null && (
-                    <HalfPieContextMenu
-                      close={() => this.setState(() => ({pointContextMenuProps: null}))}
-                      centerPoint={{left: this.state.pointContextMenuProps.left, top: this.state.pointContextMenuProps.top}}
-                      placement="top"
-                      items={[
-                        {
-                          label: '$R$eset',
-                          cb: () => null,
-                          IconComponent: MdDonutSmall,
-                        },
-                        {
-                          label: '$D$elete',
-                          cb: () => this.removePoint(this.state.pointContextMenuProps.variableId, this.state.pointContextMenuProps.pointIndex),
-                          IconComponent: MdCancel,
-                        },
-                        {
-                          label: '$C$onnect',
-                          cb: () => this.addConnector(this.state.pointContextMenuProps.variableId, this.state.pointContextMenuProps.pointIndex),
-                          IconComponent: MdStars,
-                        },
-                      ]}
-                    />
-                  )}
-                  {this.state.connectorContextMenuProps != null && (
-                    <HalfPieContextMenu
-                      close={() => this.setState(() => ({connectorContextMenuProps: null}))}
-                      centerPoint={{left: this.state.connectorContextMenuProps.left, top: this.state.connectorContextMenuProps.top}}
-                      placement="top"
-                      items={[
-                        {
-                          label: '$R$eset',
-                          cb: () => null,
-                          IconComponent: MdDonutSmall,
-                        },
-                        {
-                          label: '$D$elete',
-                          cb: () => this.removeConnector(this.state.connectorContextMenuProps.variableId, this.state.connectorContextMenuProps.pointIndex),
-                          IconComponent: MdCancel,
-                        },
-                        {
-                          label: '$S$elect',
-                          cb: () => this.removeConnector(this.state.connectorContextMenuProps.variableId, this.state.connectorContextMenuProps.pointIndex),
-                          IconComponent: MdCamera,
-                        },
-                      ]}
-                    />
-                  )}
-                </div>
-              )
+      <div
+        ref={c => (this.container = c)}
+        className={cx(css.container, {
+          [css.redAddCursor]: isAddingPoint && activeVariableColorName === 'red',
+          [css.blueAddCursor]: isAddingPoint && activeVariableColorName === 'blue',
+          [css.yellowAddCursor]: isAddingPoint && activeVariableColorName === 'yellow',
+          [css.purpleAddCursor]: isAddingPoint && activeVariableColorName === 'purple',
+        })}
+        style={{width: svgWidth}}
+      >
+        <div
+          className={css.svgArea}
+          style={{transform: `translate3d(${this.props.scrollLeft}px, 0, 0)`}}>
+          <svg
+            viewBox={`0 0 ${svgWidth} ${svgHeight}`}
+            height={svgHeight}
+            width={svgWidth}
+            ref={svg => {
+              if (svg != null) this.svgArea = svg
             }}
-          </Subscriber>
-        )
-      }}
-      </Subscriber>
+            onMouseDown={(e: $FixMe) => this.addPoint(e, activeMode)}
+          >
+            <svg
+              viewBox={`0 0 ${svgWidth} ${svgHeight - svgPaddingY}`}
+              x={0}
+              y={svgPaddingY / 2}
+              width={svgWidth}
+              height={svgHeight - svgPaddingY}
+              style={{overflow: 'visible'}}>
+              <defs>
+                <filter id="glow">
+                  <feColorMatrix type="matrix" values={`3  0  0  0  0
+                                                        0  3  0  0  0
+                                                        0  0  3  0  0
+                                                        0  0  0  1  0`} />
+                  <feGaussianBlur stdDeviation=".7" />
+                </filter>
+              </defs>
+              <Variables
+                shouldReRenderVariables={this.state.variablesShouldReRender}
+                resetReRenderVariablesFlag={this.setVariablesShouldReRenderToFalse}
+                activeVariableId={activeVariableId}
+                getVariables={this.getNormalizedVariables}
+                variableIdToColorIndexMap={variableIdToColorIndexMap}
+                getSvgSize={this.getSvgSize}
+                showPointValuesEditor={this.showPointValuesEditor}
+                showContextMenuForPoint={this.showContextMenuForPoint}
+                showContextMenuForConnector={this.showContextMenuForConnector}
+                changePointPositionBy={this.changePointPositionBy}
+                changePointHandlesBy={this.changePointHandlesBy}
+                removePoint={this.removePoint}
+                addConnector={this.addConnector}
+                removeConnector={this.removeConnector}
+                makeHandleHorizontal={this.makeHandleHorizontal}
+              />
+            </svg>
+          </svg>
+        </div>
+        {pointValuesEditorProps != null && (
+          <PointValuesEditor
+            {..._.pick(pointValuesEditorProps, [
+              'left',
+              'top',
+              'initialValue',
+              'initialTime',
+            ])}
+            onClose={() =>
+              this.setState(() => ({pointValuesEditorProps: null}))
+            }
+            onSubmit={newPosition =>
+              this.setPointPositionTo(
+                pointValuesEditorProps.variableId,
+                pointValuesEditorProps.pointIndex,
+                newPosition,
+              )
+            }
+          />
+        )}
+        {this.state.pointContextMenuProps != null && (
+          <HalfPieContextMenu
+            close={() => this.setState(() => ({pointContextMenuProps: null}))}
+            centerPoint={{left: this.state.pointContextMenuProps.left, top: this.state.pointContextMenuProps.top}}
+            placement="top"
+            items={[
+              {
+                label: '$R$eset',
+                cb: () => null,
+                IconComponent: MdDonutSmall,
+              },
+              {
+                label: '$D$elete',
+                cb: () => this.removePoint(this.state.pointContextMenuProps.variableId, this.state.pointContextMenuProps.pointIndex),
+                IconComponent: MdCancel,
+              },
+              {
+                label: '$C$onnect',
+                cb: () => this.addConnector(this.state.pointContextMenuProps.variableId, this.state.pointContextMenuProps.pointIndex),
+                IconComponent: MdStars,
+              },
+            ]}
+          />
+        )}
+        {this.state.connectorContextMenuProps != null && (
+          <HalfPieContextMenu
+            close={() => this.setState(() => ({connectorContextMenuProps: null}))}
+            centerPoint={{left: this.state.connectorContextMenuProps.left, top: this.state.connectorContextMenuProps.top}}
+            placement="top"
+            items={[
+              {
+                label: '$R$eset',
+                cb: () => null,
+                IconComponent: MdDonutSmall,
+              },
+              {
+                label: '$D$elete',
+                cb: () => this.removeConnector(this.state.connectorContextMenuProps.variableId, this.state.connectorContextMenuProps.pointIndex),
+                IconComponent: MdCancel,
+              },
+              {
+                label: '$S$elect',
+                cb: () => this.removeConnector(this.state.connectorContextMenuProps.variableId, this.state.connectorContextMenuProps.pointIndex),
+                IconComponent: MdCamera,
+              },
+            ]}
+          />
+        )}
+      </div>
     )
   }
 }
 
-export default connect((s: IStoreState, op: IOwnProps) => {
-  const pathToVariables = [...op.pathToTimeline, 'variables']
-  const variablesState = _.get(s, pathToVariables)
-
-  const variables = op.variableIds.map(id => variablesState[id])
-  return {
-    variables,
-    pathToVariables,
-  }
-})(BoxView)
+export default connect()(BoxView)
