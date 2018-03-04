@@ -58,7 +58,6 @@ type State = {
   untapFromTimeBoxChanges?: () => void
   isSeekerBeingDragged: boolean
   timelineInstance: undefined | TimelineInstance
-  scrollLeft: number
 }
 
 class Content extends StudioComponent<Props, State> {
@@ -83,7 +82,6 @@ class Content extends StudioComponent<Props, State> {
       focus: [0, 8000],
       isSeekerBeingDragged: false,
       timelineInstance: undefined,
-      scrollLeft: 0,
     }
 
     this.currentTTimeXBeforeDrag = boxAtom(0)
@@ -352,26 +350,25 @@ class Content extends StudioComponent<Props, State> {
     this._resetBoundariesAndRatios(this.props.layout, boxes)
   }
 
-  changeFocusRightTo = (newFocusRight: number, panelWidth: number) => {
+  changeFocusRightTo = (newFocusRight: number) => {
     const {focus, duration} = this.state
     if (newFocusRight > duration) newFocusRight = duration
     if (newFocusRight - focus[0] < 1000) newFocusRight = focus[0] + 1000
 
-    this.changeFocusTo(focus[0], newFocusRight, panelWidth)
+    this.changeFocusTo(focus[0], newFocusRight)
   }
 
-  changeFocusLeftTo = (newFocusLeft: number, panelWidth: number) => {
+  changeFocusLeftTo = (newFocusLeft: number) => {
     const {focus} = this.state
     if (newFocusLeft < 0) newFocusLeft = 0
     if (focus[1] - newFocusLeft < 1000) newFocusLeft = focus[1] - 1000
 
-    this.changeFocusTo(newFocusLeft, focus[1], panelWidth)
+    this.changeFocusTo(newFocusLeft, focus[1])
   }
 
   _changeZoomLevel = (
     newFocusLeft: number,
     newFocusRight: number,
-    panelWidth: number,
   ) => {
     const {duration} = this.state
     if (newFocusLeft < 0) {
@@ -382,21 +379,12 @@ class Content extends StudioComponent<Props, State> {
     }
     if (newFocusRight - newFocusLeft < 1) return
 
-    this.setState(() => ({
-      focus: [newFocusLeft, newFocusRight],
-      scrollLeft: this._getScrollLeft(
-        duration,
-        newFocusLeft,
-        newFocusRight,
-        panelWidth,
-      ),
-    }))
+    this.setState(() => ({focus: [newFocusLeft, newFocusRight]}))
   }
 
   changeFocusTo = (
     newFocusLeft: number,
     newFocusRight: number,
-    panelWidth: number,
   ) => {
     const {focus, duration} = this.state
     if (newFocusLeft < 0) {
@@ -408,15 +396,7 @@ class Content extends StudioComponent<Props, State> {
       newFocusRight = duration
     }
 
-    this.setState(() => ({
-      focus: [newFocusLeft, newFocusRight],
-      scrollLeft: this._getScrollLeft(
-        duration,
-        newFocusLeft,
-        newFocusRight,
-        panelWidth,
-      ),
-    }))
+    this.setState(() => ({focus: [newFocusLeft, newFocusRight]}))
   }
 
   changeCurrentTimeTo = (currentTTime: number) => {
@@ -485,7 +465,6 @@ class Content extends StudioComponent<Props, State> {
         this._changeZoomLevel(
           focus[0] - change * fraction,
           focus[1] + change * (1 - fraction),
-          panelWidth,
         )
       }
       return
@@ -495,7 +474,7 @@ class Content extends StudioComponent<Props, State> {
       e.preventDefault()
       const {focus} = this.state
       const change = e.deltaX / panelWidth * (focus[1] - focus[0])
-      this.changeFocusTo(focus[0] + change, focus[1] + change, panelWidth)
+      this.changeFocusTo(focus[0] + change, focus[1] + change)
     }
   }
 
@@ -646,6 +625,7 @@ class Content extends StudioComponent<Props, State> {
             const svgWidth: number = Math.floor(
               duration / Math.floor(focus[1] - focus[0]) * panelWidth,
             )
+            const scrollLeft = this._getScrollLeft(duration, focus[0], focus[1], panelWidth)
             return (
               <div
                 ref={c => (this.container = c)}
@@ -674,13 +654,13 @@ class Content extends StudioComponent<Props, State> {
                       this.xToFocusedTime(x, focus, panelWidth)
                     }
                     changeFocusTo={(focusLeft: number, focusRight: number) =>
-                      this.changeFocusTo(focusLeft, focusRight, panelWidth)
+                      this.changeFocusTo(focusLeft, focusRight)
                     }
                     changeFocusRightTo={(focus: number) =>
-                      this.changeFocusRightTo(focus, panelWidth)
+                      this.changeFocusRightTo(focus)
                     }
                     changeFocusLeftTo={(focus: number) =>
-                      this.changeFocusLeftTo(focus, panelWidth)
+                      this.changeFocusLeftTo(focus)
                     }
                     changeCurrentTimeTo={this.changeCurrentTimeTo}
                     changeDuration={this.changeDuration}
@@ -735,7 +715,7 @@ class Content extends StudioComponent<Props, State> {
                             canBeMerged={canBeMerged}
                             shouldIndicateMerge={shouldIndicateMerge}
                             pathToTimeline={this.props.pathToTimeline}
-                            scrollLeft={this.state.scrollLeft}
+                            scrollLeft={scrollLeft}
                             isABoxBeingDragged={isABoxBeingDragged}
                             onMoveStart={this.onBoxStartMove}
                             onMoveEnd={this.onBoxEndMove}
