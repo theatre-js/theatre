@@ -55,6 +55,7 @@ class Connector extends React.PureComponent<IProps, IState> {
       rightPointTime, rightPointValue,
       handles,
     } = this.props
+
     const valueAbsDiff = Math.abs(rightPointValue - leftPointValue)
     const x = `${leftPointTime}%`
     const y = `${Math.min(leftPointValue, rightPointValue)}%`

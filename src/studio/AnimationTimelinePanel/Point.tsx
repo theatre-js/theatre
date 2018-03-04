@@ -140,7 +140,7 @@ class Point extends React.PureComponent<IProps, IState> {
       time: pointMove[0],
       value: pointMove[1],
     })
-    this._resetState()
+    // this._resetState()
   }
 
   leftHandleDragStartHandler = () => {
@@ -239,8 +239,8 @@ class Point extends React.PureComponent<IProps, IState> {
     return (
       <g opacity={0.5}>
         {pointConnected &&
-          nextPointValue &&
-          nextPointTime && (
+          nextPointValue != null &&
+          nextPointTime != null && (
             <Connector
               leftPointTime={newTime}
               leftPointValue={newValue}
@@ -250,8 +250,8 @@ class Point extends React.PureComponent<IProps, IState> {
             />
           )}
         {prevPointConnected &&
-          prevPointTime &&
-          prevPointValue && (
+          prevPointTime != null &&
+          prevPointValue != null && (
             <Connector
               leftPointTime={prevPointTime}
               leftPointValue={prevPointValue}

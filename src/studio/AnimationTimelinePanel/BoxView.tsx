@@ -181,7 +181,7 @@ class BoxView extends StudioComponent<IProps, IState> {
     }
     this.props.dispatch(
       reduceStateAction(
-        [...this.props.pathToVariables, this.state.activeVariableId],
+        [...this.props.pathToVariables, this.props.activeVariableId],
         variable => {
           const points = variable.points
           let atIndex = points.findIndex(point => point.time > pointProps.time)

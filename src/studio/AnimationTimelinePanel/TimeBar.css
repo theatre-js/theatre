@@ -3,7 +3,6 @@
   --thumbColor: #00E0FF;
   --focusBarColor: #9DF233;
   height: 0;
-  position: relative;
 
   &.shouldIgnoreMouse {
     pointer-events: none;
