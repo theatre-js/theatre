@@ -1,5 +1,10 @@
-
-import {React, connect, reduceStateAction, multiReduceStateAction, StudioComponent} from '$studio/handy'
+import {
+  React,
+  connect,
+  reduceStateAction,
+  multiReduceStateAction,
+  StudioComponent,
+} from '$studio/handy'
 import {
   VariableID,
   VariableObject,
@@ -166,20 +171,17 @@ class BoxView extends StudioComponent<IProps, IState> {
       },
     }
     dispatch(
-      reduceStateAction(
-        [...pathToVariables, activeVariableId],
-        variable => {
-          const points = variable.points
-          let atIndex = points.findIndex(point => point.time > pointProps.time)
-          if (atIndex === -1) atIndex = points.length
-          return {
-            ...variable,
-            points: points
-              .slice(0, atIndex)
-              .concat(pointProps, points.slice(atIndex)),
-          }
-        },
-      ),
+      reduceStateAction([...pathToVariables, activeVariableId], variable => {
+        const points = variable.points
+        let atIndex = points.findIndex(point => point.time > pointProps.time)
+        if (atIndex === -1) atIndex = points.length
+        return {
+          ...variable,
+          points: points
+            .slice(0, atIndex)
+            .concat(pointProps, points.slice(atIndex)),
+        }
+      }),
     )
     this._resetExtremumsOfVariable(activeVariableId)
   }
@@ -196,9 +198,12 @@ class BoxView extends StudioComponent<IProps, IState> {
 
   removePoint = (variableId: VariableID, pointIndex: number) => {
     this.props.dispatch(
-      reduceStateAction(this.pathToPoints(variableId), points =>
-        points.slice(0, pointIndex).concat(points.slice(pointIndex + 1)),
-      ),
+      reduceStateAction(this.pathToPoints(variableId), points => {
+        if (points[pointIndex - 1] != null) {
+          points[pointIndex - 1].interpolationDescriptor.connected = false
+        }
+        return points.slice(0, pointIndex).concat(points.slice(pointIndex + 1))
+      }),
     )
     this._resetExtremumsOfVariable(variableId)
   }
