@@ -25,8 +25,8 @@ class Connector extends React.PureComponent<IProps, IState> {
   activeMode: string
 
   clickHandler = (e: $FixMe) => {
-    e.stopPropagation()
     if (this.activeMode === MODE_D) {
+      e.stopPropagation()
       return this.props.removeConnector && this.props.removeConnector(this.props.leftPointIndex)
     }
   }

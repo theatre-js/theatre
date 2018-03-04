@@ -37,10 +37,8 @@ interface IProps extends IOwnProps {
 }
 
 type IState = {
-  svgExtremums: [number, number]
   pointValuesEditorProps: undefined | null | Object
   variableIdToColorIndexMap: {[variableId: string]: number}
-  variablesShouldReRender: boolean
 }
 const resetExtremums = (pathToVariable: string[]) => {
   return reduceStateAction(pathToVariable, variable => {
@@ -54,13 +52,18 @@ const resetExtremums = (pathToVariable: string[]) => {
       let candids = [value]
       if (nextPoint != null) {
         candids = candids.concat(
-          value + point.interpolationDescriptor.handles[1] * (nextPoint.value - value),
-          nextPoint.value + point.interpolationDescriptor.handles[3] * (value - nextPoint.value))
+          value +
+            point.interpolationDescriptor.handles[1] *
+              (nextPoint.value - value),
+          nextPoint.value +
+            point.interpolationDescriptor.handles[3] *
+              (value - nextPoint.value),
+        )
       }
       const localMin = Math.min(...candids)
       const localMax = Math.max(...candids)
-      min = (min == null) ? localMin : Math.min(min, localMin)
-      max = (max == null) ? localMax : Math.max(max, localMax)
+      min = min == null ? localMin : Math.min(min, localMin)
+      max = max == null ? localMax : Math.max(max, localMax)
     })
     if (min === max) {
       min -= 5
@@ -89,10 +92,10 @@ class BoxView extends StudioComponent<IProps, IState> {
     super(props, context)
 
     this.state = {
-      svgExtremums: this._getSvgExtremums(props),
       pointValuesEditorProps: null,
-      variableIdToColorIndexMap: this._getVariableIdToColorIndexMap(props.variables),
-      variablesShouldReRender: false,
+      variableIdToColorIndexMap: this._getVariableIdToColorIndexMap(
+        props.variables,
+      ),
     }
   }
 
@@ -107,54 +110,27 @@ class BoxView extends StudioComponent<IProps, IState> {
 
   componentWillReceiveProps(nextProps: IProps) {
     if (nextProps.variableIds !== this.props.variableIds) {
-      this.setVariablesShouldReRenderToTrue()
       this.setState(() => ({
-        variableIdToColorIndexMap: this._getVariableIdToColorIndexMap(nextProps.variables)
+        variableIdToColorIndexMap: this._getVariableIdToColorIndexMap(
+          nextProps.variables,
+        ),
       }))
     }
-
-    const newSvgExtremums = this._getSvgExtremums(nextProps)
-    if (
-      !_.isEqual(newSvgExtremums, this.state.svgExtremums)
-    ) {
-      this.setVariablesShouldReRenderToTrue()
-      this.setState(() => ({svgExtremums: newSvgExtremums}))
-    }
   }
 
-  _getVariableIdToColorIndexMap(variables: VariableObject[]): {[variableId: string]: number} {
+  _getVariableIdToColorIndexMap(
+    variables: VariableObject[],
+  ): {[variableId: string]: number} {
     const colorsLength = colors.length
-    return variables.reduce(
-      (reducer, variable, index) => {
-        return {
-          ...reducer,
-          [variable.id]: index % colorsLength,
-        }
-      }, {})
-  }
-
-  setVariablesShouldReRenderToFalse = () => {
-    this.setState(() => ({variablesShouldReRender: false}))
-  }
-
-  setVariablesShouldReRenderToTrue = () => {
-    this.setState(() => ({variablesShouldReRender: true}))
-  }
-
-  _getSvgExtremums(props: IProps) {
-    const {variables} = props
-    let min: undefined | null | number, max: undefined | null | number
-    variables.forEach((variable: $FixMe) => {
-      const {extremums} = variable
-      min = (min == null) ? extremums[0] : Math.min(min, extremums[0])
-      max = (max == null) ? extremums[1] : Math.max(max, extremums[1])
-    })
-
-    return [min, max]
+    return variables.reduce((reducer, variable, index) => {
+      return {
+        ...reducer,
+        [variable.id]: index % colorsLength,
+      }
+    }, {})
   }
 
   _resetExtremumsOfVariable(variableId: string) {
-    this.setVariablesShouldReRenderToTrue()
     this.props.dispatch(
       resetExtremums([...this.props.pathToVariables, variableId]),
     )
@@ -162,26 +138,36 @@ class BoxView extends StudioComponent<IProps, IState> {
 
   addPoint = (e: $FixMe, activeMode: string) => {
     if (activeMode !== MODE_CMD) return
-    e.stopPropagation()
 
-    const {svgHeight, svgWidth, duration} = this.props
-    const {svgExtremums} = this.state
+    e.stopPropagation()
+    const {
+      svgHeight,
+      svgWidth,
+      duration,
+      variables,
+      activeVariableId,
+      dispatch,
+      pathToVariables,
+    } = this.props
+    const {extremums} = variables.find(
+      ({id}: {id: string}) => id === activeVariableId,
+    )
     const {top, left} = this.svgArea.getBoundingClientRect()
     const time = e.clientX - left + 5
-    const value = e.clientY - top + 5 - .5 * svgPaddingY
+    const value = e.clientY - top + 5 - 0.5 * svgPaddingY
     const pointProps: Point = {
       time: time * duration / svgWidth,
-      value: -value * (svgExtremums[1] - svgExtremums[0]) / (svgHeight - svgPaddingY),
+      value: -value * (extremums[1] - extremums[0]) / (svgHeight - svgPaddingY),
       interpolationDescriptor: {
         connected: false,
         __descriptorType: 'TimelinePointInterpolationDescriptor',
         interpolationType: 'CubicBezier',
-        handles: [.5, 0, .5, 0],
-      }
+        handles: [0.5, 0, 0.5, 0],
+      },
     }
-    this.props.dispatch(
+    dispatch(
       reduceStateAction(
-        [...this.props.pathToVariables, this.props.activeVariableId],
+        [...pathToVariables, activeVariableId],
         variable => {
           const points = variable.points
           let atIndex = points.findIndex(point => point.time > pointProps.time)
@@ -195,7 +181,7 @@ class BoxView extends StudioComponent<IProps, IState> {
         },
       ),
     )
-    this._resetExtremumsOfVariable(this.props.activeVariableId)
+    this._resetExtremumsOfVariable(activeVariableId)
   }
 
   pathToPoints = (variableId: string) => [
@@ -237,13 +223,15 @@ class BoxView extends StudioComponent<IProps, IState> {
     pointIndex: number,
     change: PointPosition,
   ) => {
-    const {svgExtremums} = this.state
-    const extDiff = svgExtremums[1] - svgExtremums[0]
+    const {extremums} = this.props.variables.find(
+      ({id}: {id: string}) => id === variableId,
+    )
+    const extDiff = extremums[1] - extremums[0]
     this.props.dispatch(
       reduceStateAction(this.pathToPoint(variableId, pointIndex), point => ({
         ...point,
         time: point.time + change.time * this.props.duration / 100,
-        value: point.value + svgExtremums[1] - change.value * extDiff / 100
+        value: point.value + extremums[1] - change.value * extDiff / 100,
       })),
     )
 
@@ -258,36 +246,52 @@ class BoxView extends StudioComponent<IProps, IState> {
     if (pointIndex === 0) {
       this.props.dispatch(
         reduceStateAction(
-          [...this.pathToPoint(variableId, pointIndex), 'interpolationDescriptor', 'handles'],
+          [
+            ...this.pathToPoint(variableId, pointIndex),
+            'interpolationDescriptor',
+            'handles',
+          ],
           handles => {
-            return (
-              handles.slice(0, 2).map((handle, index) => handle + change[index + 2])
-            ).concat(handles.slice(2))
-          }
-        )
+            return handles
+              .slice(0, 2)
+              .map((handle, index) => handle + change[index + 2])
+              .concat(handles.slice(2))
+          },
+        ),
       )
     } else {
       this.props.dispatch(
         multiReduceStateAction([
           {
-            path: [...this.pathToPoint(variableId, pointIndex), 'interpolationDescriptor', 'handles'],
+            path: [
+              ...this.pathToPoint(variableId, pointIndex),
+              'interpolationDescriptor',
+              'handles',
+            ],
             reducer: handles => {
-              return (
-                handles.slice(0, 2).map((handle, index) => handle + change[index + 2])
-              ).concat(handles.slice(2))
-            }
+              return handles
+                .slice(0, 2)
+                .map((handle, index) => handle + change[index + 2])
+                .concat(handles.slice(2))
+            },
           },
           {
-            path: [...this.pathToPoint(variableId, pointIndex - 1), 'interpolationDescriptor', 'handles'],
+            path: [
+              ...this.pathToPoint(variableId, pointIndex - 1),
+              'interpolationDescriptor',
+              'handles',
+            ],
             reducer: handles => {
-              return (
-                handles.slice(0, 2).concat(
-                  handles.slice(2).map((handle, index) => handle + change[index])
+              return handles
+                .slice(0, 2)
+                .concat(
+                  handles
+                    .slice(2)
+                    .map((handle, index) => handle + change[index]),
                 )
-              )
-            }
+            },
           },
-        ])
+        ]),
       )
     }
 
@@ -295,32 +299,29 @@ class BoxView extends StudioComponent<IProps, IState> {
   }
 
   addConnector = (variableId: VariableID, pointIndex: number) => {
-    this._resetExtremumsOfVariable(variableId)
     this.props.dispatch(
-      reduceStateAction(
-        this.pathToPoint(variableId, pointIndex),
-        point => ({
-          ...point,
-          interpolationDescriptor: {
-            ...point.interpolationDescriptor,
-            connected: true,
-          }
-        }),
-      ),
+      reduceStateAction(this.pathToPoint(variableId, pointIndex), point => ({
+        ...point,
+        interpolationDescriptor: {
+          ...point.interpolationDescriptor,
+          connected: true,
+        },
+      })),
     )
+    this._resetExtremumsOfVariable(variableId)
   }
 
   removeConnector = (variableId: VariableID, pointIndex: number) => {
-    this._resetExtremumsOfVariable(variableId)
     this.props.dispatch(
       reduceStateAction(this.pathToPoint(variableId, pointIndex), point => ({
         ...point,
         interpolationDescriptor: {
           ...point.interpolationDescriptor,
           connected: false,
-        }
+        },
       })),
     )
+    this._resetExtremumsOfVariable(variableId)
   }
 
   makeHandleHorizontal = (
@@ -328,11 +329,14 @@ class BoxView extends StudioComponent<IProps, IState> {
     pointIndex: number,
     side: 'left' | 'right',
   ) => {
-    this._resetExtremumsOfVariable(variableId)
     if (side === 'left' && pointIndex !== 0) {
       this.props.dispatch(
         reduceStateAction(
-          [...this.pathToPoint(variableId, pointIndex - 1), 'interpolationDescriptor', 'handles'],
+          [
+            ...this.pathToPoint(variableId, pointIndex - 1),
+            'interpolationDescriptor',
+            'handles',
+          ],
           handles => {
             handles[3] = 0
             return handles
@@ -343,7 +347,11 @@ class BoxView extends StudioComponent<IProps, IState> {
     if (side === 'right') {
       this.props.dispatch(
         reduceStateAction(
-          [...this.pathToPoint(variableId, pointIndex), 'interpolationDescriptor', 'handles'],
+          [
+            ...this.pathToPoint(variableId, pointIndex),
+            'interpolationDescriptor',
+            'handles',
+          ],
           handles => {
             handles[1] = 0
             return handles
@@ -351,6 +359,7 @@ class BoxView extends StudioComponent<IProps, IState> {
         ),
       )
     }
+    this._resetExtremumsOfVariable(variableId)
   }
 
   showPointValuesEditor = (
@@ -366,79 +375,66 @@ class BoxView extends StudioComponent<IProps, IState> {
   showContextMenuForPoint = (
     variableId: VariableID,
     pointIndex: number,
-    pos: {left: number, top: number},
+    pos: {left: number; top: number},
   ) => {
     this.setState(() => ({
-      pointContextMenuProps: {...pos, variableId, pointIndex}
+      pointContextMenuProps: {...pos, variableId, pointIndex},
     }))
   }
 
   showContextMenuForConnector = (
     variableId: VariableID,
     pointIndex: number,
-    pos: {left: number, top: number},
+    pos: {left: number; top: number},
   ) => {
     this.setState(() => ({
-      connectorContextMenuProps: {...pos, variableId, pointIndex}
+      connectorContextMenuProps: {...pos, variableId, pointIndex},
     }))
   }
 
-  _normalizePoints(points: Point[]): NormalizedPoint[] {
-    const {svgExtremums} = this.state
-    const extDiff = svgExtremums[1] - svgExtremums[0]
-    return points.map((point: $FixMe) => {
-      const {time, value, interpolationDescriptor} = point
-      return {
-        _t: time,
-        _value: value,
-        time: time / this.props.duration * 100,
-        value: (svgExtremums[1] - value) / extDiff * 100,
-        interpolationDescriptor: {...interpolationDescriptor},
-      }
-    })
-  }
-
   getSvgSize = () => {
-    return {width: this.props.svgWidth, height: this.props.svgHeight - svgPaddingY}
+    return {
+      width: this.props.svgWidth,
+      height: this.props.svgHeight - svgPaddingY,
+    }
   }
 
-  getNormalizedVariables = () => {
-    return this.props.variables.map((variable: $FixMe) => (
-      {
-        ...variable,
-        points: this._normalizePoints(variable.points),
-      }
-    ))
+  getDuration = () => {
+    return this.props.duration
   }
 
   render() {
     const {
+      variables,
       svgHeight,
       svgWidth,
       activeVariableId,
       activeMode,
     } = this.props
-    const {
-      pointValuesEditorProps,
-      variableIdToColorIndexMap,
-    } = this.state
+    const {pointValuesEditorProps, variableIdToColorIndexMap} = this.state
 
-    const activeVariableColorName = colors[variableIdToColorIndexMap[activeVariableId]].name
+    const activeVariableColorName =
+      colors[variableIdToColorIndexMap[activeVariableId]].name
     const isAddingPoint = activeMode === MODE_CMD
     return (
       <div
         ref={c => (this.container = c)}
         className={cx(css.container, {
-          [css.redAddCursor]: isAddingPoint && activeVariableColorName === 'red',
-          [css.blueAddCursor]: isAddingPoint && activeVariableColorName === 'blue',
-          [css.yellowAddCursor]: isAddingPoint && activeVariableColorName === 'yellow',
-          [css.purpleAddCursor]: isAddingPoint && activeVariableColorName === 'purple',
+          [css.redAddCursor]:
+            isAddingPoint && activeVariableColorName === 'red',
+          [css.blueAddCursor]:
+            isAddingPoint && activeVariableColorName === 'blue',
+          [css.yellowAddCursor]:
+            isAddingPoint && activeVariableColorName === 'yellow',
+          [css.purpleAddCursor]:
+            isAddingPoint && activeVariableColorName === 'purple',
         })}
         style={{width: svgWidth}}
       >
         <div
           className={css.svgArea}
-          style={{transform: `translate3d(${this.props.scrollLeft}px, 0, 0)`}}>
+          style={{transform: `translate3d(${this.props.scrollLeft}px, 0, 0)`}}
+        >
           <svg
             viewBox={`0 0 ${svgWidth} ${svgHeight}`}
             height={svgHeight}
@@ -454,23 +450,26 @@ class BoxView extends StudioComponent<IProps, IState> {
               y={svgPaddingY / 2}
               width={svgWidth}
               height={svgHeight - svgPaddingY}
-              style={{overflow: 'visible'}}>
+              style={{overflow: 'visible'}}
+            >
               <defs>
                 <filter id="glow">
-                  <feColorMatrix type="matrix" values={`3  0  0  0  0
-                                                        0  3  0  0  0
-                                                        0  0  3  0  0
-                                                        0  0  0  1  0`} />
+                  <feColorMatrix
+                    type="matrix"
+                    values={` 3  0  0  0  0
+                              0  3  0  0  0
+                              0  0  3  0  0
+                              0  0  0  1  0`}
+                  />
                   <feGaussianBlur stdDeviation=".7" />
                 </filter>
               </defs>
               <Variables
-                shouldReRenderVariables={this.state.variablesShouldReRender}
-                resetReRenderVariablesFlag={this.setVariablesShouldReRenderToFalse}
                 activeVariableId={activeVariableId}
-                getVariables={this.getNormalizedVariables}
+                variables={variables}
                 variableIdToColorIndexMap={variableIdToColorIndexMap}
                 getSvgSize={this.getSvgSize}
+                getDuration={this.getDuration}
                 showPointValuesEditor={this.showPointValuesEditor}
                 showContextMenuForPoint={this.showContextMenuForPoint}
                 showContextMenuForConnector={this.showContextMenuForConnector}
@@ -507,7 +506,10 @@ class BoxView extends StudioComponent<IProps, IState> {
         {this.state.pointContextMenuProps != null && (
           <HalfPieContextMenu
             close={() => this.setState(() => ({pointContextMenuProps: null}))}
-            centerPoint={{left: this.state.pointContextMenuProps.left, top: this.state.pointContextMenuProps.top}}
+            centerPoint={{
+              left: this.state.pointContextMenuProps.left,
+              top: this.state.pointContextMenuProps.top,
+            }}
             placement="top"
             items={[
               {
@@ -517,12 +519,20 @@ class BoxView extends StudioComponent<IProps, IState> {
               },
               {
                 label: '$D$elete',
-                cb: () => this.removePoint(this.state.pointContextMenuProps.variableId, this.state.pointContextMenuProps.pointIndex),
+                cb: () =>
+                  this.removePoint(
+                    this.state.pointContextMenuProps.variableId,
+                    this.state.pointContextMenuProps.pointIndex,
+                  ),
                 IconComponent: MdCancel,
               },
               {
                 label: '$C$onnect',
-                cb: () => this.addConnector(this.state.pointContextMenuProps.variableId, this.state.pointContextMenuProps.pointIndex),
+                cb: () =>
+                  this.addConnector(
+                    this.state.pointContextMenuProps.variableId,
+                    this.state.pointContextMenuProps.pointIndex,
+                  ),
                 IconComponent: MdStars,
               },
             ]}
@@ -530,8 +540,13 @@ class BoxView extends StudioComponent<IProps, IState> {
         )}
         {this.state.connectorContextMenuProps != null && (
           <HalfPieContextMenu
-            close={() => this.setState(() => ({connectorContextMenuProps: null}))}
-            centerPoint={{left: this.state.connectorContextMenuProps.left, top: this.state.connectorContextMenuProps.top}}
+            close={() =>
+              this.setState(() => ({connectorContextMenuProps: null}))
+            }
+            centerPoint={{
+              left: this.state.connectorContextMenuProps.left,
+              top: this.state.connectorContextMenuProps.top,
+            }}
             placement="top"
             items={[
               {
@@ -541,12 +556,20 @@ class BoxView extends StudioComponent<IProps, IState> {
               },
               {
                 label: '$D$elete',
-                cb: () => this.removeConnector(this.state.connectorContextMenuProps.variableId, this.state.connectorContextMenuProps.pointIndex),
+                cb: () =>
+                  this.removeConnector(
+                    this.state.connectorContextMenuProps.variableId,
+                    this.state.connectorContextMenuProps.pointIndex,
+                  ),
                 IconComponent: MdCancel,
               },
               {
                 label: '$S$elect',
-                cb: () => this.removeConnector(this.state.connectorContextMenuProps.variableId, this.state.connectorContextMenuProps.pointIndex),
+                cb: () =>
+                  this.removeConnector(
+                    this.state.connectorContextMenuProps.variableId,
+                    this.state.connectorContextMenuProps.pointIndex,
+                  ),
                 IconComponent: MdCamera,
               },
             ]}

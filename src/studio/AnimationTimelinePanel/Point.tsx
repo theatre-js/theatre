@@ -229,12 +229,14 @@ class Point extends React.PureComponent<IProps, IState> {
       .concat(pointHandles.slice(2)) as IHandles
 
     // @ts-ignore
-    const newPrevPointHandles = prevPointHandles.slice(0, 2).concat(
-      // @ts-ignore
-      prevPointHandles
-        .slice(2)
-        .map((handle: number, index: number) => handle + handlesMove[index]),
-    ) as IHandles
+    const newPrevPointHandles =
+      prevPointHandles != null &&
+      (prevPointHandles.slice(0, 2).concat(
+        // @ts-ignore
+        prevPointHandles
+          .slice(2)
+          .map((handle: number, index: number) => handle + handlesMove[index]),
+      ) as IHandles)
 
     return (
       <g opacity={0.5}>
@@ -314,7 +316,7 @@ class Point extends React.PureComponent<IProps, IState> {
       `${pointTime +
         // @ts-ignore
         (handles[0] + handlesMove[0]) * (prevPointTime - pointTime)}%`,
-        `${pointValue +
+      `${pointValue +
         // @ts-ignore
         (handles[1] + handlesMove[1]) * (prevPointValue - pointValue)}%`,
     ]
@@ -322,7 +324,7 @@ class Point extends React.PureComponent<IProps, IState> {
       `${pointTime +
         // @ts-ignore
         (handles[2] + handlesMove[2]) * (nextPointTime - pointTime)}%`,
-        `${pointValue +
+      `${pointValue +
         // @ts-ignore
         (handles[3] + handlesMove[3]) * (nextPointValue - pointValue)}%`,
     ]

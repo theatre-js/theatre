@@ -6,8 +6,10 @@ import {NormalizedPoint} from '$studio/animationTimeline/types'
 type Props = {
   variableId: string
   points: NormalizedPoint[]
+  extremums: $FixMe
   color: {name: string, normal: string, darkened: string}
   getSvgSize: Function
+  getDuration: Function
   showPointValuesEditor: Function
   showContextMenuForPoint: Function
   showContextMenuForConnector: Function
@@ -19,7 +21,50 @@ type Props = {
   makeHandleHorizontal: Function
 }
 
-class Variable extends React.PureComponent<Props, {}> {
+interface IState {
+  points: $FixMe
+}
+
+class Variable extends React.PureComponent<Props, IState> {
+  constructor(props: Props) {
+    super(props)
+
+    this.state = {
+      points: this._getNormalizedPoints(props.points, props.extremums),
+    }
+  }
+
+  componentWillReceiveProps(nextProps: Props) {
+    // const {extremums} = this.props
+    // const {extremums: nextExtremums} = nextProps
+    // console.log(extremums === nextExtremums)
+    // if (extremums[0] !== nextExtremums[0] || extremums[1] !== nextExtremums[1]) {
+    //   this.setState(() => ({
+    //     points: this._getNormalizedPoints(nextProps.points, nextExtremums)
+    //   }))
+    // }
+    if (nextProps.extremums !== this.props.extremums) {
+      this.setState(() => ({
+        points: this._getNormalizedPoints(nextProps.points, nextProps.extremums)
+      }))
+    }
+  }
+
+  _getNormalizedPoints(points: $FixMe, extremums: $FixMe) {
+    const extDiff = extremums[1] - extremums[0]
+    const duration = this.props.getDuration()
+    return points.map((point: $FixMe) => {
+      const {time, value, interpolationDescriptor} = point
+      return {
+        _t: time,
+        _value: value,
+        time: time / duration * 100,
+        value: (extremums[1] - value) / extDiff * 100,
+        interpolationDescriptor: {...interpolationDescriptor},
+      }
+    })
+  }
+
   showPointValuesEditor = (pointIndex: number, params: $FixMe) => {
     this.props.showPointValuesEditor(this.props.variableId, pointIndex, params)
   }
@@ -57,10 +102,11 @@ class Variable extends React.PureComponent<Props, {}> {
   }
 
   render() {
-    const {points, color} = this.props
+    const {color} = this.props
+    const {points} = this.state
     return (
       <g fill={color.normal} stroke={color.normal}>
-        {points.map((point, index) => {
+        {points.map((point: $FixMe, index: number) => {
           const prevPoint = points[index - 1]
           const nextPoint = points[index + 1]
           return (

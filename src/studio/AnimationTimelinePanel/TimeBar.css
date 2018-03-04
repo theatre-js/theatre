@@ -218,7 +218,7 @@
 .timeGrid {
   position: absolute;
   top: 0px;
-  left: 0px;
+  left: 31px;
   right: 0;
   height: 8px;
   z-index: 1;
