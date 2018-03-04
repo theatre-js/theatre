@@ -1,4 +1,4 @@
-// @flow
+
 import propTypes from 'prop-types'
 
 export const contextName = 'theaterJSStudio'

@@ -1,4 +1,4 @@
-// @flow
+
 import createSagaMiddleware from 'redux-saga'
 import {applyMiddleware, createStore} from 'redux'
 

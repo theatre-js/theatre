@@ -1,4 +1,4 @@
-// @flow
+
 import React from 'react'
 import css from './Node.css'
 import {Path} from '$studio/elementTree/types'

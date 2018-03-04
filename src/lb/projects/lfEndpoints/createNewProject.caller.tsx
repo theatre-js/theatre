@@ -1,4 +1,4 @@
-// @flow
+
 import createNewProject from './createNewProject.lfEndpoint'
 import {makeLFCaller} from '$lb/common/utils'
 

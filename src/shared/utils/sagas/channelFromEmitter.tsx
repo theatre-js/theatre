@@ -1,4 +1,4 @@
-// @flow
+
 import forEach from 'lodash/forEach'
 import {Channel, eventChannel} from 'redux-saga'
 

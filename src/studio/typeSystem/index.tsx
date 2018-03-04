@@ -1,4 +1,4 @@
-// @flow
+
 
 type Type = {
   typeName: string

@@ -1,4 +1,4 @@
-// @flow
+
 export default {
   folderDoesntExist: "Folder doesn't exist.",
   pathUnreadable: 'Path is not readable.',

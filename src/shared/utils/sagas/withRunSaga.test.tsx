@@ -1,4 +1,4 @@
-// @flow
+
 import {RunSagaFn} from './withRunSaga'
 
 describe('withRunSaga()', () => {

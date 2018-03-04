@@ -1,4 +1,4 @@
-// @flow
+
 import RootRoutes from './RootRoutes'
 import * as React from 'react'
 

@@ -1,4 +1,4 @@
-// @flow
+
 import fse from 'fs-extra'
 import {call, select} from '$shared/utils/sagas'
 import path from 'path'

@@ -1,4 +1,4 @@
-// @flow
+
 import {fork, call} from 'redux-saga/effects'
 import mirrorOfLBStateRootSaga from '$lf/mirrorOfLBState/sagas'
 

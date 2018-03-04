@@ -1,4 +1,4 @@
-// @flow
+
 
 import {actionCreator} from '$shared/utils'
 import {Pair} from '$shared/utils/sagas/multiReduceState.js'

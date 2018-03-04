@@ -189,10 +189,10 @@ describe('FlattenDeepDerivation', () => {
         .getValue()
         .getValue() as string
       ofNum.flattenDeep(1).getValue() as number
-      // @flow flow should catch this, but can't atm
+       flow should catch this, but can't atm
       ofNum.flattenDeep(1).getValue() as string
       num.flattenDeep(1).getValue() as number
-      // @flow flow should catch this, but can't atm
+       flow should catch this, but can't atm
       num.flattenDeep(1).getValue() as string
     })
 

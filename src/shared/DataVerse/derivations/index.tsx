@@ -1,4 +1,4 @@
-// // @flow
+// 
 
 // export {default as of} from './of'
 // export {default as proxy} from './proxy'

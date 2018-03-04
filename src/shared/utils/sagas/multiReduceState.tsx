@@ -1,4 +1,4 @@
-// @flow
+
 import {select, put} from 'redux-saga/effects'
 import {call} from 'redux-saga/effects'
 import update from 'lodash/fp/update'

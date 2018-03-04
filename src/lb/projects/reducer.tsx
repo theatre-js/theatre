@@ -1,4 +1,4 @@
-// @flow
+
 import {ProjectsNamespaceState} from './types'
 
 const defaultState: ProjectsNamespaceState = {

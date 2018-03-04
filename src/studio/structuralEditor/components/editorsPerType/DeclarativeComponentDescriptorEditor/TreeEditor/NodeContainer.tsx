@@ -1,4 +1,4 @@
-// @flow
+
 import {React} from '$studio/handy'
 import css from './NodeContainer.css'
 import ComponentNode from './ComponentNode'

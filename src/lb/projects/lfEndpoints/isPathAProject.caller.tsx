@@ -1,4 +1,4 @@
-// @flow
+
 import isPathAProject from './isPathAProject.lfEndpoint'
 import {makeLFCaller} from '$lb/common/utils'
 

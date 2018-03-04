@@ -1,4 +1,4 @@
-// @flow
+
 import {React} from '$studio/handy'
 import css from './MovableNode.css'
 import PresentationOnlyNode from './PresentationOnlyNode'

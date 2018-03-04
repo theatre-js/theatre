@@ -1,4 +1,4 @@
-// @flow
+
 import resolveCss from './resolveCss'
 import reduceState from './sagas/reduceState'
 import actionCreator from './redux/actionCreator'

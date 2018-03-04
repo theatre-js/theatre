@@ -1,4 +1,4 @@
-// @flow
+
 import {React, connect, reduceStateAction, multiReduceStateAction, StudioComponent} from '$studio/handy'
 import {
   VariableID,

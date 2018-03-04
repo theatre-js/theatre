@@ -1,4 +1,4 @@
-// @flow
+
 import {MirrorOfLBStateNamespace} from './types'
 
 const defaultState: MirrorOfLBStateNamespace = null

@@ -1,4 +1,4 @@
-// @flow
+
 
 import actionCreator from '$shared/utils/redux/actionCreator'
 

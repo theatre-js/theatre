@@ -1,4 +1,4 @@
-// @flow
+
 import {Selector} from '$studio/types'
 import {ComponentId} from './types'
 import stringStartsWith from 'lodash/startsWith'

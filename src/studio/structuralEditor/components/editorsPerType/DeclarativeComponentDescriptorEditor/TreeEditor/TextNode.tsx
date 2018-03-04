@@ -1,4 +1,4 @@
-// @flow
+
 import {React} from '$studio/handy'
 import css from './TextNode.css'
 import cx from 'classnames'

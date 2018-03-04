@@ -1,4 +1,4 @@
-// @flow
+
 import ValueDerivation from './ValueDerivation'
 
 export default class ValueInstance {

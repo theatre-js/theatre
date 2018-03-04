@@ -1,4 +1,4 @@
-// @flow
+
 import combineChannels from './combineChannels'
 import {channel} from 'redux-saga'
 import {call, take} from 'redux-saga/effects'

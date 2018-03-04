@@ -1,4 +1,4 @@
-// @flow
+
 import {withRouter} from 'react-router-dom'
 // import {HigherOrderComponent} from 'react-flow-types'
 

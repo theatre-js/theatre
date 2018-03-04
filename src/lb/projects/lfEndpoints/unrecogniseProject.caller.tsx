@@ -1,4 +1,4 @@
-// @flow
+
 import unrecogniseProject from './unrecogniseProject.lfEndpoint'
 import {makeLFCaller} from '$lb/common/utils'
 

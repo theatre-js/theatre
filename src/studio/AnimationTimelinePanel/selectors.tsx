@@ -1,4 +1,4 @@
-// @flow
+
 import {Selector, IStoreState} from '$studio/types'
 import {
   TimelineID,

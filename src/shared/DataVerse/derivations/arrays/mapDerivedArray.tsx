@@ -1,4 +1,4 @@
-// @flow
+
 import noop from 'lodash/noop'
 import AbstractDerivedArray from './AbstractDerivedArray'
 import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'

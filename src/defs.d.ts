@@ -12,7 +12,7 @@ interface Window {
 
 type mixed = object | number | string | boolean | symbol | undefined | null
 
-// @flow
+
 
 /**
  * Project-specific globals (such as the unique shape of process.env) will be defined here.

@@ -1,4 +1,4 @@
-// @flow
+
 
 export function domAttrSetter(
   node: Element,

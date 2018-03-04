@@ -1,4 +1,4 @@
-// @flow
+
 import {_multiReduceState} from './multiReduceState'
 import {call} from 'redux-saga/effects'
 

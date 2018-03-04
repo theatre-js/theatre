@@ -1,4 +1,4 @@
-// @flow
+
 import * as React from 'react'
 import hoistNonReactStatics from 'hoist-non-react-statics'
 // import {HigherOrderComponent} from 'react-flow-types'

@@ -1,4 +1,4 @@
-// @flow
+
 import React from 'react'
 import css from './Point.css'
 import Connector from './Connector'

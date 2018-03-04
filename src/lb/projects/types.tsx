@@ -1,4 +1,4 @@
-// @flow
+
 
 // @todo maybe opaque types here would be more suitable?
 

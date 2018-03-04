@@ -1,4 +1,4 @@
-// @flow
+
 import {CommonNamespaceState} from './types'
 import {handleActions} from 'redux-actions'
 import {combineReducers} from 'redux'

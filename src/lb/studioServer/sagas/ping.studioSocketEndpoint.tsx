@@ -1,4 +1,4 @@
-// @flow
+
 
 export default function* ping(
   request: $FixMe,

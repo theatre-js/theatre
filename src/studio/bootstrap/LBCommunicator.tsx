@@ -1,4 +1,4 @@
-// @flow
+
 import wn from 'when'
 import io from 'socket.io-client'
 

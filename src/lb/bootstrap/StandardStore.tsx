@@ -1,4 +1,3 @@
-// @flow
 import {
   applyMiddleware,
   createStore,
@@ -13,6 +12,7 @@ import { identity } from 'lodash';
 type RootSaga<State, Action> = (
   store: StandardStore<State, Action>,
 ) => Generator_<mixed, mixed, mixed>
+
 type ConstructorProps<State, Action> = {
   initialState?: State,
   rootSaga: RootSaga<State, Action>,

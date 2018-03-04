@@ -1,4 +1,4 @@
-// @flow
+
 import StandardStore from '$lb/bootstrap/StandardStore'
 import rootReducer from './rootReducer'
 import rootSaga from './rootSaga'

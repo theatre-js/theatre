@@ -1,4 +1,4 @@
-// @flow
+
 import {CommonNamespaceState} from './types'
 
 const initialState: CommonNamespaceState = {

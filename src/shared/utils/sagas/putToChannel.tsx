@@ -1,4 +1,4 @@
-// @flow
+
 import {put} from 'redux-saga/effects'
 import {Channel} from 'redux-saga'
 
