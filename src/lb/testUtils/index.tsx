@@ -1,5 +1,3 @@
-
-
 import StandardStore from '$lb/bootstrap/StandardStore'
 import rootReducer from '$lb/bootstrap/rootReducer'
 // import rootSaga from '$lb/bootstrap/rootSaga'

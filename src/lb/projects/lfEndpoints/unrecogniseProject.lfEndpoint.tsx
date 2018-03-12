@@ -1,7 +1,7 @@
-import {select} from '$shared/utils/sagas'
 import {StoreState} from '$lb/types'
 import {multiReduceState} from '$shared/utils'
 import _ from 'lodash'
+import {select} from 'redux-saga/effects'
 
 type ErrorTypes = 'projectNotRecognised'
 

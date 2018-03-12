@@ -1,7 +1,7 @@
 import fse from 'fs-extra'
-import {call, select} from '$shared/utils/sagas'
 import {StoreState} from '$lb/types'
 import {multiReduceState} from '$shared/utils'
+import {select, call} from 'redux-saga/effects'
 
 export type ErrorTypes = 'projectAlreadyRecognised' | 'fileDoesntExist'
 
@@ -12,13 +12,13 @@ export default function* recogniseProject(params: {
   {type: 'ok'} | {type: 'error'; errorType: ErrorTypes},
   $FixMe
 > {
-  const state: StoreState = yield select() as $FixMe
+  const state: StoreState = yield select()
 
   if (state.projects.listOfPaths.indexOf(params.filePath) !== -1) {
     return {type: 'error', errorType: 'projectAlreadyRecognised'}
   }
-  // @ts-ignore @todo
-  if ((yield* call(fse.pathExists, params.filePath)) !== true) {
+
+  if ((yield call(fse.pathExists, params.filePath)) !== true) {
     return {type: 'error', errorType: 'fileDoesntExist'}
   }
 

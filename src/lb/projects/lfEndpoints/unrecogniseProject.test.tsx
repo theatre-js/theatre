@@ -8,7 +8,7 @@ describe('unrecogniseProject()', () => {
   beforeEach(() => {
     mock({
       '/foo/bar': {
-        'theaterjs.json': '{}',
+        'theater.json': '{}',
       },
     })
   })
@@ -23,9 +23,9 @@ describe('unrecogniseProject()', () => {
       $FixMe,
       $FixMe
     > {
-      yield call(recogniseProject, {filePath: '/foo/bar/theaterjs.json'})
+      yield call(recogniseProject, {filePath: '/foo/bar/theater.json'})
       return yield call(unrecogniseProject, {
-        filePath: '/foo/bar/theaterjs.json',
+        filePath: '/foo/bar/theater.json',
       })
     })
     const result = await task.done
@@ -43,9 +43,9 @@ describe('unrecogniseProject()', () => {
       $FixMe,
       $FixMe
     > {
-      yield call(recogniseProject, {filePath: '/foo/bar/theaterjs.json'})
+      yield call(recogniseProject, {filePath: '/foo/bar/theater.json'})
       return yield call(unrecogniseProject, {
-        filePath: '/non/existing/theaterjs.json',
+        filePath: '/non/existing/theater.json',
       })
     })
     const result = await task.done

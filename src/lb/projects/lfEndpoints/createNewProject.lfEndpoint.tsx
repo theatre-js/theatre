@@ -1,19 +1,19 @@
 
 import fse from 'fs-extra'
-import {call, select} from '$shared/utils/sagas'
 import path from 'path'
 import {StoreState} from '$lb/types'
 import {
   default as recogniseProject,
   ErrorTypes as RecognizeProjectErrorTypes,
 } from './recogniseProject.lfEndpoint'
+import { call, select } from 'redux-saga/effects';
 
 type ErrorTypes =
   | 'folderDoesntExist'
   | 'pathUnreadable'
   | 'pathIsNotAFolder'
   | 'projectAlreadyRecognised'
-  | 'theaterjsDotJsonFileAlreadyExists'
+  | 'theaterDotJsonFileAlreadyExists'
   | RecognizeProjectErrorTypes
 
 export default function* createNewProject(params: {
@@ -28,7 +28,7 @@ export default function* createNewProject(params: {
     return {type: 'error', errorType: 'folderDoesntExist'}
   }
 
-  let pathStat: $FixMe
+  let pathStat
   try {
     pathStat = yield call(fse.stat, params.folderPath)
   } catch (e) {
@@ -36,25 +36,24 @@ export default function* createNewProject(params: {
     return {type: 'error', errorType: 'pathUnreadable'}
   }
 
-  if (!(pathStat as $FixMe).isDirectory()) {
+  if (!(pathStat).isDirectory()) {
     return {type: 'error', errorType: 'pathIsNotAFolder'}
   }
 
-  const filePath = path.join(params.folderPath, 'theaterjs.json')
-  const state: StoreState = yield select() as $FixMe
+  const filePath = path.join(params.folderPath, 'theater.json')
+  const state: StoreState = yield select()
 
   if (state.projects.listOfPaths.indexOf(filePath) !== -1) {
     return {type: 'error', errorType: 'projectAlreadyRecognised'}
   }
 
   if (yield call(fse.pathExists, filePath)) {
-    return {type: 'error', errorType: 'theaterjsDotJsonFileAlreadyExists'}
+    return {type: 'error', errorType: 'theaterDotJsonFileAlreadyExists'}
   }
 
   const fileContent = JSON.stringify({name: params.name})
   yield call(fse.writeFile, filePath, fileContent, {encoding: 'utf-8'})
-  // @ts-ignore
-  const resultOfRecognise = yield* call(recogniseProject, {filePath})
+  const resultOfRecognise = yield call(recogniseProject, {filePath})
   if (resultOfRecognise.type === 'ok') {
     return {...resultOfRecognise, filePath}
   } else {

@@ -9,7 +9,7 @@ import pickPathsFromObject from 'lodash/pick'
 
 const pathToPersistenceFile = path.join(app.getPath('userData'), 'state.json')
 
-const whitelistOfPartsOfStateToPersist = [['projects']]
+const whitelistOfPartsOfStateToPersist = [['projects', 'listOfPaths']]
 
 export default function* statePersistorRootSaga(): Generator_<
   $FixMe,

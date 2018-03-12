@@ -19,7 +19,7 @@ const makeSocketServer = (): Promise<SocketServer> => {
   server.listen(process.env.studio.socketPort, () => {})
 
   deferred.resolve(server)
-  console.log('server listening on', process.env.studio.socketPort)
+  console.log('Studio server listening on', process.env.studio.socketPort)
   // @ts-ignore @ignore
   return deferred.promise
 }

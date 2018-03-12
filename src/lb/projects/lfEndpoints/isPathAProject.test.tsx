@@ -6,7 +6,7 @@ describe('isPathAProject()', () => {
   beforeEach(() => {
     mock({
       '/foo/bar': {
-        'theaterjs.json': '{}',
+        'theater.json': '{}',
       },
     })
   })
@@ -17,12 +17,12 @@ describe('isPathAProject()', () => {
 
   it('should return true for existing files', async () => {
     const result = await runSingleSaga(isPathAProject, {
-      fileOrFolderPath: '/foo/bar/theaterjs.json',
+      fileOrFolderPath: '/foo/bar/theater.json',
     }).task.done
     expect(result).toMatchObject({
       type: 'ok',
       isIt: true,
-      filePath: '/foo/bar/theaterjs.json',
+      filePath: '/foo/bar/theater.json',
     })
   })
 
@@ -33,7 +33,7 @@ describe('isPathAProject()', () => {
     expect(result).toMatchObject({
       type: 'ok',
       isIt: true,
-      filePath: '/foo/bar/theaterjs.json',
+      filePath: '/foo/bar/theater.json',
     })
   })
 

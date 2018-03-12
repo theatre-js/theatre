@@ -1,23 +1,21 @@
-
-
 // @todo maybe opaque types here would be more suitable?
 
-export type ProjectId = string
-
 export type ProjectPath = string
+export interface StuffInTheaterJsonFile {
+  name: string
+}
 
 export type ProjectLoadingStateErrors =
+  | {loadingState: 'error'; errorType: 'fileCantBeRead'; message: string}
   | {loadingState: 'error'; errorType: 'jsonCantBeParsed'; message: string}
   | {loadingState: 'error'; errorType: 'invalidJsonSchema'; message: string}
 
 export type ProjectDescription =
   | {loadingState: 'loading'}
   | ProjectLoadingStateErrors
-  | {
+  | ({
       loadingState: 'loaded'
-      projectId: ProjectId
-      name: string
-    }
+    } & StuffInTheaterJsonFile)
 
 export type ProjectsNamespaceState = {
   // If a project is mentioned in `byPath` but isn't here, it means it is yet to be loaded

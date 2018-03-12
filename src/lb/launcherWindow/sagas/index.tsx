@@ -1,8 +1,8 @@
 import {fork, call, take, takeLatest, select} from 'redux-saga/effects'
 import {delay} from 'redux-saga'
 import electronIsReadyPromise from '$lb/launcherWindow/utils/electronIsReadyPromise'
-import temporaryTrayIcon from '$lb/launcherWindow/assets/temporaryTrayIcon.png'
-import {Tray, BrowserWindow} from 'electron'
+// import temporaryTrayIcon from '$lb/launcherWindow/assets/temporaryTrayIcon.png'
+import {/*Tray, */BrowserWindow} from 'electron'
 import deepEqual from 'deep-equal'
 import {
   sendRequestToWindow,
@@ -65,7 +65,7 @@ export default function* launcherWindowSaga(): Generator_<
   $FixMe
 > {
   yield electronIsReadyPromise
-  const tray = new Tray(temporaryTrayIcon)
+  // const tray = new Tray(temporaryTrayIcon)
   const window = createWindow()
   window.show()
 
@@ -76,7 +76,7 @@ export default function* launcherWindowSaga(): Generator_<
     yield fork(listenToWindowRequests, window)
     yield new Promise(() => {}) // just prevents the window from being closed right after it's open
   } finally {
-    tray.destroy()
+    // tray.destroy()
     window.destroy()
   }
 }
