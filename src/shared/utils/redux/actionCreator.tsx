@@ -1,34 +1,26 @@
 import {createAction} from 'redux-actions'
 
-type Reducer<ActionType, Payload> = <State>(
-  callback: (
-    state: State,
-    action: {type: ActionType; payload: Payload},
-  ) => State,
-) => {
-  (state: State, action: {type: ActionType; payload: Payload}): State
-  type: ActionType
-}
-
 interface Transformer<Input, Output> {
   (input: Input): Output
 }
 
 interface ActionCreatorCreator {
-  <ActionType, Payload, Input, T extends Transformer<Input, Payload>>(
+  <ActionType, Payload, Input>(
     actionType: ActionType,
-    transformer: T,
+    transformer: Transformer<Input, Payload>,
   ): {
     (input: Input): {type: ActionType; payload: Payload}
     type: ActionType
-    reducer: Reducer<ActionType, Payload>
+    ActionType: {type: ActionType; payload: Payload}
+    is: (o: {}) => o is {type: ActionType; payload: Payload}
   }
 
   <ActionType>(actionType: ActionType): {
     <Payload>(payload: Payload): {type: ActionType; payload: Payload}
     (): {type: ActionType; payload: void}
     type: ActionType
-    reducer: Reducer<ActionType, any>
+    ActionType: {type: ActionType; payload: mixed}
+    is: (o: mixed) => o is {type: ActionType; payload: mixed}
   }
 }
 
@@ -43,13 +35,9 @@ const actionCreator = (actionType: string, transformer?: $IntentionalAny) => {
     transformer,
   ) as $IntentionalAny
   originalActionCreator.type = actionType
-  originalActionCreator.reducer = (cb: Function) => {
-    const fn = (state: $IntentionalAny, action: $IntentionalAny) =>
-      cb(state, action)
-    // @ts-ignore @ignore
-    fn.type = actionType
-    return fn
-  }
+  originalActionCreator.is = (o: $IntentionalAny) =>
+    o && o.type && o.type === actionType
+
   return originalActionCreator
 }
 
