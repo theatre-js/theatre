@@ -1,8 +1,8 @@
 import flattenDeep from './flattenDeep'
 import Ticker from '$src/shared/DataVerse/Ticker'
-import boxAtom from '$src/shared/DataVerse/atoms/box';
-import withDeps from '$src/shared/DataVerse/derivations/withDeps';
-import constant from '$src/shared/DataVerse/derivations/constant';
+import boxAtom from '$src/shared/DataVerse/atoms/box'
+import withDeps from '$src/shared/DataVerse/derivations/withDeps'
+import constant from '$src/shared/DataVerse/derivations/constant'
 
 describe('FlattenDeepDerivation', () => {
   let ticker: Ticker
@@ -88,9 +88,7 @@ describe('FlattenDeepDerivation', () => {
     const b = boxAtom('b')
     const bD = b.derivation()
     const cD = aD
-      .map(aValue =>
-        bD.map(bValue => withDeps({}, () => aValue + bValue)),
-      )
+      .map(aValue => bD.map(bValue => withDeps({}, () => aValue + bValue)))
       .flattenDeep(7)
 
     expect(cD.getValue()).toEqual('ab')
@@ -189,10 +187,10 @@ describe('FlattenDeepDerivation', () => {
         .getValue()
         .getValue() as string
       ofNum.flattenDeep(1).getValue() as number
-       flow should catch this, but can't atm
+      // flow should catch this, but can't atm
       ofNum.flattenDeep(1).getValue() as string
       num.flattenDeep(1).getValue() as number
-       flow should catch this, but can't atm
+      // flow should catch this, but can't atm
       num.flattenDeep(1).getValue() as string
     })
 

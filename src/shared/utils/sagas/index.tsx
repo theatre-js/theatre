@@ -2,7 +2,6 @@
 import putToChannel from './putToChannel'
 import combineChannels from './combineChannels'
 import channelFromEmitter from './channelFromEmitter'
-import * as io from 'redux-saga/effects'
 
 declare type Fn0<R> = () =>
   | Generator_<$FixMe, R, $FixMe>
@@ -75,20 +74,5 @@ declare type CallFn = (<R, Fn extends Fn0<R>>(fn: Fn) => R) &
     t5: T5,
     t6: T6,
   ) => R)
-
-/**
- * You can use this just like you'd use the normal `call` function from `redux-saga/effects`. The only
- * difference is that the return value of the `call` function is correctly inferred this way.
- *
- * Note that you need to do it like this:
- * const result = yield * callfn, arg0, arg1, ...)
- */
-export const call: CallFn = function* call(
-  ...args
-): Generator_<$FixMe, $FixMe, $FixMe> {
-  return yield io.call(...args)
-} as any
-
-export const select = io.select
 
 export {channelFromEmitter, putToChannel, combineChannels}

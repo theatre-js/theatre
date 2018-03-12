@@ -1,16 +1,15 @@
-
 import wn from 'when'
 import io from 'socket.io-client'
 
 type Options = {
-  backendUrl: string,
+  backendUrl: string
 }
 
 type Socket = $FixMe
 
 export default class LBCommunicator {
   options: Options
-  _socketPromise: *
+  _socketPromise: null | Promise<$FixMe>
 
   constructor(options: Options) {
     this.options = options
@@ -27,16 +26,15 @@ export default class LBCommunicator {
     }
   }
 
-  request(endpoint: string, payload: mixed): $FixMe {
-    return this.getSocket().then(socket => {
-      return emit('request', {endpoint, payload}, socket)
-    })
+  async request(endpoint: string, payload: mixed) {
+    const socket = await this.getSocket()
+    return emit('request', {endpoint, payload}, socket)
   }
 }
 
 const createSocketPromsie = (addr: string): Promise<Socket> => {
   const socket = io.connect(addr)
-  const d = wn.defer()
+  const d = wn.defer<Socket>()
 
   let resolved = false
   socket.on('connect', () => {
@@ -64,8 +62,8 @@ const emit = (
   data: mixed,
   socket: Socket,
 ): Promise<mixed> => {
-  return wn.promise(resolve => {
-    socket.emit(eventName, data, response => {
+  return new Promise(resolve => {
+    socket.emit(eventName, data, (response: mixed) => {
       resolve(response)
     })
   })

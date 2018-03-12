@@ -5,7 +5,8 @@
 }
 
 .container {
-  width: 400px;
+  /* width: 400px; */
+  height: 100%;
   background: #333;
 }
 
@@ -19,10 +20,10 @@
 }
 
 .dropzone {
-  position: relative;
+  /* position: relative; */
   width: listWidth;
   min-height: 200px;
-  max-height: 400px;
+  /* max-height: 400px; */
   background: #333;
   padding: 10px;
   box-sizing: border-box;
@@ -58,7 +59,8 @@
 
 .dropHint {
   composes: centeredText;
-  position: relative;
+  position: fixed;
+  bottom: 0;
   width: 100%;
   min-height: 30px;
   font-size: 12px;

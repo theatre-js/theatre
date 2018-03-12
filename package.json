@@ -76,6 +76,7 @@
     "@types/react-router-dom": "^4.2.3",
     "@types/recompose": "^0.24.4",
     "@types/redux-actions": "^2.2.3",
+    "@types/socket.io-client": "^1.4.32",
     "@types/uuid": "^3.4.3",
     "@types/webpack": "^3.8.2",
     "@types/webpack-env": "^1.13.5",

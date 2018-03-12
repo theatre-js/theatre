@@ -4,7 +4,7 @@ export default {
   pathUnreadable: 'Path is not readable.',
   pathIsNotAFolder: 'Path is not a folder.',
   projectAlreadyRecognised: 'Project is already recognised.',
-  theaterjsDotJsonFileAlreadyExists: 'Theaterjs.json file already exists!',
+  theaterDotJsonFileAlreadyExists: 'theater.json file already exists!',
   fileDoesntExist: "File doesn't exist.",
   projectNotRecognised: 'Project is not recognised',
 }

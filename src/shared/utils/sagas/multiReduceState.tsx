@@ -10,7 +10,7 @@ export type Pair = {
   reducer: Function
 }
 
-export default function(pairs: Array<Pair>, providedState?: $IntentionalAny) {
+export default function multiReduceState(pairs: Array<Pair>, providedState?: $IntentionalAny) {
   return call(_multiReduceState, pairs, providedState)
 }
 
