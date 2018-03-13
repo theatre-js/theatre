@@ -5,7 +5,7 @@ import {
   VariableID,
   TimelineObject,
   VariableObject,
-} from '$studio/animationTimeline/types'
+} from '$studio/AnimationTimelinePanel/types'
 
 export const getTimelineById: Selector<TimelineObject, TimelineID> = (
   state,

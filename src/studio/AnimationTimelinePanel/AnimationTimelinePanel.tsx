@@ -739,13 +739,11 @@ class Content extends StudioComponent<Props, State> {
 export default connect((s: IStoreState, op: OwnProps) => {
   const timeline = _.get(s, op.pathToTimeline)
   const panelObjectBeingDragged = _.get(s, [
-    'persistedState',
     'workspace',
     'panels',
     'panelObjectBeingDragged',
   ])
   const selectedComponentId = _.get(s, [
-    'persistedState',
     'workspace',
     'panels',
     'byId',
@@ -755,7 +753,6 @@ export default connect((s: IStoreState, op: OwnProps) => {
     'componentId',
   ])
   const selectedElementId = _.get(s, [
-    'persistedState',
     'componentModel',
     'componentDescriptors',
     'custom',
@@ -765,7 +762,6 @@ export default connect((s: IStoreState, op: OwnProps) => {
     'selectedNodeId',
   ])
   const activeComponentPath = [
-    'persistedState',
     'componentModel',
     'componentDescriptors',
     'custom',

@@ -7,7 +7,7 @@ import {
 import pick from 'lodash/pick'
 import {Reducer} from '$shared/types'
 import update from 'lodash/fp/update'
-import {Pair} from '$shared/utils/sagas/multiReduceState.js'
+import {Pair} from '$shared/utils/sagas/multiReduceState'
 
 /**
  * Takes a reducer and returns a new reducer that acts the same as the original reducer, but

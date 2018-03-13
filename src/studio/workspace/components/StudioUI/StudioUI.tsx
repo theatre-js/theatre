@@ -1,5 +1,10 @@
 import * as React from 'react'
-import {connect, reduceStateAction, StudioComponent, resolveCss} from '$studio/handy'
+import {
+  connect,
+  reduceStateAction,
+  StudioComponent,
+  resolveCss,
+} from '$studio/handy'
 import {IStoreState} from '$studio/types'
 import * as _ from 'lodash'
 import {set, get} from 'lodash/fp'
@@ -10,6 +15,10 @@ import {
 import PanelController from '../PanelController/PanelController'
 import StatusBar from '../StatusBar/StatusBar'
 import css from './StudioUI.css'
+import {
+  undoAction,
+  redoAction,
+} from '../../../../shared/utils/redux/historyReducer/actions'
 
 const classes = resolveCss(css)
 
@@ -101,6 +110,8 @@ export class StudioUI extends StudioComponent<IProps, State> {
     window.addEventListener('resize', this._handleResize)
     document.addEventListener('keydown', this._handleKeyDown)
     document.addEventListener('keyup', this._resetActiveMode)
+    document.addEventListener('keyup', this._handleKeyUp)
+    document.addEventListener('keypress', this._handleKeyPress)
   }
 
   // componentWillUnmount() {
@@ -117,6 +128,8 @@ export class StudioUI extends StudioComponent<IProps, State> {
     }
   }
 
+  _handleKeyUp = (e: KeyboardEvent) => {}
+
   componentWillReceiveProps(nextProps: IProps) {
     this.setState(() => ({
       ...this._getUpdatedBoundaries(nextProps.panelsBoundaries),
@@ -129,7 +142,17 @@ export class StudioUI extends StudioComponent<IProps, State> {
     }))
   }
 
-  _handleKeyDown = (e: $FixMe) => {
+  _handleKeyDown = (e: KeyboardEvent) => {
+    if (e.keyCode === 90) {
+      if (e.metaKey) {
+        if (e.shiftKey) {
+          this.dispatch(redoAction())
+        } else {
+          this.dispatch(undoAction())
+        }
+      }
+    }
+
     if (e.target.tagName === 'INPUT' && ![91].includes(e.keyCode)) return
     switch (e.keyCode) {
       case 16:
@@ -151,7 +174,6 @@ export class StudioUI extends StudioComponent<IProps, State> {
         this.setState(() => ({activeMode: MODE_H}))
         break
       default:
-        // console.log(e.keyCode)
         break
     }
   }
@@ -540,10 +562,10 @@ export class StudioUI extends StudioComponent<IProps, State> {
 
 export default connect((state: IStoreState) => {
   const panelsBoundaries = _.mapValues(
-    _.get(state, ['persistedState', 'workspace', 'panels', 'byId']),
+    _.get(state, ['workspace', 'panels', 'byId']),
     panel => panel.boundaries,
   )
-  const visiblePanels = _.get(state, ['persistedState', 'workspace', 'panels', 'listOfVisibles'])
+  const visiblePanels = _.get(state, ['workspace', 'panels', 'listOfVisibles'])
   return {
     panelsBoundaries,
     visiblePanels,

@@ -7,12 +7,11 @@ export const getComponentDescriptor: Selector<*, *> = (
   state,
   id: ComponentId,
 ) =>
-  state.persistedState.componentModel.componentDescriptors[
+  state.componentModel.componentDescriptors[
     stringStartsWith(id, 'TheaterJS/Core/') ? 'core' : 'custom'
   ][id]
 
 export const getPathToComponentDescriptor = (id: ComponentId) => [
-  'persistedState',
   'componentModel',
   'componentDescriptors',
   stringStartsWith(id, 'TheaterJS/Core/') ? 'core' : 'custom',

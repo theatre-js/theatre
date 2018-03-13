@@ -1,7 +1,7 @@
 import React from 'react'
 import Point from './Point'
 import Connector from './Connector'
-import {NormalizedPoint} from '$studio/animationTimeline/types'
+import {NormalizedPoint} from '$studio/AnimationTimelinePanel/types'
 
 type Props = {
   variableId: string

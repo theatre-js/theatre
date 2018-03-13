@@ -41,12 +41,17 @@
       "^.+\\.tsx?$": "ts-jest"
     },
     "moduleFileExtensions": [
-      "ts",
       "tsx",
+      "ts",
       "js",
       "jsx",
       "json",
       "node"
+    ],
+    "modulePathIgnorePatterns": [
+      "<rootDir>/bundles",
+      "<rootDir>/xeno",
+      "<rootDir>/webpack"
     ],
     "globals": {
       "ts-jest": {
@@ -111,7 +116,8 @@
     "html-webpack-plugin": "^2.29.0",
     "husky": "^0.14.3",
     "immer": "^0.7.0",
-    "jest": "^21.2.1",
+    "jest": "^22.4.2",
+    "json-touch-patch": "^0.11.2",
     "json2csv": "^3.11.4",
     "lodash": "^4.17.4",
     "mock-fs": "^4.4.1",

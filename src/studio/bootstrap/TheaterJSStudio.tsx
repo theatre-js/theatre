@@ -24,9 +24,9 @@ export default class TheaterJSStudio {
     this.atom = configureAtom(this.store)
     this.componentInstances = new Map()
 
-    this._lbCommunicator = new LBCommunicator({
-      backendUrl: `${window.location.protocol}//${window.location.hostname}:${process.env.studio.socketPort}`,
-    })
+    // this._lbCommunicator = new LBCommunicator({
+    //   backendUrl: `${window.location.protocol}//${window.location.hostname}:${process.env.studio.socketPort}`,
+    // })
   }
 
   run() {
@@ -36,11 +36,11 @@ export default class TheaterJSStudio {
       window.requestAnimationFrame(onAnimationFrame)
     }
     window.requestAnimationFrame(onAnimationFrame)
-    this._lbCommunicator.getSocket().then(() => {
-      this._lbCommunicator.request('ping', 'pingalu').then((res) => {
-        console.log('res', res)
-      })
-    })
+    // this._lbCommunicator.getSocket().then(() => {
+    //   this._lbCommunicator.request('ping', 'pingalu').then((res) => {
+    //     console.log('res', res)
+    //   })
+    // })
     this.store.runRootSaga()
 
     this._mountElement()

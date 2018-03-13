@@ -116,3 +116,9 @@ declare module 'socket.io' {
   const a: any
   export default a
 }
+
+declare module 'json-touch-patch' {
+  type Diff = $FixMe
+  const patch: <State>(s: State, diffs: Array<Diff>) => State
+  export default patch
+}

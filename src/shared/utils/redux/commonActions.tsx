@@ -1,7 +1,7 @@
 
 
 import {actionCreator} from '$shared/utils'
-import {Pair} from '$shared/utils/sagas/multiReduceState.js'
+import {Pair} from '$shared/utils/sagas/multiReduceState'
 /**
  * @note All these functions are available at dev time through `$s.shortcuts`.
  * Example: `$s.shortcuts.setStateAction({foo: 'bar'})` would replace the state
