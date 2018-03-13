@@ -11,6 +11,7 @@ const initialState: WorkspaceNamespaceState = {
         },
         configuration: {
           pathToTimeline: [
+            'persistedState',
             'componentModel',
             'componentDescriptors',
             'custom',

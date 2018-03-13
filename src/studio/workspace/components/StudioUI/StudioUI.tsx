@@ -540,10 +540,10 @@ export class StudioUI extends StudioComponent<IProps, State> {
 
 export default connect((state: IStoreState) => {
   const panelsBoundaries = _.mapValues(
-    _.get(state, ['workspace', 'panels', 'byId']),
+    _.get(state, ['persistedState', 'workspace', 'panels', 'byId']),
     panel => panel.boundaries,
   )
-  const visiblePanels = _.get(state, ['workspace', 'panels', 'listOfVisibles'])
+  const visiblePanels = _.get(state, ['persistedState', 'workspace', 'panels', 'listOfVisibles'])
   return {
     panelsBoundaries,
     visiblePanels,

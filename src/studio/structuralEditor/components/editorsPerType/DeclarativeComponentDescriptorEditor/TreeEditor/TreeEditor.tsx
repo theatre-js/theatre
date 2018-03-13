@@ -658,6 +658,7 @@ class TreeEditor extends StudioComponent<IProps, State> {
 
 export default connect((s: IStoreState, op: IOwnProps) => {
   const componentDescriptors = _.get(s, [
+    'persistedState',
     'componentModel',
     'componentDescriptors',
   ])
