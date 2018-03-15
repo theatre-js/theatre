@@ -6,7 +6,7 @@ export type ServerEvent =
   | {type: 'connection'; socket: Socket}
   | {type: 'error'; error: $FixMe}
 
-export const getChannelFromSocketServer = (
+export const getChannelOfConnectionsFromSocketServer = (
   server: SocketServer,
 ): Channel<$FixMe> => {
   return eventChannel(emitToChannel => {

@@ -4,6 +4,7 @@
 type $FixMe = any
 /** For `any`s that we don't care about */
 type $IntentionalAny = any
+type $AnyBecauseOfBugInTS = any
 
 interface Window {
   __REACT_DEVTOOLS_GLOBAL_HOOK__: any
@@ -49,6 +50,10 @@ type DevSpecificEnvironmentVariables = {
   }
 }
 
+type TestSpecificEnvironmentVariables = {
+  NODE_ENV: 'test'
+}
+
 type ProductionSpecificEnvironmentVariables = {
   NODE_ENV: 'production'
 }
@@ -58,6 +63,7 @@ type ProductionSpecificEnvironmentVariables = {
 type EnvironmentVariables =
   | (CommonEnvironmentVariables & DevSpecificEnvironmentVariables)
   | (CommonEnvironmentVariables & ProductionSpecificEnvironmentVariables)
+  | (CommonEnvironmentVariables & TestSpecificEnvironmentVariables)
 
 declare var process: {
   env: EnvironmentVariables
@@ -70,7 +76,7 @@ declare var module: {
   }
 }
 
-type Generator_<A, ReturnType, YieldType> = Generator
+interface Generator_<A, ReturnType, YieldType> extends Generator {}
 
 declare module '*.svg' {
   var s: string
@@ -121,4 +127,9 @@ declare module 'json-touch-patch' {
   type Diff = $FixMe
   const patch: <State>(s: State, diffs: Array<Diff>) => State
   export default patch
+}
+
+declare module 'lodash/fp/update' {
+  const update: $FixMe
+  export default update
 }

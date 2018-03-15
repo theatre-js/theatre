@@ -1,12 +1,12 @@
 import _ from 'lodash'
 
-const context = require.context('$lb/', true, /\.lfEndpoint\.tsx$/)
+const context = require.context('$lf/', true, /\.endpointForLB\.tsx$/)
 const listOfModulePaths: Array<string> = context.keys()
 const requireModuleByPath = context
 const handlersByName = _.mapValues(
   _.keyBy(listOfModulePaths, s => {
     const matches: Array<string> = s.match(
-      /\/([a-zA-Z]+)\.lfEndpoint\.tsx$/,
+      /\/([a-zA-Z]+)\.endpointForLB\.tsx$/,
     ) as $IntentionalAny
     return matches[1]
   }),

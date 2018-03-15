@@ -4,7 +4,7 @@ import {
   ProjectsNamespaceState,
   StuffInTheaterJsonFile,
 } from '$src/lb/projects/types'
-import {StoreState as LBStoreState} from '$src/lb/types'
+import {LBStoreState as LBStoreState} from '$src/lb/types'
 import {reduceStateAction} from '$src/lb/common/actions'
 import {Task} from 'redux-saga'
 import {omit} from 'lodash'

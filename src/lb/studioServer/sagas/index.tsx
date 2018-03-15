@@ -1,6 +1,5 @@
-
 import {
-  getChannelFromSocketServer,
+  getChannelOfConnectionsFromSocketServer,
   getChannelFromSocket,
   SocketServer,
   ServerEvent,
@@ -42,23 +41,26 @@ export default function* studioServerRootSaga(): Generator_<
 function* handleServer(
   server: SocketServer,
 ): Generator_<$FixMe, $FixMe, $FixMe> {
-  const eventsChannel = yield call(getChannelFromSocketServer, server)
+  const connectionsChannel = yield call(
+    getChannelOfConnectionsFromSocketServer,
+    server,
+  )
   try {
     while (true) {
-      const serverEvent: ServerEvent = yield take(eventsChannel)
+      const serverEvent: ServerEvent = yield take(connectionsChannel)
       if (serverEvent.type === 'error') {
         // @todo
         console.error(`Error from socket server`, serverEvent.error)
       } else {
-        yield fork(handleSocket, serverEvent.socket)
+        yield fork(handleConnection, serverEvent.socket)
       }
     }
   } finally {
-    eventsChannel.close()
+    connectionsChannel.close()
   }
 }
 
-function* handleSocket(socket: Socket): Generator_<$FixMe, $FixMe, $FixMe> {
+function* handleConnection(socket: Socket): Generator_<$FixMe, $FixMe, $FixMe> {
   const socketChannel = yield call(getChannelFromSocket, socket)
 
   try {

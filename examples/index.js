@@ -5,4 +5,6 @@ import React from 'react'
 import {render} from 'react-dom'
 import SampleApp from './SampleApp'
 
-render(<SampleApp />, (document.getElementById('root'): $FixMe))
+window.TheaterJS.run('')
+
+render(<SampleApp />, (document.getElementById('root')))

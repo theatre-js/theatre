@@ -1,7 +1,7 @@
 import StandardStore from '$lb/bootstrap/StandardStore'
 import rootReducer from '$lb/bootstrap/rootReducer'
 // import rootSaga from '$lb/bootstrap/rootSaga'
-import {StoreState} from '$lb/types'
+import {LBStoreState} from '$lb/types'
 
 type Fn0<R> = (...rest: Array<void>) => Generator_<mixed, R, mixed>
 type Fn1<T1, R> = (t1: T1, ...rest: Array<void>) => Generator_<mixed, R, mixed>
@@ -42,7 +42,7 @@ type Fn6<T1, T2, T3, T4, T5, T6, R> = (
 ) => Generator_<mixed, R, mixed>
 
 type Return<R> = {
-  store: StandardStore<StoreState, any>
+  store: StandardStore<LBStoreState, any>
   task: {done: Promise<R>}
 }
 

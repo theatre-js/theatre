@@ -4,24 +4,28 @@ import {call, put, fork, select, takeLatest} from 'redux-saga/effects'
 import {delay} from 'redux-saga'
 import fse from 'fs-extra'
 import deepEqual from 'deep-equal'
-import {bootstrapAction, mergeStateAction} from '$lb/common/actions'
+import {bootstrapAction, setStateAction} from '$lb/common/actions'
 import pickPathsFromObject from 'lodash/pick'
+import spreadPaths from '$src/shared/utils/spreadPaths'
 
-const pathToPersistenceFile = path.join(app.getPath('userData'), 'state.json')
+export const pathToPersistenceFile =
+  process.env.NODE_ENV === 'test'
+    ? '/foo/state.json'
+    : path.join(app.getPath('userData'), 'state.json')
 
-const whitelistOfPartsOfStateToPersist = [['projects', 'listOfPaths']]
+export const whitelistOfPartsOfStateToPersist = [['projects', 'listOfPaths']]
 
 export default function* statePersistorRootSaga(): Generator_<
   $FixMe,
   $FixMe,
   $FixMe
 > {
-  yield call(loadState)
+  yield call(_loadState)
   yield fork(persistStateChanges)
   yield null
 }
 
-function* loadState(): Generator_<$FixMe, $FixMe, $FixMe> {
+export function* _loadState(): Generator_<$FixMe, $FixMe, $FixMe> {
   // return yield put(bootstrapAction())
 
   const fileExists: boolean = yield call(fse.pathExists, pathToPersistenceFile)
@@ -42,7 +46,14 @@ function* loadState(): Generator_<$FixMe, $FixMe, $FixMe> {
     // @todo report this
   }
 
-  yield put(mergeStateAction(jsonData))
+  const oldState = yield select()
+  const newState = spreadPaths(
+    whitelistOfPartsOfStateToPersist,
+    jsonData,
+    oldState,
+  )
+
+  yield put(setStateAction(newState))
   return yield put(bootstrapAction())
 }
 

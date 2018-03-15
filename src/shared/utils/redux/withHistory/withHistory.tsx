@@ -46,7 +46,7 @@ export type StateWithHistory<InnerState extends {}> = InnerState & {
   '@@tempActions': Array<TempAction>
 }
 
-export const wrapReducerWithHistory = <
+export const withHistory = <
   PersistedState,
   InnerReducer extends Reducer<PersistedState>,
   FullState extends StateWithHistory<PersistedState>

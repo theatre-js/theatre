@@ -1,5 +1,5 @@
 import mock from 'mock-fs'
-import isPathAProject from './isPathAProject.lfEndpoint'
+import isPathAProject from './isPathAProject.endpointForLf'
 import {runSingleSaga} from '$lb/testUtils'
 
 describe('isPathAProject()', () => {

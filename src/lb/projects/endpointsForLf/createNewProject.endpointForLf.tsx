@@ -1,11 +1,11 @@
 
 import fse from 'fs-extra'
 import path from 'path'
-import {StoreState} from '$lb/types'
+import {LBStoreState} from '$lb/types'
 import {
   default as recogniseProject,
   ErrorTypes as RecognizeProjectErrorTypes,
-} from './recogniseProject.lfEndpoint'
+} from './recogniseProject.endpointForLf'
 import { call, select } from 'redux-saga/effects';
 
 type ErrorTypes =
@@ -41,7 +41,7 @@ export default function* createNewProject(params: {
   }
 
   const filePath = path.join(params.folderPath, 'theater.json')
-  const state: StoreState = yield select()
+  const state: LBStoreState = yield select()
 
   if (state.projects.listOfPaths.indexOf(filePath) !== -1) {
     return {type: 'error', errorType: 'projectAlreadyRecognised'}

@@ -1,4 +1,4 @@
 
-import {StoreState as LBStoreState} from '$lb/types'
+import {LBStoreState as LBStoreState} from '$lb/types'
 
 export type MirrorOfLBStateNamespace = undefined | null | LBStoreState

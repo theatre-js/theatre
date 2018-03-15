@@ -4,9 +4,9 @@ import actionCreator from '$shared/utils/redux/actionCreator'
 import { undoAction, redoAction, tempActionGroup } from './actions';
 import {
   WithHistoryConfig,
-  wrapReducerWithHistory,
+  withHistory,
   StateWithHistory,
-} from './wrapReducerWithHistory'
+} from './withHistory'
 
 type InnerState = {num: number}
 
@@ -29,7 +29,7 @@ const makeStore = (
       return s
     }
   }
-  const outerReducer = wrapReducerWithHistory(
+  const outerReducer = withHistory(
     (innerReducer as $IntentionalAny) as Reducer<InnerState>,
     config,
   )
@@ -44,7 +44,7 @@ const emptyHistory = {
   innerState: {num: 0}
 }
 
-describe(`wrapReducerWithHistory`, () => {
+describe(`withHistory()`, () => {
   let store: Store<StateWithHistory<InnerState>>
   beforeEach(() => {
     store = makeStore(undefined)

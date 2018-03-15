@@ -13,10 +13,10 @@ import {Pair} from '$shared/utils/sagas/multiReduceState'
  * Takes a reducer and returns a new reducer that acts the same as the original reducer, but
  * also recognizes and reduces these three actions: mergeStateAction, setStateAction, resetStateAction
  */
-export default function wrapRootReducer<State, Action>(
+export default function wrapRootReducer<State, Action extends {type: string, payload: mixed}>(
   reducer: Reducer<State, Action>,
 ): Reducer<State, Action> {
-  return (state: State | void, action: Action): State => {
+  return (state: State | undefined, action: Action): State => {
     if (typeof action === 'object' && action !== null) {
       // mergeStateAction
       if (action.type === mergeStateAction.type) {
@@ -40,7 +40,7 @@ export default function wrapRootReducer<State, Action>(
               state,
             )} given`,
           )
-        return {...(state || {}), ...action.payload}
+        return {...(state || {}) as $AnyBecauseOfBugInTS, ...action.payload}
 
         // setStateAction
       } else if (action.type === setStateAction.type) {
@@ -62,7 +62,7 @@ export default function wrapRootReducer<State, Action>(
           )
 
         return Array.isArray(action.payload)
-          ? {...(state || {}), ...pick(initialState, action.payload)}
+          ? {...(state || {}) as $AnyBecauseOfBugInTS, ...pick(initialState, action.payload) as $AnyBecauseOfBugInTS}
           : initialState
       } else if (action.type === multiReduceStateAction.type) {
         // debugger

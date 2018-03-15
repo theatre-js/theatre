@@ -1,5 +1,5 @@
 import mock from 'mock-fs'
-import recogniseProject from './recogniseProject.lfEndpoint'
+import recogniseProject from './recogniseProject.endpointForLf'
 import {runSingleSaga} from '$lb/testUtils'
 import {call} from 'redux-saga/effects'
 

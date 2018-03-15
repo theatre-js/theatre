@@ -1,5 +1,5 @@
 import fse from 'fs-extra'
-import {StoreState} from '$lb/types'
+import {LBStoreState} from '$lb/types'
 import {multiReduceState} from '$shared/utils'
 import {select, call} from 'redux-saga/effects'
 
@@ -12,7 +12,7 @@ export default function* recogniseProject(params: {
   {type: 'ok'} | {type: 'error'; errorType: ErrorTypes},
   $FixMe
 > {
-  const state: StoreState = yield select()
+  const state: LBStoreState = yield select()
 
   if (state.projects.listOfPaths.indexOf(params.filePath) !== -1) {
     return {type: 'error', errorType: 'projectAlreadyRecognised'}

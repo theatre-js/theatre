@@ -29,11 +29,12 @@ module.exports = (env: Envs) => {
       __dirname: true,
       __filename: true,
     }
+    // c.externals = [/^[a-zA-Z0-9\@]+/]
     c.externals = (_: {}, request: any, callback: any) => {
       if (request.match(/webpack\/hot\/poll/)) {
         callback(null, false)
       } else {
-        callback(null, !!request.match(/^[a-z\-@0-9]+[^!]*$/))
+        callback(null, !!request.match(/^[a-zA-Z\-@0-9]+[^!]*$/))
       }
     }
     // c.plugins.push(new webpack.HotModuleReplacementPlugin())

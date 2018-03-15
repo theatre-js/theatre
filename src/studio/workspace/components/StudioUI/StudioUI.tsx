@@ -18,7 +18,7 @@ import css from './StudioUI.css'
 import {
   undoAction,
   redoAction,
-} from '../../../../shared/utils/redux/historyReducer/actions'
+} from '$shared/utils/redux/withHistory/actions'
 
 const classes = resolveCss(css)
 

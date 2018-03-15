@@ -1,4 +1,4 @@
-import {StoreState} from '$lb/types'
+import {LBStoreState} from '$lb/types'
 import {multiReduceState} from '$shared/utils'
 import _ from 'lodash'
 import {select} from 'redux-saga/effects'
@@ -12,7 +12,7 @@ export default function* unrecogniseProject(params: {
   {type: 'ok'} | {type: 'error'; errorType: ErrorTypes},
   $FixMe
 > {
-  const state: StoreState = yield select() as $FixMe
+  const state: LBStoreState = yield select() as $FixMe
 
   if (state.projects.listOfPaths.indexOf(params.filePath) === -1) {
     return {type: 'error', errorType: 'projectNotRecognised'}

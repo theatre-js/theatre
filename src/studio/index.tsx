@@ -13,7 +13,7 @@ import createRootComponentForReact from './componentModel/react/createRootCompon
 import '$shared/DataVerse/devtoolsFormatters/setup'
 
 const theaterStudioInstance = new TheaterJSStudio()
-theaterStudioInstance.run()
+// theaterStudioInstance.run()
 
 if (process.env.NODE_ENV === 'development') {
   // @ts-ignore
