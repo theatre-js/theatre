@@ -2,14 +2,15 @@ import React from 'react'
 import Point from './Point'
 import Connector from './Connector'
 import {NormalizedPoint} from '$studio/AnimationTimelinePanel/types'
+import {svgPaddingY} from './BoxView'
 
 type Props = {
   variableId: string
   points: NormalizedPoint[]
-  extremums: $FixMe
   color: {name: string; normal: string; darkened: string}
   getSvgSize: Function
   getDuration: Function
+  addPoint: Function
   showPointValuesEditor: Function
   showContextMenuForPoint: Function
   showContextMenuForConnector: Function
@@ -26,35 +27,28 @@ interface IState {
 }
 
 class Variable extends React.PureComponent<Props, IState> {
+  extremums: [number, number]
+
   constructor(props: Props) {
     super(props)
 
+    this.extremums = this._getExtremums(props.points)
     this.state = {
-      points: this._getNormalizedPoints(props.points, props.extremums),
+      points: this._getNormalizedPoints(props.points),
     }
   }
 
   componentWillReceiveProps(nextProps: Props) {
-    // const {extremums} = this.props
-    // const {extremums: nextExtremums} = nextProps
-    // console.log(extremums === nextExtremums)
-    // if (extremums[0] !== nextExtremums[0] || extremums[1] !== nextExtremums[1]) {
-    //   this.setState(() => ({
-    //     points: this._getNormalizedPoints(nextProps.points, nextExtremums)
-    //   }))
-    // }
-    if (nextProps.extremums !== this.props.extremums) {
+    if (this.props.points !== nextProps.points) {
+      this.extremums = this._getExtremums(nextProps.points)
       this.setState(() => ({
-        points: this._getNormalizedPoints(
-          nextProps.points,
-          nextProps.extremums,
-        ),
+        points: this._getNormalizedPoints(nextProps.points),
       }))
     }
   }
 
-  _getNormalizedPoints(points: $FixMe, extremums: $FixMe) {
-    const extDiff = extremums[1] - extremums[0]
+  _getNormalizedPoints(points: $FixMe) {
+    const extDiff = this.extremums[1] - this.extremums[0]
     const duration = this.props.getDuration()
     return points.map((point: $FixMe) => {
       const {time, value, interpolationDescriptor} = point
@@ -62,10 +56,41 @@ class Variable extends React.PureComponent<Props, IState> {
         _t: time,
         _value: value,
         time: time / duration * 100,
-        value: (extremums[1] - value) / extDiff * 100,
+        value: (this.extremums[1] - value) / extDiff * 100,
         interpolationDescriptor: {...interpolationDescriptor},
       }
     })
+  }
+
+  _getExtremums(points: $FixMe): [number, number] {
+    if (points.length === 0) return [-5, 5]
+
+    let min, max
+    points.forEach((point, index) => {
+      const {value} = point
+      const nextPoint = points[index + 1]
+      let candids = [value]
+      if (nextPoint != null) {
+        candids = candids.concat(
+          value +
+            point.interpolationDescriptor.handles[1] *
+              (nextPoint.value - value),
+          nextPoint.value +
+            point.interpolationDescriptor.handles[3] *
+              (value - nextPoint.value),
+        )
+      }
+      const localMin = Math.min(...candids)
+      const localMax = Math.max(...candids)
+      min = min == null ? localMin : Math.min(min, localMin)
+      max = max == null ? localMax : Math.max(max, localMax)
+    })
+    if (min === max) {
+      min -= 5
+      max += 5
+    }
+
+    return [min, max]
   }
 
   showPointValuesEditor = (pointIndex: number, params: $FixMe) => {
@@ -94,7 +119,12 @@ class Variable extends React.PureComponent<Props, IState> {
     pointIndex: number,
     change: {time: number; value: number},
   ) => {
-    this.props.changePointPositionBy(this.props.variableId, pointIndex, change)
+    this.props.changePointPositionBy(
+      this.props.variableId,
+      pointIndex,
+      change,
+      this.extremums,
+    )
   }
 
   changePointHandlesBy = (
@@ -120,11 +150,29 @@ class Variable extends React.PureComponent<Props, IState> {
     this.props.makeHandleHorizontal(this.props.variableId, pointIndex, side)
   }
 
+  mouseDownHandler = (e: $FixMe) => {
+    e.stopPropagation()
+    this.props.addPoint(
+      this.props.variableId,
+      this.extremums,
+      e.clientX,
+      e.clientY,
+    )
+  }
+
   render() {
     const {color} = this.props
     const {points} = this.state
-    return (
-      <g fill={color.normal} stroke={color.normal}>
+    return [
+      <rect
+        key="hit-zone"
+        fill="transparent"
+        width="100%"
+        y={-svgPaddingY / 2}
+        style={{height: `calc(100% + ${svgPaddingY}*1px)`}}
+        onMouseDown={this.mouseDownHandler}
+      />,
+      <g key="variable" fill={color.normal} stroke={color.normal}>
         {points.map((point: $FixMe, index: number) => {
           const prevPoint = points[index - 1]
           const nextPoint = points[index + 1]
@@ -181,8 +229,8 @@ class Variable extends React.PureComponent<Props, IState> {
             </g>
           )
         })}
-      </g>
-    )
+      </g>,
+    ]
   }
 }
 

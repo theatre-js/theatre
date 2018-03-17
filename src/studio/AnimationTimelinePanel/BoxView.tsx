@@ -42,44 +42,8 @@ type IState = {
   pointValuesEditorProps: undefined | null | Object
   variableIdToColorIndexMap: {[variableId: string]: number}
 }
-const resetExtremums = (pathToVariable: string[]) => {
-  return reduceStateAction(pathToVariable, variable => {
-    const {points} = variable
-    if (points.length === 0) return variable
 
-    let min, max
-    points.forEach((point, index) => {
-      const {value} = point
-      const nextPoint = points[index + 1]
-      let candids = [value]
-      if (nextPoint != null) {
-        candids = candids.concat(
-          value +
-            point.interpolationDescriptor.handles[1] *
-              (nextPoint.value - value),
-          nextPoint.value +
-            point.interpolationDescriptor.handles[3] *
-              (value - nextPoint.value),
-        )
-      }
-      const localMin = Math.min(...candids)
-      const localMax = Math.max(...candids)
-      min = min == null ? localMin : Math.min(min, localMin)
-      max = max == null ? localMax : Math.max(max, localMax)
-    })
-    if (min === max) {
-      min -= 5
-      max += 5
-    }
-
-    return {
-      ...variable,
-      extremums: [min, max],
-    }
-  })
-}
-
-const svgPaddingY = 20
+export const svgPaddingY = 20
 export const colors = [
   {name: 'blue', normal: '#3AAFA9', darkened: '#345b59'},
   {name: 'purple', normal: '#575790', darkened: '#323253'},
@@ -99,15 +63,6 @@ class BoxView extends StudioComponent<IProps, IState> {
         props.variables,
       ),
     }
-  }
-
-  componentDidMount() {
-    this.props.dispatch(
-      resetExtremums([
-        ...this.props.pathToVariables,
-        this.props.activeVariableId,
-      ]),
-    )
   }
 
   componentWillReceiveProps(nextProps: IProps) {
@@ -132,31 +87,20 @@ class BoxView extends StudioComponent<IProps, IState> {
     }, {})
   }
 
-  _resetExtremumsOfVariable(variableId: string) {
-    this.props.dispatch(
-      resetExtremums([...this.props.pathToVariables, variableId]),
-    )
-  }
-
-  addPoint = (e: $FixMe, activeMode: string) => {
-    if (activeMode !== MODE_CMD) return
-
-    e.stopPropagation()
+  addPoint = (variableId: string, extremums: $FixMe, clientX: number, clientY: number) => {
     const {
       svgHeight,
       svgWidth,
       duration,
-      variables,
-      activeVariableId,
+      activeMode,
       dispatch,
       pathToVariables,
     } = this.props
-    const {extremums} = variables.find(
-      ({id}: {id: string}) => id === activeVariableId,
-    )
+    if (activeMode !== MODE_CMD) return
+
     const {top, left} = this.svgArea.getBoundingClientRect()
-    const time = e.clientX - left + 5
-    const value = e.clientY - top + 5 - 0.5 * svgPaddingY
+    const time = clientX - left + 5
+    const value = clientY - top + 5 - 0.5 * svgPaddingY
     const pointProps: Point = {
       time: time * duration / svgWidth,
       value: -value * (extremums[1] - extremums[0]) / (svgHeight - svgPaddingY),
@@ -168,7 +112,7 @@ class BoxView extends StudioComponent<IProps, IState> {
       },
     }
     dispatch(
-      reduceStateAction([...pathToVariables, activeVariableId], variable => {
+      reduceStateAction([...pathToVariables, variableId], variable => {
         const points = variable.points
         let atIndex = points.findIndex(point => point.time > pointProps.time)
         if (atIndex === -1) atIndex = points.length
@@ -180,7 +124,6 @@ class BoxView extends StudioComponent<IProps, IState> {
         }
       }),
     )
-    this._resetExtremumsOfVariable(activeVariableId)
   }
 
   pathToPoints = (variableId: string) => [
@@ -202,7 +145,6 @@ class BoxView extends StudioComponent<IProps, IState> {
         return points.slice(0, pointIndex).concat(points.slice(pointIndex + 1))
       }),
     )
-    this._resetExtremumsOfVariable(variableId)
   }
 
   setPointPositionTo = (
@@ -216,18 +158,14 @@ class BoxView extends StudioComponent<IProps, IState> {
         ...newPosition,
       })),
     )
-
-    this._resetExtremumsOfVariable(variableId)
   }
 
   changePointPositionBy = (
     variableId: VariableID,
     pointIndex: number,
     change: PointPosition,
+    extremums: $FixMe,
   ) => {
-    const {extremums} = this.props.variables.find(
-      ({id}: {id: string}) => id === variableId,
-    )
     const extDiff = extremums[1] - extremums[0]
     this.props.dispatch(
       reduceStateAction(this.pathToPoint(variableId, pointIndex), point => ({
@@ -236,8 +174,6 @@ class BoxView extends StudioComponent<IProps, IState> {
         value: point.value + extremums[1] - change.value * extDiff / 100,
       })),
     )
-
-    this._resetExtremumsOfVariable(variableId)
   }
 
   changePointHandlesBy = (
@@ -296,8 +232,6 @@ class BoxView extends StudioComponent<IProps, IState> {
         ]),
       )
     }
-
-    this._resetExtremumsOfVariable(variableId)
   }
 
   addConnector = (variableId: VariableID, pointIndex: number) => {
@@ -310,7 +244,6 @@ class BoxView extends StudioComponent<IProps, IState> {
         },
       })),
     )
-    this._resetExtremumsOfVariable(variableId)
   }
 
   removeConnector = (variableId: VariableID, pointIndex: number) => {
@@ -323,7 +256,6 @@ class BoxView extends StudioComponent<IProps, IState> {
         },
       })),
     )
-    this._resetExtremumsOfVariable(variableId)
   }
 
   makeHandleHorizontal = (
@@ -361,7 +293,6 @@ class BoxView extends StudioComponent<IProps, IState> {
         ),
       )
     }
-    this._resetExtremumsOfVariable(variableId)
   }
 
   showPointValuesEditor = (
@@ -444,7 +375,6 @@ class BoxView extends StudioComponent<IProps, IState> {
             ref={svg => {
               if (svg != null) this.svgArea = svg
             }}
-            onMouseDown={(e: $FixMe) => this.addPoint(e, activeMode)}
           >
             <svg
               viewBox={`0 0 ${svgWidth} ${svgHeight - svgPaddingY}`}
@@ -472,6 +402,7 @@ class BoxView extends StudioComponent<IProps, IState> {
                 variableIdToColorIndexMap={variableIdToColorIndexMap}
                 getSvgSize={this.getSvgSize}
                 getDuration={this.getDuration}
+                addPoint={this.addPoint}
                 showPointValuesEditor={this.showPointValuesEditor}
                 showContextMenuForPoint={this.showContextMenuForPoint}
                 showContextMenuForConnector={this.showContextMenuForConnector}

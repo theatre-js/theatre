@@ -9,6 +9,7 @@ interface IProps {
   variableIdToColorIndexMap: {[variableId: string]: number}
   getSvgSize: Function
   getDuration: Function
+  addPoint: Function
   showPointValuesEditor: Function
   showContextMenuForPoint: Function
   showContextMenuForConnector: Function
@@ -27,15 +28,15 @@ class Variables extends React.PureComponent<IProps, IState> {
     return _.sortBy(
       variables,
       (variable: $FixMe) => variable.id === activeVariableId,
-    ).map(({id, points, extremums}) => (
+    ).map(({id, points}) => (
       <Variable
         key={id}
         variableId={id}
         points={points}
-        extremums={extremums}
         color={colors[variableIdToColorIndexMap[id]]}
         getSvgSize={this.props.getSvgSize}
         getDuration={this.props.getDuration}
+        addPoint={this.props.addPoint}
         showPointValuesEditor={this.props.showPointValuesEditor}
         showContextMenuForPoint={this.props.showContextMenuForPoint}
         showContextMenuForConnector={this.props.showContextMenuForConnector}
