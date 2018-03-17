@@ -19,7 +19,6 @@ const two = {
               id: 'translationY',
               component: 'div.ball',
               property: 'translationY',
-              // extremums: [-100, 0],
               points: [
                 {
                   time: 1550,
@@ -48,7 +47,6 @@ const two = {
               id: 'translationYP',
               component: 'div.ball',
               property: 'translationYP',
-              // extremums: [-100, 0],
               points: [
                 {
                   time: 1550,
@@ -77,7 +75,6 @@ const two = {
               id: 'translationYZ',
               component: 'div.ball',
               property: 'translationYZ',
-              // extremums: [-100, 0],
               points: [
                 {
                   time: 1550,
