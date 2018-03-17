@@ -38,9 +38,14 @@ class ExplorerPanel extends StudioComponent<Props, State> {
 
   _subscribeToHookEvents(hook: undefined | null | Object) {
     if (hook == null) throw Error('Dev tools hook not found!')
-    hook.sub('renderer', data => {
-      this.rendererID = data.id
-      this.debouncedAddNodes(hook)
+    hook.sub('root', (data: $FixMe) => {
+      this.walkTree(data.internalInstance, (node) => {
+        if (node.key === 'TheaterJS/Core/RenderCurrentCanvas#RenderCurrentCanvas') {
+          this.rendererID = data.renderer
+          this.debouncedAddNodes(hook)
+          return true
+        }
+      })
     })
     hook.sub('mount', data => {
       if (data.renderer !== this.rendererID) return
