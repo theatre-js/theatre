@@ -23,4 +23,7 @@ if (process.env.NODE_ENV === 'development') {
 const reactExport = {
   Root: createRootComponentForReact(theaterStudioInstance),
 }
-export {theaterStudioInstance as studio, reactExport as react}
+
+const run = theaterStudioInstance.run.bind(theaterStudioInstance)
+
+export {theaterStudioInstance as studio, reactExport as react, run}
