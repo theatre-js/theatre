@@ -1,22 +1,16 @@
-import {
-  applyMiddleware,
-  createStore,
-  compose,
-  Reducer,
-  Store,
-} from 'redux'
+import {applyMiddleware, createStore, compose, Reducer, Store} from 'redux'
 import {call} from 'redux-saga/effects'
 import createSagaMiddleware from 'redux-saga'
-import { identity } from 'lodash';
+import {identity} from 'lodash'
 
 type RootSaga<State, Action> = (
   store: StandardStore<State, Action>,
 ) => Generator_<mixed, mixed, mixed>
 
 type ConstructorProps<State, Action> = {
-  initialState?: State,
-  rootSaga: RootSaga<State, Action>,
-  rootReducer: Reducer<State>,
+  initialState?: State
+  rootSaga: RootSaga<State, Action>
+  rootReducer: Reducer<State>
 }
 
 /**
@@ -67,18 +61,23 @@ export default class StandardStore<State, Action> {
     return store
   }
 
-  runRootSaga() {
-    return this.sagaMiddleware.run(this.rootSaga, this)
+  runRootSaga(arg?: mixed) {
+    return this.sagaMiddleware.run(this.rootSaga, arg)
   }
 
-  runSaga: RunSagaFn = (fn: $IntentionalAny, ...args: $IntentionalAny[]): $FixMe => {
+  runSaga: RunSagaFn = (
+    fn: $IntentionalAny,
+    ...args: $IntentionalAny[]
+  ): $FixMe => {
     // @ts-ignore ignore
     return this.reduxStore.sagaMiddleware.run(preventToThrow(fn), ...args).done
   }
 }
 
 function preventToThrow(fn: () => Generator_<$FixMe, $FixMe, $FixMe>) {
-  return function* callAndCatch(...args: $IntentionalAny[]): Generator_<$FixMe, $FixMe, $FixMe> {
+  return function* callAndCatch(
+    ...args: $IntentionalAny[]
+  ): Generator_<$FixMe, $FixMe, $FixMe> {
     try {
       // @ts-ignore
       return yield call(fn, ...args)
@@ -134,7 +133,7 @@ export type RunSagaFn = (<
   T5,
   T6,
   R,
-  Fn extends Fn6<T1, T2, T3, T4, T5, T6, R>,
+  Fn extends Fn6<T1, T2, T3, T4, T5, T6, R>
 >(
   fn: Fn,
   t1: T1,

@@ -12,15 +12,18 @@ import TheaterJSStudio from '$studio/bootstrap/TheaterJSStudio'
 import createRootComponentForReact from './componentModel/react/createRootComponentForReact'
 import '$shared/DataVerse/devtoolsFormatters/setup'
 
-const theaterStudioInstance = new TheaterJSStudio()
+const studio = new TheaterJSStudio()
 // theaterStudioInstance.run()
 
 if (process.env.NODE_ENV === 'development') {
   // @ts-ignore
-  window.studio = theaterStudioInstance
+  window.studio = studio
 }
 
 const reactExport = {
-  Root: createRootComponentForReact(theaterStudioInstance),
+  Root: createRootComponentForReact(studio),
 }
-export {theaterStudioInstance as studio, reactExport as react}
+
+const run = studio.run.bind(studio)
+
+export {studio, reactExport as react, run}

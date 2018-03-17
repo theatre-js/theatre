@@ -25,7 +25,7 @@ export const getChannelOfConnectionsFromSocketServer = (
 }
 
 export type SocketHandshake = $FixMe
-export type Request = {
+export type ShapeOfRequestFromStudio = {
   handshake: SocketHandshake
   type: 'request'
   endpoint: string
@@ -35,7 +35,7 @@ export type Request = {
 
 export type SocketEvent =
   | {handshake: SocketHandshake; type: 'error'; error: $FixMe}
-  | Request
+  | ShapeOfRequestFromStudio
 
 export type ResponseToSocketRequest =
   | {type: 'error'; errorType: 'malformedRequest'}

@@ -5,7 +5,7 @@ import {
   ServerEvent,
   Socket,
   SocketEvent,
-  Request,
+  ShapeOfRequestFromStudio,
 } from './utils'
 import {fork, take, call} from 'redux-saga/effects'
 import Server from 'socket.io'
@@ -23,7 +23,7 @@ const makeSocketServer = (): Promise<SocketServer> => {
   return deferred.promise
 }
 
-export default function* studioServerRootSaga(): Generator_<
+export default function* studioCommsRootSaga(): Generator_<
   $FixMe,
   $FixMe,
   $FixMe
@@ -78,7 +78,9 @@ function* handleConnection(socket: Socket): Generator_<$FixMe, $FixMe, $FixMe> {
   }
 }
 
-function* handleRequest(request: Request): Generator_<$FixMe, $FixMe, $FixMe> {
+function* handleRequest(
+  request: ShapeOfRequestFromStudio,
+): Generator_<$FixMe, $FixMe, $FixMe> {
   const handler = allStudioSocketEndpoints[request.endpoint]
   console.log('request', request.type, request.endpoint)
   if (handler) {
@@ -91,5 +93,11 @@ function* handleRequest(request: Request): Generator_<$FixMe, $FixMe, $FixMe> {
       request.respond({type: 'error', errorType: 'unkown'})
       return
     }
+  } else {
+    // @todo
+    console.error(
+      `Received a request from studio with an unkown handler: ` +
+        String(request.type),
+    )
   }
 }

@@ -12,16 +12,14 @@ const RenderCurrentCanvas = makeReactiveComponent({
   displayName: 'RenderCurrentCanvas',
   getClass: baseClass =>
     baseClass.extend({
-      render(d) {
-        return d.prop('studio').flatMap(studio => {
-          const studioAtom = studio.atom
-
+      render(self) {
+        return self.prop('studioAtom').flatMap(studioAtom => {
           const componentIdToBeRenderedAsCurrentCanvasP = studioAtom
             .pointer()
             .prop('workspace')
             .prop('componentIdToBeRenderedAsCurrentCanvas')
 
-          const childrenP = d
+          const childrenP = self
             .pointer()
             .prop('props')
             .prop('children')
@@ -38,7 +36,7 @@ const RenderCurrentCanvas = makeReactiveComponent({
               return elementify(
                 constant('currentCanvas'),
                 instantiationDescriptorP,
-                d.prop('studio'),
+                self.prop('studio'),
               )
             } else {
               return childrenP.getValue()

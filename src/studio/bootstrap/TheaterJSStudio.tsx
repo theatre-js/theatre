@@ -6,10 +6,12 @@ import StudioRootComponent from './components/StudioRootComponent'
 import {default as StandardStore} from '$lb/bootstrap/StandardStore'
 import configureAtom from './configureAtom'
 import Ticker from '$src/shared/DataVerse/Ticker'
+import {startStudio} from './rootSaga'
 
 type Atom = $FixMe
 
 export default class TheaterJSStudio {
+  _started: boolean
   componentInstances: Map<number, React.ComponentType>
   atom: Atom
   ticker: Ticker
@@ -18,19 +20,28 @@ export default class TheaterJSStudio {
   store: StandardStore<$FixMe, $FixMe>
 
   constructor() {
+    this._started = false
     this._lastComponentInstanceId = 0
     this.ticker = new Ticker()
     this.store = configureStore()
     this.atom = configureAtom(this.store)
     this.componentInstances = new Map()
+    this._lbCommunicator = new LBCommunicator({
+      backendUrl: `${window.location.protocol}//${window.location.hostname}:${
+        process.env.studio.socketPort
+      }`,
+    })
+    this.store.runRootSaga(this)
 
-    // this._lbCommunicator = new LBCommunicator({
-    //   backendUrl: `${window.location.protocol}//${window.location.hostname}:${process.env.studio.socketPort}`,
-    // })
+    this._lbCommunicator.getSocket()
   }
 
-  run() {
-    
+  run(projectPath: string) {
+    if (this._started)
+      throw new Error(`TheaterJS.run() has already been called once`)
+    this._started = true
+
+    this.store.runSaga(startStudio, projectPath)
     const onAnimationFrame = () => {
       this.ticker.tick()
       window.requestAnimationFrame(onAnimationFrame)
@@ -41,7 +52,6 @@ export default class TheaterJSStudio {
     //     console.log('res', res)
     //   })
     // })
-    this.store.runRootSaga()
 
     this._mountElement()
   }

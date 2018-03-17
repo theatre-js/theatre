@@ -7,5 +7,6 @@ export type CommonNamespaceState = {
      * it will be set to true.
      */
     bootstrapped: boolean
-  }
+  },
+  
 }
