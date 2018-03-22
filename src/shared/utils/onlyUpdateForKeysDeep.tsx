@@ -1,4 +1,3 @@
-
 import {shouldUpdate} from 'recompose'
 import deepEqual from 'deep-equal'
 import pick from 'lodash/pick'

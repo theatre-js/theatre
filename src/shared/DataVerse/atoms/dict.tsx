@@ -2,9 +2,12 @@ import {default as AbstractCompositeAtom} from './utils/AbstractCompositeAtom'
 import forEach from 'lodash/forEach'
 import mapValues from 'lodash/mapValues'
 import deriveFromDictAtom from '$shared/DataVerse/derivations/dicts/deriveFromDictAtom'
-import {default as pointer, PointerDerivation} from '$shared/DataVerse/derivations/pointer'
+import {
+  default as pointer,
+  PointerDerivation,
+} from '$shared/DataVerse/derivations/pointer'
 import {UnatomifyDeep} from './utils/types'
-import AbstractDerivedDict from '$src/shared/DataVerse/derivations/dicts/AbstractDerivedDict';
+import AbstractDerivedDict from '$src/shared/DataVerse/derivations/dicts/AbstractDerivedDict'
 
 interface DictAtomChangeType<O> {
   overriddenRefs: Partial<O>
@@ -28,7 +31,10 @@ export class DictAtom<O> extends AbstractCompositeAtom<DictAtomChangeType<O>> {
   }
 
   unboxDeep(): UnatomifyDeep<O> {
-    return mapValues(this._internalMap, v => (v ? v.unboxDeep() : v)) as $IntentionalAny
+    return mapValues(
+      this._internalMap,
+      v => (v ? v.unboxDeep() : v),
+    ) as $IntentionalAny
   }
 
   _assignInitialValue(o: O) {
@@ -59,7 +65,7 @@ export class DictAtom<O> extends AbstractCompositeAtom<DictAtomChangeType<O>> {
       overriddenRefs[propName] = this.prop(propName)
     })
 
-    forEach(overriddenRefs, (v) => {
+    forEach(overriddenRefs, v => {
       if (v) {
         this._unadopt(v as $IntentionalAny)
       }

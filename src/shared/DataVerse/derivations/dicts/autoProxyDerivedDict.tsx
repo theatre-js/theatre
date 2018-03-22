@@ -5,8 +5,8 @@ import {
   IProxyDerivedDict,
 } from './proxyDerivedDict'
 import emptyDict from './emptyDict'
-import Ticker from '$src/shared/DataVerse/Ticker';
-import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation';
+import Ticker from '$src/shared/DataVerse/Ticker'
+import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
 
 class AutoProxyDerivedDict<O> extends AbstractDerivedDict<O> {
   _proxy: IProxyDerivedDict<O>
@@ -15,7 +15,10 @@ class AutoProxyDerivedDict<O> extends AbstractDerivedDict<O> {
   _untapFromProxyChanges: () => void
   _untapFromSourceChanges: () => void
 
-  constructor(sourceD: AbstractDerivation<AbstractDerivedDict<O>>, ticker: Ticker) {
+  constructor(
+    sourceD: AbstractDerivation<AbstractDerivedDict<O>>,
+    ticker: Ticker,
+  ) {
     super()
     this._ticker = ticker
     this._sourceD = sourceD

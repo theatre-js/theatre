@@ -9,7 +9,7 @@ interface IState {}
 class PointValuesEditor extends React.PureComponent<IProps, IState> {
   state = {
     value: String(this.props.initialValue),
-    time: (this.props.initialTime/1000).toFixed(2),
+    time: (this.props.initialTime / 1000).toFixed(2),
   }
 
   componentDidMount() {
@@ -17,7 +17,7 @@ class PointValuesEditor extends React.PureComponent<IProps, IState> {
     this.valueInput.select()
   }
 
-  handleClick = (e) => {
+  handleClick = e => {
     e.stopPropagation()
     if (e.target === this.wrapper) this.props.onClose()
   }
@@ -50,7 +50,7 @@ class PointValuesEditor extends React.PureComponent<IProps, IState> {
   _onSubmit() {
     if (
       this.state.value === String(this.props.initialValue) &&
-      this.state.time === (this.props.initialTime/1000).toFixed(2)
+      this.state.time === (this.props.initialTime / 1000).toFixed(2)
     ) {
       return
     }
@@ -59,7 +59,7 @@ class PointValuesEditor extends React.PureComponent<IProps, IState> {
       value: Number(this.state.value),
     })
   }
-  
+
   handleChange = (e: $FixMe, input: 'time' | 'value') => {
     const {value} = e.target
     if (input === 'time') this.setState(() => ({time: value}))
@@ -70,38 +70,31 @@ class PointValuesEditor extends React.PureComponent<IProps, IState> {
     const {left, top, initialValue, initialTime} = this.props
     return (
       <div
-        ref={c => this.wrapper = c}
+        ref={c => (this.wrapper = c)}
         className={css.wrapper}
         onMouseDown={this.handleClick}
-        onWheel={(e) => e.stopPropagation()}
-        >
-        <div
-          className={css.container}
-          style={{left, top}}
-        >
+        onWheel={e => e.stopPropagation()}
+      >
+        <div className={css.container} style={{left, top}}>
           <div className={css.row}>
-            <span className={css.icon}>
-              {String.fromCharCode(0x25ba)}
-            </span>
+            <span className={css.icon}>{String.fromCharCode(0x25ba)}</span>
             <input
-              ref={c => this.timeInput = c}
+              ref={c => (this.timeInput = c)}
               className={css.input}
               value={this.state.time}
-              onKeyDown={(e) => this.handleKeyDown(e, 'time')}
-              onChange={(e) => this.handleChange(e, 'time')}
+              onKeyDown={e => this.handleKeyDown(e, 'time')}
+              onChange={e => this.handleChange(e, 'time')}
             />
-            </div>
+          </div>
           <div className={css.row}>
-            <span className={css.icon}>
-              {String.fromCharCode(0x25b2)}
-            </span>
-              <input
-                ref={c => this.valueInput = c}
-                className={css.input}
-                value={this.state.value}
-                onKeyDown={(e) => this.handleKeyDown(e, 'value')}
-                onChange={(e) => this.handleChange(e, 'value')}              
-              />
+            <span className={css.icon}>{String.fromCharCode(0x25b2)}</span>
+            <input
+              ref={c => (this.valueInput = c)}
+              className={css.input}
+              value={this.state.value}
+              onKeyDown={e => this.handleKeyDown(e, 'value')}
+              onChange={e => this.handleChange(e, 'value')}
+            />
           </div>
         </div>
       </div>

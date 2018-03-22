@@ -5,7 +5,7 @@ import {Subscriber} from 'react-broadcast'
 import {PanelActiveModeChannel} from '$src/studio/workspace/components/Panel/Panel'
 import {MODE_SHIFT} from '$src/studio/workspace/components/StudioUI/StudioUI'
 import BoxLegends from '$src/studio/AnimationTimelinePanel/BoxLegends'
-import {IStoreState} from '$src/studio/types'
+import {IStudioStoreState} from '$src/studio/types'
 import {
   VariableObject,
   VariableID,
@@ -224,7 +224,7 @@ class VariablesBox extends React.PureComponent<IProps, IState> {
   }
 }
 
-export default connect((s: IStoreState, op: IOwnProps) => {
+export default connect((s: IStudioStoreState, op: IOwnProps) => {
   const pathToVariables = [...op.pathToTimeline, 'variables']
   const variablesState = _.get(s, pathToVariables)
 

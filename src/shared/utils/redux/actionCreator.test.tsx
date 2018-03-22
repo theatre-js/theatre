@@ -1,5 +1,3 @@
-
-
 import actionCreator from '$shared/utils/redux/actionCreator'
 
 describe('$shared/utils/redux/actionCreator()', () => {

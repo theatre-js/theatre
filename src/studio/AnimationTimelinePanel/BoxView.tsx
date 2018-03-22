@@ -1,17 +1,10 @@
-import {
-  React,
-  connect,
-  reduceStateAction,
-  multiReduceStateAction,
-  StudioComponent,
-} from '$studio/handy'
+import {React, connect, StudioComponent} from '$studio/handy'
 import {
   VariableID,
   VariableObject,
   Point,
   PointPosition,
   PointHandles,
-  NormalizedPoint,
 } from '$studio/animationTimelinePanel/types'
 import css from './BoxView.css'
 import Variables from './Variables'
@@ -24,6 +17,10 @@ import MdCancel from 'react-icons/lib/md/cancel'
 import MdDonutSmall from 'react-icons/lib/md/donut-small'
 import MdStars from 'react-icons/lib/md/stars'
 import MdCamera from 'react-icons/lib/md/camera'
+import {
+  reduceStateAction,
+  multiReduceStateAction,
+} from '$shared/utils/redux/commonActions'
 
 interface IOwnProps {
   variables: VariableObject[]

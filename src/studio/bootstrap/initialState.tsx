@@ -1,23 +1,15 @@
 import {default as common} from '$studio/common/initialState'
 import {default as workspace} from '$studio/workspace/initialState'
 import {default as componentModel} from '$studio/componentModel/initialState'
-import {IStoreState} from '../types'
+import {IStorePersistedState, IStoreAhistoricSTate} from '../types'
 
-const initialInnerState = {
+export const initialPersistedState: IStorePersistedState = {
   common,
   workspace,
   componentModel,
 }
 
-const initialState: IStoreState = {
-  ...initialInnerState,
-  '@@history': {
-    currentCommitHash: undefined,
-    commitsByHash: {},
-    listOfCommitHashes: [],
-    innerState: initialInnerState
-  },
-  '@@tempActions': []
+export const initialAhistoricState: IStoreAhistoricSTate = {
+  stateIsHydrated: false,
+  pathToProject: undefined,
 }
-
-export default initialState

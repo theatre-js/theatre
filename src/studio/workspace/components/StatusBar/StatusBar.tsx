@@ -11,7 +11,11 @@ import {MODE_OPTION} from '$src/studio/workspace/components/StudioUI/StudioUI'
 class StatusBar extends React.PureComponent<any, any> {
   render() {
     return (
-      <div className={cx(css.container, {[css.onTop]: this.props.activeMode === MODE_OPTION})}>
+      <div
+        className={cx(css.container, {
+          [css.onTop]: this.props.activeMode === MODE_OPTION,
+        })}
+      >
         <div className={css.leftContainer}>
           <div className={css.item}>
             <MdApps className={css.icon} />

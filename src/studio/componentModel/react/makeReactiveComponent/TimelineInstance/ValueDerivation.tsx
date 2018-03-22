@@ -299,10 +299,9 @@ export default class ValueDerivation extends AbstractDerivation<$FixMe> {
 
     const state = this._state
 
-    const value: mixed = (handlersByState as $IntentionalAny)[state.type].recalculateValue(
-      state,
-      this,
-    )
+    const value: mixed = (handlersByState as $IntentionalAny)[
+      state.type
+    ].recalculateValue(state, this)
 
     this._changeObservedIn.clear()
 
@@ -312,10 +311,9 @@ export default class ValueDerivation extends AbstractDerivation<$FixMe> {
   _determineNewState(startSearchingFromPointIndex: number = 0) {
     const baseState = this._determinNewBaseState(startSearchingFromPointIndex)
 
-    this._state = (handlersByState as $IntentionalAny)[baseState.type].transitionIn(
-      baseState,
-      this,
-    )
+    this._state = (handlersByState as $IntentionalAny)[
+      baseState.type
+    ].transitionIn(baseState, this)
   }
 
   _determinNewBaseState(

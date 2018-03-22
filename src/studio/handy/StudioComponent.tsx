@@ -10,6 +10,4 @@ import PureComponentWithStudio from '$src/studio/componentModel/react/utils/Pure
 export default abstract class StudioComponent<
   Props,
   State
-> extends PureComponentWithStudio<Props, State> {
-  
-}
+> extends PureComponentWithStudio<Props, State> {}

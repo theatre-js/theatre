@@ -1,5 +1,3 @@
-
-
 export function domAttrSetter(
   node: Element,
   name: string,

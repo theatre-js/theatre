@@ -1,7 +1,7 @@
 import {contextTypes, contextName} from './studioContext'
 import * as React from 'react'
-import TheaterJSStudio from '$studio/bootstrap/TheaterJSStudio'
-import {reduceStateAction} from '$src/studio/common/actions'
+import Studio from '$studio/bootstrap/Studio'
+import {reduceStateAction} from '$shared/utils/redux/commonActions'
 
 /**
  * The main reason I made this as a component instead of just providing a HOC called `withStudio()` is that
@@ -12,7 +12,7 @@ export default class PureComponentWithStudio<
   Props,
   State
 > extends React.PureComponent<Props, State> {
-  studio: TheaterJSStudio
+  studio: Studio
 
   constructor(props: Props, context: $IntentionalAny) {
     super(props, context)

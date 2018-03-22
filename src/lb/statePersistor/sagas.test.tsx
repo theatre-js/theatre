@@ -17,7 +17,7 @@ describe(`statePersistor/sagas`, () => {
 
     it(`should just load the state if persistence file does exist`, async () => {
       const persistedStuff = {
-        projects: {listOfPaths: ['foo/bar/theater.json']}, // this should be loaded into the state
+        projects: {listOfPaths: ['foo/bar/theatesr.json']}, // this should be loaded into the state
         extraneous: 'blah', // this shouldn't be loaded into the state
       }
       mock({
@@ -31,7 +31,8 @@ describe(`statePersistor/sagas`, () => {
 
       const newState = store.reduxStore.getState()
       expect(newState.common.temp.bootstrapped).toEqual(true)
-      expect(newState).toMatchObject(persistedStuff)
+      expect(newState).not.toHaveProperty('extraneous')
+      expect(newState.projects).toMatchObject(persistedStuff.projects)
     })
   })
 })

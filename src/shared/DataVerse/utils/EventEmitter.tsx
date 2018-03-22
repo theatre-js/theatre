@@ -1,4 +1,3 @@
-
 import without from 'lodash/without'
 import forEach from 'lodash/forEach'
 type Listener = (v: $FixMe) => void

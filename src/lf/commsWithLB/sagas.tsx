@@ -4,6 +4,7 @@ import allEndpointsForLB from '$src/lf/commsWithLB/allEndpointsForLB'
 import generateUniqueId from 'uuid/v4'
 import wn from 'when'
 import {ipcRenderer} from 'electron'
+import {defer} from '$shared/utils/defer'
 
 interface RequestFromLB {
   type: string
@@ -77,7 +78,7 @@ function _sendRequestToLB(
     payload,
   }
 
-  const payloadDeferred = wn.defer<mixed>()
+  const payloadDeferred = defer<mixed>()
 
   const listener = (
     _event: mixed,

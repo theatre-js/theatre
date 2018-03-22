@@ -8,7 +8,7 @@ const constructModifierInstantiationValueDescriptor = (
   return dictAtom({
     modifierId: des.prop('modifierId'),
     enabled: des.prop('enabled'),
-    props: des.prop('props').flatMap((v) => constructMapDescriptor(v, d)),
+    props: des.prop('props').flatMap(v => constructMapDescriptor(v, d)),
   }).derivedDict()
 }
 

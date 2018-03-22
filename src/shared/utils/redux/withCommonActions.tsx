@@ -3,19 +3,20 @@ import {
   setStateAction,
   resetStateAction,
   multiReduceStateAction,
+  Pair,
 } from './commonActions'
 import pick from 'lodash/pick'
-import {Reducer} from '$shared/types'
+import {ReduxReducer} from '$shared/types'
 import update from 'lodash/fp/update'
-import {Pair} from '$shared/utils/sagas/multiReduceState'
 
 /**
  * Takes a reducer and returns a new reducer that acts the same as the original reducer, but
  * also recognizes and reduces these three actions: mergeStateAction, setStateAction, resetStateAction
  */
-export default function wrapRootReducer<State, Action extends {type: string, payload: mixed}>(
-  reducer: Reducer<State, Action>,
-): Reducer<State, Action> {
+export default function withCommonActions<
+  State,
+  Action extends {type: string; payload: mixed}
+>(reducer: ReduxReducer<State>): ReduxReducer<State> {
   return (state: State | undefined, action: Action): State => {
     if (typeof action === 'object' && action !== null) {
       // mergeStateAction
@@ -40,7 +41,7 @@ export default function wrapRootReducer<State, Action extends {type: string, pay
               state,
             )} given`,
           )
-        return {...(state || {}) as $AnyBecauseOfBugInTS, ...action.payload}
+        return {...((state || {}) as $AnyBecauseOfBugInTS), ...action.payload}
 
         // setStateAction
       } else if (action.type === setStateAction.type) {
@@ -62,7 +63,10 @@ export default function wrapRootReducer<State, Action extends {type: string, pay
           )
 
         return Array.isArray(action.payload)
-          ? {...(state || {}) as $AnyBecauseOfBugInTS, ...pick(initialState, action.payload) as $AnyBecauseOfBugInTS}
+          ? {
+              ...((state || {}) as $AnyBecauseOfBugInTS),
+              ...(pick(initialState, action.payload) as $AnyBecauseOfBugInTS),
+            }
           : initialState
       } else if (action.type === multiReduceStateAction.type) {
         // debugger

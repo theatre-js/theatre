@@ -1,4 +1,3 @@
-
 import 'mock-fs'
 
 // Mocks be here

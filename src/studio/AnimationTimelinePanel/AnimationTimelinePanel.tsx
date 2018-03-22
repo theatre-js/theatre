@@ -1,9 +1,8 @@
+import {React, connect} from '$src/studio/handy'
 import {
-  React,
-  connect,
   reduceStateAction,
   multiReduceStateAction,
-} from '$src/studio/handy'
+} from '$shared/utils/redux/commonActions'
 import generateUniqueId from 'uuid/v4'
 import css from './AnimationTimelinePanel.css'
 import VariablesBox from './VariablesBox'
@@ -28,7 +27,7 @@ import {XY} from '$src/studio/workspace/types'
 import StudioComponent from '$src/studio/handy/StudioComponent'
 import boxAtom, {BoxAtom} from '$src/shared/DataVerse/atoms/box'
 import TimelineInstance from '$studio/componentModel/react/makeReactiveComponent/TimelineInstance/TimelineInstance'
-import {IStoreState} from '$studio/types'
+import {IStudioStoreState} from '$studio/types'
 
 type OwnProps = TimelineObject & {
   pathToTimeline: string[]
@@ -345,7 +344,7 @@ class Content extends StudioComponent<Props, State> {
       [boxId]: {
         ...this.props.boxes[boxId],
         height: newHeight,
-      }
+      },
     }
     this._resetBoundariesAndRatios(this.props.layout, boxes)
   }
@@ -366,10 +365,7 @@ class Content extends StudioComponent<Props, State> {
     this.changeFocusTo(newFocusLeft, focus[1])
   }
 
-  _changeZoomLevel = (
-    newFocusLeft: number,
-    newFocusRight: number,
-  ) => {
+  _changeZoomLevel = (newFocusLeft: number, newFocusRight: number) => {
     const {duration} = this.state
     if (newFocusLeft < 0) {
       newFocusLeft = 0
@@ -382,10 +378,7 @@ class Content extends StudioComponent<Props, State> {
     this.setState(() => ({focus: [newFocusLeft, newFocusRight]}))
   }
 
-  changeFocusTo = (
-    newFocusLeft: number,
-    newFocusRight: number,
-  ) => {
+  changeFocusTo = (newFocusLeft: number, newFocusRight: number) => {
     const {focus, duration} = this.state
     if (newFocusLeft < 0) {
       newFocusLeft = 0
@@ -625,7 +618,12 @@ class Content extends StudioComponent<Props, State> {
             const svgWidth: number = Math.floor(
               duration / Math.floor(focus[1] - focus[0]) * panelWidth,
             )
-            const scrollLeft = this._getScrollLeft(duration, focus[0], focus[1], panelWidth)
+            const scrollLeft = this._getScrollLeft(
+              duration,
+              focus[0],
+              focus[1],
+              panelWidth,
+            )
             return (
               <div
                 ref={c => (this.container = c)}
@@ -736,7 +734,7 @@ class Content extends StudioComponent<Props, State> {
   }
 }
 
-export default connect((s: IStoreState, op: OwnProps) => {
+export default connect((s: IStudioStoreState, op: OwnProps) => {
   const timeline = _.get(s, op.pathToTimeline)
   const panelObjectBeingDragged = _.get(s, [
     'workspace',

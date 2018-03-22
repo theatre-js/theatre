@@ -1,4 +1,3 @@
-
 import {React} from '$studio/handy'
 import css from './MovableNode.css'
 import PresentationOnlyNode from './PresentationOnlyNode'
@@ -64,7 +63,7 @@ class MovableNode extends React.PureComponent<Props, State> {
     const {offsetTop, moveY, moveX} = this.state
     return (
       <div
-        ref={c => (this.container = c)}        
+        ref={c => (this.container = c)}
         className={css.container}
         style={{
           transform: `translate3d(${moveX}px, ${moveY}px, 0)`,
@@ -73,7 +72,7 @@ class MovableNode extends React.PureComponent<Props, State> {
           '--height': height,
         }}
       >
-        <PresentationOnlyNode nodeData={rootNode} rootNodeId={rootNode.id}/>
+        <PresentationOnlyNode nodeData={rootNode} rootNodeId={rootNode.id} />
       </div>
     )
   }

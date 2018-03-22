@@ -1,7 +1,5 @@
-
-
 import {actionCreator} from '$shared/utils'
-import {Pair} from '$shared/utils/sagas/multiReduceState'
+
 /**
  * @note All these functions are available at dev time through `$s.shortcuts`.
  * Example: `$s.shortcuts.setStateAction({foo: 'bar'})` would replace the state
@@ -33,3 +31,5 @@ export const multiReduceStateAction = actionCreator(
   '@@root/REDUCE_STATE',
   (a: Array<Pair>) => a,
 )
+
+export type Pair = {path: Array<string | number>, reducer: <T>(from: T) => T}

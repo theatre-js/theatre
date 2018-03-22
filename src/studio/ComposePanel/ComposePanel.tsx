@@ -4,7 +4,7 @@ import {ComponentDescriptor, ComponentId} from '$studio/componentModel/types'
 import * as componentModelSelectors from '$studio/componentModel/selectors'
 import PaleMessage from '$src/studio/common/components/PaleMessage'
 import Panel from '$src/studio/workspace/components/Panel/Panel'
-import {IStoreState} from '$studio/types'
+import {IStudioStoreState} from '$studio/types'
 
 interface IOwnProps {
   inputs: $FixMe
@@ -59,14 +59,14 @@ class ComposePanelContent extends React.PureComponent<IProps, IState> {
   }
 }
 
-export default connect((s: IStoreState, op: IOwnProps): ILP => {
+export default connect((s: IStudioStoreState, op: IOwnProps): ILP => {
   const possibleComponentId =
     op.inputs.selectedNode && op.inputs.selectedNode.componentId
   if (!possibleComponentId) {
     return {
       pathToComopnentDescriptor: undefined,
       componentDescriptor: undefined,
-      componentId: undefined
+      componentId: undefined,
     }
   }
 

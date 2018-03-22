@@ -1,4 +1,4 @@
-import StandardStore from '$lb/bootstrap/StandardStore'
+import StoreAndStuff from '$lb/bootstrap/StoreAndStuff'
 import rootReducer from '$lb/bootstrap/rootReducer'
 // import rootSaga from '$lb/bootstrap/rootSaga'
 import {LBStoreState} from '$lb/types'
@@ -42,7 +42,7 @@ type Fn6<T1, T2, T3, T4, T5, T6, R> = (
 ) => Generator_<mixed, R, mixed>
 
 type Return<R> = {
-  store: StandardStore<LBStoreState, any>
+  store: StoreAndStuff<LBStoreState, any>
   task: {done: Promise<R>}
 }
 
@@ -106,7 +106,7 @@ export const runSingleSaga: RunSingleSagaFn = (
   customRootSaga: $IntentionalAny,
   ...args: $IntentionalAny[]
 ): $IntentionalAny => {
-  const store = new StandardStore({
+  const store = new StoreAndStuff({
     rootReducer,
     rootSaga: null as $IntentionalAny,
   })

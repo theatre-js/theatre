@@ -57,5 +57,4 @@ describe('DataVerse.atoms.dict', () => {
     expect(changes).toHaveLength(4)
     expect(changes[3]).toMatchObject({overriddenRefs: {}, deletedKeys: ['obj']})
   })
-  
 })

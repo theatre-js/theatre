@@ -1,11 +1,7 @@
 import * as React from 'react'
-import {
-  connect,
-  reduceStateAction,
-  StudioComponent,
-  resolveCss,
-} from '$studio/handy'
-import {IStoreState} from '$studio/types'
+import {connect, StudioComponent, resolveCss} from '$studio/handy'
+import {reduceStateAction} from '$shared/utils/redux/commonActions'
+import {IStudioStoreState} from '$studio/types'
 import * as _ from 'lodash'
 import {set, get} from 'lodash/fp'
 import {
@@ -15,10 +11,7 @@ import {
 import PanelController from '../PanelController/PanelController'
 import StatusBar from '../StatusBar/StatusBar'
 import css from './StudioUI.css'
-import {
-  undoAction,
-  redoAction,
-} from '$shared/utils/redux/withHistory/actions'
+import {undoAction, redoAction} from '$shared/utils/redux/withHistory/actions'
 
 const classes = resolveCss(css)
 
@@ -560,7 +553,7 @@ export class StudioUI extends StudioComponent<IProps, State> {
   }
 }
 
-export default connect((state: IStoreState) => {
+export default connect((state: IStudioStoreState) => {
   const panelsBoundaries = _.mapValues(
     _.get(state, ['workspace', 'panels', 'byId']),
     panel => panel.boundaries,

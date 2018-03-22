@@ -1,5 +1,4 @@
-
-import {Selector, IStoreState} from '$studio/types'
+import {Selector, IStudioStoreState} from '$studio/types'
 import {
   TimelineID,
   VariableID,

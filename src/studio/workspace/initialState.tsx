@@ -3,7 +3,7 @@ import {WorkspaceNamespaceState} from './types'
 const initialState: WorkspaceNamespaceState = {
   panels: {
     byId: {
-      'timelinePanel': {
+      timelinePanel: {
         id: 'timelinePanel',
         type: 'AnimationTimelinePanel',
         persistentState: {
@@ -112,11 +112,7 @@ const initialState: WorkspaceNamespaceState = {
         outputs: {},
       },
     },
-    listOfVisibles: [
-      'timelinePanel',
-      'elementTree',
-      'composePanel-imAUUID',
-    ],
+    listOfVisibles: ['timelinePanel', 'elementTree', 'composePanel-imAUUID'],
     idOfActivePanel: 'elementTree',
     panelObjectBeingDragged: null,
   },

@@ -3,24 +3,24 @@ import {render} from 'react-dom'
 import LBCommunicator from './LBCommunicator'
 import configureStore from './configureStore'
 import StudioRootComponent from './components/StudioRootComponent'
-import {default as StandardStore} from '$lb/bootstrap/StandardStore'
+import {default as StoreAndStuff} from '$lb/bootstrap/StoreAndStuff'
 import configureAtom from './configureAtom'
 import Ticker from '$src/shared/DataVerse/Ticker'
-import {startStudio} from './rootSaga'
+import {runStudio} from './rootSaga'
 
 type Atom = $FixMe
 
-export default class TheaterJSStudio {
-  _started: boolean
+export default class Studio {
+  _ran: boolean
   componentInstances: Map<number, React.ComponentType>
   atom: Atom
   ticker: Ticker
   _lastComponentInstanceId: number
   _lbCommunicator: LBCommunicator
-  store: StandardStore<$FixMe, $FixMe>
+  store: StoreAndStuff<$FixMe, $FixMe>
 
   constructor() {
-    this._started = false
+    this._ran = false
     this._lastComponentInstanceId = 0
     this.ticker = new Ticker()
     this.store = configureStore()
@@ -37,11 +37,12 @@ export default class TheaterJSStudio {
   }
 
   run(projectPath: string) {
-    if (this._started)
+    if (this._ran)
       throw new Error(`TheaterJS.run() has already been called once`)
-    this._started = true
+    this._ran = true
 
-    this.store.runSaga(startStudio, projectPath)
+    this.store.runSaga(runStudio, projectPath)
+
     const onAnimationFrame = () => {
       this.ticker.tick()
       window.requestAnimationFrame(onAnimationFrame)

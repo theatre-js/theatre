@@ -1,7 +1,7 @@
 import {LBStoreState} from '$lb/types'
-import {multiReduceState} from '$shared/utils'
 import _ from 'lodash'
-import {select} from 'redux-saga/effects'
+import {select, put} from 'redux-saga/effects'
+import {multiReduceStateAction} from '$shared/utils/redux/commonActions'
 
 type ErrorTypes = 'projectNotRecognised'
 
@@ -18,12 +18,14 @@ export default function* unrecogniseProject(params: {
     return {type: 'error', errorType: 'projectNotRecognised'}
   }
 
-  yield multiReduceState([
-    {
-      path: ['projects', 'listOfPaths'],
-      reducer: (paths: string[]) => _.without(paths, params.filePath),
-    },
-  ])
+  yield put(
+    multiReduceStateAction([
+      {
+        path: ['projects', 'listOfPaths'],
+        reducer: (paths: string[]) => _.without(paths, params.filePath),
+      },
+    ]),
+  )
 
   return {type: 'ok'}
 }

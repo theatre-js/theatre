@@ -1,7 +1,7 @@
 import {React, connect, typeSystem, StudioComponent} from '$studio/handy'
 import get from 'lodash/get'
 import editorsPerType from './editorsPerType/editorsPerType'
-import {IStoreState} from '$studio/types'
+import {IStudioStoreState} from '$studio/types'
 
 interface IOwnProps {
   path: string[]
@@ -31,7 +31,7 @@ class ValueEditor extends StudioComponent<IProps, State> {
   }
 }
 
-export default connect((s: IStoreState, op: IOwnProps) => {
+export default connect((s: IStudioStoreState, op: IOwnProps) => {
   if (op.hasOwnProperty('typeName')) {
     const {typeName} = op
     if (!typeName) {

@@ -3,31 +3,29 @@ import {call} from 'redux-saga/effects'
 import createSagaMiddleware from 'redux-saga'
 import {identity} from 'lodash'
 
-type RootSaga<State, Action> = (
-  store: StandardStore<State, Action>,
-) => Generator_<mixed, mixed, mixed>
+type RootSagaShape = (...args: mixed[]) => Generator_<mixed, mixed, mixed>
 
-type ConstructorProps<State, Action> = {
+type ConstructorProps<State, RootSaga> = {
   initialState?: State
-  rootSaga: RootSaga<State, Action>
+  rootSaga: RootSaga
   rootReducer: Reducer<State>
 }
 
 /**
- * StandardStore is basically just a standard configuration of redux store and sagas. Nothing special really.
+ * StoreAndStuff is basically just a standard configuration of redux store and sagas. Nothing special really.
  */
-export default class StandardStore<State, Action> {
+export default class StoreAndStuff<State, RootSaga extends RootSagaShape> {
   sagaMiddleware: $FixMe
   _initialState: undefined | null | State
   rootReducer: Reducer<State>
   reduxStore: Store<State>
-  rootSaga: RootSaga<State, Action>
+  rootSaga: RootSaga
 
   constructor({
     initialState,
     rootReducer,
     rootSaga,
-  }: ConstructorProps<State, Action>) {
+  }: ConstructorProps<State, RootSaga>) {
     this._initialState = initialState
     this.sagaMiddleware = createSagaMiddleware()
 

@@ -4,11 +4,11 @@ import {
   ProjectsNamespaceState,
   StuffInTheaterJsonFile,
 } from '$src/lb/projects/types'
-import {LBStoreState as LBStoreState} from '$src/lb/types'
-import {reduceStateAction} from '$src/lb/common/actions'
+import {LBStoreState} from '$src/lb/types'
 import {Task} from 'redux-saga'
 import {omit} from 'lodash'
 import * as fse from 'fs-extra'
+import {reduceStateAction} from '$shared/utils/redux/commonActions'
 
 type ListOfProjectPaths = ProjectsNamespaceState['listOfPaths']
 

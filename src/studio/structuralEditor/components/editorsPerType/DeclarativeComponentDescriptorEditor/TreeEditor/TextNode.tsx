@@ -1,4 +1,3 @@
-
 import {React} from '$studio/handy'
 import css from './TextNode.css'
 import cx from 'classnames'
@@ -67,11 +66,11 @@ class TextNode extends React.PureComponent<Props, State> {
     this.setState(() => ({value}))
     this.updateText(value)
   }
-  
+
   updateText(value: string) {
     this.props.onChange(value)
   }
-  
+
   render() {
     return (
       <div

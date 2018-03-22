@@ -19,4 +19,3 @@ interface Snapshot {
   commitHash: CommitHash
   data: mixed
 }
-

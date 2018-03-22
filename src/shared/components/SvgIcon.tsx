@@ -1,4 +1,3 @@
-
 import * as React from 'react'
 import {compose} from 'ramda'
 import css from './SvgIcon.css'

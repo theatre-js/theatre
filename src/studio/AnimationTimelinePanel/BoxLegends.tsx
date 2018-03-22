@@ -8,14 +8,13 @@ import FaBullseye from 'react-icons/lib/fa/bullseye'
 import FaCircleO from 'react-icons/lib/fa/circle-o'
 import {MODE_SHIFT} from '$studio/workspace/components/StudioUI/StudioUI'
 
-
 interface IState {
   contextMenuProps: undefined | null | Object
 }
 
 class BoxLegends extends React.PureComponent<$FixMe, IState> {
   state = {
-    contextMenuProps: null
+    contextMenuProps: null,
   }
 
   handleClick(e: $FixMe, variableId: string) {
@@ -28,7 +27,9 @@ class BoxLegends extends React.PureComponent<$FixMe, IState> {
     e.stopPropagation()
     e.preventDefault()
     const {clientX, clientY} = e
-    this.setState(() => ({contextMenuProps: {variableId, left: clientX, top: clientY}}))
+    this.setState(() => ({
+      contextMenuProps: {variableId, left: clientX, top: clientY},
+    }))
   }
 
   render() {
@@ -62,7 +63,7 @@ class BoxLegends extends React.PureComponent<$FixMe, IState> {
           <HalfPieContextMenu
             close={() => this.setState(() => ({contextMenuProps: null}))}
             centerPoint={_.pick(contextMenuProps, ['left', 'top'])}
-            placement='top'
+            placement="top"
             items={[
               {
                 label: 'Hide $O$ther Lanes',
@@ -71,7 +72,11 @@ class BoxLegends extends React.PureComponent<$FixMe, IState> {
               },
               {
                 label: '$S$plit this Lane',
-                cb: () => this.props.splitVariable(this.props.boxIndex, contextMenuProps.variableId),
+                cb: () =>
+                  this.props.splitVariable(
+                    this.props.boxIndex,
+                    contextMenuProps.variableId,
+                  ),
                 disabled: variables.length === 1,
                 IconComponent: MdSwapVerticalCircel,
               },

@@ -1,13 +1,13 @@
 import {combineReducers} from 'redux'
 import {StoreState} from '$lf/types'
-import wrapRootReducer from '$shared/utils/redux/wrapRootReducer'
+import withCommonActions from '$shared/utils/redux/withCommonActions'
 import commonReducer from '$lf/common/reducer'
 import mirrorOfLBStateReducer from '$lf/mirrorOfLBState/reducer'
-import {Reducer} from '$shared/types'
+import {ReduxReducer} from '$shared/types'
 
-const mainReducer: Reducer<StoreState, mixed> = combineReducers<StoreState>({
+const mainReducer: ReduxReducer<StoreState> = combineReducers<StoreState>({
   common: commonReducer,
   mirrorOfLBState: mirrorOfLBStateReducer,
 })
 
-export default wrapRootReducer(mainReducer)
+export default withCommonActions(mainReducer)

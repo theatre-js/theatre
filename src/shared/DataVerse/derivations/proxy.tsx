@@ -1,4 +1,3 @@
-
 import AbstractDerivation from './AbstractDerivation'
 
 export class ProxyDerivation<V> extends AbstractDerivation<V> {

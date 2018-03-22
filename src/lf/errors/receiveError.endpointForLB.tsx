@@ -1,4 +1,3 @@
-
 function* receiveError(
   request: ErrorFromLBRequest,
 ): Generator_<$FixMe, $FixMe, $FixMe> {

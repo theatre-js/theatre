@@ -1,5 +1,3 @@
-
-
 export const findingColdDerivations = true
 
 export let skippingColdDerivations = false

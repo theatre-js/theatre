@@ -1,4 +1,3 @@
-
 import {CommonNamespaceState} from '$lb/common/types'
 import {ProjectsNamespaceState} from '$lb/projects/types'
 

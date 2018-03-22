@@ -1,27 +1,26 @@
-
 // This will be some sort of loading indicator to show before the studio is ready to function
 
 import * as React from 'react'
 import {compose} from 'ramda'
 import {connect} from '$studio/handy'
-import {getIsBootstrapped} from '$studio/common/selectors'
+import {getIsHydrated} from '$studio/common/selectors'
 
-import {IStoreState} from '$studio/types'
+import {IStudioStoreState} from '$studio/types'
 
 type Props = {
-  isBootstrapped: boolean
+  isHydrated: boolean
   children?: any
 }
 
-const LoadingUnlessBootstrapped = (props: Props) => {
-  return !props.isBootstrapped ? <div>Loading...</div> : props.children
+const LoadingUnlessHydrated = (props: Props) => {
+  return !props.isHydrated ? <div>Loading...</div> : props.children
 }
 
 /**
  * Shows a splash screen, unless we're bootstrapped (see bootstrapped in $common/reducer)
  */
 export default compose(
-  connect((state: IStoreState) => ({
-    isBootstrapped: getIsBootstrapped(state) || true,
+  connect((state: IStudioStoreState) => ({
+    isHydrated: getIsHydrated(state),
   })),
-)(LoadingUnlessBootstrapped)
+)(LoadingUnlessHydrated)

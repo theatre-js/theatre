@@ -1,5 +1,6 @@
 import wn from 'when'
 import io from 'socket.io-client'
+import {defer} from '$shared/utils/defer'
 
 type Options = {
   backendUrl: string
@@ -22,19 +23,24 @@ export default class LBCommunicator {
     } else {
       return (this._socketPromise = createSocketPromsie(
         this.options.backendUrl,
+        {
+          query: {
+          },
+          transports: ['websocket']
+        }
       ))
     }
   }
 
-  async request(endpoint: string, payload: mixed) {
+  async _request(endpoint: string, payload: mixed) {
     const socket = await this.getSocket()
     return emit('request', {endpoint, payload}, socket)
   }
 }
 
-const createSocketPromsie = (addr: string): Promise<Socket> => {
-  const socket = io.connect(addr)
-  const d = wn.defer<Socket>()
+const createSocketPromsie = (addr: string, opts: SocketIOClient.ConnectOpts): Promise<Socket> => {
+  const socket = io.connect(addr, opts)
+  const d = defer<Socket>()
 
   let resolved = false
   socket.on('connect', () => {

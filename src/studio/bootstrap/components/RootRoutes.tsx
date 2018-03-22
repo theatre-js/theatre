@@ -1,5 +1,5 @@
 import * as React from 'react'
-import LoadingUnlessBootstrapped from './LoadingUnlessBootstrapped'
+import LoadingUnlessHydrated from './LoadingUnlessBootstrapped'
 import {MemoryRouter as Router, Route, Switch, Redirect} from 'react-router-dom'
 import StudioUI from '$studio/workspace/components/StudioUI/StudioUI'
 
@@ -24,11 +24,11 @@ const routes = [
 
 const RootRoutes = () => {
   return (
-    <LoadingUnlessBootstrapped>
+    <LoadingUnlessHydrated>
       <Router>
         <Switch>{[...routes]}</Switch>
       </Router>
-    </LoadingUnlessBootstrapped>
+    </LoadingUnlessHydrated>
   )
 }
 

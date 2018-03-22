@@ -1,4 +1,3 @@
-
 import {React} from '$studio/handy'
 import css from './NodeContainer.css'
 import ComponentNode from './ComponentNode'
@@ -12,7 +11,6 @@ import MdDonutSmall from 'react-icons/lib/md/donut-small'
 import MdExplore from 'react-icons/lib/md/explore'
 import MdStars from 'react-icons/lib/md/stars'
 import * as _ from 'lodash'
-
 
 type Props = {
   nodeData: Object
@@ -39,7 +37,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
   componentDidMount() {
     if (this.props.nodeData.status === STATUS.RELOCATED) {
       const {nodeData: {actionPayload}} = this.props
-      this.setState(() => ({maxHeight: actionPayload.height,}))
+      this.setState(() => ({maxHeight: actionPayload.height}))
     }
   }
 
@@ -54,7 +52,8 @@ class NodeContainer extends React.PureComponent<Props, State> {
       const {nodeData: {actionPayload: currentPayload}} = this.props
       if (
         currentPayload == null ||
-        (currentPayload != null && !_.isEqual(currentPayload.dropOffset, dropOffset))
+        (currentPayload != null &&
+          !_.isEqual(currentPayload.dropOffset, dropOffset))
       ) {
         this.setState(() => ({
           maxHeight: actionPayload.height,
@@ -94,7 +93,16 @@ class NodeContainer extends React.PureComponent<Props, State> {
       }
     }
     this.setState(() => ({isBeingDragged: true, maxHeight: height}))
-    setNodeBeingDragged({nodeProps, depth, top, left, height, width, offsetY, offsetX})
+    setNodeBeingDragged({
+      nodeProps,
+      depth,
+      top,
+      left,
+      height,
+      width,
+      offsetY,
+      offsetX,
+    })
   }
 
   onDrop = (e: $FixMe, index: number) => {
@@ -110,20 +118,31 @@ class NodeContainer extends React.PureComponent<Props, State> {
       targetLeft = left + parseInt(css.nodeIndent)
       targetTop = bottom
       targetWidth = width - parseInt(css.nodeIndent)
-    }
-    else if (index === childrenLength) {
-      const {left, bottom, width} = this.childContainersRefs[index - 1].getBoundingClientRect()
+    } else if (index === childrenLength) {
+      const {left, bottom, width} = this.childContainersRefs[
+        index - 1
+      ].getBoundingClientRect()
       targetLeft = left
       targetTop = bottom
       targetWidth = width
     } else {
-      const {left, top, width} = this.childContainersRefs[index].getBoundingClientRect()
+      const {left, top, width} = this.childContainersRefs[
+        index
+      ].getBoundingClientRect()
       targetLeft = left
       targetTop = top
       targetWidth = width
     }
 
-    this.props.dispatchAction(ACTION.NODE_MOVE, {id, index, mouseY, mouseX, targetTop, targetLeft, targetWidth})
+    this.props.dispatchAction(ACTION.NODE_MOVE, {
+      id,
+      index,
+      mouseY,
+      mouseX,
+      targetTop,
+      targetLeft,
+      targetWidth,
+    })
   }
 
   handleClick = (e: $FixMe, index: number) => {
@@ -156,7 +175,11 @@ class NodeContainer extends React.PureComponent<Props, State> {
 
   deleteNode = () => {
     const {height} = this.wrapper.getBoundingClientRect()
-    this.setState(() => ({contextMenuProps: null, isCollapsed: true, maxHeight: height}))
+    this.setState(() => ({
+      contextMenuProps: null,
+      isCollapsed: true,
+      maxHeight: height,
+    }))
     setTimeout(() => {
       const {id: nodeId, parentId, index} = this.props.nodeData
       this.props.dispatchAction(ACTION.NODE_DELETE, {nodeId, parentId, index})
@@ -203,7 +226,12 @@ class NodeContainer extends React.PureComponent<Props, State> {
       selectedNodeId,
       isCommandDown,
     } = this.props
-    const {isCollapsed, maxHeight, contextMenuProps, isBeingDragged} = this.state
+    const {
+      isCollapsed,
+      maxHeight,
+      contextMenuProps,
+      isBeingDragged,
+    } = this.state
 
     const isText =
       nodeProps.type === NODE_TYPE.TEXT &&
@@ -226,14 +254,23 @@ class NodeContainer extends React.PureComponent<Props, State> {
           style={{
             '--depth': depth,
             '--maxHeight': maxHeight,
-            '--initialLeftOffset': isRelocated ? nodeProps.actionPayload.dropOffset.x : 0,
-            '--initialTopOffset': isRelocated ? nodeProps.actionPayload.dropOffset.y : 0,
-            '--originalWidth': isRelocated ? nodeProps.actionPayload.originalWidth : null,
-            '--targetWidth': isRelocated ? nodeProps.actionPayload.targetWidth : null,
+            '--initialLeftOffset': isRelocated
+              ? nodeProps.actionPayload.dropOffset.x
+              : 0,
+            '--initialTopOffset': isRelocated
+              ? nodeProps.actionPayload.dropOffset.y
+              : 0,
+            '--originalWidth': isRelocated
+              ? nodeProps.actionPayload.originalWidth
+              : null,
+            '--targetWidth': isRelocated
+              ? nodeProps.actionPayload.targetWidth
+              : null,
           }}
           className={cx(css.container, {
             [css.isRelocated]: isRelocated,
-            [css.relocationCanceled]: nodeProps.status === STATUS.RELOCATION_CANCELED,
+            [css.relocationCanceled]:
+              nodeProps.status === STATUS.RELOCATION_CANCELED,
             [css.appear]:
               nodeProps.status === STATUS.UNINITIALIZED ||
               nodeProps.status === STATUS.CREATION_CANCELED,
@@ -244,19 +281,21 @@ class NodeContainer extends React.PureComponent<Props, State> {
             [css.indicateDropPossible]: shoudlIndicateDropPossible,
             [css.indicateDropNotPossible]: shoudlIndicateDropNotPossible,
           })}
-          >
+        >
           <div
-            ref={c => this.rootWrapper = c}
+            ref={c => (this.rootWrapper = c)}
             className={cx(css.rootWrapper, {
               [css.isCommandDown]: shouldReactToCommandDown,
               [css.isANodeBeingDragged]: shoudlIndicateDropPossible,
             })}
             onContextMenu={this.contextMenuHandler}
             onMouseDown={this.mouseDownHandler}
-            {...(isComponent ? {
-              onClick: (e: $FixMe) => this.handleClick(e, 0),
-              onMouseUp: (e) => this.onDrop(e, 0),
-            } : {})}
+            {...(isComponent
+              ? {
+                  onClick: (e: $FixMe) => this.handleClick(e, 0),
+                  onMouseUp: e => this.onDrop(e, 0),
+                }
+              : {})}
           >
             <div className={css.root}>
               {shouldRenderComponent && (
@@ -283,21 +322,21 @@ class NodeContainer extends React.PureComponent<Props, State> {
           </div>
           {children &&
             children.map((child, index) => (
-              <div               
-                className={css.childContainer}
-                key={child.id}>
+              <div className={css.childContainer} key={child.id}>
                 <div
                   className={cx(css.hoverSensor, {
                     [css.isCommandDown]: shouldReactToCommandDown,
                     [css.isANodeBeingDragged]: shoudlIndicateDropPossible,
                   })}
-                  {...(isComponent ? {
-                    onClick: (e: $FixMe) => this.handleClick(e, index + 1),
-                    onMouseUp: (e) => this.onDrop(e, index + 1),
-                  } : {})}
+                  {...(isComponent
+                    ? {
+                        onClick: (e: $FixMe) => this.handleClick(e, index + 1),
+                        onMouseUp: e => this.onDrop(e, index + 1),
+                      }
+                    : {})}
                 />
                 <div
-                  ref={c => this.childContainersRefs[index] = c} 
+                  ref={c => (this.childContainersRefs[index] = c)}
                   className={css.child}
                 >
                   <NodeContainer
@@ -311,15 +350,18 @@ class NodeContainer extends React.PureComponent<Props, State> {
                     setNodeBeingDragged={this.props.setNodeBeingDragged}
                     setSelectedNodeId={this.props.setSelectedNodeId}
                     listOfDisplayNames={this.props.listOfDisplayNames}
-                    handleTextNodeTypeChange={this.props.handleTextNodeTypeChange}
-                    cancelTextNodeTypeChange={this.props.cancelTextNodeTypeChange}
+                    handleTextNodeTypeChange={
+                      this.props.handleTextNodeTypeChange
+                    }
+                    cancelTextNodeTypeChange={
+                      this.props.cancelTextNodeTypeChange
+                    }
                     cancelSettingType={this.props.cancelSettingType}
                   />
                 </div>
-                <div className={css.siblingIndicator}/>
+                <div className={css.siblingIndicator} />
               </div>
-            )
-            )}
+            ))}
         </div>
         {contextMenuProps != null && (
           <HalfPieContextMenu

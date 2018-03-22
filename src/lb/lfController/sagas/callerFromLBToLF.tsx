@@ -3,7 +3,6 @@ import {_sendRequestToWindow} from '$src/lb/lfController/sagas'
 import {call} from 'redux-saga/effects'
 
 export const callerFromLBToLF = (handlerName: string): any => {
-  
   const fn: any = function*(
     window: BrowserWindow,
     payload: $FixMe,

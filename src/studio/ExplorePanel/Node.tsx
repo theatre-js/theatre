@@ -1,4 +1,3 @@
-
 import React from 'react'
 import css from './Node.css'
 import {Path} from '$studio/ExplorePanel/types'
@@ -208,7 +207,7 @@ const ClassName = ({stateNode}) => {
 
 const WrappedNode = connect((s, op) => {
   const {_ref} = op
-  
+
   const {type, stateNode} = _ref
 
   const componentDescriptor =

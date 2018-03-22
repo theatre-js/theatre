@@ -1,4 +1,3 @@
-
 import {React} from '$studio/handy'
 import css from './ComponentNode.css'
 import {STATUS} from './constants'
@@ -53,7 +52,7 @@ class ComponentNode extends React.PureComponent<Props, State> {
 
   componentWillReceiveProps(nextProps: Props) {
     if (nextProps.nodeProps.status === STATUS.RELOCATED) {
-      this._fitClassInput()      
+      this._fitClassInput()
     }
     if (
       (nextProps.nodeProps.status === STATUS.CHANGED ||
@@ -191,7 +190,9 @@ class ComponentNode extends React.PureComponent<Props, State> {
               <input
                 type="text"
                 ref={c => (this.classInput = c)}
-                className={cx(css.input, {[css.isDisabled]: !isSelected || isCommandDown})}
+                className={cx(css.input, {
+                  [css.isDisabled]: !isSelected || isCommandDown,
+                })}
                 value={classValue}
                 onChange={this.handleClassValueChange}
                 onKeyDown={this.handleKeyDown}

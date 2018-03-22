@@ -2,7 +2,7 @@ import {compose, React, connect} from '$studio/handy'
 import {map, get} from 'lodash'
 import SingleAttributeInspector from './SingleAttributeInspector'
 import ModifierInspectorWrapper from '$studio/common/components/ModifierInspectorWrapper'
-import {IStoreState} from '$studio/types'
+import {IStudioStoreState} from '$studio/types'
 
 interface IOwnProps {
   pathToModifierInstantiationDescriptor: string[]
@@ -34,7 +34,7 @@ export class SetAttributeInspector extends React.PureComponent<IProps, {}> {
   }
 }
 
-export default connect((s: IStoreState, op: IOwnProps) => {
+export default connect((s: IStudioStoreState, op: IOwnProps) => {
   return {
     list: get(s, op.pathToModifierInstantiationDescriptor).props.pairings.list,
   }

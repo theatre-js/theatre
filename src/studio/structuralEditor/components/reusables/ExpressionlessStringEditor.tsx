@@ -1,7 +1,8 @@
-import {React, connect, reduceStateAction, StudioComponent} from '$studio/handy'
+import {React, connect, StudioComponent} from '$studio/handy'
+import {reduceStateAction} from '$shared/utils/redux/commonActions'
 import css from './ExpressionlessStringEditor.css'
 import * as _ from 'lodash'
-import {IStoreState} from '$studio/types'
+import {IStudioStoreState} from '$studio/types'
 
 interface IOwnProps {
   label: string
@@ -37,7 +38,7 @@ class ExpressionlessStringEditor extends StudioComponent<IProps, State> {
   }
 }
 
-export default connect((s: IStoreState, op: IOwnProps): {value: string} => {
+export default connect((s: IStudioStoreState, op: IOwnProps): {value: string} => {
   return {
     value: _.get(s, op.path),
   }

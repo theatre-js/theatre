@@ -1,6 +1,10 @@
 import {MapKey} from '$shared/DataVerse/types'
 import AbstractDerivation from './AbstractDerivation'
-import { DerivationTypeOfPointerType, IndexOfPointer, PropOfPointer } from './pointerTypes';
+import {
+  DerivationTypeOfPointerType,
+  IndexOfPointer,
+  PropOfPointer,
+} from './pointerTypes'
 
 const noBoxAtoms = (v: $IntentionalAny) => {
   if (v instanceof modules.box.BoxAtom) {
@@ -22,7 +26,9 @@ type Address =
       keyOrIndex: number | string
     }
 
-export class PointerDerivation<V> extends AbstractDerivation<DerivationTypeOfPointerType<V>> {
+export class PointerDerivation<V> extends AbstractDerivation<
+  DerivationTypeOfPointerType<V>
+> {
   v: V
   static NOTFOUND: void = undefined //Symbol('notfound')
   isPointer = true

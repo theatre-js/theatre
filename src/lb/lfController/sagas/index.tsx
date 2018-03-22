@@ -8,6 +8,7 @@ import allEndpointsForLF from './allEndpointsForLF'
 import generateUniqueId from 'uuid/v4'
 import wn from 'when'
 import receiveNewState from '$src/lf/mirrorOfLBState/receiveNewState.caller'
+import {defer} from '$shared/utils/defer'
 
 type RawRequest = {
   type: string
@@ -124,8 +125,6 @@ export default function* lfControllerSaga(): Generator_<
   const window = createWindow()
   window.show()
 
- 
-
   try {
     yield fork(listenToWindowRequests, window)
 
@@ -202,7 +201,7 @@ export function _sendRequestToWindow(
   }
 
   // @todo implement a timeout
-  const payloadDeferred = wn.defer()
+  const payloadDeferred = defer()
   let responded = false
 
   const listener = (_event: mixed, response: Response) => {

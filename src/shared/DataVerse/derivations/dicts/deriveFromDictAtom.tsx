@@ -1,9 +1,9 @@
-import AbstractDerivedDict, { PropOfADD } from './AbstractDerivedDict'
+import AbstractDerivedDict, {PropOfADD} from './AbstractDerivedDict'
 import noop from 'lodash/noop'
 // import AbstractDerivation from '../AbstractDerivation'
 import {ensureNoAtoms} from './utils'
 import {DictAtom} from '$src/shared/DataVerse/atoms/dict'
-import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation';
+import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
 
 export class DerivedDictFromDictAtom<O> extends AbstractDerivedDict<O> {
   _dictAtom: DictAtom<O>
@@ -17,7 +17,7 @@ export class DerivedDictFromDictAtom<O> extends AbstractDerivedDict<O> {
     this._untapFromDictAtomChangeEmitter = noop
     return this
   }
-  
+
   prop<K extends keyof O>(key: K): AbstractDerivation<PropOfADD<O[K]>> {
     return this._dictAtom
       .pointer()

@@ -1,4 +1,3 @@
-
 import isAtom from '$shared/DataVerse/atoms/utils/isAtom'
 
 const toJS = (val: $IntentionalAny) => {

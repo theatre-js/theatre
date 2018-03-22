@@ -1,7 +1,7 @@
 import {CommonNamespaceState} from './types'
 import {handleActions} from 'redux-actions'
 import {combineReducers, Reducer} from 'redux'
-import {bootstrapAction} from './actions'
+import {bootstrapAction} from '$shared/utils/redux/commonActions'
 
 export default combineReducers({
   temp: combineReducers({

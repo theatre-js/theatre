@@ -1,23 +1,20 @@
-import StandardStore from '$lb/bootstrap/StandardStore'
+import StoreAndStuff from '$lb/bootstrap/StoreAndStuff'
 import rootSaga from './rootSaga'
-import {multiReduceState} from '$shared/utils'
 import rootReducer from './rootReducer'
-import defaultInitialState from './initialState'
+import {multiReduceStateAction} from '$shared/utils/redux/commonActions'
 
 export const defaultConfig = {rootReducer, rootSaga}
 
 export default function createStore(
   config: typeof defaultConfig = defaultConfig,
-): StandardStore<$FixMe, $FixMe> {
-  const initialState = defaultInitialState
-
-  const store = new StandardStore({...config, initialState})
+): StoreAndStuff<$FixMe, $FixMe> {
+  const store = new StoreAndStuff({...config})
 
   if (process.env.NODE_ENV === 'development' && module.hot) {
     module.hot.accept('./rootReducer', () => {
-      store.runSaga(function*(): Generator_<$FixMe, $FixMe, $FixMe> {
-        const r: $IntentionalAny = require
-        yield multiReduceState([
+      const r: $IntentionalAny = require
+      store.reduxStore.dispatch(
+        multiReduceStateAction([
           {
             path: ['componentModel', 'modifierDescriptors', 'core'],
             reducer: () =>
@@ -32,8 +29,8 @@ export default function createStore(
                 '$studio/componentModel/coreComponentDescriptors/coreComponentDescriptors',
               ).default,
           },
-        ])
-      })
+        ]),
+      )
     })
   }
 

@@ -8,7 +8,7 @@ import {
 import TextInput from '$studio/common/components/TextInput'
 import get from 'lodash/get'
 import KeyValuePair from '$studio/common/components/KeyValuePair'
-import {IStoreState} from '$studio/types'
+import {IStudioStoreState} from '$studio/types'
 
 interface IOwnProps {
   pathToPairings: Array<string>
@@ -63,7 +63,7 @@ export class SingleCustomStyleInspector extends StudioComponent<IProps, {}> {
 }
 
 export default compose(
-  connect((s: IStoreState, op: IOwnProps) => {
+  connect((s: IStudioStoreState, op: IOwnProps) => {
     return {
       pairing: get(s, op.pathToPairings).byId[op.id],
     }

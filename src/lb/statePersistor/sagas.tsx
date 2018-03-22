@@ -4,9 +4,12 @@ import {call, put, fork, select, takeLatest} from 'redux-saga/effects'
 import {delay} from 'redux-saga'
 import fse from 'fs-extra'
 import deepEqual from 'deep-equal'
-import {bootstrapAction, setStateAction} from '$lb/common/actions'
 import pickPathsFromObject from 'lodash/pick'
 import spreadPaths from '$src/shared/utils/spreadPaths'
+import {
+  bootstrapAction,
+  setStateAction,
+} from '$shared/utils/redux/commonActions'
 
 export const pathToPersistenceFile =
   process.env.NODE_ENV === 'test'

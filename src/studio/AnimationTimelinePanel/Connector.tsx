@@ -1,8 +1,6 @@
 import React from 'react'
 import {PointHandles as IHandles} from '$studio/AnimationTimelinePanel/types'
-import {
-  PanelActiveModeChannel,
-} from '$src/studio/workspace/components/Panel/Panel'
+import {PanelActiveModeChannel} from '$src/studio/workspace/components/Panel/Panel'
 import {Subscriber} from 'react-broadcast'
 import {MODE_D} from '$studio/workspace/components/StudioUI/StudioUI'
 import css from './Connector.css'
@@ -27,7 +25,10 @@ class Connector extends React.PureComponent<IProps, IState> {
   clickHandler = (e: $FixMe) => {
     if (this.activeMode === MODE_D) {
       e.stopPropagation()
-      return this.props.removeConnector && this.props.removeConnector(this.props.leftPointIndex)
+      return (
+        this.props.removeConnector &&
+        this.props.removeConnector(this.props.leftPointIndex)
+      )
     }
   }
 
@@ -36,7 +37,8 @@ class Connector extends React.PureComponent<IProps, IState> {
     e.preventDefault()
     const {clientX, clientY} = e
     const pos = {left: clientX, top: clientY}
-    this.props.showContextMenu && this.props.showContextMenu(this.props.leftPointIndex, pos)
+    this.props.showContextMenu &&
+      this.props.showContextMenu(this.props.leftPointIndex, pos)
   }
 
   _setActiveMode(activeMode: string) {
@@ -51,8 +53,10 @@ class Connector extends React.PureComponent<IProps, IState> {
 
   render() {
     const {
-      leftPointTime, leftPointValue,
-      rightPointTime, rightPointValue,
+      leftPointTime,
+      leftPointValue,
+      rightPointTime,
+      rightPointValue,
       handles,
     } = this.props
 
@@ -83,40 +87,42 @@ class Connector extends React.PureComponent<IProps, IState> {
                   ${handles[2] * 100} 0 100 0`
     }
 
-    return ([
-      <Subscriber key='subscriber' channel={PanelActiveModeChannel}>
+    return [
+      <Subscriber key="subscriber" channel={PanelActiveModeChannel}>
         {({activeMode}: {activeMode: string}) => {
           this._setActiveMode(activeMode)
           return null
         }}
-      </Subscriber>
-      ,
+      </Subscriber>,
       <svg
-        key='curve'
+        key="curve"
         x={x}
         y={y}
         width={width}
         height={height}
-        viewBox='0 0 100 100'
-        preserveAspectRatio='none'
-        className={css.curveContainer}>
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
+        className={css.curveContainer}
+      >
         <path
           d={pathD}
-          fill='transparent'
-          stroke='transparent'
+          fill="transparent"
+          stroke="transparent"
           strokeWidth={10}
-          vectorEffect='non-scaling-stroke'
+          vectorEffect="non-scaling-stroke"
           onMouseDown={this.clickHandler}
           onContextMenu={this.contextMenuHandler}
-          ref={c => this.connectorClickArea = c}/>
+          ref={c => (this.connectorClickArea = c)}
+        />
         <path
           d={pathD}
-          fill='transparent'
+          fill="transparent"
           strokeWidth={2}
-          vectorEffect='non-scaling-stroke'
-          className={css.connectorPath}/>
-      </svg>
-    ])
+          vectorEffect="non-scaling-stroke"
+          className={css.connectorPath}
+        />
+      </svg>,
+    ]
   }
 }
 

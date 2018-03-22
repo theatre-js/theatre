@@ -11,9 +11,10 @@ import {fork, take, call} from 'redux-saga/effects'
 import Server from 'socket.io'
 import allStudioSocketEndpoints from './allStudioSocketEndpoints'
 import wn from 'when'
+import {defer} from '$shared/utils/defer'
 
 const makeSocketServer = (): Promise<SocketServer> => {
-  const deferred = wn.defer<SocketServer>()
+  const deferred = defer<SocketServer>()
   const server = new Server()
   server.listen(process.env.studio.socketPort, () => {})
 
@@ -32,7 +33,7 @@ export default function* studioCommsRootSaga(): Generator_<
 
   try {
     yield fork(handleServer, server)
-    yield wn.defer().promise
+    yield defer().promise
   } finally {
     server.close()
   }

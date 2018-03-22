@@ -1,27 +1,28 @@
 import makeUUID from 'uuid/v4'
 import jsonPatchLib from 'fast-json-patch'
-import {Reducer} from 'redux'
 import {
   reduceEntireStateAction,
   undoAction,
   redoAction,
-  GenericAction,
   _pushTemporaryAction,
   _discardTemporaryAction,
+  ahistoricalAction,
 } from './actions'
 import * as _ from 'lodash'
 import patch from 'json-touch-patch'
+import getPropsInCommon from '$src/shared/utils/getPropsInCommon'
+import {ReduxReducer, GenericAction} from '$shared/types'
 
 type TempAction = {
   type: string
   payload: {id: string; originalAction: GenericAction}
 }
 
-interface History<InnerState> {
+interface History<HistoricState> {
   currentCommitHash: CommitHash | undefined
   commitsByHash: Record<CommitHash, Commit>
   listOfCommitHashes: Array<CommitHash>
-  innerState: InnerState
+  innerState: HistoricState
 }
 
 interface Commit {
@@ -41,17 +42,24 @@ const defaultConfig: WithHistoryConfig = {
   maxNumberOfCommits: 100,
 }
 
-export type StateWithHistory<InnerState extends {}> = InnerState & {
-  '@@history': History<InnerState>
-  '@@tempActions': Array<TempAction>
-}
+export type StateWithHistory<
+  HistoricState extends {},
+  AhistoricState extends {}
+> = HistoricState &
+  AhistoricState & {
+    '@@history': History<HistoricState>
+    '@@tempActions': Array<TempAction>
+    '@@ahistoricState': AhistoricState
+  }
 
 export const withHistory = <
   PersistedState,
-  InnerReducer extends Reducer<PersistedState>,
-  FullState extends StateWithHistory<PersistedState>
+  AhistoricState,
+  historicalReducer extends ReduxReducer<PersistedState>,
+  FullState extends StateWithHistory<PersistedState, AhistoricState>
 >(
-  innerReducer: InnerReducer,
+  historicalReducer: historicalReducer,
+  ahistoricalReducer: ReduxReducer<AhistoricState>,
   config: WithHistoryConfig = defaultConfig,
 ) => {
   const reduceForPermanentHistory = (
@@ -63,43 +71,70 @@ export const withHistory = <
         currentCommitHash: undefined,
         commitsByHash: {},
         listOfCommitHashes: [],
-        innerState: innerReducer(undefined as $FixMe, action),
+        innerState: historicalReducer(undefined as $FixMe, action),
       }
-    } else if (reduceEntireStateAction.is(action)) {
-      return action.payload(prevHistory)
     } else if (undoAction.is(action)) {
       return undo(prevHistory)
     } else if (redoAction.is(action)) {
       return redo(prevHistory)
     } else {
-      return pushCommit(prevHistory, innerReducer, action, config)
+      return pushCommit(prevHistory, historicalReducer, action, config)
     }
   }
 
-  return (prevState: FullState, action: GenericAction): FullState => {
+  return (
+    prevState: undefined | FullState,
+    action: GenericAction,
+  ): FullState => {
     let history: History<PersistedState>
     let tempActions: Array<TempAction>
+    let ahistoricState: AhistoricState
     if (!prevState) {
       history = reduceForPermanentHistory(undefined as $FixMe, action)
+      ahistoricState = ahistoricalReducer(undefined as $FixMe, action)
       tempActions = []
-    } else if (_pushTemporaryAction.is(action)) {
-      history = prevState['@@history']
-      tempActions = pushTemp(prevState['@@tempActions'], action)
-    } else if (_discardTemporaryAction.is(action)) {
-      history = prevState['@@history']
-      tempActions = discardTemp(prevState['@@tempActions'], action)
+    } else if (reduceEntireStateAction.is(action)) {
+      return action.payload(prevState)
     } else {
-      history = reduceForPermanentHistory(prevState['@@history'], action)
+      history = prevState['@@history']
+      ahistoricState = prevState['@@ahistoricState']
       tempActions = prevState['@@tempActions']
+
+      if (ahistoricalAction.is(action)) {
+        ahistoricState = ahistoricalReducer(ahistoricState, action.payload)
+      } else if (_pushTemporaryAction.is(action)) {
+        tempActions = pushTemp(prevState['@@tempActions'], action)
+      } else if (_discardTemporaryAction.is(action)) {
+        tempActions = discardTemp(prevState['@@tempActions'], action)
+      } else {
+        history = reduceForPermanentHistory(prevState['@@history'], action)
+      }
     }
 
     // const innerStateWithTemps = applyTemps(history)
-    const innerStateWithTemps = applyTemps(history.innerState, tempActions, innerReducer)
+    const innerStateWithTemps = applyTemps(
+      history.innerState,
+      tempActions,
+      historicalReducer,
+    )
+
+    if (process.env.NODE_ENV !== 'production') {
+      const commonProps = getPropsInCommon(innerStateWithTemps, ahistoricState)
+      if (commonProps.length > 0) {
+        throw new Error(
+          `Looks like ahistoricReducer and historicalReducer return states with props ${JSON.stringify(
+            commonProps,
+          )} in common. They should have no props in common, otherwise ahistoricReducer would override the props in historicalReducer`,
+        )
+      }
+    }
 
     return {
       ...innerStateWithTemps,
+      ...(ahistoricState as $FixMe),
       '@@history': history,
       '@@tempActions': tempActions,
+      '@@ahistoricState': ahistoricState,
     }
   }
 }
@@ -107,25 +142,36 @@ export const withHistory = <
 const pushTemp = (old: TempAction[], action: TempAction) => {
   const id = action.payload.id
 
-  return [...old.filter((s) => s.payload.id !== id), action]
+  return [...old.filter(s => s.payload.id !== id), action]
 }
 
-const discardTemp = (old: TempAction[], action: typeof _discardTemporaryAction.ActionType) => {
+const discardTemp = (
+  old: TempAction[],
+  action: typeof _discardTemporaryAction.ActionType,
+) => {
   const id = action.payload
 
-  return old.filter((s) => s.payload.id !== id)
+  return old.filter(s => s.payload.id !== id)
 }
 
-const applyTemps = (s: mixed, actions: TempAction[], innerReducer: Reducer<$FixMe>) => 
-  actions.reduce((prevState, action) => innerReducer(prevState, action.payload.originalAction), s)
+const applyTemps = (
+  s: mixed,
+  actions: TempAction[],
+  historicalReducer: ReduxReducer<$FixMe>,
+) =>
+  actions.reduce(
+    (prevState, action) =>
+      historicalReducer(prevState, action.payload.originalAction),
+    s,
+  )
 
 function pushCommit<InnerState>(
   prevHistory: History<InnerState>,
-  innerReducer: Reducer<InnerState>,
+  historicalReducer: ReduxReducer<InnerState>,
   action: GenericAction,
   config: WithHistoryConfig,
 ) {
-  const newInnerState = innerReducer(prevHistory.innerState, action)
+  const newInnerState = historicalReducer(prevHistory.innerState, action)
 
   const commit: Commit = createCommit(prevHistory.innerState, newInnerState)
 
@@ -231,7 +277,7 @@ function undo<InnerState, H extends History<InnerState>>(prevHistory: H): H {
       : prevHistory.listOfCommitHashes[indexOfNewCommitHash]
 
   const newHistory: H = {
-    ...prevHistory as $IntentionalAny,
+    ...(prevHistory as $IntentionalAny),
     currentCommitHash: newCommitHash,
     innerState: newInnerState,
   }
@@ -262,7 +308,7 @@ function redo<InnerState, H extends History<InnerState>>(prevHistory: H): H {
   const newInnerState = patch(prevHistory.innerState, currentCommit.forwardDiff)
 
   const newHistory: H = {
-    ...prevHistory as $IntentionalAny,
+    ...(prevHistory as $IntentionalAny),
     currentCommitHash: newCommitHash,
     innerState: newInnerState,
   }
@@ -270,7 +316,9 @@ function redo<InnerState, H extends History<InnerState>>(prevHistory: H): H {
   return newHistory
 }
 
-export const extractState = <S extends {}>(o: StateWithHistory<S>): S => {
+export const extractState = <S extends {}>(
+  o: StateWithHistory<S, $IntentionalAny>,
+): S => {
   const {'@@history': h, '@@tempActions': t, ...state} = o as $FixMe
   return state
 }

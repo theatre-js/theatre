@@ -8,11 +8,11 @@ backend(window.__REACT_DEVTOOLS_GLOBAL_HOOK__)
 // @todo only one instance of babel-polyfill is allowed per window, so we can't ship
 // with this global polyfill
 import 'babel-polyfill'
-import TheaterJSStudio from '$studio/bootstrap/TheaterJSStudio'
+import Studio from '$studio/bootstrap/Studio'
 import createRootComponentForReact from './componentModel/react/createRootComponentForReact'
 import '$shared/DataVerse/devtoolsFormatters/setup'
 
-const studio = new TheaterJSStudio()
+const studio = new Studio()
 // theaterStudioInstance.run()
 
 if (process.env.NODE_ENV === 'development') {

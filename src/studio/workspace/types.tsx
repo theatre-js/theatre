@@ -1,4 +1,3 @@
-
 import {ComponentId} from '$studio/componentModel/types'
 
 export type PanelId = string

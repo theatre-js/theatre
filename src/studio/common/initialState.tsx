@@ -1,10 +1,5 @@
-
 import {CommonNamespaceState} from './types'
 
-const initialState: CommonNamespaceState = {
-  temp: {
-    bootstrapped: true,
-  },
-}
+const initialState: CommonNamespaceState = {}
 
 export default initialState

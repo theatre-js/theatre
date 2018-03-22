@@ -7,7 +7,7 @@ type Props = {
   variableId: string
   points: NormalizedPoint[]
   extremums: $FixMe
-  color: {name: string, normal: string, darkened: string}
+  color: {name: string; normal: string; darkened: string}
   getSvgSize: Function
   getDuration: Function
   showPointValuesEditor: Function
@@ -45,7 +45,10 @@ class Variable extends React.PureComponent<Props, IState> {
     // }
     if (nextProps.extremums !== this.props.extremums) {
       this.setState(() => ({
-        points: this._getNormalizedPoints(nextProps.points, nextProps.extremums)
+        points: this._getNormalizedPoints(
+          nextProps.points,
+          nextProps.extremums,
+        ),
       }))
     }
   }
@@ -69,19 +72,35 @@ class Variable extends React.PureComponent<Props, IState> {
     this.props.showPointValuesEditor(this.props.variableId, pointIndex, params)
   }
 
-  showContextMenuForPoint = (pointIndex: number, pos: {left: number, top: number}) => {
+  showContextMenuForPoint = (
+    pointIndex: number,
+    pos: {left: number; top: number},
+  ) => {
     this.props.showContextMenuForPoint(this.props.variableId, pointIndex, pos)
   }
 
-  showContextMenuForConnector = (pointIndex: number, pos: {left: number, top: number}) => {
-    this.props.showContextMenuForConnector(this.props.variableId, pointIndex, pos)
+  showContextMenuForConnector = (
+    pointIndex: number,
+    pos: {left: number; top: number},
+  ) => {
+    this.props.showContextMenuForConnector(
+      this.props.variableId,
+      pointIndex,
+      pos,
+    )
   }
 
-  changePointPositionBy = (pointIndex: number, change: {time: number, value: number}) => {
+  changePointPositionBy = (
+    pointIndex: number,
+    change: {time: number; value: number},
+  ) => {
     this.props.changePointPositionBy(this.props.variableId, pointIndex, change)
   }
 
-  changePointHandlesBy = (pointIndex: number, change: [number, number, number, number]) => {
+  changePointHandlesBy = (
+    pointIndex: number,
+    change: [number, number, number, number],
+  ) => {
     this.props.changePointHandlesBy(this.props.variableId, pointIndex, change)
   }
 
@@ -127,16 +146,22 @@ class Variable extends React.PureComponent<Props, IState> {
               <Point
                 color={color}
                 key={`${point._value}${point._t}`}
-                {...(prevPoint ? {
-                  prevPointTime: prevPoint.time,
-                  prevPointValue: prevPoint.value,
-                  prevPointHandles: prevPoint.interpolationDescriptor.handles,
-                  prevPointConnected: prevPoint.interpolationDescriptor.connected,
-                } : {})}
-                {...(nextPoint ? {
-                  nextPointTime: nextPoint.time,
-                  nextPointValue: nextPoint.value,
-                } : {})}
+                {...(prevPoint
+                  ? {
+                      prevPointTime: prevPoint.time,
+                      prevPointValue: prevPoint.value,
+                      prevPointHandles:
+                        prevPoint.interpolationDescriptor.handles,
+                      prevPointConnected:
+                        prevPoint.interpolationDescriptor.connected,
+                    }
+                  : {})}
+                {...(nextPoint
+                  ? {
+                      nextPointTime: nextPoint.time,
+                      nextPointValue: nextPoint.value,
+                    }
+                  : {})}
                 pointTime={point.time}
                 pointValue={point.value}
                 pointHandles={point.interpolationDescriptor.handles}

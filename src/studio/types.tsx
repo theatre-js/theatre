@@ -9,9 +9,17 @@ export interface IStorePersistedState {
   componentModel: IComponentModelNamespaceState
 }
 
-export interface IStoreState extends StateWithHistory<IStorePersistedState> {}
+export interface IStoreAhistoricSTate {
+  stateIsHydrated: boolean
+  pathToProject: undefined | string
+}
 
-export type Selector<ReturnType, ParamsType> = (
-  state: IStoreState,
-  params: ParamsType,
-) => ReturnType
+export interface IStudioStoreState
+  extends StateWithHistory<IStorePersistedState, IStoreAhistoricSTate> {}
+
+export type Selector<ReturnType, ParamsType = void> = 
+  ParamsType extends void ? (state: IStudioStoreState) => ReturnType : 
+  (
+    state: IStudioStoreState,
+    params: ParamsType,
+  ) => ReturnType

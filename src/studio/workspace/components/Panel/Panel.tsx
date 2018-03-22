@@ -116,7 +116,7 @@ export default class Panel extends StudioComponent<IProps, IState> {
     )
     const newBoundaries = {
       left: {
-        ...refMapX.hasOwnProperty(newLeft)
+        ...(refMapX.hasOwnProperty(newLeft)
           ? {
               type: SAME_AS_BOUNDARY,
               path: refMapX[newLeft],
@@ -124,10 +124,10 @@ export default class Panel extends StudioComponent<IProps, IState> {
           : {
               type: EXACT_VALUE,
               value: newLeft,
-            },
+            }),
       },
       right: {
-        ...refMapX.hasOwnProperty(newRight)
+        ...(refMapX.hasOwnProperty(newRight)
           ? {
               type: SAME_AS_BOUNDARY,
               path: refMapX[newRight],
@@ -135,10 +135,10 @@ export default class Panel extends StudioComponent<IProps, IState> {
           : {
               type: EXACT_VALUE,
               value: newRight,
-            },
+            }),
       },
       top: {
-        ...refMapY.hasOwnProperty(newTop)
+        ...(refMapY.hasOwnProperty(newTop)
           ? {
               type: SAME_AS_BOUNDARY,
               path: refMapY[newTop],
@@ -146,10 +146,10 @@ export default class Panel extends StudioComponent<IProps, IState> {
           : {
               type: EXACT_VALUE,
               value: newTop,
-            },
+            }),
       },
       bottom: {
-        ...refMapY.hasOwnProperty(newBottom)
+        ...(refMapY.hasOwnProperty(newBottom)
           ? {
               type: SAME_AS_BOUNDARY,
               path: refMapY[newBottom],
@@ -157,7 +157,7 @@ export default class Panel extends StudioComponent<IProps, IState> {
           : {
               type: EXACT_VALUE,
               value: newBottom,
-            },
+            }),
       },
     }
 
@@ -253,7 +253,7 @@ export default class Panel extends StudioComponent<IProps, IState> {
       newBoundaries = {
         ...newBoundaries,
         left: {
-          ...refMapX.hasOwnProperty(newLeft)
+          ...(refMapX.hasOwnProperty(newLeft)
             ? {
                 type: SAME_AS_BOUNDARY,
                 path: refMapX[newLeft],
@@ -261,7 +261,7 @@ export default class Panel extends StudioComponent<IProps, IState> {
             : {
                 type: EXACT_VALUE,
                 value: newLeft,
-              },
+              }),
         },
       }
     }
@@ -270,7 +270,7 @@ export default class Panel extends StudioComponent<IProps, IState> {
       newBoundaries = {
         ...newBoundaries,
         right: {
-          ...refMapX.hasOwnProperty(newRight)
+          ...(refMapX.hasOwnProperty(newRight)
             ? {
                 type: SAME_AS_BOUNDARY,
                 path: refMapX[newRight],
@@ -278,7 +278,7 @@ export default class Panel extends StudioComponent<IProps, IState> {
             : {
                 type: EXACT_VALUE,
                 value: newRight,
-              },
+              }),
         },
       }
     }
@@ -287,7 +287,7 @@ export default class Panel extends StudioComponent<IProps, IState> {
       newBoundaries = {
         ...newBoundaries,
         top: {
-          ...refMapY.hasOwnProperty(newTop)
+          ...(refMapY.hasOwnProperty(newTop)
             ? {
                 type: SAME_AS_BOUNDARY,
                 path: refMapY[newTop],
@@ -295,7 +295,7 @@ export default class Panel extends StudioComponent<IProps, IState> {
             : {
                 type: EXACT_VALUE,
                 value: newTop,
-              },
+              }),
         },
       }
     }
@@ -304,7 +304,7 @@ export default class Panel extends StudioComponent<IProps, IState> {
       newBoundaries = {
         ...newBoundaries,
         bottom: {
-          ...refMapY.hasOwnProperty(newBottom)
+          ...(refMapY.hasOwnProperty(newBottom)
             ? {
                 type: SAME_AS_BOUNDARY,
                 path: refMapY[newBottom],
@@ -312,7 +312,7 @@ export default class Panel extends StudioComponent<IProps, IState> {
             : {
                 type: EXACT_VALUE,
                 value: newBottom,
-              },
+              }),
         },
       }
     }
@@ -360,7 +360,7 @@ export default class Panel extends StudioComponent<IProps, IState> {
             top,
             width,
             height,
-            ...isMovingPanel
+            ...(isMovingPanel
               ? {
                   transition: 'transform .05s',
                   transform: `translate3d(${panelMove.x}px, ${
@@ -368,8 +368,8 @@ export default class Panel extends StudioComponent<IProps, IState> {
                   }px, 0)`,
                   zIndex: 1000,
                 }
-              : {},
-            ...isMovingBoundaries ? {zIndex: 1000} : {},
+              : {}),
+            ...(isMovingBoundaries ? {zIndex: 1000} : {}),
           }
 
           return (
@@ -388,13 +388,19 @@ export default class Panel extends StudioComponent<IProps, IState> {
                 <Broadcast
                   channel={PanelWidthChannel}
                   value={{width}}
-                  compareValues={(prevValue: $FixMe, nextValue: $FixMe) => (_.isEqual(prevValue, nextValue))}>
+                  compareValues={(prevValue: $FixMe, nextValue: $FixMe) =>
+                    _.isEqual(prevValue, nextValue)
+                  }
+                >
                   <Broadcast
                     channel={PanelActiveModeChannel}
-                    compareValues={(prevValue: $FixMe, nextValue: $FixMe) => (_.isEqual(prevValue, nextValue))}
-                    value={{activeMode}}>
-                      <div className={css.content}>{children}</div>
-                    </Broadcast>
+                    compareValues={(prevValue: $FixMe, nextValue: $FixMe) =>
+                      _.isEqual(prevValue, nextValue)
+                    }
+                    value={{activeMode}}
+                  >
+                    <div className={css.content}>{children}</div>
+                  </Broadcast>
                 </Broadcast>
               </div>
               {activeMode === MODE_OPTION && (

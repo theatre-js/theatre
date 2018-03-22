@@ -14,34 +14,14 @@ const RenderCurrentCanvas = makeReactiveComponent({
     baseClass.extend({
       render(self) {
         return self.prop('studioAtom').flatMap(studioAtom => {
-          const componentIdToBeRenderedAsCurrentCanvasP = studioAtom
+          return studioAtom
             .pointer()
-            .prop('workspace')
-            .prop('componentIdToBeRenderedAsCurrentCanvas')
+            .prop('stateIsHydrated')
+            .flatMap((hydrated: boolean) => {
+              console.log('here', hydrated)
 
-          const childrenP = self
-            .pointer()
-            .prop('props')
-            .prop('children')
-
-          const instantiationDescriptorP = dictAtom({
-              componentId: boxAtom(componentIdToBeRenderedAsCurrentCanvasP),
-              props: dictAtom({}),
+              return hydrated ? render(studioAtom, self) : null
             })
-            .derivedDict()
-            .pointer()
-
-          return componentIdToBeRenderedAsCurrentCanvasP.flatMap(C => {
-            if (typeof C === 'string') {
-              return elementify(
-                constant('currentCanvas'),
-                instantiationDescriptorP,
-                self.prop('studio'),
-              )
-            } else {
-              return childrenP.getValue()
-            }
-          })
         })
       },
     }),
@@ -55,3 +35,30 @@ const descriptor: ComponentDescriptor = {
 }
 
 export default descriptor
+function render(studioAtom: any, self: any) {
+  const componentIdToBeRenderedAsCurrentCanvasP = studioAtom
+    .pointer()
+    .prop('workspace')
+    .prop('componentIdToBeRenderedAsCurrentCanvas')
+  const childrenP = self
+    .pointer()
+    .prop('props')
+    .prop('children')
+  const instantiationDescriptorP = dictAtom({
+    componentId: boxAtom(componentIdToBeRenderedAsCurrentCanvasP),
+    props: dictAtom({}),
+  })
+    .derivedDict()
+    .pointer()
+  return componentIdToBeRenderedAsCurrentCanvasP.flatMap(C => {
+    if (typeof C === 'string') {
+      return elementify(
+        constant('currentCanvas'),
+        instantiationDescriptorP,
+        self.prop('studio'),
+      )
+    } else {
+      return childrenP.getValue()
+    }
+  })
+}

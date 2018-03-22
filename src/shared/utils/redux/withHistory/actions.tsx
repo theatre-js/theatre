@@ -1,8 +1,8 @@
 import {actionCreator} from '$shared/utils'
 import makeUUID from 'uuid/v4'
+import {GenericAction} from '$shared/types'
 
 type GenericReducer = <T extends {}>(state: T) => T
-export type GenericAction = {type: string; payload: mixed | void}
 
 export const reduceEntireStateAction = actionCreator(
   '@history/reduceEntireState',
@@ -35,3 +35,8 @@ export const tempActionGroup = () => {
     discard,
   }
 }
+
+export const ahistoricalAction = actionCreator(
+  '@history/ahistorical',
+  (a: GenericAction) => a,
+)
