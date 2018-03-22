@@ -4,12 +4,17 @@ export interface StudioStatePersistorNamespaceState {
   byPath: Record<string, StateWithCacheData>
 }
 
-export interface StateWithCacheData {
-  state: PossibleStates
+export type StateWithCacheData = PossibleStates & {
   lastRead: number
 }
 
 export type PossibleStates = EmptyState | FullState
 
-type EmptyState = {type: 'empty'}
-type FullState = {type: 'full'; checksum: string; state: IStudioHistoryState}
+interface EmptyState {
+  checksum: 'empty'
+  data: {}
+}
+interface FullState {
+  checksum: string
+  data: IStudioHistoryState
+}

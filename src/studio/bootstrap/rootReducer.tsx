@@ -6,6 +6,7 @@ import {
   initialPersistedState,
   initialAhistoricState,
 } from '$studio/bootstrap/initialState'
+import withBatchedActions from '$shared/utils/redux/withHistory/withBatchActions'
 
 const mainReducer: ReduxReducer<IStoreHistoricState> = (
   s: IStoreHistoricState = initialPersistedState,
@@ -15,7 +16,9 @@ const ahistoricReducer: ReduxReducer<IStoreAhistoricSTate> = (
   s = initialAhistoricState,
 ) => s
 
-export default withHistory(
-  withCommonActions(mainReducer),
-  withCommonActions(ahistoricReducer),
+export default withBatchedActions(
+  withHistory(
+    withCommonActions(mainReducer),
+    withCommonActions(ahistoricReducer),
+  ),
 )

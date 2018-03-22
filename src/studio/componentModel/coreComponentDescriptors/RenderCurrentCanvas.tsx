@@ -18,8 +18,6 @@ const RenderCurrentCanvas = makeReactiveComponent({
             .pointer()
             .prop('stateIsHydrated')
             .flatMap((hydrated: boolean) => {
-              console.log('here', hydrated)
-
               return hydrated ? render(studioAtom, self) : null
             })
         })

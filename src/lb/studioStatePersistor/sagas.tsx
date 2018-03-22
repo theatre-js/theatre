@@ -65,17 +65,18 @@ function* loadProjectState(
       }
     }
 
-    if (typeof json.state !== 'object') {
+    if (typeof json.data !== 'object') {
       return {
         errorType: 'corruptedData',
-        details: `json file doesn't have a .state property`,
+        details: `json file doesn't have a .data property`,
       }
     }
 
     state = json
   } else {
     state = {
-      type: 'empty',
+      checksum: 'empty',
+      data: {}
     }
   }
 
@@ -84,15 +85,15 @@ function* loadProjectState(
   return 'okay'
 }
 
-function* cacheProjectState(pathToProject: string, state: PossibleStates) {
+export function* cacheProjectState(pathToProject: string, state: PossibleStates) {
   yield put(
     reduceLBState(['studioStatePersistor', 'byPath', pathToProject], () => ({
-      state,
+      ...state,
       lastRead: Date.now(),
     })),
   )
 }
 
-function projectPathToStatePath(pathToProject: string) {
+export function projectPathToStatePath(pathToProject: string) {
   return pathToProject.replace(/theater\.json$/, 'theater-history.json')
 }

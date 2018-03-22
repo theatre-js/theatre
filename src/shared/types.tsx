@@ -12,3 +12,6 @@ export type ErrorsOf<T> =
 export type ReturnOf<Fn> =
   Fn extends (...args: $IntentionalAny[]) => 
     Generator_<infer R> ? R : never
+
+export type PromiseValue<P> =
+  P extends Promise<infer R> ? R : never

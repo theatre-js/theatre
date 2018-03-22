@@ -1,15 +1,24 @@
 import {Studio} from '$studio/handy'
-import {IStudioStoreState} from '$studio/types'
-import {select, take, fork, cancel} from 'redux-saga/effects'
-import {delay} from 'redux-saga'
+import {IStudioStoreState, IStudioHistoryState} from '$studio/types'
+import jsonPatchLib from 'fast-json-patch'
+import {select, take, fork, cancel, actionChannel} from 'redux-saga/effects'
+import {delay, buffers} from 'redux-saga'
 import getProjectState from '$lb/studioStatePersistor/getProjectState.caller'
 import {isError} from '$shared/utils/isError'
 import {reduceAhistoricState} from '$studio/bootstrap/actions'
+import pushDiffForProjectState from '$lb/studioStatePersistor/pushDiffForProjectState.caller'
+import {PromiseValue} from '$shared/types'
+import gneerateUniqueId from 'uuid/v4'
+import {replaceHistoryAction} from '$shared/utils/redux/withHistory/actions'
+import {batchedAction} from '$shared/utils/redux/withHistory/withBatchActions'
 
 export default class StatePersistor {
-  _lastPersistedStateInfo: {type: 'pending'} | {type: 'empty'}
+  _lastPersistedStateInfo:
+    | {type: 'empty'; state: {}}
+    | {type: 'full'; checksum: string; state: IStudioHistoryState}
+
   constructor(readonly _studio: Studio) {
-    this._lastPersistedStateInfo = {type: 'pending'}
+    this._lastPersistedStateInfo = {type: 'empty', state: {}}
     this._waitForRun()
   }
 
@@ -32,15 +41,72 @@ export default class StatePersistor {
       // @todo
       console.error(result)
     } else {
-      if (result.projectState.type === 'empty') {
-        this._lastPersistedStateInfo = {type: 'empty'}
+      const newProjectState = result.projectState
+      if (newProjectState.checksum === 'empty') {
+        this._lastPersistedStateInfo = {type: 'empty', state: {}}
         this._studio.store.reduxStore.dispatch(
           reduceAhistoricState(['stateIsHydrated'], () => true),
         )
       } else {
-        throw new Error('Implement me @todo')
+        this._lastPersistedStateInfo = {
+          type: 'full',
+          checksum: newProjectState.checksum,
+          state: newProjectState.data as IStudioHistoryState,
+        }
+        this._studio.store.reduxStore.dispatch(
+          batchedAction([
+            replaceHistoryAction(newProjectState.data as $FixMe),
+            reduceAhistoricState(['stateIsHydrated'], () => true),
+          ]),
+        )
       }
+      this._startPersisting()
     }
+  }
+
+  _startPersisting() {
+    const self = this
+    this._studio.store.runSaga(function* startPersisting(): Generator_ {
+      const ch = yield actionChannel('*', buffers.sliding(1))
+
+      while (true) {
+        yield take(ch)
+        const state: IStudioStoreState = yield select()
+        const history = state['@@history']
+        const diffs = jsonPatchLib.compare(
+          self._lastPersistedStateInfo.state,
+          history,
+        )
+        if (diffs.length === 0) continue
+
+        const checksum = gneerateUniqueId()
+
+        const resultPromise = self._studio._lbCommunicator.request(
+          pushDiffForProjectState({
+            prevChecksum:
+              self._lastPersistedStateInfo.type === 'empty'
+                ? 'empty'
+                : self._lastPersistedStateInfo.checksum,
+            newChecksum: checksum,
+            diffs,
+            pathToProject: state.pathToProject as string,
+          }),
+        )
+
+        const result: PromiseValue<typeof resultPromise> = yield resultPromise
+
+        if (result === 'ok') {
+          self._lastPersistedStateInfo = {
+            type: 'full',
+            state: history,
+            checksum,
+          }
+        } else {
+          // @todo high
+          console.error(result)
+        }
+      }
+    })
   }
 }
 

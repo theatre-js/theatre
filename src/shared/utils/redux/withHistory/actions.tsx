@@ -1,12 +1,18 @@
 import {actionCreator} from '$shared/utils'
 import makeUUID from 'uuid/v4'
 import {GenericAction} from '$shared/types'
+import { HistoryOnly } from '$shared/utils/redux/withHistory/withHistory';
 
 type GenericReducer = <T extends {}>(state: T) => T
 
 export const reduceEntireStateAction = actionCreator(
   '@history/reduceEntireState',
   (reducer: GenericReducer): GenericReducer => reducer,
+)
+
+export const replaceHistoryAction = actionCreator(
+  '@history/replaceHistory',
+  (newHistory: HistoryOnly<$FixMe>): HistoryOnly<$FixMe> => newHistory,
 )
 
 export const undoAction = actionCreator('@history/undo')

@@ -1,5 +1,5 @@
 import makeUUID from 'uuid/v4'
-import jsonPatchLib from 'fast-json-patch'
+import jsonPatchLib, { Operation } from 'fast-json-patch'
 import {
   reduceEntireStateAction,
   undoAction,
@@ -7,6 +7,7 @@ import {
   _pushTemporaryAction,
   _discardTemporaryAction,
   ahistoricalAction,
+  replaceHistoryAction,
 } from './actions'
 import * as _ from 'lodash'
 import patch from 'json-touch-patch'
@@ -27,8 +28,8 @@ export interface HistoryOnly<HistoricState> {
 
 interface Commit {
   hash: CommitHash
-  forwardDiff: CommitDiff
-  backwardDiff: CommitDiff
+  forwardDiff: Operation[]
+  backwardDiff: Operation[]
   timestamp: number
 }
 
@@ -100,7 +101,9 @@ export const withHistory = <
       ahistoricState = prevState['@@ahistoricState']
       tempActions = prevState['@@tempActions']
 
-      if (ahistoricalAction.is(action)) {
+      if (replaceHistoryAction.is(action)) {
+        history = action.payload
+      } else if (ahistoricalAction.is(action)) {
         ahistoricState = ahistoricalReducer(ahistoricState, action.payload)
       } else if (_pushTemporaryAction.is(action)) {
         tempActions = pushTemp(prevState['@@tempActions'], action)
@@ -249,7 +252,9 @@ function createCommit<Snapshot>(
   return commit
 }
 
-function undo<InnerState, H extends HistoryOnly<InnerState>>(prevHistory: H): H {
+function undo<InnerState, H extends HistoryOnly<InnerState>>(
+  prevHistory: H,
+): H {
   if (prevHistory.currentCommitHash === undefined) {
     return prevHistory
   }
@@ -285,7 +290,9 @@ function undo<InnerState, H extends HistoryOnly<InnerState>>(prevHistory: H): H 
   return newHistory
 }
 
-function redo<InnerState, H extends HistoryOnly<InnerState>>(prevHistory: H): H {
+function redo<InnerState, H extends HistoryOnly<InnerState>>(
+  prevHistory: H,
+): H {
   if (prevHistory.listOfCommitHashes.length === 0) {
     return prevHistory
   }
@@ -319,6 +326,11 @@ function redo<InnerState, H extends HistoryOnly<InnerState>>(prevHistory: H): H 
 export const extractState = <S extends {}>(
   o: StateWithHistory<S, $IntentionalAny>,
 ): S => {
-  const {'@@history': h, '@@tempActions': t, '@@ahistoricState': a, ...state} = o as $FixMe
+  const {
+    '@@history': h,
+    '@@tempActions': t,
+    '@@ahistoricState': a,
+    ...state
+  } = o as $FixMe
   return state
 }

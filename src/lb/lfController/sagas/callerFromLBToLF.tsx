@@ -13,7 +13,7 @@ export const callerFromLBToLF = (handlerName: string): any => {
       handlerName,
       payload,
       // @todo set this to 4000
-      4000000,
+      4000,
       'I promise this call is coming from callerFromLBToLF()',
     )
     return r
