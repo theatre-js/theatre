@@ -1,4 +1,3 @@
-
 import fse from 'fs-extra'
 import path from 'path'
 import {LBStoreState} from '$lb/types'
@@ -6,7 +5,7 @@ import {
   default as recogniseProject,
   ErrorTypes as RecognizeProjectErrorTypes,
 } from './recogniseProject.endpointForLf'
-import { call, select } from 'redux-saga/effects';
+import {call, select} from 'redux-saga/effects'
 
 type ErrorTypes =
   | 'folderDoesntExist'
@@ -20,9 +19,7 @@ export default function* createNewProject(params: {
   folderPath: string
   name: string
 }): Generator_<
-  $FixMe,
-  {type: 'ok'; filePath: string} | {type: 'error'; errorType: ErrorTypes},
-  $FixMe
+  {type: 'ok'; filePath: string} | {type: 'error'; errorType: ErrorTypes}
 > {
   if (!(yield call(fse.pathExists, params.folderPath))) {
     return {type: 'error', errorType: 'folderDoesntExist'}
@@ -36,7 +33,7 @@ export default function* createNewProject(params: {
     return {type: 'error', errorType: 'pathUnreadable'}
   }
 
-  if (!(pathStat).isDirectory()) {
+  if (!pathStat.isDirectory()) {
     return {type: 'error', errorType: 'pathIsNotAFolder'}
   }
 

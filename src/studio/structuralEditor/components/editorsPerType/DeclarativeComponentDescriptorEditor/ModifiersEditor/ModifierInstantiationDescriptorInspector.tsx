@@ -1,6 +1,6 @@
 import {compose, React, connect} from '$studio/handy'
 import {get} from 'lodash'
-import { IStoreState } from '$studio/types';
+import {IStudioStoreState} from '$studio/types'
 import inspectorComponents, {
   ModifierIDsWithInspectorComponents,
 } from '$studio/componentModel/coreModifierDescriptors/inspectorComponents'
@@ -48,7 +48,7 @@ export class ModifierInstantiationDescriptorInspector extends React.PureComponen
 }
 
 export default compose(
-  connect((s: IStoreState, op: IOwnProps) => {
+  connect((s: IStudioStoreState, op: IOwnProps) => {
     return {
       modifierId: get(s, [
         ...op.pathToModifierInstantiationDescriptor,

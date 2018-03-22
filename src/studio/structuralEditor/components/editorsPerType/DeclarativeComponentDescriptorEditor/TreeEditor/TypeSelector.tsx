@@ -39,7 +39,7 @@ class TypeSelector extends React.PureComponent<Props, State> {
   }
 
   componentWillUnmount() {
-    document.removeEventListener('mousedown', this._handleMouseDownOutsideList)    
+    document.removeEventListener('mousedown', this._handleMouseDownOutsideList)
   }
 
   componentWillReceiveProps(nextProps) {
@@ -49,14 +49,14 @@ class TypeSelector extends React.PureComponent<Props, State> {
     }
 
     if (this.props.isActive && !nextProps.isActive) {
-      this.setState((state) => ({
+      this.setState(state => ({
         willListUnmount: false,
         query: nextProps.initialValue || state.query,
       }))
       this.input.blur()
     }
 
-    if (nextProps.initialValue && (nextProps.initialValue !== this.state.query)) {
+    if (nextProps.initialValue && nextProps.initialValue !== this.state.query) {
       this.setState(() => ({query: nextProps.initialValue}))
     }
   }
@@ -70,9 +70,12 @@ class TypeSelector extends React.PureComponent<Props, State> {
     }
   }
 
-  _handleMouseDownOutsideList =  (e: $FixMe) => {
+  _handleMouseDownOutsideList = (e: $FixMe) => {
     if (this.listContainer && !this.listContainer.contains(e.target)) {
-      this.props.handleClickOutsideList(e, {nodeType: NODE_TYPE.COMPONENT, displayName: 'div'})
+      this.props.handleClickOutsideList(e, {
+        nodeType: NODE_TYPE.COMPONENT,
+        displayName: 'div',
+      })
     }
   }
 
@@ -165,7 +168,7 @@ class TypeSelector extends React.PureComponent<Props, State> {
         />
         {this.props.isActive && (
           <div
-            ref={c => this.listContainer = c}
+            ref={c => (this.listContainer = c)}
             className={cx(css.list, {
               [css.willUnmount]: this.state.willListUnmount,
             })}

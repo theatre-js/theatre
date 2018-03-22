@@ -1,4 +1,6 @@
-import {React, connect, reduceStateAction} from '$src/studio/handy'
+import {React, connect} from '$src/studio/handy'
+import {reduceStateAction} from '$shared/utils/redux/commonActions'
+
 import {
   XY,
   PanelType,
@@ -17,7 +19,7 @@ import * as panelComponents from '$src/studio/workspace/panelComponents'
 import {Broadcast} from 'react-broadcast'
 import {ActiveMode} from '$src/studio/workspace/components/StudioUI/StudioUI'
 import {StudioComponent} from '$studio/handy'
-import {IStoreState} from '$studio/types'
+import {IStudioStoreState} from '$studio/types'
 import {isEqual} from 'lodash'
 
 export const PanelControlChannel = 'TheaterJS/PanelControlChannel'
@@ -101,7 +103,10 @@ class PanelController extends StudioComponent<IProps, State> {
       <Broadcast
         channel={PanelControlChannel}
         value={panelControlChannelData}
-        compareValues={(prevValue: $FixMe, nextValue: $FixMe) => (isEqual(prevValue, nextValue))}>
+        compareValues={(prevValue: $FixMe, nextValue: $FixMe) =>
+          isEqual(prevValue, nextValue)
+        }
+      >
         <PanelComponent
           {...configuration}
           // {...componentState}
@@ -128,7 +133,7 @@ class PanelController extends StudioComponent<IProps, State> {
   }
 }
 
-export default connect((s: IStoreState, op: OwnProps) => {
+export default connect((s: IStudioStoreState, op: OwnProps) => {
   const {
     type,
     configuration,

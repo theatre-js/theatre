@@ -1,4 +1,3 @@
-
 import {RunSagaFn} from './withRunSaga'
 
 describe('withRunSaga()', () => {
@@ -7,7 +6,7 @@ describe('withRunSaga()', () => {
   /* eslint-disable no-unused-vars */
   async function typeTests() {
     declare var run: RunSagaFn
-    function* foo(a: string, b: number): Generator_<*, boolean, *> {
+    function* foo(a: string, b: number): Generator_<boolean> {
       yield null
       return false
     }

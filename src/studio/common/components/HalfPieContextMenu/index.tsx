@@ -5,9 +5,14 @@ import * as _ from 'lodash'
 
 interface IProps {
   close: Function
-  centerPoint: {left: number, top: number}
+  centerPoint: {left: number; top: number}
   placement: 'left' | 'right' | 'top' | 'bottom'
-  items: Array<{label: string, cb: Function, IconComponent: $FixMe, disabled?: boolean}>
+  items: Array<{
+    label: string
+    cb: Function
+    IconComponent: $FixMe
+    disabled?: boolean
+  }>
 }
 
 interface IState {
@@ -30,8 +35,14 @@ const getCoordinatesOnVerticalAxis = (
   const menuEdge = centerPointLeft + maxItemWidth
   const isOutOfWindow = menuEdge > innerWidth
   const coeff = (isOutOfWindow ? -1 : 1) * (placement === 'left' ? -1 : 1)
-  const leftCoeff = .75 * (isOutOfWindow ?
-    Math.pow((1 - (menuEdge + maxItemWidth - innerWidth) / (radius + maxItemWidth)), 3) : 1)
+  const leftCoeff =
+    0.75 *
+    (isOutOfWindow
+      ? Math.pow(
+          1 - (menuEdge + maxItemWidth - innerWidth) / (radius + maxItemWidth),
+          3,
+        )
+      : 1)
 
   return (index: number) => {
     let leftTranslate
@@ -46,7 +57,7 @@ const getCoordinatesOnVerticalAxis = (
     }
     const topTranslate = index * BOX_HEIGHT - radius
 
-    return {leftTranslate, topTranslate, leftCoeff, topCoeff: .5}
+    return {leftTranslate, topTranslate, leftCoeff, topCoeff: 0.5}
   }
 }
 
@@ -61,7 +72,7 @@ const getCoordinatesOnHorizontalAxis = (
   const radiusX = Math.ceil(halfOfItems) * maxItemWidth
 
   const coeff = placement === 'top' ? -1 : 1
-  
+
   return (index: number) => {
     let topTranslate
     if (index < halfOfItems) {
@@ -77,9 +88,9 @@ const getCoordinatesOnHorizontalAxis = (
       (index === halfOfItems || index === halfOfItems - 1)
     ) {
       leftTranslate =
-        (halfOfItemsFloored - index) / halfOfItemsFloored * radiusX * .7
+        (halfOfItemsFloored - index) / halfOfItemsFloored * radiusX * 0.7
     }
-    return {leftTranslate, topTranslate, leftCoeff: .5, topCoeff: .5}
+    return {leftTranslate, topTranslate, leftCoeff: 0.5, topCoeff: 0.5}
   }
 }
 
@@ -119,11 +130,13 @@ class HalfPieContextMenu extends React.PureComponent<IProps, IState> {
     const pressedKeyCode = e.keyCode
     this.setState(() => ({pressedKeyCode}))
   }
-  
+
   _handleKeyUp = () => {
     const {pressedKeyCode} = this.state
     const matchedItemIndex = this.preparedLabels.findIndex(({key}: $FixMe) => {
-      return key.toLowerCase() === String.fromCharCode(pressedKeyCode).toLowerCase()
+      return (
+        key.toLowerCase() === String.fromCharCode(pressedKeyCode).toLowerCase()
+      )
     })
     if (matchedItemIndex !== -1) {
       this.props.items[matchedItemIndex].cb()
@@ -141,21 +154,33 @@ class HalfPieContextMenu extends React.PureComponent<IProps, IState> {
     )
     const translateCalculatorFn =
       placement === 'left' || placement === 'right'
-        ? getCoordinatesOnVerticalAxis(placement, items.length, centerPoint.left, maxItemWidth)
+        ? getCoordinatesOnVerticalAxis(
+            placement,
+            items.length,
+            centerPoint.left,
+            maxItemWidth,
+          )
         : getCoordinatesOnHorizontalAxis(placement, items.length, maxItemWidth)
-    
+
     const {innerWidth, innerHeight} = window
     return (
       <div className={css.container} onMouseDown={() => close()}>
         {items.map(({cb, disabled, IconComponent}: $FixMe, index: number) => {
-          const {leftTranslate, topTranslate, leftCoeff, topCoeff} = translateCalculatorFn(index)
+          const {
+            leftTranslate,
+            topTranslate,
+            leftCoeff,
+            topCoeff,
+          } = translateCalculatorFn(index)
           const {key, suffix, prefix} = this.preparedLabels[index]
           return (
             <div
               key={index}
               className={cx(css.item, {
                 [css.disabled]: disabled,
-                [css.highlight]: key.toLowerCase() === String.fromCharCode(pressedKeyCode).toLowerCase()
+                [css.highlight]:
+                  key.toLowerCase() ===
+                  String.fromCharCode(pressedKeyCode).toLowerCase(),
               })}
               style={{
                 right: innerWidth - centerPoint.left,
@@ -170,7 +195,9 @@ class HalfPieContextMenu extends React.PureComponent<IProps, IState> {
                 cb()
               }}
             >
-              <span className={css.icon}><IconComponent /></span>
+              <span className={css.icon}>
+                <IconComponent />
+              </span>
               <span className={css.label}>
                 {prefix}
                 <span className={css.key}>{key}</span>
@@ -179,7 +206,10 @@ class HalfPieContextMenu extends React.PureComponent<IProps, IState> {
             </div>
           )
         })}
-        <div className={css.anchor} style={{left: centerPoint.left, top: centerPoint.top}}/>        
+        <div
+          className={css.anchor}
+          style={{left: centerPoint.left, top: centerPoint.top}}
+        />
       </div>
     )
   }

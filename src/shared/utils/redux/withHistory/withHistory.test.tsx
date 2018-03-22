@@ -1,36 +1,54 @@
-import {createStore, Reducer, Store} from 'redux'
+import {createStore, Store} from 'redux'
 
 import actionCreator from '$shared/utils/redux/actionCreator'
-import { undoAction, redoAction, tempActionGroup } from './actions';
 import {
-  WithHistoryConfig,
-  withHistory,
-  StateWithHistory,
-} from './withHistory'
+  undoAction,
+  redoAction,
+  tempActionGroup,
+  ahistoricalAction,
+} from './actions'
+import {WithHistoryConfig, withHistory, StateWithHistory} from './withHistory'
+import {ReduxReducer} from '$shared/types'
 
 type InnerState = {num: number}
+type AhistoricState = {foo: number}
 
 const incrementAction = actionCreator('increment')
 const doubleNumbersAction = actionCreator('doubleNumbers')
 
-const makeStore = (
-  initialState?: undefined | StateWithHistory<InnerState>,
-  config: undefined | WithHistoryConfig = {maxNumberOfCommits: 3},
-): Store<StateWithHistory<InnerState>> => {
-  const innerReducer = (
-    s: undefined | InnerState = {num: 0},
-    action: mixed,
-  ) => {
-    if (incrementAction.is(action)) {
-      return {num: s.num + 1}
-    } else if (doubleNumbersAction.is(action)) {
-      return {num: parseInt(String(s.num) + String(s.num), 10)}
-    } else {
-      return s
-    }
+const ahistoricReducer = (
+  s: undefined | AhistoricState = {foo: 0},
+  action: mixed,
+) => {
+  if (incrementAction.is(action)) {
+    return {foo: s.foo + 1}
+  } else if (doubleNumbersAction.is(action)) {
+    return {foo: parseInt(String(s.foo) + String(s.foo), 10)}
+  } else {
+    return s
   }
+}
+
+const historicalReducer = (
+  s: undefined | InnerState = {num: 0},
+  action: mixed,
+) => {
+  if (incrementAction.is(action)) {
+    return {num: s.num + 1}
+  } else if (doubleNumbersAction.is(action)) {
+    return {num: parseInt(String(s.num) + String(s.num), 10)}
+  } else {
+    return s
+  }
+}
+
+const makeStore = (
+  initialState?: undefined | StateWithHistory<InnerState, AhistoricState>,
+  config: undefined | WithHistoryConfig = {maxNumberOfCommits: 3},
+): Store<StateWithHistory<InnerState, AhistoricState>> => {
   const outerReducer = withHistory(
-    (innerReducer as $IntentionalAny) as Reducer<InnerState>,
+    (historicalReducer as $IntentionalAny) as ReduxReducer<InnerState>,
+    ahistoricReducer,
     config,
   )
   const store = createStore(outerReducer, initialState)
@@ -41,11 +59,11 @@ const emptyHistory = {
   currentCommitHash: undefined,
   listOfCommitHashes: [],
   commitsByHash: {},
-  innerState: {num: 0}
+  innerState: {num: 0},
 }
 
 describe(`withHistory()`, () => {
-  let store: Store<StateWithHistory<InnerState>>
+  let store: Store<StateWithHistory<InnerState, AhistoricState>>
   beforeEach(() => {
     store = makeStore(undefined)
   })
@@ -61,7 +79,9 @@ describe(`withHistory()`, () => {
     const initialState = {
       num: 1,
       '@@history': {...emptyHistory, innerState: {num: 1}},
-      '@@tempActions': []
+      '@@tempActions': [],
+      foo: 0,
+      '@@ahistoricState': {foo: 0},
     }
     const store = makeStore(initialState)
     expect(store.getState()).toMatchObject(initialState)
@@ -118,7 +138,7 @@ describe(`withHistory()`, () => {
       expect(store.getState().num).toEqual(2)
       store.dispatch(undoAction())
       expect(store.getState().num).toEqual(1)
-      
+
       store.dispatch(incrementAction())
       store.dispatch(incrementAction())
       store.dispatch(incrementAction())
@@ -148,7 +168,7 @@ describe(`withHistory()`, () => {
       expect(
         Object.keys(store.getState()['@@history'].commitsByHash),
       ).toHaveLength(3)
-      
+
       store.dispatch(undoAction())
       store.dispatch(undoAction())
       store.dispatch(undoAction())
@@ -176,7 +196,7 @@ describe(`withHistory()`, () => {
       expect(store.getState().num).toEqual(12)
     })
   })
-  
+
   describe(`temporary actions`, () => {
     it('should work', () => {
       store.dispatch(incrementAction())
@@ -192,6 +212,24 @@ describe(`withHistory()`, () => {
       expect(store.getState().num).toEqual(11)
       store.dispatch(incrementAction())
       expect(store.getState().num).toEqual(22)
+    })
+  })
+
+  describe(`ahistoric actions`, () => {
+    it(`should work`, () => {
+      expect(store.getState()).toMatchObject({foo: 0})
+      store.dispatch(ahistoricalAction(incrementAction()))
+      expect(store.getState()).toMatchObject({foo: 1})
+      expect(store.getState()).toMatchObject({'@@ahistoricState': {foo: 1}})
+    })
+
+    it(`should disallow ahistoricState to override anything on historicState`, () => {
+      expect(() =>
+        withHistory(historicalReducer, historicalReducer)(undefined, {
+          type: '@@init',
+          payload: undefined,
+        }),
+      ).toThrow()
     })
   })
 })

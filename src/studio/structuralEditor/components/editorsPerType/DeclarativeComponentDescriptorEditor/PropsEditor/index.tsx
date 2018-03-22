@@ -1,4 +1,3 @@
-
 import {React, compose} from '$studio/handy'
 import css from './index.css'
 import PanelSection from '$studio/structuralEditor/components/reusables/PanelSection'

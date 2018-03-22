@@ -5,15 +5,15 @@ import {
   ServerEvent,
   Socket,
   SocketEvent,
-  Request,
+  ShapeOfRequestFromStudio,
 } from './utils'
 import {fork, take, call} from 'redux-saga/effects'
 import Server from 'socket.io'
 import allStudioSocketEndpoints from './allStudioSocketEndpoints'
-import wn from 'when'
+import {defer} from '$shared/utils/defer'
 
 const makeSocketServer = (): Promise<SocketServer> => {
-  const deferred = wn.defer<SocketServer>()
+  const deferred = defer<SocketServer>()
   const server = new Server()
   server.listen(process.env.studio.socketPort, () => {})
 
@@ -23,7 +23,7 @@ const makeSocketServer = (): Promise<SocketServer> => {
   return deferred.promise
 }
 
-export default function* studioServerRootSaga(): Generator_<
+export default function* studioCommsRootSaga(): Generator_<
   $FixMe,
   $FixMe,
   $FixMe
@@ -32,7 +32,7 @@ export default function* studioServerRootSaga(): Generator_<
 
   try {
     yield fork(handleServer, server)
-    yield wn.defer().promise
+    yield defer().promise
   } finally {
     server.close()
   }
@@ -40,7 +40,7 @@ export default function* studioServerRootSaga(): Generator_<
 
 function* handleServer(
   server: SocketServer,
-): Generator_<$FixMe, $FixMe, $FixMe> {
+): Generator_<$FixMe> {
   const connectionsChannel = yield call(
     getChannelOfConnectionsFromSocketServer,
     server,
@@ -60,7 +60,7 @@ function* handleServer(
   }
 }
 
-function* handleConnection(socket: Socket): Generator_<$FixMe, $FixMe, $FixMe> {
+function* handleConnection(socket: Socket): Generator_<$FixMe> {
   const socketChannel = yield call(getChannelFromSocket, socket)
 
   try {
@@ -78,12 +78,14 @@ function* handleConnection(socket: Socket): Generator_<$FixMe, $FixMe, $FixMe> {
   }
 }
 
-function* handleRequest(request: Request): Generator_<$FixMe, $FixMe, $FixMe> {
+function* handleRequest(
+  request: ShapeOfRequestFromStudio,
+): Generator_<$FixMe> {
   const handler = allStudioSocketEndpoints[request.endpoint]
   console.log('request', request.type, request.endpoint)
   if (handler) {
     try {
-      const result = yield call(handler, request)
+      const result = yield call(handler, request.payload, request)
       request.respond(result)
       return
     } catch (e) {
@@ -91,5 +93,11 @@ function* handleRequest(request: Request): Generator_<$FixMe, $FixMe, $FixMe> {
       request.respond({type: 'error', errorType: 'unkown'})
       return
     }
+  } else {
+    // @todo
+    console.error(
+      `Received a request from studio with an unkown handler: ` +
+        String(request.type),
+    )
   }
 }

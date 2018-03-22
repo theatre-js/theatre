@@ -1,5 +1,3 @@
-
-
 type Type = {
   typeName: string
   schema: null

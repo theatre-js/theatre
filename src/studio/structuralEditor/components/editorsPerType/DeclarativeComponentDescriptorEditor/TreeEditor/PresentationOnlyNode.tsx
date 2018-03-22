@@ -24,35 +24,50 @@ class PresentationOnlyNode extends React.PureComponent<IProps, IState> {
   render() {
     const {nodeData: {children, ...nodeProps}, rootNodeId} = this.props
     return (
-      <div className={cx(css.container, {[css.isDragHandle]: rootNodeId === nodeProps.id})}>
+      <div
+        className={cx(css.container, {
+          [css.isDragHandle]: rootNodeId === nodeProps.id,
+        })}
+      >
         <div className={css.root}>
-          {(nodeProps.type === NODE_TYPE.COMPONENT) &&
+          {nodeProps.type === NODE_TYPE.COMPONENT && (
             <div className={css.componentNode}>
               <span className={css.tagOpen}>&lt;</span>
               <div className={css.displayName}>
-                <input ref={c => this.displayNameInput = c} value={nodeProps.displayName} onChange={() => {}} />
+                <input
+                  ref={c => (this.displayNameInput = c)}
+                  value={nodeProps.displayName}
+                  onChange={() => {}}
+                />
               </div>
               <span className={css.dot}>.</span>
               <div className={css.className}>
-                <input ref={c => this.classInput = c} value={nodeProps.class || NO_CLASS} onChange={() => {}} />                
+                <input
+                  ref={c => (this.classInput = c)}
+                  value={nodeProps.class || NO_CLASS}
+                  onChange={() => {}}
+                />
               </div>
               <span className={css.tagClose}>&gt;</span>
             </div>
-          }
-          {(nodeProps.type === NODE_TYPE.TEXT) &&
+          )}
+          {nodeProps.type === NODE_TYPE.TEXT && (
             <div className={css.textNode}>
               <div className={css.textLogo}>t</div>
-              <input className={css.textInput} value={nodeProps.value} onChange={() => {}} />
+              <input
+                className={css.textInput}
+                value={nodeProps.value}
+                onChange={() => {}}
+              />
             </div>
-          }
+          )}
         </div>
         {children &&
           children.map((child: $FixMe, index: number) => (
             <div className={css.childContainer} key={index}>
-              <PresentationOnlyNode nodeData={child} rootNodeId={rootNodeId}/>
+              <PresentationOnlyNode nodeData={child} rootNodeId={rootNodeId} />
             </div>
-          )
-        )}
+          ))}
       </div>
     )
   }

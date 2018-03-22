@@ -14,7 +14,7 @@ const two = {
           __descriptorType: 'TimelineDescriptor',
           id: 'defaultTimeline',
           variables: {
-            'translationY': {
+            translationY: {
               __descriptorType: 'TimelineVarDescriptor',
               id: 'translationY',
               component: 'div.ball',
@@ -43,7 +43,7 @@ const two = {
                 },
               ],
             },
-            'translationYP': {
+            translationYP: {
               __descriptorType: 'TimelineVarDescriptor',
               id: 'translationYP',
               component: 'div.ball',
@@ -72,7 +72,7 @@ const two = {
                 },
               ],
             },
-            'translationYZ': {
+            translationYZ: {
               __descriptorType: 'TimelineVarDescriptor',
               id: 'translationYZ',
               component: 'div.ball',

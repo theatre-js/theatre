@@ -1,5 +1,5 @@
-import wn from 'when'
 import {app} from 'electron'
+import {defer} from '$shared/utils/defer'
 
 const installDevtoolsExtensions = () => {
   require('electron-debug')({showDevTools: true})
@@ -17,7 +17,7 @@ const installDevtoolsExtensions = () => {
 
 function waitForElectron(): $FixMe {
   if (!app) return Promise.resolve()
-  const d = wn.defer()
+  const d = defer()
   app.on('ready', d.resolve)
   return d.promise
 }

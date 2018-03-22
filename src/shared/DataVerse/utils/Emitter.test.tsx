@@ -1,4 +1,3 @@
-
 import Emitter from './Emitter'
 
 describe.only('DataVerse.Emitter', () => {

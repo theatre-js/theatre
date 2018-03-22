@@ -3,14 +3,14 @@ import {AppContainer} from 'react-hot-loader'
 import configureStore from '$lf/bootstrap/configureStore'
 import {Provider as StoreProvider} from 'react-redux'
 import './App.css'
-import Store from '$lb/bootstrap/StandardStore'
+import Store from '$lb/bootstrap/StoreAndStuff'
 import HotReloadablePartOfApp from './HotReloadablePartOfApp'
 
 type Props = {}
 
 type State = {
-  HotReloadablePartOfApp: typeof HotReloadablePartOfApp,
-  store: Store<any, any>,
+  HotReloadablePartOfApp: typeof HotReloadablePartOfApp
+  store: Store<any, any>
 }
 
 class App extends React.Component<Props, State> {

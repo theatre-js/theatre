@@ -1,10 +1,9 @@
-
 import React from 'react'
 import css from './TimeBar.css'
 import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
 import cx from 'classnames'
-import { BoxAtom } from '$src/shared/DataVerse/atoms/box';
-import { noop } from 'lodash';
+import {BoxAtom} from '$src/shared/DataVerse/atoms/box'
+import {noop} from 'lodash'
 
 type Props = {
   shouldIgnoreMouse: boolean
@@ -54,11 +53,13 @@ class TimeBar extends React.PureComponent<Props, State> {
     this.check(newProps)
   }
 
-  check(props: Props = this.props) {
+  check(props: Props = this.props) {
     this.untapFromTimeBoxChanges()
 
-    if (props.timeBox) {
-      this.untapFromTimeBoxChanges =  props.timeBox.changes().tap(this._updateFromTimeBox)
+    if (props.timeBox) {
+      this.untapFromTimeBoxChanges = props.timeBox
+        .changes()
+        .tap(this._updateFromTimeBox)
       this._updateFromTimeBox(props.timeBox.getValue())
     }
   }
@@ -122,16 +123,15 @@ class TimeBar extends React.PureComponent<Props, State> {
   }
 
   _addGlobalCursorRule(cursor: string) {
-    document.body.classList.add(...['timeBarDrag', 'timeBarDrag'.concat(cursor.toUpperCase())])
+    document.body.classList.add(
+      ...['timeBarDrag', 'timeBarDrag'.concat(cursor.toUpperCase())],
+    )
   }
 
   _removeGlobalCursorRule() {
-    document.body.classList.remove(...[
-      'timeBarDrag',
-      'timeBarDragE',
-      'timeBarDragW',
-      'timeBarDragEW',
-    ])
+    document.body.classList.remove(
+      ...['timeBarDrag', 'timeBarDragE', 'timeBarDragW', 'timeBarDragEW'],
+    )
   }
 
   render() {
@@ -152,10 +152,13 @@ class TimeBar extends React.PureComponent<Props, State> {
     focus = focus.map(f => f / 1000)
     duration = duration / 1000
 
-    const isSeekerHidden = (currentX < 0 || currentX > panelWidth)
+    const isSeekerHidden = currentX < 0 || currentX > panelWidth
     return (
-      <div className={cx(
-        css.container, {[css.shouldIgnoreMouse]: shouldIgnoreMouse})}>
+      <div
+        className={cx(css.container, {
+          [css.shouldIgnoreMouse]: shouldIgnoreMouse,
+        })}
+      >
         {/* <div className={css.timeStart}>{0}</div>
         {isChangingDuration ? (
           <SingleInputForm
@@ -231,7 +234,9 @@ class TimeBar extends React.PureComponent<Props, State> {
           onDragEnd={this._removeGlobalCursorRule}
         >
           <div
-            className={cx(css.currentTimeNeedle, {[css.isHidden]: isSeekerHidden})}
+            className={cx(css.currentTimeNeedle, {
+              [css.isHidden]: isSeekerHidden,
+            })}
             style={{transform: `translateX(${currentX}px)`}}
           />
         </DraggableArea>
@@ -244,11 +249,15 @@ class TimeBar extends React.PureComponent<Props, State> {
           onDragEnd={this._removeGlobalCursorRule}
         >
           <div
-            className={cx(css.currentTimeThumb, {[css.isHidden]: isSeekerHidden})}
+            className={cx(css.currentTimeThumb, {
+              [css.isHidden]: isSeekerHidden,
+            })}
             style={{transform: `translateX(${currentX}px)`}}
           >
             <div className={css.thumbSquinch} />
-            <div className={css.currentTimeToolTip}>{currentTime.toFixed(1)}</div>
+            <div className={css.currentTimeToolTip}>
+              {currentTime.toFixed(1)}
+            </div>
           </div>
         </DraggableArea>
       </div>

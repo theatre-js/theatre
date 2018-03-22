@@ -4,7 +4,7 @@ import {AppContainer} from 'react-hot-loader'
 import {compose} from 'ramda'
 import './StudioRootComponent.css'
 import * as React from 'react'
-import TheaterJSStudio from '$studio/bootstrap/TheaterJSStudio'
+import Studio from '$studio/bootstrap/Studio'
 import {storeKey} from '$studio/handy/connect'
 import {
   contextName,
@@ -14,7 +14,7 @@ import {
 const StoreProvider = createProvider(storeKey)
 
 type Props = {
-  studio: TheaterJSStudio
+  studio: Studio
 }
 
 type State = {

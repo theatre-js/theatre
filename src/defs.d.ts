@@ -7,7 +7,7 @@ type $IntentionalAny = any
 type $AnyBecauseOfBugInTS = any
 
 interface Window {
-  __REACT_DEVTOOLS_GLOBAL_HOOK__: any
+  __REACT_DEVTOOLS_GLOBAL_HOOK__: $FixMe
   devToolsExtension?: Function
 }
 
@@ -76,7 +76,7 @@ declare var module: {
   }
 }
 
-interface Generator_<A, ReturnType, YieldType> extends Generator {}
+interface Generator_<ReturnType = {}, A = {}, YieldType = {}> extends Generator {}
 
 declare module '*.svg' {
   var s: string
@@ -119,6 +119,11 @@ declare module '*.png' {
 }
 
 declare module 'socket.io' {
+  const a: any
+  export default a
+}
+
+declare module 'error-overlay-webpack-plugin' {
   const a: any
   export default a
 }

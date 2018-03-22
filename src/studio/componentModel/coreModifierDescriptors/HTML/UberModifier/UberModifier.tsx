@@ -56,7 +56,9 @@ const getClass = (propsP, baseClass) => {
                 translateZP,
               )}px) scale3d(${numeralize(scaleXP)}, ${numeralize(
                 scaleYP,
-              )}, ${numeralize(scaleZP)}) rotate3d(0, 0, 1, ${numeralize(rotateZP)}deg)`,
+              )}, ${numeralize(scaleZP)}) rotate3d(0, 0, 1, ${numeralize(
+                rotateZP,
+              )}deg)`,
               opacity: numeralize(opacityP),
             })
 

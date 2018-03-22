@@ -1,4 +1,3 @@
-
 import {CommonNamespaceState} from '$lf/common/types'
 import {MirrorOfLBStateNamespace} from '$lf/mirrorOfLBState/types'
 

@@ -1,17 +1,13 @@
 import fse from 'fs-extra'
 import {LBStoreState} from '$lb/types'
-import {multiReduceState} from '$shared/utils'
-import {select, call} from 'redux-saga/effects'
+import {select, call, put} from 'redux-saga/effects'
+import {multiReduceStateAction} from '$shared/utils/redux/commonActions'
 
 export type ErrorTypes = 'projectAlreadyRecognised' | 'fileDoesntExist'
 
 export default function* recogniseProject(params: {
   filePath: string
-}): Generator_<
-  $FixMe,
-  {type: 'ok'} | {type: 'error'; errorType: ErrorTypes},
-  $FixMe
-> {
+}): Generator_<{type: 'ok'} | {type: 'error'; errorType: ErrorTypes}> {
   const state: LBStoreState = yield select()
 
   if (state.projects.listOfPaths.indexOf(params.filePath) !== -1) {
@@ -22,12 +18,14 @@ export default function* recogniseProject(params: {
     return {type: 'error', errorType: 'fileDoesntExist'}
   }
 
-  yield multiReduceState([
-    {
-      path: ['projects', 'listOfPaths'],
-      reducer: paths => [...paths, params.filePath],
-    },
-  ])
+  yield put(
+    multiReduceStateAction([
+      {
+        path: ['projects', 'listOfPaths'],
+        reducer: paths => [...paths, params.filePath],
+      },
+    ]),
+  )
 
   return {type: 'ok'}
 }

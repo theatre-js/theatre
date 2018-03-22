@@ -1,4 +1,4 @@
-export type PathBasedReducer<S> = {
+export type PathBasedReducer<S, ReturnType> = {
   <
     A0 extends keyof S,
     A1 extends keyof S[A0],
@@ -16,7 +16,7 @@ export type PathBasedReducer<S> = {
     reducer: (
       d: S[A0][A1][A2][A3][A4][A5][A6][A7][A8][A9][A10],
     ) => S[A0][A1][A2][A3][A4][A5][A6][A7][A8][A9][A10],
-  ): mixed
+  ): ReturnType
 
   <
     A0 extends keyof S,
@@ -34,7 +34,7 @@ export type PathBasedReducer<S> = {
     reducer: (
       d: S[A0][A1][A2][A3][A4][A5][A6][A7][A8][A9],
     ) => S[A0][A1][A2][A3][A4][A5][A6][A7][A8][A9],
-  ): mixed
+  ): ReturnType
 
   <
     A0 extends keyof S,
@@ -51,7 +51,7 @@ export type PathBasedReducer<S> = {
     reducer: (
       d: S[A0][A1][A2][A3][A4][A5][A6][A7][A8],
     ) => S[A0][A1][A2][A3][A4][A5][A6][A7][A8],
-  ): mixed
+  ): ReturnType
 
   <
     A0 extends keyof S,
@@ -67,7 +67,7 @@ export type PathBasedReducer<S> = {
     reducer: (
       d: S[A0][A1][A2][A3][A4][A5][A6][A7],
     ) => S[A0][A1][A2][A3][A4][A5][A6][A7],
-  ): mixed
+  ): ReturnType
 
   <
     A0 extends keyof S,
@@ -82,7 +82,7 @@ export type PathBasedReducer<S> = {
     reducer: (
       d: S[A0][A1][A2][A3][A4][A5][A6],
     ) => S[A0][A1][A2][A3][A4][A5][A6],
-  ): mixed
+  ): ReturnType
 
   <
     A0 extends keyof S,
@@ -94,7 +94,7 @@ export type PathBasedReducer<S> = {
   >(
     addr: [A0, A1, A2, A3, A4, A5],
     reducer: (d: S[A0][A1][A2][A3][A4][A5]) => S[A0][A1][A2][A3][A4][A5],
-  ): mixed
+  ): ReturnType
 
   <
     A0 extends keyof S,
@@ -105,7 +105,7 @@ export type PathBasedReducer<S> = {
   >(
     addr: [A0, A1, A2, A3, A4],
     reducer: (d: S[A0][A1][A2][A3][A4]) => S[A0][A1][A2][A3][A4],
-  ): mixed
+  ): ReturnType
 
   <
     A0 extends keyof S,
@@ -115,21 +115,21 @@ export type PathBasedReducer<S> = {
   >(
     addr: [A0, A1, A2, A3],
     reducer: (d: S[A0][A1][A2][A3]) => S[A0][A1][A2][A3],
-  ): mixed
+  ): ReturnType
 
   <A0 extends keyof S, A1 extends keyof S[A0], A2 extends keyof S[A0][A1]>(
     addr: [A0, A1, A2],
     reducer: (d: S[A0][A1][A2]) => S[A0][A1][A2],
-  ): mixed
+  ): ReturnType
 
   <A0 extends keyof S, A1 extends keyof S[A0]>(
     addr: [A0, A1],
     reducer: (d: S[A0][A1]) => S[A0][A1],
-  ): mixed
+  ): ReturnType
 
-  <A0 extends keyof S>(addr: [A0], reducer: (d: S[A0]) => S[A0]): mixed
+  <A0 extends keyof S>(addr: [A0], reducer: (d: S[A0]) => S[A0]): ReturnType
 
-  (addr: undefined[], reducer: (d: S) => S): mixed
+  (addr: undefined[], reducer: (d: S) => S): ReturnType
 }
 
 // type Stu = {

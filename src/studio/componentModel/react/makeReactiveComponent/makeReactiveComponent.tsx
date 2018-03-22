@@ -72,6 +72,12 @@ export default function makeReactiveComponent({
           .prop('_atom')
           .prop('studio'),
 
+      studioAtom: self =>
+        self
+          .pointer()
+          .prop('studio')
+          .map(studio => studio.atom),
+
       modifierInstantiationDescriptors: d =>
         d
           .pointer()
@@ -218,18 +224,11 @@ export default function makeReactiveComponent({
         .flatMap((list: D.IDerivedArray<$FixMe>) => {
           if (!list) return derivedClassWithoutModifiers
 
-          return (
-            list
-              .map((id: string) =>
-                modifierInstantiationDescriptorsByIdP.prop(id),
-              )
-              .reduce((dict, modifierInstantiationDescriptor) => {
-                return this._applyModifier(
-                  modifierInstantiationDescriptor,
-                  dict,
-                )
-              }, constant(derivedClassWithoutModifiers))
-          )
+          return list
+            .map((id: string) => modifierInstantiationDescriptorsByIdP.prop(id))
+            .reduce((dict, modifierInstantiationDescriptor) => {
+              return this._applyModifier(modifierInstantiationDescriptor, dict)
+            }, constant(derivedClassWithoutModifiers))
         })
 
       return finalDerivedClassD
@@ -251,9 +250,8 @@ export default function makeReactiveComponent({
             .flatMap((modifierId: string) => {
               return this.studio.atom
                 .pointer()
-                .prop('componentModel')
-                .prop('modifierDescriptors')
-                .prop('core')
+                .prop('ahistoricComponentModel')
+                .prop('coreModifierDescriptors')
                 .prop(modifierId)
                 .prop('getClass')
                 .flatMap((possibleFn: undefined | null | Function) => {

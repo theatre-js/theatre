@@ -1,36 +1,56 @@
 import * as React from 'react'
 import {render} from 'react-dom'
-import LBCommunicator from './LBCommunicator'
+import LBCommunicator from '$studio/commsWithLB/LBCommunicator'
 import configureStore from './configureStore'
 import StudioRootComponent from './components/StudioRootComponent'
-import {default as StandardStore} from '$lb/bootstrap/StandardStore'
+import {default as StoreAndStuff} from '$lb/bootstrap/StoreAndStuff'
 import configureAtom from './configureAtom'
 import Ticker from '$src/shared/DataVerse/Ticker'
+import {ahistoricalAction} from '$shared/utils/redux/withHistory/actions'
+import {reduceStateAction} from '$shared/utils/redux/commonActions'
+import {reduceAhistoricState} from '$studio/bootstrap/actions'
+import StatePersistor from '$studio/statePersistence/StatePersistor'
+import {IStudioStoreState} from '$studio/types'
 
 type Atom = $FixMe
 
-export default class TheaterJSStudio {
+export default class Studio {
+  _statePersistor: StatePersistor
+  _ran: boolean
   componentInstances: Map<number, React.ComponentType>
   atom: Atom
   ticker: Ticker
   _lastComponentInstanceId: number
   _lbCommunicator: LBCommunicator
-  store: StandardStore<$FixMe, $FixMe>
+  store: StoreAndStuff<IStudioStoreState, $FixMe>
 
   constructor() {
+    this._ran = false
     this._lastComponentInstanceId = 0
     this.ticker = new Ticker()
     this.store = configureStore()
     this.atom = configureAtom(this.store)
     this.componentInstances = new Map()
+    this._lbCommunicator = new LBCommunicator({
+      lbUrl: `${window.location.protocol}//${window.location.hostname}:${
+        process.env.studio.socketPort
+      }`,
+    })
+    this._statePersistor = new StatePersistor(this)
+    this.store.runRootSaga(this)
 
-    // this._lbCommunicator = new LBCommunicator({
-    //   backendUrl: `${window.location.protocol}//${window.location.hostname}:${process.env.studio.socketPort}`,
-    // })
+    this._lbCommunicator.getSocket()
   }
 
-  run() {
-    
+  run(pathToProject: string) {
+    if (this._ran)
+      throw new Error(`TheaterJS.run() has already been called once`)
+    this._ran = true
+
+    this.store.reduxStore.dispatch(
+      reduceAhistoricState(['pathToProject'], () => pathToProject),
+    )
+
     const onAnimationFrame = () => {
       this.ticker.tick()
       window.requestAnimationFrame(onAnimationFrame)
@@ -41,7 +61,6 @@ export default class TheaterJSStudio {
     //     console.log('res', res)
     //   })
     // })
-    this.store.runRootSaga()
 
     this._mountElement()
   }

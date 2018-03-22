@@ -1,11 +1,24 @@
-import {IStoreState} from '$studio/types'
-import wrapRootReducer from '$shared/utils/redux/wrapRootReducer'
-import {Reducer} from '$shared/types'
-import initialState from './initialState'
+import {IStoreHistoricState, IStoreAhistoricSTate} from '$studio/types'
+import withCommonActions from '$shared/utils/redux/withCommonActions'
+import {ReduxReducer} from '$shared/types'
 import {withHistory} from '$src/shared/utils/redux/withHistory/withHistory'
+import {
+  initialPersistedState,
+  initialAhistoricState,
+} from '$studio/bootstrap/initialState'
+import withBatchedActions from '$shared/utils/redux/withHistory/withBatchActions'
 
-const mainReducer: Reducer<IStoreState, $IntentionalAny> = (
-  s: IStoreState = initialState,
+const mainReducer: ReduxReducer<IStoreHistoricState> = (
+  s: IStoreHistoricState = initialPersistedState,
 ) => s
 
-export default withHistory(wrapRootReducer(mainReducer))
+const ahistoricReducer: ReduxReducer<IStoreAhistoricSTate> = (
+  s = initialAhistoricState,
+) => s
+
+export default withBatchedActions(
+  withHistory(
+    withCommonActions(mainReducer),
+    withCommonActions(ahistoricReducer),
+  ),
+)

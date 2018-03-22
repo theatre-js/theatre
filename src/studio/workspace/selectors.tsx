@@ -1,4 +1,4 @@
-import {Selector, IStoreState} from '$studio/types'
+import {Selector, IStudioStoreState} from '$studio/types'
 import {
   visiblePanelsList,
   PanelObject,
@@ -8,7 +8,7 @@ import {
 export const getVisiblePanelsList: Selector<visiblePanelsList, void> = state =>
   state.workspace.panels.listOfVisibles
 
-export const getActivePanelId = (state: IStoreState) =>
+export const getActivePanelId = (state: IStudioStoreState) =>
   state.workspace.panels.idOfActivePanel
 
 export const getPanelById: Selector<PanelObject, string> = (state, panelId) =>

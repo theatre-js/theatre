@@ -6,6 +6,8 @@ import * as CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin'
 import * as WatchMissingNodeModulesPlugin from 'react-dev-utils/WatchMissingNodeModulesPlugin'
 import * as TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
 import {mapValues} from 'lodash'
+// @ts-ignore
+import * as ErrorOverlayPlugin from 'error-overlay-webpack-plugin'
 
 export const context = path.resolve(__dirname, '..')
 
@@ -119,6 +121,9 @@ export const makeConfigParts = (options: Options) => {
             new WatchMissingNodeModulesPlugin(
               path.resolve(__dirname, '../node_modules'),
             ),
+            ...(options.withDevServer !== true ? [] : [
+              new ErrorOverlayPlugin()
+            ]) 
           ]
         : [
             new webpack.optimize.UglifyJsPlugin({
@@ -223,7 +228,7 @@ export const makeConfigParts = (options: Options) => {
       // clientLogLevel: 'error',
       public: `localhost:${packageDevSpecificConfig.devServerPort}`,
       noInfo: false,
-      quiet: true,
+      // quiet: true,
       stats: false,
       headers: {
         'Access-Control-Allow-Origin': '*',

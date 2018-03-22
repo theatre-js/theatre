@@ -22,7 +22,7 @@ export default makeReactiveComponent({
           .prop('componentDescriptor')
 
         const whatToRenderP = componentDescriptorP.prop('whatToRender')
-        return whatToRenderP.flatMap((v) => constructValue(v, self))
+        return whatToRenderP.flatMap(v => constructValue(v, self))
         // return constructValue(whatToRenderP, self)
       },
     }),

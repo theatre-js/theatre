@@ -1,8 +1,9 @@
-import {React, connect, reduceStateAction, StudioComponent} from '$studio/handy'
+import {React, connect, StudioComponent} from '$studio/handy'
+import {reduceStateAction} from '$shared/utils/redux/commonActions'
 import TextInput from '$studio/common/components/TextInput'
 import {get} from 'lodash'
 import KeyValuePair from '$studio/common/components/KeyValuePair'
-import {IStoreState} from '$studio/types'
+import {IStudioStoreState} from '$studio/types'
 
 interface IOwnProps {
   pathToPairings: string[]
@@ -56,7 +57,7 @@ export class SingleCustomStyleInspector extends StudioComponent<Props, {}> {
   }
 }
 
-export default connect((s: IStoreState, op: IOwnProps) => {
+export default connect((s: IStudioStoreState, op: IOwnProps) => {
   return {
     pairing: get(s, op.pathToPairings).byId[op.id],
   }

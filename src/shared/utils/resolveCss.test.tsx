@@ -1,4 +1,3 @@
-
 import resolveCss from '$shared/utils/resolveCss'
 
 describe('common/utils/resolveCss()', () => {

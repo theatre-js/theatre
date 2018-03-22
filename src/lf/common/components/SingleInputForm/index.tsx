@@ -2,16 +2,16 @@ import * as React from 'react'
 import * as css from './index.css'
 
 type Props = {
-  placeholder?: string,
-  onSubmit: Function,
-  onCancel: Function,
-  value?: string,
-  className?: string,
-  autoFocus: boolean,
+  placeholder?: string
+  onSubmit: Function
+  onCancel: Function
+  value?: string
+  className?: string
+  autoFocus: boolean
 }
 
 type State = {
-  value: string,
+  value: string
 }
 
 class SingleInputForm extends React.Component<Props, State> {

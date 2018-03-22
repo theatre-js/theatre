@@ -1,4 +1,3 @@
-
 type UniqueID = string
 export type VariableID = UniqueID
 export type TimelineID = UniqueID
@@ -17,7 +16,7 @@ export type Point = PointPosition & {
   interpolationDescriptor: {
     handles: PointHandles
     connected: PointConnectionStatus
-  },
+  }
 }
 
 export type NormalizedPoint = Point & {

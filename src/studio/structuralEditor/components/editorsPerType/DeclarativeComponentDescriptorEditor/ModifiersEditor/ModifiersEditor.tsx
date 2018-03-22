@@ -10,7 +10,7 @@ import {
 } from '$src/studio/componentModel/types'
 import ListOfModifierInstantiationDescriptorsInspector from './ListOfModifierInstantiationDescriptorsInspector'
 import PaleMessage from '$src/studio/common/components/PaleMessage'
-import {IStoreState} from '$studio/types'
+import {IStudioStoreState} from '$studio/types'
 
 interface IOwnProps {
   pathToComponentDescriptor: string[]
@@ -86,7 +86,7 @@ class ModifiersEditor extends StudioComponent<IProps, State> {
   }
 }
 
-export default connect((s: IStoreState, op: IOwnProps) => {
+export default connect((s: IStudioStoreState, op: IOwnProps) => {
   return {
     componentDescriptor: _.get(s, op.pathToComponentDescriptor),
   }

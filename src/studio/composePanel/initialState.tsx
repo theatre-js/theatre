@@ -1,4 +1,3 @@
-
 import {ComposePanelNamespaceState} from './types'
 
 const initialState: ComposePanelNamespaceState = {

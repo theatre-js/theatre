@@ -4,11 +4,11 @@ import {
   ProjectsNamespaceState,
   StuffInTheaterJsonFile,
 } from '$src/lb/projects/types'
-import {LBStoreState as LBStoreState} from '$src/lb/types'
-import {reduceStateAction} from '$src/lb/common/actions'
+import {LBStoreState} from '$src/lb/types'
 import {Task} from 'redux-saga'
 import {omit} from 'lodash'
 import * as fse from 'fs-extra'
+import {reduceStateAction} from '$shared/utils/redux/commonActions'
 
 type ListOfProjectPaths = ProjectsNamespaceState['listOfPaths']
 
@@ -121,4 +121,25 @@ function* cleanupObservedPath(taskToCancel: Task, projectPath: string) {
       omit(byPath, projectPath),
     ),
   )
+}
+
+type ProjectNotRecognisedError = {
+  type: 'Error'
+  errorType: 'projectNotRecognised'
+}
+
+export function* ensureProjectIsRecognised(projectPath: string): Generator_<'ok'> {
+  const state: LBStoreState = yield select()
+  const pathIsRecognised =
+    state.projects.listOfPaths.indexOf(projectPath) !== -1
+
+  if (!pathIsRecognised) {
+    const error: ProjectNotRecognisedError = {
+      type: 'Error',
+      errorType: 'projectNotRecognised',
+    }
+    return error
+  }
+
+  // @todo ensure that the data from theater.json of that project is also loaded
 }

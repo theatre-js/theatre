@@ -1,4 +1,3 @@
-
 import * as React from 'react'
 import {ComponentId} from './index'
 
@@ -63,9 +62,7 @@ export interface IReferenceToProp {
   propid: string
 }
 
-export type IMapDescriptor<O> = {
-  [K in keyof O]: O[K]
-}
+export type IMapDescriptor<O> = {[K in keyof O]: O[K]}
 
 export type ArrayDescriptor<T> = Array<T>
 export type StringLiteralDescriptor = string

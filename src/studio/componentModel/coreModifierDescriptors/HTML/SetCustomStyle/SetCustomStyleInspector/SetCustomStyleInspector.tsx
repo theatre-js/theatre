@@ -2,7 +2,7 @@ import {React, connect} from '$src/studio/handy'
 import {map, get} from 'lodash'
 import SingleCustomStyleInspector from '$src/studio/componentModel/coreModifierDescriptors/HTML/SetCustomStyle/SetCustomStyleInspector/SingleCustomStyleInspector'
 import ModifierInspectorWrapper from '$src/studio/common/components/ModifierInspectorWrapper'
-import {IStoreState} from '$studio/types'
+import {IStudioStoreState} from '$studio/types'
 
 interface IOwnProps {
   pathToModifierInstantiationDescriptor: string[]
@@ -39,7 +39,7 @@ export class SetCustomStyleInspector extends React.PureComponent<Props, {}> {
   }
 }
 
-export default connect((s: IStoreState, op: IOwnProps) => {
+export default connect((s: IStudioStoreState, op: IOwnProps) => {
   return {
     list: get(s, op.pathToModifierInstantiationDescriptor).props.pairings.list,
   }

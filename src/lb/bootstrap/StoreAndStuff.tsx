@@ -1,39 +1,31 @@
-import {
-  applyMiddleware,
-  createStore,
-  compose,
-  Reducer,
-  Store,
-} from 'redux'
+import {applyMiddleware, createStore, compose, Reducer, Store} from 'redux'
 import {call} from 'redux-saga/effects'
 import createSagaMiddleware from 'redux-saga'
-import { identity } from 'lodash';
+import {identity} from 'lodash'
 
-type RootSaga<State, Action> = (
-  store: StandardStore<State, Action>,
-) => Generator_<mixed, mixed, mixed>
+type RootSagaShape = (...args: mixed[]) => Generator_<mixed, mixed, mixed>
 
-type ConstructorProps<State, Action> = {
-  initialState?: State,
-  rootSaga: RootSaga<State, Action>,
-  rootReducer: Reducer<State>,
+type ConstructorProps<State, RootSaga> = {
+  initialState?: State
+  rootSaga: RootSaga
+  rootReducer: Reducer<State>
 }
 
 /**
- * StandardStore is basically just a standard configuration of redux store and sagas. Nothing special really.
+ * StoreAndStuff is basically just a standard configuration of redux store and sagas. Nothing special really.
  */
-export default class StandardStore<State, Action> {
+export default class StoreAndStuff<State, RootSaga extends RootSagaShape> {
   sagaMiddleware: $FixMe
   _initialState: undefined | null | State
   rootReducer: Reducer<State>
   reduxStore: Store<State>
-  rootSaga: RootSaga<State, Action>
+  rootSaga: RootSaga
 
   constructor({
     initialState,
     rootReducer,
     rootSaga,
-  }: ConstructorProps<State, Action>) {
+  }: ConstructorProps<State, RootSaga>) {
     this._initialState = initialState
     this.sagaMiddleware = createSagaMiddleware()
 
@@ -67,18 +59,23 @@ export default class StandardStore<State, Action> {
     return store
   }
 
-  runRootSaga() {
-    return this.sagaMiddleware.run(this.rootSaga, this)
+  runRootSaga(arg?: mixed) {
+    return this.sagaMiddleware.run(this.rootSaga, arg)
   }
 
-  runSaga: RunSagaFn = (fn: $IntentionalAny, ...args: $IntentionalAny[]): $FixMe => {
+  runSaga: RunSagaFn = (
+    fn: $IntentionalAny,
+    ...args: $IntentionalAny[]
+  ): Promise<$FixMe> => {
     // @ts-ignore ignore
     return this.reduxStore.sagaMiddleware.run(preventToThrow(fn), ...args).done
   }
 }
 
-function preventToThrow(fn: () => Generator_<$FixMe, $FixMe, $FixMe>) {
-  return function* callAndCatch(...args: $IntentionalAny[]): Generator_<$FixMe, $FixMe, $FixMe> {
+function preventToThrow(fn: () => Generator_<$FixMe>) {
+  return function* callAndCatch(
+    ...args: $IntentionalAny[]
+  ): Generator_<$FixMe> {
     try {
       // @ts-ignore
       return yield call(fn, ...args)
@@ -88,25 +85,19 @@ function preventToThrow(fn: () => Generator_<$FixMe, $FixMe, $FixMe>) {
   }
 }
 
-type Fn0<R> = (...rest: Array<void>) => Generator_<mixed, R, mixed>
-type Fn1<T1, R> = (t1: T1, ...rest: Array<void>) => Generator_<mixed, R, mixed>
-type Fn2<T1, T2, R> = (
-  t1: T1,
-  t2: T2,
-  ...rest: Array<void>
-) => Generator_<mixed, R, mixed>
+type Fn0<R> = () => Generator_<mixed, R, mixed>
+type Fn1<T1, R> = (t1: T1) => Generator_<mixed, R, mixed>
+type Fn2<T1, T2, R> = (t1: T1, t2: T2) => Generator_<mixed, R, mixed>
 type Fn3<T1, T2, T3, R> = (
   t1: T1,
   t2: T2,
   t3: T3,
-  ...rest: Array<void>
 ) => Generator_<mixed, R, mixed>
 type Fn4<T1, T2, T3, T4, R> = (
   t1: T1,
   t2: T2,
   t3: T3,
   t4: T4,
-  ...rest: Array<void>
 ) => Generator_<mixed, R, mixed>
 type Fn5<T1, T2, T3, T4, T5, R> = (
   t1: T1,
@@ -114,7 +105,6 @@ type Fn5<T1, T2, T3, T4, T5, R> = (
   t3: T3,
   t4: T4,
   t5: T5,
-  ...rest: Array<void>
 ) => Generator_<mixed, R, mixed>
 type Fn6<T1, T2, T3, T4, T5, T6, R> = (
   t1: T1,
@@ -123,7 +113,6 @@ type Fn6<T1, T2, T3, T4, T5, T6, R> = (
   t4: T4,
   t5: T5,
   t6: T6,
-  ...rest: Array<void>
 ) => Generator_<mixed, R, mixed>
 
 export type RunSagaFn = (<
@@ -134,7 +123,7 @@ export type RunSagaFn = (<
   T5,
   T6,
   R,
-  Fn extends Fn6<T1, T2, T3, T4, T5, T6, R>,
+  Fn extends Fn6<T1, T2, T3, T4, T5, T6, R>
 >(
   fn: Fn,
   t1: T1,
@@ -143,7 +132,6 @@ export type RunSagaFn = (<
   t4: T4,
   t5: T5,
   t6: T6,
-  ...rest: Array<void>
 ) => Promise<R>) &
   (<T1, T2, T3, T4, T5, R, Fn extends Fn5<T1, T2, T3, T4, T5, R>>(
     fn: Fn,
@@ -152,7 +140,6 @@ export type RunSagaFn = (<
     t3: T3,
     t4: T4,
     t5: T5,
-    ...rest: Array<void>
   ) => Promise<R>) &
   (<T1, T2, T3, T4, R, Fn extends Fn4<T1, T2, T3, T4, R>>(
     fn: Fn,
@@ -160,24 +147,17 @@ export type RunSagaFn = (<
     t2: T2,
     t3: T3,
     t4: T4,
-    ...rest: Array<void>
   ) => Promise<R>) &
   (<T1, T2, T3, R, Fn extends Fn3<T1, T2, T3, R>>(
     fn: Fn,
     t1: T1,
     t2: T2,
     t3: T3,
-    ...rest: Array<void>
   ) => Promise<R>) &
   (<T1, T2, R, Fn extends Fn2<T1, T2, R>>(
     fn: Fn,
     t1: T1,
     t2: T2,
-    ...rest: Array<void>
   ) => Promise<R>) &
-  (<T1, R, Fn extends Fn1<T1, R>>(
-    fn: Fn,
-    t1: T1,
-    ...rest: Array<void>
-  ) => Promise<R>) &
-  (<R, Fn extends Fn0<R>>(fn: Fn, ...rest: Array<void>) => Promise<R>)
+  (<T1, R, Fn extends Fn1<T1, R>>(fn: Fn, t1: T1) => Promise<R>) &
+  (<R, Fn extends Fn0<R>>(fn: Fn) => Promise<R>)

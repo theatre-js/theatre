@@ -2,7 +2,7 @@ import {compose, React, connect} from '$studio/handy'
 import {IModifierInstantiationValueDescriptors} from '$studio/componentModel/types'
 import ModifierInstantiationDescriptorInspector from './ModifierInstantiationDescriptorInspector'
 import get from 'lodash/get'
-import {IStoreState} from '$studio/types'
+import {IStudioStoreState} from '$studio/types'
 
 interface IOwnProps {
   modifierInstantiationDescriptors: IModifierInstantiationValueDescriptors
@@ -49,7 +49,7 @@ export class ListOfModifierInstantiationDescriptorsInspector extends React.PureC
 }
 
 export default compose(
-  connect((s: IStoreState, op: IOwnProps) => {
+  connect((s: IStudioStoreState, op: IOwnProps) => {
     return {
       listOfModifierInstantiationDescriptors: get(s, [
         ...op.pathToModifierInstantiationDescriptors,

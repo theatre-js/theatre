@@ -12,38 +12,14 @@ const RenderCurrentCanvas = makeReactiveComponent({
   displayName: 'RenderCurrentCanvas',
   getClass: baseClass =>
     baseClass.extend({
-      render(d) {
-        return d.prop('studio').flatMap(studio => {
-          const studioAtom = studio.atom
-
-          const componentIdToBeRenderedAsCurrentCanvasP = studioAtom
+      render(self) {
+        return self.prop('studioAtom').flatMap(studioAtom => {
+          return studioAtom
             .pointer()
-            .prop('workspace')
-            .prop('componentIdToBeRenderedAsCurrentCanvas')
-
-          const childrenP = d
-            .pointer()
-            .prop('props')
-            .prop('children')
-
-          const instantiationDescriptorP = dictAtom({
-              componentId: boxAtom(componentIdToBeRenderedAsCurrentCanvasP),
-              props: dictAtom({}),
+            .prop('stateIsHydrated')
+            .flatMap((hydrated: boolean) => {
+              return hydrated ? render(studioAtom, self) : null
             })
-            .derivedDict()
-            .pointer()
-
-          return componentIdToBeRenderedAsCurrentCanvasP.flatMap(C => {
-            if (typeof C === 'string') {
-              return elementify(
-                constant('currentCanvas'),
-                instantiationDescriptorP,
-                d.prop('studio'),
-              )
-            } else {
-              return childrenP.getValue()
-            }
-          })
         })
       },
     }),
@@ -57,3 +33,30 @@ const descriptor: ComponentDescriptor = {
 }
 
 export default descriptor
+function render(studioAtom: any, self: any) {
+  const componentIdToBeRenderedAsCurrentCanvasP = studioAtom
+    .pointer()
+    .prop('workspace')
+    .prop('componentIdToBeRenderedAsCurrentCanvas')
+  const childrenP = self
+    .pointer()
+    .prop('props')
+    .prop('children')
+  const instantiationDescriptorP = dictAtom({
+    componentId: boxAtom(componentIdToBeRenderedAsCurrentCanvasP),
+    props: dictAtom({}),
+  })
+    .derivedDict()
+    .pointer()
+  return componentIdToBeRenderedAsCurrentCanvasP.flatMap(C => {
+    if (typeof C === 'string') {
+      return elementify(
+        constant('currentCanvas'),
+        instantiationDescriptorP,
+        self.prop('studio'),
+      )
+    } else {
+      return childrenP.getValue()
+    }
+  })
+}

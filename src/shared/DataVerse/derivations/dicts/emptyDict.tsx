@@ -22,6 +22,6 @@ export class EmptyDict extends AbstractDerivedDict<{}> {
   }
 }
 
-const emptyDict = new EmptyDict
+const emptyDict = new EmptyDict()
 
 export default emptyDict

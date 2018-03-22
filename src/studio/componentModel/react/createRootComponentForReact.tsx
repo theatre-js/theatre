@@ -1,5 +1,5 @@
 import * as React from 'react'
-import TheaterJSStudio from '$studio/bootstrap/TheaterJSStudio'
+import Studio from '$studio/bootstrap/Studio'
 import {contextTypes, contextName} from './utils/studioContext'
 import {elementify} from '$studio/handy'
 import DerivationAsReactElement from './utils/DerivationAsReactElement'
@@ -20,7 +20,7 @@ interface Props {
 // }>
 type ElementifyProps = $FixMe
 
-const createRootComponentForReact = (studio: TheaterJSStudio) => {
+const createRootComponentForReact = (studio: Studio) => {
   class TheaterJSRoot extends React.Component<Props, {}> {
     elementD: $FixMe
     mapAtomOfPropsOfElementify: ElementifyProps

@@ -1,11 +1,9 @@
+import {React, connect, StudioComponent} from '$src/studio/handy'
 import {
-  React,
-  compose,
-  connect,
   reduceStateAction,
   multiReduceStateAction,
-  StudioComponent,
-} from '$src/studio/handy'
+} from '$shared/utils/redux/commonActions'
+
 import {getComponentDescriptor} from '$src/studio/componentModel/selectors'
 import PanelSection from '$src/studio/structuralEditor/components/reusables/PanelSection'
 import NodeContainer from '$src/studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor/NodeContainer'
@@ -24,7 +22,7 @@ import cx from 'classnames'
 import {PanelActiveModeChannel} from '$src/studio/workspace/components/Panel/Panel'
 import {Subscriber} from 'react-broadcast'
 import {MODE_CMD} from '$src/studio/workspace/components/StudioUI/StudioUI'
-import {IStoreState} from '$studio/types'
+import {IStudioStoreState} from '$studio/types'
 
 export const metaKey = 'composePanel'
 const PLACEHOLDER = '\n'
@@ -406,7 +404,7 @@ class TreeEditor extends StudioComponent<IProps, State> {
   }
 
   handleDragEnd = () => {
-    document.body.classList.remove('globalNoDropCursor')    
+    document.body.classList.remove('globalNoDropCursor')
 
     const dropPayload: $FixMe = this.queuedDrop
     this._unsetQueuedDrop()
@@ -656,19 +654,13 @@ class TreeEditor extends StudioComponent<IProps, State> {
   }
 }
 
-export default connect((s: IStoreState, op: IOwnProps) => {
-  const componentDescriptors = _.get(s, [
-    'componentModel',
-    'componentDescriptors',
-  ])
+export default connect((s: IStudioStoreState, op: IOwnProps) => {
   const {
-    core: {
-      'TheaterJS/Core/RenderCurrentCanvas': rcc,
-      'TheaterJS/Core/DOMTag': dt,
-      ...core
-    },
-    custom,
-  } = componentDescriptors
+    'TheaterJS/Core/RenderCurrentCanvas': rcc,
+    'TheaterJS/Core/DOMTag': dt,
+    ...core
+  } = s.ahistoricComponentModel.coreComponentDescriptors
+  const custom = s.historicComponentModel.customComponentDescriptors
   const componentTypes = Object.entries({...core, ...custom}).reduce(
     (reducer, [key, value]) => {
       reducer[key] = {

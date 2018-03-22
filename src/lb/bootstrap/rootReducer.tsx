@@ -1,14 +1,15 @@
 import {combineReducers} from 'redux'
 import {LBStoreState} from '$lb/types'
-import wrapRootReducer from '$shared/utils/redux/wrapRootReducer'
+import withCommonActions from '$shared/utils/redux/withCommonActions'
 import commonReducer from '$lb/common/reducer'
 import projectsReducer from '$lb/projects/reducer'
-import {Reducer} from '$shared/types'
+import studioStatePersistorReducer from '$lb/studioStatePersistor/reducer'
+import {ReduxReducer} from '$shared/types'
 
-// @ts-ignore @todo
-const mainReducer: Reducer<LBStoreState, mixed> = combineReducers({
+const mainReducer: ReduxReducer<LBStoreState> = combineReducers({
   common: commonReducer,
   projects: projectsReducer,
+  studioStatePersistor: studioStatePersistorReducer
 })
 
-export default wrapRootReducer(mainReducer)
+export default withCommonActions(mainReducer)

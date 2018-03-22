@@ -9,7 +9,7 @@ const resolveReferenceToHiddenLocalValue = (whichP, d) => {
 
   return whichP.flatMap((id: string) => {
     const valueDescP = localHiddenValuesByIdP.prop(id)
-    return valueDescP.flatMap((v) => constructValue.default(v, d))
+    return valueDescP.flatMap(v => constructValue.default(v, d))
   })
 }
 
