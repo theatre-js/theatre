@@ -4,15 +4,11 @@ import statePersistorSaga from '$lb/statePersistor/sagas'
 import studioCommsSaga from '$lb/studioComms/sagas'
 import projectsSaga from '$src/lb/projects/projectsSagas'
 
-export default function* errorCatchingRootSaga(): Generator_<
-  $FixMe,
-  $FixMe,
-  $FixMe
-> {
+export default function* errorCatchingRootSaga(): Generator_ {
   return yield call(rootSaga)
 }
 
-function* rootSaga(): Generator_<$FixMe, $FixMe, $FixMe> {
+function* rootSaga(): Generator_ {
   yield [
     fork(statePersistorSaga),
     fork(lfControllerSaga),

@@ -1,12 +1,20 @@
-import wn from 'when'
 import io from 'socket.io-client'
 import {defer} from '$shared/utils/defer'
 
 type Options = {
-  backendUrl: string
+  lbUrl: string
 }
 
 type Socket = $FixMe
+
+type ThePromise = "I promise I'm calling LBCommunicator._request from wrapLBEndpointForStudio"
+export const _correctText: ThePromise = `I promise I'm calling LBCommunicator._request from wrapLBEndpointForStudio`
+
+export type RequestFn = (
+  endpoint: string,
+  payload: mixed,
+  thePromise: ThePromise,
+) => Promise<mixed>
 
 export default class LBCommunicator {
   options: Options
@@ -21,24 +29,35 @@ export default class LBCommunicator {
     if (this._socketPromise) {
       return this._socketPromise
     } else {
-      return (this._socketPromise = createSocketPromsie(
-        this.options.backendUrl,
-        {
-          query: {
-          },
-          transports: ['websocket']
-        }
-      ))
+      return (this._socketPromise = createSocketPromsie(this.options.lbUrl, {
+        transports: ['websocket'],
+      }))
     }
   }
 
-  async _request(endpoint: string, payload: mixed) {
+  request<T>(fn: (request: RequestFn) => Promise<T>): Promise<T> {
+    return fn(this._request)
+  }
+
+  _request = async (
+    endpoint: string,
+    payload: mixed,
+    theCheck: ThePromise,
+  ): Promise<mixed> => {
+    if (theCheck !== _correctText) {
+      throw new Error(
+        `LBCommunicator._request should only be called through wrapLBEndpointForStudio`,
+      ) // @todo
+    }
     const socket = await this.getSocket()
     return emit('request', {endpoint, payload}, socket)
   }
 }
 
-const createSocketPromsie = (addr: string, opts: SocketIOClient.ConnectOpts): Promise<Socket> => {
+const createSocketPromsie = (
+  addr: string,
+  opts: SocketIOClient.ConnectOpts,
+): Promise<Socket> => {
   const socket = io.connect(addr, opts)
   const d = defer<Socket>()
 
@@ -54,7 +73,7 @@ const createSocketPromsie = (addr: string, opts: SocketIOClient.ConnectOpts): Pr
     }
   })
 
-  socket.on('reconnect_failed', err => {
+  socket.on('reconnect_failed', (err: $FixMe) => {
     console.error(err)
     // @todo handle this case
     d.reject("Couldn't connect to socket server")

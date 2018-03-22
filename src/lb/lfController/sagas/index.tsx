@@ -97,11 +97,12 @@ function createWindow() {
 
 function* sendStateUpdatesToWindow(
   window: typeof BrowserWindow,
-): Generator_<$FixMe, $FixMe, $FixMe> {
+): Generator_<$FixMe> {
   let lastState = yield select()
-  yield takeLatest('*', function*(): Generator_<$FixMe, $FixMe, $FixMe> {
+  yield takeLatest('*', function*(): Generator_<$FixMe> {
     yield delay(2)
     const newState = yield select()
+    // @todo we don't really need to send all of the state to lf. Just the parts that lf needs
     if (!deepEqual(lastState, newState)) {
       try {
         yield call(receiveNewState, window, newState)
@@ -115,11 +116,7 @@ function* sendStateUpdatesToWindow(
   })
 }
 
-export default function* lfControllerSaga(): Generator_<
-  $FixMe,
-  $FixMe,
-  $FixMe
-> {
+export default function* lfControllerSaga(): Generator_ {
   yield electronIsReadyPromise
   // const tray = new Tray(temporaryTrayIcon)
   const window = createWindow()
@@ -143,7 +140,7 @@ export default function* lfControllerSaga(): Generator_<
 
 function* listenToWindowRequests(
   window: typeof BrowserWindow,
-): Generator_<$FixMe, $FixMe, $FixMe> {
+): Generator_<$FixMe> {
   const requestsFromWindow = yield call(getChannelOfRequestsFromWindow, window)
 
   while (true) {
@@ -160,7 +157,7 @@ function* listenToWindowRequests(
 function* handleRequestFromWindow(
   handler: Function,
   request: Request,
-): Generator_<$FixMe, $FixMe, $FixMe> {
+): Generator_<$FixMe> {
   try {
     // @ts-ignore
     const result = yield call(handler, request.payload)
@@ -238,7 +235,7 @@ export function _sendRequestToWindow(
 //   callee: Function,
 //   args: Array<mixed>,
 //   numberOfRetries: number = 10,
-// ): Generator_<$FixMe, $FixMe, $FixMe> {
+// ): Generator_<$FixMe> {
 //   let retries = -1
 //   while (true) {
 //     retries++

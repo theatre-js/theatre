@@ -7,11 +7,7 @@ export type ErrorTypes = 'projectAlreadyRecognised' | 'fileDoesntExist'
 
 export default function* recogniseProject(params: {
   filePath: string
-}): Generator_<
-  $FixMe,
-  {type: 'ok'} | {type: 'error'; errorType: ErrorTypes},
-  $FixMe
-> {
+}): Generator_<{type: 'ok'} | {type: 'error'; errorType: ErrorTypes}> {
   const state: LBStoreState = yield select()
 
   if (state.projects.listOfPaths.indexOf(params.filePath) !== -1) {

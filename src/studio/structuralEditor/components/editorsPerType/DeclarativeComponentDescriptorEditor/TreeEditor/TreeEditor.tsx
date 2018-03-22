@@ -655,18 +655,12 @@ class TreeEditor extends StudioComponent<IProps, State> {
 }
 
 export default connect((s: IStudioStoreState, op: IOwnProps) => {
-  const componentDescriptors = _.get(s, [
-    'componentModel',
-    'componentDescriptors',
-  ])
   const {
-    core: {
-      'TheaterJS/Core/RenderCurrentCanvas': rcc,
-      'TheaterJS/Core/DOMTag': dt,
-      ...core
-    },
-    custom,
-  } = componentDescriptors
+    'TheaterJS/Core/RenderCurrentCanvas': rcc,
+    'TheaterJS/Core/DOMTag': dt,
+    ...core
+  } = s.ahistoricComponentModel.coreComponentDescriptors
+  const custom = s.historicComponentModel.customComponentDescriptors
   const componentTypes = Object.entries({...core, ...custom}).reduce(
     (reducer, [key, value]) => {
       reducer[key] = {

@@ -19,9 +19,7 @@ export default function* createNewProject(params: {
   folderPath: string
   name: string
 }): Generator_<
-  $FixMe,
-  {type: 'ok'; filePath: string} | {type: 'error'; errorType: ErrorTypes},
-  $FixMe
+  {type: 'ok'; filePath: string} | {type: 'error'; errorType: ErrorTypes}
 > {
   if (!(yield call(fse.pathExists, params.folderPath))) {
     return {type: 'error', errorType: 'folderDoesntExist'}

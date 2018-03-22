@@ -5,10 +5,10 @@ import {PropTypes} from 'prop-types'
 import {call} from 'redux-saga/effects'
 import {InferableComponentEnhancer} from 'react-redux'
 
-function preventToThrow(fn: () => Generator_<$FixMe, $FixMe, $FixMe>) {
+function preventToThrow(fn: () => Generator_<$FixMe>) {
   return function* callAndCatch(
     ...args: $IntentionalAny[]
-  ): Generator_<$FixMe, $FixMe, $FixMe> {
+  ): Generator_<$FixMe> {
     try {
       return yield call(fn, ...args)
     } catch (e) {

@@ -1,21 +1,24 @@
 import {CommonNamespaceState} from '$studio/common/types'
 import {WorkspaceNamespaceState} from '$studio/workspace/types'
-import {IComponentModelNamespaceState} from '$studio/componentModel/types'
-import {StateWithHistory} from '$src/shared/utils/redux/withHistory/withHistory'
+import {IComponentModelNamespaceHistoricState, IComponentModelNamespaceAhistoricState} from '$studio/componentModel/types'
+import {StateWithHistory, HistoryOnly} from '$src/shared/utils/redux/withHistory/withHistory'
 
-export interface IStorePersistedState {
+export interface IStoreHistoricState {
   common: CommonNamespaceState
   workspace: WorkspaceNamespaceState
-  componentModel: IComponentModelNamespaceState
+  historicComponentModel: IComponentModelNamespaceHistoricState
 }
 
 export interface IStoreAhistoricSTate {
   stateIsHydrated: boolean
   pathToProject: undefined | string
+  ahistoricComponentModel: IComponentModelNamespaceAhistoricState
 }
 
 export interface IStudioStoreState
-  extends StateWithHistory<IStorePersistedState, IStoreAhistoricSTate> {}
+  extends StateWithHistory<IStoreHistoricState, IStoreAhistoricSTate> {}
+
+export interface IStudioHistoryState extends HistoryOnly<IStoreHistoricState> {}
 
 export type Selector<ReturnType, ParamsType = void> = 
   ParamsType extends void ? (state: IStudioStoreState) => ReturnType : 

@@ -1,4 +1,7 @@
-import {IComponentModelNamespaceState} from './types'
+import {
+  IComponentModelNamespaceHistoricState,
+  IComponentModelNamespaceAhistoricState,
+} from './types'
 import coreComponentDescriptors from './coreComponentDescriptors/coreComponentDescriptors'
 import coreModifierDescriptors from './coreModifierDescriptors/coreModifierDescriptors'
 // import {
@@ -297,14 +300,11 @@ import tempCustomComponentDescriptors from './tempBall2'
 //   // whatToRender: 'hi',
 // }
 
-const initialState: IComponentModelNamespaceState = {
-  componentDescriptors: {
-    core: coreComponentDescriptors,
-    custom: tempCustomComponentDescriptors,
-  },
-  modifierDescriptors: {
-    core: coreModifierDescriptors,
-  },
+export const historicInitialState: IComponentModelNamespaceHistoricState = {
+  customComponentDescriptors: tempCustomComponentDescriptors,
 }
 
-export default initialState
+export const ahistoricInitialState: IComponentModelNamespaceAhistoricState = {
+  coreComponentDescriptors,
+  coreModifierDescriptors,
+}

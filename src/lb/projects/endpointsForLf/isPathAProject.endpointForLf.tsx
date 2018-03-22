@@ -10,7 +10,7 @@ type ReturnType =
 
 export default function* isPathAProject(params: {
   fileOrFolderPath: string
-}): Generator_<$FixMe, ReturnType, $FixMe> {
+}): Generator_<ReturnType> {
   if ((yield call(fse.pathExists, params.fileOrFolderPath)) !== true) {
     return {type: 'ok', isIt: false}
   }

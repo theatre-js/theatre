@@ -76,7 +76,7 @@ declare var module: {
   }
 }
 
-interface Generator_<A, ReturnType, YieldType> extends Generator {}
+interface Generator_<ReturnType = {}, A = {}, YieldType = {}> extends Generator {}
 
 declare module '*.svg' {
   var s: string

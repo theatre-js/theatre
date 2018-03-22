@@ -1,4 +1,3 @@
-import wn from 'when'
 import {app} from 'electron'
 import {defer} from '$shared/utils/defer'
 

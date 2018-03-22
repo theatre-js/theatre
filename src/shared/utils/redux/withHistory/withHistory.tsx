@@ -18,7 +18,7 @@ type TempAction = {
   payload: {id: string; originalAction: GenericAction}
 }
 
-interface History<HistoricState> {
+export interface HistoryOnly<HistoricState> {
   currentCommitHash: CommitHash | undefined
   commitsByHash: Record<CommitHash, Commit>
   listOfCommitHashes: Array<CommitHash>
@@ -47,7 +47,7 @@ export type StateWithHistory<
   AhistoricState extends {}
 > = HistoricState &
   AhistoricState & {
-    '@@history': History<HistoricState>
+    '@@history': HistoryOnly<HistoricState>
     '@@tempActions': Array<TempAction>
     '@@ahistoricState': AhistoricState
   }
@@ -63,9 +63,9 @@ export const withHistory = <
   config: WithHistoryConfig = defaultConfig,
 ) => {
   const reduceForPermanentHistory = (
-    prevHistory: History<PersistedState>,
+    prevHistory: HistoryOnly<PersistedState>,
     action: GenericAction,
-  ): History<PersistedState> => {
+  ): HistoryOnly<PersistedState> => {
     if (prevHistory === undefined) {
       return {
         currentCommitHash: undefined,
@@ -86,7 +86,7 @@ export const withHistory = <
     prevState: undefined | FullState,
     action: GenericAction,
   ): FullState => {
-    let history: History<PersistedState>
+    let history: HistoryOnly<PersistedState>
     let tempActions: Array<TempAction>
     let ahistoricState: AhistoricState
     if (!prevState) {
@@ -166,7 +166,7 @@ const applyTemps = (
   )
 
 function pushCommit<InnerState>(
-  prevHistory: History<InnerState>,
+  prevHistory: HistoryOnly<InnerState>,
   historicalReducer: ReduxReducer<InnerState>,
   action: GenericAction,
   config: WithHistoryConfig,
@@ -181,7 +181,7 @@ function pushCommit<InnerState>(
 
   const prevLastCommitHash = _.last(prevHistory.listOfCommitHashes)
 
-  const newHistory: History<InnerState> = {
+  const newHistory: HistoryOnly<InnerState> = {
     currentCommitHash: commit.hash,
     commitsByHash: {...prevHistory.commitsByHash},
     listOfCommitHashes: [...prevHistory.listOfCommitHashes],
@@ -249,7 +249,7 @@ function createCommit<Snapshot>(
   return commit
 }
 
-function undo<InnerState, H extends History<InnerState>>(prevHistory: H): H {
+function undo<InnerState, H extends HistoryOnly<InnerState>>(prevHistory: H): H {
   if (prevHistory.currentCommitHash === undefined) {
     return prevHistory
   }
@@ -285,7 +285,7 @@ function undo<InnerState, H extends History<InnerState>>(prevHistory: H): H {
   return newHistory
 }
 
-function redo<InnerState, H extends History<InnerState>>(prevHistory: H): H {
+function redo<InnerState, H extends HistoryOnly<InnerState>>(prevHistory: H): H {
   if (prevHistory.listOfCommitHashes.length === 0) {
     return prevHistory
   }
@@ -319,6 +319,6 @@ function redo<InnerState, H extends History<InnerState>>(prevHistory: H): H {
 export const extractState = <S extends {}>(
   o: StateWithHistory<S, $IntentionalAny>,
 ): S => {
-  const {'@@history': h, '@@tempActions': t, ...state} = o as $FixMe
+  const {'@@history': h, '@@tempActions': t, '@@ahistoricState': a, ...state} = o as $FixMe
   return state
 }

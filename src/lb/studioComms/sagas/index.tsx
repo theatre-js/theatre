@@ -10,7 +10,6 @@ import {
 import {fork, take, call} from 'redux-saga/effects'
 import Server from 'socket.io'
 import allStudioSocketEndpoints from './allStudioSocketEndpoints'
-import wn from 'when'
 import {defer} from '$shared/utils/defer'
 
 const makeSocketServer = (): Promise<SocketServer> => {
@@ -41,7 +40,7 @@ export default function* studioCommsRootSaga(): Generator_<
 
 function* handleServer(
   server: SocketServer,
-): Generator_<$FixMe, $FixMe, $FixMe> {
+): Generator_<$FixMe> {
   const connectionsChannel = yield call(
     getChannelOfConnectionsFromSocketServer,
     server,
@@ -61,7 +60,7 @@ function* handleServer(
   }
 }
 
-function* handleConnection(socket: Socket): Generator_<$FixMe, $FixMe, $FixMe> {
+function* handleConnection(socket: Socket): Generator_<$FixMe> {
   const socketChannel = yield call(getChannelFromSocket, socket)
 
   try {
@@ -81,12 +80,12 @@ function* handleConnection(socket: Socket): Generator_<$FixMe, $FixMe, $FixMe> {
 
 function* handleRequest(
   request: ShapeOfRequestFromStudio,
-): Generator_<$FixMe, $FixMe, $FixMe> {
+): Generator_<$FixMe> {
   const handler = allStudioSocketEndpoints[request.endpoint]
   console.log('request', request.type, request.endpoint)
   if (handler) {
     try {
-      const result = yield call(handler, request)
+      const result = yield call(handler, request.payload, request)
       request.respond(result)
       return
     } catch (e) {

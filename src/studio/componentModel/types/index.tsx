@@ -26,12 +26,11 @@ export type ComponentDescriptor =
   | IDeclarativeComponentDescriptor
   | IHardCodedComponentDescriptor
 
-export interface IComponentModelNamespaceState {
-  componentDescriptors: {
-    core: {[id: string]: ComponentDescriptor}
-    custom: {[id: string]: ComponentDescriptor}
-  }
-  modifierDescriptors: {
-    core: {[id: string]: IModifierDescriptor}
-  }
+export interface IComponentModelNamespaceHistoricState {
+  customComponentDescriptors: {[id: string]: ComponentDescriptor}
+}
+
+export interface IComponentModelNamespaceAhistoricState {
+  coreComponentDescriptors: {[id: string]: ComponentDescriptor}
+  coreModifierDescriptors: {[id: string]: IModifierDescriptor}
 }

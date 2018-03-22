@@ -1,10 +1,10 @@
 import * as React from 'react'
 import ElementifyDeclarativeComponent from '$src/studio/componentModel/react/elementify/ElementifyDeclarativeComponent/ElementifyDeclarativeComponent'
-import stringStartsWith from 'lodash/startsWith'
 import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
 import withDeps from '$src/shared/DataVerse/derivations/withDeps'
 import autoDerive from '$src/shared/DataVerse/derivations/autoDerive/autoDerive'
 import dictAtom from '$src/shared/DataVerse/atoms/dict'
+import {isCoreComponent} from '$studio/componentModel/selectors'
 
 const identity = a => a
 
@@ -15,15 +15,19 @@ const getComponentDescriptorById = (
   withDeps({idD, studioD}, identity).flatMap((): $FixMe => {
     const idString = idD.getValue()
 
-    const componentDescriptorsP = studioD
-      .getValue()
-      .atom.pointer()
-      .prop('componentModel')
-      .prop('componentDescriptors')
+    const atomP = studioD.getValue().atom.pointer()
 
-    return stringStartsWith(idString, 'TheaterJS/Core/')
-      ? componentDescriptorsP.prop('core').prop(idString)
-      : componentDescriptorsP.prop('custom').prop(idString)
+    const isCore = isCoreComponent(idString)
+
+    return isCore
+      ? atomP
+          .prop('ahistoricComponentModel')
+          .prop('coreComponentDescriptors')
+          .prop(idString)
+      : atomP
+          .prop('historicComponentModel')
+          .prop('customComponentDescriptors')
+          .prop(idString)
   })
 
 const elementify = (keyD, instantiationDescriptorP, studioD) => {

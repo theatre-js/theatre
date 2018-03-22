@@ -2,7 +2,6 @@ import {Channel, eventChannel} from 'redux-saga'
 import {call, take, fork} from 'redux-saga/effects'
 import allEndpointsForLB from '$src/lf/commsWithLB/allEndpointsForLB'
 import generateUniqueId from 'uuid/v4'
-import wn from 'when'
 import {ipcRenderer} from 'electron'
 import {defer} from '$shared/utils/defer'
 
@@ -103,7 +102,7 @@ function _sendRequestToLB(
 export const callerFromLFToLB = (handlerName: string): any => {
   const fn: any = function*(
     payload: $FixMe,
-  ): Generator_<$FixMe, $FixMe, $FixMe> {
+  ): Generator_<$FixMe> {
     const r: any = yield call(
       _sendRequestToLB,
       handlerName,
@@ -116,7 +115,7 @@ export const callerFromLFToLB = (handlerName: string): any => {
   return fn
 }
 
-export default function* commsWithLBSaga(): Generator_<$FixMe, $FixMe, $FixMe> {
+export default function* commsWithLBSaga(): Generator_<$FixMe> {
   const requestsFromLB: Channel<RequestFromLB> = yield call(
     getChannelOfRequestsFromLB,
   )
@@ -136,7 +135,7 @@ export default function* commsWithLBSaga(): Generator_<$FixMe, $FixMe, $FixMe> {
 function* handleRequestFromLB(
   handler: Function,
   request: RequestFromLB,
-): Generator_<$FixMe, $FixMe, $FixMe> {
+): Generator_<$FixMe> {
   try {
     // @ts-ignore @ignore
     const result = yield call(handler, request.payload)

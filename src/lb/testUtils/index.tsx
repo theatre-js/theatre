@@ -3,26 +3,26 @@ import rootReducer from '$lb/bootstrap/rootReducer'
 // import rootSaga from '$lb/bootstrap/rootSaga'
 import {LBStoreState} from '$lb/types'
 
-type Fn0<R> = (...rest: Array<void>) => Generator_<mixed, R, mixed>
-type Fn1<T1, R> = (t1: T1, ...rest: Array<void>) => Generator_<mixed, R, mixed>
+type Fn0<R> = (...rest: Array<void>) => Generator_<R>
+type Fn1<T1, R> = (t1: T1, ...rest: Array<void>) => Generator_<R>
 type Fn2<T1, T2, R> = (
   t1: T1,
   t2: T2,
   ...rest: Array<void>
-) => Generator_<mixed, R, mixed>
+) => Generator_<R>
 type Fn3<T1, T2, T3, R> = (
   t1: T1,
   t2: T2,
   t3: T3,
   ...rest: Array<void>
-) => Generator_<mixed, R, mixed>
+) => Generator_<R>
 type Fn4<T1, T2, T3, T4, R> = (
   t1: T1,
   t2: T2,
   t3: T3,
   t4: T4,
   ...rest: Array<void>
-) => Generator_<mixed, R, mixed>
+) => Generator_<R>
 type Fn5<T1, T2, T3, T4, T5, R> = (
   t1: T1,
   t2: T2,
@@ -30,7 +30,7 @@ type Fn5<T1, T2, T3, T4, T5, R> = (
   t4: T4,
   t5: T5,
   ...rest: Array<void>
-) => Generator_<mixed, R, mixed>
+) => Generator_<R>
 type Fn6<T1, T2, T3, T4, T5, T6, R> = (
   t1: T1,
   t2: T2,
@@ -39,7 +39,7 @@ type Fn6<T1, T2, T3, T4, T5, T6, R> = (
   t5: T5,
   t6: T6,
   ...rest: Array<void>
-) => Generator_<mixed, R, mixed>
+) => Generator_<R>
 
 type Return<R> = {
   store: StoreAndStuff<LBStoreState, any>

@@ -6,7 +6,7 @@ export const callerFromLBToLF = (handlerName: string): any => {
   const fn: any = function*(
     window: BrowserWindow,
     payload: $FixMe,
-  ): Generator_<$FixMe, $FixMe, $FixMe> {
+  ): Generator_<$FixMe> {
     const r: any = yield call(
       _sendRequestToWindow,
       window,

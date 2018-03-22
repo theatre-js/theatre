@@ -11,9 +11,8 @@ const initialState: WorkspaceNamespaceState = {
         },
         configuration: {
           pathToTimeline: [
-            'componentModel',
-            'componentDescriptors',
-            'custom',
+            'historicComponentModel',
+            'customComponentDescriptors',
             'BouncyBall',
             'timelineDescriptors',
             'byId',

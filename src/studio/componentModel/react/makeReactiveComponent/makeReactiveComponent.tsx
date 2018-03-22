@@ -250,9 +250,8 @@ export default function makeReactiveComponent({
             .flatMap((modifierId: string) => {
               return this.studio.atom
                 .pointer()
-                .prop('componentModel')
-                .prop('modifierDescriptors')
-                .prop('core')
+                .prop('ahistoricComponentModel')
+                .prop('coreModifierDescriptors')
                 .prop(modifierId)
                 .prop('getClass')
                 .flatMap((possibleFn: undefined | null | Function) => {

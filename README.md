@@ -10,6 +10,7 @@ We'll have very few aliases in this project. All you need to remember are:
 * `$lb` points to 'app/src/lb'
 * `$lf` points to 'app/src/lf'
 * `$shared` points to 'app/src/shared'
+* `$root` points to 'app/'
 
 ### Common practices
 
