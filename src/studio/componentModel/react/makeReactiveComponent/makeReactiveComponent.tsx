@@ -101,7 +101,7 @@ export default function makeReactiveComponent({
 
     constructor(props: Props, context: $FixMe) {
       super(props, context)
-
+      
       this._fnsToCallOnWillUnmount = []
 
       // $FixMe
@@ -163,7 +163,7 @@ export default function makeReactiveComponent({
 
       this.studio.declareComponentInstance(this.elementId, this)
 
-      if (this.getComponentId() === 'IntroScene') {
+      if (this.getComponentId() === 'BouncyBall') {
         this.reduceState(
           [
             'workspace',
@@ -191,9 +191,7 @@ export default function makeReactiveComponent({
 
     _createAtom() {
       return dictAtom({
-        instanceId: this.studio._getNewComponentInstanceId(
-          this.constructor.componentId,
-        ),
+        instanceId: this.studio._getNewComponentInstanceId(),
         props: this.props.props,
         modifierInstantiationDescriptors: this.props
           .modifierInstantiationDescriptors,

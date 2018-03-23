@@ -60,13 +60,13 @@ type State = {
 }
 
 class Content extends StudioComponent<Props, State> {
-  variablesContainer: any
   static panelName = 'AnimationTimeline'
-
-  currentTTimeXBeforeDrag: BoxAtom<number>
   static panelConfig = {
     headerLess: true,
   }
+
+  variablesContainer: $FixMe
+  currentTTimeXBeforeDrag: BoxAtom<number>
 
   constructor(props: Props, context: $IntentionalAny) {
     super(props, context)
@@ -113,6 +113,8 @@ class Content extends StudioComponent<Props, State> {
   }
 
   _updateThingy(props: Props = this.props) {
+    console.log(props);
+    
     const thingy = calculateThingy(props.elementId, props.pathToTimeline)
     if (thingy === this.state.thingy) return
 
@@ -741,7 +743,8 @@ export default connect((s: IStudioStoreState, op: OwnProps) => {
     'panels',
     'panelObjectBeingDragged',
   ])
-  const selectedComponentId = _.get(s, [
+  
+  const selectedComponentId = 'BouncyBall' /* _.get(s, [
     'workspace',
     'panels',
     'byId',
@@ -749,7 +752,8 @@ export default connect((s: IStudioStoreState, op: OwnProps) => {
     'outputs',
     'selectedNode',
     'componentId',
-  ])
+  ])*/
+
   const selectedElementId = _.get(s, [
     'componentModel',
     'componentDescriptors',
