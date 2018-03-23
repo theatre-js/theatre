@@ -38,17 +38,27 @@ class ExplorerPanel extends StudioComponent<Props, State> {
 
   _subscribeToHookEvents(hook: undefined | null | Object) {
     if (hook == null) throw Error('Dev tools hook not found!')
-    hook.sub('root', (data: $FixMe) => {
-      if (this.rendererID != null) return
-      this.walkTree(data.internalInstance, (node) => {
-        if (node.key === 'TheaterJS/Core/RenderCurrentCanvas#RenderCurrentCanvas') {
-          this.rendererID = data.renderer
-          this.debouncedAddNodes(hook)
-          return true
-        }
-      })
-    })
+    // hook.sub('root', (data: $FixMe) => {
+    //   if (this.rendererID != null) return
+    //   this.walkTree(data.internalInstance, (node) => {
+    //     if (node.key === 'TheaterJS/Core/RenderCurrentCanvas#RenderCurrentCanvas') {
+    //       this.rendererID = data.renderer
+    //       this.debouncedAddNodes(hook)
+    //       return true
+    //     }
+    //   })
+    // })
     hook.sub('mount', data => {
+      if (this.rendererID == null) {
+        this.walkTree(data.internalInstance, (node) => {
+          if (node.key === 'TheaterJS/Core/RenderCurrentCanvas#RenderCurrentCanvas') {
+            this.rendererID = data.renderer
+            this.debouncedAddNodes(hook)
+            return true
+          }
+        })
+        return
+      }
       if (data.renderer !== this.rendererID) return
       this.debouncedAddNodes(hook)
     })
