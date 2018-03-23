@@ -2,6 +2,8 @@
 /xeno
 /bundles
 /.vscode
+/examples/theater.json
+/examples/theater-history.json
 *.log
 development.env.json
 production.env.json

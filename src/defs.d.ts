@@ -32,6 +32,7 @@ type CommonEnvironmentVariables = {
   }
   KEEPING_DERIVATION_TRACES: boolean
   TRACKING_COLD_DERIVATIONS: boolean
+  PATH_TO_ROOT: string
 }
 
 // Some environment variables are specific to NODE_ENV='development'

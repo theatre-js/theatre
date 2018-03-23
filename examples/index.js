@@ -1,10 +1,12 @@
-// @flow
-// import 'babel-polyfill'
-
 import React from 'react'
 import {render} from 'react-dom'
 import SampleApp from './SampleApp'
+import {join} from 'path'
 
-window.TheaterJS.run('/Users/aria/theaterjs/sample-app/theater.json')
+/**
+ * 
+ */
+const pathToProject = join(process.env.PATH_TO_ROOT, 'examples/theater.json')
+window.TheaterJS.run(pathToProject, __dirname)
 
 render(<SampleApp />, (document.getElementById('root')))

@@ -18,7 +18,6 @@
     "studio:webpack:dev": "webpack-dev-server --progress --config webpack/studio/development.js",
     "playground:webpack:dev": "webpack-dev-server --progress --config webpack/playground/development.js",
     "examples:webpack:dev": "webpack-dev-server --progress --config webpack/examples/development.js",
-    "all-dev-servers": "webpack-dev-server --progress --config webpack/allDevServers.js",
     "build:dev": "npm-run-all --parallel lb:webpack:dev lf:webpack:dev studio:webpack:dev examples:webpack:dev",
     "open-examples": "opn http://localhost:9092/examples",
     "typescript:check": "tsc -p ./tsconfig.json --noEmit"

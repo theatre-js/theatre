@@ -6,7 +6,6 @@ import * as CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin'
 import * as WatchMissingNodeModulesPlugin from 'react-dev-utils/WatchMissingNodeModulesPlugin'
 import * as TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
 import {mapValues} from 'lodash'
-// @ts-ignore
 import * as ErrorOverlayPlugin from 'error-overlay-webpack-plugin'
 
 export const context = path.resolve(__dirname, '..')
@@ -77,9 +76,9 @@ export const makeConfigParts = (options: Options) => {
               require.resolve('react-dev-utils/webpackHotDevClient'),
               require.resolve('react-hot-loader/patch'),
             ].concat(ent)
-          : options.withServerSideHotLoading ?
-          ['webpack/hot/poll?100'].concat(ent)
-          : ent,
+          : options.withServerSideHotLoading
+            ? ['webpack/hot/poll?100'].concat(ent)
+            : ent,
     ),
     output: {
       path: bundlesDir,
@@ -121,9 +120,9 @@ export const makeConfigParts = (options: Options) => {
             new WatchMissingNodeModulesPlugin(
               path.resolve(__dirname, '../node_modules'),
             ),
-            ...(options.withDevServer !== true ? [] : [
-              new ErrorOverlayPlugin()
-            ]) 
+            ...(options.withDevServer !== true
+              ? []
+              : [new ErrorOverlayPlugin()]),
           ]
         : [
             new webpack.optimize.UglifyJsPlugin({
