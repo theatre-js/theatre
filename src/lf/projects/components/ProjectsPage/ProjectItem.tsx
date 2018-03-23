@@ -36,7 +36,7 @@ const ProjectItem = (props: Props) => {
             <div className={css.title}>{props.projectDesc.message}</div>
           )}
         <div title={props.path} className={css.path}>
-          {props.path.slice(1).slice(0, -15)}
+          {props.path.slice(1).slice(0, -13)}
         </div>
       </div>
       <button className={css.forgetButton} onClick={props.onForget}>
