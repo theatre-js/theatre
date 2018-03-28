@@ -7,15 +7,17 @@ import generateUniqueId from 'uuid/v4'
 import css from './AnimationTimelinePanel.css'
 import VariablesBox from './VariablesBox'
 import TimeBar from './TimeBar'
-import {Subscriber} from 'react-broadcast'
+import {Subscriber, Broadcast} from 'react-broadcast'
 import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
 import cx from 'classnames'
 import * as _ from 'lodash'
 import {set} from 'lodash/fp'
 import {
   PanelWidthChannel,
+  PanelActiveModeChannel,
   default as Panel,
 } from '$src/studio/workspace/components/Panel/Panel'
+import {MODE_SHIFT} from '$src/studio/workspace/components/StudioUI/StudioUI'
 
 import {
   BoxID,
@@ -28,6 +30,7 @@ import StudioComponent from '$src/studio/handy/StudioComponent'
 import boxAtom, {BoxAtom} from '$src/shared/DataVerse/atoms/box'
 import TimelineInstance from '$studio/componentModel/react/makeReactiveComponent/TimelineInstance/TimelineInstance'
 import {IStudioStoreState} from '$studio/types'
+import { svgPaddingY } from '$studio/AnimationTimelinePanel/BoxView';
 
 type OwnProps = TimelineObject & {
   pathToTimeline: string[]
@@ -59,8 +62,12 @@ type State = {
   timelineInstance: undefined | TimelineInstance
 }
 
+const LEGEND_BAR_WIDTH = 30
+export const SelectionBoundariesChannel = 'TheaterJS/SelectionBoundariesChannel'
+
 class Content extends StudioComponent<Props, State> {
-  variablesContainer: any
+  container: $FixMe
+  variablesContainer: $FixMe
   static panelName = 'AnimationTimeline'
 
   currentTTimeXBeforeDrag: BoxAtom<number>
@@ -593,6 +600,151 @@ class Content extends StudioComponent<Props, State> {
     document.body.classList.remove('animationTimelineSeekerDrag')
   }
 
+  _handleMouseDown = (e: $FixMe, activeMode: string) => {
+    if (activeMode === MODE_SHIFT) {
+      document.addEventListener('mousemove', this._updateSelectionOnDrag)
+      document.addEventListener('mouseup', this._handleSelectionEnd)
+      const {clientX, clientY} = e
+      const {left, top} = this.container.getBoundingClientRect()
+      this.setState(({boundaries}) => ({
+        boundariesOfSelection: boundaries.reduce((reducer: number[], b: number, index: number) => {
+          let boxBoundaries = []
+          if (index === 0) {
+            return [
+              ...reducer,
+              boundaries[0] + svgPaddingY / 2,
+            ]
+          }
+          if (index === boundaries.length - 1) {
+            return [
+              ...reducer,
+              boundaries[boundaries.length - 1] - svgPaddingY / 2,
+            ]
+          }
+          return [
+            ...reducer,
+            boundaries[index] - svgPaddingY / 2,
+            boundaries[index] + svgPaddingY / 2,
+          ]
+        }, []),
+        selectionProps: {
+          _clientX: clientX,
+          _clientY: clientY,
+          fromX: clientX - left,
+          fromY: clientY - top - 1,
+          dX: 0,
+          dY: 0,
+        },
+      }))
+    }
+  }
+
+  _updateSelectionOnDrag = e => {
+    const {clientX, clientY} = e
+    this.setState(({selectionProps}) => ({
+      selectionProps: {
+        ...selectionProps,
+        dX: clientX - selectionProps._clientX,
+        dY: clientY - selectionProps._clientY,
+      },
+    }))
+  }
+
+  _handleSelectionEnd = () => {
+    document.removeEventListener('mousemove', this._updateSelectionOnDrag)
+    document.removeEventListener('mouseup', this._handleSelectionEnd)
+    // this.setState(() => ({selectionProps: null}))
+  }
+
+  _getSelectionBoundaries = (panelWidth: number) => {
+    const {boundariesOfSelection, selectionProps, focus, duration} = this.state
+    // console.log(this.state.boundariesOfSelection, boundaries)
+    const {fromY, dY, fromX, dX} = selectionProps
+    const fromIndex = boundariesOfSelection.findIndex((b: number) => (b > fromY)) - 1
+    let toIndex = boundariesOfSelection.findIndex((b: number) => (b >= fromY + dY))
+    if (toIndex === -1) toIndex = boundariesOfSelection.length - 1
+
+    // const fromBoxIndex = (fromIndex % 2 === 0) ? fromIndex / 2 : Math.ceil(fromIndex / 2)
+    // const toBoxIndex = (toIndex % 2 === 0) ? toIndex / 2 - 1 : Math.floor(toIndex / 2)
+
+    const topBoundaryBoxIndex = (fromIndex % 2 === 0) ? fromIndex / 2 : Math.ceil(fromIndex / 2)
+    const bottomBoundaryBoxIndex = (toIndex % 2 === 0) ? toIndex / 2 - 1 : Math.floor(toIndex / 2)
+
+    const leftOffset = focus[0] / duration
+    const focusedWidth = (focus[1] - focus[0]) / duration
+    const left = 100 * (leftOffset + focusedWidth * ((fromX - LEGEND_BAR_WIDTH) / panelWidth))
+    const right = 100 * (leftOffset + focusedWidth * ((fromX + dX - LEGEND_BAR_WIDTH) / panelWidth))
+
+    let selectionBoundaries
+    // if (fromBoxIndex === toBoxIndex) {
+    if (topBoundaryBoxIndex === bottomBoundaryBoxIndex){
+        // const fromBoxBoundary = boundariesOfSelection[fromBoxIndex * 2]
+        // const boxHeight = boundariesOfSelection[fromBoxIndex * 2 + 1] - fromBoxBoundary
+      const topBoundary = boundariesOfSelection[topBoundaryBoxIndex * 2]
+      const bottomBoundary = boundariesOfSelection[bottomBoundaryBoxIndex * 2 + 1]
+      const boxHeight = bottomBoundary - topBoundary
+      selectionBoundaries = {
+        [topBoundaryBoxIndex]: {
+          left, right,
+          top: (fromY - topBoundary) / boxHeight * 100,
+          bottom: (fromY + dY - topBoundary) / boxHeight * 100,
+        }
+      }
+    } else {
+      const fromBoxTopBoundary = boundariesOfSelection[topBoundaryBoxIndex * 2]
+      const fromBoxHeight = boundariesOfSelection[topBoundaryBoxIndex * 2 + 1] - fromBoxTopBoundary
+      const toBoxTopBoundary = boundariesOfSelection[bottomBoundaryBoxIndex * 2]
+      const toBoxHeight = boundariesOfSelection[bottomBoundaryBoxIndex * 2 + 1] - toBoxTopBoundary
+      const fromBoxBoundaries = {
+        left, right,
+        top: 100 * (fromY - fromBoxTopBoundary) / fromBoxHeight,
+        bottom: 100,
+      }
+      const toBoxBoundaries = {
+        left, right,
+        top: 0,
+        bottom: 100 * (fromY + dY - toBoxTopBoundary) / toBoxHeight,
+      }
+
+      selectionBoundaries = {
+        [topBoundaryBoxIndex]: fromBoxBoundaries,
+        [bottomBoundaryBoxIndex]: toBoxBoundaries,
+        ...(
+          Array.from(Array(bottomBoundaryBoxIndex - topBoundaryBoxIndex - 1), (_, i: number) => i + topBoundaryBoxIndex + 1).reduce((reducer: Object, n: number) => {
+            return {
+              ...reducer,
+              [n]: {
+                left, right,
+                top: 0,
+                bottom: 100,
+              }
+            }
+          }, {})
+        )
+      }
+    }
+    return {boxesInSelection: Object.keys(selectionBoundaries), selectionBoundaries}
+  }
+
+  _renderSelectionZone = (panelWidth: number) => {
+    const {selectionProps} = this.state
+    return (
+      <div
+        key="selectionZone"
+        style={{
+          position: 'absolute',
+          zIndex: 100,
+          // background: 'rgba(255, 255, 255, .5)',
+          boxShadow: 'inset 0 0 0 2px white',
+          left: selectionProps.fromX,
+          top: selectionProps.fromY,
+          width: selectionProps.dX,
+          height: selectionProps.dY,
+        }}
+      />
+    )
+  }
+
   render() {
     const {
       boxBeingDragged,
@@ -600,10 +752,12 @@ class Content extends StudioComponent<Props, State> {
       duration,
       focus,
       // currentTTime: currentTime,
+      selectionProps,
     } = this.state
     const {boxes, layout, panelObjectBeingDragged} = this.props
 
     const isABoxBeingDragged = boxBeingDragged != null
+    const isASelectionBeingMade = selectionProps != null
     return (
       <Panel
         headerLess={true}
@@ -614,7 +768,7 @@ class Content extends StudioComponent<Props, State> {
       >
         <Subscriber channel={PanelWidthChannel}>
           {({width: panelWidth}: $FixMe) => {
-            panelWidth -= 30
+            panelWidth -= LEGEND_BAR_WIDTH
             const svgWidth: number = Math.floor(
               duration / Math.floor(focus[1] - focus[0]) * panelWidth,
             )
@@ -624,109 +778,133 @@ class Content extends StudioComponent<Props, State> {
               focus[1],
               panelWidth,
             )
-            return (
-              <div
-                ref={c => (this.container = c)}
-                className={cx(css.container, {
-                  [css.showModifierDropOverlay]:
-                    panelObjectBeingDragged &&
-                    panelObjectBeingDragged.type === 'modifier',
-                })}
-                onWheel={e => this._handleScroll(e, panelWidth)}
-                onMouseUp={this._handleModifierDrop}
-              >
-                <div className={css.timeBar}>
-                  <TimeBar
-                    shouldIgnoreMouse={this.state.isSeekerBeingDragged}
-                    panelWidth={panelWidth}
-                    duration={duration}
-                    // currentTime={currentTime}
-                    timeBox={this.state.timeBox}
-                    focus={focus}
-                    timeToX={(time: number) => this.timeToX(time, panelWidth)}
-                    xToTime={(x: number) => this.xToTime(x, panelWidth)}
-                    focusedTimeToX={(time: number, focus: [number, number]) =>
-                      this.focusedTimeToX(time, focus, panelWidth)
-                    }
-                    xToFocusedTime={(x: number, focus: [number, number]) =>
-                      this.xToFocusedTime(x, focus, panelWidth)
-                    }
-                    changeFocusTo={(focusLeft: number, focusRight: number) =>
-                      this.changeFocusTo(focusLeft, focusRight)
-                    }
-                    changeFocusRightTo={(focus: number) =>
-                      this.changeFocusRightTo(focus)
-                    }
-                    changeFocusLeftTo={(focus: number) =>
-                      this.changeFocusLeftTo(focus)
-                    }
-                    changeCurrentTimeTo={this.changeCurrentTimeTo}
-                    changeDuration={this.changeDuration}
-                  />
-                </div>
-                <DraggableArea
-                  onDragStart={(e: $FixMe) =>
-                    this._handleSeekerDragStart(e, focus, panelWidth)
-                  }
-                  onDrag={(dx: number) =>
-                    this.changeCurrentTimeTo(
-                      this.xToFocusedTime(
-                        // this.state.currentTimeXBeforeDrag + dx, focus, panelWidth
-                        this.currentTTimeXBeforeDrag.getValue() + dx,
-                        focus,
-                        panelWidth,
-                      ),
-                    )
-                  }
-                  onDragEnd={this._handleSeekerDragEnd}
-                >
-                  <div
-                    ref={c => (this.variablesContainer = c)}
-                    className={css.variables}
-                  >
-                    <div>
-                      {layout.map((id, index) => {
-                        const box = boxes[id]
-                        const boxTranslateY =
-                          moveRatios[index] *
-                          (isABoxBeingDragged ? boxBeingDragged.height : 0)
-                        const canBeMerged =
-                          isABoxBeingDragged &&
-                          boxBeingDragged.index === index &&
-                          boxBeingDragged.mergeWith != null
-                        const shouldIndicateMerge =
-                          isABoxBeingDragged &&
-                          boxBeingDragged.mergeWith !== null &&
-                          boxBeingDragged.mergeWith === index
-                        let height = box.height
-                        return (
-                          <VariablesBox
-                            key={id}
-                            boxIndex={index}
-                            boxId={id}
-                            translateY={boxTranslateY}
-                            svgHeight={height}
-                            svgWidth={svgWidth}
-                            variableIds={box.variables}
-                            splitVariable={this.splitVariable}
-                            duration={duration}
-                            canBeMerged={canBeMerged}
-                            shouldIndicateMerge={shouldIndicateMerge}
-                            pathToTimeline={this.props.pathToTimeline}
-                            scrollLeft={scrollLeft}
-                            isABoxBeingDragged={isABoxBeingDragged}
-                            onMoveStart={this.onBoxStartMove}
-                            onMoveEnd={this.onBoxEndMove}
-                            onMove={this.onBoxMove}
-                            onResize={this.onBoxResize}
-                          />
-                        )
+            const selectionBoundaries = isASelectionBeingMade ? this._getSelectionBoundaries(panelWidth) : null
+            return [
+              <Subscriber key="subscriber" channel={PanelActiveModeChannel}>
+                {({activeMode}) => {
+                  return (
+                    <div
+                      ref={c => (this.container = c)}
+                      className={cx(css.container, {
+                        [css.showModifierDropOverlay]:
+                          panelObjectBeingDragged &&
+                          panelObjectBeingDragged.type === 'modifier',
                       })}
+                      onWheel={e => this._handleScroll(e, panelWidth)}
+                      onMouseDown={e => this._handleMouseDown(e, activeMode)}
+                      onMouseUp={this._handleModifierDrop}
+                    >
+                      <div className={css.timeBar}>
+                        <TimeBar
+                          shouldIgnoreMouse={this.state.isSeekerBeingDragged}
+                          panelWidth={panelWidth}
+                          duration={duration}
+                          // currentTime={currentTime}
+                          timeBox={this.state.timeBox}
+                          focus={focus}
+                          timeToX={(time: number) =>
+                            this.timeToX(time, panelWidth)
+                          }
+                          xToTime={(x: number) => this.xToTime(x, panelWidth)}
+                          focusedTimeToX={(
+                            time: number,
+                            focus: [number, number],
+                          ) => this.focusedTimeToX(time, focus, panelWidth)}
+                          xToFocusedTime={(
+                            x: number,
+                            focus: [number, number],
+                          ) => this.xToFocusedTime(x, focus, panelWidth)}
+                          changeFocusTo={(
+                            focusLeft: number,
+                            focusRight: number,
+                          ) => this.changeFocusTo(focusLeft, focusRight)}
+                          changeFocusRightTo={(focus: number) =>
+                            this.changeFocusRightTo(focus)
+                          }
+                          changeFocusLeftTo={(focus: number) =>
+                            this.changeFocusLeftTo(focus)
+                          }
+                          changeCurrentTimeTo={this.changeCurrentTimeTo}
+                          changeDuration={this.changeDuration}
+                        />
+                      </div>
+                      <DraggableArea
+                        shouldRegisterEvents={activeMode !== MODE_SHIFT}
+                        onDragStart={(e: $FixMe) =>
+                          this._handleSeekerDragStart(e, focus, panelWidth)
+                        }
+                        onDrag={(dx: number) =>
+                          this.changeCurrentTimeTo(
+                            this.xToFocusedTime(
+                              // this.state.currentTimeXBeforeDrag + dx, focus, panelWidth
+                              this.currentTTimeXBeforeDrag.getValue() + dx,
+                              focus,
+                              panelWidth,
+                            ),
+                          )
+                        }
+                        onDragEnd={this._handleSeekerDragEnd}
+                      >
+                        <div
+                          ref={c => (this.variablesContainer = c)}
+                          className={css.variables}
+                        >
+                          <Broadcast
+                            channel={SelectionBoundariesChannel}
+                            value={selectionBoundaries}
+                            compareValues={() => !isASelectionBeingMade}
+                          >
+                            <div>
+                              {layout.map((id, index) => {
+                                const box = boxes[id]
+                                const boxTranslateY =
+                                  moveRatios[index] *
+                                  (isABoxBeingDragged
+                                    ? boxBeingDragged.height
+                                    : 0)
+                                const canBeMerged =
+                                  isABoxBeingDragged &&
+                                  boxBeingDragged.index === index &&
+                                  boxBeingDragged.mergeWith != null
+                                const shouldIndicateMerge =
+                                  isABoxBeingDragged &&
+                                  boxBeingDragged.mergeWith !== null &&
+                                  boxBeingDragged.mergeWith === index
+                                let height = box.height
+                                return (
+                                  <VariablesBox
+                                    key={id}
+                                    boxIndex={index}
+                                    boxId={id}
+                                    activeMode={activeMode}
+                                    translateY={boxTranslateY}
+                                    svgHeight={height}
+                                    svgWidth={svgWidth}
+                                    variableIds={box.variables}
+                                    splitVariable={this.splitVariable}
+                                    duration={duration}
+                                    canBeMerged={canBeMerged}
+                                    shouldIndicateMerge={shouldIndicateMerge}
+                                    pathToTimeline={this.props.pathToTimeline}
+                                    scrollLeft={scrollLeft}
+                                    isABoxBeingDragged={isABoxBeingDragged}
+                                    onMoveStart={this.onBoxStartMove}
+                                    onMoveEnd={this.onBoxEndMove}
+                                    onMove={this.onBoxMove}
+                                    onResize={this.onBoxResize}
+                                  />
+                                )
+                              })}
+                            </div>
+                          </Broadcast>
+                        </div>
+                      </DraggableArea>
                     </div>
-                  </div>
-                </DraggableArea>
-              </div>
-            )
+                  )
+                }}
+              </Subscriber>,
+              isASelectionBeingMade && this._renderSelectionZone(panelWidth),
+            ]
           }}
         </Subscriber>
       </Panel>

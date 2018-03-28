@@ -151,12 +151,11 @@ class Variable extends React.PureComponent<Props, IState> {
   }
 
   mouseDownHandler = (e: $FixMe) => {
-    e.stopPropagation()
+    // e.stopPropagation()
     this.props.addPoint(
       this.props.variableId,
       this.extremums,
-      e.clientX,
-      e.clientY,
+      e,
     )
   }
 

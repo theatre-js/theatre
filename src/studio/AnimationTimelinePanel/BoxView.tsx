@@ -87,7 +87,7 @@ class BoxView extends StudioComponent<IProps, IState> {
     }, {})
   }
 
-  addPoint = (variableId: string, extremums: $FixMe, clientX: number, clientY: number) => {
+  addPoint = (variableId: string, extremums: $FixMe, event: $FixMe) => {
     const {
       svgHeight,
       svgWidth,
@@ -98,6 +98,9 @@ class BoxView extends StudioComponent<IProps, IState> {
     } = this.props
     if (activeMode !== MODE_CMD) return
 
+    event.stopPropagation()
+    event.preventDefault()
+    const {clientX, clientY} = event
     const {top, left} = this.svgArea.getBoundingClientRect()
     const time = clientX - left + 5
     const value = clientY - top + 5 - 0.5 * svgPaddingY

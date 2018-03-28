@@ -98,8 +98,64 @@ const two = {
                 },
               ],
             },
+            translationYZZ: {
+              __descriptorType: 'TimelineVarDescriptor',
+              id: 'translationYZZ',
+              component: 'div.ball',
+              property: 'translationYZZ',
+              points: [
+                {
+                  time: 1550,
+                  value: 0,
+                  interpolationDescriptor: {
+                    connected: true,
+                    __descriptorType: 'TimelinePointInterpolationDescriptor',
+                    interpolationType: 'CubicBezier',
+                    handles: [0.5, 0, 0.5, 0],
+                  },
+                },
+                {
+                  time: 4190,
+                  value: -100,
+                  interpolationDescriptor: {
+                    connected: false,
+                    __descriptorType: 'TimelinePointInterpolationDescriptor',
+                    interpolationType: 'CubicBezier',
+                    handles: [0.5, 0, 0.5, 0],
+                  },
+                },
+              ],
+            },
+            translationYZT: {
+              __descriptorType: 'TimelineVarDescriptor',
+              id: 'translationYZT',
+              component: 'div.ball',
+              property: 'translationYZT',
+              points: [
+                {
+                  time: 1550,
+                  value: 0,
+                  interpolationDescriptor: {
+                    connected: true,
+                    __descriptorType: 'TimelinePointInterpolationDescriptor',
+                    interpolationType: 'CubicBezier',
+                    handles: [0.5, 0, 0.5, 0],
+                  },
+                },
+                {
+                  time: 4190,
+                  value: -100,
+                  interpolationDescriptor: {
+                    connected: false,
+                    __descriptorType: 'TimelinePointInterpolationDescriptor',
+                    interpolationType: 'CubicBezier',
+                    handles: [0.5, 0, 0.5, 0],
+                  },
+                },
+              ],
+            },
           },
-          layout: ['box-translateY', 'box-translateYP', 'box-translateYZ'],
+          layout: ['box-translateY', 'box-translateYP', 'box-translateYZ', 'box-translateYZZ', 'box-translateYZT'],
           boxes: {
             'box-translateY': {
               id: 'box-translateY',
@@ -115,6 +171,16 @@ const two = {
               id: 'box-translateYZ',
               height: 126,
               variables: ['translationYZ'],
+            },
+            'box-translateYZZ': {
+              id: 'box-translateYZZ',
+              height: 126,
+              variables: ['translationYZZ'],
+            },
+            'box-translateYZT': {
+              id: 'box-translateYZT',
+              height: 126,
+              variables: ['translationYZT'],
             },
           },
         },

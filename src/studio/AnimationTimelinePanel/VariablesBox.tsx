@@ -1,11 +1,10 @@
 import {React, connect} from '$studio/handy'
 import css from './VariablesBox.css'
 import DraggableArea from '$src/studio/common/components/DraggableArea/DraggableArea'
-import {Subscriber} from 'react-broadcast'
-import {PanelActiveModeChannel} from '$src/studio/workspace/components/Panel/Panel'
 import {MODE_SHIFT} from '$src/studio/workspace/components/StudioUI/StudioUI'
 import BoxLegends from '$src/studio/AnimationTimelinePanel/BoxLegends'
 import {IStudioStoreState} from '$src/studio/types'
+import {Broadcast} from 'react-broadcast'
 import {
   VariableObject,
   VariableID,
@@ -20,6 +19,7 @@ interface IOwnProps {
   translateY: number
   svgHeight: number
   svgWidth: number
+  activeMode: string
   variableIds: VariableID[]
   splitVariable: Function
   duration: number
@@ -51,6 +51,7 @@ interface IState {
 }
 
 const minBoxHeight = 40
+export const BoxIndexChannel = 'TheaterJS/BoxIndexChannel'
 
 class VariablesBox extends React.PureComponent<IProps, IState> {
   resizeEndTimeout: $FixMe
@@ -141,6 +142,7 @@ class VariablesBox extends React.PureComponent<IProps, IState> {
       canBeMerged,
       shouldIndicateMerge,
       isABoxBeingDragged,
+      activeMode,
     } = props
     const {activeVariableId, moveY, isMoving, shouldDisableResizeHandle} = state
     const svgHeight = props.svgHeight + state.resizeY
@@ -156,70 +158,66 @@ class VariablesBox extends React.PureComponent<IProps, IState> {
       ...(isMoving ? {transform: `translateY(${moveY}px)`} : {}),
     }
     return (
-      <Subscriber channel={PanelActiveModeChannel}>
-        {({activeMode}) => {
-          return (
+      <div
+        className={cx(css.container, {
+          [css.canBeMerged]: canBeMerged,
+          [css.indicateMerge]: shouldIndicateMerge,
+          [css.isMoving]: isMoving,
+          [css.isABoxBeingDragged]: isABoxBeingDragged,
+        })}
+        style={containerStyle}
+      >
+        <div className={css.wrapper} style={wrapperStyle}>
+          <DraggableArea
+            shouldRegisterEvents={activeMode === MODE_SHIFT}
+            onDragStart={this.onMoveStart}
+            onDrag={this.onMove}
+            onDragEnd={this.onMoveEnd}
+          >
             <div
-              className={cx(css.container, {
-                [css.canBeMerged]: canBeMerged,
-                [css.indicateMerge]: shouldIndicateMerge,
-                [css.isMoving]: isMoving,
-                [css.isABoxBeingDragged]: isABoxBeingDragged,
-              })}
-              style={containerStyle}
+              className={cx(css.boxLegends, {[css.isMoving]: isMoving})}
             >
-              <div className={css.wrapper} style={wrapperStyle}>
-                <DraggableArea
-                  shouldRegisterEvents={activeMode === MODE_SHIFT}
-                  onDragStart={this.onMoveStart}
-                  onDrag={this.onMove}
-                  onDragEnd={this.onMoveEnd}
-                >
-                  <div
-                    className={cx(css.boxLegends, {[css.isMoving]: isMoving})}
-                  >
-                    <BoxLegends
-                      activeMode={activeMode}
-                      variables={variables.map(variable =>
-                        _.pick(variable, ['id', 'component', 'property']),
-                      )}
-                      colors={colors.map(c => c.normal)}
-                      activeVariableId={activeVariableId}
-                      setActiveVariable={this.setActiveVariable}
-                      splitVariable={splitVariable}
-                      boxIndex={boxIndex}
-                    />
-                  </div>
-                </DraggableArea>
-                <div
-                  className={css.boxView}
-                  onWheel={this._handleResizeOnPinch}
-                >
-                  <BoxView
-                    variables={variables}
-                    variableIds={props.variableIds}
-                    activeVariableId={activeVariableId}
-                    svgHeight={svgHeight}
-                    svgWidth={props.svgWidth}
-                    duration={props.duration}
-                    activeMode={activeMode}
-                    pathToVariables={props.pathToVariables}
-                    scrollLeft={props.scrollLeft}
-                  />
-                </div>
-                {!shouldDisableResizeHandle && (
-                  <DraggableArea
-                    onDrag={this.onResize}
-                    onDragEnd={this.onResizeEnd}
-                  >
-                    <div className={css.resizeHandle} />
-                  </DraggableArea>
+              <BoxLegends
+                activeMode={activeMode}
+                variables={variables.map(variable =>
+                  _.pick(variable, ['id', 'component', 'property']),
                 )}
-              </div>
+                colors={colors.map(c => c.normal)}
+                activeVariableId={activeVariableId}
+                setActiveVariable={this.setActiveVariable}
+                splitVariable={splitVariable}
+                boxIndex={boxIndex}
+              />
             </div>
-          )
-        }}
-      </Subscriber>
+          </DraggableArea>
+          <div
+            className={css.boxView}
+            onWheel={this._handleResizeOnPinch}
+          >
+            <Broadcast channel={BoxIndexChannel} value={boxIndex}>
+              <BoxView
+                variables={variables}
+                variableIds={props.variableIds}
+                activeVariableId={activeVariableId}
+                svgHeight={svgHeight}
+                svgWidth={props.svgWidth}
+                duration={props.duration}
+                activeMode={activeMode}
+                pathToVariables={props.pathToVariables}
+                scrollLeft={props.scrollLeft}
+              />
+            </Broadcast>
+          </div>
+          {!shouldDisableResizeHandle && (
+            <DraggableArea
+              onDrag={this.onResize}
+              onDragEnd={this.onResizeEnd}
+            >
+              <div className={css.resizeHandle} />
+            </DraggableArea>
+          )}
+        </div>
+      </div>
     )
   }
 }

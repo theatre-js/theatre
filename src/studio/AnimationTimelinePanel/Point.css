@@ -2,6 +2,10 @@
   cursor: pointer;
 }
 
+.pointClickRect:global(.point-highlightAsSelected) ~ .pointStroke {
+  stroke: white;
+}
+
 .pointClickRect:not(:global(.point-highlightRedOnHover)):hover ~ .pointGlow,
 .pointClickRect:not(:global(.point-highlightRedOnHover)):active ~ .pointGlow {
   filter: url('#glow');

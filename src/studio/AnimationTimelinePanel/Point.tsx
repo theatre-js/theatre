@@ -12,6 +12,8 @@ import {
   MODE_CMD,
 } from '$studio/workspace/components/StudioUI/StudioUI'
 import {PointHandles as IHandles} from '$studio/AnimationTimelinePanel/types'
+import {SelectionBoundariesChannel} from '$studio/AnimationTimelinePanel/AnimationTimelinePanel'
+import {BoxIndexChannel} from '$studio/AnimationTimelinePanel/VariablesBox'
 
 interface IProps {
   color: $FixMe
@@ -45,6 +47,8 @@ interface IState {
 }
 
 class Point extends React.PureComponent<IProps, IState> {
+  isSelected: boolean;
+  boxIndex: number
   pointClickRect: SVGRectElement | null
   activeMode: string
   svgSize: {width: number; height: number}
@@ -329,9 +333,56 @@ class Point extends React.PureComponent<IProps, IState> {
     ]
 
     return [
-      <Subscriber key="subscriber" channel={PanelActiveModeChannel}>
+      <Subscriber key="activeModeSubscriber" channel={PanelActiveModeChannel}>
         {({activeMode}: {activeMode: string}) => {
           this._setActiveMode(activeMode)
+          return null
+        }}
+      </Subscriber>,
+      <Subscriber
+        key="selectionBoundariesSubscriber"
+        channel={SelectionBoundariesChannel}
+      >
+        {(value: undefined | null | Object) => {
+          if (value == null) {
+            if (this.isSelected) {
+              this.isSelected = false
+              this.pointClickRect.classList.remove('point-highlightAsSelected')
+            }
+            return null
+          }
+          if (value.boxesInSelection.includes(String(this.boxIndex))) {
+            const {left, top, right, bottom} = value.selectionBoundaries[
+              this.boxIndex
+            ]
+            if (
+              left <= pointTime &&
+              pointTime <= right &&
+              top <= pointValue &&
+              pointValue <= bottom
+            ) {
+              if (!this.isSelected) {
+                this.isSelected = true
+                this.pointClickRect.classList.add('point-highlightAsSelected')
+              }
+            } else {
+              if (this.isSelected) {
+                this.isSelected = false
+                this.pointClickRect.classList.remove('point-highlightAsSelected')
+              }
+            }
+          } else {
+            if (this.isSelected) {
+              this.isSelected = false
+              this.pointClickRect.classList.remove('point-highlightAsSelected')
+            }
+          }
+          return null
+        }}
+      </Subscriber>,
+      <Subscriber key="boxIndexSubscriber" channel={BoxIndexChannel}>
+        {(boxIndex: number) => {
+          this.boxIndex = boxIndex
           return null
         }}
       </Subscriber>,
