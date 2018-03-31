@@ -111,7 +111,7 @@ const initialState: WorkspaceNamespaceState = {
         outputs: {},
       },
     },
-    listOfVisibles: ['timelinePanel', 'elementTree', 'composePanel-imAUUID'],
+    listOfVisibles: [/*'timelinePanel', 'elementTree', */ 'composePanel-imAUUID'],
     idOfActivePanel: 'elementTree',
     panelObjectBeingDragged: null,
   },

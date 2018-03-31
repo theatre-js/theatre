@@ -22,7 +22,7 @@ type NativeUpdater = {
 };
 
 export type DataType = {
-  nodeType: 'Native' | 'Wrapper' | 'NativeWrapper' | 'Composite' | 'Text' | 'Portal' | 'Empty',
+  nodeType: 'Native' | 'Wrapper' | 'NativeWrapper' | 'Composite' | 'Special' | 'Text' | 'Portal' | 'Empty',
   type: ?(string | AnyFn),
   key: ?string,
   ref: ?(string | AnyFn),

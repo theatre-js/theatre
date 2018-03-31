@@ -39,7 +39,8 @@
     ],
     "automock": false,
     "transform": {
-      "^.+\\.tsx?$": "ts-jest"
+      "^.+\\.tsx?$": "ts-jest",
+      "^.+\\.js$": "babel-jest"
     },
     "moduleFileExtensions": [
       "tsx",

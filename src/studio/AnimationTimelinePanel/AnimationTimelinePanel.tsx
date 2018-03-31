@@ -113,8 +113,8 @@ class Content extends StudioComponent<Props, State> {
   }
 
   _updateThingy(props: Props = this.props) {
-    console.log(props);
-    
+    console.log(props)
+
     const thingy = calculateThingy(props.elementId, props.pathToTimeline)
     if (thingy === this.state.thingy) return
 
@@ -743,8 +743,9 @@ export default connect((s: IStudioStoreState, op: OwnProps) => {
     'panels',
     'panelObjectBeingDragged',
   ])
-  
-  const selectedComponentId = 'BouncyBall' /* _.get(s, [
+
+  const selectedComponentId =
+    'BouncyBall' /* _.get(s, [
     'workspace',
     'panels',
     'byId',

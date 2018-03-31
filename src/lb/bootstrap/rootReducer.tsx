@@ -9,7 +9,7 @@ import {ReduxReducer} from '$shared/types'
 const mainReducer: ReduxReducer<LBStoreState> = combineReducers({
   common: commonReducer,
   projects: projectsReducer,
-  studioStatePersistor: studioStatePersistorReducer
+  studioStatePersistor: studioStatePersistorReducer,
 })
 
 export default withCommonActions(mainReducer)

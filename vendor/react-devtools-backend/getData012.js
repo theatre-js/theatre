@@ -86,6 +86,7 @@ function getData012(internalInstance: Object): DataType {
     publicInstance = internalInstance;
   }
 
+  // $FlowFixMe
   return {
     nodeType,
     type,

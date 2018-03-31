@@ -14,6 +14,7 @@ import type {Hook, ReactRenderer, Helpers} from './types';
 var getDataFiber = require('./getDataFiber');
 var {
   ClassComponent,
+  ContextConsumer,
   HostRoot,
 } = require('./ReactTypeOfWork');
 
@@ -56,6 +57,11 @@ function attachRendererFiber(hook: Hook, rid: string, renderer: ReactRenderer): 
       if (nextFiber.updateQueue != null && nextFiber.updateQueue.hasForceUpdate) {
         return true;
       }
+    }
+    // Always treat context consumers as changed.
+    // This ensures we don't skip highlighting their updates.
+    if (prevFiber.tag === ContextConsumer) {
+      return true;
     }
     // Compare the fields that would result in observable changes in DevTools.
     // We don't compare type, tag, index, and key, because these are known to match.

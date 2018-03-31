@@ -11,11 +11,12 @@
 'use strict';
 
 const FB_MODULE_RE = /^(.*) \[from (.*)\]$/;
-const cachedDisplayNames = new WeakMap();
+const cachedDisplayNames: WeakMap<Function, string> = new WeakMap();
 
-function getDisplayName(type: Function): string {
-  if (cachedDisplayNames.has(type)) {
-    return cachedDisplayNames.get(type);
+function getDisplayName(type: Function, fallbackName: string = 'Unknown'): string {
+  const nameFromCache = cachedDisplayNames.get(type);
+  if (nameFromCache != null) {
+    return nameFromCache;
   }
 
   let displayName;
@@ -28,7 +29,7 @@ function getDisplayName(type: Function): string {
   }
 
   if (!displayName) {
-    displayName = type.name || 'Unknown';
+    displayName = type.name || fallbackName;
   }
 
   // Facebook-specific hack to turn "Image [from Image.react]" into just "Image".

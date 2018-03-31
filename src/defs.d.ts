@@ -44,6 +44,13 @@ type DevSpecificEnvironmentVariables = {
     }
     studio: {
       devServerPort: number
+      /**
+       * If you want the state persistor to not persist the state, you have these options:
+       * 'dontLoadOrPersist' => starts with initialstate and doesn't persist the changes
+       * 'loadButDontUpdate' => load the state from LB but don't persist changes
+       * 'normal' (Default) => load the state from LB and do persist changes
+       */
+      statePersistenceMode?: 'dontLoadOrPersist' | 'loadButDontUpdate' | 'normal'
     }
     examples: {
       devServerPort: number

@@ -21,6 +21,12 @@ describe('DataVerse.atoms.dict', () => {
     o.setProp('foo', boxAtom('foo2'))
     expect(o.prop('foo').getValue()).toEqual('foo2')
   })
+  describe(`clear()`, () => {
+    it(`should work`, () => {
+      o.clear()
+      expect(o.keys()).toHaveLength(0)
+    })
+  })
   it('should allow correctly set itself as parent of inner children', () => {
     expect(o.prop('foo').getParent()).toEqual(o)
     const foo2 = boxAtom('foo2')

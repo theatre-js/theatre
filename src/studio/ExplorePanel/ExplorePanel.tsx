@@ -20,6 +20,7 @@ type State = {
 }
 
 class ExplorerPanel extends StudioComponent<Props, State> {
+  updateTimeout: $FixMe
   static panelName = 'Explore'
 
   rendererID: undefined | null | string
@@ -50,8 +51,11 @@ class ExplorerPanel extends StudioComponent<Props, State> {
     // })
     hook.sub('mount', data => {
       if (this.rendererID == null) {
-        this.walkTree(data.internalInstance, (node) => {
-          if (node.key === 'TheaterJS/Core/RenderCurrentCanvas#RenderCurrentCanvas') {
+        this.walkTree(data.internalInstance, node => {
+          if (
+            node.key ===
+            'TheaterJS/Core/RenderCurrentCanvas#RenderCurrentCanvas'
+          ) {
             this.rendererID = data.renderer
             this.debouncedAddNodes(hook)
             return true

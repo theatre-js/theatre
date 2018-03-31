@@ -48,6 +48,11 @@ export class DictAtom<O> extends AbstractCompositeAtom<DictAtomChangeType<O>> {
     return this._change(o, [])
   }
 
+  clear(): this {
+    this._change({}, this.keys())
+    return this
+  }
+
   _change(o: Partial<O>, keysToDelete: Array<keyof O>): this {
     const addedKeys: Array<keyof O> = []
     forEach(o, (_v, k: keyof O) => {

@@ -1,9 +1,4 @@
-if (!window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
-  const globalHook = require('$root/vendor/react-devtools-backend/installGlobalHook')
-  globalHook(window)
-}
-const backend = require('$root/vendor/react-devtools-backend/backend')
-backend(window.__REACT_DEVTOOLS_GLOBAL_HOOK__)
+import '$src/integrations/react/treeMirroring/MirrorOfReactTree'
 
 // @todo only one instance of babel-polyfill is allowed per window, so we can't ship
 // with this global polyfill
