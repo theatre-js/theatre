@@ -59,6 +59,15 @@ export class ArrayAtom<V> extends AbstractCompositeAtom<
     }) as $IntentionalAny
   }
 
+  unbox(): V[] {
+    return [...this._internalArray]
+  }
+
+  replace(a: V[]): this {
+    this.splice(0, this.length(), a)
+    return this
+  }
+
   length(): number {
     return this._internalArray.length
   }
@@ -89,6 +98,18 @@ export class ArrayAtom<V> extends AbstractCompositeAtom<
 
   setIndex(index: number, value: V) {
     return this.splice(index, 1, [value])
+  }
+
+  indexOf(v: V): number {
+    return this._internalArray.indexOf(v)
+  }
+
+  pluck(v: V): this {
+    const index = this.indexOf(v)
+    if (index !== -1) {
+      this.splice(index, 1, [])
+    }
+    return this
   }
 
   push(rows: Array<V>) {

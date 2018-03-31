@@ -33,6 +33,7 @@ export class DictAtom<O> extends AbstractCompositeAtom<DictAtomChangeType<O>> {
   unboxDeep(): UnatomifyDeep<O> {
     return mapValues(
       this._internalMap,
+      // @ts-ignore @todo
       v => (v ? v.unboxDeep() : v),
     ) as $IntentionalAny
   }
@@ -122,6 +123,10 @@ export class DictAtom<O> extends AbstractCompositeAtom<DictAtomChangeType<O>> {
 
   keys(): Array<keyof O> {
     return Object.keys(this._internalMap) as $IntentionalAny
+  }
+
+  size(): number {
+    return this.keys().length
   }
 
   derivedDict(): AbstractDerivedDict<O> {

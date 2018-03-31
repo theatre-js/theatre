@@ -1,6 +1,6 @@
 import * as T from '$src/integrations/react/treeMirroring/types'
 import MirrorOfReactTree, {
-  VolatileId,
+  VolatileId, isTextNode, isWrapperNode, isGenericNode
 } from '$src/integrations/react/treeMirroring/MirrorOfReactTree'
 import delay from '$shared/utils/delay'
 import boxAtom from '$shared/DataVerse/atoms/box'
@@ -18,11 +18,11 @@ type SummaryNode =
 interface SummarisedTree extends Array<SummaryNode> {}
 
 const summarise = (mirror: MirrorOfReactTree): SummarisedTree => {
-  if (Object.keys(mirror._renderers).length > 1) {
+  if (mirror._atom.prop('renderers').size() > 1) {
     throw new Error(`Got more than one renderer. Can't handle that atm`)
   }
-  const rendererId = Object.keys(mirror._renderers)[0]
-  const renderer = mirror._renderers[rendererId]
+  const rendererId = mirror._atom.prop('renderers').keys()[0]
+  const renderer = mirror._atom.prop('renderers').prop(rendererId)
   return renderer.volatileIdsOfRootNodes.map(summariseNode.bind(null, mirror))
 
 }
@@ -31,7 +31,7 @@ const summariseNode = (
   mirror: MirrorOfReactTree,
   volatileId: VolatileId,
 ): SummaryNode => {
-  const node = mirror._nodesByVolatileId.get(volatileId)
+  const node = mirror._getNodeByVolatileId(volatileId)
   if (!node) {
     debugger
     throw new Error(
@@ -39,21 +39,22 @@ const summariseNode = (
     )
   }
 
-  if (node.type === 'Text') {
+  if (isTextNode(node)) {
+    const textData = node.prop('textData')
     return text(
-      typeof node.textData === 'string'
-        ? node.textData
-        : (node.textData.internalData.text as string),
+      typeof textData === 'string'
+        ? textData
+        : (textData.internalData.text as string),
     )
-  } else if (node.type === 'Wrapper') {
+  } else if (isWrapperNode(node)) {
     return wrapper(
-      node.volatileIdsOfChildren.map(summariseNode.bind(null, mirror)),
+      node.prop('volatileIdsOfChildren').unbox().map(summariseNode.bind(null, mirror)),
     )
-  } else if (node.type === 'Generic') {
+  } else if (isGenericNode(node)) {
     return generic(
-      node.internalData.name as string,
-      node.internalData.props.id,
-      node.volatileIdsOfChildren.map(summariseNode.bind(null, mirror)),
+      node.prop('internalData').name as string,
+      node.prop('internalData').props.id,
+      node.prop('volatileIdsOfChildren').unbox().map(summariseNode.bind(null, mirror)),
     )
   } else {
     debugger
@@ -234,7 +235,7 @@ describe(`mirror`, () => {
         // ensure the tree matches expectation
         expect(summarise(m)).toMatchObject(expectation)
         // ensure discarded nodes are removed from m._nodesByVolatileId
-        expect(m._nodesByVolatileId.size).toEqual(3 + numberOfChildren)
+        expect(m._atom.prop('nodesByVolatileId').size()).toEqual(3 + numberOfChildren)
       }
 
       check([text('pending')], 1)
@@ -257,17 +258,17 @@ describe(`mirror`, () => {
       check([generic('a', 'blah', [])], 1)
 
       ReactDOM.unmountComponentAtNode(rootEl)
-      expect(m._nodesByVolatileId.size).toEqual(0)
+      expect(m._atom.prop('nodesByVolatileId').size()).toEqual(0)
 
       ReactDOM.render(<ClassComp />, rootEl)
-      expect(Object.keys(m._renderers)).toHaveLength(1)
+      expect(m._atom.prop('renderers').keys()).toHaveLength(1)
       
       const anotherRootEl = document.createElement('div')
       anotherRootEl.id = 'anotherRootEl'
       document.body.appendChild(anotherRootEl)
       ReactDOM.render(<ClassComp />, anotherRootEl)
       await delay(20)
-      expect(Object.keys(m._renderers)).toHaveLength(1)
+      expect(m._atom.prop('renderers').keys()).toHaveLength(1)
       
       
       m._cleanup()

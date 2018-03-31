@@ -8,6 +8,8 @@ import {
   OpaqueNodeHandle,
 } from './types'
 import uuid from 'uuid/v4'
+import dict, {DictAtom} from '$shared/DataVerse/atoms/dict'
+import arrayAtom, {ArrayAtom} from '$shared/DataVerse/atoms/array'
 
 // if (!window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
 //   const installReactDevtoolsGlobalHook = require('$root/vendor/react-devtools-backend/installGlobalHook')
@@ -29,7 +31,7 @@ const PARENT_ID_UNKOWN = '0'
  * All nodes have a volatileId, a rendererID, and with the exception
  * of WrapperNode, a parentVolatileId
  */
-interface StuffMostNodesHaveInCommon {
+type StuffMostNodesHaveInCommon = {
   volatileId: VolatileId
   parentVolatileId: typeof PARENT_ID_UNKOWN | string
   rendererId: RendererId
@@ -39,40 +41,56 @@ interface StuffMostNodesHaveInCommon {
  * All native elements (eg <div>, <a>, etc) and all custom
  * elements (eg <MyButton>) are recorded as GeneralNode.
  */
-export interface GenericNode extends StuffMostNodesHaveInCommon {
-  type: 'Generic'
-  internalData: DataType
-  internalInstance: OpaqueNodeHandle
-  volatileIdsOfChildren: VolatileId[]
-}
+export type GenericNode = DictAtom<
+  StuffMostNodesHaveInCommon & {
+    type: 'Generic'
+    internalData: DataType
+    internalInstance: OpaqueNodeHandle
+    volatileIdsOfChildren: ArrayAtom<VolatileId>
+  }
+>
 
 /**
  * WrapperNode is at the very top of every react tree
  */
-interface WrapperNode {
+type WrapperNode = DictAtom<{
   type: 'Wrapper'
   volatileId: VolatileId
   rendererId: RendererId
   internalData: DataType
   internalInstance: OpaqueNodeHandle
-  volatileIdsOfChildren: VolatileId[]
-}
+  volatileIdsOfChildren: ArrayAtom<VolatileId>
+}>
 
-interface TextNode extends StuffMostNodesHaveInCommon {
-  type: 'Text'
-  textData:
-    | string
-    | {internalData: DataType; internalInstance: OpaqueNodeHandle}
-}
+type TextNode = DictAtom<
+  StuffMostNodesHaveInCommon & {
+    type: 'Text'
+    textData:
+      | string
+      | {internalData: DataType; internalInstance: OpaqueNodeHandle}
+  }
+>
 
 export type Node = GenericNode | TextNode | WrapperNode
+
+export const isGenericNode = (n: Node): n is GenericNode => {
+  return n.prop('type') === 'Generic'
+}
+
+export const isWrapperNode = (n: Node): n is WrapperNode => {
+  // @ts-ignore @todo
+  return n.prop('type') === 'Wrapper'
+}
+
+export const isTextNode = (n: Node): n is TextNode => {
+  // @ts-ignore @todo
+  return n.prop('type') === 'Text'
+}
 
 interface Renderer {
   rendererId: RendererId
   renderer: ReactRenderer
   helpers: Helpers
-  // rootNodeVolatileId : void | VolatileId
-  // renderer.volatileIds
   volatileIdsOfRootNodes: VolatileId[]
 }
 
@@ -81,12 +99,12 @@ export default class MirrorOfReactTree {
   _subscriptions: AnyFn[]
   // reference to __REACT_DEVTOOLS_GLOBAL_HOOK__
   _hook: Hook
-  _renderers: Record<RendererId, Renderer>
   _volatileIdsByInternalInstances: WeakMap<OpaqueNodeHandle, VolatileId>
+  _atom: DictAtom<{
+    renderers: DictAtom<{[rendererId: string]: Renderer}>
+    nodesByVolatileId: DictAtom<{[volatileId: string]: Node}>
+  }>
 
-  _nodesByVolatileId: Map<VolatileId, Node>
-
-  // _nodes:
   constructor() {
     if (!window.__REACT_DEVTOOLS_GLOBAL_HOOK__)
       throw new Error(
@@ -95,11 +113,21 @@ export default class MirrorOfReactTree {
 
     this._hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__
     this._subscriptions = []
-    this._renderers = {}
+    this._atom = new DictAtom({
+      renderers: new DictAtom({}),
+      nodesByVolatileId: new DictAtom({}),
+    })
     this._volatileIdsByInternalInstances = new WeakMap()
-    this._nodesByVolatileId = new Map()
 
     this._setup()
+  }
+
+  _getRenderer(id: RendererId) {
+    return this._atom.prop('renderers').prop(id)
+  }
+
+  _setRenderer(id: RendererId, r: Renderer) {
+    this._atom.prop('renderers').setProp(id, r)
   }
 
   _setup() {
@@ -126,8 +154,8 @@ export default class MirrorOfReactTree {
     const subs = this._subscriptions
     this._subscriptions = []
     subs.forEach(fn => fn())
-    this._renderers = {}
-    this._nodesByVolatileId.clear()
+    this._atom.prop('renderers').clear()
+    this._atom.prop('nodesByVolatileId').clear()
   }
 
   _getOrAssignVolatileIdFromInternalInstance(
@@ -161,8 +189,6 @@ export default class MirrorOfReactTree {
       // @todo
       throw new Error(`type is ${rest.type}. Investigate`)
     }
-
-    if (window.shouldDebug) debugger
 
     const volatileId = this._getOrAssignVolatileIdFromInternalInstance(
       internalInstance,
@@ -201,47 +227,47 @@ export default class MirrorOfReactTree {
         `Got an 'unmount' with internalInstance that doesn't have a volatileId`,
       )
     }
-    const node = this._nodesByVolatileId.get(volatileId) as Node
+    const node = this._getNodeByVolatileId(volatileId) as Node
 
-    if (node.type === 'Generic' || node.type === 'Wrapper') {
-      if (node.volatileIdsOfChildren.length !== 0) {
+    if (isGenericNode(node) || isWrapperNode(node)) {
+      if (node.prop('volatileIdsOfChildren').length() !== 0) {
         // debugger
-        throw new Error(`Got an unmount for a node that still has volatileIdsOfChildren. This should never happen`)
+        throw new Error(
+          `Got an unmount for a node that still has volatileIdsOfChildren. This should never happen`,
+        )
       }
     }
 
-    if (node.type === 'Wrapper') {
-      const renderer = this._renderers[node.rendererId]
-      renderer.volatileIdsOfRootNodes.splice(renderer.volatileIdsOfRootNodes.indexOf(volatileId), 1)
-      this._nodesByVolatileId.delete(volatileId)
+    if (isWrapperNode(node)) {
+      const renderer = this._getRenderer(node.prop('rendererId'))
+      renderer.volatileIdsOfRootNodes.splice(
+        renderer.volatileIdsOfRootNodes.indexOf(volatileId),
+        1,
+      )
+      this._atom.prop('nodesByVolatileId').deleteProp(volatileId)
       return
     }
 
-    const parentVolatileId: VolatileId | undefined = node.parentVolatileId
+    const parentVolatileId: VolatileId | undefined = node.prop('parentVolatileId')
     if (!parentVolatileId) {
       throw new Error(
         `Got an unmount for a node that doesn't have a parentVolatileId`,
       )
     }
-    const parentNode = this._nodesByVolatileId.get(parentVolatileId) as
+    const parentNode = this._getNodeByVolatileId(parentVolatileId) as
       | WrapperNode
       | GenericNode
       | undefined
+
     if (!parentNode) {
       throw new Error(
         `Got an unmount for a node whose parent has been deregistered`,
       )
     }
 
-    parentNode.volatileIdsOfChildren = parentNode.volatileIdsOfChildren.filter(
-      cid => cid !== volatileId,
-    )
+    parentNode.prop('volatileIdsOfChildren').pluck(volatileId)
 
-    this._nodesByVolatileId.delete(volatileId)
-
-    // const parentNode =
-    // console.log('unmount', args)
-    // debugger
+    this._atom.prop('nodesByVolatileId').deleteProp(volatileId)
   }
 
   _reactToUpdate = ({
@@ -258,7 +284,6 @@ export default class MirrorOfReactTree {
     if (rest.type !== 'update') {
       throw new Error(`type is ${rest.type}. Investigate`)
     }
-    if (window.shouldDebug) debugger
     const {nodeType} = data
     if (nodeType === 'Native' || nodeType === 'Composite') {
       this._reactToGenericOrWrapperUpdate(internalInstance, data, rendererId)
@@ -281,16 +306,16 @@ export default class MirrorOfReactTree {
       )
     }
 
-    const node = this._nodesByVolatileId.get(volatileId) as GenericNode
-    const oldNode = {
-      volatileIdsOfChildren: node.volatileIdsOfChildren,
-      internalData: node.internalData,
+    const node = this._getNodeByVolatileId(volatileId) as GenericNode
+    const oldNodeStuff = {
+      volatileIdsOfChildren: node.prop('volatileIdsOfChildren').unbox(),
+      internalData: node.prop('internalData'),
     }
-    node.internalData = data
+    node.setProp('internalData', data)
 
     if (Array.isArray(data.children)) {
-      if (typeof oldNode.internalData.children === 'string') {
-        this._nodesByVolatileId.delete(oldNode.volatileIdsOfChildren[0])
+      if (typeof oldNodeStuff.internalData.children === 'string') {
+        this._atom.prop('nodesByVolatileId').deleteProp(oldNodeStuff.volatileIdsOfChildren[0])
       }
       const volatileIdsOfChildren: VolatileId[] = data.children.map(
         childInternalInstance =>
@@ -300,30 +325,32 @@ export default class MirrorOfReactTree {
       )
 
       volatileIdsOfChildren.forEach((childVolatileId: VolatileId) => {
-        ;(this._nodesByVolatileId.get(childVolatileId) as
+        // @ts-ignore @todo
+        ;(this._getNodeByVolatileId(childVolatileId) as
           | TextNode
-          | GenericNode).parentVolatileId = volatileId
+          | GenericNode).setProp('parentVolatileId', volatileId)
       })
 
-      node.volatileIdsOfChildren = volatileIdsOfChildren
+      node.prop('volatileIdsOfChildren').replace(volatileIdsOfChildren)
+
     } else if (typeof data.children === 'string') {
-      if (typeof oldNode.internalData.children === 'string') {
-        const oldChildVolatileId = oldNode.volatileIdsOfChildren[0]
-        const oldChildNode = this._nodesByVolatileId.get(
+      if (typeof oldNodeStuff.internalData.children === 'string') {
+        const oldChildVolatileId = oldNodeStuff.volatileIdsOfChildren[0]
+        const oldChildNode = this._getNodeByVolatileId(
           oldChildVolatileId,
         ) as TextNode
-        oldChildNode.textData = data.children
+        oldChildNode.setProp('textData', data.children)
       } else {
-        const newTextNode: TextNode = {
-          type: 'Text',
+        const newTextNode: TextNode = dict({
+          type: 'Text' as 'Text',
           volatileId: uuid(),
           parentVolatileId: volatileId,
           textData: data.children,
           rendererId,
-        }
-        this._nodesByVolatileId.set(newTextNode.volatileId, newTextNode)
-        node.volatileIdsOfChildren = [newTextNode.volatileId]
-        node.internalData = data
+        })
+        this._atom.prop('nodesByVolatileId').setProp(newTextNode.prop('volatileId'), newTextNode)
+        node.prop('volatileIdsOfChildren').replace([newTextNode.prop('volatileId')])
+        node.setProp('internalData', data)
       }
     } else {
       debugger
@@ -340,12 +367,12 @@ export default class MirrorOfReactTree {
     renderer: ReactRenderer
     helpers: Helpers
   }) => {
-    this._renderers[rendererId] = {
+    this._setRenderer(rendererId, {
       rendererId,
       renderer,
       helpers,
       volatileIdsOfRootNodes: [],
-    }
+    })
     /**
      * Calling helpers.walkTree() causes `mount` events to be fired for all the mounted elements.
      * These `mount` events _may_ have been called before MirrorOfReactTree was instantiated, so
@@ -390,48 +417,59 @@ export default class MirrorOfReactTree {
       )
 
       volatileIdsOfChildren.forEach((childVolatileId: VolatileId) => {
-        ;(this._nodesByVolatileId.get(childVolatileId) as
+        // @ts-ignore @todo
+        ;(this._getNodeByVolatileId(childVolatileId) as
           | TextNode
-          | GenericNode).parentVolatileId = volatileId
+          | GenericNode).setProp('parentVolatileId', volatileId)
       })
     } else if (typeof data.children === 'string') {
-      const textNode: TextNode = {
-        type: 'Text',
+      const textNode: TextNode = dict({
+        type: 'Text' as 'Text',
         volatileId: uuid(),
         parentVolatileId: volatileId,
         textData: data.children,
         rendererId,
-      }
-      this._nodesByVolatileId.set(textNode.volatileId, textNode)
-      volatileIdsOfChildren = [textNode.volatileId]
+      })
+      this._atom
+        .prop('nodesByVolatileId')
+        .setProp(textNode.prop('volatileId'), textNode)
+      volatileIdsOfChildren = [textNode.prop('volatileId')]
     } else {
       debugger
       throw new Error(`handle this case`)
     }
 
     if (data.nodeType === 'Wrapper') {
-      this._renderers[rendererId].volatileIdsOfRootNodes.push(volatileId)
-      const node: WrapperNode = {
-        type: 'Wrapper',
+      this._atom
+        .prop('renderers')
+        .prop(rendererId)
+        .volatileIdsOfRootNodes.push(volatileId)
+
+      const node: WrapperNode = dict({
+        type: 'Wrapper' as 'Wrapper',
         volatileId,
         internalData: data,
         internalInstance,
-        volatileIdsOfChildren,
+        volatileIdsOfChildren: arrayAtom(volatileIdsOfChildren),
         rendererId,
-      }
-      this._nodesByVolatileId.set(volatileId, node)
+      })
+      this._atom.prop('nodesByVolatileId').setProp(volatileId, node)
     } else {
-      const node: GenericNode = {
-        type: 'Generic',
+      const node: GenericNode = dict({
+        type: 'Generic' as 'Generic',
         volatileId,
         internalData: data,
         internalInstance,
-        volatileIdsOfChildren,
+        volatileIdsOfChildren: arrayAtom(volatileIdsOfChildren),
         rendererId,
         parentVolatileId: PARENT_ID_UNKOWN,
-      }
-      this._nodesByVolatileId.set(volatileId, node)
+      })
+      this._atom.prop('nodesByVolatileId').setProp(volatileId, node)
     }
+  }
+
+  _getNodeByVolatileId(childVolatileId: string): Node | undefined {
+    return this._atom.prop('nodesByVolatileId').prop(childVolatileId)
   }
 
   private _reactToTextNodeMount(
@@ -440,14 +478,14 @@ export default class MirrorOfReactTree {
     internalInstance: OpaqueNodeHandle,
     rendererId: string,
   ) {
-    const node: TextNode = {
-      type: 'Text',
+    const node: TextNode = dict({
+      type: 'Text' as 'Text',
       volatileId,
       textData: {internalData: data, internalInstance},
       rendererId,
       parentVolatileId: PARENT_ID_UNKOWN,
-    }
-    this._nodesByVolatileId.set(volatileId, node)
+    })
+    this._atom.prop('nodesByVolatileId').setProp(volatileId, node)
   }
 
   private _reactToRoot = ({
@@ -465,7 +503,12 @@ export default class MirrorOfReactTree {
         `Got a 'root' event with an internalInstance that is does not have a volatileId. This should never happen`,
       )
     }
-    if (this._renderers[rendererId].volatileIdsOfRootNodes.indexOf(volatileId) === -1) {
+    if (
+      this._atom
+        .prop('renderers')
+        .prop(rendererId)
+        .volatileIdsOfRootNodes.indexOf(volatileId) === -1
+    ) {
       throw new Error(
         `Got a 'root' event whose volatileId is not in its renderer's volatileIdsOfRootNodes. This should never happen`,
       )
