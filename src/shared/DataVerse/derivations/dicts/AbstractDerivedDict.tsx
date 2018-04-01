@@ -1,10 +1,13 @@
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import {PointerDerivation} from '../pointer'
-import {PropOfPointer} from '../pointerTypes'
 import {DictAtom} from '$src/shared/DataVerse/atoms/dict'
 import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
 import {BoxAtom} from '$src/shared/DataVerse/atoms/box'
-import { ExtendDerivedDict } from './extend';
+import {ExtendDerivedDict} from './extend'
+import {
+  KeysOfDerivedDictDerivation,
+  default as keysOfDerivedDict,
+} from '$shared/DataVerse/derivations/dicts/keysOfDerivedDict'
 
 export type DerivedDictChangeType<O> = {
   addedKeys: Array<keyof O>
@@ -12,10 +15,9 @@ export type DerivedDictChangeType<O> = {
 }
 
 // @todo also support ArrayAtom
-export type PropOfADD<V> =
-  V extends DictAtom<infer O> ? AbstractDerivedDict<O> :
-  V extends BoxAtom<infer T> ? T :
-  V
+export type PropOfADD<V> = V extends DictAtom<infer O>
+  ? AbstractDerivedDict<O>
+  : V extends BoxAtom<infer T> ? T : V
 
 export default abstract class AbstractDerivedDict<O> {
   isDerivedDict = true
@@ -83,6 +85,10 @@ export default abstract class AbstractDerivedDict<O> {
 
   toJS() {
     throw new Error('Not implemented') // @todo
+  }
+
+  keysD(): KeysOfDerivedDictDerivation<O> {
+    return keysOfDerivedDict(this)
   }
 }
 
