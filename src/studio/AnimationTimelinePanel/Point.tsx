@@ -6,14 +6,13 @@ import SingleInputForm from '$lf/common/components/SingleInputForm'
 import {PanelActiveModeChannel} from '$src/studio/workspace/components/Panel/Panel'
 import {Subscriber} from 'react-broadcast'
 import {
-  MODE_D,
   MODE_C,
+  MODE_D,
   MODE_H,
   MODE_CMD,
 } from '$studio/workspace/components/StudioUI/StudioUI'
 import {PointHandles as IHandles} from '$studio/AnimationTimelinePanel/types'
-import {SelectionBoundariesChannel} from '$studio/AnimationTimelinePanel/AnimationTimelinePanel'
-import {BoxIndexChannel} from '$studio/AnimationTimelinePanel/VariablesBox'
+import {SelectionBoundariesChannel} from '$studio/AnimationTimelinePanel/VariablesBox'
 
 interface IProps {
   color: $FixMe
@@ -38,6 +37,8 @@ interface IProps {
   removePoint: Function
   addConnector: Function
   makeHandleHorizontal: Function
+  addPointToSelection: Function
+  removePointFromSelection: Function
 }
 
 interface IState {
@@ -46,9 +47,10 @@ interface IState {
   handlesMove: IHandles
 }
 
+export const POINT_RECT_EDGE_SIZE = 16
+
 class Point extends React.PureComponent<IProps, IState> {
-  isSelected: boolean;
-  boxIndex: number
+  isSelected: boolean
   pointClickRect: SVGRectElement | null
   activeMode: string
   svgSize: {width: number; height: number}
@@ -280,9 +282,47 @@ class Point extends React.PureComponent<IProps, IState> {
     this.activeMode = activeMode
     if (this.pointClickRect == null) return
     if (activeMode === MODE_D) {
-      this.pointClickRect.classList.add('point-highlightRedOnHover')
+      this.pointClickRect.classList.add(css.highlightRedOnHover)
     } else {
-      this.pointClickRect.classList.remove('point-highlightRedOnHover')
+      this.pointClickRect.classList.remove(css.highlightRedOnHover)
+    }
+  }
+
+  _highlightAsSelected(boundaries: $FixMe) {
+    let shouldUpdateHighlightAsSelectedClass = false
+    if (boundaries == null) {
+      if (this.isSelected) {
+        this.isSelected = false
+        shouldUpdateHighlightAsSelectedClass = true
+      }
+    } else {
+      const {pointTime, pointValue} = this.props
+      const {left, top, right, bottom} = boundaries
+      if (
+        left <= pointTime &&
+        pointTime <= right &&
+        top <= pointValue &&
+        pointValue <= bottom
+      ) {
+        if (!this.isSelected) {
+          this.isSelected = true
+          shouldUpdateHighlightAsSelectedClass = true
+        }
+      } else {
+        if (this.isSelected) {
+          this.isSelected = false
+          shouldUpdateHighlightAsSelectedClass = true
+        }
+      }
+    }
+    if (shouldUpdateHighlightAsSelectedClass && this.pointClickRect != null) {
+      if (this.isSelected) {
+        this.pointClickRect.classList.add(css.highlightAsSelected)
+        this.props.addPointToSelection(this.props.pointIndex, {time: this.props.pointTime, value: this.props.pointValue})
+      } else {
+        this.pointClickRect.classList.remove(css.highlightAsSelected)
+        this.props.removePointFromSelection(this.props.pointIndex)
+      }
     }
   }
 
@@ -343,46 +383,8 @@ class Point extends React.PureComponent<IProps, IState> {
         key="selectionBoundariesSubscriber"
         channel={SelectionBoundariesChannel}
       >
-        {(value: undefined | null | Object) => {
-          if (value == null) {
-            if (this.isSelected) {
-              this.isSelected = false
-              this.pointClickRect.classList.remove('point-highlightAsSelected')
-            }
-            return null
-          }
-          if (value.boxesInSelection.includes(String(this.boxIndex))) {
-            const {left, top, right, bottom} = value.selectionBoundaries[
-              this.boxIndex
-            ]
-            if (
-              left <= pointTime &&
-              pointTime <= right &&
-              top <= pointValue &&
-              pointValue <= bottom
-            ) {
-              if (!this.isSelected) {
-                this.isSelected = true
-                this.pointClickRect.classList.add('point-highlightAsSelected')
-              }
-            } else {
-              if (this.isSelected) {
-                this.isSelected = false
-                this.pointClickRect.classList.remove('point-highlightAsSelected')
-              }
-            }
-          } else {
-            if (this.isSelected) {
-              this.isSelected = false
-              this.pointClickRect.classList.remove('point-highlightAsSelected')
-            }
-          }
-          return null
-        }}
-      </Subscriber>,
-      <Subscriber key="boxIndexSubscriber" channel={BoxIndexChannel}>
-        {(boxIndex: number) => {
-          this.boxIndex = boxIndex
+        {(value: null | Object) => {
+          this._highlightAsSelected(value)
           return null
         }}
       </Subscriber>,
@@ -421,8 +423,8 @@ class Point extends React.PureComponent<IProps, IState> {
         >
           <g>
             <rect
-              width="16"
-              height="16"
+              width={POINT_RECT_EDGE_SIZE}
+              height={POINT_RECT_EDGE_SIZE}
               x={x}
               y={y}
               fill="transparent"

@@ -1,5 +1,5 @@
 import React from 'react'
-import Point from './Point'
+import PointWrapper from './PointWrapper'
 import Connector from './Connector'
 import {NormalizedPoint} from '$studio/AnimationTimelinePanel/types'
 import {svgPaddingY} from './BoxView'
@@ -20,6 +20,8 @@ type Props = {
   addConnector: Function
   removeConnector: Function
   makeHandleHorizontal: Function
+  addPointToSelection: Function
+  removePointFromSelection: Function
 }
 
 interface IState {
@@ -159,6 +161,14 @@ class Variable extends React.PureComponent<Props, IState> {
     )
   }
 
+  addPointToSelection = (pointIndex: number, pointData: Object) => {
+    this.props.addPointToSelection(this.props.variableId, pointIndex, pointData)
+  }
+
+  removePointFromSelection = (pointIndex: number) => {
+    this.props.removePointFromSelection(this.props.variableId, pointIndex)
+  }
+
   render() {
     const {color} = this.props
     const {points} = this.state
@@ -190,31 +200,34 @@ class Variable extends React.PureComponent<Props, IState> {
                     showContextMenu={this.showContextMenuForConnector}
                   />
                 )}
-              <Point
+              <PointWrapper
                 color={color}
                 key={`${point._value}${point._t}`}
-                {...(prevPoint
-                  ? {
-                      prevPointTime: prevPoint.time,
-                      prevPointValue: prevPoint.value,
-                      prevPointHandles:
-                        prevPoint.interpolationDescriptor.handles,
-                      prevPointConnected:
-                        prevPoint.interpolationDescriptor.connected,
-                    }
-                  : {})}
-                {...(nextPoint
-                  ? {
-                      nextPointTime: nextPoint.time,
-                      nextPointValue: nextPoint.value,
-                    }
-                  : {})}
-                pointTime={point.time}
-                pointValue={point.value}
-                pointHandles={point.interpolationDescriptor.handles}
-                pointConnected={point.interpolationDescriptor.connected}
-                pointAbsoluteTime={point._t}
-                pointAbsoluteValue={point._value}
+                point={point}
+                prevPoint={prevPoint}
+                nextPoint={nextPoint}
+                // {...(prevPoint
+                //   ? {
+                //       prevPointTime: prevPoint.time,
+                //       prevPointValue: prevPoint.value,
+                //       prevPointHandles:
+                //         prevPoint.interpolationDescriptor.handles,
+                //       prevPointConnected:
+                //         prevPoint.interpolationDescriptor.connected,
+                //     }
+                //   : {})}
+                // {...(nextPoint
+                //   ? {
+                //       nextPointTime: nextPoint.time,
+                //       nextPointValue: nextPoint.value,
+                //     }
+                //   : {})}
+                // pointTime={point.time}
+                // pointValue={point.value}
+                // pointHandles={point.interpolationDescriptor.handles}
+                // pointConnected={point.interpolationDescriptor.connected}
+                // pointAbsoluteTime={point._t}
+                // pointAbsoluteValue={point._value}
                 pointIndex={index}
                 getSvgSize={this.props.getSvgSize}
                 showPointValuesEditor={this.showPointValuesEditor}
@@ -224,6 +237,8 @@ class Variable extends React.PureComponent<Props, IState> {
                 removePoint={this.removePoint}
                 addConnector={this.addConnector}
                 makeHandleHorizontal={this.makeHandleHorizontal}
+                addPointToSelection={this.addPointToSelection}
+                removePointFromSelection={this.removePointFromSelection}
               />
             </g>
           )

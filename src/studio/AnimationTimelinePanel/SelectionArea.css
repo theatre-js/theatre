@@ -1,0 +1,28 @@
+.container {
+  position: absolute 0;
+  top: 0px;
+  z-index: 10000;
+  cursor: pointer;
+
+  &:before {
+    position: absolute;
+    content: ' ';
+    display: block;
+    top: -10px;
+    left: 0;
+    right: 0;
+    height: 10px;
+  }
+}
+
+.selection {
+  position: absolute;
+  z-index: 100;
+  cursor: move;
+  background: rgba(255, 255, 255, .2);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, .6);
+
+  &.shrink {
+    transition: all .2s ease-out;
+  }
+}

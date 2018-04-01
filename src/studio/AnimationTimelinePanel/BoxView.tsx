@@ -32,6 +32,8 @@ interface IOwnProps {
   activeMode: string
   pathToVariables: string[]
   scrollLeft: number
+  addPointToSelection: Function
+  removePointFromSelection: Function
 }
 
 interface IProps extends IOwnProps {
@@ -415,6 +417,8 @@ class BoxView extends StudioComponent<IProps, IState> {
                 addConnector={this.addConnector}
                 removeConnector={this.removeConnector}
                 makeHandleHorizontal={this.makeHandleHorizontal}
+                addPointToSelection={this.props.addPointToSelection}
+                removePointFromSelection={this.props.removePointFromSelection}
               />
             </svg>
           </svg>

@@ -7,7 +7,7 @@ import generateUniqueId from 'uuid/v4'
 import css from './AnimationTimelinePanel.css'
 import VariablesBox from './VariablesBox'
 import TimeBar from './TimeBar'
-import {Subscriber, Broadcast} from 'react-broadcast'
+import {Subscriber} from 'react-broadcast'
 import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
 import cx from 'classnames'
 import * as _ from 'lodash'
@@ -30,7 +30,9 @@ import StudioComponent from '$src/studio/handy/StudioComponent'
 import boxAtom, {BoxAtom} from '$src/shared/DataVerse/atoms/box'
 import TimelineInstance from '$studio/componentModel/react/makeReactiveComponent/TimelineInstance/TimelineInstance'
 import {IStudioStoreState} from '$studio/types'
-import { svgPaddingY } from '$studio/AnimationTimelinePanel/BoxView';
+import {svgPaddingY} from '$studio/AnimationTimelinePanel/BoxView'
+import SelectionArea from '$studio/AnimationTimelinePanel/SelectionArea'
+import {POINT_RECT_EDGE_SIZE} from '$studio/AnimationTimelinePanel/Point'
 
 type OwnProps = TimelineObject & {
   pathToTimeline: string[]
@@ -51,6 +53,19 @@ type State = {
         mergeWith?: undefined | null | number
         moveTo?: undefined | null | number
       }
+  selectionStatus: 'NONE' | 'ACTIVE' | 'CONFIRMED'
+  selectionSize: {x: number; y: number}
+  selectionProps:
+    | undefined
+    | null
+    | {
+        contaienrScrollTop: number
+        paddedBoundaries: number[]
+        _clientX: number
+        _clientY: number
+        fromX: number
+        fromY: number
+      }
   moveRatios: number[]
   boundaries: number[]
   duration: number
@@ -63,14 +78,16 @@ type State = {
 }
 
 const LEGEND_BAR_WIDTH = 30
-export const SelectionBoundariesChannel = 'TheaterJS/SelectionBoundariesChannel'
 
 class Content extends StudioComponent<Props, State> {
+  panelWidth: number
   container: $FixMe
   variablesContainer: $FixMe
+  selectedPoints: $FixMe
+  currentTTimeXBeforeDrag: BoxAtom<number>
+
   static panelName = 'AnimationTimeline'
 
-  currentTTimeXBeforeDrag: BoxAtom<number>
   static panelConfig = {
     headerLess: true,
   }
@@ -82,6 +99,9 @@ class Content extends StudioComponent<Props, State> {
 
     this.state = {
       boxBeingDragged: null,
+      selectionStatus: 'NONE',
+      selectionSize: {x: 0, y: 0},
+      selectionProps: null,
       moveRatios: new Array(layout.length).fill(0),
       boundaries: this._getBoundaries(boxes, layout),
       duration: 20000,
@@ -89,7 +109,7 @@ class Content extends StudioComponent<Props, State> {
       isSeekerBeingDragged: false,
       timelineInstance: undefined,
     }
-
+    this.selectedPoints = {}
     this.currentTTimeXBeforeDrag = boxAtom(0)
   }
 
@@ -602,50 +622,53 @@ class Content extends StudioComponent<Props, State> {
 
   _handleMouseDown = (e: $FixMe, activeMode: string) => {
     if (activeMode === MODE_SHIFT) {
-      document.addEventListener('mousemove', this._updateSelectionOnDrag)
-      document.addEventListener('mouseup', this._handleSelectionEnd)
       const {clientX, clientY} = e
       const {left, top} = this.container.getBoundingClientRect()
-      this.setState(({boundaries}) => ({
-        boundariesOfSelection: boundaries.reduce((reducer: number[], b: number, index: number) => {
-          let boxBoundaries = []
+
+      const {boundaries} = this.state
+      const boundariesCount = boundaries.length - 1
+      const halfOfSvgPaddingY = svgPaddingY / 2
+      const paddedBoundaries = boundaries.reduce(
+        (reducer: number[], boundary: number, index: number) => {
           if (index === 0) {
-            return [
-              ...reducer,
-              boundaries[0] + svgPaddingY / 2,
-            ]
+            return [...reducer, boundary + halfOfSvgPaddingY]
           }
-          if (index === boundaries.length - 1) {
-            return [
-              ...reducer,
-              boundaries[boundaries.length - 1] - svgPaddingY / 2,
-            ]
+          if (index === boundariesCount) {
+            return [...reducer, boundary - halfOfSvgPaddingY]
           }
           return [
             ...reducer,
-            boundaries[index] - svgPaddingY / 2,
-            boundaries[index] + svgPaddingY / 2,
+            boundary - halfOfSvgPaddingY,
+            boundary + halfOfSvgPaddingY,
           ]
-        }, []),
+        },
+        [],
+      )
+
+      this.setState(() => ({
+        selectionStatus: 'ACTIVE',
         selectionProps: {
+          contaienrScrollTop: this.variablesContainer.scrollTop,
+          paddedBoundaries,
           _clientX: clientX,
           _clientY: clientY,
           fromX: clientX - left,
           fromY: clientY - top - 1,
-          dX: 0,
-          dY: 0,
         },
       }))
+      document.addEventListener('mousemove', this._updateSelectionOnDrag)
+      document.addEventListener('mouseup', this._handleSelectionEnd)
     }
   }
 
-  _updateSelectionOnDrag = e => {
+  _updateSelectionOnDrag = (e: $FixMe) => {
     const {clientX, clientY} = e
     this.setState(({selectionProps}) => ({
-      selectionProps: {
-        ...selectionProps,
-        dX: clientX - selectionProps._clientX,
-        dY: clientY - selectionProps._clientY,
+      selectionSize: {
+        // @ts-ignore
+        x: clientX - selectionProps._clientX,
+        // @ts-ignore
+        y: clientY - selectionProps._clientY,
       },
     }))
   }
@@ -653,96 +676,250 @@ class Content extends StudioComponent<Props, State> {
   _handleSelectionEnd = () => {
     document.removeEventListener('mousemove', this._updateSelectionOnDrag)
     document.removeEventListener('mouseup', this._handleSelectionEnd)
-    // this.setState(() => ({selectionProps: null}))
+
+    const {left, top, right, bottom} = this._getSelectedPointsBoundaries(
+      this.selectedPoints,
+    )
+    this.setState(({selectionProps}: $FixMe) => ({
+      selectionStatus: 'CONFIRMED',
+      selectionProps: {
+        ...selectionProps,
+        fromX: left,
+        fromY: top,
+      },
+      selectionSize: {
+        x: right - left,
+        y: bottom - top,
+      },
+    }))
   }
 
-  _getSelectionBoundaries = (panelWidth: number) => {
-    const {boundariesOfSelection, selectionProps, focus, duration} = this.state
-    // console.log(this.state.boundariesOfSelection, boundaries)
-    const {fromY, dY, fromX, dX} = selectionProps
-    const fromIndex = boundariesOfSelection.findIndex((b: number) => (b > fromY)) - 1
-    let toIndex = boundariesOfSelection.findIndex((b: number) => (b >= fromY + dY))
-    if (toIndex === -1) toIndex = boundariesOfSelection.length - 1
+  _getSelectedPointsBoundaries(points: $FixMe) {
+    const {selectionProps} = this.state
+    // @ts-ignore
+    const {paddedBoundaries} = selectionProps
 
-    // const fromBoxIndex = (fromIndex % 2 === 0) ? fromIndex / 2 : Math.ceil(fromIndex / 2)
-    // const toBoxIndex = (toIndex % 2 === 0) ? toIndex / 2 - 1 : Math.floor(toIndex / 2)
+    let arrayOfPointTimes: number[] = []
+    Object.keys(points).forEach((boxKey: string) => {
+      const boxInfo = points[boxKey]
+      Object.keys(boxInfo).forEach((variableKey: string) => {
+        const variableInfo = boxInfo[variableKey]
+        Object.keys(variableInfo).forEach((pointKey: string) => {
+          arrayOfPointTimes = [
+            ...arrayOfPointTimes,
+            variableInfo[pointKey].time,
+          ]
+        })
+      })
+    })
 
-    const topBoundaryBoxIndex = (fromIndex % 2 === 0) ? fromIndex / 2 : Math.ceil(fromIndex / 2)
-    const bottomBoundaryBoxIndex = (toIndex % 2 === 0) ? toIndex / 2 - 1 : Math.floor(toIndex / 2)
+    const {focus, duration} = this.state
+    const leftOffset = 100 * focus[0] / duration
+    const focusedWidth = (focus[1] - focus[0]) / duration
+    const left =
+      LEGEND_BAR_WIDTH -
+      POINT_RECT_EDGE_SIZE / 2 +
+      (Math.min(...arrayOfPointTimes) - leftOffset) /
+        focusedWidth *
+        this.panelWidth /
+        100
+    const right =
+      LEGEND_BAR_WIDTH +
+      POINT_RECT_EDGE_SIZE / 2 +
+      (Math.max(...arrayOfPointTimes) - leftOffset) /
+        focusedWidth *
+        this.panelWidth /
+        100
+
+    const indicesOfBoxesInSelection = Object.keys(points)
+      .map(Number)
+      .sort()
+    const topBoundaryBoxIndex = indicesOfBoxesInSelection[0]
+    const bottomBoundaryBoxIndex =
+      indicesOfBoxesInSelection[indicesOfBoxesInSelection.length - 1]
+    const topBoundaryBox = points[topBoundaryBoxIndex]
+    const bottomBoundaryBox = points[bottomBoundaryBoxIndex]
+    let arrayOfTopBoxValues: number[] = []
+    let arrayOfBottomBoxValues: number[] = []
+    Object.keys(topBoundaryBox).forEach((variableKey: string) => {
+      const variableInfo = topBoundaryBox[variableKey]
+      Object.keys(variableInfo).forEach((pointKey: string) => {
+        arrayOfTopBoxValues = [
+          ...arrayOfTopBoxValues,
+          variableInfo[pointKey].value,
+        ]
+      })
+    })
+    Object.keys(bottomBoundaryBox).forEach((variableKey: string) => {
+      const variableInfo = bottomBoundaryBox[variableKey]
+      Object.keys(variableInfo).forEach((pointKey: string) => {
+        arrayOfBottomBoxValues = [
+          ...arrayOfBottomBoxValues,
+          variableInfo[pointKey].value,
+        ]
+      })
+    })
+
+    const top =
+      paddedBoundaries[topBoundaryBoxIndex * 2] +
+      Math.min(...arrayOfTopBoxValues) /
+        100 *
+        (paddedBoundaries[topBoundaryBoxIndex * 2 + 1] -
+          paddedBoundaries[topBoundaryBoxIndex * 2]) -
+      POINT_RECT_EDGE_SIZE / 2
+
+    const bottom =
+      paddedBoundaries[bottomBoundaryBoxIndex * 2] +
+      Math.max(...arrayOfBottomBoxValues) /
+        100 *
+        (paddedBoundaries[bottomBoundaryBoxIndex * 2 + 1] -
+          paddedBoundaries[bottomBoundaryBoxIndex * 2]) +
+      POINT_RECT_EDGE_SIZE / 2
+
+    return {left, top, right, bottom}
+  }
+
+  _getSelectionBoundaries(panelWidth: number) {
+    if (this.state.selectionProps == null) return null
+
+    const {focus, duration, selectionSize, selectionProps} = this.state
+    const {paddedBoundaries, contaienrScrollTop} = selectionProps
+    let {fromY, fromX} = selectionProps
+    let {x: dX, y: dY} = selectionSize
+    fromY += contaienrScrollTop
+    if (dY < 0) {
+      dY = -dY
+      fromY = fromY - dY
+    }
+    if (dX < 0) {
+      dX = -dX
+      fromX = fromX - dX
+    }
+
+    const fromIndex = paddedBoundaries.findIndex((b: number) => b > fromY) - 1
+    let toIndex = paddedBoundaries.findIndex((b: number) => b >= fromY + dY)
+    if (toIndex === -1) toIndex = paddedBoundaries.length - 1
+
+    const topBoundaryBoxIndex =
+      fromIndex % 2 === 0 ? fromIndex / 2 : Math.ceil(fromIndex / 2)
+    const bottomBoundaryBoxIndex =
+      toIndex % 2 === 0 ? toIndex / 2 : Math.floor(toIndex / 2)
 
     const leftOffset = focus[0] / duration
     const focusedWidth = (focus[1] - focus[0]) / duration
-    const left = 100 * (leftOffset + focusedWidth * ((fromX - LEGEND_BAR_WIDTH) / panelWidth))
-    const right = 100 * (leftOffset + focusedWidth * ((fromX + dX - LEGEND_BAR_WIDTH) / panelWidth))
+    const left =
+      100 *
+      (leftOffset + focusedWidth * ((fromX - LEGEND_BAR_WIDTH) / panelWidth))
+    const right =
+      100 *
+      (leftOffset +
+        focusedWidth * ((fromX + dX - LEGEND_BAR_WIDTH) / panelWidth))
 
-    let selectionBoundaries
-    // if (fromBoxIndex === toBoxIndex) {
-    if (topBoundaryBoxIndex === bottomBoundaryBoxIndex){
-        // const fromBoxBoundary = boundariesOfSelection[fromBoxIndex * 2]
-        // const boxHeight = boundariesOfSelection[fromBoxIndex * 2 + 1] - fromBoxBoundary
-      const topBoundary = boundariesOfSelection[topBoundaryBoxIndex * 2]
-      const bottomBoundary = boundariesOfSelection[bottomBoundaryBoxIndex * 2 + 1]
+    let boxesBoundaries
+    if (topBoundaryBoxIndex === bottomBoundaryBoxIndex) {
+      const topBoundary = paddedBoundaries[topBoundaryBoxIndex * 2]
+      const bottomBoundary = paddedBoundaries[bottomBoundaryBoxIndex * 2 + 1]
       const boxHeight = bottomBoundary - topBoundary
-      selectionBoundaries = {
+      boxesBoundaries = {
         [topBoundaryBoxIndex]: {
-          left, right,
+          left,
+          right,
           top: (fromY - topBoundary) / boxHeight * 100,
           bottom: (fromY + dY - topBoundary) / boxHeight * 100,
-        }
+        },
       }
     } else {
-      const fromBoxTopBoundary = boundariesOfSelection[topBoundaryBoxIndex * 2]
-      const fromBoxHeight = boundariesOfSelection[topBoundaryBoxIndex * 2 + 1] - fromBoxTopBoundary
-      const toBoxTopBoundary = boundariesOfSelection[bottomBoundaryBoxIndex * 2]
-      const toBoxHeight = boundariesOfSelection[bottomBoundaryBoxIndex * 2 + 1] - toBoxTopBoundary
+      const fromBoxTopBoundary = paddedBoundaries[topBoundaryBoxIndex * 2]
+      const fromBoxHeight =
+        paddedBoundaries[topBoundaryBoxIndex * 2 + 1] - fromBoxTopBoundary
+      const toBoxTopBoundary = paddedBoundaries[bottomBoundaryBoxIndex * 2]
+      const toBoxHeight =
+        paddedBoundaries[bottomBoundaryBoxIndex * 2 + 1] - toBoxTopBoundary
       const fromBoxBoundaries = {
-        left, right,
+        left,
+        right,
         top: 100 * (fromY - fromBoxTopBoundary) / fromBoxHeight,
         bottom: 100,
       }
       const toBoxBoundaries = {
-        left, right,
+        left,
+        right,
         top: 0,
         bottom: 100 * (fromY + dY - toBoxTopBoundary) / toBoxHeight,
       }
 
-      selectionBoundaries = {
+      boxesBoundaries = {
         [topBoundaryBoxIndex]: fromBoxBoundaries,
         [bottomBoundaryBoxIndex]: toBoxBoundaries,
-        ...(
-          Array.from(Array(bottomBoundaryBoxIndex - topBoundaryBoxIndex - 1), (_, i: number) => i + topBoundaryBoxIndex + 1).reduce((reducer: Object, n: number) => {
-            return {
-              ...reducer,
-              [n]: {
-                left, right,
-                top: 0,
-                bottom: 100,
-              }
-            }
-          }, {})
-        )
+        ...Array.from(
+          Array(bottomBoundaryBoxIndex - topBoundaryBoxIndex - 1),
+          (_, i: number) => i + topBoundaryBoxIndex + 1,
+        ).reduce((reducer: Object, n: number) => {
+          return {
+            ...reducer,
+            [n]: {
+              left,
+              right,
+              top: 0,
+              bottom: 100,
+            },
+          }
+        }, {}),
       }
     }
-    return {boxesInSelection: Object.keys(selectionBoundaries), selectionBoundaries}
+    return boxesBoundaries
   }
 
-  _renderSelectionZone = (panelWidth: number) => {
-    const {selectionProps} = this.state
-    return (
-      <div
-        key="selectionZone"
-        style={{
-          position: 'absolute',
-          zIndex: 100,
-          // background: 'rgba(255, 255, 255, .5)',
-          boxShadow: 'inset 0 0 0 2px white',
-          left: selectionProps.fromX,
-          top: selectionProps.fromY,
-          width: selectionProps.dX,
-          height: selectionProps.dY,
-        }}
-      />
-    )
+  addPointToSelection = (
+    boxIndex: number,
+    variableId: string,
+    pointIndex: number,
+    pointData: Object,
+  ) => {
+    const boxInfo = this.selectedPoints[boxIndex] || {}
+    const variableInfo = boxInfo[variableId] || {}
+    this.selectedPoints = {
+      ...this.selectedPoints,
+      [boxIndex]: {
+        ...boxInfo,
+        [variableId]: {
+          ...variableInfo,
+          [pointIndex]: pointData,
+        },
+      },
+    }
+  }
+
+  removePointFromSelection = (
+    boxIndex: number,
+    variableId: string,
+    pointIndex: number,
+  ) => {
+    const {[boxIndex]: boxInfo, ...otherBoxes} = this.selectedPoints
+    const {[variableId]: variableInfo, ...otherVariables} = boxInfo
+    // // @ts-ignore
+    const {[pointIndex]: pointInfo, ...otherPoints} = variableInfo
+
+    if (Object.keys(otherPoints).length > 0) {
+      this.selectedPoints = {
+        ...otherBoxes,
+        [boxIndex]: {
+          ...otherVariables,
+          [variableId]: {
+            ...otherPoints,
+          },
+        },
+      }
+    } else {
+      if (Object.keys(otherVariables).length > 0) {
+        this.selectedPoints = {
+          ...otherBoxes,
+          [boxIndex]: {...otherVariables},
+        }
+      } else {
+        this.selectedPoints = {...otherBoxes}
+      }
+    }
   }
 
   render() {
@@ -752,12 +929,14 @@ class Content extends StudioComponent<Props, State> {
       duration,
       focus,
       // currentTTime: currentTime,
+      selectionStatus,
+      selectionSize,
       selectionProps,
     } = this.state
     const {boxes, layout, panelObjectBeingDragged} = this.props
 
     const isABoxBeingDragged = boxBeingDragged != null
-    const isASelectionBeingMade = selectionProps != null
+
     return (
       <Panel
         headerLess={true}
@@ -769,6 +948,7 @@ class Content extends StudioComponent<Props, State> {
         <Subscriber channel={PanelWidthChannel}>
           {({width: panelWidth}: $FixMe) => {
             panelWidth -= LEGEND_BAR_WIDTH
+            this.panelWidth = panelWidth
             const svgWidth: number = Math.floor(
               duration / Math.floor(focus[1] - focus[0]) * panelWidth,
             )
@@ -778,9 +958,12 @@ class Content extends StudioComponent<Props, State> {
               focus[1],
               panelWidth,
             )
-            const selectionBoundaries = isASelectionBeingMade ? this._getSelectionBoundaries(panelWidth) : null
-            return [
-              <Subscriber key="subscriber" channel={PanelActiveModeChannel}>
+            const selectionBoundaries =
+              selectionStatus !== 'NONE'
+                ? this._getSelectionBoundaries(panelWidth)
+                : null
+            return (
+              <Subscriber channel={PanelActiveModeChannel}>
                 {({activeMode}) => {
                   return (
                     <div
@@ -849,64 +1032,81 @@ class Content extends StudioComponent<Props, State> {
                           ref={c => (this.variablesContainer = c)}
                           className={css.variables}
                         >
-                          <Broadcast
-                            channel={SelectionBoundariesChannel}
-                            value={selectionBoundaries}
-                            compareValues={() => !isASelectionBeingMade}
-                          >
-                            <div>
-                              {layout.map((id, index) => {
-                                const box = boxes[id]
-                                const boxTranslateY =
-                                  moveRatios[index] *
-                                  (isABoxBeingDragged
-                                    ? boxBeingDragged.height
-                                    : 0)
-                                const canBeMerged =
-                                  isABoxBeingDragged &&
-                                  boxBeingDragged.index === index &&
-                                  boxBeingDragged.mergeWith != null
-                                const shouldIndicateMerge =
-                                  isABoxBeingDragged &&
-                                  boxBeingDragged.mergeWith !== null &&
-                                  boxBeingDragged.mergeWith === index
-                                let height = box.height
-                                return (
-                                  <VariablesBox
-                                    key={id}
-                                    boxIndex={index}
-                                    boxId={id}
-                                    activeMode={activeMode}
-                                    translateY={boxTranslateY}
-                                    svgHeight={height}
-                                    svgWidth={svgWidth}
-                                    variableIds={box.variables}
-                                    splitVariable={this.splitVariable}
-                                    duration={duration}
-                                    canBeMerged={canBeMerged}
-                                    shouldIndicateMerge={shouldIndicateMerge}
-                                    pathToTimeline={this.props.pathToTimeline}
-                                    scrollLeft={scrollLeft}
-                                    isABoxBeingDragged={isABoxBeingDragged}
-                                    onMoveStart={this.onBoxStartMove}
-                                    onMoveEnd={this.onBoxEndMove}
-                                    onMove={this.onBoxMove}
-                                    onResize={this.onBoxResize}
-                                  />
-                                )
-                              })}
-                            </div>
-                          </Broadcast>
+                          <div>
+                            {layout.map((id, index) => {
+                              const box = boxes[id]
+                              const boxTranslateY =
+                                moveRatios[index] *
+                                (isABoxBeingDragged
+                                  ? boxBeingDragged.height
+                                  : 0)
+                              const canBeMerged =
+                                isABoxBeingDragged &&
+                                boxBeingDragged.index === index &&
+                                boxBeingDragged.mergeWith != null
+                              const shouldIndicateMerge =
+                                isABoxBeingDragged &&
+                                boxBeingDragged.mergeWith !== null &&
+                                boxBeingDragged.mergeWith === index
+                              let height = box.height
+                              return (
+                                <VariablesBox
+                                  key={id}
+                                  boxIndex={index}
+                                  boxId={id}
+                                  activeMode={activeMode}
+                                  translateY={boxTranslateY}
+                                  svgHeight={height}
+                                  svgWidth={svgWidth}
+                                  variableIds={box.variables}
+                                  splitVariable={this.splitVariable}
+                                  duration={duration}
+                                  canBeMerged={canBeMerged}
+                                  shouldIndicateMerge={shouldIndicateMerge}
+                                  pathToTimeline={this.props.pathToTimeline}
+                                  scrollLeft={scrollLeft}
+                                  isABoxBeingDragged={isABoxBeingDragged}
+                                  onMoveStart={this.onBoxStartMove}
+                                  onMoveEnd={this.onBoxEndMove}
+                                  onMove={this.onBoxMove}
+                                  onResize={this.onBoxResize}
+                                  addPointToSelection={this.addPointToSelection}
+                                  removePointFromSelection={
+                                    this.removePointFromSelection
+                                  }
+                                  {...(selectionBoundaries != null
+                                    ? {
+                                        selectionBoundaries:
+                                          selectionBoundaries[index],
+                                      }
+                                    : {})}
+                                />
+                              )
+                            })}
+                          </div>
                         </div>
                       </DraggableArea>
                     </div>
                   )
                 }}
-              </Subscriber>,
-              isASelectionBeingMade && this._renderSelectionZone(panelWidth),
-            ]
+              </Subscriber>
+            )
           }}
         </Subscriber>
+        <SelectionArea
+          status={selectionStatus}
+          {...(selectionStatus != 'NONE'
+            ? {
+                // @ts-ignore
+                left: selectionProps.fromX,
+                // @ts-ignore
+                top: selectionProps.fromY,
+                width: selectionSize.x,
+                height: selectionSize.y,
+              }
+            : {})}
+          onEnd={() => this.setState(() => ({selectionStatus: 'NONE'}))}
+        />
       </Panel>
     )
   }

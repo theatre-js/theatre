@@ -2,23 +2,28 @@
   cursor: pointer;
 }
 
-.pointClickRect:global(.point-highlightAsSelected) ~ .pointStroke {
-  stroke: white;
-}
-
-.pointClickRect:not(:global(.point-highlightRedOnHover)):hover ~ .pointGlow,
-.pointClickRect:not(:global(.point-highlightRedOnHover)):active ~ .pointGlow {
+.pointClickRect.highlightAsSelected ~ .pointGlow {
   filter: url('#glow');
   opacity: 1;
 }
 
-.pointClickRect:not(:global(.point-highlightRedOnHover)):hover ~ .pointStroke,
-.pointClickRect:not(:global(.point-highlightRedOnHover)):active ~ .pointStroke {
+.pointClickRect.highlightAsSelected ~ .pointStroke {
   stroke-width: 4px;
 }
 
-.pointClickRect:global(.point-highlightRedOnHover):hover ~ .pointStroke,
-.pointClickRect:global(.point-highlightRedOnHover):active ~ .pointStroke {
+.pointClickRect:not(.highlightRedOnHover):hover ~ .pointGlow,
+.pointClickRect:not(.highlightRedOnHover):active ~ .pointGlow {
+  filter: url('#glow');
+  opacity: 1;
+}
+
+.pointClickRect:not(.highlightRedOnHover):hover ~ .pointStroke,
+.pointClickRect:not(.highlightRedOnHover):active ~ .pointStroke {
+  stroke-width: 4px;
+}
+
+.pointClickRect.highlightRedOnHover:hover ~ .pointStroke,
+.pointClickRect.highlightRedOnHover:active ~ .pointStroke {
   stroke: red;
 }
 
@@ -45,7 +50,7 @@
 }
 
 .handle {
-  pointer-events: none;  
+  pointer-events: none;
 }
 
 .pointTip {

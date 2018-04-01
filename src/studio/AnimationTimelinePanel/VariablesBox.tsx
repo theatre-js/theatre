@@ -34,6 +34,9 @@ interface IOwnProps {
   onResizeStart: Function
   onResize: Function
   onResizeEnd: Function
+  addPointToSelection: Function
+  removePointFromSelection: Function
+  selectionBoundaries?: Object //$FixMe
 }
 
 interface IProps extends IOwnProps {
@@ -51,7 +54,7 @@ interface IState {
 }
 
 const minBoxHeight = 40
-export const BoxIndexChannel = 'TheaterJS/BoxIndexChannel'
+export const SelectionBoundariesChannel = 'TheaterJS/SelectionBoundariesChannel'
 
 class VariablesBox extends React.PureComponent<IProps, IState> {
   resizeEndTimeout: $FixMe
@@ -132,6 +135,14 @@ class VariablesBox extends React.PureComponent<IProps, IState> {
     this.setState(() => ({activeVariableId}))
   }
 
+  addPointToSelection = (variableId: string, pointIndex: number, pointData: Object) => {
+    this.props.addPointToSelection(this.props.boxIndex, variableId, pointIndex, pointData)
+  }
+
+  removePointFromSelection = (variableId: string, pointIndex: number) => {
+    this.props.removePointFromSelection(this.props.boxIndex, variableId, pointIndex)
+  }
+
   render() {
     const {props, state} = this
     const {
@@ -143,7 +154,9 @@ class VariablesBox extends React.PureComponent<IProps, IState> {
       shouldIndicateMerge,
       isABoxBeingDragged,
       activeMode,
+      selectionBoundaries,
     } = props
+
     const {activeVariableId, moveY, isMoving, shouldDisableResizeHandle} = state
     const svgHeight = props.svgHeight + state.resizeY
 
@@ -194,7 +207,7 @@ class VariablesBox extends React.PureComponent<IProps, IState> {
             className={css.boxView}
             onWheel={this._handleResizeOnPinch}
           >
-            <Broadcast channel={BoxIndexChannel} value={boxIndex}>
+            <Broadcast channel={SelectionBoundariesChannel} value={selectionBoundaries}>
               <BoxView
                 variables={variables}
                 variableIds={props.variableIds}
@@ -205,6 +218,8 @@ class VariablesBox extends React.PureComponent<IProps, IState> {
                 activeMode={activeMode}
                 pathToVariables={props.pathToVariables}
                 scrollLeft={props.scrollLeft}
+                addPointToSelection={this.addPointToSelection}
+                removePointFromSelection={this.removePointFromSelection}
               />
             </Broadcast>
           </div>

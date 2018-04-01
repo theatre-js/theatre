@@ -19,6 +19,8 @@ interface IProps {
   addConnector: Function
   removeConnector: Function
   makeHandleHorizontal: Function
+  addPointToSelection: Function
+  removePointFromSelection: Function
 }
 interface IState {}
 
@@ -46,6 +48,8 @@ class Variables extends React.PureComponent<IProps, IState> {
         addConnector={this.props.addConnector}
         removeConnector={this.props.removeConnector}
         makeHandleHorizontal={this.props.makeHandleHorizontal}
+        addPointToSelection={this.props.addPointToSelection}
+        removePointFromSelection={this.props.removePointFromSelection}
       />
     ))
   }
