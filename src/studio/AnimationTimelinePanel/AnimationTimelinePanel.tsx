@@ -25,8 +25,8 @@ import {
 } from '$src/studio/AnimationTimelinePanel/types'
 import {XY} from '$src/studio/workspace/types'
 import StudioComponent from '$src/studio/handy/StudioComponent'
-import boxAtom, {BoxAtom} from '$src/shared/DataVerse/atoms/box'
-import TimelineInstance from '$studio/componentModel/react/makeReactiveComponent/TimelineInstance/TimelineInstance'
+import boxAtom, {BoxAtom} from '$shared//DataVerse/atoms/boxAtom'
+import TimelineInstance from '$studio/componentModel/react/TheaterComponent/TimelineInstance/TimelineInstance'
 import {IStudioStoreState} from '$studio/types'
 
 type OwnProps = TimelineObject & {
@@ -749,7 +749,7 @@ export default connect((s: IStudioStoreState, op: OwnProps) => {
     'workspace',
     'panels',
     'byId',
-    'elementTree',
+    'explore',
     'outputs',
     'selectedNode',
     'componentId',

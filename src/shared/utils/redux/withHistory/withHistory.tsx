@@ -1,5 +1,5 @@
 import makeUUID from 'uuid/v4'
-import jsonPatchLib, { Operation } from 'fast-json-patch'
+import jsonPatchLib, {Operation} from 'fast-json-patch'
 import {
   reduceEntireStateAction,
   undoAction,
@@ -11,7 +11,7 @@ import {
 } from './actions'
 import * as _ from 'lodash'
 import patch from 'json-touch-patch'
-import getPropsInCommon from '$src/shared/utils/getPropsInCommon'
+import getPropsInCommon from '$shared//utils/getPropsInCommon'
 import {ReduxReducer, GenericAction} from '$shared/types'
 
 type TempAction = {
@@ -62,7 +62,7 @@ export const withHistory = <
   historicalReducer: historicalReducer,
   ahistoricalReducer: ReduxReducer<AhistoricState>,
   config: WithHistoryConfig = defaultConfig,
-) => {
+): ReduxReducer<FullState> => {
   const reduceForPermanentHistory = (
     prevHistory: HistoryOnly<PersistedState>,
     action: GenericAction,
@@ -323,8 +323,11 @@ function redo<InnerState, H extends HistoryOnly<InnerState>>(
   return newHistory
 }
 
-export const extractState = <S extends {}>(
-  o: StateWithHistory<S, $IntentionalAny>,
+export const extractState = <
+  S extends {},
+  O extends StateWithHistory<S, $IntentionalAny>
+>(
+  o: O,
 ): S => {
   const {
     '@@history': h,

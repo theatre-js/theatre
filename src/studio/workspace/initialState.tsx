@@ -23,7 +23,7 @@ const initialState: WorkspaceNamespaceState = {
         boundaries: {
           left: {
             type: 'sameAsBoundary',
-            path: ['elementTree', 'right'],
+            path: ['explore', 'right'],
           },
           right: {
             type: 'sameAsBoundary',
@@ -42,8 +42,8 @@ const initialState: WorkspaceNamespaceState = {
         inputs: {},
         outputs: {},
       },
-      elementTree: {
-        id: 'elementTree',
+      explore: {
+        id: 'explore',
         type: 'ExplorePanel',
         persistentState: {
           isInSettings: false,
@@ -58,7 +58,7 @@ const initialState: WorkspaceNamespaceState = {
           },
           right: {
             type: 'distanceFromBoundary',
-            path: ['elementTree', 'left'],
+            path: ['explore', 'left'],
             distance: 250,
           },
           top: {
@@ -106,13 +106,13 @@ const initialState: WorkspaceNamespaceState = {
           },
         },
         inputs: {
-          selectedNode: 'elementTree',
+          selectedNode: 'explore',
         },
         outputs: {},
       },
     },
-    listOfVisibles: [/*'timelinePanel', 'elementTree', */ 'composePanel-imAUUID'],
-    idOfActivePanel: 'elementTree',
+    listOfVisibles: [/*'timelinePanel',*/ 'explore', 'composePanel-imAUUID'],
+    idOfActivePanel: 'explore',
     panelObjectBeingDragged: null,
   },
   componentIdToBeRenderedAsCurrentCanvas: 'IntroScene',

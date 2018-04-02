@@ -1,16 +1,17 @@
-import Emitter from '$src/shared/DataVerse/utils/Emitter'
-import Ticker from '$src/shared/DataVerse/Ticker'
+import Ticker from '$shared//DataVerse/Ticker'
 import {
   default as propOfDerivedClassInstance,
   DerivationOfAPropOfADerivedClassInstance,
 } from './propOfDerivedClassInstance'
-import constant from '$src/shared/DataVerse/derivations/constant'
+import constant from '$shared//DataVerse/derivations/constant'
 import forEach from 'lodash/forEach'
-import pointer from '$src/shared/DataVerse/derivations/pointer'
-import {DerivedClass} from '$src/shared/DataVerse/derivedClass/derivedClass'
-import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
+import pointer, {
+  PointerDerivation,
+} from '$shared//DataVerse/derivations/pointer'
+import {DerivedClass} from '$shared//DataVerse/derivedClass/derivedClass'
+import AbstractDerivation from '$shared//DataVerse/derivations/AbstractDerivation'
 
-const NOTFOUND = undefined // Symbol('notfound')
+const NOTFOUND = undefined
 const notFoundDerivation = constant(NOTFOUND)
 
 type Wire = {
@@ -31,7 +32,8 @@ type Layer = {
 }
 
 type Layers = {
-  byId: {[id: LayerId]: Layer}
+  // This is actualy number | 'face' | 'tail'
+  byId: {[id: number]: Layer}
   list: Array<number>
   face: {initiatingWiresByKey: {[propName: string]: Wire}}
   tail: {
@@ -54,24 +56,23 @@ const makeEmptyStructure = (): Structure => ({
   derivationsByLayerAndKey: {},
 })
 
-export default class DerivedClassInstance {
+export default class DerivedClassInstance<O> {
   isDerivedClassInstance = true
-  _head: void | DerivedClass<$FixMe>
-  _changeEmitter: Emitter<$FixMe>
+  _head: undefined | DerivedClass<$FixMe>
   _ticker: Ticker
   _structure: Structure
-  _pointer: void | $FixMe
+  _pointer: undefined | PointerDerivation<DerivedClassInstance<O>>
 
-  constructor(head: void | DerivedClass<$FixMe>, ticker: Ticker) {
+  constructor(head: undefined | DerivedClass<$FixMe>, ticker: Ticker) {
     this._head = head
-    this._changeEmitter = new Emitter()
     this._ticker = ticker
     this._structure = makeEmptyStructure()
+    this._pointer = undefined
     this._updateStructure = this._updateStructure.bind(this)
     this._updateStructure()
   }
 
-  setClass(head: void | DerivedClass<$FixMe>) {
+  setClass(head: DerivedClass<$FixMe>) {
     this._head = head
     this._notifyStructureNeedsUpdating()
   }
@@ -89,7 +90,6 @@ export default class DerivedClassInstance {
     const newStructure = makeEmptyStructure()
 
     let currentDerivedDict = this._head
-    // eslint-disable-next-line no-constant-condition
     while (true) {
       if (!currentDerivedDict) break
 
@@ -116,15 +116,15 @@ export default class DerivedClassInstance {
     })
   }
 
-  changes() {
-    return this._changeEmitter
-  }
-
-  pointer() {
+  pointer(): PointerDerivation<DerivedClassInstance<O>> {
     if (!this._pointer) {
-      this._pointer = pointer({type: 'WithPath', root: this, path: []})
+      this._pointer = pointer({
+        type: 'WithPath',
+        root: this,
+        path: [],
+      }) as $IntentionalAny
     }
-    return this._pointer
+    return this._pointer as $IntentionalAny
   }
 
   prop(key: string): $FixMe {
@@ -194,7 +194,7 @@ export default class DerivedClassInstance {
       const methodFn = (layer as $FixMe).derivedDict._getMethod(key)
 
       derivation = notFoundDerivation.flatMap(() =>
-        methodFn(new MethodArg(this, lid)),
+        methodFn(new Self(this, lid)),
       )
     }
 
@@ -228,25 +228,24 @@ export default class DerivedClassInstance {
   }
 }
 
-class MethodArg {
-  _instance: $FixMe
+class Self {
   _sourceLayerId: number
-  constructor(instance: DerivedClassInstance, sourceLayerId: number) {
-    this._instance = instance
+  constructor(
+    readonly _instance: DerivedClassInstance<$FixMe>,
+    sourceLayerId: number,
+  ) {
     this._sourceLayerId = sourceLayerId
   }
 
   prop(key: string) {
-    return this._instance.prop(key)
+    return this._instance.pointer().prop(key)
   }
 
   pointer() {
     return this._instance.pointer()
   }
 
-  propFromSuper(key) {
+  propFromSuper(key: string) {
     return this._instance.propFromLayer(key, this._sourceLayerId)
   }
 }
-
-export type Face = DerivedClassInstance

@@ -1,9 +1,9 @@
-import {ArrayAtom} from '$shared/DataVerse/atoms/array'
+import {ArrayAtom} from '$shared/DataVerse/atoms/arrayAtom'
 import AbstractDerivedArray from './AbstractDerivedArray'
 import {ensureNoAtoms} from '../dicts/utils'
 import noop from 'lodash/noop'
 
-export class DerivedArrayFromArrayAtom<V> extends AbstractDerivedArray<$FixMe> {
+export class DerivedArrayFromArrayAtom<V> extends AbstractDerivedArray<V> {
   _arrayAtom: ArrayAtom<V>
   _untapFromArrayAtomChangeEmitter: () => void
 

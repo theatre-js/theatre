@@ -2,8 +2,8 @@ import Emitter from '$shared/DataVerse/utils/Emitter'
 import {default as Tappable} from '$shared/DataVerse/utils/Tappable'
 import AbstractDerivation, {
   IObjectWhoListensToAtomicUpdateNotices,
-} from '$src/shared/DataVerse/derivations/AbstractDerivation'
-import Ticker from '$src/shared/DataVerse/Ticker'
+} from '$shared//DataVerse/derivations/AbstractDerivation'
+import Ticker from '$shared//DataVerse/Ticker'
 
 export default class DerivationEmitter<V>
   implements IObjectWhoListensToAtomicUpdateNotices {
@@ -23,7 +23,6 @@ export default class DerivationEmitter<V>
     })
     this._hadTappers = false
     this._lastValueRecorded = false
-    // $FlowIgnore
     this._lastValue = undefined
     return this
   }

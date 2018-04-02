@@ -1,8 +1,8 @@
 import withDeps from './withDeps'
-import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
-import boxAtom from '$src/shared/DataVerse/atoms/box'
-import constant from '$src/shared/DataVerse/derivations/constant'
-import Ticker from '$src/shared/DataVerse/Ticker'
+import AbstractDerivation from '$shared//DataVerse/derivations/AbstractDerivation'
+import boxAtom from '$shared//DataVerse/atoms/boxAtom'
+import constant from '$shared//DataVerse/derivations/constant'
+import Ticker from '$shared//DataVerse/Ticker'
 
 describe('withDeps', () => {
   it('should work', () => {
@@ -60,7 +60,7 @@ describe('withDeps', () => {
     // expect(() => aD.changes()).toThrow()
     const ticker = new Ticker()
 
-    const adEvents = []
+    const adEvents: number[] = []
 
     aD.changes(ticker).tap(newVal => {
       adEvents.push(newVal)
@@ -73,8 +73,7 @@ describe('withDeps', () => {
     ticker.tick()
     expect(adEvents).toMatchObject([3])
 
-    const finalEvents = []
-    // debugger
+    const finalEvents: number[] = []
     final.changes(ticker).tap(v => {
       finalEvents.push(v)
     })
@@ -104,8 +103,7 @@ describe('withDeps', () => {
     const cD = aD.flatMap(a => bD.map(b => a + b))
 
     expect(cD.getValue()).toEqual('ab')
-    const changes = []
-    // debugger
+    const changes: string[] = []
     cD.changes(ticker).tap(c => {
       changes.push(c)
     })
@@ -113,20 +111,5 @@ describe('withDeps', () => {
     b.set('bb')
     ticker.tick()
     expect(changes).toMatchObject(['abb'])
-  })
-  ;(function() {
-    // @todo this should be a flow error since 'hi' is not an AbstractDerivation
-    withDeps({a: 'hi'}, () => {})
-    const f = withDeps({a: constant('hi')}, ({a}) => {
-      // @ts-ignore expected
-      a.getValue() as number
-      a.getValue() as string
-
-      return a.getValue()
-    })
-
-    // @ts-ignore expected
-    f.getValue() as number
-    f.getValue() as string
   })
 })

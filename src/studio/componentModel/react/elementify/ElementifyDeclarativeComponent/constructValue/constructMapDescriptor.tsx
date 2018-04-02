@@ -1,8 +1,8 @@
-const constructMapDescriptor = (m: $FixMe, d: $FixMe) => {
+const constructMapDescriptor = (m: $FixMe, self: $FixMe) => {
   return (
     m &&
     m.mapValues(v => {
-      return constructValue.default(v, d)
+      return constructValue.default(v, self)
     })
   )
 }

@@ -307,4 +307,6 @@ export const historicInitialState: IComponentModelNamespaceHistoricState = {
 export const ahistoricInitialState: IComponentModelNamespaceAhistoricState = {
   coreComponentDescriptors,
   coreModifierDescriptors,
+  selectedElementVolatileId: undefined,
+  collapsedElementsByVolatileId: {}
 }

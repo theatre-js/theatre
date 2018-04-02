@@ -1,8 +1,8 @@
 import {IModifierDescriptor} from '$src/studio/componentModel/types'
 import commonStylesPrototype from '$src/studio/componentModel/coreModifierDescriptors/HTML/SetCustomStyle/commonStylesPrototype'
-import dictAtom from '$src/shared/DataVerse/atoms/dict'
-import withDeps from '$src/shared/DataVerse/derivations/withDeps'
-import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
+import dictAtom from '$shared//DataVerse/atoms/dictAtom'
+import withDeps from '$shared//DataVerse/derivations/withDeps'
+import AbstractDerivation from '$shared//DataVerse/derivations/AbstractDerivation'
 
 const numeralize = (
   vD: AbstractDerivation<undefined | null | string | number>,

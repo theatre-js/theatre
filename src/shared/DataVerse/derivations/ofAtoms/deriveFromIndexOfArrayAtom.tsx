@@ -1,16 +1,14 @@
 import AbstractDerivation from '../AbstractDerivation'
-import {IArrayAtom} from '$shared/DataVerse'
+import {ArrayAtom} from '$shared//DataVerse/atoms/arrayAtom'
 
 const noop = () => {}
 
 export class DerivationOfAnIndexOfAnArrayAtom<V> extends AbstractDerivation<V> {
-  getValue: () => V
-
-  _arrayAtom: IArrayAtom<V>
+  _arrayAtom: ArrayAtom<V>
   _untapFromDictAtomChanges: Function
   _index: number
 
-  constructor(arrayAtom: IArrayAtom<V>, index: number) {
+  constructor(arrayAtom: ArrayAtom<V>, index: number) {
     super()
     this._arrayAtom = arrayAtom
     this._index = index
@@ -18,8 +16,8 @@ export class DerivationOfAnIndexOfAnArrayAtom<V> extends AbstractDerivation<V> {
     return this
   }
 
-  _recalculate(): $FixMe {
-    return this._arrayAtom.index(this._index as $FixMe)
+  _recalculate() {
+    return this._arrayAtom.index(this._index)
   }
 
   _keepUptodate() {
@@ -43,8 +41,8 @@ export class DerivationOfAnIndexOfAnArrayAtom<V> extends AbstractDerivation<V> {
   }
 }
 
-export default function deriveFromIndexOfArrayAtom<V, A extends IArrayAtom<V>>(
-  a: A,
+export default function deriveFromIndexOfArrayAtom<V>(
+  a: ArrayAtom<V>,
   index: number,
 ): AbstractDerivation<V> {
   return new DerivationOfAnIndexOfAnArrayAtom(a, index)

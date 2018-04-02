@@ -1,29 +1,36 @@
-import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
+import AbstractDerivation from '$shared//DataVerse/derivations/AbstractDerivation'
+import Stack from '$shared/utils/Stack'
+import noop from '$shared/utils/noop'
+
+const stack = new Stack<Collector>()
+const noopCollector: Collector = noop
 
 type Collector = (d: AbstractDerivation<$IntentionalAny>) => void
-
-const stack: {
-  foundDeps: Set<AbstractDerivation<mixed>>
-  collector: Collector
-}[] = []
 
 export const collectObservedDependencies = (
   cb: () => void,
   collector: Collector,
 ) => {
-  const foundDeps: Set<AbstractDerivation<$IntentionalAny>> = new Set()
-  stack.push({foundDeps, collector})
+  stack.push(collector)
   cb()
   stack.pop()
-  return foundDeps
 }
 
-export const reportObservedDependency = (
+export const reportResolutionStart = (
   d: AbstractDerivation<$IntentionalAny>,
 ) => {
-  if (stack.length === 0) return
-  const top = stack[stack.length - 1]
+  const possibleCollector = stack.peek()
+  if (possibleCollector) {
+    possibleCollector(d)
+  }
 
-  top.foundDeps.add(d)
-  top.collector(d)
+  stack.push(noopCollector)
+}
+
+export const reportResolutionEnd = (d: AbstractDerivation<$IntentionalAny>) => {
+  stack.pop()
+}
+
+export const isCollectingDependencies = () => {
+  return stack.peek() !== noopCollector
 }

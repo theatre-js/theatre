@@ -1,7 +1,7 @@
 import {CommonNamespaceState} from '$studio/common/types'
 import {WorkspaceNamespaceState} from '$studio/workspace/types'
 import {IComponentModelNamespaceHistoricState, IComponentModelNamespaceAhistoricState} from '$studio/componentModel/types'
-import {StateWithHistory, HistoryOnly} from '$src/shared/utils/redux/withHistory/withHistory'
+import {StateWithHistory, HistoryOnly} from '$shared//utils/redux/withHistory/withHistory'
 
 export interface IStoreHistoricState {
   common: CommonNamespaceState

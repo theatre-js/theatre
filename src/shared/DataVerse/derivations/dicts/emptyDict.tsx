@@ -9,7 +9,8 @@ export class EmptyDict extends AbstractDerivedDict<{}> {
     return this
   }
 
-  prop(_k: void) {
+  // @ts-ignore @ignore
+  prop(_k) {
     return constantDerivation(undefined) as $IntentionalAny
   }
 

@@ -29,9 +29,9 @@ export default class LBCommunicator {
     if (this._socketPromise) {
       return this._socketPromise
     } else {
-      return (this._socketPromise = createSocketPromsie(this.options.lbUrl, {
-        transports: ['websocket'],
-      }))
+      // return (this._socketPromise = createSocketPromsie(this.options.lbUrl, {
+      //   transports: ['websocket'],
+      // }))
     }
   }
 

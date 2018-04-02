@@ -3,6 +3,7 @@ import {
   IDeclarativeComponentDescriptor,
   IModifierDescriptor,
 } from './declarative'
+import {VolatileId} from '$studio/integrations/react/treeMirroring/MirrorOfReactTree'
 export * from './declarative'
 
 export type ComponentId = string
@@ -33,4 +34,6 @@ export interface IComponentModelNamespaceHistoricState {
 export interface IComponentModelNamespaceAhistoricState {
   coreComponentDescriptors: {[id: string]: ComponentDescriptor}
   coreModifierDescriptors: {[id: string]: IModifierDescriptor}
+  selectedElementVolatileId: undefined | VolatileId
+  collapsedElementsByVolatileId: Record<string, true>
 }

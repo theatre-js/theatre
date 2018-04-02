@@ -1,5 +1,4 @@
-import * as React from 'react'
-import {compose} from 'ramda'
+import React from 'react'
 
 type Props = {
   children: React.ReactNode
@@ -18,4 +17,4 @@ class TheaterJSRoot extends React.Component<Props, State> {
   }
 }
 
-export default compose(a => a)(TheaterJSRoot)
+export default TheaterJSRoot

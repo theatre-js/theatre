@@ -1,7 +1,7 @@
 import KeyedSideEffectRunner from '$shared/utils/KeyedSideEffectRunner'
-import Ticker from '$src/shared/DataVerse/Ticker'
-import autoProxyDerivedDict from '$src/shared/DataVerse/derivations/dicts/autoProxyDerivedDict'
-import withDeps from '$src/shared/DataVerse/derivations/withDeps'
+import Ticker from '$shared//DataVerse/Ticker'
+import autoProxyDerivedDict from '$shared//DataVerse/derivations/dicts/autoProxyDerivedDict'
+import withDeps from '$shared//DataVerse/derivations/withDeps'
 
 const styleSetter = (elRef: HTMLElement, unprefixedKey: string) => {
   const key = unprefixedKey // @todo add vendor prefixes

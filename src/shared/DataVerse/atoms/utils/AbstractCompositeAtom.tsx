@@ -5,7 +5,6 @@ export default abstract class AbstractCompositeAtom<
   ChangeType
 > extends AbstractAtom<ChangeType> {
   isCompositeAtom = true
-  // abstract _keyOfValue(): MapKey | void
 
   constructor() {
     super()

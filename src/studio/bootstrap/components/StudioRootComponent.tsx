@@ -59,4 +59,4 @@ class StudioRootComponent extends React.Component<Props, State> {
   static childContextTypes = contextTypes
 }
 
-export default compose(a => a)(StudioRootComponent)
+export default StudioRootComponent

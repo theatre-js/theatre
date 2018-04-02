@@ -1,4 +1,4 @@
-import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
+import AbstractDerivation from '$shared//DataVerse/derivations/AbstractDerivation'
 import {collectObservedDependencies} from './discoveryMechanism'
 
 export class AutoDerivation<V> extends AbstractDerivation<V> {
@@ -10,11 +10,14 @@ export class AutoDerivation<V> extends AbstractDerivation<V> {
 
   _recalculate() {
     let value: V
-    const newDeps: Set<AbstractDerivation<mixed>> = collectObservedDependencies(
+
+    const newDeps: Set<AbstractDerivation<mixed>> = new Set() 
+    collectObservedDependencies(
       () => {
         value = this._fn()
       },
       observedDep => {
+        newDeps.add(observedDep)
         this._addDependency(observedDep)
       },
     )
@@ -36,6 +39,6 @@ export class AutoDerivation<V> extends AbstractDerivation<V> {
   }
 }
 
-export default function autoDerive<T>(fn: () => T) {
+export default function autoDerive<T>(fn: () => T): AbstractDerivation<T> {
   return new AutoDerivation(fn)
 }

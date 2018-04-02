@@ -1,4 +1,4 @@
-// export {default as box} from './box'
-// export {default as dict} from './dict'
-// export {default as array} from './array'
+// export {default as box} from './boxAtom'
+// export {default as dict} from './dictAtom'
+// export {default as array} from './arrayAtom'
 // export {default as atomifyDeep} from './atomifyDeep'

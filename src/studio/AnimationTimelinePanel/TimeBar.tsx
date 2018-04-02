@@ -2,7 +2,7 @@ import React from 'react'
 import css from './TimeBar.css'
 import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
 import cx from 'classnames'
-import {BoxAtom} from '$src/shared/DataVerse/atoms/box'
+import {BoxAtom} from '$shared//DataVerse/atoms/boxAtom'
 import {noop} from 'lodash'
 
 type Props = {

@@ -1,8 +1,8 @@
 import withDeps from '../withDeps'
 import deriveFromPropOfADictAtom from './deriveFromPropOfADictAtom'
-import dictAtom from '$src/shared/DataVerse/atoms/dict'
-import boxAtom from '$src/shared/DataVerse/atoms/box'
-import Ticker from '$src/shared/DataVerse/Ticker'
+import dictAtom from '$shared//DataVerse/atoms/dictAtom'
+import boxAtom from '$shared//DataVerse/atoms/boxAtom'
+import Ticker from '$shared//DataVerse/Ticker'
 
 describe('deriveFromPropOfADictAtom', () => {
   it('events should work', done => {
@@ -10,6 +10,7 @@ describe('deriveFromPropOfADictAtom', () => {
 
     const aD = deriveFromPropOfADictAtom(m, 'a')
     const bD = deriveFromPropOfADictAtom(m, 'b')
+
     const final = aD
       .map(n => bD.map(m => m.getValue() + n.getValue()))
       .flattenDeep(7)
@@ -23,7 +24,7 @@ describe('deriveFromPropOfADictAtom', () => {
 
     const ticker = new Ticker()
 
-    const adEvents = []
+    const adEvents: number[] = []
 
     aD.changes(ticker).tap(newBox => {
       adEvents.push(newBox.getValue())
@@ -36,7 +37,7 @@ describe('deriveFromPropOfADictAtom', () => {
     ticker.tick()
     expect(adEvents).toMatchObject([3])
 
-    const finalEvents = []
+    const finalEvents: number[] = []
     final.changes(ticker).tap(v => {
       finalEvents.push(v)
     })
@@ -68,7 +69,7 @@ describe('deriveFromPropOfADictAtom', () => {
       .flattenDeep(7)
 
     expect(cD.getValue()).toEqual('ab')
-    const changes = []
+    const changes: string[] = []
     cD.changes(ticker).tap(c => {
       changes.push(c)
     })

@@ -3,7 +3,7 @@ import AbstractCompositeAtom from './AbstractCompositeAtom'
 
 export default abstract class AbstractAtom<ChangeType> {
   isAtom = true
-  _trace: $FixMe
+  _trace?: $IntentionalAny
   _changeEmitter: Emitter<ChangeType>
   _parent: null | {
     atom: AbstractCompositeAtom<$IntentionalAny>

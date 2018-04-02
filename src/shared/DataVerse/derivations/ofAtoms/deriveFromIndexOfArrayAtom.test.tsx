@@ -1,7 +1,7 @@
 import deriveFromIndexOfArrayAtom from './deriveFromIndexOfArrayAtom'
-import boxAtom from '$src/shared/DataVerse/atoms/box'
-import arrayAtom from '$src/shared/DataVerse/atoms/array'
-import Ticker from '$src/shared/DataVerse/Ticker'
+import arrayAtom from '$shared//DataVerse/atoms/arrayAtom'
+import Ticker from '$shared//DataVerse/Ticker'
+import boxAtom, {BoxAtom} from '$shared//DataVerse/atoms/boxAtom'
 
 describe('deriveFromIndexOfArrayAtom', () => {
   it('should work', () => {
@@ -16,8 +16,7 @@ describe('deriveFromIndexOfArrayAtom', () => {
     ]
     const a = arrayAtom(originals)
     const index3 = deriveFromIndexOfArrayAtom(a, 3).map(val => val.getValue())
-    const changes = []
-    // debugger
+    const changes: string[] = []
     index3.changes(ticker).tap(c => {
       changes.push(c)
     })

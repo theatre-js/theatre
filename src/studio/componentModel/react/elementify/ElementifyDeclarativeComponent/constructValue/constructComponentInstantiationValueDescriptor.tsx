@@ -1,15 +1,15 @@
 import {elementify} from '$studio/handy'
 import constructMapDescriptor from './constructMapDescriptor'
 import constructListDescriptor from './constructListDescriptor'
-import boxAtom from '$src/shared/DataVerse/atoms/box'
-import dictAtom from '$src/shared/DataVerse/atoms/dict'
+import boxAtom from '$shared//DataVerse/atoms/boxAtom'
+import dictAtom from '$shared//DataVerse/atoms/dictAtom'
 
 const constructComponentInstantiationValueDescriptor = (
   des: $FixMe,
-  d: $FixMe,
+  self: $FixMe,
 ) => {
   const propsToFinalComponent = des.prop('props').flatMap(v => {
-    return constructMapDescriptor(v, d)
+    return constructMapDescriptor(v, self)
   })
 
   const modifierInstantiationDescriptors = des
@@ -22,10 +22,10 @@ const constructComponentInstantiationValueDescriptor = (
     modifierInstantiationDescriptors: dictAtom({
       byId: modifierInstantiationDescriptors
         .prop('byId')
-        .flatMap(v => constructMapDescriptor(v, d)),
+        .flatMap(v => constructMapDescriptor(v, self)),
       list: modifierInstantiationDescriptors
         .prop('list')
-        .flatMap(v => constructListDescriptor(v, d)),
+        .flatMap(v => constructListDescriptor(v, self)),
     }),
   })
     .derivedDict()
@@ -34,7 +34,7 @@ const constructComponentInstantiationValueDescriptor = (
   return elementify(
     instantiationDescriptorP.prop('props').prop('key'),
     instantiationDescriptorP,
-    d.pointer().prop('studio'),
+    self.pointer().prop('studio'),
   )
 }
 

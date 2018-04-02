@@ -5,7 +5,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "lint": "tslint -p . -c tslint.json ./src/**/*.tsx",
+    "lint": "tslint -p . -t stylish -c tslint.json",
     "test": "jest",
     "prettify-and-lint": "run-s prettify lint",
     "prettify": "prettier --write \"src/**/*.tsx\"",
@@ -20,7 +20,8 @@
     "examples:webpack:dev": "webpack-dev-server --progress --config webpack/examples/development.js",
     "build:dev": "npm-run-all --parallel lb:webpack:dev lf:webpack:dev studio:webpack:dev examples:webpack:dev",
     "open-examples": "opn http://localhost:9092/examples",
-    "typescript:check": "tsc -p ./tsconfig.json --noEmit"
+    "ci:check-types": "tsc -p ./ci.tsconfig.json --noEmit",
+    "ci:type-tests": "tslint -c ./typeTests.tslint.json -p ./typeTests.tsconfig.json --format stylish ./src/**/*.typeTest.ts*"
   },
   "jest": {
     "testMatch": [
@@ -79,6 +80,7 @@
     "@types/react-broadcast": "^0.6.0",
     "@types/react-dom": "^16.0.3",
     "@types/react-hot-loader": "^3.0.5",
+    "@types/react-icons": "^2.2.5",
     "@types/react-redux": "^5.0.14",
     "@types/react-router-dom": "^4.2.3",
     "@types/recompose": "^0.24.4",
@@ -125,6 +127,7 @@
     "json-touch-patch": "^0.11.2",
     "json2csv": "^3.11.4",
     "lodash": "^4.17.4",
+    "mitt": "^1.1.3",
     "mock-fs": "^4.4.2",
     "npm-run-all": "^4.0.2",
     "opn-cli": "^3.1.0",
@@ -159,7 +162,7 @@
     "tsconfig-paths-webpack-plugin": "^2.0.0",
     "tslint": "^5.9.1",
     "tslint-sonarts": "^1.4.0",
-    "typescript": "^2.9.0-dev.20180331",
+    "typescript": "^2.9.0-dev.20180402",
     "typings-for-css-modules-loader": "^1.7.0",
     "url-loader": "^0.5.9",
     "uuid": "^3.1.0",

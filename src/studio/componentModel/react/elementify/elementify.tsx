@@ -1,10 +1,9 @@
-import * as React from 'react'
-import ElementifyDeclarativeComponent from '$src/studio/componentModel/react/elementify/ElementifyDeclarativeComponent/ElementifyDeclarativeComponent'
-import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
-import withDeps from '$src/shared/DataVerse/derivations/withDeps'
-import autoDerive from '$src/shared/DataVerse/derivations/autoDerive/autoDerive'
-import dictAtom from '$src/shared/DataVerse/atoms/dict'
+import React from 'react'
+import AbstractDerivation from '$shared//DataVerse/derivations/AbstractDerivation'
+import withDeps from '$shared/DataVerse/derivations/withDeps'
 import {isCoreComponent} from '$studio/componentModel/selectors'
+import getOrCreateClassForDeclarativeComponentId from './ElementifyDeclarativeComponent/getOrCreateClassForDeclarativeComponentId'
+import constant from '$shared/DataVerse/derivations/constant';
 
 const identity = a => a
 
@@ -43,14 +42,16 @@ const elementify = (keyD, instantiationDescriptorP, studioD) => {
       const componentDescriptorTypeP = componentDescriptorP.prop('type')
 
       return componentDescriptorTypeP.flatMap((type: string) => {
-        const fn =
+        const reactComponentD =
           type === 'HardCoded'
-            ? elementifyHardCodedComponent
-            : elementifyDeclarativeComponent
+            ? componentDescriptorP.prop('reactComponent')
+            : constant(getOrCreateClassForDeclarativeComponentId(componentIdP.getValue()))
 
-        return fn(
+        return _elementify(
           keyD,
-          componentDescriptorP,
+          // componentDescriptorP,
+          componentIdP,
+          reactComponentD,
           instantiationDescriptorP.prop('props'),
           instantiationDescriptorP.prop('modifierInstantiationDescriptors'),
         )
@@ -61,21 +62,23 @@ const elementify = (keyD, instantiationDescriptorP, studioD) => {
 
 export default elementify
 
-const elementifyHardCodedComponent = (
+const _elementify = (
   keyD: AbstractDerivation<string>,
-  componentDescriptorP: $FixMe,
+  componentIdD: AbstractDerivation<string>,
+  reactComponentD: AbstractDerivation<React.ComponentType<$FixMe>>,
+  // componentDescriptorP: $FixMe,
   propsP: $FixMe,
   modifierInstantiationDescriptorsP: $FixMe,
 ) => {
-  const reactComponentP = componentDescriptorP.prop('reactComponent')
-  const componentIdD = componentDescriptorP.prop('id')
+  // const reactComponentD = componentDescriptorP.prop('reactComponent')
+  // const componentIdD = componentDescriptorP.prop('id')
   const finalKeyD = withDeps({componentIdD, keyD}, () => {
     // debugger
     return `${componentIdD.getValue()}#${keyD.getValue()}`
   })
 
-  return withDeps({reactComponentP, finalKeyD}, () => {
-    const Comp = reactComponentP.getValue()
+  return withDeps({reactComponentD, finalKeyD}, () => {
+    const Comp = reactComponentD.getValue()
     return (
       <Comp
         key={finalKeyD.getValue()}
@@ -87,33 +90,46 @@ const elementifyHardCodedComponent = (
   })
 }
 
-const elementifyDeclarativeComponent = (
-  keyD: AbstractDerivation<string>,
-  componentDescriptorP: $FixMe,
-  propsP: $FixMe,
-  modifierInstantiationDescriptorsP: $FixMe,
-) => {
-  const componentIdD = componentDescriptorP.prop('id')
-  const finalKeyD = autoDerive(() => {
-    return `${componentIdD.getValue()}#${keyD.getValue()}`
-  })
+// const elementifyDeclarativeComponent = (
+//   keyD: AbstractDerivation<string>,
+//   componentDescriptorP: $FixMe,
+//   propsP: $FixMe,
+//   modifierInstantiationDescriptorsP: $FixMe,
+// ) => {
+//   const componentIdD = componentDescriptorP.prop('id')
+//   const finalKeyD = autoDerive(() => {
+//     return `${componentIdD.getValue()}#${keyD.getValue()}`
+//   })
 
-  const innerPropsP = dictAtom({
-    componentDescriptor: componentDescriptorP,
-    props: propsP,
-    modifierInstantiationDescriptors: modifierInstantiationDescriptorsP,
-  })
-    .derivedDict()
-    .pointer()
+//   // const innerPropsP = dictAtom({
+//   //   componentDescriptor: componentDescriptorP,
+//   //   props: propsP,
+//   //   modifierInstantiationDescriptors: modifierInstantiationDescriptorsP,
+//   // })
+//   //   .derivedDict()
+//   //   .pointer()
 
-  return finalKeyD.flatMap(key => {
-    return (
-      <ElementifyDeclarativeComponent
-        componentId={componentIdD.getValue()}
-        key={key}
-        keyD={keyD}
-        props={innerPropsP}
-      />
-    )
-  })
-}
+//   return finalKeyD.flatMap(key => {
+//     const Cls = getOrCreateClassForDeclarativeComponentId(
+//       componentIdD.getValue(),
+//     )
+
+//     return (
+//       <Cls
+//         key={key}
+//         keyD={keyD}
+//         props={propsP}
+//         modifierInstantiationDescriptors={modifierInstantiationDescriptorsP}
+//       />
+//     )
+
+//     // return (
+//     //   <ElementifyDeclarativeComponent
+//     //     componentId={componentIdD.getValue()}
+//     //     key={key}
+//     //     keyD={keyD}
+//     //     props={innerPropsP}
+//     //   />
+//     // )
+//   })
+// }
