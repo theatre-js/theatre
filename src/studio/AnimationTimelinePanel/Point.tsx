@@ -51,6 +51,8 @@ export const POINT_RECT_EDGE_SIZE = 16
 
 class Point extends React.PureComponent<IProps, IState> {
   isSelected: boolean
+  isNextPointSelected: boolean
+  isPrevPointSelected: boolean
   pointClickRect: SVGRectElement | null
   activeMode: string
   svgSize: {width: number; height: number}
@@ -211,8 +213,9 @@ class Point extends React.PureComponent<IProps, IState> {
     this.props.showContextMenu(this.props.pointIndex, pos)
   }
 
-  _renderTransformedPoint() {
+  _renderTransformedPoint(pointMove: $FixMe) {
     const {
+      color,
       pointTime,
       pointValue,
       pointHandles,
@@ -224,7 +227,7 @@ class Point extends React.PureComponent<IProps, IState> {
       nextPointTime,
       nextPointValue,
     } = this.props
-    const {pointMove, handlesMove} = this.state
+    const {handlesMove} = this.state
 
     const newTime = pointTime + pointMove[0]
     const newValue = pointValue + pointMove[1]
@@ -243,30 +246,47 @@ class Point extends React.PureComponent<IProps, IState> {
           .map((handle: number, index: number) => handle + handlesMove[index]),
       ) as IHandles)
 
-    return (
-      <g opacity={0.5}>
+    const renderPrevPointConnector =
+      prevPointConnected && prevPointTime != null && prevPointValue != null
+    return [
+      // <g opacity={0.5}>
+      <g fill={color.darkened} stroke={color.darkened}>
         {pointConnected &&
           nextPointValue != null &&
           nextPointTime != null && (
             <Connector
               leftPointTime={newTime}
               leftPointValue={newValue}
-              rightPointTime={nextPointTime}
-              rightPointValue={nextPointValue}
+              rightPointTime={
+                this.isNextPointSelected
+                  ? nextPointTime + pointMove[0]
+                  : nextPointTime
+              }
+              rightPointValue={
+                this.isNextPointSelected
+                  ? nextPointValue + pointMove[1]
+                  : nextPointValue
+              }
               handles={newHandles}
             />
           )}
-        {prevPointConnected &&
-          prevPointTime != null &&
-          prevPointValue != null && (
-            <Connector
-              leftPointTime={prevPointTime}
-              leftPointValue={prevPointValue}
-              rightPointTime={newTime}
-              rightPointValue={newValue}
-              handles={newPrevPointHandles}
-            />
-          )}
+        {renderPrevPointConnector && (
+          <Connector
+            leftPointTime={
+              this.isPrevPointSelected
+                ? prevPointTime + pointMove[0]
+                : prevPointTime
+            }
+            leftPointValue={
+              this.isPrevPointSelected
+                ? prevPointValue + pointMove[1]
+                : prevPointValue
+            }
+            rightPointTime={newTime}
+            rightPointValue={newValue}
+            handles={newPrevPointHandles}
+          />
+        )}
         <circle
           fill="#1C2226"
           strokeWidth={2}
@@ -274,8 +294,27 @@ class Point extends React.PureComponent<IProps, IState> {
           cy={`${newValue}%`}
           r={3.2}
         />
-      </g>
-    )
+      </g>,
+      ...(renderPrevPointConnector ?
+        this.isPrevPointSelected ? [
+          <circle
+            fill="#1C2226"
+            stroke={color.darkened}
+            strokeWidth={2}
+            cx={`${prevPointTime + pointMove[0]}%`}
+            cy={`${prevPointValue + pointMove[1]}%`}
+            r={3.2}
+          />
+        ] : [
+        <circle
+          fill="#1C2226"
+          strokeWidth={1.6}
+          cx={`${prevPointTime}%`}
+          cy={`${prevPointValue}%`}
+          r={3.2}
+        />
+      ] : []),
+    ]
   }
 
   _setActiveMode(activeMode: string) {
@@ -291,12 +330,21 @@ class Point extends React.PureComponent<IProps, IState> {
   _highlightAsSelected(boundaries: $FixMe) {
     let shouldUpdateHighlightAsSelectedClass = false
     if (boundaries == null) {
+      this.isNextPointSelected = false
+      this.isPrevPointSelected = false
       if (this.isSelected) {
         this.isSelected = false
         shouldUpdateHighlightAsSelectedClass = true
       }
     } else {
-      const {pointTime, pointValue} = this.props
+      const {
+        pointTime,
+        pointValue,
+        prevPointTime,
+        prevPointValue,
+        nextPointTime,
+        nextPointValue,
+      } = this.props
       const {left, top, right, bottom} = boundaries
       if (
         left <= pointTime &&
@@ -314,11 +362,38 @@ class Point extends React.PureComponent<IProps, IState> {
           shouldUpdateHighlightAsSelectedClass = true
         }
       }
+      if (
+        prevPointTime != null &&
+        prevPointValue != null &&
+        left <= prevPointTime &&
+        prevPointTime <= right &&
+        top <= prevPointValue &&
+        prevPointValue <= bottom
+      ) {
+        this.isPrevPointSelected = true
+      } else {
+        this.isPrevPointSelected = false
+      }
+      if (
+        nextPointTime != null &&
+        nextPointValue != null &&
+        left <= nextPointTime &&
+        nextPointTime <= right &&
+        top <= nextPointValue &&
+        nextPointValue <= bottom
+      ) {
+        this.isNextPointSelected = true
+      } else {
+        this.isNextPointSelected = false
+      }
     }
     if (shouldUpdateHighlightAsSelectedClass && this.pointClickRect != null) {
       if (this.isSelected) {
         this.pointClickRect.classList.add(css.highlightAsSelected)
-        this.props.addPointToSelection(this.props.pointIndex, {time: this.props.pointTime, value: this.props.pointValue})
+        this.props.addPointToSelection(this.props.pointIndex, {
+          time: this.props.pointTime,
+          value: this.props.pointValue,
+        })
       } else {
         this.pointClickRect.classList.remove(css.highlightAsSelected)
         this.props.removePointFromSelection(this.props.pointIndex)
@@ -388,8 +463,16 @@ class Point extends React.PureComponent<IProps, IState> {
           return null
         }}
       </Subscriber>,
+      <Subscriber key="selectionMoveSubscriber" channel="selectionMove">
+        {({x, y}) => {
+          const {width, height} = this.svgSize
+          return this.isSelected
+            ? this._renderTransformedPoint([x / width * 100, y / height * 100])
+            : null
+        }}
+      </Subscriber>,
       <g key="point">
-        {isMoving && this._renderTransformedPoint()}
+        {isMoving && this._renderTransformedPoint(this.state.pointMove)}
         {renderLeftHandle && (
           <line
             x1={x}

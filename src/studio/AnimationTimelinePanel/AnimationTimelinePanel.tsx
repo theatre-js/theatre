@@ -7,7 +7,7 @@ import generateUniqueId from 'uuid/v4'
 import css from './AnimationTimelinePanel.css'
 import VariablesBox from './VariablesBox'
 import TimeBar from './TimeBar'
-import {Subscriber} from 'react-broadcast'
+import {Subscriber, Broadcast} from 'react-broadcast'
 import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
 import cx from 'classnames'
 import * as _ from 'lodash'
@@ -54,7 +54,8 @@ type State = {
         moveTo?: undefined | null | number
       }
   selectionStatus: 'NONE' | 'ACTIVE' | 'CONFIRMED'
-  selectionSize: {x: number; y: number}
+  selectionSize: {x: number, y: number}
+  selectionMove: {x: number, y: number}
   selectionProps:
     | undefined
     | null
@@ -101,6 +102,7 @@ class Content extends StudioComponent<Props, State> {
       boxBeingDragged: null,
       selectionStatus: 'NONE',
       selectionSize: {x: 0, y: 0},
+      selectionMove: {x: 0, y: 0},
       selectionProps: null,
       moveRatios: new Array(layout.length).fill(0),
       boundaries: this._getBoundaries(boxes, layout),
@@ -1032,58 +1034,60 @@ class Content extends StudioComponent<Props, State> {
                           ref={c => (this.variablesContainer = c)}
                           className={css.variables}
                         >
-                          <div>
-                            {layout.map((id, index) => {
-                              const box = boxes[id]
-                              const boxTranslateY =
-                                moveRatios[index] *
-                                (isABoxBeingDragged
-                                  ? boxBeingDragged.height
-                                  : 0)
-                              const canBeMerged =
-                                isABoxBeingDragged &&
-                                boxBeingDragged.index === index &&
-                                boxBeingDragged.mergeWith != null
-                              const shouldIndicateMerge =
-                                isABoxBeingDragged &&
-                                boxBeingDragged.mergeWith !== null &&
-                                boxBeingDragged.mergeWith === index
-                              let height = box.height
-                              return (
-                                <VariablesBox
-                                  key={id}
-                                  boxIndex={index}
-                                  boxId={id}
-                                  activeMode={activeMode}
-                                  translateY={boxTranslateY}
-                                  svgHeight={height}
-                                  svgWidth={svgWidth}
-                                  variableIds={box.variables}
-                                  splitVariable={this.splitVariable}
-                                  duration={duration}
-                                  canBeMerged={canBeMerged}
-                                  shouldIndicateMerge={shouldIndicateMerge}
-                                  pathToTimeline={this.props.pathToTimeline}
-                                  scrollLeft={scrollLeft}
-                                  isABoxBeingDragged={isABoxBeingDragged}
-                                  onMoveStart={this.onBoxStartMove}
-                                  onMoveEnd={this.onBoxEndMove}
-                                  onMove={this.onBoxMove}
-                                  onResize={this.onBoxResize}
-                                  addPointToSelection={this.addPointToSelection}
-                                  removePointFromSelection={
-                                    this.removePointFromSelection
-                                  }
-                                  {...(selectionBoundaries != null
-                                    ? {
-                                        selectionBoundaries:
-                                          selectionBoundaries[index],
-                                      }
-                                    : {})}
-                                />
-                              )
-                            })}
-                          </div>
+                          <Broadcast channel={'selectionMove'} value={this.state.selectionMove}>
+                            <div>
+                              {layout.map((id, index) => {
+                                const box = boxes[id]
+                                const boxTranslateY =
+                                  moveRatios[index] *
+                                  (isABoxBeingDragged
+                                    ? boxBeingDragged.height
+                                    : 0)
+                                const canBeMerged =
+                                  isABoxBeingDragged &&
+                                  boxBeingDragged.index === index &&
+                                  boxBeingDragged.mergeWith != null
+                                const shouldIndicateMerge =
+                                  isABoxBeingDragged &&
+                                  boxBeingDragged.mergeWith !== null &&
+                                  boxBeingDragged.mergeWith === index
+                                let height = box.height
+                                return (
+                                  <VariablesBox
+                                    key={id}
+                                    boxIndex={index}
+                                    boxId={id}
+                                    activeMode={activeMode}
+                                    translateY={boxTranslateY}
+                                    svgHeight={height}
+                                    svgWidth={svgWidth}
+                                    variableIds={box.variables}
+                                    splitVariable={this.splitVariable}
+                                    duration={duration}
+                                    canBeMerged={canBeMerged}
+                                    shouldIndicateMerge={shouldIndicateMerge}
+                                    pathToTimeline={this.props.pathToTimeline}
+                                    scrollLeft={scrollLeft}
+                                    isABoxBeingDragged={isABoxBeingDragged}
+                                    onMoveStart={this.onBoxStartMove}
+                                    onMoveEnd={this.onBoxEndMove}
+                                    onMove={this.onBoxMove}
+                                    onResize={this.onBoxResize}
+                                    addPointToSelection={this.addPointToSelection}
+                                    removePointFromSelection={
+                                      this.removePointFromSelection
+                                    }
+                                    {...(selectionBoundaries != null
+                                      ? {
+                                          selectionBoundaries:
+                                            selectionBoundaries[index],
+                                        }
+                                      : {})}
+                                  />
+                                )
+                              })}
+                            </div>
+                          </Broadcast>
                         </div>
                       </DraggableArea>
                     </div>
@@ -1105,6 +1109,8 @@ class Content extends StudioComponent<Props, State> {
                 height: selectionSize.y,
               }
             : {})}
+          move={this.state.selectionMove}
+          onMove={(x, y) => this.setState(() => ({selectionMove: {x, y}}))}
           onEnd={() => this.setState(() => ({selectionStatus: 'NONE'}))}
         />
       </Panel>

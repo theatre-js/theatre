@@ -30,12 +30,12 @@ class SelectionArea extends React.Component<Props, State> {
           <DraggableArea
             shouldRegisterEvents={isSelectionConfirmed}
             onDragStart={() => console.log('drag start')}
-            onDrag={() => console.log('drag')}
+            onDrag={this.props.onMove}
             onDragEnd={() => console.log('drag end')}
           >
             <div
               className={cx(css.selection, {[css.shrink]: isSelectionConfirmed})}
-              style={{left, top, width, height}}
+              style={{left, top, width, height, transform: `translate3d(${this.props.move.x}px, ${this.props.move.y}px, 0)`}}
               onClick={e => {
                 e.stopPropagation()
               }}

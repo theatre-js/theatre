@@ -1,5 +1,5 @@
 import React from 'react'
-import PointWrapper from './PointWrapper'
+import Point from './Point'
 import Connector from './Connector'
 import {NormalizedPoint} from '$studio/AnimationTimelinePanel/types'
 import {svgPaddingY} from './BoxView'
@@ -200,34 +200,31 @@ class Variable extends React.PureComponent<Props, IState> {
                     showContextMenu={this.showContextMenuForConnector}
                   />
                 )}
-              <PointWrapper
+              <Point
                 color={color}
                 key={`${point._value}${point._t}`}
-                point={point}
-                prevPoint={prevPoint}
-                nextPoint={nextPoint}
-                // {...(prevPoint
-                //   ? {
-                //       prevPointTime: prevPoint.time,
-                //       prevPointValue: prevPoint.value,
-                //       prevPointHandles:
-                //         prevPoint.interpolationDescriptor.handles,
-                //       prevPointConnected:
-                //         prevPoint.interpolationDescriptor.connected,
-                //     }
-                //   : {})}
-                // {...(nextPoint
-                //   ? {
-                //       nextPointTime: nextPoint.time,
-                //       nextPointValue: nextPoint.value,
-                //     }
-                //   : {})}
-                // pointTime={point.time}
-                // pointValue={point.value}
-                // pointHandles={point.interpolationDescriptor.handles}
-                // pointConnected={point.interpolationDescriptor.connected}
-                // pointAbsoluteTime={point._t}
-                // pointAbsoluteValue={point._value}
+                {...(prevPoint
+                  ? {
+                      prevPointTime: prevPoint.time,
+                      prevPointValue: prevPoint.value,
+                      prevPointHandles:
+                        prevPoint.interpolationDescriptor.handles,
+                      prevPointConnected:
+                        prevPoint.interpolationDescriptor.connected,
+                    }
+                  : {})}
+                {...(nextPoint
+                  ? {
+                      nextPointTime: nextPoint.time,
+                      nextPointValue: nextPoint.value,
+                    }
+                  : {})}
+                pointTime={point.time}
+                pointValue={point.value}
+                pointHandles={point.interpolationDescriptor.handles}
+                pointConnected={point.interpolationDescriptor.connected}
+                pointAbsoluteTime={point._t}
+                pointAbsoluteValue={point._value}
                 pointIndex={index}
                 getSvgSize={this.props.getSvgSize}
                 showPointValuesEditor={this.showPointValuesEditor}
