@@ -108,7 +108,7 @@ class BoxView extends StudioComponent<IProps, IState> {
     const value = clientY - top + 5 - 0.5 * svgPaddingY
     const pointProps: Point = {
       time: time * duration / svgWidth,
-      value: -value * (extremums[1] - extremums[0]) / (svgHeight - svgPaddingY),
+      value: extremums[1] - (value * (extremums[1] - extremums[0]) / (svgHeight - svgPaddingY)),
       interpolationDescriptor: {
         connected: false,
         __descriptorType: 'TimelinePointInterpolationDescriptor',
@@ -176,7 +176,7 @@ class BoxView extends StudioComponent<IProps, IState> {
       reduceStateAction(this.pathToPoint(variableId, pointIndex), point => ({
         ...point,
         time: point.time + change.time * this.props.duration / 100,
-        value: point.value + extremums[1] - change.value * extDiff / 100,
+        value: point.value - change.value * extDiff / 100,
       })),
     )
   }

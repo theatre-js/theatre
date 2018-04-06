@@ -249,8 +249,7 @@ class Point extends React.PureComponent<IProps, IState> {
     const renderPrevPointConnector =
       prevPointConnected && prevPointTime != null && prevPointValue != null
     return [
-      // <g opacity={0.5}>
-      <g fill={color.darkened} stroke={color.darkened}>
+      <g key='pointAndConnectors' fill={color.darkened} stroke={color.darkened}>
         {pointConnected &&
           nextPointValue != null &&
           nextPointTime != null && (
@@ -298,6 +297,7 @@ class Point extends React.PureComponent<IProps, IState> {
       ...(renderPrevPointConnector ?
         this.isPrevPointSelected ? [
           <circle
+            key='prevPoint'
             fill="#1C2226"
             stroke={color.darkened}
             strokeWidth={2}
@@ -307,6 +307,7 @@ class Point extends React.PureComponent<IProps, IState> {
           />
         ] : [
         <circle
+          key='prevPoint'
           fill="#1C2226"
           strokeWidth={1.6}
           cx={`${prevPointTime}%`}
