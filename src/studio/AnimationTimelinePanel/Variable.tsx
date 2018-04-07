@@ -162,7 +162,7 @@ class Variable extends React.PureComponent<Props, IState> {
   }
 
   addPointToSelection = (pointIndex: number, pointData: Object) => {
-    this.props.addPointToSelection(this.props.variableId, pointIndex, pointData)
+    this.props.addPointToSelection(this.props.variableId, this.extremums, pointIndex, pointData)
   }
 
   removePointFromSelection = (pointIndex: number) => {

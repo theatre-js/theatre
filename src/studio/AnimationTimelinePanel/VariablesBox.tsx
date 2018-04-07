@@ -135,8 +135,8 @@ class VariablesBox extends React.PureComponent<IProps, IState> {
     this.setState(() => ({activeVariableId}))
   }
 
-  addPointToSelection = (variableId: string, pointIndex: number, pointData: Object) => {
-    this.props.addPointToSelection(this.props.boxIndex, variableId, pointIndex, pointData)
+  addPointToSelection = (variableId: string, variableExtremums: Object, pointIndex: number, pointData: Object) => {
+    this.props.addPointToSelection(this.props.boxIndex, variableId, variableExtremums, pointIndex, pointData)
   }
 
   removePointFromSelection = (variableId: string, pointIndex: number) => {

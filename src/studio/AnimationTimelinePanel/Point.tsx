@@ -249,7 +249,7 @@ class Point extends React.PureComponent<IProps, IState> {
     const renderPrevPointConnector =
       prevPointConnected && prevPointTime != null && prevPointValue != null
     return [
-      <g key='pointAndConnectors' fill={color.darkened} stroke={color.darkened}>
+      <g key="pointAndConnectors" fill={color.darkened} stroke={color.darkened}>
         {pointConnected &&
           nextPointValue != null &&
           nextPointTime != null && (
@@ -294,27 +294,30 @@ class Point extends React.PureComponent<IProps, IState> {
           r={3.2}
         />
       </g>,
-      ...(renderPrevPointConnector ?
-        this.isPrevPointSelected ? [
-          <circle
-            key='prevPoint'
-            fill="#1C2226"
-            stroke={color.darkened}
-            strokeWidth={2}
-            cx={`${prevPointTime + pointMove[0]}%`}
-            cy={`${prevPointValue + pointMove[1]}%`}
-            r={3.2}
-          />
-        ] : [
-        <circle
-          key='prevPoint'
-          fill="#1C2226"
-          strokeWidth={1.6}
-          cx={`${prevPointTime}%`}
-          cy={`${prevPointValue}%`}
-          r={3.2}
-        />
-      ] : []),
+      ...(renderPrevPointConnector
+        ? this.isPrevPointSelected
+          ? [
+              <circle
+                key="prevPoint"
+                fill="#1C2226"
+                stroke={color.darkened}
+                strokeWidth={2}
+                cx={`${prevPointTime + pointMove[0]}%`}
+                cy={`${prevPointValue + pointMove[1]}%`}
+                r={3.2}
+              />,
+            ]
+          : [
+              <circle
+                key="prevPoint"
+                fill="#1C2226"
+                strokeWidth={1.6}
+                cx={`${prevPointTime}%`}
+                cy={`${prevPointValue}%`}
+                r={3.2}
+              />,
+            ]
+        : []),
     ]
   }
 
@@ -464,14 +467,6 @@ class Point extends React.PureComponent<IProps, IState> {
           return null
         }}
       </Subscriber>,
-      <Subscriber key="selectionMoveSubscriber" channel="selectionMove">
-        {({x, y}) => {
-          const {width, height} = this.svgSize
-          return this.isSelected
-            ? this._renderTransformedPoint([x / width * 100, y / height * 100])
-            : null
-        }}
-      </Subscriber>,
       <g key="point">
         {isMoving && this._renderTransformedPoint(this.state.pointMove)}
         {renderLeftHandle && (
@@ -598,7 +593,7 @@ class Point extends React.PureComponent<IProps, IState> {
                 strokeWidth="1"
                 // @ts-ignore
                 cx={rightHandle[0]}
-                // @ts-ignore
+                // @ts-ignoree
                 cy={rightHandle[1]}
                 r={2}
                 className={css.handle}
@@ -609,6 +604,14 @@ class Point extends React.PureComponent<IProps, IState> {
           </DraggableArea>
         )}
       </g>,
+      <Subscriber key="selectionMoveSubscriber" channel="selectionMove">
+        {({x, y}) => {
+          const {width, height} = this.svgSize
+          return this.isSelected
+            ? this._renderTransformedPoint([x / width * 100, y / height * 100])
+            : null
+        }}
+      </Subscriber>,
     ]
   }
 }

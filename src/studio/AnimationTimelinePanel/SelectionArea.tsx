@@ -1,7 +1,7 @@
 import {React} from '$src/studio/handy'
 import css from './SelectionArea.css'
 import cx from 'classnames'
-import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea';
+import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
 
 interface Props {
   status: $FixMe
@@ -15,6 +15,21 @@ interface Props {
 interface State {}
 
 class SelectionArea extends React.Component<Props, State> {
+  initialX: number = 0
+  initialY: number = 0
+
+  dragHandler = (dx: number, dy: number) => {
+    this.props.onMove(dx + this.initialX, dy + this.initialY)
+    // this.props.onMove(dx, dy)
+  }
+
+  dragStartHandler = () => {
+    this.initialX = this.props.move.x || 0
+    this.initialY = this.props.move.y || 0
+  }
+
+  dragEndHandler = () => {}
+
   render() {
     const {status} = this.props
     const isSelectionConfirmed = status === 'CONFIRMED'
@@ -29,17 +44,28 @@ class SelectionArea extends React.Component<Props, State> {
         <div className={css.container} onClick={() => this.props.onEnd()}>
           <DraggableArea
             shouldRegisterEvents={isSelectionConfirmed}
-            onDragStart={() => console.log('drag start')}
-            onDrag={this.props.onMove}
-            onDragEnd={() => console.log('drag end')}
+            onDragStart={this.dragStartHandler}
+            onDrag={this.dragHandler}
+            onDragEnd={this.dragEndHandler}
           >
             <div
-              className={cx(css.selection, {[css.shrink]: isSelectionConfirmed})}
-              style={{left, top, width, height, transform: `translate3d(${this.props.move.x}px, ${this.props.move.y}px, 0)`}}
-              onClick={e => {
-                e.stopPropagation()
+              style={{
+                transform: `translate3d(
+                  ${this.props.move.x}px,
+                  ${this.props.move.y}px,
+                  0)`,
               }}
-            />
+            >
+              <div
+                className={cx(css.selection, {
+                  [css.shrink]: isSelectionConfirmed,
+                })}
+                style={{left, top, width, height}}
+                onClick={e => {
+                  e.stopPropagation()
+                }}
+              />
+            </div>
           </DraggableArea>
         </div>
       )
