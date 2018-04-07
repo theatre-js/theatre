@@ -54,8 +54,9 @@ type State = {
         moveTo?: undefined | null | number
       }
   selectionStatus: 'NONE' | 'ACTIVE' | 'CONFIRMED'
-  selectionSize: {x: number, y: number}
-  selectionMove: {x: number, y: number}
+  selectionSize: {x: number; y: number}
+  selectionMove: {x: number; y: number}
+  selectionLimits: null | {right: number; left: number}
   selectionProps:
     | undefined
     | null
@@ -104,6 +105,7 @@ class Content extends StudioComponent<Props, State> {
       selectionStatus: 'NONE',
       selectionSize: {x: 0, y: 0},
       selectionMove: {x: 0, y: 0},
+      selectionLimits: null,
       selectionProps: null,
       moveRatios: new Array(layout.length).fill(0),
       boundaries: this._getBoundaries(boxes, layout),
@@ -694,6 +696,9 @@ class Content extends StudioComponent<Props, State> {
           x: right - left,
           y: bottom - top,
         },
+        selectionLimits: {
+          ...this._getSelectedPointsHorizontalLimits(this.selectedPoints),
+        },
       }))
     } else {
       this.selectedPoints = {}
@@ -703,6 +708,7 @@ class Content extends StudioComponent<Props, State> {
         selectionProps: null,
         selectionSize: {x: 0, y: 0},
         selectionMove: {x: 0, y: 0},
+        selectionLimits: null,
       }))
     }
   }
@@ -716,10 +722,15 @@ class Content extends StudioComponent<Props, State> {
         (variables: $FixMe) => {
           Object.keys(this.selectedPoints).forEach((boxKey: string) => {
             const boxInfo = this.selectedPoints[boxKey]
-            const boxHeight = boundaries[Number(boxKey) + 1] - boundaries[Number(boxKey)] - svgPaddingY
+            const boxHeight =
+              boundaries[Number(boxKey) + 1] -
+              boundaries[Number(boxKey)] -
+              svgPaddingY
             Object.keys(boxInfo).forEach((variableKey: string) => {
               const variableInfo = boxInfo[variableKey]
-              const extremums = this.extremumsOfVariablesInSelection[variableKey]
+              const extremums = this.extremumsOfVariablesInSelection[
+                variableKey
+              ]
               const extDiff = extremums[1] - extremums[0]
               Object.keys(variableInfo).forEach((pointKey: string) => {
                 const path = [variableKey, 'points', pointKey]
@@ -728,17 +739,19 @@ class Content extends StudioComponent<Props, State> {
                   path,
                   {
                     ...pointProps,
-                    time: pointProps.time + (selectionMove.x / svgWidth) * duration,
-                    value: pointProps.value - (selectionMove.y / boxHeight) * extDiff,
+                    time:
+                      pointProps.time + selectionMove.x / svgWidth * duration,
+                    value:
+                      pointProps.value - selectionMove.y / boxHeight * extDiff,
                   },
-                  variables
+                  variables,
                 )
               })
             })
           })
           return variables
-        }
-      )
+        },
+      ),
     )
 
     this.setState(() => ({
@@ -746,6 +759,7 @@ class Content extends StudioComponent<Props, State> {
       selectionProps: null,
       selectionSize: {x: 0, y: 0},
       selectionMove: {x: 0, y: 0},
+      selectionLimits: null,
     }))
     setTimeout(() => {
       this.selectedPoints = {}
@@ -838,6 +852,49 @@ class Content extends StudioComponent<Props, State> {
       POINT_RECT_EDGE_SIZE / 2
 
     return {left, top, right, bottom}
+  }
+
+  _getSelectedPointsHorizontalLimits(points: $FixMe): {right: number, left: number} {
+    const {variables} = this.props
+    const {focus} = this.state
+
+    let leftLimit = -Infinity
+    let rightLimit = Infinity
+    Object.keys(points).forEach((boxKey: string) => {
+      const selectedBox = points[boxKey]
+      Object.keys(selectedBox).forEach((variableKey: string) => {
+        const {points: variablePoints} = variables[variableKey]
+        const selectedPointsKeys = Object.keys(selectedBox[variableKey]).map(
+          Number,
+        )
+        selectedPointsKeys.forEach((pointIndex: number) => {
+          const point = variablePoints[pointIndex]
+          const prevIndex = pointIndex - 1
+          const nextIndex = pointIndex + 1
+
+          if (!selectedPointsKeys.includes(prevIndex)) {
+            const prevPoint = variablePoints[prevIndex]
+            if (prevPoint != null) {
+              leftLimit = Math.max(leftLimit, prevPoint.time - point.time)
+            } else {
+              leftLimit = Math.max(leftLimit, -point.time)
+            }
+          }
+          if (!selectedPointsKeys.includes(nextIndex)) {
+            const nextPoint = variablePoints[nextIndex]
+            if (nextPoint != null) {
+              rightLimit = Math.min(rightLimit, nextPoint.time - point.time)
+            } else {
+              rightLimit = Math.min(rightLimit, focus[1] - point.time)
+            }
+          }
+        })
+      })
+    })
+    return {
+      left: leftLimit / (focus[1] - focus[0]) * this.panelWidth,
+      right: rightLimit / (focus[1] - focus[0]) * this.panelWidth,
+    }
   }
 
   _getSelectionBoundaries(panelWidth: number) {
@@ -999,6 +1056,7 @@ class Content extends StudioComponent<Props, State> {
       selectionStatus,
       selectionSize,
       selectionProps,
+      selectionLimits,
     } = this.state
     const {boxes, layout, panelObjectBeingDragged} = this.props
 
@@ -1099,7 +1157,10 @@ class Content extends StudioComponent<Props, State> {
                           ref={c => (this.variablesContainer = c)}
                           className={css.variables}
                         >
-                          <Broadcast channel={'selectionMove'} value={this.state.selectionMove}>
+                          <Broadcast
+                            channel={'selectionMove'}
+                            value={this.state.selectionMove}
+                          >
                             <div>
                               {layout.map((id, index) => {
                                 const box = boxes[id]
@@ -1138,7 +1199,9 @@ class Content extends StudioComponent<Props, State> {
                                     onMoveEnd={this.onBoxEndMove}
                                     onMove={this.onBoxMove}
                                     onResize={this.onBoxResize}
-                                    addPointToSelection={this.addPointToSelection}
+                                    addPointToSelection={
+                                      this.addPointToSelection
+                                    }
                                     removePointFromSelection={
                                       this.removePointFromSelection
                                     }
@@ -1155,6 +1218,26 @@ class Content extends StudioComponent<Props, State> {
                           </Broadcast>
                         </div>
                       </DraggableArea>
+                      <SelectionArea
+                        status={selectionStatus}
+                        {...(selectionStatus != 'NONE'
+                          ? {
+                              // @ts-ignore
+                              left: selectionProps.fromX,
+                              // @ts-ignore
+                              top: selectionProps.fromY,
+                              width: selectionSize.x,
+                              height: selectionSize.y,
+                            }
+                          : {})}
+                        leftLimit={selectionLimits != null ? selectionLimits.left : null}
+                        rightLimit={selectionLimits != null ? selectionLimits.right : null}
+                        move={this.state.selectionMove}
+                        onMove={(x: number, y: number) =>
+                          this.setState(() => ({selectionMove: {x, y}}))
+                        }
+                        onEnd={this._applyChangesToSelection}
+                      />
                     </div>
                   )
                 }}
@@ -1162,22 +1245,6 @@ class Content extends StudioComponent<Props, State> {
             )
           }}
         </Subscriber>
-        <SelectionArea
-          status={selectionStatus}
-          {...(selectionStatus != 'NONE'
-            ? {
-                // @ts-ignore
-                left: selectionProps.fromX,
-                // @ts-ignore
-                top: selectionProps.fromY,
-                width: selectionSize.x,
-                height: selectionSize.y,
-              }
-            : {})}
-          move={this.state.selectionMove}
-          onMove={(x: number, y: number) => this.setState(() => ({selectionMove: {x, y}}))}
-          onEnd={this._applyChangesToSelection}
-        />
       </Panel>
     )
   }

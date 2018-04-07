@@ -10,6 +10,8 @@ interface Props {
   width?: number
   height?: number
   onEnd: Function
+  leftLimit: null | number
+  rightLimit: null | number
 }
 
 interface State {}
@@ -18,8 +20,12 @@ class SelectionArea extends React.Component<Props, State> {
   initialX: number = 0
   initialY: number = 0
 
-  dragHandler = (dx: number, dy: number) => {
-    this.props.onMove(dx + this.initialX, dy + this.initialY)
+  dragHandler = (x: number, y: number) => {
+    const {leftLimit, rightLimit} = this.props
+    let dx = x + this.initialX
+    if (dx <= leftLimit) dx = leftLimit + 1
+    if (dx >= rightLimit) dx = rightLimit - 1
+    this.props.onMove(dx, y + this.initialY)
     // this.props.onMove(dx, dy)
   }
 
