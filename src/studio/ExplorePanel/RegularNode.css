@@ -10,7 +10,7 @@
 
   &:before {
     display: block;
-    position: absolute 0 -1px 0 0;  
+    position: absolute 0 -1px 0 0;
     content: ' ';
     background: #11a4d6;
     opacity: 0;
@@ -25,12 +25,12 @@
 
   & > .name {
     & > .textLogo {
-      color: rgba(#FFFFFF, 0.5);
+      color: rgba(#ffffff, 0.5);
     }
 
     & > .tagOpen,
     & > .tagClose {
-      color: rgba(#FFFFFF, 0.5);
+      color: rgba(#ffffff, 0.5);
     }
 
     & > .tagName {
@@ -71,7 +71,7 @@
 }
 
 .selected > .top > .bullet {
-  color: rgba(#FFFFFF, 0.6);
+  color: rgba(#ffffff, 0.6);
 }
 
 .expandButton {
@@ -83,7 +83,8 @@
   line-height: 25px;
 }
 
-.tagOpen, .tagClose {
+.tagOpen,
+.tagClose {
   color: #4f5d77;
 }
 
@@ -180,21 +181,4 @@
     border-radius: 50%;
     border: 2px solid #5a5a5a;
   }
-}
-
-.textLogo {
-  position: relative;
-  display: inline-block;
-  width: 14px;
-  height: 14px;
-  margin-right: 4px;
-  border-radius: 2px;
-  line-height: 16px;
-  color: #4f5d77;
-  text-align: center;
-}
-
-.textContent {
-  white-space: nowrap;
-  display: inline-block;  
 }

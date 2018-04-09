@@ -9,7 +9,7 @@ type Listener<V> = ((v: V) => void) | (() => void)
 
 export default class Tappable<V> {
   _props: IProps<V>
-  _tappers: Map<any, (v: V) => void>
+  _tappers: Map<number, (v: V) => void>
   _untapFromSource: null | UntapFromSource
   _lastTapperId: number
 

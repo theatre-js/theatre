@@ -1,0 +1,28 @@
+.container {
+  composes: container from './RegularNode.css';
+}
+
+.top {
+  composes: top from './RegularNode.css';
+}
+
+.textLogo {
+  position: relative;
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-right: 4px;
+  border-radius: 2px;
+  line-height: 16px;
+  color: #4f5d77;
+  text-align: center;
+}
+
+.textContent {
+  white-space: nowrap;
+  display: inline-block;
+}
+
+.name {
+  padding-left: calc(var(--indent) - 30px);
+}

@@ -1,5 +1,5 @@
 import React from 'react'
-import css from './Node.css'
+import css from './RegularNode.css'
 // import {Path} from '$studio/ExplorePanel/types'
 import SvgIcon from '$shared/components/SvgIcon'
 import {resolveCss} from '$studio/handy'

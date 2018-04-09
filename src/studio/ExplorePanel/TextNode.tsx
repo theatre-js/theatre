@@ -1,7 +1,7 @@
 import React from 'react'
-import css from './Node.css'
+import css from './TextNode.css'
 // import {Path} from '$studio/ExplorePanel/types'
-import SvgIcon from '$shared/components/SvgIcon'
+// import SvgIcon from '$shared/components/SvgIcon'
 import {resolveCss} from '$studio/handy'
 // import stringStartsWith from 'lodash/startsWith'
 // import DerivationAsReactElement from '$src/studio/componentModel/react/utils/DerivationAsReactElement'
@@ -32,7 +32,17 @@ const TextNode = (props: Props): React.ReactNode => (
 
       const depth = val(propsP.depth)
 
-      return <div>Text node for {val(nodeP.text)}</div>
+      return (
+        <div {...classes('container')} style={{'--depth': depth}}>
+          <div className={css.top}>
+            <div key="name" className={css.name}>
+              <div className={css.textLogo}>t</div>
+              <div className={css.textContent}>{val(nodeP.text)}</div>
+            </div>
+            <div key="highlighter" className={css.highlighter} />
+          </div>
+        </div>
+      )
     }}
   </PropsAsPointer>
 )

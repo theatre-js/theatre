@@ -16,4 +16,3 @@ export const bulletIcon: string;
 export const hasChildren: string;
 export const expanded: string;
 export const subNodes: string;
-export const textContent: string;

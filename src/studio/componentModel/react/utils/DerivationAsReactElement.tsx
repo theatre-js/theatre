@@ -24,15 +24,16 @@ export default class DerivationAsReactElement extends PureComponentWithStudio<
       .tap(() => {
         this.forceUpdate()
       })
-  }
-
-  componentWillUnmount() {
-    this._untapFromDerivationChanges()
-  }
-
-  componentWillReceiveProps(newProps: Props) {
-    this._untapFromDerivationChanges()
-    this.listen(newProps)
+    }
+    
+    componentWillUnmount() {
+      this._untapFromDerivationChanges()
+    }
+    
+    componentWillReceiveProps(newProps: Props) {
+      this._untapFromDerivationChanges()
+      this.listen(newProps)
+      this.forceUpdate()
   }
 
   render() {

@@ -1,7 +1,14 @@
 import {CommonNamespaceState} from '$studio/common/types'
 import {WorkspaceNamespaceState} from '$studio/workspace/types'
-import {IComponentModelNamespaceHistoricState, IComponentModelNamespaceAhistoricState} from '$studio/componentModel/types'
-import {StateWithHistory, HistoryOnly} from '$shared//utils/redux/withHistory/withHistory'
+import {
+  IComponentModelNamespaceHistoricState,
+  IComponentModelNamespaceAhistoricState,
+} from '$studio/componentModel/types'
+import {
+  StateWithHistory,
+  HistoryOnly,
+} from '$shared//utils/redux/withHistory/withHistory'
+import {Pointer} from '$shared/DataVerse2/pointer'
 
 export interface IStoreHistoricState {
   common: CommonNamespaceState
@@ -20,9 +27,11 @@ export interface IStudioStoreState
 
 export interface IStudioHistoryState extends HistoryOnly<IStoreHistoricState> {}
 
-export type Selector<ReturnType, ParamsType = void> = 
-  ParamsType extends void ? (state: IStudioStoreState) => ReturnType : 
-  (
-    state: IStudioStoreState,
-    params: ParamsType,
-  ) => ReturnType
+export type Selector<ReturnType, ParamsType = void> = ParamsType extends void
+  ? (((state: IStudioStoreState) => ReturnType) &
+      ((state: Pointer<IStudioStoreState>) => Pointer<ReturnType>))
+  : (((state: IStudioStoreState, params: ParamsType) => ReturnType) &
+      ((
+        state: Pointer<IStudioStoreState>,
+        params: ParamsType,
+      ) => Pointer<ReturnType>))

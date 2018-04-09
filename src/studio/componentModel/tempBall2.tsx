@@ -188,6 +188,7 @@ const two = {
       list: ['defaultTimeline'],
     },
     localHiddenValuesById: {
+      hallo: 'hallo',
       fontSize: '18px',
       container: {
         __descriptorType: 'ComponentInstantiationValueDescriptor',
@@ -196,6 +197,10 @@ const two = {
           class: 'scene',
           key: 'container',
           children: [
+            {
+              __descriptorType: 'ReferenceToLocalHiddenValue',
+              which: 'hallo',
+            },
             {
               __descriptorType: 'ReferenceToLocalHiddenValue',
               which: '8f69e8f5-77c3-4b9c-9864-e14c004f7e89',
