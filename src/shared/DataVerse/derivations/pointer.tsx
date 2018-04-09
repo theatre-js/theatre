@@ -1,9 +1,15 @@
 import {MapKey} from '$shared/DataVerse/types'
 import AbstractDerivation from './AbstractDerivation'
+import {DictAtom} from '../atoms/dictAtom'
+import {ArrayAtom} from '$shared/DataVerse/atoms/arrayAtom'
+import AbstractDerivedDict from '$shared//DataVerse/derivations/dicts/AbstractDerivedDict'
+import AbstractDerivedArray from './arrays/AbstractDerivedArray'
+import DerivedClassInstance from '../derivedClass/DerivedClassInstance';
 import {
   DerivationTypeOfPointerType,
   IndexOfPointer,
   PropOfPointer,
+  PointerKeys,
 } from './pointerTypes'
 
 const noBoxAtoms = (v: $IntentionalAny) => {
@@ -14,15 +20,22 @@ const noBoxAtoms = (v: $IntentionalAny) => {
   }
 }
 
+type Root =
+  | DictAtom<mixed>
+  | ArrayAtom<mixed>
+  | AbstractDerivedDict<mixed>
+  | AbstractDerivedArray<mixed>
+  | DerivedClassInstance<mixed>
+
 type Address =
   | {
       type: 'WithPath'
-      root: $FixMe
+      root: Root
       path: Array<MapKey>
     }
   | {
       type: 'fromParentPointer'
-      parentPointer: PointerDerivation<$FixMe>
+      parentPointer: PointerDerivation<$IntentionalAny>
       keyOrIndex: number | string
     }
 
@@ -30,28 +43,26 @@ export class PointerDerivation<V> extends AbstractDerivation<
   DerivationTypeOfPointerType<V>
 > {
   v: V
-  static NOTFOUND: void = undefined //Symbol('notfound')
+  static NOTFOUND: void = undefined
   isPointer = true
   _address: Address
-  _internalDerivation: undefined | null | AbstractDerivation<$FixMe>
-  // inPointer = true
-  _props: {[key: string]: PointerDerivation<$FixMe>}
+  _internalDerivation: undefined | null | AbstractDerivation<$IntentionalAny>
+  _props: {[K in $IntentionalAny]: PointerDerivation<$IntentionalAny>}
 
   constructor(address: Address) {
     super()
-    // lastPointerId++
     this._address = address
     this._internalDerivation = undefined
     this._props = {}
   }
 
-  prop<K extends MapKey>(key: K): PropOfPointer<V, K> {
+  prop<K extends PointerKeys<V>>(key: K): PropOfPointer<V, K> {
     if (!this._props[key]) {
       this._props[key] = new PointerDerivation({
         type: 'fromParentPointer',
         parentPointer: this,
-        keyOrIndex: key,
-      }) // {...this._address, path: [...this._address.path, key]})
+        keyOrIndex: key as $IntentionalAny,
+      })
     }
     return this._props[key] as $IntentionalAny
   }
@@ -62,10 +73,9 @@ export class PointerDerivation<V> extends AbstractDerivation<
         type: 'fromParentPointer',
         parentPointer: this,
         keyOrIndex: key,
-      }) // {...this._address, path: [...this._address.path, key]})
+      })
     }
     return this._props[key] as $IntentionalAny
-    // return new PointerDerivation({...this._address, path: [...this._address.path, key]})
   }
 
   _makeDerivation() {
@@ -73,9 +83,7 @@ export class PointerDerivation<V> extends AbstractDerivation<
     const d =
       address.type === 'fromParentPointer'
         ? this._makeDerivationForParentPointer(
-            // $FixMe
             address.parentPointer,
-            // $FixMe
             address.keyOrIndex,
           )
         : this._makeDerivationForPath(address.root, address.path)
@@ -86,33 +94,29 @@ export class PointerDerivation<V> extends AbstractDerivation<
   }
 
   _makeDerivationForParentPointer(
-    parentPointer: PointerDerivation<$FixMe>,
+    parentPointer: PointerDerivation<$IntentionalAny>,
     keyOrIndex: string | number,
   ) {
     const d = parentPointer
       .flatMap(p => propify(p, keyOrIndex))
       .flatMap(noBoxAtoms)
 
-    // d.inPointer = true
     return d
   }
 
-  _makeDerivationForPath(root: $FixMe, path: Array<string | number>) {
+  _makeDerivationForPath(root: Root, path: Array<string | number>) {
     let finalDerivation = modules.constant.default(root) as AbstractDerivation<
-      $FixMe
+      $IntentionalAny
     >
-    // finalDerivation.inPointer = true
     path.forEach(key => {
       finalDerivation = finalDerivation.flatMap(p => propify(p, key))
-      // finalDerivation.inPointer = true
     })
 
     finalDerivation = finalDerivation.flatMap(noBoxAtoms)
-    // finalDerivation.inPointer = true
     return finalDerivation
   }
 
-  _getInternalDerivation(): AbstractDerivation<$FixMe> {
+  _getInternalDerivation(): AbstractDerivation<$IntentionalAny> {
     if (!this._internalDerivation) {
       this._internalDerivation = this._makeDerivation()
     }
@@ -132,18 +136,17 @@ export class PointerDerivation<V> extends AbstractDerivation<
   }
 }
 
-const _propify = (possibleReactiveValue: $FixMe, key: string | number) => {
-  // pointerFlatMaps++
+const _propify = (
+  possibleReactiveValue: $IntentionalAny,
+  key: string | number,
+) => {
   if (
     possibleReactiveValue === PointerDerivation.NOTFOUND ||
     possibleReactiveValue === undefined
   ) {
     return PointerDerivation.NOTFOUND
   } else if (possibleReactiveValue instanceof modules.dict.DictAtom) {
-    return modules.deriveFromPropOfADictAtom.default(
-      possibleReactiveValue,
-      key as $FixMe,
-    )
+    return modules.deriveFromPropOfADictAtom.default(possibleReactiveValue, key)
   } else if (
     possibleReactiveValue instanceof modules.array.ArrayAtom &&
     typeof key === 'number'
@@ -153,7 +156,7 @@ const _propify = (possibleReactiveValue: $FixMe, key: string | number) => {
       key,
     )
   } else if (
-    possibleReactiveValue instanceof modules.DerivedInstance.default ||
+    possibleReactiveValue instanceof modules.DerivedClassInstance.default ||
     possibleReactiveValue instanceof PointerDerivation ||
     possibleReactiveValue instanceof modules.AbstractDerivedDict.default
   ) {
@@ -165,11 +168,11 @@ const _propify = (possibleReactiveValue: $FixMe, key: string | number) => {
   }
 }
 
-const propify = (possibleReactiveValue: $FixMe, key: string | number) => {
+const propify = (
+  possibleReactiveValue: $IntentionalAny,
+  key: string | number,
+) => {
   const d = _propify(possibleReactiveValue, key)
-  if (typeof d === 'object' && d.isDerivation === true) {
-    // d.inPointer = true
-  }
   return d
 }
 
@@ -182,17 +185,9 @@ const modules = {
   deriveFromPropOfADictAtom: require('./ofAtoms/deriveFromPropOfADictAtom'),
   deriveFromIndexOfArrayAtom: require('./ofAtoms/deriveFromIndexOfArrayAtom'),
   deriveFromBoxAtom: require('./ofAtoms/deriveFromBoxAtom'),
-  DerivedInstance: require('$shared/DataVerse/derivedClass/DerivedClassInstance'),
+  DerivedClassInstance: require('$shared/DataVerse/derivedClass/DerivedClassInstance'),
   AbstractDerivedDict: require('./dicts/AbstractDerivedDict'),
-  box: require('$shared/DataVerse/atoms/box'),
-  dict: require('$shared/DataVerse/atoms/dict'),
-  array: require('$shared/DataVerse/atoms/array'),
+  box: require('$shared/DataVerse/atoms/boxAtom'),
+  dict: require('$shared/DataVerse/atoms/dictAtom'),
+  array: require('$shared/DataVerse/atoms/arrayAtom'),
 }
-
-// let lastPointerId = 0
-// let pointerFlatMaps = 0
-
-// setTimeout(() => {
-//   console.log('pointers:', lastPointerId)
-//   console.log('pointerFlatMaps:', pointerFlatMaps)
-// }, 200)

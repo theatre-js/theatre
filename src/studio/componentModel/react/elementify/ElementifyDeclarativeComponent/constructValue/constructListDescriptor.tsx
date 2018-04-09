@@ -1,5 +1,5 @@
-const constructListDescriptor = (derivedArray: $FixMe, d: $FixMe) => {
-  return derivedArray && derivedArray.map(v => constructValue.default(v, d))
+const constructListDescriptor = (derivedArray: $FixMe, self: $FixMe) => {
+  return derivedArray && derivedArray.map(v => constructValue.default(v, self))
 }
 
 const constructValue = require('./constructValue')

@@ -1,5 +1,5 @@
 import jsonPatchLib from 'fast-json-patch'
-import atomifyDeep from '$src/shared/DataVerse/atoms/atomifyDeep'
+import atomifyDeep from '$shared//DataVerse/atoms/atomifyDeep'
 
 type Diff = $FixMe
 type Stuff = $FixMe

@@ -1,8 +1,8 @@
 import autoDerive, {AutoDerivation} from './autoDerive'
-import Ticker from '$src/shared/DataVerse/Ticker'
-import constant from '$src/shared/DataVerse/derivations/constant'
-import dictAtom from '$src/shared/DataVerse/atoms/dict'
-import boxAtom from '$src/shared/DataVerse/atoms/box'
+import Ticker from '$shared//DataVerse/Ticker'
+import constant from '$shared//DataVerse/derivations/constant'
+import dictAtom from '$shared//DataVerse/atoms/dictAtom'
+import boxAtom from '$shared//DataVerse/atoms/boxAtom'
 
 describe('autoDerive', () => {
   let ticker: Ticker
@@ -29,7 +29,8 @@ describe('autoDerive', () => {
     ticker.tick()
     expect(changes).toMatchObject(['foo2boo'])
   })
-  it.skip('should only collect immediate dependencies', () => {
+  it('should only collect immediate dependencies', () => {
+
     const aD = constant(1)
     const bD = aD.map(v => v * 2)
     const cD = autoDerive(() => {
@@ -37,24 +38,5 @@ describe('autoDerive', () => {
     })
     expect(cD.getValue()).toEqual(2)
     expect(cD._dependencies.size).toEqual(1)
-  })
-  ;(function() {
-    const a = autoDerive(() => {
-      return 'hi'
-    })
-
-    a.getValue()
-    a.getValue() as string
-    // $FlowExpectError
-    // ;(a.getValue() as number)
-
-    const changes: Array<string> = []
-    // const wrongChanges: Array<number> = []
-
-    a.changes(null as $IntentionalAny).tap(c => {
-      changes.push(c)
-      // $FlowExpectError
-      // wrongChanges.push(c)
-    })
   })
 })

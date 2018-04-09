@@ -1,5 +1,5 @@
-import AbstractDerivedArray from '$src/shared/DataVerse/derivations/arrays/AbstractDerivedArray'
-import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
+import AbstractDerivedArray from '$shared//DataVerse/derivations/arrays/AbstractDerivedArray'
+import AbstractDerivation from '$shared//DataVerse/derivations/AbstractDerivation'
 
 export class ConcatenatedDerivedArray<V> extends AbstractDerivedArray<V> {
   _left: AbstractDerivedArray<V>
@@ -16,6 +16,7 @@ export class ConcatenatedDerivedArray<V> extends AbstractDerivedArray<V> {
     return this._left.length() + this._right.length()
   }
 
+  // @ts-ignore @todo
   index(i: number): AbstractDerivation<V> {
     throw new Error('Method not implemented.')
   }

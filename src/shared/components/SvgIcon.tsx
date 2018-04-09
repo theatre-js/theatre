@@ -1,5 +1,4 @@
-import * as React from 'react'
-import {compose} from 'ramda'
+import React from 'react'
 import css from './SvgIcon.css'
 import {resolveCss} from '$shared/utils'
 
@@ -22,4 +21,4 @@ const SvgIcon = (props: Props) => {
   )
 }
 
-export default compose(a => a)(SvgIcon)
+export default SvgIcon

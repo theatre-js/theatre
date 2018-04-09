@@ -1,16 +1,16 @@
 import AbstractDerivation from '../AbstractDerivation'
-import {IDictAtom} from '$shared/DataVerse'
+import {DictAtom} from '$shared/DataVerse/atoms/dictAtom'
 
 const noop = () => {}
 
-export class DerivationOfAPropOfADictAtom<O> extends AbstractDerivation<
-  $FixMe
-> {
-  _dictAtom: IDictAtom<O>
+export class DerivationOfAPropOfADictAtom<
+  V
+> extends AbstractDerivation<V> {
+  _dictAtom: DictAtom<$IntentionalAny>
   _untapFromDictAtomChanges: Function
-  _propName: keyof O
+  _propName: $IntentionalAny
 
-  constructor(dictAtom: IDictAtom<O>, propName: keyof O) {
+  constructor(dictAtom: DictAtom<V>, propName: $IntentionalAny) {
     super()
     this._dictAtom = dictAtom
     this._propName = propName
@@ -18,7 +18,7 @@ export class DerivationOfAPropOfADictAtom<O> extends AbstractDerivation<
   }
 
   _recalculate() {
-    return this._dictAtom.prop(this._propName as $FixMe)
+    return this._dictAtom.prop(this._propName)
   }
 
   _keepUptodate() {
@@ -27,7 +27,7 @@ export class DerivationOfAPropOfADictAtom<O> extends AbstractDerivation<
         changes.overriddenRefs.hasOwnProperty(this._propName) ||
         changes.deletedKeys.indexOf(this._propName) !== -1
       )
-        this._youMayNeedToUpdateYourself(this)
+        this._youMayNeedToUpdateYourself(this as $IntentionalAny)
     })
   }
 
@@ -37,10 +37,10 @@ export class DerivationOfAPropOfADictAtom<O> extends AbstractDerivation<
   }
 }
 
-export default function deriveFromPropOfADictAtom<
-  O,
-  M extends IDictAtom<O>,
-  K extends keyof O
->(m: M, propName: keyof O): AbstractDerivation<O[K]> {
-  return new DerivationOfAPropOfADictAtom(m, propName)
+export default function deriveFromPropOfADictAtom<O, K extends keyof O>(
+  dict: DictAtom<O>,
+  key: K,
+): AbstractDerivation<O[K]> {
+  // @ts-ignore ignore
+  return new DerivationOfAPropOfADictAtom(dict, key)
 }

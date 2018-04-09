@@ -20,7 +20,7 @@ export class ProxyDerivation<V> extends AbstractDerivation<V> {
     return this
   }
 
-  _recalculate(): $FixMe {
+  _recalculate(): V {
     return this._target.getValue()
   }
 }

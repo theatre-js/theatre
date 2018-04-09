@@ -19,7 +19,21 @@ export default class StatePersistor {
 
   constructor(readonly _studio: Studio) {
     this._lastPersistedStateInfo = {type: 'empty', state: {}}
-    this._waitForRun()
+    if (
+      process.env.NODE_ENV === 'development' &&
+      process.env.devSpecific.studio.statePersistenceMode &&
+      process.env.devSpecific.studio.statePersistenceMode !== 'normal'
+    ) {
+      if (process.env.devSpecific.studio.statePersistenceMode === 'dontLoadOrPersist') {
+        this._studio.store.reduxStore.dispatch(
+          reduceAhistoricState(['stateIsHydrated'], () => true),
+        )
+      } else if (process.env.devSpecific.studio.statePersistenceMode === 'loadButDontUpdate') {
+        throw new Error('Implement me @todo')
+      }
+    } else {
+      this._waitForRun()
+    }
   }
 
   async _waitForRun() {

@@ -1,27 +1,26 @@
 import AbstractDerivedDict from './AbstractDerivedDict'
-import {IDerivedDict} from './types'
 import _ from 'lodash'
-import {default as box, IBoxAtom} from '$shared/DataVerse/atoms/box'
-import {AbstractDerivation} from '../types'
+import boxAtom, {BoxAtom} from '$shared//DataVerse/atoms/boxAtom'
+import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
+import noop from '$shared/utils/noop'
+import {VoidFn} from '$shared/types'
 
-export interface IProxyDerivedDict<O> extends IDerivedDict<O> {
-  setSource(s: IDerivedDict<O>): IProxyDerivedDict<O>
-}
+class ProxyDerivedDict<O> extends AbstractDerivedDict<O> {
+  _sourceBox: BoxAtom<AbstractDerivedDict<O>>
+  _sourceBoxD: AbstractDerivation<AbstractDerivedDict<O>>
+  _untapFromSourceChanges: VoidFn
 
-class ProxyDerivedDict<O> extends AbstractDerivedDict
-  implements IProxyDerivedDict<O> {
-  _sourceBox: IBoxAtom<IDerivedDict<O>>
-  _sourceBoxD: AbstractDerivation<IDerivedDict<O>>
-
-  constructor(source: IDerivedDict<O>) {
+  constructor(source: AbstractDerivedDict<O>) {
     super()
-    this._sourceBox = box(source)
+    this._untapFromSourceChanges = noop
+    
+    this._sourceBox = boxAtom(source)
     this._sourceBoxD = this._sourceBox.derivation()
 
     return this
   }
 
-  setSource(newSource: IDerivedDict<O>): IProxyDerivedDict<O> {
+  setSource(newSource: AbstractDerivedDict<O>): this {
     const oldSource = this._sourceBox.getValue()
     this._sourceBox.set(newSource)
 
@@ -62,7 +61,7 @@ class ProxyDerivedDict<O> extends AbstractDerivedDict
     return this._sourceBox.getValue().keys()
   }
 
-  prop(key) {
+  prop<K extends keyof O>(key: K) {
     return this._sourceBoxD.flatMap(source => source.prop(key))
   }
 
@@ -72,7 +71,7 @@ class ProxyDerivedDict<O> extends AbstractDerivedDict
 }
 
 export default function proxyDerivedDict<O>(
-  initialSource: IDerivedDict<O>,
-): IProxyDerivedDict<O> {
+  initialSource: AbstractDerivedDict<O>,
+): ProxyDerivedDict<O> {
   return new ProxyDerivedDict(initialSource)
 }

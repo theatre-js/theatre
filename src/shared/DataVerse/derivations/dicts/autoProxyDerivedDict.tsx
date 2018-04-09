@@ -5,8 +5,8 @@ import {
   IProxyDerivedDict,
 } from './proxyDerivedDict'
 import emptyDict from './emptyDict'
-import Ticker from '$src/shared/DataVerse/Ticker'
-import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
+import Ticker from '$shared/DataVerse/Ticker'
+import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 
 class AutoProxyDerivedDict<O> extends AbstractDerivedDict<O> {
   _proxy: IProxyDerivedDict<O>

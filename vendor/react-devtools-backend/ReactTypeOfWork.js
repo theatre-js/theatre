@@ -24,4 +24,8 @@ module.exports = {
   CoroutineHandlerPhase: 8,
   YieldComponent: 9,
   Fragment: 10,
+  Mode: 11,
+  ContextConsumer: 12,
+  ContextProvider: 13,
+  ForwardRef: 14,
 };

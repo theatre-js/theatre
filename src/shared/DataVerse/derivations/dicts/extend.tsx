@@ -1,9 +1,5 @@
-import AbstractDerivedDict, {
-  DerivedDictChangeType,
-  PropOfADD,
-} from './AbstractDerivedDict'
+import AbstractDerivedDict, {DerivedDictChangeType} from './AbstractDerivedDict'
 import _, {noop} from 'lodash'
-import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
 
 export class ExtendDerivedDict<L, R> extends AbstractDerivedDict<Spread<L, R>> {
   _base: AbstractDerivedDict<L>
@@ -42,27 +38,28 @@ export class ExtendDerivedDict<L, R> extends AbstractDerivedDict<Spread<L, R>> {
   _reactToChangeFromBase(c: DerivedDictChangeType<L>) {
     const keysOfOverrider = this._overrider.keys()
     const change = {
-      addedKeys: _.difference(c.addedKeys, keysOfOverrider),
-      deletedKeys: _.difference(c.deletedKeys, keysOfOverrider),
+      addedKeys: _.difference(c.addedKeys, keysOfOverrider as $IntentionalAny),
+      deletedKeys: _.difference(
+        c.deletedKeys,
+        keysOfOverrider as $IntentionalAny,
+      ),
     }
 
     if (change.addedKeys.length > 0 || change.deletedKeys.length > 0)
-      this._changeEmitter.emit(change)
+      this._changeEmitter.emit(change as $IntentionalAny)
   }
 
   _reactToChangeFromOverrider(c: DerivedDictChangeType<R>) {
     const keysOfBase = this._base.keys()
     const change = {
-      addedKeys: _.difference(c.addedKeys, keysOfBase),
-      deletedKeys: _.difference(c.deletedKeys, keysOfBase),
+      addedKeys: _.difference(c.addedKeys, keysOfBase as $IntentionalAny),
+      deletedKeys: _.difference(c.deletedKeys, keysOfBase as $IntentionalAny),
     }
     if (change.addedKeys.length > 0 || change.deletedKeys.length > 0)
-      this._changeEmitter.emit(change)
+      this._changeEmitter.emit(change as $IntentionalAny)
   }
 
-  prop<K extends keyof this['_S']>(
-    key: K,
-  ): AbstractDerivation<PropOfADD<this['_S'][K]>> {
+  prop<K extends keyof this['_S']>(key: K) {
     return this._overrider
       .prop(key as $IntentionalAny)
       .flatMap(
@@ -71,7 +68,7 @@ export class ExtendDerivedDict<L, R> extends AbstractDerivedDict<Spread<L, R>> {
       )
   }
 
-  keys(): Array<$FixMe> {
+  keys() {
     return _.uniq([
       ...this._base.keys(),
       ...this._overrider.keys(),
@@ -79,7 +76,7 @@ export class ExtendDerivedDict<L, R> extends AbstractDerivedDict<Spread<L, R>> {
   }
 }
 
-export default function extend<L, R, O extends Spread<L, R>>(
+export default function extend<L, R>(
   base: AbstractDerivedDict<L>,
   overrider: AbstractDerivedDict<R>,
 ): ExtendDerivedDict<L, R> {

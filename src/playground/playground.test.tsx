@@ -10,7 +10,7 @@ describe(`playground`, () => {
     })
 
     let num = 0
-    function* catchLuals(cch): Generator {
+    function* catchLuals(cch: $FixMe): Generator {
       const myNum = num++
       // const ch = yield actionChannel(cch)
       while (true) {

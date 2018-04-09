@@ -1,7 +1,8 @@
 import Emitter from '$shared/DataVerse/utils/Emitter'
-import {PointerDerivation} from '$src/shared/DataVerse/derivations/pointer'
-import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
-import Tappable from '$src/shared/DataVerse/utils/Tappable'
+import {PointerDerivation} from '$shared//DataVerse/derivations/pointer'
+import AbstractDerivation from '$shared//DataVerse/derivations/AbstractDerivation'
+import Tappable from '$shared//DataVerse/utils/Tappable'
+import {PropOfADD} from '$shared/DataVerse/derivations/dicts/AbstractDerivedDict'
 
 let lastId: number = 0
 
@@ -10,6 +11,8 @@ interface IDerivedArrayChangeType {
   deleteCount: number
   addCount: number
 }
+
+type IndexOfAbstractDerivedArray<V> = PropOfADD<V>
 
 export default abstract class AbstractDerivedArray<V> {
   isDerivedArray = true
@@ -20,7 +23,7 @@ export default abstract class AbstractDerivedArray<V> {
   abstract _reactToHavingTappers(): void
   abstract _reactToNotHavingTappers(): void
   _pointer: undefined | PointerDerivation<AbstractDerivedArray<V>>
-  abstract index(i: number): AbstractDerivation<V>
+  abstract index(i: number): AbstractDerivation<IndexOfAbstractDerivedArray<V>>
   abstract length(): number
 
   constructor() {

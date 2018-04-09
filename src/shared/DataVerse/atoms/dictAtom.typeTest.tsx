@@ -1,0 +1,1 @@
+import dictAtom from './dictAtom'

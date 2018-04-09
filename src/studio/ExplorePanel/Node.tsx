@@ -1,29 +1,60 @@
 import React from 'react'
-import css from './Node.css'
-import {Path} from '$studio/ExplorePanel/types'
-import * as _ from 'lodash'
-import cx from 'classnames'
-import arrowIcon from 'svg-inline-loader!./arrow.svg'
-import SvgIcon from '$shared/components/SvgIcon'
+// import {Path} from '$studio/ExplorePanel/types'
+// import stringStartsWith from 'lodash/startsWith'
+// import DerivationAsReactElement from '$src/studio/componentModel/react/utils/DerivationAsReactElement'
+// import {isTheaterComponent} from '$studio/componentModel/react/TheaterComponent/TheaterComponent'
+import {VolatileId} from '$studio/integrations/react/treeMirroring/MirrorOfReactTree'
+import PropsAsPointer from '$studio/handy/PropsAsPointer'
+import {val} from '$shared/DataVerse2/atom'
+import {Pointer} from '$shared/DataVerse2/pointer'
+import TextNode from './TextNode'
+import RegularNode from './RegularNode'
 
-import {connect} from '$studio/handy'
-import {getComponentDescriptor} from '$studio/componentModel/selectors'
-import stringStartsWith from 'lodash/startsWith'
-import DerivationAsReactElement from '$src/studio/componentModel/react/utils/DerivationAsReactElement'
-
-interface IProps {
-  isExpanded: boolean
-  children: Object
-  path: Path
-  toggleExpansion: Function
-  selectNode: Function
-  selectedNodePath: Path
-  displayName: string
-  shouldSwallowChild: undefined | null | boolean
-  depth?: number
-  stateNode: $FixMe
-  elementId: undefined | number
+type Props = {
+  depth: number
+  volatileId: VolatileId
+  // isExpanded: boolean
+  // children: Object
+  // path: Path
+  // toggleExpansion: (volatileId: VolatileId) => void
+  // selectNode: (volatileId: VolatileId) => void
+  // selectedNodePath: Path
+  // displayName: string
+  // shouldSwallowChild: undefined | null | boolean
+  // stateNode: $FixMe
+  // elementId: undefined | number
 }
+
+const Node = (props: Props): React.ReactNode => (
+  <PropsAsPointer props={props}>
+    {(propsP: Pointer<Props>, studio) => {
+      const volatileId = val(propsP.volatileId)
+
+      const nodeP =
+        studio._mirrorOfReactTree.atom.pointer.nodesByVolatileId[volatileId]
+
+      const type = val(nodeP.type)
+
+      if (type === 'Text') {
+        return (
+          <TextNode
+            volatileId={val(propsP.volatileId)}
+            depth={val(propsP.depth)}
+          />
+        )
+      } else {
+        return (
+          <RegularNode
+            volatileId={val(propsP.volatileId)}
+            depth={val(propsP.depth)}
+          />
+        )
+      }
+    }}
+  </PropsAsPointer>
+)
+
+export default Node
 
 /**
  * This is used for the following situation:
@@ -36,32 +67,38 @@ interface IProps {
  *
  * This function is used to do that.
  */
-const extractChildrenOfChild = children => {
-  if (children && typeof children === 'object') {
-    const childrenKeys = Object.keys(children)
-    if (childrenKeys.length > 1) {
-      // debugger
-      console.warn(`This should never happen`)
-    }
+// const extractChildrenOfChild = children => {
+//   if (children && typeof children === 'object') {
+//     const childrenKeys = Object.keys(children)
+//     if (childrenKeys.length > 1) {
+//       // debugger
+//       console.warn(`This should never happen`)
+//     }
 
-    if (childrenKeys.length === 0) {
-      return children
-    } else {
-      const firstChildKey = childrenKeys[0]
-      const firstChild = children[firstChildKey]
-      if (firstChild && typeof firstChild === 'object') {
-        return firstChild.children
-      } else {
-        console.warn('Should this ever happen?')
-        return firstChild
-      }
-    }
-  } else {
-    return children
+//     if (childrenKeys.length === 0) {
+//       return children
+//     } else {
+//       const firstChildKey = childrenKeys[0]
+//       const firstChild = children[firstChildKey]
+//       if (firstChild && typeof firstChild === 'object') {
+//         return firstChild.children
+//       } else {
+//         console.warn('Should this ever happen?')
+//         return firstChild
+//       }
+//     }
+//   } else {
+//     return children
+//   }
+// }
+
+class Nodea extends React.PureComponent<IProps, {}> {
+  static defaultProps = {depth: 1}
+  _toRender: AbstractDerivation<React.ReactNode>
+  constructor(props: IProps, context: $IntentionalAny) {
+    super(props, context)
   }
-}
 
-class Node extends React.PureComponent<IProps, void> {
   render(): React.ReactNode {
     const {props} = this
 
@@ -77,6 +114,7 @@ class Node extends React.PureComponent<IProps, void> {
       selectNode,
       shouldSwallowChild,
     } = props
+
     const children =
       shouldSwallowChild === true
         ? extractChildrenOfChild(props.children)
@@ -91,6 +129,8 @@ class Node extends React.PureComponent<IProps, void> {
       selectedNodePath &&
       selectedNodePath.indexOf(id) !== -1 &&
       selectedNodePath[selectedNodePath.length - 1] !== id
+
+    return null
 
     return (
       <div
@@ -142,7 +182,7 @@ class Node extends React.PureComponent<IProps, void> {
           <div className={css.subNodes}>
             {children != null &&
               Object.keys(children).map((key, index) => (
-                <WrappedNode
+                <Nodea
                   depth={depth + 1}
                   index={index}
                   key={key}
@@ -173,13 +213,14 @@ class Node extends React.PureComponent<IProps, void> {
   }
 }
 
-const ClassName = ({stateNode}) => {
-  if (stateNode && stateNode.isTheaterJSComponent === true) {
-    const childrenD = stateNode._atom
+const ClassName = (nativeNode: React.ReactNode) => {
+  if (isTheaterComponent(nativeNode)) {
+    const childrenD = nativeNode._atom
       .pointer()
       .prop('props')
+      // @ts-ignore @ignore
       .prop('class')
-      .map(possibleClass => {
+      .map((possibleClass: string | undefined) => {
         if (
           typeof possibleClass === 'string' &&
           possibleClass.trim().length > 0
@@ -205,50 +246,50 @@ const ClassName = ({stateNode}) => {
   }
 }
 
-const WrappedNode = connect((s, op) => {
-  const {_ref} = op
+// const WrappedNode = connect((s, op) => {
+//   const {_ref} = op
 
-  const {type, stateNode} = _ref
+//   const {type, stateNode} = _ref
 
-  const componentDescriptor =
-    typeof type !== 'string' && type !== null
-      ? (getComponentDescriptor(s, _ref.stateNode.getComponentId()) as $FixMe)
-      : undefined
+//   const componentDescriptor =
+//     typeof type !== 'string' && type !== null
+//       ? (getComponentDescriptor(s, _ref.stateNode.getComponentId()) as $FixMe)
+//       : undefined
 
-  const elementId = _ref && _ref.stateNode && _ref.stateNode.elementId
+//   const elementId = _ref && _ref.stateNode && _ref.stateNode.elementId
 
-  const displayName = componentDescriptor
-    ? componentDescriptor.displayName
-    : type === 'string' ? type : type === null ? 'null' : 'null'
+//   const displayName = componentDescriptor
+//     ? componentDescriptor.displayName
+//     : type === 'string' ? type : type === null ? 'null' : 'null'
 
-  const textContent =
-    stateNode.nodeName === '#text' ? stateNode.textContent : null
+//   const textContent =
+//     stateNode.nodeName === '#text' ? stateNode.textContent : null
 
-  const childRef = _ref.child
-  const textChild =
-    childRef != null &&
-    childRef.child == null &&
-    childRef.stateNode.firstChild &&
-    childRef.stateNode.firstChild.nodeName === '#text' &&
-    childRef.stateNode.lastChild &&
-    childRef.stateNode.lastChild.nodeName === '#text'
-      ? childRef.stateNode.textContent
-      : null
+//   const childRef = _ref.child
+//   const textChild =
+//     childRef != null &&
+//     childRef.child == null &&
+//     childRef.stateNode.firstChild &&
+//     childRef.stateNode.firstChild.nodeName === '#text' &&
+//     childRef.stateNode.lastChild &&
+//     childRef.stateNode.lastChild.nodeName === '#text'
+//       ? childRef.stateNode.textContent
+//       : null
 
-  const shouldSwallowChild =
-    (type &&
-      type.componentId &&
-      stringStartsWith(type.componentId, 'TheaterJS/Core/HTML/')) ||
-    false
+//   const shouldSwallowChild =
+//     (type &&
+//       type.componentId &&
+//       stringStartsWith(type.componentId, 'TheaterJS/Core/HTML/')) ||
+//     false
 
-  return {
-    displayName,
-    shouldSwallowChild,
-    textContent,
-    textChild,
-    stateNode,
-    elementId,
-  }
-})(Node)
+//   return {
+//     displayName,
+//     shouldSwallowChild,
+//     textContent,
+//     textChild,
+//     stateNode,
+//     elementId,
+//   }
+// })(Node)
 
-export default WrappedNode
+// export default Node

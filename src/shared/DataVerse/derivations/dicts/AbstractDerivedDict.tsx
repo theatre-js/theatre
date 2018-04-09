@@ -1,21 +1,30 @@
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import {PointerDerivation} from '../pointer'
-import {PropOfPointer} from '../pointerTypes'
-import {DictAtom} from '$src/shared/DataVerse/atoms/dict'
-import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
-import {BoxAtom} from '$src/shared/DataVerse/atoms/box'
-import { ExtendDerivedDict } from './extend';
+import {DictAtom} from '$shared//DataVerse/atoms/dictAtom'
+import AbstractDerivation from '$shared//DataVerse/derivations/AbstractDerivation'
+import {BoxAtom} from '$shared//DataVerse/atoms/boxAtom'
+import {ExtendDerivedDict} from './extend'
+import {ArrayAtom} from '$shared/DataVerse/atoms/arrayAtom'
+import AbstractDerivedArray from '$shared//DataVerse/derivations/arrays/AbstractDerivedArray'
+import {
+  KeysOfDerivedDictDerivation,
+  default as keysOfDerivedDict,
+} from '$shared/DataVerse/derivations/dicts/keysOfDerivedDict'
 
 export type DerivedDictChangeType<O> = {
   addedKeys: Array<keyof O>
   deletedKeys: Array<keyof O>
 }
 
-// @todo also support ArrayAtom
-export type PropOfADD<V> =
-  V extends DictAtom<infer O> ? AbstractDerivedDict<O> :
-  V extends BoxAtom<infer T> ? T :
-  V
+export type PropOfADD<V> = V extends DictAtom<infer O>
+  ? AbstractDerivedDict<O>
+  : V extends ArrayAtom<infer T>
+    ? AbstractDerivedArray<T>
+    : V extends AbstractDerivedDict<infer T>
+      ? AbstractDerivedDict<T>
+      : V extends AbstractDerivedArray<infer T>
+        ? AbstractDerivedArray<T>
+        : V extends BoxAtom<infer T> ? T : V
 
 export default abstract class AbstractDerivedDict<O> {
   isDerivedDict = true
@@ -74,7 +83,7 @@ export default abstract class AbstractDerivedDict<O> {
   }
 
   extend<R>(x: AbstractDerivedDict<R>): ExtendDerivedDict<O, R> {
-    return extend.default(this as $IntentionalAny, x)
+    return extend.default(this, x)
   }
 
   mapValues(fn: $IntentionalAny): $IntentionalAny {
@@ -84,7 +93,13 @@ export default abstract class AbstractDerivedDict<O> {
   toJS() {
     throw new Error('Not implemented') // @todo
   }
+
+  keysD(): KeysOfDerivedDictDerivation<O> {
+    return keysOfDerivedDict(this)
+  }
 }
+
+export type DerivedDictTypeOf<O> = O extends DictAtom<infer OO> ? AbstractDerivedDict<OO> : never
 
 const pointer = require('$shared/DataVerse/derivations/pointer')
 const proxyDerivedDict = require('./proxyDerivedDict')

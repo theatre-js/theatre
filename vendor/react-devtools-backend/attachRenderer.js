@@ -62,9 +62,11 @@ function attachRenderer(hook: Hook, rid: string, renderer: ReactRenderer): Helpe
     };
 
     extras.getReactElementFromNative = function(node) {
+      // $FlowFixMe
       var id = renderer.Mount.getID(node);
       while (node && node.parentNode && !id) {
         node = node.parentNode;
+        // $FlowFixMe
         id = renderer.Mount.getID(node);
       }
       return rootNodeIDMap.get(id);
@@ -112,7 +114,7 @@ function attachRenderer(hook: Hook, rid: string, renderer: ReactRenderer): Helpe
       },
       unmountComponent() {
         hook.emit('unmount', {internalInstance: this, renderer: rid});
-        rootNodeIDMap.delete(this._rootNodeID, this);
+        rootNodeIDMap.delete(this._rootNodeID);
       },
     });
   } else if (renderer.Reconciler) {
@@ -130,7 +132,7 @@ function attachRenderer(hook: Hook, rid: string, renderer: ReactRenderer): Helpe
       },
       unmountComponent(internalInstance) {
         hook.emit('unmount', {internalInstance, renderer: rid});
-        rootNodeIDMap.delete(internalInstance._rootNodeID, internalInstance);
+        rootNodeIDMap.delete(internalInstance._rootNodeID);
       },
     });
   }

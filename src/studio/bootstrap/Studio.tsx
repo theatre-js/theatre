@@ -1,35 +1,46 @@
-import * as React from 'react'
+import React from 'react'
 import {render} from 'react-dom'
 import LBCommunicator from '$studio/commsWithLB/LBCommunicator'
 import configureStore from './configureStore'
 import StudioRootComponent from './components/StudioRootComponent'
 import {default as StoreAndStuff} from '$lb/bootstrap/StoreAndStuff'
 import configureAtom from './configureAtom'
-import Ticker from '$src/shared/DataVerse/Ticker'
-import {ahistoricalAction} from '$shared/utils/redux/withHistory/actions'
-import {reduceStateAction} from '$shared/utils/redux/commonActions'
+import Ticker from '$shared//DataVerse/Ticker'
 import {reduceAhistoricState} from '$studio/bootstrap/actions'
 import StatePersistor from '$studio/statePersistence/StatePersistor'
 import {IStudioStoreState} from '$studio/types'
+import MirrorOfReactTree from '$studio/integrations/react/treeMirroring/MirrorOfReactTree'
+import {Atomify} from '$shared/DataVerse/atoms/atomifyDeep'
+import {PointerDerivation} from '$shared/DataVerse/derivations/pointer'
+import AbstractDerivedDict from '$shared/DataVerse/derivations/dicts/AbstractDerivedDict'
+import {UnwrapDictAtom} from '$shared/DataVerse/atoms/dictAtom'
+import configureAtom2 from '$studio/bootstrap/configureAtom2'
+import {Atom} from '$shared/DataVerse2/atom'
 
-type Atom = $FixMe
+export type StudioStateAtom = Atomify<IStudioStoreState>
 
 export default class Studio {
+  atom2: Atom<IStudioStoreState>
   _statePersistor: StatePersistor
   _ran: boolean
   componentInstances: Map<number, React.ComponentType>
-  atom: Atom
+  atom: StudioStateAtom
+  atomP: PointerDerivation<AbstractDerivedDict<UnwrapDictAtom<StudioStateAtom>>>
   ticker: Ticker
   _lastComponentInstanceId: number
   _lbCommunicator: LBCommunicator
   store: StoreAndStuff<IStudioStoreState, $FixMe>
+  _mirrorOfReactTree: MirrorOfReactTree
 
   constructor() {
     this._ran = false
     this._lastComponentInstanceId = 0
     this.ticker = new Ticker()
+    this._mirrorOfReactTree = new MirrorOfReactTree()
     this.store = configureStore()
     this.atom = configureAtom(this.store)
+    this.atomP = this.atom.derivedDict().pointer()
+    this.atom2 = configureAtom2(this.store)
     this.componentInstances = new Map()
     this._lbCommunicator = new LBCommunicator({
       lbUrl: `${window.location.protocol}//${window.location.hostname}:${

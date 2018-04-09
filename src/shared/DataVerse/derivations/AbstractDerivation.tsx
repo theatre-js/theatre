@@ -1,8 +1,9 @@
-import {reportObservedDependency} from './autoDerive/discoveryMechanism'
+import { reportResolutionStart, reportResolutionEnd, isCollectingDependencies } from './autoDerive/discoveryMechanism';
 import {default as DerivationEmitter} from './DerivationEmitter'
 import * as debug from '$shared/debug'
-import Ticker from '$src/shared/DataVerse/Ticker'
-import Tappable from '$src/shared/DataVerse/utils/Tappable'
+import Ticker from '$shared//DataVerse/Ticker'
+import Tappable from '$shared//DataVerse/utils/Tappable'
+import {VoidFn} from '$shared/types'
 
 const FRESHNESS_STATE_NOT_APPLICABLE = 0
 const FRESHNESS_STATE_STALE = 1
@@ -25,12 +26,12 @@ export default abstract class AbstractDerivation<V>
   _thereAreMoreThanOneDependents: boolean
 
   _freshnessState: FreshnessState
-  _lastValue: $FixMe
+  _lastValue: undefined | V
 
   _dependents: Set<IObjectWhoListensToAtomicUpdateNotices>
   _dependencies: Set<AbstractDerivation<$IntentionalAny>>
 
-  _trace: $FixMe
+  _trace: $IntentionalAny
   abstract _recalculate(): V
   Type: V
   ChangeType: V
@@ -48,16 +49,16 @@ export default abstract class AbstractDerivation<V>
     this._dependents = new Set()
   }
 
-  _addDependency(d: AbstractDerivation<$IntentionalAny>) {
+  _addDependency(d: AbstractDerivation<mixed>) {
     if (this._dependencies.has(d)) return
     this._dependencies.add(d)
-    if (this._thereAreMoreThanOneDependents) d._addDependent(this as $FixMe)
+    if (this._thereAreMoreThanOneDependents) d._addDependent(this)
   }
 
-  _removeDependency(d: AbstractDerivation<$IntentionalAny>) {
+  _removeDependency(d: AbstractDerivation<mixed>) {
     if (!this._dependencies.has(d)) return
     this._dependencies.delete(d)
-    if (this._thereAreMoreThanOneDependents) d._removeDependent(this as $FixMe)
+    if (this._thereAreMoreThanOneDependents) d._removeDependent(this)
   }
 
   _removeAllDependencies() {
@@ -70,7 +71,7 @@ export default abstract class AbstractDerivation<V>
     return new DerivationEmitter(this, ticker).tappable()
   }
 
-  tapImmediate(ticker: Ticker, fn: ((cb: $FixMe) => void)): $FixMe {
+  tapImmediate(ticker: Ticker, fn: ((cb: V) => void)): VoidFn {
     const untap = this.changes(ticker).tap(fn)
     fn(this.getValue())
     return untap
@@ -113,16 +114,18 @@ export default abstract class AbstractDerivation<V>
   }
 
   getValue(): V {
-    reportObservedDependency(this)
-
+    
     if (
       process.env.TRACKING_COLD_DERIVATIONS === true &&
       debug.findingColdDerivations &&
       !debug.skippingColdDerivations &&
-      this._freshnessState === FRESHNESS_STATE_NOT_APPLICABLE
+      this._freshnessState === FRESHNESS_STATE_NOT_APPLICABLE &&
+      !isCollectingDependencies()
     ) {
       console.warn(`Perf regression: Unexpected cold derivation read`)
     }
+    
+    reportResolutionStart(this)
 
     if (this._freshnessState !== FRESHNESS_STATE_FRESH) {
       const unboxed = this._recalculate()
@@ -132,7 +135,8 @@ export default abstract class AbstractDerivation<V>
         this._didNotifyDownstreamOfUpcomingUpdate = false
       }
     }
-    return this._lastValue
+    reportResolutionEnd(this)
+    return this._lastValue as V
   }
 
   _reactToNumberOfDependentsChange() {
@@ -147,13 +151,13 @@ export default abstract class AbstractDerivation<V>
     if (thereAreMoreThanOneDependents) {
       this._freshnessState = FRESHNESS_STATE_STALE
       this._dependencies.forEach(d => {
-        d._addDependent(this as $FixMe)
+        d._addDependent(this)
       })
       this._keepUptodate()
     } else {
       this._freshnessState = FRESHNESS_STATE_NOT_APPLICABLE
       this._dependencies.forEach(d => {
-        d._removeDependent(this as $FixMe)
+        d._removeDependent(this)
       })
       this._stopKeepingUptodate()
     }
@@ -167,19 +171,22 @@ export default abstract class AbstractDerivation<V>
     return mapDerivation.default(this, fn)
   }
 
-  flatMap<T, R extends AbstractDerivation<T>>(
+  flatMap<R>(
     fn: (v: V) => R,
-  ): AbstractDerivation<T> {
+  ): AbstractDerivation<R extends AbstractDerivation<infer T> ? T : R> {
     return flatMapDerivation.default(this, fn)
   }
 
-  flatten(): AbstractDerivation<$FixMe> {
+  flatten(): AbstractDerivation<V extends AbstractDerivation<infer T> ? T : V> {
     return this.flattenDeep(1)
   }
 
+  /**
+   * @note so far, we're not using flattenDeep() directly anywhere other than in tests, 
+   * so there is no need to spend time typing this thing for the time being.
+   */
   flattenDeep(levels?: number): AbstractDerivation<$FixMe> {
-    // $FixMe
-    return flattenDeep.default(this as $FixMe, levels)
+    return flattenDeep.default(this, levels)
   }
 
   toJS() {

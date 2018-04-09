@@ -7,7 +7,7 @@ export class WithDepsDerivation<
   constructor(readonly _deps: O, readonly _fn: (dependencies: O) => V) {
     super()
 
-    for (let dependencyKey in _deps) {
+    for (const dependencyKey in _deps) {
       this._addDependency(_deps[dependencyKey])
     }
   }

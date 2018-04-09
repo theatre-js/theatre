@@ -1,6 +1,6 @@
 import AbstractDerivedDict, {DerivedDictChangeType, PropOfADD} from './AbstractDerivedDict'
 import noop from 'lodash/noop'
-import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
+import AbstractDerivation from '$shared//DataVerse/derivations/AbstractDerivation'
 
 type FunctionMapping<V, Fn extends (v: V) => $IntentionalAny> = Fn extends (v: V) => infer R ? R : any
 

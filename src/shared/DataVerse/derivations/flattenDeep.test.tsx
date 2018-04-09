@@ -1,8 +1,8 @@
 import flattenDeep from './flattenDeep'
-import Ticker from '$src/shared/DataVerse/Ticker'
-import boxAtom from '$src/shared/DataVerse/atoms/box'
-import withDeps from '$src/shared/DataVerse/derivations/withDeps'
-import constant from '$src/shared/DataVerse/derivations/constant'
+import Ticker from '$shared//DataVerse/Ticker'
+import boxAtom from '$shared//DataVerse/atoms/boxAtom'
+import withDeps from '$shared//DataVerse/derivations/withDeps'
+import constant from '$shared//DataVerse/derivations/constant'
 
 describe('FlattenDeepDerivation', () => {
   let ticker: Ticker

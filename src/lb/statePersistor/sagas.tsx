@@ -5,7 +5,7 @@ import {delay} from 'redux-saga'
 import fse from 'fs-extra'
 import deepEqual from 'deep-equal'
 import pickPathsFromObject from 'lodash/pick'
-import spreadPaths from '$src/shared/utils/spreadPaths'
+import spreadPaths from '$shared//utils/spreadPaths'
 import {
   bootstrapAction,
   setStateAction,

@@ -1,6 +1,6 @@
 import jsonPatchLib from 'fast-json-patch'
 import applyJsonDiffToAtom from './applyJsonDiffToAtom'
-import atomifyDeep from '$src/shared/DataVerse/atoms/atomifyDeep'
+import atomifyDeep from '$shared//DataVerse/atoms/atomifyDeep'
 
 const example = (input, output) => {
   const diffs: Array<Object> = jsonPatchLib.compare(input, output)

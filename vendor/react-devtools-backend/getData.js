@@ -160,6 +160,7 @@ function getData(internalInstance: Object): DataType {
     };
   }
 
+  // $FlowFixMe
   return {
     nodeType,
     type,

@@ -1,6 +1,6 @@
-import dictAtom, {DictAtom} from '$src/shared/DataVerse/atoms/dict'
-import boxAtom from '$src/shared/DataVerse/atoms/box'
-import Ticker from '$src/shared/DataVerse/Ticker'
+import dictAtom, {DictAtom} from '$shared//DataVerse/atoms/dictAtom'
+import boxAtom from '$shared//DataVerse/atoms/boxAtom'
+import Ticker from '$shared//DataVerse/Ticker'
 
 describe('extend()', () => {
   let ticker: Ticker

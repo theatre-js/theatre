@@ -3,10 +3,10 @@ import Studio from '$studio/bootstrap/Studio'
 import {contextTypes, contextName} from './utils/studioContext'
 import {elementify} from '$studio/handy'
 import DerivationAsReactElement from './utils/DerivationAsReactElement'
-import dictAtom from '$src/shared/DataVerse/atoms/dict'
-import boxAtom from '$src/shared/DataVerse/atoms/box'
-import arrayAtom from '$src/shared/DataVerse/atoms/array'
-import constant from '$src/shared/DataVerse/derivations/constant'
+import dictAtom from '$shared//DataVerse/atoms/dictAtom'
+import boxAtom from '$shared//DataVerse/atoms/boxAtom'
+import arrayAtom from '$shared//DataVerse/atoms/arrayAtom'
+import constant from '$shared//DataVerse/derivations/constant'
 
 interface Props {
   children: React.ReactNode

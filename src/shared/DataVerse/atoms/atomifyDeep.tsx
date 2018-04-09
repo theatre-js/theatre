@@ -1,7 +1,7 @@
 import isPlainObject from 'lodash/isPlainObject'
-import {default as box, BoxAtom} from './box'
-import {default as dict, DictAtom} from './dict'
-import {default as array, ArrayAtom} from './array'
+import {default as box, BoxAtom} from './boxAtom'
+import {default as dict, DictAtom} from './dictAtom'
+import {default as array, ArrayAtom} from './arrayAtom'
 import mapValues from 'lodash/mapValues'
 import {default as AbstractAtom} from './utils/AbstractAtom'
 
@@ -11,6 +11,7 @@ export type Atomify<V> = {
   V extends AbstractAtom<$IntentionalAny> ? V :
   // following is commented out as I don't know how to detect plain objects in TS
   // V extends {constructor: Function} ? BoxAtom<V> :
+  V extends Function ? BoxAtom<V> :
   V extends object ? DictAtom<{[K in keyof V]: Atomify<V[K]>}> :
   BoxAtom<V>
 }[V extends number ? '1' : '1']

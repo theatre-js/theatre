@@ -1,7 +1,7 @@
-import Ticker from '$src/shared/DataVerse/Ticker'
-import arrayAtom from '$src/shared/DataVerse/atoms/array'
-import boxAtom from '$src/shared/DataVerse/atoms/box'
-import constant from '$src/shared/DataVerse/derivations/constant'
+import Ticker from '$shared//DataVerse/Ticker'
+import arrayAtom from '$shared//DataVerse/atoms/arrayAtom'
+import boxAtom from '$shared//DataVerse/atoms/boxAtom'
+import constant from '$shared//DataVerse/derivations/constant'
 
 describe('DataVerse.derivations.deriveFromArrayAtom', () => {
   let ticker: Ticker
@@ -44,7 +44,7 @@ describe('DataVerse.derivations.deriveFromArrayAtom', () => {
     expect(
       arrayAtom([])
         .derivedArray()
-        .reduce(() => {}, 'blah')
+        .reduce((() => {}) as $IntentionalAny, 'blah')
         .getValue(),
     ).toEqual('blah')
 

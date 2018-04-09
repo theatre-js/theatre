@@ -1,5 +1,4 @@
-import * as React from 'react'
-import PureComponentWithStudio from '$src/studio/componentModel/react/utils/PureComponentWithStudio'
+import PureComponentWithStudio from '$studio/componentModel/react/utils/PureComponentWithStudio'
 
 /**
  * A superclass of almost all TheaterJS Studio components. Right now, it

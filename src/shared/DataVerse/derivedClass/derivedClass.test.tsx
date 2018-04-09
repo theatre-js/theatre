@@ -1,5 +1,5 @@
-import derivedClass from '$src/shared/DataVerse/derivedClass/derivedClass'
-import Ticker from '$src/shared/DataVerse/Ticker'
+import derivedClass from '$shared/DataVerse/derivedClass/derivedClass'
+import Ticker from '$shared/DataVerse/Ticker'
 
 describe('derivedClass', () => {
   let ticker: Ticker

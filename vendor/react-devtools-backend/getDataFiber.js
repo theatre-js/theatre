@@ -22,6 +22,18 @@ var {
   HostText,
   Fragment,
 } = require('./ReactTypeOfWork');
+var {
+  ASYNC_MODE_NUMBER,
+  ASYNC_MODE_SYMBOL_STRING,
+  CONTEXT_CONSUMER_NUMBER,
+  CONTEXT_CONSUMER_SYMBOL_STRING,
+  CONTEXT_PROVIDER_NUMBER,
+  CONTEXT_PROVIDER_SYMBOL_STRING,
+  FORWARD_REF_NUMBER,
+  FORWARD_REF_SYMBOL_STRING,
+  STRICT_MODE_NUMBER,
+  STRICT_MODE_SYMBOL_STRING,
+} = require('./ReactSymbols');
 
 // TODO: we might want to change the data structure
 // once we no longer suppport Stack versions of `getData`.
@@ -114,10 +126,57 @@ function getDataFiber(fiber: Object, getOpaqueNode: (fiber: Object) => Object): 
       children = [];
       break;
     default: // Coroutines and yields
-      nodeType = 'Native';
-      props = fiber.memoizedProps;
-      name = 'TODO_NOT_IMPLEMENTED_YET';
-      children = [];
+      const symbolOrNumber = typeof type === 'object' && type !== null
+        ? type.$$typeof
+        : type;
+      // $FlowFixMe facebook/flow/issues/2362
+      const switchValue = typeof symbolOrNumber === 'symbol'
+        ? symbolOrNumber.toString()
+        : symbolOrNumber;
+
+      switch (switchValue) {
+        case ASYNC_MODE_NUMBER:
+        case ASYNC_MODE_SYMBOL_STRING:
+          nodeType = 'Special';
+          name = 'AsyncMode';
+          children = [];
+          break;
+        case CONTEXT_PROVIDER_NUMBER:
+        case CONTEXT_PROVIDER_SYMBOL_STRING:
+          nodeType = 'Special';
+          props = fiber.memoizedProps;
+          name = 'Context.Provider';
+          children = [];
+          break;
+        case CONTEXT_CONSUMER_NUMBER:
+        case CONTEXT_CONSUMER_SYMBOL_STRING:
+          nodeType = 'Special';
+          props = fiber.memoizedProps;
+          // TODO: TraceUpdatesBackendManager currently depends on this.
+          // If you change .name, figure out a more resilient way to detect it.
+          name = 'Context.Consumer';
+          children = [];
+          break;
+        case STRICT_MODE_NUMBER:
+        case STRICT_MODE_SYMBOL_STRING:
+          nodeType = 'Special';
+          name = 'StrictMode';
+          children = [];
+          break;
+        case FORWARD_REF_NUMBER:
+        case FORWARD_REF_SYMBOL_STRING:
+          const functionName = getDisplayName(fiber.type.render, '');
+          nodeType = 'Special';
+          name = functionName !== '' ? `ForwardRef(${functionName})` : 'ForwardRef';
+          children = [];
+          break;
+        default:
+          nodeType = 'Native';
+          props = fiber.memoizedProps;
+          name = 'TODO_NOT_IMPLEMENTED_YET';
+          children = [];
+          break;
+      }
       break;
   }
 
@@ -129,6 +188,7 @@ function getDataFiber(fiber: Object, getOpaqueNode: (fiber: Object) => Object): 
     }
   }
 
+  // $FlowFixMe
   return {
     nodeType,
     type,

@@ -1,7 +1,7 @@
 import {default as atomifyDeep} from './atomifyDeep'
-import {DictAtom} from '$src/shared/DataVerse/atoms/dict'
-import boxAtom, {BoxAtom} from '$src/shared/DataVerse/atoms/box'
-import {ArrayAtom} from '$src/shared/DataVerse/atoms/array'
+import {DictAtom} from '$shared//DataVerse/atoms/dictAtom'
+import boxAtom, {BoxAtom} from '$shared//DataVerse/atoms/boxAtom'
+import {ArrayAtom} from '$shared//DataVerse/atoms/arrayAtom'
 
 describe('DataVerse.atomifyDeep', () => {
   it('shoudl work', () => {
@@ -26,7 +26,7 @@ describe('DataVerse.atomifyDeep', () => {
     ref
       .prop('b')
       .prop('d')
-      .getValue() as Error
+      .getValue()
     expect(ref.prop('a').getValue()).toEqual('a')
     expect(ref.prop('b').isAtom).toEqual(true)
     expect(

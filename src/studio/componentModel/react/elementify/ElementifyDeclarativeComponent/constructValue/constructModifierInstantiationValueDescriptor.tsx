@@ -1,14 +1,14 @@
 import constructMapDescriptor from './constructMapDescriptor'
-import dictAtom from '$src/shared/DataVerse/atoms/dict'
+import dictAtom from '$shared//DataVerse/atoms/dictAtom'
 
 const constructModifierInstantiationValueDescriptor = (
   des: $FixMe,
-  d: $FixMe,
+  self: $FixMe,
 ) => {
   return dictAtom({
     modifierId: des.prop('modifierId'),
     enabled: des.prop('enabled'),
-    props: des.prop('props').flatMap(v => constructMapDescriptor(v, d)),
+    props: des.prop('props').flatMap(v => constructMapDescriptor(v, self)),
   }).derivedDict()
 }
 

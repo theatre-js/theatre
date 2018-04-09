@@ -1,11 +1,12 @@
-import * as React from 'react'
+import React from 'react'
 import {ComponentDescriptor} from '$studio/componentModel/types'
-import {makeReactiveComponent} from '$studio/handy'
-import {DerivedClass} from '$src/shared/DataVerse/derivedClass/derivedClass'
-import withDeps from '$src/shared/DataVerse/derivations/withDeps'
-import boxAtom from '$src/shared/DataVerse/atoms/box'
-import dictAtom from '$src/shared/DataVerse/atoms/dict'
-import autoDerive from '$src/shared/DataVerse/derivations/autoDerive/autoDerive'
+import {DerivedClass} from '$shared//DataVerse/derivedClass/derivedClass'
+import withDeps from '$shared//DataVerse/derivations/withDeps'
+import boxAtom from '$shared//DataVerse/atoms/boxAtom'
+import dictAtom from '$shared//DataVerse/atoms/dictAtom'
+import autoDerive from '$shared//DataVerse/derivations/autoDerive/autoDerive'
+import TheaterComponent from '$studio/componentModel/react/TheaterComponent/TheaterComponent'
+import {DictAtom} from '$shared/DataVerse/atoms/dictAtom'
 
 const lookupTable = {
   tagName: self => {
@@ -21,7 +22,7 @@ const lookupTable = {
       .prop('props')
       .prop('children')
       .toJS()
-
+    
     const refFn = self.pointer().prop('refFn')
     const tagName = self.pointer().prop('tagName')
 
@@ -59,19 +60,22 @@ type State = DictAtom<{
 
 const componentId = 'TheaterJS/Core/DOMTag'
 
-export const propsTomakeReactiveComponent = {
-  componentId,
-  displayName: componentId,
-  componentType: 'HardCoded',
-  getInitialState(): State {
+class DOMTag extends TheaterComponent {
+  static componentId = componentId
+  static displayName = 'DOMTag'
+  static componentType = 'HardCoded'
+  static shouldSwallowChild = true // don't try this at home
+
+  _getClass(dict: DerivedClass<$FixMe>): DerivedClass<$FixMe> {
+    return dict.extend(lookupTable)
+  }
+  
+  _getInitialState(): State {
     return dictAtom({
       elRef: boxAtom(null),
     })
-  },
-  getClass: (dict: DerivedClass<$FixMe>) => dict.extend(lookupTable),
+  }
 }
-
-const DOMTag = makeReactiveComponent(propsTomakeReactiveComponent)
 
 const descriptor: ComponentDescriptor = {
   id: componentId,
@@ -112,7 +116,7 @@ const makeSeparateComponentForEachDomTag = () => {
     'main',
   ]
 
-  const components = {}
+  const components: {[id: string]: $FixMe} = {}
 
   supportedTags.forEach(tagName => {
     const id = 'TheaterJS/Core/HTML/' + tagName
@@ -120,19 +124,29 @@ const makeSeparateComponentForEachDomTag = () => {
       ...descriptor,
       id,
       displayName: tagName,
-      // $FlowIgnore
-      reactComponent: makeReactiveComponent({
-        ...propsTomakeReactiveComponent,
-        componentId: id,
-        displayName: tagName,
-        getClass: (dict: DerivedClass<$FixMe>) =>
-          dict.extend({
+      reactComponent: class extends DOMTag {
+        static componentId = id
+        static displayName = tagName
+        _getClass(dict: DerivedClass<$FixMe>) {
+          return dict.extend({
             ...lookupTable,
             tagName() {
               return tagName
             },
-          }),
-      }),
+          })
+        }
+      },
+      // $FlowIgnore
+      // reactComponent: TheaterComponent({
+      //   ...propsToTheaterComponent,
+      //   getClass: (dict: DerivedClass<$FixMe>) =>
+      //     dict.extend({
+      //       ...lookupTable,
+      //       tagName() {
+      //         return tagName
+      //       },
+      //     }),
+      // }),
     }
 
     components[id] = componentDescriptor
