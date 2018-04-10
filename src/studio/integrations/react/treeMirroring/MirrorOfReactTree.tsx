@@ -13,7 +13,7 @@ import Stack from '$shared/utils/Stack'
 import atom, {Atom} from '$shared/DataVerse2/atom'
 import {PathBasedReducer} from '$shared/utils/redux/withHistory/PathBasedReducer'
 import update from 'lodash/fp/update'
-import {get, omit, pull} from 'lodash'
+import {get, omit, pull, pickBy} from 'lodash'
 
 // if (!window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
 //   const installReactDevtoolsGlobalHook = require('$root/vendor/react-devtools-backend/installGlobalHook')
@@ -120,6 +120,7 @@ export default class MirrorOfReactTree {
    */
   _volatileIdsByInternalInstances: WeakMap<OpaqueNodeHandle, VolatileId>
   atom: Atom<State>
+  _rendererInterestedIn: RendererId | undefined
 
   constructor() {
     if (!window.__REACT_DEVTOOLS_GLOBAL_HOOK__)
@@ -137,6 +138,30 @@ export default class MirrorOfReactTree {
     this._volatileIdsByInternalInstances = new WeakMap()
 
     this._setup()
+  }
+
+  discardAllRenderersExcept(rendererId: RendererId) {
+    if (
+      this._rendererInterestedIn &&
+      this._rendererInterestedIn !== rendererId
+    ) {
+      throw new Error(
+        `We're already discarding renderer '${
+          this._rendererInterestedIn
+        }'. Can't discard another renderer again`,
+      )
+    }
+
+    this._rendererInterestedIn = rendererId
+    const oldState = this.getState()
+    const newState = {
+      renderers: pickBy(oldState.renderers, r => r.rendererId === rendererId),
+      nodesByVolatileId: pickBy(
+        oldState.nodesByVolatileId,
+        r => r.rendererId === rendererId,
+      ),
+    }
+    this._replaceState(() => newState as $FixMe)
   }
 
   private _replaceState(fn: (old: State) => State) {
@@ -217,6 +242,9 @@ export default class MirrorOfReactTree {
     renderer: RendererId
     type: 'mount'
   }) => {
+    if (this._rendererInterestedIn && this._rendererInterestedIn !== rendererId)
+      return
+
     if (rest.type !== 'mount') {
       // @todo
       throw new Error(`type is ${rest.type}. Investigate`)
@@ -247,11 +275,14 @@ export default class MirrorOfReactTree {
 
   _reactToUnmount = ({
     internalInstance,
-  }: // renderer: rendererId,
-  {
+    renderer: rendererId,
+  }: {
     internalInstance: OpaqueNodeHandle
     renderer: RendererId
   }) => {
+    if (this._rendererInterestedIn && this._rendererInterestedIn !== rendererId)
+      return
+
     const volatileId = this._getVolatileIdFromInternalInstance(internalInstance)
 
     if (!volatileId) {
@@ -259,12 +290,12 @@ export default class MirrorOfReactTree {
         `Got an 'unmount' with internalInstance that doesn't have a volatileId`,
       )
     }
-    const node = this._getNodeByVolatileId(volatileId) as Node
+    const node = this.getNodeByVolatileId(volatileId) as Node
 
     if (isGenericNode(node) || isWrapperNode(node)) {
       if (node.volatileIdsOfChildren.length !== 0) {
         const childNodeVid = node.volatileIdsOfChildren[0]
-        const childNode = this._getNodeByVolatileId(childNodeVid) as Node
+        const childNode = this.getNodeByVolatileId(childNodeVid) as Node
         if (
           node.volatileIdsOfChildren.length === 1 &&
           childNode.type === 'Text' &&
@@ -295,7 +326,7 @@ export default class MirrorOfReactTree {
         )
       }
 
-      const parentNode = this._getNodeByVolatileId(parentVolatileId) as
+      const parentNode = this.getNodeByVolatileId(parentVolatileId) as
         | WrapperNode
         | GenericNode
         | undefined
@@ -316,6 +347,13 @@ export default class MirrorOfReactTree {
     this.events.emit('unmount', node)
   }
 
+  /**
+   * @todo We are doing way too mcuh in the update hook. It will surely slow things down
+   * whenever a react element gets updated. (It actually did slow Studio UI down, but since
+   * the UI is on a separate RendererId, I easily fixed it with `this.discardAllRenderersExcept()).
+   * But any animation that goes through normal react lifecycle and causes an `update` event here
+   * will be slowed down.
+   */
   _reactToUpdate = ({
     internalInstance,
     data,
@@ -327,6 +365,9 @@ export default class MirrorOfReactTree {
     renderer: RendererId
     type: 'update'
   }) => {
+    if (this._rendererInterestedIn && this._rendererInterestedIn !== rendererId)
+      return
+
     if (rest.type !== 'update') {
       throw new Error(`type is ${rest.type}. Investigate`)
     }
@@ -398,7 +439,7 @@ export default class MirrorOfReactTree {
       )
     }
 
-    const oldNode = this._getNodeByVolatileId(volatileId) as
+    const oldNode = this.getNodeByVolatileId(volatileId) as
       | GenericNode
       | WrapperNode
     // const oldNodeStuff = {
@@ -511,9 +552,7 @@ export default class MirrorOfReactTree {
   }
 
   private _deleteNode(volatileId: string) {
-    this._reduceState(['nodesByVolatileId'], nodes =>
-      omit(nodes, [volatileId]),
-    )
+    this._reduceState(['nodesByVolatileId'], nodes => omit(nodes, [volatileId]))
   }
 
   private _getVolatileIdFromInternalInstance(
@@ -602,8 +641,16 @@ export default class MirrorOfReactTree {
     }
   }
 
-  _getNodeByVolatileId(childVolatileId: string): Node | undefined {
-    return this.atom.getState().nodesByVolatileId[childVolatileId]
+  getNodeByVolatileId(volatileId: string): Node | undefined {
+    return this.atom.getState().nodesByVolatileId[volatileId]
+  }
+
+  getNativeElementByVolatileId(
+    id: string,
+  ): undefined | Element | React.Component<mixed, mixed> {
+    const node = this.getNodeByVolatileId(id)
+    if (!node || node.type !== 'Generic') return undefined
+    return node.nativeNode
   }
 
   /**
@@ -636,7 +683,7 @@ export default class MirrorOfReactTree {
         continue
       }
       const id = top.shift() as VolatileId
-      const node = this._getNodeByVolatileId(id)
+      const node = this.getNodeByVolatileId(id)
       if (!node) {
         throw new Error(
           `Got a childVolatileId for a child that doesn't exist. This should never happen`,
@@ -681,6 +728,8 @@ export default class MirrorOfReactTree {
     internalInstance: OpaqueNodeHandle
     renderer: RendererId
   }) => {
+    if (this._rendererInterestedIn && this._rendererInterestedIn !== rendererId)
+      return
     const volatileId = this._volatileIdsByInternalInstances.get(
       internalInstance,
     )
@@ -689,7 +738,7 @@ export default class MirrorOfReactTree {
         `Got a 'root' event with an internalInstance that is does not have a volatileId. This should never happen`,
       )
     }
-    const node = this._getNodeByVolatileId(volatileId) as Node
+    const node = this.getNodeByVolatileId(volatileId) as Node
     if (node.type !== 'Wrapper') {
       throw new Error(`Got a root event but not for a wrapper.`)
     }

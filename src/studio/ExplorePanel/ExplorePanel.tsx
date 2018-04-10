@@ -86,6 +86,12 @@ class ExplorerPanel extends StudioComponent<Props, State> {
 
     getVolatileOdOfRenderCurrentCanvas(this.studio._mirrorOfReactTree).then(
       volatileIdOfRenderCurrentCanvas => {
+        const node = this.studio._mirrorOfReactTree.getState()
+          .nodesByVolatileId[volatileIdOfRenderCurrentCanvas]
+
+        this.studio._mirrorOfReactTree.discardAllRenderersExcept(
+          node.rendererId,
+        )
         this.atom.setState({volatileIdOfRenderCurrentCanvas})
       },
     )

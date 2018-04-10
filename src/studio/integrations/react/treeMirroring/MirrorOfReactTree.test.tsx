@@ -35,7 +35,7 @@ const summariseNode = (
   mirror: MirrorOfReactTree,
   volatileId: VolatileId,
 ): SummaryNode => {
-  const node = mirror._getNodeByVolatileId(volatileId)
+  const node = mirror.getNodeByVolatileId(volatileId)
   if (!node) {
     debugger
     throw new Error(

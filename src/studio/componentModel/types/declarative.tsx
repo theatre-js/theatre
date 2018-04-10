@@ -1,4 +1,4 @@
-import * as React from 'react'
+import React from 'react'
 import {ComponentId} from './index'
 
 export interface IDeclarativeComponentDescriptor {
@@ -17,6 +17,11 @@ export interface IDeclarativeComponentDescriptor {
   props: {
     byId: {[id: string]: IPropDescriptor}
     list: Array<string>
+  }
+  meta?: {
+    composePanel?: {
+      selectedNodeId?: string
+    }
   }
 }
 

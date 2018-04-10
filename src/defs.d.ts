@@ -146,3 +146,8 @@ declare module 'lodash/fp/update' {
   const update: $FixMe
   export default update
 }
+
+declare module 'hoist-non-react-statics' {
+  const hoist: $FixMe
+  export default hoist
+}

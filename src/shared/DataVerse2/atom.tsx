@@ -182,3 +182,10 @@ export const val = <P extends PointerInnerObj<$IntentionalAny>>(
   }
   return derivation.getValue()
 }
+
+export const pathTo = <P extends PointerInnerObj<$IntentionalAny>>(
+  pointer: P,
+): Array<string | number> => {
+  const meta = pointer.$pointerMeta
+  return meta.path
+}

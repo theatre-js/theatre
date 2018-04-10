@@ -1,4 +1,4 @@
-import {React, connect} from '$src/studio/handy'
+import {React} from '$src/studio/handy'
 import {
   reduceStateAction,
   multiReduceStateAction,
@@ -27,17 +27,26 @@ import {
 } from '$src/studio/AnimationTimelinePanel/types'
 import {XY} from '$src/studio/workspace/types'
 import StudioComponent from '$src/studio/handy/StudioComponent'
-import boxAtom, {BoxAtom} from '$src/shared/DataVerse/atoms/box'
-import TimelineInstance from '$studio/componentModel/react/makeReactiveComponent/TimelineInstance/TimelineInstance'
-import {IStudioStoreState} from '$studio/types'
+import boxAtom, {BoxAtom} from '$src/shared/DataVerse/atoms/boxAtom'
+import TimelineInstance from '$studio/componentModel/react/TheaterComponent/TimelineInstance/TimelineInstance'
 import {svgPaddingY} from '$studio/AnimationTimelinePanel/BoxView'
 import SelectionArea from '$studio/AnimationTimelinePanel/SelectionArea'
 import {POINT_RECT_EDGE_SIZE} from '$studio/AnimationTimelinePanel/Point'
+import {val, pathTo} from '$shared/DataVerse2/atom'
+import {Pointer} from '$shared/DataVerse2/pointer'
+import {
+  getComponentIdOfSelectedElement,
+  getVolatileIdOfSelectedElement,
+} from '$studio/componentModel/utils'
+import {getPathToComponentDescriptor} from '$studio/componentModel/selectors'
+import {IDeclarativeComponentDescriptor} from '../componentModel/types/declarative'
+import DerivationAsReactElement from '../componentModel/react/utils/DerivationAsReactElement'
+import autoDerive from '../../shared/DataVerse/derivations/autoDerive/autoDerive'
+import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
 
 type OwnProps = TimelineObject & {
   pathToTimeline: string[]
   panelDimensions: XY
-  elementId?: number
 }
 
 type Props = OwnProps
@@ -89,12 +98,6 @@ class Content extends StudioComponent<Props, State> {
   extremumsOfVariablesInSelection: $FixMe = {}
   currentTTimeXBeforeDrag: BoxAtom<number>
 
-  static panelName = 'AnimationTimeline'
-
-  static panelConfig = {
-    headerLess: true,
-  }
-
   constructor(props: Props, context: $IntentionalAny) {
     super(props, context)
 
@@ -133,6 +136,8 @@ class Content extends StudioComponent<Props, State> {
     }, 0)
 
     window.addEventListener('keypress', this._handleKeyPress)
+
+    this._updateThingy(this.props)
   }
 
   componentWillReceiveProps(newProps: IProps) {
@@ -144,28 +149,28 @@ class Content extends StudioComponent<Props, State> {
   }
 
   _updateThingy(props: Props = this.props) {
-    const thingy = calculateThingy(props.elementId, props.pathToTimeline)
+    const thingy = calculateThingy(props.volatileIdOfSelectedElement, props.pathToTimeline)
     if (thingy === this.state.thingy) return
 
     if (this.state.untapFromTimeBoxChanges) {
       this.state.untapFromTimeBoxChanges()
     }
 
-    if (props.elementId && props.pathToTimeline) {
-      const timelineId = props.pathToTimeline[props.pathToTimeline.length - 1]
-      const element = this.studio.componentInstances.get(props.elementId)
-      const timelineInstance = element.getTimelineInstance(timelineId)
-      const timeBox = timelineInstance.atom.prop('time')
-      const untapFromTimeBoxChanges = timeBox.changes().tap(() => {})
+    const timelineId = props.pathToTimeline[props.pathToTimeline.length - 1]
+    // this.studio._mirrorOfReactTree._getNodeByVolatileId(props.)
+    const element = props.selectedElement
+    
+    const timelineInstance = element.getTimelineInstance(timelineId)
+    const timeBox = timelineInstance.atom.prop('time')
+    const untapFromTimeBoxChanges = timeBox.changes().tap(() => {})
 
-      this.setState({
-        thingy,
-        timeBox,
-        timelineInstance,
-        untapFromTimeBoxChanges,
-        currentTTime: timeBox.getValue(),
-      })
-    }
+    this.setState({
+      thingy,
+      timeBox,
+      timelineInstance,
+      untapFromTimeBoxChanges,
+      currentTTime: timeBox.getValue(),
+    })
   }
 
   _updateTimeState = () => {}
@@ -534,7 +539,7 @@ class Content extends StudioComponent<Props, State> {
     this.dispatch(
       multiReduceStateAction([
         {
-          path: props.activeComponentPath,
+          path: props.pathToActiveLocalHiddenValue,
           reducer: theaterObj => {
             componentName = `${theaterObj.componentId.split('/').slice(-1)}.${
               theaterObj.props.class
@@ -854,7 +859,9 @@ class Content extends StudioComponent<Props, State> {
     return {left, top, right, bottom}
   }
 
-  _getSelectedPointsHorizontalLimits(points: $FixMe): {right: number, left: number} {
+  _getSelectedPointsHorizontalLimits(
+    points: $FixMe,
+  ): {right: number; left: number} {
     const {variables} = this.props
     const {focus} = this.state
 
@@ -1230,8 +1237,12 @@ class Content extends StudioComponent<Props, State> {
                               height: selectionSize.y,
                             }
                           : {})}
-                        leftLimit={selectionLimits != null ? selectionLimits.left : null}
-                        rightLimit={selectionLimits != null ? selectionLimits.right : null}
+                        leftLimit={
+                          selectionLimits != null ? selectionLimits.left : null
+                        }
+                        rightLimit={
+                          selectionLimits != null ? selectionLimits.right : null
+                        }
                         move={this.state.selectionMove}
                         onMove={(x: number, y: number) =>
                           this.setState(() => ({selectionMove: {x, y}}))
@@ -1250,46 +1261,122 @@ class Content extends StudioComponent<Props, State> {
   }
 }
 
-export default connect((s: IStudioStoreState, op: OwnProps) => {
-  const timeline = _.get(s, op.pathToTimeline)
-  const panelObjectBeingDragged = _.get(s, [
-    'workspace',
-    'panels',
-    'panelObjectBeingDragged',
-  ])
-  const selectedComponentId = _.get(s, [
-    'workspace',
-    'panels',
-    'byId',
-    'elementTree',
-    'outputs',
-    'selectedNode',
-    'componentId',
-  ])
-  const selectedElementId = _.get(s, [
-    'componentModel',
-    'componentDescriptors',
-    'custom',
-    selectedComponentId,
-    'meta',
-    'composePanel',
-    'selectedNodeId',
-  ])
-  const activeComponentPath = [
-    'componentModel',
-    'componentDescriptors',
-    'custom',
-    selectedComponentId,
-    'localHiddenValuesById',
-    selectedElementId,
-  ]
-  return {...timeline, panelObjectBeingDragged, activeComponentPath}
-})(Content)
+export default class ThePanel extends StudioComponent<{}, void> {
+  _d: AbstractDerivation<React.ReactNode>
+  static panelName = 'AnimationTimeline'
 
-function calculateThingy(elementId?: number, pathToTimeline?: string[]) {
-  if (!elementId || !pathToTimeline) {
+  static panelConfig = {
+    headerLess: true,
+  }
+
+  constructor(props: {}, context: $IntentionalAny) {
+    super(props, context)
+    const emptyPanel = <Panel key="emptyPanel" />
+    const studio = this.studio
+
+    this._d = autoDerive(() => {
+      const volatileIdOfSelectedElement = getVolatileIdOfSelectedElement(studio)
+      if (!volatileIdOfSelectedElement) return emptyPanel
+      const selectedElement = studio._mirrorOfReactTree.getNativeElementByVolatileId(
+        volatileIdOfSelectedElement,
+      )
+      if (!selectedElement) return emptyPanel
+
+      const selectedComponentId =
+        getComponentIdOfSelectedElement(studio) || 'BouncyBall'
+
+      if (!selectedComponentId) return emptyPanel
+
+      const pathToComponent = getPathToComponentDescriptor(selectedComponentId)
+
+      const componentP: Pointer<IDeclarativeComponentDescriptor> = _.get(
+        studio.atom2.pointer,
+        pathToComponent,
+      )
+
+      const componentType = val(componentP.type)
+
+      if (componentType !== 'Declarative') return emptyPanel
+
+      const defaultTimelineP =
+        componentP.timelineDescriptors.byId.defaultTimeline
+      const pathToTimeline = pathTo(defaultTimelineP)
+      const defaultTimeline = val(defaultTimelineP)
+
+      if (!defaultTimeline) return emptyPanel
+
+      const panelObjectBeingDragged = val(
+        studio.atom2.pointer.workspace.panels.panelObjectBeingDragged,
+      )
+
+      const pathToActiveLocalHiddenValue = pathTo(
+        componentP.meta.composePanel.selectedNodeId,
+      )
+
+      const props = {
+        ...defaultTimeline,
+        panelObjectBeingDragged,
+        pathToActiveLocalHiddenValue,
+        pathToTimeline,
+        volatileIdOfSelectedElement,
+        selectedElement,
+      }
+
+      return <Content key="actualPanel" {...props} />
+
+      // const pathToActiveLocalHiddenValue = [
+      //   ...pathToComponent,
+      //   'localHiddenValuesById',
+      //   selectedLocalHiddenValueId,
+      // ]
+
+      // const selectedComponentId = val(_.get(studio.atom2.pointer, [
+      //   'workspace',
+      //   'panels',
+      //   'byId',
+      //   'elementTree',
+      //   'outputs',
+      //   'selectedNode',
+      //   'componentId',
+      // ]))
+
+      // const selectedElementId = val(_.get(studio.atom2.pointer, [
+      //   'componentModel',
+      //   'componentDescriptors',
+      //   'custom',
+      //   selectedComponentId,
+      //   'meta',
+      //   'composePanel',
+      //   'selectedNodeId',
+      // ]))
+
+      // const pathToActiveLocalHiddenValue = [
+      //   'componentModel',
+      //   'componentDescriptors',
+      //   'custom',
+      //   selectedComponentId,
+      //   'localHiddenValuesById',
+      //   selectedElementId,
+      // ]
+      // return {
+      //   ...defaultTimeline,
+      //   panelObjectBeingDragged,
+      //   pathToActiveLocalHiddenValue,
+      //   pathToTimeline,
+      //   volatileIdOfSelectedElement,
+      // }
+    })
+  }
+
+  render() {
+    return <DerivationAsReactElement derivation={this._d} />
+  }
+}
+
+function calculateThingy(volatileIdOfSelectedElement?: string, pathToTimeline?: string[]) {
+  if (!volatileIdOfSelectedElement || !pathToTimeline) {
     return undefined
   } else {
-    return JSON.stringify({elementId, pathToTimeline})
+    return JSON.stringify({volatileIdOfSelectedElement, pathToTimeline})
   }
 }
