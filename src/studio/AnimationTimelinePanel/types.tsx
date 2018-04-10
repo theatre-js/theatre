@@ -31,7 +31,7 @@ export type BoxObject = {
 }
 
 export type LayoutArray = BoxID[]
-export type BoxesObject = {[id: BoxID]: BoxObject}
+export type BoxesObject = {[id: string]: BoxObject}
 export type TimelineObject = {
   layout: LayoutArray
   boxes: BoxesObject

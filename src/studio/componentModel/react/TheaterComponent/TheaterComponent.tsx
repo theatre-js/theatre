@@ -348,6 +348,11 @@ export default abstract class TheaterComponent<
   getTimelineInstance(timelineId: string) {
     return this._atom.prop('timelineInstances').prop(timelineId)
   }
+
+  componentDidCatch(error, info) {
+    console.log('catch', error, info, this);
+    
+  }
 }
 
 export const isTheaterComponent = (s: mixed): s is TheaterComponent<mixed> =>

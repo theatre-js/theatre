@@ -10,7 +10,7 @@ import TimeBar from './TimeBar'
 import {Subscriber, Broadcast} from 'react-broadcast'
 import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
 import cx from 'classnames'
-import * as _ from 'lodash'
+import _ from 'lodash'
 import {set} from 'lodash/fp'
 import {
   PanelWidthChannel,
@@ -43,13 +43,16 @@ import {IDeclarativeComponentDescriptor} from '../componentModel/types/declarati
 import DerivationAsReactElement from '../componentModel/react/utils/DerivationAsReactElement'
 import autoDerive from '../../shared/DataVerse/derivations/autoDerive/autoDerive'
 import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
+import TheaterComponent from '$studio/componentModel/react/TheaterComponent/TheaterComponent'
 
-type OwnProps = TimelineObject & {
-  pathToTimeline: string[]
+type Props = TimelineObject & {
   panelDimensions: XY
+  volatileIdOfSelectedElement: string
+  panelObjectBeingDragged: $FixMe
+  pathToActiveLocalHiddenValue: string[]
+  pathToTimeline: string[]
+  selectedElement: TheaterComponent<$IntentionalAny>
 }
-
-type Props = OwnProps
 
 type State = {
   boxBeingDragged:
@@ -86,6 +89,7 @@ type State = {
   untapFromTimeBoxChanges?: () => void
   isSeekerBeingDragged: boolean
   timelineInstance: undefined | TimelineInstance
+  currentTTime: number
 }
 
 const LEGEND_BAR_WIDTH = 30
@@ -116,6 +120,7 @@ class Content extends StudioComponent<Props, State> {
       focus: [0, 8000],
       isSeekerBeingDragged: false,
       timelineInstance: undefined,
+      currentTTime: 0,
     }
     this.currentTTimeXBeforeDrag = boxAtom(0)
   }
@@ -140,7 +145,7 @@ class Content extends StudioComponent<Props, State> {
     this._updateThingy(this.props)
   }
 
-  componentWillReceiveProps(newProps: IProps) {
+  componentWillReceiveProps(newProps: Props) {
     if (JSON.stringify(newProps.layout) !== JSON.stringify(this.props.layout)) {
       this._resetBoundariesAndRatios(newProps.layout, newProps.boxes)
     }
@@ -149,7 +154,10 @@ class Content extends StudioComponent<Props, State> {
   }
 
   _updateThingy(props: Props = this.props) {
-    const thingy = calculateThingy(props.volatileIdOfSelectedElement, props.pathToTimeline)
+    const thingy = calculateThingy(
+      props.volatileIdOfSelectedElement,
+      props.pathToTimeline,
+    )
     if (thingy === this.state.thingy) return
 
     if (this.state.untapFromTimeBoxChanges) {
@@ -159,7 +167,7 @@ class Content extends StudioComponent<Props, State> {
     const timelineId = props.pathToTimeline[props.pathToTimeline.length - 1]
     // this.studio._mirrorOfReactTree._getNodeByVolatileId(props.)
     const element = props.selectedElement
-    
+
     const timelineInstance = element.getTimelineInstance(timelineId)
     const timeBox = timelineInstance.atom.prop('time')
     const untapFromTimeBoxChanges = timeBox.changes().tap(() => {})
@@ -175,10 +183,10 @@ class Content extends StudioComponent<Props, State> {
 
   _updateTimeState = () => {}
 
-  _handleKeyPress = (e: React.KeyboardEvent<$FixMe>) => {
+  _handleKeyPress = (e: KeyboardEvent) => {
     // if (keyCode)
     if (e.keyCode === 32 && e.target === document.body) {
-      if (this.state.thingy) {
+      if (this.state.thingy && this.state.timelineInstance) {
         this.state.timelineInstance.togglePlay()
       }
     }
@@ -263,7 +271,7 @@ class Content extends StudioComponent<Props, State> {
 
     this.setState(state => ({
       boxBeingDragged: {
-        ...state.boxBeingDragged,
+        ...(state.boxBeingDragged as $IntentionalAny),
         moveTo: index,
         mergeWith: null,
       },
@@ -1309,11 +1317,17 @@ export default class ThePanel extends StudioComponent<{}, void> {
         studio.atom2.pointer.workspace.panels.panelObjectBeingDragged,
       )
 
-      const pathToActiveLocalHiddenValue = pathTo(
+      const selectedNodeId: string = val(
+        // @ts-ignore @todo
         componentP.meta.composePanel.selectedNodeId,
+      ) as $FixMe
+
+      const pathToActiveLocalHiddenValue = pathTo(
+        componentP.localHiddenValuesById[selectedNodeId],
       )
 
-      const props = {
+      // @ts-ignore @todo
+      const props: Props = {
         ...defaultTimeline,
         panelObjectBeingDragged,
         pathToActiveLocalHiddenValue,
@@ -1323,48 +1337,6 @@ export default class ThePanel extends StudioComponent<{}, void> {
       }
 
       return <Content key="actualPanel" {...props} />
-
-      // const pathToActiveLocalHiddenValue = [
-      //   ...pathToComponent,
-      //   'localHiddenValuesById',
-      //   selectedLocalHiddenValueId,
-      // ]
-
-      // const selectedComponentId = val(_.get(studio.atom2.pointer, [
-      //   'workspace',
-      //   'panels',
-      //   'byId',
-      //   'elementTree',
-      //   'outputs',
-      //   'selectedNode',
-      //   'componentId',
-      // ]))
-
-      // const selectedElementId = val(_.get(studio.atom2.pointer, [
-      //   'componentModel',
-      //   'componentDescriptors',
-      //   'custom',
-      //   selectedComponentId,
-      //   'meta',
-      //   'composePanel',
-      //   'selectedNodeId',
-      // ]))
-
-      // const pathToActiveLocalHiddenValue = [
-      //   'componentModel',
-      //   'componentDescriptors',
-      //   'custom',
-      //   selectedComponentId,
-      //   'localHiddenValuesById',
-      //   selectedElementId,
-      // ]
-      // return {
-      //   ...defaultTimeline,
-      //   panelObjectBeingDragged,
-      //   pathToActiveLocalHiddenValue,
-      //   pathToTimeline,
-      //   volatileIdOfSelectedElement,
-      // }
     })
   }
 
@@ -1373,7 +1345,10 @@ export default class ThePanel extends StudioComponent<{}, void> {
   }
 }
 
-function calculateThingy(volatileIdOfSelectedElement?: string, pathToTimeline?: string[]) {
+function calculateThingy(
+  volatileIdOfSelectedElement?: string,
+  pathToTimeline?: string[],
+) {
   if (!volatileIdOfSelectedElement || !pathToTimeline) {
     return undefined
   } else {
