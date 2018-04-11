@@ -16,6 +16,7 @@ import AbstractDerivedDict from '$shared/DataVerse/derivations/dicts/AbstractDer
 import {UnwrapDictAtom} from '$shared/DataVerse/atoms/dictAtom'
 import configureAtom2 from '$studio/bootstrap/configureAtom2'
 import {Atom} from '$shared/DataVerse2/atom'
+import { GenericAction } from '$shared/types';
 
 export type StudioStateAtom = Atomify<IStudioStoreState>
 

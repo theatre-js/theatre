@@ -296,7 +296,7 @@ class Content extends StudioComponent<Props, State> {
     document.body.classList.remove('globalMoveCursor')
     if (this.state.boxBeingDragged == null) return
     const {index, moveTo, mergeWith} = this.state.boxBeingDragged
-    const {dispatch} = this.props
+    const {dispatch} = this
     if (moveTo != null) {
       dispatch(
         reduceStateAction([...this.props.pathToTimeline, 'layout'], layout => {
@@ -337,7 +337,7 @@ class Content extends StudioComponent<Props, State> {
   }
 
   splitVariable = (index: number, variableId: string) => {
-    const {dispatch} = this.props
+    const {dispatch} = this
     dispatch(
       reduceStateAction(
         this.props.pathToTimeline,
@@ -376,7 +376,7 @@ class Content extends StudioComponent<Props, State> {
   }
 
   onBoxResize = (boxId: BoxID, newHeight: number) => {
-    const {dispatch} = this.props
+    const {dispatch} = this
     dispatch(
       reduceStateAction(
         [...this.props.pathToTimeline, 'boxes', boxId, 'height'],
@@ -729,7 +729,7 @@ class Content extends StudioComponent<Props, State> {
   _applyChangesToSelection = () => {
     const {selectionMove, duration, focus, boundaries} = this.state
     const svgWidth = duration / (focus[1] - focus[0]) * this.panelWidth
-    this.props.dispatch(
+    this.dispatch(
       reduceStateAction(
         this.props.pathToTimeline.concat('variables'),
         (variables: $FixMe) => {
