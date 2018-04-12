@@ -20,13 +20,16 @@ class SelectionArea extends React.Component<Props, State> {
   initialX: number = 0
   initialY: number = 0
 
-  dragHandler = (x: number, y: number) => {
+  dragHandler = (x: number, y: number, e: MouseEvent) => {
     const {leftLimit, rightLimit} = this.props
     let dx = x + this.initialX
+    let dy = y + this.initialY
+    if (e.altKey) dy = this.props.move.y
+    if (e.shiftKey) dx = this.props.move.x
+
     if (dx <= leftLimit) dx = leftLimit + 1
     if (dx >= rightLimit) dx = rightLimit - 1
-    this.props.onMove(dx, y + this.initialY)
-    // this.props.onMove(dx, dy)
+    this.props.onMove(dx, dy)
   }
 
   dragStartHandler = () => {
