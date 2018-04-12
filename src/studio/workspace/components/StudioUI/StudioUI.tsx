@@ -59,6 +59,7 @@ const getOppositeSide = (side: string): string => {
 }
 
 export class StudioUI extends StudioComponent<IProps, State> {
+  _isMouseDown: boolean
   boundaryPathToValueRefMap: object
   static getDefaultPanelPlacement(type): PanelPlacementSettings {
     // ??
@@ -103,8 +104,10 @@ export class StudioUI extends StudioComponent<IProps, State> {
     window.addEventListener('resize', this._handleResize)
     document.addEventListener('keydown', this._handleKeyDown)
     document.addEventListener('keyup', this._resetActiveMode)
-    document.addEventListener('keyup', this._handleKeyUp)
+    // document.addEventListener('keyup', this._handleKeyUp)
     document.addEventListener('keypress', this._handleKeyPress)
+    document.addEventListener('mousedown', this._handleMouseDown)
+    document.addEventListener('mouseup', this._handleMouseUp)
   }
 
   // componentWillUnmount() {
@@ -114,6 +117,14 @@ export class StudioUI extends StudioComponent<IProps, State> {
   //   document.removeEventListener('keydown', this._handleKeyDown)
   //   document.removeEventListener('keyup', this._resetActiveMode)
   // }
+
+  _handleMouseDown = () => {
+    this._isMouseDown = true
+  }
+
+  _handleMouseUp = () => {
+    this._isMouseDown = false
+  }
 
   _handleKeyPress = (e: KeyboardEvent) => {
     if (e.keyCode === 96) {
@@ -146,6 +157,7 @@ export class StudioUI extends StudioComponent<IProps, State> {
       }
     }
 
+    if (this._isMouseDown) return
     if (e.target.tagName === 'INPUT' && ![91].includes(e.keyCode)) return
     switch (e.keyCode) {
       case 16:

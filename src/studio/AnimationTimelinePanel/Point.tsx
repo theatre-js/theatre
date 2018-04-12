@@ -119,11 +119,12 @@ class Point extends React.PureComponent<IProps, IState> {
     this.svgSize = this.props.getSvgSize()
   }
 
-  pointDragHandler = (dx: number, dy: number) => {
+  pointDragHandler = (dx: number, dy: number, e: MouseEvent) => {
     const {width, height} = this.svgSize
     let x = dx / width * 100
-    // if (e.altKey) y = this.state.pointMove[1]
-    // if (e.shiftKey) x = this.state.pointMove[0]
+    let y = dy / height * 100
+    if (e.altKey) y = this.state.pointMove[1]
+    if (e.shiftKey) x = this.state.pointMove[0]
 
     const {pointTime, prevPointTime, nextPointTime} = this.props
     const limitLeft = prevPointTime == null ? 0 : prevPointTime
@@ -135,7 +136,7 @@ class Point extends React.PureComponent<IProps, IState> {
 
     this.setState(() => ({
       isMoving: true,
-      pointMove: [x, dy / height * 100],
+      pointMove: [x, y],
     }))
   }
 
