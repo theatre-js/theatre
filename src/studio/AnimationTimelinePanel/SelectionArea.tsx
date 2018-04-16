@@ -20,7 +20,7 @@ interface Props {
   getSelectedPoints: Function
   onEnd: Function
   onMove: Function
-  onSelectionBoundariesChange: Function
+  onResize: Function
 }
 
 interface State {
@@ -70,6 +70,12 @@ class SelectionArea extends React.PureComponent<Props, State> {
     }
   }
 
+  componentDidUpdate(prevProps: Props) {
+    if (prevProps.panelWidth !== this.props.panelWidth) {
+      this.props.onEnd() // $FixMe
+    }
+  }
+
   componentDidMount() {
     document.addEventListener('mousemove', this.mouseMoveHandler)
     document.addEventListener('mouseup', this.mouseUpHandler)
@@ -111,7 +117,7 @@ class SelectionArea extends React.PureComponent<Props, State> {
     const [top, bottom] = y < startY ? [y, startY] : [startY, y]
 
     this.setState(() => ({left, top, right, bottom}))
-    this.props.onSelectionBoundariesChange(this.getBoxBoundaries())
+    this.props.onResize(this.getBoxBoundaries())
   }
 
   private mouseUpHandler = () => {

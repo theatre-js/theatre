@@ -940,9 +940,7 @@ class Content extends StudioComponent<Props, State> {
                           variablesContainerRef={this.variablesContainer}
                           move={selectionMove}
                           onMove={this.setSelectionMove}
-                          onSelectionBoundariesChange={
-                            this.setSelectionBoundaries
-                          }
+                          onResize={this.setSelectionBoundaries}
                           onEnd={this.resetSelectionState}
                           applyChanges={this.applyChangesToSelection}
                         />
