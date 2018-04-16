@@ -24,6 +24,7 @@ interface Props {
 }
 
 interface State {
+  isMoving: boolean
   isMovable: boolean
   left: number
   top: number
@@ -371,9 +372,14 @@ class SelectionArea extends React.PureComponent<Props, State> {
   private dragStartHandler = () => {
     const {move: {x, y}} = this.props
     this.setState(() => ({
+      isMoving: true,
       xBeforeDrag: x,
       yBeforeDrag: y,
     }))
+  }
+
+  private dragEndHandler = () => {
+    this.setState(() => ({isMoving: false}))
   }
 
   private clickOutsideHandler = () => {
@@ -383,16 +389,23 @@ class SelectionArea extends React.PureComponent<Props, State> {
 
   render() {
     const {move} = this.props
-    const {left, top, right, bottom, isMovable} = this.state
+    const {left, top, right, bottom, isMovable, isMoving} = this.state
 
     const width = right - left
     const height = bottom - top
     return (
-      <div className={css.container} onClick={this.clickOutsideHandler}>
+      <div
+        className={cx(css.container, {
+          [css.showConfirmCursor]: isMovable && !isMoving,
+        })}
+        onClick={this.clickOutsideHandler}
+        onWheel={e => e.stopPropagation()}
+      >
         <DraggableArea
           shouldRegisterEvents={isMovable}
           onDragStart={this.dragStartHandler}
           onDrag={this.dragHandler}
+          onDragEnd={this.dragEndHandler}
         >
           <div
             style={{

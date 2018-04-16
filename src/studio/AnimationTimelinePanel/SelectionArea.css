@@ -2,7 +2,10 @@
   position: absolute 0;
   top: 0px;
   z-index: 100;
-  cursor: pointer;
+  // cursor: pointer;
+  &.showConfirmCursor {
+    cursor: url('url-loader!./ConfirmCursor.svg'), auto;
+  }
 
   &:before {
     position: absolute;
