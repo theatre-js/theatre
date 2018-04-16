@@ -29,9 +29,7 @@ import {XY} from '$src/studio/workspace/types'
 import StudioComponent from '$src/studio/handy/StudioComponent'
 import boxAtom, {BoxAtom} from '$src/shared/DataVerse/atoms/boxAtom'
 import TimelineInstance from '$studio/componentModel/react/TheaterComponent/TimelineInstance/TimelineInstance'
-import {svgPaddingY} from '$studio/AnimationTimelinePanel/BoxView'
 import SelectionArea from '$studio/AnimationTimelinePanel/SelectionArea'
-import {POINT_RECT_EDGE_SIZE} from '$studio/AnimationTimelinePanel/Point'
 import {val, pathTo} from '$shared/DataVerse2/atom'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import {
@@ -44,6 +42,7 @@ import DerivationAsReactElement from '../componentModel/react/utils/DerivationAs
 import autoDerive from '../../shared/DataVerse/derivations/autoDerive/autoDerive'
 import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
 import TheaterComponent from '$studio/componentModel/react/TheaterComponent/TheaterComponent'
+import {svgPaddingY} from '$studio/AnimationTimelinePanel/BoxView'
 
 type Props = TimelineObject & {
   panelDimensions: XY
@@ -65,21 +64,16 @@ type State = {
         mergeWith?: undefined | null | number
         moveTo?: undefined | null | number
       }
-  selectionStatus: 'NONE' | 'ACTIVE' | 'CONFIRMED'
-  selectionSize: {x: number; y: number}
+  selectionStartPos: null | {x: number; y: number}
+  selectionBoundaries: null | {
+    [id: string]: {
+      left: number
+      right: number
+      top: number
+      bottom: number
+    }
+  }
   selectionMove: {x: number; y: number}
-  selectionLimits: null | {right: number; left: number}
-  selectionProps:
-    | undefined
-    | null
-    | {
-        containerScrollTop: number
-        paddedBoundaries: number[]
-        _clientX: number
-        _clientY: number
-        fromX: number
-        fromY: number
-      }
   moveRatios: number[]
   boundaries: number[]
   duration: number
@@ -92,7 +86,7 @@ type State = {
   currentTTime: number
 }
 
-const LEGEND_BAR_WIDTH = 30
+export const LEGEND_BAR_WIDTH = 30
 
 class Content extends StudioComponent<Props, State> {
   panelWidth: number
@@ -109,11 +103,9 @@ class Content extends StudioComponent<Props, State> {
 
     this.state = {
       boxBeingDragged: null,
-      selectionStatus: 'NONE',
-      selectionSize: {x: 0, y: 0},
+      selectionStartPos: null,
+      selectionBoundaries: null,
       selectionMove: {x: 0, y: 0},
-      selectionLimits: null,
-      selectionProps: null,
       moveRatios: new Array(layout.length).fill(0),
       boundaries: this._getBoundaries(boxes, layout),
       duration: 20000,
@@ -639,94 +631,12 @@ class Content extends StudioComponent<Props, State> {
 
   _handleMouseDown = (e: $FixMe, activeMode: string) => {
     if (activeMode === MODE_SHIFT) {
-      const {clientX, clientY} = e
-      const {left, top} = this.container.getBoundingClientRect()
-
-      const {boundaries} = this.state
-      const boundariesCount = boundaries.length - 1
-      const halfOfSvgPaddingY = svgPaddingY / 2
-      const paddedBoundaries = boundaries.reduce(
-        (reducer: number[], boundary: number, index: number) => {
-          if (index === 0) {
-            return [...reducer, boundary + halfOfSvgPaddingY]
-          }
-          if (index === boundariesCount) {
-            return [...reducer, boundary - halfOfSvgPaddingY]
-          }
-          return [
-            ...reducer,
-            boundary - halfOfSvgPaddingY,
-            boundary + halfOfSvgPaddingY,
-          ]
-        },
-        [],
-      )
-
-      this.setState(() => ({
-        selectionStatus: 'ACTIVE',
-        selectionProps: {
-          containerScrollTop: this.variablesContainer.scrollTop,
-          paddedBoundaries,
-          _clientX: clientX,
-          _clientY: clientY,
-          fromX: clientX - left,
-          fromY: clientY - top - 1,
-        },
-      }))
-      document.addEventListener('mousemove', this._updateSelectionOnDrag)
-      document.addEventListener('mouseup', this._confirmSelection)
+      const {clientX: x, clientY: y} = e
+      this.setState(() => ({selectionStartPos: {x, y}}))
     }
   }
 
-  _updateSelectionOnDrag = (e: $FixMe) => {
-    const {clientX, clientY} = e
-    this.setState(({selectionProps}) => ({
-      selectionSize: {
-        // @ts-ignore
-        x: clientX - selectionProps._clientX,
-        // @ts-ignore
-        y: clientY - selectionProps._clientY,
-      },
-    }))
-  }
-
-  _confirmSelection = () => {
-    document.removeEventListener('mousemove', this._updateSelectionOnDrag)
-    document.removeEventListener('mouseup', this._confirmSelection)
-
-    if (Object.keys(this.selectedPoints).length > 0) {
-      const {left, top, right, bottom} = this._getSelectedPointsBoundaries(
-        this.selectedPoints,
-      )
-      this.setState(({selectionProps}: $FixMe) => ({
-        selectionStatus: 'CONFIRMED',
-        selectionProps: {
-          ...selectionProps,
-          fromX: left,
-          fromY: top,
-        },
-        selectionSize: {
-          x: right - left,
-          y: bottom - top,
-        },
-        selectionLimits: {
-          ...this._getSelectedPointsHorizontalLimits(this.selectedPoints),
-        },
-      }))
-    } else {
-      this.selectedPoints = {}
-      this.extremumsOfVariablesInSelection = {}
-      this.setState(() => ({
-        selectionStatus: 'NONE',
-        selectionProps: null,
-        selectionSize: {x: 0, y: 0},
-        selectionMove: {x: 0, y: 0},
-        selectionLimits: null,
-      }))
-    }
-  }
-
-  _applyChangesToSelection = () => {
+  applyChangesToSelection = () => {
     const {selectionMove, duration, focus, boundaries} = this.state
     const svgWidth = duration / (focus[1] - focus[0]) * this.panelWidth
     this.dispatch(
@@ -766,241 +676,26 @@ class Content extends StudioComponent<Props, State> {
         },
       ),
     )
+  }
 
+  setSelectionBoundaries = (selectionBoundaries: $FixMe) => {
+    this.setState(() => ({selectionBoundaries}))
+  }
+
+  setSelectionMove = (selectionMove: $FixMe) => {
+    this.setState(() => ({selectionMove}))
+  }
+
+  resetSelectionState = () => {
     this.setState(() => ({
-      selectionStatus: 'NONE',
-      selectionProps: null,
-      selectionSize: {x: 0, y: 0},
+      selectionStartPos: null,
+      selectionBoundaries: null,
       selectionMove: {x: 0, y: 0},
-      selectionLimits: null,
     }))
     setTimeout(() => {
       this.selectedPoints = {}
       this.extremumsOfVariablesInSelection = {}
     }, 0)
-  }
-
-  _getSelectedPointsBoundaries(points: $FixMe) {
-    const {selectionProps} = this.state
-    // @ts-ignore
-    const {paddedBoundaries, containerScrollTop} = selectionProps
-
-    let arrayOfPointTimes: number[] = []
-    Object.keys(points).forEach((boxKey: string) => {
-      const boxInfo = points[boxKey]
-      Object.keys(boxInfo).forEach((variableKey: string) => {
-        const variableInfo = boxInfo[variableKey]
-        Object.keys(variableInfo).forEach((pointKey: string) => {
-          arrayOfPointTimes = [
-            ...arrayOfPointTimes,
-            variableInfo[pointKey].time,
-          ]
-        })
-      })
-    })
-
-    const {focus, duration} = this.state
-    const leftOffset = 100 * focus[0] / duration
-    const focusedWidth = (focus[1] - focus[0]) / duration
-    const left =
-      LEGEND_BAR_WIDTH -
-      POINT_RECT_EDGE_SIZE / 2 +
-      (Math.min(...arrayOfPointTimes) - leftOffset) /
-        focusedWidth *
-        this.panelWidth /
-        100
-    const right =
-      LEGEND_BAR_WIDTH +
-      POINT_RECT_EDGE_SIZE / 2 +
-      (Math.max(...arrayOfPointTimes) - leftOffset) /
-        focusedWidth *
-        this.panelWidth /
-        100
-
-    const indicesOfBoxesInSelection = Object.keys(points)
-      .map(Number)
-      .sort()
-    const topBoundaryBoxIndex = indicesOfBoxesInSelection[0]
-    const bottomBoundaryBoxIndex =
-      indicesOfBoxesInSelection[indicesOfBoxesInSelection.length - 1]
-    const topBoundaryBox = points[topBoundaryBoxIndex]
-    const bottomBoundaryBox = points[bottomBoundaryBoxIndex]
-    let arrayOfTopBoxValues: number[] = []
-    let arrayOfBottomBoxValues: number[] = []
-    Object.keys(topBoundaryBox).forEach((variableKey: string) => {
-      const variableInfo = topBoundaryBox[variableKey]
-      Object.keys(variableInfo).forEach((pointKey: string) => {
-        arrayOfTopBoxValues = [
-          ...arrayOfTopBoxValues,
-          variableInfo[pointKey].value,
-        ]
-      })
-    })
-    Object.keys(bottomBoundaryBox).forEach((variableKey: string) => {
-      const variableInfo = bottomBoundaryBox[variableKey]
-      Object.keys(variableInfo).forEach((pointKey: string) => {
-        arrayOfBottomBoxValues = [
-          ...arrayOfBottomBoxValues,
-          variableInfo[pointKey].value,
-        ]
-      })
-    })
-
-    const top =
-      paddedBoundaries[topBoundaryBoxIndex * 2] +
-      Math.min(...arrayOfTopBoxValues) /
-        100 *
-        (paddedBoundaries[topBoundaryBoxIndex * 2 + 1] -
-          paddedBoundaries[topBoundaryBoxIndex * 2]) -
-      containerScrollTop -
-      POINT_RECT_EDGE_SIZE / 2
-
-    const bottom =
-      paddedBoundaries[bottomBoundaryBoxIndex * 2] +
-      Math.max(...arrayOfBottomBoxValues) /
-        100 *
-        (paddedBoundaries[bottomBoundaryBoxIndex * 2 + 1] -
-          paddedBoundaries[bottomBoundaryBoxIndex * 2]) -
-      containerScrollTop +
-      POINT_RECT_EDGE_SIZE / 2
-
-    return {left, top, right, bottom}
-  }
-
-  _getSelectedPointsHorizontalLimits(
-    points: $FixMe,
-  ): {right: number; left: number} {
-    const {variables} = this.props
-    const {focus} = this.state
-
-    let leftLimit = -Infinity
-    let rightLimit = Infinity
-    Object.keys(points).forEach((boxKey: string) => {
-      const selectedBox = points[boxKey]
-      Object.keys(selectedBox).forEach((variableKey: string) => {
-        const {points: variablePoints} = variables[variableKey]
-        const selectedPointsKeys = Object.keys(selectedBox[variableKey]).map(
-          Number,
-        )
-        selectedPointsKeys.forEach((pointIndex: number) => {
-          const point = variablePoints[pointIndex]
-          const prevIndex = pointIndex - 1
-          const nextIndex = pointIndex + 1
-
-          if (!selectedPointsKeys.includes(prevIndex)) {
-            const prevPoint = variablePoints[prevIndex]
-            if (prevPoint != null) {
-              leftLimit = Math.max(leftLimit, prevPoint.time - point.time)
-            } else {
-              leftLimit = Math.max(leftLimit, -point.time)
-            }
-          }
-          if (!selectedPointsKeys.includes(nextIndex)) {
-            const nextPoint = variablePoints[nextIndex]
-            if (nextPoint != null) {
-              rightLimit = Math.min(rightLimit, nextPoint.time - point.time)
-            } else {
-              rightLimit = Math.min(rightLimit, focus[1] - point.time)
-            }
-          }
-        })
-      })
-    })
-    return {
-      left: leftLimit / (focus[1] - focus[0]) * this.panelWidth,
-      right: rightLimit / (focus[1] - focus[0]) * this.panelWidth,
-    }
-  }
-
-  _getSelectionBoundaries(panelWidth: number) {
-    if (this.state.selectionProps == null) return null
-
-    const {focus, duration, selectionSize, selectionProps} = this.state
-    const {paddedBoundaries, containerScrollTop} = selectionProps
-    let {fromY, fromX} = selectionProps
-    let {x: dX, y: dY} = selectionSize
-    fromY += containerScrollTop
-    if (dY < 0) {
-      dY = -dY
-      fromY = fromY - dY
-    }
-    if (dX < 0) {
-      dX = -dX
-      fromX = fromX - dX
-    }
-
-    const fromIndex = paddedBoundaries.findIndex((b: number) => b > fromY) - 1
-    let toIndex = paddedBoundaries.findIndex((b: number) => b >= fromY + dY)
-    if (toIndex === -1) toIndex = paddedBoundaries.length - 1
-
-    const topBoundaryBoxIndex =
-      fromIndex % 2 === 0 ? fromIndex / 2 : Math.ceil(fromIndex / 2)
-    const bottomBoundaryBoxIndex =
-      toIndex % 2 === 0 ? toIndex / 2 : Math.floor(toIndex / 2)
-
-    const leftOffset = focus[0] / duration
-    const focusedWidth = (focus[1] - focus[0]) / duration
-    const left =
-      100 *
-      (leftOffset + focusedWidth * ((fromX - LEGEND_BAR_WIDTH) / panelWidth))
-    const right =
-      100 *
-      (leftOffset +
-        focusedWidth * ((fromX + dX - LEGEND_BAR_WIDTH) / panelWidth))
-
-    let boxesBoundaries
-    if (topBoundaryBoxIndex === bottomBoundaryBoxIndex) {
-      const topBoundary = paddedBoundaries[topBoundaryBoxIndex * 2]
-      const bottomBoundary = paddedBoundaries[bottomBoundaryBoxIndex * 2 + 1]
-      const boxHeight = bottomBoundary - topBoundary
-      boxesBoundaries = {
-        [topBoundaryBoxIndex]: {
-          left,
-          right,
-          top: (fromY - topBoundary) / boxHeight * 100,
-          bottom: (fromY + dY - topBoundary) / boxHeight * 100,
-        },
-      }
-    } else {
-      const fromBoxTopBoundary = paddedBoundaries[topBoundaryBoxIndex * 2]
-      const fromBoxHeight =
-        paddedBoundaries[topBoundaryBoxIndex * 2 + 1] - fromBoxTopBoundary
-      const toBoxTopBoundary = paddedBoundaries[bottomBoundaryBoxIndex * 2]
-      const toBoxHeight =
-        paddedBoundaries[bottomBoundaryBoxIndex * 2 + 1] - toBoxTopBoundary
-      const fromBoxBoundaries = {
-        left,
-        right,
-        top: 100 * (fromY - fromBoxTopBoundary) / fromBoxHeight,
-        bottom: 100,
-      }
-      const toBoxBoundaries = {
-        left,
-        right,
-        top: 0,
-        bottom: 100 * (fromY + dY - toBoxTopBoundary) / toBoxHeight,
-      }
-
-      boxesBoundaries = {
-        [topBoundaryBoxIndex]: fromBoxBoundaries,
-        [bottomBoundaryBoxIndex]: toBoxBoundaries,
-        ...Array.from(
-          Array(bottomBoundaryBoxIndex - topBoundaryBoxIndex - 1),
-          (_, i: number) => i + topBoundaryBoxIndex + 1,
-        ).reduce((reducer: Object, n: number) => {
-          return {
-            ...reducer,
-            [n]: {
-              left,
-              right,
-              top: 0,
-              bottom: 100,
-            },
-          }
-        }, {}),
-      }
-    }
-    return boxesBoundaries
   }
 
   addPointToSelection = (
@@ -1061,6 +756,10 @@ class Content extends StudioComponent<Props, State> {
     }
   }
 
+  getSelectedPoints = () => {
+    return this.selectedPoints
+  }
+
   render() {
     const {
       boxBeingDragged,
@@ -1068,10 +767,10 @@ class Content extends StudioComponent<Props, State> {
       duration,
       focus,
       // currentTTime: currentTime,
-      selectionStatus,
-      selectionSize,
-      selectionProps,
-      selectionLimits,
+      boundaries,
+      selectionStartPos,
+      selectionBoundaries,
+      selectionMove,
     } = this.state
     const {boxes, layout, panelObjectBeingDragged} = this.props
 
@@ -1098,10 +797,6 @@ class Content extends StudioComponent<Props, State> {
               focus[1],
               panelWidth,
             )
-            const selectionBoundaries =
-              selectionStatus !== 'NONE'
-                ? this._getSelectionBoundaries(panelWidth)
-                : null
             return (
               <Subscriber channel={PanelActiveModeChannel}>
                 {({activeMode}) => {
@@ -1174,7 +869,7 @@ class Content extends StudioComponent<Props, State> {
                         >
                           <Broadcast
                             channel={'selectionMove'}
-                            value={this.state.selectionMove}
+                            value={selectionMove}
                           >
                             <div>
                               {layout.map((id, index) => {
@@ -1233,30 +928,25 @@ class Content extends StudioComponent<Props, State> {
                           </Broadcast>
                         </div>
                       </DraggableArea>
-                      <SelectionArea
-                        status={selectionStatus}
-                        {...(selectionStatus != 'NONE'
-                          ? {
-                              // @ts-ignore
-                              left: selectionProps.fromX,
-                              // @ts-ignore
-                              top: selectionProps.fromY,
-                              width: selectionSize.x,
-                              height: selectionSize.y,
-                            }
-                          : {})}
-                        leftLimit={
-                          selectionLimits != null ? selectionLimits.left : null
-                        }
-                        rightLimit={
-                          selectionLimits != null ? selectionLimits.right : null
-                        }
-                        move={this.state.selectionMove}
-                        onMove={(x: number, y: number) =>
-                          this.setState(() => ({selectionMove: {x, y}}))
-                        }
-                        onEnd={this._applyChangesToSelection}
-                      />
+                      {selectionStartPos != null && (
+                        <SelectionArea
+                          getSelectedPoints={this.getSelectedPoints}
+                          focus={focus}
+                          duration={duration}
+                          panelWidth={panelWidth}
+                          variables={this.props.variables}
+                          startPos={selectionStartPos}
+                          boundaries={boundaries}
+                          variablesContainerRef={this.variablesContainer}
+                          move={selectionMove}
+                          onMove={this.setSelectionMove}
+                          onSelectionBoundariesChange={
+                            this.setSelectionBoundaries
+                          }
+                          onEnd={this.resetSelectionState}
+                          applyChanges={this.applyChangesToSelection}
+                        />
+                      )}
                     </div>
                   )
                 }}

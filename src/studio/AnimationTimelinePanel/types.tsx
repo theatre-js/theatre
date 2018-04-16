@@ -16,6 +16,8 @@ export type Point = PointPosition & {
   interpolationDescriptor: {
     handles: PointHandles
     connected: PointConnectionStatus
+    interpolationType: string
+    __descriptorType: string
   }
 }
 
@@ -40,14 +42,15 @@ export type TimelineObject = {
 
 export type VariableObject = {
   id: VariableID
-  extremums: [number, number]
   points: Point[]
   component: string
   property: string
+  __descriptorType: string
 }
-export type Variables = {
-  byId: {[id: string]: VariableObject}
-}
+// export type Variables = {
+//   byId: {[id: string]: VariableObject}
+// }
+export type Variables = {[id: string]: VariableObject}
 
 export type Timelines = {
   byId: {[id: string]: TimelineObject}

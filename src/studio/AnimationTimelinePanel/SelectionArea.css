@@ -20,7 +20,7 @@
   z-index: 100;
   cursor: move;
   background: rgba(255, 255, 255, .2);
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, .6);
+  // box-shadow: inset 0 0 0 .5px rgba(255, 255, 255, .6);
 
   &.shrink {
     transition: all .2s ease-out;
