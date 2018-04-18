@@ -1,5 +1,5 @@
 .pointClickRect {
-  cursor: pointer;
+  // cursor: pointer;
 }
 
 .pointClickRect.highlightAsSelected ~ .pointGlow {
@@ -41,7 +41,7 @@
 }
 
 .handleClickRect {
-  cursor: pointer;
+  // cursor: pointer;
 }
 
 .handleClickRect:hover ~ .handle,

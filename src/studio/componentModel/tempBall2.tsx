@@ -31,8 +31,18 @@ const two = {
                   },
                 },
                 {
-                  time: 4190,
+                  time: 3190,
                   value: -100,
+                  interpolationDescriptor: {
+                    connected: true,
+                    __descriptorType: 'TimelinePointInterpolationDescriptor',
+                    interpolationType: 'CubicBezier',
+                    handles: [0.5, 0, 0.5, 0],
+                  },
+                },
+                {
+                  time: 6190,
+                  value: 100,
                   interpolationDescriptor: {
                     connected: false,
                     __descriptorType: 'TimelinePointInterpolationDescriptor',
