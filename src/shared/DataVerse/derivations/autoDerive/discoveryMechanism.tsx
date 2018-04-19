@@ -1,4 +1,4 @@
-import AbstractDerivation from '$shared//DataVerse/derivations/AbstractDerivation'
+import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 import Stack from '$shared/utils/Stack'
 import noop from '$shared/utils/noop'
 

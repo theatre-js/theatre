@@ -4,7 +4,6 @@ import atom, {Atom, val} from '$shared/DataVerse2/atom'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import Panel from '$src/studio/workspace/components/Panel/Panel'
 import {isTheaterComponent} from '$studio/componentModel/react/TheaterComponent/TheaterComponent'
-import {StudioComponent} from '$studio/handy'
 import MirrorOfReactTree, {
   GenericNode,
   isGenericNode,
@@ -16,6 +15,7 @@ import React from 'react'
 import DerivationAsReactElement from '$studio/componentModel/react/utils/DerivationAsReactElement'
 import css from './ExplorePanel.css'
 import Node from './Node'
+import StudioComponent from '$studio/handy/StudioComponent'
 
 const isRenderCurrentCanvas = (node: MirrorNode): boolean => {
   if (!isGenericNode(node)) return false
@@ -70,7 +70,7 @@ type State = {
 }
 
 class ExplorerPanel extends StudioComponent<Props, State> {
-  mirror: MirrorOfReactTree
+  // mirror: MirrorOfReactTree
   atom: Atom<{volatileIdOfRenderCurrentCanvas: VolatileId | undefined}>
   static panelName = 'Explore'
   _children: AbstractDerivation<React.ReactNode>
@@ -78,23 +78,23 @@ class ExplorerPanel extends StudioComponent<Props, State> {
   constructor(props: Props, context: $IntentionalAny) {
     super(props, context)
 
-    this.mirror = this.studio._mirrorOfReactTree
+    // this.mirror = this.studio.elementTree.mirrorOfReactTree
 
     this.atom = atom({
       volatileIdOfRenderCurrentCanvas: undefined,
     })
 
-    getVolatileOdOfRenderCurrentCanvas(this.studio._mirrorOfReactTree).then(
-      volatileIdOfRenderCurrentCanvas => {
-        const node = this.studio._mirrorOfReactTree.getState()
-          .nodesByVolatileId[volatileIdOfRenderCurrentCanvas]
+    // getVolatileOdOfRenderCurrentCanvas(this.studio.elementTree.mirrorOfReactTree).then(
+    //   volatileIdOfRenderCurrentCanvas => {
+    //     const node = this.studio.elementTree.mirrorOfReactTree.getState()
+    //       .nodesByVolatileId[volatileIdOfRenderCurrentCanvas]
 
-        this.studio._mirrorOfReactTree.discardAllRenderersExcept(
-          node.rendererId,
-        )
-        this.atom.setState({volatileIdOfRenderCurrentCanvas})
-      },
-    )
+    //     this.studio.elementTree.mirrorOfReactTree.discardAllRenderersExcept(
+    //       node.rendererId,
+    //     )
+    //     this.atom.setState({volatileIdOfRenderCurrentCanvas})
+    //   },
+    // )
 
     this._children = autoDerive(() => {
       const volatileIdOfRenderCurrentCanvas = val(

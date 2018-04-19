@@ -2,8 +2,8 @@ import Emitter from '$shared/DataVerse/utils/Emitter'
 import {default as Tappable} from '$shared/DataVerse/utils/Tappable'
 import AbstractDerivation, {
   IObjectWhoListensToAtomicUpdateNotices,
-} from '$shared//DataVerse/derivations/AbstractDerivation'
-import Ticker from '$shared//DataVerse/Ticker'
+} from '$shared/DataVerse/derivations/AbstractDerivation'
+import Ticker from '$shared/DataVerse/Ticker'
 
 export default class DerivationEmitter<V>
   implements IObjectWhoListensToAtomicUpdateNotices {

@@ -1,5 +1,5 @@
-import {React, connect} from '$src/studio/handy'
 import {reduceStateAction} from '$shared/utils/redux/commonActions'
+import React from 'react'
 
 import {
   XY,
@@ -18,9 +18,10 @@ import {
 import * as panelComponents from '$src/studio/workspace/panelComponents'
 import {Broadcast} from 'react-broadcast'
 import {ActiveMode} from '$src/studio/workspace/components/StudioUI/StudioUI'
-import {StudioComponent} from '$studio/handy'
 import {IStudioStoreState} from '$studio/types'
 import {isEqual} from 'lodash'
+import StudioComponent from '$studio/handy/StudioComponent'
+import connect from '$studio/handy/connect'
 
 export const PanelControlChannel = 'TheaterJS/PanelControlChannel'
 

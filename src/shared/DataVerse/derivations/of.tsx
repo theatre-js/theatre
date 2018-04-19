@@ -1,7 +1,7 @@
 import constant from './constant'
 import AbstractDerivation, {
   isDerivation,
-} from '$shared//DataVerse/derivations/AbstractDerivation'
+} from '$shared/DataVerse/derivations/AbstractDerivation'
 
 export default function of<V>(
   d: V | AbstractDerivation<V>,

@@ -1,4 +1,4 @@
-import {React} from '$studio/handy'
+import React from 'react'
 import css from './index.css'
 
 type Props = {

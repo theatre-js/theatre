@@ -1,4 +1,3 @@
-import {React, connect, StudioComponent} from '$studio/handy'
 import {
   VariableID,
   VariableObject,
@@ -21,6 +20,9 @@ import {
   reduceStateAction,
   multiReduceStateAction,
 } from '$shared/utils/redux/commonActions'
+import React from 'react'
+import connect from '$studio/handy/connect';
+import StudioComponent from '$studio/handy/StudioComponent';
 
 interface IOwnProps {
   variables: VariableObject[]

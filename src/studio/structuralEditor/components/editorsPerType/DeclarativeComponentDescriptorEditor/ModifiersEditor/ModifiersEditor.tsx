@@ -1,4 +1,4 @@
-import {React, connect} from '$src/studio/handy'
+import React from 'react'
 import css from './ModifiersEditor.css'
 import PanelSection from '$src/studio/structuralEditor/components/reusables/PanelSection'
 import * as _ from 'lodash'
@@ -11,6 +11,7 @@ import {
 import ListOfModifierInstantiationDescriptorsInspector from './ListOfModifierInstantiationDescriptorsInspector'
 import PaleMessage from '$src/studio/common/components/PaleMessage'
 import {IStudioStoreState} from '$studio/types'
+import connect from '$studio/handy/connect'
 
 interface IOwnProps {
   pathToComponentDescriptor: string[]

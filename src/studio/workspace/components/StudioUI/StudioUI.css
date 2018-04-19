@@ -9,7 +9,9 @@
 }
 
 .container {
-  position: fixed 0;
+  position: fixed;
+  top: 0;
+  left: 0;
 
   /* font-family: Roboto; */
   /* font-family: "Frutiger Neue 1450 Pro"; */

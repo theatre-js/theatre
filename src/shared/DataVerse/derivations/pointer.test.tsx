@@ -1,7 +1,7 @@
 import dictAtom, {DictAtom} from '$shared/DataVerse/atoms/dictAtom'
-import derivedClass from '$shared//DataVerse/derivedClass/derivedClass'
-import boxAtom, {BoxAtom} from '$shared//DataVerse/atoms/boxAtom'
-import Ticker from '$shared//DataVerse/Ticker'
+import derivedClass from '$shared/DataVerse/derivedClass/derivedClass'
+import boxAtom, {BoxAtom} from '$shared/DataVerse/atoms/boxAtom'
+import Ticker from '$shared/DataVerse/Ticker'
 
 describe('pointer', () => {
   let ticker: Ticker

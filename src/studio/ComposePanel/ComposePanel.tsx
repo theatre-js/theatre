@@ -1,4 +1,3 @@
-import {React, typeSystem} from '$studio/handy'
 import {ValueEditor} from '$studio/structuralEditor'
 import {ComponentId} from '$studio/componentModel/types'
 import * as componentModelSelectors from '$studio/componentModel/selectors'
@@ -8,6 +7,8 @@ import PropsAsPointer from '../handy/PropsAsPointer'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import {val} from '$shared/DataVerse2/atom'
 import {getComponentIdOfSelectedElement} from '$studio/componentModel/utils'
+import React from 'react'
+import * as typeSystem from '$studio/typeSystem'
 
 type IProps = {}
 
@@ -27,7 +28,7 @@ export default class ComposePanelContent extends React.PureComponent<
       <PropsAsPointer props={this.props}>
         {(_: Pointer<IProps>, studio) => {
           const possibleComponentId = getComponentIdOfSelectedElement(studio)
-          
+
           if (!possibleComponentId) {
             return (
               <Panel>

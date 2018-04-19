@@ -1,4 +1,3 @@
-import {React} from '$src/studio/handy'
 import {
   reduceStateAction,
   multiReduceStateAction,
@@ -43,6 +42,7 @@ import autoDerive from '../../shared/DataVerse/derivations/autoDerive/autoDerive
 import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
 import TheaterComponent from '$studio/componentModel/react/TheaterComponent/TheaterComponent'
 import {svgPaddingY} from '$studio/AnimationTimelinePanel/BoxView'
+import React from 'react'
 
 type Props = TimelineObject & {
   panelDimensions: XY
@@ -973,7 +973,7 @@ export default class ThePanel extends StudioComponent<{}, void> {
     this._d = autoDerive(() => {
       const volatileIdOfSelectedElement = getVolatileIdOfSelectedElement(studio)
       if (!volatileIdOfSelectedElement) return emptyPanel
-      const selectedElement = studio._mirrorOfReactTree.getNativeElementByVolatileId(
+      const selectedElement = studio.elementTree.mirrorOfReactTree.getNativeElementByVolatileId(
         volatileIdOfSelectedElement,
       )
       if (!selectedElement) return emptyPanel

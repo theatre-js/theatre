@@ -1,70 +1,36 @@
-import * as React from 'react'
+import React from 'react'
 import Studio from '$studio/bootstrap/Studio'
 import {contextTypes, contextName} from './utils/studioContext'
-import {elementify} from '$studio/handy'
-import DerivationAsReactElement from './utils/DerivationAsReactElement'
-import dictAtom from '$shared//DataVerse/atoms/dictAtom'
-import boxAtom from '$shared//DataVerse/atoms/boxAtom'
-import arrayAtom from '$shared//DataVerse/atoms/arrayAtom'
-import constant from '$shared//DataVerse/derivations/constant'
+import WhatToShowInBody from '$studio/workspace/components/WhatToShowInBody/WhatToShowInBody'
 
 interface Props {
   children: React.ReactNode
 }
 
-// type ElementifyProps = DictAtom<{
-//   componentId: 'TheaterJS/Core/RenderCurrentCanvas',
-//   props: DictAtom<{
-//     children: BoxAtom<React.Node>,
-//   }>,
-// }>
-type ElementifyProps = $FixMe
-
 const createRootComponentForReact = (studio: Studio) => {
-  class TheaterJSRoot extends React.Component<Props, {}> {
-    elementD: $FixMe
-    mapAtomOfPropsOfElementify: ElementifyProps
-    instantiationDescriptor: $FixMe
-
+  class TheaterJSRoot extends React.Component<
+    Props,
+    {WhatToShowInBody: typeof WhatToShowInBody}
+  > {
     constructor(props: Props) {
       super(props)
+      this.state = {WhatToShowInBody}
 
-      this.instantiationDescriptor = dictAtom({
-        componentId: 'TheaterJS/Core/RenderCurrentCanvas',
-        props: dictAtom({
-          children: boxAtom(props.children),
-        }),
-        modifierInstantiationDescriptors: dictAtom({
-          byId: dictAtom({}),
-          list: arrayAtom([]),
-        }),
-      })
-      this.elementD = elementify(
-        constant(`RenderCurrentCanvas`),
-        this.instantiationDescriptor.derivedDict().pointer(),
-        constant(studio),
-      )
+      if (process.env.NODE_ENV === 'development' && module.hot) {
+        module.hot.accept(
+          '$studio/workspace/components/WhatToShowInBody/WhatToShowInBody',
+          () => {
+            this.setState({
+              WhatToShowInBody: require('$studio/workspace/components/WhatToShowInBody/WhatToShowInBody')
+                .default,
+            })
+          },
+        )
+      }
     }
-
-    componentWillReceiveProps(props: Props) {
-      this.instantiationDescriptor
-        .prop('props')
-        .prop('children')
-        .set(props.children)
-    }
-
-    shouldComponentUpdate() {
-      return false
-    }
-
     render() {
-      return (
-        <DerivationAsReactElement
-          key="RenderCurrentCanvas"
-          derivation={this.elementD}
-        />
-      )
-      // return <Elementify key="RenderCurrentCanvas" props={this.propsOfElementify}  />
+      const {WhatToShowInBody} = this.state
+      return <WhatToShowInBody passThroughNode={this.props.children} />
     }
 
     getChildContext() {

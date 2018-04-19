@@ -1,0 +1,20 @@
+.container {
+  position: absolute;
+  border: 1px solid #adadad;
+  background: white;
+  overflow: hidden;
+
+  &.isActive {
+    border-color: #6d6d73;
+  }
+}
+
+.content {
+  position: absolute 0;
+  z-index: 0;
+}
+
+.unclickable {
+  position: absolute 0;
+  z-index: 1;
+}

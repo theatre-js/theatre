@@ -1,5 +1,7 @@
-import {StudioComponent, React, resolveCss} from '$studio/handy'
 import * as css from './PaleMessage.css'
+import resolveCss from '$shared/utils/resolveCss'
+import StudioComponent from '$studio/handy/StudioComponent'
+import React from 'react'
 
 interface IProps {
   css?: any

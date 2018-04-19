@@ -1,4 +1,5 @@
-import {compose, React, connect} from '$studio/handy'
+import React from 'react'
+import connect from '$studio/handy/connect'
 import {IModifierInstantiationValueDescriptors} from '$studio/componentModel/types'
 import ModifierInstantiationDescriptorInspector from './ModifierInstantiationDescriptorInspector'
 import get from 'lodash/get'
@@ -48,13 +49,11 @@ export class ListOfModifierInstantiationDescriptorsInspector extends React.PureC
   }
 }
 
-export default compose(
-  connect((s: IStudioStoreState, op: IOwnProps) => {
-    return {
-      listOfModifierInstantiationDescriptors: get(s, [
-        ...op.pathToModifierInstantiationDescriptors,
-        'list',
-      ]),
-    }
-  }),
-)(ListOfModifierInstantiationDescriptorsInspector)
+export default connect((s: IStudioStoreState, op: IOwnProps) => {
+  return {
+    listOfModifierInstantiationDescriptors: get(s, [
+      ...op.pathToModifierInstantiationDescriptors,
+      'list',
+    ]),
+  }
+})(ListOfModifierInstantiationDescriptorsInspector)

@@ -1,4 +1,3 @@
-import {React, connect, StudioComponent} from '$src/studio/handy'
 import {
   reduceStateAction,
   multiReduceStateAction,
@@ -23,6 +22,9 @@ import {PanelActiveModeChannel} from '$src/studio/workspace/components/Panel/Pan
 import {Subscriber} from 'react-broadcast'
 import {MODE_CMD} from '$src/studio/workspace/components/StudioUI/StudioUI'
 import {IStudioStoreState} from '$studio/types'
+import StudioComponent from '$studio/handy/StudioComponent'
+import React from 'react'
+import connect from '$studio/handy/connect'
 
 export const metaKey = 'composePanel'
 const PLACEHOLDER = '\n'

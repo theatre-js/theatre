@@ -1,4 +1,4 @@
-import {Atom} from './atom'
+import {Atom, Pointable} from './atom'
 import {IdentityDerivation} from './identityDerivation'
 
 export type PointerInnerObj<O> = {
@@ -11,7 +11,7 @@ export type PointerInnerObj<O> = {
   }
 }
 
-type Unindexable =
+export type UnindexableTypesForPointer =
   | number
   | string
   | boolean
@@ -20,11 +20,15 @@ type Unindexable =
   | undefined
   | Function
 
+export type UnindexablePointer = {[K in $IntentionalAny]: Pointer<UnindexablePointer>}
+
 export type Pointer<O> = {
   '1': PointerInnerObj<O> &
-    (O extends Unindexable
-      ? {}
-      : O extends {} ? {[K in keyof O]-?: Pointer<O[K]>} : {})
+    (O extends UnindexableTypesForPointer
+      ? UnindexablePointer
+      : O extends {}
+        ? {[K in keyof O]-?: Pointer<O[K]>}
+        : UnindexablePointer)
 }[O extends number ? '1' : '1']
 
 const handler = {
@@ -42,7 +46,7 @@ const pointer = <O>({
   root,
   path,
 }: {
-  root: Atom<$IntentionalAny>
+  root: Pointable
   path: Array<string | number>
 }): Pointer<O> => {
   return new Proxy(

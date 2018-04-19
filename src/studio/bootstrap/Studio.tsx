@@ -5,7 +5,7 @@ import configureStore from './configureStore'
 import StudioRootComponent from './components/StudioRootComponent'
 import {default as StoreAndStuff} from '$lb/bootstrap/StoreAndStuff'
 import configureAtom from './configureAtom'
-import Ticker from '$shared//DataVerse/Ticker'
+import Ticker from '$shared/DataVerse/Ticker'
 import {reduceAhistoricState} from '$studio/bootstrap/actions'
 import StatePersistor from '$studio/statePersistence/StatePersistor'
 import {IStudioStoreState} from '$studio/types'
@@ -16,33 +16,31 @@ import AbstractDerivedDict from '$shared/DataVerse/derivations/dicts/AbstractDer
 import {UnwrapDictAtom} from '$shared/DataVerse/atoms/dictAtom'
 import configureAtom2 from '$studio/bootstrap/configureAtom2'
 import {Atom} from '$shared/DataVerse2/atom'
-import { GenericAction } from '$shared/types';
+import ElementTree from './ElementTree'
 
 export type StudioStateAtom = Atomify<IStudioStoreState>
 
 export default class Studio {
+  elementTree: ElementTree;
   atom2: Atom<IStudioStoreState>
   _statePersistor: StatePersistor
   _ran: boolean
-  componentInstances: Map<number, React.ComponentType>
   atom: StudioStateAtom
   atomP: PointerDerivation<AbstractDerivedDict<UnwrapDictAtom<StudioStateAtom>>>
   ticker: Ticker
-  _lastComponentInstanceId: number
   _lbCommunicator: LBCommunicator
   store: StoreAndStuff<IStudioStoreState, $FixMe>
-  _mirrorOfReactTree: MirrorOfReactTree
+  // _mirrorOfReactTree: MirrorOfReactTree
 
   constructor() {
     this._ran = false
-    this._lastComponentInstanceId = 0
     this.ticker = new Ticker()
-    this._mirrorOfReactTree = new MirrorOfReactTree()
+    // this._mirrorOfReactTree = new MirrorOfReactTree()
+    this.elementTree = new ElementTree(this)
     this.store = configureStore()
     this.atom = configureAtom(this.store)
     this.atomP = this.atom.derivedDict().pointer()
     this.atom2 = configureAtom2(this.store)
-    this.componentInstances = new Map()
     this._lbCommunicator = new LBCommunicator({
       lbUrl: `${window.location.protocol}//${window.location.hostname}:${
         process.env.studio.socketPort
@@ -91,15 +89,7 @@ export default class Studio {
     render(<StudioRootComponent studio={this} />, rootEl)
   }
 
-  _getNewComponentInstanceId() {
-    return this._lastComponentInstanceId++
-  }
+  
 
-  declareComponentInstance(id: number, instance: React.ComponentType) {
-    this.componentInstances.set(id, instance)
-  }
 
-  undeclareComponentInstance(id: number) {
-    this.componentInstances.delete(id)
-  }
 }

@@ -43,7 +43,36 @@ export type Panels = {
   idOfActivePanel: undefined | null | string
 }
 
+type ViewportCanvas = {
+  id: string
+  name: stringv
+  viewports: Record<string, true>
+  activeViewportId: undefined | string
+}
+
+type Viewport = {
+  id: string
+  dimensions: {width: number; height: number}
+  position: {x: number; y: number}
+  viewportCanvasId: string
+  sceneComponentId: ComponentId
+}
+
 export type WorkspaceNamespaceState = {
   panels: Panels
   componentIdToBeRenderedAsCurrentCanvas: undefined | null | ComponentId
+
+  viewports: {
+    byId: Record<string, Viewport>
+    /**
+     * This designates which viewport is active, but only when the viewport*s
+     * view is showing. In other words, this is only relevant if
+     * `whatToShowInBody.type === 'Viewports'`
+     */
+    activeViewportId: undefined | string
+    whatToShowInBody:
+      | {type: 'Passthrough'}
+      | {type: 'Viewports'}
+      | {type: 'Viewport'; id: string}
+  }
 }

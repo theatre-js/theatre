@@ -1,6 +1,6 @@
 import UnitBezier from 'timing-function/lib/UnitBezier'
-import AbstractDerivation from '$shared//DataVerse/derivations/AbstractDerivation'
-import withDeps from '$shared//DataVerse/derivations/withDeps'
+import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
+import withDeps from '$shared/DataVerse/derivations/withDeps'
 
 type Config = {
   timeD: AbstractDerivation<number>

@@ -11,7 +11,7 @@ import {
 } from './actions'
 import * as _ from 'lodash'
 import patch from 'json-touch-patch'
-import getPropsInCommon from '$shared//utils/getPropsInCommon'
+import getPropsInCommon from '$shared/utils/getPropsInCommon'
 import {ReduxReducer, GenericAction} from '$shared/types'
 
 type TempAction = {

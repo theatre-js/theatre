@@ -1,4 +1,5 @@
-import {StudioComponent, React, resolveCss} from '$studio/handy'
+import StudioComponent from '$studio/handy/StudioComponent'
+import React from 'react'
 import * as css from './Panel.css'
 import {Subscriber} from 'react-broadcast'
 import {
@@ -13,6 +14,7 @@ import {
 import _ from 'lodash'
 import {Broadcast} from 'react-broadcast'
 import {MODE_OPTION} from '$studio/workspace/components/StudioUI/StudioUI'
+import resolveCss from '$shared/utils/resolveCss'
 
 interface IProps {
   css?: any

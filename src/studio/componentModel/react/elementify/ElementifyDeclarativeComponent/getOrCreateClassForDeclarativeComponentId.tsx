@@ -1,3 +1,4 @@
+import {label} from '../../../../structuralEditor/components/reusables/PanelSection.css'
 import {ComponentId} from '$studio/componentModel/types'
 import TheaterComponent from '$studio/componentModel/react/TheaterComponent/TheaterComponent'
 import {DerivedClass, Classify} from '$shared/DataVerse/derivedClass/derivedClass'

@@ -1,4 +1,6 @@
-import {StudioComponent, React, resolveCss} from '$studio/handy'
+import StudioComponent from '$studio/handy/StudioComponent'
+import React from 'react'
+import resolveCss from '$shared/utils/resolveCss'
 import * as css from './UberModifierInspector.css'
 import Input from './Input'
 

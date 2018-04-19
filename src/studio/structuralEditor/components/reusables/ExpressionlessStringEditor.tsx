@@ -1,4 +1,6 @@
-import {React, connect, StudioComponent} from '$studio/handy'
+import StudioComponent from '$studio/handy/StudioComponent'
+import React from 'react'
+import connect from '$studio/handy/connect'
 import {reduceStateAction} from '$shared/utils/redux/commonActions'
 import css from './ExpressionlessStringEditor.css'
 import * as _ from 'lodash'

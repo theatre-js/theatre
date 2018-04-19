@@ -1,8 +1,8 @@
-import {elementify} from '$studio/handy'
 import constructMapDescriptor from './constructMapDescriptor'
 import constructListDescriptor from './constructListDescriptor'
-import boxAtom from '$shared//DataVerse/atoms/boxAtom'
-import dictAtom from '$shared//DataVerse/atoms/dictAtom'
+import boxAtom from '$shared/DataVerse/atoms/boxAtom'
+import dictAtom from '$shared/DataVerse/atoms/dictAtom'
+import elementify from '$studio/componentModel/react/elementify/elementify'
 
 const constructComponentInstantiationValueDescriptor = (
   des: $FixMe,

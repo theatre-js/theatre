@@ -1,8 +1,8 @@
 import { reportResolutionStart, reportResolutionEnd, isCollectingDependencies } from './autoDerive/discoveryMechanism';
 import {default as DerivationEmitter} from './DerivationEmitter'
 import * as debug from '$shared/debug'
-import Ticker from '$shared//DataVerse/Ticker'
-import Tappable from '$shared//DataVerse/utils/Tappable'
+import Ticker from '$shared/DataVerse/Ticker'
+import Tappable from '$shared/DataVerse/utils/Tappable'
 import {VoidFn} from '$shared/types'
 
 const FRESHNESS_STATE_NOT_APPLICABLE = 0

@@ -2,11 +2,12 @@ import React from 'react'
 import hoistNonReactStatics from 'hoist-non-react-statics'
 import PropsAsPointer from '$studio/handy/PropsAsPointer'
 import {Pointer} from '$shared/DataVerse2/pointer'
-import {Studio} from '$studio/handy'
+import Studio from '$studio/bootstrap/Studio'
 
-export default function withDerivation<OuterProps extends {}, InnerProps extends {}>(
-  fn: (outerProps: Pointer<OuterProps>, studio: Studio) => InnerProps,
-) {
+export default function withDerivation<
+  OuterProps extends {},
+  InnerProps extends {}
+>(fn: (outerProps: Pointer<OuterProps>, studio: Studio) => InnerProps) {
   return function wrappedWithDerivation<D>(
     innerComponent: React.Component<D>,
   ): React.Component<{[K in Exclude<keyof D, keyof InnerProps>]: D[K]}> {

@@ -1,9 +1,11 @@
-import {React, connect, StudioComponent} from '$studio/handy'
 import {reduceStateAction} from '$shared/utils/redux/commonActions'
 import TextInput from '$studio/common/components/TextInput'
 import {get} from 'lodash'
 import KeyValuePair from '$studio/common/components/KeyValuePair'
 import {IStudioStoreState} from '$studio/types'
+import StudioComponent from '$studio/handy/StudioComponent'
+import connect from '$studio/handy/connect'
+import React from 'react'
 
 interface IOwnProps {
   pathToPairings: string[]

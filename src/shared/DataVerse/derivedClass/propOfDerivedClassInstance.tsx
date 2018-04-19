@@ -1,5 +1,5 @@
-import {ProxyDerivation} from '$shared//DataVerse/derivations/proxy'
-import AbstractDerivation from '$shared//DataVerse/derivations/AbstractDerivation'
+import {ProxyDerivation} from '$shared/DataVerse/derivations/proxy'
+import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 
 export class DerivationOfAPropOfADerivedClassInstance<
   V

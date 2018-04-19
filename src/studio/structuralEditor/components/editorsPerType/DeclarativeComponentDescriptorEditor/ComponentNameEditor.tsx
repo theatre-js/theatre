@@ -1,4 +1,4 @@
-import {React} from '$studio/handy'
+import React from 'react'
 import css from './ComponentNameEditor.css'
 import ExpressionlessStringEditor from '$studio/structuralEditor/components/reusables/ExpressionlessStringEditor'
 import PanelSection from '$studio/structuralEditor/components/reusables/PanelSection'

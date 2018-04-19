@@ -31,7 +31,7 @@ const Node = (props: Props): React.ReactNode => (
       const volatileId = val(propsP.volatileId)
 
       const nodeP =
-        studio._mirrorOfReactTree.atom.pointer.nodesByVolatileId[volatileId]
+        studio.elementTree.mirrorOfReactTree.atom.pointer.nodesByVolatileId[volatileId]
 
       const type = val(nodeP.type)
 

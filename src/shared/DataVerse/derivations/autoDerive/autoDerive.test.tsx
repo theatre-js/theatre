@@ -1,8 +1,8 @@
 import autoDerive, {AutoDerivation} from './autoDerive'
-import Ticker from '$shared//DataVerse/Ticker'
-import constant from '$shared//DataVerse/derivations/constant'
-import dictAtom from '$shared//DataVerse/atoms/dictAtom'
-import boxAtom from '$shared//DataVerse/atoms/boxAtom'
+import Ticker from '$shared/DataVerse/Ticker'
+import constant from '$shared/DataVerse/derivations/constant'
+import dictAtom from '$shared/DataVerse/atoms/dictAtom'
+import boxAtom from '$shared/DataVerse/atoms/boxAtom'
 
 describe('autoDerive', () => {
   let ticker: Ticker

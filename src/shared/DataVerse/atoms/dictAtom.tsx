@@ -7,7 +7,7 @@ import {
   PointerDerivation,
 } from '$shared/DataVerse/derivations/pointer'
 import {UnatomifyDeep} from './utils/UnatomifyDeep'
-import AbstractDerivedDict from '$shared//DataVerse/derivations/dicts/AbstractDerivedDict'
+import AbstractDerivedDict from '$shared/DataVerse/derivations/dicts/AbstractDerivedDict'
 import isAtom from '$shared/DataVerse/atoms/utils/isAtom'
 
 export interface IDictAtomChangeType<O> {

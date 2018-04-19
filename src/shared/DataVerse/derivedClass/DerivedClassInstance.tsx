@@ -1,15 +1,15 @@
-import Ticker from '$shared//DataVerse/Ticker'
+import Ticker from '$shared/DataVerse/Ticker'
 import {
   default as propOfDerivedClassInstance,
   DerivationOfAPropOfADerivedClassInstance,
 } from './propOfDerivedClassInstance'
-import constant from '$shared//DataVerse/derivations/constant'
+import constant from '$shared/DataVerse/derivations/constant'
 import forEach from 'lodash/forEach'
 import pointer, {
   PointerDerivation,
-} from '$shared//DataVerse/derivations/pointer'
-import {DerivedClass} from '$shared//DataVerse/derivedClass/derivedClass'
-import AbstractDerivation from '$shared//DataVerse/derivations/AbstractDerivation'
+} from '$shared/DataVerse/derivations/pointer'
+import {DerivedClass} from '$shared/DataVerse/derivedClass/derivedClass'
+import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 
 const NOTFOUND = undefined
 const notFoundDerivation = constant(NOTFOUND)

@@ -2,7 +2,7 @@ import TheaterComponent from '$src/studio/componentModel/react/TheaterComponent/
 import * as _ from 'lodash'
 import TimelineInstance from './TimelineInstance/TimelineInstance'
 import {getPathToComponentDescriptor} from '$studio/componentModel/selectors'
-import autoProxyDerivedDict from '$shared//DataVerse/derivations/dicts/autoProxyDerivedDict'
+import autoProxyDerivedDict from '$shared/DataVerse/derivations/dicts/autoProxyDerivedDict'
 
 export default class TimelinesHandler {
   _element: TheaterComponent<$IntentionalAny>

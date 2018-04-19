@@ -1,4 +1,3 @@
-import {Studio} from '$studio/handy'
 import {IStudioStoreState, IStudioHistoryState} from '$studio/types'
 import jsonPatchLib from 'fast-json-patch'
 import {select, take, fork, cancel, actionChannel} from 'redux-saga/effects'
@@ -11,6 +10,7 @@ import {PromiseValue} from '$shared/types'
 import gneerateUniqueId from 'uuid/v4'
 import {replaceHistoryAction} from '$shared/utils/redux/withHistory/actions'
 import {batchedAction} from '$shared/utils/redux/withHistory/withBatchActions'
+import Studio from '$studio/bootstrap/Studio'
 
 export default class StatePersistor {
   _lastPersistedStateInfo:
@@ -24,11 +24,17 @@ export default class StatePersistor {
       process.env.devSpecific.studio.statePersistenceMode &&
       process.env.devSpecific.studio.statePersistenceMode !== 'normal'
     ) {
-      if (process.env.devSpecific.studio.statePersistenceMode === 'dontLoadOrPersist') {
+      if (
+        process.env.devSpecific.studio.statePersistenceMode ===
+        'dontLoadOrPersist'
+      ) {
         this._studio.store.reduxStore.dispatch(
           reduceAhistoricState(['stateIsHydrated'], () => true),
         )
-      } else if (process.env.devSpecific.studio.statePersistenceMode === 'loadButDontUpdate') {
+      } else if (
+        process.env.devSpecific.studio.statePersistenceMode ===
+        'loadButDontUpdate'
+      ) {
         throw new Error('Implement me @todo')
       }
     } else {

@@ -1,4 +1,3 @@
-import {React} from '$src/studio/handy'
 import css from './SelectionArea.css'
 import cx from 'classnames'
 import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
@@ -6,6 +5,7 @@ import {LEGEND_BAR_WIDTH} from '$studio/AnimationTimelinePanel/AnimationTimeline
 import {svgPaddingY} from '$studio/AnimationTimelinePanel/BoxView'
 import {POINT_RECT_EDGE_SIZE} from '$studio/AnimationTimelinePanel/Point'
 import {Variables} from '$studio/AnimationTimelinePanel/types'
+import React from 'react'
 
 interface Props {
   variablesContainerRef: $FixMe

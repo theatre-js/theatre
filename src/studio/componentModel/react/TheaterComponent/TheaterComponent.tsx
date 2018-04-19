@@ -1,4 +1,4 @@
-import {DerivedClass} from '$shared//DataVerse/derivedClass/derivedClass'
+import {DerivedClass} from '$shared/DataVerse/derivedClass/derivedClass'
 import dictAtom, {DictAtom} from '$shared/DataVerse/atoms/dictAtom'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 import AbstractDerivedArray from '$shared/DataVerse/derivations/arrays/AbstractDerivedArray'
@@ -14,10 +14,11 @@ import derivedClass, {
 import DerivedClassInstance from '$shared/DataVerse/derivedClass/DerivedClassInstance'
 import SideEffectsHandler from '$src/studio/componentModel/react/TheaterComponent/SideEffectsHandler'
 import TimelinesHandler from '$src/studio/componentModel/react/TheaterComponent/TimelinesHandler'
-import {PureComponentWithStudio, Studio} from '$src/studio/handy'
-import {StudioStateAtom} from '$studio/bootstrap/Studio'
+
+import Studio, { StudioStateAtom } from '$studio/bootstrap/Studio'
 import {isCoreComponent} from '$studio/componentModel/selectors'
 import {ComponentId} from '$studio/componentModel/types'
+import PureComponentWithStudio from '$studio/componentModel/react/utils/PureComponentWithStudio';
 
 type WrapProps<Props> = {
   key: string
@@ -26,7 +27,7 @@ type WrapProps<Props> = {
 }
 
 type TheAtom<Props> = DictAtom<{
-  instanceId: number
+  // instanceId: number
   componentInstance: TheaterComponent<Props>
   props: Props
   modifierInstantiationDescriptors: $FixMe
@@ -186,7 +187,6 @@ export default abstract class TheaterComponent<
     this._timelinesHandler = new TimelinesHandler(this as $IntentionalAny)
     this._timelinesHandler.start()
 
-    this.studio.declareComponentInstance(this.elementId, this as $FixMe)
 
     // if (this.getComponentId() === 'BouncyBall') {
     //   this.reduceState(
@@ -224,7 +224,7 @@ export default abstract class TheaterComponent<
 
   _createAtom(): TheAtom<Props> {
     return dictAtom({
-      instanceId: this.studio._getNewComponentInstanceId(),
+      // instanceId: this.studio._getNewComponentInstanceId(),
       componentInstance: this,
       props: this.props.props,
       modifierInstantiationDescriptors: this.props
@@ -338,7 +338,6 @@ export default abstract class TheaterComponent<
     this._fnsToCallOnWillUnmount.forEach(fn => {
       fn()
     })
-    this.studio.undeclareComponentInstance(this.elementId)
   }
 
   render() {

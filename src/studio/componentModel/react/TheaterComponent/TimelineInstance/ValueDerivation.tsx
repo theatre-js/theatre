@@ -1,6 +1,6 @@
 import * as _ from 'lodash'
 import * as interpolators from './interpolators/interpolators'
-import AbstractDerivation from '$shared//DataVerse/derivations/AbstractDerivation'
+import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 
 type TimelineIsEmptyBaseState = {type: 'TimelineIsEmpty'}
 type TimelineIsEmptyState = Spread<

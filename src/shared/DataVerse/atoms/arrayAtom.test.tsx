@@ -1,7 +1,7 @@
 import boxAtom from './boxAtom'
 import atomifyDeep from './atomifyDeep'
-import {ArrayAtom} from '$shared//DataVerse/atoms/arrayAtom'
-import {BoxAtom} from '$shared//DataVerse/atoms/boxAtom'
+import {ArrayAtom} from '$shared/DataVerse/atoms/arrayAtom'
+import {BoxAtom} from '$shared/DataVerse/atoms/boxAtom'
 import { IArrayAtomChangeType } from './arrayAtom';
 
 describe('DataVerse.atoms.array', () => {

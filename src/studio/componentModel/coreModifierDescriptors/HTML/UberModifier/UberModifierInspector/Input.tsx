@@ -1,5 +1,7 @@
-import {StudioComponent, React, resolveCss, connect} from '$studio/handy'
 import {reduceStateAction} from '$shared/utils/redux/commonActions'
+import StudioComponent from '$studio/handy/StudioComponent'
+import React from 'react'
+import connect from '$studio/handy/connect'
 
 import * as css from './Input.css'
 import {get} from 'lodash'
@@ -8,6 +10,7 @@ import {PanelActiveModeChannel} from '$src/studio/workspace/components/Panel/Pan
 import {Subscriber} from 'react-broadcast'
 import {MODE_CMD} from '$studio/workspace/components/StudioUI/StudioUI'
 import {IStudioStoreState} from '$studio/types'
+import resolveCss from '$shared/utils/resolveCss'
 
 interface IOwnProps {
   prop: string

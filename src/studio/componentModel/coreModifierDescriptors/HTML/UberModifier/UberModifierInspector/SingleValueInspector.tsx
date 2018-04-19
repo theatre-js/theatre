@@ -1,14 +1,11 @@
-import {
-  compose,
-  React,
-  connect,
-  reduceStateAction,
-  StudioComponent,
-} from '$studio/handy'
+import StudioComponent from '$studio/handy/StudioComponent'
+import React from 'react'
+import connect from '$studio/handy/connect'
 import TextInput from '$studio/common/components/TextInput'
 import get from 'lodash/get'
 import KeyValuePair from '$studio/common/components/KeyValuePair'
 import {IStudioStoreState} from '$studio/types'
+import { reduceStateAction } from '$shared/utils/redux/commonActions';
 
 interface IOwnProps {
   pathToPairings: Array<string>
@@ -62,10 +59,9 @@ export class SingleCustomStyleInspector extends StudioComponent<IProps, {}> {
   }
 }
 
-export default compose(
+export default 
   connect((s: IStudioStoreState, op: IOwnProps) => {
     return {
       pairing: get(s, op.pathToPairings).byId[op.id],
     }
-  }),
-)(SingleCustomStyleInspector)
+  }))(SingleCustomStyleInspector)

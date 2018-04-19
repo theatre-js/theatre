@@ -1,4 +1,4 @@
-import {React} from '$studio/handy'
+import React from 'react'
 import css from './PresentationOnlyNode.css'
 import cx from 'classnames'
 import {NODE_TYPE} from './constants'

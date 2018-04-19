@@ -1,7 +1,7 @@
 import deriveFromIndexOfArrayAtom from './deriveFromIndexOfArrayAtom'
-import arrayAtom from '$shared//DataVerse/atoms/arrayAtom'
-import Ticker from '$shared//DataVerse/Ticker'
-import boxAtom, {BoxAtom} from '$shared//DataVerse/atoms/boxAtom'
+import arrayAtom from '$shared/DataVerse/atoms/arrayAtom'
+import Ticker from '$shared/DataVerse/Ticker'
+import boxAtom, {BoxAtom} from '$shared/DataVerse/atoms/boxAtom'
 
 describe('deriveFromIndexOfArrayAtom', () => {
   it('should work', () => {

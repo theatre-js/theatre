@@ -6,7 +6,7 @@ import {
   default as pointer,
   PointerDerivation,
 } from '$shared/DataVerse/derivations/pointer'
-import isAtom from '$shared//DataVerse/atoms/utils/isAtom'
+import isAtom from '$shared/DataVerse/atoms/utils/isAtom'
 import {UnatomifyDeep} from './utils/UnatomifyDeep'
 import AbstractDerivedArray from '../derivations/arrays/AbstractDerivedArray'
 
@@ -79,7 +79,7 @@ export class ArrayAtom<V> extends AbstractCompositeAtom<
     )
 
     removedRefs.forEach(r => {
-      if (!!!r) throw new Error(`This should never happen`)
+      if (!!!r) throw new Error(`ArrayAtom: This should never happen`)
       this._unadopt(r)
     })
 

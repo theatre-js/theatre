@@ -119,6 +119,7 @@ export default class MirrorOfReactTree {
    * id to each internalInstance, hence assigning a unique id to each element.
    */
   _volatileIdsByInternalInstances: WeakMap<OpaqueNodeHandle, VolatileId>
+  _volatileIdsByStateNodes: WeakMap<$FixMe, VolatileId>
   atom: Atom<State>
   _rendererInterestedIn: RendererId | undefined
 
@@ -136,6 +137,7 @@ export default class MirrorOfReactTree {
       nodesByVolatileId: {},
     })
     this._volatileIdsByInternalInstances = new WeakMap()
+    this._volatileIdsByStateNodes = new WeakMap()
 
     this._setup()
   }
@@ -223,12 +225,24 @@ export default class MirrorOfReactTree {
     )
 
     if (!possibleVolatileId) {
-      const volatileID = uuid()
+      let volatileID: string
+      const {stateNode} = internalInstance as $FixMe
+      if (stateNode && this._volatileIdsByStateNodes.has(stateNode)) {
+        volatileID = this._volatileIdsByStateNodes.get(stateNode) as string
+      } else {
+        volatileID = uuid()
+      }
       this._volatileIdsByInternalInstances.set(internalInstance, volatileID)
       return volatileID
     } else {
       return possibleVolatileId
     }
+  }
+
+  assignEarlyVolatileIdToComponentInstance(componentInstance: mixed) {
+    const volatileId = uuid()
+    this._volatileIdsByStateNodes.set(componentInstance, volatileId)
+    return volatileId
   }
 
   _reactToMount = ({

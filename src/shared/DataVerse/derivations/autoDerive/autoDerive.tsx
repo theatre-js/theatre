@@ -1,4 +1,4 @@
-import AbstractDerivation from '$shared//DataVerse/derivations/AbstractDerivation'
+import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 import {collectObservedDependencies} from './discoveryMechanism'
 
 export class AutoDerivation<V> extends AbstractDerivation<V> {

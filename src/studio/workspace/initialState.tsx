@@ -116,6 +116,26 @@ const initialState: WorkspaceNamespaceState = {
     panelObjectBeingDragged: null,
   },
   componentIdToBeRenderedAsCurrentCanvas: 'IntroScene',
+
+  viewports: {
+
+    byId: {
+      viewport1: {
+        id: 'viewport1',
+        dimensions: {width: 520, height: 220},
+        position: {x: 300, y: 60},
+        sceneComponentId: 'IntroScene',
+      },
+      viewport2: {
+        id: 'viewport2',
+        dimensions: {width: 300, height: 220},
+        position: {x: 870, y: 60},
+        sceneComponentId: 'IntroScene',
+      },
+    },
+    whatToShowInBody: {type: 'Viewports'},
+    activeViewportId: 'viewport1'
+  },
 }
 
 export default initialState

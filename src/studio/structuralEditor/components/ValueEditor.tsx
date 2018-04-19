@@ -1,7 +1,10 @@
-import {React, connect, typeSystem, StudioComponent} from '$studio/handy'
+import StudioComponent from '$studio/handy/StudioComponent'
+import React from 'react'
+import connect from '$studio/handy/connect'
 import get from 'lodash/get'
 import editorsPerType from './editorsPerType/editorsPerType'
 import {IStudioStoreState} from '$studio/types'
+import * as typeSystem from '$studio/typeSystem'
 
 interface IOwnProps {
   path: string[]

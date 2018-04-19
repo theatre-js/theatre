@@ -1,6 +1,7 @@
-import * as React from 'react'
-import {connect, StudioComponent, resolveCss} from '$studio/handy'
 import {reduceStateAction} from '$shared/utils/redux/commonActions'
+import StudioComponent from '$studio/handy/StudioComponent'
+import React from 'react'
+import connect from '$studio/handy/connect'
 import {IStudioStoreState} from '$studio/types'
 import * as _ from 'lodash'
 import {set, get} from 'lodash/fp'
@@ -12,6 +13,7 @@ import PanelController from '../PanelController/PanelController'
 import StatusBar from '../StatusBar/StatusBar'
 import css from './StudioUI.css'
 import {undoAction, redoAction} from '$shared/utils/redux/withHistory/actions'
+import resolveCss from '$shared/utils/resolveCss'
 
 const classes = resolveCss(css)
 

@@ -1,6 +1,6 @@
-import {React, compose} from '$studio/handy'
 import css from './index.css'
 import PanelSection from '$studio/structuralEditor/components/reusables/PanelSection'
+import React from 'react'
 
 type Props = {
   pathToComponentDescriptor: Array<string>
@@ -30,4 +30,4 @@ class PropsEditor extends React.PureComponent<Props, State> {
   }
 }
 
-export default compose(a => a)(PropsEditor)
+export default PropsEditor

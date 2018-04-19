@@ -1,7 +1,7 @@
 import _ from 'lodash'
-import AbstractDerivation from '$shared//DataVerse/derivations/AbstractDerivation'
-import Ticker from '$shared//DataVerse/Ticker'
-import withDeps from '$shared//DataVerse/derivations/withDeps'
+import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
+import Ticker from '$shared/DataVerse/Ticker'
+import withDeps from '$shared/DataVerse/derivations/withDeps'
 
 type Dict = $FixMe
 type EmptyFn = () => void

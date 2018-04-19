@@ -1,4 +1,4 @@
-import {React} from '$studio/handy'
+import React from 'react'
 import css from './EditOverlay.css'
 import cx from 'classnames'
 import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'

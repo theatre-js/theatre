@@ -1,9 +1,9 @@
 import jsonPatchLib from 'fast-json-patch'
 import applyJsonDiffToAtom from '$shared/utils/applyJsonDiffToAtom'
-import atomifyDeep, {Atomify} from '$shared//DataVerse/atoms/atomifyDeep'
+import atomifyDeep, {Atomify} from '$shared/DataVerse/atoms/atomifyDeep'
 import StoreAndStuff from '$src/lb/bootstrap/StoreAndStuff'
 import {IStudioStoreState} from '$src/studio/types'
-import {extractState} from '$shared//utils/redux/withHistory/withHistory'
+import {extractState} from '$shared/utils/redux/withHistory/withHistory'
 
 export default function configureAtom(
   reduxStore: StoreAndStuff<IStudioStoreState, $IntentionalAny>,

@@ -1,4 +1,4 @@
-import {React} from '$studio/handy'
+import React from 'react'
 import css from './NodeContainer.css'
 import ComponentNode from './ComponentNode'
 import TextNode from './TextNode'

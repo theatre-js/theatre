@@ -1,6 +1,7 @@
-import {React, PureComponentWithStudio} from '$studio/handy'
+import React from 'react'
 import _ from 'lodash'
-import AbstractDerivation from '$shared//DataVerse/derivations/AbstractDerivation'
+import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
+import PureComponentWithStudio from './PureComponentWithStudio'
 
 interface Props {
   derivation: AbstractDerivation<React.ReactNode>
@@ -24,16 +25,16 @@ export default class DerivationAsReactElement extends PureComponentWithStudio<
       .tap(() => {
         this.forceUpdate()
       })
-    }
-    
-    componentWillUnmount() {
-      this._untapFromDerivationChanges()
-    }
-    
-    componentWillReceiveProps(newProps: Props) {
-      this._untapFromDerivationChanges()
-      this.listen(newProps)
-      this.forceUpdate()
+  }
+
+  componentWillUnmount() {
+    this._untapFromDerivationChanges()
+  }
+
+  componentWillReceiveProps(newProps: Props) {
+    this._untapFromDerivationChanges()
+    this.listen(newProps)
+    this.forceUpdate()
   }
 
   render() {

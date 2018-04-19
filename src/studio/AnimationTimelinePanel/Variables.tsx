@@ -1,4 +1,4 @@
-import {React} from '$studio/handy'
+import React from 'react'
 import Variable from './Variable'
 import * as _ from 'lodash'
 import {colors} from './BoxView'

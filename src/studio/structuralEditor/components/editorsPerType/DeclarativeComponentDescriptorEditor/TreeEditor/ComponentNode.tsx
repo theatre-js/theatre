@@ -1,4 +1,4 @@
-import {React} from '$studio/handy'
+import React from 'react'
 import css from './ComponentNode.css'
 import {STATUS} from './constants'
 import cx from 'classnames'

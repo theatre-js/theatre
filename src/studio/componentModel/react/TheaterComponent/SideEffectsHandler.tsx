@@ -1,6 +1,6 @@
 import noop from 'lodash/noop'
-import Ticker from '$shared//DataVerse/Ticker'
-import AbstractDerivedDict from '$shared//DataVerse/derivations/dicts/AbstractDerivedDict'
+import Ticker from '$shared/DataVerse/Ticker'
+import AbstractDerivedDict from '$shared/DataVerse/derivations/dicts/AbstractDerivedDict'
 
 type FinalFace = $FixMe
 

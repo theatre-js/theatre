@@ -1,6 +1,6 @@
 import ValueInstance from '$src/studio/componentModel/react/TheaterComponent/TimelineInstance/ValueInstance'
-import dictAtom from '$shared//DataVerse/atoms/dictAtom'
-import boxAtom from '$shared//DataVerse/atoms/boxAtom'
+import dictAtom from '$shared/DataVerse/atoms/dictAtom'
+import boxAtom from '$shared/DataVerse/atoms/boxAtom'
 
 export default class TimelineInstance {
   _timeLength: number

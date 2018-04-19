@@ -1,5 +1,5 @@
 import constructMapDescriptor from './constructMapDescriptor'
-import dictAtom from '$shared//DataVerse/atoms/dictAtom'
+import dictAtom from '$shared/DataVerse/atoms/dictAtom'
 
 const constructModifierInstantiationValueDescriptor = (
   des: $FixMe,

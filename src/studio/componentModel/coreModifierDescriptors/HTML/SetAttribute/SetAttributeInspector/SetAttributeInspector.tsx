@@ -1,8 +1,9 @@
-import {compose, React, connect} from '$studio/handy'
 import {map, get} from 'lodash'
 import SingleAttributeInspector from './SingleAttributeInspector'
 import ModifierInspectorWrapper from '$studio/common/components/ModifierInspectorWrapper'
 import {IStudioStoreState} from '$studio/types'
+import React from 'react';
+import connect from '$studio/handy/connect'
 
 interface IOwnProps {
   pathToModifierInstantiationDescriptor: string[]

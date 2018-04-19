@@ -1,6 +1,7 @@
 import * as HtmlWebpackPlugin from 'html-webpack-plugin'
 import {makeConfigParts, Envs} from '../commons'
 import {default as immer, setAutoFreeze} from 'immer'
+// import * as CircularDependencyDetector from 'circular-dependency-plugin'
 
 setAutoFreeze(false)
 
@@ -24,6 +25,15 @@ module.exports = (env: Envs) => {
         inject: 'body',
         template: 'src/studio/index.html',
       }),
+      /**
+       * Enable this if you suspect an error is caused by circular dependencies.
+       * Note that we do have a bunch of circular dependencies that don't cause
+       * any trouble
+       */
+      // new CircularDependencyDetector({
+      //   cwd: parts.srcDir,
+      //   exclude: /\/node_modules\/|\/DataVerse\//,
+      // })
     )
   })
 }

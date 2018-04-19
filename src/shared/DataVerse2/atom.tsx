@@ -75,7 +75,15 @@ class Thingy {
   }
 }
 
-export class Atom<State> {
+export interface Pointable {
+  _getIdentityByPath(path: Array<string | number>): mixed
+  _tapIntoIdentityOfPathChanges(
+    path: Array<string | number>,
+    cb: (v: mixed) => void,
+  ): void
+}
+
+export class Atom<State> implements Pointable {
   _currentState: State
   readonly _rootThingy: Thingy
   readonly pointer: Pointer<State>
@@ -119,10 +127,6 @@ export class Atom<State> {
       this._comp([...path, childKey], childThingy, oldChildVal, newChildVal)
     })
   }
-
-  // _consumeDiffOp = (op: Operation) => {
-  //   console.log('consuming op')
-  // }
 
   getValueByPath(path: Array<string | number>): $IntentionalAny {
     return get(this._currentState, path)

@@ -1,6 +1,6 @@
 import AbstractDerivedDict from './AbstractDerivedDict'
 import _ from 'lodash'
-import boxAtom, {BoxAtom} from '$shared//DataVerse/atoms/boxAtom'
+import boxAtom, {BoxAtom} from '$shared/DataVerse/atoms/boxAtom'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 import noop from '$shared/utils/noop'
 import {VoidFn} from '$shared/types'

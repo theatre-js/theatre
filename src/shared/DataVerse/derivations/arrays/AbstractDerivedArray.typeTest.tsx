@@ -1,7 +1,7 @@
 import {_any, expectType} from '$shared/types'
 import {ArrayAtom} from '$shared/DataVerse/atoms/arrayAtom'
 import {BoxAtom} from '$shared/DataVerse/atoms/boxAtom'
-import {DictAtom} from '$shared//DataVerse/atoms/dictAtom'
+import {DictAtom} from '$shared/DataVerse/atoms/dictAtom'
 import AbstractDerivedDict from '../dicts/AbstractDerivedDict'
 
 // ArrayAtom > string

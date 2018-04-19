@@ -1,8 +1,8 @@
-import {makeFormatter} from '$shared//DataVerse/devtoolsFormatters/common'
+import {makeFormatter} from '$shared/DataVerse/devtoolsFormatters/common'
 import {
   skipFindingColdDerivations,
   endSkippingColdDerivations,
-} from '$shared//debug'
+} from '$shared/debug'
 import {map, times} from 'lodash'
 
 const styles = {

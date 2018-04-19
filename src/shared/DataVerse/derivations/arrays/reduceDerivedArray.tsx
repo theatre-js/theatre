@@ -1,6 +1,6 @@
 import AbstractDerivation from '../AbstractDerivation'
 import of from '../of'
-import AbstractDerivedArray from '$shared//DataVerse/derivations/arrays/AbstractDerivedArray'
+import AbstractDerivedArray from '$shared/DataVerse/derivations/arrays/AbstractDerivedArray'
 
 const noop = () => {}
 

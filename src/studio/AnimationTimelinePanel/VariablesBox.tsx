@@ -1,4 +1,3 @@
-import {React, connect} from '$studio/handy'
 import css from './VariablesBox.css'
 import DraggableArea from '$src/studio/common/components/DraggableArea/DraggableArea'
 import {MODE_SHIFT} from '$src/studio/workspace/components/StudioUI/StudioUI'
@@ -12,6 +11,8 @@ import {
 import BoxView, {colors} from '$src/studio/AnimationTimelinePanel/BoxView'
 import cx from 'classnames'
 import _, {clamp} from 'lodash'
+import React from 'react'
+import connect from '$studio/handy/connect'
 
 interface IOwnProps {
   boxIndex: number
@@ -135,12 +136,27 @@ class VariablesBox extends React.PureComponent<IProps, IState> {
     this.setState(() => ({activeVariableId}))
   }
 
-  addPointToSelection = (variableId: string, variableExtremums: Object, pointIndex: number, pointData: Object) => {
-    this.props.addPointToSelection(this.props.boxIndex, variableId, variableExtremums, pointIndex, pointData)
+  addPointToSelection = (
+    variableId: string,
+    variableExtremums: Object,
+    pointIndex: number,
+    pointData: Object,
+  ) => {
+    this.props.addPointToSelection(
+      this.props.boxIndex,
+      variableId,
+      variableExtremums,
+      pointIndex,
+      pointData,
+    )
   }
 
   removePointFromSelection = (variableId: string, pointIndex: number) => {
-    this.props.removePointFromSelection(this.props.boxIndex, variableId, pointIndex)
+    this.props.removePointFromSelection(
+      this.props.boxIndex,
+      variableId,
+      pointIndex,
+    )
   }
 
   render() {
@@ -187,9 +203,7 @@ class VariablesBox extends React.PureComponent<IProps, IState> {
             onDrag={this.onMove}
             onDragEnd={this.onMoveEnd}
           >
-            <div
-              className={cx(css.boxLegends, {[css.isMoving]: isMoving})}
-            >
+            <div className={cx(css.boxLegends, {[css.isMoving]: isMoving})}>
               <BoxLegends
                 activeMode={activeMode}
                 variables={variables.map(variable =>
@@ -203,11 +217,11 @@ class VariablesBox extends React.PureComponent<IProps, IState> {
               />
             </div>
           </DraggableArea>
-          <div
-            className={css.boxView}
-            onWheel={this._handleResizeOnPinch}
-          >
-            <Broadcast channel={SelectionBoundariesChannel} value={selectionBoundaries}>
+          <div className={css.boxView} onWheel={this._handleResizeOnPinch}>
+            <Broadcast
+              channel={SelectionBoundariesChannel}
+              value={selectionBoundaries}
+            >
               <BoxView
                 variables={variables}
                 variableIds={props.variableIds}
@@ -224,10 +238,7 @@ class VariablesBox extends React.PureComponent<IProps, IState> {
             </Broadcast>
           </div>
           {!shouldDisableResizeHandle && (
-            <DraggableArea
-              onDrag={this.onResize}
-              onDragEnd={this.onResizeEnd}
-            >
+            <DraggableArea onDrag={this.onResize} onDragEnd={this.onResizeEnd}>
               <div className={css.resizeHandle} />
             </DraggableArea>
           )}

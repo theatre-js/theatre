@@ -1,12 +1,12 @@
-import {React} from '$studio/handy'
 import css from './BoxLegends.css'
-import * as _ from 'lodash'
+import _ from 'lodash'
 import cx from 'classnames'
 import HalfPieContextMenu from '$studio/common/components/HalfPieContextMenu'
 import MdSwapVerticalCircel from 'react-icons/lib/md/swap-vertical-circle'
 import FaBullseye from 'react-icons/lib/fa/bullseye'
 import FaCircleO from 'react-icons/lib/fa/circle-o'
 import {MODE_SHIFT} from '$studio/workspace/components/StudioUI/StudioUI'
+import React from 'react'
 
 interface IState {
   contextMenuProps: undefined | null | Object

@@ -1,5 +1,5 @@
-import {React} from '$src/studio/handy'
 import css from './StatusBar.css'
+import React from 'react'
 import cx from 'classnames'
 import GoRepoForked from 'react-icons/lib/go/repo-forked'
 import MdApps from 'react-icons/lib/md/apps'

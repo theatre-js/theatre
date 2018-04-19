@@ -2,7 +2,6 @@ import React from 'react'
 import css from './RegularNode.css'
 // import {Path} from '$studio/ExplorePanel/types'
 import SvgIcon from '$shared/components/SvgIcon'
-import {resolveCss} from '$studio/handy'
 // import stringStartsWith from 'lodash/startsWith'
 // import DerivationAsReactElement from '$src/studio/componentModel/react/utils/DerivationAsReactElement'
 import arrowIcon from 'svg-inline-loader!./arrow.svg'
@@ -17,13 +16,14 @@ import {Pointer} from '$shared/DataVerse2/pointer'
 import TheaterComponent, {
   isTheaterComponent,
 } from '../componentModel/react/TheaterComponent/TheaterComponent'
-import AbstractDerivation from '$shared//DataVerse/derivations/AbstractDerivation'
+import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 import Studio from '$studio/bootstrap/Studio'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 import {getComponentDescriptor} from '$studio/componentModel/selectors'
 import Node from './Node'
 import {reduceAhistoricState} from '$studio/bootstrap/actions'
 import {omit} from 'lodash'
+import resolveCss from '$shared/utils/resolveCss'
 
 type Props = {
   depth: number
@@ -37,9 +37,8 @@ const RegularNode = (props: Props): React.ReactNode => (
     {(propsP: Pointer<Props>, studio) => {
       const volatileId = val(propsP.volatileId)
 
-      const nodeP = studio._mirrorOfReactTree.atom.pointer.nodesByVolatileId[
-        volatileId
-      ] as Pointer<MGenericNode>
+      const nodeP = studio.elementTree.mirrorOfReactTree.atom.pointer
+        .nodesByVolatileId[volatileId] as Pointer<MGenericNode>
 
       const isSelected =
         val(
@@ -93,7 +92,7 @@ const RegularNode = (props: Props): React.ReactNode => (
 
       const volatileIdsOfChildrenP = !shouldSwallowChild
         ? nodeP.volatileIdsOfChildren
-        : (studio._mirrorOfReactTree.atom.pointer.nodesByVolatileId[
+        : (studio.elementTree.mirrorOfReactTree.atom.pointer.nodesByVolatileId[
             val(nodeP.volatileIdsOfChildren)[0]
           ] as Pointer<MGenericNode>).volatileIdsOfChildren
 

@@ -1,6 +1,6 @@
-import dictAtom, {DictAtom} from '$shared//DataVerse/atoms/dictAtom'
-import {ArrayAtom} from '$shared//DataVerse/atoms/arrayAtom'
-import {BoxAtom} from '$shared//DataVerse/atoms/boxAtom'
+import dictAtom, {DictAtom} from '$shared/DataVerse/atoms/dictAtom'
+import {ArrayAtom} from '$shared/DataVerse/atoms/arrayAtom'
+import {BoxAtom} from '$shared/DataVerse/atoms/boxAtom'
 
 // unboxDeep
 ;() => {

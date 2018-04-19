@@ -1,4 +1,4 @@
-import {React} from '$studio/handy'
+import React from 'react'
 import SingleInputForm from '$lf/common/components/SingleInputForm'
 import css from './PointValuesEditor.css'
 

@@ -1,6 +1,6 @@
 import noop from 'lodash/noop'
 import AbstractDerivedArray from './AbstractDerivedArray'
-import AbstractDerivation from '$shared//DataVerse/derivations/AbstractDerivation'
+import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 
 export class MappedDerivedArray<T, V> extends AbstractDerivedArray<V> {
   _untapFromSourceChanges: Function

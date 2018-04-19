@@ -1,8 +1,9 @@
-import {React, connect} from '$src/studio/handy'
 import {map, get} from 'lodash'
 import SingleCustomStyleInspector from '$src/studio/componentModel/coreModifierDescriptors/HTML/SetCustomStyle/SetCustomStyleInspector/SingleCustomStyleInspector'
 import ModifierInspectorWrapper from '$src/studio/common/components/ModifierInspectorWrapper'
 import {IStudioStoreState} from '$studio/types'
+import React from 'react'
+import connect from '$studio/handy/connect'
 
 interface IOwnProps {
   pathToModifierInstantiationDescriptor: string[]
