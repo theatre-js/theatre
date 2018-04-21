@@ -20,7 +20,7 @@ export const getComponentIdOfSelectedElement = (
   if (!possibleVolatileIdOfSelectedElement) return undefined
 
   const mirrorNode = val(
-    studio.elementTree.mirrorOfReactTree.atom.pointer.nodesByVolatileId[
+    studio.elementTree.mirrorOfReactTreeAtom.pointer.nodesByVolatileId[
       possibleVolatileIdOfSelectedElement
     ],
   )

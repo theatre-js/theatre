@@ -1,6 +1,8 @@
 import {IdentityDerivation} from '$shared/DataVerse2/identityDerivation'
 import {get, last, isPlainObject} from 'lodash'
 import pointer, {Pointer, PointerInnerObj} from './pointer'
+import {PathBasedReducer} from '$shared/utils/redux/withHistory/PathBasedReducer'
+import update from 'lodash/fp/update'
 
 type Listener = (newVal: mixed) => void
 
@@ -103,6 +105,15 @@ export class Atom<State> implements Pointable {
 
   getState() {
     return this._currentState
+  }
+
+  reduceState: PathBasedReducer<State, State> = (
+    path: $IntentionalAny[],
+    reducer: $IntentionalAny,
+  ) => {
+    const newState = update(path, reducer, this.getState())
+    this.setState(newState)
+    return newState
   }
 
   _comp(

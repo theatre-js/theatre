@@ -10,10 +10,9 @@ import {
 import uuid from 'uuid/v4'
 import mitt, {Emitter} from 'mitt'
 import Stack from '$shared/utils/Stack'
-import atom, {Atom} from '$shared/DataVerse2/atom'
 import {PathBasedReducer} from '$shared/utils/redux/withHistory/PathBasedReducer'
 import update from 'lodash/fp/update'
-import {get, omit, pull, pickBy} from 'lodash'
+import {omit, pull, pickBy} from 'lodash'
 
 // if (!window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
 //   const installReactDevtoolsGlobalHook = require('$root/vendor/react-devtools-backend/installGlobalHook')
@@ -94,7 +93,7 @@ export const isTextNode = (n: Node): n is TextNode => {
   return n.type === 'Text'
 }
 
-type State = {
+export type State = {
   renderers: {[rendererId: string]: Renderer}
   nodesByVolatileId: {[volatileId: string]: Node}
 }
@@ -120,7 +119,8 @@ export default class MirrorOfReactTree {
    */
   _volatileIdsByInternalInstances: WeakMap<OpaqueNodeHandle, VolatileId>
   _volatileIdsByStateNodes: WeakMap<$FixMe, VolatileId>
-  atom: Atom<State>
+  // atom: Atom<State>
+  state: State
   _rendererInterestedIn: RendererId | undefined
 
   constructor() {
@@ -132,10 +132,11 @@ export default class MirrorOfReactTree {
     this.events = new mitt()
     this._hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__
     this._subscriptions = []
-    this.atom = atom({
+    // this.atom = atom()
+    this.state = {
       renderers: {},
       nodesByVolatileId: {},
-    })
+    }
     this._volatileIdsByInternalInstances = new WeakMap()
     this._volatileIdsByStateNodes = new WeakMap()
 
@@ -167,11 +168,11 @@ export default class MirrorOfReactTree {
   }
 
   private _replaceState(fn: (old: State) => State) {
-    this.atom.setState(fn(this.atom.getState()))
+    this.state = fn(this.state)
   }
 
   getState() {
-    return this.atom.getState()
+    return this.state
   }
 
   private _reduceState: PathBasedReducer<State, void> = (
@@ -182,7 +183,7 @@ export default class MirrorOfReactTree {
   }
 
   _getRenderer(id: RendererId): Renderer {
-    return get(this.atom.getState(), ['renderers', id])
+    return this.state.renderers[id]
   }
 
   _setRenderer(id: RendererId, r: Renderer) {
@@ -472,13 +473,10 @@ export default class MirrorOfReactTree {
       )
     }
 
-    let newNode = this._reduceNode(
-      volatileId,
-      (n: GenericNode | WrapperNode) => ({
-        ...n,
-        reactSpecific: {...n.reactSpecific, internalData},
-      }),
-    )
+    let newNode = {
+      ...oldNode,
+      reactSpecific: {...oldNode.reactSpecific, internalData},
+    }
 
     if (Array.isArray(internalData.children)) {
       if (typeof oldNode.reactSpecific.internalData.children === 'string') {
@@ -504,10 +502,7 @@ export default class MirrorOfReactTree {
         }))
       })
 
-      newNode = this._reduceNode(volatileId, n => ({
-        ...n,
-        volatileIdsOfChildren,
-      }))
+      newNode.volatileIdsOfChildren = volatileIdsOfChildren
     } else if (typeof internalData.children === 'string') {
       if (typeof oldNode.reactSpecific.internalData.children === 'string') {
         const oldChildVolatileId = oldNode.volatileIdsOfChildren[0]
@@ -526,10 +521,7 @@ export default class MirrorOfReactTree {
         this._reduceNode(newTextNode.volatileId, () => newTextNode)
         this.events.emit('mount', newTextNode)
 
-        newNode = this._reduceNode(volatileId, n => ({
-          ...n,
-          volatileIdsOfChildren: [newTextNode.volatileId],
-        }))
+        newNode.volatileIdsOfChildren = [newTextNode.volatileId]
       }
     } else {
       debugger
@@ -656,7 +648,7 @@ export default class MirrorOfReactTree {
   }
 
   getNodeByVolatileId(volatileId: string): Node | undefined {
-    return this.atom.getState().nodesByVolatileId[volatileId]
+    return this.state.nodesByVolatileId[volatileId]
   }
 
   getNativeElementByVolatileId(
@@ -675,7 +667,7 @@ export default class MirrorOfReactTree {
   walk(cb: (node: Node) => void | false, volatileId?: VolatileId) {
     const nodeIds = volatileId
       ? [volatileId]
-      : Object.keys(this.atom.getState().renderers).reduce(
+      : Object.keys(this.state.renderers).reduce(
           (ids: string[], rendererId) => {
             const renderer = this.getState().renderers[rendererId]
             return ids.concat(renderer.volatileIdsOfRootNodes)

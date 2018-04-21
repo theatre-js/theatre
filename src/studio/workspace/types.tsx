@@ -43,13 +43,6 @@ export type Panels = {
   idOfActivePanel: undefined | null | string
 }
 
-type ViewportCanvas = {
-  id: string
-  name: stringv
-  viewports: Record<string, true>
-  activeViewportId: undefined | string
-}
-
 type Viewport = {
   id: string
   dimensions: {width: number; height: number}
@@ -60,7 +53,6 @@ type Viewport = {
 
 export type WorkspaceNamespaceState = {
   panels: Panels
-  componentIdToBeRenderedAsCurrentCanvas: undefined | null | ComponentId
 
   viewports: {
     byId: Record<string, Viewport>

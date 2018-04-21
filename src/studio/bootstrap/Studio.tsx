@@ -62,6 +62,7 @@ export default class Studio {
     )
 
     const onAnimationFrame = () => {
+      this.elementTree.tick()
       this.ticker.tick()
       window.requestAnimationFrame(onAnimationFrame)
     }

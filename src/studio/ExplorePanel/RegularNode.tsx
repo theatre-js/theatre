@@ -1,11 +1,4 @@
 import React from 'react'
-import css from './RegularNode.css'
-// import {Path} from '$studio/ExplorePanel/types'
-import SvgIcon from '$shared/components/SvgIcon'
-// import stringStartsWith from 'lodash/startsWith'
-// import DerivationAsReactElement from '$src/studio/componentModel/react/utils/DerivationAsReactElement'
-import arrowIcon from 'svg-inline-loader!./arrow.svg'
-// import {isTheaterComponent} from '$studio/componentModel/react/TheaterComponent/TheaterComponent'
 import {
   VolatileId,
   GenericNode as MGenericNode,
@@ -23,21 +16,20 @@ import {getComponentDescriptor} from '$studio/componentModel/selectors'
 import Node from './Node'
 import {reduceAhistoricState} from '$studio/bootstrap/actions'
 import {omit} from 'lodash'
-import resolveCss from '$shared/utils/resolveCss'
+import NodeTemplate from './NodeTemplate'
+import {TaggedDisplayName} from './NodeTemplate'
 
 type Props = {
   depth: number
   volatileId: VolatileId
 }
 
-const classes = resolveCss(css)
-
-const RegularNode = (props: Props): React.ReactNode => (
+const RegularNode = (props: Props) => (
   <PropsAsPointer props={props}>
     {(propsP: Pointer<Props>, studio) => {
       const volatileId = val(propsP.volatileId)
 
-      const nodeP = studio.elementTree.mirrorOfReactTree.atom.pointer
+      const nodeP = studio.elementTree.mirrorOfReactTreeAtom.pointer
         .nodesByVolatileId[volatileId] as Pointer<MGenericNode>
 
       const isSelected =
@@ -51,6 +43,9 @@ const RegularNode = (props: Props): React.ReactNode => (
           studio.atom2.pointer.ahistoricComponentModel
             .collapsedElementsByVolatileId[volatileId],
         ) !== true
+
+      const nativeNode = val(nodeP.nativeNode)
+      if (!nativeNode) return null
 
       // @todo
       const ancestorOfSelectedNode = false
@@ -77,22 +72,22 @@ const RegularNode = (props: Props): React.ReactNode => (
         }
       }
 
-      const select = () => {
-        markElementAsSelected(studio, volatileId)
+      let isSelectable = false
+      if (isTheaterComponent(nativeNode)) {
+        const cls = nativeNode.constructor as $FixMe
+        if (cls.componentType === 'Declarative') isSelectable = true
       }
 
-      const nativeNode = val(nodeP.nativeNode)
-      // @todo
       const displayName: string = getDisplayName(nativeNode, studio).getValue()
 
-      let childrenNode: React.ReactNode = null
+      let childrenNodes: React.ReactNode = null
       const depth = val(propsP.depth)
       const shouldSwallowChild =
         (nativeNode.constructor as $FixMe).shouldSwallowChild === true
 
       const volatileIdsOfChildrenP = !shouldSwallowChild
         ? nodeP.volatileIdsOfChildren
-        : (studio.elementTree.mirrorOfReactTree.atom.pointer.nodesByVolatileId[
+        : (studio.elementTree.mirrorOfReactTreeAtom.pointer.nodesByVolatileId[
             val(nodeP.volatileIdsOfChildren)[0]
           ] as Pointer<MGenericNode>).volatileIdsOfChildren
 
@@ -102,47 +97,34 @@ const RegularNode = (props: Props): React.ReactNode => (
 
       if (isExpanded && hasChildren) {
         const childDepth = depth + 1
-        childrenNode = (
-          <div {...classes('subNodes')}>
-            {val(volatileIdsOfChildrenP).map(childVolatileId => {
-              return (
-                <Node
-                  key={`child-${childVolatileId}`}
-                  volatileId={childVolatileId}
-                  depth={childDepth}
-                />
-              )
-            })}
-          </div>
-        )
+        childrenNodes = val(volatileIdsOfChildrenP).map(childVolatileId => (
+          <Node
+            key={`child-${childVolatileId}`}
+            volatileId={childVolatileId}
+            depth={childDepth}
+          />
+        ))
       }
 
       return (
-        <div
-          {...classes(
-            'container',
-            isSelected && 'selected',
-            isExpanded && 'expanded',
-            hasChildren && 'hasChildren',
-            ancestorOfSelectedNode && 'ancestorOfSelectedNode',
-          )}
-          style={{'--depth': depth}}
-        >
-          <div className={css.top}>
-            <div className={css.bullet} onClick={toggleExpansion}>
-              <div className={css.bulletIcon}>
-                {<SvgIcon sizing="fill" src={arrowIcon} />}
-              </div>
-            </div>
-            <div key="name" className={css.name} onClick={select}>
-              <span className={css.tagOpen}>&lt;</span>
-              <span className={css.tagName}>{displayName}</span>
-              <span className={css.tagClose}>&gt;</span>
-            </div>
-            <div key="highlighter" className={css.highlighter} />
-          </div>
-          {childrenNode}
-        </div>
+        <NodeTemplate
+          isSelected={isSelected}
+          isExpanded={isExpanded}
+          ancestorOfSelectedNode={ancestorOfSelectedNode}
+          depth={depth}
+          toggleExpansion={toggleExpansion}
+          select={
+            isSelectable
+              ? () => {
+                  markElementAsSelected(studio, volatileId)
+                }
+              : undefined
+          }
+          hasChildren={hasChildren}
+          childrenNodes={childrenNodes}
+          name={<TaggedDisplayName name={displayName} />}
+          canHaveChildren={true}
+        />
       )
     }}
   </PropsAsPointer>
@@ -171,11 +153,14 @@ const getDisplayName = (
       }
     } else if (node instanceof Element) {
       return node.tagName
+    } else if (!node) {
+      return ''
     } else {
       const cls = node.constructor as $FixMe
       return cls.displayName || cls.name
     }
   })
+
 function markElementAsSelected(studio: Studio, volatileId: string) {
   studio.store.reduxStore.dispatch(
     reduceAhistoricState(

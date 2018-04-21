@@ -23,8 +23,8 @@ export default class Ticker {
 
   registerComputationUpdate(d: ObjectWhoseComputationShouldBeUpdated): void {
     if (this._computationsToUpdate.has(d)) {
-      debugger
-      console.error('Computation is already registered. This should never happen')
+      // @todo
+      // console.error('Computation is already registered. This should never happen')
     }
 
     if (process.env.KEEPING_DERIVATION_TRACES === true) {

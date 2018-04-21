@@ -1,64 +1,11 @@
-import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
-import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
-import atom, {Atom, val} from '$shared/DataVerse2/atom'
-import {Pointer} from '$shared/DataVerse2/pointer'
 import Panel from '$src/studio/workspace/components/Panel/Panel'
-import {isTheaterComponent} from '$studio/componentModel/react/TheaterComponent/TheaterComponent'
-import MirrorOfReactTree, {
-  GenericNode,
-  isGenericNode,
-  Node as MirrorNode,
-  VolatileId,
-} from '$studio/integrations/react/treeMirroring/MirrorOfReactTree'
 import {PanelOutput} from '$studio/workspace/types'
 import React from 'react'
-import DerivationAsReactElement from '$studio/componentModel/react/utils/DerivationAsReactElement'
 import css from './ExplorePanel.css'
-import Node from './Node'
 import StudioComponent from '$studio/handy/StudioComponent'
-
-const isRenderCurrentCanvas = (node: MirrorNode): boolean => {
-  if (!isGenericNode(node)) return false
-  const nativeNode = node.nativeNode
-
-  if (!isTheaterComponent(nativeNode)) return false
-
-  if (
-    (nativeNode.constructor as $IntentionalAny).componentId ===
-    'TheaterJS/Core/RenderCurrentCanvas'
-  ) {
-    return true
-  }
-  return false
-}
-
-const getVolatileOdOfRenderCurrentCanvas = (
-  mirror: MirrorOfReactTree,
-): Promise<string> =>
-  new Promise(resolve => {
-    let foundNode: MirrorNode
-    mirror.walk(node => {
-      if (isRenderCurrentCanvas(node)) {
-        foundNode = node
-        return false
-      } else {
-        return undefined
-      }
-    })
-    // @ts-ignore
-    if (foundNode) {
-      return resolve(foundNode.volatileId)
-    }
-
-    const onMount = (node: MirrorNode) => {
-      if (isRenderCurrentCanvas(node)) {
-        mirror.events.off('mount', onMount)
-        resolve(node.volatileId)
-      }
-    }
-
-    mirror.events.on('mount', onMount)
-  })
+import PropsAsPointer from '$studio/handy/PropsAsPointer'
+import {val} from '$shared/DataVerse2/atom'
+import ViewportNode from './ViewportNode'
 
 type Props = {
   outputs: PanelOutput
@@ -70,73 +17,36 @@ type State = {
 }
 
 class ExplorerPanel extends StudioComponent<Props, State> {
-  // mirror: MirrorOfReactTree
-  atom: Atom<{volatileIdOfRenderCurrentCanvas: VolatileId | undefined}>
   static panelName = 'Explore'
-  _children: AbstractDerivation<React.ReactNode>
-
-  constructor(props: Props, context: $IntentionalAny) {
-    super(props, context)
-
-    // this.mirror = this.studio.elementTree.mirrorOfReactTree
-
-    this.atom = atom({
-      volatileIdOfRenderCurrentCanvas: undefined,
-    })
-
-    // getVolatileOdOfRenderCurrentCanvas(this.studio.elementTree.mirrorOfReactTree).then(
-    //   volatileIdOfRenderCurrentCanvas => {
-    //     const node = this.studio.elementTree.mirrorOfReactTree.getState()
-    //       .nodesByVolatileId[volatileIdOfRenderCurrentCanvas]
-
-    //     this.studio.elementTree.mirrorOfReactTree.discardAllRenderersExcept(
-    //       node.rendererId,
-    //     )
-    //     this.atom.setState({volatileIdOfRenderCurrentCanvas})
-    //   },
-    // )
-
-    this._children = autoDerive(() => {
-      const volatileIdOfRenderCurrentCanvas = val(
-        this.atom.pointer.volatileIdOfRenderCurrentCanvas,
-      )
-
-      if (typeof volatileIdOfRenderCurrentCanvas !== 'string') {
-        return null
-      }
-
-      const nodeP = this.mirror.atom.pointer.nodesByVolatileId[
-        volatileIdOfRenderCurrentCanvas
-      ] as Pointer<GenericNode>
-
-      const volatileIdsOfChildren: VolatileId[] = val(
-        nodeP.volatileIdsOfChildren,
-      )
-
-      return volatileIdsOfChildren.map(vid => {
-        return <Node key={`node-for-${vid}`} volatileId={vid} depth={1} />
-      })
-    })
-  }
-
   render() {
-    // const {nodes, selectedNodePath} = this.state
-    // const {outputs: {selectedNode}} = this.props
     return (
       <Panel>
         <div className={css.container}>
-          <DerivationAsReactElement derivation={this._children} />
-          {/*Object.keys(nodes).map(key => {
-             return (
-               <Node
-                 key={key}
-                 toggleExpansion={this.toggleNodeExpansionState}
-                 selectNode={this.selectNode}
-                 selectedNodePath={selectedNodePath}
-                 {...nodes[key]}
-               />
-             )
-           })*/}
+          <PropsAsPointer props={this.props}>
+            {() => {
+              const whatToShowInBody = val(
+                this.studio.atom2.pointer.workspace.viewports.whatToShowInBody,
+              )
+
+              if (whatToShowInBody.type === 'Viewports') {
+                const activeViewportId = val(
+                  this.studio.atom2.pointer.workspace.viewports
+                    .activeViewportId,
+                )
+
+                if (!activeViewportId) return null
+                const volatileIdOfActiveViewport = val(
+                  this.studio.elementTree.atom.pointer.unexpandedViewports[
+                    activeViewportId
+                  ],
+                )
+                if (!volatileIdOfActiveViewport) return null
+                return <ViewportNode depth={1} volatileId={volatileIdOfActiveViewport} />
+              } else {
+                throw new Error(`Implement me`)
+              }
+            }}
+          </PropsAsPointer>
         </div>
       </Panel>
     )
