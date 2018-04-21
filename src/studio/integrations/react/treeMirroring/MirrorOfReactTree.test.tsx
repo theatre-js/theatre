@@ -8,6 +8,7 @@ import MirrorOfReactTree, {
 } from './MirrorOfReactTree'
 import delay from '$shared/utils/delay'
 import boxAtom from '$shared/DataVerse/atoms/boxAtom'
+import immer from 'immer';
 
 type SummaryNode =
   | {type: 'Text'; text: string}
@@ -35,7 +36,8 @@ const summariseNode = (
   mirror: MirrorOfReactTree,
   volatileId: VolatileId,
 ): SummaryNode => {
-  const node = mirror.getNodeByVolatileId(volatileId)
+  const state = mirror.getState()
+  const node = state.nodesByVolatileId[volatileId]
   if (!node) {
     debugger
     throw new Error(
@@ -128,6 +130,16 @@ describe(`mirror`, () => {
     ReactDOM.unmountComponentAtNode(rootEl)
   })
 
+  it.only('blah', () => {
+    const s = {a: 'a', b: 'b', c: 'c'}
+    // debugger
+    const s2 = immer(s, (sMut) => {
+      debugger
+      sMut.a = 'a2'
+      sMut.b = 'b2'
+    })
+  })
+
   describe(`the testing setup`, () => {
     // Here we are ensuring that theHook is actually set up and picked up by React.
     const fn = () => {
@@ -207,7 +219,7 @@ describe(`mirror`, () => {
   })
 
   describe(`updates/unmounts`, () => {
-    it(`a bunch of test cases`, async () => {
+    it.only(`a bunch of test cases`, async () => {
       const b = boxAtom<React.ReactNode | React.ReactNode[]>('pending')
 
       class ClassComp extends React.Component<
@@ -246,10 +258,12 @@ describe(`mirror`, () => {
       }
 
       check([text('pending')], 1)
-
+      
+      
       b.set('resolved')
       m.flushEvents()
       check([text('resolved')], 1)
+      return
 
       b.set(['1', '2'])
       m.flushEvents()      

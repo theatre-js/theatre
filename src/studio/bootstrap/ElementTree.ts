@@ -26,6 +26,7 @@ export default class ElementTree {
 
   tick() {
     const oldS = this.mirrorOfReactTreeAtom.getState()
+    this.mirrorOfReactTree.flushEvents()
     const newS = this.mirrorOfReactTree.getState()
     if (oldS !== newS) {
       this.mirrorOfReactTreeAtom.setState(newS)

@@ -32,7 +32,7 @@ describe(`v2 atom`, () => {
   })
 
   describe(`dictMaps`, () => {
-    it(`should work`, () => {
+    it.skip(`should work`, () => {
       const state = {one: 1, two: 2}
       const a = atom(state)
       const mapped = mapDict(a.pointer, (propP: $FixMe, key: $FixMe) => {
