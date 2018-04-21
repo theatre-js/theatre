@@ -106,6 +106,7 @@ interface Renderer {
 }
 
 export default class MirrorOfReactTree {
+  _bufferedEvents: Array<$FixMe>;
   events: Emitter
   // All the subscriptions to _hook.sub(). We'll call all of thsese on #cleanup()
   _subscriptions: AnyFn[]
@@ -139,6 +140,7 @@ export default class MirrorOfReactTree {
     }
     this._volatileIdsByInternalInstances = new WeakMap()
     this._volatileIdsByStateNodes = new WeakMap()
+    this._bufferedEvents = []
 
     this._setup()
   }
@@ -192,21 +194,47 @@ export default class MirrorOfReactTree {
 
   _setup() {
     this._subscriptions.push(
-      this._hook.sub('root', this._reactToRoot),
-      this._hook.sub('mount', this._reactToMount),
-      this._hook.sub('unmount', this._reactToUnmount),
-      this._hook.sub('update', this._reactToUpdate),
+      this._hook.sub('root', this._bufferEvent),
+      this._hook.sub('mount', this._bufferEvent),
+      this._hook.sub('unmount', this._bufferEvent),
+      this._hook.sub('update', this._bufferEvent),
       this._hook.sub(
         'renderer-attached',
         ({id: rendererId, helpers, renderer}) =>
-          this._reactToRendererAttached({rendererId, helpers, renderer}),
+        this._bufferEvent({rendererId, helpers, renderer, type: 'renderer-attached'})
       ),
     )
 
     for (const rendererId in this._hook.helpers) {
       const renderer = this._hook._renderers[rendererId]
       const helpers = this._hook.helpers[rendererId]
-      this._reactToRendererAttached({rendererId, renderer, helpers})
+      this._bufferEvent({rendererId, helpers, renderer, type: 'renderer-attached'})
+    }
+  }
+
+  _bufferEvent = (eventData: $FixMe) => {
+    this._bufferedEvents.push(eventData)
+  }
+
+  flushEvents() {
+    while (true) {
+      const event = this._bufferedEvents.shift()
+      if (!event) return
+      const {type} = event
+      if (type === 'mount') {
+        this._reactToMount(event)
+      } else if (type === 'unmount') {
+        this._reactToUnmount(event)
+      } else if (type === 'update') {
+        this._reactToUpdate(event)
+      } else if (type === 'root') {
+        this._reactToRoot(event)
+      } else if (type === 'renderer-attached') {
+        this._reactToRendererAttached(event)
+      } else {
+        debugger
+        throw new Error(`Unkown event type '${type}'`)
+      }
     }
   }
 

@@ -178,7 +178,7 @@ describe(`mirror`, () => {
     expect(rootEl.childNodes).toHaveLength(1)
 
     const m = new MirrorOfReactTree()
-
+    m.flushEvents()
     const s = summarise(m)
 
     expect(s).toMatchObject([
@@ -236,6 +236,7 @@ describe(`mirror`, () => {
             ]),
           ]),
         ]
+        m.flushEvents()
         // ensure the tree matches expectation
         expect(summarise(m)).toMatchObject(expectation)
         // ensure discarded nodes are removed from m._nodesByVolatileId
@@ -247,25 +248,31 @@ describe(`mirror`, () => {
       check([text('pending')], 1)
 
       b.set('resolved')
+      m.flushEvents()
       check([text('resolved')], 1)
 
       b.set(['1', '2'])
+      m.flushEvents()      
       check([text('1'), text('2')], 2)
 
       b.set(['1', '2'])
-      // await delay(20)
+      m.flushEvents()      
       check([text('1'), text('2')], 2)
 
       b.set(['1'])
+      m.flushEvents()
       check([text('1')], 1)
 
       b.set([<a id="blah" key="blah" />])
+      m.flushEvents()
       check([generic('a', 'blah', [])], 1)
 
       ReactDOM.unmountComponentAtNode(rootEl)
+      m.flushEvents()
       expect(Object.keys(m.getState().nodesByVolatileId).length).toEqual(0)
 
       ReactDOM.render(<ClassComp />, rootEl)
+      m.flushEvents()
       expect(Object.keys(m.getState().renderers)).toHaveLength(1)
 
       const anotherRootEl = document.createElement('div')
@@ -273,6 +280,7 @@ describe(`mirror`, () => {
       document.body.appendChild(anotherRootEl)
       ReactDOM.render(<ClassComp />, anotherRootEl)
       await delay(20)
+      m.flushEvents()
       expect(Object.keys(m.getState().renderers)).toHaveLength(1)
 
       m._cleanup()
@@ -293,6 +301,7 @@ describe(`mirror`, () => {
 
       const m = new MirrorOfReactTree()
       const spy = jest.fn()
+      m.flushEvents()      
       m.walk(spy)
       const [firstCall, ...otherCalls]: $IntentionalAny = spy.mock.calls.map(
         (args: [Node]) => args[0],
