@@ -8,6 +8,8 @@ import arrayAtom from '$shared/DataVerse/atoms/arrayAtom'
 import elementify from '$studio/componentModel/react/elementify/elementify'
 import constant from '$shared/DataVerse/derivations/constant'
 import {reduceHistoricState} from '$studio/bootstrap/actions'
+import Studio from '$studio/bootstrap/Studio'
+import { getComponentDescriptor } from '$studio/componentModel/selectors';
 
 const classes = resolveCss(css)
 
@@ -92,6 +94,19 @@ export default class Viewport extends ReactiveComponentWithStudio<
         <div key="content" {...classes('content')}>
           {elementD.getValue()}
         </div>
+        <div {...classes('header')} onClick={this._activate}>
+          <span {...classes('headerSceneName')}>
+            {getDisplayNameOfComponent(
+              this.studio,
+              viewportDescriptor.sceneComponentId,
+            )}
+          </span>
+          <span {...classes('headerSeperator')}>–</span>
+          <span {...classes('headerDimensions')}>
+            {viewportDescriptor.dimensions.width}x
+            {viewportDescriptor.dimensions.height}
+          </span>
+        </div>
         {!isActive && (
           <div {...classes('unclickable')} onClick={this._activate} />
         )}
@@ -102,3 +117,12 @@ export default class Viewport extends ReactiveComponentWithStudio<
 
 export const isViewportElement = (n: $IntentionalAny): n is Viewport =>
   n && n.constructor && n.constructor[viewportSym] === true
+
+const getDisplayNameOfComponent = (studio: Studio, id: string) => {
+  const componentDescriptorP = getComponentDescriptor(studio.atom2.pointer, id)
+  const displayName = val(componentDescriptorP.displayName)
+  if (typeof displayName !== 'string') {
+    throw new Error(`Got a non-string displayName. This should never happen`)
+  }
+  return displayName
+}

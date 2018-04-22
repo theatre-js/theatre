@@ -61,8 +61,12 @@ export default class Studio {
       reduceAhistoricState(['pathToProject'], () => pathToProject),
     )
 
+    let i = 0
+
     const onAnimationFrame = () => {
-      this.elementTree.tick()
+      i++
+      // only update the elementTree every 10 frames
+      if (i % 10 === 0) this.elementTree.tick()
       this.ticker.tick()
       window.requestAnimationFrame(onAnimationFrame)
     }

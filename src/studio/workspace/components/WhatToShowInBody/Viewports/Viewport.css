@@ -2,8 +2,7 @@
   position: absolute;
   border: 1px solid #adadad;
   background: white;
-  overflow: hidden;
-
+  
   &.isActive {
     border-color: #6d6d73;
   }
@@ -11,10 +10,30 @@
 
 .content {
   position: absolute 0;
+  overflow: hidden;
   z-index: 0;
 }
 
 .unclickable {
   position: absolute 0;
   z-index: 1;
+}
+
+.header {
+  position: absolute;
+  top: -20px;
+  left: 0;
+  composes: typography from '$studio/workspace/components/StudioUI/StudioUI.css';
+
+  color: #9c9c9c;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+}
+
+.isActive > .header {
+  color: black;
+}
+
+.headerSeperator {
+  margin: 0 1em;
 }
