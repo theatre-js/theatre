@@ -130,16 +130,6 @@ describe(`mirror`, () => {
     ReactDOM.unmountComponentAtNode(rootEl)
   })
 
-  it.only('blah', () => {
-    const s = {a: 'a', b: 'b', c: 'c'}
-    // debugger
-    const s2 = immer(s, (sMut) => {
-      debugger
-      sMut.a = 'a2'
-      sMut.b = 'b2'
-    })
-  })
-
   describe(`the testing setup`, () => {
     // Here we are ensuring that theHook is actually set up and picked up by React.
     const fn = () => {

@@ -53,7 +53,7 @@ export class Input extends StudioComponent<IProps, IState> {
 
     this.dispatch(
       reduceStateAction(
-        ['workspace', 'panels', 'panelObjectBeingDragged'],
+        ['historicWorkspace', 'panels', 'panelObjectBeingDragged'],
         () => ({type: 'modifier', prop: this.props.prop}),
       ),
     )
@@ -69,7 +69,7 @@ export class Input extends StudioComponent<IProps, IState> {
 
     this.dispatch(
       reduceStateAction(
-        ['workspace', 'panels', 'panelObjectBeingDragged'],
+        ['historicWorkspace', 'panels', 'panelObjectBeingDragged'],
         () => null,
       ),
     )

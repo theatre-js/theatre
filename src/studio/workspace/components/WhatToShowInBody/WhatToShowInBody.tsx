@@ -18,7 +18,7 @@ export default class WhatToShowInBody extends ReactiveComponentWithStudio<
 > {
   _render() {
     const whatToShowInBody = val(
-      this.studioAtom2P.workspace.viewports.whatToShowInBody,
+      this.studioAtom2P.historicWorkspace.viewports.whatToShowInBody,
     )
     if (whatToShowInBody.type === 'Viewports') {
       return <Viewports />

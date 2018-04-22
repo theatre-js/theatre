@@ -2,20 +2,27 @@ import {isTheaterComponent} from '$studio/componentModel/react/TheaterComponent/
 import {val} from '$shared/DataVerse2/atom'
 import Studio from '$studio/bootstrap/Studio'
 
-export const getVolatileIdOfSelectedElement = (
+export const getActiveViewportId = (studio: Studio): string | undefined => {
+  return val(studio.atom2.pointer.historicWorkspace.viewports.activeViewportId)
+}
+
+export const getVolatileIdOfActiveNode = (
   studio: Studio,
 ): string | undefined => {
+  const activeViewportId = getActiveViewportId(studio)
+  if (!activeViewportId) return undefined
+
   return val(
-    studio.atom2.pointer.ahistoricComponentModel.selectedElementVolatileId,
+    studio.atom2.pointer.ahistoricWorkspace.activeNodeVolatileIdByViewportId[
+      activeViewportId
+    ],
   )
 }
 
-export const getComponentIdOfSelectedElement = (
+export const getComponentIdOfActiveNode = (
   studio: Studio,
 ): string | undefined => {
-  const possibleVolatileIdOfSelectedElement = getVolatileIdOfSelectedElement(
-    studio,
-  )
+  const possibleVolatileIdOfSelectedElement = getVolatileIdOfActiveNode(studio)
 
   if (!possibleVolatileIdOfSelectedElement) return undefined
 

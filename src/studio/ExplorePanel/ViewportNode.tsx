@@ -1,9 +1,12 @@
 import React from 'react'
-import {VolatileId} from '$studio/integrations/react/treeMirroring/MirrorOfReactTree'
+import {
+  VolatileId,
+  GenericNode,
+} from '$studio/integrations/react/treeMirroring/MirrorOfReactTree'
 import PropsAsPointer from '$studio/handy/PropsAsPointer'
 import {val} from '$shared/DataVerse2/atom'
 import {Pointer} from '$shared/DataVerse2/pointer'
-import Node from './Node'
+import NodeTemplate, {getVolatileIdsOfChildrenNLevelsDeep} from './NodeTemplate'
 
 type Props = {
   depth: number
@@ -12,9 +15,23 @@ type Props = {
 
 const ViewportNode = (props: Props): React.ReactElement<$IntentionalAny> => (
   <PropsAsPointer props={props}>
-    {(propsP: Pointer<Props>) => {
+    {(propsP: Pointer<Props>, studio) => {
+      const nodeP = studio.elementTree.mirrorOfReactTreeAtom.pointer
+        .nodesByVolatileId[val(propsP.volatileId)] as Pointer<GenericNode>
+
       return (
-        <Node volatileId={val(propsP.volatileId)} depth={val(propsP.depth)} />
+        <NodeTemplate
+          volatileId={props.volatileId}
+          depth={props.depth}
+          key={props.volatileId}
+          isSelectable={true}
+          name={'Name of viewport'}
+          volatileIdsOfChildren={getVolatileIdsOfChildrenNLevelsDeep(
+            nodeP,
+            studio,
+            3,
+          )}
+        />
       )
     }}
   </PropsAsPointer>

@@ -24,10 +24,10 @@ export type PanelInput = {[key: string]: PanelId}
 export type PanelProps = {
   type: PanelType
   configuration: PanelConfiguration
-  placementSettings: PanelPlacementSettings
   persistentState: PanelPersistentState
   inputs: PanelInput
   outputs: PanelOutput
+  boundaries: $FixMe
 }
 
 export type PanelObject = PanelProps & {
@@ -47,11 +47,10 @@ type Viewport = {
   id: string
   dimensions: {width: number; height: number}
   position: {x: number; y: number}
-  viewportCanvasId: string
   sceneComponentId: ComponentId
 }
 
-export type WorkspaceNamespaceState = {
+export type IWorkspaceNamespaceHistoricState = {
   panels: Panels
 
   viewports: {
@@ -67,4 +66,8 @@ export type WorkspaceNamespaceState = {
       | {type: 'Viewports'}
       | {type: 'Viewport'; id: string}
   }
+}
+
+export type IWorkspaceNamespaceAHistoricState = {
+  activeNodeVolatileIdByViewportId: Record<string, string>
 }

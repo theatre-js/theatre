@@ -34,6 +34,5 @@ export interface IComponentModelNamespaceHistoricState {
 export interface IComponentModelNamespaceAhistoricState {
   coreComponentDescriptors: {[id: string]: ComponentDescriptor}
   coreModifierDescriptors: {[id: string]: IModifierDescriptor}
-  selectedElementVolatileId: undefined | VolatileId
   collapsedElementsByVolatileId: Record<string, true>
 }

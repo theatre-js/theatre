@@ -26,6 +26,8 @@ export type Pointer<O> = {
   '1': PointerInnerObj<O> &
     (O extends UnindexableTypesForPointer
       ? UnindexablePointer
+      : O extends Array<infer T> 
+      ? Array<Pointer<T>>
       : O extends {}
         ? {[K in keyof O]-?: Pointer<O[K]>}
         : UnindexablePointer)

@@ -320,7 +320,7 @@ export class StudioUI extends StudioComponent<IProps, State> {
     if (!shouldUpdate) return
 
     this.dispatch(
-      reduceStateAction(['workspace', 'panels', 'byId'], (panels: $FixMe) => {
+      reduceStateAction(['historicWorkspace', 'panels', 'byId'], (panels: $FixMe) => {
         const newBoundariesKeys: string[] = Object.keys(newBoundaries)
         const stagedChanges = _.compact(
           _.flatMap(newBoundaries, (sideValue: $FixMe, sideKey: string) => {
@@ -530,19 +530,6 @@ export class StudioUI extends StudioComponent<IProps, State> {
     this.setState(() => ({isCreatingNewPanel: true}))
   }
 
-  // createNewPanel = (type: string) => {
-  //   const panelProperties = {
-  //     type,
-  //     persistentState: TheUI.getDefaultPanelPersistentState(),
-  //     configuration: TheUI.getDefaultPanelConfig(),
-  //     placementSettings: TheUI.getDefaultPanelPlacement(type),
-  //     inputs: {},
-  //     outputs: {},
-  //   }
-  //   this.setState(() => ({isCreatingNewPanel: false}))
-  //   this.dispatch(createPanel, panelProperties)
-  // }
-
   cancelCreatingNewPanel = () => {
     this.setState(() => ({isCreatingNewPanel: false}))
   }
@@ -569,10 +556,10 @@ export class StudioUI extends StudioComponent<IProps, State> {
 
 export default connect((state: IStudioStoreState) => {
   const panelsBoundaries = _.mapValues(
-    _.get(state, ['workspace', 'panels', 'byId']),
+    _.get(state, ['historicWorkspace', 'panels', 'byId']),
     panel => panel.boundaries,
   )
-  const visiblePanels = _.get(state, ['workspace', 'panels', 'listOfVisibles'])
+  const visiblePanels = _.get(state, ['historicWorkspace', 'panels', 'listOfVisibles'])
   return {
     panelsBoundaries,
     visiblePanels,

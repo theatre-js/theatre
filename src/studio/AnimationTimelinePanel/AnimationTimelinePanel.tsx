@@ -32,9 +32,9 @@ import SelectionArea from '$studio/AnimationTimelinePanel/SelectionArea'
 import {val, pathTo} from '$shared/DataVerse2/atom'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import {
-  getComponentIdOfSelectedElement,
-  getVolatileIdOfSelectedElement,
-} from '$studio/componentModel/utils'
+  getComponentIdOfActiveNode,
+  getVolatileIdOfActiveNode,
+} from '$studio/ExplorePanel/utils'
 import {getPathToComponentDescriptor} from '$studio/componentModel/selectors'
 import {IDeclarativeComponentDescriptor} from '../componentModel/types/declarative'
 import DerivationAsReactElement from '../componentModel/react/utils/DerivationAsReactElement'
@@ -971,19 +971,19 @@ export default class ThePanel extends StudioComponent<{}, void> {
     const studio = this.studio
 
     this._d = autoDerive(() => {
-      const volatileIdOfSelectedElement = getVolatileIdOfSelectedElement(studio)
+      const volatileIdOfSelectedElement = getVolatileIdOfActiveNode(studio)
       if (!volatileIdOfSelectedElement) return emptyPanel
       const selectedElement = studio.elementTree.mirrorOfReactTree.getNativeElementByVolatileId(
         volatileIdOfSelectedElement,
       )
       if (!selectedElement) return emptyPanel
 
-      const selectedComponentId =
-        getComponentIdOfSelectedElement(studio) || 'BouncyBall'
+      const activeComponentId =
+        getComponentIdOfActiveNode(studio) || 'BouncyBall'
 
-      if (!selectedComponentId) return emptyPanel
+      if (!activeComponentId) return emptyPanel
 
-      const pathToComponent = getPathToComponentDescriptor(selectedComponentId)
+      const pathToComponent = getPathToComponentDescriptor(activeComponentId)
 
       const componentP: Pointer<IDeclarativeComponentDescriptor> = _.get(
         studio.atom2.pointer,
@@ -1002,7 +1002,7 @@ export default class ThePanel extends StudioComponent<{}, void> {
       if (!defaultTimeline) return emptyPanel
 
       const panelObjectBeingDragged = val(
-        studio.atom2.pointer.workspace.panels.panelObjectBeingDragged,
+        studio.atom2.pointer.historicWorkspace.panels.panelObjectBeingDragged,
       )
 
       const selectedNodeId: string = val(

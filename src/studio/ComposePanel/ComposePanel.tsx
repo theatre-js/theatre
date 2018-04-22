@@ -6,7 +6,7 @@ import Panel from '$src/studio/workspace/components/Panel/Panel'
 import PropsAsPointer from '../handy/PropsAsPointer'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import {val} from '$shared/DataVerse2/atom'
-import {getComponentIdOfSelectedElement} from '$studio/componentModel/utils'
+import {getComponentIdOfActiveNode} from '$studio/ExplorePanel/utils'
 import React from 'react'
 import * as typeSystem from '$studio/typeSystem'
 
@@ -27,7 +27,7 @@ export default class ComposePanelContent extends React.PureComponent<
     return (
       <PropsAsPointer props={this.props}>
         {(_: Pointer<IProps>, studio) => {
-          const possibleComponentId = getComponentIdOfSelectedElement(studio)
+          const possibleComponentId = getComponentIdOfActiveNode(studio)
 
           if (!possibleComponentId) {
             return (

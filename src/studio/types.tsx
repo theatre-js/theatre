@@ -1,5 +1,8 @@
 import {CommonNamespaceState} from '$studio/common/types'
-import {WorkspaceNamespaceState} from '$studio/workspace/types'
+import {
+  IWorkspaceNamespaceHistoricState,
+  IWorkspaceNamespaceAHistoricState,
+} from '$studio/workspace/types'
 import {
   IComponentModelNamespaceHistoricState,
   IComponentModelNamespaceAhistoricState,
@@ -12,7 +15,7 @@ import {Pointer} from '$shared/DataVerse2/pointer'
 
 export interface IStoreHistoricState {
   common: CommonNamespaceState
-  workspace: WorkspaceNamespaceState
+  historicWorkspace: IWorkspaceNamespaceHistoricState
   historicComponentModel: IComponentModelNamespaceHistoricState
 }
 
@@ -20,6 +23,7 @@ export interface IStoreAhistoricSTate {
   stateIsHydrated: boolean
   pathToProject: undefined | string
   ahistoricComponentModel: IComponentModelNamespaceAhistoricState
+  ahistoricWorkspace: IWorkspaceNamespaceAHistoricState
 }
 
 export interface IStudioStoreState

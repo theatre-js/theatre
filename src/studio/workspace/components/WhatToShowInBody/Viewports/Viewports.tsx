@@ -22,14 +22,14 @@ export default class Viewports extends ReactiveComponentWithStudio<
     
     this.dispatch(
       reduceHistoricState(
-        ['workspace', 'viewports', 'activeViewportId'],
+        ['historicWorkspace', 'viewports', 'activeViewportId'],
         () => undefined,
       ),
     )
   }
   _render() {
     // @todo use keys()
-    const viewports = val(this.studioAtom2P.workspace.viewports.byId)
+    const viewports = val(this.studioAtom2P.historicWorkspace.viewports.byId)
     const viewportEls = map(viewports, s => {
       return <Viewport key={s.id} id={s.id} />
     })

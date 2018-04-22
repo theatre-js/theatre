@@ -5,7 +5,7 @@ import css from './ExplorePanel.css'
 import StudioComponent from '$studio/handy/StudioComponent'
 import PropsAsPointer from '$studio/handy/PropsAsPointer'
 import {val} from '$shared/DataVerse2/atom'
-import ViewportNode from './ViewportNode'
+import AnyNode from './AnyNode'
 
 type Props = {
   outputs: PanelOutput
@@ -25,12 +25,12 @@ class ExplorerPanel extends StudioComponent<Props, State> {
           <PropsAsPointer props={this.props}>
             {() => {
               const whatToShowInBody = val(
-                this.studio.atom2.pointer.workspace.viewports.whatToShowInBody,
+                this.studio.atom2.pointer.historicWorkspace.viewports.whatToShowInBody,
               )
 
               if (whatToShowInBody.type === 'Viewports') {
                 const activeViewportId = val(
-                  this.studio.atom2.pointer.workspace.viewports
+                  this.studio.atom2.pointer.historicWorkspace.viewports
                     .activeViewportId,
                 )
 
@@ -41,7 +41,10 @@ class ExplorerPanel extends StudioComponent<Props, State> {
                   ],
                 )
                 if (!volatileIdOfActiveViewport) return null
-                return <ViewportNode depth={1} volatileId={volatileIdOfActiveViewport} />
+
+                return (
+                  <AnyNode depth={1} volatileId={volatileIdOfActiveViewport} />
+                )
               } else {
                 throw new Error(`Implement me`)
               }

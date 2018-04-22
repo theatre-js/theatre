@@ -11,6 +11,8 @@ import {reduceHistoricState} from '$studio/bootstrap/actions'
 
 const classes = resolveCss(css)
 
+const viewportSym = Symbol('TheaterJS/ViewportElement')
+
 interface IProps {
   /**
    * We don't expect the `id` prop to change
@@ -24,24 +26,28 @@ export default class Viewport extends ReactiveComponentWithStudio<
   IProps,
   IState
 > {
-  volatileId: string;
+  static [viewportSym] = true
+  volatileId: string
   constructor(props: IProps, context: $IntentionalAny) {
     super(props, context)
     this.volatileId = this.studio.elementTree.mirrorOfReactTree.assignEarlyVolatileIdToComponentInstance(
       this,
     )
 
-    this.studio.elementTree.registerUnexpandedViewport(props.id, this.volatileId)
+    this.studio.elementTree.registerUnexpandedViewport(
+      props.id,
+      this.volatileId,
+    )
   }
 
   componentWillUnmount() {
-    this.studio.elementTree.unregisterUnexpandedViewport(props.id, this.volatileId)
+    this.studio.elementTree.unregisterUnexpandedViewport(this.props.id)
   }
 
   _activate = () => {
     this.dispatch(
       reduceHistoricState(
-        ['workspace', 'viewports', 'activeViewportId'],
+        ['historicWorkspace', 'viewports', 'activeViewportId'],
         () => this.props.id,
       ),
     )
@@ -49,11 +55,11 @@ export default class Viewport extends ReactiveComponentWithStudio<
 
   _render() {
     const viewportDescriptor = val(
-      this.studioAtom2P.workspace.viewports.byId[this.props.id],
+      this.studioAtom2P.historicWorkspace.viewports.byId[this.props.id],
     )
 
     const activeViewportId = val(
-      this.studioAtom2P.workspace.viewports.activeViewportId,
+      this.studioAtom2P.historicWorkspace.viewports.activeViewportId,
     )
 
     const isActive = activeViewportId === this.props.id
@@ -93,3 +99,6 @@ export default class Viewport extends ReactiveComponentWithStudio<
     )
   }
 }
+
+export const isViewportElement = (n: $IntentionalAny): n is Viewport =>
+  n && n.constructor && n.constructor[viewportSym] === true

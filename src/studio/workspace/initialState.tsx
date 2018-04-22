@@ -1,6 +1,13 @@
-import {WorkspaceNamespaceState} from './types'
+import {
+  IWorkspaceNamespaceHistoricState,
+  IWorkspaceNamespaceAHistoricState,
+} from './types'
 
-const initialState: WorkspaceNamespaceState = {
+export const ahistoricWorkspaceInitialState: IWorkspaceNamespaceAHistoricState = {
+  activeNodeVolatileIdByViewportId: {},
+}
+
+export const historicWorkspaceInitialState: IWorkspaceNamespaceHistoricState = {
   panels: {
     byId: {
       timelinePanel: {
@@ -115,10 +122,8 @@ const initialState: WorkspaceNamespaceState = {
     idOfActivePanel: 'explore',
     panelObjectBeingDragged: null,
   },
-  componentIdToBeRenderedAsCurrentCanvas: 'IntroScene',
 
   viewports: {
-
     byId: {
       viewport1: {
         id: 'viewport1',
@@ -134,8 +139,6 @@ const initialState: WorkspaceNamespaceState = {
       },
     },
     whatToShowInBody: {type: 'Viewports'},
-    activeViewportId: 'viewport1'
+    activeViewportId: 'viewport1',
   },
 }
-
-export default initialState

@@ -42,7 +42,7 @@
 //     return autoDerive(() => {
 //       const studio = studioP.getValue() as Studio
 //       const whatToShowInBody = val(
-//         studio.atom2.pointer.workspace.viewports.whatToShowInBody,
+//         studio.atom2.pointer.historicWorkspace.viewports.whatToShowInBody,
 //       )
 //       if (!whatToShowInBody || whatToShowInBody.type === 'Passthrough') {
 //         return childrenP.getValue()

@@ -27,11 +27,9 @@ const TextNode = (props: Props) => (
       return (
         <NodeTemplate
           depth={depth}
-          isSelected={false}
-          isExpanded={false}
-          hasChildren={false}
-          ancestorOfSelectedNode={false}
-          canHaveChildren={false}
+          isSelectable={false}
+          volatileId={volatileId}
+          volatileIdsOfChildren={null}
           name={
             <>
               <div className={css.textLogo}>t</div>

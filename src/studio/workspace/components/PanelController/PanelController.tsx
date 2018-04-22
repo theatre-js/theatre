@@ -123,7 +123,7 @@ class PanelController extends StudioComponent<IProps, State> {
   updatePanelData(propertyToUpdate: string, newData: Object) {
     this.dispatch(
       reduceStateAction(
-        ['workspace', 'panels', 'byId', this.props.panelId, propertyToUpdate],
+        ['historicWorkspace', 'panels', 'byId', this.props.panelId, propertyToUpdate],
         data => ({...data, ...newData}),
       ),
     )
@@ -138,7 +138,6 @@ export default connect((s: IStudioStoreState, op: OwnProps) => {
   const {
     type,
     configuration,
-    placementSettings,
     persistentState,
     outputs,
     inputs,
@@ -148,7 +147,6 @@ export default connect((s: IStudioStoreState, op: OwnProps) => {
     type,
     configuration,
     persistentState,
-    ...placementSettings,
     outputs,
     inputs: getPanelInputs(s, inputs),
     isActive: getActivePanelId(s) === op.panelId,

@@ -1,5 +1,5 @@
 import {default as common} from '$studio/common/initialState'
-import {default as workspace} from '$studio/workspace/initialState'
+import {historicWorkspaceInitialState as historicWorkspace, ahistoricWorkspaceInitialState as ahistoricWorkspace} from '$studio/workspace/initialState'
 import {
   historicInitialState as historicComponentModel,
   ahistoricInitialState as ahistoricComponentModel,
@@ -8,7 +8,7 @@ import {IStoreHistoricState, IStoreAhistoricSTate} from '../types'
 
 export const initialPersistedState: IStoreHistoricState = {
   common,
-  workspace,
+  historicWorkspace,
   historicComponentModel,
 }
 
@@ -16,4 +16,5 @@ export const initialAhistoricState: IStoreAhistoricSTate = {
   stateIsHydrated: false,
   pathToProject: undefined,
   ahistoricComponentModel,
+  ahistoricWorkspace,
 }
