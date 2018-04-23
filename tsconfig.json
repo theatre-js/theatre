@@ -3,7 +3,7 @@
     "outDir": "build/dist",
     "module": "es6",
     "target": "ES2017",
-    "lib": ["es7", "dom"],
+    "lib": ["es2017", "dom"],
     "sourceMap": true,
     "allowJs": true,
     "checkJs": true,
