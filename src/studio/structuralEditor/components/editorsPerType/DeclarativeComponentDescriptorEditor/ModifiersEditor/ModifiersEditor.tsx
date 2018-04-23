@@ -39,7 +39,7 @@ type Action = {
 type LastAction = undefined | null | Action
 interface IState {
   modifiersStatus?: $FixMe
-  boxBeingDraggedIndex: null | number
+  boxBeingDraggedIndex: undefined | null | number
   lastAction: LastAction
 }
 
@@ -144,25 +144,29 @@ class ModifiersEditor extends StudioComponent<IProps, IState> {
   }
 
   boxDropHandler = (index: number) => {
-    // let {boxBeingDraggedIndex} = this.state
-    // if (boxBeingDraggedIndex == null) return
-    // let {modifierInstantiationDescriptors: {list: modifiersList}} = this.state
-    // const modifierToMove = modifiersList[boxBeingDraggedIndex]
-    // modifiersList = modifiersList
-    //   .slice(0, index)
-    //   .concat(modifierToMove)
-    //   .concat(modifiersList.slice(index))
-    // if (boxBeingDraggedIndex > index) boxBeingDraggedIndex++
-    // modifiersList = modifiersList
-    //   .slice(0, boxBeingDraggedIndex)
-    //   .concat(modifiersList.slice(boxBeingDraggedIndex + 1))
-    // this.setState(({modifierInstantiationDescriptors}) => ({
-    //   lastAction: {type: ACTION.BOX_MOVE, payload: {id: modifierToMove}},
-    //   modifierInstantiationDescriptors: {
-    //     ...modifierInstantiationDescriptors,
-    //     list: modifiersList,
-    //   },
-    // }))
+    let {boxBeingDraggedIndex} = this.state
+    if (boxBeingDraggedIndex == null) return
+    const {modifierInstantiationDescriptors: {list}} = this.props
+    const modifierId = list[boxBeingDraggedIndex]
+    this.setState(() => ({
+      lastAction: {type: ACTION.BOX_MOVE, payload: {id: modifierId}}
+    }))
+    this.dispatch(
+      reduceStateAction(
+        this.props.pathToModifierInstantiationDescriptors!.concat('list'),
+        (list) => {
+          list = list
+            .slice(0, index)
+            .concat(modifierId)
+            .concat(list.slice(index))
+          // TODO: get rid of non-null assertion operators!
+          if (boxBeingDraggedIndex! > index) boxBeingDraggedIndex = boxBeingDraggedIndex! + 1
+          return list
+            .slice(0, boxBeingDraggedIndex)
+            .concat(list.slice(boxBeingDraggedIndex! + 1))
+        },
+      ),
+    )
   }
 
   render() {
