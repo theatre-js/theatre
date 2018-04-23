@@ -1,0 +1,29 @@
+.container {
+  position: relative;
+  width: calc(100% - 2px);
+  left: 1px;
+  height: 2px;
+  z-index: 100;
+
+  &.isCommandDown:hover {
+    background: cyan;
+    cursor: cell;
+
+    &:before {
+      display: block;
+      content: ' ';
+      position: absolute -6px 0 -6px 0;
+    }
+  }
+
+  &.isABoxBeingDragged:hover {
+    background: cyan;
+    cursor: alias;
+
+    &:before {
+      display: block;
+      content: ' ';
+      position: absolute -6px 0 -6px 0;
+    }
+  }
+}

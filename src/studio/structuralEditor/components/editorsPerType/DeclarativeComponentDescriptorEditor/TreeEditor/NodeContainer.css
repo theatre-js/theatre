@@ -50,7 +50,7 @@
     width: var(--originalWidth);
     top: var(--initialTopOffset);
     left: var(--initialLeftOffset);
-    background: var(--color);    
+    background: var(--color);
     animation:
       containerDropHeightAndTop .3s ease-out forwards,
       containerDropWidthAndLeft .25s .05s ease-out forwards,
@@ -61,7 +61,7 @@
     z-index: 1000;
     overflow: hidden;
     max-height: 0;
-    background: var(--color);    
+    background: var(--color);
     animation:
       containerDropCancelHeight .3s ease-out forwards,
       containerDropBackground .7s ease-out forwards;

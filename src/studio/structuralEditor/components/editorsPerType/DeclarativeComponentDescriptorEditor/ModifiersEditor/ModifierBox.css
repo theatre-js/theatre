@@ -1,0 +1,39 @@
+.container {
+  position: relative;
+  width: calc(100% - 2px);
+  left: 1px;
+  box-sizing: border-box;
+  padding-left: 20px;
+  line-height: 30px;
+  height: 30px;
+  color: #BBB;
+  font-size: 11px;
+
+  &:not(.isABoxBeingDragged):hover {
+    background: rgba(0, 0, 0, .1);
+  }
+
+  &:not(.isMoving) {
+    &.isABoxBeingDragged:after {
+      display: block;
+      content: ' ';
+      position: absolute 0;
+    }
+  }
+
+  &.isMoving {
+    z-index: 1000;
+    background: rgba(0, 200, 200, .8);
+    color: #FFF;
+    pointer-events: none;
+
+    & ~ div.container {
+      transition: .15s ease-out;
+      transform: translateY(-32px);
+    }
+
+    & ~ div:not(.container) {
+      transform: translateY(-32px);
+    }
+  }
+}
