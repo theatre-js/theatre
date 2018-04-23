@@ -1,0 +1,18 @@
+.container {
+  composes: defaultHeaderContent from '$studio/workspace/components/Panel/Panel.css';
+}
+
+.flyoutTrigger {
+  composes: title from '$studio/workspace/components/Panel/Panel.css';
+  border: 1px solid #212b32;
+  border-bottom: none;
+  background: rgba(255, 255, 255, 0.1);
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+  
+  }
+}
+
+.title {
+  composes: title from '$studio/workspace/components/Panel/Panel.css';
+}

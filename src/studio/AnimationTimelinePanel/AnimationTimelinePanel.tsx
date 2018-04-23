@@ -34,7 +34,7 @@ import {Pointer} from '$shared/DataVerse2/pointer'
 import {
   getComponentIdOfActiveNode,
   getVolatileIdOfActiveNode,
-} from '$studio/ExplorePanel/utils'
+} from '$studio/ExploreFlyoutMenu/utils'
 import {getPathToComponentDescriptor} from '$studio/componentModel/selectors'
 import {IDeclarativeComponentDescriptor} from '../componentModel/types/declarative'
 import DerivationAsReactElement from '../componentModel/react/utils/DerivationAsReactElement'
@@ -778,7 +778,7 @@ class Content extends StudioComponent<Props, State> {
 
     return (
       <Panel
-        headerLess={true}
+        header={null}
         css={{
           container: css.panelContainer,
           innerWrapper: css.panelInnerWrapper,
@@ -960,10 +960,6 @@ class Content extends StudioComponent<Props, State> {
 export default class ThePanel extends StudioComponent<{}, void> {
   _d: AbstractDerivation<React.ReactNode>
   static panelName = 'AnimationTimeline'
-
-  static panelConfig = {
-    headerLess: true,
-  }
 
   constructor(props: {}, context: $IntentionalAny) {
     super(props, context)

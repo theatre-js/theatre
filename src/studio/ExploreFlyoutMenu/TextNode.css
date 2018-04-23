@@ -9,9 +9,12 @@
   color: #4f5d77;
   text-align: center;
   margin-left: -18px;
+  @add-mixin typography from '$studio/common/styles.css';
 }
 
 .textContent {
+  @add-mixin typography from '$studio/common/styles.css';
+  color: white;
   white-space: nowrap;
   display: inline-block;
 }

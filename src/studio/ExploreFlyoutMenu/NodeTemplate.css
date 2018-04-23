@@ -1,13 +1,43 @@
 .container {
   position: relative;
   --indent: calc(18px + var(--depth) * 16px);
+
+  &:before {
+    pointer-events: none;
+    top: 0;
+    right: auto;
+    bottom: 0;
+    left: calc(var(--indent) - 10px);
+    position: absolute;
+    width: 1px;
+    display: none;
+    content: ' ';
+    z-index: 5;
+    border-left: 1px solid #ffffff3d;
+  }
+
+  &:first-child:before {
+    top: 14px;
+  }
+
+  &:last-child:before {
+    bottom: 14px;
+  }
 }
 
 .top {
   height: 30px;
   line-height: 32px;
   position: relative;
+  min-width: 100px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  margin-left: var(--indent);
+  margin-right: 16px;
 
+  white-space: nowrap;
+  
   &:before {
     display: block;
     position: absolute 0 -1px 0 0;
@@ -52,8 +82,9 @@
 }
 
 .name {
-  position: absolute 0 0 0 calc(var(--indent) - 10px);
-  white-space: nowrap;
+  /* position: absolute 0 0 0 calc(var(--indent) - 10px); */
+  position: relative;
+  color: white;
 }
 
 .highlighter {
@@ -75,9 +106,10 @@
 }
 
 .expandButton {
-  position: absolute;
+  position: relagtive;
   width: 10px;
-  left: -10px;
+  left: 0;
+  /* left: -10px; */
   font-size: 15px;
   text-align: left;
   line-height: 25px;
@@ -100,36 +132,13 @@
   color: white;
 }
 
-.container {
-  position: relative;
-  &:before {
-    pointer-events: none;
-    top: 0;
-    right: auto;
-    bottom: 0;
-    left: calc(var(--indent) - 10px);
-    position: absolute;
-    width: 1px;
-    display: none;
-    content: ' ';
-    z-index: 5;
-    border-left: 1px solid #ffffff3d;
-  }
 
-  &:first-child:before {
-    top: 14px;
-  }
-
-  &:last-child:before {
-    bottom: 14px;
-  }
-}
 
 .bullet {
   cursor: default;
   user-select: none;
   display: none;
-  position: absolute;
+  position: relative;
   left: 0;
   top: 1px;
   bottom: 0;
@@ -143,7 +152,7 @@
   top: 12px;
   width: 6px;
   height: 6px;
-  right: 0;
+  right: 7px;
   transition: transform 0.1s ease-out;
   line-height: 10px;
 }
@@ -155,7 +164,7 @@
 }
 
 .hasChildren > .top > .bullet {
-  display: block;
+  /* display: block; */
 }
 
 .expanded > .top > .bullet > .bulletIcon {

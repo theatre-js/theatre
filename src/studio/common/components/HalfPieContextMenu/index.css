@@ -58,6 +58,7 @@
 
 .label {
   grid-column: label;
+  white-space: nowrap;
 }
 
 .key {

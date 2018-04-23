@@ -7,6 +7,7 @@ import PropsAsPointer from '$studio/handy/PropsAsPointer'
 import {val} from '$shared/DataVerse2/atom'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import NodeTemplate, {getVolatileIdsOfChildrenNLevelsDeep} from './NodeTemplate'
+import * as css  from './ViewportNode.css'
 
 type Props = {
   depth: number
@@ -25,7 +26,7 @@ const ViewportNode = (props: Props): React.ReactElement<$IntentionalAny> => (
           depth={props.depth}
           key={props.volatileId}
           isSelectable={true}
-          name={'Name of viewport'}
+          name={<div className={css.name}>Name of viewport</div>}
           volatileIdsOfChildren={getVolatileIdsOfChildrenNLevelsDeep(
             nodeP,
             studio,

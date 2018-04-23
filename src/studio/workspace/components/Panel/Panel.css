@@ -1,8 +1,12 @@
+@import "$studio/common/styles.css";
+
 .container {
-  position: absolute;
+  position: fixed;
+  z-index: 10000;
   box-sizing: border-box;
-  --panelTopBarHeight: 34px;
+  --panelHeaderHeight: 34px;
   --body-color: #263238;
+  @add-mixin typography;
 
   &:hover {
     z-index: 100;
@@ -39,85 +43,44 @@
   background: var(--body-color);
   position: absolute 0px;
   z-index: 0;
-  // overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
 .content {
-  position: absolute var(--panelTopBarHeight) 0 0 0;
+  /* position: absolute var(--panelHeaderHeight) 0 0 0; */
   z-index: 0;
-  
-}
-
-.headerLess .content {
-  top: 0;
+  justify-self: stretch;
+  flex-grow: 1;
+  flex-shrink: 0;
+  overflow-y: scroll;
 }
 
 .displayNone {
   display: none;
 }
 
-/*.settings {
-  display: inline-block;
-  font-size: 14px;
-  color: rgba(150, 150, 150, .3);
-  cursor: pointer;
+.header {
+  justify-self: flex-start;
+  flex-grow: 0;
+  flex-shring: 0;
+}
 
-  &:hover {
-    color: rgba(150, 150, 150, .8);
-    text-decoration: underline;
-  }
-}*/
-
-.topBar {
-  /* position: absolute 0 0 auto 0;
-  height: 30px;
-  display: flex;
-  justify-content: flex-start;
-  background: var(--shadows);
-  border-bottom: 1px solid var(--borders-color);
-  z-index: 1;
-  box-shadow: 0 2px 9px -6px black; */
-
-  top: 0;
-  right: 0;
-  bottom: auto;
-  left: 0;
-  position: absolute;
-  height: var(--panelTopBarHeight);
+.defaultHeaderContent {
+  height: var(--panelHeaderHeight);
   display: flex;
   justify-content: flex-start;
   border-bottom: 1px solid #202b32;
-  z-index: 1;
 }
 
 .title {
-  /* padding: 0 16px;
-  color: rgba(255, 255, 255, 0.7);
-  background: var(--body-color);
-  font-size: 10px;
-  text-transform: uppercase;
-  font-weight: 400;
-  line-height: 30px;
-  border-right: 1px solid var(--borders-color); */
-
   padding: 0 16px;
   color: rgb(137, 169, 179);
-  /* background: var(--body-color); */
   font-size: 10px;
   text-transform: uppercase;
   font-weight: 400;
-  /* line-height: 30px; */
   display: flex;
   border-right: 1px solid var(--borders-color);
   align-items: center;
-
-  /* font-family: "Avenir Next Condensed"; */
-}
-
-.headerLess {
-  & .topBar {
-    display: none;
-  }
-
-
 }

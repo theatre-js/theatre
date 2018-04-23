@@ -30,11 +30,11 @@ export const historicWorkspaceInitialState: IWorkspaceNamespaceHistoricState = {
         boundaries: {
           left: {
             type: 'sameAsBoundary',
-            path: ['explore', 'right'],
+            path: ['leftPanel', 'right'],
           },
           right: {
             type: 'sameAsBoundary',
-            path: ['composePanel-imAUUID', 'left'],
+            path: ['rightPanel', 'left'],
           },
           top: {
             type: 'distanceFromBoundary',
@@ -51,7 +51,7 @@ export const historicWorkspaceInitialState: IWorkspaceNamespaceHistoricState = {
       },
       explore: {
         id: 'explore',
-        type: 'ExplorePanel',
+        type: 'ExploreFlyoutMenu',
         persistentState: {
           isInSettings: false,
         },
@@ -84,9 +84,9 @@ export const historicWorkspaceInitialState: IWorkspaceNamespaceHistoricState = {
           },
         },
       },
-      'composePanel-imAUUID': {
-        id: 'composePanel-imAUUID',
-        type: 'ComposePanel',
+      leftPanel: {
+        id: 'leftPanel',
+        type: 'LeftPanel',
         persistentState: {
           isInSettings: false,
         },
@@ -95,13 +95,13 @@ export const historicWorkspaceInitialState: IWorkspaceNamespaceHistoricState = {
         },
         boundaries: {
           left: {
-            type: 'distanceFromBoundary',
-            path: ['composePanel-imAUUID', 'right'],
-            distance: -250,
+            type: 'sameAsBoundary',
+            path: ['window', 'left'],
           },
           right: {
-            type: 'sameAsBoundary',
-            path: ['window', 'right'],
+            type: 'distanceFromBoundary',
+            path: ['leftPanel', 'left'],
+            distance: 250,
           },
           top: {
             type: 'sameAsBoundary',
@@ -117,8 +117,37 @@ export const historicWorkspaceInitialState: IWorkspaceNamespaceHistoricState = {
         },
         outputs: {},
       },
+      rightPanel: {
+        id: 'rightPanel',
+        type: 'RightPanel',
+        persistentState: {
+          isInSettings: false,
+        },
+        configuration: {},
+        boundaries: {
+          left: {
+            type: 'distanceFromBoundary',
+            path: ['rightPanel', 'right'],
+            distance: -250,
+          },
+          right: {
+            type: 'sameAsBoundary',
+            path: ['window', 'right'],
+          },
+          top: {
+            type: 'sameAsBoundary',
+            path: ['window', 'top'],
+          },
+          bottom: {
+            type: 'sameAsBoundary',
+            path: ['window', 'bottom'],
+          },
+        },
+        inputs: {},
+        outputs: {},
+      },
     },
-    listOfVisibles: ['timelinePanel', 'explore', 'composePanel-imAUUID'],
+    listOfVisibles: ['timelinePanel', /*'explore',*/ 'leftPanel', 'rightPanel'],
     idOfActivePanel: 'explore',
     panelObjectBeingDragged: null,
   },

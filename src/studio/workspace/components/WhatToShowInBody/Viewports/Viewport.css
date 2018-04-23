@@ -23,7 +23,7 @@
   position: absolute;
   top: -20px;
   left: 0;
-  composes: typography from '$studio/workspace/components/StudioUI/StudioUI.css';
+  @add-mixin typography from '$studio/common/styles.css';
 
   color: #9c9c9c;
   font-size: 10px !important;

@@ -8,15 +8,15 @@
   padding: 10px;
 }
 
-.typography {
+.typographyBlah {
   font: 12px -apple-system, BlinkMacSystemFont, Segoe WPC, Segoe UI, HelveticaNeue-Light, Ubuntu, Droid Sans, sans-serif;
 }
 
-.container {
+/* .container {
   position: fixed;
   top: 0;
   left: 0;
-  composes: typography;
+  composes: typography; */
 
   /* font-family: Roboto; */
   /* font-family: "Frutiger Neue 1450 Pro"; */
@@ -31,14 +31,14 @@
     Helvetica, Arial, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; */
   /* font-size: 12px; */
-  color: white;
+  /* color: white; */
 
-  display: none;
+  /* display: none;
 
   &.uiVisible {
     display: block;
   }
-}
+} */
 
 :global(.globalMoveCursor) {
   & * {

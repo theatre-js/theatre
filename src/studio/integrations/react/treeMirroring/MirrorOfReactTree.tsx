@@ -315,7 +315,8 @@ export default class MirrorOfReactTree {
     } else if (
       nodeType === 'Native' ||
       nodeType === 'Composite' ||
-      nodeType === 'Wrapper'
+      nodeType === 'Wrapper' ||
+      nodeType === 'Portal'
     ) {
       this._reactToGenericOrWrapperNodeMount(
         data,

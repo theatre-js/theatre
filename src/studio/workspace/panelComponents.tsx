@@ -1,5 +1,5 @@
-import ExplorePanel from '$studio/ExplorePanel/ExplorePanel'
-import ComposePanel from '$studio/ComposePanel/ComposePanel'
+import LeftPanel from '$studio/LeftPanel/LeftPanel'
+import RightPanel from '$studio/RightPanel/RightPanel'
 import AnimationTimelinePanel from '$studio/AnimationTimelinePanel/AnimationTimelinePanel'
 
-export {ExplorePanel, ComposePanel, AnimationTimelinePanel}
+export {LeftPanel, AnimationTimelinePanel, RightPanel}

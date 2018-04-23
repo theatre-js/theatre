@@ -5,7 +5,7 @@ import * as webpack from 'webpack'
 import * as CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin'
 import * as WatchMissingNodeModulesPlugin from 'react-dev-utils/WatchMissingNodeModulesPlugin'
 import * as TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
-import {mapValues} from 'lodash'
+import {mapValues, startsWith} from 'lodash'
 import * as ErrorOverlayPlugin from 'error-overlay-webpack-plugin'
 
 export const context = path.resolve(__dirname, '..')
@@ -171,7 +171,17 @@ export const makeConfigParts = (options: Options) => {
         {
           test: /\.css$/,
           use: [
-            require.resolve(`style-loader`),
+            {
+              loader: require.resolve(`style-loader`),
+              options: {
+                convertToAbsoluteUrls: true,
+                ...(!isDev
+                  ? {}
+                  : {
+                      hmr: true,
+                    }),
+              },
+            },
             {
               loader: require.resolve('typings-for-css-modules-loader'),
               options: {
@@ -182,7 +192,42 @@ export const makeConfigParts = (options: Options) => {
                 importLoaders: 1,
               },
             },
-            require.resolve('postcss-loader'),
+            {
+              loader: require.resolve('postcss-loader'),
+              options: {
+                plugins: () => {
+                  return [
+                    require('postcss-import')({
+                      // All these shenanigans to get postcss to see webpack aliases
+                      resolve(requestedPath: string): string | void {
+                        for (const aliasFrom in aliases) {
+                          if (startsWith(requestedPath, aliasFrom)) {
+                            const pathWithoutAlias = requestedPath
+                              .substr(aliasFrom.length, requestedPath.length)
+                              .replace(
+                                // remove the leading slash (eg /common.css => common.css)
+                                /^\//,
+                                '',
+                              )
+
+                            const resolvedPath = path.resolve(
+                              aliases[aliasFrom],
+                              pathWithoutAlias,
+                            )
+                            return resolvedPath
+                          }
+                        }
+                        return requestedPath
+                      },
+                    }),
+                    require('postcss-mixins')(),
+                    require('postcss-hexrgba')(),
+                    require('postcss-nesting')(),
+                    require('postcss-short')(),
+                  ]
+                },
+              },
+            },
           ],
           exclude: /node_modules/,
         },

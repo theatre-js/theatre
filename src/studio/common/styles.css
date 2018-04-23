@@ -1,0 +1,3 @@
+@define-mixin typography {
+  font: 12px -apple-system, BlinkMacSystemFont, Segoe WPC, Segoe UI, HelveticaNeue-Light, Ubuntu, Droid Sans, sans-serif;
+}

@@ -1,5 +1,7 @@
 {
   "plugins": {
+    "postcss-import": {},
+    "postcss-mixins": {},
     "postcss-hexrgba": {},
     "postcss-nesting": {},
     "postcss-short": {}

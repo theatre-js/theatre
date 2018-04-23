@@ -1,25 +1,24 @@
-import StudioComponent from '$studio/handy/StudioComponent'
-import React from 'react'
-import * as css from './Panel.css'
-import {Subscriber} from 'react-broadcast'
-import {
-  PanelControlChannel,
-  IPanelControlChannelData,
-} from '$src/studio/workspace/components/PanelController/PanelController'
+import resolveCss from '$shared/utils/resolveCss'
 import EditOverlay from '$src/studio/workspace/components/Panel/EditOverlay'
+import {
+  IPanelControlChannelData,
+  PanelControlChannel,
+} from '$src/studio/workspace/components/PanelController/PanelController'
 import {
   EXACT_VALUE,
   SAME_AS_BOUNDARY,
 } from '$src/studio/workspace/components/StudioUI/StudioUI'
-import _ from 'lodash'
-import {Broadcast} from 'react-broadcast'
+import StudioComponent from '$studio/handy/StudioComponent'
 import {MODE_OPTION} from '$studio/workspace/components/StudioUI/StudioUI'
-import resolveCss from '$shared/utils/resolveCss'
+import _ from 'lodash'
+import React from 'react'
+import {Broadcast, Subscriber} from 'react-broadcast'
+import * as css from './Panel.css'
 
 interface IProps {
   css?: any
   label?: string
-  headerLess?: boolean
+  header?: 'auto' | React.ReactNode
 }
 
 interface IState {
@@ -328,7 +327,7 @@ export default class Panel extends StudioComponent<IProps, IState> {
   render() {
     const {props, state} = this
     const classes = resolveCss(css, props.css)
-    const {children, label, headerLess} = props
+    const {children, label, header} = props
     const {
       panelMove,
       boundariesMoves,
@@ -376,16 +375,18 @@ export default class Panel extends StudioComponent<IProps, IState> {
 
           return (
             <div
-              {...classes(
-                'container',
-                isActive && 'isActive',
-                headerLess && 'headerLess',
-              )}
+              {...classes('container', isActive && 'isActive')}
               style={style}
             >
               <div {...classes('innerWrapper')}>
-                <div className={css.topBar}>
-                  <div className={css.title}>{label || defaultLabel}</div>
+                <div className={css.header}>
+                  {header === 'auto' || header === undefined ? (
+                    <div className={css.defaultHeaderContent}>
+                      <div className={css.title}>{label || defaultLabel}</div>
+                    </div>
+                  ) : (
+                    header
+                  )}
                 </div>
                 <Broadcast
                   channel={PanelWidthChannel}
@@ -407,7 +408,7 @@ export default class Panel extends StudioComponent<IProps, IState> {
               </div>
               {activeMode === MODE_OPTION && (
                 <EditOverlay
-                  isPanelHeaderLess={headerLess}
+                  isPanelHeaderLess={true}
                   onPanelDrag={(dx: number, dy: number) =>
                     this.movePanel(boundaries, gridOfBoundaries, dx, dy)
                   }
