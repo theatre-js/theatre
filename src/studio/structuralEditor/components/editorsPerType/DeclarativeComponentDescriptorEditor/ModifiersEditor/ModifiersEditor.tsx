@@ -17,12 +17,16 @@ import generateUniqueId from 'uuid/v4'
 import ModifierSensor from '$studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/ModifiersEditor/ModifierSensor'
 import ModifierBox from '$studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/ModifiersEditor/ModifierBox'
 import {STATUS_BY_ACTION, ACTION} from './constants'
+import {reduceStateAction} from '$shared/utils/redux/commonActions'
 interface IOwnProps {
   pathToComponentDescriptor: string[]
 }
 
 interface IProps extends IOwnProps {
   componentDescriptor: IDeclarativeComponentDescriptor
+  selectedNodeId?: string
+  modifierInstantiationDescriptors?: $FixMe
+  pathToModifierInstantiationDescriptors?: string[]
 }
 
 type ActionPayload = {
@@ -33,9 +37,8 @@ type Action = {
   payload: ActionPayload
 }
 type LastAction = undefined | null | Action
-
 interface IState {
-  modifierInstantiationDescriptors: $FixMe
+  modifiersStatus?: $FixMe
   boxBeingDraggedIndex: null | number
   lastAction: LastAction
 }
@@ -44,125 +47,92 @@ const modifierTypes = ['translate', 'rotate', 'scale', 'skew']
 const modifierDirs = ['X', 'Y', 'Z']
 
 class ModifiersEditor extends StudioComponent<IProps, IState> {
-  state = {
-    modifierInstantiationDescriptors: null,
-    boxBeingDraggedIndex: null,
-    lastAction: null,
-  }
-
-  componentDidMount() {
-    this.setModifiers(this.props.componentDescriptor)
+  constructor(props: IProps, context: $IntentionalAny) {
+    super(props, context)
+    const {modifierInstantiationDescriptors} = props
+    this.state = {
+      boxBeingDraggedIndex: null,
+      lastAction: null,
+      ...(modifierInstantiationDescriptors != null
+        ? {
+            modifiersStatus: this.getModifiersStatus(
+              modifierInstantiationDescriptors,
+            ),
+          }
+        : {}),
+    }
   }
 
   componentWillReceiveProps(nextProps: IProps) {
-    this.setModifiers(nextProps.componentDescriptor)
+    const {modifierInstantiationDescriptors} = nextProps
+    if (modifierInstantiationDescriptors != null) {
+      this.setModifiersStatus(modifierInstantiationDescriptors)
+    }
   }
 
-  private setModifiers = _.memoize((
-    componentDescriptor: IDeclarativeComponentDescriptor,
-  ) => {
-    console.log('setting modifiers')
-    let modifierInstantiationDescriptors: null | $FixMe = null
-    const selectedNodeId = getSelectedNodeId(componentDescriptor)
-    const possibleHiddenValue =
-      selectedNodeId &&
-      componentDescriptor.localHiddenValuesById[selectedNodeId]
+  private setModifiersStatus(modifierInstantiationDescriptors: $FixMe) {
+    this.setState(({lastAction}) => ({
+      lastAction: null,
+      modifiersStatus: this.getModifiersStatus(
+        modifierInstantiationDescriptors,
+        lastAction,
+      ),
+    }))
+  }
 
-    if (
-      possibleHiddenValue &&
-      // @ts-ignore
-      possibleHiddenValue.__descriptorType &&
-      // @ts-ignore
-      possibleHiddenValue.__descriptorType ===
-        'ComponentInstantiationValueDescriptor'
-    ) {
-      const instantiationValueDescriptor: IComponentInstantiationValueDescriptor = possibleHiddenValue as $IntentionalAny
-      // const pathToLocalHiddenValueId = [
-      //   ...pathToComponentDescriptor,
-      //   'localHiddenValuesById',
-      //   selectedNodeId,
-      // ]
-
-      // const pathToModifierInstantiationDescriptors = [
-      //   ...pathToLocalHiddenValueId,
-      //   'modifierInstantiationDescriptors',
-      // ]
-      // modifierInstantiationDescriptors =
-      // instantiationValueDescriptor.modifierInstantiationDescriptors
-      modifierInstantiationDescriptors = {
-        list:
-          instantiationValueDescriptor.modifierInstantiationDescriptors.list,
-        byId: Object.entries(
-          instantiationValueDescriptor.modifierInstantiationDescriptors.byId,
-        ).reduce((reducer, [key, value]: [string, Object]) => {
+  private getModifiersStatus = _.memoize(
+    (modifierInstantiationDescriptors: $FixMe, lastAction: LastAction = null) => {
+      return Object.keys(modifierInstantiationDescriptors.byId).reduce(
+        (reducer, key: string) => {
           return (reducer = {
             ...reducer,
-            [key]: {
-              ...value,
-              ...this.getComponentStatusAndActionPayload(key),
-            },
+            [key]: this.getComponentStatusAndActionPayload(key, lastAction),
           })
-        }, {}),
-      }
-    }
-
-    // if (
-    //   // @ts-ignore
-    //   possibleHiddenValue.__descriptorType ===
-    //   'ComponentInstantiationValueDescriptor'
-    // ) {
-
-    // if (
-    //   rootComponentDescriptor.whatToRender.__descriptorType ===
-    //   DESCRIPTOR_TYPE.REF_TO_LOCAL_HIDDEN_VALUE
-    // ) {
-    //   const {localHiddenValuesById, whatToRender} = rootComponentDescriptor
-    //   nodes = this._getComponentData(
-    //     localHiddenValuesById[whatToRender.which],
-    //     localHiddenValuesById,
-    //   )
-    // }
-    // this._unsetLastAction()
-    this.setState(() => ({
-      lastAction: null,
-      modifierInstantiationDescriptors,
-    }))
-  })
+        },
+        {},
+      )
+    },
+  )
 
   private getComponentStatusAndActionPayload(
     id: string,
-  ): {status: string; actionPayload: undefined | ActionPayload} {
+    lastAction: LastAction,
+  ): {status: string; actionPayload: ActionPayload} {
     let status: string = STATUS_BY_ACTION.DEFAULT,
-      actionPayload
-
-    const {lastAction} = this.state
-    if (lastAction != null) {
-      const action = lastAction as Action
-      const {id, ...payload} = action.payload
-      status = STATUS_BY_ACTION[action.type]
+      actionPayload = {}
+    if (lastAction != null && lastAction.payload.id === id) {
+      const {id, ...payload} = lastAction.payload
+      status = STATUS_BY_ACTION[lastAction.type]
       actionPayload = payload
     }
     return {status, actionPayload}
   }
 
   createBox = (index: number) => {
-    console.log(this.props)
-    this.setState(({modifierInstantiationDescriptors: {byId, list}}) => {
-      const uniqueId = generateUniqueId()
-      const newModifier = {
-        modifierId: [
-          modifierTypes[Math.floor(Math.random() * modifierTypes.length)],
-          modifierDirs[Math.floor(Math.random() * modifierDirs.length)],
-        ].join(''),
-      }
-      return {
-        lastAction: {type: ACTION.BOX_ADD, payload: {id: uniqueId}},
-        modifierInstantiationDescriptors: {
-          list: list.slice(0, index).concat(uniqueId, list.slice(index)),
-          byId: {...byId, [uniqueId]: newModifier},
+    const uniqueId = generateUniqueId()
+    this.setState(() => ({
+      lastAction: {type: ACTION.BOX_ADD, payload: {id: uniqueId}}
+    }))
+    this.dispatch(
+      reduceStateAction(
+        this.props.pathToModifierInstantiationDescriptors!,
+        ({byId, list}) => {
+          const newModifier = {
+            __descriptorType: 'ModifierInstantiationValueDescriptor',
+            enabled: true,
+            props: {},
+            modifierId: [
+              modifierTypes[Math.floor(Math.random() * modifierTypes.length)],
+              modifierDirs[Math.floor(Math.random() * modifierDirs.length)],
+            ].join(''),
+          }
+          return {
+            list: list.slice(0, index).concat(uniqueId, list.slice(index)),
+            byId: {...byId, [uniqueId]: newModifier},
+          }
         },
-      }
-    })
+      ),
+    )
   }
 
   boxDragStartHandler = (index: number) => {
@@ -174,36 +144,37 @@ class ModifiersEditor extends StudioComponent<IProps, IState> {
   }
 
   boxDropHandler = (index: number) => {
-    let {boxBeingDraggedIndex} = this.state
-    if (boxBeingDraggedIndex == null) return
-    let {modifierInstantiationDescriptors: {list: modifiersList}} = this.state
-    const modifierToMove = modifiersList[boxBeingDraggedIndex]
-    modifiersList = modifiersList
-      .slice(0, index)
-      .concat(modifierToMove)
-      .concat(modifiersList.slice(index))
-    if (boxBeingDraggedIndex > index) boxBeingDraggedIndex++
-    modifiersList = modifiersList
-      .slice(0, boxBeingDraggedIndex)
-      .concat(modifiersList.slice(boxBeingDraggedIndex + 1))
-    this.setState(({modifierInstantiationDescriptors}) => ({
-      lastAction: {type: ACTION.BOX_MOVE, payload: {id: modifierToMove}},
-      modifierInstantiationDescriptors: {
-        ...modifierInstantiationDescriptors,
-        list: modifiersList,
-      },
-    }))
+    // let {boxBeingDraggedIndex} = this.state
+    // if (boxBeingDraggedIndex == null) return
+    // let {modifierInstantiationDescriptors: {list: modifiersList}} = this.state
+    // const modifierToMove = modifiersList[boxBeingDraggedIndex]
+    // modifiersList = modifiersList
+    //   .slice(0, index)
+    //   .concat(modifierToMove)
+    //   .concat(modifiersList.slice(index))
+    // if (boxBeingDraggedIndex > index) boxBeingDraggedIndex++
+    // modifiersList = modifiersList
+    //   .slice(0, boxBeingDraggedIndex)
+    //   .concat(modifiersList.slice(boxBeingDraggedIndex + 1))
+    // this.setState(({modifierInstantiationDescriptors}) => ({
+    //   lastAction: {type: ACTION.BOX_MOVE, payload: {id: modifierToMove}},
+    //   modifierInstantiationDescriptors: {
+    //     ...modifierInstantiationDescriptors,
+    //     list: modifiersList,
+    //   },
+    // }))
   }
 
   render() {
-    const {boxBeingDraggedIndex, modifierInstantiationDescriptors} = this.state
+    const {selectedNodeId, modifierInstantiationDescriptors} = this.props
+    const {boxBeingDraggedIndex, modifiersStatus} = this.state
     const isABoxBeingDragged = boxBeingDraggedIndex != null
     const modifiersList =
       modifierInstantiationDescriptors != null
         ? modifierInstantiationDescriptors.list
         : []
-    // console.log(modifierInstantiationDescriptors)
-    return (
+
+    return selectedNodeId != null ? (
       <Subscriber channel={PanelActiveModeChannel}>
         {({activeMode}: {activeMode: string}) => {
           return (
@@ -219,6 +190,7 @@ class ModifiersEditor extends StudioComponent<IProps, IState> {
                   ].modifierId
                     .split('/')
                     .slice(-1)
+                    .concat('-', modifiersStatus[modifierId].status)
 
                   return [
                     <ModifierSensor
@@ -252,7 +224,7 @@ class ModifiersEditor extends StudioComponent<IProps, IState> {
           )
         }}
       </Subscriber>
-    )
+    ) : null
   }
 
   // return null
@@ -278,7 +250,47 @@ class ModifiersEditor extends StudioComponent<IProps, IState> {
 }
 
 export default connect((s: IStudioStoreState, op: IOwnProps) => {
-  return {
-    componentDescriptor: _.get(s, op.pathToComponentDescriptor),
+  const componentDescriptor = _.get(s, op.pathToComponentDescriptor)
+  const selectedNodeId = getSelectedNodeId(componentDescriptor)
+  const possibleHiddenValue =
+    selectedNodeId && componentDescriptor.localHiddenValuesById[selectedNodeId]
+
+  if (
+    !selectedNodeId ||
+    !possibleHiddenValue ||
+    typeof possibleHiddenValue !== 'object' ||
+    Array.isArray(possibleHiddenValue)
+  ) {
+    return {
+      componentDescriptor,
+    }
+  }
+
+  let pathToModifierInstantiationDescriptors, modifierInstantiationDescriptors
+  if (
+    // @ts-ignore
+    possibleHiddenValue.__descriptorType ===
+    'ComponentInstantiationValueDescriptor'
+  ) {
+    const instantiationValueDescriptor: IComponentInstantiationValueDescriptor = possibleHiddenValue as $IntentionalAny
+    const pathToLocalHiddenValueId = [
+      ...op.pathToComponentDescriptor,
+      'localHiddenValuesById',
+      selectedNodeId,
+    ]
+
+    pathToModifierInstantiationDescriptors = [
+      ...pathToLocalHiddenValueId,
+      'modifierInstantiationDescriptors',
+    ]
+    modifierInstantiationDescriptors =
+      instantiationValueDescriptor.modifierInstantiationDescriptors
+
+    return {
+      selectedNodeId,
+      componentDescriptor,
+      modifierInstantiationDescriptors,
+      pathToModifierInstantiationDescriptors,
+    }
   }
 })(ModifiersEditor)
