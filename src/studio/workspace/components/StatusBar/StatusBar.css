@@ -1,9 +1,13 @@
+@import '$studio/common/styles.css';
+
 .container {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
   height: 26px;
+  /* background: #282828;
+  color: rgba(#3D666B, 0); */
   background: #1E2A30;
   color: #3D666B;
   display: flex;
@@ -48,5 +52,5 @@
   line-height: 28px;
   font-size: 11px;
   font-weight: bold;
-  @add-mixin typography from '$studio/common/styles.css';
+  @include typography;
 }

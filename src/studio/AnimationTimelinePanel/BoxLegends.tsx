@@ -1,4 +1,4 @@
-import css from './BoxLegends.css'
+import * as css from './BoxLegends.css'
 import _ from 'lodash'
 import cx from 'classnames'
 import HalfPieContextMenu from '$studio/common/components/HalfPieContextMenu'

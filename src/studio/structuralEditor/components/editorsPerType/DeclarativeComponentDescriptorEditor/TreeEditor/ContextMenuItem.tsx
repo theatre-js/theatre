@@ -1,5 +1,5 @@
 import React from 'react'
-import css from './ContextMenuItem.css'
+import * as css from './ContextMenuItem.css'
 
 type Props = {
   children: React.Node

@@ -1,4 +1,4 @@
-import css from './StatusBar.css'
+import * as css from './StatusBar.css'
 import React from 'react'
 import cx from 'classnames'
 import GoRepoForked from 'react-icons/lib/go/repo-forked'

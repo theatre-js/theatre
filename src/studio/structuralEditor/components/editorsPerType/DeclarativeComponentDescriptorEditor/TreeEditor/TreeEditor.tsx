@@ -7,7 +7,7 @@ import {getComponentDescriptor} from '$src/studio/componentModel/selectors'
 import PanelSection from '$src/studio/structuralEditor/components/reusables/PanelSection'
 import NodeContainer from '$src/studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor/NodeContainer'
 import MovableNode from '$src/studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor/MovableNode'
-import css from '$src/studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor/index.css'
+import * as css from '$src/studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor/index.css'
 import generateUniqueId from 'uuid/v4'
 import * as _ from 'lodash'
 import {

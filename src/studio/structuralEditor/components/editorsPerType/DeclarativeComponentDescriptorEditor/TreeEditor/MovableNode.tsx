@@ -1,5 +1,5 @@
 import React from 'react'
-import css from './MovableNode.css'
+import * as css from './MovableNode.css'
 import PresentationOnlyNode from './PresentationOnlyNode'
 
 type Props = {

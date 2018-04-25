@@ -78,10 +78,5 @@ export default class ComposePanelContent extends React.PureComponent<
 }
 
 const Wrapper = ({children}: {children: React.ReactNode}) => {
-  return (
-    <Panel header={null}>
-      <LeftPanelHeader />
-      {children}
-    </Panel>
-  )
+  return <Panel header={<LeftPanelHeader />}>{children}</Panel>
 }

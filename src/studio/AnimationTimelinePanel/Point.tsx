@@ -1,5 +1,5 @@
 import React from 'react'
-import css from './Point.css'
+import * as css from './Point.css'
 import Connector from './Connector'
 import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
 import SingleInputForm from '$lf/common/components/SingleInputForm'

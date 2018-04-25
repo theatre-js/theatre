@@ -1,5 +1,5 @@
 import React from 'react'
-import css from './ExploreFlyoutMenu.css'
+import * as css from './ExploreFlyoutMenu.css'
 import StudioComponent from '$studio/handy/StudioComponent'
 import PropsAsPointer from '$studio/handy/PropsAsPointer'
 import {val} from '$shared/DataVerse2/atom'

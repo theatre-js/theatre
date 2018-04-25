@@ -1,12 +1,17 @@
 .container {
   /* margin-top: 16px; */
   margin-bottom: 16px;
+  position: relative;
   &.withTopMargin {
     margin-top: 8px;
   }
 
   &.withoutBottomMargin {
     margin-bottom: 0;
+  }
+
+  &:first-child {
+    margin-top: 16px;
   }
 }
 
@@ -20,20 +25,35 @@
 }
 
 .label {
-  background: #242424;
+  /* background: #242424; */
   padding: 0 16px;
-  height: 32px;
-  margin-bottom: 4px;
-  display: none;
+  /* height: 32px; */
+  margin-bottom: 12px;
 }
 
 .labelText {
-  color: #e5e5e5;
+  /* color: #e5e5e5;
   font-weight: 400;
-  line-height: 32px;
+  line-height: 32px; */
+
+  text-transform: uppercase;
+  font-weight: 600;
+  /*font-family: 'Fira Sans';*/
+  font-size: 10px;
+  /* color: rgba(#FFF, 0.64); */
+  color: #7da5af;
 
 }
 
 .hasLabel {
 
+}
+
+.separator {
+  height: 1px;
+  width: calc(100% - 24px);
+  margin-left: auto;
+  margin-right: auto;
+  background: #1e2529;
+  margin-top: 16px;
 }

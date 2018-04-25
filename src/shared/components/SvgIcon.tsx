@@ -1,16 +1,16 @@
 import React from 'react'
-import css from './SvgIcon.css'
+import * as css from './SvgIcon.css'
 import {resolveCss} from '$shared/utils'
 
 type Props = {
-  css?: any
+  css?: Partial<typeof css>
   src: string
   sizing?: 'em' | 'fill' | 'none'
 }
 
 const SvgIcon = (props: Props) => {
   const {src, css: propsCss, sizing, ...rest} = props
-  const classes = resolveCss(css, propsCss)
+  const classes = resolveCss(css, propsCss as $IntentionalAny)
 
   return (
     <div

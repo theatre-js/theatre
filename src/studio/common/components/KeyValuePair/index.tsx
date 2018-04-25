@@ -1,5 +1,5 @@
 import React from 'react'
-import css from './index.css'
+import * as css from './index.css'
 
 type Props = {
   k: React.ReactNode

@@ -1,5 +1,5 @@
 import React from 'react'
-import css from './ComponentNameEditor.css'
+import * as css from './ComponentNameEditor.css'
 import ExpressionlessStringEditor from '$studio/structuralEditor/components/reusables/ExpressionlessStringEditor'
 import PanelSection from '$studio/structuralEditor/components/reusables/PanelSection'
 
@@ -21,9 +21,8 @@ class ComponentNameEditor extends React.PureComponent<Props, State> {
   render() {
     return (
       <div className={css.container}>
-        <PanelSection withTopMargin={true} withHorizontalMargin={true}>
-          <ExpressionlessStringEditor
-            label="Component Name"
+        <PanelSection withTopMargin={true} withHorizontalMargin={true} label="Component Name">
+          <ExpressionlessStringEditor css={{container: css.stringEditor}}
             path={[...this.props.pathToComponentDescriptor, 'displayName']}
           />
         </PanelSection>

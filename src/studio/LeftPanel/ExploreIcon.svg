@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="19" height="10" version="1.1" viewBox="0 0 19 10">
+    <g id="Canvas" fill="none">
+        <g id="Explore Icon">
+            <g id="Rectangle">
+                <g id="Rectangle_2">
+                    <rect width="10" height="2" fill="currentColor" fill-opacity="0.76" transform="translate(9 8)"/>
+                </g>
+            </g>
+            <g id="Rectangle_3">
+                <g id="Rectangle_4">
+                    <rect width="10" height="2" fill="currentColor" fill-opacity="0.76" transform="translate(6 4)"/>
+                </g>
+                <g id="Vector">
+                    <path stroke="currentColor" stroke-opacity="0.68" stroke-width="0.5" d="M 0 0L 0 4L 3 4" transform="translate(4 5)"/>
+                </g>
+            </g>
+            <g id="Rectangle_5">
+                <g id="Rectangle_6">
+                    <rect width="10" height="2" fill="currentColor" fill-opacity="0.76" transform="translate(3 0)"/>
+                </g>
+                <g id="Vector_2">
+                    <path stroke="currentColor" stroke-opacity="0.68" stroke-width="0.5" d="M 0 0L 0 4L 3 4" transform="translate(1 1)"/>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

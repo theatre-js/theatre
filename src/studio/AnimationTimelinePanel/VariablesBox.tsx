@@ -1,4 +1,4 @@
-import css from './VariablesBox.css'
+import * as css from './VariablesBox.css'
 import DraggableArea from '$src/studio/common/components/DraggableArea/DraggableArea'
 import {MODE_SHIFT} from '$src/studio/workspace/components/StudioUI/StudioUI'
 import BoxLegends from '$src/studio/AnimationTimelinePanel/BoxLegends'

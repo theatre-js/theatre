@@ -1,5 +1,5 @@
 import React from 'react'
-import css from './EditOverlay.css'
+import * as css from './EditOverlay.css'
 import cx from 'classnames'
 import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
 

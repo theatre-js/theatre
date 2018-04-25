@@ -6,3 +6,4 @@ export const withHorizontalMargin: string;
 export const label: string;
 export const labelText: string;
 export const hasLabel: string;
+export const separator: string;

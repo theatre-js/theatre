@@ -1,5 +1,5 @@
 import React from 'react'
-import css from './ComponentNode.css'
+import * as css from './ComponentNode.css'
 import {STATUS} from './constants'
 import cx from 'classnames'
 import TypeSelector from './TypeSelector'

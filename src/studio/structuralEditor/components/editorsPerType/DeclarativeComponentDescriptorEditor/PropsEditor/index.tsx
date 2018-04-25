@@ -1,4 +1,4 @@
-import css from './index.css'
+import * as css from './index.css'
 import PanelSection from '$studio/structuralEditor/components/reusables/PanelSection'
 import React from 'react'
 

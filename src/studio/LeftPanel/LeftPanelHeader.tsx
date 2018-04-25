@@ -1,6 +1,9 @@
 import React from 'react'
 import * as css from './LeftPanelHeader.css'
 import ExploreFlyoutMenu from '$studio/ExploreFlyoutMenu/ExploreFlyoutMenu'
+import PanelTab from '$studio/workspace/components/Panel/PanelTab'
+import SvgIcon from '$shared/components/SvgIcon'
+import ExploreIcon from 'svg-inline-loader!./ExploreIcon.svg'
 
 type IProps = {}
 
@@ -20,10 +23,10 @@ export default class LeftPanelHeader extends React.PureComponent<
   render() {
     return (
       <div className={css.container}>
-        <div className={css.flyoutTrigger} onClick={this._toggleExplore}>
-          Explore
-        </div>
-        <div className={css.title}>Left Panel</div>
+        <PanelTab onClick={this._toggleExplore} css={{container: css.exploreTab}} isCurrent={false}>
+          <SvgIcon src={ExploreIcon} css={{container: css.exploreIcon}} />
+        </PanelTab>
+        <PanelTab isCurrent={true}>Compose</PanelTab>
         <ExploreFlyoutMenu isOpen={this.state.exploreIsOpen} />
       </div>
     )

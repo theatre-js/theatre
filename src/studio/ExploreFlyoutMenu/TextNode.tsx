@@ -1,5 +1,5 @@
 import React from 'react'
-import css from './TextNode.css'
+import * as css from './TextNode.css'
 import {
   VolatileId,
   TextNode as MTextNode,

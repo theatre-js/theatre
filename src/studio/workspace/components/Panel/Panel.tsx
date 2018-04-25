@@ -14,6 +14,7 @@ import _ from 'lodash'
 import React from 'react'
 import {Broadcast, Subscriber} from 'react-broadcast'
 import * as css from './Panel.css'
+import PanelTab from './PanelTab'
 
 interface IProps {
   css?: any
@@ -378,34 +379,34 @@ export default class Panel extends StudioComponent<IProps, IState> {
               {...classes('container', isActive && 'isActive')}
               style={style}
             >
-              <div {...classes('innerWrapper')}>
-                <div className={css.header}>
-                  {header === 'auto' || header === undefined ? (
-                    <div className={css.defaultHeaderContent}>
-                      <div className={css.title}>{label || defaultLabel}</div>
-                    </div>
-                  ) : (
-                    header
-                  )}
-                </div>
+              <div className={css.header}>
+                {header === 'auto' || header === undefined ? (
+                  <div className={css.defaultHeaderContent}>
+                    <PanelTab isCurrent={true}>
+                      {label || defaultLabel}
+                    </PanelTab>
+                  </div>
+                ) : (
+                  header
+                )}
+              </div>
+              <Broadcast
+                channel={PanelWidthChannel}
+                value={{width}}
+                compareValues={(prevValue: $FixMe, nextValue: $FixMe) =>
+                  _.isEqual(prevValue, nextValue)
+                }
+              >
                 <Broadcast
-                  channel={PanelWidthChannel}
-                  value={{width}}
+                  channel={PanelActiveModeChannel}
                   compareValues={(prevValue: $FixMe, nextValue: $FixMe) =>
                     _.isEqual(prevValue, nextValue)
                   }
+                  value={{activeMode}}
                 >
-                  <Broadcast
-                    channel={PanelActiveModeChannel}
-                    compareValues={(prevValue: $FixMe, nextValue: $FixMe) =>
-                      _.isEqual(prevValue, nextValue)
-                    }
-                    value={{activeMode}}
-                  >
-                    <div className={css.content}>{children}</div>
-                  </Broadcast>
+                  <div className={css.content}>{children}</div>
                 </Broadcast>
-              </div>
+              </Broadcast>
               {activeMode === MODE_OPTION && (
                 <EditOverlay
                   isPanelHeaderLess={true}

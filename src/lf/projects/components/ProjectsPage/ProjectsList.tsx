@@ -1,6 +1,6 @@
 import * as React from 'react'
 import ProjectItem from './ProjectItem'
-import css from './ProjectsList.css'
+import * as css from './ProjectsList.css'
 import {ProjectsNamespaceState} from '$lb/projects/types'
 
 type Props = {

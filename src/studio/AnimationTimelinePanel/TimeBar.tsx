@@ -1,5 +1,5 @@
 import React from 'react'
-import css from './TimeBar.css'
+import * as css from './TimeBar.css'
 import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
 import cx from 'classnames'
 import {BoxAtom} from '$shared/DataVerse/atoms/boxAtom'

@@ -1,5 +1,5 @@
 import React from 'react'
-import css from './ContextMenu.css'
+import * as css from './ContextMenu.css'
 
 type Props = {
   menuProps: {

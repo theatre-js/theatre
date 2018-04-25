@@ -1,5 +1,5 @@
 import React from 'react'
-import css from './ModifiersEditor.css'
+import * as css from './ModifiersEditor.css'
 import PanelSection from '$src/studio/structuralEditor/components/reusables/PanelSection'
 import * as _ from 'lodash'
 import StudioComponent from '$src/studio/handy/StudioComponent'

@@ -1,4 +1,4 @@
-import css from './SelectionArea.css'
+import * as css from './SelectionArea.css'
 import cx from 'classnames'
 import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
 import {LEGEND_BAR_WIDTH} from '$studio/AnimationTimelinePanel/AnimationTimelinePanel'

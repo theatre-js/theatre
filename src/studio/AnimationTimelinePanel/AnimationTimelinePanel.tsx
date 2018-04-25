@@ -3,7 +3,7 @@ import {
   multiReduceStateAction,
 } from '$shared/utils/redux/commonActions'
 import generateUniqueId from 'uuid/v4'
-import css from './AnimationTimelinePanel.css'
+import * as css from './AnimationTimelinePanel.css'
 import VariablesBox from './VariablesBox'
 import TimeBar from './TimeBar'
 import {Subscriber, Broadcast} from 'react-broadcast'

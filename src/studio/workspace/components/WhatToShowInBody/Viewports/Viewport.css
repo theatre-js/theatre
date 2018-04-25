@@ -1,3 +1,5 @@
+@import '$studio/common/styles.css';
+
 .container {
   position: absolute;
   border: 1px solid #adadad;
@@ -23,7 +25,7 @@
   position: absolute;
   top: -20px;
   left: 0;
-  @add-mixin typography from '$studio/common/styles.css';
+  @include typography;
 
   color: #9c9c9c;
   font-size: 10px !important;

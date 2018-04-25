@@ -2,85 +2,38 @@
 
 .container {
   position: fixed;
-  z-index: 10000;
+  z-index: $panelZIndex;
   box-sizing: border-box;
   --panelHeaderHeight: 34px;
   --body-color: #263238;
-  @add-mixin typography;
-
-  &:hover {
-    z-index: 100;
-  }
-  &.isActive {
-    background: red;
-  }
-  /* --borders-color: #312424; */
-  /* --shadows: #263238; */
-
-  /* &:before {
-    position: absolute 0;
-    content: ' ';
-    display: block;
-    background: rgba(0, 0, 0, 0.7);
-    z-index: -2;
-  }
-
-  &:after {
-    position: absolute 1px;
-    content: ' ';
-    display: block;
-    border: 1px solid #38a2ca;
-    z-index: -1;
-    opacity: 0.2;
-  }
-
-  &.isActive:after {
-    opacity: 1;
-  } */
-}
-
-.innerWrapper {
   background: var(--body-color);
-  position: absolute 0px;
-  z-index: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-}
-
-.content {
-  /* position: absolute var(--panelHeaderHeight) 0 0 0; */
-  z-index: 0;
-  justify-self: stretch;
-  flex-grow: 1;
-  flex-shrink: 0;
-  overflow-y: scroll;
-}
-
-.displayNone {
-  display: none;
+  @include typography;
+  --header-height: 32px;
+  
 }
 
 .header {
-  justify-self: flex-start;
-  flex-grow: 0;
-  flex-shring: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--header-height);
+}
+
+.content {
+  position: absolute;
+  top: calc(var(--header-height) + 1px);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow-y: scroll;
 }
 
 .defaultHeaderContent {
   height: var(--panelHeaderHeight);
   display: flex;
   justify-content: flex-start;
-  border-bottom: 1px solid #202b32;
+  background: rgba(#FFFFFF, 0.04);
+  margin: 1px 1px 0 1px;
 }
 
-.title {
-  padding: 0 16px;
-  color: rgb(137, 169, 179);
-  font-size: 10px;
-  text-transform: uppercase;
-  font-weight: 400;
-  display: flex;
-  border-right: 1px solid var(--borders-color);
-  align-items: center;
-}

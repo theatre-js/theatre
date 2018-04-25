@@ -1,5 +1,7 @@
+@import '$studio/common/styles.css';
+
 .container {
-  @add-mixin typography from '$studio/common/styles.css';
+  @include typography;
   position: fixed;
   left: 0;
   top: 35px;

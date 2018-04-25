@@ -1,5 +1,5 @@
 import React from 'react'
-import css from './NodeContainer.css'
+import * as css from './NodeContainer.css'
 import ComponentNode from './ComponentNode'
 import TextNode from './TextNode'
 import HalfPieContextMenu from '$studio/common/components/HalfPieContextMenu'

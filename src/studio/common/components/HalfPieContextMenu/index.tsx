@@ -1,5 +1,5 @@
 import React from 'react'
-import css from './index.css'
+import * as css from './index.css'
 import cx from 'classnames'
 import * as _ from 'lodash'
 

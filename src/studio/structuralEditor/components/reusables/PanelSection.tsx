@@ -1,5 +1,5 @@
 import React from 'react'
-import css from './PanelSection.css'
+import * as css from './PanelSection.css'
 import cx from 'classnames'
 
 type Props = {
@@ -41,6 +41,7 @@ class PanelSection extends React.PureComponent<Props, State> {
           </div>
         )}
         <div className={css.body}>{this.props.children}</div>
+        <div className={css.separator} />
       </div>
     )
   }

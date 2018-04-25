@@ -1,5 +1,5 @@
 import React from 'react'
-import css from './TypeSelector.css'
+import * as css from './TypeSelector.css'
 import {filter} from 'fuzzaldrin-plus'
 import cx from 'classnames'
 import * as _ from 'lodash'

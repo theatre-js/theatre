@@ -1,6 +1,6 @@
 import React from 'react'
 import SingleInputForm from '$lf/common/components/SingleInputForm'
-import css from './PointValuesEditor.css'
+import * as css from './PointValuesEditor.css'
 
 interface IProps {}
 

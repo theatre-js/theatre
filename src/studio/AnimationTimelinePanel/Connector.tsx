@@ -3,7 +3,7 @@ import {PointHandles as IHandles} from '$studio/AnimationTimelinePanel/types'
 import {PanelActiveModeChannel} from '$src/studio/workspace/components/Panel/Panel'
 import {Subscriber} from 'react-broadcast'
 import {MODE_D} from '$studio/workspace/components/StudioUI/StudioUI'
-import css from './Connector.css'
+import * as css from './Connector.css'
 
 interface IProps {
   leftPointIndex?: number

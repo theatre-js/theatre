@@ -5,19 +5,25 @@ import * as webpack from 'webpack'
 import * as CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin'
 import * as WatchMissingNodeModulesPlugin from 'react-dev-utils/WatchMissingNodeModulesPlugin'
 import * as TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
-import {mapValues, startsWith} from 'lodash'
+import {mapValues, startsWith, flow, mapKeys} from 'lodash'
 import * as ErrorOverlayPlugin from 'error-overlay-webpack-plugin'
+import {readFile} from 'fs-extra'
 
 export const context = path.resolve(__dirname, '..')
 
-export const aliases: {[alias: string]: string} = {
-  $root: path.join(context, './'),
-  $src: path.join(context, './src/'),
-  $lb: path.join(context, './src/lb/'),
-  $lf: path.join(context, './src/lf/'),
-  $studio: path.join(context, './src/studio/'),
-  $shared: path.join(context, './src/shared/'),
+const aliasesFromRoot = {
+  $root: './',
+  $src: './src/',
+  $lb: './src/lb/',
+  $lf: './src/lf/',
+  $studio: './src/studio/',
+  $shared: './src/shared/',
 }
+
+export const aliases: {[alias: string]: string} = mapValues(
+  aliasesFromRoot,
+  fromRoot => path.join(context, fromRoot),
+)
 
 type PackageName = 'studio' | 'playground' | 'examples' | 'lb' | 'lf'
 
@@ -70,15 +76,15 @@ export const makeConfigParts = (options: Options) => {
   } = {
     entry: mapValues(
       options.entries || {},
-      ent =>
-        options.withReactHotLoading && isDev
-          ? [
-              require.resolve('react-dev-utils/webpackHotDevClient'),
-              require.resolve('react-hot-loader/patch'),
-            ].concat(ent)
-          : options.withServerSideHotLoading
-            ? ['webpack/hot/poll?100'].concat(ent)
-            : ent,
+      ent => ent,
+      // options.withReactHotLoading && isDev
+      //   ? [
+      //       require.resolve('react-dev-utils/webpackHotDevClient'),
+      //       require.resolve('react-hot-loader/patch'),
+      //     ].concat(ent)
+      //   : options.withServerSideHotLoading
+      //     ? ['webpack/hot/poll?100'].concat(ent)
+      //     : ent,
     ),
     output: {
       path: bundlesDir,
@@ -196,10 +202,27 @@ export const makeConfigParts = (options: Options) => {
               loader: require.resolve('postcss-loader'),
               options: {
                 plugins: () => {
+                  const variables = flow(
+                    (v: typeof aliasesFromRoot) =>
+                      mapKeys(v, (_, k: string) => k.substring(1, k.length)),
+                    (v: typeof aliasesFromRoot) =>
+                      mapValues(v, (_, k) => '$' + k),
+                  )(aliasesFromRoot)
+
                   return [
-                    require('postcss-import')({
-                      // All these shenanigans to get postcss to see webpack aliases
-                      resolve(requestedPath: string): string | void {
+                    require('postcss-advanced-variables')({
+                      variables,
+
+                      resolve(
+                        id: string,
+                        cwd: string,
+                        _: any,
+                      ): Promise<{file: string; contents: string}> {
+                        const requestedPath = id
+                          .replace("('", '')
+                          .replace("')", '')
+
+                        let resolvedPath = requestedPath
                         for (const aliasFrom in aliases) {
                           if (startsWith(requestedPath, aliasFrom)) {
                             const pathWithoutAlias = requestedPath
@@ -210,17 +233,21 @@ export const makeConfigParts = (options: Options) => {
                                 '',
                               )
 
-                            const resolvedPath = path.resolve(
+                            resolvedPath = path.resolve(
                               aliases[aliasFrom],
                               pathWithoutAlias,
                             )
-                            return resolvedPath
                           }
                         }
-                        return requestedPath
+                        const finalPath = path.resolve(cwd, resolvedPath)
+
+                        return new Promise((resolve, reject) => {
+                          readFile(finalPath, 'utf-8').then(contents => {
+                            resolve({contents, file: finalPath})
+                          }, reject)
+                        })
                       },
                     }),
-                    require('postcss-mixins')(),
                     require('postcss-hexrgba')(),
                     require('postcss-nesting')(),
                     require('postcss-short')(),

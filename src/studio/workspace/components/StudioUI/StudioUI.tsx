@@ -11,7 +11,7 @@ import {
 } from '$studio/workspace/types'
 import PanelController from '../PanelController/PanelController'
 import StatusBar from '../StatusBar/StatusBar'
-import css from './StudioUI.css'
+import * as css from './StudioUI.css'
 import {undoAction, redoAction} from '$shared/utils/redux/withHistory/actions'
 import resolveCss from '$shared/utils/resolveCss'
 

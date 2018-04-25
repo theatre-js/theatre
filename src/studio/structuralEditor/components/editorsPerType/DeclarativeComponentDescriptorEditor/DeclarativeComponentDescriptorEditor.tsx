@@ -1,4 +1,4 @@
-import css from './DeclarativeComponentDescriptorEditor.css'
+import * as css from './DeclarativeComponentDescriptorEditor.css'
 import ComponentNameEditor from '$src/studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/ComponentNameEditor'
 import TreeEditor from '$src/studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor/TreeEditor'
 import ModifiersEditor from './ModifiersEditor/ModifiersEditor'

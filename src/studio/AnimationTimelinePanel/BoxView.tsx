@@ -5,7 +5,7 @@ import {
   PointPosition,
   PointHandles,
 } from '$studio/animationTimelinePanel/types'
-import css from './BoxView.css'
+import * as css from './BoxView.css'
 import Variables from './Variables'
 import PointValuesEditor from './PointValuesEditor'
 import * as _ from 'lodash'
