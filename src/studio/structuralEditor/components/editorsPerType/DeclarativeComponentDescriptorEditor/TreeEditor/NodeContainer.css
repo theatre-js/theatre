@@ -106,7 +106,7 @@
 
 .container.isSelected > .rootWrapper {
   background: #0e1315;
-  z-index: 1000;
+  // z-index: 1000;
 }
 
 .container.isRelocated > .rootWrapper {

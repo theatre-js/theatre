@@ -452,168 +452,170 @@ class Point extends React.PureComponent<IProps, IState> {
         (handles[3] + handlesMove[3]) * (nextPointValue - pointValue)}%`,
     ]
 
-    return [
-      <Subscriber key="activeModeSubscriber" channel={PanelActiveModeChannel}>
-        {({activeMode}: {activeMode: string}) => {
-          this._setActiveMode(activeMode)
-          return null
-        }}
-      </Subscriber>,
-      <Subscriber
-        key="selectionBoundariesSubscriber"
-        channel={SelectionBoundariesChannel}
-      >
-        {(value: null | Object) => {
-          this._highlightAsSelected(value)
-          return null
-        }}
-      </Subscriber>,
-      <g key="point">
-        {isMoving && this._renderTransformedPoint(this.state.pointMove)}
-        {renderLeftHandle && (
-          <line
-            x1={x}
-            y1={y}
-            // @ts-ignore
-            x2={leftHandle[0]}
-            // @ts-ignore
-            y2={leftHandle[1]}
-            fill={color.darkened}
-            stroke={color.darkened}
-          />
-        )}
-        {renderRightHandle && (
-          <g>
+    return (
+      <>
+        <Subscriber channel={PanelActiveModeChannel}>
+          {({activeMode}: {activeMode: string}) => {
+            this._setActiveMode(activeMode)
+            return null
+          }}
+        </Subscriber>
+        <Subscriber channel={SelectionBoundariesChannel}>
+          {(value: null | Object) => {
+            this._highlightAsSelected(value)
+            return null
+          }}
+        </Subscriber>
+        <g>
+          {isMoving && this._renderTransformedPoint(this.state.pointMove)}
+          {renderLeftHandle && (
             <line
               x1={x}
               y1={y}
               // @ts-ignore
-              x2={rightHandle[0]}
+              x2={leftHandle[0]}
               // @ts-ignore
-              y2={rightHandle[1]}
+              y2={leftHandle[1]}
               fill={color.darkened}
               stroke={color.darkened}
             />
-          </g>
-        )}
-        <DraggableArea
-          onDragStart={this.pointDragStartHandler}
-          onDrag={this.pointDragHandler}
-          onDragEnd={this.changePointPosition}
-        >
-          <g>
-            <rect
-              width={POINT_RECT_EDGE_SIZE}
-              height={POINT_RECT_EDGE_SIZE}
-              x={x}
-              y={y}
-              fill="transparent"
-              stroke="transparent"
-              transform={`translate(-8 -8)`}
-              onContextMenu={this.contextMenuHandler}
-              onClick={this.pointClickHandler}
-              className={css.pointClickRect}
-              ref={c => (this.pointClickRect = c)}
-            />
-            <circle cx={x} cy={y} r={6} className={css.pointGlow} />
-            <circle
-              strokeWidth="2"
-              cx={x}
-              cy={y}
-              r={3.2}
-              className={css.pointStroke}
-              vectorEffect="non-scaling-stroke"
-            />
-            <circle
-              fill="#1C2226"
-              stroke="transparent"
-              cx={x}
-              cy={y}
-              r={2.4}
-              className={css.pointCenter}
-            />
-          </g>
-        </DraggableArea>
-        {renderLeftHandle && (
+          )}
+          {renderRightHandle && (
+            <g>
+              <line
+                x1={x}
+                y1={y}
+                // @ts-ignore
+                x2={rightHandle[0]}
+                // @ts-ignore
+                y2={rightHandle[1]}
+                fill={color.darkened}
+                stroke={color.darkened}
+              />
+            </g>
+          )}
           <DraggableArea
-            onDragStart={this.leftHandleDragStartHandler}
-            onDrag={this.leftHandleDragHandler}
-            onDragEnd={this.changePointHandles}
+            onDragStart={this.pointDragStartHandler}
+            onDrag={this.pointDragHandler}
+            onDragEnd={this.changePointPosition}
           >
             <g>
               <rect
-                width="12"
-                height="12"
-                // @ts-ignore
-                x={leftHandle[0]}
-                // @ts-ignore
-                y={leftHandle[1]}
+                width={POINT_RECT_EDGE_SIZE}
+                height={POINT_RECT_EDGE_SIZE}
+                x={x}
+                y={y}
                 fill="transparent"
                 stroke="transparent"
-                transform={`translate(${handlesMove[0] - 6} ${handlesMove[1] -
-                  6})`}
-                onClick={e => this.handleClickHandler(e, 'left')}
-                className={css.handleClickRect}
+                transform={`translate(-8 -8)`}
+                onContextMenu={this.contextMenuHandler}
+                onClick={this.pointClickHandler}
+                className={css.pointClickRect}
+                ref={c => (this.pointClickRect = c)}
+              />
+              <circle cx={x} cy={y} r={6} className={css.pointGlow} />
+              <circle
+                strokeWidth="2"
+                cx={x}
+                cy={y}
+                r={3.2}
+                className={css.pointStroke}
+                vectorEffect="non-scaling-stroke"
               />
               <circle
-                strokeWidth="1"
-                // @ts-ignore
-                cx={leftHandle[0]}
-                // @ts-ignore
-                cy={leftHandle[1]}
-                r={2}
-                className={css.handle}
-                stroke={color.darkened}
-                fill={color.darkened}
+                fill="#1C2226"
+                stroke="transparent"
+                cx={x}
+                cy={y}
+                r={2.4}
+                className={css.pointCenter}
               />
             </g>
           </DraggableArea>
-        )}
-        {renderRightHandle && (
-          <DraggableArea
-            onDragStart={this.rightHandleDragStartHandler}
-            onDrag={this.rightHandleDragHandler}
-            onDragEnd={this.changePointHandles}
-          >
-            <g>
-              <rect
-                width="12"
-                height="12"
-                // @ts-ignore
-                x={rightHandle[0]}
-                // @ts-ignore
-                y={rightHandle[1]}
-                fill="transparent"
-                stroke="transparent"
-                onClick={e => this.handleClickHandler(e, 'right')}
-                transform={`translate(${handlesMove[2] - 6} ${handlesMove[3] -
-                  6})`}
-                className={css.handleClickRect}
-              />
-              <circle
-                strokeWidth="1"
-                // @ts-ignore
-                cx={rightHandle[0]}
-                // @ts-ignoree
-                cy={rightHandle[1]}
-                r={2}
-                className={css.handle}
-                stroke={color.darkened}
-                fill={color.darkened}
-              />
-            </g>
-          </DraggableArea>
-        )}
-      </g>,
-      <Subscriber key="selectionMoveSubscriber" channel="selectionMove">
-        {({x, y}) => {
-          const {width, height} = this.svgSize
-          return this.isSelected
-            ? this._renderTransformedPoint([x / width * 100, y / height * 100])
-            : null
-        }}
-      </Subscriber>,
-    ]
+          {renderLeftHandle && (
+            <DraggableArea
+              onDragStart={this.leftHandleDragStartHandler}
+              onDrag={this.leftHandleDragHandler}
+              onDragEnd={this.changePointHandles}
+            >
+              <g>
+                <rect
+                  width="12"
+                  height="12"
+                  // @ts-ignore
+                  x={leftHandle[0]}
+                  // @ts-ignore
+                  y={leftHandle[1]}
+                  fill="transparent"
+                  stroke="transparent"
+                  transform={`translate(${handlesMove[0] - 6} ${handlesMove[1] -
+                    6})`}
+                  onClick={e => this.handleClickHandler(e, 'left')}
+                  className={css.handleClickRect}
+                />
+                <circle
+                  strokeWidth="1"
+                  // @ts-ignore
+                  cx={leftHandle[0]}
+                  // @ts-ignore
+                  cy={leftHandle[1]}
+                  r={2}
+                  className={css.handle}
+                  stroke={color.darkened}
+                  fill={color.darkened}
+                />
+              </g>
+            </DraggableArea>
+          )}
+          {renderRightHandle && (
+            <DraggableArea
+              onDragStart={this.rightHandleDragStartHandler}
+              onDrag={this.rightHandleDragHandler}
+              onDragEnd={this.changePointHandles}
+            >
+              <g>
+                <rect
+                  width="12"
+                  height="12"
+                  // @ts-ignore
+                  x={rightHandle[0]}
+                  // @ts-ignore
+                  y={rightHandle[1]}
+                  fill="transparent"
+                  stroke="transparent"
+                  onClick={e => this.handleClickHandler(e, 'right')}
+                  transform={`translate(${handlesMove[2] - 6} ${handlesMove[3] -
+                    6})`}
+                  className={css.handleClickRect}
+                />
+                <circle
+                  strokeWidth="1"
+                  // @ts-ignore
+                  cx={rightHandle[0]}
+                  // @ts-ignoree
+                  cy={rightHandle[1]}
+                  r={2}
+                  className={css.handle}
+                  stroke={color.darkened}
+                  fill={color.darkened}
+                />
+              </g>
+            </DraggableArea>
+          )}
+        </g>
+        <Subscriber channel="selectionMove">
+          {({x, y}) => {
+            const {width, height} = this.svgSize
+            return this.isSelected
+              ? this._renderTransformedPoint([
+                  x / width * 100,
+                  y / height * 100,
+                ])
+              : null
+          }}
+        </Subscriber>
+      </>
+    )
   }
 }
 

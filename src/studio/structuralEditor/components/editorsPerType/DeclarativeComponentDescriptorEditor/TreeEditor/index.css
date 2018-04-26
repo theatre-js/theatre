@@ -4,8 +4,7 @@
   /* height: calc(100% - 60px); */
   /* height: calc(100% - 450px); */
   left: 1px;
-  margin-bottom: -26px;
-  overflow: hidden scroll;
+  // overflow: hidden scroll;
 
   &::-webkit-scrollbar {
     display: none;

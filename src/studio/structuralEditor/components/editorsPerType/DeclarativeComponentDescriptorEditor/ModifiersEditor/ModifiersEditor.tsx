@@ -194,7 +194,6 @@ class ModifiersEditor extends StudioComponent<IProps, IState> {
                   ].modifierId
                     .split('/')
                     .slice(-1)
-                    .concat('-', modifiersStatus[modifierId].status)
 
                   return [
                     <ModifierSensor
@@ -204,9 +203,10 @@ class ModifiersEditor extends StudioComponent<IProps, IState> {
                       isABoxBeingDragged={isABoxBeingDragged}
                       onClick={this.createBox}
                       onDrop={this.boxDropHandler}
-                    />,
-                    <ModifierBox
-                      key={`box-${index}`}
+                      />,
+                      <ModifierBox
+                      key={modifierId}
+                      status={modifiersStatus[modifierId].status}
                       title={modifier}
                       index={index}
                       activeMode={activeMode}

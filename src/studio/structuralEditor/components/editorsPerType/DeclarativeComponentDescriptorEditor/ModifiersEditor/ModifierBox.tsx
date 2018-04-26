@@ -3,9 +3,12 @@ import css from './ModifierBox.css'
 import cx from 'classnames'
 import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
 import {MODE_SHIFT} from '$studio/workspace/components/StudioUI/StudioUI'
+import {STATUS} from '$studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/ModifiersEditor/constants'
+import TypeSelector from '$studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/ModifiersEditor/TypeSelector';
 
 interface IProps {
   index: number
+  status: string
   title: string
   activeMode: string
   isABoxBeingDragged: boolean
@@ -48,7 +51,7 @@ class ModifierBox extends React.PureComponent<IProps, IState> {
   }
 
   render() {
-    const {activeMode, isABoxBeingDragged, title} = this.props
+    const {status, activeMode, isABoxBeingDragged, title} = this.props
     const {moveX, moveY, isMoving} = this.state
     return (
       <DraggableArea
@@ -61,6 +64,7 @@ class ModifierBox extends React.PureComponent<IProps, IState> {
           className={cx(css.container, {
             [css.isMoving]: isMoving,
             [css.isABoxBeingDragged]: isABoxBeingDragged,
+            [css.appear]: status === STATUS.UNINITIALIZED,
           })}
           {...(isMoving
             ? {
@@ -68,7 +72,11 @@ class ModifierBox extends React.PureComponent<IProps, IState> {
               }
             : {})}
         >
-          {title}-{this.props.index}
+          {status === STATUS.UNINITIALIZED ? (
+            <TypeSelector />
+          ) : (
+            <div>box</div>
+          )}
         </div>
       </DraggableArea>
     )

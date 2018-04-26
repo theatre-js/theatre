@@ -1,3 +1,5 @@
+@value boxMinHeight: 30px;
+
 .container {
   position: relative;
   width: calc(100% - 2px);
@@ -8,6 +10,11 @@
   height: 30px;
   color: #BBB;
   font-size: 11px;
+
+  &.appear {
+    max-height: 0;
+    animation: containerAppear .2s ease-out forwards;
+  }
 
   &:not(.isABoxBeingDragged):hover {
     background: rgba(0, 0, 0, .1);
@@ -36,4 +43,9 @@
       transform: translateY(-32px);
     }
   }
+}
+
+@keyframes containerAppear {
+  from {max-height: 0; opacity: 0;}
+  to {max-height: boxMinHeight; opacity: 1;}
 }
