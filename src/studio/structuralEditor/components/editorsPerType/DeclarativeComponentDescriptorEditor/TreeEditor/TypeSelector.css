@@ -9,7 +9,7 @@
 .input {
   color: #d8d8d8;
   pointer-events: auto;
-  
+
   &.isDisabled {
     pointer-events: none;
   }

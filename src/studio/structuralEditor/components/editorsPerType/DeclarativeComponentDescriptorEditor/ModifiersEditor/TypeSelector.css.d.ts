@@ -1,2 +1,3 @@
-export const input: string;
-export const list: string;
+export const inputContainer: string;
+export const listContainer: string;
+export const appear: string;

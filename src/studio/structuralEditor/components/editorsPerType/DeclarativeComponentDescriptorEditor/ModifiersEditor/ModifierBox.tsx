@@ -4,7 +4,8 @@ import cx from 'classnames'
 import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
 import {MODE_SHIFT} from '$studio/workspace/components/StudioUI/StudioUI'
 import {STATUS} from '$studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/ModifiersEditor/constants'
-import TypeSelector from '$studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/ModifiersEditor/TypeSelector';
+import TypeSelector from '$studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/ModifiersEditor/TypeSelector'
+import _ from 'lodash'
 
 interface IProps {
   index: number
@@ -20,13 +21,48 @@ interface IState {
   moveX: number
   moveY: number
   isMoving: boolean
+  containerRect: {
+    left: number
+    top: number
+    width: number
+    height: number
+  }
+}
+
+const INITIAL_HEIGHT = 27
+const INITIAL_RECT = {
+  height: INITIAL_HEIGHT,
+  left: 0,
+  top: 0,
+  width: 0,
 }
 
 class ModifierBox extends React.PureComponent<IProps, IState> {
-  state = {
-    moveX: 0,
-    moveY: 0,
-    isMoving: false,
+  containerBoundingClientRect: ClientRect | DOMRect
+  container: HTMLDivElement | null
+
+  constructor(props: IProps) {
+    super(props)
+
+    this.state = {
+      moveX: 0,
+      moveY: 0,
+      isMoving: false,
+      containerRect: INITIAL_RECT,
+    }
+  }
+
+  componentDidMount() {
+    this.setState(({containerRect: {height}}) => ({
+      containerRect: {
+        ..._.pick(this.container!.getBoundingClientRect(), [
+          'left',
+          'top',
+          'width',
+        ]),
+        height,
+      },
+    }))
   }
 
   dragHandler = (moveX: number, moveY: number) => {
@@ -52,7 +88,7 @@ class ModifierBox extends React.PureComponent<IProps, IState> {
 
   render() {
     const {status, activeMode, isABoxBeingDragged, title} = this.props
-    const {moveX, moveY, isMoving} = this.state
+    const {moveX, moveY, isMoving, containerRect} = this.state
     return (
       <DraggableArea
         shouldRegisterEvents={activeMode === MODE_SHIFT}
@@ -61,11 +97,13 @@ class ModifierBox extends React.PureComponent<IProps, IState> {
         onDragEnd={this.dragEndHandler}
       >
         <div
+          ref={c => (this.container = c)}
           className={cx(css.container, {
             [css.isMoving]: isMoving,
             [css.isABoxBeingDragged]: isABoxBeingDragged,
             [css.appear]: status === STATUS.UNINITIALIZED,
           })}
+          style={{'--height': containerRect.height}}
           {...(isMoving
             ? {
                 style: {transform: `translate3d(${moveX}px, ${moveY}px, 0)`},
@@ -73,7 +111,7 @@ class ModifierBox extends React.PureComponent<IProps, IState> {
             : {})}
         >
           {status === STATUS.UNINITIALIZED ? (
-            <TypeSelector />
+            this.container != null && <TypeSelector {...containerRect} />
           ) : (
             <div>box</div>
           )}

@@ -187,6 +187,13 @@ class ModifiersEditor extends StudioComponent<IProps, IState> {
               withoutBottomMargin={true}
             >
               <div>
+                <ModifierSensor
+                  index={0}
+                  activeMode={activeMode}
+                  isABoxBeingDragged={isABoxBeingDragged}
+                  onClick={this.createBox}
+                  onDrop={this.boxDropHandler}
+                />
                 {modifiersList.map((modifierId: string, index: number) => {
                   // @ts-ignore
                   const modifier = modifierInstantiationDescriptors.byId[
@@ -195,34 +202,27 @@ class ModifiersEditor extends StudioComponent<IProps, IState> {
                     .split('/')
                     .slice(-1)
 
-                  return [
-                    <ModifierSensor
-                      key={`sensor-${index}`}
-                      index={index}
-                      activeMode={activeMode}
-                      isABoxBeingDragged={isABoxBeingDragged}
-                      onClick={this.createBox}
-                      onDrop={this.boxDropHandler}
-                      />,
+                  return (
+                    <React.Fragment key={modifierId}>
                       <ModifierBox
-                      key={modifierId}
-                      status={modifiersStatus[modifierId].status}
-                      title={modifier}
-                      index={index}
-                      activeMode={activeMode}
-                      isABoxBeingDragged={isABoxBeingDragged}
-                      onDragStart={this.boxDragStartHandler}
-                      onDragEnd={this.boxDragEndHandler}
-                    />,
-                  ]
+                        status={modifiersStatus[modifierId].status}
+                        title={modifier}
+                        index={index}
+                        activeMode={activeMode}
+                        isABoxBeingDragged={isABoxBeingDragged}
+                        onDragStart={this.boxDragStartHandler}
+                        onDragEnd={this.boxDragEndHandler}
+                      />
+                      <ModifierSensor
+                        index={index + 1}
+                        activeMode={activeMode}
+                        isABoxBeingDragged={isABoxBeingDragged}
+                        onClick={this.createBox}
+                        onDrop={this.boxDropHandler}
+                      />
+                    </React.Fragment>
+                  )
                 })}
-                <ModifierSensor
-                  index={modifiersList.length}
-                  activeMode={activeMode}
-                  isABoxBeingDragged={isABoxBeingDragged}
-                  onClick={this.createBox}
-                  onDrop={this.boxDropHandler}
-                />
               </div>
             </PanelSection>
           )

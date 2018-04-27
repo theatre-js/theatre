@@ -8,6 +8,7 @@ type OptionsList = string[]
 interface IProps {
   options: OptionsList
   onClickOutside: Function
+  onSelect(index: number, option: string): any
   children(
     onQuery: Function,
     filteredOptions: OptionsList,
@@ -35,6 +36,12 @@ class DataList extends React.PureComponent<IProps, IState> {
   }
 
   private keyDownHandler = (e: KeyboardEvent) => {
+    if (e.keyCode === 13) {
+      e.preventDefault()
+      const {filteredOptions, focusedIndex} = this.state
+      if (focusedIndex < filteredOptions.length)
+        this.props.onSelect(focusedIndex, filteredOptions[focusedIndex])
+    }
     if (e.keyCode === 38) {
       e.preventDefault()
       this.setState(({focusedIndex}) => ({
@@ -53,15 +60,12 @@ class DataList extends React.PureComponent<IProps, IState> {
   }
 
   private onQuery = (q: string) => {
-    this.setState(({focusedIndex}, {options}) => {
-      const filteredOptions = options.filter((o: string) => {
-        return o.includes(q)
-      })
-      const max = filteredOptions.length - 1
-      focusedIndex = clamp(focusedIndex, 0, max)
+    this.setState((_, {options}) => {
       return {
-        filteredOptions,
-        focusedIndex,
+        filteredOptions: options.filter((o: string) => {
+          return o.includes(q)
+        }),
+        focusedIndex: 0,
       }
     })
   }

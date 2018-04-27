@@ -1,25 +1,24 @@
-@value boxMinHeight: 30px;
-
 .container {
   position: relative;
   width: calc(100% - 2px);
   left: 1px;
   box-sizing: border-box;
   padding-left: 20px;
-  line-height: 30px;
-  height: 30px;
+  line-height: calc(var(--height)*1px);
+  height: var(--height);
   color: #BBB;
   font-size: 11px;
 
   &.appear {
     max-height: 0;
     animation: containerAppear .2s ease-out forwards;
+    background: black;
   }
-
-  &:not(.isABoxBeingDragged):hover {
-    background: rgba(0, 0, 0, .1);
-  }
-
+  /*
+  // &:not(.isABoxBeingDragged):not(.appear):hover {
+  //   background: rgba(0, 0, 0, .1);
+  // }
+  */
   &:not(.isMoving) {
     &.isABoxBeingDragged:after {
       display: block;
@@ -47,5 +46,5 @@
 
 @keyframes containerAppear {
   from {max-height: 0; opacity: 0;}
-  to {max-height: boxMinHeight; opacity: 1;}
+  to {max-height: var(--height); opacity: 1;}
 }
