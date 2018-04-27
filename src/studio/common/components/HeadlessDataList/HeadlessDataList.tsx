@@ -1,14 +1,14 @@
 import {React} from '$studio/handy'
 import Overlay from '$studio/common/components/Overlay/Overlay'
 import {clamp} from 'lodash'
+import {filter} from 'fuzzaldrin-plus'
 
 type OptionsList = string[]
-// options: {key: string | number; value: string | number}[]
 
 interface IProps {
   options: OptionsList
   onClickOutside: Function
-  onSelect(index: number, option: string): any
+  onSelect(option: string): any
   children(
     onQuery: Function,
     filteredOptions: OptionsList,
@@ -21,7 +21,7 @@ interface IState {
   focusedIndex: number
 }
 
-class DataList extends React.PureComponent<IProps, IState> {
+class HeadlessDataList extends React.PureComponent<IProps, IState> {
   constructor(props: IProps) {
     super(props)
 
@@ -35,12 +35,16 @@ class DataList extends React.PureComponent<IProps, IState> {
     document.addEventListener('keydown', this.keyDownHandler)
   }
 
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.keyDownHandler)
+  }
+
   private keyDownHandler = (e: KeyboardEvent) => {
     if (e.keyCode === 13) {
       e.preventDefault()
       const {filteredOptions, focusedIndex} = this.state
       if (focusedIndex < filteredOptions.length)
-        this.props.onSelect(focusedIndex, filteredOptions[focusedIndex])
+        this.props.onSelect(filteredOptions[focusedIndex])
     }
     if (e.keyCode === 38) {
       e.preventDefault()
@@ -62,9 +66,7 @@ class DataList extends React.PureComponent<IProps, IState> {
   private onQuery = (q: string) => {
     this.setState((_, {options}) => {
       return {
-        filteredOptions: options.filter((o: string) => {
-          return o.includes(q)
-        }),
+        filteredOptions: q.length === 0 ? options : filter(options, q),
         focusedIndex: 0,
       }
     })
@@ -90,4 +92,4 @@ class DataList extends React.PureComponent<IProps, IState> {
   }
 }
 
-export default DataList
+export default HeadlessDataList

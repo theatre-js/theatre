@@ -169,6 +169,23 @@ class ModifiersEditor extends StudioComponent<IProps, IState> {
     )
   }
 
+  setBoxType = (id: string, type: string) => {
+    this.setState(() => ({
+      lastAction: {type: ACTION.BOX_SET_TYPE, payload: {id}}
+    }))
+    this.dispatch(
+      reduceStateAction(
+        this.props.pathToModifierInstantiationDescriptors!.concat('byId', id),
+        (modifier) => {
+          return {
+            ...modifier,
+            modifierId: type,
+          }
+        }
+      )
+    )
+  }
+
   render() {
     const {selectedNodeId, modifierInstantiationDescriptors} = this.props
     const {boxBeingDraggedIndex, modifiersStatus} = this.state
@@ -208,10 +225,12 @@ class ModifiersEditor extends StudioComponent<IProps, IState> {
                         status={modifiersStatus[modifierId].status}
                         title={modifier}
                         index={index}
+                        modifierId={modifierId}
                         activeMode={activeMode}
                         isABoxBeingDragged={isABoxBeingDragged}
                         onDragStart={this.boxDragStartHandler}
                         onDragEnd={this.boxDragEndHandler}
+                        setBoxType={this.setBoxType}
                       />
                       <ModifierSensor
                         index={index + 1}

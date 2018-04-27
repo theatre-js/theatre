@@ -72,6 +72,7 @@
     "@types/classnames": "^2.2.3",
     "@types/deep-equal": "^1.0.1",
     "@types/fs-extra": "^5.0.0",
+    "@types/fuzzaldrin-plus": "0.0.1",
     "@types/html-webpack-plugin": "^2.30.1",
     "@types/jest": "^22.1.0",
     "@types/lodash": "^4.14.93",

@@ -9,12 +9,14 @@ import _ from 'lodash'
 
 interface IProps {
   index: number
+  modifierId: string
   status: string
   title: string
   activeMode: string
   isABoxBeingDragged: boolean
-  onDragStart: Function
-  onDragEnd: Function
+  onDragStart(index: number): void
+  onDragEnd(): void
+  setBoxType(id: string, type: string): void
 }
 
 interface IState {
@@ -86,6 +88,10 @@ class ModifierBox extends React.PureComponent<IProps, IState> {
     }))
   }
 
+  onSelectType = (type: string) => {
+    this.props.setBoxType(this.props.modifierId, type)
+  }
+
   render() {
     const {status, activeMode, isABoxBeingDragged, title} = this.props
     const {moveX, moveY, isMoving, containerRect} = this.state
@@ -111,9 +117,10 @@ class ModifierBox extends React.PureComponent<IProps, IState> {
             : {})}
         >
           {status === STATUS.UNINITIALIZED ? (
-            this.container != null && <TypeSelector {...containerRect} />
+            this.container != null &&
+            <TypeSelector {...containerRect} onSelect={this.onSelectType} onCancel={() => console.log('canceled')}/>
           ) : (
-            <div>box</div>
+            <div>{title}</div>
           )}
         </div>
       </DraggableArea>

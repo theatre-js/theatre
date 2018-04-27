@@ -7,11 +7,23 @@ interface IProps {
   top: number
   width: number
   height: number
+  onSelect(option: string): any
+  onCancel(): any
 }
 
 interface IState {}
 
 class TypeSelector extends React.PureComponent<IProps, IState> {
+  input: HTMLInputElement | null
+
+  componentDidMount() {
+    this.input!.focus()
+  }
+
+  onSelect = (option: string) => {
+    this.props.onSelect(option)
+  }
+
   render() {
     const {left, top, width, height} = this.props
     const style = {
@@ -30,14 +42,19 @@ class TypeSelector extends React.PureComponent<IProps, IState> {
           'rotateY',
           'rotateZ',
         ]}
-        onSelect={(index, option) => console.log('selected: ', index, option)}
+        // onSelect={(option) => console.log('selected: ', option)}
+        onSelect={this.onSelect}
         onClickOutside={() => console.log('clicked outside')}
       >
         {(onQuery, filteredOptions, focusedIndex) => {
           return (
             <>
               <div className={css.inputContainer} style={style}>
-                <input type="text" onChange={e => onQuery(e.target.value)} />
+                <input
+                  ref={c => (this.input = c)}
+                  type="text"
+                  onChange={e => onQuery(e.target.value)}
+                />
               </div>
               <div className={css.listContainer} style={style}>
                 {filteredOptions.map((o, i) => (
