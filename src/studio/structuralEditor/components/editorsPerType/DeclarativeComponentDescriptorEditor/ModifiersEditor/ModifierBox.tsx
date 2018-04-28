@@ -1,4 +1,5 @@
-import {React, connect} from '$studio/handy'
+import React from 'react'
+import connect from '$studio/handy/connect'
 import css from './ModifierBox.css'
 import cx from 'classnames'
 import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'

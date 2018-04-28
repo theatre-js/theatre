@@ -1,4 +1,5 @@
-import {React, connect} from '$studio/handy'
+import React from 'react'
+import connect from '$studio/handy/connect'
 import css from './TypeSelector.css'
 import HeadlessDataList from '$studio/common/components/HeadlessDataList/HeadlessDataList'
 import {IStudioStoreState} from '$studio/types'

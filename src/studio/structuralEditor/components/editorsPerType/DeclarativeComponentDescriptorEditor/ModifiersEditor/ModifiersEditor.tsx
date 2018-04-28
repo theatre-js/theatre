@@ -1,9 +1,5 @@
-<<<<<<< HEAD
 import React from 'react'
-import * as css from './ModifiersEditor.css'
-=======
-import {React, connect} from '$src/studio/handy'
->>>>>>> refactor modifiers editor
+import connect from '$studio/handy/connect'
 import PanelSection from '$src/studio/structuralEditor/components/reusables/PanelSection'
 import _ from 'lodash'
 import StudioComponent from '$src/studio/handy/StudioComponent'

@@ -1,4 +1,4 @@
-import {React} from '$studio/handy'
+import React from 'react'
 import css from './ModifierSensor.css'
 import cx from 'classnames'
 import {MODE_CMD} from '$studio/workspace/components/StudioUI/StudioUI'

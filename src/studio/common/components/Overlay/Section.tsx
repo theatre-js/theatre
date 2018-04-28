@@ -1,4 +1,4 @@
-import {React} from '$studio/handy'
+import React from 'react'
 
 interface IProps {
   setRef?(instance: HTMLDivElement): void

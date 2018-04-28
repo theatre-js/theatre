@@ -1,4 +1,4 @@
-import {React} from '$studio/handy'
+import React from 'react'
 import Overlay from '$studio/common/components/Overlay/Overlay'
 import {clamp} from 'lodash'
 import {filter} from 'fuzzaldrin-plus'

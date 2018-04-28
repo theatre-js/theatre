@@ -1,7 +1,6 @@
-import {React} from '$studio/handy'
+import React, {CSSProperties} from 'react'
 import ReactDOM from 'react-dom'
 import studioCss from '$studio/workspace/components/StudioUI/StudioUI.css'
-import {CSSProperties} from 'react'
 import Section from '$studio/common/components/Overlay/Section'
 
 interface IProps {
