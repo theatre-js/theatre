@@ -2,30 +2,25 @@
 
 .container {
   position: relative;
-  width: calc(100% - 2px);
-  left: 1px;
+  width: calc(100% - 16px);
+  left: 8px;
   box-sizing: border-box;
-  padding-left: 20px;
   color: #bbb;
   font-size: 11px;
 
   &.appear {
     animation: containerAppear 0.2s ease-in-out forwards;
-    background: black;
+    background: #0e1315;
   }
 
   &.initialize {
-    &:before {
-      position: absolute 0;
-      display: block;
-      content: ' ';
-      background: black;
-      animation: containerInitialize 0.2s ease-in-out forwards;
-    }
+    overflow: hidden;
+    animation: containerInitialize .2s ease-in-out forwards;
   }
 
   &.collapse {
     animation: containerCollapse 0.25s ease-out forwards;
+    overflow: hidden;
     & + div {
       height: 0;
       transition: all 0.1s;
@@ -37,9 +32,8 @@
   }
 
   &.isBeingDragged {
+    box-shadow: 0 0 0 2px #3CDFFF;
     z-index: 1000;
-    background: rgba(0, 200, 200, 0.8);
-    color: #fff;
     pointer-events: none;
   }
 }
@@ -50,17 +44,19 @@
     opacity: 0;
   }
   to {
-    height: var(--height);
+    height: minBoxHeight;
     opacity: 1;
   }
 }
 
 @keyframes containerInitialize {
   from {
-    opacity: 1;
+    opacity: 0;
+    height: minBoxHeight;
   }
   to {
-    opacity: 0;
+    opacity: 1;
+    height: var(--height);
   }
 }
 

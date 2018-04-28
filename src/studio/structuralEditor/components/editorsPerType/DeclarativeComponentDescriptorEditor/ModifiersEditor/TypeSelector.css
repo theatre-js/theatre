@@ -31,8 +31,9 @@
 
 .listContainer {
   position: absolute;
-  background: green;
+  background: #0e1315;
   overflow: scroll;
+  padding: 5px 0;
 
   left: var(--left);
   top: var(--top);
@@ -52,6 +53,19 @@
       opacity: 1;
       text-align: center;
     }
+  }
+}
+
+.option {
+  padding: 0 10px;
+  height: 20px;
+  line-height: 20px;
+  color: #AAA;
+  font-weight: 300;
+  font-size: 11px;
+
+  &.isSelected {
+    background-color: rgba(60, 223, 255, .3);
   }
 }
 

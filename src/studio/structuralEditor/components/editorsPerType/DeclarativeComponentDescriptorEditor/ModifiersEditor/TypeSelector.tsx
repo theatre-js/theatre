@@ -3,6 +3,7 @@ import css from './TypeSelector.css'
 import HeadlessDataList from '$studio/common/components/HeadlessDataList/HeadlessDataList'
 import {IStudioStoreState} from '$studio/types'
 import _ from 'lodash'
+import cx from 'classnames'
 import {IModifierDescriptor} from '$studio/componentModel/types'
 
 interface IProps {
@@ -79,16 +80,14 @@ class TypeSelector extends React.PureComponent<IProps, IState> {
                 </span>
               </div>
               <div className={css.listContainer} style={listStyle}>
-                {filteredOptions.map((o, i) => (
+                {filteredOptions.map((option: string, i) => (
                   <div
-                    style={{
-                      ...(i === focusedIndex
-                        ? {textDecoration: 'underline'}
-                        : {}),
-                    }}
+                    className={cx(css.option, {
+                      [css.isSelected]: i === focusedIndex,
+                    })}
                     key={i}
                   >
-                    {o}
+                    {option}
                   </div>
                 ))}
               </div>

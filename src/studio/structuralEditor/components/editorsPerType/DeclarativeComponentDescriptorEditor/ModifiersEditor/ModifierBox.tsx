@@ -8,8 +8,11 @@ import TypeSelector from '$studio/structuralEditor/components/editorsPerType/Dec
 import _ from 'lodash'
 import {ModifierInstantiationDescriptorInspector} from '$studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/ModifiersEditor/ModifierInstantiationDescriptorInspector'
 import {IStudioStoreState} from '$studio/types'
-import { ModifierIDsWithInspectorComponents } from '$studio/componentModel/coreModifierDescriptors/inspectorComponents';
-
+import {ModifierIDsWithInspectorComponents} from '$studio/componentModel/coreModifierDescriptors/inspectorComponents'
+import HalfPieContextMenu from '$studio/common/components/HalfPieContextMenu'
+import MdCancel from 'react-icons/lib/md/cancel'
+import MdDonutSmall from 'react-icons/lib/md/donut-small'
+import MdStars from 'react-icons/lib/md/stars'
 interface IOwnProps {
   index: number
   descriptorId: string
@@ -41,6 +44,13 @@ interface IState {
     width: number
     height: number
   }
+  contextMenuProps:
+    | undefined
+    | null
+    | {
+        left: number
+        top: number
+      }
 }
 
 const INITIAL_HEIGHT = parseInt(css.minBoxHeight)
@@ -64,6 +74,7 @@ class ModifierBox extends React.PureComponent<IProps, IState> {
       isBeingDragged: false,
       shouldDisappear: false,
       containerRect: INITIAL_RECT,
+      contextMenuProps: null,
     }
   }
 
@@ -98,9 +109,23 @@ class ModifierBox extends React.PureComponent<IProps, IState> {
     }
   }
 
+  componentDidUpdate(prevProps: IProps) {
+    if (prevProps.status === STATUS.uninitialized && this.props.status === STATUS.initialized) {
+      this.setState(({containerRect}) => ({
+        containerRect: {
+          ...containerRect,
+          height: this.container!.firstElementChild!.getBoundingClientRect().height,
+        }
+      }))
+    }
+  }
+
   animationEndHandler = (e: AnimationEvent) => {
     if (e.animationName === css.containerMove) {
       this.props.moveModifier()
+    }
+    if (e.animationName === css.containerCollapse) {
+      this.props.deleteModifier(this.props.descriptorId)
     }
   }
 
@@ -144,16 +169,20 @@ class ModifierBox extends React.PureComponent<IProps, IState> {
     }
   }
 
-  deleteModifier() {
+  deleteModifier = () => {
     const {height} = this.container!.getBoundingClientRect()
     this.setState(({containerRect}) => ({
       shouldDisappear: true,
+      contextMenuProps: null,
       containerRect: {...containerRect, height},
     }))
-    //FIXME:
-    setTimeout(() => {
-      this.props.deleteModifier(this.props.descriptorId)
-    }, 300)
+  }
+
+  contextMenuHandler = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation()
+    e.preventDefault()
+    const {clientX, clientY} = e
+    this.setState(() => ({contextMenuProps: {left: clientX, top: clientY}}))
   }
 
   render() {
@@ -172,6 +201,7 @@ class ModifierBox extends React.PureComponent<IProps, IState> {
       isBeingDragged,
       containerRect,
       shouldDisappear,
+      contextMenuProps,
     } = this.state
 
     const shouldMove = status === STATUS.moved || status === STATUS.dragCanceled
@@ -196,43 +226,70 @@ class ModifierBox extends React.PureComponent<IProps, IState> {
           : {}),
     }
     return (
-      <DraggableArea
-        shouldRegisterEvents={activeMode === MODE_SHIFT}
-        onDragStart={this.dragStartHandler}
-        onDrag={this.dragHandler}
-        onDragEnd={this.dragEndHandler}
-      >
-        <div
-          ref={c => (this.container = c)}
-          className={cx(css.container, {
-            [css.isBeingDragged]: isBeingDragged,
-            [css.appear]: status === STATUS.uninitialized,
-            [css.initialize]: status === STATUS.initialized,
-            [css.collapse]: shouldDisappear,
-            [css.move]: shouldMove,
-          })}
-          style={style}
+      <>
+        <DraggableArea
+          shouldRegisterEvents={activeMode === MODE_SHIFT}
+          onDragStart={this.dragStartHandler}
+          onDrag={this.dragHandler}
+          onDragEnd={this.dragEndHandler}
         >
-          {status === STATUS.uninitialized ? (
-            this.container != null &&
-            !shouldDisappear && (
-              <TypeSelector
-                {...containerRect}
-                onSelect={this.confirmTypeSelectionHandler}
-                onCancel={this.cancelTypeSelectionHandler}
+          <div
+            ref={c => (this.container = c)}
+            style={style}
+            className={cx(css.container, {
+              [css.isBeingDragged]: isBeingDragged,
+              [css.appear]: status === STATUS.uninitialized,
+              [css.initialize]: status === STATUS.initialized,
+              [css.collapse]: shouldDisappear,
+              [css.move]: shouldMove,
+            })}
+            onContextMenu={this.contextMenuHandler}
+          >
+            {status === STATUS.uninitialized ? (
+              this.container != null &&
+              !shouldDisappear && (
+                <TypeSelector
+                  {...containerRect}
+                  onSelect={this.confirmTypeSelectionHandler}
+                  onCancel={this.cancelTypeSelectionHandler}
+                />
+              )
+            ) : (
+              <ModifierInstantiationDescriptorInspector
+                id={descriptorId}
+                modifierId={modifierId}
+                pathToModifierInstantiationDescriptor={
+                  pathToModifierInstantiationDescriptor
+                }
               />
-            )
-          ) : (
-            <ModifierInstantiationDescriptorInspector
-              id={descriptorId}
-              modifierId={modifierId}
-              pathToModifierInstantiationDescriptor={
-                pathToModifierInstantiationDescriptor
-              }
-            />
-          )}
-        </div>
-      </DraggableArea>
+            )}
+          </div>
+        </DraggableArea>
+        {contextMenuProps != null && (
+          <HalfPieContextMenu
+            close={() => this.setState(() => ({contextMenuProps: null}))}
+            centerPoint={contextMenuProps}
+            placement="right"
+            items={[
+              {
+                label: '$A$dd to Timeline',
+                cb: () => null,
+                IconComponent: MdDonutSmall,
+              },
+              {
+                label: '$D$elete Modifier',
+                cb: this.deleteModifier,
+                IconComponent: MdCancel,
+              },
+              {
+                label: '$O$verride Previous Modifiers',
+                cb: () => null,
+                IconComponent: MdStars,
+              },
+            ]}
+          />
+        )}
+      </>
     )
   }
 }

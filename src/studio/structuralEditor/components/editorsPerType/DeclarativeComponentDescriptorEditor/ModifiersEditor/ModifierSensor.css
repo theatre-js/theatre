@@ -1,5 +1,5 @@
 @value minBoxHeight from './ModifierBox.css';
-@value sensorHeight: 2px;
+@value sensorHeight: 10px;
 
 .container {
   position: relative;
@@ -17,12 +17,28 @@
   }
 
   &.isCommandDown:hover {
-    background: cyan;
+    &:after {
+      display: block;
+      position: absolute;
+      content: ' ';
+      height: 2px;
+      width: 100%;
+      top: calc(50% - 1px);
+      background: #3CDFFF;
+    }
     cursor: cell;
   }
 
   &.isABoxBeingDragged:hover {
-    background: cyan;
+    &:after {
+      display: block;
+      position: absolute;
+      content: ' ';
+      height: 2px;
+      width: 100%;
+      top: calc(50% - 1px);
+      background: #3CDFFF;
+    }
     cursor: alias;
   }
 }

@@ -1,6 +1,6 @@
 .container {
-  margin-left: 8px;
-  margin-right: 8px;
+  // margin-left: 8px;
+  // margin-right: 8px;
 }
 
 .group {
@@ -38,9 +38,11 @@
     display: inline-block;
   }
 
-  margin-bottom: 10px;
-
   &:last-child {
     padding-bottom: 8px;
   }
+}
+
+.separator {
+  height: 5px;
 }

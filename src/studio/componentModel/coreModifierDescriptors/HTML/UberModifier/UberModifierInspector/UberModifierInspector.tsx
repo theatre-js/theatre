@@ -113,7 +113,7 @@ export default class UberModifierInspector extends StudioComponent<
             </div>
           </div>
         </div>
-
+        <div {...classes('separator')} />
         <div {...classes('group')}>
           <div {...classes('title')}>Fill</div>
           <div {...classes('subGroup')}>
