@@ -11,8 +11,8 @@ interface IProps {
   width: number
   height: number
   listOfCoreModifiers: {id: string; name: string}[]
-  onSelect: (option: string) => any
-  onCancel: () => any
+  onSelect: (option: string) => void
+  onCancel: () => void
 }
 
 interface IState {}
@@ -113,4 +113,4 @@ export default connect((s: IStudioStoreState) => {
       }),
     ),
   }
-})(TypeSelector as React.ComponentClass<any>)
+})(TypeSelector)

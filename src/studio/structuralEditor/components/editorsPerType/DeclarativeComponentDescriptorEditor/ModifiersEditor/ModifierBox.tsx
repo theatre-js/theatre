@@ -1,4 +1,4 @@
-import {React} from '$studio/handy'
+import {React, connect} from '$studio/handy'
 import css from './ModifierBox.css'
 import cx from 'classnames'
 import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
@@ -6,12 +6,14 @@ import {MODE_SHIFT} from '$studio/workspace/components/StudioUI/StudioUI'
 import {STATUS} from '$studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/ModifiersEditor/constants'
 import TypeSelector from '$studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/ModifiersEditor/TypeSelector'
 import _ from 'lodash'
+import {ModifierInstantiationDescriptorInspector} from '$studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/ModifiersEditor/ModifierInstantiationDescriptorInspector'
+import {IStudioStoreState} from '$studio/types'
+import { ModifierIDsWithInspectorComponents } from '$studio/componentModel/coreModifierDescriptors/inspectorComponents';
 
-interface IProps {
+interface IOwnProps {
   index: number
-  modifierId: string
+  descriptorId: string
   status: string
-  title: string
   translateY: number
   activeMode: string
   isABoxBeingDragged: boolean
@@ -20,6 +22,12 @@ interface IProps {
   setModifierType: (id: string, type: string) => void
   deleteModifier: (id: string) => void
   moveModifier: () => void
+  pathToModifierInstantiationDescriptors: string[]
+}
+
+interface IProps extends IOwnProps {
+  modifierId: ModifierIDsWithInspectorComponents
+  pathToModifierInstantiationDescriptor: string[]
 }
 
 interface IState {
@@ -61,7 +69,7 @@ class ModifierBox extends React.PureComponent<IProps, IState> {
 
   componentDidMount() {
     this.container!.addEventListener('animationend', this.animationEndHandler)
-    this.setState(({containerRect: {height}} , {status}) => ({
+    this.setState(({containerRect: {height}}, {status}) => ({
       containerRect: {
         ..._.pick(this.container!.getBoundingClientRect(), [
           'left',
@@ -112,7 +120,7 @@ class ModifierBox extends React.PureComponent<IProps, IState> {
     ])
     this.props.onDragStart(
       this.props.index,
-      this.props.modifierId,
+      this.props.descriptorId,
       containerRect.height,
       containerRect.top,
     )
@@ -127,7 +135,7 @@ class ModifierBox extends React.PureComponent<IProps, IState> {
   }
 
   confirmTypeSelectionHandler = (type: string) => {
-    this.props.setModifierType(this.props.modifierId, type)
+    this.props.setModifierType(this.props.descriptorId, type)
   }
 
   cancelTypeSelectionHandler = () => {
@@ -144,7 +152,7 @@ class ModifierBox extends React.PureComponent<IProps, IState> {
     }))
     //FIXME:
     setTimeout(() => {
-      this.props.deleteModifier(this.props.modifierId)
+      this.props.deleteModifier(this.props.descriptorId)
     }, 300)
   }
 
@@ -154,7 +162,9 @@ class ModifierBox extends React.PureComponent<IProps, IState> {
       activeMode,
       isABoxBeingDragged,
       translateY,
-      title,
+      descriptorId,
+      modifierId,
+      pathToModifierInstantiationDescriptor,
     } = this.props
     const {
       moveX,
@@ -212,13 +222,14 @@ class ModifierBox extends React.PureComponent<IProps, IState> {
                 onCancel={this.cancelTypeSelectionHandler}
               />
             )
-          ) : title === 'rotateX' ? (
-            <div>
-              {title}
-              <div><input type='text' placeholder='0'/></div>
-            </div>
           ) : (
-            <div>{title}</div>
+            <ModifierInstantiationDescriptorInspector
+              id={descriptorId}
+              modifierId={modifierId}
+              pathToModifierInstantiationDescriptor={
+                pathToModifierInstantiationDescriptor
+              }
+            />
           )}
         </div>
       </DraggableArea>
@@ -226,4 +237,14 @@ class ModifierBox extends React.PureComponent<IProps, IState> {
   }
 }
 
-export default ModifierBox
+export default connect((s: IStudioStoreState, op: IOwnProps) => {
+  const pathToModifierInstantiationDescriptor = op.pathToModifierInstantiationDescriptors.concat(
+    'byId',
+    op.descriptorId,
+  )
+  const {modifierId} = _.get(s, pathToModifierInstantiationDescriptor)
+  return {
+    modifierId,
+    pathToModifierInstantiationDescriptor,
+  }
+})(ModifierBox)

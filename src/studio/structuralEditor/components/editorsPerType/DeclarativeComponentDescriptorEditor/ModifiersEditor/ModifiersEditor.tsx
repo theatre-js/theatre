@@ -10,11 +10,8 @@ import StudioComponent from '$src/studio/handy/StudioComponent'
 import {getSelectedNodeId} from '$src/studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor/TreeEditor'
 import {
   IDeclarativeComponentDescriptor,
-  IComponentInstantiationValueDescriptor,
-  IModifierInstantiationValueDescriptors,
+  ArrayDescriptor,
 } from '$src/studio/componentModel/types'
-// import ListOfModifierInstantiationDescriptorsInspector from './ListOfModifierInstantiationDescriptorsInspector'
-// import PaleMessage from '$src/studio/common/components/PaleMessage'
 import {Subscriber} from 'react-broadcast'
 import {PanelActiveModeChannel} from '$studio/workspace/components/Panel/Panel'
 import generateUniqueId from 'uuid/v4'
@@ -30,13 +27,13 @@ interface IOwnProps {
 interface IProps extends IOwnProps {
   componentDescriptor: IDeclarativeComponentDescriptor
   selectedNodeId?: string
-  modifierInstantiationDescriptors?: IModifierInstantiationValueDescriptors
+  listOfModifierInstantiationDescriptors: ArrayDescriptor<string>
   pathToModifierInstantiationDescriptors?: string[]
 }
 
 type Action = null | {
   type: string
-  id: string
+  descriptorId: string
 }
 interface IState {
   lastAction: Action
@@ -45,7 +42,7 @@ interface IState {
     | null
     | {
         boxIndex: number
-        modifierId: string
+        descriptorId: string
         holeHeight: number
         boxTop: number
       }
@@ -74,7 +71,7 @@ class ModifiersEditor extends StudioComponent<IProps, IState> {
     this.setState(() => ({
       lastAction: {
         type: ACTION.add,
-        id: uniqueId,
+        descriptorId: uniqueId,
       },
     }))
     this.dispatch(
@@ -105,11 +102,11 @@ class ModifiersEditor extends StudioComponent<IProps, IState> {
     this.setState(() => ({
       lastAction: {
         type: ACTION.startDrag,
-        id: id,
+        descriptorId: id,
       },
       dragSourceProps: {
         boxIndex: index,
-        modifierId: id,
+        descriptorId: id,
         holeHeight: height + SENSOR_HEIGHT,
         boxTop: top,
       },
@@ -122,14 +119,14 @@ class ModifiersEditor extends StudioComponent<IProps, IState> {
       this.setState(() => ({
         lastAction: {
           type: ACTION.cancelMove,
-          id: dragSourceProps!.modifierId,
+          descriptorId: dragSourceProps!.descriptorId,
         },
       }))
     } else {
       this.setState(() => ({
         lastAction: {
           type: ACTION.move,
-          id: dragSourceProps!.modifierId,
+          descriptorId: dragSourceProps!.descriptorId,
         },
       }))
     }
@@ -139,7 +136,7 @@ class ModifiersEditor extends StudioComponent<IProps, IState> {
     this.setState(({dragSourceProps}) => ({
       lastAction: {
         type: ACTION.drop,
-        id: dragSourceProps!.modifierId,
+        descriptorId: dragSourceProps!.descriptorId,
       },
       dropZoneProps: {
         sensorIndex: index,
@@ -152,7 +149,7 @@ class ModifiersEditor extends StudioComponent<IProps, IState> {
     this.setState(() => ({
       lastAction: {
         type: ACTION.setType,
-        id,
+        descriptorId: id,
       },
     }))
     this.dispatch(
@@ -175,12 +172,12 @@ class ModifiersEditor extends StudioComponent<IProps, IState> {
       this.reduceState(
         this.props.pathToModifierInstantiationDescriptors!.concat('list'),
         list => {
-          const {modifierId} = dragSourceProps
+          const {descriptorId} = dragSourceProps
           let {boxIndex: dragIndex} = dragSourceProps
           const {sensorIndex: dropIndex} = dropZoneProps
           list = list
             .slice(0, dropIndex)
-            .concat(modifierId)
+            .concat(descriptorId)
             .concat(list.slice(dropIndex))
           if (dragIndex > dropIndex) dragIndex = dragIndex + 1
           return list.slice(0, dragIndex).concat(list.slice(dragIndex + 1))
@@ -194,7 +191,7 @@ class ModifiersEditor extends StudioComponent<IProps, IState> {
     }))
   }
 
-  deleteModifier = (modifierId: string) => {
+  deleteModifier = (id: string) => {
     this.setState(() => ({
       lastAction: null,
     }))
@@ -202,10 +199,10 @@ class ModifiersEditor extends StudioComponent<IProps, IState> {
       reduceStateAction(
         this.props.pathToModifierInstantiationDescriptors as string[],
         descriptors => {
-          const {[modifierId]: remove, ...byId} = descriptors.byId
+          const {[id]: remove, ...byId} = descriptors.byId
           return {
             byId,
-            list: descriptors.list.filter((id: string) => id !== modifierId),
+            list: descriptors.list.filter((descriptorId: string) => descriptorId !== id),
           }
         },
       ),
@@ -234,13 +231,13 @@ class ModifiersEditor extends StudioComponent<IProps, IState> {
 
   render() {
     const {props, state} = this
-    const {selectedNodeId, modifierInstantiationDescriptors} = props
+    const {
+      selectedNodeId,
+      listOfModifierInstantiationDescriptors,
+      pathToModifierInstantiationDescriptors,
+    } = props
     const {dragSourceProps, lastAction} = state
     const isABoxBeingDragged = dragSourceProps != null
-    const modifiersList =
-      modifierInstantiationDescriptors != null
-        ? modifierInstantiationDescriptors.list
-        : []
 
     return selectedNodeId != null ? (
       <Subscriber channel={PanelActiveModeChannel}>
@@ -259,46 +256,47 @@ class ModifiersEditor extends StudioComponent<IProps, IState> {
                   onClick={this.addModifier}
                   onDrop={this.dropHandler}
                 />
-                {modifiersList.map((modifierId: string, index: number) => {
-                  // @ts-ignore
-                  const modifier = modifierInstantiationDescriptors.byId[
-                    modifierId
-                  ].modifierId
-                    .split('/')
-                    .slice(-1)
-                  const status =
-                    lastAction && lastAction.id === modifierId
-                      ? STATUS_BY_ACTION[lastAction.type]
-                      : STATUS_BY_ACTION.default
-                  const translateY = this.getTranslateY(index, status)
+                {(listOfModifierInstantiationDescriptors || []).map(
+                  (
+                    id: string,
+                    index: number,
+                  ) => {
+                    const status =
+                      lastAction && lastAction.descriptorId === id
+                        ? STATUS_BY_ACTION[lastAction.type]
+                        : STATUS_BY_ACTION.default
+                    const translateY = this.getTranslateY(index, status)
 
-                  return (
-                    <React.Fragment key={modifierId}>
-                      <ModifierBox
-                        status={status}
-                        title={modifier[0]}
-                        index={index}
-                        modifierId={modifierId}
-                        activeMode={activeMode}
-                        translateY={translateY}
-                        isABoxBeingDragged={isABoxBeingDragged}
-                        onDragStart={this.dragStartHandler}
-                        onDragEnd={this.dragEndHandler}
-                        setModifierType={this.setModifierType}
-                        deleteModifier={this.deleteModifier}
-                        moveModifier={this.moveModifier}
-                      />
-                      <ModifierSensor
-                        index={index + 1}
-                        activeMode={activeMode}
-                        translateY={translateY}
-                        isABoxBeingDragged={isABoxBeingDragged}
-                        onClick={this.addModifier}
-                        onDrop={this.dropHandler}
-                      />
-                    </React.Fragment>
-                  )
-                })}
+                    return (
+                      <React.Fragment key={id}>
+                        <ModifierBox
+                          status={status}
+                          index={index}
+                          descriptorId={id}
+                          activeMode={activeMode}
+                          translateY={translateY}
+                          isABoxBeingDragged={isABoxBeingDragged}
+                          onDragStart={this.dragStartHandler}
+                          onDragEnd={this.dragEndHandler}
+                          setModifierType={this.setModifierType}
+                          deleteModifier={this.deleteModifier}
+                          moveModifier={this.moveModifier}
+                          pathToModifierInstantiationDescriptors={
+                            pathToModifierInstantiationDescriptors!
+                          }
+                        />
+                        <ModifierSensor
+                          index={index + 1}
+                          activeMode={activeMode}
+                          translateY={translateY}
+                          isABoxBeingDragged={isABoxBeingDragged}
+                          onClick={this.addModifier}
+                          onDrop={this.dropHandler}
+                        />
+                      </React.Fragment>
+                    )
+                  },
+                )}
               </div>
             </PanelSection>
           )
@@ -306,27 +304,6 @@ class ModifiersEditor extends StudioComponent<IProps, IState> {
       </Subscriber>
     ) : null
   }
-
-  // return null
-  //     return (
-  //       <div className={css.container}>
-  //         <PanelSection label="Modifiers" withHorizontalMargin={false}>
-  //           <ListOfModifierInstantiationDescriptorsInspector
-  //             pathToModifierInstantiationDescriptors={
-  //               pathToModifierInstantiationDescriptors
-  //             }
-  //             modifierInstantiationDescriptors={
-  //               modifierInstantiationDescriptors
-  //             }
-  //           />
-  //           <PaleMessage
-  //             style="paler"
-  //             message={`Add more modifiers by CMD+Clicking after or in-between other modifiers`}
-  //           />
-  //         </PanelSection>
-  //       </div>
-  //     )
-  //   }
 }
 
 export default connect((s: IStudioStoreState, op: IOwnProps) => {
@@ -346,13 +323,12 @@ export default connect((s: IStudioStoreState, op: IOwnProps) => {
     }
   }
 
-  let pathToModifierInstantiationDescriptors, modifierInstantiationDescriptors
+  let pathToModifierInstantiationDescriptors
   if (
     // @ts-ignore
     possibleHiddenValue.__descriptorType ===
     'ComponentInstantiationValueDescriptor'
   ) {
-    const instantiationValueDescriptor: IComponentInstantiationValueDescriptor = possibleHiddenValue as $IntentionalAny
     const pathToLocalHiddenValueId = [
       ...op.pathToComponentDescriptor,
       'localHiddenValuesById',
@@ -363,13 +339,16 @@ export default connect((s: IStudioStoreState, op: IOwnProps) => {
       ...pathToLocalHiddenValueId,
       'modifierInstantiationDescriptors',
     ]
-    modifierInstantiationDescriptors =
-      instantiationValueDescriptor.modifierInstantiationDescriptors
+
+    const listOfModifierInstantiationDescriptors = _.get(
+      s,
+      pathToModifierInstantiationDescriptors.concat('list'),
+    )
 
     return {
       selectedNodeId,
       componentDescriptor,
-      modifierInstantiationDescriptors,
+      listOfModifierInstantiationDescriptors,
       pathToModifierInstantiationDescriptors,
     }
   }

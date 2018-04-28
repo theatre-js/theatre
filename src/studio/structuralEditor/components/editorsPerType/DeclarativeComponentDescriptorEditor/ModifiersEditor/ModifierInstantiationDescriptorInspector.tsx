@@ -8,7 +8,7 @@ import inspectorComponents, {
 
 interface IOwnProps {
   id: string
-  index: number
+  // index: number
   pathToModifierInstantiationDescriptor: Array<string>
 }
 
