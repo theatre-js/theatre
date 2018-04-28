@@ -15,7 +15,7 @@
 
   &.initialize {
     overflow: hidden;
-    animation: containerInitialize .2s ease-in-out forwards;
+    animation: containerInitialize 0.2s ease-in-out forwards;
   }
 
   &.collapse {
@@ -32,8 +32,9 @@
   }
 
   &.isBeingDragged {
-    box-shadow: 0 0 0 2px #3CDFFF;
+    box-shadow: 0 0 0 2px #3cdfff;
     z-index: 1000;
+    opacity: 0.8;
     pointer-events: none;
   }
 }
