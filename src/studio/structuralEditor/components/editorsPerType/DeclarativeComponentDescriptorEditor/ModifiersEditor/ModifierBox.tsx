@@ -226,6 +226,7 @@ class ModifierBox extends React.PureComponent<IProps, IState> {
             }
           : {}),
     }
+
     return (
       <>
         <DraggableArea

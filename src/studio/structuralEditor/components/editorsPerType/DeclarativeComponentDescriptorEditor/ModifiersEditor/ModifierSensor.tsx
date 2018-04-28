@@ -32,7 +32,7 @@ class ModifierSensor extends React.PureComponent<IProps, IState> {
     const isCommandDown = activeMode === MODE_CMD
     const style = {
       transform: `translate3d(0, ${translateY}px, 0)`,
-      transition: 'transform .2s ease-in-out',
+      transition: 'all .2s ease-in-out',
     }
     return (
       <div

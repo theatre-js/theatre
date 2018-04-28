@@ -441,7 +441,7 @@ export default class MirrorOfReactTree {
     } else if (nodeType === 'Text') {
       this._reactToTextUpdate(internalInstance, data)
     } else {
-      debugger
+      // debugger
     }
   }
 

@@ -19,6 +19,7 @@
   height: 100%;
   padding: 0 5px;
   box-sizing: border-box;
+  color: #aaa;
 }
 
 .hint {
@@ -28,6 +29,7 @@
   top: 0;
   left: 5px;
   color: rgba(255, 255, 255, 0.4);
+  display: none;
 }
 
 .listContainer {

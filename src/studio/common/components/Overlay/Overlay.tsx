@@ -1,6 +1,6 @@
-import React, {CSSProperties} from 'react'
+import React from 'react'
 import ReactDOM from 'react-dom'
-import studioCss from '$studio/workspace/components/StudioUI/StudioUI.css'
+import css from './Overlay.css'
 import Section from '$studio/common/components/Overlay/Section'
 
 interface IProps {
@@ -38,15 +38,6 @@ class Overlay extends React.PureComponent<IProps, IState> {
   }
 
   render() {
-    const style: CSSProperties = {
-      position: 'fixed',
-      left: 0,
-      top: 0,
-      right: 0,
-      bottom: 0,
-      zIndex: 1000,
-    }
-
     const children = React.Children.map(
       this.props.children,
       (child: React.ReactElement<any>) => {
@@ -54,8 +45,8 @@ class Overlay extends React.PureComponent<IProps, IState> {
       },
     )
     return ReactDOM.createPortal(
-      <div style={style}>{children}</div>,
-      document.querySelector(`.${studioCss.container}`) as HTMLElement,
+      <div className={css.container}>{children}</div>,
+      document.getElementById('theaterjs-studio') as HTMLElement,
     )
   }
 }
