@@ -10,6 +10,7 @@
   top: var(--top);
   width: var(--width);
   height: var(--height);
+  animation: inputAppear 0.25s ease-in-out;
 }
 
 .input {
@@ -40,7 +41,7 @@
   width: var(--width);
   max-height: var(--height);
 
-  animation: appear 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.575);
+  animation: listAppear 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.575);
 
   &:empty {
     &:after {
@@ -60,16 +61,25 @@
   padding: 0 10px;
   height: 20px;
   line-height: 20px;
-  color: #AAA;
+  color: #aaa;
   font-weight: 300;
   font-size: 11px;
 
   &.isSelected {
-    background-color: rgba(60, 223, 255, .3);
+    background-color: rgba(60, 223, 255, 0.3);
   }
 }
 
-@keyframes appear {
+@keyframes inputAppear {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes listAppear {
   from {
     opacity: 0;
     transform: translateY(-10px);
