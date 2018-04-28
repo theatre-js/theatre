@@ -275,7 +275,7 @@ class ModifiersEditor extends StudioComponent<IProps, IState> {
                     <React.Fragment key={modifierId}>
                       <ModifierBox
                         status={status}
-                        title={modifier}
+                        title={modifier[0]}
                         index={index}
                         modifierId={modifierId}
                         activeMode={activeMode}

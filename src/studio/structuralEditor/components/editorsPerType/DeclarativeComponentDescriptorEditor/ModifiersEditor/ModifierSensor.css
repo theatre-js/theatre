@@ -1,3 +1,4 @@
+@value minBoxHeight from './ModifierBox.css';
 @value sensorHeight: 2px;
 
 .container {
@@ -6,26 +7,22 @@
   left: 1px;
   height: sensorHeight;
   z-index: 100;
+  --hitZoneOffset: calc(-0.3 * minBoxHeight);
+
+  &.isCommandDown:before,
+  &.isABoxBeingDragged:before {
+    display: block;
+    content: ' ';
+    position: absolute var(--hitZoneOffset) 0 var(--hitZoneOffset) 0;
+  }
 
   &.isCommandDown:hover {
     background: cyan;
     cursor: cell;
-
-    &:before {
-      display: block;
-      content: ' ';
-      position: absolute -6px 0 -6px 0;
-    }
   }
 
   &.isABoxBeingDragged:hover {
     background: cyan;
     cursor: alias;
-
-    &:before {
-      display: block;
-      content: ' ';
-      position: absolute -6px 0 -6px 0;
-    }
   }
 }

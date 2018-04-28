@@ -61,14 +61,15 @@ class ModifierBox extends React.PureComponent<IProps, IState> {
 
   componentDidMount() {
     this.container!.addEventListener('animationend', this.animationEndHandler)
-    this.setState(({containerRect: {height}}) => ({
+    this.setState(({containerRect: {height}} , {status}) => ({
       containerRect: {
         ..._.pick(this.container!.getBoundingClientRect(), [
           'left',
           'top',
           'width',
+          'height',
         ]),
-        height,
+        ...(status === STATUS.uninitialized ? {height} : {}),
       },
     }))
   }
@@ -163,8 +164,7 @@ class ModifierBox extends React.PureComponent<IProps, IState> {
       shouldDisappear,
     } = this.state
 
-    const shouldMove =
-      status === STATUS.moved || status === STATUS.dragCanceled
+    const shouldMove = status === STATUS.moved || status === STATUS.dragCanceled
     const style = {
       '--height': containerRect.height,
       ...(shouldMove
@@ -212,6 +212,11 @@ class ModifierBox extends React.PureComponent<IProps, IState> {
                 onCancel={this.cancelTypeSelectionHandler}
               />
             )
+          ) : title === 'rotateX' ? (
+            <div>
+              {title}
+              <div><input type='text' placeholder='0'/></div>
+            </div>
           ) : (
             <div>{title}</div>
           )}

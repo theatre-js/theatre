@@ -17,7 +17,16 @@ class TypeSelector extends React.PureComponent<IProps, IState> {
   input: HTMLInputElement | null
 
   componentDidMount() {
+    window.addEventListener('resize', this.windowResizeHandler)
     this.input!.focus()
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.windowResizeHandler)
+  }
+
+  windowResizeHandler = () => {
+    this.props.onCancel()
   }
 
   onSelect = (option: string) => {
@@ -26,12 +35,20 @@ class TypeSelector extends React.PureComponent<IProps, IState> {
 
   render() {
     const {left, top, width, height} = this.props
-    const style = {
+    const {innerHeight} = window
+    const inputStyle = {
       '--left': left,
       '--top': top,
       '--width': width,
       '--height': height,
     }
+    const listStyle = {
+      '--left': left + 10,
+      '--top': top + height + 2,
+      '--width': width - 20,
+      '--height': innerHeight - top - height - 4,
+    }
+
     return (
       <HeadlessDataList
         options={[
@@ -49,7 +66,7 @@ class TypeSelector extends React.PureComponent<IProps, IState> {
         {(onQuery, filteredOptions, focusedIndex) => {
           return (
             <>
-              <div className={css.inputContainer} style={style}>
+              <div className={css.inputContainer} style={inputStyle}>
                 <input
                   ref={c => (this.input = c)}
                   type="text"
@@ -57,7 +74,7 @@ class TypeSelector extends React.PureComponent<IProps, IState> {
                   onChange={e => onQuery(e.target.value)}
                 />
               </div>
-              <div className={css.listContainer} style={style}>
+              <div className={css.listContainer} style={listStyle}>
                 {filteredOptions.map((o, i) => (
                   <div
                     style={{

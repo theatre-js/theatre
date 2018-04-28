@@ -4,7 +4,7 @@ export const ACTION: {[key: string]: string} = {
   drop: 'DROP',
   startDrag: 'START_DRAG',
   move: 'MOVE',
-  cancelMove: 'CANCEL_MOVE'
+  cancelMove: 'CANCEL_MOVE',
 }
 
 export const STATUS: {[key: string]: string} = {

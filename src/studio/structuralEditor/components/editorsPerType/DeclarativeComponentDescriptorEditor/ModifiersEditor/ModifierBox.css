@@ -6,14 +6,11 @@
   left: 1px;
   box-sizing: border-box;
   padding-left: 20px;
-  line-height: calc(var(--height)*1px);
-  height: var(--height);
-  color: #BBB;
+  color: #bbb;
   font-size: 11px;
 
   &.appear {
-    max-height: 0;
-    animation: containerAppear .2s ease-in-out forwards;
+    animation: containerAppear 0.2s ease-in-out forwards;
     background: black;
   }
 
@@ -23,46 +20,64 @@
       display: block;
       content: ' ';
       background: black;
-      animation: containerInitialize .2s ease-in-out forwards;
+      animation: containerInitialize 0.2s ease-in-out forwards;
     }
   }
 
   &.collapse {
-    animation: containerCollapse .25s ease-out forwards;
+    animation: containerCollapse 0.25s ease-out forwards;
     & + div {
       height: 0;
-      transition: all .1s;
+      transition: all 0.1s;
     }
   }
 
   &.move {
-    animation: containerMove .25s ease-in-out forwards;
+    animation: containerMove 0.25s ease-in-out forwards;
   }
 
   &.isBeingDragged {
     z-index: 1000;
-    background: rgba(0, 200, 200, .8);
-    color: #FFF;
+    background: rgba(0, 200, 200, 0.8);
+    color: #fff;
     pointer-events: none;
   }
 }
 
 @keyframes containerAppear {
-  from {max-height: 0; opacity: 0;}
-  to {max-height: var(--height); opacity: 1;}
+  from {
+    height: 0;
+    opacity: 0;
+  }
+  to {
+    height: var(--height);
+    opacity: 1;
+  }
 }
 
 @keyframes containerInitialize {
-  from {opacity: 1}
-  to {opacity: 0}
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 @keyframes containerCollapse {
-  from {max-height: var(--height);}
-  to {max-height: 0;}
+  from {
+    height: var(--height);
+  }
+  to {
+    height: 0;
+  }
 }
 
 @keyframes containerMove {
-  from {transform: translate3d(var(--fromX), var(--fromY), 0)}
-  to {transform: translate3d(0, var(--toY), 0)}
+  from {
+    transform: translate3d(var(--fromX), var(--fromY), 0);
+  }
+  to {
+    transform: translate3d(0, var(--toY), 0);
+  }
 }

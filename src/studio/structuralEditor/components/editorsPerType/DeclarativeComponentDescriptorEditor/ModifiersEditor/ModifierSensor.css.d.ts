@@ -1,3 +1,4 @@
+export const minBoxHeight: string;
 export const sensorHeight: string;
 export const container: string;
 export const isCommandDown: string;

@@ -20,19 +20,21 @@
   background: green;
   overflow: scroll;
 
-  left: calc(var(--left)*1px + 10px);
-  top: calc(var(--top)*1px + var(--height)*1px + 2px);
-  width: calc(var(--width)*1px - 20px);
-  height: 100px;
+  left: var(--left);
+  top: var(--top);
+  width: var(--width);
+  max-height: var(--height);
 
-  animation: appear .25s cubic-bezier(0.175, 0.885, 0.32, 1.575);
+  animation: appear 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.575);
 }
 
 @keyframes appear {
   from {
-    opacity: 0; transform: translateY(-10px);
+    opacity: 0;
+    transform: translateY(-10px);
   }
   to {
-    opacity: 1; transform: translateY(0);
+    opacity: 1;
+    transform: translateY(0);
   }
 }
