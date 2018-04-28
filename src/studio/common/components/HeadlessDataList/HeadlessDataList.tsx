@@ -8,6 +8,7 @@ type OptionsList = string[]
 interface IProps {
   options: OptionsList
   onClickOutside: Function
+  onCancel(): void
   onSelect(option: string): any
   children(
     onQuery: Function,
@@ -45,6 +46,10 @@ class HeadlessDataList extends React.PureComponent<IProps, IState> {
       const {filteredOptions, focusedIndex} = this.state
       if (focusedIndex < filteredOptions.length)
         this.props.onSelect(filteredOptions[focusedIndex])
+    }
+    if (e.keyCode === 27) {
+      e.preventDefault()
+      this.props.onCancel()
     }
     if (e.keyCode === 38) {
       e.preventDefault()

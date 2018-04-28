@@ -2,6 +2,7 @@ export const ACTION: {[key: string]: string} = {
   BOX_ADD: 'BOX_ADD',
   BOX_MOVE: 'BOX_MOVE',
   BOX_SET_TYPE: 'BOX_SET_TYPE',
+  BOX_DROPPED: 'BOX_DROPPED',
 }
 
 export const STATUS: {[key: string]: string} = {
@@ -9,6 +10,7 @@ export const STATUS: {[key: string]: string} = {
   INITIALIZED: 'INITIALIZED',
   UNINITIALIZED: 'UNINITIALIZED',
   RELOCATED: 'RELOCATED',
+  DROPPED: 'DROPPED',
 }
 
 export const STATUS_BY_ACTION: {[key: string]: string} = {
@@ -16,4 +18,5 @@ export const STATUS_BY_ACTION: {[key: string]: string} = {
   BOX_ADD: STATUS.UNINITIALIZED,
   BOX_MOVE: STATUS.RELOCATED,
   BOX_SET_TYPE: STATUS.INITIALIZED,
+  BOX_DROPPED: STATUS.DROPPED,
 }

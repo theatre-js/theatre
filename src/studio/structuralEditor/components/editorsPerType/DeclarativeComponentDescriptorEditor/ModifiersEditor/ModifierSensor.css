@@ -1,8 +1,10 @@
+@value sensorHeight: 2px;
+
 .container {
   position: relative;
   width: calc(100% - 2px);
   left: 1px;
-  height: 2px;
+  height: sensorHeight;
   z-index: 100;
 
   &.isCommandDown:hover {
@@ -26,4 +28,16 @@
       position: absolute -6px 0 -6px 0;
     }
   }
+  /*
+  &.drop {
+    & ~ div.container {
+      transform: translateY(32px);
+    }
+
+    & ~ div:not(.container) {
+      transition: .15s ease-out;
+      transform: translateY(32px);
+    }
+  }
+  */
 }

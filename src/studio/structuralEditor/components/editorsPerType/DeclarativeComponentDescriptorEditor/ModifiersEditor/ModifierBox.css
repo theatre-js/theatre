@@ -1,3 +1,5 @@
+@value minBoxHeight: 27px;
+
 .container {
   position: relative;
   width: calc(100% - 2px);
@@ -11,8 +13,34 @@
 
   &.appear {
     max-height: 0;
-    animation: containerAppear .2s ease-out forwards;
+    animation: containerAppear .2s ease-in-out forwards;
     background: black;
+  }
+
+  &.initialize {
+    &:before {
+      position: absolute 0;
+      display: block;
+      content: ' ';
+      background: black;
+      animation: containerInitialize .2s ease-in-out forwards;
+    }
+  }
+
+  &.disappear {
+    animation: containerDisappear .25s ease-out forwards;
+    & + div {
+      height: 0;
+      transition: all .1s;
+    }
+  }
+
+  &.drop {
+    animation: containerDrop .25s ease-in-out forwards;
+  }
+
+  &.reactToHover:hover {
+    background: rgba(0, 0, 0, .1);
   }
   /*
   // &:not(.isABoxBeingDragged):not(.appear):hover {
@@ -32,19 +60,25 @@
     background: rgba(0, 200, 200, .8);
     color: #FFF;
     pointer-events: none;
-
-    & ~ div.container {
-      transition: .15s ease-out;
-      transform: translateY(-32px);
-    }
-
-    & ~ div:not(.container) {
-      transform: translateY(-32px);
-    }
   }
 }
 
 @keyframes containerAppear {
   from {max-height: 0; opacity: 0;}
   to {max-height: var(--height); opacity: 1;}
+}
+
+@keyframes containerInitialize {
+  from {opacity: 1}
+  to {opacity: 0}
+}
+
+@keyframes containerDisappear {
+  from {max-height: var(--height);}
+  to {max-height: 0;}
+}
+
+@keyframes containerDrop {
+  from {max-height: 0;}
+  to {max-height: var(--height);}
 }

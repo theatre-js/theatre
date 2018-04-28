@@ -44,7 +44,8 @@ class TypeSelector extends React.PureComponent<IProps, IState> {
         ]}
         // onSelect={(option) => console.log('selected: ', option)}
         onSelect={this.onSelect}
-        onClickOutside={() => console.log('clicked outside')}
+        onCancel={this.props.onCancel}
+        onClickOutside={this.props.onCancel}
       >
         {(onQuery, filteredOptions, focusedIndex) => {
           return (
@@ -53,6 +54,7 @@ class TypeSelector extends React.PureComponent<IProps, IState> {
                 <input
                   ref={c => (this.input = c)}
                   type="text"
+                  onBlur={this.props.onCancel}
                   onChange={e => onQuery(e.target.value)}
                 />
               </div>

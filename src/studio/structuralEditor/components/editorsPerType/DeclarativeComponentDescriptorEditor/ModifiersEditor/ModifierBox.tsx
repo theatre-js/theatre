@@ -12,17 +12,20 @@ interface IProps {
   modifierId: string
   status: string
   title: string
+  translateY: number
   activeMode: string
   isABoxBeingDragged: boolean
-  onDragStart(index: number): void
-  onDragEnd(): void
-  setBoxType(id: string, type: string): void
+  onDragStart: (index: number, id: string, height: number, top: number) => void
+  onDragEnd: () => void
+  setModifierType: (id: string, type: string) => void
+  deleteModifier: (id: string) => void
 }
 
 interface IState {
   moveX: number
   moveY: number
   isMoving: boolean
+  shouldDisappear: boolean
   containerRect: {
     left: number
     top: number
@@ -31,7 +34,7 @@ interface IState {
   }
 }
 
-const INITIAL_HEIGHT = 27
+const INITIAL_HEIGHT = parseInt(css.minBoxHeight)
 const INITIAL_RECT = {
   height: INITIAL_HEIGHT,
   left: 0,
@@ -50,6 +53,7 @@ class ModifierBox extends React.PureComponent<IProps, IState> {
       moveX: 0,
       moveY: 0,
       isMoving: false,
+      shouldDisappear: false,
       containerRect: INITIAL_RECT,
     }
   }
@@ -75,26 +79,73 @@ class ModifierBox extends React.PureComponent<IProps, IState> {
   }
 
   dragStartHandler = () => {
-    this.props.onDragStart(this.props.index)
-    this.setState(() => ({isMoving: true}))
+    const containerRect = _.pick(this.container!.getBoundingClientRect(), [
+      'left',
+      'top',
+      'width',
+      'height',
+    ])
+    this.props.onDragStart(
+      this.props.index,
+      this.props.modifierId,
+      containerRect.height,
+      containerRect.top,
+    )
+    this.setState(() => ({isMoving: true, containerRect}))
   }
 
   dragEndHandler = () => {
-    this.props.onDragEnd()
     this.setState(() => ({
       isMoving: false,
       moveX: 0,
       moveY: 0,
     }))
+    setTimeout(this.props.onDragEnd, 250)
   }
 
-  onSelectType = (type: string) => {
-    this.props.setBoxType(this.props.modifierId, type)
+  confirmTypeSelectionHandler = (type: string) => {
+    this.props.setModifierType(this.props.modifierId, type)
+  }
+
+  cancelTypeSelectionHandler = () => {
+    if (this.props.status === STATUS.UNINITIALIZED) {
+      this.deleteModifier()
+    }
+  }
+
+  deleteModifier() {
+    const {height} = this.container!.getBoundingClientRect()
+    this.setState(({containerRect}) => ({
+      shouldDisappear: true,
+      containerRect: {...containerRect, height},
+    }))
+    setTimeout(() => {
+      this.props.deleteModifier(this.props.modifierId)
+    }, 300)
   }
 
   render() {
-    const {status, activeMode, isABoxBeingDragged, title} = this.props
-    const {moveX, moveY, isMoving, containerRect} = this.state
+    const {
+      status,
+      activeMode,
+      isABoxBeingDragged,
+      translateY,
+      title,
+    } = this.props
+    const {moveX, moveY, isMoving, containerRect, shouldDisappear} = this.state
+    const style = {
+      '--height': containerRect.height,
+      ...(isMoving
+        ? {
+            transform: `translate3d(${moveX}px, ${moveY}px, 0)`,
+          }
+        : isABoxBeingDragged
+          ? {
+              transform: `translate3d(0, ${translateY}px, 0)`,
+              transition: 'transform .2s ease-in-out',
+            }
+          : {}),
+    }
     return (
       <DraggableArea
         shouldRegisterEvents={activeMode === MODE_SHIFT}
@@ -106,19 +157,23 @@ class ModifierBox extends React.PureComponent<IProps, IState> {
           ref={c => (this.container = c)}
           className={cx(css.container, {
             [css.isMoving]: isMoving,
-            [css.isABoxBeingDragged]: isABoxBeingDragged,
+            // [css.isABoxBeingDragged]: isABoxBeingDragged,
             [css.appear]: status === STATUS.UNINITIALIZED,
+            [css.initialize]: status === STATUS.INITIALIZED,
+            [css.disappear]: shouldDisappear,
+            [css.drop]: status === STATUS.RELOCATED,
           })}
-          style={{'--height': containerRect.height}}
-          {...(isMoving
-            ? {
-                style: {transform: `translate3d(${moveX}px, ${moveY}px, 0)`},
-              }
-            : {})}
+          style={style}
         >
           {status === STATUS.UNINITIALIZED ? (
             this.container != null &&
-            <TypeSelector {...containerRect} onSelect={this.onSelectType} onCancel={() => console.log('canceled')}/>
+            !shouldDisappear && (
+              <TypeSelector
+                {...containerRect}
+                onSelect={this.confirmTypeSelectionHandler}
+                onCancel={this.cancelTypeSelectionHandler}
+              />
+            )
           ) : (
             <div>{title}</div>
           )}
