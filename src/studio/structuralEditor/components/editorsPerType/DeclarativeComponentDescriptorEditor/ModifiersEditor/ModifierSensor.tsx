@@ -8,7 +8,7 @@ interface IProps {
   index: number
   translateY: number
   isABoxBeingDragged: boolean
-  onClick: Function
+  onClick: (index: number) => void
   onDrop: (index: number, top: number) => void
 }
 interface IState {}
@@ -21,9 +21,6 @@ class ModifierSensor extends React.PureComponent<IProps, IState> {
   }
 
   mouseUpHandler = () => {
-    // if (this.props.isABoxBeingDragged) {
-    //   this.setState(() => ({drop: true}))
-    // }
     if (this.props.isABoxBeingDragged) {
       const {bottom} = this.container!.getBoundingClientRect()
       this.props.onDrop(this.props.index, bottom)

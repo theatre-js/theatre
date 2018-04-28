@@ -7,8 +7,8 @@ interface IProps {
   top: number
   width: number
   height: number
-  onSelect(option: string): any
-  onCancel(): any
+  onSelect: (option: string) => any
+  onCancel: () => any
 }
 
 interface IState {}
@@ -42,7 +42,6 @@ class TypeSelector extends React.PureComponent<IProps, IState> {
           'rotateY',
           'rotateZ',
         ]}
-        // onSelect={(option) => console.log('selected: ', option)}
         onSelect={this.onSelect}
         onCancel={this.props.onCancel}
         onClickOutside={this.props.onCancel}

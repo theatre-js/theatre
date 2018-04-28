@@ -11,6 +11,7 @@ import {getSelectedNodeId} from '$src/studio/structuralEditor/components/editors
 import {
   IDeclarativeComponentDescriptor,
   IComponentInstantiationValueDescriptor,
+  IModifierInstantiationValueDescriptors,
 } from '$src/studio/componentModel/types'
 // import ListOfModifierInstantiationDescriptorsInspector from './ListOfModifierInstantiationDescriptorsInspector'
 // import PaleMessage from '$src/studio/common/components/PaleMessage'
@@ -29,20 +30,16 @@ interface IOwnProps {
 interface IProps extends IOwnProps {
   componentDescriptor: IDeclarativeComponentDescriptor
   selectedNodeId?: string
-  modifierInstantiationDescriptors?: $FixMe
+  modifierInstantiationDescriptors?: IModifierInstantiationValueDescriptors
   pathToModifierInstantiationDescriptors?: string[]
 }
 
-type Action =
-  | {
-      type: null
-      id: null
-    }
-  | {
-      type: string
-      id: string
-    }
+type Action = null | {
+  type: string
+  id: string
+}
 interface IState {
+  lastAction: Action
   dragSourceProps:
     | undefined
     | null
@@ -63,27 +60,23 @@ interface IState {
 
 const SENSOR_HEIGHT = parseInt(require('./ModifierSensor.css').sensorHeight)
 class ModifiersEditor extends StudioComponent<IProps, IState> {
-  lastAction: Action = {type: null, id: null}
-
   constructor(props: IProps, context: $IntentionalAny) {
     super(props, context)
     this.state = {
       dragSourceProps: null,
       dropZoneProps: null,
+      lastAction: null,
     }
   }
 
-  private setLastAction(type: string, id: string) {
-    this.lastAction = {type, id}
-  }
-
-  private unsetLastAction() {
-    this.lastAction = {type: null, id: null}
-  }
-
-  createBox = (index: number) => {
+  addModifier = (index: number) => {
     const uniqueId = generateUniqueId()
-    this.setLastAction(ACTION.BOX_ADD, uniqueId)
+    this.setState(() => ({
+      lastAction: {
+        type: ACTION.add,
+        id: uniqueId,
+      },
+    }))
     this.dispatch(
       reduceStateAction(
         this.props.pathToModifierInstantiationDescriptors!,
@@ -92,7 +85,7 @@ class ModifiersEditor extends StudioComponent<IProps, IState> {
             __descriptorType: 'ModifierInstantiationValueDescriptor',
             enabled: true,
             props: {},
-            modifierId: '', //TODO
+            modifierId: '', //FIXME:
           }
           return {
             list: list.slice(0, index).concat(uniqueId, list.slice(index)),
@@ -103,13 +96,17 @@ class ModifiersEditor extends StudioComponent<IProps, IState> {
     )
   }
 
-  boxDragStartHandler = (
+  dragStartHandler = (
     index: number,
     id: string,
     height: number,
     top: number,
   ) => {
     this.setState(() => ({
+      lastAction: {
+        type: ACTION.startDrag,
+        id: id,
+      },
       dragSourceProps: {
         boxIndex: index,
         modifierId: id,
@@ -119,37 +116,31 @@ class ModifiersEditor extends StudioComponent<IProps, IState> {
     }))
   }
 
-  boxDragEndHandler = () => {
-    const {state, props} = this
-    const {dragSourceProps, dropZoneProps} = state
-    this.unsetLastAction()
-    this.reduceState(
-      props.pathToModifierInstantiationDescriptors!.concat('list'),
-      list => {
-        const {modifierId} = dragSourceProps!
-        let {boxIndex: dragIndex} = dragSourceProps!
-        const {sensorIndex: dropIndex} = dropZoneProps!
-        list = list
-          .slice(0, dropIndex)
-          .concat(modifierId)
-          .concat(list.slice(dropIndex))
-        if (dragIndex > dropIndex) dragIndex = dragIndex + 1
-        return list.slice(0, dragIndex).concat(list.slice(dragIndex + 1))
-      },
-    )
-
-    this.setState(() => ({
-      dragSourceProps: null,
-      dropZoneProps: null,
-    }))
+  dragEndHandler = () => {
+    const {dragSourceProps, dropZoneProps} = this.state
+    if (dropZoneProps == null) {
+      this.setState(() => ({
+        lastAction: {
+          type: ACTION.cancelMove,
+          id: dragSourceProps!.modifierId,
+        },
+      }))
+    } else {
+      this.setState(() => ({
+        lastAction: {
+          type: ACTION.move,
+          id: dragSourceProps!.modifierId,
+        },
+      }))
+    }
   }
 
-  boxDropHandler = (index: number, top: number) => {
-    this.setLastAction(
-      ACTION.BOX_DROPPED,
-      this.state.dragSourceProps!.modifierId,
-    )
-    this.setState(() => ({
+  dropHandler = (index: number, top: number) => {
+    this.setState(({dragSourceProps}) => ({
+      lastAction: {
+        type: ACTION.drop,
+        id: dragSourceProps!.modifierId,
+      },
       dropZoneProps: {
         sensorIndex: index,
         boxTop: top,
@@ -158,7 +149,12 @@ class ModifiersEditor extends StudioComponent<IProps, IState> {
   }
 
   setModifierType = (id: string, type: string) => {
-    this.setLastAction(ACTION.BOX_SET_TYPE, id)
+    this.setState(() => ({
+      lastAction: {
+        type: ACTION.setType,
+        id,
+      },
+    }))
     this.dispatch(
       reduceStateAction(
         this.props.pathToModifierInstantiationDescriptors!.concat('byId', id),
@@ -172,8 +168,35 @@ class ModifiersEditor extends StudioComponent<IProps, IState> {
     )
   }
 
+  moveModifier = () => {
+    const {dragSourceProps, dropZoneProps} = this.state
+    if (dragSourceProps != null && dropZoneProps != null) {
+      this.reduceState(
+        this.props.pathToModifierInstantiationDescriptors!.concat('list'),
+        list => {
+          const {modifierId} = dragSourceProps
+          let {boxIndex: dragIndex} = dragSourceProps
+          const {sensorIndex: dropIndex} = dropZoneProps
+          list = list
+            .slice(0, dropIndex)
+            .concat(modifierId)
+            .concat(list.slice(dropIndex))
+          if (dragIndex > dropIndex) dragIndex = dragIndex + 1
+          return list.slice(0, dragIndex).concat(list.slice(dragIndex + 1))
+        },
+      )
+    }
+    this.setState(() => ({
+      lastAction: null,
+      dragSourceProps: null,
+      dropZoneProps: null,
+    }))
+  }
+
   deleteModifier = (modifierId: string) => {
-    this.unsetLastAction()
+    this.setState(() => ({
+      lastAction: null,
+    }))
     this.dispatch(
       reduceStateAction(
         this.props.pathToModifierInstantiationDescriptors as string[],
@@ -188,32 +211,31 @@ class ModifiersEditor extends StudioComponent<IProps, IState> {
     )
   }
 
-  private getTranslateY(
-    index: number,
-    isABoxBeingDragged: boolean,
-    isABoxBeingDropped: boolean,
-  ): number {
-    const {dragSourceProps, dropZoneProps} = this.state
-    return isABoxBeingDragged
-      ? isABoxBeingDropped
-        ? dragSourceProps!.boxIndex < index &&
-          index < dropZoneProps!.sensorIndex
-          ? -dragSourceProps!.holeHeight
-          : index < dragSourceProps!.boxIndex &&
-            dropZoneProps!.sensorIndex <= index
-            ? dragSourceProps!.holeHeight
-            : 0
-        : dragSourceProps!.boxIndex < index ? -dragSourceProps!.holeHeight : 0
-      : 0
+  private getTranslateY(index: number, status: string): number {
+    const {dragSourceProps, dropZoneProps, lastAction} = this.state
+    if (lastAction && lastAction.type === ACTION.cancelMove) return 0
+    const isABoxBeingDragged = dragSourceProps != null
+    const isABoxBeingDropped = dropZoneProps != null
+    return status === STATUS.moved
+      ? dropZoneProps!.boxTop - dragSourceProps!.boxTop
+      : isABoxBeingDragged
+        ? isABoxBeingDropped
+          ? dragSourceProps!.boxIndex < index &&
+            index < dropZoneProps!.sensorIndex
+            ? -dragSourceProps!.holeHeight
+            : index < dragSourceProps!.boxIndex &&
+              dropZoneProps!.sensorIndex <= index
+              ? dragSourceProps!.holeHeight
+              : 0
+          : dragSourceProps!.boxIndex < index ? -dragSourceProps!.holeHeight : 0
+        : 0
   }
 
   render() {
-    const {lastAction, props, state} = this
+    const {props, state} = this
     const {selectedNodeId, modifierInstantiationDescriptors} = props
-    const {dragSourceProps, dropZoneProps} = state
+    const {dragSourceProps, lastAction} = state
     const isABoxBeingDragged = dragSourceProps != null
-    const isABoxBeingDropped = dropZoneProps != null
-
     const modifiersList =
       modifierInstantiationDescriptors != null
         ? modifierInstantiationDescriptors.list
@@ -233,8 +255,8 @@ class ModifiersEditor extends StudioComponent<IProps, IState> {
                   activeMode={activeMode}
                   translateY={0}
                   isABoxBeingDragged={isABoxBeingDragged}
-                  onClick={this.createBox}
-                  onDrop={this.boxDropHandler}
+                  onClick={this.addModifier}
+                  onDrop={this.dropHandler}
                 />
                 {modifiersList.map((modifierId: string, index: number) => {
                   // @ts-ignore
@@ -244,17 +266,11 @@ class ModifiersEditor extends StudioComponent<IProps, IState> {
                     .split('/')
                     .slice(-1)
                   const status =
-                    lastAction.id === modifierId
-                      ? STATUS_BY_ACTION[lastAction.type!]
-                      : STATUS_BY_ACTION.DEFAULT
-                  const translateY =
-                    status === STATUS.DROPPED
-                      ? dropZoneProps!.boxTop - dragSourceProps!.boxTop
-                      : this.getTranslateY(
-                          index,
-                          isABoxBeingDragged,
-                          isABoxBeingDropped,
-                        )
+                    lastAction && lastAction.id === modifierId
+                      ? STATUS_BY_ACTION[lastAction.type]
+                      : STATUS_BY_ACTION.default
+                  const translateY = this.getTranslateY(index, status)
+
                   return (
                     <React.Fragment key={modifierId}>
                       <ModifierBox
@@ -265,18 +281,19 @@ class ModifiersEditor extends StudioComponent<IProps, IState> {
                         activeMode={activeMode}
                         translateY={translateY}
                         isABoxBeingDragged={isABoxBeingDragged}
-                        onDragStart={this.boxDragStartHandler}
-                        onDragEnd={this.boxDragEndHandler}
+                        onDragStart={this.dragStartHandler}
+                        onDragEnd={this.dragEndHandler}
                         setModifierType={this.setModifierType}
                         deleteModifier={this.deleteModifier}
+                        moveModifier={this.moveModifier}
                       />
                       <ModifierSensor
                         index={index + 1}
                         activeMode={activeMode}
                         translateY={translateY}
                         isABoxBeingDragged={isABoxBeingDragged}
-                        onClick={this.createBox}
-                        onDrop={this.boxDropHandler}
+                        onClick={this.addModifier}
+                        onDrop={this.dropHandler}
                       />
                     </React.Fragment>
                   )

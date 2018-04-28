@@ -28,16 +28,4 @@
       position: absolute -6px 0 -6px 0;
     }
   }
-  /*
-  &.drop {
-    & ~ div.container {
-      transform: translateY(32px);
-    }
-
-    & ~ div:not(.container) {
-      transition: .15s ease-out;
-      transform: translateY(32px);
-    }
-  }
-  */
 }

@@ -1,22 +1,28 @@
 export const ACTION: {[key: string]: string} = {
-  BOX_ADD: 'BOX_ADD',
-  BOX_MOVE: 'BOX_MOVE',
-  BOX_SET_TYPE: 'BOX_SET_TYPE',
-  BOX_DROPPED: 'BOX_DROPPED',
+  add: 'ADD',
+  setType: 'SET_TYPE',
+  drop: 'DROP',
+  startDrag: 'START_DRAG',
+  move: 'MOVE',
+  cancelMove: 'CANCEL_MOVE'
 }
 
 export const STATUS: {[key: string]: string} = {
-  UNCHANGED: 'UNCHANGED',
-  INITIALIZED: 'INITIALIZED',
-  UNINITIALIZED: 'UNINITIALIZED',
-  RELOCATED: 'RELOCATED',
-  DROPPED: 'DROPPED',
+  unchanged: 'UNCHANGED',
+  initialized: 'INITIALIZED',
+  uninitialized: 'UNINITIALIZED',
+  beingDragged: 'BEING_DRAGGED',
+  dragCanceled: 'DRAG_CANCELED',
+  dropped: 'DROPPED',
+  moved: 'MOVED',
 }
 
 export const STATUS_BY_ACTION: {[key: string]: string} = {
-  DEFAULT: STATUS.UNCHANGED,
-  BOX_ADD: STATUS.UNINITIALIZED,
-  BOX_MOVE: STATUS.RELOCATED,
-  BOX_SET_TYPE: STATUS.INITIALIZED,
-  BOX_DROPPED: STATUS.DROPPED,
+  default: STATUS.unchanged,
+  ADD: STATUS.uninitialized,
+  SET_TYPE: STATUS.initialized,
+  START_DRAG: STATUS.moving,
+  CANCEL_MOVE: STATUS.dragCanceled,
+  DROP: STATUS.dropped,
+  MOVE: STATUS.moved,
 }

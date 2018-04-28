@@ -27,35 +27,19 @@
     }
   }
 
-  &.disappear {
-    animation: containerDisappear .25s ease-out forwards;
+  &.collapse {
+    animation: containerCollapse .25s ease-out forwards;
     & + div {
       height: 0;
       transition: all .1s;
     }
   }
 
-  &.drop {
-    animation: containerDrop .25s ease-in-out forwards;
+  &.move {
+    animation: containerMove .25s ease-in-out forwards;
   }
 
-  &.reactToHover:hover {
-    background: rgba(0, 0, 0, .1);
-  }
-  /*
-  // &:not(.isABoxBeingDragged):not(.appear):hover {
-  //   background: rgba(0, 0, 0, .1);
-  // }
-  */
-  &:not(.isMoving) {
-    &.isABoxBeingDragged:after {
-      display: block;
-      content: ' ';
-      position: absolute 0;
-    }
-  }
-
-  &.isMoving {
+  &.isBeingDragged {
     z-index: 1000;
     background: rgba(0, 200, 200, .8);
     color: #FFF;
@@ -73,12 +57,12 @@
   to {opacity: 0}
 }
 
-@keyframes containerDisappear {
+@keyframes containerCollapse {
   from {max-height: var(--height);}
   to {max-height: 0;}
 }
 
-@keyframes containerDrop {
-  from {max-height: 0;}
-  to {max-height: var(--height);}
+@keyframes containerMove {
+  from {transform: translate3d(var(--fromX), var(--fromY), 0)}
+  to {transform: translate3d(0, var(--toY), 0)}
 }
