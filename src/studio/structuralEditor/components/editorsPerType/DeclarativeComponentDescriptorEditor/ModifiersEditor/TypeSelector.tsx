@@ -1,12 +1,16 @@
-import {React} from '$studio/handy'
+import {React, connect} from '$studio/handy'
 import css from './TypeSelector.css'
 import HeadlessDataList from '$studio/common/components/HeadlessDataList/HeadlessDataList'
+import {IStudioStoreState} from '$studio/types'
+import _ from 'lodash'
+import {IModifierDescriptor} from '$studio/componentModel/types'
 
 interface IProps {
   left: number
   top: number
   width: number
   height: number
+  listOfCoreModifiers: {id: string; name: string}[]
   onSelect: (option: string) => any
   onCancel: () => any
 }
@@ -30,11 +34,14 @@ class TypeSelector extends React.PureComponent<IProps, IState> {
   }
 
   onSelect = (option: string) => {
-    this.props.onSelect(option)
+    const {id} = this.props.listOfCoreModifiers.find(
+      ({name}) => name === option,
+    )!
+    this.props.onSelect(id)
   }
 
   render() {
-    const {left, top, width, height} = this.props
+    const {left, top, width, height, listOfCoreModifiers} = this.props
     const {innerHeight} = window
     const inputStyle = {
       '--left': left,
@@ -51,14 +58,7 @@ class TypeSelector extends React.PureComponent<IProps, IState> {
 
     return (
       <HeadlessDataList
-        options={[
-          'translateX',
-          'translateY',
-          'translateZ',
-          'rotateX',
-          'rotateY',
-          'rotateZ',
-        ]}
+        options={listOfCoreModifiers.map(({name}) => name)}
         onSelect={this.onSelect}
         onCancel={this.props.onCancel}
         onClickOutside={this.props.onCancel}
@@ -68,11 +68,15 @@ class TypeSelector extends React.PureComponent<IProps, IState> {
             <>
               <div className={css.inputContainer} style={inputStyle}>
                 <input
-                  ref={c => (this.input = c)}
                   type="text"
+                  className={css.input}
+                  ref={c => (this.input = c)}
                   onBlur={this.props.onCancel}
                   onChange={e => onQuery(e.target.value)}
                 />
+                <span className={css.hint}>
+                  {filteredOptions[focusedIndex]}
+                </span>
               </div>
               <div className={css.listContainer} style={listStyle}>
                 {filteredOptions.map((o, i) => (
@@ -96,4 +100,17 @@ class TypeSelector extends React.PureComponent<IProps, IState> {
   }
 }
 
-export default TypeSelector
+export default connect((s: IStudioStoreState) => {
+  const coreModifierDescriptors = _.get(s, [
+    'ahistoricComponentModel',
+    'coreModifierDescriptors',
+  ])
+  return {
+    listOfCoreModifiers: Object.values(coreModifierDescriptors).map(
+      (desc: IModifierDescriptor) => ({
+        id: desc.id,
+        name: desc.id.split('/').slice(-1)[0],
+      }),
+    ),
+  }
+})(TypeSelector as React.ComponentClass<any>)

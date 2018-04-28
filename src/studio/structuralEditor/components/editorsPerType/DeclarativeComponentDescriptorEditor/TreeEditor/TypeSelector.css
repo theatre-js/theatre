@@ -27,7 +27,7 @@
   // background: #0C1620;
   background: #0e1315;
   padding: 5px 0;
-  
+
   opacity: 0;
   transform: translateY(6px);
   animation: listAppear .2s ease-in-out forwards;

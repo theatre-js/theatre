@@ -15,7 +15,6 @@ import {
 } from '$src/studio/componentModel/types'
 // import ListOfModifierInstantiationDescriptorsInspector from './ListOfModifierInstantiationDescriptorsInspector'
 // import PaleMessage from '$src/studio/common/components/PaleMessage'
-import {IStudioStoreState} from '$studio/types'
 import {Subscriber} from 'react-broadcast'
 import {PanelActiveModeChannel} from '$studio/workspace/components/Panel/Panel'
 import generateUniqueId from 'uuid/v4'
@@ -23,6 +22,7 @@ import ModifierSensor from '$studio/structuralEditor/components/editorsPerType/D
 import ModifierBox from '$studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/ModifiersEditor/ModifierBox'
 import {STATUS_BY_ACTION, ACTION, STATUS} from './constants'
 import {reduceStateAction} from '$shared/utils/redux/commonActions'
+import {IStudioStoreState} from '$studio/types'
 interface IOwnProps {
   pathToComponentDescriptor: string[]
 }
@@ -83,9 +83,9 @@ class ModifiersEditor extends StudioComponent<IProps, IState> {
         ({byId, list}) => {
           const newModifier = {
             __descriptorType: 'ModifierInstantiationValueDescriptor',
-            enabled: true,
+            enabled: false,
             props: {},
-            modifierId: '', //FIXME:
+            modifierId: 'TheaterJS/Core/HTML/UberModifier',
           }
           return {
             list: list.slice(0, index).concat(uniqueId, list.slice(index)),
@@ -162,6 +162,7 @@ class ModifiersEditor extends StudioComponent<IProps, IState> {
           return {
             ...modifier,
             modifierId: type,
+            enabled: true,
           }
         },
       ),

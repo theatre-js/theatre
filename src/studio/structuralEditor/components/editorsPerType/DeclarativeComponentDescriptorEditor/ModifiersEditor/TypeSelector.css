@@ -1,18 +1,32 @@
+.inputText {
+  line-height: calc(var(--height) * 1px);
+  font-size: 12px;
+  font-weight: 300;
+}
+
 .inputContainer {
   position: absolute;
   left: var(--left);
   top: var(--top);
   width: var(--width);
   height: var(--height);
+}
 
-  & > input {
-    width: 100%;
-    height: 100%;
-    line-height: var(--height);
-    font-size: 12px;
-    padding: 0 5px;
-    box-sizing: border-box;
-  }
+.input {
+  composes: inputText;
+  width: 100%;
+  height: 100%;
+  padding: 0 5px;
+  box-sizing: border-box;
+}
+
+.hint {
+  composes: inputText;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 5px;
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .listContainer {
@@ -26,6 +40,19 @@
   max-height: var(--height);
 
   animation: appear 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.575);
+
+  &:empty {
+    &:after {
+      display: block;
+      position: relative;
+      content: 'No Match Found!';
+      font-size: 10px;
+      height: 30px;
+      line-height: 30px;
+      opacity: 1;
+      text-align: center;
+    }
+  }
 }
 
 @keyframes appear {
