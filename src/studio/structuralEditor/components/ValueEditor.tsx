@@ -9,6 +9,7 @@ import * as typeSystem from '$studio/typeSystem'
 interface IOwnProps {
   path: string[]
   typeName?: string
+  config?: Record<string, $FixMe>
 }
 
 interface IProps extends IOwnProps {
@@ -17,6 +18,7 @@ interface IProps extends IOwnProps {
 
 type State = {}
 
+// @todo use PropsAsPointer
 class ValueEditor extends StudioComponent<IProps, State> {
   render() {
     const {typeName} = this.props
@@ -30,7 +32,7 @@ class ValueEditor extends StudioComponent<IProps, State> {
       throw new Error(`Type '${typeName}' doesn't have a structural editor yet`)
     }
 
-    return <EditorComponent path={this.props.path} />
+    return <EditorComponent path={this.props.path} config={this.props.config} />
   }
 }
 

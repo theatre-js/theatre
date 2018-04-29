@@ -1,4 +1,4 @@
-import * as _ from 'lodash'
+import {keyBy, mapValues} from 'lodash'
 
 // @ts-ignore
 const context = require.context(
@@ -8,8 +8,8 @@ const context = require.context(
 )
 const listOfModulePaths: Array<string> = context.keys()
 const requireModuleByPath: typeof require = context
-const components = _.mapValues(
-  _.keyBy(listOfModulePaths, s => {
+const components = mapValues(
+  keyBy(listOfModulePaths, s => {
     const matches: Array<string> = s.match(
       /\/([a-zA-Z]+)Editor\/([a-zA-Z]+)Editor\.tsx$/,
     ) as $IntentionalAny

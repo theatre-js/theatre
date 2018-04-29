@@ -7,8 +7,10 @@ import atom, {Atom, val} from '$shared/DataVerse2/atom'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 
+const emptyProps = {}
+
 type ChildrenType<InnerProps> = (
-  p: Pointer<InnerProps>,
+  propsP: Pointer<InnerProps>,
   studio: Studio,
 ) => AbstractDerivation<React.ReactNode> | React.ReactNode
 
@@ -35,7 +37,7 @@ export default class PropsAsPointer<
 
   componentWillReceiveProps(newProps: Props<InnerProps>) {
     this._atom.setState({
-      props: newProps.props || {},
+      props: newProps.props || emptyProps,
       children: newProps.children,
     })
   }

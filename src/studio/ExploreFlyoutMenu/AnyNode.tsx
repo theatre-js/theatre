@@ -8,7 +8,7 @@ import {val} from '$shared/DataVerse2/atom'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import TextNode from './TextNode'
 import RegularNode from './RegularNode'
-import {isViewportElement} from '$studio/workspace/components/WhatToShowInBody/Viewports/Viewport'
+import {isViewportNode} from '$studio/workspace/components/WhatToShowInBody/Viewports/Viewport'
 import ViewportNode from './ViewportNode'
 
 type Props = {
@@ -41,7 +41,7 @@ const AnyNode = (props: Props): React.ReactElement<any> => (
         throw new Error(`@todo Find a way to display Wrapper nodes`)
       } else {
         const nativeNode = val((nodeP as Pointer<GenericNode>).nativeNode)
-        if (isViewportElement(nativeNode)) {
+        if (isViewportNode(nativeNode)) {
           return (
             <ViewportNode
               volatileId={val(propsP.volatileId)}

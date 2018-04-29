@@ -131,6 +131,8 @@ declare module 'socket.io' {
   export default a
 }
 
+declare module 'fuzzaldrin-plus'
+
 declare module 'error-overlay-webpack-plugin' {
   const a: any
   export default a

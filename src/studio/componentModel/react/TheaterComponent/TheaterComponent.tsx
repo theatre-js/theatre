@@ -354,6 +354,6 @@ export default abstract class TheaterComponent<
   }
 }
 
-export const isTheaterComponent = (s: mixed): s is TheaterComponent<mixed> =>
+export const isTheaterComponent = (s: mixed): s is TheaterComponent<mixed> & {constructor: typeof TheaterComponent} =>
   // @ts-ignore @ignore
   s && s.isTheaterJSComponent === true

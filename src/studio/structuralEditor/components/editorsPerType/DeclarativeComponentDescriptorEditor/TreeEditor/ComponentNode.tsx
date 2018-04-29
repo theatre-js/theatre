@@ -9,7 +9,13 @@ type Props = {
   nodeProps: $FixMe
   setClassValue: Function
   isSelected: boolean
+  onCancelSelectingType: () => void
+  isCommandDown: boolean
+  listOfDisplayNames: string[]
+  hasChildren: boolean
+  onSelectComponentType: (nodeType: $FixMe, displayName?: string) => void
 }
+
 type State = {
   isContentHidden: boolean
   classValue: string
@@ -24,6 +30,9 @@ class ComponentNode extends React.PureComponent<Props, State> {
     isContentHidden: false,
     isTypeBeingChanged: false,
   }
+
+  classInput: HTMLInputElement
+  container: HTMLDivElement
 
   componentDidMount() {
     this._setClassValueFromProps()
@@ -40,7 +49,7 @@ class ComponentNode extends React.PureComponent<Props, State> {
     }
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps: Props, prevState: State) {
     if (
       prevProps.nodeProps.class !== this.props.nodeProps.class ||
       prevState.classValue !== this.state.classValue ||
@@ -82,13 +91,13 @@ class ComponentNode extends React.PureComponent<Props, State> {
     this.classInput.select()
   }
 
-  handleClassValueChange = e => {
+  handleClassValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     fitInput(this.classInput)
     const {value} = e.target
     this.setState(() => ({classValue: value}))
   }
 
-  handleKeyDown = e => {
+  handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.keyCode === 13) {
       this.classInput.blur()
       this.setClassValue()
@@ -118,7 +127,10 @@ class ComponentNode extends React.PureComponent<Props, State> {
     }
   }
 
-  handleClick = (e, target) => {
+  handleClick = (
+    _: React.MouseEvent<HTMLElement>,
+    target: 'CONTAINER' | 'TYPE' | '',
+  ) => {
     // e.stopPropagation()
     if (this.props.isSelected) {
       if (target === 'TYPE') {
@@ -131,19 +143,9 @@ class ComponentNode extends React.PureComponent<Props, State> {
     }
   }
 
-  onTypeChange = e => {
-    const typeValue = e.target.value
-    this.setState(() => ({typeValue}))
-  }
-
-  _handleClickOutside = (e: $FixMe, defaultType: $FixMe) => {
-    if (!this.container.contains(e.target)) {
+  _handleClickOutside = (e: MouseEvent) => {
+    if (!this.container.contains(e.target as $IntentionalAny)) {
       this.props.onCancelSelectingType()
-      // if (this.props.nodeProps.status === STATUS.UNINITIALIZED) {
-      //   this.props.onSelectComponentType(defaultType)
-      // } else {
-      //   this.props.onCancelSelectingType()
-      // }
     }
   }
 
@@ -152,7 +154,7 @@ class ComponentNode extends React.PureComponent<Props, State> {
     const {isContentHidden, classValue, isTypeBeingChanged} = this.state
     return (
       <div
-        ref={c => (this.container = c)}
+        ref={c => (this.container = c as HTMLDivElement)}
         className={cx(css.container, {
           [css.isContentHidden]: isContentHidden,
           [css.isSelected]: isSelected,
@@ -163,12 +165,14 @@ class ComponentNode extends React.PureComponent<Props, State> {
         }}
         onClick={e => this.handleClick(e, 'CONTAINER')}
       >
-        <div className={css.displayName} onClick={this.clickHandler}>
+        <div className={css.displayName}>
           <span className={cx(css.tagOpen, {[css.isSelected]: isSelected})}>
             &lt;
           </span>
           <TypeSelector
-            onClick={e => this.handleClick(e, 'TYPE')}
+            onClick={(e: React.MouseEvent<HTMLInputElement>) =>
+              this.handleClick(e, 'TYPE')
+            }
             isActive={isTypeBeingChanged}
             initialValue={nodeProps.displayName}
             listOfDisplayNames={this.props.listOfDisplayNames}
@@ -189,7 +193,7 @@ class ComponentNode extends React.PureComponent<Props, State> {
             >
               <input
                 type="text"
-                ref={c => (this.classInput = c)}
+                ref={c => (this.classInput = c as $IntentionalAny)}
                 className={cx(css.input, {
                   [css.isDisabled]: !isSelected || isCommandDown,
                 })}

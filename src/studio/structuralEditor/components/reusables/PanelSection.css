@@ -57,3 +57,7 @@
   background: #1e2529;
   margin-top: 16px;
 }
+
+.container:last-child > .separator {
+  display: none;
+}

@@ -5,8 +5,9 @@ import {STATUS} from './constants'
 import {debounce} from 'lodash'
 
 type Props = {
-  nodeProps: Object
+  nodeProps: {value: $FixMe, status: $FixMe}
   onChange: Function
+  handleTypeChange: () => void
 }
 type State = {
   isFocused: boolean
@@ -16,6 +17,7 @@ type State = {
 }
 
 class TextNode extends React.PureComponent<Props, State> {
+  input: HTMLInputElement
   constructor(props: Props) {
     super(props)
 
@@ -35,7 +37,7 @@ class TextNode extends React.PureComponent<Props, State> {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps: Props) {
     if (
       (nextProps.nodeProps.status === STATUS.CHANGED ||
         nextProps.nodeProps.status === STATUS.UNCHANGED) &&
@@ -46,12 +48,12 @@ class TextNode extends React.PureComponent<Props, State> {
     }
   }
 
-  handleKeyDown = e => {
+  handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     this.setState(() => ({previousValue: this.input.value}))
     if (e.keyCode === 13 || e.keyCode === 27) this.input.blur()
   }
 
-  handleKeyUp = e => {
+  handleKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (
       e.keyCode === 8 &&
       this.props.nodeProps.value === '' &&
@@ -84,7 +86,7 @@ class TextNode extends React.PureComponent<Props, State> {
       >
         <div className={css.textLogo}>t</div>
         <input
-          ref={c => (this.input = c)}
+          ref={c => (this.input = c as $IntentionalAny)}
           type="text"
           className={css.text}
           value={this.state.value}

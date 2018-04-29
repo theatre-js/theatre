@@ -8,14 +8,8 @@ export interface IDeclarativeComponentDescriptor {
   type: 'Declarative'
   localHiddenValuesById: {[localid: string]: ValueDescriptor}
   whatToRender: WhatToRender
-  ruleSetsById: {[id: string]: IRuleSet} // later
-  listOfRulesets: Array<string>
   timelineDescriptors: {
     byId: {[id: string]: ITimelineDescriptor}
-    list: Array<string>
-  }
-  props: {
-    byId: {[id: string]: IPropDescriptor}
     list: Array<string>
   }
   meta?: {
@@ -23,6 +17,7 @@ export interface IDeclarativeComponentDescriptor {
       selectedNodeId?: string
     }
   }
+  isScene: boolean
 }
 
 export type WhatToRender = IReferenceToLocalHiddenValue | IReferenceToProp

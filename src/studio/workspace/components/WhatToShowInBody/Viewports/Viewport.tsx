@@ -30,12 +30,14 @@ export default class Viewport extends ReactiveComponentWithStudio<
 > {
   static [viewportSym] = true
   volatileId: string
+  viewportId: string
   constructor(props: IProps, context: $IntentionalAny) {
     super(props, context)
     this.volatileId = this.studio.elementTree.mirrorOfReactTree.assignEarlyVolatileIdToComponentInstance(
       this,
     )
 
+    this.viewportId = props.id
     this.studio.elementTree.registerUnexpandedViewport(
       props.id,
       this.volatileId,
@@ -115,7 +117,7 @@ export default class Viewport extends ReactiveComponentWithStudio<
   }
 }
 
-export const isViewportElement = (n: $IntentionalAny): n is Viewport =>
+export const isViewportNode = (n: $IntentionalAny): n is Viewport =>
   n && n.constructor && n.constructor[viewportSym] === true
 
 const getDisplayNameOfComponent = (studio: Studio, id: string) => {

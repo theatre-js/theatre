@@ -25,6 +25,7 @@ import {IStudioStoreState} from '$studio/types'
 import StudioComponent from '$studio/handy/StudioComponent'
 import React from 'react'
 import connect from '$studio/handy/connect'
+import { IDeclarativeComponentDescriptor } from '$studio/componentModel/types/declarative';
 
 export const metaKey = 'composePanel'
 const PLACEHOLDER = '\n'
@@ -41,7 +42,7 @@ export const getSelectedNodeId = (
 
 interface IOwnProps {
   pathToComponentDescriptor: string[]
-  rootComponentDescriptor: Object
+  rootComponentDescriptor: IDeclarativeComponentDescriptor
 }
 
 interface IProps extends IOwnProps {}
@@ -71,7 +72,7 @@ type State = {
       }
 }
 
-const getDefaultComponentProps = id => ({
+const getDefaultComponentProps = (id: string) => ({
   __descriptorType: DESCRIPTOR_TYPE.COMPONENT_INSTANTIATION_VALUE_DESCRIPTOR,
   props: {
     key: id,
@@ -109,13 +110,14 @@ class TreeEditor extends StudioComponent<IProps, State> {
     isCommandDown: false,
     nodeBeingDragged: null,
     selectedNodeId: null,
+    componentBeingSet: null
   }
 
   componentDidMount() {
     this._setNodes(this.props.rootComponentDescriptor)
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps: IProps) {
     if (
       !_.isEqual(
         nextProps.rootComponentDescriptor.localHiddenValuesById,
@@ -464,7 +466,7 @@ class TreeEditor extends StudioComponent<IProps, State> {
             'localHiddenValuesById',
             currentParentId,
           ),
-          reducer: currentParent => {
+          reducer: (currentParent: $FixMe) => {
             const children = [].concat(currentParent.props.children)
             childToMove = children.splice(currentIndex, 1)
             currentParent.props.children = children
@@ -476,7 +478,7 @@ class TreeEditor extends StudioComponent<IProps, State> {
             'localHiddenValuesById',
             newParentId,
           ),
-          reducer: newParent => {
+          reducer: (newParent: $FixMe) => {
             const children = [].concat(newParent.props.children || [])
             newParent.props.children = [
               ...children.slice(0, newIndex),

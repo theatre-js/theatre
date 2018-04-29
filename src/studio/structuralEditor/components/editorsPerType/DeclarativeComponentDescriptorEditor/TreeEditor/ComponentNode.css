@@ -3,8 +3,6 @@
 
 .container {
   position: relative;
-  // left: nodePadding;
-  // width: calc(100% - 2 * nodePadding);
   height: nodeHeight;
   font-weight: 400;
   white-space: nowrap;
@@ -15,11 +13,6 @@
 
   opacity: 1;
   /* transition: opacity .15s ease-in-out; */
-
-  // display: grid;
-  // grid-template-columns: auto 1fr;
-  // grid-column-gap: 5px;
-  // align-items: end;
 
   &.isContentHidden {
     opacity: 0;
@@ -49,22 +42,24 @@
 
   }
   */
+
+  &.isSelected {
+
+  }
 }
 
 .displayName {
   /* cursor: pointer; */
-  // grid-column: 1;
 }
 
 .className {
   position: relative;
-  // grid-column: 2;
   display: inline-block;
 }
 
 .input {
-  color: rgba(255, 255, 255, .6);
-  font-style: italic;
+  color: white;
+  /* font-style: italic; */
   border-bottom: 1px solid transparent;
   transition: border-bottom-color .15s ease-in-out;
   pointer-events: auto;
@@ -80,10 +75,20 @@
 
 .tagOpen, .tagClose {
   color: #4f5d77;
+}
 
-  /* &.isSelected {
-    color: #9fafcc;
-  } */
+.tagOpen {
+  margin-right: 2px;
+}
+
+.tagClose {
+  margin-left: 1px;
+}
+
+.container.isSelected > .displayName {
+  & > .tagOpen, & > .tagClose {
+    color: rgba(255,255,255, 0.5);
+  }
 }
 
 .container.isRelocated > .displayName > .tagOpen,
@@ -93,7 +98,7 @@
 
 .tagClose {
   position: relative;
-  left: -1px;
+  /* left: -1px; */
 }
 
 .tagName {

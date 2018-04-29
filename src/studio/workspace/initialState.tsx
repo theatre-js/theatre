@@ -147,7 +147,7 @@ export const historicWorkspaceInitialState: IWorkspaceNamespaceHistoricState = {
         outputs: {},
       },
     },
-    listOfVisibles: ['leftPanel', /*'timelinePanel' , 'rightPanel' */],
+    listOfVisibles: ['leftPanel', 'rightPanel', /*'timelinePanel'  */],
     idOfActivePanel: 'explore',
     panelObjectBeingDragged: null,
   },

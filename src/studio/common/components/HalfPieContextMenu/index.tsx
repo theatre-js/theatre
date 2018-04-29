@@ -126,8 +126,14 @@ class HalfPieContextMenu extends React.PureComponent<IProps, IState> {
     document.removeEventListener('keyup', this._handleKeyUp)
   }
 
-  _handleKeyDown = (e: $FixMe) => {
+  _handleKeyDown = (e: KeyboardEvent) => {
     const pressedKeyCode = e.keyCode
+    // esc
+    if (e.keyCode === 27) {
+      this.props.close()
+      return
+    }
+    
     this.setState(() => ({pressedKeyCode}))
   }
 

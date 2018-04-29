@@ -1,4 +1,9 @@
+@import '$studio/common/styles.css';
+
+
 .container {
+  @include typography;
+  
   padding: 2em;
   text-align: center;
   color: rgba(#FFF, 0.8);

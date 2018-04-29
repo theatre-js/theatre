@@ -10,6 +10,10 @@ import {getComponentIdOfActiveNode} from '$studio/ExploreFlyoutMenu/utils'
 import React from 'react'
 import * as typeSystem from '$studio/typeSystem'
 import LeftPanelHeader from './LeftPanelHeader'
+import {getActiveNode} from '../ExploreFlyoutMenu/utils'
+import Studio from '$studio/bootstrap/Studio'
+import {isViewportNode} from '$studio/workspace/components/WhatToShowInBody/Viewports/Viewport'
+import ViewportEditor from '$studio/structuralEditor/components/editorsPerType/ViewportEditor/ViewportEditor'
 
 type IProps = {}
 
@@ -19,64 +23,78 @@ export default class ComposePanelContent extends React.PureComponent<
   IProps,
   IState
 > {
-  static panelName = 'Left'
+  static panelName = 'Component'
   render() {
     return (
       <PropsAsPointer props={this.props}>
         {(_: Pointer<IProps>, studio) => {
-          const possibleComponentId = getComponentIdOfActiveNode(studio)
-
-          if (!possibleComponentId) {
-            return (
-              <Wrapper>
-                <PaleMessage
-                  message={`Select an element from the Explorer pane`}
-                />
-              </Wrapper>
-            )
-          }
-
-          const componentId = possibleComponentId as ComponentId
-
-          const pathToComopnentDescriptor = componentModelSelectors.getPathToComponentDescriptor(
-            componentId,
+          return (
+            <Panel header={<LeftPanelHeader />}>
+              {renderEditorForEitherLeftOrRightPanel('left', studio)}
+            </Panel>
           )
-
-          const componentDescriptorP = componentModelSelectors.getComponentDescriptor(
-            studio.atom2.pointer,
-            componentId,
-          )
-
-          const type = val(componentDescriptorP.type)
-
-          if (type === 'HardCoded') {
-            return (
-              <Wrapper>
-                <PaleMessage
-                  message={`<${val(
-                    componentDescriptorP.displayName,
-                  )}> is a hard-coded component`}
-                />
-              </Wrapper>
-            )
-          } else {
-            return (
-              <Wrapper>
-                <ValueEditor
-                  path={pathToComopnentDescriptor}
-                  typeName={
-                    typeSystem.types.DeclarativeComponentDescriptor.typeName
-                  }
-                />
-              </Wrapper>
-            )
-          }
         }}
       </PropsAsPointer>
     )
   }
 }
 
-const Wrapper = ({children}: {children: React.ReactNode}) => {
-  return <Panel header={<LeftPanelHeader />}>{children}</Panel>
+export const renderEditorForEitherLeftOrRightPanel = (
+  leftOrRight: 'left' | 'right',
+  studio: Studio,
+) => {
+  const possibleActiveNode = getActiveNode(studio)
+  if (!possibleActiveNode) {
+    return <PaleMessage message={`Select an element from the Explorer pane`} />
+  }
+
+  const activeNode = possibleActiveNode
+
+  if (isViewportNode(activeNode)) {
+    if (leftOrRight === 'left') {
+
+      const viewportId = activeNode.viewportId
+      return <ViewportEditor viewportId={viewportId} partsToShow={['dims', 'scene']} />
+    } else { return null}
+  }
+
+  const possibleComponentId = getComponentIdOfActiveNode(studio)
+
+  if (!possibleComponentId) {
+    return <PaleMessage message={`Select an element from the Explorer pane`} />
+  }
+
+  const componentId = possibleComponentId as ComponentId
+
+  const pathToComopnentDescriptor = componentModelSelectors.getPathToComponentDescriptor(
+    componentId,
+  )
+
+  const componentDescriptorP = componentModelSelectors.getComponentDescriptor(
+    studio.atom2.pointer,
+    componentId,
+  )
+
+  const type = val(componentDescriptorP.type)
+
+  if (type === 'HardCoded') {
+    return (
+      <PaleMessage
+        message={`<${val(
+          componentDescriptorP.displayName,
+        )}> is a hard-coded component`}
+      />
+    )
+  } else {
+    return (
+      <ValueEditor
+        path={pathToComopnentDescriptor}
+        typeName={typeSystem.types.DeclarativeComponentDescriptor.typeName}
+        config={{
+          partsToShow:
+            leftOrRight === 'left' ? ['name', 'template'] : ['modifiers'],
+        }}
+      />
+    )
+  }
 }

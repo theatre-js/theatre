@@ -3,14 +3,19 @@ import * as css from './TypeSelector.css'
 import {filter} from 'fuzzaldrin-plus'
 import cx from 'classnames'
 import * as _ from 'lodash'
-import {NODE_TYPE, STATUS} from './constants'
+import {NODE_TYPE} from './constants'
 import {fitInput} from './utils'
 
 type Props = {
   isActive: boolean
   initialValue: string
-  onClick: Function
+  onClick: (e: React.MouseEvent<HTMLElement>) => void
   listOfDisplayNames: string[]
+  hasChildren: boolean
+  onSelect: (nodeType: $FixMe, displayName?: string) => void
+  handleClickOutsideList: (e: MouseEvent) => void
+  onCancel: () => void
+  onTab: () => void
 }
 type State = {
   query: string
@@ -20,6 +25,8 @@ type State = {
 }
 
 class TypeSelector extends React.PureComponent<Props, State> {
+  input: HTMLInputElement
+  listContainer: HTMLDivElement
   constructor(props: Props) {
     super(props)
 
@@ -31,6 +38,8 @@ class TypeSelector extends React.PureComponent<Props, State> {
       focusedIndex: 0,
       willListUnmount: false,
     }
+    this.input = undefined as $IntentionalAny
+    this.listContainer = undefined as $IntentionalAny
   }
 
   componentDidMount() {
@@ -42,7 +51,7 @@ class TypeSelector extends React.PureComponent<Props, State> {
     document.removeEventListener('mousedown', this._handleMouseDownOutsideList)
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps: Props) {
     if (!this.props.isActive && nextProps.isActive) {
       this.input.focus()
       this.input.select()
@@ -61,7 +70,7 @@ class TypeSelector extends React.PureComponent<Props, State> {
     }
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps: Props, prevState: State) {
     if (
       (!this.props.isActive && prevProps.isActive) ||
       this.state.query !== prevState.query
@@ -72,14 +81,11 @@ class TypeSelector extends React.PureComponent<Props, State> {
 
   _handleMouseDownOutsideList = (e: $FixMe) => {
     if (this.listContainer && !this.listContainer.contains(e.target)) {
-      this.props.handleClickOutsideList(e, {
-        nodeType: NODE_TYPE.COMPONENT,
-        displayName: 'div',
-      })
+      this.props.handleClickOutsideList(e)
     }
   }
 
-  handleKeyDown = e => {
+  handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const maxIndex = this.state.matchedDisplayNames.length - 1
     if (e.keyCode === 38) {
       e.preventDefault()
@@ -116,7 +122,7 @@ class TypeSelector extends React.PureComponent<Props, State> {
     }
   }
 
-  onChange = e => {
+  onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     fitInput(this.input)
     const {value} = e.target
     if (value.toLowerCase() === 't ' && !this.props.hasChildren) {
@@ -149,7 +155,7 @@ class TypeSelector extends React.PureComponent<Props, State> {
     return isNameValid
   }
 
-  _unmount(cb) {
+  _unmount(cb: () => void) {
     this.setState(() => ({willListUnmount: true}))
     setTimeout(cb, 100)
   }
@@ -160,7 +166,7 @@ class TypeSelector extends React.PureComponent<Props, State> {
       <div className={css.container} onClick={this.props.onClick}>
         <input
           type="text"
-          ref={c => (this.input = c)}
+          ref={c => {this.input = c as $IntentionalAny}}
           className={cx(css.input, {[css.isDisabled]: !this.props.isActive})}
           value={query}
           onChange={this.onChange}
@@ -168,7 +174,7 @@ class TypeSelector extends React.PureComponent<Props, State> {
         />
         {this.props.isActive && (
           <div
-            ref={c => (this.listContainer = c)}
+            ref={c => {this.listContainer = c as $IntentionalAny}}
             className={cx(css.list, {
               [css.willUnmount]: this.state.willListUnmount,
             })}

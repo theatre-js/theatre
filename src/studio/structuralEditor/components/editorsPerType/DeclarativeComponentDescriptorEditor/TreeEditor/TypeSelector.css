@@ -4,27 +4,25 @@
 
 .container {
   display: inline-block;
+  cursor: text;
+  height: 100%;
 }
 
 .input {
-  color: #d8d8d8;
+  color: white;
   pointer-events: auto;
-
+  height: 100%;
+  
   &.isDisabled {
-    pointer-events: none;
+    cursor: default;
   }
 }
 
 .list {
   position: absolute;
-  // top: calc(nodeHeight - 4px);
   top: calc(nodeHeight + 1px);
-  // width: calc(var(--width) - nodeIndent - nodePadding);
   width: calc(100% - nodeIndent - nodePadding);
-  // max-height: 100px;
   overflow: hidden scroll;
-  // background: rgb(10, 10, 40);
-  // background: #0C1620;
   background: #0e1315;
   padding: 5px 0;
 

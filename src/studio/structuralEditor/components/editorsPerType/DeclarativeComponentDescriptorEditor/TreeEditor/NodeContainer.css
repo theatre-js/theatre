@@ -1,4 +1,4 @@
-@value nodeHeight: 27px;
+@value nodeHeight: 30px;
 @value nodeMargin: 0;
 @value hoverBarColor: #3CDFFF;
 @value nodePadding: 8px;
@@ -6,12 +6,13 @@
 
 .container {
   position: relative;
-  --colorOffset: var(--depth) * 4 - 4;
+  --colorOffset: var(--depth) * 8 - 10;
   --colorCoords:
-    calc(39 - var(--colorOffset)),
-    calc(50 - var(--colorOffset)),
-    calc(56 - var(--colorOffset));
-  --color: rgb(var(--colorCoords));
+    calc(59 + var(--colorOffset)),
+    calc(70 + var(--colorOffset)),
+    calc(76 + var(--colorOffset));
+  --color: rgb(var(--colorCoords)); 
+
   --highlightColor: rgba(60, 223, 255, .1);
 
   &:hover {
@@ -105,8 +106,8 @@
 }
 
 .container.isSelected > .rootWrapper {
-  background: #0e1315;
-  // z-index: 1000;
+  background: #11a4d6;
+  z-index: 1000;
 }
 
 .container.isRelocated > .rootWrapper {

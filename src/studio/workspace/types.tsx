@@ -43,7 +43,7 @@ export type Panels = {
   idOfActivePanel: undefined | null | string
 }
 
-type Viewport = {
+export type IViewport = {
   id: string
   dimensions: {width: number; height: number}
   position: {x: number; y: number}
@@ -54,7 +54,7 @@ export type IWorkspaceNamespaceHistoricState = {
   panels: Panels
 
   viewports: {
-    byId: Record<string, Viewport>
+    byId: Record<string, IViewport>
     /**
      * This designates which viewport is active, but only when the viewport*s
      * view is showing. In other words, this is only relevant if
