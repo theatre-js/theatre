@@ -1,7 +1,7 @@
 import fn from './pushDiffForProjectState.studioSocketEndpoint'
 import wrapLBEndpointForStudio, {
   WrapLBEndpointForStudio,
-} from '$studio/commsWithLB/wrapLBEndpointForStudio'
+} from '$theater/commsWithLB/wrapLBEndpointForStudio'
 
 const pushDiffForProjectState: WrapLBEndpointForStudio<
   typeof fn

@@ -1,0 +1,40 @@
+@import "$theater/common/styles.css";
+
+.container {
+  position: fixed;
+  z-index: $panelZIndex;
+  box-sizing: border-box;
+  --panelHeaderHeight: 34px;
+  --body-color: #263238;
+  background: var(--body-color);
+  @include typography;
+  --header-height: 32px;
+  
+}
+
+.header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--header-height);
+  @include typography;
+}
+
+.content {
+  position: absolute;
+  top: calc(var(--header-height) + 1px);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow-y: scroll;
+}
+
+.defaultHeaderContent {
+  height: var(--panelHeaderHeight);
+  display: flex;
+  justify-content: flex-start;
+  background: rgba(#FFFFFF, 0.04);
+  margin: 1px 1px 0 1px;
+}
+

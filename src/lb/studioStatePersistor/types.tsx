@@ -1,4 +1,4 @@
-import {IStudioHistoryState} from '$studio/types'
+import {ITheaterHistoryState} from '$theater/types'
 
 export interface StudioStatePersistorNamespaceState {
   byPath: Record<string, StateWithCacheData>
@@ -16,5 +16,5 @@ interface EmptyState {
 }
 interface FullState {
   checksum: string
-  data: IStudioHistoryState
+  data: ITheaterHistoryState
 }

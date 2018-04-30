@@ -1,0 +1,7 @@
+@import "$theater/common/styles.css";
+
+.container {
+  @include typography;
+  position: fixed 0;
+  z-index: 10000;
+}

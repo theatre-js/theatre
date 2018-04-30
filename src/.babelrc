@@ -35,7 +35,7 @@
         "stage-1"
       ]
     },
-    "studio:development": {
+    "theater:development": {
       "presets": [
         ["env", {"targets": {"chrome": "56", "modules": false}, "include": ["transform-es2015-classes"]}],
         "react",
