@@ -25,13 +25,6 @@ const isLiteral = s =>
   s === null
 
 const constructValue = (val: $FixMe, self: $FixMe) => {
-  // if (desP.isPointer !== true) {
-  // debugger
-  // throw Error('Pointers only')
-  // }
-  // debugger
-
-  // return desP.flatMap(val => {
   if (isLiteral(val)) {
     return val
   } else if (val && val.isDerivedArray === true) {

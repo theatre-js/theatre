@@ -74,7 +74,9 @@ export default function withCommonActions<
         // $FlowIgnore
         return pairs.reduce(
           (acc: $IntentionalAny, pair: Pair) =>
-            update(pair.path, pair.reducer, acc),
+            pair.path.length === 0
+              ? pair.reducer(acc)
+              : update(pair.path, pair.reducer, acc),
           state,
         )
         // fallback to inner reducer

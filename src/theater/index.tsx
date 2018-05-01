@@ -6,8 +6,11 @@ import '$theater/integrations/react/treeMirroring/setup'
 import Theater from '$theater/bootstrap/Theater'
 import createRootComponentForReact from './componentModel/react/createRootComponentForReact'
 import '$shared/DataVerse/devtoolsFormatters/setup'
+import Studio from '$theater/bootstrap/Studio'
 
-const theater = new Theater({withStudio: true})
+const theater = new Theater({})
+const studio = new Studio(theater)
+theater._setStudio(studio)
 // theaterStudioInstance.run()
 
 if (process.env.NODE_ENV === 'development') {

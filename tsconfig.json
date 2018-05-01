@@ -39,5 +39,10 @@
     "src/setupTests.ts",
     "vendor"
   ],
-  "types": ["typePatches", "webpack-env", "node"]
+  "types": ["typePatches", "webpack-env", "node"],
+  "plugins": [
+    {
+      "name": "typescript-snapshots-plugin"
+    }
+  ]
 }

@@ -33,7 +33,8 @@
       "\\$lb/(.*)": "<rootDir>/src/lb/$1",
       "\\$lf/(.*)": "<rootDir>/src/lf/$1",
       "\\$theater/(.*)": "<rootDir>/src/theater/$1",
-      "\\$shared/(.*)": "<rootDir>/src/shared/$1"
+      "\\$shared/(.*)": "<rootDir>/src/shared/$1",
+      "\\.(css|less)$": "identity-obj-proxy"
     },
     "setupFiles": [
       "./src/test/env.tsx"
@@ -123,9 +124,11 @@
     "fuzzaldrin-plus": "^0.6.0",
     "html-webpack-plugin": "^2.29.0",
     "husky": "^0.14.3",
+    "identity-obj-proxy": "^3.0.0",
     "immer": "^1.2.1",
     "io-ts": "^1.0.5",
     "jest": "^22.4.2",
+    "jiff": "^0.7.3",
     "json-touch-patch": "^0.11.2",
     "json2csv": "^3.11.4",
     "lodash": "^4.17.4",
@@ -169,6 +172,7 @@
     "tslint": "^5.9.1",
     "tslint-sonarts": "^1.4.0",
     "typescript": "^2.9.0-dev.20180402",
+    "typescript-snapshots-plugin": "^1.2.0",
     "typings-for-css-modules-loader": "^1.7.0",
     "url-loader": "^0.5.9",
     "uuid": "^3.1.0",

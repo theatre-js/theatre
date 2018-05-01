@@ -3,18 +3,9 @@ import {
   IDeclarativeComponentDescriptor,
   IModifierDescriptor,
 } from './declarative'
-import {VolatileId} from '$theater/integrations/react/treeMirroring/MirrorOfReactTree'
 export * from './declarative'
 
 export type ComponentId = string
-
-export interface IComponentInstantiationDescriptor {
-  displayName: string
-  componentId: ComponentId
-  props: {[key: string]: $FixMe}
-  modifierInstantiationDescriptorsById: {[id: string]: $FixMe}
-  listOfModifierInstantiationDescriptorIds: Array<string>
-}
 
 export interface IHardCodedComponentDescriptor {
   displayName: string

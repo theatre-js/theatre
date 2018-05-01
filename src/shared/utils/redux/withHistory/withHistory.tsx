@@ -1,5 +1,5 @@
 import makeUUID from 'uuid/v4'
-import jsonPatchLib, {Operation} from 'fast-json-patch'
+import jiff from 'jiff'
 import {
   reduceEntireStateAction,
   undoAction,
@@ -239,8 +239,8 @@ function createCommit<Snapshot>(
   oldSnapshot: Snapshot,
   newSnapshot: Snapshot,
 ): Commit {
-  const forwardDiff = jsonPatchLib.compare(oldSnapshot, newSnapshot)
-  const backwardDiff = jsonPatchLib.compare(newSnapshot, oldSnapshot)
+  const forwardDiff = jiff.diff(oldSnapshot, newSnapshot)
+  const backwardDiff = jiff.diff(newSnapshot, oldSnapshot)
   const timestamp = Date.now()
   const commitHash = makeUUID()
   const commit: Commit = {

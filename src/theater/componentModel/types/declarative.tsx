@@ -5,7 +5,6 @@ export interface IDeclarativeComponentDescriptor {
   __descriptorType: 'DeclarativeComponentDescriptor'
   id: ComponentId // this is unique
   displayName: string // this doesn't have to be
-  type: 'Declarative'
   localHiddenValuesById: {[localid: string]: ValueDescriptor}
   whatToRender: WhatToRender
   timelineDescriptors: {
@@ -62,7 +61,7 @@ export interface IReferenceToProp {
   propid: string
 }
 
-export type IMapDescriptor<O> = {[K in keyof O]: O[K]}
+export type IMapDescriptor<O> = Record<string, O>
 
 export type ArrayDescriptor<T> = Array<T>
 export type StringLiteralDescriptor = string

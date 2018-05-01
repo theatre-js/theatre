@@ -1,4 +1,3 @@
-import {Operation} from 'fast-json-patch'
 import {ensureProjectIsRecognised} from '$lb/projects/projectsSagas'
 import {call} from 'redux-saga/effects'
 import {isError} from '$shared/utils/isError'

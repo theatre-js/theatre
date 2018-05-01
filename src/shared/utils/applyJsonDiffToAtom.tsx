@@ -90,6 +90,8 @@ export default function applyJsonDiffToAtom(diff: Diff, atom: $FixMe) {
   if (opFn) {
     opFn(diff, stuff)
   } else {
+    if (diff.op === 'test') return
+    debugger
     throw Error(
       `@todo Diff op '${diff.op}' for atom type ${type} not yet supported`,
     )

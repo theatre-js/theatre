@@ -13,7 +13,6 @@ export const makeSceneComponent = (
       list: [],
       byId: {},
     },
-    type: 'Declarative',
     localHiddenValuesById: {
       first: null,
     },

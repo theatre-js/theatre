@@ -1,5 +1,5 @@
+import jiff from 'jiff'
 import {ITheaterStoreState, ITheaterHistoryState} from '$theater/types'
-import jsonPatchLib from 'fast-json-patch'
 import {select, take, fork, cancel, actionChannel} from 'redux-saga/effects'
 import {delay, buffers} from 'redux-saga'
 import getProjectState from '$lb/studioStatePersistor/getProjectState.caller'
@@ -93,7 +93,7 @@ export default class StatePersistor {
         yield take(ch)
         const state: ITheaterStoreState = yield select()
         const history = state['@@history']
-        const diffs = jsonPatchLib.compare(
+        const diffs = jiff.diff(
           self._lastPersistedStateInfo.state,
           history,
         )

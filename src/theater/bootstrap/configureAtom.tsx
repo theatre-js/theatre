@@ -1,4 +1,4 @@
-import jsonPatchLib from 'fast-json-patch'
+import {diff} from 'jiff'
 import applyJsonDiffToAtom from '$shared/utils/applyJsonDiffToAtom'
 import atomifyDeep, {Atomify} from '$shared/DataVerse/atoms/atomifyDeep'
 import StoreAndStuff from '$src/lb/bootstrap/StoreAndStuff'
@@ -13,7 +13,7 @@ export default function configureAtom(
 
   reduxStore.reduxStore.subscribe(() => {
     const newState = extractState(reduxStore.reduxStore.getState())
-    const diffs: Array<Object> = jsonPatchLib.compare(lastState, newState)
+    const diffs: Array<Object> = diff(lastState, newState, {invertible: false})
     for (const diff of diffs) {
       applyJsonDiffToAtom(diff, atom)
     }

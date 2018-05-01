@@ -9,19 +9,19 @@ import AbstractDerivedDict from '$shared/DataVerse/derivations/dicts/AbstractDer
 import {UnwrapDictAtom} from '$shared/DataVerse/atoms/dictAtom'
 import configureAtom2 from '$theater/bootstrap/configureAtom2'
 import {Atom} from '$shared/DataVerse2/atom'
-import Studio from './Studio'
+import Studio from '$theater/bootstrap/Studio'
 
 export type TheaterStateAtom = Atomify<ITheaterStoreState>
 
-type Options = {
-  withStudio: boolean
-}
+type Options = {}
 
 export default class Theater {
   atom2: Atom<ITheaterStoreState>
   _ran: boolean
   atom: TheaterStateAtom
-  atomP: PointerDerivation<AbstractDerivedDict<UnwrapDictAtom<TheaterStateAtom>>>
+  atomP: PointerDerivation<
+    AbstractDerivedDict<UnwrapDictAtom<TheaterStateAtom>>
+  >
   ticker: Ticker
   store: StoreAndStuff<ITheaterStoreState, $FixMe>
   studio: Studio
@@ -33,9 +33,10 @@ export default class Theater {
     this.atom = configureAtom(this.store)
     this.atomP = this.atom.derivedDict().pointer()
     this.atom2 = configureAtom2(this.store)
-    if (_options.withStudio) {
-      this.studio = new Studio(this)
-    }
+  }
+
+  _setStudio(studio: Studio) {
+    this.studio = studio
   }
 
   run(pathToProject: string) {

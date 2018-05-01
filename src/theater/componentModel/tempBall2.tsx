@@ -5,7 +5,6 @@ const two = {
     __descriptorType: 'DeclarativeComponentDescriptor',
     id: 'BouncyBall',
     displayName: 'BouncyBall',
-    type: 'Declarative',
     listOfRulesets: [],
     ruleSetsById: {},
     timelineDescriptors: {
@@ -249,7 +248,6 @@ const two = {
     __descriptorType: 'DeclarativeComponentDescriptor',
     id: 'IntroScene',
     displayName: 'IntroScene',
-    type: 'Declarative',
     listOfRulesets: [],
     ruleSetsById: {},
     timelineDescriptors: {
@@ -372,7 +370,6 @@ export default two /* {
     __descriptorType: 'DeclarativeComponentDescriptor',
     id: 'BouncyBall',
     displayName: 'BouncyBall',
-    type: 'Declarative',
     listOfRulesets: [],
     ruleSetsById: {},
     timelineDescriptors: {
@@ -579,7 +576,6 @@ export default two /* {
     __descriptorType: 'DeclarativeComponentDescriptor',
     id: 'IntroScene',
     displayName: 'IntroScene',
-    type: 'Declarative',
     listOfRulesets: [],
     ruleSetsById: {},
     timelineDescriptors: {

@@ -67,7 +67,6 @@ import tempCustomComponentDescriptors from './tempBall2'
 //   __descriptorType: 'DeclarativeComponentDescriptor',
 //   id: 'IntroScene',
 //   displayName: 'IntroScene',
-//   type: 'Declarative',
 //   listOfRulesets: [],
 //   ruleSetsById: {},
 //   timelineDescriptors: {

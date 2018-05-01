@@ -153,3 +153,5 @@ declare module 'hoist-non-react-statics' {
   const hoist: $FixMe
   export default hoist
 }
+
+declare module 'jiff'

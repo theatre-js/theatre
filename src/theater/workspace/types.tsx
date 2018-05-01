@@ -65,6 +65,7 @@ export type IWorkspaceNamespaceHistoricState = {
       | {type: 'Passthrough'}
       | {type: 'Viewports'}
       | {type: 'Viewport'; id: string}
+      | {type: 'TestingOnly:DirectlyRenderComponent', componentId: string}
   }
 }
 
