@@ -38,11 +38,6 @@ export default class WhatToShowInBody extends ReactiveComponentWithTheater<
       )
       const instantiationDescriptorP = dictAtom({
         componentId: whatToShowInBody.componentId,
-        props: dictAtom({}),
-        modifierInstantiationDescriptors: dictAtom({
-          list: arrayAtom([]),
-          byId: dictAtom({}),
-        }),
       })
         .derivedDict()
         .pointer()

@@ -5,6 +5,7 @@ import {ITheaterStoreState} from '$theater/types'
 import immer from 'immer'
 import React from 'react'
 import ReactDOM from 'react-dom'
+import {IModifierInstantiationValueDescriptor} from '../types/declarative'
 import {
   IDeclarativeComponentDescriptor,
   IReferenceToLocalHiddenValue,
@@ -94,6 +95,32 @@ const test: TestFn = (testName: string, fn: (utils: Utils) => void) => {
     fn(utils)
     ReactDOM.unmountComponentAtNode(rootDiv)
   })
+}
+
+const modifiers = (...mods: $FixMe[]) => {
+  const byId: $FixMe = {}
+  const list = []
+  let i = 0
+  for (const mod of mods) {
+    i++
+    const id = String(i)
+    byId[id] = mod
+    list.push(id)
+  }
+
+  return {byId, list}
+}
+
+const modifier = (
+  modifierId: string,
+  props: {},
+): IModifierInstantiationValueDescriptor => {
+  return {
+    __descriptorType: 'ModifierInstantiationValueDescriptor',
+    enabled: true,
+    modifierId,
+    props,
+  }
 }
 
 test.skip = it.skip
@@ -232,16 +259,12 @@ describe(`components`, () => {
       expect(utils.rootDiv.innerHTML).toEqual(
         '<div><span><div>one</div></span></div>',
       )
-      utils.updateComponent('Root', (s) => {
+      utils.updateComponent('Root', s => {
         const two: IComponentInstantiationValueDescriptor = {
           __descriptorType: 'ComponentInstantiationValueDescriptor',
           componentId: 'TheaterJS/Core/HTML/div',
           props: {
             children: 'two',
-          },
-          modifierInstantiationDescriptors: {
-            byId: {},
-            list: [],
           },
         }
 
@@ -251,12 +274,71 @@ describe(`components`, () => {
         }
         s.localHiddenValuesById.two = two
         // @ts-ignore ignore
-        s.localHiddenValuesById.spanInContainer.props.children = [null, refToTwo, null]
+        s.localHiddenValuesById.spanInContainer.props.children = [
+          null,
+          refToTwo,
+          null,
+        ]
       })
       utils.theater.ticker.tick()
       expect(utils.rootDiv.innerHTML).toEqual(
         '<div><span><div>two</div></span></div>',
       )
+    })
+  })
+
+  describe(`modifiers`, () => {
+    test('assigning/updating/deleting a modifier', utils => {
+      utils.updateComponent('Root', s => {
+        s.localHiddenValuesById.container.modifierInstantiationDescriptors = modifiers(
+          modifier('TheaterJS/Core/HTML/SetCustomStyle', {
+            pairings: {
+              list: ['1'],
+              byId: {
+                '1': {
+                  key: 'opacity',
+                  value: '0.2',
+                },
+              },
+            },
+          }),
+        )
+      })
+      utils.theater.ticker.tick()
+      expect(utils.rootDiv.innerHTML).toEqual(
+        '<div style="opacity: 0.2;">empty</div>',
+      )
+
+      utils.updateComponent('Root', s => {
+        s.localHiddenValuesById.container.modifierInstantiationDescriptors = modifiers(
+          modifier('TheaterJS/Core/HTML/SetCustomStyle', {
+            pairings: {
+              list: ['1', '2'],
+              byId: {
+                '1': {
+                  key: 'opacity',
+                  value: '0.2',
+                },
+                '2': {
+                  key: 'border',
+                  value: '1px solid red',
+                },
+              },
+            },
+          }),
+        )
+      })
+      utils.theater.ticker.tick()
+      expect(utils.rootDiv.innerHTML).toEqual(
+        '<div style="opacity: 0.2; border: 1px solid red;">empty</div>',
+      )
+
+      utils.updateComponent('Root', s => {
+        s.localHiddenValuesById.container.modifierInstantiationDescriptors = modifiers()
+      })
+      // debugger
+      utils.theater.ticker.tick()
+      expect(utils.rootDiv.innerHTML).toEqual('<div>empty</div>')
     })
   })
 })

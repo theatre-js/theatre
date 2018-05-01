@@ -79,8 +79,8 @@ export type BooleanLiteralDescriptor = boolean
 export interface IComponentInstantiationValueDescriptor {
   __descriptorType: 'ComponentInstantiationValueDescriptor'
   componentId: ComponentId
-  props: IMapDescriptor<{}>
-  modifierInstantiationDescriptors: IModifierInstantiationValueDescriptors
+  props?: IMapDescriptor<{}>
+  modifierInstantiationDescriptors?: IModifierInstantiationValueDescriptors
 }
 
 export interface IModifierInstantiationValueDescriptors {

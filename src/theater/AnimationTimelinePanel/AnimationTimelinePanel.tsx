@@ -32,7 +32,6 @@ import SelectionArea from '$theater/AnimationTimelinePanel/SelectionArea'
 import {val, pathTo} from '$shared/DataVerse2/atom'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import {
-  getComponentIdOfActiveNode,
   getVolatileIdOfActiveNode,
   getComponentIdOfNode,
 } from '$theater/ExploreFlyoutMenu/utils'

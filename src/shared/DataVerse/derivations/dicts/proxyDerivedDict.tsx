@@ -13,7 +13,7 @@ class ProxyDerivedDict<O> extends AbstractDerivedDict<O> {
   constructor(source: AbstractDerivedDict<O>) {
     super()
     this._untapFromSourceChanges = noop
-    
+
     this._sourceBox = boxAtom(source)
     this._sourceBoxD = this._sourceBox.derivation()
 
@@ -28,8 +28,8 @@ class ProxyDerivedDict<O> extends AbstractDerivedDict<O> {
       this._reactToNotHavingTappers()
       this._reactToHavingTappers()
 
-      const oldKeys = oldSource.keys()
-      const newKeys = newSource.keys()
+      const oldKeys = oldSource ? oldSource.keys() : []
+      const newKeys = newSource ? newSource.keys() : []
 
       const change = {
         addedKeys: _.difference(newKeys, oldKeys),
@@ -44,12 +44,12 @@ class ProxyDerivedDict<O> extends AbstractDerivedDict<O> {
   }
 
   _reactToHavingTappers() {
-    this._untapFromSourceChanges = this._sourceBox
-      .getValue()
-      .changes()
-      .tap(c => {
+    const newSource = this._sourceBox.getValue()
+    if (newSource) {
+      this._untapFromSourceChanges = newSource.changes().tap(c => {
         this._changeEmitter.emit(c)
       })
+    }
   }
 
   _reactToNotHavingTappers() {

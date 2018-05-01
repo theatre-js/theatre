@@ -26,7 +26,7 @@ export type LayerId = 'face' | 'tail' | number
 type Layer = {
   id: number
   initiatingWiresByKey: {[propName: string]: Wire}
-  derivedDict: DerivedClass<$FixMe>
+  derivedClass: DerivedClass<$FixMe>
   sourceDerivationsByKey: {[propName: string]: AbstractDerivation<$FixMe>}
   untapFromParentChanges: () => void
 }
@@ -89,24 +89,24 @@ export default class DerivedClassInstance<O> {
 
     const newStructure = makeEmptyStructure()
 
-    let currentDerivedDict = this._head
+    let currentDerivedClass = this._head
     while (true) {
-      if (!currentDerivedDict) break
+      if (!currentDerivedClass) break
 
-      const id = currentDerivedDict._id
+      const id = currentDerivedClass._id
       const layer = {
         id,
         initiatingWiresByKey: {},
-        derivedDict: currentDerivedDict,
+        derivedClass: currentDerivedClass,
         sourceDerivationsByKey: {},
-        untapFromParentChanges: currentDerivedDict
+        untapFromParentChanges: currentDerivedClass
           .prototypeChanges()
           .tap(this._notifyStructureNeedsUpdating),
       }
       newStructure.layers.list.unshift(id)
       newStructure.layers.byId[id] = layer
 
-      currentDerivedDict = currentDerivedDict.getPrototype()
+      currentDerivedClass = currentDerivedClass.getPrototype()
     }
 
     this._structure = newStructure
@@ -191,7 +191,7 @@ export default class DerivedClassInstance<O> {
       derivation = notFoundDerivation
     } else {
       const lid = layerId
-      const methodFn = (layer as $FixMe).derivedDict._getMethod(key)
+      const methodFn = (layer as $FixMe).derivedClass._getMethod(key)
 
       derivation = notFoundDerivation.flatMap(() =>
         methodFn(new Self(this, lid)),
@@ -213,8 +213,8 @@ export default class DerivedClassInstance<O> {
       const layerId = this._structure.layers.list[i]
 
       const layer: Layer = this._structure.layers.byId[layerId] as $FixMe
-      const derivedDict = layer.derivedDict
-      const constructor = derivedDict._getMethod(key)
+      const derivedClass = layer.derivedClass
+      const constructor = derivedClass._getMethod(key)
       if (constructor) {
         return layerId
       }

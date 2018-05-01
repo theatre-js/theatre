@@ -4,7 +4,7 @@ import UberModifier from '$theater/componentModel/coreModifierDescriptors/HTML/U
 
 const coreModifierDescriptors = {
   // 'TheaterJS/Core/HTML/SetAttribute': SetAttribute,
-  // 'TheaterJS/Core/HTML/SetCustomStyle': SetCustomStyle,
+  'TheaterJS/Core/HTML/SetCustomStyle': SetCustomStyle,
   'TheaterJS/Core/HTML/UberModifier': UberModifier,
 }
 
