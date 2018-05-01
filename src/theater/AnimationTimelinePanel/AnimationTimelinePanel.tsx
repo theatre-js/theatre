@@ -39,7 +39,7 @@ import {
 import {getPathToComponentDescriptor} from '$theater/componentModel/selectors'
 import {IDeclarativeComponentDescriptor} from '../componentModel/types/declarative'
 import DerivationAsReactElement from '../componentModel/react/utils/DerivationAsReactElement'
-import autoDerive from '../../shared/DataVerse/derivations/autoDerive/autoDerive'
+import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
 import TheaterComponent from '$theater/componentModel/react/TheaterComponent/TheaterComponent'
 import {svgPaddingY} from '$theater/AnimationTimelinePanel/BoxView'

@@ -4,10 +4,8 @@ import {val} from '$shared/DataVerse2/atom'
 import Viewports from './Viewports/Viewports'
 import elementify from '$theater/componentModel/react/elementify/elementify'
 import constant from '$shared/DataVerse/derivations/constant'
-import {PointerDerivation} from '$shared/DataVerse/derivations/pointer'
-import {IComponentInstantiationDescriptor} from '../../../componentModel/types/index'
-import dictAtom from '../../../../shared/DataVerse/atoms/dictAtom'
-import arrayAtom from '../../../../shared/DataVerse/atoms/arrayAtom'
+import dictAtom from '$shared/DataVerse/atoms/dictAtom'
+import arrayAtom from '$shared/DataVerse/atoms/arrayAtom'
 
 interface IProps {
   passThroughNode: React.ReactNode
