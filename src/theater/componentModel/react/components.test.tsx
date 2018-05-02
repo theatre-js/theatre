@@ -338,7 +338,7 @@ describe(`components`, () => {
       })
       // debugger
       utils.theater.ticker.tick()
-      expect(utils.rootDiv.innerHTML).toEqual('<div>empty</div>')
+      expect(utils.rootDiv.innerHTML).toEqual('<div style="">empty</div>')
     })
   })
 })

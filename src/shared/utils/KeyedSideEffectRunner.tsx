@@ -98,7 +98,7 @@ export default class KeyedSideEffectRunner {
       return
     }
 
-    a.stopObserving()
+    a.remove()
     delete this._activeKeys[key]
   }
 
