@@ -1,12 +1,8 @@
 .container {
-  position: absolute 0;
+  position: fixed 0;
   background: #d6d6d6;
 }
 
 .viewports {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 0;
-  height: 0;
 }

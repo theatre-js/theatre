@@ -69,6 +69,12 @@ export type IWorkspaceNamespaceHistoricState = {
   }
 }
 
+export type ViewportsContainer = {
+  scrollX: number,
+  scrollY: number
+}
+
 export type IWorkspaceNamespaceAHistoricState = {
   activeNodeVolatileIdByViewportId: Record<string, string>
+  viewportsContainer: ViewportsContainer
 }

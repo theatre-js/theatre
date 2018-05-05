@@ -14,7 +14,7 @@ export default abstract class ReactiveComponentWithTheater<
   _renderD: AbstractDerivation<React.ReactNode>
   propsP: Pointer<Props>
   stateP: Pointer<State>
-  state: never
+  // state: never
 
   constructor(props: Props, context: $IntentionalAny) {
     super(props, context)
