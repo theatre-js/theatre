@@ -14,7 +14,7 @@ export default abstract class ReactiveComponentWithTheater<
   _renderD: AbstractDerivation<React.ReactNode>
   propsP: Pointer<Props>
   stateP: Pointer<State>
-  // state: never
+  state: never
 
   constructor(props: Props, context: $IntentionalAny) {
     super(props, context)
@@ -31,7 +31,11 @@ export default abstract class ReactiveComponentWithTheater<
     return {} as State
   }
 
-  setState(s: State | ((oldState: State) => State)) {
+  setState<K extends keyof State>(
+    s:
+      | ((prevState: Readonly<State>) => Pick<State, K> | State)
+      | (Pick<State, K> | State),
+  ) {
     const oldState = this._atom.getState().state
     if (typeof s === 'function') {
       const newState = {...(oldState as $FixMe), ...(s(oldState) as $FixMe)}

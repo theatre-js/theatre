@@ -1,21 +1,19 @@
-import * as React from 'react'
+import React from 'react'
 
 type Props = {
-  children: any,
-  withShift?: boolean,
-  onDragStart?: Function,
-  onDragEnd?: Function,
-  onDrag?: Function,
-  shouldRegisterEvents?: boolean,
+  children: any
+  onDragStart?: (event: MouseEvent) => void
+  onDragEnd?: (dragHappened: boolean) => void
+  onDrag?: (dx: number, dy: number, event: MouseEvent) => void
+  shouldRegisterEvents?: boolean
 }
 
 type State = {
-  dragHappened: boolean,
+  dragHappened: boolean
   startPos: {
-    x: number,
-    y: number,
-  },
-  dragStartTime: number,
+    x: number
+    y: number
+  }
 }
 
 class DraggableArea extends React.PureComponent<Props, {}> {
@@ -24,17 +22,12 @@ class DraggableArea extends React.PureComponent<Props, {}> {
     super(props)
     this.s = {
       dragHappened: false,
-      dragStartTime: 0,
       startPos: {
         x: 0,
         y: 0,
       },
     }
   }
-
-  // componentWillUnmount() {
-  //   this.removeDragListeners()
-  // }
 
   addDragListeners() {
     document.addEventListener('mousemove', this.dragHandler)
@@ -46,18 +39,13 @@ class DraggableArea extends React.PureComponent<Props, {}> {
     document.removeEventListener('mouseup', this.dragEndHandler)
   }
 
-  dragStartHandler = (e: SyntheticMouseEvent<*>) => {
-    if (this.props.withShift && !e.shiftKey) return
+  dragStartHandler = (e: MouseEvent) => {
     if (e.button !== 0) return
     e.preventDefault()
     e.stopPropagation()
 
     const {screenX, screenY} = e
     this.s.startPos = {x: screenX, y: screenY}
-    this.s.dragStartTime = Date.now()
-    // this.setState(() => ({
-      // startPos: {x: screenX, y: screenY},
-    // }))
 
     this.addDragListeners()
     this.props.onDragStart && this.props.onDragStart(e)
@@ -67,13 +55,9 @@ class DraggableArea extends React.PureComponent<Props, {}> {
     this.removeDragListeners()
 
     this.props.onDragEnd && this.props.onDragEnd(this.s.dragHappened)
-    // if (this.state.dragHappened) {
-    //   this.setState(() => ({dragHappened: false}))
-    // }
   }
 
   dragHandler = (e: MouseEvent) => {
-    // if (!this.state.dragHappened) this.setState(() => ({dragHappened: true}))
     if (!this.s.dragHappened) this.s.dragHappened = true
 
     const {startPos} = this.s
@@ -82,14 +66,15 @@ class DraggableArea extends React.PureComponent<Props, {}> {
   }
 
   render() {
-    const shouldRegisterEvents = (this.props.shouldRegisterEvents != null) ? this.props.shouldRegisterEvents : true
-    return shouldRegisterEvents ? (
-      React.cloneElement(this.props.children, {
-        onMouseDown: this.dragStartHandler,
-      })
-    ) : (
-      this.props.children
-    )
+    const shouldRegisterEvents =
+      this.props.shouldRegisterEvents != null
+        ? this.props.shouldRegisterEvents
+        : true
+    return shouldRegisterEvents
+      ? React.cloneElement(this.props.children, {
+          onMouseDown: this.dragStartHandler,
+        })
+      : this.props.children
   }
 }
 

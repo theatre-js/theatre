@@ -1,5 +1,5 @@
 .container {
-  position: absolute var(--panelTopBarHeight) 0 0 0; 
+  position: absolute 0;
   display: grid;
   grid-template-columns: .3fr .4fr .3fr;
   grid-template-rows: .2fr .6fr .2fr;
@@ -7,13 +7,9 @@
 
   opacity: 0;
   transition: opacity .1s ease-in-out;
-  
+
   &:hover {
     opacity: 1;
-  }
-
-  &.isPanelHeaderLess {
-    top: 0;
   }
 }
 

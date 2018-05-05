@@ -3,10 +3,22 @@ import * as css from './EditOverlay.css'
 import cx from 'classnames'
 import DraggableArea from '$theater/common/components/DraggableArea/DraggableArea'
 
-type Props = any
-type State = any
+export type SizeChanges = Partial<{
+  left: number,
+  right: number,
+  bottom: number,
+  top: number,
+}>
 
-class EditOverlay extends React.Component<Props, State> {
+interface IProps {
+  onMove: (dx: number, dy: number) => void
+  onMoveEnd: () => void
+  onResize: (changes: SizeChanges) => void
+  onResizeEnd: () => void
+}
+interface IState {}
+
+class EditOverlay extends React.Component<IProps, IState> {
   shouldComponentUpdate() {
     return false
   }
@@ -15,62 +27,62 @@ class EditOverlay extends React.Component<Props, State> {
     return (
       <div
         className={cx(css.container, {
-          [css.isPanelHeaderLess]: this.props.isPanelHeaderLess,
+          // [css.isPanelHeaderLess]: this.props.isPanelHeaderLess,
         })}
       >
         <DraggableArea
-          onDrag={(dx, dy) => this.props.onBoundaryDrag({left: dx, top: dy})}
-          onDragEnd={() => this.props.onBoundaryDragEnd()}
+          onDrag={(dx, dy) => this.props.onResize({left: dx, top: dy})}
+          onDragEnd={() => this.props.onResizeEnd()}
         >
           <div style={{cursor: 'nwse-resize'}} />
         </DraggableArea>
         <DraggableArea
-          onDrag={(_, dy) => this.props.onBoundaryDrag({top: dy})}
-          onDragEnd={() => this.props.onBoundaryDragEnd()}
+          onDrag={(_, dy) => this.props.onResize({top: dy})}
+          onDragEnd={() => this.props.onResizeEnd()}
         >
           <div style={{cursor: 'ns-resize'}} />
         </DraggableArea>
         <DraggableArea
-          onDrag={(dx, dy) => this.props.onBoundaryDrag({right: dx, top: dy})}
-          onDragEnd={() => this.props.onBoundaryDragEnd()}
+          onDrag={(dx, dy) => this.props.onResize({right: dx, top: dy})}
+          onDragEnd={() => this.props.onResizeEnd()}
         >
           <div style={{cursor: 'nesw-resize'}} />
         </DraggableArea>
         <DraggableArea
-          onDrag={dx => this.props.onBoundaryDrag({left: dx})}
-          onDragEnd={() => this.props.onBoundaryDragEnd()}
+          onDrag={dx => this.props.onResize({left: dx})}
+          onDragEnd={() => this.props.onResizeEnd()}
         >
           <div style={{cursor: 'ew-resize'}} />
         </DraggableArea>
         <DraggableArea
-          onDrag={(dx, dy) => this.props.onPanelDrag(dx, dy)}
-          onDragEnd={() => this.props.onPanelDragEnd()}
+          onDrag={(dx, dy) => this.props.onMove(dx, dy)}
+          onDragEnd={() => this.props.onMoveEnd()}
         >
           <div style={{cursor: 'move'}} />
         </DraggableArea>
         <DraggableArea
-          onDrag={dx => this.props.onBoundaryDrag({right: dx})}
-          onDragEnd={() => this.props.onBoundaryDragEnd()}
+          onDrag={dx => this.props.onResize({right: dx})}
+          onDragEnd={() => this.props.onResizeEnd()}
         >
           <div style={{cursor: 'ew-resize'}} />
         </DraggableArea>
         <DraggableArea
-          onDrag={(dx, dy) => this.props.onBoundaryDrag({left: dx, bottom: dy})}
-          onDragEnd={() => this.props.onBoundaryDragEnd()}
+          onDrag={(dx, dy) => this.props.onResize({left: dx, bottom: dy})}
+          onDragEnd={() => this.props.onResizeEnd()}
         >
           <div style={{cursor: 'nesw-resize'}} />
         </DraggableArea>
         <DraggableArea
-          onDrag={(_, dy) => this.props.onBoundaryDrag({bottom: dy})}
-          onDragEnd={() => this.props.onBoundaryDragEnd()}
+          onDrag={(_, dy) => this.props.onResize({bottom: dy})}
+          onDragEnd={() => this.props.onResizeEnd()}
         >
           <div style={{cursor: 'ns-resize'}} />
         </DraggableArea>
         <DraggableArea
           onDrag={(dx, dy) =>
-            this.props.onBoundaryDrag({right: dx, bottom: dy})
+            this.props.onResize({right: dx, bottom: dy})
           }
-          onDragEnd={() => this.props.onBoundaryDragEnd()}
+          onDragEnd={() => this.props.onResizeEnd()}
         >
           <div style={{cursor: 'nwse-resize'}} />
         </DraggableArea>

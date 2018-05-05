@@ -24,7 +24,7 @@ export default class PropsAsPointer<
 > extends PureComponentWithTheater<Props<InnerProps>, {}> {
   _atom: Atom<{props: InnerProps; children: ChildrenType<InnerProps>}>
   _renderD: AbstractDerivation<React.ReactNode>
-  
+
   constructor(props: Props<InnerProps>, context: $IntentionalAny) {
     super(props, context)
     this._atom = atom({props: props.props || {}, children: props.children})

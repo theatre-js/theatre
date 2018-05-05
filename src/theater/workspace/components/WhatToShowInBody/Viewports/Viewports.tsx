@@ -15,7 +15,9 @@ const classes = resolveCss(css)
 
 interface IProps {}
 
-interface IState extends ViewportsContainer {}
+interface IState extends ViewportsContainer {
+  isOptionDown: boolean
+}
 
 export default class Viewports extends ReactiveComponentWithTheater<
   IProps,
@@ -30,6 +32,29 @@ export default class Viewports extends ReactiveComponentWithTheater<
     return {
       scrollX,
       scrollY,
+      isOptionDown: false,
+    }
+  }
+
+  componentDidMount() {
+    document.addEventListener('keydown', this.handleKeyDown)
+    document.addEventListener('keyup', this.handleKeyUp)
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.handleKeyDown)
+    document.removeEventListener('keyup', this.handleKeyUp)
+  }
+
+  handleKeyDown = (e: KeyboardEvent) => {
+    if (e.keyCode === 18) {
+      this.setState(() => ({isOptionDown: true}))
+    }
+  }
+
+  handleKeyUp = (e: KeyboardEvent) => {
+    if (e.keyCode === 18) {
+      this.setState(() => ({isOptionDown: false}))
     }
   }
 
@@ -76,10 +101,11 @@ export default class Viewports extends ReactiveComponentWithTheater<
 
   _render() {
     // @todo use keys()
-    const {scrollX, scrollY} = val(this.stateP)
+    const {scrollX, scrollY, isOptionDown} = val(this.stateP)
+
     const viewports = val(this.studioAtom2P.historicWorkspace.viewports.byId)
     const viewportEls = map(viewports, s => {
-      return <Viewport key={s.id} id={s.id} />
+      return <Viewport key={s.id} id={s.id} isOptionDown={isOptionDown}/>
     })
 
     return (

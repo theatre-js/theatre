@@ -7,9 +7,14 @@ import dictAtom from '$shared/DataVerse/atoms/dictAtom'
 import arrayAtom from '$shared/DataVerse/atoms/arrayAtom'
 import elementify from '$theater/componentModel/react/elementify/elementify'
 import constant from '$shared/DataVerse/derivations/constant'
-import {reduceHistoricState} from '$theater/bootstrap/actions'
-import {getComponentDescriptor} from '$theater/componentModel/selectors'
 import Theater from '$theater/bootstrap/Theater'
+import {reduceHistoricState} from '$studio/bootstrap/actions'
+import Studio from '$studio/bootstrap/Studio'
+import {getComponentDescriptor} from '$studio/componentModel/selectors'
+import EditOverlay, {
+  SizeChanges,
+} from '$studio/workspace/components/Panel/EditOverlay'
+import {IViewport} from '$studio/workspace/types'
 
 const classes = resolveCss(css)
 
@@ -20,9 +25,13 @@ interface IProps {
    * We don't expect the `id` prop to change
    */
   id: string
+  isOptionDown: boolean
 }
 
-interface IState {}
+interface IState {
+  positionChange: {x: number; y: number}
+  dimensionsChange: {width: number; height: number}
+}
 
 export default class Viewport extends ReactiveComponentWithTheater<
   IProps,
@@ -44,6 +53,13 @@ export default class Viewport extends ReactiveComponentWithTheater<
     )
   }
 
+  _getInitialState(): IState {
+    return {
+      positionChange: {x: 0, y: 0},
+      dimensionsChange: {width: 0, height: 0},
+    }
+  }
+
   componentWillUnmount() {
     this.theater.studio.elementTree.unregisterUnexpandedViewport(this.props.id)
   }
@@ -53,6 +69,78 @@ export default class Viewport extends ReactiveComponentWithTheater<
       reduceHistoricState(
         ['historicWorkspace', 'viewports', 'activeViewportId'],
         () => this.props.id,
+      ),
+    )
+  }
+
+  moveViewport = (dx: number, dy: number) => {
+    this.setState(() => ({
+      positionChange: {x: dx, y: dy},
+    }))
+  }
+
+  saveViewportPosition = () => {
+    const positionChange = val(this.stateP.positionChange)
+    const {id} = this.props
+    this.setState(() => ({
+      positionChange: {x: 0, y: 0},
+    }))
+    this.dispatch(
+      reduceHistoricState(
+        ['historicWorkspace', 'viewports', 'byId', id],
+        (viewport: IViewport) => {
+          return {
+            ...viewport,
+            position: {
+              x: viewport.position.x + positionChange.x,
+              y: viewport.position.y + positionChange.y,
+            },
+          }
+        },
+      ),
+    )
+  }
+
+  resizeViewport = (changes: SizeChanges) => {
+    const left = changes.left ? changes.left : 0
+    const right = changes.right ? changes.right : 0
+    const top = changes.top ? changes.top : 0
+    const bottom = changes.bottom ? changes.bottom : 0
+    this.setState(() => ({
+      positionChange: {
+        x: left,
+        y: top,
+      },
+      dimensionsChange: {
+        width: right - left,
+        height: bottom - top,
+      }
+    }))
+  }
+
+  saveViewportSize = () => {
+    const {positionChange, dimensionsChange} = val(this.stateP)
+    const {id} = this.props
+    this.setState(() => ({
+      positionChange: {x: 0, y: 0},
+      dimensionsChange: {width: 0, height: 0},
+    }))
+    this.dispatch(
+      reduceHistoricState(
+        ['historicWorkspace', 'viewports', 'byId', id],
+        (viewport: IViewport) => {
+          return {
+            ...viewport,
+            position: {
+              x: viewport.position.x + positionChange.x,
+              y: viewport.position.y + positionChange.y,
+            },
+            dimensions: {
+              width: viewport.dimensions.width + dimensionsChange.width,
+              height: viewport.dimensions.height + dimensionsChange.height,
+            }
+          }
+        },
       ),
     )
   }
@@ -83,18 +171,34 @@ export default class Viewport extends ReactiveComponentWithTheater<
       constant(this.theater),
     )
 
+    const state = val(this.stateP)
+    const left = viewportDescriptor.position.x + state.positionChange.x
+    const top = viewportDescriptor.position.y + state.positionChange.y
+    const width =
+      viewportDescriptor.dimensions.width + state.dimensionsChange.width
+    const height =
+      viewportDescriptor.dimensions.height + state.dimensionsChange.height
+
     return (
       <div
         {...classes('container', isActive && 'isActive')}
         style={{
-          left: `${viewportDescriptor.position.x}px`,
-          top: `${viewportDescriptor.position.y}px`,
-          width: `${viewportDescriptor.dimensions.width}px`,
-          height: `${viewportDescriptor.dimensions.height}px`,
+          left: `${left}px`,
+          top: `${top}px`,
+          width: `${width}px`,
+          height: `${height}px`,
         }}
       >
         <div key="content" {...classes('content')}>
           {elementD.getValue()}
+          {val(this.propsP.isOptionDown) && (
+            <EditOverlay
+              onMove={this.moveViewport}
+              onMoveEnd={this.saveViewportPosition}
+              onResize={this.resizeViewport}
+              onResizeEnd={this.saveViewportSize}
+            />
+          )}
         </div>
         <div {...classes('header')} onClick={this._activate}>
           <span {...classes('headerSceneName')}>

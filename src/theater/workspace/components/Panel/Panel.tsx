@@ -409,11 +409,10 @@ export default class Panel extends StudioComponent<IProps, IState> {
               </Broadcast>
               {activeMode === MODE_OPTION && (
                 <EditOverlay
-                  isPanelHeaderLess={true}
-                  onPanelDrag={(dx: number, dy: number) =>
+                  onMove={(dx: number, dy: number) =>
                     this.movePanel(boundaries, gridOfBoundaries, dx, dy)
                   }
-                  onPanelDragEnd={() =>
+                  onMoveEnd={() =>
                     this.setPanelPosition(
                       panelId,
                       boundaries,
@@ -421,10 +420,10 @@ export default class Panel extends StudioComponent<IProps, IState> {
                       updatePanelBoundaries,
                     )
                   }
-                  onBoundaryDrag={(deltas: $FixMe) =>
+                  onResize={(deltas: $FixMe) =>
                     this.moveBoundaries(boundaries, gridOfBoundaries, deltas)
                   }
-                  onBoundaryDragEnd={() =>
+                  onResizeEnd={() =>
                     this.setBoundariesPositions(
                       panelId,
                       boundaries,
