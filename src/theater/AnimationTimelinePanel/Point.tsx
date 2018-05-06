@@ -5,12 +5,7 @@ import DraggableArea from '$theater/common/components/DraggableArea/DraggableAre
 import SingleInputForm from '$lf/common/components/SingleInputForm'
 import {PanelActiveModeChannel} from '$theater/workspace/components/Panel/Panel'
 import {Subscriber} from 'react-broadcast'
-import {
-  MODE_C,
-  MODE_D,
-  MODE_H,
-  MODE_CMD,
-} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
+import {MODES} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
 import {PointHandles as IHandles} from '$studio/AnimationTimelinePanel/types'
 import {SelectionBoundariesChannel} from '$studio/AnimationTimelinePanel/VariablesBox'
 
@@ -84,13 +79,13 @@ class Point extends React.PureComponent<IProps, IState> {
     e.preventDefault()
     e.stopPropagation()
     switch (this.activeMode) {
-      case MODE_C:
+      case MODES.c:
         this.props.addConnector(this.props.pointIndex)
         break
-      case MODE_CMD:
+      case MODES.cmd:
         this.props.addConnector(this.props.pointIndex)
         break
-      case MODE_D:
+      case MODES.d:
         this.props.removePoint(this.props.pointIndex)
         break
       default: {
@@ -109,7 +104,7 @@ class Point extends React.PureComponent<IProps, IState> {
   handleClickHandler = (e: $FixMe, side: 'left' | 'right') => {
     e.preventDefault()
     e.stopPropagation()
-    if (this.activeMode === MODE_H) {
+    if (this.activeMode === MODES.h) {
       return this.props.makeHandleHorizontal(this.props.pointIndex, side)
     }
   }
@@ -325,7 +320,7 @@ class Point extends React.PureComponent<IProps, IState> {
   _setActiveMode(activeMode: string) {
     this.activeMode = activeMode
     if (this.pointClickRect == null) return
-    if (activeMode === MODE_D) {
+    if (activeMode === MODES.d) {
       this.pointClickRect.classList.add(css.highlightRedOnHover)
     } else {
       this.pointClickRect.classList.remove(css.highlightRedOnHover)

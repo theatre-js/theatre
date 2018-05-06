@@ -5,9 +5,7 @@ import * as css from './Viewports.css'
 import resolveCss from '$shared/utils/resolveCss'
 import {map} from 'lodash'
 import Viewport from './Viewport'
-import {
-  reduceHistoricState,
-} from '$studio/bootstrap/actions'
+import {reduceHistoricState} from '$studio/bootstrap/actions'
 import ActiveModeDetector, {
   ActiveMode,
 } from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
@@ -39,7 +37,7 @@ export default class Viewports extends ReactiveComponentWithTheater<
     const viewports = val(this.studioAtom2P.historicWorkspace.viewports.byId)
 
     return (
-      <ActiveModeDetector>
+      <ActiveModeDetector modes={['option', 'cmd']}>
         {(activeMode: ActiveMode) => {
           return (
             <Container

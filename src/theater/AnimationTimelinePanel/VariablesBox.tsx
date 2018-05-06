@@ -6,7 +6,7 @@ import BoxLegends from '$theater/AnimationTimelinePanel/BoxLegends'
 import {ITheaterStoreState} from '$theater/types'
 =======
 import DraggableArea from '$src/studio/common/components/DraggableArea/DraggableArea'
-import {MODE_SHIFT} from '$src/studio/common/components/ActiveModeDetector/ActiveModeDetector'
+import {MODES} from '$src/studio/common/components/ActiveModeDetector/ActiveModeDetector'
 import BoxLegends from '$src/studio/AnimationTimelinePanel/BoxLegends'
 import {IStudioStoreState} from '$src/studio/types'
 >>>>>>> create active mode detector component:src/studio/AnimationTimelinePanel/VariablesBox.tsx
@@ -205,7 +205,7 @@ class VariablesBox extends React.PureComponent<IProps, IState> {
       >
         <div className={css.wrapper} style={wrapperStyle}>
           <DraggableArea
-            shouldRegisterEvents={activeMode === MODE_SHIFT}
+            shouldRegisterEvents={activeMode === MODES.shift}
             onDragStart={this.onMoveStart}
             onDrag={this.onMove}
             onDragEnd={this.onMoveEnd}

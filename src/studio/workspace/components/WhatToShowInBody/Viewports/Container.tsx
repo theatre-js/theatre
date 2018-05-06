@@ -1,7 +1,7 @@
 import React from 'react'
 import {
   ActiveMode,
-  MODE_CMD,
+  MODES,
 } from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
 import {
   reduceAhistoricState,
@@ -67,7 +67,7 @@ export class Container extends React.PureComponent<IProps, IState> {
   )
 
   private handleMouseDown = (e: MouseEvent) => {
-    if (this.props.activeMode !== MODE_CMD || e.target !== this.container)
+    if (this.props.activeMode !== MODES.cmd || e.target !== this.container)
       return
 
     const id = generateUniqueId()

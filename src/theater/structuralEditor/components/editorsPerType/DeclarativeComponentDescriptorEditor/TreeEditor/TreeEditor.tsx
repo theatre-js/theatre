@@ -20,7 +20,7 @@ import {
 import cx from 'classnames'
 import {PanelActiveModeChannel} from '$theater/workspace/components/Panel/Panel'
 import {Subscriber} from 'react-broadcast'
-import {MODE_CMD} from '$src/studio/common/components/ActiveModeDetector/ActiveModeDetector'
+import {MODES} from '$src/studio/common/components/ActiveModeDetector/ActiveModeDetector'
 import {IStudioStoreState} from '$studio/types'
 import StudioComponent from '$studio/handy/StudioComponent'
 import React from 'react'
@@ -635,7 +635,7 @@ class TreeEditor extends StudioComponent<IProps, State> {
                 >
                   <NodeContainer
                     key={nodes.id}
-                    isCommandDown={activeMode === MODE_CMD}
+                    isCommandDown={activeMode === MODES.cmd}
                     selectedNodeId={selectedNodeId}
                     nodeData={nodes}
                     dispatchAction={this.dispatchActionFromNode}

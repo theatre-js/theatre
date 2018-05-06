@@ -9,7 +9,7 @@ import {
   SAME_AS_BOUNDARY,
 } from '$src/studio/workspace/components/StudioUI/StudioUI'
 import StudioComponent from '$studio/handy/StudioComponent'
-import {MODE_OPTION} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
+import {MODES} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
 import _ from 'lodash'
 import React from 'react'
 import {Broadcast, Subscriber} from 'react-broadcast'
@@ -407,7 +407,7 @@ export default class Panel extends StudioComponent<IProps, IState> {
                   <div className={css.content}>{children}</div>
                 </Broadcast>
               </Broadcast>
-              {activeMode === MODE_OPTION && (
+              {activeMode === MODES.option && (
                 <EditOverlay
                   onMove={(dx: number, dy: number) =>
                     this.movePanel(boundaries, gridOfBoundaries, dx, dy)

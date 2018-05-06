@@ -16,7 +16,7 @@ import {
   PanelActiveModeChannel,
   default as Panel,
 } from '$src/studio/workspace/components/Panel/Panel'
-import {MODE_SHIFT} from '$src/studio/common/components/ActiveModeDetector/ActiveModeDetector'
+import {MODES} from '$src/studio/common/components/ActiveModeDetector/ActiveModeDetector'
 
 import {
   BoxID,
@@ -632,7 +632,7 @@ class Content extends StudioComponent<Props, State> {
   }
 
   _handleMouseDown = (e: $FixMe, activeMode: string) => {
-    if (activeMode === MODE_SHIFT) {
+    if (activeMode === MODES.shift) {
       const {clientX: x, clientY: y} = e
       this.setState(() => ({selectionStartPos: {x, y}}))
     }
@@ -849,7 +849,7 @@ class Content extends StudioComponent<Props, State> {
                         />
                       </div>
                       <DraggableArea
-                        shouldRegisterEvents={activeMode !== MODE_SHIFT}
+                        shouldRegisterEvents={activeMode !== MODES.shift}
                         onDragStart={(e: $FixMe) =>
                           this._handleSeekerDragStart(e, focus, panelWidth)
                         }

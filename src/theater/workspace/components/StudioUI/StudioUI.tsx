@@ -483,7 +483,7 @@ export class StudioUI extends StudioComponent<IProps, State> {
     const {visiblePanels} = this.props
     return (
       // <div {...classes('container', this.state.uiVisible && 'uiVisible')}>
-      <ActiveModeDetector>
+      <ActiveModeDetector modes={['option', 'cmd', 'shift', 'd', 'c', 'h']}>
         {(activeMode: ActiveMode) => (
           <>
             {visiblePanels.map(panelId => (

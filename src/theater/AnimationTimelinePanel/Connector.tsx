@@ -2,7 +2,7 @@ import React from 'react'
 import {PointHandles as IHandles} from '$theater/AnimationTimelinePanel/types'
 import {PanelActiveModeChannel} from '$theater/workspace/components/Panel/Panel'
 import {Subscriber} from 'react-broadcast'
-import {MODE_D} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
+import {MODES} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
 import * as css from './Connector.css'
 
 interface IProps {
@@ -23,7 +23,7 @@ class Connector extends React.PureComponent<IProps, IState> {
   activeMode: string
 
   clickHandler = (e: $FixMe) => {
-    if (this.activeMode === MODE_D) {
+    if (this.activeMode === MODES.d) {
       e.stopPropagation()
       return (
         this.props.removeConnector &&
@@ -44,7 +44,7 @@ class Connector extends React.PureComponent<IProps, IState> {
   _setActiveMode(activeMode: string) {
     this.activeMode = activeMode
     if (this.connectorClickArea == null) return
-    if (activeMode === MODE_D) {
+    if (activeMode === MODES.d) {
       this.connectorClickArea.classList.add('connector-highlightRedOnHover')
     } else {
       this.connectorClickArea.classList.remove('connector-highlightRedOnHover')

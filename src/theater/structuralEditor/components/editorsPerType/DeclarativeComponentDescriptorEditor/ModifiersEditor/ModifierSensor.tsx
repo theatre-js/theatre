@@ -1,7 +1,7 @@
 import React from 'react'
 import css from './ModifierSensor.css'
 import cx from 'classnames'
-import {MODE_CMD} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
+import {MODES} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
 
 interface IProps {
   activeMode: string
@@ -16,7 +16,7 @@ interface IState {}
 class ModifierSensor extends React.PureComponent<IProps, IState> {
   container: HTMLDivElement | null
   clickHandler = () => {
-    if (this.props.activeMode !== MODE_CMD) return
+    if (this.props.activeMode !== MODES.cmd) return
     this.props.onClick(this.props.index)
   }
 
@@ -29,7 +29,7 @@ class ModifierSensor extends React.PureComponent<IProps, IState> {
 
   render() {
     const {activeMode, isABoxBeingDragged, translateY} = this.props
-    const isCommandDown = activeMode === MODE_CMD
+    const isCommandDown = activeMode === MODES.cmd
     const style = {
       transform: `translate3d(0, ${translateY}px, 0)`,
       transition: 'all .2s ease-in-out',

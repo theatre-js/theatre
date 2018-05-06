@@ -3,6 +3,7 @@ import React from 'react'
 export type ActiveMode = undefined | null | string
 
 interface IProps {
+  modes: TMODE[]
   children: (activeMode: ActiveMode) => any
 }
 
@@ -10,17 +11,38 @@ interface IState {
   activeMode: ActiveMode
 }
 
-export const MODE_OPTION = 'option'
-export const MODE_CMD = 'command'
-export const MODE_SHIFT = 'shift'
-export const MODE_D = 'd'
-export const MODE_C = 'c'
-export const MODE_H = 'h'
+type TMODE = 'option' | 'cmd' | 'shift' | 'd' | 'c' | 'h'
+
+export const MODES: Record<TMODE, string> = {
+  option: 'OPTION',
+  cmd: 'COMMAND',
+  shift: 'SHIFT',
+  d: 'D',
+  c: 'C',
+  h: 'H',
+}
+
+const KEYS_MAP: Record<TMODE, KeyboardEvent['keyCode']> = {
+  option: 18,
+  shift: 16,
+  cmd: 91,
+  d: 68,
+  c: 67,
+  h: 72,
+}
 
 class ActiveModeDetector extends React.PureComponent<IProps, IState> {
   _isMouseDown: boolean
-  state = {
-    activeMode: null,
+  _mapOfKeycodeToMode: Map<number, TMODE>
+
+  constructor(props: IProps) {
+    super(props)
+
+    this._mapOfKeycodeToMode = new Map(props.modes.map((mode): [number, TMODE] => [KEYS_MAP[mode], mode]))
+
+    this.state = {
+      activeMode: null,
+    }
   }
 
   componentDidMount() {
@@ -44,27 +66,9 @@ class ActiveModeDetector extends React.PureComponent<IProps, IState> {
   private handleKeyDown = (e: KeyboardEvent) => {
     if (this._isMouseDown) return
     if (e.target && (e.target as HTMLElement).tagName === 'INPUT' && ![91].includes(e.keyCode)) return
-    switch (e.keyCode) {
-      case 16:
-        this.setState(() => ({activeMode: MODE_SHIFT}))
-        break
-      case 18:
-        this.setState(() => ({activeMode: MODE_OPTION}))
-        break
-      case 91:
-        this.setState(() => ({activeMode: MODE_CMD}))
-        break
-      case 68:
-        this.setState(() => ({activeMode: MODE_D}))
-        break
-      case 67:
-        this.setState(() => ({activeMode: MODE_C}))
-        break
-      case 72:
-        this.setState(() => ({activeMode: MODE_H}))
-        break
-      default:
-        break
+    const mode = this._mapOfKeycodeToMode.get(e.keyCode)
+    if (mode != null) {
+      this.setState(() => ({activeMode: MODES[mode]}))
     }
   }
 

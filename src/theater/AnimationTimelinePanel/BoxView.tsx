@@ -10,7 +10,7 @@ import Variables from './Variables'
 import PointValuesEditor from './PointValuesEditor'
 import * as _ from 'lodash'
 import cx from 'classnames'
-import {MODE_CMD} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
+import {MODES} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
 import HalfPieContextMenu from '$studio/common/components/HalfPieContextMenu'
 import MdCancel from 'react-icons/lib/md/cancel'
 import MdDonutSmall from 'react-icons/lib/md/donut-small'
@@ -100,7 +100,7 @@ class BoxView extends StudioComponent<IProps, IState> {
       dispatch,
       pathToVariables,
     } = this.props
-    if (activeMode !== MODE_CMD) return
+    if (activeMode !== MODES.cmd) return
 
     event.stopPropagation()
     event.preventDefault()
@@ -355,7 +355,7 @@ class BoxView extends StudioComponent<IProps, IState> {
 
     const activeVariableColorName =
       colors[variableIdToColorIndexMap[activeVariableId]].name
-    const isAddingPoint = activeMode === MODE_CMD
+    const isAddingPoint = activeMode === MODES.cmd
     return (
       <div
         ref={c => (this.container = c)}

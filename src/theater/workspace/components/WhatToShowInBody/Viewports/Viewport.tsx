@@ -16,7 +16,7 @@ import EditOverlay, {
 } from '$studio/workspace/components/Panel/EditOverlay'
 import {IViewport} from '$studio/workspace/types'
 import {
-  MODE_OPTION,
+  MODES,
   ActiveMode,
 } from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
 
@@ -196,7 +196,7 @@ export default class Viewport extends ReactiveComponentWithTheater<
         <div key="content" {...classes('content')}>
           {elementD.getValue()}
         </div>
-        {val(this.propsP.activeMode) === MODE_OPTION && (
+        {val(this.propsP.activeMode) === MODES.option && (
           <EditOverlay
             onMove={this.moveViewport}
             onMoveEnd={this.saveViewportPosition}

@@ -8,7 +8,7 @@ import {get} from 'lodash'
 import DraggableArea from '$theater/common/components/DraggableArea/DraggableArea'
 import {PanelActiveModeChannel} from '$theater/workspace/components/Panel/Panel'
 import {Subscriber} from 'react-broadcast'
-import {MODE_CMD} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
+import {MODES} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
 import {IStudioStoreState} from '$studio/types'
 import resolveCss from '$shared/utils/resolveCss'
 
@@ -96,7 +96,7 @@ export class Input extends StudioComponent<IProps, IState> {
         {({activeMode}) => {
           return (
             <DraggableArea
-              shouldRegisterEvents={activeMode === MODE_CMD}
+              shouldRegisterEvents={activeMode === MODES.cmd}
               onDragStart={e => this._handleDragStart(e)}
               onDrag={(x, y) => this.setState(() => ({move: {x, y}}))}
               onDragEnd={() => this._handleDragEnd()}

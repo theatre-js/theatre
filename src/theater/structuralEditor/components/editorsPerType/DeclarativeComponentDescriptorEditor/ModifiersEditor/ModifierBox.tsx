@@ -3,7 +3,7 @@ import connect from '$theater/handy/connect'
 import css from './ModifierBox.css'
 import cx from 'classnames'
 import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
-import {MODE_SHIFT} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
+import {MODES} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
 import {STATUS} from '$studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/ModifiersEditor/constants'
 import TypeSelector from '$studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/ModifiersEditor/TypeSelector'
 import _ from 'lodash'
@@ -230,7 +230,7 @@ class ModifierBox extends React.PureComponent<IProps, IState> {
     return (
       <>
         <DraggableArea
-          shouldRegisterEvents={activeMode === MODE_SHIFT}
+          shouldRegisterEvents={activeMode === MODES.shift}
           onDragStart={this.dragStartHandler}
           onDrag={this.dragHandler}
           onDragEnd={this.dragEndHandler}
