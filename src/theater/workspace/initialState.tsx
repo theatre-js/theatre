@@ -6,8 +6,8 @@ import {
 export const ahistoricWorkspaceInitialState: IWorkspaceNamespaceAHistoricState = {
   activeNodeVolatileIdByViewportId: {},
   viewportsContainer: {
-    scrollX: 100,
-    scrollY: -100,
+    scrollX: 0,
+    scrollY: 0,
   }
 }
 

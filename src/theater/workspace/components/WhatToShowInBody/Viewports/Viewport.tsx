@@ -15,6 +15,10 @@ import EditOverlay, {
   SizeChanges,
 } from '$studio/workspace/components/Panel/EditOverlay'
 import {IViewport} from '$studio/workspace/types'
+import {
+  MODE_OPTION,
+  ActiveMode,
+} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
 
 const classes = resolveCss(css)
 
@@ -25,7 +29,7 @@ interface IProps {
    * We don't expect the `id` prop to change
    */
   id: string
-  isOptionDown: boolean
+  activeMode: ActiveMode
 }
 
 interface IState {
@@ -114,7 +118,7 @@ export default class Viewport extends ReactiveComponentWithTheater<
       dimensionsChange: {
         width: right - left,
         height: bottom - top,
-      }
+      },
     }))
   }
 
@@ -138,7 +142,7 @@ export default class Viewport extends ReactiveComponentWithTheater<
             dimensions: {
               width: viewport.dimensions.width + dimensionsChange.width,
               height: viewport.dimensions.height + dimensionsChange.height,
-            }
+            },
           }
         },
       ),
@@ -191,15 +195,15 @@ export default class Viewport extends ReactiveComponentWithTheater<
       >
         <div key="content" {...classes('content')}>
           {elementD.getValue()}
-          {val(this.propsP.isOptionDown) && (
-            <EditOverlay
-              onMove={this.moveViewport}
-              onMoveEnd={this.saveViewportPosition}
-              onResize={this.resizeViewport}
-              onResizeEnd={this.saveViewportSize}
-            />
-          )}
         </div>
+        {val(this.propsP.activeMode) === MODE_OPTION && (
+          <EditOverlay
+            onMove={this.moveViewport}
+            onMoveEnd={this.saveViewportPosition}
+            onResize={this.resizeViewport}
+            onResizeEnd={this.saveViewportSize}
+          />
+        )}
         <div {...classes('header')} onClick={this._activate}>
           <span {...classes('headerSceneName')}>
             {getDisplayNameOfComponent(
@@ -209,8 +213,7 @@ export default class Viewport extends ReactiveComponentWithTheater<
           </span>
           <span {...classes('headerSeperator')}>–</span>
           <span {...classes('headerDimensions')}>
-            {viewportDescriptor.dimensions.width}x
-            {viewportDescriptor.dimensions.height}
+            {width}x{height}
           </span>
         </div>
         {!isActive && (

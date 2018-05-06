@@ -7,9 +7,9 @@ import {
 import {
   EXACT_VALUE,
   SAME_AS_BOUNDARY,
-} from '$theater/workspace/components/StudioUI/StudioUI'
-import StudioComponent from '$theater/handy/StudioComponent'
-import {MODE_OPTION} from '$theater/workspace/components/StudioUI/StudioUI'
+} from '$src/studio/workspace/components/StudioUI/StudioUI'
+import StudioComponent from '$studio/handy/StudioComponent'
+import {MODE_OPTION} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
 import _ from 'lodash'
 import React from 'react'
 import {Broadcast, Subscriber} from 'react-broadcast'

@@ -14,10 +14,11 @@ import StatusBar from '../StatusBar/StatusBar'
 import * as css from './StudioUI.css'
 import {undoAction, redoAction} from '$shared/utils/redux/withHistory/actions'
 import resolveCss from '$shared/utils/resolveCss'
+import ActiveModeDetector, {
+  ActiveMode,
+} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
 
 const classes = resolveCss(css)
-
-export type ActiveMode = undefined | null | string
 
 interface IOwnProps {
   visiblePanels: Array<string>
@@ -37,13 +38,6 @@ type State = {
 export const EXACT_VALUE = 'exactValue'
 export const SAME_AS_BOUNDARY = 'sameAsBoundary'
 export const DIST_FROM_BOUNDARY = 'distanceFromBoundary'
-
-export const MODE_OPTION = 'option'
-export const MODE_CMD = 'command'
-export const MODE_SHIFT = 'shift'
-export const MODE_D = 'd'
-export const MODE_C = 'c'
-export const MODE_H = 'h'
 
 const getOppositeSide = (side: string): string => {
   switch (side) {
@@ -101,31 +95,9 @@ export class StudioUI extends StudioComponent<IProps, State> {
   }
 
   componentDidMount() {
-    window.addEventListener('focus', this._resetActiveMode)
-    document.addEventListener('mouseenter', this._resetActiveMode)
     window.addEventListener('resize', this._handleResize)
     document.addEventListener('keydown', this._handleKeyDown)
-    document.addEventListener('keyup', this._resetActiveMode)
-    // document.addEventListener('keyup', this._handleKeyUp)
     document.addEventListener('keypress', this._handleKeyPress)
-    document.addEventListener('mousedown', this._handleMouseDown)
-    document.addEventListener('mouseup', this._handleMouseUp)
-  }
-
-  // componentWillUnmount() {
-  //   window.removeEventListener('focus', this._resetActiveMode)
-  //   document.removeEventListener('mouseenter', this._resetActiveMode)
-  //   window.removeEventListener('resize', this._handleResize)
-  //   document.removeEventListener('keydown', this._handleKeyDown)
-  //   document.removeEventListener('keyup', this._resetActiveMode)
-  // }
-
-  _handleMouseDown = () => {
-    this._isMouseDown = true
-  }
-
-  _handleMouseUp = () => {
-    this._isMouseDown = false
   }
 
   _handleKeyPress = (e: KeyboardEvent) => {
@@ -133,8 +105,6 @@ export class StudioUI extends StudioComponent<IProps, State> {
       this.setState({uiVisible: !this.state.uiVisible})
     }
   }
-
-  _handleKeyUp = (e: KeyboardEvent) => {}
 
   componentWillReceiveProps(nextProps: IProps) {
     this.setState(() => ({
@@ -157,37 +127,6 @@ export class StudioUI extends StudioComponent<IProps, State> {
           this.dispatch(undoAction())
         }
       }
-    }
-
-    if (this._isMouseDown) return
-    if (e.target.tagName === 'INPUT' && ![91].includes(e.keyCode)) return
-    switch (e.keyCode) {
-      case 16:
-        this.setState(() => ({activeMode: MODE_SHIFT}))
-        break
-      case 18:
-        this.setState(() => ({activeMode: MODE_OPTION}))
-        break
-      case 91:
-        this.setState(() => ({activeMode: MODE_CMD}))
-        break
-      case 68:
-        this.setState(() => ({activeMode: MODE_D}))
-        break
-      case 67:
-        this.setState(() => ({activeMode: MODE_C}))
-        break
-      case 72:
-        this.setState(() => ({activeMode: MODE_H}))
-        break
-      default:
-        break
-    }
-  }
-
-  _resetActiveMode = () => {
-    if (this.state.activeMode != null) {
-      this.setState(() => ({activeMode: null}))
     }
   }
 
@@ -544,19 +483,23 @@ export class StudioUI extends StudioComponent<IProps, State> {
     const {visiblePanels} = this.props
     return (
       // <div {...classes('container', this.state.uiVisible && 'uiVisible')}>
-      <>
-        {visiblePanels.map(panelId => (
-          <PanelController
-            key={panelId}
-            panelId={panelId}
-            activeMode={this.state.activeMode}
-            boundaries={this.state.calculatedBoundaries[panelId]}
-            gridOfBoundaries={this.state.gridOfBoundaries}
-            updatePanelBoundaries={this.updatePanelBoundaries}
-          />
-        ))}
-        <StatusBar activeMode={this.state.activeMode} />
-      </>
+      <ActiveModeDetector>
+        {(activeMode: ActiveMode) => (
+          <>
+            {visiblePanels.map(panelId => (
+              <PanelController
+                key={panelId}
+                panelId={panelId}
+                activeMode={activeMode}
+                boundaries={this.state.calculatedBoundaries[panelId]}
+                gridOfBoundaries={this.state.gridOfBoundaries}
+                updatePanelBoundaries={this.updatePanelBoundaries}
+              />
+            ))}
+            <StatusBar activeMode={activeMode} />
+          </>
+        )}
+      </ActiveModeDetector>
       // </div>
     )
   }

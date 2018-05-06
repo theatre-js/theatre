@@ -10,13 +10,16 @@ import {
   reduceAhistoricState,
 } from '$studio/bootstrap/actions'
 import {ViewportsContainer} from '$studio/workspace/types'
+import ActiveModeDetector, {
+  ActiveMode,
+} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
 
 const classes = resolveCss(css)
 
 interface IProps {}
 
 interface IState extends ViewportsContainer {
-  isOptionDown: boolean
+  activeMode: ActiveMode
 }
 
 export default class Viewports extends ReactiveComponentWithTheater<
@@ -32,29 +35,7 @@ export default class Viewports extends ReactiveComponentWithTheater<
     return {
       scrollX,
       scrollY,
-      isOptionDown: false,
-    }
-  }
-
-  componentDidMount() {
-    document.addEventListener('keydown', this.handleKeyDown)
-    document.addEventListener('keyup', this.handleKeyUp)
-  }
-
-  componentWillUnmount() {
-    document.removeEventListener('keydown', this.handleKeyDown)
-    document.removeEventListener('keyup', this.handleKeyUp)
-  }
-
-  handleKeyDown = (e: KeyboardEvent) => {
-    if (e.keyCode === 18) {
-      this.setState(() => ({isOptionDown: true}))
-    }
-  }
-
-  handleKeyUp = (e: KeyboardEvent) => {
-    if (e.keyCode === 18) {
-      this.setState(() => ({isOptionDown: false}))
+      activeMode: null,
     }
   }
 
@@ -101,30 +82,40 @@ export default class Viewports extends ReactiveComponentWithTheater<
 
   _render() {
     // @todo use keys()
-    const {scrollX, scrollY, isOptionDown} = val(this.stateP)
+    const {scrollX, scrollY} = val(this.stateP)
 
     const viewports = val(this.studioAtom2P.historicWorkspace.viewports.byId)
-    const viewportEls = map(viewports, s => {
-      return <Viewport key={s.id} id={s.id} isOptionDown={isOptionDown}/>
-    })
 
     return (
-      <div
-        {...classes('container')}
-        ref={c => (this.container = c)}
-        onWheel={this._scrollHandler}
-      >
-        <div
-          {...classes('viewports')}
-          style={{
-            left: scrollX,
-            top: scrollY,
-          }}
-        >
-          {viewportEls}
-        </div>
-        <div {...classes('background')} onClick={this._setNoViewportAsActive} />
-      </div>
+      <ActiveModeDetector>
+        {(activeMode: ActiveMode) => {
+          return (
+            <div
+              {...classes('container')}
+              ref={c => (this.container = c)}
+              onWheel={this._scrollHandler}
+            >
+              <div
+                {...classes('viewports')}
+                style={{
+                  left: scrollX,
+                  top: scrollY,
+                }}
+              >
+                {map(viewports, s => {
+                  return (
+                    <Viewport key={s.id} id={s.id} activeMode={activeMode} />
+                  )
+                })}
+              </div>
+              <div
+                {...classes('background')}
+                onClick={this._setNoViewportAsActive}
+              />
+            </div>
+          )
+        }}
+      </ActiveModeDetector>
     )
   }
 }

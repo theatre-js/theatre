@@ -8,8 +8,8 @@ import {get} from 'lodash'
 import DraggableArea from '$theater/common/components/DraggableArea/DraggableArea'
 import {PanelActiveModeChannel} from '$theater/workspace/components/Panel/Panel'
 import {Subscriber} from 'react-broadcast'
-import {MODE_CMD} from '$theater/workspace/components/StudioUI/StudioUI'
-import {ITheaterStoreState} from '$theater/types'
+import {MODE_CMD} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
+import {IStudioStoreState} from '$studio/types'
 import resolveCss from '$shared/utils/resolveCss'
 
 interface IOwnProps {

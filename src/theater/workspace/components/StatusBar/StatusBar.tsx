@@ -6,7 +6,7 @@ import MdApps from 'react-icons/lib/md/apps'
 import MdLiveHelp from 'react-icons/lib/md/live-help'
 import MdTouchApp from 'react-icons/lib/md/touch-app'
 import MdImportExport from 'react-icons/lib/md/import-export'
-import {MODE_OPTION} from '$theater/workspace/components/StudioUI/StudioUI'
+import {MODE_OPTION} from '$src/studio/common/components/ActiveModeDetector/ActiveModeDetector'
 
 class StatusBar extends React.PureComponent<any, any> {
   render() {

@@ -20,9 +20,9 @@ import {
 import cx from 'classnames'
 import {PanelActiveModeChannel} from '$theater/workspace/components/Panel/Panel'
 import {Subscriber} from 'react-broadcast'
-import {MODE_CMD} from '$theater/workspace/components/StudioUI/StudioUI'
-import {ITheaterStoreState} from '$theater/types'
-import StudioComponent from '$theater/handy/StudioComponent'
+import {MODE_CMD} from '$src/studio/common/components/ActiveModeDetector/ActiveModeDetector'
+import {IStudioStoreState} from '$studio/types'
+import StudioComponent from '$studio/handy/StudioComponent'
 import React from 'react'
 import connect from '$theater/handy/connect'
 import { IDeclarativeComponentDescriptor } from '$theater/componentModel/types/declarative';

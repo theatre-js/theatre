@@ -1,8 +1,15 @@
 import * as css from './VariablesBox.css'
+<<<<<<< HEAD:src/theater/AnimationTimelinePanel/VariablesBox.tsx
 import DraggableArea from '$theater/common/components/DraggableArea/DraggableArea'
 import {MODE_SHIFT} from '$theater/workspace/components/StudioUI/StudioUI'
 import BoxLegends from '$theater/AnimationTimelinePanel/BoxLegends'
 import {ITheaterStoreState} from '$theater/types'
+=======
+import DraggableArea from '$src/studio/common/components/DraggableArea/DraggableArea'
+import {MODE_SHIFT} from '$src/studio/common/components/ActiveModeDetector/ActiveModeDetector'
+import BoxLegends from '$src/studio/AnimationTimelinePanel/BoxLegends'
+import {IStudioStoreState} from '$src/studio/types'
+>>>>>>> create active mode detector component:src/studio/AnimationTimelinePanel/VariablesBox.tsx
 import {Broadcast} from 'react-broadcast'
 import {
   VariableObject,

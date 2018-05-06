@@ -10,9 +10,9 @@ import {
   MODE_D,
   MODE_H,
   MODE_CMD,
-} from '$theater/workspace/components/StudioUI/StudioUI'
-import {PointHandles as IHandles} from '$theater/AnimationTimelinePanel/types'
-import {SelectionBoundariesChannel} from '$theater/AnimationTimelinePanel/VariablesBox'
+} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
+import {PointHandles as IHandles} from '$studio/AnimationTimelinePanel/types'
+import {SelectionBoundariesChannel} from '$studio/AnimationTimelinePanel/VariablesBox'
 
 interface IProps {
   color: $FixMe

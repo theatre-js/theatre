@@ -2,7 +2,7 @@ import React from 'react'
 import {PointHandles as IHandles} from '$theater/AnimationTimelinePanel/types'
 import {PanelActiveModeChannel} from '$theater/workspace/components/Panel/Panel'
 import {Subscriber} from 'react-broadcast'
-import {MODE_D} from '$theater/workspace/components/StudioUI/StudioUI'
+import {MODE_D} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
 import * as css from './Connector.css'
 
 interface IProps {
