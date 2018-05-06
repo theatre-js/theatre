@@ -1,8 +1,16 @@
 import React from 'react'
-import {ActiveMode} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
-import {reduceAhistoricState} from '$studio/bootstrap/actions'
+import {
+  ActiveMode,
+  MODE_CMD,
+} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
+import {
+  reduceAhistoricState,
+  reduceHistoricState,
+} from '$studio/bootstrap/actions'
 import {debounce} from 'lodash'
-import {ViewportsContainer} from '$studio/workspace/types'
+import {ViewportsContainer, IViewport} from '$studio/workspace/types'
+import generateUniqueId from 'uuid/v4'
+import ViewportInstantiator from '$studio/workspace/components/WhatToShowInBody/Viewports/ViewportInstantiator'
 
 interface IProps {
   classes: $FixMe
@@ -12,7 +20,9 @@ interface IProps {
   dispatch: Function
 }
 
-interface IState extends ViewportsContainer {}
+interface IState extends ViewportsContainer {
+  newViewportProps: undefined | null | {id: string; x: number; y: number}
+}
 
 export class Container extends React.PureComponent<IProps, IState> {
   container: HTMLDivElement | null
@@ -20,7 +30,10 @@ export class Container extends React.PureComponent<IProps, IState> {
   constructor(props: IProps) {
     super(props)
 
-    this.state = props.initialState
+    this.state = {
+      ...props.initialState,
+      newViewportProps: null,
+    }
   }
 
   private handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
@@ -54,11 +67,47 @@ export class Container extends React.PureComponent<IProps, IState> {
   )
 
   private handleMouseDown = (e: MouseEvent) => {
-    if (e.target === this.container) console.log('mouse down')
+    if (this.props.activeMode !== MODE_CMD || e.target !== this.container)
+      return
+
+    const id = generateUniqueId()
+    const x = e.clientX
+    const y = e.clientY
+    this.setState(() => ({
+      newViewportProps: {
+        id,
+        x,
+        y,
+      },
+    }))
+  }
+
+  private createEmptyViewport = (width: number, height: number) => {
+    const {id, x, y} = this.state.newViewportProps!
+    this.setState(() => ({newViewportProps: null}))
+
+    this.props.dispatch(
+      reduceHistoricState(['historicWorkspace', 'viewports'], viewports => {
+        const newViewPort: IViewport = {
+          id,
+          dimensions: {width, height},
+          position: {x: x - this.state.scrollX, y: y - this.state.scrollY},
+          sceneComponentId: 'IntroScene',
+        }
+        return {
+          ...viewports,
+          byId: {
+            ...viewports.byId,
+            [id]: newViewPort,
+          },
+          activeViewportId: id,
+        }
+      }),
+    )
   }
 
   render() {
-    const {scrollX, scrollY} = this.state
+    const {scrollX, scrollY, newViewportProps} = this.state
     return (
       <div
         {...this.props.classes}
@@ -67,6 +116,13 @@ export class Container extends React.PureComponent<IProps, IState> {
         onMouseDown={this.handleMouseDown}
       >
         {this.props.children(scrollX, scrollY)}
+        {newViewportProps != null && (
+          <ViewportInstantiator
+            x={newViewportProps.x}
+            y={newViewportProps.y}
+            createViewport={this.createEmptyViewport}
+          />
+        )}
       </div>
     )
   }
