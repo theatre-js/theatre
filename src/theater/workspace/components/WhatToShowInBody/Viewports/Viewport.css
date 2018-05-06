@@ -4,7 +4,7 @@
   position: absolute;
   border: 1px solid #adadad;
   background: white;
-  
+
   &.isActive {
     border-color: #6d6d73;
   }

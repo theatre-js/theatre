@@ -13,15 +13,6 @@ interface IState {
 
 type TMODE = 'option' | 'cmd' | 'shift' | 'd' | 'c' | 'h'
 
-export const MODES: Record<TMODE, string> = {
-  option: 'OPTION',
-  cmd: 'COMMAND',
-  shift: 'SHIFT',
-  d: 'D',
-  c: 'C',
-  h: 'H',
-}
-
 const KEYS_MAP: Record<TMODE, KeyboardEvent['keyCode']> = {
   option: 18,
   shift: 16,
@@ -30,6 +21,13 @@ const KEYS_MAP: Record<TMODE, KeyboardEvent['keyCode']> = {
   c: 67,
   h: 72,
 }
+
+export const MODES = Object.keys(KEYS_MAP).reduce((reducer, key) => {
+  return {
+    ...reducer,
+    [key]: key.toUpperCase(),
+  }
+}, {}) as Record<TMODE, string>
 
 class ActiveModeDetector extends React.PureComponent<IProps, IState> {
   _isMouseDown: boolean

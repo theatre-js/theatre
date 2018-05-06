@@ -1,0 +1,43 @@
+.container {
+  position: relative;
+  display: inline-block;
+
+  &:before {
+    display: block;
+    content: ' ';
+    position: absolute;
+    height: 1px;
+    left: 0;
+    right: 0;
+    bottom: -2px;
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  &.isEnabled {
+    &:after {
+      display: block;
+      content: ' ';
+      position: absolute;
+      height: 2px;
+      left: -3px;
+      right: -3px;
+      bottom: -3px;
+      transform-origin: 0 0;
+      transform: scaleX(0);
+      background: #999;
+      animation: inputEffect 0.15s ease-in-out forwards;
+    }
+  }
+}
+
+.name {
+  font-size: 11px;
+  font-weight: 400;
+  margin-right: 1px;
+}
+
+@keyframes inputEffect {
+  to {
+    transform: scaleX(1);
+  }
+}

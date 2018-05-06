@@ -1,5 +1,5 @@
 import React from 'react'
-import Overlay from '$theater/common/components/Overlay/Overlay'
+// import Overlay from '$studio/common/components/Overlay/Overlay'
 import {clamp} from 'lodash'
 import {filter} from 'fuzzaldrin-plus'
 
@@ -7,14 +7,14 @@ type OptionsList = string[]
 
 interface IProps {
   options: OptionsList
-  onClickOutside: Function
-  onCancel(): void
-  onSelect(option: string): any
-  children(
+  onCancel: () => void
+  onSelectOption: (option: string) => any
+  onSelectNothing: () => any
+  children: (
     onQuery: Function,
     filteredOptions: OptionsList,
     focusedIndex: number,
-  ): React.ReactFragment
+  ) => React.ReactFragment
 }
 
 interface IState {
@@ -44,8 +44,9 @@ class HeadlessDataList extends React.PureComponent<IProps, IState> {
     if (e.keyCode === 13) {
       e.preventDefault()
       const {filteredOptions, focusedIndex} = this.state
+      if (filteredOptions.length === 0) this.props.onSelectNothing()
       if (focusedIndex < filteredOptions.length)
-        this.props.onSelect(filteredOptions[focusedIndex])
+        this.props.onSelectOption(filteredOptions[focusedIndex])
     }
     if (e.keyCode === 27) {
       e.preventDefault()
@@ -79,21 +80,22 @@ class HeadlessDataList extends React.PureComponent<IProps, IState> {
 
   render() {
     const {filteredOptions, focusedIndex} = this.state
-    const children = React.Children.map(
-      this.props.children(this.onQuery, filteredOptions, focusedIndex),
-      (fragment: React.ReactElement<any>) => {
-        return React.Children.map(
-          fragment.props.children,
-          (child: React.ReactElement<any>) => {
-            return React.createElement(Overlay.Section, {}, child)
-          },
-        )
-      },
-    )
+    // const children = React.Children.map(
+    //   this.props.children(this.onQuery, filteredOptions, focusedIndex),
+    //   (fragment: React.ReactElement<any>) => {
+    //     return React.Children.map(
+    //       fragment.props.children,
+    //       (child: React.ReactElement<any>) => {
+    //         return React.createElement(Overlay.Section, {}, child)
+    //       },
+    //     )
+    //   },
+    // )
 
-    return (
-      <Overlay onClickOutside={this.props.onClickOutside}>{children}</Overlay>
-    )
+    // return (
+    //   <Overlay onClickOutside={this.props.onClickOutside}>{children}</Overlay>
+    // )
+    return this.props.children(this.onQuery, filteredOptions, focusedIndex)
   }
 }
 

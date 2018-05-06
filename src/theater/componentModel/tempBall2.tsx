@@ -244,7 +244,26 @@ const two = {
       },
     },
   },
+  EmptyScene: {
+    isScene: true,
+    __descriptorType: 'DeclarativeComponentDescriptor',
+    displayName: 'EmptyScene',
+    id: 'EmptyScene',
+    timelineDescriptors: {
+      list: [],
+      byId: {},
+    },
+    type: 'Declarative',
+    localHiddenValuesById: {
+      nothing: null,
+    },
+    whatToRender: {
+      __descriptorType: 'ReferenceToLocalHiddenValue',
+      which: 'nothing',
+    },
+  },
   IntroScene: {
+    isScene: true,
     __descriptorType: 'DeclarativeComponentDescriptor',
     id: 'IntroScene',
     displayName: 'IntroScene',

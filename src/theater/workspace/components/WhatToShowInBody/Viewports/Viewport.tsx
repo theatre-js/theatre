@@ -19,6 +19,7 @@ import {
   MODES,
   ActiveMode,
 } from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
+import SceneName from '$studio/workspace/components/WhatToShowInBody/Viewports/SceneName'
 
 const classes = resolveCss(css)
 
@@ -205,12 +206,13 @@ export default class Viewport extends ReactiveComponentWithTheater<
           />
         )}
         <div {...classes('header')} onClick={this._activate}>
-          <span {...classes('headerSceneName')}>
-            {getDisplayNameOfComponent(
-              this.theater,
+          <SceneName
+            name={getDisplayNameOfComponent(
+              this.studio,
               viewportDescriptor.sceneComponentId,
             )}
-          </span>
+            viewportId={this.props.id}
+          />
           <span {...classes('headerSeperator')}>–</span>
           <span {...classes('headerDimensions')}>
             {width}x{height}

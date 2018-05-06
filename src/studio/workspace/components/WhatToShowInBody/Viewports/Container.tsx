@@ -37,6 +37,7 @@ export class Container extends React.PureComponent<IProps, IState> {
   }
 
   private handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    if (e.target !== this.container) return
     const {deltaX, deltaY} = e
     this.setState(({scrollX, scrollY}) => {
       scrollX -= deltaX
@@ -92,7 +93,7 @@ export class Container extends React.PureComponent<IProps, IState> {
           id,
           dimensions: {width, height},
           position: {x: x - this.state.scrollX, y: y - this.state.scrollY},
-          sceneComponentId: 'IntroScene',
+          sceneComponentId: 'EmptyScene',
         }
         return {
           ...viewports,
