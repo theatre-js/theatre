@@ -111,12 +111,16 @@ class ModifierBox extends React.PureComponent<IProps, IState> {
   }
 
   componentDidUpdate(prevProps: IProps) {
-    if (prevProps.status === STATUS.uninitialized && this.props.status === STATUS.initialized) {
+    if (
+      prevProps.status === STATUS.uninitialized &&
+      this.props.status === STATUS.initialized
+    ) {
       this.setState(({containerRect}) => ({
         containerRect: {
           ...containerRect,
-          height: this.container!.firstElementChild!.getBoundingClientRect().height,
-        }
+          height: this.container!.firstElementChild!.getBoundingClientRect()
+            .height,
+        },
       }))
     }
   }
@@ -240,11 +244,11 @@ class ModifierBox extends React.PureComponent<IProps, IState> {
             ref={c => (this.container = c)}
             style={style}
             className={cx(css.container, {
+              [css.move]: shouldMove,
+              [css.collapse]: shouldDisappear,
               [css.isBeingDragged]: isBeingDragged,
               [css.appear]: status === STATUS.uninitialized,
               [css.initialize]: status === STATUS.initialized,
-              [css.collapse]: shouldDisappear,
-              [css.move]: shouldMove,
             })}
             onContextMenu={this.contextMenuHandler}
           >

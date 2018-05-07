@@ -24,14 +24,14 @@
 
   &.collapse {
     overflow: hidden;
-    animation: containerCollapse 0.2s ease-out;
+    animation: containerCollapse 0.2s ease-out !important;
     & + div {
       height: 0;
     }
   }
 
   &.move {
-    animation: containerMove 0.25s ease-in-out forwards;
+    animation: containerMove 0.25s ease-in-out forwards !important;
   }
 
   &.isBeingDragged {
