@@ -3,6 +3,7 @@ import {get, last, isPlainObject} from 'lodash'
 import pointer, {Pointer, PointerInnerObj} from './pointer'
 import {PathBasedReducer} from '$shared/utils/redux/withHistory/PathBasedReducer'
 import update from 'lodash/fp/update'
+import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 
 type Listener = (newVal: mixed) => void
 
@@ -185,9 +186,11 @@ const atom = <D extends {}>(data: D) => new Atom<D>(data)
 
 export default atom
 
-export const val = <P extends PointerInnerObj<$IntentionalAny>>(
+export const valueDerivation = <P extends PointerInnerObj<$IntentionalAny>>(
   pointer: P,
-): P extends PointerInnerObj<infer T> ? T : never => {
+): P extends PointerInnerObj<infer T>
+  ? IdentityDerivation<T>
+  : IdentityDerivation<void> => {
   const meta = pointer.$pointerMeta
   let derivation = meta.identityDerivation
   if (!derivation) {
@@ -195,7 +198,13 @@ export const val = <P extends PointerInnerObj<$IntentionalAny>>(
       $IntentionalAny
     >(meta.root, meta.path)
   }
-  return derivation.getValue()
+  return derivation as $IntentionalAny
+}
+
+export const val = <P extends PointerInnerObj<$IntentionalAny>>(
+  pointer: P,
+): P extends PointerInnerObj<infer T> ? T : never => {
+  return valueDerivation(pointer).getValue()
 }
 
 export const pathTo = <P extends PointerInnerObj<$IntentionalAny>>(
