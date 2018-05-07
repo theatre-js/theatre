@@ -120,7 +120,7 @@ class SceneSelector extends StudioComponent<IProps, IState> {
         onSelectNothing={this.createNewScene}
         onCancel={this.props.onCancel}
       >
-        {(onQuery, filteredOptions, focusedIndex) => {
+        {(onQuery, filteredOptions, focusedIndex, setFocusedIndexTo) => {
           return (
             <>
               <input
@@ -134,6 +134,8 @@ class SceneSelector extends StudioComponent<IProps, IState> {
                 {filteredOptions.length > 0 ? (
                   filteredOptions.map((option: string, i) => (
                     <div
+                      onMouseEnter={() => setFocusedIndexTo(i)}
+                      onMouseDown={() => this.setViewportSceneId(option)}
                       {...classes('item', i === focusedIndex && 'highlight')}
                       key={i}
                     >

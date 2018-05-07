@@ -14,6 +14,7 @@ interface IProps {
     onQuery: Function,
     filteredOptions: OptionsList,
     focusedIndex: number,
+    setFocusedIndexTo: Function,
   ) => any
 }
 
@@ -78,9 +79,18 @@ class HeadlessDataList extends React.PureComponent<IProps, IState> {
     })
   }
 
+  setFocusedIndexTo = (focusedIndex: number) => {
+    this.setState(() => ({focusedIndex}))
+  }
+
   render() {
     const {filteredOptions, focusedIndex} = this.state
-    return this.props.children(this.onQuery, filteredOptions, focusedIndex)
+    return this.props.children(
+      this.onQuery,
+      filteredOptions,
+      focusedIndex,
+      this.setFocusedIndexTo,
+    )
   }
 }
 
