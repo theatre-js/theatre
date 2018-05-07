@@ -14,7 +14,7 @@ interface IProps {
     onQuery: Function,
     filteredOptions: OptionsList,
     focusedIndex: number,
-  ) => React.ReactFragment
+  ) => any
 }
 
 interface IState {
@@ -80,21 +80,6 @@ class HeadlessDataList extends React.PureComponent<IProps, IState> {
 
   render() {
     const {filteredOptions, focusedIndex} = this.state
-    // const children = React.Children.map(
-    //   this.props.children(this.onQuery, filteredOptions, focusedIndex),
-    //   (fragment: React.ReactElement<any>) => {
-    //     return React.Children.map(
-    //       fragment.props.children,
-    //       (child: React.ReactElement<any>) => {
-    //         return React.createElement(Overlay.Section, {}, child)
-    //       },
-    //     )
-    //   },
-    // )
-
-    // return (
-    //   <Overlay onClickOutside={this.props.onClickOutside}>{children}</Overlay>
-    // )
     return this.props.children(this.onQuery, filteredOptions, focusedIndex)
   }
 }

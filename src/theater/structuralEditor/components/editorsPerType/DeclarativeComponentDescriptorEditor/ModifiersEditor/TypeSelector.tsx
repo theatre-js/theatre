@@ -5,7 +5,8 @@ import HeadlessDataList from '$theater/common/components/HeadlessDataList/Headle
 import {ITheaterStoreState} from '$theater/types'
 import _ from 'lodash'
 import cx from 'classnames'
-import {IModifierDescriptor} from '$theater/componentModel/types'
+import {IModifierDescriptor} from '$studio/componentModel/types'
+import Overlay from '$studio/common/components/Overlay/Overlay'
 
 interface IProps {
   left: number
@@ -61,38 +62,42 @@ class TypeSelector extends React.PureComponent<IProps, IState> {
     return (
       <HeadlessDataList
         options={listOfCoreModifiers.map(({name}) => name)}
-        onSelect={this.onSelect}
+        onSelectOption={this.onSelect}
         onCancel={this.props.onCancel}
-        onClickOutside={this.props.onCancel}
+        onSelectNothing={() => {}}
       >
         {(onQuery, filteredOptions, focusedIndex) => {
           return (
-            <>
-              <div className={css.inputContainer} style={inputStyle}>
-                <input
-                  type="text"
-                  className={css.input}
-                  ref={c => (this.input = c)}
-                  onBlur={this.props.onCancel}
-                  onChange={e => onQuery(e.target.value)}
-                />
-                <span className={css.hint}>
-                  {filteredOptions[focusedIndex]}
-                </span>
-              </div>
-              <div className={css.listContainer} style={listStyle}>
-                {filteredOptions.map((option: string, i) => (
-                  <div
-                    className={cx(css.option, {
-                      [css.isSelected]: i === focusedIndex,
-                    })}
-                    key={i}
-                  >
-                    {option}
-                  </div>
-                ))}
-              </div>
-            </>
+            <Overlay onClickOutside={this.props.onCancel}>
+              <Overlay.Section>
+                <div className={css.inputContainer} style={inputStyle}>
+                  <input
+                    type="text"
+                    className={css.input}
+                    ref={c => (this.input = c)}
+                    onBlur={this.props.onCancel}
+                    onChange={e => onQuery(e.target.value)}
+                  />
+                  <span className={css.hint}>
+                    {filteredOptions[focusedIndex]}
+                  </span>
+                </div>
+              </Overlay.Section>
+              <Overlay.Section>
+                <div className={css.listContainer} style={listStyle}>
+                  {filteredOptions.map((option: string, i) => (
+                    <div
+                      className={cx(css.option, {
+                        [css.isSelected]: i === focusedIndex,
+                      })}
+                      key={i}
+                    >
+                      {option}
+                    </div>
+                  ))}
+                </div>
+              </Overlay.Section>
+            </Overlay>
           )
         }}
       </HeadlessDataList>

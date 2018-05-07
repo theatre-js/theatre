@@ -182,6 +182,7 @@ class ModifierBox extends React.PureComponent<IProps, IState> {
   contextMenuHandler = (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation()
     e.preventDefault()
+    if (this.props.status === STATUS.uninitialized) return
     const {clientX, clientY} = e
     this.setState(() => ({contextMenuProps: {left: clientX, top: clientY}}))
   }

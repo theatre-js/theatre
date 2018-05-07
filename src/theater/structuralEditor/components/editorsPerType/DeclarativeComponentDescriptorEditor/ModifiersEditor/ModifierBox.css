@@ -1,4 +1,5 @@
 @value minBoxHeight: 27px;
+@value sensorHeight: 10px;
 
 .container {
   position: relative;
@@ -11,16 +12,19 @@
   &.appear {
     animation: containerAppear 0.2s ease-in-out forwards;
     background: #0e1315;
+    & + div {
+      animation: sensorAppear .2s ease-in-out forwards;
+    }
   }
 
   &.initialize {
     overflow: hidden;
-    animation: containerInitialize .2s ease-in-out forwards;
+    animation: containerInitialize 0.2s ease-in-out forwards;
   }
 
   &.collapse {
     overflow: hidden;
-    animation: containerCollapse .2s ease-out;
+    animation: containerCollapse 0.2s ease-out;
     & + div {
       height: 0;
     }
@@ -46,6 +50,15 @@
   to {
     height: minBoxHeight;
     opacity: 1;
+  }
+}
+
+@keyframes sensorAppear {
+  from {
+    height: 0;
+  }
+  to {
+    height: sensorHeight;
   }
 }
 

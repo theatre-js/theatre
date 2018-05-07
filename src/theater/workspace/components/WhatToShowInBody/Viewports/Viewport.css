@@ -26,6 +26,7 @@
   top: -20px;
   left: 0;
   @include typography;
+  white-space: nowrap;
 
   color: #9c9c9c;
   font-size: 10px !important;
