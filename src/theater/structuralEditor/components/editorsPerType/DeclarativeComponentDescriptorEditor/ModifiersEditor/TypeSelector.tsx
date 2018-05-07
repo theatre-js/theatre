@@ -66,7 +66,7 @@ class TypeSelector extends React.PureComponent<IProps, IState> {
         onCancel={this.props.onCancel}
         onSelectNothing={() => {}}
       >
-        {(onQuery, filteredOptions, focusedIndex) => {
+        {(onQuery, filteredOptions, focusedIndex, setFocusedIndexTo) => {
           return (
             <Overlay onClickOutside={this.props.onCancel}>
               <Overlay.Section>
@@ -87,6 +87,8 @@ class TypeSelector extends React.PureComponent<IProps, IState> {
                 <div className={css.listContainer} style={listStyle}>
                   {filteredOptions.map((option: string, i) => (
                     <div
+                      onMouseEnter={() => setFocusedIndexTo(i)}
+                      onMouseDown={() => this.onSelect(option)}
                       className={cx(css.option, {
                         [css.isSelected]: i === focusedIndex,
                       })}
