@@ -8,19 +8,18 @@ import arrayAtom from '$shared/DataVerse/atoms/arrayAtom'
 import elementify from '$theater/componentModel/react/elementify/elementify'
 import constant from '$shared/DataVerse/derivations/constant'
 import Theater from '$theater/bootstrap/Theater'
-import {reduceHistoricState} from '$studio/bootstrap/actions'
-import Studio from '$studio/bootstrap/Studio'
-import {getComponentDescriptor} from '$studio/componentModel/selectors'
+import {reduceHistoricState} from '$theater/bootstrap/actions'
+import {getComponentDescriptor} from '$theater/componentModel/selectors'
 import EditOverlay, {
   SizeChanges,
-} from '$studio/workspace/components/Panel/EditOverlay'
-import {IViewport} from '$studio/workspace/types'
+} from '$theater/workspace/components/Panel/EditOverlay'
+import {IViewport} from '$theater/workspace/types'
 import {
   MODES,
   ActiveMode,
-} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
-import {TBoundingRect} from '$studio/workspace/components/WhatToShowInBody/Viewports/ViewportInstantiator'
-import Header from '$studio/workspace/components/WhatToShowInBody/Viewports/Header'
+} from '$theater/common/components/ActiveModeDetector/ActiveModeDetector'
+import {TBoundingRect} from '$theater/workspace/components/WhatToShowInBody/Viewports/ViewportInstantiator'
+import Header from '$theater/workspace/components/WhatToShowInBody/Viewports/Header'
 import {batchedAction} from '$shared/utils/redux/withHistory/withBatchActions'
 
 const classes = resolveCss(css)
@@ -227,7 +226,7 @@ export default class Viewport extends ReactiveComponentWithTheater<
           isActive={isActive}
           viewportId={this.props.id}
           name={getDisplayNameOfComponent(
-            this.studio,
+            this.theater,
             viewportDescriptor.sceneComponentId,
           )}
           width={boundingRect.width}

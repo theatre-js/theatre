@@ -5,7 +5,7 @@ import HalfPieContextMenu from '$theater/common/components/HalfPieContextMenu'
 import MdSwapVerticalCircel from 'react-icons/lib/md/swap-vertical-circle'
 import FaBullseye from 'react-icons/lib/fa/bullseye'
 import FaCircleO from 'react-icons/lib/fa/circle-o'
-import {MODES} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
+import {MODES} from '$theater/common/components/ActiveModeDetector/ActiveModeDetector'
 import React from 'react'
 
 interface IState {

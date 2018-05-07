@@ -5,11 +5,11 @@ import * as css from './Viewports.css'
 import resolveCss from '$shared/utils/resolveCss'
 import {map} from 'lodash'
 import Viewport from './Viewport'
-import {reduceHistoricState} from '$studio/bootstrap/actions'
+import {reduceHistoricState} from '$theater/bootstrap/actions'
 import ActiveModeDetector, {
   ActiveMode,
-} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
-import Container from '$studio/workspace/components/WhatToShowInBody/Viewports/Container'
+} from '$theater/common/components/ActiveModeDetector/ActiveModeDetector'
+import Container from '$theater/workspace/components/WhatToShowInBody/Viewports/Container'
 
 const classes = resolveCss(css)
 
@@ -34,7 +34,7 @@ export default class Viewports extends ReactiveComponentWithTheater<
 
   _render() {
     // @todo use keys()
-    const viewports = val(this.studioAtom2P.historicWorkspace.viewports.byId)
+    const viewports = val(this.theaterAtom2P.historicWorkspace.viewports.byId)
 
     return (
       <ActiveModeDetector modes={['option', 'cmd']}>
@@ -42,7 +42,7 @@ export default class Viewports extends ReactiveComponentWithTheater<
           return (
             <Container
               initialState={val(
-                this.studioAtom2P.ahistoricWorkspace.viewportsContainer,
+                this.theaterAtom2P.ahistoricWorkspace.viewportsContainer,
               )}
               dispatch={this.dispatch}
               activeMode={activeMode}

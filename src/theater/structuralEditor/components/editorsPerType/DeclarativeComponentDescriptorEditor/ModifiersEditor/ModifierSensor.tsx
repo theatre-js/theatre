@@ -1,7 +1,7 @@
 import React from 'react'
 import css from './ModifierSensor.css'
 import cx from 'classnames'
-import {MODES} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
+import {MODES} from '$theater/common/components/ActiveModeDetector/ActiveModeDetector'
 
 interface IProps {
   activeMode: string

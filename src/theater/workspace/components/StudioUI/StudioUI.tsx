@@ -16,7 +16,7 @@ import {undoAction, redoAction} from '$shared/utils/redux/withHistory/actions'
 import resolveCss from '$shared/utils/resolveCss'
 import ActiveModeDetector, {
   ActiveMode,
-} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
+} from '$theater/common/components/ActiveModeDetector/ActiveModeDetector'
 
 const classes = resolveCss(css)
 

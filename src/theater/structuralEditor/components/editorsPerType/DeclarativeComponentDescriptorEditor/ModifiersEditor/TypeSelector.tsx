@@ -5,8 +5,8 @@ import HeadlessDataList from '$theater/common/components/HeadlessDataList/Headle
 import {ITheaterStoreState} from '$theater/types'
 import _ from 'lodash'
 import cx from 'classnames'
-import {IModifierDescriptor} from '$studio/componentModel/types'
-import Overlay from '$studio/common/components/Overlay/Overlay'
+import {IModifierDescriptor} from '$theater/componentModel/types'
+import Overlay from '$theater/common/components/Overlay/Overlay'
 
 interface IProps {
   left: number

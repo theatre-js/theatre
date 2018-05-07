@@ -14,8 +14,8 @@ export default function configureAtom(
   reduxStore.reduxStore.subscribe(() => {
     const newState = extractState(reduxStore.reduxStore.getState())
     const diffs: Array<Object> = diff(lastState, newState, {invertible: false})
-    for (const diff of diffs) {
-      applyJsonDiffToAtom(diff, atom)
+    for (const d of diffs) {
+      applyJsonDiffToAtom(d, atom)
     }
 
     lastState = newState

@@ -13,7 +13,7 @@
     animation: containerAppear 0.2s ease-in-out forwards;
     background: #0e1315;
     & + div {
-      animation: sensorAppear .2s ease-in-out forwards;
+      animation: sensorAppear 0.2s ease-in-out forwards;
     }
   }
 

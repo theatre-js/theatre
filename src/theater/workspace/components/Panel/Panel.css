@@ -1,4 +1,4 @@
-@import "$theater/common/styles.css";
+@import '$theater/common/styles.css';
 
 .container {
   position: fixed;
@@ -9,7 +9,6 @@
   background: var(--body-color);
   @include typography;
   --header-height: 32px;
-  
 }
 
 .header {
@@ -34,7 +33,6 @@
   height: var(--panelHeaderHeight);
   display: flex;
   justify-content: flex-start;
-  background: rgba(#FFFFFF, 0.04);
+  background: rgba(#ffffff, 0.04);
   margin: 1px 1px 0 1px;
 }
-

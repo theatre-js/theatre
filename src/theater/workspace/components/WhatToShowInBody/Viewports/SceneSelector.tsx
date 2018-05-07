@@ -1,13 +1,13 @@
 import React from 'react'
-import HeadlessDataList from '$studio/common/components/HeadlessDataList/HeadlessDataList'
-import {fitInput} from '$studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor/utils'
+import HeadlessDataList from '$theater/common/components/HeadlessDataList/HeadlessDataList'
+import {fitInput} from '$theater/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor/utils'
 import resolveCss from '$shared/utils/resolveCss'
 import css from './SceneSelector.css'
-import {IDeclarativeComponentDescriptor} from '$studio/componentModel/types/declarative'
-import StudioComponent from '$studio/handy/StudioComponent'
+import {IDeclarativeComponentDescriptor} from '$theater/componentModel/types/declarative'
+import StudioComponent from '$theater/handy/StudioComponent'
 import {val} from '$shared/DataVerse2/atom'
-import {reduceHistoricState} from '$studio/bootstrap/actions'
-import {makeSceneComponent} from '$studio/componentModel/utils'
+import {reduceHistoricState} from '$theater/bootstrap/actions'
+import {makeSceneComponent} from '$theater/componentModel/utils'
 import {batchedAction} from '$shared/utils/redux/withHistory/withBatchActions'
 
 const classes = resolveCss(css)
@@ -100,7 +100,7 @@ class SceneSelector extends StudioComponent<IProps, IState> {
 
   private getScenes() {
     const customComponents = val(
-      this.studioAtom2P.historicComponentModel.customComponentDescriptors,
+      this.theaterAtom2P.historicComponentModel.customComponentDescriptors,
     )
     return Object.entries(customComponents).reduce(
       (reducer, [id, descriptor]) => {

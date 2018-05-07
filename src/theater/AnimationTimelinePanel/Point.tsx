@@ -5,9 +5,9 @@ import DraggableArea from '$theater/common/components/DraggableArea/DraggableAre
 import SingleInputForm from '$lf/common/components/SingleInputForm'
 import {PanelActiveModeChannel} from '$theater/workspace/components/Panel/Panel'
 import {Subscriber} from 'react-broadcast'
-import {MODES} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
-import {PointHandles as IHandles} from '$studio/AnimationTimelinePanel/types'
-import {SelectionBoundariesChannel} from '$studio/AnimationTimelinePanel/VariablesBox'
+import {MODES} from '$theater/common/components/ActiveModeDetector/ActiveModeDetector'
+import {PointHandles as IHandles} from '$theater/AnimationTimelinePanel/types'
+import {SelectionBoundariesChannel} from '$theater/AnimationTimelinePanel/VariablesBox'
 
 interface IProps {
   color: $FixMe

@@ -15,8 +15,8 @@ import {
   PanelWidthChannel,
   PanelActiveModeChannel,
   default as Panel,
-} from '$src/studio/workspace/components/Panel/Panel'
-import {MODES} from '$src/studio/common/components/ActiveModeDetector/ActiveModeDetector'
+} from '$theater/workspace/components/Panel/Panel'
+import {MODES} from '$theater/common/components/ActiveModeDetector/ActiveModeDetector'
 
 import {
   BoxID,
