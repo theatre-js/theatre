@@ -40,7 +40,6 @@ export default class Theater {
   }
 
   run(pathToProject: string) {
-    debugger
     if (this._ran)
       throw new Error(`TheaterJS.run() has already been called once`)
 
