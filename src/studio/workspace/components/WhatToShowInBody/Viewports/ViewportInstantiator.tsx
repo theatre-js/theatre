@@ -1,20 +1,28 @@
 import React from 'react'
+import {clamp} from 'lodash'
 
 interface IProps {
-  x: number,
-  y: number,
-  createViewport: (width: number, height: number) => void
+  x: number
+  y: number
+  createViewport: (boundingRect: TBoundingRect) => void
 }
 
 interface IState {
-  width: number,
-  height: number,
+  deltaX: number
+  deltaY: number
+}
+
+export type TBoundingRect = {
+  left: number
+  top: number
+  width: number
+  height: number
 }
 
 class ViewportInstantiator extends React.PureComponent<IProps, IState> {
   state = {
-    width: 0,
-    height: 0,
+    deltaX: 0,
+    deltaY: 0,
   }
 
   componentDidMount() {
@@ -29,27 +37,35 @@ class ViewportInstantiator extends React.PureComponent<IProps, IState> {
 
   private handleMouseMove = (e: MouseEvent) => {
     const {movementX, movementY} = e
-    this.setState(({width, height}) => ({
-      width: width + movementX,
-      height: height + movementY,
+    this.setState(({deltaX, deltaY}) => ({
+      deltaX: deltaX + movementX,
+      deltaY: deltaY + movementY,
     }))
   }
 
+  private getBoundingRect(): TBoundingRect {
+    const {deltaX, deltaY} = this.state
+    return {
+      left: this.props.x + clamp(deltaX, 0),
+      top: this.props.y + clamp(deltaY, 0),
+      width: Math.abs(deltaX),
+      height: Math.abs(deltaY),
+    }
+  }
+
   private handleMouseUp = () => {
-    const {width, height} = this.state
-    this.props.createViewport(width, height)
+    this.props.createViewport(this.getBoundingRect())
   }
 
   render() {
     return (
-      <div style={{
-        background: 'white',
-        position: 'absolute',
-        left: this.props.x,
-        top: this.props.y,
-        width: this.state.width,
-        height: this.state.height,
-      }} />
+      <div
+        style={{
+          background: 'white',
+          position: 'absolute',
+          ...this.getBoundingRect(),
+        }}
+      />
     )
   }
 }

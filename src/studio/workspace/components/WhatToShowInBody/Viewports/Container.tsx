@@ -10,7 +10,9 @@ import {
 import {debounce} from 'lodash'
 import {ViewportsContainer, IViewport} from '$studio/workspace/types'
 import generateUniqueId from 'uuid/v4'
-import ViewportInstantiator from '$studio/workspace/components/WhatToShowInBody/Viewports/ViewportInstantiator'
+import ViewportInstantiator, {
+  TBoundingRect,
+} from '$studio/workspace/components/WhatToShowInBody/Viewports/ViewportInstantiator'
 
 interface IProps {
   classes: $FixMe
@@ -83,8 +85,9 @@ export class Container extends React.PureComponent<IProps, IState> {
     }))
   }
 
-  private createEmptyViewport = (width: number, height: number) => {
-    const {id, x, y} = this.state.newViewportProps!
+  private createEmptyViewport = ({left, top, width, height}: TBoundingRect) => {
+    const {newViewportProps, scrollX, scrollY} = this.state
+    const {id} = newViewportProps!
     this.setState(() => ({newViewportProps: null}))
 
     this.props.dispatch(
@@ -92,7 +95,7 @@ export class Container extends React.PureComponent<IProps, IState> {
         const newViewPort: IViewport = {
           id,
           dimensions: {width, height},
-          position: {x: x - this.state.scrollX, y: y - this.state.scrollY},
+          position: {x: left - scrollX, y: top - scrollY},
           sceneComponentId: 'EmptyScene',
         }
         return {

@@ -8,7 +8,7 @@
   opacity: 0;
   transition: opacity .1s ease-in-out;
 
-  &:hover {
+  &:hover, &:active {
     opacity: 1;
   }
 }

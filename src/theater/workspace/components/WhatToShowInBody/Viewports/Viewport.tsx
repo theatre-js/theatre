@@ -20,6 +20,7 @@ import {
   ActiveMode,
 } from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
 import SceneName from '$studio/workspace/components/WhatToShowInBody/Viewports/SceneName'
+import {TBoundingRect} from '$studio/workspace/components/WhatToShowInBody/Viewports/ViewportInstantiator'
 
 const classes = resolveCss(css)
 
@@ -34,8 +35,8 @@ interface IProps {
 }
 
 interface IState {
-  positionChange: {x: number; y: number}
-  dimensionsChange: {width: number; height: number}
+  positionChange: IViewport['position']
+  dimensionsChange: IViewport['dimensions']
 }
 
 export default class Viewport extends ReactiveComponentWithTheater<
@@ -84,28 +85,6 @@ export default class Viewport extends ReactiveComponentWithTheater<
     }))
   }
 
-  saveViewportPosition = () => {
-    const positionChange = val(this.stateP.positionChange)
-    const {id} = this.props
-    this.setState(() => ({
-      positionChange: {x: 0, y: 0},
-    }))
-    this.dispatch(
-      reduceHistoricState(
-        ['historicWorkspace', 'viewports', 'byId', id],
-        (viewport: IViewport) => {
-          return {
-            ...viewport,
-            position: {
-              x: viewport.position.x + positionChange.x,
-              y: viewport.position.y + positionChange.y,
-            },
-          }
-        },
-      ),
-    )
-  }
-
   resizeViewport = (changes: SizeChanges) => {
     const left = changes.left ? changes.left : 0
     const right = changes.right ? changes.right : 0
@@ -123,8 +102,11 @@ export default class Viewport extends ReactiveComponentWithTheater<
     }))
   }
 
-  saveViewportSize = () => {
-    const {positionChange, dimensionsChange} = val(this.stateP)
+  saveViewportSizeAndPosition = (viewportDescriptor: IViewport) => {
+    const boundingRect = this.getBoundingRect(
+      viewportDescriptor.position,
+      viewportDescriptor.dimensions,
+    )
     const {id} = this.props
     this.setState(() => ({
       positionChange: {x: 0, y: 0},
@@ -137,17 +119,39 @@ export default class Viewport extends ReactiveComponentWithTheater<
           return {
             ...viewport,
             position: {
-              x: viewport.position.x + positionChange.x,
-              y: viewport.position.y + positionChange.y,
+              x: boundingRect.left,
+              y: boundingRect.top,
             },
             dimensions: {
-              width: viewport.dimensions.width + dimensionsChange.width,
-              height: viewport.dimensions.height + dimensionsChange.height,
+              width: boundingRect.width,
+              height: boundingRect.height,
             },
           }
         },
       ),
     )
+  }
+
+  getBoundingRect(
+    viewportPosition: IViewport['position'],
+    viewportDimensions: IViewport['dimensions'],
+  ): TBoundingRect {
+    const {x, y} = viewportPosition
+    const {width, height} = viewportDimensions
+
+    const {positionChange, dimensionsChange} = val(this.stateP)
+
+    const newLeft = x + positionChange.x
+    const newTop = y + positionChange.y
+    const newWidth = width + dimensionsChange.width
+    const newHeight = height + dimensionsChange.height
+
+    return {
+      left: newWidth >= 0 ? newLeft : newLeft + newWidth,
+      top: newHeight >= 0 ? newTop : newTop + newHeight,
+      width: Math.abs(newWidth),
+      height: Math.abs(newHeight),
+    }
   }
 
   _render() {
@@ -176,23 +180,14 @@ export default class Viewport extends ReactiveComponentWithTheater<
       constant(this.theater),
     )
 
-    const state = val(this.stateP)
-    const left = viewportDescriptor.position.x + state.positionChange.x
-    const top = viewportDescriptor.position.y + state.positionChange.y
-    const width =
-      viewportDescriptor.dimensions.width + state.dimensionsChange.width
-    const height =
-      viewportDescriptor.dimensions.height + state.dimensionsChange.height
-
+    const boundingRect = this.getBoundingRect(
+      viewportDescriptor.position,
+      viewportDescriptor.dimensions,
+    )
     return (
       <div
         {...classes('container', isActive && 'isActive')}
-        style={{
-          left: `${left}px`,
-          top: `${top}px`,
-          width: `${width}px`,
-          height: `${height}px`,
-        }}
+        style={boundingRect}
       >
         <div key="content" {...classes('content')}>
           {elementD.getValue()}
@@ -200,9 +195,9 @@ export default class Viewport extends ReactiveComponentWithTheater<
         {val(this.propsP.activeMode) === MODES.option && (
           <EditOverlay
             onMove={this.moveViewport}
-            onMoveEnd={this.saveViewportPosition}
+            onMoveEnd={() => this.saveViewportSizeAndPosition(viewportDescriptor)}
             onResize={this.resizeViewport}
-            onResizeEnd={this.saveViewportSize}
+            onResizeEnd={() => this.saveViewportSizeAndPosition(viewportDescriptor)}
           />
         )}
         <div {...classes('header')} onClick={this._activate}>
@@ -215,7 +210,7 @@ export default class Viewport extends ReactiveComponentWithTheater<
           />
           <span {...classes('headerSeperator')}>–</span>
           <span {...classes('headerDimensions')}>
-            {width}x{height}
+            {boundingRect.width}x{boundingRect.height}
           </span>
         </div>
         {!isActive && (
