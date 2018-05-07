@@ -1,4 +1,22 @@
+@import '$studio/common/styles.css';
+
 .container {
+  position: absolute;
+  top: -20px;
+  left: 0;
+  @include typography;
+  white-space: nowrap;
+
+  color: #9c9c9c;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+
+  &.isActive {
+    color: black;
+  }
+}
+
+.nameContainer {
   position: relative;
   display: inline-block;
 
@@ -25,7 +43,7 @@
       transform-origin: 0 0;
       transform: scaleX(0);
       background: #999;
-      animation: inputEffect 0.15s ease-in-out forwards;
+      animation: nameInputEffect 0.15s ease-in-out forwards;
     }
   }
 }
@@ -36,7 +54,11 @@
   margin-right: 1px;
 }
 
-@keyframes inputEffect {
+.separator {
+  margin: 0 1em;
+}
+
+@keyframes nameInputEffect {
   to {
     transform: scaleX(1);
   }

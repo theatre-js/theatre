@@ -1,6 +1,9 @@
+@import '$studio/common/styles.css';
+
 .container {
   position: fixed 0 0 0 0;
   z-index: 999999;
+  @include typography;
 }
 
 .anchor {

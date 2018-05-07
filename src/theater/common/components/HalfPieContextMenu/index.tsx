@@ -133,7 +133,7 @@ class HalfPieContextMenu extends React.PureComponent<IProps, IState> {
       this.props.close()
       return
     }
-    
+
     this.setState(() => ({pressedKeyCode}))
   }
 

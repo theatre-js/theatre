@@ -19,8 +19,9 @@ import {
   MODES,
   ActiveMode,
 } from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
-import SceneName from '$studio/workspace/components/WhatToShowInBody/Viewports/SceneName'
 import {TBoundingRect} from '$studio/workspace/components/WhatToShowInBody/Viewports/ViewportInstantiator'
+import Header from '$studio/workspace/components/WhatToShowInBody/Viewports/Header'
+import {batchedAction} from '$shared/utils/redux/withHistory/withBatchActions'
 
 const classes = resolveCss(css)
 
@@ -76,6 +77,22 @@ export default class Viewport extends ReactiveComponentWithTheater<
         ['historicWorkspace', 'viewports', 'activeViewportId'],
         () => this.props.id,
       ),
+    )
+  }
+
+  deleteViewport = (id: string) => {
+    this.dispatch(
+      batchedAction([
+        reduceHistoricState(
+          ['historicWorkspace', 'viewports', 'activeViewportId'],
+          activeViewportId =>
+            activeViewportId === id ? undefined : activeViewportId,
+        ),
+        reduceHistoricState(
+          ['historicWorkspace', 'viewports', 'byId'],
+          ({[id]: _, ...viewports}) => viewports,
+        ),
+      ]),
     )
   }
 
@@ -159,6 +176,8 @@ export default class Viewport extends ReactiveComponentWithTheater<
       this.theaterAtom2P.historicWorkspace.viewports.byId[this.props.id],
     )
 
+    if (viewportDescriptor == null) return null
+
     const activeViewportId = val(
       this.theaterAtom2P.historicWorkspace.viewports.activeViewportId,
     )
@@ -195,24 +214,27 @@ export default class Viewport extends ReactiveComponentWithTheater<
         {val(this.propsP.activeMode) === MODES.option && (
           <EditOverlay
             onMove={this.moveViewport}
-            onMoveEnd={() => this.saveViewportSizeAndPosition(viewportDescriptor)}
+            onMoveEnd={() =>
+              this.saveViewportSizeAndPosition(viewportDescriptor)
+            }
             onResize={this.resizeViewport}
-            onResizeEnd={() => this.saveViewportSizeAndPosition(viewportDescriptor)}
+            onResizeEnd={() =>
+              this.saveViewportSizeAndPosition(viewportDescriptor)
+            }
           />
         )}
-        <div {...classes('header')} onClick={this._activate}>
-          <SceneName
-            name={getDisplayNameOfComponent(
-              this.studio,
-              viewportDescriptor.sceneComponentId,
-            )}
-            viewportId={this.props.id}
-          />
-          <span {...classes('headerSeperator')}>–</span>
-          <span {...classes('headerDimensions')}>
-            {boundingRect.width}x{boundingRect.height}
-          </span>
-        </div>
+        <Header
+          isActive={isActive}
+          viewportId={this.props.id}
+          name={getDisplayNameOfComponent(
+            this.studio,
+            viewportDescriptor.sceneComponentId,
+          )}
+          width={boundingRect.width}
+          height={boundingRect.height}
+          activateViewport={this._activate}
+          deleteViewport={this.deleteViewport}
+        />
         {!isActive && (
           <div {...classes('unclickable')} onClick={this._activate} />
         )}
