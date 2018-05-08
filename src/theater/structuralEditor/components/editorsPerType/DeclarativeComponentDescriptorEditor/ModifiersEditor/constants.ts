@@ -21,7 +21,7 @@ export const STATUS_BY_ACTION: {[key: string]: string} = {
   default: STATUS.unchanged,
   ADD: STATUS.uninitialized,
   SET_TYPE: STATUS.initialized,
-  START_DRAG: STATUS.moving,
+  START_DRAG: STATUS.beingDragged,
   CANCEL_MOVE: STATUS.dragCanceled,
   DROP: STATUS.dropped,
   MOVE: STATUS.moved,

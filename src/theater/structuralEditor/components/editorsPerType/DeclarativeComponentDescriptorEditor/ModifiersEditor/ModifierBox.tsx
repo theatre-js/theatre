@@ -14,6 +14,8 @@ import HalfPieContextMenu from '$theater/common/components/HalfPieContextMenu'
 import MdCancel from 'react-icons/lib/md/cancel'
 import MdDonutSmall from 'react-icons/lib/md/donut-small'
 import MdStars from 'react-icons/lib/md/stars'
+import resolveCss from '$shared/utils/resolveCss'
+
 interface IOwnProps {
   index: number
   descriptorId: string
@@ -61,6 +63,8 @@ const INITIAL_RECT = {
   top: 0,
   width: 0,
 }
+
+const classes = resolveCss(css)
 
 class ModifierBox extends React.PureComponent<IProps, IState> {
   containerBoundingClientRect: ClientRect | DOMRect
@@ -158,10 +162,16 @@ class ModifierBox extends React.PureComponent<IProps, IState> {
   }
 
   dragEndHandler = () => {
-    this.setState(() => ({
-      isBeingDragged: false,
-    }))
-    this.props.onDragEnd()
+    // this.setState(() => ({
+    //   isBeingDragged: false,
+    // }))
+    // this.props.onDragEnd()
+    this.setState(() => {
+      this.props.onDragEnd()
+      return {
+        isBeingDragged: false,
+      }
+    })
   }
 
   confirmTypeSelectionHandler = (type: string) => {
@@ -231,7 +241,15 @@ class ModifierBox extends React.PureComponent<IProps, IState> {
             }
           : {}),
     }
-
+    if (this.props.index === 1) {
+      console.log(classes('container',
+        status === STATUS.uninitialized && 'appear',
+        status === STATUS.initialized && 'initialize',
+        isBeingDragged && 'isBeingDragged',
+        shouldDisappear && 'collapse',
+        shouldMove && 'move'
+      ))
+    }
     return (
       <>
         <DraggableArea
@@ -243,13 +261,20 @@ class ModifierBox extends React.PureComponent<IProps, IState> {
           <div
             ref={c => (this.container = c)}
             style={style}
-            className={cx(css.container, {
-              [css.move]: shouldMove,
-              [css.collapse]: shouldDisappear,
-              [css.isBeingDragged]: isBeingDragged,
-              [css.appear]: status === STATUS.uninitialized,
-              [css.initialize]: status === STATUS.initialized,
-            })}
+            {...classes('container',
+              status === STATUS.uninitialized && 'appear',
+              status === STATUS.initialized && 'initialize',
+              isBeingDragged && 'isBeingDragged',
+              shouldDisappear && 'collapse',
+              shouldMove && 'move'
+            )}
+            // className={cx(css.container, {
+            //   [css.initialize]: status === STATUS.initialized,
+            //   [css.appear]: status === STATUS.uninitialized,
+            //   [css.isBeingDragged]: isBeingDragged,
+            //   [css.collapse]: shouldDisappear,
+            //   [css.move]: shouldMove,
+            // })}
             onContextMenu={this.contextMenuHandler}
           >
             {status === STATUS.uninitialized ? (
