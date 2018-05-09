@@ -19,35 +19,37 @@ class ExploreFlyoutMenu extends StudioComponent<Props, State> {
     if (!this.props.isOpen) return null
     return createPortal(
       <div className={css.container}>
-        <PropsAsPointer props={this.props}>
-          {() => {
-            const whatToShowInBody = val(
-              this.theater.atom2.pointer.historicWorkspace.viewports
-                .whatToShowInBody,
-            )
-
-            if (whatToShowInBody.type === 'Viewports') {
-              const activeViewportId = val(
+        <div className={css.wrapper}>
+          <PropsAsPointer props={this.props}>
+            {() => {
+              const whatToShowInBody = val(
                 this.theater.atom2.pointer.historicWorkspace.viewports
-                  .activeViewportId,
+                  .whatToShowInBody,
               )
 
-              if (!activeViewportId) return null
-              const volatileIdOfActiveViewport = val(
-                this.theater.studio.elementTree.atom.pointer.unexpandedViewports[
-                  activeViewportId
-                ],
-              )
-              if (!volatileIdOfActiveViewport) return null
+              if (whatToShowInBody.type === 'Viewports') {
+                const activeViewportId = val(
+                  this.theater.atom2.pointer.historicWorkspace.viewports
+                    .activeViewportId,
+                )
 
-              return (
-                <AnyNode depth={1} volatileId={volatileIdOfActiveViewport} />
-              )
-            } else {
-              throw new Error(`Implement me`)
-            }
-          }}
-        </PropsAsPointer>
+                if (!activeViewportId) return null
+                const volatileIdOfActiveViewport = val(
+                  this.theater.studio.elementTree.atom.pointer.unexpandedViewports[
+                    activeViewportId
+                  ],
+                )
+                if (!volatileIdOfActiveViewport) return null
+
+                return (
+                  <AnyNode depth={1} volatileId={volatileIdOfActiveViewport} />
+                )
+              } else {
+                throw new Error(`Implement me`)
+              }
+            }}
+          </PropsAsPointer>
+        </div>
       </div>,
       document.body,
     )

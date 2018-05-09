@@ -1,7 +1,6 @@
 import React from 'react'
 import connect from '$theater/handy/connect'
 import css from './ModifierBox.css'
-import cx from 'classnames'
 import DraggableArea from '$theater/common/components/DraggableArea/DraggableArea'
 import {MODES} from '$theater/common/components/ActiveModeDetector/ActiveModeDetector'
 import {STATUS} from '$theater/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/ModifiersEditor/constants'
@@ -162,10 +161,6 @@ class ModifierBox extends React.PureComponent<IProps, IState> {
   }
 
   dragEndHandler = () => {
-    // this.setState(() => ({
-    //   isBeingDragged: false,
-    // }))
-    // this.props.onDragEnd()
     this.setState(() => {
       this.props.onDragEnd()
       return {
@@ -241,15 +236,7 @@ class ModifierBox extends React.PureComponent<IProps, IState> {
             }
           : {}),
     }
-    if (this.props.index === 1) {
-      console.log(classes('container',
-        status === STATUS.uninitialized && 'appear',
-        status === STATUS.initialized && 'initialize',
-        isBeingDragged && 'isBeingDragged',
-        shouldDisappear && 'collapse',
-        shouldMove && 'move'
-      ))
-    }
+
     return (
       <>
         <DraggableArea
@@ -261,20 +248,14 @@ class ModifierBox extends React.PureComponent<IProps, IState> {
           <div
             ref={c => (this.container = c)}
             style={style}
-            {...classes('container',
+            {...classes(
+              'container',
               status === STATUS.uninitialized && 'appear',
               status === STATUS.initialized && 'initialize',
               isBeingDragged && 'isBeingDragged',
               shouldDisappear && 'collapse',
-              shouldMove && 'move'
+              shouldMove && 'move',
             )}
-            // className={cx(css.container, {
-            //   [css.initialize]: status === STATUS.initialized,
-            //   [css.appear]: status === STATUS.uninitialized,
-            //   [css.isBeingDragged]: isBeingDragged,
-            //   [css.collapse]: shouldDisappear,
-            //   [css.move]: shouldMove,
-            // })}
             onContextMenu={this.contextMenuHandler}
           >
             {status === STATUS.uninitialized ? (
