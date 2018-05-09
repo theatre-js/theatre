@@ -90,18 +90,18 @@ export class Input extends StudioComponent<IProps, IState> {
     const {move, initialPos} = state
 
     const value = typeof rawValue === 'string' ? rawValue : ''
-
     return (
       <Subscriber channel={PanelActiveModeChannel}>
         {({activeMode}) => {
+          const isGrabbable = activeMode === MODES.cmd && typeof rawValue !== 'object'
           return (
             <DraggableArea
-              shouldRegisterEvents={activeMode === MODES.cmd && typeof rawValue !== 'object'}
+              shouldRegisterEvents={isGrabbable}
               onDragStart={e => this._handleDragStart(e)}
               onDrag={(x, y) => this.setState(() => ({move: {x, y}}))}
               onDragEnd={() => this._handleDragEnd()}
             >
-              <label {...classes('container')}>
+              <label {...classes('container', isGrabbable && 'grabbable')}>
                 {/* <span {...classes('label')}>{label}</span> */}
                 <input
                   ref={c => (this.input = c)}
