@@ -66,35 +66,39 @@ class Variable extends React.PureComponent<Props, IState> {
   }
 
   _getExtremums(points: $FixMe): [number, number] {
-    if (points.length === 0) return [-5, 5]
-
-    let min, max
-    points.forEach((point, index) => {
-      const {value} = point
-      const nextPoint = points[index + 1]
-      let candids = [value]
-      if (nextPoint != null) {
-        candids = candids.concat(
-          value +
-            point.interpolationDescriptor.handles[1] *
-              (nextPoint.value - value),
-          nextPoint.value +
-            point.interpolationDescriptor.handles[3] *
-              (value - nextPoint.value),
-        )
+    let extremums: [number, number]
+    if (points.length === 0) {
+      extremums = [-5, 5]
+    } else {
+      let min: number = Infinity, max: number = -Infinity
+      points.forEach((point: $FixMe, index: number) => {
+        const {value} = point
+        const nextPoint = points[index + 1]
+        let candids = [value]
+        if (nextPoint != null) {
+          candids = candids.concat(
+            value +
+              point.interpolationDescriptor.handles[1] *
+                (nextPoint.value - value),
+            nextPoint.value +
+              point.interpolationDescriptor.handles[3] *
+                (value - nextPoint.value),
+          )
+        }
+        const localMin = Math.min(...candids)
+        const localMax = Math.max(...candids)
+        min = Math.min(min, localMin)
+        max = Math.max(max, localMax)
+      })
+      if (min === max) {
+        min -= 5
+        max += 5
       }
-      const localMin = Math.min(...candids)
-      const localMax = Math.max(...candids)
-      min = min == null ? localMin : Math.min(min, localMin)
-      max = max == null ? localMax : Math.max(max, localMax)
-    })
-    if (min === max) {
-      min -= 5
-      max += 5
+      extremums = [min, max]
     }
 
-    this.props.addExtremums(this.props.variableId, [min, max])
-    return [min, max]
+    this.props.addExtremums(this.props.variableId, extremums)
+    return extremums
   }
 
   showPointValuesEditor = (pointIndex: number, params: $FixMe) => {

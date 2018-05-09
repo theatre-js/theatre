@@ -10,6 +10,7 @@ import {PanelActiveModeChannel} from '$theater/workspace/components/Panel/Panel'
 import {Subscriber} from 'react-broadcast'
 import {MODES} from '$theater/common/components/ActiveModeDetector/ActiveModeDetector'
 import resolveCss from '$shared/utils/resolveCss'
+import ReactDOM from 'react-dom';
 
 interface IOwnProps {
   prop: string
@@ -111,7 +112,8 @@ export class Input extends StudioComponent<IProps, IState> {
                   disabled={typeof rawValue === 'object'}
                 />
                 {state.isBeingDragged && (
-                  <div
+                  ReactDOM.createPortal(
+                    <div
                     {...classes('draggable')}
                     style={{
                       transform: `translate3d(
@@ -121,7 +123,9 @@ export class Input extends StudioComponent<IProps, IState> {
                     }}
                   >
                     {props.prop}
-                  </div>
+                  </div>,
+                    document.getElementById('theaterjs-studio') as HTMLElement,
+                  )
                 )}
                 {typeof rawValue === 'object' && (
                   <div {...classes('animated')}>Animated</div>

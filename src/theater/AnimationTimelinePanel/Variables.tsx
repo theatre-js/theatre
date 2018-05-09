@@ -46,6 +46,7 @@ class Variables extends React.PureComponent<IProps, IState> {
   }
 
   mouseDownHandler = (e: React.MouseEvent<SVGRectElement>) => {
+    console.log(this)
     this.props.addPoint(
       this.props.activeVariableId,
       this.variablesExtremums[this.props.activeVariableId],

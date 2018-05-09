@@ -4,7 +4,7 @@
   &.showModifierDropOverlay {
     &:after {
       position: absolute 0;
-      top: -4px;
+      top: 0px;
       display: block;
       content: ' ';
       z-index: 1000;
