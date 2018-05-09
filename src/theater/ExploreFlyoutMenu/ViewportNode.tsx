@@ -6,8 +6,7 @@ import {
 import PropsAsPointer from '$theater/handy/PropsAsPointer'
 import {val} from '$shared/DataVerse2/atom'
 import {Pointer} from '$shared/DataVerse2/pointer'
-import NodeTemplate, {getVolatileIdsOfChildrenNLevelsDeep} from './NodeTemplate'
-import * as css  from './ViewportNode.css'
+import {getVolatileIdsOfChildrenNLevelsDeep} from './NodeTemplate'
 import AnyNode from './AnyNode'
 
 type Props = {

@@ -43,6 +43,6 @@
   background: #8f3ea0;
 
   &:hover {
-    box-shadow: 10px 10px 10px red;
+    /* box-shadow: 10px 10px 10px red; */
   }
 }

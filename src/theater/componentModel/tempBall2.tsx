@@ -210,7 +210,7 @@ const two = {
               __descriptorType: 'ModifierInstantiationValueDescriptor',
               modifierId: 'TheaterJS/Core/HTML/UberModifier',
               props: {
-                translationX: '0',
+                translationX: '=10 * t',
                 translationY: {
                   __descriptorType: 'ReferenceToTimelineVar',
                   timelineId: 'defaultTimeline',

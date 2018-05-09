@@ -23,6 +23,7 @@ type WrapProps<Props> = {
   key: string
   props: Props
   modifierInstantiationDescriptors: $FixMe
+  owner: TheaterComponent<$IntentionalAny>
 }
 
 type TheAtom<Props> = DictAtom<{
@@ -49,6 +50,7 @@ type BaseClass<Props> = Classify<
     componentInstance: TheaterComponent<Props>
     componentId: ComponentId
     componentDescriptor: $FixMe
+    owner: TheaterComponent<$IntentionalAny>
   }
 >
 
@@ -106,6 +108,10 @@ export default abstract class TheaterComponent<
       return self.prop('_atom').prop('componentInstance')
     },
 
+    owner(self) {
+      return self.prop('_atom').prop('owner')
+    },
+
     componentDescriptor(self) {
       const idP = self.prop('componentId')
       return autoDerive(() => {
@@ -127,6 +133,9 @@ export default abstract class TheaterComponent<
   }
   constructor(props: WrapProps<Props>, context: $IntentionalAny) {
     super(props, context)
+
+    // console.log(props.owner);
+    
 
     this._fnsToCallOnWillUnmount = []
 
@@ -191,6 +200,7 @@ export default abstract class TheaterComponent<
       theater: this.theater,
       state: this._getInitialState(),
       timelineInstances: dictAtom({}),
+      owner: this.props.owner,
     })
   }
 

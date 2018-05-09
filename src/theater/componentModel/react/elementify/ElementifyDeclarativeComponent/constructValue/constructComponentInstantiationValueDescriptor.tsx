@@ -27,6 +27,7 @@ const constructComponentInstantiationValueDescriptor = (
         .prop('list')
         .flatMap(v => constructListDescriptor(v, self)),
     }),
+    owner: self.prop('componentInstance')
   })
     .derivedDict()
     .pointer()

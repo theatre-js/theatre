@@ -11,7 +11,7 @@ export default class TimelineInstance {
   playing: boolean
   atom: DictAtom<{time: BoxAtom<number>}>
   _descriptorP: $FixMe
-  _timeP: PointerDerivation<BoxAtom<number>>
+  timeP: PointerDerivation<BoxAtom<number>>
   _theater: Theater
   _pathToTimelineDescriptor: Array<string>
   _af: undefined | number
@@ -28,7 +28,7 @@ export default class TimelineInstance {
     this._pathToTimelineDescriptor = pathToTimelineDescriptor
     this._theater = theater
 
-    this._timeP = this.atom.pointer().prop('time')
+    this.timeP = this.atom.pointer().prop('time')
 
     this._descriptorP = descriptorP
     this.playing = false
@@ -42,7 +42,7 @@ export default class TimelineInstance {
     const varDescP = this._descriptorP.prop('variables').prop(varId)
     const valueInstance = new ValueInstance(
       varDescP,
-      this._timeP,
+      this.timeP,
       this._theater,
       [...this._pathToTimelineDescriptor, 'variables', varId],
     )

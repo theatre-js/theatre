@@ -964,7 +964,7 @@ export default class ThePanel extends StudioComponent<{}, void> {
 
   constructor(props: {}, context: $IntentionalAny) {
     super(props, context)
-    const emptyPanel = <Panel key="emptyPanel" />
+    const emptyPanel = null // <Panel key="emptyPanel" />
     const theater = this.theater
 
     this._d = autoDerive(() => {
