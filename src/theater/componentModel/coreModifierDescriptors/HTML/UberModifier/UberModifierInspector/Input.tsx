@@ -22,6 +22,7 @@ interface IProps extends IOwnProps {
   label: string
   value: undefined | number
   pathToProp: string[]
+  showGrabHighlight: boolean
 }
 
 interface IState {
@@ -86,14 +87,14 @@ export class Input extends StudioComponent<IProps, IState> {
   render() {
     const {props, state} = this
     const classes = resolveCss(css, props.css)
-    const {label, value: rawValue} = props
+    const {label, value: rawValue, showGrabHighlight} = props
     const {move, initialPos} = state
 
     const value = typeof rawValue === 'string' ? rawValue : ''
     return (
       <Subscriber channel={PanelActiveModeChannel}>
         {({activeMode}) => {
-          const isGrabbable = activeMode === MODES.cmd && typeof rawValue !== 'object'
+          const isGrabbable = showGrabHighlight && activeMode === MODES.cmd && typeof rawValue !== 'object'
           return (
             <DraggableArea
               shouldRegisterEvents={isGrabbable}
@@ -148,5 +149,6 @@ export default connect((s: ITheaterStoreState, op: IOwnProps) => {
   return {
     pathToProp,
     value: get(s, pathToProp),
+    showGrabHighlight: get(s, ['historicWorkspace', 'panels', 'panelObjectBeingDragged']) == null,
   }
 })(Input)
