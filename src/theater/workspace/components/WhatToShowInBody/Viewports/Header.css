@@ -19,6 +19,7 @@
 .nameContainer {
   position: relative;
   display: inline-block;
+  min-width: 10px;
 
   &:before {
     display: block;
@@ -32,17 +33,21 @@
   }
 
   &.isEnabled {
+    color: white;
     &:after {
       display: block;
       content: ' ';
       position: absolute;
-      height: 2px;
+      z-index: -1;
+      // height: 2px;
+      top: -3px;
       left: -3px;
       right: -3px;
       bottom: -3px;
       transform-origin: 0 0;
       transform: scaleX(0);
-      background: #999;
+      // background: #999;
+      background: #0e1315;
       animation: nameInputEffect 0.15s ease-in-out forwards;
     }
   }

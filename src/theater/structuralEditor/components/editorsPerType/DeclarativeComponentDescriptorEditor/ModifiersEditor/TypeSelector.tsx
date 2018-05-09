@@ -54,7 +54,7 @@ class TypeSelector extends React.PureComponent<IProps, IState> {
     }
     const listStyle = {
       '--left': left + 10,
-      '--top': top + height + 2,
+      '--top': top + height,
       '--width': width - 20,
       '--height': innerHeight - top - height - 4,
     }

@@ -164,14 +164,16 @@ class TypeSelector extends React.PureComponent<Props, State> {
     const {focusedIndex, matchedDisplayNames, query} = this.state
     return (
       <div className={css.container} onClick={this.props.onClick}>
-        <input
-          type="text"
-          ref={c => {this.input = c as $IntentionalAny}}
-          className={cx(css.input, {[css.isDisabled]: !this.props.isActive})}
-          value={query}
-          onChange={this.onChange}
-          onKeyDown={this.handleKeyDown}
-        />
+        <div className={css.inputWrapper}>
+          <input
+            type="text"
+            ref={c => {this.input = c as $IntentionalAny}}
+            className={cx(css.input, {[css.isDisabled]: !this.props.isActive})}
+            value={query}
+            onChange={this.onChange}
+            onKeyDown={this.handleKeyDown}
+          />
+        </div>
         {this.props.isActive && (
           <div
             ref={c => {this.listContainer = c as $IntentionalAny}}

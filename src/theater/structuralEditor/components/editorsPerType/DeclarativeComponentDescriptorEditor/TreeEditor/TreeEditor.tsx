@@ -666,10 +666,12 @@ export default connect((s: ITheaterStoreState, op: IOwnProps) => {
   const custom = s.historicComponentModel.customComponentDescriptors
   const componentTypes = Object.entries({...core, ...custom}).reduce(
     (reducer, [key, value]) => {
-      reducer[key] = {
-        id: key,
-        displayName: value.displayName,
-        type: value.type,
+      if (!value.isScene) {
+        reducer[key] = {
+          id: key,
+          displayName: value.displayName,
+          type: value.type,
+        }
       }
       return reducer
     },

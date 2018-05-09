@@ -8,30 +8,63 @@
   height: 100%;
 }
 
+.inputWrapper {
+  height: 100%;
+  position: relative;
+  // background: blue;
+  display: inline-block;
+
+  // transition: padding 0.2s ease-in-out, background-color 2s ease-in-out;
+  &:before {
+    display: block;
+    position: absolute 0;
+    // position: absolute 0 -10px 0 -10px;
+    content: ' ';
+    background-color: #0e1315;
+    z-index: -1;
+    opacity: 0;
+    // transition: opacity 0.2s ease-in-out;
+  }
+  &:focus-within {
+    transition: padding 0.2s ease-in-out;
+    z-index: 10;
+    padding: 0 5px;
+    &:before {
+      opacity: 1;
+    }
+  }
+}
+
 .input {
   color: white;
   pointer-events: auto;
   height: 100%;
-  
+
   &.isDisabled {
     cursor: default;
+  }
+
+  &:focus {
+    color: white;
   }
 }
 
 .list {
   position: absolute;
-  top: calc(nodeHeight + 1px);
+  // left: 0;
+  top: calc(nodeHeight);
   width: calc(100% - nodeIndent - nodePadding);
   overflow: hidden scroll;
+  // background: black;
   background: #0e1315;
-  padding: 5px 0;
+  padding-top: 1px;
 
   opacity: 0;
   transform: translateY(6px);
-  animation: listAppear .2s ease-in-out forwards;
+  animation: listAppear 0.2s ease-in-out forwards;
 
   &.willUnmount {
-    animation: listDisappear .1s ease-in-out forwards;
+    animation: listDisappear 0.1s ease-in-out forwards;
   }
 
   &:empty {
@@ -40,32 +73,46 @@
       position: relative;
       content: 'No Match Found!';
       font-size: 10px;
-      height: 20px;
-      line-height: 20px;
-      opacity: .5;
+      height: 28px;
+      line-height: 28px;
+      color: #eee;
+      opacity: 0.5;
       text-align: center;
     }
   }
 }
 
 @keyframes listAppear {
-  to {opacity: 1; transform: translateY(0);}
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes listDisappear {
-  from {opacity: 1; transform: translateY(0);}
-  to {opacity: 0; transform: translateY(2px);}
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(2px);
+  }
 }
 
 .option {
   padding: 0 nodeIndent;
-  height: 20px;
-  line-height: 20px;
-  color: #AAA;
-  font-weight: 300;
+  height: 28px;
+  line-height: 28px;
+  color: #aaa;
+  font-weight: 400;
   font-size: 11px;
+  cursor: default;
 
   &.isSelected {
-    background-color: rgba(60, 223, 255, .3);
+    // color: #000;
+    // background-color: rgba(60, 223, 255, .7);
+    color: #fff;
+    background: #11a4d6;
   }
 }

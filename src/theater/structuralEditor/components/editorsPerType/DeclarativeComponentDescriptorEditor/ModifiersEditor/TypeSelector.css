@@ -36,7 +36,7 @@
   position: absolute;
   background: #0e1315;
   overflow: scroll;
-  padding: 5px 0;
+  padding-top: 1px;
 
   left: var(--left);
   top: var(--top);
@@ -62,14 +62,17 @@
 
 .option {
   padding: 0 10px;
-  height: 20px;
-  line-height: 20px;
+  height: 28px;
+  line-height: 28px;
   color: #aaa;
-  font-weight: 300;
+  font-weight: 400;
   font-size: 11px;
+  cursor: default;
 
   &.isSelected {
-    background-color: rgba(60, 223, 255, 0.3);
+    // background-color: rgba(60, 223, 255, 0.3);
+    color: #fff;
+    background: #11a4d6;
   }
 }
 
