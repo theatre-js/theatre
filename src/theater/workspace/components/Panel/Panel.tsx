@@ -19,7 +19,7 @@ import PanelTab from './PanelTab'
 interface IProps {
   css?: any
   label?: string
-  header?: 'auto' | React.ReactNode
+  header?: 'auto' | 'hidden' | React.ReactNode
 }
 
 interface IState {
@@ -372,6 +372,7 @@ export default class Panel extends StudioComponent<IProps, IState> {
                 }
               : {}),
             ...(isMovingBoundaries ? {zIndex: 1000} : {}),
+            ...(header === 'hidden' ? {'--headerHeight': '0px'} : {}),
           }
 
           return (
@@ -379,17 +380,19 @@ export default class Panel extends StudioComponent<IProps, IState> {
               {...classes('container', isActive && 'isActive')}
               style={style}
             >
-              <div className={css.header}>
-                {header === 'auto' || header === undefined ? (
-                  <div className={css.defaultHeaderContent}>
-                    <PanelTab isCurrent={true}>
-                      {label || defaultLabel}
-                    </PanelTab>
-                  </div>
-                ) : (
-                  header
-                )}
-              </div>
+              {header !== 'hidden' && (
+                <div className={css.header}>
+                  {header === 'auto' || header === undefined ? (
+                    <div className={css.defaultHeaderContent}>
+                      <PanelTab isCurrent={true}>
+                        {label || defaultLabel}
+                      </PanelTab>
+                    </div>
+                  ) : (
+                    header
+                  )}
+                </div>
+              )}
               <Broadcast
                 channel={PanelWidthChannel}
                 value={{width}}

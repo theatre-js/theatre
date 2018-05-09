@@ -96,7 +96,7 @@ export class Input extends StudioComponent<IProps, IState> {
         {({activeMode}) => {
           return (
             <DraggableArea
-              shouldRegisterEvents={activeMode === MODES.cmd}
+              shouldRegisterEvents={activeMode === MODES.cmd && typeof rawValue !== 'object'}
               onDragStart={e => this._handleDragStart(e)}
               onDrag={(x, y) => this.setState(() => ({move: {x, y}}))}
               onDragEnd={() => this._handleDragEnd()}

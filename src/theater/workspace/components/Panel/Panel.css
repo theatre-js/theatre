@@ -8,7 +8,7 @@
   --body-color: #263238;
   background: var(--body-color);
   @include typography;
-  --header-height: 32px;
+  --header-height: var(--headerHeight, 32px);
 }
 
 .header {

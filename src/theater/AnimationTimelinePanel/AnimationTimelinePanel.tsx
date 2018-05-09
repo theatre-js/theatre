@@ -779,7 +779,7 @@ class Content extends StudioComponent<Props, State> {
 
     return (
       <Panel
-        header={null}
+        header={'hidden'}
         css={{
           container: css.panelContainer,
           innerWrapper: css.panelInnerWrapper,
