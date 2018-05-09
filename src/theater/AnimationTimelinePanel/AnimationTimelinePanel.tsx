@@ -974,7 +974,7 @@ export default class ThePanel extends StudioComponent<{}, void> {
         volatileIdOfSelectedElement,
       )
       if (!selectedElement) return emptyPanel
-      
+
       const activeComponentId =
         getComponentIdOfNode(selectedElement)
 

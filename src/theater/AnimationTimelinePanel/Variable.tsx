@@ -11,6 +11,7 @@ type Props = {
   getSvgSize: Function
   getDuration: Function
   addPoint: Function
+  addExtremums: (id: string, extremums: [number, number]) => any
   showPointValuesEditor: Function
   showContextMenuForPoint: Function
   showContextMenuForConnector: Function
@@ -92,6 +93,7 @@ class Variable extends React.PureComponent<Props, IState> {
       max += 5
     }
 
+    this.props.addExtremums(this.props.variableId, [min, max])
     return [min, max]
   }
 
@@ -172,76 +174,78 @@ class Variable extends React.PureComponent<Props, IState> {
   render() {
     const {color} = this.props
     const {points} = this.state
-    return [
-      <rect
-        key="hit-zone"
-        fill="transparent"
-        width="100%"
-        y={-svgPaddingY / 2}
-        style={{height: `calc(100% + ${svgPaddingY}*1px)`}}
-        onMouseDown={this.mouseDownHandler}
-      />,
-      <g key="variable" fill={color.normal} stroke={color.normal}>
-        {points.map((point: $FixMe, index: number) => {
-          const prevPoint = points[index - 1]
-          const nextPoint = points[index + 1]
-          return (
-            <g key={index}>
-              {point.interpolationDescriptor.connected &&
-                nextPoint != null && (
-                  <Connector
-                    leftPointIndex={index}
-                    leftPointTime={point.time}
-                    leftPointValue={point.value}
-                    rightPointTime={nextPoint.time}
-                    rightPointValue={nextPoint.value}
-                    handles={point.interpolationDescriptor.handles}
-                    removeConnector={this.removeConnector}
-                    showContextMenu={this.showContextMenuForConnector}
-                  />
-                )}
-              <Point
-                color={color}
-                key={`${point._value}${point._t}`}
-                {...(prevPoint
-                  ? {
-                      prevPointTime: prevPoint.time,
-                      prevPointValue: prevPoint.value,
-                      prevPointHandles:
-                        prevPoint.interpolationDescriptor.handles,
-                      prevPointConnected:
-                        prevPoint.interpolationDescriptor.connected,
-                    }
-                  : {})}
-                {...(nextPoint
-                  ? {
-                      nextPointTime: nextPoint.time,
-                      nextPointValue: nextPoint.value,
-                    }
-                  : {})}
-                pointTime={point.time}
-                pointValue={point.value}
-                pointHandles={point.interpolationDescriptor.handles}
-                pointConnected={point.interpolationDescriptor.connected}
-                pointAbsoluteTime={point._t}
-                pointAbsoluteValue={point._value}
-                pointIndex={index}
-                getSvgSize={this.props.getSvgSize}
-                showPointValuesEditor={this.showPointValuesEditor}
-                showContextMenu={this.showContextMenuForPoint}
-                changePointPositionBy={this.changePointPositionBy}
-                changePointHandlesBy={this.changePointHandlesBy}
-                removePoint={this.removePoint}
-                addConnector={this.addConnector}
-                makeHandleHorizontal={this.makeHandleHorizontal}
-                addPointToSelection={this.addPointToSelection}
-                removePointFromSelection={this.removePointFromSelection}
-              />
-            </g>
-          )
-        })}
-      </g>,
-    ]
+    return (
+      <>
+        {/* <rect
+          key="hit-zone"
+          fill="transparent"
+          width="100%"
+          y={-svgPaddingY / 2}
+          style={{height: `calc(100% + ${svgPaddingY}*1px)`}}
+          onMouseDown={this.mouseDownHandler}
+        /> */}
+        <g key="variable" fill={color.normal} stroke={color.normal}>
+          {points.map((point: $FixMe, index: number) => {
+            const prevPoint = points[index - 1]
+            const nextPoint = points[index + 1]
+            return (
+              <g key={index}>
+                {point.interpolationDescriptor.connected &&
+                  nextPoint != null && (
+                    <Connector
+                      leftPointIndex={index}
+                      leftPointTime={point.time}
+                      leftPointValue={point.value}
+                      rightPointTime={nextPoint.time}
+                      rightPointValue={nextPoint.value}
+                      handles={point.interpolationDescriptor.handles}
+                      removeConnector={this.removeConnector}
+                      showContextMenu={this.showContextMenuForConnector}
+                    />
+                  )}
+                <Point
+                  color={color}
+                  key={`${point._value}${point._t}`}
+                  {...(prevPoint
+                    ? {
+                        prevPointTime: prevPoint.time,
+                        prevPointValue: prevPoint.value,
+                        prevPointHandles:
+                          prevPoint.interpolationDescriptor.handles,
+                        prevPointConnected:
+                          prevPoint.interpolationDescriptor.connected,
+                      }
+                    : {})}
+                  {...(nextPoint
+                    ? {
+                        nextPointTime: nextPoint.time,
+                        nextPointValue: nextPoint.value,
+                      }
+                    : {})}
+                  pointTime={point.time}
+                  pointValue={point.value}
+                  pointHandles={point.interpolationDescriptor.handles}
+                  pointConnected={point.interpolationDescriptor.connected}
+                  pointAbsoluteTime={point._t}
+                  pointAbsoluteValue={point._value}
+                  pointIndex={index}
+                  getSvgSize={this.props.getSvgSize}
+                  showPointValuesEditor={this.showPointValuesEditor}
+                  showContextMenu={this.showContextMenuForPoint}
+                  changePointPositionBy={this.changePointPositionBy}
+                  changePointHandlesBy={this.changePointHandlesBy}
+                  removePoint={this.removePoint}
+                  addConnector={this.addConnector}
+                  makeHandleHorizontal={this.makeHandleHorizontal}
+                  addPointToSelection={this.addPointToSelection}
+                  removePointFromSelection={this.removePointFromSelection}
+                />
+              </g>
+            )
+          })}
+        </g>
+      </>
+    )
   }
 }
 
