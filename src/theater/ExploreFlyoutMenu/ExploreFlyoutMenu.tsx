@@ -8,6 +8,7 @@ import {createPortal} from 'react-dom'
 
 type Props = {
   isOpen: boolean
+  close: () => void
 }
 
 type State = {
@@ -15,6 +16,20 @@ type State = {
 }
 
 class ExploreFlyoutMenu extends StudioComponent<Props, State> {
+  componentWillReceiveProps(nextProps: Props) {
+    if (nextProps.isOpen) {
+      document.addEventListener('click', this.props.close)
+      document.addEventListener('keydown', this.closeOnEscape)
+    } else {
+      document.removeEventListener('click', this.props.close)
+      document.removeEventListener('keydown', this.closeOnEscape)
+    }
+  }
+
+  closeOnEscape = (e: KeyboardEvent) => {
+    if (e.keyCode === 27) this.props.close()
+  }
+
   render() {
     if (!this.props.isOpen) return null
     return createPortal(

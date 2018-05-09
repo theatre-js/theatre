@@ -5,24 +5,19 @@
   position: fixed;
   left: 0;
   top: 35px;
-  bottom: 0;
   z-index: 10001;
-  /*background: linear-gradient(
-    to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.1) 50%, rgba(0, 0, 0, 0.1)
-    );*/
-  /*padding: 0 12px;*/
-  /*color: blue;*/
-  background: rgba(#000, 0.8);
 
   transform-origin: 50% 50%;
-  animation: containerAppear .25s ease-out forwards;
+  animation: containerAppear 0.25s ease-out forwards;
 
   &:before {
     content: ' ';
     display: block;
     position: absolute 0;
-    filter: blur(70px);
-    background: rgb(30, 40, 50);
+    filter: blur(40px);
+    background: #000;
+    opacity: 0.2;
+    z-index: -1;
   }
 }
 
@@ -33,6 +28,7 @@
   height: 100%;
   min-width: 100px;
   overflow-y: scroll;
+  padding: 10px 0;
 }
 
 @keyframes containerAppear {

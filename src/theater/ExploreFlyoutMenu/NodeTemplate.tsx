@@ -122,12 +122,10 @@ const NodeTemplate = (props: Props) => {
                   </div>
                 </div>
               )}
-              <div key="name" {...classes('name')} onClick={select}>
+              <div key="name" {...classes('name', isSelectable && 'selectable')} onClick={select}>
                 {props.name}
-              </div>
-              {isSelectable && (
                 <div key="highlighter" {...classes('highlighter')} />
-              )}
+              </div>
             </div>
             {hasChildren && <div {...classes('subNodes')}>{childrenNodes}</div>}
           </div>

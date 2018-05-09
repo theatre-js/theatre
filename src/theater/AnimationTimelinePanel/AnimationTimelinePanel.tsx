@@ -991,7 +991,7 @@ export default class ThePanel extends StudioComponent<{}, void> {
 
       if (componentType !== 'DeclarativeComponentDescriptor') return emptyPanel
 
-      debugger
+      // debugger
 
       const defaultTimelineP =
         componentP.timelineDescriptors.byId.defaultTimeline

@@ -1,6 +1,8 @@
 .container {
   position: relative;
   --indent: calc(18px + var(--depth) * 16px);
+  opacity: 0;
+  animation: appear calc(.25s + (var(--depth) - 1)*.02s) ease-out forwards;
 
   &:before {
     pointer-events: none;
@@ -37,7 +39,7 @@
   margin-right: 16px;
 
   white-space: nowrap;
-  
+
   &:before {
     display: block;
     position: absolute 0 -1px 0 0;
@@ -50,7 +52,7 @@
 
 .selected > .top {
   &:before {
-    opacity: 1;
+    // opacity: 1;
   }
 
   & > .name {
@@ -84,21 +86,42 @@
 .name {
   /* position: absolute 0 0 0 calc(var(--indent) - 10px); */
   position: relative;
+}
+
+.name .tagName {
+  color: #aaa;
+}
+
+.name.selectable .tagName {
   color: white;
 }
 
 .highlighter {
+  // position: absolute 2px -10px;
   position: absolute 0;
+  min-width: 50px;
   pointer-events: none;
   z-index: -1;
+  &:before {
+    display: block;
+    content: ' ';
+    position: absolute 2px -10px;
+    background: rgb(48, 60, 66);
+  }
 }
 
-.name:hover ~ .highlighter {
-  background: #ffffff21;
-}
-
-.selected > .top > .name {
+.name.selectable > .highlighter:before {
+  box-shadow: 0 0 15px 1px #222;
   opacity: 1;
+}
+
+.name.selectable:hover > .highlighter:before {
+  box-shadow: inset 0 0 0 2px #11a4d6;
+}
+
+.selected > .top > .name > .highlighter:before {
+  background: #11a4d6;
+  box-shadow: 0 0 15px 1px #0e86ad;
 }
 
 .selected > .top > .bullet {
@@ -190,4 +213,9 @@
     border-radius: 50%;
     border: 2px solid #5a5a5a;
   }
+}
+
+@keyframes appear {
+  from {opacity: 0; transform: translateY(5px)}
+  to {opacity: 1; transform: translateY(0)}
 }
