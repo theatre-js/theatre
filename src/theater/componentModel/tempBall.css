@@ -1,44 +1,16 @@
-:global(.scene) {
+:global(.scene), :global(.container) {
   position: absolute 0;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  /* background-color: #242424; */
-  /* background-image: src('/xeno/1.jpg'); */
-}
-
-:global(.phone) {
-  /* background: #000; */
-  /* width: 600px;
-  height: 500px; */
-  position: absolute 0;
-  /* top: 0px; */
-  /* position: absolute; */
-  /* bottom: 425px; */
-  /* overflow: hidden; */
-  
-  /* &:after {
-    position: absolute 0 -15px -64px 0;
-    content: ' ';
-    display: block;
-    background-image: url('./iphone.png');
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center bottom;
-  } */
-
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
 }
 
 :global(.ball) {
+  position: absolute;
+  bottom: 0;
+  left: calc(50% - 40px);
   width: 80px;
   height: 80px;
   /* background-size: 80px 80px; */
   /* background-image: url('./theBall.png'); */
   transform-origin: 50% 100%;
-  position: relative;
   z-index: 2;
   background: #8f3ea0;
 

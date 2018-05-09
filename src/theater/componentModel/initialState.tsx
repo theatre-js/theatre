@@ -8,8 +8,7 @@ import coreModifierDescriptors from './coreModifierDescriptors/coreModifierDescr
 //   IDeclarativeComponentDescriptor,
 //   IComponentInstantiationValueDescriptor,
 // } from '$theater/componentModel/types'
-import * as _ from 'lodash'
-import tempCustomComponentDescriptors from './tempBall2'
+import tempCustomComponentDescriptors from './tempBall3'
 
 // const tags = ['div', 'header', 'span', 'footer', 'picture', 'video']
 
