@@ -17,7 +17,7 @@
   &.isContentHidden {
     opacity: 0;
   }
-/*
+  /*
   &:before {
     display: block;
     content: ' ';
@@ -44,7 +44,6 @@
   */
 
   &.isSelected {
-
   }
 }
 
@@ -55,25 +54,52 @@
 .className {
   position: relative;
   display: inline-block;
+  height: 100%;
+
+  transition: padding 0.2s ease-in-out;
+
+  &:before {
+    position: absolute 0;
+    display: block;
+    content: ' ';
+    background: #0e1315;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+    z-index: -1;
+  }
+
+  &:focus-within {
+    padding: 0 5px;
+
+    &:before {
+      opacity: 1;
+    }
+  }
 }
 
 .input {
   color: white;
   /* font-style: italic; */
-  border-bottom: 1px solid transparent;
-  transition: border-bottom-color .15s ease-in-out;
-  pointer-events: auto;
+  // border-bottom: 1px solid transparent;
+  // transition: border-bottom-color .15s ease-in-out;
+  // pointer-events: auto;
+  height: 100%;
 
   &:focus {
-    border-bottom-color: rgba(255, 255, 255, .3);
+    // border-bottom-color: rgba(255, 255, 255, .3);
   }
-  
+
+  &:hover {
+    background: #0003;
+  }
+
   &.isDisabled {
-    pointer-events: none;
+    // pointer-events: none;
   }
 }
 
-.tagOpen, .tagClose {
+.tagOpen,
+.tagClose {
   color: #4f5d77;
 }
 
@@ -86,14 +112,15 @@
 }
 
 .container.isSelected > .displayName {
-  & > .tagOpen, & > .tagClose {
-    color: rgba(255,255,255, 0.5);
+  & > .tagOpen,
+  & > .tagClose {
+    color: rgba(255, 255, 255, 0.5);
   }
 }
 
 .container.isRelocated > .displayName > .tagOpen,
 .container.isRelocated > .displayName > .tagClose {
-  animation: tagColorChange .2s ease-in forwards;
+  animation: tagColorChange 0.2s ease-in forwards;
 }
 
 .tagClose {
@@ -107,10 +134,31 @@
 
 .dot {
   color: #dadada;
+
+  &.hidden {
+    display: none;
+  }
 }
 
 .className {
   color: white;
+
+  &.hidden {
+    visibility: hidden;
+    pointer-events: none;
+    position: absolute;
+  }
+}
+
+.container:hover {
+  & .className {
+    position: relative;
+    visibility: visible;
+    pointer-events: auto;
+  }
+  & .dot {
+    display: inline-block;
+  }
 }
 
 /* .className {
@@ -124,6 +172,6 @@
   }
 
   100% {
-    color: #4f5d77;    
+    color: #4f5d77;
   }
 }

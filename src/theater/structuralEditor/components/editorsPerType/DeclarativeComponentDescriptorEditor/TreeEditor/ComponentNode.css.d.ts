@@ -13,3 +13,4 @@ export const isRelocated: string;
 export const tagColorChange: string;
 export const tagName: string;
 export const dot: string;
+export const hidden: string;

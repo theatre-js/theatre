@@ -37,11 +37,11 @@ class ComponentNode extends React.PureComponent<Props, State> {
   componentDidMount() {
     this._setClassValueFromProps()
 
+    this._fitClassInput()
     if (
       this.props.nodeProps.status === STATUS.UNINITIALIZED ||
       this.props.nodeProps.status === STATUS.TEXT_CHANGING_TYPE
     ) {
-      this._fitClassInput()
       setTimeout(() => {
         // this.width = this.container.getBoundingClientRect().width
         this.setState(() => ({isTypeBeingChanged: true}))
@@ -132,11 +132,12 @@ class ComponentNode extends React.PureComponent<Props, State> {
     target: 'CONTAINER' | 'TYPE' | '',
   ) => {
     // e.stopPropagation()
+    if (target === 'TYPE') {
+      // this.width = this.container.getBoundingClientRect().width
+      this.setState(() => ({isTypeBeingChanged: true}))
+    }
     if (this.props.isSelected) {
-      if (target === 'TYPE') {
-        // this.width = this.container.getBoundingClientRect().width
-        this.setState(() => ({isTypeBeingChanged: true}))
-      }
+
       // this.setState(() => ({isContentHidden: true}))
     } else {
       // this.props.onSelect()
@@ -149,9 +150,11 @@ class ComponentNode extends React.PureComponent<Props, State> {
     }
   }
 
+
   render() {
     const {nodeProps, isSelected, isCommandDown} = this.props
     const {isContentHidden, classValue, isTypeBeingChanged} = this.state
+    const isClassHidden = (classValue === NO_CLASS && !isSelected)
     return (
       <div
         ref={c => (this.container = c as HTMLDivElement)}
@@ -182,7 +185,29 @@ class ComponentNode extends React.PureComponent<Props, State> {
             onCancel={this.props.onCancelSelectingType}
             onTab={this._focusOnClassInput}
           />
-          {((classValue !== NO_CLASS && !isSelected) || isSelected) && [
+          <>
+            <span key="dot" className={cx(css.dot, {[css.hidden]: isClassHidden})}>
+              .
+            </span>
+            <div
+              key="classValue"
+              className={cx(css.className, {[css.hidden]: isClassHidden})}
+              onClick={e => this.handleClick(e, '')}
+            >
+              <input
+                type="text"
+                ref={c => (this.classInput = c as $IntentionalAny)}
+                className={cx(css.input, {
+                  [css.isDisabled]: isCommandDown,
+                })}
+                value={classValue}
+                onChange={this.handleClassValueChange}
+                onKeyDown={this.handleKeyDown}
+                onFocus={() => this.classInput.select()}
+              />
+            </div>
+          </>
+          {/* {((classValue !== NO_CLASS && !isSelected) || isSelected) && [
             <span key="dot" className={css.dot}>
               .
             </span>,
@@ -195,7 +220,7 @@ class ComponentNode extends React.PureComponent<Props, State> {
                 type="text"
                 ref={c => (this.classInput = c as $IntentionalAny)}
                 className={cx(css.input, {
-                  [css.isDisabled]: !isSelected || isCommandDown,
+                  [css.isDisabled]: isCommandDown,
                 })}
                 value={classValue}
                 onChange={this.handleClassValueChange}
@@ -203,7 +228,7 @@ class ComponentNode extends React.PureComponent<Props, State> {
                 onFocus={() => this.classInput.select()}
               />
             </div>,
-          ]}
+          ]} */}
           <span className={cx(css.tagClose, {[css.isSelected]: isSelected})}>
             &gt;
           </span>

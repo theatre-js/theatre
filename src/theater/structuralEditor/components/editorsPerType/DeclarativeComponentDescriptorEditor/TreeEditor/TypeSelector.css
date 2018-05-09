@@ -40,9 +40,15 @@
   pointer-events: auto;
   height: 100%;
 
+  &:hover {
+    background: #0003;
+  }
+
+  /*
   &.isDisabled {
     cursor: default;
   }
+  */
 
   &:focus {
     color: white;
