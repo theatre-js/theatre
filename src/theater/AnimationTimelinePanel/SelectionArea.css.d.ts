@@ -1,4 +1,8 @@
-export const container: string;
-export const showConfirmCursor: string;
-export const selection: string;
-export const shrink: string;
+export interface ISelectionAreaCss {
+  'container': string;
+  'showConfirmCursor': string;
+  'selection': string;
+  'shrink': string;
+}
+
+export const locals: ISelectionAreaCss;

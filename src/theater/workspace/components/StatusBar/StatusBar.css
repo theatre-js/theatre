@@ -1,4 +1,4 @@
-@import '$theater/common/styles.css';
+@value typographyFont from '../../../common/styles.css';
 
 .container {
   position: fixed;
@@ -14,9 +14,6 @@
   align-items: center;
   justify-content: space-between;
   z-index: 1001;
-  &.onTop {
-    // z-index: 100000;
-  }
 }
 
 .leftContainer {
@@ -52,5 +49,5 @@
   line-height: 28px;
   font-size: 11px;
   font-weight: bold;
-  @include typography;
+  font: typographyFont;
 }

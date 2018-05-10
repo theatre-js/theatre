@@ -1,4 +1,4 @@
-@import '$theater/common/styles.css';
+@value typographyFont from '../../../../../common/styles.css';
 
 .container {
   /* display: flex; */
@@ -36,7 +36,7 @@
 }
 
 .draggable {
-  @include typography;
+  font: typographyFont;
   position: fixed;
   left: -35px;
   top: -11px;

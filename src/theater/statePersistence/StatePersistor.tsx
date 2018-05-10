@@ -28,7 +28,7 @@ export default class StatePersistor {
         process.env.devSpecific.theater.statePersistenceMode ===
         'dontLoadOrPersist'
       ) {
-        this._theater.store.reduxStore.dispatch(
+        this._theater.store.dispatch(
           reduceAhistoricState(['stateIsHydrated'], () => true),
         )
       } else if (
@@ -50,7 +50,7 @@ export default class StatePersistor {
   }
 
   async _startSession() {
-    const pathToProject = this._theater.store.reduxStore.getState()
+    const pathToProject = this._theater.store.getState()
       .pathToProject as string
 
     const result = await this._theater._lbCommunicator.request(
@@ -64,7 +64,7 @@ export default class StatePersistor {
       const newProjectState = result.projectState
       if (newProjectState.checksum === 'empty') {
         this._lastPersistedStateInfo = {type: 'empty', state: {}}
-        this._theater.store.reduxStore.dispatch(
+        this._theater.store.dispatch(
           reduceAhistoricState(['stateIsHydrated'], () => true),
         )
       } else {
@@ -73,7 +73,7 @@ export default class StatePersistor {
           checksum: newProjectState.checksum,
           state: newProjectState.data as ITheaterHistoryState,
         }
-        this._theater.store.reduxStore.dispatch(
+        this._theater.store.dispatch(
           batchedAction([
             replaceHistoryAction(newProjectState.data as $FixMe),
             reduceAhistoricState(['stateIsHydrated'], () => true),

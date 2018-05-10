@@ -1,9 +1,9 @@
 .container {
-  composes: defaultHeaderContent from '$theater/workspace/components/Panel/Panel.css';
+  composes: defaultHeaderContent from '../workspace/components/Panel/Panel.css';
 }
 
 .flyoutTrigger {
-  composes: title from '$theater/workspace/components/Panel/Panel.css';
+  composes: title from '../workspace/components/Panel/Panel.css';
   border: 1px solid #212b32;
   background: rgba(255, 255, 255, 0.1);
   &:hover {
@@ -13,7 +13,7 @@
 }
 
 .title {
-  composes: title from '$theater/workspace/components/Panel/Panel.css';
+  composes: title from '../workspace/components/Panel/Panel.css';
 }
 
 .exploreTab {

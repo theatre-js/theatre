@@ -1,9 +1,14 @@
-export const container: string;
-export const anchor: string;
-export const item: string;
-export const highlight: string;
-export const disabled: string;
-export const appear: string;
-export const icon: string;
-export const key: string;
-export const label: string;
+export interface IIndexCss {
+  'typographyFont': string;
+  'container': string;
+  'anchor': string;
+  'item': string;
+  'highlight': string;
+  'disabled': string;
+  'appear': string;
+  'icon': string;
+  'key': string;
+  'label': string;
+}
+
+export const locals: IIndexCss;

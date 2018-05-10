@@ -1,7 +1,12 @@
-export const container: string;
-export const isActive: string;
-export const nameContainer: string;
-export const isEnabled: string;
-export const nameInputEffect: string;
-export const name: string;
-export const separator: string;
+export interface IHeaderCss {
+  'typographyFont': string;
+  'container': string;
+  'isActive': string;
+  'nameContainer': string;
+  'isEnabled': string;
+  'nameInputEffect': string;
+  'name': string;
+  'separator': string;
+}
+
+export const locals: IHeaderCss;

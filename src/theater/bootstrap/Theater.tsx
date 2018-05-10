@@ -1,15 +1,15 @@
-import configureStore from './configureStore'
-import {default as StoreAndStuff} from '$lb/bootstrap/StoreAndStuff'
-import configureAtom from './configureAtom'
 import Ticker from '$shared/DataVerse/Ticker'
-import {ITheaterStoreState} from '$theater/types'
 import {Atomify} from '$shared/DataVerse/atoms/atomifyDeep'
-import {PointerDerivation} from '$shared/DataVerse/derivations/pointer'
-import AbstractDerivedDict from '$shared/DataVerse/derivations/dicts/AbstractDerivedDict'
 import {UnwrapDictAtom} from '$shared/DataVerse/atoms/dictAtom'
-import configureAtom2 from '$theater/bootstrap/configureAtom2'
+import AbstractDerivedDict from '$shared/DataVerse/derivations/dicts/AbstractDerivedDict'
+import {PointerDerivation} from '$shared/DataVerse/derivations/pointer'
 import {Atom} from '$shared/DataVerse2/atom'
 import Studio from '$theater/bootstrap/Studio'
+import configureAtom2 from '$theater/bootstrap/configureAtom2'
+import {ITheaterStoreState} from '$theater/types'
+import {Store} from 'redux'
+import configureAtom from './configureAtom'
+import configureStore from './configureStore'
 
 export type TheaterStateAtom = Atomify<ITheaterStoreState>
 
@@ -23,7 +23,7 @@ export default class Theater {
     AbstractDerivedDict<UnwrapDictAtom<TheaterStateAtom>>
   >
   ticker: Ticker
-  store: StoreAndStuff<ITheaterStoreState, $FixMe>
+  store: Store<ITheaterStoreState>
   studio: Studio
 
   constructor(readonly _options: Options) {

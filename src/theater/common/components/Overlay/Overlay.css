@@ -1,7 +1,7 @@
-@import "$theater/common/styles.css";
+@value typographyFont from '../../styles.css';
 
 .container {
-  @include typography;
+  font: typographyFont;
   position: fixed 0;
   z-index: 10000;
 }

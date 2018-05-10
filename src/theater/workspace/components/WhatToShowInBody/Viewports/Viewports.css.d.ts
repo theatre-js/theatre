@@ -1,2 +1,6 @@
-export const container: string;
-export const viewports: string;
+export interface IViewportsCss {
+  'container': string;
+  'viewports': string;
+}
+
+export const locals: IViewportsCss;

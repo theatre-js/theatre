@@ -1,4 +1,8 @@
-export const container: string;
-export const isActive: string;
-export const content: string;
-export const unclickable: string;
+export interface IViewportCss {
+  'container': string;
+  'isActive': string;
+  'content': string;
+  'unclickable': string;
+}
+
+export const locals: IViewportCss;

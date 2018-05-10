@@ -1,7 +1,11 @@
-export const container: string;
-export const group: string;
-export const title: string;
-export const subGroup: string;
-export const body: string;
-export const item: string;
-export const separator: string;
+export interface IUberModifierInspectorCss {
+  'container': string;
+  'group': string;
+  'title': string;
+  'subGroup': string;
+  'body': string;
+  'item': string;
+  'separator': string;
+}
+
+export const locals: IUberModifierInspectorCss;

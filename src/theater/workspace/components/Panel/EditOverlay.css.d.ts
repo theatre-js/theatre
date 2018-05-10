@@ -1,1 +1,5 @@
-export const container: string;
+export interface IEditOverlayCss {
+  'container': string;
+}
+
+export const locals: IEditOverlayCss;

@@ -1,13 +1,14 @@
-@import '$theater/common/styles.css';
+@value panelZIndex from '../../../common/styles.css';
+@value typographyFont from '../../../common/styles.css';
 
 .container {
   position: fixed;
-  z-index: $panelZIndex;
+  z-index: panelZIndex;
   box-sizing: border-box;
   --panelHeaderHeight: 34px;
   --body-color: #263238;
   background: var(--body-color);
-  @include typography;
+  font: typographyFont;
   --header-height: var(--headerHeight, 32px);
 }
 
@@ -17,7 +18,7 @@
   left: 0;
   right: 0;
   height: var(--header-height);
-  @include typography;
+  font: typographyFont;
 }
 
 .content {

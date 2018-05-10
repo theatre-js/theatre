@@ -1,2 +1,7 @@
-export const textLogo: string;
-export const textContent: string;
+export interface ITextNodeCss {
+  'typographyFont': string;
+  'textLogo': string;
+  'textContent': string;
+}
+
+export const locals: ITextNodeCss;

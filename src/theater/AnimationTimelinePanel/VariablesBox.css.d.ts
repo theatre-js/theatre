@@ -1,9 +1,13 @@
-export const container: string;
-export const isABoxBeingDragged: string;
-export const isMoving: string;
-export const canBeMerged: string;
-export const indicateMerge: string;
-export const wrapper: string;
-export const boxLegends: string;
-export const boxView: string;
-export const resizeHandle: string;
+export interface IVariablesBoxCss {
+  'container': string;
+  'isABoxBeingDragged': string;
+  'isMoving': string;
+  'canBeMerged': string;
+  'indicateMerge': string;
+  'wrapper': string;
+  'boxLegends': string;
+  'boxView': string;
+  'resizeHandle': string;
+}
+
+export const locals: IVariablesBoxCss;

@@ -1,5 +1,9 @@
-export const wrapper: string;
-export const container: string;
-export const row: string;
-export const icon: string;
-export const input: string;
+export interface IPointValuesEditorCss {
+  'wrapper': string;
+  'container': string;
+  'row': string;
+  'icon': string;
+  'input': string;
+}
+
+export const locals: IPointValuesEditorCss;

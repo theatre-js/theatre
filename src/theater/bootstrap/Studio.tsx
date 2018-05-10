@@ -27,7 +27,7 @@ export default class Studio {
   }
 
   _run(pathToProject: string) {
-    this.theater.store.reduxStore.dispatch(
+    this.theater.store.dispatch(
       reduceAhistoricState(['pathToProject'], () => pathToProject),
     )
 

@@ -1,3 +1,7 @@
-export const container: string;
-export const em: string;
-export const fill: string;
+export interface ISvgIconCss {
+  'container': string;
+  'em': string;
+  'fill': string;
+}
+
+export const locals: ISvgIconCss;

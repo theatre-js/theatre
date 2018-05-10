@@ -62,7 +62,7 @@ const NodeTemplate = (props: Props) => {
           : () => {
               if (!canHaveChildren) return
               if (isExpanded) {
-                theater.store.reduxStore.dispatch(
+                theater.store.dispatch(
                   reduceAhistoricState(
                     [
                       'ahistoricComponentModel',
@@ -73,7 +73,7 @@ const NodeTemplate = (props: Props) => {
                   ),
                 )
               } else {
-                theater.store.reduxStore.dispatch(
+                theater.store.dispatch(
                   reduceAhistoricState(
                     [
                       'ahistoricComponentModel',
@@ -174,7 +174,7 @@ function markElementAsActive(theater: Theater, volatileId: string) {
   ).getValue()
 
   if (!activeViewportId) throw new Error(`No active viewport selected.`)
-  theater.store.reduxStore.dispatch(
+  theater.store.dispatch(
     reduceAhistoricState(
       [
         'ahistoricWorkspace',

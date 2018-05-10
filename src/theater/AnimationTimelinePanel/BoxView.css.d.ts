@@ -1,6 +1,10 @@
-export const container: string;
-export const blueAddCursor: string;
-export const redAddCursor: string;
-export const purpleAddCursor: string;
-export const yellowAddCursor: string;
-export const svgArea: string;
+export interface IBoxViewCss {
+  'container': string;
+  'blueAddCursor': string;
+  'redAddCursor': string;
+  'purpleAddCursor': string;
+  'yellowAddCursor': string;
+  'svgArea': string;
+}
+
+export const locals: IBoxViewCss;

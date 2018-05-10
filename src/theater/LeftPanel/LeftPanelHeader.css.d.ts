@@ -1,5 +1,9 @@
-export const container: string;
-export const flyoutTrigger: string;
-export const title: string;
-export const exploreTab: string;
-export const exploreIcon: string;
+export interface ILeftPanelHeaderCss {
+  'container': string;
+  'flyoutTrigger': string;
+  'title': string;
+  'exploreTab': string;
+  'exploreIcon': string;
+}
+
+export const locals: ILeftPanelHeaderCss;

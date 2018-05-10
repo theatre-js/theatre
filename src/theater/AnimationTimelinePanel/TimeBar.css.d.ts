@@ -1,19 +1,23 @@
-export const container: string;
-export const shouldIgnoreMouse: string;
-export const time: string;
-export const timeStart: string;
-export const timeEnd: string;
-export const timeEndInput: string;
-export const timeThread: string;
-export const currentTime: string;
-export const currentTimeThumb: string;
-export const isHidden: string;
-export const thumbSquinch: string;
-export const currentTimeNeedle: string;
-export const focusBar: string;
-export const focusHandle: string;
-export const leftFocusHandle: string;
-export const rightFocusHandle: string;
-export const focusTimeToolTip: string;
-export const currentTimeToolTip: string;
-export const timeGrid: string;
+export interface ITimeBarCss {
+  'container': string;
+  'shouldIgnoreMouse': string;
+  'time': string;
+  'timeStart': string;
+  'timeEnd': string;
+  'timeEndInput': string;
+  'timeThread': string;
+  'currentTime': string;
+  'currentTimeThumb': string;
+  'isHidden': string;
+  'thumbSquinch': string;
+  'currentTimeNeedle': string;
+  'focusBar': string;
+  'focusHandle': string;
+  'leftFocusHandle': string;
+  'rightFocusHandle': string;
+  'focusTimeToolTip': string;
+  'currentTimeToolTip': string;
+  'timeGrid': string;
+}
+
+export const locals: ITimeBarCss;

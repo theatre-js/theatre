@@ -321,7 +321,7 @@ export default class ValueDerivation extends AbstractDerivation<$FixMe> {
     startSearchingFromPointIndex: number,
   ): PossibleBaseStates {
     const points = _.get(
-      this._theater.store.reduxStore.getState(),
+      this._theater.store.getState(),
       this._pathToValueDescriptor,
     ).points
 

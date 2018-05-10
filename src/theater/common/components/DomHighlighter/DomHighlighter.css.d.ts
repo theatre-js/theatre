@@ -1,1 +1,5 @@
-export const container: string;
+export interface IDomHighlighterCss {
+  'container': string;
+}
+
+export const locals: IDomHighlighterCss;

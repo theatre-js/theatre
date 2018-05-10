@@ -1,2 +1,6 @@
-export const container: string;
-export const isCurrent: string;
+export interface IPanelTabCss {
+  'container': string;
+  'isCurrent': string;
+}
+
+export const locals: IPanelTabCss;

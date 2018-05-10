@@ -180,7 +180,8 @@ export const makeConfigParts = (options: Options) => {
             {
               loader: require.resolve(`style-loader`),
               options: {
-                convertToAbsoluteUrls: true,
+                // singleton: true,
+                // convertToAbsoluteUrls: true,
                 ...(!isDev
                   ? {}
                   : {
@@ -193,7 +194,6 @@ export const makeConfigParts = (options: Options) => {
               options: {
                 sourceMap: isDev,
                 modules: true,
-                namedExport: true,
                 localIdentName: '[name]_[local]_[hash:10]',
                 importLoaders: 1,
               },
@@ -202,52 +202,52 @@ export const makeConfigParts = (options: Options) => {
               loader: require.resolve('postcss-loader'),
               options: {
                 plugins: () => {
-                  const variables = flow(
-                    (v: typeof aliasesFromRoot) =>
-                      mapKeys(v, (_, k: string) => k.substring(1, k.length)),
-                    (v: typeof aliasesFromRoot) =>
-                      mapValues(v, (_, k) => '$' + k),
-                  )(aliasesFromRoot)
+                  // const variables = flow(
+                  //   (v: typeof aliasesFromRoot) =>
+                  //     mapKeys(v, (_, k: string) => k.substring(1, k.length)),
+                  //   (v: typeof aliasesFromRoot) =>
+                  //     mapValues(v, (_, k) => '$' + k),
+                  // )(aliasesFromRoot)
 
                   return [
-                    require('postcss-advanced-variables')({
-                      variables,
+                    // require('postcss-advanced-variables')({
+                    //   variables,
 
-                      resolve(
-                        id: string,
-                        cwd: string,
-                        _: any,
-                      ): Promise<{file: string; contents: string}> {
-                        const requestedPath = id
-                          .replace("('", '')
-                          .replace("')", '')
+                    //   resolve(
+                    //     id: string,
+                    //     cwd: string,
+                    //     _: any,
+                    //   ): Promise<{file: string; contents: string}> {
+                    //     const requestedPath = id
+                    //       .replace("('", '')
+                    //       .replace("')", '')
 
-                        let resolvedPath = requestedPath
-                        for (const aliasFrom in aliases) {
-                          if (startsWith(requestedPath, aliasFrom)) {
-                            const pathWithoutAlias = requestedPath
-                              .substr(aliasFrom.length, requestedPath.length)
-                              .replace(
-                                // remove the leading slash (eg /common.css => common.css)
-                                /^\//,
-                                '',
-                              )
+                    //     let resolvedPath = requestedPath
+                    //     for (const aliasFrom in aliases) {
+                    //       if (startsWith(requestedPath, aliasFrom)) {
+                    //         const pathWithoutAlias = requestedPath
+                    //           .substr(aliasFrom.length, requestedPath.length)
+                    //           .replace(
+                    //             // remove the leading slash (eg /common.css => common.css)
+                    //             /^\//,
+                    //             '',
+                    //           )
 
-                            resolvedPath = path.resolve(
-                              aliases[aliasFrom],
-                              pathWithoutAlias,
-                            )
-                          }
-                        }
-                        const finalPath = path.resolve(cwd, resolvedPath)
+                    //         resolvedPath = path.resolve(
+                    //           aliases[aliasFrom],
+                    //           pathWithoutAlias,
+                    //         )
+                    //       }
+                    //     }
+                    //     const finalPath = path.resolve(cwd, resolvedPath)
 
-                        return new Promise((resolve, reject) => {
-                          readFile(finalPath, 'utf-8').then(contents => {
-                            resolve({contents, file: finalPath})
-                          }, reject)
-                        })
-                      },
-                    }),
+                    //     return new Promise((resolve, reject) => {
+                    //       readFile(finalPath, 'utf-8').then(contents => {
+                    //         resolve({contents, file: finalPath})
+                    //       }, reject)
+                    //     })
+                    //   },
+                    // }),
                     require('postcss-hexrgba')(),
                     require('postcss-nesting')(),
                     require('postcss-short')(),

@@ -44,7 +44,7 @@ class StudioRootComponent extends React.Component<Props, State> {
     const {HotReloadablePart} = this.state
     return (
       <AppContainer warnings={true}>
-        <StoreProvider store={this.props.theater.store.reduxStore}>
+        <StoreProvider store={this.props.theater.store}>
           <HotReloadablePart />
         </StoreProvider>
       </AppContainer>

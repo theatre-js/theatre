@@ -1,8 +1,12 @@
-export const container: string;
-export const legendItem: string;
-export const legendBar: string;
-export const isActive: string;
-export const legendText: string;
-export const property: string;
-export const component: string;
-export const separator: string;
+export interface IBoxLegendsCss {
+  'container': string;
+  'legendItem': string;
+  'legendBar': string;
+  'isActive': string;
+  'legendText': string;
+  'property': string;
+  'component': string;
+  'separator': string;
+}
+
+export const locals: IBoxLegendsCss;

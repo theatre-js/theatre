@@ -1,10 +1,10 @@
-@import '$theater/common/styles.css';
+@value typographyFont from '../../../../common/styles.css';
 
 .container {
   position: absolute;
   top: -20px;
   left: 0;
-  @include typography;
+  font: typographyFont;
   white-space: nowrap;
 
   color: #9c9c9c;

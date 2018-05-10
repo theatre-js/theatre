@@ -32,7 +32,7 @@ const test: TestFn = (testName: string, fn: (utils: Utils) => void) => {
   return it(testName, () => {
     const theater = new Theater({withStudio: false})
     const updateState = (fn: (s: ITheaterStoreState) => void) => {
-      theater.store.reduxStore.dispatch(
+      theater.store.dispatch(
         reduceHistoricState([], s => {
           return immer(s, fn)
         }),

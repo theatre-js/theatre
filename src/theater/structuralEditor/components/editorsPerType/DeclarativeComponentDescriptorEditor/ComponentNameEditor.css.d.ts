@@ -1,1 +1,5 @@
-export const stringEditor: string;
+export interface IComponentNameEditorCss {
+  'stringEditor': string;
+}
+
+export const locals: IComponentNameEditorCss;

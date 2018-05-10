@@ -1,5 +1,9 @@
-export const treeWrapper: string;
-export const treeContainer: string;
-export const scroller: string;
-export const top: string;
-export const bottom: string;
+export interface IIndexCss {
+  'treeWrapper': string;
+  'treeContainer': string;
+  'scroller': string;
+  'top': string;
+  'bottom': string;
+}
+
+export const locals: IIndexCss;

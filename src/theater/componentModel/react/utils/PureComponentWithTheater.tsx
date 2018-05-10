@@ -36,7 +36,7 @@ export default class PureComponentWithTheater<
   }
 
   dispatch = (action: GenericAction) => {
-    this.theater.store.reduxStore.dispatch(action)
+    this.theater.store.dispatch(action)
   }
 
   static contextTypes = contextTypes

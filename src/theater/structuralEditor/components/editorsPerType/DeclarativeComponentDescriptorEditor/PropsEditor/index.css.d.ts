@@ -1,1 +1,5 @@
-export const dragStHereMsg: string;
+export interface IIndexCss {
+  'dragStHereMsg': string;
+}
+
+export const locals: IIndexCss;

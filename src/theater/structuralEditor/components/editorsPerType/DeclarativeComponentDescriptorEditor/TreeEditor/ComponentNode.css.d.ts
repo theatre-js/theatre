@@ -1,15 +1,19 @@
-export const nodeHeight: string;
-export const nodePadding: string;
-export const container: string;
-export const isContentHidden: string;
-export const isSelected: string;
-export const className: string;
-export const dot: string;
-export const displayName: string;
-export const tagOpen: string;
-export const tagClose: string;
-export const hidden: string;
-export const input: string;
-export const isRelocated: string;
-export const tagColorChange: string;
-export const tagName: string;
+export interface IComponentNodeCss {
+  'nodeHeight': string;
+  'nodePadding': string;
+  'container': string;
+  'isContentHidden': string;
+  'isSelected': string;
+  'className': string;
+  'dot': string;
+  'displayName': string;
+  'tagOpen': string;
+  'tagClose': string;
+  'hidden': string;
+  'input': string;
+  'isRelocated': string;
+  'tagColorChange': string;
+  'tagName': string;
+}
+
+export const locals: IComponentNodeCss;

@@ -1,4 +1,4 @@
-@import '$theater/common/styles.css';
+@value typographyFont from '../common/styles.css';
 
 .textLogo {
   position: relative;
@@ -11,11 +11,11 @@
   color: #5d6b85;
   text-align: center;
   margin-left: -8px;
-  @include typography;
+  font: typographyFont;
 }
 
 .textContent {
-  @include typography;
+  font: typographyFont;
   color: #aaa;
   line-height: 30px;
   white-space: nowrap;
