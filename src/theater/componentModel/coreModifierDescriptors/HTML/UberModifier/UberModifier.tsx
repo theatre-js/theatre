@@ -62,7 +62,7 @@ const getClass = (propsP, baseClass) => {
       const ownerP = self.prop('owner')
       return self.propFromSuper('reifiedStyles').flatMap(reifiedStyles => {
         const translateXP = propsP.prop('translationX').flatMap(formularize(ownerP))
-        const translateYP = propsP.prop('translationY')
+        const translateYP = propsP.prop('translationY').flatMap(formularize(ownerP))
         const translateZP = propsP.prop('translationZ')
 
         const scaleXP = propsP.prop('scaleX')

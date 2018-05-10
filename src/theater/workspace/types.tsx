@@ -78,3 +78,5 @@ export type IWorkspaceNamespaceAHistoricState = {
   activeNodeVolatileIdByViewportId: Record<string, string>
   viewportsContainer: ViewportsContainer
 }
+
+

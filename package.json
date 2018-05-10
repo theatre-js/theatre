@@ -127,7 +127,7 @@
     "husky": "^0.14.3",
     "identity-obj-proxy": "^3.0.0",
     "immer": "^1.2.1",
-    "io-ts": "^1.0.5",
+    "io-ts": "^1.1.1",
     "jest": "^22.4.2",
     "jiff": "^0.7.3",
     "json-touch-patch": "^0.11.2",
