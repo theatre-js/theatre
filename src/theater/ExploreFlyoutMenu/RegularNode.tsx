@@ -32,7 +32,6 @@ const RegularNode = (props: Props) => (
       if (!nativeNode) return null
 
       let isSelectable = false
-
       if (isTheaterComponent(nativeNode)) {
         const cls = nativeNode.constructor as $FixMe
         if (cls.componentType === 'Declarative') isSelectable = true

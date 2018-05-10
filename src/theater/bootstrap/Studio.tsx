@@ -35,7 +35,7 @@ export default class Studio {
   }
 
   _tick() {
-    this.elementTree.tick()    
+    this.elementTree.tick()
   }
 
   _mountElement() {

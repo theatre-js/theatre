@@ -16,6 +16,7 @@ import {Pointer} from '$shared/DataVerse2/pointer'
 import {getActiveViewportId, getVolatileIdOfActiveNode} from './utils'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 import Theater from '$theater/bootstrap/Theater'
+import HighlightByInternalInstance from '$theater/common/components/DomHighlighter/HighlightByInternalInstance'
 
 type Props = {
   isSelectable: boolean
@@ -104,6 +105,13 @@ const NodeTemplate = (props: Props) => {
           )
         }
 
+        const nodeP =
+          theater.studio.elementTree.mirrorOfReactTreeAtom.pointer
+            .nodesByVolatileId[volatileId]
+
+        const internalInstance = val(nodeP.reactSpecific.internalInstance)
+        const rendererId = val(nodeP.rendererId)
+
         return (
           <div
             {...classes(
@@ -122,9 +130,24 @@ const NodeTemplate = (props: Props) => {
                   </div>
                 </div>
               )}
-              <div key="name" {...classes('name', isSelectable && 'selectable')} onClick={select}>
+              <div
+                key="name"
+                {...classes('name', isSelectable && 'selectable')}
+                onClick={select}
+              >
                 {props.name}
-                <div key="highlighter" {...classes('highlighter')} />
+                <HighlightByInternalInstance
+                  internalInstance={internalInstance}
+                  rendererId={rendererId}
+                >
+                  {(showOverlay, hideOverlay) => (
+                    <div
+                      {...classes('highlighter')}
+                      {...showOverlay != null && {onMouseEnter: showOverlay}}
+                      {...hideOverlay != null && {onMouseLeave: hideOverlay}}
+                    />
+                  )}
+                </HighlightByInternalInstance>
               </div>
             </div>
             {hasChildren && <div {...classes('subNodes')}>{childrenNodes}</div>}

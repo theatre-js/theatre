@@ -8,15 +8,16 @@
   margin-right: 4px;
   border-radius: 2px;
   line-height: 16px;
-  color: #4f5d77;
+  color: #5d6b85;
   text-align: center;
-  margin-left: -18px;
+  margin-left: -8px;
   @include typography;
 }
 
 .textContent {
   @include typography;
-  color: white;
+  color: #aaa;
+  line-height: 30px;
   white-space: nowrap;
   display: inline-block;
 }

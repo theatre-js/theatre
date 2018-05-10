@@ -97,16 +97,14 @@
 }
 
 .highlighter {
-  // position: absolute 2px -10px;
   position: absolute 0;
   min-width: 50px;
-  pointer-events: none;
-  z-index: -1;
   &:before {
     display: block;
     content: ' ';
     position: absolute 2px -10px;
     background: rgb(48, 60, 66);
+    z-index: -1;
   }
 }
 

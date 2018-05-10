@@ -12,38 +12,25 @@
   padding: 0 nodePadding;
 
   opacity: 1;
-  /* transition: opacity .15s ease-in-out; */
 
   &.isContentHidden {
     opacity: 0;
   }
-  /*
-  &:before {
-    display: block;
-    content: ' ';
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: calc(-1 * nodePadding);
-    background: black;
-    opacity: 0;
-    border-radius: 2px;
-    z-index: -1;
-  }
-  
-  &:hover:before {
-    opacity: 0.1;
-  }
-  
-  &.isSelected:before {
-    opacity: 1;
-    background: #0e1315;
+}
 
-  }
-  */
+.container:not(.isSelected) * {
+  pointer-events: none !important;
+}
 
-  &.isSelected {
+
+.container:hover {
+  & .className {
+    position: relative;
+    visibility: visible;
+    pointer-events: auto;
+  }
+  & .dot {
+    display: inline-block;
   }
 }
 
@@ -51,12 +38,26 @@
   /* cursor: pointer; */
 }
 
+.container.isSelected > .displayName {
+  & > .tagOpen,
+  & > .tagClose {
+    color: rgba(255, 255, 255, 0.5);
+  }
+}
+
 .className {
   position: relative;
   display: inline-block;
   height: 100%;
+  color: white;
 
   transition: padding 0.2s ease-in-out;
+
+  &.hidden {
+    visibility: hidden;
+    pointer-events: none;
+    position: absolute;
+  }
 
   &:before {
     position: absolute 0;
@@ -79,53 +80,28 @@
 
 .input {
   color: white;
-  /* font-style: italic; */
-  // border-bottom: 1px solid transparent;
-  // transition: border-bottom-color .15s ease-in-out;
-  // pointer-events: auto;
   height: 100%;
 
-  &:focus {
-    // border-bottom-color: rgba(255, 255, 255, .3);
-  }
-
   &:hover {
+    transition: 0.15s background ease-in-out;
     background: #0003;
   }
-
-  &.isDisabled {
-    // pointer-events: none;
-  }
-}
-
-.tagOpen,
-.tagClose {
-  color: #4f5d77;
 }
 
 .tagOpen {
+  color: #4f5d77;
   margin-right: 2px;
 }
 
 .tagClose {
+  color: #4f5d77;
   margin-left: 1px;
-}
-
-.container.isSelected > .displayName {
-  & > .tagOpen,
-  & > .tagClose {
-    color: rgba(255, 255, 255, 0.5);
-  }
+  position: relative;
 }
 
 .container.isRelocated > .displayName > .tagOpen,
 .container.isRelocated > .displayName > .tagClose {
   animation: tagColorChange 0.2s ease-in forwards;
-}
-
-.tagClose {
-  position: relative;
-  /* left: -1px; */
 }
 
 .tagName {
@@ -139,32 +115,6 @@
     display: none;
   }
 }
-
-.className {
-  color: white;
-
-  &.hidden {
-    visibility: hidden;
-    pointer-events: none;
-    position: absolute;
-  }
-}
-
-.container:hover {
-  & .className {
-    position: relative;
-    visibility: visible;
-    pointer-events: auto;
-  }
-  & .dot {
-    display: inline-block;
-  }
-}
-
-/* .className {
-  color: #65eeff;
-  font-weight: 500;
-} */
 
 @keyframes tagColorChange {
   0% {
