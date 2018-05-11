@@ -1170,3 +1170,13 @@ export {
 
 export const intentionalAny = $IntentionalAny
 export const fixMe = $IntentionalAny
+
+export function maybe<RT extends Any>(
+  type: RT,
+  name?: string,
+): UnionType<
+  [RT, NullType],
+  TypeOf<RT> | null
+> {
+  return union<[RT, NullType]>([type, nullType], name)
+}
