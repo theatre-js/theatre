@@ -302,7 +302,7 @@ type Rec = {
   b: Rec | undefined
 }
 
-const Rec = t.recursion<Rec, t.mixed, GenerableInterface>('T', self =>
+const Rec = t.recursion<Rec, GenerableInterface>('T', self =>
   t.interface({
     a: t.number,
     b: t.union([self, t.undefined]),
@@ -349,8 +349,7 @@ export function maybe<RT extends t.Any>(
   name?: string,
 ): t.UnionType<
   [RT, t.NullType],
-  t.TypeOf<RT> | null,
-  t.InputOf<RT> | null
+  t.TypeOf<RT> | null
 > {
   return t.union<[RT, t.NullType]>([type, t.null], name)
 }
@@ -395,10 +394,9 @@ declare const Any1: t.AnyType | t.InterfaceType<any>
 
 declare const E1: t.InterfaceType<
   {a: t.NumberType},
-  {a: number},
   {a: number}
 >
-const E2: t.Type<any, {a: number}> = t.exact(E1)
+const E2: t.Type<any> = t.exact(E1)
 
 const C1 = t.type({
   a: t.string,
@@ -425,10 +423,12 @@ interface C1WithAdditionalProp {
 const C2 = t.clean<C1>(C1)
 // $ExpectError
 const C3 = t.clean<C1WithAdditionalProp, C1O>(C1)
-const C4 = t.clean<C1, C1O>(C1)
+// 
+const C4 = t.clean<C1>(C1)
 const C5 = t.alias(C1)<C1>()
-// $-ExpectError @todo
+// $ExpectError
 const C6 = t.alias(C1)<C1, C1>()
 // $ExpectError
 const C7 = t.alias(C1)<C1WithAdditionalProp, C1O>()
+// @ts-ignore @todo
 const C8 = t.alias(C1)<C1, C1O>()
