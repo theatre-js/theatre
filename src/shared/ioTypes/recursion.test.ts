@@ -31,23 +31,6 @@ describe('recursion', () => {
     ])
   })
 
-  it('should serialize a deserialized', () => {
-    type A = {
-      a: Date
-      b: A | null
-    }
-    type O = {
-      a: number
-      b: O | null
-    }
-    const T = t.recursion<A, O>('T', self =>
-      t.interface({
-        a: DateFromNumber,
-        b: t.union([self, t.null]),
-      }),
-    )
-  })
-
   it('should type guard', () => {
     type A = {
       a: Date

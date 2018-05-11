@@ -17,11 +17,6 @@ describe('union', () => {
     ])
   })
 
-  it('should return the same reference when serializing', () => {
-    const T = t.union([t.type({a: t.number}), t.string])
-    assert.strictEqual(T.encode, t.identity)
-  })
-
   it('should type guard', () => {
     const T1 = t.union([t.string, t.number])
     assert.strictEqual(T1.is(0), true)

@@ -20,21 +20,6 @@ describe('refinement', () => {
     assertFailure(T.rootValidate(1.2), ['Invalid value 1.2 supplied to : Integer'])
   })
 
-  it('should fail with the last deserialized value', () => {
-    const T = t.refinement(t.number, (n) => n % 1 === 0, 'Integer')
-    assertFailure(T.rootValidate('a'), [
-      'Invalid value "a" supplied to : Integer',
-    ])
-    assertFailure(T.rootValidate(1.2), [
-      'Invalid value 1.2 supplied to : Integer',
-    ])
-  })
-
-  it('should return the same reference when serializing', () => {
-    const T = t.refinement(t.array(t.number), () => true)
-    assert.strictEqual(T.encode, t.identity)
-  })
-
   it('should type guard', () => {
     const T = t.Integer
     assert.strictEqual(T.is(1.2), false)

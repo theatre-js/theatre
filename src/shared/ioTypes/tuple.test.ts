@@ -25,11 +25,6 @@ describe('tuple', () => {
     ])
   })
 
-  it('should return the same reference when serializing', () => {
-    const T = t.tuple([t.number, t.string])
-    assert.strictEqual(T.encode, t.identity)
-  })
-
   it('should type guard', () => {
     const T1 = t.tuple([t.number, t.string])
     assert.strictEqual(T1.is([0, 'foo']), true)

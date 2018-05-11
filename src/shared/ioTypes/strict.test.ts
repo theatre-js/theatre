@@ -28,11 +28,6 @@ describe('strict', () => {
     assert.strictEqual(T2.name, 'StrictType<{ foo: string }>')
   })
 
-  it('should return the same reference when serializing', () => {
-    const T = t.strict({a: t.number})
-    assert.strictEqual(T.encode, t.identity)
-  })
-
   it('should type guard', () => {
     const T1 = t.strict({a: t.number})
     assert.strictEqual(T1.is({a: 0}), true)

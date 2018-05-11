@@ -57,11 +57,6 @@ describe('taggedUnion', () => {
     ])
   })
 
-  it('should return the same reference when serializing', () => {
-    const T = t.taggedUnion('type', [TUA, TUB])
-    assert.strictEqual(T.encode, t.identity)
-  })
-
   it('should type guard', () => {
     assert.strictEqual(T.is({type: 'a', foo: 'foo'}), true)
     assert.strictEqual(T.is({type: 'b', bar: 1}), true)
