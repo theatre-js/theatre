@@ -1,7 +1,11 @@
-import {ICommonNamespaceState, $ICommonNamespaceState} from '$theater/common/types'
 import {
-  IWorkspaceNamespaceHistoricState,
+  ICommonNamespaceState,
+  $ICommonNamespaceState,
+} from '$theater/common/types'
+import {
+  IWorkspaceHistoricState,
   IWorkspaceNamespaceAHistoricState,
+  $IWorkspaceHistoricState,
 } from '$theater/workspace/types'
 import {
   IComponentModelNamespaceHistoricState,
@@ -16,13 +20,14 @@ import * as t from '$shared/ioTypes/index'
 
 export interface IStoreHistoricState {
   common: ICommonNamespaceState
-  historicWorkspace: IWorkspaceNamespaceHistoricState
+  historicWorkspace: IWorkspaceHistoricState
   historicComponentModel: IComponentModelNamespaceHistoricState
 }
 
 const $IStoreHistoricState = t.type(
   {
     common: $ICommonNamespaceState,
+    historicWorkspace: $IWorkspaceHistoricState,
   },
   'StoreHistoricState',
 )

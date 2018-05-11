@@ -7,7 +7,8 @@ export type IPanelId = t.TypeOf<typeof $IPanelId>
 export const $IPanelType = t.string
 export type IPanelType = t.TypeOf<typeof $IPanelType>
 
-export type XY = {x: number; y: number}
+export const $IXY = t.type({x: t.number, y: t.number}, 'XY')
+export type IXY = t.TypeOf<typeof $IXY>
 
 const $IPanelBoundaryDim = t.union([
   t.literal('top'),
@@ -68,43 +69,52 @@ const $IPanels = t.type(
     byId: t.dictionary(t.string, $IWorkspacePanel, 'PanelsById'),
     listOfVisibles: t.array($IPanelId),
     panelObjectBeingDragged: t.fixMe,
-    idOfActivePanel: t.optional
+    idOfActivePanel: t.maybe(t.string),
   },
   'IWorkspacePanels',
 )
 
-export type IViewport = {
-  id: string
-  dimensions: {width: number; height: number}
-  position: {x: number; y: number}
-  sceneComponentId: ComponentId
-}
+export const $IViewport = t.type(
+  {
+    id: t.string,
+    dimensions: t.type({width: t.number, height: t.number}),
+    position: t.type({x: t.number, y: t.number}),
+    sceneComponentId: t.string,
+  },
+  'Viewport',
+)
+export type IViewport = t.TypeOf<typeof $IViewport>
 
-const $IWorkspaceNamespaceHistoricState = t.type(
+export const $IViewports = t.type(
+  {
+    byId: t.dictionary(t.string, $IViewport),
+    activeViewportId: t.union([t.undefined, t.string], 'activeViewportId'),
+    whatToShowInBody: t.taggedUnion(
+      'type',
+      [
+        t.type({type: t.literal('Passthrough')}),
+        t.type({type: t.literal('Viewports')}),
+        t.type({type: t.literal('Viewport'), id: t.string}),
+        t.type({
+          type: t.literal('TestingOnly:DirectlyRenderComponent'),
+          componentId: t.string,
+        }),
+      ],
+      'WhatTShowInBody',
+    ),
+  },
+  'IViewports',
+)
+export type IViewports = t.TypeOf<typeof $IViewports>
+
+export const $IWorkspaceHistoricState = t.type(
   {
     panels: $IPanels,
+    viewports: $IViewports,
   },
   'IWorkspaceNamespaceHistoricState',
 )
-
-export type IWorkspaceNamespaceHistoricState = {
-  panels: Panels
-
-  viewports: {
-    byId: Record<string, IViewport>
-    /**
-     * This designates which viewport is active, but only when the viewport*s
-     * view is showing. In other words, this is only relevant if
-     * `whatToShowInBody.type === 'Viewports'`
-     */
-    activeViewportId: undefined | string
-    whatToShowInBody:
-      | {type: 'Passthrough'}
-      | {type: 'Viewports'}
-      | {type: 'Viewport'; id: string}
-      | {type: 'TestingOnly:DirectlyRenderComponent'; componentId: string}
-  }
-}
+export type IWorkspaceHistoricState = t.TypeOf<typeof $IWorkspaceHistoricState>
 
 export type ViewportsContainer = {
   scrollX: number

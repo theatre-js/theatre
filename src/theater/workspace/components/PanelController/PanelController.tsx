@@ -2,7 +2,7 @@ import {reduceStateAction} from '$shared/utils/redux/commonActions'
 import React from 'react'
 
 import {
-  XY,
+  IXY,
   IPanelType,
 } from '$theater/workspace/types'
 
@@ -52,8 +52,8 @@ interface IBoundary {
 }
 
 interface IPanelPlacementState {
-  move: XY
-  resize: XY
+  move: IXY
+  resize: IXY
   moveBoundaries: IBoundary
   resizeBoundaries: IBoundary
 }

@@ -4,7 +4,7 @@ import {compose, applyMiddleware, createStore, Store} from 'redux'
 import {identity} from 'lodash'
 import {ITheaterStoreState, RStoreState} from '$theater/types'
 import {GenericAction} from '$shared/types'
-import {ioTSErrorReporter} from '$shared/utils/ioTSErrorReporter'
+import {betterErrorReporter} from '$shared/ioTypes/betterErrorReporter'
 export const defaultConfig = {rootReducer, rootSaga}
 
 export default function configureStore(): Store<ITheaterStoreState> {
@@ -21,13 +21,13 @@ export default function configureStore(): Store<ITheaterStoreState> {
         const result = store.dispatch(action)
         const newState = store.getState()
 
-        const validationResult = RStoreState.decode(newState)
+        const validationResult = RStoreState.validate(newState)
         if (validationResult.isLeft()) {
           console.group(`Store state has become invalid.`)
           console.log('Culprit action:', action)
-          const errors = ioTSErrorReporter(validationResult)
-          const log = console.log.bind(console)
-          errors.forEach(log)
+          const errors = betterErrorReporter(validationResult)
+          console.log('Errors:', `(${errors.length})`)
+          errors.forEach((err) => console.log(err))
         }
         console.groupEnd()
 

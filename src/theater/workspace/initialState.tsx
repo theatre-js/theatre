@@ -1,5 +1,5 @@
 import {
-  IWorkspaceNamespaceHistoricState,
+  IWorkspaceHistoricState,
   IWorkspaceNamespaceAHistoricState,
 } from './types'
 
@@ -11,7 +11,7 @@ export const ahistoricWorkspaceInitialState: IWorkspaceNamespaceAHistoricState =
   },
 }
 
-export const historicWorkspaceInitialState: IWorkspaceNamespaceHistoricState = {
+export const historicWorkspaceInitialState: IWorkspaceHistoricState = {
   panels: {
     byId: {
       timelinePanel: {

@@ -24,7 +24,7 @@ import {
   LayoutArray,
   TimelineObject,
 } from '$theater/AnimationTimelinePanel/types'
-import {XY} from '$theater/workspace/types'
+import {IXY} from '$theater/workspace/types'
 import StudioComponent from '$theater/handy/StudioComponent'
 import boxAtom, {BoxAtom} from '$src/shared/DataVerse/atoms/boxAtom'
 import TimelineInstance from '$theater/componentModel/react/TheaterComponent/TimelineInstance/TimelineInstance'
@@ -46,7 +46,7 @@ import React from 'react'
 import {getTypeOfNode} from '../ExploreFlyoutMenu/utils'
 
 type Props = TimelineObject & {
-  panelDimensions: XY
+  panelDimensions: IXY
   volatileIdOfSelectedElement: string
   panelObjectBeingDragged: $FixMe
   pathToActiveLocalHiddenValue: string[]
