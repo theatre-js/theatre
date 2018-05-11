@@ -61,23 +61,6 @@ export class Type<A, O = A, I = mixed> implements Decoder<I, A>, Encoder<A, O> {
     /** converts a value of type A to a value of type O */
     readonly encode: Encode<A, O>,
   ) {}
-  pipe<B>(ab: Type<B, A, A>, name?: string): Type<B, O, I> {
-    return new Type(
-      name || `pipe(${this.name}, ${ab.name})`,
-      ab.is,
-      (i, c) => {
-        const validation = this.validate(i, c)
-        if (validation.isLeft()) {
-          return validation as any
-        } else {
-          return ab.validate(validation.value, c)
-        }
-      },
-      this.encode === identity && ab.encode === identity
-        ? (identity as any)
-        : b => this.encode(ab.encode(b)),
-    )
-  }
   asDecoder(): Decoder<I, A> {
     return this
   }
@@ -90,7 +73,7 @@ export class Type<A, O = A, I = mixed> implements Decoder<I, A>, Encoder<A, O> {
   }
 
   rootValidate(a: mixed): Validation<A> {
-    return this.validate(a, getDefaultContext(this)).map(() => {
+    return this.validate(a as $FixMe, getDefaultContext(this)).map((): $FixMe => {
       return true
     })
   }
