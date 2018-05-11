@@ -5,10 +5,6 @@ import connect from '$theater/handy/connect'
 import {ITheaterStoreState} from '$theater/types'
 import * as _ from 'lodash'
 import {set, get} from 'lodash/fp'
-import {
-  PanelPlacementSettings,
-  PanelPersistentState,
-} from '$theater/workspace/types'
 import PanelController from '../PanelController/PanelController'
 import StatusBar from '../StatusBar/StatusBar'
 import * as css from './StudioUI.css'
@@ -57,27 +53,6 @@ const getOppositeSide = (side: string): string => {
 export class StudioUI extends StudioComponent<IProps, State> {
   _isMouseDown: boolean
   boundaryPathToValueRefMap: object
-  static getDefaultPanelPlacement(type): PanelPlacementSettings {
-    // ??
-    switch (type) {
-      case 'animationTimeline':
-        return {
-          pos: {x: 20, y: 25},
-          dim: {x: 60, y: 50},
-        }
-      default:
-        return {
-          pos: {x: 35, y: 25},
-          dim: {x: 30, y: 50},
-        }
-    }
-  }
-
-  static getDefaultPanelPersistentState(): PanelPersistentState {
-    return {
-      isInSettings: true,
-    }
-  }
 
   static getDefaultPanelConfig(): Object {
     return {}

@@ -1,5 +1,5 @@
-import {CommonNamespaceState} from './types'
+import {ICommonNamespaceState} from './types'
 
-const initialState: CommonNamespaceState = {}
+const initialState: ICommonNamespaceState = {}
 
 export default initialState

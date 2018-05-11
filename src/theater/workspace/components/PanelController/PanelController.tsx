@@ -3,15 +3,11 @@ import React from 'react'
 
 import {
   XY,
-  PanelType,
-  PanelConfiguration,
-  PanelPersistentState,
-  PanelOutput,
+  IPanelType,
 } from '$theater/workspace/types'
 
 import {
   getPanelById,
-  getPanelInputs,
   getActivePanelId,
 } from '$theater/workspace/selectors'
 
@@ -44,11 +40,7 @@ interface OwnProps {
 }
 
 interface IProps extends OwnProps {
-  type: PanelType
-  configuration: PanelConfiguration
-  persistentState: PanelPersistentState
-  outputs: PanelOutput
-  inputs: {[k: string]: Object}
+  type: IPanelType
   isActive: boolean
 }
 
@@ -71,22 +63,11 @@ type State = IPanelPlacementState & {
 }
 
 class PanelController extends StudioComponent<IProps, State> {
-  static defaultProps = {
-    persistentState: {
-      isInSettings: true,
-    },
-    outputs: {},
-  }
+  static defaultProps = {}
 
   render() {
     const {props} = this
-    const {
-      persistentState: {isInSettings, ...componentState},
-      configuration,
-      outputs,
-      inputs,
-      type,
-    } = props
+    const {type} = props
 
     const PanelComponent = panelComponents[type]
 
@@ -108,47 +89,17 @@ class PanelController extends StudioComponent<IProps, State> {
           isEqual(prevValue, nextValue)
         }
       >
-        <PanelComponent
-          {...configuration}
-          // {...componentState}
-          // panelDimensions={dim}
-          outputs={outputs}
-          inputs={inputs}
-          updatePanelOutput={this.updatePanelOutput}
-        />
+        <PanelComponent />
       </Broadcast>
     )
-  }
-
-  updatePanelData(propertyToUpdate: string, newData: Object) {
-    this.dispatch(
-      reduceStateAction(
-        ['historicWorkspace', 'panels', 'byId', this.props.panelId, propertyToUpdate],
-        data => ({...data, ...newData}),
-      ),
-    )
-  }
-
-  updatePanelOutput = (newData: mixed) => {
-    return this.updatePanelData('outputs', newData)
   }
 }
 
 export default connect((s: ITheaterStoreState, op: OwnProps) => {
-  const {
-    type,
-    configuration,
-    persistentState,
-    outputs,
-    inputs,
-  } = getPanelById(s, op.panelId)
+  const {type} = getPanelById(s, op.panelId)
 
   return {
     type,
-    configuration,
-    persistentState,
-    outputs,
-    inputs: getPanelInputs(s, inputs),
     isActive: getActivePanelId(s) === op.panelId,
   }
 })(PanelController)

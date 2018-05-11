@@ -8,7 +8,7 @@ export const ahistoricWorkspaceInitialState: IWorkspaceNamespaceAHistoricState =
   viewportsContainer: {
     scrollX: 0,
     scrollY: 0,
-  }
+  },
 }
 
 export const historicWorkspaceInitialState: IWorkspaceNamespaceHistoricState = {
@@ -17,19 +17,6 @@ export const historicWorkspaceInitialState: IWorkspaceNamespaceHistoricState = {
       timelinePanel: {
         id: 'timelinePanel',
         type: 'AnimationTimelinePanel',
-        persistentState: {
-          isInSettings: false,
-        },
-        configuration: {
-          pathToTimeline: [
-            'historicComponentModel',
-            'customComponentDescriptors',
-            'BouncyBall',
-            'timelineDescriptors',
-            'byId',
-            'defaultTimeline',
-          ],
-        },
         boundaries: {
           left: {
             type: 'sameAsBoundary',
@@ -49,18 +36,11 @@ export const historicWorkspaceInitialState: IWorkspaceNamespaceHistoricState = {
             path: ['window', 'bottom'],
           },
         },
-        inputs: {},
-        outputs: {},
       },
       explore: {
         id: 'explore',
         type: 'ExploreFlyoutMenu',
-        persistentState: {
-          isInSettings: false,
-        },
-        configuration: {
-          foo: 'bar',
-        },
+
         boundaries: {
           left: {
             type: 'sameAsBoundary',
@@ -80,22 +60,10 @@ export const historicWorkspaceInitialState: IWorkspaceNamespaceHistoricState = {
             path: ['window', 'bottom'],
           },
         },
-        inputs: {},
-        outputs: {
-          selectedNode: {
-            componentId: 'IntroScene',
-          },
-        },
       },
       leftPanel: {
         id: 'leftPanel',
         type: 'LeftPanel',
-        persistentState: {
-          isInSettings: false,
-        },
-        configuration: {
-          foo: 'bar',
-        },
         boundaries: {
           left: {
             type: 'sameAsBoundary',
@@ -115,18 +83,11 @@ export const historicWorkspaceInitialState: IWorkspaceNamespaceHistoricState = {
             path: ['window', 'bottom'],
           },
         },
-        inputs: {
-          selectedNode: 'explore',
-        },
-        outputs: {},
       },
       rightPanel: {
         id: 'rightPanel',
         type: 'RightPanel',
-        persistentState: {
-          isInSettings: false,
-        },
-        configuration: {},
+
         boundaries: {
           left: {
             type: 'distanceFromBoundary',
@@ -146,8 +107,6 @@ export const historicWorkspaceInitialState: IWorkspaceNamespaceHistoricState = {
             path: ['window', 'bottom'],
           },
         },
-        inputs: {},
-        outputs: {},
       },
     },
     listOfVisibles: ['leftPanel', 'rightPanel', 'timelinePanel'],

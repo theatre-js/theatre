@@ -1,4 +1,4 @@
-import {CommonNamespaceState} from '$theater/common/types'
+import {ICommonNamespaceState, $ICommonNamespaceState} from '$theater/common/types'
 import {
   IWorkspaceNamespaceHistoricState,
   IWorkspaceNamespaceAHistoricState,
@@ -12,30 +12,32 @@ import {
   HistoryOnly,
 } from '$shared/utils/redux/withHistory/withHistory'
 import {Pointer} from '$shared/DataVerse2/pointer'
-import * as t from 'io-ts'
+import * as t from '$shared/ioTypes'
 
 export interface IStoreHistoricState {
-  common: CommonNamespaceState
+  common: ICommonNamespaceState
   historicWorkspace: IWorkspaceNamespaceHistoricState
   historicComponentModel: IComponentModelNamespaceHistoricState
 }
 
-const RStoreHistoricState = t.type(
+const $IStoreHistoricState = t.type(
   {
-    common: t.type({}, 'Theater/Store/HistoricState/Common'),
+    common: $ICommonNamespaceState,
   },
-  'Theater/Store/HistoricState',
+  'StoreHistoricState',
 )
+
+// type TT = t.TypeOf<typeof $IStoreHistoricState>
 
 const RStoreAhistoricState = t.type(
   {
     stateIsHydrated: t.boolean,
   },
-  'Theater/Store/HistoricState',
+  'StoreAhistoricState',
 )
 
 export const RStoreState = t.intersection(
-  [RStoreHistoricState, RStoreAhistoricState],
+  [$IStoreHistoricState, RStoreAhistoricState],
   'Theater/Store/State',
 )
 
