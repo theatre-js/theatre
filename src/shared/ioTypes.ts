@@ -88,6 +88,12 @@ export class Type<A, O = A, I = mixed> implements Decoder<I, A>, Encoder<A, O> {
   decode(i: I): Validation<A> {
     return this.validate(i, getDefaultContext(this))
   }
+
+  rootValidate(a: mixed): Validation<A> {
+    return this.validate(a, getDefaultContext(this)).map(() => {
+      return true
+    })
+  }
 }
 
 export const identity = <A>(a: A): A => a

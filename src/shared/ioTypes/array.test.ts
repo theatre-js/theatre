@@ -1,29 +1,22 @@
 import * as assert from 'assert'
 import * as t from '$shared/ioTypes'
-import { assertSuccess, assertFailure, assertStrictEqual, assertDeepEqual, DateFromNumber } from './testHelpers'
+import {assertSuccess, assertFailure, DateFromNumber} from './testHelpers'
 
 describe('array', () => {
   it('should succeed validating a valid value', () => {
     const T = t.array(t.number)
-    assertSuccess(T.decode([]))
-    assertSuccess(T.decode([1, 2, 3]))
-  })
-
-  it('should return the same reference if validation succeeded and nothing changed', () => {
-    const T = t.array(t.number)
-    const value = [1, 2, 3]
-    assertStrictEqual(T.decode(value), value)
-  })
-
-  it('should return a new reference if validation succeeded and something changed', () => {
-    const T = t.array(DateFromNumber)
-    assertDeepEqual(T.decode([1, 2, 3]), [new Date(1), new Date(2), new Date(3)])
+    assertSuccess(T.rootValidate([]))
+    assertSuccess(T.rootValidate([1, 2, 3]))
   })
 
   it('should fail validating an invalid value', () => {
     const T = t.array(t.number)
-    assertFailure(T.decode(1), ['Invalid value 1 supplied to : Array<number>'])
-    assertFailure(T.decode([1, 's', 3]), ['Invalid value "s" supplied to : Array<number>/1: number'])
+    assertFailure(T.rootValidate(1), [
+      'Invalid value 1 supplied to : Array<number>',
+    ])
+    assertFailure(T.rootValidate([1, 's', 3]), [
+      'Invalid value "s" supplied to : Array<number>/1: number',
+    ])
   })
 
   it('should type guard', () => {

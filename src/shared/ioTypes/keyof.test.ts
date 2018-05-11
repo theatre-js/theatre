@@ -5,13 +5,13 @@ import { assertSuccess, assertFailure } from './testHelpers'
 describe('keyof', () => {
   it('should succeed validating a valid value', () => {
     const T = t.keyof({ a: 1, b: 2 })
-    assertSuccess(T.decode('a'))
-    assertSuccess(T.decode('b'))
+    assertSuccess(T.rootValidate('a'))
+    assertSuccess(T.rootValidate('b'))
   })
 
   it('should fail validating an invalid value', () => {
     const T = t.keyof({ a: 1, b: 2 })
-    assertFailure(T.decode('c'), ['Invalid value "c" supplied to : (keyof ["a","b"])'])
+    assertFailure(T.rootValidate('c'), ['Invalid value "c" supplied to : (keyof ["a","b"])'])
   })
 
   it('should type guard', () => {

@@ -1,6 +1,6 @@
-import * as assert from 'assert'
 import * as t from '$shared/ioTypes'
-import { assertSuccess, assertFailure, assertStrictEqual, DateFromNumber } from './testHelpers'
+import * as assert from 'assert'
+import {DateFromNumber, assertFailure, assertSuccess} from './testHelpers'
 
 type T = {
   a: number
@@ -9,38 +9,25 @@ type T = {
 const T = t.recursion<T>('T', self =>
   t.interface({
     a: t.number,
-    b: t.union([self, t.undefined, t.null])
-  })
+    b: t.union([self, t.undefined, t.null]),
+  }),
 )
 
 describe('recursion', () => {
   it('should succeed validating a valid value', () => {
-    assertSuccess(T.decode({ a: 1, b: null }))
-    assertSuccess(T.decode({ a: 1, b: { a: 2, b: null } }))
-  })
-
-  it('should return the same reference if validation succeeded', () => {
-    type T = {
-      a: number
-      b: T | null | undefined
-    }
-    const T = t.recursion<T>('T', self =>
-      t.interface({
-        a: t.number,
-        b: t.union([self, t.undefined, t.null])
-      })
-    )
-    const value = { a: 1, b: { a: 2, b: null } }
-    assertStrictEqual(T.decode(value), value)
+    assertSuccess(T.rootValidate({a: 1, b: null}))
+    assertSuccess(T.rootValidate({a: 1, b: {a: 2, b: null}}))
   })
 
   it('should fail validating an invalid value', () => {
-    assertFailure(T.decode(1), ['Invalid value 1 supplied to : T'])
-    assertFailure(T.decode({}), ['Invalid value undefined supplied to : T/a: number'])
-    assertFailure(T.decode({ a: 1, b: {} }), [
+    assertFailure(T.rootValidate(1), ['Invalid value 1 supplied to : T'])
+    assertFailure(T.rootValidate({}), [
+      'Invalid value undefined supplied to : T/a: number',
+    ])
+    assertFailure(T.rootValidate({a: 1, b: {}}), [
       'Invalid value undefined supplied to : T/b: (T | undefined | null)/0: T/a: number',
       'Invalid value {} supplied to : T/b: (T | undefined | null)/1: undefined',
-      'Invalid value {} supplied to : T/b: (T | undefined | null)/2: null'
+      'Invalid value {} supplied to : T/b: (T | undefined | null)/2: null',
     ])
   })
 
@@ -56,8 +43,8 @@ describe('recursion', () => {
     const T = t.recursion<A, O>('T', self =>
       t.interface({
         a: DateFromNumber,
-        b: t.union([self, t.null])
-      })
+        b: t.union([self, t.null]),
+      }),
     )
   })
 
@@ -73,11 +60,11 @@ describe('recursion', () => {
     const T = t.recursion<A, O>('T', self =>
       t.interface({
         a: DateFromNumber,
-        b: t.union([self, t.null])
-      })
+        b: t.union([self, t.null]),
+      }),
     )
-    assert.strictEqual(T.is({ a: new Date(0), b: null }), true)
-    assert.strictEqual(T.is({ a: 0 }), false)
+    assert.strictEqual(T.is({a: new Date(0), b: null}), true)
+    assert.strictEqual(T.is({a: 0}), false)
   })
 
   it('should have a `type` field', () => {
@@ -88,8 +75,8 @@ describe('recursion', () => {
     const T = t.recursion<T>('T', self =>
       t.interface({
         a: t.number,
-        b: t.union([self, t.null])
-      })
+        b: t.union([self, t.null]),
+      }),
     )
     assert.strictEqual(T.type instanceof t.Type, true)
     assert.strictEqual(T.type.name, '{ a: number, b: (T | null) }')
@@ -105,15 +92,15 @@ describe('recursion', () => {
     }
     const A: t.RecursiveType<t.Mixed, A> = t.recursion<A>('A', self =>
       t.interface({
-        b: t.union([self, B, t.null])
-      })
+        b: t.union([self, B, t.null]),
+      }),
     )
     const B = t.recursion<B>('B', () =>
       t.interface({
-        a: t.union([A, t.null])
-      })
+        a: t.union([A, t.null]),
+      }),
     )
-    assert.strictEqual(A.is({ b: { b: null } }), true)
-    assert.strictEqual(A.is({ b: { a: { b: { a: null } } } }), true)
+    assert.strictEqual(A.is({b: {b: null}}), true)
+    assert.strictEqual(A.is({b: {a: {b: {a: null}}}}), true)
   })
 })

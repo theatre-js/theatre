@@ -14,20 +14,6 @@ export function assertFailure<T>(
   assert.deepEqual(PathReporter.report(validation), descriptions)
 }
 
-export function assertStrictEqual<T>(
-  validation: t.Validation<T>,
-  value: any,
-): void {
-  assert.strictEqual(validation.fold<any>(t.identity, t.identity), value)
-}
-
-export function assertDeepEqual<T>(
-  validation: t.Validation<T>,
-  value: any,
-): void {
-  assert.deepEqual(validation.fold<any>(t.identity, t.identity), value)
-}
-
 export const string2 = new t.Type<string, string>(
   'string2',
   (v): v is string => t.string.is(v) && v[1] === '-',

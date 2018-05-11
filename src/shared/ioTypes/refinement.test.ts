@@ -1,35 +1,33 @@
-import * as assert from 'assert'
 import * as t from '$shared/ioTypes'
-import { assertSuccess, assertFailure, assertStrictEqual, DateFromNumber, IntegerFromString } from './testHelpers'
+import * as assert from 'assert'
+import {
+  DateFromNumber,
+  IntegerFromString,
+  assertFailure,
+  assertSuccess,
+} from './testHelpers'
 
 describe('refinement', () => {
   it('should succeed validating a valid value', () => {
     const T = t.refinement(t.number, n => n >= 0)
-    assertSuccess(T.decode(0))
-    assertSuccess(T.decode(1))
-  })
-
-  it('should return the same reference if validation succeeded', () => {
-    const T = t.refinement(t.Dictionary, () => true)
-    const value = {}
-    assertStrictEqual(T.decode(value), value)
+    assertSuccess(T.rootValidate(0))
+    assertSuccess(T.rootValidate(1))
   })
 
   it('should fail validating an invalid value', () => {
     const T = t.Integer
-    assertFailure(T.decode('a'), ['Invalid value "a" supplied to : Integer'])
-    assertFailure(T.decode(1.2), ['Invalid value 1.2 supplied to : Integer'])
+    assertFailure(T.rootValidate('a'), ['Invalid value "a" supplied to : Integer'])
+    assertFailure(T.rootValidate(1.2), ['Invalid value 1.2 supplied to : Integer'])
   })
 
   it('should fail with the last deserialized value', () => {
     const T = IntegerFromString
-    assertFailure(T.decode('a'), ['Invalid value "a" supplied to : IntegerFromString'])
-    assertFailure(T.decode('1.2'), ['Invalid value 1.2 supplied to : IntegerFromString'])
-  })
-
-  it('should serialize a deserialized', () => {
-    const T = t.refinement(t.array(DateFromNumber), () => true)
-    assert.deepEqual(T.encode([new Date(0)]), [0])
+    assertFailure(T.rootValidate('a'), [
+      'Invalid value "a" supplied to : IntegerFromString',
+    ])
+    assertFailure(T.rootValidate('1.2'), [
+      'Invalid value 1.2 supplied to : IntegerFromString',
+    ])
   })
 
   it('should return the same reference when serializing', () => {
