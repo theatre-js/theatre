@@ -17,15 +17,13 @@ export type DerivationTypeOfPointerType<O> = {
 }[O extends number ? '1' : '1']
 
 export type PointerKeys<O> = {
-  '1': O extends PointerDerivation<infer T> ?
-    PointerKeys<T> :
-    O extends DictAtom<infer T> ?
-    keyof T :
-    O extends AbstractDerivedDict<infer T> ?
-    keyof T :
-    O extends DerivedClassInstance<infer T> ?
-    keyof T :
-    never
+  '1': O extends PointerDerivation<infer T>
+    ? PointerKeys<T>
+    : O extends DictAtom<infer T>
+      ? keyof T
+      : O extends AbstractDerivedDict<infer T>
+        ? keyof T
+        : O extends DerivedClassInstance<infer T> ? keyof T : never
 }[O extends number ? '1' : '1']
 
 export type IndexOfPointer<O> = {
@@ -42,7 +40,11 @@ export type PropOfPointer<O, K> = {
   '1': O extends PointerDerivation<infer T>
     ? PropOfPointer<T, K>
     : O extends DictAtom<infer T>
-      ? PointerDerivation<T extends {[key: string]: infer F} ? F : K extends keyof T ? T[K] : undefined>
+      ? PointerDerivation<
+          K extends keyof T
+            ? T[K]
+            : T extends {[key: string]: infer F} ? F : undefined
+        >
       : O extends AbstractDerivedDict<infer OO>
         ? PointerDerivation<K extends keyof OO ? PropOfADD<OO[K]> : undefined>
         : O extends DerivedClassInstance<infer OO>

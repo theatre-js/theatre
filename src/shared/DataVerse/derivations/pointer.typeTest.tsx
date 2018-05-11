@@ -57,36 +57,36 @@ import AbstractDerivedArray from './arrays/AbstractDerivedArray'
   const pP = a.derivedDict().pointer()
 
   p
-  .prop('a')
+    .prop('a')
     // $ExpectError
     .prop('a')
     .getValue() as string
 
-    pP
-    .prop('a')
-      // $ExpectError
-    .prop('a')
-    .getValue() as string
-
-    p
+  pP
     .prop('a')
     // $ExpectError
     .prop('a')
-    .getValue() as undefined
-    
-    pP
+    .getValue() as string
+
+  p
     .prop('a')
     // $ExpectError
     .prop('a')
     .getValue() as undefined
-    
-    p
+
+  pP
     .prop('a')
-      // $ExpectError
+    // $ExpectError
+    .prop('a')
+    .getValue() as undefined
+
+  p
+    .prop('a')
+    // $ExpectError
     .prop('a')
     .getValue() as string
 
-    pP
+  pP
     .prop('a')
     // $ExpectError
     .prop('a')
@@ -121,36 +121,36 @@ import AbstractDerivedArray from './arrays/AbstractDerivedArray'
   const pP = a.derivedDict().pointer()
 
   p
-  .prop('a')
-  // $ExpectError
-  .prop('a')
+    .prop('a')
+    // $ExpectError
+    .prop('a')
     .getValue() as string
 
-    pP
+  pP
     .prop('a')
     // $ExpectError
     .prop('a')
     .getValue() as string
-    
-    p
-    .prop('a')
-    // $ExpectError
-    .prop('a')
-    .getValue() as undefined
-    
-    pP
+
+  p
     .prop('a')
     // $ExpectError
     .prop('a')
     .getValue() as undefined
 
-    p
+  pP
+    .prop('a')
+    // $ExpectError
+    .prop('a')
+    .getValue() as undefined
+
+  p
     .prop('a')
     // $ExpectError
     .prop('a')
     .getValue() as string
 
-    pP
+  pP
     .prop('a')
     // $ExpectError
     .prop('a')
@@ -165,8 +165,8 @@ import AbstractDerivedArray from './arrays/AbstractDerivedArray'
     .prop('a')
     .index(1)
     .getValue() as string
-    
-    // $ExpectError
+
+  // $ExpectError
   p
     .prop('a')
     .index(1)
