@@ -302,7 +302,7 @@ type Rec = {
   b: Rec | undefined
 }
 
-const Rec = t.recursion<Rec, Rec, t.mixed, GenerableInterface>('T', self =>
+const Rec = t.recursion<Rec, t.mixed, GenerableInterface>('T', self =>
   t.interface({
     a: t.number,
     b: t.union([self, t.undefined]),
@@ -350,7 +350,6 @@ export function maybe<RT extends t.Any>(
 ): t.UnionType<
   [RT, t.NullType],
   t.TypeOf<RT> | null,
-  t.OutputOf<RT> | null,
   t.InputOf<RT> | null
 > {
   return t.union<[RT, t.NullType]>([type, t.null], name)
@@ -397,10 +396,9 @@ declare const Any1: t.AnyType | t.InterfaceType<any>
 declare const E1: t.InterfaceType<
   {a: t.NumberType},
   {a: number},
-  {a: number},
   {a: number}
 >
-const E2: t.Type<any, any, {a: number}> = t.exact(E1)
+const E2: t.Type<any, {a: number}> = t.exact(E1)
 
 const C1 = t.type({
   a: t.string,
