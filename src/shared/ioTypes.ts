@@ -114,7 +114,6 @@ export class NullType extends Type<null> {
       'null',
       (m): m is null => m === null,
       (m, c) => (this.is(m) ? success() : failure(m, c)),
-      identity,
     )
   }
 }
@@ -129,7 +128,6 @@ export class UndefinedType extends Type<undefined> {
       'undefined',
       (m): m is undefined => m === void 0,
       (m, c) => (this.is(m) ? success() : failure(m, c)),
-      identity,
     )
   }
 }
@@ -139,7 +137,7 @@ const undefinedType: UndefinedType = new UndefinedType()
 export class AnyType extends Type<any> {
   readonly _tag: 'AnyType' = 'AnyType'
   constructor() {
-    super('any', (_): _ is any => true, success, identity)
+    super('any', (_): _ is any => true, success)
   }
 }
 
@@ -178,7 +176,6 @@ export class NumberType extends Type<number> {
       'number',
       (m): m is number => typeof m === 'number',
       (m, c) => (this.is(m) ? success() : failure(m, c)),
-      identity,
     )
   }
 }
@@ -192,7 +189,6 @@ export class BooleanType extends Type<boolean> {
       'boolean',
       (m): m is boolean => typeof m === 'boolean',
       (m, c) => (this.is(m) ? success() : failure(m, c)),
-      identity,
     )
   }
 }
@@ -206,7 +202,6 @@ export class AnyArrayType extends Type<Array<mixed>> {
       'Array',
       Array.isArray,
       (m, c) => (this.is(m) ? success() : failure(m, c)),
-      identity,
     )
   }
 }
@@ -220,7 +215,6 @@ export class AnyDictionaryType extends Type<{[key: string]: mixed}> {
       'Dictionary',
       (m): m is {[key: string]: mixed} => m !== null && typeof m === 'object',
       (m, c) => (this.is(m) ? success() : failure(m, c)),
-      identity,
     )
   }
 }
@@ -230,7 +224,7 @@ export const Dictionary: AnyDictionaryType = new AnyDictionaryType()
 export class ObjectType extends Type<object> {
   readonly _tag: 'ObjectType' = 'ObjectType'
   constructor() {
-    super('object', Dictionary.is, Dictionary.validate, identity)
+    super('object', Dictionary.is, Dictionary.validate)
   }
 }
 
@@ -244,7 +238,6 @@ export class FunctionType extends Type<Function> {
       // tslint:disable-next-line:strict-type-predicates
       (m): m is Function => typeof m === 'function',
       (m, c) => (this.is(m) ? success() : failure(m, c)),
-      identity,
     )
   }
 }
@@ -629,7 +622,7 @@ export const dictionary = <D extends Mixed, C extends Mixed>(
         const keys = Object.keys(o)
         const len = keys.length
         for (let i = 0; i < len; i++) {
-          let k = keys[i]
+          const k = keys[i]
           const ok = o[k]
           const domainValidation = domain.validate(
             k,
@@ -877,7 +870,7 @@ export function tuple<RTS extends Array<Mixed>>(
       if (arrayValidation.isLeft()) {
         return arrayValidation
       } else {
-        let t: Array<any> = m as $IntentionalAny
+        const t: Array<any> = m as $IntentionalAny
         const errors: Errors = []
         for (let i = 0; i < len; i++) {
           const a = t[i]
@@ -1126,7 +1119,6 @@ export const taggedUnion = <Tag extends string, RTS extends Array<Tagged<Tag>>>(
     values.map(l => JSON.stringify(l)).join(' | '),
     isTagValue,
     (m, c) => (isTagValue(m) ? success() : failure(m, c)),
-    identity,
   )
   return new UnionType<RTS, TypeOf<RTS['_A']>, OutputOf<RTS['_A']>, mixed>(
     name,

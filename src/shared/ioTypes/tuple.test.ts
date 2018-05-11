@@ -1,6 +1,6 @@
-import * as assert from 'assert'
 import * as t from '$shared/ioTypes'
-import {assertSuccess, assertFailure, DateFromNumber} from './testHelpers'
+import * as assert from 'assert'
+import {assertFailure, assertSuccess} from './testHelpers'
 
 describe('tuple', () => {
   it('should succeed validating a valid value', () => {
@@ -32,11 +32,5 @@ describe('tuple', () => {
     assert.strictEqual(T1.is(undefined), false)
     assert.strictEqual(T1.is([0]), false)
     assert.strictEqual(T1.is([0, 'foo', true]), false)
-    const T2 = t.tuple([DateFromNumber, t.string])
-    assert.strictEqual(T2.is([new Date(0), 'foo']), true)
-    assert.strictEqual(T2.is([new Date(0), 2]), false)
-    assert.strictEqual(T2.is(undefined), false)
-    assert.strictEqual(T2.is([new Date(0)]), false)
-    assert.strictEqual(T2.is([new Date(0), 'foo', true]), false)
   })
 })

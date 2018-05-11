@@ -1,8 +1,6 @@
 import * as t from '$shared/ioTypes'
 import * as assert from 'assert'
 import {
-  DateFromNumber,
-  IntegerFromString,
   assertFailure,
   assertSuccess,
 } from './testHelpers'

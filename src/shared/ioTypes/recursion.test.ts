@@ -1,6 +1,6 @@
 import * as t from '$shared/ioTypes'
 import * as assert from 'assert'
-import {DateFromNumber, assertFailure, assertSuccess} from './testHelpers'
+import {assertFailure, assertSuccess} from './testHelpers'
 
 type T = {
   a: number
@@ -33,20 +33,20 @@ describe('recursion', () => {
 
   it('should type guard', () => {
     type A = {
-      a: Date
+      a: string
       b: A | null
     }
     type O = {
-      a: number
+      a: string
       b: O | null
     }
     const T = t.recursion<A, O>('T', self =>
       t.interface({
-        a: DateFromNumber,
+        a: t.string,
         b: t.union([self, t.null]),
       }),
     )
-    assert.strictEqual(T.is({a: new Date(0), b: null}), true)
+    assert.strictEqual(T.is({a: 'hi', b: null}), true)
     assert.strictEqual(T.is({a: 0}), false)
   })
 

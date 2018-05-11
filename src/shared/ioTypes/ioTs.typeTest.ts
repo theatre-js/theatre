@@ -3,7 +3,6 @@ import {TypeOf} from '$shared/ioTypes'
 //
 // clean / alias
 //
-import {DateFromNumber} from './testHelpers'
 
 //
 // recursion
@@ -405,12 +404,12 @@ const E2: t.Type<any, any, {a: number}> = t.exact(E1)
 
 const C1 = t.type({
   a: t.string,
-  b: DateFromNumber,
+  b: t.number,
 })
 
 interface C1 {
   a: string
-  b: Date
+  b: number
 }
 
 interface C1O {

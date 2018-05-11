@@ -1,6 +1,6 @@
 import * as assert from 'assert'
 import * as t from '$shared/ioTypes'
-import { assertSuccess, assertFailure, string2, DateFromNumber } from './testHelpers'
+import { assertSuccess, assertFailure, string2 } from './testHelpers'
 
 describe('dictionary', () => {
   it('should succeed validating a valid value', () => {
@@ -41,10 +41,6 @@ describe('dictionary', () => {
     assert.strictEqual(T1.is({}), true)
     assert.strictEqual(T1.is({ a: 1 }), true)
     assert.strictEqual(T1.is({ a: 'foo' }), false)
-    const T2 = t.dictionary(t.string, DateFromNumber)
-    assert.strictEqual(T2.is({}), true)
-    assert.strictEqual(T2.is({ a: new Date(0) }), true)
-    assert.strictEqual(T2.is({ a: 0 }), false)
     const T3 = t.dictionary(string2, t.number)
     assert.strictEqual(T3.is({}), true)
     assert.strictEqual(T3.is({ 'a-a': 1 }), true)

@@ -1,6 +1,6 @@
 import * as t from '$shared/ioTypes'
 import * as assert from 'assert'
-import {DateFromNumber, assertFailure, assertSuccess} from './testHelpers'
+import {assertFailure, assertSuccess} from './testHelpers'
 
 describe('union', () => {
   it('should succeed validating a valid value', () => {
@@ -22,9 +22,5 @@ describe('union', () => {
     assert.strictEqual(T1.is(0), true)
     assert.strictEqual(T1.is('foo'), true)
     assert.strictEqual(T1.is(true), false)
-    const T2 = t.union([t.string, DateFromNumber])
-    assert.strictEqual(T2.is(new Date(0)), true)
-    assert.strictEqual(T2.is('foo'), true)
-    assert.strictEqual(T2.is(true), false)
   })
 })

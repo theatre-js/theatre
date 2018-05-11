@@ -1,6 +1,6 @@
-import * as assert from 'assert'
 import * as t from '$shared/ioTypes'
-import { assertSuccess, assertFailure, DateFromNumber } from './testHelpers'
+import * as assert from 'assert'
+import {assertFailure, assertSuccess} from './testHelpers'
 
 describe('readonlyArray', () => {
   it('should succeed validating a valid value', () => {
@@ -10,7 +10,9 @@ describe('readonlyArray', () => {
 
   it('should fail validating an invalid value', () => {
     const T = t.readonlyArray(t.number)
-    assertFailure(T.rootValidate(['s']), ['Invalid value "s" supplied to : ReadonlyArray<number>/0: number'])
+    assertFailure(T.rootValidate(['s']), [
+      'Invalid value "s" supplied to : ReadonlyArray<number>/0: number',
+    ])
   })
 
   it('should freeze the value', () => {
@@ -24,10 +26,5 @@ describe('readonlyArray', () => {
     assert.strictEqual(T1.is([0]), true)
     assert.strictEqual(T1.is([0, 'foo']), false)
     assert.strictEqual(T1.is(undefined), false)
-    const T2 = t.readonlyArray(DateFromNumber)
-    assert.strictEqual(T2.is([]), true)
-    assert.strictEqual(T2.is([new Date(0)]), true)
-    assert.strictEqual(T2.is([new Date(0), 'foo']), false)
-    assert.strictEqual(T2.is(undefined), false)
   })
 })

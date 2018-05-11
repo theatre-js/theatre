@@ -1,5 +1,5 @@
 import * as t from '$shared/ioTypes'
-import {assertSuccess, assertFailure, DateFromNumber} from './testHelpers'
+import {assertSuccess, assertFailure} from './testHelpers'
 import * as assert from 'assert'
 
 export function strictInterfaceWithOptionals<

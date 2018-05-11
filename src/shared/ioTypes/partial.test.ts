@@ -1,6 +1,6 @@
 import * as t from '$shared/ioTypes'
 import * as assert from 'assert'
-import {DateFromNumber, assertFailure, assertSuccess} from './testHelpers'
+import {assertFailure, assertSuccess} from './testHelpers'
 
 describe('partial', () => {
   it('should succeed validating a valid value', () => {
@@ -23,10 +23,5 @@ describe('partial', () => {
     assert.strictEqual(T1.is({a: 1}), true)
     assert.strictEqual(T1.is({a: 'foo'}), false)
     assert.strictEqual(T1.is(undefined), false)
-    const T2 = t.partial({a: DateFromNumber})
-    assert.strictEqual(T2.is({}), true)
-    assert.strictEqual(T2.is({a: new Date(0)}), true)
-    assert.strictEqual(T2.is({a: 0}), false)
-    assert.strictEqual(T2.is(undefined), false)
   })
 })

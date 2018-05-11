@@ -1,6 +1,6 @@
 import * as t from '$shared/ioTypes'
 import * as assert from 'assert'
-import {DateFromNumber, assertFailure, assertSuccess} from './testHelpers'
+import {assertFailure, assertSuccess} from './testHelpers'
 
 const TUA = t.type(
   {
@@ -25,7 +25,7 @@ const TUB = t.intersection(
 const TUC = t.exact(
   t.type({
     type: t.literal('c'),
-    baz: DateFromNumber,
+    baz: t.number,
   }),
   'TUC',
 )
@@ -53,14 +53,14 @@ describe('taggedUnion', () => {
       'Invalid value undefined supplied to : (TUA | TUB | TUC)/1: TUB/bar: number',
     ])
     assertFailure(T.rootValidate({type: 'c'}), [
-      'Invalid value undefined supplied to : (TUA | TUB | TUC)/2: TUC/baz: DateFromNumber',
+      'Invalid value undefined supplied to : (TUA | TUB | TUC)/2: TUC/baz: number',
     ])
   })
 
   it('should type guard', () => {
     assert.strictEqual(T.is({type: 'a', foo: 'foo'}), true)
     assert.strictEqual(T.is({type: 'b', bar: 1}), true)
-    assert.strictEqual(T.is({type: 'c', baz: new Date(0)}), true)
+    assert.strictEqual(T.is({type: 'c', baz: 10}), true)
     assert.strictEqual(T.is(true), false)
     assert.strictEqual(T.is({type: 'a'}), false)
   })
@@ -85,7 +85,7 @@ describe('taggedUnion', () => {
     const C = t.type(
       {
         type: t.literal(3),
-        baz: DateFromNumber,
+        baz: t.number,
       },
       'C',
     )

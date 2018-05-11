@@ -1,6 +1,6 @@
 import * as assert from 'assert'
 import * as t from '$shared/ioTypes'
-import {assertSuccess, assertFailure, DateFromNumber} from './testHelpers'
+import {assertSuccess, assertFailure} from './testHelpers'
 
 describe('array', () => {
   it('should succeed validating a valid value', () => {
@@ -24,9 +24,5 @@ describe('array', () => {
     assert.strictEqual(T1.is([]), true)
     assert.strictEqual(T1.is([0]), true)
     assert.strictEqual(T1.is([0, 'foo']), false)
-    const T2 = t.array(DateFromNumber)
-    assert.strictEqual(T2.is([]), true)
-    assert.strictEqual(T2.is([new Date(0)]), true)
-    assert.strictEqual(T2.is([new Date(0), 0]), false)
   })
 })
