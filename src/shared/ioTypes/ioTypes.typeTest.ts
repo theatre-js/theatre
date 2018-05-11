@@ -1,5 +1,4 @@
 import * as t from '$shared/ioTypes'
-import {TypeOf} from '$shared/ioTypes'
 //
 // clean / alias
 //
@@ -32,8 +31,8 @@ const Rec2 = t.recursion<string>('T', Self =>
 
 const L1 = t.literal('a')
 // $ExpectError
-const x1: TypeOf<typeof L1> = 's'
-const x2: TypeOf<typeof L1> = 'a'
+const x1: t.TypeOf<typeof L1> = 's'
+const x2: t.TypeOf<typeof L1> = 'a'
 
 //
 // keyof
@@ -41,25 +40,25 @@ const x2: TypeOf<typeof L1> = 'a'
 
 const K1 = t.keyof({a: true, b: true})
 // $ExpectError
-const x3: TypeOf<typeof K1> = 's'
-const x4: TypeOf<typeof K1> = 'a'
-const x5: TypeOf<typeof K1> = 'b'
+const x3: t.TypeOf<typeof K1> = 's'
+const x4: t.TypeOf<typeof K1> = 'a'
+const x5: t.TypeOf<typeof K1> = 'b'
 
 //
 // default types
 //
 
 // $ExpectError
-undefined as TypeOf<typeof t.null>
-null as TypeOf<typeof t.null>
+undefined as t.TypeOf<typeof t.null>
+null as t.TypeOf<typeof t.null>
 
 // $ExpectError
-null as TypeOf<typeof t.undefined>
-undefined as TypeOf<typeof t.undefined>
+null as t.TypeOf<typeof t.undefined>
+undefined as t.TypeOf<typeof t.undefined>
 
 // $ExpectError
-1 as TypeOf<typeof t.string>
-'s' as TypeOf<typeof t.string>
+1 as t.TypeOf<typeof t.string>
+'s' as t.TypeOf<typeof t.string>
 
 //
 // refinement
@@ -67,8 +66,8 @@ undefined as TypeOf<typeof t.undefined>
 
 const R1 = t.refinement(t.number, n => n % 2 === 0)
 // $ExpectError
-'s' as TypeOf<typeof R1>
-2 as TypeOf<typeof R1>
+'s' as t.TypeOf<typeof R1>
+2 as t.TypeOf<typeof R1>
 
 //
 // array
@@ -76,10 +75,10 @@ const R1 = t.refinement(t.number, n => n % 2 === 0)
 
 const A1 = t.array(t.number)
 // $ExpectError
-'s' as TypeOf<typeof A1>
+'s' as t.TypeOf<typeof A1>
 // $ExpectError
-['s'] as TypeOf<typeof A1>
-[1] as TypeOf<typeof A1>
+['s'] as t.TypeOf<typeof A1>
+[1] as t.TypeOf<typeof A1>
 
 //
 // interface
@@ -87,18 +86,18 @@ const A1 = t.array(t.number)
 
 const I1 = t.interface({name: t.string, age: t.number})
 // $ExpectError
-const x6: TypeOf<typeof I1> = {}
+const x6: t.TypeOf<typeof I1> = {}
 // $ExpectError
-const x7: TypeOf<typeof I1> = {name: 'name'}
+const x7: t.TypeOf<typeof I1> = {name: 'name'}
 // $ExpectError
-const x8: TypeOf<typeof I1> = {age: 43}
-const x9: TypeOf<typeof I1> = {name: 'name', age: 43}
+const x8: t.TypeOf<typeof I1> = {age: 43}
+const x9: t.TypeOf<typeof I1> = {name: 'name', age: 43}
 
 const I2 = t.interface({
   name: t.string,
   father: t.interface({surname: t.string}),
 })
-type I2T = TypeOf<typeof I2>
+type I2T = t.TypeOf<typeof I2>
 // $ExpectError
 const x10: I2T = {name: 'name', father: {}}
 const x11: I2T = {name: 'name', father: {surname: 'surname'}}
@@ -109,10 +108,10 @@ const x11: I2T = {name: 'name', father: {surname: 'surname'}}
 
 const D1 = t.dictionary(t.keyof({a: true}), t.number)
 // $ExpectError
-const x12: TypeOf<typeof D1> = {a: 's'}
+const x12: t.TypeOf<typeof D1> = {a: 's'}
 // $ExpectError
-const x12_2: TypeOf<typeof D1> = {c: 1}
-const x13: TypeOf<typeof D1> = {a: 1}
+const x12_2: t.TypeOf<typeof D1> = {c: 1}
+const x13: t.TypeOf<typeof D1> = {a: 1}
 
 //
 // union
@@ -120,9 +119,9 @@ const x13: TypeOf<typeof D1> = {a: 1}
 
 const U1 = t.union([t.string, t.number])
 // $ExpectError
-const x14: TypeOf<typeof U1> = true
-const x15: TypeOf<typeof U1> = 's'
-const x16: TypeOf<typeof U1> = 1
+const x14: t.TypeOf<typeof U1> = true
+const x15: t.TypeOf<typeof U1> = 's'
+const x16: t.TypeOf<typeof U1> = 1
 
 //
 // intersection
@@ -133,8 +132,8 @@ const IN1 = t.intersection([
   t.interface({b: t.string}),
 ])
 // $ExpectError
-const x17: TypeOf<typeof IN1> = {a: 1}
-const x18: TypeOf<typeof IN1> = {a: 1, b: 's'}
+const x17: t.TypeOf<typeof IN1> = {a: 1}
+const x18: t.TypeOf<typeof IN1> = {a: 1, b: 's'}
 
 //
 // tuple
@@ -142,15 +141,15 @@ const x18: TypeOf<typeof IN1> = {a: 1, b: 's'}
 
 const T1 = t.tuple([t.string, t.number])
 // $ExpectError
-const x19: TypeOf<typeof T1> = ['s', true]
-const x20: TypeOf<typeof T1> = ['s', 1]
+const x19: t.TypeOf<typeof T1> = ['s', true]
+const x20: t.TypeOf<typeof T1> = ['s', 1]
 
 //
 // partial
 //
 
 const P1 = t.partial({name: t.string})
-type P1T = TypeOf<typeof P1>
+type P1T = t.TypeOf<typeof P1>
 // $ExpectError
 const x21: P1T = {name: 1}
 const x22: P1T = {}
@@ -161,11 +160,11 @@ const x23: P1T = {name: 's'}
 //
 
 const RO1 = t.readonly(t.interface({name: t.string}))
-const x24: TypeOf<typeof RO1> = {name: 's'}
+const x24: t.TypeOf<typeof RO1> = {name: 's'}
 // $ExpectError
 x24.name = 's2'
 // $ExpectError
-const x25: TypeOf<typeof RO1> = {name: 1}
+const x25: t.TypeOf<typeof RO1> = {name: 1}
 
 //
 // readonlyArray
@@ -173,8 +172,8 @@ const x25: TypeOf<typeof RO1> = {name: 1}
 
 const ROA1 = t.readonlyArray(t.number)
 // $ExpectError
-const x26: TypeOf<typeof ROA1> = ['s']
-const x27: TypeOf<typeof ROA1> = [1]
+const x26: t.TypeOf<typeof ROA1> = ['s']
+const x27: t.TypeOf<typeof ROA1> = [1]
 // $ExpectError
 x27[0] = 2
 // $ExpectError
@@ -185,7 +184,7 @@ x27.push(2)
 //
 
 const S1 = t.strict({name: t.string})
-type TS1 = TypeOf<typeof S1>
+type TS1 = t.TypeOf<typeof S1>
 const x32: TS1 = {name: 'Giulio'}
 const x33input = {name: 'foo', foo: 'foo'}
 const x33: TS1 = x33input
@@ -196,7 +195,7 @@ const S2 = t.strict(t.string)
 // object
 //
 const O1 = t.object
-type TO1 = TypeOf<typeof O1>
+type TO1 = t.TypeOf<typeof O1>
 const x34: TO1 = {name: 'Giulio'}
 // $ExpectError
 const x35: TO1 = 'foo'
@@ -319,9 +318,9 @@ const TU1 = t.taggedUnion('type', [
   t.type({type: t.literal('b')}),
 ])
 // $ExpectError
-const x36: TypeOf<typeof TU1> = true
-const x37: TypeOf<typeof TU1> = {type: 'a'}
-const x38: TypeOf<typeof TU1> = {type: 'b'}
+const x36: t.TypeOf<typeof TU1> = true
+const x37: t.TypeOf<typeof TU1> = {type: 'a'}
+const x38: t.TypeOf<typeof TU1> = {type: 'b'}
 
 //
 // custom combinators
@@ -347,10 +346,7 @@ export function interfaceWithOptionals<
 export function maybe<RT extends t.Any>(
   type: RT,
   name?: string,
-): t.UnionType<
-  [RT, t.NullType],
-  t.TypeOf<RT> | null
-> {
+): t.UnionType<[RT, t.NullType], t.TypeOf<RT> | null> {
   return t.union<[RT, t.NullType]>([type, t.null], name)
 }
 
@@ -392,10 +388,7 @@ declare const Any1: t.AnyType | t.InterfaceType<any>
 // exact
 //
 
-declare const E1: t.InterfaceType<
-  {a: t.NumberType},
-  {a: number}
->
+declare const E1: t.InterfaceType<{a: t.NumberType}, {a: number}>
 const E2: t.Type<any> = t.exact(E1)
 
 const C1 = t.type({
@@ -423,7 +416,7 @@ interface C1WithAdditionalProp {
 const C2 = t.clean<C1>(C1)
 // $ExpectError
 const C3 = t.clean<C1WithAdditionalProp, C1O>(C1)
-// 
+//
 const C4 = t.clean<C1>(C1)
 const C5 = t.alias(C1)<C1>()
 // $ExpectError

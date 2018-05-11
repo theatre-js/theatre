@@ -12,7 +12,7 @@ import {
   HistoryOnly,
 } from '$shared/utils/redux/withHistory/withHistory'
 import {Pointer} from '$shared/DataVerse2/pointer'
-import * as t from '$shared/ioTypes'
+import * as t from '$shared/ioTypes/index'
 
 export interface IStoreHistoricState {
   common: ICommonNamespaceState

@@ -1,5 +1,5 @@
 import {ComponentId} from '$theater/componentModel/types'
-import * as t from '$shared/ioTypes'
+import * as t from '$shared/ioTypes/index'
 
 export const $IPanelId = t.string
 export type IPanelId = t.TypeOf<typeof $IPanelId>
