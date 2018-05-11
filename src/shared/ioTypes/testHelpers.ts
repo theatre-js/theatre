@@ -18,9 +18,9 @@ export const string2 = new t.Type<string, string>(
   'string2',
   (v): v is string => t.string.is(v) && v[1] === '-',
   (s, c) =>
-    t.string.validate(s, c).chain(s => {
-      if (s.length === 2) {
-        return t.success(s[0] + '-' + s[1])
+    t.string.validate(s, c).chain(() => {
+      if ((s as string).length === 2) {
+        return t.success()
       } else {
         return t.failure(s, c)
       }
@@ -47,12 +47,6 @@ export const NumberFromString = new t.Type<number, string, string>(
     return isNaN(n) ? t.failure(s, c) : t.success(n)
   },
   String,
-)
-
-export const IntegerFromString = t.refinement(
-  NumberFromString,
-  t.Integer.is,
-  'IntegerFromString',
 )
 
 export function withDefault<T extends t.Mixed>(

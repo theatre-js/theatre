@@ -26,9 +26,9 @@ export interface ValidationError {
   readonly context: Context
 }
 export type Errors = Array<ValidationError>
-export type Validation<A> = Either<Errors, A>
+export type Validation = Either<Errors, true>
 export type Is<A> = (m: mixed) => m is A
-export type Validate<I, A> = (i: I, context: Context) => Validation<A>
+export type Validate<I, A> = (i: I, context: Context) => Validation
 export type Encode<A, O> = (a: A) => O
 export type Any = Type<any, any, any>
 export type Mixed = Type<any, any, mixed>
@@ -58,12 +58,13 @@ export class Type<A, O = A, I = mixed> implements Encoder<A, O> {
   asEncoder(): Encoder<A, O> {
     return this
   }
-  
 
-  rootValidate(a: mixed): Validation<A> {
-    return this.validate(a as $FixMe, getDefaultContext(this)).map((): $FixMe => {
-      return true
-    })
+  rootValidate(a: mixed): Validation {
+    return this.validate(a as $FixMe, getDefaultContext(this)).map(
+      (): $FixMe => {
+        return true
+      },
+    )
   }
 }
 
@@ -82,9 +83,7 @@ export const getValidationError = (
   context: Context,
 ): ValidationError => ({value, context})
 
-export const getDefaultContext = (type: Type<any>): Context => [
-  {key: '', type},
-]
+export const getDefaultContext = (type: Type<any>): Context => [{key: '', type}]
 
 export const appendContext = (
   c: Context,
@@ -100,13 +99,13 @@ export const appendContext = (
   return r
 }
 
-export const failures = <T>(errors: Errors): Validation<T> => new Left(errors)
+export const failures = (errors: Errors): Validation =>
+  new Left<Errors, true>(errors)
 
-export const failure = <T>(value: mixed, context: Context): Validation<T> =>
+export const failure = (value: mixed, context: Context): Validation =>
   failures([getValidationError(value, context)])
 
-export const success = <T>(value: T): Validation<T> =>
-  new Right<Errors, T>(value)
+export const success = (): Validation => new Right<Errors, true>(true)
 
 const pushAll = <A>(xs: Array<A>, ys: Array<A>): void => {
   const l = ys.length
@@ -125,7 +124,7 @@ export class NullType extends Type<null> {
     super(
       'null',
       (m): m is null => m === null,
-      (m, c) => (this.is(m) ? success(m) : failure(m, c)),
+      (m, c) => (this.is(m) ? success() : failure(m, c)),
       identity,
     )
   }
@@ -140,7 +139,7 @@ export class UndefinedType extends Type<undefined> {
     super(
       'undefined',
       (m): m is undefined => m === void 0,
-      (m, c) => (this.is(m) ? success(m) : failure(m, c)),
+      (m, c) => (this.is(m) ? success() : failure(m, c)),
       identity,
     )
   }
@@ -179,7 +178,7 @@ export class StringType extends Type<string> {
     super(
       'string',
       (m): m is string => typeof m === 'string',
-      (m, c) => (this.is(m) ? success(m) : failure(m, c)),
+      (m, c) => (this.is(m) ? success() : failure(m, c)),
       identity,
     )
   }
@@ -193,7 +192,7 @@ export class NumberType extends Type<number> {
     super(
       'number',
       (m): m is number => typeof m === 'number',
-      (m, c) => (this.is(m) ? success(m) : failure(m, c)),
+      (m, c) => (this.is(m) ? success() : failure(m, c)),
       identity,
     )
   }
@@ -207,7 +206,7 @@ export class BooleanType extends Type<boolean> {
     super(
       'boolean',
       (m): m is boolean => typeof m === 'boolean',
-      (m, c) => (this.is(m) ? success(m) : failure(m, c)),
+      (m, c) => (this.is(m) ? success() : failure(m, c)),
       identity,
     )
   }
@@ -221,7 +220,7 @@ export class AnyArrayType extends Type<Array<mixed>> {
     super(
       'Array',
       Array.isArray,
-      (m, c) => (this.is(m) ? success(m) : failure(m, c)),
+      (m, c) => (this.is(m) ? success() : failure(m, c)),
       identity,
     )
   }
@@ -235,7 +234,7 @@ export class AnyDictionaryType extends Type<{[key: string]: mixed}> {
     super(
       'Dictionary',
       (m): m is {[key: string]: mixed} => m !== null && typeof m === 'object',
-      (m, c) => (this.is(m) ? success(m) : failure(m, c)),
+      (m, c) => (this.is(m) ? success() : failure(m, c)),
       identity,
     )
   }
@@ -259,7 +258,7 @@ export class FunctionType extends Type<Function> {
       'Function',
       // tslint:disable-next-line:strict-type-predicates
       (m): m is Function => typeof m === 'function',
-      (m, c) => (this.is(m) ? success(m) : failure(m, c)),
+      (m, c) => (this.is(m) ? success() : failure(m, c)),
       identity,
     )
   }
@@ -303,8 +302,7 @@ export const refinement = <RT extends Any>(
       if (validation.isLeft()) {
         return validation
       } else {
-        const a = validation.value
-        return predicate(a) ? success(a) : failure(a, c)
+        return predicate(i) ? success() : failure(i, c)
       }
     },
     type.encode,
@@ -339,7 +337,7 @@ export const literal = <V extends string | number | boolean>(
   return new LiteralType(
     name,
     is,
-    (m, c) => (is(m) ? success(value) : failure(m, c)),
+    (m, c) => (is(m) ? success() : failure(m, c)),
     identity,
     value,
   )
@@ -370,7 +368,7 @@ export const keyof = <D extends {[key: string]: mixed}>(
   return new KeyofType(
     name,
     is,
-    (m, c) => (is(m) ? success(m) : failure(m, c)),
+    (m, c) => (is(m) ? success() : failure(m, c)),
     identity,
     keys,
   )
@@ -460,26 +458,17 @@ export const array = <RT extends Mixed>(
       if (arrayValidation.isLeft()) {
         return arrayValidation
       } else {
-        const xs = arrayValidation.value
+        const xs: Array<$FixMe> = m as $IntentionalAny
         const len = xs.length
-        let a: Array<TypeOf<RT>> = xs
         const errors: Errors = []
         for (let i = 0; i < len; i++) {
           const x = xs[i]
           const validation = type.validate(x, appendContext(c, String(i), type))
           if (validation.isLeft()) {
             pushAll(errors, validation.value)
-          } else {
-            const vx = validation.value
-            if (vx !== x) {
-              if (a === xs) {
-                a = xs.slice()
-              }
-              a[i] = vx
-            }
           }
         }
-        return errors.length ? failures(errors) : success(a)
+        return errors.length ? failures(errors) : success()
       }
     },
     type.encode === identity ? identity : a => a.map(type.encode),
@@ -555,9 +544,8 @@ export const type = <P extends Props>(
       if (dictionaryValidation.isLeft()) {
         return dictionaryValidation
       } else {
-        const o = dictionaryValidation.value
-        let a = o
         const errors: Errors = []
+        const o: $IntentionalAny = m
         for (let i = 0; i < len; i++) {
           const k = keys[i]
           const ok = o[k]
@@ -565,17 +553,9 @@ export const type = <P extends Props>(
           const validation = type.validate(ok, appendContext(c, k, type))
           if (validation.isLeft()) {
             pushAll(errors, validation.value)
-          } else {
-            const vok = validation.value
-            if (vok !== ok) {
-              if (a === o) {
-                a = {...o}
-              }
-              a[k] = vok
-            }
           }
         }
-        return errors.length ? failures(errors) : success(a as any)
+        return errors.length ? failures(errors) : success()
       }
     },
     useIdentity(types, len)
@@ -706,12 +686,10 @@ export const dictionary = <D extends Mixed, C extends Mixed>(
       if (dictionaryValidation.isLeft()) {
         return dictionaryValidation
       } else {
-        const o = dictionaryValidation.value
-        const a: {[key: string]: any} = {}
+        const o = m as $IntentionalAny
         const errors: Errors = []
         const keys = Object.keys(o)
         const len = keys.length
-        let changed: boolean = false
         for (let i = 0; i < len; i++) {
           let k = keys[i]
           const ok = o[k]
@@ -725,22 +703,12 @@ export const dictionary = <D extends Mixed, C extends Mixed>(
           )
           if (domainValidation.isLeft()) {
             pushAll(errors, domainValidation.value)
-          } else {
-            const vk = domainValidation.value
-            changed = changed || vk !== k
-            k = vk
           }
           if (codomainValidation.isLeft()) {
             pushAll(errors, codomainValidation.value)
-          } else {
-            const vok = codomainValidation.value
-            changed = changed || vok !== ok
-            a[k] = vok
           }
         }
-        return errors.length
-          ? failures(errors)
-          : success((changed ? a : o) as any)
+        return errors.length ? failures(errors) : success()
       }
     },
     domain.encode === identity && codomain.encode === identity
@@ -900,18 +868,15 @@ export function intersection<RTS extends Array<Mixed>>(
     name,
     (m): m is any => types.every(type => type.is(m)),
     (m, c) => {
-      let a = m
       const errors: Errors = []
       for (let i = 0; i < len; i++) {
         const type = types[i]
-        const validation = type.validate(a, c)
+        const validation = type.validate(m, c)
         if (validation.isLeft()) {
           pushAll(errors, validation.value)
-        } else {
-          a = validation.value
         }
       }
-      return errors.length ? failures(errors) : success(a)
+      return errors.length ? failures(errors) : success()
     },
     types.every(type => type.encode === identity)
       ? identity
@@ -1011,31 +976,22 @@ export function tuple<RTS extends Array<Mixed>>(
       if (arrayValidation.isLeft()) {
         return arrayValidation
       } else {
-        const as = arrayValidation.value
-        let t: Array<any> = as
+        let t: Array<any> = m as $IntentionalAny
         const errors: Errors = []
         for (let i = 0; i < len; i++) {
-          const a = as[i]
+          const a = t[i]
           const type = types[i]
           const validation = type.validate(a, appendContext(c, String(i), type))
           if (validation.isLeft()) {
             pushAll(errors, validation.value)
-          } else {
-            const va = validation.value
-            if (va !== a) {
-              if (t === as) {
-                t = as.slice()
-              }
-              t[i] = va
-            }
           }
         }
-        if (as.length > len) {
+        if (t.length > len) {
           errors.push(
-            getValidationError(as[len], appendContext(c, String(len), never)),
+            getValidationError(t[len], appendContext(c, String(len), never)),
           )
         }
-        return errors.length ? failures(errors) : success(t)
+        return errors.length ? failures(errors) : success()
       }
     },
     types.every(type => type.encode === identity)
@@ -1295,7 +1251,7 @@ export const taggedUnion = <Tag extends string, RTS extends Array<Tagged<Tag>>>(
   const TagValue = new Type(
     values.map(l => JSON.stringify(l)).join(' | '),
     isTagValue,
-    (m, c) => (isTagValue(m) ? success(m) : failure(m, c)),
+    (m, c) => (isTagValue(m) ? success() : failure(m, c)),
     identity,
   )
   return new UnionType<RTS, TypeOf<RTS['_A']>, OutputOf<RTS['_A']>, mixed>(
@@ -1312,7 +1268,7 @@ export const taggedUnion = <Tag extends string, RTS extends Array<Tagged<Tag>>>(
       if (dictionaryValidation.isLeft()) {
         return dictionaryValidation
       } else {
-        const d = dictionaryValidation.value
+        const d = s as $IntentionalAny
         const tagValueValidation = TagValue.validate(
           d[tag],
           appendContext(c, tag, TagValue),
@@ -1320,7 +1276,7 @@ export const taggedUnion = <Tag extends string, RTS extends Array<Tagged<Tag>>>(
         if (tagValueValidation.isLeft()) {
           return tagValueValidation
         } else {
-          const i = getIndex(tagValueValidation.value)
+          const i = getIndex(d[tag])
           const type = types[i]
           return type.validate(d, appendContext(c, String(i), type))
         }
@@ -1403,7 +1359,7 @@ export function exact<RT extends HasProps>(
       if (looseValidation.isLeft()) {
         return looseValidation
       } else {
-        const o = looseValidation.value
+        const o: $IntentionalAny = m
         const keys = Object.getOwnPropertyNames(o)
         const len = keys.length
         const errors: Errors = []
@@ -1415,7 +1371,7 @@ export function exact<RT extends HasProps>(
             )
           }
         }
-        return errors.length ? failures(errors) : success(o)
+        return errors.length ? failures(errors) : success()
       }
     },
     type.encode,

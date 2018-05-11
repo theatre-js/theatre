@@ -21,12 +21,12 @@ describe('refinement', () => {
   })
 
   it('should fail with the last deserialized value', () => {
-    const T = IntegerFromString
+    const T = t.refinement(t.number, (n) => n % 1 === 0, 'Integer')
     assertFailure(T.rootValidate('a'), [
-      'Invalid value "a" supplied to : IntegerFromString',
+      'Invalid value "a" supplied to : Integer',
     ])
-    assertFailure(T.rootValidate('1.2'), [
-      'Invalid value 1.2 supplied to : IntegerFromString',
+    assertFailure(T.rootValidate(1.2), [
+      'Invalid value 1.2 supplied to : Integer',
     ])
   })
 
