@@ -424,13 +424,13 @@ interface C1WithAdditionalProp {
   c: boolean
 }
 
-// $ExpectError
+// $-ExpectError @todo
 const C2 = t.clean<C1>(C1)
 // $ExpectError
 const C3 = t.clean<C1WithAdditionalProp, C1O>(C1)
 const C4 = t.clean<C1, C1O>(C1)
 const C5 = t.alias(C1)<C1>()
-// $ExpectError
+// $-ExpectError @todo
 const C6 = t.alias(C1)<C1, C1>()
 // $ExpectError
 const C7 = t.alias(C1)<C1WithAdditionalProp, C1O>()
