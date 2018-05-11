@@ -390,7 +390,6 @@ const ActionType = pluck(Action, 'type')
 //
 
 declare const Any1: t.AnyType | t.InterfaceType<any>
-Any1.decode(1)
 
 //
 // exact

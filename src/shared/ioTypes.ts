@@ -18,7 +18,7 @@ export type mixed =
 
 export interface ContextEntry {
   readonly key: string
-  readonly type: Decoder<any, any>
+  readonly type: Type<any>
 }
 export type Context = ReadonlyArray<ContextEntry>
 export interface ValidationError {
@@ -29,7 +29,6 @@ export type Errors = Array<ValidationError>
 export type Validation<A> = Either<Errors, A>
 export type Is<A> = (m: mixed) => m is A
 export type Validate<I, A> = (i: I, context: Context) => Validation<A>
-export type Decode<I, A> = (i: I) => Validation<A>
 export type Encode<A, O> = (a: A) => O
 export type Any = Type<any, any, any>
 export type Mixed = Type<any, any, mixed>
@@ -37,17 +36,11 @@ export type TypeOf<RT extends Any> = RT['_A']
 export type InputOf<RT extends Any> = RT['_I']
 export type OutputOf<RT extends Any> = RT['_O']
 
-export interface Decoder<I, A> {
-  readonly name: string
-  readonly validate: Validate<I, A>
-  readonly decode: Decode<I, A>
-}
-
 export interface Encoder<A, O> {
   readonly encode: Encode<A, O>
 }
 
-export class Type<A, O = A, I = mixed> implements Decoder<I, A>, Encoder<A, O> {
+export class Type<A, O = A, I = mixed> implements Encoder<A, O> {
   readonly _A!: A
   readonly _O!: O
   readonly _I!: I
@@ -61,16 +54,11 @@ export class Type<A, O = A, I = mixed> implements Decoder<I, A>, Encoder<A, O> {
     /** converts a value of type A to a value of type O */
     readonly encode: Encode<A, O>,
   ) {}
-  asDecoder(): Decoder<I, A> {
-    return this
-  }
+
   asEncoder(): Encoder<A, O> {
     return this
   }
-  /** a version of `validate` with a default context */
-  decode(i: I): Validation<A> {
-    return this.validate(i, getDefaultContext(this))
-  }
+  
 
   rootValidate(a: mixed): Validation<A> {
     return this.validate(a as $FixMe, getDefaultContext(this)).map((): $FixMe => {
@@ -86,7 +74,7 @@ export const getFunctionName = (f: Function): string =>
 
 export const getContextEntry = (
   key: string,
-  type: Decoder<any, any>,
+  type: Type<any, any>,
 ): ContextEntry => ({key, type})
 
 export const getValidationError = (
@@ -94,14 +82,14 @@ export const getValidationError = (
   context: Context,
 ): ValidationError => ({value, context})
 
-export const getDefaultContext = (type: Decoder<any, any>): Context => [
+export const getDefaultContext = (type: Type<any>): Context => [
   {key: '', type},
 ]
 
 export const appendContext = (
   c: Context,
   key: string,
-  type: Decoder<any, any>,
+  type: Type<any>,
 ): Context => {
   const len = c.length
   const r = Array(len + 1)
