@@ -5,17 +5,17 @@ import {assertFailure, assertSuccess} from './testHelpers'
 describe('strict', () => {
   it('should succeed validating a valid value', () => {
     const T = t.strict({foo: t.string})
-    assertSuccess(T.rootValidate({foo: 'foo'}))
+    assertSuccess(T.validate({foo: 'foo'}))
   })
 
   it('should succeed validating an undefined field', () => {
     const T = t.strict({foo: t.string, bar: t.union([t.string, t.undefined])})
-    assertSuccess(T.rootValidate({foo: 'foo'}))
+    assertSuccess(T.validate({foo: 'foo'}))
   })
 
   it('should fail validating an invalid value', () => {
     const T = t.strict({foo: t.string})
-    assertFailure(T.rootValidate({foo: 'foo', bar: 1, baz: true}), [
+    assertFailure(T.validate({foo: 'foo', bar: 1, baz: true}), [
       'Invalid value 1 supplied to : StrictType<{ foo: string }>/bar: never',
       'Invalid value true supplied to : StrictType<{ foo: string }>/baz: never',
     ])

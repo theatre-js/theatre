@@ -5,16 +5,16 @@ import {assertSuccess, assertFailure} from './testHelpers'
 describe('array', () => {
   it('should succeed validating a valid value', () => {
     const T = t.array(t.number)
-    assertSuccess(T.rootValidate([]))
-    assertSuccess(T.rootValidate([1, 2, 3]))
+    assertSuccess(T.validate([]))
+    assertSuccess(T.validate([1, 2, 3]))
   })
 
   it('should fail validating an invalid value', () => {
     const T = t.array(t.number)
-    assertFailure(T.rootValidate(1), [
+    assertFailure(T.validate(1), [
       'Invalid value 1 supplied to : Array<number>',
     ])
-    assertFailure(T.rootValidate([1, 's', 3]), [
+    assertFailure(T.validate([1, 's', 3]), [
       'Invalid value "s" supplied to : Array<number>/1: number',
     ])
   })

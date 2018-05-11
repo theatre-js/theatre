@@ -1,5 +1,5 @@
 import * as array from 'fp-ts/lib/Array'
-import * as t from 'io-ts'
+import * as t from '$shared/ioTypes'
 
 // const jsToString = (value: t.mixed) =>
 //   value === undefined ? 'undefined' : JSON.stringify(value)
@@ -23,9 +23,9 @@ const formatValidationError = (error: t.ValidationError) => {
     .join('.')
 
   // The actual error is last in context
-  const maybeErrorContext = array.last(error.context as t.ContextEntry[])
+  const maybeErrorContext = array.last(error.context as t.ValidationContextEntry[])
 
-  return maybeErrorContext.map((errorContext: t.ContextEntry) => {
+  return maybeErrorContext.map((errorContext: t.ValidationContextEntry) => {
     const expectedType = errorContext.type.name
     return {path, expectedType, value: error.value}
     // `Expecting ${expectedType}` +
@@ -34,7 +34,7 @@ const formatValidationError = (error: t.ValidationError) => {
   })
 }
 
-export const ioTSErrorReporter = <T>(validation: t.Validation<T>) =>
+export const betterErrorReporter = (validation: t.Validation) =>
   validation.fold(
     errors => array.catOptions(errors.map(formatValidationError)),
     () => [],

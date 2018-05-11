@@ -5,12 +5,12 @@ import {assertFailure, assertSuccess} from './testHelpers'
 describe('readonly', () => {
   it('should succeed validating a valid value', () => {
     const T = t.readonly(t.interface({a: t.number}))
-    assertSuccess(T.rootValidate({a: 1}))
+    assertSuccess(T.validate({a: 1}))
   })
 
   it('should fail validating an invalid value', () => {
     const T = t.readonly(t.interface({a: t.number}))
-    assertFailure(T.rootValidate({}), [
+    assertFailure(T.validate({}), [
       'Invalid value undefined supplied to : Readonly<{ a: number }>/a: number',
     ])
   })

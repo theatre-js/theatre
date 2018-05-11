@@ -5,19 +5,19 @@ import {assertFailure, assertSuccess} from './testHelpers'
 describe('readonlyArray', () => {
   it('should succeed validating a valid value', () => {
     const T = t.readonlyArray(t.number)
-    assertSuccess(T.rootValidate([1]))
+    assertSuccess(T.validate([1]))
   })
 
   it('should fail validating an invalid value', () => {
     const T = t.readonlyArray(t.number)
-    assertFailure(T.rootValidate(['s']), [
+    assertFailure(T.validate(['s']), [
       'Invalid value "s" supplied to : ReadonlyArray<number>/0: number',
     ])
   })
 
   it('should freeze the value', () => {
     const T = t.readonlyArray(t.number)
-    T.rootValidate([1]).map(x => assert.ok(Object.isFrozen(x)))
+    T.validate([1]).map(x => assert.ok(Object.isFrozen(x)))
   })
 
   it('should type guard', () => {

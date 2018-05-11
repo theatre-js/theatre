@@ -5,12 +5,12 @@ import { assertSuccess, assertFailure } from './testHelpers'
 describe('literal', () => {
   it('should succeed validating a valid value', () => {
     const T = t.literal('a')
-    assertSuccess(T.rootValidate('a'))
+    assertSuccess(T.validate('a'))
   })
 
   it('should fail validating an invalid value', () => {
     const T = t.literal('a')
-    assertFailure(T.rootValidate(1), ['Invalid value 1 supplied to : "a"'])
+    assertFailure(T.validate(1), ['Invalid value 1 supplied to : "a"'])
   })
 
   it('should type guard', () => {

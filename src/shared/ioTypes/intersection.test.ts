@@ -8,7 +8,7 @@ describe('intersection', () => {
       t.interface({a: t.number}),
       t.interface({b: t.number}),
     ])
-    assertSuccess(T.rootValidate({a: 1, b: 2}))
+    assertSuccess(T.validate({a: 1, b: 2}))
   })
 
   it('should fail validating an invalid value', () => {
@@ -16,7 +16,7 @@ describe('intersection', () => {
       t.interface({a: t.number}),
       t.interface({b: t.number}),
     ])
-    assertFailure(T.rootValidate({a: 1}), [
+    assertFailure(T.validate({a: 1}), [
       'Invalid value undefined supplied to : ({ a: number } & { b: number })/b: number',
     ])
   })

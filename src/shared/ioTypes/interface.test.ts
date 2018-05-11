@@ -5,25 +5,25 @@ import {assertSuccess, assertFailure} from './testHelpers'
 describe('interface', () => {
   it('should succeed validating a valid value', () => {
     const T = t.interface({a: t.string})
-    assertSuccess(T.rootValidate({a: 's'}))
+    assertSuccess(T.validate({a: 's'}))
   })
 
   it('should fail validating an invalid value', () => {
     const T = t.interface({a: t.string})
-    assertFailure(T.rootValidate(1), [
+    assertFailure(T.validate(1), [
       'Invalid value 1 supplied to : { a: string }',
     ])
-    assertFailure(T.rootValidate({}), [
+    assertFailure(T.validate({}), [
       'Invalid value undefined supplied to : { a: string }/a: string',
     ])
-    assertFailure(T.rootValidate({a: 1}), [
+    assertFailure(T.validate({a: 1}), [
       'Invalid value 1 supplied to : { a: string }/a: string',
     ])
   })
 
   it('should support the alias `type`', () => {
     const T = t.type({a: t.string})
-    assertSuccess(T.rootValidate({a: 's'}))
+    assertSuccess(T.validate({a: 's'}))
   })
 
   it('should type guard', () => {

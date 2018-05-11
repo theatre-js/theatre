@@ -5,22 +5,22 @@ import {assertFailure, assertSuccess} from './testHelpers'
 describe('tuple', () => {
   it('should succeed validating a valid value', () => {
     const T = t.tuple([t.number, t.string])
-    assertSuccess(T.rootValidate([1, 'a']))
+    assertSuccess(T.validate([1, 'a']))
   })
 
   it('should fail validating an invalid value', () => {
     const T = t.tuple([t.number, t.string])
-    assertFailure(T.rootValidate([]), [
+    assertFailure(T.validate([]), [
       'Invalid value undefined supplied to : [number, string]/0: number',
       'Invalid value undefined supplied to : [number, string]/1: string',
     ])
-    assertFailure(T.rootValidate([1]), [
+    assertFailure(T.validate([1]), [
       'Invalid value undefined supplied to : [number, string]/1: string',
     ])
-    assertFailure(T.rootValidate([1, 1]), [
+    assertFailure(T.validate([1, 1]), [
       'Invalid value 1 supplied to : [number, string]/1: string',
     ])
-    assertFailure(T.rootValidate([1, 'foo', true]), [
+    assertFailure(T.validate([1, 'foo', true]), [
       'Invalid value true supplied to : [number, string]/2: never',
     ])
   })

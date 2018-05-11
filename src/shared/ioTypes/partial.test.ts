@@ -5,13 +5,13 @@ import {assertFailure, assertSuccess} from './testHelpers'
 describe('partial', () => {
   it('should succeed validating a valid value', () => {
     const T = t.partial({a: t.number})
-    assertSuccess(T.rootValidate({}))
-    assertSuccess(T.rootValidate({a: 1}))
+    assertSuccess(T.validate({}))
+    assertSuccess(T.validate({a: 1}))
   })
 
   it('should fail validating an invalid value', () => {
     const T = t.partial({a: t.number})
-    assertFailure(T.rootValidate({a: 's'}), [
+    assertFailure(T.validate({a: 's'}), [
       'Invalid value "s" supplied to : PartialType<{ a: number }>/a: (number | undefined)/0: number',
       'Invalid value "s" supplied to : PartialType<{ a: number }>/a: (number | undefined)/1: undefined',
     ])

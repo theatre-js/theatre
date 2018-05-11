@@ -5,33 +5,33 @@ import { assertSuccess, assertFailure, string2 } from './testHelpers'
 describe('dictionary', () => {
   it('should succeed validating a valid value', () => {
     const T1 = t.dictionary(t.string, t.number)
-    assertSuccess(T1.rootValidate({}))
-    assertSuccess(T1.rootValidate({ aa: 1 }))
+    assertSuccess(T1.validate({}))
+    assertSuccess(T1.validate({ aa: 1 }))
     const T2 = t.dictionary(t.refinement(t.string, s => s.length >= 2), t.number)
-    assertSuccess(T2.rootValidate({}))
-    assertSuccess(T2.rootValidate({ aa: 1 }))
+    assertSuccess(T2.validate({}))
+    assertSuccess(T2.validate({ aa: 1 }))
     const T3 = t.dictionary(string2, t.number)
-    assertSuccess(T3.rootValidate({}))
-    assertSuccess(T3.rootValidate({ aa: 1 }))
+    assertSuccess(T3.validate({}))
+    assertSuccess(T3.validate({ aa: 1 }))
   })
 
   it('should fail validating an invalid value', () => {
     const T = t.dictionary(t.string, t.number)
-    assertFailure(T.rootValidate({ aa: 's' }), ['Invalid value "s" supplied to : { [K in string]: number }/aa: number'])
+    assertFailure(T.validate({ aa: 's' }), ['Invalid value "s" supplied to : { [K in string]: number }/aa: number'])
   })
 
   it('should support literals as domain type', () => {
     const T = t.dictionary(t.literal('foo'), t.string)
-    assertSuccess(T.rootValidate({ foo: 'bar' }))
-    assertFailure(T.rootValidate({ foo: 'bar', baz: 'bob' }), [
+    assertSuccess(T.validate({ foo: 'bar' }))
+    assertFailure(T.validate({ foo: 'bar', baz: 'bob' }), [
       'Invalid value "baz" supplied to : { [K in "foo"]: string }/baz: "foo"'
     ])
   })
 
   it('should support keyof as domain type', () => {
     const T = t.dictionary(t.keyof({ foo: true, bar: true }), t.string)
-    assertSuccess(T.rootValidate({ foo: 'bar' }))
-    assertFailure(T.rootValidate({ foo: 'bar', baz: 'bob' }), [
+    assertSuccess(T.validate({ foo: 'bar' }))
+    assertFailure(T.validate({ foo: 'bar', baz: 'bob' }), [
       'Invalid value "baz" supplied to : { [K in (keyof ["foo","bar"])]: string }/baz: (keyof ["foo","bar"])'
     ])
   })

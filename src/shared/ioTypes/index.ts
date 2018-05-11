@@ -41,15 +41,14 @@ export class Type<A> {
     /** a custom type guard */
     readonly is: Is<A>,
     /** succeeds if a value of type I can be decoded to a value of type A */
-    readonly validate: Validate,
+    readonly _validateWithContext: Validate,
   ) {}
 
-  rootValidate(a: mixed): Validation {
-    return this.validate(a as $FixMe, getDefaultValidationContext(this)).map(
-      (): $FixMe => {
-        return true
-      },
-    )
+  validate(
+    value: mixed,
+    validationContext = getDefaultValidationContext(this),
+  ): Validation {
+    return this._validateWithContext(value as $FixMe, validationContext)
   }
 }
 
@@ -220,7 +219,7 @@ export const Dictionary: AnyDictionaryType = new AnyDictionaryType()
 export class ObjectType extends Type<object> {
   readonly _tag: 'ObjectType' = 'ObjectType'
   constructor() {
-    super('object', Dictionary.is, Dictionary.validate)
+    super('object', Dictionary.is, Dictionary._validateWithContext)
   }
 }
 
@@ -251,11 +250,11 @@ export class RefinementType<RT extends Any, A = $IntentionalAny> extends Type<
   constructor(
     name: string,
     is: RefinementType<RT, A>['is'],
-    validate: RefinementType<RT, A>['validate'],
+    _validateWithContext: RefinementType<RT, A>['_validateWithContext'],
     readonly type: RT,
     readonly predicate: Predicate<A>,
   ) {
-    super(name, is, validate)
+    super(name, is, _validateWithContext)
   }
 }
 
@@ -268,7 +267,7 @@ export const refinement = <RT extends Any>(
     name,
     (m): m is TypeOf<RT> => type.is(m) && predicate(m),
     (i, c) => {
-      const validation = type.validate(i, c)
+      const validation = type._validateWithContext(i, c)
       if (validation.isLeft()) {
         return validation
       } else {
@@ -290,10 +289,10 @@ export class LiteralType<V extends string | number | boolean> extends Type<V> {
   constructor(
     name: string,
     is: LiteralType<V>['is'],
-    validate: LiteralType<V>['validate'],
+    _validateWithContext: LiteralType<V>['_validateWithContext'],
     readonly value: V,
   ) {
-    super(name, is, validate)
+    super(name, is, _validateWithContext)
   }
 }
 
@@ -319,10 +318,10 @@ export class KeyofType<D extends {[key: string]: mixed}> extends Type<keyof D> {
   constructor(
     name: string,
     is: KeyofType<D>['is'],
-    validate: KeyofType<D>['validate'],
+    _validateWithContext: KeyofType<D>['_validateWithContext'],
     readonly keys: D,
   ) {
-    super(name, is, validate)
+    super(name, is, _validateWithContext)
   }
 }
 
@@ -350,10 +349,10 @@ export class RecursiveType<RT extends Any, A = $IntentionalAny> extends Type<
   constructor(
     name: string,
     is: RecursiveType<RT, A>['is'],
-    validate: RecursiveType<RT, A>['validate'],
+    _validateWithContext: RecursiveType<RT, A>['_validateWithContext'],
     private runDefinition: () => RT,
   ) {
-    super(name, is, validate)
+    super(name, is, _validateWithContext)
   }
   get type(): RT {
     return this.runDefinition()
@@ -374,7 +373,7 @@ export const recursion = <A, RT extends Type<A> = Type<A>>(
   const Self: $IntentionalAny = new RecursiveType<RT, A>(
     name,
     (m): m is A => runDefinition().is(m),
-    (m, c) => runDefinition().validate(m, c),
+    (m, c) => runDefinition()._validateWithContext(m, c),
     runDefinition,
   )
   return Self
@@ -389,10 +388,10 @@ export class ArrayType<RT extends Any, A = $IntentionalAny> extends Type<A> {
   constructor(
     name: string,
     is: ArrayType<RT, A>['is'],
-    validate: ArrayType<RT, A>['validate'],
+    _validateWithContext: ArrayType<RT, A>['_validateWithContext'],
     readonly type: RT,
   ) {
-    super(name, is, validate)
+    super(name, is, _validateWithContext)
   }
 }
 
@@ -404,7 +403,7 @@ export const array = <RT extends Mixed>(
     name,
     (m): m is Array<TypeOf<RT>> => arrayType.is(m) && m.every(type.is),
     (m, c) => {
-      const arrayValidation = arrayType.validate(m, c)
+      const arrayValidation = arrayType._validateWithContext(m, c)
       if (arrayValidation.isLeft()) {
         return arrayValidation
       } else {
@@ -413,7 +412,10 @@ export const array = <RT extends Mixed>(
         const errors: Errors = []
         for (let i = 0; i < len; i++) {
           const x = xs[i]
-          const validation = type.validate(x, appendValidationContext(c, String(i), type))
+          const validation = type._validateWithContext(
+            x,
+            appendValidationContext(c, String(i), type),
+          )
           if (validation.isLeft()) {
             pushAll(errors, validation.value)
           }
@@ -433,10 +435,10 @@ export class InterfaceType<P, A = $IntentionalAny> extends Type<A> {
   constructor(
     name: string,
     is: InterfaceType<P, A>['is'],
-    validate: InterfaceType<P, A>['validate'],
+    _validateWithContext: InterfaceType<P, A>['_validateWithContext'],
     readonly props: P,
   ) {
-    super(name, is, validate)
+    super(name, is, _validateWithContext)
   }
 }
 
@@ -477,7 +479,7 @@ export const type = <P extends Props>(
       return true
     },
     (m, c) => {
-      const dictionaryValidation = Dictionary.validate(m, c)
+      const dictionaryValidation = Dictionary._validateWithContext(m, c)
       if (dictionaryValidation.isLeft()) {
         return dictionaryValidation
       } else {
@@ -487,7 +489,10 @@ export const type = <P extends Props>(
           const k = keys[i]
           const ok = o[k]
           const type = types[i]
-          const validation = type.validate(ok, appendValidationContext(c, k, type))
+          const validation = type._validateWithContext(
+            ok,
+            appendValidationContext(c, k, type),
+          )
           if (validation.isLeft()) {
             pushAll(errors, validation.value)
           }
@@ -509,10 +514,10 @@ export class PartialType<P, A = $IntentionalAny> extends Type<A> {
   constructor(
     name: string,
     is: PartialType<P, A>['is'],
-    validate: PartialType<P, A>['validate'],
+    _validateWithContext: PartialType<P, A>['_validateWithContext'],
     readonly props: P,
   ) {
-    super(name, is, validate)
+    super(name, is, _validateWithContext)
   }
 }
 
@@ -535,7 +540,7 @@ export const partial = <P extends Props>(
   return new PartialType(
     name,
     partial.is as $IntentionalAny,
-    partial.validate as $IntentionalAny,
+    partial._validateWithContext as $IntentionalAny,
     props,
   )
 }
@@ -553,11 +558,11 @@ export class DictionaryType<
   constructor(
     name: string,
     is: DictionaryType<D, C, A>['is'],
-    validate: DictionaryType<D, C, A>['validate'],
+    _validateWithContext: DictionaryType<D, C, A>['_validateWithContext'],
     readonly domain: D,
     readonly codomain: C,
   ) {
-    super(name, is, validate)
+    super(name, is, _validateWithContext)
   }
 }
 
@@ -576,7 +581,7 @@ export const dictionary = <D extends Mixed, C extends Mixed>(
       Dictionary.is(m) &&
       Object.keys(m).every(k => domain.is(k) && codomain.is(m[k])),
     (m, c) => {
-      const dictionaryValidation = Dictionary.validate(m, c)
+      const dictionaryValidation = Dictionary._validateWithContext(m, c)
       if (dictionaryValidation.isLeft()) {
         return dictionaryValidation
       } else {
@@ -587,11 +592,11 @@ export const dictionary = <D extends Mixed, C extends Mixed>(
         for (let i = 0; i < len; i++) {
           const k = keys[i]
           const ok = o[k]
-          const domainValidation = domain.validate(
+          const domainValidation = domain._validateWithContext(
             k,
             appendValidationContext(c, k, domain),
           )
-          const codomainValidation = codomain.validate(
+          const codomainValidation = codomain._validateWithContext(
             ok,
             appendValidationContext(c, k, codomain),
           )
@@ -621,10 +626,10 @@ export class UnionType<
   constructor(
     name: string,
     is: UnionType<RTS, A>['is'],
-    validate: UnionType<RTS, A>['validate'],
+    _validateWithContext: UnionType<RTS, A>['_validateWithContext'],
     readonly types: RTS,
   ) {
-    super(name, is, validate)
+    super(name, is, _validateWithContext)
   }
 }
 
@@ -640,7 +645,10 @@ export const union = <RTS extends Array<Mixed>>(
       const errors: Errors = []
       for (let i = 0; i < len; i++) {
         const type = types[i]
-        const validation = type.validate(m, appendValidationContext(c, String(i), type))
+        const validation = type._validateWithContext(
+          m,
+          appendValidationContext(c, String(i), type),
+        )
         if (validation.isRight()) {
           return validation
         } else {
@@ -665,10 +673,10 @@ export class IntersectionType<
   constructor(
     name: string,
     is: IntersectionType<RTS, A>['is'],
-    validate: IntersectionType<RTS, A>['validate'],
+    _validateWithContext: IntersectionType<RTS, A>['_validateWithContext'],
     readonly types: RTS,
   ) {
-    super(name, is, validate)
+    super(name, is, _validateWithContext)
   }
 }
 
@@ -718,7 +726,7 @@ export function intersection<RTS extends Array<Mixed>>(
       const errors: Errors = []
       for (let i = 0; i < len; i++) {
         const type = types[i]
-        const validation = type.validate(m, c)
+        const validation = type._validateWithContext(m, c)
         if (validation.isLeft()) {
           pushAll(errors, validation.value)
         }
@@ -741,10 +749,10 @@ export class TupleType<
   constructor(
     name: string,
     is: TupleType<RTS, A>['is'],
-    validate: TupleType<RTS, A>['validate'],
+    _validateWithContext: TupleType<RTS, A>['_validateWithContext'],
     readonly types: RTS,
   ) {
-    super(name, is, validate)
+    super(name, is, _validateWithContext)
   }
 }
 
@@ -794,7 +802,7 @@ export function tuple<RTS extends Array<Mixed>>(
       m.length === len &&
       types.every((type, i) => type.is(m[i])),
     (m, c) => {
-      const arrayValidation = arrayType.validate(m, c)
+      const arrayValidation = arrayType._validateWithContext(m, c)
       if (arrayValidation.isLeft()) {
         return arrayValidation
       } else {
@@ -803,14 +811,20 @@ export function tuple<RTS extends Array<Mixed>>(
         for (let i = 0; i < len; i++) {
           const a = t[i]
           const type = types[i]
-          const validation = type.validate(a, appendValidationContext(c, String(i), type))
+          const validation = type._validateWithContext(
+            a,
+            appendValidationContext(c, String(i), type),
+          )
           if (validation.isLeft()) {
             pushAll(errors, validation.value)
           }
         }
         if (t.length > len) {
           errors.push(
-            getValidationError(t[len], appendValidationContext(c, String(len), never)),
+            getValidationError(
+              t[len],
+              appendValidationContext(c, String(len), never),
+            ),
           )
         }
         return errors.length ? failures(errors) : success()
@@ -829,10 +843,10 @@ export class ReadonlyType<RT extends Any, A = $IntentionalAny> extends Type<A> {
   constructor(
     name: string,
     is: ReadonlyType<RT, A>['is'],
-    validate: ReadonlyType<RT, A>['validate'],
+    _validateWithContext: ReadonlyType<RT, A>['_validateWithContext'],
     readonly type: RT,
   ) {
-    super(name, is, validate)
+    super(name, is, _validateWithContext)
   }
 }
 
@@ -840,7 +854,12 @@ export const readonly = <RT extends Mixed>(
   type: RT,
   name: string = `Readonly<${type.name}>`,
 ): ReadonlyType<RT, Readonly<TypeOf<RT>>> =>
-  new ReadonlyType(name, type.is, (m, c) => type.validate(m, c), type)
+  new ReadonlyType(
+    name,
+    type.is,
+    (m, c) => type._validateWithContext(m, c),
+    type,
+  )
 
 //
 // readonly arrays
@@ -854,10 +873,10 @@ export class ReadonlyArrayType<
   constructor(
     name: string,
     is: ReadonlyArrayType<RT, A>['is'],
-    validate: ReadonlyArrayType<RT, A>['validate'],
+    _validateWithContext: ReadonlyArrayType<RT, A>['_validateWithContext'],
     readonly type: RT,
   ) {
-    super(name, is, validate)
+    super(name, is, _validateWithContext)
   }
 }
 
@@ -869,7 +888,7 @@ export const readonlyArray = <RT extends Mixed>(
   return new ReadonlyArrayType(
     name,
     arrayType.is,
-    (m, c) => arrayType.validate(m, c),
+    (m, c) => arrayType._validateWithContext(m, c),
     type,
   )
 }
@@ -883,10 +902,10 @@ export class StrictType<P, A = $IntentionalAny> extends Type<A> {
   constructor(
     name: string,
     is: StrictType<P, A>['is'],
-    validate: StrictType<P, A>['validate'],
+    _validateWithContext: StrictType<P, A>['_validateWithContext'],
     readonly props: P,
   ) {
-    super(name, is, validate)
+    super(name, is, _validateWithContext)
   }
 }
 
@@ -899,7 +918,12 @@ export const strict = <P extends Props>(
   name: string = `StrictType<${getNameFromProps(props)}>`,
 ): StrictType<P, TypeOfProps<P>> => {
   const exactType = exact(type(props))
-  return new StrictType(name, exactType.is, exactType.validate, props)
+  return new StrictType(
+    name,
+    exactType.is,
+    exactType._validateWithContext,
+    props,
+  )
 }
 
 //
@@ -1043,12 +1067,12 @@ export const taggedUnion = <Tag extends string, RTS extends Array<Tagged<Tag>>>(
       return TagValue.is(tagValue) && types[getIndex(tagValue)].is(v)
     },
     (s, c) => {
-      const dictionaryValidation = Dictionary.validate(s, c)
+      const dictionaryValidation = Dictionary._validateWithContext(s, c)
       if (dictionaryValidation.isLeft()) {
         return dictionaryValidation
       } else {
         const d = s as $IntentionalAny
-        const tagValueValidation = TagValue.validate(
+        const tagValueValidation = TagValue._validateWithContext(
           d[tag],
           appendValidationContext(c, tag, TagValue),
         )
@@ -1057,7 +1081,10 @@ export const taggedUnion = <Tag extends string, RTS extends Array<Tagged<Tag>>>(
         } else {
           const i = getIndex(d[tag])
           const type = types[i]
-          return type.validate(d, appendValidationContext(c, String(i), type))
+          return type._validateWithContext(
+            d,
+            appendValidationContext(c, String(i), type),
+          )
         }
       }
     },
@@ -1074,10 +1101,10 @@ export class ExactType<RT extends Any, A = $IntentionalAny> extends Type<A> {
   constructor(
     name: string,
     is: ExactType<RT, A>['is'],
-    validate: ExactType<RT, A>['validate'],
+    _validateWithContext: ExactType<RT, A>['_validateWithContext'],
     readonly type: RT,
   ) {
-    super(name, is, validate)
+    super(name, is, _validateWithContext)
   }
 }
 
@@ -1126,7 +1153,7 @@ export function exact<RT extends HasProps>(
       type.is(m) &&
       Object.getOwnPropertyNames(m).every(k => props.hasOwnProperty(k)),
     (m, c) => {
-      const looseValidation = type.validate(m, c)
+      const looseValidation = type._validateWithContext(m, c)
       if (looseValidation.isLeft()) {
         return looseValidation
       } else {
@@ -1138,7 +1165,10 @@ export function exact<RT extends HasProps>(
           const key = keys[i]
           if (!props.hasOwnProperty(key)) {
             errors.push(
-              getValidationError(o[key], appendValidationContext(c, key, never)),
+              getValidationError(
+                o[key],
+                appendValidationContext(c, key, never),
+              ),
             )
           }
         }

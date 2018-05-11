@@ -34,25 +34,25 @@ const T = t.taggedUnion('type', [TUA, TUB, TUC])
 
 describe('taggedUnion', () => {
   it('should succeed validating a valid value', () => {
-    assertSuccess(T.rootValidate({type: 'a', foo: 'foo'}))
-    assertSuccess(T.rootValidate({type: 'b', bar: 1}))
-    assertSuccess(T.rootValidate({type: 'c', baz: 0}))
+    assertSuccess(T.validate({type: 'a', foo: 'foo'}))
+    assertSuccess(T.validate({type: 'b', bar: 1}))
+    assertSuccess(T.validate({type: 'c', baz: 0}))
   })
 
   it('should fail validating an invalid value', () => {
-    assertFailure(T.rootValidate(true), [
+    assertFailure(T.validate(true), [
       'Invalid value true supplied to : (TUA | TUB | TUC)',
     ])
-    assertFailure(T.rootValidate({type: 'D'}), [
+    assertFailure(T.validate({type: 'D'}), [
       'Invalid value "D" supplied to : (TUA | TUB | TUC)/type: "a" | "b" | "c"',
     ])
-    assertFailure(T.rootValidate({type: 'a'}), [
+    assertFailure(T.validate({type: 'a'}), [
       'Invalid value undefined supplied to : (TUA | TUB | TUC)/0: TUA/foo: string',
     ])
-    assertFailure(T.rootValidate({type: 'b'}), [
+    assertFailure(T.validate({type: 'b'}), [
       'Invalid value undefined supplied to : (TUA | TUB | TUC)/1: TUB/bar: number',
     ])
-    assertFailure(T.rootValidate({type: 'c'}), [
+    assertFailure(T.validate({type: 'c'}), [
       'Invalid value undefined supplied to : (TUA | TUB | TUC)/2: TUC/baz: number',
     ])
   })
@@ -99,15 +99,15 @@ describe('taggedUnion', () => {
     assert.strictEqual(U.is({type: 4}), false)
     assert.strictEqual(U.is({type: '1', foo: 'foo'}), false)
 
-    assertSuccess(U.rootValidate({type: 1, foo: 'foo'}))
-    assertFailure(U.rootValidate({type: 1, foo: 0}), [
+    assertSuccess(U.validate({type: 1, foo: 'foo'}))
+    assertFailure(U.validate({type: 1, foo: 0}), [
       'Invalid value 0 supplied to : U/0: A/foo: string',
     ])
-    assertSuccess(U.rootValidate({type: 2, bar: 0}))
-    assertFailure(U.rootValidate({type: 2, bar: 'bar'}), [
+    assertSuccess(U.validate({type: 2, bar: 0}))
+    assertFailure(U.validate({type: 2, bar: 'bar'}), [
       'Invalid value "bar" supplied to : U/1: B/bar: number',
     ])
-    assertFailure(U.rootValidate({type: 4}), [
+    assertFailure(U.validate({type: 4}), [
       'Invalid value 4 supplied to : U/type: 1 | 2 | 3',
     ])
   })
@@ -137,15 +137,15 @@ describe('taggedUnion', () => {
     assert.strictEqual(U.is({type: false, bar: 'bar'}), false)
     assert.strictEqual(U.is({type: 3}), false)
 
-    assertSuccess(U.rootValidate({type: true, foo: 'foo'}))
-    assertFailure(U.rootValidate({type: true, foo: 0}), [
+    assertSuccess(U.validate({type: true, foo: 'foo'}))
+    assertFailure(U.validate({type: true, foo: 0}), [
       'Invalid value 0 supplied to : U/0: A/foo: string',
     ])
-    assertSuccess(U.rootValidate({type: false, bar: 0}))
-    assertFailure(U.rootValidate({type: false, bar: 'bar'}), [
+    assertSuccess(U.validate({type: false, bar: 0}))
+    assertFailure(U.validate({type: false, bar: 'bar'}), [
       'Invalid value "bar" supplied to : U/1: B/bar: number',
     ])
-    assertFailure(U.rootValidate({type: 3}), [
+    assertFailure(U.validate({type: 3}), [
       'Invalid value 3 supplied to : U/type: true | false',
     ])
   })
@@ -175,15 +175,15 @@ describe('taggedUnion', () => {
     assert.strictEqual(U.is({type: '1', bar: 2}), true)
     assert.strictEqual(U.is({type: 3}), false)
 
-    assertSuccess(U.rootValidate({type: 1, foo: 'foo'}))
-    assertFailure(U.rootValidate({type: 1, bar: 'bar'}), [
+    assertSuccess(U.validate({type: 1, foo: 'foo'}))
+    assertFailure(U.validate({type: 1, bar: 'bar'}), [
       'Invalid value undefined supplied to : U/0: A/foo: string',
     ])
-    assertSuccess(U.rootValidate({type: '1', bar: 2}))
-    assertFailure(U.rootValidate({type: '1', foo: 'foo'}), [
+    assertSuccess(U.validate({type: '1', bar: 2}))
+    assertFailure(U.validate({type: '1', foo: 'foo'}), [
       'Invalid value undefined supplied to : U/1: B/bar: number',
     ])
-    assertFailure(U.rootValidate({type: 3}), [
+    assertFailure(U.validate({type: 3}), [
       'Invalid value 3 supplied to : U/type: 1 | "1"',
     ])
   })

@@ -10,8 +10,7 @@ export function strictInterfaceWithOptionals<
   optional: O,
   name?: string,
 ): t.Type<
-  t.TypeOfProps<R> & t.TypeOfPartialProps<O>,
-  t.OutputOfProps<R> & t.OutputOfPartialProps<O>
+  t.TypeOfProps<R> & t.TypeOfPartialProps<O>
 > {
   return t.exact(
     t.intersection([t.interface(required), t.partial(optional)]),
@@ -26,8 +25,8 @@ describe('strictInterfaceWithOptionals', () => {
       {bar: t.string},
       'T',
     )
-    assertSuccess(T.rootValidate({foo: 'foo'}))
-    assertSuccess(T.rootValidate({foo: 'foo', bar: 'a'}))
+    assertSuccess(T.validate({foo: 'foo'}))
+    assertSuccess(T.validate({foo: 'foo', bar: 'a'}))
   })
 
   it('should fail validating an invalid value', () => {
@@ -36,10 +35,10 @@ describe('strictInterfaceWithOptionals', () => {
       {bar: t.string},
       'T',
     )
-    assertFailure(T.rootValidate({foo: 'foo', a: 1}), [
+    assertFailure(T.validate({foo: 'foo', a: 1}), [
       'Invalid value 1 supplied to : T/a: never',
     ])
-    assertFailure(T.rootValidate({foo: 'foo', bar: 1}), [
+    assertFailure(T.validate({foo: 'foo', bar: 1}), [
       'Invalid value 1 supplied to : T/bar: (string | undefined)/0: string',
       'Invalid value 1 supplied to : T/bar: (string | undefined)/1: undefined',
     ])

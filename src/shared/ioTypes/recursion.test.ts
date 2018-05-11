@@ -15,16 +15,16 @@ const T = t.recursion<T>('T', self =>
 
 describe('recursion', () => {
   it('should succeed validating a valid value', () => {
-    assertSuccess(T.rootValidate({a: 1, b: null}))
-    assertSuccess(T.rootValidate({a: 1, b: {a: 2, b: null}}))
+    assertSuccess(T.validate({a: 1, b: null}))
+    assertSuccess(T.validate({a: 1, b: {a: 2, b: null}}))
   })
 
   it('should fail validating an invalid value', () => {
-    assertFailure(T.rootValidate(1), ['Invalid value 1 supplied to : T'])
-    assertFailure(T.rootValidate({}), [
+    assertFailure(T.validate(1), ['Invalid value 1 supplied to : T'])
+    assertFailure(T.validate({}), [
       'Invalid value undefined supplied to : T/a: number',
     ])
-    assertFailure(T.rootValidate({a: 1, b: {}}), [
+    assertFailure(T.validate({a: 1, b: {}}), [
       'Invalid value undefined supplied to : T/b: (T | undefined | null)/0: T/a: number',
       'Invalid value {} supplied to : T/b: (T | undefined | null)/1: undefined',
       'Invalid value {} supplied to : T/b: (T | undefined | null)/2: null',
@@ -36,11 +36,8 @@ describe('recursion', () => {
       a: string
       b: A | null
     }
-    type O = {
-      a: string
-      b: O | null
-    }
-    const T = t.recursion<A, O>('T', self =>
+
+    const T = t.recursion<A>('T', self =>
       t.interface({
         a: t.string,
         b: t.union([self, t.null]),

@@ -5,13 +5,13 @@ import {assertFailure, assertSuccess} from './testHelpers'
 describe('union', () => {
   it('should succeed validating a valid value', () => {
     const T = t.union([t.string, t.number])
-    assertSuccess(T.rootValidate('s'))
-    assertSuccess(T.rootValidate(1))
+    assertSuccess(T.validate('s'))
+    assertSuccess(T.validate(1))
   })
 
   it('should fail validating an invalid value', () => {
     const T = t.union([t.string, t.number])
-    assertFailure(T.rootValidate(true), [
+    assertFailure(T.validate(true), [
       'Invalid value true supplied to : (string | number)/0: string',
       'Invalid value true supplied to : (string | number)/1: number',
     ])
