@@ -1,3 +1,5 @@
+import * as t from '$shared/ioTypes'
+import {difference} from 'lodash'
 export type GenericAction = {type: string; payload: mixed | void}
 
 export type ReduxReducer<State extends {}> = (
@@ -5,16 +7,19 @@ export type ReduxReducer<State extends {}> = (
   action: GenericAction,
 ) => State
 
-export type ErrorsOf<T> = 
-  T extends (...args: $IntentionalAny[]) => 
-    Generator_<infer R> ? R extends {errorType: string} ? R : never : never
+export type ErrorsOf<T> = T extends (
+  ...args: $IntentionalAny[]
+) => Generator_<infer R>
+  ? R extends {errorType: string} ? R : never
+  : never
 
-export type ReturnOf<Fn> =
-  Fn extends (...args: $IntentionalAny[]) => 
-    Generator_<infer R> ? R : never
+export type ReturnOf<Fn> = Fn extends (
+  ...args: $IntentionalAny[]
+) => Generator_<infer R>
+  ? R
+  : never
 
-export type PromiseValue<P> =
-  P extends Promise<infer R> ? R : never
+export type PromiseValue<P> = P extends Promise<infer R> ? R : never
 
 export type VoidFn = () => void
 
@@ -28,3 +33,38 @@ export const _any: $IntentionalAny = null
  * just write `expectType<V>(v)`
  */
 export const expectType = <T extends mixed>(v: T): T => v
+
+/**
+ * An object of {list, byId} of type `type`, plus an invariant that
+ * makes sure `list` only contains ids that exist in `byId`, and also
+ * all `byId`s are listed in `list`
+ */
+export const listAndById = <T extends mixed>(type: t.Type<T>, name: string) =>
+  t
+    .type(
+      {
+        list: t.array(t.string),
+        byId: t.record(t.string, type),
+      },
+      name,
+    )
+    .withInvariant(function listAndByIdInvariant(v: {
+      list: string[]
+      byId: Record<string, mixed>
+    }) {
+      const inListButNotInById = v.list.filter(id => !v.byId.hasOwnProperty(id))
+      if (inListButNotInById.length > 0) {
+        return [
+          `List ids ${JSON.stringify(inListButNotInById)} don't exist in byId.`,
+        ]
+      }
+
+      const diff = difference(Object.keys(v.byId), v.list)
+      if (diff.length > 0) {
+        return [
+          `Keys ${JSON.stringify(diff)} are present in byId but not in list`,
+        ]
+      }
+
+      return true
+    })

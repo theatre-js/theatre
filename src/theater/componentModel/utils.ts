@@ -1,4 +1,4 @@
-import {IDeclarativeComponentDescriptor} from './types/declarative'
+import {IDeclarativeComponentDescriptor} from './types'
 import uuid from 'uuid/v4'
 
 export const makeSceneComponent = (

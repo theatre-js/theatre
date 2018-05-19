@@ -6,7 +6,6 @@ import StudioComponent from '$theater/handy/StudioComponent'
 import {getSelectedNodeId} from '$theater/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor/TreeEditor'
 import {
   IDeclarativeComponentDescriptor,
-  ArrayDescriptor,
 } from '$theater/componentModel/types'
 import {Subscriber} from 'react-broadcast'
 import {PanelActiveModeChannel} from '$theater/workspace/components/Panel/Panel'
@@ -23,7 +22,7 @@ interface IOwnProps {
 interface IProps extends IOwnProps {
   componentDescriptor: IDeclarativeComponentDescriptor
   selectedNodeId?: string
-  listOfModifierInstantiationDescriptors: ArrayDescriptor<string>
+  listOfModifierInstantiationDescriptors: string[]
   pathToModifierInstantiationDescriptors?: string[]
 }
 

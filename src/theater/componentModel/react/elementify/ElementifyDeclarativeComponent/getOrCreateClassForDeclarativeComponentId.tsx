@@ -1,12 +1,12 @@
 import {label} from '$theater/structuralEditor/components/reusables/PanelSection.css'
-import {ComponentId} from '$theater/componentModel/types'
+import {IComponentId} from '$theater/componentModel/types'
 import TheaterComponent from '$theater/componentModel/react/TheaterComponent/TheaterComponent'
 import {DerivedClass, Classify} from '$shared/DataVerse/derivedClass/derivedClass'
 import constructValue from './constructValue/constructValue'
 
-const cache = new Map<ComponentId, DeclarativeComponentBaseClass>()
+const cache = new Map<IComponentId, DeclarativeComponentBaseClass>()
 
-const getOrCreateClassForDeclarativeComponentId = (id: ComponentId) => {
+const getOrCreateClassForDeclarativeComponentId = (id: IComponentId) => {
   if (cache.has(id)) {
     return cache.get(id)
   } else {
@@ -18,7 +18,7 @@ const getOrCreateClassForDeclarativeComponentId = (id: ComponentId) => {
 
 export default getOrCreateClassForDeclarativeComponentId
 
-const createClass = (id: ComponentId) => {
+const createClass = (id: IComponentId) => {
   const cls = class extends DeclarativeComponentBaseClass {
     static componentId = id
   }

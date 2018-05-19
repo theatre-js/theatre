@@ -1,11 +1,11 @@
-import {IStoreAhistoricSTate, IStoreHistoricState} from '$theater/types'
+import {IStoreAhistoricState, IStoreHistoricState} from '$theater/types'
 import {GenericAction} from '$shared/types'
 import {ahistoricalAction} from '$shared/utils/redux/withHistory/actions'
 import {reduceStateAction} from '$shared/utils/redux/commonActions'
 import {PathBasedReducer} from '$shared/utils/redux/withHistory/PathBasedReducer'
 
 export const reduceAhistoricState: PathBasedReducer<
-  IStoreAhistoricSTate,
+  IStoreAhistoricState,
   GenericAction
 > = (path: $IntentionalAny[], reducer: $IntentionalAny): GenericAction => {
   return ahistoricalAction(reduceStateAction(path, reducer))

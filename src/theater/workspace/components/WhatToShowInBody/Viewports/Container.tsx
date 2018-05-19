@@ -8,7 +8,7 @@ import {
   reduceHistoricState,
 } from '$theater/bootstrap/actions'
 import {debounce} from 'lodash'
-import {ViewportsContainer, IViewport} from '$theater/workspace/types'
+import {IViewportsContainer, IViewport} from '$theater/workspace/types'
 import generateUniqueId from 'uuid/v4'
 import ViewportInstantiator, {
   TBoundingRect,
@@ -16,13 +16,13 @@ import ViewportInstantiator, {
 
 interface IProps {
   classes: $FixMe
-  initialState: ViewportsContainer
+  initialState: IViewportsContainer
   activeMode: ActiveMode
   children: (scrollX: number, scrollY: number) => any
   dispatch: Function
 }
 
-interface IState extends ViewportsContainer {
+interface IState extends IViewportsContainer {
   newViewportProps: undefined | null | {id: string; x: number; y: number}
 }
 

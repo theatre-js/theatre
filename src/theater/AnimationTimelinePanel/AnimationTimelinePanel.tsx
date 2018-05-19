@@ -36,7 +36,7 @@ import {
   getComponentIdOfNode,
 } from '$theater/ExploreFlyoutMenu/utils'
 import {getPathToComponentDescriptor} from '$theater/componentModel/selectors'
-import {IDeclarativeComponentDescriptor} from '../componentModel/types/declarative'
+import {IDeclarativeComponentDescriptor} from '../componentModel/types'
 import DerivationAsReactElement from '../componentModel/react/utils/DerivationAsReactElement'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'

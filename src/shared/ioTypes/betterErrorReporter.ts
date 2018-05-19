@@ -27,7 +27,7 @@ const formatValidationError = (error: t.ValidationError) => {
 
   return maybeErrorContext.map((errorContext: t.ValidationContextEntry) => {
     const expectedType = errorContext.type.name
-    return {path, expectedType, value: error.value}
+    return {path, expectedType, value: error.value, ...(error.extraInfo ? {info: error.extraInfo} : {})}
     // `Expecting ${expectedType}` +
     // (path === '' ? '' : ` at ${path}`) +
     // ` but instead got: ${stringify(error.value)}.`

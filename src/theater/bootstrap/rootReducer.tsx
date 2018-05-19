@@ -1,4 +1,4 @@
-import {IStoreHistoricState, IStoreAhistoricSTate} from '$theater/types'
+import {IStoreHistoricState, IStoreAhistoricState} from '$theater/types'
 import withCommonActions from '$shared/utils/redux/withCommonActions'
 import {ReduxReducer} from '$shared/types'
 import {withHistory} from '$shared/utils/redux/withHistory/withHistory'
@@ -12,7 +12,7 @@ const mainReducer: ReduxReducer<IStoreHistoricState> = (
   s: IStoreHistoricState = initialPersistedState,
 ) => s
 
-const ahistoricReducer: ReduxReducer<IStoreAhistoricSTate> = (
+const ahistoricReducer: ReduxReducer<IStoreAhistoricState> = (
   s = initialAhistoricState,
 ) => s
 

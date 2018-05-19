@@ -1,10 +1,12 @@
+import {$IComponentModelNamespaceHistoricState} from './componentModel/types'
+import {$IWorkspaceAhistoricState} from './workspace/types'
 import {
   ICommonNamespaceState,
   $ICommonNamespaceState,
 } from '$theater/common/types'
 import {
   IWorkspaceHistoricState,
-  IWorkspaceNamespaceAHistoricState,
+  IWorkspaceAhistoricState,
   $IWorkspaceHistoricState,
 } from '$theater/workspace/types'
 import {
@@ -16,7 +18,7 @@ import {
   HistoryOnly,
 } from '$shared/utils/redux/withHistory/withHistory'
 import {Pointer} from '$shared/DataVerse2/pointer'
-import * as t from '$shared/ioTypes/index'
+import * as t from '$shared/ioTypes'
 
 export interface IStoreHistoricState {
   common: ICommonNamespaceState
@@ -28,33 +30,32 @@ const $IStoreHistoricState = t.type(
   {
     common: $ICommonNamespaceState,
     historicWorkspace: $IWorkspaceHistoricState,
+    historicComponentModel: $IComponentModelNamespaceHistoricState,
   },
   'StoreHistoricState',
 )
 
-// type TT = t.TypeOf<typeof $IStoreHistoricState>
+export const $IStoreAhistoricState = t.type({
+  stateIsHydrated: t.boolean,
+  pathToProject: t.union([t.undefined, t.string]),
+  ahistoricWorkspace: $IWorkspaceAhistoricState,
+}, 'StoreAhistoricState')
+// export type IStoreAhistoricState = t.TypeOf<typeof $IStoreAhistoricState>
 
-const RStoreAhistoricState = t.type(
-  {
-    stateIsHydrated: t.boolean,
-  },
-  'StoreAhistoricState',
-)
-
-export const RStoreState = t.intersection(
-  [$IStoreHistoricState, RStoreAhistoricState],
-  'Theater/Store/State',
-)
-
-export interface IStoreAhistoricSTate {
+export interface IStoreAhistoricState {
   stateIsHydrated: boolean
   pathToProject: undefined | string
   ahistoricComponentModel: IComponentModelNamespaceAhistoricState
-  ahistoricWorkspace: IWorkspaceNamespaceAHistoricState
+  ahistoricWorkspace: IWorkspaceAhistoricState
 }
 
+export const RStoreState = t.intersection(
+  [$IStoreHistoricState, $IStoreAhistoricState],
+  'StoreState',
+)
+
 export interface ITheaterStoreState
-  extends StateWithHistory<IStoreHistoricState, IStoreAhistoricSTate> {}
+  extends StateWithHistory<IStoreHistoricState, IStoreAhistoricState> {}
 
 export interface ITheaterHistoryState
   extends HistoryOnly<IStoreHistoricState> {}

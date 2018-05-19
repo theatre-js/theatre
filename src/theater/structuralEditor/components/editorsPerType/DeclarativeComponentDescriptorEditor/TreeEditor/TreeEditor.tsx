@@ -24,7 +24,7 @@ import {MODES} from '$theater/common/components/ActiveModeDetector/ActiveModeDet
 import StudioComponent from '$theater/handy/StudioComponent'
 import React from 'react'
 import connect from '$theater/handy/connect'
-import { IDeclarativeComponentDescriptor } from '$theater/componentModel/types/declarative';
+import {IDeclarativeComponentDescriptor} from '$theater/componentModel/types'
 
 export const metaKey = 'composePanel'
 const PLACEHOLDER = '\n'
@@ -109,7 +109,7 @@ class TreeEditor extends StudioComponent<IProps, State> {
     isCommandDown: false,
     nodeBeingDragged: null,
     selectedNodeId: null,
-    componentBeingSet: null
+    componentBeingSet: null,
   }
 
   componentDidMount() {

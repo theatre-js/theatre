@@ -17,7 +17,7 @@ import TimelinesHandler from '$theater/componentModel/react/TheaterComponent/Tim
 import Theater, {TheaterStateAtom} from '$theater/bootstrap/Theater'
 import PureComponentWithTheater from '$theater/componentModel/react/utils/PureComponentWithTheater'
 import {isCoreComponent} from '$theater/componentModel/selectors'
-import {ComponentId} from '$theater/componentModel/types'
+import {IComponentId} from '$theater/componentModel/types'
 
 type WrapProps<Props> = {
   key: string
@@ -48,7 +48,7 @@ type BaseClass<Props> = Classify<
     timelineDescriptors: AbstractDerivedDict<{[key: string]: $FixMe}>
     timelineInstances: DictAtom<$FixMe>
     componentInstance: TheaterComponent<Props>
-    componentId: ComponentId
+    componentId: IComponentId
     componentDescriptor: $FixMe
     owner: TheaterComponent<$IntentionalAny>
   }

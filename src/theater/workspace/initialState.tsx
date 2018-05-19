@@ -1,9 +1,9 @@
 import {
   IWorkspaceHistoricState,
-  IWorkspaceNamespaceAHistoricState,
+  IWorkspaceAhistoricState,
 } from './types'
 
-export const ahistoricWorkspaceInitialState: IWorkspaceNamespaceAHistoricState = {
+export const ahistoricWorkspaceInitialState: IWorkspaceAhistoricState = {
   activeNodeVolatileIdByViewportId: {},
   viewportsContainer: {
     scrollX: 0,

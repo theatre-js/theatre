@@ -3,7 +3,7 @@ import HeadlessDataList from '$theater/common/components/HeadlessDataList/Headle
 import {fitInput} from '$theater/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor/utils'
 import resolveCss from '$shared/utils/resolveCss'
 import css from './SceneSelector.css'
-import {IDeclarativeComponentDescriptor} from '$theater/componentModel/types/declarative'
+import {IDeclarativeComponentDescriptor} from '$theater/componentModel/types'
 import StudioComponent from '$theater/handy/StudioComponent'
 import {val} from '$shared/DataVerse2/atom'
 import {reduceHistoricState} from '$theater/bootstrap/actions'

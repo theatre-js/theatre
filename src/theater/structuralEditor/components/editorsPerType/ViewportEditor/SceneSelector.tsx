@@ -11,8 +11,8 @@ import {get} from 'lodash'
 import {IViewport} from '$theater/workspace/types'
 import {getComponentDescriptor} from '$theater/componentModel/selectors'
 import Theater from '$theater/bootstrap/Theater'
-import {ComponentId} from '$theater/componentModel/types/index'
-import {ComponentDescriptor} from '$theater/componentModel/types'
+import {IComponentId} from '$theater/componentModel/types/index'
+import {IComponentDescriptor} from '$theater/componentModel/types'
 import {reduceHistoricState} from '$theater/bootstrap/actions'
 import {makeSceneComponent} from '$theater/componentModel/utils'
 import {batchedAction} from '$shared/utils/redux/withHistory/withBatchActions'
@@ -33,7 +33,7 @@ export default class SceneSelector extends PureComponentWithTheater<
     this.state = {}
   }
 
-  setSceneComponentId = (id: ComponentId) => {
+  setSceneComponentId = (id: IComponentId) => {
     this.dispatch(
       reduceHistoricState(
         [
@@ -145,11 +145,11 @@ export default class SceneSelector extends PureComponentWithTheater<
 const findSceneByDisplayName = (
   displayName: string,
   theater: Theater,
-): ComponentId | void => {
+): IComponentId | void => {
   const state = theater.atom2.getState()
   const lookIn = (
-    descs: Record<ComponentId, ComponentDescriptor>,
-  ): ComponentId | void => {
+    descs: Record<IComponentId, IComponentDescriptor>,
+  ): IComponentId | void => {
     for (const id in descs) {
       const desc = descs[id]
       if (desc.displayName === displayName) return desc.id

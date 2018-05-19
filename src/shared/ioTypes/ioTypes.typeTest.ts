@@ -1,4 +1,6 @@
 import * as t from '$shared/ioTypes'
+import {Right} from 'fp-ts/lib/Either'
+import {expectType} from '$shared/types'
 //
 // clean / alias
 //
@@ -31,8 +33,8 @@ const Rec2 = t.recursion<string>('T', Self =>
 
 const L1 = t.literal('a')
 // $ExpectError
-const x1: t.TypeOf<typeof L1> = 's'
-const x2: t.TypeOf<typeof L1> = 'a'
+const x1: t.StaticTypeOf<typeof L1> = 's'
+const x2: t.StaticTypeOf<typeof L1> = 'a'
 
 //
 // keyof
@@ -40,25 +42,25 @@ const x2: t.TypeOf<typeof L1> = 'a'
 
 const K1 = t.keyof({a: true, b: true})
 // $ExpectError
-const x3: t.TypeOf<typeof K1> = 's'
-const x4: t.TypeOf<typeof K1> = 'a'
-const x5: t.TypeOf<typeof K1> = 'b'
+const x3: t.StaticTypeOf<typeof K1> = 's'
+const x4: t.StaticTypeOf<typeof K1> = 'a'
+const x5: t.StaticTypeOf<typeof K1> = 'b'
 
 //
 // default types
 //
 
 // $ExpectError
-undefined as t.TypeOf<typeof t.null>
-null as t.TypeOf<typeof t.null>
+undefined as t.StaticTypeOf<typeof t.null>
+null as t.StaticTypeOf<typeof t.null>
 
 // $ExpectError
-null as t.TypeOf<typeof t.undefined>
-undefined as t.TypeOf<typeof t.undefined>
+null as t.StaticTypeOf<typeof t.undefined>
+undefined as t.StaticTypeOf<typeof t.undefined>
 
 // $ExpectError
-1 as t.TypeOf<typeof t.string>
-'s' as t.TypeOf<typeof t.string>
+1 as t.StaticTypeOf<typeof t.string>
+'s' as t.StaticTypeOf<typeof t.string>
 
 //
 // refinement
@@ -66,8 +68,8 @@ undefined as t.TypeOf<typeof t.undefined>
 
 const R1 = t.refinement(t.number, n => n % 2 === 0)
 // $ExpectError
-'s' as t.TypeOf<typeof R1>
-2 as t.TypeOf<typeof R1>
+'s' as t.StaticTypeOf<typeof R1>
+2 as t.StaticTypeOf<typeof R1>
 
 //
 // array
@@ -75,10 +77,10 @@ const R1 = t.refinement(t.number, n => n % 2 === 0)
 
 const A1 = t.array(t.number)
 // $ExpectError
-'s' as t.TypeOf<typeof A1>
+'s' as t.StaticTypeOf<typeof A1>
 // $ExpectError
-['s'] as t.TypeOf<typeof A1>
-[1] as t.TypeOf<typeof A1>
+['s'] as t.StaticTypeOf<typeof A1>
+[1] as t.StaticTypeOf<typeof A1>
 
 //
 // interface
@@ -86,18 +88,18 @@ const A1 = t.array(t.number)
 
 const I1 = t.interface({name: t.string, age: t.number})
 // $ExpectError
-const x6: t.TypeOf<typeof I1> = {}
+const x6: t.StaticTypeOf<typeof I1> = {}
 // $ExpectError
-const x7: t.TypeOf<typeof I1> = {name: 'name'}
+const x7: t.StaticTypeOf<typeof I1> = {name: 'name'}
 // $ExpectError
-const x8: t.TypeOf<typeof I1> = {age: 43}
-const x9: t.TypeOf<typeof I1> = {name: 'name', age: 43}
+const x8: t.StaticTypeOf<typeof I1> = {age: 43}
+const x9: t.StaticTypeOf<typeof I1> = {name: 'name', age: 43}
 
 const I2 = t.interface({
   name: t.string,
   father: t.interface({surname: t.string}),
 })
-type I2T = t.TypeOf<typeof I2>
+type I2T = t.StaticTypeOf<typeof I2>
 // $ExpectError
 const x10: I2T = {name: 'name', father: {}}
 const x11: I2T = {name: 'name', father: {surname: 'surname'}}
@@ -106,12 +108,12 @@ const x11: I2T = {name: 'name', father: {surname: 'surname'}}
 // dictionary
 //
 
-const D1 = t.dictionary(t.keyof({a: true}), t.number)
+const D1 = t.record(t.keyof({a: true}), t.number)
 // $ExpectError
-const x12: t.TypeOf<typeof D1> = {a: 's'}
+const x12: t.StaticTypeOf<typeof D1> = {a: 's'}
 // $ExpectError
-const x12_2: t.TypeOf<typeof D1> = {c: 1}
-const x13: t.TypeOf<typeof D1> = {a: 1}
+const x12_2: t.StaticTypeOf<typeof D1> = {c: 1}
+const x13: t.StaticTypeOf<typeof D1> = {a: 1}
 
 //
 // union
@@ -119,9 +121,9 @@ const x13: t.TypeOf<typeof D1> = {a: 1}
 
 const U1 = t.union([t.string, t.number])
 // $ExpectError
-const x14: t.TypeOf<typeof U1> = true
-const x15: t.TypeOf<typeof U1> = 's'
-const x16: t.TypeOf<typeof U1> = 1
+const x14: t.StaticTypeOf<typeof U1> = true
+const x15: t.StaticTypeOf<typeof U1> = 's'
+const x16: t.StaticTypeOf<typeof U1> = 1
 
 //
 // intersection
@@ -132,8 +134,8 @@ const IN1 = t.intersection([
   t.interface({b: t.string}),
 ])
 // $ExpectError
-const x17: t.TypeOf<typeof IN1> = {a: 1}
-const x18: t.TypeOf<typeof IN1> = {a: 1, b: 's'}
+const x17: t.StaticTypeOf<typeof IN1> = {a: 1}
+const x18: t.StaticTypeOf<typeof IN1> = {a: 1, b: 's'}
 
 //
 // tuple
@@ -141,15 +143,15 @@ const x18: t.TypeOf<typeof IN1> = {a: 1, b: 's'}
 
 const T1 = t.tuple([t.string, t.number])
 // $ExpectError
-const x19: t.TypeOf<typeof T1> = ['s', true]
-const x20: t.TypeOf<typeof T1> = ['s', 1]
+const x19: t.StaticTypeOf<typeof T1> = ['s', true]
+const x20: t.StaticTypeOf<typeof T1> = ['s', 1]
 
 //
 // partial
 //
 
 const P1 = t.partial({name: t.string})
-type P1T = t.TypeOf<typeof P1>
+type P1T = t.StaticTypeOf<typeof P1>
 // $ExpectError
 const x21: P1T = {name: 1}
 const x22: P1T = {}
@@ -160,11 +162,11 @@ const x23: P1T = {name: 's'}
 //
 
 const RO1 = t.readonly(t.interface({name: t.string}))
-const x24: t.TypeOf<typeof RO1> = {name: 's'}
+const x24: t.StaticTypeOf<typeof RO1> = {name: 's'}
 // $ExpectError
 x24.name = 's2'
 // $ExpectError
-const x25: t.TypeOf<typeof RO1> = {name: 1}
+const x25: t.StaticTypeOf<typeof RO1> = {name: 1}
 
 //
 // readonlyArray
@@ -172,8 +174,8 @@ const x25: t.TypeOf<typeof RO1> = {name: 1}
 
 const ROA1 = t.readonlyArray(t.number)
 // $ExpectError
-const x26: t.TypeOf<typeof ROA1> = ['s']
-const x27: t.TypeOf<typeof ROA1> = [1]
+const x26: t.StaticTypeOf<typeof ROA1> = ['s']
+const x27: t.StaticTypeOf<typeof ROA1> = [1]
 // $ExpectError
 x27[0] = 2
 // $ExpectError
@@ -184,7 +186,7 @@ x27.push(2)
 //
 
 const S1 = t.strict({name: t.string})
-type TS1 = t.TypeOf<typeof S1>
+type TS1 = t.StaticTypeOf<typeof S1>
 const x32: TS1 = {name: 'Giulio'}
 const x33input = {name: 'foo', foo: 'foo'}
 const x33: TS1 = x33input
@@ -195,7 +197,7 @@ const S2 = t.strict(t.string)
 // object
 //
 const O1 = t.object
-type TO1 = t.TypeOf<typeof O1>
+type TO1 = t.StaticTypeOf<typeof O1>
 const x34: TO1 = {name: 'Giulio'}
 // $ExpectError
 const x35: TO1 = 'foo'
@@ -204,7 +206,7 @@ type GenerableProps = {[key: string]: Generable}
 type GenerableInterface = t.InterfaceType<GenerableProps>
 type GenerableStrict = t.StrictType<GenerableProps>
 type GenerablePartials = t.PartialType<GenerableProps>
-interface GenerableDictionary extends t.DictionaryType<Generable, Generable> {}
+interface GenerableDictionary extends t.RecordType<Generable, Generable> {}
 interface GenerableRefinement extends t.RefinementType<Generable> {}
 interface GenerableArray extends t.ArrayType<Generable> {}
 interface GenerableUnion extends t.UnionType<Array<Generable>> {}
@@ -253,8 +255,8 @@ function f(generable: Generable): string {
       return 'StrictType'
     case 'PartialType':
       return 'PartialType'
-    case 'DictionaryType':
-      return 'DictionaryType'
+    case 'RecordType':
+      return 'RecordType'
     case 'UnionType':
       return 'UnionType'
     case 'IntersectionType':
@@ -318,9 +320,9 @@ const TU1 = t.taggedUnion('type', [
   t.type({type: t.literal('b')}),
 ])
 // $ExpectError
-const x36: t.TypeOf<typeof TU1> = true
-const x37: t.TypeOf<typeof TU1> = {type: 'a'}
-const x38: t.TypeOf<typeof TU1> = {type: 'b'}
+const x36: t.StaticTypeOf<typeof TU1> = true
+const x37: t.StaticTypeOf<typeof TU1> = {type: 'a'}
+const x38: t.StaticTypeOf<typeof TU1> = {type: 'b'}
 
 //
 // custom combinators
@@ -346,7 +348,7 @@ export function interfaceWithOptionals<
 export function maybe<RT extends t.Any>(
   type: RT,
   name?: string,
-): t.UnionType<[RT, t.NullType], t.TypeOf<RT> | null> {
+): t.UnionType<[RT, t.NullType], t.StaticTypeOf<RT> | null> {
   return t.union<[RT, t.NullType]>([type, t.null], name)
 }
 
@@ -356,7 +358,7 @@ const pluck = <
 >(
   union: U,
   field: F,
-): t.Type<t.TypeOf<U>[F]> => {
+): t.Type<t.StaticTypeOf<U>[F]> => {
   return t.union(union.types.map(type => type.props[field]))
 }
 
@@ -425,3 +427,63 @@ const C6 = t.alias(C1)<C1, C1>()
 const C7 = t.alias(C1)<C1WithAdditionalProp, C1O>()
 // @ts-ignore @todo
 const C8 = t.alias(C1)<C1, C1O>()
+
+const v: {} = 'hi'
+if (t.string.castStatic<number>().is(v)) {
+  expectType<number>(v)
+  // $ExpectError
+  expectType<string>(v)
+}
+
+const v2: {} = 'hi'
+class A {
+  a: true
+}
+class B {
+  b: true
+}
+
+if (t.instanceOf<typeof A>(A).is(v2)) {
+  expectType<A>(v2)
+  // $ExpectError
+  expectType<B>(v2)
+}
+
+;() => {
+  const v: {} = 'hi'
+  class A {
+    a: true
+  }
+
+  if (t.subclassOf(A).is(v)) {
+    const t = new v()
+    expectType<true>(t.a)
+    // $ExpectError
+    expectType<string>(t.a)
+  }
+
+  const s = t.subclassOf(A)
+
+  const v2: t.StaticTypeOf<typeof s> = A
+  const v3: t.StaticTypeOf<typeof s> = class A2 extends A {}
+  // $ExpectError
+  const v4: t.StaticTypeOf<typeof s> = class A3 {}
+}
+;() => {
+  const v: {} = 'hi'
+
+  if (t.deferred(() => t.number).is(v)) {
+    expectType<number>(v)
+    // $ExpectError
+    expectType<string>(v)
+  }
+}
+;() => {
+  const v: {} = 10
+
+  if (t.string.withInvariant(() => true).is(v)) {
+    // $ExpectError
+    expectType<number>(v)
+    expectType<string>(v)
+  }
+}

@@ -3,7 +3,7 @@ import {Predicate} from 'fp-ts/lib/function'
 
 declare global {
   interface Array<T> {
-    _A: T
+    StaticType: T
   }
 }
 
@@ -19,11 +19,13 @@ export type mixed =
 export interface ValidationContextEntry {
   readonly key: string
   readonly type: Type<$IntentionalAny>
+  readonly value: mixed
 }
 export type ValidationContext = ReadonlyArray<ValidationContextEntry>
 export interface ValidationError {
   readonly value: mixed
   readonly context: ValidationContext
+  readonly extraInfo?: mixed
 }
 export type Errors = Array<ValidationError>
 export type Validation = Either<Errors, true>
@@ -31,13 +33,16 @@ export type Is<A> = (m: mixed) => m is A
 export type Validate = (i: mixed, context: ValidationContext) => Validation
 export type Any = Type<$IntentionalAny>
 export type Mixed = Type<$IntentionalAny>
-export type TypeOf<RT extends Any> = RT['_A']
+export type StaticTypeOf<RT extends Any> = RT['StaticType']
+
+type TypeName = string | (() => string)
 
 export class Type<A> {
-  readonly _A!: A
+  readonly StaticType!: A
+  // abstract _name: string
   constructor(
     /** a unique name for this runtime type */
-    readonly name: string,
+    readonly _name: TypeName,
     /** a custom type guard */
     readonly is: Is<A>,
     /** succeeds if a value of type I can be decoded to a value of type A */
@@ -46,9 +51,38 @@ export class Type<A> {
 
   validate(
     value: mixed,
-    validationContext = getDefaultValidationContext(this),
+    validationContext = getDefaultValidationContext(this, value),
   ): Validation {
     return this._validateWithContext(value as $FixMe, validationContext)
+  }
+
+  _resolvedName: undefined | string = undefined
+  get name() {
+    if (this._resolvedName) {
+      return this._resolvedName
+    } else {
+      this._resolvedName =
+        typeof this._name === 'string' ? this._name : this._name()
+      return this._resolvedName
+    }
+  }
+
+  /**
+   * This is to override the static type in case in can't be properly inferred.
+   */
+  castStatic<T>(): Type<T> {
+    return this as $IntentionalAny
+  }
+
+  refinement(predicate: Predicate<StaticTypeOf<this>>, name?: TypeName) {
+    return refinement(this, predicate, name)
+  }
+
+  withInvariant(
+    condition: InvariantCondition<A>,
+    name: undefined | TypeName = undefined,
+  ): InvariantType<A, Type<A>> {
+    return withInvariant(this, condition, name)
   }
 }
 
@@ -62,36 +96,43 @@ export const getFunctionName = (f: Function): string =>
 export const getValidationContextEntry = (
   key: string,
   type: Type<$IntentionalAny>,
-): ValidationContextEntry => ({key, type})
+  value: mixed
+): ValidationContextEntry => ({key, type, value})
 
 export const getValidationError = (
   value: mixed,
   context: ValidationContext,
-): ValidationError => ({value, context})
+  extraInfo?: mixed,
+): ValidationError => ({value, context, extraInfo})
 
 export const getDefaultValidationContext = (
   type: Type<$IntentionalAny>,
-): ValidationContext => [{key: '', type}]
+  value: mixed
+): ValidationContext => [{key: '', type, value}]
 
 export const appendValidationContext = (
   c: ValidationContext,
   key: string,
   type: Type<$IntentionalAny>,
+  value: mixed
 ): ValidationContext => {
   const len = c.length
   const r = Array(len + 1)
   for (let i = 0; i < len; i++) {
     r[i] = c[i]
   }
-  r[len] = {key, type}
+  r[len] = {key, type, value}
   return r
 }
 
 export const failures = (errors: Errors): Validation =>
   new Left<Errors, true>(errors)
 
-export const failure = (value: mixed, context: ValidationContext): Validation =>
-  failures([getValidationError(value, context)])
+export const failure = (
+  value: mixed,
+  context: ValidationContext,
+  extraInfo?: mixed,
+): Validation => failures([getValidationError(value, context, extraInfo)])
 
 export const success = (): Validation => new Right<Errors, true>(true)
 
@@ -203,23 +244,23 @@ export class AnyArrayType extends Type<Array<mixed>> {
 
 const arrayType: AnyArrayType = new AnyArrayType()
 
-export class AnyDictionaryType extends Type<{[key: string]: mixed}> {
-  readonly _tag: 'AnyDictionaryType' = 'AnyDictionaryType'
+export class AnyRecordType extends Type<{[key: string]: mixed}> {
+  readonly _tag: 'AnyRecordType' = 'AnyRecordType'
   constructor() {
     super(
-      'Dictionary',
+      'Record',
       (m): m is {[key: string]: mixed} => m !== null && typeof m === 'object',
       (m, c) => (this.is(m) ? success() : failure(m, c)),
     )
   }
 }
 
-export const Dictionary: AnyDictionaryType = new AnyDictionaryType()
+export const $Record: AnyRecordType = new AnyRecordType()
 
 export class ObjectType extends Type<object> {
   readonly _tag: 'ObjectType' = 'ObjectType'
   constructor() {
-    super('object', Dictionary.is, Dictionary._validateWithContext)
+    super('object', $Record.is, $Record._validateWithContext)
   }
 }
 
@@ -248,7 +289,7 @@ export class RefinementType<RT extends Any, A = $IntentionalAny> extends Type<
 > {
   readonly _tag: 'RefinementType' = 'RefinementType'
   constructor(
-    name: string,
+    name: TypeName,
     is: RefinementType<RT, A>['is'],
     _validateWithContext: RefinementType<RT, A>['_validateWithContext'],
     readonly type: RT,
@@ -260,12 +301,12 @@ export class RefinementType<RT extends Any, A = $IntentionalAny> extends Type<
 
 export const refinement = <RT extends Any>(
   type: RT,
-  predicate: Predicate<TypeOf<RT>>,
-  name: string = `(${type.name} | ${getFunctionName(predicate)})`,
-): RefinementType<RT, TypeOf<RT>> =>
+  predicate: Predicate<StaticTypeOf<RT>>,
+  name: TypeName = () => `(${type.name} | ${getFunctionName(predicate)})`,
+): RefinementType<RT, StaticTypeOf<RT>> =>
   new RefinementType(
     name,
-    (m): m is TypeOf<RT> => type.is(m) && predicate(m),
+    (m): m is StaticTypeOf<RT> => type.is(m) && predicate(m),
     (i, c) => {
       const validation = type._validateWithContext(i, c)
       if (validation.isLeft()) {
@@ -398,10 +439,10 @@ export class ArrayType<RT extends Any, A = $IntentionalAny> extends Type<A> {
 export const array = <RT extends Mixed>(
   type: RT,
   name: string = `Array<${type.name}>`,
-): ArrayType<RT, Array<TypeOf<RT>>> =>
+): ArrayType<RT, Array<StaticTypeOf<RT>>> =>
   new ArrayType(
     name,
-    (m): m is Array<TypeOf<RT>> => arrayType.is(m) && m.every(type.is),
+    (m): m is Array<StaticTypeOf<RT>> => arrayType.is(m) && m.every(type.is),
     (m, c) => {
       const arrayValidation = arrayType._validateWithContext(m, c)
       if (arrayValidation.isLeft()) {
@@ -414,7 +455,7 @@ export const array = <RT extends Mixed>(
           const x = xs[i]
           const validation = type._validateWithContext(
             x,
-            appendValidationContext(c, String(i), type),
+            appendValidationContext(c, String(i), type, x),
           )
           if (validation.isLeft()) {
             pushAll(errors, validation.value)
@@ -433,7 +474,7 @@ export const array = <RT extends Mixed>(
 export class InterfaceType<P, A = $IntentionalAny> extends Type<A> {
   readonly _tag: 'InterfaceType' = 'InterfaceType'
   constructor(
-    name: string,
+    name: TypeName,
     is: InterfaceType<P, A>['is'],
     _validateWithContext: InterfaceType<P, A>['_validateWithContext'],
     readonly props: P,
@@ -451,7 +492,7 @@ const getNameFromProps = (props: Props): string =>
     .map(k => `${k}: ${props[k].name}`)
     .join(', ')} }`
 
-export type TypeOfProps<P extends AnyProps> = {[K in keyof P]: TypeOf<P[K]>}
+export type TypeOfProps<P extends AnyProps> = {[K in keyof P]: StaticTypeOf<P[K]>}
 
 export interface Props {
   [key: string]: Mixed
@@ -460,7 +501,7 @@ export interface Props {
 /** @alias `interface` */
 export const type = <P extends Props>(
   props: P,
-  name: string = getNameFromProps(props),
+  name: TypeName = () => getNameFromProps(props),
 ): InterfaceType<P, TypeOfProps<P>> => {
   const keys = Object.keys(props)
   const types = keys.map(key => props[key])
@@ -468,7 +509,7 @@ export const type = <P extends Props>(
   return new InterfaceType(
     name,
     (m): m is TypeOfProps<P> => {
-      if (!Dictionary.is(m)) {
+      if (!$Record.is(m)) {
         return false
       }
       for (let i = 0; i < len; i++) {
@@ -479,9 +520,9 @@ export const type = <P extends Props>(
       return true
     },
     (m, c) => {
-      const dictionaryValidation = Dictionary._validateWithContext(m, c)
-      if (dictionaryValidation.isLeft()) {
-        return dictionaryValidation
+      const recordValidation = $Record._validateWithContext(m, c)
+      if (recordValidation.isLeft()) {
+        return recordValidation
       } else {
         const errors: Errors = []
         const o: $IntentionalAny = m
@@ -491,7 +532,7 @@ export const type = <P extends Props>(
           const type = types[i]
           const validation = type._validateWithContext(
             ok,
-            appendValidationContext(c, k, type),
+            appendValidationContext(c, k, type, ok),
           )
           if (validation.isLeft()) {
             pushAll(errors, validation.value)
@@ -512,7 +553,7 @@ export const type = <P extends Props>(
 export class PartialType<P, A = $IntentionalAny> extends Type<A> {
   readonly _tag: 'PartialType' = 'PartialType'
   constructor(
-    name: string,
+    name: TypeName,
     is: PartialType<P, A>['is'],
     _validateWithContext: PartialType<P, A>['_validateWithContext'],
     readonly props: P,
@@ -522,12 +563,12 @@ export class PartialType<P, A = $IntentionalAny> extends Type<A> {
 }
 
 export type TypeOfPartialProps<P extends AnyProps> = {
-  [K in keyof P]?: TypeOf<P[K]>
+  [K in keyof P]?: StaticTypeOf<P[K]>
 }
 
 export const partial = <P extends Props>(
   props: P,
-  name: string = `PartialType<${getNameFromProps(props)}>`,
+  name: TypeName = () => `PartialType<${getNameFromProps(props)}>`,
 ): PartialType<P, TypeOfPartialProps<P>> => {
   const keys = Object.keys(props)
   const types = keys.map(key => props[key])
@@ -546,19 +587,19 @@ export const partial = <P extends Props>(
 }
 
 //
-// dictionaries
+// records
 //
 
-export class DictionaryType<
+export class RecordType<
   D extends Any,
   C extends Any,
   A = $IntentionalAny
 > extends Type<A> {
-  readonly _tag: 'DictionaryType' = 'DictionaryType'
+  readonly _tag: 'RecordType' = 'RecordType'
   constructor(
-    name: string,
-    is: DictionaryType<D, C, A>['is'],
-    _validateWithContext: DictionaryType<D, C, A>['_validateWithContext'],
+    name: TypeName,
+    is: RecordType<D, C, A>['is'],
+    _validateWithContext: RecordType<D, C, A>['_validateWithContext'],
     readonly domain: D,
     readonly codomain: C,
   ) {
@@ -566,24 +607,24 @@ export class DictionaryType<
   }
 }
 
-export type TypeOfDictionary<D extends Any, C extends Any> = {
-  [K in TypeOf<D>]: TypeOf<C>
+export type TypeOfRecord<D extends Any, C extends Any> = {
+  [K in StaticTypeOf<D>]: StaticTypeOf<C>
 }
 
-export const dictionary = <D extends Mixed, C extends Mixed>(
+export const record = <D extends Mixed, C extends Mixed>(
   domain: D,
   codomain: C,
-  name: string = `{ [K in ${domain.name}]: ${codomain.name} }`,
-): DictionaryType<D, C, TypeOfDictionary<D, C>> =>
-  new DictionaryType(
+  name: () => string = () => `{ [K in ${domain.name}]: ${codomain.name} }`,
+): RecordType<D, C, TypeOfRecord<D, C>> =>
+  new RecordType(
     name,
-    (m): m is TypeOfDictionary<D, C> =>
-      Dictionary.is(m) &&
+    (m): m is TypeOfRecord<D, C> =>
+      $Record.is(m) &&
       Object.keys(m).every(k => domain.is(k) && codomain.is(m[k])),
     (m, c) => {
-      const dictionaryValidation = Dictionary._validateWithContext(m, c)
-      if (dictionaryValidation.isLeft()) {
-        return dictionaryValidation
+      const recordValidation = $Record._validateWithContext(m, c)
+      if (recordValidation.isLeft()) {
+        return recordValidation
       } else {
         const o = m as $IntentionalAny
         const errors: Errors = []
@@ -594,11 +635,11 @@ export const dictionary = <D extends Mixed, C extends Mixed>(
           const ok = o[k]
           const domainValidation = domain._validateWithContext(
             k,
-            appendValidationContext(c, k, domain),
+            appendValidationContext(c, k, domain, ok),
           )
           const codomainValidation = codomain._validateWithContext(
             ok,
-            appendValidationContext(c, k, codomain),
+            appendValidationContext(c, k, codomain, ok),
           )
           if (domainValidation.isLeft()) {
             pushAll(errors, domainValidation.value)
@@ -624,7 +665,7 @@ export class UnionType<
 > extends Type<A> {
   readonly _tag: 'UnionType' = 'UnionType'
   constructor(
-    name: string,
+    name: TypeName,
     is: UnionType<RTS, A>['is'],
     _validateWithContext: UnionType<RTS, A>['_validateWithContext'],
     readonly types: RTS,
@@ -635,19 +676,20 @@ export class UnionType<
 
 export const union = <RTS extends Array<Mixed>>(
   types: RTS,
-  name: string = `(${types.map(type => type.name).join(' | ')})`,
-): UnionType<RTS, TypeOf<RTS['_A']>> => {
+  name: TypeName = () => `(${types.map(type => type.name).join(' | ')})`,
+): UnionType<RTS, StaticTypeOf<RTS['StaticType']>> => {
   const len = types.length
   return new UnionType(
     name,
-    (m): m is TypeOf<RTS['_A']> => types.some(type => type.is(m)),
+    (m): m is StaticTypeOf<RTS['StaticType']> => types.some(type => type.is(m)),
     (m, c) => {
       const errors: Errors = []
       for (let i = 0; i < len; i++) {
         const type = types[i]
         const validation = type._validateWithContext(
           m,
-          appendValidationContext(c, String(i), type),
+          // c
+          appendValidationContext(c, '::' + String(i), type, m),
         )
         if (validation.isRight()) {
           return validation
@@ -671,7 +713,7 @@ export class IntersectionType<
 > extends Type<A> {
   readonly _tag: 'IntersectionType' = 'IntersectionType'
   constructor(
-    name: string,
+    name: TypeName,
     is: IntersectionType<RTS, A>['is'],
     _validateWithContext: IntersectionType<RTS, A>['_validateWithContext'],
     readonly types: RTS,
@@ -688,10 +730,10 @@ export function intersection<
   E extends Mixed
 >(
   types: [A, B, C, D, E],
-  name?: string,
+  name?: TypeName,
 ): IntersectionType<
   [A, B, C, D, E],
-  TypeOf<A> & TypeOf<B> & TypeOf<C> & TypeOf<D> & TypeOf<E>
+  StaticTypeOf<A> & StaticTypeOf<B> & StaticTypeOf<C> & StaticTypeOf<D> & StaticTypeOf<E>
 >
 export function intersection<
   A extends Mixed,
@@ -700,23 +742,23 @@ export function intersection<
   D extends Mixed
 >(
   types: [A, B, C, D],
-  name?: string,
-): IntersectionType<[A, B, C, D], TypeOf<A> & TypeOf<B> & TypeOf<C> & TypeOf<D>>
+  name?: TypeName,
+): IntersectionType<[A, B, C, D], StaticTypeOf<A> & StaticTypeOf<B> & StaticTypeOf<C> & StaticTypeOf<D>>
 export function intersection<A extends Mixed, B extends Mixed, C extends Mixed>(
   types: [A, B, C],
-  name?: string,
-): IntersectionType<[A, B, C], TypeOf<A> & TypeOf<B> & TypeOf<C>>
+  name?: TypeName,
+): IntersectionType<[A, B, C], StaticTypeOf<A> & StaticTypeOf<B> & StaticTypeOf<C>>
 export function intersection<A extends Mixed, B extends Mixed>(
   types: [A, B],
-  name?: string,
-): IntersectionType<[A, B], TypeOf<A> & TypeOf<B>>
+  name?: TypeName,
+): IntersectionType<[A, B], StaticTypeOf<A> & StaticTypeOf<B>>
 export function intersection<A extends Mixed>(
   types: [A],
-  name?: string,
-): IntersectionType<[A], TypeOf<A>>
+  name?: TypeName,
+): IntersectionType<[A], StaticTypeOf<A>>
 export function intersection<RTS extends Array<Mixed>>(
   types: RTS,
-  name: string = `(${types.map(type => type.name).join(' & ')})`,
+  name: TypeName = () => `(${types.map(type => type.name).join(' & ')})`,
 ): IntersectionType<RTS, $IntentionalAny> {
   const len = types.length
   return new IntersectionType(
@@ -747,7 +789,7 @@ export class TupleType<
 > extends Type<A> {
   readonly _tag: 'TupleType' = 'TupleType'
   constructor(
-    name: string,
+    name: TypeName,
     is: TupleType<RTS, A>['is'],
     _validateWithContext: TupleType<RTS, A>['_validateWithContext'],
     readonly types: RTS,
@@ -764,10 +806,10 @@ export function tuple<
   E extends Mixed
 >(
   types: [A, B, C, D, E],
-  name?: string,
+  name?: TypeName,
 ): TupleType<
   [A, B, C, D, E],
-  [TypeOf<A>, TypeOf<B>, TypeOf<C>, TypeOf<D>, TypeOf<E>]
+  [StaticTypeOf<A>, StaticTypeOf<B>, StaticTypeOf<C>, StaticTypeOf<D>, StaticTypeOf<E>]
 >
 export function tuple<
   A extends Mixed,
@@ -776,20 +818,20 @@ export function tuple<
   D extends Mixed
 >(
   types: [A, B, C, D],
-  name?: string,
-): TupleType<[A, B, C, D], [TypeOf<A>, TypeOf<B>, TypeOf<C>, TypeOf<D>]>
+  name?: TypeName,
+): TupleType<[A, B, C, D], [StaticTypeOf<A>, StaticTypeOf<B>, StaticTypeOf<C>, StaticTypeOf<D>]>
 export function tuple<A extends Mixed, B extends Mixed, C extends Mixed>(
   types: [A, B, C],
-  name?: string,
-): TupleType<[A, B, C], [TypeOf<A>, TypeOf<B>, TypeOf<C>]>
+  name?: TypeName,
+): TupleType<[A, B, C], [StaticTypeOf<A>, StaticTypeOf<B>, StaticTypeOf<C>]>
 export function tuple<A extends Mixed, B extends Mixed>(
   types: [A, B],
-  name?: string,
-): TupleType<[A, B], [TypeOf<A>, TypeOf<B>]>
+  name?: TypeName,
+): TupleType<[A, B], [StaticTypeOf<A>, StaticTypeOf<B>]>
 export function tuple<A extends Mixed>(
   types: [A],
-  name?: string,
-): TupleType<[A], [TypeOf<A>]>
+  name?: TypeName,
+): TupleType<[A], [StaticTypeOf<A>]>
 export function tuple<RTS extends Array<Mixed>>(
   types: RTS,
   name: string = `[${types.map(type => type.name).join(', ')}]`,
@@ -813,7 +855,7 @@ export function tuple<RTS extends Array<Mixed>>(
           const type = types[i]
           const validation = type._validateWithContext(
             a,
-            appendValidationContext(c, String(i), type),
+            appendValidationContext(c, String(i), type, a),
           )
           if (validation.isLeft()) {
             pushAll(errors, validation.value)
@@ -823,7 +865,7 @@ export function tuple<RTS extends Array<Mixed>>(
           errors.push(
             getValidationError(
               t[len],
-              appendValidationContext(c, String(len), never),
+              appendValidationContext(c, String(len), never, m),
             ),
           )
         }
@@ -853,7 +895,7 @@ export class ReadonlyType<RT extends Any, A = $IntentionalAny> extends Type<A> {
 export const readonly = <RT extends Mixed>(
   type: RT,
   name: string = `Readonly<${type.name}>`,
-): ReadonlyType<RT, Readonly<TypeOf<RT>>> =>
+): ReadonlyType<RT, Readonly<StaticTypeOf<RT>>> =>
   new ReadonlyType(
     name,
     type.is,
@@ -883,7 +925,7 @@ export class ReadonlyArrayType<
 export const readonlyArray = <RT extends Mixed>(
   type: RT,
   name: string = `ReadonlyArray<${type.name}>`,
-): ReadonlyArrayType<RT, ReadonlyArray<TypeOf<RT>>> => {
+): ReadonlyArrayType<RT, ReadonlyArray<StaticTypeOf<RT>>> => {
   const arrayType = array(type)
   return new ReadonlyArrayType(
     name,
@@ -964,6 +1006,7 @@ export type Tagged<Tag extends string, A = $IntentionalAny> =
   | TaggedUnion<Tag, A>
   | TaggedIntersection<Tag, A>
   | TaggedExact<Tag>
+  | InvariantType<A, Type<A>>
 
 const isTagged = <Tag extends string>(
   tag: Tag,
@@ -1012,6 +1055,7 @@ const getTagValue = <Tag extends string>(
         return f(findTagged(tag, type.types))
       case 'UnionType':
         return f(type.types[0])
+      case 'InvariantType':
       case 'RefinementType':
       case 'ExactType':
         return f(type.type)
@@ -1024,7 +1068,7 @@ export const taggedUnion = <Tag extends string, RTS extends Array<Tagged<Tag>>>(
   tag: Tag,
   types: RTS,
   name: string = `(${types.map(type => type.name).join(' | ')})`,
-): UnionType<RTS, TypeOf<RTS['_A']>> => {
+): UnionType<RTS, StaticTypeOf<RTS['StaticType']>> => {
   const len = types.length
   const values: Array<string | number | boolean> = new Array(len)
   const hash: {[key: string]: number} = {}
@@ -1057,24 +1101,24 @@ export const taggedUnion = <Tag extends string, RTS extends Array<Tagged<Tag>>>(
     isTagValue,
     (m, c) => (isTagValue(m) ? success() : failure(m, c)),
   )
-  return new UnionType<RTS, TypeOf<RTS['_A']>>(
+  return new UnionType<RTS, StaticTypeOf<RTS['StaticType']>>(
     name,
-    (v): v is TypeOf<RTS['_A']> => {
-      if (!Dictionary.is(v)) {
+    (v): v is StaticTypeOf<RTS['StaticType']> => {
+      if (!$Record.is(v)) {
         return false
       }
       const tagValue = v[tag]
       return TagValue.is(tagValue) && types[getIndex(tagValue)].is(v)
     },
     (s, c) => {
-      const dictionaryValidation = Dictionary._validateWithContext(s, c)
-      if (dictionaryValidation.isLeft()) {
-        return dictionaryValidation
+      const recordValidation = $Record._validateWithContext(s, c)
+      if (recordValidation.isLeft()) {
+        return recordValidation
       } else {
         const d = s as $IntentionalAny
         const tagValueValidation = TagValue._validateWithContext(
           d[tag],
-          appendValidationContext(c, tag, TagValue),
+          appendValidationContext(c, tag, TagValue, s),
         )
         if (tagValueValidation.isLeft()) {
           return tagValueValidation
@@ -1083,7 +1127,7 @@ export const taggedUnion = <Tag extends string, RTS extends Array<Tagged<Tag>>>(
           const type = types[i]
           return type._validateWithContext(
             d,
-            appendValidationContext(c, String(i), type),
+            appendValidationContext(c, String(i), type, s),
           )
         }
       }
@@ -1145,11 +1189,11 @@ const getProps = (type: HasProps): Props => {
 export function exact<RT extends HasProps>(
   type: RT,
   name: string = `ExactType<${type.name}>`,
-): ExactType<RT, TypeOf<RT>> {
+): ExactType<RT, StaticTypeOf<RT>> {
   const props: Props = getProps(type)
   return new ExactType(
     name,
-    (m): m is TypeOf<RT> =>
+    (m): m is StaticTypeOf<RT> =>
       type.is(m) &&
       Object.getOwnPropertyNames(m).every(k => props.hasOwnProperty(k)),
     (m, c) => {
@@ -1167,7 +1211,7 @@ export function exact<RT extends HasProps>(
             errors.push(
               getValidationError(
                 o[key],
-                appendValidationContext(c, key, never),
+                appendValidationContext(c, key, never, o[key]),
               ),
             )
           }
@@ -1229,7 +1273,148 @@ export const fixMe = $IntentionalAny
 
 export function maybe<RT extends Any>(
   type: RT,
-  name?: string,
-): UnionType<[RT, NullType], TypeOf<RT> | null> {
+  name?: TypeName,
+): UnionType<[RT, NullType], StaticTypeOf<RT> | null> {
   return union<[RT, NullType]>([type, nullType], name)
+}
+
+class OptionalType<T, Rt extends Type<T>> extends Type<T | undefined> {
+  _tag: 'OptionalType' = 'OptionalType'
+  constructor(type: Rt) {
+    super(name, is, _validateWithContext)
+    function name(this: OptionalType<T, Rt>) {
+      return `Optional<${type.name}>`
+    }
+    function is(v: mixed): v is T | undefined {
+      return typeof v === 'undefined' || type.is(v)
+    }
+    function _validateWithContext(
+      v: mixed,
+      c: ValidationContext,
+    ) {
+      return typeof v === 'undefined' ? success() : type._validateWithContext(v, c)
+    }
+  }
+}
+
+export function optional<T, Rt extends Type<T>>(type: Rt): OptionalType<T, Rt> {
+  return new OptionalType(type)
+}
+
+type Instantiable = new (...args: $IntentionalAny[]) => $IntentionalAny
+
+class InstanceOfClass<Cls extends Instantiable> extends Type<
+  InstanceType<Cls>
+> {
+  readonly _tag = 'InstanceOf'
+  constructor(name: string, cls: Cls) {
+    super(
+      name,
+      (v): v is InstanceType<Cls> => v instanceof cls,
+      (v, c) => {
+        return this.is(v) ? success() : failure(v, c)
+      },
+    )
+  }
+}
+
+export const instanceOf = <Cls extends Instantiable>(
+  cls: Cls,
+): Type<InstanceType<Cls>> => {
+  return new InstanceOfClass(`instanceOf<${getFunctionName(cls)}>`, cls)
+}
+
+class SubclassOf<Cls extends Instantiable> extends Type<Cls> {
+  readonly _tag = 'SubclassOf'
+  constructor(name: string, cls: Cls) {
+    super(
+      name,
+      (v: Instantiable): v is Cls =>
+        (typeof v === 'function' && v.prototype instanceof cls) || v === cls,
+      (v, c) => {
+        return this.is(v) ? success() : failure(v, c)
+      },
+    )
+  }
+}
+
+export const subclassOf = <Cls extends Instantiable>(
+  cls: Cls,
+): SubclassOf<Cls> => {
+  return new SubclassOf(`subclassOf<${getFunctionName(cls)}>`, cls)
+}
+
+export class DeferredType<A> extends Type<A> {
+  _cachedType: Type<A> | undefined
+
+  constructor(readonly _resolveType: () => Type<A>) {
+    super(
+      function name(this: DeferredType<A>) {
+        return this.getType().name
+      },
+      function is(this: DeferredType<A>, v: {}): v is A {
+        return this.getType().is(v)
+      },
+      function _validateWithContext(
+        this: DeferredType<A>,
+        v: mixed,
+        c: ValidationContext,
+      ) {
+        return this.getType()._validateWithContext(v, c)
+      },
+    )
+  }
+
+  getType(): Type<A> {
+    if (this._cachedType) return this._cachedType
+    this._cachedType = this._resolveType()
+    return this._cachedType
+  }
+}
+
+export const deferred = <A>(resolveType: () => Type<A>): Type<A> => {
+  const Self: $IntentionalAny = new DeferredType<A>(resolveType)
+  return Self
+}
+
+type InvariantCondition<T> = (v: T, c?: ValidationContext) => true | string[]
+
+export class InvariantType<A, Rt extends Type<A>> extends Type<A> {
+  readonly _tag: 'InvariantType' = 'InvariantType'
+
+  get type(): Type<A> {
+    return this.inner
+  }
+  constructor(
+    name: TypeName,
+    readonly inner: Type<A>,
+    readonly condition: InvariantCondition<A>,
+  ) {
+    super(
+      name,
+      function is(this: InvariantType<A, Rt>, v: mixed): v is A {
+        if (!this.inner.is(v)) return false
+        return this.condition(v) === true
+      },
+      function _validateWithContext(
+        this: InvariantType<A, Rt>,
+        v: mixed,
+        c: ValidationContext,
+      ) {
+        return this.inner._validateWithContext(v, c).chain(() => {
+          const conditionResult = this.condition(v as A, c)
+          if (conditionResult === true) return success()
+          return failure(v, c, conditionResult)
+        })
+      },
+    )
+  }
+}
+
+export const withInvariant = <T, Rt extends Type<T>>(
+  inner: Rt,
+  condition: InvariantCondition<T>,
+  name: TypeName = () => `invariant<${inner.name}>`,
+): InvariantType<T, Rt> => {
+  return new InvariantType(name, inner, condition)
 }

@@ -1,14 +1,14 @@
-import {ComponentId} from '$theater/componentModel/types'
+import {IComponentId} from '$theater/componentModel/types'
 import * as t from '$shared/ioTypes/index'
 
 export const $IPanelId = t.string
-export type IPanelId = t.TypeOf<typeof $IPanelId>
+export type IPanelId = t.StaticTypeOf<typeof $IPanelId>
 
 export const $IPanelType = t.string
-export type IPanelType = t.TypeOf<typeof $IPanelType>
+export type IPanelType = t.StaticTypeOf<typeof $IPanelType>
 
 export const $IXY = t.type({x: t.number, y: t.number}, 'XY')
-export type IXY = t.TypeOf<typeof $IXY>
+export type IXY = t.StaticTypeOf<typeof $IXY>
 
 const $IPanelBoundaryDim = t.union([
   t.literal('top'),
@@ -32,7 +32,7 @@ export const $IPanelBoundary = t.taggedUnion(
   ],
   'IPanelBoundary',
 )
-export type IPanelBoundary = t.TypeOf<typeof $IPanelBoundary>
+export type IPanelBoundary = t.StaticTypeOf<typeof $IPanelBoundary>
 
 export const $IPanelBoundaries = t.type(
   {
@@ -43,7 +43,7 @@ export const $IPanelBoundaries = t.type(
   },
   'IPanelBoundaries',
 )
-export type IPanelBoundaries = t.TypeOf<typeof $IPanelBoundaries>
+export type IPanelBoundaries = t.StaticTypeOf<typeof $IPanelBoundaries>
 
 export const $IWorkspacePanel = t.type(
   {
@@ -53,7 +53,7 @@ export const $IWorkspacePanel = t.type(
   },
   'IWorkspacePanel',
 )
-export type IWorkspacePanel = t.TypeOf<typeof $IWorkspacePanel>
+export type IWorkspacePanel = t.StaticTypeOf<typeof $IWorkspacePanel>
 
 export type visiblePanelsList = Array<string>
 
@@ -66,7 +66,7 @@ export type Panels = {
 
 const $IPanels = t.type(
   {
-    byId: t.dictionary(t.string, $IWorkspacePanel, 'PanelsById'),
+    byId: t.record(t.string, $IWorkspacePanel, 'PanelsById'),
     listOfVisibles: t.array($IPanelId),
     panelObjectBeingDragged: t.fixMe,
     idOfActivePanel: t.maybe(t.string),
@@ -83,11 +83,11 @@ export const $IViewport = t.type(
   },
   'Viewport',
 )
-export type IViewport = t.TypeOf<typeof $IViewport>
+export type IViewport = t.StaticTypeOf<typeof $IViewport>
 
 export const $IViewports = t.type(
   {
-    byId: t.dictionary(t.string, $IViewport),
+    byId: t.record(t.string, $IViewport),
     activeViewportId: t.union([t.undefined, t.string], 'activeViewportId'),
     whatToShowInBody: t.taggedUnion(
       'type',
@@ -105,7 +105,7 @@ export const $IViewports = t.type(
   },
   'IViewports',
 )
-export type IViewports = t.TypeOf<typeof $IViewports>
+export type IViewports = t.StaticTypeOf<typeof $IViewports>
 
 export const $IWorkspaceHistoricState = t.type(
   {
@@ -114,14 +114,26 @@ export const $IWorkspaceHistoricState = t.type(
   },
   'IWorkspaceNamespaceHistoricState',
 )
-export type IWorkspaceHistoricState = t.TypeOf<typeof $IWorkspaceHistoricState>
+export type IWorkspaceHistoricState = t.StaticTypeOf<typeof $IWorkspaceHistoricState>
 
-export type ViewportsContainer = {
-  scrollX: number
-  scrollY: number
-}
+export const $IViewportsContainer = t.type(
+  {
+    scrollX: t.number,
+    scrollY: t.number,
+  },
+  'ViewportsContainer',
+)
+export type IViewportsContainer = t.StaticTypeOf<typeof $IViewportsContainer>
 
-export type IWorkspaceNamespaceAHistoricState = {
-  activeNodeVolatileIdByViewportId: Record<string, string>
-  viewportsContainer: ViewportsContainer
-}
+export const $IWorkspaceAhistoricState = t.type({
+  activeNodeVolatileIdByViewportId: t.record(t.string, t.string),
+  viewportsContainer: $IViewportsContainer,
+})
+export type IWorkspaceAhistoricState = t.StaticTypeOf<
+  typeof $IWorkspaceAhistoricState
+>
+
+// export type IWorkspaceAhistoricState = {
+//   activeNodeVolatileIdByViewportId: Record<string, string>
+//   viewportsContainer: IViewportsContainer
+// }

@@ -1,6 +1,6 @@
 import constructModifierInstantiationValueDescriptor from './constructModifierInstantiationValueDescriptor'
 import constructComponentInstantiationValueDescriptor from './constructComponentInstantiationValueDescriptor'
-import {ValueDescriptorDescribedInAnObject} from '$theater/componentModel/types'
+import {ITaggedValueDescriptor} from '$theater/componentModel/types'
 import constructListDescriptor from './constructListDescriptor'
 import constructMapDescriptor from './constructMapDescriptor'
 import constructReferenceToLocalHiddenValue from './constructReferenceToLocalHiddenValue'
@@ -9,7 +9,7 @@ import constructReferenceToTimelineVar from './constructReferenceToTimelineVar'
 type Constructor = (desP: $FixMe, d: $FixMe) => $FixMe
 
 const constructors: {
-  [key: ValueDescriptorDescribedInAnObject['type']]: Constructor
+  [key in ITaggedValueDescriptor['__descriptorType']]: Constructor
 } = {
   ComponentInstantiationValueDescriptor: constructComponentInstantiationValueDescriptor,
   ModifierInstantiationValueDescriptor: constructModifierInstantiationValueDescriptor,
@@ -32,7 +32,7 @@ const constructValue = (val: $FixMe, self: $FixMe) => {
   } else if (val && val.isDerivedDict === true) {
     return val
       .prop('__descriptorType')
-      .flatMap((type: ValueDescriptorDescribedInAnObject['type']) => {
+      .flatMap((type: ITaggedValueDescriptor['type']) => {
         if (typeof type === 'string') {
           const constructor = constructors[type]
           if (constructor) return constructor(val, self)

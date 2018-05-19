@@ -1,5 +1,5 @@
 import React from 'react'
-import {ComponentDescriptor} from '$theater/componentModel/types'
+import {IComponentDescriptor} from '$theater/componentModel/types'
 import {DerivedClass} from '$shared/DataVerse/derivedClass/derivedClass'
 import withDeps from '$shared/DataVerse/derivations/withDeps'
 import boxAtom from '$shared/DataVerse/atoms/boxAtom'
@@ -77,7 +77,7 @@ class DOMTag extends TheaterComponent {
   }
 }
 
-const descriptor: ComponentDescriptor = {
+const descriptor: IComponentDescriptor = {
   id: componentId,
   displayName: 'DOMTag',
   type: 'HardCoded',

@@ -5,12 +5,12 @@ import {ITheaterStoreState} from '$theater/types'
 import immer from 'immer'
 import React from 'react'
 import ReactDOM from 'react-dom'
-import {IModifierInstantiationValueDescriptor} from '../types/declarative'
 import {
+  IModifierInstantiationValueDescriptor,
   IDeclarativeComponentDescriptor,
   IReferenceToLocalHiddenValue,
   IComponentInstantiationValueDescriptor,
-} from '../types/declarative'
+} from '../types'
 
 type Utils = {
   updateState: (fn: (s: ITheaterStoreState) => void) => void

@@ -4,6 +4,7 @@ import {compose, applyMiddleware, createStore, Store} from 'redux'
 import {identity} from 'lodash'
 import {ITheaterStoreState, RStoreState} from '$theater/types'
 import {GenericAction} from '$shared/types'
+import {diff as diffValues} from 'jiff'
 import {betterErrorReporter} from '$shared/ioTypes/betterErrorReporter'
 export const defaultConfig = {rootReducer, rootSaga}
 
@@ -16,6 +17,7 @@ export default function configureStore(): Store<ITheaterStoreState> {
       ...args: $IntentionalAny[]
     ) => {
       const store: Store<ITheaterStoreState> = _createStore(...args)
+      let oldState = store.getState()
 
       const dispatch = (action: GenericAction) => {
         const result = store.dispatch(action)
@@ -25,11 +27,18 @@ export default function configureStore(): Store<ITheaterStoreState> {
         if (validationResult.isLeft()) {
           console.group(`Store state has become invalid.`)
           console.log('Culprit action:', action)
+          console.log(
+            'Diff:',
+            diffValues(getRelevantState(oldState), getRelevantState(newState), {
+              invertible: false,
+            }),
+          )
           const errors = betterErrorReporter(validationResult)
           console.log('Errors:', `(${errors.length})`)
-          errors.forEach((err) => console.log(err))
+          errors.forEach(err => console.log(err))
         }
         console.groupEnd()
+        oldState = newState
 
         return result
       }
@@ -84,4 +93,11 @@ export default function configureStore(): Store<ITheaterStoreState> {
   }
 
   return store
+
+  function getRelevantState(oldState: ITheaterStoreState): $IntentionalAny {
+    return {
+      ...oldState['@@history'].innerState,
+      ...oldState['@@ahistoricState'],
+    }
+  }
 }

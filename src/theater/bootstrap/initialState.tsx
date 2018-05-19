@@ -4,7 +4,7 @@ import {
   historicInitialState as historicComponentModel,
   ahistoricInitialState as ahistoricComponentModel,
 } from '$theater/componentModel/initialState'
-import {IStoreHistoricState, IStoreAhistoricSTate} from '../types'
+import {IStoreHistoricState, IStoreAhistoricState} from '../types'
 
 export const initialPersistedState: IStoreHistoricState = {
   common,
@@ -12,7 +12,7 @@ export const initialPersistedState: IStoreHistoricState = {
   historicComponentModel,
 }
 
-export const initialAhistoricState: IStoreAhistoricSTate = {
+export const initialAhistoricState: IStoreAhistoricState = {
   stateIsHydrated: false,
   pathToProject: undefined,
   ahistoricComponentModel,

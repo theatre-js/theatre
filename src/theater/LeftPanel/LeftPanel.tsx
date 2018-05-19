@@ -1,5 +1,5 @@
 import {ValueEditor} from '$theater/structuralEditor'
-import {ComponentId} from '$theater/componentModel/types'
+import {IComponentId} from '$theater/componentModel/types'
 import * as componentModelSelectors from '$theater/componentModel/selectors'
 import PaleMessage from '$theater/common/components/PaleMessage'
 import Panel from '$theater/workspace/components/Panel/Panel'
@@ -64,7 +64,7 @@ export const renderEditorForEitherLeftOrRightPanel = (
     return <PaleMessage message={`Select an element from the Explorer pane`} />
   }
 
-  const componentId = possibleComponentId as ComponentId
+  const componentId = possibleComponentId as IComponentId
 
   const pathToComopnentDescriptor = componentModelSelectors.getPathToComponentDescriptor(
     componentId,

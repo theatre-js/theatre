@@ -1,16 +1,16 @@
 import {Selector} from '$theater/types'
-import {ComponentId, ComponentDescriptor} from './types'
+import {IComponentId, IComponentDescriptor} from './types'
 import stringStartsWith from 'lodash/startsWith'
 import {get} from 'lodash'
 
 export const getComponentDescriptor: Selector<
-  ComponentDescriptor,
-  ComponentId
-> = (state, id: ComponentId) => {
+  IComponentDescriptor,
+  IComponentId
+> = (state, id: IComponentId) => {
   return get(state, getPathToComponentDescriptor(id))
 }
 
-export const getPathToComponentDescriptor = (id: ComponentId) => {
+export const getPathToComponentDescriptor = (id: IComponentId) => {
   const isCore = isCoreComponent(id)
 
   if (isCore) {
