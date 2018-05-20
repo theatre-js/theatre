@@ -855,7 +855,6 @@ class Content extends PureComponentWithTheater<Props, State> {
                         onDrag={(dx: number) =>
                           this.changeCurrentTimeTo(
                             this.xToFocusedTime(
-                              // this.state.currentTimeXBeforeDrag + dx, focus, panelWidth
                               this.currentTTimeXBeforeDrag.getValue() + dx,
                               focus,
                               panelWidth,

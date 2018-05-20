@@ -53,6 +53,7 @@ class SelectionArea extends React.PureComponent<Props, State> {
     const startX = startPos.x - left
     const startY = startPos.y - top
     this.state = {
+      isMoving: false,
       isMovable: false,
       left: startX,
       top: startY,

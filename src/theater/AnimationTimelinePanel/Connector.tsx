@@ -69,60 +69,61 @@ class Connector extends React.PureComponent<IProps, IState> {
     let pathD
     if (rightPointValue > leftPointValue) {
       pathD = `M 0 0
-                C ${handles[0] * 100}
-                  ${handles[1] * 100}
-                  ${100 - handles[2] * 100}
-                  ${100 - handles[3] * 100} 100 100`
+               C ${handles[0] * 100}
+                 ${handles[1] * 100}
+                 ${100 - handles[2] * 100}
+                 ${100 - handles[3] * 100} 100 100`
     }
     if (rightPointValue < leftPointValue) {
       pathD = `M 0 100
-                C ${handles[0] * 100}
-                  ${100 - handles[1] * 100}
-                  ${100 - handles[2] * 100}
-                  ${handles[3] * 100} 100 0`
+               C ${handles[0] * 100}
+                 ${100 - handles[1] * 100}
+                 ${100 - handles[2] * 100}
+                 ${handles[3] * 100} 100 0`
     }
     if (rightPointValue === leftPointValue) {
       pathD = `M 0 0
-                C ${handles[0] * 100} 0
-                  ${handles[2] * 100} 0 100 0`
+               C ${handles[0] * 100} 0
+                 ${handles[2] * 100} 0 100 0`
     }
 
-    return [
-      <Subscriber key="subscriber" channel={PanelActiveModeChannel}>
-        {({activeMode}: {activeMode: string}) => {
-          this._setActiveMode(activeMode)
-          return null
-        }}
-      </Subscriber>,
-      <svg
-        key="curve"
-        x={x}
-        y={y}
-        width={width}
-        height={height}
-        viewBox="0 0 100 100"
-        preserveAspectRatio="none"
-        className={css.curveContainer}
-      >
-        <path
-          d={pathD}
-          fill="transparent"
-          stroke="transparent"
-          strokeWidth={10}
-          vectorEffect="non-scaling-stroke"
-          onMouseDown={this.clickHandler}
-          onContextMenu={this.contextMenuHandler}
-          ref={c => (this.connectorClickArea = c)}
-        />
-        <path
-          d={pathD}
-          fill="transparent"
-          strokeWidth={2}
-          vectorEffect="non-scaling-stroke"
-          className={css.connectorPath}
-        />
-      </svg>,
-    ]
+    return (
+      <>
+        <Subscriber channel={PanelActiveModeChannel}>
+          {({activeMode}: {activeMode: string}) => {
+            this._setActiveMode(activeMode)
+            return null
+          }}
+        </Subscriber>
+        <svg
+          x={x}
+          y={y}
+          width={width}
+          height={height}
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+          className={css.curveContainer}
+        >
+          <path
+            d={pathD}
+            fill="transparent"
+            stroke="transparent"
+            strokeWidth={10}
+            vectorEffect="non-scaling-stroke"
+            onMouseDown={this.clickHandler}
+            onContextMenu={this.contextMenuHandler}
+            ref={c => (this.connectorClickArea = c)}
+          />
+          <path
+            d={pathD}
+            fill="transparent"
+            strokeWidth={2}
+            vectorEffect="non-scaling-stroke"
+            className={css.connectorPath}
+          />
+        </svg>
+      </>
+    )
   }
 }
 

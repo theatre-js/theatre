@@ -55,8 +55,13 @@ export const colors = [
   {name: 'yellow', normal: '#FCE181', darkened: '#726a4b'},
 ]
 
+<<<<<<< HEAD
 class BoxView extends PureComponentWithTheater<IProps, IState> {
   svgArea: HTMLElement
+=======
+class BoxView extends StudioComponent<IProps, IState> {
+  svgArea: SVGSVGElement
+>>>>>>> minor changes
 
   constructor(props: IProps, context: $IntentionalAny) {
     super(props, context)
