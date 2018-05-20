@@ -13,14 +13,11 @@ import * as t from '$shared/ioTypes'
 // }
 
 const formatValidationError = (error: t.ValidationError) => {
-  // const path = getContextPath(error.context)
-
   const path = error.context
-    .map(c => c.key)
-    // The context entry with an empty key is the original type ("default
-    // context"), not an type error.
-    .filter(key => key.length > 0)
-    .join('.')
+    .map((c) => {
+      return {key: c.key, value: c.value}
+    })
+    .filter(({key}) => key.length > 0)
 
   // The actual error is last in context
   const maybeErrorContext = array.last(error.context as t.ValidationContextEntry[])
@@ -28,9 +25,6 @@ const formatValidationError = (error: t.ValidationError) => {
   return maybeErrorContext.map((errorContext: t.ValidationContextEntry) => {
     const expectedType = errorContext.type.name
     return {path, expectedType, value: error.value, ...(error.extraInfo ? {info: error.extraInfo} : {})}
-    // `Expecting ${expectedType}` +
-    // (path === '' ? '' : ` at ${path}`) +
-    // ` but instead got: ${stringify(error.value)}.`
   })
 }
 

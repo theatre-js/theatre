@@ -2,26 +2,8 @@ import {$IComponentId} from './'
 import React from 'react'
 import {IComponentId} from './index'
 import * as t from '$shared/ioTypes'
-import {difference, findLast} from 'lodash'
+import {findLast} from 'lodash'
 import {listAndById} from '$shared/types'
-
-// export interface IDeclarativeComponentDescriptor {
-//   __descriptorType: 'DeclarativeComponentDescriptor'
-//   id: IComponentId // this is unique
-//   displayName: string // this doesn't have to be
-//   localHiddenValuesById: {[localid: string]: ValueDescriptor}
-//   whatToRender: WhatToRender
-//   timelineDescriptors: {
-//     byId: {[id: string]: ITimelineDescriptor}
-//     list: Array<string>
-//   }
-//   meta?: {
-//     composePanel?: {
-//       selectedNodeId?: string
-//     }
-//   }
-//   isScene: boolean
-// }
 
 export const $IDeclarativeComponentDescriptor = t.type(
   {
@@ -32,6 +14,15 @@ export const $IDeclarativeComponentDescriptor = t.type(
     whatToRender: t.deferred(() => $IReferenceToLocalHiddenValue),
     isScene: t.optional(t.boolean),
     timelineDescriptors: t.deferred(() => $ITimelineDescriptors),
+    meta: t.optional(
+      t.type({
+        composePanel: t.optional(
+          t.type({
+            selectedNodeId: t.optional(t.string),
+          }),
+        ),
+      }),
+    ),
   },
   'IDeclarativeComponentDescriptor',
 )
@@ -47,7 +38,7 @@ export type ILocalHiddenValuesById = t.StaticTypeOf<
   typeof $ILocalHiddenValuesById
 >
 
-export type WhatToRender = IReferenceToLocalHiddenValue | IReferenceToProp
+export type WhatToRender = IReferenceToLocalHiddenValue
 
 export interface IPropDescriptor {
   // each prop has a uniquely generated ID
@@ -66,24 +57,13 @@ export interface IRuleSet {
   selector: string // better to have a more structured type for this
 }
 
-export interface IModifierInstantiationValueDescriptor {
-  __descriptorType: 'ModifierInstantiationValueDescriptor'
-  modifierId: string
-  props: Record<string, mixed>
-  enabled: boolean
-}
-
 export interface IModifierDescriptor {
   id: string
   getClass: $FixMe
   InspectorComponent?: React.Component<$FixMe>
 }
 
-// export interface IReferenceToLocalHiddenValue {
-//   __descriptorType: 'ReferenceToLocalHiddenValue'
-//   which: string
-// }
-
+// crawls up the validationContext to find the first IDeclarativeComponentDescriptor
 const findDeclarativeComponentDescriptorInContext = (
   c: t.ValidationContext,
 ): undefined | IDeclarativeComponentDescriptor => {
@@ -111,7 +91,7 @@ export const $IReferenceToLocalHiddenValue = t
     },
     'IReferenceToLocalHiddenValue',
   )
-  .withInvariant((v, c) => {
+  .withRuntimeCheck((v, c) => {
     if (!c) return true
     const possibleComponent = findDeclarativeComponentDescriptorInContext(c)
     if (!possibleComponent) {
@@ -133,30 +113,6 @@ export type IReferenceToLocalHiddenValue = t.StaticTypeOf<
   typeof $IReferenceToLocalHiddenValue
 >
 
-export interface IReferenceToProp {
-  __descriptorType: 'ReferenceToProp'
-  propid: string
-}
-
-// export type IMapDescriptor<O> = Record<string, O>
-
-// export type IArrayDescriptor<T> = Array<T>
-
-/**
- * This is how you'd tell a declarative component to construct another component.
- *
- * How is this different from a ComponentInstantiationDescriptor, you ask?
- * A ComponentInstantiationDescriptor is the value that `Elementify` receives .
- * and is already constructed, while ComponentInstantiationValueDescriptor must
- * be constructed first.
- */
-export interface IComponentInstantiationValueDescriptor {
-  __descriptorType: 'ComponentInstantiationValueDescriptor'
-  componentId: IComponentId
-  props?: Record<string, $FixMe>
-  modifierInstantiationDescriptors?: IModifierInstantiationValueDescriptors
-}
-
 export const $IComponentInstantiationValueDescriptor = t.type(
   {
     __descriptorType: t.literal('ComponentInstantiationValueDescriptor'),
@@ -168,15 +124,20 @@ export const $IComponentInstantiationValueDescriptor = t.type(
   },
   'ComponentInstantiationValueDescriptor',
 )
-// export type IComponentInstantiationValueDescriptor = t.TypeOf<typeof $IComponentInstantiationValueDescriptor>
-
-// export interface IModifierInstantiationValueDescriptors {
-//   list: string[]
-//   byId: Record<string, IModifierInstantiationValueDescriptor>
-// }
+/**
+ * This is how you'd tell a declarative component to construct another component.
+ *
+ * How is this different from a ComponentInstantiationDescriptor, you ask?
+ * A ComponentInstantiationDescriptor is the value that `Elementify` receives .
+ * and is already constructed, while ComponentInstantiationValueDescriptor must
+ * be constructed first.
+ */
+export type IComponentInstantiationValueDescriptor = t.StaticTypeOf<
+  typeof $IComponentInstantiationValueDescriptor
+>
 
 export const $IModifierInstantiationValueDescriptors = listAndById(
-  t.fixMe,
+  t.deferred(() => $IModifierInstantiationValueDescriptor),
   'IModifierInstantiationValueDescriptors',
 )
 
@@ -184,28 +145,62 @@ export type IModifierInstantiationValueDescriptors = t.StaticTypeOf<
   typeof $IModifierInstantiationValueDescriptors
 >
 
-export type ITaggedValueDescriptor =
-  | IReferenceToLocalHiddenValue
-  | IReferenceToProp
-  | IComponentInstantiationValueDescriptor
-  | IModifierInstantiationValueDescriptor
+export const $IModifierInstantiationValueDescriptor = t.type(
+  {
+    __descriptorType: t.literal('ModifierInstantiationValueDescriptor'),
+    modifierId: t.string,
+    props: t.record(t.string, t.fixMe),
+    enabled: t.boolean,
+  },
+  'ModifierInstantiationValueDescriptor',
+)
+export type IModifierInstantiationValueDescriptor = t.StaticTypeOf<
+  typeof $IModifierInstantiationValueDescriptor
+>
 
 export const $ITaggedValueDescriptor = t.taggedUnion(
   '__descriptorType',
-  [$IReferenceToLocalHiddenValue, $IComponentInstantiationValueDescriptor],
+  [
+    $IReferenceToLocalHiddenValue,
+    $IComponentInstantiationValueDescriptor,
+    $IModifierInstantiationValueDescriptor,
+  ],
   'ITaggedValueDescriptor',
 )
-// export type ITaggedValueDescriptor = t.TypeOf<typeof $ITaggedValueDescriptor>
+export type ITaggedValueDescriptor = t.StaticTypeOf<
+  typeof $ITaggedValueDescriptor
+>
 
-export type ValueDescriptor =
-  | ITaggedValueDescriptor
+// export type ValueDescriptor =
+//   | ITaggedValueDescriptor
+//   | string
+//   | boolean
+//   | number
+//   | null
+//   | undefined
+//   | Array<mixed>
+//   | Record<string, mixed> & {__descriptorType: never}
+
+export const $IMapDescriptor: t.Type<
+{[K in string]: K extends '__descriptorType' ? never : IValueDescriptor}
+> = t.record(
+  t.string.refinement(v => v !== '__descriptorType'),
+  t.deferred(() => $IValueDescriptor),
+  'MapDescriptor',
+) as $IntentionalAny
+export type IMapDescriptor = t.StaticTypeOf<typeof $IMapDescriptor>
+
+interface IArrayValueDescriptor extends Array<IValueDescriptor> {}
+
+export type IValueDescriptor =
   | string
-  | boolean
   | number
+  | boolean
   | null
   | undefined
-  | Array<mixed>
-  | Record<string, mixed> & {__descriptorType: never}
+  | ITaggedValueDescriptor
+  | IArrayValueDescriptor
+  | IMapDescriptor
 
 export const $IValueDescriptor = t.union(
   [
@@ -216,17 +211,10 @@ export const $IValueDescriptor = t.union(
     t.undefined,
     $ITaggedValueDescriptor,
     t.array(t.$IntentionalAny),
-    t.type({__descriptorType: t.never}, 'IMapDescriptor'),
+    $IMapDescriptor,
   ],
   'IValueDescriptor',
-)
-export type IValueDescriptor = t.StaticTypeOf<typeof $IValueDescriptor>
-
-// export interface ITimelineDescriptor {
-//   __descriptorType: 'TimelineDescriptor'
-//   id: string
-//   vars: {[varId: string]: ITimelineVarDescriptor}
-// }
+).castStatic<IValueDescriptor>()
 
 export const $ITimelineDescriptor = t.type(
   {
@@ -249,89 +237,70 @@ export interface IPointerThroughLocalHiddenValue {
   rest: Array<string>
 }
 
-export const $ITimelineVarDescriptor = t.type(
-  {
-    __descriptorType: t.literal('TimelineVarDescriptor'),
-    id: t.string,
-    // backPointer: IPointerThroughLocalHiddenValue
-    points: t.type({
-      firstId: t.union([t.null, t.string]),
-      lastId: t.union([t.null, t.string]),
-      byId: t.record(t.string, t.deferred(() => {return $ITimelineVarPoint})),
-    }),
-  },
-  'TimelineVarDescriptor',
-)
+export const $ITimelineVarDescriptor = t
+  .type(
+    {
+      __descriptorType: t.literal('TimelineVarDescriptor'),
+      id: t.string,
+      backPointer: t.fixMe, // IPointerThroughLocalHiddenValue
+      /**
+       * We should reconsider the data structure in which we store points, if things become slow.
+       */
+      points: t.array(t.deferred(() => $ITimelineVarPoint)),
+      // @todo this is tmeporary. Use backPointer
+      component: t.string,
+      // @todo this is tmeporary. Use backPointer
+      property: t.string,
+      // @todo this is temporary. Extremums can be derived from the points
+      extremums: t.tuple([t.number, t.number]),
+    },
+    'TimelineVarDescriptor',
+  )
+  .withRuntimeCheck((v, c) => {
+    if (!c) return true
+    const lastPoint = v.points[v.points.length - 1]
+    if (!lastPoint) return true
+    if (lastPoint.interpolationDescriptor.connected === true) {
+      return ['Last point can never be connected, but this one is']
+    }
+    return true
+  })
 export type ITimelineVarDescriptor = t.StaticTypeOf<
   typeof $ITimelineVarDescriptor
 >
 
-// export interface ITimelineVarDescriptor {
-//   __descriptorType: 'TimelineVarDescriptor'
-//   id: string
-//   backPointer: IPointerThroughLocalHiddenValue
-//   points: {
-//     firstId: undefined | null | string
-//     lastId: undefined | null | string
-//     // list: Array<string>,
-//     byId: {[id: string]: ITimelineVarPoint}
-//   }
-// }
-
-// export interface ITimelinePointInterpolationDescriptor {
-//   __descriptorType: 'TimelinePointInterpolationDescriptor'
-//   interpolationType: 'CubicBezier'
-//   // handles: [lx, ly, rx, ry]
-//   handles: [number, number, number, number]
-//   connected: boolean
-// }
+const $INumberBetween0And1 = t.number.refinement(
+  v => v >= 0 && v <= 1,
+  'NumberBetween0And1',
+)
 
 export const $ITimelinePointInterpolationDescriptor = t.type(
   {
     __descriptorType: t.literal('TimelinePointInterpolationDescriptor'),
     interpolationType: t.literal('CubicBezier'),
-    handles: t.tuple([t.number, t.number, t.number, t.number]),
+    handles: t.tuple([
+      $INumberBetween0And1,
+      t.number,
+      $INumberBetween0And1,
+      t.number,
+    ]),
     connected: t.boolean,
   },
   'TimelinePointInterpolationDescriptor',
-).withInvariant((v) => {
-  const errors: string[] = []
-  const leftHandle = v.handles[0]
-  if (leftHandle < 0 || leftHandle > 1) {
-    errors.push(`Handle 0 should be between 0 <= x <= 1. It's actually ${leftHandle}`)
-  }
-
-  const rightHandle = v.handles[2]
-  if (rightHandle < 0 || rightHandle > 1) {
-    errors.push(`Handle 2 should be between 0 <= x <= 1. It's actually ${rightHandle}`)
-  }
-  return errors.length > 0 ? errors : true
-})
+)
 export type ITimelinePointInterpolationDescriptor = t.StaticTypeOf<
   typeof $ITimelinePointInterpolationDescriptor
 >
 
-// export interface ITimelineVarPoint {
-//   __descriptorType: 'TimelineVarPoint'
-//   id: string
-//   time: number
-//   value: number
-//   interpolationDescriptor: ITimelinePointInterpolationDescriptor
-//   prevId: string // 'head' means we're the first point
-//   nextId: string // 'end' means we're the last point
-// }
-
 export const $ITimelineVarPoint = t.type(
   {
-    __descriptorType: t.literal('TimelineVarPoint'),
-    id: t.string,
+    // @todo let's require a __descriptorType
+    // __descriptorType: t.literal('TimelineVarPoint'),
     time: t.number,
     value: t.number,
     interpolationDescriptor: t.deferred(
       () => $ITimelinePointInterpolationDescriptor,
     ),
-    prevId: t.string, // 'head' means we're the first point
-    nextId: t.string, // 'end' means we're the last point
   },
   'TimelineVarPoint',
 )

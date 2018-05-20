@@ -25,9 +25,9 @@ describe('recursion', () => {
       'Invalid value undefined supplied to : T/a: number',
     ])
     assertFailure(T.validate({a: 1, b: {}}), [
-      'Invalid value undefined supplied to : T/b: (T | undefined | null)/0: T/a: number',
-      'Invalid value {} supplied to : T/b: (T | undefined | null)/1: undefined',
-      'Invalid value {} supplied to : T/b: (T | undefined | null)/2: null',
+      'Invalid value undefined supplied to : T/b: (T | undefined | null)/<T>: T/a: number',
+      'Invalid value {} supplied to : T/b: (T | undefined | null)/<undefined>: undefined',
+      'Invalid value {} supplied to : T/b: (T | undefined | null)/<null>: null',
     ])
   })
 

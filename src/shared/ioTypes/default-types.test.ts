@@ -78,6 +78,6 @@ describe('object', () => {
 
 describe('Function', () => {
   it('should accept functions', () => {
-    assertSuccess(t.Function.validate(t.identity))
+    assertSuccess(t.Function.validate((<V>(v: V): V => v)))
   })
 })

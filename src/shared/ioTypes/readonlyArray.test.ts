@@ -11,7 +11,7 @@ describe('readonlyArray', () => {
   it('should fail validating an invalid value', () => {
     const T = t.readonlyArray(t.number)
     assertFailure(T.validate(['s']), [
-      'Invalid value "s" supplied to : ReadonlyArray<number>/0: number',
+      'Invalid value "s" supplied to : ReadonlyArray<number>/[0]: number',
     ])
   })
 

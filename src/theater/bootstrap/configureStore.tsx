@@ -26,6 +26,7 @@ export default function configureStore(): Store<ITheaterStoreState> {
         const validationResult = RStoreState.validate(newState)
         if (validationResult.isLeft()) {
           console.group(`Store state has become invalid.`)
+          console.log('State:', newState)
           console.log('Culprit action:', action)
           console.log(
             'Diff:',

@@ -47,13 +47,13 @@ describe('taggedUnion', () => {
       'Invalid value "D" supplied to : (TUA | TUB | TUC)/type: "a" | "b" | "c"',
     ])
     assertFailure(T.validate({type: 'a'}), [
-      'Invalid value undefined supplied to : (TUA | TUB | TUC)/0: TUA/foo: string',
+      'Invalid value undefined supplied to : (TUA | TUB | TUC)/<TUA>: TUA/foo: string',
     ])
     assertFailure(T.validate({type: 'b'}), [
-      'Invalid value undefined supplied to : (TUA | TUB | TUC)/1: TUB/bar: number',
+      'Invalid value undefined supplied to : (TUA | TUB | TUC)/<TUB>: TUB/bar: number',
     ])
     assertFailure(T.validate({type: 'c'}), [
-      'Invalid value undefined supplied to : (TUA | TUB | TUC)/2: TUC/baz: number',
+      'Invalid value undefined supplied to : (TUA | TUB | TUC)/<TUC>: TUC/baz: number',
     ])
   })
 
@@ -101,11 +101,11 @@ describe('taggedUnion', () => {
 
     assertSuccess(U.validate({type: 1, foo: 'foo'}))
     assertFailure(U.validate({type: 1, foo: 0}), [
-      'Invalid value 0 supplied to : U/0: A/foo: string',
+      'Invalid value 0 supplied to : U/<A>: A/foo: string',
     ])
     assertSuccess(U.validate({type: 2, bar: 0}))
     assertFailure(U.validate({type: 2, bar: 'bar'}), [
-      'Invalid value "bar" supplied to : U/1: B/bar: number',
+      'Invalid value "bar" supplied to : U/<B>: B/bar: number',
     ])
     assertFailure(U.validate({type: 4}), [
       'Invalid value 4 supplied to : U/type: 1 | 2 | 3',
@@ -139,11 +139,11 @@ describe('taggedUnion', () => {
 
     assertSuccess(U.validate({type: true, foo: 'foo'}))
     assertFailure(U.validate({type: true, foo: 0}), [
-      'Invalid value 0 supplied to : U/0: A/foo: string',
+      'Invalid value 0 supplied to : U/<A>: A/foo: string',
     ])
     assertSuccess(U.validate({type: false, bar: 0}))
     assertFailure(U.validate({type: false, bar: 'bar'}), [
-      'Invalid value "bar" supplied to : U/1: B/bar: number',
+      'Invalid value "bar" supplied to : U/<B>: B/bar: number',
     ])
     assertFailure(U.validate({type: 3}), [
       'Invalid value 3 supplied to : U/type: true | false',
@@ -177,11 +177,11 @@ describe('taggedUnion', () => {
 
     assertSuccess(U.validate({type: 1, foo: 'foo'}))
     assertFailure(U.validate({type: 1, bar: 'bar'}), [
-      'Invalid value undefined supplied to : U/0: A/foo: string',
+      'Invalid value undefined supplied to : U/<A>: A/foo: string',
     ])
     assertSuccess(U.validate({type: '1', bar: 2}))
     assertFailure(U.validate({type: '1', foo: 'foo'}), [
-      'Invalid value undefined supplied to : U/1: B/bar: number',
+      'Invalid value undefined supplied to : U/<B>: B/bar: number',
     ])
     assertFailure(U.validate({type: 3}), [
       'Invalid value 3 supplied to : U/type: 1 | "1"',

@@ -39,8 +39,8 @@ describe('strictInterfaceWithOptionals', () => {
       'Invalid value 1 supplied to : T/a: never',
     ])
     assertFailure(T.validate({foo: 'foo', bar: 1}), [
-      'Invalid value 1 supplied to : T/bar: (string | undefined)/0: string',
-      'Invalid value 1 supplied to : T/bar: (string | undefined)/1: undefined',
+      'Invalid value 1 supplied to : T/bar: (string | undefined)/<string>: string',
+      'Invalid value 1 supplied to : T/bar: (string | undefined)/<undefined>: undefined',
     ])
   })
 

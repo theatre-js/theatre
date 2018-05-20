@@ -48,7 +48,7 @@ export const listAndById = <T extends mixed>(type: t.Type<T>, name: string) =>
       },
       name,
     )
-    .withInvariant(function listAndByIdInvariant(v: {
+    .withRuntimeCheck(function listAndByIdInvariant(v: {
       list: string[]
       byId: Record<string, mixed>
     }) {

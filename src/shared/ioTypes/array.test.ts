@@ -15,7 +15,7 @@ describe('array', () => {
       'Invalid value 1 supplied to : Array<number>',
     ])
     assertFailure(T.validate([1, 's', 3]), [
-      'Invalid value "s" supplied to : Array<number>/1: number',
+      'Invalid value "s" supplied to : Array<number>/[1]: number',
     ])
   })
 

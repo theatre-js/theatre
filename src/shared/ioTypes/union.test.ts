@@ -12,8 +12,8 @@ describe('union', () => {
   it('should fail validating an invalid value', () => {
     const T = t.union([t.string, t.number])
     assertFailure(T.validate(true), [
-      'Invalid value true supplied to : (string | number)/0: string',
-      'Invalid value true supplied to : (string | number)/1: number',
+      'Invalid value true supplied to : (string | number)/<string>: string',
+      'Invalid value true supplied to : (string | number)/<number>: number',
     ])
   })
 

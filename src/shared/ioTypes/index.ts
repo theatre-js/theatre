@@ -57,6 +57,10 @@ export class Type<A> {
   }
 
   _resolvedName: undefined | string = undefined
+
+  /**
+   * Each type has a name, either given, or generated
+   */
   get name() {
     if (this._resolvedName) {
       return this._resolvedName
@@ -78,15 +82,30 @@ export class Type<A> {
     return refinement(this, predicate, name)
   }
 
-  withInvariant(
+  /**
+   * Returns a new type with an additional runtime condition. This is useful
+   * to ascertain invariants.
+   * @example
+   *  
+   *  const singleChar = t.string.withRuntimeCheck(
+   *    function condition(value) {
+          return value.length === 1 ? true : ['Length should be 1']
+   *    },
+   *    'SingleCharachterString' // name of the type
+   * )
+   * 
+   * @note you can also look up the value's parent or ancestors to ensure
+   * the whole thing is properly formed. Look up the type $IReferenceToLocalHiddenValue for 
+   * a good example of this. It ensures that the localHiddenValue actaully exists
+   * in the component that owns it.
+   */
+  withRuntimeCheck(
     condition: InvariantCondition<A>,
     name: undefined | TypeName = undefined,
-  ): InvariantType<A, Type<A>> {
-    return withInvariant(this, condition, name)
+  ): RuntimeCheckType<A, Type<A>> {
+    return withRuntimeCheck(this, condition, name)
   }
 }
-
-export const identity = <A>(a: A): A => a
 
 export const getFunctionName = (f: Function): string =>
   (f as $IntentionalAny).displayName ||
@@ -357,7 +376,7 @@ export const literal = <V extends string | number | boolean>(
 export class KeyofType<D extends {[key: string]: mixed}> extends Type<keyof D> {
   readonly _tag: 'KeyofType' = 'KeyofType'
   constructor(
-    name: string,
+    name: TypeName,
     is: KeyofType<D>['is'],
     _validateWithContext: KeyofType<D>['_validateWithContext'],
     readonly keys: D,
@@ -368,7 +387,7 @@ export class KeyofType<D extends {[key: string]: mixed}> extends Type<keyof D> {
 
 export const keyof = <D extends {[key: string]: mixed}>(
   keys: D,
-  name: string = `(keyof ${JSON.stringify(Object.keys(keys))})`,
+  name: TypeName = () => `(keyof ${JSON.stringify(Object.keys(keys))})`,
 ): KeyofType<D> => {
   const is = (m: mixed): m is keyof D => string.is(m) && keys.hasOwnProperty(m)
   return new KeyofType(
@@ -427,7 +446,7 @@ export const recursion = <A, RT extends Type<A> = Type<A>>(
 export class ArrayType<RT extends Any, A = $IntentionalAny> extends Type<A> {
   readonly _tag: 'ArrayType' = 'ArrayType'
   constructor(
-    name: string,
+    name: TypeName,
     is: ArrayType<RT, A>['is'],
     _validateWithContext: ArrayType<RT, A>['_validateWithContext'],
     readonly type: RT,
@@ -438,7 +457,7 @@ export class ArrayType<RT extends Any, A = $IntentionalAny> extends Type<A> {
 
 export const array = <RT extends Mixed>(
   type: RT,
-  name: string = `Array<${type.name}>`,
+  name: TypeName = () => `Array<${type.name}>`,
 ): ArrayType<RT, Array<StaticTypeOf<RT>>> =>
   new ArrayType(
     name,
@@ -455,7 +474,7 @@ export const array = <RT extends Mixed>(
           const x = xs[i]
           const validation = type._validateWithContext(
             x,
-            appendValidationContext(c, String(i), type, x),
+            appendValidationContext(c, `[${String(i)}]`, type, x),
           )
           if (validation.isLeft()) {
             pushAll(errors, validation.value)
@@ -611,10 +630,16 @@ export type TypeOfRecord<D extends Any, C extends Any> = {
   [K in StaticTypeOf<D>]: StaticTypeOf<C>
 }
 
+/**
+ * Analog to typescript's Record
+ * @example
+ * t.record(t.string, t.number)
+ * Record<string, number>
+ */
 export const record = <D extends Mixed, C extends Mixed>(
   domain: D,
   codomain: C,
-  name: () => string = () => `{ [K in ${domain.name}]: ${codomain.name} }`,
+  name: TypeName = () => `{ [K in ${domain.name}]: ${codomain.name} }`,
 ): RecordType<D, C, TypeOfRecord<D, C>> =>
   new RecordType(
     name,
@@ -674,6 +699,12 @@ export class UnionType<
   }
 }
 
+/**
+ * Analog to typescript's unions.
+ * @example 
+ * const stringOrNumber = union([t.string, t.number])
+ * type StringOrNumber = string | number
+ */
 export const union = <RTS extends Array<Mixed>>(
   types: RTS,
   name: TypeName = () => `(${types.map(type => type.name).join(' | ')})`,
@@ -689,7 +720,7 @@ export const union = <RTS extends Array<Mixed>>(
         const validation = type._validateWithContext(
           m,
           // c
-          appendValidationContext(c, '::' + String(i), type, m),
+          appendValidationContext(c, '<' + type.name + '>', type, m),
         )
         if (validation.isRight()) {
           return validation
@@ -722,6 +753,12 @@ export class IntersectionType<
   }
 }
 
+/**
+ * Analog to typescript intersections
+ * @example
+ *  t.intersection([t.type({foo: t.string}), t.type({bar: t.number})])
+ *  {foo: string} & {bar: number}
+ */
 export function intersection<
   A extends Mixed,
   B extends Mixed,
@@ -834,7 +871,7 @@ export function tuple<A extends Mixed>(
 ): TupleType<[A], [StaticTypeOf<A>]>
 export function tuple<RTS extends Array<Mixed>>(
   types: RTS,
-  name: string = `[${types.map(type => type.name).join(', ')}]`,
+  name: TypeName = () => `[${types.map(type => type.name).join(', ')}]`,
 ): TupleType<RTS, $IntentionalAny> {
   const len = types.length
   return new TupleType(
@@ -855,7 +892,7 @@ export function tuple<RTS extends Array<Mixed>>(
           const type = types[i]
           const validation = type._validateWithContext(
             a,
-            appendValidationContext(c, String(i), type, a),
+            appendValidationContext(c, `[${String(i)}]`, type, a),
           )
           if (validation.isLeft()) {
             pushAll(errors, validation.value)
@@ -865,7 +902,7 @@ export function tuple<RTS extends Array<Mixed>>(
           errors.push(
             getValidationError(
               t[len],
-              appendValidationContext(c, String(len), never, m),
+              appendValidationContext(c, `[${String(len)}]`, never, m),
             ),
           )
         }
@@ -883,7 +920,7 @@ export function tuple<RTS extends Array<Mixed>>(
 export class ReadonlyType<RT extends Any, A = $IntentionalAny> extends Type<A> {
   readonly _tag: 'ReadonlyType' = 'ReadonlyType'
   constructor(
-    name: string,
+    name: TypeName,
     is: ReadonlyType<RT, A>['is'],
     _validateWithContext: ReadonlyType<RT, A>['_validateWithContext'],
     readonly type: RT,
@@ -894,7 +931,7 @@ export class ReadonlyType<RT extends Any, A = $IntentionalAny> extends Type<A> {
 
 export const readonly = <RT extends Mixed>(
   type: RT,
-  name: string = `Readonly<${type.name}>`,
+  name: TypeName = () => `Readonly<${type.name}>`,
 ): ReadonlyType<RT, Readonly<StaticTypeOf<RT>>> =>
   new ReadonlyType(
     name,
@@ -913,7 +950,7 @@ export class ReadonlyArrayType<
 > extends Type<A> {
   readonly _tag: 'ReadonlyArrayType' = 'ReadonlyArrayType'
   constructor(
-    name: string,
+    name: TypeName,
     is: ReadonlyArrayType<RT, A>['is'],
     _validateWithContext: ReadonlyArrayType<RT, A>['_validateWithContext'],
     readonly type: RT,
@@ -924,7 +961,7 @@ export class ReadonlyArrayType<
 
 export const readonlyArray = <RT extends Mixed>(
   type: RT,
-  name: string = `ReadonlyArray<${type.name}>`,
+  name: TypeName = () => `ReadonlyArray<${type.name}>`,
 ): ReadonlyArrayType<RT, ReadonlyArray<StaticTypeOf<RT>>> => {
   const arrayType = array(type)
   return new ReadonlyArrayType(
@@ -942,7 +979,7 @@ export const readonlyArray = <RT extends Mixed>(
 export class StrictType<P, A = $IntentionalAny> extends Type<A> {
   readonly _tag: 'StrictType' = 'StrictType'
   constructor(
-    name: string,
+    name: TypeName,
     is: StrictType<P, A>['is'],
     _validateWithContext: StrictType<P, A>['_validateWithContext'],
     readonly props: P,
@@ -957,7 +994,7 @@ export class StrictType<P, A = $IntentionalAny> extends Type<A> {
  */
 export const strict = <P extends Props>(
   props: P,
-  name: string = `StrictType<${getNameFromProps(props)}>`,
+  name: TypeName = () => `StrictType<${getNameFromProps(props)}>`,
 ): StrictType<P, TypeOfProps<P>> => {
   const exactType = exact(type(props))
   return new StrictType(
@@ -1006,7 +1043,7 @@ export type Tagged<Tag extends string, A = $IntentionalAny> =
   | TaggedUnion<Tag, A>
   | TaggedIntersection<Tag, A>
   | TaggedExact<Tag>
-  | InvariantType<A, Type<A>>
+  | RuntimeCheckType<A, Type<A>>
 
 const isTagged = <Tag extends string>(
   tag: Tag,
@@ -1064,10 +1101,16 @@ const getTagValue = <Tag extends string>(
   return f
 }
 
+/**
+ * A more efficient form of union(), where the tag property is explicitly stated.
+ * @example
+ *  t.taggedUnion('type', [t.type({type: t.literal('Foo'), foo: t.string}), t.type({type: t.literal('Bar'), foo: t.number})])
+ *  {type: 'Foo', foo: string} | {type: 'Bar', foo: number}
+ */
 export const taggedUnion = <Tag extends string, RTS extends Array<Tagged<Tag>>>(
   tag: Tag,
   types: RTS,
-  name: string = `(${types.map(type => type.name).join(' | ')})`,
+  name: TypeName = () => `(${types.map(type => type.name).join(' | ')})`,
 ): UnionType<RTS, StaticTypeOf<RTS['StaticType']>> => {
   const len = types.length
   const values: Array<string | number | boolean> = new Array(len)
@@ -1127,7 +1170,7 @@ export const taggedUnion = <Tag extends string, RTS extends Array<Tagged<Tag>>>(
           const type = types[i]
           return type._validateWithContext(
             d,
-            appendValidationContext(c, String(i), type, s),
+            appendValidationContext(c, '<' + type.name + '>', type, s),
           )
         }
       }
@@ -1143,7 +1186,7 @@ export const taggedUnion = <Tag extends string, RTS extends Array<Tagged<Tag>>>(
 export class ExactType<RT extends Any, A = $IntentionalAny> extends Type<A> {
   readonly _tag: 'ExactType' = 'ExactType'
   constructor(
-    name: string,
+    name: TypeName,
     is: ExactType<RT, A>['is'],
     _validateWithContext: ExactType<RT, A>['_validateWithContext'],
     readonly type: RT,
@@ -1188,7 +1231,7 @@ const getProps = (type: HasProps): Props => {
 
 export function exact<RT extends HasProps>(
   type: RT,
-  name: string = `ExactType<${type.name}>`,
+  name: TypeName = () => `ExactType<${type.name}>`,
 ): ExactType<RT, StaticTypeOf<RT>> {
   const props: Props = getProps(type)
   return new ExactType(
@@ -1297,6 +1340,9 @@ class OptionalType<T, Rt extends Type<T>> extends Type<T | undefined> {
   }
 }
 
+/**
+ * Mostly like a union of T and undefined
+ */
 export function optional<T, Rt extends Type<T>>(type: Rt): OptionalType<T, Rt> {
   return new OptionalType(type)
 }
@@ -1318,6 +1364,9 @@ class InstanceOfClass<Cls extends Instantiable> extends Type<
   }
 }
 
+/**
+ * Matches all values that are instances of cls
+ */
 export const instanceOf = <Cls extends Instantiable>(
   cls: Cls,
 ): Type<InstanceType<Cls>> => {
@@ -1338,6 +1387,9 @@ class SubclassOf<Cls extends Instantiable> extends Type<Cls> {
   }
 }
 
+/**
+ * Matches all values which are classes that extend cls
+ */
 export const subclassOf = <Cls extends Instantiable>(
   cls: Cls,
 ): SubclassOf<Cls> => {
@@ -1372,6 +1424,13 @@ export class DeferredType<A> extends Type<A> {
   }
 }
 
+/**
+ * To prevent circular dependency errors, you can wrap some types with deferred()
+ * 
+ * @example 
+ *  const foo = t.type({foo: deferred(() => bar)})
+ *  const bar = t.type({bar: union([t.null, foo])})
+ */
 export const deferred = <A>(resolveType: () => Type<A>): Type<A> => {
   const Self: $IntentionalAny = new DeferredType<A>(resolveType)
   return Self
@@ -1379,7 +1438,7 @@ export const deferred = <A>(resolveType: () => Type<A>): Type<A> => {
 
 type InvariantCondition<T> = (v: T, c?: ValidationContext) => true | string[]
 
-export class InvariantType<A, Rt extends Type<A>> extends Type<A> {
+export class RuntimeCheckType<A, Rt extends Type<A>> extends Type<A> {
   readonly _tag: 'InvariantType' = 'InvariantType'
 
   get type(): Type<A> {
@@ -1392,12 +1451,12 @@ export class InvariantType<A, Rt extends Type<A>> extends Type<A> {
   ) {
     super(
       name,
-      function is(this: InvariantType<A, Rt>, v: mixed): v is A {
+      function is(this: RuntimeCheckType<A, Rt>, v: mixed): v is A {
         if (!this.inner.is(v)) return false
         return this.condition(v) === true
       },
       function _validateWithContext(
-        this: InvariantType<A, Rt>,
+        this: RuntimeCheckType<A, Rt>,
         v: mixed,
         c: ValidationContext,
       ) {
@@ -1411,10 +1470,10 @@ export class InvariantType<A, Rt extends Type<A>> extends Type<A> {
   }
 }
 
-export const withInvariant = <T, Rt extends Type<T>>(
+const withRuntimeCheck = <T, Rt extends Type<T>>(
   inner: Rt,
   condition: InvariantCondition<T>,
-  name: TypeName = () => `invariant<${inner.name}>`,
-): InvariantType<T, Rt> => {
-  return new InvariantType(name, inner, condition)
+  name: TypeName = () => `${inner.name} (with runtime checks)`,
+): RuntimeCheckType<T, Rt> => {
+  return new RuntimeCheckType(name, inner, condition)
 }

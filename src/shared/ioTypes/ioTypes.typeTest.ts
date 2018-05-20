@@ -481,7 +481,7 @@ if (t.instanceOf<typeof A>(A).is(v2)) {
 ;() => {
   const v: {} = 10
 
-  if (t.string.withInvariant(() => true).is(v)) {
+  if (t.string.withRuntimeCheck(() => true).is(v)) {
     // $ExpectError
     expectType<number>(v)
     expectType<string>(v)

@@ -2,8 +2,8 @@ import * as assert from 'assert'
 import * as t from '$shared/ioTypes'
 import {assertSuccess, assertFailure} from './testHelpers'
 
-describe('withInvariant', () => {
-  const T = t.string.withInvariant(
+describe('withRuntimeCheck', () => {
+  const T = t.string.withRuntimeCheck(
     v => (v.length === 2 ? true : ['the string should have a length of 10']),
   )
   it('should succeed validating a valid value', () => {
@@ -12,7 +12,7 @@ describe('withInvariant', () => {
 
   it('should fail validating an invalid value', () => {
     assertFailure(T.validate('1'), [
-      'Invalid value "1" supplied to : invariant<string>. Info: the string should have a length of 10',
+      'Invalid value "1" supplied to : string (with runtime checks). Info: the string should have a length of 10',
     ])
   })
 
