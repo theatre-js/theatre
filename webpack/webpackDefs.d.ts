@@ -5,3 +5,5 @@ declare module 'react-dev-utils/WatchMissingNodeModulesPlugin'
 declare module 'tsconfig-paths-webpack-plugin'
 declare module 'error-overlay-webpack-plugin'
 declare module 'circular-dependency-plugin'
+type $FixMe = any
+type $IntentionalAny = any

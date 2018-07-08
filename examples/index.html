@@ -1,43 +1,14 @@
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>TheaterJS examples</title>
-  <style>
-    body {
-      background: url("/xeno/5.jpg");
-      background-size: cover;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>TheaterJS Examples</title>
 </head>
 <body>
-  <div id="root"></div>
-
-  <script>
-    const blockedPrefixes = ['Warning: Accessing PropTypes', 'Warning: Accessing createClass']
-    const originalConsoleWarn = console.warn.bind(console)
-    console.warn = (msg, ...rest) => {
-      let shouldBlock = false
-      blockedPrefixes.forEach((prefix) => {
-        if (msg.startsWith(prefix)) {
-          shouldBlock = true
-          return false
-        }
-      })
-      if (!shouldBlock) {
-        originalConsoleWarn(msg, ...rest)
-      }
-    }
-    console.time('whole')
-    console.time('theater')
-  </script>
-
-
-  <!-- the studio -->
-  <!-- @todo get studio's url from env instead of hardcoding it: -->
-  <script crossorigin src="http://localhost:9091/index.js"></script>
-  <script>//console.timeEnd('theater')</script>
-  <!-- the entry file of examples/ -->
-  <script crossorigin src="/index.js"></script>
-  <script>//console.timeEnd('whole')</script>
+  <ul>
+    <li><a href="./studio/1/">Studio - 1</a></li>
+    <li><a href="./tl/1/">TheaterJS Library - 1</a></li>
+  </ul>
 </body>
 </html>

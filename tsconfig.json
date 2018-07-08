@@ -24,6 +24,7 @@
       "$lf/*": ["src/lf/*"],
       "$theater/*": ["src/theater/*"],
       "$shared/*": ["src/shared/*"],
+      "$tl/*": ["src/tl/*"],
       "$root/*": ["/*"],
       "$src/*": ["src/*"]
     }

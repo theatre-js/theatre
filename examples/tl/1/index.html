@@ -1,0 +1,41 @@
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>TheaterJS Library Example</title>
+  <style>
+  </style>
+</head>
+
+<body>
+  <div id="root"></div>
+
+  <script>
+    const blockedPrefixes = ['Warning: Accessing PropTypes', 'Warning: Accessing createClass']
+    const originalConsoleWarn = console.warn.bind(console)
+    console.warn = (msg, ...rest) => {
+      let shouldBlock = false
+      blockedPrefixes.forEach((prefix) => {
+        if (msg.startsWith(prefix)) {
+          shouldBlock = true
+          return false
+        }
+      })
+      if (!shouldBlock) {
+        originalConsoleWarn(msg, ...rest)
+      }
+    }
+  </script>
+
+ 
+
+
+      <!-- the studio -->
+      <!-- @todo get studio's url from env instead of hardcoding it: -->
+      <script crossorigin src="http://localhost:9094/index.js"></script>
+      <script>//console.timeEnd('theater')</script>
+      <!-- the entry file of examples/ -->
+      <script>//console.timeEnd('whole')</script>
+</body>
+
+</html>

@@ -1,0 +1,54 @@
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <style>
+    body {
+      background: url("/xeno/5.jpg");
+      background-size: cover;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root"></div>
+
+  <script>
+    const blockedPrefixes = ['Warning: Accessing PropTypes', 'Warning: Accessing createClass']
+    const originalConsoleWarn = console.warn.bind(console)
+    console.warn = (msg, ...rest) => {
+      let shouldBlock = false
+      blockedPrefixes.forEach((prefix) => {
+        if (msg.startsWith(prefix)) {
+          shouldBlock = true
+          return false
+        }
+      })
+      if (!shouldBlock) {
+        originalConsoleWarn(msg, ...rest)
+      }
+    }
+
+      ; (() => {
+        const location = window.location
+        const urlToStudio = location.protocol + '//' + location.hostname + ':' + '<%= onv.devSpecific.theater.devServerPort %>' + '/index.js'
+        const script = document.createElement('script')
+        script.src = urlToStudio
+        script.crossOrigin = true
+        document.write('<script src="' + urlToStudio + '" crossOrigin />')
+        // document.body.appendChild(script)
+      })();
+  </script>
+
+
+  <script>//console.timeEnd('theater')</script>
+  <!-- the entry file of examples/ -->
+  <script>//console.timeEnd('whole')</script>
+
+  <% for (var chunk in htmlWebpackPlugin.files.chunks) { %>
+    <script src="<%= htmlWebpackPlugin.files.chunks[chunk].entry %>"></script>
+    <% } %>
+</body>
+
+</html>

@@ -1,3 +1,4 @@
+import * as HtmlWebpackPlugin from 'html-webpack-plugin'
 import {makeConfigParts, Envs} from '../commons'
 import {default as immer, setAutoFreeze} from 'immer'
 // import * as CircularDependencyDetector from 'circular-dependency-plugin'
@@ -8,16 +9,16 @@ module.exports = (env: Envs) => {
   const parts = makeConfigParts({
     env,
     withReactHotLoading: true,
-    packageName: 'theater',
+    packageName: 'tl',
     withDevServer: true,
     entries: {
-      index: ['./src/theater/index.tsx'],
+      index: ['./src/tl/index.tsx'],
     },
   })
 
   return immer(parts.config, c => {
     c.output.libraryTarget = 'umd'
-    c.output.library = 'TheaterJS'
+    c.output.library = 'TL'
 
     c.plugins.push(
       /**

@@ -23,6 +23,7 @@
       "$root/*": ["/*"],
       "$lb/*": ["src/lb/*"],
       "$lf/*": ["src/lf/*"],
+      "$tl/*": ["src/tl/*"],
       "$studio/*": ["src/studio/*"],
       "$shared/*": ["src/shared/*"]
     }

@@ -5,9 +5,8 @@ import * as webpack from 'webpack'
 import * as CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin'
 import * as WatchMissingNodeModulesPlugin from 'react-dev-utils/WatchMissingNodeModulesPlugin'
 import * as TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
-import {mapValues, startsWith, flow, mapKeys} from 'lodash'
+import {mapValues} from 'lodash'
 import * as ErrorOverlayPlugin from 'error-overlay-webpack-plugin'
-import {readFile} from 'fs-extra'
 
 export const context = path.resolve(__dirname, '..')
 
@@ -16,6 +15,7 @@ const aliasesFromRoot = {
   $src: './src/',
   $lb: './src/lb/',
   $lf: './src/lf/',
+  $tl: './src/tl/',
   $theater: './src/theater/',
   $shared: './src/shared/',
 }
@@ -25,7 +25,7 @@ export const aliases: {[alias: string]: string} = mapValues(
   fromRoot => path.join(context, fromRoot),
 )
 
-type PackageName = 'theater' | 'playground' | 'examples' | 'lb' | 'lf'
+type PackageName = 'theater' | 'playground' | 'examples' | 'lb' | 'lf' | 'tl'
 
 export type Envs = 'development' | 'production'
 
@@ -93,16 +93,23 @@ export const makeConfigParts = (options: Options) => {
       devtoolModuleFilenameTemplate: info =>
         path.resolve(info.absoluteResourcePath).replace(/\\/g, '/'),
     },
+    // theaterConfig: envConfig,
     context: context,
     devtool: isDev ? 'cheap-module-source-map' : 'source-map',
+    mode: isDev ? 'development' : 'production',
+    node: {
+      process: false,
+    },
     resolve: {
       alias: aliases,
       extensions: ['.tsx', '.ts', '.js', '.json'],
+      plugins: [
+        new TsconfigPathsPlugin({
+          configFile: require.resolve('../tsconfig.json'),
+        }),
+      ],
     },
     plugins: [
-      new TsconfigPathsPlugin({
-        configFile: require.resolve('../tsconfig.json'),
-      }),
       new CleanPlugin([bundlesDir], {root: context}),
       new webpack.DefinePlugin({
         // This is only used inside `$root/webpack/env/index.js` and there it is
@@ -111,6 +118,7 @@ export const makeConfigParts = (options: Options) => {
       }),
       new webpack.ProvidePlugin({
         'process.env': '$root/webpack/env/index.js',
+        'lenv': '$root/webpack/env/index.js',
       }),
       new CaseSensitivePathsPlugin(),
       ...(isDev
@@ -123,9 +131,10 @@ export const makeConfigParts = (options: Options) => {
             // to restart the development server for Webpack to discover it. This plugin
             // makes the discovery automatic so you don't have to restart.
             // See https://github.com/facebookincubator/create-react-app/issues/186
-            new WatchMissingNodeModulesPlugin(
-              path.resolve(__dirname, '../node_modules'),
-            ),
+            // @todo Doesn't work with webpack 4 atm
+            // new WatchMissingNodeModulesPlugin(
+            //   path.resolve(__dirname, '../node_modules'),
+            // ),
             ...(options.withDevServer !== true
               ? []
               : [new ErrorOverlayPlugin()]),
@@ -202,52 +211,7 @@ export const makeConfigParts = (options: Options) => {
               loader: require.resolve('postcss-loader'),
               options: {
                 plugins: () => {
-                  // const variables = flow(
-                  //   (v: typeof aliasesFromRoot) =>
-                  //     mapKeys(v, (_, k: string) => k.substring(1, k.length)),
-                  //   (v: typeof aliasesFromRoot) =>
-                  //     mapValues(v, (_, k) => '$' + k),
-                  // )(aliasesFromRoot)
-
                   return [
-                    // require('postcss-advanced-variables')({
-                    //   variables,
-
-                    //   resolve(
-                    //     id: string,
-                    //     cwd: string,
-                    //     _: any,
-                    //   ): Promise<{file: string; contents: string}> {
-                    //     const requestedPath = id
-                    //       .replace("('", '')
-                    //       .replace("')", '')
-
-                    //     let resolvedPath = requestedPath
-                    //     for (const aliasFrom in aliases) {
-                    //       if (startsWith(requestedPath, aliasFrom)) {
-                    //         const pathWithoutAlias = requestedPath
-                    //           .substr(aliasFrom.length, requestedPath.length)
-                    //           .replace(
-                    //             // remove the leading slash (eg /common.css => common.css)
-                    //             /^\//,
-                    //             '',
-                    //           )
-
-                    //         resolvedPath = path.resolve(
-                    //           aliases[aliasFrom],
-                    //           pathWithoutAlias,
-                    //         )
-                    //       }
-                    //     }
-                    //     const finalPath = path.resolve(cwd, resolvedPath)
-
-                    //     return new Promise((resolve, reject) => {
-                    //       readFile(finalPath, 'utf-8').then(contents => {
-                    //         resolve({contents, file: finalPath})
-                    //       }, reject)
-                    //     })
-                    //   },
-                    // }),
                     require('postcss-hexrgba')(),
                     require('postcss-nesting')(),
                     require('postcss-short')(),
@@ -258,6 +222,21 @@ export const makeConfigParts = (options: Options) => {
           ],
           exclude: /node_modules/,
         },
+        // {
+        //   test: /\.html$/,
+        //   use: [
+        //     {
+        //       loader: 'underscore-template-loader',
+        //       query: {
+        //         engine: 'lodash',
+        //       },
+        //     },
+        //     {
+        //       loader: 'html-loader'
+        //     }
+        //   ],
+        //   exclude: /node_modules/,
+        // },
         // {test: /\.svg$/, use: require.resolve('svg-inline-loader')},
         // "file" loader makes sure those assets get served by WebpackDevServer.
         // When you `import` an asset, you get its (virtual) filename.
@@ -272,7 +251,7 @@ export const makeConfigParts = (options: Options) => {
           exclude: [
             /\.js$/,
             /\.tsx?$/,
-            /\.html$/,
+            /\.html?$/,
             /\.json$/,
             /\.css$/,
             /\.svg$/,
@@ -309,11 +288,29 @@ export const makeConfigParts = (options: Options) => {
     }
   }
 
+  const htmlPluginTemplateParameters = (
+    compilation: $FixMe,
+    assets: $FixMe,
+    options: $FixMe,
+  ) => {
+    return {
+      onv: envConfig,
+      compilation: compilation,
+      webpack: compilation.getStats().toJson(),
+      webpackConfig: compilation.options,
+      htmlWebpackPlugin: {
+        files: assets,
+        options: options,
+      },
+    }
+  }
+
   return {
     isDev,
     envConfig,
     bundlesDir,
     config,
     srcDir,
+    htmlPluginTemplateParameters,
   }
 }

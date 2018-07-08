@@ -1,7 +1,9 @@
-// @flow
+// @ts-ignore ignore
 import developmentEnv from '$root/development.env.json'
+// @ts-ignore ignore
 import productionEnv from '$root/production.env.json'
 
+// @ts-ignore ignore
 declare var $$$NODE_ENV: 'development' | 'production'
 
 let envFileOfInterest
