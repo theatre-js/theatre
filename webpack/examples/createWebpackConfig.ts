@@ -1,6 +1,7 @@
 import * as HtmlWebpackPlugin from 'html-webpack-plugin'
 import {makeConfigParts, Envs} from '../commons'
 import {default as immer, setAutoFreeze} from 'immer'
+import * as webpack from 'webpack'
 
 setAutoFreeze(false)
 
@@ -20,12 +21,12 @@ module.exports = (env: Envs) => {
     // we got multiple entries with the same name, so let's use [id] here
     c.output.filename = '[id].js'
     c.plugins.push(
-      // new HtmlWebpackPlugin({
-      //   inject: 'body',
-      //   template: './examples/index.html',
-      //   filename: 'index.html',
-      //   chunks: [],
-      // }),
+      new HtmlWebpackPlugin({
+        inject: false,
+        template: './examples/index.html',
+        filename: 'index.html',
+        chunks: [],
+      }),
       new HtmlWebpackPlugin({
         inject: false,
         template: './examples/studio/1/index.html',
@@ -33,12 +34,14 @@ module.exports = (env: Envs) => {
         chunks: ['studio/1'],
         templateParameters: parts.htmlPluginTemplateParameters,
       }),
-      // new HtmlWebpackPlugin({
-      //   inject: 'body',
-      //   template: './examples/tl/1/index.html',
-      //   filename: 'tl/1/index.html',
-      //   chunks: ['tl/1'],
-      // }),
+      new HtmlWebpackPlugin({
+        inject: false,
+        template: './examples/tl/1/index.html',
+        filename: 'tl/1/index.html',
+        chunks: ['tl/1'],
+        templateParameters: parts.htmlPluginTemplateParameters,
+      }),
+      new webpack.ProvidePlugin({'THREE': 'three'})
     )
   })
 }

@@ -2,8 +2,20 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>TheaterJS Library Example</title>
+  <title>TheaterJS TL Example 1</title>
   <style>
+    body {
+      background: black;
+    }
+
+    body {
+      margin: 0;
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%
+    }
   </style>
 </head>
 
@@ -25,17 +37,22 @@
         originalConsoleWarn(msg, ...rest)
       }
     }
+
+      ; (() => {
+        const location = window.location
+        const urlToStudio = location.protocol + '//' + location.hostname + ':' + '<%= onv.devSpecific.tl.devServerPort %>' + '/index.js'
+        const script = document.createElement('script')
+        script.src = urlToStudio
+        script.crossOrigin = true;
+        const scriptTag = `<script crossorigin src="` + urlToStudio + `">` + '</' + 'script>';
+        document.write(scriptTag)
+      })();
   </script>
 
- 
 
-
-      <!-- the studio -->
-      <!-- @todo get studio's url from env instead of hardcoding it: -->
-      <script crossorigin src="http://localhost:9094/index.js"></script>
-      <script>//console.timeEnd('theater')</script>
-      <!-- the entry file of examples/ -->
-      <script>//console.timeEnd('whole')</script>
+  <% for (var chunk in htmlWebpackPlugin.files.chunks) { %>
+    <script crossorigin src="<%= htmlWebpackPlugin.files.chunks[chunk].entry %>"></script>
+    <% } %>
 </body>
 
 </html>
