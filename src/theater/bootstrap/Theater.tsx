@@ -10,6 +10,7 @@ import {ITheaterStoreState} from '$theater/types'
 import {Store} from 'redux'
 import configureAtom from './configureAtom'
 import configureStore from './configureStore'
+import rootReducer from './rootReducer'
 
 export type TheaterStateAtom = Atomify<ITheaterStoreState>
 
@@ -29,7 +30,7 @@ export default class Theater {
   constructor(readonly _options: Options) {
     this._ran = false
     this.ticker = new Ticker()
-    this.store = configureStore()
+    this.store = configureStore({rootReducer}) as $FixMe
     this.atom = configureAtom(this.store)
     this.atomP = this.atom.derivedDict().pointer()
     this.atom2 = configureAtom2(this.store)
