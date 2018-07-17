@@ -11,7 +11,7 @@
     calc(59 + var(--colorOffset)),
     calc(70 + var(--colorOffset)),
     calc(76 + var(--colorOffset));
-  --color: rgb(var(--colorCoords)); 
+  --color: rgb(var(--colorCoords));
 
   --highlightColor: rgba(60, 223, 255, .1);
 
@@ -92,7 +92,7 @@
         content: ' ';
         height: 2px;
         bottom: 0;
-        left: calc(nodeIndent + nodePadding);
+        left: calc(nodeIndent);
         right: 0;
         background-color: hoverBarColor;
       }
@@ -163,7 +163,8 @@
           content: ' ';
           height: 2px;
           top: -1px;
-          left: nodePadding;
+          // left: nodePadding;
+          left: 0;
           right: 0;
           background-color: hoverBarColor;
         }
