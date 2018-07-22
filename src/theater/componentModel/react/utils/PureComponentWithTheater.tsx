@@ -1,4 +1,4 @@
-import {contextTypes, contextName} from './studioContext'
+import {contextTypes, contextName} from '$theater/componentModel/react/utils/theaterContext'
 import React from 'react'
 import Theater, {TheaterStateAtom} from '$theater/bootstrap/Theater'
 import {reduceStateAction} from '$shared/utils/redux/commonActions'

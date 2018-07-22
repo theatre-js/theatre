@@ -6,6 +6,7 @@ import resolveCss from '$shared/utils/resolveCss'
 import {val} from '$shared/DataVerse2/atom'
 import PropsAsPointer from '$theater/handy/PropsAsPointer'
 import {get} from 'lodash'
+import {TheaterConsumer} from '$theater/componentModel/react/utils/theaterContext'
 
 interface IOwnProps {
   path: Array<string>
@@ -30,22 +31,26 @@ export default class ExpressionlessStringEditor extends StudioComponent<
     const classes = resolveCss(css, props.css)
 
     return (
-      <PropsAsPointer props={props}>
-        {(propsP, theater) => {
-          const value = val(get(theater.atom2.pointer, val(propsP.path)))
+      <TheaterConsumer>
+        {theater => (
+          <PropsAsPointer props={props}>
+            {propsP => {
+              const value = val(get(theater.atom2.pointer, val(propsP.path)))
 
-          return (
-            <div {...classes('container')}>
-              <input
-                {...classes('input')}
-                type="text"
-                value={typeof value === 'string' ? value : ''}
-                onChange={this.onChange}
-              />
-            </div>
-          )
-        }}
-      </PropsAsPointer>
+              return (
+                <div {...classes('container')}>
+                  <input
+                    {...classes('input')}
+                    type="text"
+                    value={typeof value === 'string' ? value : ''}
+                    onChange={this.onChange}
+                  />
+                </div>
+              )
+            }}
+          </PropsAsPointer>
+        )}
+      </TheaterConsumer>
     )
   }
 }

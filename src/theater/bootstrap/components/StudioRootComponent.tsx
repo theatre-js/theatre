@@ -8,7 +8,7 @@ import {storeKey} from '$theater/handy/connect'
 import {
   contextName,
   contextTypes,
-} from '$theater/componentModel/react/utils/studioContext'
+} from '$theater/componentModel/react/utils/theaterContext'
 import {TickerProvider} from '$shared/utils/react/TickerContext'
 
 const StoreProvider = createProvider(storeKey)

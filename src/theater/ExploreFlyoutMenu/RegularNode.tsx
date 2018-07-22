@@ -14,6 +14,7 @@ import Theater from '$theater/bootstrap/Theater'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 import {getComponentDescriptor} from '$theater/componentModel/selectors'
 import NodeTemplate, {TaggedDisplayName} from './NodeTemplate'
+import {TheaterConsumer} from '$theater/componentModel/react/utils/theaterContext'
 
 type Props = {
   depth: number
@@ -21,47 +22,55 @@ type Props = {
 }
 
 const RegularNode = (props: Props) => (
-  <PropsAsPointer props={props}>
-    {(propsP: Pointer<Props>, theater) => {
-      const volatileId = val(propsP.volatileId)
+  <TheaterConsumer>
+    {theater => (
+      <PropsAsPointer props={props}>
+        {(propsP: Pointer<Props>) => {
+          const volatileId = val(propsP.volatileId)
 
-      const nodeP = theater.studio.elementTree.mirrorOfReactTreeAtom.pointer
-        .nodesByVolatileId[volatileId] as Pointer<MGenericNode>
+          const nodeP = theater.studio.elementTree.mirrorOfReactTreeAtom.pointer
+            .nodesByVolatileId[volatileId] as Pointer<MGenericNode>
 
-      const nativeNode = val(nodeP.nativeNode)
-      if (!nativeNode) return null
+          const nativeNode = val(nodeP.nativeNode)
+          if (!nativeNode) return null
 
-      let isSelectable = false
-      if (isTheaterComponent(nativeNode)) {
-        const cls = nativeNode.constructor as $FixMe
-        if (cls.componentType === 'Declarative') isSelectable = true
-      }
+          let isSelectable = false
+          if (isTheaterComponent(nativeNode)) {
+            const cls = nativeNode.constructor as $FixMe
+            if (cls.componentType === 'Declarative') isSelectable = true
+          }
 
-      const displayName: string = getDisplayName(nativeNode, theater).getValue()
+          const displayName: string = getDisplayName(
+            nativeNode,
+            theater,
+          ).getValue()
 
-      const depth = val(propsP.depth)
-      const shouldSwallowChild =
-        (nativeNode.constructor as $FixMe).shouldSwallowChild === true
+          const depth = val(propsP.depth)
+          const shouldSwallowChild =
+            (nativeNode.constructor as $FixMe).shouldSwallowChild === true
 
-      const volatileIdsOfChildrenP = !shouldSwallowChild
-        ? nodeP.volatileIdsOfChildren
-        : (theater.studio.elementTree.mirrorOfReactTreeAtom.pointer.nodesByVolatileId[
-            val(nodeP.volatileIdsOfChildren)[0]
-          ] as Pointer<MGenericNode>).volatileIdsOfChildren
+          const volatileIdsOfChildrenP = !shouldSwallowChild
+            ? nodeP.volatileIdsOfChildren
+            : (theater.studio.elementTree.mirrorOfReactTreeAtom.pointer
+                .nodesByVolatileId[
+                val(nodeP.volatileIdsOfChildren)[0]
+              ] as Pointer<MGenericNode>).volatileIdsOfChildren
 
-      const volatileIdsOfChildren = val(volatileIdsOfChildrenP)
+          const volatileIdsOfChildren = val(volatileIdsOfChildrenP)
 
-      return (
-        <NodeTemplate
-          depth={depth}
-          volatileIdsOfChildren={volatileIdsOfChildren}
-          name={<TaggedDisplayName name={displayName} />}
-          isSelectable={isSelectable}
-          volatileId={volatileId}
-        />
-      )
-    }}
-  </PropsAsPointer>
+          return (
+            <NodeTemplate
+              depth={depth}
+              volatileIdsOfChildren={volatileIdsOfChildren}
+              name={<TaggedDisplayName name={displayName} />}
+              isSelectable={isSelectable}
+              volatileId={volatileId}
+            />
+          )
+        }}
+      </PropsAsPointer>
+    )}
+  </TheaterConsumer>
 )
 
 export default RegularNode

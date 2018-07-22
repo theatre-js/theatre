@@ -14,6 +14,7 @@ import {getActiveNode} from '../ExploreFlyoutMenu/utils'
 import Theater from '$theater/bootstrap/Theater'
 import {isViewportNode} from '$theater/workspace/components/WhatToShowInBody/Viewports/Viewport'
 import ViewportEditor from '$theater/structuralEditor/components/editorsPerType/ViewportEditor/ViewportEditor'
+import {TheaterConsumer} from '$theater/componentModel/react/utils/theaterContext'
 
 type IProps = {}
 
@@ -26,15 +27,19 @@ export default class ComposePanelContent extends React.PureComponent<
   static panelName = 'Component'
   render() {
     return (
-      <PropsAsPointer props={this.props}>
-        {(_: Pointer<IProps>, theater) => {
-          return (
-            <Panel header={<LeftPanelHeader />}>
-              {renderEditorForEitherLeftOrRightPanel('left', theater)}
-            </Panel>
-          )
-        }}
-      </PropsAsPointer>
+      <TheaterConsumer>
+        {theater => (
+          <PropsAsPointer props={this.props}>
+            {(_: Pointer<IProps>) => {
+              return (
+                <Panel header={<LeftPanelHeader />}>
+                  {renderEditorForEitherLeftOrRightPanel('left', theater)}
+                </Panel>
+              )
+            }}
+          </PropsAsPointer>
+        )}
+      </TheaterConsumer>
     )
   }
 }
@@ -52,10 +57,16 @@ export const renderEditorForEitherLeftOrRightPanel = (
 
   if (isViewportNode(activeNode)) {
     if (leftOrRight === 'left') {
-
       const viewportId = activeNode.viewportId
-      return <ViewportEditor viewportId={viewportId} partsToShow={['dims', 'scene']} />
-    } else { return null}
+      return (
+        <ViewportEditor
+          viewportId={viewportId}
+          partsToShow={['dims', 'scene']}
+        />
+      )
+    } else {
+      return null
+    }
   }
 
   const possibleComponentId = getComponentIdOfActiveNode(theater)

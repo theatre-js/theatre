@@ -17,6 +17,7 @@ import {getActiveViewportId, getVolatileIdOfActiveNode} from './utils'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 import Theater from '$theater/bootstrap/Theater'
 import HighlightByInternalInstance from '$theater/common/components/DomHighlighter/HighlightByInternalInstance'
+import {TheaterConsumer} from '$theater/componentModel/react/utils/theaterContext'
 
 type Props = {
   isSelectable: boolean
@@ -34,127 +35,137 @@ const NodeTemplate = (props: Props) => {
   const classes = resolveCss(css, props.css)
 
   return (
-    <PropsAsPointer props={props}>
-      {(propsP, theater) => {
-        const volatileId = val(propsP.volatileId)
-        const volatileIdsOfChildren = val(propsP.volatileIdsOfChildren)
+    <TheaterConsumer>
+      {theater => (
+        <PropsAsPointer props={props}>
+          {propsP => {
+            const volatileId = val(propsP.volatileId)
+            const volatileIdsOfChildren = val(propsP.volatileIdsOfChildren)
 
-        const canHaveChildren = Array.isArray(volatileIdsOfChildren)
-        const hasChildren =
-          canHaveChildren &&
-          (volatileIdsOfChildren as Array<VolatileId>).length > 0
-        const isSelectable = val(propsP.isSelectable)
+            const canHaveChildren = Array.isArray(volatileIdsOfChildren)
+            const hasChildren =
+              canHaveChildren &&
+              (volatileIdsOfChildren as Array<VolatileId>).length > 0
+            const isSelectable = val(propsP.isSelectable)
 
-        const depth = val(propsP.depth)
+            const depth = val(propsP.depth)
 
-        const isSelected =
-          isSelectable && getVolatileIdOfActiveNode(theater) === volatileId
+            const isSelected =
+              isSelectable && getVolatileIdOfActiveNode(theater) === volatileId
 
-        const isExpanded =
-          canHaveChildren &&
-          val(
-            theater.atom2.pointer.ahistoricComponentModel
-              .collapsedElementsByVolatileId[volatileId],
-          ) !== true
+            const isExpanded =
+              canHaveChildren &&
+              val(
+                theater.atom2.pointer.ahistoricComponentModel
+                  .collapsedElementsByVolatileId[volatileId],
+              ) !== true
 
-        const toggleExpansion = !canHaveChildren
-          ? undefined
-          : () => {
-              if (!canHaveChildren) return
-              if (isExpanded) {
-                theater.store.dispatch(
-                  reduceAhistoricState(
-                    [
-                      'ahistoricComponentModel',
-                      'collapsedElementsByVolatileId',
-                      volatileId,
-                    ] as $FixMe,
-                    () => true,
-                  ),
-                )
-              } else {
-                theater.store.dispatch(
-                  reduceAhistoricState(
-                    [
-                      'ahistoricComponentModel',
-                      'collapsedElementsByVolatileId',
-                    ],
-                    s => omit(s, volatileId),
-                  ),
-                )
-              }
+            const toggleExpansion = !canHaveChildren
+              ? undefined
+              : () => {
+                  if (!canHaveChildren) return
+                  if (isExpanded) {
+                    theater.store.dispatch(
+                      reduceAhistoricState(
+                        [
+                          'ahistoricComponentModel',
+                          'collapsedElementsByVolatileId',
+                          volatileId,
+                        ] as $FixMe,
+                        () => true,
+                      ),
+                    )
+                  } else {
+                    theater.store.dispatch(
+                      reduceAhistoricState(
+                        [
+                          'ahistoricComponentModel',
+                          'collapsedElementsByVolatileId',
+                        ],
+                        s => omit(s, volatileId),
+                      ),
+                    )
+                  }
+                }
+
+            const select = !isSelectable
+              ? undefined
+              : () => {
+                  markElementAsActive(theater, volatileId)
+                }
+
+            let childrenNodes = null
+            if (isExpanded && hasChildren) {
+              const childDepth = depth + 1
+              childrenNodes = (volatileIdsOfChildren as Array<VolatileId>).map(
+                childVolatileId => (
+                  <AnyNode
+                    key={`child-${childVolatileId}`}
+                    volatileId={childVolatileId}
+                    depth={childDepth}
+                  />
+                ),
+              )
             }
 
-        const select = !isSelectable
-          ? undefined
-          : () => {
-              markElementAsActive(theater, volatileId)
-            }
+            const nodeP =
+              theater.studio.elementTree.mirrorOfReactTreeAtom.pointer
+                .nodesByVolatileId[volatileId]
 
-        let childrenNodes = null
-        if (isExpanded && hasChildren) {
-          const childDepth = depth + 1
-          childrenNodes = (volatileIdsOfChildren as Array<VolatileId>).map(
-            childVolatileId => (
-              <AnyNode
-                key={`child-${childVolatileId}`}
-                volatileId={childVolatileId}
-                depth={childDepth}
-              />
-            ),
-          )
-        }
+            const internalInstance = val(nodeP.reactSpecific.internalInstance)
+            const rendererId = val(nodeP.rendererId)
 
-        const nodeP =
-          theater.studio.elementTree.mirrorOfReactTreeAtom.pointer
-            .nodesByVolatileId[volatileId]
-
-        const internalInstance = val(nodeP.reactSpecific.internalInstance)
-        const rendererId = val(nodeP.rendererId)
-
-        return (
-          <div
-            {...classes(
-              'container',
-              isSelected && 'selected',
-              isExpanded && 'expanded',
-              hasChildren && 'hasChildren',
-            )}
-            style={{'--depth': depth}}
-          >
-            <div {...classes('top')}>
-              {canHaveChildren && (
-                <div {...classes('bullet')} onClick={toggleExpansion}>
-                  <div {...classes('bulletIcon')}>
-                    {<SvgIcon sizing="fill" src={arrowIcon} />}
+            return (
+              <div
+                {...classes(
+                  'container',
+                  isSelected && 'selected',
+                  isExpanded && 'expanded',
+                  hasChildren && 'hasChildren',
+                )}
+                style={{'--depth': depth}}
+              >
+                <div {...classes('top')}>
+                  {canHaveChildren && (
+                    <div {...classes('bullet')} onClick={toggleExpansion}>
+                      <div {...classes('bulletIcon')}>
+                        {<SvgIcon sizing="fill" src={arrowIcon} />}
+                      </div>
+                    </div>
+                  )}
+                  <div
+                    key="name"
+                    {...classes('name', isSelectable && 'selectable')}
+                    onClick={select}
+                  >
+                    {props.name}
+                    <HighlightByInternalInstance
+                      internalInstance={internalInstance}
+                      rendererId={rendererId}
+                    >
+                      {(showOverlay, hideOverlay) => (
+                        <div
+                          {...classes('highlighter')}
+                          {...showOverlay != null && {
+                            onMouseEnter: showOverlay,
+                          }}
+                          {...hideOverlay != null && {
+                            onMouseLeave: hideOverlay,
+                          }}
+                        />
+                      )}
+                    </HighlightByInternalInstance>
                   </div>
                 </div>
-              )}
-              <div
-                key="name"
-                {...classes('name', isSelectable && 'selectable')}
-                onClick={select}
-              >
-                {props.name}
-                <HighlightByInternalInstance
-                  internalInstance={internalInstance}
-                  rendererId={rendererId}
-                >
-                  {(showOverlay, hideOverlay) => (
-                    <div
-                      {...classes('highlighter')}
-                      {...showOverlay != null && {onMouseEnter: showOverlay}}
-                      {...hideOverlay != null && {onMouseLeave: hideOverlay}}
-                    />
-                  )}
-                </HighlightByInternalInstance>
+                {hasChildren && (
+                  <div {...classes('subNodes')}>{childrenNodes}</div>
+                )}
               </div>
-            </div>
-            {hasChildren && <div {...classes('subNodes')}>{childrenNodes}</div>}
-          </div>
-        )
-      }}
-    </PropsAsPointer>
+            )
+          }}
+        </PropsAsPointer>
+      )}
+    </TheaterConsumer>
   )
 }
 
