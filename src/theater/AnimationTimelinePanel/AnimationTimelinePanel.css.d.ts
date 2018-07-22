@@ -1,11 +1,7 @@
-export interface IAnimationTimelinePanelCss {
-  'container': string;
-  'showModifierDropOverlay': string;
-  'modifierDropOverlayAppear': string;
-  'timeBar': string;
-  'variables': string;
-  'panelContainer': string;
-  'panelInnerWrapper': string;
-}
-
-export const locals: IAnimationTimelinePanelCss;
+export const container: string;
+export const showModifierDropOverlay: string;
+export const modifierDropOverlayAppear: string;
+export const timeBar: string;
+export const variables: string;
+export const panelContainer: string;
+export const panelInnerWrapper: string;

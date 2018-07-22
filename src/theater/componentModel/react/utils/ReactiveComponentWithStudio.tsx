@@ -3,7 +3,7 @@ import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation
 import atom, {Atom} from '$shared/DataVerse2/atom'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 import React from 'react'
-import DerivationAsReactElement from '$theater/componentModel/react/utils/DerivationAsReactElement'
+import DerivationAsReactElement from '$shared/utils/react/DerivationAsReactElement'
 import {Pointer} from '$shared/DataVerse2/pointer'
 
 export default abstract class ReactiveComponentWithTheater<

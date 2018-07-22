@@ -1,7 +1,3 @@
-export interface IMovableNodeCss {
-  'nodeHeight': string;
-  'container': string;
-  'containerCollapse': string;
-}
-
-export const locals: IMovableNodeCss;
+export const nodeHeight: string;
+export const container: string;
+export const containerCollapse: string;

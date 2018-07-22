@@ -1,13 +1,9 @@
-export interface IStatusBarCss {
-  'typographyFont': string;
-  'container': string;
-  'leftContainer': string;
-  'rightContainer': string;
-  'item': string;
-  'icon': string;
-  'syncedIcon': string;
-  'dexterIcon': string;
-  'text': string;
-}
-
-export const locals: IStatusBarCss;
+export const typographyFont: string;
+export const container: string;
+export const leftContainer: string;
+export const rightContainer: string;
+export const item: string;
+export const icon: string;
+export const syncedIcon: string;
+export const dexterIcon: string;
+export const text: string;

@@ -1,5 +1,4 @@
-export default {
-  foo: 'bar'
-}
+import UI from '$tl/UI/UI'
+export {default as Project} from '$tl/Project/Project'
 
-console.log('tl is loaded');
+export const ui = new UI()

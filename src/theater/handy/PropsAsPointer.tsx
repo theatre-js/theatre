@@ -1,6 +1,6 @@
 import PureComponentWithTheater from '$theater/componentModel/react/utils/PureComponentWithTheater'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
-import DerivationAsReactElement from '../componentModel/react/utils/DerivationAsReactElement'
+import DerivationAsReactElement from '$shared/utils/react/DerivationAsReactElement'
 import React from 'react'
 import Theater from '$theater/bootstrap/Theater'
 import atom, {Atom, val} from '$shared/DataVerse2/atom'

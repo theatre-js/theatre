@@ -1,6 +1,2 @@
-export interface IStudioUICss {
-  'button': string;
-  'typographyBlah': string;
-}
-
-export const locals: IStudioUICss;
+export const button: string;
+export const typographyBlah: string;

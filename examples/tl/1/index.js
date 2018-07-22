@@ -12,5 +12,14 @@ const {sphere} = setupScene()
 //   })
 // }
 
+// TL.ui.propertyEditors.add({
+//   traitName: 'Position2D',
+//   render(data) {
+//     return <div />
+//   }
+// })
+
+TL.ui.enable()
+
 const project = new TL.Project('Bouncing Ball Project')
 // const timeline = project.getTimeline('Bouncing Ball Timeline')

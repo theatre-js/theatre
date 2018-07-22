@@ -1,6 +1,6 @@
 import * as t from '$shared/ioTypes'
 import {difference} from 'lodash'
-export type GenericAction = {type: string; payload: mixed | void}
+export type GenericAction = {type: string; payload: mixed}
 
 export type ReduxReducer<State extends {}> = (
   s: undefined | State,

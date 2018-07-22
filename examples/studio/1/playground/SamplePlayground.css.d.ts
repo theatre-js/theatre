@@ -1,5 +1,1 @@
-export interface ISamplePlaygroundCss {
-  'container': string;
-}
-
-export const locals: ISamplePlaygroundCss;
+export const container: string;

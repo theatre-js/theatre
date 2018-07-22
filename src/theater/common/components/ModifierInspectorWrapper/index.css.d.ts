@@ -1,9 +1,5 @@
-export interface IIndexCss {
-  'container': string;
-  'titleContainer': string;
-  'title': string;
-  'bodyContainer': string;
-  'triangle': string;
-}
-
-export const locals: IIndexCss;
+export const container: string;
+export const titleContainer: string;
+export const title: string;
+export const bodyContainer: string;
+export const triangle: string;

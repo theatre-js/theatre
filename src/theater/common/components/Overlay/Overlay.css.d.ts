@@ -1,6 +1,2 @@
-export interface IOverlayCss {
-  'typographyFont': string;
-  'container': string;
-}
-
-export const locals: IOverlayCss;
+export const typographyFont: string;
+export const container: string;

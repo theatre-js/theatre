@@ -1,7 +1,3 @@
-export interface IStylesCss {
-  'panelZIndex': string;
-  'statusBarZIndex': string;
-  'typographyFont': string;
-}
-
-export const locals: IStylesCss;
+export const panelZIndex: string;
+export const statusBarZIndex: string;
+export const typographyFont: string;

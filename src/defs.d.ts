@@ -11,9 +11,7 @@ interface Window {
   devToolsExtension?: Function
 }
 
-type mixed = object | number | string | boolean | symbol | undefined | null
-
-
+type mixed = object | number | string | boolean | symbol | undefined | null | Object | void
 
 /**
  * Project-specific globals (such as the unique shape of process.env) will be defined here.
@@ -29,6 +27,9 @@ type CommonEnvironmentVariables = {
   launcherBackend: {}
   theater: {
     socketPort: number
+  }
+  tl: {
+    version: string
   }
   KEEPING_DERIVATION_TRACES: boolean
   TRACKING_COLD_DERIVATIONS: boolean
@@ -50,7 +51,10 @@ type DevSpecificEnvironmentVariables = {
        * 'loadButDontUpdate' => load the state from LB but don't persist changes
        * 'normal' (Default) => load the state from LB and do persist changes
        */
-      statePersistenceMode?: 'dontLoadOrPersist' | 'loadButDontUpdate' | 'normal'
+      statePersistenceMode?:
+        | 'dontLoadOrPersist'
+        | 'loadButDontUpdate'
+        | 'normal'
     }
     examples: {
       devServerPort: number
@@ -84,7 +88,8 @@ declare var module: {
   }
 }
 
-interface Generator_<ReturnType = {}, A = {}, YieldType = {}> extends Generator {}
+interface Generator_<ReturnType = {}, A = {}, YieldType = {}>
+  extends Generator {}
 
 declare module '*.svg' {
   var s: string
@@ -94,11 +99,12 @@ declare module '*.svg' {
 // @todo uncomment this once https://github.com/Microsoft/TypeScript/pull/21316 lands
 // type Spread<A, B> = $FixMe
 
-type Diff<T, U> = T extends U ? never : T;
+type Diff<T, U> = T extends U ? never : T
 
 // Names of properties in T with types that include undefined
-type OptionalPropertyNames<T> =
-  {[K in keyof T]: undefined extends T[K] ? K : never}[keyof T];
+type OptionalPropertyNames<T> = {
+  [K in keyof T]: undefined extends T[K] ? K : never
+}[keyof T]
 
 // Common properties from L and R with undefined in R[K] replaced by type in L[K]
 type SpreadProperties<L, R, K extends keyof L & keyof R> = {

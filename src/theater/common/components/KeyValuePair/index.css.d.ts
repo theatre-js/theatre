@@ -1,8 +1,4 @@
-export interface IIndexCss {
-  'container': string;
-  'keyContainer': string;
-  'valueContainer': string;
-  'colon': string;
-}
-
-export const locals: IIndexCss;
+export const container: string;
+export const keyContainer: string;
+export const valueContainer: string;
+export const colon: string;

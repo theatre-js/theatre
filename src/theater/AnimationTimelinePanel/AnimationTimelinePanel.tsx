@@ -37,7 +37,7 @@ import {
 } from '$theater/ExploreFlyoutMenu/utils'
 import {getPathToComponentDescriptor} from '$theater/componentModel/selectors'
 import {IDeclarativeComponentDescriptor} from '../componentModel/types'
-import DerivationAsReactElement from '../componentModel/react/utils/DerivationAsReactElement'
+import DerivationAsReactElement from '$shared/utils/react/DerivationAsReactElement'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 import AbstractDerivation from '$src/shared/DataVerse/derivations/AbstractDerivation'
 import TheaterComponent from '$theater/componentModel/react/TheaterComponent/TheaterComponent'

@@ -1,6 +1,2 @@
-export interface IIndexCss {
-  'input': string;
-  'container': string;
-}
-
-export const locals: IIndexCss;
+export const input: string;
+export const container: string;

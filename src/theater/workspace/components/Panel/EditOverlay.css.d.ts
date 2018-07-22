@@ -1,5 +1,1 @@
-export interface IEditOverlayCss {
-  'container': string;
-}
-
-export const locals: IEditOverlayCss;
+export const container: string;

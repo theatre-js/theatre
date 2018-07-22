@@ -1,17 +1,13 @@
-export interface IModifierBoxCss {
-  'minBoxHeight': string;
-  'sensorHeight': string;
-  'container': string;
-  'isBeingDragged': string;
-  'appear': string;
-  'containerAppear': string;
-  'sensorAppear': string;
-  'collapse': string;
-  'containerCollapse': string;
-  'initialize': string;
-  'containerInitialize': string;
-  'move': string;
-  'containerMove': string;
-}
-
-export const locals: IModifierBoxCss;
+export const minBoxHeight: string;
+export const sensorHeight: string;
+export const container: string;
+export const isBeingDragged: string;
+export const appear: string;
+export const containerAppear: string;
+export const sensorAppear: string;
+export const collapse: string;
+export const containerCollapse: string;
+export const initialize: string;
+export const containerInitialize: string;
+export const move: string;
+export const containerMove: string;

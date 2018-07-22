@@ -1,5 +1,1 @@
-export interface IDimensionsEditorCss {
-
-}
-
-export const locals: IDimensionsEditorCss;
+export {};

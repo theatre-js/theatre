@@ -1,7 +1,3 @@
-export interface IPaleMessageCss {
-  'typographyFont': string;
-  'container': string;
-  'paler': string;
-}
-
-export const locals: IPaleMessageCss;
+export const typographyFont: string;
+export const container: string;
+export const paler: string;

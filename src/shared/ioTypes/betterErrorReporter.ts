@@ -1,17 +1,6 @@
 import * as array from 'fp-ts/lib/Array'
 import * as t from '$shared/ioTypes'
 
-// const jsToString = (value: t.mixed) =>
-//   value === undefined ? 'undefined' : JSON.stringify(value)
-
-// function stringify(v: any): string {
-//   return typeof v === 'function' ? t.getFunctionName(v) : JSON.stringify(v)
-// }
-
-// function getContextPath(context: t.Context): string {
-//   return context.map(({key, type}) => `${key}: ${type.name}`).join('.')
-// }
-
 const formatValidationError = (error: t.ValidationError) => {
   const path = error.context
     .map((c) => {

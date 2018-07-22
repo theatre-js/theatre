@@ -45,7 +45,7 @@ export default class Studio {
       document.body.appendChild(rootEl)
     } else {
       // @todo This error message is confusing. Let's rewrite it so that it
-      // would tell the user exactly what they have to do to fix it.
+      // would tell the user exactly what they have to do to fix the problem.
       throw new Error(`Where is the <body> tag?`)
     }
 

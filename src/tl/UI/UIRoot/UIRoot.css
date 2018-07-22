@@ -1,0 +1,14 @@
+.container {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  z-index: 1000;
+}
+
+.trigger {
+  position: absolute;
+  appearance: none;
+  -webkit-appearance: none;
+}

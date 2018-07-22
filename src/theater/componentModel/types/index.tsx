@@ -1,10 +1,10 @@
 import {
   IModifierDescriptor,
   $IDeclarativeComponentDescriptor,
-} from './declarative'
+} from '$theater/componentModel/types/declarative'
 import * as t from '$shared/ioTypes'
 import {$IReactComponent} from '$shared/ioTypes/extras'
-export * from './declarative'
+export * from '$theater/componentModel/types/declarative'
 
 export const $IComponentId = t.string
 export type IComponentId = t.StaticTypeOf<typeof $IComponentId>

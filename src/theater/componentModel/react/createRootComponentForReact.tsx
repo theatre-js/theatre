@@ -2,6 +2,7 @@ import React from 'react'
 import Theater from '$theater/bootstrap/Theater'
 import {contextTypes, contextName} from './utils/studioContext'
 import WhatToShowInBody from '$theater/workspace/components/WhatToShowInBody/WhatToShowInBody'
+import {TickerProvider} from '$shared/utils/react/TickerContext'
 
 interface Props {
   children: React.ReactNode
@@ -30,7 +31,11 @@ const createRootComponentForReact = (theater: Theater) => {
     }
     render() {
       const {WhatToShowInBody} = this.state
-      return <WhatToShowInBody passThroughNode={this.props.children} />
+      return (
+        <TickerProvider ticker={theater.ticker}>
+          <WhatToShowInBody passThroughNode={this.props.children} />
+        </TickerProvider>
+      )
     }
 
     getChildContext() {

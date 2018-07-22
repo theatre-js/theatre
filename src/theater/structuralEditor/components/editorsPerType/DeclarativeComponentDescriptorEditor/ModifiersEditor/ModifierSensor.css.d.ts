@@ -1,9 +1,5 @@
-export interface IModifierSensorCss {
-  'minBoxHeight': string;
-  'sensorHeight': string;
-  'container': string;
-  'isCommandDown': string;
-  'isABoxBeingDragged': string;
-}
-
-export const locals: IModifierSensorCss;
+export const minBoxHeight: string;
+export const sensorHeight: string;
+export const container: string;
+export const isCommandDown: string;
+export const isABoxBeingDragged: string;

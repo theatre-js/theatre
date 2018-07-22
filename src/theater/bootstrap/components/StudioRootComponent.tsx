@@ -2,13 +2,14 @@ import HotReloadablePart from './HotReloadablePart'
 import {createProvider} from 'react-redux'
 import {AppContainer} from 'react-hot-loader'
 import './StudioRootComponent.css'
-import React from 'react';
+import React from 'react'
 import Theater from '$theater/bootstrap/Theater'
 import {storeKey} from '$theater/handy/connect'
 import {
   contextName,
   contextTypes,
 } from '$theater/componentModel/react/utils/studioContext'
+import {TickerProvider} from '$shared/utils/react/TickerContext'
 
 const StoreProvider = createProvider(storeKey)
 
@@ -43,16 +44,20 @@ class StudioRootComponent extends React.Component<Props, State> {
   render() {
     const {HotReloadablePart} = this.state
     return (
-      <AppContainer warnings={true}>
-        <StoreProvider store={this.props.theater.store}>
-          <HotReloadablePart />
-        </StoreProvider>
-      </AppContainer>
+      <TickerProvider ticker={this.props.theater.ticker}>
+        <AppContainer>
+          <StoreProvider store={this.props.theater.store}>
+            <HotReloadablePart />
+          </StoreProvider>
+        </AppContainer>
+      </TickerProvider>
     )
   }
 
   getChildContext() {
-    return {[contextName]: this.props.theater}
+    return {
+      [contextName]: this.props.theater,
+    }
   }
 
   static childContextTypes = contextTypes

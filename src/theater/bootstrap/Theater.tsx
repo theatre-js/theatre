@@ -5,11 +5,11 @@ import AbstractDerivedDict from '$shared/DataVerse/derivations/dicts/AbstractDer
 import {PointerDerivation} from '$shared/DataVerse/derivations/pointer'
 import {Atom} from '$shared/DataVerse2/atom'
 import Studio from '$theater/bootstrap/Studio'
-import configureAtom2 from '$theater/bootstrap/configureAtom2'
+import atomFromReduxStore from '$shared/utils/redux/atomFromReduxStore'
 import {ITheaterStoreState} from '$theater/types'
 import {Store} from 'redux'
 import configureAtom from './configureAtom'
-import configureStore from './configureStore'
+import configureStore from '$shared/utils/redux/configureStore'
 import rootReducer from './rootReducer'
 
 export type TheaterStateAtom = Atomify<ITheaterStoreState>
@@ -33,7 +33,32 @@ export default class Theater {
     this.store = configureStore({rootReducer}) as $FixMe
     this.atom = configureAtom(this.store)
     this.atomP = this.atom.derivedDict().pointer()
-    this.atom2 = configureAtom2(this.store)
+    this.atom2 = atomFromReduxStore(this.store)
+
+    if (process.env.NODE_ENV === 'development' && module.hot) {
+      // @todo
+      // module.hot.accept('./rootReducer', () => {
+      //   const r: $IntentionalAny = require
+      //   store.dispatch(
+      //     multiReduceStateAction([
+      //       {
+      //         path: ['componentModel', 'modifierDescriptors', 'core'],
+      //         reducer: () =>
+      //           r(
+      //             '$theater/componentModel/coreModifierDescriptors/coreModifierDescriptors',
+      //           ).default,
+      //       },
+      //       {
+      //         path: ['componentModel', 'componentDescriptors', 'core'],
+      //         reducer: () =>
+      //           r(
+      //             '$theater/componentModel/coreComponentDescriptors/coreComponentDescriptors',
+      //           ).default,
+      //       },
+      //     ]),
+      //   )
+      // })
+    }
   }
 
   _setStudio(studio: Studio) {

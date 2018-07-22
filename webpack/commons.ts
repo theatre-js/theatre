@@ -205,6 +205,7 @@ export const makeConfigParts = (options: Options) => {
                 modules: true,
                 localIdentName: '[name]_[local]_[hash:10]',
                 importLoaders: 1,
+                namedExport: true,
               },
             },
             {

@@ -1,8 +1,4 @@
-export interface IExploreFlyoutMenuCss {
-  'typographyFont': string;
-  'container': string;
-  'containerAppear': string;
-  'wrapper': string;
-}
-
-export const locals: IExploreFlyoutMenuCss;
+export const typographyFont: string;
+export const container: string;
+export const containerAppear: string;
+export const wrapper: string;
