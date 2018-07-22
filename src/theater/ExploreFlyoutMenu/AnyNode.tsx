@@ -3,7 +3,7 @@ import {
   VolatileId,
   GenericNode,
 } from '$theater/integrations/react/treeMirroring/MirrorOfReactTree'
-import PropsAsPointer from '$theater/handy/PropsAsPointer'
+import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import {val} from '$shared/DataVerse2/atom'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import TextNode from './TextNode'

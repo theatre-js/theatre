@@ -1,5 +1,5 @@
 import Panel from '$theater/workspace/components/Panel/Panel'
-import PropsAsPointer from '../handy/PropsAsPointer'
+import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import React from 'react'
 import {renderEditorForEitherLeftOrRightPanel} from '$theater/LeftPanel/LeftPanel'

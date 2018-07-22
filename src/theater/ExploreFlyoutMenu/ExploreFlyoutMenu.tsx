@@ -1,7 +1,7 @@
 import React from 'react'
 import * as css from './ExploreFlyoutMenu.css'
 import StudioComponent from '$theater/handy/StudioComponent'
-import PropsAsPointer from '$theater/handy/PropsAsPointer'
+import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import {val} from '$shared/DataVerse2/atom'
 import AnyNode from './AnyNode'
 import {createPortal} from 'react-dom'

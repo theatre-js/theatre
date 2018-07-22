@@ -7,7 +7,7 @@ import {
   VolatileId,
   GenericNode,
 } from '$theater/integrations/react/treeMirroring/MirrorOfReactTree'
-import PropsAsPointer from '$theater/handy/PropsAsPointer'
+import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import {val} from '$shared/DataVerse2/atom'
 import {reduceAhistoricState} from '$theater/bootstrap/actions'
 import {omit} from 'lodash'

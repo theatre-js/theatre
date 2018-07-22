@@ -21,7 +21,7 @@ import {TBoundingRect} from '$theater/workspace/components/WhatToShowInBody/View
 import Header from '$theater/workspace/components/WhatToShowInBody/Viewports/Header'
 import {batchedAction} from '$shared/utils/redux/withHistory/withBatchActions'
 import PureComponentWithTheater from '$theater/componentModel/react/utils/PureComponentWithTheater'
-import PropsAsPointer from '$theater/handy/PropsAsPointer'
+import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 
 const classes = resolveCss(css)
 

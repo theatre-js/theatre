@@ -5,7 +5,7 @@ import elementify from '$theater/componentModel/react/elementify/elementify'
 import constant from '$shared/DataVerse/derivations/constant'
 import dictAtom from '$shared/DataVerse/atoms/dictAtom'
 import PureComponentWithTheater from '$theater/componentModel/react/utils/PureComponentWithTheater'
-import PropsAsPointer from '$theater/handy/PropsAsPointer'
+import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 
 interface IProps {
   passThroughNode: React.ReactNode

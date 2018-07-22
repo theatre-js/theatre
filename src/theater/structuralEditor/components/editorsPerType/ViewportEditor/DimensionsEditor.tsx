@@ -1,6 +1,6 @@
 import resolveCss from '$shared/utils/resolveCss'
 import PureComponentWithTheater from '$theater/componentModel/react/utils/PureComponentWithTheater'
-import PropsAsPointer from '$theater/handy/PropsAsPointer'
+import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import React from 'react'
 import * as css from './DimensionsEditor.css'
 import {Pointer} from '$shared/DataVerse2/pointer'

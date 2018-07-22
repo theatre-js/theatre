@@ -4,7 +4,7 @@ import {reduceStateAction} from '$shared/utils/redux/commonActions'
 import * as css from './ExpressionlessStringEditor.css'
 import resolveCss from '$shared/utils/resolveCss'
 import {val} from '$shared/DataVerse2/atom'
-import PropsAsPointer from '$theater/handy/PropsAsPointer'
+import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import {get} from 'lodash'
 import {TheaterConsumer} from '$theater/componentModel/react/utils/theaterContext'
 
