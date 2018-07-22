@@ -1,5 +1,4 @@
 import React from 'react'
-import ReactiveComponentWithTheater from '$theater/componentModel/react/utils/ReactiveComponentWithStudio'
 import {val} from '$shared/DataVerse2/atom'
 import * as css from './Viewport.css'
 import resolveCss from '$shared/utils/resolveCss'
@@ -21,6 +20,8 @@ import {
 import {TBoundingRect} from '$theater/workspace/components/WhatToShowInBody/Viewports/ViewportInstantiator'
 import Header from '$theater/workspace/components/WhatToShowInBody/Viewports/Header'
 import {batchedAction} from '$shared/utils/redux/withHistory/withBatchActions'
+import PureComponentWithTheater from '$theater/componentModel/react/utils/PureComponentWithTheater'
+import PropsAsPointer from '$theater/handy/PropsAsPointer'
 
 const classes = resolveCss(css)
 
@@ -39,13 +40,14 @@ interface IState {
   dimensionsChange: IViewport['dimensions']
 }
 
-export default class Viewport extends ReactiveComponentWithTheater<
-  IProps,
-  IState
-> {
+export default class Viewport extends PureComponentWithTheater<IProps, IState> {
   static [viewportSym] = true
   volatileId: string
   viewportId: string
+  state = {
+    positionChange: {x: 0, y: 0},
+    dimensionsChange: {width: 0, height: 0},
+  }
   constructor(props: IProps, context: $IntentionalAny) {
     super(props, context)
     this.volatileId = this.theater.studio.elementTree.mirrorOfReactTree.assignEarlyVolatileIdToComponentInstance(
@@ -57,13 +59,6 @@ export default class Viewport extends ReactiveComponentWithTheater<
       props.id,
       this.volatileId,
     )
-  }
-
-  _getInitialState(): IState {
-    return {
-      positionChange: {x: 0, y: 0},
-      dimensionsChange: {width: 0, height: 0},
-    }
   }
 
   componentWillUnmount() {
@@ -119,10 +114,13 @@ export default class Viewport extends ReactiveComponentWithTheater<
   }
 
   saveViewportSizeAndPosition = (viewportDescriptor: IViewport) => {
-    const boundingRect = this.getBoundingRect(
+    const boundingRect = getBoundingRect(
       viewportDescriptor.position,
       viewportDescriptor.dimensions,
+      this.state.positionChange,
+      this.state.dimensionsChange,
     )
+
     const {id} = this.props
     this.setState(() => ({
       positionChange: {x: 0, y: 0},
@@ -148,96 +146,83 @@ export default class Viewport extends ReactiveComponentWithTheater<
     )
   }
 
-  getBoundingRect(
-    viewportPosition: IViewport['position'],
-    viewportDimensions: IViewport['dimensions'],
-  ): TBoundingRect {
-    const {x, y} = viewportPosition
-    const {width, height} = viewportDimensions
-
-    const {positionChange, dimensionsChange} = val(this.stateP)
-
-    const newLeft = x + positionChange.x
-    const newTop = y + positionChange.y
-    const newWidth = width + dimensionsChange.width
-    const newHeight = height + dimensionsChange.height
-
-    return {
-      left: newWidth >= 0 ? newLeft : newLeft + newWidth,
-      top: newHeight >= 0 ? newTop : newTop + newHeight,
-      width: Math.abs(newWidth),
-      height: Math.abs(newHeight),
-    }
-  }
-
-  _render() {
-    const viewportDescriptor = val(
-      this.theaterAtom2P.historicWorkspace.viewports.byId[this.props.id],
-    )
-
-    if (viewportDescriptor == null) return null
-
-    const activeViewportId = val(
-      this.theaterAtom2P.historicWorkspace.viewports.activeViewportId,
-    )
-
-    const isActive = activeViewportId === this.props.id
-
-    const instantiationDescriptor = dictAtom({
-      componentId: viewportDescriptor.sceneComponentId,
-      props: dictAtom({}),
-      modifierInstantiationDescriptors: dictAtom({
-        byId: dictAtom({}),
-        list: arrayAtom([]),
-      }),
-    })
-
-    const elementD = elementify(
-      constant(`SceneComponent`),
-      instantiationDescriptor.derivedDict().pointer(),
-      constant(this.theater),
-    )
-
-    const boundingRect = this.getBoundingRect(
-      viewportDescriptor.position,
-      viewportDescriptor.dimensions,
-    )
+  render() {
     return (
-      <div
-        {...classes('container', isActive && 'isActive')}
-        style={boundingRect}
-      >
-        <div key="content" {...classes('content')}>
-          {elementD.getValue()}
-        </div>
-        {val(this.propsP.activeMode) === MODES.option && (
-          <EditOverlay
-            onMove={this.moveViewport}
-            onMoveEnd={() =>
-              this.saveViewportSizeAndPosition(viewportDescriptor)
-            }
-            onResize={this.resizeViewport}
-            onResizeEnd={() =>
-              this.saveViewportSizeAndPosition(viewportDescriptor)
-            }
-          />
-        )}
-        <Header
-          isActive={isActive}
-          viewportId={this.props.id}
-          name={getDisplayNameOfComponent(
-            this.theater,
-            viewportDescriptor.sceneComponentId,
-          )}
-          width={boundingRect.width}
-          height={boundingRect.height}
-          activateViewport={this._activate}
-          deleteViewport={this.deleteViewport}
-        />
-        {!isActive && (
-          <div {...classes('unclickable')} onClick={this._activate} />
-        )}
-      </div>
+      <PropsAsPointer props={{props: this.props, state: this.state}}>
+        {({props, state}) => {
+          const viewportDescriptor = val(
+            this.theaterAtom2P.historicWorkspace.viewports.byId[this.props.id],
+          )
+
+          if (viewportDescriptor == null) return null
+
+          const activeViewportId = val(
+            this.theaterAtom2P.historicWorkspace.viewports.activeViewportId,
+          )
+
+          const isActive = activeViewportId === this.props.id
+
+          const instantiationDescriptor = dictAtom({
+            componentId: viewportDescriptor.sceneComponentId,
+            props: dictAtom({}),
+            modifierInstantiationDescriptors: dictAtom({
+              byId: dictAtom({}),
+              list: arrayAtom([]),
+            }),
+          })
+
+          const elementD = elementify(
+            constant(`SceneComponent`),
+            instantiationDescriptor.derivedDict().pointer(),
+            constant(this.theater),
+          )
+
+          const boundingRect = getBoundingRect(
+            viewportDescriptor.position,
+            viewportDescriptor.dimensions,
+            val(state.positionChange),
+            val(state.dimensionsChange),
+          )
+
+          return (
+            <div
+              {...classes('container', isActive && 'isActive')}
+              style={boundingRect}
+            >
+              <div key="content" {...classes('content')}>
+                {elementD.getValue()}
+              </div>
+              {val(props.activeMode) === MODES.option && (
+                <EditOverlay
+                  onMove={this.moveViewport}
+                  onMoveEnd={() =>
+                    this.saveViewportSizeAndPosition(viewportDescriptor)
+                  }
+                  onResize={this.resizeViewport}
+                  onResizeEnd={() =>
+                    this.saveViewportSizeAndPosition(viewportDescriptor)
+                  }
+                />
+              )}
+              <Header
+                isActive={isActive}
+                viewportId={this.props.id}
+                name={getDisplayNameOfComponent(
+                  this.theater,
+                  viewportDescriptor.sceneComponentId,
+                )}
+                width={boundingRect.width}
+                height={boundingRect.height}
+                activateViewport={this._activate}
+                deleteViewport={this.deleteViewport}
+              />
+              {!isActive && (
+                <div {...classes('unclickable')} onClick={this._activate} />
+              )}
+            </div>
+          )
+        }}
+      </PropsAsPointer>
     )
   }
 }
@@ -252,4 +237,28 @@ const getDisplayNameOfComponent = (theater: Theater, id: string) => {
     throw new Error(`Got a non-string displayName. This should never happen`)
   }
   return displayName
+}
+
+function getBoundingRect(
+  viewportPosition: IViewport['position'],
+  viewportDimensions: IViewport['dimensions'],
+  positionChange: IViewport['position'],
+  dimensionsChange: IViewport['dimensions'],
+): TBoundingRect {
+  const {x, y} = viewportPosition
+  const {width, height} = viewportDimensions
+
+  // const {positionChange, dimensionsChange} = val(this.stateP)
+
+  const newLeft = x + positionChange.x
+  const newTop = y + positionChange.y
+  const newWidth = width + dimensionsChange.width
+  const newHeight = height + dimensionsChange.height
+
+  return {
+    left: newWidth >= 0 ? newLeft : newLeft + newWidth,
+    top: newHeight >= 0 ? newTop : newTop + newHeight,
+    width: Math.abs(newWidth),
+    height: Math.abs(newHeight),
+  }
 }
