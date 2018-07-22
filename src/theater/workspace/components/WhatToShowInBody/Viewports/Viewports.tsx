@@ -9,7 +9,7 @@ import ActiveModeDetector, {
   ActiveMode,
 } from '$theater/common/components/ActiveModeDetector/ActiveModeDetector'
 import Container from '$theater/workspace/components/WhatToShowInBody/Viewports/Container'
-import PureComponentWithTheater from '$theater/componentModel/react/utils/PureComponentWithTheater'
+import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 
 const classes = resolveCss(css)

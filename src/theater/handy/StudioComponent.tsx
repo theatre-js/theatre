@@ -1,4 +1,4 @@
-import PureComponentWithTheater from '$theater/componentModel/react/utils/PureComponentWithTheater'
+import PureComponentWithTheater from './PureComponentWithTheater'
 
 /**
  * A superclass of almost all TheaterJS Studio components. Right now, it

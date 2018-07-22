@@ -30,11 +30,11 @@ const ephemeralActionWrapper = actionCreator(
 )
 
 export const uiActions = {
-  ahistoric: mapValues(
+  ahistoric: (mapValues(
     ahistoricUnwrappedActions,
     actionCreator => (payload: any) =>
       ahistoricActionWrapper(actionCreator(payload)),
-  ) as $IntentionalAny as typeof ahistoricUnwrappedActions,
+  ) as $IntentionalAny) as typeof ahistoricUnwrappedActions,
 }
 
 export const rootReducer: ReduxReducer<UIState> = (
@@ -57,7 +57,11 @@ export const rootReducer: ReduxReducer<UIState> = (
       ephemeral: ephemeralReducer(state.ephemeral, action),
     }
   } */ else {
-    console.error(`Unkown action type ${action.type} in rootReducer`)
+    if (actionTypesToIgnore.indexOf(action.type) === -1) {
+      console.error(`Unkown action type ${action.type} in rootReducer`)
+    }
     return state
   }
 }
+
+const actionTypesToIgnore = ['@@INIT']

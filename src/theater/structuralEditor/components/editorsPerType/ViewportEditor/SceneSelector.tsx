@@ -1,5 +1,5 @@
 import resolveCss from '$shared/utils/resolveCss'
-import PureComponentWithTheater from '$theater/componentModel/react/utils/PureComponentWithTheater'
+import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import React from 'react'
 import * as css from './DimensionsEditor.css'

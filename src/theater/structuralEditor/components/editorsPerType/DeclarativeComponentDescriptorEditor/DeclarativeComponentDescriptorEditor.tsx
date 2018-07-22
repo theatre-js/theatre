@@ -2,7 +2,7 @@ import ComponentNameEditor from '$theater/structuralEditor/components/editorsPer
 import TreeEditor from '$theater/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor/TreeEditor'
 import ModifiersEditor from './ModifiersEditor/ModifiersEditor'
 import React from 'react'
-import PureComponentWithTheater from '$theater/componentModel/react/utils/PureComponentWithTheater'
+import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
 import PropsEditor from './PropsEditor'
 
 type Props = {

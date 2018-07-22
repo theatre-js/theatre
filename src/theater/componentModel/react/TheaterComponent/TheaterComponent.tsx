@@ -15,7 +15,7 @@ import DerivedClassInstance from '$shared/DataVerse/derivedClass/DerivedClassIns
 import SideEffectsHandler from '$theater/componentModel/react/TheaterComponent/SideEffectsHandler'
 import TimelinesHandler from '$theater/componentModel/react/TheaterComponent/TimelinesHandler'
 import Theater, {TheaterStateAtom} from '$theater/bootstrap/Theater'
-import PureComponentWithTheater from '$theater/componentModel/react/utils/PureComponentWithTheater'
+import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
 import {isCoreComponent} from '$theater/componentModel/selectors'
 import {IComponentId} from '$theater/componentModel/types'
 

@@ -1,4 +1,4 @@
-import PureComponentWithTheater from '$theater/componentModel/react/utils/PureComponentWithTheater'
+import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 import dictAtom, {DictAtom, UnwrapDictAtom} from '$shared/DataVerse/atoms/dictAtom'
 import {PointerDerivation} from '$shared/DataVerse/derivations/pointer'

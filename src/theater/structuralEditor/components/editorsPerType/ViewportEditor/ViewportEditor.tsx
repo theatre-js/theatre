@@ -1,5 +1,5 @@
 import React from 'react'
-import PureComponentWithTheater from '$theater/componentModel/react/utils/PureComponentWithTheater'
+import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
 import SceneSelector from './SceneSelector'
 import DimensionsEditor from './DimensionsEditor'
 
