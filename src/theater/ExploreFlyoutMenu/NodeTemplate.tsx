@@ -38,7 +38,7 @@ const NodeTemplate = (props: Props) => {
     <TheaterConsumer>
       {theater => (
         <PropsAsPointer props={props}>
-          {propsP => {
+          {({props: propsP}) => {
             const volatileId = val(propsP.volatileId)
             const volatileIdsOfChildren = val(propsP.volatileIdsOfChildren)
 

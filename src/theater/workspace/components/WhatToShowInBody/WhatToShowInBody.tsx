@@ -23,7 +23,7 @@ export default class WhatToShowInBody extends PureComponentWithTheater<
   render() {
     return (
       <PropsAsPointer props={this.props}>
-        {props => {
+        {({props}) => {
           const whatToShowInBody = val(
             this.theaterAtom2P.historicWorkspace.viewports.whatToShowInBody,
           )

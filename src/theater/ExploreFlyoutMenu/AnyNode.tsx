@@ -21,7 +21,7 @@ const AnyNode = (props: Props): React.ReactElement<any> => (
   <TheaterConsumer>
     {theater => (
       <PropsAsPointer props={props}>
-        {(propsP: Pointer<Props>) => {
+        {({props: propsP}) => {
           // @todo @perf if depth and volatileId never change per Node, then we should read them directly from props
           const volatileId = val(propsP.volatileId)
 

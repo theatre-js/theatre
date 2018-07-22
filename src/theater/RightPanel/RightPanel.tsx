@@ -16,7 +16,7 @@ export default class RightPanel extends React.PureComponent<IProps, IState> {
       <TheaterConsumer>
         {theater => (
           <PropsAsPointer props={this.props}>
-            {(_: Pointer<IProps>) => {
+            {() => {
               return (
                 <Panel label="Element">
                   {renderEditorForEitherLeftOrRightPanel('right', theater)}

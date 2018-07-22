@@ -74,7 +74,7 @@ export default class ExpressionlessNumberEditor extends StudioComponent<
       <TheaterConsumer>
         {theater => (
           <PropsAsPointer props={props}>
-            {propsP => {
+            {({props: propsP}) => {
               const value = val(
                 get(theater.atom2.pointer, val(propsP.path)),
               ) as number | undefined

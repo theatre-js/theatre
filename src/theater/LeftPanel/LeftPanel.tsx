@@ -30,7 +30,7 @@ export default class ComposePanelContent extends React.PureComponent<
       <TheaterConsumer>
         {theater => (
           <PropsAsPointer props={this.props}>
-            {(_: Pointer<IProps>) => {
+            {() => {
               return (
                 <Panel header={<LeftPanelHeader />}>
                   {renderEditorForEitherLeftOrRightPanel('left', theater)}

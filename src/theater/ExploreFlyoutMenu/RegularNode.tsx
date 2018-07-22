@@ -25,7 +25,7 @@ const RegularNode = (props: Props) => (
   <TheaterConsumer>
     {theater => (
       <PropsAsPointer props={props}>
-        {(propsP: Pointer<Props>) => {
+        {({props: propsP}) => {
           const volatileId = val(propsP.volatileId)
 
           const nodeP = theater.studio.elementTree.mirrorOfReactTreeAtom.pointer

@@ -19,7 +19,7 @@ const ViewportNode = (props: Props): React.ReactElement<$IntentionalAny> => (
   <TheaterConsumer>
     {theater => (
       <PropsAsPointer props={props}>
-        {(propsP: Pointer<Props>) => {
+        {({props: propsP}) => {
           const nodeP = theater.studio.elementTree.mirrorOfReactTreeAtom.pointer
             .nodesByVolatileId[val(propsP.volatileId)] as Pointer<GenericNode>
 

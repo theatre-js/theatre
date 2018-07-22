@@ -148,7 +148,7 @@ export default class Viewport extends PureComponentWithTheater<IProps, IState> {
 
   render() {
     return (
-      <PropsAsPointer props={{props: this.props, state: this.state}}>
+      <PropsAsPointer props={this.props} state={this.state}>
         {({props, state}) => {
           const viewportDescriptor = val(
             this.theaterAtom2P.historicWorkspace.viewports.byId[this.props.id],

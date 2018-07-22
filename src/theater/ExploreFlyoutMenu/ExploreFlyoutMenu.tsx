@@ -35,7 +35,7 @@ class ExploreFlyoutMenu extends StudioComponent<Props, State> {
     return createPortal(
       <div className={css.container}>
         <div className={css.wrapper}>
-          <PropsAsPointer props={this.props}>
+          <PropsAsPointer>
             {() => {
               const whatToShowInBody = val(
                 this.theater.atom2.pointer.historicWorkspace.viewports

@@ -112,7 +112,7 @@ export default class SceneSelector extends PureComponentWithTheater<
 
     return (
       <PropsAsPointer props={props as IProps}>
-        {(propsP: Pointer<IProps>) => {
+        {({props: propsP}) => {
           const viewportId = val(propsP.viewportId)
 
           const displayName = this.getDisplayName(viewportId)

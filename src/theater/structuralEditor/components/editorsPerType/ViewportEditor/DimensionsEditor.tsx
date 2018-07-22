@@ -32,7 +32,7 @@ export default class DimensionsEditor extends PureComponentWithTheater<
 
     return (
       <PropsAsPointer props={props as IProps}>
-        {(propsP: Pointer<IProps>) => {
+        {({props: propsP}) => {
           const viewportId = val(propsP.viewportId)
           const path = pathToViewport(viewportId)
 
