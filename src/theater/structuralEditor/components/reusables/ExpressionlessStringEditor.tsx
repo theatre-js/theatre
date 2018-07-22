@@ -1,4 +1,4 @@
-import StudioComponent from '$theater/handy/StudioComponent'
+import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
 import React from 'react'
 import {reduceStateAction} from '$shared/utils/redux/commonActions'
 import * as css from './ExpressionlessStringEditor.css'
@@ -17,7 +17,7 @@ interface IProps extends IOwnProps {}
 
 interface State {}
 
-export default class ExpressionlessStringEditor extends StudioComponent<
+export default class ExpressionlessStringEditor extends PureComponentWithTheater<
   IProps,
   State
 > {

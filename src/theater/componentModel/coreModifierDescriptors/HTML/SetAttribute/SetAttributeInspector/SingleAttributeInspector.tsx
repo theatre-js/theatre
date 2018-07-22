@@ -3,7 +3,7 @@ import TextInput from '$theater/common/components/TextInput'
 import {get} from 'lodash'
 import KeyValuePair from '$theater/common/components/KeyValuePair'
 import {ITheaterStoreState} from '$theater/types'
-import StudioComponent from '$theater/handy/StudioComponent'
+import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
 import connect from '$theater/handy/connect'
 import React from 'react'
 
@@ -16,7 +16,7 @@ interface Props extends IOwnProps {
   pairing: {key: string; value: string}
 }
 
-export class SingleAttributeInspector extends StudioComponent<Props, {}> {
+export class SingleAttributeInspector extends PureComponentWithTheater<Props, {}> {
   _onKeyChange = (key: string) => {
     this.dispatch(
       reduceStateAction(

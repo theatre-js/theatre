@@ -4,7 +4,7 @@ import {fitInput} from '$theater/structuralEditor/components/editorsPerType/Decl
 import resolveCss from '$shared/utils/resolveCss'
 import css from './SceneSelector.css'
 import {IDeclarativeComponentDescriptor} from '$theater/componentModel/types'
-import StudioComponent from '$theater/handy/StudioComponent'
+import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
 import {val} from '$shared/DataVerse2/atom'
 import {reduceHistoricState} from '$theater/bootstrap/actions'
 import {makeSceneComponent} from '$theater/componentModel/utils'
@@ -22,7 +22,7 @@ interface IState {
   value: string
 }
 
-class SceneSelector extends StudioComponent<IProps, IState> {
+class SceneSelector extends PureComponentWithTheater<IProps, IState> {
   input: HTMLInputElement | null
   scenes: Record<string, IDeclarativeComponentDescriptor>
 

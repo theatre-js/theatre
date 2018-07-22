@@ -21,7 +21,7 @@ import cx from 'classnames'
 import {PanelActiveModeChannel} from '$theater/workspace/components/Panel/Panel'
 import {Subscriber} from 'react-broadcast'
 import {MODES} from '$theater/common/components/ActiveModeDetector/ActiveModeDetector'
-import StudioComponent from '$theater/handy/StudioComponent'
+import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
 import React from 'react'
 import connect from '$theater/handy/connect'
 import {IDeclarativeComponentDescriptor} from '$theater/componentModel/types'
@@ -101,7 +101,7 @@ const getDefaultComponentProps = (id: string) => ({
   },
 })
 
-class TreeEditor extends StudioComponent<IProps, State> {
+class TreeEditor extends PureComponentWithTheater<IProps, State> {
   lastAction = {type: null, payload: null}
   queuedDrop = null
   state = {

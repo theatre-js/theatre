@@ -16,7 +16,7 @@ import {Broadcast} from 'react-broadcast'
 import {ActiveMode} from '$theater/workspace/components/StudioUI/StudioUI'
 import {ITheaterStoreState} from '$theater/types'
 import {isEqual} from 'lodash'
-import StudioComponent from '$theater/handy/StudioComponent'
+import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
 import connect from '$theater/handy/connect'
 
 export const PanelControlChannel = 'TheaterJS/PanelControlChannel'
@@ -62,7 +62,7 @@ type State = IPanelPlacementState & {
   isMoving: boolean
 }
 
-class PanelController extends StudioComponent<IProps, State> {
+class PanelController extends PureComponentWithTheater<IProps, State> {
   static defaultProps = {}
 
   render() {

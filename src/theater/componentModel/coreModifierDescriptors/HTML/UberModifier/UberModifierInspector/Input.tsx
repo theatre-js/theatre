@@ -1,5 +1,5 @@
 import {reduceStateAction} from '$shared/utils/redux/commonActions'
-import StudioComponent from '$theater/handy/StudioComponent'
+import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
 import React from 'react'
 import connect from '$theater/handy/connect'
 
@@ -31,7 +31,7 @@ interface IState {
   initialPos: {x: number; y: number}
 }
 
-export class Input extends StudioComponent<IProps, IState> {
+export class Input extends PureComponentWithTheater<IProps, IState> {
   state = {
     isBeingDragged: false,
     move: {x: 0, y: 0},

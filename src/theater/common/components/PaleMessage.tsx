@@ -1,6 +1,6 @@
 import * as css from './PaleMessage.css'
 import resolveCss from '$shared/utils/resolveCss'
-import StudioComponent from '$theater/handy/StudioComponent'
+import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
 import React from 'react'
 
 interface IProps {
@@ -11,7 +11,7 @@ interface IProps {
 
 interface IState {}
 
-export default class PaleMessage extends StudioComponent<IProps, IState> {
+export default class PaleMessage extends PureComponentWithTheater<IProps, IState> {
   constructor(props: IProps, context: any) {
     super(props, context)
     this.state = {}

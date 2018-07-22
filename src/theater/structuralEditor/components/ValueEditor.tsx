@@ -1,4 +1,4 @@
-import StudioComponent from '$theater/handy/StudioComponent'
+import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
 import React from 'react'
 import connect from '$theater/handy/connect'
 import get from 'lodash/get'
@@ -19,7 +19,7 @@ interface IProps extends IOwnProps {
 type State = {}
 
 // @todo use PropsAsPointer
-class ValueEditor extends StudioComponent<IProps, State> {
+class ValueEditor extends PureComponentWithTheater<IProps, State> {
   render() {
     const {typeName} = this.props
     const type = typeSystem.types[typeName]

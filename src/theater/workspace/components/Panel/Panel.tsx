@@ -8,7 +8,7 @@ import {
   EXACT_VALUE,
   SAME_AS_BOUNDARY,
 } from '$theater/workspace/components/StudioUI/StudioUI'
-import StudioComponent from '$theater/handy/StudioComponent'
+import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
 import {MODES} from '$theater/common/components/ActiveModeDetector/ActiveModeDetector'
 import _ from 'lodash'
 import React from 'react'
@@ -38,7 +38,7 @@ const SNAP_RANGE = 10
 export const PanelWidthChannel = 'TheaterJS/PanelWidthChannel'
 export const PanelActiveModeChannel = 'TheaterJS/PanelActiveModeChannel'
 
-export default class Panel extends StudioComponent<IProps, IState> {
+export default class Panel extends PureComponentWithTheater<IProps, IState> {
   constructor(props: IProps, context: $IntentionalAny) {
     super(props, context)
     this.state = {

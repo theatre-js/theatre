@@ -25,7 +25,7 @@ import {
   TimelineObject,
 } from '$theater/AnimationTimelinePanel/types'
 import {IXY} from '$theater/workspace/types'
-import StudioComponent from '$theater/handy/StudioComponent'
+import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
 import boxAtom, {BoxAtom} from '$src/shared/DataVerse/atoms/boxAtom'
 import TimelineInstance from '$theater/componentModel/react/TheaterComponent/TimelineInstance/TimelineInstance'
 import SelectionArea from '$theater/AnimationTimelinePanel/SelectionArea'
@@ -89,7 +89,7 @@ type State = {
 
 export const LEGEND_BAR_WIDTH = 30
 
-class Content extends StudioComponent<Props, State> {
+class Content extends PureComponentWithTheater<Props, State> {
   panelWidth: number
   container: $FixMe
   variablesContainer: $FixMe
@@ -958,7 +958,7 @@ class Content extends StudioComponent<Props, State> {
   }
 }
 
-export default class ThePanel extends StudioComponent<{}, void> {
+export default class ThePanel extends PureComponentWithTheater<{}, void> {
   _d: AbstractDerivation<React.ReactNode>
   static panelName = 'AnimationTimeline'
 

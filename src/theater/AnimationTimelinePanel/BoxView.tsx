@@ -22,7 +22,7 @@ import {
 } from '$shared/utils/redux/commonActions'
 import React from 'react'
 import connect from '$theater/handy/connect';
-import StudioComponent from '$theater/handy/StudioComponent';
+import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater';
 
 interface IOwnProps {
   variables: VariableObject[]
@@ -55,7 +55,7 @@ export const colors = [
   {name: 'yellow', normal: '#FCE181', darkened: '#726a4b'},
 ]
 
-class BoxView extends StudioComponent<IProps, IState> {
+class BoxView extends PureComponentWithTheater<IProps, IState> {
   svgArea: HTMLElement
 
   constructor(props: IProps, context: $IntentionalAny) {

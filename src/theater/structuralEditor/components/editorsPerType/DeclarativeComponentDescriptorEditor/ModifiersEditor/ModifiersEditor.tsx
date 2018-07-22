@@ -2,7 +2,7 @@ import React from 'react'
 import connect from '$theater/handy/connect'
 import PanelSection from '$theater/structuralEditor/components/reusables/PanelSection'
 import _ from 'lodash'
-import StudioComponent from '$theater/handy/StudioComponent'
+import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
 import {getSelectedNodeId} from '$theater/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor/TreeEditor'
 import {
   IDeclarativeComponentDescriptor,
@@ -51,7 +51,7 @@ interface IState {
 }
 
 const SENSOR_HEIGHT = parseInt(require('./ModifierSensor.css').sensorHeight)
-class ModifiersEditor extends StudioComponent<IProps, IState> {
+class ModifiersEditor extends PureComponentWithTheater<IProps, IState> {
   constructor(props: IProps, context: $IntentionalAny) {
     super(props, context)
     this.state = {

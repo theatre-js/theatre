@@ -1,5 +1,5 @@
 import {reduceStateAction} from '$shared/utils/redux/commonActions'
-import StudioComponent from '$theater/handy/StudioComponent'
+import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
 import React from 'react'
 import connect from '$theater/handy/connect'
 import {ITheaterStoreState} from '$theater/types'
@@ -50,7 +50,7 @@ const getOppositeSide = (side: string): string => {
   }
 }
 
-export class StudioUI extends StudioComponent<IProps, State> {
+export class StudioUI extends PureComponentWithTheater<IProps, State> {
   _isMouseDown: boolean
   boundaryPathToValueRefMap: object
 

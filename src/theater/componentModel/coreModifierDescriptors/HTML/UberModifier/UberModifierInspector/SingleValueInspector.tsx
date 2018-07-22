@@ -1,4 +1,4 @@
-import StudioComponent from '$theater/handy/StudioComponent'
+import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
 import React from 'react'
 import connect from '$theater/handy/connect'
 import TextInput from '$theater/common/components/TextInput'
@@ -16,7 +16,7 @@ interface IProps extends IOwnProps {
   pairing: {key: string; value: string}
 }
 
-export class SingleCustomStyleInspector extends StudioComponent<IProps, {}> {
+export class SingleCustomStyleInspector extends PureComponentWithTheater<IProps, {}> {
   _onKeyChange = (key: string) => {
     this.dispatch(
       reduceStateAction(
