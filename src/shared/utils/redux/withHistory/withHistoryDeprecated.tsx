@@ -6,10 +6,12 @@ import {
   redoAction,
   _pushTemporaryAction,
   _discardTemporaryAction,
+  ahistoricalAction,
   replaceHistoryAction,
 } from './actions'
 import * as _ from 'lodash'
 import patch from 'json-touch-patch'
+import getPropsInCommon from '$shared/utils/getPropsInCommon'
 import {ReduxReducer, GenericAction} from '$shared/types'
 import {Operation} from 'fast-json-patch'
 
@@ -44,21 +46,24 @@ const defaultConfig: WithHistoryConfig = {
 
 export type StateWithHistory<
   HistoricState extends {},
+  AhistoricState extends {}
 > = HistoricState &
-  {
+  AhistoricState & {
     '@@history': HistoryOnly<HistoricState>
     '@@tempActions': Array<TempAction>
+    '@@ahistoricState': AhistoricState
   }
 
 export const withHistory = <
   PersistedState,
+  AhistoricState,
   historicalReducer extends ReduxReducer<PersistedState>,
-  FullState extends StateWithHistory<PersistedState>
+  FullState extends StateWithHistory<PersistedState, AhistoricState>
 >(
   historicalReducer: historicalReducer,
+  ahistoricalReducer: ReduxReducer<AhistoricState>,
   config: WithHistoryConfig = defaultConfig,
 ): ReduxReducer<FullState> => {
-  
   const reduceForPermanentHistory = (
     prevHistory: HistoryOnly<PersistedState>,
     action: GenericAction,
@@ -85,17 +90,22 @@ export const withHistory = <
   ): FullState => {
     let history: HistoryOnly<PersistedState>
     let tempActions: Array<TempAction>
+    let ahistoricState: AhistoricState
     if (!prevState) {
       history = reduceForPermanentHistory(undefined as $FixMe, action)
+      ahistoricState = ahistoricalReducer(undefined as $FixMe, action)
       tempActions = []
     } else if (reduceEntireStateAction.is(action)) {
       return action.payload(prevState)
     } else {
       history = prevState['@@history']
+      ahistoricState = prevState['@@ahistoricState']
       tempActions = prevState['@@tempActions']
 
       if (replaceHistoryAction.is(action)) {
         history = action.payload
+      } else if (ahistoricalAction.is(action)) {
+        ahistoricState = ahistoricalReducer(ahistoricState, action.payload)
       } else if (_pushTemporaryAction.is(action)) {
         tempActions = pushTemp(prevState['@@tempActions'], action)
       } else if (_discardTemporaryAction.is(action)) {
@@ -112,10 +122,23 @@ export const withHistory = <
       historicalReducer,
     )
 
+    if (process.env.NODE_ENV !== 'production') {
+      const commonProps = getPropsInCommon(innerStateWithTemps, ahistoricState)
+      if (commonProps.length > 0) {
+        throw new Error(
+          `Looks like ahistoricReducer and historicalReducer return states with props ${JSON.stringify(
+            commonProps,
+          )} in common. They should have no props in common, otherwise ahistoricReducer would override the props in historicalReducer`,
+        )
+      }
+    }
+
     return {
       ...innerStateWithTemps,
+      ...(ahistoricState as $FixMe),
       '@@history': history,
       '@@tempActions': tempActions,
+      '@@ahistoricState': ahistoricState,
     }
   }
 }
@@ -310,6 +333,7 @@ export const extractState = <
   const {
     '@@history': h,
     '@@tempActions': t,
+    '@@ahistoricState': a,
     ...state
   } = o as $FixMe
   return state

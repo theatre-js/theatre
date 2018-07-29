@@ -1,5 +1,9 @@
 import {UIState} from './types'
 
+const initialHistoricState = {
+  foo: '1',
+}
+
 export const uiInitialState: UIState = {
   ahistoric: {
     visibilityState: 'everythingIsVisible',
@@ -12,7 +16,16 @@ export const uiInitialState: UIState = {
     },
   },
   historic: {
-    foo: '1',
+    ...initialHistoricState,
+    '@@history': {
+      commitsByHash: {},
+      currentCommitHash: undefined,
+      innerState: {
+        ...initialHistoricState,
+      },
+      listOfCommitHashes: [],
+    },
+    '@@tempActions': [],
   },
   ephemeral: {},
 }
