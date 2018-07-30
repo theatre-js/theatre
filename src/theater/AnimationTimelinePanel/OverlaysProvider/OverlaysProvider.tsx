@@ -2,9 +2,12 @@ import React from 'react'
 import {
   TOverlaysAPI,
   TPointValuesEditorProps,
+  TPointContextMenuProps,
 } from '$theater/AnimationTimelinePanel/OverlaysProvider/types'
 import {Broadcast} from 'react-broadcast'
 import PointValuesEditor from '$theater/AnimationTimelinePanel/OverlaysProvider/PointValuesEditor'
+import PointContextMenu from '$theater/AnimationTimelinePanel/OverlaysProvider/PointContextMenu'
+import ConnectorContextMenu from '$theater/AnimationTimelinePanel/OverlaysProvider/ConnectorContextMenu'
 
 interface IProps {
   pathToTimeline: string[]
@@ -13,6 +16,8 @@ interface IProps {
 
 interface IState {
   pointValuesEditorProps: null | TPointValuesEditorProps
+  pointContextMenuProps: null | TPointContextMenuProps
+  connectorContextMenuProps: null | TPointContextMenuProps
 }
 
 export const OverlaysAPIChannel = 'theaterjs/OverlaysAPIChannel'
@@ -23,29 +28,50 @@ class OverlaysProvider extends React.PureComponent<IProps, IState> {
 
     this.state = {
       pointValuesEditorProps: null,
+      pointContextMenuProps: null,
+      connectorContextMenuProps: null,
     }
   }
 
   _clearState = () => {
     this.setState(() => ({
       pointValuesEditorProps: null,
+      pointContextMenuProps: null,
+      connectorContextMenuProps: null,
     }))
   }
 
-  _showPointValuesEditor = (props: TPointValuesEditorProps) => {
+  _showPointValuesEditor: TOverlaysAPI['showPointValuesEditor'] = props => {
     this.setState(() => ({
       pointValuesEditorProps: props,
     }))
   }
 
+  _showPointContextMenu: TOverlaysAPI['showPointContextMenu'] = props => {
+    this.setState(() => ({
+      pointContextMenuProps: props,
+    }))
+  }
+
+  _showConnectorContextMenu: TOverlaysAPI['showConnectorContextMenu'] = props => {
+    this.setState(() => ({
+      connectorContextMenuProps: props,
+    }))
+  }
+
   api: TOverlaysAPI = {
     showPointValuesEditor: this._showPointValuesEditor,
-    showPointContextMenu: () => {},
-    showConnectorContextMenu: () => {},
+    showPointContextMenu: this._showPointContextMenu,
+    showConnectorContextMenu: this._showConnectorContextMenu,
   }
 
   render() {
-    const {pointValuesEditorProps} = this.state
+    const {
+      pointValuesEditorProps,
+      pointContextMenuProps,
+      connectorContextMenuProps,
+    } = this.state
+    const {pathToTimeline} = this.props
     return (
       <Broadcast channel={OverlaysAPIChannel} value={this.api}>
         <>
@@ -53,7 +79,21 @@ class OverlaysProvider extends React.PureComponent<IProps, IState> {
           {pointValuesEditorProps != null && (
             <PointValuesEditor
               {...pointValuesEditorProps}
-              pathToTimeline={this.props.pathToTimeline}
+              pathToTimeline={pathToTimeline}
+              onClose={this._clearState}
+            />
+          )}
+          {pointContextMenuProps != null && (
+            <PointContextMenu
+              {...pointContextMenuProps}
+              pathToTimeline={pathToTimeline}
+              onClose={this._clearState}
+            />
+          )}
+          {connectorContextMenuProps != null && (
+            <ConnectorContextMenu
+              {...connectorContextMenuProps}
+              pathToTimeline={pathToTimeline}
               onClose={this._clearState}
             />
           )}

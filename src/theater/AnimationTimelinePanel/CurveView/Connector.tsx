@@ -8,6 +8,7 @@ import {
 } from '$theater/common/components/ActiveModeDetector/ActiveModeDetector'
 import * as css from './Connector.css'
 import noop from '$shared/utils/noop'
+import {TShowConnectorContextMenu} from '$theater/AnimationTimelinePanel/CurveView/types'
 
 interface IProps {
   leftPointIndex?: number
@@ -16,8 +17,8 @@ interface IProps {
   rightPointTime: number
   rightPointValue: number
   handles: IHandles
-  removeConnector?: Function
-  showContextMenu?: Function
+  removeConnector?: (pointIndex: number) => void
+  showContextMenu?: TShowConnectorContextMenu
 }
 
 interface IState {}
@@ -45,7 +46,7 @@ class Connector extends React.PureComponent<IProps, IState> {
   clickHandler = (e: React.MouseEvent<SVGPathElement>) => {
     if (this.activeMode === MODES.d) {
       e.stopPropagation()
-      this.props.removeConnector!(this.props.leftPointIndex)
+      this.props.removeConnector!(this.props.leftPointIndex as number)
     }
   }
 
@@ -53,8 +54,11 @@ class Connector extends React.PureComponent<IProps, IState> {
     e.stopPropagation()
     e.preventDefault()
     const {clientX, clientY} = e
-    const pos = {left: clientX, top: clientY}
-    this.props.showContextMenu!(this.props.leftPointIndex, pos)
+    this.props.showContextMenu!({
+      left: clientX,
+      top: clientY,
+      pointIndex: this.props.leftPointIndex as number,
+    })
   }
 
   render() {

@@ -2,8 +2,8 @@ import {VariableID} from '$theater/AnimationTimelinePanel/types'
 
 export type TOverlaysAPI = {
   showPointValuesEditor: (props: TPointValuesEditorProps) => void
-  showPointContextMenu: () => void
-  showConnectorContextMenu: () => void
+  showPointContextMenu: (props: TPointContextMenuProps) => void
+  showConnectorContextMenu: (prop: TConnectorContextMenuProps) => void
 }
 
 export type TPointValuesEditorProps = {
@@ -11,6 +11,20 @@ export type TPointValuesEditorProps = {
   top: number
   initialValue: number
   initialTime: number
+  variableId: VariableID
+  pointIndex: number
+}
+
+export type TPointContextMenuProps = {
+  left: number
+  top: number
+  variableId: VariableID
+  pointIndex: number
+}
+
+export type TConnectorContextMenuProps = {
+  left: number
+  top: number
   variableId: VariableID
   pointIndex: number
 }

@@ -22,7 +22,13 @@ import {
 } from '$theater/AnimationTimelinePanel/SelectionProvider/types'
 import {OverlaysAPIChannel} from '$theater/AnimationTimelinePanel/OverlaysProvider/OverlaysProvider'
 import {TOverlaysAPI} from '$theater/AnimationTimelinePanel/OverlaysProvider/types'
-import {TShowPointValuesEditor} from '$theater/AnimationTimelinePanel/CurveView/types'
+import {
+  TShowPointValuesEditor,
+  TShowPointContextMenu,
+  TShowConnectorContextMenu,
+  TRemovePointFromSelection,
+  TAddPointToSelection,
+} from '$theater/AnimationTimelinePanel/CurveView/types'
 import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
 
 interface IOwnProps {
@@ -42,8 +48,6 @@ interface IProps extends IOwnProps {
 interface IState {}
 
 class CurveView extends PureComponentWithTheater<IProps, IState> {
-  noop = () => {}
-
   removePoint = (pointIndex: number) => {
     const {pathToTimeline, variableId} = this.props
     this.dispatch(
@@ -176,7 +180,7 @@ class CurveView extends PureComponentWithTheater<IProps, IState> {
     )
   }
 
-  addPointToSelection = (pointIndex: number, pointData: TPointData) => {
+  addPointToSelection: TAddPointToSelection = (pointIndex, pointData) => {
     this.props.selectionAPI.addPoint(
       this.props.propGetter('boxIndex'),
       this.props.variableId,
@@ -186,7 +190,7 @@ class CurveView extends PureComponentWithTheater<IProps, IState> {
     )
   }
 
-  removePointFromSelection = (pointIndex: number) => {
+  removePointFromSelection: TRemovePointFromSelection = pointIndex => {
     this.props.selectionAPI.removePoint(
       this.props.propGetter('boxIndex'),
       this.props.variableId,
@@ -196,6 +200,20 @@ class CurveView extends PureComponentWithTheater<IProps, IState> {
 
   showPointValuesEditor: TShowPointValuesEditor = props => {
     this.props.overlaysAPI.showPointValuesEditor({
+      ...props,
+      variableId: this.props.variableId,
+    })
+  }
+
+  showPointContextMenu: TShowPointContextMenu = props => {
+    this.props.overlaysAPI.showPointContextMenu({
+      ...props,
+      variableId: this.props.variableId,
+    })
+  }
+
+  showConnectorContextMenu: TShowConnectorContextMenu = props => {
+    this.props.overlaysAPI.showConnectorContextMenu({
       ...props,
       variableId: this.props.variableId,
     })
@@ -220,7 +238,7 @@ class CurveView extends PureComponentWithTheater<IProps, IState> {
                     rightPointValue={nextPoint.value}
                     handles={point.interpolationDescriptor.handles}
                     removeConnector={this.removeConnector}
-                    showContextMenu={this.noop}
+                    showContextMenu={this.showConnectorContextMenu}
                   />
                 )}
               <Point
@@ -256,7 +274,7 @@ class CurveView extends PureComponentWithTheater<IProps, IState> {
                 changePointHandlesBy={this.changePointHandlesBy}
                 makeHandleHorizontal={this.makeHandleHorizontal}
                 showPointValuesEditor={this.showPointValuesEditor}
-                showContextMenu={this.noop}
+                showContextMenu={this.showPointContextMenu}
                 addPointToSelection={this.addPointToSelection}
                 removePointFromSelection={this.removePointFromSelection}
               />

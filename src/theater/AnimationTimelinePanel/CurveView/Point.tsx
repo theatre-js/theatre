@@ -27,7 +27,12 @@ import {
   TSelectionMove,
 } from '$theater/AnimationTimelinePanel/SelectionProvider/types'
 import {TPropName} from '$theater/AnimationTimelinePanel/VariablesContainer/VariablesPropProvider'
-import {TShowPointValuesEditor} from '$theater/AnimationTimelinePanel/CurveView/types'
+import {
+  TShowPointValuesEditor,
+  TShowPointContextMenu,
+  TRemovePointFromSelection,
+  TAddPointToSelection,
+} from '$theater/AnimationTimelinePanel/CurveView/types'
 
 interface IProps {
   propGetter: (propName: TPropName) => any
@@ -51,9 +56,9 @@ interface IProps {
   changePointHandlesBy: (pointIndex: number, change: PointHandles) => void
   makeHandleHorizontal: (pointIndex: number, side: 'left' | 'right') => void
   showPointValuesEditor: TShowPointValuesEditor
-  showContextMenu: Function
-  addPointToSelection: Function
-  removePointFromSelection: Function
+  showContextMenu: TShowPointContextMenu
+  addPointToSelection: TAddPointToSelection
+  removePointFromSelection: TRemovePointFromSelection
 }
 
 interface IState {
@@ -243,8 +248,11 @@ class Point extends React.PureComponent<IProps, IState> {
     e.stopPropagation()
     e.preventDefault()
     const {clientX, clientY} = e
-    const pos = {left: clientX, top: clientY}
-    this.props.showContextMenu(this.props.pointIndex, pos)
+    this.props.showContextMenu({
+      left: clientX,
+      top: clientY,
+      pointIndex: this.props.pointIndex,
+    })
   }
 
   _highlightAsSelected = (selectedArea: TTransformedSelectedArea) => {
