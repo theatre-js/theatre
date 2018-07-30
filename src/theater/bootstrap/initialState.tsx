@@ -6,7 +6,7 @@ import {
 } from '$theater/componentModel/initialState'
 import {IStoreHistoricState, IStoreAhistoricState} from '../types'
 
-export const initialPersistedState: IStoreHistoricState = {
+export const initialHistoricState: IStoreHistoricState = {
   common,
   historicWorkspace,
   historicComponentModel,

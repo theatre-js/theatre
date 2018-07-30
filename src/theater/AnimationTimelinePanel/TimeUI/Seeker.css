@@ -1,0 +1,112 @@
+.seeker {
+  --thumbColor: #00E0FF;
+  position: absolute;
+  top: 0;
+  width: 5px;
+  margin-left: 30px;
+  height: 100%;
+  z-index: 1000;
+  cursor: ew-resize;
+
+  display: none;
+  &.visible {
+    display: block;
+  }
+}
+
+.thumb {
+  background-color: var(--thumbColor);
+  position: absolute;
+  width: 5px;
+  height: 10px;
+  top: -2px;
+  left: -2px;
+  z-index: 2;
+
+  &:before {
+    position: absolute;
+    display: block;
+    content: ' ';
+    left: -1px;
+    width: 0;
+    height: 0;
+    border-bottom: 2px solid #1F2B2B;
+    border-left: 1px solid transparent;
+  }
+
+  &:after {
+    position: absolute;
+    display: block;
+    content: ' ';
+    right: -1px;
+    width: 0;
+    height: 0;
+    border-bottom: 2px solid #1F2B2B;
+    border-right: 1px solid transparent;
+  }
+}
+
+.squinch {
+  position: absolute;
+  left: 1px;
+  right: 1px;
+  top: 10px;
+  border-top: 3px solid var(--thumbColor);
+  border-right: 1px solid transparent;
+  border-left: 1px solid transparent;
+
+  &:before {
+    position: absolute;
+    display: block;
+    content: ' ';
+    top: -4px;
+    left: -2px;
+    height: 8px;
+    width: 2px;
+    background: none;
+    border-radius: 0 100% 0 0;
+    border-top: 1px solid var(--thumbColor);
+    border-right: 1px solid var(--thumbColor);
+  }
+
+  &:after {
+    position: absolute;
+    display: block;
+    content: ' ';
+    top: -4px;
+    right: -2px;
+    height: 8px;
+    width: 2px;
+    background: none;
+    border-radius: 100% 0 0 0;
+    border-top: 1px solid var(--thumbColor);
+    border-left: 1px solid var(--thumbColor);
+  }
+}
+
+.rod {
+  position: absolute;
+  top: 8px;
+  width: 0;
+  height: calc(100% - 8px);
+  border-left: 1px solid #616161;
+  z-index: 1;
+}
+
+.tooltip {
+  display: none;
+  position: absolute -20px * * 4px;
+  padding: 0 2px;
+  transform: translateX(-50%);
+  background: #999;
+  border-radius: 4px;
+  color: #FFF;
+  font-size: 10px;
+  line-height: 18px;
+  text-align: center;
+}
+
+.container:hover .tooltip,
+.container:active .tooltip {
+  display: block;
+}

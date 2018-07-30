@@ -1,0 +1,76 @@
+.container:hover .legendText .property {
+  text-shadow: 0px 0px 2px var(--color);
+}
+
+.container:hover .legendBar:not(.isActive) {
+  transform: scaleX(0.6);
+}
+
+.legendBar {
+  width: 16px;
+  height: 4px;
+  background-color: var(--color);
+  margin-bottom: 3px;
+  transform-origin: 0 0;
+  transform: scaleX(.5);
+
+  transition: transform .1s ease-in-out;
+
+  &.isActive {
+    transform: scaleX(1);
+
+    &:before, &:after {
+      transform: inherit;
+    }
+  }
+
+  &:before {
+    display: block;
+    position: absolute;
+    content: ' ';
+    left: -2px;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    border-radius: 50%;
+    background-color: var(--color);
+    transition: transform .1s ease-in-out;
+    transform: scaleX(2);
+  }
+
+
+  &:after {
+    display: block;
+    position: absolute;
+    content: ' ';
+    right: -2px;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    border-radius: 50%;
+    background-color: var(--color);
+    transition: transform .1s ease-in-out;
+    transform: scaleX(2);
+  }
+}
+
+.legendText {
+  font-size: 10px;
+  line-height: 10px;
+
+  transition: all .15s ease-in-out;
+  opacity: 0;
+  height: 0;
+}
+
+.legendText .component {
+  color: #666;
+}
+
+.legendText .separator {
+  color: #666;
+}
+
+.legendText .property {
+  color: var(--color);
+}

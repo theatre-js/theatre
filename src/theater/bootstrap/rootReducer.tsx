@@ -6,9 +6,9 @@ import {
 } from '$theater/types'
 import withCommonActions from '$shared/utils/redux/withCommonActions'
 import {ReduxReducer} from '$shared/types'
-import {withHistory} from '$shared/utils/redux/withHistory/withHistory'
+import {withHistory} from '$shared/utils/redux/withHistory/withHistoryDeprecated'
 import {
-  initialPersistedState,
+  initialHistoricState,
   initialAhistoricState,
 } from '$theater/bootstrap/initialState'
 import withBatchedActions from '$shared/utils/redux/withHistory/withBatchActions'
@@ -16,7 +16,7 @@ import withTypeConformity from '$shared/utils/redux/withTypeConformity'
 import {compose} from 'ramda'
 
 const mainReducer: ReduxReducer<IStoreHistoricState> = (
-  s: IStoreHistoricState = initialPersistedState,
+  s: IStoreHistoricState = initialHistoricState,
 ) => s
 
 const ahistoricReducer: ReduxReducer<IStoreAhistoricState> = (

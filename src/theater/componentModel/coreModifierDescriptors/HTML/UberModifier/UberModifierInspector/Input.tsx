@@ -93,7 +93,7 @@ export class Input extends PureComponentWithTheater<IProps, IState> {
     const value = typeof rawValue === 'string' ? rawValue : ''
     return (
       <Subscriber channel={PanelActiveModeChannel}>
-        {({activeMode}) => {
+        {(activeMode: string) => {
           const isGrabbable = showGrabHighlight && activeMode === MODES.cmd && typeof rawValue !== 'object'
           return (
             <DraggableArea

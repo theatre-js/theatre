@@ -1,0 +1,31 @@
+@value dropZoneMoveIndicatorHeight: 8px;
+@value dropZoneMoveIndicatorTop: -5px;
+
+.container {
+  position: relative;
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.dropZone {
+  flex-grow: 1;
+  position: sticky;
+  left: 0;
+
+  z-index: 100000;
+  cursor: alias;
+
+  &:hover:after {
+    display: block;
+    position: absolute;
+    content: ' ';
+    top: dropZoneMoveIndicatorTop;
+    left: 0;
+    right: 0;
+    height: dropZoneMoveIndicatorHeight;
+    box-shadow: inset 0 0 0 2px yellow;
+    background: rgba(255, 255, 0, 0.1);
+  }
+}

@@ -14,15 +14,11 @@ class Overlay extends React.PureComponent<IProps, IState> {
   static Section: React.ComponentClass
   refsArray: HTMLElement[] = []
 
-  componentDidMount() {
-    document.addEventListener('click', this.clickOutsideHandler)
+  private stopPropagation = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation()
   }
 
-  componentWillUnmount() {
-    document.removeEventListener('click', this.clickOutsideHandler)
-  }
-
-  private clickOutsideHandler = (e: MouseEvent) => {
+  private clickOutsideHandler = (e: React.MouseEvent<HTMLDivElement>) => {
     const target = e.target as Node
     let isOutside = true
     this.refsArray.forEach((ref: HTMLElement) => {
@@ -30,7 +26,11 @@ class Overlay extends React.PureComponent<IProps, IState> {
         isOutside = false
       }
     })
-    if (isOutside) this.props.onClickOutside()
+    if (isOutside) {
+      e.stopPropagation()
+      this.props.onClickOutside()
+    } else {
+    }
   }
 
   setRef = (ref: HTMLElement) => {
@@ -45,7 +45,14 @@ class Overlay extends React.PureComponent<IProps, IState> {
       },
     )
     return ReactDOM.createPortal(
-      <div className={css.container}>{children}</div>,
+      <div
+        className={css.container}
+        onClick={this.clickOutsideHandler}
+        onMouseDown={this.stopPropagation}
+        onWheel={this.stopPropagation}
+      >
+        {children}
+      </div>,
       document.getElementById('theaterjs-studio') as HTMLElement,
     )
   }

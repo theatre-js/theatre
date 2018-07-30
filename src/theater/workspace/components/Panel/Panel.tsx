@@ -327,7 +327,6 @@ export default class Panel extends PureComponentWithTheater<IProps, IState> {
 
   render() {
     const {props, state} = this
-    const classes = resolveCss(css, props.css)
     const {children, label, header} = props
     const {
       panelMove,
@@ -336,6 +335,7 @@ export default class Panel extends PureComponentWithTheater<IProps, IState> {
       isMovingBoundaries,
     } = state
 
+    const classes = resolveCss(css, props.css)
     return (
       <Subscriber channel={PanelControlChannel}>
         {(config: IPanelControlChannelData) => {
@@ -395,19 +395,19 @@ export default class Panel extends PureComponentWithTheater<IProps, IState> {
               )}
               <Broadcast
                 channel={PanelWidthChannel}
-                value={{width}}
-                compareValues={(prevValue: $FixMe, nextValue: $FixMe) =>
-                  _.isEqual(prevValue, nextValue)
-                }
+                value={width}
+                // compareValues={(prevValue: $FixMe, nextValue: $FixMe) =>
+                //   _.isEqual(prevValue, nextValue)
+                // }
               >
                 <Broadcast
                   channel={PanelActiveModeChannel}
-                  compareValues={(prevValue: $FixMe, nextValue: $FixMe) =>
-                    _.isEqual(prevValue, nextValue)
-                  }
-                  value={{activeMode}}
+                  // compareValues={(prevValue: $FixMe, nextValue: $FixMe) =>
+                  //   _.isEqual(prevValue, nextValue)
+                  // }
+                  value={activeMode}
                 >
-                  <div className={css.content}>{children}</div>
+                  <div {...classes('content')}>{children}</div>
                 </Broadcast>
               </Broadcast>
               {activeMode === MODES.option && (

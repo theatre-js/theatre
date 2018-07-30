@@ -236,7 +236,7 @@ class ModifiersEditor extends PureComponentWithTheater<IProps, IState> {
 
     return selectedNodeId != null ? (
       <Subscriber channel={PanelActiveModeChannel}>
-        {({activeMode}: {activeMode: string}) => {
+        {(activeMode: string) => {
           return (
             <PanelSection
               withHorizontalMargin={false}

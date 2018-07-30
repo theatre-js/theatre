@@ -252,7 +252,7 @@ export const $ITimelineVarDescriptor = t
       // @todo this is tmeporary. Use backPointer
       property: t.string,
       // @todo this is temporary. Extremums can be derived from the points
-      extremums: t.tuple([t.number, t.number]),
+      // extremums: t.tuple([t.number, t.number]),
     },
     'TimelineVarDescriptor',
   )

@@ -1,0 +1,26 @@
+@value boxLegendWidth: 30px;
+
+.panelContainer {
+}
+
+.panelContent {
+  overflow-y: visible;
+}
+
+.wrapper {
+  position: relative;
+  height: 100%;
+  left: 0;
+  overflow: scroll;
+  // overflow: hidden;
+}
+
+.wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollingContainer {
+  position: relative;
+  height: auto;
+  // height: 100%;
+}

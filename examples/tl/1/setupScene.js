@@ -51,6 +51,7 @@ const setupScene = () => {
     )
     camera.position.z = 800
     camera.position.y = 100
+    // camera.rotation
     var controls = new THREE.OrbitControls(camera)
     return camera
   }

@@ -29,7 +29,7 @@ export const historicWorkspaceInitialState: IWorkspaceHistoricState = {
           top: {
             type: 'distanceFromBoundary',
             path: ['timelinePanel', 'bottom'],
-            distance: -188,
+            distance: -388,
           },
           bottom: {
             type: 'sameAsBoundary',

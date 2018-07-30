@@ -10,9 +10,7 @@ import {
 import uuid from 'uuid/v4'
 import mitt, {Emitter} from 'mitt'
 import Stack from '$shared/utils/Stack'
-import {PathBasedReducer} from '$shared/utils/redux/withHistory/PathBasedReducer'
-import update from 'lodash/fp/update'
-import {omit, pull, pickBy} from 'lodash'
+import {pull, pickBy} from 'lodash'
 import immer, {setAutoFreeze} from 'immer'
 setAutoFreeze(false)
 
@@ -126,6 +124,7 @@ export default class MirrorOfReactTree {
   immutableState: State
   _mutableState: State
   _rendererInterestedIn: RendererId | undefined
+  flushing: boolean = false
 
   constructor() {
     if (!window.__REACT_DEVTOOLS_GLOBAL_HOOK__)
@@ -247,7 +246,7 @@ export default class MirrorOfReactTree {
         }
       }
     })
-    this._mutableState = undefined
+    this._mutableState = undefined as $IntentionalAny
     this.immutableState = newState
     this.flushing = false
   }
@@ -362,7 +361,8 @@ export default class MirrorOfReactTree {
         ) {
           this._deleteNode(childNodeVid)
         } else {
-          throw new Error(
+          this._deleteNode(childNodeVid)
+          console.warn(
             `Got an unmount for a node that still has volatileIdsOfChildren. This should never happen`,
           )
         }

@@ -12,7 +12,7 @@ export type PointHandles = [number, number, number, number]
 
 export type PointConnectionStatus = boolean
 
-export type Point = PointPosition & {
+export type TPoint = PointPosition & {
   interpolationDescriptor: {
     handles: PointHandles
     connected: PointConnectionStatus
@@ -21,7 +21,7 @@ export type Point = PointPosition & {
   }
 }
 
-export type NormalizedPoint = Point & {
+export type TNormalizedPoint = TPoint & {
   _t: number
   _value: number
 }
@@ -30,6 +30,7 @@ export type BoxObject = {
   id: BoxID
   height: number
   variables: VariableID[]
+  activeVariable: VariableID
 }
 
 export type LayoutArray = BoxID[]
@@ -42,16 +43,20 @@ export type TimelineObject = {
 
 export type VariableObject = {
   id: VariableID
-  points: Point[]
+  points: TPoint[]
   component: string
   property: string
   __descriptorType: string
 }
-// export type Variables = {
-//   byId: {[id: string]: VariableObject}
-// }
+
 export type Variables = {[id: string]: VariableObject}
 
 export type Timelines = {
   byId: {[id: string]: TimelineObject}
+}
+
+export type TColor = {
+  name: string
+  normal: string
+  darkened: string
 }

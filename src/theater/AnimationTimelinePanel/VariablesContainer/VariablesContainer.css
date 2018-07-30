@@ -1,0 +1,10 @@
+@value boxLegendWidth from '$theater/AnimationTimelinePanel/TimelinePanelContent.css';
+
+.container {
+  position: absolute;
+  width: calc(100% - boxLegendWidth);
+  height: 100%;
+  top: 0;
+  left: boxLegendWidth;
+  overflow: hidden;
+}

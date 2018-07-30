@@ -609,7 +609,7 @@ class TreeEditor extends PureComponentWithTheater<IProps, State> {
 
     return (
       <Subscriber channel={PanelActiveModeChannel}>
-        {({activeMode}) => {
+        {(activeMode: string) => {
           return (
             <PanelSection
               withHorizontalMargin={false}

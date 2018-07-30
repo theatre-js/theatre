@@ -1,9 +1,14 @@
-import { reportResolutionStart, reportResolutionEnd, isCollectingDependencies } from './autoDerive/discoveryMechanism';
+import {
+  reportResolutionStart,
+  reportResolutionEnd,
+  isCollectingDependencies,
+} from './autoDerive/discoveryMechanism'
 import {default as DerivationEmitter} from './DerivationEmitter'
 import * as debug from '$shared/debug'
 import Ticker from '$shared/DataVerse/Ticker'
 import Tappable from '$shared/DataVerse/utils/Tappable'
 import {VoidFn} from '$shared/types'
+import DerivationValuelessEmitter from '$shared/DataVerse/derivations/DerivationValuelessEmitter'
 
 const FRESHNESS_STATE_NOT_APPLICABLE = 0
 const FRESHNESS_STATE_STALE = 1
@@ -71,6 +76,10 @@ export default abstract class AbstractDerivation<V>
     return new DerivationEmitter(this, ticker).tappable()
   }
 
+  changesWithoutValues(): Tappable<void> {
+    return new DerivationValuelessEmitter(this).tappable()
+  }
+
   tapImmediate(ticker: Ticker, fn: ((cb: V) => void)): VoidFn {
     const untap = this.changes(ticker).tap(fn)
     fn(this.getValue())
@@ -114,7 +123,6 @@ export default abstract class AbstractDerivation<V>
   }
 
   getValue(): V {
-    
     if (
       process.env.TRACKING_COLD_DERIVATIONS === true &&
       debug.findingColdDerivations &&
@@ -124,7 +132,7 @@ export default abstract class AbstractDerivation<V>
     ) {
       console.warn(`Perf regression: Unexpected cold derivation read`)
     }
-    
+
     reportResolutionStart(this)
 
     if (this._freshnessState !== FRESHNESS_STATE_FRESH) {
@@ -182,7 +190,7 @@ export default abstract class AbstractDerivation<V>
   }
 
   /**
-   * @note so far, we're not using flattenDeep() directly anywhere other than in tests, 
+   * @note so far, we're not using flattenDeep() directly anywhere other than in tests,
    * so there is no need to spend time typing this thing for the time being.
    */
   flattenDeep(levels?: number): AbstractDerivation<$FixMe> {

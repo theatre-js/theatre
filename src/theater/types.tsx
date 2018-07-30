@@ -16,7 +16,7 @@ import {
 import {
   StateWithHistory,
   HistoryOnly,
-} from '$shared/utils/redux/withHistory/withHistory'
+} from '$shared/utils/redux/withHistory/withHistoryDeprecated'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import * as t from '$shared/ioTypes'
 

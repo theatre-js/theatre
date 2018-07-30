@@ -2,6 +2,7 @@ import React from 'react'
 import * as css from './index.css'
 import cx from 'classnames'
 import * as _ from 'lodash'
+import Overlay from '$theater/common/components/Overlay/Overlay'
 
 interface IProps {
   close: Function
@@ -82,13 +83,13 @@ const getCoordinatesOnHorizontalAxis = (
         coeff * ((numberOfItems - 1 - index) / halfOfItemsFloored) * radiusY
     }
     let leftTranslate =
-      (halfOfItemsFloored - index) / halfOfItemsFloored * radiusY * 2.5
+      ((halfOfItemsFloored - index) / halfOfItemsFloored) * radiusY * 2.5
     if (
       numberOfItems % 2 === 0 &&
       (index === halfOfItems || index === halfOfItems - 1)
     ) {
       leftTranslate =
-        (halfOfItemsFloored - index) / halfOfItemsFloored * radiusX * 0.7
+        ((halfOfItemsFloored - index) / halfOfItemsFloored) * radiusX * 0.7
     }
     return {leftTranslate, topTranslate, leftCoeff: 0.5, topCoeff: 0.5}
   }
@@ -170,7 +171,8 @@ class HalfPieContextMenu extends React.PureComponent<IProps, IState> {
 
     const {innerWidth, innerHeight} = window
     return (
-      <div className={css.container} onMouseDown={() => close()}>
+      <Overlay onClickOutside={() => close()}>
+        {/*<div className={css.container} onMouseDown={() => close()}>*/}
         {items.map(({cb, disabled, IconComponent}: $FixMe, index: number) => {
           const {
             leftTranslate,
@@ -180,43 +182,46 @@ class HalfPieContextMenu extends React.PureComponent<IProps, IState> {
           } = translateCalculatorFn(index)
           const {key, suffix, prefix} = this.preparedLabels[index]
           return (
-            <div
-              key={index}
-              className={cx(css.item, {
-                [css.disabled]: disabled,
-                [css.highlight]:
-                  key.toLowerCase() ===
-                  String.fromCharCode(pressedKeyCode).toLowerCase(),
-              })}
-              style={{
-                right: innerWidth - centerPoint.left,
-                bottom: innerHeight - centerPoint.top,
-                '--left': leftTranslate,
-                '--top': topTranslate,
-                '--leftCoeff': leftCoeff,
-                '--topCoeff': topCoeff,
-              }}
-              onMouseDown={() => {
-                close()
-                cb()
-              }}
-            >
-              <span className={css.icon}>
-                <IconComponent />
-              </span>
-              <span className={css.label}>
-                {prefix}
-                <span className={css.key}>{key}</span>
-                {suffix}
-              </span>
-            </div>
+            <Overlay.Section key={index}>
+              <div
+                className={cx(css.item, {
+                  [css.disabled]: disabled,
+                  [css.highlight]:
+                    key.toLowerCase() ===
+                    String.fromCharCode(pressedKeyCode).toLowerCase(),
+                })}
+                style={{
+                  right: innerWidth - centerPoint.left,
+                  bottom: innerHeight - centerPoint.top,
+                  '--left': leftTranslate,
+                  '--top': topTranslate,
+                  '--leftCoeff': leftCoeff,
+                  '--topCoeff': topCoeff,
+                }}
+                onMouseDown={() => {
+                  close()
+                  cb()
+                }}
+              >
+                <span className={css.icon}>
+                  <IconComponent />
+                </span>
+                <span className={css.label}>
+                  {prefix}
+                  <span className={css.key}>{key}</span>
+                  {suffix}
+                </span>
+              </div>
+            </Overlay.Section>
           )
         })}
-        <div
-          className={css.anchor}
-          style={{left: centerPoint.left, top: centerPoint.top}}
-        />
-      </div>
+        <Overlay.Section>
+          <div
+            className={css.anchor}
+            style={{left: centerPoint.left, top: centerPoint.top}}
+          />
+        </Overlay.Section>
+      </Overlay>
     )
   }
 }

@@ -1,11 +1,12 @@
 import React from 'react'
 
 type Props = {
-  children: any
-  onDragStart?: (event: MouseEvent) => void
+  children: React.ReactElement<$IntentionalAny>
+  onDragStart?: (event: React.MouseEvent<HTMLElement>) => void
   onDragEnd?: (dragHappened: boolean) => void
-  onDrag?: (dx: number, dy: number, event: MouseEvent) => void
+  onDrag: (dx: number, dy: number, event: MouseEvent) => void
   shouldRegisterEvents?: boolean
+  shouldReturnMovement?: boolean
 }
 
 type State = {
@@ -18,6 +19,8 @@ type State = {
 
 class DraggableArea extends React.PureComponent<Props, {}> {
   s: State
+  getDeltas: (e: MouseEvent) => [number, number]
+
   constructor(props: Props) {
     super(props)
     this.s = {
@@ -26,6 +29,11 @@ class DraggableArea extends React.PureComponent<Props, {}> {
         x: 0,
         y: 0,
       },
+    }
+    if (props.shouldReturnMovement) {
+      this.getDeltas = this.getMovements
+    } else {
+      this.getDeltas = this.getDistances
     }
   }
 
@@ -46,6 +54,7 @@ class DraggableArea extends React.PureComponent<Props, {}> {
 
     const {screenX, screenY} = e
     this.s.startPos = {x: screenX, y: screenY}
+    this.s.dragHappened = false
 
     this.addDragListeners()
     this.props.onDragStart && this.props.onDragStart(e)
@@ -60,9 +69,19 @@ class DraggableArea extends React.PureComponent<Props, {}> {
   dragHandler = (e: MouseEvent) => {
     if (!this.s.dragHappened) this.s.dragHappened = true
 
+    // const {startPos} = this.s
+    const deltas = this.getDeltas(e)
+    this.props.onDrag(deltas[0], deltas[1], e)
+    // this.props.onDrag(e.screenX - startPos.x, e.screenY - startPos.y, e)
+  }
+
+  getDistances(e: MouseEvent): [number, number] {
     const {startPos} = this.s
-    this.props.onDrag &&
-      this.props.onDrag(e.screenX - startPos.x, e.screenY - startPos.y, e)
+    return [e.screenX - startPos.x, e.screenY - startPos.y]
+  }
+
+  getMovements(e: MouseEvent): [number, number] {
+    return [e.movementX, e.movementY]
   }
 
   render() {

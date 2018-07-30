@@ -1,0 +1,113 @@
+.container {
+  --threadHeight: 6px;
+  --thumbColor: #00E0FF;
+  --focusBarColor: #9DF233;
+  position: absolute;
+  height: 0;
+  width: 100%;
+  top: 0;
+
+  /*
+  &.shouldIgnoreMouse {
+    pointer-events: none;
+  }
+  */
+}
+
+.timeGrid {
+  position: absolute;
+  top: 0px;
+  left: 30px;
+  right: 0;
+  height: 8px;
+  z-index: 1;
+  background: url('url-loader!./TimeGridBg.svg');
+}
+
+.timeThread {
+  position: relative;
+  top: 0;
+  left: 30px;
+  width: calc(100% - 30px);
+  height: var(--threadHeight);
+  background: #23363D;
+}
+
+.focusBar {
+  position: absolute;
+  height: 5px;
+  background: rgba(#9DF233, 0.2);
+  cursor: ew-resize;
+  z-index: 2;
+
+  &:hover, &:active {
+    background: rgba(#9DF233, 0.4);
+  }
+
+  &:after {
+    position: absolute -4px;
+    display: block;
+    content: ' ';
+  }
+}
+
+.focusHandle {
+  position: absolute;
+  height: 9px;
+  width: 7px;
+  z-index: 2;
+  top: -2px;
+  display: block;
+
+  &:before {
+    position: absolute 0;
+    display: block;
+    content: ' ';
+    background: url('url-loader!./FocusBarHandle.svg');
+  }
+
+  &:after {
+    position: absolute -4px;
+    display: block;
+    content: ' ';
+  }
+}
+
+.leftFocusHandle {
+  composes: focusHandle;
+  left: 0px;
+  cursor: w-resize;
+  &:before {
+    transform: scaleX(-1);
+  }
+}
+
+.rightFocusHandle {
+  composes: focusHandle;
+  cursor: e-resize;
+  left: -7px;
+}
+
+.tooltip {
+  display: none;
+  position: absolute -20px * * 4px;
+  padding: 0 2px;
+  transform: translateX(-50%);
+  background: #999;
+  border-radius: 4px;
+  color: #FFF;
+  font-size: 10px;
+  line-height: 18px;
+  text-align: center;
+}
+
+.leftFocusHandle:hover .tooltip,
+.leftFocusHandle.active .tooltip,
+.rightFocusHandle:hover .tooltip,
+.rightFocusHandle:active .tooltip,
+.focusBar:hover ~ .leftFocusHandle .tooltip,
+.focusBar:hover ~ .rightFocusHandle .tooltip,
+.focusBar:active ~ .leftFocusHandle .tooltip,
+.focusBar:active ~ .rightFocusHandle .tooltip {
+  display: block;
+}

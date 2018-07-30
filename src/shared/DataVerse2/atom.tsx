@@ -3,7 +3,6 @@ import {get, last, isPlainObject} from 'lodash'
 import pointer, {Pointer, PointerInnerObj} from './pointer'
 import {PathBasedReducer} from '$shared/utils/redux/withHistory/PathBasedReducer'
 import update from 'lodash/fp/update'
-import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 
 type Listener = (newVal: mixed) => void
 
@@ -106,6 +105,10 @@ export class Atom<State> implements Pointable {
 
   getState() {
     return this._currentState
+  }
+
+  getIn(path: string[]) {
+    return get(this.getState(), path)
   }
 
   reduceState: PathBasedReducer<State, State> = (

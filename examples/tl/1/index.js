@@ -22,4 +22,5 @@ const {sphere} = setupScene()
 TL.ui.enable()
 
 const project = new TL.Project('Bouncing Ball Project')
-// const timeline = project.getTimeline('Bouncing Ball Timeline')
+const timeline = project.getTimeline('scene /  Bouncing  Ball')
+const ball = timeline.createObject('main / The ball')

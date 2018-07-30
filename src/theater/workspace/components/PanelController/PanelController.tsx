@@ -10,14 +10,13 @@ import {
   getPanelById,
   getActivePanelId,
 } from '$theater/workspace/selectors'
-
 import * as panelComponents from '$theater/workspace/panelComponents'
 import {Broadcast} from 'react-broadcast'
-import {ActiveMode} from '$theater/workspace/components/StudioUI/StudioUI'
 import {ITheaterStoreState} from '$theater/types'
 import {isEqual} from 'lodash'
 import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
 import connect from '$theater/handy/connect'
+import {ActiveMode} from '$theater/common/components/ActiveModeDetector/ActiveModeDetector'
 
 export const PanelControlChannel = 'TheaterJS/PanelControlChannel'
 
@@ -93,10 +92,32 @@ class PanelController extends PureComponentWithTheater<IProps, State> {
       </Broadcast>
     )
   }
+
+  updatePanelData(propertyToUpdate: string, newData: Object) {
+    this.dispatch(
+      reduceStateAction(
+        [
+          'historicWorkspace',
+          'panels',
+          'byId',
+          this.props.panelId,
+          propertyToUpdate,
+        ],
+        data => ({...data, ...newData}),
+      ),
+    )
+  }
+
+  updatePanelOutput = (newData: mixed) => {
+    return this.updatePanelData('outputs', newData)
+  }
 }
 
 export default connect((s: ITheaterStoreState, op: OwnProps) => {
-  const {type} = getPanelById(s, op.panelId)
+  const {type, configuration, persistentState, outputs, inputs} = getPanelById(
+    s,
+    op.panelId,
+  )
 
   return {
     type,

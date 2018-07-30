@@ -23,7 +23,7 @@
 
 .content {
   position: absolute;
-  top: calc(var(--header-height) + 1px);
+  top: calc(var(--header-height));
   left: 0;
   right: 0;
   bottom: 0;
