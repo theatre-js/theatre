@@ -21,7 +21,7 @@
   right: 0;
   height: 8px;
   z-index: 1;
-  background: url('url-loader!./TimeGridBg.svg');
+  // background: url('url-loader!./TimeGridBg.svg');
 }
 
 .timeThread {
@@ -30,7 +30,7 @@
   left: 30px;
   width: calc(100% - 30px);
   height: var(--threadHeight);
-  background: #23363D;
+  // background: #23363D;
 }
 
 .focusBar {

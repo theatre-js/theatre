@@ -18,7 +18,8 @@
   height: 100%;
   box-sizing: border-box;
   overflow-y: scroll;
-  background: #1c2227;
+  // background: #1c2227;
+  background: #192024;
 
   &::-webkit-scrollbar {
     display: none;

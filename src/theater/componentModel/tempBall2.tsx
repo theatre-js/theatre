@@ -105,26 +105,16 @@ const two = {
               component: 'div.ball',
               property: 'translationYZ',
               points: [
-                {
-                  time: 1550,
-                  value: 0,
+                ...(Array.from(new Array(21).keys()).map(i => ({
+                  time: i * 1000,
+                  value: Math.random() * 100,
                   interpolationDescriptor: {
-                    connected: true,
+                    connected: (i < 20),
                     __descriptorType: 'TimelinePointInterpolationDescriptor',
                     interpolationType: 'CubicBezier',
                     handles: [0.5, 0, 0.5, 0],
                   },
-                },
-                {
-                  time: 4190,
-                  value: -100,
-                  interpolationDescriptor: {
-                    connected: false,
-                    __descriptorType: 'TimelinePointInterpolationDescriptor',
-                    interpolationType: 'CubicBezier',
-                    handles: [0.5, 0, 0.5, 0],
-                  },
-                },
+                }))),
               ],
             },
             translationYZZ: {
@@ -184,7 +174,8 @@ const two = {
               ],
             },
           },
-          layout: ['box-translateY', 'box-translateYP', 'box-translateYZ', 'box-translateYZZ', 'box-translateYZT'],
+          // layout: ['box-translateY', 'box-translateYP', 'box-translateYZ', 'box-translateYZZ', 'box-translateYZT'],
+          layout: ['box-translateYZ', 'box-translateY', 'box-translateYP'],
           // layout: ['box-translateY', 'box-translateYP'],
           boxes: {
             'box-translateY': {

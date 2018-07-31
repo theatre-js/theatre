@@ -10,8 +10,8 @@
   width: 100%;
   left: 0;
 
-  background: url('url-loader!./GridBG.svg');
-  background-color: #1b2226;
+  // background: url('url-loader!./GridBG.svg');
+  // background-color: #1b2226;
 
   &.moveUp {
     animation: containerMoveUp animationLength ease-in-out;

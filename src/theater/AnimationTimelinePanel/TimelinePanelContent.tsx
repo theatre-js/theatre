@@ -24,6 +24,7 @@ import RootPropProvider from '$theater/AnimationTimelinePanel/RootPropProvider'
 import BoxesContainer from '$theater/AnimationTimelinePanel/BoxesContainer/BoxesContainer'
 import SelectionProvider from '$theater/AnimationTimelinePanel/SelectionProvider/SelectionProvider'
 import OverlaysProvider from '$theater/AnimationTimelinePanel/OverlaysProvider/OverlaysProvider'
+import FramesGrid from '$theater/AnimationTimelinePanel/FramesGrid'
 
 interface IOwnProps {
   timelineInstance: TimelineInstance
@@ -52,7 +53,7 @@ class TimelinePanelContent extends React.PureComponent<IProps, IState> {
 
     this.state = {
       focus: [0, 8000],
-      duration: 20000,
+      duration: 600000,
       currentTime: 0,
       untapFromTimeBoxChanges: noop,
     }
@@ -217,6 +218,11 @@ class TimelinePanelContent extends React.PureComponent<IProps, IState> {
 
     return (
       <>
+        <FramesGrid
+          canvasWidth={boxWidth}
+          containerWidth={panelWidth}
+          focus={focus}
+        />
         <DraggableArea
           onDragStart={this.syncSeekerWithMousePosition}
           onDrag={this.seekTime}
