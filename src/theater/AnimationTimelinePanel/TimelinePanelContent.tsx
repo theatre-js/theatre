@@ -53,7 +53,7 @@ class TimelinePanelContent extends React.PureComponent<IProps, IState> {
 
     this.state = {
       focus: [0, 8000],
-      duration: 600000,
+      duration: 20000,
       currentTime: 0,
       untapFromTimeBoxChanges: noop,
     }
