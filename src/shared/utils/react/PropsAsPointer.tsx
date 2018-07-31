@@ -20,11 +20,13 @@ export default class PropsAsPointer<
 > extends PureComponent<Props<InnerProps>, {}> {
   _atom: Atom<{props: InnerProps; children: ChildrenType<InnerProps>}>
   _renderD: AbstractDerivation<React.ReactNode>
+  _stringOfLastChldren: string
 
   constructor(props: Props<InnerProps>, context: $IntentionalAny) {
     super(props, context)
     const {children, ...rest} = props as $IntentionalAny
     this._atom = atom({props: rest || {}, children})
+    this._stringOfLastChldren = children.toString()
 
     this._renderD = autoDerive(() => {
       const childrenFn = val(this._atom.pointer.children)
@@ -34,10 +36,18 @@ export default class PropsAsPointer<
 
   componentWillReceiveProps(newProps: Props<InnerProps>) {
     const {children, ...rest} = newProps as $IntentionalAny
+    let newChildren = this.props.children
+    if (children !== this.props.children) {
+      const stringOfChildren = children.toString()
+      if (stringOfChildren !== this._stringOfLastChldren) {
+        this._stringOfLastChldren = stringOfChildren
+        newChildren = children
+      }
+    }
 
     this._atom.setState({
       props: rest || emptyProps,
-      children,
+      children: newChildren,
     })
   }
 
