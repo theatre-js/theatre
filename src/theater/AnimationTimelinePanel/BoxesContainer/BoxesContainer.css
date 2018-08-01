@@ -13,6 +13,7 @@
   flex-grow: 1;
   position: sticky;
   left: 0;
+  background: blue;
 
   z-index: 100000;
   cursor: alias;

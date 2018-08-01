@@ -5,7 +5,6 @@ import {
   Variables,
 } from '$theater/AnimationTimelinePanel/types'
 import {svgPaddingY} from '$theater/AnimationTimelinePanel/VariablesContainer/VariablesSvgWrapper'
-import {BOX_LEGEND_WIDTH} from '$theater/AnimationTimelinePanel/TimelinePanelContent'
 import {
   TSelectedPoints,
   TBoxesBoundaries,
@@ -13,7 +12,7 @@ import {
   TTransformedSelectedArea,
   THorizontalLimits,
 } from '$theater/AnimationTimelinePanel/SelectionProvider/types'
-import {POINT_RECT_EDGE_SIZE} from '$theater/AnimationTimelinePanel/CurveView/Point'
+import {POINT_RECT_EDGE_SIZE} from '$theater/AnimationTimelinePanel/GraphView/Point'
 
 export const memoizedGetBoxesBoundaries = memoizeOne(
   (boxes: BoxesObject, layout: LayoutArray): TBoxesBoundaries => {

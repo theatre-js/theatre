@@ -32,7 +32,7 @@ import {
   TShowPointContextMenu,
   TRemovePointFromSelection,
   TAddPointToSelection,
-} from '$theater/AnimationTimelinePanel/CurveView/types'
+} from '$theater/AnimationTimelinePanel/GraphView/types'
 
 interface IProps {
   propGetter: (propName: TPropName) => any

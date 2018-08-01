@@ -1,6 +1,6 @@
 import React from 'react'
-import Connector from '$theater/AnimationTimelinePanel/CurveView/Connector'
-import Point from '$theater/AnimationTimelinePanel/CurveView/Point'
+import Connector from '$theater/AnimationTimelinePanel/GraphView/Connector'
+import Point from '$theater/AnimationTimelinePanel/GraphView/Point'
 import {
   TColor,
   TNormalizedPoint,
@@ -16,10 +16,7 @@ import {
 } from '$theater/AnimationTimelinePanel/VariablesContainer/VariablesPropProvider'
 import {Subscriber} from 'react-broadcast'
 import {SelectionAPIChannel} from '$theater/AnimationTimelinePanel/SelectionProvider/SelectionProvider'
-import {
-  TSelectionAPI,
-  TPointData,
-} from '$theater/AnimationTimelinePanel/SelectionProvider/types'
+import {TSelectionAPI} from '$theater/AnimationTimelinePanel/SelectionProvider/types'
 import {OverlaysAPIChannel} from '$theater/AnimationTimelinePanel/OverlaysProvider/OverlaysProvider'
 import {TOverlaysAPI} from '$theater/AnimationTimelinePanel/OverlaysProvider/types'
 import {
@@ -28,7 +25,7 @@ import {
   TShowConnectorContextMenu,
   TRemovePointFromSelection,
   TAddPointToSelection,
-} from '$theater/AnimationTimelinePanel/CurveView/types'
+} from '$theater/AnimationTimelinePanel/GraphView/types'
 import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
 
 interface IOwnProps {
@@ -47,7 +44,7 @@ interface IProps extends IOwnProps {
 
 interface IState {}
 
-class CurveView extends PureComponentWithTheater<IProps, IState> {
+class GraphView extends PureComponentWithTheater<IProps, IState> {
   removePoint = (pointIndex: number) => {
     const {pathToTimeline, variableId} = this.props
     this.dispatch(
@@ -293,7 +290,7 @@ export default (props: IOwnProps) => (
         {(selectoinAPI: IProps['selectionAPI']) => (
           <Subscriber channel={OverlaysAPIChannel}>
             {(overlaysAPI: IProps['overlaysAPI']) => (
-              <CurveView
+              <GraphView
                 {...props}
                 propGetter={propGetter}
                 selectionAPI={selectoinAPI}

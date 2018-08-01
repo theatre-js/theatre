@@ -7,7 +7,7 @@ import {
 } from '$theater/AnimationTimelinePanel/types'
 import {Subscriber} from 'react-broadcast'
 import {DurationChannel} from '$theater/AnimationTimelinePanel/RootPropProvider'
-import CurveView from '$theater/AnimationTimelinePanel/CurveView/CurveView'
+import GraphView from '$theater/AnimationTimelinePanel/GraphView/GraphView'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import {val} from '$shared/DataVerse2/atom'
 import {get} from 'lodash'
@@ -114,7 +114,7 @@ class VariableView extends PureComponentWithTheater<IProps, IState> {
                         pathToTimeline={pathToTimeline}
                       />
                     ) : null}
-                    <CurveView
+                    <GraphView
                       points={normalizedPoints}
                       extremums={extremums}
                       color={color}

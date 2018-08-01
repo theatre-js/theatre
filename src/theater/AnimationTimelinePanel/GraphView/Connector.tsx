@@ -8,7 +8,7 @@ import {
 } from '$theater/common/components/ActiveModeDetector/ActiveModeDetector'
 import * as css from './Connector.css'
 import noop from '$shared/utils/noop'
-import {TShowConnectorContextMenu} from '$theater/AnimationTimelinePanel/CurveView/types'
+import {TShowConnectorContextMenu} from '$theater/AnimationTimelinePanel/GraphView/types'
 
 interface IProps {
   leftPointIndex?: number
