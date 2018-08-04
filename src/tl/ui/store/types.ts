@@ -40,6 +40,10 @@ export type UIEphemeralState = t.StaticTypeOf<typeof $UIEphemeralState>
 export const $UIHistoricState = $StateWithHistory(
   t.type({
     foo: t.string,
+    allInOnePanel: t.type({
+      height: t.number,
+      selectedProject: t.string,
+    }),
   }),
 )
 

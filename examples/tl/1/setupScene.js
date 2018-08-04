@@ -38,14 +38,14 @@ const setupScene = () => {
 
     renderer = new THREE.WebGLRenderer({antialias: true})
     renderer.setPixelRatio(window.devicePixelRatio)
-    renderer.setSize(window.innerWidth, window.innerHeight)
+    renderer.setSize(window.innerWidth, window.innerHeight / 2)
     document.body.appendChild(renderer.domElement)
     window.addEventListener('resize', onWindowResize, false)
   }
   function makeCamera() {
     const camera = new THREE.PerspectiveCamera(
       40,
-      window.innerWidth / window.innerHeight,
+      window.innerWidth / (window.innerHeight / 2),
       1,
       2000,
     )
@@ -97,9 +97,10 @@ const setupScene = () => {
   }
 
   function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight
+    const height = window.innerHeight / 2
+    camera.aspect = window.innerWidth / height
     camera.updateProjectionMatrix()
-    renderer.setSize(window.innerWidth, window.innerHeight)
+    renderer.setSize(window.innerWidth, height)
   }
 
   function animate() {

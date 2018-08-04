@@ -2,6 +2,10 @@ import {UIState} from './types'
 
 const initialHistoricState = {
   foo: '1',
+  allInOnePanel: {
+    height: 300,
+    selectedProject: 'Bouncing Ball Project',
+  },
 }
 
 export const uiInitialState: UIState = {

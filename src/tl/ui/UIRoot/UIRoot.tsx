@@ -6,6 +6,7 @@ import TheTrigger from './TheTrigger'
 import {TickerProvider} from '$shared/utils/react/TickerContext'
 import {val} from '$shared/DataVerse2/atom'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
+import AllInOnePanel from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
 
 interface IProps {
   ui: UI
@@ -20,14 +21,14 @@ export default class UIRoot extends React.Component<IProps, {}> {
             const visiblityState = val(
               this.props.ui.atomP.ahistoric.visibilityState,
             )
-            const shouldShowTrigger = visiblityState !== 'everythingIsHidden'
+            const shouldShowTrigger = visiblityState === 'onlyTriggerIsVisible'
 
             const shouldShowPanels = visiblityState === 'everythingIsVisible'
             
             return (
               <div className={css.container}>
                 {shouldShowTrigger && <TheTrigger />}
-                {shouldShowPanels && val(this.props.ui.atomP.historic.foo)}
+                {shouldShowPanels && <AllInOnePanel />}
               </div>
             )
           }}

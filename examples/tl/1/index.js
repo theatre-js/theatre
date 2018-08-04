@@ -1,5 +1,5 @@
-import setupScene from './setupScene'
-const {sphere} = setupScene()
+// import setupScene from './setupScene'
+// const {sphere} = setupScene()
 
 // function setupTheaterForSphere(mesh) {
 //   const obj = timeline.getObject('The Ball', mesh, {

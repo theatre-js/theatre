@@ -1,31 +1,38 @@
 import resolveCss from '$shared/utils/resolveCss'
-import UIComponent from '$tl/UI/handy/UIComponent'
+import UIComponent from '$tl/ui/handy/UIComponent'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import React from 'react'
 import * as css from './AllInOnePanel.css'
+import {val} from '$shared/DataVerse2/atom'
+import Left from '$tl/ui/panels/AllInOnePanel/Left/Left'
+import Bottom from './Bottom/Bottom'
 
-interface IProps {
-  css?: Partial<typeof css>
-}
+const classes = resolveCss(css)
+
+interface IProps {}
 
 interface IState {}
 
-export default class AllInOnePanel extends UIComponent<
-  IProps,
-  IState
-> {
+export default class AllInOnePanel extends UIComponent<IProps, IState> {
   constructor(props: IProps, context: $IntentionalAny) {
     super(props, context)
     this.state = {}
   }
 
   render() {
-    const classes = resolveCss(css, this.props.css)
-
     return (
       <PropsAsPointer props={this.props}>
         {({props: propsP}) => {
-          return <div {...classes('container')}>here</div>
+          const height = val(this.ui.atomP.historic.allInOnePanel.height)
+          
+          // if (!selectedProject)
+          // const project = projectsSingleton.atom.pointer.projects[selectedProject]
+          return (
+            <div {...classes('container')} style={{height: height + 'px'}}>
+              <Left />
+              <Bottom />
+            </div>
+          )
         }}
       </PropsAsPointer>
     )

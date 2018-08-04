@@ -14,7 +14,9 @@ class ProjectsSingleton {
   add(id: string, project: Project) {
     if (this.has(id))
       throw new Error(
-        `A project with id '${id}' is already initialised. You need to make sure that each project has its own unique id`,
+        `Looks like you're calling \`new Project("${id}")\` twice. 
+        If you're trying to make two separate projects, make sure to
+        assign a unique ID to each of them. `,
       )
     this.atom.reduceState(['projects', id], () => project)
   }
