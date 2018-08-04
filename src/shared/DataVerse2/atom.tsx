@@ -169,7 +169,7 @@ export class Atom<State> implements Pointable {
   }
 
   _getIdentityByPath(path: Array<string | number>): mixed {
-    return get(this._currentState, path)
+    return path.length === 0 ? this._currentState : get(this._currentState, path)
   }
 
   _tapIntoIdentityOfPathChanges(

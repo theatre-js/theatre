@@ -7,7 +7,7 @@ export default class InternalTimeline {
   readonly _internalObjects: Atom<{[path: string]: InternalObject}> = new Atom(
     {},
   )
-  constructor(readonly project: Project, protected _path: string) {}
+  constructor(readonly project: Project, readonly _path: string) {}
 
   getInternalObject(
     path: string,

@@ -1,0 +1,15 @@
+.positioner {
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+.container {
+  position: absolute;
+  bottom: 0;
+  z-index: 1;
+  max-width: 260px;
+  min-width: 210px;
+  background: #10181b;
+
+}

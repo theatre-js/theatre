@@ -4,7 +4,9 @@ const initialHistoricState = {
   foo: '1',
   allInOnePanel: {
     height: 300,
-    selectedProject: 'Bouncing Ball Project',
+    selectedProject: 'Explorable Explanations',
+    leftWidth: 30,
+    selectedTimelineByProject: {},
   },
 }
 
@@ -31,5 +33,7 @@ export const uiInitialState: UIState = {
     },
     '@@tempActions': [],
   },
-  ephemeral: {},
+  ephemeral: {
+    initialised: true,
+  },
 }

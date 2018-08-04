@@ -1,3 +1,5 @@
+@value bottomHeight from './Bottom/Bottom.css';
+
 .container {
   position: fixed _ 20px 20px 20px;
   background: #263238;
@@ -5,4 +7,13 @@
   color: rgba(255, 255, 255, 0.8);
   font: 12px -apple-system, BlinkMacSystemFont, Segoe WPC, Segoe UI,
     HelveticaNeue-Light, Ubuntu, Droid Sans, sans-serif;
+}
+
+.middle {
+  position: absolute 0 0 bottomHeight 0;
+}
+
+.bottom {
+  position: absolute _ 0 0 0;
+  height: bottomHeight;
 }

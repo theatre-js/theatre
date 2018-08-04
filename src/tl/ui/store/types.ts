@@ -30,7 +30,9 @@ export type UIAhistoricState = t.StaticTypeOf<typeof $UIAhistoricState>
 /**
  * Ephemeral state is neither persisted nor undoable
  */
-export const $UIEphemeralState = t.type({})
+export const $UIEphemeralState = t.type({
+  initialised: t.boolean,
+})
 
 export type UIEphemeralState = t.StaticTypeOf<typeof $UIEphemeralState>
 
@@ -42,7 +44,15 @@ export const $UIHistoricState = $StateWithHistory(
     foo: t.string,
     allInOnePanel: t.type({
       height: t.number,
-      selectedProject: t.string,
+      selectedProject: t.union([t.null, t.string]),
+      selectedTimelineByProject: t.record(
+        t.string,
+        t.type({
+          internalTimelinePath: t.string,
+          instanceId: t.union([t.undefined, t.string]),
+        }),
+      ),
+      leftWidth: t.number,
     }),
   }),
 )

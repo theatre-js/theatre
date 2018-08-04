@@ -21,11 +21,12 @@ export default class UIRoot extends React.Component<IProps, {}> {
             const visiblityState = val(
               this.props.ui.atomP.ahistoric.visibilityState,
             )
+            const initialised = val(this.props.ui.atomP.ephemeral.initialised)
             const shouldShowTrigger = visiblityState === 'onlyTriggerIsVisible'
 
             const shouldShowPanels = visiblityState === 'everythingIsVisible'
-            
-            return (
+
+            return !initialised ? null : (
               <div className={css.container}>
                 {shouldShowTrigger && <TheTrigger />}
                 {shouldShowPanels && <AllInOnePanel />}

@@ -24,13 +24,17 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
       <PropsAsPointer props={this.props}>
         {({props: propsP}) => {
           const height = val(this.ui.atomP.historic.allInOnePanel.height)
-          
+
           // if (!selectedProject)
           // const project = projectsSingleton.atom.pointer.projects[selectedProject]
           return (
             <div {...classes('container')} style={{height: height + 'px'}}>
-              <Left />
-              <Bottom />
+              <div {...classes('middle')}>
+                <Left />
+              </div>
+              <div {...classes('bottom')}>
+                <Bottom />
+              </div>
             </div>
           )
         }}

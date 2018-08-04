@@ -1,0 +1,32 @@
+@value bottomHeight from './Bottom.css';
+@value typographyFont from '$theater/common/styles.css';
+
+.container {
+  padding: 0 10px;
+  font: typographyFont;
+  line-height: bottomHeight;
+  font-size: 11px;
+  font-weight: normal;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: default;
+
+  &:hover {
+    background: #18242a;
+    /* color: #688f9e; */
+  }
+  &:active {
+    background: #141d21;
+    color: #3b5162;
+  }
+  &.focusOfAttention {
+    font-weight: bold;
+    background: yellow;
+  }
+}
+
+.icon {
+  position: relative;
+  bottom: 1px;
+  margin-right: 4px;
+}
