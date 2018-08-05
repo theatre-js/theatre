@@ -1,7 +1,5 @@
-import resolveCss from '$shared/utils/resolveCss'
 import UIComponent from '$tl/ui/handy/UIComponent'
 import React from 'react'
-import * as css from './ProjectSelect.css'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import Item from './Item'
 import FlyoutMenu from '$shared/components/FlyoutMenu/FlyoutMenu'
@@ -12,7 +10,6 @@ import Project from '$tl/Project/Project'
 import projectsSingleton from '$tl/Project/projectsSingleton'
 
 interface IProps {
-  css?: Partial<typeof css>
   allInOnePanelStuff: AllInOnePanelStuff
 }
 
@@ -27,7 +24,6 @@ export default class ProjectSelect extends UIComponent<IProps, IState> {
   }
 
   _render(propsP: Pointer<IProps>, stateP: Pointer<IState>) {
-    const classes = resolveCss(css, this.props.css)
     // const p = getProjectSelectionState(this.ui)
     const projects = val(projectsSingleton.atom.pointer.projects)
 

@@ -36,7 +36,7 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
   render() {
     return (
       <PropsAsPointer props={this.props}>
-        {({props: propsP}) => {
+        {() => {
           const height = val(this.ui.atomP.historic.allInOnePanel.height)
 
           const project = getSelectedProject(this.ui)

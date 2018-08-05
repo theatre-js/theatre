@@ -1,6 +1,5 @@
 import UIComponent from '$tl/ui/handy/UIComponent'
 import React from 'react'
-import * as css from './TimelineSelect.css'
 import Item from './Item'
 import FlyoutMenu from '$shared/components/FlyoutMenu/FlyoutMenu'
 import FlyoutMenuItem from '$shared/components/FlyoutMenu/FlyoutMenuItem'
@@ -10,7 +9,6 @@ import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import InternalTimeline from '$tl/timelines/InternalTimeline'
 
 interface IProps {
-  css?: Partial<typeof css>
   allInOnePanelStuff: AllInOnePanelStuff
 }
 

@@ -35,6 +35,7 @@ export default class UIComponent<Props, State> extends React.PureComponent<
     return this._render(props, state)
   }
 
+  // @ts-ignore ignore
   _render(props: Pointer<Props>, state: Pointer<State>): React.ReactNode {
     return null
   }
