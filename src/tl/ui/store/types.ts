@@ -45,13 +45,8 @@ export const $UIHistoricState = $StateWithHistory(
     allInOnePanel: t.type({
       height: t.number,
       selectedProject: t.union([t.null, t.string]),
-      selectedTimelineByProject: t.record(
-        t.string,
-        t.type({
-          internalTimelinePath: t.string,
-          instanceId: t.union([t.undefined, t.string]),
-        }),
-      ),
+      selectedTimelineByProject: t.record(t.string, t.string),
+      selectedTimelineInstanceByProjectAndTimeline: t.record(t.string, t.string),
       leftWidth: t.number,
     }),
   }),

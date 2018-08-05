@@ -3,14 +3,17 @@ import UIComponent from '$tl/ui/handy/UIComponent'
 import React from 'react'
 import * as css from './ProjectSelect.css'
 import {Pointer} from '$shared/DataVerse2/pointer'
-import {getProjectSelectionState} from '../selectors'
 import Item from './Item'
 import FlyoutMenu from '$shared/components/FlyoutMenu/FlyoutMenu'
 import FlyoutMenuItem from '$shared/components/FlyoutMenu/FlyoutMenuItem'
 import {val} from '$shared/DataVerse2/atom'
+import {AllInOnePanelStuff} from '../AllInOnePanel'
+import Project from '$tl/Project/Project'
+import projectsSingleton from '$tl/Project/projectsSingleton'
 
 interface IProps {
   css?: Partial<typeof css>
+  allInOnePanelStuff: AllInOnePanelStuff
 }
 
 interface IState {
@@ -25,13 +28,16 @@ export default class ProjectSelect extends UIComponent<IProps, IState> {
 
   _render(propsP: Pointer<IProps>, stateP: Pointer<IState>) {
     const classes = resolveCss(css, this.props.css)
-    const p = getProjectSelectionState(this.ui)
+    // const p = getProjectSelectionState(this.ui)
+    const projects = val(projectsSingleton.atom.pointer.projects)
+
+    const areThereProjects = Object.keys(projects).length > 0
 
     return (
       <>
         {val(stateP.menuOpen) && (
           <FlyoutMenu onClose={this.closeMenu}>
-            {Object.keys(p.projects).map((projectId, i) => {
+            {Object.keys(projects).map((projectId, i) => {
               return (
                 <FlyoutMenuItem
                   title={projectId}
@@ -42,8 +48,10 @@ export default class ProjectSelect extends UIComponent<IProps, IState> {
             })}
           </FlyoutMenu>
         )}
-        <Item onClick={p.areThereProjects ? this.onClick : undefined}>
-          {!p.areThereProjects ? 'No project' : p.selectedProject.id}
+        <Item onClick={areThereProjects ? this.onClick : undefined}>
+          {!areThereProjects
+            ? 'No project'
+            : (val(propsP.allInOnePanelStuff.project) as Project).id}
         </Item>
       </>
     )

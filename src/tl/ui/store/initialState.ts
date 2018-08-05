@@ -7,6 +7,7 @@ const initialHistoricState = {
     selectedProject: 'Explorable Explanations',
     leftWidth: 30,
     selectedTimelineByProject: {},
+    selectedTimelineInstanceByProjectAndTimeline: {},
   },
 }
 

@@ -16,7 +16,7 @@ export default class UIComponent<Props, State> extends React.PureComponent<
     this.ui = context.ui
   }
 
-  render() {
+  render(): React.ReactNode {
     return (
       // @ts-ignore ignore
       <PropsAsPointer props={this.props} state={this.state}>

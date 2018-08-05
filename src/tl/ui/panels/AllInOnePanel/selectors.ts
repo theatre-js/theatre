@@ -51,18 +51,16 @@ export const getSelectedInternalTimeline = (
   ui: UI,
   project: Project,
 ): undefined | InternalTimeline => {
-  const infoOfUserDesiredTimeline = val(
+  const userSelectedTimelinePath = val(
     ui.atomP.historic.allInOnePanel.selectedTimelineByProject[project.id],
   )
 
-  if (infoOfUserDesiredTimeline) {
-    const pathOfUserDesiredInternalTimeline = val(
-      project._internalTimelines.pointer[
-        infoOfUserDesiredTimeline.internalTimelinePath
-      ],
+  if (userSelectedTimelinePath) {
+    const userSelectedInternalTimeline = val(
+      project._internalTimelines.pointer[userSelectedTimelinePath],
     )
-    if (pathOfUserDesiredInternalTimeline)
-      return pathOfUserDesiredInternalTimeline
+
+    if (userSelectedInternalTimeline) return userSelectedInternalTimeline
   }
   const internalTimelines = val(project._internalTimelines.pointer)
 
@@ -71,4 +69,56 @@ export const getSelectedInternalTimeline = (
   if (!areThereTimelines) return undefined
 
   return internalTimelines[timelinePaths[0]]
+}
+
+export const getSelectedTimelineInstance = (
+  ui: UI,
+  project: Project,
+  internalTimeline: InternalTimeline,
+): undefined | TimelineInstance => {
+  const path = combineProjectAndTimelinePath(project.id, internalTimeline._path)
+
+  const userDesiredInstanceId = val(
+    ui.atomP.historic.allInOnePanel.selectedTimelineInstanceByProjectAndTimeline[path]
+  )
+
+  if (userDesiredInstanceId) {
+    const possibleInstance = val(
+      project._timelineInstances.pointer[internalTimeline._path][
+        userDesiredInstanceId
+      ],
+    )
+
+    if (possibleInstance) return possibleInstance
+  }
+
+  const instances = val(
+    project._timelineInstances.pointer[internalTimeline._path],
+  )
+
+  if (!instances) return undefined
+
+  const isntanceIds = Object.keys(instances)
+  const areThereInstances = isntanceIds.length > 0
+  if (!areThereInstances) return undefined
+
+  return instances[isntanceIds[0]]
+}
+
+export const getTimelineInstances = (
+  project: Project,
+  internalTimeline: InternalTimeline,
+) => {
+  const instances = val(
+    project._timelineInstances.pointer[internalTimeline._path],
+  )
+
+  return instances
+}
+
+export function combineProjectAndTimelinePath(
+  projectId: string,
+  internalTimelinePath: string,
+) {
+  return projectId + '######' + internalTimelinePath
 }

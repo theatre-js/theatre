@@ -1,5 +1,6 @@
 import reducto from '$shared/utils/redux/reducto'
 import {$UIHistoricState} from '$tl/ui/store/types'
+import {combineProjectAndTimelinePath} from '$tl/ui/panels/AllInOnePanel/selectors'
 
 const r = reducto($UIHistoricState)
 
@@ -9,17 +10,19 @@ export const selectProject = r((s, p: string) => {
 
 export const setSelectedTimeline = r(
   (s, p: {projectId: string; internalTimelinePath: string}) => {
-    const existing = s.allInOnePanel.selectedTimelineByProject[p.projectId]
-    if (existing) {
-      s.allInOnePanel.selectedTimelineByProject[
-        p.projectId
-      ].internalTimelinePath =
-        p.internalTimelinePath
-    } else {
-      s.allInOnePanel.selectedTimelineByProject[p.projectId] = {
-        internalTimelinePath: p.internalTimelinePath,
-        instanceId: undefined,
-      }
-    }
+    s.allInOnePanel.selectedTimelineByProject[p.projectId] =
+      p.internalTimelinePath
+  },
+)
+
+export const setActiveTimelineInstanceId = r(
+  (
+    s,
+    p: {projectId: string; internalTimelinePath: string; instanceId: string},
+  ) => {
+    s.allInOnePanel.selectedTimelineInstanceByProjectAndTimeline[
+      combineProjectAndTimelinePath(p.projectId, p.internalTimelinePath)
+    ] =
+      p.instanceId
   },
 )

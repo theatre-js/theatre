@@ -1,15 +1,17 @@
 import UIComponent from '$tl/ui/handy/UIComponent'
 import React from 'react'
 import * as css from './TimelineSelect.css'
-import {Pointer} from '$shared/DataVerse2/pointer'
-import {getSelectedProject, getSelectedInternalTimeline} from '../selectors'
 import Item from './Item'
 import FlyoutMenu from '$shared/components/FlyoutMenu/FlyoutMenu'
 import FlyoutMenuItem from '$shared/components/FlyoutMenu/FlyoutMenuItem'
 import {val} from '$shared/DataVerse2/atom'
+import {AllInOnePanelStuff} from '../AllInOnePanel'
+import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
+import InternalTimeline from '$tl/timelines/InternalTimeline'
 
 interface IProps {
   css?: Partial<typeof css>
+  allInOnePanelStuff: AllInOnePanelStuff
 }
 
 interface IState {
@@ -22,29 +24,37 @@ export default class TimelineSelect extends UIComponent<IProps, IState> {
     this.state = {menuOpen: false}
   }
 
-  _render(propsP: Pointer<IProps>, stateP: Pointer<IState>) {
-    const project = getSelectedProject(this.ui)
+  render() {
+    const {props} = this
 
+    const project = props.allInOnePanelStuff.project
     if (!project) return null
 
-    const internalTimeline = getSelectedInternalTimeline(this.ui, project)
-    const internalTimelines = val(project._internalTimelines.pointer)
+    const internalTimeline = props.allInOnePanelStuff
+      .internalTimeline as InternalTimeline
 
     return (
       <>
-        {val(stateP.menuOpen) && (
+        {this.state.menuOpen && (
           <FlyoutMenu onClose={this.closeMenu}>
-            {Object.keys(internalTimelines).map((timelinePath, i) => {
-              return (
-                <FlyoutMenuItem
-                  title={timelinePath}
-                  key={`project#${i}`}
-                  onClick={() =>
-                    this.selectInternalTimeline(project.id, timelinePath)
-                  }
-                />
-              )
-            })}
+            <PropsAsPointer>
+              {() => {
+                const internalTimelines = val(
+                  project._internalTimelines.pointer,
+                )
+                return Object.keys(internalTimelines).map((timelinePath, i) => {
+                  return (
+                    <FlyoutMenuItem
+                      title={timelinePath}
+                      key={`project#${i}`}
+                      onClick={() =>
+                        this.selectInternalTimeline(project.id, timelinePath)
+                      }
+                    />
+                  )
+                })
+              }}
+            </PropsAsPointer>
           </FlyoutMenu>
         )}
         <Item onClick={this.onClick}>

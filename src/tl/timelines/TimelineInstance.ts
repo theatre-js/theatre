@@ -9,9 +9,9 @@ export default class TimelineInstance {
   _objects: {[path: string]: TimelineInstanceObject} = {}
 
   constructor(
-    protected _project: Project,
-    protected _path: string,
-    protected _instanceId: string,
+    protected readonly _project: Project,
+    protected readonly _path: string,
+    public readonly _instanceId: string,
   ) {
     this._internalTimeline = _project._getInternalTimeline(_path)
   }

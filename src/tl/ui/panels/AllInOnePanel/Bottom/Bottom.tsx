@@ -2,14 +2,17 @@ import resolveCss from '$shared/utils/resolveCss'
 import UIComponent from '$tl/ui/handy/UIComponent'
 import React from 'react'
 import * as css from './Bottom.css'
-import {Pointer} from '$shared/DataVerse2/pointer'
 import ProjectSelect from './ProjectSelect'
 import Item from './Item'
 import TimelineSelect from './TimelineSelect'
+import TimelineInstanceSelect from './TimelineInstanceSelect'
+import {AllInOnePanelStuff} from '../AllInOnePanel'
 
 const classes = resolveCss(css)
 
-interface IProps {}
+interface IProps {
+  allInOnePanelStuff: AllInOnePanelStuff
+}
 
 interface IState {}
 
@@ -19,12 +22,15 @@ export default class Bottom extends UIComponent<IProps, IState> {
     this.state = {}
   }
 
-  _render(propsP: Pointer<IProps>, stateP: Pointer<IState>) {
+  render() {
     return (
       <div {...classes('container')}>
         <div className={css.leftContainer}>
-          <ProjectSelect />
-          <TimelineSelect />
+          <ProjectSelect allInOnePanelStuff={this.props.allInOnePanelStuff} />
+          <TimelineSelect allInOnePanelStuff={this.props.allInOnePanelStuff} />
+          <TimelineInstanceSelect
+            allInOnePanelStuff={this.props.allInOnePanelStuff}
+          />
         </div>
         <div className={css.rightContainer}>
           <Item>TheaterJS</Item>
