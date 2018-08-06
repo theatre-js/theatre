@@ -161,3 +161,8 @@ declare module 'hoist-non-react-statics' {
 }
 
 declare module 'jiff'
+
+// import {TL as TL_} from '$src/tl'
+
+// declare var TL: string
+

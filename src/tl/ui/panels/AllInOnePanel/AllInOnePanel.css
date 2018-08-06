@@ -11,6 +11,42 @@
 
 .middle {
   position: absolute 0 0 bottomHeight 0;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+.left {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200px;
+}
+
+.right {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: calc(100% - 200px);
+  background: #AAA;
+  overflow-x: scroll;
+}
+
+.leftContent {
+  height: 800px;
+  background-image:linear-gradient(0deg, transparent 50%, #aaa 50%),
+                 linear-gradient(90deg, #aaa 50%, #ccc 50%);
+background-size:50px 50px,50px 50px;
+background-position:0 0, 0 25px;
+}
+
+.rightContent {
+  height: 800px;
+  width: 9000px;
+
+  background-image:linear-gradient(0deg, transparent 50%, blue 50%),
+                 linear-gradient(90deg, blue 50%, #ccc 50%);
+background-size:50px 50px,50px 50px;
+background-position:0 0, 0 25px;
 }
 
 .bottom {

@@ -24,11 +24,11 @@ const vertexShaderSource = `
   `
 
 const setupScene = () => {
-  var camera, scene, renderer, sphere
+  let camera, scene, renderer, sphere
   init()
   animate()
   function init() {
-    var size = 150
+    const size = 150
     camera = makeCamera()
     scene = new THREE.Scene()
     scene.background = new THREE.Color(0x444444)
@@ -52,22 +52,23 @@ const setupScene = () => {
     camera.position.z = 800
     camera.position.y = 100
     // camera.rotation
-    var controls = new THREE.OrbitControls(camera)
+    // tslint:disable-next-line:prefer-const
+    let controls = new THREE.OrbitControls(camera)
     return camera
   }
 
   function makeSphereMesh(size) {
-    let geometry = new THREE.SphereBufferGeometry(size / 2, 32, 16)
+    const geometry = new THREE.SphereBufferGeometry(size / 2, 32, 16)
     const material = new THREE.MeshBasicMaterial({color: 0x888888})
     const mesh = new THREE.Mesh(geometry, material)
     scene.add(mesh)
 
-    var wireframe = new THREE.WireframeGeometry(geometry)
+    const wireframe = new THREE.WireframeGeometry(geometry)
     const lineMaterial = new THREE.LineBasicMaterial({
       color: 0x111111,
       linewidth: 1,
     })
-    var line = new THREE.LineSegments(wireframe, lineMaterial)
+    const line = new THREE.LineSegments(wireframe, lineMaterial)
     line.material.depthTest = true
     line.material.opacity = 1
     line.material.transparent = true
@@ -77,16 +78,16 @@ const setupScene = () => {
   }
 
   function makePlatformMesh(size) {
-    let geometry = new THREE.BoxBufferGeometry(size * 5, 1, size * 5, 10, 1, 10)
+    const geometry = new THREE.BoxBufferGeometry(size * 5, 1, size * 5, 10, 1, 10)
     const material = new THREE.MeshBasicMaterial({color: 0x00ff00})
-    var wireframe = new THREE.WireframeGeometry(geometry)
+    const wireframe = new THREE.WireframeGeometry(geometry)
 
     const lineMaterial = new THREE.LineBasicMaterial({
       color: 0xffffff,
       linewidth: 1,
     })
 
-    var line = new THREE.LineSegments(wireframe, lineMaterial)
+    const line = new THREE.LineSegments(wireframe, lineMaterial)
     line.material.depthTest = true
     line.material.opacity = 0.25
     line.material.transparent = true

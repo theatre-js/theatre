@@ -5,7 +5,7 @@ const initialHistoricState = {
   allInOnePanel: {
     height: 300,
     selectedProject: 'Explorable Explanations',
-    leftWidth: 30,
+    leftWidthFraction: 0.3,
     selectedTimelineByProject: {},
     selectedTimelineInstanceByProjectAndTimeline: {},
   },

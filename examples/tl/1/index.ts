@@ -1,4 +1,6 @@
 // import setupScene from './setupScene'
+// import {TLType} from '../../../src/tl/index'
+import {TypeOfTL} from '$src/tl/index'
 // const {sphere} = setupScene()
 
 // function setupTheaterForSphere(mesh) {
@@ -19,14 +21,18 @@
 //   }
 // })
 
+// declare var TL: TLType
+declare var TL: TypeOfTL
+
 TL.ui.enable()
 
 new TL.Project('Intro Post')
 new TL.Project('Mathly Preview')
 
 const project = new TL.Project('Explorable Explanations')
-const timeline = project.getTimeline('Bouncing  Ball')
-project.getTimeline('Bouncing  Ball', '1')
-project.getTimeline('Bouncing  Ball', '2')
-project.getTimeline('Bouncing  Ball 2')
+project.getTimeline('Bouncing Ball/ The ball', '1')
+project.getTimeline('Bouncing Ball / The ball', '2')
+project.getTimeline('Bouncing Ball X')
+
+const timeline = project.getTimeline('Bouncing Ball / The ball')
 const ball = timeline.createObject('The ball')

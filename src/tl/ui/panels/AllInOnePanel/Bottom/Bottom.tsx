@@ -8,6 +8,8 @@ import TimelineSelect from './TimelineSelect'
 import TimelineInstanceSelect from './TimelineInstanceSelect'
 import {AllInOnePanelStuff} from '../AllInOnePanel'
 
+export const bottomHeight = parseFloat(css.bottomHeight.replace(/[a-z]+$/, ''))
+
 const classes = resolveCss(css)
 
 interface IProps {

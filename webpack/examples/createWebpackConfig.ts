@@ -13,7 +13,7 @@ module.exports = (env: Envs) => {
     withDevServer: true,
     entries: {
       'studio/1': ['./examples/studio/1/index.js'],
-      'tl/1': ['./examples/tl/1/index.js'],
+      'tl/1': ['./examples/tl/1/index.ts'],
     },
   })
 

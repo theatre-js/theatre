@@ -29,7 +29,7 @@
       "$src/*": ["src/*"]
     }
   },
-  "include": ["./src/"],
+  "include": ["."],
   "exclude": [
     "node_modules",
     "build",
@@ -38,7 +38,12 @@
     "webpack",
     "jest",
     "src/setupTests.ts",
-    "vendor"
+    "vendor",
+    "xeno",
+    "webpack",
+    "docs",
+    "bundles",
+    ".vscode"
   ],
   "types": ["typePatches", "webpack-env", "node"],
   "plugins": [

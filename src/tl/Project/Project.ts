@@ -25,7 +25,7 @@ export default class Project {
     this.adapters = new NativeObjectAdaptersManager(this)
   }
 
-  getTimeline(_path: string, instanceId: string = 'default') {
+  getTimeline(_path: string, instanceId: string = 'default'): TimelineInstance {
     const path = validateAndSanitiseSlashedPathOrThrow(
       _path,
       'project.getTimeline',

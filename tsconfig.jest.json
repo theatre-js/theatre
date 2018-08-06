@@ -28,7 +28,7 @@
       "$shared/*": ["src/shared/*"]
     }
   },
-  "include": ["./src/"],
+  "include": ["."],
   "exclude": [
     "node_modules",
     "build",
@@ -36,7 +36,9 @@
     "acceptance-tests",
     "webpack",
     "jest",
-    "src/setupTests.ts"
+    "src/setupTests.ts",
+    "xeno",
+    "docs"
   ],
   "types": ["typePatches"]
 }

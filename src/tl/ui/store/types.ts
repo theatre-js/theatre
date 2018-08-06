@@ -47,7 +47,7 @@ export const $UIHistoricState = $StateWithHistory(
       selectedProject: t.union([t.null, t.string]),
       selectedTimelineByProject: t.record(t.string, t.string),
       selectedTimelineInstanceByProjectAndTimeline: t.record(t.string, t.string),
-      leftWidth: t.number,
+      leftWidthFraction: t.number,
     }),
   }),
 )

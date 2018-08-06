@@ -20,7 +20,7 @@ export default class TimelineInstance {
     _path: string,
     nativeObject: $FixMe,
     config: NativeObjectTypeConfig,
-  ) {
+  ): TimelineInstanceObject {
     const path = validateAndSanitiseSlashedPathOrThrow(
       _path,
       'timeline.createObject',
