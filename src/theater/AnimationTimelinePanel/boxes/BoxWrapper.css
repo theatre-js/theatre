@@ -1,0 +1,213 @@
+@value boxLegendWidth from '$theater/AnimationTimelinePanel/TimelinePanelContent.css';
+@value dropZoneMoveIndicatorHeight from '$theater/AnimationTimelinePanel/boxes/BoxesContainer.css';
+@value dropZoneMoveIndicatorTop from '$theater/AnimationTimelinePanel/boxes/BoxesContainer.css';
+@value animationLength: 0.2s;
+@value minBoxHeight: 40px;
+
+
+.container {
+  --boxMargin: 2px;
+
+  position: relative;
+  width: 100%;
+  left: 0;
+
+  // background-color: #1b2226;
+
+  &.moveUp {
+    animation: containerMoveUp animationLength ease-in-out;
+  }
+
+  &.moveDown {
+    animation: containerMoveDown animationLength ease-in-out forwards;
+  }
+
+  &.toggleView {
+    animation: containerToggle animationLength ease-in-out forwards;
+
+    & > [data-hideontoggle] {
+      animation: fadeOut 0.1s ease-in-out forwards;
+    }
+  }
+
+  &.isDragging {
+    transition: opacity animationLength ease-in-out;
+    z-index: 1000000;
+    opacity: 0.6;
+    background-color: rgba(#5f666a, 0.5);
+    animation: containerDragging 0s animationLength forwards;
+  }
+
+  &.isMoved {
+    position: absolute;
+    z-index: 1000;
+    top: calc(var(--offsetTop) * 1px);
+    animation: containerMove animationLength ease-in-out forwards;
+  }
+
+  &.isMerged {
+    position: absolute;
+    z-index: 1000;
+    top: calc(var(--offsetTop) * 1px);
+    opacity: 0.6;
+    animation: containerMerge animationLength ease-in-out forwards;
+  }
+
+  &:not(.isDragging) {
+    &:after {
+      display: block;
+      position: absolute;
+      content: ' ';
+      height: var(--boxMargin);
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--body-color);
+      z-index: 100;
+      pointer-events: none;
+    }
+  }
+}
+
+.resizeHandle {
+  position: absolute;
+  width: 100%;
+  height: 5px;
+  bottom: calc(-1 * var(--boxMargin));
+  z-index: 1;
+  cursor: row-resize;
+}
+
+.moveHandle {
+  position: sticky;
+  left: 0;
+  top: 0;
+  width: boxLegendWidth;
+  height: 100%;
+  z-index: 10000;
+  cursor: move;
+  transform: translate3d(0, -100%, 0);
+
+  &.isDragging {
+    background-color: rgba(#5f666a, 0.5);
+  }
+}
+
+.dropZone {
+  position: absolute 0;
+  cursor: alias;
+  z-index: 100000;
+
+  --boxShadow: inset 0 0 0 2px yellow;
+  --background: rgba(255, 255, 0, 0.1);
+
+  --middleHeight: 40;
+  --edgeHeight: calc(0.5 * (100 - var(--middleHeight)));
+
+  & .middle {
+    height: calc(var(--middleHeight) * 1%);
+
+    &:hover:after {
+      height: calc((100 / var(--middleHeight)) * 100%);
+      transform: translate3d(0, calc(-1 * var(--edgeHeight) * 1%), 0);
+      width: var(--panelWidth);
+      box-shadow: var(--boxShadow);
+      background: var(--background);
+      position: sticky;
+      left: 0;
+      display: block;
+      content: ' ';
+    }
+  }
+
+  & .top,
+  & .bottom {
+    position: relative;
+    height: calc(var(--edgeHeight) * 1%);
+    z-index: 10;
+
+    &:hover:after {
+      height: dropZoneMoveIndicatorHeight;
+      transform: translate3d(0, dropZoneMoveIndicatorTop, 0);
+      width: var(--panelWidth);
+      box-shadow: var(--boxShadow);
+      background: var(--background);
+      position: sticky;
+      left: 0;
+      display: block;
+      content: ' ';
+    }
+  }
+
+  & .bottom:before {
+    display: block;
+    content: ' ';
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+@keyframes containerMoveUp {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(0, calc(-1 * var(--translateY) * 1px), 0);
+  }
+}
+
+@keyframes containerMoveDown {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(0, calc(var(--translateY) * 1px), 0);
+  }
+}
+
+@keyframes containerToggle {
+  from {
+    height: var(--fromHeight);
+  }
+  to {
+    height: var(--toHeight);
+  }
+}
+
+@keyframes containerDragging {
+  to {
+    position: absolute;
+    pointer-events: none;
+    top: calc(var(--offsetTop) * 1px);
+  }
+}
+
+@keyframes containerMove {
+  from {
+    transform: translate3d(0, calc(var(--fromY) * 1px), 0);
+  }
+  to {
+    transform: translate3d(0, calc(var(--toY) * 1px), 0);
+  }
+}
+
+@keyframes containerMerge {
+  from {
+    transform: translate3d(0, calc(var(--fromY) * 1px), 0);
+    height: var(--fromHeight);
+  }
+  to {
+    transform: translate3d(0, calc(var(--toY) * 1px), 0);
+    height: var(--toHeight);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}

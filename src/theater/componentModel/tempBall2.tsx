@@ -20,7 +20,7 @@ const two = {
               property: 'translationY',
               points: [
                 {
-                  time: 0,
+                  time: 950,
                   value: 20,
                   interpolationDescriptor: {
                     connected: true,
@@ -59,11 +59,11 @@ const two = {
                     handles: [0.5, 0, 0.5, 0],
                   },
                 },
-                ...(Array.from(new Array(101).keys()).map(i => ({
-                  time: 6500 +  135 * i,
+                ...(Array.from(new Array(21).keys()).map(i => ({
+                  time: 6500 +  650 * i,
                   value: Math.random() * 200 - 100,
                   interpolationDescriptor: {
-                    connected: (i < 100),
+                    connected: (i < 20),
                     __descriptorType: 'TimelinePointInterpolationDescriptor',
                     interpolationType: 'CubicBezier',
                     handles: [0.5, 0, 0.5, 0],
@@ -174,8 +174,8 @@ const two = {
               ],
             },
           },
-          // layout: ['box-translateY', 'box-translateYP', 'box-translateYZ', 'box-translateYZZ', 'box-translateYZT'],
-          layout: ['box-translateYZ', 'box-translateY', 'box-translateYP'],
+          layout: ['box-translateY', 'box-translateYP', 'box-translateYZ', 'box-translateYZZ', 'box-translateYZT'],
+          // layout: ['box-translateYZ', 'box-translateY', 'box-translateYP'],
           // layout: ['box-translateY', 'box-translateYP'],
           boxes: {
             'box-translateY': {
@@ -183,30 +183,35 @@ const two = {
               height: 226,
               variables: ['translationY'],
               activeVariable: 'translationY',
+              dopeSheet: false,
             },
             'box-translateYP': {
               id: 'box-translateYP',
               height: 126,
               variables: ['opacity'],
               activeVariable: 'opacity',
+              dopeSheet: false,
             },
             'box-translateYZ': {
               id: 'box-translateYZ',
               height: 126,
               variables: ['translationYZ'],
               activeVariable: 'translationYZ',
+              dopeSheet: false,
             },
             'box-translateYZZ': {
               id: 'box-translateYZZ',
               height: 126,
               variables: ['translationYZZ'],
               activeVariable: 'translationYZZ',
+              dopeSheet: false,
             },
             'box-translateYZT': {
               id: 'box-translateYZT',
               height: 126,
               variables: ['translationYZT'],
               activeVariable: 'translationYZT',
+              dopeSheet: false,
             },
           },
         },

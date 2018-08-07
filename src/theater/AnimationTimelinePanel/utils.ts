@@ -48,6 +48,14 @@ export const removeGlobalPointDragRule = () => {
   document.body.classList.remove('pointDrag')
 }
 
+export const addGlobalDopesheetDragRule = () => {
+  document.body.classList.add('dopesheetDrag')
+}
+
+export const removeGlobalDopesheetDragRule = () => {
+  document.body.classList.remove('dopesheetDrag')
+}
+
 export const colors = [
   {name: 'blue', normal: '#3AAFA9', darkened: '#345b59'},
   {name: 'purple', normal: '#575790', darkened: '#323253'},

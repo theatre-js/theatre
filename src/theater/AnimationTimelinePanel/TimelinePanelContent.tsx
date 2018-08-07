@@ -19,11 +19,11 @@ import {
 } from '$theater/AnimationTimelinePanel/utils'
 import memoizeOne from 'memoize-one'
 import DraggableArea from '$theater/common/components/DraggableArea/DraggableArea'
-import TimeUI from '$theater/AnimationTimelinePanel/TimeUI/TimeUI'
+import TimeUI from '$theater/AnimationTimelinePanel/time/TimeUI'
 import RootPropProvider from '$theater/AnimationTimelinePanel/RootPropProvider'
-import BoxesContainer from '$theater/AnimationTimelinePanel/BoxesContainer/BoxesContainer'
-import SelectionProvider from '$theater/AnimationTimelinePanel/SelectionProvider/SelectionProvider'
-import OverlaysProvider from '$theater/AnimationTimelinePanel/OverlaysProvider/OverlaysProvider'
+import BoxesContainer from '$theater/AnimationTimelinePanel/boxes/BoxesContainer'
+import SelectionProvider from '$theater/AnimationTimelinePanel/selection/SelectionProvider'
+import OverlaysProvider from '$theater/AnimationTimelinePanel/overlays/OverlaysProvider'
 import FramesGrid from '$theater/AnimationTimelinePanel/FramesGrid'
 
 interface IOwnProps {
@@ -74,6 +74,67 @@ class TimelinePanelContent extends React.PureComponent<IProps, IState> {
 
   componentDidUpdate(prevProps: IProps) {
     if (prevProps.boxWidth !== this.props.boxWidth) this.scrollContainer()
+  }
+
+  render() {
+    const {boxWidth, panelWidth, pathToTimeline} = this.props
+    const {focus, duration, currentTime} = this.state
+
+    const svgWidth = getSvgWidth(duration, focus, boxWidth)
+
+    return (
+      <>
+        <FramesGrid
+          canvasWidth={boxWidth}
+          containerWidth={panelWidth}
+          focus={focus}
+        />
+        <DraggableArea
+          onDragStart={this.syncSeekerWithMousePosition}
+          onDrag={this.seekTime}
+          onDragEnd={removeGlobalSeekerDragRule}
+          shouldReturnMovement={true}
+        >
+          <div
+            ref={c => (this.wrapper = c)}
+            className={css.wrapper}
+            style={{width: panelWidth}}
+            onWheel={this.handleWheel}
+          >
+            <div
+              className={css.scrollingContainer}
+              style={{width: svgWidth + BOX_LEGEND_WIDTH}}
+            >
+              <SelectionProvider
+                pathToTimeline={pathToTimeline}
+                focus={focus}
+                duration={duration}
+                boxWidth={boxWidth}
+              >
+                <OverlaysProvider pathToTimeline={pathToTimeline}>
+                  <RootPropProvider
+                    duration={duration}
+                    svgWidth={svgWidth}
+                    boxWidth={boxWidth}
+                    panelWidth={panelWidth}
+                  >
+                    {memoizedBoxesContainer(pathToTimeline)}
+                  </RootPropProvider>
+                </OverlaysProvider>
+              </SelectionProvider>
+            </div>
+          </div>
+        </DraggableArea>
+        <TimeUI
+          boxWidth={boxWidth}
+          currentTime={currentTime}
+          duration={duration}
+          focus={focus}
+          seekTime={this.seekTime}
+          updateFocus={this.updateFocus}
+        />
+      </>
+    )
   }
 
   handleKeyPress = (e: KeyboardEvent) => {
@@ -208,67 +269,6 @@ class TimelinePanelContent extends React.PureComponent<IProps, IState> {
         focus[1] + change * (1 - fraction),
       )
     }
-  }
-
-  render() {
-    const {boxWidth, panelWidth, pathToTimeline} = this.props
-    const {focus, duration, currentTime} = this.state
-
-    const svgWidth = getSvgWidth(duration, focus, boxWidth)
-
-    return (
-      <>
-        <FramesGrid
-          canvasWidth={boxWidth}
-          containerWidth={panelWidth}
-          focus={focus}
-        />
-        <DraggableArea
-          onDragStart={this.syncSeekerWithMousePosition}
-          onDrag={this.seekTime}
-          onDragEnd={removeGlobalSeekerDragRule}
-          shouldReturnMovement={true}
-        >
-          <div
-            ref={c => (this.wrapper = c)}
-            className={css.wrapper}
-            style={{width: panelWidth}}
-            onWheel={this.handleWheel}
-          >
-            <div
-              className={css.scrollingContainer}
-              style={{width: svgWidth + BOX_LEGEND_WIDTH}}
-            >
-              <SelectionProvider
-                pathToTimeline={pathToTimeline}
-                focus={focus}
-                duration={duration}
-                boxWidth={boxWidth}
-              >
-                <OverlaysProvider pathToTimeline={pathToTimeline}>
-                  <RootPropProvider
-                    duration={duration}
-                    svgWidth={svgWidth}
-                    boxWidth={boxWidth}
-                    panelWidth={panelWidth}
-                  >
-                    {memoizedBoxesContainer(pathToTimeline)}
-                  </RootPropProvider>
-                </OverlaysProvider>
-              </SelectionProvider>
-            </div>
-          </div>
-        </DraggableArea>
-        <TimeUI
-          boxWidth={boxWidth}
-          currentTime={currentTime}
-          duration={duration}
-          focus={focus}
-          seekTime={this.seekTime}
-          updateFocus={this.updateFocus}
-        />
-      </>
-    )
   }
 }
 

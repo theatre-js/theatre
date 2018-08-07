@@ -34,6 +34,19 @@ class TimelineInstantiator extends PureComponentWithTheater<IProps, IState> {
     this._updateThingy(newProps)
   }
 
+  render() {
+    const {timelineInstance} = this.state
+    if (timelineInstance == null) return null
+
+    const {pathToTimeline} = this.props
+    return (
+      <TimelinePanelContent
+        timelineInstance={timelineInstance}
+        pathToTimeline={pathToTimeline}
+      />
+    )
+  }
+
   _updateThingy(props: IProps = this.props) {
     const thingy = calculateThingy(
       props.volatileIdOfSelectedElement,
@@ -51,19 +64,6 @@ class TimelineInstantiator extends PureComponentWithTheater<IProps, IState> {
       thingy,
       timelineInstance,
     })
-  }
-
-  render() {
-    const {timelineInstance} = this.state
-    if (timelineInstance == null) return null
-
-    const {pathToTimeline} = this.props
-    return (
-      <TimelinePanelContent
-        timelineInstance={timelineInstance}
-        pathToTimeline={pathToTimeline}
-      />
-    )
   }
 }
 

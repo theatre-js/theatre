@@ -30,6 +30,28 @@ class FramesGrid extends React.PureComponent<IProps, IState> {
     this._drawGrid()
   }
 
+  render() {
+    return (
+      <PropsAsPointer props={this.props}>
+        {({props}) => {
+          const containerWidth = val(props.containerWidth)
+          const canvasWidth = val(props.canvasWidth)
+          return (
+            <div {...classes('container')} style={{width: containerWidth}}>
+              <canvas
+                {...classes('canvas')}
+                ref={c => (this.canvas = c)}
+                width={canvasWidth}
+                height={100}
+                style={{width: canvasWidth}}
+              />
+            </div>
+          )
+        }}
+      </PropsAsPointer>
+    )
+  }
+
   _drawGrid() {
     const {canvasWidth, focus} = this.props
     const focusDuration = focus[1] - focus[0]
@@ -82,28 +104,6 @@ class FramesGrid extends React.PureComponent<IProps, IState> {
       ctx.stroke()
       ctx.closePath()
     }
-  }
-
-  render() {
-    return (
-      <PropsAsPointer props={this.props}>
-        {({props}) => {
-          const containerWidth = val(props.containerWidth)
-          const canvasWidth = val(props.canvasWidth)
-          return (
-            <div {...classes('container')} style={{width: containerWidth}}>
-              <canvas
-                {...classes('canvas')}
-                ref={c => (this.canvas = c)}
-                width={canvasWidth}
-                height={100}
-                style={{width: canvasWidth}}
-              />
-            </div>
-          )
-        }}
-      </PropsAsPointer>
-    )
   }
 }
 

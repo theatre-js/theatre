@@ -114,6 +114,12 @@
   }
 }
 
+:global(.dopesheetDrag) {
+  & * {
+    cursor: ew-resize;
+  }
+}
+
 body {
   overscroll-behavior: none;
 }

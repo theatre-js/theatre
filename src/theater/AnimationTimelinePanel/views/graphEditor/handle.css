@@ -1,0 +1,12 @@
+.handleClickArea {
+  cursor: default;
+}
+
+.handleClickArea:hover ~ .handle,
+.handleClickArea:active ~ .handle {
+  stroke-width: 3px;
+}
+
+.handle {
+  pointer-events: none;
+}

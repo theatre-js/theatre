@@ -1,0 +1,6 @@
+@value minBoxHeight from '$theater/AnimationTimelinePanel/boxes/BoxWrapper.css';
+
+.container {
+  height: minBoxHeight;
+  width: 100%;
+}

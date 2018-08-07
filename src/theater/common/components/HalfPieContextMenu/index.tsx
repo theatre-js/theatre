@@ -96,12 +96,16 @@ const getCoordinatesOnHorizontalAxis = (
 }
 
 class HalfPieContextMenu extends React.PureComponent<IProps, IState> {
-  preparedLabels: $FixMe
+  preparedLabels: {
+    key: string
+    prefix: string
+    suffix: string
+  }[]
 
   constructor(props: IProps) {
     super(props)
 
-    this.preparedLabels = props.items.map(({label}: $FixMe) => {
+    this.preparedLabels = props.items.map(({label}) => {
       const openningSignIndex = label.indexOf('$')
       const closingSignIndex = label.lastIndexOf('$')
       const key = label.slice(openningSignIndex + 1, closingSignIndex)
@@ -146,7 +150,10 @@ class HalfPieContextMenu extends React.PureComponent<IProps, IState> {
       )
     })
     if (matchedItemIndex !== -1) {
-      this.props.items[matchedItemIndex].cb()
+      const item = this.props.items[matchedItemIndex]
+      if (item.disabled == null || !item.disabled) {
+        this.props.items[matchedItemIndex].cb()
+      }
       this.props.close()
     } else {
       this.setState(() => ({pressedKeyCode: -1}))

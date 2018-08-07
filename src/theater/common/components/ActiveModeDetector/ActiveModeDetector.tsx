@@ -11,7 +11,7 @@ interface IState {
   activeMode: ActiveMode
 }
 
-type TMODE = 'option' | 'cmd' | 'shift' | 'd' | 'c' | 'h'
+type TMODE = 'option' | 'cmd' | 'shift' | 'd' | 'c' | 'h' | 's'
 
 const KEYS_MAP: Record<TMODE, KeyboardEvent['keyCode']> = {
   option: 18,
@@ -20,6 +20,7 @@ const KEYS_MAP: Record<TMODE, KeyboardEvent['keyCode']> = {
   d: 68,
   c: 67,
   h: 72,
+  s: 83,
 }
 
 export const MODES = Object.keys(KEYS_MAP).reduce((reducer, key) => {
@@ -36,7 +37,9 @@ class ActiveModeDetector extends React.PureComponent<IProps, IState> {
   constructor(props: IProps) {
     super(props)
 
-    this._mapOfKeycodeToMode = new Map(props.modes.map((mode): [number, TMODE] => [KEYS_MAP[mode], mode]))
+    this._mapOfKeycodeToMode = new Map(
+      props.modes.map((mode): [number, TMODE] => [KEYS_MAP[mode], mode]),
+    )
 
     this.state = {
       activeMode: null,
@@ -63,7 +66,14 @@ class ActiveModeDetector extends React.PureComponent<IProps, IState> {
 
   private handleKeyDown = (e: KeyboardEvent) => {
     if (this._isMouseDown) return
-    if (e.target && (e.target as HTMLElement).tagName === 'INPUT' && ![91].includes(e.keyCode)) return
+    if (
+      e.target &&
+      (e.target as HTMLElement).tagName === 'INPUT' &&
+      ![91].includes(e.keyCode)
+    ) {
+      return
+    }
+
     const mode = this._mapOfKeycodeToMode.get(e.keyCode)
     if (mode != null) {
       this.setState(() => ({activeMode: MODES[mode]}))

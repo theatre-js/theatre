@@ -1,0 +1,25 @@
+.container {
+  height: calc(100% + var(--svgPadding) * 1px);
+  pointer-events: none;
+
+  &.fullHeight {
+    height: 100%;
+  }
+
+  &.enabled {
+    pointer-events: auto;
+  }
+}
+
+.blueCursor {
+  cursor: url('url-loader!./AddCursorBlue.svg'), auto;
+}
+.redCursor {
+  cursor: url('url-loader!./AddCursorRed.svg'), auto;
+}
+.purpleCursor {
+  cursor: url('url-loader!./AddCursorPurple.svg'), auto;
+}
+.yellowCursor {
+  cursor: url('url-loader!./AddCursorYellow.svg'), auto;
+}

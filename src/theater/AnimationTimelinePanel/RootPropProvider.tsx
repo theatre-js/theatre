@@ -21,19 +21,6 @@ export type TPropName = 'svgWidth' | 'boxWidth' | 'duration' | 'panelWidth'
 export type TPropGetter = (propName: TPropName) => any
 
 class RootPropProvider extends PureComponentWithTheater<IProps, IState> {
-  getProp: TPropGetter = (propName: TPropName) => {
-    switch (propName) {
-      case 'svgWidth':
-        return this.props.svgWidth
-      case 'boxWidth':
-        return this.props.boxWidth
-      case 'duration':
-        return this.props.duration
-      case 'panelWidth':
-        return this.props.panelWidth
-    }
-  }
-
   render() {
     return (
       <PropsAsPointer props={this.props}>
@@ -50,6 +37,19 @@ class RootPropProvider extends PureComponentWithTheater<IProps, IState> {
         }}
       </PropsAsPointer>
     )
+  }
+
+  getProp: TPropGetter = (propName: TPropName) => {
+    switch (propName) {
+      case 'svgWidth':
+        return this.props.svgWidth
+      case 'boxWidth':
+        return this.props.boxWidth
+      case 'duration':
+        return this.props.duration
+      case 'panelWidth':
+        return this.props.panelWidth
+    }
   }
 }
 

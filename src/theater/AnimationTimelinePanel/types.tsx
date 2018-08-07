@@ -31,6 +31,7 @@ export type BoxObject = {
   height: number
   variables: VariableID[]
   activeVariable: VariableID
+  dopeSheet: boolean
 }
 
 export type LayoutArray = BoxID[]

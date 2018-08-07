@@ -1,8 +1,8 @@
 import React from 'react'
 
 type Props = {
-  children: React.ReactElement<$IntentionalAny>
-  onDragStart?: (event: React.MouseEvent<HTMLElement>) => void
+  children: React.ReactElement<HTMLElement | SVGElement>
+  onDragStart?: (event: React.MouseEvent<HTMLElement | SVGElement>) => void
   onDragEnd?: (dragHappened: boolean) => void
   onDrag: (dx: number, dy: number, event: MouseEvent) => void
   shouldRegisterEvents?: boolean
@@ -47,7 +47,7 @@ class DraggableArea extends React.PureComponent<Props, {}> {
     document.removeEventListener('mouseup', this.dragEndHandler)
   }
 
-  dragStartHandler = (e: MouseEvent) => {
+  dragStartHandler = (e: React.MouseEvent<HTMLElement>) => {
     if (e.button !== 0) return
     e.preventDefault()
     e.stopPropagation()
