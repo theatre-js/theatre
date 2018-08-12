@@ -13,7 +13,6 @@ import {
   THorizontalLimits,
 } from '$theater/AnimationTimelinePanel/selection/types'
 import {MIN_BOX_HEIGHT} from '$theater/AnimationTimelinePanel/boxes/BoxWrapper'
-import {uniq} from 'lodash'
 import {POINT_RECT_EDGE_SIZE} from '$theater/AnimationTimelinePanel/views/point/PointClickArea'
 
 export const memoizedGetBoxesBoundaries = memoizeOne(
