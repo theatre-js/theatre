@@ -12,6 +12,7 @@ export default class Ticker {
     ObjectWhoseStructureShouldBeUpdated
   >
   _traces: $FixMe
+  _sideEffectsToCall: Set<() => void>
 
   constructor() {
     this._computationsToUpdate = new Set()
@@ -19,12 +20,14 @@ export default class Ticker {
     if (process.env.KEEPING_DERIVATION_TRACES === true) {
       this._traces = new WeakMap()
     }
+    this._sideEffectsToCall = new Set()
   }
 
   registerComputationUpdate(d: ObjectWhoseComputationShouldBeUpdated): void {
     if (this._computationsToUpdate.has(d)) {
       // @todo
       // console.error('Computation is already registered. This should never happen')
+      return
     }
 
     if (process.env.KEEPING_DERIVATION_TRACES === true) {
@@ -37,6 +40,10 @@ export default class Ticker {
     d: ObjectWhoseStructureShouldBeUpdated,
   ) {
     this._objectsWhoseStructureShouldBeUpdated.add(d)
+  }
+
+  registerSideEffect(fn: () => void) {
+    this._sideEffectsToCall.add(fn)
   }
 
   tick() {
@@ -75,9 +82,16 @@ export default class Ticker {
       d._updateComputation()
     })
 
+    const oldSE = this._sideEffectsToCall
+    this._sideEffectsToCall = new Set()
+    oldSE.forEach(fn => {
+      fn()
+    })
+
     if (
       this._objectsWhoseStructureShouldBeUpdated.size > 0 ||
-      this._computationsToUpdate.size > 0
+      this._computationsToUpdate.size > 0 ||
+      this._sideEffectsToCall.size > 0
     ) {
       return this._tick(n + 1)
     }

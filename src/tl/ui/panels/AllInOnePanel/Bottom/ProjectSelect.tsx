@@ -1,16 +1,14 @@
 import UIComponent from '$tl/ui/handy/UIComponent'
 import React from 'react'
-import {Pointer} from '$shared/DataVerse2/pointer'
 import Item from './Item'
 import {val} from '$shared/DataVerse2/atom'
-import {AllInOnePanelStuff} from '../AllInOnePanel'
 import Project from '$tl/Project/Project'
 import projectsSingleton from '$tl/Project/projectsSingleton'
 import FlyoutSearchableList from '$shared/components/FlyoutSearchableList'
+import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
+import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 
-interface IProps {
-  allInOnePanelStuff: AllInOnePanelStuff
-}
+interface IProps {}
 
 interface IState {
   menuOpen: boolean
@@ -22,27 +20,36 @@ export default class ProjectSelect extends UIComponent<IProps, IState> {
     this.state = {menuOpen: false}
   }
 
-  _render(propsP: Pointer<IProps>, stateP: Pointer<IState>) {
-    // const p = getProjectSelectionState(this.ui)
-    const projects = val(projectsSingleton.atom.pointer.projects)
-
-    const areThereProjects = Object.keys(projects).length > 0
-
+  render() {
     return (
-      <>
-        {val(stateP.menuOpen) && (
-          <FlyoutSearchableList
-            options={Object.keys(projects)}
-            onSelect={this.selectProject}
-            close={this.closeMenu}
-          />
+      <AllInOnePanelStuff>
+        {({project: projectP}) => (
+          <PropsAsPointer state={this.state}>
+            {({state: stateP}) => {
+              const projects = val(projectsSingleton.atom.pointer.projects)
+
+              const areThereProjects = Object.keys(projects).length > 0
+
+              return (
+                <>
+                  {val(stateP.menuOpen) && (
+                    <FlyoutSearchableList
+                      options={Object.keys(projects)}
+                      onSelect={this.selectProject}
+                      close={this.closeMenu}
+                    />
+                  )}
+                  <Item onClick={areThereProjects ? this.onClick : undefined}>
+                    {!areThereProjects
+                      ? 'No project'
+                      : (val(projectP) as Project).id}
+                  </Item>
+                </>
+              )
+            }}
+          </PropsAsPointer>
         )}
-        <Item onClick={areThereProjects ? this.onClick : undefined}>
-          {!areThereProjects
-            ? 'No project'
-            : (val(propsP.allInOnePanelStuff.project) as Project).id}
-        </Item>
-      </>
+      </AllInOnePanelStuff>
     )
   }
 

@@ -52,7 +52,7 @@ export const getSelectedInternalTimeline = (
   project: Project,
 ): undefined | InternalTimeline => {
   const userSelectedTimelinePath = val(
-    ui.atomP.historic.allInOnePanel.selectedTimelineByProject[project.id],
+    ui.atomP.historic.allInOnePanel.projects[project.id].selectedTimeline,
   )
 
   if (userSelectedTimelinePath) {
@@ -76,10 +76,10 @@ export const getSelectedTimelineInstance = (
   project: Project,
   internalTimeline: InternalTimeline,
 ): undefined | TimelineInstance => {
-  const path = combineProjectAndTimelinePath(project.id, internalTimeline._path)
-
   const userDesiredInstanceId = val(
-    ui.atomP.historic.allInOnePanel.selectedTimelineInstanceByProjectAndTimeline[path]
+    ui.atomP.historic.allInOnePanel.projects[project.id].timelines[
+      internalTimeline._path
+    ].selectedTimelineInstance,
   )
 
   if (userDesiredInstanceId) {
@@ -96,7 +96,8 @@ export const getSelectedTimelineInstance = (
     project._timelineInstances.pointer[internalTimeline._path],
   )
 
-  if (!instances) return undefined
+  if (!instances) debugger
+  if (!instances) return
 
   const isntanceIds = Object.keys(instances)
   const areThereInstances = isntanceIds.length > 0
@@ -114,11 +115,4 @@ export const getTimelineInstances = (
   )
 
   return instances
-}
-
-export function combineProjectAndTimelinePath(
-  projectId: string,
-  internalTimelinePath: string,
-) {
-  return projectId + '######' + internalTimelinePath
 }

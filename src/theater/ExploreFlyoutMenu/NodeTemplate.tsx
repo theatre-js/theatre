@@ -123,6 +123,7 @@ const NodeTemplate = (props: Props) => {
                   isExpanded && 'expanded',
                   hasChildren && 'hasChildren',
                 )}
+                // @ts-ignore ignore
                 style={{'--depth': depth}}
               >
                 <div {...classes('top')}>

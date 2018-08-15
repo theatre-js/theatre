@@ -9,8 +9,8 @@ export interface NativeObjectAdapter {
   accepts(nativeObject: $FixMe): boolean
   getType(
     nativeObject: $FixMe,
-    config: NativeObjectTypeConfig,
-  ): NativeObjectType | null
+    config?: NativeObjectTypeConfig,
+  ): NativeObjectType
 }
 
 type Priority = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10

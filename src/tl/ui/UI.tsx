@@ -2,7 +2,7 @@ import {Atom} from '$shared/DataVerse2/atom'
 import ReactDOM from 'react-dom'
 import React from 'react'
 import UIRoot from './UIRoot/UIRoot'
-import {rootReducer, uiActions} from './store/rootReducer'
+import {rootReducer, uiActions} from './store'
 import configureStore from '$shared/utils/redux/configureStore'
 import {UIState} from '$tl/ui/store/types'
 import {Store} from 'redux'
@@ -25,7 +25,6 @@ export default class UI {
     this.ticker = new Ticker()
 
     const onAnimationFrame = () => {
-      
       this.ticker.tick()
       window.requestAnimationFrame(onAnimationFrame)
     }

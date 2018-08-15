@@ -5,7 +5,6 @@ import React from 'react'
 import * as css from './TheTrigger.css'
 import {val} from '$shared/DataVerse2/atom'
 import WindowDims from '$shared/utils/react/WindowDims'
-import {uiActions} from '$tl/ui/store/rootReducer'
 
 const boxDims = {
   width: 50,
@@ -29,7 +28,7 @@ export default class TheTrigger extends UIComponent<IProps, IState> {
       .visibilityState
     // debugger
     this.ui.reduxStore.dispatch(
-      uiActions.ahistoric.setUIVisibilityState(
+      this.ui.actions.ahistoric.setUIVisibilityState(
         existingState === 'everythingIsVisible'
           ? 'onlyTriggerIsVisible'
           : 'everythingIsVisible',

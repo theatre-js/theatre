@@ -11,17 +11,23 @@ export default class InternalObject {
     readonly internalTimeline: InternalTimeline,
     readonly path: string,
     initialNativeObject: $FixMe,
-    initialNativeobjectConfig: NativeObjectTypeConfig,
+    initialNativeobjectConfig: NativeObjectTypeConfig | undefined,
   ) {
-    this.nativeObjectType = getTypeOfNativeObject(
+    const type = getTypeOfNativeObject(
       this.internalTimeline.project,
       initialNativeObject,
       initialNativeobjectConfig,
     )
+    if (!type) {
+      // @todo better error
+      console.error(`Could not determine type of object:`, initialNativeObject)
+      throw new Error(`Could not determine type of object`)
+    }
+    this.nativeObjectType = type
   }
 
   ensureNativeObjectIsAcceptable(
     nativeObject: $FixMe,
-    config: NativeObjectTypeConfig,
+    config?: NativeObjectTypeConfig,
   ) {}
 }

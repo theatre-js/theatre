@@ -12,7 +12,7 @@ export default class InternalTimeline {
   getInternalObject(
     path: string,
     nativeObject: $FixMe,
-    config: NativeObjectTypeConfig,
+    config?: NativeObjectTypeConfig,
   ) {
     let internalObject = this._internalObjects.getState()[path]
     if (!internalObject) {

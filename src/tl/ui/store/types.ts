@@ -1,5 +1,6 @@
 import * as t from '$shared/ioTypes'
 import {$StateWithHistory} from '$shared/utils/redux/withHistory/withHistory'
+import {listAndById} from '$shared/types'
 
 /**
  * Ahistoric state is persisted, but its changes
@@ -36,26 +37,43 @@ export const $UIEphemeralState = t.type({
 
 export type UIEphemeralState = t.StaticTypeOf<typeof $UIEphemeralState>
 
+const $ObjectState = t.type(
+  {
+    activePropsList: t.array(t.string),
+  },
+  'ObjectStateInUI',
+)
+
+const $TimelineState = t.type({
+  selectedTimelineInstance: t.union([t.null, t.string]),
+  objects: t.record(t.string, $ObjectState),
+})
+
+const $ProjectState = t.type(
+  {
+    selectedTimeline: t.union([t.null, t.string]),
+    timelines: t.record(t.string, $TimelineState),
+  },
+  'UIProjectState',
+)
+
 /**
  * Historic state is both persisted and is undoable
  */
-export const $UIHistoricState = $StateWithHistory(
-  t.type({
-    foo: t.string,
-    allInOnePanel: t.type({
-      height: t.number,
-      selectedProject: t.union([t.null, t.string]),
-      selectedTimelineByProject: t.record(t.string, t.string),
-      selectedTimelineInstanceByProjectAndTimeline: t.record(t.string, t.string),
-      leftWidthFraction: t.number,
-    }),
+export const $UIHistoricState = t.type({
+  foo: t.string,
+  allInOnePanel: t.type({
+    height: t.number,
+    selectedProject: t.union([t.null, t.string]),
+    projects: t.record(t.string, $ProjectState),
+    leftWidthFraction: t.number,
   }),
-)
+})
 
 export type UIHistoricState = t.StaticTypeOf<typeof $UIHistoricState>
 
 export const $UIState = t.type({
-  historic: $UIHistoricState,
+  historic: $StateWithHistory($UIHistoricState),
   ahistoric: $UIAhistoricState,
   ephemeral: $UIEphemeralState,
 })

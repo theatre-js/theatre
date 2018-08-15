@@ -14,6 +14,8 @@ import {
 import Project from '$tl/Project/Project'
 import InternalTimeline from '$tl/timelines/InternalTimeline'
 import TimelineInstance from '$tl/timelines/TimelineInstance'
+import Right from './Right/Right'
+import createPointerContext from '$shared/utils/react/createPointerContext'
 
 const classes = resolveCss(css)
 
@@ -23,7 +25,13 @@ interface IState {
   windowWidth: number
 }
 
-export type AllInOnePanelStuff = {
+const {Provider, Consumer: AllInOnePanelStuff} = createPointerContext<
+  IAllInOnePanelStuff
+>()
+
+export {AllInOnePanelStuff}
+
+export type IAllInOnePanelStuff = {
   project: undefined | Project
   internalTimeline: undefined | InternalTimeline
   timelineInstance: undefined | TimelineInstance
@@ -63,6 +71,7 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
           const internalTimeline = project
             ? getSelectedInternalTimeline(this.ui, project)
             : undefined
+
           const timelineInstance = internalTimeline
             ? getSelectedTimelineInstance(
                 this.ui,
@@ -73,7 +82,7 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
 
           const width = val(stateP.windowWidth)
 
-          const allInOnePanelStuff: AllInOnePanelStuff = {
+          const allInOnePanelStuff: IAllInOnePanelStuff = {
             project,
             internalTimeline,
             timelineInstance,
@@ -84,31 +93,33 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
           }
 
           return (
-            <div
-              {...classes('container')}
-              style={{height: fullHeightIncludingBottom + 'px'}}
-            >
+            <Provider value={allInOnePanelStuff}>
               <div
-                {...classes('middle')}
-                style={{height: allInOnePanelStuff.height + 'px'}}
+                {...classes('container')}
+                style={{height: fullHeightIncludingBottom + 'px'}}
               >
                 <div
-                  {...classes('left')}
-                  style={{width: allInOnePanelStuff.leftWidth + 'px'}}
+                  {...classes('middle')}
+                  style={{height: allInOnePanelStuff.height + 'px'}}
                 >
-                  <Left allInOnePanelStuff={allInOnePanelStuff} />
+                  <div
+                    {...classes('left')}
+                    style={{width: allInOnePanelStuff.leftWidth + 'px'}}
+                  >
+                    <Left />
+                  </div>
+                  <div
+                    {...classes('right')}
+                    style={{width: allInOnePanelStuff.rightWidth + 'px'}}
+                  >
+                    <Right />
+                  </div>
                 </div>
-                <div
-                  {...classes('right')}
-                  style={{width: allInOnePanelStuff.rightWidth + 'px'}}
-                >
-                  {/* <div {...classes('rightContent')} /> */}
+                <div {...classes('bottom')}>
+                  <Bottom />
                 </div>
               </div>
-              <div {...classes('bottom')}>
-                <Bottom allInOnePanelStuff={allInOnePanelStuff} />
-              </div>
-            </div>
+            </Provider>
           )
         }}
       </PropsAsPointer>

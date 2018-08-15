@@ -6,15 +6,12 @@ import ProjectSelect from './ProjectSelect'
 import Item from './Item'
 import TimelineSelect from './TimelineSelect'
 import TimelineInstanceSelect from './TimelineInstanceSelect'
-import {AllInOnePanelStuff} from '../AllInOnePanel'
 
 export const bottomHeight = parseFloat(css.bottomHeight.replace(/[a-z]+$/, ''))
 
 const classes = resolveCss(css)
 
-interface IProps {
-  allInOnePanelStuff: AllInOnePanelStuff
-}
+interface IProps {}
 
 interface IState {}
 
@@ -28,11 +25,9 @@ export default class Bottom extends UIComponent<IProps, IState> {
     return (
       <div {...classes('container')}>
         <div className={css.leftContainer}>
-          <ProjectSelect allInOnePanelStuff={this.props.allInOnePanelStuff} />
-          <TimelineSelect allInOnePanelStuff={this.props.allInOnePanelStuff} />
-          <TimelineInstanceSelect
-            allInOnePanelStuff={this.props.allInOnePanelStuff}
-          />
+          <ProjectSelect />
+          <TimelineSelect />
+          <TimelineInstanceSelect />
         </div>
         <div className={css.rightContainer}>
           <Item>TheaterJS</Item>

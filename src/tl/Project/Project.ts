@@ -4,6 +4,13 @@ import InternalTimeline from '$tl/timelines/InternalTimeline'
 import {validateAndSanitiseSlashedPathOrThrow} from '$tl/handy/slashedPaths'
 import NativeObjectAdaptersManager from '$tl/nativeObjectAdapters/NativeObjectAdaptersManager'
 import {Atom} from '$shared/DataVerse2/atom'
+import {rootReducer, projectActions} from './store'
+import {ProjectState} from './store/types'
+import {Store} from 'redux'
+import {Pointer} from '$shared/DataVerse2/pointer'
+import Ticker from '$shared/DataVerse/Ticker'
+import configureStore from '$shared/utils/redux/configureStore'
+import atomFromReduxStore from '$shared/utils/redux/atomFromReduxStore';
 
 export default class Project {
   static version = process.env.tl.version
@@ -15,7 +22,14 @@ export default class Project {
     [path: string]: InternalTimeline
   }> = new Atom({})
 
+  atom: Atom<ProjectState>
+  reduxStore: Store<ProjectState>
+  _enabled = false
+  atomP: Pointer<ProjectState>
+  ticker: Ticker
+
   adapters: NativeObjectAdaptersManager
+  _actions = projectActions
 
   /**
    * @todo should we have a human-readable name for each project too?
@@ -23,6 +37,10 @@ export default class Project {
   constructor(readonly id: string) {
     projectsSingleton.add(id, this)
     this.adapters = new NativeObjectAdaptersManager(this)
+    this.reduxStore = configureStore({rootReducer})
+    this.atom = atomFromReduxStore(this.reduxStore)
+    this.atomP = this.atom.pointer
+    this.ticker = new Ticker()
   }
 
   getTimeline(_path: string, instanceId: string = 'default'): TimelineInstance {
@@ -34,7 +52,11 @@ export default class Project {
     let instance = this._timelineInstances.getIn([path, instanceId])
     if (!instance) {
       instance = new TimelineInstance(this, path, instanceId)
-      this._timelineInstances.reduceState([path, instanceId], () => instance)
+
+      this._timelineInstances.reduceState([path], (existingInstances = {}) => ({
+        ...existingInstances,
+        [instanceId]: instance,
+      }))
     }
 
     return instance

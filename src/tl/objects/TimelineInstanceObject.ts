@@ -8,7 +8,7 @@ export default class TimelineInstanceObject {
     readonly _timelineInstance: TimelineInstance,
     readonly path: string,
     readonly nativeObject: $FixMe,
-    readonly config: NativeObjectTypeConfig,
+    readonly config: NativeObjectTypeConfig | undefined,
   ) {
     this._internalObject = this._timelineInstance._internalTimeline.getInternalObject(
       path,
