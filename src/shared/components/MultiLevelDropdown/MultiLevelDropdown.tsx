@@ -18,6 +18,7 @@ interface IState {}
 export type TItems = {
   [id: string]: {
     isLeaf: boolean
+    isSelectable: boolean
     path: string[]
     internalPath: string[]
     __subItems__: TItems

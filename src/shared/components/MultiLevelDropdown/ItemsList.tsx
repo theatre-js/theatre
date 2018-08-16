@@ -21,7 +21,7 @@ class ItemsList extends React.PureComponent<IProps, IState> {
     return (
       <div {...classes('container')}>
         {Object.entries(items).map(
-          ([id, {isLeaf, path, __subItems__}]) =>
+          ([id, {isLeaf, isSelectable, path, __subItems__}]) =>
             isLeaf ? (
               <LeafItem
                 key={path.join('/')}
@@ -33,6 +33,8 @@ class ItemsList extends React.PureComponent<IProps, IState> {
               <InternalItem
                 key={path.join('/')}
                 title={id}
+                path={path}
+                isSelectable={isSelectable}
                 subItems={__subItems__}
                 activePath={activePath}
                 isActive={isInActivePath(activePath, path)}

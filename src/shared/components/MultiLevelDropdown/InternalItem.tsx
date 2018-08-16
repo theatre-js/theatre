@@ -1,5 +1,8 @@
 import React from 'react'
-import {TItems} from '$shared/components/MultiLevelDropdown/MultiLevelDropdown'
+import {
+  TItems,
+  MenuAPIContext,
+} from '$shared/components/MultiLevelDropdown/MultiLevelDropdown'
 import css from './InternalItem.css'
 import {resolveCss} from '$shared/utils'
 import ItemsList from '$shared/components/MultiLevelDropdown/ItemsList'
@@ -13,6 +16,8 @@ const classes = resolveCss(css)
 
 interface IProps {
   title: string
+  path: string[]
+  isSelectable: boolean
   subItems: TItems
   activePath: string[]
   isActive: boolean
@@ -61,16 +66,24 @@ class InternalItem extends React.PureComponent<IProps, IState> {
   }
 
   _renderItem() {
-    const {title, isActive} = this.props
+    const {title, path, isSelectable, isActive} = this.props
     return (
-      <div
-        {...classes('item', isActive && 'active')}
-        onMouseMove={this.handleItemMouseEnter}
-        onMouseLeave={this.handleItemMouseLeave}
-      >
-        <span {...classes('title')}>{title}</span>
-        <span {...classes('arrow')}>&rsaquo;</span>
-      </div>
+      <MenuAPIContext.Consumer>
+        {api => {
+          const onSelect = () => (isSelectable ? api.onSelect(path) : null)
+          return (
+            <div
+              {...classes('item', isActive && 'active')}
+              onMouseMove={this.handleItemMouseEnter}
+              onMouseLeave={this.handleItemMouseLeave}
+              onClickCapture={onSelect}
+            >
+              <span {...classes('title')}>{title}</span>
+              <span {...classes('arrow')}>&rsaquo;</span>
+            </div>
+          )
+        }}
+      </MenuAPIContext.Consumer>
     )
   }
 

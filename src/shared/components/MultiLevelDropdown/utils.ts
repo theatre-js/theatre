@@ -21,11 +21,16 @@ export const convertInternalTimelinesToItems = memoizeOne(
           ]).slice(0, -1)
           if (get(internalPath, items) == null) {
             const item = {
+              isSelectable: i === l,
               isLeaf: i === l,
               path: currentPath,
               __subItems__: {},
             }
             items = set(internalPath, item, items)
+          } else {
+            if (i === l) {
+              items = set(internalPath.concat('isSelectable'), true, items)
+            }
           }
         }
         return items
