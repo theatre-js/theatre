@@ -13,3 +13,11 @@
   left: boxLegendWidth;
   height: 100%;
 }
+
+.stamps {
+  position: absolute;
+  top: 5px;
+  left: boxLegendWidth;
+  height: 20px;
+  overflow: hidden;
+}

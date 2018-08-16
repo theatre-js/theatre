@@ -86,7 +86,7 @@ export const historicWorkspaceInitialState: IWorkspaceHistoricState = {
       },
       rightPanel: {
         id: 'rightPanel',
-        type: 'AllInOnePanel',
+        type: 'RightPanel',
 
         boundaries: {
           left: {

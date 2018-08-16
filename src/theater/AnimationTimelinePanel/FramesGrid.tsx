@@ -21,14 +21,7 @@ class FramesGrid extends React.PureComponent<IProps, IState> {
   canvas: HTMLCanvasElement | null
   frameDuration: number = Number((1000 / FPS).toFixed(5))
   fpsNumberFactors: number[] = getFactors(FPS)
-
-  componentDidMount() {
-    this._drawGrid()
-  }
-
-  componentDidUpdate() {
-    this._drawGrid()
-  }
+  stampsEl: React.RefObject<HTMLDivElement> = React.createRef()
 
   render() {
     return (
@@ -45,11 +38,24 @@ class FramesGrid extends React.PureComponent<IProps, IState> {
                 height={100}
                 style={{width: canvasWidth}}
               />
+              <div
+                ref={this.stampsEl}
+                style={{width: canvasWidth}}
+                {...classes('stamps')}
+              />
             </div>
           )
         }}
       </PropsAsPointer>
     )
+  }
+
+  componentDidMount() {
+    this._drawGrid()
+  }
+
+  componentDidUpdate() {
+    this._drawGrid()
   }
 
   _drawGrid() {
@@ -73,38 +79,89 @@ class FramesGrid extends React.PureComponent<IProps, IState> {
     const cellDuration = framesPerCell * this.frameDuration
     // TODO: Explain what you did here!
     const normalizationFactor = 1000 * (framesPerCell / FPS)
-    // Time of the first line that'll be drawn
+    // Time and frame of the first line that'll be drawn
     const startTime =
       Math.ceil(Math.floor(focus[0] / normalizationFactor)) *
       normalizationFactor
+    const startFrame = Math.floor((startTime / this.frameDuration) % FPS)
     // Number of lines that we'll draw
     const numberOfLines = Math.floor((focus[1] - startTime) / cellDuration) + 1
 
-    this._renderLines(numberOfLines, startTime, cellDuration)
+
+    this._renderLines(
+      numberOfLines,
+      startTime,
+      cellDuration,
+      framesPerCell,
+      startFrame,
+    )
   }
 
-  _renderLines(numberOfLines: number, startTime: number, cellDuration: number) {
+  _renderLines(
+    numberOfLines: number,
+    startTime: number,
+    cellDuration: number,
+    framesPerCell: number,
+    startFrame: number,
+  ) {
     const {canvasWidth, focus} = this.props
     const timeToX = canvasWidth / (focus[1] - focus[0])
     const offsetLeft = timeToX * (startTime - focus[0])
     const widthStep = timeToX * cellDuration
 
+    let innerHTML = ''
     const ctx = this.canvas!.getContext('2d') as CanvasRenderingContext2D
     ctx.clearRect(0, 0, canvasWidth, 100)
-    ctx.globalAlpha = 0.1
-    for (let i = 0; i < numberOfLines; i++) {
-      const lineTime = startTime + i * cellDuration
-      ctx.strokeStyle =
-        Math.ceil(lineTime) % 1000 === 0 || Math.floor(lineTime) % 1000 === 0
-          ? 'rgb(225, 225, 225)'
-          : 'rgb(100, 100, 100)'
+    for (let i = 0, frame = startFrame; i < numberOfLines; i++) {
+      const x = offsetLeft + i * widthStep
+      const isFullSecond = frame === 0
+
+      ctx.strokeStyle = isFullSecond
+        ? 'rgba(225, 225, 225, 0.1)'
+        : 'rgba(100, 100, 100, 0.1)'
       ctx.beginPath()
-      ctx.moveTo(offsetLeft + i * widthStep, 0)
-      ctx.lineTo(offsetLeft + i * widthStep, 100)
+      ctx.moveTo(x, 0)
+      ctx.lineTo(x, 100)
       ctx.stroke()
       ctx.closePath()
+
+      if (isFullSecond) {
+        const lineTime = startTime + i * cellDuration
+        const fullSecondTime =
+          Math.ceil(lineTime) % 1000 === 0
+            ? Math.ceil(lineTime / 1000)
+            : Math.floor(lineTime / 1000)
+        innerHTML += getFullSecondStamp(fullSecondTime, x)
+      } else {
+        innerHTML += getFrameStamp(frame, x)
+      }
+
+      frame = (frame + framesPerCell) % FPS
     }
+    this.stampsEl.current!.innerHTML = innerHTML
   }
+}
+
+function getFullSecondStamp(time: number, x: number) {
+  return `<span style="
+    position: absolute;
+    left: ${x}px;
+    color: #888;
+    font-size: 10px;
+    transform: translateX(-50%)">
+      ${time}s
+    </span>`
+}
+
+function getFrameStamp(frame: number, x: number) {
+  return `<span style="
+    position: absolute;
+    left: ${x}px;
+    color: #555;
+    font-size: 10px;
+    transform: translateX(-50%)">
+      ${frame}f
+    </span>`
 }
 
 function getFactors(num: number): number[] {
