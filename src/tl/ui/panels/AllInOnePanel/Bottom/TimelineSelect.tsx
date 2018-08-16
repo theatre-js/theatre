@@ -1,12 +1,13 @@
 import UIComponent from '$tl/ui/handy/UIComponent'
 import React from 'react'
 import Item from './Item'
-import FlyoutMenu from '$shared/components/FlyoutMenu/FlyoutMenu'
-import FlyoutMenuItem from '$shared/components/FlyoutMenu/FlyoutMenuItem'
 import {val} from '$shared/DataVerse2/atom'
 import {AllInOnePanelStuff} from '../AllInOnePanel'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import InternalTimeline from '$tl/timelines/InternalTimeline'
+import MultiLevelDropdown from '$shared/components/MultiLevelDropdown/MultiLevelDropdown'
+import {convertInternalTimelinesToItems} from '$shared/components/MultiLevelDropdown/utils'
+import FlyoutSearchableList from '$shared/components/FlyoutSearchableList'
 
 interface IProps {
   allInOnePanelStuff: AllInOnePanelStuff
@@ -34,26 +35,37 @@ export default class TimelineSelect extends UIComponent<IProps, IState> {
     return (
       <>
         {this.state.menuOpen && (
-          <FlyoutMenu onClose={this.closeMenu}>
-            <PropsAsPointer>
-              {() => {
-                const internalTimelines = val(
-                  project._internalTimelines.pointer,
-                )
-                return Object.keys(internalTimelines).map((timelinePath, i) => {
-                  return (
-                    <FlyoutMenuItem
-                      title={timelinePath}
-                      key={`project#${i}`}
-                      onClick={() =>
-                        this.selectInternalTimeline(project.id, timelinePath)
-                      }
-                    />
-                  )
-                })
-              }}
-            </PropsAsPointer>
-          </FlyoutMenu>
+          <PropsAsPointer>
+            {() => {
+              const internalTimelines = val(project._internalTimelines.pointer)
+              const activePath = !!internalTimeline
+                ? internalTimeline._path.split(' / ')
+                : []
+              const multiLevelItems = convertInternalTimelinesToItems(
+                internalTimelines,
+              )
+              const onSelect = (path: string) =>
+                this.selectInternalTimeline(project.id, path)
+
+              return (
+                <FlyoutSearchableList
+                  options={Object.keys(internalTimelines)}
+                  onSelect={onSelect}
+                  close={this.closeMenu}
+                >
+                  {query =>
+                    query.length === 0 ? (
+                      <MultiLevelDropdown
+                        items={multiLevelItems}
+                        activePath={activePath}
+                        onSelect={path => onSelect(path.join(' / '))}
+                      />
+                    ) : null
+                  }
+                </FlyoutSearchableList>
+              )
+            }}
+          </PropsAsPointer>
         )}
         <Item onClick={this.onClick}>
           {!internalTimeline ? 'No timelines yet' : internalTimeline._path}
@@ -80,5 +92,6 @@ export default class TimelineSelect extends UIComponent<IProps, IState> {
         internalTimelinePath,
       }),
     )
+    this.closeMenu()
   }
 }

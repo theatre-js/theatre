@@ -1,13 +1,10 @@
 import UIComponent from '$tl/ui/handy/UIComponent'
 import React from 'react'
-import {
-  getTimelineInstances,
-} from '../selectors'
+import {getTimelineInstances} from '../selectors'
 import Item from './Item'
-import FlyoutMenu from '$shared/components/FlyoutMenu/FlyoutMenu'
-import FlyoutMenuItem from '$shared/components/FlyoutMenu/FlyoutMenuItem'
 import {AllInOnePanelStuff} from '../AllInOnePanel'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
+import FlyoutSearchableList from '$shared/components/FlyoutSearchableList'
 
 interface IProps {
   allInOnePanelStuff: AllInOnePanelStuff
@@ -38,33 +35,25 @@ export default class TimelineInstanceSelect extends UIComponent<
     return (
       <>
         {this.state.menuOpen && (
-          <FlyoutMenu onClose={this.closeMenu}>
-            <PropsAsPointer>
-              {() => {
-                {
-                  const timelineInstances = getTimelineInstances(
-                    project,
-                    internalTimeline,
-                  )
-                  return Object.keys(timelineInstances).map((instanceId, i) => {
-                    return (
-                      <FlyoutMenuItem
-                        title={instanceId}
-                        key={`instance#${i}`}
-                        onClick={() =>
-                          this.setInstance(
-                            project.id,
-                            internalTimeline._path,
-                            instanceId,
-                          )
-                        }
-                      />
-                    )
-                  })
-                }
-              }}
-            </PropsAsPointer>
-          </FlyoutMenu>
+          <PropsAsPointer>
+            {() => {
+              const timelineInstances = getTimelineInstances(
+                project,
+                internalTimeline,
+              )
+
+              const onSelect = (instanceId: string) =>
+                this.setInstance(project.id, internalTimeline._path, instanceId)
+
+              return (
+                <FlyoutSearchableList
+                  options={Object.keys(timelineInstances)}
+                  onSelect={onSelect}
+                  close={this.closeMenu}
+                />
+              )
+            }}
+          </PropsAsPointer>
         )}
         <Item onClick={this.onClick}>
           {timelineInstance ? timelineInstance._instanceId : 'No instances'}
@@ -90,8 +79,9 @@ export default class TimelineInstanceSelect extends UIComponent<
       this.ui.actions.historic.setActiveTimelineInstanceId({
         projectId,
         internalTimelinePath,
-        instanceId
+        instanceId,
       }),
     )
+    this.closeMenu()
   }
 }

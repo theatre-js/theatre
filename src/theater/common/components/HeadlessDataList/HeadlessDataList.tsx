@@ -10,16 +10,18 @@ interface IProps {
   onSelectOption: (option: string) => any
   onSelectNothing: () => any
   children: (
-    onQuery: Function,
+    onQuery: (q: string) => void,
     filteredOptions: OptionsList,
     focusedIndex: number,
-    setFocusedIndexTo: Function,
+    setFocusedIndexTo: (index: number) => void,
+    query: string,
   ) => any
 }
 
 interface IState {
   filteredOptions: OptionsList
   focusedIndex: number
+  query: string
 }
 
 class HeadlessDataList extends React.PureComponent<IProps, IState> {
@@ -29,6 +31,7 @@ class HeadlessDataList extends React.PureComponent<IProps, IState> {
     this.state = {
       filteredOptions: props.options,
       focusedIndex: 0,
+      query: '',
     }
   }
 
@@ -74,6 +77,7 @@ class HeadlessDataList extends React.PureComponent<IProps, IState> {
       return {
         filteredOptions: q.length === 0 ? options : filter(options, q),
         focusedIndex: 0,
+        query: q,
       }
     })
   }
@@ -83,12 +87,13 @@ class HeadlessDataList extends React.PureComponent<IProps, IState> {
   }
 
   render() {
-    const {filteredOptions, focusedIndex} = this.state
+    const {filteredOptions, focusedIndex, query} = this.state
     return this.props.children(
       this.onQuery,
       filteredOptions,
       focusedIndex,
       this.setFocusedIndexTo,
+      query,
     )
   }
 }

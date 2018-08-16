@@ -1,0 +1,56 @@
+@value focusedItemColor, focusedItemBg from '$shared/components/DataListView/DataListView.css';
+@value arrowWidth from './LeafItem.css';
+
+.container {
+  position: relative;
+  & > .subMenu {
+    visibility: hidden;
+  }
+
+  &:hover {
+    & > .subMenu {
+      visibility: visible;
+    }
+
+    & > .item {
+      background: focusedItemBg;
+      color: focusedItemColor;
+    }
+  }
+}
+
+.item {
+  composes: item from './LeafItem.css';
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.active {
+  composes: active from './LeafItem.css';
+}
+
+.title {
+  composes: title from './LeafItem.css';
+  pointer-events: none;
+}
+
+.arrow {
+  position: relative;
+  left: arrowWidth;
+  text-align: right;
+  transform: scale(1.3) translateY(-1px);
+}
+
+.subMenu {
+  position: absolute;
+  left: 100%;
+  transform: translateY(-100%);
+}
+
+.extender {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: var(--height);
+}

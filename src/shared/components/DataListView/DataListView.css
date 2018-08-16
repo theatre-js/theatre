@@ -1,0 +1,21 @@
+@value menuBg: #10181b;
+@value listPadding: 10px;
+@value itemColor: #aaa;
+@value focusedItemColor: #fff;
+@value focusedItemBg: rgba(50, 200, 235, 0.6);
+
+.container {
+  background: menuBg;
+}
+
+.item {
+  padding: listPadding;
+  box-sizing: border-box;
+  color: itemColor;
+  cursor: default;
+}
+
+.focused {
+  color: focusedItemColor;
+  background: focusedItemBg;
+}

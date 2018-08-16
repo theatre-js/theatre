@@ -1,0 +1,11 @@
+.positioner {
+  width: auto;
+  height: 0;
+  position: relative;
+}
+
+.container {
+  width: 100%;
+  position: absolute;
+  transform: translateY(-100%);
+}

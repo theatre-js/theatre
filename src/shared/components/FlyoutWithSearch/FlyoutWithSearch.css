@@ -1,0 +1,29 @@
+@value menuBg, listPadding, focusedItemBg from '$shared/components/DataListView/DataListView.css';
+
+.positioner {
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+.container {
+  position: absolute;
+  width: auto;
+  bottom: 0;
+  background: menuBg;
+}
+
+.inputWrapper {
+  padding: listPadding;
+}
+
+.input {
+  border: none;
+  outline: none;
+  background: none;
+  height: 25px;
+  font-size: 14px;
+  color: #eee;
+
+  border-bottom: 1px solid focusedItemBg;
+}

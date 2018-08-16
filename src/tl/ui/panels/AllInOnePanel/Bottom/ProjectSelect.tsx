@@ -2,12 +2,11 @@ import UIComponent from '$tl/ui/handy/UIComponent'
 import React from 'react'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import Item from './Item'
-import FlyoutMenu from '$shared/components/FlyoutMenu/FlyoutMenu'
-import FlyoutMenuItem from '$shared/components/FlyoutMenu/FlyoutMenuItem'
 import {val} from '$shared/DataVerse2/atom'
 import {AllInOnePanelStuff} from '../AllInOnePanel'
 import Project from '$tl/Project/Project'
 import projectsSingleton from '$tl/Project/projectsSingleton'
+import FlyoutSearchableList from '$shared/components/FlyoutSearchableList'
 
 interface IProps {
   allInOnePanelStuff: AllInOnePanelStuff
@@ -32,17 +31,11 @@ export default class ProjectSelect extends UIComponent<IProps, IState> {
     return (
       <>
         {val(stateP.menuOpen) && (
-          <FlyoutMenu onClose={this.closeMenu}>
-            {Object.keys(projects).map((projectId, i) => {
-              return (
-                <FlyoutMenuItem
-                  title={projectId}
-                  key={`project#${i}`}
-                  onClick={() => this.selectProject(projectId)}
-                />
-              )
-            })}
-          </FlyoutMenu>
+          <FlyoutSearchableList
+            options={Object.keys(projects)}
+            onSelect={this.selectProject}
+            close={this.closeMenu}
+          />
         )}
         <Item onClick={areThereProjects ? this.onClick : undefined}>
           {!areThereProjects
@@ -65,5 +58,6 @@ export default class ProjectSelect extends UIComponent<IProps, IState> {
     this.ui.reduxStore.dispatch(
       this.ui.actions.historic.selectProject(projectId),
     )
+    this.closeMenu()
   }
 }

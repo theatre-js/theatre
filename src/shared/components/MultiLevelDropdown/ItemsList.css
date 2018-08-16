@@ -1,0 +1,8 @@
+@value menuBg from "$shared/components/DataListView/DataListView.css";
+
+.container {
+  position: relative;
+  width: auto;
+  height: auto;
+  background: menuBg;
+}

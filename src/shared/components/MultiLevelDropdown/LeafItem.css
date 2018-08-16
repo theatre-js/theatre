@@ -1,0 +1,27 @@
+@value itemColor, focusedItemColor, focusedItemBg from '$shared/components/DataListView/DataListView.css';
+@value arrowWidth: 30px;
+@value itemHoverColor: white;
+
+.item {
+  position: relative;
+  white-space: nowrap;
+  padding: 10px calc(arrowWidth + 5px) 10px 5px;
+  user-select: none;
+  box-sizing: border-box;
+  color: itemColor;
+
+  &:hover {
+    background: focusedItemBg;
+    color: focusedItemColor;
+  }
+}
+
+.active {
+  color: focusedItemColor;
+  font-weight: bold;
+}
+
+.title {
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
