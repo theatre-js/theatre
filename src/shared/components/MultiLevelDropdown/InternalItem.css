@@ -24,11 +24,17 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  cursor: auto;
+
+  &.selectable {
+    cursor: pointer;
+  }
 }
 
 .active {
   composes: active from './LeafItem.css';
 }
+
 
 .title {
   composes: title from './LeafItem.css';

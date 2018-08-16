@@ -73,7 +73,7 @@ class InternalItem extends React.PureComponent<IProps, IState> {
           const onSelect = () => (isSelectable ? api.onSelect(path) : null)
           return (
             <div
-              {...classes('item', isActive && 'active')}
+              {...classes('item', isActive && 'active', isSelectable && 'selectable')}
               onMouseMove={this.handleItemMouseEnter}
               onMouseLeave={this.handleItemMouseLeave}
               onClickCapture={onSelect}

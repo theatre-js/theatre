@@ -9,6 +9,7 @@
   user-select: none;
   box-sizing: border-box;
   color: itemColor;
+  cursor: pointer;
 
   &:hover {
     background: focusedItemBg;

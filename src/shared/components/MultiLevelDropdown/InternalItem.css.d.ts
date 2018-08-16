@@ -4,6 +4,7 @@ export const arrowWidth: string;
 export const container: string;
 export const subMenu: string;
 export const item: string;
+export const selectable: string;
 export const active: string;
 export const title: string;
 export const arrow: string;
