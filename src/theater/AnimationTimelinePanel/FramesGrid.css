@@ -20,4 +20,6 @@
   left: boxLegendWidth;
   height: 20px;
   overflow: hidden;
+  pointer-events: none;
+  will-change: transform;
 }
