@@ -84,11 +84,7 @@ class TimelinePanelContent extends React.PureComponent<IProps, IState> {
 
     return (
       <>
-        <FramesGrid
-          canvasWidth={boxWidth}
-          containerWidth={panelWidth}
-          focus={focus}
-        />
+        <FramesGrid canvasWidth={boxWidth} focus={focus} />
         <DraggableArea
           onDragStart={this.syncSeekerWithMousePosition}
           onDrag={this.seekTime}

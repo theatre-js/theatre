@@ -2,7 +2,7 @@
 
 .container {
   position: absolute;
-  left: 0;
+  left: boxLegendWidth;
   top: 0;
   height: 100%;
   background: #1b2226;
@@ -10,16 +10,33 @@
 
 .canvas {
   position: relative;
-  left: boxLegendWidth;
+  left: 0;
   height: 100%;
 }
 
 .stamps {
   position: absolute;
-  top: 5px;
-  left: boxLegendWidth;
-  height: 20px;
+  top: 0;
+  height: 100%;
+  left: 0;
   overflow: hidden;
   pointer-events: none;
   will-change: transform;
+}
+
+.fullSecondStamp {
+  position: absolute;
+  padding-top: 5px;
+  color: #888;
+  font-size: 10px;
+  transform: translateX(-50%);
+}
+
+.frameStamp {
+  position: absolute;
+  padding-top: 5px;
+  color: #555;
+  font-size: 10px;
+  text-align: center;
+  transform: translateX(-50%);
 }
