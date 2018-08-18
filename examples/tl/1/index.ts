@@ -50,10 +50,7 @@ project.getTimeline('Scene / Panels / Tools')
 
 project.adapters.add(1, {
   accepts(nativeObject) {
-    return nativeObject instanceof HTMLElement &&
-      nativeObject.classList.contains('ball')
-      ? true
-      : false
+    return nativeObject instanceof HTMLElement
   },
 
   getType(nativeObject: HTMLElement): NativeObjectType {
