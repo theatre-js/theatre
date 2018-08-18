@@ -23,14 +23,14 @@ const FPS = 30
 
 class FramesGrid extends PureComponentWithTheater<IProps, IState> {
   canvas: HTMLCanvasElement | null
-  frameDuration: number = Number((1000 / FPS).toFixed(5))
-  fpsNumberFactors: number[] = getFactors(FPS)
   fullSecondStampsRef: React.RefObject<HTMLDivElement> = React.createRef()
   frameStampRef: React.RefObject<HTMLDivElement> = React.createRef()
   containerRef: React.RefObject<HTMLDivElement> = React.createRef()
   containerRect: {left: number; top: number; right: number; bottom: number}
-  mouseX: null | number = null
+  frameDuration: number = Number((1000 / FPS).toFixed(6).slice(0, -1)) /* slice: 6.66667 -> 6.66666*/
+  fpsNumberFactors: number[] = getFactors(FPS)
   framesPerCell: number
+  mouseX: null | number = null
 
   render() {
     return (
@@ -103,6 +103,7 @@ class FramesGrid extends PureComponentWithTheater<IProps, IState> {
     const startTime =
       Math.ceil(Math.floor(focus[0] / normalizationFactor)) *
       normalizationFactor
+
     const startFrame = Math.floor((startTime / this.frameDuration) % FPS)
     // Number of lines that we'll draw
     const numberOfLines = Math.floor((focus[1] - startTime) / cellDuration) + 1
@@ -124,6 +125,7 @@ class FramesGrid extends PureComponentWithTheater<IProps, IState> {
     let innerHTML = ''
     const ctx = this.canvas!.getContext('2d') as CanvasRenderingContext2D
     ctx.clearRect(0, 0, canvasWidth, 100)
+
     for (let i = 0, frame = startFrame; i < numberOfLines; i++) {
       const x = offsetLeft + i * widthStep
       const isFullSecond = frame === 0
@@ -211,11 +213,10 @@ class FramesGrid extends PureComponentWithTheater<IProps, IState> {
 
 function getFullSecondStamp(time: number, x: number) {
   return `<span
-   data-felan
-   style="left: ${x}px;"
-   class="${css.fullSecondStamp}">
+  style="left: ${x}px;"
+  class="${css.fullSecondStamp}">
       ${time}s
-    </span>`
+  </span>`
 }
 
 function getFactors(num: number): number[] {
