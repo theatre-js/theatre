@@ -34,7 +34,8 @@ export default class Node extends UIComponent<IProps, IState> {
 
   _render(propsP: Pointer<IProps>, stateP: Pointer<IState>) {
     const classes = resolveCss(css, this.props.css)
-    const node = val(propsP.nodeDescriptorsByPath[val(propsP.path)])
+    const path = val(propsP.path);
+    const node = val(propsP.nodeDescriptorsByPath[path])
     const depth = val(propsP.depth)
     const isExpanded = val(stateP.isExpanded)
     const hasChildren = node.children.length > 0
@@ -85,7 +86,7 @@ export default class Node extends UIComponent<IProps, IState> {
             {node.lastComponent}
           </div>
         </div>
-        {isObject && isExpanded && <Props />}
+        {isObject && isExpanded && <Props depth={depth} path={path} />}
         {hasChildren && <div {...classes('subNodes')}>{childrenNodes}</div>}
       </div>
     )

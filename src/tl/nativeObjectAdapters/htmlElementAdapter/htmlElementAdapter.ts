@@ -8,8 +8,10 @@ const htmlElementAdapter: NativeObjectAdapter = {
   getType(
     nativeObject: HTMLElement,
     config: NativeObjectTypeConfig,
-  ): NativeObjectType | null {
-    return {}
+  ): NativeObjectType {
+    return {
+      props: {}
+    }
   },
 }
 

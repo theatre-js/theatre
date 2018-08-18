@@ -22,6 +22,14 @@
   width: 200px;
 }
 
+.seekBar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 4px;
+  background: red;
+}
+
 .right {
   position: absolute;
   top: 0;

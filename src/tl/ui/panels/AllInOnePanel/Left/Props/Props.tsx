@@ -2,12 +2,24 @@ import resolveCss from '$shared/utils/resolveCss'
 import UIComponent from '$tl/ui/handy/UIComponent'
 import React from 'react'
 import * as css from './Props.css'
-import {Pointer} from '$shared/DataVerse2/pointer'
-import InternalObject from '$tl/objects/InternalObject'
+import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
+import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
+import {val} from '$shared/DataVerse2/atom'
+import InternalTimeline from '$tl/timelines/InternalTimeline'
+import Prop from '$tl/ui/panels/AllInOnePanel/Left/Props/Prop'
+
+const classes = resolveCss(css)
+
+const alphabeticalCompare = function(a: string, b: string) {
+  if (a < b) return -1
+  if (a > b) return 1
+  return 0
+}
 
 interface IProps {
   css?: Partial<typeof css>
-  internalObject: InternalObject
+  depth: number
+  path: string
 }
 
 interface IState {}
@@ -18,9 +30,42 @@ export default class Props extends UIComponent<IProps, IState> {
     this.state = {}
   }
 
-  _render(propsP: Pointer<IProps>, stateP: Pointer<IState>) {
-    const classes = resolveCss(css, this.props.css)
+  render() {
+    return (
+      <AllInOnePanelStuff>
+        {stuffP => (
+          <PropsAsPointer props={this.props} state={this.state}>
+            {p => {
+              const internalTimeline = val(
+                stuffP.internalTimeline,
+              ) as InternalTimeline
+              const path = val(p.props.path)
 
-    return <div {...classes('container')}>props</div>
+              const internalObject = val(
+                internalTimeline._internalObjects.pointer[path],
+              )
+
+              const nativeObjectType = internalObject.nativeObjectType
+              const props = nativeObjectType.props
+              const propKeys = Object.keys(props).sort(alphabeticalCompare)
+
+              return (
+                <div {...classes('container')}>
+                  {propKeys.map(propKey => {
+                    return (
+                      <Prop
+                        key={'prop:' + propKey}
+                        propKey={propKey}
+                        internalObject={internalObject}
+                      />
+                    )
+                  })}
+                </div>
+              )
+            }}
+          </PropsAsPointer>
+        )}
+      </AllInOnePanelStuff>
+    )
   }
 }

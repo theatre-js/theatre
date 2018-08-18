@@ -59,9 +59,12 @@ project.adapters.add(1, {
   getType(nativeObject: HTMLElement): NativeObjectType {
     return {
       props: {
-        position: {
-          type: 'position3d',
-        },
+        // position: {
+        //   type: 'position3d',
+        // },
+        opacity: {
+          type: 'number'
+        }
       },
     }
   },
@@ -78,6 +81,7 @@ ballInDom.style.cssText = `
 
 ballInDom.classList.add('ball')
 const ball = timeline.createObject('Act 1 / Stage / Ball', ballInDom)
+
 timeline.createObject(
   'Act 1 / Stage / Ball / The dangling thing',
   document.createElement('div'),

@@ -20,10 +20,45 @@ export type ProjectEphemeralState = t.StaticTypeOf<
   typeof $ProjectEphemeralState
 >
 
+const $PrimitiveValue = t.type(
+  {type: t.literal('PrimitiveValue'), stringRepresentation: t.string},
+  'PrimitiveValue',
+)
+
+const $StaticValueContainer = t.type({
+  type: t.literal('StaticValueContainer'),
+  value: $PrimitiveValue,
+})
+
+const $PropValueContainer = t.taggedUnion('type', [$StaticValueContainer])
+
+const $ObjectPropState = t.type(
+  {
+    valueContainer: $PropValueContainer,
+  },
+  'ObjectPropState',
+)
+
+const $InternalObjectState = t.type(
+  {
+    props: t.record(t.string, $ObjectPropState),
+  },
+  'InternalObjectState',
+)
+
+const $InternalTimelineState = t.type(
+  {
+    objects: t.record(t.string, $InternalObjectState),
+  },
+  'InternalTimelineState',
+)
+
 /**
  * Historic state is both persisted and is undoable
  */
-export const $ProjectHistoricState = t.type({})
+export const $ProjectHistoricState = t.type({
+  internalTimeines: t.record(t.string, $InternalTimelineState),
+})
 
 export type ProjectHistoricState = t.StaticTypeOf<typeof $ProjectHistoricState>
 

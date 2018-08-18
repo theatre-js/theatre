@@ -1,13 +1,38 @@
 import Project from '$tl/Project/Project'
 import InternalObject from '$tl/objects/InternalObject'
 import {NativeObjectTypeConfig} from '$tl/objects/objectTypes'
-import {Atom} from '$shared/DataVerse2/atom'
+import atom, {Atom} from '$shared/DataVerse2/atom'
+import {Pointer} from '$shared/DataVerse2/pointer'
+
+type RangeState = {
+  duration: number
+  rangeShownInPanel: {
+    from: number
+    to: number
+  }
+  temporarilyLimitedPlayRange: null | {from: number; to: number}
+}
 
 export default class InternalTimeline {
   readonly _internalObjects: Atom<{[path: string]: InternalObject}> = new Atom(
     {},
   )
-  constructor(readonly project: Project, readonly _path: string) {}
+
+  public get _pointerToState() {
+    return this.project.atomP.historic.internalTimeines[this._path]
+  }
+
+  protected _rangeState: Atom<RangeState> = atom({
+    duration: 2000,
+    rangeShownInPanel: {from: 0, to: 2000},
+    temporarilyLimitedPlayRange: null,
+  })
+
+  public pointerToRangeState: Pointer<RangeState>
+
+  constructor(readonly project: Project, readonly _path: string) {
+    this.pointerToRangeState = this._rangeState.pointer
+  }
 
   getInternalObject(
     path: string,
@@ -23,5 +48,17 @@ export default class InternalTimeline {
     }
 
     return internalObject
+  }
+
+  _setDuration(d: number) {
+    this._rangeState.reduceState(['duration'], () => d)
+  }
+
+  _setRangeShownInPanel(p: {from: number; to: number}) {
+    this._rangeState.reduceState(['rangeShownInPanel'], () => p)
+  }
+
+  _setTemporarilyLimitedPlayRange(p: null | {from: number; to: number}) {
+    this._rangeState.reduceState(['temporarilyLimitedPlayRange'], () => p)
   }
 }

@@ -3,10 +3,18 @@ import InternalTimeline from './InternalTimeline'
 import TimelineInstanceObject from '$tl/objects/TimelineInstanceObject'
 import {validateAndSanitiseSlashedPathOrThrow} from '$tl/handy/slashedPaths'
 import {NativeObjectTypeConfig} from '$tl/objects/objectTypes'
+import atom, {Atom} from '$shared/DataVerse2/atom'
+import {Pointer} from '$shared/DataVerse2/pointer'
+
+type State = {
+  time: number
+}
 
 export default class TimelineInstance {
   _internalTimeline: InternalTimeline
   _objects: {[path: string]: TimelineInstanceObject} = {}
+  protected _state: Atom<State> = atom({time: 0})
+  public statePointer: Pointer<State>
 
   constructor(
     protected readonly _project: Project,
@@ -14,6 +22,7 @@ export default class TimelineInstance {
     public readonly _instanceId: string,
   ) {
     this._internalTimeline = _project._getInternalTimeline(_path)
+    this.statePointer = this._state.pointer
   }
 
   createObject(
@@ -55,5 +64,12 @@ export default class TimelineInstance {
     )
 
     return this._objects[path]
+  }
+
+  gotoTime = (t: number) => {
+    this._state.reduceState(
+      ['time'],
+      () => (typeof t === 'number' && t >= 0 ? t : 0),
+    )
   }
 }

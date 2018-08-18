@@ -16,6 +16,7 @@ import InternalTimeline from '$tl/timelines/InternalTimeline'
 import TimelineInstance from '$tl/timelines/TimelineInstance'
 import Right from './Right/Right'
 import createPointerContext from '$shared/utils/react/createPointerContext'
+import SeekBar from './Right/SeekBar/SeekBar'
 
 const classes = resolveCss(css)
 
@@ -113,6 +114,12 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
                     style={{width: allInOnePanelStuff.rightWidth + 'px'}}
                   >
                     <Right />
+                  </div>
+                  <div
+                    {...classes('seekBar')}
+                    style={{width: allInOnePanelStuff.rightWidth + 'px'}}
+                  >
+                    <SeekBar />
                   </div>
                 </div>
                 <div {...classes('bottom')}>
