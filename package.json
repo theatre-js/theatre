@@ -61,7 +61,8 @@
       "ts-jest": {
         "tsConfigFile": "tsconfig.jest.json"
       }
-    }
+    },
+    "testURL": "http://localhost"
   },
   "repository": {
     "type": "git",
