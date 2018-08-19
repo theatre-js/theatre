@@ -6,7 +6,27 @@ import allInOneStoreBundle from '$shared/utils/redux/allInOneStoreBundle'
 const initialHistoricState: UIHistoricState = {
   foo: '1',
   allInOnePanel: {
-    projects: {},
+    projects: {
+      'Explorable Explanations': {
+        selectedTimeline: null,
+        timelines: {
+          'Bouncing Ball / The ball': {
+            objects: {
+              'Act 1 / Stage / Ball': {
+                activePropsList: [],
+                props: {
+                  opacity: {
+                    expanded: true,
+                    heightWhenExpanded: 150,
+                  },
+                },
+              },
+            },
+            selectedTimelineInstance: null,
+          },
+        },
+      },
+    },
     height: 300,
     selectedProject: 'Explorable Explanations',
     leftWidthFraction: 0.3,

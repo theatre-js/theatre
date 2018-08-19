@@ -27,10 +27,48 @@ const $PrimitiveValue = t.type(
 
 const $StaticValueContainer = t.type({
   type: t.literal('StaticValueContainer'),
-  value: $PrimitiveValue,
+  value: t.union([$PrimitiveValue]),
 })
 
-const $PropValueContainer = t.taggedUnion('type', [$StaticValueContainer])
+const $INumberBetween0And1 = t.number.refinement(
+  v => v >= 0 && v <= 1,
+  'NumberBetween0And1',
+)
+
+const $ITimelinePointInterpolationDescriptor = t.type(
+  {
+    __descriptorType: t.literal('TimelinePointInterpolationDescriptor'),
+    interpolationType: t.literal('CubicBezier'),
+    handles: t.tuple([
+      $INumberBetween0And1,
+      t.number,
+      $INumberBetween0And1,
+      t.number,
+    ]),
+    connected: t.boolean,
+  },
+  'TimelinePointInterpolationDescriptor',
+)
+
+const $ITimelineVarPoint = <V>(valueType: t.Type<V>) => t.type(
+  {
+    time: t.number,
+    value: valueType,
+    interpolationDescriptor: t.deferred(
+      () => $ITimelinePointInterpolationDescriptor,
+    ),
+  },
+  'TimelineVarPoint',
+)
+
+const $BezierCurvesOfScalarValues = t.type({
+  type: t.literal('BezierCurvesOfScalarValues'),
+  points: t.array($ITimelineVarPoint(t.number))
+})
+
+export type IBezierCurvesOfScalarValues = t.StaticTypeOf<typeof $BezierCurvesOfScalarValues>
+
+const $PropValueContainer = t.taggedUnion('type', [$StaticValueContainer, $BezierCurvesOfScalarValues])
 
 const $ObjectPropState = t.type(
   {

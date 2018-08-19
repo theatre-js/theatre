@@ -63,7 +63,7 @@ export default class ProjectSelect extends UIComponent<IProps, IState> {
 
   selectProject = (projectId: string) => {
     this.ui.reduxStore.dispatch(
-      this.ui.actions.historic.selectProject(projectId),
+      this.ui.actions.historic.selectProject({projectId}),
     )
     this.closeMenu()
   }

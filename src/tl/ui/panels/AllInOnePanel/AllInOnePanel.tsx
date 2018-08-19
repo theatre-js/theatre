@@ -7,16 +7,13 @@ import {val} from '$shared/DataVerse2/atom'
 import Left from '$tl/ui/panels/AllInOnePanel/Left/Left'
 import Bottom, {bottomHeight} from './Bottom/Bottom'
 import {
-  getSelectedProject,
-  getSelectedInternalTimeline,
-  getSelectedTimelineInstance,
+  getProjectTimelineAndInstance,
 } from './selectors'
 import Project from '$tl/Project/Project'
 import InternalTimeline from '$tl/timelines/InternalTimeline'
 import TimelineInstance from '$tl/timelines/TimelineInstance'
 import Right from './Right/Right'
 import createPointerContext from '$shared/utils/react/createPointerContext'
-import SeekBar from './Right/SeekBar/SeekBar'
 
 const classes = resolveCss(css)
 
@@ -68,20 +65,13 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
             this.ui.atomP.historic.allInOnePanel.leftWidthFraction,
           )
 
-          const project = getSelectedProject(this.ui)
-          const internalTimeline = project
-            ? getSelectedInternalTimeline(this.ui, project)
-            : undefined
+          const {
+            project,
+            timelineInstance,
+            internalTimeline,
+          } = getProjectTimelineAndInstance(this.ui)
 
-          const timelineInstance = internalTimeline
-            ? getSelectedTimelineInstance(
-                this.ui,
-                project as $IntentionalAny,
-                internalTimeline,
-              )
-            : undefined
-
-          const width = val(stateP.windowWidth)
+          const width = val(stateP.windowWidth) - 40
 
           const allInOnePanelStuff: IAllInOnePanelStuff = {
             project,
@@ -114,12 +104,6 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
                     style={{width: allInOnePanelStuff.rightWidth + 'px'}}
                   >
                     <Right />
-                  </div>
-                  <div
-                    {...classes('seekBar')}
-                    style={{width: allInOnePanelStuff.rightWidth + 'px'}}
-                  >
-                    <SeekBar />
                   </div>
                 </div>
                 <div {...classes('bottom')}>

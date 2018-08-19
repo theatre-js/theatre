@@ -5,6 +5,7 @@ import {validateAndSanitiseSlashedPathOrThrow} from '$tl/handy/slashedPaths'
 import {NativeObjectTypeConfig} from '$tl/objects/objectTypes'
 import atom, {Atom} from '$shared/DataVerse2/atom'
 import {Pointer} from '$shared/DataVerse2/pointer'
+import {TimelineInstanceAddress} from '$tl/handy/addresses'
 
 type State = {
   time: number
@@ -13,6 +14,7 @@ type State = {
 export default class TimelineInstance {
   _internalTimeline: InternalTimeline
   _objects: {[path: string]: TimelineInstanceObject} = {}
+  _address: TimelineInstanceAddress
   protected _state: Atom<State> = atom({time: 0})
   public statePointer: Pointer<State>
 
@@ -23,6 +25,10 @@ export default class TimelineInstance {
   ) {
     this._internalTimeline = _project._getInternalTimeline(_path)
     this.statePointer = this._state.pointer
+    this._address = {
+      ...this._internalTimeline._address,
+      timelineInstanceId: _instanceId,
+    }
   }
 
   createObject(

@@ -40,16 +40,16 @@ export default class NumberProp extends UIComponent<IProps, IState> {
   }
 
   _renderValue(propsP: Pointer<IProps>, stateP: Pointer<IState>) {
-    const valueP = this.props.internalObject._pointerToState.props[
+    const valueContainerP = this.props.internalObject._pointerToState.props[
       val(propsP.propKey)
-    ].value
+    ].valueContainer
 
-    const storedValueType = val(valueP.type)
+    const storedValueType = val(valueContainerP.type)
 
     if (!storedValueType) {
       return <span {...classes('value')}>0</span>
-    } else if (storedValueType === 'PrimitiveValue') {
-      const value = val(valueP)
+    } else if (storedValueType === 'StaticValueContainer') {
+      const value = val(valueContainerP.value)
       return <span {...classes('value')}>{value.stringRepresentation}</span>
     } else {
       console.error('Only supporting PrimitiveValue atm')

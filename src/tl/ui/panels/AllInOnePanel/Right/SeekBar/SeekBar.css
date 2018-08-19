@@ -1,0 +1,12 @@
+.container {
+  z-index: 2;
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 5px;
+  color: transparent;
+
+  &:hover {
+    color: white;
+  }
+}

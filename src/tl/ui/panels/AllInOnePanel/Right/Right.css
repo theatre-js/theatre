@@ -1,5 +1,11 @@
 .container {
   background: #1B2226;
-  height: 700px;
-  width: 100%;
+  position: absolute 0;
+  overflow-x: scroll;
+  overflow-y: visible;
+}
+
+.filler {
+  width: 5000px;
+  height: 20px;
 }

@@ -1,4 +1,19 @@
 {
   "extends": "./tsconfig.json",
-  "exclude": ["**/*.typeTest.ts*"]
+  "exclude": [
+    "**/*.typeTest.ts*",
+    "./src/theater",
+    "./vendor/**",
+    "./webpack/**",
+    "./bundles/**",
+    "./examples/**",
+    "./src/lb",
+    "./src/lf",
+    "./node_modules/@types/**",
+    "./src/shared/DataVerse/atoms/**"
+  ],
+  "compilerOptions": {
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
+  }
 }

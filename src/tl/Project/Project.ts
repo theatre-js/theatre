@@ -11,6 +11,7 @@ import {Pointer} from '$shared/DataVerse2/pointer'
 import Ticker from '$shared/DataVerse/Ticker'
 import configureStore from '$shared/utils/redux/configureStore'
 import atomFromReduxStore from '$shared/utils/redux/atomFromReduxStore';
+import { ProjectAddress } from '$tl/handy/addresses';
 
 export default class Project {
   static version = process.env.tl.version
@@ -30,6 +31,7 @@ export default class Project {
 
   adapters: NativeObjectAdaptersManager
   _actions = projectActions
+  _address: ProjectAddress
 
   /**
    * @todo should we have a human-readable name for each project too?
@@ -41,6 +43,7 @@ export default class Project {
     this.atom = atomFromReduxStore(this.reduxStore)
     this.atomP = this.atom.pointer
     this.ticker = new Ticker()
+    this._address = {projectId: this.id}
   }
 
   getTimeline(_path: string, instanceId: string = 'default'): TimelineInstance {

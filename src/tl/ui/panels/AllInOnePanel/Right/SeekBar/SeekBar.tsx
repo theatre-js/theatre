@@ -60,7 +60,7 @@ export default class SeekBar extends UIComponent<IProps, IState> {
 
                 const rangeState = val(internalTimeline.pointerToRangeState)
                 return (
-                  <div>
+                  <div className={css.container}>
                     <div>current time: {currentTime}</div>
                     <div>range stuff: {JSON.stringify(rangeState)}</div>
                     <div>width: {width}</div>

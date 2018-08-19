@@ -4,9 +4,11 @@ import {
   getTypeOfNativeObject,
   NativeObjectType,
 } from './objectTypes'
+import { ObjectAddress } from '$tl/handy/addresses';
 
 export default class InternalObject {
   nativeObjectType: NativeObjectType
+  _address: ObjectAddress
   
   public get _project() {
     return this.internalTimeline.project
@@ -22,6 +24,7 @@ export default class InternalObject {
     initialNativeObject: $FixMe,
     initialNativeobjectConfig: NativeObjectTypeConfig | undefined,
   ) {
+    this._address = {...internalTimeline._address, objectPath: path}
     const type = getTypeOfNativeObject(
       this.internalTimeline.project,
       initialNativeObject,

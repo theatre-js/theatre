@@ -4,22 +4,12 @@ import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import React from 'react'
 import * as css from './Left.css'
 import {val} from '$shared/DataVerse2/atom'
-import Node from './Node'
 import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
+import {internalTimelineToSeriesOfVerticalItems} from '../utils'
+import GroupingOrObject from './items/GroupingOrObject'
+import PrimitiveProp from './items/PrimitiveProp'
 
-const rootPath = '@@@@ROOT@@@@23907uaso;dlsld;kjfs;d298dlksjdlskaj932'
 const classes = resolveCss(css)
-
-export type NodeDescriptorsByPath = {
-  [path: string]: NodeDescriptor
-}
-
-export type NodeDescriptor = {
-  isObject: boolean
-  path: string
-  lastComponent: string
-  children: string[]
-}
 
 interface IProps {}
 
@@ -46,57 +36,32 @@ export default class Left extends UIComponent<IProps, IState> {
                 )
                 if (!timelineInstance || !internalTimeline) return null
 
-                const internalObjects = val(
-                  internalTimeline._internalObjects.pointer,
+                const items = internalTimelineToSeriesOfVerticalItems(
+                  this.ui,
+                  internalTimeline,
                 )
-                const allPaths = Object.keys(internalObjects)
 
-                const root: NodeDescriptor = {
-                  isObject: false,
-                  path: '',
-                  children: [],
-                  lastComponent: rootPath,
-                }
-
-                const nodeDescriptorsByPath: NodeDescriptorsByPath = {
-                  [rootPath]: root,
-                }
-
-                for (const path of allPaths) {
-                  const pathComponents = path.split(/\s*\/\s*/)
-                  let parent = root
-                  for (let i = 0; i < pathComponents.length; i++) {
-                    const pathSoFar = pathComponents.slice(0, i + 1).join(' / ')
-                    if (!nodeDescriptorsByPath[pathSoFar]) {
-                      nodeDescriptorsByPath[pathSoFar] = {
-                        isObject: false,
-                        path: pathSoFar,
-                        children: [],
-                        lastComponent: pathComponents[i],
-                      }
-                    }
-                    const node = nodeDescriptorsByPath[pathSoFar]
-                    const isLast = i === pathComponents.length - 1
-                    if (isLast) {
-                      node.isObject = true
-                    }
-                    if (parent.children.indexOf(pathSoFar) === -1)
-                      parent.children.push(pathSoFar)
-                    parent = node
-                  }
-                }
+                const lastItem = items[items.length - 1]
+                const height = lastItem ? lastItem.top + lastItem.height : 0
 
                 return (
-                  <div {...classes('container')}>
-                    {root.children.map(childPath => {
-                      return (
-                        <Node
-                          path={childPath}
-                          key={'child: ' + childPath}
-                          nodeDescriptorsByPath={nodeDescriptorsByPath}
-                          depth={1}
-                        />
-                      )
+                  <div
+                    {...classes('container')}
+                    style={{height: `${height}px`}}
+                  >
+                    {items.map(item => {
+                      if (
+                        item.type === 'Grouping' ||
+                        item.type === 'ObjectItem'
+                      ) {
+                        return <GroupingOrObject item={item} key={item.key} />
+                      } else if (item.type === 'PrimitiveProp') {
+                        return <PrimitiveProp item={item} key={item.key} />
+                      } else {
+                        console.log('@todo unsupported yet', item)
+
+                        return null
+                      }
                     })}
                   </div>
                 )

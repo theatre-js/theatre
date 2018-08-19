@@ -77,14 +77,14 @@ export default class TimelineInstanceSelect extends UIComponent<
 
   setInstance = (
     projectId: string,
-    internalTimelinePath: string,
-    instanceId: string,
+    timelinePath: string,
+    timelineInstanceId: string,
   ) => {
     this.ui.reduxStore.dispatch(
       this.ui.actions.historic.setActiveTimelineInstanceId({
         projectId,
-        internalTimelinePath,
-        instanceId,
+        timelinePath,
+        timelineInstanceId,
       }),
     )
     this.closeMenu()

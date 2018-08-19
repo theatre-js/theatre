@@ -1,6 +1,5 @@
 import * as t from '$shared/ioTypes'
 import {$StateWithHistory} from '$shared/utils/redux/withHistory/withHistory'
-import {listAndById} from '$shared/types'
 
 /**
  * Ahistoric state is persisted, but its changes
@@ -37,9 +36,15 @@ export const $UIEphemeralState = t.type({
 
 export type UIEphemeralState = t.StaticTypeOf<typeof $UIEphemeralState>
 
+const $PropState = t.type({
+  expanded: t.boolean,
+  heightWhenExpanded: t.number,
+})
+
 const $ObjectState = t.type(
   {
     activePropsList: t.array(t.string),
+    props: t.record(t.string, $PropState),
   },
   'ObjectStateInUI',
 )

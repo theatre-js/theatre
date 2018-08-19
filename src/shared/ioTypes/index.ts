@@ -1234,6 +1234,7 @@ export function exact<RT extends HasProps>(
   name: TypeName = () => `ExactType<${type.name}>`,
 ): ExactType<RT, StaticTypeOf<RT>> {
   const props: Props = getProps(type)
+  // @ts-ignore @todo
   return new ExactType(
     name,
     (m): m is StaticTypeOf<RT> =>

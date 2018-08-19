@@ -3,6 +3,7 @@ import InternalObject from '$tl/objects/InternalObject'
 import {NativeObjectTypeConfig} from '$tl/objects/objectTypes'
 import atom, {Atom} from '$shared/DataVerse2/atom'
 import {Pointer} from '$shared/DataVerse2/pointer'
+import { TimelineAddress } from '$tl/handy/addresses';
 
 type RangeState = {
   duration: number
@@ -14,6 +15,7 @@ type RangeState = {
 }
 
 export default class InternalTimeline {
+  _address: TimelineAddress
   readonly _internalObjects: Atom<{[path: string]: InternalObject}> = new Atom(
     {},
   )
@@ -32,6 +34,7 @@ export default class InternalTimeline {
 
   constructor(readonly project: Project, readonly _path: string) {
     this.pointerToRangeState = this._rangeState.pointer
+    this._address = {...this.project._address, timelinePath: _path}
   }
 
   getInternalObject(
@@ -48,10 +51,6 @@ export default class InternalTimeline {
     }
 
     return internalObject
-  }
-
-  _setDuration(d: number) {
-    this._rangeState.reduceState(['duration'], () => d)
   }
 
   _setRangeShownInPanel(p: {from: number; to: number}) {
