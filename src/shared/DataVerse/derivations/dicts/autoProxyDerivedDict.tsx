@@ -2,14 +2,14 @@ import AbstractDerivedDict from './AbstractDerivedDict'
 import _ from 'lodash'
 import {
   default as proxyDerivedDict,
-  IProxyDerivedDict,
+  ProxyDerivedDict
 } from './proxyDerivedDict'
 import emptyDict from './emptyDict'
 import Ticker from '$shared/DataVerse/Ticker'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 
 class AutoProxyDerivedDict<O> extends AbstractDerivedDict<O> {
-  _proxy: IProxyDerivedDict<O>
+  _proxy: ProxyDerivedDict<O>
   _sourceD: AbstractDerivation<AbstractDerivedDict<O>>
   _ticker: Ticker
   _untapFromProxyChanges: () => void
@@ -24,7 +24,7 @@ class AutoProxyDerivedDict<O> extends AbstractDerivedDict<O> {
     this._sourceD = sourceD
     this._untapFromProxyChanges = _.noop
     this._untapFromSourceChanges = _.noop
-    this._proxy = proxyDerivedDict(emptyDict)
+    this._proxy = proxyDerivedDict(emptyDict as $IntentionalAny)
 
     return this
   }
@@ -37,7 +37,7 @@ class AutoProxyDerivedDict<O> extends AbstractDerivedDict<O> {
       },
     )
 
-    this._untapFromProxyChanges = this._proxy.changes().tap(c => {
+    this._untapFromProxyChanges = this._proxy.changes().tap((c: $FixMe) => {
       this._changeEmitter.emit(c)
     })
   }
@@ -56,7 +56,8 @@ class AutoProxyDerivedDict<O> extends AbstractDerivedDict<O> {
     return this._proxy.keys()
   }
 
-  prop(key) {
+  // @ts-ignore @todo
+  prop(key: keyof O) {
     return this._sourceD.flatMap(source => {
       // dirty, I know :D
       if (!this._changeEmitterHasTappers) {
@@ -71,6 +72,6 @@ class AutoProxyDerivedDict<O> extends AbstractDerivedDict<O> {
 export default function autoProxyDerivedDict<O>(
   initialSource: AbstractDerivation<AbstractDerivedDict<O>>,
   ticker: Ticker,
-): AbstractDerivedDict<O> {
+): AutoProxyDerivedDict<O> {
   return new AutoProxyDerivedDict(initialSource, ticker)
 }

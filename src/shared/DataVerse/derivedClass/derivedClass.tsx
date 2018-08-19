@@ -9,7 +9,7 @@ type Method = $FixMe
 
 let lastId: number = 0
 
-export class DerivedClass<O> {
+export class DerivedClass<O extends {}> {
   _id: number
   _methods: O
   _prototype: undefined | DerivedClass<$IntentionalAny>
@@ -50,7 +50,7 @@ export class DerivedClass<O> {
   keys(): {[k in keyof O]: void} {
     const parentKeys = this._prototype ? this._prototype.keys() : {}
     const ourKeys = mapValues(this._methods, () => undefined)
-    return {...parentKeys, ...ourKeys} as $IntentionalAny
+    return {...parentKeys, ...(ourKeys as $FixMe)} as $IntentionalAny
   }
 }
 

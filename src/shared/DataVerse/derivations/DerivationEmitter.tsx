@@ -16,8 +16,7 @@ export default class DerivationEmitter<V>
 
   constructor(
     derivation: AbstractDerivation<V>,
-    ticker: Ticker,
-    readonly dontEmitValues: boolean = false,
+    ticker: Ticker
   ) {
     this._derivation = derivation
     this._ticker = ticker
@@ -52,10 +51,6 @@ export default class DerivationEmitter<V>
   }
 
   _updateComputation() {
-    if (this.dontEmitValues) {
-      this._emitter.emit()
-      return
-    }
     const newValue = this._derivation.getValue()
     if (newValue === this._lastValue && this._lastValueRecorded === true) return
     this._lastValue = newValue

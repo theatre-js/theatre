@@ -30,6 +30,8 @@ const $StaticValueContainer = t.type({
   value: t.union([$PrimitiveValue]),
 })
 
+export type StaticValueContainer = t.StaticTypeOf<typeof $StaticValueContainer>
+
 const $INumberBetween0And1 = t.number.refinement(
   v => v >= 0 && v <= 1,
   'NumberBetween0And1',

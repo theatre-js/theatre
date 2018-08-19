@@ -1,7 +1,7 @@
 import * as React from 'react'
 import hoistNonReactStatics from 'hoist-non-react-statics'
 // import {HigherOrderComponent} from 'react-flow-types'
-import {PropTypes} from 'prop-types'
+import {any} from 'prop-types'
 import {call} from 'redux-saga/effects'
 import {InferableComponentEnhancer} from 'react-redux'
 
@@ -10,6 +10,7 @@ function preventToThrow(fn: () => Generator_<$FixMe>) {
     ...args: $IntentionalAny[]
   ): Generator_<$FixMe> {
     try {
+      // @ts-ignore ignore
       return yield call(fn, ...args)
     } catch (e) {
       return Promise.reject(e)
@@ -119,7 +120,7 @@ export default function withRunSaga(): InferableComponentEnhancer<{
 
     // @ts-ignore @ignore
     finalComponent.contextTypes = {
-      store: PropTypes.any,
+      store: any,
     }
 
     // @ts-ignore @ignore

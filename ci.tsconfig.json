@@ -1,5 +1,7 @@
 {
   "extends": "./tsconfig.json",
+  "files": ["./defs.d.ts"],
+  "include": ["./src"],
   "exclude": [
     "**/*.typeTest.ts*",
     "./src/theater",
@@ -9,8 +11,23 @@
     "./examples/**",
     "./src/lb",
     "./src/lf",
-    "./node_modules/@types/**",
-    "./src/shared/DataVerse/atoms/**"
+    "node_modules/@types/**/*.ts",
+    "./node_modules/**",
+    "./src/shared/DataVerse/atoms/**",
+    "./src/shared/utils/sagas",
+    "node_modules",
+    "build",
+    "scripts",
+    "acceptance-tests",
+    "webpack",
+    "jest",
+    "src/setupTests.ts",
+    "vendor",
+    "xeno",
+    "webpack",
+    "docs",
+    "bundles",
+    ".vscode"
   ],
   "compilerOptions": {
     "noUnusedLocals": false,

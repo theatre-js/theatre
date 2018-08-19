@@ -36,7 +36,9 @@ export class MapValues<
     this._changeEmitter.emit(c)
   }
 
+  // @ts-ignore @todo
   prop<K extends keyof this['_o']>(key: K): AbstractDerivation<PropOfADD<this['_o'][K]>> {
+    // @ts-ignore @todo
     return this._source.pointer().prop(key).flatMap(this._fn) as $IntentionalAny
   }
 

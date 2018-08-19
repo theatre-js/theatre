@@ -3,7 +3,7 @@ import actionCreator from '$shared/utils/redux/actionCreator'
 describe('$shared/utils/redux/actionCreator()', () => {
   const actionType = 'Bootstrap'
   const payload = {a: 1, b: 2}
-  let creator
+  let creator = actionCreator(actionType)
 
   beforeEach(() => {
     creator = actionCreator(actionType)

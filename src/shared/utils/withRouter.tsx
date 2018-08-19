@@ -1,4 +1,5 @@
 import {withRouter} from 'react-router-dom'
+import { InferableComponentEnhancer } from 'react-redux';
 // import {HigherOrderComponent} from 'react-flow-types'
 
 export type WithRouterProps = {
@@ -11,4 +12,4 @@ export type WithRouterProps = {
   location: Object
 }
 
-export default (withRouter as any) as HigherOrderComponent<{}, WithRouterProps>
+export default (withRouter as any) as InferableComponentEnhancer<WithRouterProps>

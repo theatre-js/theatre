@@ -58,8 +58,8 @@ describe('derivedClass', () => {
         },
       })
         .extend({
-          a(ps) {
-            return ps.propFromSuper('a').map(s => s + '2')
+          a(ps: $FixMe) {
+            return ps.propFromSuper('a').map((s: string) => s + '2')
           },
         })
         .instance(ticker)
@@ -74,8 +74,8 @@ describe('derivedClass', () => {
         },
       })
       const layer1 = derivedClass({
-        a(ps) {
-          return ps.propFromSuper('a').map(s => s + 'layer1')
+        a(ps: $FixMe) {
+          return ps.propFromSuper('a').map((s: $FixMe) => s + 'layer1')
         },
       })
 

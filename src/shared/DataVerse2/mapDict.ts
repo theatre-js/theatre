@@ -23,7 +23,9 @@ class MappedDict<O> implements Pointable {
     })
   }
 
-  _getIdentifyOfProp<K extends keyof O>(key: K): O[K] {}
+  _getIdentifyOfProp<K extends keyof O>(key: K): O[K] {
+    return null as $FixMe
+  }
 
   _tapIntoIdentityOfPathChanges(
     path: (string | number)[],

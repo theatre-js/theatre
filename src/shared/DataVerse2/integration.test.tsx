@@ -31,14 +31,14 @@ describe(`v2 atom`, () => {
     })
   })
 
-  describe(`dictMaps`, () => {
-    it.skip(`should work`, () => {
-      const state = {one: 1, two: 2}
-      const a = atom(state)
-      const mapped = mapDict(a.pointer, (propP: $FixMe, key: $FixMe) => {
-        return val(propP) * 2
-      })
-      expect(mapped._getIdentityByPath([])).toMatchObject({one: 2, two: 4})
-    })
-  })
+  // describe(`dictMaps`, () => {
+  //   it.skip(`should work`, () => {
+  //     const state = {one: 1, two: 2}
+  //     const a = atom(state)
+  //     const mapped = mapDict(a.pointer, (propP: $FixMe, key: $FixMe) => {
+  //       return (val(propP) as $FixMe) * 2
+  //     })
+  //     expect(mapped._getIdentityByPath([])).toMatchObject({one: 2, two: 4})
+  //   })
+  // })
 })

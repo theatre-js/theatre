@@ -39,6 +39,7 @@ describe('mapValues', () => {
       deletedKeys: string[]
     }[] = []
     mapped.changes().tap((c: DerivedDictChangeType<$IntentionalAny>) => {
+      // @ts-ignore @todo
       mappedChanges.push(c)
     })
 

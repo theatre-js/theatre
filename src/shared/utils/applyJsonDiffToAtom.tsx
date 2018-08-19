@@ -1,5 +1,6 @@
 import jsonPatchLib from 'fast-json-patch'
 import atomifyDeep from '$shared/DataVerse/atoms/atomifyDeep'
+import { ArrayAtom } from '$shared/DataVerse/atoms/arrayAtom';
 
 type Diff = $FixMe
 type Stuff = $FixMe
@@ -32,11 +33,11 @@ const ops = {
     remove(diff: Diff, {curAtom, lastComponent}: Stuff) {
       curAtom.splice(lastComponent, 1, [])
     },
-    replace(diff: Diff, {curAtom, lastComponent}) {
-      curAtom.setIndex(lastComponent, atomifyDeep(diff.value))
+    replace(diff: Diff, p: {curAtom: ArrayAtom<$IntentionalAny>, lastComponent: number}) {
+      p.curAtom.setIndex(p.lastComponent, atomifyDeep(diff.value))
     },
-    add(diff: Diff, {curAtom, lastComponent}) {
-      curAtom.splice(lastComponent, 0, [atomifyDeep(diff.value)])
+    add(diff: Diff, p: {curAtom: ArrayAtom<$IntentionalAny>, lastComponent: number}) {
+      p.curAtom.splice(p.lastComponent, 0, [atomifyDeep(diff.value)])
     },
   },
   box: {},
@@ -86,6 +87,7 @@ export default function applyJsonDiffToAtom(diff: Diff, atom: $FixMe) {
     curAtom,
   }
 
+  // @ts-ignore @todo
   const opFn = ops[type][diff.op]
   if (opFn) {
     opFn(diff, stuff)

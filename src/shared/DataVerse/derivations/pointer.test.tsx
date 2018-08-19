@@ -112,18 +112,22 @@ describe('pointer', () => {
       f
         .pointer()
         .prop('a')
+        // @ts-ignore @todo
         .prop('a')
         .prop('foo')
         .getValue(),
     ).toEqual('foo')
 
-    const changes = []
-    f
-      .pointer()
+    const changes: string[] = []
+    f.pointer()
       .prop('a')
+      // @ts-ignore @todo
+
       .prop('a')
       .prop('foo')
       .changes(ticker)
+      // @ts-ignore @todo
+
       .tap(c => {
         changes.push(c)
       })

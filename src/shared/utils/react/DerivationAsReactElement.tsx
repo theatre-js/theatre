@@ -10,7 +10,7 @@ interface Props {
 
 export default class DerivationAsReactElement extends React.Component<
   Props,
-  void
+  {}
 > {
   _untapFromDerivationChanges: () => void
   updateQueeud: boolean = false

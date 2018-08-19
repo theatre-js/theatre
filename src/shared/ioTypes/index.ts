@@ -29,7 +29,7 @@ export interface ValidationError {
 }
 export type Errors = Array<ValidationError>
 export type Validation = Either<Errors, true>
-export type Is<A> = (m: mixed) => m is A
+export type Is<A> = (m: $IntentionalAny) => m is A
 export type Validate = (i: mixed, context: ValidationContext) => Validation
 export type Any = Type<$IntentionalAny>
 export type Mixed = Type<$IntentionalAny>
@@ -1095,7 +1095,7 @@ const getTagValue = <Tag extends string>(
       case 'InvariantType':
       case 'RefinementType':
       case 'ExactType':
-        return f(type.type)
+        return f((type as $FixMe).type)
     }
   }
   return f
@@ -1329,7 +1329,7 @@ class OptionalType<T, Rt extends Type<T>> extends Type<T | undefined> {
     function name(this: OptionalType<T, Rt>) {
       return `Optional<${type.name}>`
     }
-    function is(v: mixed): v is T | undefined {
+    function is(v: $IntentionalAny): v is T | undefined {
       return typeof v === 'undefined' || type.is(v)
     }
     function _validateWithContext(
@@ -1452,7 +1452,7 @@ export class RuntimeCheckType<A, Rt extends Type<A>> extends Type<A> {
   ) {
     super(
       name,
-      function is(this: RuntimeCheckType<A, Rt>, v: mixed): v is A {
+      function is(this: RuntimeCheckType<A, Rt>, v: $IntentionalAny): v is A {
         if (!this.inner.is(v)) return false
         return this.condition(v) === true
       },
@@ -1462,7 +1462,7 @@ export class RuntimeCheckType<A, Rt extends Type<A>> extends Type<A> {
         c: ValidationContext,
       ) {
         return this.inner._validateWithContext(v, c).chain(() => {
-          const conditionResult = this.condition(v as A, c)
+          const conditionResult = this.condition(v as $IntentionalAny as  A, c)
           if (conditionResult === true) return success()
           return failure(v, c, conditionResult)
         })

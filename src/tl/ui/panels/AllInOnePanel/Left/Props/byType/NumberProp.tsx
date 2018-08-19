@@ -5,6 +5,7 @@ import * as css from './NumberProp.css'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import {val} from '$shared/DataVerse2/atom'
 import {PropsOfProp} from './common/types'
+import {StaticValueContainer} from '$tl/Project/store/types'
 
 const classes = resolveCss(css)
 
@@ -49,7 +50,9 @@ export default class NumberProp extends UIComponent<IProps, IState> {
     if (!storedValueType) {
       return <span {...classes('value')}>0</span>
     } else if (storedValueType === 'StaticValueContainer') {
-      const value = val(valueContainerP.value)
+      const value = val(
+        (valueContainerP as Pointer<StaticValueContainer>).value,
+      )
       return <span {...classes('value')}>{value.stringRepresentation}</span>
     } else {
       console.error('Only supporting PrimitiveValue atm')

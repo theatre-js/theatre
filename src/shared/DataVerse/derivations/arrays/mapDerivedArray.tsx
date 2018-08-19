@@ -33,6 +33,7 @@ export class MappedDerivedArray<T, V> extends AbstractDerivedArray<V> {
     return this._source
       .pointer()
       .index(i)
+      // @ts-ignore @todo
       .flatMap(this._fn)
   }
 

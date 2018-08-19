@@ -5,7 +5,7 @@ import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation
 import noop from '$shared/utils/noop'
 import {VoidFn} from '$shared/types'
 
-class ProxyDerivedDict<O> extends AbstractDerivedDict<O> {
+export class ProxyDerivedDict<O> extends AbstractDerivedDict<O> {
   _sourceBox: BoxAtom<AbstractDerivedDict<O>>
   _sourceBoxD: AbstractDerivation<AbstractDerivedDict<O>>
   _untapFromSourceChanges: VoidFn

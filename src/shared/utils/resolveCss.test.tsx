@@ -1,7 +1,11 @@
 import resolveCss from '$shared/utils/resolveCss'
 
 describe('common/utils/resolveCss()', () => {
-  function example(a, b, expectation: string) {
+  function example(
+    a: $IntentionalAny,
+    b: $IntentionalAny,
+    expectation: string,
+  ) {
     it(`${JSON.stringify([a, b])}`, () => {
       expect(resolveCss(a)(...b).className).toEqual(expectation)
     })

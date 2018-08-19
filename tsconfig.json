@@ -29,7 +29,7 @@
       "$src/*": ["src/*"]
     }
   },
-  "include": ["."],
+  "include": ["./src", "./examples"],
   "exclude": [
     "node_modules",
     "build",
@@ -45,10 +45,10 @@
     "bundles",
     ".vscode"
   ],
-  "types": ["typePatches", "webpack-env", "node"],
+  // "types": ["typePatches", "webpack-env", "node"],
   "plugins": [
-    {
-      "name": "typescript-snapshots-plugin"
-    }
+    // {
+      // "name": "typescript-snapshots-plugin"
+    // }
   ]
 }

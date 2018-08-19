@@ -115,8 +115,6 @@ export const internalTimelineToSeriesOfVerticalItems = (
 
   type ExcludeHeight<O> = Pick<O, Exclude<keyof O, 'height'>>
 
-  const t: keyof AnyItem = 'address'
-
   const push = (
     _item:
       | ExcludeHeight<GroupingItem>

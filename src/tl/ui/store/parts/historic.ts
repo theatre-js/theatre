@@ -95,7 +95,7 @@ export const setPropHeightWhenExpanded = r(
     },
   ) => {
     ensurePropIsSetUp(s, p)
-    const propState = getPropState(s, p)
+    const propState = uiSelectors.getPropState(s, p)
     propState.heightWhenExpanded = p.height
   },
 )

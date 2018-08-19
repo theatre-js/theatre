@@ -43,7 +43,7 @@ export default class KeyedSideEffectRunner {
 
     this._started = true
 
-    this._untapFromDict = this._sideEffectsDict.changes().tap(changes => {
+    this._untapFromDict = this._sideEffectsDict.changes().tap((changes: $FixMe) => {
       changes.deletedKeys.forEach(this._removeKey)
       changes.addedKeys.forEach(this._startObservingKey)
     })

@@ -35,14 +35,22 @@ export class DictAtom<O> extends AbstractCompositeAtom<IDictAtomChangeType<O>> {
 
   unboxDeep(): UnatomifyDeep<DictAtom<O>> {
     return mapValues(
+      // @ts-ignore @todo
+
       this._internalMap,
+      // @ts-ignore @todo
+
       v => (isAtom(v) ? v.unboxDeep() : v),
     ) as $IntentionalAny
   }
 
   _assignInitialValue(o: O) {
+    // @ts-ignore @todo
+
     forEach(o, (v, k: keyof O) => {
       this._internalMap[k] = v
+      // @ts-ignore @todo
+
       this._adopt(k, v)
     })
   }
@@ -58,6 +66,8 @@ export class DictAtom<O> extends AbstractCompositeAtom<IDictAtomChangeType<O>> {
 
   _change(o: Partial<O>, keysToDelete: Array<keyof O>): this {
     const addedKeys: Array<keyof O> = []
+    // @ts-ignore @todo
+
     forEach(o, (_v, k: keyof O) => {
       if (!this._internalMap.hasOwnProperty(k)) {
         addedKeys.push(k)
@@ -70,6 +80,7 @@ export class DictAtom<O> extends AbstractCompositeAtom<IDictAtomChangeType<O>> {
 
     const deletedKeys = keysToDelete
     deletedKeys.forEach(propName => {
+      // @ts-ignore @todo
       overriddenRefs[propName] = this.prop(propName)
     })
 
@@ -83,8 +94,12 @@ export class DictAtom<O> extends AbstractCompositeAtom<IDictAtomChangeType<O>> {
       delete this._internalMap[key]
     })
 
+    // @ts-ignore @todo
+
     forEach(o as O, (v, k: keyof O) => {
       this._internalMap[k] = v
+      // @ts-ignore @todo
+
       this._adopt(k, v)
     })
 
@@ -112,7 +127,7 @@ export class DictAtom<O> extends AbstractCompositeAtom<IDictAtomChangeType<O>> {
   }
 
   forEach<K extends keyof O>(fn: (v: O[K], k: K) => void | false): void {
-    forEach(this._internalMap, fn)
+    forEach(this._internalMap as $FixMe, fn as $FixMe)
   }
 
   deleteProp<K extends keyof O>(key: K): this {
