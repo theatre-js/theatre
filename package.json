@@ -9,7 +9,6 @@
     "test": "jest",
     "prettify-and-lint": "run-s prettify lint",
     "prettify": "prettier --write \"src/**/*.tsx\"",
-    "prepush": "run-p prettify-and-lint test",
     "lb:webpack:dev": "webpack --progress --config webpack/lb/development.js --watch",
     "lb:dev": "nodemon --watch ./bundles/lb/index.js --exec \"electron\" ./bundles/lb/index.js",
     "lb:debug": "electron --inspect-brk=9239 ./bundles/lb/index.js",
