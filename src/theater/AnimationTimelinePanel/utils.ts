@@ -1,3 +1,5 @@
+import { RangeState } from "$tl/timelines/InternalTimeline";
+
 export const getSvgWidth = (
   duration: number,
   focus: [number, number],
@@ -20,10 +22,22 @@ export const focusedTimeToX = (focus: [number, number], width: number) => (
   return ((time - focus[0]) / (focus[1] - focus[0])) * width
 }
 
+export const inRangeTimeToX = (range: RangeState['rangeShownInPanel'], width: number) => (
+  time: number,
+) => {
+  return ((time - range.from) / (range.to - range.from)) * width
+}
+
 export const xToFocusedTime = (focus: [number, number], width: number) => (
   x: number,
 ) => {
   return (x * (focus[1] - focus[0])) / width + focus[0]
+}
+
+export const xToInRangeTime = (range: RangeState['rangeShownInPanel'], width: number) => (
+  x: number,
+) => {
+  return (x * (range.to - range.from)) / width + range.from
 }
 
 export const deltaXToFocusedTime = (focus: [number, number], width: number) => (

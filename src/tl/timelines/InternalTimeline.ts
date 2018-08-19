@@ -5,7 +5,7 @@ import atom, {Atom} from '$shared/DataVerse2/atom'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import { TimelineAddress } from '$tl/handy/addresses';
 
-type RangeState = {
+export type RangeState = {
   duration: number
   rangeShownInPanel: {
     from: number

@@ -5,6 +5,7 @@ import * as css from './SeekBar.css'
 import {val} from '$shared/DataVerse2/atom'
 import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
+import Seeker from '$tl/ui/panels/AllInOnePanel/Right/SeekBar/Seeker'
 
 interface IProps {}
 
@@ -60,12 +61,26 @@ export default class SeekBar extends UIComponent<IProps, IState> {
 
                 const rangeState = val(internalTimeline.pointerToRangeState)
                 return (
-                  <div className={css.container}>
-                    <div>current time: {currentTime}</div>
-                    <div>range stuff: {JSON.stringify(rangeState)}</div>
-                    <div>width: {width}</div>
-                    <div>height: {height}</div>
-                  </div>
+                  <>
+                    {/* <RangeBar
+                      width={width}
+                      duration={rangeState.duration}
+                      range={rangeState.rangeShownInPanel}
+                      setRange={internalTimeline._setRangeShownInPanel}
+                    /> */}
+                    <Seeker
+                      width={width}
+                      currentTime={currentTime}
+                      range={rangeState.rangeShownInPanel}
+                      gotoTime={timelineInstance.gotoTime}
+                    />
+                  </>
+                  // <div>
+                  //   <div>current time: {currentTime}</div>
+                  //   <div>range stuff: {JSON.stringify(rangeState)}</div>
+                  //   <div>width: {width}</div>
+                  //   <div>height: {height}</div>
+                  // </div>
                 )
               }}
             </PropsAsPointer>

@@ -69,6 +69,7 @@ class FramesGrid extends PureComponentWithTheater<IProps, IState> {
     this._drawGrid()
 
     document.addEventListener('mousemove', this.handleMouseMove)
+    window.addEventListener('resize', this._updateContainerRect)
   }
 
   componentDidUpdate() {
@@ -77,6 +78,7 @@ class FramesGrid extends PureComponentWithTheater<IProps, IState> {
 
   componentWillUnmount() {
     document.removeEventListener('mousemove', this.handleMouseMove)
+    window.removeEventListener('resize', this._updateContainerRect)
   }
 
   _drawGrid() {
@@ -176,7 +178,7 @@ class FramesGrid extends PureComponentWithTheater<IProps, IState> {
     this.frameStampRef.current!.innerHTML = ''
   }
 
-  _updateContainerRect() {
+  _updateContainerRect = () => {
     if (this.containerRef.current == null) return
     const {
       left,
