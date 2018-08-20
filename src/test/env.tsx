@@ -1,4 +1,6 @@
 import 'mock-fs'
+// @ts-ignore ignore
+global.$env = process.env
 
 // Mocks be here
 // jest.mock(
