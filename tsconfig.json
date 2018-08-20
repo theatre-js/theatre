@@ -27,7 +27,8 @@
       "$tl/*": ["src/tl/*"],
       "$root/*": ["/*"],
       "$src/*": ["src/*"]
-    }
+    },
+    "types": ["jest"]
   },
   "include": ["./src", "./examples"],
   "exclude": [
@@ -45,10 +46,9 @@
     "bundles",
     ".vscode"
   ],
-  // "types": ["typePatches", "webpack-env", "node"],
   "plugins": [
     // {
-      // "name": "typescript-snapshots-plugin"
+    // "name": "typescript-snapshots-plugin"
     // }
   ]
 }

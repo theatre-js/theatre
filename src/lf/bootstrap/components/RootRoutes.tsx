@@ -5,13 +5,13 @@ import SplashUnlessBootstrapped from './SplashUnlessBootstrapped'
 import {MemoryRouter as Router, Route, Switch, Redirect} from 'react-router-dom'
 
 let PlaygroundPage
-if (process.env.NODE_ENV === 'development') {
+if ($env.NODE_ENV === 'development') {
   PlaygroundPage = require('$lf/playground/components/PlaygroundPage').default
 }
 
 const routes = [
   ...projectsRoutes,
-  process.env.NODE_ENV === 'development' && (
+  $env.NODE_ENV === 'development' && (
     <Route
       key="playgroundRoute"
       path={`/playground`}

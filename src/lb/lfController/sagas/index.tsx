@@ -79,8 +79,8 @@ function createWindow() {
     show: false,
     webPreferences: {webSecurity: false, allowRunningInsecureContent: true},
   })
-  if (process.env.NODE_ENV === 'development') {
-    win.loadURL(`http://localhost:${process.env.devSpecific.lf.devServerPort}/`)
+  if ($env.NODE_ENV === 'development') {
+    win.loadURL(`http://localhost:${$env.devSpecific.lf.devServerPort}/`)
   } else {
     // @todo
     throw new Error(

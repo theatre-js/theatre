@@ -13,7 +13,7 @@ const studio = new Studio(theater)
 theater._setStudio(studio)
 // theaterStudioInstance.run()
 
-if (process.env.NODE_ENV === 'development') {
+if ($env.NODE_ENV === 'development') {
   // @ts-ignore
   window.theater = theater
 }

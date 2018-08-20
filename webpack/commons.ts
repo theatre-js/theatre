@@ -118,7 +118,7 @@ export const makeConfigParts = (options: Options) => {
       }),
       new webpack.ProvidePlugin({
         'process.env': '$root/webpack/env/index.js',
-        'lenv': '$root/webpack/env/index.js',
+        '$env': '$root/webpack/env/index.js',
       }),
       new CaseSensitivePathsPlugin(),
       ...(isDev

@@ -41,7 +41,7 @@ export default abstract class AbstractDerivedDict<O> {
   abstract prop<K extends keyof O>(key: K): AbstractDerivation<PropOfADD<O[K]>>
 
   constructor() {
-    if (process.env.KEEPING_DERIVATION_TRACES === true) {
+    if ($env.KEEPING_DERIVATION_TRACES === true) {
       this._trace = new Error('trace')
     }
     this._changeEmitter = new Emitter()

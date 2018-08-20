@@ -42,7 +42,7 @@ export default abstract class AbstractDerivation<V>
   ChangeType: V
 
   constructor() {
-    if (process.env.KEEPING_DERIVATION_TRACES === true) {
+    if ($env.KEEPING_DERIVATION_TRACES === true) {
       this._trace = new Error('trace')
     }
     this._didNotifyDownstreamOfUpcomingUpdate = false
@@ -124,7 +124,7 @@ export default abstract class AbstractDerivation<V>
 
   getValue(): V {
     if (
-      process.env.TRACKING_COLD_DERIVATIONS === true &&
+      $env.TRACKING_COLD_DERIVATIONS === true &&
       debug.findingColdDerivations &&
       !debug.skippingColdDerivations &&
       this._freshnessState === FRESHNESS_STATE_NOT_APPLICABLE &&

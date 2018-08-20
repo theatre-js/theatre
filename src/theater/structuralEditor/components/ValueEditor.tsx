@@ -44,7 +44,7 @@ export default connect((s: ITheaterStoreState, op: IOwnProps) => {
       throw new Error(`typeName can only be a string and not empty`)
     }
 
-    if (process.env.NODE_ENV === 'development') {
+    if ($env.NODE_ENV === 'development') {
       const value = get(s, op.path)
       if (!value || value.__descriptorType !== typeName) {
         throw new Error(

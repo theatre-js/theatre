@@ -12,7 +12,7 @@ import {
 } from '$shared/utils/redux/commonActions'
 
 export const pathToPersistenceFile =
-  process.env.NODE_ENV === 'test'
+  $env.NODE_ENV === 'test'
     ? '/foo/state.json'
     : path.join(app.getPath('userData'), 'state.json')
 

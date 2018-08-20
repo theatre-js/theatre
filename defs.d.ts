@@ -1,3 +1,5 @@
+// <reference path="./node_modules/@types/node/index.d.ts" />
+
 /**
  * For `any`s that aren't meant to stay `any`
  */
@@ -77,16 +79,27 @@ type EnvironmentVariables =
   | (CommonEnvironmentVariables & ProductionSpecificEnvironmentVariables)
   | (CommonEnvironmentVariables & TestSpecificEnvironmentVariables)
 
-declare var process: {
-  env: EnvironmentVariables
-}
+declare var $env: EnvironmentVariables
 
-declare var module: {
-  hot?: {
-    accept: ((add: string, callback: Function) => mixed) & (() => mixed)
-    dispose: (() => mixed)
-  }
-}
+// interface PC extends NodeJS.Process {
+//   env: EnvironmentVariables & {[k: string]: string}
+// }
+
+// declare namespace NodeJS {
+//   interface Process {
+//     env: EnvironmentVariables & {[k: string]: string}
+
+//   }
+// }
+
+// declare var process: PC
+
+// declare var module: {
+//   hot?: {
+//     accept: ((add: string, callback: Function) => mixed) & (() => mixed)
+//     dispose: (() => mixed)
+//   }
+// }
 
 interface Generator_<ReturnType = {}, A = {}, YieldType = {}>
   extends Generator {}

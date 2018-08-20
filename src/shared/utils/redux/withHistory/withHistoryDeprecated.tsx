@@ -122,7 +122,7 @@ export const withHistory = <
       historicalReducer,
     )
 
-    if (process.env.NODE_ENV !== 'production') {
+    if ($env.NODE_ENV !== 'production') {
       const commonProps = getPropsInCommon(innerStateWithTemps, ahistoricState)
       if (commonProps.length > 0) {
         throw new Error(

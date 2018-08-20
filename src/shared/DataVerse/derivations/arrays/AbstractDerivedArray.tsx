@@ -27,7 +27,7 @@ export default abstract class AbstractDerivedArray<V> {
   abstract length(): number
 
   constructor() {
-    if (process.env.KEEPING_DERIVATION_TRACES === true) {
+    if ($env.KEEPING_DERIVATION_TRACES === true) {
       this._trace = new Error('trace')
     }
     this._id = lastId++

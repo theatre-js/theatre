@@ -35,7 +35,7 @@ export default class Theater {
     this.atomP = this.atom.derivedDict().pointer()
     this.atom2 = atomFromReduxStore(this.store)
 
-    if (process.env.NODE_ENV === 'development' && module.hot) {
+    if ($env.NODE_ENV === 'development' && module.hot) {
       // @todo
       // module.hot.accept('./rootReducer', () => {
       //   const r: $IntentionalAny = require

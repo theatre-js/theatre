@@ -23,5 +23,5 @@ function waitForElectron(): $FixMe {
 }
 
 export default waitForElectron().then((): $FixMe => {
-  if (process.env.NODE_ENV === 'development') return installDevtoolsExtensions()
+  if ($env.NODE_ENV === 'development') return installDevtoolsExtensions()
 })

@@ -30,7 +30,7 @@ class App extends React.Component<Props, State> {
     // inside the following arrow function. But it should. Maybe a babel misconfig this is?
     const self = this
 
-    if (process.env.NODE_ENV === 'development' && module.hot) {
+    if ($env.NODE_ENV === 'development' && module.hot) {
       module.hot.accept('./HotReloadablePartOfApp', () => {
         const HotReloadablePartOfApp = require('./HotReloadablePartOfApp')
           .default

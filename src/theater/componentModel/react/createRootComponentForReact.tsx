@@ -17,7 +17,7 @@ const createRootComponentForReact = (theater: Theater) => {
       super(props)
       this.state = {WhatToShowInBody}
 
-      if (process.env.NODE_ENV === 'development' && module.hot) {
+      if ($env.NODE_ENV === 'development' && module.hot) {
         module.hot.accept(
           '$theater/workspace/components/WhatToShowInBody/WhatToShowInBody',
           () => {

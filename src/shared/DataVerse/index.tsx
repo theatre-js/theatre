@@ -14,6 +14,6 @@
 
 // export {atoms, derivations, literals}
 
-if (process.env.NODE_ENV === 'development') {
+if ($env.NODE_ENV === 'development') {
   require('./devtoolsFormatters/setup')
 }

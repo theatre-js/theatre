@@ -12,7 +12,7 @@ export default abstract class AbstractAtom<ChangeType> {
   abstract unboxDeep(): mixed
 
   constructor() {
-    if (process.env.KEEPING_DERIVATION_TRACES === true) {
+    if ($env.KEEPING_DERIVATION_TRACES === true) {
       this._trace = new Error('trace')
     }
     this._changeEmitter = new Emitter()

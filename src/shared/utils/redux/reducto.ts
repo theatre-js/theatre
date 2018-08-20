@@ -22,7 +22,7 @@ const reducto = <State>(stateIoType: t.Type<State>) => <Payload>(
       innerReducer(draftState, action.payload)
     })
 
-    if (process.env.NODE_ENV === 'development') {
+    if ($env.NODE_ENV === 'development') {
       const validationResult = stateIoType.validate(newState as $FixMe)
       if (validationResult.isLeft()) {
         console.group(

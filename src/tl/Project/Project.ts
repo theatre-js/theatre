@@ -14,7 +14,7 @@ import atomFromReduxStore from '$shared/utils/redux/atomFromReduxStore';
 import { ProjectAddress } from '$tl/handy/addresses';
 
 export default class Project {
-  static version = process.env.tl.version
+  static version = $env.tl.version
   _timelineInstances: Atom<{
     [path: string]: {[instanceId: string]: TimelineInstance}
   }> = new Atom({})

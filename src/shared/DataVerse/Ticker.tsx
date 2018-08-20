@@ -17,7 +17,7 @@ export default class Ticker {
   constructor() {
     this._computationsToUpdate = new Set()
     this._objectsWhoseStructureShouldBeUpdated = new Set()
-    if (process.env.KEEPING_DERIVATION_TRACES === true) {
+    if ($env.KEEPING_DERIVATION_TRACES === true) {
       this._traces = new WeakMap()
     }
     this._sideEffectsToCall = new Set()
@@ -30,7 +30,7 @@ export default class Ticker {
       return
     }
 
-    if (process.env.KEEPING_DERIVATION_TRACES === true) {
+    if ($env.KEEPING_DERIVATION_TRACES === true) {
       this._traces.set(d, new Error('Trace'))
     }
     this._computationsToUpdate.add(d)
@@ -73,7 +73,7 @@ export default class Ticker {
     const oldD = this._computationsToUpdate
     this._computationsToUpdate = new Set()
     oldD.forEach(d => {
-      if (process.env.KEEPING_DERIVATION_TRACES === true) {
+      if ($env.KEEPING_DERIVATION_TRACES === true) {
         // This const is just there for debugging purposes
         // eslint-disable-next-line no-unused-vars
         // const trace = this._traces.get(d)

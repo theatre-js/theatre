@@ -10,9 +10,9 @@ export default function configureStore<State>(conf: Conf<State>): Store<State> {
   const middlewares: $FixMe[] = []
   const enhancers = []
 
-  if (process.env.NODE_ENV === 'development') {
+  if ($env.NODE_ENV === 'development') {
     const devtoolsEnhancer =
-      process.env.NODE_ENV === 'development' &&
+      $env.NODE_ENV === 'development' &&
       typeof window === 'object' &&
       window.devToolsExtension
         ? window.devToolsExtension()

@@ -20,19 +20,19 @@ export default class StatePersistor {
   constructor(readonly _theater: Theater) {
     this._lastPersistedStateInfo = {type: 'empty', state: {}}
     if (
-      process.env.NODE_ENV === 'development' &&
-      process.env.devSpecific.theater.statePersistenceMode &&
-      process.env.devSpecific.theater.statePersistenceMode !== 'normal'
+      $env.NODE_ENV === 'development' &&
+      $env.devSpecific.theater.statePersistenceMode &&
+      $env.devSpecific.theater.statePersistenceMode !== 'normal'
     ) {
       if (
-        process.env.devSpecific.theater.statePersistenceMode ===
+        $env.devSpecific.theater.statePersistenceMode ===
         'dontLoadOrPersist'
       ) {
         this._theater.store.dispatch(
           reduceAhistoricState(['stateIsHydrated'], () => true),
         )
       } else if (
-        process.env.devSpecific.theater.statePersistenceMode ===
+        $env.devSpecific.theater.statePersistenceMode ===
         'loadButDontUpdate'
       ) {
         throw new Error('Implement me @todo')

@@ -18,7 +18,7 @@ export default class Studio {
     this.elementTree = new ElementTree()
     this._lbCommunicator = new LBCommunicator({
       lbUrl: `${window.location.protocol}//${window.location.hostname}:${
-        process.env.theater.socketPort
+        $env.theater.socketPort
       }`,
     })
     this._statePersistor = new StatePersistor(theater)

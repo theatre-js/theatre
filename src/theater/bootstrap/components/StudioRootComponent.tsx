@@ -33,7 +33,7 @@ class StudioRootComponent extends React.Component<Props, State> {
   componentWillMount() {
     const self = this
 
-    if (process.env.NODE_ENV === 'development' && module.hot) {
+    if ($env.NODE_ENV === 'development' && module.hot) {
       module.hot.accept('./HotReloadablePart', () => {
         const HotReloadablePart = require('./HotReloadablePart').default
         self.setState({HotReloadablePart})
