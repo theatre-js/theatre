@@ -21,7 +21,9 @@
     "build:dev": "npm-run-all --parallel lb:webpack:dev lf:webpack:dev theater:webpack:dev examples:webpack:dev",
     "open-examples": "opn http://localhost:9092/examples",
     "ci:check-types": "tsc -p ./ci.tsconfig.json --noEmit",
-    "ci:type-tests": "tslint -c ./typeTests.tslint.json -p ./typeTests.tsconfig.json --format stylish ./src/**/*.typeTest.ts*"
+    "ci:type-tests": "tslint -c ./typeTests.tslint.json -p ./typeTests.tsconfig.json --format stylish ./src/**/*.typeTest.ts*",
+    "ci": "run-p ci:check-types test",
+    "prepush": "npm run ci"
   },
   "jest": {
     "testMatch": [
@@ -132,6 +134,7 @@
     "fuzzaldrin-plus": "^0.6.0",
     "html-loader": "^0.5.5",
     "html-webpack-plugin": "^3.2.0",
+    "husky": "^0.14.3",
     "identity-obj-proxy": "^3.0.0",
     "immer": "^1.2.1",
     "jest": "^22.4.2",
