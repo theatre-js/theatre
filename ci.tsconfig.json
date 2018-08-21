@@ -21,13 +21,7 @@
     "acceptance-tests",
     "webpack",
     "jest",
-    "src/setupTests.ts",
-    "vendor",
-    "xeno",
-    "webpack",
-    "docs",
-    "bundles",
-    ".vscode"
+    "src/setupTests.ts"
   ],
   "compilerOptions": {
     "noUnusedLocals": false,

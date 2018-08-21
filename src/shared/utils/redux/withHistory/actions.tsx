@@ -2,6 +2,7 @@ import {actionCreator} from '$shared/utils'
 import makeUUID from 'uuid/v4'
 import {GenericAction} from '$shared/types'
 import {HistoryOnly} from '$shared/utils/redux/withHistory/withHistoryDeprecated'
+import {identity} from 'lodash'
 
 type GenericReducer = <T extends {}>(state: T) => T
 
@@ -28,13 +29,15 @@ export const _discardTemporaryAction = actionCreator(
   (id: string) => id,
 )
 
-export const tempActionGroup = () => {
+export const tempActionGroup = (
+  transform: (original: GenericAction) => GenericAction = identity,
+) => {
   const id = makeUUID()
 
   const push = (originalAction: GenericAction) =>
-    _pushTemporaryAction({id, originalAction})
+    transform(_pushTemporaryAction({id, originalAction}))
 
-  const discard = () => _discardTemporaryAction(id)
+  const discard = () => transform(_discardTemporaryAction(id))
 
   return {
     push,

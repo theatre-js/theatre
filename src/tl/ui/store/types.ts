@@ -52,6 +52,7 @@ const $ObjectState = t.type(
 const $TimelineState = t.type({
   selectedTimelineInstance: t.union([t.null, t.string]),
   objects: t.record(t.string, $ObjectState),
+  collapsedNodesByPath: t.record(t.string, t.literal(1))
 })
 
 const $ProjectState = t.type(

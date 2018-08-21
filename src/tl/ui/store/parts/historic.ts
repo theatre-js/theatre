@@ -35,6 +35,7 @@ const ensureTimelineIsSetUp = (s: UIHistoricState, addr: TimelineAddress) => {
     s.allInOnePanel.projects[addr.projectId].timelines[addr.timelinePath] = {
       selectedTimelineInstance: null,
       objects: {},
+      collapsedNodesByPath: {},
     }
   }
 }
@@ -97,5 +98,17 @@ export const setPropHeightWhenExpanded = r(
     ensurePropIsSetUp(s, p)
     const propState = uiSelectors.getPropState(s, p)
     propState.heightWhenExpanded = p.height
+  },
+)
+
+export const setNodeExpansion = r(
+  (s, p: TimelineAddress & {expanded: boolean; nodePath: string}) => {
+    ensureTimelineIsSetUp(s, p)
+    const {collapsedNodesByPath} = uiSelectors.getTimelineState(s, p)
+    if (p.expanded === false) {
+      collapsedNodesByPath[p.nodePath] = 1
+    } else {
+      delete collapsedNodesByPath[p.nodePath]
+    }
   },
 )

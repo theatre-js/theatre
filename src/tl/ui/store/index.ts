@@ -23,6 +23,7 @@ const initialHistoricState: UIHistoricState = {
               },
             },
             selectedTimelineInstance: null,
+            collapsedNodesByPath: {},
           },
         },
       },

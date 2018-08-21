@@ -5,6 +5,7 @@ import * as css from './GroupingOrObject.css'
 import SvgIcon from '$shared/components/SvgIcon'
 import arrowIcon from 'svg-inline-loader!$theater/ExploreFlyoutMenu/arrow.svg'
 import {GroupingItem, ObjectItem} from '../../utils'
+import {getProjectTimelineAndInstance} from '$tl/ui/panels/AllInOnePanel/selectors'
 
 const classes = resolveCss(css)
 
@@ -19,7 +20,16 @@ export default class GroupingOrObject extends UIComponent<IProps, IState> {
     super(props, context)
   }
 
-  toggleExpansion = () => {}
+  toggleExpansion = () => {
+    const {internalTimeline} = getProjectTimelineAndInstance(this.ui)
+    this.ui.reduxStore.dispatch(
+      this.ui.actions.historic.setNodeExpansion({
+        expanded: !this.props.item.expanded,
+        nodePath: this.props.item.path,
+        ...internalTimeline._address,
+      }),
+    )
+  }
 
   select = () => {}
 
@@ -42,8 +52,12 @@ export default class GroupingOrObject extends UIComponent<IProps, IState> {
           hasChildren && 'hasChildren',
           item.type === 'Grouping' ? 'grouping' : 'object',
         )}
-        // @ts-ignore ignore
-        style={{'--depth': props.item.depth, top: item.top + 'px', height: item.height + 'px'}}
+        style={{
+          // @ts-ignore ignore
+          '--depth': props.item.depth,
+          top: item.top + 'px',
+          height: item.height + 'px',
+        }}
       >
         <div {...classes('top')}>
           {

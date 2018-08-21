@@ -19,6 +19,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "pretty": true,
+    "noEmit": true,
     "paths": {
       "$lb/*": ["src/lb/*"],
       "$lf/*": ["src/lf/*"],

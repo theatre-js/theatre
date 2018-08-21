@@ -103,6 +103,7 @@ export interface PrimitivePropItem extends Item {
   expanded: boolean
 }
 
+type ExcludeHeight<O> = Pick<O, Exclude<keyof O, 'height'>>
 type AnyItem = GroupingItem | ObjectItem | PrimitivePropItem
 const singleItemheight = 30
 
@@ -113,7 +114,11 @@ export const internalTimelineToSeriesOfVerticalItems = (
   const items: AnyItem[] = []
   let heightSoFar = 0
 
-  type ExcludeHeight<O> = Pick<O, Exclude<keyof O, 'height'>>
+  const collapsedNodes = val(uiSelectors.getCollapsedNodesOfTimelineByPath(
+    ui.atomP.historic,
+    internalTimeline._address,
+  ))
+  const setOfCollapsedNodes = new Set(Object.keys(collapsedNodes))
 
   const push = (
     _item:
@@ -134,30 +139,33 @@ export const internalTimelineToSeriesOfVerticalItems = (
 
   const processNode = (node: NodeDescriptor, depth: number) => {
     const {isObject} = node
-    const isExpanded = true
+    // ui.atomP.historic.allInOnePanel.projects[]
+    const expanded = setOfCollapsedNodes.has(node.path) ? false : true
     const hasChildren = node.children.length > 0
 
-    const internalObject = val(internalTimeline._internalObjects.pointer[node.path])
+    const internalObject = val(
+      internalTimeline._internalObjects.pointer[node.path],
+    )
 
     push(
       {
         type: isObject ? 'ObjectItem' : ('Grouping' as $IntentionalAny),
         path: node.path,
-        expanded: isExpanded,
+        expanded,
         depth: depth,
         top: heightSoFar,
         key: `Item:${node.path}`,
         hasChildren: node.children.length > 0,
-        address: isObject ? internalObject._address : undefined
+        address: isObject ? internalObject._address : undefined,
       },
       singleItemheight,
     )
 
-    if (isExpanded && isObject) {
+    if (expanded && isObject) {
       processProps(node, depth)
     }
 
-    if (isExpanded && hasChildren) {
+    if (expanded && hasChildren) {
       processChildren(node, depth)
     }
   }
@@ -197,7 +205,9 @@ export const internalTimelineToSeriesOfVerticalItems = (
     if (typeDesc.type === 'number') {
       const propAddr = {...internalObject._address, objectPath, propKey}
       // debugger
-      const propState = val(uiSelectors.getPropState(ui.atomP.historic, propAddr))
+      const propState = val(
+        uiSelectors.getPropState(ui.atomP.historic, propAddr),
+      )
 
       push(
         {

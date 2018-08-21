@@ -1,10 +1,10 @@
 import {UIHistoricState} from './types'
 import pointerFriendlySelector from '$shared/utils/redux/pointerFriendlySelector'
 import {TimelineAddress, ObjectAddress, PropAddress} from '$tl/handy/addresses'
-import { val } from '$shared/DataVerse2/atom';
+import {val} from '$shared/DataVerse2/atom'
 import projectsSingleton from '$tl/Project/projectsSingleton'
-import UI from '$tl/ui/UI';
-import { Project } from '$src/tl';
+import UI from '$tl/ui/UI'
+import {Project} from '$src/tl'
 
 const getTimelineState = pointerFriendlySelector(
   (s: UIHistoricState, addr: TimelineAddress) => {
@@ -12,20 +12,20 @@ const getTimelineState = pointerFriendlySelector(
   },
 )
 
+const getCollapsedNodesOfTimelineByPath = pointerFriendlySelector(
+  (s: UIHistoricState, addr: TimelineAddress) => {
+    return getTimelineState(s, addr).collapsedNodesByPath
+  },
+)
+
 const getObjectState = pointerFriendlySelector(
-  (
-    s: UIHistoricState,
-    addr: ObjectAddress
-  ) => {
+  (s: UIHistoricState, addr: ObjectAddress) => {
     return getTimelineState(s, addr).objects[addr.objectPath]
   },
 )
 
 const getPropState = pointerFriendlySelector(
-  (
-    s: UIHistoricState,
-    addr: PropAddress
-  ) => {
+  (s: UIHistoricState, addr: PropAddress) => {
     return getObjectState(s, addr).props[addr.propKey]
   },
 )
@@ -55,6 +55,12 @@ const getSelectedProject = (ui: UI): Project | undefined => {
   return projects[selectedProjectId] || projects[projectIds[0]]
 }
 
-const uiSelectors = {getTimelineState, getObjectState, getPropState, getSelectedProject}
+const uiSelectors = {
+  getTimelineState,
+  getObjectState,
+  getPropState,
+  getSelectedProject,
+  getCollapsedNodesOfTimelineByPath,
+}
 
 export default uiSelectors
