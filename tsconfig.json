@@ -32,23 +32,8 @@
   },
   "include": ["./src", "./examples"],
   "exclude": [
-    "node_modules",
-    "build",
-    "scripts",
-    "acceptance-tests",
-    "webpack",
-    "jest",
-    "src/setupTests.ts",
-    "vendor",
-    "xeno",
-    "webpack",
-    "docs",
-    "bundles",
-    ".vscode"
+    "src/setupTests.ts"
   ],
-  "plugins": [
-    // {
-    // "name": "typescript-snapshots-plugin"
-    // }
-  ]
+  "files": ["./defs.d.ts"],
+  "plugins": []
 }

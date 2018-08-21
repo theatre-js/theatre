@@ -22,8 +22,7 @@
     "open-examples": "opn http://localhost:9092/examples",
     "ci:check-types": "tsc -p ./ci.tsconfig.json --noEmit",
     "ci:type-tests": "tslint -c ./typeTests.tslint.json -p ./typeTests.tsconfig.json --format stylish ./src/**/*.typeTest.ts*",
-    "ci": "run-p ci:check-types test",
-    "prepush": "npm run ci"
+    "prepush": "run-p ci:check-types test"
   },
   "jest": {
     "testMatch": [

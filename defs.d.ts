@@ -1,5 +1,3 @@
-// <reference path="./node_modules/@types/node/index.d.ts" />
-
 /**
  * For `any`s that aren't meant to stay `any`
  */
@@ -81,26 +79,6 @@ type EnvironmentVariables =
 
 declare var $env: EnvironmentVariables
 
-// interface PC extends NodeJS.Process {
-//   env: EnvironmentVariables & {[k: string]: string}
-// }
-
-// declare namespace NodeJS {
-//   interface Process {
-//     env: EnvironmentVariables & {[k: string]: string}
-
-//   }
-// }
-
-// declare var process: PC
-
-// declare var module: {
-//   hot?: {
-//     accept: ((add: string, callback: Function) => mixed) & (() => mixed)
-//     dispose: (() => mixed)
-//   }
-// }
-
 interface Generator_<ReturnType = {}, A = {}, YieldType = {}>
   extends Generator {}
 
@@ -174,8 +152,3 @@ declare module 'hoist-non-react-statics' {
 }
 
 declare module 'jiff'
-
-// import {TL as TL_} from '$src/tl'
-
-// declare var TL: string
-
