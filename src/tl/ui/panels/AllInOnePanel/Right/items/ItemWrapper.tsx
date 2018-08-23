@@ -72,12 +72,4 @@ class ItemWrapper extends UIComponent<IProps, IState> {
   }
 }
 
-/*
-const actionGroup = ui.actions.historic.temp()
-ui.reduxStore.dispatch(actionGroup.push(ui.actions.historic.blah()))
-
-ui.actions.historic.undo/redo() am has alan
-
-*/
-
 export default ItemWrapper

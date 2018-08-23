@@ -1,16 +1,13 @@
-import resolveCss from '$shared/utils/resolveCss'
 import UIComponent from '$tl/ui/handy/UIComponent'
 import React from 'react'
-import * as css from './TimelineItem.css'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import {val} from '$shared/DataVerse2/atom'
 import {PrimitivePropItem} from '../../utils'
 import projectSelectors from '$tl/Project/store/selectors'
 import {IBezierCurvesOfScalarValues} from '$tl/Project/store/types'
-import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
 import ItemWrapper from '$tl/ui/panels/AllInOnePanel/Right/items/ItemWrapper'
+import ItemPropProvider from '$tl/ui/panels/AllInOnePanel/Right/items/ItemPropProvider'
 
-const classes = resolveCss(css)
 interface IProps {
   item: PrimitivePropItem
 }
@@ -32,7 +29,11 @@ export default class TimelineItem extends UIComponent<IProps, IState> {
 
     const points = valueContainer.points
 
-    return <ItemWrapper item={item}>PointsPropProvider, PointsView</ItemWrapper>
+    return (
+      <ItemWrapper item={item}>
+        <ItemPropProvider itemHeight={item.height}>ItemView</ItemPropProvider>
+      </ItemWrapper>
+    )
   }
 
   // setPoints = (points: IBezierCurvesOfScalarValues['points']) => {
