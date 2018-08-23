@@ -15,6 +15,7 @@ export type RangeState = {
 }
 
 export default class InternalTimeline {
+  blah = 'hi'
   _address: TimelineAddress
   readonly _internalObjects: Atom<{[path: string]: InternalObject}> = new Atom(
     {},
@@ -25,8 +26,8 @@ export default class InternalTimeline {
   }
 
   protected _rangeState: Atom<RangeState> = atom({
-    duration: 2000,
-    rangeShownInPanel: {from: 0, to: 2000},
+    duration: 20000,
+    rangeShownInPanel: {from: 0, to: 8000},
     temporarilyLimitedPlayRange: null,
   })
 
@@ -53,7 +54,7 @@ export default class InternalTimeline {
     return internalObject
   }
 
-  _setRangeShownInPanel(p: {from: number; to: number}) {
+  _setRangeShownInPanel = (p: {from: number; to: number}) => {
     this._rangeState.reduceState(['rangeShownInPanel'], () => p)
   }
 

@@ -5,76 +5,157 @@ import React from 'react'
 import * as css from './Right.css'
 import {val} from '$shared/DataVerse2/atom'
 import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
+import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
+import {RangeState} from '$tl/timelines/InternalTimeline'
+import TimelineInstance from '$tl/timelines/TimelineInstance'
 import {
-  internalTimelineToSeriesOfVerticalItems,
-  PrimitivePropItem,
-} from '../utils'
-// import GroupingOrObject from './items/GroupingOrObject'
-// import PrimitiveProp from './items/PrimitiveProp'
-import SeekBar from './SeekBar/SeekBar'
-import AnimatableProp from './items/AnimatableProp'
+  xToInRangeTime,
+  deltaXToInRangeTime,
+  getSvgWidth,
+} from '$tl/ui/panels/AllInOnePanel/Right/utils'
+import {
+  getNewRange,
+  getNewZoom,
+  clampTime,
+} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
+import TimelineProviders from '$tl/ui/panels/AllInOnePanel/Right/items/TimelineProviders'
 
 const classes = resolveCss(css)
 
-interface IProps {}
+interface IExportedComponentProps {}
 
-interface IState {}
+interface IRightProps {
+  range: RangeState['rangeShownInPanel']
+  duration: RangeState['duration']
+  // currentTime: number
+  width: number
+  timelineInstance: TimelineInstance
+  setRange: (range: RangeState['rangeShownInPanel']) => void
+}
 
-export default class Right extends UIComponent<IProps, IState> {
-  constructor(props: IProps, context: $IntentionalAny) {
+interface IRightState {}
+
+class Right extends UIComponent<IRightProps, IRightState> {
+  wrapper: React.RefObject<HTMLDivElement> = React.createRef()
+  wrapperLeft: number
+
+  constructor(props: IRightProps, context: $IntentionalAny) {
     super(props, context)
     this.state = {}
   }
 
   render() {
+    const {range, duration, width} = this.props
+    const svgWidth = getSvgWidth(range, duration, width)
     return (
-      <AllInOnePanelStuff>
-        {allInOnePanelStuffP => {
-          return (
-            <PropsAsPointer>
-              {() => {
-                const timelineInstance = val(
-                  allInOnePanelStuffP.timelineInstance,
-                )
-                const internalTimeline = val(
-                  allInOnePanelStuffP.internalTimeline,
-                )
-                if (!timelineInstance || !internalTimeline) return null
-
-                const items = internalTimelineToSeriesOfVerticalItems(
-                  this.ui,
-                  internalTimeline,
-                )
-
-                const lastItem = items[items.length - 1]
-                const height = lastItem ? lastItem.top + lastItem.height : 0
-
-                return (
-                  <>
-                    <SeekBar />
-                    <div
-                      {...classes('container')}
-                      style={{height: `${height}px`}}
-                    >
-                      <div {...classes('filler')} />
-                      {items
-                        .filter(item => item.type === 'PrimitiveProp')
-                        .map(item => {
-                          return (
-                            <AnimatableProp
-                              item={item as PrimitivePropItem}
-                              key={item.key}
-                            />
-                          )
-                        })}
-                    </div>
-                  </>
-                )
-              }}
-            </PropsAsPointer>
-          )
-        }}
-      </AllInOnePanelStuff>
+      <DraggableArea
+        onDragStart={this.syncSeekerWithMousePosition}
+        onDrag={this.seekTime}
+        shouldReturnMovement={true}
+      >
+        <div
+          ref={this.wrapper}
+          {...classes('wrapper')}
+          onWheel={this.handleWheel}
+        >
+          <div style={{width: svgWidth}} {...classes('scrollingContainer')}>
+            <TimelineProviders />
+          </div>
+        </div>
+      </DraggableArea>
     )
   }
+
+  componentDidMount() {
+    this.wrapperLeft = this.wrapper.current!.getBoundingClientRect().left
+  }
+
+  syncSeekerWithMousePosition = (event: React.MouseEvent<HTMLDivElement>) => {
+    const {width, range, timelineInstance} = this.props
+    const newTime = xToInRangeTime(range, width)(
+      event.clientX - this.wrapperLeft,
+    )
+    timelineInstance.gotoTime(newTime)
+    // if (timelineInstance.playing) {
+    //   timelineInstance.pause()
+    //   timelineInstance.gotoTime(newTime)
+    //   timelineInstance.play()
+    // } else {
+    //   timelineInstance.gotoTime(newTime)
+    //   // addGlobalSeekerDragRule()
+    // }
+  }
+
+  seekTime = (_: number, __: number, event: MouseEvent) => {
+    const {range, width, timelineInstance} = this.props
+    const newTime = xToInRangeTime(range, width)(
+      event.clientX - this.wrapperLeft,
+    )
+    timelineInstance.gotoTime(clampTime(range, newTime))
+  }
+
+  handleWheel = (event: React.WheelEvent<HTMLDivElement>) => {
+    // horizontal scroll
+    if (Math.abs(event.deltaY) < Math.abs(event.deltaX)) {
+      event.preventDefault()
+      event.stopPropagation()
+      const {range, width, duration} = this.props
+      const dt = deltaXToInRangeTime(range, width)(event.deltaX)
+
+      const change = {from: dt, to: dt}
+      this._setRange(getNewRange(range, change, duration))
+      return
+    }
+
+    // pinch
+    if (event.ctrlKey) {
+      event.preventDefault()
+      event.stopPropagation()
+      const {range, duration, width} = this.props
+      const dt = deltaXToInRangeTime(range, width)(event.deltaY) * 3.5
+      const fraction = (event.clientX - this.wrapperLeft) / width
+
+      const change = {from: -dt * fraction, to: dt * (1 - fraction)}
+      this._setRange(getNewZoom(range, change, duration))
+    }
+  }
+
+  _setRange(range: RangeState['rangeShownInPanel']) {
+    this.props.setRange(range)
+    this.scrollContainer()
+  }
+
+  scrollContainer() {
+    const {range, width} = this.props
+    const scrollLeft = (width * range.from) / (range.to - range.from)
+
+    this.wrapper.current!.scrollTo({left: scrollLeft})
+  }
 }
+
+export default (_props: IExportedComponentProps) => (
+  <AllInOnePanelStuff>
+    {allInOnePanelStuffP => (
+      <PropsAsPointer>
+        {() => {
+          const timelineInstance = val(allInOnePanelStuffP.timelineInstance)
+          const internalTimeline = val(allInOnePanelStuffP.internalTimeline)
+          if (!timelineInstance || !internalTimeline) return null
+
+          const rangeState = val(internalTimeline.pointerToRangeState)
+          // const currentTime = val(timelineInstance.statePointer.time)
+          const width = val(allInOnePanelStuffP.rightWidth)
+          const rightProps: IRightProps = {
+            range: rangeState.rangeShownInPanel,
+            duration: rangeState.duration,
+            // currentTime,
+            width,
+            timelineInstance,
+            setRange: internalTimeline._setRangeShownInPanel,
+          }
+          return <Right {...rightProps} />
+        }}
+      </PropsAsPointer>
+    )}
+  </AllInOnePanelStuff>
+)

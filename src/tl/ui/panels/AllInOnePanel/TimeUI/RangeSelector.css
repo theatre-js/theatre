@@ -1,0 +1,106 @@
+.container {
+  --threadHeight: 6px;
+  --thumbColor: #00E0FF;
+  --rangeBarColor: #9DF233;
+  position: absolute;
+  height: 0;
+  width: 100%;
+  top: 0;
+  pointer-events: auto;
+}
+
+.timeGrid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 8px;
+  z-index: 1;
+}
+
+.timeThread {
+  position: relative;
+  top: 0;
+  left: 0;
+  width: calc(100% - 30px);
+  height: var(--threadHeight);
+}
+
+.rangeBar {
+  position: absolute;
+  height: 5px;
+  background: rgba(#9DF233, 0.2);
+  cursor: ew-resize;
+  z-index: 2;
+
+  &:hover, &:active {
+    background: rgba(#9DF233, 0.4);
+  }
+
+  &:after {
+    position: absolute -4px;
+    display: block;
+    content: ' ';
+  }
+}
+
+.handle {
+  position: absolute;
+  height: 9px;
+  width: 7px;
+  z-index: 2;
+  top: -2px;
+  display: block;
+
+  &:before {
+    position: absolute 0;
+    display: block;
+    content: ' ';
+    background: url('url-loader!./RangeSelectorHandle.svg');
+  }
+
+  &:after {
+    position: absolute -4px;
+    display: block;
+    content: ' ';
+  }
+}
+
+.rangeFromHandle {
+  composes: handle;
+  left: 0px;
+  cursor: w-resize;
+  &:before {
+    transform: scaleX(-1);
+  }
+}
+
+.rangeToHandle {
+  composes: handle;
+  cursor: e-resize;
+  left: -7px;
+}
+
+.tooltip {
+  display: none;
+  position: absolute -20px * * 4px;
+  padding: 0 2px;
+  transform: translateX(-50%);
+  background: #999;
+  border-radius: 4px;
+  color: #FFF;
+  font-size: 10px;
+  line-height: 18px;
+  text-align: center;
+}
+
+.rangeFromHandle:hover .tooltip,
+.rangeFromHandle.active .tooltip,
+.rangeToHandle:hover .tooltip,
+.rangeToHandle:active .tooltip,
+.rangeBar:hover ~ .rangeFromHandle .tooltip,
+.rangeBar:hover ~ .rangeToHandle .tooltip,
+.rangeBar:active ~ .rangeFromHandle .tooltip,
+.rangeBar:active ~ .rangeToHandle .tooltip {
+  display: block;
+}

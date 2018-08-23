@@ -1,11 +1,30 @@
-.container {
-  background: #1B2226;
-  position: absolute 0;
+.wrapper {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: auto;
+  min-height: 100%;
   overflow-x: scroll;
   overflow-y: visible;
 }
 
-.filler {
-  width: 5000px;
-  height: 20px;
+.wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollingContainer {
+  position: relative;
+  left: 0;
+  top: 0;
+  height: auto;
+  min-height: 100%;
+
+  &:before {
+    display: block;
+    position: absolute 0;
+    content: ' ';
+    z-index: -1;
+    background: #1b2226;
+  }
 }

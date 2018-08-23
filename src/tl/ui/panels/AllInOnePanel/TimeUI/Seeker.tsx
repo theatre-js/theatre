@@ -1,14 +1,10 @@
 import React from 'react'
 import css from './Seeker.css'
-import {
-  addGlobalSeekerDragRule,
-  removeGlobalSeekerDragRule,
-  inRangeTimeToX,
-  xToInRangeTime,
-} from '$theater/AnimationTimelinePanel/utils'
 import DraggableArea from '$theater/common/components/DraggableArea/DraggableArea'
 import resolveCss from '$shared/utils/resolveCss'
 import {RangeState} from '$tl/timelines/InternalTimeline'
+import {inRangeTimeToX} from '$tl/ui/panels/AllInOnePanel/Right/utils'
+import {getNewTime} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
 
 const classes = resolveCss(css)
 
@@ -34,9 +30,9 @@ class Seeker extends React.PureComponent<IProps, IState> {
         style={{transform: `translate3d(${currentX}px, 0, 0)`}}
       >
         <DraggableArea
-          onDragStart={addGlobalSeekerDragRule}
+          // onDragStart={addGlobalSeekerDragRule}
           onDrag={this.gotoTime}
-          onDragEnd={removeGlobalSeekerDragRule}
+          // onDragEnd={removeGlobalSeekerDragRule}
           shouldReturnMovement={true}
         >
           <div {...classes('thumb')}>
@@ -50,9 +46,8 @@ class Seeker extends React.PureComponent<IProps, IState> {
   }
 
   gotoTime = (dx: number) => {
-    const {range, width, currentTime} = this.props
-    const currentTimeX = inRangeTimeToX(range, width)(currentTime)
-    const newTime = xToInRangeTime(range, width)(currentTimeX + dx)
+    const {range, currentTime, width} = this.props
+    const newTime = getNewTime(range, currentTime, width, dx)
     this.props.gotoTime(newTime)
   }
 }

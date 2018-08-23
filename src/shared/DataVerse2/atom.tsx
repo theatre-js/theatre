@@ -99,7 +99,6 @@ export class Atom<State> implements Pointable {
   setState(newState: State) {
     const oldState = this._currentState
     this._currentState = newState
-
     this._comp([], this._rootThingy, oldState, newState)
   }
 

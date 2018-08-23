@@ -1,2 +1,2 @@
-export const container: string;
-export const filler: string;
+export const wrapper: string;
+export const scrollingContainer: string;

@@ -22,36 +22,10 @@
   width: 200px;
 }
 
-.seekBar {
-  position: absolute;
-  top: 0;
-  right: 0;
-  height: 4px;
-  background: red;
-}
-
 .right {
   position: absolute;
   top: 0;
   right: 0;
-}
-
-.leftContent {
-  height: 800px;
-  background-image:linear-gradient(0deg, transparent 50%, #aaa 50%),
-                 linear-gradient(90deg, #aaa 50%, #ccc 50%);
-background-size:50px 50px,50px 50px;
-background-position:0 0, 0 25px;
-}
-
-.rightContent {
-  height: 800px;
-  width: 9000px;
-
-  background-image:linear-gradient(0deg, transparent 50%, blue 50%),
-                 linear-gradient(90deg, blue 50%, #ccc 50%);
-background-size:50px 50px,50px 50px;
-background-position:0 0, 0 25px;
 }
 
 .bottom {

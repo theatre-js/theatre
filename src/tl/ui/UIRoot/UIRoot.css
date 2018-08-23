@@ -6,3 +6,7 @@
   height: 0;
   z-index: 1000;
 }
+
+body {
+  overscroll-behavior-x: none;
+}

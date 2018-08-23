@@ -6,14 +6,13 @@ import * as css from './AllInOnePanel.css'
 import {val} from '$shared/DataVerse2/atom'
 import Left from '$tl/ui/panels/AllInOnePanel/Left/Left'
 import Bottom, {bottomHeight} from './Bottom/Bottom'
-import {
-  getProjectTimelineAndInstance,
-} from './selectors'
+import {getProjectTimelineAndInstance} from './selectors'
 import Project from '$tl/Project/Project'
 import InternalTimeline from '$tl/timelines/InternalTimeline'
 import TimelineInstance from '$tl/timelines/TimelineInstance'
 import Right from './Right/Right'
 import createPointerContext from '$shared/utils/react/createPointerContext'
+import TimeUI from '$tl/ui/panels/AllInOnePanel/TimeUI/TimeUI'
 
 const classes = resolveCss(css)
 
@@ -72,36 +71,43 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
           } = getProjectTimelineAndInstance(this.ui)
 
           const width = val(stateP.windowWidth) - 40
+          const height = fullHeightIncludingBottom - bottomHeight
+          const leftWidth = width * leftWidthFraction
+          const rightWidth = width * (1 - leftWidthFraction)
 
           const allInOnePanelStuff: IAllInOnePanelStuff = {
             project,
             internalTimeline,
             timelineInstance,
             width,
-            height: fullHeightIncludingBottom - bottomHeight,
-            leftWidth: width * leftWidthFraction,
-            rightWidth: width * (1 - leftWidthFraction),
+            height,
+            leftWidth,
+            rightWidth,
           }
 
           return (
             <Provider value={allInOnePanelStuff}>
               <div
                 {...classes('container')}
-                style={{height: fullHeightIncludingBottom + 'px'}}
+                style={{height: fullHeightIncludingBottom}}
               >
-                <div
-                  {...classes('middle')}
-                  style={{height: allInOnePanelStuff.height + 'px'}}
-                >
-                  <div
-                    {...classes('left')}
-                    style={{width: allInOnePanelStuff.leftWidth + 'px'}}
-                  >
+                <TimeUI
+                  internalTimeline={internalTimeline}
+                  timelineInstance={timelineInstance}
+                  height={height}
+                  width={rightWidth}
+                  left={leftWidth}
+                />
+                <div {...classes('middle')} style={{height}}>
+                  <div {...classes('left')} style={{width: leftWidth}}>
                     <Left />
                   </div>
                   <div
                     {...classes('right')}
-                    style={{width: allInOnePanelStuff.rightWidth + 'px'}}
+                    style={{
+                      width: rightWidth,
+                      height,
+                    }}
                   >
                     <Right />
                   </div>

@@ -1,7 +1,7 @@
 import resolveCss from '$shared/utils/resolveCss'
 import UIComponent from '$tl/ui/handy/UIComponent'
 import React from 'react'
-import * as css from './AnimatableProp.css'
+import * as css from './TimelineItem.css'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import {val} from '$shared/DataVerse2/atom'
 import {PrimitivePropItem} from '../../utils'
@@ -15,35 +15,32 @@ interface IProps {
 
 interface IState {}
 
-export default class AnimatableProp extends UIComponent<IProps, IState> {
+export default class TimelineItem extends UIComponent<IProps, IState> {
   constructor(props: IProps, context: $IntentionalAny) {
     super(props, context)
     this.state = {}
   }
 
-  _render(propsP: Pointer<IProps>, stateP: Pointer<IState>) {
+  _render(propsP: Pointer<IProps>) {
     const item = val(propsP.item)
     const propState = projectSelectors.historic.getPropState(
       this.project.atomP.historic,
       item.address,
     )
+
+
     const valueContainer = val(propState.valueContainer)
 
     if (!valueContainer || valueContainer.type !== 'BezierCurvesOfScalarValues')
       return null
-      
-    const points = valueContainer.points
-    console.log('points', points)
 
-    setTimeout(() => {
-      this.setPoints([])
-    }, 500)
+    const points = valueContainer.points
 
     return (
       <div
         {...classes('container')}
-        onClick={this.toggleExpansion}
-        style={{top: item.top + 'px', height: item.height + 'px'}}
+        onDoubleClick={this.toggleExpansion}
+        style={{top: item.top, height: item.height}}
       >
         {item.address.propKey}
       </div>

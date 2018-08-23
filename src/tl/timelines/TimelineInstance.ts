@@ -52,9 +52,9 @@ export default class TimelineInstance {
     } else {
       if (nativeObject !== object.nativeObject) {
         throw new Error(
-          `Looks like you're creating two different objects on the same path "${path}". 
+          `Looks like you're creating two different objects on the same path "${path}".
           If you're trying to create two different objects, give each a unique path.
-          Otherwise if you're trying to query the same existing object, you can run 
+          Otherwise if you're trying to query the same existing object, you can run
           timeline.getObject(path) to get access to that object after it's been created.`,
         )
       }

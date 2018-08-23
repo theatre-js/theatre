@@ -1,0 +1,40 @@
+.container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  pointer-events: none;
+}
+
+.canvas {
+  position: relative;
+  left: 0;
+  height: 100%;
+}
+
+.stamps {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  left: 0;
+  overflow: hidden;
+  z-index: 2;
+  will-change: transform;
+}
+
+.fullSecondStamp {
+  position: absolute;
+  padding-top: 5px;
+  color: #888;
+  font-size: 10px;
+  transform: translateX(-50%);
+}
+
+.frameStamp {
+  position: absolute;
+  padding-top: 5px;
+  color: #555;
+  font-size: 10px;
+  text-align: center;
+  transform: translateX(-50%);
+}
