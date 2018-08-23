@@ -28,7 +28,7 @@ class ItemsContainer extends UIComponent<IItemsContainerProps, IState> {
 
     const lastItem = items[items.length - 1]
     const height = lastItem ? lastItem.top + lastItem.height : '100%'
-
+    console.log(items)
     return (
       <div style={{height}}>
         {items

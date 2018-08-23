@@ -18,7 +18,8 @@ import {
   getNewZoom,
   clampTime,
 } from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
-import TimelineProviders from '$tl/ui/panels/AllInOnePanel/Right/items/TimelineProviders'
+import TimelineProviders from '$tl/ui/panels/AllInOnePanel/Right/timeline/TimelineProviders'
+import ItemsContainer from '$tl/ui/panels/AllInOnePanel/Right/items/ItemsContainer'
 
 const classes = resolveCss(css)
 
@@ -59,7 +60,9 @@ class Right extends UIComponent<IRightProps, IRightState> {
           onWheel={this.handleWheel}
         >
           <div style={{width: svgWidth}} {...classes('scrollingContainer')}>
-            <TimelineProviders />
+            <TimelineProviders>
+              <ItemsContainer />
+            </TimelineProviders>
           </div>
         </div>
       </DraggableArea>
@@ -122,10 +125,10 @@ class Right extends UIComponent<IRightProps, IRightState> {
 
   _setRange(range: RangeState['rangeShownInPanel']) {
     this.props.setRange(range)
-    this.scrollContainer()
+    this._scrollContainer()
   }
 
-  scrollContainer() {
+  _scrollContainer() {
     const {range, width} = this.props
     const scrollLeft = (width * range.from) / (range.to - range.from)
 

@@ -25,7 +25,7 @@
 .fullSecondStamp {
   position: absolute;
   padding-top: 5px;
-  color: #888;
+  color: #6A6A6A;
   font-size: 10px;
   transform: translateX(-50%);
 }
