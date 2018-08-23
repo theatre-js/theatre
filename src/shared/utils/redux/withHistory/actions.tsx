@@ -30,14 +30,20 @@ export const _discardTemporaryAction = actionCreator(
 )
 
 export const tempActionGroup = (
-  transform: (original: GenericAction) => GenericAction = identity,
+  outerTransform: (original: GenericAction) => GenericAction = identity,
+  innerTransform: (original: GenericAction) => GenericAction = identity,
 ) => {
   const id = makeUUID()
 
   const push = (originalAction: GenericAction) =>
-    transform(_pushTemporaryAction({id, originalAction}))
+    outerTransform(
+      _pushTemporaryAction({
+        id,
+        originalAction: innerTransform(originalAction),
+      }),
+    )
 
-  const discard = () => transform(_discardTemporaryAction(id))
+  const discard = () => outerTransform(_discardTemporaryAction(id))
 
   return {
     push,

@@ -80,7 +80,11 @@ const allInOneStoreBundle = <
         // @ts-ignore ignore
         historicActionWrapper(actionCreator(payload)),
     ) as $IntentionalAny),
-    temp: () => tempActionGroup(historicActionWrapper),
+    temp: () =>
+      tempActionGroup(
+        historicActionWrapper,
+        ({payload}: {payload: mixed}) => payload as $IntentionalAny,
+      ),
   } as typeof historicUnwrappedActions & {
     undo: typeof undoAction
     redo: typeof redoAction
