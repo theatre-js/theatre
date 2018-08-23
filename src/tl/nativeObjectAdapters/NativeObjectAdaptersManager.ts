@@ -4,6 +4,8 @@ import {keyBy, mapValues} from 'lodash'
 // import {NativeObjectTypeConfig} from '../objects/objectTypes'
 import htmlElementAdapter from './htmlElementAdapter/htmlElementAdapter'
 import {NativeObjectTypeConfig, NativeObjectType} from '$tl/objects/objectTypes'
+import {VoidFn} from '$shared/types'
+import TimelineInstanceObject from '$tl/objects/TimelineInstanceObject'
 
 export interface NativeObjectAdapter {
   accepts(nativeObject: $FixMe): boolean
@@ -11,6 +13,11 @@ export interface NativeObjectAdapter {
     nativeObject: $FixMe,
     config?: NativeObjectTypeConfig,
   ): NativeObjectType
+  start?(
+    object: TimelineInstanceObject,
+    nativeObject: $FixMe,
+    config?: NativeObjectTypeConfig,
+  ): VoidFn
 }
 
 type Priority = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10

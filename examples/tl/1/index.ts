@@ -2,6 +2,7 @@
 // import {TLType} from '../../../src/tl/index'
 import {TypeOfTL} from '$src/tl/index'
 import {NativeObjectType} from '$tl/objects/objectTypes'
+import {VoidFn} from '$shared/types'
 // const {sphere} = setupScene()
 
 // function setupTheaterForSphere(mesh) {
@@ -47,7 +48,6 @@ project.getTimeline('Scene / Demo / Grids')
 project.getTimeline('Scene / Panels / Layers')
 project.getTimeline('Scene / Panels / Tools')
 
-
 project.adapters.add(1, {
   accepts(nativeObject) {
     return nativeObject instanceof HTMLElement
@@ -60,10 +60,23 @@ project.adapters.add(1, {
         //   type: 'position3d',
         // },
         opacity: {
-          type: 'number'
-        }
+          type: 'number',
+        },
       },
     }
+  },
+
+  start(obj, nativeObject: HTMLElement): VoidFn {
+    const stopListening = obj.onValuesChange((values, t) => {
+      nativeObject.style.opacity = String(values.opacity)
+    })
+
+    const cleanup = () => {
+      stopListening()
+      nativeObject.style.opacity = '1'
+    }
+
+    return cleanup
   },
 })
 
@@ -83,22 +96,13 @@ timeline.createObject(
   'Act 1 / Stage / Ball / The dangling thing',
   document.createElement('div'),
 )
-timeline.createObject(
-  'Act 1 / Stage / Plane',
-  document.createElement('div'),
-)
+timeline.createObject('Act 1 / Stage / Plane', document.createElement('div'))
 
 timeline.createObject(
   'Act 1 / Helpers / FPS Counter',
   document.createElement('div'),
 )
 
-timeline.createObject(
-  'Act 2 / Recess / Title',
-  document.createElement('div'),
-)
+timeline.createObject('Act 2 / Recess / Title', document.createElement('div'))
 
-timeline.createObject(
-  'Act 2 / Recess / Music',
-  document.createElement('div'),
-)
+timeline.createObject('Act 2 / Recess / Music', document.createElement('div'))

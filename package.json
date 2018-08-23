@@ -157,6 +157,7 @@
     "postcss-short": "^4.1.0",
     "postcss-simple-vars": "^4.1.0",
     "prettier": "^1.12.0",
+    "propose": "0.0.5",
     "ramda": "^0.24.1",
     "react": "^16.4.1",
     "react-broadcast": "^0.6.1",

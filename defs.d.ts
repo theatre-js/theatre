@@ -11,7 +11,16 @@ interface Window {
   devToolsExtension?: Function
 }
 
-type mixed = object | number | string | boolean | symbol | undefined | null | Object | void
+type mixed =
+  | object
+  | number
+  | string
+  | boolean
+  | symbol
+  | undefined
+  | null
+  | Object
+  | void
 
 /**
  * Project-specific globals (such as the unique shape of process.env) will be defined here.
@@ -152,3 +161,12 @@ declare module 'hoist-non-react-statics' {
 }
 
 declare module 'jiff'
+
+declare module 'propose' {
+  const propose: (
+    str: string,
+    dictionary: string[],
+    options?: {threshold?: number; ignoreCase?: boolean},
+  ) => string | null
+  export default propose
+}
