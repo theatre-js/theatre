@@ -31,7 +31,7 @@ export default class InternalTimeline {
   }
 
   protected _rangeState: Atom<RangeState> = atom({
-    duration: 2000,
+    duration: 20000,
     rangeShownInPanel: {from: 0, to: 8000},
     temporarilyLimitedPlayRange: null,
   })

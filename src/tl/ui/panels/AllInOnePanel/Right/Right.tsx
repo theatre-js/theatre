@@ -48,6 +48,7 @@ class Right extends UIComponent<IRightProps, IRightState> {
   render() {
     const {range, duration, timelineWidth} = this.props
     const svgWidth = getSvgWidth(range, duration, timelineWidth)
+
     return (
       <DraggableArea
         onDragStart={this.syncSeekerWithMousePosition}
