@@ -1,9 +1,12 @@
 import Project from '$tl/Project/Project'
 import InternalObject from '$tl/objects/InternalObject'
 import {NativeObjectTypeConfig} from '$tl/objects/objectTypes'
-import atom, {Atom} from '$shared/DataVerse2/atom'
+import atom, {Atom, valueDerivation} from '$shared/DataVerse2/atom'
 import {Pointer} from '$shared/DataVerse2/pointer'
-import { TimelineAddress } from '$tl/handy/addresses';
+import {TimelineAddress} from '$tl/handy/addresses'
+import {ConstantDerivation} from '$shared/DataVerse/derivations/constant'
+import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
+import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 
 export type RangeState = {
   duration: number
@@ -15,8 +18,10 @@ export type RangeState = {
 }
 
 export default class InternalTimeline {
-  blah = 'hi'
   _address: TimelineAddress
+
+  _playableRangeD: undefined | AbstractDerivation<{start: number; end: number}>
+
   readonly _internalObjects: Atom<{[path: string]: InternalObject}> = new Atom(
     {},
   )
@@ -26,7 +31,7 @@ export default class InternalTimeline {
   }
 
   protected _rangeState: Atom<RangeState> = atom({
-    duration: 20000,
+    duration: 2000,
     rangeShownInPanel: {from: 0, to: 8000},
     temporarilyLimitedPlayRange: null,
   })
@@ -36,6 +41,7 @@ export default class InternalTimeline {
   constructor(readonly project: Project, readonly _path: string) {
     this.pointerToRangeState = this._rangeState.pointer
     this._address = {...this.project._address, timelinePath: _path}
+    this._playableRangeD = undefined
   }
 
   getInternalObject(
@@ -60,5 +66,18 @@ export default class InternalTimeline {
 
   _setTemporarilyLimitedPlayRange(p: null | {from: number; to: number}) {
     this._rangeState.reduceState(['temporarilyLimitedPlayRange'], () => p)
+  }
+
+  _getPlayableRangeD() {
+    if (this._playableRangeD) return this._playableRangeD
+    const startD = new ConstantDerivation(0)
+    const durD = valueDerivation(this.pointerToRangeState.duration)
+    const endD = durD
+
+    const playableRangeD = (this._playableRangeD = autoDerive(() => {
+      return {start: startD.getValue(), end: endD.getValue()}
+    }))
+
+    return playableRangeD
   }
 }

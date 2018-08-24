@@ -112,7 +112,7 @@ class Right extends UIComponent<IRightProps, IRightState> {
       event.preventDefault()
       event.stopPropagation()
       const {range, duration, width} = this.props
-      const dt = deltaXToInRangeTime(range, width)(event.deltaY) * 3.5
+      const dt = deltaXToInRangeTime(range, width)(event.deltaY) * 9.5
       const fraction = (event.clientX - this.wrapperLeft) / width
 
       const change = {from: -dt * fraction, to: dt * (1 - fraction)}

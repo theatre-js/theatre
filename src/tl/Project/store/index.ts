@@ -14,7 +14,7 @@ const initialHistoricState: ProjectHistoricState = {
         'Act 1 / Stage / Ball': {
           props: {
             opacity: {
-              valueContainer: {
+              valueContainer: /* {type: 'StaticValueContainer', value: 0.5} */ {
                 type: 'BezierCurvesOfScalarValues',
                 points: [
                   {
@@ -28,22 +28,22 @@ const initialHistoricState: ProjectHistoricState = {
                     },
                   },
                   {
-                    time: 200,
+                    time: 1000,
                     value: 0.5,
                     interpolationDescriptor: {
                       __descriptorType: 'TimelinePointInterpolationDescriptor',
                       connected: false,
-                      handles: [0, 0, 0, 0],
+                      handles: [0.5, 0, 0, 0.5],
                       interpolationType: 'CubicBezier',
                     },
                   },
                   {
-                    time: 300,
+                    time: 1500,
                     value: 1,
                     interpolationDescriptor: {
                       __descriptorType: 'TimelinePointInterpolationDescriptor',
                       connected: false,
-                      handles: [0, 0, 0, 0],
+                      handles: [0.5, 0, 0, 0.5],
                       interpolationType: 'CubicBezier',
                     },
                   },
@@ -69,22 +69,22 @@ const initialHistoricState: ProjectHistoricState = {
                     },
                   },
                   {
-                    time: 200,
+                    time: 1000,
                     value: 0.5,
                     interpolationDescriptor: {
                       __descriptorType: 'TimelinePointInterpolationDescriptor',
                       connected: false,
-                      handles: [0, 0, 0, 0],
+                      handles: [0.5, 0, 0, 0.5],
                       interpolationType: 'CubicBezier',
                     },
                   },
                   {
-                    time: 300,
+                    time: 1500,
                     value: 1,
                     interpolationDescriptor: {
                       __descriptorType: 'TimelinePointInterpolationDescriptor',
                       connected: false,
-                      handles: [0, 0, 0, 0],
+                      handles: [0.5, 0, 0, 0.5],
                       interpolationType: 'CubicBezier',
                     },
                   },

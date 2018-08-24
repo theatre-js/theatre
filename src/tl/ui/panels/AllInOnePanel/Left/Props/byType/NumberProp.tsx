@@ -53,7 +53,7 @@ export default class NumberProp extends UIComponent<IProps, IState> {
       const value = val(
         (valueContainerP as Pointer<StaticValueContainer>).value,
       )
-      return <span {...classes('value')}>{value.stringRepresentation}</span>
+      return <span {...classes('value')}>{value}</span>
     } else {
       console.error('Only supporting PrimitiveValue atm')
       return 'Error'

@@ -20,14 +20,14 @@ export type ProjectEphemeralState = t.StaticTypeOf<
   typeof $ProjectEphemeralState
 >
 
-const $PrimitiveValue = t.type(
-  {type: t.literal('PrimitiveValue'), stringRepresentation: t.string},
-  'PrimitiveValue',
-)
+// const $PrimitiveValue = t.type(
+//   {type: t.literal('PrimitiveValue'), stringRepresentation: t.string},
+//   'PrimitiveValue',
+// )
 
 const $StaticValueContainer = t.type({
   type: t.literal('StaticValueContainer'),
-  value: t.union([$PrimitiveValue]),
+  value: t.union([t.number, t.string]),
 })
 
 export type StaticValueContainer = t.StaticTypeOf<typeof $StaticValueContainer>
@@ -52,25 +52,37 @@ const $ITimelinePointInterpolationDescriptor = t.type(
   'TimelinePointInterpolationDescriptor',
 )
 
-const $ITimelineVarPoint = <V>(valueType: t.Type<V>) => t.type(
-  {
-    time: t.number,
-    value: valueType,
-    interpolationDescriptor: t.deferred(
-      () => $ITimelinePointInterpolationDescriptor,
-    ),
-  },
-  'TimelineVarPoint',
-)
+export type ITimelinePointInterpolationDescriptor = t.StaticTypeOf<
+  typeof $ITimelinePointInterpolationDescriptor
+>
+
+const $ITimelineVarPoint = <V>(valueType: t.Type<V>) =>
+  t.type(
+    {
+      time: t.number,
+      value: valueType,
+      interpolationDescriptor: t.deferred(
+        () => $ITimelinePointInterpolationDescriptor,
+      ),
+    },
+    'TimelineVarPoint',
+  )
+
+export type ITimelineVarPoint = t.StaticTypeOf<typeof $ITimelineVarPoint>
 
 const $BezierCurvesOfScalarValues = t.type({
   type: t.literal('BezierCurvesOfScalarValues'),
-  points: t.array($ITimelineVarPoint(t.number))
+  points: t.array($ITimelineVarPoint(t.number)),
 })
 
-export type IBezierCurvesOfScalarValues = t.StaticTypeOf<typeof $BezierCurvesOfScalarValues>
+export type IBezierCurvesOfScalarValues = t.StaticTypeOf<
+  typeof $BezierCurvesOfScalarValues
+>
 
-const $PropValueContainer = t.taggedUnion('type', [$StaticValueContainer, $BezierCurvesOfScalarValues])
+const $PropValueContainer = t.taggedUnion('type', [
+  $StaticValueContainer,
+  $BezierCurvesOfScalarValues,
+])
 
 const $ObjectPropState = t.type(
   {

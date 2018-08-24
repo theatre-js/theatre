@@ -80,6 +80,10 @@ export default abstract class AbstractDerivation<V>
     return new DerivationValuelessEmitter(this).tappable()
   }
 
+  keepHot() {
+    return this.changesWithoutValues().tap(() => {})
+  }
+
   tapImmediate(ticker: Ticker, fn: ((cb: V) => void)): VoidFn {
     const untap = this.changes(ticker).tap(fn)
     fn(this.getValue())
@@ -130,6 +134,7 @@ export default abstract class AbstractDerivation<V>
       this._freshnessState === FRESHNESS_STATE_NOT_APPLICABLE &&
       !isCollectingDependencies()
     ) {
+      debugger
       console.warn(`Perf regression: Unexpected cold derivation read`)
     }
 

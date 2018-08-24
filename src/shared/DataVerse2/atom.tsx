@@ -168,7 +168,9 @@ export class Atom<State> implements Pointable {
   }
 
   _getIdentityByPath(path: Array<string | number>): mixed {
-    return path.length === 0 ? this._currentState : get(this._currentState, path)
+    return path.length === 0
+      ? this._currentState
+      : get(this._currentState, path)
   }
 
   _tapIntoIdentityOfPathChanges(
@@ -190,9 +192,7 @@ export default atom
 
 export const valueDerivation = <P extends PointerInnerObj<$IntentionalAny>>(
   pointer: P,
-): P extends PointerInnerObj<infer T>
-  ? IdentityDerivation<T>
-  : IdentityDerivation<void> => {
+): IdentityDerivation<P extends PointerInnerObj<infer T> ? T : void> => {
   const meta = pointer.$pointerMeta
   let derivation = meta.identityDerivation
   if (!derivation) {
@@ -206,6 +206,7 @@ export const valueDerivation = <P extends PointerInnerObj<$IntentionalAny>>(
 export const val = <P extends PointerInnerObj<$IntentionalAny>>(
   pointer: P,
 ): P extends PointerInnerObj<infer T> ? T : never => {
+  // @ts-ignore @todo
   return valueDerivation(pointer).getValue()
 }
 

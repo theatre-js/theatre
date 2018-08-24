@@ -44,6 +44,12 @@ export default class Project {
     this.atomP = this.atom.pointer
     this.ticker = new Ticker()
     this._address = {projectId: this.id}
+
+    const onAnimationFrame = (t: number) => {
+      this.ticker.tick(t)
+      window.requestAnimationFrame(onAnimationFrame)
+    }
+    window.requestAnimationFrame(onAnimationFrame)
   }
 
   getTimeline(_path: string, instanceId: string = 'default'): TimelineInstance {

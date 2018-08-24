@@ -67,7 +67,11 @@ project.adapters.add(1, {
   },
 
   start(obj, nativeObject: HTMLElement): VoidFn {
+    // console.log('vv', nativeOb``);
+    
     const stopListening = obj.onValuesChange((values, t) => {
+      // console.log(nativeObject);
+      
       nativeObject.style.opacity = String(values.opacity)
     })
 
@@ -91,6 +95,7 @@ ballInDom.style.cssText = `
 
 ballInDom.classList.add('ball')
 const ball = timeline.createObject('Act 1 / Stage / Ball', ballInDom)
+timeline.play({repeat: true})
 
 timeline.createObject(
   'Act 1 / Stage / Ball / The dangling thing',

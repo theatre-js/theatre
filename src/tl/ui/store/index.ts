@@ -5,7 +5,6 @@ import allInOneStoreBundle from '$shared/utils/redux/allInOneStoreBundle'
 
 const initialHistoricState: UIHistoricState = {
   foo: '1',
-  bar: '1',
   allInOnePanel: {
     projects: {
       'Explorable Explanations': {

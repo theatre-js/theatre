@@ -4,26 +4,33 @@ import {NativeObjectTypeConfig} from './objectTypes'
 import {VoidFn} from '$shared/types'
 import didYouMean from '$shared/utils/didYouMean'
 import PropInstance from './PropInstance'
-import { mapValues } from 'lodash';
-import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive';
-import { val } from '$shared/DataVerse2/atom';
+import {mapValues} from 'lodash'
+import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
+import Project from '$tl/Project/Project'
 
 type Values = {[k: string]: $FixMe}
 
 export default class TimelineInstanceObject {
   _internalObject: InternalObject
   _propInstances: {[propName: string]: PropInstance} = {}
+  _project: Project
   constructor(
     readonly _timelineInstance: TimelineInstance,
     readonly path: string,
     readonly nativeObject: $FixMe,
     readonly config: NativeObjectTypeConfig | undefined,
   ) {
+    this._project = _timelineInstance._project
     this._internalObject = this._timelineInstance._internalTimeline.getInternalObject(
       path,
       nativeObject,
       config,
     )
+
+    const adapter = this._internalObject.adapter
+    if (adapter && adapter.start) {
+      adapter.start!(this, nativeObject, config)
+    }
   }
 
   getProp(name: string) {
@@ -46,21 +53,29 @@ export default class TimelineInstanceObject {
   }
 
   onValuesChange(callback: (values: Values, time: number) => void): VoidFn {
-    const props = mapValues(this._internalObject.nativeObjectType.props, (_, propName) => {
-      return this.getProp(name)
-    })
-
-    const timeP = this._timelineInstance.statePointer.time
+    const props = mapValues(
+      this._internalObject.nativeObjectType.props,
+      (_, propName) => {
+        return this.getProp(propName)
+      },
+    )
 
     const der = autoDerive(() => {
-      const time = val(timeP)
-      const values = mapValues(props, (prop) => {
-        // return prop._value
+      const values = mapValues(props, prop => {
+        return prop.value
       })
+
+      return values
     })
 
-    return () => {
+    const untap = der.changes(this._internalObject._project.ticker).tap(v => {
+      callback(v, this._timelineInstance.time)
+    })
 
-    }
+    this._project.ticker.registerSideEffect(() => {
+      callback(der.getValue(), this._timelineInstance.time)
+    })
+
+    return untap
   }
 }

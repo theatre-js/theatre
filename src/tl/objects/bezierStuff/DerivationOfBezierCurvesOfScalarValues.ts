@@ -1,13 +1,20 @@
 import _ from 'lodash'
 import * as interpolators from './interpolators/interpolators'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
-import Theater from '$theater/bootstrap/Theater'
+import {Pointer} from '$shared/DataVerse2/pointer'
+import {
+  IBezierCurvesOfScalarValues,
+  ITimelineVarPoint,
+} from '$tl/Project/store/types'
+import {val, valueDerivation} from '$shared/DataVerse2/atom'
+import interpolationDerivationForCubicBezier from './interpolators/interpolationDerivationForCubicBezier'
+import {skipFindingColdDerivations, endSkippingColdDerivations} from '$shared/debug'
 
 type TimelineIsEmptyBaseState = {type: 'TimelineIsEmpty'}
 type TimelineIsEmptyState = Spread<
   TimelineIsEmptyBaseState,
   {
-    firstIndexP: AbstractDerivation<undefined | mixed>
+    firstIndexPD: AbstractDerivation<undefined | ITimelineVarPoint>
   }
 >
 
@@ -18,7 +25,7 @@ type TimeIsBeforeFirstPointBaseState = {type: 'TimeIsBeforeFirstPoint'}
 type TimeIsBeforeFirstPointState = Spread<
   TimeIsBeforeFirstPointBaseState,
   {
-    timeOfFirstPointD: AbstractDerivation<undefined | null | number>
+    timeOfFirstPointPD: AbstractDerivation<undefined | number>
   }
 >
 
@@ -26,10 +33,10 @@ type ObservingKeyBaseState = {type: 'ObservingKey'; currentPointIndex: number}
 type ObservingKeyState = Spread<
   ObservingKeyBaseState,
   {
-    leftPointTimeP: AbstractDerivation<undefined | null | number>
+    leftPointTimePD: AbstractDerivation<undefined | number>
     isLastPointD: AbstractDerivation<undefined | null | boolean>
-    possibleRightPointTimeD: AbstractDerivation<undefined | null | number>
-    interpolatorD: AbstractDerivation<$FixMe>
+    possibleRightPointTimePD: AbstractDerivation<undefined | null | number>
+    interpolatorD: AbstractDerivation<number>
   }
 >
 
@@ -57,18 +64,21 @@ const handlersByState = {
   TimelineIsEmpty: {
     transitionIn(
       baseState: TimelineIsEmptyBaseState,
-      d: ValueDerivation,
+      d: DerivationOfBezierCurvesOfScalarValues,
     ): TimelineIsEmptyState {
-      const firstIndexP = d._pointsP.index(0)
-      d._addDependency(firstIndexP)
+      const firstIndexPD = valueDerivation(d._pointsP[0])
+      d._addDependency(firstIndexPD)
       return {
         ...baseState,
-        firstIndexP,
+        firstIndexPD,
       }
     },
 
-    recalculateValue(state: TimelineIsEmptyState, d: ValueDerivation) {
-      if (d._changeObservedIn.has(state.firstIndexP)) {
+    recalculateValue(
+      state: TimelineIsEmptyState,
+      d: DerivationOfBezierCurvesOfScalarValues,
+    ) {
+      if (d._changeObservedIn.has(state.firstIndexPD)) {
         return this._transitionOutAndRecalculateValue(state, d)
       } else {
         return d._emptyValue()
@@ -77,9 +87,9 @@ const handlersByState = {
 
     _transitionOutAndRecalculateValue(
       state: TimelineIsEmptyState,
-      d: ValueDerivation,
+      d: DerivationOfBezierCurvesOfScalarValues,
     ) {
-      d._removeDependency(state.firstIndexP)
+      d._removeDependency(state.firstIndexPD)
       d._determineNewState()
       return d._recalculate()
     },
@@ -88,40 +98,39 @@ const handlersByState = {
   TimeIsBeforeFirstPoint: {
     transitionIn(
       baseState: TimeIsBeforeFirstPointBaseState,
-      d: ValueDerivation,
+      d: DerivationOfBezierCurvesOfScalarValues,
     ): TimeIsBeforeFirstPointState {
-      const firstPointP = d._pointsP.index(0)
-
-      const timeOfFirstPointD = firstPointP.flatMap(
-        (firstPoint?: $FixMe) =>
-          firstPoint && firstPoint.pointer().prop('time'),
-      )
-      d._addDependency(timeOfFirstPointD)
+      const timeOfFirstPointPD = valueDerivation(d._pointsP[0].time)
+      d._addDependency(timeOfFirstPointPD)
 
       return {
         ...baseState,
-        timeOfFirstPointD,
+        timeOfFirstPointPD,
       }
     },
 
-    recalculateValue(state: TimeIsBeforeFirstPointState, d: ValueDerivation) {
+    recalculateValue(
+      state: TimeIsBeforeFirstPointState,
+      d: DerivationOfBezierCurvesOfScalarValues,
+    ) {
       // If the time of the first point has changed
-      if (d._changeObservedIn.has(state.timeOfFirstPointD)) {
-        const firstPointTime = state.timeOfFirstPointD.getValue()
+      if (d._changeObservedIn.has(state.timeOfFirstPointPD)) {
+        const firstPointTime = state.timeOfFirstPointPD.getValue()
         // The first point could've been removed
         if (firstPointTime === undefined) {
           return this._transitionOutAndRecalculateValue(state, d)
         }
 
         // if current time is still before the first point
-        if (firstPointTime > d._timeD.getValue()) {
+        if (firstPointTime > d.timeD.getValue()) {
           return d._emptyValue()
         } else {
           return this._transitionOutAndRecalculateValue(state, d)
         }
       } else if (
-        d._changeObservedIn.has(d._timeD) &&
-        d._timeD.getValue() >= state.timeOfFirstPointD.getValue()
+        d._changeObservedIn.has(d.timeD) &&
+        d.timeD.getValue() >=
+          ((state.timeOfFirstPointPD.getValue() as $IntentionalAny) as number)
       ) {
         return this._transitionOutAndRecalculateValue(state, d)
       } else {
@@ -131,32 +140,101 @@ const handlersByState = {
 
     _transitionOutAndRecalculateValue(
       state: TimeIsBeforeFirstPointState,
-      d: ValueDerivation,
+      d: DerivationOfBezierCurvesOfScalarValues,
     ) {
-      d._removeDependency(state.timeOfFirstPointD)
+      d._removeDependency(state.timeOfFirstPointPD)
       d._determineNewState()
       return d._recalculate()
     },
   },
 
   Error: {
-    transitionIn(_: ErrorBaseState, __: ValueDerivation): ErrorState {
+    transitionIn(
+      _: ErrorBaseState,
+      __: DerivationOfBezierCurvesOfScalarValues,
+    ): ErrorState {
       return baseStates.error
     },
-    recalculateValue(_: ErrorState, d: ValueDerivation) {
+    recalculateValue(_: ErrorState, d: DerivationOfBezierCurvesOfScalarValues) {
       return d._emptyValue()
     },
-    _transitionOutAndRecalculateValue(_: ErrorState, d: ValueDerivation) {
+    _transitionOutAndRecalculateValue(
+      _: ErrorState,
+      d: DerivationOfBezierCurvesOfScalarValues,
+    ) {
       d._determineNewState()
       return d._recalculate()
     },
   },
 
   ObservingKey: {
-    recalculateValue(state: ObservingKeyState, d: ValueDerivation) {
-      const leftPointTime = state.leftPointTimeP.getValue()
-      const time = d._timeD.getValue()
-      const rightPointTime = state.possibleRightPointTimeD.getValue()
+    transitionIn(
+      baseState: ObservingKeyBaseState,
+      d: DerivationOfBezierCurvesOfScalarValues,
+    ): ObservingKeyState {
+      // debugger
+      const leftPointP = d._pointsP[baseState.currentPointIndex]
+      const possibleRightPointP = d._pointsP[baseState.currentPointIndex + 1]
+      const isLastPointD = valueDerivation(possibleRightPointP).map(
+        (possibleRightPoint: mixed) => !possibleRightPoint,
+      )
+
+      const possibleRightPointTimePD = valueDerivation(possibleRightPointP.time)
+
+      const possibleRightPointValuePD = valueDerivation(
+        possibleRightPointP.value,
+      )
+
+      // we'll bypass the interpolator if the left point goes out of existense,
+      // or a point is added between it and the current time, or its time is bigger than
+      // the current time
+      const leftPointTimePD = valueDerivation(leftPointP.time)
+
+      const interpolationDescriptorP = leftPointP.interpolationDescriptor
+      const interpolationTypeP = interpolationDescriptorP.interpolationType
+
+      const interpolatorD = valueDerivation(interpolationTypeP).flatMap(
+        (interpolationType: string) => {
+          const interpolator = (interpolators as $IntentionalAny)[
+            interpolationType
+          ] as typeof interpolationDerivationForCubicBezier
+          if (interpolator) {
+            return interpolator({
+              timeD: d.timeD,
+              interpolationDescriptorP,
+              leftPointTimeD: valueDerivation(leftPointP.time),
+              leftPointValueD: valueDerivation(leftPointP.value),
+              rightPointTimeD: possibleRightPointTimePD,
+              rightPointValueD: possibleRightPointValuePD,
+            })
+          } else {
+            throw new Error(
+              `Unkown interpolationType '${interpolationType || 'undefined'}'`,
+            )
+          }
+        },
+      )
+
+      d._addDependency(leftPointTimePD)
+      d._addDependency(isLastPointD)
+      d._addDependency(possibleRightPointTimePD)
+      d._addDependency(interpolatorD)
+
+      return {
+        ...baseState,
+        leftPointTimePD,
+        isLastPointD,
+        possibleRightPointTimePD,
+        interpolatorD,
+      }
+    },
+    recalculateValue(
+      state: ObservingKeyState,
+      d: DerivationOfBezierCurvesOfScalarValues,
+    ) {
+      const leftPointTime = state.leftPointTimePD.getValue()
+      const time = d.timeD.getValue()
+      const rightPointTime = state.possibleRightPointTimePD.getValue()
 
       // either point doesn't exist anymore, or it's after the current time
       if (leftPointTime === undefined || leftPointTime > time) {
@@ -172,110 +250,37 @@ const handlersByState = {
         return this._transitionOutAndRecalculateValue(state, d)
       }
     },
-
     _transitionOutAndRecalculateValue(
       state: ObservingKeyState,
-      d: ValueDerivation,
+      d: DerivationOfBezierCurvesOfScalarValues,
     ) {
-      d._removeDependency(state.leftPointTimeP)
+      d._removeDependency(state.leftPointTimePD)
       d._removeDependency(state.isLastPointD)
-      d._removeDependency(state.possibleRightPointTimeD)
+      d._removeDependency(state.possibleRightPointTimePD)
       d._removeDependency(state.interpolatorD)
       d._determineNewState()
       return d._recalculate()
     },
-    transitionIn(
-      baseState: ObservingKeyBaseState,
-      d: ValueDerivation,
-    ): ObservingKeyState {
-      // debugger
-      const leftPointP = d._pointsP.index(baseState.currentPointIndex)
-      const possibleRightPointP = d._pointsP.index(
-        baseState.currentPointIndex + 1,
-      )
-      const isLastPointD = possibleRightPointP.map(
-        (possibleRightPoint: mixed) => !possibleRightPoint,
-      )
-
-      const possibleRightPointTimeD = possibleRightPointP.prop('time')
-
-      const possibleRightPointValueD = possibleRightPointP.prop('value')
-
-      // we'll bypass the interpolator if the left point goes out of existense,
-      // or a point is added between it and the current time, or its time is bigger than
-      // the current time
-      const leftPointTimeP = leftPointP.prop('time')
-
-      const interpolationDescriptorP = leftPointP.prop(
-        'interpolationDescriptor',
-      )
-      const interpolationTypeP = interpolationDescriptorP.prop(
-        'interpolationType',
-      )
-
-      const interpolatorD = interpolationTypeP.flatMap(
-        (interpolationType: undefined | null | string) => {
-          // @ts-ignore
-          const interpolator = interpolators[interpolationType]
-          if (interpolator) {
-            return interpolator({
-              timeD: d._timeD,
-              interpolationDescriptorP,
-              leftPointTimeD: leftPointP.prop('time'),
-              leftPointValueD: leftPointP.prop('value'),
-              rightPointTimeD: possibleRightPointTimeD,
-              rightPointValueD: possibleRightPointValueD,
-            })
-          } else {
-            throw new Error(
-              `Unkown interpolationType '${interpolationType || 'undefined'}'`,
-            )
-          }
-        },
-      )
-
-      d._addDependency(leftPointTimeP)
-      d._addDependency(isLastPointD)
-      d._addDependency(possibleRightPointTimeD)
-      d._addDependency(interpolatorD)
-
-      return {
-        ...baseState,
-        leftPointTimeP,
-        isLastPointD,
-        possibleRightPointTimeD,
-        interpolatorD,
-      }
-    },
   },
 }
 
-export default class ValueDerivation extends AbstractDerivation<$FixMe> {
+export default class DerivationOfBezierCurvesOfScalarValues extends AbstractDerivation<
+  number
+> {
   _hot: boolean
-  _changeObservedIn: Set<$FixMe>
-  _descP: $FixMe
-  _timeD: $FixMe
-  _pointsP: $FixMe
-  _pointsProxy: $FixMe
-  _theater: $FixMe
-  _pathToValueDescriptor: Array<string>
-  _pathToPointsById: Array<string>
+  _changeObservedIn: Set<
+    AbstractDerivation<number | null | undefined | ITimelineVarPoint>
+  >
   _state: PossibleStates
+  
 
   constructor(
-    descP: $FixMe,
-    timeD: $FixMe,
-    theater: Theater,
-    pathToValueDescriptor: Array<string>,
+    readonly _pointsP: Pointer<IBezierCurvesOfScalarValues['points']>,
+    readonly timeD: AbstractDerivation<number>,
   ) {
     super()
-    this._descP = descP
-    this._theater = theater
-    this._pathToValueDescriptor = pathToValueDescriptor
-    this._pathToPointsById = [...pathToValueDescriptor, 'points', 'byId']
-    this._pointsP = descP.prop('points')
-    this._timeD = timeD
     this._addDependency(timeD)
+    // @ts-ignore @todo
     this._state = {type: 'started'}
     this._changeObservedIn = new Set()
   }
@@ -293,18 +298,23 @@ export default class ValueDerivation extends AbstractDerivation<$FixMe> {
     return 0
   }
 
-  _recalculate(): $FixMe {
+  _recalculate(): number {
     if (!this._hot) {
-      throw new Error(`Cold reads aren't supported on Timeline/ValueDerivation`)
+      throw new Error(
+        `Cold reads aren't supported on Timeline/DerivationOfBezierCurvesOfScalarValues`,
+      )
     }
 
     const state = this._state
 
-    const value: mixed = (handlersByState as $IntentionalAny)[
+    const value: number = (handlersByState as $IntentionalAny)[
       state.type
     ].recalculateValue(state, this)
 
     this._changeObservedIn.clear()
+
+    // console.log('val', value);
+    
 
     return value
   }
@@ -320,10 +330,10 @@ export default class ValueDerivation extends AbstractDerivation<$FixMe> {
   _determinNewBaseState(
     startSearchingFromPointIndex: number,
   ): PossibleBaseStates {
-    const points = _.get(
-      this._theater.store.getState(),
-      this._pathToValueDescriptor,
-    ).points
+    skipFindingColdDerivations()
+    const points = val(this._pointsP)
+    endSkippingColdDerivations()
+
 
     // if no points
     if (points.length === 0) {
@@ -339,7 +349,7 @@ export default class ValueDerivation extends AbstractDerivation<$FixMe> {
         : 0
     }
 
-    const time = this._timeD.getValue()
+    const time = this.timeD.getValue()
 
     while (true) {
       const currentPoint = points[currentPointIndex]
@@ -373,7 +383,11 @@ export default class ValueDerivation extends AbstractDerivation<$FixMe> {
     }
   }
 
-  _youMayNeedToUpdateYourself(msgComingFrom: AbstractDerivation<$FixMe>) {
+  _youMayNeedToUpdateYourself(
+    msgComingFrom: AbstractDerivation<
+      number | null | undefined | ITimelineVarPoint
+    >,
+  ) {
     this._changeObservedIn.add(msgComingFrom)
 
     AbstractDerivation.prototype._youMayNeedToUpdateYourself.call(

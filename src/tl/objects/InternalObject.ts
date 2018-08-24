@@ -3,13 +3,16 @@ import {
   NativeObjectTypeConfig,
   getTypeOfNativeObject,
   NativeObjectType,
+  getAdapterOfNativeObject,
 } from './objectTypes'
-import { ObjectAddress } from '$tl/handy/addresses';
+import {ObjectAddress} from '$tl/handy/addresses'
+import {NativeObjectAdapter} from '$tl/nativeObjectAdapters/NativeObjectAdaptersManager'
 
 export default class InternalObject {
   nativeObjectType: NativeObjectType
   _address: ObjectAddress
-  
+  adapter: void | NativeObjectAdapter
+
   public get _project() {
     return this.internalTimeline.project
   }
@@ -17,7 +20,7 @@ export default class InternalObject {
   public get _pointerToState() {
     return this.internalTimeline._pointerToState.objects[this.path]
   }
-  
+
   constructor(
     readonly internalTimeline: InternalTimeline,
     readonly path: string,
@@ -36,6 +39,12 @@ export default class InternalObject {
       throw new Error(`Could not determine type of object`)
     }
     this.nativeObjectType = type
+
+    this.adapter = getAdapterOfNativeObject(
+      this.internalTimeline.project,
+      initialNativeObject,
+      initialNativeobjectConfig,
+    )
   }
 
   ensureNativeObjectIsAcceptable(

@@ -170,3 +170,5 @@ declare module 'propose' {
   ) => string | null
   export default propose
 }
+
+declare module 'timing-function/lib/UnitBezier'
