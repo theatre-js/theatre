@@ -1,5 +1,4 @@
 import React from 'react'
-import Section from '$shared/components/Overlay/Section'
 
 interface IProps {
   children: React.ReactNode
@@ -17,7 +16,6 @@ export const OverlayAPIContext = React.createContext({
 } as TOverlayAPI)
 
 class Overlay extends React.PureComponent<IProps, IState> {
-  static Section: React.ComponentClass = Section
   refsCollection: Set<HTMLElement> = new Set()
 
   render() {
@@ -30,13 +28,13 @@ class Overlay extends React.PureComponent<IProps, IState> {
 
   componentDidMount() {
     document.addEventListener('click', this.handleClick, true)
-    document.addEventListener('mousedown', this.disableEvent, true)
+    document.addEventListener('mousedown', this.stopPropagation, true)
     document.addEventListener('wheel', this.disableEvent, true)
   }
 
   componentWillUnmount() {
     document.removeEventListener('click', this.handleClick, true)
-    document.removeEventListener('mousedown', this.disableEvent, true)
+    document.removeEventListener('mousedown', this.stopPropagation, true)
     document.removeEventListener('wheel', this.disableEvent, true)
     this.refsCollection.clear()
   }
@@ -49,25 +47,33 @@ class Overlay extends React.PureComponent<IProps, IState> {
     setRef: this.setRef,
   }
 
-  private handleClick = (evt: MouseEvent) => {
-    const {target} = evt
+  private handleClick = (event: MouseEvent) => {
+    const {target} = event
     if (target == null) return
 
+    if (this.isEventTargetOutside(target)) {
+      this.disableEvent(event)
+      this.props.onClickOutside()
+    }
+  }
+
+  private stopPropagation = (event: MouseEvent) => {
+    event.stopPropagation()
+  }
+
+  private disableEvent = (event: MouseEvent) => {
+    event.stopPropagation()
+    event.preventDefault()
+  }
+
+  private isEventTargetOutside = (target: EventTarget) => {
     let isOutside = true
     Array.from(this.refsCollection).forEach(ref => {
       if (ref && ref.contains(target as Node)) {
         isOutside = false
       }
     })
-    if (isOutside) {
-      this.disableEvent(evt)
-      this.props.onClickOutside()
-    }
-  }
-
-  private disableEvent = (evt: MouseEvent) => {
-    evt.stopPropagation()
-    evt.preventDefault()
+    return isOutside
   }
 }
 

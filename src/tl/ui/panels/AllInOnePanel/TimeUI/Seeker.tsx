@@ -1,17 +1,17 @@
 import React from 'react'
 import css from './Seeker.css'
-import DraggableArea from '$theater/common/components/DraggableArea/DraggableArea'
 import resolveCss from '$shared/utils/resolveCss'
-import {RangeState} from '$tl/timelines/InternalTimeline'
 import {inRangeTimeToX} from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import {getNewTime} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
+import {TRange} from '$tl/ui/panels/AllInOnePanel/Right/types'
+import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
 
 const classes = resolveCss(css)
 
 interface IProps {
   width: number
   currentTime: number
-  range: RangeState['rangeShownInPanel']
+  range: TRange
   gotoTime: (t: number) => void
 }
 

@@ -4,17 +4,17 @@ import {val} from '$shared/DataVerse2/atom'
 import css from './FramesGrid.css'
 import resolveCss from '$shared/utils/resolveCss'
 import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
-import {RangeState} from '$tl/timelines/InternalTimeline'
 import {
   xToInRangeTime,
   inRangeTimeToX,
 } from '$tl/ui/panels/AllInOnePanel/Right/utils'
+import {TRange} from '$tl/ui/panels/AllInOnePanel/Right/types'
 
 const classes = resolveCss(css)
 
 interface IProps {
   width: number
-  range: RangeState['rangeShownInPanel']
+  range: TRange
 }
 
 interface IState {}

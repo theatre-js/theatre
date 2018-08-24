@@ -69,6 +69,8 @@ const $ITimelineVarPoint = <V>(valueType: t.Type<V>) =>
   )
 
 export type ITimelineVarPoint = t.StaticTypeOf<typeof $ITimelineVarPoint>
+const $ITimelineVarPointWithNumberValue = $ITimelineVarPoint(t.number)
+export type ITimelineVarPointWithValueNumber = t.StaticTypeOf<typeof $ITimelineVarPointWithNumberValue>
 
 const $BezierCurvesOfScalarValues = t.type({
   type: t.literal('BezierCurvesOfScalarValues'),

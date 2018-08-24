@@ -59,15 +59,14 @@ class ItemWrapper extends UIComponent<IProps, IState> {
   }
 
   handleResizeEnd = () => {
-    this.tempActionGroup.discard()
-  }
-
-  setExpansionHeight = (height: number) => {
     this.ui.reduxStore.dispatch(
-      this.ui.actions.historic.setPropHeightWhenExpanded({
-        ...this.props.item.address,
-        height,
-      }),
+      this.ui.actions.batched([
+        this.ui.actions.historic.setPropHeightWhenExpanded({
+          ...this.props.item.address,
+          height: this.props.item.height,
+        }),
+        this.tempActionGroup.discard(),
+      ]),
     )
   }
 }

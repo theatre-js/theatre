@@ -4,7 +4,7 @@ import Item from './Item'
 import {val} from '$shared/DataVerse2/atom'
 import Project from '$tl/Project/Project'
 import projectsSingleton from '$tl/Project/projectsSingleton'
-import FlyoutSearchableList from '$shared/components/FlyoutSearchableList'
+import FlyoutSearchableList from '$shared/components/FlyoutSearchableList/FlyoutSearchableList'
 import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 

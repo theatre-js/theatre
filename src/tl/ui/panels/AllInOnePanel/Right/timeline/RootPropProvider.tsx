@@ -3,14 +3,15 @@ import {val} from '$shared/DataVerse2/atom'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
 import {getSvgWidth} from '$tl/ui/panels/AllInOnePanel/Right/utils'
+import {TDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
 
 interface IExportedComponentProps {
   children: React.ReactNode
 }
 
 interface IRootPropProviderProps extends IExportedComponentProps {
-  width: number
-  duration: number
+  timelineWidth: number
+  duration: TDuration
   svgWidth: number
 }
 
@@ -19,7 +20,7 @@ interface IState {}
 export const RootPropGetterContext = React.createContext<TPropGetter>(() => {})
 export const DurationContext = React.createContext<number>(0)
 
-export type TPropName = 'svgWidth' | 'width' | 'duration'
+export type TPropName = 'svgWidth' | 'timelineWidth' | 'duration'
 export type TPropGetter = (propName: TPropName) => any
 
 class RootPropProvider extends React.PureComponent<
@@ -41,8 +42,8 @@ class RootPropProvider extends React.PureComponent<
     switch (propName) {
       case 'svgWidth':
         return this.props.svgWidth
-      case 'width':
-        return this.props.width
+      case 'timelineWidth':
+        return this.props.timelineWidth
       case 'duration':
         return this.props.duration
     }
@@ -62,7 +63,7 @@ export default (props: IExportedComponentProps) => (
           const width = val(allInOnePanelStuffP.rightWidth)
           const rootPropProviderProps: IRootPropProviderProps = {
             duration,
-            width,
+            timelineWidth: width,
             svgWidth: getSvgWidth(range, duration, width),
             children: props.children,
           }

@@ -3,10 +3,10 @@ import React from 'react'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import {val} from '$shared/DataVerse2/atom'
 import {PrimitivePropItem} from '../../utils'
-import projectSelectors from '$tl/Project/store/selectors'
-import {IBezierCurvesOfScalarValues} from '$tl/Project/store/types'
 import ItemWrapper from '$tl/ui/panels/AllInOnePanel/Right/items/ItemWrapper'
 import ItemPropProvider from '$tl/ui/panels/AllInOnePanel/Right/items/ItemPropProvider'
+import ItemView from '$tl/ui/panels/AllInOnePanel/Right/items/ItemView'
+import projectSelectors from '$tl/Project/store/selectors'
 
 interface IProps {
   item: PrimitivePropItem
@@ -24,14 +24,18 @@ export default class TimelineItem extends UIComponent<IProps, IState> {
 
     const valueContainer = val(propState.valueContainer)
 
-    if (!valueContainer || valueContainer.type !== 'BezierCurvesOfScalarValues')
+    if (
+      !valueContainer ||
+      valueContainer.type !== 'BezierCurvesOfScalarValues'
+    ) {
       return null
-
-    const points = valueContainer.points
+    }
 
     return (
       <ItemWrapper item={item}>
-        <ItemPropProvider itemHeight={item.height}>ItemView</ItemPropProvider>
+        <ItemPropProvider itemAddress={item.address} itemHeight={item.height}>
+          <ItemView expanded={item.expanded} points={valueContainer.points} />
+        </ItemPropProvider>
       </ItemWrapper>
     )
   }

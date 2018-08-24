@@ -3,10 +3,8 @@ import React from 'react'
 import {getTimelineInstances} from '../selectors'
 import Item from './Item'
 import {AllInOnePanelStuff} from '../AllInOnePanel'
-import FlyoutMenu from '$shared/components/FlyoutMenu/FlyoutMenu'
-import FlyoutMenuItem from '$shared/components/FlyoutMenu/FlyoutMenuItem'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
-import FlyoutSearchableList from '$shared/components/FlyoutSearchableList'
+import FlyoutSearchableList from '$shared/components/FlyoutSearchableList/FlyoutSearchableList'
 import {val} from '$shared/DataVerse2/atom'
 
 interface IProps {}

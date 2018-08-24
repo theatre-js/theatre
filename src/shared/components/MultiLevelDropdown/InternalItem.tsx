@@ -11,6 +11,7 @@ import {
   isInsideTriangle,
   getDistance2,
 } from '$shared/components/MultiLevelDropdown/utils'
+import OverlaySection from '$shared/components/Overlay/OverlaySection'
 
 const classes = resolveCss(css)
 
@@ -73,7 +74,11 @@ class InternalItem extends React.PureComponent<IProps, IState> {
           const onSelect = () => (isSelectable ? api.onSelect(path) : null)
           return (
             <div
-              {...classes('item', isActive && 'active', isSelectable && 'selectable')}
+              {...classes(
+                'item',
+                isActive && 'active',
+                isSelectable && 'selectable',
+              )}
               onMouseMove={this.handleItemMouseEnter}
               onMouseLeave={this.handleItemMouseLeave}
               onClickCapture={onSelect}
@@ -90,11 +95,11 @@ class InternalItem extends React.PureComponent<IProps, IState> {
   _renderMenu() {
     const {subItems, activePath} = this.props
     return (
-      <Overlay.Section {...classes('subMenu')}>
+      <OverlaySection {...classes('subMenu')}>
         <div ref={this.menuWrapper}>
           <ItemsList items={subItems} activePath={activePath} />
         </div>
-      </Overlay.Section>
+      </OverlaySection>
     )
   }
 

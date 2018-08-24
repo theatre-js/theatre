@@ -6,7 +6,7 @@ interface IProps {
   style?: Object
 }
 
-class Section extends React.PureComponent<IProps, {}> {
+class OverlaySection extends React.PureComponent<IProps, {}> {
   render() {
     return (
       <OverlayAPIContext.Consumer>
@@ -24,4 +24,4 @@ class Section extends React.PureComponent<IProps, {}> {
   }
 }
 
-export default Section
+export default OverlaySection

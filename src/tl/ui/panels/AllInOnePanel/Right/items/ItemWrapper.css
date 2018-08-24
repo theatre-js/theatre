@@ -11,6 +11,7 @@
     background: panelBgColor;
     opacity: 0.2;
     z-index: -1;
+    pointer-events: none;
   }
 
   &:after {
@@ -23,6 +24,7 @@
     border-top: 1px solid panelBgColor;
     border-bottom: 1px solid panelBgColor;
     opacity: 1;
+    pointer-events: none;
   }
 }
 

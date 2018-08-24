@@ -3,6 +3,7 @@ import css from './MultiLevelDropdown.css'
 import {resolveCss} from '$shared/utils'
 import ItemsList from '$shared/components/MultiLevelDropdown/ItemsList'
 import Overlay from '$shared/components/Overlay/Overlay'
+import OverlaySection from '$shared/components/Overlay/OverlaySection'
 
 const classes = resolveCss(css)
 
@@ -46,14 +47,14 @@ class MultiLevelDropdown extends React.PureComponent<IProps, IState> {
           <div {...classes('container')}>
             {onClickOutside != null ? (
               <Overlay onClickOutside={onClickOutside}>
-                <Overlay.Section>
+                <OverlaySection>
                   <ItemsList items={items} activePath={activePath} />
-                </Overlay.Section>
+                </OverlaySection>
               </Overlay>
             ) : (
-              <Overlay.Section>
+              <OverlaySection>
                 <ItemsList items={items} activePath={activePath} />
-              </Overlay.Section>
+              </OverlaySection>
             )}
           </div>
         </div>

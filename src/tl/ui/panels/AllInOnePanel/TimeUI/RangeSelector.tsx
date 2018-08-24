@@ -1,18 +1,18 @@
 import React from 'react'
 import css from './RangeSelector.css'
 import resolveCss from '$shared/utils/resolveCss'
-import DraggableArea from '$theater/common/components/DraggableArea/DraggableArea'
-import {RangeState} from '$tl/timelines/InternalTimeline'
 import {timeToX, xToTime} from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import {getNewRange} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
+import {TDuration, TRange} from '$tl/ui/panels/AllInOnePanel/Right/types'
+import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
 
 const classes = resolveCss(css)
 
 interface IProps {
-  duration: RangeState['duration']
-  range: RangeState['rangeShownInPanel']
+  duration: TDuration
+  range: TRange
   width: number
-  setRange: (range: RangeState['rangeShownInPanel']) => void
+  setRange: (range: TRange) => void
 }
 
 interface IState {}
@@ -103,7 +103,7 @@ class RangeSelector extends React.PureComponent<IProps, IState> {
     this._setRange({from: 0, to: dt})
   }
 
-  _setRange(change: IProps['range']) {
+  _setRange(change: TRange) {
     const {range, duration, setRange} = this.props
     setRange(getNewRange(range, change, duration))
   }

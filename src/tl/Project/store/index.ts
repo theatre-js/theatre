@@ -18,35 +18,55 @@ const initialHistoricState: ProjectHistoricState = {
                 type: 'BezierCurvesOfScalarValues',
                 points: [
                   {
-                    time: 100,
+                    time: 950,
+                    value: 20,
+                    interpolationDescriptor: {
+                      connected: true,
+                      __descriptorType: 'TimelinePointInterpolationDescriptor',
+                      interpolationType: 'CubicBezier',
+                      handles: [0.5, 0, 0.5, 0],
+                    },
+                  },
+                  {
+                    time: 1550,
                     value: 0,
                     interpolationDescriptor: {
-                      __descriptorType: 'TimelinePointInterpolationDescriptor',
                       connected: true,
-                      handles: [0.5, 0, 0, 0.5],
+                      __descriptorType: 'TimelinePointInterpolationDescriptor',
                       interpolationType: 'CubicBezier',
+                      handles: [0.5, 0, 0.5, 0],
                     },
                   },
                   {
-                    time: 1000,
-                    value: 0.5,
+                    time: 3190,
+                    value: -100,
                     interpolationDescriptor: {
+                      connected: true,
                       __descriptorType: 'TimelinePointInterpolationDescriptor',
-                      connected: false,
-                      handles: [0.5, 0, 0, 0.5],
                       interpolationType: 'CubicBezier',
+                      handles: [0.5, 0, 0.5, 0],
                     },
                   },
                   {
-                    time: 1500,
-                    value: 1,
+                    time: 6190,
+                    value: 100,
                     interpolationDescriptor: {
+                      connected: true,
                       __descriptorType: 'TimelinePointInterpolationDescriptor',
-                      connected: false,
-                      handles: [0.5, 0, 0, 0.5],
                       interpolationType: 'CubicBezier',
+                      handles: [0.5, 0, 0.5, 0],
                     },
                   },
+                  ...Array.from(new Array(21).keys()).map(i => ({
+                    time: 6500 + 650 * i,
+                    value: Math.random() * 200 - 100,
+                    interpolationDescriptor: {
+                      connected: i < 20,
+                      __descriptorType: 'TimelinePointInterpolationDescriptor',
+                      interpolationType: 'CubicBezier',
+                      handles: [0.5, 0, 0.5, 0],
+                    },
+                  })) as any,
                 ],
               },
             },
@@ -58,36 +78,16 @@ const initialHistoricState: ProjectHistoricState = {
               valueContainer: {
                 type: 'BezierCurvesOfScalarValues',
                 points: [
-                  {
-                    time: 100,
-                    value: 0,
+                  ...Array.from(new Array(21).keys()).map(i => ({
+                    time: i * 1000,
+                    value: Math.random() * 100,
                     interpolationDescriptor: {
+                      connected: i < 20,
                       __descriptorType: 'TimelinePointInterpolationDescriptor',
-                      connected: true,
-                      handles: [0.5, 0, 0, 0.5],
                       interpolationType: 'CubicBezier',
+                      handles: [0.5, 0, 0.5, 0],
                     },
-                  },
-                  {
-                    time: 1000,
-                    value: 0.5,
-                    interpolationDescriptor: {
-                      __descriptorType: 'TimelinePointInterpolationDescriptor',
-                      connected: false,
-                      handles: [0.5, 0, 0, 0.5],
-                      interpolationType: 'CubicBezier',
-                    },
-                  },
-                  {
-                    time: 1500,
-                    value: 1,
-                    interpolationDescriptor: {
-                      __descriptorType: 'TimelinePointInterpolationDescriptor',
-                      connected: false,
-                      handles: [0.5, 0, 0, 0.5],
-                      interpolationType: 'CubicBezier',
-                    },
-                  },
+                  })) as any,
                 ],
               },
             },

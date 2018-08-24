@@ -1,5 +1,5 @@
 @value bottomHeight from './Bottom.css';
-@value typographyFont from '$theater/common/styles.css';
+@value typographyFont from '$shared/styles.css';
 
 .container {
   padding: 0 10px;

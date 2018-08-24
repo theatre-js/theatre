@@ -1,0 +1,54 @@
+.pointClickArea {
+  cursor: default;
+}
+
+.pointClickArea.highlightAsSelected ~ .pointGlow {
+  filter: url('#glow');
+  opacity: 1;
+}
+
+.pointClickArea.highlightAsSelected ~ .pointStroke {
+  stroke-width: 4px;
+}
+
+.pointClickArea:not(.highlightRedOnHover):hover ~ .pointGlow,
+.pointClickArea:not(.highlightRedOnHover):active ~ .pointGlow {
+  filter: url('#glow');
+  opacity: 1;
+}
+
+.pointClickArea:not(.highlightRedOnHover):hover ~ .pointStroke,
+.pointClickArea:not(.highlightRedOnHover):active ~ .pointStroke {
+  stroke-width: 4px;
+}
+
+.pointClickArea.highlightRedOnHover:hover ~ .pointStroke,
+.pointClickArea.highlightRedOnHover:active ~ .pointStroke {
+  stroke: red;
+}
+
+.pointGlow {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pointStroke {
+  pointer-events: none;
+}
+
+.pointCenter {
+  pointer-events: none;
+}
+
+.handleClickArea {
+  cursor: default;
+}
+
+.handleClickArea:hover ~ .handle,
+.handleClickArea:active ~ .handle {
+  stroke-width: 3px;
+}
+
+.handle {
+  pointer-events: none;
+}

@@ -1,11 +1,11 @@
-import {RangeState} from '$tl/timelines/InternalTimeline'
 import {
   inRangeTimeToX,
   xToInRangeTime,
 } from '$tl/ui/panels/AllInOnePanel/Right/utils'
+import {TRange, TDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
 
 export const getNewTime = (
-  range: RangeState['rangeShownInPanel'],
+  range: TRange,
   currentTime: number,
   width: number,
   deltaX: number,
@@ -15,20 +15,17 @@ export const getNewTime = (
   return clampTime(range, newTime)
 }
 
-export const clampTime = (
-  range: RangeState['rangeShownInPanel'],
-  time: number,
-): number => {
+export const clampTime = (range: TRange, time: number): number => {
   if (time < range.from) time = range.from
   if (time > range.to) time = range.to
   return time
 }
 
 export const getNewRange = (
-  range: RangeState['rangeShownInPanel'],
-  change: RangeState['rangeShownInPanel'],
-  duration: number,
-): RangeState['rangeShownInPanel'] => {
+  range: TRange,
+  change: TRange,
+  duration: TDuration,
+): TRange => {
   const newRange = {from: range.from + change.from, to: range.to + change.to}
   if (newRange.to - newRange.from < 1) {
     if (newRange.from === range.from) {
@@ -50,9 +47,9 @@ export const getNewRange = (
 }
 
 export const getNewZoom = (
-  range: RangeState['rangeShownInPanel'],
-  change: RangeState['rangeShownInPanel'],
-  duration: number,
+  range: TRange,
+  change: TRange,
+  duration: TDuration,
 ) => {
   const newRange = {from: range.from + change.from, to: range.to + change.to}
   if (newRange.from < 0) {

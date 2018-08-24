@@ -3,7 +3,7 @@ import UIComponent from '$tl/ui/handy/UIComponent'
 import React from 'react'
 import * as css from './GroupingOrObject.css'
 import SvgIcon from '$shared/components/SvgIcon'
-import arrowIcon from 'svg-inline-loader!$theater/ExploreFlyoutMenu/arrow.svg'
+import arrowIcon from 'svg-inline-loader!./arrow.svg'
 import {GroupingItem, ObjectItem} from '../../utils'
 import {getProjectTimelineAndInstance} from '$tl/ui/panels/AllInOnePanel/selectors'
 

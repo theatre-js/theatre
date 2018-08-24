@@ -3,6 +3,7 @@ import css from './FlyoutWithSearch.css'
 import {resolveCss} from '$shared/utils'
 import noop from '$shared/utils/noop'
 import Overlay from '$shared/components/Overlay/Overlay'
+import OverlaySection from '$shared/components/Overlay/OverlaySection'
 
 const classes = resolveCss(css)
 
@@ -23,19 +24,19 @@ class FlyoutWithSearch extends React.PureComponent<IProps, {}> {
       <div {...classes('positioner')}>
         <div {...classes('container')}>
           <Overlay onClickOutside={onClickOutside}>
-            <Overlay.Section>
+            <OverlaySection>
               {this.props.children}
               <div {...classes('inputWrapper')}>
                 <input
                   type="text"
                   {...classes('input')}
-                  placeholder='Search'
+                  placeholder="Search"
                   autoFocus={true}
                   onBlur={onBlur}
                   onChange={e => onChange(e.target.value)}
                 />
               </div>
-            </Overlay.Section>
+            </OverlaySection>
           </Overlay>
         </div>
       </div>

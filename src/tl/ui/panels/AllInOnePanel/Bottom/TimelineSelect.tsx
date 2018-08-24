@@ -3,10 +3,8 @@ import React from 'react'
 import Item from './Item'
 import {val} from '$shared/DataVerse2/atom'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
-import InternalTimeline from '$tl/timelines/InternalTimeline'
 import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
-import {Pointer} from '$shared/DataVerse2/pointer'
-import FlyoutSearchableList from '$shared/components/FlyoutSearchableList'
+import FlyoutSearchableList from '$shared/components/FlyoutSearchableList/FlyoutSearchableList'
 import MultiLevelDropdown from '$shared/components/MultiLevelDropdown/MultiLevelDropdown'
 import {convertInternalTimelinesToItems} from '$shared/components/MultiLevelDropdown/utils'
 
@@ -81,10 +79,7 @@ export default class TimelineSelect extends UIComponent<IProps, IState> {
     this.setState({menuOpen: false})
   }
 
-  selectInternalTimeline = (
-    projectId: string,
-    timelinePath: string,
-  ) => {
+  selectInternalTimeline = (projectId: string, timelinePath: string) => {
     this.ui.reduxStore.dispatch(
       this.ui.actions.historic.setSelectedTimeline({
         projectId,
