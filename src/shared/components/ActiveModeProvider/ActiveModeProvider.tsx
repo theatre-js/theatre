@@ -4,7 +4,6 @@ export type ActiveMode = undefined | null | string
 
 interface IProps {
   modes: TMODE[]
-  children: (activeMode: ActiveMode) => any
 }
 
 interface IState {
@@ -29,7 +28,9 @@ export const MODES = Object.keys(KEYS_MAP).reduce((reducer, key) => {
   }
 }, {}) as Record<TMODE, string>
 
-class ActiveModeDetector extends React.PureComponent<IProps, IState> {
+export const ActiveModeContext = React.createContext<ActiveMode>(null)
+
+class ActiveModeProvider extends React.PureComponent<IProps, IState> {
   _isMouseDown: boolean
   _mapOfKeycodeToMode: Map<number, TMODE>
 
@@ -63,17 +64,17 @@ class ActiveModeDetector extends React.PureComponent<IProps, IState> {
     window.removeEventListener('focus', this.resetActiveMode)
   }
 
-  private handleKeyDown = (e: KeyboardEvent) => {
+  private handleKeyDown = (event: KeyboardEvent) => {
     if (this._isMouseDown) return
     if (
-      e.target &&
-      (e.target as HTMLElement).tagName === 'INPUT' &&
-      ![91].includes(e.keyCode)
+      event.target &&
+      (event.target as HTMLElement).tagName === 'INPUT' &&
+      ![91].includes(event.keyCode)
     ) {
       return
     }
 
-    const mode = this._mapOfKeycodeToMode.get(e.keyCode)
+    const mode = this._mapOfKeycodeToMode.get(event.keyCode)
     if (mode != null) {
       this.setState(() => ({activeMode: MODES[mode]}))
     }
@@ -98,8 +99,12 @@ class ActiveModeDetector extends React.PureComponent<IProps, IState> {
   }
 
   render() {
-    return this.props.children(this.state.activeMode)
+    return (
+      <ActiveModeContext.Provider value={this.state.activeMode}>
+        {this.props.children}
+      </ActiveModeContext.Provider>
+    )
   }
 }
 
-export default ActiveModeDetector
+export default ActiveModeProvider

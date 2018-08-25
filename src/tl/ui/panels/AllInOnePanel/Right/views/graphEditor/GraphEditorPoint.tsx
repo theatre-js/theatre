@@ -1,10 +1,6 @@
 import React from 'react'
 import pointCss from '../point/point.css'
 // import {
-//   MODES,
-//   ActiveMode,
-// } from '$theater/common/components/ActiveModeDetector/ActiveModeDetector'
-// import {
 //   removeGlobalPointDragRule,
 //   addGlobalPointDragRule,
 // } from '$tl/ui/panels/AllInOnePanel/Right/utils'
@@ -31,9 +27,19 @@ import {TPropGetter} from '$tl/ui/panels/AllInOnePanel/Right/items/ItemPropProvi
 import {
   TColor,
   TPointHandles,
-  TPointCoords,
+  TPointSingleHandle,
 } from '$tl/ui/panels/AllInOnePanel/Right/types'
 import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
+import {
+  ActiveModeContext,
+  ActiveMode,
+  MODES,
+} from '$shared/components/ActiveModeProvider/ActiveModeProvider'
+import {
+  TMovePointToNewCoords,
+  TMoveSingleHandle,
+  TFnNeedsPointIndex,
+} from '$tl/ui/panels/AllInOnePanel/Right/views/types'
 
 interface IProps {
   propGetter: TPropGetter
@@ -51,11 +57,13 @@ interface IProps {
   originalTime: number
   originalValue: number
   pointIndex: number
-  removePoint: (pointIndex: number) => void
-  addConnector: (pointIndex: number) => void
-  changePointCoordsBy: (pointIndex: number, change: TPointCoords) => void
-  changePointHandlesBy: (pointIndex: number, change: TPointHandles) => void
-  makeHandleHorizontal: (pointIndex: number, side: 'left' | 'right') => void
+  removePoint: TFnNeedsPointIndex
+  addConnector: TFnNeedsPointIndex
+  movePointToNewCoords: TMovePointToNewCoords
+  moveLeftHandle: TMoveSingleHandle
+  moveRightHandle: TMoveSingleHandle
+  makeLeftHandleHorizontal: TFnNeedsPointIndex
+  makeRightHandleHorizontal: TFnNeedsPointIndex
   showPointValuesEditor: $FixMe /*TShowPointValuesEditor*/
   showContextMenu: $FixMe /*TShowPointContextMenu*/
   addPointToSelection: $FixMe /*TAddPointToSelection*/
@@ -75,7 +83,7 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
   isNextPointSelected: boolean
   isPrevPointSelected: boolean
   pointClickArea: React.RefObject<SVGRectElement> = React.createRef()
-  activeMode: $FixMe /*ActiveMode*/
+  activeMode: ActiveMode
   svgSize: TSVGSize
   leftHandleNormalizers: {xNormalizer: number; yNormalizer: number}
   rightHandleNormalizers: {xNormalizer: number; yNormalizer: number}
@@ -143,6 +151,9 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
         <Subscriber channel={SelectedAreaChannel}>
           {this._highlightAsSelected}
         </Subscriber> */}
+        <ActiveModeContext.Consumer>
+          {this._setActiveMode}
+        </ActiveModeContext.Consumer>
         <g>
           {isMoving && this._renderTransformedPoint(this.state.pointMove)}
           {renderLeftHandle && (
@@ -182,7 +193,7 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
             <DraggableArea
               onDragStart={this.leftHandleDragStartHandler}
               onDrag={this.leftHandleDragHandler}
-              onDragEnd={this.changePointHandles}
+              onDragEnd={this.moveLeftHandle}
             >
               <g>
                 <HandleClickArea
@@ -199,7 +210,7 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
             <DraggableArea
               onDragStart={this.rightHandleDragStartHandler}
               onDrag={this.rightHandleDragHandler}
-              onDragEnd={this.changePointHandles}
+              onDragEnd={this.moveRightHandle}
             >
               <g>
                 <HandleClickArea
@@ -312,15 +323,15 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
     )
   }
 
-  private _setActiveMode = (activeMode: $FixMe /*ActiveMode*/) => {
-    // this.activeMode = activeMode
-    // if (this.pointClickArea.current == null) return null
-    // if (activeMode === MODES.d) {
-    //   this.pointClickArea.current.classList.add(pointCss.highlightRedOnHover)
-    // } else {
-    //   this.pointClickArea.current.classList.remove(pointCss.highlightRedOnHover)
-    // }
-    // return null
+  private _setActiveMode = (activeMode: ActiveMode) => {
+    this.activeMode = activeMode
+    if (this.pointClickArea.current == null) return null
+    if (activeMode === MODES.d) {
+      this.pointClickArea.current.classList.add(pointCss.highlightRedOnHover)
+    } else {
+      this.pointClickArea.current.classList.remove(pointCss.highlightRedOnHover)
+    }
+    return null
   }
 
   _resetState() {
@@ -335,15 +346,15 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
     e.preventDefault()
     e.stopPropagation()
     switch (this.activeMode) {
-      // case MODES.c:
-      //   this.props.addConnector(this.props.pointIndex)
-      //   break
-      // case MODES.cmd:
-      //   this.props.addConnector(this.props.pointIndex)
-      //   break
-      // case MODES.d:
-      //   this.props.removePoint(this.props.pointIndex)
-      //   break
+      case MODES.c:
+        this.props.addConnector(this.props.pointIndex)
+        break
+      case MODES.cmd:
+        this.props.addConnector(this.props.pointIndex)
+        break
+      case MODES.d:
+        this.props.removePoint(this.props.pointIndex)
+        break
       default: {
         const {
           left,
@@ -369,9 +380,12 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
   ) => {
     e.preventDefault()
     e.stopPropagation()
-    // if (this.activeMode === MODES.h) {
-    //   return this.props.makeHandleHorizontal(this.props.pointIndex, side)
-    // }
+    if (this.activeMode === MODES.h) {
+      if (side === 'left')
+        this.props.makeLeftHandleHorizontal(this.props.pointIndex)
+      if (side === 'right')
+        this.props.makeRightHandleHorizontal(this.props.pointIndex)
+    }
   }
 
   pointDragStartHandler = () => {
@@ -404,11 +418,20 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
     // removeGlobalPointDragRule()
     if (!dragHappened) return
     const {pointMove} = this.state
-    this.props.changePointCoordsBy(this.props.pointIndex, {
+    const originalCoords = {
+      time: this.props.originalTime,
+      value: this.props.originalValue,
+    }
+    const change = {
       time: pointMove[0],
       value: pointMove[1],
-    })
-    // this._resetState()
+    }
+    this.props.movePointToNewCoords(
+      this.props.pointIndex,
+      originalCoords,
+      change,
+    )
+    this._resetState()
   }
 
   leftHandleDragStartHandler = () => {
@@ -425,8 +448,26 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
     const {xNormalizer, yNormalizer} = this.leftHandleNormalizers
     this.setState(() => ({
       isMoving: true,
-      handlesMove: [(dx / xNormalizer) * 100, (dy / yNormalizer) * 100, 0, 0],
+      handlesMove: [
+        clampHandleMove(
+          this.props.prevPointHandles![2],
+          (dx / xNormalizer) * 100,
+        ),
+        (dy / yNormalizer) * 100,
+        0,
+        0,
+      ],
     }))
+  }
+
+  moveLeftHandle = () => {
+    const newHandle = this.props
+      .prevPointHandles!.slice(2)
+      .map(
+        (handle, i) => handle + this.state.handlesMove[i],
+      ) as TPointSingleHandle
+    this.props.moveLeftHandle(this.props.pointIndex, newHandle)
+    this._resetState()
   }
 
   rightHandleDragStartHandler = () => {
@@ -443,14 +484,22 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
     const {xNormalizer, yNormalizer} = this.rightHandleNormalizers
     this.setState(() => ({
       isMoving: true,
-      handlesMove: [0, 0, (dx / xNormalizer) * 100, (dy / yNormalizer) * 100],
+      handlesMove: [
+        0,
+        0,
+        clampHandleMove(this.props.pointHandles[0], (dx / xNormalizer) * 100),
+        (dy / yNormalizer) * 100,
+      ],
     }))
   }
 
-  changePointHandles = () => {
-    // removeGlobalPointDragRule()
-    const {handlesMove} = this.state
-    this.props.changePointHandlesBy(this.props.pointIndex, handlesMove)
+  moveRightHandle = () => {
+    const newHandle = this.props.pointHandles
+      .slice(0, 2)
+      .map(
+        (handle, i) => handle + this.state.handlesMove[i + 2],
+      ) as TPointSingleHandle
+    this.props.moveRightHandle(this.props.pointIndex, newHandle)
     this._resetState()
   }
 
@@ -562,7 +611,14 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
   }
 }
 
-const getSVGSize = (propGetter: IProps['propGetter']): TSVGSize => {
+const clampHandleMove = (handleX: number, moveX: number) => {
+  let handleMove = moveX
+  if (handleMove + handleX > 1) handleMove = 1 - handleX
+  if (handleMove + handleX < 0) handleMove = -handleX
+  return handleMove
+}
+
+const getSVGSize = (propGetter: TPropGetter): TSVGSize => {
   const height = propGetter('itemHeight')
   const width = propGetter('svgWidth')
   return {width, height}

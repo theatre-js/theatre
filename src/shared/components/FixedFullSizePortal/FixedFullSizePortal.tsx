@@ -8,6 +8,7 @@ const style: React.CSSProperties = {
   right: 0,
   bottom: 0,
   zIndex: 10000,
+  pointerEvents: 'none',
 }
 
 class FixedFullSizePortal extends React.PureComponent<{}, {}> {

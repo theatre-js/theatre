@@ -39,7 +39,7 @@ class Dopesheet extends ViewBase<IProps & IWithUtilsProps> {
               removePoint={this._removePoint}
               addConnector={this._addConnector}
               removeConnector={this._removeConnector}
-              movePoint={this.movePoint}
+              movePointToNewCoords={this._movePointToNewCoords}
               moveConnector={this.moveConnector}
               propGetter={propGetter}
               getValueRelativeToBoxHeight={this.getValueRelativeToBoxHeight}

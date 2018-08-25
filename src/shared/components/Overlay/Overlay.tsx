@@ -52,7 +52,6 @@ class Overlay extends React.PureComponent<IProps, IState> {
     if (target == null) return
 
     if (this.isEventTargetOutside(target)) {
-      this.disableEvent(event)
       this.props.onClickOutside()
     }
   }

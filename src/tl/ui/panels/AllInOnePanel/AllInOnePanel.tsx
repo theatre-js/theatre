@@ -13,6 +13,7 @@ import TimelineInstance from '$tl/timelines/TimelineInstance'
 import Right from './Right/Right'
 import createPointerContext from '$shared/utils/react/createPointerContext'
 import TimeUI from '$tl/ui/panels/AllInOnePanel/TimeUI/TimeUI'
+import ActiveModeProvider from '$shared/components/ActiveModeProvider/ActiveModeProvider'
 
 const classes = resolveCss(css)
 
@@ -87,35 +88,37 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
 
           return (
             <Provider value={allInOnePanelStuff}>
-              <div
-                {...classes('container')}
-                style={{height: fullHeightIncludingBottom}}
-              >
-                <TimeUI
-                  internalTimeline={internalTimeline}
-                  timelineInstance={timelineInstance}
-                  height={height}
-                  width={rightWidth}
-                  left={leftWidth}
-                />
-                <div {...classes('middle')} style={{height}}>
-                  <div {...classes('left')} style={{width: leftWidth}}>
-                    <Left />
+              <ActiveModeProvider modes={['cmd', 'c', 'd', 'h']}>
+                <div
+                  {...classes('container')}
+                  style={{height: fullHeightIncludingBottom}}
+                >
+                  <TimeUI
+                    internalTimeline={internalTimeline}
+                    timelineInstance={timelineInstance}
+                    height={height}
+                    width={rightWidth}
+                    left={leftWidth}
+                  />
+                  <div {...classes('middle')} style={{height}}>
+                    <div {...classes('left')} style={{width: leftWidth}}>
+                      <Left />
+                    </div>
+                    <div
+                      {...classes('right')}
+                      style={{
+                        width: rightWidth,
+                        height,
+                      }}
+                    >
+                      <Right />
+                    </div>
                   </div>
-                  <div
-                    {...classes('right')}
-                    style={{
-                      width: rightWidth,
-                      height,
-                    }}
-                  >
-                    <Right />
+                  <div {...classes('bottom')}>
+                    <Bottom />
                   </div>
                 </div>
-                <div {...classes('bottom')}>
-                  <Bottom />
-                </div>
-              </div>
+              </ActiveModeProvider>
             </Provider>
           )
         }}

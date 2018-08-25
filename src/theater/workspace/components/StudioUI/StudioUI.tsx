@@ -458,7 +458,7 @@ export class StudioUI extends PureComponentWithTheater<IProps, State> {
     const {visiblePanels} = this.props
     return (
       // <div {...classes('container', this.state.uiVisible && 'uiVisible')}>
-      <ActiveModeDetector modes={['option', 'cmd', 'shift', 'd', 'c', 'h', 's']}>
+      <ActiveModeDetector modes={['option', 'cmd', 'shift', 'd', 'c', 'h']}>
         {(activeMode: ActiveMode) => (
           <>
             {visiblePanels.map(panelId => (

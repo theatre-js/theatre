@@ -10,8 +10,11 @@ import BezierConnector from '$tl/ui/panels/AllInOnePanel/Right/views/graphEditor
 import {
   TColor,
   TNormalizedPoints,
-  TPointHandles,
 } from '$tl/ui/panels/AllInOnePanel/Right/types'
+import {
+  TMoveSingleHandle,
+  TFnNeedsPointIndex,
+} from '$tl/ui/panels/AllInOnePanel/Right/views/types'
 
 interface IProps extends IViewBaseProps {
   color: TColor
@@ -54,9 +57,11 @@ class GraphEditor extends ViewBase<IProps & IWithUtilsProps> {
                 pointIndex={index}
                 removePoint={this._removePoint}
                 addConnector={this._addConnector}
-                changePointCoordsBy={this._changePointCoordsBy}
-                changePointHandlesBy={this.changePointHandlesBy}
-                makeHandleHorizontal={this.makeHandleHorizontal}
+                movePointToNewCoords={this._movePointToNewCoords}
+                moveLeftHandle={this.moveLeftHandle}
+                moveRightHandle={this.moveRightHandle}
+                makeRightHandleHorizontal={this.makeRightHandleHorizontal}
+                makeLeftHandleHorizontal={this.makeLeftHandleHorizontal}
                 showPointValuesEditor={this._showPointValuesEditor}
                 showContextMenu={this._showPointContextMenu}
                 addPointToSelection={this._addPointToSelection}
@@ -85,70 +90,50 @@ class GraphEditor extends ViewBase<IProps & IWithUtilsProps> {
     )
   }
 
-  changePointHandlesBy = (pointIndex: number, change: TPointHandles) => {
-    console.log('changePointHandlesBy', {pointIndex, change})
-    // const {pathToTimeline, variableId} = this.props
-    // this.dispatch(
-    //   reduceHistoricState(
-    //     [
-    //       ...pathToTimeline,
-    //       'variables',
-    //       variableId,
-    //       'points',
-    //       pointIndex,
-    //       'interpolationDescriptor',
-    //       'handles',
-    //     ],
-    //     (handles: PointHandles) => {
-    //       return handles
-    //         .slice(0, 2)
-    //         .map((handle, index) => handle + change[index + 2])
-    //         .concat(handles.slice(2))
-    //     },
-    //   ),
-    // )
-    // if (pointIndex > 0) {
-    //   this.dispatch(
-    //     reduceHistoricState(
-    //       [
-    //         ...pathToTimeline,
-    //         'variables',
-    //         variableId,
-    //         'points',
-    //         pointIndex - 1,
-    //         'interpolationDescriptor',
-    //         'handles',
-    //       ],
-    //       (handles: PointHandles) => {
-    //         return handles
-    //           .slice(0, 2)
-    //           .concat(
-    //             handles.slice(2).map((handle, index) => handle + change[index]),
-    //           )
-    //       },
-    //     ),
-    //   )
-    // }
+  moveLeftHandle: TMoveSingleHandle = (pointIndex, newHandle) => {
+    this.project.reduxStore.dispatch(
+      this.project._actions.historic.movePointLeftHandleInBezierCurvesOfScalarValues(
+        {
+          propAddress: this.props.propGetter('itemAddress'),
+          pointIndex,
+          newHandle,
+        },
+      ),
+    )
   }
 
-  makeHandleHorizontal = (pointIndex: number, side: 'left' | 'right') => {
-    console.log('makeHandleHorizontal', {pointIndex, side})
-    //   const {pathToTimeline, variableId} = this.props
-    //   this.dispatch(
-    //     reduceHistoricState(
-    //       [
-    //         ...pathToTimeline,
-    //         'variables',
-    //         variableId,
-    //         'points',
-    //         side === 'left' ? pointIndex - 1 : pointIndex,
-    //         'interpolationDescriptor',
-    //         'handles',
-    //         side === 'left' ? 3 : 1,
-    //       ],
-    //       () => 0,
-    //     ),
-    //   )
+  moveRightHandle: TMoveSingleHandle = (pointIndex, newHandle) => {
+    this.project.reduxStore.dispatch(
+      this.project._actions.historic.movePointRightHandleInBezierCurvesOfScalarValues(
+        {
+          propAddress: this.props.propGetter('itemAddress'),
+          pointIndex,
+          newHandle,
+        },
+      ),
+    )
+  }
+
+  makeLeftHandleHorizontal: TFnNeedsPointIndex = pointIndex => {
+    this.project.reduxStore.dispatch(
+      this.project._actions.historic.makePointLeftHandleHorizontalInBezierCurvesOfScalarValues(
+        {
+          propAddress: this.props.propGetter('itemAddress'),
+          pointIndex,
+        },
+      ),
+    )
+  }
+
+  makeRightHandleHorizontal: TFnNeedsPointIndex = pointIndex => {
+    this.project.reduxStore.dispatch(
+      this.project._actions.historic.makePointRightHandleHorizontalInBezierCurvesOfScalarValues(
+        {
+          propAddress: this.props.propGetter('itemAddress'),
+          pointIndex,
+        },
+      ),
+    )
   }
 }
 

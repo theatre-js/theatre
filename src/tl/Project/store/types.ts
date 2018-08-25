@@ -52,6 +52,12 @@ const $ITimelinePointInterpolationDescriptor = t.type(
   'TimelinePointInterpolationDescriptor',
 )
 
+const $ITimelinePointSingleHandle = t.tuple([$INumberBetween0And1, t.number])
+
+export type ITimelinePointSingleHandle = t.StaticTypeOf<
+  typeof $ITimelinePointSingleHandle
+>
+
 export type ITimelinePointInterpolationDescriptor = t.StaticTypeOf<
   typeof $ITimelinePointInterpolationDescriptor
 >
@@ -70,7 +76,9 @@ const $ITimelineVarPoint = <V>(valueType: t.Type<V>) =>
 
 export type ITimelineVarPoint = t.StaticTypeOf<typeof $ITimelineVarPoint>
 const $ITimelineVarPointWithNumberValue = $ITimelineVarPoint(t.number)
-export type ITimelineVarPointWithValueNumber = t.StaticTypeOf<typeof $ITimelineVarPointWithNumberValue>
+export type ITimelineVarPointWithValueNumber = t.StaticTypeOf<
+  typeof $ITimelineVarPointWithNumberValue
+>
 
 const $BezierCurvesOfScalarValues = t.type({
   type: t.literal('BezierCurvesOfScalarValues'),

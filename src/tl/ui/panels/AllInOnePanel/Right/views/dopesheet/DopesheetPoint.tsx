@@ -21,11 +21,6 @@ import {TColor} from '$tl/ui/panels/AllInOnePanel/Right/types'
 //   addGlobalDopesheetDragRule,
 //   removeGlobalDopesheetDragRule,
 // } from '$tl/ui/panels/AllInOnePanel/Right/utils'
-// import {
-//   ActiveMode,
-//   MODES,
-// } from '$theater/common/components/ActiveModeDetector/ActiveModeDetector'
-// import {PanelActiveModeChannel} from '$theater/workspace/components/Panel/Panel'
 import PointCircle from '$tl/ui/panels/AllInOnePanel/Right/views/point/PointCircle'
 import LineConnectorRect from '$tl/ui/panels/AllInOnePanel/Right/views/dopesheet/LineConnectorRect'
 import LineConnector from '$tl/ui/panels/AllInOnePanel/Right/views/dopesheet/LineConnector'
@@ -33,6 +28,12 @@ import Point from '$tl/ui/panels/AllInOnePanel/Right/views/point/Point'
 import {noop} from 'redux-saga/utils'
 import {TPropGetter} from '$tl/ui/panels/AllInOnePanel/Right/items/ItemPropProvider'
 import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
+import {
+  ActiveModeContext,
+  ActiveMode,
+  MODES,
+} from '$shared/components/ActiveModeProvider/ActiveModeProvider'
+import {TMovePointToNewCoords} from '$tl/ui/panels/AllInOnePanel/Right/views/types'
 
 interface IProps {
   propGetter: TPropGetter
@@ -49,7 +50,7 @@ interface IProps {
   pointIndex: number
   removePoint: (pointIndex: number) => void
   addConnector: (pointIndex: number) => void
-  movePoint: (pointIndex: number, move: number) => void
+  movePointToNewCoords: TMovePointToNewCoords
   moveConnector: (pointIndex: number, move: number) => void
   getValueRelativeToBoxHeight: () => number
   removeConnector: (pointIndex: number) => void
@@ -70,7 +71,7 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
   pointClickArea: React.RefObject<SVGRectElement> = React.createRef()
   connectorClickArea: React.RefObject<SVGRectElement> = React.createRef()
   svgWidth: number = 0
-  activeMode: $FixMe /*ActiveMode*/
+  activeMode: ActiveMode
 
   state = {
     isMovingConnector: false,
@@ -99,12 +100,13 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
     const connectorFill = pointIndex === 0 ? color.darkened : 'transparent'
     return (
       <>
-        {/* <Subscriber channel={PanelActiveModeChannel}>
-          {this._setActiveMode}
-        </Subscriber>
+        {/*
         <Subscriber channel={SelectedAreaChannel}>
           {this._highlightAsSelected}
         </Subscriber> */}
+        <ActiveModeContext.Consumer>
+          {this._setActiveMode}
+        </ActiveModeContext.Consumer>
         <g>
           {nextPointConnected && (
             <LineConnectorRect
@@ -230,25 +232,25 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
     )
   }
 
-  _setActiveMode = (activeMode: $FixMe/*ActiveMode*/) => {
+  _setActiveMode = (activeMode: ActiveMode) => {
     this.activeMode = activeMode
-    // if (activeMode === MODES.d) {
-    //   this.pointClickArea.current != null &&
-    //     this.pointClickArea.current.classList.add(pointCss.highlightRedOnHover)
-    //   this.connectorClickArea.current != null &&
-    //     this.connectorClickArea.current.classList.add(
-    //       connectorCss.highlightRedOnHover,
-    //     )
-    // } else {
-    //   this.pointClickArea.current != null &&
-    //     this.pointClickArea.current.classList.remove(
-    //       pointCss.highlightRedOnHover,
-    //     )
-    //   this.connectorClickArea.current != null &&
-    //     this.connectorClickArea.current.classList.remove(
-    //       connectorCss.highlightRedOnHover,
-    //     )
-    // }
+    if (activeMode === MODES.d) {
+      this.pointClickArea.current != null &&
+        this.pointClickArea.current.classList.add(pointCss.highlightRedOnHover)
+      this.connectorClickArea.current != null &&
+        this.connectorClickArea.current.classList.add(
+          connectorCss.highlightRedOnHover,
+        )
+    } else {
+      this.pointClickArea.current != null &&
+        this.pointClickArea.current.classList.remove(
+          pointCss.highlightRedOnHover,
+        )
+      this.connectorClickArea.current != null &&
+        this.connectorClickArea.current.classList.remove(
+          connectorCss.highlightRedOnHover,
+        )
+    }
     return null
   }
 
@@ -306,19 +308,19 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
     return null
   }
 
-  pointClickHandler = (e: React.MouseEvent<SVGRectElement>) => {
-    e.preventDefault()
-    e.stopPropagation()
+  pointClickHandler = (event: React.MouseEvent<SVGRectElement>) => {
+    event.preventDefault()
+    event.stopPropagation()
     switch (this.activeMode) {
-      // case MODES.c:
-      //   this.props.addConnector(this.props.pointIndex)
-      //   break
-      // case MODES.cmd:
-      //   this.props.addConnector(this.props.pointIndex)
-      //   break
-      // case MODES.d:
-      //   this.props.removePoint(this.props.pointIndex)
-      //   break
+      case MODES.c:
+        this.props.addConnector(this.props.pointIndex)
+        break
+      case MODES.cmd:
+        this.props.addConnector(this.props.pointIndex)
+        break
+      case MODES.d:
+        this.props.removePoint(this.props.pointIndex)
+        break
       default: {
         const {
           left,
@@ -338,11 +340,11 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
     }
   }
 
-  connectorClickHandler = (e: React.MouseEvent<SVGRectElement>) => {
-    // if (this.activeMode === MODES.d) {
-    //   e.stopPropagation()
-    //   this.props.removeConnector(this.props.pointIndex)
-    // }
+  connectorClickHandler = (event: React.MouseEvent<SVGRectElement>) => {
+    if (this.activeMode === MODES.d) {
+      event.stopPropagation()
+      this.props.removeConnector(this.props.pointIndex)
+    }
   }
 
   connectorDragStartHandler = () => {
@@ -408,7 +410,19 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
   pointDragEndHandler = (dragHappened: true) => {
     // removeGlobalDopesheetDragRule()
     if (!dragHappened) return
-    this.props.movePoint(this.props.pointIndex, this.state.pointMove)
+    const originalCoords = {
+      time: this.props.originalTime,
+      value: this.props.originalValue,
+    }
+    const change = {
+      time: this.state.pointMove,
+      value: 0,
+    }
+    this.props.movePointToNewCoords(
+      this.props.pointIndex,
+      originalCoords,
+      change,
+    )
     this.setState(() => ({
       isMovingPoint: false,
       pointMove: 0,

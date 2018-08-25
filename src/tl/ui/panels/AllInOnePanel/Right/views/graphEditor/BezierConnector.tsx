@@ -1,16 +1,14 @@
 import React from 'react'
-// import {PointHandles as IHandles} from '$tl/ui/panels/AllInOnePanel/Right/types'
-// import {PanelActiveModeChannel} from '$theater/workspace/components/Panel/Panel'
-// import {Subscriber} from 'react-broadcast'
-// import {
-//   MODES,
-//   ActiveMode,
-// } from '$theater/common/components/ActiveModeDetector/ActiveModeDetector'
 import css from './BezierConnector.css'
 import noop from '$shared/utils/noop'
 // import {TShowConnectorContextMenu} from '$tl/ui/panels/AllInOnePanel/Right/views/types'
 import resolveCss from '$shared/utils/resolveCss'
 import {TPointHandles} from '$tl/ui/panels/AllInOnePanel/Right/types'
+import {
+  ActiveMode,
+  ActiveModeContext,
+  MODES,
+} from '$shared/components/ActiveModeProvider/ActiveModeProvider'
 
 const classes = resolveCss(css)
 
@@ -29,7 +27,7 @@ interface IState {}
 
 class BezierConnector extends React.PureComponent<IProps, IState> {
   connectorClickArea: SVGPathElement | null
-  activeMode: $FixMe /*ActiveMode*/
+  activeMode: ActiveMode
 
   static defaultProps = {
     removeConnector: noop,
@@ -74,9 +72,9 @@ class BezierConnector extends React.PureComponent<IProps, IState> {
 
     return (
       <>
-        {/* <Subscriber channel={PanelActiveModeChannel}>
+        <ActiveModeContext.Consumer>
           {this._setActiveMode}
-        </Subscriber> */}
+        </ActiveModeContext.Consumer>
         <svg
           x={x}
           y={y}
@@ -108,33 +106,33 @@ class BezierConnector extends React.PureComponent<IProps, IState> {
     )
   }
 
-  private _setActiveMode = (activeMode: $FixMe /*ActiveMode*/) => {
-    // this.activeMode = activeMode
-    // if (this.connectorClickArea == null) return null
-    // if (activeMode === MODES.d) {
-    //   this.connectorClickArea.classList.add('connector-highlightRedOnHover')
-    // } else {
-    //   this.connectorClickArea.classList.remove('connector-highlightRedOnHover')
-    // }
-    // return null
+  private _setActiveMode = (activeMode: ActiveMode) => {
+    this.activeMode = activeMode
+    if (this.connectorClickArea == null) return null
+    if (activeMode === MODES.d) {
+      this.connectorClickArea.classList.add('connector-highlightRedOnHover')
+    } else {
+      this.connectorClickArea.classList.remove('connector-highlightRedOnHover')
+    }
+    return null
   }
 
-  clickHandler = (e: React.MouseEvent<SVGPathElement>) => {
-    // if (this.activeMode === MODES.d) {
-    //   e.stopPropagation()
-    //   this.props.removeConnector!(this.props.leftPointIndex as number)
-    // }
+  clickHandler = (event: React.MouseEvent<SVGPathElement>) => {
+    if (this.activeMode === MODES.d) {
+      event.stopPropagation()
+      this.props.removeConnector!(this.props.leftPointIndex as number)
+    }
   }
 
-  contextMenuHandler = (e: React.MouseEvent<SVGPathElement>) => {
-    // e.stopPropagation()
-    // e.preventDefault()
-    // const {clientX, clientY} = e
-    // this.props.showContextMenu!({
-    //   left: clientX,
-    //   top: clientY,
-    //   pointIndex: this.props.leftPointIndex as number,
-    // })
+  contextMenuHandler = (event: React.MouseEvent<SVGPathElement>) => {
+    event.stopPropagation()
+    event.preventDefault()
+    const {clientX, clientY} = event
+    this.props.showContextMenu!({
+      left: clientX,
+      top: clientY,
+      pointIndex: this.props.leftPointIndex as number,
+    })
   }
 }
 

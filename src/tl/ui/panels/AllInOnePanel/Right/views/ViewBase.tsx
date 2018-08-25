@@ -1,23 +1,13 @@
-// import {
-//   TPoint,
-//   VariableID,
-//   PointPosition,
-// } from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {IWithUtilsProps} from '$tl/ui/panels/AllInOnePanel/Right/views/withUtils'
 import UIComponent from '$tl/ui/handy/UIComponent'
 import {TExtremums, TPointCoords} from '$tl/ui/panels/AllInOnePanel/Right/types'
-import {TShowPointContextMenu} from '$theater/AnimationTimelinePanel/views/types'
-// import {
-//   TShowConnectorContextMenu,
-//   TShowPointContextMenu,
-//   TShowPointValuesEditor,
-//   TRemovePointFromSelection,
-//   TAddPointToSelection,
-// } from '$tl/ui/panels/AllInOnePanel/Right/views/types'
+import {
+  TShowPointContextMenu,
+  TShowPointValuesEditor,
+  TMovePointToNewCoords,
+} from '$tl/ui/panels/AllInOnePanel/Right/views/types'
 
 export interface IViewBaseProps {
-  // pathToTimeline: string[]
-  // variableId: VariableID
   extremums: TExtremums
 }
 
@@ -28,75 +18,56 @@ export default class ViewBase<Props extends IProps> extends UIComponent<
   {}
 > {
   _removePoint = (pointIndex: number) => {
-    console.log('_removPoint', {pointIndex})
-    // const {pathToTimeline, variableId} = this.props
-    // this.dispatch(
-    //   reduceHistoricState(
-    //     [...pathToTimeline, 'variables', variableId, 'points'],
-    //     (points: TPoint[]): TPoint[] => {
-    //       if (points[pointIndex - 1] != null && points[pointIndex + 1] == null) {
-    //         points[pointIndex - 1].interpolationDescriptor.connected = false
-    //       }
-    //       return points
-    //         .slice(0, pointIndex)
-    //         .concat(points.slice(pointIndex + 1))
-    //     },
-    //   ),
-    // )
+    this.project.reduxStore.dispatch(
+      this.project._actions.historic.removePointInBezierCurvesOfScalarValues({
+        propAddress: this.props.propGetter('itemAddress'),
+        pointIndex,
+      }),
+    )
   }
 
   _addConnector = (pointIndex: number) => {
-    console.log('_addConnector', {pointIndex})
-    // const {pathToTimeline, variableId} = this.props
-    // this.dispatch(
-    //   reduceHistoricState(
-    //     [
-    //       ...pathToTimeline,
-    //       'variables',
-    //       variableId,
-    //       'points',
-    //       pointIndex,
-    //       'interpolationDescriptor',
-    //       'connected',
-    //     ],
-    //     () => true,
-    //   ),
-    // )
+    this.project.reduxStore.dispatch(
+      this.project._actions.historic.addConnectorInBezierCurvesOfScalarValues({
+        propAddress: this.props.propGetter('itemAddress'),
+        pointIndex,
+      }),
+    )
   }
 
   _removeConnector = (pointIndex: number) => {
-    console.log('_removeConnector', {pointIndex})
-    // const {pathToTimeline, variableId} = this.props
-    // this.dispatch(
-    //   reduceHistoricState(
-    //     [
-    //       ...pathToTimeline,
-    //       'variables',
-    //       variableId,
-    //       'points',
-    //       pointIndex,
-    //       'interpolationDescriptor',
-    //       'connected',
-    //     ],
-    //     () => false,
-    //   ),
-    // )
+    this.project.reduxStore.dispatch(
+      this.project._actions.historic.removeConnectorInBezierCurvesOfScalarValues(
+        {
+          propAddress: this.props.propGetter('itemAddress'),
+          pointIndex,
+        },
+      ),
+    )
   }
 
-  _changePointCoordsBy = (pointIndex: number, change: TPointCoords) => {
-    console.log('_changePointCoordsBy', {pointIndex, change})
-    // const {extremums, variableId, pathToTimeline, propGetter} = this.props
-    // const extDiff = extremums[1] - extremums[0]
-    // this.dispatch(
-    //   reduceHistoricState(
-    //     [...pathToTimeline, 'variables', variableId, 'points', pointIndex],
-    //     (point: TPoint) => ({
-    //       ...point,
-    //       time: point.time + (change.time * propGetter('duration')) / 100,
-    //       value: point.value - (change.value * extDiff) / 100,
-    //     }),
-    //   ),
-    // )
+  _movePointToNewCoords: TMovePointToNewCoords = (
+    pointIndex,
+    originalCoords,
+    change,
+  ) => {
+    const {extremums, propGetter} = this.props
+    const newCoords = {
+      time: originalCoords.time + (change.time * propGetter('duration')) / 100,
+      value:
+        originalCoords.value -
+        (change.value * (extremums[1] - extremums[0])) / 100,
+    }
+
+    this.project.reduxStore.dispatch(
+      this.project._actions.historic.movePointToNewCoordsInBezierCurvesOfScalarValues(
+        {
+          propAddress: propGetter('itemAddress'),
+          pointIndex,
+          newCoords,
+        },
+      ),
+    )
   }
 
   // TODO: Fix Me
@@ -125,11 +96,10 @@ export default class ViewBase<Props extends IProps> extends UIComponent<
 
   // TODO: Fix Me
   // @ts-ignore
-  _showPointValuesEditor /*: TShowPointValuesEditor*/ = props => {
-    // console.log('_showPointValuesEditor', {props})
+  _showPointValuesEditor: TShowPointValuesEditor = props => {
     this.props.overlaysAPI.showPointValuesEditor({
-      ...props,
       propAddress: this.props.propGetter('itemAddress'),
+      ...props,
     })
   }
 
