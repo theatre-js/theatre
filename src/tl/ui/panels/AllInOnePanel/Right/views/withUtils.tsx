@@ -5,10 +5,13 @@ import {
 } from '$tl/ui/panels/AllInOnePanel/Right/items/ItemPropProvider'
 import {OverlaysAPIContext} from '$tl/ui/panels/AllInOnePanel/Right/timeline/OverlaysProvider'
 import {TOverlaysAPI} from '$tl/ui/panels/AllInOnePanel/Right/timeline/overlays/types'
+import {SelectionAPIContext} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/SelectionProvider'
+import {TSelectionAPI} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/types'
 
 export interface IWithUtilsProps {
   propGetter: TPropGetter
   overlaysAPI: TOverlaysAPI
+  selectionAPI: TSelectionAPI
 }
 
 export default <P extends {}>(
@@ -16,54 +19,20 @@ export default <P extends {}>(
 ) => (props: P) => (
   <ItemPropGetterContext.Consumer>
     {propGetter => (
-      <OverlaysAPIContext.Consumer>
-        {overlaysAPI => (
-          <Component
-            {...props}
-            propGetter={propGetter}
-            overlaysAPI={overlaysAPI}
-          />
+      <SelectionAPIContext.Consumer>
+        {selectionAPI => (
+          <OverlaysAPIContext.Consumer>
+            {overlaysAPI => (
+              <Component
+                {...props}
+                propGetter={propGetter}
+                overlaysAPI={overlaysAPI}
+                selectionAPI={selectionAPI}
+              />
+            )}
+          </OverlaysAPIContext.Consumer>
         )}
-      </OverlaysAPIContext.Consumer>
+      </SelectionAPIContext.Consumer>
     )}
   </ItemPropGetterContext.Consumer>
 )
-
-// import {Subscriber} from 'react-broadcast'
-// import {
-//   VariablesPropGetterChannel,
-//   TPropGetter,
-// } from '$tl/ui/panels/AllInOnePanel/Right/variables/VariablesPropProvider'
-// import {SelectionAPIChannel} from '$tl/ui/panels/AllInOnePanel/Right/selection/SelectionProvider'
-// import {OverlaysAPIChannel} from '$tl/ui/panels/AllInOnePanel/Right/overlays/OverlaysProvider'
-// import {TSelectionAPI} from '$tl/ui/panels/AllInOnePanel/Right/selection/types'
-// import {TOverlaysAPI} from '$tl/ui/panels/AllInOnePanel/Right/overlays/types'
-
-// export interface IWithUtilsProps {
-//   propGetter: TPropGetter
-//   selectionAPI: TSelectionAPI
-//   overlaysAPI: TOverlaysAPI
-// }
-
-// export default <P extends {}>(
-//   Component: React.ComponentType<P & IWithUtilsProps>,
-// ) => (props: P) => (
-//   <Subscriber channel={VariablesPropGetterChannel}>
-//     {(propGetter: TPropGetter) => (
-//       <Subscriber channel={SelectionAPIChannel}>
-//         {(selectoinAPI: TSelectionAPI) => (
-//           <Subscriber channel={OverlaysAPIChannel}>
-//             {(overlaysAPI: TOverlaysAPI) => (
-//               <Component
-//                 {...props}
-//                 propGetter={propGetter}
-//                 selectionAPI={selectoinAPI}
-//                 overlaysAPI={overlaysAPI}
-//               />
-//             )}
-//           </Subscriber>
-//         )}
-//       </Subscriber>
-//     )}
-//   </Subscriber>
-// )

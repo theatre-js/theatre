@@ -1,19 +1,5 @@
 import React from 'react'
 import pointCss from '../point/point.css'
-// import {
-//   SelectedAreaChannel,
-//   SelectionMoveChannel,
-// } from '$tl/ui/panels/AllInOnePanel/Right/selection/SelectionProvider'
-// import {
-//   TTransformedSelectedArea,
-//   TSelectionMove,
-// } from '$tl/ui/panels/AllInOnePanel/Right/selection/types'
-// import {
-//   TShowPointValuesEditor,
-//   TShowPointContextMenu,
-//   TRemovePointFromSelection,
-//   TAddPointToSelection,
-// } from '$tl/ui/panels/AllInOnePanel/Right/views/types'
 import Point from '$tl/ui/panels/AllInOnePanel/Right/views/point/Point'
 import PointCircle from '$tl/ui/panels/AllInOnePanel/Right/views/point/PointCircle'
 import HandleLine from '$tl/ui/panels/AllInOnePanel/Right/views/graphEditor/HandleLine'
@@ -37,7 +23,14 @@ import {
   TFnNeedsPointIndex,
   TShowPointContextMenu,
   TShowPointValuesEditor,
+  TAddPointToSelection,
+  TRemovePointFromSelection,
 } from '$tl/ui/panels/AllInOnePanel/Right/views/types'
+import {
+  SelectedAreaContext,
+  SelectionMoveContext,
+} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/SelectionProvider'
+import {TTransformedSelectedArea, TSelectionMove} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/types'
 
 interface IProps {
   propGetter: TPropGetter
@@ -64,8 +57,8 @@ interface IProps {
   makeRightHandleHorizontal: TFnNeedsPointIndex
   showPointValuesEditor: TShowPointValuesEditor
   showContextMenu: TShowPointContextMenu
-  addPointToSelection: $FixMe /*TAddPointToSelection*/
-  removePointFromSelection: $FixMe /*TRemovePointFromSelection*/
+  addPointToSelection: TAddPointToSelection
+  removePointFromSelection: TRemovePointFromSelection
 }
 
 interface IState {
@@ -143,13 +136,12 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
 
     return (
       <>
-        {/*
-        <Subscriber channel={SelectedAreaChannel}>
-          {this._highlightAsSelected}
-        </Subscriber> */}
         <ActiveModeContext.Consumer>
           {this._setActiveMode}
         </ActiveModeContext.Consumer>
+        <SelectedAreaContext.Consumer>
+          {this._highlightAsSelected}
+        </SelectedAreaContext.Consumer>
         <g>
           {isMoving && this._renderTransformedPoint(this.state.pointMove)}
           {renderLeftHandle && (
@@ -220,9 +212,9 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
             </DraggableArea>
           )}
         </g>
-        {/* <Subscriber channel={SelectionMoveChannel}>
+        <SelectionMoveContext.Consumer>
           {this._handleSelectionMove}
-        </Subscriber> */}
+        </SelectionMoveContext.Consumer>
       </>
     )
   }
@@ -506,14 +498,10 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
     })
   }
 
-  _highlightAsSelected = (
-    selectedArea: $FixMe /*: TTransformedSelectedArea*/,
-  ) => {
-    // TODO: Fix Me
-    // const boxIndex = this.props.propGetter('boxIndex')
-    const boxIndex = 0
+  _highlightAsSelected = (selectedArea: TTransformedSelectedArea) => {
+    const itemKey = this.props.propGetter('itemKey')
     let shouldUpdateHighlightAsSelectedClass = false
-    if (selectedArea[boxIndex] == null) {
+    if (selectedArea[itemKey] == null) {
       this.isNextPointSelected = false
       this.isPrevPointSelected = false
       if (this.isSelected) {
@@ -529,7 +517,7 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
         nextPointTime,
         nextPointValue,
       } = this.props
-      const {left, top, right, bottom} = selectedArea[boxIndex]
+      const {left, top, right, bottom} = selectedArea[itemKey]
       if (
         left <= pointTime &&
         pointTime <= right &&
@@ -591,7 +579,7 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
     return null
   }
 
-  _handleSelectionMove = ({x, y}: $FixMe /*: TSelectionMove*/) => {
+  _handleSelectionMove = ({x, y}: TSelectionMove) => {
     if (this.isSelected) {
       const {width, height} = getSVGSize(this.props.propGetter)
       return this._renderTransformedPoint([

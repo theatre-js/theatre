@@ -9,6 +9,7 @@ import {
 import {PrimitivePropItem} from '$tl/ui/panels/AllInOnePanel/utils'
 
 interface IOwnProps {
+  itemKey: PrimitivePropItem['key']
   itemAddress: PrimitivePropItem['address']
   itemHeight: number
   children: React.ReactNode
@@ -22,7 +23,7 @@ interface IState {}
 
 export const ItemPropGetterContext = React.createContext<TPropGetter>(() => {})
 
-export type TPropName = 'itemAddress' | 'itemHeight' | TRootPropName
+export type TPropName = 'itemAddress' | 'itemKey' | 'itemHeight' | TRootPropName
 export type TPropGetter = (propName: TPropName) => any
 
 class ItemPropProvider extends React.PureComponent<IProps, IState> {
@@ -47,6 +48,8 @@ class ItemPropProvider extends React.PureComponent<IProps, IState> {
         return this.props.itemHeight
       case 'itemAddress':
         return this.props.itemAddress
+      case 'itemKey':
+        return this.props.itemKey
       default:
         return this.props.rootPropGetter(propName)
     }

@@ -104,7 +104,7 @@ export interface PrimitivePropItem extends Item {
 }
 
 type ExcludeHeight<O> = Pick<O, Exclude<keyof O, 'height'>>
-type AnyItem = GroupingItem | ObjectItem | PrimitivePropItem
+export type AnyItem = GroupingItem | ObjectItem | PrimitivePropItem
 export const singleItemHeight = 30
 
 export const internalTimelineToSeriesOfVerticalItems = (

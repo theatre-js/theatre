@@ -2,14 +2,6 @@ import React from 'react'
 import connectorCss from '$tl/ui/panels/AllInOnePanel/Right/views/dopesheet/connector.css'
 import pointCss from '$tl/ui/panels/AllInOnePanel/Right/views/point/point.css'
 import {TColor} from '$tl/ui/panels/AllInOnePanel/Right/types'
-// import {
-//   SelectedAreaChannel,
-//   SelectionMoveChannel,
-// } from '$tl/ui/panels/AllInOnePanel/Right/selection/SelectionProvider'
-// import {
-//   TTransformedSelectedArea,
-//   TSelectionMove,
-// } from '$tl/ui/panels/AllInOnePanel/Right/selection/types'
 import PointCircle from '$tl/ui/panels/AllInOnePanel/Right/views/point/PointCircle'
 import LineConnectorRect from '$tl/ui/panels/AllInOnePanel/Right/views/dopesheet/LineConnectorRect'
 import LineConnector from '$tl/ui/panels/AllInOnePanel/Right/views/dopesheet/LineConnector'
@@ -28,7 +20,11 @@ import {
   TShowPointValuesEditor,
   TShowConnectorContextMenu,
   TShowPointContextMenu,
+  TAddPointToSelection,
+  TRemovePointFromSelection,
 } from '$tl/ui/panels/AllInOnePanel/Right/views/types'
+import {TTransformedSelectedArea, TSelectionMove} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/types'
+import {SelectedAreaContext, SelectionMoveContext} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/SelectionProvider'
 
 interface IProps {
   propGetter: TPropGetter
@@ -52,8 +48,8 @@ interface IProps {
   showPointContextMenu: TShowPointContextMenu
   showConnectorContextMenu: TShowConnectorContextMenu
   getValueRelativeToBoxHeight: () => number
-  addPointToSelection: $FixMe /*TAddPointToSelection*/
-  removePointFromSelection: $FixMe /*TRemovePointFromSelection*/
+  addPointToSelection: TAddPointToSelection
+  removePointFromSelection: TRemovePointFromSelection
 }
 
 interface IState {
@@ -97,13 +93,12 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
     const connectorFill = pointIndex === 0 ? color.darkened : 'transparent'
     return (
       <>
-        {/*
-        <Subscriber channel={SelectedAreaChannel}>
-          {this._highlightAsSelected}
-        </Subscriber> */}
         <ActiveModeContext.Consumer>
           {this._setActiveMode}
         </ActiveModeContext.Consumer>
+        <SelectedAreaContext.Consumer>
+          {this._highlightAsSelected}
+        </SelectedAreaContext.Consumer>
         <g>
           {nextPointConnected && (
             <LineConnectorRect
@@ -135,9 +130,9 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
         </g>
         {isMovingConnector && this._renderMovingConnector(connectorMove)}
         {isMovingPoint && this._renderMovingPoint(pointMove)}
-        {/* <Subscriber channel={SelectionMoveChannel}>
+        <SelectionMoveContext.Consumer>
           {this._handleSelectionMove}
-        </Subscriber> */}
+        </SelectionMoveContext.Consumer>
         <DraggableArea
           onDragStart={this.pointDragStartHandler}
           onDrag={this.pointDragHandler}
@@ -256,22 +251,18 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
     return null
   }
 
-  _highlightAsSelected = (
-    selectedArea: $FixMe /*TTransformedSelectedArea*/,
-  ) => {
-    // TODO: Fix Me
-    // const boxIndex = this.props.propGetter('boxIndex')
-    const boxIndex = 0
+  _highlightAsSelected = (selectedArea: TTransformedSelectedArea) => {
+    const itemKey = this.props.propGetter('itemKey')
     let shouldUpdateHighlightAsSelectedClass = false
-    if (selectedArea[boxIndex] == null) {
+    if (selectedArea[itemKey] == null) {
       if (this.isSelected) {
         this.isSelected = false
         shouldUpdateHighlightAsSelectedClass = true
       }
     } else {
-      const {pointTime, getValueRelativeToBoxHeight} = this.props
-      const pointValue = getValueRelativeToBoxHeight()
-      const {left, top, right, bottom} = selectedArea[boxIndex]
+      const {pointTime} = this.props
+      const pointValue = 50
+      const {left, top, right, bottom} = selectedArea[itemKey]
       if (
         left <= pointTime &&
         pointTime <= right &&
@@ -298,7 +289,7 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
         this.pointClickArea.current.classList.add(pointCss.highlightAsSelected)
         this.props.addPointToSelection(this.props.pointIndex, {
           time: this.props.pointTime,
-          value: this.props.getValueRelativeToBoxHeight(),
+          value: 50,
         })
       } else {
         this.pointClickArea.current.classList.remove(
@@ -427,7 +418,7 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
     }))
   }
 
-  _handleSelectionMove = ({x}: $FixMe /*TSelectionMove*/) => {
+  _handleSelectionMove = ({x}: TSelectionMove) => {
     if (this.isSelected) {
       const svgWidth = this.props.propGetter('svgWidth')
       return this._renderMovingPoint((x / svgWidth) * 100)

@@ -47,17 +47,17 @@ class DraggableArea extends React.PureComponent<Props, {}> {
     document.removeEventListener('mouseup', this.dragEndHandler)
   }
 
-  dragStartHandler = (e: React.MouseEvent<HTMLElement>) => {
-    if (e.button !== 0) return
-    e.preventDefault()
-    e.stopPropagation()
+  dragStartHandler = (event: React.MouseEvent<HTMLElement>) => {
+    if (event.button !== 0) return
+    event.preventDefault()
+    event.stopPropagation()
 
-    const {screenX, screenY} = e
+    const {screenX, screenY} = event
     this.s.startPos = {x: screenX, y: screenY}
     this.s.dragHappened = false
 
     this.addDragListeners()
-    this.props.onDragStart && this.props.onDragStart(e)
+    this.props.onDragStart && this.props.onDragStart(event)
   }
 
   dragEndHandler = () => {
@@ -66,22 +66,20 @@ class DraggableArea extends React.PureComponent<Props, {}> {
     this.props.onDragEnd && this.props.onDragEnd(this.s.dragHappened)
   }
 
-  dragHandler = (e: MouseEvent) => {
+  dragHandler = (event: MouseEvent) => {
     if (!this.s.dragHappened) this.s.dragHappened = true
 
-    // const {startPos} = this.s
-    const deltas = this.getDeltas(e)
-    this.props.onDrag(deltas[0], deltas[1], e)
-    // this.props.onDrag(e.screenX - startPos.x, e.screenY - startPos.y, e)
+    const deltas = this.getDeltas(event)
+    this.props.onDrag(deltas[0], deltas[1], event)
   }
 
-  getDistances(e: MouseEvent): [number, number] {
+  getDistances(event: MouseEvent): [number, number] {
     const {startPos} = this.s
-    return [e.screenX - startPos.x, e.screenY - startPos.y]
+    return [event.screenX - startPos.x, event.screenY - startPos.y]
   }
 
-  getMovements(e: MouseEvent): [number, number] {
-    return [e.movementX, e.movementY]
+  getMovements(event: MouseEvent): [number, number] {
+    return [event.movementX, event.movementY]
   }
 
   render() {

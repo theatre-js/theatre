@@ -6,6 +6,8 @@ import {
   TShowPointValuesEditor,
   TMovePointToNewCoords,
   TShowConnectorContextMenu,
+  TAddPointToSelection,
+  TRemovePointFromSelection,
 } from '$tl/ui/panels/AllInOnePanel/Right/views/types'
 
 export interface IViewBaseProps {
@@ -71,28 +73,20 @@ export default class ViewBase<Props extends IProps> extends UIComponent<
     )
   }
 
-  // TODO: Fix Me
-  // @ts-ignore
-  _addPointToSelection /*: TAddPointToSelection*/ = (pointIndex, pointData) => {
-    console.log('_addPointToSelection', {pointIndex, pointData})
-    // this.props.selectionAPI.addPoint(
-    //   this.props.propGetter('boxIndex'),
-    //   this.props.variableId,
-    //   this.props.extremums,
-    //   pointIndex,
-    //   pointData,
-    // )
+  _addPointToSelection: TAddPointToSelection = (pointIndex, pointData) => {
+    this.props.selectionAPI.addPoint(
+      this.props.propGetter('itemKey'),
+      pointIndex,
+      this.props.extremums,
+      pointData,
+    )
   }
 
-  // TODO: Fix Me
-  // @ts-ignore
-  _removePointFromSelection /*: TRemovePointFromSelection*/ = pointIndex => {
-    console.log('_removePointFromSelection', {pointIndex})
-    // this.props.selectionAPI.removePoint(
-    //   this.props.propGetter('boxIndex'),
-    //   this.props.variableId,
-    //   pointIndex,
-    // )
+  _removePointFromSelection: TRemovePointFromSelection = pointIndex => {
+    this.props.selectionAPI.removePoint(
+      this.props.propGetter('itemKey'),
+      pointIndex,
+    )
   }
 
   _showPointValuesEditor: TShowPointValuesEditor = props => {

@@ -28,13 +28,19 @@ class RootPropProvider extends React.PureComponent<
   IState
 > {
   render() {
-    const {duration, children} = this.props
     return (
-      <RootPropGetterContext.Provider value={this.getProp}>
-        <DurationContext.Provider value={duration}>
-          {children}
-        </DurationContext.Provider>
-      </RootPropGetterContext.Provider>
+      <PropsAsPointer props={this.props}>
+        {({props: propsP}) => {
+          const duration = val(propsP.duration)
+          return (
+            <RootPropGetterContext.Provider value={this.getProp}>
+              <DurationContext.Provider value={duration}>
+                {this.props.children}
+              </DurationContext.Provider>
+            </RootPropGetterContext.Provider>
+          )
+        }}
+      </PropsAsPointer>
     )
   }
 

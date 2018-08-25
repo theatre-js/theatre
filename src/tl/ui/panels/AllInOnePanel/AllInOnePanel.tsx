@@ -88,7 +88,7 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
 
           return (
             <Provider value={allInOnePanelStuff}>
-              <ActiveModeProvider modes={['cmd', 'c', 'd', 'h']}>
+              <ActiveModeProvider modes={['cmd', 'shift', 'c', 'd', 'h']}>
                 <div
                   {...classes('container')}
                   style={{height: fullHeightIncludingBottom}}

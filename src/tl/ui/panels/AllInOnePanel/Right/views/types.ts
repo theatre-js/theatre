@@ -7,7 +7,6 @@ import {
   TPointCoords,
   TPointSingleHandle,
 } from '$tl/ui/panels/AllInOnePanel/Right/types'
-// import {TPointData} from '$tl/ui/panels/AllInOnePanel/Right/selection/types'
 
 export type TShowPointValuesEditor = (
   props: Pick<
@@ -24,10 +23,10 @@ export type TShowConnectorContextMenu = (
   props: Pick<TConnectorContextMenuProps, 'left' | 'top' | 'pointIndex'>,
 ) => void
 
-// export type TAddPointToSelection = (
-//   pointIndex: number,
-//   pointData: TPointData,
-// ) => void
+export type TAddPointToSelection = (
+  pointIndex: number,
+  pointData: TPointCoords,
+) => void
 
 export type TRemovePointFromSelection = (pointIndex: number) => void
 
