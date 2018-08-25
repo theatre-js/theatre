@@ -11,6 +11,7 @@ import {
   TColor,
   TNormalizedPoints,
 } from '$tl/ui/panels/AllInOnePanel/Right/types'
+import {TMoveDopesheetConnector} from '$tl/ui/panels/AllInOnePanel/Right/views/types'
 
 interface IProps extends IViewBaseProps {
   color: TColor
@@ -46,6 +47,8 @@ class Dopesheet extends ViewBase<IProps & IWithUtilsProps> {
               addPointToSelection={this._addPointToSelection}
               removePointFromSelection={this._removePointFromSelection}
               showPointValuesEditor={this._showPointValuesEditor}
+              showPointContextMenu={this._showPointContextMenu}
+              showConnectorContextMenu={this._showConnectorContextMenu}
               {...(prevPoint != null
                 ? {
                     prevPointTime: prevPoint.time,
@@ -78,29 +81,32 @@ class Dopesheet extends ViewBase<IProps & IWithUtilsProps> {
     // return this.props.valueRelativeToBoxHeight
   }
 
-  movePoint = (pointIndex: number, move: number) => {
-    console.log('movePoint', {pointIndex, move})
-    // this._changePointPositionBy(pointIndex, {time: move, value: 0})
-  }
+  moveConnector: TMoveDopesheetConnector = (pointIndex, moveAmount) => {
+    const {propGetter, points} = this.props
+    const timeChange = (moveAmount * propGetter('duration')) / 100
 
-  moveConnector = (pointIndex: number, move: number) => {
-    console.log('moveConnector', {pointIndex, move})
-    // const {pathToTimeline, variableId, propGetter} = this.props
-    // this.dispatch(
-    //   reduceHistoricState(
-    //     [...pathToTimeline, 'variables', variableId, 'points'],
-    //     (points: IBezierCurvesOfScalarValues['points']): TPoint[] => {
-    //       return immer(points, p => {
-    //         const change = (move * propGetter('duration')) / 100
-    //         p[pointIndex].time += change
-    //         if (p[pointIndex + 1] != null) {
-    //           p[pointIndex + 1].time += change
-    //         }
-    //         return p
-    //       })
-    //     },
-    //   ),
-    // )
+    const point = points[pointIndex]
+    const nextPoint = points[pointIndex + 1]
+
+    this.project.reduxStore.dispatch(
+      this.project._actions.historic.moveDopesheetConnectorInBezierCurvesOfScalarValues(
+        {
+          propAddress: propGetter('itemAddress'),
+          leftPoint: {
+            index: pointIndex,
+            newTime: point.originalTime + timeChange,
+          },
+          ...(nextPoint != null
+            ? {
+                rightPoint: {
+                  index: pointIndex + 1,
+                  newTime: nextPoint.originalTime + timeChange,
+                },
+              }
+            : {}),
+        },
+      ),
+    )
   }
 }
 

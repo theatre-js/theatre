@@ -1,10 +1,6 @@
 import React from 'react'
 import pointCss from '../point/point.css'
 // import {
-//   removeGlobalPointDragRule,
-//   addGlobalPointDragRule,
-// } from '$tl/ui/panels/AllInOnePanel/Right/utils'
-// import {
 //   SelectedAreaChannel,
 //   SelectionMoveChannel,
 // } from '$tl/ui/panels/AllInOnePanel/Right/selection/SelectionProvider'
@@ -39,6 +35,8 @@ import {
   TMovePointToNewCoords,
   TMoveSingleHandle,
   TFnNeedsPointIndex,
+  TShowPointContextMenu,
+  TShowPointValuesEditor,
 } from '$tl/ui/panels/AllInOnePanel/Right/views/types'
 
 interface IProps {
@@ -64,8 +62,8 @@ interface IProps {
   moveRightHandle: TMoveSingleHandle
   makeLeftHandleHorizontal: TFnNeedsPointIndex
   makeRightHandleHorizontal: TFnNeedsPointIndex
-  showPointValuesEditor: $FixMe /*TShowPointValuesEditor*/
-  showContextMenu: $FixMe /*TShowPointContextMenu*/
+  showPointValuesEditor: TShowPointValuesEditor
+  showContextMenu: TShowPointContextMenu
   addPointToSelection: $FixMe /*TAddPointToSelection*/
   removePointFromSelection: $FixMe /*TRemovePointFromSelection*/
 }
@@ -145,9 +143,7 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
 
     return (
       <>
-        {/* <Subscriber channel={PanelActiveModeChannel}>
-          {this._setActiveMode}
-        </Subscriber>
+        {/*
         <Subscriber channel={SelectedAreaChannel}>
           {this._highlightAsSelected}
         </Subscriber> */}
@@ -389,7 +385,6 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
   }
 
   pointDragStartHandler = () => {
-    // addGlobalPointDragRule()
     this.svgSize = getSVGSize(this.props.propGetter)
   }
 
@@ -415,7 +410,6 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
   }
 
   changePointPosition = (dragHappened: boolean) => {
-    // removeGlobalPointDragRule()
     if (!dragHappened) return
     const {pointMove} = this.state
     const originalCoords = {
@@ -435,7 +429,6 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
   }
 
   leftHandleDragStartHandler = () => {
-    // addGlobalPointDragRule()
     const {width, height} = getSVGSize(this.props.propGetter)
     const {pointTime, pointValue, prevPointTime, prevPointValue} = this.props
     this.leftHandleNormalizers = {
@@ -471,7 +464,6 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
   }
 
   rightHandleDragStartHandler = () => {
-    // addGlobalPointDragRule()
     const {width, height} = getSVGSize(this.props.propGetter)
     const {pointTime, pointValue, nextPointTime, nextPointValue} = this.props
     this.rightHandleNormalizers = {

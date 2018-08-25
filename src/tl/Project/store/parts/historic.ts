@@ -9,6 +9,7 @@ import projectSelectors from '$tl/Project/store/selectors'
 import {
   TPointCoords,
   TPointSingleHandle,
+  TPoint,
 } from '$tl/ui/panels/AllInOnePanel/Right/types'
 
 const r = reducto($ProjectHistoricState)
@@ -43,7 +44,8 @@ const ensureObject = (s: ProjectHistoricState, addr: ObjectAddress) => {
 //   }
 // }
 
-type TPointAddress = {propAddress: PropAddress; pointIndex: number}
+type TPropAddress = {propAddress: PropAddress}
+type TPropAddressWithPointIndex = TPropAddress & {pointIndex: number}
 
 const getPoints = (
   s: ProjectHistoricState,
@@ -62,8 +64,17 @@ export const setPointsInBezierCurvesOfScalarValues = r(
   },
 )
 
+export const addPointInBezierCurvesOfScalarValues = r(
+  (s, p: TPropAddress & {pointProps: TPoint}) => {
+    const points = getPoints(s, p.propAddress)
+    let atIndex = points.findIndex(point => point.time > p.pointProps.time)
+    if (atIndex === -1) atIndex = points.length
+    points.splice(atIndex, 0, p.pointProps)
+  },
+)
+
 export const addConnectorInBezierCurvesOfScalarValues = r(
-  (s, p: TPointAddress) => {
+  (s, p: TPropAddressWithPointIndex) => {
     const points = getPoints(s, p.propAddress)
     if (p.pointIndex === points.length - 1) return
     points[p.pointIndex].interpolationDescriptor.connected = true
@@ -71,14 +82,14 @@ export const addConnectorInBezierCurvesOfScalarValues = r(
 )
 
 export const removeConnectorInBezierCurvesOfScalarValues = r(
-  (s, p: TPointAddress) => {
+  (s, p: TPropAddressWithPointIndex) => {
     const points = getPoints(s, p.propAddress)
     points[p.pointIndex].interpolationDescriptor.connected = false
   },
 )
 
 export const removePointInBezierCurvesOfScalarValues = r(
-  (s, p: TPointAddress) => {
+  (s, p: TPropAddressWithPointIndex) => {
     const points = getPoints(s, p.propAddress)
     if (points[p.pointIndex - 1] != null && points[p.pointIndex + 1] == null) {
       points[p.pointIndex - 1].interpolationDescriptor.connected = false
@@ -88,7 +99,7 @@ export const removePointInBezierCurvesOfScalarValues = r(
 )
 
 export const movePointToNewCoordsInBezierCurvesOfScalarValues = r(
-  (s, p: TPointAddress & {newCoords: TPointCoords}) => {
+  (s, p: TPropAddressWithPointIndex & {newCoords: TPointCoords}) => {
     const point = getPoints(s, p.propAddress)[p.pointIndex]
     point.time = p.newCoords.time
     point.value = p.newCoords.value
@@ -96,7 +107,7 @@ export const movePointToNewCoordsInBezierCurvesOfScalarValues = r(
 )
 
 export const movePointLeftHandleInBezierCurvesOfScalarValues = r(
-  (s, p: TPointAddress & {newHandle: TPointSingleHandle}) => {
+  (s, p: TPropAddressWithPointIndex & {newHandle: TPointSingleHandle}) => {
     const points = getPoints(s, p.propAddress)
     const prevPointHandles =
       points[p.pointIndex - 1].interpolationDescriptor.handles
@@ -106,7 +117,7 @@ export const movePointLeftHandleInBezierCurvesOfScalarValues = r(
 )
 
 export const movePointRightHandleInBezierCurvesOfScalarValues = r(
-  (s, p: TPointAddress & {newHandle: TPointSingleHandle}) => {
+  (s, p: TPropAddressWithPointIndex & {newHandle: TPointSingleHandle}) => {
     const points = getPoints(s, p.propAddress)
     const pointHandles = points[p.pointIndex].interpolationDescriptor.handles
     pointHandles[0] = p.newHandle[0]
@@ -115,21 +126,38 @@ export const movePointRightHandleInBezierCurvesOfScalarValues = r(
 )
 
 export const makePointLeftHandleHorizontalInBezierCurvesOfScalarValues = r(
-  (s, p: TPointAddress) => {
+  (s, p: TPropAddressWithPointIndex) => {
     const points = getPoints(s, p.propAddress)
     points[p.pointIndex - 1].interpolationDescriptor.handles[3] = 0
   },
 )
 
 export const makePointRightHandleHorizontalInBezierCurvesOfScalarValues = r(
-  (s, p: TPointAddress) => {
+  (s, p: TPropAddressWithPointIndex) => {
     const points = getPoints(s, p.propAddress)
     points[p.pointIndex].interpolationDescriptor.handles[1] = 0
   },
 )
 
+export const moveDopesheetConnectorInBezierCurvesOfScalarValues = r(
+  (
+    s,
+    p: TPropAddress & {
+      leftPoint: {index: number; newTime: number}
+      rightPoint?: {index: number; newTime: number}
+    },
+  ) => {
+    const points = getPoints(s, p.propAddress)
+    points[p.leftPoint.index].time = p.leftPoint.newTime
+
+    if (p.rightPoint != null) {
+      points[p.rightPoint.index].time = p.rightPoint.newTime
+    }
+  },
+)
+
 export const setPointCoordsInBezierCurvesOfScalarValues = r(
-  (s, p: TPointAddress & {coords: TPointCoords}) => {
+  (s, p: TPropAddressWithPointIndex & {coords: TPointCoords}) => {
     const points = getPoints(s, p.propAddress)
     const pointToUpdate = points[p.pointIndex]
     const nextPoint = points[p.pointIndex + 1]

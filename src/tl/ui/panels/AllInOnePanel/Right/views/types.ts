@@ -43,3 +43,8 @@ export type TMoveSingleHandle = (
 ) => void
 
 export type TFnNeedsPointIndex = (pointIndex: number) => void
+
+export type TMoveDopesheetConnector = (
+  pointIndex: number,
+  moveAmount: number,
+) => void

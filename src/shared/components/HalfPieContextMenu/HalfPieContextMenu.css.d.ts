@@ -1,5 +1,4 @@
 export const typographyFont: string;
-export const container: string;
 export const anchor: string;
 export const item: string;
 export const highlight: string;

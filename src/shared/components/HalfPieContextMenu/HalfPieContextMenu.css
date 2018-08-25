@@ -1,10 +1,4 @@
-@value typographyFont from '../../styles.css';
-
-.container {
-  position: fixed 0 0 0 0;
-  z-index: 999999;
-  font: typographyFont;
-}
+@value typographyFont from '$shared/styles.css';
 
 .anchor {
   position: absolute;
@@ -18,6 +12,7 @@
 }
 
 .item {
+  font: typographyFont;
   background: #000;
   font-size: 11px;
   position: absolute;
@@ -52,8 +47,8 @@
   color: rgba(60, 223, 255, 0.75);
 }
 
-.item:hover > .icon,
-.item.highlight > .icon {
+.item:hover .icon,
+.item.highlight .icon {
   color: #fff;
 }
 

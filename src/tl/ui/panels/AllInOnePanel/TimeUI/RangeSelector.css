@@ -22,7 +22,7 @@
   position: relative;
   top: 0;
   left: 0;
-  width: calc(100% - 30px);
+  width: 100%;
   height: var(--threadHeight);
 }
 

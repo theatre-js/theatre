@@ -105,7 +105,7 @@ export interface PrimitivePropItem extends Item {
 
 type ExcludeHeight<O> = Pick<O, Exclude<keyof O, 'height'>>
 type AnyItem = GroupingItem | ObjectItem | PrimitivePropItem
-const singleItemheight = 30
+export const singleItemHeight = 30
 
 export const internalTimelineToSeriesOfVerticalItems = (
   ui: UI,
@@ -158,7 +158,7 @@ export const internalTimelineToSeriesOfVerticalItems = (
         hasChildren: node.children.length > 0,
         address: isObject ? internalObject._address : undefined,
       },
-      singleItemheight,
+      singleItemHeight,
     )
 
     if (expanded && isObject) {
@@ -220,7 +220,7 @@ export const internalTimelineToSeriesOfVerticalItems = (
         },
         propState && propState.expanded
           ? propState.heightWhenExpanded
-          : singleItemheight,
+          : singleItemHeight,
       )
     } else {
       console.error(`@todo not supporting prop type ${typeDesc.type} yet`)

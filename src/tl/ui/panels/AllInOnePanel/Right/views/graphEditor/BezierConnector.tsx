@@ -110,9 +110,9 @@ class BezierConnector extends React.PureComponent<IProps, IState> {
     this.activeMode = activeMode
     if (this.connectorClickArea == null) return null
     if (activeMode === MODES.d) {
-      this.connectorClickArea.classList.add('connector-highlightRedOnHover')
+      this.connectorClickArea.classList.add(css.highlightRedOnHover)
     } else {
-      this.connectorClickArea.classList.remove('connector-highlightRedOnHover')
+      this.connectorClickArea.classList.remove(css.highlightRedOnHover)
     }
     return null
   }

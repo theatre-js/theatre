@@ -34,7 +34,7 @@ export default class TimelineItem extends UIComponent<IProps, IState> {
     return (
       <ItemWrapper item={item}>
         <ItemPropProvider itemAddress={item.address} itemHeight={item.height}>
-          <ItemView expanded={item.expanded} points={valueContainer.points} />
+          <ItemView expanded={item.expanded} points={valueContainer.points} address={item.address}/>
         </ItemPropProvider>
       </ItemWrapper>
     )

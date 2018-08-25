@@ -10,22 +10,10 @@ import {TColor} from '$tl/ui/panels/AllInOnePanel/Right/types'
 //   TTransformedSelectedArea,
 //   TSelectionMove,
 // } from '$tl/ui/panels/AllInOnePanel/Right/selection/types'
-// import {TPropName} from '$tl/ui/panels/AllInOnePanel/Right/variables/VariablesPropProvider'
-// import {
-//   TAddPointToSelection,
-//   TRemovePointFromSelection,
-//   TShowPointValuesEditor,
-// } from '$tl/ui/panels/AllInOnePanel/Right/views/types'
-
-// import {
-//   addGlobalDopesheetDragRule,
-//   removeGlobalDopesheetDragRule,
-// } from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import PointCircle from '$tl/ui/panels/AllInOnePanel/Right/views/point/PointCircle'
 import LineConnectorRect from '$tl/ui/panels/AllInOnePanel/Right/views/dopesheet/LineConnectorRect'
 import LineConnector from '$tl/ui/panels/AllInOnePanel/Right/views/dopesheet/LineConnector'
 import Point from '$tl/ui/panels/AllInOnePanel/Right/views/point/Point'
-import {noop} from 'redux-saga/utils'
 import {TPropGetter} from '$tl/ui/panels/AllInOnePanel/Right/items/ItemPropProvider'
 import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
 import {
@@ -33,7 +21,14 @@ import {
   ActiveMode,
   MODES,
 } from '$shared/components/ActiveModeProvider/ActiveModeProvider'
-import {TMovePointToNewCoords} from '$tl/ui/panels/AllInOnePanel/Right/views/types'
+import {
+  TMovePointToNewCoords,
+  TFnNeedsPointIndex,
+  TMoveDopesheetConnector,
+  TShowPointValuesEditor,
+  TShowConnectorContextMenu,
+  TShowPointContextMenu,
+} from '$tl/ui/panels/AllInOnePanel/Right/views/types'
 
 interface IProps {
   propGetter: TPropGetter
@@ -48,15 +43,17 @@ interface IProps {
   originalTime: number
   originalValue: number
   pointIndex: number
-  removePoint: (pointIndex: number) => void
-  addConnector: (pointIndex: number) => void
+  removePoint: TFnNeedsPointIndex
+  addConnector: TFnNeedsPointIndex
   movePointToNewCoords: TMovePointToNewCoords
-  moveConnector: (pointIndex: number, move: number) => void
+  removeConnector: TFnNeedsPointIndex
+  moveConnector: TMoveDopesheetConnector
+  showPointValuesEditor: TShowPointValuesEditor
+  showPointContextMenu: TShowPointContextMenu
+  showConnectorContextMenu: TShowConnectorContextMenu
   getValueRelativeToBoxHeight: () => number
-  removeConnector: (pointIndex: number) => void
   addPointToSelection: $FixMe /*TAddPointToSelection*/
   removePointFromSelection: $FixMe /*TRemovePointFromSelection*/
-  showPointValuesEditor: $FixMe /*TShowPointValuesEditor*/
 }
 
 interface IState {
@@ -130,6 +127,7 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
                   color={connectorFill}
                   ref={this.connectorClickArea}
                   onClick={this.connectorClickHandler}
+                  onContextMenu={this.handleConnectorContextMenu}
                 />
               </g>
             </DraggableArea>
@@ -150,7 +148,7 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
               x={pointTime}
               y={50}
               onClick={this.pointClickHandler}
-              onContextMenu={noop}
+              onContextMenu={this.handlePointContextMenu}
               ref={this.pointClickArea}
             />
           </g>
@@ -241,16 +239,20 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
         this.connectorClickArea.current.classList.add(
           connectorCss.highlightRedOnHover,
         )
-    } else {
-      this.pointClickArea.current != null &&
-        this.pointClickArea.current.classList.remove(
-          pointCss.highlightRedOnHover,
-        )
-      this.connectorClickArea.current != null &&
-        this.connectorClickArea.current.classList.remove(
-          connectorCss.highlightRedOnHover,
-        )
+      return null
     }
+    if (activeMode === MODES.cmd) {
+      this.connectorClickArea.current != null &&
+        this.connectorClickArea.current.classList.add(connectorCss.ignoreMouse)
+      return null
+    }
+    this.pointClickArea.current != null &&
+      this.pointClickArea.current.classList.remove(pointCss.highlightRedOnHover)
+    this.connectorClickArea.current != null &&
+      this.connectorClickArea.current.classList.remove(
+        connectorCss.highlightRedOnHover,
+        connectorCss.ignoreMouse,
+      )
     return null
   }
 
@@ -348,7 +350,6 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
   }
 
   connectorDragStartHandler = () => {
-    // addGlobalDopesheetDragRule()
     this.svgWidth = this.props.propGetter('svgWidth')
   }
 
@@ -376,7 +377,6 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
   }
 
   connectorDragEndHandler = (dragHappened: true) => {
-    // removeGlobalDopesheetDragRule()
     if (!dragHappened) return
     this.props.moveConnector(this.props.pointIndex, this.state.connectorMove)
     this.setState(() => ({
@@ -386,7 +386,6 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
   }
 
   pointDragStartHandler = () => {
-    // addGlobalDopesheetDragRule()
     this.svgWidth = this.props.propGetter('svgWidth')
   }
 
@@ -408,7 +407,6 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
   }
 
   pointDragEndHandler = (dragHappened: true) => {
-    // removeGlobalDopesheetDragRule()
     if (!dragHappened) return
     const originalCoords = {
       time: this.props.originalTime,
@@ -435,6 +433,28 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
       return this._renderMovingPoint((x / svgWidth) * 100)
     }
     return null
+  }
+
+  handlePointContextMenu = (event: React.MouseEvent<SVGRectElement>) => {
+    event.stopPropagation()
+    event.preventDefault()
+    const {clientX, clientY} = event
+    this.props.showPointContextMenu({
+      left: clientX,
+      top: clientY,
+      pointIndex: this.props.pointIndex,
+    })
+  }
+
+  handleConnectorContextMenu = (event: React.MouseEvent<SVGRectElement>) => {
+    event.stopPropagation()
+    event.preventDefault()
+    const {clientX, clientY} = event
+    this.props.showConnectorContextMenu!({
+      left: clientX,
+      top: clientY,
+      pointIndex: this.props.pointIndex,
+    })
   }
 }
 

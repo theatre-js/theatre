@@ -2,7 +2,6 @@ import React from 'react'
 import MdDonutSmall from 'react-icons/lib/md/donut-small'
 import MdCancel from 'react-icons/lib/md/cancel'
 import MdCamera from 'react-icons/lib/md/camera'
-import {noop} from 'redux-saga/utils'
 import {TConnectorContextMenuProps} from '$tl/ui/panels/AllInOnePanel/Right/timeline/overlays/types'
 import UIComponent from '$tl/ui/handy/UIComponent'
 import HalfPieContextMenu from '$shared/components/HalfPieContextMenu/HalfPieContextMenu'
@@ -24,7 +23,7 @@ class ConnectorContextMenu extends UIComponent<IProps, IState> {
         items={[
           {
             label: '$R$eset',
-            cb: noop,
+            cb: onClose,
             IconComponent: MdDonutSmall,
           },
           {
@@ -34,7 +33,7 @@ class ConnectorContextMenu extends UIComponent<IProps, IState> {
           },
           {
             label: '$S$elect',
-            cb: noop,
+            cb: onClose,
             IconComponent: MdCamera,
           },
         ]}
@@ -43,22 +42,13 @@ class ConnectorContextMenu extends UIComponent<IProps, IState> {
   }
 
   _removeConnector = () => {
-    // const {pathToTimeline, variableId, pointIndex, onClose} = this.props
-    // this.dispatch(
-    //   reduceHistoricState(
-    //     [
-    //       ...pathToTimeline,
-    //       'variables',
-    //       variableId,
-    //       'points',
-    //       pointIndex,
-    //       'interpolationDescriptor',
-    //       'connected',
-    //     ],
-    //     () => false,
-    //   ),
-    // )
-    // onClose()
+    this.project.reduxStore.dispatch(
+      this.project._actions.historic.removeConnectorInBezierCurvesOfScalarValues({
+        propAddress: this.props.propAddress,
+        pointIndex: this.props.pointIndex,
+      })
+    )
+    this.props.onClose()
   }
 }
 

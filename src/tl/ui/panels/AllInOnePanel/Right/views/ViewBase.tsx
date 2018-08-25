@@ -1,10 +1,11 @@
 import {IWithUtilsProps} from '$tl/ui/panels/AllInOnePanel/Right/views/withUtils'
 import UIComponent from '$tl/ui/handy/UIComponent'
-import {TExtremums, TPointCoords} from '$tl/ui/panels/AllInOnePanel/Right/types'
+import {TExtremums} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {
   TShowPointContextMenu,
   TShowPointValuesEditor,
   TMovePointToNewCoords,
+  TShowConnectorContextMenu,
 } from '$tl/ui/panels/AllInOnePanel/Right/views/types'
 
 export interface IViewBaseProps {
@@ -94,8 +95,6 @@ export default class ViewBase<Props extends IProps> extends UIComponent<
     // )
   }
 
-  // TODO: Fix Me
-  // @ts-ignore
   _showPointValuesEditor: TShowPointValuesEditor = props => {
     this.props.overlaysAPI.showPointValuesEditor({
       propAddress: this.props.propGetter('itemAddress'),
@@ -103,22 +102,17 @@ export default class ViewBase<Props extends IProps> extends UIComponent<
     })
   }
 
-  // TODO: Fix Me
-  // @ts-ignore
   _showPointContextMenu: TShowPointContextMenu = props => {
-    // this.props.overlaysAPI.showPointContextMenu({
-    //   ...props,
-    //   variableId: this.props.variableId,
-    // })
+    this.props.overlaysAPI.showPointContextMenu({
+      propAddress: this.props.propGetter('itemAddress'),
+      ...props,
+    })
   }
 
-  // TODO: Fix Me
-  // @ts-ignore
-  _showConnectorContextMenu /*: TShowConnectorContextMenu*/ = props => {
-    console.log('_showConnectorContextMenu', {props})
-    // this.props.overlaysAPI.showConnectorContextMenu({
-    //   ...props,
-    //   variableId: this.props.variableId,
-    // })
+  _showConnectorContextMenu: TShowConnectorContextMenu = props => {
+    this.props.overlaysAPI.showConnectorContextMenu({
+      propAddress: this.props.propGetter('itemAddress'),
+      ...props,
+    })
   }
 }

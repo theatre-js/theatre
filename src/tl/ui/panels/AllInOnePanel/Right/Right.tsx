@@ -71,7 +71,21 @@ class Right extends UIComponent<IRightProps, IRightState> {
   }
 
   componentDidMount() {
+    this._updateWrapperLeft()
+    window.addEventListener('resize', this.handleResize)
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.handleResize)
+  }
+
+  _updateWrapperLeft() {
     this.wrapperLeft = this.wrapper.current!.getBoundingClientRect().left
+  }
+
+  handleResize = () => {
+    this._updateWrapperLeft()
+    this._scrollContainer(this.props.range)
   }
 
   syncSeekerWithMousePosition = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -86,7 +100,6 @@ class Right extends UIComponent<IRightProps, IRightState> {
     //   timelineInstance.play()
     // } else {
     //   timelineInstance.gotoTime(newTime)
-    //   // addGlobalSeekerDragRule()
     // }
   }
 

@@ -2,13 +2,11 @@ import React from 'react'
 import MdDonutSmall from 'react-icons/lib/md/donut-small'
 import MdCancel from 'react-icons/lib/md/cancel'
 import MdStars from 'react-icons/lib/md/stars'
-import noop from '$shared/utils/noop'
 import UIComponent from '$tl/ui/handy/UIComponent'
 import {TPointContextMenuProps} from '$tl/ui/panels/AllInOnePanel/Right/timeline/overlays/types'
 import HalfPieContextMenu from '$shared/components/HalfPieContextMenu/HalfPieContextMenu'
 
 interface IProps extends TPointContextMenuProps {
-  // pathToTimeline: string[]
   onClose: () => void
 }
 
@@ -25,8 +23,9 @@ class PointContextMenu extends UIComponent<IProps, IState> {
         items={[
           {
             label: '$R$eset',
-            cb: noop,
+            cb: onClose,
             IconComponent: MdDonutSmall,
+            disabled: true,
           },
           {
             label: '$D$elete',
@@ -44,40 +43,23 @@ class PointContextMenu extends UIComponent<IProps, IState> {
   }
 
   _removePoint = () => {
-    // const {pathToTimeline, variableId, pointIndex, onClose} = this.props
-    // this.dispatch(
-    //   reduceHistoricState(
-    //     [...pathToTimeline, 'variables', variableId, 'points'],
-    //     (points: TPoint[]): TPoint[] => {
-    //       if (points[pointIndex - 1] != null) {
-    //         points[pointIndex - 1].interpolationDescriptor.connected = false
-    //       }
-    //       return points
-    //         .slice(0, pointIndex)
-    //         .concat(points.slice(pointIndex + 1))
-    //     },
-    //   ),
-    // )
-    // onClose()
+    this.project.reduxStore.dispatch(
+      this.project._actions.historic.removePointInBezierCurvesOfScalarValues({
+        propAddress: this.props.propAddress,
+        pointIndex: this.props.pointIndex,
+      }),
+    )
+    this.props.onClose()
   }
 
   _connectPoint = () => {
-    // const {pathToTimeline, variableId, pointIndex, onClose} = this.props
-    // this.dispatch(
-    //   reduceHistoricState(
-    //     [
-    //       ...pathToTimeline,
-    //       'variables',
-    //       variableId,
-    //       'points',
-    //       pointIndex,
-    //       'interpolationDescriptor',
-    //       'connected',
-    //     ],
-    //     () => true,
-    //   ),
-    // )
-    // onClose()
+    this.project.reduxStore.dispatch(
+      this.project._actions.historic.addConnectorInBezierCurvesOfScalarValues({
+        propAddress: this.props.propAddress,
+        pointIndex: this.props.pointIndex,
+      }),
+    )
+    this.props.onClose()
   }
 }
 

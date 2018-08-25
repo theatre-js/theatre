@@ -19,13 +19,13 @@ export type TPointValuesEditorProps = {
 export type TPointContextMenuProps = {
   left: number
   top: number
-  variableId: VariableID
   pointIndex: number
+  propAddress: PrimitivePropItem['address']
 }
 
 export type TConnectorContextMenuProps = {
   left: number
   top: number
-  variableId: VariableID
   pointIndex: number
+  propAddress: PrimitivePropItem['address']
 }

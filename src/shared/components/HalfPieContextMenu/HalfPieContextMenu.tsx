@@ -1,18 +1,21 @@
 import React from 'react'
-import * as css from './HalfPieContextMenu.css'
-import cx from 'classnames'
+import css from './HalfPieContextMenu.css'
 import {flatMap} from 'lodash'
 import Overlay from '$shared/components/Overlay/Overlay'
 import OverlaySection from '$shared/components/Overlay/OverlaySection'
+import {resolveCss} from '$shared/utils'
+import FixedFullSizePortal from '$shared/components/FixedFullSizePortal/FixedFullSizePortal'
+
+const classes = resolveCss(css)
 
 interface IProps {
-  close: Function
+  close: () => void
   centerPoint: {left: number; top: number}
   placement: 'left' | 'right' | 'top' | 'bottom'
   items: Array<{
     label: string
-    cb: Function
-    IconComponent: $FixMe
+    cb: () => void
+    IconComponent: React.ReactNode
     disabled?: boolean
   }>
 }
@@ -122,6 +125,78 @@ class HalfPieContextMenu extends React.PureComponent<IProps, IState> {
     }
   }
 
+  render() {
+    const {centerPoint, items, close, placement} = this.props
+    const {pressedKeyCode} = this.state
+    const maxItemWidth = Math.max(
+      ...flatMap(items, (item: $FixMe) => 5 + item.label.length * 6),
+    )
+    const translateCalculatorFn =
+      placement === 'left' || placement === 'right'
+        ? getCoordinatesOnVerticalAxis(
+            placement,
+            items.length,
+            centerPoint.left,
+            maxItemWidth,
+          )
+        : getCoordinatesOnHorizontalAxis(placement, items.length, maxItemWidth)
+
+    const {innerWidth, innerHeight} = window
+    return (
+      <FixedFullSizePortal>
+        <Overlay onClickOutside={close}>
+          {items.map(({cb, disabled, IconComponent}: $FixMe, index: number) => {
+            const {
+              leftTranslate,
+              topTranslate,
+              leftCoeff,
+              topCoeff,
+            } = translateCalculatorFn(index)
+            const {key, suffix, prefix} = this.preparedLabels[index]
+            const shouldHighlight =
+              key.toLowerCase() ===
+              String.fromCharCode(pressedKeyCode).toLowerCase()
+            return (
+              <OverlaySection
+                key={index}
+                {...classes(
+                  'item',
+                  disabled && 'disabled',
+                  shouldHighlight && 'highlight',
+                )}
+                style={{
+                  right: innerWidth - centerPoint.left,
+                  bottom: innerHeight - centerPoint.top,
+                  // @ts-ignore ignore
+                  '--left': leftTranslate,
+                  '--top': topTranslate,
+                  '--leftCoeff': leftCoeff,
+                  '--topCoeff': topCoeff,
+                }}
+                onClick={cb}
+              >
+                <span className={css.icon}>
+                  <IconComponent />
+                </span>
+                <span className={css.label}>
+                  {prefix}
+                  <span className={css.key}>{key}</span>
+                  {suffix}
+                </span>
+              </OverlaySection>
+            )
+          })}
+          <OverlaySection>
+            <div
+              className={css.anchor}
+              style={{left: centerPoint.left, top: centerPoint.top}}
+            />
+          </OverlaySection>
+        </Overlay>
+      </FixedFullSizePortal>
+    )
+  }
+
   componentDidMount() {
     document.addEventListener('keydown', this._handleKeyDown)
     document.addEventListener('keyup', this._handleKeyUp)
@@ -159,79 +234,6 @@ class HalfPieContextMenu extends React.PureComponent<IProps, IState> {
     } else {
       this.setState(() => ({pressedKeyCode: -1}))
     }
-  }
-
-  render() {
-    const {centerPoint, items, close, placement} = this.props
-    const {pressedKeyCode} = this.state
-    const maxItemWidth = Math.max(
-      ...flatMap(items, (item: $FixMe) => 5 + item.label.length * 6),
-    )
-    const translateCalculatorFn =
-      placement === 'left' || placement === 'right'
-        ? getCoordinatesOnVerticalAxis(
-            placement,
-            items.length,
-            centerPoint.left,
-            maxItemWidth,
-          )
-        : getCoordinatesOnHorizontalAxis(placement, items.length, maxItemWidth)
-
-    const {innerWidth, innerHeight} = window
-    return (
-      <Overlay onClickOutside={() => close()}>
-        {/*<div className={css.container} onMouseDown={() => close()}>*/}
-        {items.map(({cb, disabled, IconComponent}: $FixMe, index: number) => {
-          const {
-            leftTranslate,
-            topTranslate,
-            leftCoeff,
-            topCoeff,
-          } = translateCalculatorFn(index)
-          const {key, suffix, prefix} = this.preparedLabels[index]
-          return (
-            <OverlaySection key={index}>
-              <div
-                className={cx(css.item, {
-                  [css.disabled]: disabled,
-                  [css.highlight]:
-                    key.toLowerCase() ===
-                    String.fromCharCode(pressedKeyCode).toLowerCase(),
-                })}
-                style={{
-                  right: innerWidth - centerPoint.left,
-                  bottom: innerHeight - centerPoint.top,
-                  // @ts-ignore ignore
-                  '--left': leftTranslate,
-                  '--top': topTranslate,
-                  '--leftCoeff': leftCoeff,
-                  '--topCoeff': topCoeff,
-                }}
-                onMouseDown={() => {
-                  close()
-                  cb()
-                }}
-              >
-                <span className={css.icon}>
-                  <IconComponent />
-                </span>
-                <span className={css.label}>
-                  {prefix}
-                  <span className={css.key}>{key}</span>
-                  {suffix}
-                </span>
-              </div>
-            </OverlaySection>
-          )
-        })}
-        <OverlaySection>
-          <div
-            className={css.anchor}
-            style={{left: centerPoint.left, top: centerPoint.top}}
-          />
-        </OverlaySection>
-      </Overlay>
-    )
   }
 }
 

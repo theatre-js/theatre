@@ -2,7 +2,10 @@ import React from 'react'
 import UIComponent from '$tl/ui/handy/UIComponent'
 import css from './ItemWrapper.css'
 import {resolveCss} from '$shared/utils'
-import {PrimitivePropItem} from '$tl/ui/panels/AllInOnePanel/utils'
+import {
+  PrimitivePropItem,
+  singleItemHeight,
+} from '$tl/ui/panels/AllInOnePanel/utils'
 import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
 
 const classes = resolveCss(css)
@@ -48,11 +51,12 @@ class ItemWrapper extends UIComponent<IProps, IState> {
   }
 
   handleResize = (_: number, dy: number) => {
+    const newHeight = Math.max(this.props.item.height + dy, singleItemHeight)
     this.ui.reduxStore.dispatch(
       this.tempActionGroup.push(
         this.ui.actions.historic.setPropHeightWhenExpanded({
           ...this.props.item.address,
-          height: this.props.item.height + dy,
+          height: newHeight,
         }),
       ),
     )

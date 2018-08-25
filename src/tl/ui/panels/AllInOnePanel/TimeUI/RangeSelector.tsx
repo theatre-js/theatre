@@ -27,12 +27,7 @@ class RangeSelector extends React.PureComponent<IProps, IState> {
       <div {...classes('container')}>
         <div {...classes('timeGrid')} />
         <div {...classes('timeThread')}>
-          <DraggableArea
-            // onDragStart={() => this.handleDragStart({left: true, right: true})}
-            onDrag={this.updateRange}
-            // onDragEnd={this.handleDragEnd}
-            shouldReturnMovement={true}
-          >
+          <DraggableArea onDrag={this.updateRange} shouldReturnMovement={true}>
             <div
               {...classes('rangeBar')}
               style={{
@@ -42,9 +37,7 @@ class RangeSelector extends React.PureComponent<IProps, IState> {
             />
           </DraggableArea>
           <DraggableArea
-            // onDragStart={() => this.handleDragStart({left: true})}
             onDrag={this.updateRangeFrom}
-            // onDragEnd={this.handleDragEnd}
             shouldReturnMovement={true}
           >
             <div
@@ -57,9 +50,7 @@ class RangeSelector extends React.PureComponent<IProps, IState> {
             </div>
           </DraggableArea>
           <DraggableArea
-            // onDragStart={() => this.handleDragStart({right: true})}
             onDrag={this.updateRangeTo}
-            // onDragEnd={this.handleDragEnd}
             shouldReturnMovement={true}
           >
             <div
@@ -72,17 +63,6 @@ class RangeSelector extends React.PureComponent<IProps, IState> {
         </div>
       </div>
     )
-  }
-
-  handleDragStart({left, right}: {left?: boolean; right?: boolean}) {
-    let cursorText = ''
-    if (right) cursorText = cursorText.concat('e')
-    if (left) cursorText = cursorText.concat('w')
-    this.addGlobalCursorRule(cursorText)
-  }
-
-  handleDragEnd = () => {
-    this.removeGlobalCursorRule()
   }
 
   updateRange = (dx: number) => {
@@ -106,18 +86,6 @@ class RangeSelector extends React.PureComponent<IProps, IState> {
   _setRange(change: TRange) {
     const {range, duration, setRange} = this.props
     setRange(getNewRange(range, change, duration))
-  }
-
-  addGlobalCursorRule(cursor: string) {
-    document.body.classList.add(
-      ...['timeBarDrag', 'timeBarDrag'.concat(cursor.toUpperCase())],
-    )
-  }
-
-  removeGlobalCursorRule() {
-    document.body.classList.remove(
-      ...['timeBarDrag', 'timeBarDragE', 'timeBarDragW', 'timeBarDragEW'],
-    )
   }
 }
 

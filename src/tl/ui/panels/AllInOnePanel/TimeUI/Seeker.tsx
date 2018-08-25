@@ -30,9 +30,7 @@ class Seeker extends React.PureComponent<IProps, IState> {
         style={{transform: `translate3d(${currentX}px, 0, 0)`}}
       >
         <DraggableArea
-          // onDragStart={addGlobalSeekerDragRule}
           onDrag={this.gotoTime}
-          // onDragEnd={removeGlobalSeekerDragRule}
           shouldReturnMovement={true}
         >
           <div {...classes('thumb')}>

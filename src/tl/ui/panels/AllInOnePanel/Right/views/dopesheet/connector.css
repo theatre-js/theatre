@@ -15,3 +15,7 @@
 .connector {
   pointer-events: none;
 }
+
+.connectorClickArea.ignoreMouse {
+  pointer-events: none;
+}
