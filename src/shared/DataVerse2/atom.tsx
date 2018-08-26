@@ -210,6 +210,16 @@ export const val = <P extends PointerInnerObj<$IntentionalAny>>(
   return valueDerivation(pointer).getValue()
 }
 
+/**
+ * Like val(), but used for a one-off read
+ */
+export const coldVal = <P extends PointerInnerObj<$IntentionalAny>>(
+  pointer: P,
+): P extends PointerInnerObj<infer T> ? T : never => {
+  const meta = pointer.$pointerMeta
+  return meta.root.getIn(meta.path as $IntentionalAny)  
+}
+
 export const pathTo = <P extends PointerInnerObj<$IntentionalAny>>(
   pointer: P,
 ): Array<string | number> => {

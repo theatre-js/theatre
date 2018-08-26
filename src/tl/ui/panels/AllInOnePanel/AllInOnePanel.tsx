@@ -47,6 +47,36 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
 
   componentWillMount() {
     window.addEventListener('resize', this.reactToWindowResize)
+    window.addEventListener('keydown', this._handleKeyDown)
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.reactToWindowResize)
+    window.removeEventListener('keydown', this._handleKeyDown)
+  }
+
+  _handleKeyDown = (e: KeyboardEvent) => {
+    if (e.target && (e.target as HTMLElement).tagName === 'INPUT') {
+      return
+    }
+
+    if (e.key === ' ') {
+      this.togglePlay()
+      e.preventDefault()
+      e.stopPropagation()
+    }
+  }
+
+  togglePlay() {
+    const {timelineInstance} = getProjectTimelineAndInstance(this.ui)
+
+    if (timelineInstance) {
+      if (timelineInstance.playing) {
+        timelineInstance.pause()
+      } else {
+        timelineInstance.play()
+      }
+    }
   }
 
   reactToWindowResize = () => {

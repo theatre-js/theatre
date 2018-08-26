@@ -68,10 +68,11 @@ project.adapters.add(1, {
 
   start(obj, nativeObject: HTMLElement): VoidFn {
     // console.log('vv', nativeOb``);
-    
+
     const stopListening = obj.onValuesChange((values, t) => {
       // console.log(nativeObject);
-      
+      // console.log(obj.path, t, values.opacity)
+
       nativeObject.style.opacity = String(values.opacity)
     })
 

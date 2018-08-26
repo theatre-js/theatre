@@ -30,11 +30,13 @@ export class MappedDerivedArray<T, V> extends AbstractDerivedArray<V> {
   }
 
   index(i: number): $FixMe {
-    return this._source
-      .pointer()
-      .index(i)
-      // @ts-ignore @todo
-      .flatMap(this._fn)
+    return (
+      this._source
+        .pointer()
+        .index(i)
+        // @ts-ignore @todo
+        .flatMap(this._fn)
+    )
   }
 
   length() {

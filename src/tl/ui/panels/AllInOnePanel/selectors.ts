@@ -72,8 +72,11 @@ export const getSelectedTimelineInstance = (
     project._timelineInstances.pointer[internalTimeline._path],
   )
 
-  if (!instances) debugger
   if (!instances) return
+
+  if (instances['default']) {
+    return instances['default']
+  }
 
   const isntanceIds = Object.keys(instances)
   const areThereInstances = isntanceIds.length > 0
