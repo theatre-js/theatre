@@ -104,7 +104,7 @@ class PointValuesEditor extends UIComponent<IProps, IState> {
         {
           propAddress: this.props.propAddress,
           pointIndex: this.props.pointIndex,
-          coords: {
+          newCoords: {
             time: Number(this.state.time) * 1000,
             value: Number(this.state.value),
           },

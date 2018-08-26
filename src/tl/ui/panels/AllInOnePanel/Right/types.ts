@@ -12,6 +12,8 @@ export type TPoints = IBezierCurvesOfScalarValues['points']
 export type TPointSingleHandle = ITimelinePointSingleHandle
 export type TPointHandles = TPoint['interpolationDescriptor']['handles']
 export type TPointCoords = Pick<TPoint, 'time' | 'value'>
+export type TPointTime = Pick<TPoint, 'time'>
+export type TPointValue = Pick<TPoint, 'value'>
 export type TNormalizedPoint = TPoint & {
   originalTime: number
   originalValue: number

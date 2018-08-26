@@ -1,33 +1,33 @@
 import memoizeOne from 'memoize-one'
-import {PrimitivePropItem} from '$tl/ui/panels/AllInOnePanel/utils'
 import {
   TItemsInfo,
   TDims,
   TTransformedSelectedArea,
   TSelectedPoints,
   THorizontalLimits,
-  TPointsOfItems,
+  TMapOfFilteredItemKeyToItemData,
+  // TPointsOfItems,
 } from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/types'
 import {svgPaddingY} from '$tl/ui/panels/AllInOnePanel/Right/views/GraphEditorWrapper'
 import {TRange, TDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {POINT_RECT_EDGE_SIZE} from '$tl/ui/panels/AllInOnePanel/Right/views/point/PointClickArea'
 
 export const memoizedGetItemsInfo = memoizeOne(
-  (items: PrimitivePropItem[]): TItemsInfo => {
-    const itemsInfo = items.reduce(
-      (info, item) => {
+  (mapOfItemsData: TMapOfFilteredItemKeyToItemData): TItemsInfo => {
+    const itemsInfo = Object.entries(mapOfItemsData).reduce(
+      (info, [itemKey, itemData]) => {
         let boundariesToAdd: [number, number]
-        if (item.expanded) {
+        if (itemData.expanded) {
           boundariesToAdd = [
-            item.top + svgPaddingY / 2,
-            item.top + item.height - svgPaddingY / 2,
+            itemData.top + svgPaddingY / 2,
+            itemData.top + itemData.height - svgPaddingY / 2,
           ]
         } else {
-          boundariesToAdd = [item.top, item.top + item.height]
+          boundariesToAdd = [itemData.top, itemData.top + itemData.height]
         }
         return {
           boundaries: info.boundaries.concat(boundariesToAdd),
-          keys: info.keys.concat(item.key),
+          keys: info.keys.concat(itemKey),
         }
       },
       {boundaries: [], keys: []} as TItemsInfo,
@@ -216,13 +216,13 @@ export const getHorizontalLimits = (
   selectedPoints: TSelectedPoints,
   timelineWidth: number,
   range: TRange,
-  pointsOfItems: TPointsOfItems,
+  mapOfItemsData: TMapOfFilteredItemKeyToItemData,
 ): THorizontalLimits => {
   let leftLimit = -Infinity
   let rightLimit = Infinity
   Object.keys(selectedPoints).forEach(itemKey => {
     const itemSelectedPoints = selectedPoints[itemKey]
-    const allPointsOfItem = pointsOfItems[itemKey]
+    const allPointsOfItem = mapOfItemsData[itemKey].points
     const selectedPointsKeys = Object.keys(itemSelectedPoints).map(Number)
 
     selectedPointsKeys.forEach(pointIndex => {

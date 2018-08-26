@@ -23,8 +23,14 @@ import {
   TAddPointToSelection,
   TRemovePointFromSelection,
 } from '$tl/ui/panels/AllInOnePanel/Right/views/types'
-import {TTransformedSelectedArea, TSelectionMove} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/types'
-import {SelectedAreaContext, SelectionMoveContext} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/SelectionProvider'
+import {
+  TTransformedSelectedArea,
+  TSelectionMove,
+} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/types'
+import {
+  SelectedAreaContext,
+  SelectionMoveContext,
+} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/SelectionProvider'
 
 interface IProps {
   propGetter: TPropGetter

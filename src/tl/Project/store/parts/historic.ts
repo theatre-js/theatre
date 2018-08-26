@@ -11,6 +11,7 @@ import {
   TPointSingleHandle,
   TPoint,
 } from '$tl/ui/panels/AllInOnePanel/Right/types'
+import {TCollectionOfSelectedPointsData} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/types'
 
 const r = reducto($ProjectHistoricState)
 
@@ -156,15 +157,31 @@ export const moveDopesheetConnectorInBezierCurvesOfScalarValues = r(
   },
 )
 
+export const moveSelectionOfPointsInBezierCurvesOfScalarValues = r(
+  (
+    s,
+    p: Array<TPropAddress & {pointsNewCoords: TCollectionOfSelectedPointsData}>,
+  ) => {
+    p.forEach(({propAddress, pointsNewCoords}) => {
+      const points = getPoints(s, propAddress)
+      Object.entries(pointsNewCoords).forEach(([pointIndex, newCoords]) => {
+        const point = points[Number(pointIndex)]
+        point.time = newCoords.time
+        if (newCoords.value != null) point.value = newCoords.value
+      })
+    })
+  },
+)
+
 export const setPointCoordsInBezierCurvesOfScalarValues = r(
-  (s, p: TPropAddressWithPointIndex & {coords: TPointCoords}) => {
+  (s, p: TPropAddressWithPointIndex & {newCoords: TPointCoords}) => {
     const points = getPoints(s, p.propAddress)
     const pointToUpdate = points[p.pointIndex]
     const nextPoint = points[p.pointIndex + 1]
     const prevPoint = points[p.pointIndex - 1]
     const nextPointTime = (nextPoint && nextPoint.time) || Infinity
     const prevPointTime = (prevPoint && prevPoint.time) || -Infinity
-    const {time: newTime, value: newValue} = p.coords
+    const {time: newTime, value: newValue} = p.newCoords
 
     if (newTime > prevPointTime && newTime < nextPointTime) {
       pointToUpdate.time = newTime

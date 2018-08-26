@@ -1,4 +1,11 @@
-import {TExtremums, TPointCoords, TPoints} from '$tl/ui/panels/AllInOnePanel/Right/types'
+import {
+  TExtremums,
+  TPoints,
+  TPointCoords,
+  TPointTime,
+  TPointValue,
+} from '$tl/ui/panels/AllInOnePanel/Right/types'
+import {PrimitivePropItem} from '$tl/ui/panels/AllInOnePanel/utils'
 
 export type TDims = {
   left: number
@@ -29,10 +36,6 @@ export type TSelectedPoints = {
   }
 }
 
-export type TExtremumsMap = {
-  [itemKey: string]: TExtremums
-}
-
 export type TSelectionAPI = {
   addPoint: (
     itemKey: string,
@@ -45,6 +48,19 @@ export type TSelectionAPI = {
 
 export type THorizontalLimits = {left: number; right: number}
 
-export type TPointsOfItems = {
-  [itemKey: string]: TPoints
+export type TCollectionOfSelectedPointsData = {
+  [pointIndex: string]: TPointTime & Partial<TPointValue>
+}
+
+export type TExtremumsMap = {
+  [itemKey: string]: TExtremums
+}
+
+export type TMapOfFilteredItemKeyToItemData = {
+  [itemKey: string]: Pick<
+    PrimitivePropItem,
+    'address' | 'height' | 'top' | 'expanded'
+  > & {
+    points: TPoints
+  }
 }

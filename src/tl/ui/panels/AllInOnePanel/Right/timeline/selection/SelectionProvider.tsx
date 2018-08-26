@@ -32,7 +32,9 @@ import {
   TSelectionAPI,
   TSelectedPoints,
   TExtremumsMap,
-  TPointsOfItems,
+  // TPointsOfItems,
+  TCollectionOfSelectedPointsData,
+  TMapOfFilteredItemKeyToItemData,
 } from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/types'
 import projectSelectors from '$tl/Project/store/selectors'
 import {IBezierCurvesOfScalarValues} from '$tl/Project/store/types'
@@ -78,6 +80,7 @@ export const SelectionMoveContext = React.createContext<TSelectionMove>({
 class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
   selectedPoints: TSelectedPoints = {}
   extremumsOfItemsInSelection: TExtremumsMap = {}
+  mapOfItemsData: TMapOfFilteredItemKeyToItemData = {}
 
   static defaultStateValues: IState = {
     status: 'noSelection',
@@ -199,10 +202,9 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
   }
 
   activateSelection = (event: React.MouseEvent<HTMLDivElement>) => {
+    this.mapOfItemsData = this._getMapOfItemsData(this.props.internalTimeline)
     const {layerX, layerY} = event.nativeEvent
-    const itemsInfo = utils.memoizedGetItemsInfo(
-      this._getFilteredItems(this.props.internalTimeline),
-    )
+    const itemsInfo = utils.memoizedGetItemsInfo(this.mapOfItemsData)
     this.setState(() => ({
       status: 'selectingPoints',
       startPoint: {
@@ -252,9 +254,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
         this.selectedPoints,
         timelineWidth,
         range,
-        this._getPointsOfFilteredItems(
-          this._getFilteredItems(this.props.internalTimeline),
-        ),
+        this.mapOfItemsData,
       )
 
       const fittedDims = utils.getFittedDims(
@@ -275,49 +275,47 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
   }
 
   applyChangesToSelection = (event: React.MouseEvent<HTMLDivElement>) => {
-    // disableEvent(e)
-    // const {duration, range, timelineWidth} = this.props
-    // const {move, boxesBoundaries} = this.state
-    // const svgWidth = getSvgWidth(range, duration, timelineWidth)
-    // const {boxes, layout} = this._getBoxesAndLayout()
-    // this.dispatch(
-    //   reduceHistoricState(
-    //     this.props.pathToTimeline.concat('variables'),
-    //     (variables: Variables) => {
-    //       Object.keys(this.selectedPoints).forEach((boxKey: string) => {
-    //         const boxInfo = this.selectedPoints[boxKey]
-    //         const dopeSheet = boxes[layout[Number(boxKey)]].dopeSheet
-    //         const boxHeight =
-    //           boxesBoundaries[2 * Number(boxKey) + 1] -
-    //           boxesBoundaries[2 * Number(boxKey)]
-    //         Object.keys(boxInfo).forEach((variableKey: string) => {
-    //           const variableInfo = boxInfo[variableKey]
-    //           const extremums = this.extremumsOfItemsInSelection[
-    //             variableKey
-    //           ]
-    //           const extDiff = extremums[1] - extremums[0]
-    //           Object.keys(variableInfo).forEach((pointKey: string) => {
-    //             const path = [variableKey, 'points', pointKey]
-    //             const pointProps = get(variables, path)
-    //             variables = set(
-    //               path,
-    //               {
-    //                 ...pointProps,
-    //                 time: pointProps.time + (move.x / svgWidth) * duration,
-    //                 value:
-    //                   pointProps.value -
-    //                   (dopeSheet ? 0 : (move.y / boxHeight) * extDiff),
-    //               },
-    //               variables,
-    //             )
-    //           })
-    //         })
-    //       })
-    //       return variables
-    //     },
-    //   ),
-    // )
-    // this._clearSelection()
+    disableEvent(event)
+    const {duration, range, timelineWidth} = this.props
+    const {move} = this.state
+    const svgWidth = getSvgWidth(range, duration, timelineWidth)
+
+    const timeChange = (move.x / svgWidth) * duration
+
+    const newCoordsOfPointsInSelection = Object.entries(
+      this.selectedPoints,
+    ).reduce((acc, [itemKey, selectedPointsData]) => {
+      const itemData = this.mapOfItemsData[itemKey]
+      const itemExtremums = this.extremumsOfItemsInSelection[itemKey]
+      const extDiff = itemExtremums[1] - itemExtremums[0]
+      const valueChange = (move.y / itemData.height) * extDiff
+      const pointsNewCoords: TCollectionOfSelectedPointsData = {}
+
+      Object.keys(selectedPointsData).forEach(pointIndex => {
+        const originalPoint = itemData.points[Number(pointIndex)]
+        pointsNewCoords[pointIndex] = {
+          time: originalPoint.time + timeChange,
+          ...(itemData.expanded
+            ? {value: originalPoint.value - valueChange}
+            : {}),
+        }
+      })
+      console.log(pointsNewCoords)
+      return [
+        ...acc,
+        {
+          propAddress: itemData.address,
+          pointsNewCoords,
+        },
+      ]
+    }, [])
+
+    this.project.reduxStore.dispatch(
+      this.project._actions.historic.moveSelectionOfPointsInBezierCurvesOfScalarValues(
+        newCoordsOfPointsInSelection,
+      ),
+    )
+    this._clearSelection()
   }
 
   _clearSelection = () => {
@@ -325,18 +323,21 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
       () => SelectionProvider.defaultStateValues,
       () => {
         this.selectedPoints = {}
+        this.mapOfItemsData = {}
         this.extremumsOfItemsInSelection = {}
       },
     )
   }
 
-  _getFilteredItems = memoizeOne(
-    (internalTimeline: InternalTimeline): PrimitivePropItem[] => {
-      return internalTimelineToSeriesOfVerticalItems(
-        this.ui,
-        internalTimeline,
-      ).filter(item => {
-        if (item.type !== 'PrimitiveProp') return false
+  _getMapOfItemsData = (
+    internalTimeline: InternalTimeline,
+  ): TMapOfFilteredItemKeyToItemData => {
+    return internalTimelineToSeriesOfVerticalItems(
+      this.ui,
+      internalTimeline,
+    ).reduce(
+      (mapOfItemsData, item) => {
+        if (item.type !== 'PrimitiveProp') return mapOfItemsData
         const propState = projectSelectors.historic.getPropState(
           this.project.atomP.historic,
           item.address,
@@ -346,31 +347,21 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
           !valueContainer ||
           valueContainer.type !== 'BezierCurvesOfScalarValues'
         ) {
-          return false
+          return mapOfItemsData
         }
-        return true
-      }) as PrimitivePropItem[]
-    },
-  )
 
-  _getPointsOfFilteredItems = (
-    filteredItems: PrimitivePropItem[],
-  ): TPointsOfItems => {
-    return filteredItems.reduce(
-      (pointsOfItems, item) => {
-        const propState = projectSelectors.historic.getPropState(
-          this.project.atomP.historic,
-          item.address,
-        )
-        const valueContainer = val(propState.valueContainer as Pointer<
-          IBezierCurvesOfScalarValues
-        >)
         return {
-          ...pointsOfItems,
-          [item.key]: valueContainer.points,
+          ...mapOfItemsData,
+          [item.key]: {
+            address: item.address,
+            top: item.top,
+            height: item.height,
+            expanded: item.expanded,
+            points: valueContainer.points,
+          },
         }
       },
-      {} as TPointsOfItems,
+      {} as TMapOfFilteredItemKeyToItemData,
     )
   }
 
