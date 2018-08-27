@@ -90,8 +90,8 @@ class BezierConnector extends React.PureComponent<IProps, IState> {
             stroke="transparent"
             strokeWidth={10}
             vectorEffect="non-scaling-stroke"
-            onMouseDown={this.clickHandler}
-            onContextMenu={this.contextMenuHandler}
+            onMouseDown={this.handleClick}
+            onContextMenu={this.handleContextMenu}
             ref={c => (this.connectorClickArea = c)}
           />
           <path
@@ -117,14 +117,14 @@ class BezierConnector extends React.PureComponent<IProps, IState> {
     return null
   }
 
-  clickHandler = (event: React.MouseEvent<SVGPathElement>) => {
+  handleClick = (event: React.MouseEvent<SVGPathElement>) => {
     if (this.activeMode === MODES.d) {
       event.stopPropagation()
       this.props.removeConnector!(this.props.leftPointIndex as number)
     }
   }
 
-  contextMenuHandler = (event: React.MouseEvent<SVGPathElement>) => {
+  handleContextMenu = (event: React.MouseEvent<SVGPathElement>) => {
     event.stopPropagation()
     event.preventDefault()
     const {clientX, clientY} = event

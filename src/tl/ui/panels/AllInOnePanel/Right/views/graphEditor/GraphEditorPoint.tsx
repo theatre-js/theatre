@@ -1,15 +1,15 @@
 import React from 'react'
 import pointCss from '../point/point.css'
 import Point from '$tl/ui/panels/AllInOnePanel/Right/views/point/Point'
-import PointCircle from '$tl/ui/panels/AllInOnePanel/Right/views/point/PointCircle'
 import HandleLine from '$tl/ui/panels/AllInOnePanel/Right/views/graphEditor/HandleLine'
 import HandleClickArea from '$tl/ui/panels/AllInOnePanel/Right/views/graphEditor/HandleClickArea'
-import BezierConnector from '$tl/ui/panels/AllInOnePanel/Right/views/graphEditor/BezierConnector'
 import {TPropGetter} from '$tl/ui/panels/AllInOnePanel/Right/items/ItemPropProvider'
 import {
   TColor,
   TPointHandles,
   TPointSingleHandle,
+  TNormalizedPoint,
+  TPointCoords,
 } from '$tl/ui/panels/AllInOnePanel/Right/types'
 import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
 import {
@@ -25,34 +25,35 @@ import {
   TShowPointValuesEditor,
   TAddPointToSelection,
   TRemovePointFromSelection,
+  TPointMove,
+  TMovePointToNewCoordsTemp,
 } from '$tl/ui/panels/AllInOnePanel/Right/views/types'
 import {
   SelectedAreaContext,
   SelectionMoveContext,
 } from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/SelectionProvider'
-import {TTransformedSelectedArea, TSelectionMove} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/types'
+import {
+  TTransformedSelectedArea,
+  TSelectionMove,
+} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/types'
+import {svgPaddingY} from '$tl/ui/panels/AllInOnePanel/Right/views/GraphEditorWrapper'
+import TempPoint from '$tl/ui/panels/AllInOnePanel/Right/views/graphEditor/TempPoint'
 
 interface IProps {
   propGetter: TPropGetter
   color: TColor
-  prevPointTime?: number
-  prevPointValue?: number
-  prevPointHandles?: TPointHandles
-  prevPointConnected?: boolean
-  nextPointTime?: number
-  nextPointValue?: number
-  pointTime: number
-  pointValue: number
-  pointHandles: TPointHandles
-  pointConnected: boolean
-  originalTime: number
-  originalValue: number
   pointIndex: number
+  point: TNormalizedPoint
+  prevPoint?: TNormalizedPoint
+  nextPoint?: TNormalizedPoint
   removePoint: TFnNeedsPointIndex
   addConnector: TFnNeedsPointIndex
   movePointToNewCoords: TMovePointToNewCoords
+  movePointToNewCoordsTemp: TMovePointToNewCoordsTemp
   moveLeftHandle: TMoveSingleHandle
+  moveLeftHandleTemp: TMoveSingleHandle
   moveRightHandle: TMoveSingleHandle
+  moveRightHandleTemp: TMoveSingleHandle
   makeLeftHandleHorizontal: TFnNeedsPointIndex
   makeRightHandleHorizontal: TFnNeedsPointIndex
   showPointValuesEditor: TShowPointValuesEditor
@@ -63,7 +64,7 @@ interface IProps {
 
 interface IState {
   isMoving: boolean
-  pointMove: [number, number]
+  pointMove: TPointMove
   handlesMove: TPointHandles
 }
 
@@ -78,9 +79,10 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
   svgSize: TSVGSize
   leftHandleNormalizers: {xNormalizer: number; yNormalizer: number}
   rightHandleNormalizers: {xNormalizer: number; yNormalizer: number}
+  cachedOriginalCoords: TPointCoords
 
-  constructor(props: IProps) {
-    super(props)
+  constructor(props: IProps, context: $IntentionalAny) {
+    super(props, context)
 
     this.state = {
       isMoving: false,
@@ -88,52 +90,13 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
       handlesMove: [0, 0, 0, 0],
     }
     this.svgSize = getSVGSize(props.propGetter)
+    this.cachedOriginalCoords = {
+      time: props.point.originalTime,
+      value: props.point.originalValue,
+    }
   }
 
   render() {
-    const {
-      color,
-      pointTime,
-      pointValue,
-      pointHandles,
-      pointConnected,
-      prevPointTime,
-      prevPointValue,
-      prevPointHandles,
-      prevPointConnected,
-      nextPointTime,
-      nextPointValue,
-    } = this.props
-    const handles = (prevPointHandles != null
-      ? prevPointHandles.slice(2)
-      : [0, 0]
-    ).concat(pointHandles.slice(0, 2))
-    const {isMoving, handlesMove} = this.state
-
-    const renderLeftHandle =
-      prevPointValue != null &&
-      prevPointValue !== pointValue &&
-      prevPointConnected
-    const renderRightHandle =
-      nextPointValue != null && nextPointValue !== pointValue && pointConnected
-
-    const leftHandle = renderLeftHandle
-      ? [
-          pointTime +
-            (handles[0] + handlesMove[0]) * (prevPointTime! - pointTime),
-          pointValue +
-            (handles[1] + handlesMove[1]) * (prevPointValue! - pointValue),
-        ]
-      : []
-    const rightHandle = renderRightHandle
-      ? [
-          pointTime +
-            (handles[2] + handlesMove[2]) * (nextPointTime! - pointTime),
-          pointValue +
-            (handles[3] + handlesMove[3]) * (nextPointValue! - pointValue),
-        ]
-      : []
-
     return (
       <>
         <ActiveModeContext.Consumer>
@@ -143,196 +106,151 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
           {this._highlightAsSelected}
         </SelectedAreaContext.Consumer>
         <g>
-          {isMoving && this._renderTransformedPoint(this.state.pointMove)}
-          {renderLeftHandle && (
-            <HandleLine
-              x1={pointTime}
-              y1={pointValue}
-              x2={leftHandle[0]}
-              y2={leftHandle[1]}
-              color={color.darkened}
-            />
-          )}
-          {renderRightHandle && (
-            <HandleLine
-              x1={pointTime}
-              y1={pointValue}
-              x2={rightHandle[0]}
-              y2={rightHandle[1]}
-              color={color.darkened}
-            />
-          )}
-          <DraggableArea
-            onDragStart={this.pointDragStartHandler}
-            onDrag={this.pointDragHandler}
-            onDragEnd={this.changePointPosition}
-          >
-            <g>
-              <Point
-                x={pointTime}
-                y={pointValue}
-                onClick={this.pointClickHandler}
-                onContextMenu={this.contextMenuHandler}
-                ref={this.pointClickArea}
-              />
-            </g>
-          </DraggableArea>
-          {renderLeftHandle && (
-            <DraggableArea
-              onDragStart={this.leftHandleDragStartHandler}
-              onDrag={this.leftHandleDragHandler}
-              onDragEnd={this.moveLeftHandle}
-            >
-              <g>
-                <HandleClickArea
-                  x={leftHandle[0]}
-                  y={leftHandle[1]}
-                  move={handlesMove.slice(0, 2) as [number, number]}
-                  color={color.darkened}
-                  onClick={e => this.handleClickHandler(e, 'left')}
-                />
-              </g>
-            </DraggableArea>
-          )}
-          {renderRightHandle && (
-            <DraggableArea
-              onDragStart={this.rightHandleDragStartHandler}
-              onDrag={this.rightHandleDragHandler}
-              onDragEnd={this.moveRightHandle}
-            >
-              <g>
-                <HandleClickArea
-                  x={rightHandle[0]}
-                  y={rightHandle[1]}
-                  move={handlesMove.slice(-2) as [number, number]}
-                  color={color.darkened}
-                  onClick={e => this.handleClickHandler(e, 'right')}
-                />
-              </g>
-            </DraggableArea>
-          )}
+          <SelectionMoveContext.Consumer>
+            {this._render}
+          </SelectionMoveContext.Consumer>
         </g>
-        <SelectionMoveContext.Consumer>
-          {this._handleSelectionMove}
-        </SelectionMoveContext.Consumer>
       </>
     )
   }
 
-  _renderTransformedPoint(pointMove: IState['pointMove']) {
-    const {
-      color,
-      pointTime,
-      pointValue,
-      pointHandles,
-      pointConnected,
-      prevPointTime,
-      prevPointValue,
-      prevPointHandles,
-      prevPointConnected,
-      nextPointTime,
-      nextPointValue,
-    } = this.props
-    const {handlesMove} = this.state
+  // _handleSelectionMove = ({x, y}: TSelectionMove) => {
+  //   if (this.isSelected) {
+  //     const {width, height} = getSVGSize(this.props.propGetter)
+  //     return this._renderTempPoint([(x / width) * 100, (y / height) * 100])
+  //   }
+  //   return null
+  // }
 
-    const newTime = pointTime + pointMove[0]
-    const newValue = pointValue + pointMove[1]
-    const newHandles = pointHandles
-      .slice(0, 2)
-      .map((handle: number, index: number) => handle + handlesMove[index + 2])
-      .concat(pointHandles.slice(2)) as TPointHandles
-
-    const newPrevPointHandles =
-      prevPointHandles != null
-        ? (prevPointHandles
-            .slice(0, 2)
-            .concat(
-              prevPointHandles
-                .slice(2)
-                .map(
-                  (handle: number, index: number) =>
-                    handle + handlesMove[index],
-                ),
-            ) as TPointHandles)
-        : null
-
-    const renderPrevPointConnector =
-      prevPointConnected && prevPointTime != null && prevPointValue != null
+  _render = (selectionMove: TSelectionMove) => {
+    const {isMoving} = this.state
     return (
-      <g fill={color.darkened} stroke={color.darkened}>
-        {pointConnected &&
-          nextPointValue != null &&
-          nextPointTime != null && (
-            <BezierConnector
-              leftPointTime={newTime}
-              leftPointValue={newValue}
-              rightPointTime={
-                this.isNextPointSelected
-                  ? nextPointTime + pointMove[0]
-                  : nextPointTime
-              }
-              rightPointValue={
-                this.isNextPointSelected
-                  ? nextPointValue + pointMove[1]
-                  : nextPointValue
-              }
-              handles={newHandles}
-            />
-          )}
-        {renderPrevPointConnector && (
-          <BezierConnector
-            leftPointTime={
-              this.isPrevPointSelected
-                ? prevPointTime! + pointMove[0]
-                : prevPointTime!
-            }
-            leftPointValue={
-              this.isPrevPointSelected
-                ? prevPointValue! + pointMove[1]
-                : prevPointValue!
-            }
-            rightPointTime={newTime}
-            rightPointValue={newValue}
-            handles={newPrevPointHandles!}
-          />
-        )}
-        <PointCircle x={newTime} y={newValue} />
-        {renderPrevPointConnector ? (
-          this.isPrevPointSelected ? (
-            <PointCircle
-              x={prevPointTime! + pointMove[0]}
-              y={prevPointValue! + pointMove[1]}
-            />
-          ) : (
-            <PointCircle x={prevPointTime!} y={prevPointValue!} />
-          )
-        ) : null},
+      <g>
+        {isMoving && this._renderTempPoint()}
+
+        {this._renderPoint()}
       </g>
     )
   }
 
-  private _setActiveMode = (activeMode: ActiveMode) => {
-    this.activeMode = activeMode
-    if (this.pointClickArea.current == null) return null
-    if (activeMode === MODES.d) {
-      this.pointClickArea.current.classList.add(pointCss.highlightRedOnHover)
-    } else {
-      this.pointClickArea.current.classList.remove(pointCss.highlightRedOnHover)
-    }
-    return null
+  _renderPoint() {
+    const {color, point, prevPoint, nextPoint} = this.props
+    const handles = (prevPoint != null
+      ? prevPoint.interpolationDescriptor.handles.slice(2)
+      : [0, 0]
+    ).concat(point.interpolationDescriptor.handles.slice(0, 2))
+
+    const pointTime = point.time
+    const pointValue = point.value
+
+    const renderLeftHandle =
+      prevPoint != null &&
+      prevPoint.value !== pointValue &&
+      prevPoint.interpolationDescriptor.connected
+    const renderRightHandle =
+      nextPoint != null &&
+      nextPoint.value !== pointValue &&
+      point.interpolationDescriptor.connected
+
+    const leftHandle = renderLeftHandle
+      ? [
+          pointTime + handles[0] * (prevPoint!.time - pointTime),
+          pointValue + handles[1] * (prevPoint!.value - pointValue),
+        ]
+      : []
+    const rightHandle = renderRightHandle
+      ? [
+          pointTime + handles[2] * (nextPoint!.time - pointTime),
+          pointValue + handles[3] * (nextPoint!.value - pointValue),
+        ]
+      : []
+    return (
+      <g>
+        {renderLeftHandle && (
+          <HandleLine
+            x1={pointTime}
+            y1={pointValue}
+            x2={leftHandle[0]}
+            y2={leftHandle[1]}
+            color={color.darkened}
+          />
+        )}
+        {renderRightHandle && (
+          <HandleLine
+            x1={pointTime}
+            y1={pointValue}
+            x2={rightHandle[0]}
+            y2={rightHandle[1]}
+            color={color.darkened}
+          />
+        )}
+        <DraggableArea
+          onDragStart={this.handlePointDragStart}
+          onDrag={this.handlePointDrag}
+          onDragEnd={this.handlePointDragEnd}
+        >
+          <g>
+            <Point
+              x={pointTime}
+              y={pointValue}
+              onClick={this.handleClickOnPoint}
+              onContextMenu={this.handleContextMenu}
+              ref={this.pointClickArea}
+            />
+          </g>
+        </DraggableArea>
+        {renderLeftHandle && (
+          <DraggableArea
+            onDragStart={this.handleLeftHandleDragStart}
+            onDrag={this.handleLeftHandleDrag}
+            onDragEnd={this.handleLeftHandleDragEnd}
+          >
+            <g>
+              <HandleClickArea
+                x={leftHandle[0]}
+                y={leftHandle[1]}
+                color={color.darkened}
+                onClick={e => this.handleClickOnHandles(e, 'left')}
+              />
+            </g>
+          </DraggableArea>
+        )}
+        {renderRightHandle && (
+          <DraggableArea
+            onDragStart={this.handleRightHandleDragStart}
+            onDrag={this.handleRightHandleDrag}
+            onDragEnd={this.handleRightHandleDragEnd}
+          >
+            <g>
+              <HandleClickArea
+                x={rightHandle[0]}
+                y={rightHandle[1]}
+                color={color.darkened}
+                onClick={e => this.handleClickOnHandles(e, 'right')}
+              />
+            </g>
+          </DraggableArea>
+        )}
+      </g>
+    )
   }
 
-  _resetState() {
-    this.setState(() => ({
-      isMoving: false,
-      pointMove: [0, 0],
-      handlesMove: [0, 0, 0, 0],
-    }))
+  _renderTempPoint() {
+    return (
+      <TempPoint
+        color={this.props.color}
+        point={this.props.point}
+        prevPoint={this.props.prevPoint}
+        nextPoint={this.props.nextPoint}
+        pointMove={this.state.pointMove}
+        handlesMove={this.state.handlesMove}
+      />
+    )
   }
 
-  pointClickHandler = (e: React.MouseEvent<SVGRectElement>) => {
-    e.preventDefault()
-    e.stopPropagation()
+  handleClickOnPoint = (event: React.MouseEvent<SVGRectElement>) => {
+    event.preventDefault()
+    event.stopPropagation()
     switch (this.activeMode) {
       case MODES.c:
         this.props.addConnector(this.props.pointIndex)
@@ -353,8 +271,8 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
         const params = {
           left: left + width / 2,
           top: top + height / 2,
-          initialTime: this.props.originalTime,
-          initialValue: this.props.originalValue,
+          initialTime: this.props.point.originalTime,
+          initialValue: this.props.point.originalValue,
           pointIndex: this.props.pointIndex,
         }
         this.props.showPointValuesEditor(params)
@@ -362,7 +280,7 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
     }
   }
 
-  handleClickHandler = (
+  handleClickOnHandles = (
     e: React.MouseEvent<SVGRectElement>,
     side: 'left' | 'right',
   ) => {
@@ -376,118 +294,144 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
     }
   }
 
-  pointDragStartHandler = () => {
+  handlePointDragStart = () => {
     this.svgSize = getSVGSize(this.props.propGetter)
   }
 
-  pointDragHandler = (dx: number, dy: number, e: MouseEvent) => {
+  handlePointDrag = (dx: number, dy: number, e: MouseEvent) => {
     const {width, height} = this.svgSize
+    const {point, prevPoint, nextPoint} = this.props
+    const {pointMove} = this.state
+
     let x = (dx / width) * 100
     let y = (dy / height) * 100
-    if (e.altKey) y = this.state.pointMove[1]
-    if (e.shiftKey) x = this.state.pointMove[0]
+    if (e.altKey) y = 0
+    if (e.shiftKey) x = 0
 
-    const {pointTime, prevPointTime, nextPointTime} = this.props
-    const limitLeft = prevPointTime == null ? 0 : prevPointTime
-    const limitRight = nextPointTime == null ? 100 : nextPointTime
+    const limitLeft = prevPoint == null ? 0 : prevPoint.time
+    const limitRight = nextPoint == null ? 100 : nextPoint.time
 
+    const pointTime = point.time - pointMove[0]
     const newT = pointTime + x
     if (newT >= limitRight) x = limitRight - pointTime - 100 / width
     if (newT <= limitLeft) x = limitLeft - pointTime + 100 / width
-
+    const originalCoords = {
+      time: this.cachedOriginalCoords.time,
+      value: this.cachedOriginalCoords.value,
+    }
+    const change = {
+      time: x - pointMove[0],
+      value: y - pointMove[1],
+    }
+    this.cachedOriginalCoords = this.props.movePointToNewCoordsTemp(
+      this.props.pointIndex,
+      originalCoords,
+      change,
+    )
     this.setState(() => ({
       isMoving: true,
       pointMove: [x, y],
     }))
   }
 
-  changePointPosition = (dragHappened: boolean) => {
+  handlePointDragEnd = (dragHappened: boolean) => {
     if (!dragHappened) return
-    const {pointMove} = this.state
-    const originalCoords = {
-      time: this.props.originalTime,
-      value: this.props.originalValue,
+    const coords = {
+      time: this.props.point.originalTime,
+      value: this.props.point.originalValue,
     }
-    const change = {
-      time: pointMove[0],
-      value: pointMove[1],
-    }
-    this.props.movePointToNewCoords(
-      this.props.pointIndex,
-      originalCoords,
-      change,
-    )
+
+    this.props.movePointToNewCoords(this.props.pointIndex, coords)
     this._resetState()
   }
 
-  leftHandleDragStartHandler = () => {
+  handleLeftHandleDragStart = () => {
     const {width, height} = getSVGSize(this.props.propGetter)
-    const {pointTime, pointValue, prevPointTime, prevPointValue} = this.props
+    const {point, prevPoint} = this.props
     this.leftHandleNormalizers = {
-      xNormalizer: (prevPointTime! - pointTime) * width,
-      yNormalizer: (prevPointValue! - pointValue) * height,
+      xNormalizer: (prevPoint!.time - point.time) * width,
+      yNormalizer: (prevPoint!.value - point.value) * height,
     }
   }
 
-  leftHandleDragHandler = (dx: number, dy: number) => {
+  handleLeftHandleDrag = (dx: number, dy: number) => {
     const {xNormalizer, yNormalizer} = this.leftHandleNormalizers
+    const handlesMove: TPointHandles = [
+      clampHandleMove(
+        this.props.prevPoint!.interpolationDescriptor.handles[2] -
+          this.state.handlesMove[0],
+        (dx / xNormalizer) * 100,
+      ),
+      (dy / yNormalizer) * 100,
+      0,
+      0,
+    ]
+    const newHandle = this.props
+      .prevPoint!.interpolationDescriptor.handles.slice(2)
+      .map(
+        (handle, i) => handle + handlesMove[i] - this.state.handlesMove[i],
+      ) as TPointSingleHandle
+
+    this.props.moveLeftHandleTemp(this.props.pointIndex, newHandle)
     this.setState(() => ({
       isMoving: true,
-      handlesMove: [
-        clampHandleMove(
-          this.props.prevPointHandles![2],
-          (dx / xNormalizer) * 100,
-        ),
-        (dy / yNormalizer) * 100,
-        0,
-        0,
-      ],
+      handlesMove,
     }))
   }
 
-  moveLeftHandle = () => {
-    const newHandle = this.props
-      .prevPointHandles!.slice(2)
-      .map(
-        (handle, i) => handle + this.state.handlesMove[i],
-      ) as TPointSingleHandle
+  handleLeftHandleDragEnd = () => {
+    const newHandle = this.props.prevPoint!.interpolationDescriptor.handles.slice(
+      2,
+    ) as TPointSingleHandle
     this.props.moveLeftHandle(this.props.pointIndex, newHandle)
     this._resetState()
   }
 
-  rightHandleDragStartHandler = () => {
+  handleRightHandleDragStart = () => {
     const {width, height} = getSVGSize(this.props.propGetter)
-    const {pointTime, pointValue, nextPointTime, nextPointValue} = this.props
+    const {point, nextPoint} = this.props
     this.rightHandleNormalizers = {
-      xNormalizer: (nextPointTime! - pointTime) * width,
-      yNormalizer: (nextPointValue! - pointValue) * height,
+      xNormalizer: (nextPoint!.time - point.time) * width,
+      yNormalizer: (nextPoint!.value - point.value) * height,
     }
   }
 
-  rightHandleDragHandler = (dx: number, dy: number) => {
+  handleRightHandleDrag = (dx: number, dy: number) => {
     const {xNormalizer, yNormalizer} = this.rightHandleNormalizers
+    const handlesMove = [
+      0,
+      0,
+      clampHandleMove(
+        this.props.point.interpolationDescriptor.handles[0] -
+          this.state.handlesMove[2],
+        (dx / xNormalizer) * 100,
+      ),
+      (dy / yNormalizer) * 100,
+    ] as TPointHandles
+    const newHandle = this.props.point.interpolationDescriptor.handles
+      .slice(0, 2)
+      .map(
+        (handle, i) =>
+          handle + handlesMove[i + 2] - this.state.handlesMove[i + 2],
+      ) as TPointSingleHandle
+
+    this.props.moveRightHandleTemp(this.props.pointIndex, newHandle)
     this.setState(() => ({
       isMoving: true,
-      handlesMove: [
-        0,
-        0,
-        clampHandleMove(this.props.pointHandles[0], (dx / xNormalizer) * 100),
-        (dy / yNormalizer) * 100,
-      ],
+      handlesMove,
     }))
   }
 
-  moveRightHandle = () => {
-    const newHandle = this.props.pointHandles
-      .slice(0, 2)
-      .map(
-        (handle, i) => handle + this.state.handlesMove[i + 2],
-      ) as TPointSingleHandle
+  handleRightHandleDragEnd = () => {
+    const newHandle = this.props.point.interpolationDescriptor.handles.slice(
+      0,
+      2,
+    ) as TPointSingleHandle
     this.props.moveRightHandle(this.props.pointIndex, newHandle)
     this._resetState()
   }
 
-  contextMenuHandler = (e: React.MouseEvent<SVGRectElement>) => {
+  handleContextMenu = (e: React.MouseEvent<SVGRectElement>) => {
     e.stopPropagation()
     e.preventDefault()
     const {clientX, clientY} = e
@@ -496,6 +440,25 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
       top: clientY,
       pointIndex: this.props.pointIndex,
     })
+  }
+
+  _resetState() {
+    this.setState(() => ({
+      isMoving: false,
+      pointMove: [0, 0],
+      handlesMove: [0, 0, 0, 0],
+    }))
+  }
+
+  _setActiveMode = (activeMode: ActiveMode) => {
+    this.activeMode = activeMode
+    if (this.pointClickArea.current == null) return null
+    if (activeMode === MODES.d) {
+      this.pointClickArea.current.classList.add(pointCss.highlightRedOnHover)
+    } else {
+      this.pointClickArea.current.classList.remove(pointCss.highlightRedOnHover)
+    }
+    return null
   }
 
   _highlightAsSelected = (selectedArea: TTransformedSelectedArea) => {
@@ -509,20 +472,13 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
         shouldUpdateHighlightAsSelectedClass = true
       }
     } else {
-      const {
-        pointTime,
-        pointValue,
-        prevPointTime,
-        prevPointValue,
-        nextPointTime,
-        nextPointValue,
-      } = this.props
+      const {point, nextPoint, prevPoint} = this.props
       const {left, top, right, bottom} = selectedArea[itemKey]
       if (
-        left <= pointTime &&
-        pointTime <= right &&
-        top <= pointValue &&
-        pointValue <= bottom
+        left <= point.time &&
+        point.time <= right &&
+        top <= point.value &&
+        point.value <= bottom
       ) {
         if (!this.isSelected) {
           this.isSelected = true
@@ -535,24 +491,22 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
         }
       }
       if (
-        prevPointTime != null &&
-        prevPointValue != null &&
-        left <= prevPointTime &&
-        prevPointTime <= right &&
-        top <= prevPointValue &&
-        prevPointValue <= bottom
+        prevPoint != null &&
+        left <= prevPoint.time &&
+        prevPoint.time <= right &&
+        top <= prevPoint.value &&
+        prevPoint.value <= bottom
       ) {
         this.isPrevPointSelected = true
       } else {
         this.isPrevPointSelected = false
       }
       if (
-        nextPointTime != null &&
-        nextPointValue != null &&
-        left <= nextPointTime &&
-        nextPointTime <= right &&
-        top <= nextPointValue &&
-        nextPointValue <= bottom
+        nextPoint != null &&
+        left <= nextPoint.time &&
+        nextPoint.time <= right &&
+        top <= nextPoint.value &&
+        nextPoint.value <= bottom
       ) {
         this.isNextPointSelected = true
       } else {
@@ -566,8 +520,8 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
       if (this.isSelected) {
         this.pointClickArea.current.classList.add(pointCss.highlightAsSelected)
         this.props.addPointToSelection(this.props.pointIndex, {
-          time: this.props.pointTime,
-          value: this.props.pointValue,
+          time: this.props.point.time,
+          value: this.props.point.value,
         })
       } else {
         this.pointClickArea.current.classList.remove(
@@ -575,17 +529,6 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
         )
         this.props.removePointFromSelection(this.props.pointIndex)
       }
-    }
-    return null
-  }
-
-  _handleSelectionMove = ({x, y}: TSelectionMove) => {
-    if (this.isSelected) {
-      const {width, height} = getSVGSize(this.props.propGetter)
-      return this._renderTransformedPoint([
-        (x / width) * 100,
-        (y / height) * 100,
-      ])
     }
     return null
   }
@@ -599,7 +542,7 @@ const clampHandleMove = (handleX: number, moveX: number) => {
 }
 
 const getSVGSize = (propGetter: TPropGetter): TSVGSize => {
-  const height = propGetter('itemHeight')
+  const height = propGetter('itemHeight') - svgPaddingY
   const width = propGetter('svgWidth')
   return {width, height}
 }

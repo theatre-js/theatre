@@ -1,5 +1,19 @@
 .pointClickArea {
   cursor: default;
+
+  &:hover, &:active {
+    cursor: move;
+  }
+
+  &.ewCursor {
+    &:hover, &:active {
+      cursor: ew-resize;
+    }
+  }
+
+  &.highlightRedOnHover {
+    cursor: default;
+  }
 }
 
 .pointClickArea.highlightAsSelected ~ .pointGlow {
@@ -37,18 +51,5 @@
 }
 
 .pointCenter {
-  pointer-events: none;
-}
-
-.handleClickArea {
-  cursor: default;
-}
-
-.handleClickArea:hover ~ .handle,
-.handleClickArea:active ~ .handle {
-  stroke-width: 3px;
-}
-
-.handle {
   pointer-events: none;
 }

@@ -2,7 +2,6 @@ import React from 'react'
 import connectorCss from '$tl/ui/panels/AllInOnePanel/Right/views/dopesheet/connector.css'
 import pointCss from '$tl/ui/panels/AllInOnePanel/Right/views/point/point.css'
 import {TColor} from '$tl/ui/panels/AllInOnePanel/Right/types'
-import PointCircle from '$tl/ui/panels/AllInOnePanel/Right/views/point/PointCircle'
 import LineConnectorRect from '$tl/ui/panels/AllInOnePanel/Right/views/dopesheet/LineConnectorRect'
 import LineConnector from '$tl/ui/panels/AllInOnePanel/Right/views/dopesheet/LineConnector'
 import Point from '$tl/ui/panels/AllInOnePanel/Right/views/point/Point'
@@ -22,6 +21,8 @@ import {
   TShowPointContextMenu,
   TAddPointToSelection,
   TRemovePointFromSelection,
+  TMovePointToNewCoordsTemp,
+  TMoveDopesheetConnectorTemp,
 } from '$tl/ui/panels/AllInOnePanel/Right/views/types'
 import {
   TTransformedSelectedArea,
@@ -31,6 +32,8 @@ import {
   SelectedAreaContext,
   SelectionMoveContext,
 } from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/SelectionProvider'
+import TempPoint from '$tl/ui/panels/AllInOnePanel/Right/views/dopesheet/TempPoint'
+import TempConnector from '$tl/ui/panels/AllInOnePanel/Right/views/dopesheet/TempConnector'
 
 interface IProps {
   propGetter: TPropGetter
@@ -48,12 +51,13 @@ interface IProps {
   removePoint: TFnNeedsPointIndex
   addConnector: TFnNeedsPointIndex
   movePointToNewCoords: TMovePointToNewCoords
+  movePointToNewCoordsTemp: TMovePointToNewCoordsTemp
   removeConnector: TFnNeedsPointIndex
   moveConnector: TMoveDopesheetConnector
+  moveConnectorTemp: TMoveDopesheetConnectorTemp
   showPointValuesEditor: TShowPointValuesEditor
   showPointContextMenu: TShowPointContextMenu
   showConnectorContextMenu: TShowConnectorContextMenu
-  getValueRelativeToBoxHeight: () => number
   addPointToSelection: TAddPointToSelection
   removePointFromSelection: TRemovePointFromSelection
 }
@@ -80,6 +84,32 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
   }
 
   render() {
+    return (
+      <>
+        <ActiveModeContext.Consumer>
+          {this._setActiveMode}
+        </ActiveModeContext.Consumer>
+        <SelectedAreaContext.Consumer>
+          {this._highlightAsSelected}
+        </SelectedAreaContext.Consumer>
+        <SelectionMoveContext.Consumer>
+          {this._render}
+        </SelectionMoveContext.Consumer>
+      </>
+    )
+  }
+
+  _render = ({x}: TSelectionMove) => {
+    return (
+      <g>
+        {this.state.isMovingPoint && this._renderTempPoint()}
+        {this._renderPoint()}
+        {this.state.isMovingConnector && this._renderTempConnector()}
+      </g>
+    )
+  }
+
+  _renderPoint() {
     const {
       pointIndex,
       pointTime,
@@ -89,22 +119,11 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
       nextNextPointTime,
       color,
     } = this.props
-    const {
-      isMovingConnector,
-      isMovingPoint,
-      connectorMove,
-      pointMove,
-    } = this.state
 
     const connectorFill = pointIndex === 0 ? color.darkened : 'transparent'
+
     return (
       <>
-        <ActiveModeContext.Consumer>
-          {this._setActiveMode}
-        </ActiveModeContext.Consumer>
-        <SelectedAreaContext.Consumer>
-          {this._highlightAsSelected}
-        </SelectedAreaContext.Consumer>
         <g>
           {nextPointConnected && (
             <LineConnectorRect
@@ -116,9 +135,9 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
           )}
           {pointConnected && (
             <DraggableArea
-              onDragStart={this.connectorDragStartHandler}
-              onDrag={this.connectorDragHandler}
-              onDragEnd={this.connectorDragEndHandler}
+              onDragStart={this.handleConnectorDragStart}
+              onDrag={this.handleConnectorDrag}
+              onDragEnd={this.handleConnectorDragEnd}
             >
               <g>
                 <LineConnector
@@ -127,30 +146,26 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
                   width={nextPointTime! - pointTime}
                   color={connectorFill}
                   ref={this.connectorClickArea}
-                  onClick={this.connectorClickHandler}
+                  onClick={this.handleConnectorClick}
                   onContextMenu={this.handleConnectorContextMenu}
                 />
               </g>
             </DraggableArea>
           )}
         </g>
-        {isMovingConnector && this._renderMovingConnector(connectorMove)}
-        {isMovingPoint && this._renderMovingPoint(pointMove)}
-        <SelectionMoveContext.Consumer>
-          {this._handleSelectionMove}
-        </SelectionMoveContext.Consumer>
         <DraggableArea
-          onDragStart={this.pointDragStartHandler}
-          onDrag={this.pointDragHandler}
-          onDragEnd={this.pointDragEndHandler}
+          onDragStart={this.handlePointDragStart}
+          onDrag={this.handlePointDrag}
+          onDragEnd={this.handlePointDragEnd}
         >
           <g>
             <Point
               x={pointTime}
               y={50}
-              onClick={this.pointClickHandler}
+              onClick={this.handlePointClick}
               onContextMenu={this.handlePointContextMenu}
               ref={this.pointClickArea}
+              dopesheet={true}
             />
           </g>
         </DraggableArea>
@@ -158,78 +173,189 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
     )
   }
 
-  _renderMovingConnector(move: number) {
-    const {
-      pointTime,
-      nextPointTime,
-      nextPointConnected,
-      prevPointConnected,
-      color,
-    } = this.props
-
+  _renderTempPoint() {
     return (
-      <g>
-        {prevPointConnected &&
-          move > 0 && (
-            <LineConnectorRect
-              x={pointTime}
-              y={50}
-              width={move}
-              color={color.darkened}
-            />
-          )}
-        {nextPointConnected &&
-          move < 0 && (
-            <LineConnectorRect
-              x={nextPointTime! + move}
-              y={50}
-              width={-move}
-              color={color.darkened}
-            />
-          )}
-        <LineConnectorRect
-          x={pointTime + move}
-          y={50}
-          width={nextPointTime! - pointTime}
-          color={color.darkened}
-        />
-        <g opacity={0.7}>
-          <PointCircle x={pointTime + move} y={50} />
-          <PointCircle x={nextPointTime! + move} y={50} />
-        </g>
-      </g>
+      <TempPoint
+        color={this.props.color}
+        pointTime={this.props.pointTime - this.state.pointMove}
+        pointConnected={this.props.pointConnected}
+        nextPointTime={this.props.nextPointTime}
+        prevPointTime={this.props.prevPointTime}
+        prevPointConnected={this.props.prevPointConnected}
+      />
     )
   }
 
-  _renderMovingPoint(move: number) {
-    const {pointTime, prevPointConnected, pointConnected, color} = this.props
-
+  _renderTempConnector() {
+    const {connectorMove} = this.state
     return (
-      <g>
-        {prevPointConnected &&
-          move > 0 && (
-            <LineConnectorRect
-              x={pointTime}
-              y={50}
-              width={move}
-              color={color.darkened}
-            />
-          )}
-        {pointConnected &&
-          move < 0 && (
-            <LineConnectorRect
-              x={pointTime + move}
-              y={50}
-              width={-move}
-              color={color.darkened}
-            />
-          )}
-        <g opacity={0.7}>
-          <PointCircle x={pointTime + move} y={50} />
-        </g>
-      </g>
+      <TempConnector
+        color={this.props.color}
+        pointTime={this.props.pointTime - connectorMove}
+        nextPointTime={this.props.nextPointTime! - connectorMove}
+        nextPointConnected={this.props.nextPointConnected!}
+        nextNextPointTime={this.props.nextNextPointTime}
+        prevPointTime={this.props.prevPointTime}
+        prevPointConnected={this.props.prevPointConnected}
+        move={connectorMove}
+      />
     )
   }
+
+  handlePointClick = (event: React.MouseEvent<SVGRectElement>) => {
+    event.preventDefault()
+    event.stopPropagation()
+    switch (this.activeMode) {
+      case MODES.c:
+        this.props.addConnector(this.props.pointIndex)
+        break
+      case MODES.cmd:
+        this.props.addConnector(this.props.pointIndex)
+        break
+      case MODES.d:
+        this.props.removePoint(this.props.pointIndex)
+        break
+      default: {
+        const {
+          left,
+          top,
+          width,
+          height,
+        } = this.pointClickArea.current!.getBoundingClientRect()
+        const params = {
+          left: left + width / 2,
+          top: top + height / 2,
+          initialTime: this.props.originalTime,
+          initialValue: this.props.originalValue,
+          pointIndex: this.props.pointIndex,
+        }
+        this.props.showPointValuesEditor(params)
+      }
+    }
+  }
+
+  handleConnectorClick = (event: React.MouseEvent<SVGRectElement>) => {
+    if (this.activeMode === MODES.d) {
+      event.stopPropagation()
+      this.props.removeConnector(this.props.pointIndex)
+    }
+  }
+
+  handlePointDragStart = () => {
+    this.svgWidth = this.props.propGetter('svgWidth')
+  }
+
+  handlePointDrag = (dx: number) => {
+    let x = (dx / this.svgWidth) * 100
+
+    const {prevPointTime, nextPointTime} = this.props
+    const {pointMove} = this.state
+    const pointTime = this.props.pointTime - pointMove
+
+    const limitLeft = prevPointTime == null ? 0 : prevPointTime
+    const limitRight = nextPointTime == null ? 100 : nextPointTime
+
+    const newTime = pointTime + x
+    if (newTime >= limitRight) x = limitRight - pointTime - 100 / this.svgWidth
+    if (newTime <= limitLeft) x = limitLeft - pointTime + 100 / this.svgWidth
+
+    const originalCoords = {
+      time: this.props.originalTime,
+      value: this.props.originalValue,
+    }
+    const change = {
+      time: x - this.state.pointMove,
+      value: 0,
+    }
+    this.props.movePointToNewCoordsTemp(
+      this.props.pointIndex,
+      originalCoords,
+      change,
+    )
+
+    this.setState(() => ({
+      isMovingPoint: true,
+      pointMove: x,
+    }))
+  }
+
+  handlePointDragEnd = (dragHappened: true) => {
+    if (!dragHappened) return
+    const coords = {
+      time: this.props.originalTime,
+      value: this.props.originalValue,
+    }
+    this.props.movePointToNewCoords(this.props.pointIndex, coords)
+    this.setState(() => ({
+      isMovingPoint: false,
+      pointMove: 0,
+    }))
+  }
+
+  handleConnectorDragStart = () => {
+    this.svgWidth = this.props.propGetter('svgWidth')
+  }
+
+  handleConnectorDrag = (dx: number) => {
+    let x = (dx / this.svgWidth) * 100
+
+    const {prevPointTime, nextNextPointTime} = this.props
+    const {connectorMove} = this.state
+    const pointTime = this.props.pointTime - connectorMove
+    const nextPointTime = this.props.nextPointTime! - connectorMove
+    const limitLeft = prevPointTime == null ? 0 : prevPointTime
+    const limitRight = nextNextPointTime == null ? 100 : nextNextPointTime
+
+    if (nextPointTime! + x >= limitRight)
+      x = limitRight - nextPointTime! - 100 / this.svgWidth
+    if (pointTime + x <= limitLeft)
+      x = limitLeft - pointTime + 100 / this.svgWidth
+    this.props.moveConnectorTemp(this.props.pointIndex, x - connectorMove)
+    this.setState(() => ({
+      isMovingConnector: true,
+      connectorMove: x,
+    }))
+  }
+
+  handleConnectorDragEnd = (dragHappened: true) => {
+    if (!dragHappened) return
+    // this.props.moveConnector(this.props.pointIndex, this.state.connectorMove)
+    this.props.moveConnector(this.props.pointIndex)
+    this.setState(() => ({
+      isMovingConnector: false,
+      connectorMove: 0,
+    }))
+  }
+
+  handlePointContextMenu = (event: React.MouseEvent<SVGRectElement>) => {
+    event.stopPropagation()
+    event.preventDefault()
+    const {clientX, clientY} = event
+    this.props.showPointContextMenu({
+      left: clientX,
+      top: clientY,
+      pointIndex: this.props.pointIndex,
+    })
+  }
+
+  handleConnectorContextMenu = (event: React.MouseEvent<SVGRectElement>) => {
+    event.stopPropagation()
+    event.preventDefault()
+    const {clientX, clientY} = event
+    this.props.showConnectorContextMenu!({
+      left: clientX,
+      top: clientY,
+      pointIndex: this.props.pointIndex,
+    })
+  }
+
+  // _handleSelectionMove = ({x}: TSelectionMove) => {
+  //   if (this.isSelected) {
+  //     const svgWidth = this.props.propGetter('svgWidth')
+  //     return this._renderTempPoint((x / svgWidth) * 100)
+  //   }
+  //   return null
+  // }
 
   _setActiveMode = (activeMode: ActiveMode) => {
     this.activeMode = activeMode
@@ -305,153 +431,6 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
       }
     }
     return null
-  }
-
-  pointClickHandler = (event: React.MouseEvent<SVGRectElement>) => {
-    event.preventDefault()
-    event.stopPropagation()
-    switch (this.activeMode) {
-      case MODES.c:
-        this.props.addConnector(this.props.pointIndex)
-        break
-      case MODES.cmd:
-        this.props.addConnector(this.props.pointIndex)
-        break
-      case MODES.d:
-        this.props.removePoint(this.props.pointIndex)
-        break
-      default: {
-        const {
-          left,
-          top,
-          width,
-          height,
-        } = this.pointClickArea.current!.getBoundingClientRect()
-        const params = {
-          left: left + width / 2,
-          top: top + height / 2,
-          initialTime: this.props.originalTime,
-          initialValue: this.props.originalValue,
-          pointIndex: this.props.pointIndex,
-        }
-        this.props.showPointValuesEditor(params)
-      }
-    }
-  }
-
-  connectorClickHandler = (event: React.MouseEvent<SVGRectElement>) => {
-    if (this.activeMode === MODES.d) {
-      event.stopPropagation()
-      this.props.removeConnector(this.props.pointIndex)
-    }
-  }
-
-  connectorDragStartHandler = () => {
-    this.svgWidth = this.props.propGetter('svgWidth')
-  }
-
-  connectorDragHandler = (dx: number) => {
-    let x = (dx / this.svgWidth) * 100
-
-    const {
-      pointTime,
-      prevPointTime,
-      nextPointTime,
-      nextNextPointTime,
-    } = this.props
-    const limitLeft = prevPointTime == null ? 0 : prevPointTime
-    const limitRight = nextNextPointTime == null ? 100 : nextNextPointTime
-
-    if (nextPointTime! + x >= limitRight)
-      x = limitRight - nextPointTime! - 100 / this.svgWidth
-    if (pointTime + x <= limitLeft)
-      x = limitLeft - pointTime + 100 / this.svgWidth
-
-    this.setState(() => ({
-      isMovingConnector: true,
-      connectorMove: x,
-    }))
-  }
-
-  connectorDragEndHandler = (dragHappened: true) => {
-    if (!dragHappened) return
-    this.props.moveConnector(this.props.pointIndex, this.state.connectorMove)
-    this.setState(() => ({
-      isMovingConnector: false,
-      connectorMove: 0,
-    }))
-  }
-
-  pointDragStartHandler = () => {
-    this.svgWidth = this.props.propGetter('svgWidth')
-  }
-
-  pointDragHandler = (dx: number) => {
-    let x = (dx / this.svgWidth) * 100
-
-    const {pointTime, prevPointTime, nextPointTime} = this.props
-    const limitLeft = prevPointTime == null ? 0 : prevPointTime
-    const limitRight = nextPointTime == null ? 100 : nextPointTime
-
-    const newTime = pointTime + x
-    if (newTime >= limitRight) x = limitRight - pointTime - 100 / this.svgWidth
-    if (newTime <= limitLeft) x = limitLeft - pointTime + 100 / this.svgWidth
-
-    this.setState(() => ({
-      isMovingPoint: true,
-      pointMove: x,
-    }))
-  }
-
-  pointDragEndHandler = (dragHappened: true) => {
-    if (!dragHappened) return
-    const originalCoords = {
-      time: this.props.originalTime,
-      value: this.props.originalValue,
-    }
-    const change = {
-      time: this.state.pointMove,
-      value: 0,
-    }
-    this.props.movePointToNewCoords(
-      this.props.pointIndex,
-      originalCoords,
-      change,
-    )
-    this.setState(() => ({
-      isMovingPoint: false,
-      pointMove: 0,
-    }))
-  }
-
-  _handleSelectionMove = ({x}: TSelectionMove) => {
-    if (this.isSelected) {
-      const svgWidth = this.props.propGetter('svgWidth')
-      return this._renderMovingPoint((x / svgWidth) * 100)
-    }
-    return null
-  }
-
-  handlePointContextMenu = (event: React.MouseEvent<SVGRectElement>) => {
-    event.stopPropagation()
-    event.preventDefault()
-    const {clientX, clientY} = event
-    this.props.showPointContextMenu({
-      left: clientX,
-      top: clientY,
-      pointIndex: this.props.pointIndex,
-    })
-  }
-
-  handleConnectorContextMenu = (event: React.MouseEvent<SVGRectElement>) => {
-    event.stopPropagation()
-    event.preventDefault()
-    const {clientX, clientY} = event
-    this.props.showConnectorContextMenu!({
-      left: clientX,
-      top: clientY,
-      pointIndex: this.props.pointIndex,
-    })
   }
 }
 

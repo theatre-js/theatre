@@ -30,10 +30,15 @@ export type TAddPointToSelection = (
 
 export type TRemovePointFromSelection = (pointIndex: number) => void
 
-export type TMovePointToNewCoords = (
+export type TMovePointToNewCoordsTemp = (
   pointIndex: number,
   originalCoords: TPointCoords,
   change: TPointCoords,
+) => TPointCoords
+
+export type TMovePointToNewCoords = (
+  pointIndex: number,
+  newCoords: TPointCoords,
 ) => void
 
 export type TMoveSingleHandle = (
@@ -45,5 +50,11 @@ export type TFnNeedsPointIndex = (pointIndex: number) => void
 
 export type TMoveDopesheetConnector = (
   pointIndex: number,
+) => void
+
+export type TMoveDopesheetConnectorTemp = (
+  pointIndex: number,
   moveAmount: number,
 ) => void
+
+export type TPointMove = [number, number]

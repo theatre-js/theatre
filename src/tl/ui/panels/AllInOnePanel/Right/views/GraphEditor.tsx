@@ -45,43 +45,27 @@ class GraphEditor extends ViewBase<IProps & IWithUtilsProps> {
                   />
                 )}
               <GraphEditorPoint
-                key={`${point.originalValue}${point.originalTime}`}
+                key={index}
                 color={color}
-                propGetter={propGetter}
-                pointTime={point.time}
-                pointValue={point.value}
-                pointHandles={point.interpolationDescriptor.handles}
-                pointConnected={point.interpolationDescriptor.connected}
-                originalTime={point.originalTime}
-                originalValue={point.originalValue}
+                point={point}
+                {...(prevPoint ? {prevPoint} : {})}
+                {...(nextPoint ? {nextPoint} : {})}
                 pointIndex={index}
+                propGetter={propGetter}
                 removePoint={this._removePoint}
                 addConnector={this._addConnector}
                 movePointToNewCoords={this._movePointToNewCoords}
+                movePointToNewCoordsTemp={this._movePointToNewCoordsTemp}
                 moveLeftHandle={this.moveLeftHandle}
+                moveLeftHandleTemp={this.moveLeftHandleTemp}
                 moveRightHandle={this.moveRightHandle}
+                moveRightHandleTemp={this.moveRightHandleTemp}
                 makeRightHandleHorizontal={this.makeRightHandleHorizontal}
                 makeLeftHandleHorizontal={this.makeLeftHandleHorizontal}
                 showPointValuesEditor={this._showPointValuesEditor}
                 showContextMenu={this._showPointContextMenu}
                 addPointToSelection={this._addPointToSelection}
                 removePointFromSelection={this._removePointFromSelection}
-                {...(prevPoint
-                  ? {
-                      prevPointTime: prevPoint.time,
-                      prevPointValue: prevPoint.value,
-                      prevPointHandles:
-                        prevPoint.interpolationDescriptor.handles,
-                      prevPointConnected:
-                        prevPoint.interpolationDescriptor.connected,
-                    }
-                  : {})}
-                {...(nextPoint
-                  ? {
-                      nextPointTime: nextPoint.time,
-                      nextPointValue: nextPoint.value,
-                    }
-                  : {})}
               />
             </g>
           )
@@ -91,25 +75,63 @@ class GraphEditor extends ViewBase<IProps & IWithUtilsProps> {
   }
 
   moveLeftHandle: TMoveSingleHandle = (pointIndex, newHandle) => {
+    this.props.extremumsAPI.unpersist()
     this.project.reduxStore.dispatch(
-      this.project._actions.historic.movePointLeftHandleInBezierCurvesOfScalarValues(
-        {
-          propAddress: this.props.propGetter('itemAddress'),
-          pointIndex,
-          newHandle,
-        },
+      this.project._actions.batched([
+        this.tempActionGroup.discard(),
+        this.project._actions.historic.movePointLeftHandleInBezierCurvesOfScalarValues(
+          {
+            propAddress: this.props.propGetter('itemAddress'),
+            pointIndex,
+            newHandle,
+          },
+        ),
+      ]),
+    )
+  }
+
+  moveLeftHandleTemp: TMoveSingleHandle = (pointIndex, newHandle) => {
+    this.props.extremumsAPI.persist()
+    this.project.reduxStore.dispatch(
+      this.tempActionGroup.push(
+        this.project._actions.historic.movePointLeftHandleInBezierCurvesOfScalarValues(
+          {
+            propAddress: this.props.propGetter('itemAddress'),
+            pointIndex,
+            newHandle,
+          },
+        ),
       ),
     )
   }
 
   moveRightHandle: TMoveSingleHandle = (pointIndex, newHandle) => {
+    this.props.extremumsAPI.unpersist()
     this.project.reduxStore.dispatch(
-      this.project._actions.historic.movePointRightHandleInBezierCurvesOfScalarValues(
-        {
-          propAddress: this.props.propGetter('itemAddress'),
-          pointIndex,
-          newHandle,
-        },
+      this.project._actions.batched([
+        this.tempActionGroup.discard(),
+        this.project._actions.historic.movePointRightHandleInBezierCurvesOfScalarValues(
+          {
+            propAddress: this.props.propGetter('itemAddress'),
+            pointIndex,
+            newHandle,
+          },
+        ),
+      ]),
+    )
+  }
+
+  moveRightHandleTemp: TMoveSingleHandle = (pointIndex, newHandle) => {
+    this.props.extremumsAPI.persist()
+    this.project.reduxStore.dispatch(
+      this.tempActionGroup.push(
+        this.project._actions.historic.movePointRightHandleInBezierCurvesOfScalarValues(
+          {
+            propAddress: this.props.propGetter('itemAddress'),
+            pointIndex,
+            newHandle,
+          },
+        ),
       ),
     )
   }

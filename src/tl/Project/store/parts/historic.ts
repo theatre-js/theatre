@@ -145,15 +145,12 @@ export const moveDopesheetConnectorInBezierCurvesOfScalarValues = r(
     s,
     p: TPropAddress & {
       leftPoint: {index: number; newTime: number}
-      rightPoint?: {index: number; newTime: number}
+      rightPoint: {index: number; newTime: number}
     },
   ) => {
     const points = getPoints(s, p.propAddress)
     points[p.leftPoint.index].time = p.leftPoint.newTime
-
-    if (p.rightPoint != null) {
-      points[p.rightPoint.index].time = p.rightPoint.newTime
-    }
+    points[p.rightPoint.index].time = p.rightPoint.newTime
   },
 )
 

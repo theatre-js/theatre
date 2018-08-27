@@ -38,6 +38,7 @@ import {
 } from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/types'
 import projectSelectors from '$tl/Project/store/selectors'
 import {IBezierCurvesOfScalarValues} from '$tl/Project/store/types'
+import {svgPaddingY} from '$tl/ui/panels/AllInOnePanel/Right/views/GraphEditorWrapper'
 
 const classes = resolveCss(css)
 
@@ -131,7 +132,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
               <DraggableArea
                 shouldRegisterEvents={statusIsMovingPoints}
                 shouldReturnMovement={true}
-                onDrag={this.areaMoveHandler}
+                onDrag={this.handleAreaMove}
               >
                 <div
                   style={{transform: `translate3d(${move.x}px,${move.y}px,0)`}}
@@ -235,7 +236,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
     })
   }
 
-  areaMoveHandler = (dx: number, dy: number, event: MouseEvent) => {
+  handleAreaMove = (dx: number, dy: number, event: MouseEvent) => {
     this.setState(({move, horizontalLimits}) => {
       let x = move.x + dx
       let y = move.y + dy
@@ -282,13 +283,13 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
 
     const timeChange = (move.x / svgWidth) * duration
 
-    const newCoordsOfPointsInSelection = Object.entries(
+    const pointsInSelectionDataAfterMove = Object.entries(
       this.selectedPoints,
-    ).reduce((acc, [itemKey, selectedPointsData]) => {
+    ).reduce((pointsDataAfterMove, [itemKey, selectedPointsData]) => {
       const itemData = this.mapOfItemsData[itemKey]
       const itemExtremums = this.extremumsOfItemsInSelection[itemKey]
       const extDiff = itemExtremums[1] - itemExtremums[0]
-      const valueChange = (move.y / itemData.height) * extDiff
+      const valueChange = (move.y / (itemData.height - svgPaddingY)) * extDiff
       const pointsNewCoords: TCollectionOfSelectedPointsData = {}
 
       Object.keys(selectedPointsData).forEach(pointIndex => {
@@ -300,9 +301,9 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
             : {}),
         }
       })
-      console.log(pointsNewCoords)
+
       return [
-        ...acc,
+        ...pointsDataAfterMove,
         {
           propAddress: itemData.address,
           pointsNewCoords,
@@ -312,7 +313,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
 
     this.project.reduxStore.dispatch(
       this.project._actions.historic.moveSelectionOfPointsInBezierCurvesOfScalarValues(
-        newCoordsOfPointsInSelection,
+        pointsInSelectionDataAfterMove,
       ),
     )
     this._clearSelection()

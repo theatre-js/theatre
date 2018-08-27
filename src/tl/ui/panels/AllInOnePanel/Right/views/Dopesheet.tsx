@@ -11,7 +11,10 @@ import {
   TColor,
   TNormalizedPoints,
 } from '$tl/ui/panels/AllInOnePanel/Right/types'
-import {TMoveDopesheetConnector} from '$tl/ui/panels/AllInOnePanel/Right/views/types'
+import {
+  TMoveDopesheetConnector,
+  TMoveDopesheetConnectorTemp,
+} from '$tl/ui/panels/AllInOnePanel/Right/views/types'
 
 interface IProps extends IViewBaseProps {
   color: TColor
@@ -23,7 +26,7 @@ class Dopesheet extends ViewBase<IProps & IWithUtilsProps> {
   render() {
     const {color, points, propGetter} = this.props
     return (
-      <g key="variable" fill={color.normal} stroke={color.normal}>
+      <g fill={color.normal} stroke={color.normal}>
         {points.map((point, index) => {
           const prevPoint = points[index - 1]
           const nextPoint = points[index + 1]
@@ -31,8 +34,8 @@ class Dopesheet extends ViewBase<IProps & IWithUtilsProps> {
           return (
             <DopesheetPoint
               key={index}
-              pointIndex={index}
               color={color}
+              pointIndex={index}
               originalTime={point.originalTime}
               originalValue={point.originalValue}
               pointTime={point.time}
@@ -41,9 +44,10 @@ class Dopesheet extends ViewBase<IProps & IWithUtilsProps> {
               addConnector={this._addConnector}
               removeConnector={this._removeConnector}
               movePointToNewCoords={this._movePointToNewCoords}
+              movePointToNewCoordsTemp={this._movePointToNewCoordsTemp}
               moveConnector={this.moveConnector}
+              moveConnectorTemp={this.moveConnectorTemp}
               propGetter={propGetter}
-              getValueRelativeToBoxHeight={this.getValueRelativeToBoxHeight}
               addPointToSelection={this._addPointToSelection}
               removePointFromSelection={this._removePointFromSelection}
               showPointValuesEditor={this._showPointValuesEditor}
@@ -75,13 +79,34 @@ class Dopesheet extends ViewBase<IProps & IWithUtilsProps> {
     )
   }
 
-  getValueRelativeToBoxHeight = () => {
-    console.log('getValueRelativeToBoxHeight')
-    return 0
-    // return this.props.valueRelativeToBoxHeight
+  moveConnector: TMoveDopesheetConnector = (pointIndex) => {
+    this.props.extremumsAPI.unpersist()
+    const {propGetter, points} = this.props
+    const point = points[pointIndex]
+    const nextPoint = points[pointIndex + 1]
+
+    this.project.reduxStore.dispatch(
+      this.project._actions.batched([
+        this.tempActionGroup.discard(),
+        this.project._actions.historic.moveDopesheetConnectorInBezierCurvesOfScalarValues(
+          {
+            propAddress: propGetter('itemAddress'),
+            leftPoint: {
+              index: pointIndex,
+              newTime: point.originalTime,
+            },
+            rightPoint: {
+              index: pointIndex + 1,
+              newTime: nextPoint.originalTime,
+            },
+          },
+        ),
+      ]),
+    )
   }
 
-  moveConnector: TMoveDopesheetConnector = (pointIndex, moveAmount) => {
+  moveConnectorTemp: TMoveDopesheetConnectorTemp = (pointIndex, moveAmount) => {
+    this.props.extremumsAPI.persist()
     const {propGetter, points} = this.props
     const timeChange = (moveAmount * propGetter('duration')) / 100
 
@@ -89,22 +114,20 @@ class Dopesheet extends ViewBase<IProps & IWithUtilsProps> {
     const nextPoint = points[pointIndex + 1]
 
     this.project.reduxStore.dispatch(
-      this.project._actions.historic.moveDopesheetConnectorInBezierCurvesOfScalarValues(
-        {
-          propAddress: propGetter('itemAddress'),
-          leftPoint: {
-            index: pointIndex,
-            newTime: point.originalTime + timeChange,
+      this.tempActionGroup.push(
+        this.project._actions.historic.moveDopesheetConnectorInBezierCurvesOfScalarValues(
+          {
+            propAddress: propGetter('itemAddress'),
+            leftPoint: {
+              index: pointIndex,
+              newTime: point.originalTime + timeChange,
+            },
+            rightPoint: {
+              index: pointIndex + 1,
+              newTime: nextPoint.originalTime + timeChange,
+            },
           },
-          ...(nextPoint != null
-            ? {
-                rightPoint: {
-                  index: pointIndex + 1,
-                  newTime: nextPoint.originalTime + timeChange,
-                },
-              }
-            : {}),
-        },
+        ),
       ),
     )
   }

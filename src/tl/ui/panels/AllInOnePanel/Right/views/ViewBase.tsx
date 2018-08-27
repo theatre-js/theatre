@@ -1,6 +1,6 @@
 import {IWithUtilsProps} from '$tl/ui/panels/AllInOnePanel/Right/views/withUtils'
 import UIComponent from '$tl/ui/handy/UIComponent'
-import {TExtremums} from '$tl/ui/panels/AllInOnePanel/Right/types'
+import {TExtremums, TPointCoords} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {
   TShowPointContextMenu,
   TShowPointValuesEditor,
@@ -8,6 +8,7 @@ import {
   TShowConnectorContextMenu,
   TAddPointToSelection,
   TRemovePointFromSelection,
+  TMovePointToNewCoordsTemp,
 } from '$tl/ui/panels/AllInOnePanel/Right/views/types'
 
 export interface IViewBaseProps {
@@ -20,6 +21,8 @@ export default class ViewBase<Props extends IProps> extends UIComponent<
   Props,
   {}
 > {
+  tempActionGroup = this.ui.actions.historic.temp()
+
   _removePoint = (pointIndex: number) => {
     this.project.reduxStore.dispatch(
       this.project._actions.historic.removePointInBezierCurvesOfScalarValues({
@@ -49,12 +52,31 @@ export default class ViewBase<Props extends IProps> extends UIComponent<
     )
   }
 
-  _movePointToNewCoords: TMovePointToNewCoords = (
+  _movePointToNewCoords: TMovePointToNewCoords = (pointIndex, newCoords) => {
+    this.props.extremumsAPI.unpersist()
+
+    this.project.reduxStore.dispatch(
+      this.project._actions.batched([
+        this.tempActionGroup.discard(),
+        this.project._actions.historic.movePointToNewCoordsInBezierCurvesOfScalarValues(
+          {
+            propAddress: this.props.propGetter('itemAddress'),
+            pointIndex,
+            newCoords,
+          },
+        ),
+      ]),
+    )
+  }
+
+  _movePointToNewCoordsTemp: TMovePointToNewCoordsTemp = (
     pointIndex,
     originalCoords,
     change,
-  ) => {
-    const {extremums, propGetter} = this.props
+   ) => {
+    const {extremums, propGetter, extremumsAPI} = this.props
+    extremumsAPI.persist()
+
     const newCoords = {
       time: originalCoords.time + (change.time * propGetter('duration')) / 100,
       value:
@@ -63,14 +85,17 @@ export default class ViewBase<Props extends IProps> extends UIComponent<
     }
 
     this.project.reduxStore.dispatch(
-      this.project._actions.historic.movePointToNewCoordsInBezierCurvesOfScalarValues(
-        {
-          propAddress: propGetter('itemAddress'),
-          pointIndex,
-          newCoords,
-        },
+      this.tempActionGroup.push(
+        this.project._actions.historic.movePointToNewCoordsInBezierCurvesOfScalarValues(
+          {
+            propAddress: propGetter('itemAddress'),
+            pointIndex,
+            newCoords,
+          },
+        ),
       ),
     )
+    return newCoords
   }
 
   _addPointToSelection: TAddPointToSelection = (pointIndex, pointData) => {

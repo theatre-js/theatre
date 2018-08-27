@@ -1,5 +1,9 @@
 .handleClickArea {
   cursor: default;
+
+  &:hover, &:active {
+    cursor: move;
+  }
 }
 
 .handleClickArea:hover ~ .handle,

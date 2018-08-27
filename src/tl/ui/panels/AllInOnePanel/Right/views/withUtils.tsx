@@ -7,11 +7,16 @@ import {OverlaysAPIContext} from '$tl/ui/panels/AllInOnePanel/Right/timeline/Ove
 import {TOverlaysAPI} from '$tl/ui/panels/AllInOnePanel/Right/timeline/overlays/types'
 import {SelectionAPIContext} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/SelectionProvider'
 import {TSelectionAPI} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/types'
+import {
+  ExtremumsAPIContext,
+  TExtremumsAPI,
+} from '$tl/ui/panels/AllInOnePanel/Right/items/ItemPointsNormalizer'
 
 export interface IWithUtilsProps {
   propGetter: TPropGetter
   overlaysAPI: TOverlaysAPI
   selectionAPI: TSelectionAPI
+  extremumsAPI: TExtremumsAPI
 }
 
 export default <P extends {}>(
@@ -23,12 +28,17 @@ export default <P extends {}>(
         {selectionAPI => (
           <OverlaysAPIContext.Consumer>
             {overlaysAPI => (
-              <Component
-                {...props}
-                propGetter={propGetter}
-                overlaysAPI={overlaysAPI}
-                selectionAPI={selectionAPI}
-              />
+              <ExtremumsAPIContext.Consumer>
+                {extremumsAPI => (
+                  <Component
+                    {...props}
+                    propGetter={propGetter}
+                    overlaysAPI={overlaysAPI}
+                    selectionAPI={selectionAPI}
+                    extremumsAPI={extremumsAPI}
+                  />
+                )}
+              </ExtremumsAPIContext.Consumer>
             )}
           </OverlaysAPIContext.Consumer>
         )}

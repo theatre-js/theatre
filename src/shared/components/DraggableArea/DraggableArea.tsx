@@ -37,6 +37,19 @@ class DraggableArea extends React.PureComponent<Props, {}> {
     }
   }
 
+  render() {
+    const shouldRegisterEvents =
+      this.props.shouldRegisterEvents != null
+        ? this.props.shouldRegisterEvents
+        : true
+    return shouldRegisterEvents
+      ? React.cloneElement(this.props.children, {
+          onMouseDown: this.dragStartHandler,
+          onClickCapture: this.disableUnwantedClick,
+        })
+      : this.props.children
+  }
+
   addDragListeners() {
     document.addEventListener('mousemove', this.dragHandler)
     document.addEventListener('mouseup', this.dragEndHandler)
@@ -45,6 +58,14 @@ class DraggableArea extends React.PureComponent<Props, {}> {
   removeDragListeners() {
     document.removeEventListener('mousemove', this.dragHandler)
     document.removeEventListener('mouseup', this.dragEndHandler)
+  }
+
+  disableUnwantedClick = (event: MouseEvent) => {
+    if (this.s.dragHappened) {
+      event.stopPropagation()
+      event.preventDefault()
+      this.s.dragHappened = false
+    }
   }
 
   dragStartHandler = (event: React.MouseEvent<HTMLElement>) => {
@@ -80,18 +101,6 @@ class DraggableArea extends React.PureComponent<Props, {}> {
 
   getMovements(event: MouseEvent): [number, number] {
     return [event.movementX, event.movementY]
-  }
-
-  render() {
-    const shouldRegisterEvents =
-      this.props.shouldRegisterEvents != null
-        ? this.props.shouldRegisterEvents
-        : true
-    return shouldRegisterEvents
-      ? React.cloneElement(this.props.children, {
-          onMouseDown: this.dragStartHandler,
-        })
-      : this.props.children
   }
 }
 

@@ -7,10 +7,11 @@ interface IProps {
   y: number
   onClick: (evt: React.MouseEvent<SVGRectElement>) => any
   onContextMenu: (evt: React.MouseEvent<SVGRectElement>) => any
+  dopesheet?: boolean
 }
 
 export default React.forwardRef((
-  {x, y, onClick, onContextMenu}: IProps,
+  {x, y, onClick, onContextMenu, dopesheet = false}: IProps,
   ref: React.RefObject<SVGRectElement>,
 ) => {
   return (
@@ -21,6 +22,7 @@ export default React.forwardRef((
         onClick={onClick}
         onContextMenu={onContextMenu}
         forwardedRef={ref}
+        dopesheet={dopesheet}
       />
       <PointCircle x={x} y={y} />
     </>

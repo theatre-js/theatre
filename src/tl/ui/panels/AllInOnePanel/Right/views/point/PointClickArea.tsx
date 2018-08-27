@@ -12,9 +12,10 @@ interface IProps {
   onClick: (evt: React.MouseEvent<SVGRectElement>) => any
   onContextMenu: (evt: React.MouseEvent<SVGRectElement>) => any
   forwardedRef: React.RefObject<SVGRectElement>
+  dopesheet: boolean
 }
 
-export default ({x, y, onClick, onContextMenu, forwardedRef}: IProps) => {
+export default ({x, y, onClick, onContextMenu, forwardedRef, dopesheet}: IProps) => {
   return (
     <>
       <rect
@@ -29,7 +30,7 @@ export default ({x, y, onClick, onContextMenu, forwardedRef}: IProps) => {
         onContextMenu={onContextMenu}
         onClick={onClick}
         ref={forwardedRef}
-        {...classes('pointClickArea')}
+        {...classes('pointClickArea', dopesheet && 'ewCursor')}
       />
       <circle cx={`${x}%`} cy={`${y}%`} r={6} {...classes('pointGlow')} />
     </>

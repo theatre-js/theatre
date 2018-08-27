@@ -7,12 +7,11 @@ const classes = resolveCss(css)
 interface IProps {
   x: number
   y: number
-  move: [number, number]
   color: string
   onClick: (evt: React.MouseEvent<SVGRectElement>) => any
 }
 
-export default ({x, y, move, color, onClick}: IProps) => {
+export default ({x, y, color, onClick}: IProps) => {
   return (
     <>
       <rect
@@ -22,7 +21,7 @@ export default ({x, y, move, color, onClick}: IProps) => {
         y={`${y}%`}
         fill="transparent"
         stroke="transparent"
-        transform={`translate(${move[0] - 6} ${move[1] - 6})`}
+        transform={`translate(-6 -6)`}
         onClick={onClick}
         {...classes('handleClickArea')}
       />
