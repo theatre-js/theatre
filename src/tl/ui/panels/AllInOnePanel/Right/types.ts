@@ -19,7 +19,7 @@ export type TNormalizedPoint = TPoint & {
   originalValue: number
 }
 export type TNormalizedPoints = TNormalizedPoint[]
-export type TExtremums = [number, number]
+export type TExtremums = TNumberTuple
 
 // Range state
 export type TRange = RangeState['rangeShownInPanel']
@@ -34,3 +34,5 @@ export type TColor = {
   normal: string
   darkened: string
 }
+
+export type TNumberTuple = [number, number]

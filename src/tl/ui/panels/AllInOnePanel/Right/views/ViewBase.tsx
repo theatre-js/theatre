@@ -1,6 +1,7 @@
+import React from 'react'
 import {IWithUtilsProps} from '$tl/ui/panels/AllInOnePanel/Right/views/withUtils'
 import UIComponent from '$tl/ui/handy/UIComponent'
-import {TExtremums, TPointCoords} from '$tl/ui/panels/AllInOnePanel/Right/types'
+import {TExtremums} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {
   TShowPointContextMenu,
   TShowPointValuesEditor,
@@ -10,6 +11,8 @@ import {
   TRemovePointFromSelection,
   TMovePointToNewCoordsTemp,
 } from '$tl/ui/panels/AllInOnePanel/Right/views/types'
+import {SelectedAreaContext} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/SelectionProvider'
+import RenderBlocker from '$shared/components/RenderBlocker/RenderBlocker'
 
 export interface IViewBaseProps {
   extremums: TExtremums
@@ -21,7 +24,25 @@ export default class ViewBase<Props extends IProps> extends UIComponent<
   Props,
   {}
 > {
-  tempActionGroup = this.ui.actions.historic.temp()
+  tempActionGroup = this.project._actions.historic.temp()
+
+  _renderSelectedAreaConsumer = () => {
+    return (
+      <RenderBlocker>
+        <SelectedAreaContext.Consumer>
+          {selectedArea => {
+            const itemKey = this.props.propGetter('itemKey')
+            if (selectedArea[itemKey] != null) {
+              this.props.extremumsAPI.persist()
+            } else {
+              this.props.extremumsAPI.unpersist()
+            }
+            return null
+          }}
+        </SelectedAreaContext.Consumer>
+      </RenderBlocker>
+    )
+  }
 
   _removePoint = (pointIndex: number) => {
     this.project.reduxStore.dispatch(
@@ -73,7 +94,7 @@ export default class ViewBase<Props extends IProps> extends UIComponent<
     pointIndex,
     originalCoords,
     change,
-   ) => {
+  ) => {
     const {extremums, propGetter, extremumsAPI} = this.props
     extremumsAPI.persist()
 

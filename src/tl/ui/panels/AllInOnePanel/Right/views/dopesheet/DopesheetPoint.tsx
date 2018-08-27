@@ -34,6 +34,9 @@ import {
 } from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/SelectionProvider'
 import TempPoint from '$tl/ui/panels/AllInOnePanel/Right/views/dopesheet/TempPoint'
 import TempConnector from '$tl/ui/panels/AllInOnePanel/Right/views/dopesheet/TempConnector'
+import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
+import TempPointInSelection from '$tl/ui/panels/AllInOnePanel/Right/views/dopesheet/TempPointInSelection'
+import {isNumberTupleZero} from '$tl/ui/panels/AllInOnePanel/Right/utils'
 
 interface IProps {
   propGetter: TPropGetter
@@ -75,15 +78,38 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
   connectorClickArea: React.RefObject<SVGRectElement> = React.createRef()
   svgWidth: number = 0
   activeMode: ActiveMode
+  cache: {
+    pointTime: number
+    prevPointTime: undefined | number
+    nextPointTime: undefined | number
+  }
 
-  state = {
-    isMovingConnector: false,
-    connectorMove: 0,
-    isMovingPoint: false,
-    pointMove: 0,
+  constructor(props: IProps) {
+    super(props)
+
+    this.state = {
+      isMovingConnector: false,
+      connectorMove: 0,
+      isMovingPoint: false,
+      pointMove: 0,
+    }
+    this._cachePoints()
   }
 
   render() {
+    return (
+      <>
+        <PropsAsPointer>{this._renderConsumers}</PropsAsPointer>
+        <g>
+          {this.state.isMovingPoint && this._renderTempPoint()}
+          {this._renderPoint()}
+          {this.state.isMovingConnector && this._renderTempConnector()}
+        </g>
+      </>
+    )
+  }
+
+  _renderConsumers = () => {
     return (
       <>
         <ActiveModeContext.Consumer>
@@ -93,19 +119,9 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
           {this._highlightAsSelected}
         </SelectedAreaContext.Consumer>
         <SelectionMoveContext.Consumer>
-          {this._render}
+          {this._handleSelectionMove}
         </SelectionMoveContext.Consumer>
       </>
-    )
-  }
-
-  _render = ({x}: TSelectionMove) => {
-    return (
-      <g>
-        {this.state.isMovingPoint && this._renderTempPoint()}
-        {this._renderPoint()}
-        {this.state.isMovingConnector && this._renderTempConnector()}
-      </g>
     )
   }
 
@@ -198,6 +214,19 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
         prevPointTime={this.props.prevPointTime}
         prevPointConnected={this.props.prevPointConnected}
         move={connectorMove}
+      />
+    )
+  }
+
+  _renderTempPointInSelection() {
+    return (
+      <TempPointInSelection
+        color={this.props.color}
+        pointTime={this.cache.pointTime}
+        pointConnected={this.props.pointConnected}
+        nextPointTime={this.cache.nextPointTime}
+        prevPointTime={this.cache.prevPointTime}
+        prevPointConnected={this.props.prevPointConnected}
       />
     )
   }
@@ -349,13 +378,13 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
     })
   }
 
-  // _handleSelectionMove = ({x}: TSelectionMove) => {
-  //   if (this.isSelected) {
-  //     const svgWidth = this.props.propGetter('svgWidth')
-  //     return this._renderTempPoint((x / svgWidth) * 100)
-  //   }
-  //   return null
-  // }
+  _handleSelectionMove = ({x, y}: TSelectionMove) => {
+    if (isNumberTupleZero([x, y])) this._cachePoints()
+    if (this.isSelected) {
+      return this._renderTempPointInSelection()
+    }
+    return null
+  }
 
   _setActiveMode = (activeMode: ActiveMode) => {
     this.activeMode = activeMode
@@ -419,6 +448,7 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
     ) {
       if (this.isSelected) {
         this.pointClickArea.current.classList.add(pointCss.highlightAsSelected)
+        this._cachePoints()
         this.props.addPointToSelection(this.props.pointIndex, {
           time: this.props.pointTime,
           value: 50,
@@ -431,6 +461,14 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
       }
     }
     return null
+  }
+
+  _cachePoints() {
+    this.cache = {
+      pointTime: this.props.pointTime,
+      nextPointTime: this.props.nextNextPointTime,
+      prevPointTime: this.props.prevPointTime,
+    }
   }
 }
 

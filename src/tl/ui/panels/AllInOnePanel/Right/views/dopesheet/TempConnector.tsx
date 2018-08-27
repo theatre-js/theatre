@@ -25,7 +25,7 @@ export default ({
   move,
 }: IProps) => {
   return (
-    <g opacity={0.5}>
+    <g>
       {prevPointConnected && (
         <LineConnectorRect
           x={prevPointTime!}
@@ -48,11 +48,12 @@ export default ({
         width={nextPointTime - pointTime}
         color={color.darkened}
       />
-      <PointCircle x={pointTime} y={50} />
-      <PointCircle x={nextPointTime} y={50} />
-
-      {prevPointTime && <PointCircle x={prevPointTime!} y={50} />}
+      <g fill={color.darkened} stroke={color.darkened}>
+        <PointCircle x={pointTime} y={50} />
+        <PointCircle x={nextPointTime} y={50} />
+      </g>
       <PointCircle x={pointTime + move} y={50} />
+      {prevPointTime && <PointCircle x={prevPointTime!} y={50} />}
     </g>
   )
 }

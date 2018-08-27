@@ -2,10 +2,7 @@ import React from 'react'
 import css from './SelectionProvider.css'
 import {resolveCss} from '$shared/utils'
 import {val} from '$shared/DataVerse2/atom'
-import {Pointer} from '$shared/DataVerse2/pointer'
 import * as utils from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/utils'
-import {get} from 'lodash'
-import {set} from 'lodash/fp'
 import {TDuration, TRange} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import UIComponent from '$tl/ui/handy/UIComponent'
 import {
@@ -18,11 +15,7 @@ import noop from '$shared/utils/noop'
 import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import InternalTimeline from '$tl/timelines/InternalTimeline'
-import {
-  internalTimelineToSeriesOfVerticalItems,
-  PrimitivePropItem,
-} from '$tl/ui/panels/AllInOnePanel/utils'
-import memoizeOne from 'memoize-one'
+import {internalTimelineToSeriesOfVerticalItems} from '$tl/ui/panels/AllInOnePanel/utils'
 import {
   TSelectionMove,
   TDims,
@@ -37,7 +30,6 @@ import {
   TMapOfFilteredItemKeyToItemData,
 } from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/types'
 import projectSelectors from '$tl/Project/store/selectors'
-import {IBezierCurvesOfScalarValues} from '$tl/Project/store/types'
 import {svgPaddingY} from '$tl/ui/panels/AllInOnePanel/Right/views/GraphEditorWrapper'
 
 const classes = resolveCss(css)
@@ -82,6 +74,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
   selectedPoints: TSelectedPoints = {}
   extremumsOfItemsInSelection: TExtremumsMap = {}
   mapOfItemsData: TMapOfFilteredItemKeyToItemData = {}
+  tempActionGroup = this.project._actions.historic.temp()
 
   static defaultStateValues: IState = {
     status: 'noSelection',
@@ -131,7 +124,6 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
             >
               <DraggableArea
                 shouldRegisterEvents={statusIsMovingPoints}
-                shouldReturnMovement={true}
                 onDrag={this.handleAreaMove}
               >
                 <div
@@ -182,7 +174,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
       ...this.selectedPoints,
       [itemKey]: {
         ...itemData,
-        [pointIndex]: pointData,
+        [pointIndex]: {...pointData},
       },
     }
   }
@@ -236,16 +228,12 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
     })
   }
 
-  handleAreaMove = (dx: number, dy: number, event: MouseEvent) => {
-    this.setState(({move, horizontalLimits}) => {
-      let x = move.x + dx
-      let y = move.y + dy
-      if (event.altKey) x = this.state.move.x
-      if (event.shiftKey) y = this.state.move.y
-      if (x <= horizontalLimits.left) x = horizontalLimits.left + 1
-      if (x >= horizontalLimits.right) x = horizontalLimits.right - 1
-      return {move: {x, y}}
-    })
+  handleAreaMove = (x: number, y: number) => {
+    const {horizontalLimits} = this.state
+    if (x <= horizontalLimits.left) x = horizontalLimits.left + 1
+    if (x >= horizontalLimits.right) x = horizontalLimits.right - 1
+
+    this.setState(() => ({move: {x, y}}), this.applyChangesToSelectionTemp)
   }
 
   confirmSelectionDims = (dragHappened: boolean) => {
@@ -275,46 +263,25 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
     }
   }
 
+  applyChangesToSelectionTemp = () => {
+    this.project.reduxStore.dispatch(
+      this.tempActionGroup.push(
+        this.project._actions.historic.moveSelectionOfPointsInBezierCurvesOfScalarValues(
+          this._getPointsInSelectionDataAfterMove(),
+        ),
+      ),
+    )
+  }
+
   applyChangesToSelection = (event: React.MouseEvent<HTMLDivElement>) => {
     disableEvent(event)
-    const {duration, range, timelineWidth} = this.props
-    const {move} = this.state
-    const svgWidth = getSvgWidth(range, duration, timelineWidth)
-
-    const timeChange = (move.x / svgWidth) * duration
-
-    const pointsInSelectionDataAfterMove = Object.entries(
-      this.selectedPoints,
-    ).reduce((pointsDataAfterMove, [itemKey, selectedPointsData]) => {
-      const itemData = this.mapOfItemsData[itemKey]
-      const itemExtremums = this.extremumsOfItemsInSelection[itemKey]
-      const extDiff = itemExtremums[1] - itemExtremums[0]
-      const valueChange = (move.y / (itemData.height - svgPaddingY)) * extDiff
-      const pointsNewCoords: TCollectionOfSelectedPointsData = {}
-
-      Object.keys(selectedPointsData).forEach(pointIndex => {
-        const originalPoint = itemData.points[Number(pointIndex)]
-        pointsNewCoords[pointIndex] = {
-          time: originalPoint.time + timeChange,
-          ...(itemData.expanded
-            ? {value: originalPoint.value - valueChange}
-            : {}),
-        }
-      })
-
-      return [
-        ...pointsDataAfterMove,
-        {
-          propAddress: itemData.address,
-          pointsNewCoords,
-        },
-      ]
-    }, [])
-
     this.project.reduxStore.dispatch(
-      this.project._actions.historic.moveSelectionOfPointsInBezierCurvesOfScalarValues(
-        pointsInSelectionDataAfterMove,
-      ),
+      this.project._actions.batched([
+        this.tempActionGroup.discard(),
+        this.project._actions.historic.moveSelectionOfPointsInBezierCurvesOfScalarValues(
+          this._getPointsInSelectionDataAfterMove(),
+        ),
+      ]),
     )
     this._clearSelection()
   }
@@ -327,6 +294,44 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
         this.mapOfItemsData = {}
         this.extremumsOfItemsInSelection = {}
       },
+    )
+  }
+
+  _getPointsInSelectionDataAfterMove() {
+    const {duration, range, timelineWidth} = this.props
+    const {move} = this.state
+
+    const svgWidth = getSvgWidth(range, duration, timelineWidth)
+
+    const timeChange = (move.x / svgWidth) * duration
+
+    return Object.entries(this.selectedPoints).reduce(
+      (pointsDataAfterMove, [itemKey, selectedPointsData]) => {
+        const itemData = this.mapOfItemsData[itemKey]
+        const itemExtremums = this.extremumsOfItemsInSelection[itemKey]
+        const extDiff = itemExtremums[1] - itemExtremums[0]
+        const valueChange = (move.y / (itemData.height - svgPaddingY)) * extDiff
+        const pointsNewCoords: TCollectionOfSelectedPointsData = {}
+
+        Object.keys(selectedPointsData).forEach(pointIndex => {
+          const originalPoint = itemData.points[Number(pointIndex)]
+          pointsNewCoords[pointIndex] = {
+            time: originalPoint.time + timeChange,
+            ...(itemData.expanded
+              ? {value: originalPoint.value - valueChange}
+              : {}),
+          }
+        })
+
+        return [
+          ...pointsDataAfterMove,
+          {
+            propAddress: itemData.address,
+            pointsNewCoords,
+          },
+        ]
+      },
+      [],
     )
   }
 

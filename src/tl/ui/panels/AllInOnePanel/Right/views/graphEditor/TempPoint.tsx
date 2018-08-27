@@ -8,6 +8,7 @@ import {
 import BezierConnector from '$tl/ui/panels/AllInOnePanel/Right/views/graphEditor/BezierConnector'
 import PointCircle from '$tl/ui/panels/AllInOnePanel/Right/views/point/PointCircle'
 import {TPointMove} from '$tl/ui/panels/AllInOnePanel/Right/views/types'
+import {isNumberTupleZero} from '$tl/ui/panels/AllInOnePanel/Right/utils'
 
 interface IProps {
   color: TColor
@@ -16,10 +17,6 @@ interface IProps {
   prevPoint?: TNormalizedPoint
   pointMove: TPointMove
   handlesMove: TPointHandles
-}
-
-const isArrayZero = (array: TPointSingleHandle) => {
-  return array[0] === array[1] && array[0] === 0
 }
 
 export default ({
@@ -33,17 +30,19 @@ export default ({
   const pointTime = point.time - pointMove[0]
   const pointValue = point.value - pointMove[1]
 
-  const ponintMoveIsNonZero = !isArrayZero(pointMove)
+  const ponintMoveIsNonZero = !isNumberTupleZero(pointMove)
 
   const renderPointConnector =
     point.interpolationDescriptor.connected &&
     nextPoint != null &&
-    (ponintMoveIsNonZero || !isArrayZero(handlesMove.slice(2) as TPointSingleHandle))
+    (ponintMoveIsNonZero ||
+      !isNumberTupleZero(handlesMove.slice(2) as TPointSingleHandle))
 
   const renderPrevPointConnector =
     prevPoint != null &&
     prevPoint.interpolationDescriptor.connected &&
-    (ponintMoveIsNonZero || !isArrayZero(handlesMove.slice(0, 2) as TPointSingleHandle))
+    (ponintMoveIsNonZero ||
+      !isNumberTupleZero(handlesMove.slice(0, 2) as TPointSingleHandle))
 
   const pointHandles = [
     ...point.interpolationDescriptor.handles

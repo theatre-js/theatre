@@ -25,52 +25,55 @@ class GraphEditor extends ViewBase<IProps & IWithUtilsProps> {
   render() {
     const {points, color, propGetter} = this.props
     return (
-      <g fill={color.normal} stroke={color.normal}>
-        {points.map((point, index) => {
-          const prevPoint = points[index - 1]
-          const nextPoint = points[index + 1]
-          return (
-            <g key={index}>
-              {point.interpolationDescriptor.connected &&
-                nextPoint != null && (
-                  <BezierConnector
-                    leftPointIndex={index}
-                    leftPointTime={point.time}
-                    leftPointValue={point.value}
-                    rightPointTime={nextPoint.time}
-                    rightPointValue={nextPoint.value}
-                    handles={point.interpolationDescriptor.handles}
-                    removeConnector={this._removeConnector}
-                    showContextMenu={this._showConnectorContextMenu}
-                  />
-                )}
-              <GraphEditorPoint
-                key={index}
-                color={color}
-                point={point}
-                {...(prevPoint ? {prevPoint} : {})}
-                {...(nextPoint ? {nextPoint} : {})}
-                pointIndex={index}
-                propGetter={propGetter}
-                removePoint={this._removePoint}
-                addConnector={this._addConnector}
-                movePointToNewCoords={this._movePointToNewCoords}
-                movePointToNewCoordsTemp={this._movePointToNewCoordsTemp}
-                moveLeftHandle={this.moveLeftHandle}
-                moveLeftHandleTemp={this.moveLeftHandleTemp}
-                moveRightHandle={this.moveRightHandle}
-                moveRightHandleTemp={this.moveRightHandleTemp}
-                makeRightHandleHorizontal={this.makeRightHandleHorizontal}
-                makeLeftHandleHorizontal={this.makeLeftHandleHorizontal}
-                showPointValuesEditor={this._showPointValuesEditor}
-                showContextMenu={this._showPointContextMenu}
-                addPointToSelection={this._addPointToSelection}
-                removePointFromSelection={this._removePointFromSelection}
-              />
-            </g>
-          )
-        })}
-      </g>
+      <>
+        <g fill={color.normal} stroke={color.normal}>
+          {points.map((point, index) => {
+            const prevPoint = points[index - 1]
+            const nextPoint = points[index + 1]
+            return (
+              <g key={index}>
+                {point.interpolationDescriptor.connected &&
+                  nextPoint != null && (
+                    <BezierConnector
+                      leftPointIndex={index}
+                      leftPointTime={point.time}
+                      leftPointValue={point.value}
+                      rightPointTime={nextPoint.time}
+                      rightPointValue={nextPoint.value}
+                      handles={point.interpolationDescriptor.handles}
+                      removeConnector={this._removeConnector}
+                      showContextMenu={this._showConnectorContextMenu}
+                    />
+                  )}
+                <GraphEditorPoint
+                  key={index}
+                  color={color}
+                  point={point}
+                  {...(prevPoint ? {prevPoint} : {})}
+                  {...(nextPoint ? {nextPoint} : {})}
+                  pointIndex={index}
+                  propGetter={propGetter}
+                  removePoint={this._removePoint}
+                  addConnector={this._addConnector}
+                  movePointToNewCoords={this._movePointToNewCoords}
+                  movePointToNewCoordsTemp={this._movePointToNewCoordsTemp}
+                  moveLeftHandle={this.moveLeftHandle}
+                  moveLeftHandleTemp={this.moveLeftHandleTemp}
+                  moveRightHandle={this.moveRightHandle}
+                  moveRightHandleTemp={this.moveRightHandleTemp}
+                  makeRightHandleHorizontal={this.makeRightHandleHorizontal}
+                  makeLeftHandleHorizontal={this.makeLeftHandleHorizontal}
+                  showPointValuesEditor={this._showPointValuesEditor}
+                  showContextMenu={this._showPointContextMenu}
+                  addPointToSelection={this._addPointToSelection}
+                  removePointFromSelection={this._removePointFromSelection}
+                />
+              </g>
+            )
+          })}
+        </g>
+        {this._renderSelectedAreaConsumer()}
+      </>
     )
   }
 

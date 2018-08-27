@@ -85,8 +85,11 @@ class ItemPointsNormalizer extends UIComponent<IProps, IState> {
   }
 
   unpersistExtremums: TExtremumsAPI['unpersist'] = () => {
-    this.shouldPersistExtremums = false
-    this.cache = {...defaultCache}
+    if (this.shouldPersistExtremums) {
+      this.shouldPersistExtremums = false
+      this.cache.points = [...defaultCache.points]
+      this.cache.normalizedPoints = [...defaultCache.normalizedPoints]
+    }
   }
 
   api: TExtremumsAPI = {

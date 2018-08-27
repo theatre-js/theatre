@@ -19,67 +19,69 @@ import {
 interface IProps extends IViewBaseProps {
   color: TColor
   points: TNormalizedPoints
-  // valueRelativeToBoxHeight: number
 }
 
 class Dopesheet extends ViewBase<IProps & IWithUtilsProps> {
   render() {
     const {color, points, propGetter} = this.props
     return (
-      <g fill={color.normal} stroke={color.normal}>
-        {points.map((point, index) => {
-          const prevPoint = points[index - 1]
-          const nextPoint = points[index + 1]
-          const nextNextPoint = points[index + 2]
-          return (
-            <DopesheetPoint
-              key={index}
-              color={color}
-              pointIndex={index}
-              originalTime={point.originalTime}
-              originalValue={point.originalValue}
-              pointTime={point.time}
-              pointConnected={point.interpolationDescriptor.connected}
-              removePoint={this._removePoint}
-              addConnector={this._addConnector}
-              removeConnector={this._removeConnector}
-              movePointToNewCoords={this._movePointToNewCoords}
-              movePointToNewCoordsTemp={this._movePointToNewCoordsTemp}
-              moveConnector={this.moveConnector}
-              moveConnectorTemp={this.moveConnectorTemp}
-              propGetter={propGetter}
-              addPointToSelection={this._addPointToSelection}
-              removePointFromSelection={this._removePointFromSelection}
-              showPointValuesEditor={this._showPointValuesEditor}
-              showPointContextMenu={this._showPointContextMenu}
-              showConnectorContextMenu={this._showConnectorContextMenu}
-              {...(prevPoint != null
-                ? {
-                    prevPointTime: prevPoint.time,
-                    prevPointConnected:
-                      prevPoint.interpolationDescriptor.connected,
-                  }
-                : {})}
-              {...(nextPoint != null
-                ? {
-                    nextPointTime: nextPoint.time,
-                    nextPointConnected:
-                      nextPoint.interpolationDescriptor.connected,
-                  }
-                : {})}
-              {...(nextNextPoint != null
-                ? {
-                    nextNextPointTime: nextNextPoint.time,
-                  }
-                : {})}
-            />
-          )
-        })}
-      </g>
+      <>
+        <g fill={color.normal} stroke={color.normal}>
+          {points.map((point, index) => {
+            const prevPoint = points[index - 1]
+            const nextPoint = points[index + 1]
+            const nextNextPoint = points[index + 2]
+            return (
+              <DopesheetPoint
+                key={index}
+                color={color}
+                pointIndex={index}
+                originalTime={point.originalTime}
+                originalValue={point.originalValue}
+                pointTime={point.time}
+                pointConnected={point.interpolationDescriptor.connected}
+                removePoint={this._removePoint}
+                addConnector={this._addConnector}
+                removeConnector={this._removeConnector}
+                movePointToNewCoords={this._movePointToNewCoords}
+                movePointToNewCoordsTemp={this._movePointToNewCoordsTemp}
+                moveConnector={this.moveConnector}
+                moveConnectorTemp={this.moveConnectorTemp}
+                propGetter={propGetter}
+                addPointToSelection={this._addPointToSelection}
+                removePointFromSelection={this._removePointFromSelection}
+                showPointValuesEditor={this._showPointValuesEditor}
+                showPointContextMenu={this._showPointContextMenu}
+                showConnectorContextMenu={this._showConnectorContextMenu}
+                {...(prevPoint != null
+                  ? {
+                      prevPointTime: prevPoint.time,
+                      prevPointConnected:
+                        prevPoint.interpolationDescriptor.connected,
+                    }
+                  : {})}
+                {...(nextPoint != null
+                  ? {
+                      nextPointTime: nextPoint.time,
+                      nextPointConnected:
+                        nextPoint.interpolationDescriptor.connected,
+                    }
+                  : {})}
+                {...(nextNextPoint != null
+                  ? {
+                      nextNextPointTime: nextNextPoint.time,
+                    }
+                  : {})}
+              />
+            )
+          })}
+        </g>
+        {this._renderSelectedAreaConsumer()}
+      </>
     )
   }
 
-  moveConnector: TMoveDopesheetConnector = (pointIndex) => {
+  moveConnector: TMoveDopesheetConnector = pointIndex => {
     this.props.extremumsAPI.unpersist()
     const {propGetter, points} = this.props
     const point = points[pointIndex]

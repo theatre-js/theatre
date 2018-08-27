@@ -2,6 +2,7 @@ import {
   TRange,
   TDuration,
   TColor,
+  TNumberTuple,
 } from '$tl/ui/panels/AllInOnePanel/Right/types'
 
 export const getSvgWidth = (
@@ -40,4 +41,8 @@ export const color: TColor = {
   name: 'blue',
   normal: '#3AAFA9',
   darkened: '#345b59',
+}
+
+export const isNumberTupleZero = (tuple: TNumberTuple) => {
+  return tuple[0] === tuple[1] && tuple[0] === 0
 }
