@@ -237,10 +237,13 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
     })
   }
 
-  handleAreaMove = (x: number, y: number) => {
+  handleAreaMove = (x: number, y: number, event: MouseEvent) => {
     const {horizontalLimits} = this.state
     if (x <= horizontalLimits.left) x = horizontalLimits.left + 1
     if (x >= horizontalLimits.right) x = horizontalLimits.right - 1
+
+    if (event.shiftKey) x = 0
+    if (event.altKey) y = 0
 
     this.setState(() => ({move: {x, y}}), this.applyChangesToSelectionTemp)
   }
