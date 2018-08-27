@@ -14,7 +14,10 @@ import {
 import {
   TMoveDopesheetConnector,
   TMoveDopesheetConnectorTemp,
+  TGetAllPoints,
+  TTempPointRenderer,
 } from '$tl/ui/panels/AllInOnePanel/Right/views/types'
+import TempPointInSelection from '$tl/ui/panels/AllInOnePanel/Right/views/dopesheet/TempPointInSelection';
 
 interface IProps extends IViewBaseProps {
   color: TColor
@@ -26,6 +29,10 @@ class Dopesheet extends ViewBase<IProps & IWithUtilsProps> {
     const {color, points, propGetter} = this.props
     return (
       <>
+        {this._renderTempPointsInSelection(
+          this._getAllPoints,
+          this._tempPointRenderer,
+        )}
         <g fill={color.normal} stroke={color.normal}>
           {points.map((point, index) => {
             const prevPoint = points[index - 1]
@@ -76,8 +83,21 @@ class Dopesheet extends ViewBase<IProps & IWithUtilsProps> {
             )
           })}
         </g>
-        {this._renderSelectedAreaConsumer()}
       </>
+    )
+  }
+
+  _getAllPoints: TGetAllPoints = () => {
+    return this.props.points
+  }
+
+  _tempPointRenderer: TTempPointRenderer = (point, nextPoint) => {
+    return (
+      <TempPointInSelection
+        color={this.props.color}
+        point={point}
+        nextPoint={nextPoint}
+      />
     )
   }
 

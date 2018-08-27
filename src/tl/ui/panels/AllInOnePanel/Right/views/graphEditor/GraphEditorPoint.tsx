@@ -28,19 +28,12 @@ import {
   TPointMove,
   TMovePointToNewCoordsTemp,
 } from '$tl/ui/panels/AllInOnePanel/Right/views/types'
-import {
-  SelectedAreaContext,
-  SelectionMoveContext,
-} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/SelectionProvider'
-import {
-  TTransformedSelectedArea,
-  TSelectionMove,
-} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/types'
+import {TTransformedSelectedArea} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/types'
 import {svgPaddingY} from '$tl/ui/panels/AllInOnePanel/Right/views/GraphEditorWrapper'
 import TempPoint from '$tl/ui/panels/AllInOnePanel/Right/views/graphEditor/TempPoint'
 import RenderBlocker from '$shared/components/RenderBlocker/RenderBlocker'
-import {isNumberTupleZero} from '$tl/ui/panels/AllInOnePanel/Right/utils'
-import TempPointInSelection from '$tl/ui/panels/AllInOnePanel/Right/views/graphEditor/TempPointInSelection'
+import {SelectedAreaContext} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/SelectionProvider'
+import {shouldToggleIsInSelection} from '$tl/ui/panels/AllInOnePanel/Right/views/utils'
 
 interface IProps {
   propGetter: TPropGetter
@@ -74,18 +67,13 @@ interface IState {
 export type TSVGSize = {width: number; height: number}
 
 class GraphEditorPoint extends React.PureComponent<IProps, IState> {
-  isSelected: boolean
-  isNextPointSelected: boolean
-  isPrevPointSelected: boolean
   pointClickArea: React.RefObject<SVGRectElement> = React.createRef()
   activeMode: ActiveMode
   svgSize: TSVGSize
   leftHandleNormalizers: {xNormalizer: number; yNormalizer: number}
   rightHandleNormalizers: {xNormalizer: number; yNormalizer: number}
   cachedOriginalCoords: TPointCoords
-  cachedPoint: TNormalizedPoint
-  cachedPrevPoint: {} | TNormalizedPoint
-  cachedNextPoint: {} | TNormalizedPoint
+  isInSelection: boolean = false
 
   constructor(props: IProps, context: $IntentionalAny) {
     super(props, context)
@@ -98,7 +86,6 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
 
     this.svgSize = getSVGSize(props.propGetter)
     this._cacheOriginalCoords()
-    this._cachePoints()
   }
 
   render() {
@@ -122,9 +109,6 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
         <SelectedAreaContext.Consumer>
           {this._highlightAsSelected}
         </SelectedAreaContext.Consumer>
-        <SelectionMoveContext.Consumer>
-          {this._handleSelectionMove}
-        </SelectionMoveContext.Consumer>
       </RenderBlocker>
     )
   }
@@ -240,26 +224,6 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
         nextPoint={this.props.nextPoint}
         pointMove={pointMove}
         handlesMove={this.state.handlesMove}
-      />
-    )
-  }
-
-  _renderTempPointInSelection() {
-    const {isNextPointSelected, isPrevPointSelected} = this
-    const nextPoint = (isNextPointSelected
-      ? this.cachedNextPoint
-      : this.props.nextPoint) as TNormalizedPoint
-    const prevPoint = (isPrevPointSelected
-      ? this.cachedPrevPoint
-      : this.props.prevPoint) as TNormalizedPoint
-    return (
-      <TempPointInSelection
-        color={this.props.color}
-        point={this.cachedPoint}
-        nextPoint={nextPoint}
-        prevPoint={prevPoint}
-        isPrevPointSelected={isPrevPointSelected}
-        isNextPointSelected={isNextPointSelected}
       />
     )
   }
@@ -467,14 +431,6 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
     }))
   }
 
-  _handleSelectionMove = ({x, y}: TSelectionMove) => {
-    if (isNumberTupleZero([x, y])) this._cachePoints()
-    if (this.isSelected) {
-      return this._renderTempPointInSelection()
-    }
-    return null
-  }
-
   _setActiveMode = (activeMode: ActiveMode) => {
     this.activeMode = activeMode
     if (this.pointClickArea.current == null) return null
@@ -488,72 +444,27 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
 
   _highlightAsSelected = (selectedArea: TTransformedSelectedArea) => {
     const itemKey = this.props.propGetter('itemKey')
-    let shouldUpdateHighlightAsSelectedClass = false
-    if (selectedArea[itemKey] == null) {
-      this.isNextPointSelected = false
-      this.isPrevPointSelected = false
-      if (this.isSelected) {
-        this.isSelected = false
-        shouldUpdateHighlightAsSelectedClass = true
-      }
-    } else {
-      const {point, nextPoint, prevPoint} = this.props
-      const {left, top, right, bottom} = selectedArea[itemKey]
-      if (
-        left <= point.time &&
-        point.time <= right &&
-        top <= point.value &&
-        point.value <= bottom
-      ) {
-        if (!this.isSelected) {
-          this.isSelected = true
-          shouldUpdateHighlightAsSelectedClass = true
-        }
-      } else {
-        if (this.isSelected) {
-          this.isSelected = false
-          shouldUpdateHighlightAsSelectedClass = true
-        }
-      }
-      if (
-        prevPoint != null &&
-        left <= prevPoint.time &&
-        prevPoint.time <= right &&
-        top <= prevPoint.value &&
-        prevPoint.value <= bottom
-      ) {
-        this.isPrevPointSelected = true
-      } else {
-        this.isPrevPointSelected = false
-      }
-      if (
-        nextPoint != null &&
-        left <= nextPoint.time &&
-        nextPoint.time <= right &&
-        top <= nextPoint.value &&
-        nextPoint.value <= bottom
-      ) {
-        this.isNextPointSelected = true
-      } else {
-        this.isNextPointSelected = false
-      }
-    }
-    if (
-      shouldUpdateHighlightAsSelectedClass &&
-      this.pointClickArea.current != null
-    ) {
-      if (this.isSelected) {
+    const {
+      point: {time, value},
+      pointIndex,
+    } = this.props
+    const pointCoords = {time, value}
+    const shouldToggle = shouldToggleIsInSelection(
+      pointCoords,
+      this.isInSelection,
+      selectedArea[itemKey],
+    )
+
+    if (shouldToggle && this.pointClickArea.current != null) {
+      this.isInSelection = !this.isInSelection
+      if (this.isInSelection) {
         this.pointClickArea.current.classList.add(pointCss.highlightAsSelected)
-        this._cachePoints()
-        this.props.addPointToSelection(this.props.pointIndex, {
-          time: this.props.point.time,
-          value: this.props.point.value,
-        })
+        this.props.addPointToSelection(pointIndex, pointCoords)
       } else {
         this.pointClickArea.current.classList.remove(
           pointCss.highlightAsSelected,
         )
-        this.props.removePointFromSelection(this.props.pointIndex)
+        this.props.removePointFromSelection(pointIndex)
       }
     }
     return null
@@ -564,12 +475,6 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
       time: this.props.point.originalTime,
       value: this.props.point.originalValue,
     }
-  }
-
-  _cachePoints() {
-    this.cachedPoint = {...this.props.point}
-    this.cachedPrevPoint = {...this.props.prevPoint}
-    this.cachedNextPoint = {...this.props.nextPoint}
   }
 }
 

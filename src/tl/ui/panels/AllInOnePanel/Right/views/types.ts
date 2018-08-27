@@ -6,6 +6,8 @@ import {
 import {
   TPointCoords,
   TPointSingleHandle,
+  TNormalizedPoints,
+  TNormalizedPoint,
 } from '$tl/ui/panels/AllInOnePanel/Right/types'
 
 export type TShowPointValuesEditor = (
@@ -48,9 +50,7 @@ export type TMoveSingleHandle = (
 
 export type TFnNeedsPointIndex = (pointIndex: number) => void
 
-export type TMoveDopesheetConnector = (
-  pointIndex: number,
-) => void
+export type TMoveDopesheetConnector = (pointIndex: number) => void
 
 export type TMoveDopesheetConnectorTemp = (
   pointIndex: number,
@@ -58,3 +58,14 @@ export type TMoveDopesheetConnectorTemp = (
 ) => void
 
 export type TPointMove = [number, number]
+
+export type TGetAllPoints = () => TNormalizedPoints
+
+export type TTempPointRenderer = (
+  point: TNormalizedPoint,
+  nextPoint: TNormalizedPoint,
+) => React.ReactNode
+
+export type TTempPointsInSelection = {
+  [pointIndex: string]: TNormalizedPoint
+}

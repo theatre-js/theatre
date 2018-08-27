@@ -46,7 +46,11 @@ interface ISelectionProviderProps extends IExportedComponentProps {
 }
 
 interface IState {
-  status: 'noSelection' | 'selectingPoints' | 'movingPoints'
+  status:
+    | 'noSelection'
+    | 'selectingPoints'
+    | 'movingPoints'
+    | 'committingChanges'
   startPoint: {
     left: number
     top: number
@@ -61,14 +65,12 @@ interface IState {
 export const SelectionAPIContext = React.createContext<TSelectionAPI>({
   addPoint: noop,
   removePoint: noop,
+  getSelectedPointsOfItem: () => ({}),
 })
 export const SelectedAreaContext = React.createContext<
   TTransformedSelectedArea
 >({})
-export const SelectionMoveContext = React.createContext<TSelectionMove>({
-  x: 0,
-  y: 0,
-})
+export const SelectionMoveContext = React.createContext<boolean>(false)
 
 class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
   selectedPoints: TSelectedPoints = {}
@@ -151,7 +153,9 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
         <SelectedAreaContext.Provider
           value={this.state.transformedSelectedArea}
         >
-          <SelectionMoveContext.Provider value={this.state.move}>
+          <SelectionMoveContext.Provider
+            value={this.state.status === 'movingPoints'}
+          >
             {this.props.children}
           </SelectionMoveContext.Provider>
         </SelectedAreaContext.Provider>
@@ -189,9 +193,14 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
     }
   }
 
+  getSelectedPointsOfItem: TSelectionAPI['getSelectedPointsOfItem'] = itemKey => {
+    return this.selectedPoints[itemKey]
+  }
+
   api: TSelectionAPI = {
     addPoint: this.addPointToSelection,
     removePoint: this.removePointFromSelection,
+    getSelectedPointsOfItem: this.getSelectedPointsOfItem,
   }
 
   activateSelection = (event: React.MouseEvent<HTMLDivElement>) => {

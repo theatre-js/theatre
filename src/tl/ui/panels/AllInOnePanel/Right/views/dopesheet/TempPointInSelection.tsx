@@ -1,47 +1,29 @@
 import React from 'react'
 import LineConnectorRect from '$tl/ui/panels/AllInOnePanel/Right/views/dopesheet/LineConnectorRect'
-import PointCircle from '$tl/ui/panels/AllInOnePanel/Right/views/point/PointCircle'
-import {TColor} from '$tl/ui/panels/AllInOnePanel/Right/types'
+import {TColor, TNormalizedPoint} from '$tl/ui/panels/AllInOnePanel/Right/types'
+import {TempPointCircle} from '$tl/ui/panels/AllInOnePanel/Right/views/dopesheet/TempPoint'
 
 interface IProps {
   color: TColor
-  pointTime: number
-  pointConnected: boolean
-  nextPointTime?: number
-  prevPointTime?: number
-  prevPointConnected?: boolean
+  point: TNormalizedPoint
+  nextPoint?: TNormalizedPoint
 }
 
-export default ({
-  color,
-  pointTime,
-  pointConnected,
-  nextPointTime,
-  prevPointTime,
-  prevPointConnected = false,
-}: IProps) => {
+export default ({color, point, nextPoint}: IProps) => {
+  const renderPointConnector =
+    point.interpolationDescriptor.connected && nextPoint != null
+
   return (
     <g fill={color.darkened} stroke={color.darkened}>
-      {prevPointConnected && (
-        <>
-          <LineConnectorRect
-            x={prevPointTime!}
-            y={50}
-            width={pointTime - prevPointTime!}
-            color={color.darkened}
-          />
-          {/* <PointCircle x={prevPointTime!} y={50} /> */}
-        </>
-      )}
-      {pointConnected && (
+      {renderPointConnector && (
         <LineConnectorRect
-          x={pointTime}
+          x={point.time}
           y={50}
-          width={nextPointTime! - pointTime}
+          width={nextPoint!.time - point.time}
           color={color.darkened}
         />
       )}
-      <PointCircle x={pointTime} y={50} />
+      <TempPointCircle color={color} x={point.time} />
     </g>
   )
 }

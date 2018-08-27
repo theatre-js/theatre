@@ -44,6 +44,7 @@ export type TSelectionAPI = {
     pointData: TPointCoords,
   ) => void
   removePoint: (itemKey: string, pointIndex: number) => void
+  getSelectedPointsOfItem: (itemKey: string) => undefined | TCollectionOfSelectedPointsData
 }
 
 export type THorizontalLimits = {left: number; right: number}

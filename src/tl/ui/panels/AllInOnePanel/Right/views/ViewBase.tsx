@@ -1,7 +1,10 @@
 import React from 'react'
 import {IWithUtilsProps} from '$tl/ui/panels/AllInOnePanel/Right/views/withUtils'
 import UIComponent from '$tl/ui/handy/UIComponent'
-import {TExtremums} from '$tl/ui/panels/AllInOnePanel/Right/types'
+import {
+  TExtremums,
+  TNormalizedPoints,
+} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {
   TShowPointContextMenu,
   TShowPointValuesEditor,
@@ -10,9 +13,13 @@ import {
   TAddPointToSelection,
   TRemovePointFromSelection,
   TMovePointToNewCoordsTemp,
+  TGetAllPoints,
+  TTempPointRenderer,
+  TTempPointsInSelection,
 } from '$tl/ui/panels/AllInOnePanel/Right/views/types'
-import {SelectedAreaContext} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/SelectionProvider'
+import {SelectionMoveContext} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/SelectionProvider'
 import RenderBlocker from '$shared/components/RenderBlocker/RenderBlocker'
+import {TCollectionOfSelectedPointsData} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/types'
 
 export interface IViewBaseProps {
   extremums: TExtremums
@@ -26,22 +33,80 @@ export default class ViewBase<Props extends IProps> extends UIComponent<
 > {
   tempActionGroup = this.project._actions.historic.temp()
 
-  _renderSelectedAreaConsumer = () => {
+  _renderTempPointsInSelection = (
+    getAllPoints: TGetAllPoints,
+    tempPointRenderer: TTempPointRenderer,
+  ) => {
     return (
       <RenderBlocker>
-        <SelectedAreaContext.Consumer>
-          {selectedArea => {
-            const itemKey = this.props.propGetter('itemKey')
-            if (selectedArea[itemKey] != null) {
-              this.props.extremumsAPI.persist()
-            } else {
-              this.props.extremumsAPI.unpersist()
+        <SelectionMoveContext.Consumer>
+          {isMoving => {
+            if (isMoving) {
+              const pointsInSelection = this.props.selectionAPI.getSelectedPointsOfItem(
+                this.props.propGetter('itemKey'),
+              )
+              if (
+                pointsInSelection != null &&
+                Object.keys(pointsInSelection).length > 0
+              ) {
+                this.props.extremumsAPI.persist()
+
+                const tempPointsInSelection = this._getTempPointsInSelection(
+                  pointsInSelection,
+                  getAllPoints(),
+                )
+
+                return Object.keys(tempPointsInSelection)
+                  .sort()
+                  .map(Number)
+                  .map(index => {
+                    const point = tempPointsInSelection[index]
+                    const nextPoint = tempPointsInSelection[index + 1]
+                    return (
+                      <g key={index}>{tempPointRenderer(point, nextPoint)}</g>
+                    )
+                  })
+              }
             }
+            this.props.extremumsAPI.unpersist()
             return null
           }}
-        </SelectedAreaContext.Consumer>
+        </SelectionMoveContext.Consumer>
       </RenderBlocker>
     )
+  }
+
+  _getTempPointsInSelection(
+    pointsInSelection: TCollectionOfSelectedPointsData,
+    allPoints: TNormalizedPoints,
+  ): TTempPointsInSelection {
+    return Object.keys(pointsInSelection)
+      .map(Number)
+      .sort()
+      .reduce(
+        (tempPointsInSelection, pointIndex) => {
+          const prevIndex = pointIndex - 1
+          const prevPoint = allPoints[prevIndex]
+          if (
+            prevPoint != null &&
+            prevPoint.interpolationDescriptor.connected
+          ) {
+            if (tempPointsInSelection[prevIndex] == null) {
+              tempPointsInSelection[prevIndex] = {...prevPoint}
+            }
+          }
+          const point = allPoints[pointIndex]
+          if (tempPointsInSelection[pointIndex] == null) {
+            tempPointsInSelection[pointIndex] = {...point}
+          }
+          if (point.interpolationDescriptor.connected) {
+            const nextIndex = pointIndex + 1
+            tempPointsInSelection[nextIndex] = {...allPoints[nextIndex]}
+          }
+          return tempPointsInSelection
+        },
+        {} as TTempPointsInSelection,
+      )
   }
 
   _removePoint = (pointIndex: number) => {
