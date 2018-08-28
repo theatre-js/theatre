@@ -94,13 +94,6 @@ class Right extends UIComponent<IRightProps, IRightState> {
       event.clientX - this.wrapperLeft,
     )
     timelineInstance.time = newTime
-    // if (timelineInstance.playing) {
-    //   timelineInstance.pause()
-    //   timelineInstance.gotoTime(newTime)
-    //   timelineInstance.play()
-    // } else {
-    //   timelineInstance.gotoTime(newTime)
-    // }
   }
 
   seekTime = (_: number, __: number, event: MouseEvent) => {
