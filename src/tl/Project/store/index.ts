@@ -104,6 +104,33 @@ const initialHistoricState: ProjectHistoricState = {
                 ],
               },
             },
+            'position.x': {
+              valueContainer: {
+                type: 'BezierCurvesOfScalarValues',
+                points: [
+                  {
+                    time: 0,
+                    value: 0,
+                    interpolationDescriptor: {
+                      connected: true,
+                      __descriptorType: 'TimelinePointInterpolationDescriptor',
+                      interpolationType: 'CubicBezier',
+                      handles: [0.5, 0, 0.5, 0],
+                    },
+                  },
+                  {
+                    time: 2000,
+                    value: 300,
+                    interpolationDescriptor: {
+                      connected: false,
+                      __descriptorType: 'TimelinePointInterpolationDescriptor',
+                      interpolationType: 'CubicBezier',
+                      handles: [0.5, 0, 0.5, 0],
+                    },
+                  },
+                ],
+              },
+            }
           },
         },
         'Act 1 / Stage / Ball / The dangling thing': {
