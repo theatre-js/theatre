@@ -4,7 +4,7 @@ import {DictAtom} from '../atoms/dictAtom'
 import {ArrayAtom} from '$shared/DataVerse/atoms/arrayAtom'
 import AbstractDerivedDict from '$shared/DataVerse/derivations/dicts/AbstractDerivedDict'
 import AbstractDerivedArray from './arrays/AbstractDerivedArray'
-import DerivedClassInstance from '../derivedClass/DerivedClassInstance';
+import DerivedClassInstance from '../derivedClass/DerivedClassInstance'
 import {
   DerivationTypeOfPointerType,
   IndexOfPointer,

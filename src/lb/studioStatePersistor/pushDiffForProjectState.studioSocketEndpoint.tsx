@@ -44,8 +44,7 @@ export default function* pushDiffForProjectState(params: {
   const newState = {checksum: params.newChecksum, data: newData}
 
   const pathToStateFile = projectPathToStatePath(params.pathToProject)
-  console.log(pathToStateFile);
-  
+  console.log(pathToStateFile)
 
   try {
     yield fs.writeJSON(pathToStateFile, newState)

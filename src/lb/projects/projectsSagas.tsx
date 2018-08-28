@@ -128,7 +128,9 @@ type ProjectNotRecognisedError = {
   errorType: 'projectNotRecognised'
 }
 
-export function* ensureProjectIsRecognised(projectPath: string): Generator_<'ok'> {
+export function* ensureProjectIsRecognised(
+  projectPath: string,
+): Generator_<'ok'> {
   const state: LBStoreState = yield select()
   const pathIsRecognised =
     state.projects.listOfPaths.indexOf(projectPath) !== -1

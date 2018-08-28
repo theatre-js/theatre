@@ -1,8 +1,15 @@
-import AbstractDerivedDict, {DerivedDictChangeType, PropOfADD} from './AbstractDerivedDict'
+import AbstractDerivedDict, {
+  DerivedDictChangeType,
+  PropOfADD,
+} from './AbstractDerivedDict'
 import noop from 'lodash/noop'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 
-type FunctionMapping<V, Fn extends (v: V) => $IntentionalAny> = Fn extends (v: V) => infer R ? R : any
+type FunctionMapping<V, Fn extends (v: V) => $IntentionalAny> = Fn extends (
+  v: V,
+) => infer R
+  ? R
+  : any
 
 export class MapValues<
   S,
@@ -37,9 +44,14 @@ export class MapValues<
   }
 
   // @ts-ignore @todo
-  prop<K extends keyof this['_o']>(key: K): AbstractDerivation<PropOfADD<this['_o'][K]>> {
-    // @ts-ignore @todo
-    return this._source.pointer().prop(key).flatMap(this._fn) as $IntentionalAny
+  prop<K extends keyof this['_o']>(
+    key: K,
+  ): AbstractDerivation<PropOfADD<this['_o'][K]>> {
+    return this._source
+      .pointer()
+      // @ts-ignore @todo
+      .prop(key)
+      .flatMap(this._fn) as $IntentionalAny
   }
 
   keys() {

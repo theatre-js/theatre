@@ -9,7 +9,9 @@ const toJS = (val: $IntentionalAny) => {
         ? val.unboxDeep()
         : val.isDerivedArray === true
           ? val.toJS()
-          : val.isDerivedDict === true ? val.toJS() : val
+          : val.isDerivedDict === true
+            ? val.toJS()
+            : val
     }
   } else {
     return val

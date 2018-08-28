@@ -2,7 +2,7 @@ import {map, get} from 'lodash'
 import SingleAttributeInspector from './SingleAttributeInspector'
 import ModifierInspectorWrapper from '$theater/common/components/ModifierInspectorWrapper'
 import {ITheaterStoreState} from '$theater/types'
-import React from 'react';
+import React from 'react'
 import connect from '$theater/handy/connect'
 
 interface IOwnProps {

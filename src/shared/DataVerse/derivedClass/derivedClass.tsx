@@ -70,11 +70,12 @@ export type Classify<Super, O> = {
   [K in keyof O]: (
     self: Self<Super, O>,
   ) => O[K] | PointerDerivation<O[K]> | AbstractDerivation<O[K]>
-} & {
-  [K in keyof Super]?: (
-    self: Self<Super, O>,
-  ) => Super[K] | PointerDerivation<Super[K]> | AbstractDerivation<Super[K]>
-}
+} &
+  {
+    [K in keyof Super]?: (
+      self: Self<Super, O>,
+    ) => Super[K] | PointerDerivation<Super[K]> | AbstractDerivation<Super[K]>
+  }
 
 interface Self<Super, O extends {}> {
   prop: <K extends keyof O | keyof Super>(

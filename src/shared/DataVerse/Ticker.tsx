@@ -52,7 +52,7 @@ export default class Ticker {
   registerSideEffect(fn: SideEffectFn) {
     this._sideEffectsToCall.add(fn)
   }
-  
+
   registerSideEffectForNextTick(fn: SideEffectFn) {
     this._sideEffectsToCallOnNextTick.add(fn)
   }
@@ -74,7 +74,9 @@ export default class Ticker {
   tick(t: number = performance.now()) {
     this.ticking = true
     this._tickingT = t
-    this._sideEffectsToCallOnNextTick.forEach((v) => this._sideEffectsToCall.add(v))
+    this._sideEffectsToCallOnNextTick.forEach(v =>
+      this._sideEffectsToCall.add(v),
+    )
     this._sideEffectsToCallOnNextTick.clear()
     this._tick(0)
     this.ticking = false

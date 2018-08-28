@@ -1,5 +1,5 @@
 import dictAtom from '$shared/DataVerse/atoms/dictAtom'
-import Ticker from '$shared/DataVerse/Ticker';
+import Ticker from '$shared/DataVerse/Ticker'
 
 describe(`keysOfDerivedDict`, () => {
   it(`should work`, () => {
@@ -12,7 +12,7 @@ describe(`keysOfDerivedDict`, () => {
     expect(keysD.getValue()).toMatchObject(['a'])
     const t = new Ticker()
     const changes: Array<$IntentionalAny> = []
-    keysD.changes(t).tap((c) => {
+    keysD.changes(t).tap(c => {
       changes.push(c)
     })
     d.setProp('b', 'hi')

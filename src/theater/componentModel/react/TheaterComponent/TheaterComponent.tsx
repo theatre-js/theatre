@@ -85,7 +85,9 @@ export default abstract class TheaterComponent<
     theater: self => self.prop('_atom').prop('theater'),
 
     theaterAtom: self =>
-      self.prop('theater').map((theater: Theater) => theater.atom.derivedDict()),
+      self
+        .prop('theater')
+        .map((theater: Theater) => theater.atom.derivedDict()),
 
     modifierInstantiationDescriptors: self =>
       self.prop('_atom').prop('modifierInstantiationDescriptors'),
@@ -135,7 +137,6 @@ export default abstract class TheaterComponent<
     super(props, context)
 
     // console.log(props.owner);
-    
 
     this._fnsToCallOnWillUnmount = []
 

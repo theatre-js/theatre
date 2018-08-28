@@ -11,7 +11,10 @@ interface IProps {
 }
 
 export default React.forwardRef(
-  ({x, y, width, color, onClick}: IProps, ref: React.RefObject<SVGRectElement>) => {
+  (
+    {x, y, width, color, onClick}: IProps,
+    ref: React.RefObject<SVGRectElement>,
+  ) => {
     return (
       <>
         <LineConnectorClickArea

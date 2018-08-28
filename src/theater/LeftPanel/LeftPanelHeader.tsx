@@ -23,11 +23,18 @@ export default class LeftPanelHeader extends React.PureComponent<
   render() {
     return (
       <div className={css.container}>
-        <PanelTab onClick={this._toggleExplore} css={{container: css.exploreTab}} isCurrent={false}>
+        <PanelTab
+          onClick={this._toggleExplore}
+          css={{container: css.exploreTab}}
+          isCurrent={false}
+        >
           <SvgIcon src={ExploreIcon} css={{container: css.exploreIcon}} />
         </PanelTab>
         <PanelTab isCurrent={true}>Component</PanelTab>
-        <ExploreFlyoutMenu isOpen={this.state.exploreIsOpen} close={this._closeExplore}/>
+        <ExploreFlyoutMenu
+          isOpen={this.state.exploreIsOpen}
+          close={this._closeExplore}
+        />
       </div>
     )
   }

@@ -9,11 +9,7 @@ interface IProps {
   nextPoint?: TNormalizedPoint
 }
 
-export default ({
-  color,
-  point,
-  nextPoint,
-}: IProps) => {
+export default ({color, point, nextPoint}: IProps) => {
   const renderPointConnector =
     point.interpolationDescriptor.connected && nextPoint != null
 

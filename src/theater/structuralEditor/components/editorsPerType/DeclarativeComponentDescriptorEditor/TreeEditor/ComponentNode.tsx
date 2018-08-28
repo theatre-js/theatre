@@ -137,7 +137,6 @@ class ComponentNode extends React.PureComponent<Props, State> {
       this.setState(() => ({isTypeBeingChanged: true}))
     }
     if (this.props.isSelected) {
-
       // this.setState(() => ({isContentHidden: true}))
     } else {
       // this.props.onSelect()
@@ -150,11 +149,10 @@ class ComponentNode extends React.PureComponent<Props, State> {
     }
   }
 
-
   render() {
     const {nodeProps, isSelected, isCommandDown} = this.props
     const {isContentHidden, classValue, isTypeBeingChanged} = this.state
-    const isClassHidden = (classValue === NO_CLASS && !isSelected)
+    const isClassHidden = classValue === NO_CLASS && !isSelected
     return (
       <div
         ref={c => (this.container = c as HTMLDivElement)}
@@ -186,7 +184,10 @@ class ComponentNode extends React.PureComponent<Props, State> {
             onTab={this._focusOnClassInput}
           />
           <>
-            <span key="dot" className={cx(css.dot, {[css.hidden]: isClassHidden})}>
+            <span
+              key="dot"
+              className={cx(css.dot, {[css.hidden]: isClassHidden})}
+            >
               .
             </span>
             <div

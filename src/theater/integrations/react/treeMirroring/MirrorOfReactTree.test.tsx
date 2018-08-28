@@ -8,7 +8,7 @@ import MirrorOfReactTree, {
 } from './MirrorOfReactTree'
 import delay from '$shared/utils/delay'
 import boxAtom from '$shared/DataVerse/atoms/boxAtom'
-import immer from 'immer';
+import immer from 'immer'
 
 type SummaryNode =
   | {type: 'Text'; text: string}
@@ -49,17 +49,13 @@ const summariseNode = (
     return text(node.text)
   } else if (isWrapperNode(node)) {
     return wrapper(
-      node
-        .volatileIdsOfChildren
-        .map(summariseNode.bind(null, mirror)),
+      node.volatileIdsOfChildren.map(summariseNode.bind(null, mirror)),
     )
   } else if (isGenericNode(node)) {
     return generic(
       node.reactSpecific.internalData.name as string,
       node.reactSpecific.internalData.props.id,
-      node
-        .volatileIdsOfChildren
-        .map(summariseNode.bind(null, mirror)),
+      node.volatileIdsOfChildren.map(summariseNode.bind(null, mirror)),
     )
   } else {
     // debugger
@@ -248,19 +244,18 @@ describe(`mirror`, () => {
       }
 
       check([text('pending')], 1)
-      
-      
+
       b.set('resolved')
       m.flushEvents()
       check([text('resolved')], 1)
       return
 
       b.set(['1', '2'])
-      m.flushEvents()      
+      m.flushEvents()
       check([text('1'), text('2')], 2)
 
       b.set(['1', '2'])
-      m.flushEvents()      
+      m.flushEvents()
       check([text('1'), text('2')], 2)
 
       b.set(['1'])
@@ -305,7 +300,7 @@ describe(`mirror`, () => {
 
       const m = new MirrorOfReactTree()
       const spy = jest.fn()
-      m.flushEvents()      
+      m.flushEvents()
       m.walk(spy)
       const [firstCall, ...otherCalls]: $IntentionalAny = spy.mock.calls.map(
         (args: [Node]) => args[0],

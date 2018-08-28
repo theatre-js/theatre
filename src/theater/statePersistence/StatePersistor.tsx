@@ -25,15 +25,13 @@ export default class StatePersistor {
       $env.devSpecific.theater.statePersistenceMode !== 'normal'
     ) {
       if (
-        $env.devSpecific.theater.statePersistenceMode ===
-        'dontLoadOrPersist'
+        $env.devSpecific.theater.statePersistenceMode === 'dontLoadOrPersist'
       ) {
         this._theater.store.dispatch(
           reduceAhistoricState(['stateIsHydrated'], () => true),
         )
       } else if (
-        $env.devSpecific.theater.statePersistenceMode ===
-        'loadButDontUpdate'
+        $env.devSpecific.theater.statePersistenceMode === 'loadButDontUpdate'
       ) {
         throw new Error('Implement me @todo')
       }
@@ -50,8 +48,7 @@ export default class StatePersistor {
   }
 
   async _startSession() {
-    const pathToProject = this._theater.store.getState()
-      .pathToProject as string
+    const pathToProject = this._theater.store.getState().pathToProject as string
 
     const result = await this._theater._lbCommunicator.request(
       getProjectState({pathToProject}),
@@ -93,10 +90,7 @@ export default class StatePersistor {
         yield take(ch)
         const state: ITheaterStoreState = yield select()
         const history = state['@@history']
-        const diffs = jiff.diff(
-          self._lastPersistedStateInfo.state,
-          history,
-        )
+        const diffs = jiff.diff(self._lastPersistedStateInfo.state, history)
         if (diffs.length === 0) continue
 
         const checksum = gneerateUniqueId()

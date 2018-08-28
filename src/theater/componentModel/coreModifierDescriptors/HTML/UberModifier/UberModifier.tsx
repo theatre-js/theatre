@@ -1,9 +1,9 @@
-import { IModifierDescriptor } from '$theater/componentModel/types'
+import {IModifierDescriptor} from '$theater/componentModel/types'
 import commonStylesPrototype from '$theater/componentModel/coreModifierDescriptors/HTML/SetCustomStyle/commonStylesPrototype'
 import dictAtom from '$shared/DataVerse/atoms/dictAtom'
 import withDeps from '$shared/DataVerse/derivations/withDeps'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
-import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive';
+import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 import {Parser, Expression} from 'expr-eval'
 
 const numeralize = (
@@ -23,13 +23,13 @@ const numeralize = (
   }
 }
 
-const formularize = (ownerP) => (v) => {
+const formularize = ownerP => v => {
   if (typeof v !== 'string') return v
 
   if (v.startsWith('=')) {
     let expr: Expression
     try {
-     expr = (new Parser()).parse(v.replace(/^=/, ''))
+      expr = new Parser().parse(v.replace(/^=/, ''))
     } catch (e) {
       return '0'
     }
@@ -44,13 +44,12 @@ const formularize = (ownerP) => (v) => {
         let val
         try {
           val = expr.evaluate({t: time, pi: Math.PI})
-        } catch (e)  {
+        } catch (e) {
           console.log('e', e)
           val = '0'
         }
         return String(val)
       })
-      
     }).flatten()
   }
   return v
@@ -61,8 +60,12 @@ const getClass = (propsP, baseClass) => {
     reifiedStyles(self) {
       const ownerP = self.prop('owner')
       return self.propFromSuper('reifiedStyles').flatMap(reifiedStyles => {
-        const translateXP = propsP.prop('translationX').flatMap(formularize(ownerP))
-        const translateYP = propsP.prop('translationY').flatMap(formularize(ownerP))
+        const translateXP = propsP
+          .prop('translationX')
+          .flatMap(formularize(ownerP))
+        const translateYP = propsP
+          .prop('translationY')
+          .flatMap(formularize(ownerP))
         const translateZP = propsP.prop('translationZ')
 
         const scaleXP = propsP.prop('scaleX')

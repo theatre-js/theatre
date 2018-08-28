@@ -10,21 +10,23 @@ interface IProps {
   dopesheet?: boolean
 }
 
-export default React.forwardRef((
-  {x, y, onClick, onContextMenu, dopesheet = false}: IProps,
-  ref: React.RefObject<SVGRectElement>,
-) => {
-  return (
-    <>
-      <PointClickArea
-        x={x}
-        y={y}
-        onClick={onClick}
-        onContextMenu={onContextMenu}
-        forwardedRef={ref}
-        dopesheet={dopesheet}
-      />
-      <PointCircle x={x} y={y} />
-    </>
-  )
-})
+export default React.forwardRef(
+  (
+    {x, y, onClick, onContextMenu, dopesheet = false}: IProps,
+    ref: React.RefObject<SVGRectElement>,
+  ) => {
+    return (
+      <>
+        <PointClickArea
+          x={x}
+          y={y}
+          onClick={onClick}
+          onContextMenu={onContextMenu}
+          forwardedRef={ref}
+          dopesheet={dopesheet}
+        />
+        <PointCircle x={x} y={y} />
+      </>
+    )
+  },
+)

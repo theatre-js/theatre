@@ -36,7 +36,9 @@ class NodeContainer extends React.PureComponent<Props, State> {
 
   componentDidMount() {
     if (this.props.nodeData.status === STATUS.RELOCATED) {
-      const {nodeData: {actionPayload}} = this.props
+      const {
+        nodeData: {actionPayload},
+      } = this.props
       this.setState(() => ({maxHeight: actionPayload.height}))
     }
   }
@@ -47,9 +49,13 @@ class NodeContainer extends React.PureComponent<Props, State> {
       return
     }
     if (nextProps.nodeData.status === STATUS.RELOCATED) {
-      const {nodeData: {actionPayload}} = nextProps
+      const {
+        nodeData: {actionPayload},
+      } = nextProps
       const {dropOffset} = actionPayload
-      const {nodeData: {actionPayload: currentPayload}} = this.props
+      const {
+        nodeData: {actionPayload: currentPayload},
+      } = this.props
       if (
         currentPayload == null ||
         (currentPayload != null &&

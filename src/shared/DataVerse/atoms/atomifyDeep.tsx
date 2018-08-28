@@ -6,14 +6,17 @@ import mapValues from 'lodash/mapValues'
 import {default as AbstractAtom} from './utils/AbstractAtom'
 
 export type Atomify<V> = {
-  '1': 
-  V extends Array<infer T> ? ArrayAtom<Atomify<T>> :
-  V extends AbstractAtom<$IntentionalAny> ? V :
-  // following is commented out as I don't know how to detect plain objects in TS
-  // V extends {constructor: Function} ? BoxAtom<V> :
-  V extends Function ? BoxAtom<V> :
-  V extends object ? DictAtom<{[K in keyof V]: Atomify<V[K]>}> :
-  BoxAtom<V>
+  '1': V extends Array<infer T>
+    ? ArrayAtom<Atomify<T>>
+    : V extends AbstractAtom<$IntentionalAny>
+      ? V
+      : // following is commented out as I don't know how to detect plain objects in TS
+        // V extends {constructor: Function} ? BoxAtom<V> :
+        V extends Function
+        ? BoxAtom<V>
+        : V extends object
+          ? DictAtom<{[K in keyof V]: Atomify<V[K]>}>
+          : BoxAtom<V>
 }[V extends number ? '1' : '1']
 
 const atomifyDeep = <V extends {}>(jsValue: V): Atomify<V> => {

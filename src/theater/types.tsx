@@ -35,11 +35,14 @@ const $IStoreHistoricState = t.type(
   'StoreHistoricState',
 )
 
-export const $IStoreAhistoricState = t.type({
-  stateIsHydrated: t.boolean,
-  pathToProject: t.union([t.undefined, t.string]),
-  ahistoricWorkspace: $IWorkspaceAhistoricState,
-}, 'StoreAhistoricState')
+export const $IStoreAhistoricState = t.type(
+  {
+    stateIsHydrated: t.boolean,
+    pathToProject: t.union([t.undefined, t.string]),
+    ahistoricWorkspace: $IWorkspaceAhistoricState,
+  },
+  'StoreAhistoricState',
+)
 // export type IStoreAhistoricState = t.TypeOf<typeof $IStoreAhistoricState>
 
 export interface IStoreAhistoricState {

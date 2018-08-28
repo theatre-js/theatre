@@ -16,12 +16,12 @@ const _any: $IntentionalAny = null
 // flatten
 ;() => {
   const a: AbstractDerivation<AbstractDerivation<string>> = _any
-  
+
   // ExpectType AbstractDerivation<string>
   a.flatten()
-  
+
   a.flatten() as AbstractDerivation<string>
-  
+
   const b: AbstractDerivation<string> = _any
 
   // $ExpectType AbstractDerivation<string>

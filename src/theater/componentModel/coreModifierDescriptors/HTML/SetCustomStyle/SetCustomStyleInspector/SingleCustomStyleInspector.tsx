@@ -16,7 +16,10 @@ interface Props extends IOwnProps {
   pairing: {key: string; value: string}
 }
 
-export class SingleCustomStyleInspector extends PureComponentWithTheater<Props, {}> {
+export class SingleCustomStyleInspector extends PureComponentWithTheater<
+  Props,
+  {}
+> {
   _onKeyChange = (key: string) => {
     this.dispatch(
       reduceStateAction(

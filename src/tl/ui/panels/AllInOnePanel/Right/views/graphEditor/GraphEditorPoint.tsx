@@ -458,7 +458,9 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
       if (!this.isInSelection) {
         const didAdd = this.props.addPointToSelection(pointIndex, pointCoords)
         if (didAdd) {
-          this.pointClickArea.current.classList.add(pointCss.highlightAsSelected)
+          this.pointClickArea.current.classList.add(
+            pointCss.highlightAsSelected,
+          )
           this.isInSelection = true
         }
       } else {

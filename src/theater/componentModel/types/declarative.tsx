@@ -182,7 +182,7 @@ export type ITaggedValueDescriptor = t.StaticTypeOf<
 //   | Record<string, mixed> & {__descriptorType: never}
 
 export const $IMapDescriptor: t.Type<
-{[K in string]: K extends '__descriptorType' ? never : IValueDescriptor}
+  {[K in string]: K extends '__descriptorType' ? never : IValueDescriptor}
 > = t.record(
   t.string.refinement(v => v !== '__descriptorType'),
   t.deferred(() => $IValueDescriptor),
@@ -202,19 +202,21 @@ export type IValueDescriptor =
   | IArrayValueDescriptor
   | IMapDescriptor
 
-export const $IValueDescriptor = t.union(
-  [
-    t.string,
-    t.number,
-    t.boolean,
-    t.null,
-    t.undefined,
-    $ITaggedValueDescriptor,
-    t.array(t.$IntentionalAny),
-    $IMapDescriptor,
-  ],
-  'IValueDescriptor',
-).castStatic<IValueDescriptor>()
+export const $IValueDescriptor = t
+  .union(
+    [
+      t.string,
+      t.number,
+      t.boolean,
+      t.null,
+      t.undefined,
+      $ITaggedValueDescriptor,
+      t.array(t.$IntentionalAny),
+      $IMapDescriptor,
+    ],
+    'IValueDescriptor',
+  )
+  .castStatic<IValueDescriptor>()
 
 export const $ITimelineDescriptor = t.type(
   {

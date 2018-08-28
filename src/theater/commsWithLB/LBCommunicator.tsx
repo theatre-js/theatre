@@ -58,7 +58,10 @@ const createSocketPromsie = (
   addr: string,
   opts: SocketIOClient.ConnectOpts,
 ): Promise<Socket> => {
-  const socket = io.connect(addr, opts)
+  const socket = io.connect(
+    addr,
+    opts,
+  )
   const d = defer<Socket>()
 
   let resolved = false

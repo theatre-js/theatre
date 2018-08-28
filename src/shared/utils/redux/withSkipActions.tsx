@@ -2,7 +2,7 @@ import {ReduxReducer, GenericAction} from '$shared/types'
 
 /**
  * Just a higher-order reducer that skips some actions
- * 
+ *
  * @param innerReducer The inner reducer
  * @param shouldSkip A function like (GenericAction) => boolean
  */

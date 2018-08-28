@@ -11,7 +11,10 @@ interface IProps {
 
 interface IState {}
 
-export default class PaleMessage extends PureComponentWithTheater<IProps, IState> {
+export default class PaleMessage extends PureComponentWithTheater<
+  IProps,
+  IState
+> {
   constructor(props: IProps, context: any) {
     super(props, context)
     this.state = {}

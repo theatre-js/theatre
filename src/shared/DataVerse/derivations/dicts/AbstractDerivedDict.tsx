@@ -99,7 +99,9 @@ export default abstract class AbstractDerivedDict<O> {
   }
 }
 
-export type DerivedDictTypeOf<O> = O extends DictAtom<infer OO> ? AbstractDerivedDict<OO> : never
+export type DerivedDictTypeOf<O> = O extends DictAtom<infer OO>
+  ? AbstractDerivedDict<OO>
+  : never
 
 const pointer = require('$shared/DataVerse/derivations/pointer')
 const proxyDerivedDict = require('./proxyDerivedDict')

@@ -6,7 +6,6 @@ import withDeps from '$shared/DataVerse/derivations/withDeps'
 const styleSetter = (elRef: HTMLElement, unprefixedKey: string) => {
   const key = unprefixedKey // @todo add vendor prefixes
   return (value: undefined | null | string) => {
-    
     const finalValue = value === null || value === undefined ? '' : value
     // $FixMe
     elRef.style[key] = finalValue

@@ -4,10 +4,10 @@ import cx from 'classnames'
 import DraggableArea from '$theater/common/components/DraggableArea/DraggableArea'
 
 export type SizeChanges = Partial<{
-  left: number,
-  right: number,
-  bottom: number,
-  top: number,
+  left: number
+  right: number
+  bottom: number
+  top: number
 }>
 
 interface IProps {
@@ -79,9 +79,7 @@ class EditOverlay extends React.Component<IProps, IState> {
           <div style={{cursor: 'ns-resize'}} />
         </DraggableArea>
         <DraggableArea
-          onDrag={(dx, dy) =>
-            this.props.onResize({right: dx, bottom: dy})
-          }
+          onDrag={(dx, dy) => this.props.onResize({right: dx, bottom: dy})}
           onDragEnd={() => this.props.onResizeEnd()}
         >
           <div style={{cursor: 'nwse-resize'}} />

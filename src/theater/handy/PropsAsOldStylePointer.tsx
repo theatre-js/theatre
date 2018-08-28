@@ -1,12 +1,15 @@
 import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
-import dictAtom, {DictAtom, UnwrapDictAtom} from '$shared/DataVerse/atoms/dictAtom'
+import dictAtom, {
+  DictAtom,
+  UnwrapDictAtom,
+} from '$shared/DataVerse/atoms/dictAtom'
 import {PointerDerivation} from '$shared/DataVerse/derivations/pointer'
 import AbstractDerivedDict from '$shared/DataVerse/derivations/dicts/AbstractDerivedDict'
 import DerivationAsReactElement from '$shared/utils/react/DerivationAsReactElement'
 import React from 'react'
 import boxAtom, {BoxAtom} from '$shared/DataVerse/atoms/boxAtom'
-import Theater from '$theater/bootstrap/Theater';
+import Theater from '$theater/bootstrap/Theater'
 
 type AtomType<InnerProps> = DictAtom<InnerProps>
 
@@ -24,10 +27,9 @@ type Props<InnerProps> = {
   children: ChildrenType<InnerProps>
 }
 
-export default class PropsAsOldStylePointer<InnerProps> extends PureComponentWithTheater<
-  Props<InnerProps>,
-  {}
-> {
+export default class PropsAsOldStylePointer<
+  InnerProps
+> extends PureComponentWithTheater<Props<InnerProps>, {}> {
   _childrenAtom: BoxAtom<ChildrenType<InnerProps>>
   _propsAtom: AtomType<InnerProps>
   _renderD: AbstractDerivation<React.ReactNode>

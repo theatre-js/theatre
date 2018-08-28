@@ -12,7 +12,7 @@ export const ui = new UI()
  */
 const TL = {
   ui,
-  Project
+  Project,
 }
 
 export type TypeOfTL = typeof TL

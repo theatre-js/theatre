@@ -1,5 +1,5 @@
 import {VariableID} from '$theater/AnimationTimelinePanel/types'
-import { PrimitivePropItem } from '$tl/ui/panels/AllInOnePanel/utils';
+import {PrimitivePropItem} from '$tl/ui/panels/AllInOnePanel/utils'
 
 export type TOverlaysAPI = {
   showPointValuesEditor: (props: TPointValuesEditorProps) => void

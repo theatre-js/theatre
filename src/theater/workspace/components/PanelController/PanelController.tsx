@@ -1,15 +1,9 @@
 import {reduceStateAction} from '$shared/utils/redux/commonActions'
 import React from 'react'
 
-import {
-  IXY,
-  IPanelType,
-} from '$theater/workspace/types'
+import {IXY, IPanelType} from '$theater/workspace/types'
 
-import {
-  getPanelById,
-  getActivePanelId,
-} from '$theater/workspace/selectors'
+import {getPanelById, getActivePanelId} from '$theater/workspace/selectors'
 import * as panelComponents from '$theater/workspace/panelComponents'
 import {Broadcast} from 'react-broadcast'
 import {ITheaterStoreState} from '$theater/types'

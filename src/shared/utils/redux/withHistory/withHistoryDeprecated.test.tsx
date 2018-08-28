@@ -7,7 +7,11 @@ import {
   tempActionGroup,
   ahistoricalAction,
 } from './actions'
-import {WithHistoryConfig, withHistory, StateWithHistory} from './withHistoryDeprecated'
+import {
+  WithHistoryConfig,
+  withHistory,
+  StateWithHistory,
+} from './withHistoryDeprecated'
 import {ReduxReducer} from '$shared/types'
 
 type InnerState = {num: number}

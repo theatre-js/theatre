@@ -10,7 +10,7 @@ import {PanelActiveModeChannel} from '$theater/workspace/components/Panel/Panel'
 import {Subscriber} from 'react-broadcast'
 import {MODES} from '$theater/common/components/ActiveModeDetector/ActiveModeDetector'
 import resolveCss from '$shared/utils/resolveCss'
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom'
 
 interface IOwnProps {
   prop: string
@@ -94,7 +94,10 @@ export class Input extends PureComponentWithTheater<IProps, IState> {
     return (
       <Subscriber channel={PanelActiveModeChannel}>
         {(activeMode: string) => {
-          const isGrabbable = showGrabHighlight && activeMode === MODES.cmd && typeof rawValue !== 'object'
+          const isGrabbable =
+            showGrabHighlight &&
+            activeMode === MODES.cmd &&
+            typeof rawValue !== 'object'
           return (
             <DraggableArea
               shouldRegisterEvents={isGrabbable}
@@ -112,22 +115,21 @@ export class Input extends PureComponentWithTheater<IProps, IState> {
                   onKeyDown={e => (e.keyCode === 13 ? this.input.blur() : null)}
                   disabled={typeof rawValue === 'object'}
                 />
-                {state.isBeingDragged && (
+                {state.isBeingDragged &&
                   ReactDOM.createPortal(
                     <div
-                    {...classes('draggable')}
-                    style={{
-                      transform: `translate3d(
+                      {...classes('draggable')}
+                      style={{
+                        transform: `translate3d(
                         ${initialPos.x + move.x}px,
                         ${initialPos.y + move.y}px,
                         0)`,
-                    }}
-                  >
-                    {props.prop}
-                  </div>,
+                      }}
+                    >
+                      {props.prop}
+                    </div>,
                     document.getElementById('theaterjs-studio') as HTMLElement,
-                  )
-                )}
+                  )}
                 {typeof rawValue === 'object' && (
                   <div {...classes('animated')}>Animated</div>
                 )}
@@ -149,6 +151,8 @@ export default connect((s: ITheaterStoreState, op: IOwnProps) => {
   return {
     pathToProp,
     value: get(s, pathToProp),
-    showGrabHighlight: get(s, ['historicWorkspace', 'panels', 'panelObjectBeingDragged']) == null,
+    showGrabHighlight:
+      get(s, ['historicWorkspace', 'panels', 'panelObjectBeingDragged']) ==
+      null,
   }
 })(Input)

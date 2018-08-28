@@ -50,9 +50,8 @@ class ExploreFlyoutMenu extends PureComponentWithTheater<Props, State> {
 
                 if (!activeViewportId) return null
                 const volatileIdOfActiveViewport = val(
-                  this.theater.studio.elementTree.atom.pointer.unexpandedViewports[
-                    activeViewportId
-                  ],
+                  this.theater.studio.elementTree.atom.pointer
+                    .unexpandedViewports[activeViewportId],
                 )
                 if (!volatileIdOfActiveViewport) return null
 

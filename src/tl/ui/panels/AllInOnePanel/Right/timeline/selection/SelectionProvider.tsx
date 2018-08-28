@@ -24,7 +24,6 @@ import {
   TSelectionAPI,
   TSelectedPoints,
   TExtremumsMap,
-  // TPointsOfItems,
   TCollectionOfSelectedPointsData,
   TMapOfFilteredItemKeyToItemData,
   TLastCommittedData,

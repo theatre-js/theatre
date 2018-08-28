@@ -1,6 +1,6 @@
 interface Node<Data> {
   next: undefined | Node<Data>
-  data: Data 
+  data: Data
 }
 
 /**

@@ -1,18 +1,18 @@
 import AbstractDerivation from '../AbstractDerivation'
-import AbstractDerivedDict from '$shared/DataVerse/derivations/dicts/AbstractDerivedDict';
+import AbstractDerivedDict from '$shared/DataVerse/derivations/dicts/AbstractDerivedDict'
 
 const noop = () => {}
 
-export class KeysOfDerivedDictDerivation<O> extends AbstractDerivation<Array<keyof O>> {
+export class KeysOfDerivedDictDerivation<O> extends AbstractDerivation<
+  Array<keyof O>
+> {
   static displayName = 'keysOfDerivedDict'
 
   _hot: boolean
   _currentKeys: Array<keyof O>
   _untapFromDerivedDictChanges: () => void
 
-  constructor(
-    readonly _derivedDict: AbstractDerivedDict<O>,
-  ) {
+  constructor(readonly _derivedDict: AbstractDerivedDict<O>) {
     super()
     this._hot = false
     this._currentKeys = []
@@ -41,7 +41,8 @@ export class KeysOfDerivedDictDerivation<O> extends AbstractDerivation<Array<key
   }
 }
 
-export default function keysOfDerivedDict<O, D extends AbstractDerivedDict<O>>
-(d: D): KeysOfDerivedDictDerivation<O> {
+export default function keysOfDerivedDict<O, D extends AbstractDerivedDict<O>>(
+  d: D,
+): KeysOfDerivedDictDerivation<O> {
   return new KeysOfDerivedDictDerivation(d)
 }

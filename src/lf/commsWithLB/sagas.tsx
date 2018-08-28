@@ -100,9 +100,7 @@ function _sendRequestToLB(
 }
 
 export const callerFromLFToLB = (handlerName: string): any => {
-  const fn: any = function*(
-    payload: $FixMe,
-  ): Generator_<$FixMe> {
+  const fn: any = function*(payload: $FixMe): Generator_<$FixMe> {
     const r: any = yield call(
       _sendRequestToLB,
       handlerName,

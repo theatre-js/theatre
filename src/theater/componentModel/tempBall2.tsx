@@ -59,16 +59,16 @@ const two = {
                     handles: [0.5, 0, 0.5, 0],
                   },
                 },
-                ...(Array.from(new Array(21).keys()).map(i => ({
-                  time: 6500 +  650 * i,
+                ...Array.from(new Array(21).keys()).map(i => ({
+                  time: 6500 + 650 * i,
                   value: Math.random() * 200 - 100,
                   interpolationDescriptor: {
-                    connected: (i < 20),
+                    connected: i < 20,
                     __descriptorType: 'TimelinePointInterpolationDescriptor',
                     interpolationType: 'CubicBezier',
                     handles: [0.5, 0, 0.5, 0],
                   },
-                }))),
+                })),
               ],
             },
             opacity: {
@@ -96,7 +96,7 @@ const two = {
                     interpolationType: 'CubicBezier',
                     handles: [0.5, 0, 0.5, 0],
                   },
-                }
+                },
               ],
             },
             translationYZ: {
@@ -105,16 +105,16 @@ const two = {
               component: 'div.ball',
               property: 'translationYZ',
               points: [
-                ...(Array.from(new Array(21).keys()).map(i => ({
+                ...Array.from(new Array(21).keys()).map(i => ({
                   time: i * 1000,
                   value: Math.random() * 100,
                   interpolationDescriptor: {
-                    connected: (i < 20),
+                    connected: i < 20,
                     __descriptorType: 'TimelinePointInterpolationDescriptor',
                     interpolationType: 'CubicBezier',
                     handles: [0.5, 0, 0.5, 0],
                   },
-                }))),
+                })),
               ],
             },
             translationYZZ: {
@@ -174,7 +174,13 @@ const two = {
               ],
             },
           },
-          layout: ['box-translateY', 'box-translateYP', 'box-translateYZ', 'box-translateYZZ', 'box-translateYZT'],
+          layout: [
+            'box-translateY',
+            'box-translateYP',
+            'box-translateYZ',
+            'box-translateYZZ',
+            'box-translateYZT',
+          ],
           // layout: ['box-translateYZ', 'box-translateY', 'box-translateYP'],
           // layout: ['box-translateY', 'box-translateYP'],
           boxes: {

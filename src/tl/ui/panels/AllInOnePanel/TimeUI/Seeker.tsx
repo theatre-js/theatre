@@ -29,10 +29,7 @@ class Seeker extends React.PureComponent<IProps, IState> {
         {...classes('seeker', isVisible && 'visible')}
         style={{transform: `translate3d(${currentX}px, 0, 0)`}}
       >
-        <DraggableArea
-          onDrag={this.gotoTime}
-          shouldReturnMovement={true}
-        >
+        <DraggableArea onDrag={this.gotoTime} shouldReturnMovement={true}>
           <div {...classes('thumb')}>
             <div {...classes('squinch')} />
             <div {...classes('tooltip')}>{normalizedTime.toFixed(1)}</div>

@@ -4,9 +4,7 @@ import PanelSection from '$theater/structuralEditor/components/reusables/PanelSe
 import _ from 'lodash'
 import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
 import {getSelectedNodeId} from '$theater/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor/TreeEditor'
-import {
-  IDeclarativeComponentDescriptor,
-} from '$theater/componentModel/types'
+import {IDeclarativeComponentDescriptor} from '$theater/componentModel/types'
 import {Subscriber} from 'react-broadcast'
 import {PanelActiveModeChannel} from '$theater/workspace/components/Panel/Panel'
 import generateUniqueId from 'uuid/v4'
@@ -197,7 +195,9 @@ class ModifiersEditor extends PureComponentWithTheater<IProps, IState> {
           const {[id]: remove, ...byId} = descriptors.byId
           return {
             byId,
-            list: descriptors.list.filter((descriptorId: string) => descriptorId !== id),
+            list: descriptors.list.filter(
+              (descriptorId: string) => descriptorId !== id,
+            ),
           }
         },
       ),
@@ -220,7 +220,9 @@ class ModifiersEditor extends PureComponentWithTheater<IProps, IState> {
               dropZoneProps!.sensorIndex <= index
               ? dragSourceProps!.holeHeight
               : 0
-          : dragSourceProps!.boxIndex < index ? -dragSourceProps!.holeHeight : 0
+          : dragSourceProps!.boxIndex < index
+            ? -dragSourceProps!.holeHeight
+            : 0
         : 0
   }
 
@@ -252,10 +254,7 @@ class ModifiersEditor extends PureComponentWithTheater<IProps, IState> {
                   onDrop={this.dropHandler}
                 />
                 {(listOfModifierInstantiationDescriptors || []).map(
-                  (
-                    id: string,
-                    index: number,
-                  ) => {
+                  (id: string, index: number) => {
                     const status =
                       lastAction && lastAction.descriptorId === id
                         ? STATUS_BY_ACTION[lastAction.type]

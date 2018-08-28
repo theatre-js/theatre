@@ -21,5 +21,5 @@ export const getPathToComponentDescriptor = (id: IComponentId) => {
 }
 
 export function isCoreComponent(id: string) {
-  return stringStartsWith(id, 'TheaterJS/Core/');
+  return stringStartsWith(id, 'TheaterJS/Core/')
 }

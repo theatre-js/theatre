@@ -46,13 +46,7 @@ export default ({
   )
 }
 
-export const TempPointCircle = ({
-  color,
-  x,
-}: {
-  color: TColor
-  x: number
-}) => {
+export const TempPointCircle = ({color, x}: {color: TColor; x: number}) => {
   return (
     <g fill={color.darkened} stroke={color.darkened}>
       <circle cx={`${x}%`} cy="50%" r={4} strokeWidth="2" />

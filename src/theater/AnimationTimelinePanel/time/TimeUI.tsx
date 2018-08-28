@@ -13,7 +13,14 @@ interface IProps {
 
 class TimeUI extends React.PureComponent<IProps, {}> {
   render() {
-    const {focus, duration, currentTime, boxWidth, updateFocus, seekTime} = this.props
+    const {
+      focus,
+      duration,
+      currentTime,
+      boxWidth,
+      updateFocus,
+      seekTime,
+    } = this.props
     return (
       <>
         <FocusBar

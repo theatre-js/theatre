@@ -17,7 +17,7 @@ import {
   TGetAllPoints,
   TTempPointRenderer,
 } from '$tl/ui/panels/AllInOnePanel/Right/views/types'
-import TempPointInSelection from '$tl/ui/panels/AllInOnePanel/Right/views/dopesheet/TempPointInSelection';
+import TempPointInSelection from '$tl/ui/panels/AllInOnePanel/Right/views/dopesheet/TempPointInSelection'
 
 interface IProps extends IViewBaseProps {
   color: TColor

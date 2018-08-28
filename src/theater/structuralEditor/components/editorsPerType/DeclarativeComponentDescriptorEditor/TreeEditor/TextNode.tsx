@@ -5,7 +5,7 @@ import {STATUS} from './constants'
 import {debounce} from 'lodash'
 
 type Props = {
-  nodeProps: {value: $FixMe, status: $FixMe}
+  nodeProps: {value: $FixMe; status: $FixMe}
   onChange: Function
   handleTypeChange: () => void
 }

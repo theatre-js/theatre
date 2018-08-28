@@ -43,10 +43,12 @@ class ConnectorContextMenu extends UIComponent<IProps, IState> {
 
   _removeConnector = () => {
     this.project.reduxStore.dispatch(
-      this.project._actions.historic.removeConnectorInBezierCurvesOfScalarValues({
-        propAddress: this.props.propAddress,
-        pointIndex: this.props.pointIndex,
-      })
+      this.project._actions.historic.removeConnectorInBezierCurvesOfScalarValues(
+        {
+          propAddress: this.props.propAddress,
+          pointIndex: this.props.pointIndex,
+        },
+      ),
     )
     this.props.onClose()
   }

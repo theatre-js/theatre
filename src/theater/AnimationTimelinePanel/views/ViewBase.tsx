@@ -31,7 +31,10 @@ export default class ViewBase<
       reduceHistoricState(
         [...pathToTimeline, 'variables', variableId, 'points'],
         (points: TPoint[]): TPoint[] => {
-          if (points[pointIndex - 1] != null && points[pointIndex + 1] == null) {
+          if (
+            points[pointIndex - 1] != null &&
+            points[pointIndex + 1] == null
+          ) {
             points[pointIndex - 1].interpolationDescriptor.connected = false
           }
           return points

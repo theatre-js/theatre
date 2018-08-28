@@ -19,10 +19,9 @@ describe(`playground`, () => {
         // yield delay(2)
       }
     }
-    
-    const multicastChannel = () => {
-      const ch = channel()
 
+    const multicastChannel = () => {
+      const ch = channel()
     }
 
     await s.sagaMiddleware.run(function*(): Generator {

@@ -3,9 +3,7 @@ import {DictAtom} from '$shared/DataVerse/atoms/dictAtom'
 
 const noop = () => {}
 
-export class DerivationOfAPropOfADictAtom<
-  V
-> extends AbstractDerivation<V> {
+export class DerivationOfAPropOfADictAtom<V> extends AbstractDerivation<V> {
   _dictAtom: DictAtom<$IntentionalAny>
   _untapFromDictAtomChanges: Function
   _propName: $IntentionalAny

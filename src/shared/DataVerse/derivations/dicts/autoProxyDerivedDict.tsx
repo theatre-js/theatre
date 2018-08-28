@@ -1,9 +1,6 @@
 import AbstractDerivedDict from './AbstractDerivedDict'
 import _ from 'lodash'
-import {
-  default as proxyDerivedDict,
-  ProxyDerivedDict
-} from './proxyDerivedDict'
+import {default as proxyDerivedDict, ProxyDerivedDict} from './proxyDerivedDict'
 import emptyDict from './emptyDict'
 import Ticker from '$shared/DataVerse/Ticker'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'

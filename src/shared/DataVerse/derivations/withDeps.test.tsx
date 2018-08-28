@@ -21,8 +21,9 @@ describe('withDeps', () => {
   it('should still work', () => {
     const a = withDeps({}, () => 2)
     const b = withDeps({}, () => 3)
-    const c = a.flatMap((thisGonnaBeTwo): AbstractDerivation<number> =>
-      withDeps({b}, ({b}) => b.getValue() + thisGonnaBeTwo),
+    const c = a.flatMap(
+      (thisGonnaBeTwo): AbstractDerivation<number> =>
+        withDeps({b}, ({b}) => b.getValue() + thisGonnaBeTwo),
     )
     expect(c.getValue()).toEqual(5)
   })
@@ -46,8 +47,8 @@ describe('withDeps', () => {
     bD.flatMap(m => m + 1).getValue() as string
     bD.flatMap(m => constant(m + 1)).getValue() as number
 
-    const final = aD.flatMap((n): AbstractDerivation<number> =>
-      bD.map(m => m + n),
+    const final = aD.flatMap(
+      (n): AbstractDerivation<number> => bD.map(m => m + n),
     )
 
     expect(final.getValue()).toEqual(4)

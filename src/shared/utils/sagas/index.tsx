@@ -2,17 +2,9 @@ import putToChannel from './putToChannel'
 import combineChannels from './combineChannels'
 import channelFromEmitter from './channelFromEmitter'
 
-declare type Fn0<R> = () =>
-  | Generator_<R>
-  | Promise<R>
-  | Generator_<R>
-declare type Fn1<T1, R> = (
-  t1: T1,
-) => R | Promise<R> | Generator_<R>
-declare type Fn2<T1, T2, R> = (
-  t1: T1,
-  t2: T2,
-) => R | Promise<R> | Generator_<R>
+declare type Fn0<R> = () => Generator_<R> | Promise<R> | Generator_<R>
+declare type Fn1<T1, R> = (t1: T1) => R | Promise<R> | Generator_<R>
+declare type Fn2<T1, T2, R> = (t1: T1, t2: T2) => R | Promise<R> | Generator_<R>
 declare type Fn3<T1, T2, T3, R> = (
   t1: T1,
   t2: T2,

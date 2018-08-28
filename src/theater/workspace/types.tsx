@@ -114,7 +114,9 @@ export const $IWorkspaceHistoricState = t.type(
   },
   'IWorkspaceNamespaceHistoricState',
 )
-export type IWorkspaceHistoricState = t.StaticTypeOf<typeof $IWorkspaceHistoricState>
+export type IWorkspaceHistoricState = t.StaticTypeOf<
+  typeof $IWorkspaceHistoricState
+>
 
 export const $IViewportsContainer = t.type(
   {

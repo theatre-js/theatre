@@ -61,7 +61,11 @@ class DomHighlighter extends React.PureComponent<IProps, IState> {
       <div
         ref={c => (this.overlay = c)}
         {...classes('container')}
-        style={{...style, '--left': `${style.left}px`, '--top': `${style.top}px`}}
+        style={{
+          ...style,
+          '--left': `${style.left}px`,
+          '--top': `${style.top}px`,
+        }}
       />,
       document.getElementById('theaterjs-studio') as HTMLElement,
     )

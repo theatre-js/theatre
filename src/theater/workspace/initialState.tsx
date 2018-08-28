@@ -1,7 +1,4 @@
-import {
-  IWorkspaceHistoricState,
-  IWorkspaceAhistoricState,
-} from './types'
+import {IWorkspaceHistoricState, IWorkspaceAhistoricState} from './types'
 
 export const ahistoricWorkspaceInitialState: IWorkspaceAhistoricState = {
   activeNodeVolatileIdByViewportId: {},

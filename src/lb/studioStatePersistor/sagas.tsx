@@ -1,6 +1,9 @@
 import {select, call, put} from 'redux-saga/effects'
 import {LBStoreState} from '$lb/types'
-import {StateWithCacheData, PossibleStates} from '$lb/studioStatePersistor/types'
+import {
+  StateWithCacheData,
+  PossibleStates,
+} from '$lb/studioStatePersistor/types'
 import * as fs from 'fs-extra'
 import {reduceLBState} from '$lb/bootstrap/actions'
 import {ErrorsOf} from '$shared/types'
@@ -76,7 +79,7 @@ function* loadProjectState(
   } else {
     state = {
       checksum: 'empty',
-      data: {}
+      data: {},
     }
   }
 
@@ -85,7 +88,10 @@ function* loadProjectState(
   return 'okay'
 }
 
-export function* cacheProjectState(pathToProject: string, state: PossibleStates) {
+export function* cacheProjectState(
+  pathToProject: string,
+  state: PossibleStates,
+) {
   yield put(
     reduceLBState(['studioStatePersistor', 'byPath', pathToProject], () => ({
       ...state,

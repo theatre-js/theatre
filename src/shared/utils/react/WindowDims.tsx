@@ -5,7 +5,7 @@ type Props = {
 }
 
 type State = {
-  dims: {width: number, height: number}
+  dims: {width: number; height: number}
 }
 
 export default class WindowDims extends React.Component<Props, State> {

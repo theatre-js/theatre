@@ -1,6 +1,9 @@
 import React from 'react'
 import Theater from '$theater/bootstrap/Theater'
-import {contextTypes, contextName} from '$theater/componentModel/react/utils/theaterContext'
+import {
+  contextTypes,
+  contextName,
+} from '$theater/componentModel/react/utils/theaterContext'
 import WhatToShowInBody from '$theater/workspace/components/WhatToShowInBody/WhatToShowInBody'
 import {TickerProvider} from '$shared/utils/react/TickerContext'
 

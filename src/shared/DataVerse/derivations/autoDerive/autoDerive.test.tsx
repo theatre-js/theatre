@@ -30,7 +30,6 @@ describe('autoDerive', () => {
     expect(changes).toMatchObject(['foo2boo'])
   })
   it('should only collect immediate dependencies', () => {
-
     const aD = constant(1)
     const bD = aD.map(v => v * 2)
     const cD = autoDerive(() => {

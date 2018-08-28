@@ -11,7 +11,7 @@ export class AutoDerivation<V> extends AbstractDerivation<V> {
   _recalculate() {
     let value: V
 
-    const newDeps: Set<AbstractDerivation<mixed>> = new Set() 
+    const newDeps: Set<AbstractDerivation<mixed>> = new Set()
     collectObservedDependencies(
       () => {
         value = this._fn()

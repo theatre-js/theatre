@@ -22,7 +22,10 @@ class PresentationOnlyNode extends React.PureComponent<IProps, IState> {
   }
 
   render() {
-    const {nodeData: {children, ...nodeProps}, rootNodeId} = this.props
+    const {
+      nodeData: {children, ...nodeProps},
+      rootNodeId,
+    } = this.props
     return (
       <div
         className={cx(css.container, {

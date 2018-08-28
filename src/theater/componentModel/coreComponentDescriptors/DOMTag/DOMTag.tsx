@@ -22,7 +22,7 @@ const lookupTable = {
       .prop('props')
       .prop('children')
       .toJS()
-    
+
     const refFn = self.pointer().prop('refFn')
     const tagName = self.pointer().prop('tagName')
 
@@ -69,7 +69,7 @@ class DOMTag extends TheaterComponent {
   _getClass(dict: DerivedClass<$FixMe>): DerivedClass<$FixMe> {
     return dict.extend(lookupTable)
   }
-  
+
   _getInitialState(): State {
     return dictAtom({
       elRef: boxAtom(null),

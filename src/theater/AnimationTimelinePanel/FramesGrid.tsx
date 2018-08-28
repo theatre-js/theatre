@@ -27,7 +27,9 @@ class FramesGrid extends PureComponentWithTheater<IProps, IState> {
   frameStampRef: React.RefObject<HTMLDivElement> = React.createRef()
   containerRef: React.RefObject<HTMLDivElement> = React.createRef()
   containerRect: {left: number; top: number; right: number; bottom: number}
-  frameDuration: number = Number((1000 / FPS).toFixed(6).slice(0, -1)) /* slice: 6.66667 -> 6.66666*/
+  frameDuration: number = Number(
+    (1000 / FPS).toFixed(6).slice(0, -1),
+  ) /* slice: 6.66667 -> 6.66666*/
   fpsNumberFactors: number[] = getFactors(FPS)
   framesPerCell: number
   mouseX: null | number = null

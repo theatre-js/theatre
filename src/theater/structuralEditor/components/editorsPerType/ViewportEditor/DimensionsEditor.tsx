@@ -45,12 +45,8 @@ export default class DimensionsEditor extends PureComponentWithTheater<
                 <ExpressionlessNumberEditor
                   path={[...path, 'dimensions', 'height']}
                 />
-                <ExpressionlessNumberEditor
-                  path={[...path, 'position', 'x']}
-                />
-                <ExpressionlessNumberEditor
-                  path={[...path, 'position', 'y']}
-                />
+                <ExpressionlessNumberEditor path={[...path, 'position', 'x']} />
+                <ExpressionlessNumberEditor path={[...path, 'position', 'y']} />
               </div>
             </PanelSection>
           )

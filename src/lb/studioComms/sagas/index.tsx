@@ -38,9 +38,7 @@ export default function* studioCommsRootSaga(): Generator_<
   }
 }
 
-function* handleServer(
-  server: SocketServer,
-): Generator_<$FixMe> {
+function* handleServer(server: SocketServer): Generator_<$FixMe> {
   const connectionsChannel = yield call(
     getChannelOfConnectionsFromSocketServer,
     server,
@@ -78,9 +76,7 @@ function* handleConnection(socket: Socket): Generator_<$FixMe> {
   }
 }
 
-function* handleRequest(
-  request: ShapeOfRequestFromStudio,
-): Generator_<$FixMe> {
+function* handleRequest(request: ShapeOfRequestFromStudio): Generator_<$FixMe> {
   const handler = allStudioSocketEndpoints[request.endpoint]
   console.log('request', request.type, request.endpoint)
   if (handler) {

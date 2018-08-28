@@ -10,7 +10,7 @@ type Props = {
 
 const partNameToEditorComponent = {
   scene: SceneSelector,
-  dims: DimensionsEditor
+  dims: DimensionsEditor,
 }
 
 type State = {}

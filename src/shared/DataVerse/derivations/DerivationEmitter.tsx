@@ -14,10 +14,7 @@ export default class DerivationEmitter<V>
   _lastValueRecorded: boolean
   _hadTappers: boolean
 
-  constructor(
-    derivation: AbstractDerivation<V>,
-    ticker: Ticker
-  ) {
+  constructor(derivation: AbstractDerivation<V>, ticker: Ticker) {
     this._derivation = derivation
     this._ticker = ticker
     this._emitter = new Emitter()

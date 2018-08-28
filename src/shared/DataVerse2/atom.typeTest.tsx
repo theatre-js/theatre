@@ -12,7 +12,7 @@ import atom, {val} from './atom'
 
   // $ExpectError
   expectType<{}>(val(p.nonExistent))
-  
+
   expectType<undefined | boolean>(val(p.optional))
   // $ExpectError
   expectType<boolean>(val(p.optional))
@@ -20,5 +20,4 @@ import atom, {val} from './atom'
   expectType<undefined>(val(p.optional))
   // $ExpectError
   expectType<undefined | string>(val(p.optional))
-
 }

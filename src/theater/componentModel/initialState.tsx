@@ -14,5 +14,5 @@ export const historicInitialState: IComponentModelNamespaceHistoricState = {
 export const ahistoricInitialState: IComponentModelNamespaceAhistoricState = {
   coreComponentDescriptors,
   coreModifierDescriptors,
-  collapsedElementsByVolatileId: {}
+  collapsedElementsByVolatileId: {},
 }

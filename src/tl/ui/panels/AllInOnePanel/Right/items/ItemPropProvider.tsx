@@ -24,7 +24,12 @@ interface IState {}
 
 export const ItemPropGetterContext = React.createContext<TPropGetter>(() => {})
 
-export type TPropName = 'itemAddress' | 'itemKey' | 'itemHeight' | 'itemExpanded' | TRootPropName
+export type TPropName =
+  | 'itemAddress'
+  | 'itemKey'
+  | 'itemHeight'
+  | 'itemExpanded'
+  | TRootPropName
 export type TPropGetter = (propName: TPropName) => any
 
 class ItemPropProvider extends React.PureComponent<IProps, IState> {

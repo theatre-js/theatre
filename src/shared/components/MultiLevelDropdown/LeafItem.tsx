@@ -19,7 +19,10 @@ class LeafItem extends React.PureComponent<IProps, IState> {
     return (
       <MenuAPIContext.Consumer>
         {({onSelect}) => (
-          <div {...classes('item', isActive && 'active')} onClickCapture={() => onSelect(path)}>
+          <div
+            {...classes('item', isActive && 'active')}
+            onClickCapture={() => onSelect(path)}
+          >
             <div {...classes('title')}>{title}</div>
           </div>
         )}

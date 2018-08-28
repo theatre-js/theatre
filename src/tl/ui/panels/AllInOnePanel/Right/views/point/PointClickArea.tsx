@@ -15,7 +15,14 @@ interface IProps {
   dopesheet: boolean
 }
 
-export default ({x, y, onClick, onContextMenu, forwardedRef, dopesheet}: IProps) => {
+export default ({
+  x,
+  y,
+  onClick,
+  onContextMenu,
+  forwardedRef,
+  dopesheet,
+}: IProps) => {
   return (
     <>
       <rect

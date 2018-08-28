@@ -9,7 +9,7 @@ export type TDims = {
 
 export type TBoxesBoundaries = number[]
 
-export type TSelectionMove = {x: number, y: number}
+export type TSelectionMove = {x: number; y: number}
 
 export type TTransformedSelectedArea = {
   [boxIndex: number]: {
@@ -52,4 +52,4 @@ export type TSelectionAPI = {
   ) => void
 }
 
-export type THorizontalLimits = {left: number, right: number}
+export type THorizontalLimits = {left: number; right: number}

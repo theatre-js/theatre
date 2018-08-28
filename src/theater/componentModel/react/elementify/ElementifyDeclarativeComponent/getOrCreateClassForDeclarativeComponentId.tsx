@@ -1,7 +1,10 @@
 import {label} from '$theater/structuralEditor/components/reusables/PanelSection.css'
 import {IComponentId} from '$theater/componentModel/types'
 import TheaterComponent from '$theater/componentModel/react/TheaterComponent/TheaterComponent'
-import {DerivedClass, Classify} from '$shared/DataVerse/derivedClass/derivedClass'
+import {
+  DerivedClass,
+  Classify,
+} from '$shared/DataVerse/derivedClass/derivedClass'
 import constructValue from './constructValue/constructValue'
 
 const cache = new Map<IComponentId, DeclarativeComponentBaseClass>()
@@ -27,16 +30,14 @@ const createClass = (id: IComponentId) => {
 
 const methods: Classify<$FixMe, $FixMe> = {
   timelineDescriptors(self: $FixMe) {
-    const componentDescriptorP = self
-      .prop('componentDescriptor')
+    const componentDescriptorP = self.prop('componentDescriptor')
 
     return componentDescriptorP.prop('timelineDescriptors').prop('byId')
   },
 
   render(self: $FixMe) {
     // debugger
-    const componentDescriptorP = self
-      .prop('componentDescriptor')
+    const componentDescriptorP = self.prop('componentDescriptor')
 
     const whatToRenderP = componentDescriptorP.prop('whatToRender')
     return whatToRenderP.flatMap((v: $FixMe) => constructValue(v, self))
@@ -47,7 +48,7 @@ const methods: Classify<$FixMe, $FixMe> = {
 class DeclarativeComponentBaseClass extends TheaterComponent<{}> {
   static displayName = 'DeclarativeComponent'
   static componentType = 'Declarative'
-  
+
   _getClass(baseClass) {
     return baseClass.extend(methods)
   }

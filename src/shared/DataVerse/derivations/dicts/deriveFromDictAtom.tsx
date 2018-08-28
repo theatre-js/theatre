@@ -38,7 +38,7 @@ export class DerivedDictFromDictAtom<O> extends AbstractDerivedDict<O> {
     this._untapFromDictAtomChangeEmitter = noop
   }
 
-  keys(){
+  keys() {
     return this._dictAtom.keys()
   }
 }

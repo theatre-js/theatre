@@ -32,4 +32,4 @@ export const multiReduceStateAction = actionCreator(
   (a: Array<Pair>) => a,
 )
 
-export type Pair = {path: Array<string | number>, reducer: <T>(from: T) => T}
+export type Pair = {path: Array<string | number>; reducer: <T>(from: T) => T}

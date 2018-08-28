@@ -16,7 +16,10 @@ interface Props extends IOwnProps {
   pairing: {key: string; value: string}
 }
 
-export class SingleAttributeInspector extends PureComponentWithTheater<Props, {}> {
+export class SingleAttributeInspector extends PureComponentWithTheater<
+  Props,
+  {}
+> {
   _onKeyChange = (key: string) => {
     this.dispatch(
       reduceStateAction(
