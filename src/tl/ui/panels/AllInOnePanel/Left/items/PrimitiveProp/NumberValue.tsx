@@ -64,6 +64,8 @@ export default class NumberValue extends UIComponent<IProps, IState> {
           />
         </div>
       )
+    } else {
+      return null
     }
   }
 
