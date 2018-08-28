@@ -62,6 +62,15 @@ project.adapters.add(1, {
         opacity: {
           type: 'number',
         },
+        'position.x': {
+          type: 'number',
+        },
+        'position.y': {
+          type: 'number',
+        },
+        'position.z': {
+          type: 'number',
+        },
       },
     }
   },
@@ -74,6 +83,7 @@ project.adapters.add(1, {
       // console.log(obj.path, t, values.opacity)
 
       nativeObject.style.opacity = String(values.opacity)
+      nativeObject.style.transform = `translateX(${String(values['position.x'])}px)`
     })
 
     const cleanup = () => {

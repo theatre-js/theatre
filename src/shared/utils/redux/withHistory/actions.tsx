@@ -29,10 +29,15 @@ export const _discardTemporaryAction = actionCreator(
   (id: string) => id,
 )
 
+export interface ITempActionGroup {
+  push(originalAction: GenericAction): GenericAction
+  discard(): GenericAction
+}
+
 export const tempActionGroup = (
   outerTransform: (original: GenericAction) => GenericAction = identity,
   innerTransform: (original: GenericAction) => GenericAction = identity,
-) => {
+): ITempActionGroup => {
   const id = makeUUID()
 
   const push = (originalAction: GenericAction) =>

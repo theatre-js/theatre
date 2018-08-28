@@ -16,7 +16,7 @@ const initialHistoricState: UIHistoricState = {
                 activePropsList: [],
                 props: {
                   opacity: {
-                    expanded: true,
+                    expanded: false,
                     heightWhenExpanded: 150,
                   },
                 },

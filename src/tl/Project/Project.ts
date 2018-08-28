@@ -10,8 +10,10 @@ import {Store} from 'redux'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import Ticker from '$shared/DataVerse/Ticker'
 import configureStore from '$shared/utils/redux/configureStore'
-import atomFromReduxStore from '$shared/utils/redux/atomFromReduxStore';
-import { ProjectAddress } from '$tl/handy/addresses';
+import atomFromReduxStore from '$shared/utils/redux/atomFromReduxStore'
+import {ProjectAddress} from '$tl/handy/addresses'
+import projectSelectors from '$tl/Project/store/selectors'
+import {GenericAction} from '$shared/types'
 
 export default class Project {
   static version = $env.tl.version
@@ -33,13 +35,17 @@ export default class Project {
   _actions = projectActions
   _address: ProjectAddress
 
+  _selectors = projectSelectors
+
   /**
    * @todo should we have a human-readable name for each project too?
    */
   constructor(readonly id: string) {
     projectsSingleton.add(id, this)
     this.adapters = new NativeObjectAdaptersManager(this)
-    this.reduxStore = configureStore({rootReducer})
+    this.reduxStore = configureStore({rootReducer, devtoolsOptions: {
+      name: 'TheaterJS Project ' + id
+    }})
     this.atom = atomFromReduxStore(this.reduxStore)
     this.atomP = this.atom.pointer
     this.ticker = new Ticker()
@@ -79,5 +85,9 @@ export default class Project {
     }
 
     return internalTimeline
+  }
+
+  _dispatch(...actions: GenericAction[]) {
+    return this.reduxStore.dispatch(this._actions.batched(actions))
   }
 }

@@ -1,3 +1,4 @@
+export const indent: string;
 export const container: string;
 export const top: string;
 export const selected: string;
@@ -15,4 +16,3 @@ export const expandButton: string;
 export const bulletIcon: string;
 export const hasChildren: string;
 export const expanded: string;
-export const subNodes: string;

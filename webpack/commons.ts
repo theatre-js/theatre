@@ -3,7 +3,6 @@ import * as CleanPlugin from 'clean-webpack-plugin'
 import * as WebpackNotifierPlugin from 'webpack-notifier'
 import * as webpack from 'webpack'
 import * as CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin'
-import * as WatchMissingNodeModulesPlugin from 'react-dev-utils/WatchMissingNodeModulesPlugin'
 import * as TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
 import {mapValues} from 'lodash'
 import * as ErrorOverlayPlugin from 'error-overlay-webpack-plugin'
@@ -118,7 +117,7 @@ export const makeConfigParts = (options: Options) => {
       }),
       new webpack.ProvidePlugin({
         'process.env': '$root/webpack/env/index.js',
-        '$env': '$root/webpack/env/index.js',
+        $env: '$root/webpack/env/index.js',
       }),
       new CaseSensitivePathsPlugin(),
       ...(isDev

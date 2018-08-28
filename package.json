@@ -117,7 +117,7 @@
     "circular-dependency-plugin": "^5.0.2",
     "classnames": "^2.2.6",
     "clean-webpack-plugin": "^0.1.19",
-    "css-loader": "^0.28.7",
+    "css-loader": "^1.0.0",
     "deep-equal": "^1.0.1",
     "dtslint": "^0.2.0",
     "electron": "^1.8.3",

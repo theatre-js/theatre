@@ -1,5 +1,57 @@
 .container {
+  composes: indent from './GroupingOrObject.css';
   position: absolute;
   right: 0;
-  padding-right: 8px;
+  left: 0;
+  /* padding-right: 8px; */
+  /* border-top: 1px solid transparent; */
+  /* border-bottom: 1px solid transparent; */
+  /* border-color: #1a282f; */
+  box-sizing: border-box;
+  line-height: 32px;
+  display: flex;
+  justify-content: flex-end;
+
+  &:after {
+    position: absolute;
+    bottom: -2px;
+    right: 0;
+    /* left: 0; */
+    left: calc(var(--indent) - 4px);
+    height: 1px;
+    content: ' ';
+    background: #1a282f;
+    display: none;
+  }
+}
+
+.bullet {
+  composes: bullet from './GroupingOrObject.css';
+  /* display: block; */
+  width: 80px;
+  left: -94px;
+  display: none;
+}
+
+.bulletIcon {
+  composes: bulletIcon from './GroupingOrObject.css';
+}
+
+.top {
+  composes: top from './GroupingOrObject.css';
+}
+
+.expanded {
+  composes: expanded from './GroupingOrObject.css';
+}
+
+.name {
+  color: #8ea2ad;
+}
+
+.value {
+  height: 100%;
+  width: 100px;
+  margin-left: 13px;
+  box-sizing: border-box;
 }

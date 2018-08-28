@@ -4,6 +4,7 @@ import {ReduxReducer} from '$shared/types'
 
 interface Conf<State> {
   rootReducer: ReduxReducer<State>
+  devtoolsOptions?: $FixMe
 }
 
 export default function configureStore<State>(conf: Conf<State>): Store<State> {
@@ -15,7 +16,7 @@ export default function configureStore<State>(conf: Conf<State>): Store<State> {
       $env.NODE_ENV === 'development' &&
       typeof window === 'object' &&
       window.devToolsExtension
-        ? window.devToolsExtension()
+        ? window.devToolsExtension(conf.devtoolsOptions)
         : identity
 
     enhancers.push(devtoolsEnhancer)

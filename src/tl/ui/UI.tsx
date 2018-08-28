@@ -1,7 +1,6 @@
 import {Atom} from '$shared/DataVerse2/atom'
 import ReactDOM from 'react-dom'
 import React from 'react'
-import UIRoot from './UIRoot/UIRoot'
 import {rootReducer, uiActions} from './store'
 import configureStore from '$shared/utils/redux/configureStore'
 import {UIState} from '$tl/ui/store/types'
@@ -9,6 +8,7 @@ import {Store} from 'redux'
 import atomFromReduxStore from '$shared/utils/redux/atomFromReduxStore'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import Ticker from '$shared/DataVerse/Ticker'
+import UIRootWrapper from '$tl/ui/UIRoot/UIRootWrapper'
 
 export default class UI {
   atom: Atom<UIState>
@@ -19,7 +19,10 @@ export default class UI {
   actions: typeof uiActions = uiActions
 
   constructor() {
-    this.reduxStore = configureStore({rootReducer})
+    this.reduxStore = configureStore({
+      rootReducer,
+      devtoolsOptions: {name: 'TheaterJS UI'},
+    })
     this.atom = atomFromReduxStore(this.reduxStore)
     this.atomP = this.atom.pointer
     this.ticker = new Ticker()
@@ -46,6 +49,6 @@ export default class UI {
     containerEl.className = 'theaterjsRoot'
     document.body.appendChild(containerEl)
 
-    ReactDOM.render(<UIRoot ui={this} />, containerEl)
+    ReactDOM.render(<UIRootWrapper ui={this} />, containerEl)
   }
 }

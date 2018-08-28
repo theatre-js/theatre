@@ -1,6 +1,30 @@
+.indent {
+  --indent: calc(26px + var(--depth) * 12px);
+}
+
 .container {
+  composes: indent;
   position: absolute;
-  --indent: calc(22px + var(--depth) * 12px);
+  box-sizing: border-box;
+  left: 0;
+  right: 0;
+
+  &:after {
+    position: absolute;
+    bottom: -2px;
+    right: 0;
+    /* left: 0; */
+    left: calc(var(--indent) - 4px);
+    height: 1px;
+    display: block;
+    content: ' ';
+    /* display: none; */
+  }
+
+  /* &.object.expanded:after { */
+  &:after {
+    background: #1a282f;
+  }
 
   &:before {
     pointer-events: none;
@@ -76,6 +100,7 @@
 .name {
   position: absolute 0 0 0 calc(var(--indent) - 4px);
   white-space: nowrap;
+  color: #8ea2ad;
 }
 
 .highlighter {
@@ -138,11 +163,12 @@
 .bulletIcon {
   position: absolute;
   top: 12px;
-  width: 6px;
+  width: 8px;
   height: 6px;
   right: 0;
   transition: transform 0.1s ease-out;
   line-height: 10px;
+  font-size: 30px;
 }
 
 .bullet:hover > .bulletIcon {
@@ -156,28 +182,9 @@
 }
 
 .expanded > .top > .bullet > .bulletIcon {
-  transform: rotateZ(90deg);
+  transform: translateY(2px) rotateZ(90deg);
 }
 
 .expanded > .top > .bullet:hover > .bulletIcon {
-  transform: rotateZ(75deg) !important;
+  transform: translateY(2px) rotateZ(75deg) !important;
 }
-
-.subNodes {
-  position: relative;
-  &:before {
-    pointer-events: none;
-    bottom: 13px;
-    left: calc(var(--indent) - 12px);
-    position: absolute;
-    width: 1px;
-    display: none;
-    height: 1px;
-    content: ' ';
-    z-index: 23;
-    border-radius: 50%;
-    border: 2px solid #5a5a5a;
-  }
-}
-
-/* .isObject {background: red;} */

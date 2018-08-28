@@ -3,6 +3,7 @@ import {
   $ProjectHistoricState,
   IBezierCurvesOfScalarValues,
   ProjectHistoricState,
+  PropValueContainer,
 } from '$tl/Project/store/types'
 import {PropAddress, ObjectAddress, TimelineAddress} from '$tl/handy/addresses'
 import projectSelectors from '$tl/Project/store/selectors'
@@ -12,6 +13,7 @@ import {
   TPoint,
 } from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {TCollectionOfSelectedPointsData} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/types'
+import {StaticValueContainer} from '$tl/Project/store/types'
 
 const r = reducto($ProjectHistoricState)
 
@@ -34,14 +36,14 @@ const ensureObject = (s: ProjectHistoricState, addr: ObjectAddress) => {
   }
 }
 
-// const ensureProp = (s: ProjectHistoricState, addr: PropAddress) => {
+// const ensurePropWithValueContainer = (
+//   s: ProjectHistoricState,
+//   addr: PropAddress
+// ) => {
 //   ensureObject(s, addr)
-//   const objectState = projectSelectors.getObjectState(s, addr)
+//   const objectState = projectSelectors.historic.getObjectState(s, addr)
 //   if (!objectState.props[addr.propKey]) {
-//     objectState.props[addr.propKey] = {valueContainer: {
-//       type: 'StaticValueContainer',
-//       value
-//     }}
+//     objectState.props[addr.propKey] = {valueContainer}
 //   }
 // }
 
@@ -210,5 +212,24 @@ export const setPointCoordsInBezierCurvesOfScalarValues = r(
     pointToUpdate.time = newTime
     pointToUpdate.value = newValue
     points.splice(newIndex, 0, pointToUpdate)
+  },
+)
+
+export const prop_setNumberValueInStaticValueContainer = r(
+  (s, p: PropAddress & {value: number}) => {
+    ensureObject(s, p)
+    const objectState = projectSelectors.historic.getObjectState(s, p)
+    if (!objectState.props[p.propKey]) {
+      objectState.props[p.propKey] = {
+        valueContainer: {
+          type: 'StaticValueContainer',
+          value: p.value,
+        },
+      }
+    } else {
+      ;(objectState.props[p.propKey]
+        .valueContainer as StaticValueContainer).value =
+        p.value
+    }
   },
 )

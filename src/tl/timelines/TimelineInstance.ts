@@ -90,7 +90,7 @@ export default class TimelineInstance {
     return object
   }
 
-  getObject(_path: string): TimelineInstanceObject | undefined {
+  getObject(_path: string): TimelineInstanceObject {
     const path = validateAndSanitiseSlashedPathOrThrow(
       _path,
       'timeline.getObject',
@@ -107,7 +107,9 @@ export default class TimelineInstance {
   }
 
   gotoTime = (time: number) => {
-    console.warn(`TimelineInstance.gotoTime(t) is deprecated. Use 'TimelineInstance.time = t' instead.`)
+    console.warn(
+      `TimelineInstance.gotoTime(t) is deprecated. Use 'TimelineInstance.time = t' instead.`,
+    )
     this.time = time
   }
 
@@ -121,9 +123,7 @@ export default class TimelineInstance {
       throw new Error(`timeline.time must be a number`)
     }
     if (time < 0) {
-      throw new Error(
-        `timeline.time must be a positive number`,
-      )
+      throw new Error(`timeline.time must be a positive number`)
     }
     const dur = coldVal(this._internalTimeline.pointerToRangeState.duration)
     this._gotoTime(time > dur ? dur : time)
@@ -243,7 +243,12 @@ export default class TimelineInstance {
     this._play(iterationCount, range, rate, direction)
   }
 
-  _play(iterationCount: number, range: Range, rate: number, direction: Direction) {
+  _play(
+    iterationCount: number,
+    range: Range,
+    rate: number,
+    direction: Direction,
+  ) {
     if (this._playing) {
       this.pause()
     }
@@ -259,7 +264,10 @@ export default class TimelineInstance {
     }
 
     let goingForward =
-      direction === Direction.AlternateReverse || direction === Direction.Reverse ? -1 : 1
+      direction === Direction.AlternateReverse ||
+      direction === Direction.Reverse
+        ? -1
+        : 1
 
     let countSoFar = 1
 

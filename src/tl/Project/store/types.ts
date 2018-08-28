@@ -27,7 +27,7 @@ export type ProjectEphemeralState = t.StaticTypeOf<
 
 const $StaticValueContainer = t.type({
   type: t.literal('StaticValueContainer'),
-  value: t.union([t.number, t.string]),
+  value: t.union([t.number]),
 })
 
 export type StaticValueContainer = t.StaticTypeOf<typeof $StaticValueContainer>
@@ -93,6 +93,8 @@ const $PropValueContainer = t.taggedUnion('type', [
   $StaticValueContainer,
   $BezierCurvesOfScalarValues,
 ])
+
+export type PropValueContainer = t.StaticTypeOf<typeof $PropValueContainer>
 
 const $ObjectPropState = t.type(
   {
