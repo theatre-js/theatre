@@ -11,7 +11,6 @@ import {
 } from '$shared/components/ActiveModeProvider/ActiveModeProvider'
 import {getSvgWidth} from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
-import noop from '$shared/utils/noop'
 import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import InternalTimeline from '$tl/timelines/InternalTimeline'
@@ -28,9 +27,12 @@ import {
   // TPointsOfItems,
   TCollectionOfSelectedPointsData,
   TMapOfFilteredItemKeyToItemData,
+  TLastCommittedData,
 } from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/types'
 import projectSelectors from '$tl/Project/store/selectors'
 import {svgPaddingY} from '$tl/ui/panels/AllInOnePanel/Right/views/GraphEditorWrapper'
+import Overlay from '$shared/components/Overlay/Overlay'
+import OverlaySection from '$shared/components/Overlay/OverlaySection'
 
 const classes = resolveCss(css)
 
@@ -51,6 +53,7 @@ interface IState {
     | 'selectingPoints'
     | 'movingPoints'
     | 'committingChanges'
+    | 'confirmedSelection'
   startPoint: {
     left: number
     top: number
@@ -63,20 +66,23 @@ interface IState {
 }
 
 export const SelectionAPIContext = React.createContext<TSelectionAPI>({
-  addPoint: noop,
-  removePoint: noop,
+  addPoint: () => true,
+  removePoint: () => true,
   getSelectedPointsOfItem: () => ({}),
 })
 export const SelectedAreaContext = React.createContext<
   TTransformedSelectedArea
 >({})
-export const SelectionMoveContext = React.createContext<boolean>(false)
+export const SelectionStatusContext = React.createContext<IState['status']>(
+  'noSelection',
+)
 
 class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
   selectedPoints: TSelectedPoints = {}
   extremumsOfItemsInSelection: TExtremumsMap = {}
   mapOfItemsData: TMapOfFilteredItemKeyToItemData = {}
   tempActionGroup = this.project._actions.historic.temp()
+  lastCommittedData: TLastCommittedData
 
   static defaultStateValues: IState = {
     status: 'noSelection',
@@ -91,58 +97,14 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
   state = SelectionProvider.defaultStateValues
 
   render() {
-    return (
-      <ActiveModeContext.Consumer>
-        {activeMode => {
-          const renderSelectionArea =
-            activeMode === MODES.shift || this.state.status !== 'noSelection'
-          return renderSelectionArea
-            ? this._renderSelectionArea()
-            : this._renderContextProviders()
-        }}
-      </ActiveModeContext.Consumer>
-    )
-  }
-
-  _renderSelectionArea() {
-    const {status, move, dims} = this.state
-    const {duration, range, timelineWidth} = this.props
-    const statusIsMovingPoints = status === 'movingPoints'
-    const svgWidth = getSvgWidth(range, duration, timelineWidth)
+    const {status} = this.state
     return (
       <>
         {this._renderContextProviders()}
-        <div {...classes('selectionContainer')} style={{width: svgWidth}}>
-          <DraggableArea
-            shouldRegisterEvents={!statusIsMovingPoints}
-            onDragStart={this.activateSelection}
-            onDrag={this.setSelectionDimsAndBoundaries}
-            onDragEnd={this.confirmSelectionDims}
-          >
-            <div
-              {...classes('selectionZone', statusIsMovingPoints && 'confirm')}
-              {...this._getZoneProps(status)}
-              style={{width: timelineWidth}}
-            >
-              <DraggableArea
-                shouldRegisterEvents={statusIsMovingPoints}
-                onDrag={this.handleAreaMove}
-              >
-                <div
-                  style={{transform: `translate3d(${move.x}px,${move.y}px,0)`}}
-                >
-                  <div
-                    {...classes(
-                      'selectedArea',
-                      statusIsMovingPoints && 'movable',
-                    )}
-                    style={dims}
-                  />
-                </div>
-              </DraggableArea>
-            </div>
-          </DraggableArea>
-        </div>
+        <ActiveModeContext.Consumer>
+          {activeMode => activeMode === MODES.shift && this._renderHitZone()}
+        </ActiveModeContext.Consumer>
+        {status !== 'noSelection' && this._renderSelectedArea()}
       </>
     )
   }
@@ -153,13 +115,66 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
         <SelectedAreaContext.Provider
           value={this.state.transformedSelectedArea}
         >
-          <SelectionMoveContext.Provider
-            value={this.state.status === 'movingPoints'}
-          >
+          <SelectionStatusContext.Provider value={this.state.status}>
             {this.props.children}
-          </SelectionMoveContext.Provider>
+          </SelectionStatusContext.Provider>
         </SelectedAreaContext.Provider>
       </SelectionAPIContext.Provider>
+    )
+  }
+
+  _renderHitZone() {
+    return (
+      <DraggableArea
+        onDragStart={this.activateSelection}
+        onDrag={this.setSelectionDimsAndBoundaries}
+        onDragEnd={this.confirmSelectionDims}
+      >
+        <div {...classes('hitZone')} />
+      </DraggableArea>
+    )
+  }
+
+  _renderSelectedArea() {
+    const {status, move, dims} = this.state
+    const statusIsConfirmedSelection = status === 'confirmedSelection'
+
+    const areaIsMovable =
+      statusIsConfirmedSelection ||
+      status === 'movingPoints' ||
+      status === 'committingChanges'
+
+    return (
+      <div {...classes('container')}>
+        <Overlay
+          onClickOutside={this._clearSelection}
+          propagateWheel={true}
+          propagateMouseDown={true}
+        >
+          <OverlaySection>
+            <DraggableArea
+              onDragStart={this.handleAreaDragStart}
+              onDrag={this.handleAreaDrag}
+              onDragEnd={this.handleAreaDragEnd}
+            >
+              <div
+                style={{
+                  transform: `translate3d(${move.x}px, ${move.y}px, 0)`,
+                }}
+              >
+                <div
+                  {...classes(
+                    'areaOverlay',
+                    areaIsMovable && 'movable',
+                    statusIsConfirmedSelection && 'hasTransition',
+                  )}
+                  style={dims}
+                />
+              </div>
+            </DraggableArea>
+          </OverlaySection>
+        </Overlay>
+      </div>
     )
   }
 
@@ -169,6 +184,13 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
     extremums,
     pointData,
   ) => {
+    if (
+      this.state.status === 'committingChanges' &&
+      this.selectedPoints[itemKey][pointIndex] == null
+    ) {
+      return false
+    }
+
     this.extremumsOfItemsInSelection = {
       ...this.extremumsOfItemsInSelection,
       [itemKey]: extremums,
@@ -181,16 +203,22 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
         [pointIndex]: {...pointData},
       },
     }
+    return true
   }
 
   removePointFromSelection: TSelectionAPI['removePoint'] = (
     itemKey,
     pointIndex,
   ) => {
-    delete this.selectedPoints[itemKey][pointIndex]
-    if (Object.keys(this.selectedPoints[itemKey]).length === 0) {
-      delete this.selectedPoints[itemKey]
+    const {status} = this.state
+    if (status === 'selectingPoints' || status === 'noSelection') {
+      delete this.selectedPoints[itemKey][pointIndex]
+      if (Object.keys(this.selectedPoints[itemKey]).length === 0) {
+        delete this.selectedPoints[itemKey]
+      }
+      return true
     }
+    return false
   }
 
   getSelectedPointsOfItem: TSelectionAPI['getSelectedPointsOfItem'] = itemKey => {
@@ -206,6 +234,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
   activateSelection = (event: React.MouseEvent<HTMLDivElement>) => {
     this.mapOfItemsData = this._getMapOfItemsData(this.props.internalTimeline)
     const {layerX, layerY} = event.nativeEvent
+
     const itemsInfo = utils.memoizedGetItemsInfo(this.mapOfItemsData)
     this.setState(() => ({
       status: 'selectingPoints',
@@ -237,8 +266,15 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
     })
   }
 
-  handleAreaMove = (x: number, y: number, event: MouseEvent) => {
+  handleAreaDragStart = () => {
+    this.setState(() => ({
+      status: 'movingPoints',
+    }))
+  }
+
+  handleAreaDrag = (x: number, y: number, event: MouseEvent) => {
     const {horizontalLimits} = this.state
+
     if (x <= horizontalLimits.left) x = horizontalLimits.left + 1
     if (x >= horizontalLimits.right) x = horizontalLimits.right - 1
 
@@ -246,6 +282,15 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
     if (event.altKey) y = 0
 
     this.setState(() => ({move: {x, y}}), this.applyChangesToSelectionTemp)
+  }
+
+  handleAreaDragEnd = () => {
+    this.setState(
+      () => ({
+        status: 'committingChanges',
+      }),
+      this.applyChangesToSelection,
+    )
   }
 
   confirmSelectionDims = (dragHappened: boolean) => {
@@ -266,7 +311,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
         this.state.itemsInfo,
       )
       this.setState(() => ({
-        status: 'movingPoints',
+        status: 'confirmedSelection',
         horizontalLimits,
         dims: fittedDims,
       }))
@@ -285,17 +330,16 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
     )
   }
 
-  applyChangesToSelection = (event: React.MouseEvent<HTMLDivElement>) => {
-    disableEvent(event)
+  applyChangesToSelection = () => {
     this.project.reduxStore.dispatch(
       this.project._actions.batched([
         this.tempActionGroup.discard(),
         this.project._actions.historic.moveSelectionOfPointsInBezierCurvesOfScalarValues(
-          this._getPointsInSelectionDataAfterMove(),
+          this.lastCommittedData,
         ),
       ]),
     )
-    this._clearSelection()
+    this._updateSelectionState()
   }
 
   _clearSelection = () => {
@@ -305,8 +349,47 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
         this.selectedPoints = {}
         this.mapOfItemsData = {}
         this.extremumsOfItemsInSelection = {}
+        this.lastCommittedData = []
       },
     )
+  }
+
+  _updateSelectionState() {
+    const {range, duration, timelineWidth} = this.props
+    const {itemsInfo} = this.state
+    this.mapOfItemsData = this._getMapOfItemsData(this.props.internalTimeline)
+    const dims = utils.getFittedDims(
+      this.selectedPoints,
+      range,
+      duration,
+      timelineWidth,
+      itemsInfo,
+    )
+
+    const startPoint = {left: dims.left, top: dims.top}
+
+    const transformedSelectedArea = utils.getTransformedSelectedArea(
+      dims,
+      range,
+      duration,
+      timelineWidth,
+      itemsInfo,
+    )
+    const horizontalLimits = utils.getHorizontalLimits(
+      this.selectedPoints,
+      timelineWidth,
+      range,
+      this.mapOfItemsData,
+    )
+
+    this.setState(() => ({
+      move: {x: 0, y: 0},
+      startPoint,
+      dims,
+      transformedSelectedArea,
+      itemsInfo,
+      horizontalLimits,
+    }))
   }
 
   _getPointsInSelectionDataAfterMove() {
@@ -317,11 +400,12 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
 
     const timeChange = (move.x / svgWidth) * duration
 
-    return Object.entries(this.selectedPoints).reduce(
+    return (this.lastCommittedData = Object.entries(this.selectedPoints).reduce(
       (pointsDataAfterMove, [itemKey, selectedPointsData]) => {
         const itemData = this.mapOfItemsData[itemKey]
         const itemExtremums = this.extremumsOfItemsInSelection[itemKey]
         const extDiff = itemExtremums[1] - itemExtremums[0]
+
         const valueChange = (move.y / (itemData.height - svgPaddingY)) * extDiff
         const pointsNewCoords: TCollectionOfSelectedPointsData = {}
 
@@ -344,7 +428,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
         ]
       },
       [],
-    )
+    ))
   }
 
   _getMapOfItemsData = (
@@ -394,27 +478,6 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
       itemsInfo,
     )
   }
-
-  _getZoneProps(status: IState['status']) {
-    if (status === 'selectingPoints') {
-      return {
-        onWheel: disableEvent,
-      }
-    }
-    if (status === 'movingPoints') {
-      return {
-        onWheel: disableEvent,
-        onClick: disableEvent,
-        onMouseDown: this.applyChangesToSelection,
-      }
-    }
-    return {}
-  }
-}
-
-const disableEvent = (event: React.MouseEvent<HTMLDivElement>) => {
-  event.stopPropagation()
-  event.preventDefault()
 }
 
 export default (props: IExportedComponentProps) => (

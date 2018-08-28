@@ -381,15 +381,20 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
     )
 
     if (shouldToggle && this.pointClickArea.current != null) {
-      this.isInSelection = !this.isInSelection
-      if (this.isInSelection) {
-        this.pointClickArea.current.classList.add(pointCss.highlightAsSelected)
-        this.props.addPointToSelection(pointIndex, pointCoords)
+      if (!this.isInSelection) {
+        const didAdd = this.props.addPointToSelection(pointIndex, pointCoords)
+        if (didAdd) {
+          this.pointClickArea.current.classList.add(pointCss.highlightAsSelected)
+          this.isInSelection = true
+        }
       } else {
-        this.pointClickArea.current.classList.remove(
-          pointCss.highlightAsSelected,
-        )
-        this.props.removePointFromSelection(pointIndex)
+        const didRemove = this.props.removePointFromSelection(pointIndex)
+        if (didRemove) {
+          this.pointClickArea.current.classList.remove(
+            pointCss.highlightAsSelected,
+          )
+          this.isInSelection = false
+        }
       }
     }
     return null

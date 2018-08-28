@@ -6,7 +6,6 @@ import {
   TSelectedPoints,
   THorizontalLimits,
   TMapOfFilteredItemKeyToItemData,
-  // TPointsOfItems,
 } from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/types'
 import {svgPaddingY} from '$tl/ui/panels/AllInOnePanel/Right/views/GraphEditorWrapper'
 import {TRange, TDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
@@ -61,11 +60,9 @@ export const getTransformedSelectedArea = (
   const lowerBoundaryItemIndex =
     toIndex % 2 === 0 ? toIndex / 2 - 1 : Math.floor(toIndex / 2) - 1
 
-  const leftOffset = range.from / duration
   const focusedWidth = (range.to - range.from) / duration
-  const left = 100 * (leftOffset + focusedWidth * (fromX / timelineWidth))
-  const right =
-    100 * (leftOffset + focusedWidth * ((fromX + dX) / timelineWidth))
+  const left = 100 * (focusedWidth * (fromX / timelineWidth))
+  const right = 100 * (focusedWidth * ((fromX + dX) / timelineWidth))
 
   let transformedBoundaries
   if (upperBoundaryItemIndex === lowerBoundaryItemIndex) {
@@ -145,18 +142,13 @@ export const getFittedDims = (
     })
   })
 
-  const leftOffset = (100 * range.from) / duration
   const focusedWidth = (range.to - range.from) / duration
   const left =
     -POINT_RECT_EDGE_SIZE / 2 +
-    (((Math.min(...arrayOfPointsTimes) - leftOffset) / focusedWidth) *
-      timelineWidth) /
-      100
+    ((Math.min(...arrayOfPointsTimes) / focusedWidth) * timelineWidth) / 100
   const right =
     POINT_RECT_EDGE_SIZE / 2 +
-    (((Math.max(...arrayOfPointsTimes) - leftOffset) / focusedWidth) *
-      timelineWidth) /
-      100
+    ((Math.max(...arrayOfPointsTimes) / focusedWidth) * timelineWidth) / 100
 
   const {boundaries: itemsBoundaries, keys: itemsKeys} = itemsInfo
   const itemsInSelectionKeys = Object.keys(selectedPoints)

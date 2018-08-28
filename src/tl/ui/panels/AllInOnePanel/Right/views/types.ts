@@ -8,6 +8,7 @@ import {
   TPointSingleHandle,
   TNormalizedPoints,
   TNormalizedPoint,
+  TExtremums,
 } from '$tl/ui/panels/AllInOnePanel/Right/types'
 
 export type TShowPointValuesEditor = (
@@ -28,6 +29,7 @@ export type TShowConnectorContextMenu = (
 export type TAddPointToSelection = (
   pointIndex: number,
   pointData: TPointCoords,
+  extremums?: TExtremums,
 ) => void
 
 export type TRemovePointFromSelection = (pointIndex: number) => void

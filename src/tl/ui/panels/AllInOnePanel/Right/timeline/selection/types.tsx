@@ -6,6 +6,7 @@ import {
   TPointValue,
 } from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {PrimitivePropItem} from '$tl/ui/panels/AllInOnePanel/utils'
+import {PropAddress} from '$tl/handy/addresses'
 
 export type TDims = {
   left: number
@@ -30,10 +31,12 @@ export type TTransformedSelectedArea = {
   }
 }
 
+export type TSelectedPointsInItem = {
+  [pointIndex: string]: TPointCoords
+}
+
 export type TSelectedPoints = {
-  [itemKey: string]: {
-    [pointIndex: string]: TPointCoords
-  }
+  [itemKey: string]: TSelectedPointsInItem
 }
 
 export type TSelectionAPI = {
@@ -42,9 +45,11 @@ export type TSelectionAPI = {
     pointIndex: number,
     extremums: TExtremums,
     pointData: TPointCoords,
-  ) => void
-  removePoint: (itemKey: string, pointIndex: number) => void
-  getSelectedPointsOfItem: (itemKey: string) => undefined | TCollectionOfSelectedPointsData
+  ) => boolean
+  removePoint: (itemKey: string, pointIndex: number) => boolean
+  getSelectedPointsOfItem: (
+    itemKey: string,
+  ) => undefined | TSelectedPointsInItem
 }
 
 export type THorizontalLimits = {left: number; right: number}
@@ -65,3 +70,8 @@ export type TMapOfFilteredItemKeyToItemData = {
     points: TPoints
   }
 }
+
+export type TLastCommittedData = Array<{
+  propAddress: PropAddress
+  pointsNewCoords: TCollectionOfSelectedPointsData
+}>

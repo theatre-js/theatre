@@ -17,9 +17,14 @@ import {
   TTempPointRenderer,
   TTempPointsInSelection,
 } from '$tl/ui/panels/AllInOnePanel/Right/views/types'
-import {SelectionMoveContext} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/SelectionProvider'
+import {SelectionStatusContext} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/SelectionProvider'
 import RenderBlocker from '$shared/components/RenderBlocker/RenderBlocker'
 import {TCollectionOfSelectedPointsData} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/types'
+import {
+  getTimeNormalizer,
+  getValueNormalizer,
+  calculateNextExtremums,
+} from '$tl/ui/panels/AllInOnePanel/Right/items/ItemPointsNormalizer'
 
 export interface IViewBaseProps {
   extremums: TExtremums
@@ -39,9 +44,50 @@ export default class ViewBase<Props extends IProps> extends UIComponent<
   ) => {
     return (
       <RenderBlocker>
-        <SelectionMoveContext.Consumer>
-          {isMoving => {
-            if (isMoving) {
+        <SelectionStatusContext.Consumer>
+          {status => {
+            if (status === 'committingChanges') {
+              this.props.extremumsAPI.unpersist()
+              const pointsInSelection = this.props.selectionAPI.getSelectedPointsOfItem(
+                this.props.propGetter('itemKey'),
+              )
+              if (
+                pointsInSelection != null &&
+                Object.keys(pointsInSelection).length > 0
+              ) {
+                const allPoints = getAllPoints()
+                const expanded = this.props.propGetter('itemExpanded')
+                const tempPointsInSelection = this._getTempPointsInSelection(
+                  pointsInSelection,
+                  allPoints,
+                )
+
+                const nextExtremums = calculateNextExtremums(allPoints)
+
+                const normalizedTempPointsInSelection = this._getNormalizedTempPointsInSelection(
+                  tempPointsInSelection,
+                  nextExtremums,
+                )
+
+                Object.keys(pointsInSelection)
+                  .map(Number)
+                  .forEach(pointIndex => {
+                    this._addPointToSelection(
+                      pointIndex,
+                      {
+                        time: normalizedTempPointsInSelection[pointIndex].time,
+                        value: expanded
+                          ? normalizedTempPointsInSelection[pointIndex].value
+                          : 50,
+                      },
+                      nextExtremums,
+                    )
+                  })
+              }
+              return null
+            }
+
+            if (status === 'movingPoints') {
               const pointsInSelection = this.props.selectionAPI.getSelectedPointsOfItem(
                 this.props.propGetter('itemKey'),
               )
@@ -71,8 +117,36 @@ export default class ViewBase<Props extends IProps> extends UIComponent<
             this.props.extremumsAPI.unpersist()
             return null
           }}
-        </SelectionMoveContext.Consumer>
+        </SelectionStatusContext.Consumer>
       </RenderBlocker>
+    )
+  }
+
+  _getNormalizedTempPointsInSelection(
+    tempPointsInSelection: TTempPointsInSelection,
+    nextExtremums: TExtremums,
+  ): TTempPointsInSelection {
+    const normalizeTime = getTimeNormalizer(this.props.propGetter('duration'))
+    const normalizeValue = getValueNormalizer(nextExtremums)
+    return Object.keys(tempPointsInSelection).reduce(
+      (normalizedTempPoints, pointIndex) => {
+        const {
+          originalTime,
+          originalValue,
+          interpolationDescriptor,
+        } = tempPointsInSelection[pointIndex]
+        return {
+          ...normalizedTempPoints,
+          [pointIndex]: {
+            originalTime,
+            originalValue,
+            time: normalizeTime(originalTime),
+            value: normalizeValue(originalValue),
+            interpolationDescriptor: {...interpolationDescriptor},
+          },
+        }
+      },
+      {} as TTempPointsInSelection,
     )
   }
 
@@ -184,17 +258,21 @@ export default class ViewBase<Props extends IProps> extends UIComponent<
     return newCoords
   }
 
-  _addPointToSelection: TAddPointToSelection = (pointIndex, pointData) => {
-    this.props.selectionAPI.addPoint(
+  _addPointToSelection: TAddPointToSelection = (
+    pointIndex,
+    pointData,
+    extremums = this.props.extremums,
+  ) => {
+    return this.props.selectionAPI.addPoint(
       this.props.propGetter('itemKey'),
       pointIndex,
-      this.props.extremums,
+      extremums,
       pointData,
     )
   }
 
   _removePointFromSelection: TRemovePointFromSelection = pointIndex => {
-    this.props.selectionAPI.removePoint(
+    return this.props.selectionAPI.removePoint(
       this.props.propGetter('itemKey'),
       pointIndex,
     )

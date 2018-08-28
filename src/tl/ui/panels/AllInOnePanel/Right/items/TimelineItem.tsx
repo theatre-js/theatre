@@ -37,6 +37,7 @@ export default class TimelineItem extends UIComponent<IProps, IState> {
           itemKey={item.key}
           itemAddress={item.address}
           itemHeight={item.height}
+          itemExpanded={item.expanded}
         >
           <ItemView
             expanded={item.expanded}

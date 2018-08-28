@@ -1,42 +1,26 @@
-.selectionContainer {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
+.hitZone {
+  position: absolute 0;
   z-index: 10000;
+  pointer-events: auto;
+  cursor: crosshair;
+}
+
+.container {
+  position: absolute 0;
+  z-index: 100000;
   pointer-events: none;
 }
 
-.selectionZone {
-  position: sticky;
-  left: 0;
-  top: 0;
-  height: 100%;
-  pointer-events: auto;
-  cursor: crosshair;
-
-  &.confirm {
-    cursor: url('url-loader!./ConfirmCursor.svg'), auto;
-
-    /*
-    // &:after {
-    //   display: block;
-    //   position: absolute;
-    //   content: ' ';
-    //   left: calc(-1 * boxLegendWidth);
-    //   width: boxLegendWidth;
-    //   height: 100%;
-    // }
-    */
-  }
-}
-
-.selectedArea {
-  position: absolute;
+.areaOverlay {
+  position: absolute 0;
   background: rgba(255, 255, 255, 0.2);
+  pointer-events: auto;
 
   &.movable {
-    transition: all 0.3s ease-in-out;
     cursor: move;
+  }
+
+  &.hasTransition {
+    transition: all 0.3s ease-in-out;
   }
 }
