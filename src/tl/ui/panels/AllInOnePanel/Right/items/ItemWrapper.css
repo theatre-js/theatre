@@ -18,8 +18,8 @@
     position: absolute;
     display: block;
     content: ' ';
-    top: 1px;
-    bottom: 1px;
+    top: 0px;
+    bottom: -1px;
     width: 100%;
     border-top: 1px solid panelBgColor;
     border-bottom: 1px solid panelBgColor;

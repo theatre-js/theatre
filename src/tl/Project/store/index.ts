@@ -70,6 +70,40 @@ const initialHistoricState: ProjectHistoricState = {
                 ],
               },
             },
+            'position.x': {
+              valueContainer: {
+                type: 'BezierCurvesOfScalarValues',
+                points: [
+                  ...(Array.from(new Array(21).keys()).map(i => ({
+                    time: i * 1000,
+                    value: Math.random() * 100,
+                    interpolationDescriptor: {
+                      connected: i < 20,
+                      __descriptorType: 'TimelinePointInterpolationDescriptor',
+                      interpolationType: 'CubicBezier',
+                      handles: [0.5, 0, 0.5, 0],
+                    },
+                  })) as any),
+                ],
+              },
+            },
+            'position.y': {
+              valueContainer: {
+                type: 'BezierCurvesOfScalarValues',
+                points: [
+                  ...(Array.from(new Array(21).keys()).map(i => ({
+                    time: i * 1000,
+                    value: Math.random() * 100,
+                    interpolationDescriptor: {
+                      connected: i < 20,
+                      __descriptorType: 'TimelinePointInterpolationDescriptor',
+                      interpolationType: 'CubicBezier',
+                      handles: [0.5, 0, 0.5, 0],
+                    },
+                  })) as any),
+                ],
+              },
+            },
           },
         },
         'Act 1 / Stage / Ball / The dangling thing': {
