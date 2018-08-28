@@ -57,16 +57,16 @@ const initialHistoricState: ProjectHistoricState = {
                       handles: [0.5, 0, 0.5, 0],
                     },
                   },
-                  // ...Array.from(new Array(21).keys()).map(i => ({
-                  //   time: 6500 + 650 * i,
-                  //   value: Math.random() * 200 - 100,
-                  //   interpolationDescriptor: {
-                  //     connected: i < 20,
-                  //     __descriptorType: 'TimelinePointInterpolationDescriptor',
-                  //     interpolationType: 'CubicBezier',
-                  //     handles: [0.5, 0, 0.5, 0],
-                  //   },
-                  // })) as any,
+                  ...(Array.from(new Array(21).keys()).map(i => ({
+                    time: 6500 + 650 * i,
+                    value: Math.random() * 200 - 100,
+                    interpolationDescriptor: {
+                      connected: i < 20,
+                      __descriptorType: 'TimelinePointInterpolationDescriptor',
+                      interpolationType: 'CubicBezier',
+                      handles: [0.5, 0, 0.5, 0],
+                    },
+                  })) as any),
                 ],
               },
             },
@@ -75,10 +75,11 @@ const initialHistoricState: ProjectHistoricState = {
         'Act 1 / Stage / Ball / The dangling thing': {
           props: {
             opacity: {
-              valueContainer: {type: 'StaticValueContainer', value: 0.5}  /* {
+              // valueContainer: {type: 'StaticValueContainer', value: 0.5}
+              valueContainer: {
                 type: 'BezierCurvesOfScalarValues',
                 points: [
-                  ...Array.from(new Array(21).keys()).map(i => ({
+                  ...(Array.from(new Array(21).keys()).map(i => ({
                     time: i * 1000,
                     value: Math.random() * 100,
                     interpolationDescriptor: {
@@ -87,9 +88,9 @@ const initialHistoricState: ProjectHistoricState = {
                       interpolationType: 'CubicBezier',
                       handles: [0.5, 0, 0.5, 0],
                     },
-                  })) as any,
+                  })) as any),
                 ],
-              } */,
+              },
             },
           },
         },

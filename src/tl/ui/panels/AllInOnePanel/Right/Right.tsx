@@ -93,7 +93,7 @@ class Right extends UIComponent<IRightProps, IRightState> {
     const newTime = xToInRangeTime(range, timelineWidth)(
       event.clientX - this.wrapperLeft,
     )
-    timelineInstance.gotoTime(newTime)
+    timelineInstance.time = newTime
     // if (timelineInstance.playing) {
     //   timelineInstance.pause()
     //   timelineInstance.gotoTime(newTime)
@@ -108,7 +108,7 @@ class Right extends UIComponent<IRightProps, IRightState> {
     const newTime = xToInRangeTime(range, timelineWidth)(
       event.clientX - this.wrapperLeft,
     )
-    timelineInstance.gotoTime(clampTime(range, newTime))
+    timelineInstance.time = clampTime(range, newTime)
   }
 
   handleWheel = (event: React.WheelEvent<HTMLDivElement>) => {

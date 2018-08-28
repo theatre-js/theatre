@@ -48,7 +48,11 @@ export default class TimeUI extends UIComponent<IProps, IState> {
            * We just need to somehow show this in the timeline
            */
           const currentTime = val(timelineInstance.statePointer.time)
-          
+
+          function gotoTime(time: number) {
+            timelineInstance.time = time
+          }
+
           const rangeState = val(internalTimeline.pointerToRangeState)
           const range = rangeState.rangeShownInPanel
           const height = val(propsP.height)
@@ -67,7 +71,7 @@ export default class TimeUI extends UIComponent<IProps, IState> {
                 width={width}
                 currentTime={currentTime}
                 range={range}
-                gotoTime={timelineInstance.gotoTime}
+                gotoTime={gotoTime}
               />
             </div>
           )
