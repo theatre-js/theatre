@@ -277,8 +277,8 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
     if (x <= horizontalLimits.left) x = horizontalLimits.left + 1
     if (x >= horizontalLimits.right) x = horizontalLimits.right - 1
 
-    if (event.shiftKey) x = 0
-    if (event.altKey) y = 0
+    if (event.shiftKey) y = 0
+    if (event.altKey) x = 0
 
     this.setState(() => ({move: {x, y}}), this.applyChangesToSelectionTemp)
   }

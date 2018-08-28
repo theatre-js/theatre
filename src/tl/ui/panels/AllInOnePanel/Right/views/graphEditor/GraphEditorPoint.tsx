@@ -286,8 +286,8 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
 
     let x = (dx / width) * 100
     let y = (dy / height) * 100
-    if (e.altKey) y = 0
-    if (e.shiftKey) x = 0
+    if (e.altKey) x = 0
+    if (e.shiftKey) y = 0
 
     const limitLeft = prevPoint == null ? 0 : prevPoint.time
     const limitRight = nextPoint == null ? 100 : nextPoint.time

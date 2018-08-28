@@ -9,6 +9,7 @@ import TimelineInstance from '$tl/timelines/TimelineInstance'
 import InternalTimeline from '$tl/timelines/InternalTimeline'
 import RangeSelector from '$tl/ui/panels/AllInOnePanel/TimeUI/RangeSelector'
 import FramesGrid from '$tl/ui/panels/AllInOnePanel/TimeUI/FramesGrid'
+import {clamp} from 'lodash'
 
 interface IProps {
   internalTimeline: InternalTimeline
@@ -48,22 +49,23 @@ export default class TimeUI extends UIComponent<IProps, IState> {
            * We just need to somehow show this in the timeline
            */
           const currentTime = val(timelineInstance.statePointer.time)
-
-          function gotoTime(time: number) {
-            timelineInstance.time = time
-          }
-
           const rangeState = val(internalTimeline.pointerToRangeState)
           const range = rangeState.rangeShownInPanel
           const height = val(propsP.height)
           const width = val(propsP.width)
           const left = val(propsP.left)
+          const {duration} = rangeState
+
+          function gotoTime(time: number) {
+            timelineInstance.time = clamp(time, 0, duration)
+          }
+
           return (
             <div {...classes('container')} style={{width, left, height}}>
               <FramesGrid width={width} range={range} />
               <RangeSelector
                 width={width}
-                duration={rangeState.duration}
+                duration={duration}
                 range={rangeState.rangeShownInPanel}
                 setRange={internalTimeline._setRangeShownInPanel}
               />
