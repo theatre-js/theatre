@@ -7,7 +7,11 @@ import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
 import FlyoutSearchableList from '$shared/components/FlyoutSearchableList/FlyoutSearchableList'
 import MultiLevelDropdown from '$shared/components/MultiLevelDropdown/MultiLevelDropdown'
 import {convertInternalTimelinesToItems} from '$shared/components/MultiLevelDropdown/utils'
-
+import FullSizeHint, {
+  TextBlock,
+  CodeSnippet,
+  Tooltip,
+} from '$tl/ui/panels/AllInOnePanel/Bottom/FullSizeHint/FullSizeHint'
 interface IProps {}
 
 interface IState {
@@ -40,22 +44,36 @@ export default class TimelineSelect extends UIComponent<IProps, IState> {
                 this.selectInternalTimeline(project.id, path)
               return (
                 <>
-                  {val(stateP.menuOpen) && (
-                    <FlyoutSearchableList
-                      options={Object.keys(internalTimelines)}
-                      onSelect={onSelect}
-                      close={this.closeMenu}
-                    >
-                      {query =>
-                        query.length === 0 ? (
-                          <MultiLevelDropdown
-                            items={multiLevelItems}
-                            activePath={activePath}
-                            onSelect={path => onSelect(path.join(' / '))}
-                          />
-                        ) : null
-                      }
-                    </FlyoutSearchableList>
+                  {val(stateP.menuOpen) &&
+                    (internalTimeline && (
+                      <FlyoutSearchableList
+                        options={Object.keys(internalTimelines)}
+                        onSelect={onSelect}
+                        close={this.closeMenu}
+                      >
+                        {query =>
+                          query.length === 0 ? (
+                            <MultiLevelDropdown
+                              items={multiLevelItems}
+                              activePath={activePath}
+                              onSelect={path => onSelect(path.join(' / '))}
+                            />
+                          ) : null
+                        }
+                      </FlyoutSearchableList>
+                    ))}
+
+                  {!internalTimeline && (
+                    <>
+                      <FullSizeHint>
+                        <TextBlock>Create a timeline!</TextBlock>
+                        <CodeSnippet>
+                          const timeline = project.getTimeline('Timeline Name', 'Timeline
+                          Instance')
+                        </CodeSnippet>
+                      </FullSizeHint>
+                      <Tooltip>Your timeline will appear here.</Tooltip>
+                    </>
                   )}
                   <Item onClick={this.onClick}>
                     {!internalTimeline

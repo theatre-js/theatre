@@ -1,7 +1,4 @@
 import React from 'react'
-import {val} from '$shared/DataVerse2/atom'
-import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
-import UIComponent from '$tl/ui/handy/UIComponent'
 import {DurationContext} from '$tl/ui/panels/AllInOnePanel/Right/timeline/RootPropProvider'
 import {
   TPoints,
@@ -48,37 +45,27 @@ const defaultCache: TCache = {
   points: [],
 }
 
-class ItemPointsNormalizer extends UIComponent<IProps, IState> {
+class ItemPointsNormalizer extends React.PureComponent<IProps, IState> {
   shouldPersistExtremums: boolean = false
   cache: TCache = {...defaultCache}
 
   render() {
+    const {points} = this.props
+    const extremums = this.getExtremums(points)
     return (
-      <PropsAsPointer props={this.props}>
-        {({props: propsP}) => {
-          const points = val(propsP.points)
-          const extremums = this.getExtremums(points)
-          return (
-            <ExtremumsAPIContext.Provider value={this.api}>
-              <DurationContext.Consumer>
-                {duration => {
-                  const normalizedPoints = this.getNormalizedPoints(
-                    points,
-                    duration,
-                    extremums,
-                  )
+      <ExtremumsAPIContext.Provider value={this.api}>
+        <DurationContext.Consumer>
+          {duration => {
+            const normalizedPoints = this.getNormalizedPoints(
+              points,
+              duration,
+              extremums,
+            )
 
-                  return this.props.children(
-                    normalizedPoints,
-                    extremums,
-                    duration,
-                  )
-                }}
-              </DurationContext.Consumer>
-            </ExtremumsAPIContext.Provider>
-          )
-        }}
-      </PropsAsPointer>
+            return this.props.children(normalizedPoints, extremums, duration)
+          }}
+        </DurationContext.Consumer>
+      </ExtremumsAPIContext.Provider>
     )
   }
 

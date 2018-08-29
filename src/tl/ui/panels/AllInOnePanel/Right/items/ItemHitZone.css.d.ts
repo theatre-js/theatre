@@ -1,3 +1,4 @@
+export const svgPaddingY: string;
 export const container: string;
 export const fullHeight: string;
 export const enabled: string;

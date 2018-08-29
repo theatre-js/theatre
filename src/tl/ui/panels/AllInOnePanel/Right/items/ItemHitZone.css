@@ -1,5 +1,8 @@
+@value svgPaddingY from '$tl/ui/panels/AllInOnePanel/Right/views/SVGWrapper.css';
+
+
 .container {
-  height: calc(100% + var(--svgPadding) * 1px);
+  height: calc(100% + svgPaddingY);
   pointer-events: none;
 
   &.fullHeight {

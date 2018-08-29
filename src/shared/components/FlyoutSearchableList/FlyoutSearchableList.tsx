@@ -16,6 +16,7 @@ interface IState {}
 class FlyoutSearchableList extends React.PureComponent<IProps, IState> {
   render() {
     const {options, onSelect, close} = this.props
+    if (options.length === 0) return null
     return (
       <HeadlessDataList
         options={options}

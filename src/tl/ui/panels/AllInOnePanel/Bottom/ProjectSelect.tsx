@@ -7,6 +7,11 @@ import projectsSingleton from '$tl/Project/projectsSingleton'
 import FlyoutSearchableList from '$shared/components/FlyoutSearchableList/FlyoutSearchableList'
 import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
+import FullSizeHint, {
+  TextBlock,
+  CodeSnippet,
+  Tooltip,
+} from '$tl/ui/panels/AllInOnePanel/Bottom/FullSizeHint/FullSizeHint'
 
 interface IProps {}
 
@@ -32,16 +37,28 @@ export default class ProjectSelect extends UIComponent<IProps, IState> {
 
               return (
                 <>
-                  {val(stateP.menuOpen) && (
-                    <FlyoutSearchableList
-                      options={Object.keys(projects)}
-                      onSelect={this.selectProject}
-                      close={this.closeMenu}
-                    />
+                  {val(stateP.menuOpen) &&
+                    (areThereProjects && (
+                      <FlyoutSearchableList
+                        options={Object.keys(projects)}
+                        onSelect={this.selectProject}
+                        close={this.closeMenu}
+                      />
+                    ))}
+                  {!areThereProjects && (
+                    <>
+                      <FullSizeHint>
+                        <TextBlock>Create a project!</TextBlock>
+                        <CodeSnippet>
+                          const project = new TL.Project('Project Name')
+                        </CodeSnippet>
+                      </FullSizeHint>
+                      <Tooltip>Your project will appear here.</Tooltip>
+                    </>
                   )}
-                  <Item onClick={areThereProjects ? this.onClick : undefined}>
+                  <Item onClick={this.onClick}>
                     {!areThereProjects
-                      ? 'No project'
+                      ? 'No projects yet'
                       : (val(projectP) as Project).id}
                   </Item>
                 </>

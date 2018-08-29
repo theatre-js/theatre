@@ -30,7 +30,7 @@ import {
   TDataOfPointsToDelete,
 } from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/types'
 import projectSelectors from '$tl/Project/store/selectors'
-import {svgPaddingY} from '$tl/ui/panels/AllInOnePanel/Right/views/GraphEditorWrapper'
+import {SVG_PADDING_Y} from '$tl/ui/panels/AllInOnePanel/Right/views/SVGWrapper'
 import Overlay from '$shared/components/Overlay/Overlay'
 import OverlaySection from '$shared/components/Overlay/OverlaySection'
 import SelectionContextMenu from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/SelectionContextMenu'
@@ -459,7 +459,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
         const itemExtremums = this.extremumsOfItemsInSelection[itemKey]
         const extDiff = itemExtremums[1] - itemExtremums[0]
 
-        const valueChange = (move.y / (itemData.height - svgPaddingY)) * extDiff
+        const valueChange = (move.y / (itemData.height - SVG_PADDING_Y)) * extDiff
         const pointsNewCoords: TCollectionOfSelectedPointsData = {}
 
         Object.keys(selectedPointsData).forEach(pointIndex => {

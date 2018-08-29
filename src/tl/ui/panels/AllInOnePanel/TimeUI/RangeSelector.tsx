@@ -20,12 +20,12 @@ interface IState {}
 class RangeSelector extends React.PureComponent<IProps, IState> {
   render() {
     const {range, duration, width} = this.props
-    const rangeFrom = timeToX(duration, width)(range.from)
-    const rangeTo = timeToX(duration, width)(range.to)
+    const tToX = timeToX(duration, width)
+    const rangeFrom = tToX(range.from)
+    const rangeTo = tToX(range.to)
 
     return (
       <div {...classes('container')}>
-        <div {...classes('timeGrid')} />
         <div {...classes('timeThread')}>
           <DraggableArea onDrag={this.updateRange} shouldReturnMovement={true}>
             <div

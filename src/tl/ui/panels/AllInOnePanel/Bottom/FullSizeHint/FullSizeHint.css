@@ -1,0 +1,83 @@
+@value panelBgColor from '$tl/ui/panels/AllInOnePanel/AllInOnePanel.css';
+@value tooltipBg: #1e2a30;
+
+.positioner {
+  position: absolute;
+  width: 0;
+  height: 0;
+  z-index: -1;
+}
+
+.container {
+  position: absolute;
+  bottom: 0;
+  background: panelBgColor;
+}
+
+.body {
+  position: absolute 15% 20%;
+}
+
+.text {
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.code {
+  background: rgba(150, 150, 150, 0.1);
+  position: relative;
+  margin-bottom: 10px;
+  padding: 5px;
+  color: #aaa;
+  overflow-x: scroll;
+  border-left: 2px solid rgba(255, 255, 255, 0.3);
+  line-height: 24px;
+}
+
+.code::-webkit-scrollbar {
+  display: none;
+}
+
+.tooltipPositioner {
+  position: relative;
+  width: 0;
+  height: 0;
+  z-index: -1;
+}
+
+.tooltipBg {
+  position: absolute;
+  bottom: 0;
+  width: 120px;
+  height: 60px;
+
+  &:before {
+    display: block;
+    content: ' ';
+    position: absolute;
+    width: 100%;
+    height: 52px;
+    bottom: 8px;
+    background: tooltipBg;
+    border-radius: 5px;
+    z-index: -1;
+    box-shadow: inset 0 0 0 2px tooltipBg;
+  }
+
+  &:after {
+    display: block;
+    content: ' ';
+    position: absolute;
+    left: 52px;
+    bottom: 0;
+    border-top: 8px solid tooltipBg;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+  }
+}
+
+.tooltipText {
+  text-align: center;
+  position: absolute 8px;
+  bottom: 15px;
+}

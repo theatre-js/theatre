@@ -5,17 +5,9 @@
   position: absolute;
   height: 0;
   width: 100%;
+  left: 0;
   top: 0;
   pointer-events: auto;
-}
-
-.timeGrid {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 8px;
-  z-index: 1;
 }
 
 .timeThread {
@@ -48,6 +40,7 @@
   position: absolute;
   height: 9px;
   width: 7px;
+  left: 0;
   z-index: 2;
   top: -2px;
   display: block;
@@ -68,7 +61,7 @@
 
 .rangeFromHandle {
   composes: handle;
-  left: 0px;
+  left: 0;
   cursor: w-resize;
   &:before {
     transform: scaleX(-1);

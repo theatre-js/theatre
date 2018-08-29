@@ -29,7 +29,7 @@ import {
   TMovePointToNewCoordsTemp,
 } from '$tl/ui/panels/AllInOnePanel/Right/views/types'
 import {TTransformedSelectedArea} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/types'
-import {svgPaddingY} from '$tl/ui/panels/AllInOnePanel/Right/views/GraphEditorWrapper'
+import {SVG_PADDING_Y} from '$tl/ui/panels/AllInOnePanel/Right/views/SVGWrapper'
 import TempPoint from '$tl/ui/panels/AllInOnePanel/Right/views/graphEditor/TempPoint'
 import RenderBlocker from '$shared/components/RenderBlocker/RenderBlocker'
 import {SelectedAreaContext} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/SelectionProvider'
@@ -492,7 +492,7 @@ const clampHandleMove = (handleX: number, moveX: number) => {
 }
 
 const getSVGSize = (propGetter: TPropGetter): TSVGSize => {
-  const height = propGetter('itemHeight') - svgPaddingY
+  const height = propGetter('itemHeight') - SVG_PADDING_Y
   const width = propGetter('svgWidth')
   return {width, height}
 }

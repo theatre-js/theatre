@@ -8,6 +8,10 @@ import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
 import {internalTimelineToSeriesOfVerticalItems} from '../utils'
 import GroupingOrObject from './items/GroupingOrObject'
 import PrimitiveProp from './items/PrimitiveProp'
+import {
+  TextBlock,
+  CodeSnippet,
+} from '$tl/ui/panels/AllInOnePanel/Bottom/FullSizeHint/FullSizeHint'
 
 const classes = resolveCss(css)
 
@@ -44,7 +48,7 @@ export default class Left extends UIComponent<IProps, IState> {
                 const lastItem = items[items.length - 1]
                 const height = lastItem ? lastItem.top + lastItem.height : 0
 
-                return (
+                return items.length > 0 ? (
                   <div
                     {...classes('container')}
                     style={{height: `${height}px`}}
@@ -63,6 +67,14 @@ export default class Left extends UIComponent<IProps, IState> {
                         return null
                       }
                     })}
+                  </div>
+                ) : (
+                  <div {...classes('createItemTip')}>
+                    <TextBlock>Create an item!</TextBlock>
+                    <CodeSnippet>
+                      timeline.createObject('Item key', DOMElement)
+                    </CodeSnippet>
+                    <TextBlock>Your item will appear in this panel.</TextBlock>
                   </div>
                 )
               }}

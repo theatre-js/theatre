@@ -118,7 +118,8 @@ export const internalTimelineToSeriesOfVerticalItems = (
     ui.atomP.historic,
     internalTimeline._address,
   ))
-  const setOfCollapsedNodes = new Set(Object.keys(collapsedNodes))
+
+  const setOfCollapsedNodes = new Set(Object.keys(collapsedNodes || {}))
 
   const push = (
     _item:

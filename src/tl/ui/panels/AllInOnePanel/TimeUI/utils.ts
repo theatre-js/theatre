@@ -43,6 +43,7 @@ export const getNewRange = (
     newRange.from = duration - (range.to - range.from)
     newRange.to = duration
   }
+
   return newRange
 }
 

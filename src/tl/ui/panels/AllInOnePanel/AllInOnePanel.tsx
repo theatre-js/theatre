@@ -14,6 +14,7 @@ import Right from './Right/Right'
 import createPointerContext from '$shared/utils/react/createPointerContext'
 import TimeUI from '$tl/ui/panels/AllInOnePanel/TimeUI/TimeUI'
 import ActiveModeProvider from '$shared/components/ActiveModeProvider/ActiveModeProvider'
+import projectsSingleton from '$tl/Project/projectsSingleton'
 
 const classes = resolveCss(css)
 
@@ -45,44 +46,6 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
     this.state = {windowWidth: window.innerWidth}
   }
 
-  componentWillMount() {
-    window.addEventListener('resize', this.reactToWindowResize)
-    window.addEventListener('keydown', this._handleKeyDown)
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.reactToWindowResize)
-    window.removeEventListener('keydown', this._handleKeyDown)
-  }
-
-  _handleKeyDown = (e: KeyboardEvent) => {
-    if (e.target && (e.target as HTMLElement).tagName === 'INPUT') {
-      return
-    }
-
-    if (e.key === ' ') {
-      this.togglePlay()
-      e.preventDefault()
-      e.stopPropagation()
-    }
-  }
-
-  togglePlay() {
-    const {timelineInstance} = getProjectTimelineAndInstance(this.ui)
-
-    if (timelineInstance) {
-      if (timelineInstance.playing) {
-        timelineInstance.pause()
-      } else {
-        timelineInstance.play()
-      }
-    }
-  }
-
-  reactToWindowResize = () => {
-    this.setState({windowWidth: window.innerWidth})
-  }
-
   render() {
     return (
       <PropsAsPointer props={this.props} state={this.state}>
@@ -94,6 +57,8 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
           const leftWidthFraction = val(
             this.ui.atomP.historic.allInOnePanel.leftWidthFraction,
           )
+
+          const projects = val(projectsSingleton.atom.pointer.projects)
 
           const {
             project,
@@ -154,5 +119,43 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
         }}
       </PropsAsPointer>
     )
+  }
+
+  componentWillMount() {
+    window.addEventListener('resize', this.reactToWindowResize)
+    window.addEventListener('keydown', this._handleKeyDown)
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.reactToWindowResize)
+    window.removeEventListener('keydown', this._handleKeyDown)
+  }
+
+  _handleKeyDown = (e: KeyboardEvent) => {
+    if (e.target && (e.target as HTMLElement).tagName === 'INPUT') {
+      return
+    }
+
+    if (e.key === ' ') {
+      this.togglePlay()
+      e.preventDefault()
+      e.stopPropagation()
+    }
+  }
+
+  togglePlay() {
+    const {timelineInstance} = getProjectTimelineAndInstance(this.ui)
+
+    if (timelineInstance) {
+      if (timelineInstance.playing) {
+        timelineInstance.pause()
+      } else {
+        timelineInstance.play()
+      }
+    }
+  }
+
+  reactToWindowResize = () => {
+    this.setState({windowWidth: window.innerWidth})
   }
 }

@@ -16,6 +16,10 @@
   overflow-y: scroll;
 }
 
+.middle::-webkit-scrollbar {
+  display: none;
+}
+
 .left {
   position: absolute;
   top: 0;

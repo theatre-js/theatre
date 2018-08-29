@@ -28,7 +28,6 @@ interface IExportedComponentProps {}
 interface IRightProps {
   range: TRange
   duration: TDuration
-  // currentTime: number
   timelineWidth: number
   timelineInstance: TimelineInstance
   setRange: (range: TRange) => void
@@ -39,6 +38,7 @@ interface IRightState {}
 class Right extends UIComponent<IRightProps, IRightState> {
   wrapper: React.RefObject<HTMLDivElement> = React.createRef()
   wrapperLeft: number
+  scrollLeft: number = 0
 
   constructor(props: IRightProps, context: $IntentionalAny) {
     super(props, context)
@@ -77,6 +77,12 @@ class Right extends UIComponent<IRightProps, IRightState> {
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.handleResize)
+  }
+
+  componentDidUpdate(prevProps: IRightProps) {
+    if (prevProps.range !== this.props.range) {
+      this._scrollContainer(this.props.range)
+    }
   }
 
   _updateWrapperLeft() {
@@ -138,8 +144,10 @@ class Right extends UIComponent<IRightProps, IRightState> {
   _scrollContainer = (range: TRange) => {
     const {timelineWidth} = this.props
     const scrollLeft = (timelineWidth * range.from) / (range.to - range.from)
-
-    this.wrapper.current!.scrollTo({left: scrollLeft})
+    if (scrollLeft !== this.scrollLeft) {
+      this.scrollLeft = scrollLeft
+      this.wrapper.current!.scrollTo({left: scrollLeft})
+    }
   }
 }
 
@@ -153,12 +161,10 @@ export default (_props: IExportedComponentProps) => (
           if (!timelineInstance || !internalTimeline) return null
 
           const rangeState = val(internalTimeline.pointerToRangeState)
-          // const currentTime = val(timelineInstance.statePointer.time)
           const width = val(allInOnePanelStuffP.rightWidth)
           const rightProps: IRightProps = {
             range: rangeState.rangeShownInPanel,
             duration: rangeState.duration,
-            // currentTime,
             timelineWidth: width,
             timelineInstance,
             setRange: internalTimeline._setRangeShownInPanel,

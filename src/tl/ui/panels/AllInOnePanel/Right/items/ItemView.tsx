@@ -1,13 +1,12 @@
 import React from 'react'
 import ItemPointsNormalizer from '$tl/ui/panels/AllInOnePanel/Right/items/ItemPointsNormalizer'
-import GraphEditorWrapper from '$tl/ui/panels/AllInOnePanel/Right/views/GraphEditorWrapper'
 import GraphEditor from '$tl/ui/panels/AllInOnePanel/Right/views/GraphEditor'
-import DopesheetWrapper from '$tl/ui/panels/AllInOnePanel/Right/views/DopesheetWrapper'
 import {TPoints, TExpanded} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {color} from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import Dopesheet from '$tl/ui/panels/AllInOnePanel/Right/views/Dopesheet'
 import ItemHitZone from '$tl/ui/panels/AllInOnePanel/Right/items/ItemHitZone'
 import {PrimitivePropItem} from '$tl/ui/panels/AllInOnePanel/utils'
+import SVGWrapper from '$tl/ui/panels/AllInOnePanel/Right/views/SVGWrapper';
 
 interface IProps {
   expanded: TExpanded
@@ -26,7 +25,7 @@ class ItemView extends React.PureComponent<IProps, IState> {
 
   _renderGraphView = () => {
     return (
-      <GraphEditorWrapper>
+      <SVGWrapper>
         <ItemPointsNormalizer points={this.props.points}>
           {(normalizedPoints, extremums, duration) => (
             <>
@@ -45,13 +44,13 @@ class ItemView extends React.PureComponent<IProps, IState> {
             </>
           )}
         </ItemPointsNormalizer>
-      </GraphEditorWrapper>
+      </SVGWrapper>
     )
   }
 
   _renderDopesheet = () => {
     return (
-      <DopesheetWrapper>
+      <SVGWrapper dopesheet>
         <ItemPointsNormalizer points={this.props.points}>
           {(normalizedPoints, extremums, duration) => (
             <>
@@ -70,7 +69,7 @@ class ItemView extends React.PureComponent<IProps, IState> {
             </>
           )}
         </ItemPointsNormalizer>
-      </DopesheetWrapper>
+      </SVGWrapper>
     )
   }
 }

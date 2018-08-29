@@ -52,7 +52,6 @@ class FramesGrid extends React.PureComponent<IProps, IState> {
                   ref={c => (this.canvas = c)}
                   width={width}
                   height={100}
-                  style={{width: width}}
                 />
                 <div style={{width: width}} {...classes('stamps')}>
                   <div ref={this.fullSecondStampsRef} />
@@ -143,7 +142,7 @@ class FramesGrid extends React.PureComponent<IProps, IState> {
     const ctx = this.canvas!.getContext('2d') as CanvasRenderingContext2D
     ctx.clearRect(0, 0, width, 100)
 
-    for (let i = 0, frame = startFrame; i < numberOfLines; i++) {
+    for (let i = 0, frame = startFrame; i <= numberOfLines; i++) {
       const x = offsetLeft + i * widthStep
       const isFullSecond = frame === 0
 

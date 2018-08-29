@@ -21,6 +21,7 @@ interface IState {}
 
 class ItemsContainer extends UIComponent<IItemsContainerProps, IState> {
   _render(propsP: Pointer<IItemsContainerProps>) {
+
     const items = internalTimelineToSeriesOfVerticalItems(
       this.ui,
       val(propsP.internalTimeline),

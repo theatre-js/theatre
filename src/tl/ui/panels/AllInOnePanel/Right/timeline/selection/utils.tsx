@@ -7,7 +7,7 @@ import {
   THorizontalLimits,
   TMapOfFilteredItemKeyToItemData,
 } from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/types'
-import {svgPaddingY} from '$tl/ui/panels/AllInOnePanel/Right/views/GraphEditorWrapper'
+import {SVG_PADDING_Y} from '$tl/ui/panels/AllInOnePanel/Right/views/SVGWrapper'
 import {TRange, TDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {POINT_RECT_EDGE_SIZE} from '$tl/ui/panels/AllInOnePanel/Right/views/point/PointClickArea'
 
@@ -18,8 +18,8 @@ export const memoizedGetItemsInfo = memoizeOne(
         let boundariesToAdd: [number, number]
         if (itemData.expanded) {
           boundariesToAdd = [
-            itemData.top + svgPaddingY / 2,
-            itemData.top + itemData.height - svgPaddingY / 2,
+            itemData.top + SVG_PADDING_Y / 2,
+            itemData.top + itemData.height - SVG_PADDING_Y / 2,
           ]
         } else {
           boundariesToAdd = [itemData.top, itemData.top + itemData.height]

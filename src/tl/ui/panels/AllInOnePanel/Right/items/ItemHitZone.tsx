@@ -3,12 +3,12 @@ import css from './ItemHitZone.css'
 import {resolveCss} from '$shared/utils'
 import UIComponent from '$tl/ui/handy/UIComponent'
 import {TColor, TPoint} from '$tl/ui/panels/AllInOnePanel/Right/types'
-import {svgPaddingY} from '$tl/ui/panels/AllInOnePanel/Right/views/GraphEditorWrapper'
 import {
   ActiveModeContext,
   MODES,
 } from '$shared/components/ActiveModeProvider/ActiveModeProvider'
 import {PrimitivePropItem} from '$tl/ui/panels/AllInOnePanel/utils'
+import {SVG_PADDING_Y} from '$tl/ui/panels/AllInOnePanel/Right/views/SVGWrapper'
 
 const classes = resolveCss(css)
 
@@ -21,10 +21,6 @@ interface IProps {
 }
 
 interface IState {}
-
-const style = {
-  '--svgPadding': svgPaddingY,
-}
 
 class ItemHitZone extends UIComponent<IProps, IState> {
   render() {
@@ -41,9 +37,7 @@ class ItemHitZone extends UIComponent<IProps, IState> {
             )}
             fill="transparent"
             width="100%"
-            y={dopeSheet ? 0 : -svgPaddingY / 2}
-            // @ts-ignore ignore
-            style={style}
+            y={dopeSheet ? 0 : -SVG_PADDING_Y / 2}
             onMouseDown={stopPropagation}
             onClick={this.addPoint}
           />
@@ -74,9 +68,9 @@ class ItemHitZone extends UIComponent<IProps, IState> {
     } else {
       value =
         extremums[1] -
-        ((clientY - top + 5 - 0.5 * svgPaddingY) *
+        ((clientY - top + 5 - 0.5 * SVG_PADDING_Y) *
           (extremums[1] - extremums[0])) /
-          (height - svgPaddingY)
+          (height - SVG_PADDING_Y)
     }
 
     return {

@@ -1,5 +1,4 @@
 export const container: string;
-export const timeGrid: string;
 export const timeThread: string;
 export const rangeBar: string;
 export const handle: string;
