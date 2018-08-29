@@ -5,6 +5,7 @@ import {
   redoAction,
   _pushTemporaryAction,
   _discardTemporaryAction,
+  replaceHistoryAction,
 } from './actions'
 import * as _ from 'lodash'
 import patch from 'json-touch-patch'
@@ -93,7 +94,9 @@ export const withHistory = <
       history = prevState['@@history']
       tempActions = prevState['@@tempActions']
 
-      if (_pushTemporaryAction.is(action)) {
+      if (replaceHistoryAction.is(action)) {
+        history = action.payload
+      } else if (_pushTemporaryAction.is(action)) {
         tempActions = pushTemp(prevState['@@tempActions'], action)
       } else if (_discardTemporaryAction.is(action)) {
         tempActions = discardTemp(prevState['@@tempActions'], action)

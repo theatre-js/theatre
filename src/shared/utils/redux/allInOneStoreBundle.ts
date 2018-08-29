@@ -9,7 +9,11 @@ import {
   withHistory,
   StateWithHistory,
 } from '$shared/utils/redux/withHistory/withHistory'
-import {undoAction, redoAction} from '$shared/utils/redux/withHistory/actions'
+import {
+  undoAction,
+  redoAction,
+  replaceHistoryAction,
+} from '$shared/utils/redux/withHistory/actions'
 import {tempActionGroup} from './withHistory/actions'
 
 type Handlers<State> = {
@@ -71,6 +75,7 @@ const allInOneStoreBundle = <
     ...historicUnwrappedActions,
     undo: undoAction,
     redo: redoAction,
+    __unsafe_replaceHistory: replaceHistoryAction,
   }
 
   const historicActions = {
@@ -88,6 +93,7 @@ const allInOneStoreBundle = <
   } as typeof historicUnwrappedActions & {
     undo: typeof undoAction
     redo: typeof redoAction
+    __unsafe_replaceHistory: typeof replaceHistoryAction
     temp: () => ReturnType<typeof tempActionGroup>
   }
 

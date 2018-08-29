@@ -4,11 +4,17 @@
   position: absolute;
   width: 100%;
 
+  &.sticky {
+    width: var(--right-width);
+    left: 0;
+    position: sticky;
+  }
+
   &:before {
     position: absolute 0;
     display: block;
     content: ' ';
-    background: panelBgColor;
+    background: transparent;
     opacity: 0.2;
     z-index: -1;
     pointer-events: none;
@@ -21,10 +27,28 @@
     top: 0px;
     bottom: -1px;
     width: 100%;
-    border-top: 1px solid panelBgColor;
-    border-bottom: 1px solid panelBgColor;
+    border-top: 1px solid transparent;
+    border-bottom: 1px solid transparent;
     opacity: 1;
     pointer-events: none;
+  }
+
+  &.bezierCurves {
+    &:before {
+      background: panelBgColor;
+    }
+    &:after {
+      border-color: panelBgColor;
+    }
+  }
+
+  &.static {
+    &:before {
+      background: #333333;
+    }
+    &:after {
+      border-color: #2d2d2d;
+    }
   }
 }
 

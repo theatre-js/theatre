@@ -18,7 +18,7 @@
     height: 1px;
     display: block;
     content: ' ';
-    /* display: none; */
+    display: none;
   }
 
   /* &.object.expanded:after { */

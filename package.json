@@ -21,6 +21,7 @@
     "build:dev": "npm-run-all --parallel lb:webpack:dev lf:webpack:dev theater:webpack:dev examples:webpack:dev",
     "open-examples": "opn http://localhost:9092/examples",
     "ci:check-types": "tsc -p ./ci.tsconfig.json --noEmit",
+    "ci:check-types:watch": "tsc -p ./ci.tsconfig.json --noEmit --watch",
     "ci:type-tests": "tslint -c ./typeTests.tslint.json -p ./typeTests.tsconfig.json --format stylish ./src/**/*.typeTest.ts*",
     "prepush": "run-p ci:check-types test"
   },

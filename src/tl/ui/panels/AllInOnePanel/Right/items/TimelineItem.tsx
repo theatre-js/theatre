@@ -7,6 +7,8 @@ import ItemWrapper from '$tl/ui/panels/AllInOnePanel/Right/items/ItemWrapper'
 import ItemPropProvider from '$tl/ui/panels/AllInOnePanel/Right/items/ItemPropProvider'
 import ItemView from '$tl/ui/panels/AllInOnePanel/Right/items/ItemView'
 import projectSelectors from '$tl/Project/store/selectors'
+import StaticValueContainerItem from '$tl/ui/panels/AllInOnePanel/Right/items/StaticValueContainerItem/StaticValueContainerItem'
+import {IBezierCurvesOfScalarValues} from '$tl/Project/store/types'
 
 interface IProps {
   item: PrimitivePropItem
@@ -17,22 +19,29 @@ interface IState {}
 export default class TimelineItem extends UIComponent<IProps, IState> {
   _render(propsP: Pointer<IProps>) {
     const item = val(propsP.item)
-    const propState = projectSelectors.historic.getPropState(
+    const propStateP = projectSelectors.historic.getPropState(
       this.project.atomP.historic,
       item.address,
     )
 
-    const valueContainer = val(propState.valueContainer)
+    const valueContainerType = val(propStateP.valueContainer.type)
 
-    if (
-      !valueContainer ||
-      valueContainer.type !== 'BezierCurvesOfScalarValues'
-    ) {
+    if (!valueContainerType || valueContainerType === 'StaticValueContainer') {
+      return (
+        <ItemWrapper sticky={true} item={item} type="static">
+          <StaticValueContainerItem item={item} />
+        </ItemWrapper>
+      )
+    } else if (valueContainerType !== 'BezierCurvesOfScalarValues') {
       return null
     }
 
+    const valueContainer = val(
+      propStateP.valueContainer,
+    ) as IBezierCurvesOfScalarValues
+
     return (
-      <ItemWrapper item={item}>
+      <ItemWrapper item={item} sticky={false} type="bezierCurves">
         <ItemPropProvider
           itemKey={item.key}
           itemAddress={item.address}
@@ -48,13 +57,4 @@ export default class TimelineItem extends UIComponent<IProps, IState> {
       </ItemWrapper>
     )
   }
-
-  // setPoints = (points: IBezierCurvesOfScalarValues['points']) => {
-  //   this.project.reduxStore.dispatch(
-  //     this.project._actions.historic.setPointsInBezierCurvesOfScalarValues({
-  //       ...this.props.item.address,
-  //       points,
-  //     }),
-  //   )
-  // }
 }

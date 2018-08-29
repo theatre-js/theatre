@@ -95,6 +95,8 @@ class Right extends UIComponent<IRightProps, IRightState> {
   }
 
   syncSeekerWithMousePosition = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (event.target instanceof HTMLInputElement) return
+    
     const {timelineWidth, range, timelineInstance} = this.props
     const newTime = xToInRangeTime(range, timelineWidth)(
       event.clientX - this.wrapperLeft,
@@ -103,6 +105,9 @@ class Right extends UIComponent<IRightProps, IRightState> {
   }
 
   seekTime = (_: number, __: number, event: MouseEvent) => {
+    if (event.target instanceof HTMLInputElement) return
+
+
     const {range, timelineWidth, timelineInstance} = this.props
     const newTime = xToInRangeTime(range, timelineWidth)(
       event.clientX - this.wrapperLeft,

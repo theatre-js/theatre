@@ -31,6 +31,10 @@ TL.ui.enable()
 new TL.Project('Intro Post')
 new TL.Project('Mathly Preview')
 
+// const state = {
+//   versionId: 'sdlkfjsldfjoejsldkoeijsldksd'
+// }
+
 const project = new TL.Project('Explorable Explanations')
 project.getTimeline('Bouncing Ball / The ball', '1')
 project.getTimeline('Bouncing Ball / The ball', '2')
@@ -83,7 +87,9 @@ project.adapters.add(1, {
       // console.log(obj.path, t, values.opacity)
 
       nativeObject.style.opacity = String(values.opacity)
-      nativeObject.style.transform = `translateX(${String(values['position.x'])}px)`
+      nativeObject.style.transform = `translateX(${String(
+        values['position.x'],
+      )}px)`
     })
 
     const cleanup = () => {
@@ -103,11 +109,10 @@ ballInDom.style.cssText = `
   height: 50px; left: calc(50% - 25px); 
   top: 10%; border-radius: 50%;
   border: 3px solid rgba(255, 255, 255, 0.5);`
-  
 
 ballInDom.classList.add('ball')
 const ball = timeline.createObject('Act 1 / Stage / Ball', ballInDom)
-timeline.play({repeat: true})
+// timeline.play({rate: -1})
 
 timeline.createObject(
   'Act 1 / Stage / Ball / The dangling thing',

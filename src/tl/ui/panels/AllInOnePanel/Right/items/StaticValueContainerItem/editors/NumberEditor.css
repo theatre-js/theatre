@@ -1,0 +1,52 @@
+.container {
+  height: 100%;
+  width: 200px;
+  padding-left: 0;
+  /* background: #212b31; */
+  box-sizing: border-box;
+
+  & .input {
+    width: 100%;
+    text-indent: 14px;
+    height: 100%;
+    box-sizing: border-box;
+    /* background: black; */
+    background: transparent;
+    border: none;
+    /* border: 1px solid white; */
+    outline: none;
+    color: #45787b;
+
+    padding: 0;
+    margin: 0;
+    display: inline;
+    line-height: inherit;
+    /* border-radius: 0 1px 1px 0; */
+  }
+
+  &.noFocus {
+    cursor: ns-resize;
+    user-select: none;
+    font-weight: 200;
+
+    & .input {
+      cursor: ns-resize;
+    }
+
+    & .value {
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.4);
+      cursor: pointer;
+    }
+  }
+
+  &.editingViaKeyboard {
+    & .input {
+      color: white;
+    }
+    /* padding-left: 0; */
+  }
+
+  &.dragging {
+    
+  }
+}

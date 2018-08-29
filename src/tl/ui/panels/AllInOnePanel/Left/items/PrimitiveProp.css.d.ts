@@ -5,3 +5,4 @@ export const top: string;
 export const expanded: string;
 export const name: string;
 export const value: string;
+export const trigger: string;

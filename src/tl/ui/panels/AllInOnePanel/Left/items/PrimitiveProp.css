@@ -47,6 +47,7 @@
 
 .name {
   color: #8ea2ad;
+  margin-right: 14px;
 }
 
 .value {
@@ -54,4 +55,18 @@
   width: 100px;
   margin-left: 13px;
   box-sizing: border-box;
+  display: none;
+}
+
+.trigger {
+  display: flex;
+  padding-top: 4px;
+  flex-direction: column;
+  justify-content: center;
+  color: rgba(#8ea2ad, 0.4);
+  margin-right: 8px;
+  padding-right: 4px;
+  &:hover {
+    color: #00d8ff;
+  }
 }

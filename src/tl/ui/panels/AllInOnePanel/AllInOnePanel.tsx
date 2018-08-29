@@ -86,7 +86,11 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
               <ActiveModeProvider modes={['cmd', 'shift', 'c', 'd', 'h']}>
                 <div
                   {...classes('container')}
-                  style={{height: fullHeightIncludingBottom}}
+                  style={{
+                    height: fullHeightIncludingBottom,
+                    // @ts-ignore @ignore
+                    '--right-width': `${rightWidth}px`
+                  }}
                 >
                   <TimeUI
                     internalTimeline={internalTimeline}

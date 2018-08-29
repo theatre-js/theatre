@@ -247,3 +247,48 @@ export const prop_setNumberValueInStaticValueContainer = r(
     }
   },
 )
+
+export const prop_convertPropToBezierCurves = r((s, p: PropAddress) => {
+  ensureObject(s, p)
+  const objectState = projectSelectors.historic.getObjectState(s, p)
+  const prop = objectState.props[p.propKey]
+  if (!prop) {
+    objectState.props[p.propKey] = {valueContainer: emptyTimeline(0)}
+  } else if (prop.valueContainer.type === 'StaticValueContainer') {
+    const oldValueConainer = prop.valueContainer as StaticValueContainer
+    prop.valueContainer = emptyTimeline(oldValueConainer.value)
+  }
+})
+
+export const prop_convertPropToStaticValue = r((s, p: PropAddress) => {
+  ensureObject(s, p)
+  const objectState = projectSelectors.historic.getObjectState(s, p)
+  const prop = objectState.props[p.propKey]
+  if (!prop) {
+    objectState.props[p.propKey] = {
+      valueContainer: {type: 'StaticValueContainer', value: 0},
+    }
+  } else if (prop.valueContainer.type === 'BezierCurvesOfScalarValues') {
+    const oldValueConainer = prop.valueContainer as IBezierCurvesOfScalarValues
+    prop.valueContainer = {
+      type: 'StaticValueContainer',
+      value: oldValueConainer.points[0] ? oldValueConainer.points[0].value : 0,
+    }
+  }
+})
+
+const emptyTimeline = (value: number): IBezierCurvesOfScalarValues => ({
+  type: 'BezierCurvesOfScalarValues',
+  points: [
+    {
+      value,
+      time: 0,
+      interpolationDescriptor: {
+        __descriptorType: 'TimelinePointInterpolationDescriptor',
+        connected: false,
+        interpolationType: 'CubicBezier',
+        handles: [0.5, 0.5, 0.5, 0.5],
+      },
+    },
+  ],
+})

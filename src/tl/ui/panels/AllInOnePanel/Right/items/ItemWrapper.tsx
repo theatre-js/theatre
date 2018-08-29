@@ -12,6 +12,8 @@ const classes = resolveCss(css)
 
 interface IProps {
   item: PrimitivePropItem
+  sticky: boolean
+  type: 'static' | 'bezierCurves'
 }
 
 interface IState {}
@@ -23,7 +25,11 @@ class ItemWrapper extends UIComponent<IProps, IState> {
     const {height, top, expanded} = this.props.item
     return (
       <div
-        {...classes('container')}
+        {...classes(
+          'container',
+          this.props.sticky && 'sticky',
+          this.props.type,
+        )}
         onDoubleClick={this.toggleExpansion}
         style={{top, height}}
       >

@@ -7,6 +7,7 @@ type Props = {
   onDrag: (dx: number, dy: number, event: MouseEvent) => void
   shouldRegisterEvents?: boolean
   shouldReturnMovement?: boolean
+  dontBlockMouseDown?: boolean
 }
 
 type State = {
@@ -62,16 +63,22 @@ class DraggableArea extends React.PureComponent<Props, {}> {
 
   disableUnwantedClick = (event: MouseEvent) => {
     if (this.s.dragHappened) {
-      event.stopPropagation()
-      event.preventDefault()
+      if (!this.props.dontBlockMouseDown) {
+        event.stopPropagation()
+        event.preventDefault()
+      }
       this.s.dragHappened = false
     }
   }
 
   dragStartHandler = (event: React.MouseEvent<HTMLElement>) => {
     if (event.button !== 0) return
-    event.preventDefault()
-    event.stopPropagation()
+    if (!this.props.dontBlockMouseDown) {
+      console.log('block');
+      
+      event.stopPropagation()
+      event.preventDefault()
+    }
 
     const {screenX, screenY} = event
     this.s.startPos = {x: screenX, y: screenY}

@@ -7,17 +7,13 @@ import {val} from '$shared/DataVerse2/atom'
 import {PrimitivePropItem} from '../../utils'
 import SvgIcon from '$shared/components/SvgIcon'
 import arrowIcon from 'svg-inline-loader!./arrow.svg'
-import {
-  AllInOnePanelStuff,
-  IAllInOnePanelStuff,
-} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
+import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
-import TimelineInstance from '$tl/timelines/TimelineInstance'
-import TimelineInstanceObject from '$tl/objects/TimelineInstanceObject'
-import {StaticValueContainer} from '$tl/Project/store/types'
-import NumberValue from './PrimitiveProp/NumberValue'
 import {ITempActionGroup} from '$shared/utils/redux/withHistory/actions'
-import {GenericAction} from '$shared/types'
+import projectSelectors from '$tl/Project/store/selectors'
+import {StaticValueContainer} from '$tl/Project/store/types'
+import BezierIcon from 'svg-inline-loader!./bezierIcon.svg'
+import StaticIcon from 'svg-inline-loader!./staticIcon.svg'
 
 const classes = resolveCss(css)
 interface IProps {
@@ -47,24 +43,32 @@ export default class PrimitiveProp extends UIComponent<IProps, IState> {
 
   render = () => (
     <AllInOnePanelStuff>
-      {stuffP => (
+      {() => (
         <PropsAsPointer props={this.props} state={this.state}>
-          {({props: propsP, state: stateP}) =>
-            this._renderWithPointers(propsP, stateP, stuffP)
-          }
+          {({props: propsP}) => this._renderWithPointers(propsP)}
         </PropsAsPointer>
       )}
     </AllInOnePanelStuff>
   )
 
-  _renderWithPointers(
-    propsP: Pointer<IProps>,
-    stateP: Pointer<IState>,
-    stuffP: Pointer<IAllInOnePanelStuff>,
-  ) {
+  _renderWithPointers(propsP: Pointer<IProps>) {
     const item = val(propsP.item)
-    const timelineInstance = val(stuffP.timelineInstance) as TimelineInstance
-    const objectInstance = timelineInstance.getObject(item.address.objectPath)
+
+    // const timelineInstance = val(stuffP.timelineInstance)
+    // if (!timelineInstance) return null
+    // const objectInstance = timelineInstance.getObject(item.address.objectPath)
+
+    const propStateP = projectSelectors.historic.getPropState(
+      this.project.atomP.historic,
+      item.address,
+    )
+
+    const valueContainerP = propStateP.valueContainer as Pointer<
+      StaticValueContainer
+    >
+
+    const valueContainerType =
+      val(valueContainerP.type) || 'StaticValueContainer'
 
     return (
       <div
@@ -82,77 +86,74 @@ export default class PrimitiveProp extends UIComponent<IProps, IState> {
           </div>
         </div>
         <div {...classes('name')}>{item.address.propKey}</div>
-        {this._renderValue(propsP, stateP, item, objectInstance)}
+        <div {...classes('trigger')} onClick={this.trigger}>
+          {valueContainerType === 'StaticValueContainer' ? (
+            <SvgIcon src={StaticIcon} />
+          ) : (
+            <SvgIcon src={BezierIcon} />
+          )}
+        </div>
       </div>
     )
   }
 
-  _renderInput(
-    propsP: Pointer<IProps>,
-    stateP: Pointer<IState>,
-    item: PrimitivePropItem,
-    objectInstance: TimelineInstanceObject,
-  ) {}
+  trigger = () => {
+    const item = this.props.item
 
-  _renderValue(
-    propsP: Pointer<IProps>,
-    stateP: Pointer<IState>,
-    item: PrimitivePropItem,
-    objectInstance: TimelineInstanceObject,
-  ) {
-    const propStateP = this.project._selectors.historic.getPropState(
-      this.project.atomP.historic,
+    // const timelineInstance = val(stuffP.timelineInstance)
+    // if (!timelineInstance) return null
+    // const objectInstance = timelineInstance.getObject(item.address.objectPath)
+
+    const propState = projectSelectors.historic.getPropState(
+      this.project.reduxStore.getState().historic,
       item.address,
     )
-    const valueContainerP = propStateP.valueContainer
-    const storedValueType = val(valueContainerP.type)
 
-    const valEl = !storedValueType ? (
-      <NumberValue
-        temporarilySetValue={this.temporarilySetValueForStaticContainer}
-        discardTemporaryValue={this.discardTemporaryValue}
-        permenantlySetValue={this.permenantlySetValueForStaticContainer}
-        value={0}
-      />
-    ) : storedValueType === 'StaticValueContainer' ? (
-      <NumberValue
-        value={val((valueContainerP as Pointer<StaticValueContainer>).value)}
-        temporarilySetValue={this.temporarilySetValueForStaticContainer}
-        discardTemporaryValue={this.discardTemporaryValue}
-        permenantlySetValue={this.permenantlySetValueForStaticContainer}
-      />
-    ) : storedValueType === 'BezierCurvesOfScalarValues' ? (
-      <NumberValue
-        value={0}
-        temporarilySetValue={this.temporarilySetValueForStaticContainer}
-        discardTemporaryValue={this.discardTemporaryValue}
-        permenantlySetValue={this.permenantlySetValueForStaticContainer}
-      />
-    ) : null
+    if (!propState) {
+      this.project._dispatch(
+        this.project._actions.historic.prop_convertPropToStaticValue(
+          item.address,
+        ),
+      )
+    }
 
-    return <div {...classes('value')}>{valEl}</div>
+    const valueContainer = propState.valueContainer
+
+    if (!valueContainer || valueContainer.type === 'StaticValueContainer') {
+      this.project._dispatch(
+        this.project._actions.historic.prop_convertPropToBezierCurves(
+          item.address,
+        ),
+      )
+    } else {
+      this.project._dispatch(
+        this.project._actions.historic.prop_convertPropToStaticValue(
+          item.address,
+        ),
+      )
+    }
   }
 
-  temporarilySetValueForStaticContainer = (value: number) => {
-    this.project._dispatch(
-      this.tempActionGroup.push(this._changeValueAction(value)),
-    )
-  }
+  // temporarilySetValueForStaticContainer = (value: number) => {
+  //   this.project._dispatch(
+  //     this.tempActionGroup.push(this._changeValueAction(value)),
+  //   )
+  // }
 
-  discardTemporaryValue = () => {
-    this.project.reduxStore.dispatch(this.tempActionGroup.discard())
-  }
+  // discardTemporaryValue = () => {
+  //   this.project.reduxStore.dispatch(this.tempActionGroup.discard())
+  // }
 
-  permenantlySetValueForStaticContainer = (v: number) => {
-    this.project._dispatch(
-      this.tempActionGroup.discard(),
-      this._changeValueAction(v),
-    )
-  }
+  // permenantlySetValueForStaticContainer = (v: number) => {
+  //   this.project._dispatch(
+  //     this.tempActionGroup.discard(),
+  //     this._changeValueAction(v),
+  //   )
+  // }
 
-  private _changeValueAction(value: number): GenericAction {
-    return this.project._actions.historic.prop_setNumberValueInStaticValueContainer(
-      {...this.props.item.address, value},
-    )
-  }
+  // private _changeValueAction(value: number): GenericAction {
+  //   return this.project._actions.historic.prop_setNumberValueInStaticValueContainer(
+  //     {...this.props.item.address, value},
+  //   )
+  // }
 }
