@@ -4,7 +4,7 @@ import {flatMap} from 'lodash'
 import Overlay from '$shared/components/Overlay/Overlay'
 import OverlaySection from '$shared/components/Overlay/OverlaySection'
 import {resolveCss} from '$shared/utils'
-import FixedFullSizePortal from '$shared/components/FixedFullSizePortal/FixedFullSizePortal'
+import FixedFullSizeContainer from '$shared/components/FixedFullSizeContainer/FixedFullSizeContainer'
 
 const classes = resolveCss(css)
 
@@ -12,6 +12,7 @@ interface IProps {
   close: () => void
   centerPoint: {left: number; top: number}
   placement: 'left' | 'right' | 'top' | 'bottom'
+  renderInPortal?: boolean
   items: Array<{
     label: string
     cb: () => void
@@ -100,6 +101,10 @@ const getCoordinatesOnHorizontalAxis = (
 }
 
 class HalfPieContextMenu extends React.PureComponent<IProps, IState> {
+  static defaultProps = {
+    renderInPortal: true,
+  }
+
   preparedLabels: {
     key: string
     prefix: string
@@ -126,7 +131,7 @@ class HalfPieContextMenu extends React.PureComponent<IProps, IState> {
   }
 
   render() {
-    const {centerPoint, items, close, placement} = this.props
+    const {centerPoint, items, close, placement, renderInPortal} = this.props
     const {pressedKeyCode} = this.state
     const maxItemWidth = Math.max(
       ...flatMap(items, (item: $FixMe) => 5 + item.label.length * 6),
@@ -143,7 +148,7 @@ class HalfPieContextMenu extends React.PureComponent<IProps, IState> {
 
     const {innerWidth, innerHeight} = window
     return (
-      <FixedFullSizePortal>
+      <FixedFullSizeContainer usePortal={renderInPortal}>
         <Overlay onClickOutside={close}>
           {items.map(({cb, disabled, IconComponent}: $FixMe, index: number) => {
             const {
@@ -154,8 +159,9 @@ class HalfPieContextMenu extends React.PureComponent<IProps, IState> {
             } = translateCalculatorFn(index)
             const {key, suffix, prefix} = this.preparedLabels[index]
             const shouldHighlight =
+              !disabled &&
               key.toLowerCase() ===
-              String.fromCharCode(pressedKeyCode).toLowerCase()
+                String.fromCharCode(pressedKeyCode).toLowerCase()
             return (
               <OverlaySection
                 key={index}
@@ -193,7 +199,7 @@ class HalfPieContextMenu extends React.PureComponent<IProps, IState> {
             />
           </OverlaySection>
         </Overlay>
-      </FixedFullSizePortal>
+      </FixedFullSizeContainer>
     )
   }
 

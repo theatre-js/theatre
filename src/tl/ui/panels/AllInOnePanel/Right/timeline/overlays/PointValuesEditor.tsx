@@ -5,7 +5,7 @@ import UIComponent from '$tl/ui/handy/UIComponent'
 import {TPointValuesEditorProps} from '$tl/ui/panels/AllInOnePanel/Right/timeline/overlays/types'
 import Overlay from '$shared/components/Overlay/Overlay'
 import OverlaySection from '$shared/components/Overlay/OverlaySection'
-import FixedFullSizePortal from '$shared/components/FixedFullSizePortal/FixedFullSizePortal'
+import FixedFullSizeContainer from '$shared/components/FixedFullSizeContainer/FixedFullSizeContainer'
 
 const classes = resolveCss(css)
 
@@ -30,7 +30,7 @@ class PointValuesEditor extends UIComponent<IProps, IState> {
   render() {
     const {left, top} = this.props
     return (
-      <FixedFullSizePortal>
+      <FixedFullSizeContainer>
         <Overlay onClickOutside={this.props.onClose}>
           <OverlaySection {...classes('container')} style={{left, top}}>
             <div {...classes('row')}>
@@ -55,7 +55,7 @@ class PointValuesEditor extends UIComponent<IProps, IState> {
             </div>
           </OverlaySection>
         </Overlay>
-      </FixedFullSizePortal>
+      </FixedFullSizeContainer>
     )
   }
 

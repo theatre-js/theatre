@@ -75,3 +75,8 @@ export type TLastCommittedData = Array<{
   propAddress: PropAddress
   pointsNewCoords: TCollectionOfSelectedPointsData
 }>
+
+export type TDataOfPointsToDelete = Array<{
+  propAddress: PropAddress
+  pointsIndices: number[]
+}>

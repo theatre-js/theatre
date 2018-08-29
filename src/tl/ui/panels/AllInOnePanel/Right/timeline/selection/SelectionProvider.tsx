@@ -27,11 +27,13 @@ import {
   TCollectionOfSelectedPointsData,
   TMapOfFilteredItemKeyToItemData,
   TLastCommittedData,
+  TDataOfPointsToDelete,
 } from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/types'
 import projectSelectors from '$tl/Project/store/selectors'
 import {svgPaddingY} from '$tl/ui/panels/AllInOnePanel/Right/views/GraphEditorWrapper'
 import Overlay from '$shared/components/Overlay/Overlay'
 import OverlaySection from '$shared/components/Overlay/OverlaySection'
+import SelectionContextMenu from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/SelectionContextMenu'
 
 const classes = resolveCss(css)
 
@@ -62,6 +64,7 @@ interface IState {
   horizontalLimits: THorizontalLimits
   transformedSelectedArea: TTransformedSelectedArea
   itemsInfo: TItemsInfo
+  contextMenuProps: null | {left: number; top: number}
 }
 
 export const SelectionAPIContext = React.createContext<TSelectionAPI>({
@@ -91,6 +94,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
     transformedSelectedArea: {},
     itemsInfo: {boundaries: [], keys: []},
     horizontalLimits: {left: -Infinity, right: Infinity},
+    contextMenuProps: null,
   }
 
   state = SelectionProvider.defaultStateValues
@@ -135,7 +139,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
   }
 
   _renderSelectedArea() {
-    const {status, move, dims} = this.state
+    const {status, move, dims, contextMenuProps} = this.state
     const statusIsConfirmedSelection = status === 'confirmedSelection'
 
     const areaIsMovable =
@@ -144,36 +148,46 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
       status === 'committingChanges'
 
     return (
-      <div {...classes('container')}>
-        <Overlay
-          onClickOutside={this._clearSelection}
-          propagateWheel={true}
-          propagateMouseDown={true}
-        >
-          <OverlaySection>
-            <DraggableArea
-              onDragStart={this.handleAreaDragStart}
-              onDrag={this.handleAreaDrag}
-              onDragEnd={this.handleAreaDragEnd}
-            >
-              <div
-                style={{
-                  transform: `translate3d(${move.x}px, ${move.y}px, 0)`,
-                }}
+      <>
+        <div {...classes('container')}>
+          <Overlay
+            onClickOutside={this._clearSelection}
+            propagateWheel={true}
+            propagateMouseDown={true}
+          >
+            <OverlaySection>
+              <DraggableArea
+                onDragStart={this.handleAreaDragStart}
+                onDrag={this.handleAreaDrag}
+                onDragEnd={this.handleAreaDragEnd}
               >
                 <div
-                  {...classes(
-                    'areaOverlay',
-                    areaIsMovable && 'movable',
-                    statusIsConfirmedSelection && 'hasTransition',
-                  )}
-                  style={dims}
+                  style={{
+                    transform: `translate3d(${move.x}px, ${move.y}px, 0)`,
+                  }}
+                >
+                  <div
+                    {...classes(
+                      'areaOverlay',
+                      areaIsMovable && 'movable',
+                      statusIsConfirmedSelection && 'hasTransition',
+                    )}
+                    style={dims}
+                    onContextMenu={this.handleContextMenu}
+                  />
+                </div>
+              </DraggableArea>
+              {contextMenuProps != null && (
+                <SelectionContextMenu
+                  {...contextMenuProps}
+                  onClose={this.closeContextMenu}
+                  onDelete={this.deletePointsInSelection}
                 />
-              </div>
-            </DraggableArea>
-          </OverlaySection>
-        </Overlay>
-      </div>
+              )}
+            </OverlaySection>
+          </Overlay>
+        </div>
+      </>
     )
   }
 
@@ -230,6 +244,30 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
     getSelectedPointsOfItem: this.getSelectedPointsOfItem,
   }
 
+  handleContextMenu = (event: React.MouseEvent<HTMLDivElement>) => {
+    event.preventDefault()
+    event.stopPropagation()
+    const {clientX, clientY} = event
+    this.setState(() => ({
+      contextMenuProps: {left: clientX, top: clientY},
+    }))
+  }
+
+  closeContextMenu = () => {
+    this.setState(() => ({
+      contextMenuProps: null,
+    }))
+  }
+
+  deletePointsInSelection = () => {
+    this.project.reduxStore.dispatch(
+      this.project._actions.historic.removeSelectionOfPointsInBezierCurvesOfScalarValues(
+        this._getDataOfPointsToRemove(),
+      ),
+    )
+    this._clearSelection()
+  }
+
   activateSelection = (event: React.MouseEvent<HTMLDivElement>) => {
     this.mapOfItemsData = this._getMapOfItemsData(this.props.internalTimeline)
     const {layerX, layerY} = event.nativeEvent
@@ -283,7 +321,8 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
     this.setState(() => ({move: {x, y}}), this.applyChangesToSelectionTemp)
   }
 
-  handleAreaDragEnd = () => {
+  handleAreaDragEnd = (dragHappened: boolean) => {
+    if (!dragHappened) return
     this.setState(
       () => ({
         status: 'committingChanges',
@@ -389,6 +428,21 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
       itemsInfo,
       horizontalLimits,
     }))
+  }
+
+  _getDataOfPointsToRemove(): TDataOfPointsToDelete {
+    return Object.entries(this.selectedPoints).reduce(
+      (dataOfPointsToDelete, [itemKey, pointsInSelection]) => {
+        return [
+          ...dataOfPointsToDelete,
+          {
+            propAddress: this.mapOfItemsData[itemKey].address,
+            pointsIndices: Object.keys(pointsInSelection).map(Number),
+          },
+        ]
+      },
+      [] as TDataOfPointsToDelete,
+    )
   }
 
   _getPointsInSelectionDataAfterMove() {

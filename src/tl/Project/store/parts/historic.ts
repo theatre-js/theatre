@@ -3,7 +3,7 @@ import {
   $ProjectHistoricState,
   IBezierCurvesOfScalarValues,
   ProjectHistoricState,
-  PropValueContainer,
+  StaticValueContainer,
 } from '$tl/Project/store/types'
 import {PropAddress, ObjectAddress, TimelineAddress} from '$tl/handy/addresses'
 import projectSelectors from '$tl/Project/store/selectors'
@@ -13,7 +13,6 @@ import {
   TPoint,
 } from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {TCollectionOfSelectedPointsData} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/types'
-import {StaticValueContainer} from '$tl/Project/store/types'
 
 const r = reducto($ProjectHistoricState)
 
@@ -167,6 +166,21 @@ export const moveSelectionOfPointsInBezierCurvesOfScalarValues = r(
         const point = points[Number(pointIndex)]
         point.time = newCoords.time
         if (newCoords.value != null) point.value = newCoords.value
+      })
+    })
+  },
+)
+
+export const removeSelectionOfPointsInBezierCurvesOfScalarValues = r(
+  (s, p: Array<TPropAddress & {pointsIndices: number[]}>) => {
+    p.forEach(({propAddress, pointsIndices}) => {
+      const points = getPoints(s, propAddress)
+      pointsIndices.forEach((pointIndex, i) => {
+        pointIndex -= i
+        if (points[pointIndex - 1] != null && points[pointIndex + 1] == null) {
+          points[pointIndex - 1].interpolationDescriptor.connected = false
+        }
+        points.splice(pointIndex, 1)
       })
     })
   },
