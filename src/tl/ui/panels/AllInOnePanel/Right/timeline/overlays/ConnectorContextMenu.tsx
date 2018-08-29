@@ -1,10 +1,11 @@
 import React from 'react'
-import MdDonutSmall from 'react-icons/lib/md/donut-small'
-import MdCancel from 'react-icons/lib/md/cancel'
-import MdCamera from 'react-icons/lib/md/camera'
+import MdLens from 'react-icons/lib/md/lens'
+import MdRemoveCircle from 'react-icons/lib/md/remove-circle'
+import MdCheckCircle from 'react-icons/lib/md/check-circle'
 import {TConnectorContextMenuProps} from '$tl/ui/panels/AllInOnePanel/Right/timeline/overlays/types'
 import UIComponent from '$tl/ui/handy/UIComponent'
 import HalfPieContextMenu from '$shared/components/HalfPieContextMenu/HalfPieContextMenu'
+import noop from '$shared/utils/noop'
 
 interface IProps extends TConnectorContextMenuProps {
   onClose: () => void
@@ -23,18 +24,20 @@ class ConnectorContextMenu extends UIComponent<IProps, IState> {
         items={[
           {
             label: '$R$eset',
-            cb: onClose,
-            IconComponent: MdDonutSmall,
+            cb: noop,
+            IconComponent: MdLens,
+            disabled: true,
           },
           {
             label: '$D$elete',
             cb: this._removeConnector,
-            IconComponent: MdCancel,
+            IconComponent: MdRemoveCircle,
           },
           {
             label: '$S$elect',
-            cb: onClose,
-            IconComponent: MdCamera,
+            cb: noop,
+            IconComponent: MdCheckCircle,
+            disabled: true,
           },
         ]}
       />

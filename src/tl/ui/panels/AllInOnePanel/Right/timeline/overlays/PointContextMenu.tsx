@@ -1,10 +1,11 @@
 import React from 'react'
-import MdDonutSmall from 'react-icons/lib/md/donut-small'
-import MdCancel from 'react-icons/lib/md/cancel'
-import MdStars from 'react-icons/lib/md/stars'
+import MdLens from 'react-icons/lib/md/lens'
+import MdRemoveCircle from 'react-icons/lib/md/remove-circle'
+import MdOfflinePin from 'react-icons/lib/md/offline-pin'
 import UIComponent from '$tl/ui/handy/UIComponent'
 import {TPointContextMenuProps} from '$tl/ui/panels/AllInOnePanel/Right/timeline/overlays/types'
 import HalfPieContextMenu from '$shared/components/HalfPieContextMenu/HalfPieContextMenu'
+import noop from '$shared/utils/noop'
 
 interface IProps extends TPointContextMenuProps {
   onClose: () => void
@@ -23,19 +24,19 @@ class PointContextMenu extends UIComponent<IProps, IState> {
         items={[
           {
             label: '$R$eset',
-            cb: onClose,
-            IconComponent: MdDonutSmall,
+            cb: noop,
+            IconComponent: MdLens,
             disabled: true,
           },
           {
             label: '$D$elete',
             cb: this._removePoint,
-            IconComponent: MdCancel,
+            IconComponent: MdRemoveCircle,
           },
           {
             label: '$C$onnect',
             cb: this._connectPoint,
-            IconComponent: MdStars,
+            IconComponent: MdOfflinePin,
           },
         ]}
       />

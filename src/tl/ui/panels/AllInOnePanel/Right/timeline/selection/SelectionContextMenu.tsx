@@ -1,8 +1,8 @@
 import React from 'react'
 import HalfPieContextMenu from '$shared/components/HalfPieContextMenu/HalfPieContextMenu'
-import MdDonutSmall from 'react-icons/lib/md/donut-small'
-import MdCancel from 'react-icons/lib/md/cancel'
-import MdStars from 'react-icons/lib/md/stars'
+import MdRadioButtonUnchecked from 'react-icons/lib/md/radio-button-unchecked'
+import MdRemoveCircle from 'react-icons/lib/md/remove-circle'
+import MdGroupWork from 'react-icons/lib/md/group-work'
 import noop from '$shared/utils/noop'
 
 interface IProps {
@@ -30,18 +30,18 @@ export default class SelectionContextMenu extends React.PureComponent<
           {
             label: 'C$u$t Points',
             cb: noop,
-            IconComponent: MdDonutSmall,
+            IconComponent: MdRadioButtonUnchecked,
             disabled: true,
           },
           {
             label: '$D$elete Points',
             cb: onDelete,
-            IconComponent: MdCancel,
+            IconComponent: MdRemoveCircle,
           },
           {
             label: '$C$opy Points',
             cb: noop,
-            IconComponent: MdStars,
+            IconComponent: MdGroupWork,
             disabled: true,
           },
         ]}
