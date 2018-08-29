@@ -232,8 +232,6 @@ export default class NumberEditor extends UIComponent<IProps, IState> {
   }
 
   onDrag = (dx: number, dy: number) => {
-    console.log(dy);
-    
     const newValue = this.state.valueBeforeDragging - dy
     this.setState({
       currentDraggingValue: newValue,

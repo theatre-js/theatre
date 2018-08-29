@@ -23,10 +23,9 @@ export default function interpolationDerivationForCubicBezier(
   config: Config,
 ): AbstractDerivation<number> {
   // debugger
-  return isConnected(config).flatMap(
-    isConnected =>
-      isConnected ? interpolatedValue(config) : config.leftPointValueD,
-  )
+  return isConnected(config).flatMap(isConnected => {
+    return isConnected ? interpolatedValue(config) : config.leftPointValueD
+  })
 }
 
 const unitBezier = (
@@ -64,17 +63,14 @@ const interpolatedValue = (config: Config) => {
   const solverD = unitBezier(config.interpolationDescriptorP)
   const {leftPointValueD, rightPointValueD} = config
 
-  return withDeps(
-    {progressionD, solverD, leftPointValueD, rightPointValueD},
-    () => {
-      // console.log('here')
-      // debugger
-      const solver: Solver = solverD.getValue()
-      const valueProgression = solver.solveSimple(progressionD.getValue())
-      const valueDiff =
-        ((rightPointValueD.getValue() as $IntentionalAny) as number) -
-        leftPointValueD.getValue()
-      return leftPointValueD.getValue() + valueProgression * valueDiff
-    },
-  )
+  return autoDerive(() => {
+    // debugger
+    const solver: Solver = solverD.getValue()
+    const valueProgression = solver.solveSimple(progressionD.getValue())
+    const valueDiff =
+      ((rightPointValueD.getValue() as $IntentionalAny) as number) -
+      leftPointValueD.getValue()
+    
+    return leftPointValueD.getValue() + valueProgression * valueDiff
+  })
 }

@@ -25,11 +25,21 @@ const getKeyOfValue = (
 ): mixed => {
   if (vType === ValueTypes.Dict && typeof key === 'string') {
     return (v as $IntentionalAny)[key]
-  } else if (vType === ValueTypes.Array && typeof key === 'number') {
+  } else if (vType === ValueTypes.Array && isValidArrayIndex(key)) {
     return (v as $IntentionalAny)[key]
   } else {
     return undefined
   }
+}
+
+const isValidArrayIndex = (key: string | number): boolean => {
+  const inNumber = typeof key === 'number' ? key : parseInt(key, 10)
+  return (
+    !isNaN(inNumber) &&
+    inNumber >= 0 &&
+    inNumber < Infinity &&
+    (inNumber | 0) === inNumber
+  )
 }
 
 class Thingy {
@@ -99,6 +109,7 @@ export class Atom<State> implements Pointable {
   setState(newState: State) {
     const oldState = this._currentState
     this._currentState = newState
+
     this._comp([], this._rootThingy, oldState, newState)
   }
 
@@ -126,6 +137,7 @@ export class Atom<State> implements Pointable {
     newState: mixed,
   ) {
     if (oldState === newState) return
+    // if (path.includes('points') && window.dbg) debugger
     thingy.identityChangeListeners.forEach(cb => cb(newState))
 
     if (thingy.children.size === 0) return
@@ -217,7 +229,7 @@ export const coldVal = <P extends PointerInnerObj<$IntentionalAny>>(
   pointer: P,
 ): P extends PointerInnerObj<infer T> ? T : never => {
   const meta = pointer.$pointerMeta
-  return meta.root.getIn(meta.path as $IntentionalAny)  
+  return meta.root.getIn(meta.path as $IntentionalAny)
 }
 
 export const pathTo = <P extends PointerInnerObj<$IntentionalAny>>(

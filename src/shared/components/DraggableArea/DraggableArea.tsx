@@ -74,8 +74,6 @@ class DraggableArea extends React.PureComponent<Props, {}> {
   dragStartHandler = (event: React.MouseEvent<HTMLElement>) => {
     if (event.button !== 0) return
     if (!this.props.dontBlockMouseDown) {
-      console.log('block');
-      
       event.stopPropagation()
       event.preventDefault()
     }

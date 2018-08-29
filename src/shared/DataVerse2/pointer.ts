@@ -35,6 +35,8 @@ export type Pointer<O> = {
 
 const handler = {
   get(obj: PointerInnerObj<mixed>, prop: string): $IntentionalAny {
+    // const keyAsInteger = parseInt(requestedProp, 10)
+    // const prop = !isNaN(keyAsInteger) && keyAsInteger >= 0 && keyAsInteger < Infinity ? keyAsInteger : requestedProp
     const meta = obj.$pointerMeta
     if (prop === '$pointerMeta') return meta
     if (meta.cachedSubPointers[prop]) return meta.cachedSubPointers[prop]

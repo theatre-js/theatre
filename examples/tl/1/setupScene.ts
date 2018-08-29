@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import 'three/examples/js/controls/OrbitControls'
+// import 'three/examples/js/controls/OrbitControls'
 
 const fragmentShaderSource = `
   varying vec3 vCenter;
@@ -24,7 +24,7 @@ const vertexShaderSource = `
   `
 
 const setupScene = () => {
-  let camera, scene, renderer, sphere
+  let camera: THREE.Camera, scene: THREE.Scene, renderer: THREE.WebGLRenderer, sphere: THREE.Group
   init()
   animate()
   function init() {
@@ -53,15 +53,15 @@ const setupScene = () => {
     camera.position.y = 100
     // camera.rotation
     // tslint:disable-next-line:prefer-const
-    let controls = new THREE.OrbitControls(camera)
+    // let controls = new THREE.OrbitControls(camera)
     return camera
   }
 
-  function makeSphereMesh(size) {
+  function makeSphereMesh(size: number) {
     const geometry = new THREE.SphereBufferGeometry(size / 2, 32, 16)
     const material = new THREE.MeshBasicMaterial({color: 0x888888})
     const mesh = new THREE.Mesh(geometry, material)
-    scene.add(mesh)
+    // scene.add(mesh)
 
     const wireframe = new THREE.WireframeGeometry(geometry)
     const lineMaterial = new THREE.LineBasicMaterial({
@@ -73,12 +73,24 @@ const setupScene = () => {
     line.material.opacity = 1
     line.material.transparent = true
 
-    scene.add(line)
-    sphere = line
+    // scene.add(line)
+
+    const group = new THREE.Group()
+    group.add(line)
+    group.add(mesh)
+    scene.add(group)
+    sphere = group
   }
 
-  function makePlatformMesh(size) {
-    const geometry = new THREE.BoxBufferGeometry(size * 5, 1, size * 5, 10, 1, 10)
+  function makePlatformMesh(size: number) {
+    const geometry = new THREE.BoxBufferGeometry(
+      size * 5,
+      1,
+      size * 5,
+      10,
+      1,
+      10,
+    )
     const material = new THREE.MeshBasicMaterial({color: 0x00ff00})
     const wireframe = new THREE.WireframeGeometry(geometry)
 
@@ -99,8 +111,8 @@ const setupScene = () => {
 
   function onWindowResize() {
     const height = window.innerHeight / 2
-    camera.aspect = window.innerWidth / height
-    camera.updateProjectionMatrix()
+    // camera.aspect = window.innerWidth / height
+    // camera.updateProjectionMatrix()
     renderer.setSize(window.innerWidth, height)
   }
 
