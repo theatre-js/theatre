@@ -34,6 +34,7 @@ import TempPoint from '$tl/ui/panels/AllInOnePanel/Right/views/graphEditor/TempP
 import RenderBlocker from '$shared/components/RenderBlocker/RenderBlocker'
 import {SelectedAreaContext} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/SelectionProvider'
 import {shouldToggleIsInSelection} from '$tl/ui/panels/AllInOnePanel/Right/views/utils'
+import {clamp} from 'lodash'
 
 interface IProps {
   propGetter: TPropGetter
@@ -349,8 +350,8 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
     ]
     const newHandle = this.props
       .prevPoint!.interpolationDescriptor.handles.slice(2)
-      .map(
-        (handle, i) => handle + handlesMove[i] - this.state.handlesMove[i],
+      .map((handle, i) =>
+        clamp(handle + handlesMove[i] - this.state.handlesMove[i], 0, 1),
       ) as TPointSingleHandle
 
     this.props.moveLeftHandleTemp(this.props.pointIndex, newHandle)
@@ -391,9 +392,12 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
     ] as TPointHandles
     const newHandle = this.props.point.interpolationDescriptor.handles
       .slice(0, 2)
-      .map(
-        (handle, i) =>
+      .map((handle, i) =>
+        clamp(
           handle + handlesMove[i + 2] - this.state.handlesMove[i + 2],
+          0,
+          1,
+        ),
       ) as TPointSingleHandle
 
     this.props.moveRightHandleTemp(this.props.pointIndex, newHandle)

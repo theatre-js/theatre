@@ -122,6 +122,7 @@ class ItemPointsNormalizer extends React.PureComponent<IProps, IState> {
     this.cache.points = points
     this.cache.normalizedPoints = normalizedPoints
     this.cache.duration = duration
+    this.cache.extremums = extremums
     return normalizedPoints
   }
 
@@ -159,7 +160,6 @@ class ItemPointsNormalizer extends React.PureComponent<IProps, IState> {
       }
       extremums = [min, max]
     }
-    this.cache.extremums = extremums
     return extremums
   }
 }
