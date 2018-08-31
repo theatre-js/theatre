@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom'
 import React from 'react'
 import css from '$shared/components/FixedFullSizeContainer/FixedFullSizeContainer.css'
-import {resolveCss} from '$shared/utils'
+import resolveCss from '$shared/utils/resolveCss'
 
 const classes = resolveCss(css)
 

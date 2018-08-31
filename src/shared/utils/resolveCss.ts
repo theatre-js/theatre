@@ -1,4 +1,4 @@
-import {forEachRight, flattenDeep} from 'lodash'
+import {forEachRight, flattenDeep} from 'lodash-es'
 
 type IStylesToClassName<ValidNames extends string> = Partial<
   Record<ValidNames, string>

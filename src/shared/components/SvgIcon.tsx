@@ -1,6 +1,6 @@
 import React from 'react'
 import * as css from './SvgIcon.css'
-import {resolveCss} from '$shared/utils'
+import resolveCss from '$shared/utils/resolveCss'
 
 type Props = {
   css?: Partial<typeof css>

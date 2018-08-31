@@ -1,5 +1,5 @@
 import {ReduxReducer, GenericAction} from '$shared/types'
-import {actionCreator} from '$shared/utils'
+import actionCreator from '$shared/utils/redux/actionCreator'
 
 export const batchedAction = actionCreator(
   '@@batched',

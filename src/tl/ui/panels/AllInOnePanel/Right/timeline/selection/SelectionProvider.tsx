@@ -1,6 +1,6 @@
 import React from 'react'
 import css from './SelectionProvider.css'
-import {resolveCss} from '$shared/utils'
+import resolveCss from '$shared/utils/resolveCss'
 import {val} from '$shared/DataVerse2/atom'
 import * as utils from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/utils'
 import {TDuration, TRange} from '$tl/ui/panels/AllInOnePanel/Right/types'
@@ -34,6 +34,7 @@ import {SVG_PADDING_Y} from '$tl/ui/panels/AllInOnePanel/Right/views/SVGWrapper'
 import Overlay from '$shared/components/Overlay/Overlay'
 import OverlaySection from '$shared/components/Overlay/OverlaySection'
 import SelectionContextMenu from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/SelectionContextMenu'
+import {PropValueContainer} from '$tl/Project/store/types'
 
 const classes = resolveCss(css)
 
@@ -459,7 +460,8 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
         const itemExtremums = this.extremumsOfItemsInSelection[itemKey]
         const extDiff = itemExtremums[1] - itemExtremums[0]
 
-        const valueChange = (move.y / (itemData.height - SVG_PADDING_Y)) * extDiff
+        const valueChange =
+          (move.y / (itemData.height - SVG_PADDING_Y)) * extDiff
         const pointsNewCoords: TCollectionOfSelectedPointsData = {}
 
         Object.keys(selectedPointsData).forEach(pointIndex => {
@@ -493,11 +495,16 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
     ).reduce(
       (mapOfItemsData, item) => {
         if (item.type !== 'PrimitiveProp') return mapOfItemsData
-        const propState = projectSelectors.historic.getPropState(
+        const propStateP = projectSelectors.historic.getPropState(
           this.project.atomP.historic,
           item.address,
         )
-        const valueContainer = val(propState.valueContainer)
+
+        // if (!propState) return null as any
+        const valueContainer = val(
+          propStateP.valueContainer,
+        ) as PropValueContainer | undefined
+
         if (
           !valueContainer ||
           valueContainer.type !== 'BezierCurvesOfScalarValues'

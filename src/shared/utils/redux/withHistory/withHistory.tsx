@@ -7,7 +7,7 @@ import {
   _discardTemporaryAction,
   replaceHistoryAction,
 } from './actions'
-import * as _ from 'lodash'
+import {last} from 'lodash-es'
 import patch from 'json-touch-patch'
 import {ReduxReducer, GenericAction} from '$shared/types'
 import {Operation} from 'fast-json-patch'
@@ -160,7 +160,7 @@ function pushCommit<InnerState>(
     return prevHistory
   }
 
-  const prevLastCommitHash = _.last(prevHistory.listOfCommitHashes)
+  const prevLastCommitHash = last(prevHistory.listOfCommitHashes)
 
   const newHistory: HistoryOnly<InnerState> = {
     currentCommitHash: commit.hash,

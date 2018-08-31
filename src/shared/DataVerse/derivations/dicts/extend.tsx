@@ -1,5 +1,5 @@
 import AbstractDerivedDict, {DerivedDictChangeType} from './AbstractDerivedDict'
-import _, {noop} from 'lodash'
+import _, {noop} from 'lodash-es'
 
 export class ExtendDerivedDict<L, R> extends AbstractDerivedDict<Spread<L, R>> {
   _base: AbstractDerivedDict<L>

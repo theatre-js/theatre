@@ -4,7 +4,7 @@ import React from 'react'
 import connect from '$theater/handy/connect'
 
 import * as css from './Input.css'
-import {get} from 'lodash'
+import {get} from 'lodash-es'
 import DraggableArea from '$theater/common/components/DraggableArea/DraggableArea'
 import {PanelActiveModeChannel} from '$theater/workspace/components/Panel/Panel'
 import {Subscriber} from 'react-broadcast'

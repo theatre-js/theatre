@@ -4,7 +4,7 @@ import {TimelineAddress, ObjectAddress, PropAddress} from '$tl/handy/addresses'
 import {val} from '$shared/DataVerse2/atom'
 import projectsSingleton from '$tl/Project/projectsSingleton'
 import UI from '$tl/ui/UI'
-import {Project} from '$src/tl'
+import Project from '$tl/Project/Project'
 
 const getTimelineState = pointerFriendlySelector(
   (s: UIHistoricState, addr: TimelineAddress) => {

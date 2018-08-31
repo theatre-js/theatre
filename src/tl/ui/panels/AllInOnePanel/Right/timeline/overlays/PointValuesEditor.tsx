@@ -1,6 +1,6 @@
 import React from 'react'
 import css from './PointValuesEditor.css'
-import {resolveCss} from '$shared/utils'
+import resolveCss from '$shared/utils/resolveCss'
 import UIComponent from '$tl/ui/handy/UIComponent'
 import {TPointValuesEditorProps} from '$tl/ui/panels/AllInOnePanel/Right/timeline/overlays/types'
 import Overlay from '$shared/components/Overlay/Overlay'

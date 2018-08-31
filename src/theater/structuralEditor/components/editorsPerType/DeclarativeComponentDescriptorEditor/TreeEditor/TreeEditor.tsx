@@ -9,7 +9,7 @@ import NodeContainer from '$theater/structuralEditor/components/editorsPerType/D
 import MovableNode from '$theater/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor/MovableNode'
 import * as css from '$theater/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor/index.css'
 import generateUniqueId from 'uuid/v4'
-import * as _ from 'lodash'
+import {get, isEqual, omit} from 'lodash-es'
 import {
   DESCRIPTOR_TYPE,
   ACTION,
@@ -30,13 +30,13 @@ export const metaKey = 'composePanel'
 const PLACEHOLDER = '\n'
 
 export const getMeta = (rootComponentDescriptor: $IntentionalAny) => {
-  return _.get(rootComponentDescriptor, ['meta', metaKey])
+  return get(rootComponentDescriptor, ['meta', metaKey])
 }
 
 export const getSelectedNodeId = (
   rootComponentDescriptor: $IntentionalAny,
 ): undefined | null | string => {
-  return _.get(getMeta(rootComponentDescriptor), 'selectedNodeId')
+  return get(getMeta(rootComponentDescriptor), 'selectedNodeId')
 }
 
 interface IOwnProps {
@@ -118,7 +118,7 @@ class TreeEditor extends PureComponentWithTheater<IProps, State> {
 
   componentWillReceiveProps(nextProps: IProps) {
     if (
-      !_.isEqual(
+      !isEqual(
         nextProps.rootComponentDescriptor.localHiddenValuesById,
         this.props.rootComponentDescriptor.localHiddenValuesById,
       ) ||
@@ -366,7 +366,7 @@ class TreeEditor extends PureComponentWithTheater<IProps, State> {
                 this._getLocalHiddenValueIdsOfSubNodes(deletedNodeValue),
               )
             }
-            return _.omit(values, idsToDelete)
+            return omit(values, idsToDelete)
           },
         },
       ]),
@@ -619,7 +619,7 @@ class TreeEditor extends PureComponentWithTheater<IProps, State> {
               {this._renderScroller('up')}
               {isANodeBeingDragged && (
                 <MovableNode
-                  rootNode={_.get(nodes, nodeBeingDragged.nodeProps.path)}
+                  rootNode={get(nodes, nodeBeingDragged.nodeProps.path)}
                   nodeBeingDragged={nodeBeingDragged}
                   onDragEnd={this.handleDragEnd}
                 />
@@ -685,7 +685,7 @@ export default connect((s: ITheaterStoreState, op: IOwnProps) => {
     componentTypes,
     listOfDisplayNames,
     getComponentDescriptor: id => getComponentDescriptor(s, id),
-    rootComponentDescriptor: _.get(s, op.pathToComponentDescriptor),
+    rootComponentDescriptor: get(s, op.pathToComponentDescriptor),
     // selectedNodeId,
   }
 })(TreeEditor)

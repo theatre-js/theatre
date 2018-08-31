@@ -1,4 +1,4 @@
-import {keyBy, mapValues} from 'lodash'
+import {keyBy, mapValues} from 'lodash-es'
 
 // @ts-ignore
 const context = require.context(

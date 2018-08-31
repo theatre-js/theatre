@@ -3,8 +3,9 @@ import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
 import React from 'react'
 import connect from '$theater/handy/connect'
 import {ITheaterStoreState} from '$theater/types'
-import * as _ from 'lodash'
-import {set, get} from 'lodash/fp'
+import {compact, mapValues, get as get_, flatMap} from 'lodash-es'
+import get from 'lodash/fp/get'
+import set from 'lodash/fp/set'
 import PanelController from '../PanelController/PanelController'
 import StatusBar from '../StatusBar/StatusBar'
 import * as css from './StudioUI.css'
@@ -122,16 +123,16 @@ export class StudioUI extends PureComponentWithTheater<IProps, State> {
   }
 
   _getCalculatedBoundaries(boundaries: $FixMe) {
-    return _.mapValues(boundaries, boundary =>
-      _.mapValues(boundary, side => {
+    return mapValues(boundaries, boundary =>
+      mapValues(boundary, side => {
         if (side.type === EXACT_VALUE) {
           return side.value
         } else {
           let distance = side.distance | 0
-          let ref = _.get(boundaries, side.path)
+          let ref = get_(boundaries, side.path)
           while (ref.type !== EXACT_VALUE) {
             if (ref.type === DIST_FROM_BOUNDARY) distance += ref.distance
-            ref = _.get(boundaries, ref.path)
+            ref = get_(boundaries, ref.path)
           }
           return ref.value + distance
         }
@@ -163,10 +164,10 @@ export class StudioUI extends PureComponentWithTheater<IProps, State> {
           }
           if (boundary[side].type === DIST_FROM_BOUNDARY) {
             let distance = boundary[side].distance | 0
-            let ref = _.get(boundaries, boundary[side].path)
+            let ref = get_(boundaries, boundary[side].path)
             while (ref.type !== EXACT_VALUE) {
               if (ref.type === DIST_FROM_BOUNDARY) distance += ref.distance
-              ref = _.get(boundaries, ref.path)
+              ref = get_(boundaries, ref.path)
             }
             x = x.concat(ref.value + distance)
             refMapX = {
@@ -195,10 +196,10 @@ export class StudioUI extends PureComponentWithTheater<IProps, State> {
           }
           if (boundary[side].type === DIST_FROM_BOUNDARY) {
             let distance = boundary[side].distance | 0
-            let ref = _.get(boundaries, boundary[side].path)
+            let ref = get_(boundaries, boundary[side].path)
             while (ref.type !== EXACT_VALUE) {
               if (ref.type === DIST_FROM_BOUNDARY) distance += ref.distance
-              ref = _.get(boundaries, ref.path)
+              ref = get_(boundaries, ref.path)
             }
             y = y.concat(ref.value + distance)
             refMapY = {
@@ -218,11 +219,11 @@ export class StudioUI extends PureComponentWithTheater<IProps, State> {
   }
 
   updatePanelBoundaries = (panelId: string, newBoundaries: $FixMe) => {
-    const newCalculatedBoundaries = _.mapValues(newBoundaries, side => {
+    const newCalculatedBoundaries = mapValues(newBoundaries, side => {
       if (side.type === EXACT_VALUE) {
         return side.value
       } else {
-        return _.get(this.state.calculatedBoundaries, side.path)
+        return get_(this.state.calculatedBoundaries, side.path)
       }
     })
     const currentCalculatedBoundaries = this.state.calculatedBoundaries[panelId]
@@ -238,8 +239,8 @@ export class StudioUI extends PureComponentWithTheater<IProps, State> {
         ['historicWorkspace', 'panels', 'byId'],
         (panels: $FixMe) => {
           const newBoundariesKeys: string[] = Object.keys(newBoundaries)
-          const stagedChanges = _.compact(
-            _.flatMap(newBoundaries, (sideValue: $FixMe, sideKey: string) => {
+          const stagedChanges = compact(
+            flatMap(newBoundaries, (sideValue: $FixMe, sideKey: string) => {
               const oppositeSideKey = getOppositeSide(sideKey)
               if (!newBoundariesKeys.includes(oppositeSideKey)) {
                 const oppositeSideValue =
@@ -340,7 +341,7 @@ export class StudioUI extends PureComponentWithTheater<IProps, State> {
             }),
           )
 
-          const panelsWithoutRefsToUpdatedPanel = _.mapValues(
+          const panelsWithoutRefsToUpdatedPanel = mapValues(
             panels,
             (panel: $FixMe) => {
               if (panel.id === panelId) {
@@ -351,7 +352,7 @@ export class StudioUI extends PureComponentWithTheater<IProps, State> {
               } else {
                 return {
                   ...panel,
-                  boundaries: _.mapValues(
+                  boundaries: mapValues(
                     panel.boundaries,
                     (sideValue: $FixMe) => {
                       if (
@@ -384,12 +385,12 @@ export class StudioUI extends PureComponentWithTheater<IProps, State> {
             )
           })
 
-          return _.mapValues(
+          return mapValues(
             panelsWithPrioritizedBoundaries,
             (panel: $FixMe) => {
               return {
                 ...panel,
-                boundaries: _.mapValues(
+                boundaries: mapValues(
                   panel.boundaries,
                   (sideValue: $FixMe, sideKey: string, boundaries: $FixMe) => {
                     const oppositeSideKey = getOppositeSide(sideKey)
@@ -481,11 +482,11 @@ export class StudioUI extends PureComponentWithTheater<IProps, State> {
 }
 
 export default connect((state: ITheaterStoreState) => {
-  const panelsBoundaries = _.mapValues(
-    _.get(state, ['historicWorkspace', 'panels', 'byId']),
+  const panelsBoundaries = mapValues(
+    get_(state, ['historicWorkspace', 'panels', 'byId']),
     panel => panel.boundaries,
   )
-  const visiblePanels = _.get(state, [
+  const visiblePanels = get_(state, [
     'historicWorkspace',
     'panels',
     'listOfVisibles',

@@ -47,8 +47,9 @@ export default class UI {
   protected _render() {
     const containerEl = document.createElement('div')
     containerEl.className = 'theaterjsRoot'
-    document.body.appendChild(containerEl)
-
-    ReactDOM.render(<UIRootWrapper ui={this} />, containerEl)
+    setTimeout(() => {
+      document.body.appendChild(containerEl)
+      ReactDOM.render(<UIRootWrapper ui={this} />, containerEl)
+    }, 10)
   }
 }

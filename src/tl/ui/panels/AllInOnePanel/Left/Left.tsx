@@ -70,11 +70,11 @@ export default class Left extends UIComponent<IProps, IState> {
                   </div>
                 ) : (
                   <div {...classes('createItemTip')}>
-                    <TextBlock>Create an item!</TextBlock>
+                    <TextBlock>Your timeline seems to be empty. Add on object to your timeline by:</TextBlock>
                     <CodeSnippet>
-                      timeline.createObject('Item key', DOMElement)
+                      timeline.createObject('My Div', myDiv)
                     </CodeSnippet>
-                    <TextBlock>Your item will appear in this panel.</TextBlock>
+                    <TextBlock>Your object will appear here.</TextBlock>
                   </div>
                 )
               }}

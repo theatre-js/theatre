@@ -3,7 +3,7 @@ import MirrorOfReactTree, {
   State as MState,
 } from '$theater/integrations/react/treeMirroring/MirrorOfReactTree'
 import atom, {Atom} from '$shared/DataVerse2/atom'
-import {omit} from 'lodash'
+import {omit} from 'lodash-es'
 
 type State = {
   unexpandedViewports: Record<string, VolatileId>

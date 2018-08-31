@@ -1,5 +1,5 @@
 import React from 'react'
-import {clamp} from 'lodash'
+import {clamp} from 'lodash-es'
 import {filter} from 'fuzzaldrin-plus'
 
 type OptionsList = string[]

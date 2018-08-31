@@ -1,8 +1,9 @@
 import memoizeOne from 'memoize-one'
 import {TItems} from '$shared/components/MultiLevelDropdown/MultiLevelDropdown'
 import InternalTimeline from '$tl/timelines/InternalTimeline'
-import {flatMap} from 'lodash'
-import {get, set} from 'lodash/fp'
+import {flatMap} from 'lodash-es'
+import get from 'lodash/fp/get'
+import set from 'lodash/fp/set'
 
 type TInternalTimelines = {
   [path: string]: InternalTimeline

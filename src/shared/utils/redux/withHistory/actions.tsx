@@ -1,8 +1,8 @@
-import {actionCreator} from '$shared/utils'
+import actionCreator from '$shared/utils/redux/actionCreator'
 import makeUUID from 'uuid/v4'
 import {GenericAction} from '$shared/types'
 import {HistoryOnly} from '$shared/utils/redux/withHistory/withHistoryDeprecated'
-import {identity} from 'lodash'
+import {identity} from 'lodash-es'
 
 type GenericReducer = <T extends {}>(state: T) => T
 

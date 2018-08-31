@@ -10,7 +10,7 @@ import {
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import {val} from '$shared/DataVerse2/atom'
 import {reduceAhistoricState} from '$theater/bootstrap/actions'
-import {omit} from 'lodash'
+import {omit} from 'lodash-es'
 import AnyNode from './AnyNode'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import {getActiveViewportId, getVolatileIdOfActiveNode} from './utils'

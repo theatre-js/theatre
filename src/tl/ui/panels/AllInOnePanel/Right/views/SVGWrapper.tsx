@@ -1,6 +1,6 @@
 import React from 'react'
 import css from './SVGWrapper.css'
-import {resolveCss} from '$shared/utils'
+import resolveCss from '$shared/utils/resolveCss'
 
 const classes = resolveCss(css)
 

@@ -8,7 +8,7 @@ export default class UIRootWrapper extends React.Component<{ui: UI}> {
   componentWillMount() {
     const self = this
     // @ts-ignore
-    if ($env.NODE_ENV === 'development' && module.hot) {
+    if ($env.NODE_ENV === 'development' && module && module.hot) {
       // @ts-ignore
       module.hot.accept('./UIRoot', () => {
         const UIRoot = require('./UIRoot').default

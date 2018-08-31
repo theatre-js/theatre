@@ -1,9 +1,9 @@
 import React from 'react'
 import css from './HalfPieContextMenu.css'
-import {flatMap} from 'lodash'
+import {flatMap} from 'lodash-es'
 import Overlay from '$shared/components/Overlay/Overlay'
 import OverlaySection from '$shared/components/Overlay/OverlaySection'
-import {resolveCss} from '$shared/utils'
+import resolveCss from '$shared/utils/resolveCss'
 import FixedFullSizeContainer from '$shared/components/FixedFullSizeContainer/FixedFullSizeContainer'
 
 const classes = resolveCss(css)

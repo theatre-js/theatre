@@ -10,7 +10,7 @@ import MdCamera from 'react-icons/lib/md/camera'
 import MdDonutSmall from 'react-icons/lib/md/donut-small'
 import MdExplore from 'react-icons/lib/md/explore'
 import MdStars from 'react-icons/lib/md/stars'
-import * as _ from 'lodash'
+import {isEqual} from 'lodash-es'
 
 type Props = {
   nodeData: Object
@@ -59,7 +59,7 @@ class NodeContainer extends React.PureComponent<Props, State> {
       if (
         currentPayload == null ||
         (currentPayload != null &&
-          !_.isEqual(currentPayload.dropOffset, dropOffset))
+          !isEqual(currentPayload.dropOffset, dropOffset))
       ) {
         this.setState(() => ({
           maxHeight: actionPayload.height,

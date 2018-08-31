@@ -1,6 +1,6 @@
 import React from 'react'
 import css from './FlyoutWithSearch.css'
-import {resolveCss} from '$shared/utils'
+import resolveCss from '$shared/utils/resolveCss'
 import noop from '$shared/utils/noop'
 import Overlay from '$shared/components/Overlay/Overlay'
 import OverlaySection from '$shared/components/Overlay/OverlaySection'

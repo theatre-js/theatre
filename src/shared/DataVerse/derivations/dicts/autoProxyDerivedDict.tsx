@@ -1,5 +1,5 @@
 import AbstractDerivedDict from './AbstractDerivedDict'
-import _ from 'lodash'
+import * as _ from 'lodash-es'
 import {default as proxyDerivedDict, ProxyDerivedDict} from './proxyDerivedDict'
 import emptyDict from './emptyDict'
 import Ticker from '$shared/DataVerse/Ticker'

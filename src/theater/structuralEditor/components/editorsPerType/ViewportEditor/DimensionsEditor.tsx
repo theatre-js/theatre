@@ -6,7 +6,7 @@ import * as css from './DimensionsEditor.css'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import {val} from '$shared/DataVerse2/atom'
 import PanelSection from '$theater/structuralEditor/components/reusables/PanelSection'
-import {get} from 'lodash'
+import {get} from 'lodash-es'
 import {IViewport} from '$theater/workspace/types'
 import ExpressionlessNumberEditor from '$theater/structuralEditor/components/reusables/ExpressionlessNumberEditor'
 

@@ -3,7 +3,7 @@ import {
   skipFindingColdDerivations,
   endSkippingColdDerivations,
 } from '$shared/debug'
-import {map, times} from 'lodash'
+import {map, times} from 'lodash-es'
 
 const styles = {
   header: 'color: #7F7F7F; font-style: italic;',

@@ -1,4 +1,4 @@
-import {map, get} from 'lodash'
+import {map, get} from 'lodash-es'
 import SingleCustomStyleInspector from '$theater/componentModel/coreModifierDescriptors/HTML/SetCustomStyle/SetCustomStyleInspector/SingleCustomStyleInspector'
 import ModifierInspectorWrapper from '$theater/common/components/ModifierInspectorWrapper'
 import {ITheaterStoreState} from '$theater/types'

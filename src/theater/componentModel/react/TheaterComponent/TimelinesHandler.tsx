@@ -1,5 +1,5 @@
 import TheaterComponent from '$theater/componentModel/react/TheaterComponent/TheaterComponent'
-import * as _ from 'lodash'
+import {noop} from 'lodash-es'
 import TimelineInstance from './TimelineInstance/TimelineInstance'
 import {getPathToComponentDescriptor} from '$theater/componentModel/selectors'
 import autoProxyDerivedDict from '$shared/DataVerse/derivations/dicts/autoProxyDerivedDict'
@@ -24,7 +24,7 @@ export default class TimelinesHandler {
       this._element.theater.ticker,
     )
 
-    this._untap = _.noop
+    this._untap = noop
   }
 
   start() {

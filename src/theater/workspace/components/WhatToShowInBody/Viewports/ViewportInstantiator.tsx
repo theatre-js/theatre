@@ -1,5 +1,5 @@
 import React from 'react'
-import {clamp} from 'lodash'
+import {clamp} from 'lodash-es'
 
 interface IProps {
   x: number

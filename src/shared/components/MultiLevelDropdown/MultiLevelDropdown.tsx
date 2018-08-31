@@ -1,6 +1,6 @@
 import React from 'react'
 import css from './MultiLevelDropdown.css'
-import {resolveCss} from '$shared/utils'
+import resolveCss from '$shared/utils/resolveCss'
 import ItemsList from '$shared/components/MultiLevelDropdown/ItemsList'
 import Overlay from '$shared/components/Overlay/Overlay'
 import OverlaySection from '$shared/components/Overlay/OverlaySection'

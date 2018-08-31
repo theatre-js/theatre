@@ -1,4 +1,4 @@
-import {actionCreator} from '$shared/utils'
+import actionCreator from '$shared/utils/redux/actionCreator'
 
 /**
  * @note All these functions are available at dev time through `$s.shortcuts`.

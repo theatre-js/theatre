@@ -1,5 +1,5 @@
 import {IdentityDerivation} from '$shared/DataVerse2/identityDerivation'
-import {get, last, isPlainObject} from 'lodash'
+import {get, last, isPlainObject} from 'lodash-es'
 import pointer, {Pointer, PointerInnerObj} from './pointer'
 import {PathBasedReducer} from '$shared/utils/redux/withHistory/PathBasedReducer'
 import update from 'lodash/fp/update'

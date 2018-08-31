@@ -1,7 +1,6 @@
-import {betterErrorReporter} from '$shared/ioTypes/betterErrorReporter'
 import immer from 'immer'
 import * as t from '$shared/ioTypes'
-import {diff as diffValues} from 'jiff'
+
 
 type OuterReducer<State, Payload> = (
   prevState: State,
@@ -22,7 +21,9 @@ const reducto = <State>(stateIoType: t.Type<State>) => <Payload>(
       innerReducer(draftState, action.payload)
     })
 
-    if ($env.NODE_ENV === 'development') {
+    if ($env.NODE_ENV === 'development' && stateIoType) {
+      const {betterErrorReporter} = require('$shared/ioTypes/betterErrorReporter')
+      const {diff: diffValues} = require('jiff')
       const validationResult = stateIoType.validate(newState as $FixMe)
       if (validationResult.isLeft()) {
         console.group(
@@ -38,7 +39,7 @@ const reducto = <State>(stateIoType: t.Type<State>) => <Payload>(
         )
         const errors = betterErrorReporter(validationResult)
         console.log('Errors:', `(${errors.length})`)
-        errors.forEach(err => console.log(err))
+        errors.forEach((err: $IntentionalAny) => console.log(err))
         console.groupEnd()
       }
     }

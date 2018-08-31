@@ -1,7 +1,7 @@
 import React from 'react'
 import UIComponent from '$tl/ui/handy/UIComponent'
 import css from './ItemWrapper.css'
-import {resolveCss} from '$shared/utils'
+import resolveCss from '$shared/utils/resolveCss'
 import {
   PrimitivePropItem,
   singleItemHeight,

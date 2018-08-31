@@ -1,5 +1,5 @@
 import update from 'lodash/fp/update'
-import {get} from 'lodash'
+import {get} from 'lodash-es'
 
 export default function spreadPaths(
   paths: string[][],

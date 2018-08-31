@@ -6,7 +6,7 @@ import Panel, {
 import {Subscriber} from 'react-broadcast'
 import TimelineInstance from '$theater/componentModel/react/TheaterComponent/TimelineInstance/TimelineInstance'
 import {BoxAtom} from '$shared/DataVerse/atoms/boxAtom'
-import {noop, clamp} from 'lodash'
+import {noop, clamp} from 'lodash-es'
 import {
   focusedTimeToX,
   xToFocusedTime,

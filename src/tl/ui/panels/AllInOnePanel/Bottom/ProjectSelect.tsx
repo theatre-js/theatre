@@ -48,12 +48,12 @@ export default class ProjectSelect extends UIComponent<IProps, IState> {
                   {!areThereProjects && (
                     <>
                       <FullSizeHint>
-                        <TextBlock>Create a project!</TextBlock>
+                        <TextBlock>Start by creating a project:</TextBlock>
                         <CodeSnippet>
-                          const project = new TL.Project('Project Name')
+                          const project = new Theatre.Project('My project')
                         </CodeSnippet>
                       </FullSizeHint>
-                      <Tooltip>Your project will appear here.</Tooltip>
+                      <Tooltip>Your project will appear here!</Tooltip>
                     </>
                   )}
                   <Item onClick={this.onClick}>

@@ -1,5 +1,5 @@
 import {default as AbstractCompositeAtom} from './utils/AbstractCompositeAtom'
-import {forEach} from 'lodash'
+import {forEach} from 'lodash-es'
 import deriveFromArrayAtom from '$shared/DataVerse/derivations/arrays/deriveFromArrayAtom'
 import range from 'lodash/range'
 import {

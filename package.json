@@ -39,7 +39,8 @@
       "\\$lf/(.*)": "<rootDir>/src/lf/$1",
       "\\$theater/(.*)": "<rootDir>/src/theater/$1",
       "\\$shared/(.*)": "<rootDir>/src/shared/$1",
-      "\\.(css|less)$": "identity-obj-proxy"
+      "\\.(css|less)$": "identity-obj-proxy",
+      "lodash-es": "lodash"
     },
     "setupFiles": [
       "./src/test/env.tsx"
@@ -64,7 +65,7 @@
     ],
     "globals": {
       "ts-jest": {
-        "tsConfigFile": "tsconfig.jest.json"
+        "tsConfigFile": "./tsconfig.jest.json"
       }
     },
     "testURL": "http://localhost"

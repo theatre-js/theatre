@@ -4,7 +4,7 @@ import {NativeObjectTypeConfig} from './objectTypes'
 import {VoidFn} from '$shared/types'
 import didYouMean from '$shared/utils/didYouMean'
 import PropInstance from './PropInstance'
-import {mapValues} from 'lodash'
+import {mapValues} from 'lodash-es'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 import Project from '$tl/Project/Project'
 

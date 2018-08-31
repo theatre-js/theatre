@@ -1,5 +1,5 @@
 import React from 'react'
-import {isElement} from 'lodash'
+import {isElement} from 'lodash-es'
 import DomHighlighter from '$theater/common/components/DomHighlighter/DomHighlighter'
 
 interface IProps {

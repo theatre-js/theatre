@@ -1,6 +1,6 @@
 import React from 'react'
 import connect from '$theater/handy/connect'
-import {get} from 'lodash'
+import {get} from 'lodash-es'
 import {ITheaterStoreState} from '$theater/types'
 import inspectorComponents, {
   ModifierIDsWithInspectorComponents,

@@ -66,13 +66,12 @@ export default class TimelineSelect extends UIComponent<IProps, IState> {
                   {!internalTimeline && (
                     <>
                       <FullSizeHint>
-                        <TextBlock>Create a timeline!</TextBlock>
+                        <TextBlock>Next, you need to create a timeline to put your objects in:</TextBlock>
                         <CodeSnippet>
-                          const timeline = project.getTimeline('Timeline Name', 'Timeline
-                          Instance')
+                          const timeline = project.getTimeline('A timeline')
                         </CodeSnippet>
                       </FullSizeHint>
-                      <Tooltip>Your timeline will appear here.</Tooltip>
+                      <Tooltip>Your timeline will appear here:</Tooltip>
                     </>
                   )}
                   <Item onClick={this.onClick}>

@@ -14,7 +14,7 @@ import {
 import {PanelActiveModeChannel} from '$theater/workspace/components/Panel/Panel'
 import {stopPropagation} from '$theater/AnimationTimelinePanel/utils'
 import css from './VariableHitZone.css'
-import {resolveCss} from '$shared/utils'
+import resolveCss from '$shared/utils/resolveCss'
 import {reduceStateAction} from '$shared/utils/redux/commonActions'
 import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
 

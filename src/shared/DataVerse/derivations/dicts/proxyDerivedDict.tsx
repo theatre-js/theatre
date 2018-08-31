@@ -1,5 +1,5 @@
 import AbstractDerivedDict from './AbstractDerivedDict'
-import _ from 'lodash'
+import * as _ from 'lodash-es'
 import boxAtom, {BoxAtom} from '$shared/DataVerse/atoms/boxAtom'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 import noop from '$shared/utils/noop'

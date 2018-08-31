@@ -1,7 +1,7 @@
 import React from 'react'
 import {MenuAPIContext} from '$shared/components/MultiLevelDropdown/MultiLevelDropdown'
 import css from './LeafItem.css'
-import {resolveCss} from '$shared/utils'
+import resolveCss from '$shared/utils/resolveCss'
 
 const classes = resolveCss(css)
 

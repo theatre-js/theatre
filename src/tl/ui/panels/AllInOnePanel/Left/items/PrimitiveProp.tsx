@@ -115,6 +115,7 @@ export default class PrimitiveProp extends UIComponent<IProps, IState> {
           item.address,
         ),
       )
+      return
     }
 
     const valueContainer = propState.valueContainer

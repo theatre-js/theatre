@@ -1,4 +1,6 @@
-import {createAction} from 'redux-actions'
+// import {createAction} from 'redux-actions'
+import noop from '$shared/utils/noop'
+import identity from '$shared/utils/identity'
 
 interface Transformer<Input, Output> {
   (input: Input): Output
@@ -29,11 +31,19 @@ interface ActionCreatorCreator {
  * only that you can query the type of the action from the resulting
  * action creator.
  */
-const actionCreator = (actionType: string, transformer?: $IntentionalAny) => {
-  const originalActionCreator = createAction(
-    actionType,
-    transformer,
-  ) as $IntentionalAny
+const actionCreator = (
+  actionType: string,
+  transformer: $IntentionalAny = identity,
+) => {
+  // const originalActionCreator = createAction(
+  //   actionType,
+  //   transformer,
+  // ) as $IntentionalAny
+
+  const originalActionCreator: $IntentionalAny = (
+    payload: $IntentionalAny,
+  ) => ({type: actionType, payload: transformer(payload)})
+
   originalActionCreator.type = actionType
   originalActionCreator.is = (o: $IntentionalAny) =>
     o && o.type && o.type === actionType

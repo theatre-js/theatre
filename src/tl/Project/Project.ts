@@ -14,7 +14,7 @@ import atomFromReduxStore from '$shared/utils/redux/atomFromReduxStore'
 import {ProjectAddress} from '$tl/handy/addresses'
 import projectSelectors from '$tl/Project/store/selectors'
 import {GenericAction} from '$shared/types'
-import {debounce} from 'lodash'
+import {debounce} from 'lodash-es'
 
 const storageKey = 'storageKey'
 

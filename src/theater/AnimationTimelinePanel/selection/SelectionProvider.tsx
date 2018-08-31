@@ -6,7 +6,7 @@ import {
   ActiveMode,
 } from '$theater/common/components/ActiveModeDetector/ActiveModeDetector'
 import css from './SelectionProvider.css'
-import {resolveCss} from '$shared/utils'
+import resolveCss from '$shared/utils/resolveCss'
 import {disableEvent, getSvgWidth} from '$theater/AnimationTimelinePanel/utils'
 import DraggableArea from '$theater/common/components/DraggableArea/DraggableArea'
 import {
@@ -15,7 +15,7 @@ import {
   Variables,
 } from '$theater/AnimationTimelinePanel/types'
 import {val} from '$shared/DataVerse2/atom'
-import {get} from 'lodash'
+import {get} from 'lodash-es'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import * as utils from '$theater/AnimationTimelinePanel/selection/utils'
 import {
@@ -29,7 +29,7 @@ import {
   THorizontalLimits,
 } from '$theater/AnimationTimelinePanel/selection/types'
 import {reduceHistoricState} from '$theater/bootstrap/actions'
-import {set} from 'lodash/fp'
+import set from 'lodash/fp/set'
 import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
 
 const classes = resolveCss(css)

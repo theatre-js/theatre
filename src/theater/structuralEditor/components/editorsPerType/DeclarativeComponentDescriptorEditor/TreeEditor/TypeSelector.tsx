@@ -2,7 +2,7 @@ import React from 'react'
 import * as css from './TypeSelector.css'
 import {filter} from 'fuzzaldrin-plus'
 import cx from 'classnames'
-import * as _ from 'lodash'
+import {clamp} from 'lodash-es'
 import {NODE_TYPE} from './constants'
 import {fitInput} from './utils'
 
@@ -90,13 +90,13 @@ class TypeSelector extends React.PureComponent<Props, State> {
     if (e.keyCode === 38) {
       e.preventDefault()
       this.setState(state => ({
-        focusedIndex: _.clamp(state.focusedIndex - 1, 0, maxIndex),
+        focusedIndex: clamp(state.focusedIndex - 1, 0, maxIndex),
       }))
     }
     if (e.keyCode === 40) {
       e.preventDefault()
       this.setState(state => ({
-        focusedIndex: _.clamp(state.focusedIndex + 1, 0, maxIndex),
+        focusedIndex: clamp(state.focusedIndex + 1, 0, maxIndex),
       }))
     }
     if (e.keyCode === 13) {

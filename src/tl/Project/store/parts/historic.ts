@@ -29,7 +29,7 @@ const ensureObject = (s: ProjectHistoricState, addr: ObjectAddress) => {
   const timelineState = projectSelectors.historic.getInternalTimelineState(
     s,
     addr,
-  )
+  )!
   if (!timelineState.objects[addr.objectPath]) {
     timelineState.objects[addr.objectPath] = {props: {}}
   }
@@ -53,14 +53,14 @@ const getPoints = (
   s: ProjectHistoricState,
   addr: PropAddress,
 ): IBezierCurvesOfScalarValues['points'] => {
-  const propState = projectSelectors.historic.getPropState(s, addr)
+  const propState = projectSelectors.historic.getPropState(s, addr)!
   const valueContainer = propState.valueContainer as IBezierCurvesOfScalarValues
   return valueContainer.points
 }
 
 export const setPointsInBezierCurvesOfScalarValues = r(
   (s, p: PropAddress & {points: IBezierCurvesOfScalarValues['points']}) => {
-    const propState = projectSelectors.historic.getPropState(s, p)
+    const propState = projectSelectors.historic.getPropState(s, p)!
     const valueContainer = propState.valueContainer as IBezierCurvesOfScalarValues
     valueContainer.points = p.points
   },
@@ -232,7 +232,7 @@ export const setPointCoordsInBezierCurvesOfScalarValues = r(
 export const prop_setNumberValueInStaticValueContainer = r(
   (s, p: PropAddress & {value: number}) => {
     ensureObject(s, p)
-    const objectState = projectSelectors.historic.getObjectState(s, p)
+    const objectState = projectSelectors.historic.getObjectState(s, p)!
     if (!objectState.props[p.propKey]) {
       objectState.props[p.propKey] = {
         valueContainer: {
@@ -250,7 +250,7 @@ export const prop_setNumberValueInStaticValueContainer = r(
 
 export const prop_convertPropToBezierCurves = r((s, p: PropAddress) => {
   ensureObject(s, p)
-  const objectState = projectSelectors.historic.getObjectState(s, p)
+  const objectState = projectSelectors.historic.getObjectState(s, p)!
   const prop = objectState.props[p.propKey]
   if (!prop) {
     objectState.props[p.propKey] = {valueContainer: emptyTimeline(0)}
@@ -262,7 +262,7 @@ export const prop_convertPropToBezierCurves = r((s, p: PropAddress) => {
 
 export const prop_convertPropToStaticValue = r((s, p: PropAddress) => {
   ensureObject(s, p)
-  const objectState = projectSelectors.historic.getObjectState(s, p)
+  const objectState = projectSelectors.historic.getObjectState(s, p)!
   const prop = objectState.props[p.propKey]
   if (!prop) {
     objectState.props[p.propKey] = {

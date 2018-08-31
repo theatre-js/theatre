@@ -1,7 +1,7 @@
 import {Selector} from '$theater/types'
 import {IComponentId, IComponentDescriptor} from './types'
 import stringStartsWith from 'lodash/startsWith'
-import {get} from 'lodash'
+import {get} from 'lodash-es'
 
 export const getComponentDescriptor: Selector<
   IComponentDescriptor,

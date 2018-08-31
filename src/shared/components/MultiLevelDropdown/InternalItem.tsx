@@ -4,7 +4,7 @@ import {
   MenuAPIContext,
 } from '$shared/components/MultiLevelDropdown/MultiLevelDropdown'
 import css from './InternalItem.css'
-import {resolveCss} from '$shared/utils'
+import resolveCss from '$shared/utils/resolveCss'
 import ItemsList from '$shared/components/MultiLevelDropdown/ItemsList'
 import Overlay from '$shared/components/Overlay/Overlay'
 import {

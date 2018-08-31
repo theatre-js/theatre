@@ -6,11 +6,11 @@ import {NativeObjectTypeConfig} from '$tl/objects/objectTypes'
 import atom, {Atom, val, coldVal} from '$shared/DataVerse2/atom'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import {TimelineInstanceAddress} from '$tl/handy/addresses'
-import {noop} from 'redux-saga/utils'
 import {VoidFn} from '$shared/types'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 import didYouMean from '$shared/utils/didYouMean'
+import {noop} from 'lodash-es'
 
 type State = {
   time: number

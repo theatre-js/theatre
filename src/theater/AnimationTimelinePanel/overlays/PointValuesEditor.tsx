@@ -1,6 +1,6 @@
 import React from 'react'
 import css from './PointValuesEditor.css'
-import {resolveCss} from '$shared/utils'
+import resolveCss from '$shared/utils/resolveCss'
 import {TPointValuesEditorProps} from '$theater/AnimationTimelinePanel/overlays/types'
 import Overlay from '$theater/common/components/Overlay/Overlay'
 import {reduceHistoricState} from '$theater/bootstrap/actions'

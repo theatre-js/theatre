@@ -1,7 +1,7 @@
 import React from 'react'
 import * as css from './index.css'
 import cx from 'classnames'
-import * as _ from 'lodash'
+import {flatMap} from 'lodash-es'
 import Overlay from '$theater/common/components/Overlay/Overlay'
 
 interface IProps {
@@ -164,7 +164,7 @@ class HalfPieContextMenu extends React.PureComponent<IProps, IState> {
     const {centerPoint, items, close, placement} = this.props
     const {pressedKeyCode} = this.state
     const maxItemWidth = Math.max(
-      ..._.flatMap(items, (item: $FixMe) => 5 + item.label.length * 6),
+      ...flatMap(items, (item: $FixMe) => 5 + item.label.length * 6),
     )
     const translateCalculatorFn =
       placement === 'left' || placement === 'right'

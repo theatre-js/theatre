@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import * as _ from 'lodash-es'
 
 const context = require.context('$lb/', true, /\.endpointForLf\.tsx$/)
 const listOfModulePaths: Array<string> = context.keys()
