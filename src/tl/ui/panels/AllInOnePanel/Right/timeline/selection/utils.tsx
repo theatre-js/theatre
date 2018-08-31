@@ -10,6 +10,10 @@ import {
 import {SVG_PADDING_Y} from '$tl/ui/panels/AllInOnePanel/Right/views/SVGWrapper'
 import {TRange, TDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {POINT_RECT_EDGE_SIZE} from '$tl/ui/panels/AllInOnePanel/Right/views/point/PointClickArea'
+import {
+  getSvgXToPaddedSvgXOffset,
+  getSvgWidth,
+} from '$tl/ui/panels/AllInOnePanel/Right/utils'
 
 export const memoizedGetItemsInfo = memoizeOne(
   (mapOfItemsData: TMapOfFilteredItemKeyToItemData): TItemsInfo => {
@@ -44,10 +48,12 @@ export const getTransformedSelectedArea = (
   timelineWidth: number,
   itemsInfo: TItemsInfo,
 ): TTransformedSelectedArea => {
-  const fromX = dims.left
+  const svgWidth = getSvgWidth(range, duration, timelineWidth)
+  const getOffset = getSvgXToPaddedSvgXOffset(svgWidth)
+  const fromX = dims.left - getOffset(dims.left)
   const fromY = dims.top
-  const dX = dims.width
   const dY = dims.height
+  const toX = dims.left + dims.width - getOffset(dims.left + dims.width)
 
   const {boundaries: itemsBoundaries, keys: itemsKeys} = itemsInfo
   const fromIndex = itemsBoundaries.findIndex(b => b > fromY)
@@ -62,7 +68,7 @@ export const getTransformedSelectedArea = (
 
   const focusedWidth = (range.to - range.from) / duration
   const left = 100 * (focusedWidth * (fromX / timelineWidth))
-  const right = 100 * (focusedWidth * ((fromX + dX) / timelineWidth))
+  const right = 100 * (focusedWidth * (toX / timelineWidth))
 
   let transformedBoundaries
   if (upperBoundaryItemIndex === lowerBoundaryItemIndex) {

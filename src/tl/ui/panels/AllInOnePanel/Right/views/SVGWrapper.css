@@ -1,4 +1,5 @@
 @value svgPaddingY: 20px;
+@value svgPaddingX: 14px;
 
 .innerWrapper {
   overflow: visible;

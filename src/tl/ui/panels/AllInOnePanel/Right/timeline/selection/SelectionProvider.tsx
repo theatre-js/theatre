@@ -9,7 +9,10 @@ import {
   ActiveModeContext,
   MODES,
 } from '$shared/components/ActiveModeProvider/ActiveModeProvider'
-import {getSvgWidth} from '$tl/ui/panels/AllInOnePanel/Right/utils'
+import {
+  getSvgWidth,
+  getSvgXToPaddedSvgXOffset,
+} from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
 import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
@@ -39,6 +42,8 @@ import {PropValueContainer} from '$tl/Project/store/types'
 const classes = resolveCss(css)
 
 interface IExportedComponentProps {
+  enableZoom: () => void
+  disableZoom: () => void
   children: React.ReactNode
 }
 
@@ -86,6 +91,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
   mapOfItemsData: TMapOfFilteredItemKeyToItemData = {}
   tempActionGroup = this.project._actions.historic.temp()
   lastCommittedData: TLastCommittedData
+  getOffset: (x: number) => number = () => 0
 
   static defaultStateValues: IState = {
     status: 'noSelection',
@@ -141,6 +147,17 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
 
   _renderSelectedArea() {
     const {status, move, dims, contextMenuProps} = this.state
+
+    const leftOffset = this.getOffset(dims.left)
+    const style = {
+      ...dims,
+      left: dims.left + leftOffset,
+    }
+    const moveX =
+      move.x === 0
+        ? 0
+        : move.x + this.getOffset(dims.left + move.x) - leftOffset
+
     const statusIsConfirmedSelection = status === 'confirmedSelection'
 
     const areaIsMovable =
@@ -164,7 +181,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
               >
                 <div
                   style={{
-                    transform: `translate3d(${move.x}px, ${move.y}px, 0)`,
+                    transform: `translate3d(${moveX}px, ${move.y}px, 0)`,
                   }}
                 >
                   <div
@@ -173,7 +190,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
                       areaIsMovable && 'movable',
                       statusIsConfirmedSelection && 'hasTransition',
                     )}
-                    style={dims}
+                    style={style}
                     onContextMenu={this.handleContextMenu}
                   />
                 </div>
@@ -274,20 +291,32 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
     const {layerX, layerY} = event.nativeEvent
 
     const itemsInfo = utils.memoizedGetItemsInfo(this.mapOfItemsData)
-    this.setState(() => ({
-      status: 'selectingPoints',
-      startPoint: {
-        left: layerX,
-        top: layerY,
+    this.setState(
+      () => ({
+        status: 'selectingPoints',
+        startPoint: {
+          left: layerX,
+          top: layerY,
+        },
+        dims: {
+          left: layerX,
+          top: layerY,
+          width: 0,
+          height: 0,
+        },
+        itemsInfo,
+      }),
+      () => {
+        this.props.disableZoom()
+        this.getOffset = getSvgXToPaddedSvgXOffset(
+          getSvgWidth(
+            this.props.range,
+            this.props.duration,
+            this.props.timelineWidth,
+          ),
+        )
       },
-      dims: {
-        left: layerX,
-        top: layerY,
-        width: 0,
-        height: 0,
-      },
-      itemsInfo,
-    }))
+    )
   }
 
   setSelectionDimsAndBoundaries = (dx: number, dy: number) => {
@@ -297,6 +326,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
       const width = Math.abs(dx)
       const height = Math.abs(dy)
       const dims = {left, top, width, height}
+
       return {
         dims,
         transformedSelectedArea: this._getTransformedSelectedArea(dims),
@@ -349,6 +379,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
         timelineWidth,
         this.state.itemsInfo,
       )
+
       this.setState(() => ({
         status: 'confirmedSelection',
         horizontalLimits,
@@ -385,6 +416,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
     this.setState(
       () => SelectionProvider.defaultStateValues,
       () => {
+        this.props.enableZoom()
         this.selectedPoints = {}
         this.mapOfItemsData = {}
         this.extremumsOfItemsInSelection = {}

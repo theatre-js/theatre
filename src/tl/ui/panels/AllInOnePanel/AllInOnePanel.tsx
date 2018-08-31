@@ -96,7 +96,7 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
                     internalTimeline={internalTimeline}
                     timelineInstance={timelineInstance}
                     height={height}
-                    width={rightWidth}
+                    timelineWidth={rightWidth}
                     left={leftWidth}
                   />
                   <div {...classes('middle')} style={{height}}>

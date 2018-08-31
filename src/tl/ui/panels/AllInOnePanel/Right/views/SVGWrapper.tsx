@@ -9,6 +9,7 @@ interface IProps {
 }
 
 export const SVG_PADDING_Y = parseInt(css.svgPaddingY)
+export const SVG_PADDING_X = parseInt(css.svgPaddingX)
 
 class SVGWrapper extends React.PureComponent<IProps, {}> {
   static defaultProps = {
@@ -18,9 +19,11 @@ class SVGWrapper extends React.PureComponent<IProps, {}> {
   render() {
     const {dopesheet} = this.props
     const innerWrapperProps = {
-      width: '100%',
+      // width: '100%',
+      width: `calc(100% - ${SVG_PADDING_X}px)`,
       height: dopesheet ? '100%' : `calc(100% - ${SVG_PADDING_Y}px)`,
-      x: 0,
+      // x: 0,
+      x: SVG_PADDING_X / 2,
       y: dopesheet ? 0 : SVG_PADDING_Y / 2,
     }
     return (

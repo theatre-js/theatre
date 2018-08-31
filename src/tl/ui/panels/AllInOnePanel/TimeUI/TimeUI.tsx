@@ -15,7 +15,7 @@ interface IProps {
   internalTimeline: InternalTimeline
   timelineInstance: TimelineInstance
   height: number
-  width: number
+  timelineWidth: number
   left: number
 }
 
@@ -52,7 +52,7 @@ export default class TimeUI extends UIComponent<IProps, IState> {
           const rangeState = val(internalTimeline.pointerToRangeState)
           const range = rangeState.rangeShownInPanel
           const height = val(propsP.height)
-          const width = val(propsP.width)
+          const timelineWidth = val(propsP.timelineWidth)
           const left = val(propsP.left)
           const {duration} = rangeState
 
@@ -61,18 +61,26 @@ export default class TimeUI extends UIComponent<IProps, IState> {
           }
 
           return (
-            <div {...classes('container')} style={{width, left, height}}>
-              <FramesGrid width={width} range={range} />
-              <RangeSelector
-                width={width}
+            <div
+              {...classes('container')}
+              style={{width: timelineWidth, left, height}}
+            >
+              <FramesGrid
+                range={range}
                 duration={duration}
-                range={rangeState.rangeShownInPanel}
+                timelineWidth={timelineWidth}
+              />
+              <RangeSelector
+                range={range}
+                duration={duration}
+                timelineWidth={timelineWidth}
                 setRange={internalTimeline._setRangeShownInPanel}
               />
               <Seeker
-                width={width}
-                currentTime={currentTime}
                 range={range}
+                duration={duration}
+                timelineWidth={timelineWidth}
+                currentTime={currentTime}
                 gotoTime={gotoTime}
               />
             </div>

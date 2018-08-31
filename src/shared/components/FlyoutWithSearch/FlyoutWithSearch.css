@@ -11,6 +11,7 @@
   width: auto;
   bottom: 0;
   background: menuBg;
+  min-width: 150px;
 }
 
 .inputWrapper {

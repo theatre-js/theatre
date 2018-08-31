@@ -5,16 +5,18 @@ import css from './FramesGrid.css'
 import resolveCss from '$shared/utils/resolveCss'
 import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
 import {
-  xToInRangeTime,
-  inRangeTimeToX,
+  inRangeXToPaddedSvgX,
+  inRangeXToTime,
+  timeToInRangeX,
 } from '$tl/ui/panels/AllInOnePanel/Right/utils'
-import {TRange} from '$tl/ui/panels/AllInOnePanel/Right/types'
+import {TRange, TDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
 
 const classes = resolveCss(css)
 
 interface IProps {
-  width: number
+  timelineWidth: number
   range: TRange
+  duration: TDuration
 }
 
 interface IState {}
@@ -40,20 +42,20 @@ class FramesGrid extends React.PureComponent<IProps, IState> {
       <>
         <PropsAsPointer props={this.props}>
           {({props: propsP}) => {
-            const width = val(propsP.width)
+            const timelineWidth = val(propsP.timelineWidth)
             return (
               <div
                 ref={this.containerRef}
                 {...classes('container')}
-                style={{width: width}}
+                style={{width: timelineWidth}}
               >
                 <canvas
                   {...classes('canvas')}
                   ref={c => (this.canvas = c)}
-                  width={width}
+                  width={timelineWidth}
                   height={100}
                 />
-                <div style={{width: width}} {...classes('stamps')}>
+                <div style={{width: timelineWidth}} {...classes('stamps')}>
                   <div ref={this.fullSecondStampsRef} />
                   <div ref={this.frameStampRef} {...classes('frameStamp')} />
                 </div>
@@ -96,10 +98,10 @@ class FramesGrid extends React.PureComponent<IProps, IState> {
   }
 
   _drawGrid() {
-    const {width, range} = this.props
+    const {timelineWidth, range} = this.props
     const rangeDuration = range.to - range.from
 
-    const frameWidth = width / ((FPS * rangeDuration) / 1000)
+    const frameWidth = timelineWidth / ((FPS * rangeDuration) / 1000)
     // Number of frames that fit in the smallest cell possible
     const framesPerMinCell = Math.ceil(MIN_CELL_WIDTH / frameWidth)
     // Number of frames in each cell, so that lines would be drawn at full seconds
@@ -133,17 +135,22 @@ class FramesGrid extends React.PureComponent<IProps, IState> {
     cellDuration: number,
     startFrame: number,
   ) {
-    const {width, range} = this.props
-    const timeToX = width / (range.to - range.from)
+    const {timelineWidth, range, duration} = this.props
+    const timeToX = timelineWidth / (range.to - range.from)
     const offsetLeft = timeToX * (startTime - range.from)
     const widthStep = timeToX * cellDuration
 
     let innerHTML = ''
     const ctx = this.canvas!.getContext('2d') as CanvasRenderingContext2D
-    ctx.clearRect(0, 0, width, 100)
+    ctx.clearRect(0, 0, timelineWidth, 100)
 
     for (let i = 0, frame = startFrame; i <= numberOfLines; i++) {
-      const x = offsetLeft + i * widthStep
+      const x = inRangeXToPaddedSvgX(
+        offsetLeft + i * widthStep,
+        range,
+        duration,
+        timelineWidth,
+      )
       const isFullSecond = frame === 0
 
       ctx.strokeStyle = isFullSecond
@@ -171,8 +178,9 @@ class FramesGrid extends React.PureComponent<IProps, IState> {
   }
 
   _renderFrameStamp() {
-    const {range, width} = this.props
-    const mouseTime = xToInRangeTime(range, width)(this.mouseX!)
+    const {range, duration, timelineWidth} = this.props
+    // const mouseTime = xToInRangeTime(range, timelineWidth)(this.mouseX!)
+    const mouseTime = inRangeXToTime(range, duration, timelineWidth)(this.mouseX!)
     // TODO: add comments!
     const mouseTimeMiliseconds = mouseTime % 1000
     const frame =
@@ -182,7 +190,7 @@ class FramesGrid extends React.PureComponent<IProps, IState> {
 
     const stampTime =
       mouseTime - mouseTimeMiliseconds + frame * this.frameDuration
-    const stampX = inRangeTimeToX(range, width)(stampTime)
+    const stampX = timeToInRangeX(range, duration, timelineWidth)(stampTime)
 
     this.frameStampRef.current!.style.transform = `translate3d(calc(${stampX}px - 50%), 0, 0)`
     this.frameStampRef.current!.innerHTML = frame % FPS !== 0 ? `${frame}f` : ''

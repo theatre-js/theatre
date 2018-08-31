@@ -1,11 +1,14 @@
+@value svgPaddingX from '$tl/ui/panels/AllInOnePanel/Right/views/SVGWrapper.css';
+@value halfOfSvgPaddingX: calc(0.5 * svgPaddingX);
+
 .container {
   --threadHeight: 6px;
   --thumbColor: #00E0FF;
   --rangeBarColor: #9DF233;
   position: absolute;
   height: 0;
-  width: 100%;
-  left: 0;
+  width: calc(100% - svgPaddingX);
+  left: halfOfSvgPaddingX;
   top: 0;
   pointer-events: auto;
 }
@@ -39,7 +42,7 @@
 .handle {
   position: absolute;
   height: 9px;
-  width: 7px;
+  width: halfOfSvgPaddingX;
   left: 0;
   z-index: 2;
   top: -2px;
@@ -61,7 +64,7 @@
 
 .rangeFromHandle {
   composes: handle;
-  left: 0;
+  left: calc(-1 * halfOfSvgPaddingX);
   cursor: w-resize;
   &:before {
     transform: scaleX(-1);
@@ -71,7 +74,7 @@
 .rangeToHandle {
   composes: handle;
   cursor: e-resize;
-  left: -7px;
+  left: 0;
 }
 
 .tooltip {

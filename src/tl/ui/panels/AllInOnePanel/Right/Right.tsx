@@ -8,9 +8,9 @@ import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
 import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
 import TimelineInstance from '$tl/timelines/TimelineInstance'
 import {
-  xToInRangeTime,
-  deltaXToInRangeTime,
+  deltaXToTime,
   getSvgWidth,
+  inRangeXToTime,
 } from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import {
   getNewRange,
@@ -39,6 +39,7 @@ class Right extends UIComponent<IRightProps, IRightState> {
   wrapper: React.RefObject<HTMLDivElement> = React.createRef()
   wrapperLeft: number
   scrollLeft: number = 0
+  allowZoom: boolean = true
 
   constructor(props: IRightProps, context: $IntentionalAny) {
     super(props, context)
@@ -48,7 +49,7 @@ class Right extends UIComponent<IRightProps, IRightState> {
   render() {
     const {range, duration, timelineWidth} = this.props
     const svgWidth = getSvgWidth(range, duration, timelineWidth)
-
+    this._scrollContainer(range)
     return (
       <DraggableArea
         onDragStart={this.syncSeekerWithMousePosition}
@@ -61,7 +62,10 @@ class Right extends UIComponent<IRightProps, IRightState> {
           onWheel={this.handleWheel}
         >
           <div style={{width: svgWidth}} {...classes('scrollingContainer')}>
-            <TimelineProviders>
+            <TimelineProviders
+              disableZoom={this.disableZoom}
+              enableZoom={this.enableZoom}
+            >
               <ItemsContainer />
             </TimelineProviders>
           </div>
@@ -79,12 +83,6 @@ class Right extends UIComponent<IRightProps, IRightState> {
     window.removeEventListener('resize', this.handleResize)
   }
 
-  componentDidUpdate(prevProps: IRightProps) {
-    if (prevProps.range !== this.props.range) {
-      this._scrollContainer(this.props.range)
-    }
-  }
-
   _updateWrapperLeft() {
     this.wrapperLeft = this.wrapper.current!.getBoundingClientRect().left
   }
@@ -96,9 +94,9 @@ class Right extends UIComponent<IRightProps, IRightState> {
 
   syncSeekerWithMousePosition = (event: React.MouseEvent<HTMLDivElement>) => {
     if (event.target instanceof HTMLInputElement) return
-    
-    const {timelineWidth, range, timelineInstance} = this.props
-    const newTime = xToInRangeTime(range, timelineWidth)(
+
+    const {timelineWidth, range, duration, timelineInstance} = this.props
+    const newTime = inRangeXToTime(range, duration, timelineWidth)(
       event.clientX - this.wrapperLeft,
     )
     timelineInstance.time = newTime
@@ -107,9 +105,8 @@ class Right extends UIComponent<IRightProps, IRightState> {
   seekTime = (_: number, __: number, event: MouseEvent) => {
     if (event.target instanceof HTMLInputElement) return
 
-
-    const {range, timelineWidth, timelineInstance} = this.props
-    const newTime = xToInRangeTime(range, timelineWidth)(
+    const {range, duration, timelineWidth, timelineInstance} = this.props
+    const newTime = inRangeXToTime(range, duration, timelineWidth)(
       event.clientX - this.wrapperLeft,
     )
     timelineInstance.time = clampTime(range, newTime)
@@ -121,38 +118,43 @@ class Right extends UIComponent<IRightProps, IRightState> {
       event.preventDefault()
       event.stopPropagation()
       const {range, timelineWidth, duration} = this.props
-      const dt = deltaXToInRangeTime(range, timelineWidth)(event.deltaX)
+      const dt = deltaXToTime(range, timelineWidth)(event.deltaX)
 
       const change = {from: dt, to: dt}
-      this._setRange(getNewRange(range, change, duration))
+      this.props.setRange(getNewRange(range, change, duration))
       return
     }
 
     // pinch
-    if (event.ctrlKey) {
+    if (event.ctrlKey && this.allowZoom) {
       event.preventDefault()
       event.stopPropagation()
       const {range, duration, timelineWidth} = this.props
-      const dt = deltaXToInRangeTime(range, timelineWidth)(event.deltaY) * 3.5
-      const fraction = (event.clientX - this.wrapperLeft) / timelineWidth
-
+      const dt = deltaXToTime(range, timelineWidth)(event.deltaY) * 3.5
+      const zoomTime = inRangeXToTime(range, duration, timelineWidth)(
+        event.clientX - this.wrapperLeft,
+      )
+      const fraction = (zoomTime - range.from) / (range.to - range.from)
       const change = {from: -dt * fraction, to: dt * (1 - fraction)}
-      this._setRange(getNewZoom(range, change, duration))
+      this.props.setRange(getNewZoom(range, change, duration))
     }
-  }
-
-  _setRange(range: TRange) {
-    this.props.setRange(range)
-    this._scrollContainer(range)
   }
 
   _scrollContainer = (range: TRange) => {
     const {timelineWidth} = this.props
     const scrollLeft = (timelineWidth * range.from) / (range.to - range.from)
+
     if (scrollLeft !== this.scrollLeft) {
       this.scrollLeft = scrollLeft
       this.wrapper.current!.scrollTo({left: scrollLeft})
     }
+  }
+
+  enableZoom = () => {
+    this.allowZoom = true
+  }
+  disableZoom = () => {
+    this.allowZoom = false
   }
 }
 

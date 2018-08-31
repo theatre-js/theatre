@@ -1,17 +1,23 @@
 import React from 'react'
 import css from './RangeSelector.css'
 import resolveCss from '$shared/utils/resolveCss'
-import {timeToX, xToTime} from '$tl/ui/panels/AllInOnePanel/Right/utils'
+import {
+  timeToX,
+  xToTime,
+  timeToInRangeX,
+  getRangeLabel,
+} from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import {getNewRange} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
 import {TDuration, TRange} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
+import {SVG_PADDING_X} from '$tl/ui/panels/AllInOnePanel/Right/views/SVGWrapper'
 
 const classes = resolveCss(css)
 
 interface IProps {
   duration: TDuration
   range: TRange
-  width: number
+  timelineWidth: number
   setRange: (range: TRange) => void
 }
 
@@ -19,10 +25,11 @@ interface IState {}
 
 class RangeSelector extends React.PureComponent<IProps, IState> {
   render() {
-    const {range, duration, width} = this.props
-    const tToX = timeToX(duration, width)
-    const rangeFrom = tToX(range.from)
-    const rangeTo = tToX(range.to)
+    const {range, duration, timelineWidth} = this.props
+    const tToX = timeToX(duration, timelineWidth - SVG_PADDING_X)
+    const getLabel = getRangeLabel(range, duration, timelineWidth)
+    const rangeFromX = tToX(range.from)
+    const rangeToX = tToX(range.to)
 
     return (
       <div {...classes('container')}>
@@ -31,8 +38,8 @@ class RangeSelector extends React.PureComponent<IProps, IState> {
             <div
               {...classes('rangeBar')}
               style={{
-                width: `${rangeTo - rangeFrom}px`,
-                transform: `translate3d(${rangeFrom}px, 0, 0)`,
+                width: `${rangeToX - rangeFromX}px`,
+                transform: `translate3d(${rangeFromX}px, 0, 0)`,
               }}
             />
           </DraggableArea>
@@ -42,11 +49,9 @@ class RangeSelector extends React.PureComponent<IProps, IState> {
           >
             <div
               {...classes('rangeFromHandle')}
-              style={{transform: `translate3d(${rangeFrom}px, 0, 0)`}}
+              style={{transform: `translate3d(${rangeFromX}px, 0, 0)`}}
             >
-              <div {...classes('tooltip')}>
-                {(range.from / 1000).toFixed(1)}
-              </div>
+              <div {...classes('tooltip')}>{getLabel(range.from)}</div>
             </div>
           </DraggableArea>
           <DraggableArea
@@ -55,9 +60,9 @@ class RangeSelector extends React.PureComponent<IProps, IState> {
           >
             <div
               {...classes('rangeToHandle')}
-              style={{transform: `translate3d(${rangeTo}px, 0, 0)`}}
+              style={{transform: `translate3d(${rangeToX}px, 0, 0)`}}
             >
-              <div {...classes('tooltip')}>{(range.to / 1000).toFixed(1)}</div>
+              <div {...classes('tooltip')}>{getLabel(range.to)}</div>
             </div>
           </DraggableArea>
         </div>
@@ -66,20 +71,20 @@ class RangeSelector extends React.PureComponent<IProps, IState> {
   }
 
   updateRange = (dx: number) => {
-    const {duration, width} = this.props
-    const dt = xToTime(duration, width)(dx)
+    const {duration, timelineWidth} = this.props
+    const dt = xToTime(duration, timelineWidth)(dx)
     this._setRange({from: dt, to: dt})
   }
 
   updateRangeFrom = (dx: number) => {
-    const {duration, width} = this.props
-    const dt = xToTime(duration, width)(dx)
+    const {duration, timelineWidth} = this.props
+    const dt = xToTime(duration, timelineWidth)(dx)
     this._setRange({from: dt, to: 0})
   }
 
   updateRangeTo = (dx: number) => {
-    const {duration, width} = this.props
-    const dt = xToTime(duration, width)(dx)
+    const {duration, timelineWidth} = this.props
+    const dt = xToTime(duration, timelineWidth)(dx)
     this._setRange({from: 0, to: dt})
   }
 

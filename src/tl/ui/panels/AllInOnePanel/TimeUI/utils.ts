@@ -1,6 +1,6 @@
 import {
-  inRangeTimeToX,
-  xToInRangeTime,
+  timelineXToTime,
+  timeToTimelineX,
 } from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import {TRange, TDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
 
@@ -10,8 +10,8 @@ export const getNewTime = (
   width: number,
   deltaX: number,
 ): number => {
-  const currentTimeX = inRangeTimeToX(range, width)(currentTime)
-  const newTime = xToInRangeTime(range, width)(currentTimeX + deltaX)
+  const currentTimeX = timeToTimelineX(range, width)(currentTime)
+  const newTime = timelineXToTime(range, width)(currentTimeX + deltaX)
   return clampTime(range, newTime)
 }
 

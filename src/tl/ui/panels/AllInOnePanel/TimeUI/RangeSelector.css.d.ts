@@ -1,3 +1,5 @@
+export const svgPaddingX: string;
+export const halfOfSvgPaddingX: string;
 export const container: string;
 export const timeThread: string;
 export const rangeBar: string;

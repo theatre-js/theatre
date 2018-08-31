@@ -350,10 +350,10 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
     ]
     const newHandle = this.props
       .prevPoint!.interpolationDescriptor.handles.slice(2)
-      .map((handle, i) =>
-        clamp(handle + handlesMove[i] - this.state.handlesMove[i], 0, 1),
+      .map(
+        (handle, i) => handle + handlesMove[i] - this.state.handlesMove[i],
       ) as TPointSingleHandle
-
+    newHandle[0] = clamp(newHandle[0], 0, 1)
     this.props.moveLeftHandleTemp(this.props.pointIndex, newHandle)
     this.setState(() => ({
       isMoving: true,
@@ -392,14 +392,11 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
     ] as TPointHandles
     const newHandle = this.props.point.interpolationDescriptor.handles
       .slice(0, 2)
-      .map((handle, i) =>
-        clamp(
+      .map(
+        (handle, i) =>
           handle + handlesMove[i + 2] - this.state.handlesMove[i + 2],
-          0,
-          1,
-        ),
       ) as TPointSingleHandle
-
+    newHandle[0] = clamp(newHandle[0], 0, 1)
     this.props.moveRightHandleTemp(this.props.pointIndex, newHandle)
     this.setState(() => ({
       isMoving: true,
