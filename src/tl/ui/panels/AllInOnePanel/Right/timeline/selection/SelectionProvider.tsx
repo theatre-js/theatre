@@ -147,23 +147,22 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
 
   _renderSelectedArea() {
     const {status, move, dims, contextMenuProps} = this.state
-
-    const leftOffset = this.getOffset(dims.left)
-    const style = {
-      ...dims,
-      left: dims.left + leftOffset,
-    }
-    const moveX =
-      move.x === 0
-        ? 0
-        : move.x + this.getOffset(dims.left + move.x) - leftOffset
-
     const statusIsConfirmedSelection = status === 'confirmedSelection'
 
     const areaIsMovable =
       statusIsConfirmedSelection ||
       status === 'movingPoints' ||
       status === 'committingChanges'
+
+    const leftOffset = this.getOffset(dims.left)
+    const style = {
+      ...dims,
+      left: status === 'selectingPoints' ? dims.left : dims.left + leftOffset,
+    }
+    const moveX =
+      move.x === 0
+        ? 0
+        : move.x + this.getOffset(dims.left + move.x) - leftOffset
 
     return (
       <>
@@ -533,9 +532,9 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
         )
 
         // if (!propState) return null as any
-        const valueContainer = val(
-          propStateP.valueContainer,
-        ) as PropValueContainer | undefined
+        const valueContainer = val(propStateP.valueContainer) as
+          | PropValueContainer
+          | undefined
 
         if (
           !valueContainer ||
