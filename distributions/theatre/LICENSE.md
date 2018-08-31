@@ -1,0 +1,1 @@
+This software is copyrighted by TheaterJS Oy, all rights reserved. Visit theatrejs.com to obtain a license.

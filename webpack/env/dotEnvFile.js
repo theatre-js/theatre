@@ -1,14 +1,15 @@
 // @ts-ignore ignore
-import developmentEnv from '$root/development.env.json'
+const developmentEnv = require('../../development.env.json')
 // @ts-ignore ignore
-import productionEnv from '$root/production.env.json'
+const productionEnv = require('../../production.env.json')
 
 // @ts-ignore ignore
-declare var $$$NODE_ENV: 'development' | 'production'
+// declare var $$$NODE_ENV: 'development' | 'production'
 
 let envFileOfInterest
 
-if ($$$NODE_ENV === 'development') { // eslint-disable-line no-undef
+// @ts-ignore ignore
+if ($$$NODE_ENV === 'development') {
   envFileOfInterest = developmentEnv
 } else {
   envFileOfInterest = productionEnv
@@ -16,7 +17,8 @@ if ($$$NODE_ENV === 'development') { // eslint-disable-line no-undef
 
 const envStuff = {
   ...envFileOfInterest,
-  NODE_ENV: $$$NODE_ENV, // eslint-disable-line no-undef
+  // @ts-ignore ignore
+  NODE_ENV: $$$NODE_ENV,
 }
 
-export default envStuff
+module.exports = envStuff

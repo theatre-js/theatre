@@ -2,11 +2,11 @@ import setupScene from './setupScene'
 import * as THREE from 'three'
 
 // import {TLType} from '../../../src/tl/index'
-import {TypeOfTL} from '$src/tl/index'
-import {NativeObjectType} from '$tl/objects/objectTypes'
-import {VoidFn} from '$shared/types'
+import {TypeOfTheatre} from '$src/tl/entries/index'
+// import {NativeObjectType} from '$tl/objects/objectTypes'
+// import {VoidFn} from '$shared/types'
 // const {sphere} = setupScene()
-// import TL from 'theaterjs'
+// import Theatre from 'theaterjs'
 // import 'theaterjs/ui'
 
 // function setupTheaterForSphere(mesh) {
@@ -20,26 +20,26 @@ import {VoidFn} from '$shared/types'
 //   })
 // }
 
-// TL.ui.propertyEditors.add({
+// Theatre.ui.propertyEditors.add({
 //   traitName: 'Position2D',
 //   render(data) {
 //     return <div />
 //   }
 // })
 
-// declare var TL: TLType
-declare var TL: TypeOfTL
+// declare var Theatre: TLType
+declare var Theatre: TypeOfTheatre
 
-TL.ui.enable()
+// Theatre.ui.enable()
 
-// new TL.Project('Intro Post')
-// new TL.Project('Mathly Preview')
+// new Theatre.Project('Intro Post')
+// new Theatre.Project('Mathly Preview')
 
 // const state = {
 //   versionId: 'sdlkfjsldfjoejsldkoeijsldksd'
 // }
 
-// const project = new TL.Project('Explorable Explanations')
+// const project = new Theatre.Project('Explorable Explanations')
 // project.getTimeline('Bouncing Ball / The ball', '1')
 // project.getTimeline('Bouncing Ball / The ball', '2')
 // project.getTimeline('Bouncing Ball X')
@@ -135,40 +135,48 @@ TL.ui.enable()
 
 const {sphere} = setupScene()
 
-const project = new TL.Project('The ORB')
+const project = new Theatre.Project('The ORB')
 
-project.adapters.add(2, {
-  accepts(obj) {
-    return obj instanceof THREE.Object3D
-  },
-  getType(obj: THREE.Object3D) {
-    return {
-      props: {
-        positionX: {
-          type: 'number',
-        },
-        positionY: {
-          type: 'number',
-        },
-        positionZ: {
-          type: 'number',
-        },
+// project.adapters.add(2, {
+//   accepts(obj) {
+//     return obj instanceof THREE.Object3D
+//   },
+//   getType(obj: THREE.Object3D): any {
+//     return THREEType
+//   },
+//   start(object, nativeObject: THREE.Object3D) {
+//     const stop = object.onValuesChange(values => {
+//       nativeObject.position.x = values.positionX
+//       nativeObject.position.y = values.positionY
+//       nativeObject.position.z = values.positionZ
+//     })
+
+//     return stop
+//   },
+// })
+
+const timeline = project.getTimeline('Bouncing orb')
+const sp = timeline.createObject('Ball', sphere, {
+  type: {
+    props: {
+      positionX: {
+        type: 'number',
       },
-    }
-  },
-  start(object, nativeObject: THREE.Object3D) {
-    const stop = object.onValuesChange((values) => {
-      nativeObject.position.x = values.positionX
-      nativeObject.position.y = values.positionY
-      nativeObject.position.z = values.positionZ
-    })
-
-    return stop
+      positionY: {
+        type: 'number',
+      },
+      positionZ: {
+        type: 'number',
+      },
+    },
   },
 })
 
-const timeline = project.getTimeline('Bouncing orb')
-timeline.createObject('Ball', sphere)
+const stop = sp.onValuesChange(values => {
+  sphere.position.x = values.positionX
+  sphere.position.y = values.positionY
+  sphere.position.z = values.positionZ
+})
 
 // timeline.play()
 timeline.time = 2000
@@ -177,3 +185,5 @@ timeline.time = 2000
 // }, 100)
 
 // sphere.position.x = 100
+
+// console.log(Theatre);

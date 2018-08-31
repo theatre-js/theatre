@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "outDir": "build/dist",
-    "module": "es6",
+    "module": "ESNext",
     "target": "ES2017",
     "lib": ["es2017", "dom"],
     "sourceMap": true,

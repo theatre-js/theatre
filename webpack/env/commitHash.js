@@ -1,5 +1,5 @@
-import childProcess from 'child_process'
-import path from 'path'
+const childProcess = require('child_process')
+const path = require('path')
 // Have to use module.exports here, because 'exec-loader' doesn't support ES modules
 module.exports = {
   commitHash: childProcess

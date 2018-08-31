@@ -4,8 +4,9 @@ import * as WebpackNotifierPlugin from 'webpack-notifier'
 import * as webpack from 'webpack'
 import * as CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin'
 import * as TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
-import {mapValues} from 'lodash'
+import {mapValues, isPlainObject, mapKeys} from 'lodash'
 import * as ErrorOverlayPlugin from 'error-overlay-webpack-plugin'
+import {mapKeys} from 'lodash-es'
 
 export const context = path.resolve(__dirname, '..')
 
@@ -67,6 +68,23 @@ export const makeConfigParts = (options: Options) => {
   // @ts-ignore
   global.$$$NODE_ENV = options.env
 
+  const nodeEnv = isDev ? {} : require('./env/nodeEnv')
+  const envStuff: {[k: string]: string} = {}
+  const process = (v, ns: string[]) => {
+    if (isPlainObject(v)) {
+      Object.keys(v).forEach(key => {
+        process(v[key], [...ns, key])
+      })
+    } else {
+      envStuff[ns.join('.')] = JSON.stringify(v)
+    }
+  }
+  process(nodeEnv, [])
+  const toDefine = {
+    ...mapKeys(envStuff, (_, k) => 'process.env.' + k),
+    ...mapKeys(envStuff, (_, k) => '$env.' + k),
+  }
+
   const config: webpack.Configuration & {
     output: webpack.Output
     plugins: webpack.Plugin[]
@@ -88,13 +106,15 @@ export const makeConfigParts = (options: Options) => {
     output: {
       path: bundlesDir,
       filename: '[name].js',
-      sourceMapFilename: '[file].map.js',
+      sourceMapFilename: '[file].map',
       devtoolModuleFilenameTemplate: info =>
         path.resolve(info.absoluteResourcePath).replace(/\\/g, '/'),
     },
     // theaterConfig: envConfig,
     context: context,
-    devtool: isDev ? 'cheap-module-source-map' : 'source-map',
+    devtool: isDev
+      ? 'cheap-module-source-map'
+      : /*'hidden-source-map'*/ 'source-map',
     mode: isDev ? 'development' : 'production',
     node: {
       process: false,
@@ -115,13 +135,14 @@ export const makeConfigParts = (options: Options) => {
         // mirrored in process.env.NODE_ENV. So read this value from process.env.NODE_ENV.
         $$$NODE_ENV: JSON.stringify(options.env),
       }),
-      new webpack.ProvidePlugin({
-        'process.env': '$root/webpack/env/index.js',
-        $env: '$root/webpack/env/index.js',
-      }),
+
       new CaseSensitivePathsPlugin(),
       ...(isDev
         ? [
+            new webpack.ProvidePlugin({
+              'process.env': '$root/webpack/env/index.js',
+              $env: '$root/webpack/env/index.js',
+            }),
             new webpack.HotModuleReplacementPlugin(),
             new WebpackNotifierPlugin(),
             // new webpack.NoEmitOnErrorsPlugin(),
@@ -139,10 +160,12 @@ export const makeConfigParts = (options: Options) => {
               : [new ErrorOverlayPlugin()]),
           ]
         : [
-            new webpack.optimize.UglifyJsPlugin({
-              // @ts-ignore @todo 0
-              compressor: {warnings: false},
-            }),
+            new webpack.DefinePlugin(toDefine),
+
+            // new webpack.optimize.UglifyJsPlugin({
+            //   // @ts-ignore @todo 0
+            //   compressor: {warnings: false},
+            // }),
           ]),
     ],
     module: {
@@ -312,5 +335,6 @@ export const makeConfigParts = (options: Options) => {
     config,
     srcDir,
     htmlPluginTemplateParameters,
+    context,
   }
 }

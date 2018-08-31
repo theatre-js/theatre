@@ -1,0 +1,10 @@
+{
+  "name": "theatre",
+  "private": false,
+  "version": "0.1.0-beta.1",
+  "description": "A hackable animation editor for the web",
+  "main": "index.js",
+  "author": "TheaterJS Oy - theaterjs.com",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "website": "https://theatrejs.com"
+}
