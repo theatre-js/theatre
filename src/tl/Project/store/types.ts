@@ -1,9 +1,6 @@
 import * as t from '$shared/ioTypes'
 import {$StateWithHistory} from '$shared/utils/redux/withHistory/withHistory'
 
-console.log('project store types');
-
-
 /**
  * Ahistoric state is persisted, but its changes
  * are not undoable.
@@ -122,7 +119,9 @@ const $InternalTimelineState = t.type(
   'InternalTimelineState',
 )
 
-export type InternalTimelineState = t.StaticTypeOf<typeof $InternalTimelineState>
+export type InternalTimelineState = t.StaticTypeOf<
+  typeof $InternalTimelineState
+>
 
 /**
  * Historic state is both persisted and is undoable

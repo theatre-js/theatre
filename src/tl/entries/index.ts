@@ -1,9 +1,6 @@
 import UI from '$tl/ui/UI'
 import * as core from './core'
 
-console.log('mode', process.env.NODE_ENV);
-
-
 export * from './core'
 
 export const ui = new UI()
