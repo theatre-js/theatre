@@ -30,7 +30,7 @@ import {TypeOfTheatre} from '$src/tl/entries/index'
 // declare var Theatre: TLType
 declare var Theatre: TypeOfTheatre
 
-Theatre.ui.enable()
+// Theatre.ui.enable()
 
 // new Theatre.Project('Intro Post')
 // new Theatre.Project('Mathly Preview')
@@ -39,7 +39,7 @@ Theatre.ui.enable()
 //   versionId: 'sdlkfjsldfjoejsldkoeijsldksd'
 // }
 
-const project = new TL.Project('Explorable Explanations')
+const project = new Theatre.Project('Explorable Explanations')
 project.getTimeline('Bouncing Ball / The ball', '1')
 project.getTimeline('Bouncing Ball / The ball', '2')
 project.getTimeline('Bouncing Ball X')
