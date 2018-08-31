@@ -1,5 +1,4 @@
-import without from 'lodash/without'
-import forEach from 'lodash/forEach'
+import {forEach, without} from '$shared/utils'
 type Listener = (v: $FixMe) => void
 
 export default class EventEmitter {

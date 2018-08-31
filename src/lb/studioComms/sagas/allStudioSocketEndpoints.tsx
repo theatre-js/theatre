@@ -1,4 +1,4 @@
-import * as _ from 'lodash-es'
+import * as _ from '$shared/utils'
 
 const context = require.context('$lb/', true, /\.studioSocketEndpoint\.tsx$/)
 const listOfModulePaths: Array<string> = context.keys()

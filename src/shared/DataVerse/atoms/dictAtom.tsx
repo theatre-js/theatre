@@ -1,6 +1,6 @@
 import {default as AbstractCompositeAtom} from './utils/AbstractCompositeAtom'
-import forEach from 'lodash/forEach'
-import mapValues from 'lodash/mapValues'
+import {forEach} from '$shared/utils'
+import {mapValues} from '$shared/utils'
 import deriveFromDictAtom from '$shared/DataVerse/derivations/dicts/deriveFromDictAtom'
 import {
   default as pointer,

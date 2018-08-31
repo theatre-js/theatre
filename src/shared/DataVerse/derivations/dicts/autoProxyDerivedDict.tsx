@@ -1,5 +1,5 @@
 import AbstractDerivedDict from './AbstractDerivedDict'
-import * as _ from 'lodash-es'
+import noop from '$shared/utils/noop'
 import {default as proxyDerivedDict, ProxyDerivedDict} from './proxyDerivedDict'
 import emptyDict from './emptyDict'
 import Ticker from '$shared/DataVerse/Ticker'
@@ -19,8 +19,8 @@ class AutoProxyDerivedDict<O> extends AbstractDerivedDict<O> {
     super()
     this._ticker = ticker
     this._sourceD = sourceD
-    this._untapFromProxyChanges = _.noop
-    this._untapFromSourceChanges = _.noop
+    this._untapFromProxyChanges = noop
+    this._untapFromSourceChanges = noop
     this._proxy = proxyDerivedDict(emptyDict as $IntentionalAny)
 
     return this
@@ -41,9 +41,9 @@ class AutoProxyDerivedDict<O> extends AbstractDerivedDict<O> {
 
   _reactToNotHavingTappers() {
     this._untapFromProxyChanges()
-    this._untapFromProxyChanges = _.noop
+    this._untapFromProxyChanges = noop
     this._untapFromSourceChanges()
-    this._untapFromSourceChanges = _.noop
+    this._untapFromSourceChanges = noop
   }
 
   keys() {

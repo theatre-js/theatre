@@ -4,7 +4,7 @@ import withBatchedActions, {
   batchedAction,
 } from '$shared/utils/redux/withHistory/withBatchActions'
 import actionReducersBundle from '$shared/utils/redux/actionReducersBundle'
-import mapValues from 'lodash/mapValues'
+import {mapValues} from '$shared/utils'
 import {
   withHistory,
   StateWithHistory,

@@ -2,7 +2,7 @@ import React from 'react'
 import * as css from './TextNode.css'
 import cx from 'classnames'
 import {STATUS} from './constants'
-import {debounce} from 'lodash-es'
+import {debounce} from '$shared/utils'
 
 type Props = {
   nodeProps: {value: $FixMe; status: $FixMe}

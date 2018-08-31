@@ -10,7 +10,7 @@ import {
 } from '$theater/workspace/components/StudioUI/StudioUI'
 import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
 import {MODES} from '$theater/common/components/ActiveModeDetector/ActiveModeDetector'
-import * as _ from 'lodash-es'
+import * as _ from '$shared/utils'
 import React from 'react'
 import {Broadcast, Subscriber} from 'react-broadcast'
 import * as css from './Panel.css'

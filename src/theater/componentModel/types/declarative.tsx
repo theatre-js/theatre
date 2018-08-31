@@ -2,7 +2,7 @@ import {$IComponentId} from './'
 import React from 'react'
 import {IComponentId} from './index'
 import * as t from '$shared/ioTypes'
-import {findLast} from 'lodash-es'
+import {findLast} from '$shared/utils'
 import {listAndById} from '$shared/types'
 
 export const $IDeclarativeComponentDescriptor = t.type(

@@ -9,7 +9,7 @@ import {
   ahistoricalAction,
   replaceHistoryAction,
 } from './actions'
-import {last} from 'lodash-es'
+import {last} from '$shared/utils'
 import patch from 'json-touch-patch'
 import getPropsInCommon from '$shared/utils/getPropsInCommon'
 import {ReduxReducer, GenericAction} from '$shared/types'

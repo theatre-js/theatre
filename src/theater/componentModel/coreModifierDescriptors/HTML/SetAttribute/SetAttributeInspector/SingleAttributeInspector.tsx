@@ -1,6 +1,6 @@
 import {reduceStateAction} from '$shared/utils/redux/commonActions'
 import TextInput from '$theater/common/components/TextInput'
-import {get} from 'lodash-es'
+import {get} from '$shared/utils'
 import KeyValuePair from '$theater/common/components/KeyValuePair'
 import {ITheaterStoreState} from '$theater/types'
 import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'

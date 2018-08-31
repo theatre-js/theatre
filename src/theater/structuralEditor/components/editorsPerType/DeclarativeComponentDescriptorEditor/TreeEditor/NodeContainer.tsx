@@ -10,7 +10,7 @@ import MdCamera from 'react-icons/lib/md/camera'
 import MdDonutSmall from 'react-icons/lib/md/donut-small'
 import MdExplore from 'react-icons/lib/md/explore'
 import MdStars from 'react-icons/lib/md/stars'
-import {isEqual} from 'lodash-es'
+import {isEqual} from '$shared/utils'
 
 type Props = {
   nodeData: Object

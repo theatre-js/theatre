@@ -1,4 +1,4 @@
-import noop from 'lodash/noop'
+import noop from '$shared/utils/noop'
 import AbstractDerivedArray from './AbstractDerivedArray'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 

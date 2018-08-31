@@ -1,7 +1,7 @@
 import {GenericAction, ReduxReducer} from '$shared/types'
 import {diff as diffValues} from 'jiff'
 import {betterErrorReporter} from '$shared/ioTypes/betterErrorReporter'
-import identity from 'lodash/identity'
+import {identity} from '$shared/utils'
 
 /**
  * A higher-order reducer that ensures the state always conforms to `runtimeType`

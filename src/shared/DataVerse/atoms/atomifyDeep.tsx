@@ -1,8 +1,7 @@
-import isPlainObject from 'lodash/isPlainObject'
 import {default as box, BoxAtom} from './boxAtom'
 import {default as dict, DictAtom} from './dictAtom'
 import {default as array, ArrayAtom} from './arrayAtom'
-import mapValues from 'lodash/mapValues'
+import {mapValues, isPlainObject} from '$shared/utils'
 import {default as AbstractAtom} from './utils/AbstractAtom'
 
 export type Atomify<V> = {

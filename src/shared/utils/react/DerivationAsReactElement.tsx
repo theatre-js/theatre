@@ -1,5 +1,5 @@
 import React from 'react'
-import noop from 'lodash/noop'
+import noop from '$shared/utils/noop'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 import {tickerContextTypes, getTicker} from '$shared/utils/react/TickerContext'
 import Ticker from '$shared/DataVerse/Ticker'

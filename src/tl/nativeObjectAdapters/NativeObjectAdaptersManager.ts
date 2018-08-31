@@ -1,6 +1,6 @@
 import Project from '$tl/Project/Project'
-import range from 'lodash/range'
-import {keyBy, mapValues} from 'lodash-es'
+import {range} from '$shared/utils'
+import {keyBy, mapValues} from '$shared/utils'
 // import {NativeObjectTypeConfig} from '../objects/objectTypes'
 import htmlElementAdapter from './htmlElementAdapter/htmlElementAdapter'
 import {NativeObjectTypeConfig, NativeObjectType} from '$tl/objects/objectTypes'

@@ -1,7 +1,7 @@
 import {ArrayAtom} from '$shared/DataVerse/atoms/arrayAtom'
 import AbstractDerivedArray from './AbstractDerivedArray'
 import {ensureNoAtoms} from '../dicts/utils'
-import noop from 'lodash/noop'
+import noop from '$shared/utils/noop'
 
 export class DerivedArrayFromArrayAtom<V> extends AbstractDerivedArray<V> {
   _arrayAtom: ArrayAtom<V>

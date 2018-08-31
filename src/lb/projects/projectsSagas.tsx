@@ -6,7 +6,7 @@ import {
 } from '$src/lb/projects/types'
 import {LBStoreState} from '$src/lb/types'
 import {Task} from 'redux-saga'
-import {omit} from 'lodash-es'
+import {omit} from '$shared/utils'
 import * as fse from 'fs-extra'
 import {reduceStateAction} from '$shared/utils/redux/commonActions'
 

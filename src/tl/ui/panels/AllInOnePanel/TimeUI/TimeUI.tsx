@@ -9,7 +9,7 @@ import TimelineInstance from '$tl/timelines/TimelineInstance'
 import InternalTimeline from '$tl/timelines/InternalTimeline'
 import RangeSelector from '$tl/ui/panels/AllInOnePanel/TimeUI/RangeSelector'
 import FramesGrid from '$tl/ui/panels/AllInOnePanel/TimeUI/FramesGrid'
-import {clamp} from 'lodash-es'
+import clamp from '$shared/number/clamp'
 
 interface IProps {
   internalTimeline: InternalTimeline

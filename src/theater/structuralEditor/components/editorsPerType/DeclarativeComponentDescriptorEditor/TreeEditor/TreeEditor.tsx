@@ -9,7 +9,7 @@ import NodeContainer from '$theater/structuralEditor/components/editorsPerType/D
 import MovableNode from '$theater/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor/MovableNode'
 import * as css from '$theater/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor/index.css'
 import generateUniqueId from 'uuid/v4'
-import {get, isEqual, omit} from 'lodash-es'
+import {get, isEqual, omit} from '$shared/utils'
 import {
   DESCRIPTOR_TYPE,
   ACTION,

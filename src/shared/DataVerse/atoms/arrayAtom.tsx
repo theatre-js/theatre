@@ -1,7 +1,7 @@
 import {default as AbstractCompositeAtom} from './utils/AbstractCompositeAtom'
-import {forEach} from 'lodash-es'
+import {forEach} from '$shared/utils'
 import deriveFromArrayAtom from '$shared/DataVerse/derivations/arrays/deriveFromArrayAtom'
-import range from 'lodash/range'
+import {range} from '$shared/utils'
 import {
   default as pointer,
   PointerDerivation,

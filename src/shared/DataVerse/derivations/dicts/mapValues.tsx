@@ -2,7 +2,7 @@ import AbstractDerivedDict, {
   DerivedDictChangeType,
   PropOfADD,
 } from './AbstractDerivedDict'
-import noop from 'lodash/noop'
+import noop from '$shared/utils/noop'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 
 type FunctionMapping<V, Fn extends (v: V) => $IntentionalAny> = Fn extends (

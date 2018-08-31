@@ -1,9 +1,8 @@
 import memoizeOne from 'memoize-one'
 import {TItems} from '$shared/components/MultiLevelDropdown/MultiLevelDropdown'
 import InternalTimeline from '$tl/timelines/InternalTimeline'
-import {flatMap} from 'lodash-es'
-import get from 'lodash/fp/get'
-import set from 'lodash/fp/set'
+import {flatMap} from '$shared/utils'
+import {get, setImmutable as set} from '$shared/utils'
 
 type TInternalTimelines = {
   [path: string]: InternalTimeline
@@ -20,7 +19,7 @@ export const convertInternalTimelinesToItems = memoizeOne(
             p,
             '__subItems__',
           ]).slice(0, -1)
-          if (get(internalPath, items) == null) {
+          if (get(items, internalPath) == null) {
             const item = {
               isSelectable: i === l,
               isLeaf: i === l,

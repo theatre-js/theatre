@@ -1,7 +1,8 @@
 import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
 import React from 'react'
 import connect from '$theater/handy/connect'
-import get from 'lodash/get'
+import {get} from '$shared/utils'
+
 import editorsPerType from './editorsPerType/editorsPerType'
 import {ITheaterStoreState} from '$theater/types'
 import * as typeSystem from '$theater/typeSystem'

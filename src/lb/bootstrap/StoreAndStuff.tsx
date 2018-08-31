@@ -1,7 +1,7 @@
 import {applyMiddleware, createStore, compose, Reducer, Store} from 'redux'
 import {call} from 'redux-saga/effects'
 import createSagaMiddleware from 'redux-saga'
-import {identity} from 'lodash-es'
+import identity from '$shared/utils/identity'
 
 type RootSagaShape = (...args: mixed[]) => Generator_<mixed, mixed, mixed>
 

@@ -1,4 +1,4 @@
-import mapValues from 'lodash/mapValues'
+import {mapValues} from '$shared/utils'
 import {GenericAction} from '$shared/types'
 
 type PayloadTypeOfReducer<R> = R extends (

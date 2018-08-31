@@ -1,4 +1,4 @@
-import * as _ from 'lodash-es'
+import * as _ from '$shared/utils'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 import Ticker from '$shared/DataVerse/Ticker'
 import withDeps from '$shared/DataVerse/derivations/withDeps'

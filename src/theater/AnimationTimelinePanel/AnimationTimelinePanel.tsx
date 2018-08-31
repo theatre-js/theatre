@@ -9,7 +9,7 @@ import {
 import {getPathToComponentDescriptor} from '$theater/componentModel/selectors'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import {IDeclarativeComponentDescriptor} from '$theater/componentModel/types'
-import * as _ from 'lodash-es'
+import * as _ from '$shared/utils'
 import {val, pathTo} from '$shared/DataVerse2/atom'
 import TimelineInstantiator from '$theater/AnimationTimelinePanel/TimelineInstantiator'
 import DerivationAsReactElement from '$shared/utils/react/DerivationAsReactElement'

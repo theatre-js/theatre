@@ -1,5 +1,5 @@
 import {LBStoreState} from '$lb/types'
-import * as _ from 'lodash-es'
+import * as _ from '$shared/utils'
 import {select, put} from 'redux-saga/effects'
 import {multiReduceStateAction} from '$shared/utils/redux/commonActions'
 

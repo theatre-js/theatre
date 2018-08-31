@@ -2,7 +2,7 @@ import React from 'react'
 import {val} from '$shared/DataVerse2/atom'
 import * as css from './Viewports.css'
 import resolveCss from '$shared/utils/resolveCss'
-import {map} from 'lodash-es'
+import {map} from '$shared/utils'
 import Viewport from './Viewport'
 import {reduceHistoricState} from '$theater/bootstrap/actions'
 import ActiveModeDetector, {

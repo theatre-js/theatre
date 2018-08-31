@@ -7,7 +7,7 @@ import {
   _discardTemporaryAction,
   replaceHistoryAction,
 } from './actions'
-import {last} from 'lodash-es'
+import {last} from '$shared/utils'
 import patch from 'json-touch-patch'
 import {ReduxReducer, GenericAction} from '$shared/types'
 import {Operation} from 'fast-json-patch'

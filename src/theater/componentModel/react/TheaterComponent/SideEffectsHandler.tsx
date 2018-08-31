@@ -1,4 +1,4 @@
-import noop from 'lodash/noop'
+import noop from '$shared/utils/noop'
 import Ticker from '$shared/DataVerse/Ticker'
 import AbstractDerivedDict from '$shared/DataVerse/derivations/dicts/AbstractDerivedDict'
 

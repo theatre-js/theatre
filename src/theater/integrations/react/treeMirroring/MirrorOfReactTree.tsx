@@ -10,7 +10,7 @@ import {
 import uuid from 'uuid/v4'
 import mitt, {Emitter} from 'mitt'
 import Stack from '$shared/utils/Stack'
-import {pull, pickBy} from 'lodash-es'
+import {pull, pickBy} from '$shared/utils'
 import immer, {setAutoFreeze} from 'immer'
 setAutoFreeze(false)
 

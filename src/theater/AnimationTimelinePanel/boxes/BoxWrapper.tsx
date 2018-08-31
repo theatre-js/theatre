@@ -21,7 +21,7 @@ import {
   TPropGetter,
 } from '$theater/AnimationTimelinePanel/RootPropProvider'
 import {disableEvent} from '$theater/AnimationTimelinePanel/utils'
-import {clamp} from 'lodash-es'
+import clamp from '$shared/number/clamp'
 import {reduceHistoricState} from '$theater/bootstrap/actions'
 import {BoxObject} from '$theater/AnimationTimelinePanel/types'
 import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'

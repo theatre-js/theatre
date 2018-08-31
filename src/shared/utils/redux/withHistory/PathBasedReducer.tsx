@@ -131,36 +131,3 @@ export type PathBasedReducer<S, ReturnType> = {
 
   (addr: undefined[], reducer: (d: S) => S): ReturnType
 }
-
-// type Stu = {
-//   a: {
-//     aa: {
-//       aas: string
-//       aan: number
-//     }
-//     ab: {
-//       abs: string
-//       abrs: Array<string>
-//     }
-//   }
-//   bs: string
-//   c: {
-//     cs: string
-//     cn: number
-//   }
-// }
-
-// const rudu: Rudu = ((addr: $FixMe, r: $FixMe): mixed => addr[r]) as $FixMe
-
-// rudu(['bs'], (s: string) => '10')
-// rudu(['bs'], (s: number) => '2')
-
-// rudu(['a'], s => s)
-// rudu(['a'], (s: Stu['a']) => ({
-//   aa: {aas: 'hi', aan: 10},
-//   ab: {abs: 'hi', abrs: ['s']},
-// }))
-// rudu(['a'], (s: Stu['a']) => ({
-//   aa: {aas: 'hi', aan: 10},
-//   ab: {abs: 'hi', abrs: [10]},
-// }))

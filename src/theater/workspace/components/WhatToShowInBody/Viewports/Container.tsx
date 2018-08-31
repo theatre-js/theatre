@@ -7,7 +7,7 @@ import {
   reduceAhistoricState,
   reduceHistoricState,
 } from '$theater/bootstrap/actions'
-import {debounce} from 'lodash-es'
+import {debounce} from '$shared/utils'
 import {IViewportsContainer, IViewport} from '$theater/workspace/types'
 import generateUniqueId from 'uuid/v4'
 import ViewportInstantiator, {

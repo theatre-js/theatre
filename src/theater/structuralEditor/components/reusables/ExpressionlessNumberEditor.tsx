@@ -5,7 +5,7 @@ import * as css from './ExpressionlessStringEditor.css'
 import resolveCss from '$shared/utils/resolveCss'
 import {val} from '$shared/DataVerse2/atom'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
-import {get} from 'lodash-es'
+import {get} from '$shared/utils'
 import {TheaterConsumer} from '$theater/componentModel/react/utils/theaterContext'
 
 interface IOwnProps {

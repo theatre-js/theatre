@@ -1,5 +1,5 @@
 import * as fse from 'fs-extra'
-import * as _ from 'lodash-es'
+import * as _ from '$shared/utils'
 import path from 'path'
 import {call} from 'redux-saga/effects'
 

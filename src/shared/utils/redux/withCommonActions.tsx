@@ -5,9 +5,8 @@ import {
   multiReduceStateAction,
   Pair,
 } from './commonActions'
-import pick from 'lodash/pick'
+import {pick, updateImmutable as update} from '$shared/utils'
 import {ReduxReducer} from '$shared/types'
-import update from 'lodash/fp/update'
 
 /**
  * Takes a reducer and returns a new reducer that acts the same as the original reducer, but

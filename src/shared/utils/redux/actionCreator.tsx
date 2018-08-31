@@ -1,5 +1,3 @@
-// import {createAction} from 'redux-actions'
-import noop from '$shared/utils/noop'
 import identity from '$shared/utils/identity'
 
 interface Transformer<Input, Output> {

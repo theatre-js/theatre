@@ -1,4 +1,3 @@
-import * as _ from 'lodash-es'
 import * as interpolators from './interpolators/interpolators'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 import {Pointer} from '$shared/DataVerse2/pointer'

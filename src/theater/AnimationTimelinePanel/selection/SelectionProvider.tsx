@@ -15,7 +15,7 @@ import {
   Variables,
 } from '$theater/AnimationTimelinePanel/types'
 import {val} from '$shared/DataVerse2/atom'
-import {get} from 'lodash-es'
+import {get, setImmutable as set} from '$shared/utils'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import * as utils from '$theater/AnimationTimelinePanel/selection/utils'
 import {
@@ -29,7 +29,6 @@ import {
   THorizontalLimits,
 } from '$theater/AnimationTimelinePanel/selection/types'
 import {reduceHistoricState} from '$theater/bootstrap/actions'
-import set from 'lodash/fp/set'
 import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
 
 const classes = resolveCss(css)

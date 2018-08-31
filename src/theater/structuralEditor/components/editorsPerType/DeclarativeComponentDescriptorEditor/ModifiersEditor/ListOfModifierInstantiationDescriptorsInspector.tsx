@@ -2,7 +2,8 @@ import React from 'react'
 import connect from '$theater/handy/connect'
 import {IModifierInstantiationValueDescriptors} from '$theater/componentModel/types'
 import ModifierInstantiationDescriptorInspector from './ModifierInstantiationDescriptorInspector'
-import get from 'lodash/get'
+import {get} from '$shared/utils'
+
 import {ITheaterStoreState} from '$theater/types'
 
 interface IOwnProps {

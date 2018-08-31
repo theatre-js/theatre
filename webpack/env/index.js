@@ -5,7 +5,7 @@ const nodeRequrie = s => {
 const d =
   typeof window === 'undefined'
     ? nodeRequrie('./commitHash')
-    : require('exec-loader!./commitHash')
+    : require('exec-loader!./commitHash').default
 
 const dotEnvFile = require('./dotEnvFile')
 

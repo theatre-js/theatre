@@ -1,5 +1,5 @@
 import {compose, applyMiddleware, createStore, Store} from 'redux'
-import {identity} from 'lodash-es'
+import {identity} from '$shared/utils'
 import {ReduxReducer} from '$shared/types'
 
 interface Conf<State> {

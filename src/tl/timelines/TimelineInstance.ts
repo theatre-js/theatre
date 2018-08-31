@@ -10,7 +10,7 @@ import {VoidFn} from '$shared/types'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 import didYouMean from '$shared/utils/didYouMean'
-import {noop} from 'lodash-es'
+import noop from '$shared/utils/noop'
 
 type State = {
   time: number

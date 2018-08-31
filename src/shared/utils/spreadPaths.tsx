@@ -1,5 +1,4 @@
-import update from 'lodash/fp/update'
-import {get} from 'lodash-es'
+import {get, updateImmutable as update} from '$shared/utils'
 
 export default function spreadPaths(
   paths: string[][],

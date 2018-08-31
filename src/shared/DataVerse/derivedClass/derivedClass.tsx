@@ -1,7 +1,7 @@
 import DerivedClassInstance from '$shared/DataVerse/derivedClass/DerivedClassInstance'
 import Ticker from '$shared/DataVerse/Ticker'
 import Emitter from '$shared/DataVerse/utils/Emitter'
-import {mapValues} from 'lodash-es'
+import {mapValues} from '$shared/utils'
 import {PointerDerivation} from '$shared/DataVerse/derivations/pointer'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 

@@ -1,4 +1,4 @@
-import * as _ from 'lodash-es'
+import * as _ from '$shared/utils'
 import * as interpolators from './interpolators/interpolators'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 import Theater from '$theater/bootstrap/Theater'

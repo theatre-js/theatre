@@ -1,6 +1,6 @@
 import {shouldUpdate} from 'recompose'
 import deepEqual from 'deep-equal'
-import pick from 'lodash/pick'
+import {pick} from '$shared/utils'
 
 type Ident = <T>(a: T) => T
 

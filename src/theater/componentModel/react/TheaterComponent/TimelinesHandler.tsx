@@ -1,5 +1,5 @@
 import TheaterComponent from '$theater/componentModel/react/TheaterComponent/TheaterComponent'
-import {noop} from 'lodash-es'
+import noop from '$shared/utils/noop'
 import TimelineInstance from './TimelineInstance/TimelineInstance'
 import {getPathToComponentDescriptor} from '$theater/componentModel/selectors'
 import autoProxyDerivedDict from '$shared/DataVerse/derivations/dicts/autoProxyDerivedDict'

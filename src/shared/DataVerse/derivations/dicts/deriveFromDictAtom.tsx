@@ -1,5 +1,5 @@
 import AbstractDerivedDict from './AbstractDerivedDict'
-import noop from 'lodash/noop'
+import noop from '$shared/utils/noop'
 import {ensureNoAtoms} from './utils'
 import {DictAtom} from '$shared/DataVerse/atoms/dictAtom'
 

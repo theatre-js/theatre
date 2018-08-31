@@ -2,7 +2,7 @@ import React from 'react'
 import * as css from './TypeSelector.css'
 import {filter} from 'fuzzaldrin-plus'
 import cx from 'classnames'
-import {clamp} from 'lodash-es'
+import clamp from '$shared/number/clamp'
 import {NODE_TYPE} from './constants'
 import {fitInput} from './utils'
 

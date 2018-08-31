@@ -1,7 +1,7 @@
 import pointer, {Pointer} from './pointer'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 import {Pointable, val} from '$shared/DataVerse2/atom'
-import {mapValues} from 'lodash-es'
+import {mapValues} from '$shared/utils'
 
 const mapDict = <O extends {}>(
   sourcePointer: Pointer<O>,

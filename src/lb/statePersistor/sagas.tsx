@@ -4,7 +4,7 @@ import {call, put, fork, select, takeLatest} from 'redux-saga/effects'
 import {delay} from 'redux-saga'
 import fse from 'fs-extra'
 import deepEqual from 'deep-equal'
-import pickPathsFromObject from 'lodash/pick'
+import {pick as pickPathsFromObject} from '$shared/utils'
 import spreadPaths from '$shared/utils/spreadPaths'
 import {
   bootstrapAction,

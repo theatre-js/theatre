@@ -5,7 +5,7 @@ import DraggableArea from '$theater/common/components/DraggableArea/DraggableAre
 import {MODES} from '$theater/common/components/ActiveModeDetector/ActiveModeDetector'
 import {STATUS} from '$theater/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/ModifiersEditor/constants'
 import TypeSelector from '$theater/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/ModifiersEditor/TypeSelector'
-import * as _ from 'lodash-es'
+import * as _ from '$shared/utils'
 import {ModifierInstantiationDescriptorInspector} from '$theater/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/ModifiersEditor/ModifierInstantiationDescriptorInspector'
 import {ITheaterStoreState} from '$theater/types'
 import {ModifierIDsWithInspectorComponents} from '$theater/componentModel/coreModifierDescriptors/inspectorComponents'

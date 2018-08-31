@@ -1,6 +1,6 @@
 import React from 'react'
 import css from './HalfPieContextMenu.css'
-import {flatMap} from 'lodash-es'
+import {flatMap} from '$shared/utils'
 import Overlay from '$shared/components/Overlay/Overlay'
 import OverlaySection from '$shared/components/Overlay/OverlaySection'
 import resolveCss from '$shared/utils/resolveCss'

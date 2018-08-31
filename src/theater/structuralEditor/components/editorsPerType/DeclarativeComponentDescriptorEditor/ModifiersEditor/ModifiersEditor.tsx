@@ -1,7 +1,7 @@
 import React from 'react'
 import connect from '$theater/handy/connect'
 import PanelSection from '$theater/structuralEditor/components/reusables/PanelSection'
-import * as _ from 'lodash-es'
+import * as _ from '$shared/utils'
 import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
 import {getSelectedNodeId} from '$theater/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor/TreeEditor'
 import {IDeclarativeComponentDescriptor} from '$theater/componentModel/types'

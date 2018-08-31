@@ -1,4 +1,4 @@
-import forEach from 'lodash/forEach'
+import {forEach} from '$shared/utils'
 import {Channel, eventChannel} from 'redux-saga'
 
 type EventEmitter = {
