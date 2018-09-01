@@ -35,6 +35,8 @@ import RenderBlocker from '$shared/components/RenderBlocker/RenderBlocker'
 import {SelectedAreaContext} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/SelectionProvider'
 import {shouldToggleIsInSelection} from '$tl/ui/panels/AllInOnePanel/Right/views/utils'
 import {clamp} from 'lodash'
+import BezierConnector from '$tl/ui/panels/AllInOnePanel/Right/views/graphEditor/BezierConnector'
+import PointCircle from '$theater/AnimationTimelinePanel/views/point/PointCircle'
 
 interface IProps {
   propGetter: TPropGetter
@@ -63,6 +65,7 @@ interface IState {
   isMoving: boolean
   pointMove: TPointMove
   handlesMove: TPointHandles
+  renderTempConnectorOf: 'none' | 'currentPoint' | 'prevPoint'
 }
 
 export type TSVGSize = {width: number; height: number}
@@ -83,6 +86,7 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
       isMoving: false,
       pointMove: [0, 0],
       handlesMove: [0, 0, 0, 0],
+      renderTempConnectorOf: 'none',
     }
 
     this.svgSize = getSVGSize(props.propGetter)
@@ -90,11 +94,14 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
   }
 
   render() {
+    const {isMoving, renderTempConnectorOf, pointMove} = this.state
     return (
       <>
         {this._renderConsumers()}
         <g>
-          {this.state.isMoving && this._renderTempPoint(this.state.pointMove)}
+          {renderTempConnectorOf !== 'none' &&
+            this._renderConnectorPlaceholder()}
+          {isMoving && this._renderTempPoint(pointMove)}
           {this._renderPoint()}
         </g>
       </>
@@ -176,6 +183,8 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
               y={pointValue}
               onClick={this.handleClickOnPoint}
               onContextMenu={this.handleContextMenu}
+              onMouseMove={this.handlePointMouseMove}
+              onMouseLeave={this.handlePointMouseLeave}
               ref={this.pointClickArea}
             />
           </g>
@@ -227,6 +236,45 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
         handlesMove={this.state.handlesMove}
       />
     )
+  }
+
+  _renderConnectorPlaceholder() {
+    const {renderTempConnectorOf} = this.state
+    const {point, prevPoint, nextPoint, color} = this.props
+    if (renderTempConnectorOf === 'currentPoint') {
+      if (nextPoint == null) return null
+      if (point.interpolationDescriptor.connected) return null
+      return (
+        <g fill={color.darkened} stroke={color.darkened}>
+          <BezierConnector
+            leftPointTime={point.time}
+            leftPointValue={point.value}
+            rightPointTime={nextPoint.time}
+            rightPointValue={nextPoint.value}
+            handles={point.interpolationDescriptor.handles}
+          />
+        </g>
+      )
+    }
+    if (renderTempConnectorOf === 'prevPoint') {
+      if (prevPoint == null) return null
+      if (prevPoint.interpolationDescriptor.connected) return null
+      return (
+        <>
+          <g fill={color.darkened} stroke={color.darkened}>
+            <BezierConnector
+              leftPointTime={prevPoint.time}
+              leftPointValue={prevPoint.value}
+              rightPointTime={point.time}
+              rightPointValue={point.value}
+              handles={prevPoint.interpolationDescriptor.handles}
+            />
+          </g>
+          <PointCircle x={prevPoint.time} y={prevPoint.value} />
+        </>
+      )
+    }
+    return null
   }
 
   handleClickOnPoint = (event: React.MouseEvent<SVGRectElement>) => {
@@ -285,8 +333,13 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
     const {point, prevPoint, nextPoint} = this.props
     const {pointMove} = this.state
 
+    let renderTempConnectorOf: IState['renderTempConnectorOf'] = 'none'
     let x = (dx / width) * 100
     let y = (dy / height) * 100
+    if (e.metaKey) {
+      renderTempConnectorOf = x > 0 ? 'currentPoint' : 'prevPoint'
+      x = y = 0
+    }
     if (e.altKey) x = 0
     if (e.shiftKey) y = 0
 
@@ -311,6 +364,7 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
       change,
     )
     this.setState(() => ({
+      renderTempConnectorOf,
       isMoving: true,
       pointMove: [x, y],
     }))
@@ -318,12 +372,21 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
 
   handlePointDragEnd = (dragHappened: boolean) => {
     if (!dragHappened) return
+
     const coords = {
       time: this.props.point.originalTime,
       value: this.props.point.originalValue,
     }
 
     this.props.movePointToNewCoords(this.props.pointIndex, coords)
+
+    const {renderTempConnectorOf} = this.state
+    const {pointIndex, prevPoint, addConnector} = this.props
+    if (renderTempConnectorOf === 'currentPoint') addConnector(pointIndex)
+    if (renderTempConnectorOf === 'prevPoint' && prevPoint != null) {
+      addConnector(pointIndex - 1)
+    }
+
     this._resetState()
   }
 
@@ -424,8 +487,29 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
     })
   }
 
+  handlePointMouseMove = () => {
+    const {isMoving, renderTempConnectorOf} = this.state
+    if (isMoving) return
+    if (this.activeMode === MODES.cmd) {
+      if (renderTempConnectorOf === 'none') {
+        this.setState(() => ({renderTempConnectorOf: 'currentPoint'}))
+      }
+    } else {
+      if (renderTempConnectorOf !== 'none') {
+        this.setState(() => ({renderTempConnectorOf: 'none'}))
+      }
+    }
+  }
+
+  handlePointMouseLeave = () => {
+    if (this.state.renderTempConnectorOf !== 'none') {
+      this.setState(() => ({renderTempConnectorOf: 'none'}))
+    }
+  }
+
   _resetState() {
     this.setState(() => ({
+      renderTempConnectorOf: 'none',
       isMoving: false,
       pointMove: [0, 0],
       handlesMove: [0, 0, 0, 0],

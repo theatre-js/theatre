@@ -30,6 +30,7 @@ import TempPoint from '$tl/ui/panels/AllInOnePanel/Right/views/dopesheet/TempPoi
 import TempConnector from '$tl/ui/panels/AllInOnePanel/Right/views/dopesheet/TempConnector'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import {shouldToggleIsInSelection} from '$tl/ui/panels/AllInOnePanel/Right/views/utils'
+import PointCircle from '$tl/ui/panels/AllInOnePanel/Right/views/point/PointCircle'
 
 interface IProps {
   propGetter: TPropGetter
@@ -63,6 +64,7 @@ interface IState {
   isMovingPoint: boolean
   connectorMove: number
   pointMove: number
+  renderTempConnectorOf: 'none' | 'currentPoint' | 'prevPoint'
 }
 
 class DopesheetPoint extends React.PureComponent<IProps, IState> {
@@ -72,11 +74,16 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
   isInSelection: boolean = false
   svgWidth: number = 0
 
-  state = {
-    isMovingConnector: false,
-    connectorMove: 0,
-    isMovingPoint: false,
-    pointMove: 0,
+  constructor(props: IProps) {
+    super(props)
+
+    this.state = {
+      isMovingConnector: false,
+      connectorMove: 0,
+      isMovingPoint: false,
+      pointMove: 0,
+      renderTempConnectorOf: 'none',
+    }
   }
 
   render() {
@@ -84,6 +91,8 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
       <>
         <PropsAsPointer>{this._renderConsumers}</PropsAsPointer>
         <g>
+          {this.state.renderTempConnectorOf !== 'none' &&
+            this._renderConnectorPlaceholder()}
           {this.state.isMovingPoint && this._renderTempPoint()}
           {this._renderPoint()}
           {this.state.isMovingConnector && this._renderTempConnector()}
@@ -160,6 +169,8 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
               y={50}
               onClick={this.handlePointClick}
               onContextMenu={this.handlePointContextMenu}
+              onMouseMove={this.handlePointMouseMove}
+              onMouseLeave={this.handlePointMouseLeave}
               ref={this.pointClickArea}
               dopesheet={true}
             />
@@ -196,6 +207,48 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
         move={connectorMove}
       />
     )
+  }
+
+  _renderConnectorPlaceholder() {
+    const {renderTempConnectorOf} = this.state
+    const {
+      pointTime,
+      pointConnected,
+      prevPointTime,
+      prevPointConnected,
+      nextPointTime,
+      color,
+    } = this.props
+    if (renderTempConnectorOf === 'currentPoint') {
+      if (nextPointTime == null) return null
+      if (pointConnected) return null
+      return (
+        <g fill={color.darkened} stroke={color.darkened}>
+          <LineConnectorRect
+            x={pointTime}
+            y={50}
+            width={nextPointTime - pointTime}
+            color={color.darkened}
+          />
+        </g>
+      )
+    }
+    if (renderTempConnectorOf === 'prevPoint') {
+      if (prevPointTime == null) return null
+      if (prevPointConnected) return null
+      return (
+        <>
+          <LineConnectorRect
+            x={prevPointTime}
+            y={50}
+            width={pointTime - prevPointTime}
+            color={color.darkened}
+          />
+          <PointCircle x={prevPointTime} y={50} />
+        </>
+      )
+    }
+    return null
   }
 
   handlePointClick = (event: React.MouseEvent<SVGRectElement>) => {
@@ -241,8 +294,13 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
     this.svgWidth = this.props.propGetter('svgWidth')
   }
 
-  handlePointDrag = (dx: number) => {
+  handlePointDrag = (dx: number, _: number, e: MouseEvent) => {
+    let renderTempConnectorOf: IState['renderTempConnectorOf'] = 'none'
     let x = (dx / this.svgWidth) * 100
+    if (e.metaKey) {
+      renderTempConnectorOf = x > 0 ? 'currentPoint' : 'prevPoint'
+      x = 0
+    }
 
     const {prevPointTime, nextPointTime} = this.props
     const {pointMove} = this.state
@@ -270,6 +328,7 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
     )
 
     this.setState(() => ({
+      renderTempConnectorOf,
       isMovingPoint: true,
       pointMove: x,
     }))
@@ -282,7 +341,16 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
       value: this.props.originalValue,
     }
     this.props.movePointToNewCoords(this.props.pointIndex, coords)
+
+    const {renderTempConnectorOf} = this.state
+    const {pointIndex, prevPointTime, addConnector} = this.props
+    if (renderTempConnectorOf === 'currentPoint') addConnector(pointIndex)
+    if (renderTempConnectorOf === 'prevPoint' && prevPointTime != null) {
+      addConnector(pointIndex - 1)
+    }
+
     this.setState(() => ({
+      renderTempConnectorOf: 'none',
       isMovingPoint: false,
       pointMove: 0,
     }))
@@ -331,6 +399,26 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
       top: clientY,
       pointIndex: this.props.pointIndex,
     })
+  }
+
+  handlePointMouseMove = () => {
+    const {isMovingPoint, renderTempConnectorOf} = this.state
+    if (isMovingPoint) return
+    if (this.activeMode === MODES.cmd) {
+      if (renderTempConnectorOf === 'none') {
+        this.setState(() => ({renderTempConnectorOf: 'currentPoint'}))
+      }
+    } else {
+      if (renderTempConnectorOf !== 'none') {
+        this.setState(() => ({renderTempConnectorOf: 'none'}))
+      }
+    }
+  }
+
+  handlePointMouseLeave = () => {
+    if (this.state.renderTempConnectorOf !== 'none') {
+      this.setState(() => ({renderTempConnectorOf: 'none'}))
+    }
   }
 
   handleConnectorContextMenu = (event: React.MouseEvent<SVGRectElement>) => {

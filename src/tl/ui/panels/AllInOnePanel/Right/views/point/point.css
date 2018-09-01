@@ -1,12 +1,14 @@
 .pointClickArea {
   cursor: default;
 
-  &:hover, &:active {
+  &:hover,
+  &:active {
     cursor: move;
   }
 
   &.ewCursor {
-    &:hover, &:active {
+    &:hover,
+    &:active {
       cursor: ew-resize;
     }
   }

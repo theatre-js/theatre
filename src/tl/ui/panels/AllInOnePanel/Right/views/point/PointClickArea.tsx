@@ -1,6 +1,7 @@
 import React from 'react'
 import css from './point.css'
 import resolveCss from '$shared/utils/resolveCss'
+import noop from '$shared/utils/noop'
 
 const classes = resolveCss(css)
 
@@ -9,8 +10,11 @@ export const POINT_RECT_EDGE_SIZE = 16
 interface IProps {
   x: number
   y: number
-  onClick: (evt: React.MouseEvent<SVGRectElement>) => any
-  onContextMenu: (evt: React.MouseEvent<SVGRectElement>) => any
+  onClick: (evt: React.MouseEvent<SVGRectElement>) => void
+  onContextMenu: (evt: React.MouseEvent<SVGRectElement>) => void
+  onMouseMove?: (evt: React.MouseEvent<SVGRectElement>) => void
+  onMouseLeave?: (evt: React.MouseEvent<SVGRectElement>) => void
+  onMouseEnter?: (evt: React.MouseEvent<SVGRectElement>) => void
   forwardedRef: React.RefObject<SVGRectElement>
   dopesheet: boolean
 }
@@ -20,6 +24,9 @@ export default ({
   y,
   onClick,
   onContextMenu,
+  onMouseMove = noop,
+  onMouseLeave = noop,
+  onMouseEnter = noop,
   forwardedRef,
   dopesheet,
 }: IProps) => {
@@ -36,6 +43,9 @@ export default ({
           2} ${-POINT_RECT_EDGE_SIZE / 2})`}
         onContextMenu={onContextMenu}
         onClick={onClick}
+        onMouseMove={onMouseMove}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
         ref={forwardedRef}
         {...classes('pointClickArea', dopesheet && 'ewCursor')}
       />
