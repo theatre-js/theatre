@@ -11,6 +11,10 @@
   -webkit-user-select: none;
   cursor: default;
 
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+
   &:hover {
     background: #18242a;
     /* color: #688f9e; */

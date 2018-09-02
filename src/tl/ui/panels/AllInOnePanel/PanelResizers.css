@@ -1,7 +1,7 @@
-@value thickness: 6px;
+@value thickness: 12px;
 
 .container {
-  position: absolute 0;
+  position: absolute -6px;
   pointer-events: none;
 
   display: grid;

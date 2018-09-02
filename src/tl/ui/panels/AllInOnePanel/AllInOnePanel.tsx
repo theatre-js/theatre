@@ -237,6 +237,15 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
         1,
       ),
     }
+    if (windowWidth * (1 - newMargins.left - newMargins.right) < 350) {
+      if (marginsDeltas.left) {
+        newMargins.left = 1 - currentMargins.right - 350 / windowWidth
+        newMargins.right = currentMargins.right
+      } else {
+        newMargins.left = currentMargins.left
+        newMargins.right = 1 - currentMargins.left - 350 / windowWidth
+      }
+    }
     this.updatePanelMarginsTemporarily(newMargins)
   }
 

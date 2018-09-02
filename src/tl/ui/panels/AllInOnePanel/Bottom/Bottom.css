@@ -21,10 +21,12 @@
 
 .leftContainer {
   display: flex;
+  min-width: 0;
 }
 
 .rightContainer {
   display: flex;
+  background: #1e2a30;
 }
 
 .moveHandle {
