@@ -9,13 +9,14 @@ interface IProps {
   onSelect: (item: string) => void
   close: () => void
   children?: (q: string) => React.ReactNode
+  listStyle?: React.CSSProperties
 }
 
 interface IState {}
 
 class FlyoutSearchableList extends React.PureComponent<IProps, IState> {
   render() {
-    const {options, onSelect, close} = this.props
+    const {options, onSelect, close, listStyle} = this.props
     if (options.length === 0) return null
     return (
       <HeadlessDataList
@@ -29,7 +30,12 @@ class FlyoutSearchableList extends React.PureComponent<IProps, IState> {
             this.props.children && this.props.children(query)
 
           return (
-            <FlyoutWithSearch onClickOutside={close} onChange={onQuery}>
+            <FlyoutWithSearch
+              onClickOutside={close}
+              onChange={onQuery}
+              hideSearchBar={options.length === 1}
+              style={listStyle}
+            >
               {childrenToRender == null ? (
                 <DataListView
                   dataList={filteredOptions}

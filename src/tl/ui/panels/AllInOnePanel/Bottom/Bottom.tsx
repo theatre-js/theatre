@@ -6,6 +6,7 @@ import ProjectSelect from './ProjectSelect'
 import Item from './Item'
 import TimelineSelect from './TimelineSelect'
 import TimelineInstanceSelect from './TimelineInstanceSelect'
+import Settings from '$tl/ui/panels/AllInOnePanel/Bottom/Settings/Settings'
 
 export const bottomHeight = parseFloat(css.bottomHeight.replace(/[a-z]+$/, ''))
 
@@ -30,6 +31,7 @@ export default class Bottom extends UIComponent<IProps, IState> {
           <TimelineInstanceSelect />
         </div>
         <div className={css.rightContainer}>
+          <Settings />
           <Item>TheaterJS</Item>
         </div>
       </div>

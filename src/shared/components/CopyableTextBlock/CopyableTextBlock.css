@@ -1,0 +1,58 @@
+.container {
+  position: relative;
+}
+
+.copyButton {
+  position: absolute;
+  height: 25px;
+  right: 5px;
+  top: 5px;
+  outline: none;
+  border: none;
+  background: rgba(255, 255, 255, 0);
+  color: #999;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  opacity: 0.5;
+  overflow: hidden;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    opacity: 1;
+  }
+
+  & > div {
+    display: inline-block;
+    transition: all 0.15s ease-in-out;
+    width: 0;
+    opacity: 0;
+    text-align: right;
+
+    &.successful {
+      color: green;
+    }
+
+    &.failed {
+      color: red;
+    }
+
+    &.show {
+      width: 15px;
+      opacity: 1;
+    }
+  }
+}
+
+.textarea {
+  background: none;
+  width: 100%;
+  padding: 0 10px;
+  line-height: 18px;
+  resize: none;
+  outline: none;
+  overflow: scroll;
+  max-height: 50%;
+  border: none;
+  border-left: 2px #bbb solid;
+  background: rgba(200, 200, 200, 0.1);
+  color: #888;
+}

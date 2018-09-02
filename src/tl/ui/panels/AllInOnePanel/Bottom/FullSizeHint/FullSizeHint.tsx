@@ -40,7 +40,7 @@ export default class HintPop extends React.PureComponent<IProps, {}> {
 }
 
 export const TextBlock = ({children}: IProps) => {
-  return <div {...classes('text')}>{children}</div>
+  return <p {...classes('text')}>{children}</p>
 }
 
 export const CodeSnippet = ({children}: IProps) => {

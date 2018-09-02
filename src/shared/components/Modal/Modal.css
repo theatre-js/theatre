@@ -1,0 +1,16 @@
+@value panelBgColor from '$tl/ui/panels/AllInOnePanel/AllInOnePanel.css';
+@value typographyFont from '$shared/styles.css';
+
+.fixedLayer {
+  position: fixed 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 999999999;
+}
+
+.container {
+  position: absolute 15%;
+  background: panelBgColor;
+  padding: 30px;
+  color: #aaa;
+  font: typographyFont;
+}

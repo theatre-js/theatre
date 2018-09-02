@@ -13,6 +13,7 @@
   box-sizing: border-box;
   color: itemColor;
   cursor: default;
+  white-space: nowrap;
 }
 
 .focused {
