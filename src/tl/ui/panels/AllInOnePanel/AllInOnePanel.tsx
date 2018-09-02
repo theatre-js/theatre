@@ -15,6 +15,9 @@ import createPointerContext from '$shared/utils/react/createPointerContext'
 import TimeUI from '$tl/ui/panels/AllInOnePanel/TimeUI/TimeUI'
 import ActiveModeProvider from '$shared/components/ActiveModeProvider/ActiveModeProvider'
 import projectsSingleton from '$tl/Project/projectsSingleton'
+import {UIHistoricState} from '$tl/ui/store/types'
+import PanelResizers from '$tl/ui/panels/AllInOnePanel/PanelResizers'
+import clamp from '$shared/number/clamp'
 
 const classes = resolveCss(css)
 
@@ -22,6 +25,7 @@ interface IProps {}
 
 interface IState {
   windowWidth: number
+  windowHeight: number
 }
 
 const {Provider, Consumer: AllInOnePanelStuff} = createPointerContext<
@@ -41,24 +45,27 @@ export type IAllInOnePanelStuff = {
 }
 
 export default class AllInOnePanel extends UIComponent<IProps, IState> {
+  tempActionGroup = this.ui.actions.historic.temp()
+
   constructor(props: IProps, context: $IntentionalAny) {
     super(props, context)
-    this.state = {windowWidth: window.innerWidth}
+    this.state = {
+      windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight,
+    }
   }
 
   render() {
     return (
       <PropsAsPointer props={this.props} state={this.state}>
         {({state: stateP}) => {
-          const fullHeightIncludingBottom = val(
-            this.ui.atomP.historic.allInOnePanel.height,
-          )
+          const panelMargins = val(this.ui.atomP.historic.allInOnePanel.margins)
+          const windowWidth = val(stateP.windowWidth)
+          const windowHeight = val(stateP.windowHeight)
 
           const leftWidthFraction = val(
             this.ui.atomP.historic.allInOnePanel.leftWidthFraction,
           )
-
-          const projects = val(projectsSingleton.atom.pointer.projects)
 
           const {
             project,
@@ -66,7 +73,10 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
             internalTimeline,
           } = getProjectTimelineAndInstance(this.ui)
 
-          const width = val(stateP.windowWidth) - 40
+          const fullHeightIncludingBottom =
+            (1 - panelMargins.top - panelMargins.bottom) * windowHeight
+          const width =
+            (1 - panelMargins.left - panelMargins.right) * windowWidth
           const height = fullHeightIncludingBottom - bottomHeight
           const leftWidth = width * leftWidthFraction
           const rightWidth = width * (1 - leftWidthFraction)
@@ -88,8 +98,9 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
                   {...classes('container')}
                   style={{
                     height: fullHeightIncludingBottom,
-                    // @ts-ignore @ignore
-                    '--right-width': `${rightWidth}px`
+                    width,
+                    left: panelMargins.left * windowWidth,
+                    top: panelMargins.top * windowHeight,
                   }}
                 >
                   <TimeUI
@@ -114,8 +125,15 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
                     </div>
                   </div>
                   <div {...classes('bottom')}>
-                    <Bottom />
+                    <Bottom
+                      handlePanelMove={this.handlePanelMove}
+                      handlePanelMoveEnd={this.commitPanelMargins}
+                    />
                   </div>
+                  <PanelResizers
+                    onResize={this.handlePanelResize}
+                    onResizeEnd={this.commitPanelMargins}
+                  />
                 </div>
               </ActiveModeProvider>
             </Provider>
@@ -160,6 +178,93 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
   }
 
   reactToWindowResize = () => {
-    this.setState({windowWidth: window.innerWidth})
+    this.setState({
+      windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight,
+    })
+  }
+
+  handlePanelMove = (dx: number, dy: number) => {
+    dx = dx / this.state.windowWidth
+    dy = dy / this.state.windowHeight
+    const currentMargins = val(this.ui.atomP.historic.allInOnePanel.margins)
+    const newMargins = {
+      left: currentMargins.left + dx,
+      top: currentMargins.top + dy,
+      right: currentMargins.right - dx,
+      bottom: currentMargins.bottom - dy,
+    }
+
+    // Avoid moving out of the viewport
+    marginsKeys.forEach((key, index) => {
+      if (newMargins[key] < 0) {
+        const otherSideKey = marginsKeys[(index + 2) % 4]
+        newMargins[key] = 0
+        newMargins[otherSideKey] =
+          currentMargins[key] + currentMargins[otherSideKey]
+      }
+    })
+
+    this.updatePanelMarginsTemporarily(newMargins)
+  }
+
+  handlePanelResize = (marginsDeltas: Partial<TPanelMargins>) => {
+    const {windowWidth, windowHeight} = this.state
+    const currentMargins = val(this.ui.atomP.historic.allInOnePanel.margins)
+    const newMargins = {
+      left: clamp(
+        currentMargins.left +
+          (marginsDeltas.left ? marginsDeltas.left / windowWidth : 0),
+        0,
+        1,
+      ),
+      top: clamp(
+        currentMargins.top +
+          (marginsDeltas.top ? marginsDeltas.top / windowHeight : 0),
+        0,
+        1,
+      ),
+      right: clamp(
+        currentMargins.right -
+          (marginsDeltas.right ? marginsDeltas.right / windowWidth : 0),
+        0,
+        1,
+      ),
+      bottom: clamp(
+        currentMargins.bottom -
+          (marginsDeltas.bottom ? marginsDeltas.bottom / windowHeight : 0),
+        0,
+        1,
+      ),
+    }
+    this.updatePanelMarginsTemporarily(newMargins)
+  }
+
+  updatePanelMarginsTemporarily = (newMargins: TPanelMargins) => {
+    this.ui.reduxStore.dispatch(
+      this.tempActionGroup.push(
+        this.ui.actions.historic.setAllInOnePanelMargins({newMargins}),
+      ),
+    )
+  }
+
+  commitPanelMargins = () => {
+    this.ui.reduxStore.dispatch(
+      this.ui.actions.batched([
+        this.ui.actions.historic.setAllInOnePanelMargins({
+          newMargins: val(this.ui.atomP.historic.allInOnePanel.margins),
+        }),
+        this.tempActionGroup.discard(),
+      ]),
+    )
   }
 }
+
+export type TPanelMargins = UIHistoricState['allInOnePanel']['margins']
+
+const marginsKeys: Array<keyof TPanelMargins> = [
+  'left',
+  'top',
+  'right',
+  'bottom',
+]

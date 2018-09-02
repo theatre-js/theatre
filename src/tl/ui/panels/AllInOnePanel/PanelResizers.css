@@ -1,0 +1,47 @@
+@value thickness: 6px;
+
+.container {
+  position: absolute 0;
+  pointer-events: none;
+
+  display: grid;
+  grid-template-columns: thickness 1fr thickness;
+  grid-template-rows: thickness 1fr thickness;
+
+  & > div {
+    background: transparent;
+    pointer-events: auto;
+  }
+}
+
+.left {
+  grid-column: 1;
+}
+
+.top {
+  grid-row: 1;
+}
+
+.right {
+  grid-column: 3;
+}
+
+.bottom {
+  grid-row: 3;
+}
+
+.ew {
+  cursor: ew-resize;
+}
+
+.ns {
+  cursor: ns-resize;
+}
+
+.nesw {
+  cursor: nesw-resize;
+}
+
+.nwse {
+  cursor: nwse-resize;
+}

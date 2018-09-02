@@ -28,9 +28,15 @@ const initialHistoricState: UIHistoricState = {
         },
       },
     },
-    height: 300,
+    // height: 300,
     selectedProject: 'Explorable Explanations',
     leftWidthFraction: 0.3,
+    margins: {
+      left: 0.005,
+      top: 0.6,
+      right: 0.005,
+      bottom: 0.01,
+    },
   },
 }
 

@@ -4,3 +4,4 @@ export const container: string;
 export const attention: string;
 export const leftContainer: string;
 export const rightContainer: string;
+export const moveHandle: string;

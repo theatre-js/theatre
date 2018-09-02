@@ -2,7 +2,8 @@
 @value panelBgColor: #263238;
 
 .container {
-  position: fixed _ 20px 20px 20px;
+  // position: fixed _ 20px 20px 20px;
+  position: fixed;
   background: panelBgColor;
 
   color: rgba(255, 255, 255, 0.8);

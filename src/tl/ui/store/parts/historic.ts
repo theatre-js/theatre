@@ -112,3 +112,9 @@ export const setNodeExpansion = r(
     }
   },
 )
+
+export const setAllInOnePanelMargins = r(
+  (s, p: {newMargins: UIHistoricState['allInOnePanel']['margins']}) => {
+    s.allInOnePanel.margins = p.newMargins
+  },
+)

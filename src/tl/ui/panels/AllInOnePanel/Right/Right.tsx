@@ -51,26 +51,29 @@ class Right extends UIComponent<IRightProps, IRightState> {
     const svgWidth = getSvgWidth(range, duration, timelineWidth)
     this._scrollContainer(range)
     return (
-      <DraggableArea
-        onDragStart={this.syncSeekerWithMousePosition}
-        onDrag={this.seekTime}
-        shouldReturnMovement={true}
-      >
-        <div
-          ref={this.wrapper}
-          {...classes('wrapper')}
-          onWheel={this.handleWheel}
+      <>
+        <DraggableArea
+          onDragStart={this.syncSeekerWithMousePosition}
+          onDrag={this.seekTime}
+          shouldReturnMovement={true}
         >
-          <div style={{width: svgWidth}} {...classes('scrollingContainer')}>
-            <TimelineProviders
-              disableZoom={this.disableZoom}
-              enableZoom={this.enableZoom}
-            >
-              <ItemsContainer />
-            </TimelineProviders>
+          <div
+            ref={this.wrapper}
+            {...classes('wrapper')}
+            onWheel={this.handleWheel}
+          >
+            <div style={{width: svgWidth}} {...classes('scrollingContainer')}>
+              <TimelineProviders
+                disableZoom={this.disableZoom}
+                enableZoom={this.enableZoom}
+              >
+                <ItemsContainer />
+              </TimelineProviders>
+            </div>
           </div>
-        </div>
-      </DraggableArea>
+        </DraggableArea>
+        <PropsAsPointer>{this._subscribeToPanelChanges}</PropsAsPointer>
+      </>
     )
   }
 
@@ -83,8 +86,15 @@ class Right extends UIComponent<IRightProps, IRightState> {
     window.removeEventListener('resize', this.handleResize)
   }
 
+  _subscribeToPanelChanges = () => {
+    val(this.ui.atomP.historic.allInOnePanel.margins)
+    this._updateWrapperLeft()
+    return null
+  }
+
   _updateWrapperLeft() {
-    this.wrapperLeft = this.wrapper.current!.getBoundingClientRect().left
+    if (this.wrapper.current == null) return
+    this.wrapperLeft = this.wrapper.current.getBoundingClientRect().left
   }
 
   handleResize = () => {

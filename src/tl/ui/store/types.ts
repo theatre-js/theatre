@@ -52,7 +52,7 @@ const $ObjectState = t.type(
 const $TimelineState = t.type({
   selectedTimelineInstance: t.union([t.null, t.string]),
   objects: t.record(t.string, $ObjectState),
-  collapsedNodesByPath: t.record(t.string, t.literal(1))
+  collapsedNodesByPath: t.record(t.string, t.literal(1)),
 })
 
 const $ProjectState = t.type(
@@ -69,10 +69,16 @@ const $ProjectState = t.type(
 export const $UIHistoricState = t.type({
   foo: t.string,
   allInOnePanel: t.type({
-    height: t.number,
+    // height: t.number,
     selectedProject: t.union([t.null, t.string]),
     projects: t.record(t.string, $ProjectState),
     leftWidthFraction: t.number,
+    margins: t.type({
+      left: t.number,
+      top: t.number,
+      right: t.number,
+      bottom: t.number,
+    }),
   }),
 })
 
