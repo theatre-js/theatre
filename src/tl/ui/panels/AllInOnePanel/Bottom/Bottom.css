@@ -10,7 +10,7 @@
   border-radius: 0 0 4px 4px;
   align-items: center;
   justify-content: space-between;
-  // z-index: 1001;
+  z-index: 1001;
   /* padding-left: 20px; */
 
   &.attention {

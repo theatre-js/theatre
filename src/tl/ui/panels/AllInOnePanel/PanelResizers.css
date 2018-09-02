@@ -16,6 +16,7 @@
 
 .left {
   grid-column: 1;
+  z-index: 9999;
 }
 
 .top {
@@ -24,10 +25,12 @@
 
 .right {
   grid-column: 3;
+  z-index: 9999;
 }
 
 .bottom {
   grid-row: 3;
+  z-index: 9999;
 }
 
 .ew {
