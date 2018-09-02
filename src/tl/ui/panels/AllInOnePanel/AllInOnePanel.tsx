@@ -14,10 +14,10 @@ import Right from './Right/Right'
 import createPointerContext from '$shared/utils/react/createPointerContext'
 import TimeUI from '$tl/ui/panels/AllInOnePanel/TimeUI/TimeUI'
 import ActiveModeProvider from '$shared/components/ActiveModeProvider/ActiveModeProvider'
-import projectsSingleton from '$tl/Project/projectsSingleton'
 import {UIHistoricState} from '$tl/ui/store/types'
 import PanelResizers from '$tl/ui/panels/AllInOnePanel/PanelResizers'
 import clamp from '$shared/number/clamp'
+import {cmdIsDown} from '$shared/utils/keyboardUtils'
 
 const classes = resolveCss(css)
 
@@ -101,6 +101,8 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
                     width,
                     left: panelMargins.left * windowWidth,
                     top: panelMargins.top * windowHeight,
+                    // @ts-ignore
+                    '--right-width': rightWidth
                   }}
                 >
                   <TimeUI
@@ -160,9 +162,26 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
 
     if (e.key === ' ') {
       this.togglePlay()
-      e.preventDefault()
-      e.stopPropagation()
+    } else if (e.key === 'z' || e.key === 'Z' || e.code === 'KeyZ') {
+      if (cmdIsDown(e)) {
+        if (e.shiftKey === true) {
+          this.project._dispatch(this.project._actions.historic.redo())
+        } else {
+          this.project._dispatch(this.project._actions.historic.undo())
+        }
+      } else if (e.altKey === true) {
+        if (e.shiftKey === true) {
+          this.ui._dispatch(this.ui.actions.historic.redo())
+        } else {
+          this.ui._dispatch(this.ui.actions.historic.undo())
+        }
+      }
+    } else {
+      return
     }
+
+    e.preventDefault()
+    e.stopPropagation()
   }
 
   togglePlay() {
