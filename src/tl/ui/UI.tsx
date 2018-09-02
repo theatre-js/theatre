@@ -9,6 +9,8 @@ import atomFromReduxStore from '$shared/utils/redux/atomFromReduxStore'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import Ticker from '$shared/DataVerse/Ticker'
 import UIRootWrapper from '$tl/ui/UIRoot/UIRootWrapper'
+import { GenericAction } from '$shared/types';
+import {startPersisting} from '../Project/Project'
 
 export default class UI {
   atom: Atom<UIState>
@@ -32,6 +34,8 @@ export default class UI {
       window.requestAnimationFrame(onAnimationFrame)
     }
     window.requestAnimationFrame(onAnimationFrame)
+
+    startPersisting(this.reduxStore, this.actions, 'ui')
   }
 
   enable() {
@@ -51,5 +55,9 @@ export default class UI {
       document.body.appendChild(containerEl)
       ReactDOM.render(<UIRootWrapper ui={this} />, containerEl)
     }, 10)
+  }
+
+  _dispatch(...actions: GenericAction[]) {
+    return this.reduxStore.dispatch(this.actions.batched(actions))
   }
 }

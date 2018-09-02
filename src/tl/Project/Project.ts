@@ -16,8 +16,6 @@ import projectSelectors from '$tl/Project/store/selectors'
 import {GenericAction} from '$shared/types'
 import {debounce} from '$shared/utils'
 
-const storageKey = 'storageKey'
-
 export default class Project {
   static version = $env.tl.version
   _timelineInstances: Atom<{
@@ -63,7 +61,7 @@ export default class Project {
     }
     window.requestAnimationFrame(onAnimationFrame)
 
-    this._startPersisting()
+    startPersisting(this.reduxStore, this._actions, 'project:' + id)
   }
 
   getTimeline(_path: string, instanceId: string = 'default'): TimelineInstance {
@@ -98,21 +96,26 @@ export default class Project {
   _dispatch(...actions: GenericAction[]) {
     return this.reduxStore.dispatch(this._actions.batched(actions))
   }
+}
 
-  _startPersisting() {
-    this._loadState()
-    let lastHistory = this.reduxStore.getState().historic['@@history']
-    this.reduxStore.subscribe(
-      debounce(() => {
-        const newHistory = this.reduxStore.getState().historic['@@history']
-        if (newHistory === lastHistory) return
-        lastHistory = newHistory
-        localStorage.setItem(storageKey, JSON.stringify(newHistory))
-      }, 1000),
-    )
-  }
+export function startPersisting(
+  reduxStore: $FixMe,
+  actions: $FixMe,
+  k: string,
+) {
+  const storageKey = 'theatrejs/temp/' + k
+  loadState()
+  let lastHistory = reduxStore.getState().historic['@@history']
+  reduxStore.subscribe(
+    debounce(() => {
+      const newHistory = reduxStore.getState().historic['@@history']
+      if (newHistory === lastHistory) return
+      lastHistory = newHistory
+      localStorage.setItem(storageKey, JSON.stringify(newHistory))
+    }, 1000),
+  )
 
-  _loadState() {
+  function loadState() {
     const persistedS = localStorage.getItem(storageKey)
     if (persistedS) {
       let persistedObj
@@ -121,8 +124,8 @@ export default class Project {
       } catch (e) {
         return
       }
-      this._dispatch(
-        this._actions.historic.__unsafe_replaceHistory(persistedObj),
+      reduxStore.dispatch(
+        actions.historic.__unsafe_replaceHistory(persistedObj),
       )
     }
   }
