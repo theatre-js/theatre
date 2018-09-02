@@ -6,7 +6,6 @@ import * as CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin'
 import * as TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
 import {mapValues, isPlainObject, mapKeys} from 'lodash'
 import * as ErrorOverlayPlugin from 'error-overlay-webpack-plugin'
-import {mapKeys} from 'lodash-es'
 
 export const context = path.resolve(__dirname, '..')
 
