@@ -24,7 +24,8 @@ type TimeIsBeforeFirstPointBaseState = {type: 'TimeIsBeforeFirstPoint'}
 type TimeIsBeforeFirstPointState = Spread<
   TimeIsBeforeFirstPointBaseState,
   {
-    timeOfFirstPointPD: AbstractDerivation<undefined | number>
+    timeOfFirstPointPD: AbstractDerivation<undefined | number>,
+    valueOfFirstPointD: AbstractDerivation<undefined | number>
   }
 >
 
@@ -100,11 +101,14 @@ const handlersByState = {
       d: DerivationOfBezierCurvesOfScalarValues,
     ): TimeIsBeforeFirstPointState {
       const timeOfFirstPointPD = valueDerivation(d._pointsP[0].time)
+      const valueOfFirstPointD = valueDerivation(d._pointsP[0].value)
       d._addDependency(timeOfFirstPointPD)
+      d._addDependency(valueOfFirstPointD)
 
       return {
         ...baseState,
         timeOfFirstPointPD,
+        valueOfFirstPointD,
       }
     },
 
@@ -122,7 +126,7 @@ const handlersByState = {
 
         // if current time is still before the first point
         if (firstPointTime > d.timeD.getValue()) {
-          return d._emptyValue()
+          return state.valueOfFirstPointD.getValue()
         } else {
           return this._transitionOutAndRecalculateValue(state, d)
         }
@@ -133,7 +137,7 @@ const handlersByState = {
       ) {
         return this._transitionOutAndRecalculateValue(state, d)
       } else {
-        return d._emptyValue()
+        return state.valueOfFirstPointD.getValue()
       }
     },
 

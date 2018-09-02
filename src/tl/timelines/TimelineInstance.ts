@@ -21,18 +21,13 @@ type Range = {
   to: number
 }
 
-enum Direction {
-  Normal = 'normal',
-  Reverse = 'reverse',
-  Alternate = 'alternate',
-  AlternateReverse = 'alternateReverse',
-}
+type Direction = 'normal' | 'reverse' | 'alternate' | 'alternateReverse'
 
 const possibleDirections = [
-  Direction.Normal,
-  Direction.Reverse,
-  Direction.Alternate,
-  Direction.AlternateReverse,
+  'normal',
+  'reverse',
+  'alternate',
+  'alternateReverse',
 ]
 
 export default class TimelineInstance {
@@ -200,7 +195,10 @@ export default class TimelineInstance {
     const iterationCount =
       conf && typeof conf.iterationCount === 'number' ? conf.iterationCount : 1
 
-    if (!(Number.isInteger(iterationCount) && iterationCount > 0)) {
+    if (
+      !(Number.isInteger(iterationCount) && iterationCount > 0) &&
+      iterationCount !== Infinity
+    ) {
       throw new Error(
         `Argument conf.iterationCount in play(conf) must be an integer larger than 0. ${JSON.stringify(
           iterationCount,
@@ -223,12 +221,12 @@ export default class TimelineInstance {
         `Argument conf.rate in play(conf) must be a number larger than 0. ${JSON.stringify(
           rate,
         )} given. If you want the animation to play backwards, try setting conf.direction to '${
-          Direction.Reverse
-        }' or '${Direction.AlternateReverse}'.`,
+          'reverse'
+        }' or '${'alternateReverse'}'.`,
       )
     }
 
-    const direction = conf && conf.direction ? conf.direction : Direction.Normal
+    const direction = conf && conf.direction ? conf.direction : 'normal'
     if (possibleDirections.indexOf(direction) === -1) {
       throw new Error(
         `Argument conf.direction in play(conf) must be one of ${JSON.stringify(
@@ -264,8 +262,8 @@ export default class TimelineInstance {
     }
 
     let goingForward =
-      direction === Direction.AlternateReverse ||
-      direction === Direction.Reverse
+      direction === 'alternateReverse' ||
+      direction === 'reverse'
         ? -1
         : 1
 
@@ -285,7 +283,7 @@ export default class TimelineInstance {
         } else {
           countSoFar++
           const diff = (range.from - newTime) % dur
-          if (direction === Direction.Reverse) {
+          if (direction === 'reverse') {
             this._gotoTime(range.to - diff)
           } else {
             goingForward = 1
@@ -310,7 +308,7 @@ export default class TimelineInstance {
         } else {
           countSoFar++
           const diff = (newTime - range.to) % dur
-          if (direction === Direction.Normal) {
+          if (direction === 'normal') {
             this._gotoTime(range.from + diff)
           } else {
             goingForward = -1

@@ -97,7 +97,7 @@ class BezierConnector extends React.PureComponent<IProps, IState> {
           <path
             d={pathD}
             fill="transparent"
-            strokeWidth={2}
+            strokeWidth={1.2}
             vectorEffect="non-scaling-stroke"
             {...classes('connectorPath')}
           />

@@ -66,6 +66,7 @@
   color: rgba(#8ea2ad, 0.4);
   margin-right: 8px;
   padding-right: 4px;
+  height: 26px;
   &:hover {
     color: #00d8ff;
   }

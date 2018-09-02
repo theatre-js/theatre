@@ -1,6 +1,6 @@
 .container {
   height: 100%;
-  width: 200px;
+  width: 132px;
   padding-left: 0;
   /* background: #212b31; */
   box-sizing: border-box;
@@ -11,7 +11,8 @@
     height: 100%;
     box-sizing: border-box;
     /* background: black; */
-    background: transparent;
+    background: #00000012;
+    
     border: none;
     /* border: 1px solid white; */
     outline: none;
@@ -21,6 +22,11 @@
     margin: 0;
     display: inline;
     line-height: inherit;
+
+    &:focus {
+      background: #00000040;
+      color: white;
+    }
     /* border-radius: 0 1px 1px 0; */
   }
 
@@ -28,6 +34,12 @@
     cursor: ns-resize;
     user-select: none;
     font-weight: 200;
+
+    & .input:hover {
+      background: #00000020;
+      color: #CCC;
+
+    }
 
     & .input {
       cursor: ns-resize;
