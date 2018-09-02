@@ -50,7 +50,6 @@
   resize: none;
   outline: none;
   overflow: scroll;
-  max-height: 50%;
   border: none;
   border-left: 2px #bbb solid;
   background: rgba(200, 200, 200, 0.1);

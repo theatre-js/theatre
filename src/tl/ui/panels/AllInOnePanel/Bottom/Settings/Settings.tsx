@@ -37,7 +37,9 @@ class Settings extends React.PureComponent<IProps, IState> {
             }}
           />
         )}
-        {this.state.exportOpen && <ExportModal onClose={this.closeExport} />}
+        {this.state.exportOpen && (
+          <ExportModal onClose={this.closeExportModal} />
+        )}
         <Item onClick={this.onClick}>
           <div ref={this.iconContainerRef} {...classes('container')}>
             <MdSettings />
@@ -56,7 +58,7 @@ class Settings extends React.PureComponent<IProps, IState> {
     }
   }
 
-  closeExport = () => {
+  closeExportModal = () => {
     this.setState(() => ({exportOpen: false}))
   }
 

@@ -5,12 +5,39 @@
   position: fixed 0;
   background: rgba(0, 0, 0, 0.6);
   z-index: 999999999;
+
+  opacity: 0;
+  animation: appear 0.15s ease-in-out forwards;
+
+  &.closed {
+    animation: disappear 0.15s ease-in-out forwards;
+  }
 }
 
 .container {
   position: absolute 15%;
   background: panelBgColor;
   padding: 30px;
+  box-sizing: border-box;
   color: #aaa;
   font: typographyFont;
+  overflow: hidden scroll;
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes disappear {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }

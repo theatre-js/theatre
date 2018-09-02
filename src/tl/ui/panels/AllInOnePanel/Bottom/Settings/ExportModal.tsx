@@ -8,19 +8,6 @@ interface IProps {
 
 interface IState {}
 
-const fakeJSON = `
-{
-  a: {
-    aa: 'aa',
-    ab: 'ab
-  },
-  b: {
-    ba: 'ba',
-    bb: 'bb'
-  }
-}
-`
-
 class ExportModal extends React.PureComponent<IProps, IState> {
   render() {
     return (
@@ -31,5 +18,19 @@ class ExportModal extends React.PureComponent<IProps, IState> {
     )
   }
 }
+
+const fakeJSON = `
+{
+  a: {
+    aa: 'aa',
+    ab: 'ab',
+    ac: 'ac'
+  },
+  b: {
+    ba: 'ba',
+    bb: 'bb'
+  }
+}
+`
 
 export default ExportModal

@@ -11,23 +11,58 @@ interface IProps {
   onClose: () => void
 }
 
-interface IState {}
+interface IState {
+  closed: boolean
+}
 
 class Modal extends React.PureComponent<IProps, IState> {
+  fixedLayer: React.RefObject<HTMLDivElement> = React.createRef()
+
+  state = {
+    closed: false,
+  }
+
   render() {
     return ReactDOM.createPortal(this._renderModal(), document.body)
   }
 
   _renderModal() {
     return (
-      <div {...classes('fixedLayer')}>
-        <Overlay onClickOutside={this.props.onClose} propagateWheel>
+      <div
+        ref={this.fixedLayer}
+        {...classes('fixedLayer', this.state.closed && 'closed')}
+      >
+        <Overlay onClickOutside={this.close} propagateWheel>
           <OverlaySection {...classes('container')}>
             {this.props.children}
           </OverlaySection>
         </Overlay>
       </div>
     )
+  }
+
+  componentDidMount() {
+    this.fixedLayer.current!.addEventListener(
+      'animationend',
+      this.handleAnimationEnd,
+    )
+  }
+
+  componentWillUnmount() {
+    this.fixedLayer.current!.removeEventListener(
+      'animationend',
+      this.handleAnimationEnd,
+    )
+  }
+
+  handleAnimationEnd = (event: AnimationEvent) => {
+    if (event.animationName === css.disappear) {
+      this.props.onClose()
+    }
+  }
+
+  close = () => {
+    this.setState(() => ({closed: true}))
   }
 }
 
