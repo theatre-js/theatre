@@ -14,6 +14,7 @@ module.exports = (env: Envs) => {
     entries: {
       'studio/1': ['./examples/studio/1/index.js'],
       'tl/1': ['./examples/tl/1/index.ts'],
+      'tl/2': ['./examples/tl/2/index.ts'],
     },
   })
 
@@ -39,6 +40,13 @@ module.exports = (env: Envs) => {
         template: './examples/tl/1/index.html',
         filename: 'tl/1/index.html',
         chunks: ['tl/1'],
+        templateParameters: parts.htmlPluginTemplateParameters,
+      }),
+      new HtmlWebpackPlugin({
+        inject: false,
+        template: './examples/tl/1/index.html',
+        filename: 'tl/2/index.html',
+        chunks: ['tl/2'],
         templateParameters: parts.htmlPluginTemplateParameters,
       }),
       new webpack.ProvidePlugin({'THREE': 'three'})
