@@ -37,6 +37,7 @@ import {shouldToggleIsInSelection} from '$tl/ui/panels/AllInOnePanel/Right/views
 import {clamp} from 'lodash'
 import BezierConnector from '$tl/ui/panels/AllInOnePanel/Right/views/graphEditor/BezierConnector'
 import PointCircle from '$theater/AnimationTimelinePanel/views/point/PointCircle'
+import { cmdIsDown } from '$shared/utils/keyboardUtils';
 
 interface IProps {
   propGetter: TPropGetter
@@ -336,7 +337,7 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
     let renderTempConnectorOf: IState['renderTempConnectorOf'] = 'none'
     let x = (dx / width) * 100
     let y = (dy / height) * 100
-    if (e.metaKey) {
+    if (cmdIsDown(e)) {
       renderTempConnectorOf = x > 0 ? 'currentPoint' : 'prevPoint'
       x = y = 0
     }

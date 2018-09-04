@@ -3,7 +3,7 @@ import {isMac} from './isMac'
 /**
  * On mac, it checks Cmd, on windows, ctrl
  */
-export const cmdIsDown = (e: KeyboardEvent) => {
+export const cmdIsDown = (e: KeyboardEvent | MouseEvent) => {
   if (isMac) {
     return e.metaKey === true
   } else {
@@ -14,7 +14,7 @@ export const cmdIsDown = (e: KeyboardEvent) => {
 /**
  * On mac, it checks for ctrl, on windows, Win
  */
-export const ctrlIsDown = (e: KeyboardEvent) => {
+export const ctrlIsDown = (e: KeyboardEvent | MouseEvent) => {
   if (isMac) {
     return e.ctrlKey === true
   } else {
