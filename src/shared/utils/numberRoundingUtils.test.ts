@@ -31,6 +31,7 @@ const example = <Args extends $IntentionalAny[], Return>(
 describe(`numberRoundingUtils()`, () => {
   describe(`roundestNumberBetween()`, () => {
     example(roundestNumberBetween, [0.1, 1.1], 1)
+    example(roundestNumberBetween, [0.1111111123, 0.2943439448], 0.25)
     example(roundestNumberBetween, [0.19, 0.23], 0.2)
     example(roundestNumberBetween, [-0.19, 0.23], 0)
     example(roundestNumberBetween, [-0.19, -0.02], -0.1)

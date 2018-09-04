@@ -38,7 +38,8 @@ type CommonEnvironmentVariables = {
     socketPort: number
   }
   tl: {
-    version: string
+    version: string,
+    uiPersistenceKey: string
   }
   KEEPING_DERIVATION_TRACES: boolean
   TRACKING_COLD_DERIVATIONS: boolean
