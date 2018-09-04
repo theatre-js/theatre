@@ -35,6 +35,12 @@ describe(`numberRoundingUtils()`, () => {
     example(roundestNumberBetween, [-0.19, 0.23], 0)
     example(roundestNumberBetween, [-0.19, -0.02], -0.1)
     example(roundestNumberBetween, [-0.19, 0.02], 0)
+    example(
+      roundestNumberBetween,
+      [22304.2398427391, 22304.2398427393],
+      22304.2398427392,
+    )
+    example(roundestNumberBetween, [22304.2398427391, 22304.4], 22304.25)
   })
   describe(`roundestIntegerBetween`, () => {
     example(roundestIntegerBetween, [-1, 6], 0, {})

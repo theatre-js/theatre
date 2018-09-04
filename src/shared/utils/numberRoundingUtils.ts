@@ -1,19 +1,18 @@
 import {padEnd} from 'lodash-es'
 
-export function roundestNumberBetween(a: number, b: number): number {
-  const aCeiling = Math.ceil(a)
-  if (aCeiling <= b) {
+export function roundestNumberBetween(_a: number, _b: number): number {
+  const aCeiling = Math.ceil(_a)
+  if (aCeiling <= _b) {
     return roundestIntegerBetween(
       noMinusZero(aCeiling),
-      noMinusZero(Math.floor(b)),
+      noMinusZero(Math.floor(_b)),
     )
   } else {
-    if (a < 0) {
-      // we know b < 0
-      return -roundestFloat(-b, -a)
-    } else {
-      return roundestFloat(a, b)
-    }
+    const {a, b, fixSign} =
+      _a < 0 ? {a: -_b, b: -_a, fixSign: -1} : {a: _a, b: _b, fixSign: 1}
+    const integer = Math.floor(a)
+
+    return (integer + roundestFloat(a - integer, b - integer)) * fixSign
   }
 }
 
