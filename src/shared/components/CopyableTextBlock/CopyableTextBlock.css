@@ -53,5 +53,14 @@
   border: none;
   border-left: 2px #bbb solid;
   background: rgba(200, 200, 200, 0.1);
-  color: #888;
+  color: #ccc;
+  height: 100px;
+  overflow: scroll;
+  padding: 8px;
+  cursor: text;
+
+  &::selection {
+    background: #638bb3;
+    color: white;
+  }
 }

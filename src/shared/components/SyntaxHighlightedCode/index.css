@@ -1,0 +1,12 @@
+.container {
+  width: 100%;
+  padding: 10px 14px;
+  box-sizing: border-box;
+  line-height: 21px;
+  resize: none;
+  outline: none;
+  overflow: scroll;
+  border: none;
+  background: rgba(0, 0, 0, 0.28);
+  color: #eee;
+}

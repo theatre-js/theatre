@@ -14,6 +14,13 @@ import atomFromReduxStore from '$shared/utils/redux/atomFromReduxStore'
 import {ProjectAddress} from '$tl/handy/addresses'
 import projectSelectors from '$tl/Project/store/selectors'
 import {GenericAction} from '$shared/types'
+import ProjectPersistor from './ProjectPersistor'
+import {OnDiskState} from '$tl/Project/store/types'
+import {validateOnDiskState} from './ProjectPersistor'
+
+type Conf = Partial<{
+  state: OnDiskState
+}>
 
 export default class Project {
   static version = $env.tl.version
@@ -36,11 +43,14 @@ export default class Project {
   _address: ProjectAddress
 
   _selectors = projectSelectors
+  protected _persistor: ProjectPersistor
+  _readPromise: Promise<void>
 
   /**
    * @todo should we have a human-readable name for each project too?
    */
-  constructor(readonly id: string) {
+  constructor(readonly id: string, readonly config: Conf = {}) {
+    if (config.state) validateOnDiskState(this, config.state)
     projectsSingleton.add(id, this)
     this.adapters = new NativeObjectAdaptersManager(this)
     this.reduxStore = configureStore({
@@ -59,6 +69,19 @@ export default class Project {
       window.requestAnimationFrame(onAnimationFrame)
     }
     window.requestAnimationFrame(onAnimationFrame)
+    this._persistor = new ProjectPersistor(this)
+
+    this._readPromise = new Promise(resolve => {
+      const check = () => {
+        const ahistoricState = this.reduxStore.getState().ahistoric
+        if (this._selectors.ahistoric.isReady(ahistoricState)) {
+          unsubscribe()
+          resolve()
+        }
+      }
+      const unsubscribe = this.reduxStore.subscribe(check)
+      check()
+    })
 
     // startPersisting(this.reduxStore, this._actions, 'project:' + id)
   }
@@ -94,5 +117,15 @@ export default class Project {
 
   _dispatch(...actions: GenericAction[]) {
     return this.reduxStore.dispatch(this._actions.batched(actions))
+  }
+
+  get ready() {
+    return this._readPromise
+  }
+
+  isReady() {
+    return this._selectors.ahistoric.isReady(
+      this.reduxStore.getState().ahistoric,
+    )
   }
 }

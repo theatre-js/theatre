@@ -9,6 +9,7 @@ const classes = resolveCss(css)
 
 interface IProps {
   onClose: () => void
+  autoClose?: boolean
 }
 
 interface IState {
@@ -62,7 +63,11 @@ class Modal extends React.PureComponent<IProps, IState> {
   }
 
   close = () => {
-    this.setState(() => ({closed: true}))
+    if (this.props.autoClose === false) {
+      this.props.onClose()
+    } else {
+      this.setState(() => ({closed: true}))
+    }
   }
 }
 

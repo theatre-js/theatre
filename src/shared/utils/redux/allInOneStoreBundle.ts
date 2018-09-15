@@ -5,16 +5,15 @@ import withBatchedActions, {
 } from '$shared/utils/redux/withHistory/withBatchActions'
 import actionReducersBundle from '$shared/utils/redux/actionReducersBundle'
 import {mapValues} from '$shared/utils'
-import {
-  withHistory,
-  StateWithHistory,
-} from '$shared/utils/redux/withHistory/withHistory'
+import {withHistory} from '$shared/utils/redux/withHistory/withHistory'
 import {
   undoAction,
   redoAction,
   replaceHistoryAction,
+  clearHistoryAndReplaceInnerState,
 } from '$shared/utils/redux/withHistory/actions'
 import {tempActionGroup} from './withHistory/actions'
+import {StateWithHistory} from './withHistory/types'
 
 type Handlers<State> = {
   [k: string]: (
@@ -76,6 +75,7 @@ const allInOneStoreBundle = <
     undo: undoAction,
     redo: redoAction,
     __unsafe_replaceHistory: replaceHistoryAction,
+    __unsafe_clearHistoryAndReplaceInnerState: clearHistoryAndReplaceInnerState,
   }
 
   const historicActions = {
@@ -94,6 +94,7 @@ const allInOneStoreBundle = <
     undo: typeof undoAction
     redo: typeof redoAction
     __unsafe_replaceHistory: typeof replaceHistoryAction
+    __unsafe_clearHistoryAndReplaceInnerState: typeof clearHistoryAndReplaceInnerState
     temp: () => ReturnType<typeof tempActionGroup>
   }
 

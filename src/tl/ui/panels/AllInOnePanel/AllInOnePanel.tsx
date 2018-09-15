@@ -3,7 +3,7 @@ import UIComponent from '$tl/ui/handy/UIComponent'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import React from 'react'
 import * as css from './AllInOnePanel.css'
-import {val} from '$shared/DataVerse2/atom'
+import {val, valOrRead} from '$shared/DataVerse2/atom'
 import Left from '$tl/ui/panels/AllInOnePanel/Left/Left'
 import Bottom, {bottomHeight} from './Bottom/Bottom'
 import {getProjectTimelineAndInstance} from './selectors'
@@ -73,6 +73,13 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
             internalTimeline,
           } = getProjectTimelineAndInstance(this.ui)
 
+          if (
+            project &&
+            !valOrRead(project._selectors.ahistoric.isReady(project.atomP.ahistoric))
+          ) {
+            return null
+          }
+
           const fullHeightIncludingBottom =
             (1 - panelMargins.top - panelMargins.bottom) * windowHeight
           const width =
@@ -102,7 +109,7 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
                     left: panelMargins.left * windowWidth,
                     top: panelMargins.top * windowHeight,
                     // @ts-ignore
-                    '--right-width': rightWidth
+                    '--right-width': rightWidth,
                   }}
                 >
                   <TimeUI

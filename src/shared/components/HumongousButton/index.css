@@ -1,0 +1,16 @@
+.container {
+  display: block;
+  outline: none;
+  width: 100%;
+  margin-bottom: 6px;
+  margin-top: 10px;
+  height: 40px;
+  background: #4e5d653d;
+  border: 1px solid #ffffff12;
+  color: #FFFFFFaa;
+
+  &:hover {
+    border-color: #ffffff55;
+    color: white;
+  }
+}

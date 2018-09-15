@@ -5,6 +5,9 @@
   position: fixed 0;
   background: rgba(0, 0, 0, 0.6);
   z-index: 999999999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   opacity: 0;
   animation: appear 0.15s ease-in-out forwards;
@@ -15,7 +18,15 @@
 }
 
 .container {
-  position: absolute 15%;
+  &.big {
+    position: absolute 15%;
+  }
+
+  &.fluid {
+    min-width: 100px;
+    min-height: 40px;
+  }
+  
   background: panelBgColor;
   padding: 30px;
   box-sizing: border-box;

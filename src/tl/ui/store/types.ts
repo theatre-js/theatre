@@ -1,5 +1,5 @@
 import * as t from '$shared/ioTypes'
-import {$StateWithHistory} from '$shared/utils/redux/withHistory/withHistory'
+import {$StateWithHistory} from '$shared/utils/redux/withHistory/types'
 
 /**
  * Ahistoric state is persisted, but its changes

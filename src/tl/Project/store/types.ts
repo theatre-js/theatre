@@ -1,11 +1,36 @@
 import * as t from '$shared/ioTypes'
-import {$StateWithHistory} from '$shared/utils/redux/withHistory/withHistory'
+import {
+  $StateWithHistory,
+  $HistoryOnly,
+} from '$shared/utils/redux/withHistory/types'
+
+const $ProjectLoadedState = t.type({
+  type: t.literal('loaded'),
+  diskRevisionsThatBrowserStateIsBasedOn: t.array(t.string),
+})
+
+export type ProjectLoadedState = t.StaticTypeOf<typeof $ProjectLoadedState>
+
+const $ProjectLoadingState = t.taggedUnion('type', [
+  t.type({
+    type: t.literal('loading'),
+  }),
+  $ProjectLoadedState,
+  t.type({
+    type: t.literal('browserStateIsNotBasedOnDiskState'),
+    onDiskState: (t.$IntentionalAny as $IntentionalAny) as typeof $OnDiskState,
+    browserState: (t.$IntentionalAny as $IntentionalAny) as typeof $OnBrowserState,
+  }),
+])
 
 /**
  * Ahistoric state is persisted, but its changes
  * are not undoable.
  */
-export const $ProjectAhistoricState = t.type({})
+export const $ProjectAhistoricState = t.type({
+  loadingState: $ProjectLoadingState,
+  lastExportedObject: t.union([t.null, t.deferred(() => $OnDiskState)]),
+})
 
 export type ProjectAhistoricState = t.StaticTypeOf<
   typeof $ProjectAhistoricState
@@ -139,3 +164,24 @@ export const $ProjectState = t.type({
 })
 
 export type ProjectState = t.StaticTypeOf<typeof $ProjectState>
+
+export const $OnDiskState = t.type(
+  {
+    projectState: $ProjectHistoricState,
+    revision: t.string,
+    definitionVersion: t.string,
+  },
+  'OnDiskState',
+)
+
+export type OnDiskState = t.StaticTypeOf<typeof $OnDiskState>
+
+export const $OnBrowserState = t.type(
+  {
+    projectHistory: $HistoryOnly($ProjectHistoricState),
+    basedOnRevisions: t.array(t.string),
+  },
+  'OnBrowserState',
+)
+
+export type OnBrowserState = t.StaticTypeOf<typeof $OnBrowserState>

@@ -5,6 +5,7 @@ import css from './Settings.css'
 import resolveCss from '$shared/utils/resolveCss'
 import FlyoutSearchableList from '$shared/components/FlyoutSearchableList/FlyoutSearchableList'
 import ExportModal from '$tl/ui/panels/AllInOnePanel/Bottom/Settings/ExportModal'
+import UIComponent from '$tl/ui/handy/UIComponent'
 
 const classes = resolveCss(css)
 
@@ -13,14 +14,16 @@ interface IProps {}
 interface IState {
   menuOpen: boolean
   exportOpen: boolean
+  exportString: string
 }
 
-class Settings extends React.PureComponent<IProps, IState> {
+class Settings extends UIComponent<IProps, IState> {
   iconContainerRef: React.RefObject<HTMLDivElement> = React.createRef()
 
   state = {
     menuOpen: false,
     exportOpen: false,
+    exportString: '',
   }
 
   render() {
@@ -38,7 +41,11 @@ class Settings extends React.PureComponent<IProps, IState> {
           />
         )}
         {this.state.exportOpen && (
-          <ExportModal onClose={this.closeExportModal} />
+          <ExportModal
+            onClose={this.closeExportModal}
+            exportString={this.state.exportString}
+            project={this.project}
+          />
         )}
         <Item onClick={this.onClick}>
           <div ref={this.iconContainerRef} {...classes('container')}>
@@ -51,9 +58,26 @@ class Settings extends React.PureComponent<IProps, IState> {
 
   onSelect = (selectedOption: string) => {
     if (selectedOption === 'Export') {
+      const historicState = this.project.reduxStore.getState().historic[
+        '@@history'
+      ].innerState
+
+      this.project._dispatch(
+        this.project._actions.ahistoric.prepareExportJson({
+          historicState,
+        }),
+      )
+
+      const exportString = JSON.stringify(
+        this.project.reduxStore.getState().ahistoric.lastExportedObject,
+        null,
+        2,
+      )
+
       this.setState(() => ({
         menuOpen: false,
         exportOpen: true,
+        exportString,
       }))
     }
   }

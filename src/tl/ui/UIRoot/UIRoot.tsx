@@ -7,12 +7,14 @@ import {TickerProvider} from '$shared/utils/react/TickerContext'
 import {val} from '$shared/DataVerse2/atom'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import AllInOnePanel from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
+import UIComponent from '$tl/ui/handy/UIComponent'
+import EnsureProjectsDontHaveErrors from '$tl/ui/UIRoot/EnsureProjectsDontHaveErrors'
 
 interface IProps {
   ui: UI
 }
 
-export default class UIRoot extends React.Component<IProps, {}> {
+export default class UIRoot extends UIComponent<IProps, {}> {
   render() {
     return (
       <TickerProvider ticker={this.props.ui.ticker}>
@@ -26,11 +28,15 @@ export default class UIRoot extends React.Component<IProps, {}> {
 
             const shouldShowPanels = visiblityState === 'everythingIsVisible'
 
-            return !initialised ? null : (
-              <div className={css.container}>
-                {shouldShowTrigger && <TheTrigger />}
-                {shouldShowPanels && <AllInOnePanel />}
-              </div>
+            return (
+              <EnsureProjectsDontHaveErrors>
+                {!initialised ? null : (
+                  <div className={css.container}>
+                    {shouldShowTrigger && <TheTrigger />}
+                    {shouldShowPanels && <AllInOnePanel />}
+                  </div>
+                )}
+              </EnsureProjectsDontHaveErrors>
             )
           }}
         </PropsAsPointer>

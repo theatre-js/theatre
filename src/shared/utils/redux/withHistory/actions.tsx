@@ -16,6 +16,11 @@ export const replaceHistoryAction = actionCreator(
   (newHistory: HistoryOnly<$FixMe>): HistoryOnly<$FixMe> => newHistory,
 )
 
+export const clearHistoryAndReplaceInnerState = actionCreator(
+  '@history/clearHistoryAndReplaceInnerState',
+  (newInnerState: $FixMe): $FixMe => newInnerState,
+)
+
 export const undoAction = actionCreator('@history/undo')
 export const redoAction = actionCreator('@history/redo')
 

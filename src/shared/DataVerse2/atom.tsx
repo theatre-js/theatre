@@ -1,5 +1,10 @@
 import {IdentityDerivation} from '$shared/DataVerse2/identityDerivation'
-import {get, last, isPlainObject, updateImmutable as update} from '$shared/utils'
+import {
+  get,
+  last,
+  isPlainObject,
+  updateImmutable as update,
+} from '$shared/utils'
 import pointer, {Pointer, PointerInnerObj} from './pointer'
 import {PathBasedReducer} from '$shared/utils/redux/withHistory/PathBasedReducer'
 
@@ -219,6 +224,20 @@ export const val = <P extends PointerInnerObj<$IntentionalAny>>(
 ): P extends PointerInnerObj<infer T> ? T : never => {
   // @ts-ignore @todo
   return valueDerivation(pointer).getValue()
+}
+
+export const valOrRead = <P extends {}>(
+  possiblePointer: P,
+): P extends PointerInnerObj<infer T> ? T : P => {
+  if (isPointer(possiblePointer)) {
+    return val(possiblePointer) as $IntentionalAny
+  } else {
+    return possiblePointer as $IntentionalAny
+  }
+}
+
+export const isPointer = (p: $IntentionalAny): p is Pointer<mixed> => {
+  return p && p.$pointerMeta ? true : false
 }
 
 /**

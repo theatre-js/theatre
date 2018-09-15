@@ -1,11 +1,10 @@
 import immer from 'immer'
 import * as t from '$shared/ioTypes'
 
-
-type OuterReducer<State, Payload> = (
-  prevState: State,
-  action: {type: string; payload: Payload},
-) => State
+type OuterReducer<State, Payload> = {
+  (prevState: State, action: {type: string; payload: Payload}): State
+  originalReducer: InnerReducer<State, Payload>
+}
 
 type InnerReducer<State, Payload> = (prevState: State, payload: Payload) => void
 
@@ -16,13 +15,16 @@ type InnerReducer<State, Payload> = (prevState: State, payload: Payload) => void
 const reducto = <State>(stateIoType: t.Type<State>) => <Payload>(
   innerReducer: InnerReducer<State, Payload>,
 ): OuterReducer<State, Payload> => {
+  // @ts-ignore @ignore
   const outerReducer: OuterReducer<State, Payload> = (prevState, action) => {
     const newState = immer(prevState, draftState => {
       innerReducer(draftState, action.payload)
     })
 
     if ($env.NODE_ENV === 'development' && stateIoType) {
-      const {betterErrorReporter} = require('$shared/ioTypes/betterErrorReporter')
+      const {
+        betterErrorReporter,
+      } = require('$shared/ioTypes/betterErrorReporter')
       const {diff: diffValues} = require('jiff')
       const validationResult = stateIoType.validate(newState as $FixMe)
       if (validationResult.isLeft()) {
@@ -46,6 +48,8 @@ const reducto = <State>(stateIoType: t.Type<State>) => <Payload>(
 
     return newState
   }
+
+  outerReducer.originalReducer = innerReducer
 
   return outerReducer
 }

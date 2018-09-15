@@ -7,6 +7,7 @@ const classes = resolveCss(css)
 
 interface IProps {
   children: string
+  expandToFit?: boolean
 }
 
 interface IState {
@@ -50,9 +51,11 @@ class CopyableTextBlock extends React.PureComponent<IProps, IState> {
   }
 
   componentDidMount() {
-    this.textArea.current!.style.height = `${
-      this.textArea.current!.scrollHeight
-    }px`
+    if (this.props.expandToFit) {
+      this.textArea.current!.style.height = `${
+        this.textArea.current!.scrollHeight
+      }px`
+    }
   }
 
   componentDidUpdate() {

@@ -6,51 +6,16 @@ import {
   _pushTemporaryAction,
   _discardTemporaryAction,
   replaceHistoryAction,
+  clearHistoryAndReplaceInnerState,
 } from './actions'
 import {last} from '$shared/utils'
 import patch from 'json-touch-patch'
 import {ReduxReducer, GenericAction} from '$shared/types'
-import {Operation} from 'fast-json-patch'
-import * as t from '$shared/ioTypes'
+import {StateWithHistory, WithHistoryConfig, HistoryOnly, TempAction, Commit} from './types'
 
-type TempAction = {
-  type: string
-  payload: {id: string; originalAction: GenericAction}
-}
-
-export interface HistoryOnly<HistoricState> {
-  currentCommitHash: CommitHash | undefined
-  commitsByHash: Record<CommitHash, Commit>
-  listOfCommitHashes: Array<CommitHash>
-  innerState: HistoricState
-}
-
-interface Commit {
-  hash: CommitHash
-  forwardDiff: Operation[]
-  backwardDiff: Operation[]
-  timestamp: number
-}
-
-type CommitHash = string
-
-export interface WithHistoryConfig {
-  maxNumberOfCommits: number
-}
 
 const defaultConfig: WithHistoryConfig = {
   maxNumberOfCommits: 100,
-}
-
-export const $StateWithHistory = <T extends {}>(
-  inner: t.Type<T>,
-): t.Type<StateWithHistory<T>> => {
-  return inner as $FixMe
-}
-
-export type StateWithHistory<HistoricState extends {}> = HistoricState & {
-  '@@history': HistoryOnly<HistoricState>
-  '@@tempActions': Array<TempAction>
 }
 
 export const withHistory = <
@@ -66,12 +31,8 @@ export const withHistory = <
     action: GenericAction,
   ): HistoryOnly<PersistedState> => {
     if (prevHistory === undefined) {
-      return {
-        currentCommitHash: undefined,
-        commitsByHash: {},
-        listOfCommitHashes: [],
-        innerState: historicalReducer(undefined as $FixMe, action),
-      }
+      const innerState = historicalReducer(undefined as $FixMe, action)
+      return emptyHistory<PersistedState>(innerState)
     } else if (undoAction.is(action)) {
       return undo(prevHistory)
     } else if (redoAction.is(action)) {
@@ -94,8 +55,10 @@ export const withHistory = <
       history = prevState['@@history']
       tempActions = prevState['@@tempActions']
 
-      if (replaceHistoryAction.is(action)) {
-        history = action.payload
+      if (clearHistoryAndReplaceInnerState.is(action)) {
+        history = emptyHistory(action.payload as $IntentionalAny)
+      } else if (replaceHistoryAction.is(action)) {
+        history = (action as $IntentionalAny).payload
       } else if (_pushTemporaryAction.is(action)) {
         tempActions = pushTemp(prevState['@@tempActions'], action)
       } else if (_discardTemporaryAction.is(action)) {
@@ -145,6 +108,17 @@ const applyTemps = (
       historicalReducer(prevState, action.payload.originalAction),
     s,
   )
+
+function emptyHistory<PersistedState>(
+  innerState: PersistedState,
+): HistoryOnly<PersistedState> {
+  return {
+    currentCommitHash: undefined,
+    commitsByHash: {},
+    listOfCommitHashes: [],
+    innerState: innerState,
+  }
+}
 
 function pushCommit<InnerState>(
   prevHistory: HistoryOnly<InnerState>,
@@ -217,8 +191,8 @@ function createCommit<Snapshot>(
   oldSnapshot: Snapshot,
   newSnapshot: Snapshot,
 ): Commit {
-  const forwardDiff = jiff.diff(oldSnapshot, newSnapshot)
-  const backwardDiff = jiff.diff(newSnapshot, oldSnapshot)
+  const forwardDiff = jiff.diff(oldSnapshot, newSnapshot, {invertible: false})
+  const backwardDiff = jiff.diff(newSnapshot, oldSnapshot, {invertible: false})
   const timestamp = Date.now()
   const commitHash = makeUUID()
   const commit: Commit = {

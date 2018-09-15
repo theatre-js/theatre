@@ -15,6 +15,7 @@ export default class DerivationAsReactElement extends React.Component<
   _untapFromDerivationChanges: () => void
   updateQueeud: boolean = false
   ticker: Ticker
+  willUnmount = false
 
   constructor(props: Props, context: $FixMe) {
     super(props, context)
@@ -32,17 +33,20 @@ export default class DerivationAsReactElement extends React.Component<
   }
 
   private _enqueueUpdate = () => {
-    if (this.updateQueeud) return
+    if (this.updateQueeud || this.willUnmount) return
     this.updateQueeud = true
     this.ticker.registerSideEffect(this._doUpdate)
   }
 
   private _doUpdate = () => {
+    if (this.willUnmount) return
     this.updateQueeud = false
     this.forceUpdate()
   }
 
   componentWillUnmount() {
+    this.willUnmount = true
+    this.ticker.unregisterSideEffect(this._doUpdate)
     this._untapFromDerivationChanges()
   }
 

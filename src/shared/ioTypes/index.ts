@@ -115,7 +115,7 @@ export const getFunctionName = (f: Function): string =>
 export const getValidationContextEntry = (
   key: string,
   type: Type<$IntentionalAny>,
-  value: mixed
+  value: mixed,
 ): ValidationContextEntry => ({key, type, value})
 
 export const getValidationError = (
@@ -126,14 +126,14 @@ export const getValidationError = (
 
 export const getDefaultValidationContext = (
   type: Type<$IntentionalAny>,
-  value: mixed
+  value: mixed,
 ): ValidationContext => [{key: '', type, value}]
 
 export const appendValidationContext = (
   c: ValidationContext,
   key: string,
   type: Type<$IntentionalAny>,
-  value: mixed
+  value: mixed,
 ): ValidationContext => {
   const len = c.length
   const r = Array(len + 1)
@@ -195,12 +195,14 @@ const undefinedType: UndefinedType = new UndefinedType()
 
 export class AnyType extends Type<$IntentionalAny> {
   readonly _tag: 'AnyType' = 'AnyType'
+
   constructor() {
     super('$IntentionalAny', (_): _ is $IntentionalAny => true, success)
   }
 }
 
 export const $IntentionalAny: AnyType = new AnyType()
+export const $FixMe: AnyType = new AnyType()
 
 export class NeverType extends Type<never> {
   readonly _tag: 'NeverType' = 'NeverType'
@@ -511,7 +513,9 @@ const getNameFromProps = (props: Props): string =>
     .map(k => `${k}: ${props[k].name}`)
     .join(', ')} }`
 
-export type TypeOfProps<P extends AnyProps> = {[K in keyof P]: StaticTypeOf<P[K]>}
+export type TypeOfProps<P extends AnyProps> = {
+  [K in keyof P]: StaticTypeOf<P[K]>
+}
 
 export interface Props {
   [key: string]: Mixed
@@ -701,7 +705,7 @@ export class UnionType<
 
 /**
  * Analog to typescript's unions.
- * @example 
+ * @example
  * const stringOrNumber = union([t.string, t.number])
  * type StringOrNumber = string | number
  */
@@ -770,7 +774,11 @@ export function intersection<
   name?: TypeName,
 ): IntersectionType<
   [A, B, C, D, E],
-  StaticTypeOf<A> & StaticTypeOf<B> & StaticTypeOf<C> & StaticTypeOf<D> & StaticTypeOf<E>
+  StaticTypeOf<A> &
+    StaticTypeOf<B> &
+    StaticTypeOf<C> &
+    StaticTypeOf<D> &
+    StaticTypeOf<E>
 >
 export function intersection<
   A extends Mixed,
@@ -780,11 +788,17 @@ export function intersection<
 >(
   types: [A, B, C, D],
   name?: TypeName,
-): IntersectionType<[A, B, C, D], StaticTypeOf<A> & StaticTypeOf<B> & StaticTypeOf<C> & StaticTypeOf<D>>
+): IntersectionType<
+  [A, B, C, D],
+  StaticTypeOf<A> & StaticTypeOf<B> & StaticTypeOf<C> & StaticTypeOf<D>
+>
 export function intersection<A extends Mixed, B extends Mixed, C extends Mixed>(
   types: [A, B, C],
   name?: TypeName,
-): IntersectionType<[A, B, C], StaticTypeOf<A> & StaticTypeOf<B> & StaticTypeOf<C>>
+): IntersectionType<
+  [A, B, C],
+  StaticTypeOf<A> & StaticTypeOf<B> & StaticTypeOf<C>
+>
 export function intersection<A extends Mixed, B extends Mixed>(
   types: [A, B],
   name?: TypeName,
@@ -846,7 +860,13 @@ export function tuple<
   name?: TypeName,
 ): TupleType<
   [A, B, C, D, E],
-  [StaticTypeOf<A>, StaticTypeOf<B>, StaticTypeOf<C>, StaticTypeOf<D>, StaticTypeOf<E>]
+  [
+    StaticTypeOf<A>,
+    StaticTypeOf<B>,
+    StaticTypeOf<C>,
+    StaticTypeOf<D>,
+    StaticTypeOf<E>
+  ]
 >
 export function tuple<
   A extends Mixed,
@@ -856,7 +876,10 @@ export function tuple<
 >(
   types: [A, B, C, D],
   name?: TypeName,
-): TupleType<[A, B, C, D], [StaticTypeOf<A>, StaticTypeOf<B>, StaticTypeOf<C>, StaticTypeOf<D>]>
+): TupleType<
+  [A, B, C, D],
+  [StaticTypeOf<A>, StaticTypeOf<B>, StaticTypeOf<C>, StaticTypeOf<D>]
+>
 export function tuple<A extends Mixed, B extends Mixed, C extends Mixed>(
   types: [A, B, C],
   name?: TypeName,
@@ -1332,11 +1355,10 @@ class OptionalType<T, Rt extends Type<T>> extends Type<T | undefined> {
     function is(v: $IntentionalAny): v is T | undefined {
       return typeof v === 'undefined' || type.is(v)
     }
-    function _validateWithContext(
-      v: mixed,
-      c: ValidationContext,
-    ) {
-      return typeof v === 'undefined' ? success() : type._validateWithContext(v, c)
+    function _validateWithContext(v: mixed, c: ValidationContext) {
+      return typeof v === 'undefined'
+        ? success()
+        : type._validateWithContext(v, c)
     }
   }
 }
@@ -1427,8 +1449,8 @@ export class DeferredType<A> extends Type<A> {
 
 /**
  * To prevent circular dependency errors, you can wrap some types with deferred()
- * 
- * @example 
+ *
+ * @example
  *  const foo = t.type({foo: deferred(() => bar)})
  *  const bar = t.type({bar: union([t.null, foo])})
  */
@@ -1462,7 +1484,7 @@ export class RuntimeCheckType<A, Rt extends Type<A>> extends Type<A> {
         c: ValidationContext,
       ) {
         return this.inner._validateWithContext(v, c).chain(() => {
-          const conditionResult = this.condition(v as $IntentionalAny as  A, c)
+          const conditionResult = this.condition((v as $IntentionalAny) as A, c)
           if (conditionResult === true) return success()
           return failure(v, c, conditionResult)
         })
