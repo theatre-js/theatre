@@ -1,11 +1,31 @@
 import * as t from '$shared/ioTypes'
 
-const $InternalTimelineState = t.type({
-  rangeShownInPanel: t.type({
-    from: t.number,
-    to: t.number,
-  })
+const $PropState = t.type({})
+
+const $ObjectState = t.type(
+  {
+    props: t.record(t.string, $PropState),
+  },
+  'ObjectStateInUI',
+)
+
+const $TimelineState = t.type({
+  objects: t.record(t.string, $ObjectState),
+  rangeShownInPanel: t.union([
+    t.undefined,
+    t.type({
+      from: t.number,
+      to: t.number,
+    }),
+  ]),
 })
+
+const $ProjectState = t.type(
+  {
+    timelines: t.record(t.string, $TimelineState),
+  },
+  'UIProjectState',
+)
 
 export const $UIAhistoricState = t.type({
   visibilityState: t.union([
@@ -25,9 +45,10 @@ export const $UIAhistoricState = t.type({
       distanceFromVerticalEdge: t.number,
     }),
   }),
-  internalTimelines: t.record(t.string, $InternalTimelineState)
+
+  allInOnePanel: t.type({
+    projects: t.record(t.string, $ProjectState),
+  }),
 })
 
-
 export type UIAhistoricState = t.StaticTypeOf<typeof $UIAhistoricState>
-

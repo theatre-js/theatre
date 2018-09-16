@@ -4,7 +4,6 @@ import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import React from 'react'
 import * as css from './Right.css'
 import {val} from '$shared/DataVerse2/atom'
-import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
 import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
 import TimelineInstance from '$tl/timelines/TimelineInstance'
 import {
@@ -16,12 +15,11 @@ import {
   getNewRange,
   getNewZoom,
   clampTime,
-  overshootDuration,
 } from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
 import TimelineProviders from '$tl/ui/panels/AllInOnePanel/Right/timeline/TimelineProviders'
 import ItemsContainer from '$tl/ui/panels/AllInOnePanel/Right/items/ItemsContainer'
 import {TRange, TDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
-import createPointerContext from '$shared/utils/react/createPointerContext'
+import {TimeStuff} from '$tl/ui/panels/AllInOnePanel/TimeStuffProvider'
 
 const classes = resolveCss(css)
 
@@ -36,20 +34,6 @@ interface IRightProps {
 }
 
 interface IRightState {}
-
-interface IRightPanelStuff {
-  range: TRange
-  realDuration: TDuration
-  overshotDuration: TDuration
-  timelineWidth: number
-  viewportWidth: number
-}
-
-const {Provider, Consumer: RightStuff} = createPointerContext<
-  IRightPanelStuff
->()
-
-export {RightStuff}
 
 class Right extends UIComponent<IRightProps, IRightState> {
   wrapper: React.RefObject<HTMLDivElement> = React.createRef()
@@ -179,55 +163,29 @@ class Right extends UIComponent<IRightProps, IRightState> {
   enableZoom = () => {
     this.allowZoom = true
   }
+
   disableZoom = () => {
     this.allowZoom = false
   }
 }
 
 export default (_props: IExportedComponentProps) => (
-  <AllInOnePanelStuff>
-    {allInOnePanelStuffP => (
+  <TimeStuff>
+    {timeStuffP => (
       <PropsAsPointer>
         {() => {
-          const timelineInstance = val(allInOnePanelStuffP.timelineInstance)
-          const internalTimeline = val(allInOnePanelStuffP.internalTimeline)
-          if (!timelineInstance || !internalTimeline) return null
-
-          const rangeState = val(internalTimeline.pointerToRangeState)
-          const viewportWidth = val(allInOnePanelStuffP.rightWidth)
-          const range = rangeState.rangeShownInPanel
-          const realDuration = rangeState.duration
-          const overshotDuration = overshootDuration(realDuration)
-
+          const range = val(timeStuffP.range)
           const rightProps: IRightProps = {
             range,
-            duration: overshotDuration,
-            timelineWidth: viewportWidth,
-            timelineInstance,
-            setRange: internalTimeline._setRangeShownInPanel,
+            duration: val(timeStuffP.overshotDuration),
+            timelineWidth: val(timeStuffP.viewportWidth),
+            timelineInstance: val(timeStuffP.timelineInstance),
+            setRange: val(timeStuffP.setRange),
           }
 
-          const timelineWidth = getSvgWidth(
-            range,
-            overshotDuration,
-            viewportWidth,
-          )
-
-          const rightStuff: IRightPanelStuff = {
-            range,
-            realDuration,
-            overshotDuration,
-            timelineWidth,
-            viewportWidth,
-          }
-
-          return (
-            <Provider value={rightStuff}>
-              <Right {...rightProps} />
-            </Provider>
-          )
+          return <Right {...rightProps} />
         }}
       </PropsAsPointer>
     )}
-  </AllInOnePanelStuff>
+  </TimeStuff>
 )

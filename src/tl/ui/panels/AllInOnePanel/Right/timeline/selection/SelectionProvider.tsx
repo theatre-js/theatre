@@ -14,7 +14,6 @@ import {
   getSvgXToPaddedSvgXOffset,
 } from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
-import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import InternalTimeline from '$tl/timelines/InternalTimeline'
 import {internalTimelineToSeriesOfVerticalItems} from '$tl/ui/panels/AllInOnePanel/utils'
@@ -39,6 +38,7 @@ import OverlaySection from '$shared/components/Overlay/OverlaySection'
 import SelectionContextMenu from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/SelectionContextMenu'
 import {PropValueContainer} from '$tl/Project/store/types'
 import {overshootDuration} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
+import {TimeStuff} from '$tl/ui/panels/AllInOnePanel/TimeStuffProvider'
 
 const classes = resolveCss(css)
 
@@ -573,19 +573,17 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
 }
 
 export default (props: IExportedComponentProps) => (
-  <AllInOnePanelStuff>
-    {allInOnePanelStuffP => (
+  <TimeStuff>
+    {rightStuffP => (
       <PropsAsPointer>
         {() => {
-          const internalTimeline = val(allInOnePanelStuffP.internalTimeline)
-          const range = val(
-            internalTimeline!.pointerToRangeState.rangeShownInPanel,
-          )
+          const internalTimeline = val(rightStuffP.internalTimeline)
+          const range = val(rightStuffP.range)
           const duration = overshootDuration(
             val(internalTimeline!.pointerToRangeState.duration),
           )
-          const width = val(allInOnePanelStuffP.rightWidth)
-          
+          const width = val(rightStuffP.viewportWidth)
+
           const selectionProviderProps: ISelectionProviderProps = {
             range,
             duration,
@@ -597,5 +595,5 @@ export default (props: IExportedComponentProps) => (
         }}
       </PropsAsPointer>
     )}
-  </AllInOnePanelStuff>
+  </TimeStuff>
 )

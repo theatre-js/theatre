@@ -7,6 +7,9 @@ import {
 } from '$shared/utils'
 import pointer, {Pointer, PointerInnerObj} from './pointer'
 import {PathBasedReducer} from '$shared/utils/redux/withHistory/PathBasedReducer'
+import AbstractDerivation, {
+  isDerivation,
+} from '$shared/DataVerse/derivations/AbstractDerivation'
 
 type Listener = (newVal: mixed) => void
 
@@ -219,20 +222,19 @@ export const valueDerivation = <P extends PointerInnerObj<$IntentionalAny>>(
   return derivation as $IntentionalAny
 }
 
-export const val = <P extends PointerInnerObj<$IntentionalAny>>(
-  pointer: P,
-): P extends PointerInnerObj<infer T> ? T : never => {
-  // @ts-ignore @todo
-  return valueDerivation(pointer).getValue()
-}
-
-export const valOrRead = <P extends {}>(
-  possiblePointer: P,
-): P extends PointerInnerObj<infer T> ? T : P => {
-  if (isPointer(possiblePointer)) {
-    return val(possiblePointer) as $IntentionalAny
+export const val = <P>(
+  pointerOrDerivationOrPlainValue: P,
+): P extends PointerInnerObj<infer T>
+  ? T
+  : P extends AbstractDerivation<infer T> ? T : P => {
+  if (isPointer(pointerOrDerivationOrPlainValue)) {
+    return valueDerivation(
+      pointerOrDerivationOrPlainValue,
+    ).getValue() as $IntentionalAny
+  } else if (isDerivation(pointerOrDerivationOrPlainValue)) {
+    return pointerOrDerivationOrPlainValue.getValue() as $IntentionalAny
   } else {
-    return possiblePointer as $IntentionalAny
+    return pointerOrDerivationOrPlainValue as $IntentionalAny
   }
 }
 

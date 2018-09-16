@@ -5,6 +5,7 @@ import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
 import {getSvgWidth} from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import {TDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {overshootDuration} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
+import { TimeStuff } from '$tl/ui/panels/AllInOnePanel/TimeStuffProvider';
 
 interface IExportedComponentProps {
   children: React.ReactNode
@@ -58,18 +59,16 @@ class RootPropProvider extends React.PureComponent<
 }
 
 export default (props: IExportedComponentProps) => (
-  <AllInOnePanelStuff>
-    {allInOnePanelStuffP => (
+  <TimeStuff>
+    {timeStuffP => (
       <PropsAsPointer>
         {() => {
-          const internalTimeline = val(allInOnePanelStuffP.internalTimeline)
-          const range = val(
-            internalTimeline!.pointerToRangeState.rangeShownInPanel,
-          )
+          const internalTimeline = val(timeStuffP.internalTimeline)
+          const range = val(timeStuffP.range)
           const duration = overshootDuration(
             val(internalTimeline!.pointerToRangeState.duration),
           )
-          const width = val(allInOnePanelStuffP.rightWidth)
+          const width = val(timeStuffP.viewportWidth)
           const rootPropProviderProps: IRootPropProviderProps = {
             duration,
             timelineWidth: width,
@@ -80,5 +79,5 @@ export default (props: IExportedComponentProps) => (
         }}
       </PropsAsPointer>
     )}
-  </AllInOnePanelStuff>
+  </TimeStuff>
 )

@@ -22,8 +22,8 @@ export type TNormalizedPoints = TNormalizedPoint[]
 export type TExtremums = TNumberTuple
 
 // Range state
-export type TRange = RangeState['rangeShownInPanel']
-export type TDuration = RangeState['duration']
+export type TRange = {from: number, to: number}
+export type TDuration = number
 
 // item
 export type TExpanded = PrimitivePropItem['expanded']

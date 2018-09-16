@@ -15,10 +15,10 @@ import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation
 
 export type RangeState = {
   duration: number
-  rangeShownInPanel: {
-    from: number
-    to: number
-  }
+  // rangeShownInPanel: {
+  //   from: number
+  //   to: number
+  // }
   temporarilyLimitedPlayRange: null | {from: number; to: number}
 }
 
@@ -37,7 +37,7 @@ export default class InternalTimeline {
 
   protected _rangeState: Atom<RangeState> = atom({
     duration: 20000,
-    rangeShownInPanel: {from: 0, to: 8000},
+    // rangeShownInPanel: {from: 0, to: 8000},
     temporarilyLimitedPlayRange: null,
   })
 
@@ -65,9 +65,9 @@ export default class InternalTimeline {
     return internalObject
   }
 
-  _setRangeShownInPanel = (p: {from: number; to: number}) => {
-    this._rangeState.reduceState(['rangeShownInPanel'], () => p)
-  }
+  // _setRangeShownInPanel = (p: {from: number; to: number}) => {
+  //   this._rangeState.reduceState(['rangeShownInPanel'], () => p)
+  // }
 
   _setTemporarilyLimitedPlayRange(p: null | {from: number; to: number}) {
     this._rangeState.reduceState(['temporarilyLimitedPlayRange'], () => p)
@@ -88,6 +88,10 @@ export default class InternalTimeline {
 
   get duration() {
     return 0
+  }
+
+  get address() {
+    return this._address
   }
 }
 

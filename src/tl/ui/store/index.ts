@@ -52,7 +52,9 @@ const uiInitialState: UIState = {
         distanceFromVerticalEdge: 0.02,
       },
     },
-    internalTimelines: {}
+    allInOnePanel: {
+      projects: {},
+    },
   },
   historic: {
     ...initialHistoricState,

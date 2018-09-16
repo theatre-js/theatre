@@ -4,7 +4,6 @@ import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 import {val} from '$shared/DataVerse2/atom'
 import {debounce} from '$shared/utils'
 import {Pointer} from '$shared/DataVerse2/pointer'
-import {valOrRead} from '../../shared/DataVerse2/atom'
 
 export default class ProjectPersistor {
   _storageKey: string
@@ -122,7 +121,7 @@ export default class ProjectPersistor {
 
     const stateOfInterestD = autoDerive(() => {
       return {
-        basedOnRevisions: valOrRead(diskRevisionsThatBrowserStateIsBasedOnP),
+        basedOnRevisions: val(diskRevisionsThatBrowserStateIsBasedOnP),
         projectHistory: val(atomP.historic['@@history']),
       }
     })

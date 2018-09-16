@@ -3,7 +3,7 @@ import UIComponent from '$tl/ui/handy/UIComponent'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import React from 'react'
 import * as css from './AllInOnePanel.css'
-import {val, valOrRead} from '$shared/DataVerse2/atom'
+import {val} from '$shared/DataVerse2/atom'
 import Left from '$tl/ui/panels/AllInOnePanel/Left/Left'
 import Bottom, {bottomHeight} from './Bottom/Bottom'
 import {getProjectTimelineAndInstance} from './selectors'
@@ -18,6 +18,7 @@ import {UIHistoricState} from '$tl/ui/store/types'
 import PanelResizers from '$tl/ui/panels/AllInOnePanel/PanelResizers'
 import clamp from '$shared/number/clamp'
 import {cmdIsDown} from '$shared/utils/keyboardUtils'
+import TimeStuffProvider from '$tl/ui/panels/AllInOnePanel/TimeStuffProvider'
 
 const classes = resolveCss(css)
 
@@ -75,7 +76,7 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
 
           if (
             project &&
-            !valOrRead(project._selectors.ephemeral.isReady(project.atomP.ephemeral))
+            !val(project._selectors.ephemeral.isReady(project.atomP.ephemeral))
           ) {
             return null
           }
@@ -112,27 +113,31 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
                     '--right-width': rightWidth,
                   }}
                 >
-                  <TimeUI
-                    internalTimeline={internalTimeline}
-                    timelineInstance={timelineInstance}
-                    height={height}
-                    timelineWidth={rightWidth}
-                    left={leftWidth}
-                  />
-                  <div {...classes('middle')} style={{height}}>
-                    <div {...classes('left')} style={{width: leftWidth}}>
-                      <Left />
-                    </div>
-                    <div
-                      {...classes('right')}
-                      style={{
-                        width: rightWidth,
-                        height,
-                      }}
-                    >
-                      <Right />
-                    </div>
-                  </div>
+                  <TimeStuffProvider>
+                    <>
+                      <TimeUI
+                        internalTimeline={internalTimeline}
+                        timelineInstance={timelineInstance}
+                        height={height}
+                        timelineWidth={rightWidth}
+                        left={leftWidth}
+                      />
+                      <div {...classes('middle')} style={{height}}>
+                        <div {...classes('left')} style={{width: leftWidth}}>
+                          <Left />
+                        </div>
+                        <div
+                          {...classes('right')}
+                          style={{
+                            width: rightWidth,
+                            height,
+                          }}
+                        >
+                          <Right />
+                        </div>
+                      </div>
+                    </>
+                  </TimeStuffProvider>
                   <div {...classes('bottom')}>
                     <Bottom
                       handlePanelMove={this.handlePanelMove}
