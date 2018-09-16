@@ -42,3 +42,7 @@ export const setRangeShownInPanel = r(
     timeline.rangeShownInPanel = p.range
   },
 )
+
+export const __unsafeReplaceWholeState = r((_, p: UIAhistoricState) => {
+  return p
+})

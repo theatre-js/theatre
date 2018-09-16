@@ -6,7 +6,7 @@ type OuterReducer<State, Payload> = {
   originalReducer: InnerReducer<State, Payload>
 }
 
-type InnerReducer<State, Payload> = (prevState: State, payload: Payload) => void
+type InnerReducer<State, Payload> = (prevState: State, payload: Payload) => void | State
 
 /**
  * Wraps a reducer with immer(), and adds ioTypes validation to its
@@ -18,7 +18,7 @@ const reducto = <State>(stateIoType: t.Type<State>) => <Payload>(
   // @ts-ignore @ignore
   const outerReducer: OuterReducer<State, Payload> = (prevState, action) => {
     const newState = immer(prevState, draftState => {
-      innerReducer(draftState, action.payload)
+      return innerReducer(draftState as $IntentionalAny, action.payload)
     })
 
     if ($env.NODE_ENV === 'development' && stateIoType) {

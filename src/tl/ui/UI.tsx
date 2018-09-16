@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import React from 'react'
 import {rootReducer, uiActions} from './store'
 import configureStore from '$shared/utils/redux/configureStore'
-import {UIState} from '$tl/ui/store/types'
+import {UIState, UIHistoricState, UIAhistoricState} from '$tl/ui/store/types'
 import {Store} from 'redux'
 import atomFromReduxStore from '$shared/utils/redux/atomFromReduxStore'
 import {Pointer} from '$shared/DataVerse2/pointer'
@@ -12,6 +12,7 @@ import UIRootWrapper from '$tl/ui/UIRoot/UIRootWrapper'
 import {GenericAction} from '$shared/types'
 import {debounce} from '$shared/utils'
 import uiSelectors from '$tl/ui/store/selectors'
+import {HistoryOnly} from '$shared/utils/redux/withHistory/withHistoryDeprecated'
 
 export default class UI {
   atom: Atom<UIState>
@@ -37,7 +38,26 @@ export default class UI {
     }
     window.requestAnimationFrame(onAnimationFrame)
 
-    startPersisting(this.reduxStore, this.actions)
+    startPersistingState({
+      storageKey: $env.tl.uiPersistenceKey + '.historic',
+      getState: () => this.reduxStore.getState().historic['@@history'],
+      subscribe: this.reduxStore.subscribe,
+      loadState: (s: HistoryOnly<UIHistoricState>) => {
+        this.reduxStore.dispatch(
+          this.actions.historic.__unsafe_replaceHistory(s),
+        )
+      },
+    })
+
+    startPersistingState({
+      storageKey: $env.tl.uiPersistenceKey + '.ahistoric',
+      getState: () => this.reduxStore.getState().ahistoric,
+      subscribe: this.reduxStore.subscribe,
+      loadState: (s: UIAhistoricState) =>
+        this.reduxStore.dispatch(
+          this.actions.ahistoric.__unsafeReplaceWholeState(s),
+        ),
+    })
   }
 
   enable() {
@@ -64,18 +84,23 @@ export default class UI {
   }
 }
 
-export function startPersisting(reduxStore: $FixMe, actions: $FixMe) {
-  const storageKey = $env.tl.uiPersistenceKey
+function startPersistingState(p: {
+  storageKey: string
+  getState: () => mixed
+  subscribe: (fn: () => void) => void
+  loadState: (state: mixed) => void
+}) {
+  const storageKey = p.storageKey
   loadState()
 
-  let lastHistory = reduxStore.getState().historic['@@history']
+  let lastState = p.getState()
   const persist = () => {
-    const newHistory = reduxStore.getState().historic['@@history']
-    if (newHistory === lastHistory) return
-    lastHistory = newHistory
-    localStorage.setItem(storageKey, JSON.stringify(newHistory))
+    const newState = p.getState()
+    if (newState === lastState) return
+    lastState = newState
+    localStorage.setItem(storageKey, JSON.stringify(newState))
   }
-  reduxStore.subscribe(debounce(persist, 1000))
+  p.subscribe(debounce(persist, 1000))
   if (window) {
     window.addEventListener('beforeunload', persist)
   }
@@ -89,9 +114,7 @@ export function startPersisting(reduxStore: $FixMe, actions: $FixMe) {
       } catch (e) {
         return
       }
-      reduxStore.dispatch(
-        actions.historic.__unsafe_replaceHistory(persistedObj),
-      )
+      p.loadState(persistedObj)
     }
   }
 }

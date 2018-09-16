@@ -49,7 +49,7 @@ class Right extends UIComponent<IRightProps, IRightState> {
   render() {
     const {range, duration, timelineWidth} = this.props
     const svgWidth = getSvgWidth(range, duration, timelineWidth)
-    this._scrollContainer(range)
+    requestAnimationFrame(() => this._scrollContainer(range))
     return (
       <>
         <DraggableArea
