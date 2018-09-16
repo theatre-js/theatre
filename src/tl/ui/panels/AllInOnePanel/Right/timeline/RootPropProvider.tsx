@@ -4,6 +4,7 @@ import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
 import {getSvgWidth} from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import {TDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
+import {overshootDuration} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
 
 interface IExportedComponentProps {
   children: React.ReactNode
@@ -65,7 +66,9 @@ export default (props: IExportedComponentProps) => (
           const range = val(
             internalTimeline!.pointerToRangeState.rangeShownInPanel,
           )
-          const duration = val(internalTimeline!.pointerToRangeState.duration)
+          const duration = overshootDuration(
+            val(internalTimeline!.pointerToRangeState.duration),
+          )
           const width = val(allInOnePanelStuffP.rightWidth)
           const rootPropProviderProps: IRootPropProviderProps = {
             duration,

@@ -1,0 +1,35 @@
+.container {
+  
+}
+
+.dimmer {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 1000px;
+  background: #1d1d1dc2;
+  transform-origin: 100% 0;
+}
+
+.border {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 1px;
+  background: #081517;
+  z-index: 1;
+  cursor: ew-resize;
+
+
+  &:before {
+    position: absolute -2px;
+    content: ' ';
+    display: block;
+  }
+
+  &:hover {
+    background: white;
+  }
+}

@@ -38,6 +38,7 @@ import Overlay from '$shared/components/Overlay/Overlay'
 import OverlaySection from '$shared/components/Overlay/OverlaySection'
 import SelectionContextMenu from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/SelectionContextMenu'
 import {PropValueContainer} from '$tl/Project/store/types'
+import {overshootDuration} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
 
 const classes = resolveCss(css)
 
@@ -580,8 +581,11 @@ export default (props: IExportedComponentProps) => (
           const range = val(
             internalTimeline!.pointerToRangeState.rangeShownInPanel,
           )
-          const duration = val(internalTimeline!.pointerToRangeState.duration)
+          const duration = overshootDuration(
+            val(internalTimeline!.pointerToRangeState.duration),
+          )
           const width = val(allInOnePanelStuffP.rightWidth)
+          
           const selectionProviderProps: ISelectionProviderProps = {
             range,
             duration,
