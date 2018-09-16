@@ -1,11 +1,13 @@
 import * as ahistoricHandlers from './parts/ahistoric'
 import * as historicHandlers from './parts/historic'
+import * as ephemeralHandlers from './parts/ephemeral'
 import {
   ProjectAhistoricState,
   ProjectState,
   ProjectHistoricState,
 } from '$tl/Project/store/types'
 import allInOneStoreBundle from '$shared/utils/redux/allInOneStoreBundle'
+import {ProjectEphemeralState} from './types'
 
 const initialHistoricState: ProjectHistoricState = {
   internalTimeines: {},
@@ -13,8 +15,6 @@ const initialHistoricState: ProjectHistoricState = {
 
 const projectInitialState: ProjectState = {
   ahistoric: {
-    loadingState: {type: 'loading'},
-    lastExportedObject: null,
     // stateLoading: {
     //   loaded: false,
     //   browserSateIsNotBasedOnDiskStateError: false,
@@ -34,20 +34,24 @@ const projectInitialState: ProjectState = {
     '@@tempActions': [],
   },
   ephemeral: {
-    initialised: true,
+    loadingState: {type: 'loading'},
+    lastExportedObject: null,
   },
 }
 
 const {actions: projectActions, rootReducer} = allInOneStoreBundle<
   ProjectHistoricState,
   ProjectAhistoricState,
+  ProjectEphemeralState,
   ProjectState,
   typeof historicHandlers,
-  typeof ahistoricHandlers
+  typeof ahistoricHandlers,
+  typeof ephemeralHandlers
 >({
   handlers: {
     historic: historicHandlers,
     ahistoric: ahistoricHandlers,
+    ephemeral: ephemeralHandlers,
   },
   initialState: projectInitialState,
 })

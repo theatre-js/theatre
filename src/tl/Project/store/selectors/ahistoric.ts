@@ -1,23 +1,8 @@
 import pointerFriendlySelector from '$shared/utils/redux/pointerFriendlySelector'
-import {ProjectAhistoricState, ProjectLoadedState} from '../types'
-import {valOrRead} from '$shared/DataVerse2/atom'
+import {ProjectAhistoricState} from '../types'
 
-const isReady = pointerFriendlySelector(
+export const isBlah = pointerFriendlySelector(
   (s: ProjectAhistoricState): boolean => {
-    return valOrRead(s.loadingState.type) === 'loaded'
+    return true
   },
 )
-
-const getDiskRevisionsBrowserStateIsBasedOn = pointerFriendlySelector(
-  (s: ProjectAhistoricState) => {
-    return ((s.loadingState as $IntentionalAny) as ProjectLoadedState)
-      .diskRevisionsThatBrowserStateIsBasedOn
-  },
-)
-
-const projectAhistoricSelectors = {
-  isReady,
-  getDiskRevisionsBrowserStateIsBasedOn,
-}
-
-export default projectAhistoricSelectors

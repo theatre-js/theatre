@@ -6,7 +6,7 @@ import {
   InternalObjectState,
 } from '../types'
 
-const getInternalTimelineState = pointerFriendlySelector(
+export const getInternalTimelineState = pointerFriendlySelector(
   (
     s: ProjectHistoricState,
     addr: TimelineAddress,
@@ -15,7 +15,7 @@ const getInternalTimelineState = pointerFriendlySelector(
   },
 )
 
-const getObjectState = pointerFriendlySelector(
+export const getObjectState = pointerFriendlySelector(
   (
     s: ProjectHistoricState,
     addr: ObjectAddress,
@@ -29,17 +29,9 @@ const getObjectState = pointerFriendlySelector(
   },
 )
 
-const getPropState = pointerFriendlySelector(
+export const getPropState = pointerFriendlySelector(
   (s: ProjectHistoricState, addr: PropAddress) => {
     const possibleObjectState = getObjectState(s, addr);
     return possibleObjectState && possibleObjectState.props[addr.propKey]
   },
 )
-
-const projectHistoricSelectors = {
-  getInternalTimelineState,
-  getObjectState,
-  getPropState,
-}
-
-export default projectHistoricSelectors

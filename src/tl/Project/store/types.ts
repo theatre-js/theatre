@@ -28,8 +28,7 @@ const $ProjectLoadingState = t.taggedUnion('type', [
  * are not undoable.
  */
 export const $ProjectAhistoricState = t.type({
-  loadingState: $ProjectLoadingState,
-  lastExportedObject: t.union([t.null, t.deferred(() => $OnDiskState)]),
+  
 })
 
 export type ProjectAhistoricState = t.StaticTypeOf<
@@ -39,7 +38,10 @@ export type ProjectAhistoricState = t.StaticTypeOf<
 /**
  * Ephemeral state is neither persisted nor undoable
  */
-export const $ProjectEphemeralState = t.type({})
+export const $ProjectEphemeralState = t.type({
+  loadingState: $ProjectLoadingState,
+  lastExportedObject: t.union([t.null, t.deferred(() => $OnDiskState)]),
+})
 
 export type ProjectEphemeralState = t.StaticTypeOf<
   typeof $ProjectEphemeralState
