@@ -25,16 +25,20 @@ type Handlers<State> = {
 const allInOneStoreBundle = <
   HistoricState,
   AhistoricState,
+  EphemeralState,
   State extends {
     historic: StateWithHistory<HistoricState>
     ahistoric: AhistoricState
+    ephemeral: EphemeralState,
   },
   HistoricHandlers extends Handlers<HistoricState>,
-  AhistoricHandlers extends Handlers<AhistoricState>
+  AhistoricHandlers extends Handlers<AhistoricState>,
+  EphemeralHandlers extends Handlers<EphemeralState>
 >(stuff: {
   handlers: {
     ahistoric: AhistoricHandlers // ahistoricHandlers
     historic: HistoricHandlers // historicHandlers
+    ephemeral: EphemeralHandlers 
   }
   initialState: State // uiInitialState
 }) => {
@@ -44,6 +48,13 @@ const allInOneStoreBundle = <
   } = actionReducersBundle<AhistoricState>()(stuff.handlers.ahistoric)
 
   const ahistoricReducer = ahistoricInnerReducer
+
+  const {
+    actions: ephemeralUnwrappedActions,
+    reducer: ephemeralInnerReducer,
+  } = actionReducersBundle<EphemeralState>()(stuff.handlers.ephemeral)
+
+  const ephemeralReducer = ephemeralInnerReducer
 
   const {
     actions: historicUnwrappedActions,
@@ -61,6 +72,11 @@ const allInOneStoreBundle = <
 
   const ahistoricActionWrapper = actionCreator(
     '@@ahistoric',
+    (action: GenericAction): GenericAction => action,
+  )
+
+  const ephemeralActionWrapper = actionCreator(
+    '@@ephemeral',
     (action: GenericAction): GenericAction => action,
   )
 
@@ -102,9 +118,14 @@ const allInOneStoreBundle = <
     ahistoric: (mapValues(
       ahistoricUnwrappedActions,
       actionCreator => (payload: any) =>
-        // @ts-ignore ignore
         ahistoricActionWrapper(actionCreator(payload)),
     ) as $IntentionalAny) as typeof ahistoricUnwrappedActions,
+
+    ephemeral: (mapValues(
+      ephemeralUnwrappedActions,
+      actionCreator => (payload: any) =>
+        ephemeralActionWrapper(actionCreator(payload)),
+    ) as $IntentionalAny) as typeof ephemeralUnwrappedActions,
 
     historic: historicActions,
 
@@ -115,22 +136,20 @@ const allInOneStoreBundle = <
     (state: State = stuff.initialState, action: GenericAction): State => {
       if (ahistoricActionWrapper.is(action)) {
         return {
-          // @ts-ignore @todo low
-          ...state,
+          ...(state as $FixMe),
           ahistoric: ahistoricReducer(state.ahistoric, action.payload),
         }
       } else if (historicActionWrapper.is(action)) {
         return {
-          // @ts-ignore @todo low
-          ...state,
+          ...(state as $FixMe),
           historic: historicReducer(state.historic, action.payload),
         } as $FixMe
-      } /*else if (ephemeralActionWrapper.is(action)) {
-    return {
-      ...state,
-      ephemeral: ephemeralReducer(state.ephemeral, action),
-    }
-  } */ else {
+      } else if (ephemeralActionWrapper.is(action)) {
+        return {
+          ...(state as $FixMe),
+          ephemeral: ephemeralReducer(state.ephemeral, action.payload),
+        }
+      }  else {
         if (actionTypesToIgnore.indexOf(action.type) === -1) {
           console.error(`Unkown action type ${action.type} in rootReducer`)
         }
