@@ -1,10 +1,13 @@
 import {Pointer} from '$shared/DataVerse2/pointer'
 
-type PointerFriendly<S, R, Args extends $IntentionalAny[]> = ((
-  s: Pointer<S>,
+type PointerFriendlySelector<S, R, Args extends $IntentionalAny[]> = <
+  GivenState extends S | Pointer<S>
+>(
+  state: GivenState,
   ...args: Args
-) => Pointer<R>) &
-  ((s: S, ...args: Args) => R)
+) => GivenState extends Pointer<S>
+  ? Pointer<R>
+  : GivenState extends S ? R : never
 
 /**
  * Takes a selector and returns a new selector that supports
@@ -12,7 +15,7 @@ type PointerFriendly<S, R, Args extends $IntentionalAny[]> = ((
  */
 const pointerFriendlySelector = <S, R, Args extends $IntentionalAny[]>(
   fn: (s: S, ...args: Args) => R,
-): PointerFriendly<S, R, Args> => {
+): PointerFriendlySelector<S, R, Args> => {
   return fn as $IntentionalAny
 }
 
