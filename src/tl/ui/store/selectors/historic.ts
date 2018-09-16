@@ -1,4 +1,4 @@
-import {UIHistoricState} from './types'
+import {UIHistoricState} from '../types'
 import pointerFriendlySelector from '$shared/utils/redux/pointerFriendlySelector'
 import {TimelineAddress, ObjectAddress, PropAddress} from '$tl/handy/addresses'
 import {val} from '$shared/DataVerse2/atom'
@@ -6,25 +6,25 @@ import projectsSingleton from '$tl/Project/projectsSingleton'
 import UI from '$tl/ui/UI'
 import Project from '$tl/Project/Project'
 
-const getTimelineState = pointerFriendlySelector(
+export const getTimelineState = pointerFriendlySelector(
   (s: UIHistoricState, addr: TimelineAddress) => {
     return s.allInOnePanel.projects[addr.projectId].timelines[addr.timelinePath]
   },
 )
 
-const getCollapsedNodesOfTimelineByPath = pointerFriendlySelector(
+export const getCollapsedNodesOfTimelineByPath = pointerFriendlySelector(
   (s: UIHistoricState, addr: TimelineAddress) => {
     return getTimelineState(s, addr).collapsedNodesByPath
   },
 )
 
-const getObjectState = pointerFriendlySelector(
+export const getObjectState = pointerFriendlySelector(
   (s: UIHistoricState, addr: ObjectAddress) => {
     return getTimelineState(s, addr).objects[addr.objectPath]
   },
 )
 
-const getPropState = pointerFriendlySelector(
+export const getPropState = pointerFriendlySelector(
   (s: UIHistoricState, addr: PropAddress) => {
     return getObjectState(s, addr).props[addr.propKey]
   },
@@ -42,7 +42,7 @@ const getPropState = pointerFriendlySelector(
  * Note that the selected project WILL switch back to the user-defined one
  * if that project gets initialised at any point since the page is loaded.
  */
-const getSelectedProject = (ui: UI): Project | undefined => {
+export const getSelectedProject = (ui: UI): Project | undefined => {
   const projects = val(projectsSingleton.atom.pointer.projects)
 
   const projectIds = Object.keys(projects)
@@ -54,13 +54,3 @@ const getSelectedProject = (ui: UI): Project | undefined => {
 
   return projects[selectedProjectId] || projects[projectIds[0]]
 }
-
-const uiSelectors = {
-  getTimelineState,
-  getObjectState,
-  getPropState,
-  getSelectedProject,
-  getCollapsedNodesOfTimelineByPath,
-}
-
-export default uiSelectors

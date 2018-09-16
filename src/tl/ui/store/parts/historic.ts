@@ -59,7 +59,7 @@ export const setActiveTimelineInstanceId = r(
 
 const ensureObjectIsSetUp = (s: UIHistoricState, addr: ObjectAddress) => {
   ensureTimelineIsSetUp(s, addr)
-  const timeline = uiSelectors.getTimelineState(s, addr)
+  const timeline = uiSelectors.historic.getTimelineState(s, addr)
   const {objects} = timeline
 
   if (!objects[addr.objectPath]) {
@@ -72,7 +72,7 @@ const ensureObjectIsSetUp = (s: UIHistoricState, addr: ObjectAddress) => {
 
 const ensurePropIsSetUp = (s: UIHistoricState, addr: PropAddress) => {
   ensureObjectIsSetUp(s, addr)
-  const props = uiSelectors.getObjectState(s, addr).props
+  const props = uiSelectors.historic.getObjectState(s, addr).props
 
   if (!props[addr.propKey]) {
     props[addr.propKey] = {
@@ -84,7 +84,7 @@ const ensurePropIsSetUp = (s: UIHistoricState, addr: PropAddress) => {
 
 export const setPropExpansion = r((s, p: PropAddress & {expanded: boolean}) => {
   ensurePropIsSetUp(s, p)
-  const propState = uiSelectors.getPropState(s, p)
+  const propState = uiSelectors.historic.getPropState(s, p)
   propState.expanded = p.expanded
 })
 
@@ -96,7 +96,7 @@ export const setPropHeightWhenExpanded = r(
     },
   ) => {
     ensurePropIsSetUp(s, p)
-    const propState = uiSelectors.getPropState(s, p)
+    const propState = uiSelectors.historic.getPropState(s, p)
     propState.heightWhenExpanded = p.height
   },
 )
@@ -104,7 +104,7 @@ export const setPropHeightWhenExpanded = r(
 export const setNodeExpansion = r(
   (s, p: TimelineAddress & {expanded: boolean; nodePath: string}) => {
     ensureTimelineIsSetUp(s, p)
-    const {collapsedNodesByPath} = uiSelectors.getTimelineState(s, p)
+    const {collapsedNodesByPath} = uiSelectors.historic.getTimelineState(s, p)
     if (p.expanded === false) {
       collapsedNodesByPath[p.nodePath] = 1
     } else {

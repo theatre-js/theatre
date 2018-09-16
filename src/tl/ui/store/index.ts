@@ -1,7 +1,9 @@
 import * as ahistoricHandlers from './parts/ahistoric'
 import * as historicHandlers from './parts/historic'
+import * as ephemeralHandlers from './parts/ephemeral'
 import {UIAhistoricState, UIState, UIHistoricState} from '$tl/ui/store/types'
 import allInOneStoreBundle from '$shared/utils/redux/allInOneStoreBundle'
+import {UIEphemeralState} from './types/ephemeral'
 
 const initialHistoricState: UIHistoricState = {
   foo: '1',
@@ -50,6 +52,7 @@ const uiInitialState: UIState = {
         distanceFromVerticalEdge: 0.02,
       },
     },
+    internalTimelines: {}
   },
   historic: {
     ...initialHistoricState,
@@ -71,13 +74,16 @@ const uiInitialState: UIState = {
 const {actions: uiActions, rootReducer} = allInOneStoreBundle<
   UIHistoricState,
   UIAhistoricState,
+  UIEphemeralState,
   UIState,
   typeof historicHandlers,
-  typeof ahistoricHandlers
+  typeof ahistoricHandlers,
+  typeof ephemeralHandlers
 >({
   handlers: {
     historic: historicHandlers,
     ahistoric: ahistoricHandlers,
+    ephemeral: ephemeralHandlers,
   },
   initialState: uiInitialState,
 })
