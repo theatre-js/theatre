@@ -73,8 +73,8 @@ export default class Project {
 
     this._readPromise = new Promise(resolve => {
       const check = () => {
-        const ahistoricState = this.reduxStore.getState().ahistoric
-        if (this._selectors.ahistoric.isReady(ahistoricState)) {
+        const ephemeralState = this.reduxStore.getState().ephemeral
+        if (this._selectors.ephemeral.isReady(ephemeralState)) {
           unsubscribe()
           resolve()
         }
@@ -124,8 +124,8 @@ export default class Project {
   }
 
   isReady() {
-    return this._selectors.ahistoric.isReady(
-      this.reduxStore.getState().ahistoric,
+    return this._selectors.ephemeral.isReady(
+      this.reduxStore.getState().ephemeral,
     )
   }
 }

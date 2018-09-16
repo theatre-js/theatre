@@ -11,6 +11,7 @@ import Ticker from '$shared/DataVerse/Ticker'
 import UIRootWrapper from '$tl/ui/UIRoot/UIRootWrapper'
 import {GenericAction} from '$shared/types'
 import {debounce} from '$shared/utils'
+import uiSelectors from '$tl/ui/store/selectors'
 
 export default class UI {
   atom: Atom<UIState>
@@ -19,6 +20,7 @@ export default class UI {
   atomP: Pointer<UIState>
   ticker: Ticker
   actions: typeof uiActions = uiActions
+  _selectors = uiSelectors
 
   constructor() {
     this.reduxStore = configureStore({

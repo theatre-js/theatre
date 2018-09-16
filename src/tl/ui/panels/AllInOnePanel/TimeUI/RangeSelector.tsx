@@ -4,7 +4,6 @@ import resolveCss from '$shared/utils/resolveCss'
 import {
   timeToX,
   xToTime,
-  timeToInRangeX,
   getRangeLabel,
 } from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import {getNewRange} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'

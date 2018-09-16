@@ -114,7 +114,7 @@ export const internalTimelineToSeriesOfVerticalItems = (
   const items: AnyItem[] = []
   let heightSoFar = 0
 
-  const collapsedNodes = val(uiSelectors.getCollapsedNodesOfTimelineByPath(
+  const collapsedNodes = val(uiSelectors.historic.getCollapsedNodesOfTimelineByPath(
     ui.atomP.historic,
     internalTimeline._address,
   ))
@@ -207,7 +207,7 @@ export const internalTimelineToSeriesOfVerticalItems = (
       const propAddr = {...internalObject._address, objectPath, propKey}
       // debugger
       const propState = val(
-        uiSelectors.getPropState(ui.atomP.historic, propAddr),
+        uiSelectors.historic.getPropState(ui.atomP.historic, propAddr),
       )
 
       push(

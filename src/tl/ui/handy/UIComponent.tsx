@@ -3,7 +3,6 @@ import propTypes from 'prop-types'
 import UI from '$tl/ui/UI'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import {Pointer} from '$shared/DataVerse2/pointer'
-import uiSelectors from '$tl/ui/store/selectors'
 import Project from '$tl/Project/Project'
 
 export default class UIComponent<Props, State> extends React.PureComponent<
@@ -13,7 +12,7 @@ export default class UIComponent<Props, State> extends React.PureComponent<
   ui: UI
 
   public get project() {
-    return uiSelectors.getSelectedProject(this.ui) as Project
+    return this.ui._selectors.historic.getSelectedProject(this.ui) as Project
   }
 
   constructor(props: Props, context: $IntentionalAny) {

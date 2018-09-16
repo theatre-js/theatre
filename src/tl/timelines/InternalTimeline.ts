@@ -1,7 +1,12 @@
 import Project from '$tl/Project/Project'
 import InternalObject from '$tl/objects/InternalObject'
 import {NativeObjectTypeConfig} from '$tl/objects/objectTypes'
-import atom, {Atom, valueDerivation} from '$shared/DataVerse2/atom'
+import atom, {
+  Atom,
+  valueDerivation,
+  val,
+  coldVal,
+} from '$shared/DataVerse2/atom'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import {TimelineAddress} from '$tl/handy/addresses'
 import {ConstantDerivation} from '$shared/DataVerse/derivations/constant'
@@ -80,4 +85,20 @@ export default class InternalTimeline {
 
     return playableRangeD
   }
+
+  get duration() {
+    return 0
+  }
 }
+
+// function durationDForInternalTimeline(t: InternalTimeline): AbstractDerivation<number> {
+//   return autoDerive(() => {
+//     const objs = val(t._internalObjects.pointer)
+//     for (const objPath in objs) {
+//       const obj = objs[objPath]
+//       obj._pointerToState
+//     }
+
+//     return 0
+//   })
+// }

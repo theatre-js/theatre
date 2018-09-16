@@ -14,7 +14,7 @@ export const getProjectSelectionState = (
   const projects = val(projectsSingleton.atom.pointer.projects)
   const areThereProjects = Object.keys(projects).length > 0
 
-  const selectedProject = uiSelectors.getSelectedProject(ui)
+  const selectedProject = uiSelectors.historic.getSelectedProject(ui)
 
   return {
     projects,
@@ -107,7 +107,7 @@ export const getProjectTimelineAndInstance = (
   internalTimeline: InternalTimeline
   timelineInstance: TimelineInstance
 } => {
-  const project = uiSelectors.getSelectedProject(ui)
+  const project = uiSelectors.historic.getSelectedProject(ui)
   const internalTimeline = project
     ? getSelectedInternalTimeline(ui, project)
     : undefined

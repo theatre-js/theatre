@@ -75,7 +75,7 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
 
           if (
             project &&
-            !valOrRead(project._selectors.ahistoric.isReady(project.atomP.ahistoric))
+            !valOrRead(project._selectors.ephemeral.isReady(project.atomP.ephemeral))
           ) {
             return null
           }

@@ -61,3 +61,5 @@ export const getNewZoom = (
   }
   return newRange.to - newRange.from < 1 ? range : newRange
 }
+
+export const overshootDuration = (timelineDuration: number) => timelineDuration + 2000

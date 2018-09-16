@@ -10,6 +10,7 @@ import InternalTimeline from '$tl/timelines/InternalTimeline'
 import RangeSelector from '$tl/ui/panels/AllInOnePanel/TimeUI/RangeSelector'
 import FramesGrid from '$tl/ui/panels/AllInOnePanel/TimeUI/FramesGrid'
 import clamp from '$shared/number/clamp'
+import {overshootDuration} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
 
 interface IProps {
   internalTimeline: InternalTimeline
@@ -54,10 +55,11 @@ export default class TimeUI extends UIComponent<IProps, IState> {
           const height = val(propsP.height)
           const timelineWidth = val(propsP.timelineWidth)
           const left = val(propsP.left)
-          const {duration} = rangeState
+          const actualDuration = rangeState.duration
+          const overshotDuration = overshootDuration(actualDuration)
 
           function gotoTime(time: number) {
-            timelineInstance.time = clamp(time, 0, duration)
+            timelineInstance.time = clamp(time, 0, overshotDuration)
           }
 
           return (
@@ -67,18 +69,18 @@ export default class TimeUI extends UIComponent<IProps, IState> {
             >
               <FramesGrid
                 range={range}
-                duration={duration}
+                duration={overshotDuration}
                 timelineWidth={timelineWidth}
               />
               <RangeSelector
                 range={range}
-                duration={duration}
+                duration={overshotDuration}
                 timelineWidth={timelineWidth}
                 setRange={internalTimeline._setRangeShownInPanel}
               />
               <Seeker
                 range={range}
-                duration={duration}
+                duration={overshotDuration}
                 timelineWidth={timelineWidth}
                 currentTime={currentTime}
                 gotoTime={gotoTime}

@@ -63,13 +63,13 @@ class Settings extends UIComponent<IProps, IState> {
       ].innerState
 
       this.project._dispatch(
-        this.project._actions.ahistoric.prepareExportJson({
+        this.project._actions.ephemeral.prepareExportJson({
           historicState,
         }),
       )
 
       const exportString = JSON.stringify(
-        this.project.reduxStore.getState().ahistoric.lastExportedObject,
+        this.project.reduxStore.getState().ephemeral.lastExportedObject,
         null,
         2,
       )

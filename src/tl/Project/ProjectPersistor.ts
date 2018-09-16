@@ -56,7 +56,7 @@ export default class ProjectPersistor {
       project._actions.historic.__unsafe_clearHistoryAndReplaceInnerState(
         onDiskState.projectState,
       ),
-      project._actions.ahistoric.setLoadingStateToLoaded({
+      project._actions.ephemeral.setLoadingStateToLoaded({
         diskRevisionsThatBrowserStateIsBasedOn: [onDiskState.revision],
       }),
     )
@@ -65,7 +65,7 @@ export default class ProjectPersistor {
   async _useInitialState() {
     const {project} = this
     project._dispatch(
-      project._actions.ahistoric.setLoadingStateToLoaded({
+      project._actions.ephemeral.setLoadingStateToLoaded({
         diskRevisionsThatBrowserStateIsBasedOn: [],
       }),
     )
@@ -77,7 +77,7 @@ export default class ProjectPersistor {
       project._actions.historic.__unsafe_replaceHistory(
         browserState.projectHistory,
       ),
-      project._actions.ahistoric.setLoadingStateToLoaded({
+      project._actions.ephemeral.setLoadingStateToLoaded({
         diskRevisionsThatBrowserStateIsBasedOn: browserState.basedOnRevisions,
       }),
     )
@@ -90,7 +90,7 @@ export default class ProjectPersistor {
     const {project} = this
 
     project._dispatch(
-      project._actions.ahistoric.setLoadingStateToBrowserStateIsNotBasedOnDiskStateError(
+      project._actions.ephemeral.setLoadingStateToBrowserStateIsNotBasedOnDiskStateError(
         {
           onDiskState,
           browserState,
@@ -115,9 +115,9 @@ export default class ProjectPersistor {
 
   async _startPersisting() {
     const {atomP} = this.project
-    const ahistoricStateP = atomP.ahistoric
-    const diskRevisionsThatBrowserStateIsBasedOnP = (this.project._selectors.ahistoric.getDiskRevisionsBrowserStateIsBasedOn(
-      ahistoricStateP,
+    const ephemeralStateP = atomP.ephemeral
+    const diskRevisionsThatBrowserStateIsBasedOnP = (this.project._selectors.ephemeral.getDiskRevisionsBrowserStateIsBasedOn(
+      ephemeralStateP,
     ) as $IntentionalAny) as Pointer<string[]>
 
     const stateOfInterestD = autoDerive(() => {

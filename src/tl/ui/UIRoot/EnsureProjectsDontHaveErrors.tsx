@@ -28,7 +28,7 @@ export default class EnsureProjectsDontHaveErrors extends UIComponent<
     const projectIds = Object.keys(projects)
     for (const projectId of projectIds) {
       const project = projects[projectId]
-      const loadingStateType = val(project.atomP.ahistoric.loadingState.type)
+      const loadingStateType = val(project.atomP.ephemeral.loadingState.type)
       if (loadingStateType === 'browserStateIsNotBasedOnDiskState') {
         return <BrowserStateIsNotBasedOnDiskStateModal projectId={projectId} />
       }

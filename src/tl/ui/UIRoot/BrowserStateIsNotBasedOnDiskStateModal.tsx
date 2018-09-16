@@ -35,7 +35,7 @@ export default class BrowserStateIsNotBasedOnDiskStateModal extends UIComponent<
     const classes = resolveCss(css, this.props.css)
     const projectId = val(propsP.projectId)
     const project = projectsSingleton.atom.pointer.projects[projectId]
-    const loadingState = val(project.atomP.ahistoric.loadingState)
+    const loadingState = val(project.atomP.ephemeral.loadingState)
 
     return (
       <Modal onClose={this.onClose} autoClose={false}>
@@ -71,7 +71,7 @@ export default class BrowserStateIsNotBasedOnDiskStateModal extends UIComponent<
     if (!sure) return
 
     const project = this.getProject()
-    const loadingState = project.reduxStore.getState().ahistoric.loadingState
+    const loadingState = project.reduxStore.getState().ephemeral.loadingState
     if (loadingState.type !== 'browserStateIsNotBasedOnDiskState') {
       // will never happen
       return
@@ -81,7 +81,7 @@ export default class BrowserStateIsNotBasedOnDiskStateModal extends UIComponent<
       project._actions.historic.__unsafe_clearHistoryAndReplaceInnerState(
         loadingState.onDiskState.projectState,
       ),
-      project._actions.ahistoric.setLoadingStateToLoaded({
+      project._actions.ephemeral.setLoadingStateToLoaded({
         diskRevisionsThatBrowserStateIsBasedOn: [
           loadingState.onDiskState.revision,
         ],
@@ -94,7 +94,7 @@ export default class BrowserStateIsNotBasedOnDiskStateModal extends UIComponent<
     if (!sure) return
 
     const project = this.getProject()
-    const loadingState = project.reduxStore.getState().ahistoric.loadingState
+    const loadingState = project.reduxStore.getState().ephemeral.loadingState
     if (loadingState.type !== 'browserStateIsNotBasedOnDiskState') {
       // will never happen
       return
@@ -106,10 +106,10 @@ export default class BrowserStateIsNotBasedOnDiskStateModal extends UIComponent<
       project._actions.historic.__unsafe_replaceHistory(
         browserState.projectHistory,
       ),
-      project._actions.ahistoric.setLoadingStateToLoaded({
+      project._actions.ephemeral.setLoadingStateToLoaded({
         diskRevisionsThatBrowserStateIsBasedOn: browserState.basedOnRevisions,
       }),
-      project._actions.ahistoric.pushOnDiskRevisionBrowserStateIsBasedOn(
+      project._actions.ephemeral.pushOnDiskRevisionBrowserStateIsBasedOn(
         loadingState.onDiskState.revision,
       ),
     )
