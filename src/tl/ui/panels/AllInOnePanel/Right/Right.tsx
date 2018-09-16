@@ -20,6 +20,7 @@ import TimelineProviders from '$tl/ui/panels/AllInOnePanel/Right/timeline/Timeli
 import ItemsContainer from '$tl/ui/panels/AllInOnePanel/Right/items/ItemsContainer'
 import {TRange, TDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {TimeStuff} from '$tl/ui/panels/AllInOnePanel/TimeStuffProvider'
+import {defer} from '$shared/utils/defer'
 
 const classes = resolveCss(css)
 
@@ -40,6 +41,7 @@ class Right extends UIComponent<IRightProps, IRightState> {
   wrapperLeft: number
   scrollLeft: number = 0
   allowZoom: boolean = true
+  didMountDeferred = defer<void>()
 
   constructor(props: IRightProps, context: $IntentionalAny) {
     super(props, context)
@@ -49,7 +51,7 @@ class Right extends UIComponent<IRightProps, IRightState> {
   render() {
     const {range, duration, timelineWidth} = this.props
     const svgWidth = getSvgWidth(range, duration, timelineWidth)
-    requestAnimationFrame(() => this._scrollContainer(range))
+    this._scrollContainer(range)
     return (
       <>
         <DraggableArea
@@ -78,6 +80,7 @@ class Right extends UIComponent<IRightProps, IRightState> {
   }
 
   componentDidMount() {
+    this.didMountDeferred.resolve(undefined)
     this._updateWrapperLeft()
     window.addEventListener('resize', this.handleResize)
   }
@@ -151,12 +154,16 @@ class Right extends UIComponent<IRightProps, IRightState> {
   }
 
   _scrollContainer = (range: TRange) => {
+    if (!this.wrapper.current) {
+      this.didMountDeferred.promise.then(() => this._scrollContainer(range))
+      return
+    }
     const {timelineWidth} = this.props
     const scrollLeft = (timelineWidth * range.from) / (range.to - range.from)
 
     if (scrollLeft !== this.scrollLeft) {
       this.scrollLeft = scrollLeft
-      this.wrapper.current!.scrollTo({left: scrollLeft})
+      this.wrapper.current.scrollTo({left: scrollLeft})
     }
   }
 
