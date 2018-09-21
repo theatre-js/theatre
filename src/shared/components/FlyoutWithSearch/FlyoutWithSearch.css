@@ -1,4 +1,4 @@
-@value menuBg, listPadding, focusedItemBg from '$shared/components/DataListView/DataListView.css';
+@value menuBg, listPadding, focusedItemBg from '../DataListView/DataListView.css';
 
 .positioner {
   position: relative;

@@ -1,4 +1,4 @@
-@value panelBgColor from '$tl/ui/panels/AllInOnePanel/AllInOnePanel.css';
+@value panelBgColor from '../../AllInOnePanel.css';
 @value tooltipBg: #1e2a30;
 
 .positioner {

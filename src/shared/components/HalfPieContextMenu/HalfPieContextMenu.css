@@ -1,4 +1,4 @@
-@value typographyFont from '$shared/styles.css';
+@value typographyFont from '../../styles.css';
 
 .anchor {
   position: absolute;
@@ -32,7 +32,8 @@
       background: rgba(60, 223, 255, 1);
       color: #fff;
 
-      & .key, & .icon {
+      & .key,
+      & .icon {
         color: #fff;
       }
     }

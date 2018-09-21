@@ -26,6 +26,7 @@ const state = {
   },
 }
 
+// const project = new Theatre.Project('Explorable Explanations', {state})
 const project = new Theatre.Project('Explorable Explanations')
 project.getTimeline('Bouncing Ball / The ball', '1')
 // project.getTimeline('Bouncing Ball / The ball', '2')

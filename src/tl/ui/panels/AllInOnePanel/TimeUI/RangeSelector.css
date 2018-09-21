@@ -1,10 +1,10 @@
-@value svgPaddingX from '$tl/ui/panels/AllInOnePanel/Right/views/SVGWrapper.css';
+@value svgPaddingX from '../Right/views/SVGWrapper.css';
 @value halfOfSvgPaddingX: calc(0.5 * svgPaddingX);
 
 .container {
   --threadHeight: 6px;
-  --thumbColor: #00E0FF;
-  --rangeBarColor: #9DF233;
+  --thumbColor: #00e0ff;
+  --rangeBarColor: #9df233;
   position: absolute;
   height: 0;
   width: calc(100% - svgPaddingX);
@@ -24,12 +24,13 @@
 .rangeBar {
   position: absolute;
   height: 5px;
-  background: rgba(#9DF233, 0.2);
+  background: rgba(#9df233, 0.2);
   cursor: ew-resize;
   z-index: 2;
 
-  &:hover, &:active {
-    background: rgba(#9DF233, 0.4);
+  &:hover,
+  &:active {
+    background: rgba(#9df233, 0.4);
   }
 
   &:after {
@@ -84,7 +85,7 @@
   transform: translateX(-50%);
   background: #999;
   border-radius: 4px;
-  color: #FFF;
+  color: #fff;
   font-size: 10px;
   line-height: 18px;
   text-align: center;

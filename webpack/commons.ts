@@ -120,7 +120,7 @@ export const makeConfigParts = (options: Options) => {
     },
     resolve: {
       alias: aliases,
-      extensions: ['.tsx', '.ts', '.js', '.json'],
+      extensions: ['.tsx', '.ts', '.js', '.json', '.css'],
       plugins: [
         new TsconfigPathsPlugin({
           configFile: require.resolve('../tsconfig.json'),

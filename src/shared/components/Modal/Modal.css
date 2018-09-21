@@ -1,5 +1,5 @@
-@value panelBgColor from '$tl/ui/panels/AllInOnePanel/AllInOnePanel.css';
-@value typographyFont from '$shared/styles.css';
+@value panelBgColor from '../../../tl/ui/panels/AllInOnePanel/AllInOnePanel.css';
+@value typographyFont from '../../styles.css';
 
 .fixedLayer {
   position: fixed 0;
@@ -26,7 +26,7 @@
     min-width: 100px;
     min-height: 40px;
   }
-  
+
   background: panelBgColor;
   padding: 30px;
   box-sizing: border-box;

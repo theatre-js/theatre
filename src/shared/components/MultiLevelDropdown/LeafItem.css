@@ -1,4 +1,4 @@
-@value itemColor, focusedItemColor, focusedItemBg from '$shared/components/DataListView/DataListView.css';
+@value itemColor, focusedItemColor, focusedItemBg from '../DataListView/DataListView.css';
 @value arrowWidth: 30px;
 @value itemHoverColor: white;
 

@@ -1,4 +1,4 @@
-@value typographyFont from '$shared/styles.css';
+@value typographyFont from '../../../../../shared/styles.css';
 
 @value bottomHeight: 26px;
 

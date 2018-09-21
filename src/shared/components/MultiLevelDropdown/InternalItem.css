@@ -1,4 +1,4 @@
-@value focusedItemColor, focusedItemBg from '$shared/components/DataListView/DataListView.css';
+@value focusedItemColor, focusedItemBg from '../DataListView/DataListView.css';
 @value arrowWidth from './LeafItem.css';
 
 .container {
@@ -34,7 +34,6 @@
 .active {
   composes: active from './LeafItem.css';
 }
-
 
 .title {
   composes: title from './LeafItem.css';

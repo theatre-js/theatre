@@ -1,4 +1,4 @@
-@value menuBg from "$shared/components/DataListView/DataListView.css";
+@value menuBg from "../DataListView/DataListView.css";
 
 .container {
   position: relative;
