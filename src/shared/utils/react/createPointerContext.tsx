@@ -1,12 +1,40 @@
 import React from 'react'
 import atom, {Atom} from '$shared/DataVerse2/atom'
 import {Pointer} from '$shared/DataVerse2/pointer'
-// import PropsAsPointer, {ChildrenType} from '$shared/utils/react/PropsAsPointer'
 
 export default function createPointerContext<T>() {
-  const {Consumer, Provider: _Provider} = React.createContext(
+  const {Consumer: InnerConsumer, Provider: _Provider} = React.createContext(
     (null as $IntentionalAny) as Pointer<T>,
   )
+
+  class Consumer extends React.PureComponent<
+    {
+      children: (t: Pointer<T>) => React.ReactNode
+      // ref?: React.Ref<Consumer>
+    },
+    {}
+  > {
+    _vals: Pointer<T>
+    /**
+     * Use Consumer.ref() instead of React.createRef() to get a properly typed
+     * ref object.
+     */
+    static ref = () => React.createRef<InstanceType<typeof Consumer>>()
+    render() {
+      return (
+        <InnerConsumer>
+          {vals => {
+            this._vals = vals
+            return this.props.children(vals)
+          }}
+        </InnerConsumer>
+      )
+    }
+
+    get values() {
+      return this._vals
+    }
+  }
 
   type Props = {children: React.ReactNode; value: T}
 
@@ -29,16 +57,6 @@ export default function createPointerContext<T>() {
       )
     }
   }
-
-  // const Consumer = ({children}: {children: ChildrenType<T>}) => {
-  //   return (
-  //     <_Consumer>
-  //       {valueP => {
-  //         return <PropsAsPointer>{() => children(valueP)}</PropsAsPointer>
-  //       }}
-  //     </_Consumer>
-  //   )
-  // }
 
   return {Consumer, Provider}
 }

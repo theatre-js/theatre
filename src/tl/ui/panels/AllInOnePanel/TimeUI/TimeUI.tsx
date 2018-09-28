@@ -53,17 +53,23 @@ export default class TimeUI extends UIComponent<IProps, IState> {
                * We just need to somehow show this in the timeline
                */
               const currentTime = val(timelineInstance.statePointer.time)
-              const rangeState = val(internalTimeline.pointerToRangeState)
-              const range = val(rightStuffP.range)
+              // const rangeState = val(internalTimeline.pointerToRangeState)
+              const range = val(rightStuffP.rangeAndDuration.range)
               // const range = {from: 0, to: 2000}
               const height = val(propsP.height)
               const timelineWidth = val(propsP.timelineWidth)
               const left = val(propsP.left)
-              const actualDuration = rangeState.duration
-              const overshotDuration = overshootDuration(actualDuration)
+
+              const realDuration = val(
+                rightStuffP.rangeAndDuration.realDuration,
+              )
+
+              const overshotDuration = val(
+                rightStuffP.rangeAndDuration.overshotDuration,
+              )
 
               function gotoTime(time: number) {
-                timelineInstance.time = clamp(time, 0, overshotDuration)
+                timelineInstance.time = clamp(time, 0, realDuration)
               }
 
               return (

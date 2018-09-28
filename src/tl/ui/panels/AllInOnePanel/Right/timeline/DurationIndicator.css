@@ -1,5 +1,4 @@
 .container {
-  
 }
 
 .dimmer {
@@ -29,7 +28,7 @@
     display: block;
   }
 
-  &:hover {
+  &:hover, &.dragging {
     background: white;
   }
 }

@@ -127,14 +127,18 @@ export default abstract class AbstractDerivation<V>
   }
 
   getValue(): V {
+    return this._getValue(false)
+  }
+
+  _getValue(cold: boolean): V {
     if (
+      !cold &&
       $env.TRACKING_COLD_DERIVATIONS === true &&
       debug.findingColdDerivations &&
       !debug.skippingColdDerivations &&
       this._freshnessState === FRESHNESS_STATE_NOT_APPLICABLE &&
       !isCollectingDependencies()
     ) {
-      debugger
       console.warn(`Perf regression: Unexpected cold derivation read`)
     }
 
@@ -150,6 +154,10 @@ export default abstract class AbstractDerivation<V>
     }
     reportResolutionEnd(this)
     return this._lastValue as V
+  }
+
+  getValueCold(): V {
+    return this._getValue(true)
   }
 
   _reactToNumberOfDependentsChange() {

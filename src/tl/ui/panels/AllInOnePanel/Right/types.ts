@@ -3,7 +3,7 @@ import {
   IBezierCurvesOfScalarValues,
   ITimelinePointSingleHandle,
 } from '$tl/Project/store/types'
-import {RangeState} from '$tl/timelines/InternalTimeline'
+// import {RangeState} from '$tl/timelines/InternalTimeline'
 import {PrimitivePropItem} from '$tl/ui/panels/AllInOnePanel/utils'
 
 // Point

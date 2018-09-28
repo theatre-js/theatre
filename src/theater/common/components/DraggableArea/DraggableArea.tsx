@@ -1,6 +1,6 @@
 import React from 'react'
 
-type Props = {
+type IProps = {
   children: React.ReactElement<HTMLElement | SVGElement>
   onDragStart?: (event: React.MouseEvent<HTMLElement | SVGElement>) => void
   onDragEnd?: (dragHappened: boolean) => void
@@ -9,7 +9,7 @@ type Props = {
   shouldReturnMovement?: boolean
 }
 
-type State = {
+type IState = {
   dragHappened: boolean
   startPos: {
     x: number
@@ -17,11 +17,11 @@ type State = {
   }
 }
 
-class DraggableArea extends React.PureComponent<Props, {}> {
-  s: State
+class DraggableArea extends React.PureComponent<IProps, IState> {
+  s: IState
   getDeltas: (e: MouseEvent) => [number, number]
 
-  constructor(props: Props) {
+  constructor(props: IProps) {
     super(props)
     this.s = {
       dragHappened: false,

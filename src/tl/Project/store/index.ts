@@ -10,7 +10,7 @@ import allInOneStoreBundle from '$shared/utils/redux/allInOneStoreBundle'
 import {ProjectEphemeralState} from './types'
 
 const initialHistoricState: ProjectHistoricState = {
-  internalTimeines: {},
+  internalTimelines: {},
 }
 
 const projectInitialState: ProjectState = {

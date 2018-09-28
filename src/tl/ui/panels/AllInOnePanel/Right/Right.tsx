@@ -181,11 +181,11 @@ export default (_props: IExportedComponentProps) => (
     {timeStuffP => (
       <PropsAsPointer>
         {() => {
-          const range = val(timeStuffP.range)
+          const range = val(timeStuffP.rangeAndDuration.range)
           const rightProps: IRightProps = {
             range,
-            duration: val(timeStuffP.overshotDuration),
-            timelineWidth: val(timeStuffP.viewportWidth),
+            duration: val(timeStuffP.rangeAndDuration.overshotDuration),
+            timelineWidth: val(timeStuffP.viewportSpace.width),
             timelineInstance: val(timeStuffP.timelineInstance),
             setRange: val(timeStuffP.setRange),
           }

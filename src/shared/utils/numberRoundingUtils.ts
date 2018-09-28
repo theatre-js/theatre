@@ -57,21 +57,21 @@ export function roundestIntegerBetween(
       }
     }
 
-    let highestTotalFound = currentExponentiationOfTen
+    let highestTotalFound = base
     for (const multiplier of multipliersWithoutQuartiles) {
       const toAdd = multiplier * currentExponentiationOfTen
       const total = base + toAdd
       if (total >= a && total <= b) {
         return total * fixSign
-      } else if (total < a && total > highestTotalFound) {
+      } else if (total <= a && total > highestTotalFound) {
         highestTotalFound = total
       }
     }
     base = highestTotalFound
 
     if (currentExponentiationOfTen === 1) {
-      // console.error('')
-      return 'shouldve been found by now' as $FixMe
+      console.error(`Coudn't find a human-readable number between ${a} and ${b}`)
+      return _a
     } else {
       currentExponentiationOfTen /= 10
     }

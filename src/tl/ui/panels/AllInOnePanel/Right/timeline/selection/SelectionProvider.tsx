@@ -578,11 +578,11 @@ export default (props: IExportedComponentProps) => (
       <PropsAsPointer>
         {() => {
           const internalTimeline = val(rightStuffP.internalTimeline)
-          const range = val(rightStuffP.range)
+          const range = val(rightStuffP.rangeAndDuration.range)
           const duration = overshootDuration(
-            val(internalTimeline!.pointerToRangeState.duration),
+            val(internalTimeline!._durationD),
           )
-          const width = val(rightStuffP.viewportWidth)
+          const width = val(rightStuffP.viewportSpace.width)
 
           const selectionProviderProps: ISelectionProviderProps = {
             range,

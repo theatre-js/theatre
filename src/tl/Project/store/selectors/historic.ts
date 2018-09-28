@@ -5,13 +5,14 @@ import {
   InternalTimelineState,
   InternalObjectState,
 } from '../types'
+import {val} from '$shared/DataVerse2/atom'
 
 export const getInternalTimelineState = pointerFriendlySelector(
   (
     s: ProjectHistoricState,
     addr: TimelineAddress,
   ): undefined | InternalTimelineState => {
-    return s.internalTimeines[addr.timelinePath]
+    return s.internalTimelines[addr.timelinePath]
   },
 )
 
@@ -31,7 +32,15 @@ export const getObjectState = pointerFriendlySelector(
 
 export const getPropState = pointerFriendlySelector(
   (s: ProjectHistoricState, addr: PropAddress) => {
-    const possibleObjectState = getObjectState(s, addr);
+    const possibleObjectState = getObjectState(s, addr)
     return possibleObjectState && possibleObjectState.props[addr.propKey]
+  },
+)
+
+export const getTimelineDuration = pointerFriendlySelector(
+  (s: ProjectHistoricState, addr: TimelineAddress): number => {
+    const savedDuration = val(s.internalTimelines[addr.timelinePath].duration)
+
+    return typeof savedDuration === 'number' ? savedDuration : 2000
   },
 )

@@ -38,26 +38,26 @@ export default class UI {
     }
     window.requestAnimationFrame(onAnimationFrame)
 
-    startPersistingState({
-      storageKey: $env.tl.uiPersistenceKey + '.historic',
-      getState: () => this.reduxStore.getState().historic['@@history'],
-      subscribe: this.reduxStore.subscribe,
-      loadState: (s: HistoryOnly<UIHistoricState>) => {
-        this.reduxStore.dispatch(
-          this.actions.historic.__unsafe_replaceHistory(s),
-        )
-      },
-    })
+    // startPersistingState({
+    //   storageKey: $env.tl.uiPersistenceKey + '.historic',
+    //   getState: () => this.reduxStore.getState().historic['@@history'],
+    //   subscribe: this.reduxStore.subscribe,
+    //   loadState: (s: HistoryOnly<UIHistoricState>) => {
+    //     this.reduxStore.dispatch(
+    //       this.actions.historic.__unsafe_replaceHistory(s),
+    //     )
+    //   },
+    // })
 
-    startPersistingState({
-      storageKey: $env.tl.uiPersistenceKey + '.ahistoric',
-      getState: () => this.reduxStore.getState().ahistoric,
-      subscribe: this.reduxStore.subscribe,
-      loadState: (s: UIAhistoricState) =>
-        this.reduxStore.dispatch(
-          this.actions.ahistoric.__unsafeReplaceWholeState(s),
-        ),
-    })
+    // startPersistingState({
+    //   storageKey: $env.tl.uiPersistenceKey + '.ahistoric',
+    //   getState: () => this.reduxStore.getState().ahistoric,
+    //   subscribe: this.reduxStore.subscribe,
+    //   loadState: (s: UIAhistoricState) =>
+    //     this.reduxStore.dispatch(
+    //       this.actions.ahistoric.__unsafeReplaceWholeState(s),
+    //     ),
+    // })
   }
 
   enable() {

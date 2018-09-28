@@ -7,12 +7,18 @@ import {
   _discardTemporaryAction,
   replaceHistoryAction,
   clearHistoryAndReplaceInnerState,
+  _commitTemporaryAction,
 } from './actions'
 import {last} from '$shared/utils'
 import patch from 'json-touch-patch'
 import {ReduxReducer, GenericAction} from '$shared/types'
-import {StateWithHistory, WithHistoryConfig, HistoryOnly, TempAction, Commit} from './types'
-
+import {
+  StateWithHistory,
+  WithHistoryConfig,
+  HistoryOnly,
+  TempAction,
+  Commit,
+} from './types'
 
 const defaultConfig: WithHistoryConfig = {
   maxNumberOfCommits: 100,
@@ -63,12 +69,24 @@ export const withHistory = <
         tempActions = pushTemp(prevState['@@tempActions'], action)
       } else if (_discardTemporaryAction.is(action)) {
         tempActions = discardTemp(prevState['@@tempActions'], action)
+      } else if (_commitTemporaryAction.is(action)) {
+        const tempActionId = (action as $FixMe).payload as string
+        const tempAction = prevState['@@tempActions'].find(
+          tempAction => tempAction.payload.id === tempActionId,
+        )
+        if (tempAction) {
+          const originalAction = tempAction!.payload.originalAction
+          history = reduceForPermanentHistory(
+            prevState['@@history'],
+            originalAction,
+          )
+        }
+        tempActions = discardTemp(prevState['@@tempActions'], action)
       } else {
         history = reduceForPermanentHistory(prevState['@@history'], action)
       }
     }
 
-    // const innerStateWithTemps = applyTemps(history)
     const innerStateWithTemps = applyTemps(
       history.innerState,
       tempActions,
@@ -100,12 +118,12 @@ const discardTemp = (
 
 const applyTemps = (
   s: mixed,
-  actions: TempAction[],
+  tempActions: TempAction[],
   historicalReducer: ReduxReducer<$FixMe>,
 ) =>
-  actions.reduce(
-    (prevState, action) =>
-      historicalReducer(prevState, action.payload.originalAction),
+  tempActions.reduce(
+    (prevState, tempAction) =>
+      historicalReducer(prevState, tempAction.payload.originalAction),
     s,
   )
 

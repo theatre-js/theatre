@@ -1,4 +1,5 @@
 import reducto from '$shared/utils/redux/reducto'
+// import
 import {
   $ProjectHistoricState,
   IBezierCurvesOfScalarValues,
@@ -17,22 +18,21 @@ import {TCollectionOfSelectedPointsData} from '$tl/ui/panels/AllInOnePanel/Right
 const r = reducto($ProjectHistoricState)
 
 const ensureTimeline = (s: ProjectHistoricState, addr: TimelineAddress) => {
-  if (!s.internalTimeines[addr.timelinePath]) {
-    s.internalTimeines[addr.timelinePath] = {
+  if (!s.internalTimelines[addr.timelinePath]) {
+    s.internalTimelines[addr.timelinePath] = {
       objects: {},
+      duration: null,
     }
   }
+  return s.internalTimelines[addr.timelinePath]
 }
 
 const ensureObject = (s: ProjectHistoricState, addr: ObjectAddress) => {
-  ensureTimeline(s, addr)
-  const timelineState = projectSelectors.historic.getInternalTimelineState(
-    s,
-    addr,
-  )!
+  const timelineState = ensureTimeline(s, addr)
   if (!timelineState.objects[addr.objectPath]) {
     timelineState.objects[addr.objectPath] = {props: {}}
   }
+  return timelineState.objects[addr.objectPath]
 }
 
 // const ensurePropWithValueContainer = (
@@ -48,6 +48,12 @@ const ensureObject = (s: ProjectHistoricState, addr: ObjectAddress) => {
 
 type TPropAddress = {propAddress: PropAddress}
 type TPropAddressWithPointIndex = TPropAddress & {pointIndex: number}
+
+export const setTimelineDuration = r(
+  (s, p: TimelineAddress & {duration: number}) => {
+    ensureTimeline(s, p).duration = p.duration
+  },
+)
 
 const getPoints = (
   s: ProjectHistoricState,

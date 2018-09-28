@@ -245,11 +245,19 @@ export const isPointer = (p: $IntentionalAny): p is Pointer<mixed> => {
 /**
  * Like val(), but used for a one-off read
  */
-export const coldVal = <P extends PointerInnerObj<$IntentionalAny>>(
-  pointer: P,
-): P extends PointerInnerObj<infer T> ? T : never => {
-  const meta = pointer.$pointerMeta
-  return meta.root.getIn(meta.path as $IntentionalAny)
+export const coldVal = <P>(
+  pointerOrDerivationOrPlainValue: P,
+): P extends PointerInnerObj<infer T>
+  ? T
+  : P extends AbstractDerivation<infer T> ? T : P => {
+  if (isPointer(pointerOrDerivationOrPlainValue)) {
+    const meta = pointerOrDerivationOrPlainValue.$pointerMeta
+    return meta.root.getIn(meta.path as $IntentionalAny)
+  } else if (isDerivation(pointerOrDerivationOrPlainValue)) {
+    return pointerOrDerivationOrPlainValue.getValueCold() as $IntentionalAny
+  } else {
+    return pointerOrDerivationOrPlainValue as $IntentionalAny
+  }
 }
 
 export const pathTo = <P extends PointerInnerObj<$IntentionalAny>>(

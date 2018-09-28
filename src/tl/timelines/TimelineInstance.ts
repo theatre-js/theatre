@@ -120,7 +120,7 @@ export default class TimelineInstance {
     if (time < 0) {
       throw new Error(`timeline.time must be a positive number`)
     }
-    const dur = coldVal(this._internalTimeline.pointerToRangeState.duration)
+    const dur = this._internalTimeline.duration
     this._gotoTime(time > dur ? dur : time)
   }
 
@@ -132,7 +132,7 @@ export default class TimelineInstance {
     return autoDerive(() => {
       return {
         from: 0,
-        to: val(this._internalTimeline.pointerToRangeState.duration),
+        to: val(this._internalTimeline._durationD),
       }
     })
   }
@@ -145,9 +145,7 @@ export default class TimelineInstance {
       direction: Direction
     }>,
   ) {
-    const timelineDuration = coldVal(
-      this._internalTimeline.pointerToRangeState.duration,
-    )
+    const timelineDuration = this._internalTimeline.duration
     const range =
       conf && conf.range
         ? conf.range

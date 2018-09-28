@@ -34,9 +34,15 @@ export const _discardTemporaryAction = actionCreator(
   (id: string) => id,
 )
 
+export const _commitTemporaryAction = actionCreator(
+  '@history/commitTempAction',
+  (id: string) => id,
+)
+
 export interface ITempActionGroup {
   push(originalAction: GenericAction): GenericAction
   discard(): GenericAction
+  commit(): GenericAction
 }
 
 export const tempActionGroup = (
@@ -54,10 +60,12 @@ export const tempActionGroup = (
     )
 
   const discard = () => outerTransform(_discardTemporaryAction(id))
+  const commit = () => outerTransform(_commitTemporaryAction(id))
 
   return {
     push,
     discard,
+    commit
   }
 }
 

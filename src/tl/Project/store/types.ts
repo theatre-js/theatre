@@ -27,9 +27,7 @@ const $ProjectLoadingState = t.taggedUnion('type', [
  * Ahistoric state is persisted, but its changes
  * are not undoable.
  */
-export const $ProjectAhistoricState = t.type({
-  
-})
+export const $ProjectAhistoricState = t.type({})
 
 export type ProjectAhistoricState = t.StaticTypeOf<
   typeof $ProjectAhistoricState
@@ -142,6 +140,7 @@ export type InternalObjectState = t.StaticTypeOf<typeof $InternalObjectState>
 const $InternalTimelineState = t.type(
   {
     objects: t.record(t.string, $InternalObjectState),
+    duration: t.maybe(t.number),
   },
   'InternalTimelineState',
 )
@@ -154,7 +153,7 @@ export type InternalTimelineState = t.StaticTypeOf<
  * Historic state is both persisted and is undoable
  */
 export const $ProjectHistoricState = t.type({
-  internalTimeines: t.record(t.string, $InternalTimelineState),
+  internalTimelines: t.record(t.string, $InternalTimelineState),
 })
 
 export type ProjectHistoricState = t.StaticTypeOf<typeof $ProjectHistoricState>

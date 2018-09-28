@@ -64,11 +64,11 @@ export default (props: IExportedComponentProps) => (
       <PropsAsPointer>
         {() => {
           const internalTimeline = val(timeStuffP.internalTimeline)
-          const range = val(timeStuffP.range)
+          const range = val(timeStuffP.rangeAndDuration.range)
           const duration = overshootDuration(
-            val(internalTimeline!.pointerToRangeState.duration),
+            val(internalTimeline!._durationD),
           )
-          const width = val(timeStuffP.viewportWidth)
+          const width = val(timeStuffP.viewportSpace.width)
           const rootPropProviderProps: IRootPropProviderProps = {
             duration,
             timelineWidth: width,

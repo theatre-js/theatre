@@ -6,28 +6,48 @@ import createPointerContext from '$shared/utils/react/createPointerContext'
 import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import uiSelectors from '$tl/ui/store/selectors'
-import {overshootDuration} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
-import {getSvgWidth} from '$tl/ui/panels/AllInOnePanel/Right/utils'
+import {getSvgWidth, xToTime} from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import TimelineInstance from '$tl/timelines/TimelineInstance'
 import InternalTimeline from '$tl/timelines/InternalTimeline'
-import {UIAhistoricState} from '../../store/types/ahistoric'
-import {Pointer} from '$shared/DataVerse2/pointer'
 import UI from '$tl/ui/UI'
+import projectSelectors from '$tl/Project/store/selectors'
+import {overshootDuration} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
 
 interface IProps {
   children: React.ReactNode
 }
 
-interface IState {}
+interface IState {
+  lockedRangeAndDuration: null | IRangeAndDuration
+}
 
-interface ITimeStuff {
+interface IRangeAndDuration {
   range: TRange
   realDuration: TDuration
   overshotDuration: TDuration
-  timelineWidth: number
-  viewportWidth: number
+}
+
+export interface IRangeAndDurationLock {
+  unlock: (() => void)
+  relock: (lockedRangeAndDuration: IRangeAndDuration) => void
+}
+
+interface ITimeStuff {
+  rangeAndDuration: IRangeAndDuration
+  unlockedRangeAndDuration: IRangeAndDuration
+  rangeAdndurationAreLocked: boolean
+  viewportSpace: {
+    width: number
+  }
+  scrollSpace: {
+    width: number
+    xToTime: (x: number) => number
+  }
   timelineInstance: TimelineInstance
   internalTimeline: InternalTimeline
+  lockRangeAndDuration: (
+    lockedRangeAndDuration: IRangeAndDuration,
+  ) => IRangeAndDurationLock
   ui: UI
   setRange: (range: TRange) => void
 }
@@ -40,7 +60,7 @@ export default class TimeStuffProvider extends UIComponent<IProps, IState> {
   internalTimeline: InternalTimeline
   constructor(props: IProps, context: $IntentionalAny) {
     super(props, context)
-    this.state = {}
+    this.state = {lockedRangeAndDuration: null}
     this.internalTimeline = undefined as $IntentionalAny
   }
 
@@ -53,45 +73,85 @@ export default class TimeStuffProvider extends UIComponent<IProps, IState> {
     )
   }
 
+  lockRangeAndDuration = (
+    lockedRangeAndDuration: IRangeAndDuration,
+  ): IRangeAndDurationLock => {
+    if (this.state.lockedRangeAndDuration) {
+      throw new Error(`Range is already locked`)
+    }
+    this.setState(() => ({lockedRangeAndDuration}))
+    const unlock = () => this._unlockRange()
+    const relock = (lockedRangeAndDuration: IRangeAndDuration) => {
+      this.setState(() => ({lockedRangeAndDuration}))
+    }
+    return {unlock, relock}
+  }
+
+  _unlockRange = () => {
+    this.setState({lockedRangeAndDuration: null})
+  }
+
   render() {
     return (
       <AllInOnePanelStuff>
         {stuffP => (
-          <PropsAsPointer props={this.props}>
-            {({props: propsP}) => {
+          <PropsAsPointer props={this.props} state={this.state}>
+            {({props: propsP, state: stateP}) => {
               const internalTimeline = val(stuffP.internalTimeline)
               const timelineInstance = val(stuffP.timelineInstance)
 
               if (!internalTimeline || !timelineInstance) return null
               this.internalTimeline = internalTimeline
 
+              const lockedRangeAndDuration = val(stateP.lockedRangeAndDuration)
+
               const timelineAddress = internalTimeline.address
 
-              const range = val(
+              const persistedRange = val(
                 uiSelectors.ahistoric.getRangeShownInPanel(
                   this.ui.atomP.ahistoric,
                   timelineAddress,
                 ),
               )
 
-              const rangeState = val(internalTimeline.pointerToRangeState)
+              const persistedRealDuration = val(
+                projectSelectors.historic.getTimelineDuration(
+                  this.project.atomP.historic,
+                  timelineAddress,
+                ),
+              )
 
-              const realDuration = rangeState.duration
-              const overshotDuration = overshootDuration(realDuration)
+              const unlockedRangeAndDuration = refineRangeAndDuration({
+                range: persistedRange,
+                realDuration: persistedRealDuration,
+              })
+
+              const rangeAndDuration =
+                lockedRangeAndDuration || unlockedRangeAndDuration
+
               const viewportWidth = val(stuffP.rightWidth)
 
-              const timelineWidth = getSvgWidth(
-                range,
-                overshotDuration,
+              const scrollSpaceWidth = getSvgWidth(
+                rangeAndDuration.range,
+                rangeAndDuration.overshotDuration,
                 viewportWidth,
               )
 
               const timeStuff: ITimeStuff = {
-                range,
-                realDuration,
-                overshotDuration,
-                timelineWidth,
-                viewportWidth,
+                rangeAndDuration,
+                unlockedRangeAndDuration,
+                lockRangeAndDuration: this.lockRangeAndDuration,
+                rangeAdndurationAreLocked: !!lockedRangeAndDuration,
+                scrollSpace: {
+                  width: scrollSpaceWidth,
+                  xToTime: xToTime(
+                    rangeAndDuration.overshotDuration,
+                    scrollSpaceWidth,
+                  ),
+                },
+                viewportSpace: {
+                  width: viewportWidth,
+                },
                 timelineInstance,
                 internalTimeline,
                 ui: this.ui,
@@ -106,5 +166,26 @@ export default class TimeStuffProvider extends UIComponent<IProps, IState> {
         )}
       </AllInOnePanelStuff>
     )
+  }
+}
+
+const refineRangeAndDuration = (
+  original: Pick<IRangeAndDuration, 'range' | 'realDuration'>,
+): IRangeAndDuration => {
+  let from = original.range.from
+  let to = original.range.to
+  const realDuration = original.realDuration
+  const overshotDuration = overshootDuration(realDuration)
+
+  if (from < 0) from = 0
+  if (to > overshotDuration) {
+    to = overshotDuration
+  }
+  if (to < from + 0.05) to = from + 0.05
+
+  return {
+    range: {from, to},
+    realDuration,
+    overshotDuration,
   }
 }

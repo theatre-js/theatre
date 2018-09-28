@@ -26,22 +26,22 @@ const state = {
   },
 }
 
-const project = new Theatre.Project('Explorable Explanations', {state})
+const project = new Theatre.Project('Explorable Explanations')
 project.getTimeline('Bouncing Ball / The ball', '1')
-project.getTimeline('Bouncing Ball / The ball', '2')
-project.getTimeline('Bouncing Ball X')
-project.getTimeline('Scene / Background / X / Y')
-project.getTimeline('Scene / Background')
-project.getTimeline('Scene / Foo / Foo')
-project.getTimeline('Scene / Foo / Bar')
-project.getTimeline('Scene / Foo / Baz')
-project.getTimeline('Scene / Foo / Bam')
-project.getTimeline('Scene / Bar')
-project.getTimeline('Scene / Baz')
-project.getTimeline('Scene / Demo / Cursor')
-project.getTimeline('Scene / Demo / Grids')
-project.getTimeline('Scene / Panels / Layers')
-project.getTimeline('Scene / Panels / Tools')
+// project.getTimeline('Bouncing Ball / The ball', '2')
+// project.getTimeline('Bouncing Ball X')
+// project.getTimeline('Scene / Background / X / Y')
+// project.getTimeline('Scene / Background')
+// project.getTimeline('Scene / Foo / Foo')
+// project.getTimeline('Scene / Foo / Bar')
+// project.getTimeline('Scene / Foo / Baz')
+// project.getTimeline('Scene / Foo / Bam')
+// project.getTimeline('Scene / Bar')
+// project.getTimeline('Scene / Baz')
+// project.getTimeline('Scene / Demo / Cursor')
+// project.getTimeline('Scene / Demo / Grids')
+// project.getTimeline('Scene / Panels / Layers')
+// project.getTimeline('Scene / Panels / Tools')
 
 project.adapters.add(1, {
   accepts(nativeObject) {
