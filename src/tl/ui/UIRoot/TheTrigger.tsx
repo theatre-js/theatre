@@ -68,7 +68,19 @@ export default class TheTrigger extends UIComponent<IProps, IState> {
                   style={{left: left + 'px', top: top + 'px'}}
                   {...classes('container')}
                   onClick={this.toggle}
-                />
+                >
+                  <div {...classes('grid')}>
+                    <span>T</span>
+                    <span>h</span>
+                    <span>e</span>
+                    <span />
+                    <span>a</span>
+                    <span />
+                    <span>t</span>
+                    <span>e</span>
+                    <span>r</span>
+                  </div>
+                </div>
               )
             }}
           </PropsAsPointer>

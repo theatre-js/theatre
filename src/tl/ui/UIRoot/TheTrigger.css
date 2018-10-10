@@ -1,6 +1,26 @@
+@value typographyFont from '../../../shared/styles.css';
+
 .container {
   position: absolute;
   width: 50px;
   height: 50px;
-  background: #1F2A30;
+  background: #1f2a30;
+
+  user-select: none;
+}
+
+.grid {
+  padding: 7px;
+  display: grid;
+  grid-template-columns: repeat(3, 12px);
+  grid-template-rows: repeat(3, 12px);
+
+  color: #bbb;
+  font: typographyFont;
+
+  & > span {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 }
