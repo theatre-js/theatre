@@ -1,5 +1,6 @@
 import {TypeOfTheatre} from '$src/tl/entries/index'
 import {NativeObjectType} from '$tl/objects/objectTypes'
+import {css} from 'react-emotion'
 
 declare var Theatre: TypeOfTheatre
 
@@ -90,13 +91,12 @@ project.adapters.add(1, {
 const timeline = project.getTimeline('Bouncing Ball / The ball')
 const ballInDom = document.createElement('div')
 document.body.appendChild(ballInDom)
-ballInDom.style.cssText = `
-  position: absolute; width: 50px;
-  height: 50px; left: calc(50% - 25px);
-  top: 10%; border-radius: 50%;
-  border: 3px solid rgba(255, 255, 255, 0.5);`
+ballInDom.className = css`
+position: absolute; width: 50px;
+height: 50px; left: calc(50% - 25px);
+top: 10%; border-radius: 50%;
+border: 3px solid rgba(255, 255, 255, 0.5);`
 
-ballInDom.classList.add('ball')
 const ball = timeline.createObject('Act 1 / Stage / Ball', ballInDom)
 
 timeline.createObject(
