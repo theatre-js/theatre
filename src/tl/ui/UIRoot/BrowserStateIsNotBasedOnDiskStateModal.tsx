@@ -9,7 +9,7 @@ import Modal from '$shared/components/Modal/Modal'
 import SyntaxHighlightedCode from '$shared/components/SyntaxHighlightedCode'
 import {makeSampleCode} from '$tl/ui/panels/AllInOnePanel/Bottom/Settings/ExportModal'
 import HumongousButton from '$shared/components/HumongousButton'
-import Project from '$tl/Project/Project'
+import InternalProject from '$tl/Project/InternalProject'
 
 interface IProps {
   css?: Partial<typeof css>
@@ -27,15 +27,15 @@ export default class BrowserStateIsNotBasedOnDiskStateModal extends UIComponent<
     this.state = {}
   }
 
-  getProject(): Project {
+  getProject(): InternalProject {
     return projectsSingleton.get(this.props.projectId)!
   }
 
   _render(propsP: Pointer<IProps>, stateP: Pointer<IState>) {
     const classes = resolveCss(css, this.props.css)
     const projectId = val(propsP.projectId)
-    const project = projectsSingleton.atom.pointer.projects[projectId]
-    const loadingState = val(project.atomP.ephemeral.loadingState)
+    const internalProject = projectsSingleton.atom.pointer.projects[projectId]
+    const loadingState = val(internalProject.atomP.ephemeral.loadingState)
 
     return (
       <Modal onClose={this.onClose} autoClose={false}>
@@ -70,18 +70,18 @@ export default class BrowserStateIsNotBasedOnDiskStateModal extends UIComponent<
     )
     if (!sure) return
 
-    const project = this.getProject()
-    const loadingState = project.reduxStore.getState().ephemeral.loadingState
+    const internalProject = this.getProject()
+    const loadingState = internalProject.reduxStore.getState().ephemeral.loadingState
     if (loadingState.type !== 'browserStateIsNotBasedOnDiskState') {
       // will never happen
       return
     }
 
-    project._dispatch(
-      project._actions.historic.__unsafe_clearHistoryAndReplaceInnerState(
+    internalProject._dispatch(
+      internalProject._actions.historic.__unsafe_clearHistoryAndReplaceInnerState(
         loadingState.onDiskState.projectState,
       ),
-      project._actions.ephemeral.setLoadingStateToLoaded({
+      internalProject._actions.ephemeral.setLoadingStateToLoaded({
         diskRevisionsThatBrowserStateIsBasedOn: [
           loadingState.onDiskState.revision,
         ],
@@ -93,8 +93,8 @@ export default class BrowserStateIsNotBasedOnDiskStateModal extends UIComponent<
     const sure = window.confirm(`Are you sure?`)
     if (!sure) return
 
-    const project = this.getProject()
-    const loadingState = project.reduxStore.getState().ephemeral.loadingState
+    const internalProject = this.getProject()
+    const loadingState = internalProject.reduxStore.getState().ephemeral.loadingState
     if (loadingState.type !== 'browserStateIsNotBasedOnDiskState') {
       // will never happen
       return
@@ -102,14 +102,14 @@ export default class BrowserStateIsNotBasedOnDiskStateModal extends UIComponent<
 
     const browserState = loadingState.browserState
 
-    project._dispatch(
-      project._actions.historic.__unsafe_replaceHistory(
+    internalProject._dispatch(
+      internalProject._actions.historic.__unsafe_replaceHistory(
         browserState.projectHistory,
       ),
-      project._actions.ephemeral.setLoadingStateToLoaded({
+      internalProject._actions.ephemeral.setLoadingStateToLoaded({
         diskRevisionsThatBrowserStateIsBasedOn: browserState.basedOnRevisions,
       }),
-      project._actions.ephemeral.pushOnDiskRevisionBrowserStateIsBasedOn(
+      internalProject._actions.ephemeral.pushOnDiskRevisionBrowserStateIsBasedOn(
         loadingState.onDiskState.revision,
       ),
     )

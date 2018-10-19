@@ -1,4 +1,4 @@
-import Project from '$tl/Project/Project'
+import InternalProject from '$tl/Project/InternalProject'
 import {AllPossiblePropTypes} from './propTypes'
 
 // type NumberType = {type: 'number', range: [number, number]}
@@ -16,21 +16,21 @@ export interface NativeObjectType {
 }
 
 export const getTypeOfNativeObject = (
-  project: Project,
+  internalProject: InternalProject,
   nativeObject: $FixMe,
   config?: NativeObjectTypeConfig,
 ): NativeObjectType | null => {
   if (config && config.type) return config.type
-  const adapter = getAdapterOfNativeObject(project, nativeObject, config)
+  const adapter = getAdapterOfNativeObject(internalProject, nativeObject, config)
   if (!adapter) return null
   return adapter.getType(nativeObject, config)
 }
 
 export const getAdapterOfNativeObject = (
-  project: Project,
+  internalProject: InternalProject,
   nativeObject: $FixMe,
   config?: NativeObjectTypeConfig,
 ) => {
-  const adapter = project.adapters.findAdapterForNativeObject(nativeObject)
+  const adapter = internalProject.adapters.findAdapterForNativeObject(nativeObject)
   return adapter
 }

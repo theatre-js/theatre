@@ -20,7 +20,7 @@ export default class TimelineItem extends UIComponent<IProps, IState> {
   _render(propsP: Pointer<IProps>) {
     const item = val(propsP.item)
     const propStateP = projectSelectors.historic.getPropState(
-      this.project.atomP.historic,
+      this.internalProject.atomP.historic,
       item.address,
     )
 

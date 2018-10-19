@@ -6,14 +6,14 @@ import didYouMean from '$shared/utils/didYouMean'
 import PropInstance from './PropInstance'
 import {mapValues} from '$shared/utils'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
-import Project from '$tl/Project/Project'
+import InternalProject from '$tl/Project/InternalProject'
 
 type Values = {[k: string]: $FixMe}
 
 export default class TimelineInstanceObject {
   _internalObject: InternalObject
   _propInstances: {[propName: string]: PropInstance} = {}
-  _project: Project
+  _project: InternalProject
   constructor(
     readonly _timelineInstance: TimelineInstance,
     readonly path: string,

@@ -1,7 +1,7 @@
 import React from 'react'
 import Modal from '$shared/components/Modal/Modal'
 import CopyableTextBlock from '$shared/components/CopyableTextBlock/CopyableTextBlock'
-import Project from '$tl/Project/Project'
+import InternalProject from '$tl/Project/InternalProject'
 import * as css from './ExportModal.css'
 import {escape} from 'lodash-es'
 // import {isMac} from '$shared/utils/isMac'
@@ -10,14 +10,14 @@ import SyntaxHighlightedCode from '$shared/components/SyntaxHighlightedCode'
 interface IProps {
   onClose: () => void
   exportString: string
-  project: Project
+  internalProject: InternalProject
 }
 
 interface IState {}
 
 class ExportModal extends React.PureComponent<IProps, IState> {
   render() {
-    const sampleCode = makeSampleCode(this.props.project.id, `replace {} with the json object you just copied`)
+    const sampleCode = makeSampleCode(this.props.internalProject.id, `replace {} with the json object you just copied`)
     return (
       <Modal onClose={this.props.onClose}>
         <div className={css.container}>

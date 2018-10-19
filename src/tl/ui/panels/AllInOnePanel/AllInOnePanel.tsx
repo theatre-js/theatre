@@ -7,7 +7,7 @@ import {val} from '$shared/DataVerse2/atom'
 import Left from '$tl/ui/panels/AllInOnePanel/Left/Left'
 import Bottom, {bottomHeight} from './Bottom/Bottom'
 import {getProjectTimelineAndInstance} from './selectors'
-import Project from '$tl/Project/Project'
+import InternalProject from '$tl/Project/InternalProject'
 import InternalTimeline from '$tl/timelines/InternalTimeline'
 import TimelineInstance from '$tl/timelines/TimelineInstance'
 import Right from './Right/Right'
@@ -36,7 +36,7 @@ const {Provider, Consumer: AllInOnePanelStuff} = createPointerContext<
 export {AllInOnePanelStuff}
 
 export type IAllInOnePanelStuff = {
-  project: undefined | Project
+  internalProject: undefined | InternalProject
   internalTimeline: undefined | InternalTimeline
   timelineInstance: undefined | TimelineInstance
   width: number
@@ -69,14 +69,14 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
           )
 
           const {
-            project,
+            internalProject,
             timelineInstance,
             internalTimeline,
           } = getProjectTimelineAndInstance(this.ui)
 
           if (
-            project &&
-            !val(project._selectors.ephemeral.isReady(project.atomP.ephemeral))
+            internalProject &&
+            !val(internalProject._selectors.ephemeral.isReady(internalProject.atomP.ephemeral))
           ) {
             return null
           }
@@ -90,7 +90,7 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
           const rightWidth = width * (1 - leftWidthFraction)
 
           const allInOnePanelStuff: IAllInOnePanelStuff = {
-            project,
+            internalProject,
             internalTimeline,
             timelineInstance,
             width,
@@ -177,9 +177,9 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
     } else if (e.key === 'z' || e.key === 'Z' || e.code === 'KeyZ') {
       if (cmdIsDown(e)) {
         if (e.shiftKey === true) {
-          this.project._dispatch(this.project._actions.historic.redo())
+          this.internalProject._dispatch(this.internalProject._actions.historic.redo())
         } else {
-          this.project._dispatch(this.project._actions.historic.undo())
+          this.internalProject._dispatch(this.internalProject._actions.historic.undo())
         }
       } else if (e.altKey === true) {
         if (e.shiftKey === true) {

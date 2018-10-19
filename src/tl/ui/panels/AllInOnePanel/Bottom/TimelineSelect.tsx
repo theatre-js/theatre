@@ -30,10 +30,10 @@ export default class TimelineSelect extends UIComponent<IProps, IState> {
         {stuffP => (
           <PropsAsPointer state={this.state}>
             {({state: stateP}) => {
-              const project = val(stuffP.project)
-              if (!project) return null
+              const internalProject = val(stuffP.internalProject)
+              if (!internalProject) return null
               const internalTimeline = val(stuffP.internalTimeline)
-              const internalTimelines = val(project._internalTimelines.pointer)
+              const internalTimelines = val(internalProject._internalTimelines.pointer)
               const multiLevelItems = convertInternalTimelinesToItems(
                 internalTimelines,
               )
@@ -41,7 +41,7 @@ export default class TimelineSelect extends UIComponent<IProps, IState> {
                 ? internalTimeline._path.split(' / ')
                 : []
               const onSelect = (path: string) =>
-                this.selectInternalTimeline(project.id, path)
+                this.selectInternalTimeline(internalProject.id, path)
               return (
                 <>
                   {val(stateP.menuOpen) &&

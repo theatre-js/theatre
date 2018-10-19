@@ -24,11 +24,11 @@ export default class EnsureProjectsDontHaveErrors extends UIComponent<
   }
 
   _render(propsP: Pointer<IProps>, stateP: Pointer<IState>) {
-    const projects = val(projectsSingleton.atom.pointer.projects)
-    const projectIds = Object.keys(projects)
+    const internalProjects = val(projectsSingleton.atom.pointer.projects)
+    const projectIds = Object.keys(internalProjects)
     for (const projectId of projectIds) {
-      const project = projects[projectId]
-      const loadingStateType = val(project.atomP.ephemeral.loadingState.type)
+      const internalProject = internalProjects[projectId]
+      const loadingStateType = val(internalProject.atomP.ephemeral.loadingState.type)
       if (loadingStateType === 'browserStateIsNotBasedOnDiskState') {
         return <BrowserStateIsNotBasedOnDiskStateModal projectId={projectId} />
       }

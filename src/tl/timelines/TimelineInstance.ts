@@ -1,4 +1,4 @@
-import Project from '$tl/Project/Project'
+import InternalProject from '$tl/Project/InternalProject'
 import InternalTimeline from './InternalTimeline'
 import TimelineInstanceObject from '$tl/objects/TimelineInstanceObject'
 import {validateAndSanitiseSlashedPathOrThrow} from '$tl/handy/slashedPaths'
@@ -41,7 +41,7 @@ export default class TimelineInstance {
   _stopPlayCallback: VoidFn = noop
 
   constructor(
-    readonly _project: Project,
+    readonly _project: InternalProject,
     protected readonly _path: string,
     public readonly _instanceId: string,
   ) {

@@ -1,5 +1,6 @@
 import setupScene from './setupScene'
 import * as THREE from 'three'
+import state from './data.json'
 
 import {TypeOfTheatre} from '$src/tl/entries/index'
 
@@ -7,7 +8,9 @@ declare var Theatre: TypeOfTheatre
 
 const {sphere, sphereGroup} = setupScene()
 
-const project = new Theatre.Project('The ORB')
+const project = new Theatre.Project('The ORB', {state})
+
+window.p = project
 
 project.adapters.add(2, {
   accepts(obj) {
@@ -25,26 +28,29 @@ project.adapters.add(2, {
         positionZ: {
           type: 'number',
         },
-        scaleX: {
-          type: 'number',
-        },
-        scaleY: {
-          type: 'number',
-        },
-        scaleZ: {
-          type: 'number',
-        },
+        squish: {
+          type: 'number'
+        }
+        // scaleX: {
+        //   type: 'number',
+        // },
+        // scaleY: {
+        //   type: 'number',
+        // },
+        // scaleZ: {
+        //   type: 'number',
+        // },
       },
     }
   },
   start(object, nativeObject: THREE.Object3D) {
     const stop = object.onValuesChange((values) => {
       nativeObject.position.x = values.positionX
-      nativeObject.position.y = values.positionY
+      nativeObject.position.y = values.positionY - 84
       nativeObject.position.z = values.positionZ
-      nativeObject.scale.x = values.scaleX
-      nativeObject.scale.y = values.scaleY
-      nativeObject.scale.z = values.scaleZ
+      nativeObject.scale.x = 1 - values.squish
+      nativeObject.scale.y = 1 + values.squish
+      nativeObject.scale.z = 1 - values.squish
       // nativeObject.ax
     })
 
@@ -53,14 +59,16 @@ project.adapters.add(2, {
 })
 
 const timeline = project.getTimeline('Bouncing orb')
+// timeline.createObject('Ball', null)
 timeline.createObject('Ball', sphereGroup)
 // sphereGroup.position.z = 852
 // sphere.position.y = -
 // timeline.time = 2000
 
-// timeline.play()
-// setTimeout(() => {
-//   timeline.play({range: {from: 400, to: 3300}, iterationCount: Infinity, direction: 'alternate'})
-// }, 500)
-
-// sphere.position.x = 100
+project.ready.then(async () => {
+  timeline.play({
+    iterationCount: 1000,
+    // range: {from: 200, to: 1300}
+  })
+  // timeline.gotoTime(1000)
+})

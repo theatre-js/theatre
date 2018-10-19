@@ -2,7 +2,7 @@ import UIComponent from '$tl/ui/handy/UIComponent'
 import React from 'react'
 import Item from './Item'
 import {val} from '$shared/DataVerse2/atom'
-import Project from '$tl/Project/Project'
+import InternalProject from '$tl/Project/InternalProject'
 import projectsSingleton from '$tl/Project/projectsSingleton'
 import FlyoutSearchableList from '$shared/components/FlyoutSearchableList/FlyoutSearchableList'
 import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
@@ -28,7 +28,7 @@ export default class ProjectSelect extends UIComponent<IProps, IState> {
   render() {
     return (
       <AllInOnePanelStuff>
-        {({project: projectP}) => (
+        {({internalProject: projectP}) => (
           <PropsAsPointer state={this.state}>
             {({state: stateP}) => {
               const projects = val(projectsSingleton.atom.pointer.projects)
@@ -59,7 +59,7 @@ export default class ProjectSelect extends UIComponent<IProps, IState> {
                   <Item onClick={this.onClick}>
                     {!areThereProjects
                       ? 'No projects yet'
-                      : (val(projectP) as Project).id}
+                      : (val(projectP) as InternalProject).id}
                   </Item>
                 </>
               )

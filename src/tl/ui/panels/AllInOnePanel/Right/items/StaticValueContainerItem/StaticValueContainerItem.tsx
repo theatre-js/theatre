@@ -34,7 +34,7 @@ export default class StaticValueContainerItem extends UIComponent<
   constructor(props: IProps, context: $IntentionalAny) {
     super(props, context)
     this.state = {}
-    this.tempActionGroup = this.project._actions.historic.temp()
+    this.tempActionGroup = this.internalProject._actions.historic.temp()
   }
 
   render = () => (
@@ -60,7 +60,7 @@ export default class StaticValueContainerItem extends UIComponent<
     // const objectInstance = timelineInstance.getObject(item.address.objectPath)
 
     const propStateP = projectSelectors.historic.getPropState(
-      this.project.atomP.historic,
+      this.internalProject.atomP.historic,
       item.address,
     )
 
@@ -90,24 +90,24 @@ export default class StaticValueContainerItem extends UIComponent<
   }
 
   temporarilySetValue = (value: number) => {
-    this.project._dispatch(
+    this.internalProject._dispatch(
       this.tempActionGroup.push(this._changeValueAction(value)),
     )
   }
 
   discardTemporaryValue = () => {
-    this.project.reduxStore.dispatch(this.tempActionGroup.discard())
+    this.internalProject.reduxStore.dispatch(this.tempActionGroup.discard())
   }
 
   permenantlySetValue = (v: number) => {
-    this.project._dispatch(
+    this.internalProject._dispatch(
       this.tempActionGroup.discard(),
       this._changeValueAction(v),
     )
   }
 
   private _changeValueAction(value: number): GenericAction {
-    return this.project._actions.historic.prop_setNumberValueInStaticValueContainer(
+    return this.internalProject._actions.historic.prop_setNumberValueInStaticValueContainer(
       {...this.props.item.address, value},
     )
   }

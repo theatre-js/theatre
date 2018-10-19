@@ -90,7 +90,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
   selectedPoints: TSelectedPoints = {}
   extremumsOfItemsInSelection: TExtremumsMap = {}
   mapOfItemsData: TMapOfFilteredItemKeyToItemData = {}
-  tempActionGroup = this.project._actions.historic.temp()
+  tempActionGroup = this.internalProject._actions.historic.temp()
   lastCommittedData: TLastCommittedData
   getOffset: (x: number) => number = () => 0
 
@@ -278,8 +278,8 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
   }
 
   deletePointsInSelection = () => {
-    this.project.reduxStore.dispatch(
-      this.project._actions.historic.removeSelectionOfPointsInBezierCurvesOfScalarValues(
+    this.internalProject.reduxStore.dispatch(
+      this.internalProject._actions.historic.removeSelectionOfPointsInBezierCurvesOfScalarValues(
         this._getDataOfPointsToRemove(),
       ),
     )
@@ -391,9 +391,9 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
   }
 
   applyChangesToSelectionTemp = () => {
-    this.project.reduxStore.dispatch(
+    this.internalProject.reduxStore.dispatch(
       this.tempActionGroup.push(
-        this.project._actions.historic.moveSelectionOfPointsInBezierCurvesOfScalarValues(
+        this.internalProject._actions.historic.moveSelectionOfPointsInBezierCurvesOfScalarValues(
           this._getPointsInSelectionDataAfterMove(),
         ),
       ),
@@ -401,10 +401,10 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
   }
 
   applyChangesToSelection = () => {
-    this.project.reduxStore.dispatch(
-      this.project._actions.batched([
+    this.internalProject.reduxStore.dispatch(
+      this.internalProject._actions.batched([
         this.tempActionGroup.discard(),
-        this.project._actions.historic.moveSelectionOfPointsInBezierCurvesOfScalarValues(
+        this.internalProject._actions.historic.moveSelectionOfPointsInBezierCurvesOfScalarValues(
           this.lastCommittedData,
         ),
       ]),
@@ -528,7 +528,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
       (mapOfItemsData, item) => {
         if (item.type !== 'PrimitiveProp') return mapOfItemsData
         const propStateP = projectSelectors.historic.getPropState(
-          this.project.atomP.historic,
+          this.internalProject.atomP.historic,
           item.address,
         )
 

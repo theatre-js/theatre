@@ -28,17 +28,17 @@ export default class TimelineInstanceSelect extends UIComponent<
         {stuffP => (
           <PropsAsPointer state={this.state}>
             {({state: stateP}) => {
-              const project = val(stuffP.project)
+              const internalProject = val(stuffP.internalProject)
               const internalTimeline = val(stuffP.internalTimeline)
-              if (!project || !internalTimeline) return null
+              if (!internalProject || !internalTimeline) return null
 
               const timelineInstance = val(stuffP.timelineInstance)
 
               const onSelect = (instanceId: string) =>
-                this.setInstance(project.id, internalTimeline._path, instanceId)
+                this.setInstance(internalProject.id, internalTimeline._path, instanceId)
 
               const timelineInstances = getTimelineInstances(
-                project,
+                internalProject,
                 internalTimeline,
               )
 

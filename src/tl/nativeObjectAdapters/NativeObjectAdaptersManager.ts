@@ -1,4 +1,4 @@
-import Project from '$tl/Project/Project'
+import InternalProject from '$tl/Project/InternalProject'
 import {range} from '$shared/utils'
 import {keyBy, mapValues} from '$shared/utils'
 // import {NativeObjectTypeConfig} from '../objects/objectTypes'
@@ -29,7 +29,7 @@ export default class NativeObjectAdapters {
     [priority: number]: Set<NativeObjectAdapter>
   } = mapValues(keyBy(adaptersRange, v => v), () => new Set())
 
-  constructor(readonly project: Project) {
+  constructor(readonly internalProject: InternalProject) {
     this.add(5, htmlElementAdapter)
   }
 

@@ -1,4 +1,4 @@
-import Project from './Project'
+import InternalProject from './InternalProject'
 import {OnDiskState, OnBrowserState} from '$tl/Project/store/types'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 import {val} from '$shared/DataVerse2/atom'
@@ -7,8 +7,8 @@ import {Pointer} from '$shared/DataVerse2/pointer'
 
 export default class ProjectPersistor {
   _storageKey: string
-  constructor(readonly project: Project) {
-    this._storageKey = $env.tl.projectPersistencePrefix + project.id
+  constructor(readonly internalProject: InternalProject) {
+    this._storageKey = $env.tl.projectPersistencePrefix + internalProject.id
     this._initialize().then(
       () => {},
       error => {
@@ -24,7 +24,7 @@ export default class ProjectPersistor {
   }
 
   async _load() {
-    const onDiskState = this.project.config.state
+    const onDiskState = this.internalProject.config.state
     const browserState = getBrowserPersistedState(this._storageKey)
 
     if (!browserState) {
@@ -50,33 +50,33 @@ export default class ProjectPersistor {
   }
 
   async _useOnDiskState(onDiskState: OnDiskState) {
-    const {project} = this
-    project._dispatch(
-      project._actions.historic.__unsafe_clearHistoryAndReplaceInnerState(
+    const {internalProject} = this
+    internalProject._dispatch(
+      internalProject._actions.historic.__unsafe_clearHistoryAndReplaceInnerState(
         onDiskState.projectState,
       ),
-      project._actions.ephemeral.setLoadingStateToLoaded({
+      internalProject._actions.ephemeral.setLoadingStateToLoaded({
         diskRevisionsThatBrowserStateIsBasedOn: [onDiskState.revision],
       }),
     )
   }
 
   async _useInitialState() {
-    const {project} = this
-    project._dispatch(
-      project._actions.ephemeral.setLoadingStateToLoaded({
+    const {internalProject} = this
+    internalProject._dispatch(
+      internalProject._actions.ephemeral.setLoadingStateToLoaded({
         diskRevisionsThatBrowserStateIsBasedOn: [],
       }),
     )
   }
 
   async _useBrowserState(browserState: OnBrowserState) {
-    const {project} = this
-    project._dispatch(
-      project._actions.historic.__unsafe_replaceHistory(
+    const {internalProject} = this
+    internalProject._dispatch(
+      internalProject._actions.historic.__unsafe_replaceHistory(
         browserState.projectHistory,
       ),
-      project._actions.ephemeral.setLoadingStateToLoaded({
+      internalProject._actions.ephemeral.setLoadingStateToLoaded({
         diskRevisionsThatBrowserStateIsBasedOn: browserState.basedOnRevisions,
       }),
     )
@@ -86,10 +86,10 @@ export default class ProjectPersistor {
     browserState: OnBrowserState,
     onDiskState: OnDiskState,
   ) {
-    const {project} = this
+    const {internalProject} = this
 
-    project._dispatch(
-      project._actions.ephemeral.setLoadingStateToBrowserStateIsNotBasedOnDiskStateError(
+    internalProject._dispatch(
+      internalProject._actions.ephemeral.setLoadingStateToBrowserStateIsNotBasedOnDiskStateError(
         {
           onDiskState,
           browserState,
@@ -99,23 +99,23 @@ export default class ProjectPersistor {
   }
 
   _loadOnDiskStateIntoRedux(s: OnDiskState) {
-    this.project.reduxStore.dispatch(
-      this.project._actions.historic.__unsafe_clearHistoryAndReplaceInnerState(
+    this.internalProject.reduxStore.dispatch(
+      this.internalProject._actions.historic.__unsafe_clearHistoryAndReplaceInnerState(
         s,
       ),
     )
   }
 
   _loadBrowserPersistedStateIntoRedux(s: OnBrowserState) {
-    this.project.reduxStore.dispatch(
-      this.project._actions.historic.__unsafe_replaceHistory(s.projectHistory),
+    this.internalProject.reduxStore.dispatch(
+      this.internalProject._actions.historic.__unsafe_replaceHistory(s.projectHistory),
     )
   }
 
   async _startPersisting() {
-    const {atomP} = this.project
+    const {atomP} = this.internalProject
     const ephemeralStateP = atomP.ephemeral
-    const diskRevisionsThatBrowserStateIsBasedOnP = (this.project._selectors.ephemeral.getDiskRevisionsBrowserStateIsBasedOn(
+    const diskRevisionsThatBrowserStateIsBasedOnP = (this.internalProject._selectors.ephemeral.getDiskRevisionsBrowserStateIsBasedOn(
       ephemeralStateP,
     ) as $IntentionalAny) as Pointer<string[]>
 
@@ -168,7 +168,7 @@ const persistOnBrowser = (storageKey: string, state: OnBrowserState) => {
   localStorage.setItem(storageKey, string)
 }
 
-export const validateOnDiskState = (project: Project, s: OnDiskState) => {
+export const validateOnDiskState = (internalProject: InternalProject, s: OnDiskState) => {
   if (
     Array.isArray(s) ||
     s == null ||
@@ -176,7 +176,7 @@ export const validateOnDiskState = (project: Project, s: OnDiskState) => {
   ) {
     throw new Error(
       `Error validating conf.state in new Project(${JSON.stringify(
-        project.id,
+        internalProject.id,
       )}, conf). The state seems to be formatted in a way that is unreadable to TheatreJS.`,
     )
   }

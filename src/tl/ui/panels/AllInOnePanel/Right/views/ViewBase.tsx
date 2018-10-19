@@ -36,7 +36,7 @@ export default class ViewBase<Props extends IProps> extends UIComponent<
   Props,
   {}
 > {
-  tempActionGroup = this.project._actions.historic.temp()
+  tempActionGroup = this.internalProject._actions.historic.temp()
 
   _renderTempPointsInSelection = (
     getAllPoints: TGetAllPoints,
@@ -184,8 +184,8 @@ export default class ViewBase<Props extends IProps> extends UIComponent<
   }
 
   _removePoint = (pointIndex: number) => {
-    this.project.reduxStore.dispatch(
-      this.project._actions.historic.removePointInBezierCurvesOfScalarValues({
+    this.internalProject.reduxStore.dispatch(
+      this.internalProject._actions.historic.removePointInBezierCurvesOfScalarValues({
         propAddress: this.props.propGetter('itemAddress'),
         pointIndex,
       }),
@@ -193,8 +193,8 @@ export default class ViewBase<Props extends IProps> extends UIComponent<
   }
 
   _addConnector = (pointIndex: number) => {
-    this.project.reduxStore.dispatch(
-      this.project._actions.historic.addConnectorInBezierCurvesOfScalarValues({
+    this.internalProject.reduxStore.dispatch(
+      this.internalProject._actions.historic.addConnectorInBezierCurvesOfScalarValues({
         propAddress: this.props.propGetter('itemAddress'),
         pointIndex,
       }),
@@ -202,8 +202,8 @@ export default class ViewBase<Props extends IProps> extends UIComponent<
   }
 
   _removeConnector = (pointIndex: number) => {
-    this.project.reduxStore.dispatch(
-      this.project._actions.historic.removeConnectorInBezierCurvesOfScalarValues(
+    this.internalProject.reduxStore.dispatch(
+      this.internalProject._actions.historic.removeConnectorInBezierCurvesOfScalarValues(
         {
           propAddress: this.props.propGetter('itemAddress'),
           pointIndex,
@@ -215,10 +215,10 @@ export default class ViewBase<Props extends IProps> extends UIComponent<
   _movePointToNewCoords: TMovePointToNewCoords = (pointIndex, newCoords) => {
     this.props.extremumsAPI.unpersist()
 
-    this.project.reduxStore.dispatch(
-      this.project._actions.batched([
+    this.internalProject.reduxStore.dispatch(
+      this.internalProject._actions.batched([
         this.tempActionGroup.discard(),
-        this.project._actions.historic.movePointToNewCoordsInBezierCurvesOfScalarValues(
+        this.internalProject._actions.historic.movePointToNewCoordsInBezierCurvesOfScalarValues(
           {
             propAddress: this.props.propGetter('itemAddress'),
             pointIndex,
@@ -244,9 +244,9 @@ export default class ViewBase<Props extends IProps> extends UIComponent<
         (change.value * (extremums[1] - extremums[0])) / 100,
     }
 
-    this.project.reduxStore.dispatch(
+    this.internalProject.reduxStore.dispatch(
       this.tempActionGroup.push(
-        this.project._actions.historic.movePointToNewCoordsInBezierCurvesOfScalarValues(
+        this.internalProject._actions.historic.movePointToNewCoordsInBezierCurvesOfScalarValues(
           {
             propAddress: propGetter('itemAddress'),
             pointIndex,

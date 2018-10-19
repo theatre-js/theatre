@@ -116,7 +116,7 @@ export default class TimeStuffProvider extends UIComponent<IProps, IState> {
 
               const persistedRealDuration = val(
                 projectSelectors.historic.getTimelineDuration(
-                  this.project.atomP.historic,
+                  this.internalProject.atomP.historic,
                   timelineAddress,
                 ),
               )

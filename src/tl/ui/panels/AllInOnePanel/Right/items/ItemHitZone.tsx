@@ -86,8 +86,8 @@ class ItemHitZone extends UIComponent<IProps, IState> {
   }
 
   _dispatchAddPoint(pointProps: TPoint) {
-    this.project.reduxStore.dispatch(
-      this.project._actions.historic.addPointInBezierCurvesOfScalarValues({
+    this.internalProject.reduxStore.dispatch(
+      this.internalProject._actions.historic.addPointInBezierCurvesOfScalarValues({
         propAddress: this.props.address,
         pointProps,
       }),

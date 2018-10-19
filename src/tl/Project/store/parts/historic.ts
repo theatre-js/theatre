@@ -293,7 +293,7 @@ const emptyTimeline = (value: number): IBezierCurvesOfScalarValues => ({
         __descriptorType: 'TimelinePointInterpolationDescriptor',
         connected: false,
         interpolationType: 'CubicBezier',
-        handles: [0.2, 0.2, 0.2, 0.2],
+        handles: [0.5, 0.0, 0.5, 0.0],
       },
     },
   ],

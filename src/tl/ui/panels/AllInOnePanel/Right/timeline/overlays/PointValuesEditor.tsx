@@ -99,8 +99,8 @@ class PointValuesEditor extends UIComponent<IProps, IState> {
       return
     }
 
-    this.project.reduxStore.dispatch(
-      this.project._actions.historic.setPointCoordsInBezierCurvesOfScalarValues(
+    this.internalProject.reduxStore.dispatch(
+      this.internalProject._actions.historic.setPointCoordsInBezierCurvesOfScalarValues(
         {
           propAddress: this.props.propAddress,
           pointIndex: this.props.pointIndex,

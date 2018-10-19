@@ -99,10 +99,10 @@ class GraphEditor extends ViewBase<IProps & IWithUtilsProps> {
 
   moveLeftHandle: TMoveSingleHandle = (pointIndex, newHandle) => {
     this.props.extremumsAPI.unpersist()
-    this.project.reduxStore.dispatch(
-      this.project._actions.batched([
+    this.internalProject.reduxStore.dispatch(
+      this.internalProject._actions.batched([
         this.tempActionGroup.discard(),
-        this.project._actions.historic.movePointLeftHandleInBezierCurvesOfScalarValues(
+        this.internalProject._actions.historic.movePointLeftHandleInBezierCurvesOfScalarValues(
           {
             propAddress: this.props.propGetter('itemAddress'),
             pointIndex,
@@ -115,9 +115,9 @@ class GraphEditor extends ViewBase<IProps & IWithUtilsProps> {
 
   moveLeftHandleTemp: TMoveSingleHandle = (pointIndex, newHandle) => {
     this.props.extremumsAPI.persist()
-    this.project.reduxStore.dispatch(
+    this.internalProject.reduxStore.dispatch(
       this.tempActionGroup.push(
-        this.project._actions.historic.movePointLeftHandleInBezierCurvesOfScalarValues(
+        this.internalProject._actions.historic.movePointLeftHandleInBezierCurvesOfScalarValues(
           {
             propAddress: this.props.propGetter('itemAddress'),
             pointIndex,
@@ -130,10 +130,10 @@ class GraphEditor extends ViewBase<IProps & IWithUtilsProps> {
 
   moveRightHandle: TMoveSingleHandle = (pointIndex, newHandle) => {
     this.props.extremumsAPI.unpersist()
-    this.project.reduxStore.dispatch(
-      this.project._actions.batched([
+    this.internalProject.reduxStore.dispatch(
+      this.internalProject._actions.batched([
         this.tempActionGroup.discard(),
-        this.project._actions.historic.movePointRightHandleInBezierCurvesOfScalarValues(
+        this.internalProject._actions.historic.movePointRightHandleInBezierCurvesOfScalarValues(
           {
             propAddress: this.props.propGetter('itemAddress'),
             pointIndex,
@@ -146,9 +146,9 @@ class GraphEditor extends ViewBase<IProps & IWithUtilsProps> {
 
   moveRightHandleTemp: TMoveSingleHandle = (pointIndex, newHandle) => {
     this.props.extremumsAPI.persist()
-    this.project.reduxStore.dispatch(
+    this.internalProject.reduxStore.dispatch(
       this.tempActionGroup.push(
-        this.project._actions.historic.movePointRightHandleInBezierCurvesOfScalarValues(
+        this.internalProject._actions.historic.movePointRightHandleInBezierCurvesOfScalarValues(
           {
             propAddress: this.props.propGetter('itemAddress'),
             pointIndex,
@@ -160,8 +160,8 @@ class GraphEditor extends ViewBase<IProps & IWithUtilsProps> {
   }
 
   makeLeftHandleHorizontal: TFnNeedsPointIndex = pointIndex => {
-    this.project.reduxStore.dispatch(
-      this.project._actions.historic.makePointLeftHandleHorizontalInBezierCurvesOfScalarValues(
+    this.internalProject.reduxStore.dispatch(
+      this.internalProject._actions.historic.makePointLeftHandleHorizontalInBezierCurvesOfScalarValues(
         {
           propAddress: this.props.propGetter('itemAddress'),
           pointIndex,
@@ -171,8 +171,8 @@ class GraphEditor extends ViewBase<IProps & IWithUtilsProps> {
   }
 
   makeRightHandleHorizontal: TFnNeedsPointIndex = pointIndex => {
-    this.project.reduxStore.dispatch(
-      this.project._actions.historic.makePointRightHandleHorizontalInBezierCurvesOfScalarValues(
+    this.internalProject.reduxStore.dispatch(
+      this.internalProject._actions.historic.makePointRightHandleHorizontalInBezierCurvesOfScalarValues(
         {
           propAddress: this.props.propGetter('itemAddress'),
           pointIndex,

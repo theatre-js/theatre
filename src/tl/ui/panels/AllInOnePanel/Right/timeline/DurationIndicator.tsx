@@ -59,7 +59,7 @@ export default class DurationIndicator extends UIComponent<IProps, IState> {
                 timelineWidth,
               )(realDuration)
 
-              const dimmerWidth = timelineWidth - dimmerX + 5
+              const dimmerWidth = timelineWidth - dimmerX - 1
 
               return (
                 <div {...classes('container', dragging && 'dragging')}>
@@ -97,7 +97,7 @@ export default class DurationIndicator extends UIComponent<IProps, IState> {
     this.rangeAtStartOfDrag = coldVal(
       this.timeStuffRef.current!.values.rangeAndDuration.range,
     )
-    this.dragActionGroup = this.project._actions.historic.temp()
+    this.dragActionGroup = this.internalProject._actions.historic.temp()
     this.setState({dragging: true})
     this.rangeAndDurationLock = coldVal(
       this.timeStuffRef.current!.values.lockRangeAndDuration,
@@ -106,9 +106,9 @@ export default class DurationIndicator extends UIComponent<IProps, IState> {
 
   onDragEnd = (dragHappened: boolean) => {
     if (dragHappened) {
-      this.project._dispatch(this.dragActionGroup.commit())
+      this.internalProject._dispatch(this.dragActionGroup.commit())
     } else {
-      this.project._dispatch(this.dragActionGroup.discard())
+      this.internalProject._dispatch(this.dragActionGroup.discard())
     }
     this.setState({dragging: false})
 
@@ -137,9 +137,9 @@ export default class DurationIndicator extends UIComponent<IProps, IState> {
       this.timeStuffRef.current!.values.internalTimeline,
     ).address
 
-    this.project._dispatch(
+    this.internalProject._dispatch(
       this.dragActionGroup.push(
-        this.project._actions.historic.setTimelineDuration({
+        this.internalProject._actions.historic.setTimelineDuration({
           duration: newDuration,
           ...timelineAddress,
         }),

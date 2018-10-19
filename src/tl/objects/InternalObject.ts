@@ -14,7 +14,7 @@ export default class InternalObject {
   adapter: void | NativeObjectAdapter
 
   public get _project() {
-    return this.internalTimeline.project
+    return this.internalTimeline.internalProject
   }
 
   public get _pointerToState() {
@@ -29,7 +29,7 @@ export default class InternalObject {
   ) {
     this._address = {...internalTimeline._address, objectPath: path}
     const type = getTypeOfNativeObject(
-      this.internalTimeline.project,
+      this.internalTimeline.internalProject,
       initialNativeObject,
       initialNativeobjectConfig,
     )
@@ -41,7 +41,7 @@ export default class InternalObject {
     this.nativeObjectType = type
 
     this.adapter = getAdapterOfNativeObject(
-      this.internalTimeline.project,
+      this.internalTimeline.internalProject,
       initialNativeObject,
       initialNativeobjectConfig,
     )

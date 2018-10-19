@@ -29,7 +29,7 @@ export default class PrimitiveProp extends UIComponent<IProps, IState> {
   constructor(props: IProps, context: $IntentionalAny) {
     super(props, context)
     this.state = {settingInput: false}
-    this.tempActionGroup = this.project._actions.historic.temp()
+    this.tempActionGroup = this.internalProject._actions.historic.temp()
   }
 
   toggleExpansion = () => {
@@ -59,7 +59,7 @@ export default class PrimitiveProp extends UIComponent<IProps, IState> {
     // const objectInstance = timelineInstance.getObject(item.address.objectPath)
 
     const propStateP = projectSelectors.historic.getPropState(
-      this.project.atomP.historic,
+      this.internalProject.atomP.historic,
       item.address,
     )
 
@@ -105,13 +105,13 @@ export default class PrimitiveProp extends UIComponent<IProps, IState> {
     // const objectInstance = timelineInstance.getObject(item.address.objectPath)
 
     const propState = projectSelectors.historic.getPropState(
-      this.project.reduxStore.getState().historic,
+      this.internalProject.reduxStore.getState().historic,
       item.address,
     )
 
     if (!propState) {
-      this.project._dispatch(
-        this.project._actions.historic.prop_convertPropToStaticValue(
+      this.internalProject._dispatch(
+        this.internalProject._actions.historic.prop_convertPropToStaticValue(
           item.address,
         ),
       )
@@ -121,40 +121,17 @@ export default class PrimitiveProp extends UIComponent<IProps, IState> {
     const valueContainer = propState.valueContainer
 
     if (!valueContainer || valueContainer.type === 'StaticValueContainer') {
-      this.project._dispatch(
-        this.project._actions.historic.prop_convertPropToBezierCurves(
+      this.internalProject._dispatch(
+        this.internalProject._actions.historic.prop_convertPropToBezierCurves(
           item.address,
         ),
       )
     } else {
-      this.project._dispatch(
-        this.project._actions.historic.prop_convertPropToStaticValue(
+      this.internalProject._dispatch(
+        this.internalProject._actions.historic.prop_convertPropToStaticValue(
           item.address,
         ),
       )
     }
   }
-
-  // temporarilySetValueForStaticContainer = (value: number) => {
-  //   this.project._dispatch(
-  //     this.tempActionGroup.push(this._changeValueAction(value)),
-  //   )
-  // }
-
-  // discardTemporaryValue = () => {
-  //   this.project.reduxStore.dispatch(this.tempActionGroup.discard())
-  // }
-
-  // permenantlySetValueForStaticContainer = (v: number) => {
-  //   this.project._dispatch(
-  //     this.tempActionGroup.discard(),
-  //     this._changeValueAction(v),
-  //   )
-  // }
-
-  // private _changeValueAction(value: number): GenericAction {
-  //   return this.project._actions.historic.prop_setNumberValueInStaticValueContainer(
-  //     {...this.props.item.address, value},
-  //   )
-  // }
 }

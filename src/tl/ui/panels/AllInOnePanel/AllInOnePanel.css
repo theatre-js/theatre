@@ -26,7 +26,7 @@
   top: 0;
   left: 0;
   width: 200px;
-  overflow-x: scroll;
+  overflow-x: visible;
 }
 
 .right {
