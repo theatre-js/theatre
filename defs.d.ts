@@ -42,6 +42,7 @@ type CommonEnvironmentVariables = {
     uiPersistenceKey: string
     projectPersistencePrefix: string
     currentProjectStateDefinitionVersion: string
+    isCore?: boolean
   }
   KEEPING_DERIVATION_TRACES: boolean
   TRACKING_COLD_DERIVATIONS: boolean
@@ -164,6 +165,7 @@ declare module 'hoist-non-react-statics' {
 }
 
 declare module 'jiff'
+declare module '*.json'
 
 declare module 'propose' {
   const propose: (

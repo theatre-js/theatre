@@ -27,6 +27,11 @@ module.exports = (env: Envs) => {
       entries: {
         index: [`./src/tl/entries/${which}.ts`],
       },
+      extraEnv: {
+        tl: {
+          isCore: which === 'core',
+        },
+      },
     })
 
     return immer(parts.config, c => {
@@ -40,11 +45,14 @@ module.exports = (env: Envs) => {
         // c.plugins.push(new webpack.IgnorePlugin(/\/types\.tsx?$/), new webpack.IgnorePlugin(/ioTypes/))
 
         // c.plugins.unshift()
-        c.module.rules.unshift({
-          test: [/\/types\.tsx?$/, /lodash/],
-          use: 'null-loader',
-          exclude: /node_modules/
-        })
+        if (which === 'core') {
+          // exclude all runtime types if we're building for core in production
+          c.module.rules.unshift({
+            test: [/\/types\.tsx?$/, /lodash/],
+            use: 'null-loader',
+            exclude: /node_modules/,
+          })
+        }
 
         c.plugins.push(
           new BundleAnalyzerPlugin({
@@ -78,4 +86,3 @@ module.exports = (env: Envs) => {
     })
   }
 }
-

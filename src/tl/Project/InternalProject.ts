@@ -50,13 +50,12 @@ export default class InternalProject {
    * @todo should we have a human-readable name for each project too?
    */
   constructor(readonly id: string, readonly config: Conf = {}) {
-    if (config.state) validateOnDiskState(this, config.state)
     projectsSingleton.add(id, this)
     this.adapters = new NativeObjectAdaptersManager(this)
     this.reduxStore = configureStore({
       rootReducer,
       devtoolsOptions: {
-        name: 'TheaterJS Project ' + id,
+        name: 'Theatre.js Project ' + id,
       },
     })
     this.atom = atomFromReduxStore(this.reduxStore)
@@ -86,12 +85,7 @@ export default class InternalProject {
     // startPersisting(this.reduxStore, this._actions, 'project:' + id)
   }
 
-  getTimeline(_path: string, instanceId: string = 'default'): TimelineInstance {
-    const path = validateAndSanitiseSlashedPathOrThrow(
-      _path,
-      'project.getTimeline',
-    )
-
+  getTimeline(path: string, instanceId: string = 'default'): TimelineInstance {
     let instance = this._timelineInstances.getIn([path, instanceId])
     if (!instance) {
       instance = new TimelineInstance(this, path, instanceId)

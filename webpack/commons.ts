@@ -4,7 +4,7 @@ import * as WebpackNotifierPlugin from 'webpack-notifier'
 import * as webpack from 'webpack'
 import * as CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin'
 import * as TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
-import {mapValues, isPlainObject, mapKeys} from 'lodash'
+import {mapValues, isPlainObject, mapKeys, merge as mergeDeep} from 'lodash'
 import * as ErrorOverlayPlugin from 'error-overlay-webpack-plugin'
 
 export const context = path.resolve(__dirname, '..')
@@ -35,6 +35,7 @@ export type Options = {
   entries?: {[key: string]: string[]}
   withDevServer?: boolean
   withServerSideHotLoading?: boolean
+  extraEnv?: {[key: string]: {}}
 }
 
 const babelForTsHotReloading = () => ({
@@ -67,9 +68,11 @@ export const makeConfigParts = (options: Options) => {
   // @ts-ignore
   global.$$$NODE_ENV = options.env
 
-  const nodeEnv = isDev ? {} : require('./env/nodeEnv')
+  const nodeEnv = isDev ? {} : {...require('./env/nodeEnv')}
+  mergeDeep(nodeEnv, options.extraEnv || {})
+
   const envStuff: {[k: string]: string} = {}
-  const process = (v, ns: string[]) => {
+  const process = (v: $IntentionalAny, ns: string[]) => {
     if (isPlainObject(v)) {
       Object.keys(v).forEach(key => {
         process(v[key], [...ns, key])
@@ -292,6 +295,7 @@ export const makeConfigParts = (options: Options) => {
       packageDevSpecificConfig.devServerPort
     }/`
 
+    // @ts-ignore ignore
     config.devServer = {
       host: '0.0.0.0',
       hot: true,

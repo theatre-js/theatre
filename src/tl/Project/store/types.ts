@@ -130,7 +130,7 @@ const $ObjectPropState = t.type(
 
 const $InternalObjectState = t.type(
   {
-    props: t.record(t.string, $ObjectPropState),
+    props: t.record(t.string, $ObjectPropState, 'InternalObjectState'),
   },
   'InternalObjectState',
 )
@@ -139,7 +139,7 @@ export type InternalObjectState = t.StaticTypeOf<typeof $InternalObjectState>
 
 const $InternalTimelineState = t.type(
   {
-    objects: t.record(t.string, $InternalObjectState),
+    objects: t.record(t.string, $InternalObjectState, 'InternalTimelineObjects'),
     duration: t.maybe(t.number),
   },
   'InternalTimelineState',
@@ -153,8 +153,8 @@ export type InternalTimelineState = t.StaticTypeOf<
  * Historic state is both persisted and is undoable
  */
 export const $ProjectHistoricState = t.type({
-  internalTimelines: t.record(t.string, $InternalTimelineState),
-})
+  internalTimelines: t.record(t.string, $InternalTimelineState, 'MapOfInternalTimelines'),
+}, 'ProjectHistoricState')
 
 export type ProjectHistoricState = t.StaticTypeOf<typeof $ProjectHistoricState>
 
@@ -180,7 +180,7 @@ export type OnDiskState = t.StaticTypeOf<typeof $OnDiskState>
 export const $OnBrowserState = t.type(
   {
     projectHistory: $HistoryOnly($ProjectHistoricState),
-    basedOnRevisions: t.array(t.string),
+    basedOnRevisions: t.array(t.string, 'BasedOnRevisions'),
   },
   'OnBrowserState',
 )

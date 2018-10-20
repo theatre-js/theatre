@@ -167,17 +167,3 @@ const persistOnBrowser = (storageKey: string, state: OnBrowserState) => {
   const string = JSON.stringify(state)
   localStorage.setItem(storageKey, string)
 }
-
-export const validateOnDiskState = (internalProject: InternalProject, s: OnDiskState) => {
-  if (
-    Array.isArray(s) ||
-    s == null ||
-    s.definitionVersion !== $env.tl.currentProjectStateDefinitionVersion
-  ) {
-    throw new Error(
-      `Error validating conf.state in new Project(${JSON.stringify(
-        internalProject.id,
-      )}, conf). The state seems to be formatted in a way that is unreadable to TheatreJS.`,
-    )
-  }
-}
