@@ -1,3 +1,3 @@
-import Project from '$tl/Project/Project'
+import Project from '$tl/facades/ProjectFacade'
 
 export {Project}

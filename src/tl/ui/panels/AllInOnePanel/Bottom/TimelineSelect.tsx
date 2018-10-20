@@ -30,24 +30,24 @@ export default class TimelineSelect extends UIComponent<IProps, IState> {
         {stuffP => (
           <PropsAsPointer state={this.state}>
             {({state: stateP}) => {
-              const internalProject = val(stuffP.internalProject)
-              if (!internalProject) return null
-              const internalTimeline = val(stuffP.internalTimeline)
-              const internalTimelines = val(internalProject._internalTimelines.pointer)
+              const project = val(stuffP.project)
+              if (!project) return null
+              const timelineTemplate = val(stuffP.timelineTemplate)
+              const timelineTemplates = val(project._timelineTemplates.pointer)
               const multiLevelItems = convertInternalTimelinesToItems(
-                internalTimelines,
+                timelineTemplates,
               )
-              const activePath = !!internalTimeline
-                ? internalTimeline._path.split(' / ')
+              const activePath = !!timelineTemplate
+                ? timelineTemplate._path.split(' / ')
                 : []
               const onSelect = (path: string) =>
-                this.selectInternalTimeline(internalProject.id, path)
+                this.selectInternalTimeline(project.id, path)
               return (
                 <>
                   {val(stateP.menuOpen) &&
-                    (internalTimeline && (
+                    (timelineTemplate && (
                       <FlyoutSearchableList
-                        options={Object.keys(internalTimelines)}
+                        options={Object.keys(timelineTemplates)}
                         onSelect={onSelect}
                         close={this.closeMenu}
                       >
@@ -63,10 +63,13 @@ export default class TimelineSelect extends UIComponent<IProps, IState> {
                       </FlyoutSearchableList>
                     ))}
 
-                  {!internalTimeline && (
+                  {!timelineTemplate && (
                     <>
                       <FullSizeHint>
-                        <TextBlock>Next, you need to create a timeline to put your objects in:</TextBlock>
+                        <TextBlock>
+                          Next, you need to create a timeline to put your
+                          objects in:
+                        </TextBlock>
                         <CodeSnippet>
                           const timeline = project.getTimeline('A timeline')
                         </CodeSnippet>
@@ -75,9 +78,9 @@ export default class TimelineSelect extends UIComponent<IProps, IState> {
                     </>
                   )}
                   <Item onClick={this.onClick}>
-                    {!internalTimeline
+                    {!timelineTemplate
                       ? 'No timelines yet'
-                      : internalTimeline._path}
+                      : timelineTemplate._path}
                   </Item>
                 </>
               )

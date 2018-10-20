@@ -5,7 +5,7 @@ import React from 'react'
 import * as css from './Left.css'
 import {val} from '$shared/DataVerse2/atom'
 import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
-import {internalTimelineToSeriesOfVerticalItems} from '../utils'
+import {timelineTemplateToSeriesOfVerticalItems} from '../utils'
 import GroupingOrObject from './items/GroupingOrObject'
 import PrimitiveProp from './items/PrimitiveProp'
 import {
@@ -35,14 +35,14 @@ export default class Left extends UIComponent<IProps, IState> {
                 const timelineInstance = val(
                   allInOnePanelStuffP.timelineInstance,
                 )
-                const internalTimeline = val(
-                  allInOnePanelStuffP.internalTimeline,
+                const timelineTemplate = val(
+                  allInOnePanelStuffP.timelineTemplate,
                 )
-                if (!timelineInstance || !internalTimeline) return null
+                if (!timelineInstance || !timelineTemplate) return null
 
-                const items = internalTimelineToSeriesOfVerticalItems(
+                const items = timelineTemplateToSeriesOfVerticalItems(
                   this.ui,
-                  internalTimeline,
+                  timelineTemplate,
                 )
 
                 const lastItem = items[items.length - 1]

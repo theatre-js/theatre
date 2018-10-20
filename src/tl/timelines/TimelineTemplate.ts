@@ -1,4 +1,4 @@
-import InternalProject from '$tl/Project/InternalProject'
+import Project from '$tl/Project/Project'
 import InternalObject from '$tl/objects/InternalObject'
 import {NativeObjectTypeConfig} from '$tl/objects/objectTypes'
 import atom, {
@@ -22,7 +22,7 @@ import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation
 //   temporarilyLimitedPlayRange: null | {from: number; to: number}
 // }
 
-export default class InternalTimeline {
+export default class TimelineTemplate {
   _address: TimelineAddress
 
   _playableRangeD: undefined | AbstractDerivation<{start: number; end: number}>
@@ -33,15 +33,15 @@ export default class InternalTimeline {
 
   readonly _durationD = autoDerive(() => {
     return val(
-      this.internalProject._selectors.historic.getTimelineDuration(
-        this.internalProject.atomP.historic,
+      this.project._selectors.historic.getTimelineDuration(
+        this.project.atomP.historic,
         this.address,
       ),
     )
   })
 
   public get _pointerToState() {
-    return this.internalProject.atomP.historic.internalTimelines[this._path]
+    return this.project.atomP.historic.timelineTemplates[this._path]
   }
 
   // protected _rangeState: Atom<RangeState> = atom({
@@ -52,9 +52,9 @@ export default class InternalTimeline {
 
   // public pointerToRangeState: Pointer<RangeState>
 
-  constructor(readonly internalProject: InternalProject, readonly _path: string) {
+  constructor(readonly project: Project, readonly _path: string) {
     // this.pointerToRangeState = this._rangeState.pointer
-    this._address = {...this.internalProject._address, timelinePath: _path}
+    this._address = {...this.project._address, timelinePath: _path}
     this._playableRangeD = undefined
   }
 

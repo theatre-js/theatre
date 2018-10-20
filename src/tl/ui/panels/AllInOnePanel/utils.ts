@@ -1,4 +1,4 @@
-import InternalTimeline from '$tl/timelines/InternalTimeline'
+import TimelineTemplate from '$tl/timelines/TimelineTemplate'
 import {val} from '$shared/DataVerse2/atom'
 import InternalObject from '$tl/objects/InternalObject'
 import uiSelectors from '$tl/ui/store/selectors'
@@ -107,16 +107,16 @@ type ExcludeHeight<O> = Pick<O, Exclude<keyof O, 'height'>>
 export type AnyItem = GroupingItem | ObjectItem | PrimitivePropItem
 export const singleItemHeight = 30
 
-export const internalTimelineToSeriesOfVerticalItems = (
+export const timelineTemplateToSeriesOfVerticalItems = (
   ui: UI,
-  internalTimeline: InternalTimeline,
+  timelineTemplate: TimelineTemplate,
 ): AnyItem[] => {
   const items: AnyItem[] = []
   let heightSoFar = 0
 
   const collapsedNodes = val(uiSelectors.historic.getCollapsedNodesOfTimelineByPath(
     ui.atomP.historic,
-    internalTimeline._address,
+    timelineTemplate._address,
   ))
 
   const setOfCollapsedNodes = new Set(Object.keys(collapsedNodes || {}))
@@ -133,7 +133,7 @@ export const internalTimelineToSeriesOfVerticalItems = (
     heightSoFar += height
   }
 
-  const internalObjects = val(internalTimeline._internalObjects.pointer)
+  const internalObjects = val(timelineTemplate._internalObjects.pointer)
 
   const allPaths = Object.keys(internalObjects)
   const {rootNode, nodeDescriptorsByPath} = turnPathsIntoHierarchy(allPaths)
@@ -145,7 +145,7 @@ export const internalTimelineToSeriesOfVerticalItems = (
     const hasChildren = node.children.length > 0
 
     const internalObject = val(
-      internalTimeline._internalObjects.pointer[node.path],
+      timelineTemplate._internalObjects.pointer[node.path],
     )
 
     push(
@@ -183,7 +183,7 @@ export const internalTimelineToSeriesOfVerticalItems = (
 
     const path = node.path
 
-    const internalObject = val(internalTimeline._internalObjects.pointer[path])
+    const internalObject = val(timelineTemplate._internalObjects.pointer[path])
 
     const nativeObjectType = internalObject.nativeObjectType
     const props = nativeObjectType.props

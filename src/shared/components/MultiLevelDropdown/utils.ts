@@ -1,11 +1,11 @@
 import memoizeOne from 'memoize-one'
 import {TItems} from '$shared/components/MultiLevelDropdown/MultiLevelDropdown'
-import InternalTimeline from '$tl/timelines/InternalTimeline'
+import TimelineTemplate from '$tl/timelines/TimelineTemplate'
 import {flatMap} from '$shared/utils'
 import {get, setImmutable as set} from '$shared/utils'
 
 type TInternalTimelines = {
-  [path: string]: InternalTimeline
+  [path: string]: TimelineTemplate
 }
 
 export const convertInternalTimelinesToItems = memoizeOne(

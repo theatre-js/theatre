@@ -44,7 +44,7 @@ class Settings extends UIComponent<IProps, IState> {
           <ExportModal
             onClose={this.closeExportModal}
             exportString={this.state.exportString}
-            internalProject={this.internalProject}
+            project={this.project}
           />
         )}
         <Item onClick={this.onClick}>
@@ -58,18 +58,18 @@ class Settings extends UIComponent<IProps, IState> {
 
   onSelect = (selectedOption: string) => {
     if (selectedOption === 'Export') {
-      const historicState = this.internalProject.reduxStore.getState().historic[
+      const historicState = this.project.reduxStore.getState().historic[
         '@@history'
       ].innerState
 
-      this.internalProject._dispatch(
-        this.internalProject._actions.ephemeral.prepareExportJson({
+      this.project._dispatch(
+        this.project._actions.ephemeral.prepareExportJson({
           historicState,
         }),
       )
 
       const exportString = JSON.stringify(
-        this.internalProject.reduxStore.getState().ephemeral.lastExportedObject,
+        this.project.reduxStore.getState().ephemeral.lastExportedObject,
         null,
         2,
       )

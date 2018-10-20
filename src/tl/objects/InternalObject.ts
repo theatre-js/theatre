@@ -1,4 +1,4 @@
-import InternalTimeline from '$tl/timelines/InternalTimeline'
+import TimelineTemplate from '$tl/timelines/TimelineTemplate'
 import {
   NativeObjectTypeConfig,
   getTypeOfNativeObject,
@@ -14,22 +14,22 @@ export default class InternalObject {
   adapter: void | NativeObjectAdapter
 
   public get _project() {
-    return this.internalTimeline.internalProject
+    return this.timelineTemplate.project
   }
 
   public get _pointerToState() {
-    return this.internalTimeline._pointerToState.objects[this.path]
+    return this.timelineTemplate._pointerToState.objects[this.path]
   }
 
   constructor(
-    readonly internalTimeline: InternalTimeline,
+    readonly timelineTemplate: TimelineTemplate,
     readonly path: string,
     initialNativeObject: $FixMe,
     initialNativeobjectConfig: NativeObjectTypeConfig | undefined,
   ) {
-    this._address = {...internalTimeline._address, objectPath: path}
+    this._address = {...timelineTemplate._address, objectPath: path}
     const type = getTypeOfNativeObject(
-      this.internalTimeline.internalProject,
+      this.timelineTemplate.project,
       initialNativeObject,
       initialNativeobjectConfig,
     )
@@ -41,7 +41,7 @@ export default class InternalObject {
     this.nativeObjectType = type
 
     this.adapter = getAdapterOfNativeObject(
-      this.internalTimeline.internalProject,
+      this.timelineTemplate.project,
       initialNativeObject,
       initialNativeobjectConfig,
     )

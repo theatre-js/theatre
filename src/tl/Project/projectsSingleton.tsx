@@ -1,8 +1,8 @@
-import InternalProject from './InternalProject'
+import Project from './Project'
 import {Atom} from '$shared/DataVerse2/atom'
 
 export interface State {
-  projects: Record<string, InternalProject>
+  projects: Record<string, Project>
 }
 
 class ProjectsSingleton {
@@ -11,17 +11,17 @@ class ProjectsSingleton {
     this.atom = new Atom({projects: {}})
   }
 
-  add(id: string, internalProject: InternalProject) {
+  add(id: string, project: Project) {
     if (this.has(id))
       throw new Error(
         `Looks like you're calling \`new Project("${id}")\` twice. 
         If you're trying to make two separate projects, make sure to
         assign a unique ID to each of them. `,
       )
-    this.atom.reduceState(['projects', id], () => internalProject)
+    this.atom.reduceState(['projects', id], () => project)
   }
 
-  get(id: string): InternalProject | undefined {
+  get(id: string): Project | undefined {
     return this.atom.getState().projects[id]
   }
 

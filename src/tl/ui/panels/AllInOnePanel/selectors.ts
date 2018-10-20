@@ -1,16 +1,16 @@
 import UI from '$tl/ui/UI'
 import {val} from '$shared/DataVerse2/atom'
 import projectsSingleton from '$tl/Project/projectsSingleton'
-import InternalProject from '$tl/Project/InternalProject'
-import InternalTimeline from '$tl/timelines/InternalTimeline'
-import TimelineInstance from '$tl/timelines/TimelineInstance'
+import Project from '$tl/Project/Project'
+import TimelineTemplate from '$tl/timelines/TimelineTemplate'
+import InternalTimelineInstance from '$tl/timelines/InternalTimelineInstance'
 import uiSelectors from '$tl/ui/store/selectors'
 
 export const getProjectSelectionState = (
   ui: UI,
-): {projects: Record<string, InternalProject>} & (
+): {projects: Record<string, Project>} & (
   | {areThereProjects: false; selectedProject: undefined}
-  | {areThereProjects: true; selectedProject: InternalProject}) => {
+  | {areThereProjects: true; selectedProject: Project}) => {
   const projects = val(projectsSingleton.atom.pointer.projects)
   const areThereProjects = Object.keys(projects).length > 0
 
@@ -25,42 +25,42 @@ export const getProjectSelectionState = (
 
 export const getSelectedInternalTimeline = (
   ui: UI,
-  internalProject: InternalProject,
-): undefined | InternalTimeline => {
+  project: Project,
+): undefined | TimelineTemplate => {
   const userSelectedTimelinePath = val(
-    ui.atomP.historic.allInOnePanel.projects[internalProject.id].selectedTimeline,
+    ui.atomP.historic.allInOnePanel.projects[project.id].selectedTimeline,
   )
 
   if (userSelectedTimelinePath) {
     const userSelectedInternalTimeline = val(
-      internalProject._internalTimelines.pointer[userSelectedTimelinePath],
+      project._timelineTemplates.pointer[userSelectedTimelinePath],
     )
 
     if (userSelectedInternalTimeline) return userSelectedInternalTimeline
   }
-  const internalTimelines = val(internalProject._internalTimelines.pointer)
+  const timelineTemplates = val(project._timelineTemplates.pointer)
 
-  const timelinePaths = Object.keys(internalTimelines)
+  const timelinePaths = Object.keys(timelineTemplates)
   const areThereTimelines = timelinePaths.length > 0
   if (!areThereTimelines) return undefined
 
-  return internalTimelines[timelinePaths[0]]
+  return timelineTemplates[timelinePaths[0]]
 }
 
 export const getSelectedTimelineInstance = (
   ui: UI,
-  internalProject: InternalProject,
-  internalTimeline: InternalTimeline,
-): undefined | TimelineInstance => {
+  project: Project,
+  timelineTemplate: TimelineTemplate,
+): undefined | InternalTimelineInstance => {
   const userDesiredInstanceId = val(
-    ui.atomP.historic.allInOnePanel.projects[internalProject.id].timelines[
-      internalTimeline._path
+    ui.atomP.historic.allInOnePanel.projects[project.id].timelines[
+      timelineTemplate._path
     ].selectedTimelineInstance,
   )
 
   if (userDesiredInstanceId) {
     const possibleInstance = val(
-      internalProject._timelineInstances.pointer[internalTimeline._path][
+      project._timelineInstances.pointer[timelineTemplate._path][
         userDesiredInstanceId
       ],
     )
@@ -69,7 +69,7 @@ export const getSelectedTimelineInstance = (
   }
 
   const instances = val(
-    internalProject._timelineInstances.pointer[internalTimeline._path],
+    project._timelineInstances.pointer[timelineTemplate._path],
   )
 
   if (!instances) return
@@ -86,11 +86,11 @@ export const getSelectedTimelineInstance = (
 }
 
 export const getTimelineInstances = (
-  internalProject: InternalProject,
-  internalTimeline: InternalTimeline,
+  project: Project,
+  timelineTemplate: TimelineTemplate,
 ) => {
   const instances = val(
-    internalProject._timelineInstances.pointer[internalTimeline._path],
+    project._timelineInstances.pointer[timelineTemplate._path],
   )
 
   return instances
@@ -103,22 +103,22 @@ export const getTimelineInstances = (
 export const getProjectTimelineAndInstance = (
   ui: UI,
 ): {
-  internalProject: InternalProject
-  internalTimeline: InternalTimeline
-  timelineInstance: TimelineInstance
+  project: Project
+  timelineTemplate: TimelineTemplate
+  timelineInstance: InternalTimelineInstance
 } => {
-  const internalProject = uiSelectors.historic.getSelectedProject(ui)
-  const internalTimeline = internalProject
-    ? getSelectedInternalTimeline(ui, internalProject)
+  const project = uiSelectors.historic.getSelectedProject(ui)
+  const timelineTemplate = project
+    ? getSelectedInternalTimeline(ui, project)
     : undefined
 
-  const timelineInstance = internalTimeline
+  const timelineInstance = timelineTemplate
     ? getSelectedTimelineInstance(
         ui,
-        internalProject as $IntentionalAny,
-        internalTimeline,
+        project as $IntentionalAny,
+        timelineTemplate,
       )
     : undefined
 
-  return {internalProject, internalTimeline, timelineInstance} as $IntentionalAny
+  return {project, timelineTemplate, timelineInstance} as $IntentionalAny
 }

@@ -107,10 +107,10 @@ class Dopesheet extends ViewBase<IProps & IWithUtilsProps> {
     const point = points[pointIndex]
     const nextPoint = points[pointIndex + 1]
 
-    this.internalProject.reduxStore.dispatch(
-      this.internalProject._actions.batched([
+    this.project.reduxStore.dispatch(
+      this.project._actions.batched([
         this.tempActionGroup.discard(),
-        this.internalProject._actions.historic.moveDopesheetConnectorInBezierCurvesOfScalarValues(
+        this.project._actions.historic.moveDopesheetConnectorInBezierCurvesOfScalarValues(
           {
             propAddress: propGetter('itemAddress'),
             leftPoint: {
@@ -135,9 +135,9 @@ class Dopesheet extends ViewBase<IProps & IWithUtilsProps> {
     const point = points[pointIndex]
     const nextPoint = points[pointIndex + 1]
 
-    this.internalProject.reduxStore.dispatch(
+    this.project.reduxStore.dispatch(
       this.tempActionGroup.push(
-        this.internalProject._actions.historic.moveDopesheetConnectorInBezierCurvesOfScalarValues(
+        this.project._actions.historic.moveDopesheetConnectorInBezierCurvesOfScalarValues(
           {
             propAddress: propGetter('itemAddress'),
             leftPoint: {

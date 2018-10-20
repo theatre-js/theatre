@@ -97,7 +97,7 @@ export default class DurationIndicator extends UIComponent<IProps, IState> {
     this.rangeAtStartOfDrag = coldVal(
       this.timeStuffRef.current!.values.rangeAndDuration.range,
     )
-    this.dragActionGroup = this.internalProject._actions.historic.temp()
+    this.dragActionGroup = this.project._actions.historic.temp()
     this.setState({dragging: true})
     this.rangeAndDurationLock = coldVal(
       this.timeStuffRef.current!.values.lockRangeAndDuration,
@@ -106,9 +106,9 @@ export default class DurationIndicator extends UIComponent<IProps, IState> {
 
   onDragEnd = (dragHappened: boolean) => {
     if (dragHappened) {
-      this.internalProject._dispatch(this.dragActionGroup.commit())
+      this.project._dispatch(this.dragActionGroup.commit())
     } else {
-      this.internalProject._dispatch(this.dragActionGroup.discard())
+      this.project._dispatch(this.dragActionGroup.discard())
     }
     this.setState({dragging: false})
 
@@ -134,12 +134,12 @@ export default class DurationIndicator extends UIComponent<IProps, IState> {
     const newDuration = humanReadableDuration
 
     const timelineAddress = coldVal(
-      this.timeStuffRef.current!.values.internalTimeline,
+      this.timeStuffRef.current!.values.timelineTemplate,
     ).address
 
-    this.internalProject._dispatch(
+    this.project._dispatch(
       this.dragActionGroup.push(
-        this.internalProject._actions.historic.setTimelineDuration({
+        this.project._actions.historic.setTimelineDuration({
           duration: newDuration,
           ...timelineAddress,
         }),

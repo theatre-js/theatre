@@ -1,4 +1,4 @@
-import InternalProject from './InternalProject'
+import Project from './Project'
 import {OnDiskState, OnBrowserState} from '$tl/Project/store/types'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 import {val} from '$shared/DataVerse2/atom'
@@ -7,8 +7,8 @@ import {Pointer} from '$shared/DataVerse2/pointer'
 
 export default class ProjectPersistor {
   _storageKey: string
-  constructor(readonly internalProject: InternalProject) {
-    this._storageKey = $env.tl.projectPersistencePrefix + internalProject.id
+  constructor(readonly project: Project) {
+    this._storageKey = $env.tl.projectPersistencePrefix + project.id
     this._initialize().then(
       () => {},
       error => {
@@ -24,7 +24,7 @@ export default class ProjectPersistor {
   }
 
   async _load() {
-    const onDiskState = this.internalProject.config.state
+    const onDiskState = this.project.config.state
     const browserState = getBrowserPersistedState(this._storageKey)
 
     if (!browserState) {
@@ -50,33 +50,33 @@ export default class ProjectPersistor {
   }
 
   async _useOnDiskState(onDiskState: OnDiskState) {
-    const {internalProject} = this
-    internalProject._dispatch(
-      internalProject._actions.historic.__unsafe_clearHistoryAndReplaceInnerState(
+    const {project} = this
+    project._dispatch(
+      project._actions.historic.__unsafe_clearHistoryAndReplaceInnerState(
         onDiskState.projectState,
       ),
-      internalProject._actions.ephemeral.setLoadingStateToLoaded({
+      project._actions.ephemeral.setLoadingStateToLoaded({
         diskRevisionsThatBrowserStateIsBasedOn: [onDiskState.revision],
       }),
     )
   }
 
   async _useInitialState() {
-    const {internalProject} = this
-    internalProject._dispatch(
-      internalProject._actions.ephemeral.setLoadingStateToLoaded({
+    const {project} = this
+    project._dispatch(
+      project._actions.ephemeral.setLoadingStateToLoaded({
         diskRevisionsThatBrowserStateIsBasedOn: [],
       }),
     )
   }
 
   async _useBrowserState(browserState: OnBrowserState) {
-    const {internalProject} = this
-    internalProject._dispatch(
-      internalProject._actions.historic.__unsafe_replaceHistory(
+    const {project} = this
+    project._dispatch(
+      project._actions.historic.__unsafe_replaceHistory(
         browserState.projectHistory,
       ),
-      internalProject._actions.ephemeral.setLoadingStateToLoaded({
+      project._actions.ephemeral.setLoadingStateToLoaded({
         diskRevisionsThatBrowserStateIsBasedOn: browserState.basedOnRevisions,
       }),
     )
@@ -86,10 +86,10 @@ export default class ProjectPersistor {
     browserState: OnBrowserState,
     onDiskState: OnDiskState,
   ) {
-    const {internalProject} = this
+    const {project} = this
 
-    internalProject._dispatch(
-      internalProject._actions.ephemeral.setLoadingStateToBrowserStateIsNotBasedOnDiskStateError(
+    project._dispatch(
+      project._actions.ephemeral.setLoadingStateToBrowserStateIsNotBasedOnDiskStateError(
         {
           onDiskState,
           browserState,
@@ -99,23 +99,23 @@ export default class ProjectPersistor {
   }
 
   _loadOnDiskStateIntoRedux(s: OnDiskState) {
-    this.internalProject.reduxStore.dispatch(
-      this.internalProject._actions.historic.__unsafe_clearHistoryAndReplaceInnerState(
+    this.project.reduxStore.dispatch(
+      this.project._actions.historic.__unsafe_clearHistoryAndReplaceInnerState(
         s,
       ),
     )
   }
 
   _loadBrowserPersistedStateIntoRedux(s: OnBrowserState) {
-    this.internalProject.reduxStore.dispatch(
-      this.internalProject._actions.historic.__unsafe_replaceHistory(s.projectHistory),
+    this.project.reduxStore.dispatch(
+      this.project._actions.historic.__unsafe_replaceHistory(s.projectHistory),
     )
   }
 
   async _startPersisting() {
-    const {atomP} = this.internalProject
+    const {atomP} = this.project
     const ephemeralStateP = atomP.ephemeral
-    const diskRevisionsThatBrowserStateIsBasedOnP = (this.internalProject._selectors.ephemeral.getDiskRevisionsBrowserStateIsBasedOn(
+    const diskRevisionsThatBrowserStateIsBasedOnP = (this.project._selectors.ephemeral.getDiskRevisionsBrowserStateIsBasedOn(
       ephemeralStateP,
     ) as $IntentionalAny) as Pointer<string[]>
 

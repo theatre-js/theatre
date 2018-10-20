@@ -15,8 +15,8 @@ import {
 } from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
-import InternalTimeline from '$tl/timelines/InternalTimeline'
-import {internalTimelineToSeriesOfVerticalItems} from '$tl/ui/panels/AllInOnePanel/utils'
+import TimelineTemplate from '$tl/timelines/TimelineTemplate'
+import {timelineTemplateToSeriesOfVerticalItems} from '$tl/ui/panels/AllInOnePanel/utils'
 import {
   TSelectionMove,
   TDims,
@@ -52,7 +52,7 @@ interface ISelectionProviderProps extends IExportedComponentProps {
   range: TRange
   duration: TDuration
   timelineWidth: number
-  internalTimeline: InternalTimeline
+  timelineTemplate: TimelineTemplate
 }
 
 interface IState {
@@ -90,7 +90,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
   selectedPoints: TSelectedPoints = {}
   extremumsOfItemsInSelection: TExtremumsMap = {}
   mapOfItemsData: TMapOfFilteredItemKeyToItemData = {}
-  tempActionGroup = this.internalProject._actions.historic.temp()
+  tempActionGroup = this.project._actions.historic.temp()
   lastCommittedData: TLastCommittedData
   getOffset: (x: number) => number = () => 0
 
@@ -278,8 +278,8 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
   }
 
   deletePointsInSelection = () => {
-    this.internalProject.reduxStore.dispatch(
-      this.internalProject._actions.historic.removeSelectionOfPointsInBezierCurvesOfScalarValues(
+    this.project.reduxStore.dispatch(
+      this.project._actions.historic.removeSelectionOfPointsInBezierCurvesOfScalarValues(
         this._getDataOfPointsToRemove(),
       ),
     )
@@ -287,7 +287,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
   }
 
   activateSelection = (event: React.MouseEvent<HTMLDivElement>) => {
-    this.mapOfItemsData = this._getMapOfItemsData(this.props.internalTimeline)
+    this.mapOfItemsData = this._getMapOfItemsData(this.props.timelineTemplate)
     const {layerX, layerY} = event.nativeEvent
 
     const itemsInfo = utils.memoizedGetItemsInfo(this.mapOfItemsData)
@@ -391,9 +391,9 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
   }
 
   applyChangesToSelectionTemp = () => {
-    this.internalProject.reduxStore.dispatch(
+    this.project.reduxStore.dispatch(
       this.tempActionGroup.push(
-        this.internalProject._actions.historic.moveSelectionOfPointsInBezierCurvesOfScalarValues(
+        this.project._actions.historic.moveSelectionOfPointsInBezierCurvesOfScalarValues(
           this._getPointsInSelectionDataAfterMove(),
         ),
       ),
@@ -401,10 +401,10 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
   }
 
   applyChangesToSelection = () => {
-    this.internalProject.reduxStore.dispatch(
-      this.internalProject._actions.batched([
+    this.project.reduxStore.dispatch(
+      this.project._actions.batched([
         this.tempActionGroup.discard(),
-        this.internalProject._actions.historic.moveSelectionOfPointsInBezierCurvesOfScalarValues(
+        this.project._actions.historic.moveSelectionOfPointsInBezierCurvesOfScalarValues(
           this.lastCommittedData,
         ),
       ]),
@@ -428,7 +428,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
   _updateSelectionState() {
     const {range, duration, timelineWidth} = this.props
     const {itemsInfo} = this.state
-    this.mapOfItemsData = this._getMapOfItemsData(this.props.internalTimeline)
+    this.mapOfItemsData = this._getMapOfItemsData(this.props.timelineTemplate)
     const dims = utils.getFittedDims(
       this.selectedPoints,
       range,
@@ -519,16 +519,16 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
   }
 
   _getMapOfItemsData = (
-    internalTimeline: InternalTimeline,
+    timelineTemplate: TimelineTemplate,
   ): TMapOfFilteredItemKeyToItemData => {
-    return internalTimelineToSeriesOfVerticalItems(
+    return timelineTemplateToSeriesOfVerticalItems(
       this.ui,
-      internalTimeline,
+      timelineTemplate,
     ).reduce(
       (mapOfItemsData, item) => {
         if (item.type !== 'PrimitiveProp') return mapOfItemsData
         const propStateP = projectSelectors.historic.getPropState(
-          this.internalProject.atomP.historic,
+          this.project.atomP.historic,
           item.address,
         )
 
@@ -577,10 +577,10 @@ export default (props: IExportedComponentProps) => (
     {rightStuffP => (
       <PropsAsPointer>
         {() => {
-          const internalTimeline = val(rightStuffP.internalTimeline)
+          const timelineTemplate = val(rightStuffP.timelineTemplate)
           const range = val(rightStuffP.rangeAndDuration.range)
           const duration = overshootDuration(
-            val(internalTimeline!._durationD),
+            val(timelineTemplate!._durationD),
           )
           const width = val(rightStuffP.viewportSpace.width)
 
@@ -588,7 +588,7 @@ export default (props: IExportedComponentProps) => (
             range,
             duration,
             timelineWidth: width,
-            internalTimeline: internalTimeline!,
+            timelineTemplate: timelineTemplate!,
             ...props,
           }
           return <SelectionProvider {...selectionProviderProps} />

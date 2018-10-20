@@ -4,7 +4,7 @@ import {TimelineAddress, ObjectAddress, PropAddress} from '$tl/handy/addresses'
 import {val} from '$shared/DataVerse2/atom'
 import projectsSingleton from '$tl/Project/projectsSingleton'
 import UI from '$tl/ui/UI'
-import InternalProject from '$tl/Project/InternalProject'
+import Project from '$tl/Project/Project'
 
 export const getTimelineState = pointerFriendlySelector(
   (s: UIHistoricState, addr: TimelineAddress) => {
@@ -42,7 +42,7 @@ export const getPropState = pointerFriendlySelector(
  * Note that the selected project WILL switch back to the user-defined one
  * if that project gets initialised at any point since the page is loaded.
  */
-export const getSelectedProject = (ui: UI): InternalProject | undefined => {
+export const getSelectedProject = (ui: UI): Project | undefined => {
   const projects = val(projectsSingleton.atom.pointer.projects)
 
   const projectIds = Object.keys(projects)

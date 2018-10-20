@@ -153,7 +153,7 @@ export type InternalTimelineState = t.StaticTypeOf<
  * Historic state is both persisted and is undoable
  */
 export const $ProjectHistoricState = t.type({
-  internalTimelines: t.record(t.string, $InternalTimelineState, 'MapOfInternalTimelines'),
+  timelineTemplates: t.record(t.string, $InternalTimelineState, 'MapOfInternalTimelines'),
 }, 'ProjectHistoricState')
 
 export type ProjectHistoricState = t.StaticTypeOf<typeof $ProjectHistoricState>

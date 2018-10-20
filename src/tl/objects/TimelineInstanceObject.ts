@@ -1,4 +1,4 @@
-import TimelineInstance from '$tl/timelines/TimelineInstance'
+import InternalTimelineInstance from '$tl/timelines/InternalTimelineInstance'
 import InternalObject from '$tl/objects/InternalObject'
 import {NativeObjectTypeConfig} from './objectTypes'
 import {VoidFn} from '$shared/types'
@@ -6,22 +6,22 @@ import didYouMean from '$shared/utils/didYouMean'
 import PropInstance from './PropInstance'
 import {mapValues} from '$shared/utils'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
-import InternalProject from '$tl/Project/InternalProject'
+import Project from '$tl/Project/Project'
 
 type Values = {[k: string]: $FixMe}
 
 export default class TimelineInstanceObject {
   _internalObject: InternalObject
   _propInstances: {[propName: string]: PropInstance} = {}
-  _project: InternalProject
+  _project: Project
   constructor(
-    readonly _timelineInstance: TimelineInstance,
+    readonly _timelineInstance: InternalTimelineInstance,
     readonly path: string,
     readonly nativeObject: $FixMe,
     readonly config: NativeObjectTypeConfig | undefined,
   ) {
     this._project = _timelineInstance._project
-    this._internalObject = this._timelineInstance._internalTimeline.getInternalObject(
+    this._internalObject = this._timelineInstance._timelineTemplate.getInternalObject(
       path,
       nativeObject,
       config,

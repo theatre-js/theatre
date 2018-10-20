@@ -18,13 +18,13 @@ import {TCollectionOfSelectedPointsData} from '$tl/ui/panels/AllInOnePanel/Right
 const r = reducto($ProjectHistoricState)
 
 const ensureTimeline = (s: ProjectHistoricState, addr: TimelineAddress) => {
-  if (!s.internalTimelines[addr.timelinePath]) {
-    s.internalTimelines[addr.timelinePath] = {
+  if (!s.timelineTemplates[addr.timelinePath]) {
+    s.timelineTemplates[addr.timelinePath] = {
       objects: {},
       duration: null,
     }
   }
-  return s.internalTimelines[addr.timelinePath]
+  return s.timelineTemplates[addr.timelinePath]
 }
 
 const ensureObject = (s: ProjectHistoricState, addr: ObjectAddress) => {

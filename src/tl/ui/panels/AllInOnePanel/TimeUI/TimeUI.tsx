@@ -5,8 +5,8 @@ import * as css from '$tl/ui/panels/AllInOnePanel/TimeUI/TimeUI.css'
 import {val} from '$shared/DataVerse2/atom'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import Seeker from '$tl/ui/panels/AllInOnePanel/TimeUI/Seeker'
-import TimelineInstance from '$tl/timelines/TimelineInstance'
-import InternalTimeline from '$tl/timelines/InternalTimeline'
+import InternalTimelineInstance from '$tl/timelines/InternalTimelineInstance'
+import TimelineTemplate from '$tl/timelines/TimelineTemplate'
 import RangeSelector from '$tl/ui/panels/AllInOnePanel/TimeUI/RangeSelector'
 import FramesGrid from '$tl/ui/panels/AllInOnePanel/TimeUI/FramesGrid'
 import clamp from '$shared/number/clamp'
@@ -14,8 +14,8 @@ import {overshootDuration} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
 import {TimeStuff} from '$tl/ui/panels/AllInOnePanel/TimeStuffProvider'
 
 interface IProps {
-  internalTimeline: InternalTimeline
-  timelineInstance: TimelineInstance
+  timelineTemplate: TimelineTemplate
+  timelineInstance: InternalTimelineInstance
   height: number
   timelineWidth: number
   left: number
@@ -36,24 +36,24 @@ export default class TimeUI extends UIComponent<IProps, IState> {
         {rightStuffP => (
           <PropsAsPointer props={this.props}>
             {({props: propsP}) => {
-              const internalTimeline = val(propsP.internalTimeline)
+              const timelineTemplate = val(propsP.timelineTemplate)
               const timelineInstance = val(propsP.timelineInstance)
-              if (!internalTimeline || !timelineInstance) return null
+              if (!timelineTemplate || !timelineInstance) return null
 
               // settingTemporarilyPlayableRange
-              // internalTimeline._setTemporarilyLimitedPlayRange({from: 100, to: 500})
+              // timelineTemplate._setTemporarilyLimitedPlayRange({from: 100, to: 500})
               // remove temp play
-              // internalTimeline._setTemporarilyLimitedPlayRange(null)
+              // timelineTemplate._setTemporarilyLimitedPlayRange(null)
               /**
                * Temporarily playable range is useful when the animator wants to only
                * play a specific range within the timeline. Like, if the timeline is
                * 10 seocnds long, she might want to only work on seconds 2 through 4.
-               * For that, we'd call: internalTimeline._setTemporarilyLimitedPlayRange({from: 2000, to: 4000})
+               * For that, we'd call: timelineTemplate._setTemporarilyLimitedPlayRange({from: 2000, to: 4000})
                * This would make sure that when the time reaches 4s, it'd jump back to 2s and restart from there.
                * We just need to somehow show this in the timeline
                */
               const currentTime = val(timelineInstance.statePointer.time)
-              // const rangeState = val(internalTimeline.pointerToRangeState)
+              // const rangeState = val(timelineTemplate.pointerToRangeState)
               const range = val(rightStuffP.rangeAndDuration.range)
               // const range = {from: 0, to: 2000}
               const height = val(propsP.height)

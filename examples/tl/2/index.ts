@@ -8,7 +8,7 @@ declare var Theatre: TypeOfTheatre
 
 const {sphere, sphereGroup} = setupScene()
 
-const project = new Theatre.Project('The ORB', {state})
+const project = new Theatre.Project('The ORB2', {state})
 
 window.p = project
 

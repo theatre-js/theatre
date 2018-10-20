@@ -44,8 +44,8 @@ class PointContextMenu extends UIComponent<IProps, IState> {
   }
 
   _removePoint = () => {
-    this.internalProject.reduxStore.dispatch(
-      this.internalProject._actions.historic.removePointInBezierCurvesOfScalarValues({
+    this.project.reduxStore.dispatch(
+      this.project._actions.historic.removePointInBezierCurvesOfScalarValues({
         propAddress: this.props.propAddress,
         pointIndex: this.props.pointIndex,
       }),
@@ -54,8 +54,8 @@ class PointContextMenu extends UIComponent<IProps, IState> {
   }
 
   _connectPoint = () => {
-    this.internalProject.reduxStore.dispatch(
-      this.internalProject._actions.historic.addConnectorInBezierCurvesOfScalarValues({
+    this.project.reduxStore.dispatch(
+      this.project._actions.historic.addConnectorInBezierCurvesOfScalarValues({
         propAddress: this.props.propAddress,
         pointIndex: this.props.pointIndex,
       }),

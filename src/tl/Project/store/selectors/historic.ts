@@ -12,7 +12,7 @@ export const getInternalTimelineState = pointerFriendlySelector(
     s: ProjectHistoricState,
     addr: TimelineAddress,
   ): undefined | InternalTimelineState => {
-    return s.internalTimelines[addr.timelinePath]
+    return s.timelineTemplates[addr.timelinePath]
   },
 )
 
@@ -39,7 +39,7 @@ export const getPropState = pointerFriendlySelector(
 
 export const getTimelineDuration = pointerFriendlySelector(
   (s: ProjectHistoricState, addr: TimelineAddress): number => {
-    const savedDuration = val(s.internalTimelines[addr.timelinePath].duration)
+    const savedDuration = val(s.timelineTemplates[addr.timelinePath].duration)
 
     return typeof savedDuration === 'number' ? savedDuration : 2000
   },

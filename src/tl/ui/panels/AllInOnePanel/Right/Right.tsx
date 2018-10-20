@@ -5,7 +5,7 @@ import React from 'react'
 import * as css from './Right.css'
 import {val} from '$shared/DataVerse2/atom'
 import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
-import TimelineInstance from '$tl/timelines/TimelineInstance'
+import InternalTimelineInstance from '$tl/timelines/InternalTimelineInstance'
 import {
   deltaXToTime,
   getSvgWidth,
@@ -30,7 +30,7 @@ interface IRightProps {
   range: TRange
   duration: TDuration
   timelineWidth: number
-  timelineInstance: TimelineInstance
+  timelineInstance: InternalTimelineInstance
   setRange: (range: TRange) => void
 }
 

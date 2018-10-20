@@ -1,5 +1,5 @@
-import InternalProject from '$tl/Project/InternalProject'
-import InternalTimeline from './InternalTimeline'
+import Project from '$tl/Project/Project'
+import TimelineTemplate from './TimelineTemplate'
 import TimelineInstanceObject from '$tl/objects/TimelineInstanceObject'
 import {validateAndSanitiseSlashedPathOrThrow} from '$tl/handy/slashedPaths'
 import {NativeObjectTypeConfig} from '$tl/objects/objectTypes'
@@ -30,8 +30,8 @@ const possibleDirections = [
   'alternateReverse',
 ]
 
-export default class TimelineInstance {
-  _internalTimeline: InternalTimeline
+export default class InternalTimelineInstance {
+  _timelineTemplate: TimelineTemplate
   _objects: {[path: string]: TimelineInstanceObject} = {}
   _address: TimelineInstanceAddress
   protected _state: Atom<State> = atom({time: 0})
@@ -41,14 +41,14 @@ export default class TimelineInstance {
   _stopPlayCallback: VoidFn = noop
 
   constructor(
-    readonly _project: InternalProject,
+    readonly _project: Project,
     protected readonly _path: string,
     public readonly _instanceId: string,
   ) {
-    this._internalTimeline = _project._getInternalTimeline(_path)
+    this._timelineTemplate = _project._getTimelineTemplate(_path)
     this.statePointer = this._state.pointer
     this._address = {
-      ...this._internalTimeline._address,
+      ...this._timelineTemplate._address,
       timelineInstanceId: _instanceId,
     }
   }
@@ -120,7 +120,7 @@ export default class TimelineInstance {
     if (time < 0) {
       throw new Error(`timeline.time must be a positive number`)
     }
-    const dur = this._internalTimeline.duration
+    const dur = this._timelineTemplate.duration
     this._gotoTime(time > dur ? dur : time)
   }
 
@@ -132,7 +132,7 @@ export default class TimelineInstance {
     return autoDerive(() => {
       return {
         from: 0,
-        to: val(this._internalTimeline._durationD),
+        to: val(this._timelineTemplate._durationD),
       }
     })
   }
@@ -145,7 +145,7 @@ export default class TimelineInstance {
       direction: Direction
     }>,
   ) {
-    const timelineDuration = this._internalTimeline.duration
+    const timelineDuration = this._timelineTemplate.duration
     const range =
       conf && conf.range
         ? conf.range

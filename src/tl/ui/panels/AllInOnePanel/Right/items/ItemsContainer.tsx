@@ -2,10 +2,10 @@ import React from 'react'
 import UIComponent from '$tl/ui/handy/UIComponent'
 import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
-import InternalTimeline from '$tl/timelines/InternalTimeline'
+import TimelineTemplate from '$tl/timelines/TimelineTemplate'
 import {val} from '$shared/DataVerse2/atom'
 import {
-  internalTimelineToSeriesOfVerticalItems,
+  timelineTemplateToSeriesOfVerticalItems,
   PrimitivePropItem,
 } from '$tl/ui/panels/AllInOnePanel/utils'
 import TimelineItem from '$tl/ui/panels/AllInOnePanel/Right/items/TimelineItem'
@@ -14,7 +14,7 @@ import {Pointer} from '$shared/DataVerse2/pointer'
 interface IExportedComponentProps {}
 
 interface IItemsContainerProps {
-  internalTimeline: InternalTimeline
+  timelineTemplate: TimelineTemplate
 }
 
 interface IState {}
@@ -22,9 +22,9 @@ interface IState {}
 class ItemsContainer extends UIComponent<IItemsContainerProps, IState> {
   _render(propsP: Pointer<IItemsContainerProps>) {
 
-    const items = internalTimelineToSeriesOfVerticalItems(
+    const items = timelineTemplateToSeriesOfVerticalItems(
       this.ui,
-      val(propsP.internalTimeline),
+      val(propsP.timelineTemplate),
     )
 
     const lastItem = items[items.length - 1]
@@ -47,12 +47,12 @@ export default (_props: IExportedComponentProps) => (
     {allInOnePanelStuffP => (
       <PropsAsPointer>
         {() => {
-          const internalTimeline = val(
-            allInOnePanelStuffP.internalTimeline,
-          ) as InternalTimeline
+          const timelineTemplate = val(
+            allInOnePanelStuffP.timelineTemplate,
+          ) as TimelineTemplate
 
           const timelineItemsProps: IItemsContainerProps = {
-            internalTimeline,
+            timelineTemplate,
           }
           return <ItemsContainer {...timelineItemsProps} />
         }}

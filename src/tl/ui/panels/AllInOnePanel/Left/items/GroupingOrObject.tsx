@@ -21,12 +21,12 @@ export default class GroupingOrObject extends UIComponent<IProps, IState> {
   }
 
   toggleExpansion = () => {
-    const {internalTimeline} = getProjectTimelineAndInstance(this.ui)
+    const {timelineTemplate} = getProjectTimelineAndInstance(this.ui)
     this.ui.reduxStore.dispatch(
       this.ui.actions.historic.setNodeExpansion({
         expanded: !this.props.item.expanded,
         nodePath: this.props.item.path,
-        ...internalTimeline._address,
+        ...timelineTemplate._address,
       }),
     )
   }

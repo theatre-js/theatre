@@ -7,8 +7,8 @@ import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import uiSelectors from '$tl/ui/store/selectors'
 import {getSvgWidth, xToTime} from '$tl/ui/panels/AllInOnePanel/Right/utils'
-import TimelineInstance from '$tl/timelines/TimelineInstance'
-import InternalTimeline from '$tl/timelines/InternalTimeline'
+import InternalTimelineInstance from '$tl/timelines/InternalTimelineInstance'
+import TimelineTemplate from '$tl/timelines/TimelineTemplate'
 import UI from '$tl/ui/UI'
 import projectSelectors from '$tl/Project/store/selectors'
 import {overshootDuration} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
@@ -43,8 +43,8 @@ interface ITimeStuff {
     width: number
     xToTime: (x: number) => number
   }
-  timelineInstance: TimelineInstance
-  internalTimeline: InternalTimeline
+  timelineInstance: InternalTimelineInstance
+  timelineTemplate: TimelineTemplate
   lockRangeAndDuration: (
     lockedRangeAndDuration: IRangeAndDuration,
   ) => IRangeAndDurationLock
@@ -57,17 +57,17 @@ const {Provider, Consumer: TimeStuff} = createPointerContext<ITimeStuff>()
 export {TimeStuff}
 
 export default class TimeStuffProvider extends UIComponent<IProps, IState> {
-  internalTimeline: InternalTimeline
+  timelineTemplate: TimelineTemplate
   constructor(props: IProps, context: $IntentionalAny) {
     super(props, context)
     this.state = {lockedRangeAndDuration: null}
-    this.internalTimeline = undefined as $IntentionalAny
+    this.timelineTemplate = undefined as $IntentionalAny
   }
 
   setRange = (range: TRange) => {
     this.ui._dispatch(
       this.ui.actions.ahistoric.setRangeShownInPanel({
-        ...this.internalTimeline.address,
+        ...this.timelineTemplate.address,
         range,
       }),
     )
@@ -97,15 +97,15 @@ export default class TimeStuffProvider extends UIComponent<IProps, IState> {
         {stuffP => (
           <PropsAsPointer props={this.props} state={this.state}>
             {({props: propsP, state: stateP}) => {
-              const internalTimeline = val(stuffP.internalTimeline)
+              const timelineTemplate = val(stuffP.timelineTemplate)
               const timelineInstance = val(stuffP.timelineInstance)
 
-              if (!internalTimeline || !timelineInstance) return null
-              this.internalTimeline = internalTimeline
+              if (!timelineTemplate || !timelineInstance) return null
+              this.timelineTemplate = timelineTemplate
 
               const lockedRangeAndDuration = val(stateP.lockedRangeAndDuration)
 
-              const timelineAddress = internalTimeline.address
+              const timelineAddress = timelineTemplate.address
 
               const persistedRange = val(
                 uiSelectors.ahistoric.getRangeShownInPanel(
@@ -116,7 +116,7 @@ export default class TimeStuffProvider extends UIComponent<IProps, IState> {
 
               const persistedRealDuration = val(
                 projectSelectors.historic.getTimelineDuration(
-                  this.internalProject.atomP.historic,
+                  this.project.atomP.historic,
                   timelineAddress,
                 ),
               )
@@ -153,7 +153,7 @@ export default class TimeStuffProvider extends UIComponent<IProps, IState> {
                   width: viewportWidth,
                 },
                 timelineInstance,
-                internalTimeline,
+                timelineTemplate,
                 ui: this.ui,
                 setRange: this.setRange,
               }

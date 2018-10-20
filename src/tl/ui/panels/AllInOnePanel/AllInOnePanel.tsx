@@ -7,9 +7,9 @@ import {val} from '$shared/DataVerse2/atom'
 import Left from '$tl/ui/panels/AllInOnePanel/Left/Left'
 import Bottom, {bottomHeight} from './Bottom/Bottom'
 import {getProjectTimelineAndInstance} from './selectors'
-import InternalProject from '$tl/Project/InternalProject'
-import InternalTimeline from '$tl/timelines/InternalTimeline'
-import TimelineInstance from '$tl/timelines/TimelineInstance'
+import Project from '$tl/Project/Project'
+import TimelineTemplate from '$tl/timelines/TimelineTemplate'
+import InternalTimelineInstance from '$tl/timelines/InternalTimelineInstance'
 import Right from './Right/Right'
 import createPointerContext from '$shared/utils/react/createPointerContext'
 import TimeUI from '$tl/ui/panels/AllInOnePanel/TimeUI/TimeUI'
@@ -36,9 +36,9 @@ const {Provider, Consumer: AllInOnePanelStuff} = createPointerContext<
 export {AllInOnePanelStuff}
 
 export type IAllInOnePanelStuff = {
-  internalProject: undefined | InternalProject
-  internalTimeline: undefined | InternalTimeline
-  timelineInstance: undefined | TimelineInstance
+  project: undefined | Project
+  timelineTemplate: undefined | TimelineTemplate
+  timelineInstance: undefined | InternalTimelineInstance
   width: number
   height: number
   leftWidth: number
@@ -69,14 +69,14 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
           )
 
           const {
-            internalProject,
+            project,
             timelineInstance,
-            internalTimeline,
+            timelineTemplate,
           } = getProjectTimelineAndInstance(this.ui)
 
           if (
-            internalProject &&
-            !val(internalProject._selectors.ephemeral.isReady(internalProject.atomP.ephemeral))
+            project &&
+            !val(project._selectors.ephemeral.isReady(project.atomP.ephemeral))
           ) {
             return null
           }
@@ -90,8 +90,8 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
           const rightWidth = width * (1 - leftWidthFraction)
 
           const allInOnePanelStuff: IAllInOnePanelStuff = {
-            internalProject,
-            internalTimeline,
+            project,
+            timelineTemplate,
             timelineInstance,
             width,
             height,
@@ -116,7 +116,7 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
                   <TimeStuffProvider>
                     <>
                       <TimeUI
-                        internalTimeline={internalTimeline}
+                        timelineTemplate={timelineTemplate}
                         timelineInstance={timelineInstance}
                         height={height}
                         timelineWidth={rightWidth}
@@ -177,9 +177,9 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
     } else if (e.key === 'z' || e.key === 'Z' || e.code === 'KeyZ') {
       if (cmdIsDown(e)) {
         if (e.shiftKey === true) {
-          this.internalProject._dispatch(this.internalProject._actions.historic.redo())
+          this.project._dispatch(this.project._actions.historic.redo())
         } else {
-          this.internalProject._dispatch(this.internalProject._actions.historic.undo())
+          this.project._dispatch(this.project._actions.historic.undo())
         }
       } else if (e.altKey === true) {
         if (e.shiftKey === true) {
