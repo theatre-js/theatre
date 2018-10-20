@@ -1,3 +1,3 @@
-import Project from '$tl/facades/ProjectFacade'
+import Project from '$tl/facades/TheatreJSProject'
 
 export {Project}

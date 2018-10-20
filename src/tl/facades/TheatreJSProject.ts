@@ -5,10 +5,10 @@ import {InvalidArgumentError} from '$tl/handy/errors'
 import {OnDiskState, $OnDiskState} from '$tl/Project/store/types'
 import {userFacingReoprter} from '$shared/ioTypes/userFacingReporter'
 
-const projectsWeakmap = new WeakMap<ProjectFacade, Project>()
+const projectsWeakmap = new WeakMap<TheatreJSProject, Project>()
 
 // User-facing facade for Project
-export default class ProjectFacade {
+export default class TheatreJSProject {
   // static name = 'Project'
   constructor(id: string, config: Conf = {}) {
     if ($env.NODE_ENV === 'development' || $env.tl.isCore === false) {
@@ -51,7 +51,7 @@ export default class ProjectFacade {
   }
 }
 
-const getProject = (p: ProjectFacade) =>
+const getProject = (p: TheatreJSProject) =>
   (projectsWeakmap.get(p) as $IntentionalAny) as Project
 
 const validateProjectIdOrThrow = (id: string) => {
