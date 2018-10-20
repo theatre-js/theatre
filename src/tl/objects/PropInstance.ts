@@ -14,7 +14,7 @@ export default class PropInstance {
     readonly _timelnieInstanceObject: TimelineInstanceObject,
     readonly name: string,
   ) {
-    const valueContainerP = this._timelnieInstanceObject._internalObject
+    const valueContainerP = this._timelnieInstanceObject._objectTemplate
       ._pointerToState.props[this.name].valueContainer
 
     const typeD = valueDerivation(valueContainerP.type)

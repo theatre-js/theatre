@@ -8,7 +8,7 @@ import {
 import {ObjectAddress} from '$tl/handy/addresses'
 import {NativeObjectAdapter} from '$tl/nativeObjectAdapters/NativeObjectAdaptersManager'
 
-export default class InternalObject {
+export default class ObjectTemplate {
   nativeObjectType: NativeObjectType
   _address: ObjectAddress
   adapter: void | NativeObjectAdapter

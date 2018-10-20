@@ -2,16 +2,16 @@ import pointerFriendlySelector from '$shared/utils/redux/pointerFriendlySelector
 import {TimelineAddress, ObjectAddress, PropAddress} from '$tl/handy/addresses'
 import {
   ProjectHistoricState,
-  InternalTimelineState,
-  InternalObjectState,
+  TimelineTemplateState,
+  ObjectTemplateState,
 } from '../types'
 import {val} from '$shared/DataVerse2/atom'
 
-export const getInternalTimelineState = pointerFriendlySelector(
+export const getTimelineTemplateState = pointerFriendlySelector(
   (
     s: ProjectHistoricState,
     addr: TimelineAddress,
-  ): undefined | InternalTimelineState => {
+  ): undefined | TimelineTemplateState => {
     return s.timelineTemplates[addr.timelinePath]
   },
 )
@@ -20,12 +20,12 @@ export const getObjectState = pointerFriendlySelector(
   (
     s: ProjectHistoricState,
     addr: ObjectAddress,
-  ): undefined | InternalObjectState => {
-    const possibleInternalTimeline = getInternalTimelineState(s, addr)
+  ): undefined | ObjectTemplateState => {
+    const possibleTimelineTemplate = getTimelineTemplateState(s, addr)
 
     return (
-      possibleInternalTimeline &&
-      possibleInternalTimeline.objects[addr.objectPath]
+      possibleTimelineTemplate &&
+      possibleTimelineTemplate.objects[addr.objectPath]
     )
   },
 )

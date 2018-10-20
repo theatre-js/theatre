@@ -1,5 +1,5 @@
 import projectsSingleton from './projectsSingleton'
-import InternalTimelineInstance from '$tl/timelines/InternalTimelineInstance'
+import TimelineInstance from '$tl/timelines/TimelineInstance'
 import TimelineTemplate from '$tl/timelines/TimelineTemplate'
 import NativeObjectAdaptersManager from '$tl/nativeObjectAdapters/NativeObjectAdaptersManager'
 import {Atom} from '$shared/DataVerse2/atom'
@@ -23,7 +23,7 @@ export type Conf = Partial<{
 export default class Project {
   static version = $env.tl.version
   _timelineInstances: Atom<{
-    [path: string]: {[instanceId: string]: InternalTimelineInstance}
+    [path: string]: {[instanceId: string]: TimelineInstance}
   }> = new Atom({})
 
   _timelineTemplates: Atom<{
@@ -83,10 +83,10 @@ export default class Project {
     // startPersisting(this.reduxStore, this._actions, 'project:' + id)
   }
 
-  getTimeline(path: string, instanceId: string = 'default'): InternalTimelineInstance {
+  getTimeline(path: string, instanceId: string = 'default'): TimelineInstance {
     let instance = this._timelineInstances.getIn([path, instanceId])
     if (!instance) {
-      instance = new InternalTimelineInstance(this, path, instanceId)
+      instance = new TimelineInstance(this, path, instanceId)
 
       this._timelineInstances.reduceState([path], (existingInstances = {}) => ({
         ...existingInstances,

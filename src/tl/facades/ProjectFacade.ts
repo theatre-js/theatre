@@ -1,5 +1,5 @@
 import Project, {Conf} from '$tl/Project/Project'
-import InternalTimelineInstance from '$tl/timelines/InternalTimelineInstance'
+import TimelineInstance from '$tl/timelines/TimelineInstance'
 import {validateAndSanitiseSlashedPathOrThrow} from '$tl/handy/slashedPaths'
 import {InvalidArgumentError} from '$tl/handy/errors'
 import {OnDiskState, $OnDiskState} from '$tl/Project/store/types'
@@ -29,7 +29,7 @@ export default class ProjectFacade {
     projectsWeakmap.set(this, new Project(id, config))
   }
 
-  getTimeline(_path: string, instanceId: string = 'default'): InternalTimelineInstance {
+  getTimeline(_path: string, instanceId: string = 'default'): TimelineInstance {
     const path = validateAndSanitiseSlashedPathOrThrow(
       _path,
       'project.getTimeline',

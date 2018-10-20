@@ -5,7 +5,7 @@ import * as css from '$tl/ui/panels/AllInOnePanel/TimeUI/TimeUI.css'
 import {val} from '$shared/DataVerse2/atom'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import Seeker from '$tl/ui/panels/AllInOnePanel/TimeUI/Seeker'
-import InternalTimelineInstance from '$tl/timelines/InternalTimelineInstance'
+import TimelineInstance from '$tl/timelines/TimelineInstance'
 import TimelineTemplate from '$tl/timelines/TimelineTemplate'
 import RangeSelector from '$tl/ui/panels/AllInOnePanel/TimeUI/RangeSelector'
 import FramesGrid from '$tl/ui/panels/AllInOnePanel/TimeUI/FramesGrid'
@@ -15,7 +15,7 @@ import {TimeStuff} from '$tl/ui/panels/AllInOnePanel/TimeStuffProvider'
 
 interface IProps {
   timelineTemplate: TimelineTemplate
-  timelineInstance: InternalTimelineInstance
+  timelineInstance: TimelineInstance
   height: number
   timelineWidth: number
   left: number

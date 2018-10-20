@@ -128,32 +128,32 @@ const $ObjectPropState = t.type(
   'ObjectPropState',
 )
 
-const $InternalObjectState = t.type(
+const $ObjectTemplateState = t.type(
   {
-    props: t.record(t.string, $ObjectPropState, 'InternalObjectState'),
+    props: t.record(t.string, $ObjectPropState, 'MapOfObjectTemplateState'),
   },
-  'InternalObjectState',
+  'ObjectTemplateState',
 )
 
-export type InternalObjectState = t.StaticTypeOf<typeof $InternalObjectState>
+export type ObjectTemplateState = t.StaticTypeOf<typeof $ObjectTemplateState>
 
-const $InternalTimelineState = t.type(
+const TimelineTemplateState = t.type(
   {
-    objects: t.record(t.string, $InternalObjectState, 'InternalTimelineObjects'),
+    objects: t.record(t.string, $ObjectTemplateState, 'TimelineTemplateObjects'),
     duration: t.maybe(t.number),
   },
-  'InternalTimelineState',
+  'TimelineTemplateState',
 )
 
-export type InternalTimelineState = t.StaticTypeOf<
-  typeof $InternalTimelineState
+export type TimelineTemplateState = t.StaticTypeOf<
+  typeof TimelineTemplateState
 >
 
 /**
  * Historic state is both persisted and is undoable
  */
 export const $ProjectHistoricState = t.type({
-  timelineTemplates: t.record(t.string, $InternalTimelineState, 'MapOfInternalTimelines'),
+  timelineTemplates: t.record(t.string, TimelineTemplateState, 'MapOfTimelineTemplates'),
 }, 'ProjectHistoricState')
 
 export type ProjectHistoricState = t.StaticTypeOf<typeof $ProjectHistoricState>

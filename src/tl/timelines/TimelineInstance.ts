@@ -30,7 +30,7 @@ const possibleDirections = [
   'alternateReverse',
 ]
 
-export default class InternalTimelineInstance {
+export default class TimelineInstance {
   _timelineTemplate: TimelineTemplate
   _objects: {[path: string]: TimelineInstanceObject} = {}
   _address: TimelineInstanceAddress
@@ -128,7 +128,7 @@ export default class InternalTimelineInstance {
     return this._playing
   }
 
-  _makeRangeFromInternalTimeline(): AbstractDerivation<Range> {
+  _makeRangeFromTimelineTemplate(): AbstractDerivation<Range> {
     return autoDerive(() => {
       return {
         from: 0,

@@ -9,7 +9,7 @@ import Bottom, {bottomHeight} from './Bottom/Bottom'
 import {getProjectTimelineAndInstance} from './selectors'
 import Project from '$tl/Project/Project'
 import TimelineTemplate from '$tl/timelines/TimelineTemplate'
-import InternalTimelineInstance from '$tl/timelines/InternalTimelineInstance'
+import TimelineInstance from '$tl/timelines/TimelineInstance'
 import Right from './Right/Right'
 import createPointerContext from '$shared/utils/react/createPointerContext'
 import TimeUI from '$tl/ui/panels/AllInOnePanel/TimeUI/TimeUI'
@@ -38,7 +38,7 @@ export {AllInOnePanelStuff}
 export type IAllInOnePanelStuff = {
   project: undefined | Project
   timelineTemplate: undefined | TimelineTemplate
-  timelineInstance: undefined | InternalTimelineInstance
+  timelineInstance: undefined | TimelineInstance
   width: number
   height: number
   leftWidth: number

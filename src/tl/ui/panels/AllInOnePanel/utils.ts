@@ -1,6 +1,6 @@
 import TimelineTemplate from '$tl/timelines/TimelineTemplate'
 import {val} from '$shared/DataVerse2/atom'
-import InternalObject from '$tl/objects/InternalObject'
+import ObjectTemplate from '$tl/objects/ObjectTemplate'
 import uiSelectors from '$tl/ui/store/selectors'
 import UI from '$tl/ui/UI'
 import {PropAddress, ObjectAddress} from '$tl/handy/addresses'
@@ -133,9 +133,9 @@ export const timelineTemplateToSeriesOfVerticalItems = (
     heightSoFar += height
   }
 
-  const internalObjects = val(timelineTemplate._internalObjects.pointer)
+  const objectTemplates = val(timelineTemplate._objectTemplates.pointer)
 
-  const allPaths = Object.keys(internalObjects)
+  const allPaths = Object.keys(objectTemplates)
   const {rootNode, nodeDescriptorsByPath} = turnPathsIntoHierarchy(allPaths)
 
   const processNode = (node: NodeDescriptor, depth: number) => {
@@ -144,8 +144,8 @@ export const timelineTemplateToSeriesOfVerticalItems = (
     const expanded = setOfCollapsedNodes.has(node.path) ? false : true
     const hasChildren = node.children.length > 0
 
-    const internalObject = val(
-      timelineTemplate._internalObjects.pointer[node.path],
+    const objectTemplate = val(
+      timelineTemplate._objectTemplates.pointer[node.path],
     )
 
     push(
@@ -157,7 +157,7 @@ export const timelineTemplateToSeriesOfVerticalItems = (
         top: heightSoFar,
         key: `Item:${node.path}`,
         hasChildren: node.children.length > 0,
-        address: isObject ? internalObject._address : undefined,
+        address: isObject ? objectTemplate._address : undefined,
       },
       singleItemHeight,
     )
@@ -183,28 +183,28 @@ export const timelineTemplateToSeriesOfVerticalItems = (
 
     const path = node.path
 
-    const internalObject = val(timelineTemplate._internalObjects.pointer[path])
+    const objectTemplate = val(timelineTemplate._objectTemplates.pointer[path])
 
-    const nativeObjectType = internalObject.nativeObjectType
+    const nativeObjectType = objectTemplate.nativeObjectType
     const props = nativeObjectType.props
 
     const propKeys = Object.keys(props).sort(alphabeticalCompare)
 
     propKeys.forEach(propKey => {
-      processProp(internalObject, path, propKey, propDepth)
+      processProp(objectTemplate, path, propKey, propDepth)
     })
   }
 
   const processProp = (
-    internalObject: InternalObject,
+    objectTemplate: ObjectTemplate,
     objectPath: string,
     propKey: string,
     depth: number,
   ) => {
-    const typeDesc = internalObject.nativeObjectType.props[propKey]
+    const typeDesc = objectTemplate.nativeObjectType.props[propKey]
 
     if (typeDesc.type === 'number') {
-      const propAddr = {...internalObject._address, objectPath, propKey}
+      const propAddr = {...objectTemplate._address, objectPath, propKey}
       // debugger
       const propState = val(
         uiSelectors.historic.getPropState(ui.atomP.historic, propAddr),

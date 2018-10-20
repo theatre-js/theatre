@@ -1,5 +1,5 @@
 import Project from '$tl/Project/Project'
-import InternalObject from '$tl/objects/InternalObject'
+import ObjectTemplate from '$tl/objects/ObjectTemplate'
 import {NativeObjectTypeConfig} from '$tl/objects/objectTypes'
 import atom, {
   Atom,
@@ -27,7 +27,7 @@ export default class TimelineTemplate {
 
   _playableRangeD: undefined | AbstractDerivation<{start: number; end: number}>
 
-  readonly _internalObjects: Atom<{[path: string]: InternalObject}> = new Atom(
+  readonly _objectTemplates: Atom<{[path: string]: ObjectTemplate}> = new Atom(
     {},
   )
 
@@ -58,20 +58,20 @@ export default class TimelineTemplate {
     this._playableRangeD = undefined
   }
 
-  getInternalObject(
+  getObjectTemplate(
     path: string,
     nativeObject: $FixMe,
     config?: NativeObjectTypeConfig,
   ) {
-    let internalObject = this._internalObjects.getState()[path]
-    if (!internalObject) {
-      internalObject = new InternalObject(this, path, nativeObject, config)
-      this._internalObjects.reduceState([path], () => internalObject)
+    let objectTemplate = this._objectTemplates.getState()[path]
+    if (!objectTemplate) {
+      objectTemplate = new ObjectTemplate(this, path, nativeObject, config)
+      this._objectTemplates.reduceState([path], () => objectTemplate)
     } else {
-      internalObject.ensureNativeObjectIsAcceptable(nativeObject, config)
+      objectTemplate.ensureNativeObjectIsAcceptable(nativeObject, config)
     }
 
-    return internalObject
+    return objectTemplate
   }
 
   // _setRangeShownInPanel = (p: {from: number; to: number}) => {

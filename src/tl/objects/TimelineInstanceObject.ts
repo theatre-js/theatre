@@ -1,5 +1,5 @@
-import InternalTimelineInstance from '$tl/timelines/InternalTimelineInstance'
-import InternalObject from '$tl/objects/InternalObject'
+import TimelineInstance from '$tl/timelines/TimelineInstance'
+import ObjectTemplate from '$tl/objects/ObjectTemplate'
 import {NativeObjectTypeConfig} from './objectTypes'
 import {VoidFn} from '$shared/types'
 import didYouMean from '$shared/utils/didYouMean'
@@ -11,36 +11,36 @@ import Project from '$tl/Project/Project'
 type Values = {[k: string]: $FixMe}
 
 export default class TimelineInstanceObject {
-  _internalObject: InternalObject
+  _objectTemplate: ObjectTemplate
   _propInstances: {[propName: string]: PropInstance} = {}
   _project: Project
   constructor(
-    readonly _timelineInstance: InternalTimelineInstance,
+    readonly _timelineInstance: TimelineInstance,
     readonly path: string,
     readonly nativeObject: $FixMe,
     readonly config: NativeObjectTypeConfig | undefined,
   ) {
     this._project = _timelineInstance._project
-    this._internalObject = this._timelineInstance._timelineTemplate.getInternalObject(
+    this._objectTemplate = this._timelineInstance._timelineTemplate.getObjectTemplate(
       path,
       nativeObject,
       config,
     )
 
-    const adapter = this._internalObject.adapter
+    const adapter = this._objectTemplate.adapter
     if (adapter && adapter.start) {
       adapter.start!(this, nativeObject, config)
     }
   }
 
   getProp(name: string) {
-    if (!this._internalObject.nativeObjectType.props[name]) {
+    if (!this._objectTemplate.nativeObjectType.props[name]) {
       throw new Error(
         `Object '${this.path}' does not have a prop named ${JSON.stringify(
           name,
         )}. ${didYouMean(
           name,
-          Object.keys(this._internalObject.nativeObjectType.props),
+          Object.keys(this._objectTemplate.nativeObjectType.props),
         )}`,
       )
     }
@@ -54,7 +54,7 @@ export default class TimelineInstanceObject {
 
   onValuesChange(callback: (values: Values, time: number) => void): VoidFn {
     const props = mapValues(
-      this._internalObject.nativeObjectType.props,
+      this._objectTemplate.nativeObjectType.props,
       (_, propName) => {
         return this.getProp(propName)
       },
@@ -68,7 +68,7 @@ export default class TimelineInstanceObject {
       return values
     })
 
-    const untap = der.changes(this._internalObject._project.ticker).tap(v => {
+    const untap = der.changes(this._objectTemplate._project.ticker).tap(v => {
       callback(v, this._timelineInstance.time)
     })
 

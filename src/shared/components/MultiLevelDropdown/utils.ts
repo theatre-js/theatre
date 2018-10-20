@@ -8,7 +8,7 @@ type TInternalTimelines = {
   [path: string]: TimelineTemplate
 }
 
-export const convertInternalTimelinesToItems = memoizeOne(
+export const convertTimelineTemplatesToItems = memoizeOne(
   (internalTimelines: TInternalTimelines): TItems => {
     return Object.keys(internalTimelines).reduce(
       (items, stringPath) => {

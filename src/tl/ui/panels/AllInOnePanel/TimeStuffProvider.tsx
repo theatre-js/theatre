@@ -7,7 +7,7 @@ import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import uiSelectors from '$tl/ui/store/selectors'
 import {getSvgWidth, xToTime} from '$tl/ui/panels/AllInOnePanel/Right/utils'
-import InternalTimelineInstance from '$tl/timelines/InternalTimelineInstance'
+import TimelineInstance from '$tl/timelines/TimelineInstance'
 import TimelineTemplate from '$tl/timelines/TimelineTemplate'
 import UI from '$tl/ui/UI'
 import projectSelectors from '$tl/Project/store/selectors'
@@ -43,7 +43,7 @@ interface ITimeStuff {
     width: number
     xToTime: (x: number) => number
   }
-  timelineInstance: InternalTimelineInstance
+  timelineInstance: TimelineInstance
   timelineTemplate: TimelineTemplate
   lockRangeAndDuration: (
     lockedRangeAndDuration: IRangeAndDuration,

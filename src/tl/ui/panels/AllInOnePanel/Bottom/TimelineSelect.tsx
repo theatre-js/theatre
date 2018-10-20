@@ -6,7 +6,7 @@ import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
 import FlyoutSearchableList from '$shared/components/FlyoutSearchableList/FlyoutSearchableList'
 import MultiLevelDropdown from '$shared/components/MultiLevelDropdown/MultiLevelDropdown'
-import {convertInternalTimelinesToItems} from '$shared/components/MultiLevelDropdown/utils'
+import {convertTimelineTemplatesToItems} from '$shared/components/MultiLevelDropdown/utils'
 import FullSizeHint, {
   TextBlock,
   CodeSnippet,
@@ -34,14 +34,14 @@ export default class TimelineSelect extends UIComponent<IProps, IState> {
               if (!project) return null
               const timelineTemplate = val(stuffP.timelineTemplate)
               const timelineTemplates = val(project._timelineTemplates.pointer)
-              const multiLevelItems = convertInternalTimelinesToItems(
+              const multiLevelItems = convertTimelineTemplatesToItems(
                 timelineTemplates,
               )
               const activePath = !!timelineTemplate
                 ? timelineTemplate._path.split(' / ')
                 : []
               const onSelect = (path: string) =>
-                this.selectInternalTimeline(project.id, path)
+                this.selectTimelineTemplate(project.id, path)
               return (
                 <>
                   {val(stateP.menuOpen) &&
@@ -99,7 +99,7 @@ export default class TimelineSelect extends UIComponent<IProps, IState> {
     this.setState({menuOpen: false})
   }
 
-  selectInternalTimeline = (projectId: string, timelinePath: string) => {
+  selectTimelineTemplate = (projectId: string, timelinePath: string) => {
     this.ui.reduxStore.dispatch(
       this.ui.actions.historic.setSelectedTimeline({
         projectId,

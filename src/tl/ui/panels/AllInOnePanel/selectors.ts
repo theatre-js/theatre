@@ -3,7 +3,7 @@ import {val} from '$shared/DataVerse2/atom'
 import projectsSingleton from '$tl/Project/projectsSingleton'
 import Project from '$tl/Project/Project'
 import TimelineTemplate from '$tl/timelines/TimelineTemplate'
-import InternalTimelineInstance from '$tl/timelines/InternalTimelineInstance'
+import TimelineInstance from '$tl/timelines/TimelineInstance'
 import uiSelectors from '$tl/ui/store/selectors'
 
 export const getProjectSelectionState = (
@@ -23,7 +23,7 @@ export const getProjectSelectionState = (
   } as any
 }
 
-export const getSelectedInternalTimeline = (
+export const getSelectedTimelineTemplate = (
   ui: UI,
   project: Project,
 ): undefined | TimelineTemplate => {
@@ -32,11 +32,11 @@ export const getSelectedInternalTimeline = (
   )
 
   if (userSelectedTimelinePath) {
-    const userSelectedInternalTimeline = val(
+    const userSelectedTimelineTemplate = val(
       project._timelineTemplates.pointer[userSelectedTimelinePath],
     )
 
-    if (userSelectedInternalTimeline) return userSelectedInternalTimeline
+    if (userSelectedTimelineTemplate) return userSelectedTimelineTemplate
   }
   const timelineTemplates = val(project._timelineTemplates.pointer)
 
@@ -51,7 +51,7 @@ export const getSelectedTimelineInstance = (
   ui: UI,
   project: Project,
   timelineTemplate: TimelineTemplate,
-): undefined | InternalTimelineInstance => {
+): undefined | TimelineInstance => {
   const userDesiredInstanceId = val(
     ui.atomP.historic.allInOnePanel.projects[project.id].timelines[
       timelineTemplate._path
@@ -105,11 +105,11 @@ export const getProjectTimelineAndInstance = (
 ): {
   project: Project
   timelineTemplate: TimelineTemplate
-  timelineInstance: InternalTimelineInstance
+  timelineInstance: TimelineInstance
 } => {
   const project = uiSelectors.historic.getSelectedProject(ui)
   const timelineTemplate = project
-    ? getSelectedInternalTimeline(ui, project)
+    ? getSelectedTimelineTemplate(ui, project)
     : undefined
 
   const timelineInstance = timelineTemplate
