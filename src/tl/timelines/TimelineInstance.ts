@@ -2,8 +2,8 @@ import Project from '$tl/Project/Project'
 import TimelineTemplate from './TimelineTemplate'
 import TimelineInstanceObject from '$tl/objects/TimelineInstanceObject'
 import {validateAndSanitiseSlashedPathOrThrow} from '$tl/handy/slashedPaths'
-import {NativeObjectTypeConfig} from '$tl/objects/objectTypes'
-import atom, {Atom, val, coldVal} from '$shared/DataVerse2/atom'
+import {NativeObjectTypeConfig, NativeObjectType} from '$tl/objects/objectTypes'
+import atom, {Atom, val} from '$shared/DataVerse2/atom'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import {TimelineInstanceAddress} from '$tl/handy/addresses'
 import {VoidFn} from '$shared/types'
@@ -11,17 +11,24 @@ import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 import didYouMean from '$shared/utils/didYouMean'
 import noop from '$shared/utils/noop'
+import TheatreJSTimelineInstance from '$tl/facades/TheatreJSTimelineInstance'
+import {InvalidArgumentError} from '$tl/handy/errors'
+import {defer} from '$shared/utils/defer'
 
 type State = {
   time: number
 }
 
-type Range = {
+export type PlaybackRange = {
   from: number
   to: number
 }
 
-type Direction = 'normal' | 'reverse' | 'alternate' | 'alternateReverse'
+export type PlaybackDirection =
+  | 'normal'
+  | 'reverse'
+  | 'alternate'
+  | 'alternateReverse'
 
 const possibleDirections = [
   'normal',
@@ -39,6 +46,7 @@ export default class TimelineInstance {
   protected _playing: boolean = false
   _repeat: boolean
   _stopPlayCallback: VoidFn = noop
+  facade: TheatreJSTimelineInstance
 
   constructor(
     readonly _project: Project,
@@ -51,36 +59,22 @@ export default class TimelineInstance {
       ...this._timelineTemplate._address,
       timelineInstanceId: _instanceId,
     }
+    this.facade = new TheatreJSTimelineInstance(this)
   }
 
   createObject(
-    _path: string,
+    path: string,
     nativeObject: $FixMe,
-    config?: NativeObjectTypeConfig,
+    config: NativeObjectTypeConfig,
+    type: NativeObjectType
   ): TimelineInstanceObject {
-    const path = validateAndSanitiseSlashedPathOrThrow(
-      _path,
-      'timeline.createObject',
-    )
-
-    let object = this._objects[path]
-    if (!object) {
-      object = this._objects[path] = new TimelineInstanceObject(
-        this,
-        path,
-        nativeObject,
-        config,
-      )
-    } else {
-      if (nativeObject !== object.nativeObject) {
-        throw new Error(
-          `Looks like you're creating two different objects on the same path "${path}".
-          If you're trying to create two different objects, give each a unique path.
-          Otherwise if you're trying to query the same existing object, you can run
-          timeline.getObject(path) to get access to that object after it's been created.`,
-        )
-      }
-    }
+    const object = (this._objects[path] = new TimelineInstanceObject(
+      this,
+      path,
+      nativeObject,
+      config,
+      type
+    ))
 
     return object
   }
@@ -101,24 +95,28 @@ export default class TimelineInstance {
     )
   }
 
-  gotoTime = (time: number) => {
-    console.warn(
-      `TimelineInstance.gotoTime(t) is deprecated. Use 'TimelineInstance.time = t' instead.`,
-    )
-    this.time = time
-  }
-
   get time() {
     return this._state.getState().time
   }
 
-  set time(time: number) {
+  set time(_time: number) {
+    let time = _time
     this.pause()
     if (typeof time !== 'number') {
-      throw new Error(`timeline.time must be a number`)
+      console.error(
+        `value t in timeline.time = t must be a number. ${typeof time} given`,
+      )
+      time = 0
     }
     if (time < 0) {
-      throw new Error(`timeline.time must be a positive number`)
+      console.error(`timeline.time must be a positive number. ${time} given`)
+      time = 0
+    }
+    if (time > this._timelineTemplate.duration) {
+      console.error(
+        `timeline.time cannot be larger than the timeline's duration. You can read the duration using timeline.duration.`,
+      )
+      time = this._timelineTemplate.duration
     }
     const dur = this._timelineTemplate.duration
     this._gotoTime(time > dur ? dur : time)
@@ -128,7 +126,7 @@ export default class TimelineInstance {
     return this._playing
   }
 
-  _makeRangeFromTimelineTemplate(): AbstractDerivation<Range> {
+  _makeRangeFromTimelineTemplate(): AbstractDerivation<PlaybackRange> {
     return autoDerive(() => {
       return {
         from: 0,
@@ -140,9 +138,9 @@ export default class TimelineInstance {
   play(
     conf?: Partial<{
       iterationCount: number
-      range: Range
+      range: PlaybackRange
       rate: number
-      direction: Direction
+      direction: PlaybackDirection
     }>,
   ) {
     const timelineDuration = this._timelineTemplate.duration
@@ -155,36 +153,36 @@ export default class TimelineInstance {
           }
 
     if (typeof range.from !== 'number' || range.from < 0) {
-      throw new Error(
-        `Argument conf.range.from in play(conf) must be a positive number. ${JSON.stringify(
+      throw new InvalidArgumentError(
+        `Argument conf.range.from in timeline.play(conf) must be a positive number. ${JSON.stringify(
           range.from,
         )} given.`,
       )
     }
     if (range.from >= timelineDuration) {
-      throw new Error(
-        `Argument conf.range.from in play(conf) cannot be longer than the duration of the timeline, which is ${timelineDuration}ms. ${JSON.stringify(
+      throw new InvalidArgumentError(
+        `Argument conf.range.from in timeline.play(conf) cannot be longer than the duration of the timeline, which is ${timelineDuration}ms. ${JSON.stringify(
           range.from,
         )} given.`,
       )
     }
     if (typeof range.to !== 'number' || range.to <= 0) {
-      throw new Error(
-        `Argument conf.range.to in play(conf) must be a number larger than zero. ${JSON.stringify(
+      throw new InvalidArgumentError(
+        `Argument conf.range.to in timeline.play(conf) must be a number larger than zero. ${JSON.stringify(
           range.to,
         )} given.`,
       )
     }
     if (range.from > timelineDuration) {
-      throw new Error(
-        `Argument conf.range.to in play(conf) cannot be longer than the duration of the timeline, which is ${timelineDuration}ms. ${JSON.stringify(
+      throw new InvalidArgumentError(
+        `Argument conf.range.to in timeline.play(conf) cannot be longer than the duration of the timeline, which is ${timelineDuration}ms. ${JSON.stringify(
           range.to,
         )} given.`,
       )
     }
     if (range.to <= range.from) {
-      throw new Error(
-        `Argument conf.range.to in play(conf) must be larger than conf.range.from. ${JSON.stringify(
+      throw new InvalidArgumentError(
+        `Argument conf.range.to in timeline.play(conf) must be larger than conf.range.from. ${JSON.stringify(
           range,
         )} given.`,
       )
@@ -197,8 +195,8 @@ export default class TimelineInstance {
       !(Number.isInteger(iterationCount) && iterationCount > 0) &&
       iterationCount !== Infinity
     ) {
-      throw new Error(
-        `Argument conf.iterationCount in play(conf) must be an integer larger than 0. ${JSON.stringify(
+      throw new InvalidArgumentError(
+        `Argument conf.iterationCount in timeline.play(conf) must be an integer larger than 0. ${JSON.stringify(
           iterationCount,
         )} given.`,
       )
@@ -207,16 +205,16 @@ export default class TimelineInstance {
     const rate = conf && typeof conf.rate !== 'undefined' ? conf.rate : 1
 
     if (typeof rate !== 'number' || rate === 0) {
-      throw new Error(
-        `Argument conf.rate in play(conf) must be a number larger than 0. ${JSON.stringify(
+      throw new InvalidArgumentError(
+        `Argument conf.rate in timeline.play(conf) must be a number larger than 0. ${JSON.stringify(
           rate,
         )} given.`,
       )
     }
 
     if (rate < 0) {
-      throw new Error(
-        `Argument conf.rate in play(conf) must be a number larger than 0. ${JSON.stringify(
+      throw new InvalidArgumentError(
+        `Argument conf.rate in timeline.play(conf) must be a number larger than 0. ${JSON.stringify(
           rate,
         )} given. If you want the animation to play backwards, try setting conf.direction to '${'reverse'}' or '${'alternateReverse'}'.`,
       )
@@ -224,8 +222,8 @@ export default class TimelineInstance {
 
     const direction = conf && conf.direction ? conf.direction : 'normal'
     if (possibleDirections.indexOf(direction) === -1) {
-      throw new Error(
-        `Argument conf.direction in play(conf) must be one of ${JSON.stringify(
+      throw new InvalidArgumentError(
+        `Argument conf.direction in timeline.play(conf) must be one of ${JSON.stringify(
           possibleDirections,
         )}. ${JSON.stringify(direction)} given. ${didYouMean(
           direction,
@@ -234,15 +232,15 @@ export default class TimelineInstance {
       )
     }
 
-    this._play(iterationCount, range, rate, direction)
+    return this._play(iterationCount, range, rate, direction)
   }
 
   _play(
     iterationCount: number,
-    range: Range,
+    range: PlaybackRange,
     rate: number,
-    direction: Direction,
-  ) {
+    direction: PlaybackDirection,
+  ): Promise<void> {
     if (this._playing) {
       this.pause()
     }
@@ -262,6 +260,8 @@ export default class TimelineInstance {
 
     let countSoFar = 1
 
+    const deferred = defer<void>()
+
     const tick = (tickerTime: number) => {
       const lastTime = this.time
       const timeDiff = (tickerTime - lastTickerTime) * (rate * goingForward)
@@ -272,6 +272,7 @@ export default class TimelineInstance {
         if (countSoFar === iterationCount) {
           this._gotoTime(range.from)
           this._playing = false
+          deferred.resolve(undefined)
           return
         } else {
           countSoFar++
@@ -289,6 +290,7 @@ export default class TimelineInstance {
         this._gotoTime(range.to)
         if (countSoFar === iterationCount) {
           this._playing = false
+          deferred.resolve(undefined)
           return
         }
         requestNextTick()
@@ -297,6 +299,7 @@ export default class TimelineInstance {
         if (countSoFar === iterationCount) {
           this._gotoTime(range.to)
           this._playing = false
+          deferred.resolve(undefined)
           return
         } else {
           countSoFar++
@@ -320,14 +323,17 @@ export default class TimelineInstance {
     this._stopPlayCallback = () => {
       ticker.unregisterSideEffect(tick)
       ticker.unregisterSideEffectForNextTick(tick)
+
+      if (this.playing) deferred.resolve(undefined)
     }
     const requestNextTick = () => ticker.registerSideEffectForNextTick(tick)
     ticker.registerSideEffect(tick)
+    return deferred.promise
   }
 
   pause() {
-    this._playing = false
     this._stopPlayCallback()
+    this._playing = false
     this._stopPlayCallback = noop
   }
 }

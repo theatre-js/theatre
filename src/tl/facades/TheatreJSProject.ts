@@ -4,6 +4,8 @@ import {validateAndSanitiseSlashedPathOrThrow} from '$tl/handy/slashedPaths'
 import {InvalidArgumentError} from '$tl/handy/errors'
 import {OnDiskState, $OnDiskState} from '$tl/Project/store/types'
 import {userFacingReoprter} from '$shared/ioTypes/userFacingReporter'
+import projectsSingleton from '$tl/Project/projectsSingleton'
+import TheatreJSTimelineInstance from '$tl/facades/TheatreJSTimelineInstance'
 
 const projectsWeakmap = new WeakMap<TheatreJSProject, Project>()
 
@@ -11,6 +13,11 @@ const projectsWeakmap = new WeakMap<TheatreJSProject, Project>()
 export default class TheatreJSProject {
   // static name = 'Project'
   constructor(id: string, config: Conf = {}) {
+    if (projectsSingleton.has(id)) {
+      throw new InvalidArgumentError(
+        `Looks like you're calling \`new Project("${id}")\` twice. If you're trying to make two separate projects, make sure to assign a unique ID to each of them. `,
+      )
+    }
     if ($env.NODE_ENV === 'development' || $env.tl.isCore === false) {
       validateProjectIdOrThrow(id)
     }
@@ -29,13 +36,13 @@ export default class TheatreJSProject {
     projectsWeakmap.set(this, new Project(id, config))
   }
 
-  getTimeline(_path: string, instanceId: string = 'default'): TimelineInstance {
+  getTimeline(_path: string, instanceId: string = 'default'): TheatreJSTimelineInstance {
     const path = validateAndSanitiseSlashedPathOrThrow(
       _path,
       'project.getTimeline',
     )
 
-    return getProject(this).getTimeline(path, instanceId)
+    return getProject(this).getTimeline(path, instanceId).facade
   }
 
   get adapters() {

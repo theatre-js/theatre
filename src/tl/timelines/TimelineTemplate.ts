@@ -12,6 +12,7 @@ import {TimelineAddress} from '$tl/handy/addresses'
 import {ConstantDerivation} from '$shared/DataVerse/derivations/constant'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
+import {NativeObjectType} from '../objects/objectTypes'
 
 // export type RangeState = {
 //   duration: number
@@ -62,10 +63,17 @@ export default class TimelineTemplate {
     path: string,
     nativeObject: $FixMe,
     config?: NativeObjectTypeConfig,
+    type: NativeObjectType,
   ) {
     let objectTemplate = this._objectTemplates.getState()[path]
     if (!objectTemplate) {
-      objectTemplate = new ObjectTemplate(this, path, nativeObject, config)
+      objectTemplate = new ObjectTemplate(
+        this,
+        path,
+        nativeObject,
+        config,
+        type,
+      )
       this._objectTemplates.reduceState([path], () => objectTemplate)
     } else {
       objectTemplate.ensureNativeObjectIsAcceptable(nativeObject, config)

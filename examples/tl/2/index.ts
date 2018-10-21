@@ -10,9 +10,8 @@ const {sphere, sphereGroup} = setupScene()
 
 const project = new Theatre.Project('The ORB2', {state})
 
-window.p = project
-
-project.adapters.add(2, {
+project.adapters.add({
+  name: 's',
   accepts(obj) {
     return obj instanceof THREE.Object3D
   },
@@ -58,9 +57,27 @@ project.adapters.add(2, {
   },
 })
 
+
+
 const timeline = project.getTimeline('Bouncing orb')
 // timeline.createObject('Ball', null)
 timeline.createObject('Ball', sphereGroup)
+
+project.adapters.add({
+  name: 'blah',
+  accepts(s) {
+    return s === obju
+  },
+  getType(o) {
+    return {
+      props: {}
+    }
+  }
+})
+
+const obju = {};
+
+timeline.createObject('B2', obju)
 // sphereGroup.position.z = 852
 // sphere.position.y = -
 // timeline.time = 2000

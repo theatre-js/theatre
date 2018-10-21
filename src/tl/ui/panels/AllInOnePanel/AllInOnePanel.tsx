@@ -203,7 +203,9 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
       if (timelineInstance.playing) {
         timelineInstance.pause()
       } else {
-        timelineInstance.play()
+        timelineInstance.play({
+          iterationCount: Infinity
+        })
       }
     }
   }

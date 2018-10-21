@@ -9,7 +9,7 @@ import {ObjectAddress} from '$tl/handy/addresses'
 import {NativeObjectAdapter} from '$tl/nativeObjectAdapters/NativeObjectAdaptersManager'
 
 export default class ObjectTemplate {
-  nativeObjectType: NativeObjectType
+  // nativeObjectType: NativeObjectType
   _address: ObjectAddress
   adapter: void | NativeObjectAdapter
 
@@ -26,19 +26,20 @@ export default class ObjectTemplate {
     readonly path: string,
     initialNativeObject: $FixMe,
     initialNativeobjectConfig: NativeObjectTypeConfig | undefined,
+    readonly nativeObjectType: NativeObjectType
   ) {
     this._address = {...timelineTemplate._address, objectPath: path}
-    const type = getTypeOfNativeObject(
-      this.timelineTemplate.project,
-      initialNativeObject,
-      initialNativeobjectConfig,
-    )
-    if (!type) {
-      // @todo better error
-      console.error(`Could not determine type of object:`, initialNativeObject)
-      throw new Error(`Could not determine type of object`)
-    }
-    this.nativeObjectType = type
+    // const type = getTypeOfNativeObject(
+    //   this.timelineTemplate.project,
+    //   initialNativeObject,
+    //   initialNativeobjectConfig,
+    // )
+    // if (!type) {
+    //   // @todo better error
+    //   console.error(`Could not determine type of object:`, initialNativeObject)
+    //   throw new Error(`Could not determine type of object`)
+    // }
+    // this.nativeObjectType = type
 
     this.adapter = getAdapterOfNativeObject(
       this.timelineTemplate.project,

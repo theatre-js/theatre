@@ -7,9 +7,7 @@ import {AllPossiblePropTypes} from './propTypes'
 
 type PropDescriptor = AllPossiblePropTypes
 
-export interface NativeObjectTypeConfig {
-  type: NativeObjectType
-}
+export interface NativeObjectTypeConfig extends NativeObjectType {}
 
 export interface NativeObjectType {
   props: {[key: string]: PropDescriptor}
@@ -20,7 +18,7 @@ export const getTypeOfNativeObject = (
   nativeObject: $FixMe,
   config?: NativeObjectTypeConfig,
 ): NativeObjectType | null => {
-  if (config && config.type) return config.type
+  if (config && config.props) return config
   const adapter = getAdapterOfNativeObject(project, nativeObject, config)
   if (!adapter) return null
   return adapter.getType(nativeObject, config)

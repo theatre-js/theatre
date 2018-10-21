@@ -11,13 +11,10 @@ class ProjectsSingleton {
     this.atom = new Atom({projects: {}})
   }
 
+  /**
+   * We're trusting here that each project id is unique
+   */
   add(id: string, project: Project) {
-    if (this.has(id))
-      throw new Error(
-        `Looks like you're calling \`new Project("${id}")\` twice. 
-        If you're trying to make two separate projects, make sure to
-        assign a unique ID to each of them. `,
-      )
     this.atom.reduceState(['projects', id], () => project)
   }
 
