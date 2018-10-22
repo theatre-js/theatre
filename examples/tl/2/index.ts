@@ -11,7 +11,7 @@ const {sphere, sphereGroup} = setupScene()
 const project = new Theatre.Project('The ORB2', {state})
 
 project.adapters.add({
-  name: 's',
+  name: 'THREE.js Object Adapter',
   canHandle(obj) {
     return obj instanceof THREE.Object3D
   },
@@ -62,15 +62,18 @@ const timeline = project.getTimeline('Bouncing orb')
 timeline.createObject('Ball', sphereGroup)
 
 project.adapters.add({
-  // name: 'blah',
-  // canHandle(s) {
-  //   return s === obju
-  // },
-  // getType(o) {
-  //   return {
-  //     props: {},
-  //   }
-  // },
+  name: 'blah',
+  canHandle(s) {
+    return s === obju
+  },
+  getType(o) {
+    return {
+      props: {},
+    }
+  },
+  start() {
+    return () => {}
+  }
 })
 
 const obju = {}

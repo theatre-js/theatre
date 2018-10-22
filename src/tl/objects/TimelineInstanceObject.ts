@@ -11,6 +11,7 @@ import TheatreJSTimelineInstanceObject from '../facades/TheatreJSTimelineInstanc
 import {warningForWhenAdapterDotStartDoesntReturnFunction} from '$tl/facades/TheatreJSAdaptersManager'
 
 type Values = {[k: string]: $FixMe}
+export type OnValuesChangeCallback = (values: Values, time: number) => void
 
 export default class TimelineInstanceObject {
   _objectTemplate: ObjectTemplate
@@ -35,7 +36,7 @@ export default class TimelineInstanceObject {
     const adapter = this._objectTemplate.adapter
     if (adapter && adapter.start) {
       this._project.ready.then(() => {
-        const stopFn = adapter.start!(this, nativeObject, config)
+        const stopFn = adapter.start!(this.facade, nativeObject, config)
         if (!$env.tl.isCore) {
           if (typeof stopFn !== 'function') {
             console.warn(
@@ -68,7 +69,7 @@ export default class TimelineInstanceObject {
     return this._propInstances[name]
   }
 
-  onValuesChange(callback: (values: Values, time: number) => void): VoidFn {
+  onValuesChange(callback: OnValuesChangeCallback): VoidFn {
     const props = mapValues(
       this._objectTemplate.nativeObjectType.props,
       (_, propName) => {
