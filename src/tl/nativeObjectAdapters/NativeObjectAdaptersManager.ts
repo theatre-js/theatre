@@ -14,11 +14,7 @@ export interface NativeObjectAdapter {
     nativeObject: $FixMe,
     config: NativeObjectTypeConfig,
   ): NativeObjectType
-  start(
-    object: TheatreJSTimelineInstanceObject,
-    nativeObject: $IntentionalAny,
-    config: NativeObjectTypeConfig,
-  ): VoidFn
+  start(object: TheatreJSTimelineInstanceObject): VoidFn
 }
 
 export type AdapterPriority = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10

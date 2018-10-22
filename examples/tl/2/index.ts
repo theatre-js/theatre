@@ -42,7 +42,8 @@ project.adapters.add({
       },
     }
   },
-  start(object, nativeObject: THREE.Object3D) {
+  start(object) {
+    const nativeObject = object.nativeObject
     const stop = object.onValuesChange(values => {
       nativeObject.position.x = values.positionX
       nativeObject.position.y = values.positionY - 84
@@ -73,7 +74,7 @@ project.adapters.add({
   },
   start() {
     return () => {}
-  }
+  },
 })
 
 const obju = {}
@@ -84,11 +85,11 @@ const obju = {}
 // timeline.time = 2000
 
 project.ready.then(async () => {
-  console.log('play');
-  
-timeline.play({
-  iterationCount: 1000,
-  // range: {from: 200, to: 1300}
-})
-// timeline.gotoTime(1000)
+  console.log('play')
+
+  timeline.play({
+    iterationCount: 1000,
+    // range: {from: 200, to: 1300}
+  })
+  // timeline.gotoTime(1000)
 })

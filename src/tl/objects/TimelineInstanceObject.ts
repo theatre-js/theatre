@@ -36,7 +36,7 @@ export default class TimelineInstanceObject {
     const adapter = this._objectTemplate.adapter
     if (adapter && adapter.start) {
       this._project.ready.then(() => {
-        const stopFn = adapter.start!(this.facade, nativeObject, config)
+        const stopFn = adapter.start!(this.facade)
         if (!$env.tl.isCore) {
           if (typeof stopFn !== 'function') {
             console.warn(

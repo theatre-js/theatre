@@ -213,7 +213,8 @@ const adapter = {
       }
     }
   },
-  start(theatreObject, nativeObject) {
+  start(object) {
+    const nativeObject = object.nativeObject
     const unsubscribeFromValueChanges = theatreObject.onValuesChange((newValues) => {
       nativeObject.position.left = newValues.positionX + 'px'
       nativeObject.position.top = newValues.positionY + 'px'
