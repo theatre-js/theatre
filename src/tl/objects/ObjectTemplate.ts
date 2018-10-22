@@ -26,20 +26,9 @@ export default class ObjectTemplate {
     readonly path: string,
     initialNativeObject: $FixMe,
     initialNativeobjectConfig: NativeObjectTypeConfig | undefined,
-    readonly nativeObjectType: NativeObjectType
+    readonly nativeObjectType: NativeObjectType,
   ) {
     this._address = {...timelineTemplate._address, objectPath: path}
-    // const type = getTypeOfNativeObject(
-    //   this.timelineTemplate.project,
-    //   initialNativeObject,
-    //   initialNativeobjectConfig,
-    // )
-    // if (!type) {
-    //   // @todo better error
-    //   console.error(`Could not determine type of object:`, initialNativeObject)
-    //   throw new Error(`Could not determine type of object`)
-    // }
-    // this.nativeObjectType = type
 
     this.adapter = getAdapterOfNativeObject(
       this.timelineTemplate.project,

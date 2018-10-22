@@ -15,6 +15,7 @@ import projectSelectors from '$tl/Project/store/selectors'
 import {GenericAction} from '$shared/types'
 import ProjectPersistor from './ProjectPersistor'
 import {OnDiskState} from '$tl/Project/store/types'
+import resolvedPromise from '$shared/utils/resolvedPromise'
 
 export type Conf = Partial<{
   state: OnDiskState
@@ -42,7 +43,8 @@ export default class Project {
 
   _selectors = projectSelectors
   protected _persistor: ProjectPersistor
-  _readPromise: Promise<void>
+  _readyPromise: Promise<void>
+  _isReady: boolean = false
 
   /**
    * @todo should we have a human-readable name for each project too?
@@ -66,21 +68,24 @@ export default class Project {
       window.requestAnimationFrame(onAnimationFrame)
     }
     window.requestAnimationFrame(onAnimationFrame)
-    this._persistor = new ProjectPersistor(this)
-
-    this._readPromise = new Promise(resolve => {
-      const check = () => {
-        const ephemeralState = this.reduxStore.getState().ephemeral
-        if (this._selectors.ephemeral.isReady(ephemeralState)) {
-          unsubscribe()
-          resolve()
+    if (!$env.tl.isCore) {
+      this._persistor = new ProjectPersistor(this)
+      this._readyPromise = new Promise(resolve => {
+        const check = () => {
+          const ephemeralState = this.reduxStore.getState().ephemeral
+          if (this._selectors.ephemeral.isReady(ephemeralState)) {
+            unsubscribe()
+            this._isReady = true
+            resolve()
+          }
         }
-      }
-      const unsubscribe = this.reduxStore.subscribe(check)
-      check()
-    })
-
-    // startPersisting(this.reduxStore, this._actions, 'project:' + id)
+        const unsubscribe = this.reduxStore.subscribe(check)
+        check()
+      })
+    } else {
+      this._isReady = true
+      this._readyPromise = resolvedPromise
+    }
   }
 
   getTimeline(path: string, instanceId: string = 'default'): TimelineInstance {
@@ -112,12 +117,13 @@ export default class Project {
   }
 
   get ready() {
-    return this._readPromise
+    return this._readyPromise
   }
 
   isReady() {
-    return this._selectors.ephemeral.isReady(
-      this.reduxStore.getState().ephemeral,
-    )
+    return this._isReady
+    // return this._selectors.ephemeral.isReady(
+    //   this.reduxStore.getState().ephemeral,
+    // )
   }
 }

@@ -6,6 +6,7 @@ import {OnDiskState, $OnDiskState} from '$tl/Project/store/types'
 import {userFacingReoprter} from '$shared/ioTypes/userFacingReporter'
 import projectsSingleton from '$tl/Project/projectsSingleton'
 import TheatreJSTimelineInstance from '$tl/facades/TheatreJSTimelineInstance'
+import userReadableTypeOfValue from '$shared/utils/userReadableTypeOfValue';
 
 const projectsWeakmap = new WeakMap<TheatreJSProject, Project>()
 
@@ -46,7 +47,7 @@ export default class TheatreJSProject {
   }
 
   get adapters() {
-    return getProject(this).adapters
+    return getProject(this).adapters.facade
   }
 
   get ready() {
@@ -54,7 +55,7 @@ export default class TheatreJSProject {
   }
 
   get isReady() {
-    return getProject(this).isReady
+    return getProject(this).isReady()
   }
 }
 
@@ -64,7 +65,7 @@ const getProject = (p: TheatreJSProject) =>
 const validateProjectIdOrThrow = (id: string) => {
   if (typeof id !== 'string') {
     throw new InvalidArgumentError(
-      `Argument 'id' in \`new Project(id, ...)\` must be a string. ${typeof id} given.`,
+      `Argument 'id' in \`new Project(id, ...)\` must be a string. Instead, it was ${userReadableTypeOfValue(id)}.`,
     )
   }
 
@@ -77,7 +78,7 @@ const validateProjectIdOrThrow = (id: string) => {
 
   if (idTrimmed.length < 3) {
     throw new InvalidArgumentError(
-      `Argument 'id' in \`new Project("${id}", ...)\` be at least 3 characters long.`,
+      `Argument 'id' in \`new Project("${id}", ...)\` should be at least 3 characters long.`,
     )
   }
 }

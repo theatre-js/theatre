@@ -1,3 +1,5 @@
+import {InvalidArgumentError} from '$tl/handy/errors'
+
 const sanifySlashedPath = (p: string): string =>
   p
     .replace(/^[\s\/]*/, '')
@@ -23,7 +25,7 @@ export function validateAndSanitiseSlashedPathOrThrow(
   const sanitisedPath = sanifySlashedPath(unsanitisedPath)
   const validation = getValidationErrorsOfSlashedPath(sanitisedPath)
   if (validation) {
-    throw new Error(
+    throw new InvalidArgumentError(
       `The path in ${fnName}(${
         typeof unsanitisedPath === 'string' ? `"${unsanitisedPath}"` : ''
       }) is invalid because ${validation}`,

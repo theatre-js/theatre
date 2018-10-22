@@ -8,6 +8,7 @@ import {mapValues} from '$shared/utils'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 import Project from '$tl/Project/Project'
 import TheatreJSTimelineInstanceObject from '../facades/TheatreJSTimelineInstanceObject'
+import {warningForWhenAdapterDotStartDoesntReturnFunction} from '$tl/facades/TheatreJSAdaptersManager'
 
 type Values = {[k: string]: $FixMe}
 
@@ -20,20 +21,29 @@ export default class TimelineInstanceObject {
     readonly _timelineInstance: TimelineInstance,
     readonly path: string,
     readonly nativeObject: $FixMe,
-    readonly config: NativeObjectTypeConfig | undefined,
-    type: NativeObjectType
+    readonly config: NativeObjectTypeConfig,
+    type: NativeObjectType,
   ) {
     this._project = _timelineInstance._project
     this._objectTemplate = this._timelineInstance._timelineTemplate.getObjectTemplate(
       path,
       nativeObject,
       config,
-      type
+      type,
     )
 
     const adapter = this._objectTemplate.adapter
     if (adapter && adapter.start) {
-      adapter.start!(this, nativeObject, config)
+      this._project.ready.then(() => {
+        const stopFn = adapter.start!(this, nativeObject, config)
+        if (!$env.tl.isCore) {
+          if (typeof stopFn !== 'function') {
+            console.warn(
+              warningForWhenAdapterDotStartDoesntReturnFunction(adapter),
+            )
+          }
+        }
+      })
     }
 
     this.facade = new TheatreJSTimelineInstanceObject(this)

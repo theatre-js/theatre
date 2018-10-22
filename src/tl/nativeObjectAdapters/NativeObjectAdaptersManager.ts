@@ -1,27 +1,27 @@
 import Project from '$tl/Project/Project'
 import {range} from '$shared/utils'
 import {keyBy, mapValues} from '$shared/utils'
-// import {NativeObjectTypeConfig} from '../objects/objectTypes'
 import {NativeObjectTypeConfig, NativeObjectType} from '$tl/objects/objectTypes'
 import {VoidFn} from '$shared/types'
-import TimelineInstanceObject from '$tl/objects/TimelineInstanceObject'
 import userReadableTypeOfValue from '$shared/utils/userReadableTypeOfValue'
+import TheatreJSAdaptersManager from '$tl/facades/TheatreJSAdaptersManager'
+import TheatreJSTimelineInstanceObject from '$tl/facades/TheatreJSTimelineInstanceObject'
 
 export interface NativeObjectAdapter {
   name: string
-  accepts(nativeObject: $FixMe): boolean
+  canHandle(nativeObject: $FixMe): boolean
   getType(
     nativeObject: $FixMe,
-    config?: NativeObjectTypeConfig,
+    config: NativeObjectTypeConfig,
   ): NativeObjectType
-  start?(
-    object: TimelineInstanceObject,
-    nativeObject: $FixMe,
-    config?: NativeObjectTypeConfig,
+  start(
+    object: TheatreJSTimelineInstanceObject,
+    nativeObject: $IntentionalAny,
+    config: NativeObjectTypeConfig,
   ): VoidFn
 }
 
-type Priority = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10
+export type AdapterPriority = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10
 
 const adaptersRange = range(1, 11)
 
@@ -29,18 +29,20 @@ export default class NativeObjectAdapters {
   _adaptersByPriority: {
     [priority: number]: Set<NativeObjectAdapter>
   } = mapValues(keyBy(adaptersRange, v => v), () => new Set())
+  _adaptersByName = new Map<string, NativeObjectAdapter>()
+  facade: TheatreJSAdaptersManager
 
-  constructor(readonly project: Project) {}
+  constructor(readonly project: Project) {
+    this.facade = new TheatreJSAdaptersManager(this)
+  }
 
-  add(adapter: NativeObjectAdapter, priority: Priority = 5) {
-    const adapters = this._adaptersByPriority[priority]
-    if (!adapters) {
-      throw new Error(
-        `The priority argument to adapters.add(${priority}, ...) must be an interger between 1 and 10`,
-      )
-    }
+  add(adapter: NativeObjectAdapter, priority: AdapterPriority = 5) {
+    this._adaptersByPriority[priority].add(adapter)
+    this._adaptersByName.set(adapter.name, adapter)
+  }
 
-    adapters.add(adapter)
+  getAdapterByName(name: string) {
+    return this._adaptersByName.get(name)
   }
 
   findAdapterForNativeObject(
@@ -50,7 +52,7 @@ export default class NativeObjectAdapters {
     for (const priority of adaptersRange) {
       const adapters = this._adaptersByPriority[priority]
       for (const adapter of adapters) {
-        const result = adapter.accepts(nativeObject)
+        const result = adapter.canHandle(nativeObject)
         if (typeof result === 'boolean') {
           if (result === true) return adapter
         } else {

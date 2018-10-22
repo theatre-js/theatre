@@ -12,7 +12,7 @@ const project = new Theatre.Project('The ORB2', {state})
 
 project.adapters.add({
   name: 's',
-  accepts(obj) {
+  canHandle(obj) {
     return obj instanceof THREE.Object3D
   },
   getType(obj: THREE.Object3D) {
@@ -28,8 +28,8 @@ project.adapters.add({
           type: 'number',
         },
         squish: {
-          type: 'number'
-        }
+          type: 'number',
+        },
         // scaleX: {
         //   type: 'number',
         // },
@@ -43,7 +43,7 @@ project.adapters.add({
     }
   },
   start(object, nativeObject: THREE.Object3D) {
-    const stop = object.onValuesChange((values) => {
+    const stop = object.onValuesChange(values => {
       nativeObject.position.x = values.positionX
       nativeObject.position.y = values.positionY - 84
       nativeObject.position.z = values.positionZ
@@ -57,35 +57,35 @@ project.adapters.add({
   },
 })
 
-
-
 const timeline = project.getTimeline('Bouncing orb')
 // timeline.createObject('Ball', null)
 timeline.createObject('Ball', sphereGroup)
 
 project.adapters.add({
-  name: 'blah',
-  accepts(s) {
-    return s === obju
-  },
-  getType(o) {
-    return {
-      props: {}
-    }
-  }
+  // name: 'blah',
+  // canHandle(s) {
+  //   return s === obju
+  // },
+  // getType(o) {
+  //   return {
+  //     props: {},
+  //   }
+  // },
 })
 
-const obju = {};
+const obju = {}
 
-timeline.createObject('B2', obju)
+// timeline.createObject('B2', obju)
 // sphereGroup.position.z = 852
 // sphere.position.y = -
 // timeline.time = 2000
 
 project.ready.then(async () => {
-  timeline.play({
-    iterationCount: 1000,
-    // range: {from: 200, to: 1300}
-  })
-  // timeline.gotoTime(1000)
+  console.log('play');
+  
+timeline.play({
+  iterationCount: 1000,
+  // range: {from: 200, to: 1300}
+})
+// timeline.gotoTime(1000)
 })

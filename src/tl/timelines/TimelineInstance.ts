@@ -79,12 +79,7 @@ export default class TimelineInstance {
     return object
   }
 
-  getObject(_path: string): TimelineInstanceObject {
-    const path = validateAndSanitiseSlashedPathOrThrow(
-      _path,
-      'timeline.getObject',
-    )
-
+  getObject(path: string): TimelineInstanceObject {
     return this._objects[path]
   }
 
@@ -240,7 +235,7 @@ export default class TimelineInstance {
     range: PlaybackRange,
     rate: number,
     direction: PlaybackDirection,
-  ): Promise<void> {
+  ): Promise<boolean> {
     if (this._playing) {
       this.pause()
     }
@@ -260,7 +255,7 @@ export default class TimelineInstance {
 
     let countSoFar = 1
 
-    const deferred = defer<void>()
+    const deferred = defer<boolean>()
 
     const tick = (tickerTime: number) => {
       const lastTime = this.time
@@ -272,7 +267,7 @@ export default class TimelineInstance {
         if (countSoFar === iterationCount) {
           this._gotoTime(range.from)
           this._playing = false
-          deferred.resolve(undefined)
+          deferred.resolve(true)
           return
         } else {
           countSoFar++
@@ -290,7 +285,7 @@ export default class TimelineInstance {
         this._gotoTime(range.to)
         if (countSoFar === iterationCount) {
           this._playing = false
-          deferred.resolve(undefined)
+          deferred.resolve(true)
           return
         }
         requestNextTick()
@@ -299,7 +294,7 @@ export default class TimelineInstance {
         if (countSoFar === iterationCount) {
           this._gotoTime(range.to)
           this._playing = false
-          deferred.resolve(undefined)
+          deferred.resolve(true)
           return
         } else {
           countSoFar++
@@ -324,7 +319,7 @@ export default class TimelineInstance {
       ticker.unregisterSideEffect(tick)
       ticker.unregisterSideEffectForNextTick(tick)
 
-      if (this.playing) deferred.resolve(undefined)
+      if (this.playing) deferred.resolve(false)
     }
     const requestNextTick = () => ticker.registerSideEffectForNextTick(tick)
     ticker.registerSideEffect(tick)

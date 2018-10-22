@@ -16,7 +16,7 @@ export interface NativeObjectType {
 export const getTypeOfNativeObject = (
   project: Project,
   nativeObject: $FixMe,
-  config?: NativeObjectTypeConfig,
+  config: NativeObjectTypeConfig,
 ): NativeObjectType | null => {
   if (config && config.props) return config
   const adapter = getAdapterOfNativeObject(project, nativeObject, config)

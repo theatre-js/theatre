@@ -4,7 +4,7 @@ const userReadableTypeOfValue = (v: mixed): string => {
   if (typeof v === 'string') {
     return `string("${ellipsify(v, 10)}")`
   } else if (typeof v === 'number') {
-    return `string("${ellipsify(String(v), 10)}")`
+    return `number(${ellipsify(String(v), 10)})`
   } else if (v === null) {
     return 'null'
   } else if (v === undefined) {

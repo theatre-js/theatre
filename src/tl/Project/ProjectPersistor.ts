@@ -4,6 +4,7 @@ import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 import {val} from '$shared/DataVerse2/atom'
 import {debounce} from '$shared/utils'
 import {Pointer} from '$shared/DataVerse2/pointer'
+import delay from '$shared/utils/delay'
 
 export default class ProjectPersistor {
   _storageKey: string
@@ -19,6 +20,11 @@ export default class ProjectPersistor {
   }
 
   async _initialize() {
+    // If in the future we move to IndexedDB to store the state, we'll have
+    // to deal with it being async (as opposed to localStorage that is synchronous.)
+    // so here we're artifically delaying the loading of the state to make sure users
+    // don't count on the state always being already loaded synchronously
+    await delay(0)
     await this._load()
     await this._startPersisting()
   }

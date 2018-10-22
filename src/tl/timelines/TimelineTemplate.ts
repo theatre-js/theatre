@@ -1,13 +1,7 @@
 import Project from '$tl/Project/Project'
 import ObjectTemplate from '$tl/objects/ObjectTemplate'
 import {NativeObjectTypeConfig} from '$tl/objects/objectTypes'
-import atom, {
-  Atom,
-  valueDerivation,
-  val,
-  coldVal,
-} from '$shared/DataVerse2/atom'
-import {Pointer} from '$shared/DataVerse2/pointer'
+import {Atom, val} from '$shared/DataVerse2/atom'
 import {TimelineAddress} from '$tl/handy/addresses'
 import {ConstantDerivation} from '$shared/DataVerse/derivations/constant'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
@@ -62,7 +56,7 @@ export default class TimelineTemplate {
   getObjectTemplate(
     path: string,
     nativeObject: $FixMe,
-    config?: NativeObjectTypeConfig,
+    config: NativeObjectTypeConfig,
     type: NativeObjectType,
   ) {
     let objectTemplate = this._objectTemplates.getState()[path]

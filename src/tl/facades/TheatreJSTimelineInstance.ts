@@ -10,6 +10,7 @@ import {validateAndSanitiseSlashedPathOrThrow} from '$tl/handy/slashedPaths'
 import {InvalidArgumentError} from '../handy/errors'
 import {sanitizeAndValidateTypeFromAdapter} from '$tl/facades/propSanitizers'
 import {sanitizeAndValidateHardCodedProps} from './propSanitizers'
+import {defer} from '../../shared/utils/defer'
 
 const theWeakmap = new WeakMap<TheatreJSTimelineInstance, TimelineInstance>()
 const realInstance = (s: TheatreJSTimelineInstance) =>
@@ -32,17 +33,6 @@ export default class TheatreJSTimelineInstance {
     return realInstance(this).playing
   }
 
-  play(
-    conf?: Partial<{
-      iterationCount: number
-      range: PlaybackRange
-      rate: number
-      direction: PlaybackDirection
-    }>,
-  ) {
-    realInstance(this).play(conf)
-  }
-
   createObject(
     _path: string,
     nativeObject: $FixMe,
@@ -51,11 +41,14 @@ export default class TheatreJSTimelineInstance {
     const inst = realInstance(this)
     const path = validateAndSanitiseSlashedPathOrThrow(
       _path,
-      'timeline.createObject',
+      `timeline.createObject("${_path}", ...)`,
     )
     if (inst._objects[path]) {
       throw new InvalidArgumentError(
-        `Looks like you're creating two different objects on the same path "${path}". If you're trying to create two different objects, give each a unique path. Otherwise if you're trying to query the same existing object, you can run timeline.getObject(path) to get access to that object after it's been created.`,
+        `Looks like you're creating two different objects on the same path "${path}". ` +
+          `If you're trying to create two different objects, give each a unique path. ` +
+          `Otherwise if you're trying to query the same existing object, you can run` +
+          ` timeline.getObject(path) to get access to that object after it's been created.`,
       )
     }
 
@@ -77,7 +70,9 @@ export default class TheatreJSTimelineInstance {
         type.props = {}
         if (!$env.tl.isCore) {
           console.warn(
-            `Object "${path}" in timeline.createObject("${path}", ...) is not accepted by any adapters, nor does it have props. Learn how to set props on objects at https://theatrejs.com/docs/props.html`,
+            `Object "${path}" in timeline.createObject("${path}", ...) is not accepted by ` +
+              `any adapters, nor does it have props. Learn how to set props on objects at ` +
+              `https://theatrejs.com/docs/props.html`,
           )
         }
       } else {
@@ -90,6 +85,50 @@ export default class TheatreJSTimelineInstance {
 
     const object = inst.createObject(path, nativeObject, sanitisedConfig, type)
     return object.facade
+  }
+
+  getObject(_path: string) {
+    const path = validateAndSanitiseSlashedPathOrThrow(
+      _path,
+      `timeline.getObject("${_path}")`,
+    )
+    const possibleObject = realInstance(this).getObject(path)
+    return possibleObject ? possibleObject.facade : undefined
+  }
+
+  /**
+   * Starts playback of a timeline.
+   * Returns a promise that either resolves to true when the playback completes,
+   * or resolves to false if playback gets interrupted (for example by calling timeline.pause())
+   */
+  play(
+    conf?: Partial<{
+      iterationCount: number
+      range: PlaybackRange
+      rate: number
+      direction: PlaybackDirection
+    }>,
+  ) {
+    if (realInstance(this)._project.isReady()) {
+      return realInstance(this).play(conf)
+    } else {
+      if (!$env.tl.isCore) {
+        console.warn(
+          `You seem to have called timeline.play() before the project has finished loading.\n` +
+            `This would not a problem in production when using 'theatre/core', since Theatre loads instantly in core mode. ` +
+            `However, when using Theatre's UI, it takes a few milliseconds for it to load your animation data, ` +
+            `before which your timelines cannot start playing.\n` +
+            `\n` +
+            `To fix this, simply defer calling timeline.play() until after the project is loaded, like this:\n` +
+            `project.ready.then(() => {\n` +
+            `  timeline.play()\n` +
+            `})`,
+        )
+      }
+      const d = defer()
+      d.resolve(true)
+      return d.promise
+    }
   }
 
   pause() {
