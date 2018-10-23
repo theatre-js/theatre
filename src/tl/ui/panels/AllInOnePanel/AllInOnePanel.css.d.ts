@@ -1,5 +1,6 @@
 export const bottomHeight: string;
 export const panelBgColor: string;
+export const fontd: string;
 export const container: string;
 export const middle: string;
 export const left: string;

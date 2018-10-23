@@ -1,14 +1,13 @@
 @value bottomHeight from './Bottom/Bottom.css';
 @value panelBgColor: #263238;
+@value fontd: 12px -apple-system, BlinkMacSystemFont, Segoe WPC, Segoe UI, HelveticaNeue-Light, Ubuntu, Droid Sans, sans-serif;
 
 .container {
-  // position: fixed _ 20px 20px 20px;
   position: fixed;
   background: panelBgColor;
 
   color: rgba(255, 255, 255, 0.8);
-  font: 12px -apple-system, BlinkMacSystemFont, Segoe WPC, Segoe UI,
-    HelveticaNeue-Light, Ubuntu, Droid Sans, sans-serif;
+  font: fontd;
 }
 
 .middle {

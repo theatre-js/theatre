@@ -85,11 +85,11 @@ const obju = {}
 // timeline.time = 2000
 
 project.ready.then(async () => {
-  console.log('play')
+  // console.log('play')
 
-  timeline.play({
-    iterationCount: 1000,
-    // range: {from: 200, to: 1300}
-  })
+  // timeline.play({
+  //   iterationCount: 1000,
+  //   // range: {from: 200, to: 1300}
+  // })
   // timeline.gotoTime(1000)
 })

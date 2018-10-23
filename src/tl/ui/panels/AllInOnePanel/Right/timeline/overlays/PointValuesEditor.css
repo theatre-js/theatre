@@ -1,22 +1,10 @@
+@value fontd from '../../../AllInOnePanel.css';
+
 .container {
   position: absolute;
-  width: 50px;
-  // height: 30px;
-  height: 60px;
-  padding: 4px;
+  font: fontd;
   box-sizing: border-box;
-  transform: translate3d(-50%, -100%, 0);
-
-  &:before {
-    display: block;
-    position: absolute 0 0 6px 0;
-    content: ' ';
-    background: #101010;
-    border-radius: 10%;
-    box-shadow: 0 0px 15px 1px #101010;
-    z-index: -1;
-    pointer-events: none;
-  }
+  transform: translate3d(-50%, calc(-100% - 11px), 0);
 
   &:after {
     display: block;
@@ -24,43 +12,65 @@
     content: ' ';
     width: 0;
     height: 0;
-    left: 21px;
-    bottom: 0px;
-    border-top: 6px solid #101010;
+    left: 72px;
+    bottom: -6px;
+    border-top: 6px solid #3baea7;
     border-left: 4px solid transparent;
     border-right: 4px solid transparent;
     pointer-events: none;
   }
 }
 
+.innerWrapper {
+  display: block;
+  border-radius: 3px;
+  box-sizing: border-box;
+  z-index: -1;
+  background: #282e31;
+  border: 0.5px solid #3baea7;
+  overflow: hidden;
+}
+
 .row {
-  height: 20px;
-  font-size: 11px;
-  line-height: 20px;
-  color: #fff;
-  &:first-child {
-    margin-bottom: 2px;
+  height: 30px;
+  position: relative;
+  border-bottom: 1px solid #3baea726;
+  &:last-child {
+    border-bottom: none;
   }
 }
 
-.icon {
-  font-size: 7px;
-  line-height: 14px;
-  color: #444;
-  margin-right: 2px;
-  vertical-align: middle;
-  // display: none;
+.label {
+  position: absolute;
+  left: 11px;
+  top: 7px;
+  width: 31px;
+  text-align: right;
+  display: block;
+  color: #627179;
+  /* color: #8ea2ad; */
+  pointer-events: none;
 }
 
 .input {
-  max-width: 30px;
-  // width: 42px;
-  height: 16px;
+  text-indent: 50px;
+  font-family: inherit;
+  width: 150px;
+  height: 100%;
   display: inline-block;
-  font-size: 10px;
+  line-height: 100%;
+  color: #45787b;
+  &:focus {
+    background: #171b1e;
+    color: white;
+  }
   text-align: left;
-  color: #fff;
   outline: none;
   border: none;
   background: none;
+  box-sizing: border-box;
+}
+
+.input:focus ~ .label {
+  color: #8ea2ad !important;
 }

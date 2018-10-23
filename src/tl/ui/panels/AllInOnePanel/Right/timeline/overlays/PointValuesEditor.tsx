@@ -33,25 +33,27 @@ class PointValuesEditor extends UIComponent<IProps, IState> {
       <FixedFullSizeContainer>
         <Overlay onClickOutside={this.props.onClose}>
           <OverlaySection {...classes('container')} style={{left, top}}>
-            <div {...classes('row')}>
-              <span {...classes('icon')}>{String.fromCharCode(0x25ba)}</span>
-              <input
-                ref={c => (this.timeInput = c)}
-                {...classes('input')}
-                value={this.state.time}
-                onKeyDown={this.handleTimeKeyDown}
-                onChange={this.handleTimeChange}
-              />
-            </div>
-            <div {...classes('row')}>
-              <span {...classes('icon')}>{String.fromCharCode(0x25b2)}</span>
-              <input
-                ref={c => (this.valueInput = c)}
-                {...classes('input')}
-                value={this.state.value}
-                onKeyDown={this.handleValueKeyDown}
-                onChange={this.handleValueChange}
-              />
+            <div {...classes('innerWrapper')}>
+              <div {...classes('row')}>
+                <input
+                  ref={c => (this.timeInput = c)}
+                  {...classes('input')}
+                  value={this.state.time}
+                  onKeyDown={this.handleTimeKeyDown}
+                  onChange={this.handleTimeChange}
+                />
+                <span {...classes('label')}>time</span>
+              </div>
+              <div {...classes('row')}>
+                <input
+                  ref={c => (this.valueInput = c)}
+                  {...classes('input')}
+                  value={this.state.value}
+                  onKeyDown={this.handleValueKeyDown}
+                  onChange={this.handleValueChange}
+                />
+                <span {...classes('label')}>value</span>
+              </div>
             </div>
           </OverlaySection>
         </Overlay>
