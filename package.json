@@ -18,6 +18,7 @@
     "tl:webpack:dev": "webpack-dev-server --progress --config webpack/tl/development.js",
     "tl:webpack:prod": "webpack --progress --config webpack/tl/production.js",
     "tl:publish": "run-s tl:webpack:prod run-publish-script",
+    "tl:publish:emit-decs": "tsc -p ./tsconfig.publish.json ",
     "tl:publish:prepare": "node ./scripts/tl/prepareBundle.js",
     "playground:webpack:dev": "webpack-dev-server --progress --config webpack/playground/development.js",
     "examples:webpack:dev": "webpack-dev-server --progress --config webpack/examples/development.js",

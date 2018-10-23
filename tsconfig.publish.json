@@ -1,0 +1,41 @@
+{
+  "compilerOptions": {
+    "outDir": "distributionss/theatre",
+    "module": "system",
+    "target": "ES2017",
+    "lib": ["es2017", "dom"],
+    "allowJs": false,
+    "outFile": "distributions/theatre/index.d.ts",
+    "jsx": "react",
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noImplicitAny": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "strictNullChecks": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "pretty": true,
+    "noEmit": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "paths": {
+      "$lb/*": ["src/lb/*"],
+      "$lf/*": ["src/lf/*"],
+      "$theater/*": ["src/theater/*"],
+      "$shared/*": ["src/shared/*"],
+      "$tl/*": ["src/tl/*"],
+      "$root/*": ["/*"],
+      "$src/*": ["src/*"]
+    },
+    "types": []
+  },
+  "include": ["./src/tl/entries/core.ts"],
+  "exclude": [
+    "node_modules/@types/*"
+  ],
+  "files": ["./defs.d.ts"],
+  "plugins": []
+}
