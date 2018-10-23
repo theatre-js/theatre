@@ -1,14 +1,17 @@
-import Project, {Conf} from '$tl/Project/Project'
-import TimelineInstance from '$tl/timelines/TimelineInstance'
+import Project from '$tl/Project/Project'
 import {validateAndSanitiseSlashedPathOrThrow} from '$tl/handy/slashedPaths'
 import {InvalidArgumentError} from '$tl/handy/errors'
 import {OnDiskState, $OnDiskState} from '$tl/Project/store/types'
 import {userFacingReoprter} from '$shared/ioTypes/userFacingReporter'
 import projectsSingleton from '$tl/Project/projectsSingleton'
 import TheatreJSTimelineInstance from '$tl/facades/TheatreJSTimelineInstance'
-import userReadableTypeOfValue from '$shared/utils/userReadableTypeOfValue';
+import userReadableTypeOfValue from '$shared/utils/userReadableTypeOfValue'
 
 const projectsWeakmap = new WeakMap<TheatreJSProject, Project>()
+
+type Conf = Partial<{
+  state: $IntentionalAny
+}>
 
 // User-facing facade for Project
 export default class TheatreJSProject {
@@ -37,7 +40,10 @@ export default class TheatreJSProject {
     projectsWeakmap.set(this, new Project(id, config))
   }
 
-  getTimeline(_path: string, instanceId: string = 'default'): TheatreJSTimelineInstance {
+  getTimeline(
+    _path: string,
+    instanceId: string = 'default',
+  ): TheatreJSTimelineInstance {
     const path = validateAndSanitiseSlashedPathOrThrow(
       _path,
       'project.getTimeline',
@@ -65,7 +71,9 @@ const getProject = (p: TheatreJSProject) =>
 const validateProjectIdOrThrow = (id: string) => {
   if (typeof id !== 'string') {
     throw new InvalidArgumentError(
-      `Argument 'id' in \`new Project(id, ...)\` must be a string. Instead, it was ${userReadableTypeOfValue(id)}.`,
+      `Argument 'id' in \`new Project(id, ...)\` must be a string. Instead, it was ${userReadableTypeOfValue(
+        id,
+      )}.`,
     )
   }
 

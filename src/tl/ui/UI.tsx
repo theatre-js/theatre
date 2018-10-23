@@ -17,11 +17,12 @@ import {HistoryOnly} from '$shared/utils/redux/withHistory/withHistoryDeprecated
 export default class UI {
   atom: Atom<UIState>
   reduxStore: Store<UIState>
-  _enabled = false
+  _showing = false
   atomP: Pointer<UIState>
   ticker: Ticker
   actions: typeof uiActions = uiActions
   _selectors = uiSelectors
+  containerEl = document.createElement('div')
 
   constructor() {
     this.reduxStore = configureStore({
@@ -60,27 +61,25 @@ export default class UI {
     })
   }
 
-  enable() {
-    if (this._enabled)
-      throw new Error(
-        `TheaterJS UI is already enabled. You only need to call .enable() once`,
-      )
+  show() {
+    if (this._showing) return
 
-    this._enabled = true
+    this._showing = true
     this._render()
   }
 
   protected _render() {
-    const containerEl = document.createElement('div')
-    containerEl.className = 'theaterjsRoot'
+    this.containerEl.className = 'theatrejs-ui-root'
     setTimeout(() => {
-      document.body.appendChild(containerEl)
-      ReactDOM.render(<UIRootWrapper ui={this} />, containerEl)
+      document.body.appendChild(this.containerEl)
+      ReactDOM.render(<UIRootWrapper ui={this} />, this.containerEl)
     }, 10)
   }
 
-  disable() {
-    
+  hide() {
+    if (!this._showing) return
+    document.body.removeChild(this.containerEl)
+    ReactDOM.unmountComponentAtNode(this.containerEl)
   }
 
   _dispatch(...actions: GenericAction[]) {

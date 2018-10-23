@@ -1,10 +1,10 @@
-import UI from '$tl/ui/UI'
 import * as core from './core'
+import TheatreJSUI from '$tl/facades/TheatreJSUI'
 
 export * from './core'
 
-export const ui = new UI()
-ui.enable()
+export const ui = new TheatreJSUI()
+ui.show()
 
 /**
  * Since Theatre is available as a global object, we need to somehow export its
