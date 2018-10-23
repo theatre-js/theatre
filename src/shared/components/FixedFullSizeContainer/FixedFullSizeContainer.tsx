@@ -20,7 +20,7 @@ class FixedFullSizeContainer extends React.PureComponent<IProps, {}> {
     )
     return this.props.usePortal
       ? ReactDOM.createPortal(theContainer, document.querySelector(
-          '.theaterjsRoot',
+          '.theatrejs-ui-root',
         ) as HTMLElement)
       : theContainer
   }
