@@ -6,6 +6,9 @@ import {TPointValuesEditorProps} from '$tl/ui/panels/AllInOnePanel/Right/timelin
 import Overlay from '$shared/components/Overlay/Overlay'
 import OverlaySection from '$shared/components/Overlay/OverlaySection'
 import FixedFullSizeContainer from '$shared/components/FixedFullSizeContainer/FixedFullSizeContainer'
+import {ITempActionGroup} from '$shared/utils/redux/withHistory/actions'
+import {GenericAction} from '$shared/types'
+import Input from './PointValuesEditor/Input'
 
 const classes = resolveCss(css)
 
@@ -14,18 +17,50 @@ interface IProps extends TPointValuesEditorProps {
 }
 
 interface IState {
-  value: string
-  time: string
+  temporaryActionDispatched: boolean
+}
+
+const valueValidator = (s: string): string | void => {
+  if (!s.match(/^[\-]?[0-9]+(\.[0-9]+)?$/)) return 'This is not a number'
+  const v = parseFloat(s)
+
+  if (isNaN(v)) {
+    return 'This is not a number'
+  }
+}
+
+const timeValidator = (s: string): string | void => {
+  if (!s.match(/^[\-]?[0-9]+(\.[0-9]+)?$/)) return 'This is not a number'
+  const v = parseFloat(s)
+  if (isNaN(v)) {
+    return 'This is not a number'
+  } else if (v < 0) {
+    return `Keyframes cannot be placed before 0`
+  }
+}
+
+const numberToString = (n: number) =>
+  typeof n === 'number' ? String(+n.toFixed(6)) : ''
+
+const stringToNumber = (n: string) => {
+  return parseFloat(n)
 }
 
 class PointValuesEditor extends UIComponent<IProps, IState> {
-  timeInput: HTMLInputElement | null
-  valueInput: HTMLInputElement | null
+  tempActionGroup: ITempActionGroup
+  timeRef = React.createRef<Input>()
+  valueRef = React.createRef<Input>()
 
-  state = {
-    value: String(this.props.initialValue),
-    time: (this.props.initialTime / 1000).toFixed(2),
+  constructor(props: IProps, context: $IntentionalAny) {
+    super(props, context)
+    this.tempActionGroup = this.project._actions.historic.temp()
+
+    this.state = {
+      temporaryActionDispatched: false,
+    }
   }
+
+  componentWillReceiveProps(newProps: IProps) {}
 
   render() {
     const {left, top} = this.props
@@ -35,22 +70,32 @@ class PointValuesEditor extends UIComponent<IProps, IState> {
           <OverlaySection {...classes('container')} style={{left, top}}>
             <div {...classes('innerWrapper')}>
               <div {...classes('row')}>
-                <input
-                  ref={c => (this.timeInput = c)}
-                  {...classes('input')}
-                  value={this.state.time}
-                  onKeyDown={this.handleTimeKeyDown}
-                  onChange={this.handleTimeChange}
+                <Input
+                  ref={this.timeRef}
+                  css={{input: css.input, invalid: css.inputInvalid}}
+                  validator={timeValidator}
+                  stringify={numberToString}
+                  parseString={stringToNumber}
+                  value={this.props.initialTime / 1000}
+                  cycleFocus={() => this._cycleFocus('time')}
+                  onRequestCommit={this._onRequestCommit}
+                  onRequestDiscard={this._onRequestDiscard}
+                  onChange={this._onAnyInputChange}
                 />
                 <span {...classes('label')}>time</span>
               </div>
               <div {...classes('row')}>
-                <input
-                  ref={c => (this.valueInput = c)}
-                  {...classes('input')}
-                  value={this.state.value}
-                  onKeyDown={this.handleValueKeyDown}
-                  onChange={this.handleValueChange}
+                <Input
+                  ref={this.valueRef}
+                  css={{input: css.input, invalid: css.inputInvalid}}
+                  validator={valueValidator}
+                  stringify={numberToString}
+                  parseString={stringToNumber}
+                  value={this.props.initialValue}
+                  cycleFocus={() => this._cycleFocus('value')}
+                  onRequestCommit={this._onRequestCommit}
+                  onRequestDiscard={this._onRequestDiscard}
+                  onChange={this._onAnyInputChange}
                 />
                 <span {...classes('label')}>value</span>
               </div>
@@ -62,82 +107,68 @@ class PointValuesEditor extends UIComponent<IProps, IState> {
   }
 
   componentDidMount() {
-    this.valueInput!.focus()
-    this.valueInput!.select()
+    this.valueRef.current!.focus()
+    this.valueRef.current!.select()
   }
 
-  _handleKeyDown = (
-    e: React.KeyboardEvent<HTMLInputElement>,
-    input: 'time' | 'value',
-  ) => {
-    if (e.keyCode === 9) {
-      e.preventDefault()
-      // this._submit()
-      if (input === 'time') {
-        this.timeInput!.blur()
-        this.valueInput!.focus()
-        this.valueInput!.select()
-      }
-      if (input === 'value') {
-        this.valueInput!.blur()
-        this.timeInput!.focus()
-        this.timeInput!.select()
-      }
-    }
-    if (e.keyCode === 13) {
-      this._submit()
-      this.props.onClose()
-    }
-    if (e.keyCode === 27) {
-      this.props.onClose()
-    }
+  _cycleFocus = (currentFocus: 'time' | 'value') => {
+    const el =
+      currentFocus === 'time' ? this.timeRef.current : this.valueRef.current
+    el!.focus()
   }
 
-  _submit() {
-    if (
-      this.state.value === String(this.props.initialValue) &&
-      this.state.time === (this.props.initialTime / 1000).toFixed(2)
-    ) {
-      return
-    }
-
-    this.project.reduxStore.dispatch(
-      this.project._actions.historic.setPointCoordsInBezierCurvesOfScalarValues(
-        {
-          propAddress: this.props.propAddress,
-          pointIndex: this.props.pointIndex,
-          newCoords: {
-            time: Number(this.state.time) * 1000,
-            value: Number(this.state.value),
-          },
-        },
-      ),
+  _onAnyInputChange = () => {
+    this.temporarilySetValues(
+      this.valueRef.current!.getValue(),
+      this.timeRef.current!.getValue(),
     )
   }
 
-  _handleChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    input: 'time' | 'value',
-  ) => {
-    const {value} = e.target
-    if (input === 'time') this.setState(() => ({time: value}))
-    if (input === 'value') this.setState(() => ({value: value}))
+  _onRequestCommit = () => {
+    if (this.valueRef.current!.isEdited() || this.timeRef.current!.isEdited()) {
+      this.permenantlySetValues(
+        this.valueRef.current!.getValue(),
+        this.timeRef.current!.getValue(),
+      )
+    } else {
+      this.discardTemporaryValues()
+    }
+    this.props.onClose()
   }
 
-  handleTimeKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    this._handleKeyDown(e, 'time')
+  _onRequestDiscard = () => {
+    this.discardTemporaryValues()
+    this.props.onClose()
   }
 
-  handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this._handleChange(e, 'time')
+  temporarilySetValues = (value: number, time: number) => {
+    this.project._dispatch(
+      this.tempActionGroup.push(this._changeValuesAction(value, time)),
+    )
   }
 
-  handleValueKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    this._handleKeyDown(e, 'value')
+  discardTemporaryValues = () => {
+    this.project.reduxStore.dispatch(this.tempActionGroup.discard())
   }
 
-  handleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this._handleChange(e, 'value')
+  permenantlySetValues = (value: number, time: number) => {
+    this.project._dispatch(
+      this.tempActionGroup.discard(),
+      this._changeValuesAction(value, time),
+    )
+  }
+
+  private _changeValuesAction(value: number, time: number): GenericAction {
+    return this.project._actions.historic.setPointCoordsInBezierCurvesOfScalarValues(
+      {
+        propAddress: this.props.propAddress,
+        pointIndex: this.props.pointIndex,
+        newCoords: {
+          time: time * 1000,
+          value: value,
+        },
+      },
+    )
   }
 }
 

@@ -12,7 +12,7 @@
     content: ' ';
     width: 0;
     height: 0;
-    left: 72px;
+    left: 71px;
     bottom: -6px;
     border-top: 6px solid #3baea7;
     border-left: 4px solid transparent;
@@ -53,7 +53,8 @@
 }
 
 .input {
-  text-indent: 50px;
+  padding-left: 50px;
+  padding-right: 14px;
   font-family: inherit;
   width: 150px;
   height: 100%;
@@ -71,6 +72,15 @@
   box-sizing: border-box;
 }
 
+.inputInvalid {
+  /* background: red !important; */
+  color: red !important;
+}
+
 .input:focus ~ .label {
-  color: #8ea2ad !important;
+  /* color: #8ea2ad !important; */
+}
+
+.inputInvalid ~ .label {
+  color: red !important;
 }

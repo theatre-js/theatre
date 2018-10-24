@@ -202,11 +202,60 @@ export const setPointCoordsInBezierCurvesOfScalarValues = r(
     const prevPointTime = (prevPoint && prevPoint.time) || -Infinity
     const {time: newTime, value: newValue} = p.newCoords
 
+    pointToUpdate.value = newValue
     if (newTime > prevPointTime && newTime < nextPointTime) {
       pointToUpdate.time = newTime
-      pointToUpdate.value = newValue
       return
     }
+
+    pointToUpdate.value = newValue
+
+    // If trying to move the point behind prev point
+    if (newTime <= prevPointTime) {
+      // if there is no prev point, then 0 is the minimum
+      if (prevPointTime === -Infinity) {
+        pointToUpdate.time = 0
+        return
+      } else {
+        // if there is no next point, then put it a millisecond after prev point
+        if (nextPointTime === Infinity) {
+          pointToUpdate.time = prevPointTime + 1
+          // if there is a next point
+        } else {
+          // if the prev and next are more than a millisecond apart
+          if (nextPointTime - prevPointTime > 1) {
+            // put the new point 1ms after prev point
+            pointToUpdate.time = prevPointTime + 1
+          } else {
+            // can't do anything
+            return
+          }
+        }
+      }
+    } else if (newTime >= nextPointTime) {
+      // if there is no next point
+      if (nextPointTime === Infinity) {
+        // don't set the time
+        return
+      } else {
+        // if there is no prev point
+        if (prevPointTime === -Infinity) {
+          // put it 1ms before next point
+          pointToUpdate.time = nextPointTime - 1
+        } else {
+          // if the prev and next are more than a millisecond apart
+          if (nextPointTime - prevPointTime > 1) {
+            // put the new point 1ms before next point
+            pointToUpdate.time = nextPointTime - 1
+          } else {
+            // can't do anything
+            return
+          }
+        }
+      }
+    }
+
+    return
 
     if (newTime === prevPointTime || newTime === nextPointTime) return
 

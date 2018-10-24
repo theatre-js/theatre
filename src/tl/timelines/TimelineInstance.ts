@@ -66,14 +66,14 @@ export default class TimelineInstance {
     path: string,
     nativeObject: $FixMe,
     config: NativeObjectTypeConfig,
-    type: NativeObjectType
+    type: NativeObjectType,
   ): TimelineInstanceObject {
     const object = (this._objects[path] = new TimelineInstanceObject(
       this,
       path,
       nativeObject,
       config,
-      type
+      type,
     ))
 
     return object
@@ -108,9 +108,9 @@ export default class TimelineInstance {
       time = 0
     }
     if (time > this._timelineTemplate.duration) {
-      console.error(
-        `timeline.time cannot be larger than the timeline's duration. You can read the duration using timeline.duration.`,
-      )
+      // console.error(
+      //   `timeline.time cannot be larger than the timeline's duration. You can read the duration using timeline.duration.`,
+      // )
       time = this._timelineTemplate.duration
     }
     const dur = this._timelineTemplate.duration
