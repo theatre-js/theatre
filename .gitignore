@@ -7,5 +7,6 @@
 *.log
 development.env.json
 production.env.json
+/blob%3ahttp%3a
 
 .DS_Store
