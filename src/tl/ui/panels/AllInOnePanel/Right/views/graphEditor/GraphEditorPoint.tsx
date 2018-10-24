@@ -37,7 +37,7 @@ import {shouldToggleIsInSelection} from '$tl/ui/panels/AllInOnePanel/Right/views
 import {clamp} from 'lodash'
 import BezierConnector from '$tl/ui/panels/AllInOnePanel/Right/views/graphEditor/BezierConnector'
 import PointCircle from '$theater/AnimationTimelinePanel/views/point/PointCircle'
-import { cmdIsDown } from '$shared/utils/keyboardUtils';
+import {cmdIsDown} from '$shared/utils/keyboardUtils'
 
 interface IProps {
   propGetter: TPropGetter
@@ -64,7 +64,7 @@ interface IProps {
 
 interface IState {
   isMoving: boolean
-  pointMove: TPointMove
+  // pointMove: TPointMove
   handlesMove: TPointHandles
   renderTempConnectorOf: 'none' | 'currentPoint' | 'prevPoint'
 }
@@ -77,15 +77,15 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
   svgSize: TSVGSize
   leftHandleNormalizers: {xNormalizer: number; yNormalizer: number}
   rightHandleNormalizers: {xNormalizer: number; yNormalizer: number}
-  cachedOriginalCoords: TPointCoords
   isInSelection: boolean = false
+  propsBeforeMove: IProps
 
   constructor(props: IProps, context: $IntentionalAny) {
     super(props, context)
 
     this.state = {
       isMoving: false,
-      pointMove: [0, 0],
+      // pointMove: [0, 0],
       handlesMove: [0, 0, 0, 0],
       renderTempConnectorOf: 'none',
     }
@@ -95,14 +95,14 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
   }
 
   render() {
-    const {isMoving, renderTempConnectorOf, pointMove} = this.state
+    const {isMoving, renderTempConnectorOf} = this.state
     return (
       <>
         {this._renderConsumers()}
         <g>
           {renderTempConnectorOf !== 'none' &&
             this._renderConnectorPlaceholder()}
-          {isMoving && this._renderTempPoint(pointMove)}
+          {isMoving && this._renderTempPoint()}
           {this._renderPoint()}
         </g>
       </>
@@ -226,15 +226,16 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
     )
   }
 
-  _renderTempPoint(pointMove: IState['pointMove']) {
+  _renderTempPoint() {
+    // return null
     return (
       <TempPoint
-        color={this.props.color}
-        point={this.props.point}
-        prevPoint={this.props.prevPoint}
-        nextPoint={this.props.nextPoint}
-        pointMove={pointMove}
-        handlesMove={this.state.handlesMove}
+        color={this.propsBeforeMove.color}
+        point={this.propsBeforeMove.point}
+        prevPoint={this.propsBeforeMove.prevPoint}
+        nextPoint={this.propsBeforeMove.nextPoint}
+        // pointMove={pointMove}
+        // handlesMove={this.state.handlesMove}
       />
     )
   }
@@ -329,45 +330,55 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
     this._cacheOriginalCoords()
   }
 
-  handlePointDrag = (dx: number, dy: number, e: MouseEvent) => {
+  handlePointDrag = (mouseDX: number, mouseDY: number, e: MouseEvent) => {
+    // debugger
     const {width, height} = this.svgSize
-    const {point, prevPoint, nextPoint} = this.props
-    const {pointMove} = this.state
+    const {point, prevPoint, nextPoint} = this.propsBeforeMove
+    // const {pointMove} = this.state
 
     let renderTempConnectorOf: IState['renderTempConnectorOf'] = 'none'
-    let x = (dx / width) * 100
-    let y = (dy / height) * 100
+    let dxAsPercentageOfSvgWidth = (mouseDX / width) * 100
+    let dyAsPercentageOfSvgHeight = (mouseDY / height) * 100
     if (cmdIsDown(e)) {
-      renderTempConnectorOf = x > 0 ? 'currentPoint' : 'prevPoint'
-      x = y = 0
+      renderTempConnectorOf =
+        dxAsPercentageOfSvgWidth > 0 ? 'currentPoint' : 'prevPoint'
+      dxAsPercentageOfSvgWidth = dyAsPercentageOfSvgHeight = 0
     }
-    if (e.altKey) x = 0
-    if (e.shiftKey) y = 0
+    if (e.altKey) dxAsPercentageOfSvgWidth = 0
+    if (e.shiftKey) dyAsPercentageOfSvgHeight = 0
 
     const limitLeft = prevPoint == null ? 0 : prevPoint.time
-    const limitRight = nextPoint == null ? 100 : nextPoint.time
+    const limitRight = nextPoint == null ? 1000000000 : nextPoint.time
 
-    const pointTime = point.time - pointMove[0]
-    const newT = pointTime + x
-    if (newT >= limitRight) x = limitRight - pointTime - 100 / width
-    if (newT <= limitLeft) x = limitLeft - pointTime + 100 / width
+    const pointTime = point.time //- pointMove[0]
+    const newT = pointTime + dxAsPercentageOfSvgWidth
+    if (newT >= limitRight)
+      dxAsPercentageOfSvgWidth = limitRight - pointTime - 100 / width
+    if (newT <= limitLeft)
+      dxAsPercentageOfSvgWidth = limitLeft - pointTime + 100 / width
     const originalCoords = {
-      time: this.cachedOriginalCoords.time,
-      value: this.cachedOriginalCoords.value,
+      time: this.propsBeforeMove.point.originalTime,
+      value: this.propsBeforeMove.point.originalValue,
     }
     const change = {
-      time: x - pointMove[0],
-      value: y - pointMove[1],
+      time: dxAsPercentageOfSvgWidth, //- pointMove[0],
+      value: dyAsPercentageOfSvgHeight, //- pointMove[1],
     }
-    this.cachedOriginalCoords = this.props.movePointToNewCoordsTemp(
+    const halfAPixelInTime = (0.4999 / width) * 100
+    const halfAPixelInValue = (0.4999 / height) * 100
+
+    this.props.movePointToNewCoordsTemp(
       this.props.pointIndex,
       originalCoords,
       change,
+      halfAPixelInTime,
+      halfAPixelInValue,
     )
+
     this.setState(() => ({
       renderTempConnectorOf,
       isMoving: true,
-      pointMove: [x, y],
+      // pointMove: [x, y],
     }))
   }
 
@@ -563,10 +574,7 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
   }
 
   _cacheOriginalCoords() {
-    this.cachedOriginalCoords = {
-      time: this.props.point.originalTime,
-      value: this.props.point.originalValue,
-    }
+    this.propsBeforeMove = this.props
   }
 }
 

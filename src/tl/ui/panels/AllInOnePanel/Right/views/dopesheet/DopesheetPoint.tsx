@@ -73,6 +73,7 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
   activeMode: ActiveMode
   isInSelection: boolean = false
   svgWidth: number = 0
+  propsBeforeDrag: IProps
 
   constructor(props: IProps) {
     super(props)
@@ -184,11 +185,11 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
     return (
       <TempPoint
         color={this.props.color}
-        pointTime={this.props.pointTime - this.state.pointMove}
-        pointConnected={this.props.pointConnected}
-        nextPointTime={this.props.nextPointTime}
-        prevPointTime={this.props.prevPointTime}
-        prevPointConnected={this.props.prevPointConnected}
+        pointTime={this.propsBeforeDrag.pointTime}
+        pointConnected={this.propsBeforeDrag.pointConnected}
+        nextPointTime={this.propsBeforeDrag.nextPointTime}
+        prevPointTime={this.propsBeforeDrag.prevPointTime}
+        prevPointConnected={this.propsBeforeDrag.prevPointConnected}
       />
     )
   }
@@ -292,10 +293,12 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
 
   handlePointDragStart = () => {
     this.svgWidth = this.props.propGetter('svgWidth')
+    this.propsBeforeDrag = this.props
   }
 
   handlePointDrag = (dx: number, _: number, e: MouseEvent) => {
     let renderTempConnectorOf: IState['renderTempConnectorOf'] = 'none'
+    // change in x as percent of svgWidth
     let x = (dx / this.svgWidth) * 100
     if (e.metaKey) {
       renderTempConnectorOf = x > 0 ? 'currentPoint' : 'prevPoint'
@@ -307,7 +310,7 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
     const pointTime = this.props.pointTime - pointMove
 
     const limitLeft = prevPointTime == null ? 0 : prevPointTime
-    const limitRight = nextPointTime == null ? 100 : nextPointTime
+    const limitRight = nextPointTime == null ? 100 /* 100% of svgWidth */ : nextPointTime
 
     const newTime = pointTime + x
     if (newTime >= limitRight) x = limitRight - pointTime - 100 / this.svgWidth
@@ -321,10 +324,13 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
       time: x - this.state.pointMove,
       value: 0,
     }
+    const minimumHumanNoticableDiffInTime = 0.4999 / this.svgWidth * 100
     this.props.movePointToNewCoordsTemp(
       this.props.pointIndex,
       originalCoords,
       change,
+      minimumHumanNoticableDiffInTime,
+      0
     )
 
     this.setState(() => ({

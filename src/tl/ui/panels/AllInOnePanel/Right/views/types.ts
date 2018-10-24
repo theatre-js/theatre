@@ -38,6 +38,8 @@ export type TMovePointToNewCoordsTemp = (
   pointIndex: number,
   originalCoords: TPointCoords,
   change: TPointCoords,
+  minimumHumanNoticableDiffInTime: number,
+  minimumHumanNoticableDiffInValue: number,
 ) => TPointCoords
 
 export type TMovePointToNewCoords = (

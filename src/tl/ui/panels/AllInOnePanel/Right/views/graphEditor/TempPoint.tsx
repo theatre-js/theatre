@@ -15,8 +15,8 @@ interface IProps {
   point: TNormalizedPoint
   nextPoint?: TNormalizedPoint
   prevPoint?: TNormalizedPoint
-  pointMove: TPointMove
-  handlesMove: TPointHandles
+  // pointMove: TPointMove
+  // handlesMove: TPointHandles
 }
 
 export default ({
@@ -24,39 +24,35 @@ export default ({
   point,
   prevPoint,
   nextPoint,
-  pointMove,
-  handlesMove,
-}: IProps) => {
-  const pointTime = point.time - pointMove[0]
-  const pointValue = point.value - pointMove[1]
+}: // pointMove,
+// handlesMove,
+IProps) => {
+  const pointTime = point.time
+  const pointValue = point.value
 
-  const ponintMoveIsNonZero = !isNumberTupleZero(pointMove)
+  const ponintMoveIsNonZero = true //!isNumberTupleZero(pointMove)
 
   const renderPointConnector =
-    point.interpolationDescriptor.connected &&
-    nextPoint != null &&
-    (ponintMoveIsNonZero ||
-      !isNumberTupleZero(handlesMove.slice(2) as TPointSingleHandle))
+    point.interpolationDescriptor.connected && nextPoint != null && true
+  // (ponintMoveIsNonZero ||
+  // !isNumberTupleZero(handlesMove.slice(2) as TPointSingleHandle))
 
   const renderPrevPointConnector =
-    prevPoint != null &&
-    prevPoint.interpolationDescriptor.connected &&
-    (ponintMoveIsNonZero ||
-      !isNumberTupleZero(handlesMove.slice(0, 2) as TPointSingleHandle))
+    prevPoint != null && prevPoint.interpolationDescriptor.connected && true
+  // (ponintMoveIsNonZero ||
+  //   !isNumberTupleZero(handlesMove.slice(0, 2) as TPointSingleHandle))
 
   const pointHandles = [
-    ...point.interpolationDescriptor.handles
-      .slice(0, 2)
-      .map((h, i) => h - handlesMove[i + 2]),
+    ...point.interpolationDescriptor.handles.slice(0, 2),
+    // .map((h, i) => h - handlesMove[i + 2]),
     ...point.interpolationDescriptor.handles.slice(2),
   ] as TPointHandles
 
   const prevPointHandles = renderPrevPointConnector
     ? ([
         ...prevPoint!.interpolationDescriptor.handles.slice(0, 2),
-        ...prevPoint!.interpolationDescriptor.handles
-          .slice(2)
-          .map((h, i) => h - handlesMove[i]),
+        ...prevPoint!.interpolationDescriptor.handles.slice(2),
+        // .map((h, i) => h - handlesMove[i]),
       ] as TPointHandles)
     : ([0, 0, 0, 0] as TPointHandles)
 

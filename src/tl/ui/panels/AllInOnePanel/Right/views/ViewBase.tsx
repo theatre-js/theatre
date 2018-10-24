@@ -25,6 +25,7 @@ import {
   getValueNormalizer,
   calculateNextExtremums,
 } from '$tl/ui/panels/AllInOnePanel/Right/items/ItemPointsNormalizer'
+import {roundestNumberBetween} from '$shared/utils/numberRoundingUtils'
 
 export interface IViewBaseProps {
   extremums: TExtremums
@@ -233,15 +234,59 @@ export default class ViewBase<Props extends IProps> extends UIComponent<
     pointIndex,
     originalCoords,
     change,
+    minimumHumanNoticableDiffInTime: number,
+    minimumHumanNoticableDiffInValue: number,
   ) => {
     const {extremums, propGetter, extremumsAPI} = this.props
     extremumsAPI.persist()
 
-    const newCoords = {
-      time: originalCoords.time + (change.time * propGetter('duration')) / 100,
-      value:
+    const humanUnreadableTime =
+      originalCoords.time + (change.time * propGetter('duration')) / 100
+    let time = humanUnreadableTime
+
+    if (minimumHumanNoticableDiffInTime !== 0) {
+      const [minChange, maxChange] = [
+        change.time - minimumHumanNoticableDiffInTime,
+        change.time + minimumHumanNoticableDiffInTime,
+      ]
+      const [minTime, maxTime] = [
+        originalCoords.time + (minChange * propGetter('duration')) / 100,
+        originalCoords.time + (maxChange * propGetter('duration')) / 100,
+      ]
+      const humanReadableTime = roundestNumberBetween(minTime, maxTime)
+      // console.log('t', time, humanReadableTime)
+
+      time = humanReadableTime
+    }
+
+    const humanUnreadableValue =
+      originalCoords.value -
+      (change.value * (extremums[1] - extremums[0])) / 100
+    let value = humanUnreadableValue
+
+    if (minimumHumanNoticableDiffInValue !== 0) {
+      const [minChange, maxChange] = [
+        change.value - minimumHumanNoticableDiffInValue,
+        change.value + minimumHumanNoticableDiffInValue,
+      ]
+      // console.log({minChange, maxChange});
+      
+      const [minValue, maxValue] = [
         originalCoords.value -
-        (change.value * (extremums[1] - extremums[0])) / 100,
+          (minChange * (extremums[1] - extremums[0])) / 100,
+        originalCoords.value -
+          (maxChange * (extremums[1] - extremums[0])) / 100,
+      ]
+      // console.log({minValue, maxValue});
+      
+      const humanReadableValue = roundestNumberBetween(minValue, maxValue)
+
+      value = humanReadableValue
+    }
+
+    const newCoords = {
+      time,
+      value,
     }
 
     this.project.reduxStore.dispatch(
@@ -255,7 +300,10 @@ export default class ViewBase<Props extends IProps> extends UIComponent<
         ),
       ),
     )
-    return newCoords
+    return {
+      time: humanUnreadableTime,
+      value: humanUnreadableValue
+    }
   }
 
   _addPointToSelection: TAddPointToSelection = (
