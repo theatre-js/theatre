@@ -1,8 +1,10 @@
 import {padEnd} from 'lodash-es'
 
 export function roundestNumberBetween(_a: number, _b: number): number {
-  if (_b < _a) return roundestNumberBetween(_b, _a)
-  
+  if (_b < _a) {
+    return roundestNumberBetween(_b, _a)
+  }
+
   const aCeiling = Math.ceil(_a)
   if (aCeiling <= _b) {
     return roundestIntegerBetween(
@@ -73,7 +75,9 @@ export function roundestIntegerBetween(
 
     if (currentExponentiationOfTen === 1) {
       debugger
-      console.error(`Coudn't find a human-readable number between ${a} and ${b}`)
+      console.error(
+        `Coudn't find a human-readable number between ${a} and ${b}`,
+      )
       return _a
     } else {
       currentExponentiationOfTen /= 10

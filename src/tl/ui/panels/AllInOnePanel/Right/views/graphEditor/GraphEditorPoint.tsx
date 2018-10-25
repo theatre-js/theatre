@@ -91,7 +91,7 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
     }
 
     this.svgSize = getSVGSize(props.propGetter)
-    this._cacheOriginalCoords()
+    this._cachePropsBeforeDrag()
   }
 
   render() {
@@ -330,11 +330,10 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
 
   handlePointDragStart = () => {
     this.svgSize = getSVGSize(this.props.propGetter)
-    this._cacheOriginalCoords()
+    this._cachePropsBeforeDrag()
   }
 
   handlePointDrag = (mouseDX: number, mouseDY: number, e: MouseEvent) => {
-    // debugger
     const {width, height} = this.svgSize
     const {point, prevPoint, nextPoint} = this.propsBeforeMove
     // const {pointMove} = this.state
@@ -353,12 +352,12 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
     const limitLeft = prevPoint == null ? 0 : prevPoint.time
     const limitRight = nextPoint == null ? 1000000000 : nextPoint.time
 
-    const pointTime = point.time //- pointMove[0]
-    const newT = pointTime + dxAsPercentageOfSvgWidth
+    const initialPointTime = point.time //- pointMove[0]
+    const newT = initialPointTime + dxAsPercentageOfSvgWidth
     if (newT >= limitRight)
-      dxAsPercentageOfSvgWidth = limitRight - pointTime - 100 / width
+      dxAsPercentageOfSvgWidth = limitRight - initialPointTime - 100 / width
     if (newT <= limitLeft)
-      dxAsPercentageOfSvgWidth = limitLeft - pointTime + 100 / width
+      dxAsPercentageOfSvgWidth = limitLeft - initialPointTime + 100 / width
     const originalCoords = {
       time: this.propsBeforeMove.point.originalTime,
       value: this.propsBeforeMove.point.originalValue,
@@ -576,7 +575,7 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
     return null
   }
 
-  _cacheOriginalCoords() {
+  _cachePropsBeforeDrag() {
     this.propsBeforeMove = this.props
   }
 }
