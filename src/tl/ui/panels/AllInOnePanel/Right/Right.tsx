@@ -58,6 +58,7 @@ class Right extends UIComponent<IRightProps, IRightState> {
           onDragStart={this.syncSeekerWithMousePosition}
           onDrag={this.seekTime}
           shouldReturnMovement={true}
+          lockCursorTo="ew-resize"
         >
           <div
             ref={this.wrapper}

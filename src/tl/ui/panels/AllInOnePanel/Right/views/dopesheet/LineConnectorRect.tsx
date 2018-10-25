@@ -17,8 +17,8 @@ export default ({x, y, width, color}: IProps) => {
       x={`${x}%`}
       y={`${y}%`}
       width={`${width}%`}
-      height="4px"
-      transform={`translate(0 -2)`}
+      height="2px"
+      transform={`translate(0 -1)`}
       fill={color}
       stroke={color}
       {...classes('connector')}

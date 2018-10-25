@@ -18,24 +18,23 @@
   }
 }
 
-.pointClickArea.highlightAsSelected ~ .pointGlow {
-  filter: url('#glow');
+.pointClickArea.highlightAsSelected ~ ._deprecatedPointGlow {
+  /* filter: url('#glow'); */
   opacity: 1;
 }
 
-.pointClickArea.highlightAsSelected ~ .pointStroke {
-  stroke-width: 4px;
-}
-
-.pointClickArea:not(.highlightRedOnHover):hover ~ .pointGlow,
-.pointClickArea:not(.highlightRedOnHover):active ~ .pointGlow {
-  filter: url('#glow');
+.pointClickArea:not(.highlightRedOnHover):hover ~ ._deprecatedPointGlow,
+.pointClickArea:not(.highlightRedOnHover):active ~ ._deprecatedPointGlow {
+  /* filter: url('#glow'); */
   opacity: 1;
 }
 
+.pointClickArea.highlightAsSelected ~ .pointStroke,
 .pointClickArea:not(.highlightRedOnHover):hover ~ .pointStroke,
 .pointClickArea:not(.highlightRedOnHover):active ~ .pointStroke {
-  stroke-width: 4px;
+  stroke-width: 1px;
+  r: 6px;
+  /* stroke: white; */
 }
 
 .pointClickArea.highlightRedOnHover:hover ~ .pointStroke,
@@ -43,8 +42,8 @@
   stroke: red;
 }
 
-.pointGlow {
-  opacity: 0;
+._deprecatedPointGlow {
+  opacity: 0 !important;
   pointer-events: none;
 }
 

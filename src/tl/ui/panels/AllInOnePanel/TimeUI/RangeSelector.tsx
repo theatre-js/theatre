@@ -23,6 +23,7 @@ interface IProps {
 interface IState {}
 
 class RangeSelector extends React.PureComponent<IProps, IState> {
+  _propsBeforeMove: IProps = this.props
   render() {
     const {range, duration, timelineWidth} = this.props
     const tToX = timeToX(duration, timelineWidth - SVG_PADDING_X)
@@ -33,7 +34,11 @@ class RangeSelector extends React.PureComponent<IProps, IState> {
     return (
       <div {...classes('container')}>
         <div {...classes('timeThread')}>
-          <DraggableArea onDrag={this.updateRange} shouldReturnMovement={true}>
+          <DraggableArea
+            onDragStart={this._recordPropsBeforeMove}
+            onDrag={this.updateRange}
+            lockCursorTo="ew-resize"
+          >
             <div
               {...classes('rangeBar')}
               style={{
@@ -44,7 +49,8 @@ class RangeSelector extends React.PureComponent<IProps, IState> {
           </DraggableArea>
           <DraggableArea
             onDrag={this.updateRangeFrom}
-            shouldReturnMovement={true}
+            lockCursorTo="w-resize"
+            onDragStart={this._recordPropsBeforeMove}
           >
             <div
               {...classes('rangeFromHandle')}
@@ -55,7 +61,8 @@ class RangeSelector extends React.PureComponent<IProps, IState> {
           </DraggableArea>
           <DraggableArea
             onDrag={this.updateRangeTo}
-            shouldReturnMovement={true}
+            lockCursorTo="e-resize"
+            onDragStart={this._recordPropsBeforeMove}
           >
             <div
               {...classes('rangeToHandle')}
@@ -69,27 +76,38 @@ class RangeSelector extends React.PureComponent<IProps, IState> {
     )
   }
 
+  _recordPropsBeforeMove = () => {
+    this._propsBeforeMove = this.props
+  }
+
   updateRange = (dx: number) => {
-    const {duration, timelineWidth} = this.props
+    const {duration, timelineWidth} = this._propsBeforeMove
     const dt = xToTime(duration, timelineWidth)(dx)
-    this._setRange({from: dt, to: dt})
+    this._setRange({from: dt, to: dt}, true)
   }
 
   updateRangeFrom = (dx: number) => {
-    const {duration, timelineWidth} = this.props
+    const {duration, timelineWidth} = this._propsBeforeMove
     const dt = xToTime(duration, timelineWidth)(dx)
-    this._setRange({from: dt, to: 0})
+    this._setRange({from: dt, to: 0}, false)
   }
 
   updateRangeTo = (dx: number) => {
-    const {duration, timelineWidth} = this.props
+    const {duration, timelineWidth} = this._propsBeforeMove
     const dt = xToTime(duration, timelineWidth)(dx)
-    this._setRange({from: 0, to: dt})
+    this._setRange({from: 0, to: dt}, false)
   }
 
-  _setRange(change: TRange) {
-    const {range, duration, setRange} = this.props
-    setRange(getNewRange(range, change, duration))
+  _setRange(change: TRange, bringRangeToBackIfRangeFromIsSubzero: boolean) {
+    const {range, duration, setRange} = this._propsBeforeMove
+    setRange(
+      getNewRange(
+        range,
+        change,
+        duration,
+        bringRangeToBackIfRangeFromIsSubzero,
+      ),
+    )
   }
 }
 

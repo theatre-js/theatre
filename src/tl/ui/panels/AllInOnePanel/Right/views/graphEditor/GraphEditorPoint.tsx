@@ -177,6 +177,7 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
           onDragStart={this.handlePointDragStart}
           onDrag={this.handlePointDrag}
           onDragEnd={this.handlePointDragEnd}
+          lockCursorTo="move"
         >
           <g>
             <Point
@@ -195,6 +196,7 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
             onDragStart={this.handleLeftHandleDragStart}
             onDrag={this.handleLeftHandleDrag}
             onDragEnd={this.handleLeftHandleDragEnd}
+            lockCursorTo="move"
           >
             <g>
               <HandleClickArea
@@ -211,6 +213,7 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
             onDragStart={this.handleRightHandleDragStart}
             onDrag={this.handleRightHandleDrag}
             onDragEnd={this.handleRightHandleDragEnd}
+            lockCursorTo="move"
           >
             <g>
               <HandleClickArea

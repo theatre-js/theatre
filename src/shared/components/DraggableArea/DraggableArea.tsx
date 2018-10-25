@@ -1,4 +1,6 @@
 import React from 'react'
+import createCursorLock from '../../utils/createCursorLock'
+import noop from '$shared/utils/noop'
 
 type Props = {
   children: React.ReactElement<HTMLElement | SVGElement>
@@ -8,6 +10,7 @@ type Props = {
   shouldRegisterEvents?: boolean
   shouldReturnMovement?: boolean
   dontBlockMouseDown?: boolean
+  lockCursorTo?: string
 }
 
 type State = {
@@ -21,6 +24,7 @@ type State = {
 class DraggableArea extends React.PureComponent<Props, {}> {
   s: State
   getDeltas: (e: MouseEvent) => [number, number]
+  relinquishCursorLock: () => void = noop
 
   constructor(props: Props) {
     super(props)
@@ -71,6 +75,19 @@ class DraggableArea extends React.PureComponent<Props, {}> {
     }
   }
 
+  componentWillReceiveProps(newProps: Props) {
+    if (
+      newProps.lockCursorTo !== this.props.lockCursorTo &&
+      this.s.dragHappened
+    ) {
+      this.relinquishCursorLock()
+      this.relinquishCursorLock = noop
+      if (newProps.lockCursorTo) {
+        this.relinquishCursorLock = createCursorLock(newProps.lockCursorTo)
+      }
+    }
+  }
+
   dragStartHandler = (event: React.MouseEvent<HTMLElement>) => {
     if (event.button !== 0) return
     if (!this.props.dontBlockMouseDown) {
@@ -90,9 +107,14 @@ class DraggableArea extends React.PureComponent<Props, {}> {
     this.removeDragListeners()
 
     this.props.onDragEnd && this.props.onDragEnd(this.s.dragHappened)
+    this.relinquishCursorLock()
+    this.relinquishCursorLock = noop
   }
 
   dragHandler = (event: MouseEvent) => {
+    if (!this.s.dragHappened && this.props.lockCursorTo) {
+      this.relinquishCursorLock = createCursorLock(this.props.lockCursorTo)
+    }
     if (!this.s.dragHappened) this.s.dragHappened = true
 
     const deltas = this.getDeltas(event)
@@ -106,6 +128,11 @@ class DraggableArea extends React.PureComponent<Props, {}> {
 
   getMovements(event: MouseEvent): [number, number] {
     return [event.movementX, event.movementY]
+  }
+
+  componentWillUnmount() {
+    this.relinquishCursorLock()
+    this.relinquishCursorLock = noop
   }
 }
 

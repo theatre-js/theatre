@@ -1,0 +1,3 @@
+.roomToClick {
+  position: absolute calc(var(--room) * -1);
+}

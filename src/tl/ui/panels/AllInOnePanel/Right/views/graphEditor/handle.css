@@ -8,7 +8,7 @@
 
 .handleClickArea:hover ~ .handle,
 .handleClickArea:active ~ .handle {
-  stroke-width: 3px;
+  stroke-width: 6px;
 }
 
 .handle {

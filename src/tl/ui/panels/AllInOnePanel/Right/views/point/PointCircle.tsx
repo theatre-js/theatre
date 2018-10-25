@@ -15,8 +15,8 @@ export default ({x, y}: IProps) => {
       <circle
         cx={`${x}%`}
         cy={`${y}%`}
-        r={3.2}
-        strokeWidth="2"
+        r={3}
+        strokeWidth="1"
         vectorEffect="non-scaling-stroke"
         {...classes('pointStroke')}
       />

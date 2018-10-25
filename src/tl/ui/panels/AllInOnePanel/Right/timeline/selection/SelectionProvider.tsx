@@ -178,6 +178,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
                 onDragStart={this.handleAreaDragStart}
                 onDrag={this.handleAreaDrag}
                 onDragEnd={this.handleAreaDragEnd}
+                lockCursorTo="move"
               >
                 <div
                   style={{

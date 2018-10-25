@@ -6,7 +6,7 @@ export default function createCursorLock(cursor: string) {
   el.style.cursor = cursor
   document.body.appendChild(el)
   const relinquish = () => {
-    document.removeChild(el)
+    document.body.removeChild(el)
   }
 
   return relinquish

@@ -5,6 +5,7 @@ import {timeToInRangeX} from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import {getNewTime} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
 import {TRange, TDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
+import RoomToClick from '$shared/components/RoomToClick/RoomToClick';
 
 const classes = resolveCss(css)
 
@@ -19,6 +20,8 @@ interface IProps {
 interface IState {}
 
 class Seeker extends React.PureComponent<IProps, IState> {
+  timeBeforeSeek: number
+  propsBeforeSeek: Readonly<{children?: React.ReactNode}> & Readonly<IProps>
   render() {
     const {range, duration, timelineWidth, currentTime} = this.props
     // const currentX = inRangeTimeToX(range, timelineWidth)(currentTime)
@@ -31,10 +34,15 @@ class Seeker extends React.PureComponent<IProps, IState> {
         {...classes('seeker', isVisible && 'visible')}
         style={{transform: `translate3d(${currentX}px, 0, 0)`}}
       >
-        <DraggableArea onDrag={this.gotoTime} shouldReturnMovement={true}>
+        <DraggableArea
+          onDrag={this.gotoTime}
+          onDragStart={this._onSeekerDragStart}
+          lockCursorTo="ew-resize"
+        >
           <div {...classes('thumb')}>
+            <RoomToClick room={4} />
             <div {...classes('squinch')} />
-            <div {...classes('tooltip')}>{normalizedTime.toFixed(1)}</div>
+            <div {...classes('tooltip')}>{normalizedTime.toFixed(2)}</div>
           </div>
         </DraggableArea>
         <div {...classes('rod')} />
@@ -42,8 +50,12 @@ class Seeker extends React.PureComponent<IProps, IState> {
     )
   }
 
+  _onSeekerDragStart = () => {
+    this.propsBeforeSeek = this.props
+  }
+
   gotoTime = (dx: number) => {
-    const {range, currentTime, timelineWidth} = this.props
+    const {range, timelineWidth, currentTime} = this.propsBeforeSeek
     const newTime = getNewTime(range, currentTime, timelineWidth, dx)
     this.props.gotoTime(newTime)
   }

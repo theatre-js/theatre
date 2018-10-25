@@ -144,6 +144,8 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
               onDragStart={this.handleConnectorDragStart}
               onDrag={this.handleConnectorDrag}
               onDragEnd={this.handleConnectorDragEnd}
+          lockCursorTo="ew-resize"
+
             >
               <g>
                 <LineConnector
@@ -163,6 +165,7 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
           onDragStart={this.handlePointDragStart}
           onDrag={this.handlePointDrag}
           onDragEnd={this.handlePointDragEnd}
+          lockCursorTo="ew-resize"
         >
           <g>
             <Point

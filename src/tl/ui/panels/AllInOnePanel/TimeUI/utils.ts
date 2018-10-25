@@ -25,6 +25,7 @@ export const getNewRange = (
   range: TRange,
   change: TRange,
   duration: TDuration,
+  bringRangeToBackIfRangeFromIsSubzero: boolean = true,
 ): TRange => {
   const newRange = {from: range.from + change.from, to: range.to + change.to}
   if (newRange.to - newRange.from < 1) {
@@ -37,7 +38,8 @@ export const getNewRange = (
 
   if (newRange.from < 0) {
     newRange.from = 0
-    newRange.to = range.to - range.from
+    if (bringRangeToBackIfRangeFromIsSubzero)
+      newRange.to = range.to - range.from
   }
   if (newRange.to > duration) {
     newRange.from = duration - (range.to - range.from)
@@ -62,4 +64,5 @@ export const getNewZoom = (
   return newRange.to - newRange.from < 1 ? range : newRange
 }
 
-export const overshootDuration = (timelineDuration: number) => timelineDuration + 2000
+export const overshootDuration = (timelineDuration: number) =>
+  timelineDuration + 2000
