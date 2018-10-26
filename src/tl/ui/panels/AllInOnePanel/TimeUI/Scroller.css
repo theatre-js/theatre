@@ -1,0 +1,106 @@
+@value svgPaddingX from '../Right/views/SVGWrapper.css';
+@value halfOfSvgPaddingX: calc(0.5 * svgPaddingX);
+
+.container {
+  --threadHeight: 6px;
+  --thumbColor: #00e0ff;
+  --rangeBarColor: #9df233;
+  position: absolute;
+  height: 0;
+  width: calc(100% - svgPaddingX);
+  left: halfOfSvgPaddingX;
+  bottom: 8px;
+  pointer-events: auto;
+}
+
+.timeThread {
+  position: relative;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--threadHeight);
+}
+
+.rangeBar {
+  position: absolute;
+  height: 5px;
+  background: rgba(#EEE, 0.2);
+  cursor: ew-resize;
+  z-index: 2;
+
+  &:hover,
+  &:active {
+    background: rgba(#EEE, 0.4);
+  }
+
+  &:after {
+    position: absolute -4px;
+    display: block;
+    content: ' ';
+  }
+}
+
+.handle {
+  position: absolute;
+  height: 5px;
+  width: halfOfSvgPaddingX;
+  left: 0;
+  z-index: 2;
+  top: 0;
+  bottom: 0;
+  display: block;
+
+  &:before {
+    position: absolute 0;
+    display: block;
+    content: ' ';
+    background: rgba(#EEE, 0.2);;
+    border-radius: 0 2px 2px 0;
+    /* background: url('url-loader!./ScrollerHandle.svg'); */
+  }
+
+  &:after {
+    position: absolute -4px;
+    display: block;
+    content: ' ';
+  }
+}
+
+.rangeFromHandle {
+  composes: handle;
+  left: calc(-1 * halfOfSvgPaddingX);
+  cursor: w-resize;
+  &:before {
+    transform: scaleX(-1);
+  }
+}
+
+.rangeToHandle {
+  composes: handle;
+  cursor: e-resize;
+  left: 0;
+}
+
+.tooltip {
+  display: none;
+  position: absolute -20px * * 4px;
+  padding: 0 2px;
+  transform: translateX(-50%);
+  background: #999;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 10px;
+  line-height: 18px;
+  text-align: center;
+}
+
+.rangeFromHandle:hover .tooltip,
+.rangeFromHandle.active .tooltip,
+.rangeToHandle:hover .tooltip,
+.rangeToHandle:active .tooltip,
+.rangeBar:hover ~ .rangeFromHandle .tooltip,
+.rangeBar:hover ~ .rangeToHandle .tooltip,
+.rangeBar:active ~ .rangeFromHandle .tooltip,
+.rangeBar:active ~ .rangeToHandle .tooltip {
+  display: block;
+}

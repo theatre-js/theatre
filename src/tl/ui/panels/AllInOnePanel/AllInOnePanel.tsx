@@ -40,7 +40,7 @@ export type IAllInOnePanelStuff = {
   timelineTemplate: undefined | TimelineTemplate
   timelineInstance: undefined | TimelineInstance
   width: number
-  height: number
+  heightMinusBottom: number
   leftWidth: number
   rightWidth: number
 }
@@ -85,7 +85,7 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
             (1 - panelMargins.top - panelMargins.bottom) * windowHeight
           const width =
             (1 - panelMargins.left - panelMargins.right) * windowWidth
-          const height = fullHeightIncludingBottom - bottomHeight
+          const heightMinusBottom = fullHeightIncludingBottom - bottomHeight
           const leftWidth = width * leftWidthFraction
           const rightWidth = width * (1 - leftWidthFraction)
 
@@ -94,7 +94,7 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
             timelineTemplate,
             timelineInstance,
             width,
-            height,
+            heightMinusBottom,
             leftWidth,
             rightWidth,
           }
@@ -118,11 +118,11 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
                       <TimeUI
                         timelineTemplate={timelineTemplate}
                         timelineInstance={timelineInstance}
-                        height={height}
+                        height={heightMinusBottom}
                         timelineWidth={rightWidth}
                         left={leftWidth}
                       />
-                      <div {...classes('middle')} style={{height}}>
+                      <div {...classes('middle')} style={{height: heightMinusBottom}}>
                         <div {...classes('left')} style={{width: leftWidth}}>
                           <Left />
                         </div>
@@ -130,7 +130,7 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
                           {...classes('right')}
                           style={{
                             width: rightWidth,
-                            height,
+                            height: heightMinusBottom,
                           }}
                         >
                           <Right />

@@ -68,7 +68,7 @@ class FramesGrid extends React.PureComponent<IProps, IState> {
             <PropsAsPointer>
               {() => {
                 val(alInOnePanelStuff.width)
-                val(alInOnePanelStuff.height)
+                val(alInOnePanelStuff.heightMinusBottom)
                 val(alInOnePanelStuff.rightWidth)
                 this._updateContainerRect()
                 return null

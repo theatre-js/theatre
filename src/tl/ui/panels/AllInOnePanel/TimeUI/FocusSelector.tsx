@@ -1,10 +1,11 @@
 import React from 'react'
-import css from './RangeSelector.css'
+import css from './FocusSelector.css'
 import resolveCss from '$shared/utils/resolveCss'
 import {
   timeToX,
   xToTime,
   getRangeLabel,
+  timeToTimelineX,
 } from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import {getNewRange} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
 import {TDuration, TRange} from '$tl/ui/panels/AllInOnePanel/Right/types'
@@ -22,11 +23,13 @@ interface IProps {
 
 interface IState {}
 
-class RangeSelector extends React.PureComponent<IProps, IState> {
+class FocusSelector extends React.PureComponent<IProps, IState> {
   _propsBeforeMove: IProps = this.props
   render() {
-    const {range, duration, timelineWidth} = this.props
-    const tToX = timeToX(duration, timelineWidth - SVG_PADDING_X)
+    const {range: _range, duration, timelineWidth} = this.props
+    // const range = {from: _range.from, to: _range.from + (_range.to - _range.from) / 2}
+    const range = {from: 0, to: 2000}
+    const tToX = timeToTimelineX(_range, timelineWidth - SVG_PADDING_X)
     const getLabel = getRangeLabel(range, duration, timelineWidth)
     const rangeFromX = tToX(range.from)
     const rangeToX = tToX(range.to)
@@ -111,4 +114,4 @@ class RangeSelector extends React.PureComponent<IProps, IState> {
   }
 }
 
-export default RangeSelector
+export default FocusSelector

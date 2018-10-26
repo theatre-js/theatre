@@ -32,6 +32,7 @@ interface IRightProps {
   timelineWidth: number
   timelineInstance: TimelineInstance
   setRange: (range: TRange) => void
+  heightMinusBottom: number
 }
 
 interface IRightState {}
@@ -65,7 +66,7 @@ class Right extends UIComponent<IRightProps, IRightState> {
             {...classes('wrapper')}
             onWheel={this.handleWheel}
           >
-            <div style={{width: svgWidth}} {...classes('scrollingContainer')}>
+            <div style={{width: svgWidth, minHeight: this.props.heightMinusBottom}} {...classes('scrollingContainer')}>
               <TimelineProviders
                 disableZoom={this.disableZoom}
                 enableZoom={this.enableZoom}
@@ -189,6 +190,7 @@ export default (_props: IExportedComponentProps) => (
             timelineWidth: val(timeStuffP.viewportSpace.width),
             timelineInstance: val(timeStuffP.timelineInstance),
             setRange: val(timeStuffP.setRange),
+            heightMinusBottom: val(timeStuffP.viewportSpace.height)
           }
 
           return <Right {...rightProps} />

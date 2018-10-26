@@ -53,7 +53,7 @@
     position: absolute 0;
     display: block;
     content: ' ';
-    background: url('url-loader!./RangeSelectorHandle.svg');
+    background: url('url-loader!./ScrollerHandle.svg');
   }
 
   &:after {

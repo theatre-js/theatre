@@ -19,7 +19,7 @@ export default class HintPop extends React.PureComponent<IProps, {}> {
           <PropsAsPointer>
             {() => {
               const width = val(stuffP.width)
-              const height = val(stuffP.height)
+              const height = val(stuffP.heightMinusBottom)
               const style = {
                 width,
                 height,

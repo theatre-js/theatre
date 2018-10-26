@@ -38,6 +38,7 @@ interface ITimeStuff {
   rangeAdndurationAreLocked: boolean
   viewportSpace: {
     width: number
+    height: number
   }
   scrollSpace: {
     width: number
@@ -151,6 +152,7 @@ export default class TimeStuffProvider extends UIComponent<IProps, IState> {
                 },
                 viewportSpace: {
                   width: viewportWidth,
+                  height: val(stuffP.heightMinusBottom),
                 },
                 timelineInstance,
                 timelineTemplate,

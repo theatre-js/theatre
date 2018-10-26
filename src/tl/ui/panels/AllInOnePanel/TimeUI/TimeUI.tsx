@@ -7,11 +7,13 @@ import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import Seeker from '$tl/ui/panels/AllInOnePanel/TimeUI/Seeker'
 import TimelineInstance from '$tl/timelines/TimelineInstance'
 import TimelineTemplate from '$tl/timelines/TimelineTemplate'
-import RangeSelector from '$tl/ui/panels/AllInOnePanel/TimeUI/RangeSelector'
+import Scroller from '$tl/ui/panels/AllInOnePanel/TimeUI/Scroller'
 import FramesGrid from '$tl/ui/panels/AllInOnePanel/TimeUI/FramesGrid'
 import clamp from '$shared/number/clamp'
 import {overshootDuration} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
 import {TimeStuff} from '$tl/ui/panels/AllInOnePanel/TimeStuffProvider'
+import FocusSelector from './FocusSelector'
+import DurationIndicator from './DurationIndicator'
 
 interface IProps {
   timelineTemplate: TimelineTemplate
@@ -82,7 +84,7 @@ export default class TimeUI extends UIComponent<IProps, IState> {
                     duration={overshotDuration}
                     timelineWidth={timelineWidth}
                   />
-                  <RangeSelector
+                  <Scroller
                     range={range}
                     duration={overshotDuration}
                     timelineWidth={timelineWidth}
@@ -95,6 +97,13 @@ export default class TimeUI extends UIComponent<IProps, IState> {
                     currentTime={currentTime}
                     gotoTime={gotoTime}
                   />
+                  <FocusSelector
+                    range={range}
+                    duration={overshotDuration}
+                    timelineWidth={timelineWidth}
+                    setRange={val(rightStuffP.setRange)}
+                  />
+                  {/* <DurationIndicator /> */}
                 </div>
               )
             }}

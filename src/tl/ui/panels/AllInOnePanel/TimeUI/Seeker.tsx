@@ -19,7 +19,7 @@ interface IProps {
 
 interface IState {}
 
-class Seeker extends React.PureComponent<IProps, IState> {
+export default class Seeker extends React.PureComponent<IProps, IState> {
   timeBeforeSeek: number
   propsBeforeSeek: Readonly<{children?: React.ReactNode}> & Readonly<IProps>
   render() {
@@ -60,5 +60,3 @@ class Seeker extends React.PureComponent<IProps, IState> {
     this.props.gotoTime(newTime)
   }
 }
-
-export default Seeker
