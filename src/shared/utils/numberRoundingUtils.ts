@@ -1,22 +1,24 @@
-import {padEnd} from 'lodash-es'
+import {padEnd, padStart} from 'lodash-es'
 
 export function roundestNumberBetween(_a: number, _b: number): number {
   if (_b < _a) {
     return roundestNumberBetween(_b, _a)
   }
 
+  if (_a < 0 && _b < 0) {
+    return noMinusZero(roundestNumberBetween(-_b, -_a) * -1)
+  }
+
+  if (_a <= 0 && _b >= 0) return 0
+
   const aCeiling = Math.ceil(_a)
   if (aCeiling <= _b) {
-    return roundestIntegerBetween(
-      noMinusZero(aCeiling),
-      noMinusZero(Math.floor(_b)),
-    )
+    return roundestIntegerBetween(aCeiling, Math.floor(_b))
   } else {
-    const {a, b, fixSign} =
-      _a < 0 ? {a: -_b, b: -_a, fixSign: -1} : {a: _a, b: _b, fixSign: 1}
+    const [a, b] = [_a, _b]
     const integer = Math.floor(a)
 
-    return (integer + roundestFloat(a - integer, b - integer)) * fixSign
+    return integer + roundestFloat(a - integer, b - integer)
   }
 }
 
@@ -105,39 +107,128 @@ export const getLastMultipleOf = (n: number, multipleOf: number): number => {
 
 const noMinusZero = (a: number): number => (a === -0 ? 0 : a)
 
+const numberOfLeadingZeros = (s: string) => {
+  const leadingZeroMatches = s.match(/^0+/)
+  return leadingZeroMatches ? leadingZeroMatches[0].length : 0
+}
+
+const formatter = new Intl.NumberFormat('fullwide', {
+  maximumFractionDigits: 10,
+  useGrouping: false,
+})
+
+export const stringifyNumber = (n: number): string => {
+  return formatter.format(n)
+}
+
 /**
  * it is expected that both args are 0 < arg < 1
  */
-export const roundestFloat = (_a: number, _b: number): number => {
-  const a = toPrecision(_a)
-  const b = toPrecision(_b)
-  const numberOfDecimalsInA = numberOfDecimals(a)
-  const numberOfDecimalsInB = numberOfDecimals(b)
-  const maxNumberOfDecimals = Math.max(numberOfDecimalsInA, numberOfDecimalsInB)
-  const sA = padEnd(String(a), maxNumberOfDecimals + 2, '0').substr(
-    2,
-    maxNumberOfDecimals,
-  )
-  const sB = padEnd(String(b), maxNumberOfDecimals + 2, '0').substr(
-    2,
-    maxNumberOfDecimals,
-  )
-  const intA = parseInt(sA, 10)
-  const intB = parseInt(sB, 10)
-  const roundestInt = roundestIntegerBetween(intA, intB, true)
-  const finalString = '0.' + String(roundestInt)
+export const roundestFloat = (a: number, b: number): number => {
+  const inString = {
+    a: stringifyNumber(a),
+    b: stringifyNumber(b),
+  }
+  if (inString.a === '0' || inString.b === '0') {
+    return 0
+  }
 
-  return toPrecision(parseFloat(finalString))
+  const withoutInteger = {
+    a: inString.a.substr(2, inString.a.length),
+    b: inString.b.substr(2, inString.b.length),
+  }
+
+  const leadingZeros = {
+    a: numberOfLeadingZeros(withoutInteger.a),
+    b: numberOfLeadingZeros(withoutInteger.b),
+  }
+
+  const maxNumberOfLeadingZeros = Math.max(leadingZeros.a, leadingZeros.b)
+
+  const numberOfDecimals = {
+    a: withoutInteger.a.length,
+    b: withoutInteger.b.length,
+  }
+
+  const maxNumberOfDecimals = Math.max(numberOfDecimals.a, numberOfDecimals.b)
+
+  const withPaddedDecimals = {
+    a: padEnd(withoutInteger.a, maxNumberOfDecimals, '0'),
+    b: padEnd(withoutInteger.b, maxNumberOfDecimals, '0'),
+  }
+
+  const roundestInt = roundestIntegerBetween(
+    parseInt(withPaddedDecimals.a, 10) * Math.pow(10, maxNumberOfLeadingZeros),
+    parseInt(withPaddedDecimals.b, 10) * Math.pow(10, maxNumberOfLeadingZeros),
+    true,
+  )
+
+  return (
+    toPrecision(roundestInt / Math.pow(10, maxNumberOfLeadingZeros + maxNumberOfDecimals))
+  )
 }
+
 
 export const numberOfDecimals = (n: number): number => {
   const num = String(getIntAndFraction(n).fraction).length
   return n % 1 > 0 ? num - 2 : 0
 }
 
+function fixal(n: number): string {
+  let s: $FixMe = n
+  if (Math.abs(s) < 1.0) {
+    var e = parseInt(s.toString().split('e-')[1])
+    if (e) {
+      s *= Math.pow(10, e - 1)
+      s = '0.' + new Array(e).join('0') + s.toString().substring(2)
+    }
+  } else {
+    var e = parseInt(s.toString().split('+')[1])
+    if (e > 20) {
+      e -= 20
+      s /= Math.pow(10, e)
+      s += new Array(e + 1).join('0')
+    }
+  }
+  return s
+}
+
+function numberToString(num: number): string {
+  let numStr = String(num)
+
+  if (Math.abs(num) < 1.0) {
+    let e = parseInt(num.toString().split('e-')[1])
+    if (e) {
+      let negative = num < 0
+      if (negative) num *= -1
+      num *= Math.pow(10, e - 1)
+      numStr = '0.' + new Array(e).join('0') + num.toString().substring(2)
+      if (negative) numStr = '-' + numStr
+    }
+  } else {
+    let e = parseInt(num.toString().split('+')[1])
+    if (e > 20) {
+      e -= 20
+      num /= Math.pow(10, e)
+      numStr = num.toString() + new Array(e + 1).join('0')
+    }
+  }
+
+  const matches = numStr.match(/^\-?[0-9]+\.?[0-9]{0,10}/)
+
+  if (!matches) {
+    // debugger
+    return numStr
+  } else {
+    return matches[0]
+  }
+}
+
 export const toPrecision = (n: number): number => {
-  const fixed = n.toFixed(10)
-  return parseFloat(fixed)
+  // const r = parseFloat(numberToString(n))
+  const fixed = parseFloat(String(n)).toFixed(10)
+  const r = parseFloat(fixed)
+  return r === -0 ? 0 : r
 }
 
 export const getIntAndFraction = (

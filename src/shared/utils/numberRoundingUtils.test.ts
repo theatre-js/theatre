@@ -8,6 +8,7 @@ import {
   roundestIntegerBetween,
   roundestFloat,
 } from './numberRoundingUtils'
+import {random} from 'lodash'
 
 const example = <Args extends $IntentionalAny[], Return>(
   fn: (...args: Args) => Return,
@@ -34,7 +35,10 @@ describe(`numberRoundingUtils()`, () => {
     example(roundestNumberBetween, [0.1111111123, 0.2943439448], 0.25)
     example(roundestNumberBetween, [0.19, 0.23], 0.2)
     example(roundestNumberBetween, [-0.19, 0.23], 0)
-    example(roundestNumberBetween, [-0.19, -0.02], -0.1)
+    example(roundestNumberBetween, [-0.19, -0.02], -0.1, {debug: false})
+    example(roundestNumberBetween, [-0.19, -0.022], -0.1, {debug: false})
+    example(roundestNumberBetween, [-0.19, -0.022234324], -0.1, {debug: false})
+    example(roundestNumberBetween, [-0.19, 0.0222222], 0)
     example(roundestNumberBetween, [-0.19, 0.02], 0)
     example(
       roundestNumberBetween,
@@ -46,6 +50,34 @@ describe(`numberRoundingUtils()`, () => {
     example(roundestNumberBetween, [-10, -5], -10)
     example(roundestNumberBetween, [-5, -10], -10)
     example(roundestNumberBetween, [-10, -5], -10)
+    example(roundestNumberBetween, [-0.00876370109231405, -2.909374013346118e-50], 0, {debug: false})
+    example(
+      roundestNumberBetween,
+      [0.059449443526800295, 0.06682093143783596],
+      0.06,
+      {debug: false},
+    )
+    const getRandomNumber = () => {
+      const sign = Math.random() > 0.5 ? 1 : -1
+      return Math.pow(Math.random(), Math.random()) / Math.pow(10, Math.random() * 100) * sign
+    }
+    for (let i = 0; i < 2000; i++) {
+      const from = toPrecision(getRandomNumber())
+      const to = toPrecision(getRandomNumber())
+
+      test(`roundestNumberBetween(${from}, ${to}) => fuzzy`, () => {
+        const result = roundestNumberBetween(from, to)
+        if (from < to) {
+          if (result < from || result > to) {
+            throw new Error(`Invalid: ${from} ${to} ${result}`)
+          }
+        } else {
+          if (result > from || result < to) {
+            throw new Error(`Invalid: ${to} ${from} ${result}`)
+          }
+        }
+      })
+    }
   })
   describe(`roundestIntegerBetween`, () => {
     example(roundestIntegerBetween, [-1, 6], 0, {})
