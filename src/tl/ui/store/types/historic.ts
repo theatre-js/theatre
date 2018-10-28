@@ -17,6 +17,13 @@ const $TimelineState = t.type({
   selectedTimelineInstance: t.union([t.null, t.string]),
   objects: t.record(t.string, $ObjectState),
   collapsedNodesByPath: t.record(t.string, t.literal(1)),
+  temporaryPlaybackRangeLimit: t.union([
+    t.undefined,
+    t.type({
+      from: t.number,
+      to: t.number,
+    }),
+  ]),
 })
 
 const $ProjectState = t.type(

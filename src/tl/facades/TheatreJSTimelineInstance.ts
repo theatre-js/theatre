@@ -22,11 +22,11 @@ export default class TheatreJSTimelineInstance {
   }
 
   get time() {
-    return realInstance(this).time
+    return realInstance(this).time / 1000
   }
 
   set time(t: number) {
-    realInstance(this).time = t
+    realInstance(this).time = t * 1000
   }
 
   get playing() {

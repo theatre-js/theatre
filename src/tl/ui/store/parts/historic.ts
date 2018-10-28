@@ -31,13 +31,18 @@ const ensureProjectIsSetUp = (
 const ensureTimelineIsSetUp = (s: UIHistoricState, addr: TimelineAddress) => {
   ensureProjectIsSetUp(s, addr)
   const {timelines} = s.allInOnePanel.projects[addr.projectId]
-  if (!timelines[addr.timelinePath]) {
-    s.allInOnePanel.projects[addr.projectId].timelines[addr.timelinePath] = {
+  let timeline = timelines[addr.timelinePath]
+  if (!timeline) {
+    timeline = s.allInOnePanel.projects[addr.projectId].timelines[
+      addr.timelinePath
+    ] = {
       selectedTimelineInstance: null,
       objects: {},
       collapsedNodesByPath: {},
+      temporaryPlaybackRangeLimit: undefined,
     }
   }
+  return timeline
 }
 
 export const setSelectedTimeline = r((s, addr: TimelineAddress) => {
@@ -116,5 +121,11 @@ export const setNodeExpansion = r(
 export const setAllInOnePanelMargins = r(
   (s, p: {newMargins: UIHistoricState['allInOnePanel']['margins']}) => {
     s.allInOnePanel.margins = p.newMargins
+  },
+)
+
+export const setTemporaryPlaybackRangeLimitOfTimeline = r(
+  (s, p: {limit: {from: number; to: number} | undefined} & TimelineAddress) => {
+    ensureTimelineIsSetUp(s, p).temporaryPlaybackRangeLimit = p.limit
   },
 )

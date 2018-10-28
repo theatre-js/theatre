@@ -38,6 +38,9 @@
     display: block;
     content: ' ';
   }
+  &.contextMenuOpen {
+    background: rgba(#9df233, 0.7) !important;
+  }
 }
 
 .handle {
@@ -48,6 +51,11 @@
   z-index: 2;
   top: -2px;
   display: block;
+
+  &.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
 
   &:before {
     position: absolute 0;

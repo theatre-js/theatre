@@ -19,6 +19,7 @@ import PanelResizers from '$tl/ui/panels/AllInOnePanel/PanelResizers'
 import clamp from '$shared/number/clamp'
 import {cmdIsDown} from '$shared/utils/keyboardUtils'
 import TimeStuffProvider from '$tl/ui/panels/AllInOnePanel/TimeStuffProvider'
+import UI from '$tl/ui/UI';
 
 const classes = resolveCss(css)
 
@@ -43,6 +44,7 @@ export type IAllInOnePanelStuff = {
   heightMinusBottom: number
   leftWidth: number
   rightWidth: number
+  ui: UI
 }
 
 export default class AllInOnePanel extends UIComponent<IProps, IState> {
@@ -57,6 +59,7 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
   }
 
   render() {
+    const ui = this.ui
     return (
       <PropsAsPointer props={this.props} state={this.state}>
         {({state: stateP}) => {
@@ -97,6 +100,7 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
             heightMinusBottom,
             leftWidth,
             rightWidth,
+            ui
           }
 
           return (

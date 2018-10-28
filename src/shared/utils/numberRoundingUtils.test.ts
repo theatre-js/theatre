@@ -8,7 +8,6 @@ import {
   roundestIntegerBetween,
   roundestFloat,
 } from './numberRoundingUtils'
-import {random} from 'lodash'
 
 const example = <Args extends $IntentionalAny[], Return>(
   fn: (...args: Args) => Return,

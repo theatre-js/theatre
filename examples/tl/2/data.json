@@ -1,5 +1,5 @@
 {
-  "revision": "d980a303-b73e-455f-a1bf-723edb4bd1ae",
+  "revision": "d0a4d7f8-8c88-454e-8dda-c86d499d7de9",
   "definitionVersion": "0.1.0",
   "projectState": {
     "timelineTemplates": {
@@ -37,8 +37,8 @@
                         "__descriptorType": "TimelinePointInterpolationDescriptor",
                         "interpolationType": "CubicBezier",
                         "handles": [
-                          0.5446856547850893,
-                          0.02780912422839506,
+                          0.5702563687239665,
+                          0.022188624647216132,
                           0,
                           0.3145494148662553
                         ]
@@ -75,8 +75,8 @@
                       }
                     },
                     {
-                      "time": 1173.8866215453593,
-                      "value": 305.112167710093,
+                      "time": 1175,
+                      "value": 305,
                       "interpolationDescriptor": {
                         "connected": false,
                         "__descriptorType": "TimelinePointInterpolationDescriptor",
@@ -177,7 +177,7 @@
               "positionZ": {
                 "valueContainer": {
                   "type": "StaticValueContainer",
-                  "value": 5
+                  "value": 22
                 }
               }
             }

@@ -54,3 +54,10 @@ export const getSelectedProject = (ui: UI): Project | undefined => {
 
   return projects[selectedProjectId] || projects[projectIds[0]]
 }
+
+export const getTemporaryPlaybackRangeLimit = pointerFriendlySelector((
+  s: UIHistoricState,
+  addr: TimelineAddress,
+) => {
+  return getTimelineState(s, addr).temporaryPlaybackRangeLimit
+})

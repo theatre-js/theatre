@@ -9,6 +9,12 @@
   box-shadow: 0 0 10px 1px rgba(60, 223, 255, 1);
   border: 2px solid rgba(60, 223, 255, 1);
   transform: translate3d(-50%, -50%, 0);
+  display: none;
+}
+
+.disabled {
+  pointer-events: none;
+  opacity: 0.4 !important;
 }
 
 .item {

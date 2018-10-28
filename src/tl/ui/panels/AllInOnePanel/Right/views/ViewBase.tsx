@@ -270,16 +270,16 @@ export default class ViewBase<Props extends IProps> extends UIComponent<
         change.value + minimumHumanNoticableDiffInValue,
       ]
       // console.log({minChange, maxChange});
-      
-      const [minValue, maxValue] = [
+
+      const [maxValue, minValue] = [
         originalCoords.value -
           (minChange * (extremums[1] - extremums[0])) / 100,
         originalCoords.value -
           (maxChange * (extremums[1] - extremums[0])) / 100,
       ]
-      // console.log({minValue, maxValue});
-      
+
       const humanReadableValue = roundestNumberBetween(minValue, maxValue)
+      // console.log(humanUnreadableValue, minValue, maxValue, humanReadableValue)
 
       value = humanReadableValue
     }
@@ -302,7 +302,7 @@ export default class ViewBase<Props extends IProps> extends UIComponent<
     )
     return {
       time: humanUnreadableTime,
-      value: humanUnreadableValue
+      value: humanUnreadableValue,
     }
   }
 
