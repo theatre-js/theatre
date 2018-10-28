@@ -6,7 +6,7 @@
   height: auto;
   min-height: 100%;
   overflow-x: scroll;
-  overflow-y: visible;
+  overflow-y: hidden;
 }
 
 .wrapper::-webkit-scrollbar {
