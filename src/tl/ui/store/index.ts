@@ -6,7 +6,6 @@ import allInOneStoreBundle from '$shared/utils/redux/allInOneStoreBundle'
 import {UIEphemeralState} from './types/ephemeral'
 
 const initialHistoricState: UIHistoricState = {
-  foo: '1',
   allInOnePanel: {
     projects: {},
     // height: 300,

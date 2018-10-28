@@ -38,7 +38,6 @@ const $ProjectState = t.type(
  * Historic state is both persisted and is undoable
  */
 export const $UIHistoricState = t.type({
-  foo: t.string,
   allInOnePanel: t.type({
     // height: t.number,
     selectedProject: t.union([t.null, t.string]),
