@@ -1,21 +1,23 @@
 import React from 'react'
+import { isMac } from '$shared/utils/isMac';
 
 export type ActiveMode = undefined | null | string
 
 interface IProps {
-  modes: TMODE[]
+  modes: IMode[]
 }
 
 interface IState {
   activeMode: ActiveMode
 }
 
-type TMODE = 'option' | 'cmd' | 'shift' | 'd' | 'c' | 'h'
+type IMode = 'option' | 'super' | 'shift' | 'd' | 'c' | 'h'
 
-const KEYS_MAP: Record<TMODE, KeyboardEvent['keyCode']> = {
+const KEYS_MAP: Record<IMode, KeyboardEvent['keyCode']> = {
   option: 18,
   shift: 16,
-  cmd: 91,
+  // cmd vs ctrl
+  super: isMac ? 91 : 17,
   d: 68,
   c: 67,
   h: 72,
@@ -26,19 +28,19 @@ export const MODES = Object.keys(KEYS_MAP).reduce((reducer, key) => {
     ...reducer,
     [key]: key.toUpperCase(),
   }
-}, {}) as Record<TMODE, string>
+}, {}) as Record<IMode, string>
 
 export const ActiveModeContext = React.createContext<ActiveMode>(null)
 
 class ActiveModeProvider extends React.PureComponent<IProps, IState> {
   _isMouseDown: boolean
-  _mapOfKeycodeToMode: Map<number, TMODE>
+  _mapOfKeycodeToMode: Map<number, IMode>
 
   constructor(props: IProps) {
     super(props)
 
     this._mapOfKeycodeToMode = new Map(
-      props.modes.map((mode): [number, TMODE] => [KEYS_MAP[mode], mode]),
+      props.modes.map((mode): [number, IMode] => [KEYS_MAP[mode], mode]),
     )
 
     this.state = {
@@ -69,6 +71,7 @@ class ActiveModeProvider extends React.PureComponent<IProps, IState> {
     if (
       event.target &&
       (event.target as HTMLElement).tagName === 'INPUT' &&
+      // cmd
       ![91].includes(event.keyCode)
     ) {
       return

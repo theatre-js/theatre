@@ -289,7 +289,7 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
       case MODES.c:
         this.props.addConnector(this.props.pointIndex)
         break
-      case MODES.cmd:
+      case MODES.super:
         this.props.addConnector(this.props.pointIndex)
         break
       case MODES.d:
@@ -504,7 +504,7 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
   handlePointMouseMove = () => {
     const {isMoving, renderTempConnectorOf} = this.state
     if (isMoving) return
-    if (this.activeMode === MODES.cmd) {
+    if (this.activeMode === MODES.super) {
       if (renderTempConnectorOf === 'none') {
         this.setState(() => ({renderTempConnectorOf: 'currentPoint'}))
       }

@@ -33,7 +33,7 @@ class ItemHitZone extends UIComponent<IProps, IState> {
               'container',
               dopeSheet && 'fullHeight',
               `${color.name.toLowerCase()}Cursor`,
-              activeMode === MODES.cmd && 'enabled',
+              activeMode === MODES.super && 'enabled',
             )}
             fill="transparent"
             width="100%"

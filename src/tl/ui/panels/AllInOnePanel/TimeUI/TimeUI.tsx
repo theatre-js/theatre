@@ -10,10 +10,10 @@ import TimelineTemplate from '$tl/timelines/TimelineTemplate'
 import Scroller from '$tl/ui/panels/AllInOnePanel/TimeUI/Scroller'
 import FramesGrid from '$tl/ui/panels/AllInOnePanel/TimeUI/FramesGrid'
 import clamp from '$shared/number/clamp'
-import {overshootDuration} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
+// import {overshootDuration} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
 import {TimeStuff} from '$tl/ui/panels/AllInOnePanel/TimeStuffProvider'
 import FocusSelector from './FocusSelector'
-import DurationIndicator from './DurationIndicator'
+// import DurationIndicator from './DurationIndicator'
 
 interface IProps {
   timelineTemplate: TimelineTemplate

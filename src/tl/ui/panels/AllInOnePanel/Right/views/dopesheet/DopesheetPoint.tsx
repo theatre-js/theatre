@@ -262,7 +262,7 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
       case MODES.c:
         this.props.addConnector(this.props.pointIndex)
         break
-      case MODES.cmd:
+      case MODES.super:
         this.props.addConnector(this.props.pointIndex)
         break
       case MODES.d:
@@ -413,7 +413,7 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
   handlePointMouseMove = () => {
     const {isMovingPoint, renderTempConnectorOf} = this.state
     if (isMovingPoint) return
-    if (this.activeMode === MODES.cmd) {
+    if (this.activeMode === MODES.super) {
       if (renderTempConnectorOf === 'none') {
         this.setState(() => ({renderTempConnectorOf: 'currentPoint'}))
       }
@@ -452,7 +452,7 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
         )
       return null
     }
-    if (activeMode === MODES.cmd) {
+    if (activeMode === MODES.super) {
       this.connectorClickArea.current != null &&
         this.connectorClickArea.current.classList.add(connectorCss.ignoreMouse)
       return null

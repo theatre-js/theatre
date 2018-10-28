@@ -8,30 +8,9 @@ import {UIEphemeralState} from './types/ephemeral'
 const initialHistoricState: UIHistoricState = {
   foo: '1',
   allInOnePanel: {
-    projects: {
-      'Explorable Explanations': {
-        selectedTimeline: null,
-        timelines: {
-          'Bouncing Ball / The ball': {
-            objects: {
-              'Act 1 / Stage / Ball': {
-                activePropsList: [],
-                props: {
-                  opacity: {
-                    expanded: false,
-                    heightWhenExpanded: 150,
-                  },
-                },
-              },
-            },
-            selectedTimelineInstance: null,
-            collapsedNodesByPath: {},
-          },
-        },
-      },
-    },
+    projects: {},
     // height: 300,
-    selectedProject: 'Explorable Explanations',
+    selectedProject: null,
     leftWidthFraction: 0.3,
     margins: {
       left: 0.005,
