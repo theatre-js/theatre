@@ -49,7 +49,7 @@ export interface ITimeStuff {
   viewportSpace: {
     width: number
     height: number
-    clampX: (number) => number
+    clampX: (x: number) => number
   }
   scrollSpace: {
     width: number

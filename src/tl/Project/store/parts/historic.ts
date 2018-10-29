@@ -186,9 +186,6 @@ export const moveSelectionOfPointsInBezierCurvesOfScalarValues = r(
 
 export const removeSelectionOfPointsInBezierCurvesOfScalarValues = r(
   (s, p: Array<TPropAddress & {pointsIndices: number[]}>) => {
-    console.log(p);
-    
-    return
     p.forEach(({propAddress, pointsIndices}) => {
       const points = getPoints(s, propAddress)
       pointsIndices.forEach((pointIndex, i) => {

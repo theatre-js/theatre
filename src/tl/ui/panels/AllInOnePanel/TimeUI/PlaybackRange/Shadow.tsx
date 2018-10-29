@@ -56,7 +56,7 @@ export default class Shadow extends UIComponent<IProps, IState> {
                 <div
                   {...classes('container', which, invisible && 'invisible')}
                   style={{
-                    transform: `translateX(${x}px)`,
+                    transform: `translateX(${fromX}px)`,
                   }}
                 />
               )

@@ -97,10 +97,10 @@ export default class TimeUI extends UIComponent<IProps, IState> {
                     gotoTime={gotoTime}
                   />
                   <PlaybackRange
-                    range={range}
-                    duration={overshotDuration}
-                    timelineWidth={viewportWidth}
-                    setRange={val(rightStuffP.setRange)}
+                    // range={range}
+                    // duration={overshotDuration}
+                    // timelineWidth={viewportWidth}
+                    // setRange={val(rightStuffP.setRange)}
                   />
                   {/* <DurationIndicator /> */}
                 </div>
