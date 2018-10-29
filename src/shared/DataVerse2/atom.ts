@@ -125,7 +125,7 @@ export class Atom<State> implements Pointable {
   }
 
   getIn(path: string[]) {
-    return get(this.getState(), path)
+    return path.length === 0 ? this.getState() : get(this.getState(), path)
   }
 
   reduceState: PathBasedReducer<State, State> = (

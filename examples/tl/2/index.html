@@ -2,7 +2,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>TheaterJS TL Example 1</title>
+  <title>TheaterJS TL Example 2</title>
   <style>
     body {
       background: #444444;
@@ -48,6 +48,7 @@
         document.write(scriptTag)
       })();
   </script>
+
 
   <% for (var chunk in htmlWebpackPlugin.files.chunks) { %>
     <script crossorigin src="<%= htmlWebpackPlugin.files.chunks[chunk].entry %>"></script>

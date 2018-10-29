@@ -2,12 +2,12 @@ import React from 'react'
 import createCursorLock from '../../utils/createCursorLock'
 import noop from '$shared/utils/noop'
 
-type Props = {
+type IProps = {
   children: React.ReactElement<HTMLElement | SVGElement>
   onDragStart?: (event: React.MouseEvent<HTMLElement | SVGElement>) => void
   onDragEnd?: (dragHappened: boolean) => void
   onDrag: (dx: number, dy: number, event: MouseEvent) => void
-  shouldRegisterEvents?: boolean
+  enabled?: boolean
   shouldReturnMovement?: boolean
   dontBlockMouseDown?: boolean
   lockCursorTo?: string
@@ -21,12 +21,13 @@ type State = {
   }
 }
 
-class DraggableArea extends React.PureComponent<Props, {}> {
+class DraggableArea extends React.PureComponent<IProps, {}> {
   s: State
+  mode: 'dragStartCalled' | 'dragging' | 'notDragging' = 'notDragging'
   getDeltas: (e: MouseEvent) => [number, number]
   relinquishCursorLock: () => void = noop
 
-  constructor(props: Props) {
+  constructor(props: IProps) {
     super(props)
     this.s = {
       dragHappened: false,
@@ -44,9 +45,8 @@ class DraggableArea extends React.PureComponent<Props, {}> {
 
   render() {
     const shouldRegisterEvents =
-      this.props.shouldRegisterEvents != null
-        ? this.props.shouldRegisterEvents
-        : true
+      this.props.enabled !== false
+
     return shouldRegisterEvents
       ? React.cloneElement(this.props.children, {
           onMouseDown: this.dragStartHandler,
@@ -75,7 +75,7 @@ class DraggableArea extends React.PureComponent<Props, {}> {
     }
   }
 
-  componentWillReceiveProps(newProps: Props) {
+  componentWillReceiveProps(newProps: IProps) {
     if (
       newProps.lockCursorTo !== this.props.lockCursorTo &&
       this.s.dragHappened
@@ -95,6 +95,8 @@ class DraggableArea extends React.PureComponent<Props, {}> {
       event.preventDefault()
     }
 
+    this.mode = 'dragStartCalled'
+
     const {screenX, screenY} = event
     this.s.startPos = {x: screenX, y: screenY}
     this.s.dragHappened = false
@@ -105,6 +107,7 @@ class DraggableArea extends React.PureComponent<Props, {}> {
 
   dragEndHandler = () => {
     this.removeDragListeners()
+    this.mode = 'notDragging'
 
     this.props.onDragEnd && this.props.onDragEnd(this.s.dragHappened)
     this.relinquishCursorLock()
@@ -116,6 +119,7 @@ class DraggableArea extends React.PureComponent<Props, {}> {
       this.relinquishCursorLock = createCursorLock(this.props.lockCursorTo)
     }
     if (!this.s.dragHappened) this.s.dragHappened = true
+    this.mode = 'dragging'
 
     const deltas = this.getDeltas(event)
     this.props.onDrag(deltas[0], deltas[1], event)
@@ -131,8 +135,13 @@ class DraggableArea extends React.PureComponent<Props, {}> {
   }
 
   componentWillUnmount() {
-    this.relinquishCursorLock()
-    this.relinquishCursorLock = noop
+    if (this.mode !== 'notDragging') {
+      this.relinquishCursorLock()
+      this.relinquishCursorLock = noop
+      this.removeDragListeners()
+      this.props.onDragEnd && this.props.onDragEnd(this.mode === 'dragging')
+      this.mode = 'notDragging'
+    }
   }
 }
 

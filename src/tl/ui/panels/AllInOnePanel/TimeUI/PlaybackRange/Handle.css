@@ -1,0 +1,46 @@
+@value svgPaddingX from '../../Right/views/SVGWrapper.css';
+@value halfOfSvgPaddingX: calc(0.5 * svgPaddingX);
+
+
+.container {
+  position: absolute;
+  height: 9px;
+  width: halfOfSvgPaddingX;
+  left: 0;
+  z-index: 3;
+  top: -2px;
+  display: block;
+  pointer-events: auto;
+
+  &.invisible {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  &:before {
+    position: absolute 0;
+    display: block;
+    content: ' ';
+    background: url('url-loader!./Handle.svg');
+  }
+
+  &:after {
+    position: absolute -4px;
+    display: block;
+    content: ' ';
+  }
+
+  &.from {
+    /* left: 0; */
+    left: calc(-1 * halfOfSvgPaddingX);
+    cursor: w-resize;
+    &:before {
+      transform: scaleX(-1);
+    }
+  }
+
+  &.to {
+    cursor: e-resize;
+    left: 0;
+  }
+}

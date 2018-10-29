@@ -25,25 +25,25 @@ export default class SelectionContextMenu extends React.PureComponent<
         close={onClose}
         centerPoint={{left, top}}
         placement="top"
-        renderInPortal={false}
+        renderInPortal={true}
         items={[
-          {
-            label: 'C$u$t Points',
-            cb: noop,
-            IconComponent: MdRadioButtonUnchecked,
-            disabled: true,
-          },
+          // {
+          //   label: 'C$u$t Points',
+          //   cb: noop,
+          //   IconComponent: MdRadioButtonUnchecked,
+          //   disabled: true,
+          // },
           {
             label: '$D$elete Points',
             cb: onDelete,
             IconComponent: MdRemoveCircle,
           },
-          {
-            label: '$C$opy Points',
-            cb: noop,
-            IconComponent: MdGroupWork,
-            disabled: true,
-          },
+          // {
+          //   label: '$C$opy Points',
+          //   cb: noop,
+          //   IconComponent: MdGroupWork,
+          //   disabled: true,
+          // },
         ]}
       />
     )

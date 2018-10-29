@@ -1,0 +1,49 @@
+.container {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 5px;
+  cursor: default;
+  /* background: rgba(#9df233, 0.2); */
+  z-index: 1;
+  pointer-events: auto;
+
+  &:before {
+    display: block;
+    content: ' ';
+    position: absolute 0;
+    background: #9df233;
+    opacity: 0.2;
+  }
+
+  &:hover {
+    &:after {
+      /* opacity: 0.4; */
+    }
+    &:before {
+      opacity: 0.4;
+    }
+  }
+
+  &:after {
+    display: block;
+    content: ' ';
+    position: absolute 0 0 -3px 0;
+    /* background: #9df233; */
+    opacity: 0;
+  }
+
+  &.shiftIsDown {
+    cursor: ew-resize;
+  }
+
+  &.dragging {
+    &:before {
+      /* opacity: 0.7; */
+    }
+    &:after {
+      opacity: 0;
+    }
+  }
+}

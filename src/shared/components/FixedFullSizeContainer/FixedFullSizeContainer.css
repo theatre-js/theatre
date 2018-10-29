@@ -5,9 +5,12 @@
   right: 0;
   bottom: 0;
   z-index: 10000;
-  pointer-events: none;
 
-  & > * {
-    pointer-events: auto;
+  &.suppressPointerEvents {
+    pointer-events: none;
+
+    & > * {
+      pointer-events: auto;
+    }
   }
 }

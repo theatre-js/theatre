@@ -44,7 +44,7 @@ module.exports = (env: Envs) => {
       }),
       new HtmlWebpackPlugin({
         inject: false,
-        template: './examples/tl/1/index.html',
+        template: './examples/tl/2/index.html',
         filename: 'tl/2/index.html',
         chunks: ['tl/2'],
         templateParameters: parts.htmlPluginTemplateParameters,

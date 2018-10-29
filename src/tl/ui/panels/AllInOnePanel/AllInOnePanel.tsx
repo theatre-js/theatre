@@ -19,7 +19,8 @@ import PanelResizers from '$tl/ui/panels/AllInOnePanel/PanelResizers'
 import clamp from '$shared/number/clamp'
 import {cmdIsDown} from '$shared/utils/keyboardUtils'
 import TimeStuffProvider from '$tl/ui/panels/AllInOnePanel/TimeStuffProvider'
-import UI from '$tl/ui/UI';
+import UI from '$tl/ui/UI'
+import KeyboardShortcuts from '$tl/ui/panels/AllInOnePanel/KeyboardShortcuts'
 
 const classes = resolveCss(css)
 
@@ -77,6 +78,15 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
             timelineTemplate,
           } = getProjectTimelineAndInstance(this.ui)
 
+          if ($env.NODE_ENV === 'development') {
+            // @ts-ignore ignore
+            window.project = project
+            // @ts-ignore ignore
+            window.timelineInstance = timelineInstance
+            // @ts-ignore ignore
+            window.timelineTemplate = timelineTemplate
+          }
+
           if (
             project &&
             !val(project._selectors.ephemeral.isReady(project.atomP.ephemeral))
@@ -100,7 +110,7 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
             heightMinusBottom,
             leftWidth,
             rightWidth,
-            ui
+            ui,
           }
 
           return (
@@ -119,14 +129,17 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
                 >
                   <TimeStuffProvider>
                     <>
+                      <KeyboardShortcuts />
                       <TimeUI
                         timelineTemplate={timelineTemplate}
                         timelineInstance={timelineInstance}
                         height={heightMinusBottom}
-                        timelineWidth={rightWidth}
                         left={leftWidth}
                       />
-                      <div {...classes('middle')} style={{height: heightMinusBottom}}>
+                      <div
+                        {...classes('middle')}
+                        style={{height: heightMinusBottom}}
+                      >
                         <div {...classes('left')} style={{width: leftWidth}}>
                           <Left />
                         </div>
@@ -176,9 +189,7 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
       return
     }
 
-    if (e.key === ' ') {
-      this.togglePlay()
-    } else if (e.key === 'z' || e.key === 'Z' || e.code === 'KeyZ') {
+    if (e.key === 'z' || e.key === 'Z' || e.code === 'KeyZ') {
       if (cmdIsDown(e)) {
         if (e.shiftKey === true) {
           this.project._dispatch(this.project._actions.historic.redo())
@@ -198,20 +209,6 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
 
     e.preventDefault()
     e.stopPropagation()
-  }
-
-  togglePlay() {
-    const {timelineInstance} = getProjectTimelineAndInstance(this.ui)
-
-    if (timelineInstance) {
-      if (timelineInstance.playing) {
-        timelineInstance.pause()
-      } else {
-        timelineInstance.play({
-          iterationCount: Infinity
-        })
-      }
-    }
   }
 
   reactToWindowResize = () => {

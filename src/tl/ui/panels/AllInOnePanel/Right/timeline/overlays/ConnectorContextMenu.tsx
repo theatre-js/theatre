@@ -23,10 +23,10 @@ class ConnectorContextMenu extends UIComponent<IProps, IState> {
         placement="top"
         items={[
           {
-            label: '$R$eset',
-            cb: noop,
+            label: 'Reset',
+            cb: this._resetConnector,
             IconComponent: MdLens,
-            disabled: true,
+            disabled: false,
           },
           {
             label: '$D$elete',
@@ -42,6 +42,18 @@ class ConnectorContextMenu extends UIComponent<IProps, IState> {
         ]}
       />
     )
+  }
+
+  _resetConnector = () => {
+    this.project.reduxStore.dispatch(
+      this.project._actions.historic.resetPointHandlesInBezierCurvesOfScalarValues(
+        {
+          propAddress: this.props.propAddress,
+          pointIndex: this.props.pointIndex,
+        },
+      ),
+    )
+    this.props.onClose()
   }
 
   _removeConnector = () => {

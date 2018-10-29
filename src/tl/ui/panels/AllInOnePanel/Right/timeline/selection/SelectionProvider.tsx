@@ -279,6 +279,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
   }
 
   deletePointsInSelection = () => {
+    debugger
     this.project.reduxStore.dispatch(
       this.project._actions.historic.removeSelectionOfPointsInBezierCurvesOfScalarValues(
         this._getDataOfPointsToRemove(),

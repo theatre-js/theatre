@@ -26,16 +26,19 @@
   cursor: pointer;
   height: 26px;
   display: grid;
-  grid-template-columns: 4px [icon] 24px [label] 1fr 10px;
+  display: flex;
+  justify-content: flex-start;
+  padding: 0 10px 0 4px;
+  /* grid-template-columns: 4px [icon] 24px [label] 1fr 10px; */
   align-items: center;
   color: #aaa;
-
+  /* border: 2px solid rgba(60, 223, 255, 0.35) */
   box-shadow: inset 0 0 0 2px rgba(60, 223, 255, 0.35);
 
   &:not(.disabled) {
     &:hover,
     &.highlight {
-      background: rgba(60, 223, 255, 1);
+      background: rgb(33, 139, 167);
       color: #fff;
 
       & .key,
@@ -46,22 +49,32 @@
   }
 
   &.disabled {
-    color: #999;
+    border-color: #999;
+    box-shadow: inset 0 0 0 2px #666;
+    &,
+    & .key,
+    & > .label,
+    & > .icon {
+      color: #999;
+    }
   }
 
-  animation: appear 0.15s ease-in-out forwards;
+  animation: appear 0.1s ease-in-out forwards;
 }
 
 .icon {
-  grid-column: icon;
+  /* grid-column: icon; */
   font-size: 16px;
   opacity: 0.7;
+  width: 24px;
   color: rgba(60, 223, 255, 0.75);
+  margin-right: -8px;
 }
 
 .label {
   grid-column: label;
   white-space: nowrap;
+  margin-left: 8px;
 }
 
 .key {

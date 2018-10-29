@@ -22,22 +22,22 @@ class PointContextMenu extends UIComponent<IProps, IState> {
         centerPoint={{left, top}}
         placement="top"
         items={[
-          {
-            label: '$R$eset',
-            cb: noop,
-            IconComponent: MdLens,
-            disabled: true,
-          },
+          // {
+          //   label: '$R$eset',
+          //   cb: noop,
+          //   IconComponent: MdLens,
+          //   disabled: true,
+          // },
           {
             label: '$D$elete',
             cb: this._removePoint,
             IconComponent: MdRemoveCircle,
           },
-          {
-            label: '$C$onnect',
-            cb: this._connectPoint,
-            IconComponent: MdOfflinePin,
-          },
+          // {
+          //   label: '$C$onnect',
+          //   cb: this._connectPoint,
+          //   IconComponent: MdOfflinePin,
+          // },
         ]}
       />
     )

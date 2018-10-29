@@ -25,6 +25,8 @@ export default class UI {
   containerEl = document.createElement('div')
 
   constructor() {
+    // @ts-ignore ignore
+    if ($env.NODE_ENV === 'development') window.ui = this
     this.reduxStore = configureStore({
       rootReducer,
       devtoolsOptions: {name: 'TheaterJS UI'},

@@ -1,5 +1,6 @@
 import * as t from '$shared/ioTypes'
 import {difference} from '$shared/utils'
+import DraggableArea from '$theater/common/components/DraggableArea/DraggableArea'
 export type GenericAction = {type: string; payload: mixed}
 
 export type ReduxReducer<State extends {}> = (
@@ -68,3 +69,23 @@ export const listAndById = <T extends mixed>(type: t.Type<T>, name: string) =>
 
       return true
     })
+
+/**
+ * Takes a react component and returns the type of its props.
+ *
+ * class SomeComponent extends React.Component<IProps> {...}
+ *
+ * Props<typeof SomeComponent> // returns IProps
+ *
+ * @note It adds the 'children' prop even if the component doesn't requrie it.
+ * I don't know how to fix that.
+ */
+export type PropsOf<Component> = Component extends (new (
+  props: infer Props,
+) => React.Component<$IntentionalAny>)
+  ? Props
+  : Component extends (props: infer Props) => React.ReactNode ? Props : never
+
+export type ReactComponent<Props = $IntentionalAny> =
+  | React.ComponentClass
+  | React.SFC<Props>

@@ -133,7 +133,7 @@ class Right extends UIComponent<IRightProps, IRightState> {
       event.preventDefault()
       event.stopPropagation()
       const {range, timelineWidth, duration} = this.props
-      const dt = deltaXToTime(range, timelineWidth)(event.deltaX * 3)
+      const dt = deltaXToTime(range, timelineWidth)(event.deltaX * 1)
 
       const change = {from: dt, to: dt}
       this.props.setRange(getNewRange(range, change, duration))

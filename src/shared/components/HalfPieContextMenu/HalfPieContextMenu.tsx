@@ -16,7 +16,7 @@ interface IProps {
   items: Array<{
     label: string
     cb: () => void
-    IconComponent: React.ReactNode
+    IconComponent?: React.SFC | React.ComponentClass
     disabled?: boolean
   }>
 }
@@ -42,7 +42,7 @@ const getCoordinatesOnVerticalAxis = (
   const isOutOfWindow = menuEdge > innerWidth
   const coeff = (isOutOfWindow ? -1 : 1) * (placement === 'left' ? -1 : 1)
   const leftCoeff =
-    0.75 *
+    0.1 *
     (isOutOfWindow
       ? Math.pow(
           1 - (menuEdge + maxItemWidth - innerWidth) / (radius + maxItemWidth),
@@ -63,7 +63,7 @@ const getCoordinatesOnVerticalAxis = (
     }
     const topTranslate = index * BOX_HEIGHT - radius
 
-    return {leftTranslate, topTranslate, leftCoeff, topCoeff: 0.5}
+    return {leftTranslate, topTranslate, leftCoeff, topCoeff: 0.1}
   }
 }
 
@@ -105,17 +105,20 @@ class HalfPieContextMenu extends React.PureComponent<IProps, IState> {
     renderInPortal: true,
   }
 
-  preparedLabels: {
-    key: string
-    prefix: string
-    suffix: string
-  }[]
+  preparedLabels: (
+    | string
+    | {
+        key: string
+        prefix: string
+        suffix: string
+      })[]
 
   constructor(props: IProps) {
     super(props)
 
     this.preparedLabels = props.items.map(({label}) => {
       const openningSignIndex = label.indexOf('$')
+      if (openningSignIndex < 0) return label
       const closingSignIndex = label.lastIndexOf('$')
       const key = label.slice(openningSignIndex + 1, closingSignIndex)
       return {
@@ -134,7 +137,7 @@ class HalfPieContextMenu extends React.PureComponent<IProps, IState> {
     const {centerPoint, items, close, placement, renderInPortal} = this.props
     const {pressedKeyCode} = this.state
     const maxItemWidth = Math.max(
-      ...flatMap(items, (item: $FixMe) => 5 + item.label.length * 6),
+      ...flatMap(items, item => 5 + item.label.length * 6),
     )
     const translateCalculatorFn =
       placement === 'left' || placement === 'right'
@@ -148,19 +151,24 @@ class HalfPieContextMenu extends React.PureComponent<IProps, IState> {
 
     const {innerWidth, innerHeight} = window
     return (
-      <FixedFullSizeContainer usePortal={renderInPortal}>
+      <FixedFullSizeContainer
+        usePortal={renderInPortal}
+        suppressPointerEvents={false}
+      >
         <Overlay onClickOutside={close}>
-          {items.map(({cb, disabled, IconComponent}: $FixMe, index: number) => {
+          {items.map(({cb, disabled, IconComponent}, index: number) => {
             const {
               leftTranslate,
               topTranslate,
               leftCoeff,
               topCoeff,
             } = translateCalculatorFn(index)
-            const {key, suffix, prefix} = this.preparedLabels[index]
+            const preparedLabel = this.preparedLabels[index]
+
             const shouldHighlight =
+              typeof preparedLabel !== 'string' &&
               !disabled &&
-              key.toLowerCase() ===
+              preparedLabel.key.toLowerCase() ===
                 String.fromCharCode(pressedKeyCode).toLowerCase()
             return (
               <OverlaySection
@@ -181,13 +189,22 @@ class HalfPieContextMenu extends React.PureComponent<IProps, IState> {
                 }}
                 onClick={cb}
               >
-                <span className={css.icon}>
-                  <IconComponent />
-                </span>
+                {IconComponent && (
+                  <span className={css.icon}>
+                    <IconComponent />
+                  </span>
+                )}
+
                 <span className={css.label}>
-                  {prefix}
-                  <span className={css.key}>{key}</span>
-                  {suffix}
+                  {typeof preparedLabel === 'string' ? (
+                    preparedLabel
+                  ) : (
+                    <>
+                      {preparedLabel.prefix}
+                      <span className={css.key}>{preparedLabel.key}</span>
+                      {preparedLabel.suffix}
+                    </>
+                  )}
                 </span>
               </OverlaySection>
             )
@@ -226,9 +243,11 @@ class HalfPieContextMenu extends React.PureComponent<IProps, IState> {
 
   _handleKeyUp = () => {
     const {pressedKeyCode} = this.state
-    const matchedItemIndex = this.preparedLabels.findIndex(({key}: $FixMe) => {
+    const matchedItemIndex = this.preparedLabels.findIndex(preparedLabel => {
+      if (typeof preparedLabel === 'string') return false
       return (
-        key.toLowerCase() === String.fromCharCode(pressedKeyCode).toLowerCase()
+        preparedLabel.key.toLowerCase() ===
+        String.fromCharCode(pressedKeyCode).toLowerCase()
       )
     })
     if (matchedItemIndex !== -1) {

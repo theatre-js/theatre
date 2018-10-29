@@ -12,14 +12,13 @@ import FramesGrid from '$tl/ui/panels/AllInOnePanel/TimeUI/FramesGrid'
 import clamp from '$shared/number/clamp'
 // import {overshootDuration} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
 import {TimeStuff} from '$tl/ui/panels/AllInOnePanel/TimeStuffProvider'
-import FocusSelector from './FocusSelector'
+import PlaybackRange from './PlaybackRange/PlaybackRange'
 // import DurationIndicator from './DurationIndicator'
 
 interface IProps {
   timelineTemplate: TimelineTemplate
   timelineInstance: TimelineInstance
   height: number
-  timelineWidth: number
   left: number
 }
 
@@ -59,7 +58,7 @@ export default class TimeUI extends UIComponent<IProps, IState> {
               const range = val(rightStuffP.rangeAndDuration.range)
               // const range = {from: 0, to: 2000}
               const height = val(propsP.height)
-              const timelineWidth = val(propsP.timelineWidth)
+              const viewportWidth = val(rightStuffP.viewportSpace.width)
               const left = val(propsP.left)
 
               const realDuration = val(
@@ -77,30 +76,30 @@ export default class TimeUI extends UIComponent<IProps, IState> {
               return (
                 <div
                   {...classes('container')}
-                  style={{width: timelineWidth, left, height}}
+                  style={{width: viewportWidth, left, height}}
                 >
                   <FramesGrid
                     range={range}
                     duration={overshotDuration}
-                    timelineWidth={timelineWidth}
+                    timelineWidth={viewportWidth}
                   />
                   <Scroller
                     range={range}
                     duration={overshotDuration}
-                    timelineWidth={timelineWidth}
+                    timelineWidth={viewportWidth}
                     setRange={val(rightStuffP.setRange)}
                   />
                   <Seeker
                     range={range}
                     duration={overshotDuration}
-                    timelineWidth={timelineWidth}
+                    timelineWidth={viewportWidth}
                     currentTime={currentTime}
                     gotoTime={gotoTime}
                   />
-                  <FocusSelector
+                  <PlaybackRange
                     range={range}
                     duration={overshotDuration}
-                    timelineWidth={timelineWidth}
+                    timelineWidth={viewportWidth}
                     setRange={val(rightStuffP.setRange)}
                   />
                   {/* <DurationIndicator /> */}

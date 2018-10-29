@@ -5,5 +5,5 @@ export const item: string;
 export const highlight: string;
 export const key: string;
 export const icon: string;
-export const appear: string;
 export const label: string;
+export const appear: string;

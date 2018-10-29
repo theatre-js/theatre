@@ -211,7 +211,7 @@ export default class TimelineInstance {
       throw new InvalidArgumentError(
         `Argument conf.rate in timeline.play(conf) must be a number larger than 0. ${JSON.stringify(
           rate,
-        )} given. If you want the animation to play backwards, try setting conf.direction to '${'reverse'}' or '${'alternateReverse'}'.`,
+        )} given. If you want the animation to play backwards, try setting conf.direction to 'reverse' or 'alternateReverse'.`,
       )
     }
 

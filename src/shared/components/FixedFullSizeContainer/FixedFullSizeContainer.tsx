@@ -7,6 +7,7 @@ const classes = resolveCss(css)
 
 interface IProps {
   usePortal?: boolean
+  suppressPointerEvents?: boolean
 }
 
 class FixedFullSizeContainer extends React.PureComponent<IProps, {}> {
@@ -16,7 +17,14 @@ class FixedFullSizeContainer extends React.PureComponent<IProps, {}> {
 
   render() {
     const theContainer = (
-      <div {...classes('container')}>{this.props.children}</div>
+      <div
+        {...classes(
+          'container',
+          this.props.suppressPointerEvents !== false && 'suppressPointerEvents',
+        )}
+      >
+        {this.props.children}
+      </div>
     )
     return this.props.usePortal
       ? ReactDOM.createPortal(theContainer, document.querySelector(

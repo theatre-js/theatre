@@ -5,7 +5,7 @@ import {
   TNumberTuple,
 } from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {SVG_PADDING_X} from '$tl/ui/panels/AllInOnePanel/Right/views/SVGWrapper'
-import {clamp} from 'lodash'
+import {clamp} from 'lodash-es'
 
 export const getSvgWidth = (
   range: TRange,
@@ -70,11 +70,12 @@ export const inRangeXToTime = (
   range: TRange,
   duration: TDuration,
   timelineWidth: number,
-) => (timelineX: number) => {
+) => (timelineX: number, shouldClamp: boolean = true) => {
   const svgWidth = getSvgWidth(range, duration, timelineWidth)
   const svgX = inRangeXToSvgX(timelineX, range, duration, timelineWidth)
   const theX = timelineX - getSvgXToPaddedSvgXOffset(svgWidth)(svgX)
-  return clamp(timelineXToTime(range, timelineWidth)(theX), 0, duration)
+  const time = timelineXToTime(range, timelineWidth)(theX)
+  return shouldClamp ? clamp(time, 0, duration) : time
 }
 
 export const timeToInRangeX = (

@@ -147,6 +147,13 @@ export const makePointRightHandleHorizontalInBezierCurvesOfScalarValues = r(
   },
 )
 
+export const resetPointHandlesInBezierCurvesOfScalarValues = r(
+  (s, p: TPropAddressWithPointIndex) => {
+    const points = getPoints(s, p.propAddress)
+    points[p.pointIndex].interpolationDescriptor.handles = [0.5, 0.0, 0.5, 0.0]
+  },
+)
+
 export const moveDopesheetConnectorInBezierCurvesOfScalarValues = r(
   (
     s,
@@ -179,6 +186,9 @@ export const moveSelectionOfPointsInBezierCurvesOfScalarValues = r(
 
 export const removeSelectionOfPointsInBezierCurvesOfScalarValues = r(
   (s, p: Array<TPropAddress & {pointsIndices: number[]}>) => {
+    console.log(p);
+    
+    return
     p.forEach(({propAddress, pointsIndices}) => {
       const points = getPoints(s, propAddress)
       pointsIndices.forEach((pointIndex, i) => {

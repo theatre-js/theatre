@@ -34,7 +34,7 @@ import TempPoint from '$tl/ui/panels/AllInOnePanel/Right/views/graphEditor/TempP
 import RenderBlocker from '$shared/components/RenderBlocker/RenderBlocker'
 import {SelectedAreaContext} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/SelectionProvider'
 import {shouldToggleIsInSelection} from '$tl/ui/panels/AllInOnePanel/Right/views/utils'
-import {clamp} from 'lodash'
+import {clamp} from 'lodash-es'
 import BezierConnector from '$tl/ui/panels/AllInOnePanel/Right/views/graphEditor/BezierConnector'
 import PointCircle from '$theater/AnimationTimelinePanel/views/point/PointCircle'
 import {cmdIsDown} from '$shared/utils/keyboardUtils'

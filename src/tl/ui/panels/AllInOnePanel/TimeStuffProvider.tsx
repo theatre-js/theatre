@@ -6,12 +6,18 @@ import createPointerContext from '$shared/utils/react/createPointerContext'
 import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import uiSelectors from '$tl/ui/store/selectors'
-import {getSvgWidth, xToTime} from '$tl/ui/panels/AllInOnePanel/Right/utils'
+import {
+  getSvgWidth,
+  xToTime,
+  timeToInRangeX,
+} from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import TimelineInstance from '$tl/timelines/TimelineInstance'
 import TimelineTemplate from '$tl/timelines/TimelineTemplate'
 import UI from '$tl/ui/UI'
 import projectSelectors from '$tl/Project/store/selectors'
 import {overshootDuration} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
+import {inRangeXToTime} from './Right/utils'
+import {clamp} from 'lodash-es'
 
 interface IProps {
   children: React.ReactNode
@@ -32,13 +38,18 @@ export interface IRangeAndDurationLock {
   relock: (lockedRangeAndDuration: IRangeAndDuration) => void
 }
 
-interface ITimeStuff {
+export interface ITimeStuff {
   rangeAndDuration: IRangeAndDuration
   unlockedRangeAndDuration: IRangeAndDuration
   rangeAdndurationAreLocked: boolean
+  inRangeSpace: {
+    inRangeXToTime: (x: number, shouldClamp?: boolean) => number
+    timeToInRangeX: (t: number) => number
+  }
   viewportSpace: {
     width: number
     height: number
+    clampX: (number) => number
   }
   scrollSpace: {
     width: number
@@ -51,6 +62,9 @@ interface ITimeStuff {
   ) => IRangeAndDurationLock
   ui: UI
   setRange: (range: TRange) => void
+  timeSpace: {
+    clamp: (t: number) => number
+  }
 }
 
 const {Provider, Consumer: TimeStuff} = createPointerContext<ITimeStuff>()
@@ -153,11 +167,28 @@ export default class TimeStuffProvider extends UIComponent<IProps, IState> {
                 viewportSpace: {
                   width: viewportWidth,
                   height: val(stuffP.heightMinusBottom),
+                  clampX: (x: number): number => clamp(x, 0, viewportWidth),
                 },
                 timelineInstance,
                 timelineTemplate,
                 ui: this.ui,
                 setRange: this.setRange,
+                inRangeSpace: {
+                  inRangeXToTime: inRangeXToTime(
+                    rangeAndDuration.range,
+                    rangeAndDuration.overshotDuration,
+                    viewportWidth,
+                  ),
+                  timeToInRangeX: timeToInRangeX(
+                    rangeAndDuration.range,
+                    rangeAndDuration.overshotDuration,
+                    viewportWidth,
+                  ),
+                },
+                timeSpace: {
+                  clamp: (t: number): number =>
+                    clamp(t, 0, persistedRealDuration),
+                },
               }
 
               return (

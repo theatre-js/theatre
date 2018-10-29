@@ -59,7 +59,7 @@ export default class DurationIndicator extends UIComponent<IProps, IState> {
                 timelineWidth,
               )(realDuration)
 
-              const dimmerWidth = timelineWidth - dimmerX - 1
+              const dimmerWidth = timelineWidth - dimmerX -1
 
               return (
                 <div {...classes('container', dragging && 'dragging')}>

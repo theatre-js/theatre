@@ -1,4 +1,4 @@
-@value svgPaddingX from '../Right/views/SVGWrapper.css';
+@value svgPaddingX from '../../Right/views/SVGWrapper.css';
 @value halfOfSvgPaddingX: calc(0.5 * svgPaddingX);
 
 .container {
@@ -7,8 +7,10 @@
   --rangeBarColor: #9df233;
   position: absolute;
   height: 0;
-  width: calc(100% - svgPaddingX);
-  left: halfOfSvgPaddingX;
+  /* width: calc(100% - svgPaddingX); */
+  right: 0;
+  /* left: halfOfSvgPaddingX; */
+  left: 0;
   top: 0;
   pointer-events: auto;
 }
@@ -24,9 +26,10 @@
 .rangeBar {
   position: absolute;
   height: 5px;
-  background: rgba(#9df233, 0.2);
+  background: rgba(#9df233, 0.0);
   cursor: ew-resize;
   z-index: 2;
+  display: none;
 
   &:hover,
   &:active {
@@ -41,6 +44,17 @@
   &.contextMenuOpen {
     background: rgba(#9df233, 0.7) !important;
   }
+}
+
+.base {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 5px;
+  cursor: default;
+  background: rgba(#9df233, 0.2);
+  z-index: 1;
+
 }
 
 .handle {
@@ -61,7 +75,7 @@
     position: absolute 0;
     display: block;
     content: ' ';
-    background: url('url-loader!./ScrollerHandle.svg');
+    background: url('url-loader!./Handle.svg');
   }
 
   &:after {
@@ -73,6 +87,7 @@
 
 .rangeFromHandle {
   composes: handle;
+  /* left: 0; */
   left: calc(-1 * halfOfSvgPaddingX);
   cursor: w-resize;
   &:before {

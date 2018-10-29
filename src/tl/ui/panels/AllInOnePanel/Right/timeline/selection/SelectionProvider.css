@@ -1,5 +1,5 @@
 .hitZone {
-  position: absolute 0;
+  position: absolute 8 0 0 0;
   z-index: 10000;
   pointer-events: auto;
   cursor: crosshair;

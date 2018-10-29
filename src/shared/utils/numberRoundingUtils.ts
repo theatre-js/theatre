@@ -112,10 +112,14 @@ const numberOfLeadingZeros = (s: string) => {
   return leadingZeroMatches ? leadingZeroMatches[0].length : 0
 }
 
-const formatter = new Intl.NumberFormat('fullwide', {
-  maximumFractionDigits: 10,
-  useGrouping: false,
-})
+let formatter: Intl.NumberFormat
+
+try {
+  formatter = new Intl.NumberFormat('fullwide', {
+    maximumFractionDigits: 10,
+    useGrouping: false,
+  })
+} catch (e) {}
 
 export const stringifyNumber = (n: number): string => {
   return formatter.format(n)
@@ -163,11 +167,10 @@ export const roundestFloat = (a: number, b: number): number => {
     true,
   )
 
-  return (
-    toPrecision(roundestInt / Math.pow(10, maxNumberOfLeadingZeros + maxNumberOfDecimals))
+  return toPrecision(
+    roundestInt / Math.pow(10, maxNumberOfLeadingZeros + maxNumberOfDecimals),
   )
 }
-
 
 export const numberOfDecimals = (n: number): number => {
   const num = String(getIntAndFraction(n).fraction).length

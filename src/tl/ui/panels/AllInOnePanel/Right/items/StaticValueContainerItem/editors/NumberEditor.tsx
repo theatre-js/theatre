@@ -71,7 +71,7 @@ export default class NumberEditor extends UIComponent<IProps, IState> {
           onDragStart={this.onDragStart}
           onDragEnd={this.onDragEnd}
           onDrag={this.onDrag}
-          shouldRegisterEvents={state.mode !== 'editingViaKeyboard'}
+          enabled={state.mode !== 'editingViaKeyboard'}
         >
           {theInput}
         </DraggableArea>

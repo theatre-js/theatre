@@ -1,0 +1,55 @@
+.container {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  width: 1000px;
+  height: 5px;
+  cursor: ew-resize;
+  /* background: rgba(#9df233, 0.2); */
+  z-index: 1;
+  pointer-events: auto;
+  transform-origin: 0 0;
+
+  &:before {
+    display: block;
+    content: ' ';
+    position: absolute 0;
+    background: #9df233;
+    opacity: 0.2;
+  }
+
+  &:hover {
+    &:before {
+      opacity: 0.7;
+    }
+  }
+
+  &.invisible {
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  &:after {
+    display: block;
+    content: ' ';
+    position: absolute -3px 0 -3px 0;
+    /* background: #9df233; */
+    opacity: 0;
+  }
+
+  &.dragging,
+  &.contextMenuOpen {
+    &:before {
+      opacity: 0.8;
+    }
+  }
+
+  &.dIsDown:hover {
+    &:before {
+      background: red;
+      opacity: 1;
+    }
+    cursor: pointer;
+  }
+}
