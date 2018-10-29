@@ -37,7 +37,6 @@ export const setUIVisibilityState = r(
 
 export const setRangeShownInPanel = r(
   (s, p: TimelineAddress & {range: TRange}) => {
-    console.trace()
     ensureTimelineIsSetUp(s, p)
     const timeline = uiSelectors.ahistoric.getTimelineState(s, p)
     timeline.rangeShownInPanel = p.range
