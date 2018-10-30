@@ -10,6 +10,8 @@ import {
   getSvgWidth,
   xToTime,
   timeToInRangeX,
+  timelineXToTime,
+  deltaTimelineXToDeltaTime,
 } from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import TimelineInstance from '$tl/timelines/TimelineInstance'
 import TimelineTemplate from '$tl/timelines/TimelineTemplate'
@@ -45,6 +47,7 @@ export interface ITimeStuff {
   inRangeSpace: {
     inRangeXToTime: (x: number, shouldClamp?: boolean) => number
     timeToInRangeX: (t: number) => number
+    deltaXToDeltaTime: (x: number) => number
   }
   viewportSpace: {
     width: number
@@ -174,6 +177,10 @@ export default class TimeStuffProvider extends UIComponent<IProps, IState> {
                 ui: this.ui,
                 setRange: this.setRange,
                 inRangeSpace: {
+                  deltaXToDeltaTime: deltaTimelineXToDeltaTime(
+                    rangeAndDuration.range,
+                    viewportWidth,
+                  ),
                   inRangeXToTime: inRangeXToTime(
                     rangeAndDuration.range,
                     rangeAndDuration.overshotDuration,

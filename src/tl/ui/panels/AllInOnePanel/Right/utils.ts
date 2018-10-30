@@ -26,7 +26,13 @@ export const xToTime = (duration: number, width: number) => (x: number) => {
 export const timelineXToTime = (range: TRange, timelineWidth: number) => (
   x: number,
 ) => {
-  return (x * (range.to - range.from)) / timelineWidth + range.from
+  return deltaTimelineXToDeltaTime(range, timelineWidth)(x) + range.from
+}
+
+export const deltaTimelineXToDeltaTime = (range: TRange, timelineWidth: number) => (
+  x: number,
+) => {
+  return (x * (range.to - range.from)) / timelineWidth
 }
 
 export const timeToTimelineX = (range: TRange, timelineWidth: number) => (

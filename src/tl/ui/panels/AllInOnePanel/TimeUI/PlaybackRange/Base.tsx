@@ -91,7 +91,7 @@ export default class Base extends UIComponent<IProps, IState> {
   }
 
   onShiftDrag = (dx: number) => {
-    const timeDiff = this.timeStuff.inRangeSpace.inRangeXToTime(dx, false)
+    const timeDiff = this.timeStuff.inRangeSpace.deltaXToDeltaTime(dx)
 
     let [from, to] = (timeDiff >= 0
       ? [this.dragStartTime, this.dragStartTime + timeDiff]

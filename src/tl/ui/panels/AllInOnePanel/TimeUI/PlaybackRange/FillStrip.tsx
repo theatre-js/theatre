@@ -31,7 +31,7 @@ interface IState {
 export default class FillStrip extends UIComponent<IProps, IState> {
   propsBeforeDrag: IProps
   rangeWhenDragStart: {from: number; to: number}
-  inRangeXToTime: (x: number, shouldClamp?: boolean | undefined) => number
+  deltaXToDeltaTime: (x: number, shouldClamp?: boolean | undefined) => number
   tempActionGroup: ITempActionGroup | undefined
   timeStuff: ITimeStuff
   constructor(props: IProps, context: $IntentionalAny) {
@@ -155,7 +155,7 @@ export default class FillStrip extends UIComponent<IProps, IState> {
       return
     }
 
-    this.inRangeXToTime = this.timeStuff.inRangeSpace.inRangeXToTime
+    this.deltaXToDeltaTime = this.timeStuff.inRangeSpace.deltaXToDeltaTime
     this.propsBeforeDrag = this.props
     this.rangeWhenDragStart = range
     this.tempActionGroup = this.ui.actions.historic.temp()
@@ -163,7 +163,7 @@ export default class FillStrip extends UIComponent<IProps, IState> {
   }
 
   onDrag = (dx: number) => {
-    const timeDiff = this.inRangeXToTime(dx, false)
+    const timeDiff = this.deltaXToDeltaTime(dx, false)
 
     const clampTime = this.timeStuff.timeSpace.clamp
 
