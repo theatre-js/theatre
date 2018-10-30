@@ -50,19 +50,19 @@ export default class Viewport extends PureComponentWithTheater<IProps, IState> {
   }
   constructor(props: IProps, context: $IntentionalAny) {
     super(props, context)
-    this.volatileId = this.theater.studio.elementTree.mirrorOfReactTree.assignEarlyVolatileIdToComponentInstance(
+    this.volatileId = this.studio.studio.elementTree.mirrorOfReactTree.assignEarlyVolatileIdToComponentInstance(
       this,
     )
 
     this.viewportId = props.id
-    this.theater.studio.elementTree.registerUnexpandedViewport(
+    this.studio.studio.elementTree.registerUnexpandedViewport(
       props.id,
       this.volatileId,
     )
   }
 
   componentWillUnmount() {
-    this.theater.studio.elementTree.unregisterUnexpandedViewport(this.props.id)
+    this.studio.studio.elementTree.unregisterUnexpandedViewport(this.props.id)
   }
 
   _activate = () => {
@@ -151,13 +151,13 @@ export default class Viewport extends PureComponentWithTheater<IProps, IState> {
       <PropsAsPointer props={this.props} state={this.state}>
         {({props, state}) => {
           const viewportDescriptor = val(
-            this.theaterAtom2P.historicWorkspace.viewports.byId[this.props.id],
+            this.studioAtom2P.historicWorkspace.viewports.byId[this.props.id],
           )
 
           if (viewportDescriptor == null) return null
 
           const activeViewportId = val(
-            this.theaterAtom2P.historicWorkspace.viewports.activeViewportId,
+            this.studioAtom2P.historicWorkspace.viewports.activeViewportId,
           )
 
           const isActive = activeViewportId === this.props.id
@@ -174,7 +174,7 @@ export default class Viewport extends PureComponentWithTheater<IProps, IState> {
           const elementD = elementify(
             constant(`SceneComponent`),
             instantiationDescriptor.derivedDict().pointer(),
-            constant(this.theater),
+            constant(this.studio),
           )
 
           const boundingRect = getBoundingRect(
@@ -208,7 +208,7 @@ export default class Viewport extends PureComponentWithTheater<IProps, IState> {
                 isActive={isActive}
                 viewportId={this.props.id}
                 name={getDisplayNameOfComponent(
-                  this.theater,
+                  this.studio,
                   viewportDescriptor.sceneComponentId,
                 )}
                 width={boundingRect.width}
@@ -230,8 +230,8 @@ export default class Viewport extends PureComponentWithTheater<IProps, IState> {
 export const isViewportNode = (n: $IntentionalAny): n is Viewport =>
   n && n.constructor && n.constructor[viewportSym] === true
 
-const getDisplayNameOfComponent = (theater: Theater, id: string) => {
-  const componentDescriptorP = getComponentDescriptor(theater.atom2.pointer, id)
+const getDisplayNameOfComponent = (studio: Theater, id: string) => {
+  const componentDescriptorP = getComponentDescriptor(studio.atom2.pointer, id)
   const displayName = val(componentDescriptorP.displayName)
   if (typeof displayName !== 'string') {
     throw new Error(`Got a non-string displayName. This should never happen`)

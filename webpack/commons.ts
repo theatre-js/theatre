@@ -15,7 +15,7 @@ const aliasesFromRoot = {
   $lb: './src/lb/',
   $lf: './src/lf/',
   $tl: './src/tl/',
-  $studio: './src/theater/',
+  $studio: './src/studio/',
   $shared: './src/shared/',
 }
 
@@ -24,7 +24,7 @@ export const aliases: {[alias: string]: string} = mapValues(
   fromRoot => path.join(context, fromRoot),
 )
 
-type PackageName = 'theater' | 'playground' | 'examples' | 'lb' | 'lf' | 'tl'
+type PackageName = 'studio' | 'playground' | 'examples' | 'lb' | 'lf' | 'tl'
 
 export type Envs = 'development' | 'production'
 
@@ -112,7 +112,7 @@ export const makeConfigParts = (options: Options) => {
       devtoolModuleFilenameTemplate: info =>
         path.resolve(info.absoluteResourcePath).replace(/\\/g, '/'),
     },
-    // theaterConfig: envConfig,
+    // studioConfig: envConfig,
     context: context,
     devtool: isDev
       ? 'cheap-module-source-map'

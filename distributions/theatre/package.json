@@ -4,7 +4,7 @@
   "version": "0.1.0-beta.2",
   "description": "Theatre.js – A hackable animation editor for the web",
   "main": "index.js",
-  "author": "TheaterJS Oy - theaterjs.com",
+  "author": "TheaterJS Oy - theatrejs.com",
   "license": "SEE LICENSE IN LICENSE.md",
   "website": "https://theatrejs.com"
 }

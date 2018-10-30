@@ -7,27 +7,27 @@ import StatePersistor from '$studio/statePersistence/StatePersistor'
 import ElementTree from './ElementTree'
 import Theater from '$studio/bootstrap/Theater'
 
-export default class Studio {
+export default class TheatreStudio {
   elementTree: ElementTree
   _statePersistor: StatePersistor
   _ran: boolean
   _lbCommunicator: LBCommunicator
 
-  constructor(readonly theater: Theater) {
+  constructor(readonly studio: Theater) {
     this._ran = false
     this.elementTree = new ElementTree()
     this._lbCommunicator = new LBCommunicator({
       lbUrl: `${window.location.protocol}//${window.location.hostname}:${
-        $env.theater.socketPort
+        $env.studio.socketPort
       }`,
     })
-    this._statePersistor = new StatePersistor(theater)
+    this._statePersistor = new StatePersistor(studio)
 
     this._lbCommunicator.getSocket()
   }
 
   _run(pathToProject: string) {
-    this.theater.store.dispatch(
+    this.studio.store.dispatch(
       reduceAhistoricState(['pathToProject'], () => pathToProject),
     )
 
@@ -40,7 +40,7 @@ export default class Studio {
 
   _mountElement() {
     const rootEl = document.createElement('div')
-    rootEl.id = 'theaterjs-studio'
+    rootEl.id = 'studiojs-studio'
     if (document.body) {
       document.body.appendChild(rootEl)
     } else {
@@ -49,6 +49,6 @@ export default class Studio {
       throw new Error(`Where is the <body> tag?`)
     }
 
-    render(<StudioRootComponent theater={this.theater} />, rootEl)
+    render(<StudioRootComponent studio={this.studio} />, rootEl)
   }
 }

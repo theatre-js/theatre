@@ -32,7 +32,7 @@ class VariableProcessor extends PureComponentWithTheater<IProps, IState> {
         {({props}) => {
           const {pathToTimeline, variableId} = val(props)
           const points: TPoint[] = val(get(
-            this.theater.atom2.pointer,
+            this.studio.atom2.pointer,
             pathToTimeline.concat('variables', variableId, 'points'),
           ) as Pointer<TPoint[]>)
           const extremums = this.getExtremums(points)

@@ -8,7 +8,7 @@ describe('unrecogniseProject()', () => {
   beforeEach(() => {
     mock({
       '/foo/bar': {
-        'theater.json': '{}',
+        'studio.json': '{}',
       },
     })
   })
@@ -19,9 +19,9 @@ describe('unrecogniseProject()', () => {
 
   it('should work for recognised paths', async () => {
     const {task, store} = await runSingleSaga(function*(): Generator_ {
-      yield call(recogniseProject, {filePath: '/foo/bar/theater.json'})
+      yield call(recogniseProject, {filePath: '/foo/bar/studio.json'})
       return yield call(unrecogniseProject, {
-        filePath: '/foo/bar/theater.json',
+        filePath: '/foo/bar/studio.json',
       })
     })
     const result = await task.done
@@ -35,9 +35,9 @@ describe('unrecogniseProject()', () => {
 
   it('should error for non-recognised paths', async () => {
     const {task} = await runSingleSaga(function*(): Generator_ {
-      yield call(recogniseProject, {filePath: '/foo/bar/theater.json'})
+      yield call(recogniseProject, {filePath: '/foo/bar/studio.json'})
       return yield call(unrecogniseProject, {
-        filePath: '/non/existing/theater.json',
+        filePath: '/non/existing/studio.json',
       })
     })
     const result = await task.done

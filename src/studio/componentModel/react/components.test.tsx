@@ -19,7 +19,7 @@ type Utils = {
     id: string,
     updater: (s: IDeclarativeComponentDescriptor) => void,
   ) => void
-  theater: Theater
+  studio: Theater
 }
 
 interface TestFn {
@@ -30,9 +30,9 @@ interface TestFn {
 // @ts-ignore ignore
 const test: TestFn = (testName: string, fn: (utils: Utils) => void) => {
   return it(testName, () => {
-    const theater = new Theater({withStudio: false})
+    const studio = new Theater({withStudio: false})
     const updateState = (fn: (s: ITheaterStoreState) => void) => {
-      theater.store.dispatch(
+      studio.store.dispatch(
         reduceHistoricState([], s => {
           return immer(s, fn)
         }),
@@ -87,11 +87,11 @@ const test: TestFn = (testName: string, fn: (utils: Utils) => void) => {
       })
     }
 
-    const TheaterRoot = createRootComponentForReact(theater)
+    const TheaterRoot = createRootComponentForReact(studio)
     const rootDiv = document.createElement('div')
     ReactDOM.render(<TheaterRoot>passthrough content</TheaterRoot>, rootDiv)
 
-    const utils = {updateState, rootDiv, updateComponent, theater}
+    const utils = {updateState, rootDiv, updateComponent, studio}
     fn(utils)
     ReactDOM.unmountComponentAtNode(rootDiv)
   })
@@ -139,7 +139,7 @@ describe.skip(`components`, () => {
         s.localHiddenValuesById.container.props.children = '2'
       })
       expect(utils.rootDiv.innerHTML).toEqual('<div>empty</div>')
-      utils.theater.ticker.tick()
+      utils.studio.ticker.tick()
       expect(utils.rootDiv.innerHTML).toEqual('<div>2</div>')
     })
 
@@ -155,7 +155,7 @@ describe.skip(`components`, () => {
       })
 
       expect(utils.rootDiv.innerHTML).toEqual('<div>empty</div>')
-      utils.theater.ticker.tick()
+      utils.studio.ticker.tick()
       expect(utils.rootDiv.innerHTML).toEqual('<div>2</div>')
     })
 
@@ -170,24 +170,24 @@ describe.skip(`components`, () => {
         s.localHiddenValuesById.container.props.children = ref
       })
 
-      utils.theater.ticker.tick()
+      utils.studio.ticker.tick()
       expect(utils.rootDiv.innerHTML).toEqual('<div>2</div>')
       utils.updateComponent('Root', s => {
         s.localHiddenValuesById.spanInContainer = '3'
       })
-      utils.theater.ticker.tick()
+      utils.studio.ticker.tick()
       expect(utils.rootDiv.innerHTML).toEqual('<div>3</div>')
 
       utils.updateComponent('Root', s => {
         s.localHiddenValuesById.spanInContainer = ['3', '4']
       })
-      utils.theater.ticker.tick()
+      utils.studio.ticker.tick()
       expect(utils.rootDiv.innerHTML).toEqual('<div>34</div>')
 
       utils.updateComponent('Root', s => {
         s.localHiddenValuesById.spanInContainer = '5'
       })
-      utils.theater.ticker.tick()
+      utils.studio.ticker.tick()
       expect(utils.rootDiv.innerHTML).toEqual('<div>5</div>')
 
       utils.updateComponent('Root', s => {
@@ -204,35 +204,35 @@ describe.skip(`components`, () => {
         }
         s.localHiddenValuesById.spanInContainer = instantiationDesc
       })
-      utils.theater.ticker.tick()
+      utils.studio.ticker.tick()
       expect(utils.rootDiv.innerHTML).toEqual('<div><span>1</span></div>')
 
       utils.updateComponent('Root', s => {
         // @ts-ignore ignore
         s.localHiddenValuesById.spanInContainer.props.children = '2'
       })
-      utils.theater.ticker.tick()
+      utils.studio.ticker.tick()
       expect(utils.rootDiv.innerHTML).toEqual('<div><span>2</span></div>')
 
       utils.updateComponent('Root', s => {
         // @ts-ignore ignore
         s.localHiddenValuesById.spanInContainer.props.children = ['1', '2']
       })
-      utils.theater.ticker.tick()
+      utils.studio.ticker.tick()
       expect(utils.rootDiv.innerHTML).toEqual('<div><span>12</span></div>')
 
       utils.updateComponent('Root', s => {
         // @ts-ignore ignore
         s.localHiddenValuesById.spanInContainer.props.children = null
       })
-      utils.theater.ticker.tick()
+      utils.studio.ticker.tick()
       expect(utils.rootDiv.innerHTML).toEqual('<div><span></span></div>')
 
       utils.updateComponent('Root', s => {
         // @ts-ignore ignore
         s.localHiddenValuesById.spanInContainer.props.children = [null, null]
       })
-      utils.theater.ticker.tick()
+      utils.studio.ticker.tick()
       expect(utils.rootDiv.innerHTML).toEqual('<div><span></span></div>')
       utils.updateComponent('Root', s => {
         const one: IComponentInstantiationValueDescriptor = {
@@ -255,7 +255,7 @@ describe.skip(`components`, () => {
         // @ts-ignore ignore
         s.localHiddenValuesById.spanInContainer.props.children = refToOne
       })
-      utils.theater.ticker.tick()
+      utils.studio.ticker.tick()
       expect(utils.rootDiv.innerHTML).toEqual(
         '<div><span><div>one</div></span></div>',
       )
@@ -280,7 +280,7 @@ describe.skip(`components`, () => {
           null,
         ]
       })
-      utils.theater.ticker.tick()
+      utils.studio.ticker.tick()
       expect(utils.rootDiv.innerHTML).toEqual(
         '<div><span><div>two</div></span></div>',
       )
@@ -304,7 +304,7 @@ describe.skip(`components`, () => {
           }),
         )
       })
-      utils.theater.ticker.tick()
+      utils.studio.ticker.tick()
       expect(utils.rootDiv.innerHTML).toEqual(
         '<div style="opacity: 0.2;">empty</div>',
       )
@@ -328,7 +328,7 @@ describe.skip(`components`, () => {
           }),
         )
       })
-      utils.theater.ticker.tick()
+      utils.studio.ticker.tick()
       expect(utils.rootDiv.innerHTML).toEqual(
         '<div style="opacity: 0.2; border: 1px solid red;">empty</div>',
       )
@@ -337,7 +337,7 @@ describe.skip(`components`, () => {
         s.localHiddenValuesById.container.modifierInstantiationDescriptors = modifiers()
       })
       // debugger
-      utils.theater.ticker.tick()
+      utils.studio.ticker.tick()
       expect(utils.rootDiv.innerHTML).toEqual('<div style="">empty</div>')
     })
   })

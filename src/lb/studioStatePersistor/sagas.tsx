@@ -101,5 +101,5 @@ export function* cacheProjectState(
 }
 
 export function projectPathToStatePath(pathToProject: string) {
-  return pathToProject.replace(/theater\.json$/, 'theater-history.json')
+  return pathToProject.replace(/studio\.json$/, 'studio-history.json')
 }

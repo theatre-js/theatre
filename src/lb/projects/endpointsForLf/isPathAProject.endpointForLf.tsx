@@ -15,7 +15,7 @@ export default function* isPathAProject(params: {
     return {type: 'ok', isIt: false}
   }
 
-  if (_.endsWith(params.fileOrFolderPath, '/theater.json')) {
+  if (_.endsWith(params.fileOrFolderPath, '/studio.json')) {
     return {type: 'ok', isIt: true, filePath: params.fileOrFolderPath}
   }
 
@@ -28,7 +28,7 @@ export default function* isPathAProject(params: {
   }
 
   if (pathStat.isDirectory()) {
-    const pathToFile = path.join(params.fileOrFolderPath, 'theater.json')
+    const pathToFile = path.join(params.fileOrFolderPath, 'studio.json')
     if ((yield call(fse.pathExists, pathToFile)) === true)
       return {type: 'ok', isIt: true, filePath: pathToFile}
   }

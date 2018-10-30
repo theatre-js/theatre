@@ -10,7 +10,7 @@ import TextNode from './TextNode'
 import RegularNode from './RegularNode'
 import {isViewportNode} from '$studio/workspace/components/WhatToShowInBody/Viewports/Viewport'
 import ViewportNode from './ViewportNode'
-import {TheaterConsumer} from '$studio/componentModel/react/utils/theaterContext'
+import {TheaterConsumer} from '$studio/componentModel/react/utils/studioContext'
 
 type Props = {
   depth: number
@@ -19,14 +19,14 @@ type Props = {
 
 const AnyNode = (props: Props): React.ReactElement<any> => (
   <TheaterConsumer>
-    {theater => (
+    {studio => (
       <PropsAsPointer props={props}>
         {({props: propsP}) => {
           // @todo @perf if depth and volatileId never change per Node, then we should read them directly from props
           const volatileId = val(propsP.volatileId)
 
           const nodeP =
-            theater.studio.elementTree.mirrorOfReactTreeAtom.pointer
+            studio.studio.elementTree.mirrorOfReactTreeAtom.pointer
               .nodesByVolatileId[volatileId]
 
           const type = val(nodeP.type)

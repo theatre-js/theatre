@@ -35,7 +35,7 @@ const constructComponentInstantiationValueDescriptor = (
   return elementify(
     instantiationDescriptorP.prop('props').prop('key'),
     instantiationDescriptorP,
-    self.pointer().prop('theater'),
+    self.pointer().prop('studio'),
   )
 }
 

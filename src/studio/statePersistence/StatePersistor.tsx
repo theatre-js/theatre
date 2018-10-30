@@ -17,21 +17,21 @@ export default class StatePersistor {
     | {type: 'empty'; state: {}}
     | {type: 'full'; checksum: string; state: ITheaterHistoryState}
 
-  constructor(readonly _theater: Theater) {
+  constructor(readonly _studio: Theater) {
     this._lastPersistedStateInfo = {type: 'empty', state: {}}
     if (
       $env.NODE_ENV === 'development' &&
-      $env.devSpecific.theater.statePersistenceMode &&
-      $env.devSpecific.theater.statePersistenceMode !== 'normal'
+      $env.devSpecific.studio.statePersistenceMode &&
+      $env.devSpecific.studio.statePersistenceMode !== 'normal'
     ) {
       if (
-        $env.devSpecific.theater.statePersistenceMode === 'dontLoadOrPersist'
+        $env.devSpecific.studio.statePersistenceMode === 'dontLoadOrPersist'
       ) {
-        this._theater.store.dispatch(
+        this._studio.store.dispatch(
           reduceAhistoricState(['stateIsHydrated'], () => true),
         )
       } else if (
-        $env.devSpecific.theater.statePersistenceMode === 'loadButDontUpdate'
+        $env.devSpecific.studio.statePersistenceMode === 'loadButDontUpdate'
       ) {
         throw new Error('Implement me @todo')
       }
@@ -42,15 +42,15 @@ export default class StatePersistor {
 
   async _waitForRun() {
     // @ts-ignore @todo
-    await this._theater.store.runSaga(waitUntilPathToProjectIsDefined())
+    await this._studio.store.runSaga(waitUntilPathToProjectIsDefined())
 
     await this._startSession()
   }
 
   async _startSession() {
-    const pathToProject = this._theater.store.getState().pathToProject as string
+    const pathToProject = this._studio.store.getState().pathToProject as string
 
-    const result = await this._theater._lbCommunicator.request(
+    const result = await this._studio._lbCommunicator.request(
       getProjectState({pathToProject}),
     )
 
@@ -61,7 +61,7 @@ export default class StatePersistor {
       const newProjectState = result.projectState
       if (newProjectState.checksum === 'empty') {
         this._lastPersistedStateInfo = {type: 'empty', state: {}}
-        this._theater.store.dispatch(
+        this._studio.store.dispatch(
           reduceAhistoricState(['stateIsHydrated'], () => true),
         )
       } else {
@@ -70,7 +70,7 @@ export default class StatePersistor {
           checksum: newProjectState.checksum,
           state: newProjectState.data as ITheaterHistoryState,
         }
-        this._theater.store.dispatch(
+        this._studio.store.dispatch(
           batchedAction([
             replaceHistoryAction(newProjectState.data as $FixMe),
             reduceAhistoricState(['stateIsHydrated'], () => true),
@@ -83,7 +83,7 @@ export default class StatePersistor {
 
   _startPersisting() {
     const self = this
-    this._theater.store.runSaga(function* startPersisting(): Generator_ {
+    this._studio.store.runSaga(function* startPersisting(): Generator_ {
       const ch = yield actionChannel('*', buffers.sliding(1))
 
       while (true) {
@@ -95,7 +95,7 @@ export default class StatePersistor {
 
         const checksum = gneerateUniqueId()
 
-        const resultPromise = self._theater.studio._lbCommunicator.request(
+        const resultPromise = self._studio.studio._lbCommunicator.request(
           pushDiffForProjectState({
             prevChecksum:
               self._lastPersistedStateInfo.type === 'empty'

@@ -8,10 +8,10 @@ module.exports = (env: Envs) => {
   const parts = makeConfigParts({
     env,
     withReactHotLoading: true,
-    packageName: 'theater',
+    packageName: 'studio',
     withDevServer: true,
     entries: {
-      index: ['./src/theater/index.tsx'],
+      index: ['./src/studio/index.tsx'],
     },
   })
 

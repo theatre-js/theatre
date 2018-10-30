@@ -25,7 +25,7 @@ export default class WhatToShowInBody extends PureComponentWithTheater<
       <PropsAsPointer props={this.props}>
         {({props}) => {
           const whatToShowInBody = val(
-            this.theaterAtom2P.historicWorkspace.viewports.whatToShowInBody,
+            this.studioAtom2P.historicWorkspace.viewports.whatToShowInBody,
           )
           if (whatToShowInBody.type === 'Viewports') {
             return <Viewports />
@@ -47,7 +47,7 @@ export default class WhatToShowInBody extends PureComponentWithTheater<
             return elementify(
               keyD,
               instantiationDescriptorP,
-              constant(this.theater),
+              constant(this.studio),
             )
           } else {
             throw new Error(`Bug here`)

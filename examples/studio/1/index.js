@@ -3,7 +3,7 @@ import {render} from 'react-dom'
 import SampleApp from './SampleApp'
 import {join} from 'path'
 
-const pathToProject = join(process.env.PATH_TO_ROOT, 'examples/theater.json')
+const pathToProject = join(process.env.PATH_TO_ROOT, 'examples/studio.json')
 
 window.TheaterJS.run(pathToProject, __dirname)
 

@@ -30,7 +30,7 @@ type TheAtom<Props> = DictAtom<{
   componentInstance: TheaterComponent<Props>
   props: Props
   modifierInstantiationDescriptors: $FixMe
-  theater: Theater
+  studio: Theater
   state: $FixMe
   timelineInstances: DictAtom<$FixMe>
 }>
@@ -41,8 +41,8 @@ type BaseClass<Props> = Classify<
     render: React.ReactNode
     sideEffects: AbstractDerivedDict<$FixMe>
     props: Props
-    theater: Theater
-    theaterAtom: DerivedDictTypeOf<TheaterStateAtom>
+    studio: Theater
+    studioAtom: DerivedDictTypeOf<TheaterStateAtom>
     modifierInstantiationDescriptors: $FixMe
     state: $FixMe
     timelineDescriptors: AbstractDerivedDict<{[key: string]: $FixMe}>
@@ -82,12 +82,12 @@ export default abstract class TheaterComponent<
 
     props: self => self.prop('_atom').prop('props'),
 
-    theater: self => self.prop('_atom').prop('theater'),
+    studio: self => self.prop('_atom').prop('studio'),
 
-    theaterAtom: self =>
+    studioAtom: self =>
       self
-        .prop('theater')
-        .map((theater: Theater) => theater.atom.derivedDict()),
+        .prop('studio')
+        .map((studio: Theater) => studio.atom.derivedDict()),
 
     modifierInstantiationDescriptors: self =>
       self.prop('_atom').prop('modifierInstantiationDescriptors'),
@@ -118,7 +118,7 @@ export default abstract class TheaterComponent<
       const idP = self.prop('componentId')
       return autoDerive(() => {
         const componentId = idP.getValue()
-        const atomP = self.prop('theaterAtom')
+        const atomP = self.prop('studioAtom')
         const isCore = isCoreComponent(componentId)
 
         return isCore
@@ -145,7 +145,7 @@ export default abstract class TheaterComponent<
     this._derivedClassD = this._makeDerivedClassD()
 
     const untapFromDerivedClassDChanges = this._derivedClassD
-      .changes(this.theater.ticker)
+      .changes(this.studio.ticker)
       .tap(newFinalDerivedClass => {
         this._derivedClassInstance.setClass(newFinalDerivedClass)
       })
@@ -154,7 +154,7 @@ export default abstract class TheaterComponent<
 
     this._derivedClassInstance = new DerivedClassInstance(
       this._derivedClassD.getValue(),
-      this.theater.ticker,
+      this.studio.ticker,
     )
 
     this.isTheaterJSComponent = true
@@ -162,7 +162,7 @@ export default abstract class TheaterComponent<
     this._whatToRender = null
     const untapFromRender = this._derivedClassInstance
       .prop('render')
-      .changes(this.theater.ticker)
+      .changes(this.studio.ticker)
       .tap((whatToRender: $FixMe) => {
         this._whatToRender = whatToRender
         this.forceUpdate()
@@ -175,7 +175,7 @@ export default abstract class TheaterComponent<
       .prop('sideEffects')
 
     this._sideEffetsHandler = new SideEffectsHandler(
-      this.theater.ticker,
+      this.studio.ticker,
       this._derivedClassInstance,
       sideEffectsDictP,
     )
@@ -198,7 +198,7 @@ export default abstract class TheaterComponent<
       props: this.props.props,
       modifierInstantiationDescriptors: this.props
         .modifierInstantiationDescriptors,
-      theater: this.theater,
+      studio: this.studio,
       state: this._getInitialState(),
       timelineInstances: dictAtom({}),
       owner: this.props.owner,
@@ -254,7 +254,7 @@ export default abstract class TheaterComponent<
         return modifierInstantiationDescriptor
           .prop('modifierId')
           .flatMap((modifierId: string) => {
-            return this.theater.atom
+            return this.studio.atom
               .pointer()
               .prop('ahistoricComponentModel')
               .prop('coreModifierDescriptors')

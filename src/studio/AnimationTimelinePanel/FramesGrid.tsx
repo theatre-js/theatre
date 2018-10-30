@@ -192,7 +192,7 @@ class FramesGrid extends PureComponentWithTheater<IProps, IState> {
   }
 
   _subscribeToPanelsChanges = () => {
-    val(this.theater.atom2.pointer.historicWorkspace.panels)
+    val(this.studio.atom2.pointer.historicWorkspace.panels)
     this._updateContainerRect()
     return null
   }

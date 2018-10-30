@@ -3,7 +3,7 @@ import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import React from 'react'
 import {renderEditorForEitherLeftOrRightPanel} from '$studio/LeftPanel/LeftPanel'
-import {TheaterConsumer} from '$studio/componentModel/react/utils/theaterContext'
+import {TheaterConsumer} from '$studio/componentModel/react/utils/studioContext'
 
 type IProps = {}
 
@@ -14,12 +14,12 @@ export default class RightPanel extends React.PureComponent<IProps, IState> {
   render() {
     return (
       <TheaterConsumer>
-        {theater => (
+        {studio => (
           <PropsAsPointer props={this.props}>
             {() => {
               return (
                 <Panel label="Element">
-                  {renderEditorForEitherLeftOrRightPanel('right', theater)}
+                  {renderEditorForEitherLeftOrRightPanel('right', studio)}
                 </Panel>
               )
             }}

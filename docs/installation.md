@@ -5,8 +5,8 @@
 #### Clone and install
 
 ```bash
-$ git clone ssh://git@bitbucket.org/theaterjs/theaterjs-app.git
-$ cd theaterjs-app
+$ git clone ssh://git@bitbucket.org/studiojs/studiojs-app.git
+$ cd studiojs-app
 $ npm install
 
 # there is a bug with socket.io that we need to manually fix every time we run `npm install`
@@ -41,7 +41,7 @@ This runs a bunch of webpack processes for compilling:
 1. LB - LauncherBackend (the code that runs in electron's main process)
 2. LF - LauncherFrontend (the code that runs in electron's window process)
 3. Studio - The code that runs in the user's browser
-4. examples - This is just an example theaterjs project
+4. examples - This is just an example studiojs project
 
 #### Run the launcher
 
@@ -62,7 +62,7 @@ If all has gone well, you should see the electorn window open and show you the l
 
 The launcher window should show an empty list of projects. Let's add the `examples` folder as a project.
 
-Drag the `examples` folder inside the finder window. Give it any name you wish. If that goes well, you'll see a `theater.json` file created inside the examples folder. Don't worry. It's ignored by git.
+Drag the `examples` folder inside the finder window. Give it any name you wish. If that goes well, you'll see a `studio.json` file created inside the examples folder. Don't worry. It's ignored by git.
 
 #### Launch the examples project
 

@@ -12,13 +12,13 @@ export default class TimelineInstance {
   atom: DictAtom<{time: BoxAtom<number>}>
   _descriptorP: $FixMe
   timeP: PointerDerivation<BoxAtom<number>>
-  _theater: Theater
+  _studio: Theater
   _pathToTimelineDescriptor: Array<string>
   _af: undefined | number
 
   constructor(
     descriptorP: $FixMe,
-    theater: Theater,
+    studio: Theater,
     pathToTimelineDescriptor: Array<string>,
   ) {
     this.atom = dictAtom({
@@ -26,7 +26,7 @@ export default class TimelineInstance {
     })
 
     this._pathToTimelineDescriptor = pathToTimelineDescriptor
-    this._theater = theater
+    this._studio = studio
 
     this.timeP = this.atom.pointer().prop('time')
 
@@ -43,7 +43,7 @@ export default class TimelineInstance {
     const valueInstance = new ValueInstance(
       varDescP,
       this.timeP,
-      this._theater,
+      this._studio,
       [...this._pathToTimelineDescriptor, 'variables', varId],
     )
     return valueInstance.derivation()

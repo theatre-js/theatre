@@ -3,18 +3,18 @@ import {val} from '$shared/DataVerse2/atom'
 import Theater from '$studio/bootstrap/Theater'
 import {isViewportNode} from '$studio/workspace/components/WhatToShowInBody/Viewports/Viewport'
 
-export const getActiveViewportId = (theater: Theater): string | undefined => {
-  return val(theater.atom2.pointer.historicWorkspace.viewports.activeViewportId)
+export const getActiveViewportId = (studio: Theater): string | undefined => {
+  return val(studio.atom2.pointer.historicWorkspace.viewports.activeViewportId)
 }
 
 export const getVolatileIdOfActiveNode = (
-  theater: Theater,
+  studio: Theater,
 ): string | undefined => {
-  const activeViewportId = getActiveViewportId(theater)
+  const activeViewportId = getActiveViewportId(studio)
   if (!activeViewportId) return undefined
 
   return val(
-    theater.atom2.pointer.ahistoricWorkspace.activeNodeVolatileIdByViewportId[
+    studio.atom2.pointer.ahistoricWorkspace.activeNodeVolatileIdByViewportId[
       activeViewportId
     ],
   )
@@ -22,10 +22,10 @@ export const getVolatileIdOfActiveNode = (
 
 export const getActiveNodeInstanceByVolatileId = (
   volatileId: string,
-  theater: Theater,
+  studio: Theater,
 ) => {
   const mirrorNode = val(
-    theater.studio.elementTree.mirrorOfReactTreeAtom.pointer.nodesByVolatileId[
+    studio.studio.elementTree.mirrorOfReactTreeAtom.pointer.nodesByVolatileId[
       volatileId
     ],
   )
@@ -36,12 +36,12 @@ export const getActiveNodeInstanceByVolatileId = (
   return reactElement
 }
 
-export const getActiveNode = (theater: Theater): mixed => {
-  const possibleVolatileIdOfSelectedElement = getVolatileIdOfActiveNode(theater)
+export const getActiveNode = (studio: Theater): mixed => {
+  const possibleVolatileIdOfSelectedElement = getVolatileIdOfActiveNode(studio)
 
   if (!possibleVolatileIdOfSelectedElement) return undefined
   const volatileId = possibleVolatileIdOfSelectedElement
-  const activeNode = getActiveNodeInstanceByVolatileId(volatileId, theater)
+  const activeNode = getActiveNodeInstanceByVolatileId(volatileId, studio)
   return activeNode
 }
 
@@ -51,9 +51,9 @@ export const getComponentIdOfNode = (node: mixed): undefined | string => {
 }
 
 export const getComponentIdOfActiveNode = (
-  theater: Theater,
+  studio: Theater,
 ): string | undefined => {
-  const activeNode = getActiveNode(theater)
+  const activeNode = getActiveNode(studio)
   if (!activeNode) return undefined
 
   return getComponentIdOfNode(activeNode)

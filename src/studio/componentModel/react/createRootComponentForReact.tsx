@@ -3,7 +3,7 @@ import Theater from '$studio/bootstrap/Theater'
 import {
   contextTypes,
   contextName,
-} from '$studio/componentModel/react/utils/theaterContext'
+} from '$studio/componentModel/react/utils/studioContext'
 import WhatToShowInBody from '$studio/workspace/components/WhatToShowInBody/WhatToShowInBody'
 import {TickerProvider} from '$shared/utils/react/TickerContext'
 
@@ -11,7 +11,7 @@ interface Props {
   children: React.ReactNode
 }
 
-const createRootComponentForReact = (theater: Theater) => {
+const createRootComponentForReact = (studio: Theater) => {
   class TheaterJSRoot extends React.Component<
     Props,
     {WhatToShowInBody: typeof WhatToShowInBody}
@@ -35,14 +35,14 @@ const createRootComponentForReact = (theater: Theater) => {
     render() {
       const {WhatToShowInBody} = this.state
       return (
-        <TickerProvider ticker={theater.ticker}>
+        <TickerProvider ticker={studio.ticker}>
           <WhatToShowInBody passThroughNode={this.props.children} />
         </TickerProvider>
       )
     }
 
     getChildContext() {
-      return {[contextName]: theater}
+      return {[contextName]: studio}
     }
 
     static childContextTypes = contextTypes

@@ -8,7 +8,7 @@ import {val} from '$shared/DataVerse2/atom'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import {getVolatileIdsOfChildrenNLevelsDeep} from './NodeTemplate'
 import AnyNode from './AnyNode'
-import {TheaterConsumer} from '$studio/componentModel/react/utils/theaterContext'
+import {TheaterConsumer} from '$studio/componentModel/react/utils/studioContext'
 
 type Props = {
   depth: number
@@ -17,17 +17,17 @@ type Props = {
 
 const ViewportNode = (props: Props): React.ReactElement<$IntentionalAny> => (
   <TheaterConsumer>
-    {theater => (
+    {studio => (
       <PropsAsPointer props={props}>
         {({props: propsP}) => {
-          const nodeP = theater.studio.elementTree.mirrorOfReactTreeAtom.pointer
+          const nodeP = studio.studio.elementTree.mirrorOfReactTreeAtom.pointer
             .nodesByVolatileId[val(propsP.volatileId)] as Pointer<GenericNode>
 
           return (
             <AnyNode
               depth={props.depth}
               volatileId={
-                getVolatileIdsOfChildrenNLevelsDeep(nodeP, theater, 3)[0]
+                getVolatileIdsOfChildrenNLevelsDeep(nodeP, studio, 3)[0]
               }
             />
           )

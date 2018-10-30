@@ -7,7 +7,7 @@ describe('recogniseProject()', () => {
   beforeEach(() => {
     mock({
       '/foo/bar': {
-        'theater.json': '{}',
+        'studio.json': '{}',
       },
     })
   })
@@ -16,22 +16,22 @@ describe('recogniseProject()', () => {
     mock.restore()
   })
 
-  it('should work for existing theater.json file', async () => {
+  it('should work for existing studio.json file', async () => {
     const {task, store} = await runSingleSaga(recogniseProject, {
-      filePath: '/foo/bar/theater.json',
+      filePath: '/foo/bar/studio.json',
     })
     const result = await task.done
     expect(result).toMatchObject({type: 'ok'})
     expect(store.reduxStore.getState()).toMatchObject({
       projects: {
-        listOfPaths: ['/foo/bar/theater.json'],
+        listOfPaths: ['/foo/bar/studio.json'],
       },
     })
   })
 
-  it('should error for non-existing theater.json file', async () => {
+  it('should error for non-existing studio.json file', async () => {
     const {task} = await runSingleSaga(recogniseProject, {
-      filePath: '/non/existing/theater.json',
+      filePath: '/non/existing/studio.json',
     })
     const result = await task.done
     expect(result).toMatchObject({type: 'error', errorType: 'fileDoesntExist'})
@@ -39,8 +39,8 @@ describe('recogniseProject()', () => {
 
   it('should error for already-recognized projects', async () => {
     const {task} = await runSingleSaga(function*(): Generator_ {
-      yield call(recogniseProject, {filePath: '/foo/bar/theater.json'})
-      return yield call(recogniseProject, {filePath: '/foo/bar/theater.json'})
+      yield call(recogniseProject, {filePath: '/foo/bar/studio.json'})
+      return yield call(recogniseProject, {filePath: '/foo/bar/studio.json'})
     })
     const result = await task.done
     expect(result).toMatchObject({

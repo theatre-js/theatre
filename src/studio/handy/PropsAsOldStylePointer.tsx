@@ -19,7 +19,7 @@ type PointerType<InnerProps> = PointerDerivation<
 
 type ChildrenType<InnerProps> = (
   p: PointerType<InnerProps>,
-  theater: Theater,
+  studio: Theater,
 ) => AbstractDerivation<React.ReactNode>
 
 type Props<InnerProps> = {
@@ -40,7 +40,7 @@ export default class PropsAsOldStylePointer<
     const prospP = this._propsAtom.derivedDict().pointer()
     this._renderD = this._childrenAtom
       .derivation()
-      .flatMap(childrenFn => childrenFn(prospP, this.theater))
+      .flatMap(childrenFn => childrenFn(prospP, this.studio))
   }
 
   componentWillReceiveProps(newProps: Props<InnerProps>) {

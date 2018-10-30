@@ -12,7 +12,7 @@ type ErrorTypes =
   | 'pathUnreadable'
   | 'pathIsNotAFolder'
   | 'projectAlreadyRecognised'
-  | 'theaterDotJsonFileAlreadyExists'
+  | 'studioDotJsonFileAlreadyExists'
   | RecognizeProjectErrorTypes
 
 export default function* createNewProject(params: {
@@ -37,7 +37,7 @@ export default function* createNewProject(params: {
     return {type: 'error', errorType: 'pathIsNotAFolder'}
   }
 
-  const filePath = path.join(params.folderPath, 'theater.json')
+  const filePath = path.join(params.folderPath, 'studio.json')
   const state: LBStoreState = yield select()
 
   if (state.projects.listOfPaths.indexOf(filePath) !== -1) {
@@ -45,7 +45,7 @@ export default function* createNewProject(params: {
   }
 
   if (yield call(fse.pathExists, filePath)) {
-    return {type: 'error', errorType: 'theaterDotJsonFileAlreadyExists'}
+    return {type: 'error', errorType: 'studioDotJsonFileAlreadyExists'}
   }
 
   const fileContent = JSON.stringify({name: params.name})

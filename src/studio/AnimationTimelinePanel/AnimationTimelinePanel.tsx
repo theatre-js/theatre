@@ -22,12 +22,12 @@ class AnimationTimelinePanel extends PureComponentWithTheater<{}, void> {
   constructor(props: {}, context: $IntentionalAny) {
     super(props, context)
     const EmptyPanel = <Panel key="emptyPanel" />
-    const theater = this.theater
+    const studio = this.studio
 
     this._d = autoDerive(() => {
-      const volatileIdOfSelectedElement = getVolatileIdOfActiveNode(theater)
+      const volatileIdOfSelectedElement = getVolatileIdOfActiveNode(studio)
       if (!volatileIdOfSelectedElement) return EmptyPanel
-      const selectedElement = theater.studio.elementTree.mirrorOfReactTree.getNativeElementByVolatileId(
+      const selectedElement = studio.studio.elementTree.mirrorOfReactTree.getNativeElementByVolatileId(
         volatileIdOfSelectedElement,
       )
       if (!selectedElement) return EmptyPanel
@@ -39,7 +39,7 @@ class AnimationTimelinePanel extends PureComponentWithTheater<{}, void> {
       const pathToComponent = getPathToComponentDescriptor(activeComponentId)
 
       const componentP: Pointer<IDeclarativeComponentDescriptor> = _.get(
-        theater.atom2.pointer,
+        studio.atom2.pointer,
         pathToComponent,
       )
 

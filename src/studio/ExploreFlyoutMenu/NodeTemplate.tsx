@@ -17,7 +17,7 @@ import {getActiveViewportId, getVolatileIdOfActiveNode} from './utils'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 import Theater from '$studio/bootstrap/Theater'
 import HighlightByInternalInstance from '$studio/common/components/DomHighlighter/HighlightByInternalInstance'
-import {TheaterConsumer} from '$studio/componentModel/react/utils/theaterContext'
+import {TheaterConsumer} from '$studio/componentModel/react/utils/studioContext'
 
 type Props = {
   isSelectable: boolean
@@ -36,7 +36,7 @@ const NodeTemplate = (props: Props) => {
 
   return (
     <TheaterConsumer>
-      {theater => (
+      {studio => (
         <PropsAsPointer props={props}>
           {({props: propsP}) => {
             const volatileId = val(propsP.volatileId)
@@ -51,12 +51,12 @@ const NodeTemplate = (props: Props) => {
             const depth = val(propsP.depth)
 
             const isSelected =
-              isSelectable && getVolatileIdOfActiveNode(theater) === volatileId
+              isSelectable && getVolatileIdOfActiveNode(studio) === volatileId
 
             const isExpanded =
               canHaveChildren &&
               val(
-                theater.atom2.pointer.ahistoricComponentModel
+                studio.atom2.pointer.ahistoricComponentModel
                   .collapsedElementsByVolatileId[volatileId],
               ) !== true
 
@@ -65,7 +65,7 @@ const NodeTemplate = (props: Props) => {
               : () => {
                   if (!canHaveChildren) return
                   if (isExpanded) {
-                    theater.store.dispatch(
+                    studio.store.dispatch(
                       reduceAhistoricState(
                         [
                           'ahistoricComponentModel',
@@ -76,7 +76,7 @@ const NodeTemplate = (props: Props) => {
                       ),
                     )
                   } else {
-                    theater.store.dispatch(
+                    studio.store.dispatch(
                       reduceAhistoricState(
                         [
                           'ahistoricComponentModel',
@@ -91,7 +91,7 @@ const NodeTemplate = (props: Props) => {
             const select = !isSelectable
               ? undefined
               : () => {
-                  markElementAsActive(theater, volatileId)
+                  markElementAsActive(studio, volatileId)
                 }
 
             let childrenNodes = null
@@ -109,7 +109,7 @@ const NodeTemplate = (props: Props) => {
             }
 
             const nodeP =
-              theater.studio.elementTree.mirrorOfReactTreeAtom.pointer
+              studio.studio.elementTree.mirrorOfReactTreeAtom.pointer
                 .nodesByVolatileId[volatileId]
 
             const internalInstance = val(nodeP.reactSpecific.internalInstance)
@@ -180,13 +180,13 @@ export const TaggedDisplayName = (props: {name: string}) => (
 
 export default NodeTemplate
 
-function markElementAsActive(theater: Theater, volatileId: string) {
+function markElementAsActive(studio: Theater, volatileId: string) {
   const activeViewportId = autoDerive(() =>
-    getActiveViewportId(theater),
+    getActiveViewportId(studio),
   ).getValue()
 
   if (!activeViewportId) throw new Error(`No active viewport selected.`)
-  theater.store.dispatch(
+  studio.store.dispatch(
     reduceAhistoricState(
       [
         'ahistoricWorkspace',
@@ -200,7 +200,7 @@ function markElementAsActive(theater: Theater, volatileId: string) {
 
 export const getVolatileIdsOfChildrenNLevelsDeep = (
   nodeP: Pointer<GenericNode>,
-  theater: Theater,
+  studio: Theater,
   n: number,
 ): Array<VolatileId> => {
   let i = 0
@@ -213,7 +213,7 @@ export const getVolatileIdsOfChildrenNLevelsDeep = (
 
     if (!volatileIdOfFirstChild) return []
 
-    currentNodeP = theater.studio.elementTree.mirrorOfReactTreeAtom.pointer
+    currentNodeP = studio.studio.elementTree.mirrorOfReactTreeAtom.pointer
       .nodesByVolatileId[volatileIdOfFirstChild] as Pointer<GenericNode>
   }
 

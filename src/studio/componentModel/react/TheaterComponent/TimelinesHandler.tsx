@@ -21,7 +21,7 @@ export default class TimelinesHandler {
 
     this._timelineDescriptorsProxy = autoProxyDerivedDict(
       this._timelineDescriptorsP,
-      this._element.theater.ticker,
+      this._element.studio.ticker,
     )
 
     this._untap = noop
@@ -41,7 +41,7 @@ export default class TimelinesHandler {
       key,
       new TimelineInstance(
         this._timelineDescriptorsProxy.pointer().prop(key),
-        this._element.theater,
+        this._element.studio,
         [
           ...getPathToComponentDescriptor(this._element.getComponentId()),
           'timelineDescriptors',

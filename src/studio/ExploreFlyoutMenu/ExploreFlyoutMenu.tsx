@@ -38,19 +38,19 @@ class ExploreFlyoutMenu extends PureComponentWithTheater<Props, State> {
           <PropsAsPointer>
             {() => {
               const whatToShowInBody = val(
-                this.theater.atom2.pointer.historicWorkspace.viewports
+                this.studio.atom2.pointer.historicWorkspace.viewports
                   .whatToShowInBody,
               )
 
               if (whatToShowInBody.type === 'Viewports') {
                 const activeViewportId = val(
-                  this.theater.atom2.pointer.historicWorkspace.viewports
+                  this.studio.atom2.pointer.historicWorkspace.viewports
                     .activeViewportId,
                 )
 
                 if (!activeViewportId) return null
                 const volatileIdOfActiveViewport = val(
-                  this.theater.studio.elementTree.atom.pointer
+                  this.studio.studio.elementTree.atom.pointer
                     .unexpandedViewports[activeViewportId],
                 )
                 if (!volatileIdOfActiveViewport) return null

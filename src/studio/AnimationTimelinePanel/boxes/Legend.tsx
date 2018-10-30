@@ -44,7 +44,7 @@ class Legend extends PureComponentWithTheater<IProps, IState> {
   render() {
     const {contextMenuProps} = this.state
     const variable: VariableObject = val(get(
-      this.theater.atom2.pointer,
+      this.studio.atom2.pointer,
       this.props.pathToTimeline.concat('variables', this.props.variableId),
     ) as Pointer<VariableObject>)
     const {property, component} = variable

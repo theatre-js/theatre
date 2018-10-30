@@ -8,7 +8,7 @@ describe('createNewProject()', () => {
   beforeEach(() => {
     mock({
       '/foo/bar': {
-        'theater.json': '{}',
+        'studio.json': '{}',
       },
       '/foo/baz': {},
     })
@@ -27,14 +27,14 @@ describe('createNewProject()', () => {
     const result = await task.done
     expect(result).toMatchObject({
       type: 'ok',
-      filePath: '/foo/baz/theater.json',
+      filePath: '/foo/baz/studio.json',
     })
     expect(store.reduxStore.getState()).toMatchObject({
       projects: {
-        listOfPaths: ['/foo/baz/theater.json'],
+        listOfPaths: ['/foo/baz/studio.json'],
       },
     })
-    await expect(fs.exists('/foo/baz/theater.json')).resolves.toBe(true)
+    await expect(fs.exists('/foo/baz/studio.json')).resolves.toBe(true)
   })
 
   // Didn't pass on Linux
@@ -51,7 +51,7 @@ describe('createNewProject()', () => {
   })
 
   // Didn't pass on Linux
-  it.skip('should error for a folder that already has a theater.json file', async () => {
+  it.skip('should error for a folder that already has a studio.json file', async () => {
     const {task} = await runSingleSaga(createNewProject, {
       folderPath: '/foo/bar',
       name: 'baz',
@@ -59,14 +59,14 @@ describe('createNewProject()', () => {
     const result = await task.done
     expect(result).toMatchObject({
       type: 'error',
-      errorType: 'theaterDotJsonFileAlreadyExists',
+      errorType: 'studioDotJsonFileAlreadyExists',
     })
   })
 
   // Didn't pass on Linux
   it.skip('should error for a non-folder', async () => {
     const {task} = await runSingleSaga(createNewProject, {
-      folderPath: '/foo/bar/theater.json',
+      folderPath: '/foo/bar/studio.json',
       name: 'baz',
     })
     const result = await task.done

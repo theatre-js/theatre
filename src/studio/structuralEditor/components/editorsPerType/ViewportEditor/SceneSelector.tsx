@@ -65,7 +65,7 @@ export default class SceneSelector extends PureComponentWithTheater<
         alert('Bad scene name')
         return
       }
-      if (findSceneByDisplayName(newSceneName, this.theater)) {
+      if (findSceneByDisplayName(newSceneName, this.studio)) {
         return alert(`A Scene with this name already exists`)
       }
 
@@ -97,7 +97,7 @@ export default class SceneSelector extends PureComponentWithTheater<
 
       return
     } else {
-      const possibleSceneId = findSceneByDisplayName(req, this.theater)
+      const possibleSceneId = findSceneByDisplayName(req, this.studio)
       if (possibleSceneId) {
         this.setSceneComponentId(possibleSceneId)
       } else {
@@ -131,10 +131,10 @@ export default class SceneSelector extends PureComponentWithTheater<
 
   private getDisplayName(viewportId: string) {
     const path = pathToViewport(viewportId)
-    const viewportP = get(this.theaterAtom2P, path) as Pointer<IViewport>
+    const viewportP = get(this.studioAtom2P, path) as Pointer<IViewport>
     const sceneComponentId = val(viewportP.sceneComponentId)
     const sceneComponentP = getComponentDescriptor(
-      this.theaterAtom2P,
+      this.studioAtom2P,
       sceneComponentId,
     )
     const displayName = val(sceneComponentP.displayName)
@@ -144,9 +144,9 @@ export default class SceneSelector extends PureComponentWithTheater<
 
 const findSceneByDisplayName = (
   displayName: string,
-  theater: Theater,
+  studio: Theater,
 ): IComponentId | void => {
-  const state = theater.atom2.getState()
+  const state = studio.atom2.getState()
   const lookIn = (
     descs: Record<IComponentId, IComponentDescriptor>,
   ): IComponentId | void => {

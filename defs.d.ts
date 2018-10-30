@@ -34,7 +34,7 @@ type CommonEnvironmentVariables = {
     statePersistencePrefix: string
   }
   launcherBackend: {}
-  theater: {
+  studio: {
     socketPort: number
   }
   tl: {
@@ -56,7 +56,7 @@ type DevSpecificEnvironmentVariables = {
     lf: {
       devServerPort: number
     }
-    theater: {
+    studio: {
       devServerPort: number
       /**
        * If you want the state persistor to not persist the state, you have these options:

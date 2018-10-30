@@ -6,7 +6,7 @@ import resolveCss from '$shared/utils/resolveCss'
 import {val} from '$shared/DataVerse2/atom'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import {get} from '$shared/utils'
-import {TheaterConsumer} from '$studio/componentModel/react/utils/theaterContext'
+import {TheaterConsumer} from '$studio/componentModel/react/utils/studioContext'
 
 interface IOwnProps {
   path: Array<string>
@@ -72,11 +72,11 @@ export default class ExpressionlessNumberEditor extends PureComponentWithTheater
 
     return (
       <TheaterConsumer>
-        {theater => (
+        {studio => (
           <PropsAsPointer props={props}>
             {({props: propsP}) => {
               const value = val(
-                get(theater.atom2.pointer, val(propsP.path)),
+                get(studio.atom2.pointer, val(propsP.path)),
               ) as number | undefined
               this.currentValue = value || 0
 

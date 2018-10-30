@@ -29,7 +29,7 @@ class BoxView extends PureComponentWithTheater<IProps, IState> {
           const boxIndex = val(props.boxIndex)
 
           const box: BoxObject = val(get(
-            this.theater.atom2.pointer,
+            this.studio.atom2.pointer,
             pathToTimeline.concat('boxes', boxId),
           ) as Pointer<BoxObject>)
 

@@ -8,13 +8,13 @@ import {storeKey} from '$studio/handy/connect'
 import {
   contextName,
   contextTypes,
-} from '$studio/componentModel/react/utils/theaterContext'
+} from '$studio/componentModel/react/utils/studioContext'
 import {TickerProvider} from '$shared/utils/react/TickerContext'
 
 const StoreProvider = createProvider(storeKey)
 
 type Props = {
-  theater: Theater
+  studio: Theater
 }
 
 type State = {
@@ -44,9 +44,9 @@ class StudioRootComponent extends React.Component<Props, State> {
   render() {
     const {HotReloadablePart} = this.state
     return (
-      <TickerProvider ticker={this.props.theater.ticker}>
+      <TickerProvider ticker={this.props.studio.ticker}>
         <AppContainer>
-          <StoreProvider store={this.props.theater.store}>
+          <StoreProvider store={this.props.studio.store}>
             <HotReloadablePart />
           </StoreProvider>
         </AppContainer>
@@ -56,7 +56,7 @@ class StudioRootComponent extends React.Component<Props, State> {
 
   getChildContext() {
     return {
-      [contextName]: this.props.theater,
+      [contextName]: this.props.studio,
     }
   }
 

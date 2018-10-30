@@ -200,10 +200,10 @@ class SelectionProvider extends PureComponentWithTheater<IProps, IState> {
   }
 
   _getBoxesAndLayout(): TBoxesAndLayout {
-    const boxes: BoxesObject = this.theater.atom2.getIn(
+    const boxes: BoxesObject = this.studio.atom2.getIn(
       this.props.pathToTimeline.concat('boxes'),
     )
-    const layout: LayoutArray = this.theater.atom2.getIn(
+    const layout: LayoutArray = this.studio.atom2.getIn(
       this.props.pathToTimeline.concat('layout'),
     )
     return {boxes, layout}
@@ -262,7 +262,7 @@ class SelectionProvider extends PureComponentWithTheater<IProps, IState> {
       const {boxesBoundaries} = this.state
       const offsetTop = this.selectionZone!.offsetTop
       const variables: Variables = val(get(
-        this.theater.atom2.pointer,
+        this.studio.atom2.pointer,
         this.props.pathToTimeline.concat('variables'),
       ) as Pointer<Variables>)
       this.setState(() => ({

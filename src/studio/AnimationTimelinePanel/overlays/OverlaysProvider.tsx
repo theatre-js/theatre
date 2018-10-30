@@ -20,7 +20,7 @@ interface IState {
   connectorContextMenuProps: null | TPointContextMenuProps
 }
 
-export const OverlaysAPIChannel = 'theaterjs/OverlaysAPIChannel'
+export const OverlaysAPIChannel = 'studiojs/OverlaysAPIChannel'
 
 class OverlaysProvider extends React.PureComponent<IProps, IState> {
   constructor(props: IProps, context: $IntentionalAny) {

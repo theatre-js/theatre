@@ -6,22 +6,24 @@ import '$studio/integrations/react/treeMirroring/setup'
 import Theater from '$studio/bootstrap/Theater'
 import createRootComponentForReact from './componentModel/react/createRootComponentForReact'
 import '$shared/DataVerse/devtoolsFormatters/setup'
-import Studio from '$studio/bootstrap/Studio'
+import TheatreStudio from '$studio/bootstrap/TheatreStudio'
 
-const theater = new Theater({})
-const studio = new Studio(theater)
-theater._setStudio(studio)
-// theaterStudioInstance.run()
+// debugger
+const theatre = new Theater({})
+const studio = new TheatreStudio(theatre)
+// debugger
+theatre._setStudio(studio)
+// studioStudioInstance.run()
 
 if ($env.NODE_ENV === 'development') {
   // @ts-ignore
-  window.theater = theater
+  window.studio = studio
 }
 
 const reactExport = {
-  Root: createRootComponentForReact(theater),
+  Root: createRootComponentForReact(theatre),
 }
 
-const run = theater.run.bind(theater)
+const run = theatre.run.bind(theatre)
 
-export {theater, reactExport as react, run}
+export {theatre, reactExport as react, run}

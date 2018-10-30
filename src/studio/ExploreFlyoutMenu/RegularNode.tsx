@@ -14,7 +14,7 @@ import Theater from '$studio/bootstrap/Theater'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 import {getComponentDescriptor} from '$studio/componentModel/selectors'
 import NodeTemplate, {TaggedDisplayName} from './NodeTemplate'
-import {TheaterConsumer} from '$studio/componentModel/react/utils/theaterContext'
+import {TheaterConsumer} from '$studio/componentModel/react/utils/studioContext'
 
 type Props = {
   depth: number
@@ -23,12 +23,12 @@ type Props = {
 
 const RegularNode = (props: Props) => (
   <TheaterConsumer>
-    {theater => (
+    {studio => (
       <PropsAsPointer props={props}>
         {({props: propsP}) => {
           const volatileId = val(propsP.volatileId)
 
-          const nodeP = theater.studio.elementTree.mirrorOfReactTreeAtom.pointer
+          const nodeP = studio.studio.elementTree.mirrorOfReactTreeAtom.pointer
             .nodesByVolatileId[volatileId] as Pointer<MGenericNode>
 
           const nativeNode = val(nodeP.nativeNode)
@@ -42,7 +42,7 @@ const RegularNode = (props: Props) => (
 
           const displayName: string = getDisplayName(
             nativeNode,
-            theater,
+            studio,
           ).getValue()
 
           const depth = val(propsP.depth)
@@ -51,7 +51,7 @@ const RegularNode = (props: Props) => (
 
           const volatileIdsOfChildrenP = !shouldSwallowChild
             ? nodeP.volatileIdsOfChildren
-            : (theater.studio.elementTree.mirrorOfReactTreeAtom.pointer
+            : (studio.studio.elementTree.mirrorOfReactTreeAtom.pointer
                 .nodesByVolatileId[
                 val(nodeP.volatileIdsOfChildren)[0]
               ] as Pointer<MGenericNode>).volatileIdsOfChildren
@@ -80,7 +80,7 @@ const getDisplayName = (
     | Element
     | React.Component<mixed, mixed>
     | TheaterComponent<$IntentionalAny>,
-  theater: Theater,
+  studio: Theater,
 ): AbstractDerivation<string> =>
   autoDerive(() => {
     if (isTheaterComponent(node)) {
@@ -90,7 +90,7 @@ const getDisplayName = (
       } else {
         return val(
           // @ts-ignore @todo
-          getComponentDescriptor(theater.atom2.pointer, cls.componentId)
+          getComponentDescriptor(studio.atom2.pointer, cls.componentId)
             .displayName,
         )
       }

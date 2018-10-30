@@ -100,7 +100,7 @@ class SceneSelector extends PureComponentWithTheater<IProps, IState> {
 
   private getScenes() {
     const customComponents = val(
-      this.theaterAtom2P.historicComponentModel.customComponentDescriptors,
+      this.studioAtom2P.historicComponentModel.customComponentDescriptors,
     )
     return Object.entries(customComponents).reduce(
       (reducer, [id, descriptor]) => {

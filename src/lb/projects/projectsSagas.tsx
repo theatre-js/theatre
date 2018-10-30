@@ -143,5 +143,5 @@ export function* ensureProjectIsRecognised(
     return error
   }
 
-  // @todo ensure that the data from theater.json of that project is also loaded
+  // @todo ensure that the data from studio.json of that project is also loaded
 }

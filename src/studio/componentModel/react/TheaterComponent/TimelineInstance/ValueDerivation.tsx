@@ -257,7 +257,7 @@ export default class ValueDerivation extends AbstractDerivation<$FixMe> {
   _timeD: $FixMe
   _pointsP: $FixMe
   _pointsProxy: $FixMe
-  _theater: $FixMe
+  _studio: $FixMe
   _pathToValueDescriptor: Array<string>
   _pathToPointsById: Array<string>
   _state: PossibleStates
@@ -265,12 +265,12 @@ export default class ValueDerivation extends AbstractDerivation<$FixMe> {
   constructor(
     descP: $FixMe,
     timeD: $FixMe,
-    theater: Theater,
+    studio: Theater,
     pathToValueDescriptor: Array<string>,
   ) {
     super()
     this._descP = descP
-    this._theater = theater
+    this._studio = studio
     this._pathToValueDescriptor = pathToValueDescriptor
     this._pathToPointsById = [...pathToValueDescriptor, 'points', 'byId']
     this._pointsP = descP.prop('points')
@@ -321,7 +321,7 @@ export default class ValueDerivation extends AbstractDerivation<$FixMe> {
     startSearchingFromPointIndex: number,
   ): PossibleBaseStates {
     const points = _.get(
-      this._theater.store.getState(),
+      this._studio.store.getState(),
       this._pathToValueDescriptor,
     ).points
 

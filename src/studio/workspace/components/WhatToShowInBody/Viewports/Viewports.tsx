@@ -37,7 +37,7 @@ export default class Viewports extends PureComponentWithTheater<
         {() => {
           // @todo use keys()
           const viewports = val(
-            this.theaterAtom2P.historicWorkspace.viewports.byId,
+            this.studioAtom2P.historicWorkspace.viewports.byId,
           )
 
           return (
@@ -46,7 +46,7 @@ export default class Viewports extends PureComponentWithTheater<
                 return (
                   <Container
                     initialState={val(
-                      this.theaterAtom2P.ahistoricWorkspace.viewportsContainer,
+                      this.studioAtom2P.ahistoricWorkspace.viewportsContainer,
                     )}
                     dispatch={this.dispatch}
                     activeMode={activeMode}

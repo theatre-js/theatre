@@ -14,7 +14,7 @@ import {getActiveNode} from '../ExploreFlyoutMenu/utils'
 import Theater from '$studio/bootstrap/Theater'
 import {isViewportNode} from '$studio/workspace/components/WhatToShowInBody/Viewports/Viewport'
 import ViewportEditor from '$studio/structuralEditor/components/editorsPerType/ViewportEditor/ViewportEditor'
-import {TheaterConsumer} from '$studio/componentModel/react/utils/theaterContext'
+import {TheaterConsumer} from '$studio/componentModel/react/utils/studioContext'
 
 type IProps = {}
 
@@ -28,12 +28,12 @@ export default class ComposePanelContent extends React.PureComponent<
   render() {
     return (
       <TheaterConsumer>
-        {theater => (
+        {studio => (
           <PropsAsPointer props={this.props}>
             {() => {
               return (
                 <Panel header={<LeftPanelHeader />}>
-                  {renderEditorForEitherLeftOrRightPanel('left', theater)}
+                  {renderEditorForEitherLeftOrRightPanel('left', studio)}
                 </Panel>
               )
             }}
@@ -46,9 +46,9 @@ export default class ComposePanelContent extends React.PureComponent<
 
 export const renderEditorForEitherLeftOrRightPanel = (
   leftOrRight: 'left' | 'right',
-  theater: Theater,
+  studio: Theater,
 ) => {
-  const possibleActiveNode = getActiveNode(theater)
+  const possibleActiveNode = getActiveNode(studio)
   if (!possibleActiveNode) {
     return <PaleMessage message={`Select an element from the Explorer pane`} />
   }
@@ -69,7 +69,7 @@ export const renderEditorForEitherLeftOrRightPanel = (
     }
   }
 
-  const possibleComponentId = getComponentIdOfActiveNode(theater)
+  const possibleComponentId = getComponentIdOfActiveNode(studio)
 
   if (!possibleComponentId) {
     return <PaleMessage message={`Select an element from the Explorer pane`} />
@@ -82,7 +82,7 @@ export const renderEditorForEitherLeftOrRightPanel = (
   )
 
   const componentDescriptorP = componentModelSelectors.getComponentDescriptor(
-    theater.atom2.pointer,
+    studio.atom2.pointer,
     componentId,
   )
 

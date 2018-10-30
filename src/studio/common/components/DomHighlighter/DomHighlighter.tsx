@@ -67,7 +67,7 @@ class DomHighlighter extends React.PureComponent<IProps, IState> {
           '--top': `${style.top}px`,
         }}
       />,
-      document.getElementById('theaterjs-studio') as HTMLElement,
+      document.getElementById('studiojs-studio') as HTMLElement,
     )
   }
 

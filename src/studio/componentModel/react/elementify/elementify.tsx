@@ -10,13 +10,13 @@ const identity = a => a
 
 const getComponentDescriptorById = (
   idD: AbstractDerivation<string>,
-  theaterD: AbstractDerivation<Theater>,
+  studioD: AbstractDerivation<Theater>,
 ): $FixMe =>
-  withDeps({idD, theaterD}, identity).flatMap(
+  withDeps({idD, studioD}, identity).flatMap(
     (): $FixMe => {
       const idString = idD.getValue()
 
-      const atomP = theaterD.getValue().atom.pointer()
+      const atomP = studioD.getValue().atom.pointer()
 
       const isCore = isCoreComponent(idString)
 
@@ -35,10 +35,10 @@ const getComponentDescriptorById = (
 const elementify = (
   keyD,
   instantiationDescriptorP,
-  theaterD: AbstractDerivation<Theater>,
+  studioD: AbstractDerivation<Theater>,
 ) => {
   const componentIdP = instantiationDescriptorP.prop('componentId')
-  return getComponentDescriptorById(componentIdP, theaterD).flatMap(
+  return getComponentDescriptorById(componentIdP, studioD).flatMap(
     (componentDescriptor: $FixMe) => {
       if (!componentDescriptor)
         return withDeps({componentIdP}, () => {

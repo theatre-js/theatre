@@ -128,7 +128,7 @@ export class Input extends PureComponentWithTheater<IProps, IState> {
                     >
                       {props.prop}
                     </div>,
-                    document.getElementById('theaterjs-studio') as HTMLElement,
+                    document.getElementById('studiojs-studio') as HTMLElement,
                   )}
                 {typeof rawValue === 'object' && (
                   <div {...classes('animated')}>Animated</div>

@@ -53,7 +53,7 @@ class Overlay extends React.PureComponent<IProps, IState> {
       >
         {children}
       </div>,
-      document.getElementById('theaterjs-studio') as HTMLElement,
+      document.getElementById('studiojs-studio') as HTMLElement,
     )
   }
 }

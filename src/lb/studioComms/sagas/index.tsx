@@ -15,10 +15,10 @@ import {defer} from '$shared/utils/defer'
 const makeSocketServer = (): Promise<SocketServer> => {
   const deferred = defer<SocketServer>()
   const server = new Server()
-  server.listen($env.theater.socketPort, () => {})
+  server.listen($env.studio.socketPort, () => {})
 
   deferred.resolve(server)
-  console.log('Studio server listening on', $env.theater.socketPort)
+  console.log('Studio server listening on', $env.studio.socketPort)
   // @ts-ignore @ignore
   return deferred.promise
 }

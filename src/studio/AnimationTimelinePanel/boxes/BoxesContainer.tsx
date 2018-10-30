@@ -63,7 +63,7 @@ class BoxesContainer extends PureComponentWithTheater<IProps, IState> {
         {({props, state}) => {
           const pathToTimeline = val(props.pathToTimeline)
           const timeline: Pointer<TimelineObject> = get(
-            this.theater.atom2.pointer,
+            this.studio.atom2.pointer,
             pathToTimeline,
           )
           const layout = val(timeline.layout)
@@ -190,7 +190,7 @@ class BoxesContainer extends PureComponentWithTheater<IProps, IState> {
   }
 
   _moveToEnd = () => {
-    const layout: LayoutArray = val(get(this.theater.atom2.pointer, [
+    const layout: LayoutArray = val(get(this.studio.atom2.pointer, [
       ...this.props.pathToTimeline,
       'layout',
     ]) as Pointer<LayoutArray>)

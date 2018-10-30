@@ -8,7 +8,7 @@ import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import {val} from '$shared/DataVerse2/atom'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import NodeTemplate from './NodeTemplate'
-import {TheaterConsumer} from '$studio/componentModel/react/utils/theaterContext'
+import {TheaterConsumer} from '$studio/componentModel/react/utils/studioContext'
 
 type Props = {
   depth: number
@@ -17,12 +17,12 @@ type Props = {
 
 const TextNode = (props: Props) => (
   <TheaterConsumer>
-    {theater => (
+    {studio => (
       <PropsAsPointer props={props}>
         {({props: propsP}) => {
           const volatileId = val(propsP.volatileId)
 
-          const nodeP = theater.studio.elementTree.mirrorOfReactTreeAtom.pointer
+          const nodeP = studio.studio.elementTree.mirrorOfReactTreeAtom.pointer
             .nodesByVolatileId[volatileId] as Pointer<MTextNode>
 
           const depth = val(propsP.depth)

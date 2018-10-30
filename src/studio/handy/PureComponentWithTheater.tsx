@@ -1,7 +1,7 @@
 import {
   contextTypes,
   contextName,
-} from '$studio/componentModel/react/utils/theaterContext'
+} from '$studio/componentModel/react/utils/studioContext'
 import React from 'react'
 import Theater, {TheaterStateAtom} from '$studio/bootstrap/Theater'
 import {reduceStateAction} from '$shared/utils/redux/commonActions'
@@ -21,17 +21,17 @@ export default class PureComponentWithTheater<
   Props,
   State
 > extends React.PureComponent<Props, State> {
-  theaterAtomP: PointerDerivation<
+  studioAtomP: PointerDerivation<
     AbstractDerivedDict<UnwrapDictAtom<TheaterStateAtom>>
   >
-  theater: Theater
-  theaterAtom2P: Pointer<ITheaterStoreState>
+  studio: Theater
+  studioAtom2P: Pointer<ITheaterStoreState>
 
   constructor(props: Props, context: $IntentionalAny) {
     super(props, context)
-    this.theater = context[contextName]
-    this.theaterAtomP = this.theater.atomP
-    this.theaterAtom2P = this.theater.atom2.pointer
+    this.studio = context[contextName]
+    this.studioAtomP = this.studio.atomP
+    this.studioAtom2P = this.studio.atom2.pointer
   }
 
   reduceState = (path: Array<string | number>, reducer: (s: any) => any) => {
@@ -39,7 +39,7 @@ export default class PureComponentWithTheater<
   }
 
   dispatch = (action: GenericAction) => {
-    this.theater.store.dispatch(action)
+    this.studio.store.dispatch(action)
   }
 
   static contextTypes = contextTypes

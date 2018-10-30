@@ -7,13 +7,13 @@ export default class ValueInstance {
   constructor(
     descP: $FixMe,
     timeD: $FixMe,
-    theater: $FixMe,
+    studio: $FixMe,
     pathToValueDescriptor: Array<string>,
   ) {
     this._derivation = new ValueDerivation(
       descP,
       timeD,
-      theater,
+      studio,
       pathToValueDescriptor,
     )
   }
