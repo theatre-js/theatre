@@ -10,6 +10,8 @@
   user-select: none;
   -webkit-user-select: none;
   cursor: default;
+  color: inherit;
+  text-decoration: none;
 
   text-overflow: ellipsis;
   white-space: nowrap;

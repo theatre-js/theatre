@@ -9,6 +9,8 @@ import TimelineInstanceSelect from './TimelineInstanceSelect'
 import Settings from '$tl/ui/panels/AllInOnePanel/Bottom/Settings/Settings'
 import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
 import MinimizeButton from '$tl/ui/panels/AllInOnePanel/Bottom/MinimizeButton'
+import logoInSvg from 'svg-inline-loader!./logoInTheBottom.svg'
+import SvgIcon from '$shared/components/SvgIcon'
 
 export const bottomHeight = parseFloat(css.bottomHeight.replace(/[a-z]+$/, ''))
 
@@ -45,7 +47,14 @@ export default class Bottom extends UIComponent<IProps, IState> {
         </DraggableArea>
         <div className={css.rightContainer}>
           <Settings />
-          <Item>Theatre.js</Item>
+          <a
+            href="https://theatrejs.com"
+            target="_blank"
+            {...classes('logo')}
+            title="Theatre.js – The hackable animation editor"
+          >
+            <SvgIcon sizing="fill" src={logoInSvg} {...classes('logoSvg')} />
+          </a>
         </div>
       </div>
     )

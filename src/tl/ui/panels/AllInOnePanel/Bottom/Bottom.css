@@ -35,3 +35,23 @@
   height: 100%;
   cursor: move;
 }
+
+.logoSvg {
+  width: 52px;
+}
+
+.logo {
+  color: inherit;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-right: 10px;
+  padding-left: 8px;
+  cursor: default;
+  &:hover {
+    color: #3d666b;
+    background: #18242a;
+  }
+
+}

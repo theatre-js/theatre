@@ -5,3 +5,5 @@ export const attention: string;
 export const leftContainer: string;
 export const rightContainer: string;
 export const moveHandle: string;
+export const logoSvg: string;
+export const logo: string;
