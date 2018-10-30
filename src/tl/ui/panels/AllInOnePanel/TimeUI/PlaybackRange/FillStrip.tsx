@@ -89,7 +89,7 @@ export default class FillStrip extends UIComponent<IProps, IState> {
                       // renderInPortal={true}
                       items={[
                         {
-                          label: 'Remove limit',
+                          label: 'Remove playback range',
                           cb: this._deleteLimit,
                         },
                         // {
