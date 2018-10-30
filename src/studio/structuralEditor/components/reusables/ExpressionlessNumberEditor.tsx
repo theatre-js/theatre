@@ -1,4 +1,4 @@
-import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
+import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'
 import React from 'react'
 import {reduceStateAction} from '$shared/utils/redux/commonActions'
 import * as css from './ExpressionlessStringEditor.css'
@@ -6,7 +6,7 @@ import resolveCss from '$shared/utils/resolveCss'
 import {val} from '$shared/DataVerse2/atom'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import {get} from '$shared/utils'
-import {TheaterConsumer} from '$studio/componentModel/react/utils/studioContext'
+import {TheatreConsumer} from '$studio/componentModel/react/utils/studioContext'
 
 interface IOwnProps {
   path: Array<string>
@@ -17,7 +17,7 @@ interface IProps extends IOwnProps {}
 
 interface State {}
 
-export default class ExpressionlessNumberEditor extends PureComponentWithTheater<
+export default class ExpressionlessNumberEditor extends PureComponentWithTheatre<
   IProps,
   State
 > {
@@ -71,7 +71,7 @@ export default class ExpressionlessNumberEditor extends PureComponentWithTheater
     const classes = resolveCss(css, props.css)
 
     return (
-      <TheaterConsumer>
+      <TheatreConsumer>
         {studio => (
           <PropsAsPointer props={props}>
             {({props: propsP}) => {
@@ -94,7 +94,7 @@ export default class ExpressionlessNumberEditor extends PureComponentWithTheater
             }}
           </PropsAsPointer>
         )}
-      </TheaterConsumer>
+      </TheatreConsumer>
     )
   }
 }

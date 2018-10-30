@@ -2,7 +2,7 @@ import React from 'react'
 import connect from '$studio/handy/connect'
 import PanelSection from '$studio/structuralEditor/components/reusables/PanelSection'
 import * as _ from '$shared/utils'
-import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
+import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'
 import {getSelectedNodeId} from '$studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor/TreeEditor'
 import {IDeclarativeComponentDescriptor} from '$studio/componentModel/types'
 import {Subscriber} from 'react-broadcast'
@@ -12,7 +12,7 @@ import ModifierSensor from '$studio/structuralEditor/components/editorsPerType/D
 import ModifierBox from '$studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/ModifiersEditor/ModifierBox'
 import {STATUS_BY_ACTION, ACTION, STATUS} from './constants'
 import {reduceStateAction} from '$shared/utils/redux/commonActions'
-import {ITheaterStoreState} from '$studio/types'
+import {ITheatreStoreState} from '$studio/types'
 interface IOwnProps {
   pathToComponentDescriptor: string[]
 }
@@ -49,7 +49,7 @@ interface IState {
 }
 
 const SENSOR_HEIGHT = parseInt(require('./ModifierSensor.css').sensorHeight)
-class ModifiersEditor extends PureComponentWithTheater<IProps, IState> {
+class ModifiersEditor extends PureComponentWithTheatre<IProps, IState> {
   constructor(props: IProps, context: $IntentionalAny) {
     super(props, context)
     this.state = {
@@ -75,7 +75,7 @@ class ModifiersEditor extends PureComponentWithTheater<IProps, IState> {
             __descriptorType: 'ModifierInstantiationValueDescriptor',
             enabled: false,
             props: {},
-            modifierId: 'TheaterJS/Core/HTML/UberModifier',
+            modifierId: 'TheatreJS/Core/HTML/UberModifier',
           }
           return {
             list: list.slice(0, index).concat(uniqueId, list.slice(index)),
@@ -300,7 +300,7 @@ class ModifiersEditor extends PureComponentWithTheater<IProps, IState> {
   }
 }
 
-export default connect((s: ITheaterStoreState, op: IOwnProps) => {
+export default connect((s: ITheatreStoreState, op: IOwnProps) => {
   const componentDescriptor = _.get(s, op.pathToComponentDescriptor)
   const selectedNodeId = getSelectedNodeId(componentDescriptor)
   const possibleHiddenValue =

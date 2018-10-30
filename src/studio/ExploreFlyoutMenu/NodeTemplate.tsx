@@ -17,7 +17,7 @@ import {getActiveViewportId, getVolatileIdOfActiveNode} from './utils'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 import Theatre from '$studio/bootstrap/Theatre'
 import HighlightByInternalInstance from '$studio/common/components/DomHighlighter/HighlightByInternalInstance'
-import {TheaterConsumer} from '$studio/componentModel/react/utils/studioContext'
+import {TheatreConsumer} from '$studio/componentModel/react/utils/studioContext'
 
 type Props = {
   isSelectable: boolean
@@ -35,7 +35,7 @@ const NodeTemplate = (props: Props) => {
   const classes = resolveCss(css, props.css)
 
   return (
-    <TheaterConsumer>
+    <TheatreConsumer>
       {studio => (
         <PropsAsPointer props={props}>
           {({props: propsP}) => {
@@ -166,7 +166,7 @@ const NodeTemplate = (props: Props) => {
           }}
         </PropsAsPointer>
       )}
-    </TheaterConsumer>
+    </TheatreConsumer>
   )
 }
 

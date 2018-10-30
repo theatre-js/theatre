@@ -2,7 +2,7 @@ import React from 'react'
 import connect from '$studio/handy/connect'
 import css from './TypeSelector.css'
 import HeadlessDataList from '$studio/common/components/HeadlessDataList/HeadlessDataList'
-import {ITheaterStoreState} from '$studio/types'
+import {ITheatreStoreState} from '$studio/types'
 import * as _ from '$shared/utils'
 import cx from 'classnames'
 import {IModifierDescriptor} from '$studio/componentModel/types'
@@ -107,7 +107,7 @@ class TypeSelector extends React.PureComponent<IProps, IState> {
   }
 }
 
-export default connect((s: ITheaterStoreState) => {
+export default connect((s: ITheatreStoreState) => {
   const coreModifierDescriptors = _.get(s, [
     'ahistoricComponentModel',
     'coreModifierDescriptors',

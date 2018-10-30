@@ -1,4 +1,4 @@
-import ValueInstance from '$studio/componentModel/react/TheaterComponent/TimelineInstance/ValueInstance'
+import ValueInstance from '$studio/componentModel/react/TheatreComponent/TimelineInstance/ValueInstance'
 import dictAtom, {DictAtom} from '$shared/DataVerse/atoms/dictAtom'
 import boxAtom, {BoxAtom} from '$shared/DataVerse/atoms/boxAtom'
 import Theatre from '$studio/bootstrap/Theatre'

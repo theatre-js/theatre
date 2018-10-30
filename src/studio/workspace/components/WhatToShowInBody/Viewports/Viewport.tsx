@@ -20,12 +20,12 @@ import {
 import {TBoundingRect} from '$studio/workspace/components/WhatToShowInBody/Viewports/ViewportInstantiator'
 import Header from '$studio/workspace/components/WhatToShowInBody/Viewports/Header'
 import {batchedAction} from '$shared/utils/redux/withHistory/withBatchActions'
-import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
+import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 
 const classes = resolveCss(css)
 
-const viewportSym = Symbol('TheaterJS/ViewportElement')
+const viewportSym = Symbol('TheatreJS/ViewportElement')
 
 interface IProps {
   /**
@@ -40,7 +40,7 @@ interface IState {
   dimensionsChange: IViewport['dimensions']
 }
 
-export default class Viewport extends PureComponentWithTheater<IProps, IState> {
+export default class Viewport extends PureComponentWithTheatre<IProps, IState> {
   static [viewportSym] = true
   volatileId: string
   viewportId: string

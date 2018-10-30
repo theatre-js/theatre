@@ -5,7 +5,7 @@ import {TPointValuesEditorProps} from '$studio/AnimationTimelinePanel/overlays/t
 import Overlay from '$studio/common/components/Overlay/Overlay'
 import {reduceHistoricState} from '$studio/bootstrap/actions'
 import {TPoint} from '$studio/AnimationTimelinePanel/types'
-import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
+import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'
 
 const classes = resolveCss(css)
 
@@ -19,7 +19,7 @@ interface IState {
   time: string
 }
 
-class PointValuesEditor extends PureComponentWithTheater<IProps, IState> {
+class PointValuesEditor extends PureComponentWithTheatre<IProps, IState> {
   timeInput: HTMLInputElement | null
   valueInput: HTMLInputElement | null
 

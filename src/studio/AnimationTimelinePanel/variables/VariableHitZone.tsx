@@ -16,7 +16,7 @@ import {stopPropagation} from '$studio/AnimationTimelinePanel/utils'
 import css from './VariableHitZone.css'
 import resolveCss from '$shared/utils/resolveCss'
 import {reduceStateAction} from '$shared/utils/redux/commonActions'
-import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
+import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'
 
 const classes = resolveCss(css)
 
@@ -35,7 +35,7 @@ const style = {
   '--svgPadding': svgPaddingY,
 }
 
-class VariableHitZone extends PureComponentWithTheater<IProps, IState> {
+class VariableHitZone extends PureComponentWithTheatre<IProps, IState> {
   render() {
     const {color, dopeSheet} = this.props
     return (

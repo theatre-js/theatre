@@ -21,7 +21,7 @@ import cx from 'classnames'
 import {PanelActiveModeChannel} from '$studio/workspace/components/Panel/Panel'
 import {Subscriber} from 'react-broadcast'
 import {MODES} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
-import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
+import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'
 import React from 'react'
 import connect from '$studio/handy/connect'
 import {IDeclarativeComponentDescriptor} from '$studio/componentModel/types'
@@ -81,7 +81,7 @@ const getDefaultComponentProps = (id: string) => ({
     byId: {
       '1': {
         __descriptorType: 'ModifierInstantiationValueDescriptor',
-        modifierId: 'TheaterJS/Core/HTML/UberModifier',
+        modifierId: 'TheatreJS/Core/HTML/UberModifier',
         props: {
           translationX: '0',
           translationY: '0',
@@ -101,7 +101,7 @@ const getDefaultComponentProps = (id: string) => ({
   },
 })
 
-class TreeEditor extends PureComponentWithTheater<IProps, State> {
+class TreeEditor extends PureComponentWithTheatre<IProps, State> {
   lastAction = {type: null, payload: null}
   queuedDrop = null
   state = {
@@ -657,10 +657,10 @@ class TreeEditor extends PureComponentWithTheater<IProps, State> {
   }
 }
 
-export default connect((s: ITheaterStoreState, op: IOwnProps) => {
+export default connect((s: ITheatreStoreState, op: IOwnProps) => {
   const {
-    'TheaterJS/Core/RenderCurrentCanvas': rcc,
-    'TheaterJS/Core/DOMTag': dt,
+    'TheatreJS/Core/RenderCurrentCanvas': rcc,
+    'TheatreJS/Core/DOMTag': dt,
     ...core
   } = s.ahistoricComponentModel.coreComponentDescriptors
   const custom = s.historicComponentModel.customComponentDescriptors

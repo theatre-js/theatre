@@ -1,17 +1,17 @@
-import TheaterComponent from '$studio/componentModel/react/TheaterComponent/TheaterComponent'
+import TheatreComponent from '$studio/componentModel/react/TheatreComponent/TheatreComponent'
 import noop from '$shared/utils/noop'
 import TimelineInstance from './TimelineInstance/TimelineInstance'
 import {getPathToComponentDescriptor} from '$studio/componentModel/selectors'
 import autoProxyDerivedDict from '$shared/DataVerse/derivations/dicts/autoProxyDerivedDict'
 
 export default class TimelinesHandler {
-  _element: TheaterComponent<$IntentionalAny>
+  _element: TheatreComponent<$IntentionalAny>
   _untap: () => void
   _timelineDescriptorsP: $FixMe
   _timelineDescriptorsProxy: $FixMe
   _timelineInstancesAtom: $FixMe
 
-  constructor(element: TheaterComponent<$IntentionalAny>) {
+  constructor(element: TheatreComponent<$IntentionalAny>) {
     this._element = element
     this._timelineInstancesAtom = this._element._atom.prop('timelineInstances')
 

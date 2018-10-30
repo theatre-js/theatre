@@ -2,7 +2,7 @@ import {select, fork, cancel, put, call, take} from 'redux-saga/effects'
 import deepEqual from 'deep-equal'
 import {
   ProjectsNamespaceState,
-  StuffInTheaterJsonFile,
+  StuffInTheatreJsonFile,
 } from '$src/lb/projects/types'
 import {LBStoreState} from '$src/lb/types'
 import {Task} from 'redux-saga'
@@ -86,7 +86,7 @@ function* reflectProjectJsonOntoState(projectPath: string) {
   }
 
   // @todo
-  function isJsonValid(jsonObject: {}): jsonObject is StuffInTheaterJsonFile {
+  function isJsonValid(jsonObject: {}): jsonObject is StuffInTheatreJsonFile {
     return true
   }
 

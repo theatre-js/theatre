@@ -3,7 +3,7 @@ import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import {val} from '$shared/DataVerse2/atom'
 import css from './FramesGrid.css'
 import resolveCss from '$shared/utils/resolveCss'
-import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
+import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'
 import {
   xToFocusedTime,
   focusedTimeToX,
@@ -21,7 +21,7 @@ interface IState {}
 const MIN_CELL_WIDTH = 20
 const FPS = 30
 
-class FramesGrid extends PureComponentWithTheater<IProps, IState> {
+class FramesGrid extends PureComponentWithTheatre<IProps, IState> {
   canvas: HTMLCanvasElement | null
   fullSecondStampsRef: React.RefObject<HTMLDivElement> = React.createRef()
   frameStampRef: React.RefObject<HTMLDivElement> = React.createRef()

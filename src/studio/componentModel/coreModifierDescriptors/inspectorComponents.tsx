@@ -3,9 +3,9 @@ import SetCustomStyleInspector from './HTML/SetCustomStyle/SetCustomStyleInspect
 import UberModifierInspector from './HTML/UberModifier/UberModifierInspector/UberModifierInspector'
 
 const inspectorComponents = {
-  'TheaterJS/Core/HTML/SetAttribute': SetAttributeInspector,
-  'TheaterJS/Core/HTML/SetCustomStyle': SetCustomStyleInspector,
-  'TheaterJS/Core/HTML/UberModifier': UberModifierInspector,
+  'TheatreJS/Core/HTML/SetAttribute': SetAttributeInspector,
+  'TheatreJS/Core/HTML/SetCustomStyle': SetCustomStyleInspector,
+  'TheatreJS/Core/HTML/UberModifier': UberModifierInspector,
 }
 
 export type ModifierIDsWithInspectorComponents = keyof typeof inspectorComponents

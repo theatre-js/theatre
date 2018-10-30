@@ -1,10 +1,10 @@
-import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
+import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'
 import React from 'react'
 import connect from '$studio/handy/connect'
 import {get} from '$shared/utils'
 
 import editorsPerType from './editorsPerType/editorsPerType'
-import {ITheaterStoreState} from '$studio/types'
+import {ITheatreStoreState} from '$studio/types'
 import * as typeSystem from '$studio/typeSystem'
 
 interface IOwnProps {
@@ -20,7 +20,7 @@ interface IProps extends IOwnProps {
 type State = {}
 
 // @todo use PropsAsPointer
-class ValueEditor extends PureComponentWithTheater<IProps, State> {
+class ValueEditor extends PureComponentWithTheatre<IProps, State> {
   render() {
     const {typeName} = this.props
     const type = typeSystem.types[typeName]
@@ -37,7 +37,7 @@ class ValueEditor extends PureComponentWithTheater<IProps, State> {
   }
 }
 
-export default connect((s: ITheaterStoreState, op: IOwnProps) => {
+export default connect((s: ITheatreStoreState, op: IOwnProps) => {
   if (op.hasOwnProperty('typeName')) {
     const {typeName} = op
     if (!typeName) {

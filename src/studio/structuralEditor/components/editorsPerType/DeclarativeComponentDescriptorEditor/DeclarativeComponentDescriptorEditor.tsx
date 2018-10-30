@@ -2,7 +2,7 @@ import ComponentNameEditor from '$studio/structuralEditor/components/editorsPerT
 import TreeEditor from '$studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor/TreeEditor'
 import ModifiersEditor from './ModifiersEditor/ModifiersEditor'
 import React from 'react'
-import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
+import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'
 import PropsEditor from './PropsEditor'
 
 type Props = {
@@ -19,7 +19,7 @@ const partNameToEditorComponent = {
 
 type State = {}
 
-export default class DeclarativeComponentDescriptorEditor extends PureComponentWithTheater<
+export default class DeclarativeComponentDescriptorEditor extends PureComponentWithTheatre<
   Props,
   State
 > {

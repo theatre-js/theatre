@@ -5,7 +5,7 @@ import withDeps from '$shared/DataVerse/derivations/withDeps'
 import boxAtom from '$shared/DataVerse/atoms/boxAtom'
 import dictAtom from '$shared/DataVerse/atoms/dictAtom'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
-import TheaterComponent from '$studio/componentModel/react/TheaterComponent/TheaterComponent'
+import TheatreComponent from '$studio/componentModel/react/TheatreComponent/TheatreComponent'
 import {DictAtom} from '$shared/DataVerse/atoms/dictAtom'
 
 const lookupTable = {
@@ -58,9 +58,9 @@ type State = DictAtom<{
   elRef: BoxAtom<undefined | null | HTMLElement>
 }>
 
-const componentId = 'TheaterJS/Core/DOMTag'
+const componentId = 'TheatreJS/Core/DOMTag'
 
-class DOMTag extends TheaterComponent {
+class DOMTag extends TheatreComponent {
   static componentId = componentId
   static displayName = 'DOMTag'
   static componentType = 'HardCoded'
@@ -119,7 +119,7 @@ const makeSeparateComponentForEachDomTag = () => {
   const components: {[id: string]: $FixMe} = {}
 
   supportedTags.forEach(tagName => {
-    const id = 'TheaterJS/Core/HTML/' + tagName
+    const id = 'TheatreJS/Core/HTML/' + tagName
     const componentDescriptor = {
       ...descriptor,
       id,
@@ -137,8 +137,8 @@ const makeSeparateComponentForEachDomTag = () => {
         }
       },
       // $FlowIgnore
-      // reactComponent: TheaterComponent({
-      //   ...propsToTheaterComponent,
+      // reactComponent: TheatreComponent({
+      //   ...propsToTheatreComponent,
       //   getClass: (dict: DerivedClass<$FixMe>) =>
       //     dict.extend({
       //       ...lookupTable,

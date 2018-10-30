@@ -1,4 +1,4 @@
-import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
+import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'
 import React from 'react'
 import resolveCss from '$shared/utils/resolveCss'
 import * as css from './UberModifierInspector.css'
@@ -11,7 +11,7 @@ interface IProps {
 
 interface IState {}
 
-export default class UberModifierInspector extends PureComponentWithTheater<
+export default class UberModifierInspector extends PureComponentWithTheatre<
   IProps,
   IState
 > {

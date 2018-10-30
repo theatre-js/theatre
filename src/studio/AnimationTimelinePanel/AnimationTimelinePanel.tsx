@@ -13,9 +13,9 @@ import * as _ from '$shared/utils'
 import {val, pathTo} from '$shared/DataVerse2/atom'
 import TimelineInstantiator from '$studio/AnimationTimelinePanel/TimelineInstantiator'
 import DerivationAsReactElement from '$shared/utils/react/DerivationAsReactElement'
-import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
+import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'
 
-class AnimationTimelinePanel extends PureComponentWithTheater<{}, void> {
+class AnimationTimelinePanel extends PureComponentWithTheatre<{}, void> {
   _d: AbstractDerivation<React.ReactNode>
   static panelName = 'AnimationTimeline'
 

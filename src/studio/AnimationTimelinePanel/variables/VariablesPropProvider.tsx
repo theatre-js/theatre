@@ -7,7 +7,7 @@ import {
 } from '$studio/AnimationTimelinePanel/RootPropProvider'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 
-export const VariablesPropGetterChannel = 'TheaterJS/VariablesPropGetterChannel'
+export const VariablesPropGetterChannel = 'TheatreJS/VariablesPropGetterChannel'
 
 interface IOwnProps {
   boxIndex: number

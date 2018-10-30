@@ -1,7 +1,7 @@
 import {
   IStoreHistoricState,
   IStoreAhistoricState,
-  ITheaterStoreState,
+  ITheatreStoreState,
   RStoreState,
 } from '$studio/types'
 import withCommonActions from '$shared/utils/redux/withCommonActions'
@@ -31,7 +31,7 @@ const rootReducer = compose(
 
 export default rootReducer
 
-function getRelevantState(oldState: ITheaterStoreState): $IntentionalAny {
+function getRelevantState(oldState: ITheatreStoreState): $IntentionalAny {
   return {
     ...oldState['@@history'].innerState,
     ...oldState['@@ahistoricState'],

@@ -1,4 +1,4 @@
-import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
+import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 import dictAtom, {
   DictAtom,
@@ -29,7 +29,7 @@ type Props<InnerProps> = {
 
 export default class PropsAsOldStylePointer<
   InnerProps
-> extends PureComponentWithTheater<Props<InnerProps>, {}> {
+> extends PureComponentWithTheatre<Props<InnerProps>, {}> {
   _childrenAtom: BoxAtom<ChildrenType<InnerProps>>
   _propsAtom: AtomType<InnerProps>
   _renderD: AbstractDerivation<React.ReactNode>

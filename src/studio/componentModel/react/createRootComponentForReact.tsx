@@ -12,7 +12,7 @@ interface Props {
 }
 
 const createRootComponentForReact = (studio: Theatre) => {
-  class TheaterJSRoot extends React.Component<
+  class TheatreJSRoot extends React.Component<
     Props,
     {WhatToShowInBody: typeof WhatToShowInBody}
   > {
@@ -48,7 +48,7 @@ const createRootComponentForReact = (studio: Theatre) => {
     static childContextTypes = contextTypes
   }
 
-  return TheaterJSRoot
+  return TheatreJSRoot
 }
 
 export default createRootComponentForReact

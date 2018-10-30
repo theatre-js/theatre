@@ -7,7 +7,7 @@ import {STATUS} from '$studio/structuralEditor/components/editorsPerType/Declara
 import TypeSelector from '$studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/ModifiersEditor/TypeSelector'
 import * as _ from '$shared/utils'
 import {ModifierInstantiationDescriptorInspector} from '$studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/ModifiersEditor/ModifierInstantiationDescriptorInspector'
-import {ITheaterStoreState} from '$studio/types'
+import {ITheatreStoreState} from '$studio/types'
 import {ModifierIDsWithInspectorComponents} from '$studio/componentModel/coreModifierDescriptors/inspectorComponents'
 import HalfPieContextMenu from '$studio/common/components/HalfPieContextMenu'
 import MdCancel from 'react-icons/lib/md/cancel'
@@ -307,7 +307,7 @@ class ModifierBox extends React.PureComponent<IProps, IState> {
   }
 }
 
-export default connect((s: ITheaterStoreState, op: IOwnProps) => {
+export default connect((s: ITheatreStoreState, op: IOwnProps) => {
   const pathToModifierInstantiationDescriptor = op.pathToModifierInstantiationDescriptors.concat(
     'byId',
     op.descriptorId,

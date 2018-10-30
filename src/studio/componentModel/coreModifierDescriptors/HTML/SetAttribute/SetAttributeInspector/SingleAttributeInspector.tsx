@@ -2,8 +2,8 @@ import {reduceStateAction} from '$shared/utils/redux/commonActions'
 import TextInput from '$studio/common/components/TextInput'
 import {get} from '$shared/utils'
 import KeyValuePair from '$studio/common/components/KeyValuePair'
-import {ITheaterStoreState} from '$studio/types'
-import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
+import {ITheatreStoreState} from '$studio/types'
+import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'
 import connect from '$studio/handy/connect'
 import React from 'react'
 
@@ -16,7 +16,7 @@ interface Props extends IOwnProps {
   pairing: {key: string; value: string}
 }
 
-export class SingleAttributeInspector extends PureComponentWithTheater<
+export class SingleAttributeInspector extends PureComponentWithTheatre<
   Props,
   {}
 > {
@@ -62,7 +62,7 @@ export class SingleAttributeInspector extends PureComponentWithTheater<
   }
 }
 
-export default connect((s: ITheaterStoreState, op: IOwnProps) => {
+export default connect((s: ITheatreStoreState, op: IOwnProps) => {
   return {
     pairing: get(s, op.pathToPairings).byId[op.id],
   }

@@ -8,7 +8,7 @@ export const contextTypes = {
   [contextName]: propTypes.any,
 }
 
-export class TheaterConsumer extends React.Component<{
+export class TheatreConsumer extends React.Component<{
   children: (studio: Theatre) => React.ReactNode
 }> {
   static contextTypes = contextTypes

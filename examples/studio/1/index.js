@@ -5,6 +5,6 @@ import {join} from 'path'
 
 const pathToProject = join(process.env.PATH_TO_ROOT, 'examples/studio.json')
 
-window.TheaterJS.run(pathToProject, __dirname)
+window.TheatreJS.run(pathToProject, __dirname)
 
 render(<SampleApp />, (document.getElementById('root')))

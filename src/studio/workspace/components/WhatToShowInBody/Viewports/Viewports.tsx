@@ -9,7 +9,7 @@ import ActiveModeDetector, {
   ActiveMode,
 } from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
 import Container from '$studio/workspace/components/WhatToShowInBody/Viewports/Container'
-import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
+import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 
 const classes = resolveCss(css)
@@ -18,7 +18,7 @@ interface IProps {}
 
 interface IState {}
 
-export default class Viewports extends PureComponentWithTheater<
+export default class Viewports extends PureComponentWithTheatre<
   IProps,
   IState
 > {

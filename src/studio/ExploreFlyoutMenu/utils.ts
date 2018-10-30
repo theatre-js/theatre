@@ -1,4 +1,4 @@
-import {isTheaterComponent} from '$studio/componentModel/react/TheaterComponent/TheaterComponent'
+import {isTheatreComponent} from '$studio/componentModel/react/TheatreComponent/TheatreComponent'
 import {val} from '$shared/DataVerse2/atom'
 import Theatre from '$studio/bootstrap/Theatre'
 import {isViewportNode} from '$studio/workspace/components/WhatToShowInBody/Viewports/Viewport'
@@ -46,7 +46,7 @@ export const getActiveNode = (studio: Theatre): mixed => {
 }
 
 export const getComponentIdOfNode = (node: mixed): undefined | string => {
-  if (!isTheaterComponent(node)) return undefined
+  if (!isTheatreComponent(node)) return undefined
   return node.constructor.componentId
 }
 
@@ -60,13 +60,13 @@ export const getComponentIdOfActiveNode = (
 }
 
 export enum NodeType {
-  TheaterElement,
+  TheatreElement,
   Viewport,
 }
 
 export const getTypeOfNode = (node: $FixMe) => {
-  return isTheaterComponent(node)
-    ? NodeType.TheaterElement
+  return isTheatreComponent(node)
+    ? NodeType.TheatreElement
     : isViewportNode(node)
       ? NodeType.Viewport
       : undefined

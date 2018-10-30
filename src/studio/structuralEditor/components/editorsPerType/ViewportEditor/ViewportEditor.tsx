@@ -1,5 +1,5 @@
 import React from 'react'
-import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
+import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'
 import SceneSelector from './SceneSelector'
 import DimensionsEditor from './DimensionsEditor'
 
@@ -15,7 +15,7 @@ const partNameToEditorComponent = {
 
 type State = {}
 
-export default class DeclarativeComponentDescriptorEditor extends PureComponentWithTheater<
+export default class DeclarativeComponentDescriptorEditor extends PureComponentWithTheatre<
   Props,
   State
 > {

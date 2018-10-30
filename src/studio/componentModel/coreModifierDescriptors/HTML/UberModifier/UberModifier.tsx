@@ -110,7 +110,7 @@ const getClass = (propsP, baseClass) => {
 }
 
 const descriptor: IModifierDescriptor = {
-  id: 'TheaterJS/Core/HTML/UberModifier',
+  id: 'TheatreJS/Core/HTML/UberModifier',
   getClass,
 }
 

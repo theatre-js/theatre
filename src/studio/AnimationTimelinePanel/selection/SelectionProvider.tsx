@@ -29,7 +29,7 @@ import {
   THorizontalLimits,
 } from '$studio/AnimationTimelinePanel/selection/types'
 import {reduceHistoricState} from '$studio/bootstrap/actions'
-import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
+import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'
 
 const classes = resolveCss(css)
 
@@ -58,11 +58,11 @@ type TBoxesAndLayout = {
   layout: LayoutArray
 }
 
-export const SelectionAPIChannel = 'TheaterJS/SelectionAPIChannel'
-export const SelectionMoveChannel = 'TheaterJS/SelectionMoveChannel'
-export const SelectedAreaChannel = 'TheaterJS/SelectedAreaChannel'
+export const SelectionAPIChannel = 'TheatreJS/SelectionAPIChannel'
+export const SelectionMoveChannel = 'TheatreJS/SelectionMoveChannel'
+export const SelectedAreaChannel = 'TheatreJS/SelectedAreaChannel'
 
-class SelectionProvider extends PureComponentWithTheater<IProps, IState> {
+class SelectionProvider extends PureComponentWithTheatre<IProps, IState> {
   selectionZone: HTMLDivElement | null
   selectedPoints: TSelectedPoints = {}
   extremumsOfVariablesInSelection: TExtremumsMap = {}

@@ -4,7 +4,7 @@ import React from 'react'
 import {compose} from 'ramda'
 import {getIsHydrated} from '$studio/common/selectors'
 
-import {ITheaterStoreState} from '$studio/types'
+import {ITheatreStoreState} from '$studio/types'
 import connect from '$studio/handy/connect'
 
 type Props = {
@@ -20,7 +20,7 @@ const LoadingUnlessHydrated = (props: Props) => {
  * Shows a splash screen, unless we're bootstrapped (see bootstrapped in $common/reducer)
  */
 export default compose(
-  connect((state: ITheaterStoreState) => ({
+  connect((state: ITheatreStoreState) => ({
     isHydrated: getIsHydrated(state),
   })),
 )(LoadingUnlessHydrated)

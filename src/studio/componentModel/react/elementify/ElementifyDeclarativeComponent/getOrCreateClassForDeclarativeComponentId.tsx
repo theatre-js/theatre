@@ -1,6 +1,6 @@
 import {label} from '$studio/structuralEditor/components/reusables/PanelSection.css'
 import {IComponentId} from '$studio/componentModel/types'
-import TheaterComponent from '$studio/componentModel/react/TheaterComponent/TheaterComponent'
+import TheatreComponent from '$studio/componentModel/react/TheatreComponent/TheatreComponent'
 import {
   DerivedClass,
   Classify,
@@ -45,7 +45,7 @@ const methods: Classify<$FixMe, $FixMe> = {
   },
 }
 
-class DeclarativeComponentBaseClass extends TheaterComponent<{}> {
+class DeclarativeComponentBaseClass extends TheatreComponent<{}> {
   static displayName = 'DeclarativeComponent'
   static componentType = 'Declarative'
 

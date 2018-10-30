@@ -57,17 +57,17 @@ export const RStoreState = t.intersection(
   'StoreState',
 )
 
-export interface ITheaterStoreState
+export interface ITheatreStoreState
   extends StateWithHistory<IStoreHistoricState, IStoreAhistoricState> {}
 
-export interface ITheaterHistoryState
+export interface ITheatreHistoryState
   extends HistoryOnly<IStoreHistoricState> {}
 
 export type Selector<ReturnType, ParamsType = void> = ParamsType extends void
-  ? (((state: ITheaterStoreState) => ReturnType) &
-      ((state: Pointer<ITheaterStoreState>) => Pointer<ReturnType>))
-  : (((state: ITheaterStoreState, params: ParamsType) => ReturnType) &
+  ? (((state: ITheatreStoreState) => ReturnType) &
+      ((state: Pointer<ITheatreStoreState>) => Pointer<ReturnType>))
+  : (((state: ITheatreStoreState, params: ParamsType) => ReturnType) &
       ((
-        state: Pointer<ITheaterStoreState>,
+        state: Pointer<ITheatreStoreState>,
         params: ParamsType,
       ) => Pointer<ReturnType>))

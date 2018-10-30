@@ -3,29 +3,29 @@ import {
   contextName,
 } from '$studio/componentModel/react/utils/studioContext'
 import React from 'react'
-import Theatre, {TheaterStateAtom} from '$studio/bootstrap/Theatre'
+import Theatre, {TheatreStateAtom} from '$studio/bootstrap/Theatre'
 import {reduceStateAction} from '$shared/utils/redux/commonActions'
 import {GenericAction} from '$shared/types'
 import {PointerDerivation} from '$shared/DataVerse/derivations/pointer'
 import AbstractDerivedDict from '$shared/DataVerse/derivations/dicts/AbstractDerivedDict'
 import {UnwrapDictAtom} from '$shared/DataVerse/atoms/dictAtom'
-import {ITheaterStoreState} from '$studio/types'
+import {ITheatreStoreState} from '$studio/types'
 import {Pointer} from '$shared/DataVerse2/pointer'
 
 /**
  * The main reason I made this as a component instead of just providing a HOC called `withStudio()` is that
  * I don't want to make react devtools's tree view too messy for our end-users. It'll probably make them
- * feel uncomfortable if for every TheaterJS component they see a whole bunch of HOCs.
+ * feel uncomfortable if for every TheatreJS component they see a whole bunch of HOCs.
  */
-export default class PureComponentWithTheater<
+export default class PureComponentWithTheatre<
   Props,
   State
 > extends React.PureComponent<Props, State> {
   studioAtomP: PointerDerivation<
-    AbstractDerivedDict<UnwrapDictAtom<TheaterStateAtom>>
+    AbstractDerivedDict<UnwrapDictAtom<TheatreStateAtom>>
   >
   studio: Theatre
-  studioAtom2P: Pointer<ITheaterStoreState>
+  studioAtom2P: Pointer<ITheatreStoreState>
 
   constructor(props: Props, context: $IntentionalAny) {
     super(props, context)

@@ -1,11 +1,11 @@
 import React from 'react'
 import {Broadcast} from 'react-broadcast'
 import {val} from '$shared/DataVerse2/atom'
-import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
+import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 
-export const DurationChannel = 'TheaterJS/DurationChannel'
-export const RootPropGetterChannel = 'TheaterJS/RootPropGetterChannel'
+export const DurationChannel = 'TheatreJS/DurationChannel'
+export const RootPropGetterChannel = 'TheatreJS/RootPropGetterChannel'
 
 interface IProps {
   duration: number
@@ -20,7 +20,7 @@ interface IState {}
 export type TPropName = 'svgWidth' | 'boxWidth' | 'duration' | 'panelWidth'
 export type TPropGetter = (propName: TPropName) => any
 
-class RootPropProvider extends PureComponentWithTheater<IProps, IState> {
+class RootPropProvider extends PureComponentWithTheatre<IProps, IState> {
   render() {
     return (
       <PropsAsPointer props={this.props}>

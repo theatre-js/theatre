@@ -1,6 +1,6 @@
 import React from 'react'
 import {TConnectorContextMenuProps} from '$studio/AnimationTimelinePanel/overlays/types'
-import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
+import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'
 import MdDonutSmall from 'react-icons/lib/md/donut-small'
 import MdCancel from 'react-icons/lib/md/cancel'
 import MdCamera from 'react-icons/lib/md/camera'
@@ -15,7 +15,7 @@ interface IProps extends TConnectorContextMenuProps {
 
 interface IState {}
 
-class ConnectorContextMenu extends PureComponentWithTheater<IProps, IState> {
+class ConnectorContextMenu extends PureComponentWithTheatre<IProps, IState> {
   render() {
     const {onClose, top, left} = this.props
     return (

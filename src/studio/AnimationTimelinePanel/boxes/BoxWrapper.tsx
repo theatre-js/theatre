@@ -24,7 +24,7 @@ import {disableEvent} from '$studio/AnimationTimelinePanel/utils'
 import clamp from '$shared/number/clamp'
 import {reduceHistoricState} from '$studio/bootstrap/actions'
 import {BoxObject} from '$studio/AnimationTimelinePanel/types'
-import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
+import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'
 
 const classes = resolveCss(css)
 
@@ -53,7 +53,7 @@ interface IState {
 
 export const MIN_BOX_HEIGHT = parseInt(css.minBoxHeight)
 
-class BoxWrapper extends PureComponentWithTheater<IProps, IState> {
+class BoxWrapper extends PureComponentWithTheatre<IProps, IState> {
   container: HTMLDivElement | null
   containerOffsetTop: number = 0
 

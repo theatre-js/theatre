@@ -1,4 +1,4 @@
-import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
+import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'
 import {reduceHistoricState} from '$studio/bootstrap/actions'
 import {
   TPoint,
@@ -24,7 +24,7 @@ interface IProps extends IViewBaseProps, IWithUtilsProps {}
 
 export default class ViewBase<
   Props extends IProps
-> extends PureComponentWithTheater<Props, {}> {
+> extends PureComponentWithTheatre<Props, {}> {
   _removePoint = (pointIndex: number) => {
     const {pathToTimeline, variableId} = this.props
     this.dispatch(

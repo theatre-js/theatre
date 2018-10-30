@@ -7,7 +7,7 @@ import MdStars from 'react-icons/lib/md/stars'
 import noop from '$shared/utils/noop'
 import {reduceHistoricState} from '$studio/bootstrap/actions'
 import {TPoint} from '$studio/AnimationTimelinePanel/types'
-import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
+import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'
 
 interface IProps extends TPointContextMenuProps {
   pathToTimeline: string[]
@@ -16,7 +16,7 @@ interface IProps extends TPointContextMenuProps {
 
 interface IState {}
 
-class PointContextMenu extends PureComponentWithTheater<IProps, IState> {
+class PointContextMenu extends PureComponentWithTheatre<IProps, IState> {
   render() {
     const {onClose, top, left} = this.props
     return (

@@ -17,7 +17,7 @@ module.exports = (env: Envs) => {
 
   return immer(parts.config, c => {
     c.output.libraryTarget = 'umd'
-    c.output.library = 'TheaterJS'
+    c.output.library = 'TheatreJS'
 
     c.plugins.push(
       /**

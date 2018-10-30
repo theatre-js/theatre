@@ -1,6 +1,6 @@
 import React from 'react'
 import * as css from './ExploreFlyoutMenu.css'
-import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
+import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import {val} from '$shared/DataVerse2/atom'
 import AnyNode from './AnyNode'
@@ -15,7 +15,7 @@ type State = {
   volatileIdOfRenderCurrentCanvas: undefined | string
 }
 
-class ExploreFlyoutMenu extends PureComponentWithTheater<Props, State> {
+class ExploreFlyoutMenu extends PureComponentWithTheatre<Props, State> {
   componentWillReceiveProps(nextProps: Props) {
     if (nextProps.isOpen) {
       document.addEventListener('click', this.props.close)

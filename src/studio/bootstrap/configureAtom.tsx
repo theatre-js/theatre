@@ -1,13 +1,13 @@
 import {diff} from 'jiff'
 import applyJsonDiffToAtom from '$shared/utils/applyJsonDiffToAtom'
 import atomifyDeep, {Atomify} from '$shared/DataVerse/atoms/atomifyDeep'
-import {ITheaterStoreState} from '$studio/types'
+import {ITheatreStoreState} from '$studio/types'
 import {extractState} from '$shared/utils/redux/withHistory/withHistoryDeprecated'
 import {Store} from 'redux'
 
-export default function configureAtom(store: Store<ITheaterStoreState>) {
+export default function configureAtom(store: Store<ITheatreStoreState>) {
   let lastState = extractState(store.getState())
-  const atom: Atomify<ITheaterStoreState> = atomifyDeep(
+  const atom: Atomify<ITheatreStoreState> = atomifyDeep(
     lastState,
   ) as $IntentionalAny
 

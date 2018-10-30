@@ -31,7 +31,7 @@ const getClass = (propsP, cls) => {
 }
 
 const descriptor: ModifierDescriptor = {
-  id: 'TheaterJS/Core/HTML/SetCustomStyle',
+  id: 'TheatreJS/Core/HTML/SetCustomStyle',
   getClass,
 }
 

@@ -1,7 +1,7 @@
 // @todo maybe opaque types here would be more suitable?
 
 export type ProjectPath = string
-export interface StuffInTheaterJsonFile {
+export interface StuffInTheatreJsonFile {
   name: string
 }
 
@@ -15,7 +15,7 @@ export type ProjectDescription =
   | ProjectLoadingStateErrors
   | ({
       loadingState: 'loaded'
-    } & StuffInTheaterJsonFile)
+    } & StuffInTheatreJsonFile)
 
 export type ProjectsNamespaceState = {
   // If a project is mentioned in `byPath` but isn't here, it means it is yet to be loaded

@@ -1,6 +1,6 @@
 import * as css from './PaleMessage.css'
 import resolveCss from '$shared/utils/resolveCss'
-import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
+import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'
 import React from 'react'
 
 interface IProps {
@@ -11,7 +11,7 @@ interface IProps {
 
 interface IState {}
 
-export default class PaleMessage extends PureComponentWithTheater<
+export default class PaleMessage extends PureComponentWithTheatre<
   IProps,
   IState
 > {

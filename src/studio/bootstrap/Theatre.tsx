@@ -6,25 +6,25 @@ import {PointerDerivation} from '$shared/DataVerse/derivations/pointer'
 import {Atom} from '$shared/DataVerse2/atom'
 import Studio from '$studio/bootstrap/TheatreStudio'
 import atomFromReduxStore from '$shared/utils/redux/atomFromReduxStore'
-import {ITheaterStoreState} from '$studio/types'
+import {ITheatreStoreState} from '$studio/types'
 import {Store} from 'redux'
 import configureAtom from './configureAtom'
 import configureStore from '$shared/utils/redux/configureStore'
 import rootReducer from './rootReducer'
 
-export type TheaterStateAtom = Atomify<ITheaterStoreState>
+export type TheatreStateAtom = Atomify<ITheatreStoreState>
 
 type Options = {}
 
 export default class Theatre {
-  atom2: Atom<ITheaterStoreState>
+  atom2: Atom<ITheatreStoreState>
   _ran: boolean
-  atom: TheaterStateAtom
+  atom: TheatreStateAtom
   atomP: PointerDerivation<
-    AbstractDerivedDict<UnwrapDictAtom<TheaterStateAtom>>
+    AbstractDerivedDict<UnwrapDictAtom<TheatreStateAtom>>
   >
   ticker: Ticker
-  store: Store<ITheaterStoreState>
+  store: Store<ITheatreStoreState>
   studio: Studio
 
   constructor(readonly _options: Options) {
@@ -67,7 +67,7 @@ export default class Theatre {
 
   run(pathToProject: string) {
     if (this._ran)
-      throw new Error(`TheaterJS.run() has already been called once`)
+      throw new Error(`TheatreJS.run() has already been called once`)
 
     this._ran = true
 

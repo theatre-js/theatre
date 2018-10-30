@@ -6,13 +6,13 @@ import {IXY, IPanelType} from '$studio/workspace/types'
 import {getPanelById, getActivePanelId} from '$studio/workspace/selectors'
 import * as panelComponents from '$studio/workspace/panelComponents'
 import {Broadcast} from 'react-broadcast'
-import {ITheaterStoreState} from '$studio/types'
+import {ITheatreStoreState} from '$studio/types'
 import {isEqual} from '$shared/utils'
-import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
+import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'
 import connect from '$studio/handy/connect'
 import {ActiveMode} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
 
-export const PanelControlChannel = 'TheaterJS/PanelControlChannel'
+export const PanelControlChannel = 'TheatreJS/PanelControlChannel'
 
 export interface IPanelControlChannelData {
   panelId: string
@@ -55,7 +55,7 @@ type State = IPanelPlacementState & {
   isMoving: boolean
 }
 
-class PanelController extends PureComponentWithTheater<IProps, State> {
+class PanelController extends PureComponentWithTheatre<IProps, State> {
   static defaultProps = {}
 
   render() {
@@ -107,7 +107,7 @@ class PanelController extends PureComponentWithTheater<IProps, State> {
   }
 }
 
-export default connect((s: ITheaterStoreState, op: OwnProps) => {
+export default connect((s: ITheatreStoreState, op: OwnProps) => {
   const {type, configuration, persistentState, outputs, inputs} = getPanelById(
     s,
     op.panelId,

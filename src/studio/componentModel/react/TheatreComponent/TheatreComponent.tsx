@@ -12,10 +12,10 @@ import derivedClass, {
   DerivedClass,
 } from '$shared/DataVerse/derivedClass/derivedClass'
 import DerivedClassInstance from '$shared/DataVerse/derivedClass/DerivedClassInstance'
-import SideEffectsHandler from '$studio/componentModel/react/TheaterComponent/SideEffectsHandler'
-import TimelinesHandler from '$studio/componentModel/react/TheaterComponent/TimelinesHandler'
-import Theatre, {TheaterStateAtom} from '$studio/bootstrap/Theatre'
-import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
+import SideEffectsHandler from '$studio/componentModel/react/TheatreComponent/SideEffectsHandler'
+import TimelinesHandler from '$studio/componentModel/react/TheatreComponent/TimelinesHandler'
+import Theatre, {TheatreStateAtom} from '$studio/bootstrap/Theatre'
+import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'
 import {isCoreComponent} from '$studio/componentModel/selectors'
 import {IComponentId} from '$studio/componentModel/types'
 
@@ -23,11 +23,11 @@ type WrapProps<Props> = {
   key: string
   props: Props
   modifierInstantiationDescriptors: $FixMe
-  owner: TheaterComponent<$IntentionalAny>
+  owner: TheatreComponent<$IntentionalAny>
 }
 
 type TheAtom<Props> = DictAtom<{
-  componentInstance: TheaterComponent<Props>
+  componentInstance: TheatreComponent<Props>
   props: Props
   modifierInstantiationDescriptors: $FixMe
   studio: Theatre
@@ -42,22 +42,22 @@ type BaseClass<Props> = Classify<
     sideEffects: AbstractDerivedDict<$FixMe>
     props: Props
     studio: Theatre
-    studioAtom: DerivedDictTypeOf<TheaterStateAtom>
+    studioAtom: DerivedDictTypeOf<TheatreStateAtom>
     modifierInstantiationDescriptors: $FixMe
     state: $FixMe
     timelineDescriptors: AbstractDerivedDict<{[key: string]: $FixMe}>
     timelineInstances: DictAtom<$FixMe>
-    componentInstance: TheaterComponent<Props>
+    componentInstance: TheatreComponent<Props>
     componentId: IComponentId
     componentDescriptor: $FixMe
-    owner: TheaterComponent<$IntentionalAny>
+    owner: TheatreComponent<$IntentionalAny>
   }
 >
 
-export default abstract class TheaterComponent<
+export default abstract class TheatreComponent<
   Props
-> extends PureComponentWithTheater<WrapProps<Props>, {}> {
-  static isTheaterJSComponent = true
+> extends PureComponentWithTheatre<WrapProps<Props>, {}> {
+  static isTheatreJSComponent = true
   static componentId: string
 
   _derivedClassInstance: $FixMe
@@ -65,7 +65,7 @@ export default abstract class TheaterComponent<
   _fnsToCallOnWillUnmount: Array<() => void>
   _derivedClassD: AbstractDerivation<DerivedClass<BaseClass<Props>>>
   _sideEffetsHandler: SideEffectsHandler
-  isTheaterJSComponent: boolean
+  isTheatreJSComponent: boolean
   componentType: undefined | string
   componentId: undefined | string
   _timelinesHandler: TimelinesHandler
@@ -157,7 +157,7 @@ export default abstract class TheaterComponent<
       this.studio.ticker,
     )
 
-    this.isTheaterJSComponent = true
+    this.isTheatreJSComponent = true
 
     this._whatToRender = null
     const untapFromRender = this._derivedClassInstance
@@ -207,7 +207,7 @@ export default abstract class TheaterComponent<
 
   _makeDerivedClassD() {
     const baseDerivedClass = derivedClass({_atom: () => this._atom}).extend(
-      TheaterComponent._baseClassMethods,
+      TheatreComponent._baseClassMethods,
     )
 
     const derivedClassWithoutModifiers = this._getClass(baseDerivedClass)
@@ -322,8 +322,8 @@ export default abstract class TheaterComponent<
   }
 }
 
-export const isTheaterComponent = (
+export const isTheatreComponent = (
   s: mixed,
-): s is TheaterComponent<mixed> & {constructor: typeof TheaterComponent} =>
+): s is TheatreComponent<mixed> & {constructor: typeof TheatreComponent} =>
   // @ts-ignore @ignore
-  s && s.isTheaterJSComponent === true
+  s && s.isTheatreJSComponent === true

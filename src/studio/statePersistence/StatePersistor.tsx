@@ -1,5 +1,5 @@
 import jiff from 'jiff'
-import {ITheaterStoreState, ITheaterHistoryState} from '$studio/types'
+import {ITheatreStoreState, ITheatreHistoryState} from '$studio/types'
 import {select, take, fork, cancel, actionChannel} from 'redux-saga/effects'
 import {delay, buffers} from 'redux-saga'
 import getProjectState from '$lb/studioStatePersistor/getProjectState.caller'
@@ -15,7 +15,7 @@ import Theatre from '$studio/bootstrap/Theatre'
 export default class StatePersistor {
   _lastPersistedStateInfo:
     | {type: 'empty'; state: {}}
-    | {type: 'full'; checksum: string; state: ITheaterHistoryState}
+    | {type: 'full'; checksum: string; state: ITheatreHistoryState}
 
   constructor(readonly _studio: Theatre) {
     this._lastPersistedStateInfo = {type: 'empty', state: {}}
@@ -68,7 +68,7 @@ export default class StatePersistor {
         this._lastPersistedStateInfo = {
           type: 'full',
           checksum: newProjectState.checksum,
-          state: newProjectState.data as ITheaterHistoryState,
+          state: newProjectState.data as ITheatreHistoryState,
         }
         this._studio.store.dispatch(
           batchedAction([
@@ -88,7 +88,7 @@ export default class StatePersistor {
 
       while (true) {
         yield take(ch)
-        const state: ITheaterStoreState = yield select()
+        const state: ITheatreStoreState = yield select()
         const history = state['@@history']
         const diffs = jiff.diff(self._lastPersistedStateInfo.state, history)
         if (diffs.length === 0) continue
@@ -128,14 +128,14 @@ function waitUntilPathToProjectIsDefined(): () => Generator_<string> {
   return function* waitForRun(): Generator_ {
     const errorTask = yield fork(function*(): Generator_ {
       yield delay(200)
-      // @todo If the user hasn't called TheaterStudio.run(), we should perhaps
+      // @todo If the user hasn't called TheatreStudio.run(), we should perhaps
       // show a nice dialog explaining what he/she has to do.
       throw new Error(
-        `TheaterStudio.run() wasn't called in a timely fashion. @todo`,
+        `TheatreStudio.run() wasn't called in a timely fashion. @todo`,
       )
     })
     while (true) {
-      const state: ITheaterStoreState = yield select()
+      const state: ITheatreStoreState = yield select()
       if (typeof state.pathToProject === 'string') {
         yield cancel(errorTask)
         return state.pathToProject

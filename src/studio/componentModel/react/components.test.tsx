@@ -1,7 +1,7 @@
 import {reduceHistoricState} from '$studio/bootstrap/actions'
 import Theatre from '$studio/bootstrap/Theatre'
 import createRootComponentForReact from '$studio/componentModel/react/createRootComponentForReact'
-import {ITheaterStoreState} from '$studio/types'
+import {ITheatreStoreState} from '$studio/types'
 import immer from 'immer'
 import React from 'react'
 import ReactDOM from 'react-dom'
@@ -13,7 +13,7 @@ import {
 } from '../types'
 
 type Utils = {
-  updateState: (fn: (s: ITheaterStoreState) => void) => void
+  updateState: (fn: (s: ITheatreStoreState) => void) => void
   rootDiv: HTMLDivElement
   updateComponent: (
     id: string,
@@ -31,7 +31,7 @@ interface TestFn {
 const test: TestFn = (testName: string, fn: (utils: Utils) => void) => {
   return it(testName, () => {
     const studio = new Theatre({withStudio: false})
-    const updateState = (fn: (s: ITheaterStoreState) => void) => {
+    const updateState = (fn: (s: ITheatreStoreState) => void) => {
       studio.store.dispatch(
         reduceHistoricState([], s => {
           return immer(s, fn)
@@ -58,7 +58,7 @@ const test: TestFn = (testName: string, fn: (utils: Utils) => void) => {
         localHiddenValuesById: {
           container: {
             __descriptorType: 'ComponentInstantiationValueDescriptor',
-            componentId: 'TheaterJS/Core/HTML/div',
+            componentId: 'TheatreJS/Core/HTML/div',
             props: {
               children: 'empty',
             },
@@ -87,9 +87,9 @@ const test: TestFn = (testName: string, fn: (utils: Utils) => void) => {
       })
     }
 
-    const TheaterRoot = createRootComponentForReact(studio)
+    const TheatreRoot = createRootComponentForReact(studio)
     const rootDiv = document.createElement('div')
-    ReactDOM.render(<TheaterRoot>passthrough content</TheaterRoot>, rootDiv)
+    ReactDOM.render(<TheatreRoot>passthrough content</TheatreRoot>, rootDiv)
 
     const utils = {updateState, rootDiv, updateComponent, studio}
     fn(utils)
@@ -193,7 +193,7 @@ describe.skip(`components`, () => {
       utils.updateComponent('Root', s => {
         const instantiationDesc: IComponentInstantiationValueDescriptor = {
           __descriptorType: 'ComponentInstantiationValueDescriptor',
-          componentId: 'TheaterJS/Core/HTML/span',
+          componentId: 'TheatreJS/Core/HTML/span',
           props: {
             children: '1',
           },
@@ -237,7 +237,7 @@ describe.skip(`components`, () => {
       utils.updateComponent('Root', s => {
         const one: IComponentInstantiationValueDescriptor = {
           __descriptorType: 'ComponentInstantiationValueDescriptor',
-          componentId: 'TheaterJS/Core/HTML/div',
+          componentId: 'TheatreJS/Core/HTML/div',
           props: {
             children: 'one',
           },
@@ -262,7 +262,7 @@ describe.skip(`components`, () => {
       utils.updateComponent('Root', s => {
         const two: IComponentInstantiationValueDescriptor = {
           __descriptorType: 'ComponentInstantiationValueDescriptor',
-          componentId: 'TheaterJS/Core/HTML/div',
+          componentId: 'TheatreJS/Core/HTML/div',
           props: {
             children: 'two',
           },
@@ -291,7 +291,7 @@ describe.skip(`components`, () => {
     test('assigning/updating/deleting a modifier', utils => {
       utils.updateComponent('Root', s => {
         s.localHiddenValuesById.container.modifierInstantiationDescriptors = modifiers(
-          modifier('TheaterJS/Core/HTML/SetCustomStyle', {
+          modifier('TheatreJS/Core/HTML/SetCustomStyle', {
             pairings: {
               list: ['1'],
               byId: {
@@ -311,7 +311,7 @@ describe.skip(`components`, () => {
 
       utils.updateComponent('Root', s => {
         s.localHiddenValuesById.container.modifierInstantiationDescriptors = modifiers(
-          modifier('TheaterJS/Core/HTML/SetCustomStyle', {
+          modifier('TheatreJS/Core/HTML/SetCustomStyle', {
             pairings: {
               list: ['1', '2'],
               byId: {

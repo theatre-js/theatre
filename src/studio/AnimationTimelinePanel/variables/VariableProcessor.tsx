@@ -10,7 +10,7 @@ import {Pointer} from '$shared/DataVerse2/pointer'
 import {val} from '$shared/DataVerse2/atom'
 import {get} from '$shared/utils'
 import memoizeOne from 'memoize-one'
-import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
+import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 
 interface IProps {
@@ -25,7 +25,7 @@ interface IProps {
 
 interface IState {}
 
-class VariableProcessor extends PureComponentWithTheater<IProps, IState> {
+class VariableProcessor extends PureComponentWithTheatre<IProps, IState> {
   render() {
     return (
       <PropsAsPointer props={this.props}>

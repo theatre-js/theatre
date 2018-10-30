@@ -14,7 +14,7 @@ import {getActiveNode} from '../ExploreFlyoutMenu/utils'
 import Theatre from '$studio/bootstrap/Theatre'
 import {isViewportNode} from '$studio/workspace/components/WhatToShowInBody/Viewports/Viewport'
 import ViewportEditor from '$studio/structuralEditor/components/editorsPerType/ViewportEditor/ViewportEditor'
-import {TheaterConsumer} from '$studio/componentModel/react/utils/studioContext'
+import {TheatreConsumer} from '$studio/componentModel/react/utils/studioContext'
 
 type IProps = {}
 
@@ -27,7 +27,7 @@ export default class ComposePanelContent extends React.PureComponent<
   static panelName = 'Component'
   render() {
     return (
-      <TheaterConsumer>
+      <TheatreConsumer>
         {studio => (
           <PropsAsPointer props={this.props}>
             {() => {
@@ -39,7 +39,7 @@ export default class ComposePanelContent extends React.PureComponent<
             }}
           </PropsAsPointer>
         )}
-      </TheaterConsumer>
+      </TheatreConsumer>
     )
   }
 }

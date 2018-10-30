@@ -7,7 +7,7 @@ import BoxWrapper from '$studio/AnimationTimelinePanel/boxes/BoxWrapper'
 import BoxLegends from '$studio/AnimationTimelinePanel/boxes/BoxLegends'
 import VariablesContainer from '$studio/AnimationTimelinePanel/variables/VariablesContainer'
 import VariablesPropProvider from '$studio/AnimationTimelinePanel/variables/VariablesPropProvider'
-import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
+import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 
 interface IProps {
@@ -18,7 +18,7 @@ interface IProps {
 
 interface IState {}
 
-class BoxView extends PureComponentWithTheater<IProps, IState> {
+class BoxView extends PureComponentWithTheatre<IProps, IState> {
   render() {
     return (
       <PropsAsPointer props={this.props}>

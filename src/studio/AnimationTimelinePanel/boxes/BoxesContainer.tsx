@@ -22,7 +22,7 @@ import {
 import {reduceHistoricState} from '$studio/bootstrap/actions'
 import boxWrapperCss from './BoxWrapper.css'
 import immer from 'immer'
-import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
+import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 
 const classes = resolveCss(css)
@@ -33,10 +33,10 @@ interface IProps {
 
 interface IState extends TBoxDnDState {}
 
-export const BoxDnDAPIChannel = 'TheaterJS/BoxDnDAPIChannel'
-export const BoxDnDStateChannel = 'TheaterJS/BoxDnDStateChannel'
+export const BoxDnDAPIChannel = 'TheatreJS/BoxDnDAPIChannel'
+export const BoxDnDStateChannel = 'TheatreJS/BoxDnDStateChannel'
 
-class BoxesContainer extends PureComponentWithTheater<IProps, IState> {
+class BoxesContainer extends PureComponentWithTheatre<IProps, IState> {
   dropZone: HTMLDivElement | null
 
   constructor(props: IProps, context: $IntentionalAny) {

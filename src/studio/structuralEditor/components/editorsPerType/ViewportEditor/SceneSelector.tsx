@@ -1,5 +1,5 @@
 import resolveCss from '$shared/utils/resolveCss'
-import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
+import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import React from 'react'
 import * as css from './DimensionsEditor.css'
@@ -24,7 +24,7 @@ type IProps = {
 
 interface IState {}
 
-export default class SceneSelector extends PureComponentWithTheater<
+export default class SceneSelector extends PureComponentWithTheatre<
   IProps,
   IState
 > {

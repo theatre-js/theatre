@@ -1,15 +1,15 @@
 import React from 'react'
-import TimelineInstance from '$studio/componentModel/react/TheaterComponent/TimelineInstance/TimelineInstance'
-import TheaterComponent from '$studio/componentModel/react/TheaterComponent/TheaterComponent'
+import TimelineInstance from '$studio/componentModel/react/TheatreComponent/TimelineInstance/TimelineInstance'
+import TheatreComponent from '$studio/componentModel/react/TheatreComponent/TheatreComponent'
 import {TimelineObject} from '$studio/AnimationTimelinePanel/types'
 import TimelinePanelContent from '$studio/AnimationTimelinePanel/TimelinePanelContent'
-import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
+import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'
 
 interface IProps extends TimelineObject {
   id: string
   volatileIdOfSelectedElement: string
   pathToTimeline: string[]
-  selectedElement: TheaterComponent<$IntentionalAny>
+  selectedElement: TheatreComponent<$IntentionalAny>
 }
 
 interface IState {
@@ -17,7 +17,7 @@ interface IState {
   timelineInstance: undefined | TimelineInstance
 }
 
-class TimelineInstantiator extends PureComponentWithTheater<IProps, IState> {
+class TimelineInstantiator extends PureComponentWithTheatre<IProps, IState> {
   constructor(props: IProps, context: $IntentionalAny) {
     super(props, context)
 

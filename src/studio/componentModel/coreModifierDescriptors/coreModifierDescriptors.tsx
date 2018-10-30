@@ -3,9 +3,9 @@ import SetCustomStyle from '$studio/componentModel/coreModifierDescriptors/HTML/
 import UberModifier from '$studio/componentModel/coreModifierDescriptors/HTML/UberModifier/UberModifier'
 
 const coreModifierDescriptors = {
-  // 'TheaterJS/Core/HTML/SetAttribute': SetAttribute,
-  'TheaterJS/Core/HTML/SetCustomStyle': SetCustomStyle,
-  'TheaterJS/Core/HTML/UberModifier': UberModifier,
+  // 'TheatreJS/Core/HTML/SetAttribute': SetAttribute,
+  'TheatreJS/Core/HTML/SetCustomStyle': SetCustomStyle,
+  'TheatreJS/Core/HTML/UberModifier': UberModifier,
 }
 
 export default coreModifierDescriptors

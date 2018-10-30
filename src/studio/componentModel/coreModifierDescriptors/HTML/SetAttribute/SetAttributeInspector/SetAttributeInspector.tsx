@@ -1,7 +1,7 @@
 import {map, get} from '$shared/utils'
 import SingleAttributeInspector from './SingleAttributeInspector'
 import ModifierInspectorWrapper from '$studio/common/components/ModifierInspectorWrapper'
-import {ITheaterStoreState} from '$studio/types'
+import {ITheatreStoreState} from '$studio/types'
 import React from 'react'
 import connect from '$studio/handy/connect'
 
@@ -35,7 +35,7 @@ export class SetAttributeInspector extends React.PureComponent<IProps, {}> {
   }
 }
 
-export default connect((s: ITheaterStoreState, op: IOwnProps) => {
+export default connect((s: ITheatreStoreState, op: IOwnProps) => {
   return {
     list: get(s, op.pathToModifierInstantiationDescriptor).props.pairings.list,
   }

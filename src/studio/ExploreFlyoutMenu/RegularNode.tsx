@@ -6,15 +6,15 @@ import {
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import {val} from '$shared/DataVerse2/atom'
 import {Pointer} from '$shared/DataVerse2/pointer'
-import TheaterComponent, {
-  isTheaterComponent,
-} from '../componentModel/react/TheaterComponent/TheaterComponent'
+import TheatreComponent, {
+  isTheatreComponent,
+} from '../componentModel/react/TheatreComponent/TheatreComponent'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 import Theatre from '$studio/bootstrap/Theatre'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 import {getComponentDescriptor} from '$studio/componentModel/selectors'
 import NodeTemplate, {TaggedDisplayName} from './NodeTemplate'
-import {TheaterConsumer} from '$studio/componentModel/react/utils/studioContext'
+import {TheatreConsumer} from '$studio/componentModel/react/utils/studioContext'
 
 type Props = {
   depth: number
@@ -22,7 +22,7 @@ type Props = {
 }
 
 const RegularNode = (props: Props) => (
-  <TheaterConsumer>
+  <TheatreConsumer>
     {studio => (
       <PropsAsPointer props={props}>
         {({props: propsP}) => {
@@ -35,7 +35,7 @@ const RegularNode = (props: Props) => (
           if (!nativeNode) return null
 
           let isSelectable = false
-          if (isTheaterComponent(nativeNode)) {
+          if (isTheatreComponent(nativeNode)) {
             const cls = nativeNode.constructor as $FixMe
             if (cls.componentType === 'Declarative') isSelectable = true
           }
@@ -70,7 +70,7 @@ const RegularNode = (props: Props) => (
         }}
       </PropsAsPointer>
     )}
-  </TheaterConsumer>
+  </TheatreConsumer>
 )
 
 export default RegularNode
@@ -79,11 +79,11 @@ const getDisplayName = (
   node:
     | Element
     | React.Component<mixed, mixed>
-    | TheaterComponent<$IntentionalAny>,
+    | TheatreComponent<$IntentionalAny>,
   studio: Theatre,
 ): AbstractDerivation<string> =>
   autoDerive(() => {
-    if (isTheaterComponent(node)) {
+    if (isTheatreComponent(node)) {
       const cls = node.constructor as $FixMe
       if (cls.componentType !== 'Declarative') {
         return cls.displayName

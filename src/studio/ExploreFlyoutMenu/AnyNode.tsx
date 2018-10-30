@@ -10,7 +10,7 @@ import TextNode from './TextNode'
 import RegularNode from './RegularNode'
 import {isViewportNode} from '$studio/workspace/components/WhatToShowInBody/Viewports/Viewport'
 import ViewportNode from './ViewportNode'
-import {TheaterConsumer} from '$studio/componentModel/react/utils/studioContext'
+import {TheatreConsumer} from '$studio/componentModel/react/utils/studioContext'
 
 type Props = {
   depth: number
@@ -18,7 +18,7 @@ type Props = {
 }
 
 const AnyNode = (props: Props): React.ReactElement<any> => (
-  <TheaterConsumer>
+  <TheatreConsumer>
     {studio => (
       <PropsAsPointer props={props}>
         {({props: propsP}) => {
@@ -62,7 +62,7 @@ const AnyNode = (props: Props): React.ReactElement<any> => (
         }}
       </PropsAsPointer>
     )}
-  </TheaterConsumer>
+  </TheatreConsumer>
 )
 
 export default AnyNode

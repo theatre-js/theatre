@@ -11,7 +11,7 @@ import {colors, stopPropagation} from '$studio/AnimationTimelinePanel/utils'
 import {reduceHistoricState} from '$studio/bootstrap/actions'
 import immer from 'immer'
 import generateUniqueId from 'uuid/v4'
-import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
+import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'
 
 const classes = resolveCss(css)
 const colorsLength = colors.length
@@ -26,7 +26,7 @@ interface IProps {
 
 interface IState {}
 
-class BoxLegends extends PureComponentWithTheater<IProps, IState> {
+class BoxLegends extends PureComponentWithTheatre<IProps, IState> {
   render() {
     const {variables, activeVariable} = this.props
     const isSplittable = variables.length > 1

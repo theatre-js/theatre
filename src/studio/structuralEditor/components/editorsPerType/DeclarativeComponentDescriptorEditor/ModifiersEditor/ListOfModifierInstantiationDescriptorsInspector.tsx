@@ -4,7 +4,7 @@ import {IModifierInstantiationValueDescriptors} from '$studio/componentModel/typ
 import ModifierInstantiationDescriptorInspector from './ModifierInstantiationDescriptorInspector'
 import {get} from '$shared/utils'
 
-import {ITheaterStoreState} from '$studio/types'
+import {ITheatreStoreState} from '$studio/types'
 
 interface IOwnProps {
   modifierInstantiationDescriptors: IModifierInstantiationValueDescriptors
@@ -50,7 +50,7 @@ export class ListOfModifierInstantiationDescriptorsInspector extends React.PureC
   }
 }
 
-export default connect((s: ITheaterStoreState, op: IOwnProps) => {
+export default connect((s: ITheatreStoreState, op: IOwnProps) => {
   return {
     listOfModifierInstantiationDescriptors: get(s, [
       ...op.pathToModifierInstantiationDescriptors,

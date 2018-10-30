@@ -1,7 +1,7 @@
 import React from 'react'
 import connect from '$studio/handy/connect'
 import {get} from '$shared/utils'
-import {ITheaterStoreState} from '$studio/types'
+import {ITheatreStoreState} from '$studio/types'
 import inspectorComponents, {
   ModifierIDsWithInspectorComponents,
 } from '$studio/componentModel/coreModifierDescriptors/inspectorComponents'
@@ -48,7 +48,7 @@ export class ModifierInstantiationDescriptorInspector extends React.PureComponen
   }
 }
 
-export default connect((s: ITheaterStoreState, op: IOwnProps) => {
+export default connect((s: ITheatreStoreState, op: IOwnProps) => {
   return {
     modifierId: get(s, [
       ...op.pathToModifierInstantiationDescriptor,

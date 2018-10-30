@@ -1,6 +1,6 @@
-# TheaterJS
+# TheatreJS
 
-This is the repo for the TheaterJS app. It contains the Launcher Backend, Launcher Frontend, and TheaterJS Studio.
+This is the repo for the TheatreJS app. It contains the Launcher Backend, Launcher Frontend, and TheatreJS Studio.
 
 ### Aliases
 

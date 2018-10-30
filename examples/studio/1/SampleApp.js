@@ -7,7 +7,7 @@ import SamplePlayground from './playground/SamplePlayground'
 
 // const AppContainer =
 
-const TheaterJSRoot = window.TheaterJS.react.Root
+const TheatreJSRoot = window.TheatreJS.react.Root
 
 type Props = {}
 
@@ -46,9 +46,9 @@ class SampleApp extends React.Component<Props, State> {
     const {SamplePlayground} = this.state
     return (
       <div>
-        <TheaterJSRoot>
+        <TheatreJSRoot>
           <SamplePlayground />
-        </TheaterJSRoot>
+        </TheatreJSRoot>
       </div>
     )
   }

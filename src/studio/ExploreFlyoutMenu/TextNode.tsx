@@ -8,7 +8,7 @@ import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import {val} from '$shared/DataVerse2/atom'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import NodeTemplate from './NodeTemplate'
-import {TheaterConsumer} from '$studio/componentModel/react/utils/studioContext'
+import {TheatreConsumer} from '$studio/componentModel/react/utils/studioContext'
 
 type Props = {
   depth: number
@@ -16,7 +16,7 @@ type Props = {
 }
 
 const TextNode = (props: Props) => (
-  <TheaterConsumer>
+  <TheatreConsumer>
     {studio => (
       <PropsAsPointer props={props}>
         {({props: propsP}) => {
@@ -44,7 +44,7 @@ const TextNode = (props: Props) => (
         }}
       </PropsAsPointer>
     )}
-  </TheaterConsumer>
+  </TheatreConsumer>
 )
 
 export default TextNode

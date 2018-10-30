@@ -31,7 +31,7 @@ const two = {
           byId: {
             '1': {
               __descriptorType: 'ModifierInstantiationValueDescriptor',
-              modifierId: 'TheaterJS/Core/HTML/UberModifier',
+              modifierId: 'TheatreJS/Core/HTML/UberModifier',
               props: {
                 translationX: '0',
                 translationY: '0',
@@ -50,7 +50,7 @@ const two = {
           // list: ['1', '2', '3', '4', '5', '6', '7'],
           list: ['1'],
         },
-        componentId: 'TheaterJS/Core/HTML/div',
+        componentId: 'TheatreJS/Core/HTML/div',
       },
     },
     whatToRender: {
@@ -105,7 +105,7 @@ const two = {
       fontSize: '18px',
       container: {
         __descriptorType: 'ComponentInstantiationValueDescriptor',
-        componentId: 'TheaterJS/Core/HTML/div',
+        componentId: 'TheatreJS/Core/HTML/div',
         props: {
           class: 'scene',
           key: 'container',
@@ -124,7 +124,7 @@ const two = {
           byId: {
             '1': {
               __descriptorType: 'ModifierInstantiationValueDescriptor',
-              modifierId: 'TheaterJS/Core/HTML/UberModifier',
+              modifierId: 'TheatreJS/Core/HTML/UberModifier',
               props: {
                 translationX: '0',
                 translationY: '0',
@@ -170,7 +170,7 @@ const two = {
           byId: {
             '2': {
               __descriptorType: 'ModifierInstantiationValueDescriptor',
-              modifierId: 'TheaterJS/Core/HTML/UberModifier',
+              modifierId: 'TheatreJS/Core/HTML/UberModifier',
               props: {
                 translationX: '0',
                 translationY: '0',
@@ -188,7 +188,7 @@ const two = {
           },
           list: ['2'],
         },
-        componentId: 'TheaterJS/Core/HTML/div',
+        componentId: 'TheatreJS/Core/HTML/div',
       },
     },
     whatToRender: {

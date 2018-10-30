@@ -29,7 +29,7 @@ export default class UI {
     if ($env.NODE_ENV === 'development') window.ui = this
     this.reduxStore = configureStore({
       rootReducer,
-      devtoolsOptions: {name: 'TheaterJS UI'},
+      devtoolsOptions: {name: 'TheatreJS UI'},
     })
     this.atom = atomFromReduxStore(this.reduxStore)
     this.atomP = this.atom.pointer

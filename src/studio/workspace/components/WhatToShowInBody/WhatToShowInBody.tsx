@@ -4,7 +4,7 @@ import Viewports from './Viewports/Viewports'
 import elementify from '$studio/componentModel/react/elementify/elementify'
 import constant from '$shared/DataVerse/derivations/constant'
 import dictAtom from '$shared/DataVerse/atoms/dictAtom'
-import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
+import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 
 interface IProps {
@@ -16,7 +16,7 @@ interface IState {}
 /**
  * Shows either the viewports, or an expanded viewport, or Passthrough
  */
-export default class WhatToShowInBody extends PureComponentWithTheater<
+export default class WhatToShowInBody extends PureComponentWithTheatre<
   IProps,
   IState
 > {

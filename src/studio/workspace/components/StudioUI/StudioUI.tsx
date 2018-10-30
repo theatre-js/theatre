@@ -1,8 +1,8 @@
 import {reduceStateAction} from '$shared/utils/redux/commonActions'
-import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
+import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'
 import React from 'react'
 import connect from '$studio/handy/connect'
-import {ITheaterStoreState} from '$studio/types'
+import {ITheatreStoreState} from '$studio/types'
 import {compact, mapValues, get, flatMap, setImmutable as set} from '$shared/utils'
 import PanelController from '../PanelController/PanelController'
 import StatusBar from '../StatusBar/StatusBar'
@@ -49,7 +49,7 @@ const getOppositeSide = (side: string): string => {
   }
 }
 
-export class StudioUI extends PureComponentWithTheater<IProps, State> {
+export class StudioUI extends PureComponentWithTheatre<IProps, State> {
   _isMouseDown: boolean
   boundaryPathToValueRefMap: object
 
@@ -479,7 +479,7 @@ export class StudioUI extends PureComponentWithTheater<IProps, State> {
   }
 }
 
-export default connect((state: ITheaterStoreState) => {
+export default connect((state: ITheatreStoreState) => {
   const panelsBoundaries = mapValues(
     get(state, ['historicWorkspace', 'panels', 'byId']),
     panel => panel.boundaries,

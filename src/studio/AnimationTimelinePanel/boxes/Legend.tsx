@@ -11,7 +11,7 @@ import MdSwapVerticalCircel from 'react-icons/lib/md/swap-vertical-circle'
 import FaBullseye from 'react-icons/lib/fa/bullseye'
 import FaCircleO from 'react-icons/lib/fa/circle-o'
 import noop from '$shared/utils/noop'
-import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
+import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'
 
 const classes = resolveCss({...css, legendTextHover})
 
@@ -32,7 +32,7 @@ interface IState {
   }
 }
 
-class Legend extends PureComponentWithTheater<IProps, IState> {
+class Legend extends PureComponentWithTheatre<IProps, IState> {
   constructor(props: IProps, context: $IntentionalAny) {
     super(props, context)
 

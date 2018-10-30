@@ -45,7 +45,7 @@ export default class Bottom extends UIComponent<IProps, IState> {
         </DraggableArea>
         <div className={css.rightContainer}>
           <Settings />
-          <Item>TheaterJS</Item>
+          <Item>TheatreJS</Item>
         </div>
       </div>
     )
