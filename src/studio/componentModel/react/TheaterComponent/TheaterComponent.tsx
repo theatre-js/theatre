@@ -14,7 +14,7 @@ import derivedClass, {
 import DerivedClassInstance from '$shared/DataVerse/derivedClass/DerivedClassInstance'
 import SideEffectsHandler from '$studio/componentModel/react/TheaterComponent/SideEffectsHandler'
 import TimelinesHandler from '$studio/componentModel/react/TheaterComponent/TimelinesHandler'
-import Theater, {TheaterStateAtom} from '$studio/bootstrap/Theater'
+import Theatre, {TheaterStateAtom} from '$studio/bootstrap/Theatre'
 import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
 import {isCoreComponent} from '$studio/componentModel/selectors'
 import {IComponentId} from '$studio/componentModel/types'
@@ -30,7 +30,7 @@ type TheAtom<Props> = DictAtom<{
   componentInstance: TheaterComponent<Props>
   props: Props
   modifierInstantiationDescriptors: $FixMe
-  studio: Theater
+  studio: Theatre
   state: $FixMe
   timelineInstances: DictAtom<$FixMe>
 }>
@@ -41,7 +41,7 @@ type BaseClass<Props> = Classify<
     render: React.ReactNode
     sideEffects: AbstractDerivedDict<$FixMe>
     props: Props
-    studio: Theater
+    studio: Theatre
     studioAtom: DerivedDictTypeOf<TheaterStateAtom>
     modifierInstantiationDescriptors: $FixMe
     state: $FixMe
@@ -87,7 +87,7 @@ export default abstract class TheaterComponent<
     studioAtom: self =>
       self
         .prop('studio')
-        .map((studio: Theater) => studio.atom.derivedDict()),
+        .map((studio: Theatre) => studio.atom.derivedDict()),
 
     modifierInstantiationDescriptors: self =>
       self.prop('_atom').prop('modifierInstantiationDescriptors'),

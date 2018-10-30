@@ -4,13 +4,13 @@ import withDeps from '$shared/DataVerse/derivations/withDeps'
 import {isCoreComponent} from '$studio/componentModel/selectors'
 import getOrCreateClassForDeclarativeComponentId from './ElementifyDeclarativeComponent/getOrCreateClassForDeclarativeComponentId'
 import constant from '$shared/DataVerse/derivations/constant'
-import Theater from '$studio/bootstrap/Theater'
+import Theatre from '$studio/bootstrap/Theatre'
 
 const identity = a => a
 
 const getComponentDescriptorById = (
   idD: AbstractDerivation<string>,
-  studioD: AbstractDerivation<Theater>,
+  studioD: AbstractDerivation<Theatre>,
 ): $FixMe =>
   withDeps({idD, studioD}, identity).flatMap(
     (): $FixMe => {
@@ -35,7 +35,7 @@ const getComponentDescriptorById = (
 const elementify = (
   keyD,
   instantiationDescriptorP,
-  studioD: AbstractDerivation<Theater>,
+  studioD: AbstractDerivation<Theatre>,
 ) => {
   const componentIdP = instantiationDescriptorP.prop('componentId')
   return getComponentDescriptorById(componentIdP, studioD).flatMap(

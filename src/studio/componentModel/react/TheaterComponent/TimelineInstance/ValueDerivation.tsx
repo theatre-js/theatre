@@ -1,7 +1,7 @@
 import * as _ from '$shared/utils'
 import * as interpolators from './interpolators/interpolators'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
-import Theater from '$studio/bootstrap/Theater'
+import Theatre from '$studio/bootstrap/Theatre'
 
 type TimelineIsEmptyBaseState = {type: 'TimelineIsEmpty'}
 type TimelineIsEmptyState = Spread<
@@ -265,7 +265,7 @@ export default class ValueDerivation extends AbstractDerivation<$FixMe> {
   constructor(
     descP: $FixMe,
     timeD: $FixMe,
-    studio: Theater,
+    studio: Theatre,
     pathToValueDescriptor: Array<string>,
   ) {
     super()

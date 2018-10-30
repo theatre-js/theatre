@@ -11,7 +11,7 @@ import React from 'react'
 import * as typeSystem from '$studio/typeSystem'
 import LeftPanelHeader from './LeftPanelHeader'
 import {getActiveNode} from '../ExploreFlyoutMenu/utils'
-import Theater from '$studio/bootstrap/Theater'
+import Theatre from '$studio/bootstrap/Theatre'
 import {isViewportNode} from '$studio/workspace/components/WhatToShowInBody/Viewports/Viewport'
 import ViewportEditor from '$studio/structuralEditor/components/editorsPerType/ViewportEditor/ViewportEditor'
 import {TheaterConsumer} from '$studio/componentModel/react/utils/studioContext'
@@ -46,7 +46,7 @@ export default class ComposePanelContent extends React.PureComponent<
 
 export const renderEditorForEitherLeftOrRightPanel = (
   leftOrRight: 'left' | 'right',
-  studio: Theater,
+  studio: Theatre,
 ) => {
   const possibleActiveNode = getActiveNode(studio)
   if (!possibleActiveNode) {

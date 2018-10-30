@@ -3,13 +3,13 @@
 import 'babel-polyfill'
 import '$studio/integrations/react/treeMirroring/setup'
 
-import Theater from '$studio/bootstrap/Theater'
+import Theatre from '$studio/bootstrap/Theatre'
 import createRootComponentForReact from './componentModel/react/createRootComponentForReact'
 import '$shared/DataVerse/devtoolsFormatters/setup'
 import TheatreStudio from '$studio/bootstrap/TheatreStudio'
 
 // debugger
-const theatre = new Theater({})
+const theatre = new Theatre({})
 const studio = new TheatreStudio(theatre)
 // debugger
 theatre._setStudio(studio)

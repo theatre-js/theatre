@@ -9,7 +9,7 @@ import AbstractDerivedDict from '$shared/DataVerse/derivations/dicts/AbstractDer
 import DerivationAsReactElement from '$shared/utils/react/DerivationAsReactElement'
 import React from 'react'
 import boxAtom, {BoxAtom} from '$shared/DataVerse/atoms/boxAtom'
-import Theater from '$studio/bootstrap/Theater'
+import Theatre from '$studio/bootstrap/Theatre'
 
 type AtomType<InnerProps> = DictAtom<InnerProps>
 
@@ -19,7 +19,7 @@ type PointerType<InnerProps> = PointerDerivation<
 
 type ChildrenType<InnerProps> = (
   p: PointerType<InnerProps>,
-  studio: Theater,
+  studio: Theatre,
 ) => AbstractDerivation<React.ReactNode>
 
 type Props<InnerProps> = {

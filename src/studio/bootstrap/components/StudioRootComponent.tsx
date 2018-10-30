@@ -3,7 +3,7 @@ import {createProvider} from 'react-redux'
 import {AppContainer} from 'react-hot-loader'
 import './StudioRootComponent.css'
 import React from 'react'
-import Theater from '$studio/bootstrap/Theater'
+import Theatre from '$studio/bootstrap/Theatre'
 import {storeKey} from '$studio/handy/connect'
 import {
   contextName,
@@ -14,7 +14,7 @@ import {TickerProvider} from '$shared/utils/react/TickerContext'
 const StoreProvider = createProvider(storeKey)
 
 type Props = {
-  studio: Theater
+  studio: Theatre
 }
 
 type State = {

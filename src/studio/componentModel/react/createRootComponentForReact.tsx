@@ -1,5 +1,5 @@
 import React from 'react'
-import Theater from '$studio/bootstrap/Theater'
+import Theatre from '$studio/bootstrap/Theatre'
 import {
   contextTypes,
   contextName,
@@ -11,7 +11,7 @@ interface Props {
   children: React.ReactNode
 }
 
-const createRootComponentForReact = (studio: Theater) => {
+const createRootComponentForReact = (studio: Theatre) => {
   class TheaterJSRoot extends React.Component<
     Props,
     {WhatToShowInBody: typeof WhatToShowInBody}

@@ -5,7 +5,7 @@ import StudioRootComponent from './components/StudioRootComponent'
 import {reduceAhistoricState} from '$studio/bootstrap/actions'
 import StatePersistor from '$studio/statePersistence/StatePersistor'
 import ElementTree from './ElementTree'
-import Theater from '$studio/bootstrap/Theater'
+import Theatre from '$studio/bootstrap/Theatre'
 
 export default class TheatreStudio {
   elementTree: ElementTree
@@ -13,7 +13,7 @@ export default class TheatreStudio {
   _ran: boolean
   _lbCommunicator: LBCommunicator
 
-  constructor(readonly studio: Theater) {
+  constructor(readonly studio: Theatre) {
     this._ran = false
     this.elementTree = new ElementTree()
     this._lbCommunicator = new LBCommunicator({

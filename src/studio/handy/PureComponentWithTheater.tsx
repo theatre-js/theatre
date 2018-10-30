@@ -3,7 +3,7 @@ import {
   contextName,
 } from '$studio/componentModel/react/utils/studioContext'
 import React from 'react'
-import Theater, {TheaterStateAtom} from '$studio/bootstrap/Theater'
+import Theatre, {TheaterStateAtom} from '$studio/bootstrap/Theatre'
 import {reduceStateAction} from '$shared/utils/redux/commonActions'
 import {GenericAction} from '$shared/types'
 import {PointerDerivation} from '$shared/DataVerse/derivations/pointer'
@@ -24,7 +24,7 @@ export default class PureComponentWithTheater<
   studioAtomP: PointerDerivation<
     AbstractDerivedDict<UnwrapDictAtom<TheaterStateAtom>>
   >
-  studio: Theater
+  studio: Theatre
   studioAtom2P: Pointer<ITheaterStoreState>
 
   constructor(props: Props, context: $IntentionalAny) {

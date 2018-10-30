@@ -1,7 +1,7 @@
 import ValueInstance from '$studio/componentModel/react/TheaterComponent/TimelineInstance/ValueInstance'
 import dictAtom, {DictAtom} from '$shared/DataVerse/atoms/dictAtom'
 import boxAtom, {BoxAtom} from '$shared/DataVerse/atoms/boxAtom'
-import Theater from '$studio/bootstrap/Theater'
+import Theatre from '$studio/bootstrap/Theatre'
 import {PointerDerivation} from '$shared/DataVerse/derivations/pointer'
 
 export default class TimelineInstance {
@@ -12,13 +12,13 @@ export default class TimelineInstance {
   atom: DictAtom<{time: BoxAtom<number>}>
   _descriptorP: $FixMe
   timeP: PointerDerivation<BoxAtom<number>>
-  _studio: Theater
+  _studio: Theatre
   _pathToTimelineDescriptor: Array<string>
   _af: undefined | number
 
   constructor(
     descriptorP: $FixMe,
-    studio: Theater,
+    studio: Theatre,
     pathToTimelineDescriptor: Array<string>,
   ) {
     this.atom = dictAtom({

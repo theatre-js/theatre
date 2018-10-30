@@ -6,7 +6,7 @@ import dictAtom from '$shared/DataVerse/atoms/dictAtom'
 import arrayAtom from '$shared/DataVerse/atoms/arrayAtom'
 import elementify from '$studio/componentModel/react/elementify/elementify'
 import constant from '$shared/DataVerse/derivations/constant'
-import Theater from '$studio/bootstrap/Theater'
+import Theatre from '$studio/bootstrap/Theatre'
 import {reduceHistoricState} from '$studio/bootstrap/actions'
 import {getComponentDescriptor} from '$studio/componentModel/selectors'
 import EditOverlay, {
@@ -230,7 +230,7 @@ export default class Viewport extends PureComponentWithTheater<IProps, IState> {
 export const isViewportNode = (n: $IntentionalAny): n is Viewport =>
   n && n.constructor && n.constructor[viewportSym] === true
 
-const getDisplayNameOfComponent = (studio: Theater, id: string) => {
+const getDisplayNameOfComponent = (studio: Theatre, id: string) => {
   const componentDescriptorP = getComponentDescriptor(studio.atom2.pointer, id)
   const displayName = val(componentDescriptorP.displayName)
   if (typeof displayName !== 'string') {

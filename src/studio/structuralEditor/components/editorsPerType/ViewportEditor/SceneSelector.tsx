@@ -10,7 +10,7 @@ import {pathToViewport} from './DimensionsEditor'
 import {get} from '$shared/utils'
 import {IViewport} from '$studio/workspace/types'
 import {getComponentDescriptor} from '$studio/componentModel/selectors'
-import Theater from '$studio/bootstrap/Theater'
+import Theatre from '$studio/bootstrap/Theatre'
 import {IComponentId} from '$studio/componentModel/types/index'
 import {IComponentDescriptor} from '$studio/componentModel/types'
 import {reduceHistoricState} from '$studio/bootstrap/actions'
@@ -144,7 +144,7 @@ export default class SceneSelector extends PureComponentWithTheater<
 
 const findSceneByDisplayName = (
   displayName: string,
-  studio: Theater,
+  studio: Theatre,
 ): IComponentId | void => {
   const state = studio.atom2.getState()
   const lookIn = (

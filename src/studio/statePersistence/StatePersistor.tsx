@@ -10,14 +10,14 @@ import {PromiseValue} from '$shared/types'
 import gneerateUniqueId from 'uuid/v4'
 import {replaceHistoryAction} from '$shared/utils/redux/withHistory/actions'
 import {batchedAction} from '$shared/utils/redux/withHistory/withBatchActions'
-import Theater from '$studio/bootstrap/Theater'
+import Theatre from '$studio/bootstrap/Theatre'
 
 export default class StatePersistor {
   _lastPersistedStateInfo:
     | {type: 'empty'; state: {}}
     | {type: 'full'; checksum: string; state: ITheaterHistoryState}
 
-  constructor(readonly _studio: Theater) {
+  constructor(readonly _studio: Theatre) {
     this._lastPersistedStateInfo = {type: 'empty', state: {}}
     if (
       $env.NODE_ENV === 'development' &&

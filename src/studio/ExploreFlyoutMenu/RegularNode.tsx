@@ -10,7 +10,7 @@ import TheaterComponent, {
   isTheaterComponent,
 } from '../componentModel/react/TheaterComponent/TheaterComponent'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
-import Theater from '$studio/bootstrap/Theater'
+import Theatre from '$studio/bootstrap/Theatre'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 import {getComponentDescriptor} from '$studio/componentModel/selectors'
 import NodeTemplate, {TaggedDisplayName} from './NodeTemplate'
@@ -80,7 +80,7 @@ const getDisplayName = (
     | Element
     | React.Component<mixed, mixed>
     | TheaterComponent<$IntentionalAny>,
-  studio: Theater,
+  studio: Theatre,
 ): AbstractDerivation<string> =>
   autoDerive(() => {
     if (isTheaterComponent(node)) {

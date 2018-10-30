@@ -15,7 +15,7 @@ import AnyNode from './AnyNode'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import {getActiveViewportId, getVolatileIdOfActiveNode} from './utils'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
-import Theater from '$studio/bootstrap/Theater'
+import Theatre from '$studio/bootstrap/Theatre'
 import HighlightByInternalInstance from '$studio/common/components/DomHighlighter/HighlightByInternalInstance'
 import {TheaterConsumer} from '$studio/componentModel/react/utils/studioContext'
 
@@ -180,7 +180,7 @@ export const TaggedDisplayName = (props: {name: string}) => (
 
 export default NodeTemplate
 
-function markElementAsActive(studio: Theater, volatileId: string) {
+function markElementAsActive(studio: Theatre, volatileId: string) {
   const activeViewportId = autoDerive(() =>
     getActiveViewportId(studio),
   ).getValue()
@@ -200,7 +200,7 @@ function markElementAsActive(studio: Theater, volatileId: string) {
 
 export const getVolatileIdsOfChildrenNLevelsDeep = (
   nodeP: Pointer<GenericNode>,
-  studio: Theater,
+  studio: Theatre,
   n: number,
 ): Array<VolatileId> => {
   let i = 0

@@ -1,6 +1,6 @@
 # How to install
 
-> We've been developing Theater on the Mac, so there might be some kinks in the beginning if you're on another OS.
+> We've been developing Theatre on the Mac, so there might be some kinks in the beginning if you're on another OS.
 
 #### Clone and install
 

@@ -1,5 +1,5 @@
 import {reduceHistoricState} from '$studio/bootstrap/actions'
-import Theater from '$studio/bootstrap/Theater'
+import Theatre from '$studio/bootstrap/Theatre'
 import createRootComponentForReact from '$studio/componentModel/react/createRootComponentForReact'
 import {ITheaterStoreState} from '$studio/types'
 import immer from 'immer'
@@ -19,7 +19,7 @@ type Utils = {
     id: string,
     updater: (s: IDeclarativeComponentDescriptor) => void,
   ) => void
-  studio: Theater
+  studio: Theatre
 }
 
 interface TestFn {
@@ -30,7 +30,7 @@ interface TestFn {
 // @ts-ignore ignore
 const test: TestFn = (testName: string, fn: (utils: Utils) => void) => {
   return it(testName, () => {
-    const studio = new Theater({withStudio: false})
+    const studio = new Theatre({withStudio: false})
     const updateState = (fn: (s: ITheaterStoreState) => void) => {
       studio.store.dispatch(
         reduceHistoricState([], s => {

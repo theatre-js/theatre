@@ -1,14 +1,14 @@
 import {isTheaterComponent} from '$studio/componentModel/react/TheaterComponent/TheaterComponent'
 import {val} from '$shared/DataVerse2/atom'
-import Theater from '$studio/bootstrap/Theater'
+import Theatre from '$studio/bootstrap/Theatre'
 import {isViewportNode} from '$studio/workspace/components/WhatToShowInBody/Viewports/Viewport'
 
-export const getActiveViewportId = (studio: Theater): string | undefined => {
+export const getActiveViewportId = (studio: Theatre): string | undefined => {
   return val(studio.atom2.pointer.historicWorkspace.viewports.activeViewportId)
 }
 
 export const getVolatileIdOfActiveNode = (
-  studio: Theater,
+  studio: Theatre,
 ): string | undefined => {
   const activeViewportId = getActiveViewportId(studio)
   if (!activeViewportId) return undefined
@@ -22,7 +22,7 @@ export const getVolatileIdOfActiveNode = (
 
 export const getActiveNodeInstanceByVolatileId = (
   volatileId: string,
-  studio: Theater,
+  studio: Theatre,
 ) => {
   const mirrorNode = val(
     studio.studio.elementTree.mirrorOfReactTreeAtom.pointer.nodesByVolatileId[
@@ -36,7 +36,7 @@ export const getActiveNodeInstanceByVolatileId = (
   return reactElement
 }
 
-export const getActiveNode = (studio: Theater): mixed => {
+export const getActiveNode = (studio: Theatre): mixed => {
   const possibleVolatileIdOfSelectedElement = getVolatileIdOfActiveNode(studio)
 
   if (!possibleVolatileIdOfSelectedElement) return undefined
@@ -51,7 +51,7 @@ export const getComponentIdOfNode = (node: mixed): undefined | string => {
 }
 
 export const getComponentIdOfActiveNode = (
-  studio: Theater,
+  studio: Theatre,
 ): string | undefined => {
   const activeNode = getActiveNode(studio)
   if (!activeNode) return undefined

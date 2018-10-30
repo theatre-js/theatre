@@ -16,7 +16,7 @@ export type TheaterStateAtom = Atomify<ITheaterStoreState>
 
 type Options = {}
 
-export default class Theater {
+export default class Theatre {
   atom2: Atom<ITheaterStoreState>
   _ran: boolean
   atom: TheaterStateAtom
