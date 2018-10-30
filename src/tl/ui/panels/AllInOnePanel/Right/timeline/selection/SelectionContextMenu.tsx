@@ -18,6 +18,7 @@ export default class SelectionContextMenu extends React.PureComponent<
   IProps,
   IState
 > {
+
   render() {
     const {left, top, onClose, onDelete} = this.props
     return (
@@ -34,7 +35,7 @@ export default class SelectionContextMenu extends React.PureComponent<
           //   disabled: true,
           // },
           {
-            label: '$D$elete Points',
+            label: 'Delete Points',
             cb: onDelete,
             IconComponent: MdRemoveCircle,
           },

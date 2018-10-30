@@ -255,6 +255,8 @@ class HalfPieContextMenu extends React.PureComponent<IProps, IState> {
       if (item.disabled == null || !item.disabled) {
         this.props.items[matchedItemIndex].cb()
       }
+      console.log('h')
+
       this.props.close()
     } else {
       this.setState(() => ({pressedKeyCode: -1}))

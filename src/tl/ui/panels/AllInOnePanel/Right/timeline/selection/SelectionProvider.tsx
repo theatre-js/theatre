@@ -169,7 +169,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
       <>
         <div {...classes('container')}>
           <Overlay
-            onClickOutside={this._clearSelection}
+            onClickOutside={this._handleClickOutside}
             propagateWheel={true}
             propagateMouseDown={true}
           >
@@ -279,7 +279,6 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
   }
 
   deletePointsInSelection = () => {
-    debugger
     this.project.reduxStore.dispatch(
       this.project._actions.historic.removeSelectionOfPointsInBezierCurvesOfScalarValues(
         this._getDataOfPointsToRemove(),
@@ -412,6 +411,12 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
       ]),
     )
     this._updateSelectionState()
+  }
+
+  _handleClickOutside = () => {
+    if (!this.state.contextMenuProps) {
+      this._clearSelection()
+    }
   }
 
   _clearSelection = () => {
