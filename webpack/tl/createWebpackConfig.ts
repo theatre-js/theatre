@@ -42,10 +42,12 @@ module.exports = (env: Envs) => {
       }
 
       if (!isDev) {
-        // c.plugins.push(new webpack.IgnorePlugin(/\/types\.tsx?$/), new webpack.IgnorePlugin(/ioTypes/))
-
         // c.plugins.unshift()
         if (which === 'core') {
+          c.plugins.push(
+            new webpack.IgnorePlugin(/\/types\.tsx?$/),
+            new webpack.IgnorePlugin(/ioTypes/),
+          )
           // exclude all runtime types if we're building for core in production
           c.module.rules.unshift({
             test: [/\/types\.tsx?$/, /lodash/],
