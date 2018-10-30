@@ -1,4 +1,4 @@
-import {ITheaterHistoryState} from '$theater/types'
+import {ITheaterHistoryState} from '$studio/types'
 
 export interface StudioStatePersistorNamespaceState {
   byPath: Record<string, StateWithCacheData>

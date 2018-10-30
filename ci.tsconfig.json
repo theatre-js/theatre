@@ -4,7 +4,7 @@
   "include": ["./src"],
   "exclude": [
     "**/*.typeTest.ts*",
-    "./src/theater",
+    "./src/studio",
     "./vendor/**",
     "./webpack/**",
     "./bundles/**",

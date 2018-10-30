@@ -1,7 +1,7 @@
 import fn from './getProjectState.studioSocketEndpoint'
 import wrapLBEndpointForStudio, {
   WrapLBEndpointForStudio,
-} from '$theater/commsWithLB/wrapLBEndpointForStudio'
+} from '$studio/commsWithLB/wrapLBEndpointForStudio'
 
 const getProjectState: WrapLBEndpointForStudio<
   typeof fn
