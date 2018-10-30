@@ -2,7 +2,7 @@ import UnitBezier from 'timing-function/lib/UnitBezier'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 import withDeps from '$shared/DataVerse/derivations/withDeps'
 import {Pointer} from '$shared/DataVerse2/pointer'
-import {ITimelinePointInterpolationDescriptor} from '$theater/componentModel/types'
+import {ITimelinePointInterpolationDescriptor} from '$studio/componentModel/types'
 import {valueDerivation, val} from '$shared/DataVerse2/atom'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 

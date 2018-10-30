@@ -36,7 +36,7 @@ import {SelectedAreaContext} from '$tl/ui/panels/AllInOnePanel/Right/timeline/se
 import {shouldToggleIsInSelection} from '$tl/ui/panels/AllInOnePanel/Right/views/utils'
 import {clamp} from 'lodash-es'
 import BezierConnector from '$tl/ui/panels/AllInOnePanel/Right/views/graphEditor/BezierConnector'
-import PointCircle from '$theater/AnimationTimelinePanel/views/point/PointCircle'
+import PointCircle from '$studio/AnimationTimelinePanel/views/point/PointCircle'
 import {cmdIsDown} from '$shared/utils/keyboardUtils'
 
 interface IProps {

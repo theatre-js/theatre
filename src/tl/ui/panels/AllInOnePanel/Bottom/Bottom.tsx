@@ -7,7 +7,7 @@ import Item from './Item'
 import TimelineSelect from './TimelineSelect'
 import TimelineInstanceSelect from './TimelineInstanceSelect'
 import Settings from '$tl/ui/panels/AllInOnePanel/Bottom/Settings/Settings'
-import DraggableArea from '$theater/common/components/DraggableArea/DraggableArea'
+import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
 import MinimizeButton from '$tl/ui/panels/AllInOnePanel/Bottom/MinimizeButton'
 
 export const bottomHeight = parseFloat(css.bottomHeight.replace(/[a-z]+$/, ''))

@@ -38,7 +38,7 @@
       "\\$src/(.*)": "<rootDir>/src/$1",
       "\\$lb/(.*)": "<rootDir>/src/lb/$1",
       "\\$lf/(.*)": "<rootDir>/src/lf/$1",
-      "\\$theater/(.*)": "<rootDir>/src/theater/$1",
+      "\\$studio/(.*)": "<rootDir>/src/theater/$1",
       "\\$shared/(.*)": "<rootDir>/src/shared/$1",
       "\\.(css|less)$": "identity-obj-proxy",
       "lodash-es": "lodash"

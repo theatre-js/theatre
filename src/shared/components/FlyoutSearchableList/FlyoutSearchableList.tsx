@@ -1,5 +1,5 @@
 import React from 'react'
-import HeadlessDataList from '$theater/common/components/HeadlessDataList/HeadlessDataList'
+import HeadlessDataList from '$studio/common/components/HeadlessDataList/HeadlessDataList'
 import noop from '$shared/utils/noop'
 import FlyoutWithSearch from '$shared/components/FlyoutWithSearch/FlyoutWithSearch'
 import DataListView from '$shared/components/DataListView/DataListView'

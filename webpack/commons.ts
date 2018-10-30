@@ -15,7 +15,7 @@ const aliasesFromRoot = {
   $lb: './src/lb/',
   $lf: './src/lf/',
   $tl: './src/tl/',
-  $theater: './src/theater/',
+  $studio: './src/theater/',
   $shared: './src/shared/',
 }
 

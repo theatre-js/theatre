@@ -24,7 +24,7 @@
     "paths": {
       "$lb/*": ["src/lb/*"],
       "$lf/*": ["src/lf/*"],
-      "$theater/*": ["src/theater/*"],
+      "$studio/*": ["src/theater/*"],
       "$shared/*": ["src/shared/*"],
       "$tl/*": ["src/tl/*"],
       "$root/*": ["/*"],

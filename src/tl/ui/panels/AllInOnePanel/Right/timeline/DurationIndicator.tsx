@@ -4,12 +4,12 @@ import React from 'react'
 import * as css from './DurationIndicator.css'
 import {val, coldVal} from '$shared/DataVerse2/atom'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
-import {timeToX} from '$theater/AnimationTimelinePanel/utils'
+import {timeToX} from '$studio/AnimationTimelinePanel/utils'
 import {
   TimeStuff,
   IRangeAndDurationLock,
 } from '$tl/ui/panels/AllInOnePanel/TimeStuffProvider'
-import DraggableArea from '$theater/common/components/DraggableArea/DraggableArea'
+import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
 import {TRange} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {ITempActionGroup} from '$shared/utils/redux/withHistory/actions'
 import CursorLock from '$shared/components/CursorLock'
