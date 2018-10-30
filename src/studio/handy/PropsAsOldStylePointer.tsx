@@ -1,4 +1,4 @@
-import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
+import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 import dictAtom, {
   DictAtom,
@@ -9,7 +9,7 @@ import AbstractDerivedDict from '$shared/DataVerse/derivations/dicts/AbstractDer
 import DerivationAsReactElement from '$shared/utils/react/DerivationAsReactElement'
 import React from 'react'
 import boxAtom, {BoxAtom} from '$shared/DataVerse/atoms/boxAtom'
-import Theater from '$theater/bootstrap/Theater'
+import Theater from '$studio/bootstrap/Theater'
 
 type AtomType<InnerProps> = DictAtom<InnerProps>
 

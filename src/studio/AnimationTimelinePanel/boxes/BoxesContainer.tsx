@@ -2,27 +2,27 @@ import React from 'react'
 import {
   TimelineObject,
   LayoutArray,
-} from '$theater/AnimationTimelinePanel/types'
+} from '$studio/AnimationTimelinePanel/types'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import {val} from '$shared/DataVerse2/atom'
 import css from './BoxesContainer.css'
 import resolveCss from '$shared/utils/resolveCss'
 import {get} from '$shared/utils'
-import BoxView from '$theater/AnimationTimelinePanel/boxes/BoxView'
+import BoxView from '$studio/AnimationTimelinePanel/boxes/BoxView'
 import memoizeOne from 'memoize-one'
 import {Broadcast, Subscriber} from 'react-broadcast'
 import {
   TBoxDnDAPI,
   TBoxDnDState,
-} from '$theater/AnimationTimelinePanel/boxes/types'
+} from '$studio/AnimationTimelinePanel/boxes/types'
 import {
   RootPropGetterChannel,
   TPropGetter,
-} from '$theater/AnimationTimelinePanel/RootPropProvider'
-import {reduceHistoricState} from '$theater/bootstrap/actions'
+} from '$studio/AnimationTimelinePanel/RootPropProvider'
+import {reduceHistoricState} from '$studio/bootstrap/actions'
 import boxWrapperCss from './BoxWrapper.css'
 import immer from 'immer'
-import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
+import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 
 const classes = resolveCss(css)

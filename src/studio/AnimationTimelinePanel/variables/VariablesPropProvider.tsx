@@ -4,7 +4,7 @@ import {val} from '$shared/DataVerse2/atom'
 import {
   RootPropGetterChannel,
   TPropName as TRootPropName,
-} from '$theater/AnimationTimelinePanel/RootPropProvider'
+} from '$studio/AnimationTimelinePanel/RootPropProvider'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 
 export const VariablesPropGetterChannel = 'TheaterJS/VariablesPropGetterChannel'

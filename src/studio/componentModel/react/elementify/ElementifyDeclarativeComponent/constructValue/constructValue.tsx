@@ -1,6 +1,6 @@
 import constructModifierInstantiationValueDescriptor from './constructModifierInstantiationValueDescriptor'
 import constructComponentInstantiationValueDescriptor from './constructComponentInstantiationValueDescriptor'
-import {ITaggedValueDescriptor} from '$theater/componentModel/types'
+import {ITaggedValueDescriptor} from '$studio/componentModel/types'
 import constructListDescriptor from './constructListDescriptor'
 import constructMapDescriptor from './constructMapDescriptor'
 import constructReferenceToLocalHiddenValue from './constructReferenceToLocalHiddenValue'

@@ -1,12 +1,12 @@
 // @todo only one instance of babel-polyfill is allowed per window, so we can't ship
 // with this global polyfill
 import 'babel-polyfill'
-import '$theater/integrations/react/treeMirroring/setup'
+import '$studio/integrations/react/treeMirroring/setup'
 
-import Theater from '$theater/bootstrap/Theater'
+import Theater from '$studio/bootstrap/Theater'
 import createRootComponentForReact from './componentModel/react/createRootComponentForReact'
 import '$shared/DataVerse/devtoolsFormatters/setup'
-import Studio from '$theater/bootstrap/Studio'
+import Studio from '$studio/bootstrap/Studio'
 
 const theater = new Theater({})
 const studio = new Studio(theater)

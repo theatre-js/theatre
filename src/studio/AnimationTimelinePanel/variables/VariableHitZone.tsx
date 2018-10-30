@@ -1,22 +1,22 @@
 import React from 'react'
-import {svgPaddingY} from '$theater/AnimationTimelinePanel/variables/GraphsSvgWrapper'
+import {svgPaddingY} from '$studio/AnimationTimelinePanel/variables/GraphsSvgWrapper'
 import {
   TColor,
   VariableID,
   TPoint,
   VariableObject,
-} from '$theater/AnimationTimelinePanel/types'
+} from '$studio/AnimationTimelinePanel/types'
 import {Subscriber} from 'react-broadcast'
 import {
   ActiveMode,
   MODES,
-} from '$theater/common/components/ActiveModeDetector/ActiveModeDetector'
-import {PanelActiveModeChannel} from '$theater/workspace/components/Panel/Panel'
-import {stopPropagation} from '$theater/AnimationTimelinePanel/utils'
+} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
+import {PanelActiveModeChannel} from '$studio/workspace/components/Panel/Panel'
+import {stopPropagation} from '$studio/AnimationTimelinePanel/utils'
 import css from './VariableHitZone.css'
 import resolveCss from '$shared/utils/resolveCss'
 import {reduceStateAction} from '$shared/utils/redux/commonActions'
-import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
+import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
 
 const classes = resolveCss(css)
 

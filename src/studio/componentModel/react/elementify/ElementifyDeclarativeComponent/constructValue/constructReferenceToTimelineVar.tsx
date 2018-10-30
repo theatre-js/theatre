@@ -1,4 +1,4 @@
-import {default as TimelineInstance} from '$theater/componentModel/react/TheaterComponent/TimelineInstance/TimelineInstance'
+import {default as TimelineInstance} from '$studio/componentModel/react/TheaterComponent/TimelineInstance/TimelineInstance'
 
 const constructReferenceToTimelineVar = (desD, d) => {
   const timelineIdD = desD.prop('timelineId')

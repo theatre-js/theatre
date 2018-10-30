@@ -3,11 +3,11 @@ import {
   TOverlaysAPI,
   TPointValuesEditorProps,
   TPointContextMenuProps,
-} from '$theater/AnimationTimelinePanel/overlays/types'
+} from '$studio/AnimationTimelinePanel/overlays/types'
 import {Broadcast} from 'react-broadcast'
-import PointValuesEditor from '$theater/AnimationTimelinePanel/overlays/PointValuesEditor'
-import PointContextMenu from '$theater/AnimationTimelinePanel/overlays/PointContextMenu'
-import ConnectorContextMenu from '$theater/AnimationTimelinePanel/overlays/ConnectorContextMenu'
+import PointValuesEditor from '$studio/AnimationTimelinePanel/overlays/PointValuesEditor'
+import PointContextMenu from '$studio/AnimationTimelinePanel/overlays/PointContextMenu'
+import ConnectorContextMenu from '$studio/AnimationTimelinePanel/overlays/ConnectorContextMenu'
 
 interface IProps {
   pathToTimeline: string[]

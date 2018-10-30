@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import css from './Overlay.css'
-import Section from '$theater/common/components/Overlay/Section'
+import Section from '$studio/common/components/Overlay/Section'
 
 interface IProps {
   children: any

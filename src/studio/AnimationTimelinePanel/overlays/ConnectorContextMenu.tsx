@@ -1,12 +1,12 @@
 import React from 'react'
-import {TConnectorContextMenuProps} from '$theater/AnimationTimelinePanel/overlays/types'
-import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
+import {TConnectorContextMenuProps} from '$studio/AnimationTimelinePanel/overlays/types'
+import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
 import MdDonutSmall from 'react-icons/lib/md/donut-small'
 import MdCancel from 'react-icons/lib/md/cancel'
 import MdCamera from 'react-icons/lib/md/camera'
-import HalfPieContextMenu from '$theater/common/components/HalfPieContextMenu'
+import HalfPieContextMenu from '$studio/common/components/HalfPieContextMenu'
 import {noop} from 'redux-saga/utils'
-import {reduceHistoricState} from '$theater/bootstrap/actions'
+import {reduceHistoricState} from '$studio/bootstrap/actions'
 
 interface IProps extends TConnectorContextMenuProps {
   pathToTimeline: string[]

@@ -1,7 +1,7 @@
 import React from 'react'
 import css from './connector.css'
 import resolveCss from '$shared/utils/resolveCss'
-import {POINT_RECT_EDGE_SIZE} from '$theater/AnimationTimelinePanel/views/point/PointClickArea'
+import {POINT_RECT_EDGE_SIZE} from '$studio/AnimationTimelinePanel/views/point/PointClickArea'
 
 const classes = resolveCss(css)
 

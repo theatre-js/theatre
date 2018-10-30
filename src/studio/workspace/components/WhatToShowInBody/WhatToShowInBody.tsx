@@ -1,10 +1,10 @@
 import React from 'react'
 import {val} from '$shared/DataVerse2/atom'
 import Viewports from './Viewports/Viewports'
-import elementify from '$theater/componentModel/react/elementify/elementify'
+import elementify from '$studio/componentModel/react/elementify/elementify'
 import constant from '$shared/DataVerse/derivations/constant'
 import dictAtom from '$shared/DataVerse/atoms/dictAtom'
-import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
+import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 
 interface IProps {

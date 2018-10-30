@@ -3,17 +3,17 @@ import {
   TColor,
   TNormalizedPoint,
   TPoint,
-} from '$theater/AnimationTimelinePanel/types'
-// import Point from '$theater/AnimationTimelinePanel/DopeSheetView/Point'
+} from '$studio/AnimationTimelinePanel/types'
+// import Point from '$studio/AnimationTimelinePanel/DopeSheetView/Point'
 import withUtils, {
   IWithUtilsProps,
-} from '$theater/AnimationTimelinePanel/views/withUtils'
+} from '$studio/AnimationTimelinePanel/views/withUtils'
 import ViewBase, {
   IViewBaseProps,
-} from '$theater/AnimationTimelinePanel/views/ViewBase'
-import {reduceHistoricState} from '$theater/bootstrap/actions'
+} from '$studio/AnimationTimelinePanel/views/ViewBase'
+import {reduceHistoricState} from '$studio/bootstrap/actions'
 import immer from 'immer'
-import DopeSheetPoint from '$theater/AnimationTimelinePanel/views/dopeSheet/DopeSheetPoint'
+import DopeSheetPoint from '$studio/AnimationTimelinePanel/views/dopeSheet/DopeSheetPoint'
 
 interface IProps extends IViewBaseProps {
   color: TColor

@@ -1,6 +1,6 @@
 import React from 'react'
-import LineConnectorClickArea from '$theater/AnimationTimelinePanel/views/dopeSheet/LineConnectorClickArea'
-import LineConnectorRect from '$theater/AnimationTimelinePanel/views/dopeSheet/LineConnectorRect'
+import LineConnectorClickArea from '$studio/AnimationTimelinePanel/views/dopeSheet/LineConnectorClickArea'
+import LineConnectorRect from '$studio/AnimationTimelinePanel/views/dopeSheet/LineConnectorRect'
 
 interface IProps {
   x: number

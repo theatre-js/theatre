@@ -1,7 +1,7 @@
-import ValueInstance from '$theater/componentModel/react/TheaterComponent/TimelineInstance/ValueInstance'
+import ValueInstance from '$studio/componentModel/react/TheaterComponent/TimelineInstance/ValueInstance'
 import dictAtom, {DictAtom} from '$shared/DataVerse/atoms/dictAtom'
 import boxAtom, {BoxAtom} from '$shared/DataVerse/atoms/boxAtom'
-import Theater from '$theater/bootstrap/Theater'
+import Theater from '$studio/bootstrap/Theater'
 import {PointerDerivation} from '$shared/DataVerse/derivations/pointer'
 
 export default class TimelineInstance {

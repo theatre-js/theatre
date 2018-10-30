@@ -1,9 +1,9 @@
 import React from 'react'
-import TimelineInstance from '$theater/componentModel/react/TheaterComponent/TimelineInstance/TimelineInstance'
-import TheaterComponent from '$theater/componentModel/react/TheaterComponent/TheaterComponent'
-import {TimelineObject} from '$theater/AnimationTimelinePanel/types'
-import TimelinePanelContent from '$theater/AnimationTimelinePanel/TimelinePanelContent'
-import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
+import TimelineInstance from '$studio/componentModel/react/TheaterComponent/TimelineInstance/TimelineInstance'
+import TheaterComponent from '$studio/componentModel/react/TheaterComponent/TheaterComponent'
+import {TimelineObject} from '$studio/AnimationTimelinePanel/types'
+import TimelinePanelContent from '$studio/AnimationTimelinePanel/TimelinePanelContent'
+import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
 
 interface IProps extends TimelineObject {
   id: string

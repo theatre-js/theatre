@@ -1,7 +1,7 @@
 import actionCreator from '$shared/utils/redux/actionCreator'
 import {PathBasedReducer} from '$shared/utils/redux/withHistory/PathBasedReducer'
 import {GenericAction} from '$shared/types'
-import {IStoreHistoricState} from '$theater/types'
+import {IStoreHistoricState} from '$studio/types'
 
 type Blah<HistoricOrAhistoric extends 'historic' | 'ahistoric', PayloadType> = {
   (p: PayloadType): GenericAction

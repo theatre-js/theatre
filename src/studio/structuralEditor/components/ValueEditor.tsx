@@ -1,11 +1,11 @@
-import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
+import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
 import React from 'react'
-import connect from '$theater/handy/connect'
+import connect from '$studio/handy/connect'
 import {get} from '$shared/utils'
 
 import editorsPerType from './editorsPerType/editorsPerType'
-import {ITheaterStoreState} from '$theater/types'
-import * as typeSystem from '$theater/typeSystem'
+import {ITheaterStoreState} from '$studio/types'
+import * as typeSystem from '$studio/typeSystem'
 
 interface IOwnProps {
   path: string[]

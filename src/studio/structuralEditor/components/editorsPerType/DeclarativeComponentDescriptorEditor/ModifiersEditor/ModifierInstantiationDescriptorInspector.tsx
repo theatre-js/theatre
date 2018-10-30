@@ -1,10 +1,10 @@
 import React from 'react'
-import connect from '$theater/handy/connect'
+import connect from '$studio/handy/connect'
 import {get} from '$shared/utils'
-import {ITheaterStoreState} from '$theater/types'
+import {ITheaterStoreState} from '$studio/types'
 import inspectorComponents, {
   ModifierIDsWithInspectorComponents,
-} from '$theater/componentModel/coreModifierDescriptors/inspectorComponents'
+} from '$studio/componentModel/coreModifierDescriptors/inspectorComponents'
 
 interface IOwnProps {
   id: string

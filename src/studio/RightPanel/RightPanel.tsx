@@ -1,9 +1,9 @@
-import Panel from '$theater/workspace/components/Panel/Panel'
+import Panel from '$studio/workspace/components/Panel/Panel'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import React from 'react'
-import {renderEditorForEitherLeftOrRightPanel} from '$theater/LeftPanel/LeftPanel'
-import {TheaterConsumer} from '$theater/componentModel/react/utils/theaterContext'
+import {renderEditorForEitherLeftOrRightPanel} from '$studio/LeftPanel/LeftPanel'
+import {TheaterConsumer} from '$studio/componentModel/react/utils/theaterContext'
 
 type IProps = {}
 

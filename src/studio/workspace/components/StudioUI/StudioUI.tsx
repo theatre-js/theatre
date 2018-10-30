@@ -1,8 +1,8 @@
 import {reduceStateAction} from '$shared/utils/redux/commonActions'
-import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
+import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
 import React from 'react'
-import connect from '$theater/handy/connect'
-import {ITheaterStoreState} from '$theater/types'
+import connect from '$studio/handy/connect'
+import {ITheaterStoreState} from '$studio/types'
 import {compact, mapValues, get, flatMap, setImmutable as set} from '$shared/utils'
 import PanelController from '../PanelController/PanelController'
 import StatusBar from '../StatusBar/StatusBar'
@@ -11,7 +11,7 @@ import {undoAction, redoAction} from '$shared/utils/redux/withHistory/actions'
 import resolveCss from '$shared/utils/resolveCss'
 import ActiveModeDetector, {
   ActiveMode,
-} from '$theater/common/components/ActiveModeDetector/ActiveModeDetector'
+} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
 
 const classes = resolveCss(css)
 

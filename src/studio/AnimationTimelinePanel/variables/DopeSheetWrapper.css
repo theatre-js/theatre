@@ -1,4 +1,4 @@
-@value minBoxHeight from '$theater/AnimationTimelinePanel/boxes/BoxWrapper.css';
+@value minBoxHeight from '$studio/AnimationTimelinePanel/boxes/BoxWrapper.css';
 
 .container {
   height: minBoxHeight;

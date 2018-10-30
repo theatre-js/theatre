@@ -12,12 +12,12 @@ import derivedClass, {
   DerivedClass,
 } from '$shared/DataVerse/derivedClass/derivedClass'
 import DerivedClassInstance from '$shared/DataVerse/derivedClass/DerivedClassInstance'
-import SideEffectsHandler from '$theater/componentModel/react/TheaterComponent/SideEffectsHandler'
-import TimelinesHandler from '$theater/componentModel/react/TheaterComponent/TimelinesHandler'
-import Theater, {TheaterStateAtom} from '$theater/bootstrap/Theater'
-import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
-import {isCoreComponent} from '$theater/componentModel/selectors'
-import {IComponentId} from '$theater/componentModel/types'
+import SideEffectsHandler from '$studio/componentModel/react/TheaterComponent/SideEffectsHandler'
+import TimelinesHandler from '$studio/componentModel/react/TheaterComponent/TimelinesHandler'
+import Theater, {TheaterStateAtom} from '$studio/bootstrap/Theater'
+import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
+import {isCoreComponent} from '$studio/componentModel/selectors'
+import {IComponentId} from '$studio/componentModel/types'
 
 type WrapProps<Props> = {
   key: string

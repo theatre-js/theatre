@@ -1,16 +1,16 @@
 import {reduceStateAction} from '$shared/utils/redux/commonActions'
 import React from 'react'
 
-import {IXY, IPanelType} from '$theater/workspace/types'
+import {IXY, IPanelType} from '$studio/workspace/types'
 
-import {getPanelById, getActivePanelId} from '$theater/workspace/selectors'
-import * as panelComponents from '$theater/workspace/panelComponents'
+import {getPanelById, getActivePanelId} from '$studio/workspace/selectors'
+import * as panelComponents from '$studio/workspace/panelComponents'
 import {Broadcast} from 'react-broadcast'
-import {ITheaterStoreState} from '$theater/types'
+import {ITheaterStoreState} from '$studio/types'
 import {isEqual} from '$shared/utils'
-import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
-import connect from '$theater/handy/connect'
-import {ActiveMode} from '$theater/common/components/ActiveModeDetector/ActiveModeDetector'
+import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
+import connect from '$studio/handy/connect'
+import {ActiveMode} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
 
 export const PanelControlChannel = 'TheaterJS/PanelControlChannel'
 

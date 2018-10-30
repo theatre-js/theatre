@@ -1,11 +1,11 @@
 import {reduceStateAction} from '$shared/utils/redux/commonActions'
-import TextInput from '$theater/common/components/TextInput'
+import TextInput from '$studio/common/components/TextInput'
 import {get} from '$shared/utils'
-import KeyValuePair from '$theater/common/components/KeyValuePair'
-import {ITheaterStoreState} from '$theater/types'
-import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
+import KeyValuePair from '$studio/common/components/KeyValuePair'
+import {ITheaterStoreState} from '$studio/types'
+import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
 import React from 'react'
-import connect from '$theater/handy/connect'
+import connect from '$studio/handy/connect'
 
 interface IOwnProps {
   pathToPairings: string[]

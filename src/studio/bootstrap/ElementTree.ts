@@ -1,7 +1,7 @@
 import MirrorOfReactTree, {
   VolatileId,
   State as MState,
-} from '$theater/integrations/react/treeMirroring/MirrorOfReactTree'
+} from '$studio/integrations/react/treeMirroring/MirrorOfReactTree'
 import atom, {Atom} from '$shared/DataVerse2/atom'
 import {omit} from '$shared/utils'
 

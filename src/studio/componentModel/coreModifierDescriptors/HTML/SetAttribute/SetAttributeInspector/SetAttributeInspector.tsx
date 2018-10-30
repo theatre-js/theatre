@@ -1,9 +1,9 @@
 import {map, get} from '$shared/utils'
 import SingleAttributeInspector from './SingleAttributeInspector'
-import ModifierInspectorWrapper from '$theater/common/components/ModifierInspectorWrapper'
-import {ITheaterStoreState} from '$theater/types'
+import ModifierInspectorWrapper from '$studio/common/components/ModifierInspectorWrapper'
+import {ITheaterStoreState} from '$studio/types'
 import React from 'react'
-import connect from '$theater/handy/connect'
+import connect from '$studio/handy/connect'
 
 interface IOwnProps {
   pathToModifierInstantiationDescriptor: string[]

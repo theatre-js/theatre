@@ -1,11 +1,11 @@
 import React from 'react'
-import {IComponentDescriptor} from '$theater/componentModel/types'
+import {IComponentDescriptor} from '$studio/componentModel/types'
 import {DerivedClass} from '$shared/DataVerse/derivedClass/derivedClass'
 import withDeps from '$shared/DataVerse/derivations/withDeps'
 import boxAtom from '$shared/DataVerse/atoms/boxAtom'
 import dictAtom from '$shared/DataVerse/atoms/dictAtom'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
-import TheaterComponent from '$theater/componentModel/react/TheaterComponent/TheaterComponent'
+import TheaterComponent from '$studio/componentModel/react/TheaterComponent/TheaterComponent'
 import {DictAtom} from '$shared/DataVerse/atoms/dictAtom'
 
 const lookupTable = {

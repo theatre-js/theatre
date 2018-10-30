@@ -1,5 +1,5 @@
-import {IModifierDescriptor} from '$theater/componentModel/types'
-import commonStylesPrototype from '$theater/componentModel/coreModifierDescriptors/HTML/SetCustomStyle/commonStylesPrototype'
+import {IModifierDescriptor} from '$studio/componentModel/types'
+import commonStylesPrototype from '$studio/componentModel/coreModifierDescriptors/HTML/SetCustomStyle/commonStylesPrototype'
 import dictAtom from '$shared/DataVerse/atoms/dictAtom'
 import withDeps from '$shared/DataVerse/derivations/withDeps'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'

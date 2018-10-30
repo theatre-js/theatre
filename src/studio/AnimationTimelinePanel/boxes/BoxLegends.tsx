@@ -5,13 +5,13 @@ import {
   BoxObject,
   VariableID,
   TimelineObject,
-} from '$theater/AnimationTimelinePanel/types'
-import Legend from '$theater/AnimationTimelinePanel/boxes/Legend'
-import {colors, stopPropagation} from '$theater/AnimationTimelinePanel/utils'
-import {reduceHistoricState} from '$theater/bootstrap/actions'
+} from '$studio/AnimationTimelinePanel/types'
+import Legend from '$studio/AnimationTimelinePanel/boxes/Legend'
+import {colors, stopPropagation} from '$studio/AnimationTimelinePanel/utils'
+import {reduceHistoricState} from '$studio/bootstrap/actions'
 import immer from 'immer'
 import generateUniqueId from 'uuid/v4'
-import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
+import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
 
 const classes = resolveCss(css)
 const colorsLength = colors.length

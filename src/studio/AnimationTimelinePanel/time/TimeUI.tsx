@@ -1,6 +1,6 @@
-import FocusBar from '$theater/AnimationTimelinePanel/time/FocusBar'
+import FocusBar from '$studio/AnimationTimelinePanel/time/FocusBar'
 import React from 'react'
-import Seeker from '$theater/AnimationTimelinePanel/time/Seeker'
+import Seeker from '$studio/AnimationTimelinePanel/time/Seeker'
 
 interface IProps {
   focus: [number, number]

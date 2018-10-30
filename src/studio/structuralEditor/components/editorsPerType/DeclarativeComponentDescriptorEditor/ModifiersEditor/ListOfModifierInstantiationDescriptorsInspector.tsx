@@ -1,10 +1,10 @@
 import React from 'react'
-import connect from '$theater/handy/connect'
-import {IModifierInstantiationValueDescriptors} from '$theater/componentModel/types'
+import connect from '$studio/handy/connect'
+import {IModifierInstantiationValueDescriptors} from '$studio/componentModel/types'
 import ModifierInstantiationDescriptorInspector from './ModifierInstantiationDescriptorInspector'
 import {get} from '$shared/utils'
 
-import {ITheaterStoreState} from '$theater/types'
+import {ITheaterStoreState} from '$studio/types'
 
 interface IOwnProps {
   modifierInstantiationDescriptors: IModifierInstantiationValueDescriptors

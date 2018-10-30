@@ -3,11 +3,11 @@ import {
   multiReduceStateAction,
 } from '$shared/utils/redux/commonActions'
 
-import {getComponentDescriptor} from '$theater/componentModel/selectors'
-import PanelSection from '$theater/structuralEditor/components/reusables/PanelSection'
-import NodeContainer from '$theater/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor/NodeContainer'
-import MovableNode from '$theater/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor/MovableNode'
-import * as css from '$theater/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor/index.css'
+import {getComponentDescriptor} from '$studio/componentModel/selectors'
+import PanelSection from '$studio/structuralEditor/components/reusables/PanelSection'
+import NodeContainer from '$studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor/NodeContainer'
+import MovableNode from '$studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor/MovableNode'
+import * as css from '$studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor/index.css'
 import generateUniqueId from 'uuid/v4'
 import {get, isEqual, omit} from '$shared/utils'
 import {
@@ -16,15 +16,15 @@ import {
   STATUS_BY_ACTION,
   NODE_TYPE,
   STATUS,
-} from '$theater/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor/constants'
+} from '$studio/structuralEditor/components/editorsPerType/DeclarativeComponentDescriptorEditor/TreeEditor/constants'
 import cx from 'classnames'
-import {PanelActiveModeChannel} from '$theater/workspace/components/Panel/Panel'
+import {PanelActiveModeChannel} from '$studio/workspace/components/Panel/Panel'
 import {Subscriber} from 'react-broadcast'
-import {MODES} from '$theater/common/components/ActiveModeDetector/ActiveModeDetector'
-import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
+import {MODES} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
+import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
 import React from 'react'
-import connect from '$theater/handy/connect'
-import {IDeclarativeComponentDescriptor} from '$theater/componentModel/types'
+import connect from '$studio/handy/connect'
+import {IDeclarativeComponentDescriptor} from '$studio/componentModel/types'
 
 export const metaKey = 'composePanel'
 const PLACEHOLDER = '\n'

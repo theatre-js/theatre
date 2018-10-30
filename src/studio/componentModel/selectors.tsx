@@ -1,4 +1,4 @@
-import {Selector} from '$theater/types'
+import {Selector} from '$studio/types'
 import {IComponentId, IComponentDescriptor} from './types'
 import {get, startsWith as stringStartsWith} from '$shared/utils'
 

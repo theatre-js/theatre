@@ -1,17 +1,17 @@
 import React from 'react'
 import css from './Legend.css'
 import {legendTextHover} from './BoxLegends.css'
-import {VariableID, VariableObject} from '$theater/AnimationTimelinePanel/types'
+import {VariableID, VariableObject} from '$studio/AnimationTimelinePanel/types'
 import {val} from '$shared/DataVerse2/atom'
 import {get} from '$shared/utils'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import resolveCss from '$shared/utils/resolveCss'
-import HalfPieContextMenu from '$theater/common/components/HalfPieContextMenu'
+import HalfPieContextMenu from '$studio/common/components/HalfPieContextMenu'
 import MdSwapVerticalCircel from 'react-icons/lib/md/swap-vertical-circle'
 import FaBullseye from 'react-icons/lib/fa/bullseye'
 import FaCircleO from 'react-icons/lib/fa/circle-o'
 import noop from '$shared/utils/noop'
-import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
+import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
 
 const classes = resolveCss({...css, legendTextHover})
 

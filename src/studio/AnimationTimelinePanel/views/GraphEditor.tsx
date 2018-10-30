@@ -3,16 +3,16 @@ import {
   TColor,
   TNormalizedPoint,
   PointHandles,
-} from '$theater/AnimationTimelinePanel/types'
+} from '$studio/AnimationTimelinePanel/types'
 import withUtils, {
   IWithUtilsProps,
-} from '$theater/AnimationTimelinePanel/views/withUtils'
+} from '$studio/AnimationTimelinePanel/views/withUtils'
 import ViewBase, {
   IViewBaseProps,
-} from '$theater/AnimationTimelinePanel/views/ViewBase'
-import {reduceHistoricState} from '$theater/bootstrap/actions'
-import GraphEditorPoint from '$theater/AnimationTimelinePanel/views/graphEditor/GraphEditorPoint'
-import BezierConnector from '$theater/AnimationTimelinePanel/views/graphEditor/BezierConnector'
+} from '$studio/AnimationTimelinePanel/views/ViewBase'
+import {reduceHistoricState} from '$studio/bootstrap/actions'
+import GraphEditorPoint from '$studio/AnimationTimelinePanel/views/graphEditor/GraphEditorPoint'
+import BezierConnector from '$studio/AnimationTimelinePanel/views/graphEditor/BezierConnector'
 
 interface IProps extends IViewBaseProps {
   color: TColor

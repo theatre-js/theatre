@@ -2,7 +2,7 @@ import React from 'react'
 import {
   VolatileId,
   GenericNode as MGenericNode,
-} from '$theater/integrations/react/treeMirroring/MirrorOfReactTree'
+} from '$studio/integrations/react/treeMirroring/MirrorOfReactTree'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import {val} from '$shared/DataVerse2/atom'
 import {Pointer} from '$shared/DataVerse2/pointer'
@@ -10,11 +10,11 @@ import TheaterComponent, {
   isTheaterComponent,
 } from '../componentModel/react/TheaterComponent/TheaterComponent'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
-import Theater from '$theater/bootstrap/Theater'
+import Theater from '$studio/bootstrap/Theater'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
-import {getComponentDescriptor} from '$theater/componentModel/selectors'
+import {getComponentDescriptor} from '$studio/componentModel/selectors'
 import NodeTemplate, {TaggedDisplayName} from './NodeTemplate'
-import {TheaterConsumer} from '$theater/componentModel/react/utils/theaterContext'
+import {TheaterConsumer} from '$studio/componentModel/react/utils/theaterContext'
 
 type Props = {
   depth: number

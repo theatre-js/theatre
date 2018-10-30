@@ -3,17 +3,17 @@ import {
   BoxesObject,
   LayoutArray,
   Variables,
-} from '$theater/AnimationTimelinePanel/types'
-import {svgPaddingY} from '$theater/AnimationTimelinePanel/variables/GraphsSvgWrapper'
+} from '$studio/AnimationTimelinePanel/types'
+import {svgPaddingY} from '$studio/AnimationTimelinePanel/variables/GraphsSvgWrapper'
 import {
   TSelectedPoints,
   TBoxesBoundaries,
   TDims,
   TTransformedSelectedArea,
   THorizontalLimits,
-} from '$theater/AnimationTimelinePanel/selection/types'
-import {MIN_BOX_HEIGHT} from '$theater/AnimationTimelinePanel/boxes/BoxWrapper'
-import {POINT_RECT_EDGE_SIZE} from '$theater/AnimationTimelinePanel/views/point/PointClickArea'
+} from '$studio/AnimationTimelinePanel/selection/types'
+import {MIN_BOX_HEIGHT} from '$studio/AnimationTimelinePanel/boxes/BoxWrapper'
+import {POINT_RECT_EDGE_SIZE} from '$studio/AnimationTimelinePanel/views/point/PointClickArea'
 
 export const memoizedGetBoxesBoundaries = memoizeOne(
   (boxes: BoxesObject, layout: LayoutArray): TBoxesBoundaries => {

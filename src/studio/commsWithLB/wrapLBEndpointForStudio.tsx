@@ -1,4 +1,4 @@
-import {RequestFn} from '$theater/commsWithLB/LBCommunicator'
+import {RequestFn} from '$studio/commsWithLB/LBCommunicator'
 
 export type WrapLBEndpointForStudio<Fn extends Function> = Fn extends (
   params: infer Params,

@@ -1,7 +1,7 @@
 import React from 'react'
 import * as css from './LeftPanelHeader.css'
-import ExploreFlyoutMenu from '$theater/ExploreFlyoutMenu/ExploreFlyoutMenu'
-import PanelTab from '$theater/workspace/components/Panel/PanelTab'
+import ExploreFlyoutMenu from '$studio/ExploreFlyoutMenu/ExploreFlyoutMenu'
+import PanelTab from '$studio/workspace/components/Panel/PanelTab'
 import SvgIcon from '$shared/components/SvgIcon'
 import ExploreIcon from 'svg-inline-loader!./ExploreIcon.svg'
 

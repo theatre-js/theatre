@@ -4,8 +4,8 @@ import {
   focusedTimeToX,
   addGlobalSeekerDragRule,
   removeGlobalSeekerDragRule,
-} from '$theater/AnimationTimelinePanel/utils'
-import DraggableArea from '$theater/common/components/DraggableArea/DraggableArea'
+} from '$studio/AnimationTimelinePanel/utils'
+import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
 import resolveCss from '$shared/utils/resolveCss'
 
 const classes = resolveCss(css)

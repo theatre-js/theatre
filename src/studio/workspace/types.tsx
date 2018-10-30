@@ -1,4 +1,4 @@
-import {IComponentId} from '$theater/componentModel/types'
+import {IComponentId} from '$studio/componentModel/types'
 import * as t from '$shared/ioTypes/index'
 
 export const $IPanelId = t.string

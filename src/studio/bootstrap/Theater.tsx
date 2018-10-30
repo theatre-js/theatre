@@ -4,9 +4,9 @@ import {UnwrapDictAtom} from '$shared/DataVerse/atoms/dictAtom'
 import AbstractDerivedDict from '$shared/DataVerse/derivations/dicts/AbstractDerivedDict'
 import {PointerDerivation} from '$shared/DataVerse/derivations/pointer'
 import {Atom} from '$shared/DataVerse2/atom'
-import Studio from '$theater/bootstrap/Studio'
+import Studio from '$studio/bootstrap/Studio'
 import atomFromReduxStore from '$shared/utils/redux/atomFromReduxStore'
-import {ITheaterStoreState} from '$theater/types'
+import {ITheaterStoreState} from '$studio/types'
 import {Store} from 'redux'
 import configureAtom from './configureAtom'
 import configureStore from '$shared/utils/redux/configureStore'
@@ -45,14 +45,14 @@ export default class Theater {
       //         path: ['componentModel', 'modifierDescriptors', 'core'],
       //         reducer: () =>
       //           r(
-      //             '$theater/componentModel/coreModifierDescriptors/coreModifierDescriptors',
+      //             '$studio/componentModel/coreModifierDescriptors/coreModifierDescriptors',
       //           ).default,
       //       },
       //       {
       //         path: ['componentModel', 'componentDescriptors', 'core'],
       //         reducer: () =>
       //           r(
-      //             '$theater/componentModel/coreComponentDescriptors/coreComponentDescriptors',
+      //             '$studio/componentModel/coreComponentDescriptors/coreComponentDescriptors',
       //           ).default,
       //       },
       //     ]),

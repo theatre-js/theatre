@@ -1,15 +1,15 @@
 import {
   contextTypes,
   contextName,
-} from '$theater/componentModel/react/utils/theaterContext'
+} from '$studio/componentModel/react/utils/theaterContext'
 import React from 'react'
-import Theater, {TheaterStateAtom} from '$theater/bootstrap/Theater'
+import Theater, {TheaterStateAtom} from '$studio/bootstrap/Theater'
 import {reduceStateAction} from '$shared/utils/redux/commonActions'
 import {GenericAction} from '$shared/types'
 import {PointerDerivation} from '$shared/DataVerse/derivations/pointer'
 import AbstractDerivedDict from '$shared/DataVerse/derivations/dicts/AbstractDerivedDict'
 import {UnwrapDictAtom} from '$shared/DataVerse/atoms/dictAtom'
-import {ITheaterStoreState} from '$theater/types'
+import {ITheaterStoreState} from '$studio/types'
 import {Pointer} from '$shared/DataVerse2/pointer'
 
 /**

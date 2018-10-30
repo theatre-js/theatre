@@ -1,4 +1,4 @@
-import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
+import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
 import React from 'react'
 import resolveCss from '$shared/utils/resolveCss'
 import * as css from './UberModifierInspector.css'

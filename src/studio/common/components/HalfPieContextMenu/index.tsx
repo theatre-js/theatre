@@ -2,7 +2,7 @@ import React from 'react'
 import * as css from './index.css'
 import cx from 'classnames'
 import {flatMap} from '$shared/utils'
-import Overlay from '$theater/common/components/Overlay/Overlay'
+import Overlay from '$studio/common/components/Overlay/Overlay'
 
 interface IProps {
   close: Function

@@ -4,23 +4,23 @@ import * as css from './Viewport.css'
 import resolveCss from '$shared/utils/resolveCss'
 import dictAtom from '$shared/DataVerse/atoms/dictAtom'
 import arrayAtom from '$shared/DataVerse/atoms/arrayAtom'
-import elementify from '$theater/componentModel/react/elementify/elementify'
+import elementify from '$studio/componentModel/react/elementify/elementify'
 import constant from '$shared/DataVerse/derivations/constant'
-import Theater from '$theater/bootstrap/Theater'
-import {reduceHistoricState} from '$theater/bootstrap/actions'
-import {getComponentDescriptor} from '$theater/componentModel/selectors'
+import Theater from '$studio/bootstrap/Theater'
+import {reduceHistoricState} from '$studio/bootstrap/actions'
+import {getComponentDescriptor} from '$studio/componentModel/selectors'
 import EditOverlay, {
   SizeChanges,
-} from '$theater/workspace/components/Panel/EditOverlay'
-import {IViewport} from '$theater/workspace/types'
+} from '$studio/workspace/components/Panel/EditOverlay'
+import {IViewport} from '$studio/workspace/types'
 import {
   MODES,
   ActiveMode,
-} from '$theater/common/components/ActiveModeDetector/ActiveModeDetector'
-import {TBoundingRect} from '$theater/workspace/components/WhatToShowInBody/Viewports/ViewportInstantiator'
-import Header from '$theater/workspace/components/WhatToShowInBody/Viewports/Header'
+} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
+import {TBoundingRect} from '$studio/workspace/components/WhatToShowInBody/Viewports/ViewportInstantiator'
+import Header from '$studio/workspace/components/WhatToShowInBody/Viewports/Header'
 import {batchedAction} from '$shared/utils/redux/withHistory/withBatchActions'
-import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
+import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 
 const classes = resolveCss(css)

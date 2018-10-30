@@ -1,6 +1,6 @@
-@value boxLegendWidth from '$theater/AnimationTimelinePanel/TimelinePanelContent.css';
-@value dropZoneMoveIndicatorHeight from '$theater/AnimationTimelinePanel/boxes/BoxesContainer.css';
-@value dropZoneMoveIndicatorTop from '$theater/AnimationTimelinePanel/boxes/BoxesContainer.css';
+@value boxLegendWidth from '$studio/AnimationTimelinePanel/TimelinePanelContent.css';
+@value dropZoneMoveIndicatorHeight from '$studio/AnimationTimelinePanel/boxes/BoxesContainer.css';
+@value dropZoneMoveIndicatorTop from '$studio/AnimationTimelinePanel/boxes/BoxesContainer.css';
 @value animationLength: 0.2s;
 @value minBoxHeight: 40px;
 

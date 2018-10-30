@@ -1,12 +1,12 @@
 import React from 'react'
-import connect from '$theater/handy/connect'
+import connect from '$studio/handy/connect'
 import css from './TypeSelector.css'
-import HeadlessDataList from '$theater/common/components/HeadlessDataList/HeadlessDataList'
-import {ITheaterStoreState} from '$theater/types'
+import HeadlessDataList from '$studio/common/components/HeadlessDataList/HeadlessDataList'
+import {ITheaterStoreState} from '$studio/types'
 import * as _ from '$shared/utils'
 import cx from 'classnames'
-import {IModifierDescriptor} from '$theater/componentModel/types'
-import Overlay from '$theater/common/components/Overlay/Overlay'
+import {IModifierDescriptor} from '$studio/componentModel/types'
+import Overlay from '$studio/common/components/Overlay/Overlay'
 
 interface IProps {
   left: number

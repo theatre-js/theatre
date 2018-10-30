@@ -1,8 +1,8 @@
 import React from 'react'
 import css from './FocusBar.css'
 import resolveCss from '$shared/utils/resolveCss'
-import DraggableArea from '$theater/common/components/DraggableArea/DraggableArea'
-import {timeToX, xToTime} from '$theater/AnimationTimelinePanel/utils'
+import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
+import {timeToX, xToTime} from '$studio/AnimationTimelinePanel/utils'
 
 interface IProps {
   duration: number

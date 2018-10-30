@@ -3,11 +3,11 @@ import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import {val} from '$shared/DataVerse2/atom'
 import css from './FramesGrid.css'
 import resolveCss from '$shared/utils/resolveCss'
-import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
+import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
 import {
   xToFocusedTime,
   focusedTimeToX,
-} from '$theater/AnimationTimelinePanel/utils'
+} from '$studio/AnimationTimelinePanel/utils'
 
 const classes = resolveCss(css)
 

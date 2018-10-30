@@ -1,6 +1,6 @@
-import SetAttribute from '$theater/componentModel/coreModifierDescriptors/HTML/SetAttribute/SetAttribute'
-import SetCustomStyle from '$theater/componentModel/coreModifierDescriptors/HTML/SetCustomStyle/SetCustomStyle'
-import UberModifier from '$theater/componentModel/coreModifierDescriptors/HTML/UberModifier/UberModifier'
+import SetAttribute from '$studio/componentModel/coreModifierDescriptors/HTML/SetAttribute/SetAttribute'
+import SetCustomStyle from '$studio/componentModel/coreModifierDescriptors/HTML/SetCustomStyle/SetCustomStyle'
+import UberModifier from '$studio/componentModel/coreModifierDescriptors/HTML/UberModifier/UberModifier'
 
 const coreModifierDescriptors = {
   // 'TheaterJS/Core/HTML/SetAttribute': SetAttribute,

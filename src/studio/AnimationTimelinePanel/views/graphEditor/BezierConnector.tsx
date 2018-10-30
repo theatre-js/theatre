@@ -1,14 +1,14 @@
 import React from 'react'
-import {PointHandles as IHandles} from '$theater/AnimationTimelinePanel/types'
-import {PanelActiveModeChannel} from '$theater/workspace/components/Panel/Panel'
+import {PointHandles as IHandles} from '$studio/AnimationTimelinePanel/types'
+import {PanelActiveModeChannel} from '$studio/workspace/components/Panel/Panel'
 import {Subscriber} from 'react-broadcast'
 import {
   MODES,
   ActiveMode,
-} from '$theater/common/components/ActiveModeDetector/ActiveModeDetector'
+} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
 import css from './BezierConnector.css'
 import noop from '$shared/utils/noop'
-import {TShowConnectorContextMenu} from '$theater/AnimationTimelinePanel/views/types'
+import {TShowConnectorContextMenu} from '$studio/AnimationTimelinePanel/views/types'
 import resolveCss from '$shared/utils/resolveCss'
 
 const classes = resolveCss(css)

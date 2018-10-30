@@ -1,6 +1,6 @@
 import propTypes from 'prop-types'
 import React from 'react'
-import Theater from '$theater/bootstrap/Theater'
+import Theater from '$studio/bootstrap/Theater'
 
 export const contextName = '@@theater/stheater'
 

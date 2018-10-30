@@ -1,11 +1,11 @@
 import React from 'react'
 import {render} from 'react-dom'
-import LBCommunicator from '$theater/commsWithLB/LBCommunicator'
+import LBCommunicator from '$studio/commsWithLB/LBCommunicator'
 import StudioRootComponent from './components/StudioRootComponent'
-import {reduceAhistoricState} from '$theater/bootstrap/actions'
-import StatePersistor from '$theater/statePersistence/StatePersistor'
+import {reduceAhistoricState} from '$studio/bootstrap/actions'
+import StatePersistor from '$studio/statePersistence/StatePersistor'
 import ElementTree from './ElementTree'
-import Theater from '$theater/bootstrap/Theater'
+import Theater from '$studio/bootstrap/Theater'
 
 export default class Studio {
   elementTree: ElementTree

@@ -6,18 +6,18 @@ import resolveCss from '$shared/utils/resolveCss'
 import {
   VolatileId,
   GenericNode,
-} from '$theater/integrations/react/treeMirroring/MirrorOfReactTree'
+} from '$studio/integrations/react/treeMirroring/MirrorOfReactTree'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import {val} from '$shared/DataVerse2/atom'
-import {reduceAhistoricState} from '$theater/bootstrap/actions'
+import {reduceAhistoricState} from '$studio/bootstrap/actions'
 import {omit} from '$shared/utils'
 import AnyNode from './AnyNode'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import {getActiveViewportId, getVolatileIdOfActiveNode} from './utils'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
-import Theater from '$theater/bootstrap/Theater'
-import HighlightByInternalInstance from '$theater/common/components/DomHighlighter/HighlightByInternalInstance'
-import {TheaterConsumer} from '$theater/componentModel/react/utils/theaterContext'
+import Theater from '$studio/bootstrap/Theater'
+import HighlightByInternalInstance from '$studio/common/components/DomHighlighter/HighlightByInternalInstance'
+import {TheaterConsumer} from '$studio/componentModel/react/utils/theaterContext'
 
 type Props = {
   isSelectable: boolean

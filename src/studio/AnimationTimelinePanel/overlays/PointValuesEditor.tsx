@@ -1,11 +1,11 @@
 import React from 'react'
 import css from './PointValuesEditor.css'
 import resolveCss from '$shared/utils/resolveCss'
-import {TPointValuesEditorProps} from '$theater/AnimationTimelinePanel/overlays/types'
-import Overlay from '$theater/common/components/Overlay/Overlay'
-import {reduceHistoricState} from '$theater/bootstrap/actions'
-import {TPoint} from '$theater/AnimationTimelinePanel/types'
-import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
+import {TPointValuesEditorProps} from '$studio/AnimationTimelinePanel/overlays/types'
+import Overlay from '$studio/common/components/Overlay/Overlay'
+import {reduceHistoricState} from '$studio/bootstrap/actions'
+import {TPoint} from '$studio/AnimationTimelinePanel/types'
+import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
 
 const classes = resolveCss(css)
 

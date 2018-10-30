@@ -1,23 +1,23 @@
 import React from 'react'
 import {Subscriber, Broadcast} from 'react-broadcast'
-import {PanelActiveModeChannel} from '$theater/workspace/components/Panel/Panel'
+import {PanelActiveModeChannel} from '$studio/workspace/components/Panel/Panel'
 import {
   MODES,
   ActiveMode,
-} from '$theater/common/components/ActiveModeDetector/ActiveModeDetector'
+} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
 import css from './SelectionProvider.css'
 import resolveCss from '$shared/utils/resolveCss'
-import {disableEvent, getSvgWidth} from '$theater/AnimationTimelinePanel/utils'
-import DraggableArea from '$theater/common/components/DraggableArea/DraggableArea'
+import {disableEvent, getSvgWidth} from '$studio/AnimationTimelinePanel/utils'
+import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
 import {
   BoxesObject,
   LayoutArray,
   Variables,
-} from '$theater/AnimationTimelinePanel/types'
+} from '$studio/AnimationTimelinePanel/types'
 import {val} from '$shared/DataVerse2/atom'
 import {get, setImmutable as set} from '$shared/utils'
 import {Pointer} from '$shared/DataVerse2/pointer'
-import * as utils from '$theater/AnimationTimelinePanel/selection/utils'
+import * as utils from '$studio/AnimationTimelinePanel/selection/utils'
 import {
   TDims,
   TTransformedSelectedArea,
@@ -27,9 +27,9 @@ import {
   TExtremumsMap,
   TSelectionMove,
   THorizontalLimits,
-} from '$theater/AnimationTimelinePanel/selection/types'
-import {reduceHistoricState} from '$theater/bootstrap/actions'
-import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
+} from '$studio/AnimationTimelinePanel/selection/types'
+import {reduceHistoricState} from '$studio/bootstrap/actions'
+import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
 
 const classes = resolveCss(css)
 

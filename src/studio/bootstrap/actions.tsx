@@ -1,4 +1,4 @@
-import {IStoreAhistoricState, IStoreHistoricState} from '$theater/types'
+import {IStoreAhistoricState, IStoreHistoricState} from '$studio/types'
 import {GenericAction} from '$shared/types'
 import {ahistoricalAction} from '$shared/utils/redux/withHistory/actions'
 import {reduceStateAction} from '$shared/utils/redux/commonActions'

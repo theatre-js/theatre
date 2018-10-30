@@ -1,10 +1,10 @@
 import React from 'react'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 import withDeps from '$shared/DataVerse/derivations/withDeps'
-import {isCoreComponent} from '$theater/componentModel/selectors'
+import {isCoreComponent} from '$studio/componentModel/selectors'
 import getOrCreateClassForDeclarativeComponentId from './ElementifyDeclarativeComponent/getOrCreateClassForDeclarativeComponentId'
 import constant from '$shared/DataVerse/derivations/constant'
-import Theater from '$theater/bootstrap/Theater'
+import Theater from '$studio/bootstrap/Theater'
 
 const identity = a => a
 

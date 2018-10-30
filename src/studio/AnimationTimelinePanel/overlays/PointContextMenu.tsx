@@ -1,13 +1,13 @@
 import React from 'react'
-import HalfPieContextMenu from '$theater/common/components/HalfPieContextMenu'
-import {TPointContextMenuProps} from '$theater/AnimationTimelinePanel/overlays/types'
+import HalfPieContextMenu from '$studio/common/components/HalfPieContextMenu'
+import {TPointContextMenuProps} from '$studio/AnimationTimelinePanel/overlays/types'
 import MdDonutSmall from 'react-icons/lib/md/donut-small'
 import MdCancel from 'react-icons/lib/md/cancel'
 import MdStars from 'react-icons/lib/md/stars'
 import noop from '$shared/utils/noop'
-import {reduceHistoricState} from '$theater/bootstrap/actions'
-import {TPoint} from '$theater/AnimationTimelinePanel/types'
-import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
+import {reduceHistoricState} from '$studio/bootstrap/actions'
+import {TPoint} from '$studio/AnimationTimelinePanel/types'
+import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
 
 interface IProps extends TPointContextMenuProps {
   pathToTimeline: string[]

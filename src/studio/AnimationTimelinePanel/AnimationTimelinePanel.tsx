@@ -1,19 +1,19 @@
 import React from 'react'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
-import Panel from '$theater/workspace/components/Panel/Panel'
+import Panel from '$studio/workspace/components/Panel/Panel'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 import {
   getVolatileIdOfActiveNode,
   getComponentIdOfNode,
-} from '$theater/ExploreFlyoutMenu/utils'
-import {getPathToComponentDescriptor} from '$theater/componentModel/selectors'
+} from '$studio/ExploreFlyoutMenu/utils'
+import {getPathToComponentDescriptor} from '$studio/componentModel/selectors'
 import {Pointer} from '$shared/DataVerse2/pointer'
-import {IDeclarativeComponentDescriptor} from '$theater/componentModel/types'
+import {IDeclarativeComponentDescriptor} from '$studio/componentModel/types'
 import * as _ from '$shared/utils'
 import {val, pathTo} from '$shared/DataVerse2/atom'
-import TimelineInstantiator from '$theater/AnimationTimelinePanel/TimelineInstantiator'
+import TimelineInstantiator from '$studio/AnimationTimelinePanel/TimelineInstantiator'
 import DerivationAsReactElement from '$shared/utils/react/DerivationAsReactElement'
-import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
+import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
 
 class AnimationTimelinePanel extends PureComponentWithTheater<{}, void> {
   _d: AbstractDerivation<React.ReactNode>

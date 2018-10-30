@@ -2,8 +2,8 @@ import {
   TPointValuesEditorProps,
   TPointContextMenuProps,
   TConnectorContextMenuProps,
-} from '$theater/AnimationTimelinePanel/overlays/types'
-import {TPointData} from '$theater/AnimationTimelinePanel/selection/types'
+} from '$studio/AnimationTimelinePanel/overlays/types'
+import {TPointData} from '$studio/AnimationTimelinePanel/selection/types'
 
 export type TShowPointValuesEditor = (
   props: Pick<

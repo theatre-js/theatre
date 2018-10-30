@@ -3,12 +3,12 @@ import * as css from './TextNode.css'
 import {
   VolatileId,
   TextNode as MTextNode,
-} from '$theater/integrations/react/treeMirroring/MirrorOfReactTree'
+} from '$studio/integrations/react/treeMirroring/MirrorOfReactTree'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import {val} from '$shared/DataVerse2/atom'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import NodeTemplate from './NodeTemplate'
-import {TheaterConsumer} from '$theater/componentModel/react/utils/theaterContext'
+import {TheaterConsumer} from '$studio/componentModel/react/utils/theaterContext'
 
 type Props = {
   depth: number

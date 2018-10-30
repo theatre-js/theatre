@@ -1,7 +1,7 @@
 import React from 'react'
 import * as css from './ComponentNameEditor.css'
-import ExpressionlessStringEditor from '$theater/structuralEditor/components/reusables/ExpressionlessStringEditor'
-import PanelSection from '$theater/structuralEditor/components/reusables/PanelSection'
+import ExpressionlessStringEditor from '$studio/structuralEditor/components/reusables/ExpressionlessStringEditor'
+import PanelSection from '$studio/structuralEditor/components/reusables/PanelSection'
 
 type Props = {
   pathToComponentDescriptor: Array<string>

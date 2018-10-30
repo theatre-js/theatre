@@ -2,10 +2,10 @@
 
 import React from 'react'
 import {compose} from 'ramda'
-import {getIsHydrated} from '$theater/common/selectors'
+import {getIsHydrated} from '$studio/common/selectors'
 
-import {ITheaterStoreState} from '$theater/types'
-import connect from '$theater/handy/connect'
+import {ITheaterStoreState} from '$studio/types'
+import connect from '$studio/handy/connect'
 
 type Props = {
   isHydrated: boolean

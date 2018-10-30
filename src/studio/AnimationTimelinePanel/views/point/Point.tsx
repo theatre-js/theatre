@@ -1,6 +1,6 @@
 import React from 'react'
-import PointClickArea from '$theater/AnimationTimelinePanel/views/point/PointClickArea'
-import PointCircle from '$theater/AnimationTimelinePanel/views/point/PointCircle'
+import PointClickArea from '$studio/AnimationTimelinePanel/views/point/PointClickArea'
+import PointCircle from '$studio/AnimationTimelinePanel/views/point/PointCircle'
 
 interface IProps {
   x: number

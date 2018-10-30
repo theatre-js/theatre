@@ -3,11 +3,11 @@ import {Subscriber} from 'react-broadcast'
 import {
   VariablesPropGetterChannel,
   TPropGetter,
-} from '$theater/AnimationTimelinePanel/variables/VariablesPropProvider'
-import {SelectionAPIChannel} from '$theater/AnimationTimelinePanel/selection/SelectionProvider'
-import {OverlaysAPIChannel} from '$theater/AnimationTimelinePanel/overlays/OverlaysProvider'
-import {TSelectionAPI} from '$theater/AnimationTimelinePanel/selection/types'
-import {TOverlaysAPI} from '$theater/AnimationTimelinePanel/overlays/types'
+} from '$studio/AnimationTimelinePanel/variables/VariablesPropProvider'
+import {SelectionAPIChannel} from '$studio/AnimationTimelinePanel/selection/SelectionProvider'
+import {OverlaysAPIChannel} from '$studio/AnimationTimelinePanel/overlays/OverlaysProvider'
+import {TSelectionAPI} from '$studio/AnimationTimelinePanel/selection/types'
+import {TOverlaysAPI} from '$studio/AnimationTimelinePanel/overlays/types'
 
 export interface IWithUtilsProps {
   propGetter: TPropGetter

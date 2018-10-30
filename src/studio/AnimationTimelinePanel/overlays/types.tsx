@@ -1,4 +1,4 @@
-import {VariableID} from '$theater/AnimationTimelinePanel/types'
+import {VariableID} from '$studio/AnimationTimelinePanel/types'
 
 export type TOverlaysAPI = {
   showPointValuesEditor: (props: TPointValuesEditorProps) => void

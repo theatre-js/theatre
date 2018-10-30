@@ -1,4 +1,4 @@
-@value boxLegendWidth from '$theater/AnimationTimelinePanel/TimelinePanelContent.css';
+@value boxLegendWidth from '$studio/AnimationTimelinePanel/TimelinePanelContent.css';
 
 .stickyWrapper {
   position: sticky;

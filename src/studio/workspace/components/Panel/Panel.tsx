@@ -1,15 +1,15 @@
 import resolveCss from '$shared/utils/resolveCss'
-import EditOverlay from '$theater/workspace/components/Panel/EditOverlay'
+import EditOverlay from '$studio/workspace/components/Panel/EditOverlay'
 import {
   IPanelControlChannelData,
   PanelControlChannel,
-} from '$theater/workspace/components/PanelController/PanelController'
+} from '$studio/workspace/components/PanelController/PanelController'
 import {
   EXACT_VALUE,
   SAME_AS_BOUNDARY,
-} from '$theater/workspace/components/StudioUI/StudioUI'
-import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
-import {MODES} from '$theater/common/components/ActiveModeDetector/ActiveModeDetector'
+} from '$studio/workspace/components/StudioUI/StudioUI'
+import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
+import {MODES} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
 import * as _ from '$shared/utils'
 import React from 'react'
 import {Broadcast, Subscriber} from 'react-broadcast'

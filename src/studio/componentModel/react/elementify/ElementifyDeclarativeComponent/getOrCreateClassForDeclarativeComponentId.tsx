@@ -1,6 +1,6 @@
-import {label} from '$theater/structuralEditor/components/reusables/PanelSection.css'
-import {IComponentId} from '$theater/componentModel/types'
-import TheaterComponent from '$theater/componentModel/react/TheaterComponent/TheaterComponent'
+import {label} from '$studio/structuralEditor/components/reusables/PanelSection.css'
+import {IComponentId} from '$studio/componentModel/types'
+import TheaterComponent from '$studio/componentModel/react/TheaterComponent/TheaterComponent'
 import {
   DerivedClass,
   Classify,

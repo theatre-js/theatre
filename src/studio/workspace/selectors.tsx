@@ -1,5 +1,5 @@
-import {Selector, ITheaterStoreState} from '$theater/types'
-import {visiblePanelsList, IWorkspacePanel} from '$theater/workspace/types'
+import {Selector, ITheaterStoreState} from '$studio/types'
+import {visiblePanelsList, IWorkspacePanel} from '$studio/workspace/types'
 
 export const getVisiblePanelsList: Selector<visiblePanelsList, void> = state =>
   state.historicWorkspace.panels.listOfVisibles

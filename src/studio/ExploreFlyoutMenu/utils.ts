@@ -1,7 +1,7 @@
-import {isTheaterComponent} from '$theater/componentModel/react/TheaterComponent/TheaterComponent'
+import {isTheaterComponent} from '$studio/componentModel/react/TheaterComponent/TheaterComponent'
 import {val} from '$shared/DataVerse2/atom'
-import Theater from '$theater/bootstrap/Theater'
-import {isViewportNode} from '$theater/workspace/components/WhatToShowInBody/Viewports/Viewport'
+import Theater from '$studio/bootstrap/Theater'
+import {isViewportNode} from '$studio/workspace/components/WhatToShowInBody/Viewports/Viewport'
 
 export const getActiveViewportId = (theater: Theater): string | undefined => {
   return val(theater.atom2.pointer.historicWorkspace.viewports.activeViewportId)

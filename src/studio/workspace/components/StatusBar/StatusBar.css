@@ -1,4 +1,4 @@
-@value typographyFont from '$theater/common/styles.css';
+@value typographyFont from '$studio/common/styles.css';
 
 .container {
   position: fixed;

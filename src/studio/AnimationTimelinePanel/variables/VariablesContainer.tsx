@@ -1,15 +1,15 @@
-import {BoxObject, VariableID} from '$theater/AnimationTimelinePanel/types'
+import {BoxObject, VariableID} from '$studio/AnimationTimelinePanel/types'
 import React from 'react'
 import css from './VariablesContainer.css'
 import resolveCss from '$shared/utils/resolveCss'
-import VariableProcessor from '$theater/AnimationTimelinePanel/variables/VariableProcessor'
-import GraphsSvgWrapper from '$theater/AnimationTimelinePanel/variables/GraphsSvgWrapper'
+import VariableProcessor from '$studio/AnimationTimelinePanel/variables/VariableProcessor'
+import GraphsSvgWrapper from '$studio/AnimationTimelinePanel/variables/GraphsSvgWrapper'
 import {sortBy} from '$shared/utils'
-import {colors} from '$theater/AnimationTimelinePanel/utils'
-import VariableHitZone from '$theater/AnimationTimelinePanel/variables/VariableHitZone'
-import DopeSheetWrapper from '$theater/AnimationTimelinePanel/variables/DopeSheetWrapper'
-import DopeSheet from '$theater/AnimationTimelinePanel/views/DopeSheet'
-import GraphEditor from '$theater/AnimationTimelinePanel/views/GraphEditor'
+import {colors} from '$studio/AnimationTimelinePanel/utils'
+import VariableHitZone from '$studio/AnimationTimelinePanel/variables/VariableHitZone'
+import DopeSheetWrapper from '$studio/AnimationTimelinePanel/variables/DopeSheetWrapper'
+import DopeSheet from '$studio/AnimationTimelinePanel/views/DopeSheet'
+import GraphEditor from '$studio/AnimationTimelinePanel/views/GraphEditor'
 
 const classes = resolveCss(css)
 

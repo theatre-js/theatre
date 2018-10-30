@@ -3,14 +3,14 @@ import {
   IStoreAhistoricState,
   ITheaterStoreState,
   RStoreState,
-} from '$theater/types'
+} from '$studio/types'
 import withCommonActions from '$shared/utils/redux/withCommonActions'
 import {ReduxReducer} from '$shared/types'
 import {withHistory} from '$shared/utils/redux/withHistory/withHistoryDeprecated'
 import {
   initialHistoricState,
   initialAhistoricState,
-} from '$theater/bootstrap/initialState'
+} from '$studio/bootstrap/initialState'
 import withBatchedActions from '$shared/utils/redux/withHistory/withBatchActions'
 import withTypeConformity from '$shared/utils/redux/withTypeConformity'
 import {compose} from 'ramda'

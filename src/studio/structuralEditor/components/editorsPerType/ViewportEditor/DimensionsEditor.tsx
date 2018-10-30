@@ -1,14 +1,14 @@
 import resolveCss from '$shared/utils/resolveCss'
-import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
+import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import React from 'react'
 import * as css from './DimensionsEditor.css'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import {val} from '$shared/DataVerse2/atom'
-import PanelSection from '$theater/structuralEditor/components/reusables/PanelSection'
+import PanelSection from '$studio/structuralEditor/components/reusables/PanelSection'
 import {get} from '$shared/utils'
-import {IViewport} from '$theater/workspace/types'
-import ExpressionlessNumberEditor from '$theater/structuralEditor/components/reusables/ExpressionlessNumberEditor'
+import {IViewport} from '$studio/workspace/types'
+import ExpressionlessNumberEditor from '$studio/structuralEditor/components/reusables/ExpressionlessNumberEditor'
 
 type IProps = {
   css?: Partial<typeof css>

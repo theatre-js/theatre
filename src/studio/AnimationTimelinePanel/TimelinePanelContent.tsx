@@ -2,9 +2,9 @@ import React from 'react'
 import css from './TimelinePanelContent.css'
 import Panel, {
   PanelWidthChannel,
-} from '$theater/workspace/components/Panel/Panel'
+} from '$studio/workspace/components/Panel/Panel'
 import {Subscriber} from 'react-broadcast'
-import TimelineInstance from '$theater/componentModel/react/TheaterComponent/TimelineInstance/TimelineInstance'
+import TimelineInstance from '$studio/componentModel/react/TheaterComponent/TimelineInstance/TimelineInstance'
 import {BoxAtom} from '$shared/DataVerse/atoms/boxAtom'
 import clamp from '$shared/number/clamp'
 import noop from '$shared/utils/noop'
@@ -18,15 +18,15 @@ import {
   timeToX,
   getSvgWidth,
   xToTime,
-} from '$theater/AnimationTimelinePanel/utils'
+} from '$studio/AnimationTimelinePanel/utils'
 import memoizeOne from 'memoize-one'
-import DraggableArea from '$theater/common/components/DraggableArea/DraggableArea'
-import TimeUI from '$theater/AnimationTimelinePanel/time/TimeUI'
-import RootPropProvider from '$theater/AnimationTimelinePanel/RootPropProvider'
-import BoxesContainer from '$theater/AnimationTimelinePanel/boxes/BoxesContainer'
-import SelectionProvider from '$theater/AnimationTimelinePanel/selection/SelectionProvider'
-import OverlaysProvider from '$theater/AnimationTimelinePanel/overlays/OverlaysProvider'
-import FramesGrid from '$theater/AnimationTimelinePanel/FramesGrid'
+import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
+import TimeUI from '$studio/AnimationTimelinePanel/time/TimeUI'
+import RootPropProvider from '$studio/AnimationTimelinePanel/RootPropProvider'
+import BoxesContainer from '$studio/AnimationTimelinePanel/boxes/BoxesContainer'
+import SelectionProvider from '$studio/AnimationTimelinePanel/selection/SelectionProvider'
+import OverlaysProvider from '$studio/AnimationTimelinePanel/overlays/OverlaysProvider'
+import FramesGrid from '$studio/AnimationTimelinePanel/FramesGrid'
 
 interface IOwnProps {
   timelineInstance: TimelineInstance

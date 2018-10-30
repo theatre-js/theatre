@@ -3,16 +3,16 @@ import {$IWorkspaceAhistoricState} from './workspace/types'
 import {
   ICommonNamespaceState,
   $ICommonNamespaceState,
-} from '$theater/common/types'
+} from '$studio/common/types'
 import {
   IWorkspaceHistoricState,
   IWorkspaceAhistoricState,
   $IWorkspaceHistoricState,
-} from '$theater/workspace/types'
+} from '$studio/workspace/types'
 import {
   IComponentModelNamespaceHistoricState,
   IComponentModelNamespaceAhistoricState,
-} from '$theater/componentModel/types'
+} from '$studio/componentModel/types'
 import {
   StateWithHistory,
   HistoryOnly,

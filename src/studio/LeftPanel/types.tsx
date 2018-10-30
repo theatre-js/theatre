@@ -1,4 +1,4 @@
-import {IComponentId} from '$theater/componentModel/types'
+import {IComponentId} from '$studio/componentModel/types'
 
 export type ComposePanelNamespaceState = {
   componentId: undefined | null | IComponentId

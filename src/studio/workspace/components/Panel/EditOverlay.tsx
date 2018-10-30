@@ -1,7 +1,7 @@
 import React from 'react'
 import * as css from './EditOverlay.css'
 import cx from 'classnames'
-import DraggableArea from '$theater/common/components/DraggableArea/DraggableArea'
+import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
 
 export type SizeChanges = Partial<{
   left: number

@@ -1,6 +1,6 @@
 import React from 'react'
 import * as css from './ExploreFlyoutMenu.css'
-import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
+import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import {val} from '$shared/DataVerse2/atom'
 import AnyNode from './AnyNode'

@@ -1,18 +1,18 @@
-import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
-import {reduceHistoricState} from '$theater/bootstrap/actions'
+import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
+import {reduceHistoricState} from '$studio/bootstrap/actions'
 import {
   TPoint,
   VariableID,
   PointPosition,
-} from '$theater/AnimationTimelinePanel/types'
-import {IWithUtilsProps} from '$theater/AnimationTimelinePanel/views/withUtils'
+} from '$studio/AnimationTimelinePanel/types'
+import {IWithUtilsProps} from '$studio/AnimationTimelinePanel/views/withUtils'
 import {
   TShowConnectorContextMenu,
   TShowPointContextMenu,
   TShowPointValuesEditor,
   TRemovePointFromSelection,
   TAddPointToSelection,
-} from '$theater/AnimationTimelinePanel/views/types'
+} from '$studio/AnimationTimelinePanel/views/types'
 
 export interface IViewBaseProps {
   pathToTimeline: string[]

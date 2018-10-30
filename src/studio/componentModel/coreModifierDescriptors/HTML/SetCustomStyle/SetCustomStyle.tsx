@@ -1,5 +1,5 @@
-import {ModifierDescriptor} from '$theater/componentModel/types'
-import commonStylesPrototype from '$theater/componentModel/coreModifierDescriptors/HTML/SetCustomStyle/commonStylesPrototype'
+import {ModifierDescriptor} from '$studio/componentModel/types'
+import commonStylesPrototype from '$studio/componentModel/coreModifierDescriptors/HTML/SetCustomStyle/commonStylesPrototype'
 import dictAtom from '$shared/DataVerse/atoms/dictAtom'
 
 const getClass = (propsP, cls) => {

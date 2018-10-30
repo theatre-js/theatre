@@ -1,12 +1,12 @@
-import {default as common} from '$theater/common/initialState'
+import {default as common} from '$studio/common/initialState'
 import {
   historicWorkspaceInitialState as historicWorkspace,
   ahistoricWorkspaceInitialState as ahistoricWorkspace,
-} from '$theater/workspace/initialState'
+} from '$studio/workspace/initialState'
 import {
   historicInitialState as historicComponentModel,
   ahistoricInitialState as ahistoricComponentModel,
-} from '$theater/componentModel/initialState'
+} from '$studio/componentModel/initialState'
 import {IStoreHistoricState, IStoreAhistoricState} from '../types'
 
 export const initialHistoricState: IStoreHistoricState = {

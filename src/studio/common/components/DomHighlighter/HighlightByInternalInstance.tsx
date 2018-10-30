@@ -1,6 +1,6 @@
 import React from 'react'
 import {isElement} from '$shared/utils'
-import DomHighlighter from '$theater/common/components/DomHighlighter/DomHighlighter'
+import DomHighlighter from '$studio/common/components/DomHighlighter/DomHighlighter'
 
 interface IProps {
   rendererId: string

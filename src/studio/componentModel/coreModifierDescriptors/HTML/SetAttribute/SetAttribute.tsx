@@ -1,4 +1,4 @@
-import attributesApplier from '$theater/componentModel/coreModifierDescriptors/HTML/SetAttribute/attributeApplier'
+import attributesApplier from '$studio/componentModel/coreModifierDescriptors/HTML/SetAttribute/attributeApplier'
 import boxAtom from '$shared/DataVerse/atoms/boxAtom'
 import emptyDict from '$shared/DataVerse/derivations/dicts/emptyDict'
 import dictAtom from '$shared/DataVerse/atoms/dictAtom'

@@ -1,36 +1,36 @@
 import React from 'react'
 import connectorCss from './connector.css'
 import pointCss from '../point/point.css'
-import {TColor} from '$theater/AnimationTimelinePanel/types'
+import {TColor} from '$studio/AnimationTimelinePanel/types'
 import {Subscriber} from 'react-broadcast'
 import {
   SelectedAreaChannel,
   SelectionMoveChannel,
-} from '$theater/AnimationTimelinePanel/selection/SelectionProvider'
+} from '$studio/AnimationTimelinePanel/selection/SelectionProvider'
 import {
   TTransformedSelectedArea,
   TSelectionMove,
-} from '$theater/AnimationTimelinePanel/selection/types'
-import {TPropName} from '$theater/AnimationTimelinePanel/variables/VariablesPropProvider'
+} from '$studio/AnimationTimelinePanel/selection/types'
+import {TPropName} from '$studio/AnimationTimelinePanel/variables/VariablesPropProvider'
 import {
   TAddPointToSelection,
   TRemovePointFromSelection,
   TShowPointValuesEditor,
-} from '$theater/AnimationTimelinePanel/views/types'
-import DraggableArea from '$theater/common/components/DraggableArea/DraggableArea'
+} from '$studio/AnimationTimelinePanel/views/types'
+import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
 import {
   addGlobalDopesheetDragRule,
   removeGlobalDopesheetDragRule,
-} from '$theater/AnimationTimelinePanel/utils'
+} from '$studio/AnimationTimelinePanel/utils'
 import {
   ActiveMode,
   MODES,
-} from '$theater/common/components/ActiveModeDetector/ActiveModeDetector'
-import {PanelActiveModeChannel} from '$theater/workspace/components/Panel/Panel'
-import PointCircle from '$theater/AnimationTimelinePanel/views/point/PointCircle'
-import LineConnectorRect from '$theater/AnimationTimelinePanel/views/dopeSheet/LineConnectorRect'
-import LineConnector from '$theater/AnimationTimelinePanel/views/dopeSheet/LineConnector'
-import Point from '$theater/AnimationTimelinePanel/views/point/Point'
+} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
+import {PanelActiveModeChannel} from '$studio/workspace/components/Panel/Panel'
+import PointCircle from '$studio/AnimationTimelinePanel/views/point/PointCircle'
+import LineConnectorRect from '$studio/AnimationTimelinePanel/views/dopeSheet/LineConnectorRect'
+import LineConnector from '$studio/AnimationTimelinePanel/views/dopeSheet/LineConnector'
+import Point from '$studio/AnimationTimelinePanel/views/point/Point'
 import {noop} from 'redux-saga/utils'
 
 interface IProps {

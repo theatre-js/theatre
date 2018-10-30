@@ -1,5 +1,5 @@
 import * as css from './index.css'
-import PanelSection from '$theater/structuralEditor/components/reusables/PanelSection'
+import PanelSection from '$studio/structuralEditor/components/reusables/PanelSection'
 import React from 'react'
 
 type Props = {

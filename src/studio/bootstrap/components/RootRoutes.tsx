@@ -1,7 +1,7 @@
 import * as React from 'react'
 import LoadingUnlessHydrated from './LoadingUnlessBootstrapped'
 import {MemoryRouter as Router, Route, Switch, Redirect} from 'react-router-dom'
-import StudioUI from '$theater/workspace/components/StudioUI/StudioUI'
+import StudioUI from '$studio/workspace/components/StudioUI/StudioUI'
 
 const mainRoutes = [<Route key="/" path="/" component={StudioUI} />]
 

@@ -2,13 +2,13 @@ import React from 'react'
 import {
   VolatileId,
   GenericNode,
-} from '$theater/integrations/react/treeMirroring/MirrorOfReactTree'
+} from '$studio/integrations/react/treeMirroring/MirrorOfReactTree'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import {val} from '$shared/DataVerse2/atom'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import {getVolatileIdsOfChildrenNLevelsDeep} from './NodeTemplate'
 import AnyNode from './AnyNode'
-import {TheaterConsumer} from '$theater/componentModel/react/utils/theaterContext'
+import {TheaterConsumer} from '$studio/componentModel/react/utils/theaterContext'
 
 type Props = {
   depth: number

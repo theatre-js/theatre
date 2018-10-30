@@ -1,9 +1,9 @@
 import {map, get} from '$shared/utils'
-import SingleCustomStyleInspector from '$theater/componentModel/coreModifierDescriptors/HTML/SetCustomStyle/SetCustomStyleInspector/SingleCustomStyleInspector'
-import ModifierInspectorWrapper from '$theater/common/components/ModifierInspectorWrapper'
-import {ITheaterStoreState} from '$theater/types'
+import SingleCustomStyleInspector from '$studio/componentModel/coreModifierDescriptors/HTML/SetCustomStyle/SetCustomStyleInspector/SingleCustomStyleInspector'
+import ModifierInspectorWrapper from '$studio/common/components/ModifierInspectorWrapper'
+import {ITheaterStoreState} from '$studio/types'
 import React from 'react'
-import connect from '$theater/handy/connect'
+import connect from '$studio/handy/connect'
 
 interface IOwnProps {
   pathToModifierInstantiationDescriptor: string[]

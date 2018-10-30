@@ -4,27 +4,27 @@ import resolveCss from '$shared/utils/resolveCss'
 import {
   BoxDnDAPIChannel,
   BoxDnDStateChannel,
-} from '$theater/AnimationTimelinePanel/boxes/BoxesContainer'
+} from '$studio/AnimationTimelinePanel/boxes/BoxesContainer'
 import {
   TBoxDnDAPI,
   TBoxDnDState,
-} from '$theater/AnimationTimelinePanel/boxes/types'
+} from '$studio/AnimationTimelinePanel/boxes/types'
 import {Subscriber} from 'react-broadcast'
 import {
   ActiveMode,
   MODES,
-} from '$theater/common/components/ActiveModeDetector/ActiveModeDetector'
-import {PanelActiveModeChannel} from '$theater/workspace/components/Panel/Panel'
-import DraggableArea from '$theater/common/components/DraggableArea/DraggableArea'
+} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
+import {PanelActiveModeChannel} from '$studio/workspace/components/Panel/Panel'
+import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
 import {
   RootPropGetterChannel,
   TPropGetter,
-} from '$theater/AnimationTimelinePanel/RootPropProvider'
-import {disableEvent} from '$theater/AnimationTimelinePanel/utils'
+} from '$studio/AnimationTimelinePanel/RootPropProvider'
+import {disableEvent} from '$studio/AnimationTimelinePanel/utils'
 import clamp from '$shared/number/clamp'
-import {reduceHistoricState} from '$theater/bootstrap/actions'
-import {BoxObject} from '$theater/AnimationTimelinePanel/types'
-import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
+import {reduceHistoricState} from '$studio/bootstrap/actions'
+import {BoxObject} from '$studio/AnimationTimelinePanel/types'
+import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
 
 const classes = resolveCss(css)
 

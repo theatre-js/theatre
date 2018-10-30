@@ -1,16 +1,16 @@
 import jiff from 'jiff'
-import {ITheaterStoreState, ITheaterHistoryState} from '$theater/types'
+import {ITheaterStoreState, ITheaterHistoryState} from '$studio/types'
 import {select, take, fork, cancel, actionChannel} from 'redux-saga/effects'
 import {delay, buffers} from 'redux-saga'
 import getProjectState from '$lb/studioStatePersistor/getProjectState.caller'
 import {isError} from '$shared/utils/isError'
-import {reduceAhistoricState} from '$theater/bootstrap/actions'
+import {reduceAhistoricState} from '$studio/bootstrap/actions'
 import pushDiffForProjectState from '$lb/studioStatePersistor/pushDiffForProjectState.caller'
 import {PromiseValue} from '$shared/types'
 import gneerateUniqueId from 'uuid/v4'
 import {replaceHistoryAction} from '$shared/utils/redux/withHistory/actions'
 import {batchedAction} from '$shared/utils/redux/withHistory/withBatchActions'
-import Theater from '$theater/bootstrap/Theater'
+import Theater from '$studio/bootstrap/Theater'
 
 export default class StatePersistor {
   _lastPersistedStateInfo:

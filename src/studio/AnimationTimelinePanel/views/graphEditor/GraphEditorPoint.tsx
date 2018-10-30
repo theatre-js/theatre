@@ -1,42 +1,42 @@
 import React from 'react'
 import pointCss from '../point/point.css'
-import DraggableArea from '$theater/common/components/DraggableArea/DraggableArea'
-import {PanelActiveModeChannel} from '$theater/workspace/components/Panel/Panel'
+import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
+import {PanelActiveModeChannel} from '$studio/workspace/components/Panel/Panel'
 import {Subscriber} from 'react-broadcast'
 import {
   MODES,
   ActiveMode,
-} from '$theater/common/components/ActiveModeDetector/ActiveModeDetector'
+} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
 import {
   PointHandles as IHandles,
   PointPosition,
   PointHandles,
   TColor,
-} from '$theater/AnimationTimelinePanel/types'
+} from '$studio/AnimationTimelinePanel/types'
 import {
   removeGlobalPointDragRule,
   addGlobalPointDragRule,
-} from '$theater/AnimationTimelinePanel/utils'
+} from '$studio/AnimationTimelinePanel/utils'
 import {
   SelectedAreaChannel,
   SelectionMoveChannel,
-} from '$theater/AnimationTimelinePanel/selection/SelectionProvider'
+} from '$studio/AnimationTimelinePanel/selection/SelectionProvider'
 import {
   TTransformedSelectedArea,
   TSelectionMove,
-} from '$theater/AnimationTimelinePanel/selection/types'
-import {TPropName} from '$theater/AnimationTimelinePanel/variables/VariablesPropProvider'
+} from '$studio/AnimationTimelinePanel/selection/types'
+import {TPropName} from '$studio/AnimationTimelinePanel/variables/VariablesPropProvider'
 import {
   TShowPointValuesEditor,
   TShowPointContextMenu,
   TRemovePointFromSelection,
   TAddPointToSelection,
-} from '$theater/AnimationTimelinePanel/views/types'
-import Point from '$theater/AnimationTimelinePanel/views/point/Point'
-import PointCircle from '$theater/AnimationTimelinePanel/views/point/PointCircle'
-import HandleLine from '$theater/AnimationTimelinePanel/views/graphEditor/HandleLine'
-import HandleClickArea from '$theater/AnimationTimelinePanel/views/graphEditor/HandleClickArea'
-import BezierConnector from '$theater/AnimationTimelinePanel/views/graphEditor/BezierConnector'
+} from '$studio/AnimationTimelinePanel/views/types'
+import Point from '$studio/AnimationTimelinePanel/views/point/Point'
+import PointCircle from '$studio/AnimationTimelinePanel/views/point/PointCircle'
+import HandleLine from '$studio/AnimationTimelinePanel/views/graphEditor/HandleLine'
+import HandleClickArea from '$studio/AnimationTimelinePanel/views/graphEditor/HandleClickArea'
+import BezierConnector from '$studio/AnimationTimelinePanel/views/graphEditor/BezierConnector'
 
 interface IProps {
   propGetter: (propName: TPropName) => any

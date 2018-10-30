@@ -2,17 +2,17 @@ import React from 'react'
 import {
   ActiveMode,
   MODES,
-} from '$theater/common/components/ActiveModeDetector/ActiveModeDetector'
+} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
 import {
   reduceAhistoricState,
   reduceHistoricState,
-} from '$theater/bootstrap/actions'
+} from '$studio/bootstrap/actions'
 import {debounce} from '$shared/utils'
-import {IViewportsContainer, IViewport} from '$theater/workspace/types'
+import {IViewportsContainer, IViewport} from '$studio/workspace/types'
 import generateUniqueId from 'uuid/v4'
 import ViewportInstantiator, {
   TBoundingRect,
-} from '$theater/workspace/components/WhatToShowInBody/Viewports/ViewportInstantiator'
+} from '$studio/workspace/components/WhatToShowInBody/Viewports/ViewportInstantiator'
 
 interface IProps {
   classes: $FixMe

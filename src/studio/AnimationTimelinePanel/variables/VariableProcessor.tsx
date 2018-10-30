@@ -3,14 +3,14 @@ import {
   TPoint,
   TNormalizedPoint,
   VariableID,
-} from '$theater/AnimationTimelinePanel/types'
+} from '$studio/AnimationTimelinePanel/types'
 import {Subscriber} from 'react-broadcast'
-import {DurationChannel} from '$theater/AnimationTimelinePanel/RootPropProvider'
+import {DurationChannel} from '$studio/AnimationTimelinePanel/RootPropProvider'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import {val} from '$shared/DataVerse2/atom'
 import {get} from '$shared/utils'
 import memoizeOne from 'memoize-one'
-import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
+import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 
 interface IProps {

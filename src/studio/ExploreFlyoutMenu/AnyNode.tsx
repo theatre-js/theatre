@@ -2,15 +2,15 @@ import React from 'react'
 import {
   VolatileId,
   GenericNode,
-} from '$theater/integrations/react/treeMirroring/MirrorOfReactTree'
+} from '$studio/integrations/react/treeMirroring/MirrorOfReactTree'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import {val} from '$shared/DataVerse2/atom'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import TextNode from './TextNode'
 import RegularNode from './RegularNode'
-import {isViewportNode} from '$theater/workspace/components/WhatToShowInBody/Viewports/Viewport'
+import {isViewportNode} from '$studio/workspace/components/WhatToShowInBody/Viewports/Viewport'
 import ViewportNode from './ViewportNode'
-import {TheaterConsumer} from '$theater/componentModel/react/utils/theaterContext'
+import {TheaterConsumer} from '$studio/componentModel/react/utils/theaterContext'
 
 type Props = {
   depth: number

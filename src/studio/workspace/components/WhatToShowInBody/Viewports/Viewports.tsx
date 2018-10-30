@@ -4,12 +4,12 @@ import * as css from './Viewports.css'
 import resolveCss from '$shared/utils/resolveCss'
 import {map} from '$shared/utils'
 import Viewport from './Viewport'
-import {reduceHistoricState} from '$theater/bootstrap/actions'
+import {reduceHistoricState} from '$studio/bootstrap/actions'
 import ActiveModeDetector, {
   ActiveMode,
-} from '$theater/common/components/ActiveModeDetector/ActiveModeDetector'
-import Container from '$theater/workspace/components/WhatToShowInBody/Viewports/Container'
-import PureComponentWithTheater from '$theater/handy/PureComponentWithTheater'
+} from '$studio/common/components/ActiveModeDetector/ActiveModeDetector'
+import Container from '$studio/workspace/components/WhatToShowInBody/Viewports/Container'
+import PureComponentWithTheater from '$studio/handy/PureComponentWithTheater'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 
 const classes = resolveCss(css)
