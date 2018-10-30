@@ -1,7 +1,7 @@
 {
   "name": "@studiojs/app",
   "private": true,
-  "version": "0.1.0-beta.1",
+  "version": "0.1.0-beta.4",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -17,7 +17,7 @@
     "studio:webpack:dev": "webpack-dev-server --progress --config webpack/studio/development.js",
     "tl:webpack:dev": "webpack-dev-server --progress --config webpack/tl/development.js",
     "tl:webpack:prod": "webpack --progress --config webpack/tl/production.js",
-    "tl:publish": "run-s tl:webpack:prod run-publish-script",
+    "tl:publish": "run-s tl:webpack:prod tl:publish:prepare",
     "tl:publish:emit-decs": "tsc -p ./tsconfig.publish.json ",
     "tl:publish:prepare": "node ./scripts/tl/prepareBundle.js",
     "playground:webpack:dev": "webpack-dev-server --progress --config webpack/playground/development.js",
