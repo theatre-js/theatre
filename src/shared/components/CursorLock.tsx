@@ -24,10 +24,6 @@ export default class CursorLock extends UIComponent<IProps, IState> {
     return ReactDOM.createPortal(this._renderBody(), document.body)
   }
   _renderBody() {
-    return (
-      <div {...classes('container')} style={{cursor: this.props.cursor}}>
-        here
-      </div>
-    )
+    return <div {...classes('container')} style={{cursor: this.props.cursor}} />
   }
 }
