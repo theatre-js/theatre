@@ -62,23 +62,6 @@ const timeline = project.getTimeline('Bouncing orb')
 // timeline.createObject('Ball', null)
 timeline.createObject('Ball', sphereGroup)
 
-project.adapters.add({
-  name: 'blah',
-  canHandle(s) {
-    return s === obju
-  },
-  getType(o) {
-    return {
-      props: {},
-    }
-  },
-  start() {
-    return () => {}
-  },
-})
-
-const obju = {}
-
 // timeline.createObject('B2', obju)
 // sphereGroup.position.z = 852
 // sphere.position.y = -
