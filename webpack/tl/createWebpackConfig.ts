@@ -6,6 +6,7 @@ import * as webpack from 'webpack'
 import {BundleAnalyzerPlugin} from 'webpack-bundle-analyzer'
 import * as fs from 'fs-extra'
 import * as path from 'path'
+import * as UglifyJSWebpackPlugin from 'uglifyjs-webpack-plugin'
 
 setAutoFreeze(false)
 
@@ -54,16 +55,65 @@ module.exports = (env: Envs) => {
             use: 'null-loader',
             exclude: /node_modules/,
           })
+        } else {
+          // c.mode = 'none'
+
+          // c.optimization = {
+          //   minimize: false,
+          //   // minimizer: [
+          //   //   new UglifyJSWebpackPlugin({
+          //   //     minify(file) {
+          //   //       // return file[Object.keys(file)]
+          //   //       // console.log('##')
+          //   //       // console.log('\n');
+          //   //       // console.log('\n');
+          //   //       // console.log(Object.keys(file))
+
+          //   //       return require('terser').minify(file, uglifyOptions)
+          //   //     },
+          //   //   }),
+          //   // ],
+          // }
         }
 
-        c.plugins.push(
-          new BundleAnalyzerPlugin({
-            analyzerMode: 'static',
-            reportFilename: which + '.report.html',
-            generateStatsFile: true,
-            statsFilename: which + '.stats.json',
-          }),
-        )
+        // c.plugins.push(
+        //   // new BundleAnalyzerPlugin({
+        //   //   analyzerMode: 'static',
+        //   //   reportFilename: which + '.report.html',
+        //   //   generateStatsFile: true,
+        //   //   statsFilename: which + '.stats.json',
+        //   // }),
+        //   new UglifyJSWebpackPlugin({
+        //     minify(file) {
+        //       const reserved = [
+        //         'TheatreJSError',
+        //         'InvalidArgumentError',
+        //         'TheatreJSProject',
+        //         'TheatreJSUI',
+        //       ]
+        //       const uglifyOptions = {
+        //         mangle: {
+        //           reserved,
+        //           properties: {
+        //             reserved,
+        //             // reserved: ['TheatreJSProject']
+        //           },
+        //         },
+        //         // module: true
+        //       }
+
+        //       // console.log('\n');
+        //       // console.log('############')
+        //       // console.log('\n');
+        //       // console.log(file[Object.keys(file)[0]].indexOf('TheatreJSProject'));
+
+        //       // console.log('\n');
+        //       // console.log(Object.keys(file))
+
+        //       return require('terser').minify(file, uglifyOptions)
+        //     },
+        //   }),
+        // )
 
         const pathToLicense = path.join(
           parts.context,

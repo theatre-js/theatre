@@ -128,6 +128,3 @@ const deepValidateOnDiskState = (projectId: string, s: OnDiskState) => {
     )
   }
 }
-
-// @ts-ignore ignore
-// ProjectFacade.name = 'Project'

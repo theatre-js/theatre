@@ -36,6 +36,7 @@ export type Options = {
   withDevServer?: boolean
   withServerSideHotLoading?: boolean
   extraEnv?: {[key: string]: {}}
+  // supportEs5?: boolean
 }
 
 const babelForTsHotReloading = () => ({
@@ -184,6 +185,9 @@ export const makeConfigParts = (options: Options) => {
                 // useTranspileModule: true,
                 transpileOnly: true,
                 configFile: require.resolve('../tsconfig.json'),
+                compilerOptions: {
+                  // ...(options.supportEs5 ? {target: 'es5'} : {}),
+                },
               },
             },
           ],
@@ -228,7 +232,7 @@ export const makeConfigParts = (options: Options) => {
               options: {
                 sourceMap: isDev,
                 modules: true,
-                localIdentName: '[name]_[local]_[hash:10]',
+                localIdentName: isDev ? '[name]_[local]_[hash:10]' : '[hash:10]', 
                 importLoaders: 1,
                 namedExport: true,
               },

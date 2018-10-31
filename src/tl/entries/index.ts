@@ -15,3 +15,5 @@ ui.show()
 export type TypeOfTheatre = typeof core & {
   ui: typeof ui
 }
+
+// export class Blah {}
