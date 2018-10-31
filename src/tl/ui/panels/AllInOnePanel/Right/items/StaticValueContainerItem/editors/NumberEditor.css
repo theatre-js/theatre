@@ -9,6 +9,7 @@
     width: 100%;
     text-indent: 14px;
     height: 100%;
+    min-height: 32px;
     box-sizing: border-box;
     /* background: black; */
     background: #00000000;
