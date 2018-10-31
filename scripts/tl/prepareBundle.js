@@ -4,13 +4,10 @@ const path = require('path')
 const fromRoot = s => path.join(__dirname, '../..', s)
 const fromBundles = s => fromRoot('bundles/tl/' + s)
 const fromDist = s => fromRoot('distributions/theatre/' + s)
-
-// console.log(fromDist('hi'))
-
-fs.unlinkSync(fromDist('index.js'))
-fs.unlinkSync(fromDist('core.js'))
-fs.copyFileSync(fromBundles('index.js'), fromDist('index.js'))
-fs.copyFileSync(fromBundles('core.js'), fromDist('core.js'))
+;['index.js', 'core.js'].forEach(filename => {
+  if (fs.existsSync(fromDist(filename))) fs.unlinkSync(fromDist(filename))
+  fs.copyFileSync(fromBundles(filename), fromDist(filename))
+})
 
 const packageJson = JSON.parse(fs.readFileSync(fromDist('package.json')))
 packageJson.version = require('../../package.json').version

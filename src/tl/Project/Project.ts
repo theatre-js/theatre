@@ -22,7 +22,7 @@ export type Conf = Partial<{
 }>
 
 export default class Project {
-  static version = $env.tl.version
+  static version = $env.version
   _timelineInstances: Atom<{
     [path: string]: {[instanceId: string]: TimelineInstance}
   }> = new Atom({})

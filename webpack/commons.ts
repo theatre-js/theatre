@@ -70,6 +70,7 @@ export const makeConfigParts = (options: Options) => {
 
   const nodeEnv = isDev ? {} : {...require('./env/nodeEnv')}
   mergeDeep(nodeEnv, options.extraEnv || {})
+  mergeDeep(nodeEnv, {version: require('../package.json').version})
 
   const envStuff: {[k: string]: string} = {}
   const process = (v: $IntentionalAny, ns: string[]) => {

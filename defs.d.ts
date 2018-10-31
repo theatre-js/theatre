@@ -30,6 +30,7 @@ type mixed =
 type CommonEnvironmentVariables = {
   // The hash of the last git commit the moment webpack last started running
   commitHash: string
+  version: string
   lf: {
     statePersistencePrefix: string
   }
@@ -38,7 +39,6 @@ type CommonEnvironmentVariables = {
     socketPort: number
   }
   tl: {
-    version: string,
     uiPersistenceKey: string
     projectPersistencePrefix: string
     currentProjectStateDefinitionVersion: string
