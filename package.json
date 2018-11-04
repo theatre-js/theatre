@@ -21,7 +21,7 @@
     "tl:publish:emit-decs": "tsc -p ./tsconfig.publish.json ",
     "tl:publish:prepare": "node ./scripts/tl/prepareBundle.js",
     "playground:webpack:dev": "webpack-dev-server --progress --config webpack/playground/development.js",
-    "examples:webpack:dev": "webpack-dev-server --progress --config webpack/examples/development.js",
+    "examples:webpack:dev": "webpack-dev-server --progress --open --config webpack/examples/development.js",
     "build:dev": "npm-run-all --parallel lb:webpack:dev lf:webpack:dev studio:webpack:dev examples:webpack:dev",
     "open-examples": "opn http://localhost:9092/examples",
     "ci:check-types": "tsc -p ./ci.tsconfig.json --noEmit",
