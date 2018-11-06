@@ -53,6 +53,7 @@ type CommonEnvironmentVariables = {
 type DevSpecificEnvironmentVariables = {
   NODE_ENV: 'development'
   devSpecific: {
+    devServerHost: string,
     lf: {
       devServerPort: number
     }

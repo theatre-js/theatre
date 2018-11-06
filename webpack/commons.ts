@@ -296,7 +296,7 @@ export const makeConfigParts = (options: Options) => {
   }
 
   if (isDev && options.withDevServer === true) {
-    config.output.publicPath = `http://localhost:${
+    config.output.publicPath = `http://${envConfig.devSpecific.devServerHost}:${
       packageDevSpecificConfig.devServerPort
     }/`
 
@@ -307,7 +307,8 @@ export const makeConfigParts = (options: Options) => {
       historyApiFallback: true,
       // inline: true,
       // clientLogLevel: 'error',
-      public: `localhost:${packageDevSpecificConfig.devServerPort}`,
+      public: `${envConfig.devSpecific.devServerHost}:${packageDevSpecificConfig.devServerPort}`,
+      allowedHosts: [envConfig.devSpecific.devServerHost],
       noInfo: false,
       // quiet: true,
       stats: false,

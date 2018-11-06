@@ -8,7 +8,7 @@ const heightThreshold = 80
 
 interface IProps {
   css?: Partial<typeof css>
-  children: React.DOMElement<$IntentionalAny, $IntentionalAny>
+  children: React.ReactNode
   inside: React.ReactNode
 }
 
@@ -38,11 +38,16 @@ export default class WithTooltip extends React.Component<IProps, IState> {
 
   render() {
     const classes = resolveCss(css, this.props.css)
-    const child = cloneElementAndMergeCallbacks(this.props.children, {
-      ref: this.childRef,
-      onMouseEnter: this._onMouseEnter,
-      onMouseLeave: this._onMouseLeave,
-    })
+    const child = cloneElementAndMergeCallbacks(
+      (this.props.children as $IntentionalAny) as React.ReactElement<
+        React.HTMLAttributes<$IntentionalAny>
+      >,
+      {
+        ref: this.childRef,
+        onMouseEnter: this._onMouseEnter,
+        onMouseLeave: this._onMouseLeave,
+      },
+    )
 
     let tip: React.ReactNode = null
     if (this.state.mouseInChild) {
