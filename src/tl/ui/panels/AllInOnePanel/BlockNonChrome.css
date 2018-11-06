@@ -1,0 +1,23 @@
+.container {
+  position: absolute 0;
+  bottom: 26px;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  background: rgba(#1E2A30, 0.86);
+  z-index: 10000;
+}
+
+.message {
+  width: 80%;
+  text-align: center;
+  font-size: 15px;
+  line-height: 22px;
+
+  & p {
+  }
+
+  & a {
+    color: inherit;
+  }
+}

@@ -14,6 +14,7 @@ import projectSelectors from '$tl/Project/store/selectors'
 import {StaticValueContainer} from '$tl/Project/store/types'
 import BezierIcon from 'svg-inline-loader!./bezierIcon.svg'
 import StaticIcon from 'svg-inline-loader!./staticIcon.svg'
+import WithTooltip from '$shared/components/WithTooltip/WithTooltip';
 
 const classes = resolveCss(css)
 interface IProps {
@@ -86,13 +87,16 @@ export default class PrimitiveProp extends UIComponent<IProps, IState> {
           </div>
         </div>
         <div {...classes('name')}>{item.address.propKey}</div>
+        <WithTooltip inside={valueContainerType === 'StaticValueContainer' ? `Convert to Keyframes` : `Make Static`}>
+
         <div {...classes('trigger')} onClick={this.trigger}>
           {valueContainerType === 'StaticValueContainer' ? (
             <SvgIcon src={StaticIcon} />
-          ) : (
-            <SvgIcon src={BezierIcon} />
-          )}
+            ) : (
+              <SvgIcon src={BezierIcon} />
+              )}
         </div>
+              </WithTooltip>
       </div>
     )
   }

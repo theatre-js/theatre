@@ -2,3 +2,11 @@
   font-size: 15px;
   margin-top: -2px;
 }
+
+.iconWrapper {
+  width: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}

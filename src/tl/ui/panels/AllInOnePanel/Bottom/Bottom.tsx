@@ -7,10 +7,10 @@ import Item from './Item'
 import TimelineSelect from './TimelineSelect'
 import TimelineInstanceSelect from './TimelineInstanceSelect'
 import Settings from '$tl/ui/panels/AllInOnePanel/Bottom/Settings/Settings'
-import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
 import MinimizeButton from '$tl/ui/panels/AllInOnePanel/Bottom/MinimizeButton'
 import logoInSvg from 'svg-inline-loader!./logoInTheBottom.svg'
 import SvgIcon from '$shared/components/SvgIcon'
+import DraggableArea from '$shared/components/DraggableArea/DraggableArea';
 
 export const bottomHeight = parseFloat(css.bottomHeight.replace(/[a-z]+$/, ''))
 
@@ -42,6 +42,8 @@ export default class Bottom extends UIComponent<IProps, IState> {
           shouldReturnMovement
           onDrag={this.props.handlePanelMove}
           onDragEnd={this.props.handlePanelMoveEnd}
+          lockCursorTo="move"
+          
         >
           <div {...classes('moveHandle')} />
         </DraggableArea>

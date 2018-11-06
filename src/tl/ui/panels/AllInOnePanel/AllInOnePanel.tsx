@@ -21,6 +21,7 @@ import {cmdIsDown} from '$shared/utils/keyboardUtils'
 import TimeStuffProvider from '$tl/ui/panels/AllInOnePanel/TimeStuffProvider'
 import UI from '$tl/ui/UI'
 import KeyboardShortcuts from '$tl/ui/panels/AllInOnePanel/KeyboardShortcuts'
+import BlockNonChrome from '$tl/ui/panels/AllInOnePanel/BlockNonChrome'
 
 const classes = resolveCss(css)
 
@@ -127,34 +128,36 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
                     '--right-width': rightWidth,
                   }}
                 >
-                  <TimeStuffProvider>
-                    <>
-                      <KeyboardShortcuts />
-                      <TimeUI
-                        timelineTemplate={timelineTemplate}
-                        timelineInstance={timelineInstance}
-                        height={heightMinusBottom}
-                        left={leftWidth}
-                      />
-                      <div
-                        {...classes('middle')}
-                        style={{height: heightMinusBottom}}
-                      >
-                        <div {...classes('left')} style={{width: leftWidth}}>
-                          <Left />
-                        </div>
+                  <BlockNonChrome>
+                    <TimeStuffProvider>
+                      <>
+                        <KeyboardShortcuts />
+                        <TimeUI
+                          timelineTemplate={timelineTemplate}
+                          timelineInstance={timelineInstance}
+                          height={heightMinusBottom}
+                          left={leftWidth}
+                        />
                         <div
-                          {...classes('right')}
-                          style={{
-                            width: rightWidth,
-                            height: heightMinusBottom,
-                          }}
+                          {...classes('middle')}
+                          style={{height: heightMinusBottom}}
                         >
-                          <Right />
+                          <div {...classes('left')} style={{width: leftWidth}}>
+                            <Left />
+                          </div>
+                          <div
+                            {...classes('right')}
+                            style={{
+                              width: rightWidth,
+                              height: heightMinusBottom,
+                            }}
+                          >
+                            <Right />
+                          </div>
                         </div>
-                      </div>
-                    </>
-                  </TimeStuffProvider>
+                      </>
+                    </TimeStuffProvider>
+                  </BlockNonChrome>
                   <div {...classes('bottom')}>
                     <Bottom
                       handlePanelMove={this.handlePanelMove}

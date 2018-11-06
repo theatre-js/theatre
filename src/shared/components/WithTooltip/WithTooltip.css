@@ -1,0 +1,54 @@
+@value typographyFont from '../../styles.css';
+
+.tipContainer {
+  pointer-events: none;
+  position: absolute;
+  z-index: 10000;
+
+  &.below {
+    & > .tipContent {
+      top: 8px;
+      &:after {
+        bottom: 100%;
+        transform: rotateZ(180deg);
+      }
+    }
+  }
+
+  &:not(.below) {
+    & > .tipContent {
+      top: -34px;
+
+      &:after {
+        top: 100%;
+      }
+    }
+  }
+}
+
+.tipContent {
+  font: typographyFont;
+  font-size: 10px;
+  position: relative;
+  left: -50%;
+  background: black;
+  color: #eee;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 1px;
+
+  &:after {
+    position: absolute;
+    content: ' ';
+    display: block;
+    /* top: 0; */
+    left: calc(50% - 8px);
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 7px 8px 0 8px;
+    border-color: black transparent transparent transparent;
+  }
+}

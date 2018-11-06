@@ -5,6 +5,9 @@ import React from 'react'
 import * as css from './TheTrigger.css'
 import {val} from '$shared/DataVerse2/atom'
 import WindowDims from '$shared/utils/react/WindowDims'
+import SvgIcon from '$shared/components/SvgIcon'
+import minimizeIcon from 'svg-inline-loader!$tl/ui/panels/AllInOnePanel/Bottom/minimizeIcon.svg'
+import WithTooltip from '$shared/components/WithTooltip/WithTooltip';
 
 const boxDims = {
   width: 50,
@@ -64,13 +67,19 @@ export default class TheTrigger extends UIComponent<IProps, IState> {
                     boxDims.width
 
               return (
-                <div
-                  style={{left: left + 'px', top: top + 'px'}}
-                  {...classes('container')}
-                  onClick={this.toggle}
+                <WithTooltip
+                  inside={<div {...classes('tooltip')}>Theatre.js</div>}
                 >
-                  {' '}
-                </div>
+                  <div
+                    style={{left: left + 'px', top: top + 'px'}}
+                    {...classes('container')}
+                    onClick={this.toggle}
+                  >
+                    <div {...classes('iconWrapper')}>
+                      <SvgIcon sizing="fill" src={minimizeIcon} />
+                    </div>
+                  </div>
+                </WithTooltip>
               )
             }}
           </PropsAsPointer>

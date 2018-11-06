@@ -22,11 +22,11 @@ const initialHistoricState: UIHistoricState = {
 
 const uiInitialState: UIState = {
   ahistoric: {
-    visibilityState: 'everythingIsVisible',
+    visibilityState: 'onlyTriggerIsVisible',
     theTrigger: {
       position: {
         closestCorner: 'bottomLeft',
-        distanceFromHorizontalEdge: 0.01,
+        distanceFromHorizontalEdge: 0.02,
         distanceFromVerticalEdge: 0.02,
       },
     },

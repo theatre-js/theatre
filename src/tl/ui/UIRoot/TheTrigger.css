@@ -2,25 +2,32 @@
 
 .container {
   position: absolute;
-  width: 50px;
-  height: 50px;
+  width: 30px;
+  height: 30px;
   background: #1f2a30;
 
   user-select: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &:hover {
+    background: #18242a;
+  }
 }
 
-.grid {
-  padding: 7px;
-  display: grid;
-  grid-template-columns: repeat(3, 12px);
-  grid-template-rows: repeat(3, 12px);
+.icon {
+  user-select: auto;
+  font-size: 15px;
 
-  color: #bbb;
-  font: typographyFont;
+}
 
-  & > span {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+.iconWrapper {
+  width: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  color: #3d666b;
+  transform: rotateZ(180deg);
 }
