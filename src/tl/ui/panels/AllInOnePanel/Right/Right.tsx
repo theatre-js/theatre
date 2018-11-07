@@ -166,8 +166,11 @@ class Right extends UIComponent<IRightProps, IRightState> {
     this._scrollContainer(this.props.range)
   }
 
-  syncSeekerWithMousePosition = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (event.target instanceof HTMLInputElement) return
+  syncSeekerWithMousePosition = (event: React.MouseEvent<HTMLDivElement>): void | false => {
+    if (event.target instanceof HTMLInputElement) return false
+    if (event.shiftKey || event.altKey || event.ctrlKey || event.metaKey) {
+      return false
+    }
 
     const {timelineWidth, range, duration, timelineInstance} = this.props
     const newTime = inRangeXToTime(range, duration, timelineWidth)(

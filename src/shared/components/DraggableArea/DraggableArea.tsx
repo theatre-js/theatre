@@ -4,7 +4,9 @@ import noop from '$shared/utils/noop'
 
 type IProps = {
   children: React.ReactElement<HTMLElement | SVGElement>
-  onDragStart?: (event: React.MouseEvent<HTMLElement | SVGElement>) => void
+  onDragStart?: (
+    event: React.MouseEvent<HTMLElement | SVGElement>,
+  ) => void | false
   onDragEnd?: (dragHappened: boolean) => void
   onDrag: (dx: number, dy: number, event: MouseEvent) => void
   enabled?: boolean
@@ -44,8 +46,7 @@ class DraggableArea extends React.PureComponent<IProps, {}> {
   }
 
   render() {
-    const shouldRegisterEvents =
-      this.props.enabled !== false
+    const shouldRegisterEvents = this.props.enabled !== false
 
     return shouldRegisterEvents
       ? React.cloneElement(this.props.children, {
@@ -90,6 +91,11 @@ class DraggableArea extends React.PureComponent<IProps, {}> {
 
   dragStartHandler = (event: React.MouseEvent<HTMLElement>) => {
     if (event.button !== 0) return
+    const resultOfStart =
+      this.props.onDragStart && this.props.onDragStart(event)
+
+    if (resultOfStart === false) return
+
     if (!this.props.dontBlockMouseDown) {
       event.stopPropagation()
       event.preventDefault()
@@ -102,7 +108,6 @@ class DraggableArea extends React.PureComponent<IProps, {}> {
     this.s.dragHappened = false
 
     this.addDragListeners()
-    this.props.onDragStart && this.props.onDragStart(event)
   }
 
   dragEndHandler = () => {
