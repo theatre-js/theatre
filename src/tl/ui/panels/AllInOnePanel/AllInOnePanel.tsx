@@ -51,6 +51,8 @@ export type IAllInOnePanelStuff = {
 
 export default class AllInOnePanel extends UIComponent<IProps, IState> {
   tempActionGroup = this.ui.actions.historic.temp()
+  containerRef: React.RefObject<HTMLDivElement> = React.createRef()
+  cachedCopyOfContainer: HTMLDivElement | null = null
 
   constructor(props: IProps, context: $IntentionalAny) {
     super(props, context)
@@ -119,6 +121,7 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
               <ActiveModeProvider modes={['super', 'shift', 'c', 'd', 'h']}>
                 <div
                   {...classes('container')}
+                  ref={this.containerRef}
                   style={{
                     height: fullHeightIncludingBottom,
                     width,
@@ -185,6 +188,7 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
   componentWillUnmount() {
     window.removeEventListener('resize', this.reactToWindowResize)
     window.removeEventListener('keydown', this._handleKeyDown)
+    this._detachScrollListener()
   }
 
   _handleKeyDown = (e: KeyboardEvent) => {
@@ -303,6 +307,40 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
         this.tempActionGroup.discard(),
       ]),
     )
+  }
+
+  _attachScrollListener() {
+    // return
+    const newWrapper = this.containerRef.current!
+    if (this.cachedCopyOfContainer !== newWrapper) {
+      if (this.cachedCopyOfContainer) this._detachScrollListener()
+      this.cachedCopyOfContainer = newWrapper
+      this.cachedCopyOfContainer.addEventListener(
+        'wheel',
+        this._receiveWheelEvent,
+        {passive: false, capture: false},
+      )
+    }
+  }
+
+  _detachScrollListener() {
+    this.cachedCopyOfContainer!.removeEventListener(
+      'wheel',
+      this._receiveWheelEvent,
+    )
+  }
+
+  _receiveWheelEvent = (event: WheelEvent) => {
+    event.preventDefault()
+    event.stopPropagation()
+  }
+
+  componentDidMount() {
+    this._attachScrollListener()
+  }
+
+  componentDidUpdate() {
+    this._attachScrollListener()
   }
 }
 
