@@ -146,8 +146,7 @@ class PointValuesEditor extends UIComponent<IProps, IState> {
 
   componentWillUnmount() {
     if (!this.didCleanup) {
-      this.discardTemporaryValues()
-      this.props.onClose()
+      this._onRequestCommit()
     }
   }
 
