@@ -39,6 +39,7 @@ interface IRightState {}
 
 class Right extends UIComponent<IRightProps, IRightState> {
   wrapper: React.RefObject<HTMLDivElement> = React.createRef()
+  cachedCopyOfWrapper: HTMLDivElement | null = null
   wrapperLeft: number
   scrollLeft: number = 0
   allowZoom: boolean = true
@@ -64,9 +65,12 @@ class Right extends UIComponent<IRightProps, IRightState> {
           <div
             ref={this.wrapper}
             {...classes('wrapper')}
-            onWheel={this.handleWheel}
+            // onWheel={this.handleWheel}
           >
-            <div style={{width: svgWidth, minHeight: this.props.heightMinusBottom}} {...classes('scrollingContainer')}>
+            <div
+              style={{width: svgWidth, minHeight: this.props.heightMinusBottom}}
+              {...classes('scrollingContainer')}
+            >
               <TimelineProviders
                 disableZoom={this.disableZoom}
                 enableZoom={this.enableZoom}
@@ -85,10 +89,65 @@ class Right extends UIComponent<IRightProps, IRightState> {
     this.didMountDeferred.resolve(undefined)
     this._updateWrapperLeft()
     window.addEventListener('resize', this.handleResize)
+    this._attachScrollListener()
+  }
+
+  componentDidUpdate() {
+    this._attachScrollListener()
   }
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.handleResize)
+    this._detachScrollListener()
+  }
+
+  _attachScrollListener() {
+    // return
+    const newWrapper = this.wrapper.current!
+    if (this.cachedCopyOfWrapper !== newWrapper) {
+      if (this.cachedCopyOfWrapper)
+        this._detachScrollListener()
+      this.cachedCopyOfWrapper = newWrapper
+      this.cachedCopyOfWrapper.addEventListener(
+        'wheel',
+        this._receiveWheelEvent,
+        {passive: false, capture: true},
+      )
+    }
+  }
+
+  _detachScrollListener() {
+    this.cachedCopyOfWrapper!.removeEventListener(
+      'wheel',
+      this._receiveWheelEvent,
+    )
+  }
+
+  _receiveWheelEvent = (event: WheelEvent) => {
+    if (Math.abs(event.deltaY) < Math.abs(event.deltaX)) {
+      event.preventDefault()
+      event.stopPropagation()
+      const {range, timelineWidth, duration} = this.props
+      const dt = deltaXToTime(range, timelineWidth)(event.deltaX * 1)
+
+      const change = {from: dt, to: dt}
+      this.props.setRange(getNewRange(range, change, duration))
+      return
+    }
+
+    // pinch
+    if (event.ctrlKey && this.allowZoom) {
+      event.preventDefault()
+      event.stopPropagation()
+      const {range, duration, timelineWidth} = this.props
+      const dt = deltaXToTime(range, timelineWidth)(event.deltaY) * 3.5
+      const zoomTime = inRangeXToTime(range, duration, timelineWidth)(
+        event.clientX - this.wrapperLeft,
+      )
+      const fraction = (zoomTime - range.from) / (range.to - range.from)
+      const change = {from: -dt * fraction, to: dt * (1 - fraction)}
+      this.props.setRange(getNewZoom(range, change, duration))
+    }  
   }
 
   _subscribeToPanelChanges = () => {
@@ -127,34 +186,6 @@ class Right extends UIComponent<IRightProps, IRightState> {
     timelineInstance.time = clampTime(range, newTime)
   }
 
-  handleWheel = (event: React.WheelEvent<HTMLDivElement>) => {
-    // horizontal scroll
-    if (Math.abs(event.deltaY) < Math.abs(event.deltaX)) {
-      event.preventDefault()
-      event.stopPropagation()
-      const {range, timelineWidth, duration} = this.props
-      const dt = deltaXToTime(range, timelineWidth)(event.deltaX * 1)
-
-      const change = {from: dt, to: dt}
-      this.props.setRange(getNewRange(range, change, duration))
-      return
-    }
-
-    // pinch
-    if (event.ctrlKey && this.allowZoom) {
-      event.preventDefault()
-      event.stopPropagation()
-      const {range, duration, timelineWidth} = this.props
-      const dt = deltaXToTime(range, timelineWidth)(event.deltaY) * 3.5
-      const zoomTime = inRangeXToTime(range, duration, timelineWidth)(
-        event.clientX - this.wrapperLeft,
-      )
-      const fraction = (zoomTime - range.from) / (range.to - range.from)
-      const change = {from: -dt * fraction, to: dt * (1 - fraction)}
-      this.props.setRange(getNewZoom(range, change, duration))
-    }
-  }
-
   _scrollContainer = (range: TRange) => {
     if (!this.wrapper.current) {
       this.didMountDeferred.promise.then(() => this._scrollContainer(range))
@@ -190,7 +221,7 @@ export default (_props: IExportedComponentProps) => (
             timelineWidth: val(timeStuffP.viewportSpace.width),
             timelineInstance: val(timeStuffP.timelineInstance),
             setRange: val(timeStuffP.setRange),
-            heightMinusBottom: val(timeStuffP.viewportSpace.height)
+            heightMinusBottom: val(timeStuffP.viewportSpace.height),
           }
 
           return <Right {...rightProps} />
