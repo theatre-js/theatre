@@ -324,7 +324,8 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
   }
 
   _detachScrollListener() {
-    this.cachedCopyOfContainer!.removeEventListener(
+    if (!this.cachedCopyOfContainer) return
+    this.cachedCopyOfContainer.removeEventListener(
       'wheel',
       this._receiveWheelEvent,
     )
