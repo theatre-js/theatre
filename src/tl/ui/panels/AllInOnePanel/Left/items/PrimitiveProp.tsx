@@ -83,7 +83,7 @@ export default class PrimitiveProp extends UIComponent<IProps, IState> {
       >
         <div {...classes('bullet')} onClick={this.toggleExpansion}>
           <div {...classes('bulletIcon')}>
-            {<SvgIcon sizing="fill" src={arrowIcon} />}
+            {<SvgIcon sizing="absoluteFill" src={arrowIcon} />}
           </div>
         </div>
         <div {...classes('name')}>{item.address.propKey}</div>

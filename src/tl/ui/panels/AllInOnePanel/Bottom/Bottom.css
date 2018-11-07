@@ -27,6 +27,7 @@
 .rightContainer {
   display: flex;
   background: #1e2a30;
+  height: 100%;
 }
 
 .moveHandle {
@@ -38,6 +39,15 @@
 
 .logoSvg {
   width: 52px;
+  height: 100%;
+  position: relative;
+
+  & > svg {
+    top: 7px;
+    right: 0;
+    left: 0;
+    position: absolute;
+  }
 }
 
 .logo {

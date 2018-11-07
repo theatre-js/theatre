@@ -55,7 +55,7 @@ export default class Bottom extends UIComponent<IProps, IState> {
             {...classes('logo')}
             title="Theatre.js – The hackable animation editor"
           >
-            <SvgIcon sizing="fill" src={logoInSvg} {...classes('logoSvg')} />
+            <SvgIcon sizing="absoluteFill" src={logoInSvg} {...classes('logoSvg')} />
           </a>
         </div>
       </div>

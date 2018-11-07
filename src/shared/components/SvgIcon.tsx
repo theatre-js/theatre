@@ -5,7 +5,7 @@ import resolveCss from '$shared/utils/resolveCss'
 type Props = {
   css?: Partial<typeof css>
   src: string
-  sizing?: 'em' | 'fill' | 'none'
+  sizing?: 'em' | 'fill' | 'none' | 'absoluteFill'
 }
 
 const SvgIcon = (props: Props) => {

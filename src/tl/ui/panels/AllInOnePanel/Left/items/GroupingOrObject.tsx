@@ -63,7 +63,7 @@ export default class GroupingOrObject extends UIComponent<IProps, IState> {
           {
             <div {...classes('bullet')} onClick={this.toggleExpansion}>
               <div {...classes('bulletIcon')}>
-                {<SvgIcon sizing="fill" src={arrowIcon} />}
+                {<SvgIcon sizing="absoluteFill" src={arrowIcon} />}
               </div>
             </div>
           }
