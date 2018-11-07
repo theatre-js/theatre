@@ -50,6 +50,7 @@ class PointValuesEditor extends UIComponent<IProps, IState> {
   tempActionGroup: ITempActionGroup
   timeRef = React.createRef<Input>()
   valueRef = React.createRef<Input>()
+  didCleanup = false
 
   constructor(props: IProps, context: $IntentionalAny) {
     super(props, context)
@@ -125,6 +126,7 @@ class PointValuesEditor extends UIComponent<IProps, IState> {
   }
 
   _onRequestCommit = () => {
+    this.didCleanup = true
     if (this.valueRef.current!.isEdited() || this.timeRef.current!.isEdited()) {
       this.permenantlySetValues(
         this.valueRef.current!.getValue(),
@@ -137,8 +139,16 @@ class PointValuesEditor extends UIComponent<IProps, IState> {
   }
 
   _onRequestDiscard = () => {
+    this.didCleanup = true
     this.discardTemporaryValues()
     this.props.onClose()
+  }
+
+  componentWillUnmount() {
+    if (!this.didCleanup) {
+      this.discardTemporaryValues()
+      this.props.onClose()
+    }
   }
 
   temporarilySetValues = (value: number, time: number) => {
