@@ -308,7 +308,7 @@ export const makeConfigParts = (options: Options) => {
       // inline: true,
       // clientLogLevel: 'error',
       public: `${envConfig.devSpecific.devServerHost}:${packageDevSpecificConfig.devServerPort}`,
-      allowedHosts: [envConfig.devSpecific.devServerHost],
+      allowedHosts: [envConfig.devSpecific.devServerHost, '.localtunnel.me'],
       noInfo: false,
       // quiet: true,
       stats: false,
