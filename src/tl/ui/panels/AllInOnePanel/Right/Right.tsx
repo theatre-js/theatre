@@ -65,7 +65,6 @@ class Right extends UIComponent<IRightProps, IRightState> {
           <div
             ref={this.wrapper}
             {...classes('wrapper')}
-            // onWheel={this.handleWheel}
           >
             <div
               style={{width: svgWidth, minHeight: this.props.heightMinusBottom}}

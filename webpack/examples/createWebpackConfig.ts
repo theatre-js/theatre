@@ -8,7 +8,7 @@ setAutoFreeze(false)
 module.exports = (env: Envs) => {
   const parts = makeConfigParts({
     env,
-    withReactHotLoading: true,
+    withReactHotLoading: false,
     packageName: 'examples',
     withDevServer: true,
     entries: {
