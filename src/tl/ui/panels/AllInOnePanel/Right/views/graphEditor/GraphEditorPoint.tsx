@@ -411,6 +411,8 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
       xNormalizer: (prevPoint!.time - point.time) * width,
       yNormalizer: (prevPoint!.value - point.value) * height,
     }
+    this._cachePropsBeforeDrag()
+
   }
 
   handleLeftHandleDrag = (dx: number, dy: number) => {
@@ -453,6 +455,7 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
       xNormalizer: (nextPoint!.time - point.time) * width,
       yNormalizer: (nextPoint!.value - point.value) * height,
     }
+    this._cachePropsBeforeDrag()
   }
 
   handleRightHandleDrag = (dx: number, dy: number) => {
