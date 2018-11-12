@@ -16,6 +16,7 @@ import {GenericAction} from '$shared/types'
 import ProjectPersistor from './ProjectPersistor'
 import {OnDiskState} from '$tl/Project/store/types'
 import resolvedPromise from '$shared/utils/resolvedPromise'
+import TheatreJSProject from '../facades/TheatreJSProject'
 
 export type Conf = Partial<{
   state: OnDiskState
@@ -49,7 +50,7 @@ export default class Project {
   /**
    * @todo should we have a human-readable name for each project too?
    */
-  constructor(readonly id: string, readonly config: Conf = {}) {
+  constructor(readonly id: string, readonly config: Conf = {}, readonly facade: TheatreJSProject) {
     projectsSingleton.add(id, this)
     this.adapters = new NativeObjectAdaptersManager(this)
     this.reduxStore = configureStore({
