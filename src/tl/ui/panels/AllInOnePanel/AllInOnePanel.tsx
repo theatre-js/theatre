@@ -332,8 +332,11 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
   }
 
   _receiveWheelEvent = (event: WheelEvent) => {
-    event.preventDefault()
-    event.stopPropagation()
+    if (Math.abs(event.deltaY) < Math.abs(event.deltaX)) {
+
+      event.preventDefault()
+      event.stopPropagation()
+    }
   }
 
   componentDidMount() {
