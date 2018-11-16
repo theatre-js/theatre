@@ -8,6 +8,8 @@ import UIComponent from '$tl/ui/handy/UIComponent'
 import {
   ActiveModeContext,
   MODES,
+  ActiveMode,
+  MODES,
 } from '$shared/components/ActiveModeProvider/ActiveModeProvider'
 import {
   getSvgWidth,
@@ -106,6 +108,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
   }
 
   state = SelectionProvider.defaultStateValues
+  activeMode: ActiveMode
 
   render() {
     const {status} = this.state
@@ -113,7 +116,10 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
       <>
         {this._renderContextProviders()}
         <ActiveModeContext.Consumer>
-          {activeMode => (activeMode === MODES.shift) && this._renderHitZone()}
+          {activeMode => {
+            this.activeMode = activeMode
+            return activeMode === MODES.shift && this._renderHitZone()
+          }}
         </ActiveModeContext.Consumer>
         {status !== 'noSelection' && this._renderSelectedArea()}
       </>
@@ -335,7 +341,12 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
     })
   }
 
-  handleAreaDragStart = () => {
+  handleAreaDragStart = e => {
+    if (this.activeMode === MODES.d) {
+      setTimeout(() => this.deletePointsInSelection(), 10)
+
+      return false
+    }
     this.setState(() => ({
       status: 'movingPoints',
     }))
@@ -587,9 +598,7 @@ export default (props: IExportedComponentProps) => (
         {() => {
           const timelineTemplate = val(rightStuffP.timelineTemplate)
           const range = val(rightStuffP.rangeAndDuration.range)
-          const duration = overshootDuration(
-            val(timelineTemplate!._durationD),
-          )
+          const duration = overshootDuration(val(timelineTemplate!._durationD))
           const width = val(rightStuffP.viewportSpace.width)
 
           const selectionProviderProps: ISelectionProviderProps = {
