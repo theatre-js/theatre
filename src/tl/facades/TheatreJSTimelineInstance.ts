@@ -12,6 +12,8 @@ import {sanitizeAndValidateTypeFromAdapter} from '$tl/facades/propSanitizers'
 import {sanitizeAndValidateHardCodedProps} from './propSanitizers'
 import {defer} from '../../shared/utils/defer'
 
+type GetObjectConfig = NativeObjectTypeConfig & {reuseExistingObject?: boolean}
+
 const theWeakmap = new WeakMap<TheatreJSTimelineInstance, TimelineInstance>()
 const realInstance = (s: TheatreJSTimelineInstance) =>
   theWeakmap.get(s) as TimelineInstance
@@ -33,22 +35,29 @@ export default class TheatreJSTimelineInstance {
     return realInstance(this).playing
   }
 
-  createObject(
+  getObject(
     _path: string,
     nativeObject: $FixMe,
-    _config?: NativeObjectTypeConfig,
+    __config?: GetObjectConfig,
   ) {
     const inst = realInstance(this)
     const path = validateAndSanitiseSlashedPathOrThrow(
       _path,
-      `timeline.createObject("${_path}", ...)`,
+      `timeline.getObject("${_path}", ...)`,
     )
-    if (inst._objects[path]) {
+
+    const {reuseExistingObject = false, ..._config} = __config || ({} as GetObjectConfig)
+
+    const existingObject = inst._objects[path]
+
+    if (existingObject) {
+      if (_config && reuseExistingObject === true) {
+        return existingObject.facade
+      }
+
       throw new InvalidArgumentError(
         `Looks like you're creating two different objects on the same path "${path}". ` +
-          `If you're trying to create two different objects, give each a unique path. ` +
-          `Otherwise if you're trying to query the same existing object, you can run` +
-          ` timeline.getObject(path) to get access to that object after it's been created.`,
+          `If you're trying to create two different objects, you need to give each a unique path.`,
       )
     }
 
@@ -70,8 +79,10 @@ export default class TheatreJSTimelineInstance {
         type.props = {}
         if (!$env.tl.isCore) {
           console.warn(
-            `Object "${path}" in timeline.createObject("${path}", ...) is not accepted by ` +
-              `any adapters, nor does it have props. Learn how to set props on objects at ` +
+            `When calling \`timeline.getObject("${path}", ...)\`, you did not provide any props. ` +
+              `We also couldn't find any adapters that could handle this object, so we could ` +
+              `not determine the type of its props.\n ` +
+              `Learn how to set props on objects at ` +
               `https://theatrejs.com/docs/props.html`,
           )
         }
@@ -85,15 +96,6 @@ export default class TheatreJSTimelineInstance {
 
     const object = inst.createObject(path, nativeObject, sanitisedConfig, type)
     return object.facade
-  }
-
-  getObject(_path: string) {
-    const path = validateAndSanitiseSlashedPathOrThrow(
-      _path,
-      `timeline.getObject("${_path}")`,
-    )
-    const possibleObject = realInstance(this).getObject(path)
-    return possibleObject ? possibleObject.facade : undefined
   }
 
   /**

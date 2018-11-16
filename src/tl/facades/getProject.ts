@@ -29,7 +29,7 @@ export default function getProject(
   if ($env.tl.isCore) {
     if (!config.state) {
       throw new InvalidArgumentError(
-        `Argument config.state in new Project("${id}", config) cannot be empty in theatre/core. Read more at https://theatrejs.com/docs/state-persistence.html`,
+        `Argument config.state in Theatre.getProject("${id}", config) cannot be empty in theatre/core. Read more at https://theatrejs.com/docs/state-persistence.html`,
       )
     }
     shallowValidateOnDiskState(id, config.state)
@@ -50,14 +50,14 @@ const deepValidateOnDiskState = (projectId: string, s: OnDiskState) => {
 
   if (validationResult.isLeft()) {
     console.group(
-      `Argument config.state in new Project("${projectId}", config) is invalid. Lean how to fix this at https://theatrejs.com/docs/state-persistence.html#troubleshooting`,
+      `Argument config.state in Theatre.getProject("${projectId}", config) is invalid. Lean how to fix this at https://theatrejs.com/docs/state-persistence.html#troubleshooting`,
     )
     const errors = userFacingReoprter(validationResult)
     errors.forEach(e => console.log(e))
     console.groupEnd()
 
     throw new InvalidArgumentError(
-      `Argument config.state in new Project("${projectId}", config) is invalid. Lean how to fix this at https://theatrejs.com/docs/state-persistence.html#troubleshooting`,
+      `Argument config.state in Theatre.getProject("${projectId}", config) is invalid. Lean how to fix this at https://theatrejs.com/docs/state-persistence.html#troubleshooting`,
     )
   }
 }
@@ -73,7 +73,7 @@ const shallowValidateOnDiskState = (projectId: string, s: OnDiskState) => {
     s.definitionVersion !== $env.tl.currentProjectStateDefinitionVersion
   ) {
     throw new InvalidArgumentError(
-      `Error validating conf.state in new Project(${JSON.stringify(
+      `Error validating conf.state in Theatre.getProject(${JSON.stringify(
         projectId,
       )}, conf). The state seems to be formatted in a way that is unreadable to Theatre.js. Read more at https://theatrejs.com/docs/state-persistence.html`,
     )
@@ -83,7 +83,7 @@ const shallowValidateOnDiskState = (projectId: string, s: OnDiskState) => {
 const validateProjectIdOrThrow = (id: string) => {
   if (typeof id !== 'string') {
     throw new InvalidArgumentError(
-      `Argument 'id' in \`new Project(id, ...)\` must be a string. Instead, it was ${userReadableTypeOfValue(
+      `Argument 'id' in \`Theatre.getProject(id, ...)\` must be a string. Instead, it was ${userReadableTypeOfValue(
         id,
       )}.`,
     )
@@ -92,13 +92,13 @@ const validateProjectIdOrThrow = (id: string) => {
   const idTrimmed = id.trim()
   if (idTrimmed.length !== id.length) {
     throw new InvalidArgumentError(
-      `Argument 'id' in \`new Project("${id}", ...)\` should not have surrounding whitespace.`,
+      `Argument 'id' in \`Theatre.getProject("${id}", ...)\` should not have surrounding whitespace.`,
     )
   }
 
   if (idTrimmed.length < 3) {
     throw new InvalidArgumentError(
-      `Argument 'id' in \`new Project("${id}", ...)\` should be at least 3 characters long.`,
+      `Argument 'id' in \`Theatre.getProject("${id}", ...)\` should be at least 3 characters long.`,
     )
   }
 }

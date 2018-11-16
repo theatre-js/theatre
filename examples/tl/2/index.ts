@@ -8,7 +8,7 @@ declare var Theatre: TypeOfTheatre
 
 const {sphere, sphereGroup} = setupScene()
 
-const project = new Theatre.Project('The ORB2', {state})
+const project = Theatre.getProject('The ORB2', {state})
 
 project.adapters.add({
   name: 'THREE.js Object Adapter',
@@ -60,7 +60,7 @@ project.adapters.add({
 
 const timeline = project.getTimeline('Bouncing orb')
 // timeline.createObject('Ball', null)
-timeline.createObject('Ball', sphereGroup)
+timeline.getObject('Ball', sphereGroup)
 
 // timeline.createObject('B2', obju)
 // sphereGroup.position.z = 852

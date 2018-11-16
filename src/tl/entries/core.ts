@@ -1,5 +1,3 @@
-import Project from '$tl/facades/TheatreJSProject'
+import getProject from '../facades/getProject'
 
-export {Project}
-
-// export class Core {}
+export {getProject}
