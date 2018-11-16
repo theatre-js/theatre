@@ -4,6 +4,10 @@ import ObjectTemplate from '$tl/objects/ObjectTemplate'
 import uiSelectors from '$tl/ui/store/selectors'
 import UI from '$tl/ui/UI'
 import {PropAddress, ObjectAddress} from '$tl/handy/addresses'
+import Project from '$tl/Project/Project'
+import projectSelectors from '$tl/Project/store/selectors'
+import {Pointer} from '$shared/DataVerse2/pointer'
+import {PropValueContainer} from '$tl/Project/store/types'
 
 export type NodeDescriptorsByPath = {
   [path: string]: NodeDescriptor
@@ -101,6 +105,7 @@ export interface PrimitivePropItem extends Item {
   type: 'PrimitiveProp'
   address: PropAddress
   expanded: boolean
+  expandable: boolean
 }
 
 type ExcludeHeight<O> = Pick<O, Exclude<keyof O, 'height'>>
@@ -110,14 +115,17 @@ export const singleItemHeight = 30
 export const timelineTemplateToSeriesOfVerticalItems = (
   ui: UI,
   timelineTemplate: TimelineTemplate,
+  project: Project,
 ): AnyItem[] => {
   const items: AnyItem[] = []
   let heightSoFar = 0
 
-  const collapsedNodes = val(uiSelectors.historic.getCollapsedNodesOfTimelineByPath(
-    ui.atomP.historic,
-    timelineTemplate._address,
-  ))
+  const collapsedNodes = val(
+    uiSelectors.historic.getCollapsedNodesOfTimelineByPath(
+      ui.atomP.historic,
+      timelineTemplate._address,
+    ),
+  )
 
   const setOfCollapsedNodes = new Set(Object.keys(collapsedNodes || {}))
 
@@ -210,18 +218,34 @@ export const timelineTemplateToSeriesOfVerticalItems = (
         uiSelectors.historic.getPropState(ui.atomP.historic, propAddr),
       )
 
+      const propStateInProjectP = projectSelectors.historic.getPropState(
+        project.atomP.historic,
+        propAddr,
+      )
+
+      const valueContainerP = propStateInProjectP.valueContainer as Pointer<
+        PropValueContainer
+      >
+
+      const valueContainerType =
+        val(valueContainerP.type) || 'StaticValueContainer'
+
+      const expandable = valueContainerType === 'BezierCurvesOfScalarValues'
+
+      const expanded =
+        (expandable && propState && propState.expanded) || false
+
       push(
         {
           type: 'PrimitiveProp',
+          expandable,
           depth,
           address: propAddr,
           key: objectPath + '.' + propKey,
           top: heightSoFar,
-          expanded: (propState && propState.expanded) || false,
+          expanded,
         },
-        propState && propState.expanded
-          ? propState.heightWhenExpanded
-          : singleItemHeight,
+        expanded ? propState.heightWhenExpanded : singleItemHeight,
       )
     } else {
       console.error(`@todo not supporting prop type ${typeDesc.type} yet`)

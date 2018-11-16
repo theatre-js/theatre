@@ -106,6 +106,13 @@ export const setPropHeightWhenExpanded = r(
   },
 )
 
+export const setPropExpansionAndHeight = r(
+  (s, p: PropAddress & {expanded: boolean; height: number}) => {
+    setPropExpansion.originalReducer(s, p)
+    setPropHeightWhenExpanded.originalReducer(s, p)
+  },
+)
+
 export const setNodeExpansion = r(
   (s, p: TimelineAddress & {expanded: boolean; nodePath: string}) => {
     ensureTimelineIsSetUp(s, p)

@@ -20,6 +20,7 @@ interface IState {}
 
 class ItemWrapper extends UIComponent<IProps, IState> {
   tempActionGroup = this.ui.actions.historic.temp()
+  propsBeforeResize: IProps
 
   render() {
     const {height, top, expanded} = this.props.item
@@ -30,15 +31,16 @@ class ItemWrapper extends UIComponent<IProps, IState> {
           this.props.sticky && 'sticky',
           this.props.type,
         )}
-        onDoubleClick={this.toggleExpansion}
+        // onDoubleClick={this.toggleExpansion}
         style={{top, height}}
       >
         {this.props.children}
-        {expanded && (
+        {this.props.item.expandable && (
           <DraggableArea
+            onDragStart={this.handleResizeStart}
             onDrag={this.handleResize}
             onDragEnd={this.handleResizeEnd}
-            shouldReturnMovement={true}
+            // shouldReturnMovement={false}
           >
             <div {...classes('resizeHandle')} />
           </DraggableArea>
@@ -56,12 +58,20 @@ class ItemWrapper extends UIComponent<IProps, IState> {
     )
   }
 
+  handleResizeStart = () => {
+    this.tempActionGroup = this.ui.actions.historic.temp()
+    this.propsBeforeResize = this.props
+  }
+
   handleResize = (_: number, dy: number) => {
-    const newHeight = Math.max(this.props.item.height + dy, singleItemHeight)
+    const oldHeight = this.propsBeforeResize.item.height
+    const newHeight = Math.max(oldHeight + dy, singleItemHeight)
+
     this.ui.reduxStore.dispatch(
       this.tempActionGroup.push(
-        this.ui.actions.historic.setPropHeightWhenExpanded({
-          ...this.props.item.address,
+        this.ui.actions.historic.setPropExpansionAndHeight({
+          ...this.propsBeforeResize.item.address,
+          expanded: newHeight !== singleItemHeight,
           height: newHeight,
         }),
       ),
@@ -69,15 +79,8 @@ class ItemWrapper extends UIComponent<IProps, IState> {
   }
 
   handleResizeEnd = () => {
-    this.ui.reduxStore.dispatch(
-      this.ui.actions.batched([
-        this.ui.actions.historic.setPropHeightWhenExpanded({
-          ...this.props.item.address,
-          height: this.props.item.height,
-        }),
-        this.tempActionGroup.discard(),
-      ]),
-    )
+    this.ui.reduxStore.dispatch(this.tempActionGroup.commit())
+    this.tempActionGroup = this.ui.actions.historic.temp()
   }
 }
 

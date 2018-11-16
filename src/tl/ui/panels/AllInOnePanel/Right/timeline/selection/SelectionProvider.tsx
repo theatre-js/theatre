@@ -531,6 +531,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
     return timelineTemplateToSeriesOfVerticalItems(
       this.ui,
       timelineTemplate,
+      this.project,
     ).reduce(
       (mapOfItemsData, item) => {
         if (item.type !== 'PrimitiveProp') return mapOfItemsData

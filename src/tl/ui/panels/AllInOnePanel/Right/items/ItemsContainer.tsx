@@ -25,6 +25,7 @@ class ItemsContainer extends UIComponent<IItemsContainerProps, IState> {
     const items = timelineTemplateToSeriesOfVerticalItems(
       this.ui,
       val(propsP.timelineTemplate),
+      this.project,
     )
 
     const lastItem = items[items.length - 1]

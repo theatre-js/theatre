@@ -43,6 +43,7 @@ export default class Left extends UIComponent<IProps, IState> {
                 const items = timelineTemplateToSeriesOfVerticalItems(
                   this.ui,
                   timelineTemplate,
+                  this.project,
                 )
 
                 const lastItem = items[items.length - 1]
