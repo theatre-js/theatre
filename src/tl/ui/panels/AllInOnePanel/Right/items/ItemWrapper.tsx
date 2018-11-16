@@ -40,6 +40,7 @@ class ItemWrapper extends UIComponent<IProps, IState> {
             onDragStart={this.handleResizeStart}
             onDrag={this.handleResize}
             onDragEnd={this.handleResizeEnd}
+            lockCursorTo="ns-resize"
             // shouldReturnMovement={false}
           >
             <div {...classes('resizeHandle')} />

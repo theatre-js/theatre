@@ -50,7 +50,7 @@ export default class ProjectSelect extends UIComponent<IProps, IState> {
                       <FullSizeHint>
                         <TextBlock>Start by creating a project:</TextBlock>
                         <CodeSnippet>
-                          const project = new Theatre.Project('My project')
+                          const project = Theatre.getProject('My project')
                         </CodeSnippet>
                       </FullSizeHint>
                       <Tooltip>Your project will appear here!</Tooltip>

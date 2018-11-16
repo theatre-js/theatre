@@ -53,7 +53,7 @@ export const sanitizeAndValidateHardCodedProps = (
     props,
     new MessageGeneratorForHardCodedProps(
       objectPath,
-      `timeline.createObject("${objectPath}", ..., config)`,
+      `timeline.getObject("${objectPath}", ..., config)`,
     ),
   )
 
@@ -127,7 +127,7 @@ class MessageGeneratorForHardCodedProps implements MessageGenerator {
   ) {}
 
   protected _configToCreateObjectIsInvalid() {
-    return `The config given to timeline.createObject("${
+    return `The config given to timeline.getObject("${
       this._objectPath
     }", ..., config) is invalid:\n`
   }

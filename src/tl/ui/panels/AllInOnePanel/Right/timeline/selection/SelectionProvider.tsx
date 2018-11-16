@@ -113,7 +113,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
       <>
         {this._renderContextProviders()}
         <ActiveModeContext.Consumer>
-          {activeMode => activeMode === MODES.shift && this._renderHitZone()}
+          {activeMode => (activeMode === MODES.shift) && this._renderHitZone()}
         </ActiveModeContext.Consumer>
         {status !== 'noSelection' && this._renderSelectedArea()}
       </>

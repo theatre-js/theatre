@@ -73,7 +73,7 @@ export default class Left extends UIComponent<IProps, IState> {
                   <div {...classes('createItemTip')}>
                     <TextBlock>Your timeline seems to be empty. Add on object to your timeline by:</TextBlock>
                     <CodeSnippet>
-                      timeline.createObject('My Div', myDiv)
+                      timeline.getObject('My Div', myDiv)
                     </CodeSnippet>
                     <TextBlock>Your object will appear here.</TextBlock>
                   </div>
