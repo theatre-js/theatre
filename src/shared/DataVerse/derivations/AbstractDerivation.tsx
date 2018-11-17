@@ -209,10 +209,6 @@ export default abstract class AbstractDerivation<V>
   flattenDeep(levels?: number): AbstractDerivation<$FixMe> {
     return flattenDeep.default(this, levels)
   }
-
-  toJS() {
-    return this.flatMap(toJS.default)
-  }
 }
 
 export function isDerivation(d: any): d is AbstractDerivation<mixed> {
@@ -222,7 +218,6 @@ export function isDerivation(d: any): d is AbstractDerivation<mixed> {
 const flattenDeep = require('./flattenDeep')
 const flatMapDerivation = require('./flatMapDerivation')
 const mapDerivation = require('./mapDerivation')
-const toJS = require('./toJS')
 
 let lastDerivationId = 0
 // setInterval(() => {

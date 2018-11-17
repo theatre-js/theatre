@@ -7,6 +7,7 @@ import dictAtom from '$shared/DataVerse/deprecated/atoms/dictAtom'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 import TheatreComponent from '$studio/componentModel/react/TheatreComponent/TheatreComponent'
 import {DictAtom} from '$shared/DataVerse/deprecated/atoms/dictAtom'
+import toJS from '$shared/DataVerse/deprecated/utils/toJS'
 
 const lookupTable = {
   tagName: self => {
@@ -21,7 +22,7 @@ const lookupTable = {
       .pointer()
       .prop('props')
       .prop('children')
-      .toJS()
+      .flatMap(toJS)
 
     const refFn = self.pointer().prop('refFn')
     const tagName = self.pointer().prop('tagName')
