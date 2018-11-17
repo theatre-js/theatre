@@ -1,7 +1,7 @@
 import withDeps from '../withDeps'
 import deriveFromPropOfADictAtom from './deriveFromPropOfADictAtom'
-import dictAtom from '$shared/DataVerse/atoms/dictAtom'
-import boxAtom from '$shared/DataVerse/atoms/boxAtom'
+import dictAtom from '$shared/DataVerse/atomsDeprecated/dictAtom'
+import boxAtom from '$shared/DataVerse/atomsDeprecated/boxAtom'
 import Ticker from '$shared/DataVerse/Ticker'
 
 describe('deriveFromPropOfADictAtom', () => {

@@ -1,7 +1,7 @@
 import AbstractDerivedDict from './AbstractDerivedDict'
 import noop from '$shared/utils/noop'
 import {ensureNoAtoms} from './utils'
-import {DictAtom} from '$shared/DataVerse/atoms/dictAtom'
+import {DictAtom} from '$shared/DataVerse/atomsDeprecated/dictAtom'
 
 export class DerivedDictFromDictAtom<O> extends AbstractDerivedDict<O> {
   _dictAtom: DictAtom<O>

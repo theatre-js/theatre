@@ -1,8 +1,8 @@
 import mapValues from './mapValues'
 import deriveFromDictAtom from './deriveFromDictAtom'
 import Ticker from '$shared/DataVerse/Ticker'
-import dictAtom from '$shared/DataVerse/atoms/dictAtom'
-import boxAtom from '$shared/DataVerse/atoms/boxAtom'
+import dictAtom from '$shared/DataVerse/atomsDeprecated/dictAtom'
+import boxAtom from '$shared/DataVerse/atomsDeprecated/boxAtom'
 import {DerivedDictChangeType} from './AbstractDerivedDict'
 
 describe('mapValues', () => {

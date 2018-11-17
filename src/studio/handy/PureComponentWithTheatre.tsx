@@ -8,7 +8,7 @@ import {reduceStateAction} from '$shared/utils/redux/commonActions'
 import {GenericAction} from '$shared/types'
 import {PointerDerivation} from '$shared/DataVerse/derivations/pointer'
 import AbstractDerivedDict from '$shared/DataVerse/derivations/dicts/AbstractDerivedDict'
-import {UnwrapDictAtom} from '$shared/DataVerse/atoms/dictAtom'
+import {UnwrapDictAtom} from '$shared/DataVerse/atomsDeprecated/dictAtom'
 import {ITheatreStoreState} from '$studio/types'
 import {Pointer} from '$shared/DataVerse/pointer'
 

@@ -6,7 +6,7 @@ import {
   default as pointer,
   PointerDerivation,
 } from '$shared/DataVerse/derivations/pointer'
-import isAtom from '$shared/DataVerse/atoms/utils/isAtom'
+import isAtom from '$shared/DataVerse/atomsDeprecated/utils/isAtom'
 import {UnatomifyDeep} from './utils/UnatomifyDeep'
 import AbstractDerivedArray from '../derivations/arrays/AbstractDerivedArray'
 

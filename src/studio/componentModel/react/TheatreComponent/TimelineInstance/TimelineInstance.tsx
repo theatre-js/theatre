@@ -1,6 +1,6 @@
 import ValueInstance from '$studio/componentModel/react/TheatreComponent/TimelineInstance/ValueInstance'
-import dictAtom, {DictAtom} from '$shared/DataVerse/atoms/dictAtom'
-import boxAtom, {BoxAtom} from '$shared/DataVerse/atoms/boxAtom'
+import dictAtom, {DictAtom} from '$shared/DataVerse/atomsDeprecated/dictAtom'
+import boxAtom, {BoxAtom} from '$shared/DataVerse/atomsDeprecated/boxAtom'
 import Theatre from '$studio/bootstrap/Theatre'
 import {PointerDerivation} from '$shared/DataVerse/derivations/pointer'
 

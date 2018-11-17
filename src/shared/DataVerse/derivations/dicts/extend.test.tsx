@@ -1,5 +1,5 @@
-import dictAtom, {DictAtom} from '$shared/DataVerse/atoms/dictAtom'
-import boxAtom, {BoxAtom} from '$shared/DataVerse/atoms/boxAtom'
+import dictAtom, {DictAtom} from '$shared/DataVerse/atomsDeprecated/dictAtom'
+import boxAtom, {BoxAtom} from '$shared/DataVerse/atomsDeprecated/boxAtom'
 import Ticker from '$shared/DataVerse/Ticker'
 
 describe('extend()', () => {

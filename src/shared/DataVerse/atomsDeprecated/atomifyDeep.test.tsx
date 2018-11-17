@@ -1,7 +1,7 @@
 import {default as atomifyDeep} from './atomifyDeep'
-import {DictAtom} from '$shared/DataVerse/atoms/dictAtom'
-import boxAtom, {BoxAtom} from '$shared/DataVerse/atoms/boxAtom'
-import {ArrayAtom} from '$shared/DataVerse/atoms/arrayAtom'
+import {DictAtom} from '$shared/DataVerse/atomsDeprecated/dictAtom'
+import boxAtom, {BoxAtom} from '$shared/DataVerse/atomsDeprecated/boxAtom'
+import {ArrayAtom} from '$shared/DataVerse/atomsDeprecated/arrayAtom'
 
 describe('DataVerse.atomifyDeep', () => {
   it('shoudl work', () => {

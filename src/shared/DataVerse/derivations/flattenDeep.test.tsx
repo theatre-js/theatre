@@ -1,6 +1,6 @@
 import flattenDeep from './flattenDeep'
 import Ticker from '$shared/DataVerse/Ticker'
-import boxAtom from '$shared/DataVerse/atoms/boxAtom'
+import boxAtom from '$shared/DataVerse/atomsDeprecated/boxAtom'
 import withDeps from '$shared/DataVerse/derivations/withDeps'
 import constant from '$shared/DataVerse/derivations/constant'
 

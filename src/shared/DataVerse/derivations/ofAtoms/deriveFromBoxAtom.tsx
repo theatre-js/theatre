@@ -1,5 +1,5 @@
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
-import {BoxAtom} from '$shared/DataVerse/atoms/boxAtom'
+import {BoxAtom} from '$shared/DataVerse/atomsDeprecated/boxAtom'
 import noop from '$shared/utils/noop'
 
 export class DerivationOfABoxAtom<V> extends AbstractDerivation<V> {

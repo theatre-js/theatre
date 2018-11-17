@@ -1,10 +1,10 @@
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import {PointerDerivation} from '../pointer'
-import {DictAtom} from '$shared/DataVerse/atoms/dictAtom'
+import {DictAtom} from '$shared/DataVerse/atomsDeprecated/dictAtom'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
-import {BoxAtom} from '$shared/DataVerse/atoms/boxAtom'
+import {BoxAtom} from '$shared/DataVerse/atomsDeprecated/boxAtom'
 import {ExtendDerivedDict} from './extend'
-import {ArrayAtom} from '$shared/DataVerse/atoms/arrayAtom'
+import {ArrayAtom} from '$shared/DataVerse/atomsDeprecated/arrayAtom'
 import AbstractDerivedArray from '$shared/DataVerse/derivations/arrays/AbstractDerivedArray'
 import {
   KeysOfDerivedDictDerivation,

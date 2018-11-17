@@ -1,7 +1,7 @@
 import attributesApplier from '$studio/componentModel/coreModifierDescriptors/HTML/SetAttribute/attributeApplier'
-import boxAtom from '$shared/DataVerse/atoms/boxAtom'
+import boxAtom from '$shared/DataVerse/atomsDeprecated/boxAtom'
 import emptyDict from '$shared/DataVerse/derivations/dicts/emptyDict'
-import dictAtom from '$shared/DataVerse/atoms/dictAtom'
+import dictAtom from '$shared/DataVerse/atomsDeprecated/dictAtom'
 import AbstractDerivedDict from '$shared/DataVerse/derivations/dicts/AbstractDerivedDict'
 
 const ensureDomAttributes = d => {

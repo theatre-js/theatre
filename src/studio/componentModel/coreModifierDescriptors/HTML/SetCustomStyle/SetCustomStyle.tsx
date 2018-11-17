@@ -1,6 +1,6 @@
 import {ModifierDescriptor} from '$studio/componentModel/types'
 import commonStylesPrototype from '$studio/componentModel/coreModifierDescriptors/HTML/SetCustomStyle/commonStylesPrototype'
-import dictAtom from '$shared/DataVerse/atoms/dictAtom'
+import dictAtom from '$shared/DataVerse/atomsDeprecated/dictAtom'
 
 const getClass = (propsP, cls) => {
   return cls.extend(commonStylesPrototype).extend({
