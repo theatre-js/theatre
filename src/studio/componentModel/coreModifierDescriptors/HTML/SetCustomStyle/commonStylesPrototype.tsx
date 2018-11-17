@@ -1,7 +1,7 @@
 import reifiedStyleApplier from './reifiedStyleApplier'
-import boxAtom from '$shared/DataVerse/atomsDeprecated/boxAtom'
+import boxAtom from '$shared/DataVerse/deprecated/atoms/boxAtom'
 import emptyDict from '$shared/DataVerse/derivations/dicts/emptyDict'
-import dictAtom from '$shared/DataVerse/atomsDeprecated/dictAtom'
+import dictAtom from '$shared/DataVerse/deprecated/atoms/dictAtom'
 
 const ensureReifiedStyles = d => {
   return d.propFromSuper('reifiedStyles').flatMap(possibleReifiedStyles => {

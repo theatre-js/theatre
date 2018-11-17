@@ -1,4 +1,4 @@
-import dictAtom, {DictAtom} from '$shared/DataVerse/atomsDeprecated/dictAtom'
+import dictAtom, {DictAtom} from '$shared/DataVerse/deprecated/atoms/dictAtom'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 import AbstractDerivedArray from '$shared/DataVerse/derivations/arrays/AbstractDerivedArray'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'

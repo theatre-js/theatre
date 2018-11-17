@@ -7,7 +7,7 @@ import MirrorOfReactTree, {
   Node,
 } from './MirrorOfReactTree'
 import delay from '$shared/utils/delay'
-import boxAtom from '$shared/DataVerse/atomsDeprecated/boxAtom'
+import boxAtom from '$shared/DataVerse/deprecated/atoms/boxAtom'
 import immer from 'immer'
 
 type SummaryNode =

@@ -1,4 +1,4 @@
-import dictAtom from '$shared/DataVerse/atomsDeprecated/dictAtom'
+import dictAtom from '$shared/DataVerse/deprecated/atoms/dictAtom'
 import Ticker from '$shared/DataVerse/Ticker'
 
 describe(`keysOfDerivedDict`, () => {

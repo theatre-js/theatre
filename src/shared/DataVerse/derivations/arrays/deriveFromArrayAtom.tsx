@@ -1,4 +1,4 @@
-import {ArrayAtom} from '$shared/DataVerse/atomsDeprecated/arrayAtom'
+import {ArrayAtom} from '$shared/DataVerse/deprecated/atoms/arrayAtom'
 import AbstractDerivedArray from './AbstractDerivedArray'
 import {ensureNoAtoms} from '../dicts/utils'
 import noop from '$shared/utils/noop'

@@ -1,6 +1,6 @@
 import withDeps from './withDeps'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
-import boxAtom from '$shared/DataVerse/atomsDeprecated/boxAtom'
+import boxAtom from '$shared/DataVerse/deprecated/atoms/boxAtom'
 import constant from '$shared/DataVerse/derivations/constant'
 import Ticker from '$shared/DataVerse/Ticker'
 

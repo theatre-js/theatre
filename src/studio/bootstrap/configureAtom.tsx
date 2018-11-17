@@ -1,6 +1,6 @@
 import {diff} from 'jiff'
 import applyJsonDiffToAtom from '$shared/utils/applyJsonDiffToAtom'
-import atomifyDeep, {Atomify} from '$shared/DataVerse/atomsDeprecated/atomifyDeep'
+import atomifyDeep, {Atomify} from '$shared/DataVerse/deprecated/atoms/atomifyDeep'
 import {ITheatreStoreState} from '$studio/types'
 import {extractState} from '$shared/utils/redux/withHistory/withHistoryDeprecated'
 import {Store} from 'redux'

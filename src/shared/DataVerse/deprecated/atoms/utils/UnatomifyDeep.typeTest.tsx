@@ -1,6 +1,6 @@
-import dictAtom, {DictAtom} from '$shared/DataVerse/atomsDeprecated/dictAtom'
-import {ArrayAtom} from '$shared/DataVerse/atomsDeprecated/arrayAtom'
-import {BoxAtom} from '$shared/DataVerse/atomsDeprecated/boxAtom'
+import dictAtom, {DictAtom} from '$shared/DataVerse/deprecated/atoms/dictAtom'
+import {ArrayAtom} from '$shared/DataVerse/deprecated/atoms/arrayAtom'
+import {BoxAtom} from '$shared/DataVerse/deprecated/atoms/boxAtom'
 
 // unboxDeep
 ;() => {

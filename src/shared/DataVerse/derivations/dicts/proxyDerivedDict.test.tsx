@@ -1,6 +1,6 @@
 import proxyDerivedDict from './proxyDerivedDict'
 import Ticker from '$shared/DataVerse/Ticker'
-import dictAtom from '$shared/DataVerse/atomsDeprecated/dictAtom'
+import dictAtom from '$shared/DataVerse/deprecated/atoms/dictAtom'
 
 describe('DerivedDictStabilizer', () => {
   let ticker: Ticker

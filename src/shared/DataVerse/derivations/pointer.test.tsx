@@ -1,6 +1,6 @@
-import dictAtom, {DictAtom} from '$shared/DataVerse/atomsDeprecated/dictAtom'
+import dictAtom, {DictAtom} from '$shared/DataVerse/deprecated/atoms/dictAtom'
 import derivedClass from '$shared/DataVerse/derivedClass/derivedClass'
-import boxAtom, {BoxAtom} from '$shared/DataVerse/atomsDeprecated/boxAtom'
+import boxAtom, {BoxAtom} from '$shared/DataVerse/deprecated/atoms/boxAtom'
 import Ticker from '$shared/DataVerse/Ticker'
 
 describe('pointer', () => {

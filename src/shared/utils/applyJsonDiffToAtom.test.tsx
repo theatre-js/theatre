@@ -1,7 +1,7 @@
 // fast-json-patch does't seem to be spec-compliant.
 // it can't convert arrays to objects and vice-versa
 import applyJsonDiffToAtom from './applyJsonDiffToAtom'
-import atomifyDeep from '$shared/DataVerse/atomsDeprecated/atomifyDeep'
+import atomifyDeep from '$shared/DataVerse/deprecated/atoms/atomifyDeep'
 import jiff from 'jiff'
 
 const example = (input: {}, output: {}, debug: boolean = false) => {

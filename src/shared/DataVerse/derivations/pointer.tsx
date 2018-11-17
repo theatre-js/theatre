@@ -1,7 +1,7 @@
 import {MapKey} from '$shared/DataVerse/types'
 import AbstractDerivation from './AbstractDerivation'
-import {DictAtom} from '../atomsDeprecated/dictAtom'
-import {ArrayAtom} from '$shared/DataVerse/atomsDeprecated/arrayAtom'
+import {DictAtom} from '../deprecated/atoms/dictAtom'
+import {ArrayAtom} from '$shared/DataVerse/deprecated/atoms/arrayAtom'
 import AbstractDerivedDict from '$shared/DataVerse/derivations/dicts/AbstractDerivedDict'
 import AbstractDerivedArray from './arrays/AbstractDerivedArray'
 import DerivedClassInstance from '../derivedClass/DerivedClassInstance'
@@ -187,7 +187,7 @@ const modules = {
   deriveFromBoxAtom: require('./ofAtoms/deriveFromBoxAtom'),
   DerivedClassInstance: require('$shared/DataVerse/derivedClass/DerivedClassInstance'),
   AbstractDerivedDict: require('./dicts/AbstractDerivedDict'),
-  box: require('$shared/DataVerse/atomsDeprecated/boxAtom'),
-  dict: require('$shared/DataVerse/atomsDeprecated/dictAtom'),
-  array: require('$shared/DataVerse/atomsDeprecated/arrayAtom'),
+  box: require('$shared/DataVerse/deprecated/atoms/boxAtom'),
+  dict: require('$shared/DataVerse/deprecated/atoms/dictAtom'),
+  array: require('$shared/DataVerse/deprecated/atoms/arrayAtom'),
 }

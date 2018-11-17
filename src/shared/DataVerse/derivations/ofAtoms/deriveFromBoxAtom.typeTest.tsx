@@ -1,4 +1,4 @@
-import boxAtom from '$shared/DataVerse/atomsDeprecated/boxAtom'
+import boxAtom from '$shared/DataVerse/deprecated/atoms/boxAtom'
 
 const b = boxAtom('hi')
 

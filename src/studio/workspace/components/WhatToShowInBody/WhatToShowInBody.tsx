@@ -3,7 +3,7 @@ import {val} from '$shared/DataVerse/atom'
 import Viewports from './Viewports/Viewports'
 import elementify from '$studio/componentModel/react/elementify/elementify'
 import constant from '$shared/DataVerse/derivations/constant'
-import dictAtom from '$shared/DataVerse/atomsDeprecated/dictAtom'
+import dictAtom from '$shared/DataVerse/deprecated/atoms/dictAtom'
 import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 

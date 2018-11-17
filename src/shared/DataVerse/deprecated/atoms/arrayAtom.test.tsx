@@ -1,7 +1,7 @@
 import boxAtom from './boxAtom'
 import atomifyDeep from './atomifyDeep'
-import {ArrayAtom} from '$shared/DataVerse/atomsDeprecated/arrayAtom'
-import {BoxAtom} from '$shared/DataVerse/atomsDeprecated/boxAtom'
+import {ArrayAtom} from '$shared/DataVerse/deprecated/atoms/arrayAtom'
+import {BoxAtom} from '$shared/DataVerse/deprecated/atoms/boxAtom'
 import {IArrayAtomChangeType} from './arrayAtom'
 
 describe('DataVerse.atoms.array', () => {

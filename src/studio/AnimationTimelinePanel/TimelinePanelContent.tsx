@@ -5,7 +5,7 @@ import Panel, {
 } from '$studio/workspace/components/Panel/Panel'
 import {Subscriber} from 'react-broadcast'
 import TimelineInstance from '$studio/componentModel/react/TheatreComponent/TimelineInstance/TimelineInstance'
-import {BoxAtom} from '$shared/DataVerse/atomsDeprecated/boxAtom'
+import {BoxAtom} from '$shared/DataVerse/deprecated/atoms/boxAtom'
 import clamp from '$shared/number/clamp'
 import noop from '$shared/utils/noop'
 

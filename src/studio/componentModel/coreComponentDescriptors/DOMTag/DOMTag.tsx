@@ -2,11 +2,11 @@ import React from 'react'
 import {IComponentDescriptor} from '$studio/componentModel/types'
 import {DerivedClass} from '$shared/DataVerse/derivedClass/derivedClass'
 import withDeps from '$shared/DataVerse/derivations/withDeps'
-import boxAtom from '$shared/DataVerse/atomsDeprecated/boxAtom'
-import dictAtom from '$shared/DataVerse/atomsDeprecated/dictAtom'
+import boxAtom from '$shared/DataVerse/deprecated/atoms/boxAtom'
+import dictAtom from '$shared/DataVerse/deprecated/atoms/dictAtom'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 import TheatreComponent from '$studio/componentModel/react/TheatreComponent/TheatreComponent'
-import {DictAtom} from '$shared/DataVerse/atomsDeprecated/dictAtom'
+import {DictAtom} from '$shared/DataVerse/deprecated/atoms/dictAtom'
 
 const lookupTable = {
   tagName: self => {

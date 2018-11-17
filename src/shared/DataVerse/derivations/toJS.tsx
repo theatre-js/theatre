@@ -1,4 +1,4 @@
-import isAtom from '$shared/DataVerse/atomsDeprecated/utils/isAtom'
+import isAtom from '$shared/DataVerse/deprecated/atoms/utils/isAtom'
 
 const toJS = (val: $IntentionalAny) => {
   if (typeof val === 'object') {

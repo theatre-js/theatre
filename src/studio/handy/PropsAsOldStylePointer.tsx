@@ -3,12 +3,12 @@ import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation
 import dictAtom, {
   DictAtom,
   UnwrapDictAtom,
-} from '$shared/DataVerse/atomsDeprecated/dictAtom'
+} from '$shared/DataVerse/deprecated/atoms/dictAtom'
 import {PointerDerivation} from '$shared/DataVerse/derivations/pointer'
 import AbstractDerivedDict from '$shared/DataVerse/derivations/dicts/AbstractDerivedDict'
 import DerivationAsReactElement from '$shared/utils/react/DerivationAsReactElement'
 import React from 'react'
-import boxAtom, {BoxAtom} from '$shared/DataVerse/atomsDeprecated/boxAtom'
+import boxAtom, {BoxAtom} from '$shared/DataVerse/deprecated/atoms/boxAtom'
 import Theatre from '$studio/bootstrap/Theatre'
 
 type AtomType<InnerProps> = DictAtom<InnerProps>
