@@ -1,6 +1,6 @@
 import {default as AbstractCompositeAtom} from './utils/AbstractCompositeAtom'
 import {forEach} from '$shared/utils'
-import deriveFromArrayAtom from '$shared/DataVerse/derivations/arrays/deriveFromArrayAtom'
+import deriveFromArrayAtom from '$shared/DataVerse/deprecated/atomDerivations/arrays/deriveFromArrayAtom'
 import {range} from '$shared/utils'
 import {
   default as pointer,
@@ -8,7 +8,7 @@ import {
 } from '$shared/DataVerse/derivations/pointer'
 import isAtom from '$shared/DataVerse/deprecated/atoms/utils/isAtom'
 import {UnatomifyDeep} from './utils/UnatomifyDeep'
-import AbstractDerivedArray from '../derivations/arrays/AbstractDerivedArray'
+import AbstractDerivedArray from '$shared/DataVerse/deprecated/atomDerivations/arrays/AbstractDerivedArray'
 
 export interface IArrayAtomChangeType<V> {
   startIndex: number

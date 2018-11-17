@@ -1,6 +1,5 @@
 import dictAtom, {DictAtom} from '$shared/DataVerse/deprecated/atoms/dictAtom'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
-import AbstractDerivedArray from '$shared/DataVerse/derivations/arrays/AbstractDerivedArray'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 import constant from '$shared/DataVerse/derivations/constant'
 import AbstractDerivedDict, {
@@ -18,6 +17,7 @@ import Theatre, {TheatreStateAtom} from '$studio/bootstrap/Theatre'
 import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'
 import {isCoreComponent} from '$studio/componentModel/selectors'
 import {IComponentId} from '$studio/componentModel/types'
+import AbstractDerivedArray from '$shared/DataVerse/deprecated/atomDerivations/arrays/AbstractDerivedArray'
 
 type WrapProps<Props> = {
   key: string
@@ -85,9 +85,7 @@ export default abstract class TheatreComponent<
     studio: self => self.prop('_atom').prop('studio'),
 
     studioAtom: self =>
-      self
-        .prop('studio')
-        .map((studio: Theatre) => studio.atom.derivedDict()),
+      self.prop('studio').map((studio: Theatre) => studio.atom.derivedDict()),
 
     modifierInstantiationDescriptors: self =>
       self.prop('_atom').prop('modifierInstantiationDescriptors'),

@@ -3,7 +3,7 @@ import {_any, expectType} from '$shared/types'
 import {BoxAtom} from '$shared/DataVerse/deprecated/atoms/boxAtom'
 import {DictAtom} from '$shared/DataVerse/deprecated/atoms/dictAtom'
 import {ArrayAtom} from '$shared/DataVerse/deprecated/atoms/arrayAtom'
-import AbstractDerivedArray from '../arrays/AbstractDerivedArray'
+import AbstractDerivedArray from '$shared/DataVerse/deprecated/atomDerivations/arrays/AbstractDerivedArray'
 
 // Basic
 ;() => {

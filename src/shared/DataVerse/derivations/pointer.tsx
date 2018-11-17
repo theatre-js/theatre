@@ -3,14 +3,14 @@ import AbstractDerivation from './AbstractDerivation'
 import {DictAtom} from '../deprecated/atoms/dictAtom'
 import {ArrayAtom} from '$shared/DataVerse/deprecated/atoms/arrayAtom'
 import AbstractDerivedDict from '$shared/DataVerse/derivations/dicts/AbstractDerivedDict'
-import AbstractDerivedArray from './arrays/AbstractDerivedArray'
-import DerivedClassInstance from '../deprecated/derivedClass/DerivedClassInstance'
 import {
   DerivationTypeOfPointerType,
   IndexOfPointer,
   PropOfPointer,
   PointerKeys,
 } from './pointerTypes'
+import DerivedClassInstance from '$shared/DataVerse/deprecated/derivedClass/DerivedClassInstance'
+import AbstractDerivedArray from '$shared/DataVerse/deprecated/atomDerivations/arrays/AbstractDerivedArray'
 
 const noBoxAtoms = (v: $IntentionalAny) => {
   if (v instanceof modules.box.BoxAtom) {

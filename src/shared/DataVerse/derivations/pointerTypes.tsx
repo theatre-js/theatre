@@ -4,9 +4,9 @@ import {BoxAtom} from '$shared/DataVerse/deprecated/atoms/boxAtom'
 import {DictAtom} from '$shared/DataVerse/deprecated/atoms/dictAtom'
 import AbstractDerivedDict from '$shared/DataVerse/derivations/dicts/AbstractDerivedDict'
 import {PropOfADD} from './dicts/AbstractDerivedDict'
-import AbstractDerivedArray from './arrays/AbstractDerivedArray'
 import DerivedClassInstance from '$shared/DataVerse/deprecated/derivedClass/DerivedClassInstance'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
+import AbstractDerivedArray from '$shared/DataVerse/deprecated/atomDerivations/arrays/AbstractDerivedArray'
 
 export type DerivationTypeOfPointerType<O> = {
   '1': O extends BoxAtom<infer T>

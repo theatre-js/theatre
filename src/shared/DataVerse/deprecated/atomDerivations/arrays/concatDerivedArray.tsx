@@ -1,4 +1,4 @@
-import AbstractDerivedArray from '$shared/DataVerse/derivations/arrays/AbstractDerivedArray'
+import AbstractDerivedArray from './AbstractDerivedArray'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 
 export class ConcatenatedDerivedArray<V> extends AbstractDerivedArray<V> {

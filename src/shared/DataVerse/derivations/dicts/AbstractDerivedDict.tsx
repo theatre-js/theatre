@@ -5,11 +5,11 @@ import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation
 import {BoxAtom} from '$shared/DataVerse/deprecated/atoms/boxAtom'
 import {ExtendDerivedDict} from './extend'
 import {ArrayAtom} from '$shared/DataVerse/deprecated/atoms/arrayAtom'
-import AbstractDerivedArray from '$shared/DataVerse/derivations/arrays/AbstractDerivedArray'
 import {
   KeysOfDerivedDictDerivation,
   default as keysOfDerivedDict,
 } from '$shared/DataVerse/derivations/dicts/keysOfDerivedDict'
+import AbstractDerivedArray from '$shared/DataVerse/deprecated/atomDerivations/arrays/AbstractDerivedArray'
 
 export type DerivedDictChangeType<O> = {
   addedKeys: Array<keyof O>
