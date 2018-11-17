@@ -5,7 +5,7 @@ import {
 } from './propOfDerivedClassInstance'
 import constant from '$shared/DataVerse/derivations/constant'
 import {forEach} from '$shared/utils'
-import pointer, {PointerDerivation} from '$shared/DataVerse/derivations/pointer'
+import pointer, {PointerDerivation} from '$shared/DataVerse/deprecated/atomDerivations/pointer'
 import {DerivedClass} from '$shared/DataVerse/deprecated/derivedClass/derivedClass'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 

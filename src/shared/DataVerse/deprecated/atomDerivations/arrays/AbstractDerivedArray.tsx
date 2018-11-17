@@ -1,5 +1,5 @@
 import Emitter from '$shared/DataVerse/utils/Emitter'
-import {PointerDerivation} from '$shared/DataVerse/derivations/pointer'
+import {PointerDerivation} from '$shared/DataVerse/deprecated/atomDerivations/pointer'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 import Tappable from '$shared/DataVerse/utils/Tappable'
 import {PropOfADD} from '$shared/DataVerse/deprecated/atomDerivations/dicts/AbstractDerivedDict'
@@ -84,7 +84,7 @@ export default abstract class AbstractDerivedArray<V> {
   }
 }
 
-const pointer = require('$shared/DataVerse/derivations/pointer')
+const pointer = require('$shared/DataVerse/deprecated/atomDerivations/pointer')
 const concatDerivedArray = require('./concatDerivedArray')
 const reduceDerivedArray = require('./reduceDerivedArray')
 const mapDerivedArray = require('./mapDerivedArray')

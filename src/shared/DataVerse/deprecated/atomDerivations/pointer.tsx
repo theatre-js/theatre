@@ -1,6 +1,6 @@
 import {MapKey} from '$shared/DataVerse/types'
-import AbstractDerivation from './AbstractDerivation'
-import {DictAtom} from '../deprecated/atoms/dictAtom'
+import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
+import {DictAtom} from '$shared/DataVerse/deprecated/atoms/dictAtom'
 import {ArrayAtom} from '$shared/DataVerse/deprecated/atoms/arrayAtom'
 import AbstractDerivedDict from '$shared/DataVerse/deprecated/atomDerivations/dicts/AbstractDerivedDict'
 import {
@@ -181,10 +181,10 @@ export default function pointer(address: Address): mixed {
 }
 
 const modules = {
-  constant: require('./constant'),
-  deriveFromPropOfADictAtom: require('./ofAtoms/deriveFromPropOfADictAtom'),
-  deriveFromIndexOfArrayAtom: require('./ofAtoms/deriveFromIndexOfArrayAtom'),
-  deriveFromBoxAtom: require('./ofAtoms/deriveFromBoxAtom'),
+  constant: require('$shared/DataVerse/derivations/constant'),
+  deriveFromPropOfADictAtom: require('$shared/DataVerse/derivations/ofAtoms/deriveFromPropOfADictAtom'),
+  deriveFromIndexOfArrayAtom: require('$shared/DataVerse/derivations/ofAtoms/deriveFromIndexOfArrayAtom'),
+  deriveFromBoxAtom: require('$shared/DataVerse/derivations/ofAtoms/deriveFromBoxAtom'),
   DerivedClassInstance: require('$shared/DataVerse/deprecated/derivedClass/DerivedClassInstance'),
   AbstractDerivedDict: require('$shared/DataVerse/deprecated/atomDerivations/dicts/AbstractDerivedDict'),
   box: require('$shared/DataVerse/deprecated/atoms/boxAtom'),

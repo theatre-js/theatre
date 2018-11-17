@@ -2,7 +2,7 @@ import DerivedClassInstance from '$shared/DataVerse/deprecated/derivedClass/Deri
 import Ticker from '$shared/DataVerse/Ticker'
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import {mapValues} from '$shared/utils'
-import {PointerDerivation} from '$shared/DataVerse/derivations/pointer'
+import {PointerDerivation} from '$shared/DataVerse/deprecated/atomDerivations/pointer'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 
 type Method = $FixMe
