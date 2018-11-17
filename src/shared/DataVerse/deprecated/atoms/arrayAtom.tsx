@@ -5,7 +5,7 @@ import {range} from '$shared/utils'
 import {
   default as pointer,
   PointerDerivation,
-} from '$shared/DataVerse/deprecated/atomDerivations/pointer'
+} from '$shared/DataVerse/deprecated/atomDerivations/deprecatedPointer'
 import isAtom from '$shared/DataVerse/deprecated/atoms/utils/isAtom'
 import {UnatomifyDeep} from './utils/UnatomifyDeep'
 import AbstractDerivedArray from '$shared/DataVerse/deprecated/atomDerivations/arrays/AbstractDerivedArray'

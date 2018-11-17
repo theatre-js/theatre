@@ -5,7 +5,7 @@ import deriveFromDictAtom from '$shared/DataVerse/deprecated/atomDerivations/dic
 import {
   default as pointer,
   PointerDerivation,
-} from '$shared/DataVerse/deprecated/atomDerivations/pointer'
+} from '$shared/DataVerse/deprecated/atomDerivations/deprecatedPointer'
 import {UnatomifyDeep} from './utils/UnatomifyDeep'
 import AbstractDerivedDict from '$shared/DataVerse/deprecated/atomDerivations/dicts/AbstractDerivedDict'
 import isAtom from '$shared/DataVerse/deprecated/atoms/utils/isAtom'

@@ -103,7 +103,7 @@ export type DerivedDictTypeOf<O> = O extends DictAtom<infer OO>
   ? AbstractDerivedDict<OO>
   : never
 
-const pointer = require('$shared/DataVerse/deprecated/atomDerivations/pointer')
+const pointer = require('$shared/DataVerse/deprecated/atomDerivations/deprecatedPointer')
 const proxyDerivedDict = require('./proxyDerivedDict')
 const extend = require('./extend')
 const mapValues = require('./mapValues')

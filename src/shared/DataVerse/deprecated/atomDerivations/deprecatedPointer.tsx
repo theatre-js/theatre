@@ -176,7 +176,7 @@ const propify = (
   return d
 }
 
-export default function pointer(address: Address): mixed {
+export default function deprecatedPointer(address: Address): mixed {
   return new PointerDerivation(address)
 }
 

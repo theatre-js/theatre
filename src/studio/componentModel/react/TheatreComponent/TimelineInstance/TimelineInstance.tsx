@@ -2,7 +2,7 @@ import ValueInstance from '$studio/componentModel/react/TheatreComponent/Timelin
 import dictAtom, {DictAtom} from '$shared/DataVerse/deprecated/atoms/dictAtom'
 import boxAtom, {BoxAtom} from '$shared/DataVerse/deprecated/atoms/boxAtom'
 import Theatre from '$studio/bootstrap/Theatre'
-import {PointerDerivation} from '$shared/DataVerse/deprecated/atomDerivations/pointer'
+import {PointerDerivation} from '$shared/DataVerse/deprecated/atomDerivations/deprecatedPointer'
 
 export default class TimelineInstance {
   _timeLength: number

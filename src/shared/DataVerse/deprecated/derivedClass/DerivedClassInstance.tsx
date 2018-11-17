@@ -5,7 +5,7 @@ import {
 } from './propOfDerivedClassInstance'
 import constant from '$shared/DataVerse/derivations/constant'
 import {forEach} from '$shared/utils'
-import pointer, {PointerDerivation} from '$shared/DataVerse/deprecated/atomDerivations/pointer'
+import deprecatedPointer, {PointerDerivation} from '$shared/DataVerse/deprecated/atomDerivations/deprecatedPointer'
 import {DerivedClass} from '$shared/DataVerse/deprecated/derivedClass/derivedClass'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 
@@ -116,7 +116,7 @@ export default class DerivedClassInstance<O> {
 
   pointer(): PointerDerivation<DerivedClassInstance<O>> {
     if (!this._pointer) {
-      this._pointer = pointer({
+      this._pointer = deprecatedPointer({
         type: 'WithPath',
         root: this,
         path: [],
