@@ -1,12 +1,12 @@
 import TimelineTemplate from '$tl/timelines/TimelineTemplate'
-import {val} from '$shared/DataVerse2/atom'
+import {val} from '$shared/DataVerse/atom'
 import ObjectTemplate from '$tl/objects/ObjectTemplate'
 import uiSelectors from '$tl/ui/store/selectors'
 import UI from '$tl/ui/UI'
 import {PropAddress, ObjectAddress} from '$tl/handy/addresses'
 import Project from '$tl/Project/Project'
 import projectSelectors from '$tl/Project/store/selectors'
-import {Pointer} from '$shared/DataVerse2/pointer'
+import {Pointer} from '$shared/DataVerse/pointer'
 import {PropValueContainer} from '$tl/Project/store/types'
 
 export type NodeDescriptorsByPath = {

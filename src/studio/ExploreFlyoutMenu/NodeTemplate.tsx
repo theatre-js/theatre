@@ -8,11 +8,11 @@ import {
   GenericNode,
 } from '$studio/integrations/react/treeMirroring/MirrorOfReactTree'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
-import {val} from '$shared/DataVerse2/atom'
+import {val} from '$shared/DataVerse/atom'
 import {reduceAhistoricState} from '$studio/bootstrap/actions'
 import {omit} from '$shared/utils'
 import AnyNode from './AnyNode'
-import {Pointer} from '$shared/DataVerse2/pointer'
+import {Pointer} from '$shared/DataVerse/pointer'
 import {getActiveViewportId, getVolatileIdOfActiveNode} from './utils'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 import Theatre from '$studio/bootstrap/Theatre'

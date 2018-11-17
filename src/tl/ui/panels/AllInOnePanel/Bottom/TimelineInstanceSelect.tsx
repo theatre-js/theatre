@@ -5,7 +5,7 @@ import Item from './Item'
 import {AllInOnePanelStuff} from '../AllInOnePanel'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import FlyoutSearchableList from '$shared/components/FlyoutSearchableList/FlyoutSearchableList'
-import {val} from '$shared/DataVerse2/atom'
+import {val} from '$shared/DataVerse/atom'
 
 interface IProps {}
 

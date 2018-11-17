@@ -5,7 +5,7 @@ import {
   TimelineTemplateState,
   ObjectTemplateState,
 } from '../types'
-import {val} from '$shared/DataVerse2/atom'
+import {val} from '$shared/DataVerse/atom'
 
 export const getTimelineTemplateState = pointerFriendlySelector(
   (

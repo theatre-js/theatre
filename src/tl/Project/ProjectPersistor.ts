@@ -1,9 +1,9 @@
 import Project from './Project'
 import {OnDiskState, OnBrowserState} from '$tl/Project/store/types'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
-import {val} from '$shared/DataVerse2/atom'
+import {val} from '$shared/DataVerse/atom'
 import {debounce} from '$shared/utils'
-import {Pointer} from '$shared/DataVerse2/pointer'
+import {Pointer} from '$shared/DataVerse/pointer'
 import delay from '$shared/utils/delay'
 
 export default class ProjectPersistor {

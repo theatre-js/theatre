@@ -1,6 +1,6 @@
 import UIComponent from '$tl/ui/handy/UIComponent'
 import React from 'react'
-import {val, coldVal} from '$shared/DataVerse2/atom'
+import {val, coldVal} from '$shared/DataVerse/atom'
 import {TDuration, TRange} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import createPointerContext from '$shared/utils/react/createPointerContext'
 import {IAllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
@@ -18,7 +18,7 @@ import projectSelectors from '$tl/Project/store/selectors'
 import {overshootDuration} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
 import {viewportScrolledSpace } from './Right/utils';
 import {clamp} from 'lodash-es'
-import {Pointer} from '$shared/DataVerse2/pointer'
+import {Pointer} from '$shared/DataVerse/pointer'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 
 interface IProps {

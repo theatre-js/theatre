@@ -1,7 +1,7 @@
 import React from 'react'
 import css from './SelectionProvider.css'
 import resolveCss from '$shared/utils/resolveCss'
-import {val} from '$shared/DataVerse2/atom'
+import {val} from '$shared/DataVerse/atom'
 import * as utils from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/utils'
 import {TDuration, TRange} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import UIComponent from '$tl/ui/handy/UIComponent'
@@ -9,7 +9,6 @@ import {
   ActiveModeContext,
   MODES,
   ActiveMode,
-  MODES,
 } from '$shared/components/ActiveModeProvider/ActiveModeProvider'
 import {
   getSvgWidth,
@@ -341,7 +340,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
     })
   }
 
-  handleAreaDragStart = e => {
+  handleAreaDragStart = (): void | false => {
     if (this.activeMode === MODES.d) {
       setTimeout(() => this.deletePointsInSelection(), 10)
 

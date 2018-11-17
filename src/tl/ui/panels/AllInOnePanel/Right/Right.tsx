@@ -3,7 +3,7 @@ import UIComponent from '$tl/ui/handy/UIComponent'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import React from 'react'
 import * as css from './Right.css'
-import {val} from '$shared/DataVerse2/atom'
+import {val} from '$shared/DataVerse/atom'
 import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
 import TimelineInstance from '$tl/timelines/TimelineInstance'
 import {

@@ -2,7 +2,7 @@ import MirrorOfReactTree, {
   VolatileId,
   State as MState,
 } from '$studio/integrations/react/treeMirroring/MirrorOfReactTree'
-import atom, {Atom} from '$shared/DataVerse2/atom'
+import atom, {Atom} from '$shared/DataVerse/atom'
 import {omit} from '$shared/utils'
 
 type State = {

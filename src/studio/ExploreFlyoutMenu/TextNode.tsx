@@ -5,8 +5,8 @@ import {
   TextNode as MTextNode,
 } from '$studio/integrations/react/treeMirroring/MirrorOfReactTree'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
-import {val} from '$shared/DataVerse2/atom'
-import {Pointer} from '$shared/DataVerse2/pointer'
+import {val} from '$shared/DataVerse/atom'
+import {Pointer} from '$shared/DataVerse/pointer'
 import NodeTemplate from './NodeTemplate'
 import {TheatreConsumer} from '$studio/componentModel/react/utils/studioContext'
 

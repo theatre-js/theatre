@@ -2,7 +2,7 @@ import resolveCss from '$shared/utils/resolveCss'
 import UIComponent from '$tl/ui/handy/UIComponent'
 import React from 'react'
 import * as css from './Base.css'
-import {val} from '$shared/DataVerse2/atom'
+import {val} from '$shared/DataVerse/atom'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import {
   ActiveModeContext,

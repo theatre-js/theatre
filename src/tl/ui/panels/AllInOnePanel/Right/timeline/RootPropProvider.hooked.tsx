@@ -1,5 +1,5 @@
 import React, {Consumer} from 'react'
-import {val, coldVal} from '$shared/DataVerse2/atom'
+import {val, coldVal} from '$shared/DataVerse/atom'
 import {getSvgWidth} from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import {TimeStuff} from '$tl/ui/panels/AllInOnePanel/TimeStuffProvider'
 import {useMemo} from '$tl/ui/panels/AllInOnePanel/TimeStuffProvider.hooked'

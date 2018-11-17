@@ -1,7 +1,6 @@
 import atom, {val} from './atom'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 import Ticker from '$shared/DataVerse/Ticker'
-import mapDict from './mapDict'
 
 describe(`v2 atom`, () => {
   describe(`identity pointers`, () => {
@@ -30,15 +29,4 @@ describe(`v2 atom`, () => {
       expect(changes).toHaveLength(1)
     })
   })
-
-  // describe(`dictMaps`, () => {
-  //   it.skip(`should work`, () => {
-  //     const state = {one: 1, two: 2}
-  //     const a = atom(state)
-  //     const mapped = mapDict(a.pointer, (propP: $FixMe, key: $FixMe) => {
-  //       return (val(propP) as $FixMe) * 2
-  //     })
-  //     expect(mapped._getIdentityByPath([])).toMatchObject({one: 2, two: 4})
-  //   })
-  // })
 })

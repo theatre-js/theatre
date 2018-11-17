@@ -1,6 +1,6 @@
 import React from 'react'
 import {Broadcast, Subscriber} from 'react-broadcast'
-import {val} from '$shared/DataVerse2/atom'
+import {val} from '$shared/DataVerse/atom'
 import {
   RootPropGetterChannel,
   TPropName as TRootPropName,

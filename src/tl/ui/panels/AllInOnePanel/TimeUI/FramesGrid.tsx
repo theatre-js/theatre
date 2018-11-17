@@ -1,6 +1,6 @@
 import React from 'react'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
-import {val} from '$shared/DataVerse2/atom'
+import {val} from '$shared/DataVerse/atom'
 import css from './FramesGrid.css'
 import resolveCss from '$shared/utils/resolveCss'
 import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
@@ -24,7 +24,7 @@ interface IState {}
 const MIN_CELL_WIDTH = 20
 const FPS = 30
 
-class FramesGrid extends React.PureComponent<IProps, IState> {
+export default class FramesGrid extends React.PureComponent<IProps, IState> {
   canvas: HTMLCanvasElement | null
   fullSecondStampsRef: React.RefObject<HTMLDivElement> = React.createRef()
   frameStampRef: React.RefObject<HTMLDivElement> = React.createRef()
@@ -179,7 +179,6 @@ class FramesGrid extends React.PureComponent<IProps, IState> {
 
   _renderFrameStamp() {
     const {range, duration, timelineWidth} = this.props
-    // const mouseTime = xToInRangeTime(range, timelineWidth)(this.mouseX!)
     const mouseTime = viewportScrolledSpace.xToTime(
       range,
       duration,
@@ -250,5 +249,3 @@ function getFactors(num: number): number[] {
   }
   return factors
 }
-
-export default FramesGrid

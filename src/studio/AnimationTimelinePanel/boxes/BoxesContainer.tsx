@@ -3,8 +3,8 @@ import {
   TimelineObject,
   LayoutArray,
 } from '$studio/AnimationTimelinePanel/types'
-import {Pointer} from '$shared/DataVerse2/pointer'
-import {val} from '$shared/DataVerse2/atom'
+import {Pointer} from '$shared/DataVerse/pointer'
+import {val} from '$shared/DataVerse/atom'
 import css from './BoxesContainer.css'
 import resolveCss from '$shared/utils/resolveCss'
 import {get} from '$shared/utils'

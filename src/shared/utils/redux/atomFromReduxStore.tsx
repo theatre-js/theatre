@@ -1,4 +1,4 @@
-import atom, {Atom} from '$shared/DataVerse2/atom'
+import atom, {Atom} from '$shared/DataVerse/atom'
 import {Store} from 'redux'
 
 export default function atomFromReduxStore<State>(

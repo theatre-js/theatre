@@ -1,6 +1,6 @@
 import React from 'react'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
-import {val} from '$shared/DataVerse2/atom'
+import {val} from '$shared/DataVerse/atom'
 import css from './FramesGrid.css'
 import resolveCss from '$shared/utils/resolveCss'
 import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'

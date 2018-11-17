@@ -1,4 +1,4 @@
-import {IdentityDerivation} from '$shared/DataVerse2/identityDerivation'
+import {IdentityDerivation} from '$shared/DataVerse/identityDerivation'
 import {
   get,
   last,

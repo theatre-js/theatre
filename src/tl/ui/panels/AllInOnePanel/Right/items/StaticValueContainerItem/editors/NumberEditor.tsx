@@ -2,8 +2,8 @@ import resolveCss from '$shared/utils/resolveCss'
 import UIComponent from '$tl/ui/handy/UIComponent'
 import React from 'react'
 import * as css from './NumberEditor.css'
-import {Pointer} from '$shared/DataVerse2/pointer'
-import {val} from '$shared/DataVerse2/atom'
+import {Pointer} from '$shared/DataVerse/pointer'
+import {val} from '$shared/DataVerse/atom'
 import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
 
 interface IProps {

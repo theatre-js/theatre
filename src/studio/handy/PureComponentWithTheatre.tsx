@@ -10,7 +10,7 @@ import {PointerDerivation} from '$shared/DataVerse/derivations/pointer'
 import AbstractDerivedDict from '$shared/DataVerse/derivations/dicts/AbstractDerivedDict'
 import {UnwrapDictAtom} from '$shared/DataVerse/atoms/dictAtom'
 import {ITheatreStoreState} from '$studio/types'
-import {Pointer} from '$shared/DataVerse2/pointer'
+import {Pointer} from '$shared/DataVerse/pointer'
 
 /**
  * The main reason I made this as a component instead of just providing a HOC called `withStudio()` is that

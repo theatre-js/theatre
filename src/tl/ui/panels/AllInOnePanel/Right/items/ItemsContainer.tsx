@@ -3,13 +3,13 @@ import UIComponent from '$tl/ui/handy/UIComponent'
 import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import TimelineTemplate from '$tl/timelines/TimelineTemplate'
-import {val} from '$shared/DataVerse2/atom'
+import {val} from '$shared/DataVerse/atom'
 import {
   timelineTemplateToSeriesOfVerticalItems,
   PrimitivePropItem,
 } from '$tl/ui/panels/AllInOnePanel/utils'
 import TimelineItem from '$tl/ui/panels/AllInOnePanel/Right/items/TimelineItem'
-import {Pointer} from '$shared/DataVerse2/pointer'
+import {Pointer} from '$shared/DataVerse/pointer'
 
 interface IExportedComponentProps {}
 

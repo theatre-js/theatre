@@ -14,9 +14,9 @@ import {
   LayoutArray,
   Variables,
 } from '$studio/AnimationTimelinePanel/types'
-import {val} from '$shared/DataVerse2/atom'
+import {val} from '$shared/DataVerse/atom'
 import {get, setImmutable as set} from '$shared/utils'
-import {Pointer} from '$shared/DataVerse2/pointer'
+import {Pointer} from '$shared/DataVerse/pointer'
 import * as utils from '$studio/AnimationTimelinePanel/selection/utils'
 import {
   TDims,

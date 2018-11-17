@@ -17,7 +17,7 @@ import {
   StateWithHistory,
   HistoryOnly,
 } from '$shared/utils/redux/withHistory/withHistoryDeprecated'
-import {Pointer} from '$shared/DataVerse2/pointer'
+import {Pointer} from '$shared/DataVerse/pointer'
 import * as t from '$shared/ioTypes'
 
 export interface IStoreHistoricState {

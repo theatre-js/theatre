@@ -1,6 +1,6 @@
 import React from 'react'
 import {Broadcast} from 'react-broadcast'
-import {val} from '$shared/DataVerse2/atom'
+import {val} from '$shared/DataVerse/atom'
 import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 

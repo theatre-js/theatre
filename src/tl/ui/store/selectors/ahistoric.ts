@@ -1,7 +1,7 @@
 import pointerFriendlySelector from '$shared/utils/redux/pointerFriendlySelector'
 import {UIAhistoricState} from '../types'
 import {TimelineAddress, ObjectAddress, PropAddress} from '$tl/handy/addresses'
-import {val} from '$shared/DataVerse2/atom'
+import {val} from '$shared/DataVerse/atom'
 
 export const getTimelineState = pointerFriendlySelector(
   (s: UIAhistoricState, addr: TimelineAddress) => {

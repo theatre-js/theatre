@@ -1,4 +1,4 @@
-import {Pointer} from '$shared/DataVerse2/pointer'
+import {Pointer} from '$shared/DataVerse/pointer'
 
 type PointerFriendlySelector<S, R, Args extends $IntentionalAny[]> = <
   GivenState extends S | Pointer<S>

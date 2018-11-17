@@ -1,9 +1,9 @@
 import UnitBezier from 'timing-function/lib/UnitBezier'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 import withDeps from '$shared/DataVerse/derivations/withDeps'
-import {Pointer} from '$shared/DataVerse2/pointer'
+import {Pointer} from '$shared/DataVerse/pointer'
 import {ITimelinePointInterpolationDescriptor} from '$studio/componentModel/types'
-import {valueDerivation, val} from '$shared/DataVerse2/atom'
+import {valueDerivation, val} from '$shared/DataVerse/atom'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 
 type Config = {

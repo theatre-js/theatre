@@ -1,5 +1,5 @@
 import React from 'react'
-import {val} from '$shared/DataVerse2/atom'
+import {val} from '$shared/DataVerse/atom'
 import Viewports from './Viewports/Viewports'
 import elementify from '$studio/componentModel/react/elementify/elementify'
 import constant from '$shared/DataVerse/derivations/constant'

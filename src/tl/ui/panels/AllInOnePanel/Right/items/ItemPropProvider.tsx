@@ -1,5 +1,5 @@
 import React from 'react'
-import {val} from '$shared/DataVerse2/atom'
+import {val} from '$shared/DataVerse/atom'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import {
   TPropGetter as TRootPropGetter,

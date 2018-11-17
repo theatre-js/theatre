@@ -1,5 +1,5 @@
 import React from 'react'
-import {val} from '$shared/DataVerse2/atom'
+import {val} from '$shared/DataVerse/atom'
 import * as css from './Viewports.css'
 import resolveCss from '$shared/utils/resolveCss'
 import {map} from '$shared/utils'

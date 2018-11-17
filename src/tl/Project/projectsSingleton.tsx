@@ -1,5 +1,5 @@
 import Project from './Project'
-import {Atom} from '$shared/DataVerse2/atom'
+import {Atom} from '$shared/DataVerse/atom'
 
 export interface State {
   projects: Record<string, Project>

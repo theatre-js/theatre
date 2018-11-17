@@ -1,5 +1,5 @@
 import {isTheatreComponent} from '$studio/componentModel/react/TheatreComponent/TheatreComponent'
-import {val} from '$shared/DataVerse2/atom'
+import {val} from '$shared/DataVerse/atom'
 import Theatre from '$studio/bootstrap/Theatre'
 import {isViewportNode} from '$studio/workspace/components/WhatToShowInBody/Viewports/Viewport'
 

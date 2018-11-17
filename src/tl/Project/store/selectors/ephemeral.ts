@@ -1,6 +1,6 @@
 import pointerFriendlySelector from '$shared/utils/redux/pointerFriendlySelector'
 import {ProjectEphemeralState, ProjectLoadedState} from '../types'
-import {val} from '$shared/DataVerse2/atom'
+import {val} from '$shared/DataVerse/atom'
 
 export const isReady = pointerFriendlySelector(
   (s: ProjectEphemeralState): boolean => {

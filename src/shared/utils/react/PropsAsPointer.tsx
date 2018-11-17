@@ -1,8 +1,8 @@
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 import DerivationAsReactElement from '$shared/utils/react/DerivationAsReactElement'
 import React, {PureComponent} from 'react'
-import atom, {Atom, val} from '$shared/DataVerse2/atom'
-import {Pointer} from '$shared/DataVerse2/pointer'
+import atom, {Atom, val} from '$shared/DataVerse/atom'
+import {Pointer} from '$shared/DataVerse/pointer'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 
 const emptyProps = {}

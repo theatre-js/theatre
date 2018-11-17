@@ -2,7 +2,7 @@ import React from 'react'
 import * as css from './ExploreFlyoutMenu.css'
 import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
-import {val} from '$shared/DataVerse2/atom'
+import {val} from '$shared/DataVerse/atom'
 import AnyNode from './AnyNode'
 import {createPortal} from 'react-dom'
 

@@ -2,7 +2,7 @@ import React from 'react'
 import propTypes from 'prop-types'
 import UI from '$tl/ui/UI'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
-import {Pointer} from '$shared/DataVerse2/pointer'
+import {Pointer} from '$shared/DataVerse/pointer'
 import Project from '$tl/Project/Project'
 
 export default class UIComponent<Props, State> extends React.PureComponent<

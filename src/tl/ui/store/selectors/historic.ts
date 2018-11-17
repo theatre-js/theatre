@@ -1,7 +1,7 @@
 import {UIHistoricState} from '../types'
 import pointerFriendlySelector from '$shared/utils/redux/pointerFriendlySelector'
 import {TimelineAddress, ObjectAddress, PropAddress} from '$tl/handy/addresses'
-import {val} from '$shared/DataVerse2/atom'
+import {val} from '$shared/DataVerse/atom'
 import projectsSingleton from '$tl/Project/projectsSingleton'
 import UI from '$tl/ui/UI'
 import Project from '$tl/Project/Project'

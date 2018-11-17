@@ -1,8 +1,8 @@
 import resolveCss from '$shared/utils/resolveCss'
 import UIComponent from '$tl/ui/handy/UIComponent'
 import React from 'react'
-import {Pointer} from '$shared/DataVerse2/pointer'
-import {val, coldVal} from '$shared/DataVerse2/atom'
+import {Pointer} from '$shared/DataVerse/pointer'
+import {val, coldVal} from '$shared/DataVerse/atom'
 import {TimeStuff} from '$tl/ui/panels/AllInOnePanel/TimeStuffProvider'
 import {ITimeStuff} from './TimeStuffProvider'
 

@@ -1,7 +1,7 @@
 import Project from '$tl/Project/Project'
 import ObjectTemplate from '$tl/objects/ObjectTemplate'
 import {NativeObjectTypeConfig} from '$tl/objects/objectTypes'
-import {Atom, val} from '$shared/DataVerse2/atom'
+import {Atom, val} from '$shared/DataVerse/atom'
 import {TimelineAddress} from '$tl/handy/addresses'
 import {ConstantDerivation} from '$shared/DataVerse/derivations/constant'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'

@@ -3,7 +3,7 @@ import css from './FullSizeHint.css'
 import resolveCss from '$shared/utils/resolveCss'
 import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
-import {val} from '$shared/DataVerse2/atom'
+import {val} from '$shared/DataVerse/atom'
 
 const classes = resolveCss(css)
 

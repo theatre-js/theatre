@@ -1,6 +1,6 @@
 import UIComponent from '$tl/ui/handy/UIComponent'
 import React from 'react'
-import {val} from '$shared/DataVerse2/atom'
+import {val} from '$shared/DataVerse/atom'
 import {TDuration, TRange} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import createPointerContext from '$shared/utils/react/createPointerContext'
 import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'

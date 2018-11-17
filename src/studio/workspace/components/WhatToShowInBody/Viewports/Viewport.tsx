@@ -1,5 +1,5 @@
 import React from 'react'
-import {val} from '$shared/DataVerse2/atom'
+import {val} from '$shared/DataVerse/atom'
 import * as css from './Viewport.css'
 import resolveCss from '$shared/utils/resolveCss'
 import dictAtom from '$shared/DataVerse/atoms/dictAtom'

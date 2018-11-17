@@ -1,11 +1,11 @@
 import * as interpolators from './interpolators/interpolators'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
-import {Pointer} from '$shared/DataVerse2/pointer'
+import {Pointer} from '$shared/DataVerse/pointer'
 import {
   IBezierCurvesOfScalarValues,
   ITimelineVarPoint,
 } from '$tl/Project/store/types'
-import {val, valueDerivation} from '$shared/DataVerse2/atom'
+import {val, valueDerivation} from '$shared/DataVerse/atom'
 import interpolationDerivationForCubicBezier from './interpolators/interpolationDerivationForCubicBezier'
 import {skipFindingColdDerivations, endSkippingColdDerivations} from '$shared/debug'
 

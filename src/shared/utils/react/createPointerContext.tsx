@@ -1,6 +1,6 @@
 import React from 'react'
-import atom, {Atom} from '$shared/DataVerse2/atom'
-import {Pointer} from '$shared/DataVerse2/pointer'
+import atom, {Atom} from '$shared/DataVerse/atom'
+import {Pointer} from '$shared/DataVerse/pointer'
 
 export default function createPointerContext<T>() {
   const {Consumer: InnerConsumer, Provider: _Provider} = React.createContext(

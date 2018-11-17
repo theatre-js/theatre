@@ -1,11 +1,11 @@
 import TimelineInstanceObject from '$tl/objects/TimelineInstanceObject'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
-import {valueDerivation} from '$shared/DataVerse2/atom'
+import {valueDerivation} from '$shared/DataVerse/atom'
 import {
   StaticValueContainer,
   IBezierCurvesOfScalarValues,
 } from '$tl/Project/store/types'
-import {Pointer} from '$shared/DataVerse2/pointer'
+import {Pointer} from '$shared/DataVerse/pointer'
 import DerivationOfBezierCurvesOfScalarValues from '$tl/objects/bezierStuff/DerivationOfBezierCurvesOfScalarValues'
 
 export default class PropInstance {

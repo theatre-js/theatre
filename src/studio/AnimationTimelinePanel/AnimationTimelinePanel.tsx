@@ -7,10 +7,10 @@ import {
   getComponentIdOfNode,
 } from '$studio/ExploreFlyoutMenu/utils'
 import {getPathToComponentDescriptor} from '$studio/componentModel/selectors'
-import {Pointer} from '$shared/DataVerse2/pointer'
+import {Pointer} from '$shared/DataVerse/pointer'
 import {IDeclarativeComponentDescriptor} from '$studio/componentModel/types'
 import * as _ from '$shared/utils'
-import {val, pathTo} from '$shared/DataVerse2/atom'
+import {val, pathTo} from '$shared/DataVerse/atom'
 import TimelineInstantiator from '$studio/AnimationTimelinePanel/TimelineInstantiator'
 import DerivationAsReactElement from '$shared/utils/react/DerivationAsReactElement'
 import PureComponentWithTheatre from '$studio/handy/PureComponentWithTheatre'
