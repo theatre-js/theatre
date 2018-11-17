@@ -13,11 +13,11 @@ setAutoFreeze(false)
 module.exports = (env: Envs) => {
   const isDev = env === 'development'
 
-  if (isDev) {
-    return makeBundle('index')
-  } else {
-    return [makeBundle('index'), makeBundle('core')]
-  }
+  // if (isDev) {
+  //   return makeBundle('index')
+  // } else {
+  return [makeBundle('index'), makeBundle('core')]
+  // }
 
   function makeBundle(which: 'index' | 'core') {
     const parts = makeConfigParts({
@@ -38,24 +38,30 @@ module.exports = (env: Envs) => {
     return immer(parts.config, c => {
       c.output.libraryTarget = 'umd'
       c.output.library = 'Theatre'
-      if (!isDev) {
-        c.output.filename = `${which}.js`
+      // if (!isDev) {
+      c.output.filename = `${which}.js`
+      // }
+
+      if (which === 'core') {
+        if (isDev) {
+          c.plugins.push(
+            new webpack.DefinePlugin({'$env.tl.isCore': JSON.stringify(true)}),
+          )
+        }
+        // c.plugins.push(
+        //   new webpack.IgnorePlugin(/\/types\.tsx?$/),
+        //   new webpack.IgnorePlugin(/ioTypes/),
+        // )
+        // exclude all runtime types if we're building for core in production
+        c.module.rules.unshift({
+          test: [/\/types\.tsx?$/, /lodash/, /ioTypes/],
+          use: 'null-loader',
+          exclude: /node_modules/,
+        })
       }
 
       if (!isDev) {
         // c.plugins.unshift()
-        if (which === 'core') {
-          // c.plugins.push(
-          //   new webpack.IgnorePlugin(/\/types\.tsx?$/),
-          //   new webpack.IgnorePlugin(/ioTypes/),
-          // )
-          // exclude all runtime types if we're building for core in production
-          c.module.rules.unshift({
-            test: [/\/types\.tsx?$/, /lodash/, /ioTypes/],
-            use: 'null-loader',
-            exclude: /node_modules/,
-          })
-        }
 
         c.plugins.push(
           new BundleAnalyzerPlugin({

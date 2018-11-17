@@ -84,6 +84,15 @@ export default class Project {
         check()
       })
     } else {
+      const onDiskState = this.config.state!
+      this._dispatch(
+        this._actions.historic.__unsafe_clearHistoryAndReplaceInnerState(
+          onDiskState.projectState,
+        ),
+        this._actions.ephemeral.setLoadingStateToLoaded({
+          diskRevisionsThatBrowserStateIsBasedOn: [onDiskState.revision],
+        }),
+      )
       this._isReady = true
       this._readyPromise = resolvedPromise
     }
