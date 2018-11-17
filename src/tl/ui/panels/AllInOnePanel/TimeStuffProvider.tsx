@@ -12,13 +12,13 @@ import {
   timeToInRangeX,
   timelineXToTime,
   deltaTimelineXToDeltaTime,
+  viewportScrolledSpace,
 } from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import TimelineInstance from '$tl/timelines/TimelineInstance'
 import TimelineTemplate from '$tl/timelines/TimelineTemplate'
 import UI from '$tl/ui/UI'
 import projectSelectors from '$tl/Project/store/selectors'
 import {overshootDuration} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
-import {inRangeXToTime} from './Right/utils'
 import {clamp} from 'lodash-es'
 
 interface IProps {
@@ -40,11 +40,18 @@ export interface IRangeAndDurationLock {
   relock: (lockedRangeAndDuration: IRangeAndDuration) => void
 }
 
+/**
+ * Three spaces:
+ * ViewportAbsoluteSpace
+ * ViewportScrolledSpace
+ * ScrolledSpace
+ */
+
 export interface ITimeStuff {
   rangeAndDuration: IRangeAndDuration
   unlockedRangeAndDuration: IRangeAndDuration
   rangeAdndurationAreLocked: boolean
-  inRangeSpace: {
+  viewportScrolledSpace: {
     inRangeXToTime: (x: number, shouldClamp?: boolean) => number
     timeToInRangeX: (t: number) => number
     deltaXToDeltaTime: (x: number) => number
@@ -176,12 +183,12 @@ export default class TimeStuffProvider extends UIComponent<IProps, IState> {
                 timelineTemplate,
                 ui: this.ui,
                 setRange: this.setRange,
-                inRangeSpace: {
+                viewportScrolledSpace: {
                   deltaXToDeltaTime: deltaTimelineXToDeltaTime(
                     rangeAndDuration.range,
                     viewportWidth,
                   ),
-                  inRangeXToTime: inRangeXToTime(
+                  inRangeXToTime: viewportScrolledSpace.xToTime(
                     rangeAndDuration.range,
                     rangeAndDuration.overshotDuration,
                     viewportWidth,

@@ -16,7 +16,7 @@ import TimelineTemplate from '$tl/timelines/TimelineTemplate'
 import UI from '$tl/ui/UI'
 import projectSelectors from '$tl/Project/store/selectors'
 import {overshootDuration} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
-import {inRangeXToTime} from './Right/utils'
+import {viewportScrolledSpace } from './Right/utils';
 import {clamp} from 'lodash-es'
 import {Pointer} from '$shared/DataVerse2/pointer'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
@@ -187,7 +187,7 @@ export default class HOOKED_TimeStuffProvider extends UIComponent<
           ),
           inRangeXToTime: useMemo(
             () =>
-              inRangeXToTime(
+              viewportScrolledSpace.xToTime(
                 rangeAndDuration.range,
                 rangeAndDuration.overshotDuration,
                 viewportWidth,

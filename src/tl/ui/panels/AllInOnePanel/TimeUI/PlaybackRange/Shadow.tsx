@@ -41,7 +41,7 @@ export default class Shadow extends UIComponent<IProps, IState> {
               const which = val(p.props.which)
 
               const viewportWidth = val(timeStuffP.viewportSpace.width)
-              const timeToInRangeX = val(timeStuffP.inRangeSpace.timeToInRangeX)
+              const timeToInRangeX = val(timeStuffP.viewportScrolledSpace.timeToInRangeX)
 
               const [fromX, toX] =
                 which === 'from'

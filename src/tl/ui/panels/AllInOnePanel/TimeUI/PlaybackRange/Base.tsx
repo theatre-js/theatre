@@ -86,12 +86,12 @@ export default class Base extends UIComponent<IProps, IState> {
   onShiftDragStart = (e: React.MouseEvent) => {
     this.setState({dragging: true})
     const {layerX} = e.nativeEvent
-    this.dragStartTime = this.timeStuff.inRangeSpace.inRangeXToTime(layerX)
+    this.dragStartTime = this.timeStuff.viewportScrolledSpace.inRangeXToTime(layerX)
     this.tempActionGroup = this.ui.actions.historic.temp()
   }
 
   onShiftDrag = (dx: number) => {
-    const timeDiff = this.timeStuff.inRangeSpace.deltaXToDeltaTime(dx)
+    const timeDiff = this.timeStuff.viewportScrolledSpace.deltaXToDeltaTime(dx)
 
     let [from, to] = (timeDiff >= 0
       ? [this.dragStartTime, this.dragStartTime + timeDiff]

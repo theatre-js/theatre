@@ -6,10 +6,10 @@ import resolveCss from '$shared/utils/resolveCss'
 import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
 import {
   inRangeXToPaddedSvgX,
-  inRangeXToTime,
   timeToInRangeX,
 } from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import {TRange, TDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
+import {viewportScrolledSpace} from '../Right/utils'
 
 const classes = resolveCss(css)
 
@@ -180,7 +180,11 @@ class FramesGrid extends React.PureComponent<IProps, IState> {
   _renderFrameStamp() {
     const {range, duration, timelineWidth} = this.props
     // const mouseTime = xToInRangeTime(range, timelineWidth)(this.mouseX!)
-    const mouseTime = inRangeXToTime(range, duration, timelineWidth)(this.mouseX!)
+    const mouseTime = viewportScrolledSpace.xToTime(
+      range,
+      duration,
+      timelineWidth,
+    )(this.mouseX!)
     // TODO: add comments!
     const mouseTimeMiliseconds = mouseTime % 1000
     const frame =

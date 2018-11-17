@@ -60,7 +60,7 @@ export default class FillStrip extends UIComponent<IProps, IState> {
               if (!range) return null
 
               const viewportWidth = val(timeStuffP.viewportSpace.width)
-              const timeToInRangeX = val(timeStuffP.inRangeSpace.timeToInRangeX)
+              const timeToInRangeX = val(timeStuffP.viewportScrolledSpace.timeToInRangeX)
               const dragging = val(p.state.dragging)
 
               let [fromX, toX] = [
@@ -155,7 +155,7 @@ export default class FillStrip extends UIComponent<IProps, IState> {
       return
     }
 
-    this.deltaXToDeltaTime = this.timeStuff.inRangeSpace.deltaXToDeltaTime
+    this.deltaXToDeltaTime = this.timeStuff.viewportScrolledSpace.deltaXToDeltaTime
     this.propsBeforeDrag = this.props
     this.rangeWhenDragStart = range
     this.tempActionGroup = this.ui.actions.historic.temp()

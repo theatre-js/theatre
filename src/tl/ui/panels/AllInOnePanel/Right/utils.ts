@@ -29,9 +29,10 @@ export const timelineXToTime = (range: TRange, timelineWidth: number) => (
   return deltaTimelineXToDeltaTime(range, timelineWidth)(x) + range.from
 }
 
-export const deltaTimelineXToDeltaTime = (range: TRange, timelineWidth: number) => (
-  x: number,
-) => {
+export const deltaTimelineXToDeltaTime = (
+  range: TRange,
+  timelineWidth: number,
+) => (x: number) => {
   return (x * (range.to - range.from)) / timelineWidth
 }
 
@@ -41,13 +42,13 @@ export const timeToTimelineX = (range: TRange, timelineWidth: number) => (
   return ((time - range.from) / (range.to - range.from)) * timelineWidth
 }
 
-export const deltaXToTime = (range: TRange, width: number) => (
-  dx: number,
-) => {
+export const deltaXToTime = (range: TRange, width: number) => (dx: number) => {
   return (dx * (range.to - range.from)) / width
 }
 
-export const getSvgXToPaddedSvgXOffset = (svgWidth: number) => (svgX: number) => {
+export const getSvgXToPaddedSvgXOffset = (svgWidth: number) => (
+  svgX: number,
+) => {
   return (1 / 2 - svgX / svgWidth) * SVG_PADDING_X
 }
 
@@ -72,16 +73,18 @@ export const inRangeXToSvgX = (
   return timeToSvgX(range, duration, timelineWidth)(time)
 }
 
-export const inRangeXToTime = (
-  range: TRange,
-  duration: TDuration,
-  timelineWidth: number,
-) => (timelineX: number, shouldClamp: boolean = true) => {
-  const svgWidth = getSvgWidth(range, duration, timelineWidth)
-  const svgX = inRangeXToSvgX(timelineX, range, duration, timelineWidth)
-  const theX = timelineX - getSvgXToPaddedSvgXOffset(svgWidth)(svgX)
-  const time = timelineXToTime(range, timelineWidth)(theX)
-  return shouldClamp ? clamp(time, 0, duration) : time
+export const viewportScrolledSpace = {
+  xToTime: (
+    range: TRange,
+    duration: TDuration,
+    timelineWidth: number,
+  ) => (timelineX: number, shouldClamp: boolean = true) => {
+    const svgWidth = getSvgWidth(range, duration, timelineWidth)
+    const svgX = inRangeXToSvgX(timelineX, range, duration, timelineWidth)
+    const theX = timelineX - getSvgXToPaddedSvgXOffset(svgWidth)(svgX)
+    const time = timelineXToTime(range, timelineWidth)(theX)
+    return shouldClamp ? clamp(time, 0, duration) : time
+  }
 }
 
 export const timeToInRangeX = (
@@ -89,7 +92,7 @@ export const timeToInRangeX = (
   duration: TDuration,
   timelineWidth: number,
 ) => (time: number) => {
-  const timelineX = timeToTimelineX(range,timelineWidth)(time)
+  const timelineX = timeToTimelineX(range, timelineWidth)(time)
   return inRangeXToPaddedSvgX(timelineX, range, duration, timelineWidth)
 }
 
@@ -97,8 +100,11 @@ const timeToSvgX = (
   range: TRange,
   duration: TDuration,
   timelineWidth: number,
-) => (time: number) => {
-  return (time * getSvgWidth(range, duration, timelineWidth)) / duration
+) => {
+  const width = getSvgWidth(range, duration, timelineWidth)
+  return (time: number) => {
+    return (time * width) / duration
+  }
 }
 
 export const getRangeLabel = (

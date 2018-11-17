@@ -9,7 +9,7 @@ import TimelineInstance from '$tl/timelines/TimelineInstance'
 import {
   deltaXToTime,
   getSvgWidth,
-  inRangeXToTime,
+  viewportScrolledSpace,
 } from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import {
   getNewRange,
@@ -62,10 +62,7 @@ class Right extends UIComponent<IRightProps, IRightState> {
           shouldReturnMovement={true}
           lockCursorTo="ew-resize"
         >
-          <div
-            ref={this.wrapper}
-            {...classes('wrapper')}
-          >
+          <div ref={this.wrapper} {...classes('wrapper')}>
             <div
               style={{width: svgWidth, minHeight: this.props.heightMinusBottom}}
               {...classes('scrollingContainer')}
@@ -104,8 +101,7 @@ class Right extends UIComponent<IRightProps, IRightState> {
     // return
     const newWrapper = this.wrapper.current!
     if (this.cachedCopyOfWrapper !== newWrapper) {
-      if (this.cachedCopyOfWrapper)
-        this._detachScrollListener()
+      if (this.cachedCopyOfWrapper) this._detachScrollListener()
       this.cachedCopyOfWrapper = newWrapper
       this.cachedCopyOfWrapper.addEventListener(
         'wheel',
@@ -140,13 +136,15 @@ class Right extends UIComponent<IRightProps, IRightState> {
       event.stopPropagation()
       const {range, duration, timelineWidth} = this.props
       const dt = deltaXToTime(range, timelineWidth)(event.deltaY) * 3.5
-      const zoomTime = inRangeXToTime(range, duration, timelineWidth)(
-        event.clientX - this.wrapperLeft,
-      )
+      const zoomTime = viewportScrolledSpace.xToTime(
+        range,
+        duration,
+        timelineWidth,
+      )(event.clientX - this.wrapperLeft)
       const fraction = (zoomTime - range.from) / (range.to - range.from)
       const change = {from: -dt * fraction, to: dt * (1 - fraction)}
       this.props.setRange(getNewZoom(range, change, duration))
-    }  
+    }
   }
 
   _subscribeToPanelChanges = () => {
@@ -165,16 +163,20 @@ class Right extends UIComponent<IRightProps, IRightState> {
     this._scrollContainer(this.props.range)
   }
 
-  syncSeekerWithMousePosition = (event: React.MouseEvent<HTMLDivElement>): void | false => {
+  syncSeekerWithMousePosition = (
+    event: React.MouseEvent<HTMLDivElement>,
+  ): void | false => {
     if (event.target instanceof HTMLInputElement) return false
     if (event.shiftKey || event.altKey || event.ctrlKey || event.metaKey) {
       return false
     }
 
     const {timelineWidth, range, duration, timelineInstance} = this.props
-    const newTime = inRangeXToTime(range, duration, timelineWidth)(
-      event.clientX - this.wrapperLeft,
-    )
+    const newTime = viewportScrolledSpace.xToTime(
+      range,
+      duration,
+      timelineWidth,
+    )(event.clientX - this.wrapperLeft)
     timelineInstance.time = newTime
   }
 
@@ -182,9 +184,11 @@ class Right extends UIComponent<IRightProps, IRightState> {
     if (event.target instanceof HTMLInputElement) return
 
     const {range, duration, timelineWidth, timelineInstance} = this.props
-    const newTime = inRangeXToTime(range, duration, timelineWidth)(
-      event.clientX - this.wrapperLeft,
-    )
+    const newTime = viewportScrolledSpace.xToTime(
+      range,
+      duration,
+      timelineWidth,
+    )(event.clientX - this.wrapperLeft)
     timelineInstance.time = clampTime(range, newTime)
   }
 
