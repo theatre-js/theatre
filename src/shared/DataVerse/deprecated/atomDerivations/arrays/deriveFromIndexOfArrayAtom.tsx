@@ -1,4 +1,4 @@
-import AbstractDerivation from '../AbstractDerivation'
+import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 import {ArrayAtom} from '$shared/DataVerse/deprecated/atoms/arrayAtom'
 
 const noop = () => {}

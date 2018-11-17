@@ -182,9 +182,9 @@ export default function pointer(address: Address): mixed {
 
 const modules = {
   constant: require('$shared/DataVerse/derivations/constant'),
-  deriveFromPropOfADictAtom: require('$shared/DataVerse/derivations/ofAtoms/deriveFromPropOfADictAtom'),
-  deriveFromIndexOfArrayAtom: require('$shared/DataVerse/derivations/ofAtoms/deriveFromIndexOfArrayAtom'),
-  deriveFromBoxAtom: require('$shared/DataVerse/derivations/ofAtoms/deriveFromBoxAtom'),
+  deriveFromPropOfADictAtom: require('$shared/DataVerse/deprecated/atomDerivations/dicts/deriveFromPropOfADictAtom'),
+  deriveFromIndexOfArrayAtom: require('$shared/DataVerse/deprecated/atomDerivations/arrays/deriveFromIndexOfArrayAtom'),
+  deriveFromBoxAtom: require('$shared/DataVerse/deprecated/atomDerivations/boxes/deriveFromBoxAtom'),
   DerivedClassInstance: require('$shared/DataVerse/deprecated/derivedClass/DerivedClassInstance'),
   AbstractDerivedDict: require('$shared/DataVerse/deprecated/atomDerivations/dicts/AbstractDerivedDict'),
   box: require('$shared/DataVerse/deprecated/atoms/boxAtom'),

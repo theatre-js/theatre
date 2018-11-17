@@ -1,5 +1,5 @@
 import AbstractAtom from './utils/AbstractAtom'
-import {DerivationOfABoxAtom} from '../derivations/ofAtoms/deriveFromBoxAtom'
+import {DerivationOfABoxAtom} from '$shared/DataVerse/deprecated/atomDerivations/boxes/deriveFromBoxAtom'
 
 export class BoxAtom<V> extends AbstractAtom<V> {
   isBoxAtom = true
@@ -30,7 +30,7 @@ export class BoxAtom<V> extends AbstractAtom<V> {
   }
 
   derivation(): DerivationOfABoxAtom<V> {
-    const deriveFromBoxAtom = require('$shared/DataVerse/derivations/ofAtoms/deriveFromBoxAtom')
+    const deriveFromBoxAtom = require('$shared/DataVerse/deprecated/atomDerivations/boxes/deriveFromBoxAtom')
       .default
     return deriveFromBoxAtom(this)
   }

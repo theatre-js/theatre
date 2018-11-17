@@ -1,4 +1,4 @@
-import withDeps from '../withDeps'
+import withDeps from '$shared/DataVerse/derivations/withDeps'
 import deriveFromPropOfADictAtom from './deriveFromPropOfADictAtom'
 import dictAtom from '$shared/DataVerse/deprecated/atoms/dictAtom'
 import boxAtom from '$shared/DataVerse/deprecated/atoms/boxAtom'
