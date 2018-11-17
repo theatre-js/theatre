@@ -8,7 +8,7 @@ import {ArrayAtom} from '$shared/DataVerse/deprecated/atoms/arrayAtom'
 import {
   KeysOfDerivedDictDerivation,
   default as keysOfDerivedDict,
-} from '$shared/DataVerse/derivations/dicts/keysOfDerivedDict'
+} from '$shared/DataVerse/deprecated/atomDerivations/dicts/keysOfDerivedDict'
 import AbstractDerivedArray from '$shared/DataVerse/deprecated/atomDerivations/arrays/AbstractDerivedArray'
 
 export type DerivedDictChangeType<O> = {

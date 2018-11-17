@@ -1,8 +1,8 @@
 import attributesApplier from '$studio/componentModel/coreModifierDescriptors/HTML/SetAttribute/attributeApplier'
 import boxAtom from '$shared/DataVerse/deprecated/atoms/boxAtom'
-import emptyDict from '$shared/DataVerse/derivations/dicts/emptyDict'
+import emptyDict from '$shared/DataVerse/deprecated/atomDerivations/dicts/emptyDict'
 import dictAtom from '$shared/DataVerse/deprecated/atoms/dictAtom'
-import AbstractDerivedDict from '$shared/DataVerse/derivations/dicts/AbstractDerivedDict'
+import AbstractDerivedDict from '$shared/DataVerse/deprecated/atomDerivations/dicts/AbstractDerivedDict'
 
 const ensureDomAttributes = d => {
   return d.propFromSuper('domAttributes').flatMap(possibleDomAttributes => {

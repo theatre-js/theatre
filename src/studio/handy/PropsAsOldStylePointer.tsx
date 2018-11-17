@@ -5,7 +5,7 @@ import dictAtom, {
   UnwrapDictAtom,
 } from '$shared/DataVerse/deprecated/atoms/dictAtom'
 import {PointerDerivation} from '$shared/DataVerse/derivations/pointer'
-import AbstractDerivedDict from '$shared/DataVerse/derivations/dicts/AbstractDerivedDict'
+import AbstractDerivedDict from '$shared/DataVerse/deprecated/atomDerivations/dicts/AbstractDerivedDict'
 import DerivationAsReactElement from '$shared/utils/react/DerivationAsReactElement'
 import React from 'react'
 import boxAtom, {BoxAtom} from '$shared/DataVerse/deprecated/atoms/boxAtom'

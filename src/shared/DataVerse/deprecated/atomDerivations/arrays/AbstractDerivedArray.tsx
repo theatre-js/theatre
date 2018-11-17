@@ -2,7 +2,7 @@ import Emitter from '$shared/DataVerse/utils/Emitter'
 import {PointerDerivation} from '$shared/DataVerse/derivations/pointer'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 import Tappable from '$shared/DataVerse/utils/Tappable'
-import {PropOfADD} from '$shared/DataVerse/derivations/dicts/AbstractDerivedDict'
+import {PropOfADD} from '$shared/DataVerse/deprecated/atomDerivations/dicts/AbstractDerivedDict'
 
 let lastId: number = 0
 

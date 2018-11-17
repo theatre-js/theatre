@@ -1,13 +1,13 @@
 import {default as AbstractCompositeAtom} from './utils/AbstractCompositeAtom'
 import {forEach} from '$shared/utils'
 import {mapValues} from '$shared/utils'
-import deriveFromDictAtom from '$shared/DataVerse/derivations/dicts/deriveFromDictAtom'
+import deriveFromDictAtom from '$shared/DataVerse/deprecated/atomDerivations/dicts/deriveFromDictAtom'
 import {
   default as pointer,
   PointerDerivation,
 } from '$shared/DataVerse/derivations/pointer'
 import {UnatomifyDeep} from './utils/UnatomifyDeep'
-import AbstractDerivedDict from '$shared/DataVerse/derivations/dicts/AbstractDerivedDict'
+import AbstractDerivedDict from '$shared/DataVerse/deprecated/atomDerivations/dicts/AbstractDerivedDict'
 import isAtom from '$shared/DataVerse/deprecated/atoms/utils/isAtom'
 
 export interface IDictAtomChangeType<O> {

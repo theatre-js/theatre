@@ -1,6 +1,6 @@
 import reifiedStyleApplier from './reifiedStyleApplier'
 import boxAtom from '$shared/DataVerse/deprecated/atoms/boxAtom'
-import emptyDict from '$shared/DataVerse/derivations/dicts/emptyDict'
+import emptyDict from '$shared/DataVerse/deprecated/atomDerivations/dicts/emptyDict'
 import dictAtom from '$shared/DataVerse/deprecated/atoms/dictAtom'
 
 const ensureReifiedStyles = d => {

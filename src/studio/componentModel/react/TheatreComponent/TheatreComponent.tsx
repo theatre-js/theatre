@@ -4,8 +4,8 @@ import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 import constant from '$shared/DataVerse/derivations/constant'
 import AbstractDerivedDict, {
   DerivedDictTypeOf,
-} from '$shared/DataVerse/derivations/dicts/AbstractDerivedDict'
-import emptyDict from '$shared/DataVerse/derivations/dicts/emptyDict'
+} from '$shared/DataVerse/deprecated/atomDerivations/dicts/AbstractDerivedDict'
+import emptyDict from '$shared/DataVerse/deprecated/atomDerivations/dicts/emptyDict'
 import derivedClass, {
   Classify,
   DerivedClass,

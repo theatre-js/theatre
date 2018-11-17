@@ -1,6 +1,6 @@
 import {domAttrSetter} from './utils'
 import KeyedSideEffectRunner from '$shared/utils/KeyedSideEffectRunner'
-import autoProxyDerivedDict from '$shared/DataVerse/derivations/dicts/autoProxyDerivedDict'
+import autoProxyDerivedDict from '$shared/DataVerse/deprecated/atomDerivations/dicts/autoProxyDerivedDict'
 import withDeps from '$shared/DataVerse/derivations/withDeps'
 
 declare var SVGElement: Element

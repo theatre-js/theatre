@@ -1,6 +1,6 @@
 import noop from '$shared/utils/noop'
 import Ticker from '$shared/DataVerse/Ticker'
-import AbstractDerivedDict from '$shared/DataVerse/derivations/dicts/AbstractDerivedDict'
+import AbstractDerivedDict from '$shared/DataVerse/deprecated/atomDerivations/dicts/AbstractDerivedDict'
 
 type FinalFace = $FixMe
 

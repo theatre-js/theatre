@@ -1,5 +1,5 @@
 import AbstractDerivedDict from './AbstractDerivedDict'
-import constantDerivation from '../constant'
+import constant from '$shared/DataVerse/derivations/constant'
 
 const emptyArray: Array<never> = []
 
@@ -11,7 +11,7 @@ export class EmptyDict extends AbstractDerivedDict<{}> {
 
   // @ts-ignore @ignore
   prop(_k) {
-    return constantDerivation(undefined) as $IntentionalAny
+    return constant(undefined) as $IntentionalAny
   }
 
   _reactToHavingTappers() {}

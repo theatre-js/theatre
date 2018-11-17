@@ -1,6 +1,6 @@
 import KeyedSideEffectRunner from '$shared/utils/KeyedSideEffectRunner'
 import Ticker from '$shared/DataVerse/Ticker'
-import autoProxyDerivedDict from '$shared/DataVerse/derivations/dicts/autoProxyDerivedDict'
+import autoProxyDerivedDict from '$shared/DataVerse/deprecated/atomDerivations/dicts/autoProxyDerivedDict'
 import withDeps from '$shared/DataVerse/derivations/withDeps'
 
 const styleSetter = (elRef: HTMLElement, unprefixedKey: string) => {
