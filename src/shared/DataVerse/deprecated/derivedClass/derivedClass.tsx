@@ -1,4 +1,4 @@
-import DerivedClassInstance from '$shared/DataVerse/derivedClass/DerivedClassInstance'
+import DerivedClassInstance from '$shared/DataVerse/deprecated/derivedClass/DerivedClassInstance'
 import Ticker from '$shared/DataVerse/Ticker'
 import Emitter from '$shared/DataVerse/utils/Emitter'
 import {mapValues} from '$shared/utils'

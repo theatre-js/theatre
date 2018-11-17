@@ -1,6 +1,6 @@
 import React from 'react'
 import {IComponentDescriptor} from '$studio/componentModel/types'
-import {DerivedClass} from '$shared/DataVerse/derivedClass/derivedClass'
+import {DerivedClass} from '$shared/DataVerse/deprecated/derivedClass/derivedClass'
 import withDeps from '$shared/DataVerse/derivations/withDeps'
 import boxAtom from '$shared/DataVerse/deprecated/atoms/boxAtom'
 import dictAtom from '$shared/DataVerse/deprecated/atoms/dictAtom'

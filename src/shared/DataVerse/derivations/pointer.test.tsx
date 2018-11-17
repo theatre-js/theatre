@@ -1,5 +1,5 @@
 import dictAtom, {DictAtom} from '$shared/DataVerse/deprecated/atoms/dictAtom'
-import derivedClass from '$shared/DataVerse/derivedClass/derivedClass'
+import derivedClass from '$shared/DataVerse/deprecated/derivedClass/derivedClass'
 import boxAtom, {BoxAtom} from '$shared/DataVerse/deprecated/atoms/boxAtom'
 import Ticker from '$shared/DataVerse/Ticker'
 

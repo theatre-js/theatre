@@ -5,7 +5,7 @@ import '$studio/integrations/react/treeMirroring/setup'
 
 import Theatre from '$studio/bootstrap/Theatre'
 import createRootComponentForReact from './componentModel/react/createRootComponentForReact'
-import '$shared/DataVerse/devtoolsFormatters/setup'
+import '$shared/DataVerse/deprecated/devtoolsFormatters/setup'
 import TheatreStudio from '$studio/bootstrap/TheatreStudio'
 
 // debugger

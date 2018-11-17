@@ -10,8 +10,8 @@ import emptyDict from '$shared/DataVerse/derivations/dicts/emptyDict'
 import derivedClass, {
   Classify,
   DerivedClass,
-} from '$shared/DataVerse/derivedClass/derivedClass'
-import DerivedClassInstance from '$shared/DataVerse/derivedClass/DerivedClassInstance'
+} from '$shared/DataVerse/deprecated/derivedClass/derivedClass'
+import DerivedClassInstance from '$shared/DataVerse/deprecated/derivedClass/DerivedClassInstance'
 import SideEffectsHandler from '$studio/componentModel/react/TheatreComponent/SideEffectsHandler'
 import TimelinesHandler from '$studio/componentModel/react/TheatreComponent/TimelinesHandler'
 import Theatre, {TheatreStateAtom} from '$studio/bootstrap/Theatre'

@@ -1,4 +1,4 @@
-import {makeFormatter} from '$shared/DataVerse/devtoolsFormatters/common'
+import {makeFormatter} from './common'
 import {
   skipFindingColdDerivations,
   endSkippingColdDerivations,

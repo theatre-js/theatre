@@ -5,7 +5,7 @@ import {DictAtom} from '$shared/DataVerse/deprecated/atoms/dictAtom'
 import AbstractDerivedDict from '$shared/DataVerse/derivations/dicts/AbstractDerivedDict'
 import {PropOfADD} from './dicts/AbstractDerivedDict'
 import AbstractDerivedArray from './arrays/AbstractDerivedArray'
-import DerivedClassInstance from '$shared/DataVerse/derivedClass/DerivedClassInstance'
+import DerivedClassInstance from '$shared/DataVerse/deprecated/derivedClass/DerivedClassInstance'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 
 export type DerivationTypeOfPointerType<O> = {

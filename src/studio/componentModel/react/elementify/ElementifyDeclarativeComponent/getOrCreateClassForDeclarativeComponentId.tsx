@@ -4,7 +4,7 @@ import TheatreComponent from '$studio/componentModel/react/TheatreComponent/Thea
 import {
   DerivedClass,
   Classify,
-} from '$shared/DataVerse/derivedClass/derivedClass'
+} from '$shared/DataVerse/deprecated/derivedClass/derivedClass'
 import constructValue from './constructValue/constructValue'
 
 const cache = new Map<IComponentId, DeclarativeComponentBaseClass>()

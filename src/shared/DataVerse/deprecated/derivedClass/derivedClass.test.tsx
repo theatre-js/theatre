@@ -1,4 +1,4 @@
-import derivedClass from '$shared/DataVerse/derivedClass/derivedClass'
+import derivedClass from '$shared/DataVerse/deprecated/derivedClass/derivedClass'
 import Ticker from '$shared/DataVerse/Ticker'
 
 describe('derivedClass', () => {
