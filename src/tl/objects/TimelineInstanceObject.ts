@@ -85,14 +85,40 @@ export default class TimelineInstanceObject {
       return values
     })
 
+    /**
+     * This is temporary.
+     */
+    let lastValues: Values
+
     const untap = der.changes(this._objectTemplate._project.ticker).tap(v => {
+      if (lastValues && objectsAreShallowEqual(lastValues, v)) return
+      lastValues = v
       callback(v, this._timelineInstance.time)
     })
 
     this._project.ticker.registerSideEffect(() => {
-      callback(der.getValue(), this._timelineInstance.time)
+      const d = der.getValue()
+      lastValues = d
+      callback(d, this._timelineInstance.time)
     })
 
     return untap
   }
+}
+
+const objectsAreShallowEqual = <T extends $IntentionalAny>(
+  a: T,
+  b: T,
+): boolean => {
+  const aKeys = Object.keys(a)
+  for (const key of aKeys) {
+    if (a[key] !== b[key]) return false
+  }
+  const bKeys = Object.keys(b)
+  if (aKeys.length !== bKeys.length) return false
+
+  for (const key of bKeys) {
+    if (a[key] !== b[key]) return false
+  }
+  return true
 }
