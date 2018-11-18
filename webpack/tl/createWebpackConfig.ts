@@ -13,11 +13,11 @@ setAutoFreeze(false)
 module.exports = (env: Envs) => {
   const isDev = env === 'development'
 
-  // if (isDev) {
-  //   return makeBundle('index')
-  // } else {
-  return [makeBundle('index'), makeBundle('core')]
-  // }
+  if (isDev) {
+    return makeBundle('index')
+  } else {
+    return [makeBundle('index'), makeBundle('core')]
+  }
 
   function makeBundle(which: 'index' | 'core') {
     const parts = makeConfigParts({
