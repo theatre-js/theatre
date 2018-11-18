@@ -1,4 +1,3 @@
-import {MapKey} from '$shared/DataVerse/types'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 import {DictAtom} from '$shared/DataVerse/deprecated/atoms/dictAtom'
 import {ArrayAtom} from '$shared/DataVerse/deprecated/atoms/arrayAtom'
@@ -31,7 +30,7 @@ type Address =
   | {
       type: 'WithPath'
       root: Root
-      path: Array<MapKey>
+      path: Array<string | number>
     }
   | {
       type: 'fromParentPointer'

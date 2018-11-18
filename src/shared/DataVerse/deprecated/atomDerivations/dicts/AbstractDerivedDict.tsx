@@ -1,5 +1,5 @@
 import Emitter from '$shared/DataVerse/utils/Emitter'
-import {PointerDerivation} from '../pointer'
+import {PointerDerivation} from '../deprecatedPointer'
 import {DictAtom} from '$shared/DataVerse/deprecated/atoms/dictAtom'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 import {BoxAtom} from '$shared/DataVerse/deprecated/atoms/boxAtom'
