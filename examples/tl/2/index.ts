@@ -69,7 +69,7 @@ timeline.getObject('Ball', sphereGroup)
 
 project.ready.then(async () => {
   timeline.play({
-    iterationCount: Infinity
+    iterationCount: Infinity,
   })
 
   // timeline.time = 1000

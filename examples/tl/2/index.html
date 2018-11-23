@@ -40,7 +40,7 @@
 
       ; (() => {
         const location = window.location
-        const urlToStudio = location.protocol + '//' + location.hostname + ':' + '<%= onv.devSpecific.tl.devServerPort %>' + '/core.js'
+        const urlToStudio = location.protocol + '//' + location.hostname + ':' + '<%= onv.devSpecific.tl.devServerPort %>' + '/index.js'
         const script = document.createElement('script')
         script.src = urlToStudio
         script.crossOrigin = true;
