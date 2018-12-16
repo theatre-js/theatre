@@ -81,3 +81,18 @@ project.ready.then(async () => {
   // })
   // timeline.gotoTime(1000)
 })
+
+// const ratioIndicator = document.createElement('div')
+// ratioIndicator.style = `
+//   position: absolute;
+//   top: 0;
+//   left: 0;
+// `
+// document.body.appendChild(ratioIndicator)
+
+// window.addEventListener('resize', () => {
+//   const ratio = window.innerWidth / window.innerHeight
+//   const wantedRatio = 16 / 9
+//   const diff = ratio - wantedRatio
+//   ratioIndicator.innerHTML = '' + diff + '<br>' + window.innerWidth + '<br>' + window.innerHeight
+// })

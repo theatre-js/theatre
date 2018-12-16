@@ -73,6 +73,7 @@ export default class KeyboardShortcuts extends UIComponent<IProps, IState> {
           timelineInstance.play({
             iterationCount: Infinity,
             range: range,
+            // rate: 0.5
           })
         }
       }

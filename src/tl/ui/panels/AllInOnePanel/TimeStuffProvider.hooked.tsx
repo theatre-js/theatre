@@ -16,7 +16,7 @@ import TimelineTemplate from '$tl/timelines/TimelineTemplate'
 import UI from '$tl/ui/UI'
 import projectSelectors from '$tl/Project/store/selectors'
 import {overshootDuration} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
-import {viewportScrolledSpace } from './Right/utils';
+import {viewportScrolledSpace} from './Right/utils'
 import {clamp} from 'lodash-es'
 import {Pointer} from '$shared/DataVerse/pointer'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
