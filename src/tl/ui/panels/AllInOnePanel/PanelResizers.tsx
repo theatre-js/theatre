@@ -21,6 +21,7 @@ class PanelResizers extends React.PureComponent<IProps, IState> {
           shouldReturnMovement
           onDrag={(dx, dy) => this.props.onResize({left: dx, top: dy})}
           onDragEnd={() => this.props.onResizeEnd()}
+          lockCursorTo="nwse-resize"
         >
           <div {...classes('nwse', 'top', 'left')} />
         </DraggableArea>
@@ -28,6 +29,7 @@ class PanelResizers extends React.PureComponent<IProps, IState> {
           shouldReturnMovement
           onDrag={(_, dy) => this.props.onResize({top: dy})}
           onDragEnd={() => this.props.onResizeEnd()}
+          lockCursorTo="ns-resize"
         >
           <div {...classes('ns', 'top')} />
         </DraggableArea>
@@ -35,6 +37,7 @@ class PanelResizers extends React.PureComponent<IProps, IState> {
           shouldReturnMovement
           onDrag={(dx, dy) => this.props.onResize({right: dx, top: dy})}
           onDragEnd={() => this.props.onResizeEnd()}
+          lockCursorTo="nesw-resize"
         >
           <div {...classes('nesw', 'top', 'right')} />
         </DraggableArea>
@@ -42,6 +45,7 @@ class PanelResizers extends React.PureComponent<IProps, IState> {
           shouldReturnMovement
           onDrag={dx => this.props.onResize({left: dx})}
           onDragEnd={() => this.props.onResizeEnd()}
+          lockCursorTo="ew-resize"
         >
           <div {...classes('ew', 'left')} />
         </DraggableArea>
@@ -49,6 +53,7 @@ class PanelResizers extends React.PureComponent<IProps, IState> {
           shouldReturnMovement
           onDrag={dx => this.props.onResize({right: dx})}
           onDragEnd={() => this.props.onResizeEnd()}
+          lockCursorTo="ew-resize"
         >
           <div {...classes('ew', 'right')} />
         </DraggableArea>
@@ -56,6 +61,7 @@ class PanelResizers extends React.PureComponent<IProps, IState> {
           shouldReturnMovement
           onDrag={(dx, dy) => this.props.onResize({left: dx, bottom: dy})}
           onDragEnd={() => this.props.onResizeEnd()}
+          lockCursorTo="nesw-resize"
         >
           <div {...classes('nesw', 'left', 'bottom')} />
         </DraggableArea>
@@ -63,6 +69,7 @@ class PanelResizers extends React.PureComponent<IProps, IState> {
           shouldReturnMovement
           onDrag={(_, dy) => this.props.onResize({bottom: dy})}
           onDragEnd={() => this.props.onResizeEnd()}
+          lockCursorTo="ns-resize"
         >
           <div {...classes('ns', 'bottom')} />
         </DraggableArea>
@@ -70,6 +77,7 @@ class PanelResizers extends React.PureComponent<IProps, IState> {
           shouldReturnMovement
           onDrag={(dx, dy) => this.props.onResize({right: dx, bottom: dy})}
           onDragEnd={() => this.props.onResizeEnd()}
+          lockCursorTo="nwse-resize"
         >
           <div {...classes('nwse', 'right', 'bottom')} />
         </DraggableArea>
