@@ -32,15 +32,19 @@
     /* border-radius: 0 1px 1px 0; */
   }
 
+  &.dragging .input {
+    background: #00000030;
+    color: #EEE;
+  }
+
   &.noFocus {
     cursor: ns-resize;
     user-select: none;
     font-weight: 200;
 
-    & .input:hover {
+    & .input:hover, &.dragging .input {
       background: #00000020;
       color: #CCC;
-
     }
 
     & .input {
@@ -58,9 +62,5 @@
       color: white;
     }
     /* padding-left: 0; */
-  }
-
-  &.dragging {
-    
   }
 }
