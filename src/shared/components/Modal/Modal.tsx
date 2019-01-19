@@ -29,10 +29,7 @@ class Modal extends React.PureComponent<IProps, IState> {
 
   _renderModal() {
     return (
-      <div
-        ref={this.fixedLayer}
-        {...classes('fixedLayer', this.state.closed && 'closed')}
-      >
+      <div ref={this.fixedLayer} {...classes('fixedLayer')}>
         <Overlay onClickOutside={this.close} propagateWheel>
           <OverlaySection {...classes('container')}>
             {this.props.children}
@@ -42,32 +39,33 @@ class Modal extends React.PureComponent<IProps, IState> {
     )
   }
 
-  componentDidMount() {
-    this.fixedLayer.current!.addEventListener(
-      'animationend',
-      this.handleAnimationEnd,
-    )
-  }
+  // componentDidMount() {
+  //   this.fixedLayer.current!.addEventListener(
+  //     'animationend',
+  //     this.handleAnimationEnd,
+  //   )
+  // }
 
-  componentWillUnmount() {
-    this.fixedLayer.current!.removeEventListener(
-      'animationend',
-      this.handleAnimationEnd,
-    )
-  }
+  // componentWillUnmount() {
+  //   this.fixedLayer.current!.removeEventListener(
+  //     'animationend',
+  //     this.handleAnimationEnd,
+  //   )
+  // }
 
-  handleAnimationEnd = (event: AnimationEvent) => {
-    if (event.animationName === css.disappear) {
-      this.props.onClose()
-    }
-  }
+  // handleAnimationEnd = (event: AnimationEvent) => {
+  //   if (event.animationName === css.disappear) {
+  //     this.props.onClose()
+  //   }
+  // }
 
   close = () => {
-    if (this.props.autoClose === false) {
-      this.props.onClose()
-    } else {
-      this.setState(() => ({closed: true}))
-    }
+    this.props.onClose()
+    // if (this.props.autoClose === false) {
+    //   this.props.onClose()
+    // } else {
+    //   this.setState(() => ({closed: true}))
+    // }
   }
 }
 

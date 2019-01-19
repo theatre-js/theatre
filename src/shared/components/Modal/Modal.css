@@ -9,11 +9,12 @@
   justify-content: center;
   align-items: center;
 
-  opacity: 0;
-  animation: appear 0.15s ease-in-out forwards;
+  opacity: 1;
+  /* animation: appear 0.15s ease-in-out forwards; */
 
   &.closed {
-    animation: disappear 0.15s ease-in-out forwards;
+    opacity: 0;
+    /* animation: disappear 0.15s ease-in-out forwards; */
   }
 }
 
