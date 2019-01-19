@@ -1,7 +1,6 @@
 import TimelineTemplate from '$tl/timelines/TimelineTemplate'
 import {
   NativeObjectTypeConfig,
-  getTypeOfNativeObject,
   NativeObjectType,
   getAdapterOfNativeObject,
 } from './objectTypes'

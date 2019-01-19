@@ -42,8 +42,8 @@ export default class StoreAndStuff<State, RootSaga extends RootSagaShape> {
 
     const enhancer = compose(
       applyMiddleware(...middlewares),
-      typeof window === 'object' && window.devToolsExtension
-        ? window.devToolsExtension()
+      typeof window === 'object' && window.__REDUX_DEVTOOLS_EXTENSION__
+        ? window.__REDUX_DEVTOOLS_EXTENSION__()
         : identity,
     )
 

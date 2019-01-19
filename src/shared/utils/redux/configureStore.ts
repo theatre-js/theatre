@@ -15,8 +15,8 @@ export default function configureStore<State>(conf: Conf<State>): Store<State> {
     const devtoolsEnhancer =
       $env.NODE_ENV === 'development' &&
       typeof window === 'object' &&
-      window.devToolsExtension
-        ? window.devToolsExtension(conf.devtoolsOptions)
+      window.__REDUX_DEVTOOLS_EXTENSION__
+        ? window.__REDUX_DEVTOOLS_EXTENSION__(conf.devtoolsOptions)
         : identity
 
     enhancers.push(devtoolsEnhancer)

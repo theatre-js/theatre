@@ -102,24 +102,24 @@ const sanitizeAdapter = (
     )
   }
 
-  if (!adapter.hasOwnProperty('getType')) {
+  if (!adapter.hasOwnProperty('getConfig')) {
     throw new InvalidArgumentError(
-      `Adapter "${adapter.name}" does not seem to have a getType() method.\n` +
-        `To fix this, implement a getType() method that takes a native object ` +
-        `and returns the type of that object. Example:\n` +
+      `Adapter "${adapter.name}" does not seem to have a getConfig() method.\n` +
+        `To fix this, implement a getConfig() method that takes a native object ` +
+        `and returns the config of that object. Example:\n` +
         exampleGoodAdapter +
         `\n\n` +
         `Learn more about writing adapters at https://theatrejs.com/docs/adapters.html`,
     )
   }
 
-  if (typeof adapter.getType !== 'function') {
+  if (typeof adapter.getConfig !== 'function') {
     throw new InvalidArgumentError(
-      `The getType() property of adapter "${
+      `The getConfig() property of adapter "${
         adapter.name
       }" is not a function.\n` +
-        `To fix this, implement the getType() property as a function that takes a native object ` +
-        `and returns the type of that object. Example:\n` +
+        `To fix this, implement the getConfig() property as a function that takes a native object ` +
+        `and returns the config of that object. Example:\n` +
         exampleGoodAdapter +
         `\n\n` +
         `Learn more about writing adapters at https://theatrejs.com/docs/adapters.html`,
@@ -201,7 +201,7 @@ const adapter = {
   canHandle(nativeObject) {
     return nativeObject instanceof HTMLElement
   },
-  getType(nativeObject) {
+  getConfig(nativeObject) {
     return {
       props: {
         positionX: {

@@ -72,6 +72,7 @@ export default class NumberEditor extends UIComponent<IProps, IState> {
           onDragEnd={this.onDragEnd}
           onDrag={this.onDrag}
           enabled={state.mode !== 'editingViaKeyboard'}
+          lockCursorTo="ns-resize"
         >
           {theInput}
         </DraggableArea>

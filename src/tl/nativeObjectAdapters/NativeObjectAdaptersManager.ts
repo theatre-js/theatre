@@ -10,7 +10,7 @@ import TheatreJSTimelineInstanceObject from '$tl/facades/TheatreJSTimelineInstan
 export interface NativeObjectAdapter {
   name: string
   canHandle(nativeObject: $FixMe): boolean
-  getType(
+  getConfig(
     nativeObject: $FixMe,
     config: NativeObjectTypeConfig,
   ): NativeObjectType

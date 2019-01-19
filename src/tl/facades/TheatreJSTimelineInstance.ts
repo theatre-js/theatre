@@ -65,10 +65,10 @@ export default class TheatreJSTimelineInstance {
       ? {..._config}
       : {props: {}}
 
-    let type = sanitisedConfig
+    let config = sanitisedConfig
 
     if (_config && _config.hasOwnProperty('props')) {
-      type.props = sanitizeAndValidateHardCodedProps(_config.props, _path)
+      config.props = sanitizeAndValidateHardCodedProps(_config.props, _path)
     } else {
       const possibleAdapter = getAdapterOfNativeObject(
         inst._project,
@@ -76,7 +76,7 @@ export default class TheatreJSTimelineInstance {
         sanitisedConfig,
       )
       if (!possibleAdapter) {
-        type.props = {}
+        config.props = {}
         if (!$env.tl.isCore) {
           console.warn(
             `When calling \`timeline.getObject("${path}", ...)\`, you did not provide any props. ` +
@@ -87,14 +87,14 @@ export default class TheatreJSTimelineInstance {
           )
         }
       } else {
-        type = possibleAdapter.getType(nativeObject, sanitisedConfig)
+        config = possibleAdapter.getConfig(nativeObject, sanitisedConfig)
         if (!$env.tl.isCore) {
-          type = sanitizeAndValidateTypeFromAdapter(type, possibleAdapter)
+          config = sanitizeAndValidateTypeFromAdapter(config, possibleAdapter)
         }
       }
     }
 
-    const object = inst.createObject(path, nativeObject, sanitisedConfig, type)
+    const object = inst.createObject(path, nativeObject, sanitisedConfig, config)
     return object.facade
   }
 

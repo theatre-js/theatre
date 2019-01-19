@@ -9,7 +9,7 @@ type $FixMeNow = any
 
 interface Window {
   __REACT_DEVTOOLS_GLOBAL_HOOK__: $FixMe
-  devToolsExtension?: Function
+  __REDUX_DEVTOOLS_EXTENSION__?: Function
 }
 
 type mixed =

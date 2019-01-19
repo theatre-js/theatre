@@ -13,17 +13,6 @@ export interface NativeObjectType {
   props: {[key: string]: PropDescriptor}
 }
 
-export const getTypeOfNativeObject = (
-  project: Project,
-  nativeObject: $FixMe,
-  config: NativeObjectTypeConfig,
-): NativeObjectType | null => {
-  if (config && config.props) return config
-  const adapter = getAdapterOfNativeObject(project, nativeObject, config)
-  if (!adapter) return null
-  return adapter.getType(nativeObject, config)
-}
-
 export const getAdapterOfNativeObject = (
   project: Project,
   nativeObject: $FixMe,
