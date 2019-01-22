@@ -114,7 +114,7 @@ class PointValuesEditor extends UIComponent<IProps, IState> {
 
   _cycleFocus = (currentFocus: 'time' | 'value') => {
     const el =
-      currentFocus === 'time' ? this.timeRef.current : this.valueRef.current
+      currentFocus === 'value' ? this.timeRef.current : this.valueRef.current
     el!.focus()
   }
 

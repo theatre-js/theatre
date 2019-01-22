@@ -70,6 +70,7 @@ export default class Input<T = number> extends UIComponent<
   }
 
   _handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    
     // Tab
     if (e.keyCode === 9) {
       e.preventDefault()
