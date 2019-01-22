@@ -35,7 +35,7 @@ export default class SelectionContextMenu extends React.PureComponent<
           //   disabled: true,
           // },
           {
-            label: '$D$elete Points',
+            label: '$D$elete Keyframes',
             cb: onDelete,
             IconComponent: MdRemoveCircle,
           },
