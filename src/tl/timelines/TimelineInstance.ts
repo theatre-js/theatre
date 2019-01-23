@@ -228,7 +228,7 @@ export default class TimelineInstance {
     }
 
     return this._play(
-      iterationCount + 1,
+      iterationCount,
       {from: range.from * 1000, to: range.to * 1000},
       rate,
       direction,
@@ -253,6 +253,16 @@ export default class TimelineInstance {
 
     if (this.time < range.from || this.time > range.to) {
       this._gotoTime(range.from)
+    } else if (
+      this.time === range.to &&
+      (direction === 'normal' || direction === 'alternate')
+    ) {
+      this._gotoTime(range.from)
+    } else if (
+      this.time === range.from &&
+      (direction === 'reverse' || direction === 'alternateReverse')
+    ) {
+      this._gotoTime(range.to)
     }
 
     let goingForward =
@@ -264,8 +274,17 @@ export default class TimelineInstance {
 
     const tick = (tickerTime: number) => {
       const lastTime = this.time
-      const timeDiff = (tickerTime - lastTickerTime) * (rate * goingForward)
+      let timeDiff = (tickerTime - lastTickerTime) * (rate * goingForward)
       lastTickerTime = tickerTime
+      // I don't know why exactly this happens, but every 10 times or so, the first timeline.play({iterationCount: 1}),
+      // the first call of tick() will have a timeDiff < 0.
+      // This might be because of Spectre mitigation (they randomize performance.now() a bit), or it could be that
+      // I'm using performance.now() the wrong way.
+      // Anyway, this seems like a working fix for it:
+      if (timeDiff < 0) {
+        requestNextTick()
+        return
+      }
       const newTime = lastTime + timeDiff
 
       if (newTime < range.from) {
