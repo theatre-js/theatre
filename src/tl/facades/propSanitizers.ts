@@ -20,6 +20,14 @@ const sanitizeAndValidateProps = (
   const sanitisedProps: NativeObjectTypeConfig['props'] = {}
 
   for (let key of keys) {
+    if (typeof key !== 'string') {
+      console.warn(messageGenerator.propNameIsNotString(key))
+      continue
+    } else if (key.match(/[\.\-\/]+/)) {
+      console.warn(messageGenerator.propNameHasIllegalCharacters(key))
+      continue
+    }
+    
     const propConfig = props[key]
     if (propConfig && typeof propConfig === 'object') {
       if (!propConfig.hasOwnProperty('type')) {
@@ -118,6 +126,8 @@ interface MessageGenerator {
   propTypeIsNotAString(key: string, actualType: mixed): string
   invalidPropTypeEnum(key: string, actualType: string): string
   propConfigMustBeObject(key: string, config: mixed): string
+  propNameIsNotString(key: string): string
+  propNameHasIllegalCharacters(key: string): string
 }
 
 class MessageGeneratorForHardCodedProps implements MessageGenerator {
@@ -192,6 +202,22 @@ class MessageGeneratorForHardCodedProps implements MessageGenerator {
         config,
       )}.\n` +
       `Example of a correct prop type: {type: 'number'}`
+    )
+  }
+  propNameIsNotString(key: string) {
+    return (
+      this._configToCreateObjectIsInvalid() +
+      `The name of props in config.props must be strings. ${userReadableTypeOfValue(
+        key,
+      )} was given.\n` +
+      `Example of a correct prop name: {"Position X": {type: 'number'}}`
+    )
+  }
+  propNameHasIllegalCharacters(key: string) {
+    return (
+      this._configToCreateObjectIsInvalid() +
+      `Prop "${key}" in config.props["${key}"] must not have dots (.), dashes (-), or slashes (/) in its name.\n` +
+      `Example of a correct prop name: {"Position X": {type: 'number'}}`
     )
   }
 }
@@ -275,6 +301,22 @@ class MessageGeneratorForAdapterReturnedProps implements MessageGenerator {
         config,
       )}.\n` +
       `Example of a correct prop type: {type: 'number'}`
+    )
+  }
+  propNameIsNotString(key: string) {
+    return (
+      this._configToCreateObjectIsInvalid() +
+      `The name of props in adapter.getType(...).props must be strings. ${userReadableTypeOfValue(
+        key,
+      )} was given.\n` +
+      `Example of a correct prop name: {"Position X": {type: 'number'}}`
+    )
+  }
+  propNameHasIllegalCharacters(key: string) {
+    return (
+      this._configToCreateObjectIsInvalid() +
+      `Prop "${key}" in adapter.getType(...).props["${key}"] must not have dots (.), dashes (-), or slashes (/) in its name.\n` +
+      `Example of a correct prop name: {"Position X": {type: 'number'}}`
     )
   }
 }
