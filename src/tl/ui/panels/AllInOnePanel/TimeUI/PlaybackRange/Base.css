@@ -5,7 +5,7 @@
   top: 0;
   height: 5px;
   cursor: default;
-  /* background: rgba(#9df233, 0.2); */
+  /* background: var(--colors-set-9); */
   z-index: 1;
   pointer-events: auto;
 
@@ -13,7 +13,7 @@
     display: block;
     content: ' ';
     position: absolute 0;
-    background: #9df233;
+    background: var(--colors-set-27);
     opacity: 0.2;
   }
 
@@ -30,7 +30,7 @@
     display: block;
     content: ' ';
     position: absolute 0 0 -3px 0;
-    /* background: #9df233; */
+    /* background: var(--colors-set-27); */
     opacity: 0;
   }
 

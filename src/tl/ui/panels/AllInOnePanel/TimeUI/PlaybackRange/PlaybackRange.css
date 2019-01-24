@@ -3,8 +3,8 @@
 
 .container {
   --threadHeight: 6px;
-  --thumbColor: #00e0ff;
-  --rangeBarColor: #9df233;
+  --thumbColor: var(--colors-set-26);
+  --rangeBarColor: var(--colors-set-27);
   position: absolute;
   height: 0;
   /* width: calc(100% - svgPaddingX); */
@@ -26,14 +26,14 @@
 .rangeBar {
   position: absolute;
   height: 5px;
-  background: rgba(#9df233, 0.0);
+  background: var(--colors-set-10);
   cursor: ew-resize;
   z-index: 2;
   display: none;
 
   &:hover,
   &:active {
-    background: rgba(#9df233, 0.4);
+    background: var(--colors-set-11);
   }
 
   &:after {
@@ -42,7 +42,7 @@
     content: ' ';
   }
   &.contextMenuOpen {
-    background: rgba(#9df233, 0.7) !important;
+    background: var(--colors-set-12) !important;
   }
 }
 
@@ -52,7 +52,7 @@
   right: 0;
   height: 5px;
   cursor: default;
-  background: rgba(#9df233, 0.2);
+  background: var(--colors-set-9);
   z-index: 1;
 
 }
@@ -106,9 +106,9 @@
   position: absolute -20px * * 4px;
   padding: 0 2px;
   transform: translateX(-50%);
-  background: #999;
+  background: var(--colors-set-29);
   border-radius: 4px;
-  color: #fff;
+  color: var(--colors-set-30);
   font-size: 10px;
   line-height: 18px;
   text-align: center;

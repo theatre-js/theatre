@@ -19,13 +19,13 @@
 }
 
 .pointClickArea.highlightAsSelected ~ ._deprecatedPointGlow {
-  /* filter: url('#glow'); */
+  /* filter: url('var(--colors-set-58)'); */
   opacity: 1;
 }
 
 .pointClickArea:not(.highlightRedOnHover):hover ~ ._deprecatedPointGlow,
 .pointClickArea:not(.highlightRedOnHover):active ~ ._deprecatedPointGlow {
-  /* filter: url('#glow'); */
+  /* filter: url('var(--colors-set-58)'); */
   opacity: 1;
 }
 

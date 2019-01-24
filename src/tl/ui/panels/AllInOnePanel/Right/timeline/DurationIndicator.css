@@ -7,7 +7,7 @@
   top: 0;
   bottom: 0;
   width: 1000px;
-  background: #1d1d1dc2;
+  background: var(--colors-set-50);
   transform-origin: 100% 0;
 }
 
@@ -17,7 +17,7 @@
   bottom: 0;
   right: -2px;
   width: 1px;
-  background: #081517;
+  background: var(--colors-set-51);
   z-index: 2;
   cursor: ew-resize;
 

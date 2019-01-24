@@ -3,6 +3,6 @@
 }
 
 .createItemTip {
-  color: #3d666b;
+  color: var(--colors-set-17);
   padding: 20px;
 }

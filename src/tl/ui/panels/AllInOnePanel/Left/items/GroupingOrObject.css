@@ -23,7 +23,7 @@
 
   /* &.object.expanded:after { */
   &:after {
-    background: #1a282f;
+    background: var(--colors-set-37);
   }
 
   &:before {
@@ -37,7 +37,7 @@
     display: none;
     content: ' ';
     z-index: 5;
-    border-left: 1px solid #ffffff3d;
+    border-left: 1px solid var(--colors-set-30)fff3d;
   }
 
   &:first-child:before {
@@ -58,7 +58,7 @@
     display: block;
     position: absolute 0 -1px 0 0;
     content: ' ';
-    background: #11a4d6;
+    background: var(--colors-set-39);
     opacity: 0;
     pointer-events: none;
   }
@@ -71,12 +71,12 @@
 
   & > .name {
     & > .textLogo {
-      color: rgba(#ffffff, 0.5);
+      color: var(--colors-set-6);
     }
 
     & > .tagOpen,
     & > .tagClose {
-      color: rgba(#ffffff, 0.5);
+      color: var(--colors-set-6);
     }
 
     & > .tagName {
@@ -94,13 +94,13 @@
 }
 
 .ancestorOfSelectedNode > .top {
-  background: #47d5ff14;
+  background: var(--colors-set-41);
 }
 
 .name {
   position: absolute 0 0 0 calc(var(--indent) - 4px);
   white-space: nowrap;
-  color: #8ea2ad;
+  color: var(--colors-set-42);
 }
 
 .highlighter {
@@ -110,7 +110,7 @@
 }
 
 .name:hover ~ .highlighter {
-  background: #ffffff21;
+  background: var(--colors-set-30)fff21;
 }
 
 .selected > .top > .name {
@@ -118,7 +118,7 @@
 }
 
 .selected > .top > .bullet {
-  color: rgba(#ffffff, 0.6);
+  color: var(--colors-set-7);
 }
 
 .expandButton {
@@ -132,15 +132,15 @@
 
 .tagOpen,
 .tagClose {
-  color: #4f5d77;
+  color: var(--colors-set-44);
 }
 
 .tagName {
-  color: #d8d8d8;
+  color: var(--colors-set-45);
 }
 
 .dot {
-  color: #dadada;
+  color: var(--colors-set-46);
 }
 
 .className {
@@ -157,7 +157,7 @@
   bottom: 0;
   width: calc(var(--indent) - 16px);
   z-index: 10;
-  color: #4f5d77;
+  color: var(--colors-set-44);
 }
 
 .bulletIcon {

@@ -19,7 +19,7 @@ class ExportModal extends React.PureComponent<IProps, IState> {
   render() {
     const sampleCode = makeSampleCode(this.props.project.id, `replace {} with the json object you just copied`)
     return (
-      <Modal onClose={this.props.onClose}>
+      <Modal onClose={this.props.onClose} container={document.getElementById('theatrejs-ui-root')!}>
         <div className={css.container}>
           <p>Copy and paste the following json object into your source file:</p>
           <CopyableTextBlock>{this.props.exportString}</CopyableTextBlock>

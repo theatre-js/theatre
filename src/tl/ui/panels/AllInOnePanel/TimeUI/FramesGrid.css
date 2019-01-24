@@ -26,7 +26,7 @@
 .fullSecondStamp {
   position: absolute;
   padding-top: 5px;
-  color: #6A6A6A;
+  color: var(--colors-set-24);
   font-size: 10px;
   transform: translateX(-50%);
 }
@@ -34,7 +34,7 @@
 .frameStamp {
   position: absolute;
   padding-top: 5px;
-  color: #555;
+  color: var(--colors-set-25);
   font-size: 10px;
   text-align: center;
   transform: translateX(-50%);

@@ -1,5 +1,5 @@
 .seeker {
-  --thumbColor: #00E0FF;
+  --thumbColor: var(--colors-set-31);
   position: absolute;
   top: 0;
   left: 0;
@@ -32,7 +32,7 @@
     left: -2px;
     width: 0;
     height: 0;
-    border-bottom: 4px solid #1F2B2B;
+    border-bottom: 4px solid var(--colors-set-32);
     border-left: 2px solid transparent;
   }
 
@@ -43,7 +43,7 @@
     right: -2px;
     width: 0;
     height: 0;
-    border-bottom: 4px solid #1F2B2B;
+    border-bottom: 4px solid var(--colors-set-32);
     border-right: 2px solid transparent;
   }
 }
@@ -92,7 +92,7 @@
   top: 8px;
   width: 0;
   height: calc(100% - 8px);
-  border-left: 1px solid #616161;
+  border-left: 1px solid var(--colors-set-33);
   z-index: 10;
 }
 
@@ -101,9 +101,9 @@
   position: absolute -20px * * 4px;
   padding: 0 2px;
   transform: translateX(-50%);
-  background: #999;
+  background: var(--colors-set-29);
   border-radius: 4px;
-  color: #FFF;
+  color: var(--colors-set-34);
   font-size: 10px;
   line-height: 18px;
   text-align: center;

@@ -1,4 +1,4 @@
-@value tooltipBg: #1e2a30;
+@value tooltipBg: var(--colors-set-20);
 
 .positioner {
   position: absolute;
@@ -23,13 +23,13 @@
 }
 
 .code {
-  background: rgba(150, 150, 150, 0.1);
+  background: var(--colors-set-4);
   position: relative;
   margin-bottom: 10px;
   padding: 5px;
-  color: #aaa;
+  color: var(--colors-set-35);
   overflow-x: scroll;
-  border-left: 2px solid rgba(255, 255, 255, 0.3);
+  border-left: 2px solid var(--colors-set-5);
   line-height: 24px;
 }
 

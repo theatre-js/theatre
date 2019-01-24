@@ -18,6 +18,6 @@
 
 .hint {
   
-  color: #ffc026;
+  color: var(--colors-set-36);
   font-style: italic;
 }

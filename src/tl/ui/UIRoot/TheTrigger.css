@@ -4,7 +4,7 @@
   position: absolute;
   width: 30px;
   height: 30px;
-  background: #1f2a30;
+  background: var(--colors-set-15);
 
   user-select: none;
   display: flex;
@@ -12,7 +12,7 @@
   align-items: center;
 
   &:hover {
-    background: #18242a;
+    background: var(--colors-set-16);
   }
 }
 
@@ -28,7 +28,7 @@
   justify-content: center;
   align-items: center;
   height: 100%;
-  color: #3d666b;
+  color: var(--colors-set-17);
   transform: rotateZ(180deg);
 }
 

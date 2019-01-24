@@ -34,6 +34,8 @@ export default class UI {
     this.atom = atomFromReduxStore(this.reduxStore)
     this.atomP = this.atom.pointer
     this.ticker = new Ticker()
+    // @todo we can't bootstrap theatre (design theatre using theatre), if we rely on IDed elements
+    this.containerEl.id = 'theatrejs-ui-root'
 
     const onAnimationFrame = () => {
       this.ticker.tick()

@@ -42,10 +42,10 @@
 
   &.static {
     &:before {
-      background: #333333;
+      background: var(--colors-set-48);
     }
     &:after {
-      border-color: #2d2d2d;
+      border-color: var(--colors-set-49);
     }
   }
 }

@@ -2,7 +2,7 @@
   height: 100%;
   width: 132px;
   padding-left: 0;
-  /* background: #212b31; */
+  /* background: var(--colors-set-59); */
   box-sizing: border-box;
 
   & .input {
@@ -12,13 +12,13 @@
     min-height: 32px;
     box-sizing: border-box;
     /* background: black; */
-    background: #00000000;
-    /* background: #00000012; */
+    background: var(--colors-set-60);
+    /* background: var(--colors-set-61); */
     
     border: none;
     /* border: 1px solid white; */
     outline: none;
-    color: #45787b;
+    color: var(--colors-set-56);
 
     padding: 0;
     margin: 0;
@@ -26,15 +26,15 @@
     line-height: inherit;
 
     &:focus {
-      background: #00000040;
+      background: var(--colors-set-62);
       color: white;
     }
     /* border-radius: 0 1px 1px 0; */
   }
 
   &.dragging .input {
-    background: #00000030;
-    color: #EEE;
+    background: var(--colors-set-63);
+    color: var(--colors-set-28);
   }
 
   &.noFocus {
@@ -43,8 +43,8 @@
     font-weight: 200;
 
     & .input:hover, &.dragging .input {
-      background: #00000020;
-      color: #CCC;
+      background: var(--colors-set-64);
+      color: var(--colors-set-65);
     }
 
     & .input {
@@ -52,7 +52,7 @@
     }
 
     & .value {
-      border-bottom: 1px dashed rgba(255, 255, 255, 0.4);
+      border-bottom: 1px dashed var(--colors-set-14);
       cursor: pointer;
     }
   }

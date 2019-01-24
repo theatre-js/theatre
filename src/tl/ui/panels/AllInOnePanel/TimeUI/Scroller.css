@@ -3,8 +3,8 @@
 
 .container {
   --threadHeight: 6px;
-  --thumbColor: #00e0ff;
-  --rangeBarColor: #9df233;
+  --thumbColor: var(--colors-set-26);
+  --rangeBarColor: var(--colors-set-27);
   position: absolute;
   height: 0;
   width: calc(100% - svgPaddingX);
@@ -24,13 +24,13 @@
 .rangeBar {
   position: absolute;
   height: 5px;
-  background: rgba(#EEE, 0.2);
+  background: var(--colors-set-2);
   cursor: ew-resize;
   z-index: 2;
 
   &:hover,
   &:active {
-    background: rgba(#EEE, 0.4);
+    background: var(--colors-set-3);
   }
 
   &:after {
@@ -54,7 +54,7 @@
     position: absolute 0;
     display: block;
     content: ' ';
-    background: rgba(#EEE, 0.2);;
+    background: var(--colors-set-2);;
     border-radius: 0 2px 2px 0;
     /* background: url('url-loader!./ScrollerHandle.svg'); */
   }
@@ -86,9 +86,9 @@
   position: absolute -20px * * 4px;
   padding: 0 2px;
   transform: translateX(-50%);
-  background: #999;
+  background: var(--colors-set-29);
   border-radius: 4px;
-  color: #fff;
+  color: var(--colors-set-30);
   font-size: 10px;
   line-height: 18px;
   text-align: center;

@@ -13,7 +13,7 @@
 
 .areaOverlay {
   position: absolute 0;
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--colors-set-13);
   pointer-events: auto;
 
   &.movable {

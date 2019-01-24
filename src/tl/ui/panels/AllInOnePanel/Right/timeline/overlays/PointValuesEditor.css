@@ -14,7 +14,7 @@
     height: 0;
     left: 71px;
     bottom: -6px;
-    border-top: 6px solid #3baea7;
+    border-top: 6px solid var(--colors-set-52);
     border-left: 4px solid transparent;
     border-right: 4px solid transparent;
     pointer-events: none;
@@ -26,15 +26,15 @@
   border-radius: 3px;
   box-sizing: border-box;
   z-index: -1;
-  background: #282e31;
-  border: 0.5px solid #3baea7;
+  background: var(--colors-set-53);
+  border: 0.5px solid var(--colors-set-52);
   overflow: hidden;
 }
 
 .row {
   height: 30px;
   position: relative;
-  border-bottom: 1px solid #3baea726;
+  border-bottom: 1px solid var(--colors-set-52)26;
   &:last-child {
     border-bottom: none;
   }
@@ -47,8 +47,8 @@
   width: 31px;
   text-align: right;
   display: block;
-  color: #627179;
-  /* color: #8ea2ad; */
+  color: var(--colors-set-55);
+  /* color: var(--colors-set-42); */
   pointer-events: none;
 }
 
@@ -60,9 +60,9 @@
   height: 100%;
   display: inline-block;
   line-height: 100%;
-  color: #45787b;
+  color: var(--colors-set-56);
   &:focus {
-    background: #171b1e;
+    background: var(--colors-set-57);
     color: white;
   }
   text-align: left;
@@ -78,7 +78,7 @@
 }
 
 .input:focus ~ .label {
-  /* color: #8ea2ad !important; */
+  /* color: var(--colors-set-42) !important; */
 }
 
 .inputInvalid ~ .label {

@@ -3,13 +3,80 @@
 
 :global(.theatrejs-ui-root) {
   --colors-panel-bg: #263238;
+  --colors-set-0: rgba(255, 255, 255, 0.8);
+  --colors-set-1: rgba(#1e2a30, 0.86);
+  --colors-set-2: rgba(#eee, 0.2);
+  --colors-set-3: rgba(#eee, 0.4);
+  --colors-set-4: rgba(150, 150, 150, 0.1);
+  --colors-set-5: rgba(255, 255, 255, 0.3);
+  --colors-set-6: rgba(#ffffff, 0.5);
+  --colors-set-7: rgba(#ffffff, 0.6);
+  --colors-set-8: rgba(#8ea2ad, 0.4);
+  --colors-set-9: rgba(#9df233, 0.2);
+  --colors-set-10: rgba(#9df233, 0);
+  --colors-set-11: rgba(#9df233, 0.4);
+  --colors-set-12: rgba(#9df233, 0.7);
+  --colors-set-13: rgba(255, 255, 255, 0.2);
+  --colors-set-14: rgba(255, 255, 255, 0.4);
+  --colors-set-15: #1f2a30;
+  --colors-set-16: #18242a;
+  --colors-set-17: #3d666b;
+  --colors-set-18: #1b2226;
+  --colors-set-19: #1e2a30;
+  --colors-set-20: #1e2a30;
+  --colors-set-21: #688f9e;
+  --colors-set-22: #141d21;
+  --colors-set-23: #3b5162;
+  --colors-set-24: #6a6a6a;
+  --colors-set-25: #555;
+  --colors-set-26: #00e0ff;
+  --colors-set-27: #9df233;
+  --colors-set-28: #eee;
+  --colors-set-29: #999;
+  --colors-set-30: #fff;
+  --colors-set-31: #00e0ff;
+  --colors-set-32: #1f2b2b;
+  --colors-set-33: #616161;
+  --colors-set-34: #fff;
+  --colors-set-35: #aaa;
+  --colors-set-36: #ffc026;
+  --colors-set-37: #1a282f;
+  --colors-set-38: #ffffff3d;
+  --colors-set-39: #11a4d6;
+  --colors-set-40: #ffffff;
+  --colors-set-41: #47d5ff14;
+  --colors-set-42: #8ea2ad;
+  --colors-set-43: #ffffff21;
+  --colors-set-44: #4f5d77;
+  --colors-set-45: #d8d8d8;
+  --colors-set-46: #dadada;
+  --colors-set-47: #00d8ff;
+  --colors-set-48: #333333;
+  --colors-set-49: #2d2d2d;
+  --colors-set-50: #1d1d1dc2;
+  --colors-set-51: #081517;
+  --colors-set-52: #3baea7;
+  --colors-set-53: #282e31;
+  --colors-set-54: #3baea726;
+  --colors-set-55: #627179;
+  --colors-set-56: #45787b;
+  --colors-set-57: #171b1e;
+  --colors-set-58: #glow;
+  --colors-set-59: #212b31;
+  --colors-set-60: #00000000;
+  --colors-set-61: #00000012;
+  --colors-set-62: #00000040;
+  --colors-set-63: #00000030;
+  --colors-set-64: #00000020;
+  --colors-set-65: #ccc;
 }
+
 
 .container {
   position: fixed;
   background: var(--colors-panel-bg);
 
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--colors-set-0);
   font: fontd;
 
   user-select: none;
@@ -45,7 +112,7 @@
     position: absolute 0;
     content: ' ';
     z-index: -1;
-    background: #1b2226;
+    background: var(--colors-set-18);
   }
 }
 

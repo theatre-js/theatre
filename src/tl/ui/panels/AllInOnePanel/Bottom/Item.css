@@ -18,12 +18,12 @@
   overflow: hidden;
 
   &:hover {
-    background: #18242a;
-    /* color: #688f9e; */
+    background: var(--colors-set-16);
+    /* color: var(--colors-set-21); */
   }
   &:active {
-    background: #141d21;
-    color: #3b5162;
+    background: var(--colors-set-22);
+    color: var(--colors-set-23);
   }
   &.focusOfAttention {
     font-weight: bold;

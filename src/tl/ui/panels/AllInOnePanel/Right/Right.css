@@ -25,6 +25,6 @@
     position: absolute 0;
     content: ' ';
     z-index: -1;
-    background: #1b2226;
+    background: var(--colors-set-18);
   }
 }
