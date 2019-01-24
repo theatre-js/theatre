@@ -1,4 +1,3 @@
-export const panelBgColor: string;
 export const tooltipBg: string;
 export const positioner: string;
 export const container: string;

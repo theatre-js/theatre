@@ -1,4 +1,3 @@
-@value panelBgColor from '../../AllInOnePanel.css';
 @value tooltipBg: #1e2a30;
 
 .positioner {
@@ -11,7 +10,7 @@
 .container {
   position: absolute;
   bottom: 0;
-  background: panelBgColor;
+  background: var(--colors-panel-bg);
 }
 
 .body {

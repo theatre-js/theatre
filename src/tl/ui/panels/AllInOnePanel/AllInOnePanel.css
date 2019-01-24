@@ -1,10 +1,13 @@
 @value bottomHeight from './Bottom/Bottom.css';
-@value panelBgColor: #263238;
 @value fontd: 12px -apple-system, BlinkMacSystemFont, Segoe WPC, Segoe UI, HelveticaNeue-Light, Ubuntu, Droid Sans, sans-serif;
+
+:global(.theatrejs-ui-root) {
+  --colors-panel-bg: #263238;
+}
 
 .container {
   position: fixed;
-  background: panelBgColor;
+  background: var(--colors-panel-bg);
 
   color: rgba(255, 255, 255, 0.8);
   font: fontd;

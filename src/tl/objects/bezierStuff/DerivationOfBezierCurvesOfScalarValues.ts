@@ -316,9 +316,6 @@ export default class DerivationOfBezierCurvesOfScalarValues extends AbstractDeri
 
     this._changeObservedIn.clear()
 
-    // console.log('val', value);
-    
-
     return value
   }
 

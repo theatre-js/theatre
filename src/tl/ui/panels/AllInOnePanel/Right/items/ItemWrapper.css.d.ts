@@ -1,4 +1,3 @@
-export const panelBgColor: string;
 export const container: string;
 export const sticky: string;
 export const bezierCurves: string;
