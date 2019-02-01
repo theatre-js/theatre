@@ -1,6 +1,6 @@
-import * as core from './core'
+import * as core from './coreExports'
 import TheatreJSUI from '$tl/facades/TheatreJSUI'
-export * from './core'
+export * from './coreExports'
 
 export const ui = new TheatreJSUI()
 ui.show()

@@ -1,3 +1,3 @@
-import getProject from '../facades/getProject'
-
-export {getProject}
+export * from './coreExports'
+import * as coreExports from './coreExports'
+export default coreExports

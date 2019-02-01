@@ -11,7 +11,8 @@ import {InvalidArgumentError} from '../handy/errors'
 import {sanitizeAndValidateTypeFromAdapter} from '$tl/facades/propSanitizers'
 import {sanitizeAndValidateHardCodedProps} from './propSanitizers'
 import {defer} from '../../shared/utils/defer'
-import userReadableTypeOfValue from '$shared/utils/userReadableTypeOfValue';
+import userReadableTypeOfValue from '$shared/utils/userReadableTypeOfValue'
+import {isPlainObject} from '$shared/utils'
 
 type GetObjectConfig = NativeObjectTypeConfig & {reuseExistingObject?: boolean}
 
@@ -30,12 +31,16 @@ export default class TheatreJSTimelineInstance {
 
   set time(t: number) {
     if (typeof t !== 'number') {
-      console.error(`timeline.time = t must be a number. ${userReadableTypeOfValue(t)} given.`)
+      console.error(
+        `timeline.time = t must be a number. ${userReadableTypeOfValue(
+          t,
+        )} given.`,
+      )
       return
-    } else if (t < 0) {
+    } else if (t < 0) {
       console.error(`timeline.time = t must be a positive number. ${t} given.`)
       return
-    } else if (isNaN(t)) {
+    } else if (isNaN(t)) {
       console.error(`timeline.time = t must be a real number. NaN given.`)
       return
     }
@@ -46,48 +51,35 @@ export default class TheatreJSTimelineInstance {
     return realInstance(this).playing
   }
 
-  getObject(
-    _path: string,
-    nativeObject: $FixMe,
-    __config?: GetObjectConfig,
-  ) {
+  getObject(_path: string, nativeObject: $FixMe, __config?: GetObjectConfig) {
     const inst = realInstance(this)
     const path = validateAndSanitiseSlashedPathOrThrow(
       _path,
       `timeline.getObject("${_path}", ...)`,
     )
 
-    const {reuseExistingObject = false, ..._config} = __config || ({} as GetObjectConfig)
+    const {reuseExistingObject = false, ..._config} =
+      __config || ({} as GetObjectConfig)
 
-    const existingObject = inst._objects[path]
-
-    if (existingObject) {
-      if (_config && reuseExistingObject === true) {
-        return existingObject.facade
-      }
-
-      throw new InvalidArgumentError(
-        `Looks like you're creating two different objects on the same path "${path}". ` +
-          `If you're trying to create two different objects, you need to give each a unique path.`,
-      )
-    }
-
-    const sanitisedConfig: NativeObjectTypeConfig = _config
+    const providedConfigOrEmptyConfig: NativeObjectTypeConfig = _config
       ? {..._config}
       : {props: {}}
 
-    let config = sanitisedConfig
+    let finalConfig = providedConfigOrEmptyConfig
 
     if (_config && _config.hasOwnProperty('props')) {
-      config.props = sanitizeAndValidateHardCodedProps(_config.props, _path)
+      finalConfig.props = sanitizeAndValidateHardCodedProps(
+        _config.props,
+        _path,
+      )
     } else {
       const possibleAdapter = getAdapterOfNativeObject(
         inst._project,
         nativeObject,
-        sanitisedConfig,
+        providedConfigOrEmptyConfig,
       )
       if (!possibleAdapter) {
-        config.props = {}
+        finalConfig.props = {}
         if (!$env.tl.isCore) {
           console.warn(
             `When calling \`timeline.getObject("${path}", ...)\`, you did not provide any props. ` +
@@ -98,15 +90,37 @@ export default class TheatreJSTimelineInstance {
           )
         }
       } else {
-        config = possibleAdapter.getConfig(nativeObject, sanitisedConfig)
+        finalConfig = possibleAdapter.getConfig(
+          nativeObject,
+          providedConfigOrEmptyConfig,
+        )
         if (!$env.tl.isCore) {
-          config = sanitizeAndValidateTypeFromAdapter(config, possibleAdapter)
+          finalConfig = sanitizeAndValidateTypeFromAdapter(
+            finalConfig,
+            possibleAdapter,
+          )
         }
       }
     }
 
-    const object = inst.createObject(path, nativeObject, sanitisedConfig, config)
-    return object.facade
+    const existingObject = inst._objects[path]
+
+    if (existingObject) {
+      existingObject.override(
+        nativeObject,
+        providedConfigOrEmptyConfig,
+        finalConfig,
+      )
+      return existingObject.facade
+    } else {
+      const object = inst.createObject(
+        path,
+        nativeObject,
+        providedConfigOrEmptyConfig,
+        finalConfig,
+      )
+      return object.facade
+    }
   }
 
   /**

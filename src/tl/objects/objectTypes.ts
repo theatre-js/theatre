@@ -5,12 +5,14 @@ import {AllPossiblePropTypes} from './propTypes'
 
 // type Position3d = {type: 'position3d'}
 
-type PropDescriptor = AllPossiblePropTypes
+export type PropDescriptor = AllPossiblePropTypes
 
 export interface NativeObjectTypeConfig extends NativeObjectType {}
 
+export type ObjectProps = {[key: string]: PropDescriptor}
+
 export interface NativeObjectType {
-  props: {[key: string]: PropDescriptor}
+  props: ObjectProps
 }
 
 export const getAdapterOfNativeObject = (

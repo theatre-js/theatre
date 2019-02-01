@@ -14,37 +14,46 @@ export default class PropInstance {
     readonly _timelnieInstanceObject: TimelineInstanceObject,
     readonly name: string,
   ) {
+    const typeDefD = valueDerivation(
+      this._timelnieInstanceObject._objectTemplate.atom.pointer.objectProps[
+        name
+      ],
+    )
+
     const valueContainerP = this._timelnieInstanceObject._objectTemplate
       ._pointerToState.props[this.name].valueContainer
 
-    const typeD = valueDerivation(valueContainerP.type)
-    this._valueDerivation = typeD.flatMap(valueContainerType => {
-      if (!valueContainerType) {
-        // @todo return default value
-        return 0
-      } else if (valueContainerType === 'StaticValueContainer') {
-        return valueDerivation(
-          (valueContainerP as Pointer<StaticValueContainer>).value,
-        ).map(value => {
-          if (typeof value === 'number') {
-            return value
-          } else {
-            return 0
-          }
-        })
-      } else if (valueContainerType === 'BezierCurvesOfScalarValues') {
-        return new DerivationOfBezierCurvesOfScalarValues(
-          (valueContainerP as $IntentionalAny as Pointer<
-            IBezierCurvesOfScalarValues
-          >).points,
-          valueDerivation(
-            this._timelnieInstanceObject._timelineInstance.statePointer.time,
-          ),
-        )
-      } else {
-        console.error('@todo', valueContainerType)
-        return 0
-      }
+    const valueContainerTypeD = valueDerivation(valueContainerP.type)
+    this._valueDerivation = typeDefD.flatMap((typeDef) => {
+      if (!typeDef) return 0
+      return valueContainerTypeD.flatMap(valueContainerType => {
+        if (!valueContainerType) {
+          // @todo return default value
+          return 0
+        } else if (valueContainerType === 'StaticValueContainer') {
+          return valueDerivation(
+            (valueContainerP as Pointer<StaticValueContainer>).value,
+          ).map(value => {
+            if (typeof value === 'number') {
+              return value
+            } else {
+              return 0
+            }
+          })
+        } else if (valueContainerType === 'BezierCurvesOfScalarValues') {
+          return new DerivationOfBezierCurvesOfScalarValues(
+            ((valueContainerP as $IntentionalAny) as Pointer<
+              IBezierCurvesOfScalarValues
+            >).points,
+            valueDerivation(
+              this._timelnieInstanceObject._timelineInstance.statePointer.time,
+            ),
+          )
+        } else {
+          console.error('@todo', valueContainerType)
+          return 0
+        }
+      })
     })
   }
 

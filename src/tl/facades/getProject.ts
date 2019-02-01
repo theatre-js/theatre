@@ -10,23 +10,15 @@ import {validateName} from './otherSanitizers'
 
 export default function getProject(
   id: string,
-  config: TheatreJSProjectConf & Partial<{reuseExistingProject: boolean}> = {},
+  config: TheatreJSProjectConf = {},
 ): TheatreJSProject {
-  const {reuseExistingProject, ...restOfConfig} = config
+  const {...restOfConfig} = config
   if (projectsSingleton.has(id)) {
-    if (reuseExistingProject === true) {
-      return projectsSingleton.get(id)!.facade
-    }
-    throw new InvalidArgumentError(
-      `Looks like you're calling \`Theatre.getProject("${id}", ...)\` twice. ` +
-        `If you're trying to make two separate projects, make sure to assign a unique ID to each of them. ` +
-        `Otherwise, if you're trying to use the existing project named "${id}", then set \`reuseExistingProject\` to true.\n` +
-        ` Example: \`Theatre.getProject("${id}", {reuseExistingProject: true})\``,
-    )
+    return projectsSingleton.get(id)!.facade
   }
 
   validateName(id, 'projectId in Theatre.getProject(projectId)', true)
-  
+
   if ($env.NODE_ENV === 'development' || $env.tl.isCore === false) {
     validateProjectIdOrThrow(id)
   }

@@ -8,6 +8,7 @@ import Project from '$tl/Project/Project'
 import projectSelectors from '$tl/Project/store/selectors'
 import {Pointer} from '$shared/DataVerse/pointer'
 import {PropValueContainer} from '$tl/Project/store/types'
+import { PropDescriptor } from '$tl/objects/objectTypes';
 
 export type NodeDescriptorsByPath = {
   [path: string]: NodeDescriptor
@@ -193,13 +194,13 @@ export const timelineTemplateToSeriesOfVerticalItems = (
 
     const objectTemplate = val(timelineTemplate._objectTemplates.pointer[path])
 
-    const nativeObjectType = objectTemplate.nativeObjectType
-    const props = nativeObjectType.props
+    const propTypes = val(objectTemplate.atom.pointer.objectProps)
 
-    const propKeys = Object.keys(props).sort(alphabeticalCompare)
+    const propKeys = Object.keys(propTypes).sort(alphabeticalCompare)
 
     propKeys.forEach(propKey => {
-      processProp(objectTemplate, path, propKey, propDepth)
+      const propType = propTypes[propKey]
+      processProp(objectTemplate, path, propKey, propType, propDepth)
     })
   }
 
@@ -207,11 +208,11 @@ export const timelineTemplateToSeriesOfVerticalItems = (
     objectTemplate: ObjectTemplate,
     objectPath: string,
     propKey: string,
+    propDescriptor: PropDescriptor,
     depth: number,
   ) => {
-    const typeDesc = objectTemplate.nativeObjectType.props[propKey]
 
-    if (typeDesc.type === 'number') {
+    if (propDescriptor.type === 'number') {
       const propAddr = {...objectTemplate._address, objectPath, propKey}
       // debugger
       const propState = val(
@@ -248,7 +249,7 @@ export const timelineTemplateToSeriesOfVerticalItems = (
         expanded ? propState.heightWhenExpanded : singleItemHeight,
       )
     } else {
-      console.error(`@todo not supporting prop type ${typeDesc.type} yet`)
+      console.error(`@todo not supporting prop type ${propDescriptor.type} yet`)
     }
   }
 

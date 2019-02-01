@@ -1,31 +1,31 @@
-import React from 'react'
+// import React from 'react'
 
-interface IProps {
+// interface IProps {
 
-}
+// }
 
-type IColor = {
-  type: 'Absolute',
-  inHex: string
-} | {
-  type: 'Reference',
-  address: string
-}
+// type IColor = {
+//   type: 'Absolute',
+//   inHex: string
+// } | {
+//   type: 'Reference',
+//   address: string
+// }
 
-type IPalette = {
-  colors: Record<IColor>
-}
+// type IPalette = {
+//   colors: Record<IColor>
+// }
 
-interface IState {
-  palettesById: Record<string, IPalette>
-}
+// interface IState {
+//   palettesById: Record<string, IPalette>
+// }
 
-export default class Colorado extends React.Component {
-  constructor(props: IProps) {
-    super(props)
+// export default class Colorado extends React.Component {
+//   constructor(props: IProps) {
+//     super(props)
 
-  }
-  render() {
-    return 'hi'
-  }
-}
+//   }
+//   render() {
+//     return 'hi'
+//   }
+// }

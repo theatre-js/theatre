@@ -9,6 +9,54 @@ import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 import Project from '$tl/Project/Project'
 import TheatreJSTimelineInstanceObject from '../facades/TheatreJSTimelineInstanceObject'
 import {warningForWhenAdapterDotStartDoesntReturnFunction} from '$tl/facades/TheatreJSAdaptersManager'
+import {val} from '$shared/DataVerse/atom'
+
+class Task {
+  controller: TaskController
+  private _requestedToStop = false
+  private _stopRequestCallback: VoidFn | undefined = undefined
+  private _stopped = false
+
+  constructor() {
+    this.controller = new TaskController(this)
+  }
+
+  get requestedToStop() {
+    return this._requestedToStop
+  }
+
+  stop() {
+    if (this._requestedToStop) return
+    this._requestedToStop = true
+    if (this._stopRequestCallback) {
+      this._stopRequestCallback()
+    }
+  }
+
+  onRequestStop(callback: VoidFn) {
+    this._stopRequestCallback = callback
+  }
+
+  setAsStopped() {
+    this._stopped = true
+  }
+
+  get stopped() {
+    return this._stopped
+  }
+}
+
+class TaskController {
+  constructor(private readonly _task: Task) {}
+
+  stop() {
+    this._task.stop()
+  }
+
+  get stopped() {
+    return this._task.stopped
+  }
+}
 
 type Values = {[k: string]: $FixMe}
 export type OnValuesChangeCallback = (values: Values, time: number) => void
@@ -18,6 +66,9 @@ export default class TimelineInstanceObject {
   _propInstances: {[propName: string]: PropInstance} = {}
   _project: Project
   facade: TheatreJSTimelineInstanceObject
+  _shouldStartAdapter = false
+  _adapterStopFunction: VoidFn | undefined = undefined
+  _adapterTaskController: undefined | TaskController = undefined
   constructor(
     readonly _timelineInstance: TimelineInstance,
     readonly path: string,
@@ -33,9 +84,30 @@ export default class TimelineInstanceObject {
       type,
     )
 
+    this._startAdapter()
+
+    this.facade = new TheatreJSTimelineInstanceObject(this)
+  }
+
+  private _stopAdapter() {
+    if (this._adapterTaskController) {
+      this._adapterTaskController.stop()
+      this._adapterTaskController = undefined
+    }
+  }
+
+  private _startAdapter() {
     const adapter = this._objectTemplate.adapter
     if (adapter && adapter.start) {
+      const task = new Task()
+      this._adapterTaskController = task.controller
+
       this._project.ready.then(() => {
+        if (task.requestedToStop) {
+          task.setAsStopped()
+          return
+        }
+
         const stopFn = adapter.start!(this.facade)
         if (!$env.tl.isCore) {
           if (typeof stopFn !== 'function') {
@@ -44,20 +116,34 @@ export default class TimelineInstanceObject {
             )
           }
         }
+
+        task.onRequestStop(() => {
+          if (typeof stopFn === 'function') stopFn()
+          task.setAsStopped()
+        })
       })
     }
+  }
 
-    this.facade = new TheatreJSTimelineInstanceObject(this)
+  override(
+    nativeObject: $FixMe,
+    config: NativeObjectTypeConfig,
+    type: NativeObjectType,
+  ) {
+    this._stopAdapter()
+    const template = this._objectTemplate
+    template.override(nativeObject, config, type)
+    this._startAdapter()
   }
 
   getProp(name: string) {
-    if (!this._objectTemplate.nativeObjectType.props[name]) {
+    if (!this._objectTemplate.atom.getState().objectProps[name]) {
       throw new Error(
         `Object '${this.path}' does not have a prop named ${JSON.stringify(
           name,
         )}. ${didYouMean(
           name,
-          Object.keys(this._objectTemplate.nativeObjectType.props),
+          Object.keys(this._objectTemplate.atom.getState().objectProps),
         )}`,
       )
     }
@@ -70,19 +156,20 @@ export default class TimelineInstanceObject {
   }
 
   onValuesChange(callback: OnValuesChangeCallback): VoidFn {
-    const props = mapValues(
-      this._objectTemplate.nativeObjectType.props,
-      (_, propName) => {
-        return this.getProp(propName)
-      },
-    )
-
     const der = autoDerive(() => {
-      const values = mapValues(props, prop => {
-        return prop.value
+      const propTypes = val(this._objectTemplate.atom.pointer.objectProps)
+      const props = mapValues(propTypes, (_, propName) => {
+        return this.getProp(propName)
       })
+      return props
+    }).flatMap(props => {
+      return autoDerive(() => {
+        const values = mapValues(props, prop => {
+          return prop.value
+        })
 
-      return values
+        return values
+      })
     })
 
     /**
