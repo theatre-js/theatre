@@ -76,11 +76,16 @@ export default class UI {
 
   protected _render() {
     this.containerEl.className = 'theatrejs-ui-root'
-    this._renderTimeout = setTimeout(() => {
-      this._renderTimeout = undefined
-      document.body.appendChild(this.containerEl)
-      ReactDOM.render(<UIRootWrapper ui={this} />, this.containerEl)
-    }, 10)
+    const renderCallback = () => {
+      if (!document.body) {
+        this._renderTimeout = setTimeout(renderCallback, 5)
+        return
+      }
+      this._renderTimeout = undefined;
+      document.body.appendChild(this.containerEl);
+      ReactDOM.render(<UIRootWrapper ui={this} />, this.containerEl);
+    };
+    this._renderTimeout = setTimeout(renderCallback, 10)
   }
 
   hide() {
