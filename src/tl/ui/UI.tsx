@@ -23,10 +23,12 @@ export default class UI {
   actions: typeof uiActions = uiActions
   _selectors = uiSelectors
   containerEl = document.createElement('div')
+  _shouldAppendUi = false
+  _renderTimeout: NodeJS.Timer | undefined = undefined
 
   constructor() {
     // @ts-ignore ignore
-    if ($env.NODE_ENV === 'development') window.ui = this
+    if ($env.NODE_ENV === 'development') window.ui = this
     this.reduxStore = configureStore({
       rootReducer,
       devtoolsOptions: {name: 'TheatreJS UI'},
@@ -67,14 +69,15 @@ export default class UI {
 
   show() {
     if (this._showing) return
-
     this._showing = true
+
     this._render()
   }
 
   protected _render() {
     this.containerEl.className = 'theatrejs-ui-root'
-    setTimeout(() => {
+    this._renderTimeout = setTimeout(() => {
+      this._renderTimeout = undefined
       document.body.appendChild(this.containerEl)
       ReactDOM.render(<UIRootWrapper ui={this} />, this.containerEl)
     }, 10)
@@ -82,8 +85,14 @@ export default class UI {
 
   hide() {
     if (!this._showing) return
-    document.body.removeChild(this.containerEl)
-    ReactDOM.unmountComponentAtNode(this.containerEl)
+    this._showing = false
+    if (this._renderTimeout) {
+      clearTimeout(this._renderTimeout)
+      this._renderTimeout = undefined
+    } else {
+      document.body.removeChild(this.containerEl)
+      ReactDOM.unmountComponentAtNode(this.containerEl)
+    }
   }
 
   _dispatch(...actions: GenericAction[]) {

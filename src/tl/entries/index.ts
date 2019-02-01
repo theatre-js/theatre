@@ -1,6 +1,5 @@
 import * as core from './core'
 import TheatreJSUI from '$tl/facades/TheatreJSUI'
-
 export * from './core'
 
 export const ui = new TheatreJSUI()
@@ -16,4 +15,7 @@ export type TypeOfTheatre = typeof core & {
   ui: typeof ui
 }
 
-// export class Blah {}
+export default {
+  ui,
+  ...core
+}

@@ -13,7 +13,9 @@ export default class TheatreJSUI {
     theUI(this).show()
   }
 
-  hide() {}
+  hide() {
+    theUI(this).hide()
+  }
 
   get showing() {
     return theUI(this)._showing
