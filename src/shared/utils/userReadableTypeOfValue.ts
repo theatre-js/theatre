@@ -1,6 +1,6 @@
 import ellipsify from './ellipsify'
 
-const userReadableTypeOfValue = (v: mixed): string => {
+const userReadableTypeOfValue = (v: unknown): string => {
   if (typeof v === 'string') {
     return `string("${ellipsify(v, 10)}")`
   } else if (typeof v === 'number') {

@@ -100,7 +100,7 @@
 .name {
   position: absolute 0 0 0 calc(var(--indent) - 4px);
   white-space: nowrap;
-  color: var(--colors-set-42);
+  color: var(--colors-panel-label);
 }
 
 .highlighter {
@@ -132,7 +132,7 @@
 
 .tagOpen,
 .tagClose {
-  color: var(--colors-set-44);
+  color: var(--colors-panel-mini);
 }
 
 .tagName {
@@ -157,7 +157,7 @@
   bottom: 0;
   width: calc(var(--indent) - 16px);
   z-index: 10;
-  color: var(--colors-set-44);
+  color: var(--colors-panel-mini);
 }
 
 .bulletIcon {

@@ -1,4 +1,4 @@
-@value tooltipBg: var(--colors-set-20);
+@value tooltipBg: var(--colors-panel-edge);
 
 .positioner {
   position: absolute;

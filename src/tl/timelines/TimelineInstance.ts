@@ -144,7 +144,7 @@ export default class TimelineInstance {
         ? conf.range
         : {
             from: 0,
-            to: timelineDuration / 1000,
+            to: timelineDuration,
           }
 
     if (typeof range.from !== 'number' || range.from < 0) {
@@ -156,7 +156,7 @@ export default class TimelineInstance {
     }
     if (range.from >= timelineDuration) {
       throw new InvalidArgumentError(
-        `Argument conf.range.from in timeline.play(conf) cannot be longer than the duration of the timeline, which is ${timelineDuration}s. ${JSON.stringify(
+        `Argument conf.range.from in timeline.play(conf) cannot be longer than the duration of the timeline, which is ${timelineDuration}ms. ${JSON.stringify(
           range.from,
         )} given.`,
       )
@@ -168,12 +168,13 @@ export default class TimelineInstance {
         )} given.`,
       )
     }
-    if (range.from > timelineDuration) {
-      throw new InvalidArgumentError(
-        `Argument conf.range.to in timeline.play(conf) cannot be longer than the duration of the timeline, which is ${timelineDuration}s. ${JSON.stringify(
+    if (range.to > timelineDuration) {
+      console.warn(
+        `Argument conf.range.to in timeline.play(conf) cannot be longer than the duration of the timeline, which is ${timelineDuration}ms. ${JSON.stringify(
           range.to,
         )} given.`,
       )
+      range.to = timelineDuration
     }
     if (range.to <= range.from) {
       throw new InvalidArgumentError(
@@ -229,7 +230,7 @@ export default class TimelineInstance {
 
     return this._play(
       iterationCount,
-      {from: range.from * 1000, to: range.to * 1000},
+      {from: range.from, to: range.to},
       rate,
       direction,
     )

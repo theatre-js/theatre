@@ -26,6 +26,9 @@ const sanitizeAndValidateProps = (
     } else if (key.match(/[\.\-\/]+/)) {
       console.warn(messageGenerator.propNameHasIllegalCharacters(key))
       continue
+    } else if (key.length > 32) {
+      console.warn(messageGenerator.propNameHasWrongLength(key))
+      continue
     }
     
     const propConfig = props[key]
@@ -126,8 +129,9 @@ interface MessageGenerator {
   propTypeIsNotAString(key: string, actualType: mixed): string
   invalidPropTypeEnum(key: string, actualType: string): string
   propConfigMustBeObject(key: string, config: mixed): string
-  propNameIsNotString(key: string): string
+  propNameIsNotString(key: unknown): string
   propNameHasIllegalCharacters(key: string): string
+  propNameHasWrongLength(key: string): string
 }
 
 class MessageGeneratorForHardCodedProps implements MessageGenerator {
@@ -177,7 +181,7 @@ class MessageGeneratorForHardCodedProps implements MessageGenerator {
     return (
       this._configToCreateObjectIsInvalid() +
       `config.props["${key}"] does not seem to have a 'type'.\n` +
-      `To fix this, add a 'type' key to this prop. Here is an example of a correct prop type: {type: 'number'}`
+      `To fix this, add a 'type' key to this prop. Here is an example of a valid prop type: {type: 'number'}`
     )
   }
   propTypeIsNotAString(key: string, actualType: mixed) {
@@ -186,7 +190,7 @@ class MessageGeneratorForHardCodedProps implements MessageGenerator {
       `Value config.props["${key}"].type must be a string. Instead, it was ${userReadableTypeOfValue(
         actualType,
       )}.\n` +
-      `Here is an example of a correct prop type: {type: 'number'}`
+      `Here is an example of a valid prop type: {type: 'number'}`
     )
   }
   invalidPropTypeEnum(key: string, actualType: string) {
@@ -201,23 +205,30 @@ class MessageGeneratorForHardCodedProps implements MessageGenerator {
       `config.props["${key}"] must be an object. Instead, it is ${userReadableTypeOfValue(
         config,
       )}.\n` +
-      `Example of a correct prop type: {type: 'number'}`
+      `Example of a valid prop type: {type: 'number'}`
     )
   }
-  propNameIsNotString(key: string) {
+  propNameIsNotString(key: unknown) {
     return (
       this._configToCreateObjectIsInvalid() +
       `The name of props in config.props must be strings. ${userReadableTypeOfValue(
         key,
       )} was given.\n` +
-      `Example of a correct prop name: {"Position X": {type: 'number'}}`
+      `Example of a valid prop name: {"Position X": {type: 'number'}}`
+    )
+  }
+  propNameHasWrongLength(key: string) {
+    return (
+      this._configToCreateObjectIsInvalid() +
+      `Prop "${key}" in config.props["${key}"] must have between 1 and 32 characters.\n` +
+      `Example of a valid prop name: {"Position X": {type: 'number'}}`
     )
   }
   propNameHasIllegalCharacters(key: string) {
     return (
       this._configToCreateObjectIsInvalid() +
       `Prop "${key}" in config.props["${key}"] must not have dots (.), dashes (-), or slashes (/) in its name.\n` +
-      `Example of a correct prop name: {"Position X": {type: 'number'}}`
+      `Example of a valid prop name: {"Position X": {type: 'number'}}`
     )
   }
 }
@@ -274,7 +285,7 @@ class MessageGeneratorForAdapterReturnedProps implements MessageGenerator {
     return (
       this._configToCreateObjectIsInvalid() +
       `adapter.getType(...).props["${key}"] does not seem to have a 'type' key.\n` +
-      `To fix this, add a 'type' key to this prop. Here is an example of a correct prop type:\n` +
+      `To fix this, add a 'type' key to this prop. Here is an example of a valid prop type:\n` +
       `{type: 'number'}`
     )
   }
@@ -284,7 +295,7 @@ class MessageGeneratorForAdapterReturnedProps implements MessageGenerator {
       `adapter.getType(...).props["${key}"].type must be a string. Instead, it was ${userReadableTypeOfValue(
         actualType,
       )}.\n` +
-      `Here is an example of a correct prop type: {type: 'number'}`
+      `Here is an example of a valid prop type: {type: 'number'}`
     )
   }
   invalidPropTypeEnum(key: string, actualType: string) {
@@ -300,23 +311,30 @@ class MessageGeneratorForAdapterReturnedProps implements MessageGenerator {
       `adapter.getType(...).props["${key}"] must be an object. Instead, it is ${userReadableTypeOfValue(
         config,
       )}.\n` +
-      `Example of a correct prop type: {type: 'number'}`
+      `Example of a valid prop type: {type: 'number'}`
     )
   }
-  propNameIsNotString(key: string) {
+  propNameIsNotString(key: unknown) {
     return (
       this._configToCreateObjectIsInvalid() +
       `The name of props in adapter.getType(...).props must be strings. ${userReadableTypeOfValue(
         key,
       )} was given.\n` +
-      `Example of a correct prop name: {"Position X": {type: 'number'}}`
+      `Example of a valid prop name: {"Position X": {type: 'number'}}`
+    )
+  }
+  propNameHasWrongLength(key: string) {
+    return (
+      this._configToCreateObjectIsInvalid() +
+      `Prop "${key}" in adapter.getType(...).props["${key}"] must have between 1 and 32 characters.\n` +
+      `Example of a valid prop name: {"Position X": {type: 'number'}}`
     )
   }
   propNameHasIllegalCharacters(key: string) {
     return (
       this._configToCreateObjectIsInvalid() +
       `Prop "${key}" in adapter.getType(...).props["${key}"] must not have dots (.), dashes (-), or slashes (/) in its name.\n` +
-      `Example of a correct prop name: {"Position X": {type: 'number'}}`
+      `Example of a valid prop name: {"Position X": {type: 'number'}}`
     )
   }
 }

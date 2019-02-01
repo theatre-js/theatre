@@ -46,7 +46,7 @@
 }
 
 .name {
-  color: var(--colors-set-42);
+  color: var(--colors-panel-label);
   margin-right: 14px;
 }
 
@@ -63,7 +63,7 @@
   padding-top: 4px;
   flex-direction: column;
   justify-content: center;
-  color: var(--colors-set-8);
+  color: var(--colors-panel-tini);
   margin-right: 8px;
   padding-right: 4px;
   height: 26px;

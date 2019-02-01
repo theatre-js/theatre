@@ -48,7 +48,7 @@
   text-align: right;
   display: block;
   color: var(--colors-set-55);
-  /* color: var(--colors-set-42); */
+  /* color: var(--colors-panel-label); */
   pointer-events: none;
 }
 
@@ -60,7 +60,7 @@
   height: 100%;
   display: inline-block;
   line-height: 100%;
-  color: var(--colors-set-56);
+  color: var(--colors-space-text);
   &:focus {
     background: var(--colors-set-57);
     color: white;
@@ -78,7 +78,7 @@
 }
 
 .input:focus ~ .label {
-  /* color: var(--colors-set-42) !important; */
+  /* color: var(--colors-panel-label) !important; */
 }
 
 .inputInvalid ~ .label {

@@ -11,6 +11,7 @@ import {InvalidArgumentError} from '../handy/errors'
 import {sanitizeAndValidateTypeFromAdapter} from '$tl/facades/propSanitizers'
 import {sanitizeAndValidateHardCodedProps} from './propSanitizers'
 import {defer} from '../../shared/utils/defer'
+import userReadableTypeOfValue from '$shared/utils/userReadableTypeOfValue';
 
 type GetObjectConfig = NativeObjectTypeConfig & {reuseExistingObject?: boolean}
 
@@ -24,11 +25,21 @@ export default class TheatreJSTimelineInstance {
   }
 
   get time() {
-    return realInstance(this).time / 1000
+    return realInstance(this).time
   }
 
   set time(t: number) {
-    realInstance(this).time = t * 1000
+    if (typeof t !== 'number') {
+      console.error(`timeline.time = t must be a number. ${userReadableTypeOfValue(t)} given.`)
+      return
+    } else if (t < 0) {
+      console.error(`timeline.time = t must be a positive number. ${t} given.`)
+      return
+    } else if (isNaN(t)) {
+      console.error(`timeline.time = t must be a real number. NaN given.`)
+      return
+    }
+    realInstance(this).time = t
   }
 
   get playing() {
@@ -117,8 +128,8 @@ export default class TheatreJSTimelineInstance {
       if (!$env.tl.isCore) {
         console.warn(
           `You seem to have called timeline.play() before the project has finished loading.\n` +
-            `This would not a problem in production when using 'theatre/core', since Theatre loads instantly in core mode. ` +
-            `However, when using Theatre's UI, it takes a few milliseconds for it to load your animation data, ` +
+            `This would **not** a problem in production when using 'theatre/core', since Theatre loads instantly in core mode. ` +
+            `However, when using Theatre's UI, it takes a few milliseconds for it to load your project's state, ` +
             `before which your timelines cannot start playing.\n` +
             `\n` +
             `To fix this, simply defer calling timeline.play() until after the project is loaded, like this:\n` +

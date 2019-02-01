@@ -21,7 +21,7 @@
   height: 13px;
   top: -4px;
   left: -2px;
-  z-index: 2;
+  z-index: 11;
   cursor: ew-resize;
   pointer-events: auto;
 

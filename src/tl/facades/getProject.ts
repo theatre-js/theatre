@@ -6,6 +6,7 @@ import {InvalidArgumentError} from '$tl/handy/errors'
 import {$OnDiskState, OnDiskState} from '$tl/Project/store/types'
 import {userFacingReoprter} from '$shared/ioTypes/userFacingReporter'
 import userReadableTypeOfValue from '$shared/utils/userReadableTypeOfValue'
+import {validateName} from './otherSanitizers'
 
 export default function getProject(
   id: string,
@@ -23,6 +24,9 @@ export default function getProject(
         ` Example: \`Theatre.getProject("${id}", {reuseExistingProject: true})\``,
     )
   }
+
+  validateName(id, 'projectId in Theatre.getProject(projectId)', true)
+  
   if ($env.NODE_ENV === 'development' || $env.tl.isCore === false) {
     validateProjectIdOrThrow(id)
   }

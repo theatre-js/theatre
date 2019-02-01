@@ -3,6 +3,6 @@
 }
 
 .createItemTip {
-  color: var(--colors-set-17);
+  color: var(--colors-panel-feint-text);
   padding: 20px;
 }

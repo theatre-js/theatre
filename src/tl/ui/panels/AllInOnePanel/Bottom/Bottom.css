@@ -4,8 +4,8 @@
 
 .container {
   position: absolute 0;
-  background: var(--colors-set-20);
-  color: var(--colors-set-17);
+  background: var(--colors-panel-edge);
+  color: var(--colors-panel-feint-text);
   display: flex;
   border-radius: 0 0 4px 4px;
   align-items: center;
@@ -26,7 +26,7 @@
 
 .rightContainer {
   display: flex;
-  background: var(--colors-set-20);
+  background: var(--colors-panel-edge);
   height: 100%;
 }
 
@@ -60,7 +60,7 @@
   padding-left: 8px;
   cursor: default;
   &:hover {
-    color: var(--colors-set-17);
+    color: var(--colors-panel-feint-text);
     background: var(--colors-set-16);
   }
 

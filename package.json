@@ -120,6 +120,7 @@
     "babel-register": "^6.26.0",
     "callsites": "^2.0.0",
     "case-sensitive-paths-webpack-plugin": "^2.1.2",
+    "chroma-js": "^2.0.2",
     "circular-dependency-plugin": "^5.0.2",
     "classnames": "^2.2.6",
     "clean-webpack-plugin": "^0.1.19",
