@@ -1,11 +1,11 @@
-// import Theatre from '../../../bundles/tl/index'
+import Theatre from '../../../bundles/tl/index'
 import state from './state.json'
 
 // console.log(Theatre);
 import {TypeOfTheatre} from '$src/tl/entries/index'
 import TheatreJSProject from '../../../src/tl/facades/TheatreJSProject'
 
-declare var Theatre: TypeOfTheatre
+// declare var Theatre: TypeOfTheatre
 
 // Theatre.ui.hide()
 
