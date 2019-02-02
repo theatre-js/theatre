@@ -24,8 +24,10 @@ export default class TheatreJSProject {
       _path,
       'project.getTimeline',
     )
-
-    validateName(instanceId, 'instanceId in project.getTimeline(path, instanceId)', true)
+    
+    if (!$env.tl.isCore) {
+      validateName(instanceId, 'instanceId in project.getTimeline(path, instanceId)', true)
+    }
 
     return getProject(this).getTimeline(path, instanceId).facade
   }

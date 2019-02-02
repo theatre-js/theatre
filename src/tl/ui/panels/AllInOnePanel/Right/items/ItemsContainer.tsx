@@ -10,6 +10,7 @@ import {
 } from '$tl/ui/panels/AllInOnePanel/utils'
 import TimelineItem from '$tl/ui/panels/AllInOnePanel/Right/items/TimelineItem'
 import {Pointer} from '$shared/DataVerse/pointer'
+import {scrollableAreaExtraBottomPadding} from '$tl/ui/panels/AllInOnePanel/Left/Left'
 
 interface IExportedComponentProps {}
 
@@ -21,7 +22,6 @@ interface IState {}
 
 class ItemsContainer extends UIComponent<IItemsContainerProps, IState> {
   _render(propsP: Pointer<IItemsContainerProps>) {
-
     const items = timelineTemplateToSeriesOfVerticalItems(
       this.ui,
       val(propsP.timelineTemplate),
@@ -29,7 +29,9 @@ class ItemsContainer extends UIComponent<IItemsContainerProps, IState> {
     )
 
     const lastItem = items[items.length - 1]
-    const height = lastItem ? lastItem.top + lastItem.height : '100%'
+    const height = lastItem
+      ? lastItem.top + lastItem.height + scrollableAreaExtraBottomPadding
+      : '100%'
 
     return (
       <div style={{height}}>

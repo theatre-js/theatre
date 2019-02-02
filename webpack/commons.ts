@@ -6,6 +6,7 @@ import * as CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin'
 import * as TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
 import {mapValues, isPlainObject, mapKeys, merge as mergeDeep} from 'lodash'
 import * as ErrorOverlayPlugin from 'error-overlay-webpack-plugin'
+import * as fs from 'fs-extra'
 
 export const context = path.resolve(__dirname, '..')
 
@@ -133,7 +134,7 @@ export const makeConfigParts = (options: Options) => {
       ],
     },
     plugins: [
-      new CleanPlugin([bundlesDir], {root: context}),
+      // new CleanPlugin([bundlesDir], {root: context}),
       new webpack.DefinePlugin({
         // This is only used inside `$root/webpack/env/index.js` and there it is
         // mirrored in process.env.NODE_ENV. So read this value from process.env.NODE_ENV.
@@ -296,7 +297,8 @@ export const makeConfigParts = (options: Options) => {
   }
 
   if (isDev && options.withDevServer === true) {
-    config.output.publicPath = `http://${envConfig.devSpecific.devServerHost}:${
+    const https = true
+    config.output.publicPath = `${https ? 'https' : 'http'}://${envConfig.devSpecific.devServerHost}:${
       packageDevSpecificConfig.devServerPort
     }/`
 
@@ -307,7 +309,7 @@ export const makeConfigParts = (options: Options) => {
       historyApiFallback: true,
       // inline: true,
       // clientLogLevel: 'error',
-      public: `${envConfig.devSpecific.devServerHost}:${packageDevSpecificConfig.devServerPort}`,
+      public: `${https ? 'https://' : ''}${envConfig.devSpecific.devServerHost}:${packageDevSpecificConfig.devServerPort}`,
       allowedHosts: [envConfig.devSpecific.devServerHost, '.localtunnel.me'],
       noInfo: false,
       // quiet: true,
@@ -317,6 +319,11 @@ export const makeConfigParts = (options: Options) => {
         'Access-Control-Expose-Headers': 'SourceMap,X-SourceMap',
       },
       port: packageDevSpecificConfig.devServerPort,
+      https: {
+        key: fs.readFileSync('/Users/aria/host/mine/self-cert/cert.key'),
+        cert: fs.readFileSync('/Users/aria/host/mine/self-cert/cert.pem'),
+      },
+
     }
   }
 

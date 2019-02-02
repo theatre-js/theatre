@@ -1,4 +1,4 @@
-import Theatre from '../../../bundles/tl/index'
+import Theatre from '../../../bundles/tl/core'
 import state from './state.json'
 
 // console.log(Theatre);
@@ -57,7 +57,7 @@ const createBox = (project: TheatreJSProject, i: number, iteration: number) => {
   propNames.forEach(name => {
     props[name] = {type: 'number'}
   })
-
+  // debugger
   // Create an object:
   const object = timeline.getObject(
     // The name of the object is "The box":
@@ -79,13 +79,15 @@ const createBox = (project: TheatreJSProject, i: number, iteration: number) => {
   })
 }
 
-;[0, 1, 2].forEach(iteration => {
-  setTimeout(() => {
-    for (let i = 0; i < 3; i++) {
-      createBox(project, i, iteration)
-    }
-  }, iteration * 1000)
-})
+createBox(project, 0, 0)
+
+// ;[0, 1, 2].forEach(iteration => {
+//   setTimeout(() => {
+//     for (let i = 0; i < 3; i++) {
+//       createBox(project, i, iteration)
+//     }
+//   }, iteration * 1000)
+// })
 
 // const project1 = Theatre.getProject('Project 1')
 // const project2 = Theatre.getProject('Project 2')

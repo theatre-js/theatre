@@ -1,7 +1,6 @@
 import Project from '$tl/Project/Project'
 import TimelineTemplate from './TimelineTemplate'
 import TimelineInstanceObject from '$tl/objects/TimelineInstanceObject'
-import {validateAndSanitiseSlashedPathOrThrow} from '$tl/handy/slashedPaths'
 import {NativeObjectTypeConfig, NativeObjectType} from '$tl/objects/objectTypes'
 import atom, {Atom, val} from '$shared/DataVerse/atom'
 import {Pointer} from '$shared/DataVerse/pointer'
@@ -97,15 +96,17 @@ export default class TimelineInstance {
   set time(_time: number) {
     let time = _time
     this.pause()
-    if (typeof time !== 'number') {
-      console.error(
-        `value t in timeline.time = t must be a number. ${typeof time} given`,
-      )
-      time = 0
-    }
-    if (time < 0) {
-      console.error(`timeline.time must be a positive number. ${time} given`)
-      time = 0
+    if (!$env.tl.isCore) {
+      if (typeof time !== 'number') {
+        console.error(
+          `value t in timeline.time = t must be a number. ${typeof time} given`,
+        )
+        time = 0
+      }
+      if (time < 0) {
+        console.error(`timeline.time must be a positive number. ${time} given`)
+        time = 0
+      }
     }
     if (time > this._timelineTemplate.duration) {
       // console.error(
@@ -147,85 +148,95 @@ export default class TimelineInstance {
             to: timelineDuration,
           }
 
-    if (typeof range.from !== 'number' || range.from < 0) {
-      throw new InvalidArgumentError(
-        `Argument conf.range.from in timeline.play(conf) must be a positive number. ${JSON.stringify(
-          range.from,
-        )} given.`,
-      )
-    }
-    if (range.from >= timelineDuration) {
-      throw new InvalidArgumentError(
-        `Argument conf.range.from in timeline.play(conf) cannot be longer than the duration of the timeline, which is ${timelineDuration}ms. ${JSON.stringify(
-          range.from,
-        )} given.`,
-      )
-    }
-    if (typeof range.to !== 'number' || range.to <= 0) {
-      throw new InvalidArgumentError(
-        `Argument conf.range.to in timeline.play(conf) must be a number larger than zero. ${JSON.stringify(
-          range.to,
-        )} given.`,
-      )
-    }
-    if (range.to > timelineDuration) {
-      console.warn(
-        `Argument conf.range.to in timeline.play(conf) cannot be longer than the duration of the timeline, which is ${timelineDuration}ms. ${JSON.stringify(
-          range.to,
-        )} given.`,
-      )
-      range.to = timelineDuration
-    }
-    if (range.to <= range.from) {
-      throw new InvalidArgumentError(
-        `Argument conf.range.to in timeline.play(conf) must be larger than conf.range.from. ${JSON.stringify(
-          range,
-        )} given.`,
-      )
+    if (!$env.tl.isCore) {
+      if (typeof range.from !== 'number' || range.from < 0) {
+        throw new InvalidArgumentError(
+          `Argument conf.range.from in timeline.play(conf) must be a positive number. ${JSON.stringify(
+            range.from,
+          )} given.`,
+        )
+      }
+      if (range.from >= timelineDuration) {
+        throw new InvalidArgumentError(
+          `Argument conf.range.from in timeline.play(conf) cannot be longer than the duration of the timeline, which is ${timelineDuration}ms. ${JSON.stringify(
+            range.from,
+          )} given.`,
+        )
+      }
+      if (typeof range.to !== 'number' || range.to <= 0) {
+        throw new InvalidArgumentError(
+          `Argument conf.range.to in timeline.play(conf) must be a number larger than zero. ${JSON.stringify(
+            range.to,
+          )} given.`,
+        )
+      }
+
+      if (range.to > timelineDuration) {
+        console.warn(
+          `Argument conf.range.to in timeline.play(conf) cannot be longer than the duration of the timeline, which is ${timelineDuration}ms. ${JSON.stringify(
+            range.to,
+          )} given.`,
+        )
+        range.to = timelineDuration
+      }
+
+      if (range.to <= range.from) {
+        throw new InvalidArgumentError(
+          `Argument conf.range.to in timeline.play(conf) must be larger than conf.range.from. ${JSON.stringify(
+            range,
+          )} given.`,
+        )
+      }
     }
 
     const iterationCount =
       conf && typeof conf.iterationCount === 'number' ? conf.iterationCount : 1
-
-    if (
-      !(Number.isInteger(iterationCount) && iterationCount > 0) &&
-      iterationCount !== Infinity
-    ) {
-      throw new InvalidArgumentError(
-        `Argument conf.iterationCount in timeline.play(conf) must be an integer larger than 0. ${JSON.stringify(
-          iterationCount,
-        )} given.`,
-      )
+    if (!$env.tl.isCore) {
+      if (
+        !(Number.isInteger(iterationCount) && iterationCount > 0) &&
+        iterationCount !== Infinity
+      ) {
+        throw new InvalidArgumentError(
+          `Argument conf.iterationCount in timeline.play(conf) must be an integer larger than 0. ${JSON.stringify(
+            iterationCount,
+          )} given.`,
+        )
+      }
     }
 
     const rate = conf && typeof conf.rate !== 'undefined' ? conf.rate : 1
 
-    if (typeof rate !== 'number' || rate === 0) {
-      throw new InvalidArgumentError(
-        `Argument conf.rate in timeline.play(conf) must be a number larger than 0. ${JSON.stringify(
-          rate,
-        )} given.`,
-      )
-    }
+    if (!$env.tl.isCore) {
+      if (typeof rate !== 'number' || rate === 0) {
+        throw new InvalidArgumentError(
+          `Argument conf.rate in timeline.play(conf) must be a number larger than 0. ${JSON.stringify(
+            rate,
+          )} given.`,
+        )
+      }
 
-    if (rate < 0) {
-      throw new InvalidArgumentError(
-        `Argument conf.rate in timeline.play(conf) must be a number larger than 0. ${JSON.stringify(
-          rate,
-        )} given. If you want the animation to play backwards, try setting conf.direction to 'reverse' or 'alternateReverse'.`,
-      )
+      if (rate < 0) {
+        throw new InvalidArgumentError(
+          `Argument conf.rate in timeline.play(conf) must be a number larger than 0. ${JSON.stringify(
+            rate,
+          )} given. If you want the animation to play backwards, try setting conf.direction to 'reverse' or 'alternateReverse'.`,
+        )
+      }
     }
 
     const direction = conf && conf.direction ? conf.direction : 'normal'
-    if (possibleDirections.indexOf(direction) === -1) {
-      throw new InvalidArgumentError(
-        `Argument conf.direction in timeline.play(conf) must be one of ${JSON.stringify(
-          possibleDirections,
-        )}. ${JSON.stringify(direction)} given. ${didYouMean(
-          direction,
-          possibleDirections,
-        )}`,
-      )
+
+    if (!$env.tl.isCore) {
+      if (possibleDirections.indexOf(direction) === -1) {
+        throw new InvalidArgumentError(
+          `Argument conf.direction in timeline.play(conf) must be one of ${JSON.stringify(
+            possibleDirections,
+          )}. ${JSON.stringify(direction)} given. ${didYouMean(
+            direction,
+            possibleDirections,
+          )}`,
+        )
+      }
     }
 
     return this._play(

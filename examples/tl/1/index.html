@@ -1,59 +1,68 @@
 <html>
-
-<head>
-  <meta charset="UTF-8">
-  <title>Theatre.js TL Example 1</title>
-  <style>
-    body {
-      background: #111;
-    }
-
-    body {
-      margin: 0;
-    }
-
-    canvas {
-      width: 100%;
-      height: 100%
-    }
-  </style>
-</head>
-
-<body>
-  <div id="root"></div>
-
-  <script>
-    const blockedPrefixes = ['Warning: Accessing PropTypes', 'Warning: Accessing createClass']
-    const originalConsoleWarn = console.warn.bind(console)
-    console.warn = (msg, ...rest) => {
-      let shouldBlock = false
-      blockedPrefixes.forEach((prefix) => {
-        if (msg.startsWith(prefix)) {
-          shouldBlock = true
-          return false
-        }
-      })
-      if (!shouldBlock) {
-        originalConsoleWarn(msg, ...rest)
+  <head>
+    <meta charset="UTF-8" />
+    <title>Theatre.js TL Example 1</title>
+    <style>
+      body {
+        background: #111;
       }
-    }
 
-      ; (() => {
-        return
+      body {
+        margin: 0;
+      }
+
+      canvas {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="root"></div>
+
+    <script>
+      const blockedPrefixes = [
+        'Warning: Accessing PropTypes',
+        'Warning: Accessing createClass',
+      ]
+      const originalConsoleWarn = console.warn.bind(console)
+      console.warn = (msg, ...rest) => {
+        let shouldBlock = false
+        blockedPrefixes.forEach(prefix => {
+          if (msg.startsWith(prefix)) {
+            shouldBlock = true
+            return false
+          }
+        })
+        if (!shouldBlock) {
+          originalConsoleWarn(msg, ...rest)
+        }
+      }
+      ;(() => {
+        return;
         const location = window.location
-        const urlToStudio = location.protocol + '//' + location.hostname + ':' + '<%= onv.devSpecific.tl.devServerPort %>' + '/index.js'
+        const urlToStudio =
+          location.protocol +
+          '//' +
+          location.hostname +
+          ':' +
+          '<%= onv.devSpecific.tl.devServerPort %>' +
+          '/index.js'
         const script = document.createElement('script')
         script.src = urlToStudio
-        script.crossOrigin = true;
-        const scriptTag = `<script crossorigin src="` + urlToStudio + `">` + '</' + 'script>';
+        script.crossOrigin = true
+        const scriptTag =
+          `<script crossorigin src="` + urlToStudio + `">` + '</' + 'script>'
         document.write(scriptTag)
-      })();
-  </script>
+      })()
+    </script>
 
-
-  <% for (var chunk in htmlWebpackPlugin.files.chunks) { %>
-    <script crossorigin src="<%= htmlWebpackPlugin.files.chunks[chunk].entry %>"></script>
+    <% for (var chunk in htmlWebpackPlugin.files.chunks) { %>
+    <script
+      crossorigin
+      src="<%= htmlWebpackPlugin.files.chunks[chunk].entry %>"
+    ></script>
     <% } %>
-</body>
-
+  </body>
 </html>

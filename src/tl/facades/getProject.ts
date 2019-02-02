@@ -16,16 +16,16 @@ export default function getProject(
   if (projectsSingleton.has(id)) {
     return projectsSingleton.get(id)!.facade
   }
-
-  validateName(id, 'projectId in Theatre.getProject(projectId)', true)
-
-  if ($env.NODE_ENV === 'development' || $env.tl.isCore === false) {
+  
+  if (!$env.tl.isCore) {
+    validateName(id, 'projectId in Theatre.getProject(projectId)', true)
     validateProjectIdOrThrow(id)
   }
+
   if ($env.tl.isCore) {
     if (!config.state) {
       throw new InvalidArgumentError(
-        `Argument config.state in Theatre.getProject("${id}", config) cannot be empty in theatre/core. Read more at https://theatrejs.com/docs/state-persistence.html`,
+        `Argument config.state in Theatre.getProject("${id}", config) cannot be empty in theatre/core. Read more at https://docs.theatrejs.com/`,
       )
     }
     shallowValidateOnDiskState(id, config.state)
@@ -46,14 +46,14 @@ const deepValidateOnDiskState = (projectId: string, s: OnDiskState) => {
 
   if (validationResult.isLeft()) {
     console.group(
-      `Argument config.state in Theatre.getProject("${projectId}", config) is invalid. Lean how to fix this at https://theatrejs.com/docs/state-persistence.html#troubleshooting`,
+      `Argument config.state in Theatre.getProject("${projectId}", config) is invalid. Lean how to fix this at https://docs.theatrejs.com`,
     )
     const errors = userFacingReoprter(validationResult)
     errors.forEach(e => console.log(e))
     console.groupEnd()
 
     throw new InvalidArgumentError(
-      `Argument config.state in Theatre.getProject("${projectId}", config) is invalid. Lean how to fix this at https://theatrejs.com/docs/state-persistence.html#troubleshooting`,
+      `Argument config.state in Theatre.getProject("${projectId}", config) is invalid. Lean how to fix this at https://docs.theatrejs.com`,
     )
   }
 }
@@ -71,7 +71,7 @@ const shallowValidateOnDiskState = (projectId: string, s: OnDiskState) => {
     throw new InvalidArgumentError(
       `Error validating conf.state in Theatre.getProject(${JSON.stringify(
         projectId,
-      )}, conf). The state seems to be formatted in a way that is unreadable to Theatre.js. Read more at https://theatrejs.com/docs/state-persistence.html`,
+      )}, conf). The state seems to be formatted in a way that is unreadable to Theatre.js. Read more at https://docs.theatrejs.com`,
     )
   }
 }

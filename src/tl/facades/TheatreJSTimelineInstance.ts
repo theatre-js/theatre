@@ -14,7 +14,7 @@ import {defer} from '../../shared/utils/defer'
 import userReadableTypeOfValue from '$shared/utils/userReadableTypeOfValue'
 import {isPlainObject} from '$shared/utils'
 
-type GetObjectConfig = NativeObjectTypeConfig & {reuseExistingObject?: boolean}
+type GetObjectConfig = NativeObjectTypeConfig
 
 const theWeakmap = new WeakMap<TheatreJSTimelineInstance, TimelineInstance>()
 const realInstance = (s: TheatreJSTimelineInstance) =>
@@ -58,7 +58,7 @@ export default class TheatreJSTimelineInstance {
       `timeline.getObject("${_path}", ...)`,
     )
 
-    const {reuseExistingObject = false, ..._config} =
+    const {..._config} =
       __config || ({} as GetObjectConfig)
 
     const providedConfigOrEmptyConfig: NativeObjectTypeConfig = _config
@@ -68,10 +68,12 @@ export default class TheatreJSTimelineInstance {
     let finalConfig = providedConfigOrEmptyConfig
 
     if (_config && _config.hasOwnProperty('props')) {
-      finalConfig.props = sanitizeAndValidateHardCodedProps(
-        _config.props,
-        _path,
-      )
+      if (!$env.tl.isCore) {
+        finalConfig.props = sanitizeAndValidateHardCodedProps(
+          _config.props,
+          _path,
+        )
+      }
     } else {
       const possibleAdapter = getAdapterOfNativeObject(
         inst._project,

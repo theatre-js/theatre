@@ -137,7 +137,7 @@ export default class TimelineInstanceObject {
   }
 
   getProp(name: string) {
-    if (!this._objectTemplate.atom.getState().objectProps[name]) {
+    if (!$env.tl.isCore && !this._objectTemplate.atom.getState().objectProps[name]) {
       throw new Error(
         `Object '${this.path}' does not have a prop named ${JSON.stringify(
           name,

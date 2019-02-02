@@ -17,6 +17,7 @@ import ProjectPersistor from './ProjectPersistor'
 import {OnDiskState} from '$tl/Project/store/types'
 import resolvedPromise from '$shared/utils/resolvedPromise'
 import TheatreJSProject from '../facades/TheatreJSProject'
+import {preloadedHistoryForCore} from '$tl/Project/store/coreBuildUtils'
 
 export type Conf = Partial<{
   state: OnDiskState
@@ -50,15 +51,36 @@ export default class Project {
   /**
    * @todo should we have a human-readable name for each project too?
    */
-  constructor(readonly id: string, readonly config: Conf = {}, readonly facade: TheatreJSProject) {
+  constructor(
+    readonly id: string,
+    readonly config: Conf = {},
+    readonly facade: TheatreJSProject,
+  ) {
     projectsSingleton.add(id, this)
     this.adapters = new NativeObjectAdaptersManager(this)
-    this.reduxStore = configureStore({
-      rootReducer,
-      devtoolsOptions: {
-        name: 'Theatre.js Project ' + id,
-      },
-    })
+    if ($env.tl.isCore) {
+      const onDiskState = this.config.state!
+      const state = preloadedHistoryForCore(
+        onDiskState.projectState,
+        onDiskState.revision,
+      )
+      this.reduxStore = configureStore({
+        devtoolsOptions: {
+          name: 'Theatre.js Project ' + id,
+        },
+        rootReducer: (s = state) => s,
+      })
+
+      this._isReady = true
+      this._readyPromise = resolvedPromise
+    } else {
+      this.reduxStore = configureStore({
+        rootReducer,
+        devtoolsOptions: {
+          name: 'Theatre.js Project ' + id,
+        },
+      })
+    }
     this.atom = atomFromReduxStore(this.reduxStore)
     this.atomP = this.atom.pointer
     this.ticker = new Ticker()
@@ -83,18 +105,6 @@ export default class Project {
         const unsubscribe = this.reduxStore.subscribe(check)
         check()
       })
-    } else {
-      const onDiskState = this.config.state!
-      this._dispatch(
-        this._actions.historic.__unsafe_clearHistoryAndReplaceInnerState(
-          onDiskState.projectState,
-        ),
-        this._actions.ephemeral.setLoadingStateToLoaded({
-          diskRevisionsThatBrowserStateIsBasedOn: [onDiskState.revision],
-        }),
-      )
-      this._isReady = true
-      this._readyPromise = resolvedPromise
     }
   }
 

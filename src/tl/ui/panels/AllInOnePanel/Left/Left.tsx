@@ -13,6 +13,8 @@ import {
   CodeSnippet,
 } from '$tl/ui/panels/AllInOnePanel/Bottom/FullSizeHint/FullSizeHint'
 
+export const scrollableAreaExtraBottomPadding = 10
+
 const classes = resolveCss(css)
 
 interface IProps {}
@@ -47,7 +49,7 @@ export default class Left extends UIComponent<IProps, IState> {
                 )
 
                 const lastItem = items[items.length - 1]
-                const height = lastItem ? lastItem.top + lastItem.height : 0
+                const height = (lastItem ? lastItem.top + lastItem.height : 0) + scrollableAreaExtraBottomPadding
 
                 return items.length > 0 ? (
                   <div

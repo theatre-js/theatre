@@ -24,6 +24,9 @@ export function validateAndSanitiseSlashedPathOrThrow(
   fnName: string,
 ) {
   const sanitisedPath = sanifySlashedPath(unsanitisedPath)
+  if ($env.tl.isCore) {
+    return sanitisedPath
+  }
   const validation = getValidationErrorsOfSlashedPath(sanitisedPath)
   if (validation) {
     throw new InvalidArgumentError(

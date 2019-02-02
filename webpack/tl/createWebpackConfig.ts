@@ -6,6 +6,8 @@ import * as webpack from 'webpack'
 import {BundleAnalyzerPlugin} from 'webpack-bundle-analyzer'
 import * as fs from 'fs-extra'
 import * as path from 'path'
+const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
+const WebpackDeepScopeAnalysisPlugin = require('webpack-deep-scope-plugin').default;
 // import * as UglifyJSWebpackPlugin from 'uglifyjs-webpack-plugin'
 
 setAutoFreeze(false)
@@ -47,6 +49,21 @@ module.exports = (env: Envs) => {
           c.plugins.push(
             new webpack.DefinePlugin({'$env.tl.isCore': JSON.stringify(true)}),
           )
+        } else {
+          c.stats = {
+            // @ts-ignore
+            optimizationBailout: true
+          }
+          c.plugins.push(new WebpackDeepScopeAnalysisPlugin())
+          c.plugins.unshift(new LodashModuleReplacementPlugin({
+            paths: true
+          }))
+
+          c.module.rules.unshift({
+            test: [/store\/index\.ts/, /\/propSanitizers\.ts$/],
+            use: 'null-loader',
+            exclude: /node_modules/,
+          })
         }
         // c.plugins.push(
         //   new webpack.IgnorePlugin(/\/types\.tsx?$/),
