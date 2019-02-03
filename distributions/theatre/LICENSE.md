@@ -1,1 +1,1 @@
-This software is copyrighted by TheaterJS Oy, all rights reserved. Visit theatrejs.com to obtain a license.
+This software is copyrighted by "TheaterJS OY", all rights reserved. It is currently licensed to private beta members. You can join the private beta at https://theatrejs.com to obtain a license.
