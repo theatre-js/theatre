@@ -9,7 +9,15 @@ import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 import Project from '$tl/Project/Project'
 import TheatreJSTimelineInstanceObject from '../facades/TheatreJSTimelineInstanceObject'
 import {warningForWhenAdapterDotStartDoesntReturnFunction} from '$tl/facades/TheatreJSAdaptersManager'
-import {val} from '$shared/DataVerse/atom'
+import {val, coldVal} from '$shared/DataVerse/atom'
+import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
+import constant from '$shared/DataVerse/derivations/constant'
+import {
+  skipFindingColdDerivations,
+  endSkippingColdDerivations,
+} from '../../shared/debug'
+
+const dummyValuesD = constant(0).flatMap(v => ({}))
 
 class Task {
   controller: TaskController
@@ -69,6 +77,8 @@ export default class TimelineInstanceObject {
   _shouldStartAdapter = false
   _adapterStopFunction: VoidFn | undefined = undefined
   _adapterTaskController: undefined | TaskController = undefined
+  private _valuesD: AbstractDerivation<Record<string, number>>
+
   constructor(
     readonly _timelineInstance: TimelineInstance,
     readonly path: string,
@@ -87,6 +97,7 @@ export default class TimelineInstanceObject {
     this._startAdapter()
 
     this.facade = new TheatreJSTimelineInstanceObject(this)
+    this._valuesD = dummyValuesD
   }
 
   private _stopAdapter() {
@@ -137,7 +148,10 @@ export default class TimelineInstanceObject {
   }
 
   getProp(name: string) {
-    if (!$env.tl.isCore && !this._objectTemplate.atom.getState().objectProps[name]) {
+    if (
+      !$env.tl.isCore &&
+      !this._objectTemplate.atom.getState().objectProps[name]
+    ) {
       throw new Error(
         `Object '${this.path}' does not have a prop named ${JSON.stringify(
           name,
@@ -155,22 +169,29 @@ export default class TimelineInstanceObject {
     return this._propInstances[name]
   }
 
-  onValuesChange(callback: OnValuesChangeCallback): VoidFn {
-    const der = autoDerive(() => {
-      const propTypes = val(this._objectTemplate.atom.pointer.objectProps)
-      const props = mapValues(propTypes, (_, propName) => {
-        return this.getProp(propName)
-      })
-      return props
-    }).flatMap(props => {
-      return autoDerive(() => {
-        const values = mapValues(props, prop => {
-          return prop.value
+  private _getValuesDerivation() {
+    if (this._valuesD === dummyValuesD) {
+      this._valuesD = autoDerive(() => {
+        const propTypes = val(this._objectTemplate.atom.pointer.objectProps)
+        const props = mapValues(propTypes, (_, propName) => {
+          return this.getProp(propName)
         })
+        return props
+      }).flatMap(props => {
+        return autoDerive(() => {
+          const values = mapValues(props, prop => {
+            return prop.value
+          })
 
-        return values
+          return values
+        })
       })
-    })
+    }
+    return this._valuesD
+  }
+
+  onValuesChange(callback: OnValuesChangeCallback): VoidFn {
+    const der = this._getValuesDerivation()
 
     /**
      * This is temporary.
@@ -190,6 +211,17 @@ export default class TimelineInstanceObject {
     })
 
     return untap
+  }
+
+  get currentValues() {
+    if (!$env.tl.isCore) {
+      skipFindingColdDerivations()
+    }
+    const val = this._getValuesDerivation().getValueCold()
+    if (!$env.tl.isCore) {
+      endSkippingColdDerivations()
+    }
+    return val
   }
 }
 

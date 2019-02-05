@@ -1,11 +1,11 @@
-import Theatre from '../../../bundles/tl/core'
+// import Theatre from '../../../bundles/tl/core'
 import state from './state.json'
 
 // console.log(Theatre);
 import {TypeOfTheatre} from '$src/tl/entries/index'
 import TheatreJSProject from '../../../src/tl/facades/TheatreJSProject'
 
-// declare var Theatre: TypeOfTheatre
+declare var Theatre: TypeOfTheatre
 
 // Theatre.ui.hide()
 
@@ -68,6 +68,8 @@ const createBox = (project: TheatreJSProject, i: number, iteration: number) => {
     // moving it up and down, along the y axis. So we'll only have one prop for now:
     {props},
   )
+
+  console.log({initial: object.currentValues})
 
   object.onValuesChange((newValues: $FixMe) => {
     console.log(newValues)

@@ -25,6 +25,10 @@ export default class TheatreJSTimelineInstanceObject {
     return realInstance(this).nativeObject
   }
 
+  get currentValues() {
+    return realInstance(this).currentValues
+  }
+
   onValuesChange(callback: OnValuesChangeCallback): VoidFn {
     if (!$env.tl.isCore) {
       if (typeof callback !== 'function') {
