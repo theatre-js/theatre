@@ -6,7 +6,7 @@ Theatre can be used both programmatically *and* visually:
 
 ![Video showing a browser window containing three divs falling from the middle of the screen, and bouncing back up, animated with the help of Theatre.js](https://docs.theatrejs.com/public/preview-1.gif)
 
-Theatre works with all rendering stacks. You can use it to animate DOM elements, THERE.js objects, or any kind of JavaScript variable.
+Theatre works with all rendering stacks. You can use it to animate DOM elements, THREE.js objects, or any kind of JavaScript variable.
 
 ## License
 
