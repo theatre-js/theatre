@@ -88,11 +88,11 @@ export default class UI {
         this._renderTimeout = setTimeout(renderCallback, 5)
         return
       }
-      this._renderTimeout = undefined;
+      this._renderTimeout = undefined
       this._documentBodyUIIsRenderedIn = document.body
-      document.body.appendChild(this.containerEl);
-      ReactDOM.render(<UIRootWrapper ui={this} />, this.containerEl);
-    };
+      this._documentBodyUIIsRenderedIn.appendChild(this.containerEl)
+      ReactDOM.render(<UIRootWrapper ui={this} />, this.containerEl)
+    }
     this._renderTimeout = setTimeout(renderCallback, 10)
   }
 
@@ -103,8 +103,11 @@ export default class UI {
       clearTimeout(this._renderTimeout)
       this._renderTimeout = undefined
     } else {
-      this._documentBodyUIIsRenderedIn!.removeChild(this.containerEl)
       ReactDOM.unmountComponentAtNode(this.containerEl)
+      try {
+        this._documentBodyUIIsRenderedIn!.removeChild(this.containerEl)
+        this._documentBodyUIIsRenderedIn = undefined
+      } catch (e) {}
     }
   }
 
