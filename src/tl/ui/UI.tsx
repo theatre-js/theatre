@@ -25,6 +25,7 @@ export default class UI {
   containerEl = document.createElement('div')
   _shouldAppendUi = false
   _renderTimeout: NodeJS.Timer | undefined = undefined
+  _documentBodyUIIsRenderedIn: HTMLElement | undefined = undefined
 
   constructor() {
     // @ts-ignore ignore
@@ -68,7 +69,13 @@ export default class UI {
   }
 
   show() {
-    if (this._showing) return
+    if (this._showing) {
+      if (this._documentBodyUIIsRenderedIn && document.body) {
+        this.hide()
+      } else {
+        return
+      }
+    }
     this._showing = true
 
     this._render()
@@ -82,6 +89,7 @@ export default class UI {
         return
       }
       this._renderTimeout = undefined;
+      this._documentBodyUIIsRenderedIn = document.body
       document.body.appendChild(this.containerEl);
       ReactDOM.render(<UIRootWrapper ui={this} />, this.containerEl);
     };
@@ -95,7 +103,7 @@ export default class UI {
       clearTimeout(this._renderTimeout)
       this._renderTimeout = undefined
     } else {
-      document.body.removeChild(this.containerEl)
+      this._documentBodyUIIsRenderedIn!.removeChild(this.containerEl)
       ReactDOM.unmountComponentAtNode(this.containerEl)
     }
   }
