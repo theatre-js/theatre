@@ -214,13 +214,10 @@ export default class TimelineInstanceObject {
   }
 
   get currentValues() {
-    if (!$env.tl.isCore) {
-      skipFindingColdDerivations()
-    }
-    const val = this._getValuesDerivation().getValueCold()
-    if (!$env.tl.isCore) {
-      endSkippingColdDerivations()
-    }
+    let val
+    // currently doesn't support cold reads
+    const untap = this._getValuesDerivation().tapImmediate(this._project.ticker, (v) => val = v)
+    untap()
     return val
   }
 }
