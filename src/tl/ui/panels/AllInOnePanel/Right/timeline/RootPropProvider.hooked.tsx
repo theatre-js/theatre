@@ -26,6 +26,7 @@ export default class HOOKED_RootPropProvider extends React.PureComponent<
   IState
 > {
   hooked_render() {
+    // @ts-ignore
     const timeStuffP = useContextConsumer(TimeStuff)
     const getProp = useMemo(
       (): HOOKED_TPropGetter => propName => {

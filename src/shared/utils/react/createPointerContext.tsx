@@ -3,9 +3,11 @@ import atom, {Atom} from '$shared/DataVerse/atom'
 import {Pointer} from '$shared/DataVerse/pointer'
 
 export default function createPointerContext<T>() {
-  const {Consumer: InnerConsumer, Provider: _Provider} = React.createContext(
+  const Context = React.createContext(
     (null as $IntentionalAny) as Pointer<T>,
   )
+
+  const {Consumer: InnerConsumer, Provider: _Provider} = Context
 
   class Consumer extends React.PureComponent<
     {
@@ -58,5 +60,5 @@ export default function createPointerContext<T>() {
     }
   }
 
-  return {Consumer, Provider}
+  return {Consumer, Provider, Context}
 }

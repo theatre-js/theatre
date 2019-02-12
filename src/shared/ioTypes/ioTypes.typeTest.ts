@@ -1,13 +1,7 @@
 import * as t from '$shared/ioTypes'
 import {Right} from 'fp-ts/lib/Either'
 import {expectType} from '$shared/types'
-//
-// clean / alias
-//
 
-//
-// recursion
-//
 type RecT1 = {
   type: 'a'
   items: Array<RecT1>
@@ -19,8 +13,8 @@ const Rec1 = t.recursion<RecT1>('T', Self =>
     items: t.array(Self),
   }),
 )
-// $ExpectError
 const Rec2 = t.recursion<string>('T', Self =>
+// $ExpectError
   t.interface({
     type: t.literal('a'),
     items: t.array(Self),
@@ -31,7 +25,7 @@ const Rec2 = t.recursion<string>('T', Self =>
 // literal
 //
 
-const L1 = t.literal('a')
+const L1 = t.literal('a');
 // $ExpectError
 const x1: t.StaticTypeOf<typeof L1> = 's'
 const x2: t.StaticTypeOf<typeof L1> = 'a'

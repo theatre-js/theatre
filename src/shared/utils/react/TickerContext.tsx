@@ -11,6 +11,10 @@ export const getTicker = (context: $IntentionalAny): Ticker => {
   return context[tickerContextName]
 }
 
+export const TickerContext = React.createContext<Ticker>(
+  null as $IntentionalAny,
+)
+
 export class TickerProvider extends React.Component<{
   ticker: Ticker
   children: React.ReactNode
@@ -22,6 +26,10 @@ export class TickerProvider extends React.Component<{
   static childContextTypes = tickerContextTypes
 
   render() {
-    return this.props.children
+    return (
+      <TickerContext.Provider value={this.props.ticker}>
+        this.props.children
+      </TickerContext.Provider>
+    )
   }
 }

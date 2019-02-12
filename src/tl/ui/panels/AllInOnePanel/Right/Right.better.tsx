@@ -19,10 +19,9 @@ import {
 import TimelineProviders from '$tl/ui/panels/AllInOnePanel/Right/timeline/TimelineProviders'
 import ItemsContainer from '$tl/ui/panels/AllInOnePanel/Right/items/ItemsContainer'
 import {TRange, TDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
-import {TimeStuff, TimeStuffContext} from '$tl/ui/panels/AllInOnePanel/TimeStuffProvider'
+import {TimeStuff} from '$tl/ui/panels/AllInOnePanel/TimeStuffProvider'
 import {defer} from '$shared/utils/defer'
-import autoDerive from '../../../../../shared/DataVerse/derivations/autoDerive/autoDerive'
-import { TickerContext } from '$shared/utils/react/TickerContext';
+import { mapValues } from 'lodash-es';
 
 const classes = resolveCss(css)
 
@@ -239,28 +238,3 @@ export default (_props: IExportedComponentProps) => (
   </TimeStuff>
 )
 
-// const useAutoDerive = <T extends $IntentionalAny>(fn: () => T, deps: $IntentionalAny[]): T => {
-//   const ticker = useContext(TickerContext)
-//   const derivation = useMemo(() => {
-//     return autoDerive(fn)
-//   }, deps)
-//   const untapRef = useRef(derivation.changes(ticker).tap((newValue) => {
-//     setState(newValue)
-//   }))
-
-//   const effectCountRef = useRef(0)
-//   const [state, setState] = useState(() => derivation.getValue())
-//   useEffect(() => {
-//     if (effectCountRef.current === 0) return
-//   })
-
-
-//   return state
-// }
-
-// const hookie = (props: IExportedComponentProps) => {
-//   const timeStuffP = useContext(TimeStuffContext)
-//   const props = useAutoDerive(() => {
-
-//   })
-// }

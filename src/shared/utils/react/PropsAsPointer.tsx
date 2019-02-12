@@ -9,11 +9,19 @@ const emptyProps = {}
 
 type ChildrenType<InnerProps> = (
   propsP: Pointer<InnerProps>,
-) => AbstractDerivation<React.ReactNode> | React.ReactNode
+) => $IntentionalAny /* AbstractDerivation<React.ReactNode> | React.ReactNode */
 
 type Props<InnerProps extends {}> = InnerProps & {
   children: ChildrenType<InnerProps>
 }
+
+// type PropsWithoutChildren<InnerProps extends {}> = {
+//   [Key in Exclude<keyof InnerProps, 'children'>]: InnerProps[Key]
+// }
+
+// type Props<InnerProps extends {}> = PropsWithoutChildren<InnerProps> & {
+//   children: ChildrenType<PropsWithoutChildren<InnerProps>>
+// }
 
 export default class PropsAsPointer<
   InnerProps extends {}
@@ -55,3 +63,5 @@ export default class PropsAsPointer<
     return <DerivationAsReactElement derivation={this._renderD} />
   }
 }
+
+// export const PropsAsPointer2: <InnerProps extends {}>(props: Props<InnerProps>) => React.ReactNode = null as $IntentionalAny

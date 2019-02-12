@@ -17,7 +17,7 @@ export default class TheatreJSTimelineInstanceObject {
     theWeakmap.set(this, timelineInstance)
   }
 
-  get path() {
+  get name() {
     return realInstance(this).path
   }
 

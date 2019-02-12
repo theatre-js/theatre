@@ -7,10 +7,8 @@ import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import uiSelectors from '$tl/ui/store/selectors'
 import {
-  getSvgWidth,
   xToTime,
   timeToInRangeX,
-  timelineXToTime,
   deltaTimelineXToDeltaTime,
   viewportScrolledSpace,
 } from '$tl/ui/panels/AllInOnePanel/Right/utils'
@@ -20,6 +18,15 @@ import UI from '$tl/ui/UI'
 import projectSelectors from '$tl/Project/store/selectors'
 import {overshootDuration} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
 import {clamp} from 'lodash-es'
+
+const getSvgWidth = (
+  range: TRange,
+  duration: TDuration,
+  viewportWidth: number,
+) => {
+  const rangeDuration = range.to - range.from
+  return (duration / rangeDuration) * viewportWidth
+}
 
 interface IProps {
   children: React.ReactNode
@@ -77,9 +84,9 @@ export interface ITimeStuff {
   }
 }
 
-const {Provider, Consumer: TimeStuff} = createPointerContext<ITimeStuff>()
+const {Provider, Consumer: TimeStuff, Context: TimeStuffContext} = createPointerContext<ITimeStuff>()
 
-export {TimeStuff}
+export {TimeStuff, TimeStuffContext}
 
 export default class TimeStuffProvider extends UIComponent<IProps, IState> {
   timelineTemplate: TimelineTemplate

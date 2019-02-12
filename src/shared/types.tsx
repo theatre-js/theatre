@@ -87,5 +87,5 @@ export type PropsOf<Component> = Component extends (new (
   : Component extends (props: infer Props) => React.ReactNode ? Props : never
 
 export type ReactComponent<Props = $IntentionalAny> =
-  | React.ComponentClass
+  | React.ComponentClass<Props>
   | React.SFC<Props>

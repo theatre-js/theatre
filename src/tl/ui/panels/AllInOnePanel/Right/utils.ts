@@ -10,9 +10,10 @@ import {clamp} from 'lodash-es'
 export const getSvgWidth = (
   range: TRange,
   duration: TDuration,
-  timelineWidth: number,
+  viewportWidth: number,
 ) => {
-  return (duration / (range.to - range.from)) * timelineWidth
+  const rangeDuration = range.to - range.from
+  return (duration / rangeDuration) * viewportWidth
 }
 
 export const timeToX = (duration: number, width: number) => (time: number) => {
@@ -74,17 +75,16 @@ export const inRangeXToSvgX = (
 }
 
 export const viewportScrolledSpace = {
-  xToTime: (
-    range: TRange,
-    duration: TDuration,
-    timelineWidth: number,
-  ) => (timelineX: number, shouldClamp: boolean = true) => {
+  xToTime: (range: TRange, duration: TDuration, timelineWidth: number) => (
+    timelineX: number,
+    shouldClamp: boolean = true,
+  ) => {
     const svgWidth = getSvgWidth(range, duration, timelineWidth)
     const svgX = inRangeXToSvgX(timelineX, range, duration, timelineWidth)
     const theX = timelineX - getSvgXToPaddedSvgXOffset(svgWidth)(svgX)
     const time = timelineXToTime(range, timelineWidth)(theX)
     return shouldClamp ? clamp(time, 0, duration) : time
-  }
+  },
 }
 
 export const timeToInRangeX = (
