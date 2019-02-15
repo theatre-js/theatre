@@ -118,16 +118,16 @@ export default class PrimitiveProp extends UIComponent<IProps, IState> {
       item.address,
     )
 
-    if (!propState) {
-      this.project._dispatch(
-        this.project._actions.historic.prop_convertPropToStaticValue(
-          item.address,
-        ),
-      )
-      return
-    }
+    // if (!propState) {
+    //   this.project._dispatch(
+    //     this.project._actions.historic.prop_convertPropToStaticValue(
+    //       item.address,
+    //     ),
+    //   )
+    //   return
+    // }
 
-    const valueContainer = propState.valueContainer
+    const valueContainer = propState && propState.valueContainer
 
     if (!valueContainer || valueContainer.type === 'StaticValueContainer') {
       this.project._dispatch(

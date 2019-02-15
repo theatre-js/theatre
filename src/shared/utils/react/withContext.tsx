@@ -8,7 +8,7 @@ const withContext = <
 >(
   contexts: Contexts,
 ) => <ComponentProps extends {}>(
-  component: React.SFC<ComponentProps>,
+  component: ReactComponent<ComponentProps>,
 ): React.SFC<
   {[Key in Exclude<keyof ComponentProps, keyof Contexts>]: ComponentProps[Key]}
 > => {

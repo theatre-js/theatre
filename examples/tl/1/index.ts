@@ -41,17 +41,17 @@ const createBox = (project: TheatreJSProject, i: number, iteration: number) => {
 
   const propNames = [
     'y',
-    'stretch' /* 'inertia', 'lead', 'glide', 'torque', 'symbiosis', 'collision', 'slippage', 'elasticity', 'fuzz', 'friction '*/,
+    'stretch' /*, 'inertia', 'lead', 'glide', 'torque', 'symbiosis', 'collision', 'slippage', 'elasticity', 'fuzz', 'friction '*/,
   ]
 
-  if (iteration === 1) {
-    propNames.shift()
-    propNames.push('one')
-  } else if (iteration === 2) {
-    propNames.push('one', 'two')
-  } else if (iteration === 3) {
-    propNames.push('two')
-  }
+  // if (iteration === 1) {
+  //   propNames.shift()
+  //   propNames.push('one')
+  // } else if (iteration === 2) {
+  //   propNames.push('one', 'two')
+  // } else if (iteration === 3) {
+  //   propNames.push('two')
+  // }
 
   const props: Record<string, {type: 'number'}> = {}
   propNames.forEach(name => {
@@ -69,10 +69,10 @@ const createBox = (project: TheatreJSProject, i: number, iteration: number) => {
     {props},
   )
 
-  console.log({initial: object.currentValues})
+  // console.log({initial: object.currentValues})
 
   object.onValuesChange((newValues: $FixMe) => {
-    console.log(newValues)
+    // console.log(newValues)
 
     const div = object.nativeObject
     div.style.transform = `translateY(${-newValues.y}px) scaleY(${
@@ -81,15 +81,14 @@ const createBox = (project: TheatreJSProject, i: number, iteration: number) => {
   })
 }
 
-createBox(project, 0, 0)
-
-// ;[0, 1, 2].forEach(iteration => {
-//   setTimeout(() => {
-//     for (let i = 0; i < 3; i++) {
-//       createBox(project, i, iteration)
-//     }
-//   }, iteration * 1000)
-// })
+// createBox(project, 0, 0)
+;[0, 1, 2].forEach(iteration => {
+  setTimeout(() => {
+    for (let i = 0; i < 3; i++) {
+      createBox(project, i, iteration)
+    }
+  }, iteration * 1000)
+})
 
 // const project1 = Theatre.getProject('Project 1')
 // const project2 = Theatre.getProject('Project 2')

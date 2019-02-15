@@ -28,7 +28,7 @@ export class TickerProvider extends React.Component<{
   render() {
     return (
       <TickerContext.Provider value={this.props.ticker}>
-        this.props.children
+        {this.props.children}
       </TickerContext.Provider>
     )
   }

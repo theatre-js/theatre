@@ -1,7 +1,7 @@
 import resolveCss from '$shared/utils/resolveCss'
 import UIComponent from '$tl/ui/handy/UIComponent'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
-import React, { useContext, useMemo, useLayoutEffect, useRef, useState, useEffect } from 'react'
+import React from 'react'
 import * as css from './Right.css'
 import {val} from '$shared/DataVerse/atom'
 import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
@@ -19,14 +19,14 @@ import {
 import TimelineProviders from '$tl/ui/panels/AllInOnePanel/Right/timeline/TimelineProviders'
 import ItemsContainer from '$tl/ui/panels/AllInOnePanel/Right/items/ItemsContainer'
 import {TRange, TDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
-import {TimeStuff, TimeStuffContext} from '$tl/ui/panels/AllInOnePanel/TimeStuffProvider'
+import {
+  withTimeStuff,
+  ITimeStuff,
+} from '$tl/ui/panels/AllInOnePanel/TimeStuffProvider'
 import {defer} from '$shared/utils/defer'
-import autoDerive from '../../../../../shared/DataVerse/derivations/autoDerive/autoDerive'
-import { TickerContext } from '$shared/utils/react/TickerContext';
+import {Pointer} from '$shared/DataVerse/pointer'
 
 const classes = resolveCss(css)
-
-interface IExportedComponentProps {}
 
 interface IRightProps {
   range: TRange
@@ -66,7 +66,10 @@ class Right extends UIComponent<IRightProps, IRightState> {
         >
           <div ref={this.wrapper} {...classes('wrapper')}>
             <div
-              style={{width: viewportWidth, minHeight: this.props.heightMinusBottom}}
+              style={{
+                width: viewportWidth,
+                minHeight: this.props.heightMinusBottom,
+              }}
               {...classes('scrollingContainer')}
             >
               <TimelineProviders
@@ -217,27 +220,46 @@ class Right extends UIComponent<IRightProps, IRightState> {
   }
 }
 
-export default (_props: IExportedComponentProps) => (
-  <TimeStuff>
-    {timeStuffP => (
-      <PropsAsPointer>
-        {() => {
-          const range = val(timeStuffP.rangeAndDuration.range)
-          const rightProps: IRightProps = {
-            range,
-            duration: val(timeStuffP.rangeAndDuration.overshotDuration),
-            timelineWidth: val(timeStuffP.viewportSpace.width),
-            timelineInstance: val(timeStuffP.timelineInstance),
-            setRange: val(timeStuffP.setRange),
-            heightMinusBottom: val(timeStuffP.viewportSpace.height),
-          }
+// export default (_props: IExportedComponentProps) => (
+//   <TimeStuff>
+//     {timeStuffP => (
+//       <PropsAsPointer>
+//         {() => {
+//           const range = val(timeStuffP.rangeAndDuration.range)
+//           const rightProps: IRightProps = {
+//             range,
+//             duration: val(timeStuffP.rangeAndDuration.overshotDuration),
+//             timelineWidth: val(timeStuffP.viewportSpace.width),
+//             timelineInstance: val(timeStuffP.timelineInstance),
+//             setRange: val(timeStuffP.setRange),
+//             heightMinusBottom: val(timeStuffP.viewportSpace.height),
+//           }
 
-          return <Right {...rightProps} />
-        }}
-      </PropsAsPointer>
-    )}
-  </TimeStuff>
-)
+//           return <Right {...rightProps} />
+//         }}
+//       </PropsAsPointer>
+//     )}
+//   </TimeStuff>
+// )
+
+export default withTimeStuff((_props: {timeStuff: Pointer<ITimeStuff>}) => (
+  <PropsAsPointer>
+    {() => {
+      const timeStuffP = _props.timeStuff
+      const range = val(timeStuffP.rangeAndDuration.range)
+      const rightProps: IRightProps = {
+        range,
+        duration: val(timeStuffP.rangeAndDuration.overshotDuration),
+        timelineWidth: val(timeStuffP.viewportSpace.width),
+        timelineInstance: val(timeStuffP.timelineInstance),
+        setRange: val(timeStuffP.setRange),
+        heightMinusBottom: val(timeStuffP.viewportSpace.height),
+      }
+
+      return <Right {...rightProps} />
+    }}
+  </PropsAsPointer>
+))
 
 // const useAutoDerive = <T extends $IntentionalAny>(fn: () => T, deps: $IntentionalAny[]): T => {
 //   const ticker = useContext(TickerContext)
@@ -253,7 +275,6 @@ export default (_props: IExportedComponentProps) => (
 //   useEffect(() => {
 //     if (effectCountRef.current === 0) return
 //   })
-
 
 //   return state
 // }
