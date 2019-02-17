@@ -142,7 +142,11 @@ export default abstract class AbstractDerivation<V>
       console.warn(`Perf regression: Unexpected cold derivation read`)
     }
 
+    // if (cold) {
+    //   startIgnoringDependencies()
+    // } else {
     reportResolutionStart(this)
+    // }
 
     if (this._freshnessState !== FRESHNESS_STATE_FRESH) {
       const unboxed = this._recalculate()
@@ -152,7 +156,11 @@ export default abstract class AbstractDerivation<V>
         this._didNotifyDownstreamOfUpcomingUpdate = false
       }
     }
+    // if (cold) {
+    //   stopIgnoringDependencies()
+    // } else {
     reportResolutionEnd(this)
+    // }
     return this._lastValue as V
   }
 
@@ -225,6 +233,10 @@ let lastDerivationId = 0
 // }, 2000)
 // let activeDs = new Set()
 // import toCsv from 'json2csv'
+import {
+  startIgnoringDependencies,
+  stopIgnoringDependencies,
+} from './autoDerive/discoveryMechanism'
 
 // setTimeout(() => {console.log('allDs', lastDerivationId)}, 1500)
 // setTimeout(() => {

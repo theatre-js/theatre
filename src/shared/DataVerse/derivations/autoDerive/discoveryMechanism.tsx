@@ -16,6 +16,20 @@ export const collectObservedDependencies = (
   stack.pop()
 }
 
+export const startIgnoringDependencies = () => {
+  stack.push(noopCollector)
+}
+
+export const stopIgnoringDependencies = () => {
+  if (stack.peek() !== noopCollector) {
+    if ($env.NODE_ENV === 'development') {
+      console.warn("This should never happen")
+    }
+  } else {
+    stack.pop()
+  }
+}
+
 export const reportResolutionStart = (
   d: AbstractDerivation<$IntentionalAny>,
 ) => {

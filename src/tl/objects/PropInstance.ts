@@ -6,7 +6,7 @@ import {
   IBezierCurvesOfScalarValues,
 } from '$tl/Project/store/types'
 import {Pointer} from '$shared/DataVerse/pointer'
-import DerivationOfBezierCurvesOfScalarValues from '$tl/objects/bezierStuff/DerivationOfBezierCurvesOfScalarValues'
+import {derivationOfBezierCurvesOfStaticValues} from './bezierStuff/derivationOfBezierCurvesOfStaticValues'
 
 export default class PropInstance {
   _valueDerivation: AbstractDerivation<number>
@@ -24,8 +24,8 @@ export default class PropInstance {
       ._pointerToState.props[this.name].valueContainer
 
     const valueContainerTypeD = valueDerivation(valueContainerP.type)
-    this._valueDerivation = typeDefD.flatMap((typeDef) => {
-      if (!typeDef) return 0
+    this._valueDerivation = typeDefD.flatMap(typeDef => {
+      if (!typeDef) return 0
       return valueContainerTypeD.flatMap(valueContainerType => {
         if (!valueContainerType) {
           // @todo return default value
@@ -41,7 +41,7 @@ export default class PropInstance {
             }
           })
         } else if (valueContainerType === 'BezierCurvesOfScalarValues') {
-          return new DerivationOfBezierCurvesOfScalarValues(
+          return derivationOfBezierCurvesOfStaticValues(
             ((valueContainerP as $IntentionalAny) as Pointer<
               IBezierCurvesOfScalarValues
             >).points,
