@@ -49,7 +49,7 @@ export default class Bottom extends UIComponent<IProps, IState> {
         <div className={css.rightContainer}>
           <Settings />
           <a
-            href="https://theatrejs.com"
+            href="https://docs.theatrejs.com"
             target="_blank"
             {...classes('logo')}
             title="Theatre.js – The hackable animation editor"
