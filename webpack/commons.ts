@@ -233,7 +233,9 @@ export const makeConfigParts = (options: Options) => {
               options: {
                 sourceMap: isDev,
                 modules: true,
-                localIdentName: isDev ? '[name]_[local]_[hash:10]' : '[hash:10]', 
+                localIdentName: isDev
+                  ? '[name]_[local]_[hash:10]'
+                  : '[hash:10]',
                 importLoaders: 1,
                 namedExport: true,
               },
@@ -297,10 +299,12 @@ export const makeConfigParts = (options: Options) => {
   }
 
   if (isDev && options.withDevServer === true) {
-    const https = true
-    config.output.publicPath = `${https ? 'https' : 'http'}://${envConfig.devSpecific.devServerHost}:${
-      packageDevSpecificConfig.devServerPort
-    }/`
+    const sslConfig = envConfig.devSpecific.devServerSSL
+    const https: boolean = sslConfig && sslConfig.useSSL === true
+
+    config.output.publicPath = `${https ? 'https' : 'http'}://${
+      envConfig.devSpecific.devServerHost
+    }:${packageDevSpecificConfig.devServerPort}/`
 
     // @ts-ignore ignore
     config.devServer = {
@@ -309,7 +313,9 @@ export const makeConfigParts = (options: Options) => {
       historyApiFallback: true,
       // inline: true,
       // clientLogLevel: 'error',
-      public: `${https ? 'https://' : ''}${envConfig.devSpecific.devServerHost}:${packageDevSpecificConfig.devServerPort}`,
+      public: `${https ? 'https://' : ''}${
+        envConfig.devSpecific.devServerHost
+      }:${packageDevSpecificConfig.devServerPort}`,
       allowedHosts: [envConfig.devSpecific.devServerHost, '.localtunnel.me'],
       noInfo: false,
       // quiet: true,
@@ -319,11 +325,14 @@ export const makeConfigParts = (options: Options) => {
         'Access-Control-Expose-Headers': 'SourceMap,X-SourceMap',
       },
       port: packageDevSpecificConfig.devServerPort,
-      https: {
-        key: fs.readFileSync('/Users/aria/host/mine/self-cert/cert.key'),
-        cert: fs.readFileSync('/Users/aria/host/mine/self-cert/cert.pem'),
-      },
+    }
 
+    if (https) {
+      // @ts-ignore
+      config.devServer.https = {
+        key: fs.readFileSync(sslConfig.pathToKey),
+        cert: fs.readFileSync(sslConfig.pathToCert),
+      }
     }
   }
 

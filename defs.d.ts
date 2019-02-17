@@ -55,6 +55,11 @@ type DevSpecificEnvironmentVariables = {
   NODE_ENV: 'development'
   devSpecific: {
     devServerHost: string
+    devServerSSL?: {
+      useSSL?: boolean
+      pathToKey: string
+      pathToCert: string
+    }
     lf: {
       devServerPort: number
     }
