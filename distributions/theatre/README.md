@@ -8,6 +8,10 @@ Theatre can be used both programmatically *and* visually:
 
 Theatre works with all rendering stacks. You can use it to animate DOM elements, THREE.js objects, or any kind of JavaScript variable.
 
+## Docs
+
+Documentation is currently available to private beta members. You can join the beta at [theatrejs.com](https://www.theatrejs.com). You can also DM me on [twitter](https://twitter.com/AriaMinaei) to get a license.
+
 ## License
 
-Theatre is currently licensed to private beta members. You can join the beta at [theatrejs.com](https://www.theatrejs.com).
+Theatre is currently licensed to private beta members. You can join the beta as described above.

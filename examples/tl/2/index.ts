@@ -9,7 +9,7 @@ declare var Theatre: TypeOfTheatre
 const {sphere, sphereGroup} = setupScene()
 
 const project = Theatre.getProject('The ORB2', {state})
-Theatre.getProject('The ORB 3', {state})
+// Theatre.getProject('The ORB 3', {state})
 
 project.adapters.add({
   name: 'THREE.js Object Adapter',
@@ -28,7 +28,7 @@ project.adapters.add({
         positionZ: {
           type: 'number',
         },
-        squish: {
+        stretch: {
           type: 'number',
         },
         // scaleX: {
@@ -49,9 +49,10 @@ project.adapters.add({
       nativeObject.position.x = values.positionX
       nativeObject.position.y = values.positionY - 84
       nativeObject.position.z = values.positionZ
-      nativeObject.scale.x = 1 - values.squish
-      nativeObject.scale.y = 1 + values.squish
-      nativeObject.scale.z = 1 - values.squish
+      nativeObject.scale.y = values.stretch
+      nativeObject.scale.x = 1 / values.stretch
+      nativeObject.scale.z = 1 / values.stretch
+      // nativeObject.scale.z = values.stretch
       // nativeObject.ax
     })
 
@@ -59,7 +60,7 @@ project.adapters.add({
   },
 })
 
-const timeline = project.getTimeline('Intro animation')
+const timeline = project.getTimeline('Bounce')
 // project.getTimeline('Fave')
 // project.getTimeline('Fave', '1')
 // project.getTimeline('Fave', '2')
@@ -70,7 +71,7 @@ const timeline = project.getTimeline('Intro animation')
 // project.getTimeline('Intro / Loading Sequence')
 // project.getTimeline('Intro / Initial Reveal')
 // timeline.createObject('Ball', null)
-timeline.getObject('Ball', sphereGroup)
+timeline.getObject('The box', sphereGroup)
 
 // const object = timeline.getObject(
 //   // name of our object
