@@ -33,9 +33,21 @@
 
 .frameStamp {
   position: absolute;
-  padding-top: 5px;
-  color: var(--colors-set-25);
+  top: 5px;
+  color: var(--colors-set-24);
   font-size: 10px;
   text-align: center;
   transform: translateX(-50%);
+  background: var(--colors-space-bg);
+  padding: 0 20px;
+  font-variant-numeric: tabular-nums;
+}
+
+.frameStampLine {
+  position: absolute;
+  top: 5px;
+  left: 0;
+  bottom: 0;
+  width: 1px;
+  background: rgba(100, 100, 100, 0.2);
 }

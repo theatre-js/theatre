@@ -10,6 +10,7 @@ import {
 } from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import {TRange, TDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {viewportScrolledSpace} from '../Right/utils'
+import { padStart } from 'lodash-es';
 
 const classes = resolveCss(css)
 
@@ -21,13 +22,14 @@ interface IProps {
 
 interface IState {}
 
-const MIN_CELL_WIDTH = 20
+const MIN_CELL_WIDTH = 80
 const FPS = 30
 
 export default class FramesGrid extends React.PureComponent<IProps, IState> {
   canvas: HTMLCanvasElement | null
   fullSecondStampsRef: React.RefObject<HTMLDivElement> = React.createRef()
   frameStampRef: React.RefObject<HTMLDivElement> = React.createRef()
+  frameStampLineRef: React.RefObject<HTMLDivElement> = React.createRef()
   containerRef: React.RefObject<HTMLDivElement> = React.createRef()
   containerRect: {left: number; top: number; right: number; bottom: number}
   frameDuration: number = Number(
@@ -57,6 +59,7 @@ export default class FramesGrid extends React.PureComponent<IProps, IState> {
                 />
                 <div style={{width: timelineWidth}} {...classes('stamps')}>
                   <div ref={this.fullSecondStampsRef} />
+                  <div ref={this.frameStampLineRef} {...classes('frameStampLine')} />
                   <div ref={this.frameStampRef} {...classes('frameStamp')} />
                 </div>
               </div>
@@ -86,10 +89,12 @@ export default class FramesGrid extends React.PureComponent<IProps, IState> {
 
     document.addEventListener('mousemove', this.handleMouseMove)
     window.addEventListener('resize', this._updateContainerRect)
+    this._renderFrameStamp()
   }
-
+  
   componentDidUpdate() {
     this._drawGrid()
+    this._renderFrameStamp()
   }
 
   componentWillUnmount() {
@@ -173,7 +178,7 @@ export default class FramesGrid extends React.PureComponent<IProps, IState> {
 
       frame = (frame + this.framesPerCell) % FPS
     }
-    if (this.mouseX != null) this._renderFrameStamp()
+
     this.fullSecondStampsRef.current!.innerHTML = innerHTML
   }
 
@@ -186,17 +191,21 @@ export default class FramesGrid extends React.PureComponent<IProps, IState> {
     )(this.mouseX!)
     // TODO: add comments!
     const mouseTimeMiliseconds = mouseTime % 1000
+
     const frame =
       Math.round(
-        mouseTimeMiliseconds / this.frameDuration / this.framesPerCell,
-      ) * this.framesPerCell
+        mouseTimeMiliseconds / this.frameDuration
+      )
 
     const stampTime =
       mouseTime - mouseTimeMiliseconds + frame * this.frameDuration
     const stampX = timeToInRangeX(range, duration, timelineWidth)(stampTime)
 
+    const s = Math.floor(mouseTime / 1000)
+
     this.frameStampRef.current!.style.transform = `translate3d(calc(${stampX}px - 50%), 0, 0)`
-    this.frameStampRef.current!.innerHTML = frame % FPS !== 0 ? `${frame}f` : ''
+    this.frameStampRef.current!.innerHTML = `${s}:${padStart(String(frame), 2, '0')}`
+    this.frameStampLineRef.current!.style.transform = `translate3d(calc(${stampX}px - 50%), 0, 0)`
   }
 
   _clearFrameStamp() {
