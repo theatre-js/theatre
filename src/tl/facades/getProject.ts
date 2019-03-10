@@ -18,7 +18,7 @@ export default function getProject(
   }
   
   if (!$env.tl.isCore) {
-    validateName(id, 'projectId in Theatre.getProject(projectId)', true)
+    validateName(id, 'projectName in Theatre.getProject(projectName)', true)
     validateProjectIdOrThrow(id)
   }
 
@@ -79,7 +79,7 @@ const shallowValidateOnDiskState = (projectId: string, s: OnDiskState) => {
 const validateProjectIdOrThrow = (id: string) => {
   if (typeof id !== 'string') {
     throw new InvalidArgumentError(
-      `Argument 'id' in \`Theatre.getProject(id, ...)\` must be a string. Instead, it was ${userReadableTypeOfValue(
+      `Argument 'name' in \`Theatre.getProject(name, ...)\` must be a string. Instead, it was ${userReadableTypeOfValue(
         id,
       )}.`,
     )
@@ -88,13 +88,13 @@ const validateProjectIdOrThrow = (id: string) => {
   const idTrimmed = id.trim()
   if (idTrimmed.length !== id.length) {
     throw new InvalidArgumentError(
-      `Argument 'id' in \`Theatre.getProject("${id}", ...)\` should not have surrounding whitespace.`,
+      `Argument 'name' in \`Theatre.getProject("${name}", ...)\` should not have surrounding whitespace.`,
     )
   }
 
   if (idTrimmed.length < 3) {
     throw new InvalidArgumentError(
-      `Argument 'id' in \`Theatre.getProject("${id}", ...)\` should be at least 3 characters long.`,
+      `Argument 'name' in \`Theatre.getProject("${name}", ...)\` should be at least 3 characters long.`,
     )
   }
 }
