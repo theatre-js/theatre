@@ -1,14 +1,18 @@
 import React from 'react'
 import { isMac } from '$shared/utils/isMac';
+import withContext from '$shared/utils/react/withContext'
 
-export type ActiveMode = undefined | null | string
+/**
+ * @todo @easy Make this type more specific
+ */
+export type IActiveMode = undefined | null | string
 
 interface IProps {
   modes: IMode[]
 }
 
 interface IState {
-  activeMode: ActiveMode
+  activeMode: IActiveMode
 }
 
 type IMode = 'option' | 'super' | 'shift' | 'd' | 'c' | 'h'
@@ -30,7 +34,9 @@ export const MODES = Object.keys(KEYS_MAP).reduce((reducer, key) => {
   }
 }, {}) as Record<IMode, string>
 
-export const ActiveModeContext = React.createContext<ActiveMode>(null)
+export const ActiveModeContext = React.createContext<IActiveMode>(null)
+
+export const withActiveMode = withContext({activeMode: ActiveModeContext})
 
 class ActiveModeProvider extends React.PureComponent<IProps, IState> {
   _isMouseDown: boolean

@@ -5,7 +5,7 @@ import noop from '$shared/utils/noop'
 import resolveCss from '$shared/utils/resolveCss'
 import {TPointHandles} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {
-  ActiveMode,
+  IActiveMode,
   ActiveModeContext,
   MODES,
 } from '$shared/components/ActiveModeProvider/ActiveModeProvider'
@@ -27,7 +27,7 @@ interface IState {}
 
 class BezierConnector extends React.PureComponent<IProps, IState> {
   connectorClickArea: SVGPathElement | null
-  activeMode: ActiveMode
+  activeMode: IActiveMode
 
   static defaultProps = {
     removeConnector: noop,
@@ -106,7 +106,7 @@ class BezierConnector extends React.PureComponent<IProps, IState> {
     )
   }
 
-  private _setActiveMode = (activeMode: ActiveMode) => {
+  private _setActiveMode = (activeMode: IActiveMode) => {
     this.activeMode = activeMode
     if (this.connectorClickArea == null) return null
     if (activeMode === MODES.d) {

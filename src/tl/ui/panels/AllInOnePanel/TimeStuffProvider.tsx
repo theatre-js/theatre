@@ -19,6 +19,7 @@ import projectSelectors from '$tl/Project/store/selectors'
 import {overshootDuration} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
 import {clamp} from 'lodash-es'
 import withContext from '$shared/utils/react/withContext'
+import {Pointer} from '$shared/DataVerse/pointer'
 
 const getSvgWidth = (
   range: TRange,
@@ -91,9 +92,9 @@ const {
   Context: TimeStuffContext,
 } = createPointerContext<ITimeStuff>()
 
-export {TimeStuff, TimeStuffContext}
+export type ITimeStuffP = Pointer<ITimeStuff>
 
-export const withTimeStuff = withContext({timeStuff: TimeStuffContext})
+export {TimeStuff, TimeStuffContext}
 
 export default class TimeStuffProvider extends UIComponent<IProps, IState> {
   timelineTemplate: TimelineTemplate

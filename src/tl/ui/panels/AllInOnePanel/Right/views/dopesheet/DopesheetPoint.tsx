@@ -9,7 +9,7 @@ import {TPropGetter} from '$tl/ui/panels/AllInOnePanel/Right/items/ItemPropProvi
 import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
 import {
   ActiveModeContext,
-  ActiveMode,
+  IActiveMode,
   MODES,
 } from '$shared/components/ActiveModeProvider/ActiveModeProvider'
 import {
@@ -70,7 +70,7 @@ interface IState {
 class DopesheetPoint extends React.PureComponent<IProps, IState> {
   pointClickArea: React.RefObject<SVGRectElement> = React.createRef()
   connectorClickArea: React.RefObject<SVGRectElement> = React.createRef()
-  activeMode: ActiveMode
+  activeMode: IActiveMode
   isInSelection: boolean = false
   svgWidth: number = 0
   propsBeforeDrag: IProps
@@ -441,7 +441,7 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
     })
   }
 
-  _setActiveMode = (activeMode: ActiveMode) => {
+  _setActiveMode = (activeMode: IActiveMode) => {
     this.activeMode = activeMode
     if (activeMode === MODES.d) {
       this.pointClickArea.current != null &&

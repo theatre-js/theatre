@@ -20,11 +20,11 @@ import TimelineProviders from '$tl/ui/panels/AllInOnePanel/Right/timeline/Timeli
 import ItemsContainer from '$tl/ui/panels/AllInOnePanel/Right/items/ItemsContainer'
 import {TRange, TDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {
-  withTimeStuff,
-  ITimeStuff,
+  TimeStuffContext,
+  ITimeStuffP,
 } from '$tl/ui/panels/AllInOnePanel/TimeStuffProvider'
 import {defer} from '$shared/utils/defer'
-import {Pointer} from '$shared/DataVerse/pointer'
+import withContext from '$shared/utils/react/withContext'
 
 const classes = resolveCss(css)
 
@@ -242,10 +242,12 @@ class Right extends UIComponent<IRightProps, IRightState> {
 //   </TimeStuff>
 // )
 
-export default withTimeStuff((_props: {timeStuff: Pointer<ITimeStuff>}) => (
+export default withContext({
+  timeStuffP: TimeStuffContext,
+})((props: {timeStuffP: ITimeStuffP}) => (
   <PropsAsPointer>
     {() => {
-      const timeStuffP = _props.timeStuff
+      const timeStuffP = props.timeStuffP
       const range = val(timeStuffP.rangeAndDuration.range)
       const rightProps: IRightProps = {
         range,

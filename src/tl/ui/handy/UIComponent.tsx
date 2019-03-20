@@ -5,7 +5,7 @@ import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import {Pointer} from '$shared/DataVerse/pointer'
 import Project from '$tl/Project/Project'
 
-export default class UIComponent<Props, State> extends React.PureComponent<
+export default class UIComponent<Props, State> extends React.Component<
   Props,
   State
 > {

@@ -14,7 +14,7 @@ import {
 import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
 import {
   ActiveModeContext,
-  ActiveMode,
+  IActiveMode,
   MODES,
 } from '$shared/components/ActiveModeProvider/ActiveModeProvider'
 import {
@@ -73,7 +73,7 @@ export type TSVGSize = {width: number; height: number}
 
 class GraphEditorPoint extends React.PureComponent<IProps, IState> {
   pointClickArea: React.RefObject<SVGRectElement> = React.createRef()
-  activeMode: ActiveMode
+  activeMode: IActiveMode
   svgSize: TSVGSize
   leftHandleNormalizers: {xNormalizer: number; yNormalizer: number}
   rightHandleNormalizers: {xNormalizer: number; yNormalizer: number}
@@ -533,7 +533,7 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
     }))
   }
 
-  _setActiveMode = (activeMode: ActiveMode) => {
+  _setActiveMode = (activeMode: IActiveMode) => {
     this.activeMode = activeMode
     if (this.pointClickArea.current == null) return null
     if (activeMode === MODES.d) {

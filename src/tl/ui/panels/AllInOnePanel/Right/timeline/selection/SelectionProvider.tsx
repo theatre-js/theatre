@@ -8,7 +8,7 @@ import UIComponent from '$tl/ui/handy/UIComponent'
 import {
   ActiveModeContext,
   MODES,
-  ActiveMode,
+  IActiveMode,
 } from '$shared/components/ActiveModeProvider/ActiveModeProvider'
 import {
   getSvgWidth,
@@ -107,7 +107,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
   }
 
   state = SelectionProvider.defaultStateValues
-  activeMode: ActiveMode
+  activeMode: IActiveMode
 
   render() {
     const {status} = this.state
