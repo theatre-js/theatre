@@ -1,6 +1,0 @@
-@value minBoxHeight from '$studio/AnimationTimelinePanel/boxes/BoxWrapper.css';
-
-.container {
-  height: minBoxHeight;
-  width: 100%;
-}

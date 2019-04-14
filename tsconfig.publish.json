@@ -22,9 +22,6 @@
     "declaration": true,
     "emitDeclarationOnly": true,
     "paths": {
-      "$lb/*": ["src/lb/*"],
-      "$lf/*": ["src/lf/*"],
-      "$studio/*": ["src/studio/*"],
       "$shared/*": ["src/shared/*"],
       "$tl/*": ["src/tl/*"],
       "$root/*": ["/*"],

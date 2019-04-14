@@ -1,7 +1,0 @@
-<svg fill="transparent" stroke="#B76C6C" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
-  <g>
-    <ellipse ry="3.2" rx="3.2" id="svg_1" cy="5" cx="5" stroke-width="2"/>
-    <line y2="12" x2="8" y1="12" x1="16" stroke-width="2"/>
-    <line y2="8" x2="12" y1="16" x1="12" stroke-width="2"/>
-  </g>
-</svg>

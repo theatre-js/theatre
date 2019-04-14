@@ -1,8 +1,9 @@
 import flattenDeep from './flattenDeep'
 import Ticker from '$shared/DataVerse/Ticker'
-import boxAtom from '$shared/DataVerse/deprecated/atoms/boxAtom'
 import withDeps from '$shared/DataVerse/derivations/withDeps'
 import constant from '$shared/DataVerse/derivations/constant'
+import atom from '$shared/DataVerse/atom';
+import {valueDerivation} from '../atom'
 
 describe('FlattenDeepDerivation', () => {
   let ticker: Ticker
@@ -10,13 +11,13 @@ describe('FlattenDeepDerivation', () => {
     ticker = new Ticker()
   })
   it('simple case', () => {
-    const a = boxAtom(1)
-    const aD = a.derivation()
-    const b = boxAtom(3)
-    const bD = b.derivation()
+    const a = atom(1)
+    const aD = valueDerivation(a.pointer)
+    const b = atom(3)
+    const bD = valueDerivation(b.pointer)
     const f = aD.flatMap(aValue => bD.map(bValue => aValue + bValue))
     expect(f.getValue()).toEqual(4)
-    a.set(2)
+    a.setState(2)
     expect(f.getValue()).toEqual(5)
 
     const changes: $IntentionalAny[] = []
@@ -27,27 +28,27 @@ describe('FlattenDeepDerivation', () => {
 
     ticker.tick()
     expect(changes).toHaveLength(0)
-    a.set(3)
+    a.setState(3)
     expect(changes).toHaveLength(0)
     ticker.tick()
     expect(changes).toMatchObject([6])
-    b.set(4)
+    b.setState(4)
     ticker.tick()
     expect(changes).toMatchObject([6, 7])
   })
 
   it('events should work', () => {
-    const a = boxAtom(1)
-    const b = boxAtom(3)
-    const aD = a.derivation()
-    const bD = b.derivation()
+    const a = atom(1)
+    const b = atom(3)
+    const aD = valueDerivation(a.pointer)
+    const bD = valueDerivation(b.pointer)
     const final = aD.map(n => bD.map(m => m + n)).flattenDeep(7)
 
     expect(final.getValue()).toEqual(4)
-    a.set(2)
+    a.setState(2)
     expect(final.getValue()).toEqual(5)
 
-    b.set(4)
+    b.setState(4)
     expect(final.getValue()).toEqual(6)
 
     const adEvents: $IntentionalAny[] = []
@@ -57,7 +58,7 @@ describe('FlattenDeepDerivation', () => {
     })
 
     expect(adEvents).toHaveLength(0)
-    a.set(3)
+    a.setState(3)
     expect(adEvents).toHaveLength(0)
 
     ticker.tick()
@@ -67,14 +68,14 @@ describe('FlattenDeepDerivation', () => {
     final.changes(ticker).tap(v => {
       finalEvents.push(v)
     })
-    a.set(4)
+    a.setState(4)
 
     expect(finalEvents).toHaveLength(0)
     ticker.tick()
     expect(finalEvents).toMatchObject([8])
     expect(adEvents).toMatchObject([3, 4])
 
-    b.set(5)
+    b.setState(5)
     expect(finalEvents).toHaveLength(1)
     ticker.tick()
     expect(adEvents).toHaveLength(2)
@@ -83,10 +84,10 @@ describe('FlattenDeepDerivation', () => {
   })
 
   it('more', () => {
-    const a = boxAtom('a')
-    const aD = a.derivation()
-    const b = boxAtom('b')
-    const bD = b.derivation()
+    const a = atom('a')
+    const aD = valueDerivation(a.pointer)
+    const b = atom('b')
+    const bD = valueDerivation(b.pointer)
     const cD = aD
       .map(aValue => bD.map(bValue => withDeps({}, () => aValue + bValue)))
       .flattenDeep(7)
@@ -97,16 +98,16 @@ describe('FlattenDeepDerivation', () => {
       changes.push(c)
     })
 
-    b.set('bb')
+    b.setState('bb')
     ticker.tick()
     expect(changes).toMatchObject(['abb'])
   })
 
   it('depth', () => {
-    const a = boxAtom(1)
-    const b = boxAtom(3)
-    const aD = a.derivation()
-    const bD = b.derivation()
+    const a = atom(1)
+    const b = atom(3)
+    const aD = valueDerivation(a.pointer)
+    const bD = valueDerivation(b.pointer)
     expect(
       aD
         .map(() => bD)
@@ -121,8 +122,8 @@ describe('FlattenDeepDerivation', () => {
     ).toEqual(3)
   })
   it('blah', () => {
-    const a = boxAtom('a')
-    const aD = a.derivation()
+    const a = atom('a')
+    const aD = valueDerivation(a.pointer)
 
     const b = constant(constant(aD))
     b
@@ -139,7 +140,7 @@ describe('FlattenDeepDerivation', () => {
     const f = b.flattenDeep(3)
 
     expect(f.getValue()).toEqual('a')
-    a.set('a2')
+    a.setState('a2')
     expect(f.getValue()).toEqual('a2')
 
     const changes: $IntentionalAny[] = []
@@ -147,8 +148,8 @@ describe('FlattenDeepDerivation', () => {
       changes.push(c)
     })
 
-    a.set('a32')
-    a.set('a3')
+    a.setState('a32')
+    a.setState('a3')
     ticker.tick()
     expect(changes).toMatchObject(['a3'])
   })
@@ -325,6 +326,6 @@ describe('FlattenDeepDerivation', () => {
 //   box
 //     .unbox()
 //     .unbox()
-//     .set(10)
-//   // box.unbox().unbox().set('hi')
+//     .setState(10)
+//   // box.unbox().unbox().setState('hi')
 // })

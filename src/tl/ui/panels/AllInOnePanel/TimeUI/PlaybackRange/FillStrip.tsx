@@ -20,6 +20,7 @@ const stripUnscaledWidth = 1000
 const classes = resolveCss(css)
 
 const initialContextMenuCoords = {x: 0, y: 0}
+
 const FillStrip = () => {
   const timeStuffP = useContext(TimeStuffContext)
   const ui = useContext(UIContext)

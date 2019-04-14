@@ -1,7 +1,7 @@
 import React, {memo} from 'react'
 import Base from './Base'
 import Handle from './Handle'
-import FillStrip from '$tl/ui/panels/AllInOnePanel/TimeUI/PlaybackRange/FillStrip'
+import FillStrip from './FillStrip'
 
 const PlaybackRange = memo(() => {
   return (

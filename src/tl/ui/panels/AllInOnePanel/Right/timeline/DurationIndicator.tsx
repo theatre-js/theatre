@@ -4,16 +4,16 @@ import React from 'react'
 import * as css from './DurationIndicator.css'
 import {val, coldVal} from '$shared/DataVerse/atom'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
-import {timeToX} from '$studio/AnimationTimelinePanel/utils'
 import {
   TimeStuff,
   IRangeAndDurationLock,
 } from '$tl/ui/panels/AllInOnePanel/TimeStuffProvider'
-import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
 import {TRange} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {ITempActionGroup} from '$shared/utils/redux/withHistory/actions'
 import CursorLock from '$shared/components/CursorLock'
 import {roundestNumberBetween} from '$shared/utils/numberRoundingUtils'
+import {timeToX} from '$tl/ui/panels/AllInOnePanel/Right/utils'
+import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
 
 interface IProps {
   css?: Partial<typeof css>
@@ -59,7 +59,7 @@ export default class DurationIndicator extends UIComponent<IProps, IState> {
                 timelineWidth,
               )(realDuration)
 
-              const dimmerWidth = timelineWidth - dimmerX -1
+              const dimmerWidth = timelineWidth - dimmerX - 1
 
               return (
                 <div {...classes('container', dragging && 'dragging')}>

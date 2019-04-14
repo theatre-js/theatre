@@ -13,10 +13,7 @@ export const context = path.resolve(__dirname, '..')
 const aliasesFromRoot = {
   $root: './',
   $src: './src/',
-  $lb: './src/lb/',
-  $lf: './src/lf/',
   $tl: './src/tl/',
-  $studio: './src/studio/',
   $shared: './src/shared/',
 }
 
@@ -25,7 +22,7 @@ export const aliases: {[alias: string]: string} = mapValues(
   fromRoot => path.join(context, fromRoot),
 )
 
-type PackageName = 'studio' | 'playground' | 'examples' | 'lb' | 'lf' | 'tl'
+type PackageName = 'playground' | 'examples' | 'tl'
 
 export type Envs = 'development' | 'production'
 

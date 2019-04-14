@@ -2,7 +2,7 @@ import React from 'react'
 import Ticker from '$shared/DataVerse/Ticker'
 import PropTypes from 'prop-types'
 
-export const tickerContextName = '@@studio/ticker'
+export const tickerContextName = '@@theatrejs/ticker'
 export const tickerContextTypes = {
   [tickerContextName]: PropTypes.any,
 }

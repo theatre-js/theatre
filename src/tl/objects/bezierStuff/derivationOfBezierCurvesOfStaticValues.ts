@@ -4,7 +4,7 @@ import {
   IBezierCurvesOfScalarValues,
   ITimelineVarPoint,
 } from '$tl/Project/store/types'
-import {val, valueDerivation} from '$shared/DataVerse/atom'
+import {valueDerivation} from '$shared/DataVerse/atom'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 import constant from '$shared/DataVerse/derivations/constant'
 import * as interpolators from './interpolators/interpolators'

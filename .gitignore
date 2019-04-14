@@ -2,8 +2,6 @@
 /xeno
 /bundles
 /.vscode
-/examples/studio.json
-/examples/studio-history.json
 *.log
 development.env.json
 production.env.json

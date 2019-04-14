@@ -7,42 +7,6 @@
     "development": {
       "presets": [["env", {"targets": {"node": "current"}}], "react", "stage-1"]
     },
-    "lb:development": {
-      "presets": [
-        ["env", {"targets": {"node": "current", "modules": false}}],
-        "react",
-        "stage-1"
-      ]
-    },
-    "lb:production": {
-      "presets": [
-        ["env", {"targets": {"node": "current", "modules": false}}],
-        "react",
-        "stage-1"
-      ]
-    },
-    "lf:development": {
-      "presets": [
-        ["env", {"targets": {"chrome": "56", "modules": false}}],
-        "react",
-        "stage-1"
-      ]
-    },
-    "lf:production": {
-      "presets": [
-        ["env", {"targets": {"chrome": "56", "modules": false}}],
-        "react",
-        "stage-1"
-      ]
-    },
-    "studio:development": {
-      "presets": [
-        ["env", {"targets": {"chrome": "56", "modules": false}, "include": ["transform-es2015-classes"]}],
-        "react",
-        "stage-1"
-      ],
-      "plugins": ["react-hot-loader/babel"]
-    },
     "playground:development": {
       "presets": [
         ["env", {"targets": {"chrome": "56", "modules": false}}],

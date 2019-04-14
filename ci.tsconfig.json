@@ -4,13 +4,10 @@
   "include": ["./src"],
   "exclude": [
     "**/*.typeTest.ts*",
-    "./src/studio",
     "./vendor/**",
     "./webpack/**",
     "./bundles/**",
     "./examples/**",
-    "./src/lb",
-    "./src/lf",
     "node_modules/@types/**/*.ts",
     "./node_modules/**",
     "./src/shared/DataVerse/deprecated/**/*.ts",

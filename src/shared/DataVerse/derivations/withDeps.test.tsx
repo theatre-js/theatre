@@ -1,8 +1,8 @@
 import withDeps from './withDeps'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
-import boxAtom from '$shared/DataVerse/deprecated/atoms/boxAtom'
 import constant from '$shared/DataVerse/derivations/constant'
 import Ticker from '$shared/DataVerse/Ticker'
+import atom, { valueDerivation } from '$shared/DataVerse/atom';
 
 describe('withDeps', () => {
   it('should work', () => {
@@ -29,14 +29,14 @@ describe('withDeps', () => {
   })
 
   it('events should work', done => {
-    const a = boxAtom(1)
-    const b = boxAtom(3)
-    const aD = a.derivation()
+    const a = atom(1)
+    const b = atom(3)
+    const aD = valueDerivation(a.pointer)
     aD.getValue() as number
     // @ts-ignore expected
     aD.getValue() as string
 
-    const bD = b.derivation()
+    const bD = valueDerivation(b.pointer)
     bD.map(m => m + 1).getValue() as number
     // @ts-ignore expected
     bD.map(m => m + 1).getValue() as string
@@ -52,10 +52,10 @@ describe('withDeps', () => {
     )
 
     expect(final.getValue()).toEqual(4)
-    a.set(2)
+    a.setState(2)
     expect(final.getValue()).toEqual(5)
 
-    b.set(4)
+    b.setState(4)
     expect(final.getValue()).toEqual(6)
 
     // expect(() => aD.changes()).toThrow()
@@ -68,7 +68,7 @@ describe('withDeps', () => {
     })
 
     expect(adEvents).toHaveLength(0)
-    a.set(3)
+    a.setState(3)
     expect(adEvents).toHaveLength(0)
 
     ticker.tick()
@@ -78,14 +78,14 @@ describe('withDeps', () => {
     final.changes(ticker).tap(v => {
       finalEvents.push(v)
     })
-    a.set(4)
+    a.setState(4)
 
     expect(finalEvents).toHaveLength(0)
     ticker.tick()
     expect(finalEvents).toMatchObject([8])
     expect(adEvents).toMatchObject([3, 4])
 
-    b.set(5)
+    b.setState(5)
     expect(finalEvents).toHaveLength(1)
     ticker.tick()
     expect(adEvents).toHaveLength(2)
@@ -97,10 +97,10 @@ describe('withDeps', () => {
 
   it('more', () => {
     const ticker = new Ticker()
-    const a = boxAtom('a')
-    const aD = a.derivation()
-    const b = boxAtom('b')
-    const bD = b.derivation()
+    const a = atom('a')
+    const aD = valueDerivation(a.pointer)
+    const b = atom('b')
+    const bD = valueDerivation(b.pointer)
     const cD = aD.flatMap(a => bD.map(b => a + b))
 
     expect(cD.getValue()).toEqual('ab')
@@ -109,7 +109,7 @@ describe('withDeps', () => {
       changes.push(c)
     })
 
-    b.set('bb')
+    b.setState('bb')
     ticker.tick()
     expect(changes).toMatchObject(['abb'])
   })

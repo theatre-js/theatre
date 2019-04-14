@@ -12,7 +12,6 @@ module.exports = (env: Envs) => {
     packageName: 'examples',
     withDevServer: true,
     entries: {
-      'studio/1': ['./examples/studio/1/index.js'],
       'tl/1': ['./examples/tl/1/index.ts'],
       'tl/2': ['./examples/tl/2/index.ts'],
     },
@@ -27,13 +26,6 @@ module.exports = (env: Envs) => {
         template: './examples/index.html',
         filename: 'index.html',
         chunks: [],
-      }),
-      new HtmlWebpackPlugin({
-        inject: false,
-        template: './examples/studio/1/index.html',
-        filename: 'studio/1/index.html',
-        chunks: ['studio/1'],
-        templateParameters: parts.htmlPluginTemplateParameters,
       }),
       new HtmlWebpackPlugin({
         inject: false,

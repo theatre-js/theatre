@@ -1,8 +1,7 @@
 import autoDerive, {AutoDerivation} from './autoDerive'
 import Ticker from '$shared/DataVerse/Ticker'
 import constant from '$shared/DataVerse/derivations/constant'
-import dictAtom from '$shared/DataVerse/deprecated/atoms/dictAtom'
-import boxAtom from '$shared/DataVerse/deprecated/atoms/boxAtom'
+import atom, {val} from '$shared/DataVerse/atom'
 
 describe('autoDerive', () => {
   let ticker: Ticker
@@ -11,12 +10,9 @@ describe('autoDerive', () => {
   })
 
   it('should work', () => {
-    const o = dictAtom({
-      foo: boxAtom('foo'),
-    })
-    const fooPointer = o.pointer().prop('foo')
+    const o = atom({foo: 'foo'})
     const d = new AutoDerivation(() => {
-      return fooPointer.getValue() + 'boo'
+      return val(o.pointer.foo) + 'boo'
     })
     expect(d.getValue()).toEqual('fooboo')
 
@@ -25,7 +21,7 @@ describe('autoDerive', () => {
       changes.push(c)
     })
 
-    o.prop('foo').set('foo2')
+    o.reduceState(['foo'], () => 'foo2')
     ticker.tick()
     expect(changes).toMatchObject(['foo2boo'])
   })

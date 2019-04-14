@@ -1,7 +1,0 @@
-@value typographyFont from '../../styles.css';
-
-.container {
-  font: typographyFont;
-  position: fixed 0;
-  z-index: 10000;
-}

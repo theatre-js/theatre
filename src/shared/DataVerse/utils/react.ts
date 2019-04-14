@@ -49,7 +49,7 @@ export function useObservedDerivation<T>(fn: () => T): T {
   return stuffRef.current!.derivation.getValue()
 }
 
-export function autoDeriveElement(fn: () => React.ReactNode): React.ReactNode {
+export function autoDeriveElement(fn: () => React.ReactNode): JSX.Element {
   const stuffRef = useRef<null | {
     derivation: AbstractDerivation<React.ReactNode>
     fn: () => React.ReactNode

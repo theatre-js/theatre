@@ -1,6 +1,5 @@
 import * as t from '$shared/ioTypes'
 import {difference} from '$shared/utils'
-import DraggableArea from '$studio/common/components/DraggableArea/DraggableArea'
 export type GenericAction = {type: string; payload: mixed}
 
 export type ReduxReducer<State extends {}> = (

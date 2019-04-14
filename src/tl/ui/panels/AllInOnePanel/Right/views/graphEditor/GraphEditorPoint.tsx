@@ -36,8 +36,8 @@ import {SelectedAreaContext} from '$tl/ui/panels/AllInOnePanel/Right/timeline/se
 import {shouldToggleIsInSelection} from '$tl/ui/panels/AllInOnePanel/Right/views/utils'
 import {clamp} from 'lodash-es'
 import BezierConnector from '$tl/ui/panels/AllInOnePanel/Right/views/graphEditor/BezierConnector'
-import PointCircle from '$studio/AnimationTimelinePanel/views/point/PointCircle'
 import {cmdIsDown} from '$shared/utils/keyboardUtils'
+import PointCircle from '$tl/ui/panels/AllInOnePanel/Right/views/point/PointCircle'
 
 interface IProps {
   propGetter: TPropGetter
@@ -412,7 +412,6 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
       yNormalizer: (prevPoint!.value - point.value) * height,
     }
     this._cachePropsBeforeDrag()
-
   }
 
   handleLeftHandleDrag = (dx: number, dy: number) => {
