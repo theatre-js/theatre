@@ -36,8 +36,6 @@ export const MODES = Object.keys(KEYS_MAP).reduce((reducer, key) => {
 
 export const ActiveModeContext = React.createContext<IActiveMode>(null)
 
-export const withActiveMode = withContext({activeMode: ActiveModeContext})
-
 class ActiveModeProvider extends React.PureComponent<IProps, IState> {
   _isMouseDown: boolean
   _mapOfKeycodeToMode: Map<number, IMode>

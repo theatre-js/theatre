@@ -11,7 +11,7 @@ import {
   IActiveMode,
 } from '$shared/components/ActiveModeProvider/ActiveModeProvider'
 import {
-  getSvgWidth,
+  getScrollSpaceWidth_deprecated,
   getSvgXToPaddedSvgXOffset,
 } from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
@@ -315,7 +315,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
       () => {
         this.props.disableZoom()
         this.getOffset = getSvgXToPaddedSvgXOffset(
-          getSvgWidth(
+          getScrollSpaceWidth_deprecated(
             this.props.range,
             this.props.duration,
             this.props.timelineWidth,
@@ -499,7 +499,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
     const {duration, range, timelineWidth} = this.props
     const {move} = this.state
 
-    const svgWidth = getSvgWidth(range, duration, timelineWidth)
+    const svgWidth = getScrollSpaceWidth_deprecated(range, duration, timelineWidth)
 
     const timeChange = (move.x / svgWidth) * duration
 

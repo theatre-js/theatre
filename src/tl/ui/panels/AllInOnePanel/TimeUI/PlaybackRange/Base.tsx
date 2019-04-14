@@ -1,108 +1,85 @@
 import resolveCss from '$shared/utils/resolveCss'
-import UIComponent from '$tl/ui/handy/UIComponent'
-import React from 'react'
+import React, {useState, useContext, useRef, memo} from 'react'
 import * as css from './Base.css'
 import {coldVal} from '$shared/DataVerse/atom'
 import {
   ActiveModeContext,
   MODES,
-  IActiveMode,
 } from '$shared/components/ActiveModeProvider/ActiveModeProvider'
 import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
 import CursorLock from '$shared/components/CursorLock'
-import {
-  ITimeStuff,
-  ITimeStuffP,
-  TimeStuffContext,
-} from '$tl/ui/panels/AllInOnePanel/TimeStuffProvider'
-import {ITempActionGroup} from '$shared/utils/redux/withHistory/actions'
-import withContext from '$shared/utils/react/withContext'
+import {TimeStuffContext} from '$tl/ui/panels/AllInOnePanel/TimeStuffProvider'
+import {UIContext} from '$tl/ui/UI'
 
 const classes = resolveCss(css)
 
-interface IProps {
-  timeStuffP: ITimeStuffP
-  activeMode: IActiveMode
-}
+const Base = memo(() => {
+  const [isDragging, setIsDragging] = useState(false)
+  const activeMode = useContext(ActiveModeContext)
+  const shiftIsDown = activeMode === MODES.shift
+  const dragStartTime = useRef<number | undefined>(undefined)
+  const tempActionGroup = useRef<$FixMe>(undefined)
+  const timeStuffP = useContext(TimeStuffContext)
+  const ui = useContext(UIContext)
 
-interface IState {
-  dragging: boolean
-}
+  const onShiftDragStart = (e: React.MouseEvent) => {
+    setIsDragging(true)
+    const {layerX} = e.nativeEvent
+    dragStartTime.current = coldVal(
+      timeStuffP.viewportScrolledSpace,
+    ).inRangeXToTime(layerX)
+    tempActionGroup.current = ui.actions.historic.temp()
+  }
 
-export default withContext({
-  timeStuffP: TimeStuffContext,
-  activeMode: ActiveModeContext,
-})(
-  class Base extends UIComponent<IProps, IState> {
-    dragStartTime: number
-    tempActionGroup: undefined | ITempActionGroup
-    state = {dragging: false}
-    timeStuff: ITimeStuff
+  const onShiftDrag = (dx: number) => {
+    const timeStuff = coldVal(timeStuffP)
+    const timeDiff = timeStuff.viewportScrolledSpace.deltaXToDeltaTime(dx)
 
-    componentWillReceiveProps(newProps: IProps) {
-      this.timeStuff = coldVal(newProps.timeStuffP)
-    }
+    let [from, to] = (timeDiff >= 0
+      ? [dragStartTime.current!, dragStartTime.current! + timeDiff]
+      : [dragStartTime.current! + timeDiff, dragStartTime.current!]
+    ).map(timeStuff.timeSpace.clamp)
 
-    render() {
-      const shiftIsDown = this.props.activeMode === MODES.shift
-      const {dragging} = this.state
-      return (
-        <>
-          <CursorLock cursor="ew-resize" enabled={dragging} />
-          <DraggableArea
-            enabled={shiftIsDown}
-            onDragStart={this.onShiftDragStart}
-            onDrag={this.onShiftDrag}
-            onDragEnd={this.onShiftDragEnd}
-          >
-            <div
-              {...classes(
-                'container',
-                shiftIsDown && 'shiftIsDown',
-                dragging && 'dragging',
-              )}
-            />
-          </DraggableArea>
-        </>
-      )
-    }
+    ui._dispatch(
+      tempActionGroup.current!.push(
+        ui.actions.historic.setTemporaryPlaybackRangeLimitOfTimeline({
+          limit: {from, to},
+          ...timeStuff.timelineTemplate.address,
+        }),
+      ),
+    )
+  }
 
-    onShiftDragStart = (e: React.MouseEvent) => {
-      this.setState({dragging: true})
-      const {layerX} = e.nativeEvent
-      this.dragStartTime = this.timeStuff.viewportScrolledSpace.inRangeXToTime(
-        layerX,
-      )
-      this.tempActionGroup = this.ui.actions.historic.temp()
-    }
+  const onShiftDragEnd = (happened: boolean) => {
+    setIsDragging(false)
 
-    onShiftDrag = (dx: number) => {
-      const timeDiff = this.timeStuff.viewportScrolledSpace.deltaXToDeltaTime(
-        dx,
-      )
+    ui._dispatch(
+      happened
+        ? tempActionGroup.current!.commit()
+        : tempActionGroup.current!.discard(),
+    )
+    tempActionGroup.current = undefined
+  }
 
-      let [from, to] = (timeDiff >= 0
-        ? [this.dragStartTime, this.dragStartTime + timeDiff]
-        : [this.dragStartTime + timeDiff, this.dragStartTime]
-      ).map(this.timeStuff.timeSpace.clamp)
+  return (
+    <>
+      <CursorLock cursor="ew-resize" enabled={isDragging} />
+      <DraggableArea
+        enabled={shiftIsDown}
+        onDragStart={onShiftDragStart}
+        onDrag={onShiftDrag}
+        onDragEnd={onShiftDragEnd}
+      >
+        <div
+          {...classes(
+            'container',
+            shiftIsDown && 'shiftIsDown',
+            isDragging && 'dragging',
+          )}
+        />
+      </DraggableArea>
+    </>
+  )
+})
 
-      this.ui._dispatch(
-        this.tempActionGroup!.push(
-          this.ui.actions.historic.setTemporaryPlaybackRangeLimitOfTimeline({
-            limit: {from, to},
-            ...this.timeStuff.timelineTemplate.address,
-          }),
-        ),
-      )
-    }
-
-    onShiftDragEnd = (happened: boolean) => {
-      this.setState({dragging: false})
-      const tempActionGroup = this.tempActionGroup!
-      this.ui._dispatch(
-        happened ? tempActionGroup.commit() : tempActionGroup.discard(),
-      )
-      this.tempActionGroup = undefined
-    }
-  },
-)
+export default Base

@@ -5,7 +5,7 @@ import css from './FramesGrid.css'
 import resolveCss from '$shared/utils/resolveCss'
 import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
 import {
-  inRangeXToPaddedSvgX,
+  inRangeXToPaddedScrollSpaceX,
   timeToInRangeX,
 } from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import {TRange, TDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
@@ -150,7 +150,7 @@ export default class FramesGrid extends React.PureComponent<IProps, IState> {
     ctx.clearRect(0, 0, timelineWidth, 100)
 
     for (let i = 0, frame = startFrame; i <= numberOfLines; i++) {
-      const x = inRangeXToPaddedSvgX(
+      const x = inRangeXToPaddedScrollSpaceX(
         offsetLeft + i * widthStep,
         range,
         duration,

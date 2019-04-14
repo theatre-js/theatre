@@ -18,7 +18,6 @@ import UI from '$tl/ui/UI'
 import projectSelectors from '$tl/Project/store/selectors'
 import {overshootDuration} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
 import {clamp} from 'lodash-es'
-import withContext from '$shared/utils/react/withContext'
 import {Pointer} from '$shared/DataVerse/pointer'
 
 const getSvgWidth = (

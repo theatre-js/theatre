@@ -7,13 +7,11 @@ import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import Seeker from '$tl/ui/panels/AllInOnePanel/TimeUI/Seeker'
 import TimelineInstance from '$tl/timelines/TimelineInstance'
 import TimelineTemplate from '$tl/timelines/TimelineTemplate'
-import Scroller from '$tl/ui/panels/AllInOnePanel/TimeUI/Scroller'
+import TimeScrollbar from '$tl/ui/panels/AllInOnePanel/TimeUI/TimeScrollbar'
 import FramesGrid from '$tl/ui/panels/AllInOnePanel/TimeUI/FramesGrid'
 import clamp from '$shared/number/clamp'
-// import {overshootDuration} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
 import {TimeStuff} from '$tl/ui/panels/AllInOnePanel/TimeStuffProvider'
 import PlaybackRange from './PlaybackRange/PlaybackRange'
-// import DurationIndicator from './DurationIndicator'
 
 interface IProps {
   timelineTemplate: TimelineTemplate
@@ -34,7 +32,7 @@ export default class TimeUI extends UIComponent<IProps, IState> {
   render() {
     return (
       <TimeStuff>
-        {rightStuffP => (
+        {timeStuffP => (
           <PropsAsPointer props={this.props}>
             {({props: propsP}) => {
               const timelineTemplate = val(propsP.timelineTemplate)
@@ -54,19 +52,17 @@ export default class TimeUI extends UIComponent<IProps, IState> {
                * We just need to somehow show this in the timeline
                */
               const currentTime = val(timelineInstance.statePointer.time)
-              // const rangeState = val(timelineTemplate.pointerToRangeState)
-              const range = val(rightStuffP.rangeAndDuration.range)
+
+              const range = val(timeStuffP.rangeAndDuration.range)
               // const range = {from: 0, to: 2000}
               const height = val(propsP.height)
-              const viewportWidth = val(rightStuffP.viewportSpace.width)
+              const viewportWidth = val(timeStuffP.viewportSpace.width)
               const left = val(propsP.left)
 
-              const realDuration = val(
-                rightStuffP.rangeAndDuration.realDuration,
-              )
+              const realDuration = val(timeStuffP.rangeAndDuration.realDuration)
 
               const overshotDuration = val(
-                rightStuffP.rangeAndDuration.overshotDuration,
+                timeStuffP.rangeAndDuration.overshotDuration,
               )
 
               function gotoTime(time: number) {
@@ -83,11 +79,11 @@ export default class TimeUI extends UIComponent<IProps, IState> {
                     duration={overshotDuration}
                     timelineWidth={viewportWidth}
                   />
-                  <Scroller
+                  <TimeScrollbar
                     range={range}
                     duration={overshotDuration}
                     timelineWidth={viewportWidth}
-                    setRange={val(rightStuffP.setRange)}
+                    setRange={val(timeStuffP.setRange)}
                   />
                   <Seeker
                     range={range}
@@ -96,13 +92,7 @@ export default class TimeUI extends UIComponent<IProps, IState> {
                     currentTime={currentTime}
                     gotoTime={gotoTime}
                   />
-                  <PlaybackRange
-                    // range={range}
-                    // duration={overshotDuration}
-                    // timelineWidth={viewportWidth}
-                    // setRange={val(rightStuffP.setRange)}
-                  />
-                  {/* <DurationIndicator /> */}
+                  <PlaybackRange />
                 </div>
               )
             }}

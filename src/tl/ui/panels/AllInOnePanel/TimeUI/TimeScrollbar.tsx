@@ -22,7 +22,10 @@ interface IProps {
 
 interface IState {}
 
-class Scroller extends React.PureComponent<IProps, IState> {
+/**
+ * The little scrollbar on the bottom of the Right side
+ */
+class TimeScrollbar extends React.PureComponent<IProps, IState> {
   _propsBeforeMove: IProps = this.props
   render() {
     const {range, duration, timelineWidth} = this.props
@@ -111,4 +114,4 @@ class Scroller extends React.PureComponent<IProps, IState> {
   }
 }
 
-export default Scroller
+export default TimeScrollbar

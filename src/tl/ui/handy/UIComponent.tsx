@@ -10,6 +10,8 @@ export default class UIComponent<Props, State> extends React.Component<
   State
 > {
   ui: UI
+  // renderHookie: undefined | React.SFC<Pointer<Props>>
+  // private _hooksilosa: undefined | React.SFC<Props>
 
   public get project() {
     return this.ui._selectors.historic.getSelectedProject(this.ui) as Project
@@ -18,9 +20,27 @@ export default class UIComponent<Props, State> extends React.Component<
   constructor(props: Props, context: $IntentionalAny) {
     super(props, context)
     this.ui = context.ui
+  //   const renderHookie = this.renderHookie
+  //   if (renderHookie) {
+  //     this._hooksilosa = (props: Props) => {
+  //       return (
+  //         <PropsAsPointer {...props}>
+  //           {propsP => {
+  //             return renderHookie(propsP)
+  //           }}
+  //         </PropsAsPointer>
+  //       )
+  //     }
+  //   }
   }
 
   render(): React.ReactNode {
+    // if (this._hooksilosa) {
+    //   const Hookie = this._hooksilosa
+    //   // return
+    //   return <Hookie key="hookie" {...this.props} />
+    // }
+
     return (
       // @ts-ignore ignore
       <PropsAsPointer props={this.props} state={this.state}>

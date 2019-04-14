@@ -12,7 +12,7 @@ import {TRange, TDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {POINT_RECT_EDGE_SIZE} from '$tl/ui/panels/AllInOnePanel/Right/views/point/PointClickArea'
 import {
   getSvgXToPaddedSvgXOffset,
-  getSvgWidth,
+  getScrollSpaceWidth_deprecated,
 } from '$tl/ui/panels/AllInOnePanel/Right/utils'
 
 export const memoizedGetItemsInfo = memoizeOne(
@@ -48,8 +48,8 @@ export const getTransformedSelectedArea = (
   timelineWidth: number,
   itemsInfo: TItemsInfo,
 ): TTransformedSelectedArea => {
-  const svgWidth = getSvgWidth(range, duration, timelineWidth)
-  const getOffset = getSvgXToPaddedSvgXOffset(svgWidth)
+  const scrollSpaceWidth = getScrollSpaceWidth_deprecated(range, duration, timelineWidth)
+  const getOffset = getSvgXToPaddedSvgXOffset(scrollSpaceWidth)
   const fromX = dims.left - getOffset(dims.left)
   const fromY = dims.top
   const dY = dims.height

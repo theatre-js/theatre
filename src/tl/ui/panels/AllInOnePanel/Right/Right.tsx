@@ -8,7 +8,7 @@ import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
 import TimelineInstance from '$tl/timelines/TimelineInstance'
 import {
   deltaXToTime,
-  getSvgWidth,
+  getScrollSpaceWidth_deprecated,
   viewportScrolledSpace,
 } from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import {
@@ -54,7 +54,7 @@ class Right extends UIComponent<IRightProps, IRightState> {
 
   render() {
     const {range, duration, timelineWidth} = this.props
-    const viewportWidth = getSvgWidth(range, duration, timelineWidth)
+    const viewportWidth = getScrollSpaceWidth_deprecated(range, duration, timelineWidth)
     this._scrollContainer(range)
     return (
       <>
@@ -220,28 +220,6 @@ class Right extends UIComponent<IRightProps, IRightState> {
   }
 }
 
-// export default (_props: IExportedComponentProps) => (
-//   <TimeStuff>
-//     {timeStuffP => (
-//       <PropsAsPointer>
-//         {() => {
-//           const range = val(timeStuffP.rangeAndDuration.range)
-//           const rightProps: IRightProps = {
-//             range,
-//             duration: val(timeStuffP.rangeAndDuration.overshotDuration),
-//             timelineWidth: val(timeStuffP.viewportSpace.width),
-//             timelineInstance: val(timeStuffP.timelineInstance),
-//             setRange: val(timeStuffP.setRange),
-//             heightMinusBottom: val(timeStuffP.viewportSpace.height),
-//           }
-
-//           return <Right {...rightProps} />
-//         }}
-//       </PropsAsPointer>
-//     )}
-//   </TimeStuff>
-// )
-
 export default withContext({
   timeStuffP: TimeStuffContext,
 })((props: {timeStuffP: ITimeStuffP}) => (
@@ -262,28 +240,3 @@ export default withContext({
     }}
   </PropsAsPointer>
 ))
-
-// const useAutoDerive = <T extends $IntentionalAny>(fn: () => T, deps: $IntentionalAny[]): T => {
-//   const ticker = useContext(TickerContext)
-//   const derivation = useMemo(() => {
-//     return autoDerive(fn)
-//   }, deps)
-//   const untapRef = useRef(derivation.changes(ticker).tap((newValue) => {
-//     setState(newValue)
-//   }))
-
-//   const effectCountRef = useRef(0)
-//   const [state, setState] = useState(() => derivation.getValue())
-//   useEffect(() => {
-//     if (effectCountRef.current === 0) return
-//   })
-
-//   return state
-// }
-
-// const hookie = (props: IExportedComponentProps) => {
-//   const timeStuffP = useContext(TimeStuffContext)
-//   const props = useAutoDerive(() => {
-
-//   })
-// }

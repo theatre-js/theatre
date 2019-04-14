@@ -2,7 +2,7 @@ import React from 'react'
 import {val} from '$shared/DataVerse/atom'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
-import {getSvgWidth} from '$tl/ui/panels/AllInOnePanel/Right/utils'
+import {getScrollSpaceWidth_deprecated} from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import {TDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {overshootDuration} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
 import { TimeStuff } from '$tl/ui/panels/AllInOnePanel/TimeStuffProvider';
@@ -72,7 +72,7 @@ export default (props: IExportedComponentProps) => (
           const rootPropProviderProps: IRootPropProviderProps = {
             duration,
             timelineWidth: width,
-            svgWidth: getSvgWidth(range, duration, width),
+            svgWidth: getScrollSpaceWidth_deprecated(range, duration, width),
             children: props.children,
           }
           return <RootPropProvider {...rootPropProviderProps} />

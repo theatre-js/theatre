@@ -1,0 +1,111 @@
+{
+  "revision": "776f2119-9871-4ce3-ba40-d968f6626993",
+  "definitionVersion": "0.1.0",
+  "projectState": {
+    "timelineTemplates": {
+      "Bounce": {
+        "objects": {
+          "The box": {
+            "props": {
+              "y": {
+                "valueContainer": {
+                  "type": "BezierCurvesOfScalarValues",
+                  "points": [
+                    {
+                      "value": 93,
+                      "time": 1,
+                      "interpolationDescriptor": {
+                        "__descriptorType":
+                          "TimelinePointInterpolationDescriptor",
+                        "connected": true,
+                        "interpolationType": "CubicBezier",
+                        "handles": [0, 1.0036231884057982, 0.5, 0]
+                      }
+                    },
+                    {
+                      "time": 124,
+                      "value": 301,
+                      "interpolationDescriptor": {
+                        "connected": true,
+                        "__descriptorType":
+                          "TimelinePointInterpolationDescriptor",
+                        "interpolationType": "CubicBezier",
+                        "handles": [
+                          0.5943336579725629,
+                          0.007456275818419443,
+                          1,
+                          0.2667866390358662
+                        ]
+                      }
+                    },
+                    {
+                      "time": 284,
+                      "value": 175,
+                      "interpolationDescriptor": {
+                        "connected": true,
+                        "__descriptorType":
+                          "TimelinePointInterpolationDescriptor",
+                        "interpolationType": "CubicBezier",
+                        "handles": [
+                          0.28290786368716914,
+                          -0.024109209965441636,
+                          0.39266723278715054,
+                          -3.2261614180725147
+                        ]
+                      }
+                    },
+                    {
+                      "time": 485,
+                      "value": 166,
+                      "interpolationDescriptor": {
+                        "connected": true,
+                        "__descriptorType":
+                          "TimelinePointInterpolationDescriptor",
+                        "interpolationType": "CubicBezier",
+                        "handles": [
+                          0.8645638874242267,
+                          0.009356381370997084,
+                          0,
+                          -0.2997460448363986
+                        ]
+                      }
+                    },
+                    {
+                      "time": 550,
+                      "value": 248,
+                      "interpolationDescriptor": {
+                        "connected": true,
+                        "__descriptorType":
+                          "TimelinePointInterpolationDescriptor",
+                        "interpolationType": "CubicBezier",
+                        "handles": [0.5, 0, 0.5, 0]
+                      }
+                    },
+                    {
+                      "time": 1000,
+                      "value": 90,
+                      "interpolationDescriptor": {
+                        "connected": false,
+                        "__descriptorType":
+                          "TimelinePointInterpolationDescriptor",
+                        "interpolationType": "CubicBezier",
+                        "handles": [0.5, 0, 0.5, 0]
+                      }
+                    }
+                  ]
+                }
+              },
+              "x": {
+                "valueContainer": {
+                  "type": "StaticValueContainer",
+                  "value": 10
+                }
+              }
+            }
+          }
+        },
+        "duration": null
+      }
+    }
+  }
+}

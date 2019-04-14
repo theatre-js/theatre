@@ -1,6 +1,6 @@
 import React from 'react'
 import * as css from './UIRoot.css'
-import UI from '../UI'
+import UI, {UIContext} from '../UI'
 import PropTypes from 'prop-types'
 import TheTrigger from './TheTrigger'
 import {TickerProvider} from '$shared/utils/react/TickerContext'
@@ -18,28 +18,31 @@ export default class UIRoot extends UIComponent<IProps, {}> {
   render() {
     return (
       <TickerProvider ticker={this.props.ui.ticker}>
-        <PropsAsPointer>
-          {() => {
-            const visiblityState = val(
-              this.props.ui.atomP.ahistoric.visibilityState,
-            )
-            const initialised = val(this.props.ui.atomP.ephemeral.initialised)
-            const shouldShowTrigger = visiblityState === 'onlyTriggerIsVisible'
+        <UIContext.Provider value={this.props.ui}>
+          <PropsAsPointer>
+            {() => {
+              const visiblityState = val(
+                this.props.ui.atomP.ahistoric.visibilityState,
+              )
+              const initialised = val(this.props.ui.atomP.ephemeral.initialised)
+              const shouldShowTrigger =
+                visiblityState === 'onlyTriggerIsVisible'
 
-            const shouldShowPanels = visiblityState === 'everythingIsVisible'
+              const shouldShowPanels = visiblityState === 'everythingIsVisible'
 
-            return (
-              <EnsureProjectsDontHaveErrors>
-                {!initialised ? null : (
-                  <div className={css.container}>
-                    {shouldShowTrigger && <TheTrigger />}
-                    {shouldShowPanels && <AllInOnePanel />}
-                  </div>
-                )}
-              </EnsureProjectsDontHaveErrors>
-            )
-          }}
-        </PropsAsPointer>
+              return (
+                <EnsureProjectsDontHaveErrors>
+                  {!initialised ? null : (
+                    <div className={css.container}>
+                      {shouldShowTrigger && <TheTrigger />}
+                      {shouldShowPanels && <AllInOnePanel />}
+                    </div>
+                  )}
+                </EnsureProjectsDontHaveErrors>
+              )
+            }}
+          </PropsAsPointer>
+        </UIContext.Provider>
       </TickerProvider>
     )
   }

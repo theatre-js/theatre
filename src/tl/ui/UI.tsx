@@ -1,6 +1,6 @@
 import {Atom} from '$shared/DataVerse/atom'
 import ReactDOM from 'react-dom'
-import React from 'react'
+import React, { createContext } from 'react'
 import {rootReducer, uiActions} from './store'
 import configureStore from '$shared/utils/redux/configureStore'
 import {UIState, UIHistoricState, UIAhistoricState} from '$tl/ui/store/types'
@@ -150,3 +150,5 @@ function startPersistingState(p: {
     }
   }
 }
+
+export const UIContext = createContext<UI>(null as $IntentionalAny)
