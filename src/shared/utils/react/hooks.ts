@@ -1,6 +1,6 @@
 import {useCallback, useEffect, useState} from 'react'
 
-const EMPTY_ARRAY: any[] = []
+const EMPTY_ARRAY: $IntentionalAny[] = []
 
 export function useUnmount(fn: () => void) {
   useEffect(() => fn, EMPTY_ARRAY)
