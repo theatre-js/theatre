@@ -1,6 +1,9 @@
 import {forEach, without} from '$shared/utils'
 type Listener = (v: $FixMe) => void
 
+/**
+ * A simple barebones event emitter
+ */
 export default class EventEmitter {
   _listenersByType: {[eventName: string]: Array<Listener>}
   constructor() {

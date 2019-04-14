@@ -6,8 +6,11 @@ import * as webpack from 'webpack'
 import {BundleAnalyzerPlugin} from 'webpack-bundle-analyzer'
 import * as fs from 'fs-extra'
 import * as path from 'path'
-const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
-const WebpackDeepScopeAnalysisPlugin = require('webpack-deep-scope-plugin').default;
+const LodashModuleReplacementPlugin = require('lodash-webpack-plugin')
+const WebpackDeepScopeAnalysisPlugin = require('webpack-deep-scope-plugin')
+  .default
+
+const UnusedWebpackPlugin = require('unused-webpack-plugin')
 // import * as UglifyJSWebpackPlugin from 'uglifyjs-webpack-plugin'
 
 setAutoFreeze(false)
@@ -52,12 +55,14 @@ module.exports = (env: Envs) => {
         } else {
           c.stats = {
             // @ts-ignore
-            optimizationBailout: true
+            optimizationBailout: true,
           }
           c.plugins.push(new WebpackDeepScopeAnalysisPlugin())
-          c.plugins.unshift(new LodashModuleReplacementPlugin({
-            paths: true
-          }))
+          c.plugins.unshift(
+            new LodashModuleReplacementPlugin({
+              paths: true,
+            }),
+          )
 
           c.module.rules.unshift({
             test: [/store\/index\.ts/, /\/propSanitizers\.ts$/],
@@ -75,6 +80,17 @@ module.exports = (env: Envs) => {
           use: 'null-loader',
           exclude: /node_modules/,
         })
+      } else if (isDev) {
+        c.plugins.push(
+          new UnusedWebpackPlugin({
+            // Source directories
+            directories: [parts.srcDir],
+            // Exclude patterns
+            exclude: ['*.test.ts', '*.test.tsx', '*.d.ts'],
+            // Root directory (optional)
+            root: parts.context,
+          }),
+        )
       }
 
       if (!isDev) {

@@ -1,5 +1,9 @@
 import AbstractDerivation from './AbstractDerivation'
 
+/**
+ * A proxy for a different derivation. The inner derivation can be swapped
+ * using .setTarget()
+ */
 export class ProxyDerivation<V> extends AbstractDerivation<V> {
   _target: AbstractDerivation<V>
 

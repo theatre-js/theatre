@@ -1,6 +1,6 @@
 import {Atom} from '$shared/DataVerse/atom'
 import ReactDOM from 'react-dom'
-import React, { createContext } from 'react'
+import React, {createContext} from 'react'
 import {rootReducer, uiActions} from './store'
 import configureStore from '$shared/utils/redux/configureStore'
 import {UIState, UIHistoricState, UIAhistoricState} from '$tl/ui/store/types'
@@ -12,7 +12,7 @@ import UIRootWrapper from '$tl/ui/UIRoot/UIRootWrapper'
 import {GenericAction} from '$shared/types'
 import {debounce} from '$shared/utils'
 import uiSelectors from '$tl/ui/store/selectors'
-import {HistoryOnly} from '$shared/utils/redux/withHistory/withHistoryDeprecated'
+import {HistoryOnly} from '$shared/utils/redux/withHistory/types'
 
 export default class UI {
   atom: Atom<UIState>

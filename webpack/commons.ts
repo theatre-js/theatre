@@ -22,7 +22,7 @@ export const aliases: {[alias: string]: string} = mapValues(
   fromRoot => path.join(context, fromRoot),
 )
 
-type PackageName = 'playground' | 'examples' | 'tl'
+type PackageName = 'examples' | 'tl'
 
 export type Envs = 'development' | 'production'
 
