@@ -2,15 +2,85 @@
 
 This is the repo for the Theatre.js library.
 
-### Aliases
+## Aliases
 
 We'll have very few aliases in this project. All you need to remember are:
 
+* `$root` points to `app/`
 * `$src` points to `app/src`
-* `$shared` points to 'app/src/shared'
-* `$root` points to 'app/'
+* `$shared` points to `app/src/shared
+* `$tl` points to `app/tl`
 
-### Common practices
+## Code quality
+
+The best way to learn our code quality is to have someone with more experience than you review your code. _DO NOT_ wait til you've written a thousand lines of code before you ask someone for a review. Ask for reviews early, and often, as long as the review process doesn't disturb your flow.
+
+### Type annotations
+
+Type annotations help us keep our runtime bugs to a minimum. For that, we need to keep our annotations as precise as possible. Here are some guidelines:
+
+* If a value can only be one of `"foo"` and `"bar"`, do not type it as `string`. Use a union of literals instead.
+
+  ```typescript
+  // Bad:
+  function doX(input: string) {
+    if (input === "foo") {
+      alert("is foo")
+    } else if (input === "bar") {
+      alert("is bar")
+    }
+  }
+
+  // Good:
+  function doX(input: "foo" | "bar") {
+    if (input === "foo") {
+      alert("is foo")
+    } else if (input === "bar") {
+      alert("is bar")
+    }
+  }
+  ```
+* The `Function` type is not useful. It matches any function, including classes. Use a detailed function signature instead.
+
+  ```typescript
+  // Bad:
+  function transformTuple(tuple: Array<number>, transformer: Function) {
+    return tuple.map(transformer)
+  }
+
+  // Good:
+  function transformTuple(tuple: Array<number>, transformer: (input: number) => number) {
+    return tuple.map(transformer)
+  }
+  ```
+* The `Object` type is rarely useful. Most JS values are objects. Use a more precise type instead.
+
+  ```typescript
+  // Bad:
+  function fullname({firstName, lastName}: Object) {
+    return firstName + ' ' + lastName
+  }
+
+  // Good:
+  function fullname({firstName, lastName}: {firstName: string, lastName: string}) {
+    return firstName + ' ' + lastName
+  }
+  ```
+* Sometimes you have to use the `any` type. Maybe you don't have the time to figure out the type annotation. Or maybe you don't know how to. In these situations, you should mention in the code why you used that `any`. We have standardized this in a few aliases of `any`. So, instead of directly using `any`, use one of these aliases instead (they're in defs.d.ts):
+  * `$NeedHelp`: Use this type if you don't know how to annotate a value. Your code reviewer will then help you figure out the proepr type.
+  * `$Unexpressable`: Use this type if you know that TypeScript simply cannot express the type you're looking for (maybe in a future version they can?). In future versions of TypeScript, we'll check if some of the `$Unexpressable` types have recently become expressable.
+  * `$AnyBecauseOfBugInTS`: Use this type if a bug in TypeScript is holding you back. Often these bugs are fixed in minor versions, and then we'll be able to do a proper annotation instead.
+  * `$FixMe`: With this type, you're signaling that it's better to use a better annotation, but that is not urgent. Maybe you don't have the time to do the proper annotation. You're also signaling that it's okay to merge the PR without fixing this annotation. (*Note*: Fixing the `$FixMe` types in the codebase could be a fun way to kill time).
+  * `$IntentionalAny`: With this type, you're signaling that we _should_ use the `any` type here, and no one needs to change this later.
+
+## Formatting
+
+### Prettier
+
+Prettier is configured. There is a precommit hook that checks if all files follow the code
+standard. If you get an error, run `npm run ci:fix-formatting`.
+
+## Common practices
 
 #### Put code close to where it is primarily used
 
@@ -38,14 +108,6 @@ export const selectors = {
   getPanelPosition: (state, id) => state.panels[id].position,
 }
 ```
-
-### A note about all the classes
-
-If you've taken a look at the code, you've noticed a bunch of opportunities to do away with classes and use observables instead. Examples are 'AttributesApplier`, `SideEffectsApplier', etc.
-
-I don't like the fact that we've written classes whose job is basically to tap into an emitter on start, and untap on stop. As far as I can imagine, those chunks of code can be simplified if they were rewritten with observables. We didn't have time to do that because we were very close to MVP, but at some point this problem has to be solved. These classes in their current form are difficult to understand and very easy to break. I loathe having to explain to someone how they work (even though they have a very simple responsibility).
-
-Fortunately, all of these classes are there to apply side-effects. That's an area we spend very little time in. Most of our time is spent in side-effect-free parts of the code, and those parts are already declarative and relatively easy to understand. But on the off chance that you're the unlucky individual who has to change side-effectful code in a major way and you feel these classes are really getting in your way, then I recommend you to explore libraries like RxJS or xStream, and perhaps do a rewrite using those libraries. xStream seems like a nice choice atm because it only supports hot observables.
 
 # Troubleshooting
 

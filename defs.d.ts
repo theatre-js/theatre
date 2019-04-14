@@ -1,11 +1,13 @@
+/** These should be fixed before the PR getting merged */
+type $NeedHelp = any
 /** For `any`s that aren't meant to stay `any`*/
 type $FixMe = any
 /** For `any`s that we don't care about */
 type $IntentionalAny = any
 /** For `any`s that cannot be avoided because of a bug in TypeScript */
 type $AnyBecauseOfBugInTS = any
-/** These should be fixed before the PR getting merged */
-type $FixMeNow = any
+type $Unexpressable = any
+
 
 interface Window {
   __REACT_DEVTOOLS_GLOBAL_HOOK__: $FixMe
