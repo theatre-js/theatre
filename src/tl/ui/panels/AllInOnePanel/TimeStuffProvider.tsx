@@ -1,5 +1,5 @@
 import UIComponent from '$tl/ui/handy/UIComponent'
-import React from 'react'
+import React, {useContext} from 'react'
 import {val} from '$shared/DataVerse/atom'
 import {TDuration, TRange} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import createPointerContext from '$shared/utils/react/createPointerContext'
@@ -7,7 +7,6 @@ import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import uiSelectors from '$tl/ui/store/selectors'
 import {
-  xToTime,
   timeToInRangeX,
   deltaTimelineXToDeltaTime,
   viewportScrolledSpace,
@@ -19,14 +18,23 @@ import projectSelectors from '$tl/Project/store/selectors'
 import {overshootDuration} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
 import {clamp} from 'lodash-es'
 import {Pointer} from '$shared/DataVerse/pointer'
+import {SVG_PADDING_X} from '$tl/ui/panels/AllInOnePanel/Right/views/SVGWrapper'
 
-const getSvgWidth = (
+const getScrollSpaceWidth = (
   range: TRange,
   duration: TDuration,
   viewportWidth: number,
 ) => {
   const rangeDuration = range.to - range.from
   return (duration / rangeDuration) * viewportWidth
+}
+
+const timeToX = (duration: number, width: number, time: number) => {
+  return (time * width) / duration
+}
+
+const xToTime = (duration: number, width: number) => (x: number) => {
+  return (x * duration) / width
 }
 
 interface IProps {
@@ -64,14 +72,19 @@ export interface ITimeStuff {
     timeToInRangeX: (t: number) => number
     deltaXToDeltaTime: (x: number) => number
   }
+  /**
+   * The scrollbar on the bottom of the panel exists on viewportSpace
+   */
   viewportSpace: {
     width: number
     height: number
     clampX: (x: number) => number
+    timeToX: (t: number, minusSvgPadding: boolean) => number
   }
   scrollSpace: {
     width: number
     xToTime: (x: number) => number
+    timeToX: (t: number) => number
   }
   timelineInstance: TimelineInstance
   timelineTemplate: TimelineTemplate
@@ -92,6 +105,8 @@ const {
 } = createPointerContext<ITimeStuff>()
 
 export type ITimeStuffP = Pointer<ITimeStuff>
+
+export const useTimeStuffP = () => useContext(TimeStuffContext)
 
 export {TimeStuff, TimeStuffContext}
 
@@ -170,12 +185,14 @@ export default class TimeStuffProvider extends UIComponent<IProps, IState> {
 
               const viewportWidth = val(stuffP.rightWidth)
 
-              const scrollSpaceWidth = getSvgWidth(
+              const scrollSpaceWidth = getScrollSpaceWidth(
                 rangeAndDuration.range,
                 rangeAndDuration.overshotDuration,
                 viewportWidth,
               )
 
+              // @todo perf
+              // many of these values don't change on re-render. memoize them
               const timeStuff: ITimeStuff = {
                 rangeAndDuration,
                 unlockedRangeAndDuration,
@@ -187,11 +204,25 @@ export default class TimeStuffProvider extends UIComponent<IProps, IState> {
                     rangeAndDuration.overshotDuration,
                     scrollSpaceWidth,
                   ),
+                  timeToX: (t: number) => {
+                    return timeToX(
+                      rangeAndDuration.overshotDuration,
+                      scrollSpaceWidth,
+                      t,
+                    )
+                  },
                 },
                 viewportSpace: {
                   width: viewportWidth,
                   height: val(stuffP.heightMinusBottom),
                   clampX: (x: number): number => clamp(x, 0, viewportWidth),
+                  timeToX: (t: number, minusSvgPadding: boolean) => {
+                    return timeToX(
+                      rangeAndDuration.overshotDuration,
+                      viewportWidth - (minusSvgPadding ? SVG_PADDING_X : 0),
+                      t,
+                    )
+                  },
                 },
                 timelineInstance,
                 timelineTemplate,

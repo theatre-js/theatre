@@ -80,10 +80,12 @@ export default class TimeUI extends UIComponent<IProps, IState> {
                     timelineWidth={viewportWidth}
                   />
                   <TimeScrollbar
+                  /*
                     range={range}
                     duration={overshotDuration}
                     timelineWidth={viewportWidth}
                     setRange={val(timeStuffP.setRange)}
+                    */
                   />
                   <Seeker
                     range={range}

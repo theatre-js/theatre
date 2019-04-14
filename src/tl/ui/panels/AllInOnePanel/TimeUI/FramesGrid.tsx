@@ -144,9 +144,9 @@ export default class FramesGrid extends React.PureComponent<IProps, IState> {
     startFrame: number,
   ) {
     const {timelineWidth, range, duration} = this.props
-    const timeToX = timelineWidth / (range.to - range.from)
-    const offsetLeft = timeToX * (startTime - range.from)
-    const widthStep = timeToX * cellDuration
+    const timeInX = timelineWidth / (range.to - range.from)
+    const offsetLeft = timeInX * (startTime - range.from)
+    const widthStep = timeInX * cellDuration
 
     let innerHTML = ''
     const ctx = this.canvas!.getContext('2d') as CanvasRenderingContext2D

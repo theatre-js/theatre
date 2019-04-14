@@ -17,10 +17,6 @@ export const getScrollSpaceWidth_deprecated = (
   return (duration / rangeDuration) * viewportWidth
 }
 
-export const timeToX = (duration: number, width: number) => (time: number) => {
-  return (time * width) / duration
-}
-
 export const xToTime = (duration: number, width: number) => (x: number) => {
   return (x * duration) / width
 }

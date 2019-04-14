@@ -1,45 +1,89 @@
-import React from 'react'
+import React, {useMemo} from 'react'
 import css from './Scroller.css'
 import resolveCss from '$shared/utils/resolveCss'
-import {
-  timeToX,
-  xToTime,
-  getRangeLabel,
-} from '$tl/ui/panels/AllInOnePanel/Right/utils'
+import {xToTime, getRangeLabel} from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import {getNewRange} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
-import {TDuration, TRange} from '$tl/ui/panels/AllInOnePanel/Right/types'
+import {TRange} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
-import {SVG_PADDING_X} from '$tl/ui/panels/AllInOnePanel/Right/views/SVGWrapper'
+import {autoDeriveElement} from '$shared/DataVerse/utils/react'
+import {useTimeStuffP} from '$tl/ui/panels/AllInOnePanel/TimeStuffProvider'
+import {coldVal, val} from '$shared/DataVerse/atom'
 
 const classes = resolveCss(css)
-
-interface IProps {
-  duration: TDuration
-  range: TRange
-  timelineWidth: number
-  setRange: (range: TRange) => void
-}
-
-interface IState {}
 
 /**
  * The little scrollbar on the bottom of the Right side
  */
-class TimeScrollbar extends React.PureComponent<IProps, IState> {
-  _propsBeforeMove: IProps = this.props
-  render() {
-    const {range, duration, timelineWidth} = this.props
-    const tToX = timeToX(duration, timelineWidth - SVG_PADDING_X)
-    const getLabel = getRangeLabel(range, duration, timelineWidth)
-    const rangeFromX = tToX(range.from)
-    const rangeToX = tToX(range.to)
+const TimeScrollbar = () => {
+  const timeStuffP = useTimeStuffP()
+  const handles = useMemo(
+    function getHandles() {
+      let stuffBeforeMove = coldVal(timeStuffP)
+      const self = {
+        recordStuffBeforeMove: () => {
+          stuffBeforeMove = coldVal(timeStuffP)
+        },
+
+        updateRange: (dx: number) => {
+          const duration = stuffBeforeMove.rangeAndDuration.overshotDuration
+          const viewportWidth = stuffBeforeMove.viewportSpace.width
+          const dt = xToTime(duration, viewportWidth)(dx)
+          self._setRange({from: dt, to: dt}, true)
+        },
+
+        updateRangeFrom: (dx: number) => {
+          const duration = stuffBeforeMove.rangeAndDuration.overshotDuration
+          const viewportWidth = stuffBeforeMove.viewportSpace.width
+          const dt = xToTime(duration, viewportWidth)(dx)
+          self._setRange({from: dt, to: 0}, false)
+        },
+
+        updateRangeTo: (dx: number) => {
+          const duration = stuffBeforeMove.rangeAndDuration.overshotDuration
+          const viewportWidth = stuffBeforeMove.viewportSpace.width
+          const dt = xToTime(duration, viewportWidth)(dx)
+          self._setRange({from: 0, to: dt}, false)
+        },
+
+        _setRange(
+          change: TRange,
+          bringRangeToBackIfRangeFromIsSubzero: boolean,
+        ) {
+          const range = stuffBeforeMove.rangeAndDuration.range
+          const duration = stuffBeforeMove.rangeAndDuration.overshotDuration
+
+          const {setRange} = stuffBeforeMove
+          setRange(
+            getNewRange(
+              range,
+              change,
+              duration,
+              bringRangeToBackIfRangeFromIsSubzero,
+            ),
+          )
+        },
+      }
+
+      return self
+    },
+    [timeStuffP],
+  )
+
+  return autoDeriveElement(() => {
+    const range = val(timeStuffP.rangeAndDuration.range)
+    const duration = val(timeStuffP.rangeAndDuration.overshotDuration)
+    const viewportWidth = val(timeStuffP.viewportSpace.width)
+    const timeToViewportX = val(timeStuffP.viewportSpace.timeToX)
+    const getLabel = getRangeLabel(range, duration, viewportWidth)
+    const rangeFromX = timeToViewportX(range.from, true)
+    const rangeToX = timeToViewportX(range.to, true)
 
     return (
       <div {...classes('container')}>
         <div {...classes('timeThread')}>
           <DraggableArea
-            onDragStart={this._recordPropsBeforeMove}
-            onDrag={this.updateRange}
+            onDragStart={handles.recordStuffBeforeMove}
+            onDrag={handles.updateRange}
             lockCursorTo="ew-resize"
           >
             <div
@@ -51,9 +95,9 @@ class TimeScrollbar extends React.PureComponent<IProps, IState> {
             />
           </DraggableArea>
           <DraggableArea
-            onDrag={this.updateRangeFrom}
+            onDrag={handles.updateRangeFrom}
             lockCursorTo="w-resize"
-            onDragStart={this._recordPropsBeforeMove}
+            onDragStart={handles.recordStuffBeforeMove}
           >
             <div
               {...classes('rangeFromHandle')}
@@ -63,9 +107,9 @@ class TimeScrollbar extends React.PureComponent<IProps, IState> {
             </div>
           </DraggableArea>
           <DraggableArea
-            onDrag={this.updateRangeTo}
+            onDrag={handles.updateRangeTo}
             lockCursorTo="e-resize"
-            onDragStart={this._recordPropsBeforeMove}
+            onDragStart={handles.recordStuffBeforeMove}
           >
             <div
               {...classes('rangeToHandle')}
@@ -77,41 +121,7 @@ class TimeScrollbar extends React.PureComponent<IProps, IState> {
         </div>
       </div>
     )
-  }
-
-  _recordPropsBeforeMove = () => {
-    this._propsBeforeMove = this.props
-  }
-
-  updateRange = (dx: number) => {
-    const {duration, timelineWidth} = this._propsBeforeMove
-    const dt = xToTime(duration, timelineWidth)(dx)
-    this._setRange({from: dt, to: dt}, true)
-  }
-
-  updateRangeFrom = (dx: number) => {
-    const {duration, timelineWidth} = this._propsBeforeMove
-    const dt = xToTime(duration, timelineWidth)(dx)
-    this._setRange({from: dt, to: 0}, false)
-  }
-
-  updateRangeTo = (dx: number) => {
-    const {duration, timelineWidth} = this._propsBeforeMove
-    const dt = xToTime(duration, timelineWidth)(dx)
-    this._setRange({from: 0, to: dt}, false)
-  }
-
-  _setRange(change: TRange, bringRangeToBackIfRangeFromIsSubzero: boolean) {
-    const {range, duration, setRange} = this._propsBeforeMove
-    setRange(
-      getNewRange(
-        range,
-        change,
-        duration,
-        bringRangeToBackIfRangeFromIsSubzero,
-      ),
-    )
-  }
+  })
 }
 
 export default TimeScrollbar

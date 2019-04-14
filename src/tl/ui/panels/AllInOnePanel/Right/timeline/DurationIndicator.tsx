@@ -12,7 +12,6 @@ import {TRange} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {ITempActionGroup} from '$shared/utils/redux/withHistory/actions'
 import CursorLock from '$shared/components/CursorLock'
 import {roundestNumberBetween} from '$shared/utils/numberRoundingUtils'
-import {timeToX} from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
 
 interface IProps {
@@ -45,7 +44,7 @@ export default class DurationIndicator extends UIComponent<IProps, IState> {
         {rightStuffP => (
           <PropsAsPointer state={this.state}>
             {({state: stateP}) => {
-              const timelineWidth = val(rightStuffP.scrollSpace.width)
+              const scrollSpaceWidth = val(rightStuffP.scrollSpace.width)
 
               const dragging = val(stateP.dragging)
               const rangeAndDurationP = dragging
@@ -53,13 +52,11 @@ export default class DurationIndicator extends UIComponent<IProps, IState> {
                 : rightStuffP.rangeAndDuration
 
               const realDuration = val(rangeAndDurationP.realDuration)
+              const timeToScrollSpaceX = val(rightStuffP.scrollSpace.timeToX)
 
-              const dimmerX = timeToX(
-                val(rightStuffP.rangeAndDuration.overshotDuration),
-                timelineWidth,
-              )(realDuration)
+              const dimmerX = timeToScrollSpaceX(realDuration)
 
-              const dimmerWidth = timelineWidth - dimmerX - 1
+              const dimmerWidth = scrollSpaceWidth - dimmerX - 1
 
               return (
                 <div {...classes('container', dragging && 'dragging')}>
