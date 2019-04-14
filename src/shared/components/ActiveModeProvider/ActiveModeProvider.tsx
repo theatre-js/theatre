@@ -1,6 +1,5 @@
 import React from 'react'
-import { isMac } from '$shared/utils/isMac';
-import withContext from '$shared/utils/react/withContext'
+import {isMac} from '$shared/utils/isMac'
 
 /**
  * @todo @easy Make this type more specific

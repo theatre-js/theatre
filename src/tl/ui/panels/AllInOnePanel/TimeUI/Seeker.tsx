@@ -5,7 +5,7 @@ import {timeToInRangeX} from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import {getNewTime} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
 import {TRange, TDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
-import RoomToClick from '$shared/components/RoomToClick/RoomToClick';
+import RoomToClick from '$shared/components/RoomToClick/RoomToClick'
 
 const classes = resolveCss(css)
 
