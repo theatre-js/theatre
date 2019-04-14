@@ -233,10 +233,10 @@ let lastDerivationId = 0
 // }, 2000)
 // let activeDs = new Set()
 // import toCsv from 'json2csv'
-import {
-  startIgnoringDependencies,
-  stopIgnoringDependencies,
-} from './autoDerive/discoveryMechanism'
+// import {
+//   startIgnoringDependencies,
+//   stopIgnoringDependencies,
+// } from './autoDerive/discoveryMechanism'
 
 // setTimeout(() => {console.log('allDs', lastDerivationId)}, 1500)
 // setTimeout(() => {

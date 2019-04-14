@@ -121,11 +121,6 @@ declare module '*.png' {
   export default s
 }
 
-declare module 'socket.io' {
-  const a: any
-  export default a
-}
-
 declare module 'fuzzaldrin-plus'
 
 declare module 'error-overlay-webpack-plugin' {

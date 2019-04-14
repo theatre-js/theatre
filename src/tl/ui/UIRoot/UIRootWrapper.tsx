@@ -1,5 +1,4 @@
 import React from 'react'
-// import {AppContainer} from 'react-hot-loader'
 import UIRoot from './UIRoot'
 import UI from '$tl/ui/UI'
 
@@ -19,10 +18,6 @@ export default class UIRootWrapper extends React.Component<{ui: UI}> {
   render() {
     const UIRoot = this.state.UIRoot
     const rootEl = <UIRoot ui={this.props.ui} />
-    // if ($env.NODE_ENV === 'development' && false) {
-    //   return <AppContainer>{rootEl}</AppContainer>
-    // } else {
     return rootEl
-    // }
   }
 }
