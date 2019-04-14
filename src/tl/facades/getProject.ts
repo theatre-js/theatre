@@ -16,8 +16,8 @@ export default function getProject(
   if (projectsSingleton.has(id)) {
     return projectsSingleton.get(id)!.facade
   }
-  
-  if (!$env.tl.isCore) {
+
+  if (!$env.tl.isCore) {
     validateName(id, 'projectName in Theatre.getProject(projectName)', true)
     validateProjectIdOrThrow(id)
   }

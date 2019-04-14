@@ -144,8 +144,7 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
               onDragStart={this.handleConnectorDragStart}
               onDrag={this.handleConnectorDrag}
               onDragEnd={this.handleConnectorDragEnd}
-          lockCursorTo="ew-resize"
-
+              lockCursorTo="ew-resize"
             >
               <g>
                 <LineConnector
@@ -313,7 +312,8 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
     const pointTime = this.props.pointTime - pointMove
 
     const limitLeft = prevPointTime == null ? 0 : prevPointTime
-    const limitRight = nextPointTime == null ? 100 /* 100% of svgWidth */ : nextPointTime
+    const limitRight =
+      nextPointTime == null ? 100 /* 100% of svgWidth */ : nextPointTime
 
     const newTime = pointTime + x
     if (newTime >= limitRight) x = limitRight - pointTime - 100 / this.svgWidth
@@ -327,13 +327,13 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
       time: x - this.state.pointMove,
       value: 0,
     }
-    const minimumHumanNoticableDiffInTime = 0.4999 / this.svgWidth * 100
+    const minimumHumanNoticableDiffInTime = (0.4999 / this.svgWidth) * 100
     this.props.movePointToNewCoordsTemp(
       this.props.pointIndex,
       originalCoords,
       change,
       minimumHumanNoticableDiffInTime,
-      0
+      0,
     )
 
     this.setState(() => ({

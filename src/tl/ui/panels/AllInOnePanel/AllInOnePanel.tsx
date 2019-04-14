@@ -333,7 +333,6 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
 
   _receiveWheelEvent = (event: WheelEvent) => {
     if (Math.abs(event.deltaY) < Math.abs(event.deltaX)) {
-
       event.preventDefault()
       event.stopPropagation()
     }

@@ -10,7 +10,9 @@ export type ReduxReducer<State extends {}> = (
 export type ErrorsOf<T> = T extends (
   ...args: $IntentionalAny[]
 ) => Generator_<infer R>
-  ? R extends {errorType: string} ? R : never
+  ? R extends {errorType: string}
+    ? R
+    : never
   : never
 
 export type ReturnOf<Fn> = Fn extends (
@@ -83,7 +85,9 @@ export type PropsOf<Component> = Component extends (new (
   props: infer Props,
 ) => React.Component<$IntentionalAny>)
   ? Props
-  : Component extends (props: infer Props) => React.ReactNode ? Props : never
+  : Component extends (props: infer Props) => React.ReactNode
+  ? Props
+  : never
 
 export type ReactComponent<Props = $IntentionalAny> =
   | React.ComponentClass<Props>

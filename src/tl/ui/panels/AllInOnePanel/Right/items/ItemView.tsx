@@ -6,7 +6,7 @@ import {color} from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import Dopesheet from '$tl/ui/panels/AllInOnePanel/Right/views/Dopesheet'
 import ItemHitZone from '$tl/ui/panels/AllInOnePanel/Right/items/ItemHitZone'
 import {PrimitivePropItem} from '$tl/ui/panels/AllInOnePanel/utils'
-import SVGWrapper from '$tl/ui/panels/AllInOnePanel/Right/views/SVGWrapper';
+import SVGWrapper from '$tl/ui/panels/AllInOnePanel/Right/views/SVGWrapper'
 
 interface IProps {
   expanded: TExpanded

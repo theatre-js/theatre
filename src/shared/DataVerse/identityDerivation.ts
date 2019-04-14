@@ -37,11 +37,14 @@ export class IdentityDerivation<V> extends AbstractDerivation<V> {
     this._hasCachedValue = false
     this._cachedValue = undefined
 
-    this._untapFromChanges = this._root._tapIntoIdentityOfPathChanges(this._path, (newIdentity) => {
-      this._hasCachedValue = true
-      this._cachedValue = newIdentity as $FixMe
-      this._youMayNeedToUpdateYourself(this)
-    })
+    this._untapFromChanges = this._root._tapIntoIdentityOfPathChanges(
+      this._path,
+      newIdentity => {
+        this._hasCachedValue = true
+        this._cachedValue = newIdentity as $FixMe
+        this._youMayNeedToUpdateYourself(this)
+      },
+    )
   }
 
   _stopKeepingUptodate() {

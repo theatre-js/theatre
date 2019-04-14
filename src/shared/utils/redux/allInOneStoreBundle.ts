@@ -29,7 +29,7 @@ const allInOneStoreBundle = <
   State extends {
     historic: StateWithHistory<HistoricState>
     ahistoric: AhistoricState
-    ephemeral: EphemeralState,
+    ephemeral: EphemeralState
   },
   HistoricHandlers extends Handlers<HistoricState>,
   AhistoricHandlers extends Handlers<AhistoricState>,
@@ -38,7 +38,7 @@ const allInOneStoreBundle = <
   handlers: {
     ahistoric: AhistoricHandlers // ahistoricHandlers
     historic: HistoricHandlers // historicHandlers
-    ephemeral: EphemeralHandlers 
+    ephemeral: EphemeralHandlers
   }
   initialState: State // uiInitialState
 }) => {
@@ -149,7 +149,7 @@ const allInOneStoreBundle = <
           ...(state as $FixMe),
           ephemeral: ephemeralReducer(state.ephemeral, action.payload),
         }
-      }  else {
+      } else {
         if (actionTypesToIgnore.indexOf(action.type) === -1) {
           console.error(`Unkown action type ${action.type} in rootReducer`)
         }

@@ -58,8 +58,7 @@ export default class TheatreJSTimelineInstance {
       `timeline.getObject("${_path}", ...)`,
     )
 
-    const {..._config} =
-      __config || ({} as GetObjectConfig)
+    const {..._config} = __config || ({} as GetObjectConfig)
 
     const providedConfigOrEmptyConfig: NativeObjectTypeConfig = _config
       ? {..._config}

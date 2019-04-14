@@ -48,7 +48,11 @@ export const getTransformedSelectedArea = (
   timelineWidth: number,
   itemsInfo: TItemsInfo,
 ): TTransformedSelectedArea => {
-  const scrollSpaceWidth = getScrollSpaceWidth_deprecated(range, duration, timelineWidth)
+  const scrollSpaceWidth = getScrollSpaceWidth_deprecated(
+    range,
+    duration,
+    timelineWidth,
+  )
   const getOffset = getSvgXToPaddedSvgXOffset(scrollSpaceWidth)
   const fromX = dims.left - getOffset(dims.left)
   const fromY = dims.top

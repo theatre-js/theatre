@@ -3,8 +3,8 @@ import * as t from '$shared/ioTypes'
 import {assertSuccess, assertFailure} from './testHelpers'
 
 describe('withRuntimeCheck', () => {
-  const T = t.string.withRuntimeCheck(
-    v => (v.length === 2 ? true : ['the string should have a length of 10']),
+  const T = t.string.withRuntimeCheck(v =>
+    v.length === 2 ? true : ['the string should have a length of 10'],
   )
   it('should succeed validating a valid value', () => {
     assertSuccess(T.validate('12'))

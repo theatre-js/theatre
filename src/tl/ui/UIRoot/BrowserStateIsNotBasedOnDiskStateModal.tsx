@@ -38,7 +38,11 @@ export default class BrowserStateIsNotBasedOnDiskStateModal extends UIComponent<
     const loadingState = val(project.atomP.ephemeral.loadingState)
 
     return (
-      <Modal onClose={this.onClose} autoClose={false} container={document.getElementById('theatrejs-ui-root')!}>
+      <Modal
+        onClose={this.onClose}
+        autoClose={false}
+        container={document.getElementById('theatrejs-ui-root')!}
+      >
         <div {...classes('container')}>
           <p>
             The state saved in the browser seems to be not based on the state

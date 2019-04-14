@@ -49,7 +49,12 @@ export default ({
         ref={forwardedRef}
         {...classes('pointClickArea', dopesheet && 'ewCursor')}
       />
-      <circle cx={`${x}%`} cy={`${y}%`} r={6} {...classes('_deprecatedPointGlow')} />
+      <circle
+        cx={`${x}%`}
+        cy={`${y}%`}
+        r={6}
+        {...classes('_deprecatedPointGlow')}
+      />
     </>
   )
 }

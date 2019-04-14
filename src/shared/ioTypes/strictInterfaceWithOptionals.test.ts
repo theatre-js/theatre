@@ -9,9 +9,7 @@ export function strictInterfaceWithOptionals<
   required: R,
   optional: O,
   name?: string,
-): t.Type<
-  t.TypeOfProps<R> & t.TypeOfPartialProps<O>
-> {
+): t.Type<t.TypeOfProps<R> & t.TypeOfPartialProps<O>> {
   return t.exact(
     t.intersection([t.interface(required), t.partial(optional)]),
     name,

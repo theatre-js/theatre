@@ -5,7 +5,7 @@ import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
 import {getScrollSpaceWidth_deprecated} from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import {TDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {overshootDuration} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
-import { TimeStuff } from '$tl/ui/panels/AllInOnePanel/TimeStuffProvider';
+import {TimeStuff} from '$tl/ui/panels/AllInOnePanel/TimeStuffProvider'
 
 interface IExportedComponentProps {
   children: React.ReactNode
@@ -65,9 +65,7 @@ export default (props: IExportedComponentProps) => (
         {() => {
           const timelineTemplate = val(timeStuffP.timelineTemplate)
           const range = val(timeStuffP.rangeAndDuration.range)
-          const duration = overshootDuration(
-            val(timelineTemplate!._durationD),
-          )
+          const duration = overshootDuration(val(timelineTemplate!._durationD))
           const width = val(timeStuffP.viewportSpace.width)
           const rootPropProviderProps: IRootPropProviderProps = {
             duration,

@@ -104,7 +104,9 @@ const sanitizeAdapter = (
 
   if (!adapter.hasOwnProperty('getConfig')) {
     throw new InvalidArgumentError(
-      `Adapter "${adapter.name}" does not seem to have a getConfig() method.\n` +
+      `Adapter "${
+        adapter.name
+      }" does not seem to have a getConfig() method.\n` +
         `To fix this, implement a getConfig() method that takes a native object ` +
         `and returns the config of that object. Example:\n` +
         exampleGoodAdapter +

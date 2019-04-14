@@ -255,10 +255,8 @@ export const boolean: BooleanType = new BooleanType()
 export class AnyArrayType extends Type<Array<mixed>> {
   readonly _tag: 'AnyArrayType' = 'AnyArrayType'
   constructor() {
-    super(
-      'Array',
-      Array.isArray,
-      (m, c) => (this.is(m) ? success() : failure(m, c)),
+    super('Array', Array.isArray, (m, c) =>
+      this.is(m) ? success() : failure(m, c),
     )
   }
 }

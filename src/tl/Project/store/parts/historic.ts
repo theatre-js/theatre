@@ -304,8 +304,7 @@ export const prop_setNumberValueInStaticValueContainer = r(
       }
     } else {
       ;(objectState.props[p.propKey]
-        .valueContainer as StaticValueContainer).value =
-        p.value
+        .valueContainer as StaticValueContainer).value = p.value
     }
   },
 )

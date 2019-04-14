@@ -44,7 +44,7 @@ interface IRangeAndDuration {
 }
 
 export interface IRangeAndDurationLock {
-  unlock: (() => void)
+  unlock: () => void
   relock: (lockedRangeAndDuration: IRangeAndDuration) => void
 }
 

@@ -7,7 +7,7 @@ import {
 } from './objectTypes'
 import {ObjectAddress} from '$tl/handy/addresses'
 import {NativeObjectAdapter} from '$tl/nativeObjectAdapters/NativeObjectAdaptersManager'
-import atom, { Atom } from '$shared/DataVerse/atom';
+import atom, {Atom} from '$shared/DataVerse/atom'
 
 export default class ObjectTemplate {
   // nativeObjectType: NativeObjectType
@@ -34,7 +34,7 @@ export default class ObjectTemplate {
   ) {
     this._address = {...timelineTemplate._address, objectPath: path}
     this.atom = atom({
-      objectProps: nativeObjectType.props
+      objectProps: nativeObjectType.props,
     })
 
     this.adapter = getAdapterOfNativeObject(

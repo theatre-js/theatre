@@ -1,7 +1,5 @@
 import reducto from '$shared/utils/redux/reducto'
-import {
-  $ProjectAhistoricState,
-} from '$tl/Project/store/types'
+import {$ProjectAhistoricState} from '$tl/Project/store/types'
 
 const r = reducto($ProjectAhistoricState)
 

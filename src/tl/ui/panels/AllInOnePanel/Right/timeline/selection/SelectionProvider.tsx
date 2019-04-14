@@ -499,7 +499,11 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
     const {duration, range, timelineWidth} = this.props
     const {move} = this.state
 
-    const svgWidth = getScrollSpaceWidth_deprecated(range, duration, timelineWidth)
+    const svgWidth = getScrollSpaceWidth_deprecated(
+      range,
+      duration,
+      timelineWidth,
+    )
 
     const timeChange = (move.x / svgWidth) * duration
 

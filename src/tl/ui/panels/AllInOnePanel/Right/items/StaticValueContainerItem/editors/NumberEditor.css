@@ -14,7 +14,7 @@
     /* background: black; */
     background: var(--colors-set-60);
     /* background: var(--colors-set-61); */
-    
+
     border: none;
     /* border: 1px solid white; */
     outline: none;
@@ -42,7 +42,8 @@
     user-select: none;
     font-weight: 200;
 
-    & .input:hover, &.dragging .input {
+    & .input:hover,
+    &.dragging .input {
       background: var(--colors-set-64);
       color: var(--colors-set-65);
     }

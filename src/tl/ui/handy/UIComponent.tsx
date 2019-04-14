@@ -20,18 +20,18 @@ export default class UIComponent<Props, State> extends React.Component<
   constructor(props: Props, context: $IntentionalAny) {
     super(props, context)
     this.ui = context.ui
-  //   const renderHookie = this.renderHookie
-  //   if (renderHookie) {
-  //     this._hooksilosa = (props: Props) => {
-  //       return (
-  //         <PropsAsPointer {...props}>
-  //           {propsP => {
-  //             return renderHookie(propsP)
-  //           }}
-  //         </PropsAsPointer>
-  //       )
-  //     }
-  //   }
+    //   const renderHookie = this.renderHookie
+    //   if (renderHookie) {
+    //     this._hooksilosa = (props: Props) => {
+    //       return (
+    //         <PropsAsPointer {...props}>
+    //           {propsP => {
+    //             return renderHookie(propsP)
+    //           }}
+    //         </PropsAsPointer>
+    //       )
+    //     }
+    //   }
   }
 
   render(): React.ReactNode {

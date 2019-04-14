@@ -34,7 +34,8 @@ export default class BlockNonChrome extends UIComponent<IProps, IState> {
               Hi! You're seeing{' '}
               <a href="https://theatrejs.com" target="_blank">
                 Theatre.js
-              </a>, a visual set of animation tools for the web.
+              </a>
+              , a visual set of animation tools for the web.
             </p>
             <p>
               Your Theatre.js animation will run on all browsers. But to edit

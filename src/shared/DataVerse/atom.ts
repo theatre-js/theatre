@@ -226,7 +226,9 @@ export const val = <P>(
   pointerOrDerivationOrPlainValue: P,
 ): P extends PointerInnerObj<infer T>
   ? T
-  : P extends AbstractDerivation<infer T> ? T : P => {
+  : P extends AbstractDerivation<infer T>
+  ? T
+  : P => {
   if (isPointer(pointerOrDerivationOrPlainValue)) {
     return valueDerivation(
       pointerOrDerivationOrPlainValue,
@@ -249,7 +251,9 @@ export const coldVal = <P>(
   pointerOrDerivationOrPlainValue: P,
 ): P extends PointerInnerObj<infer T>
   ? T
-  : P extends AbstractDerivation<infer T> ? T : P => {
+  : P extends AbstractDerivation<infer T>
+  ? T
+  : P => {
   if (isPointer(pointerOrDerivationOrPlainValue)) {
     const meta = pointerOrDerivationOrPlainValue.$pointerMeta
     return meta.root.getIn(meta.path as $IntentionalAny)

@@ -2,7 +2,7 @@ import flattenDeep from './flattenDeep'
 import Ticker from '$shared/DataVerse/Ticker'
 import withDeps from '$shared/DataVerse/derivations/withDeps'
 import constant from '$shared/DataVerse/derivations/constant'
-import atom from '$shared/DataVerse/atom';
+import atom from '$shared/DataVerse/atom'
 import {valueDerivation} from '../atom'
 
 describe('FlattenDeepDerivation', () => {

@@ -23,14 +23,14 @@ const sanitizeAndValidateProps = (
     if (typeof key !== 'string') {
       console.warn(messageGenerator.propNameIsNotString(key))
       continue
-    } else if (key.match(/[\.\-\/]+/)) {
+    } else if (key.match(/[\.\-\/]+/)) {
       console.warn(messageGenerator.propNameHasIllegalCharacters(key))
       continue
     } else if (key.length > 32) {
       console.warn(messageGenerator.propNameHasWrongLength(key))
       continue
     }
-    
+
     const propConfig = props[key]
     if (propConfig && typeof propConfig === 'object') {
       if (!propConfig.hasOwnProperty('type')) {

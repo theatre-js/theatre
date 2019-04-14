@@ -47,7 +47,9 @@ export default class Handle extends UIComponent<IProps, IState> {
               const which = val(p.props.which)
               const time = range[which]
               const viewportWidth = val(timeStuffP.viewportSpace.width)
-              const timeToInRangeX = val(timeStuffP.viewportScrolledSpace.timeToInRangeX)
+              const timeToInRangeX = val(
+                timeStuffP.viewportScrolledSpace.timeToInRangeX,
+              )
 
               const x = timeToInRangeX(time)
 

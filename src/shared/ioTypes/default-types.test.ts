@@ -12,20 +12,14 @@ describe('Record', () => {
 
   it('should fail with primitives', () => {
     const T = t.$Record
-    assertFailure(T.validate('s'), [
-      'Invalid value "s" supplied to : Record',
-    ])
+    assertFailure(T.validate('s'), ['Invalid value "s" supplied to : Record'])
     assertFailure(T.validate(1), ['Invalid value 1 supplied to : Record'])
-    assertFailure(T.validate(true), [
-      'Invalid value true supplied to : Record',
-    ])
+    assertFailure(T.validate(true), ['Invalid value true supplied to : Record'])
   })
 
   it('should fail with null and undefined', () => {
     const T = t.$Record
-    assertFailure(T.validate(null), [
-      'Invalid value null supplied to : Record',
-    ])
+    assertFailure(T.validate(null), ['Invalid value null supplied to : Record'])
     assertFailure(T.validate(undefined), [
       'Invalid value undefined supplied to : Record',
     ])
@@ -78,6 +72,6 @@ describe('object', () => {
 
 describe('Function', () => {
   it('should accept functions', () => {
-    assertSuccess(t.Function.validate((<V>(v: V): V => v)))
+    assertSuccess(t.Function.validate(<V>(v: V): V => v))
   })
 })

@@ -41,7 +41,7 @@ module.exports = (env: Envs) => {
         chunks: ['tl/2'],
         templateParameters: parts.htmlPluginTemplateParameters,
       }),
-      new webpack.ProvidePlugin({'THREE': 'three'})
+      new webpack.ProvidePlugin({THREE: 'three'}),
     )
   })
 }

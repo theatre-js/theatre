@@ -1,5 +1,3 @@
-
-
 .container {
   min-width: 560px;
 
@@ -17,7 +15,6 @@
 }
 
 .hint {
-  
   color: var(--colors-set-36);
   font-style: italic;
 }

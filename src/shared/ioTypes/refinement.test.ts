@@ -1,9 +1,6 @@
 import * as t from '$shared/ioTypes'
 import * as assert from 'assert'
-import {
-  assertFailure,
-  assertSuccess,
-} from './testHelpers'
+import {assertFailure, assertSuccess} from './testHelpers'
 
 describe('refinement', () => {
   it('should succeed validating a valid value', () => {

@@ -2,7 +2,7 @@ import withDeps from './withDeps'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 import constant from '$shared/DataVerse/derivations/constant'
 import Ticker from '$shared/DataVerse/Ticker'
-import atom, { valueDerivation } from '$shared/DataVerse/atom';
+import atom, {valueDerivation} from '$shared/DataVerse/atom'
 
 describe('withDeps', () => {
   it('should work', () => {

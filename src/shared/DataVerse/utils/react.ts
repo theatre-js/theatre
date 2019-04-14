@@ -20,7 +20,7 @@ export function useObservedDerivation<T>(fn: () => T): T {
 
   const stuffRef = useRef<null | {
     derivation: AbstractDerivation<T>
-    untap: VoidFn,
+    untap: VoidFn
     fn: () => T
   }>(null)
 

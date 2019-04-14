@@ -121,8 +121,8 @@ class InternalItem extends React.PureComponent<IProps, IState> {
   showExtender = () => {
     clearTimeout(this.hideExtenderTimeout)
     this.mouseCoords = null
-    this.setState(
-      ({renderExtender}) => (renderExtender ? null : {renderExtender: true}),
+    this.setState(({renderExtender}) =>
+      renderExtender ? null : {renderExtender: true},
     )
   }
 

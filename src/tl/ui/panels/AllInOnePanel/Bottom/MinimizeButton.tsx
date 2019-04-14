@@ -16,9 +16,7 @@ interface IState {}
 export default class MinimizeButton extends UIComponent<IProps, IState> {
   render() {
     return (
-      <WithTooltip 
-        inside={<div {...classes('tooltip')}>Minimize</div>}
-        >
+      <WithTooltip inside={<div {...classes('tooltip')}>Minimize</div>}>
         <div {...classes('itemWrapper')}>
           <Item onClick={this.minimize}>
             <div {...classes('iconWrapper')}>

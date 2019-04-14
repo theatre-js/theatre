@@ -57,8 +57,7 @@ export const setActiveTimelineInstanceId = r(
 
     s.allInOnePanel.projects[p.projectId].timelines[
       p.timelinePath
-    ].selectedTimelineInstance =
-      p.timelineInstanceId
+    ].selectedTimelineInstance = p.timelineInstanceId
   },
 )
 

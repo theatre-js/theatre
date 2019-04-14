@@ -37,7 +37,7 @@
     display: none;
     content: ' ';
     z-index: 5;
-    border-left: 1px solid var(--colors-set-30)fff3d;
+    border-left: 1px solid var(--colors-set-30) fff3d;
   }
 
   &:first-child:before {
@@ -110,7 +110,7 @@
 }
 
 .name:hover ~ .highlighter {
-  background: var(--colors-set-30)fff21;
+  background: var(--colors-set-30) fff21;
 }
 
 .selected > .top > .name {

@@ -2,7 +2,7 @@ import resolveCss from '$shared/utils/resolveCss'
 import UIComponent from '$tl/ui/handy/UIComponent'
 import React from 'react'
 import * as css from './Item.css'
-import { ReactComponent } from '$shared/types';
+import {ReactComponent} from '$shared/types'
 
 interface IProps {
   css?: Partial<typeof css>
@@ -25,7 +25,11 @@ export default class Item extends UIComponent<IProps, IState> {
     const Component = props.component || 'div'
     const otherProps = props.otherProps || {}
     return (
-      <Component {...classes('container')} onClick={props.onClick} {...otherProps}>
+      <Component
+        {...classes('container')}
+        onClick={props.onClick}
+        {...otherProps}
+      >
         {props.children}
       </Component>
     )

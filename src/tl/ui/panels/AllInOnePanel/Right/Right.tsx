@@ -54,7 +54,11 @@ class Right extends UIComponent<IRightProps, IRightState> {
 
   render() {
     const {range, duration, timelineWidth} = this.props
-    const viewportWidth = getScrollSpaceWidth_deprecated(range, duration, timelineWidth)
+    const viewportWidth = getScrollSpaceWidth_deprecated(
+      range,
+      duration,
+      timelineWidth,
+    )
     this._scrollContainer(range)
     return (
       <>

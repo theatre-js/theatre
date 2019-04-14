@@ -139,22 +139,31 @@ export type ObjectTemplateState = t.StaticTypeOf<typeof $ObjectTemplateState>
 
 const TimelineTemplateState = t.type(
   {
-    objects: t.record(t.string, $ObjectTemplateState, 'TimelineTemplateObjects'),
+    objects: t.record(
+      t.string,
+      $ObjectTemplateState,
+      'TimelineTemplateObjects',
+    ),
     duration: t.maybe(t.number),
   },
   'TimelineTemplateState',
 )
 
-export type TimelineTemplateState = t.StaticTypeOf<
-  typeof TimelineTemplateState
->
+export type TimelineTemplateState = t.StaticTypeOf<typeof TimelineTemplateState>
 
 /**
  * Historic state is both persisted and is undoable
  */
-export const $ProjectHistoricState = t.type({
-  timelineTemplates: t.record(t.string, TimelineTemplateState, 'MapOfTimelineTemplates'),
-}, 'ProjectHistoricState')
+export const $ProjectHistoricState = t.type(
+  {
+    timelineTemplates: t.record(
+      t.string,
+      TimelineTemplateState,
+      'MapOfTimelineTemplates',
+    ),
+  },
+  'ProjectHistoricState',
+)
 
 export type ProjectHistoricState = t.StaticTypeOf<typeof $ProjectHistoricState>
 

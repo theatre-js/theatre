@@ -18,7 +18,6 @@ export default class SelectionContextMenu extends React.PureComponent<
   IProps,
   IState
 > {
-
   render() {
     const {left, top, onClose, onDelete} = this.props
     return (

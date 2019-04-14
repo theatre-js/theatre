@@ -9,7 +9,7 @@ import Settings from '$tl/ui/panels/AllInOnePanel/Bottom/Settings/Settings'
 import MinimizeButton from '$tl/ui/panels/AllInOnePanel/Bottom/MinimizeButton'
 import logoInSvg from 'svg-inline-loader!./logoInTheBottom.svg'
 import SvgIcon from '$shared/components/SvgIcon'
-import DraggableArea from '$shared/components/DraggableArea/DraggableArea';
+import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
 
 export const bottomHeight = parseFloat(css.bottomHeight.replace(/[a-z]+$/, ''))
 
@@ -42,7 +42,6 @@ export default class Bottom extends UIComponent<IProps, IState> {
           onDrag={this.props.handlePanelMove}
           onDragEnd={this.props.handlePanelMoveEnd}
           lockCursorTo="move"
-          
         >
           <div {...classes('moveHandle')} />
         </DraggableArea>
@@ -54,7 +53,11 @@ export default class Bottom extends UIComponent<IProps, IState> {
             {...classes('logo')}
             title="Theatre.js – The hackable animation editor"
           >
-            <SvgIcon sizing="absoluteFill" src={logoInSvg} {...classes('logoSvg')} />
+            <SvgIcon
+              sizing="absoluteFill"
+              src={logoInSvg}
+              {...classes('logoSvg')}
+            />
           </a>
         </div>
       </div>

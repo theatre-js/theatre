@@ -73,7 +73,8 @@ export default class StaticValueContainerItem extends UIComponent<
     if (valueContainer && valueContainer.type !== 'StaticValueContainer')
       return null
 
-    const possibleStoredValue: number | undefined = valueContainer && valueContainer.value
+    const possibleStoredValue: number | undefined =
+      valueContainer && valueContainer.value
     const value =
       typeof possibleStoredValue === 'number' ? possibleStoredValue : 0
 

@@ -23,7 +23,7 @@ export const startIgnoringDependencies = () => {
 export const stopIgnoringDependencies = () => {
   if (stack.peek() !== noopCollector) {
     if ($env.NODE_ENV === 'development') {
-      console.warn("This should never happen")
+      console.warn('This should never happen')
     }
   } else {
     stack.pop()

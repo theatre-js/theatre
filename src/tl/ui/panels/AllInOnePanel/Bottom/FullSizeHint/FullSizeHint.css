@@ -33,7 +33,6 @@
   border-left: 2px solid var(--colors-set-5);
   line-height: 24px;
   user-select: text !important;
-
 }
 
 .code::-webkit-scrollbar {

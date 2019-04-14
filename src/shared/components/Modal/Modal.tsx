@@ -25,7 +25,10 @@ class Modal extends React.PureComponent<IProps, IState> {
   }
 
   render() {
-    return ReactDOM.createPortal(this._renderModal(), this.props.container || document.body)
+    return ReactDOM.createPortal(
+      this._renderModal(),
+      this.props.container || document.body,
+    )
   }
 
   _renderModal() {

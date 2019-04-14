@@ -1,7 +1,7 @@
 import Project from '$tl/Project/Project'
 import {validateAndSanitiseSlashedPathOrThrow} from '$tl/handy/slashedPaths'
 import TheatreJSTimelineInstance from '$tl/facades/TheatreJSTimelineInstance'
-import { validateName } from '$tl/facades/otherSanitizers';
+import {validateName} from '$tl/facades/otherSanitizers'
 
 const projectsWeakmap = new WeakMap<TheatreJSProject, Project>()
 
@@ -24,9 +24,13 @@ export default class TheatreJSProject {
       _path,
       'project.getTimeline',
     )
-    
-    if (!$env.tl.isCore) {
-      validateName(instanceId, 'instanceId in project.getTimeline(path, instanceId)', true)
+
+    if (!$env.tl.isCore) {
+      validateName(
+        instanceId,
+        'instanceId in project.getTimeline(path, instanceId)',
+        true,
+      )
     }
 
     return getProject(this).getTimeline(path, instanceId).facade

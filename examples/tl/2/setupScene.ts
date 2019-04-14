@@ -23,7 +23,10 @@ const vertexShaderSource = `
   }
   `
 
-const getDims = () => ({width: window.innerWidth / 2, height: window.innerHeight})
+const getDims = () => ({
+  width: window.innerWidth / 2,
+  height: window.innerHeight,
+})
 
 const setupScene = () => {
   let camera: THREE.Camera,

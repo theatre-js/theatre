@@ -65,7 +65,7 @@ export const tempActionGroup = (
   return {
     push,
     discard,
-    commit
+    commit,
   }
 }
 

@@ -8,7 +8,7 @@ import Project from '$tl/Project/Project'
 import projectSelectors from '$tl/Project/store/selectors'
 import {Pointer} from '$shared/DataVerse/pointer'
 import {PropValueContainer} from '$tl/Project/store/types'
-import { PropDescriptor } from '$tl/objects/objectTypes';
+import {PropDescriptor} from '$tl/objects/objectTypes'
 
 export type NodeDescriptorsByPath = {
   [path: string]: NodeDescriptor
@@ -211,7 +211,6 @@ export const timelineTemplateToSeriesOfVerticalItems = (
     propDescriptor: PropDescriptor,
     depth: number,
   ) => {
-
     if (propDescriptor.type === 'number') {
       const propAddr = {...objectTemplate._address, objectPath, propKey}
       // debugger
@@ -233,8 +232,7 @@ export const timelineTemplateToSeriesOfVerticalItems = (
 
       const expandable = valueContainerType === 'BezierCurvesOfScalarValues'
 
-      const expanded =
-        (expandable && propState && propState.expanded) || false
+      const expanded = (expandable && propState && propState.expanded) || false
 
       push(
         {

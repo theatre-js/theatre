@@ -2,7 +2,7 @@ import AbstractDerivation from './AbstractDerivation'
 
 const _any: $IntentionalAny = null
 
-// map
+  // map
 ;() => {
   const a: AbstractDerivation<string> = _any
 

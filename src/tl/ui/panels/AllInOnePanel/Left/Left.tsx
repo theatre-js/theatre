@@ -49,7 +49,9 @@ export default class Left extends UIComponent<IProps, IState> {
                 )
 
                 const lastItem = items[items.length - 1]
-                const height = (lastItem ? lastItem.top + lastItem.height : 0) + scrollableAreaExtraBottomPadding
+                const height =
+                  (lastItem ? lastItem.top + lastItem.height : 0) +
+                  scrollableAreaExtraBottomPadding
 
                 return items.length > 0 ? (
                   <div
@@ -73,7 +75,10 @@ export default class Left extends UIComponent<IProps, IState> {
                   </div>
                 ) : (
                   <div {...classes('createItemTip')}>
-                    <TextBlock>Your timeline seems to be empty. Add an object to your timeline by:</TextBlock>
+                    <TextBlock>
+                      Your timeline seems to be empty. Add an object to your
+                      timeline by:
+                    </TextBlock>
                     <CodeSnippet>
                       timeline.getObject('My Div', myDiv)
                     </CodeSnippet>

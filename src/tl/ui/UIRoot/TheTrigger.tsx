@@ -7,7 +7,7 @@ import {val} from '$shared/DataVerse/atom'
 import WindowDims from '$shared/utils/react/WindowDims'
 import SvgIcon from '$shared/components/SvgIcon'
 import minimizeIcon from 'svg-inline-loader!$tl/ui/panels/AllInOnePanel/Bottom/minimizeIcon.svg'
-import WithTooltip from '$shared/components/WithTooltip/WithTooltip';
+import WithTooltip from '$shared/components/WithTooltip/WithTooltip'
 
 const boxDims = {
   width: 50,

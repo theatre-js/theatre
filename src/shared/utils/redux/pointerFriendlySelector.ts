@@ -7,7 +7,9 @@ type PointerFriendlySelector<S, R, Args extends $IntentionalAny[]> = <
   ...args: Args
 ) => GivenState extends Pointer<S>
   ? Pointer<R>
-  : GivenState extends S ? R : never
+  : GivenState extends S
+  ? R
+  : never
 
 /**
  * Takes a selector and returns a new selector that supports

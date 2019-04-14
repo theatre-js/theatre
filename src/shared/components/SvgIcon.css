@@ -12,7 +12,6 @@
 .container.absoluteFill {
   width: 100%;
   & > svg {
-
     position: absolute 0;
   }
 }

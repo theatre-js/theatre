@@ -83,9 +83,8 @@ export default class TimelineInstance {
   }
 
   _gotoTime = (t: number) => {
-    this._state.reduceState(
-      ['time'],
-      () => (typeof t === 'number' && t >= 0 ? t : 0),
+    this._state.reduceState(['time'], () =>
+      typeof t === 'number' && t >= 0 ? t : 0,
     )
   }
 

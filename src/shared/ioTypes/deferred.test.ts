@@ -11,9 +11,7 @@ describe('deferred', () => {
   it('should fail validating an invalid value', () => {
     const T = t.deferred(() => t.number)
 
-    assertFailure(T.validate('s'), [
-      'Invalid value "s" supplied to : number',
-    ])
+    assertFailure(T.validate('s'), ['Invalid value "s" supplied to : number'])
   })
 
   it('should type guard', () => {

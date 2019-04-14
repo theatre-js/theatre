@@ -2,9 +2,13 @@ import * as assert from 'assert'
 import * as t from '$shared/ioTypes'
 import {assertSuccess, assertFailure} from './testHelpers'
 
-class A {a: true}
+class A {
+  a: true
+}
 class A2 extends A {}
-class B {b: true}
+class B {
+  b: true
+}
 
 describe('instanceOf', () => {
   it('should succeed validating a valid value', () => {

@@ -1,7 +1,6 @@
 @value svgPaddingX from '../../Right/views/SVGWrapper.css';
 @value halfOfSvgPaddingX: calc(0.5 * svgPaddingX);
 
-
 .container {
   position: absolute;
   height: 9px;

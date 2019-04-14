@@ -60,7 +60,11 @@ export const inRangeXToPaddedScrollSpaceX = (
   duration: TDuration,
   timelineWidth: number,
 ) => {
-  const scrollSpaceWidth = getScrollSpaceWidth_deprecated(range, duration, timelineWidth)
+  const scrollSpaceWidth = getScrollSpaceWidth_deprecated(
+    range,
+    duration,
+    timelineWidth,
+  )
   const svgX = inRangeXToSvgX(timelineX, range, duration, timelineWidth)
   return timelineX + getSvgXToPaddedSvgXOffset(scrollSpaceWidth)(svgX)
 }
@@ -80,7 +84,11 @@ export const viewportScrolledSpace = {
     timelineX: number,
     shouldClamp: boolean = true,
   ) => {
-    const svgWidth = getScrollSpaceWidth_deprecated(range, duration, timelineWidth)
+    const svgWidth = getScrollSpaceWidth_deprecated(
+      range,
+      duration,
+      timelineWidth,
+    )
     const svgX = inRangeXToSvgX(timelineX, range, duration, timelineWidth)
     const theX = timelineX - getSvgXToPaddedSvgXOffset(svgWidth)(svgX)
     const time = timelineXToTime(range, timelineWidth)(theX)
@@ -115,7 +123,11 @@ export const getRangeLabel = (
   timelineWidth: number,
 ) => (rangeTime: number) => {
   let rangeX = timeToSvgX(range, duration, timelineWidth)(rangeTime)
-  const svgWidth = getScrollSpaceWidth_deprecated(range, duration, timelineWidth)
+  const svgWidth = getScrollSpaceWidth_deprecated(
+    range,
+    duration,
+    timelineWidth,
+  )
   rangeX = clamp(
     rangeX - getSvgXToPaddedSvgXOffset(svgWidth)(rangeX),
     0,

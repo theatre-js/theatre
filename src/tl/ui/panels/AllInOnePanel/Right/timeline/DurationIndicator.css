@@ -21,14 +21,14 @@
   z-index: 2;
   cursor: ew-resize;
 
-
   &:before {
     position: absolute -2px;
     content: ' ';
     display: block;
   }
 
-  &:hover, &.dragging {
+  &:hover,
+  &.dragging {
     background: white;
   }
 }

@@ -7,8 +7,8 @@ const formatValidationError = (error: t.ValidationError) => {
       return c.key
     })
     .filter(key => key.length > 0)
-    .map(
-      key => (key.match(/^[a-zA-Z\_]+\w*$/) ? key : `[${JSON.stringify(key)}]`),
+    .map(key =>
+      key.match(/^[a-zA-Z\_]+\w*$/) ? key : `[${JSON.stringify(key)}]`,
     )
     .join('.')
 

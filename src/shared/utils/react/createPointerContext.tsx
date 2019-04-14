@@ -3,9 +3,7 @@ import atom, {Atom} from '$shared/DataVerse/atom'
 import {Pointer} from '$shared/DataVerse/pointer'
 
 export default function createPointerContext<T>() {
-  const Context = React.createContext(
-    (null as $IntentionalAny) as Pointer<T>,
-  )
+  const Context = React.createContext((null as $IntentionalAny) as Pointer<T>)
 
   const {Consumer: InnerConsumer, Provider: _Provider} = Context
 

@@ -54,7 +54,7 @@
     position: absolute 0;
     display: block;
     content: ' ';
-    background: var(--colors-set-2);;
+    background: var(--colors-set-2);
     border-radius: 0 2px 2px 0;
     /* background: url('url-loader!./ScrollerHandle.svg'); */
   }

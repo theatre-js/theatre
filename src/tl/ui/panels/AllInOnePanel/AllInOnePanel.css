@@ -2,11 +2,11 @@
 @value fontd: 12px -apple-system, BlinkMacSystemFont, Segoe WPC, Segoe UI, HelveticaNeue-Light, Ubuntu, Droid Sans, sans-serif;
 
 :global(.theatrejs-ui-root) {
-  --colors-panel-bg:  #263238;
-  --colors-space-bg:  #1b2226;
-  --colors-panel-edge:  #1e2a30;
-  --colors-panel-feint-text:  #3d666b;
-  --colors-panel-label:  #8ea2ad;
+  --colors-panel-bg: #263238;
+  --colors-space-bg: #1b2226;
+  --colors-panel-edge: #1e2a30;
+  --colors-panel-feint-text: #3d666b;
+  --colors-panel-label: #8ea2ad;
   --colors-panel-tini: rgba(#8ea2ad, 0.4);
   --colors-panel-mini: #4f5d77;
   --colors-space-text: #45787b;
@@ -70,7 +70,6 @@
   --colors-set-64: #00000020;
   --colors-set-65: #ccc;
 }
-
 
 .container {
   position: fixed;

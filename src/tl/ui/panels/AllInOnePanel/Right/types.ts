@@ -22,7 +22,7 @@ export type TNormalizedPoints = TNormalizedPoint[]
 export type TExtremums = TNumberTuple
 
 // Range state
-export type TRange = {from: number, to: number}
+export type TRange = {from: number; to: number}
 export type TDuration = number
 
 // item

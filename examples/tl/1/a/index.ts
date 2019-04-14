@@ -14,12 +14,12 @@ const project = Theatre.getProject('My project', {state})
 const natives: HTMLElement[] = []
 
 const createBox = (project: TheatreJSProject, i: number, iteration: number) => {
-  let nativeObject
-  if (natives[i]) {
-    nativeObject = natives[i]
-  } else {
-    nativeObject = document.createElement('div')
-    nativeObject.style.cssText = `
+    let nativeObject
+    if (natives[i]) {
+      nativeObject = natives[i]
+    } else {
+      nativeObject = document.createElement('div')
+      nativeObject.style.cssText = `
     position: absolute;
     left: calc(10vw + ${i * 60}px);
     bottom: 0;
@@ -28,60 +28,60 @@ const createBox = (project: TheatreJSProject, i: number, iteration: number) => {
     transform-origin: center bottom;
     background: #EEE;
   `
-    document.body.appendChild(nativeObject)
-    natives[i] = nativeObject
+      document.body.appendChild(nativeObject)
+      natives[i] = nativeObject
+    }
+
+    const instanceName = 'Box ' + i
+    const timeline = project.getTimeline('Bounce', instanceName)
+
+    nativeObject.addEventListener('click', () => {
+      timeline.play()
+    })
+
+    const propNames = [
+      'y',
+      'stretch' /*, 'inertia', 'lead', 'glide', 'torque', 'symbiosis', 'collision', 'slippage', 'elasticity', 'fuzz', 'friction '*/,
+    ]
+
+    // if (iteration === 1) {
+    //   propNames.shift()
+    //   propNames.push('one')
+    // } else if (iteration === 2) {
+    //   propNames.push('one', 'two')
+    // } else if (iteration === 3) {
+    //   propNames.push('two')
+    // }
+
+    const props: Record<string, {type: 'number'}> = {}
+    propNames.forEach(name => {
+      props[name] = {type: 'number'}
+    })
+    // debugger
+    // Create an object:
+    const object = timeline.getObject(
+      // The name of the object is "The box":
+      'The box',
+      // Leave a reference to the native object, which in this case is a div:
+      nativeObject,
+      // Define the properties of our object. In this case, we plan to animate the object by
+      // moving it up and down, along the y axis. So we'll only have one prop for now:
+      {props},
+    )
+
+    // console.log({initial: object.currentValues})
+
+    object.onValuesChange((newValues: $FixMe) => {
+      // console.log(newValues)
+
+      const div = object.nativeObject
+      div.style.transform = `translateY(${-newValues.y}px) scaleY(${
+        newValues.stretch
+      }) scaleX(${1 / newValues.stretch})`
+    })
   }
 
-  const instanceName = 'Box ' + i
-  const timeline = project.getTimeline('Bounce', instanceName)
-
-  nativeObject.addEventListener('click', () => {
-    timeline.play()
-  })
-
-  const propNames = [
-    'y',
-    'stretch' /*, 'inertia', 'lead', 'glide', 'torque', 'symbiosis', 'collision', 'slippage', 'elasticity', 'fuzz', 'friction '*/,
-  ]
-
-  // if (iteration === 1) {
-  //   propNames.shift()
-  //   propNames.push('one')
-  // } else if (iteration === 2) {
-  //   propNames.push('one', 'two')
-  // } else if (iteration === 3) {
-  //   propNames.push('two')
-  // }
-
-  const props: Record<string, {type: 'number'}> = {}
-  propNames.forEach(name => {
-    props[name] = {type: 'number'}
-  })
-  // debugger
-  // Create an object:
-  const object = timeline.getObject(
-    // The name of the object is "The box":
-    'The box',
-    // Leave a reference to the native object, which in this case is a div:
-    nativeObject,
-    // Define the properties of our object. In this case, we plan to animate the object by
-    // moving it up and down, along the y axis. So we'll only have one prop for now:
-    {props},
-  )
-
-  // console.log({initial: object.currentValues})
-
-  object.onValuesChange((newValues: $FixMe) => {
-    // console.log(newValues)
-
-    const div = object.nativeObject
-    div.style.transform = `translateY(${-newValues.y}px) scaleY(${
-      newValues.stretch
-    }) scaleX(${1 / newValues.stretch})`
-  })
-}
-
-// createBox(project, 0, 0)
+  // createBox(project, 0, 0)
 ;[0, 1, 2].forEach(iteration => {
   setTimeout(() => {
     for (let i = 0; i < 3; i++) {

@@ -1,10 +1,10 @@
-import withContext from "$shared/utils/react/withContext";
-import React from "react";
+import withContext from '$shared/utils/react/withContext'
+import React from 'react'
 
 describe(`withContext()`, () => {
   it(`should work`, () => {
     const ctx = React.createContext<number>(0)
-    const Comp = (props: {a: string, ctx: number}) => {
+    const Comp = (props: {a: string; ctx: number}) => {
       return <div />
     }
 

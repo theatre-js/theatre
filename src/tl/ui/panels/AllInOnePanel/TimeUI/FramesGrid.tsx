@@ -10,7 +10,7 @@ import {
 } from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import {TRange, TDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {viewportScrolledSpace} from '../Right/utils'
-import { padStart } from 'lodash-es';
+import {padStart} from 'lodash-es'
 
 const classes = resolveCss(css)
 
@@ -59,7 +59,10 @@ export default class FramesGrid extends React.PureComponent<IProps, IState> {
                 />
                 <div style={{width: timelineWidth}} {...classes('stamps')}>
                   <div ref={this.fullSecondStampsRef} />
-                  <div ref={this.frameStampLineRef} {...classes('frameStampLine')} />
+                  <div
+                    ref={this.frameStampLineRef}
+                    {...classes('frameStampLine')}
+                  />
                   <div ref={this.frameStampRef} {...classes('frameStamp')} />
                 </div>
               </div>
@@ -91,7 +94,7 @@ export default class FramesGrid extends React.PureComponent<IProps, IState> {
     window.addEventListener('resize', this._updateContainerRect)
     this._renderFrameStamp()
   }
-  
+
   componentDidUpdate() {
     this._drawGrid()
     this._renderFrameStamp()
@@ -192,10 +195,7 @@ export default class FramesGrid extends React.PureComponent<IProps, IState> {
     // TODO: add comments!
     const mouseTimeMiliseconds = mouseTime % 1000
 
-    const frame =
-      Math.round(
-        mouseTimeMiliseconds / this.frameDuration
-      )
+    const frame = Math.round(mouseTimeMiliseconds / this.frameDuration)
 
     const stampTime =
       mouseTime - mouseTimeMiliseconds + frame * this.frameDuration
@@ -204,7 +204,11 @@ export default class FramesGrid extends React.PureComponent<IProps, IState> {
     const s = Math.floor(mouseTime / 1000)
 
     this.frameStampRef.current!.style.transform = `translate3d(calc(${stampX}px - 50%), 0, 0)`
-    this.frameStampRef.current!.innerHTML = `${s}:${padStart(String(frame), 2, '0')}`
+    this.frameStampRef.current!.innerHTML = `${s}:${padStart(
+      String(frame),
+      2,
+      '0',
+    )}`
     this.frameStampLineRef.current!.style.transform = `translate3d(calc(${stampX}px - 50%), 0, 0)`
   }
 

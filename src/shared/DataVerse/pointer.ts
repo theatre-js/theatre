@@ -20,17 +20,19 @@ export type UnindexableTypesForPointer =
   | undefined
   | Function
 
-export type UnindexablePointer = {[K in $IntentionalAny]: Pointer<UnindexablePointer>}
+export type UnindexablePointer = {
+  [K in $IntentionalAny]: Pointer<UnindexablePointer>
+}
 
 export type Pointer<O> = {
   '1': PointerInnerObj<O> &
     (O extends UnindexableTypesForPointer
       ? UnindexablePointer
-      : O extends Array<infer T> 
+      : O extends Array<infer T>
       ? Array<Pointer<T>>
       : O extends {}
-        ? {[K in keyof O]-?: Pointer<O[K]>}
-        : UnindexablePointer)
+      ? {[K in keyof O]-?: Pointer<O[K]>}
+      : UnindexablePointer)
 }[O extends number ? '1' : '1']
 
 const handler = {
@@ -67,4 +69,3 @@ const pointer = <O>({
 }
 
 export default pointer
-

@@ -15,7 +15,7 @@
     }
   }
 
-  &:not(.below) {
+  &:not(.below)  {
     & > .tipContent {
       top: -34px;
 

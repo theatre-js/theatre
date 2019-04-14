@@ -82,7 +82,7 @@ timeline.getObject('The box', sphereGroup)
 //   {
 //     // the object's props:
 //     props: {
-//       // we're defining prop "y", 
+//       // we're defining prop "y",
 //       y: {
 //         // ... which is of type "number"
 //         type: 'number'
@@ -100,10 +100,8 @@ project.ready.then(async () => {
   // timeline.play({
   //   iterationCount: Infinity,
   // })
-
   // timeline.time = 1000
   // console.log('play')
-
   // timeline.play({
   //   iterationCount: 1000,
   //   // range: {from: 200, to: 1300}
@@ -191,7 +189,7 @@ project.ready.then(async () => {
 //     return nativeObject instanceof Circle
 //   },
 
-//   // 
+//   //
 //   getType() {
 
 //   }

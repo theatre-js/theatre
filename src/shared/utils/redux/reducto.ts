@@ -6,7 +6,10 @@ type OuterReducer<State, Payload> = {
   originalReducer: InnerReducer<State, Payload>
 }
 
-type InnerReducer<State, Payload> = (prevState: State, payload: Payload) => void | State
+type InnerReducer<State, Payload> = (
+  prevState: State,
+  payload: Payload,
+) => void | State
 
 /**
  * Wraps a reducer with immer(), and adds ioTypes validation to its

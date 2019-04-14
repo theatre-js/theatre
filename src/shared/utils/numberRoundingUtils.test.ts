@@ -49,7 +49,12 @@ describe(`numberRoundingUtils()`, () => {
     example(roundestNumberBetween, [-10, -5], -10)
     example(roundestNumberBetween, [-5, -10], -10)
     example(roundestNumberBetween, [-10, -5], -10)
-    example(roundestNumberBetween, [-0.00876370109231405, -2.909374013346118e-50], 0, {debug: false})
+    example(
+      roundestNumberBetween,
+      [-0.00876370109231405, -2.909374013346118e-50],
+      0,
+      {debug: false},
+    )
     example(
       roundestNumberBetween,
       [0.059449443526800295, 0.06682093143783596],
@@ -58,7 +63,11 @@ describe(`numberRoundingUtils()`, () => {
     )
     const getRandomNumber = () => {
       const sign = Math.random() > 0.5 ? 1 : -1
-      return Math.pow(Math.random(), Math.random()) / Math.pow(10, Math.random() * 100) * sign
+      return (
+        (Math.pow(Math.random(), Math.random()) /
+          Math.pow(10, Math.random() * 100)) *
+        sign
+      )
     }
     for (let i = 0; i < 2000; i++) {
       const from = toPrecision(getRandomNumber())

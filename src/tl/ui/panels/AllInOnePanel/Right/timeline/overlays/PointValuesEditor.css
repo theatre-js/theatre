@@ -34,7 +34,7 @@
 .row {
   height: 30px;
   position: relative;
-  border-bottom: 1px solid var(--colors-set-52)26;
+  border-bottom: 1px solid var(--colors-set-52) 26;
   &:last-child {
     border-bottom: none;
   }

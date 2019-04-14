@@ -17,5 +17,5 @@ export type TypeOfTheatre = typeof core & {
 
 export default {
   ui,
-  ...core
+  ...core,
 }

@@ -84,7 +84,7 @@ export default abstract class AbstractDerivation<V>
     return this.changesWithoutValues().tap(() => {})
   }
 
-  tapImmediate(ticker: Ticker, fn: ((cb: V) => void)): VoidFn {
+  tapImmediate(ticker: Ticker, fn: (cb: V) => void): VoidFn {
     const untap = this.changes(ticker).tap(fn)
     fn(this.getValue())
     return untap

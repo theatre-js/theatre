@@ -2,6 +2,5 @@
   position: fixed 0;
   z-index: 9999999;
   &.enabled {
-
   }
 }
