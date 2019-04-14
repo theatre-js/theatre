@@ -6,7 +6,6 @@ import {
 import css from './InternalItem.css'
 import resolveCss from '$shared/utils/resolveCss'
 import ItemsList from '$shared/components/MultiLevelDropdown/ItemsList'
-import Overlay from '$shared/components/Overlay/Overlay'
 import {
   isInsideTriangle,
   getDistance2,

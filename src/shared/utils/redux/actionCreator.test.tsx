@@ -24,10 +24,11 @@ describe('$shared/utils/redux/actionCreator()', () => {
     })
   })
 
-  // eslint-disable-next-line
+  // @ts-ignore
   function typeTests() {
     const creator = actionCreator(actionType)
-    let a: any = creator.type as 'Bootstrap' // eslint-disable-line
+    // @ts-ignore
+    let a: any = creator.type as 'Bootstrap'
     // $FlowExpectError
     a = creator.type as 's'
     const action = creator(payload)

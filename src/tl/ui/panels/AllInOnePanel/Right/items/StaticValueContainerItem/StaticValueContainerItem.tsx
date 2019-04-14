@@ -51,6 +51,7 @@ export default class StaticValueContainerItem extends UIComponent<
 
   _renderWithPointers(
     propsP: Pointer<IProps>,
+    // @ts-ignore
     stateP: Pointer<IState>,
     stuffP: Pointer<IAllInOnePanelStuff>,
   ) {

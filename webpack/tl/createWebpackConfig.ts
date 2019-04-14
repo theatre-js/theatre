@@ -81,16 +81,16 @@ module.exports = (env: Envs) => {
           exclude: /node_modules/,
         })
       } else if (isDev) {
-        c.plugins.push(
-          new UnusedWebpackPlugin({
-            // Source directories
-            directories: [parts.srcDir],
-            // Exclude patterns
-            exclude: ['*.test.ts', '*.test.tsx', '*.d.ts'],
-            // Root directory (optional)
-            root: parts.context,
-          }),
-        )
+        // c.plugins.push(
+        //   new UnusedWebpackPlugin({
+        //     // Source directories
+        //     directories: [parts.srcDir],
+        //     // Exclude patterns
+        //     exclude: ['*.test.ts', '*.test.tsx', '*.d.ts'],
+        //     // Root directory (optional)
+        //     root: parts.context,
+        //   }),
+        // )
       }
 
       if (!isDev) {

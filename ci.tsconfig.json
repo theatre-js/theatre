@@ -22,7 +22,5 @@
     "src/setupTests.ts"
   ],
   "compilerOptions": {
-    "noUnusedLocals": false,
-    "noUnusedParameters": false
   }
 }

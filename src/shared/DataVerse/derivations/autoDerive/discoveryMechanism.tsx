@@ -41,7 +41,10 @@ export const reportResolutionStart = (
   stack.push(noopCollector)
 }
 
-export const reportResolutionEnd = (d: AbstractDerivation<$IntentionalAny>) => {
+export const reportResolutionEnd = (
+  // @ts-ignore
+  d: AbstractDerivation<$IntentionalAny>,
+) => {
   stack.pop()
 }
 

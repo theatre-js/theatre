@@ -1,4 +1,3 @@
-import resolveCss from '$shared/utils/resolveCss'
 import UIComponent from '$tl/ui/handy/UIComponent'
 import React from 'react'
 import {Pointer} from '$shared/DataVerse/pointer'

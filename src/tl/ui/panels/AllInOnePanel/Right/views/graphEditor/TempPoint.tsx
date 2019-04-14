@@ -3,12 +3,9 @@ import {
   TColor,
   TNormalizedPoint,
   TPointHandles,
-  TPointSingleHandle,
 } from '$tl/ui/panels/AllInOnePanel/Right/types'
 import BezierConnector from '$tl/ui/panels/AllInOnePanel/Right/views/graphEditor/BezierConnector'
 import PointCircle from '$tl/ui/panels/AllInOnePanel/Right/views/point/PointCircle'
-import {TPointMove} from '$tl/ui/panels/AllInOnePanel/Right/views/types'
-import {isNumberTupleZero} from '$tl/ui/panels/AllInOnePanel/Right/utils'
 
 interface IProps {
   color: TColor

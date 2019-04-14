@@ -1,4 +1,4 @@
-import {padEnd, padStart} from 'lodash-es'
+import {padEnd} from 'lodash-es'
 
 export function roundestNumberBetween(_a: number, _b: number): number {
   if (_b < _a) {
@@ -175,56 +175,6 @@ export const roundestFloat = (a: number, b: number): number => {
 export const numberOfDecimals = (n: number): number => {
   const num = String(getIntAndFraction(n).fraction).length
   return n % 1 > 0 ? num - 2 : 0
-}
-
-function fixal(n: number): string {
-  let s: $FixMe = n
-  if (Math.abs(s) < 1.0) {
-    var e = parseInt(s.toString().split('e-')[1])
-    if (e) {
-      s *= Math.pow(10, e - 1)
-      s = '0.' + new Array(e).join('0') + s.toString().substring(2)
-    }
-  } else {
-    var e = parseInt(s.toString().split('+')[1])
-    if (e > 20) {
-      e -= 20
-      s /= Math.pow(10, e)
-      s += new Array(e + 1).join('0')
-    }
-  }
-  return s
-}
-
-function numberToString(num: number): string {
-  let numStr = String(num)
-
-  if (Math.abs(num) < 1.0) {
-    let e = parseInt(num.toString().split('e-')[1])
-    if (e) {
-      let negative = num < 0
-      if (negative) num *= -1
-      num *= Math.pow(10, e - 1)
-      numStr = '0.' + new Array(e).join('0') + num.toString().substring(2)
-      if (negative) numStr = '-' + numStr
-    }
-  } else {
-    let e = parseInt(num.toString().split('+')[1])
-    if (e > 20) {
-      e -= 20
-      num /= Math.pow(10, e)
-      numStr = num.toString() + new Array(e + 1).join('0')
-    }
-  }
-
-  const matches = numStr.match(/^\-?[0-9]+\.?[0-9]{0,10}/)
-
-  if (!matches) {
-    // debugger
-    return numStr
-  } else {
-    return matches[0]
-  }
 }
 
 export const toPrecision = (n: number): number => {

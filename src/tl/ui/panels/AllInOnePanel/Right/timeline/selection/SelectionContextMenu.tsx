@@ -1,9 +1,6 @@
 import React from 'react'
 import HalfPieContextMenu from '$shared/components/HalfPieContextMenu/HalfPieContextMenu'
-import MdRadioButtonUnchecked from 'react-icons/lib/md/radio-button-unchecked'
 import MdRemoveCircle from 'react-icons/lib/md/remove-circle'
-import MdGroupWork from 'react-icons/lib/md/group-work'
-import noop from '$shared/utils/noop'
 
 interface IProps {
   left: number

@@ -59,7 +59,9 @@ export default class ObjectTemplate {
   }
 
   ensureNativeObjectIsAcceptable(
+    // @ts-ignore
     nativeObject: $FixMe,
+    // @ts-ignore
     config?: NativeObjectTypeConfig,
   ) {}
 }

@@ -1,11 +1,8 @@
 import React from 'react'
-import MdLens from 'react-icons/lib/md/lens'
 import MdRemoveCircle from 'react-icons/lib/md/remove-circle'
-import MdOfflinePin from 'react-icons/lib/md/offline-pin'
 import UIComponent from '$tl/ui/handy/UIComponent'
 import {TPointContextMenuProps} from '$tl/ui/panels/AllInOnePanel/Right/timeline/overlays/types'
 import HalfPieContextMenu from '$shared/components/HalfPieContextMenu/HalfPieContextMenu'
-import noop from '$shared/utils/noop'
 
 interface IProps extends TPointContextMenuProps {
   onClose: () => void

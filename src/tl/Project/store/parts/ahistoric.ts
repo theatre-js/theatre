@@ -3,4 +3,9 @@ import {$ProjectAhistoricState} from '$tl/Project/store/types'
 
 const r = reducto($ProjectAhistoricState)
 
-export const blah = r((s, p: {}) => {})
+export const blah = r((
+  // @ts-ignore
+  s,
+  // @ts-ignore
+  p: {},
+) => {})

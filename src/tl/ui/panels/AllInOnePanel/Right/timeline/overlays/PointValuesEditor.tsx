@@ -60,7 +60,7 @@ class PointValuesEditor extends UIComponent<IProps, IState> {
       temporaryActionDispatched: false,
     }
   }
-
+  // @ts-ignore
   componentWillReceiveProps(newProps: IProps) {}
 
   render() {

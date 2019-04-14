@@ -7,12 +7,10 @@ import {
   getAdapterOfNativeObject,
 } from '$tl/objects/objectTypes'
 import {validateAndSanitiseSlashedPathOrThrow} from '$tl/handy/slashedPaths'
-import {InvalidArgumentError} from '../handy/errors'
 import {sanitizeAndValidateTypeFromAdapter} from '$tl/facades/propSanitizers'
 import {sanitizeAndValidateHardCodedProps} from './propSanitizers'
 import {defer} from '../../shared/utils/defer'
 import userReadableTypeOfValue from '$shared/utils/userReadableTypeOfValue'
-import {isPlainObject} from '$shared/utils'
 
 type GetObjectConfig = NativeObjectTypeConfig
 

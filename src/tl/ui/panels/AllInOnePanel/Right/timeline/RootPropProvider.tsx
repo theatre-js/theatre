@@ -1,7 +1,6 @@
 import React from 'react'
 import {val} from '$shared/DataVerse/atom'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
-import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
 import {getScrollSpaceWidth_deprecated} from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import {TDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {overshootDuration} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'

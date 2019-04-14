@@ -97,7 +97,7 @@ export const getPanelPosition = (state, id) => state.panels[id].position
 import {getPanelPosition} from '[module]/selectors'
 ```
 
-This is all good and well _IF_ `getPanelPosition()` is bound to be imported from multiple different files. _BUT_, if `getPanelPosition()` is only used from inside `[module]/components/Panel.js`, then it's better to just defined it there and not put it in `selectors.js`.
+This is all good and well _IF_ `getPanelPosition()` is bound to be imported from multiple different files. _BUT_, if `getPanelPosition()` is only used from inside `[module]/components/Panel.js`, then it's better to just define it there and not put it in `selectors.js`.
 
 This is the better way to do it:
 

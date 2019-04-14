@@ -31,11 +31,9 @@ export default class BrowserStateIsNotBasedOnDiskStateModal extends UIComponent<
     return projectsSingleton.get(this.props.projectId)!
   }
 
-  _render(propsP: Pointer<IProps>, stateP: Pointer<IState>) {
+  _render(propsP: Pointer<IProps>) {
     const classes = resolveCss(css, this.props.css)
     const projectId = val(propsP.projectId)
-    const project = projectsSingleton.atom.pointer.projects[projectId]
-    const loadingState = val(project.atomP.ephemeral.loadingState)
 
     return (
       <Modal

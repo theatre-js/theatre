@@ -23,7 +23,7 @@ class ItemWrapper extends UIComponent<IProps, IState> {
   propsBeforeResize: IProps
 
   render() {
-    const {height, top, expanded} = this.props.item
+    const {height, top} = this.props.item
     return (
       <div
         {...classes(

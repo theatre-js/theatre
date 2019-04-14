@@ -18,6 +18,7 @@ export interface NativeObjectType {
 export const getAdapterOfNativeObject = (
   project: Project,
   nativeObject: $FixMe,
+  // @ts-ignore
   config?: NativeObjectTypeConfig,
 ) => {
   const adapter = project.adapters.findAdapterForNativeObject(nativeObject)

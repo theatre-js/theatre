@@ -9,7 +9,6 @@ import {
   TPointHandles,
   TPointSingleHandle,
   TNormalizedPoint,
-  TPointCoords,
 } from '$tl/ui/panels/AllInOnePanel/Right/types'
 import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
 import {
@@ -25,7 +24,6 @@ import {
   TShowPointValuesEditor,
   TAddPointToSelection,
   TRemovePointFromSelection,
-  TPointMove,
   TMovePointToNewCoordsTemp,
 } from '$tl/ui/panels/AllInOnePanel/Right/views/types'
 import {TTransformedSelectedArea} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/types'

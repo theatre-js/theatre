@@ -232,7 +232,11 @@ export default class NumberEditor extends UIComponent<IProps, IState> {
     this.props.permenantlySetValue(value)
   }
 
-  onDrag = (dx: number, dy: number) => {
+  onDrag = (
+    // @ts-ignore
+    dx: number,
+    dy: number,
+  ) => {
     const newValue = this.state.valueBeforeDragging - dy
     this.setState({
       currentDraggingValue: newValue,

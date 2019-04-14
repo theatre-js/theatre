@@ -9,15 +9,11 @@ import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 import Project from '$tl/Project/Project'
 import TheatreJSTimelineInstanceObject from '../facades/TheatreJSTimelineInstanceObject'
 import {warningForWhenAdapterDotStartDoesntReturnFunction} from '$tl/facades/TheatreJSAdaptersManager'
-import {val, coldVal} from '$shared/DataVerse/atom'
+import {val} from '$shared/DataVerse/atom'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 import constant from '$shared/DataVerse/derivations/constant'
-import {
-  skipFindingColdDerivations,
-  endSkippingColdDerivations,
-} from '../../shared/debug'
 
-const dummyValuesD = constant(0).flatMap(v => ({}))
+const dummyValuesD = constant(0).flatMap(() => ({}))
 
 class Task {
   controller: TaskController

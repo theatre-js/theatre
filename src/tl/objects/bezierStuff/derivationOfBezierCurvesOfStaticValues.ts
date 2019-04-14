@@ -130,8 +130,6 @@ const states = {
     rightPoint: ITimelineVarPoint,
     timeD: AbstractDerivation<number>,
   ): IStartedState {
-    const leftPointTimePD = leftPoint.time
-
     const interpolationDescriptor = leftPoint.interpolationDescriptor
     const interpolationType = interpolationDescriptor.interpolationType
     const interpolator = (interpolators as $IntentionalAny)[

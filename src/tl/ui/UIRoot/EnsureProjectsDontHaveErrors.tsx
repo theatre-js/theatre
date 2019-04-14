@@ -23,7 +23,7 @@ export default class EnsureProjectsDontHaveErrors extends UIComponent<
     this.state = {}
   }
 
-  _render(propsP: Pointer<IProps>, stateP: Pointer<IState>) {
+  _render(propsP: Pointer<IProps>) {
     const projects = val(projectsSingleton.atom.pointer.projects)
     const projectIds = Object.keys(projects)
     for (const projectId of projectIds) {
