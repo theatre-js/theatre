@@ -10,7 +10,7 @@ import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 import didYouMean from '$shared/utils/didYouMean'
 import noop from '$shared/utils/noop'
-import TheatreJSTimelineInstance from '$tl/facades/TheatreJSTimelineInstance'
+import TimelineFacade from '$tl/facades/TheatreTimeline'
 import {InvalidArgumentError} from '$tl/handy/errors'
 import {defer} from '$shared/utils/defer'
 
@@ -45,7 +45,7 @@ export default class TimelineInstance {
   protected _playing: boolean = false
   _repeat: boolean
   _stopPlayCallback: VoidFn = noop
-  facade: TheatreJSTimelineInstance
+  facade: TimelineFacade
 
   constructor(
     readonly _project: Project,
@@ -58,7 +58,7 @@ export default class TimelineInstance {
       ...this._timelineTemplate._address,
       timelineInstanceId: _instanceId,
     }
-    this.facade = new TheatreJSTimelineInstance(this)
+    this.facade = new TimelineFacade(this)
   }
 
   createObject(

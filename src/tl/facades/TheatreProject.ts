@@ -1,25 +1,24 @@
 import Project from '$tl/Project/Project'
 import {validateAndSanitiseSlashedPathOrThrow} from '$tl/handy/slashedPaths'
-import TheatreJSTimelineInstance from '$tl/facades/TheatreJSTimelineInstance'
+import TheatreTimeline from '$tl/facades/TheatreTimeline'
 import {validateName} from '$tl/facades/otherSanitizers'
 
-const projectsWeakmap = new WeakMap<TheatreJSProject, Project>()
+const projectsWeakmap = new WeakMap<TheatreProject, Project>()
 
-export type TheatreJSProjectConf = Partial<{
+export type TheatreProjectConf = Partial<{
   state: $IntentionalAny
 }>
 
 // User-facing facade for Project
-export default class TheatreJSProject {
-  // static name = 'Project'
-  constructor(id: string, config: TheatreJSProjectConf = {}) {
+export default class TheatreProject {
+  constructor(id: string, config: TheatreProjectConf = {}) {
     projectsWeakmap.set(this, new Project(id, config, this))
   }
 
   getTimeline(
     _path: string,
     instanceId: string = 'default',
-  ): TheatreJSTimelineInstance {
+  ): TheatreTimeline {
     const path = validateAndSanitiseSlashedPathOrThrow(
       _path,
       'project.getTimeline',
@@ -49,5 +48,5 @@ export default class TheatreJSProject {
   }
 }
 
-const getProject = (p: TheatreJSProject) =>
+const getProject = (p: TheatreProject) =>
   (projectsWeakmap.get(p) as $IntentionalAny) as Project

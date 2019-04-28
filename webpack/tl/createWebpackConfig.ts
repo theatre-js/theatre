@@ -1,19 +1,15 @@
-// import * as HtmlWebpackPlugin from 'html-webpack-plugin'
 import {makeConfigParts, Envs} from '../commons'
-import {default as immer, setAutoFreeze} from 'immer'
-// import * as CircularDependencyDetector from 'circular-dependency-plugin'
+import {default as immer, setAutoFreeze as setImmerAutoFreeze} from 'immer'
 import * as webpack from 'webpack'
 import {BundleAnalyzerPlugin} from 'webpack-bundle-analyzer'
 import * as fs from 'fs-extra'
 import * as path from 'path'
+import * as TerserPlugin from 'terser-webpack-plugin'
 const LodashModuleReplacementPlugin = require('lodash-webpack-plugin')
 const WebpackDeepScopeAnalysisPlugin = require('webpack-deep-scope-plugin')
   .default
 
-const UnusedWebpackPlugin = require('unused-webpack-plugin')
-// import * as UglifyJSWebpackPlugin from 'uglifyjs-webpack-plugin'
-
-setAutoFreeze(false)
+setImmerAutoFreeze(false)
 
 module.exports = (env: Envs) => {
   const isDev = env === 'development'
@@ -43,9 +39,7 @@ module.exports = (env: Envs) => {
     return immer(parts.config, c => {
       c.output.libraryTarget = 'umd'
       c.output.library = 'Theatre'
-      // if (!isDev) {
       c.output.filename = `${which}.js`
-      // }
 
       if (which === 'core') {
         if (isDev) {
@@ -70,17 +64,22 @@ module.exports = (env: Envs) => {
             exclude: /node_modules/,
           })
         }
-        // c.plugins.push(
-        //   new webpack.IgnorePlugin(/\/types\.tsx?$/),
-        //   new webpack.IgnorePlugin(/ioTypes/),
-        // )
-        // exclude all runtime types if we're building for core in production
+        /**
+         * All modules matching these expressions will be skipped from the bundle.
+         * Note that after webpack's tree-shaking becomes smarter, this rule shouldn't
+         * be needed anymore
+         */
         c.module.rules.unshift({
           test: [/\/types\.tsx?$/, /lodash/, /ioTypes/],
           use: 'null-loader',
           exclude: /node_modules/,
         })
       } else if (isDev) {
+        /**
+         * Uncomment this if you suspect there are files in the project we don't need.
+         * After you decide which files to remove, comment this again.
+         */
+        // const UnusedWebpackPlugin = require('unused-webpack-plugin')
         // c.plugins.push(
         //   new UnusedWebpackPlugin({
         //     // Source directories
@@ -94,7 +93,23 @@ module.exports = (env: Envs) => {
       }
 
       if (!isDev) {
-        // c.plugins.unshift()
+        if (!c.optimization) {
+          c.optimization = {}
+        }
+        c.optimization!.minimizer = [
+          new TerserPlugin({
+            terserOptions: {
+              mangle: {
+                reserved: [
+                  'TheatreObject',
+                  'TheatreTimeline',
+                  'TheatreProject',
+                  'TheatreAdaptersManager',
+                ],
+              },
+            },
+          }),
+        ]
 
         c.plugins.push(
           new BundleAnalyzerPlugin({
@@ -115,16 +130,17 @@ module.exports = (env: Envs) => {
         c.plugins.push(new webpack.BannerPlugin(licenseText))
       }
 
+      /**
+       * Uncomment this if you suspect an error is caused by circular dependencies.
+       * Note that we do have a bunch of circular dependencies that don't cause
+       * trouble
+       */
+      // const CircularDependencyDetector = require('circular-dependency-plugin')
       // c.plugins.push(
-      //   /**
-      //    * Enable this if you suspect an error is caused by circular dependencies.
-      //    * Note that we do have a bunch of circular dependencies that don't cause
-      //    * any trouble
-      //    */
-      //   // new CircularDependencyDetector({
-      //   //   cwd: parts.srcDir,
-      //   //   exclude: /\/node_modules\/|\/DataVerse\//,
-      //   // })
+      //   new CircularDependencyDetector({
+      //     cwd: parts.srcDir,
+      //     exclude: /\/node_modules\/|\/DataVerse\//,
+      //   }),
       // )
     })
   }

@@ -16,7 +16,7 @@ import {GenericAction} from '$shared/types'
 import ProjectPersistor from './ProjectPersistor'
 import {OnDiskState} from '$tl/Project/store/types'
 import resolvedPromise from '$shared/utils/resolvedPromise'
-import TheatreJSProject from '../facades/TheatreJSProject'
+import ProjectFacade from '../facades/TheatreProject'
 import {preloadedHistoryForCore} from '$tl/Project/store/coreBuildUtils'
 
 export type Conf = Partial<{
@@ -54,7 +54,7 @@ export default class Project {
   constructor(
     readonly id: string,
     readonly config: Conf = {},
-    readonly facade: TheatreJSProject,
+    readonly facade: ProjectFacade,
   ) {
     projectsSingleton.add(id, this)
     this.adapters = new NativeObjectAdaptersManager(this)

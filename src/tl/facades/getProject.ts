@@ -1,6 +1,6 @@
-import TheatreJSProject, {
-  TheatreJSProjectConf,
-} from '$tl/facades/TheatreJSProject'
+import TheatreProject, {
+  TheatreProjectConf,
+} from '$tl/facades/TheatreProject'
 import projectsSingleton from '$tl/Project/projectsSingleton'
 import {InvalidArgumentError} from '$tl/handy/errors'
 import {$OnDiskState, OnDiskState} from '$tl/Project/store/types'
@@ -10,8 +10,8 @@ import {validateName} from './otherSanitizers'
 
 export default function getProject(
   id: string,
-  config: TheatreJSProjectConf = {},
-): TheatreJSProject {
+  config: TheatreProjectConf = {},
+): TheatreProject {
   const {...restOfConfig} = config
   if (projectsSingleton.has(id)) {
     return projectsSingleton.get(id)!.facade
@@ -35,7 +35,7 @@ export default function getProject(
     }
   }
 
-  return new TheatreJSProject(id, restOfConfig)
+  return new TheatreProject(id, restOfConfig)
 }
 
 /**

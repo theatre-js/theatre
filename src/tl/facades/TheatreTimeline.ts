@@ -14,11 +14,11 @@ import userReadableTypeOfValue from '$shared/utils/userReadableTypeOfValue'
 
 type GetObjectConfig = NativeObjectTypeConfig
 
-const theWeakmap = new WeakMap<TheatreJSTimelineInstance, TimelineInstance>()
-const realInstance = (s: TheatreJSTimelineInstance) =>
+const theWeakmap = new WeakMap<TheatreTimeline, TimelineInstance>()
+const realInstance = (s: TheatreTimeline) =>
   theWeakmap.get(s) as TimelineInstance
 
-export default class TheatreJSTimelineInstance {
+export default class TheatreTimeline {
   constructor(timelineInstance: TimelineInstance) {
     theWeakmap.set(this, timelineInstance)
   }

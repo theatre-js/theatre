@@ -5,14 +5,14 @@ import userReadableTypeOfValue from '$shared/utils/userReadableTypeOfValue'
 import noop from '$shared/utils/noop'
 
 const theWeakmap = new WeakMap<
-  TheatreJSTimelineInstanceObject,
+TheatreObject,
   TimelineInstanceObject
 >()
 
-const realInstance = (s: TheatreJSTimelineInstanceObject) =>
+const realInstance = (s: TheatreObject) =>
   theWeakmap.get(s) as TimelineInstanceObject
 
-export default class TheatreJSTimelineInstanceObject {
+export default class TheatreObject {
   constructor(timelineInstance: TimelineInstanceObject) {
     theWeakmap.set(this, timelineInstance)
   }

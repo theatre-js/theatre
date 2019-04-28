@@ -4,8 +4,8 @@ import {keyBy, mapValues} from '$shared/utils'
 import {NativeObjectTypeConfig, NativeObjectType} from '$tl/objects/objectTypes'
 import {VoidFn} from '$shared/types'
 import userReadableTypeOfValue from '$shared/utils/userReadableTypeOfValue'
-import TheatreJSAdaptersManager from '$tl/facades/TheatreJSAdaptersManager'
-import TheatreJSTimelineInstanceObject from '$tl/facades/TheatreJSTimelineInstanceObject'
+import AdaptersManagerFacade from '$tl/facades/TheatreAdaptersManager'
+import FacadeObject from '$tl/facades/TheatreObject'
 
 export interface NativeObjectAdapter {
   name: string
@@ -14,7 +14,7 @@ export interface NativeObjectAdapter {
     nativeObject: $FixMe,
     config: NativeObjectTypeConfig,
   ): NativeObjectType
-  start(object: TheatreJSTimelineInstanceObject): VoidFn
+  start(object: FacadeObject): VoidFn
 }
 
 export type AdapterPriority = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10
@@ -26,10 +26,10 @@ export default class NativeObjectAdapters {
     [priority: number]: Set<NativeObjectAdapter>
   } = mapValues(keyBy(adaptersRange, v => v), () => new Set())
   _adaptersByName = new Map<string, NativeObjectAdapter>()
-  facade: TheatreJSAdaptersManager
+  facade: AdaptersManagerFacade
 
   constructor(readonly project: Project) {
-    this.facade = new TheatreJSAdaptersManager(this)
+    this.facade = new AdaptersManagerFacade(this)
   }
 
   add(adapter: NativeObjectAdapter, priority: AdapterPriority = 5) {

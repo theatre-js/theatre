@@ -7,13 +7,13 @@ import {isInteger} from 'lodash-es'
 import userReadableTypeOfValue from '$shared/utils/userReadableTypeOfValue'
 
 const theWeakmap = new WeakMap<
-  TheatreJSAdaptersManager,
+  TheatreAdaptersManager,
   NativeObjectAdaptersManager
 >()
-const realInstance = (s: TheatreJSAdaptersManager) =>
+const realInstance = (s: TheatreAdaptersManager) =>
   theWeakmap.get(s) as NativeObjectAdaptersManager
 
-export default class TheatreJSAdaptersManager {
+export default class TheatreAdaptersManager {
   constructor(adapters: NativeObjectAdaptersManager) {
     theWeakmap.set(this, adapters)
   }
