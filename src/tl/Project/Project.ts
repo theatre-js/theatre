@@ -1,5 +1,5 @@
 import projectsSingleton from './projectsSingleton'
-import TimelineInstance from '$tl/timelines/TimelineInstance'
+import TimelineInstance from '$tl/timelines/TimelineInstance/TimelineInstance'
 import TimelineTemplate from '$tl/timelines/TimelineTemplate'
 import NativeObjectAdaptersManager from '$tl/nativeObjectAdapters/NativeObjectAdaptersManager'
 import {Atom} from '$shared/DataVerse/atom'

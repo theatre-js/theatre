@@ -1,6 +1,4 @@
-import TheatreProject, {
-  TheatreProjectConf,
-} from '$tl/facades/TheatreProject'
+import TheatreProject, {TheatreProjectConf} from '$tl/facades/TheatreProject'
 import projectsSingleton from '$tl/Project/projectsSingleton'
 import {InvalidArgumentError} from '$tl/handy/errors'
 import {$OnDiskState, OnDiskState} from '$tl/Project/store/types'

@@ -1,4 +1,4 @@
-import TimelineInstance from '$tl/timelines/TimelineInstance'
+import TimelineInstance from '$tl/timelines/TimelineInstance/TimelineInstance'
 import ObjectTemplate from '$tl/objects/ObjectTemplate'
 import {NativeObjectTypeConfig, NativeObjectType} from './objectTypes'
 import {VoidFn} from '$shared/types'

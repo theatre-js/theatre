@@ -106,7 +106,7 @@ module.exports = (env: Envs) => {
                   'TheatreProject',
                   'TheatreAdaptersManager',
                   'InvalidArgumentError',
-                  'TheatreError'
+                  'TheatreError',
                 ],
               },
             },

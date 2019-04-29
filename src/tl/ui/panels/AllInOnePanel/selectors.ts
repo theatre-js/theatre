@@ -3,7 +3,7 @@ import {val} from '$shared/DataVerse/atom'
 import projectsSingleton from '$tl/Project/projectsSingleton'
 import Project from '$tl/Project/Project'
 import TimelineTemplate from '$tl/timelines/TimelineTemplate'
-import TimelineInstance from '$tl/timelines/TimelineInstance'
+import TimelineInstance from '$tl/timelines/TimelineInstance/TimelineInstance'
 import uiSelectors from '$tl/ui/store/selectors'
 
 export const getProjectSelectionState = (

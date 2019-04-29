@@ -1,29 +1,28 @@
 import Project from '$tl/Project/Project'
-import TimelineTemplate from './TimelineTemplate'
+import TimelineTemplate from '$tl/timelines/TimelineTemplate'
 import TimelineInstanceObject from '$tl/objects/TimelineInstanceObject'
 import {NativeObjectTypeConfig, NativeObjectType} from '$tl/objects/objectTypes'
-import atom, {Atom, val} from '$shared/DataVerse/atom'
-import {Pointer} from '$shared/DataVerse/pointer'
+import {val, Atom} from '$shared/DataVerse/atom'
 import {TimelineInstanceAddress} from '$tl/handy/addresses'
-import {VoidFn} from '$shared/types'
 import AbstractDerivation from '$shared/DataVerse/derivations/AbstractDerivation'
 import autoDerive from '$shared/DataVerse/derivations/autoDerive/autoDerive'
 import didYouMean from '$shared/utils/didYouMean'
-import noop from '$shared/utils/noop'
 import TimelineFacade from '$tl/facades/TheatreTimeline'
 import {InvalidArgumentError} from '$tl/handy/errors'
-import {defer} from '$shared/utils/defer'
+import DefaultPlaybackController, {
+  IPlaybackController,
+  IPlaybackState,
+} from './DefaultPlaybackController'
+import {IBox, box} from '$shared/DataVerse/box'
+import {Pointer} from '$shared/DataVerse/pointer'
+import {valueDerivation} from '../../../shared/DataVerse/atom'
 
-type State = {
-  time: number
-}
-
-export type PlaybackRange = {
+export type IPlaybackRange = {
   from: number
   to: number
 }
 
-export type PlaybackDirection =
+export type IPlaybackDirection =
   | 'normal'
   | 'reverse'
   | 'alternate'
@@ -40,25 +39,42 @@ export default class TimelineInstance {
   _timelineTemplate: TimelineTemplate
   _objects: {[path: string]: TimelineInstanceObject} = {}
   _address: TimelineInstanceAddress
-  protected _state: Atom<State> = atom({time: 0})
-  public statePointer: Pointer<State>
-  protected _playing: boolean = false
-  _repeat: boolean
-  _stopPlayCallback: VoidFn = noop
   facade: TimelineFacade
+  private _playbackControllerBox: IBox<IPlaybackController>
+  private _statePointerDerivation: AbstractDerivation<Pointer<IPlaybackState>>
+  private _timeDerivation: AbstractDerivation<number>
 
   constructor(
     readonly _project: Project,
     protected readonly _path: string,
     public readonly _instanceId: string,
+    playbackController?: IPlaybackController,
   ) {
+    this._playbackControllerBox = box(
+      playbackController || new DefaultPlaybackController(this._project.ticker),
+    )
+
     this._timelineTemplate = _project._getTimelineTemplate(_path)
-    this.statePointer = this._state.pointer
     this._address = {
       ...this._timelineTemplate._address,
       timelineInstanceId: _instanceId,
     }
     this.facade = new TimelineFacade(this)
+
+    this._statePointerDerivation = this._playbackControllerBox.derivation.map(
+      playbackController => playbackController.statePointer,
+    )
+    this._timeDerivation = this._statePointerDerivation.flatMap(statePointer =>
+      valueDerivation(statePointer.time),
+    )
+  }
+
+  get derivationToStatePointer() {
+    return this._statePointerDerivation
+  }
+
+  get timeDerivation() {
+    return this._timeDerivation
   }
 
   createObject(
@@ -82,18 +98,12 @@ export default class TimelineInstance {
     return this._objects[path]
   }
 
-  _gotoTime = (t: number) => {
-    this._state.reduceState(['time'], () =>
-      typeof t === 'number' && t >= 0 ? t : 0,
-    )
-  }
-
   get time() {
-    return this._state.getState().time
+    return this._playbackControllerBox.get().getCurrentTime()
   }
 
-  set time(_time: number) {
-    let time = _time
+  set time(requestedTime: number) {
+    let time = requestedTime
     this.pause()
     if (!$env.tl.isCore) {
       if (typeof time !== 'number') {
@@ -108,20 +118,17 @@ export default class TimelineInstance {
       }
     }
     if (time > this._timelineTemplate.duration) {
-      // console.error(
-      //   `timeline.time cannot be larger than the timeline's duration. You can read the duration using timeline.duration.`,
-      // )
       time = this._timelineTemplate.duration
     }
     const dur = this._timelineTemplate.duration
-    this._gotoTime(time > dur ? dur : time)
+    this._playbackControllerBox.get().gotoTime(time > dur ? dur : time)
   }
 
   get playing() {
-    return this._playing
+    return this._playbackControllerBox.get().playing
   }
 
-  _makeRangeFromTimelineTemplate(): AbstractDerivation<PlaybackRange> {
+  _makeRangeFromTimelineTemplate(): AbstractDerivation<IPlaybackRange> {
     return autoDerive(() => {
       return {
         from: 0,
@@ -133,9 +140,9 @@ export default class TimelineInstance {
   play(
     conf?: Partial<{
       iterationCount: number
-      range: PlaybackRange
+      range: IPlaybackRange
       rate: number
-      direction: PlaybackDirection
+      direction: IPlaybackDirection
     }>,
   ) {
     const timelineDuration = this._timelineTemplate.duration
@@ -248,122 +255,26 @@ export default class TimelineInstance {
 
   _play(
     iterationCount: number,
-    range: PlaybackRange,
+    range: IPlaybackRange,
     rate: number,
-    direction: PlaybackDirection,
+    direction: IPlaybackDirection,
   ): Promise<boolean> {
-    if (this._playing) {
-      this.pause()
-    }
-
-    this._playing = true
-
-    const ticker = this._project.ticker
-    let lastTickerTime = ticker.time
-    const dur = range.to - range.from
-
-    if (this.time < range.from || this.time > range.to) {
-      this._gotoTime(range.from)
-    } else if (
-      this.time === range.to &&
-      (direction === 'normal' || direction === 'alternate')
-    ) {
-      this._gotoTime(range.from)
-    } else if (
-      this.time === range.from &&
-      (direction === 'reverse' || direction === 'alternateReverse')
-    ) {
-      this._gotoTime(range.to)
-    }
-
-    let goingForward =
-      direction === 'alternateReverse' || direction === 'reverse' ? -1 : 1
-
-    let countSoFar = 1
-
-    const deferred = defer<boolean>()
-
-    const tick = (tickerTime: number) => {
-      const lastTime = this.time
-      let timeDiff = (tickerTime - lastTickerTime) * (rate * goingForward)
-      lastTickerTime = tickerTime
-      // I don't know why exactly this happens, but every 10 times or so, the first timeline.play({iterationCount: 1}),
-      // the first call of tick() will have a timeDiff < 0.
-      // This might be because of Spectre mitigation (they randomize performance.now() a bit), or it could be that
-      // I'm using performance.now() the wrong way.
-      // Anyway, this seems like a working fix for it:
-      if (timeDiff < 0) {
-        requestNextTick()
-        return
-      }
-      const newTime = lastTime + timeDiff
-
-      if (newTime < range.from) {
-        if (countSoFar === iterationCount) {
-          this._gotoTime(range.from)
-          this._playing = false
-          deferred.resolve(true)
-          return
-        } else {
-          countSoFar++
-          const diff = (range.from - newTime) % dur
-          if (direction === 'reverse') {
-            this._gotoTime(range.to - diff)
-          } else {
-            goingForward = 1
-            this._gotoTime(range.from + diff)
-          }
-          requestNextTick()
-          return
-        }
-      } else if (newTime === range.to) {
-        this._gotoTime(range.to)
-        if (countSoFar === iterationCount) {
-          this._playing = false
-          deferred.resolve(true)
-          return
-        }
-        requestNextTick()
-        return
-      } else if (newTime > range.to) {
-        if (countSoFar === iterationCount) {
-          this._gotoTime(range.to)
-          this._playing = false
-          deferred.resolve(true)
-          return
-        } else {
-          countSoFar++
-          const diff = (newTime - range.to) % dur
-          if (direction === 'normal') {
-            this._gotoTime(range.from + diff)
-          } else {
-            goingForward = -1
-            this._gotoTime(range.to - diff)
-          }
-          requestNextTick()
-          return
-        }
-      } else {
-        this._gotoTime(newTime)
-        requestNextTick()
-        return
-      }
-    }
-
-    this._stopPlayCallback = () => {
-      ticker.unregisterSideEffect(tick)
-      ticker.unregisterSideEffectForNextTick(tick)
-
-      if (this.playing) deferred.resolve(false)
-    }
-    const requestNextTick = () => ticker.registerSideEffectForNextTick(tick)
-    ticker.registerSideEffect(tick)
-    return deferred.promise
+    return this._playbackControllerBox
+      .get()
+      .play(iterationCount, range, rate, direction)
   }
 
   pause() {
-    this._stopPlayCallback()
-    this._playing = false
-    this._stopPlayCallback = noop
+    this._playbackControllerBox.get().pause()
+  }
+
+  replacePlaybackController(playbackController: IPlaybackController) {
+    this.pause()
+    const oldController = this._playbackControllerBox.get()
+    this._playbackControllerBox.set(playbackController)
+
+    const time = oldController.getCurrentTime()
+    oldController.destroy()
+    playbackController.gotoTime(time)
   }
 }

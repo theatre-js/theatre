@@ -4,10 +4,7 @@ import {OnValuesChangeCallback} from '../objects/TimelineInstanceObject'
 import userReadableTypeOfValue from '$shared/utils/userReadableTypeOfValue'
 import noop from '$shared/utils/noop'
 
-const theWeakmap = new WeakMap<
-TheatreObject,
-  TimelineInstanceObject
->()
+const theWeakmap = new WeakMap<TheatreObject, TimelineInstanceObject>()
 
 const realInstance = (s: TheatreObject) =>
   theWeakmap.get(s) as TimelineInstanceObject

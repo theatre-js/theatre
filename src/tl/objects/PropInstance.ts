@@ -45,8 +45,9 @@ export default class PropInstance {
             ((valueContainerP as $IntentionalAny) as Pointer<
               IBezierCurvesOfScalarValues
             >).points,
-            valueDerivation(
-              this._timelnieInstanceObject._timelineInstance.statePointer.time,
+
+            this._timelnieInstanceObject._timelineInstance.derivationToStatePointer.flatMap(
+              statePointer => valueDerivation(statePointer.time),
             ),
           )
         } else {

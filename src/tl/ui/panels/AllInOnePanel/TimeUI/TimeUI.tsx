@@ -5,7 +5,7 @@ import * as css from '$tl/ui/panels/AllInOnePanel/TimeUI/TimeUI.css'
 import {val} from '$shared/DataVerse/atom'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import Seeker from '$tl/ui/panels/AllInOnePanel/TimeUI/Seeker'
-import TimelineInstance from '$tl/timelines/TimelineInstance'
+import TimelineInstance from '$tl/timelines/TimelineInstance/TimelineInstance'
 import TimelineTemplate from '$tl/timelines/TimelineTemplate'
 import TimeScrollbar from '$tl/ui/panels/AllInOnePanel/TimeUI/TimeScrollbar'
 import FramesGrid from '$tl/ui/panels/AllInOnePanel/TimeUI/FramesGrid'
@@ -51,7 +51,7 @@ export default class TimeUI extends UIComponent<IProps, IState> {
                * This would make sure that when the time reaches 4s, it'd jump back to 2s and restart from there.
                * We just need to somehow show this in the timeline
                */
-              const currentTime = val(timelineInstance.statePointer.time)
+              const currentTime = val(timelineInstance.timeDerivation)
 
               const range = val(timeStuffP.rangeAndDuration.range)
               // const range = {from: 0, to: 2000}

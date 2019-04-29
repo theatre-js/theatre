@@ -1,7 +1,7 @@
 import TimelineInstance, {
-  PlaybackRange,
-  PlaybackDirection,
-} from '$tl/timelines/TimelineInstance'
+  IPlaybackRange,
+  IPlaybackDirection,
+} from '$tl/timelines/TimelineInstance/TimelineInstance'
 import {
   NativeObjectTypeConfig,
   getAdapterOfNativeObject,
@@ -11,6 +11,8 @@ import {sanitizeAndValidateTypeFromAdapter} from '$tl/facades/propSanitizers'
 import {sanitizeAndValidateHardCodedProps} from './propSanitizers'
 import {defer} from '../../shared/utils/defer'
 import userReadableTypeOfValue from '$shared/utils/userReadableTypeOfValue'
+import {InvalidArgumentError, TheatreError} from '../handy/errors'
+import AudioPlaybackController from '$tl/timelines/TimelineInstance/AudioPlaybackController'
 
 type GetObjectConfig = NativeObjectTypeConfig
 
@@ -130,9 +132,9 @@ export default class TheatreTimeline {
   play(
     conf?: Partial<{
       iterationCount: number
-      range: PlaybackRange
+      range: IPlaybackRange
       rate: number
-      direction: PlaybackDirection
+      direction: IPlaybackDirection
     }>,
   ) {
     if (realInstance(this)._project.isReady()) {
@@ -159,5 +161,89 @@ export default class TheatreTimeline {
 
   pause() {
     realInstance(this).pause()
+  }
+
+  async experimental_attachAudio(args: IAttachAudioArgs): Promise<void> {
+    const {audioContext, destinationNode, decodedBuffer} = await resolveArgs(
+      args,
+    )
+    const instance = realInstance(this)
+    const playbackController = new AudioPlaybackController(
+      instance._project.ticker,
+      decodedBuffer,
+      audioContext,
+      destinationNode,
+    )
+
+    instance.replacePlaybackController(playbackController)
+  }
+}
+
+interface IAttachAudioArgs {
+  source?: string
+  decodedBuffer?: AudioBuffer
+  audioContext?: AudioContext
+  destinationNode?: AudioDestinationNode
+}
+
+async function resolveArgs(
+  args: IAttachAudioArgs,
+): Promise<{
+  decodedBuffer: AudioBuffer
+  audioContext: AudioContext
+  destinationNode: AudioDestinationNode
+}> {
+  const audioContext = args.audioContext || new AudioContext()
+
+  const decodedBufferDeferred = defer<AudioBuffer>()
+  if (args.decodedBuffer) {
+    decodedBufferDeferred.resolve(args.decodedBuffer)
+  } else if (typeof args.source !== 'string') {
+    throw new InvalidArgumentError(
+      `Error validating arguments to timeline.attachAudio(). ` +
+        `You need to either provide a \`decodedBuffer\` or a \`source\`.`,
+    )
+  } else {
+    let fetchResponse
+    try {
+      fetchResponse = await fetch(args.source)
+    } catch (e) {
+      console.error(e)
+      throw new TheatreError(
+        `Could not fetch '${args.source}'. Network error logged above.`,
+      )
+    }
+
+    let buffer
+    try {
+      buffer = await fetchResponse.arrayBuffer()
+    } catch (e) {
+      console.error(e)
+      throw new TheatreError(
+        `Could not read '${args.source}' as an arrayBuffer.`,
+      )
+    }
+
+    audioContext.decodeAudioData(
+      buffer,
+      decodedBufferDeferred.resolve,
+      decodedBufferDeferred.reject,
+    )
+  }
+
+  let decodedBuffer
+  try {
+    decodedBuffer = await decodedBufferDeferred.promise
+  } catch (e) {
+    console.error(e)
+    throw new TheatreError(`Could not decode ${args.source} as an audio file.`)
+  }
+
+  const destinationNode = args.destinationNode || audioContext.destination
+
+  return {
+    destinationNode,
+    audioContext,
+    decodedBuffer,
   }
 }

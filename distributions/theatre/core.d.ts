@@ -52,12 +52,12 @@ export interface Project {
 
   /**
    * Returns an instance of Timeline
-   * 
+   *
    * Learn more here: https://docs.theatrejs.com/api.html#project-gettimeline
-   * 
+   *
    * @param timelineName - The name of the timeline
    * @param [instanceName="default"] - In case you're creating multiple instances of the same timeline, you must provide a unique name to each instance
-   * 
+   *
    */
   getTimeline(timelineName: string, instanceName?: string): Timeline
 }
@@ -65,11 +65,11 @@ export interface Project {
 export interface AdaptersManager {
   /**
    * Add a new adapter.
-   * 
+   *
    * Adapters are a simple way to avoid repeating the prop types of each object.
-   * 
+   *
    * Learn more here: https://docs.theatrejs.com/adapters.html#adapters
-   * 
+   *
    * @param adapter - A valid Adapter object
    */
   add(adapter: Adapter): void
@@ -85,9 +85,9 @@ export interface Adapter {
 
   /**
    * This method determines whether this adapter can handle the given native object.
-   * 
+   *
    * Learn more here: https://docs.theatrejs.com/adapters.html
-   * 
+   *
    * @param nativeObject - A reference to the nativeObject provided to Timelnie.getObject(_, nativeObject)
    * @returns If the native object can be handled by this adapter, then return true, otherwise false.
    */
@@ -95,9 +95,9 @@ export interface Adapter {
 
   /**
    * This function takes a reference to the native object, and returns
-   * 
+   *
    * Learn more here: https://docs.theatrejs.com/adapters.html
-   * 
+   *
    * @param nativeObject - A reference to the nativeObject provided to Timelnie.getObject(_, nativeObject)
    * @returns The config of the Theatre object
    */
@@ -108,9 +108,9 @@ export interface Adapter {
    * You're free to perform any task within the start() method, but most commonly you'd set up the onValuesChange() listener.
    * It is also required that the start() function returns a stop() function.
    * The stop function gets called whenever the object is removed from the scene.
-   * 
+   *
    * Learn more here: https://docs.theatrejs.com/adapters.html
-   * 
+   *
    * @param object - A reference to the theatre object (not to be confused with the native object)
    * @returns A function that Theatre will call when the timeline is destroyed
    */
@@ -120,7 +120,7 @@ export interface Adapter {
 export type ObjectConfig = {
   /**
    * The props of this object.
-   * 
+   *
    * Learn more here: https://docs.theatrejs.com/api.html#theatreobjectconfig
    */
   props: Record<string, PropTypeDescriptor>
@@ -129,7 +129,7 @@ export type ObjectConfig = {
 type NumberPropTypeDescriptor = {
   /**
    * The number prop type (currently the only prop type)
-   * 
+   *
    * Learn more here: https://docs.theatrejs.com/api.html#theatreobjectconfig
    */
   type: 'number'
@@ -140,12 +140,12 @@ export type PropTypeDescriptor = NumberPropTypeDescriptor
 export interface Timeline {
   /**
    * A getter/setter for the current time of the timeline, in milliseconds.
-   * 
+   *
    * Learn more here: https://docs.theatrejs.com/api.html#timeline-time
-   * 
+   *
    * @example console.log(timeline.time)
    * @example timeline.time = 2000
-   * 
+   *
    */
   time: number
 
@@ -160,54 +160,81 @@ export interface Timeline {
   pause(): void
 
   /**
+   * EXPERIMENTAL!
+   * 
+   * Adds an audio track to the timeline.
+   *
+   * @returns Promise<void> A promise that once resolved, shows that the timeline
+   * will now play with the audio track attached
+   * 
+   * @example timeline.experimental_attachAudio('/track.mp3').then(() => console.log('audio ready'))
+   */
+  experimental_attachAudio(args: {
+    /**
+     * A URL to the audio file. Either provide this, or the decodedBuffer prop, but not both.
+     */
+    source?: string
+    /**
+     * Provide this if you've already decoded your audio buffer (obtainable from AudioContext.decodeAudioData())
+     */
+    decodedBuffer?: AudioBuffer
+    /**
+     * Provide this if you're using your own AudioContext
+     */
+    audioContext?: AudioContext
+    /**
+     * Provide this if you a destinationNode other than the context's default destination node
+     */
+    destinationNode?: AudioDestinationNode
+  }): Promise<void>
+
+  /**
    * Plays the timeline. If the timeline is already playing, the playbackConfig will be overridden.
-   * 
+   *
    * Docs: https://docs.theatrejs.com/api.html#timeline-play
-   * 
+   *
    * @param playbackConfig - Customise the playback
    * @returns Promise<boolean>. If the playback finishes, the boolean will be true.
    * If it is interrupted (such as by calling timeline.pause()), then the boolean will be false.
    */
-  play(
-    playbackConfig?: {
-      /**
-       * How many times to play. Defaults to 1. Can be Infinity
-       */
-      iterationCount?: number
+  play(playbackConfig?: {
+    /**
+     * How many times to play. Defaults to 1. Can be Infinity
+     */
+    iterationCount?: number
 
+    /**
+     * Limit the playback to this range.
+     *
+     * Defaults to {from: 0, to: timeline.duration}
+     */
+    range?: {
       /**
-       * Limit the playback to this range.
-       * 
-       * Defaults to {from: 0, to: timeline.duration}
+       * In milliseconds, starting at 0
        */
-      range?: {
-        /**
-         * In milliseconds, starting at 0
-         */
-        from: number
-        /**
-         * In milliseconds. Must not be larger than the duration of the timeline
-         */
-        to: number
-      }
+      from: number
+      /**
+       * In milliseconds. Must not be larger than the duration of the timeline
+       */
+      to: number
+    }
 
-      /**
-       * The rate of playback. Defaults to 1
-       */
-      rate?: number
+    /**
+     * The rate of playback. Defaults to 1
+     */
+    rate?: number
 
-      /**
-       * Direction of playback, similar to that of CSS animations. Defaults to `normal`
-       */
-      direction?: 'normal' | 'reverse' | 'alternate' | 'alternateReverse'
-    },
-  ): Promise<boolean>
+    /**
+     * Direction of playback, similar to that of CSS animations. Defaults to `normal`
+     */
+    direction?: 'normal' | 'reverse' | 'alternate' | 'alternateReverse'
+  }): Promise<boolean>
 
   /**
    * Takes a name, a native object, and optionally an ObjectConfig, and returns a TheatreObject.
-   * 
+   *
    * Docs: https://docs.theatrejs.com/api.html#timeline-getobject
-   * 
+   *
    * @param name - Name of the object. If two timeline.getObject() calls have the same name,
    * the same TheatreObject will be returned. The config of the second one will override that of
    * the first one.
@@ -227,30 +254,30 @@ export interface Timeline {
 export interface TheatreObject {
   /**
    * The name of the object
-   * 
+   *
    * Docs: https://docs.theatrejs.com/api.html#theatreobject-name
    */
   name: string
 
   /**
    * A reference to the nativeObject provided to timeline.getObject(_, nativeObject)
-   * 
+   *
    * Docs: https://docs.theatrejs.com/api.html#theatreobject-nativeobject
    */
   nativeObject: any
 
   /**
    * An object with the current values of all of the props of this nativeObject
-   * 
+   *
    * Docs: https://docs.theatrejs.com/api.html#theatreobject-currentvalues
    */
   currentValues: Record<string, number>
 
   /**
    * Takes a callback and calls it whenever the value of any of the props of this object have changed
-   * 
+   *
    * Docs: https://docs.theatrejs.com/api.html#theatreobject-onvalueschange
-   * 
+   *
    * @param callback - Gets invoked every time any of the props of the object has a new value
    * @returns A function that you can invoke to stop listening to the value changes
    */

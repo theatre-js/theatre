@@ -11,7 +11,7 @@ import {
   deltaTimelineXToDeltaTime,
   viewportScrolledSpace,
 } from '$tl/ui/panels/AllInOnePanel/Right/utils'
-import TimelineInstance from '$tl/timelines/TimelineInstance'
+import TimelineInstance from '$tl/timelines/TimelineInstance/TimelineInstance'
 import TimelineTemplate from '$tl/timelines/TimelineTemplate'
 import UI from '$tl/ui/UI'
 import projectSelectors from '$tl/Project/store/selectors'

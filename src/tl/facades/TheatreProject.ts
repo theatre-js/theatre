@@ -15,10 +15,7 @@ export default class TheatreProject {
     projectsWeakmap.set(this, new Project(id, config, this))
   }
 
-  getTimeline(
-    _path: string,
-    instanceId: string = 'default',
-  ): TheatreTimeline {
+  getTimeline(_path: string, instanceId: string = 'default'): TheatreTimeline {
     const path = validateAndSanitiseSlashedPathOrThrow(
       _path,
       'project.getTimeline',

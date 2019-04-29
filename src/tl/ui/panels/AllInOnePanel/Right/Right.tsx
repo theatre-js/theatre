@@ -4,8 +4,7 @@ import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import React from 'react'
 import * as css from './Right.css'
 import {val} from '$shared/DataVerse/atom'
-import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
-import TimelineInstance from '$tl/timelines/TimelineInstance'
+import TimelineInstance from '$tl/timelines/TimelineInstance/TimelineInstance'
 import {
   deltaXToTime,
   getScrollSpaceWidth_deprecated,
@@ -25,6 +24,7 @@ import {
 } from '$tl/ui/panels/AllInOnePanel/TimeStuffProvider'
 import {defer} from '$shared/utils/defer'
 import withContext from '$shared/utils/react/withContext'
+import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
 
 const classes = resolveCss(css)
 

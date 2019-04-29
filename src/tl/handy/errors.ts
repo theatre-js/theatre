@@ -1,3 +1,3 @@
-class TheatreJSError extends Error {}
+export class TheatreError extends Error {}
 
-export class InvalidArgumentError extends TheatreJSError {}
+export class InvalidArgumentError extends TheatreError {}
