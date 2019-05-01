@@ -134,7 +134,7 @@ module.exports = (env: Envs) => {
 
       /**
        * Uncomment this if you suspect an error is caused by circular dependencies.
-       * Note that we do have a bunch of circular dependencies that don't cause
+       * Note that we *do* have a bunch of circular dependencies that don't cause
        * trouble
        */
       // const CircularDependencyDetector = require('circular-dependency-plugin')

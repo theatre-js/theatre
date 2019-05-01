@@ -7,10 +7,11 @@ const fromDist = s => fromRoot('distributions/theatre/' + s)
 ;['index.js', 'core.js'].forEach(filename => {
   if (fs.existsSync(fromDist(filename))) fs.unlinkSync(fromDist(filename))
   fs.copyFileSync(fromBundles(filename), fromDist(filename))
-  const content = fs.readFileSync(fromDist(filename), {encoding: 'utf-8'})
-  const lines = content.split('\n')
-  lines.pop()
-  fs.writeFileSync(fromDist(filename), lines.join('\n'), {encoding: 'utf-8'})
+  // currently there is no sourcemap, so let's skip this part temporarily
+  // const content = fs.readFileSync(fromDist(filename), {encoding: 'utf-8'})
+  // const lines = content.split('\n')
+  // lines.pop()
+  // fs.writeFileSync(fromDist(filename), lines.join('\n'), {encoding: 'utf-8'})
 })
 
 const packageJson = JSON.parse(fs.readFileSync(fromDist('package.json')))
