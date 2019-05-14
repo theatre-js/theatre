@@ -114,6 +114,13 @@ export default class UI {
   _dispatch(...actions: GenericAction[]) {
     return this.reduxStore.dispatch(this.actions.batched(actions))
   }
+
+  restore() {
+    this.show()
+    this._dispatch(
+      uiActions.ahistoric.setUIVisibilityState('everythingIsVisible'),
+    )
+  }
 }
 
 function startPersistingState(p: {

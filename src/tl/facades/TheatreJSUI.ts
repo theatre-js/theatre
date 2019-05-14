@@ -20,4 +20,8 @@ export default class TheatreJSUI {
   get showing() {
     return theUI(this)._showing
   }
+
+  restore() {
+    theUI(this).restore()
+  }
 }
