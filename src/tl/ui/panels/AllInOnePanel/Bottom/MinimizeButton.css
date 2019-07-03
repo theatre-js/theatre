@@ -1,3 +1,5 @@
+@value bottomHeight from './Bottom.css';
+
 .icon {
   font-size: 15px;
   margin-top: -2px;
@@ -8,5 +10,5 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
+  height: bottomHeight;
 }
