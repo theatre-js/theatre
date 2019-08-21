@@ -90,6 +90,7 @@ class ItemHitZone extends UIComponent<IProps, IState> {
       this.project._actions.historic.addPointInBezierCurvesOfScalarValues({
         propAddress: this.props.address,
         pointProps,
+        recalculateInterpolator: true
       }),
     )
   }

@@ -1,4 +1,5 @@
 import reducto from '$shared/utils/redux/reducto'
+import {original as immerToOriginal} from 'immer'
 // import
 import {
   $ProjectHistoricState,
@@ -73,11 +74,28 @@ export const setPointsInBezierCurvesOfScalarValues = r(
 )
 
 export const addPointInBezierCurvesOfScalarValues = r(
-  (s, p: TPropAddress & {pointProps: TPoint}) => {
+  (s, p: TPropAddress & {pointProps: TPoint, recalculateInterpolator?: boolean}) => {
     const points = getPoints(s, p.propAddress)
     let atIndex = points.findIndex(point => point.time > p.pointProps.time)
     if (atIndex === -1) atIndex = points.length
-    points.splice(atIndex, 0, p.pointProps)
+    const newPoint: TPoint = {...p.pointProps}
+    if (p.recalculateInterpolator) {
+
+      const leftPoint = points[atIndex - 1]
+      if (leftPoint && leftPoint.interpolationDescriptor.connected) {
+        const leftInterpolator = immerToOriginal(leftPoint.interpolationDescriptor) as TPoint['interpolationDescriptor']
+        const thisInterpolator = {...leftInterpolator}
+        if (thisInterpolator.interpolationType === 'CubicBezier') {
+          thisInterpolator.handles = [...thisInterpolator.handles] as [number, number, number, number]
+          thisInterpolator.handles[0] = 0.5
+          thisInterpolator.handles[1] = 0.5
+          leftPoint.interpolationDescriptor.handles[2] = 0.5
+          leftPoint.interpolationDescriptor.handles[3] = 0.5
+        }
+        newPoint.interpolationDescriptor = thisInterpolator
+      }
+    }
+    points.splice(atIndex, 0, newPoint)
   },
 )
 
