@@ -89,11 +89,11 @@ const setupScene = () => {
 
     // scene.add(line)
 
-    const group = new THREE.Group()
-    group.add(line)
-    group.add(mesh)
-    sphere = group
-    group.position.y = size / 2
+    const lineAndMesh = new THREE.Group()
+    lineAndMesh.add(line)
+    lineAndMesh.add(mesh)
+    sphere = lineAndMesh
+    lineAndMesh.position.y = size / 2
 
     sphereGroup = new THREE.Group()
     sphereGroup.add(sphere)
