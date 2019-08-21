@@ -68,7 +68,7 @@ class DraggableArea extends React.PureComponent<IProps, {}> {
 
   disableUnwantedClick = (event: MouseEvent) => {
     if (this.s.dragHappened) {
-      if (!this.props.dontBlockMouseDown) {
+      if (!this.props.dontBlockMouseDown && this.mode !== 'notDragging') {
         event.stopPropagation()
         event.preventDefault()
       }
