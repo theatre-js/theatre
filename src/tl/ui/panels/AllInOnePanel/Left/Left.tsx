@@ -13,7 +13,7 @@ import {
   CodeSnippet,
 } from '$tl/ui/panels/AllInOnePanel/Bottom/FullSizeHint/FullSizeHint'
 
-export const scrollableAreaExtraBottomPadding = 10
+export const scrollableAreaExtraBottomPadding = 50
 
 const classes = resolveCss(css)
 
