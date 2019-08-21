@@ -17,7 +17,9 @@ export const getScrollSpaceWidth_deprecated = (
   return (duration / rangeDuration) * viewportWidth
 }
 
-export const xToTime = (duration: number, width: number) => (x: number) => {
+export const anySpace_xToTime = (duration: number, width: number) => (
+  x: number,
+) => {
   return (x * duration) / width
 }
 
@@ -129,7 +131,7 @@ export const getRangeLabel = (
     0,
     svgWidth,
   )
-  return (xToTime(duration, svgWidth)(rangeX) / 1000).toFixed(1)
+  return (anySpace_xToTime(duration, svgWidth)(rangeX) / 1000).toFixed(1)
 }
 
 export const color: TColor = {

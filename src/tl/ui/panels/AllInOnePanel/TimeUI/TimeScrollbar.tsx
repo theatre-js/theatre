@@ -1,7 +1,10 @@
 import React, {useMemo} from 'react'
 import css from './Scroller.css'
 import resolveCss from '$shared/utils/resolveCss'
-import {xToTime, getRangeLabel} from '$tl/ui/panels/AllInOnePanel/Right/utils'
+import {
+  anySpace_xToTime,
+  getRangeLabel,
+} from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import {getNewRange} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
 import {TRange} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
@@ -27,21 +30,21 @@ const TimeScrollbar = () => {
         updateRange: (dx: number) => {
           const duration = stuffBeforeMove.rangeAndDuration.overshotDuration
           const viewportWidth = stuffBeforeMove.viewportSpace.width
-          const dt = xToTime(duration, viewportWidth)(dx)
+          const dt = anySpace_xToTime(duration, viewportWidth)(dx)
           self._setRange({from: dt, to: dt}, true)
         },
 
         updateRangeFrom: (dx: number) => {
           const duration = stuffBeforeMove.rangeAndDuration.overshotDuration
           const viewportWidth = stuffBeforeMove.viewportSpace.width
-          const dt = xToTime(duration, viewportWidth)(dx)
+          const dt = anySpace_xToTime(duration, viewportWidth)(dx)
           self._setRange({from: dt, to: 0}, false)
         },
 
         updateRangeTo: (dx: number) => {
           const duration = stuffBeforeMove.rangeAndDuration.overshotDuration
           const viewportWidth = stuffBeforeMove.viewportSpace.width
-          const dt = xToTime(duration, viewportWidth)(dx)
+          const dt = anySpace_xToTime(duration, viewportWidth)(dx)
           self._setRange({from: 0, to: dt}, false)
         },
 
