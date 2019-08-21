@@ -7,6 +7,10 @@
   }
 }
 
+:global(.key-SUPER) .handles {
+  pointer-events: none;
+}
+
 .handleClickArea:hover ~ .handle,
 .handleClickArea:active ~ .handle {
   stroke-width: 6px;

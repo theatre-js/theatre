@@ -13,7 +13,9 @@ import TimelineInstance from '$tl/timelines/TimelineInstance/TimelineInstance'
 import Right from './Right/Right'
 import createPointerContext from '$shared/utils/react/createPointerContext'
 import TimeUI from '$tl/ui/panels/AllInOnePanel/TimeUI/TimeUI'
-import ActiveModeProvider from '$shared/components/ActiveModeProvider/ActiveModeProvider'
+import ActiveModeProvider, {
+  ActiveModeContext,
+} from '$shared/components/ActiveModeProvider/ActiveModeProvider'
 import {UIHistoricState} from '$tl/ui/store/types'
 import PanelResizers from '$tl/ui/panels/AllInOnePanel/PanelResizers'
 import clamp from '$shared/number/clamp'
@@ -118,9 +120,12 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
 
           return (
             <Provider value={allInOnePanelStuff}>
-              <ActiveModeProvider modes={['super', 'shift', 'c', 'd', 'h']}>
+              <ActiveModeProvider
+                modes={['super', 'shift', 'c', 'd', 'h']}
+                __dontUseOrYoullBeFired_onChange={this.activeModeChanged}
+              >
                 <div
-                  {...classes('container')}
+                  className={classes('container').className + ' ' + 'mode'}
                   ref={this.containerRef}
                   style={{
                     height: fullHeightIncludingBottom,
@@ -189,6 +194,18 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
     window.removeEventListener('resize', this.reactToWindowResize)
     window.removeEventListener('keydown', this._handleKeyDown)
     this._detachScrollListener()
+  }
+
+  activeModeChanged = (mode: string) => {
+    const div = this.containerRef.current
+    if (!div) return
+    const currentClasses = Array.from(div.classList)
+    for (let currentClass of currentClasses) {
+      if (currentClass.match(/^key\-/)) {
+        div.classList.remove(currentClass)
+      }
+    }
+    div.classList.add('key-' + mode)
   }
 
   _handleKeyDown = (e: KeyboardEvent) => {

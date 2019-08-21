@@ -29,17 +29,17 @@ class ItemView extends React.PureComponent<IProps, IState> {
         <ItemPointsNormalizer points={this.props.points}>
           {(normalizedPoints, extremums, duration) => (
             <>
-              <GraphEditor
-                points={normalizedPoints}
-                extremums={extremums}
-                color={color}
-              />
               <ItemHitZone
                 color={color}
                 extremums={extremums}
                 duration={duration}
                 dopeSheet={false}
                 address={this.props.address}
+              />
+              <GraphEditor
+                points={normalizedPoints}
+                extremums={extremums}
+                color={color}
               />
             </>
           )}
@@ -54,17 +54,17 @@ class ItemView extends React.PureComponent<IProps, IState> {
         <ItemPointsNormalizer points={this.props.points}>
           {(normalizedPoints, extremums, duration) => (
             <>
-              <Dopesheet
-                points={normalizedPoints}
-                extremums={extremums}
-                color={color}
-              />
               <ItemHitZone
                 color={color}
                 extremums={extremums}
                 duration={duration}
                 dopeSheet={true}
                 address={this.props.address}
+              />
+              <Dopesheet
+                points={normalizedPoints}
+                extremums={extremums}
+                color={color}
               />
             </>
           )}

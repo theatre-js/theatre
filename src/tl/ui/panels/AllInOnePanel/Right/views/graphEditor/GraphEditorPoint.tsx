@@ -4,6 +4,7 @@ import Point from '$tl/ui/panels/AllInOnePanel/Right/views/point/Point'
 import HandleLine from '$tl/ui/panels/AllInOnePanel/Right/views/graphEditor/HandleLine'
 import HandleClickArea from '$tl/ui/panels/AllInOnePanel/Right/views/graphEditor/HandleClickArea'
 import {TPropGetter} from '$tl/ui/panels/AllInOnePanel/Right/items/ItemPropProvider'
+import * as handleCss from './handle.css'
 import {
   TColor,
   TPointHandles,
@@ -152,7 +153,7 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
         ]
       : []
     return (
-      <g>
+      <g className={handleCss.handles}>
         {renderLeftHandle && (
           <HandleLine
             x1={pointTime}

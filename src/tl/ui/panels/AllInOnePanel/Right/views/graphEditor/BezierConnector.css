@@ -9,3 +9,7 @@
 .curveContainer {
   overflow: visible;
 }
+
+:global(.key-SUPER) .curveContainer {
+  pointer-events: none;
+}

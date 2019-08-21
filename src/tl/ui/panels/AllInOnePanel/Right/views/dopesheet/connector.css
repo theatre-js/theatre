@@ -13,6 +13,10 @@
   cursor: ew-resize;
 }
 
+:global(.key-SUPER) .connectorClickArea {
+  pointer-events: none;
+}
+
 .connector {
   pointer-events: none;
 }

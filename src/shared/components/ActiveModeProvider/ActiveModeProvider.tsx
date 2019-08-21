@@ -8,6 +8,10 @@ export type IActiveMode = undefined | null | string
 
 interface IProps {
   modes: IMode[]
+  /**
+   * An escape hatch to get the current modes through an emitter.
+   */
+  __dontUseOrYoullBeFired_onChange?: (mode: IActiveMode) => void
 }
 
 interface IState {
@@ -82,7 +86,8 @@ class ActiveModeProvider extends React.PureComponent<IProps, IState> {
 
     const mode = this._mapOfKeycodeToMode.get(event.keyCode)
     if (mode != null) {
-      this.setState(() => ({activeMode: MODES[mode]}))
+      this.setMode(MODES[mode])
+      // this.setState(() => ({activeMode: MODES[mode]}))
     }
   }
 
@@ -101,7 +106,16 @@ class ActiveModeProvider extends React.PureComponent<IProps, IState> {
   }
 
   private resetActiveMode = () => {
-    this.setState(() => ({activeMode: null}))
+    this.setMode(null)
+  }
+
+  setMode(activeMode: IActiveMode) {
+    if (this.state.activeMode === activeMode) return
+    this.setState(() => ({activeMode}))
+    const fn = this.props.__dontUseOrYoullBeFired_onChange
+    if (fn) {
+      fn(activeMode)
+    }
   }
 
   render() {
