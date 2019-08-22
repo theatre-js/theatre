@@ -7,32 +7,32 @@ import {
 import {PrimitivePropItem} from '$tl/ui/panels/AllInOnePanel/utils'
 
 // Point
-export type TPoint = ITimelineVarPointWithValueNumber
-export type TPoints = IBezierCurvesOfScalarValues['points']
-export type TPointSingleHandle = ITimelinePointSingleHandle
-export type TPointHandles = TPoint['interpolationDescriptor']['handles']
-export type TPointCoords = Pick<TPoint, 'time' | 'value'>
-export type TPointTime = Pick<TPoint, 'time'>
-export type TPointValue = Pick<TPoint, 'value'>
-export type TNormalizedPoint = TPoint & {
+export type IPoint = ITimelineVarPointWithValueNumber
+export type IPoints = IBezierCurvesOfScalarValues['points']
+export type IPointSingleHandle = ITimelinePointSingleHandle
+export type IPointHandles = IPoint['interpolationDescriptor']['handles']
+export type IPointCoords = Pick<IPoint, 'time' | 'value'>
+export type IPointTime = Pick<IPoint, 'time'>
+export type IPointValue = Pick<IPoint, 'value'>
+export type INormalizedPoint = IPoint & {
   originalTime: number
   originalValue: number
 }
-export type TNormalizedPoints = TNormalizedPoint[]
-export type TExtremums = TNumberTuple
+export type INormalizedPoints = INormalizedPoint[]
+export type IExtremums = INumberTuple
 
 // Range state
-export type TRange = {from: number; to: number}
-export type TDuration = number
+export type IRange = {from: number; to: number}
+export type IDuration = number
 
 // item
-export type TExpanded = PrimitivePropItem['expanded']
+export type IExpanded = PrimitivePropItem['expanded']
 
 // Misc
-export type TColor = {
+export type IColor = {
   name: string
   normal: string
   darkened: string
 }
 
-export type TNumberTuple = [number, number]
+export type INumberTuple = [number, number]

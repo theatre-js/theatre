@@ -1,14 +1,14 @@
 import memoizeOne from 'memoize-one'
 import {
-  TItemsInfo,
-  TDims,
-  TTransformedSelectedArea,
-  TSelectedPoints,
-  THorizontalLimits,
-  TMapOfFilteredItemKeyToItemData,
+  IItemsInfo,
+  IDims,
+  ITransformedSelectedArea,
+  ISelectedPoints,
+  IHorizontalLimits,
+  IMapOfFilteredItemKeyToItemData,
 } from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/types'
 import {SVG_PADDING_Y} from '$tl/ui/panels/AllInOnePanel/Right/views/SVGWrapper'
-import {TRange, TDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
+import {IRange, IDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {POINT_RECT_EDGE_SIZE} from '$tl/ui/panels/AllInOnePanel/Right/views/point/PointClickArea'
 import {
   getSvgXToPaddedSvgXOffset,
@@ -16,7 +16,7 @@ import {
 } from '$tl/ui/panels/AllInOnePanel/Right/utils'
 
 export const memoizedGetItemsInfo = memoizeOne(
-  (mapOfItemsData: TMapOfFilteredItemKeyToItemData): TItemsInfo => {
+  (mapOfItemsData: IMapOfFilteredItemKeyToItemData): IItemsInfo => {
     const itemsInfo = Object.entries(mapOfItemsData).reduce(
       (info, [itemKey, itemData]) => {
         let boundariesToAdd: [number, number]
@@ -33,7 +33,7 @@ export const memoizedGetItemsInfo = memoizeOne(
           keys: info.keys.concat(itemKey),
         }
       },
-      {boundaries: [], keys: []} as TItemsInfo,
+      {boundaries: [], keys: []} as IItemsInfo,
     )
     itemsInfo.boundaries.unshift(-Infinity)
     itemsInfo.boundaries.push(Infinity)
@@ -42,12 +42,12 @@ export const memoizedGetItemsInfo = memoizeOne(
 )
 
 export const getTransformedSelectedArea = (
-  dims: TDims,
-  range: TRange,
-  duration: TDuration,
+  dims: IDims,
+  range: IRange,
+  duration: IDuration,
   timelineWidth: number,
-  itemsInfo: TItemsInfo,
-): TTransformedSelectedArea => {
+  itemsInfo: IItemsInfo,
+): ITransformedSelectedArea => {
   const scrollSpaceWidth = getScrollSpaceWidth_deprecated(
     range,
     duration,
@@ -139,12 +139,12 @@ export const getTransformedSelectedArea = (
 }
 
 export const getFittedDims = (
-  selectedPoints: TSelectedPoints,
-  range: TRange,
-  duration: TDuration,
+  selectedPoints: ISelectedPoints,
+  range: IRange,
+  duration: IDuration,
   timelineWidth: number,
-  itemsInfo: TItemsInfo,
-): TDims => {
+  itemsInfo: IItemsInfo,
+): IDims => {
   let arrayOfPointsTimes: number[] = []
   Object.values(selectedPoints).forEach(itemPoints => {
     Object.values(itemPoints).forEach(point => {
@@ -215,11 +215,11 @@ export const getFittedDims = (
 }
 
 export const getHorizontalLimits = (
-  selectedPoints: TSelectedPoints,
+  selectedPoints: ISelectedPoints,
   timelineWidth: number,
-  range: TRange,
-  mapOfItemsData: TMapOfFilteredItemKeyToItemData,
-): THorizontalLimits => {
+  range: IRange,
+  mapOfItemsData: IMapOfFilteredItemKeyToItemData,
+): IHorizontalLimits => {
   let leftLimit = -Infinity
   let rightLimit = Infinity
   Object.keys(selectedPoints).forEach(itemKey => {

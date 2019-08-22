@@ -1,75 +1,73 @@
 import {
-  TPointValuesEditorProps,
-  TPointContextMenuProps,
-  TConnectorContextMenuProps,
+  IPointValuesEditorProps,
+  IPointContextMenuProps,
+  IConnectorContextMenuProps,
 } from '$tl/ui/panels/AllInOnePanel/Right/timeline/overlays/types'
 import {
-  TPointCoords,
-  TPointSingleHandle,
-  TNormalizedPoints,
-  TNormalizedPoint,
-  TExtremums,
+  IPointCoords,
+  IPointSingleHandle,
+  INormalizedPoints,
+  INormalizedPoint,
+  IExtremums,
 } from '$tl/ui/panels/AllInOnePanel/Right/types'
 
-export type TShowPointValuesEditor = (
+export type IShowPointValuesEditor = (
   props: Pick<
-    TPointValuesEditorProps,
+    IPointValuesEditorProps,
     'initialValue' | 'initialTime' | 'top' | 'left' | 'pointIndex'
   >,
 ) => void
 
-export type TShowPointContextMenu = (
-  props: Pick<TPointContextMenuProps, 'left' | 'top' | 'pointIndex'>,
+export type IShowPointContextMenu = (
+  props: Pick<IPointContextMenuProps, 'left' | 'top' | 'pointIndex'>,
 ) => void
 
-export type TShowConnectorContextMenu = (
-  props: Pick<TConnectorContextMenuProps, 'left' | 'top' | 'pointIndex'>,
+export type IShowConnectorContextMenu = (
+  props: Pick<IConnectorContextMenuProps, 'left' | 'top' | 'pointIndex'>,
 ) => void
 
-export type TAddPointToSelection = (
+export type IAddPointToSelection = (
   pointIndex: number,
-  pointData: TPointCoords,
-  extremums?: TExtremums,
+  pointData: IPointCoords,
+  extremums?: IExtremums,
 ) => void
 
-export type TRemovePointFromSelection = (pointIndex: number) => void
+export type IRemovePointFromSelection = (pointIndex: number) => void
 
-export type TMovePointToNewCoordsTemp = (
+export type IMovePointToNewCoordsTemp = (
   pointIndex: number,
-  originalCoords: TPointCoords,
-  change: TPointCoords,
+  originalCoords: IPointCoords,
+  change: IPointCoords,
   minimumHumanNoticableDiffInTime: number,
   minimumHumanNoticableDiffInValue: number,
-) => TPointCoords
+) => IPointCoords
 
-export type TMovePointToNewCoords = (
+export type IMovePointToNewCoords = (
   pointIndex: number,
-  newCoords: TPointCoords,
+  newCoords: IPointCoords,
 ) => void
 
-export type TMoveSingleHandle = (
+export type IMoveSingleHandle = (
   pointIndex: number,
-  newHandle: TPointSingleHandle,
+  newHandle: IPointSingleHandle,
 ) => void
 
-export type TFnNeedsPointIndex = (pointIndex: number) => void
+export type IFnNeedsPointIndex = (pointIndex: number) => void
 
-export type TMoveDopesheetConnector = (pointIndex: number) => void
+export type IMoveDopesheetConnector = (pointIndex: number) => void
 
-export type TMoveDopesheetConnectorTemp = (
+export type IMoveDopesheetConnectorTemp = (
   pointIndex: number,
   moveAmount: number,
 ) => void
 
-export type TPointMove = [number, number]
+export type IGetAllPoints = () => INormalizedPoints
 
-export type TGetAllPoints = () => TNormalizedPoints
-
-export type TTempPointRenderer = (
-  point: TNormalizedPoint,
-  nextPoint: TNormalizedPoint,
+export type ITempPointRenderer = (
+  point: INormalizedPoint,
+  nextPoint: INormalizedPoint,
 ) => React.ReactNode
 
-export type TTempPointsInSelection = {
-  [pointIndex: string]: TNormalizedPoint
+export type ITempPointsInSelection = {
+  [pointIndex: string]: INormalizedPoint
 }

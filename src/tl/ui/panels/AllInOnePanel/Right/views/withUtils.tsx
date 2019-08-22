@@ -1,22 +1,22 @@
 import React from 'react'
 import {
-  TPropGetter,
+  IPropGetter,
   ItemPropGetterContext,
 } from '$tl/ui/panels/AllInOnePanel/Right/items/ItemPropProvider'
 import {OverlaysAPIContext} from '$tl/ui/panels/AllInOnePanel/Right/timeline/OverlaysProvider'
-import {TOverlaysAPI} from '$tl/ui/panels/AllInOnePanel/Right/timeline/overlays/types'
+import {IOverlaysAPI} from '$tl/ui/panels/AllInOnePanel/Right/timeline/overlays/types'
 import {SelectionAPIContext} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/SelectionProvider'
-import {TSelectionAPI} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/types'
+import {ISelectionAPI} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/types'
 import {
   ExtremumsAPIContext,
-  TExtremumsAPI,
+  IExtremumsAPI,
 } from '$tl/ui/panels/AllInOnePanel/Right/items/ItemPointsNormalizer'
 
 export interface IWithUtilsProps {
-  propGetter: TPropGetter
-  overlaysAPI: TOverlaysAPI
-  selectionAPI: TSelectionAPI
-  extremumsAPI: TExtremumsAPI
+  propGetter: IPropGetter
+  overlaysAPI: IOverlaysAPI
+  selectionAPI: ISelectionAPI
+  extremumsAPI: IExtremumsAPI
 }
 
 export default <P extends {}>(

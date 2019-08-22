@@ -8,34 +8,34 @@ import OverlaySection from '$shared/components/Overlay/OverlaySection'
 const classes = resolveCss(css)
 
 interface IProps {
-  items: TItems
+  items: IItems
   activePath: string[]
   onClickOutside?: () => void
-  onSelect: TMenuAPI['onSelect']
+  onSelect: IMenuAPI['onSelect']
 }
 
 interface IState {}
 
-export type TItems = {
+export type IItems = {
   [id: string]: {
     isLeaf: boolean
     isSelectable: boolean
     path: string[]
     internalPath: string[]
-    __subItems__: TItems
+    __subItems__: IItems
   }
 }
 
-type TMenuAPI = {
+type IMenuAPI = {
   onSelect: (path: string[]) => void
 }
 
 export const MenuAPIContext = React.createContext({
   onSelect: () => {},
-} as TMenuAPI)
+} as IMenuAPI)
 
 class MultiLevelDropdown extends React.PureComponent<IProps, IState> {
-  api: TMenuAPI = {
+  api: IMenuAPI = {
     onSelect: path => this.props.onSelect(path),
   }
 

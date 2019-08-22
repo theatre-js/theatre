@@ -1,6 +1,6 @@
 import React from 'react'
 import css from './ItemsList.css'
-import {TItems} from '$shared/components/MultiLevelDropdown/MultiLevelDropdown'
+import {IItems} from '$shared/components/MultiLevelDropdown/MultiLevelDropdown'
 import resolveCss from '$shared/utils/resolveCss'
 import LeafItem from '$shared/components/MultiLevelDropdown/LeafItem'
 import InternalItem from '$shared/components/MultiLevelDropdown/InternalItem'
@@ -9,7 +9,7 @@ import {isInActivePath} from '$shared/components/MultiLevelDropdown/utils'
 const classes = resolveCss(css)
 
 interface IProps {
-  items: TItems
+  items: IItems
   activePath: string[]
 }
 

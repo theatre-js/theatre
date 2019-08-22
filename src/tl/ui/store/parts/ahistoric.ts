@@ -1,7 +1,7 @@
 import reducto from '$shared/utils/redux/reducto'
 import {$UIAhistoricState, UIAhistoricState} from '$tl/ui/store/types'
 import {TimelineAddress, ProjectAddress} from '$tl/handy/addresses'
-import {TRange} from '$tl/ui/panels/AllInOnePanel/Right/types'
+import {IRange} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import uiSelectors from '$tl/ui/store/selectors'
 
 const r = reducto($UIAhistoricState)
@@ -36,7 +36,7 @@ export const setUIVisibilityState = r(
 )
 
 export const setRangeShownInPanel = r(
-  (s, p: TimelineAddress & {range: TRange}) => {
+  (s, p: TimelineAddress & {range: IRange}) => {
     ensureTimelineIsSetUp(s, p)
     const timeline = uiSelectors.ahistoric.getTimelineState(s, p)
     timeline.rangeShownInPanel = p.range

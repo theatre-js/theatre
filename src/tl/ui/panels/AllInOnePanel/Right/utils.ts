@@ -1,16 +1,16 @@
 import {
-  TRange,
-  TDuration,
-  TColor,
-  TNumberTuple,
+  IRange,
+  IDuration,
+  IColor,
+  INumberTuple,
 } from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {SVG_PADDING_X} from '$tl/ui/panels/AllInOnePanel/Right/views/SVGWrapper'
 import {clamp} from 'lodash-es'
 
 // scrollSpace.width
 export const getScrollSpaceWidth_deprecated = (
-  range: TRange,
-  duration: TDuration,
+  range: IRange,
+  duration: IDuration,
   viewportWidth: number,
 ) => {
   const rangeDuration = range.to - range.from
@@ -23,26 +23,26 @@ export const anySpace_xToTime = (duration: number, width: number) => (
   return (x * duration) / width
 }
 
-export const timelineXToTime = (range: TRange, timelineWidth: number) => (
+export const timelineXToTime = (range: IRange, timelineWidth: number) => (
   x: number,
 ) => {
   return deltaTimelineXToDeltaTime(range, timelineWidth)(x) + range.from
 }
 
 export const deltaTimelineXToDeltaTime = (
-  range: TRange,
+  range: IRange,
   timelineWidth: number,
 ) => (x: number) => {
   return (x * (range.to - range.from)) / timelineWidth
 }
 
-export const timeToTimelineX = (range: TRange, timelineWidth: number) => (
+export const timeToTimelineX = (range: IRange, timelineWidth: number) => (
   time: number,
 ) => {
   return ((time - range.from) / (range.to - range.from)) * timelineWidth
 }
 
-export const deltaXToTime = (range: TRange, width: number) => (dx: number) => {
+export const deltaXToTime = (range: IRange, width: number) => (dx: number) => {
   return (dx * (range.to - range.from)) / width
 }
 
@@ -54,8 +54,8 @@ export const getSvgXToPaddedSvgXOffset = (svgWidth: number) => (
 
 export const inRangeXToPaddedScrollSpaceX = (
   timelineX: number,
-  range: TRange,
-  duration: TDuration,
+  range: IRange,
+  duration: IDuration,
   timelineWidth: number,
 ) => {
   const scrollSpaceWidth = getScrollSpaceWidth_deprecated(
@@ -69,8 +69,8 @@ export const inRangeXToPaddedScrollSpaceX = (
 
 export const inRangeXToSvgX = (
   timelineX: number,
-  range: TRange,
-  duration: TDuration,
+  range: IRange,
+  duration: IDuration,
   timelineWidth: number,
 ) => {
   const time = timelineXToTime(range, timelineWidth)(timelineX)
@@ -78,7 +78,7 @@ export const inRangeXToSvgX = (
 }
 
 export const viewportScrolledSpace = {
-  xToTime: (range: TRange, duration: TDuration, timelineWidth: number) => (
+  xToTime: (range: IRange, duration: IDuration, timelineWidth: number) => (
     timelineX: number,
     shouldClamp: boolean = true,
   ) => {
@@ -95,8 +95,8 @@ export const viewportScrolledSpace = {
 }
 
 export const timeToInRangeX = (
-  range: TRange,
-  duration: TDuration,
+  range: IRange,
+  duration: IDuration,
   timelineWidth: number,
 ) => (time: number) => {
   const timelineX = timeToTimelineX(range, timelineWidth)(time)
@@ -105,8 +105,8 @@ export const timeToInRangeX = (
 
 // current
 const timeToSvgX = (
-  range: TRange,
-  duration: TDuration,
+  range: IRange,
+  duration: IDuration,
   timelineWidth: number,
 ) => {
   const width = getScrollSpaceWidth_deprecated(range, duration, timelineWidth)
@@ -116,8 +116,8 @@ const timeToSvgX = (
 }
 
 export const getRangeLabel = (
-  range: TRange,
-  duration: TDuration,
+  range: IRange,
+  duration: IDuration,
   timelineWidth: number,
 ) => (rangeTime: number) => {
   let rangeX = timeToSvgX(range, duration, timelineWidth)(rangeTime)
@@ -134,12 +134,12 @@ export const getRangeLabel = (
   return (anySpace_xToTime(duration, svgWidth)(rangeX) / 1000).toFixed(1)
 }
 
-export const color: TColor = {
+export const color: IColor = {
   name: 'blue',
   normal: '#3AAFA9',
   darkened: '#345b59',
 }
 
-export const isNumberTupleZero = (tuple: TNumberTuple) => {
+export const isNumberTupleZero = (tuple: INumberTuple) => {
   return tuple[0] === tuple[1] && tuple[0] === 0
 }

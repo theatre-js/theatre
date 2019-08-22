@@ -1,10 +1,10 @@
-import {TPointCoords} from '$tl/ui/panels/AllInOnePanel/Right/types'
-import {TTransformedSelectedArea} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/types'
+import {IPointCoords} from '$tl/ui/panels/AllInOnePanel/Right/types'
+import {ITransformedSelectedArea} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/types'
 
 export const shouldToggleIsInSelection = (
-  pointCoords: TPointCoords,
+  pointCoords: IPointCoords,
   isCurrentlyInSelection: boolean,
-  selectedArea: TTransformedSelectedArea[0],
+  selectedArea: ITransformedSelectedArea[0],
 ): boolean => {
   let shouldToggle = false
   if (selectedArea == null) {

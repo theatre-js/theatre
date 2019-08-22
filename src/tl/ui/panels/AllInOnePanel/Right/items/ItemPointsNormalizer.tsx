@@ -1,44 +1,44 @@
 import React from 'react'
 import {DurationContext} from '$tl/ui/panels/AllInOnePanel/Right/timeline/RootPropProvider'
 import {
-  TPoints,
-  TNormalizedPoints,
-  TExtremums,
-  TDuration,
-  TNumberTuple,
-  TPointHandles,
+  IPoints,
+  INormalizedPoints,
+  IExtremums,
+  IDuration,
+  INumberTuple,
+  IPointHandles,
 } from '$tl/ui/panels/AllInOnePanel/Right/types'
 import noop from '$shared/utils/noop'
 
 interface IProps {
-  points: TPoints
+  points: IPoints
   children: (
-    normalizedPoints: TNormalizedPoints,
-    extremums: TExtremums,
-    duration: TDuration,
+    normalizedPoints: INormalizedPoints,
+    extremums: IExtremums,
+    duration: IDuration,
   ) => React.ReactChild
 }
 
 interface IState {}
 
-export type TExtremumsAPI = {
+export type IExtremumsAPI = {
   persist: () => void
   unpersist: () => void
 }
 
-export const ExtremumsAPIContext = React.createContext<TExtremumsAPI>({
+export const ExtremumsAPIContext = React.createContext<IExtremumsAPI>({
   persist: noop,
   unpersist: noop,
 })
 
-type TCache = {
-  extremums: TExtremums
-  duration: TDuration
-  points: TPoints
-  normalizedPoints: TNormalizedPoints
+type ICache = {
+  extremums: IExtremums
+  duration: IDuration
+  points: IPoints
+  normalizedPoints: INormalizedPoints
 }
 
-const defaultCache: TCache = {
+const defaultCache: ICache = {
   extremums: [-5, 5],
   duration: 0,
   normalizedPoints: [],
@@ -47,7 +47,7 @@ const defaultCache: TCache = {
 
 class ItemPointsNormalizer extends React.PureComponent<IProps, IState> {
   shouldPersistExtremums: boolean = false
-  cache: TCache = {...defaultCache}
+  cache: ICache = {...defaultCache}
 
   render() {
     const {points} = this.props
@@ -73,11 +73,11 @@ class ItemPointsNormalizer extends React.PureComponent<IProps, IState> {
     delete this.cache
   }
 
-  persistExtremums: TExtremumsAPI['persist'] = () => {
+  persistExtremums: IExtremumsAPI['persist'] = () => {
     this.shouldPersistExtremums = true
   }
 
-  unpersistExtremums: TExtremumsAPI['unpersist'] = () => {
+  unpersistExtremums: IExtremumsAPI['unpersist'] = () => {
     if (this.shouldPersistExtremums) {
       this.shouldPersistExtremums = false
       this.cache.points = [...defaultCache.points]
@@ -85,16 +85,16 @@ class ItemPointsNormalizer extends React.PureComponent<IProps, IState> {
     }
   }
 
-  api: TExtremumsAPI = {
+  api: IExtremumsAPI = {
     persist: this.persistExtremums,
     unpersist: this.unpersistExtremums,
   }
 
   getNormalizedPoints = (
-    points: TPoints,
-    duration: TDuration,
-    extremums: TExtremums,
-  ): TNormalizedPoints => {
+    points: IPoints,
+    duration: IDuration,
+    extremums: IExtremums,
+  ): INormalizedPoints => {
     const sameDurationAndExtremums =
       duration === this.cache.duration && extremums === this.cache.extremums
 
@@ -126,7 +126,7 @@ class ItemPointsNormalizer extends React.PureComponent<IProps, IState> {
     return normalizedPoints
   }
 
-  getExtremums(points: TPoints) {
+  getExtremums(points: IPoints) {
     if (this.shouldPersistExtremums) {
       return this.cache.extremums
     }
@@ -136,8 +136,8 @@ class ItemPointsNormalizer extends React.PureComponent<IProps, IState> {
     return this.calculateExtremums(points)
   }
 
-  calculateExtremums = (points: TPoints): TExtremums => {
-    let extremums: TExtremums
+  calculateExtremums = (points: IPoints): IExtremums => {
+    let extremums: IExtremums
     if (points.length === 0) {
       extremums = [-5, 5]
     } else {
@@ -169,15 +169,15 @@ export const getTimeNormalizer = (duration: number) => {
   return (time: number) => time * durationFactor
 }
 
-export const getValueNormalizer = (extremums: TExtremums) => {
+export const getValueNormalizer = (extremums: IExtremums) => {
   const upperExtremum = extremums[1]
   const diffFactor = 100 / (extremums[1] - extremums[0])
   return (value: number) => (upperExtremum - value) * diffFactor
 }
 
 export const calculateNextExtremums = (
-  points: TNormalizedPoints,
-): TExtremums => {
+  points: INormalizedPoints,
+): IExtremums => {
   let min: number = Infinity,
     max: number = -Infinity
   points.forEach((point, index) => {
@@ -203,8 +203,8 @@ const getMinAndMax = (
   max: number,
   pointValue: number,
   nextPointValue: undefined | number,
-  pointHandles: TPointHandles,
-): TNumberTuple => {
+  pointHandles: IPointHandles,
+): INumberTuple => {
   let candids = [pointValue]
   if (nextPointValue != null) {
     candids = candids.concat(

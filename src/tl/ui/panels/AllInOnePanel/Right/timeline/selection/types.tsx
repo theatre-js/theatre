@@ -1,28 +1,28 @@
 import {
-  TExtremums,
-  TPoints,
-  TPointCoords,
-  TPointTime,
-  TPointValue,
+  IExtremums,
+  IPoints,
+  IPointCoords,
+  IPointTime,
+  IPointValue,
 } from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {PrimitivePropItem} from '$tl/ui/panels/AllInOnePanel/utils'
 import {PropAddress} from '$tl/handy/addresses'
 
-export type TDims = {
+export type IDims = {
   left: number
   top: number
   width: number
   height: number
 }
 
-export type TItemsInfo = {
+export type IItemsInfo = {
   boundaries: number[]
   keys: string[]
 }
 
-export type TSelectionMove = {x: number; y: number}
+export type ISelectionMove = {x: number; y: number}
 
-export type TTransformedSelectedArea = {
+export type ITransformedSelectedArea = {
   [itemKey: string]: {
     left: number
     top: number
@@ -31,52 +31,52 @@ export type TTransformedSelectedArea = {
   }
 }
 
-export type TSelectedPointsInItem = {
-  [pointIndex: string]: TPointCoords
+export type ISelectedPointsInItem = {
+  [pointIndex: string]: IPointCoords
 }
 
-export type TSelectedPoints = {
-  [itemKey: string]: TSelectedPointsInItem
+export type ISelectedPoints = {
+  [itemKey: string]: ISelectedPointsInItem
 }
 
-export type TSelectionAPI = {
+export type ISelectionAPI = {
   addPoint: (
     itemKey: string,
     pointIndex: number,
-    extremums: TExtremums,
-    pointData: TPointCoords,
+    extremums: IExtremums,
+    pointData: IPointCoords,
   ) => boolean
   removePoint: (itemKey: string, pointIndex: number) => boolean
   getSelectedPointsOfItem: (
     itemKey: string,
-  ) => undefined | TSelectedPointsInItem
+  ) => undefined | ISelectedPointsInItem
 }
 
-export type THorizontalLimits = {left: number; right: number}
+export type IHorizontalLimits = {left: number; right: number}
 
-export type TCollectionOfSelectedPointsData = {
-  [pointIndex: string]: TPointTime & Partial<TPointValue>
+export type ICollectionOfSelectedPointsData = {
+  [pointIndex: string]: IPointTime & Partial<IPointValue>
 }
 
-export type TExtremumsMap = {
-  [itemKey: string]: TExtremums
+export type IExtremumsMap = {
+  [itemKey: string]: IExtremums
 }
 
-export type TMapOfFilteredItemKeyToItemData = {
+export type IMapOfFilteredItemKeyToItemData = {
   [itemKey: string]: Pick<
     PrimitivePropItem,
     'address' | 'height' | 'top' | 'expanded'
   > & {
-    points: TPoints
+    points: IPoints
   }
 }
 
-export type TLastCommittedData = Array<{
+export type ILastCommittedData = Array<{
   propAddress: PropAddress
-  pointsNewCoords: TCollectionOfSelectedPointsData
+  pointsNewCoords: ICollectionOfSelectedPointsData
 }>
 
-export type TDataOfPointsToDelete = Array<{
+export type IDataOfPointsToDelete = Array<{
   propAddress: PropAddress
   pointsIndices: number[]
 }>

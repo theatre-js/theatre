@@ -2,7 +2,7 @@ import React from 'react'
 import css from './PointValuesEditor.css'
 import resolveCss from '$shared/utils/resolveCss'
 import UIComponent from '$tl/ui/handy/UIComponent'
-import {TPointValuesEditorProps} from '$tl/ui/panels/AllInOnePanel/Right/timeline/overlays/types'
+import {IPointValuesEditorProps} from '$tl/ui/panels/AllInOnePanel/Right/timeline/overlays/types'
 import Overlay from '$shared/components/Overlay/Overlay'
 import OverlaySection from '$shared/components/Overlay/OverlaySection'
 import FixedFullSizeContainer from '$shared/components/FixedFullSizeContainer/FixedFullSizeContainer'
@@ -12,7 +12,7 @@ import Input from './PointValuesEditor/Input'
 
 const classes = resolveCss(css)
 
-interface IProps extends TPointValuesEditorProps {
+interface IProps extends IPointValuesEditorProps {
   onClose: () => void
 }
 

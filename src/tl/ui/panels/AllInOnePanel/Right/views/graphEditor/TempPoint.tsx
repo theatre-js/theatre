@@ -1,19 +1,17 @@
 import React from 'react'
 import {
-  TColor,
-  TNormalizedPoint,
-  TPointHandles,
+  IColor,
+  INormalizedPoint,
+  IPointHandles,
 } from '$tl/ui/panels/AllInOnePanel/Right/types'
 import BezierConnector from '$tl/ui/panels/AllInOnePanel/Right/views/graphEditor/BezierConnector'
 import PointCircle from '$tl/ui/panels/AllInOnePanel/Right/views/point/PointCircle'
 
 interface IProps {
-  color: TColor
-  point: TNormalizedPoint
-  nextPoint?: TNormalizedPoint
-  prevPoint?: TNormalizedPoint
-  // pointMove: TPointMove
-  // handlesMove: TPointHandles
+  color: IColor
+  point: INormalizedPoint
+  nextPoint?: INormalizedPoint
+  prevPoint?: INormalizedPoint
 }
 
 export default ({
@@ -32,26 +30,26 @@ IProps) => {
   const renderPointConnector =
     point.interpolationDescriptor.connected && nextPoint != null && true
   // (ponintMoveIsNonZero ||
-  // !isNumberTupleZero(handlesMove.slice(2) as TPointSingleHandle))
+  // !isNumberTupleZero(handlesMove.slice(2) as IPointSingleHandle))
 
   const renderPrevPointConnector =
     prevPoint != null && prevPoint.interpolationDescriptor.connected && true
   // (ponintMoveIsNonZero ||
-  //   !isNumberTupleZero(handlesMove.slice(0, 2) as TPointSingleHandle))
+  //   !isNumberTupleZero(handlesMove.slice(0, 2) as IPointSingleHandle))
 
   const pointHandles = [
     ...point.interpolationDescriptor.handles.slice(0, 2),
     // .map((h, i) => h - handlesMove[i + 2]),
     ...point.interpolationDescriptor.handles.slice(2),
-  ] as TPointHandles
+  ] as IPointHandles
 
   const prevPointHandles = renderPrevPointConnector
     ? ([
         ...prevPoint!.interpolationDescriptor.handles.slice(0, 2),
         ...prevPoint!.interpolationDescriptor.handles.slice(2),
         // .map((h, i) => h - handlesMove[i]),
-      ] as TPointHandles)
-    : ([0, 0, 0, 0] as TPointHandles)
+      ] as IPointHandles)
+    : ([0, 0, 0, 0] as IPointHandles)
 
   return (
     <g fill={color.darkened} stroke={color.darkened}>

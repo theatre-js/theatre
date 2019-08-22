@@ -1,6 +1,6 @@
 import React from 'react'
 import {
-  TItems,
+  IItems,
   MenuAPIContext,
 } from '$shared/components/MultiLevelDropdown/MultiLevelDropdown'
 import css from './InternalItem.css'
@@ -18,7 +18,7 @@ interface IProps {
   title: string
   path: string[]
   isSelectable: boolean
-  subItems: TItems
+  subItems: IItems
   activePath: string[]
   isActive: boolean
 }

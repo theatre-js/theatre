@@ -1,10 +1,10 @@
 import React from 'react'
 import MdRemoveCircle from 'react-icons/lib/md/remove-circle'
 import UIComponent from '$tl/ui/handy/UIComponent'
-import {TPointContextMenuProps} from '$tl/ui/panels/AllInOnePanel/Right/timeline/overlays/types'
+import {IPointContextMenuProps} from '$tl/ui/panels/AllInOnePanel/Right/timeline/overlays/types'
 import HalfPieContextMenu from '$shared/components/HalfPieContextMenu/HalfPieContextMenu'
 
-interface IProps extends TPointContextMenuProps {
+interface IProps extends IPointContextMenuProps {
   onClose: () => void
 }
 

@@ -1,12 +1,12 @@
 import {PrimitivePropItem} from '$tl/ui/panels/AllInOnePanel/utils'
 
-export type TOverlaysAPI = {
-  showPointValuesEditor: (props: TPointValuesEditorProps) => void
-  showPointContextMenu: (props: TPointContextMenuProps) => void
-  showConnectorContextMenu: (prop: TConnectorContextMenuProps) => void
+export type IOverlaysAPI = {
+  showPointValuesEditor: (props: IPointValuesEditorProps) => void
+  showPointContextMenu: (props: IPointContextMenuProps) => void
+  showConnectorContextMenu: (prop: IConnectorContextMenuProps) => void
 }
 
-export type TPointValuesEditorProps = {
+export type IPointValuesEditorProps = {
   left: number
   top: number
   initialValue: number
@@ -15,14 +15,14 @@ export type TPointValuesEditorProps = {
   propAddress: PrimitivePropItem['address']
 }
 
-export type TPointContextMenuProps = {
+export type IPointContextMenuProps = {
   left: number
   top: number
   pointIndex: number
   propAddress: PrimitivePropItem['address']
 }
 
-export type TConnectorContextMenuProps = {
+export type IConnectorContextMenuProps = {
   left: number
   top: number
   pointIndex: number

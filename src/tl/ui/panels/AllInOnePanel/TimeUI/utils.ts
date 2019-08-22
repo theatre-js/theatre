@@ -2,10 +2,10 @@ import {
   timelineXToTime,
   timeToTimelineX,
 } from '$tl/ui/panels/AllInOnePanel/Right/utils'
-import {TRange, TDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
+import {IRange, IDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
 
 export const getNewTime = (
-  range: TRange,
+  range: IRange,
   currentTime: number,
   width: number,
   deltaX: number,
@@ -15,18 +15,18 @@ export const getNewTime = (
   return clampTime(range, newTime)
 }
 
-export const clampTime = (range: TRange, time: number): number => {
+export const clampTime = (range: IRange, time: number): number => {
   if (time < range.from) time = range.from
   if (time > range.to) time = range.to
   return time
 }
 
 export const getNewRange = (
-  range: TRange,
-  change: TRange,
-  duration: TDuration,
+  range: IRange,
+  change: IRange,
+  duration: IDuration,
   bringRangeToBackIfRangeFromIsSubzero: boolean = true,
-): TRange => {
+): IRange => {
   const newRange = {from: range.from + change.from, to: range.to + change.to}
   if (newRange.to - newRange.from < 1) {
     if (newRange.from === range.from) {
@@ -50,9 +50,9 @@ export const getNewRange = (
 }
 
 export const getNewZoom = (
-  range: TRange,
-  change: TRange,
-  duration: TDuration,
+  range: IRange,
+  change: IRange,
+  duration: IDuration,
 ) => {
   const newRange = {from: range.from + change.from, to: range.to + change.to}
   if (newRange.from < 0) {

@@ -1,8 +1,8 @@
 import React from 'react'
 import {
-  TOverlaysAPI,
-  TPointValuesEditorProps,
-  TPointContextMenuProps,
+  IOverlaysAPI,
+  IPointValuesEditorProps,
+  IPointContextMenuProps,
 } from '$tl/ui/panels/AllInOnePanel/Right/timeline/overlays/types'
 import PointValuesEditor from '$tl/ui/panels/AllInOnePanel/Right/timeline/overlays/PointValuesEditor'
 import PointContextMenu from '$tl/ui/panels/AllInOnePanel/Right/timeline/overlays/PointContextMenu'
@@ -14,12 +14,12 @@ interface IProps {
 }
 
 interface IState {
-  pointValuesEditorProps: null | TPointValuesEditorProps
-  pointContextMenuProps: null | TPointContextMenuProps
-  connectorContextMenuProps: null | TPointContextMenuProps
+  pointValuesEditorProps: null | IPointValuesEditorProps
+  pointContextMenuProps: null | IPointContextMenuProps
+  connectorContextMenuProps: null | IPointContextMenuProps
 }
 
-export const OverlaysAPIContext = React.createContext<TOverlaysAPI>({
+export const OverlaysAPIContext = React.createContext<IOverlaysAPI>({
   showPointValuesEditor: noop,
   showPointContextMenu: noop,
   showConnectorContextMenu: noop,
@@ -77,25 +77,25 @@ class OverlaysProvider extends React.PureComponent<IProps, IState> {
     }))
   }
 
-  _showPointValuesEditor: TOverlaysAPI['showPointValuesEditor'] = props => {
+  _showPointValuesEditor: IOverlaysAPI['showPointValuesEditor'] = props => {
     this.setState(() => ({
       pointValuesEditorProps: props,
     }))
   }
 
-  _showPointContextMenu: TOverlaysAPI['showPointContextMenu'] = props => {
+  _showPointContextMenu: IOverlaysAPI['showPointContextMenu'] = props => {
     this.setState(() => ({
       pointContextMenuProps: props,
     }))
   }
 
-  _showConnectorContextMenu: TOverlaysAPI['showConnectorContextMenu'] = props => {
+  _showConnectorContextMenu: IOverlaysAPI['showConnectorContextMenu'] = props => {
     this.setState(() => ({
       connectorContextMenuProps: props,
     }))
   }
 
-  api: TOverlaysAPI = {
+  api: IOverlaysAPI = {
     showPointValuesEditor: this._showPointValuesEditor,
     showPointContextMenu: this._showPointContextMenu,
     showConnectorContextMenu: this._showConnectorContextMenu,

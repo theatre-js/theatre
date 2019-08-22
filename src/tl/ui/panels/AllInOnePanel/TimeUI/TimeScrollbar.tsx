@@ -6,7 +6,7 @@ import {
   getRangeLabel,
 } from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import {getNewRange} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
-import {TRange} from '$tl/ui/panels/AllInOnePanel/Right/types'
+import {IRange} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
 import {autoDeriveElement} from '$shared/DataVerse/utils/react'
 import {useTimeStuffP} from '$tl/ui/panels/AllInOnePanel/TimeStuffProvider'
@@ -49,7 +49,7 @@ const TimeScrollbar = () => {
         },
 
         _setRange(
-          change: TRange,
+          change: IRange,
           bringRangeToBackIfRangeFromIsSubzero: boolean,
         ) {
           const range = stuffBeforeMove.rangeAndDuration.range

@@ -8,20 +8,20 @@ import ViewBase, {
 import GraphEditorPoint from '$tl/ui/panels/AllInOnePanel/Right/views/graphEditor/GraphEditorPoint'
 import BezierConnector from '$tl/ui/panels/AllInOnePanel/Right/views/graphEditor/BezierConnector'
 import {
-  TColor,
-  TNormalizedPoints,
+  IColor,
+  INormalizedPoints,
 } from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {
-  TMoveSingleHandle,
-  TFnNeedsPointIndex,
-  TGetAllPoints,
-  TTempPointRenderer,
+  IMoveSingleHandle,
+  IFnNeedsPointIndex,
+  IGetAllPoints,
+  ITempPointRenderer,
 } from '$tl/ui/panels/AllInOnePanel/Right/views/types'
 import TempPointInSelection from '$tl/ui/panels/AllInOnePanel/Right/views/graphEditor/TempPointInSelection'
 
 interface IProps extends IViewBaseProps {
-  color: TColor
-  points: TNormalizedPoints
+  color: IColor
+  points: INormalizedPoints
 }
 
 class GraphEditor extends ViewBase<IProps & IWithUtilsProps> {
@@ -83,11 +83,11 @@ class GraphEditor extends ViewBase<IProps & IWithUtilsProps> {
     )
   }
 
-  _getAllPoints: TGetAllPoints = () => {
+  _getAllPoints: IGetAllPoints = () => {
     return this.props.points
   }
 
-  _tempPointRenderer: TTempPointRenderer = (point, nextPoint) => {
+  _tempPointRenderer: ITempPointRenderer = (point, nextPoint) => {
     return (
       <TempPointInSelection
         color={this.props.color}
@@ -97,7 +97,7 @@ class GraphEditor extends ViewBase<IProps & IWithUtilsProps> {
     )
   }
 
-  moveLeftHandle: TMoveSingleHandle = (pointIndex, newHandle) => {
+  moveLeftHandle: IMoveSingleHandle = (pointIndex, newHandle) => {
     this.props.extremumsAPI.unpersist()
     this.project.reduxStore.dispatch(
       this.project._actions.batched([
@@ -113,7 +113,7 @@ class GraphEditor extends ViewBase<IProps & IWithUtilsProps> {
     )
   }
 
-  moveLeftHandleTemp: TMoveSingleHandle = (pointIndex, newHandle) => {
+  moveLeftHandleTemp: IMoveSingleHandle = (pointIndex, newHandle) => {
     this.props.extremumsAPI.persist()
     this.project.reduxStore.dispatch(
       this.tempActionGroup.push(
@@ -128,7 +128,7 @@ class GraphEditor extends ViewBase<IProps & IWithUtilsProps> {
     )
   }
 
-  moveRightHandle: TMoveSingleHandle = (pointIndex, newHandle) => {
+  moveRightHandle: IMoveSingleHandle = (pointIndex, newHandle) => {
     this.props.extremumsAPI.unpersist()
     this.project.reduxStore.dispatch(
       this.project._actions.batched([
@@ -144,7 +144,7 @@ class GraphEditor extends ViewBase<IProps & IWithUtilsProps> {
     )
   }
 
-  moveRightHandleTemp: TMoveSingleHandle = (pointIndex, newHandle) => {
+  moveRightHandleTemp: IMoveSingleHandle = (pointIndex, newHandle) => {
     this.props.extremumsAPI.persist()
     this.project.reduxStore.dispatch(
       this.tempActionGroup.push(
@@ -159,7 +159,7 @@ class GraphEditor extends ViewBase<IProps & IWithUtilsProps> {
     )
   }
 
-  makeLeftHandleHorizontal: TFnNeedsPointIndex = pointIndex => {
+  makeLeftHandleHorizontal: IFnNeedsPointIndex = pointIndex => {
     this.project.reduxStore.dispatch(
       this.project._actions.historic.makePointLeftHandleHorizontalInBezierCurvesOfScalarValues(
         {
@@ -170,7 +170,7 @@ class GraphEditor extends ViewBase<IProps & IWithUtilsProps> {
     )
   }
 
-  makeRightHandleHorizontal: TFnNeedsPointIndex = pointIndex => {
+  makeRightHandleHorizontal: IFnNeedsPointIndex = pointIndex => {
     this.project.reduxStore.dispatch(
       this.project._actions.historic.makePointRightHandleHorizontalInBezierCurvesOfScalarValues(
         {

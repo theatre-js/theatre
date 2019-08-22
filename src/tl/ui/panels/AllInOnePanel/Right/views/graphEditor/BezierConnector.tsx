@@ -3,7 +3,7 @@ import css from './BezierConnector.css'
 import noop from '$shared/utils/noop'
 // import {TShowConnectorContextMenu} from '$tl/ui/panels/AllInOnePanel/Right/views/types'
 import resolveCss from '$shared/utils/resolveCss'
-import {TPointHandles} from '$tl/ui/panels/AllInOnePanel/Right/types'
+import {IPointHandles} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {
   IActiveMode,
   ActiveModeContext,
@@ -18,7 +18,7 @@ interface IProps {
   leftPointValue: number
   rightPointTime: number
   rightPointValue: number
-  handles: TPointHandles
+  handles: IPointHandles
   removeConnector?: (pointIndex: number) => void
   showContextMenu?: $FixMe /*TShowConnectorContextMenu*/
 }

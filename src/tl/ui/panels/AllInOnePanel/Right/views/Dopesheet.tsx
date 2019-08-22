@@ -8,20 +8,20 @@ import ViewBase, {
 } from '$tl/ui/panels/AllInOnePanel/Right/views/ViewBase'
 import DopesheetPoint from '$tl/ui/panels/AllInOnePanel/Right/views/dopesheet/DopesheetPoint'
 import {
-  TColor,
-  TNormalizedPoints,
+  IColor,
+  INormalizedPoints,
 } from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {
-  TMoveDopesheetConnector,
-  TMoveDopesheetConnectorTemp,
-  TGetAllPoints,
-  TTempPointRenderer,
+  IMoveDopesheetConnector,
+  IMoveDopesheetConnectorTemp,
+  IGetAllPoints,
+  ITempPointRenderer,
 } from '$tl/ui/panels/AllInOnePanel/Right/views/types'
 import TempPointInSelection from '$tl/ui/panels/AllInOnePanel/Right/views/dopesheet/TempPointInSelection'
 
 interface IProps extends IViewBaseProps {
-  color: TColor
-  points: TNormalizedPoints
+  color: IColor
+  points: INormalizedPoints
 }
 
 class Dopesheet extends ViewBase<IProps & IWithUtilsProps> {
@@ -87,11 +87,11 @@ class Dopesheet extends ViewBase<IProps & IWithUtilsProps> {
     )
   }
 
-  _getAllPoints: TGetAllPoints = () => {
+  _getAllPoints: IGetAllPoints = () => {
     return this.props.points
   }
 
-  _tempPointRenderer: TTempPointRenderer = (point, nextPoint) => {
+  _tempPointRenderer: ITempPointRenderer = (point, nextPoint) => {
     return (
       <TempPointInSelection
         color={this.props.color}
@@ -101,7 +101,7 @@ class Dopesheet extends ViewBase<IProps & IWithUtilsProps> {
     )
   }
 
-  moveConnector: TMoveDopesheetConnector = pointIndex => {
+  moveConnector: IMoveDopesheetConnector = pointIndex => {
     this.props.extremumsAPI.unpersist()
     const {propGetter, points} = this.props
     const point = points[pointIndex]
@@ -127,7 +127,7 @@ class Dopesheet extends ViewBase<IProps & IWithUtilsProps> {
     )
   }
 
-  moveConnectorTemp: TMoveDopesheetConnectorTemp = (pointIndex, moveAmount) => {
+  moveConnectorTemp: IMoveDopesheetConnectorTemp = (pointIndex, moveAmount) => {
     this.props.extremumsAPI.persist()
     const {propGetter, points} = this.props
     const timeChange = (moveAmount * propGetter('duration')) / 100

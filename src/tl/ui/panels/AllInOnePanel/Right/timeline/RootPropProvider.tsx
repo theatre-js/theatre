@@ -2,7 +2,7 @@ import React from 'react'
 import {val} from '$shared/DataVerse/atom'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import {getScrollSpaceWidth_deprecated} from '$tl/ui/panels/AllInOnePanel/Right/utils'
-import {TDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
+import {IDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {overshootDuration} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
 import {TimeStuff} from '$tl/ui/panels/AllInOnePanel/TimeStuffProvider'
 
@@ -12,17 +12,17 @@ interface IExportedComponentProps {
 
 interface IRootPropProviderProps extends IExportedComponentProps {
   timelineWidth: number
-  duration: TDuration
+  duration: IDuration
   svgWidth: number
 }
 
 interface IState {}
 
-export const RootPropGetterContext = React.createContext<TPropGetter>(() => {})
+export const RootPropGetterContext = React.createContext<IPropGetter>(() => {})
 export const DurationContext = React.createContext<number>(0)
 
-export type TPropName = 'svgWidth' | 'timelineWidth' | 'duration'
-export type TPropGetter = (propName: TPropName) => any
+export type IPropName = 'svgWidth' | 'timelineWidth' | 'duration'
+export type IPropGetter = (propName: IPropName) => any
 
 class RootPropProvider extends React.PureComponent<
   IRootPropProviderProps,
@@ -45,7 +45,7 @@ class RootPropProvider extends React.PureComponent<
     )
   }
 
-  getProp: TPropGetter = propName => {
+  getProp: IPropGetter = propName => {
     switch (propName) {
       case 'svgWidth':
         return this.props.svgWidth

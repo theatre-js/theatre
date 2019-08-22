@@ -1,11 +1,11 @@
 import React from 'react'
 import connectorCss from '$tl/ui/panels/AllInOnePanel/Right/views/dopesheet/connector.css'
 import pointCss from '$tl/ui/panels/AllInOnePanel/Right/views/point/point.css'
-import {TColor} from '$tl/ui/panels/AllInOnePanel/Right/types'
+import {IColor} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import LineConnectorRect from '$tl/ui/panels/AllInOnePanel/Right/views/dopesheet/LineConnectorRect'
 import LineConnector from '$tl/ui/panels/AllInOnePanel/Right/views/dopesheet/LineConnector'
 import Point from '$tl/ui/panels/AllInOnePanel/Right/views/point/Point'
-import {TPropGetter} from '$tl/ui/panels/AllInOnePanel/Right/items/ItemPropProvider'
+import {IPropGetter} from '$tl/ui/panels/AllInOnePanel/Right/items/ItemPropProvider'
 import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
 import {
   ActiveModeContext,
@@ -13,18 +13,18 @@ import {
   MODES,
 } from '$shared/components/ActiveModeProvider/ActiveModeProvider'
 import {
-  TMovePointToNewCoords,
-  TFnNeedsPointIndex,
-  TMoveDopesheetConnector,
-  TShowPointValuesEditor,
-  TShowConnectorContextMenu,
-  TShowPointContextMenu,
-  TAddPointToSelection,
-  TRemovePointFromSelection,
-  TMovePointToNewCoordsTemp,
-  TMoveDopesheetConnectorTemp,
+  IMovePointToNewCoords,
+  IFnNeedsPointIndex,
+  IMoveDopesheetConnector,
+  IShowPointValuesEditor,
+  IShowConnectorContextMenu,
+  IShowPointContextMenu,
+  IAddPointToSelection,
+  IRemovePointFromSelection,
+  IMovePointToNewCoordsTemp,
+  IMoveDopesheetConnectorTemp,
 } from '$tl/ui/panels/AllInOnePanel/Right/views/types'
-import {TTransformedSelectedArea} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/types'
+import {ITransformedSelectedArea} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/types'
 import {SelectedAreaContext} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/SelectionProvider'
 import TempPoint from '$tl/ui/panels/AllInOnePanel/Right/views/dopesheet/TempPoint'
 import TempConnector from '$tl/ui/panels/AllInOnePanel/Right/views/dopesheet/TempConnector'
@@ -33,8 +33,8 @@ import {shouldToggleIsInSelection} from '$tl/ui/panels/AllInOnePanel/Right/views
 import PointCircle from '$tl/ui/panels/AllInOnePanel/Right/views/point/PointCircle'
 
 interface IProps {
-  propGetter: TPropGetter
-  color: TColor
+  propGetter: IPropGetter
+  color: IColor
   prevPointTime?: number
   prevPointConnected?: boolean
   nextPointTime?: number
@@ -45,18 +45,18 @@ interface IProps {
   originalTime: number
   originalValue: number
   pointIndex: number
-  removePoint: TFnNeedsPointIndex
-  addConnector: TFnNeedsPointIndex
-  movePointToNewCoords: TMovePointToNewCoords
-  movePointToNewCoordsTemp: TMovePointToNewCoordsTemp
-  removeConnector: TFnNeedsPointIndex
-  moveConnector: TMoveDopesheetConnector
-  moveConnectorTemp: TMoveDopesheetConnectorTemp
-  showPointValuesEditor: TShowPointValuesEditor
-  showPointContextMenu: TShowPointContextMenu
-  showConnectorContextMenu: TShowConnectorContextMenu
-  addPointToSelection: TAddPointToSelection
-  removePointFromSelection: TRemovePointFromSelection
+  removePoint: IFnNeedsPointIndex
+  addConnector: IFnNeedsPointIndex
+  movePointToNewCoords: IMovePointToNewCoords
+  movePointToNewCoordsTemp: IMovePointToNewCoordsTemp
+  removeConnector: IFnNeedsPointIndex
+  moveConnector: IMoveDopesheetConnector
+  moveConnectorTemp: IMoveDopesheetConnectorTemp
+  showPointValuesEditor: IShowPointValuesEditor
+  showPointContextMenu: IShowPointContextMenu
+  showConnectorContextMenu: IShowConnectorContextMenu
+  addPointToSelection: IAddPointToSelection
+  removePointFromSelection: IRemovePointFromSelection
 }
 
 interface IState {
@@ -467,7 +467,7 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
     return null
   }
 
-  _highlightAsSelected = (selectedArea: TTransformedSelectedArea) => {
+  _highlightAsSelected = (selectedArea: ITransformedSelectedArea) => {
     const itemKey = this.props.propGetter('itemKey')
     const {pointTime, pointIndex} = this.props
     const pointCoords = {time: pointTime, value: 50}

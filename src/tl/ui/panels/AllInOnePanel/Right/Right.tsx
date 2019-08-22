@@ -1,7 +1,7 @@
 import resolveCss from '$shared/utils/resolveCss'
 import UIComponent from '$tl/ui/handy/UIComponent'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
-import React from 'react'
+import React, {createContext} from 'react'
 import * as css from './Right.css'
 import {val} from '$shared/DataVerse/atom'
 import TimelineInstance from '$tl/timelines/TimelineInstance/TimelineInstance'
@@ -17,7 +17,7 @@ import {
 } from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
 import TimelineProviders from '$tl/ui/panels/AllInOnePanel/Right/timeline/TimelineProviders'
 import ItemsContainer from '$tl/ui/panels/AllInOnePanel/Right/items/ItemsContainer'
-import {TRange, TDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
+import {IRange, IDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {
   TimeStuffContext,
   ITimeStuffP,
@@ -26,18 +26,22 @@ import {defer} from '$shared/utils/defer'
 import withContext from '$shared/utils/react/withContext'
 import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
 
+export const IsSeekingContext = createContext<boolean>(false)
+
 const classes = resolveCss(css)
 
 interface IRightProps {
-  range: TRange
-  duration: TDuration
+  range: IRange
+  duration: IDuration
   timelineWidth: number
   timelineInstance: TimelineInstance
-  setRange: (range: TRange) => void
+  setRange: (range: IRange) => void
   heightMinusBottom: number
 }
 
-interface IRightState {}
+interface IRightState {
+  isSeeking: boolean
+}
 
 class Right extends UIComponent<IRightProps, IRightState> {
   wrapper: React.RefObject<HTMLDivElement> = React.createRef()
@@ -46,10 +50,10 @@ class Right extends UIComponent<IRightProps, IRightState> {
   scrollLeft: number = 0
   allowZoom: boolean = true
   didMountDeferred = defer<void>()
+  state = {isSeeking: false}
 
   constructor(props: IRightProps, context: $IntentionalAny) {
     super(props, context)
-    this.state = {}
   }
 
   render() {
@@ -60,11 +64,14 @@ class Right extends UIComponent<IRightProps, IRightState> {
       timelineWidth,
     )
     this._scrollContainer(range)
+    console.log(this.state)
+
     return (
       <>
         <DraggableArea
           onDragStart={this.syncSeekerWithMousePosition}
           onDrag={this.seekTime}
+          onDragEnd={this.seekTimeHasEnded}
           shouldReturnMovement={true}
           lockCursorTo="ew-resize"
         >
@@ -76,12 +83,14 @@ class Right extends UIComponent<IRightProps, IRightState> {
               }}
               {...classes('scrollingContainer')}
             >
-              <TimelineProviders
-                disableZoom={this.disableZoom}
-                enableZoom={this.enableZoom}
-              >
-                <ItemsContainer />
-              </TimelineProviders>
+              <IsSeekingContext.Provider value={this.state.isSeeking}>
+                <TimelineProviders
+                  disableZoom={this.disableZoom}
+                  enableZoom={this.enableZoom}
+                >
+                  <ItemsContainer />
+                </TimelineProviders>
+              </IsSeekingContext.Provider>
             </div>
           </div>
         </DraggableArea>
@@ -179,6 +188,7 @@ class Right extends UIComponent<IRightProps, IRightState> {
     if (event.shiftKey || event.altKey || event.ctrlKey || event.metaKey) {
       return false
     }
+    this.setState(() => ({isSeeking: true}))
 
     const {timelineWidth, range, duration, timelineInstance} = this.props
     const newTime = viewportScrolledSpace.xToTime(
@@ -191,7 +201,6 @@ class Right extends UIComponent<IRightProps, IRightState> {
 
   seekTime = (_: number, __: number, event: MouseEvent) => {
     if (event.target instanceof HTMLInputElement) return
-
     const {range, duration, timelineWidth, timelineInstance} = this.props
     const newTime = viewportScrolledSpace.xToTime(
       range,
@@ -201,7 +210,11 @@ class Right extends UIComponent<IRightProps, IRightState> {
     timelineInstance.time = clampTime(range, newTime)
   }
 
-  _scrollContainer = (range: TRange) => {
+  seekTimeHasEnded = () => {
+    this.setState(() => ({isSeeking: false}))
+  }
+
+  _scrollContainer = (range: IRange) => {
     if (!this.wrapper.current) {
       this.didMountDeferred.promise.then(() => this._scrollContainer(range))
       return

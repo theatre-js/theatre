@@ -1,12 +1,12 @@
 import React from 'react'
-import {TColor, TNormalizedPoint} from '$tl/ui/panels/AllInOnePanel/Right/types'
+import {IColor, INormalizedPoint} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import BezierConnector from '$tl/ui/panels/AllInOnePanel/Right/views/graphEditor/BezierConnector'
 import PointCircle from '$tl/ui/panels/AllInOnePanel/Right/views/point/PointCircle'
 
 interface IProps {
-  color: TColor
-  point: TNormalizedPoint
-  nextPoint?: TNormalizedPoint
+  color: IColor
+  point: INormalizedPoint
+  nextPoint?: INormalizedPoint
 }
 
 export default ({color, point, nextPoint}: IProps) => {

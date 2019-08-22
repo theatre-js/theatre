@@ -3,13 +3,13 @@ import pointCss from '../point/point.css'
 import Point from '$tl/ui/panels/AllInOnePanel/Right/views/point/Point'
 import HandleLine from '$tl/ui/panels/AllInOnePanel/Right/views/graphEditor/HandleLine'
 import HandleClickArea from '$tl/ui/panels/AllInOnePanel/Right/views/graphEditor/HandleClickArea'
-import {TPropGetter} from '$tl/ui/panels/AllInOnePanel/Right/items/ItemPropProvider'
+import {IPropGetter} from '$tl/ui/panels/AllInOnePanel/Right/items/ItemPropProvider'
 import * as handleCss from './handle.css'
 import {
-  TColor,
-  TPointHandles,
-  TPointSingleHandle,
-  TNormalizedPoint,
+  IColor,
+  IPointHandles,
+  IPointSingleHandle,
+  INormalizedPoint,
 } from '$tl/ui/panels/AllInOnePanel/Right/types'
 import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
 import {
@@ -18,16 +18,16 @@ import {
   MODES,
 } from '$shared/components/ActiveModeProvider/ActiveModeProvider'
 import {
-  TMovePointToNewCoords,
-  TMoveSingleHandle,
-  TFnNeedsPointIndex,
-  TShowPointContextMenu,
-  TShowPointValuesEditor,
-  TAddPointToSelection,
-  TRemovePointFromSelection,
-  TMovePointToNewCoordsTemp,
+  IMovePointToNewCoords,
+  IMoveSingleHandle,
+  IFnNeedsPointIndex,
+  IShowPointContextMenu,
+  IShowPointValuesEditor,
+  IAddPointToSelection,
+  IRemovePointFromSelection,
+  IMovePointToNewCoordsTemp,
 } from '$tl/ui/panels/AllInOnePanel/Right/views/types'
-import {TTransformedSelectedArea} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/types'
+import {ITransformedSelectedArea} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/types'
 import {SVG_PADDING_Y} from '$tl/ui/panels/AllInOnePanel/Right/views/SVGWrapper'
 import TempPoint from '$tl/ui/panels/AllInOnePanel/Right/views/graphEditor/TempPoint'
 import RenderBlocker from '$shared/components/RenderBlocker/RenderBlocker'
@@ -39,41 +39,40 @@ import {cmdIsDown} from '$shared/utils/keyboardUtils'
 import PointCircle from '$tl/ui/panels/AllInOnePanel/Right/views/point/PointCircle'
 
 interface IProps {
-  propGetter: TPropGetter
-  color: TColor
+  propGetter: IPropGetter
+  color: IColor
   pointIndex: number
-  point: TNormalizedPoint
-  prevPoint?: TNormalizedPoint
-  nextPoint?: TNormalizedPoint
-  removePoint: TFnNeedsPointIndex
-  addConnector: TFnNeedsPointIndex
-  movePointToNewCoords: TMovePointToNewCoords
-  movePointToNewCoordsTemp: TMovePointToNewCoordsTemp
-  moveLeftHandle: TMoveSingleHandle
-  moveLeftHandleTemp: TMoveSingleHandle
-  moveRightHandle: TMoveSingleHandle
-  moveRightHandleTemp: TMoveSingleHandle
-  makeLeftHandleHorizontal: TFnNeedsPointIndex
-  makeRightHandleHorizontal: TFnNeedsPointIndex
-  showPointValuesEditor: TShowPointValuesEditor
-  showContextMenu: TShowPointContextMenu
-  addPointToSelection: TAddPointToSelection
-  removePointFromSelection: TRemovePointFromSelection
+  point: INormalizedPoint
+  prevPoint?: INormalizedPoint
+  nextPoint?: INormalizedPoint
+  removePoint: IFnNeedsPointIndex
+  addConnector: IFnNeedsPointIndex
+  movePointToNewCoords: IMovePointToNewCoords
+  movePointToNewCoordsTemp: IMovePointToNewCoordsTemp
+  moveLeftHandle: IMoveSingleHandle
+  moveLeftHandleTemp: IMoveSingleHandle
+  moveRightHandle: IMoveSingleHandle
+  moveRightHandleTemp: IMoveSingleHandle
+  makeLeftHandleHorizontal: IFnNeedsPointIndex
+  makeRightHandleHorizontal: IFnNeedsPointIndex
+  showPointValuesEditor: IShowPointValuesEditor
+  showContextMenu: IShowPointContextMenu
+  addPointToSelection: IAddPointToSelection
+  removePointFromSelection: IRemovePointFromSelection
 }
 
 interface IState {
   isMoving: boolean
-  // pointMove: TPointMove
-  handlesMove: TPointHandles
+  handlesMove: IPointHandles
   renderTempConnectorOf: 'none' | 'currentPoint' | 'prevPoint'
 }
 
-export type TSVGSize = {width: number; height: number}
+export type ISVGSize = {width: number; height: number}
 
 class GraphEditorPoint extends React.PureComponent<IProps, IState> {
   pointClickArea: React.RefObject<SVGRectElement> = React.createRef()
   activeMode: IActiveMode
-  svgSize: TSVGSize
+  svgSize: ISVGSize
   leftHandleNormalizers: {xNormalizer: number; yNormalizer: number}
   rightHandleNormalizers: {xNormalizer: number; yNormalizer: number}
   isInSelection: boolean = false
@@ -185,6 +184,7 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
               onClick={this.handleClickOnPoint}
               onContextMenu={this.handleContextMenu}
               onMouseMove={this.handlePointMouseMove}
+              onMouseEnter={this.handlePointMouseEnter}
               onMouseLeave={this.handlePointMouseLeave}
               ref={this.pointClickArea}
             />
@@ -415,7 +415,7 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
 
   handleLeftHandleDrag = (dx: number, dy: number) => {
     const {xNormalizer, yNormalizer} = this.leftHandleNormalizers
-    const handlesMove: TPointHandles = [
+    const handlesMove: IPointHandles = [
       clampHandleMove(
         this.props.prevPoint!.interpolationDescriptor.handles[2] -
           this.state.handlesMove[0],
@@ -429,7 +429,7 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
       .prevPoint!.interpolationDescriptor.handles.slice(2)
       .map(
         (handle, i) => handle + handlesMove[i] - this.state.handlesMove[i],
-      ) as TPointSingleHandle
+      ) as IPointSingleHandle
     newHandle[0] = clamp(newHandle[0], 0, 1)
     this.props.moveLeftHandleTemp(this.props.pointIndex, newHandle)
     this.setState(() => ({
@@ -441,7 +441,7 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
   handleLeftHandleDragEnd = () => {
     const newHandle = this.props.prevPoint!.interpolationDescriptor.handles.slice(
       2,
-    ) as TPointSingleHandle
+    ) as IPointSingleHandle
     this.props.moveLeftHandle(this.props.pointIndex, newHandle)
     this._resetState()
   }
@@ -467,13 +467,13 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
         (dx / xNormalizer) * 100,
       ),
       (dy / yNormalizer) * 100,
-    ] as TPointHandles
+    ] as IPointHandles
     const newHandle = this.props.point.interpolationDescriptor.handles
       .slice(0, 2)
       .map(
         (handle, i) =>
           handle + handlesMove[i + 2] - this.state.handlesMove[i + 2],
-      ) as TPointSingleHandle
+      ) as IPointSingleHandle
     newHandle[0] = clamp(newHandle[0], 0, 1)
     this.props.moveRightHandleTemp(this.props.pointIndex, newHandle)
     this.setState(() => ({
@@ -486,7 +486,7 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
     const newHandle = this.props.point.interpolationDescriptor.handles.slice(
       0,
       2,
-    ) as TPointSingleHandle
+    ) as IPointSingleHandle
     this.props.moveRightHandle(this.props.pointIndex, newHandle)
     this._resetState()
   }
@@ -516,6 +516,23 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
     }
   }
 
+  handlePointMouseEnter = () => {
+    const {
+      left,
+      top,
+      width,
+      height,
+    } = this.pointClickArea.current!.getBoundingClientRect()
+    const params = {
+      left: left + width / 2,
+      top: top + height / 2,
+      initialTime: this.props.point.originalTime,
+      initialValue: this.props.point.originalValue,
+      pointIndex: this.props.pointIndex,
+    }
+    // this.props.showPointValuesPreview(params)
+  }
+
   handlePointMouseLeave = () => {
     if (this.state.renderTempConnectorOf !== 'none') {
       this.setState(() => ({renderTempConnectorOf: 'none'}))
@@ -542,7 +559,7 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
     return null
   }
 
-  _highlightAsSelected = (selectedArea: TTransformedSelectedArea) => {
+  _highlightAsSelected = (selectedArea: ITransformedSelectedArea) => {
     const itemKey = this.props.propGetter('itemKey')
     const {
       point: {time, value},
@@ -588,7 +605,7 @@ const clampHandleMove = (handleX: number, moveX: number) => {
   return handleMove
 }
 
-const getSVGSize = (propGetter: TPropGetter): TSVGSize => {
+const getSVGSize = (propGetter: IPropGetter): ISVGSize => {
   const height = propGetter('itemHeight') - SVG_PADDING_Y
   const width = propGetter('svgWidth')
   return {width, height}

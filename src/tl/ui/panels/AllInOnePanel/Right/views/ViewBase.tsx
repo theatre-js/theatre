@@ -2,24 +2,24 @@ import React from 'react'
 import {IWithUtilsProps} from '$tl/ui/panels/AllInOnePanel/Right/views/withUtils'
 import UIComponent from '$tl/ui/handy/UIComponent'
 import {
-  TExtremums,
-  TNormalizedPoints,
+  IExtremums,
+  INormalizedPoints,
 } from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {
-  TShowPointContextMenu,
-  TShowPointValuesEditor,
-  TMovePointToNewCoords,
-  TShowConnectorContextMenu,
-  TAddPointToSelection,
-  TRemovePointFromSelection,
-  TMovePointToNewCoordsTemp,
-  TGetAllPoints,
-  TTempPointRenderer,
-  TTempPointsInSelection,
+  IShowPointContextMenu,
+  IShowPointValuesEditor,
+  IMovePointToNewCoords,
+  IShowConnectorContextMenu,
+  IAddPointToSelection,
+  IRemovePointFromSelection,
+  IMovePointToNewCoordsTemp,
+  IGetAllPoints,
+  ITempPointRenderer,
+  ITempPointsInSelection,
 } from '$tl/ui/panels/AllInOnePanel/Right/views/types'
 import {SelectionStatusContext} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/SelectionProvider'
 import RenderBlocker from '$shared/components/RenderBlocker/RenderBlocker'
-import {TCollectionOfSelectedPointsData} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/types'
+import {ICollectionOfSelectedPointsData} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/types'
 import {
   getTimeNormalizer,
   getValueNormalizer,
@@ -28,7 +28,7 @@ import {
 import {roundestNumberBetween} from '$shared/utils/numberRoundingUtils'
 
 export interface IViewBaseProps {
-  extremums: TExtremums
+  extremums: IExtremums
 }
 
 interface IProps extends IViewBaseProps, IWithUtilsProps {}
@@ -40,8 +40,8 @@ export default class ViewBase<Props extends IProps> extends UIComponent<
   tempActionGroup = this.project._actions.historic.temp()
 
   _renderTempPointsInSelection = (
-    getAllPoints: TGetAllPoints,
-    tempPointRenderer: TTempPointRenderer,
+    getAllPoints: IGetAllPoints,
+    tempPointRenderer: ITempPointRenderer,
   ) => {
     return (
       <RenderBlocker>
@@ -124,9 +124,9 @@ export default class ViewBase<Props extends IProps> extends UIComponent<
   }
 
   _getNormalizedTempPointsInSelection(
-    tempPointsInSelection: TTempPointsInSelection,
-    nextExtremums: TExtremums,
-  ): TTempPointsInSelection {
+    tempPointsInSelection: ITempPointsInSelection,
+    nextExtremums: IExtremums,
+  ): ITempPointsInSelection {
     const normalizeTime = getTimeNormalizer(this.props.propGetter('duration'))
     const normalizeValue = getValueNormalizer(nextExtremums)
     return Object.keys(tempPointsInSelection).reduce(
@@ -147,14 +147,14 @@ export default class ViewBase<Props extends IProps> extends UIComponent<
           },
         }
       },
-      {} as TTempPointsInSelection,
+      {} as ITempPointsInSelection,
     )
   }
 
   _getTempPointsInSelection(
-    pointsInSelection: TCollectionOfSelectedPointsData,
-    allPoints: TNormalizedPoints,
-  ): TTempPointsInSelection {
+    pointsInSelection: ICollectionOfSelectedPointsData,
+    allPoints: INormalizedPoints,
+  ): ITempPointsInSelection {
     return Object.keys(pointsInSelection)
       .map(Number)
       .sort()
@@ -180,7 +180,7 @@ export default class ViewBase<Props extends IProps> extends UIComponent<
           }
           return tempPointsInSelection
         },
-        {} as TTempPointsInSelection,
+        {} as ITempPointsInSelection,
       )
   }
 
@@ -213,7 +213,7 @@ export default class ViewBase<Props extends IProps> extends UIComponent<
     )
   }
 
-  _movePointToNewCoords: TMovePointToNewCoords = (pointIndex, newCoords) => {
+  _movePointToNewCoords: IMovePointToNewCoords = (pointIndex, newCoords) => {
     this.props.extremumsAPI.unpersist()
 
     this.project.reduxStore.dispatch(
@@ -230,7 +230,7 @@ export default class ViewBase<Props extends IProps> extends UIComponent<
     )
   }
 
-  _movePointToNewCoordsTemp: TMovePointToNewCoordsTemp = (
+  _movePointToNewCoordsTemp: IMovePointToNewCoordsTemp = (
     pointIndex,
     originalCoords,
     change,
@@ -306,7 +306,7 @@ export default class ViewBase<Props extends IProps> extends UIComponent<
     }
   }
 
-  _addPointToSelection: TAddPointToSelection = (
+  _addPointToSelection: IAddPointToSelection = (
     pointIndex,
     pointData,
     extremums = this.props.extremums,
@@ -319,28 +319,28 @@ export default class ViewBase<Props extends IProps> extends UIComponent<
     )
   }
 
-  _removePointFromSelection: TRemovePointFromSelection = pointIndex => {
+  _removePointFromSelection: IRemovePointFromSelection = pointIndex => {
     return this.props.selectionAPI.removePoint(
       this.props.propGetter('itemKey'),
       pointIndex,
     )
   }
 
-  _showPointValuesEditor: TShowPointValuesEditor = props => {
+  _showPointValuesEditor: IShowPointValuesEditor = props => {
     this.props.overlaysAPI.showPointValuesEditor({
       propAddress: this.props.propGetter('itemAddress'),
       ...props,
     })
   }
 
-  _showPointContextMenu: TShowPointContextMenu = props => {
+  _showPointContextMenu: IShowPointContextMenu = props => {
     this.props.overlaysAPI.showPointContextMenu({
       propAddress: this.props.propGetter('itemAddress'),
       ...props,
     })
   }
 
-  _showConnectorContextMenu: TShowConnectorContextMenu = props => {
+  _showConnectorContextMenu: IShowConnectorContextMenu = props => {
     this.props.overlaysAPI.showConnectorContextMenu({
       propAddress: this.props.propGetter('itemAddress'),
       ...props,

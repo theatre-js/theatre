@@ -2,7 +2,7 @@ import React from 'react'
 import css from './ItemHitZone.css'
 import resolveCss from '$shared/utils/resolveCss'
 import UIComponent from '$tl/ui/handy/UIComponent'
-import {TColor, TPoint} from '$tl/ui/panels/AllInOnePanel/Right/types'
+import {IColor, IPoint} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {
   ActiveModeContext,
   MODES,
@@ -13,7 +13,7 @@ import {SVG_PADDING_Y} from '$tl/ui/panels/AllInOnePanel/Right/views/SVGWrapper'
 const classes = resolveCss(css)
 
 interface IProps {
-  color: TColor
+  color: IColor
   extremums: [number, number]
   duration: number
   dopeSheet: boolean
@@ -50,7 +50,7 @@ class ItemHitZone extends UIComponent<IProps, IState> {
     this._dispatchAddPoint(this._getPointProps(event))
   }
 
-  _getPointProps(event: React.MouseEvent<SVGRectElement>): TPoint {
+  _getPointProps(event: React.MouseEvent<SVGRectElement>): IPoint {
     const {duration, extremums, dopeSheet} = this.props
 
     const {clientX, clientY, target} = event
@@ -85,7 +85,7 @@ class ItemHitZone extends UIComponent<IProps, IState> {
     }
   }
 
-  _dispatchAddPoint(pointProps: TPoint) {
+  _dispatchAddPoint(pointProps: IPoint) {
     this.project.reduxStore.dispatch(
       this.project._actions.historic.addPointInBezierCurvesOfScalarValues({
         propAddress: this.props.address,

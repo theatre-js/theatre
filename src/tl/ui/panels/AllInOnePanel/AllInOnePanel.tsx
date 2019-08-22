@@ -266,7 +266,7 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
     this.updatePanelMarginsTemporarily(newMargins)
   }
 
-  handlePanelResize = (marginsDeltas: Partial<TPanelMargins>) => {
+  handlePanelResize = (marginsDeltas: Partial<IPanelMargins>) => {
     const {windowWidth, windowHeight} = this.state
     const currentMargins = val(this.ui.atomP.historic.allInOnePanel.margins)
     const newMargins = {
@@ -307,7 +307,7 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
     this.updatePanelMarginsTemporarily(newMargins)
   }
 
-  updatePanelMarginsTemporarily = (newMargins: TPanelMargins) => {
+  updatePanelMarginsTemporarily = (newMargins: IPanelMargins) => {
     this.ui.reduxStore.dispatch(
       this.tempActionGroup.push(
         this.ui.actions.historic.setAllInOnePanelMargins({newMargins}),
@@ -364,9 +364,9 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
   }
 }
 
-export type TPanelMargins = UIHistoricState['allInOnePanel']['margins']
+export type IPanelMargins = UIHistoricState['allInOnePanel']['margins']
 
-const marginsKeys: Array<keyof TPanelMargins> = [
+const marginsKeys: Array<keyof IPanelMargins> = [
   'left',
   'top',
   'right',

@@ -2,8 +2,8 @@ import React from 'react'
 import {val} from '$shared/DataVerse/atom'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import {
-  TPropGetter as TRootPropGetter,
-  TPropName as TRootPropName,
+  IPropGetter as IRootPropGetter,
+  IPropName as IRootPropName,
   RootPropGetterContext,
 } from '$tl/ui/panels/AllInOnePanel/Right/timeline/RootPropProvider'
 import {PrimitivePropItem} from '$tl/ui/panels/AllInOnePanel/utils'
@@ -17,20 +17,20 @@ interface IOwnProps {
 }
 
 interface IProps extends IOwnProps {
-  rootPropGetter: TRootPropGetter
+  rootPropGetter: IRootPropGetter
 }
 
 interface IState {}
 
-export const ItemPropGetterContext = React.createContext<TPropGetter>(() => {})
+export const ItemPropGetterContext = React.createContext<IPropGetter>(() => {})
 
-export type TPropName =
+export type IPropName =
   | 'itemAddress'
   | 'itemKey'
   | 'itemHeight'
   | 'itemExpanded'
-  | TRootPropName
-export type TPropGetter = (propName: TPropName) => any
+  | IRootPropName
+export type IPropGetter = (propName: IPropName) => any
 
 class ItemPropProvider extends React.PureComponent<IProps, IState> {
   render() {
@@ -48,7 +48,7 @@ class ItemPropProvider extends React.PureComponent<IProps, IState> {
     )
   }
 
-  getProp: TPropGetter = propName => {
+  getProp: IPropGetter = propName => {
     switch (propName) {
       case 'itemHeight':
         return this.props.itemHeight

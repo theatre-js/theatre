@@ -3,7 +3,7 @@ import css from './SelectionProvider.css'
 import resolveCss from '$shared/utils/resolveCss'
 import {val} from '$shared/DataVerse/atom'
 import * as utils from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/utils'
-import {TDuration, TRange} from '$tl/ui/panels/AllInOnePanel/Right/types'
+import {IDuration, IRange} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import UIComponent from '$tl/ui/handy/UIComponent'
 import {
   ActiveModeContext,
@@ -19,18 +19,18 @@ import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import TimelineTemplate from '$tl/timelines/TimelineTemplate'
 import {timelineTemplateToSeriesOfVerticalItems} from '$tl/ui/panels/AllInOnePanel/utils'
 import {
-  TSelectionMove,
-  TDims,
-  THorizontalLimits,
-  TTransformedSelectedArea,
-  TItemsInfo,
-  TSelectionAPI,
-  TSelectedPoints,
-  TExtremumsMap,
-  TCollectionOfSelectedPointsData,
-  TMapOfFilteredItemKeyToItemData,
-  TLastCommittedData,
-  TDataOfPointsToDelete,
+  ISelectionMove,
+  IDims,
+  IHorizontalLimits,
+  ITransformedSelectedArea,
+  IItemsInfo,
+  ISelectionAPI,
+  ISelectedPoints,
+  IExtremumsMap,
+  ICollectionOfSelectedPointsData,
+  IMapOfFilteredItemKeyToItemData,
+  ILastCommittedData,
+  IDataOfPointsToDelete,
 } from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/types'
 import projectSelectors from '$tl/Project/store/selectors'
 import {SVG_PADDING_Y} from '$tl/ui/panels/AllInOnePanel/Right/views/SVGWrapper'
@@ -50,8 +50,8 @@ interface IExportedComponentProps {
 }
 
 interface ISelectionProviderProps extends IExportedComponentProps {
-  range: TRange
-  duration: TDuration
+  range: IRange
+  duration: IDuration
   timelineWidth: number
   timelineTemplate: TimelineTemplate
 }
@@ -67,32 +67,32 @@ interface IState {
     left: number
     top: number
   }
-  move: TSelectionMove
-  dims: TDims
-  horizontalLimits: THorizontalLimits
-  transformedSelectedArea: TTransformedSelectedArea
-  itemsInfo: TItemsInfo
+  move: ISelectionMove
+  dims: IDims
+  horizontalLimits: IHorizontalLimits
+  transformedSelectedArea: ITransformedSelectedArea
+  itemsInfo: IItemsInfo
   contextMenuProps: null | {left: number; top: number}
 }
 
-export const SelectionAPIContext = React.createContext<TSelectionAPI>({
+export const SelectionAPIContext = React.createContext<ISelectionAPI>({
   addPoint: () => true,
   removePoint: () => true,
   getSelectedPointsOfItem: () => ({}),
 })
 export const SelectedAreaContext = React.createContext<
-  TTransformedSelectedArea
+  ITransformedSelectedArea
 >({})
 export const SelectionStatusContext = React.createContext<IState['status']>(
   'noSelection',
 )
 
 class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
-  selectedPoints: TSelectedPoints = {}
-  extremumsOfItemsInSelection: TExtremumsMap = {}
-  mapOfItemsData: TMapOfFilteredItemKeyToItemData = {}
+  selectedPoints: ISelectedPoints = {}
+  extremumsOfItemsInSelection: IExtremumsMap = {}
+  mapOfItemsData: IMapOfFilteredItemKeyToItemData = {}
   tempActionGroup = this.project._actions.historic.temp()
-  lastCommittedData: TLastCommittedData
+  lastCommittedData: ILastCommittedData
   getOffset: (x: number) => number = () => 0
 
   static defaultStateValues: IState = {
@@ -215,7 +215,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
     )
   }
 
-  addPointToSelection: TSelectionAPI['addPoint'] = (
+  addPointToSelection: ISelectionAPI['addPoint'] = (
     itemKey,
     pointIndex,
     extremums,
@@ -243,7 +243,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
     return true
   }
 
-  removePointFromSelection: TSelectionAPI['removePoint'] = (
+  removePointFromSelection: ISelectionAPI['removePoint'] = (
     itemKey,
     pointIndex,
   ) => {
@@ -258,11 +258,11 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
     return false
   }
 
-  getSelectedPointsOfItem: TSelectionAPI['getSelectedPointsOfItem'] = itemKey => {
+  getSelectedPointsOfItem: ISelectionAPI['getSelectedPointsOfItem'] = itemKey => {
     return this.selectedPoints[itemKey]
   }
 
-  api: TSelectionAPI = {
+  api: ISelectionAPI = {
     addPoint: this.addPointToSelection,
     removePoint: this.removePointFromSelection,
     getSelectedPointsOfItem: this.getSelectedPointsOfItem,
@@ -480,7 +480,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
     }))
   }
 
-  _getDataOfPointsToRemove(): TDataOfPointsToDelete {
+  _getDataOfPointsToRemove(): IDataOfPointsToDelete {
     return Object.entries(this.selectedPoints).reduce(
       (dataOfPointsToDelete, [itemKey, pointsInSelection]) => {
         return [
@@ -491,7 +491,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
           },
         ]
       },
-      [] as TDataOfPointsToDelete,
+      [] as IDataOfPointsToDelete,
     )
   }
 
@@ -515,7 +515,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
 
         const valueChange =
           (move.y / (itemData.height - SVG_PADDING_Y)) * extDiff
-        const pointsNewCoords: TCollectionOfSelectedPointsData = {}
+        const pointsNewCoords: ICollectionOfSelectedPointsData = {}
 
         Object.keys(selectedPointsData).forEach(pointIndex => {
           const originalPoint = itemData.points[Number(pointIndex)]
@@ -541,7 +541,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
 
   _getMapOfItemsData = (
     timelineTemplate: TimelineTemplate,
-  ): TMapOfFilteredItemKeyToItemData => {
+  ): IMapOfFilteredItemKeyToItemData => {
     return timelineTemplateToSeriesOfVerticalItems(
       this.ui,
       timelineTemplate,
@@ -577,11 +577,11 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
           },
         }
       },
-      {} as TMapOfFilteredItemKeyToItemData,
+      {} as IMapOfFilteredItemKeyToItemData,
     )
   }
 
-  _getTransformedSelectedArea(dims: TDims): TTransformedSelectedArea {
+  _getTransformedSelectedArea(dims: IDims): ITransformedSelectedArea {
     const {range, duration, timelineWidth} = this.props
     const {itemsInfo} = this.state
     return utils.getTransformedSelectedArea(

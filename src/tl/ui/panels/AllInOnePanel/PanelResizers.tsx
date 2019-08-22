@@ -2,12 +2,12 @@ import React from 'react'
 import css from './PanelResizers.css'
 import resolveCss from '$shared/utils/resolveCss'
 import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
-import {TPanelMargins} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
+import {IPanelMargins} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
 
 const classes = resolveCss(css)
 
 interface IProps {
-  onResize: (marginsDeltas: Partial<TPanelMargins>) => void
+  onResize: (marginsDeltas: Partial<IPanelMargins>) => void
   onResizeEnd: () => void
 }
 

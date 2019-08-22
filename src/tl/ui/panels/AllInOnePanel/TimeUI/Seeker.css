@@ -110,6 +110,6 @@
 }
 
 .seeker:hover .tooltip,
-.seeker:active .tooltip {
+.seeker:active .tooltip, .seeker.showTooltip .tooltip {
   display: block;
 }

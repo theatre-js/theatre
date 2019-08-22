@@ -1,7 +1,7 @@
 import UIComponent from '$tl/ui/handy/UIComponent'
 import React, {useContext} from 'react'
 import {val} from '$shared/DataVerse/atom'
-import {TDuration, TRange} from '$tl/ui/panels/AllInOnePanel/Right/types'
+import {IDuration, IRange} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import createPointerContext from '$shared/utils/react/createPointerContext'
 import {AllInOnePanelStuff} from '$tl/ui/panels/AllInOnePanel/AllInOnePanel'
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
@@ -21,8 +21,8 @@ import {Pointer} from '$shared/DataVerse/pointer'
 import {SVG_PADDING_X} from '$tl/ui/panels/AllInOnePanel/Right/views/SVGWrapper'
 
 const getScrollSpaceWidth = (
-  range: TRange,
-  duration: TDuration,
+  range: IRange,
+  duration: IDuration,
   viewportWidth: number,
 ) => {
   const rangeDuration = range.to - range.from
@@ -46,9 +46,9 @@ interface IState {
 }
 
 interface IRangeAndDuration {
-  range: TRange
-  realDuration: TDuration
-  overshotDuration: TDuration
+  range: IRange
+  realDuration: IDuration
+  overshotDuration: IDuration
 }
 
 export interface IRangeAndDurationLock {
@@ -92,7 +92,7 @@ export interface ITimeStuff {
     lockedRangeAndDuration: IRangeAndDuration,
   ) => IRangeAndDurationLock
   ui: UI
-  setRange: (range: TRange) => void
+  setRange: (range: IRange) => void
   timeSpace: {
     clamp: (t: number) => number
   }
@@ -118,7 +118,7 @@ export default class TimeStuffProvider extends UIComponent<IProps, IState> {
     this.timelineTemplate = undefined as $IntentionalAny
   }
 
-  setRange = (range: TRange) => {
+  setRange = (range: IRange) => {
     this.ui._dispatch(
       this.ui.actions.ahistoric.setRangeShownInPanel({
         ...this.timelineTemplate.address,

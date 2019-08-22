@@ -8,7 +8,7 @@ import {
   TimeStuff,
   IRangeAndDurationLock,
 } from '$tl/ui/panels/AllInOnePanel/TimeStuffProvider'
-import {TRange} from '$tl/ui/panels/AllInOnePanel/Right/types'
+import {IRange} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {ITempActionGroup} from '$shared/utils/redux/withHistory/actions'
 import CursorLock from '$shared/components/CursorLock'
 import {roundestNumberBetween} from '$shared/utils/numberRoundingUtils'
@@ -27,7 +27,7 @@ const unscaledDimmerWidth = 1000
 export default class DurationIndicator extends UIComponent<IProps, IState> {
   realDurationAtStartOfDrag: number
   timeStuffRef = TimeStuff.ref()
-  rangeAtStartOfDrag: TRange
+  rangeAtStartOfDrag: IRange
   dragActionGroup: ITempActionGroup
   rangeAndDurationLock: IRangeAndDurationLock
   // timeStuffRef = React.createRef<InstanceType<typeof TimeStuff>>()

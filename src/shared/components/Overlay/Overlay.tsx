@@ -9,13 +9,13 @@ interface IProps {
 
 interface IState {}
 
-type TOverlayAPI = {
+type IOverlayAPI = {
   setRef: (ref: HTMLElement | null) => void
 }
 
 export const OverlayAPIContext = React.createContext({
   setRef: () => {},
-} as TOverlayAPI)
+} as IOverlayAPI)
 
 class Overlay extends React.PureComponent<IProps, IState> {
   refsCollection: Set<HTMLElement> = new Set()
@@ -46,11 +46,11 @@ class Overlay extends React.PureComponent<IProps, IState> {
     this.refsCollection.clear()
   }
 
-  setRef: TOverlayAPI['setRef'] = ref => {
+  setRef: IOverlayAPI['setRef'] = ref => {
     if (ref != null) this.refsCollection = this.refsCollection.add(ref)
   }
 
-  api: TOverlayAPI = {
+  api: IOverlayAPI = {
     setRef: this.setRef,
   }
 

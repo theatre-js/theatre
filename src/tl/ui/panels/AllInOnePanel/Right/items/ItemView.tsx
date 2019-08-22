@@ -1,7 +1,7 @@
 import React from 'react'
 import ItemPointsNormalizer from '$tl/ui/panels/AllInOnePanel/Right/items/ItemPointsNormalizer'
 import GraphEditor from '$tl/ui/panels/AllInOnePanel/Right/views/GraphEditor'
-import {TPoints, TExpanded} from '$tl/ui/panels/AllInOnePanel/Right/types'
+import {IPoints, IExpanded} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {color} from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import Dopesheet from '$tl/ui/panels/AllInOnePanel/Right/views/Dopesheet'
 import ItemHitZone from '$tl/ui/panels/AllInOnePanel/Right/items/ItemHitZone'
@@ -9,8 +9,8 @@ import {PrimitivePropItem} from '$tl/ui/panels/AllInOnePanel/utils'
 import SVGWrapper from '$tl/ui/panels/AllInOnePanel/Right/views/SVGWrapper'
 
 interface IProps {
-  expanded: TExpanded
-  points: TPoints
+  expanded: IExpanded
+  points: IPoints
   address: PrimitivePropItem['address']
 }
 

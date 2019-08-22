@@ -1,5 +1,5 @@
 import memoizeOne from 'memoize-one'
-import {TItems} from '$shared/components/MultiLevelDropdown/MultiLevelDropdown'
+import {IItems} from '$shared/components/MultiLevelDropdown/MultiLevelDropdown'
 import TimelineTemplate from '$tl/timelines/TimelineTemplate'
 import {flatMap} from '$shared/utils'
 import {get, setImmutable as set} from '$shared/utils'
@@ -9,7 +9,7 @@ type TInternalTimelines = {
 }
 
 export const convertTimelineTemplatesToItems = memoizeOne(
-  (internalTimelines: TInternalTimelines): TItems => {
+  (internalTimelines: TInternalTimelines): IItems => {
     return Object.keys(internalTimelines).reduce(
       (items, stringPath) => {
         const pathArray = stringPath.split(' / ')
@@ -35,7 +35,7 @@ export const convertTimelineTemplatesToItems = memoizeOne(
         }
         return items
       },
-      {} as TItems,
+      {} as IItems,
     )
   },
 )

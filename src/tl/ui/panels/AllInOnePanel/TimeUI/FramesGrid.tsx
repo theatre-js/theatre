@@ -8,7 +8,7 @@ import {
   inRangeXToPaddedScrollSpaceX,
   timeToInRangeX,
 } from '$tl/ui/panels/AllInOnePanel/Right/utils'
-import {TRange, TDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
+import {IRange, IDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {viewportScrolledSpace} from '../Right/utils'
 import {padStart} from 'lodash-es'
 
@@ -16,8 +16,8 @@ const classes = resolveCss(css)
 
 interface IProps {
   timelineWidth: number
-  range: TRange
-  duration: TDuration
+  range: IRange
+  duration: IDuration
 }
 
 interface IState {}

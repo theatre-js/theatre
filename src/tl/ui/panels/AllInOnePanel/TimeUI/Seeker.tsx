@@ -3,17 +3,18 @@ import css from './Seeker.css'
 import resolveCss from '$shared/utils/resolveCss'
 import {timeToInRangeX} from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import {getNewTime} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
-import {TRange, TDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
+import {IRange, IDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
 import RoomToClick from '$shared/components/RoomToClick/RoomToClick'
+import {IsSeekingContext} from '$tl/ui/panels/AllInOnePanel/Right/Right'
 
 const classes = resolveCss(css)
 
 interface IProps {
   timelineWidth: number
   currentTime: number
-  range: TRange
-  duration: TDuration
+  range: IRange
+  duration: IDuration
   gotoTime: (t: number) => void
 }
 
@@ -30,23 +31,32 @@ export default class Seeker extends React.PureComponent<IProps, IState> {
     const isVisible = currentX >= 0 && currentX <= timelineWidth
 
     return (
-      <div
-        {...classes('seeker', isVisible && 'visible')}
-        style={{transform: `translate3d(${currentX}px, 0, 0)`}}
-      >
-        <DraggableArea
-          onDrag={this.gotoTime}
-          onDragStart={this._onSeekerDragStart}
-          lockCursorTo="ew-resize"
-        >
-          <div {...classes('thumb')}>
-            <RoomToClick room={4} />
-            <div {...classes('squinch')} />
-            <div {...classes('tooltip')}>{normalizedTime.toFixed(2)}</div>
+      <IsSeekingContext.Consumer>
+        {isSeeking => (
+          <div
+            {...classes(
+              'seeker',
+              isVisible && 'visible',
+              isSeeking && 'showTooltip',
+            )}
+            style={{transform: `translate3d(${currentX}px, 0, 0)`}}
+          >
+            <DraggableArea
+              onDrag={this.gotoTime}
+              onDragStart={this._onSeekerDragStart}
+              lockCursorTo="ew-resize"
+            >
+              <div {...classes('thumb')}>
+                {(console.log(isSeeking), null)}
+                <RoomToClick room={4} />
+                <div {...classes('squinch')} />
+                <div {...classes('tooltip')}>{normalizedTime.toFixed(2)}</div>
+              </div>
+            </DraggableArea>
+            <div {...classes('rod')} />
           </div>
-        </DraggableArea>
-        <div {...classes('rod')} />
-      </div>
+        )}
+      </IsSeekingContext.Consumer>
     )
   }
 

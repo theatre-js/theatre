@@ -1,12 +1,12 @@
 import React from 'react'
 import LineConnectorRect from '$tl/ui/panels/AllInOnePanel/Right/views/dopesheet/LineConnectorRect'
-import {TColor, TNormalizedPoint} from '$tl/ui/panels/AllInOnePanel/Right/types'
+import {IColor, INormalizedPoint} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {TempPointCircle} from '$tl/ui/panels/AllInOnePanel/Right/views/dopesheet/TempPoint'
 
 interface IProps {
-  color: TColor
-  point: TNormalizedPoint
-  nextPoint?: TNormalizedPoint
+  color: IColor
+  point: INormalizedPoint
+  nextPoint?: INormalizedPoint
 }
 
 export default ({color, point, nextPoint}: IProps) => {
