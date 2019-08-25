@@ -23,7 +23,29 @@ interface IProps {
 interface IState {}
 
 const MIN_CELL_WIDTH = 80
-const FPS = 30
+/**
+ * @note we need to put these in a better place.
+ */
+export const FPS = 30 // @note might someday be configurable.
+export const FRAME_DURATION = Number(
+  (1000 / FPS).toFixed(6).slice(0, -1),
+) /* slice: 6.66667 -> 6.66666*/
+
+export function makeHumanReadableTimestamp(seconds: number, frame: number) {
+  return `${seconds}:${padStart(String(frame), 2, '0')}`
+}
+
+export function getSecondsAndFrame(timeInMs: number) {
+  const frame = Math.round((timeInMs % 1000) / FRAME_DURATION)
+  const s = Math.floor(timeInMs / 1000)
+  return {frame, s}
+}
+
+
+export function millisecsToHumanReadableTimestamp(timeInMs: number) {
+   const {s, frame} = getSecondsAndFrame(timeInMs)
+   return makeHumanReadableTimestamp(s, frame)
+}
 
 export default class FramesGrid extends React.PureComponent<IProps, IState> {
   canvas: HTMLCanvasElement | null
@@ -32,9 +54,6 @@ export default class FramesGrid extends React.PureComponent<IProps, IState> {
   frameStampLineRef: React.RefObject<HTMLDivElement> = React.createRef()
   containerRef: React.RefObject<HTMLDivElement> = React.createRef()
   containerRect: {left: number; top: number; right: number; bottom: number}
-  frameDuration: number = Number(
-    (1000 / FPS).toFixed(6).slice(0, -1),
-  ) /* slice: 6.66667 -> 6.66666*/
   fpsNumberFactors: number[] = getFactors(FPS)
   framesPerCell: number
   mouseX: null | number = null
@@ -122,7 +141,7 @@ export default class FramesGrid extends React.PureComponent<IProps, IState> {
       this.framesPerCell = FPS * Math.ceil(framesPerMinCell / FPS)
     }
 
-    const cellDuration = this.framesPerCell * this.frameDuration
+    const cellDuration = this.framesPerCell * FRAME_DURATION
     // TODO: Explain what you did here!
     const normalizationFactor = 1000 * (this.framesPerCell / FPS)
     // Time and frame of the first line that'll be drawn
@@ -130,7 +149,7 @@ export default class FramesGrid extends React.PureComponent<IProps, IState> {
       Math.ceil(Math.floor(range.from / normalizationFactor)) *
       normalizationFactor
 
-    const startFrame = Math.floor((startTime / this.frameDuration) % FPS)
+    const startFrame = Math.floor((startTime / FRAME_DURATION) % FPS)
     // Number of lines that we'll draw
     const numberOfLines = Math.floor((range.to - startTime) / cellDuration) + 1
 
@@ -195,20 +214,16 @@ export default class FramesGrid extends React.PureComponent<IProps, IState> {
     // TODO: add comments!
     const mouseTimeMiliseconds = mouseTime % 1000
 
-    const frame = Math.round(mouseTimeMiliseconds / this.frameDuration)
+    const {frame, s} = getSecondsAndFrame(mouseTime, FRAME_DURATION)
+
+    const humanReadableTime = makeHumanReadableTimestamp(s, frame)
 
     const stampTime =
-      mouseTime - mouseTimeMiliseconds + frame * this.frameDuration
+      mouseTime - mouseTimeMiliseconds + frame * FRAME_DURATION
     const stampX = timeToInRangeX(range, duration, timelineWidth)(stampTime)
-
-    const s = Math.floor(mouseTime / 1000)
-
     this.frameStampRef.current!.style.transform = `translate3d(calc(${stampX}px - 50%), 0, 0)`
-    this.frameStampRef.current!.innerHTML = `${s}:${padStart(
-      String(frame),
-      2,
-      '0',
-    )}`
+
+    this.frameStampRef.current!.innerHTML = humanReadableTime
     this.frameStampLineRef.current!.style.transform = `translate3d(calc(${stampX}px - 50%), 0, 0)`
   }
 

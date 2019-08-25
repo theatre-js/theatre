@@ -26,6 +26,7 @@ import {defer} from '$shared/utils/defer'
 import withContext from '$shared/utils/react/withContext'
 import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
 
+// this is is the wrong location
 export const IsSeekingContext = createContext<boolean>(false)
 
 const classes = resolveCss(css)
@@ -37,10 +38,11 @@ interface IRightProps {
   timelineInstance: TimelineInstance
   setRange: (range: IRange) => void
   heightMinusBottom: number
+  setIsSeeking: (is: boolean) => void
 }
 
 interface IRightState {
-  isSeeking: boolean
+  // isSeeking: boolean
 }
 
 class Right extends UIComponent<IRightProps, IRightState> {
@@ -50,7 +52,7 @@ class Right extends UIComponent<IRightProps, IRightState> {
   scrollLeft: number = 0
   allowZoom: boolean = true
   didMountDeferred = defer<void>()
-  state = {isSeeking: false}
+  state = {}
 
   constructor(props: IRightProps, context: $IntentionalAny) {
     super(props, context)
@@ -64,7 +66,6 @@ class Right extends UIComponent<IRightProps, IRightState> {
       timelineWidth,
     )
     this._scrollContainer(range)
-    console.log(this.state)
 
     return (
       <>
@@ -83,14 +84,12 @@ class Right extends UIComponent<IRightProps, IRightState> {
               }}
               {...classes('scrollingContainer')}
             >
-              <IsSeekingContext.Provider value={this.state.isSeeking}>
-                <TimelineProviders
-                  disableZoom={this.disableZoom}
-                  enableZoom={this.enableZoom}
-                >
-                  <ItemsContainer />
-                </TimelineProviders>
-              </IsSeekingContext.Provider>
+              <TimelineProviders
+                disableZoom={this.disableZoom}
+                enableZoom={this.enableZoom}
+              >
+                <ItemsContainer />
+              </TimelineProviders>
             </div>
           </div>
         </DraggableArea>
@@ -188,7 +187,7 @@ class Right extends UIComponent<IRightProps, IRightState> {
     if (event.shiftKey || event.altKey || event.ctrlKey || event.metaKey) {
       return false
     }
-    this.setState(() => ({isSeeking: true}))
+    this.props.setIsSeeking(true)
 
     const {timelineWidth, range, duration, timelineInstance} = this.props
     const newTime = viewportScrolledSpace.xToTime(
@@ -211,7 +210,15 @@ class Right extends UIComponent<IRightProps, IRightState> {
   }
 
   seekTimeHasEnded = () => {
-    this.setState(() => ({isSeeking: false}))
+    this.props.setIsSeeking(false)
+  }
+
+  UNSAFE_componentWillMount() {
+    this.props.setIsSeeking(false)
+  }
+
+  componentWillMount() {
+    this.props.setIsSeeking(false)
   }
 
   _scrollContainer = (range: IRange) => {
@@ -251,6 +258,7 @@ export default withContext({
         timelineInstance: val(timeStuffP.timelineInstance),
         setRange: val(timeStuffP.setRange),
         heightMinusBottom: val(timeStuffP.viewportSpace.height),
+        setIsSeeking: val(timeStuffP.setIsSeeking)
       }
 
       return <Right {...rightProps} />

@@ -43,6 +43,7 @@ interface IProps {
 
 interface IState {
   lockedRangeAndDuration: null | IRangeAndDuration
+  isSeeking: boolean
 }
 
 interface IRangeAndDuration {
@@ -96,6 +97,8 @@ export interface ITimeStuff {
   timeSpace: {
     clamp: (t: number) => number
   }
+  isSeeking: boolean
+  setIsSeeking: (is: boolean) => void
 }
 
 const {
@@ -114,7 +117,7 @@ export default class TimeStuffProvider extends UIComponent<IProps, IState> {
   timelineTemplate: TimelineTemplate
   constructor(props: IProps, context: $IntentionalAny) {
     super(props, context)
-    this.state = {lockedRangeAndDuration: null}
+    this.state = {lockedRangeAndDuration: null, isSeeking: false}
     this.timelineTemplate = undefined as $IntentionalAny
   }
 
@@ -125,6 +128,10 @@ export default class TimeStuffProvider extends UIComponent<IProps, IState> {
         range,
       }),
     )
+  }
+
+  setIsSeeking = (isSeeking: boolean) => {
+    this.setState({isSeeking})
   }
 
   lockRangeAndDuration = (
@@ -194,6 +201,8 @@ export default class TimeStuffProvider extends UIComponent<IProps, IState> {
               // @todo perf
               // many of these values don't change on re-render. memoize them
               const timeStuff: ITimeStuff = {
+                isSeeking: val(stateP.isSeeking),
+                setIsSeeking: this.setIsSeeking,
                 rangeAndDuration,
                 unlockedRangeAndDuration,
                 lockRangeAndDuration: this.lockRangeAndDuration,

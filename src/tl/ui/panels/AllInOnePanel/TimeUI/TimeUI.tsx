@@ -59,6 +59,8 @@ export default class TimeUI extends UIComponent<IProps, IState> {
               const viewportWidth = val(timeStuffP.viewportSpace.width)
               const left = val(propsP.left)
 
+              const isSeeking = val(timeStuffP.isSeeking)
+
               const realDuration = val(timeStuffP.rangeAndDuration.realDuration)
 
               const overshotDuration = val(
@@ -93,6 +95,7 @@ export default class TimeUI extends UIComponent<IProps, IState> {
                     timelineWidth={viewportWidth}
                     currentTime={currentTime}
                     gotoTime={gotoTime}
+                    isSeeking={isSeeking}
                   />
                   <PlaybackRange />
                 </div>
