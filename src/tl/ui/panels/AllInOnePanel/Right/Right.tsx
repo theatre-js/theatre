@@ -148,19 +148,22 @@ class Right extends UIComponent<IRightProps, IRightState> {
     }
 
     // pinch
-    if (event.ctrlKey && this.allowZoom) {
+    if (event.ctrlKey) {
       event.preventDefault()
       event.stopPropagation()
-      const {range, duration, timelineWidth} = this.props
-      const dt = deltaXToTime(range, timelineWidth)(event.deltaY) * 3.5
-      const zoomTime = viewportScrolledSpace.xToTime(
-        range,
-        duration,
-        timelineWidth,
-      )(event.clientX - this.wrapperLeft)
-      const fraction = (zoomTime - range.from) / (range.to - range.from)
-      const change = {from: -dt * fraction, to: dt * (1 - fraction)}
-      this.props.setRange(getNewZoom(range, change, duration))
+
+      if (this.allowZoom) {
+        const {range, duration, timelineWidth} = this.props
+        const dt = deltaXToTime(range, timelineWidth)(event.deltaY) * 3.5
+        const zoomTime = viewportScrolledSpace.xToTime(
+          range,
+          duration,
+          timelineWidth,
+        )(event.clientX - this.wrapperLeft)
+        const fraction = (zoomTime - range.from) / (range.to - range.from)
+        const change = {from: -dt * fraction, to: dt * (1 - fraction)}
+        this.props.setRange(getNewZoom(range, change, duration))
+      }
     }
   }
 

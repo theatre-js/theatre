@@ -38,7 +38,10 @@ import Overlay from '$shared/components/Overlay/Overlay'
 import OverlaySection from '$shared/components/Overlay/OverlaySection'
 import SelectionContextMenu from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/SelectionContextMenu'
 import {PropValueContainer} from '$tl/Project/store/types'
-import {overshootDuration} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
+import {
+  overshootDuration,
+  FRAME_DURATION,
+} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
 import {TimeStuff} from '$tl/ui/panels/AllInOnePanel/TimeStuffProvider'
 
 const classes = resolveCss(css)
@@ -405,7 +408,10 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
     this.project.reduxStore.dispatch(
       this.tempActionGroup.push(
         this.project._actions.historic.moveSelectionOfPointsInBezierCurvesOfScalarValues(
-          {points: this._getPointsInSelectionDataAfterMove()},
+          {
+            points: this._getPointsInSelectionDataAfterMove(),
+            snapToFrameSize: FRAME_DURATION,
+          },
         ),
       ),
     )
@@ -416,7 +422,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
       this.project._actions.batched([
         this.tempActionGroup.discard(),
         this.project._actions.historic.moveSelectionOfPointsInBezierCurvesOfScalarValues(
-          {points: this.lastCommittedData},
+          {points: this.lastCommittedData, snapToFrameSize: FRAME_DURATION},
         ),
       ]),
     )

@@ -246,14 +246,24 @@ export const removeSelectionOfPointsInBezierCurvesOfScalarValues = r(
 )
 
 export const setPointCoordsInBezierCurvesOfScalarValues = r(
-  (s, p: TPropAddressWithPointIndex & {newCoords: IPointCoords}) => {
+  (
+    s,
+    p: TPropAddressWithPointIndex & {
+      newCoords: IPointCoords
+      snapToFrameSize?: number
+    },
+  ) => {
     const points = getPoints(s, p.propAddress)
     const pointToUpdate = points[p.pointIndex]
     const nextPoint = points[p.pointIndex + 1]
     const prevPoint = points[p.pointIndex - 1]
     const nextPointTime = (nextPoint && nextPoint.time) || Infinity
     const prevPointTime = (prevPoint && prevPoint.time) || -Infinity
-    const {time: newTime, value: newValue} = p.newCoords
+    const {value: newValue} = p.newCoords
+    const newTime =
+      typeof p.snapToFrameSize === 'number'
+        ? roundTimeToClosestFrame(p.newCoords.time, p.snapToFrameSize)
+        : p.newCoords.time
 
     pointToUpdate.value = newValue
     if (newTime > prevPointTime && newTime < nextPointTime) {

@@ -9,6 +9,7 @@ import FixedFullSizeContainer from '$shared/components/FixedFullSizeContainer/Fi
 import {ITempActionGroup} from '$shared/utils/redux/withHistory/actions'
 import {GenericAction} from '$shared/types'
 import Input from './PointValuesEditor/Input'
+import {FRAME_DURATION} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
 
 const classes = resolveCss(css)
 
@@ -176,6 +177,7 @@ class PointValuesEditor extends UIComponent<IProps, IState> {
           time: time * 1000,
           value: value,
         },
+        snapToFrameSize: FRAME_DURATION,
       },
     )
   }

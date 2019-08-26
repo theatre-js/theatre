@@ -80,7 +80,8 @@ export function roundTimeToClosestFrame(time: number, frameDuration: number) {
   const lastSecond = Math.floor(time / 1000) * 1000
   const timePastLastSecond = time % 1000
 
-  const closestFrame = Math.round(timePastLastSecond / frameDuration) * frameDuration
+  const closestFrame =
+    Math.round(timePastLastSecond / frameDuration) * frameDuration
 
   return lastSecond + closestFrame
 }
