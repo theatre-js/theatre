@@ -10,7 +10,12 @@ import {
 } from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import {IRange, IDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {viewportScrolledSpace} from '../Right/utils'
-import {padStart} from 'lodash-es'
+import {
+  FPS,
+  FRAME_DURATION,
+  getSecondsAndFrame,
+  makeHumanReadableTimestamp,
+} from './utils'
 
 const classes = resolveCss(css)
 
@@ -23,28 +28,6 @@ interface IProps {
 interface IState {}
 
 const MIN_CELL_WIDTH = 80
-/**
- * @note we need to put these in a better place.
- */
-export const FPS = 30 // @note might someday be configurable.
-export const FRAME_DURATION = Number(
-  (1000 / FPS).toFixed(6).slice(0, -1),
-) /* slice: 6.66667 -> 6.66666*/
-
-export function makeHumanReadableTimestamp(seconds: number, frame: number) {
-  return `${seconds}:${padStart(String(frame), 2, '0')}`
-}
-
-export function getSecondsAndFrame(timeInMs: number) {
-  const frame = Math.round((timeInMs % 1000) / FRAME_DURATION)
-  const s = Math.floor(timeInMs / 1000)
-  return {frame, s}
-}
-
-export function millisecsToHumanReadableTimestamp(timeInMs: number) {
-  const {s, frame} = getSecondsAndFrame(timeInMs)
-  return makeHumanReadableTimestamp(s, frame)
-}
 
 export default class FramesGrid extends React.PureComponent<IProps, IState> {
   canvas: HTMLCanvasElement | null
@@ -213,7 +196,7 @@ export default class FramesGrid extends React.PureComponent<IProps, IState> {
     // TODO: add comments!
     const mouseTimeMiliseconds = mouseTime % 1000
 
-    const {frame, s} = getSecondsAndFrame(mouseTime, FRAME_DURATION)
+    const {frame, s} = getSecondsAndFrame(mouseTime)
 
     const humanReadableTime = makeHumanReadableTimestamp(s, frame)
 

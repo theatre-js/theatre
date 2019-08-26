@@ -83,7 +83,6 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
 
     this.state = {
       isMoving: false,
-      // pointMove: [0, 0],
       handlesMove: [0, 0, 0, 0],
       renderTempConnectorOf: 'none',
     }
@@ -229,15 +228,12 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
   }
 
   _renderTempPoint() {
-    // return null
     return (
       <TempPoint
         color={this.propsBeforeMove.color}
         point={this.propsBeforeMove.point}
         prevPoint={this.propsBeforeMove.prevPoint}
         nextPoint={this.propsBeforeMove.nextPoint}
-        // pointMove={pointMove}
-        // handlesMove={this.state.handlesMove}
       />
     )
   }
@@ -335,7 +331,6 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
   handlePointDrag = (mouseDX: number, mouseDY: number, e: MouseEvent) => {
     const {width, height} = this.svgSize
     const {point, prevPoint, nextPoint} = this.propsBeforeMove
-    // const {pointMove} = this.state
 
     let renderTempConnectorOf: IState['renderTempConnectorOf'] = 'none'
     let dxAsPercentageOfSvgWidth = (mouseDX / width) * 100
@@ -351,7 +346,7 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
     const limitLeft = prevPoint == null ? 0 : prevPoint.time
     const limitRight = nextPoint == null ? 1000000000 : nextPoint.time
 
-    const initialPointTime = point.time //- pointMove[0]
+    const initialPointTime = point.time
     const newT = initialPointTime + dxAsPercentageOfSvgWidth
     if (newT >= limitRight)
       dxAsPercentageOfSvgWidth = limitRight - initialPointTime - 100 / width
@@ -362,8 +357,8 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
       value: this.propsBeforeMove.point.originalValue,
     }
     const change = {
-      time: dxAsPercentageOfSvgWidth, //- pointMove[0],
-      value: dyAsPercentageOfSvgHeight, //- pointMove[1],
+      time: dxAsPercentageOfSvgWidth,
+      value: dyAsPercentageOfSvgHeight,
     }
     const halfAPixelInTime = (0.4999 / width) * 100
     const halfAPixelInValue = (0.4999 / height) * 100
@@ -379,7 +374,6 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
     this.setState(() => ({
       renderTempConnectorOf,
       isMoving: true,
-      // pointMove: [x, y],
     }))
   }
 
@@ -517,20 +511,19 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
   }
 
   handlePointMouseEnter = () => {
-    const {
-      left,
-      top,
-      width,
-      height,
-    } = this.pointClickArea.current!.getBoundingClientRect()
-    const params = {
-      left: left + width / 2,
-      top: top + height / 2,
-      initialTime: this.props.point.originalTime,
-      initialValue: this.props.point.originalValue,
-      pointIndex: this.props.pointIndex,
-    }
-    // this.props.showPointValuesPreview(params)
+    // const {
+    //   left,
+    //   top,
+    //   width,
+    //   height,
+    // } = this.pointClickArea.current!.getBoundingClientRect()
+    // const params = {
+    //   left: left + width / 2,
+    //   top: top + height / 2,
+    //   initialTime: this.props.point.originalTime,
+    //   initialValue: this.props.point.originalValue,
+    //   pointIndex: this.props.pointIndex,
+    // }
   }
 
   handlePointMouseLeave = () => {

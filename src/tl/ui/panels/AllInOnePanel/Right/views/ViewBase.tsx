@@ -26,6 +26,7 @@ import {
   calculateNextExtremums,
 } from '$tl/ui/panels/AllInOnePanel/Right/items/ItemPointsNormalizer'
 import {roundestNumberBetween} from '$shared/utils/numberRoundingUtils'
+import {FRAME_DURATION} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
 
 export interface IViewBaseProps {
   extremums: IExtremums
@@ -296,6 +297,7 @@ export default class ViewBase<Props extends IProps> extends UIComponent<
             propAddress: propGetter('itemAddress'),
             pointIndex,
             newCoords,
+            snapToFrameSize: FRAME_DURATION,
           },
         ),
       ),

@@ -6,7 +6,7 @@ import {getNewTime} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
 import {IRange, IDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import DraggableArea from '$shared/components/DraggableArea/DraggableArea'
 import RoomToClick from '$shared/components/RoomToClick/RoomToClick'
-import {millisecsToHumanReadableTimestamp} from '$tl/ui/panels/AllInOnePanel/TimeUI/FramesGrid'
+import {millisecsToHumanReadableTimestamp} from './utils'
 
 const classes = resolveCss(css)
 

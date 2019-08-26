@@ -13,9 +13,7 @@ import TimelineInstance from '$tl/timelines/TimelineInstance/TimelineInstance'
 import Right from './Right/Right'
 import createPointerContext from '$shared/utils/react/createPointerContext'
 import TimeUI from '$tl/ui/panels/AllInOnePanel/TimeUI/TimeUI'
-import ActiveModeProvider, {
-  ActiveModeContext,
-} from '$shared/components/ActiveModeProvider/ActiveModeProvider'
+import ActiveModeProvider from '$shared/components/ActiveModeProvider/ActiveModeProvider'
 import {UIHistoricState} from '$tl/ui/store/types'
 import PanelResizers from '$tl/ui/panels/AllInOnePanel/PanelResizers'
 import clamp from '$shared/number/clamp'

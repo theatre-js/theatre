@@ -1,7 +1,6 @@
 import React from 'react'
 import css from './BezierConnector.css'
 import noop from '$shared/utils/noop'
-// import {TShowConnectorContextMenu} from '$tl/ui/panels/AllInOnePanel/Right/views/types'
 import resolveCss from '$shared/utils/resolveCss'
 import {IPointHandles} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {
@@ -20,7 +19,7 @@ interface IProps {
   rightPointValue: number
   handles: IPointHandles
   removeConnector?: (pointIndex: number) => void
-  showContextMenu?: $FixMe /*TShowConnectorContextMenu*/
+  showContextMenu?: $FixMe
 }
 
 interface IState {}

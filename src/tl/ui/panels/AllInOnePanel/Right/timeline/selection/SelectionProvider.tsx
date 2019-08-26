@@ -405,7 +405,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
     this.project.reduxStore.dispatch(
       this.tempActionGroup.push(
         this.project._actions.historic.moveSelectionOfPointsInBezierCurvesOfScalarValues(
-          this._getPointsInSelectionDataAfterMove(),
+          {points: this._getPointsInSelectionDataAfterMove()},
         ),
       ),
     )
@@ -416,7 +416,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
       this.project._actions.batched([
         this.tempActionGroup.discard(),
         this.project._actions.historic.moveSelectionOfPointsInBezierCurvesOfScalarValues(
-          this.lastCommittedData,
+          {points: this.lastCommittedData},
         ),
       ]),
     )

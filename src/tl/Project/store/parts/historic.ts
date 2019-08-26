@@ -15,6 +15,7 @@ import {
   IPoint,
 } from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {ICollectionOfSelectedPointsData} from '$tl/ui/panels/AllInOnePanel/Right/timeline/selection/types'
+import {roundTimeToClosestFrame} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
 
 const r = reducto($ProjectHistoricState)
 
@@ -134,9 +135,19 @@ export const removePointInBezierCurvesOfScalarValues = r(
 )
 
 export const movePointToNewCoordsInBezierCurvesOfScalarValues = r(
-  (s, p: TPropAddressWithPointIndex & {newCoords: IPointCoords}) => {
+  (
+    s,
+    p: TPropAddressWithPointIndex & {
+      newCoords: IPointCoords
+      snapToFrameSize?: number
+    },
+  ) => {
     const point = getPoints(s, p.propAddress)[p.pointIndex]
-    point.time = p.newCoords.time
+
+    point.time =
+      typeof p.snapToFrameSize === 'number'
+        ? roundTimeToClosestFrame(p.newCoords.time, p.snapToFrameSize)
+        : p.newCoords.time
     point.value = p.newCoords.value
   },
 )
@@ -198,13 +209,21 @@ export const moveDopesheetConnectorInBezierCurvesOfScalarValues = r(
 export const moveSelectionOfPointsInBezierCurvesOfScalarValues = r(
   (
     s,
-    p: Array<TPropAddress & {pointsNewCoords: ICollectionOfSelectedPointsData}>,
+    p: {
+      points: Array<
+        TPropAddress & {pointsNewCoords: ICollectionOfSelectedPointsData}
+      >
+      snapToFrameSize?: number
+    },
   ) => {
-    p.forEach(({propAddress, pointsNewCoords}) => {
+    p.points.forEach(({propAddress, pointsNewCoords}) => {
       const points = getPoints(s, propAddress)
       Object.entries(pointsNewCoords).forEach(([pointIndex, newCoords]) => {
         const point = points[Number(pointIndex)]
-        point.time = newCoords.time
+        point.time =
+          typeof p.snapToFrameSize === 'number'
+            ? roundTimeToClosestFrame(newCoords.time, p.snapToFrameSize)
+            : newCoords.time
         if (newCoords.value != null) point.value = newCoords.value
       })
     })

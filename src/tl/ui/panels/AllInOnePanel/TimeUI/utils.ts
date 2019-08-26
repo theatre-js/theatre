@@ -3,6 +3,7 @@ import {
   timeToTimelineX,
 } from '$tl/ui/panels/AllInOnePanel/Right/utils'
 import {IRange, IDuration} from '$tl/ui/panels/AllInOnePanel/Right/types'
+import {padStart} from 'lodash-es'
 
 export const getNewTime = (
   range: IRange,
@@ -66,3 +67,35 @@ export const getNewZoom = (
 
 export const overshootDuration = (timelineDuration: number) =>
   timelineDuration + 2000
+
+/**
+ * @note we need to put these in a better place.
+ */
+export const FPS = 30 // @note might someday be configurable.
+export const FRAME_DURATION = Number(
+  (1000 / FPS).toFixed(6).slice(0, -1),
+) /* slice: 6.66667 -> 6.66666*/
+
+export function roundTimeToClosestFrame(time: number, frameDuration: number) {
+  const lastSecond = Math.floor(time / 1000) * 1000
+  const timePastLastSecond = time % 1000
+
+  const closestFrame = Math.round(timePastLastSecond / frameDuration) * frameDuration
+
+  return lastSecond + closestFrame
+}
+
+export function makeHumanReadableTimestamp(seconds: number, frame: number) {
+  return `${seconds}:${padStart(String(frame), 2, '0')}`
+}
+
+export function getSecondsAndFrame(timeInMs: number) {
+  const frame = Math.round((timeInMs % 1000) / FRAME_DURATION)
+  const s = Math.floor(timeInMs / 1000)
+  return {frame, s}
+}
+
+export function millisecsToHumanReadableTimestamp(timeInMs: number) {
+  const {s, frame} = getSecondsAndFrame(timeInMs)
+  return makeHumanReadableTimestamp(s, frame)
+}
