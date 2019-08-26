@@ -65,11 +65,15 @@ export default (props: IExportedComponentProps) => (
           const timelineTemplate = val(timeStuffP.timelineTemplate)
           const range = val(timeStuffP.rangeAndDuration.range)
           const duration = overshootDuration(val(timelineTemplate!._durationD))
-          const width = val(timeStuffP.viewportSpace.width)
+          const viewportSpaceWidth = val(timeStuffP.viewportSpace.width)
           const rootPropProviderProps: IRootPropProviderProps = {
             duration,
-            timelineWidth: width,
-            svgWidth: getScrollSpaceWidth_deprecated(range, duration, width),
+            timelineWidth: viewportSpaceWidth,
+            svgWidth: getScrollSpaceWidth_deprecated(
+              range,
+              duration,
+              viewportSpaceWidth,
+            ),
             children: props.children,
           }
           return <RootPropProvider {...rootPropProviderProps} />

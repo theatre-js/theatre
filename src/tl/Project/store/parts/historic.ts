@@ -74,19 +74,28 @@ export const setPointsInBezierCurvesOfScalarValues = r(
 )
 
 export const addPointInBezierCurvesOfScalarValues = r(
-  (s, p: TPropAddress & {pointProps: IPoint, recalculateInterpolator?: boolean}) => {
+  (
+    s,
+    p: TPropAddress & {pointProps: IPoint; recalculateInterpolator?: boolean},
+  ) => {
     const points = getPoints(s, p.propAddress)
     let atIndex = points.findIndex(point => point.time > p.pointProps.time)
     if (atIndex === -1) atIndex = points.length
     const newPoint: IPoint = {...p.pointProps}
     if (p.recalculateInterpolator) {
-
       const leftPoint = points[atIndex - 1]
       if (leftPoint && leftPoint.interpolationDescriptor.connected) {
-        const leftInterpolator = immerToOriginal(leftPoint.interpolationDescriptor) as IPoint['interpolationDescriptor']
+        const leftInterpolator = immerToOriginal(
+          leftPoint.interpolationDescriptor,
+        ) as IPoint['interpolationDescriptor']
         const thisInterpolator = {...leftInterpolator}
         if (thisInterpolator.interpolationType === 'CubicBezier') {
-          thisInterpolator.handles = [...thisInterpolator.handles] as [number, number, number, number]
+          thisInterpolator.handles = [...thisInterpolator.handles] as [
+            number,
+            number,
+            number,
+            number
+          ]
           thisInterpolator.handles[0] = 0.5
           thisInterpolator.handles[1] = 0.5
           leftPoint.interpolationDescriptor.handles[2] = 0.5

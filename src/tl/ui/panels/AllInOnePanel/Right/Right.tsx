@@ -258,7 +258,7 @@ export default withContext({
         timelineInstance: val(timeStuffP.timelineInstance),
         setRange: val(timeStuffP.setRange),
         heightMinusBottom: val(timeStuffP.viewportSpace.height),
-        setIsSeeking: val(timeStuffP.setIsSeeking)
+        setIsSeeking: val(timeStuffP.setIsSeeking),
       }
 
       return <Right {...rightProps} />

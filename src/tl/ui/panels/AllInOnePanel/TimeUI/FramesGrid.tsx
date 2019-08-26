@@ -41,10 +41,9 @@ export function getSecondsAndFrame(timeInMs: number) {
   return {frame, s}
 }
 
-
 export function millisecsToHumanReadableTimestamp(timeInMs: number) {
-   const {s, frame} = getSecondsAndFrame(timeInMs)
-   return makeHumanReadableTimestamp(s, frame)
+  const {s, frame} = getSecondsAndFrame(timeInMs)
+  return makeHumanReadableTimestamp(s, frame)
 }
 
 export default class FramesGrid extends React.PureComponent<IProps, IState> {
@@ -218,8 +217,7 @@ export default class FramesGrid extends React.PureComponent<IProps, IState> {
 
     const humanReadableTime = makeHumanReadableTimestamp(s, frame)
 
-    const stampTime =
-      mouseTime - mouseTimeMiliseconds + frame * FRAME_DURATION
+    const stampTime = mouseTime - mouseTimeMiliseconds + frame * FRAME_DURATION
     const stampX = timeToInRangeX(range, duration, timelineWidth)(stampTime)
     this.frameStampRef.current!.style.transform = `translate3d(calc(${stampX}px - 50%), 0, 0)`
 
