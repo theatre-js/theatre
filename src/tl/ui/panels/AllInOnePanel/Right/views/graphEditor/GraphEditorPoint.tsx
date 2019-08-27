@@ -432,6 +432,7 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
       .map(
         (handle, i) => handle + handlesMove[i] - this.state.handlesMove[i],
       ) as IPointSingleHandle
+
     newHandle[0] = clamp(newHandle[0], 0, 1)
     this.props.moveLeftHandleTemp(this.props.pointIndex, newHandle)
     this.setState(() => ({
