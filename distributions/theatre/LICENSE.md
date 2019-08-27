@@ -1,1 +1,14 @@
-This software is copyrighted by "TheaterJS OY", all rights reserved. It is currently licensed to private beta members. You can join the private beta at https://theatrejs.com to obtain a license.
+Copyright (c) "TheaterJS OY" 2019
+
+Note:
+We're gradually open-sourcing some components of Theatre as their code matures.
+In the meantime, this library on npm and other package managers is available
+free of charge, and can be used in both personal and commercial projects.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
