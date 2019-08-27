@@ -238,11 +238,13 @@ export default class ViewBase<Props extends IProps> extends UIComponent<
     minimumHumanNoticableDiffInTime: number,
     minimumHumanNoticableDiffInValue: number,
   ) => {
-    const {extremums, propGetter, extremumsAPI} = this.props
-    extremumsAPI.persist()
+    this.props.extremumsAPI.persist()
+    const {extremums} = this.props
+
+    const timelineDuration = this.props.propGetter('duration')
 
     const humanUnreadableTime =
-      originalCoords.time + (change.time * propGetter('duration')) / 100
+      originalCoords.time + (change.time * timelineDuration) / 100
     let time = humanUnreadableTime
 
     if (minimumHumanNoticableDiffInTime !== 0) {
@@ -251,8 +253,8 @@ export default class ViewBase<Props extends IProps> extends UIComponent<
         change.time + minimumHumanNoticableDiffInTime,
       ]
       const [minTime, maxTime] = [
-        originalCoords.time + (minChange * propGetter('duration')) / 100,
-        originalCoords.time + (maxChange * propGetter('duration')) / 100,
+        originalCoords.time + (minChange * timelineDuration) / 100,
+        originalCoords.time + (maxChange * timelineDuration) / 100,
       ]
       const humanReadableTime = roundestNumberBetween(minTime, maxTime)
       // console.log('t', time, humanReadableTime)
@@ -294,7 +296,7 @@ export default class ViewBase<Props extends IProps> extends UIComponent<
       this.tempActionGroup.push(
         this.project._actions.historic.movePointToNewCoordsInBezierCurvesOfScalarValues(
           {
-            propAddress: propGetter('itemAddress'),
+            propAddress: this.props.propGetter('itemAddress'),
             pointIndex,
             newCoords,
             snapToFrameSize: FRAME_DURATION,

@@ -6,12 +6,7 @@ import {
 } from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {SVG_PADDING_X} from '$tl/ui/panels/AllInOnePanel/Right/views/SVGWrapper'
 import {clamp} from 'lodash-es'
-import {
-  roundTimeToClosestFrame,
-  FRAME_DURATION,
-  makeHumanReadableTimestamp,
-  millisecsToHumanReadableTimestamp,
-} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
+import {millisecsToHumanReadableTimestamp} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
 
 // scrollSpace.width
 export const getScrollSpaceWidth_deprecated = (

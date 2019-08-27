@@ -58,7 +58,8 @@ export type IMoveDopesheetConnector = (pointIndex: number) => void
 
 export type IMoveDopesheetConnectorTemp = (
   pointIndex: number,
-  moveAmount: number,
+  originalCoords: [number, number],
+  dxAsPercentageOfScrollableSpaceWidth: number,
 ) => void
 
 export type IGetAllPoints = () => INormalizedPoints

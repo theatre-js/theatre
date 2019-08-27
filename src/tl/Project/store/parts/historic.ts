@@ -144,10 +144,7 @@ export const movePointToNewCoordsInBezierCurvesOfScalarValues = r(
   ) => {
     const point = getPoints(s, p.propAddress)[p.pointIndex]
 
-    point.time =
-      typeof p.snapToFrameSize === 'number'
-        ? roundTimeToClosestFrame(p.newCoords.time, p.snapToFrameSize)
-        : p.newCoords.time
+    point.time = utils.snapTimeToFrameSize(p.newCoords.time, p.snapToFrameSize)
     point.value = p.newCoords.value
   },
 )
@@ -192,17 +189,24 @@ export const resetPointHandlesInBezierCurvesOfScalarValues = r(
   },
 )
 
-export const moveDopesheetConnectorInBezierCurvesOfScalarValues = r(
+export const reAssignTimesOfTwoNeighbouringPoints = r(
   (
     s,
     p: TPropAddress & {
       leftPoint: {index: number; newTime: number}
       rightPoint: {index: number; newTime: number}
+      snapToFrameSize?: number
     },
   ) => {
     const points = getPoints(s, p.propAddress)
-    points[p.leftPoint.index].time = p.leftPoint.newTime
-    points[p.rightPoint.index].time = p.rightPoint.newTime
+    points[p.leftPoint.index].time = utils.snapTimeToFrameSize(
+      p.leftPoint.newTime,
+      p.snapToFrameSize,
+    )
+    points[p.rightPoint.index].time = utils.snapTimeToFrameSize(
+      p.rightPoint.newTime,
+      p.snapToFrameSize,
+    )
   },
 )
 
@@ -220,15 +224,23 @@ export const moveSelectionOfPointsInBezierCurvesOfScalarValues = r(
       const points = getPoints(s, propAddress)
       Object.entries(pointsNewCoords).forEach(([pointIndex, newCoords]) => {
         const point = points[Number(pointIndex)]
-        point.time =
-          typeof p.snapToFrameSize === 'number'
-            ? roundTimeToClosestFrame(newCoords.time, p.snapToFrameSize)
-            : newCoords.time
+        point.time = utils.snapTimeToFrameSize(
+          newCoords.time,
+          p.snapToFrameSize,
+        )
         if (newCoords.value != null) point.value = newCoords.value
       })
     })
   },
 )
+
+const utils = {
+  snapTimeToFrameSize(time: number, snapToFrameSize: number | undefined) {
+    return typeof snapToFrameSize === 'number'
+      ? roundTimeToClosestFrame(time, snapToFrameSize)
+      : time
+  },
+}
 
 export const removeSelectionOfPointsInBezierCurvesOfScalarValues = r(
   (s, p: Array<TPropAddress & {pointsIndices: number[]}>) => {
@@ -260,10 +272,10 @@ export const setPointCoordsInBezierCurvesOfScalarValues = r(
     const nextPointTime = (nextPoint && nextPoint.time) || Infinity
     const prevPointTime = (prevPoint && prevPoint.time) || -Infinity
     const {value: newValue} = p.newCoords
-    const newTime =
-      typeof p.snapToFrameSize === 'number'
-        ? roundTimeToClosestFrame(p.newCoords.time, p.snapToFrameSize)
-        : p.newCoords.time
+    const newTime = utils.snapTimeToFrameSize(
+      p.newCoords.time,
+      p.snapToFrameSize,
+    )
 
     pointToUpdate.value = newValue
     if (newTime > prevPointTime && newTime < nextPointTime) {

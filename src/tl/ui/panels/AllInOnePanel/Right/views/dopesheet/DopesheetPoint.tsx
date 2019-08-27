@@ -31,6 +31,7 @@ import TempConnector from '$tl/ui/panels/AllInOnePanel/Right/views/dopesheet/Tem
 import PropsAsPointer from '$shared/utils/react/PropsAsPointer'
 import {shouldToggleIsInSelection} from '$tl/ui/panels/AllInOnePanel/Right/views/utils'
 import PointCircle from '$tl/ui/panels/AllInOnePanel/Right/views/point/PointCircle'
+import {cmdIsDown} from '$shared/utils/keyboardUtils'
 
 interface IProps {
   propGetter: IPropGetter
@@ -45,6 +46,7 @@ interface IProps {
   originalTime: number
   originalValue: number
   pointIndex: number
+  nextPointOriginalTime?: number
   removePoint: IFnNeedsPointIndex
   addConnector: IFnNeedsPointIndex
   movePointToNewCoords: IMovePointToNewCoords
@@ -63,7 +65,6 @@ interface IState {
   isMovingConnector: boolean
   isMovingPoint: boolean
   connectorMove: number
-  pointMove: number
   renderTempConnectorOf: 'none' | 'currentPoint' | 'prevPoint'
 }
 
@@ -82,7 +83,6 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
       isMovingConnector: false,
       connectorMove: 0,
       isMovingPoint: false,
-      pointMove: 0,
       renderTempConnectorOf: 'none',
     }
   }
@@ -197,6 +197,7 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
   }
 
   _renderTempConnector() {
+    return null
     const {connectorMove} = this.state
     return (
       <TempConnector
@@ -298,48 +299,57 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
     this.propsBeforeDrag = this.props
   }
 
-  handlePointDrag = (dx: number, _: number, e: MouseEvent) => {
+  handlePointDrag = (mouseDX: number, _: number, e: MouseEvent) => {
+    const svgWidth = this.svgWidth
     let renderTempConnectorOf: IState['renderTempConnectorOf'] = 'none'
-    // change in x as percent of svgWidth
-    let x = (dx / this.svgWidth) * 100
-    if (e.metaKey) {
-      renderTempConnectorOf = x > 0 ? 'currentPoint' : 'prevPoint'
-      x = 0
+
+    let dxAsPercentageOfSvgWidth = (mouseDX / this.svgWidth) * 100
+    if (cmdIsDown(e)) {
+      renderTempConnectorOf =
+        dxAsPercentageOfSvgWidth > 0 ? 'currentPoint' : 'prevPoint'
+      dxAsPercentageOfSvgWidth = 0
     }
 
-    const {prevPointTime, nextPointTime} = this.props
-    const {pointMove} = this.state
-    const pointTime = this.props.pointTime - pointMove
-
-    const limitLeft = prevPointTime == null ? 0 : prevPointTime
+    const limitLeft =
+      this.propsBeforeDrag.prevPointTime == null
+        ? 0
+        : this.propsBeforeDrag.prevPointTime
     const limitRight =
-      nextPointTime == null ? 100 /* 100% of svgWidth */ : nextPointTime
+      this.propsBeforeDrag.nextPointTime == null
+        ? 100 /* 100% of svgWidth */
+        : this.propsBeforeDrag.nextPointTime
 
-    const newTime = pointTime + x
-    if (newTime >= limitRight) x = limitRight - pointTime - 100 / this.svgWidth
-    if (newTime <= limitLeft) x = limitLeft - pointTime + 100 / this.svgWidth
+    const newTime = this.propsBeforeDrag.pointTime + dxAsPercentageOfSvgWidth
+
+    if (newTime >= limitRight)
+      dxAsPercentageOfSvgWidth =
+        limitRight - this.propsBeforeDrag.pointTime - 100 / svgWidth
+    if (newTime <= limitLeft)
+      dxAsPercentageOfSvgWidth =
+        limitLeft - this.propsBeforeDrag.pointTime + 100 / svgWidth
 
     const originalCoords = {
-      time: this.props.originalTime,
-      value: this.props.originalValue,
+      time: this.propsBeforeDrag.originalTime,
+      value: this.propsBeforeDrag.originalValue,
     }
+
     const change = {
-      time: x - this.state.pointMove,
+      time: dxAsPercentageOfSvgWidth,
       value: 0,
     }
-    const minimumHumanNoticableDiffInTime = (0.4999 / this.svgWidth) * 100
+
+    const halfAPixelInTime = (0.4999 / svgWidth) * 100
     this.props.movePointToNewCoordsTemp(
       this.props.pointIndex,
       originalCoords,
       change,
-      minimumHumanNoticableDiffInTime,
+      halfAPixelInTime,
       0,
     )
 
     this.setState(() => ({
       renderTempConnectorOf,
       isMovingPoint: true,
-      pointMove: x,
     }))
   }
 
@@ -361,32 +371,52 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
     this.setState(() => ({
       renderTempConnectorOf: 'none',
       isMovingPoint: false,
-      pointMove: 0,
     }))
   }
 
   handleConnectorDragStart = () => {
     this.svgWidth = this.props.propGetter('svgWidth')
+    this.propsBeforeDrag = this.props
   }
 
-  handleConnectorDrag = (dx: number) => {
-    let x = (dx / this.svgWidth) * 100
+  handleConnectorDrag = (mouseDX: number) => {
+    let dxAsPercentageOfSvgWidth = (mouseDX / this.svgWidth) * 100
 
-    const {prevPointTime, nextNextPointTime} = this.props
-    const {connectorMove} = this.state
-    const pointTime = this.props.pointTime - connectorMove
-    const nextPointTime = this.props.nextPointTime! - connectorMove
-    const limitLeft = prevPointTime == null ? 0 : prevPointTime
-    const limitRight = nextNextPointTime == null ? 100 : nextNextPointTime
+    const limitLeft =
+      this.propsBeforeDrag.prevPointTime == null
+        ? 0
+        : this.propsBeforeDrag.prevPointTime
+    const limitRight =
+      this.propsBeforeDrag.nextNextPointTime == null
+        ? 100
+        : this.propsBeforeDrag.nextNextPointTime
 
-    if (nextPointTime! + x >= limitRight)
-      x = limitRight - nextPointTime! - 100 / this.svgWidth
-    if (pointTime + x <= limitLeft)
-      x = limitLeft - pointTime + 100 / this.svgWidth
-    this.props.moveConnectorTemp(this.props.pointIndex, x - connectorMove)
+    const leftPointTime =
+      this.propsBeforeDrag.pointTime + dxAsPercentageOfSvgWidth
+    const rightPointTime =
+      this.propsBeforeDrag.nextPointTime! + dxAsPercentageOfSvgWidth
+
+    if (rightPointTime >= limitRight)
+      dxAsPercentageOfSvgWidth =
+        limitRight - this.propsBeforeDrag.nextPointTime! - 100 / this.svgWidth
+
+    if (leftPointTime <= limitLeft)
+      dxAsPercentageOfSvgWidth =
+        limitLeft - this.propsBeforeDrag.pointTime + 100 / this.svgWidth
+
+    const originalTimes: [number, number] = [
+      this.propsBeforeDrag.originalTime,
+      this.propsBeforeDrag.nextPointOriginalTime!,
+    ]
+
+    this.props.moveConnectorTemp(
+      this.props.pointIndex,
+      originalTimes,
+      dxAsPercentageOfSvgWidth,
+    )
     this.setState(() => ({
       isMovingConnector: true,
-      connectorMove: x,
+      // connectorMove: dxAsPercentageOfSvgWidth,
     }))
   }
 
@@ -395,7 +425,7 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
     this.props.moveConnector(this.props.pointIndex)
     this.setState(() => ({
       isMovingConnector: false,
-      connectorMove: 0,
+      // connectorMove: 0,
     }))
   }
 

@@ -18,6 +18,7 @@ import {
   ITempPointRenderer,
 } from '$tl/ui/panels/AllInOnePanel/Right/views/types'
 import TempPointInSelection from '$tl/ui/panels/AllInOnePanel/Right/views/dopesheet/TempPointInSelection'
+import {FRAME_DURATION} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
 
 interface IProps extends IViewBaseProps {
   color: IColor
@@ -70,6 +71,7 @@ class Dopesheet extends ViewBase<IProps & IWithUtilsProps> {
                 {...(nextPoint != null
                   ? {
                       nextPointTime: nextPoint.time,
+                      nextPointOriginalTime: nextPoint.originalTime,
                       nextPointConnected:
                         nextPoint.interpolationDescriptor.connected,
                     }
@@ -110,46 +112,52 @@ class Dopesheet extends ViewBase<IProps & IWithUtilsProps> {
     this.project.reduxStore.dispatch(
       this.project._actions.batched([
         this.tempActionGroup.discard(),
-        this.project._actions.historic.moveDopesheetConnectorInBezierCurvesOfScalarValues(
-          {
-            propAddress: propGetter('itemAddress'),
-            leftPoint: {
-              index: pointIndex,
-              newTime: point.originalTime,
-            },
-            rightPoint: {
-              index: pointIndex + 1,
-              newTime: nextPoint.originalTime,
-            },
+        this.project._actions.historic.reAssignTimesOfTwoNeighbouringPoints({
+          propAddress: propGetter('itemAddress'),
+          leftPoint: {
+            index: pointIndex,
+            newTime: point.originalTime,
           },
-        ),
+          rightPoint: {
+            index: pointIndex + 1,
+            newTime: nextPoint.originalTime,
+          },
+          snapToFrameSize: FRAME_DURATION,
+        }),
       ]),
     )
   }
 
-  moveConnectorTemp: IMoveDopesheetConnectorTemp = (pointIndex, moveAmount) => {
+  moveConnectorTemp: IMoveDopesheetConnectorTemp = (
+    pointIndex,
+    originalTimes,
+    dxAsPercentageOfScrollableSpaceWidth,
+  ) => {
     this.props.extremumsAPI.persist()
-    const {propGetter, points} = this.props
-    const timeChange = (moveAmount * propGetter('duration')) / 100
+    const timelineDuration = this.props.propGetter('duration')
 
-    const point = points[pointIndex]
-    const nextPoint = points[pointIndex + 1]
+    const leftTime =
+      originalTimes[0] +
+      (dxAsPercentageOfScrollableSpaceWidth * timelineDuration) / 100
+
+    const rightTime =
+      originalTimes[1] +
+      (dxAsPercentageOfScrollableSpaceWidth * timelineDuration) / 100
 
     this.project.reduxStore.dispatch(
       this.tempActionGroup.push(
-        this.project._actions.historic.moveDopesheetConnectorInBezierCurvesOfScalarValues(
-          {
-            propAddress: propGetter('itemAddress'),
-            leftPoint: {
-              index: pointIndex,
-              newTime: point.originalTime + timeChange,
-            },
-            rightPoint: {
-              index: pointIndex + 1,
-              newTime: nextPoint.originalTime + timeChange,
-            },
+        this.project._actions.historic.reAssignTimesOfTwoNeighbouringPoints({
+          propAddress: this.props.propGetter('itemAddress'),
+          leftPoint: {
+            index: pointIndex,
+            newTime: leftTime,
           },
-        ),
+          rightPoint: {
+            index: pointIndex + 1,
+            newTime: rightTime,
+          },
+          snapToFrameSize: FRAME_DURATION,
+        }),
       ),
     )
   }

@@ -76,7 +76,7 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
   leftHandleNormalizers: {xNormalizer: number; yNormalizer: number}
   rightHandleNormalizers: {xNormalizer: number; yNormalizer: number}
   isInSelection: boolean = false
-  propsBeforeMove: IProps
+  propsBeforeDrag: IProps
 
   constructor(props: IProps, context: $IntentionalAny) {
     super(props, context)
@@ -230,10 +230,10 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
   _renderTempPoint() {
     return (
       <TempPoint
-        color={this.propsBeforeMove.color}
-        point={this.propsBeforeMove.point}
-        prevPoint={this.propsBeforeMove.prevPoint}
-        nextPoint={this.propsBeforeMove.nextPoint}
+        color={this.propsBeforeDrag.color}
+        point={this.propsBeforeDrag.point}
+        prevPoint={this.propsBeforeDrag.prevPoint}
+        nextPoint={this.propsBeforeDrag.nextPoint}
       />
     )
   }
@@ -329,39 +329,47 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
   }
 
   handlePointDrag = (mouseDX: number, mouseDY: number, e: MouseEvent) => {
-    const {width, height} = this.svgSize
-    const {point, prevPoint, nextPoint} = this.propsBeforeMove
+    const {width: svgWidth, height: svgHeight} = this.svgSize
 
     let renderTempConnectorOf: IState['renderTempConnectorOf'] = 'none'
-    let dxAsPercentageOfSvgWidth = (mouseDX / width) * 100
-    let dyAsPercentageOfSvgHeight = (mouseDY / height) * 100
+    let dxAsPercentageOfSvgWidth = (mouseDX / svgWidth) * 100
+    let dyAsPercentageOfSvgHeight = (mouseDY / svgHeight) * 100
     if (cmdIsDown(e)) {
       renderTempConnectorOf =
         dxAsPercentageOfSvgWidth > 0 ? 'currentPoint' : 'prevPoint'
       dxAsPercentageOfSvgWidth = dyAsPercentageOfSvgHeight = 0
     }
+
     if (e.altKey) dxAsPercentageOfSvgWidth = 0
     if (e.shiftKey) dyAsPercentageOfSvgHeight = 0
 
-    const limitLeft = prevPoint == null ? 0 : prevPoint.time
-    const limitRight = nextPoint == null ? 1000000000 : nextPoint.time
+    const limitLeft =
+      this.propsBeforeDrag.prevPoint == null
+        ? 0
+        : this.propsBeforeDrag.prevPoint.time
 
-    const initialPointTime = point.time
-    const newT = initialPointTime + dxAsPercentageOfSvgWidth
-    if (newT >= limitRight)
-      dxAsPercentageOfSvgWidth = limitRight - initialPointTime - 100 / width
-    if (newT <= limitLeft)
-      dxAsPercentageOfSvgWidth = limitLeft - initialPointTime + 100 / width
+    const limitRight =
+      this.propsBeforeDrag.nextPoint == null
+        ? 1000000000
+        : this.propsBeforeDrag.nextPoint.time
+
+    const initialPointTime = this.propsBeforeDrag.point.time
+    const newTime = initialPointTime + dxAsPercentageOfSvgWidth
+    if (newTime >= limitRight)
+      dxAsPercentageOfSvgWidth = limitRight - initialPointTime - 100 / svgWidth
+    if (newTime <= limitLeft)
+      dxAsPercentageOfSvgWidth = limitLeft - initialPointTime + 100 / svgWidth
+
     const originalCoords = {
-      time: this.propsBeforeMove.point.originalTime,
-      value: this.propsBeforeMove.point.originalValue,
+      time: this.propsBeforeDrag.point.originalTime,
+      value: this.propsBeforeDrag.point.originalValue,
     }
     const change = {
       time: dxAsPercentageOfSvgWidth,
       value: dyAsPercentageOfSvgHeight,
     }
-    const halfAPixelInTime = (0.4999 / width) * 100
-    const halfAPixelInValue = (0.4999 / height) * 100
+    const halfAPixelInTime = (0.4999 / svgWidth) * 100
+    const halfAPixelInValue = (0.4999 / svgHeight) * 100
 
     this.props.movePointToNewCoordsTemp(
       this.props.pointIndex,
@@ -587,7 +595,7 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
   }
 
   _cachePropsBeforeDrag() {
-    this.propsBeforeMove = this.props
+    this.propsBeforeDrag = this.props
   }
 }
 
