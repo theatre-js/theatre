@@ -10,7 +10,6 @@ type $AnyBecauseOfBugInTS = any
 type $Unexpressable = any
 
 interface Window {
-  __REACT_DEVTOOLS_GLOBAL_HOOK__: $FixMe
   __REDUX_DEVTOOLS_EXTENSION__?: Function
 }
 
