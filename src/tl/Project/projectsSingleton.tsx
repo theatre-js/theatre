@@ -27,7 +27,7 @@ class ProjectsSingleton {
   }
 }
 
-const SINGLETON_SYMBOL = '__studiojsProjectsSingleton'
+const SINGLETON_SYMBOL = '__theatrejsProjectsSingleton'
 
 if (!(window as $IntentionalAny)[SINGLETON_SYMBOL])
   (window as $IntentionalAny)[SINGLETON_SYMBOL] = new ProjectsSingleton()
