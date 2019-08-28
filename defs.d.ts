@@ -6,8 +6,8 @@ type $FixMe = any
 type $IntentionalAny = any
 /** For `any`s that cannot be avoided because of a bug in TypeScript */
 type $AnyBecauseOfBugInTS = any
+/* For `any`s that represent types that typescript does not support */
 type $Unexpressable = any
-
 
 interface Window {
   __REACT_DEVTOOLS_GLOBAL_HOOK__: $FixMe
