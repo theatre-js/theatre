@@ -96,14 +96,6 @@ export const makeConfigParts = (options: Options) => {
     entry: mapValues(
       options.entries || {},
       ent => ent,
-      // options.withReactHotLoading && isDev
-      //   ? [
-      //       require.resolve('react-dev-utils/webpackHotDevClient'),
-      //       require.resolve('react-hot-loader/patch'),
-      //     ].concat(ent)
-      //   : options.withServerSideHotLoading
-      //     ? ['webpack/hot/poll?100'].concat(ent)
-      //     : ent,
     ),
     output: {
       path: bundlesDir,

@@ -148,6 +148,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
         onDragStart={this.activateSelection}
         onDrag={this.setSelectionDimsAndBoundaries}
         onDragEnd={this.confirmSelectionDims}
+        lockCursorTo="crosshair"
       >
         <div {...classes('hitZone')} />
       </DraggableArea>
