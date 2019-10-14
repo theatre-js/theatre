@@ -94,6 +94,7 @@ export default class FramesGrid extends React.PureComponent<IProps, IState> {
     document.addEventListener('mousemove', this.handleMouseMove)
     window.addEventListener('resize', this._updateContainerRect)
     this._renderFrameStamp()
+    setTimeout(this._updateContainerRect, 500)
   }
 
   componentDidUpdate() {

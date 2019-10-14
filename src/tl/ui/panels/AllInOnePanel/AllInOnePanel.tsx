@@ -186,6 +186,7 @@ export default class AllInOnePanel extends UIComponent<IProps, IState> {
   componentWillMount() {
     window.addEventListener('resize', this.reactToWindowResize)
     window.addEventListener('keydown', this._handleKeyDown)
+    setTimeout(() => this.reactToWindowResize(), 500)
   }
 
   componentWillUnmount() {
