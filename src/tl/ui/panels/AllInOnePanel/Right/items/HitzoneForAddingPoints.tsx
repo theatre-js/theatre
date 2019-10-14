@@ -1,8 +1,8 @@
 import React from 'react'
-import css from './ItemHitZone.css'
+import css from '$tl/ui/panels/AllInOnePanel/Right/items/HitzoneForAddingPoints.css'
 import resolveCss from '$shared/utils/resolveCss'
 import UIComponent from '$tl/ui/handy/UIComponent'
-import {IColor, IPoint} from '$tl/ui/panels/AllInOnePanel/Right/types'
+import {IColorAccent, IPoint} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {
   ActiveModeContext,
   MODES,
@@ -13,7 +13,7 @@ import {SVG_PADDING_Y} from '$tl/ui/panels/AllInOnePanel/Right/views/SVGWrapper'
 const classes = resolveCss(css)
 
 interface IProps {
-  color: IColor
+  colorAccent: IColorAccent
   extremums: [number, number]
   duration: number
   dopeSheet: boolean
@@ -22,9 +22,9 @@ interface IProps {
 
 interface IState {}
 
-class ItemHitZone extends UIComponent<IProps, IState> {
+class HitzoneForAddingPoints extends UIComponent<IProps, IState> {
   render() {
-    const {color, dopeSheet} = this.props
+    const {colorAccent, dopeSheet} = this.props
     return (
       <ActiveModeContext.Consumer>
         {activeMode => (
@@ -32,7 +32,7 @@ class ItemHitZone extends UIComponent<IProps, IState> {
             {...classes(
               'container',
               dopeSheet && 'fullHeight',
-              `${color.name.toLowerCase()}Cursor`,
+              `${colorAccent.name.toLowerCase()}Cursor`,
               activeMode === MODES.super && 'enabled',
             )}
             fill="transparent"
@@ -100,4 +100,4 @@ const stopPropagation = (event: React.MouseEvent<$IntentionalAny>) => {
   event.stopPropagation()
 }
 
-export default ItemHitZone
+export default HitzoneForAddingPoints

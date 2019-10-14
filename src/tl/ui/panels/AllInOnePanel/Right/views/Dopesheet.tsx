@@ -8,7 +8,7 @@ import ViewBase, {
 } from '$tl/ui/panels/AllInOnePanel/Right/views/ViewBase'
 import DopesheetPoint from '$tl/ui/panels/AllInOnePanel/Right/views/dopesheet/DopesheetPoint'
 import {
-  IColor,
+  IColorAccent,
   INormalizedPoints,
 } from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {
@@ -21,20 +21,20 @@ import TempPointInSelection from '$tl/ui/panels/AllInOnePanel/Right/views/dopesh
 import {FRAME_DURATION} from '$tl/ui/panels/AllInOnePanel/TimeUI/utils'
 
 interface IProps extends IViewBaseProps {
-  color: IColor
+  colorAccent: IColorAccent
   points: INormalizedPoints
 }
 
 class Dopesheet extends ViewBase<IProps & IWithUtilsProps> {
   render() {
-    const {color, points, propGetter} = this.props
+    const {colorAccent, points, propGetter} = this.props
     return (
       <>
         {this._renderTempPointsInSelection(
           this._getAllPoints,
           this._tempPointRenderer,
         )}
-        <g fill={color.normal} stroke={color.normal}>
+        <g fill={colorAccent.normal} stroke={colorAccent.normal}>
           {points.map((point, index) => {
             const prevPoint = points[index - 1]
             const nextPoint = points[index + 1]
@@ -42,7 +42,7 @@ class Dopesheet extends ViewBase<IProps & IWithUtilsProps> {
             return (
               <DopesheetPoint
                 key={index}
-                color={color}
+                colorAccent={colorAccent}
                 pointIndex={index}
                 originalTime={point.originalTime}
                 originalValue={point.originalValue}
@@ -96,7 +96,7 @@ class Dopesheet extends ViewBase<IProps & IWithUtilsProps> {
   _tempPointRenderer: ITempPointRenderer = (point, nextPoint) => {
     return (
       <TempPointInSelection
-        color={this.props.color}
+        colorAccent={this.props.colorAccent}
         point={point}
         nextPoint={nextPoint}
       />

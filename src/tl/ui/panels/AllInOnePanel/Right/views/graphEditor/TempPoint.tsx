@@ -1,6 +1,6 @@
 import React from 'react'
 import {
-  IColor,
+  IColorAccent,
   INormalizedPoint,
   IPointHandles,
 } from '$tl/ui/panels/AllInOnePanel/Right/types'
@@ -8,7 +8,7 @@ import BezierConnector from '$tl/ui/panels/AllInOnePanel/Right/views/graphEditor
 import PointCircle from '$tl/ui/panels/AllInOnePanel/Right/views/point/PointCircle'
 
 interface IProps {
-  color: IColor
+  color: IColorAccent
   point: INormalizedPoint
   nextPoint?: INormalizedPoint
   prevPoint?: INormalizedPoint

@@ -1,11 +1,11 @@
 import React from 'react'
 import LineConnectorRect from '$tl/ui/panels/AllInOnePanel/Right/views/dopesheet/LineConnectorRect'
 import PointCircle from '$tl/ui/panels/AllInOnePanel/Right/views/point/PointCircle'
-import {IColor} from '$tl/ui/panels/AllInOnePanel/Right/types'
+import {IColorAccent} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {TempPointCircle} from '$tl/ui/panels/AllInOnePanel/Right/views/dopesheet/TempPoint'
 
 interface IProps {
-  color: IColor
+  color: IColorAccent
   pointTime: number
   nextPointTime: number
   nextPointConnected: boolean
@@ -49,8 +49,8 @@ export default ({
         width={nextPointTime - pointTime}
         color={color.darkened}
       />
-      <TempPointCircle color={color} x={pointTime} />
-      <TempPointCircle color={color} x={nextPointTime} />
+      <TempPointCircle colorAccent={color} x={pointTime} />
+      <TempPointCircle colorAccent={color} x={nextPointTime} />
       <PointCircle x={pointTime + move} y={50} />
       {prevPointTime && <PointCircle x={prevPointTime!} y={50} />}
     </g>

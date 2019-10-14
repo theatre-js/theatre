@@ -8,7 +8,7 @@ import ViewBase, {
 import GraphEditorPoint from '$tl/ui/panels/AllInOnePanel/Right/views/graphEditor/GraphEditorPoint'
 import BezierConnector from '$tl/ui/panels/AllInOnePanel/Right/views/graphEditor/BezierConnector'
 import {
-  IColor,
+  IColorAccent,
   INormalizedPoints,
 } from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {
@@ -20,20 +20,20 @@ import {
 import TempPointInSelection from '$tl/ui/panels/AllInOnePanel/Right/views/graphEditor/TempPointInSelection'
 
 interface IProps extends IViewBaseProps {
-  color: IColor
+  colorAccent: IColorAccent
   points: INormalizedPoints
 }
 
 class GraphEditor extends ViewBase<IProps & IWithUtilsProps> {
   render() {
-    const {points, color, propGetter} = this.props
+    const {points, colorAccent, propGetter} = this.props
     return (
       <>
         {this._renderTempPointsInSelection(
           this._getAllPoints,
           this._tempPointRenderer,
         )}
-        <g fill={color.normal} stroke={color.normal}>
+        <g fill={colorAccent.normal} stroke={colorAccent.normal}>
           {points.map((point, index) => {
             const prevPoint = points[index - 1]
             const nextPoint = points[index + 1]
@@ -54,7 +54,7 @@ class GraphEditor extends ViewBase<IProps & IWithUtilsProps> {
                   )}
                 <GraphEditorPoint
                   key={index}
-                  color={color}
+                  color={colorAccent}
                   point={point}
                   {...(prevPoint ? {prevPoint} : {})}
                   {...(nextPoint ? {nextPoint} : {})}
@@ -90,7 +90,7 @@ class GraphEditor extends ViewBase<IProps & IWithUtilsProps> {
   _tempPointRenderer: ITempPointRenderer = (point, nextPoint) => {
     return (
       <TempPointInSelection
-        color={this.props.color}
+        color={this.props.colorAccent}
         point={point}
         nextPoint={nextPoint}
       />

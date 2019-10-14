@@ -1,7 +1,6 @@
 import {
   IRange,
   IDuration,
-  IColor,
   INumberTuple,
 } from '$tl/ui/panels/AllInOnePanel/Right/types'
 import {SVG_PADDING_X} from '$tl/ui/panels/AllInOnePanel/Right/views/SVGWrapper'
@@ -135,12 +134,6 @@ export const getRangeLabel = (
   return millisecsToHumanReadableTimestamp(
     anySpace_xToTime(duration, svgWidth)(rangeX),
   )
-}
-
-export const color: IColor = {
-  name: 'blue',
-  normal: '#3AAFA9',
-  darkened: '#345b59',
 }
 
 export const isNumberTupleZero = (tuple: INumberTuple) => {

@@ -6,7 +6,7 @@ import HandleClickArea from '$tl/ui/panels/AllInOnePanel/Right/views/graphEditor
 import {IPropGetter} from '$tl/ui/panels/AllInOnePanel/Right/items/ItemPropProvider'
 import * as handleCss from './handle.css'
 import {
-  IColor,
+  IColorAccent,
   IPointHandles,
   IPointSingleHandle,
   INormalizedPoint,
@@ -40,7 +40,7 @@ import PointCircle from '$tl/ui/panels/AllInOnePanel/Right/views/point/PointCirc
 
 interface IProps {
   propGetter: IPropGetter
-  color: IColor
+  color: IColorAccent
   pointIndex: number
   point: INormalizedPoint
   prevPoint?: INormalizedPoint
@@ -151,25 +151,61 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
         ]
       : []
     return (
-      <g className={handleCss.handles}>
-        {renderLeftHandle && (
-          <HandleLine
-            x1={pointTime}
-            y1={pointValue}
-            x2={leftHandle[0]}
-            y2={leftHandle[1]}
-            color={color.darkened}
-          />
-        )}
-        {renderRightHandle && (
-          <HandleLine
-            x1={pointTime}
-            y1={pointValue}
-            x2={rightHandle[0]}
-            y2={rightHandle[1]}
-            color={color.darkened}
-          />
-        )}
+      <>
+        <g className={handleCss.handles}>
+          {renderLeftHandle && (
+            <HandleLine
+              x1={pointTime}
+              y1={pointValue}
+              x2={leftHandle[0]}
+              y2={leftHandle[1]}
+              color={color.darkened}
+            />
+          )}
+          {renderRightHandle && (
+            <HandleLine
+              x1={pointTime}
+              y1={pointValue}
+              x2={rightHandle[0]}
+              y2={rightHandle[1]}
+              color={color.darkened}
+            />
+          )}
+          {renderLeftHandle && (
+            <DraggableArea
+              onDragStart={this.handleLeftHandleDragStart}
+              onDrag={this.handleLeftHandleDrag}
+              onDragEnd={this.handleLeftHandleDragEnd}
+              lockCursorTo="move"
+            >
+              <g>
+                <HandleClickArea
+                  x={leftHandle[0]}
+                  y={leftHandle[1]}
+                  color={color.darkened}
+                  onClick={e => this.handleClickOnHandles(e, 'left')}
+                />
+              </g>
+            </DraggableArea>
+          )}
+          {renderRightHandle && (
+            <DraggableArea
+              onDragStart={this.handleRightHandleDragStart}
+              onDrag={this.handleRightHandleDrag}
+              onDragEnd={this.handleRightHandleDragEnd}
+              lockCursorTo="move"
+            >
+              <g>
+                <HandleClickArea
+                  x={rightHandle[0]}
+                  y={rightHandle[1]}
+                  color={color.darkened}
+                  onClick={e => this.handleClickOnHandles(e, 'right')}
+                />
+              </g>
+            </DraggableArea>
+          )}
+        </g>
         <DraggableArea
           onDragStart={this.handlePointDragStart}
           onDrag={this.handlePointDrag}
@@ -189,41 +225,7 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
             />
           </g>
         </DraggableArea>
-        {renderLeftHandle && (
-          <DraggableArea
-            onDragStart={this.handleLeftHandleDragStart}
-            onDrag={this.handleLeftHandleDrag}
-            onDragEnd={this.handleLeftHandleDragEnd}
-            lockCursorTo="move"
-          >
-            <g>
-              <HandleClickArea
-                x={leftHandle[0]}
-                y={leftHandle[1]}
-                color={color.darkened}
-                onClick={e => this.handleClickOnHandles(e, 'left')}
-              />
-            </g>
-          </DraggableArea>
-        )}
-        {renderRightHandle && (
-          <DraggableArea
-            onDragStart={this.handleRightHandleDragStart}
-            onDrag={this.handleRightHandleDrag}
-            onDragEnd={this.handleRightHandleDragEnd}
-            lockCursorTo="move"
-          >
-            <g>
-              <HandleClickArea
-                x={rightHandle[0]}
-                y={rightHandle[1]}
-                color={color.darkened}
-                onClick={e => this.handleClickOnHandles(e, 'right')}
-              />
-            </g>
-          </DraggableArea>
-        )}
-      </g>
+      </>
     )
   }
 
@@ -520,19 +522,7 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
   }
 
   handlePointMouseEnter = () => {
-    // const {
-    //   left,
-    //   top,
-    //   width,
-    //   height,
-    // } = this.pointClickArea.current!.getBoundingClientRect()
-    // const params = {
-    //   left: left + width / 2,
-    //   top: top + height / 2,
-    //   initialTime: this.props.point.originalTime,
-    //   initialValue: this.props.point.originalValue,
-    //   pointIndex: this.props.pointIndex,
-    // }
+    console.log('enter')
   }
 
   handlePointMouseLeave = () => {

@@ -1,10 +1,13 @@
 import React from 'react'
 import ItemPointsNormalizer from '$tl/ui/panels/AllInOnePanel/Right/items/ItemPointsNormalizer'
 import GraphEditor from '$tl/ui/panels/AllInOnePanel/Right/views/GraphEditor'
-import {IPoints, IExpanded} from '$tl/ui/panels/AllInOnePanel/Right/types'
-import {color} from '$tl/ui/panels/AllInOnePanel/Right/utils'
+import {
+  IPoints,
+  IExpanded,
+  IColorAccent,
+} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import Dopesheet from '$tl/ui/panels/AllInOnePanel/Right/views/Dopesheet'
-import ItemHitZone from '$tl/ui/panels/AllInOnePanel/Right/items/ItemHitZone'
+import HitzoneForAddingPoints from '$tl/ui/panels/AllInOnePanel/Right/items/HitzoneForAddingPoints'
 import {PrimitivePropItem} from '$tl/ui/panels/AllInOnePanel/utils'
 import SVGWrapper from '$tl/ui/panels/AllInOnePanel/Right/views/SVGWrapper'
 
@@ -29,8 +32,8 @@ class ItemView extends React.PureComponent<IProps, IState> {
         <ItemPointsNormalizer points={this.props.points}>
           {(normalizedPoints, extremums, duration) => (
             <>
-              <ItemHitZone
-                color={color}
+              <HitzoneForAddingPoints
+                colorAccent={colorAccent}
                 extremums={extremums}
                 duration={duration}
                 dopeSheet={false}
@@ -39,7 +42,7 @@ class ItemView extends React.PureComponent<IProps, IState> {
               <GraphEditor
                 points={normalizedPoints}
                 extremums={extremums}
-                color={color}
+                colorAccent={colorAccent}
               />
             </>
           )}
@@ -54,8 +57,8 @@ class ItemView extends React.PureComponent<IProps, IState> {
         <ItemPointsNormalizer points={this.props.points}>
           {(normalizedPoints, extremums, duration) => (
             <>
-              <ItemHitZone
-                color={color}
+              <HitzoneForAddingPoints
+                colorAccent={colorAccent}
                 extremums={extremums}
                 duration={duration}
                 dopeSheet={true}
@@ -64,7 +67,7 @@ class ItemView extends React.PureComponent<IProps, IState> {
               <Dopesheet
                 points={normalizedPoints}
                 extremums={extremums}
-                color={color}
+                colorAccent={colorAccent}
               />
             </>
           )}
@@ -75,3 +78,9 @@ class ItemView extends React.PureComponent<IProps, IState> {
 }
 
 export default ItemView
+
+export const colorAccent: IColorAccent = {
+  name: 'blue',
+  normal: '#3AAFA9',
+  darkened: '#345b59',
+}

@@ -1,7 +1,7 @@
 import React from 'react'
 import connectorCss from '$tl/ui/panels/AllInOnePanel/Right/views/dopesheet/connector.css'
 import pointCss from '$tl/ui/panels/AllInOnePanel/Right/views/point/point.css'
-import {IColor} from '$tl/ui/panels/AllInOnePanel/Right/types'
+import {IColorAccent} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import LineConnectorRect from '$tl/ui/panels/AllInOnePanel/Right/views/dopesheet/LineConnectorRect'
 import LineConnector from '$tl/ui/panels/AllInOnePanel/Right/views/dopesheet/LineConnector'
 import Point from '$tl/ui/panels/AllInOnePanel/Right/views/point/Point'
@@ -35,7 +35,7 @@ import {cmdIsDown} from '$shared/utils/keyboardUtils'
 
 interface IProps {
   propGetter: IPropGetter
-  color: IColor
+  colorAccent: IColorAccent
   prevPointTime?: number
   prevPointConnected?: boolean
   nextPointTime?: number
@@ -123,10 +123,10 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
       nextPointTime,
       nextPointConnected,
       nextNextPointTime,
-      color,
+      colorAccent,
     } = this.props
 
-    const connectorFill = pointIndex === 0 ? color.darkened : 'transparent'
+    const connectorFill = pointIndex === 0 ? colorAccent.darkened : 'transparent'
 
     return (
       <>
@@ -136,7 +136,7 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
               x={nextPointTime!}
               y={50}
               width={nextNextPointTime! - nextPointTime!}
-              color={color.darkened}
+              color={colorAccent.darkened}
             />
           )}
           {pointConnected && (
@@ -186,7 +186,7 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
   _renderTempPoint() {
     return (
       <TempPoint
-        color={this.props.color}
+        color={this.props.colorAccent}
         pointTime={this.propsBeforeDrag.pointTime}
         pointConnected={this.propsBeforeDrag.pointConnected}
         nextPointTime={this.propsBeforeDrag.nextPointTime}
@@ -201,7 +201,7 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
     const {connectorMove} = this.state
     return (
       <TempConnector
-        color={this.props.color}
+        color={this.props.colorAccent}
         pointTime={this.props.pointTime - connectorMove}
         nextPointTime={this.props.nextPointTime! - connectorMove}
         nextPointConnected={this.props.nextPointConnected!}
@@ -221,18 +221,18 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
       prevPointTime,
       prevPointConnected,
       nextPointTime,
-      color,
+      colorAccent,
     } = this.props
     if (renderTempConnectorOf === 'currentPoint') {
       if (nextPointTime == null) return null
       if (pointConnected) return null
       return (
-        <g fill={color.darkened} stroke={color.darkened}>
+        <g fill={colorAccent.darkened} stroke={colorAccent.darkened}>
           <LineConnectorRect
             x={pointTime}
             y={50}
             width={nextPointTime - pointTime}
-            color={color.darkened}
+            color={colorAccent.darkened}
           />
         </g>
       )
@@ -246,7 +246,7 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
             x={prevPointTime}
             y={50}
             width={pointTime - prevPointTime}
-            color={color.darkened}
+            color={colorAccent.darkened}
           />
           <PointCircle x={prevPointTime} y={50} />
         </>

@@ -29,7 +29,7 @@ export type IDuration = number
 export type IExpanded = PrimitivePropItem['expanded']
 
 // Misc
-export type IColor = {
+export type IColorAccent = {
   name: string
   normal: string
   darkened: string
