@@ -194,6 +194,7 @@ class Right extends UIComponent<IRightProps, IRightState> {
     if (event.shiftKey || event.altKey || event.ctrlKey || event.metaKey) {
       return false
     }
+    this._updateWrapperLeft()
     this.props.setIsSeeking(true)
 
     const {timelineWidth, range, duration, timelineInstance} = this.props
