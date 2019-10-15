@@ -7,5 +7,8 @@
   "author": "TheaterJS Oy - theatrejs.com",
   "license": "SEE LICENSE IN LICENSE.md",
   "website": "https://theatrejs.com",
-  "keywords": ["animation", "motion"]
+  "keywords": [
+    "animation",
+    "motion"
+  ]
 }
