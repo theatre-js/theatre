@@ -522,7 +522,6 @@ class GraphEditorPoint extends React.PureComponent<IProps, IState> {
   }
 
   handlePointMouseEnter = () => {
-    console.log('enter')
   }
 
   handlePointMouseLeave = () => {

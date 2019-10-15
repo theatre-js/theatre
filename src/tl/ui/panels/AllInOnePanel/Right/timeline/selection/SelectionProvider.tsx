@@ -157,8 +157,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
 
   _renderSelectedArea() {
     const {status, move, dims, contextMenuProps} = this.state
-    console.log(this.state);
-    
+
     const statusIsConfirmedSelection = status === 'confirmedSelection'
 
     const areaIsMovable =
@@ -403,10 +402,7 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
         horizontalLimits,
         dims: fittedDims,
       }))
-      console.log('confirm')
     } else {
-      console.log('clear')
-
       this._clearSelection()
     }
   }
@@ -616,8 +612,6 @@ export default (props: IExportedComponentProps) => (
           const range = val(rightStuffP.rangeAndDuration.range)
           const duration = overshootDuration(val(timelineTemplate!._durationD))
           const width = val(rightStuffP.viewportSpace.width)
-          console.log({width, duration, range});
-          
 
           const selectionProviderProps: ISelectionProviderProps = {
             range,
