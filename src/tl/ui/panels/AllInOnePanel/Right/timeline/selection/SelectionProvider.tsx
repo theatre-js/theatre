@@ -157,6 +157,8 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
 
   _renderSelectedArea() {
     const {status, move, dims, contextMenuProps} = this.state
+    console.log(this.state);
+    
     const statusIsConfirmedSelection = status === 'confirmedSelection'
 
     const areaIsMovable =
@@ -298,7 +300,8 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
 
   activateSelection = (event: React.MouseEvent<HTMLDivElement>) => {
     this.mapOfItemsData = this._getMapOfItemsData(this.props.timelineTemplate)
-    const {layerX, layerY} = event.nativeEvent
+    const {offsetX: layerX, offsetY: layerY} = event.nativeEvent
+    // const {layerX, layerY} = event.nativeEvent
 
     const itemsInfo = utils.memoizedGetItemsInfo(this.mapOfItemsData)
     this.setState(
@@ -400,7 +403,10 @@ class SelectionProvider extends UIComponent<ISelectionProviderProps, IState> {
         horizontalLimits,
         dims: fittedDims,
       }))
+      console.log('confirm')
     } else {
+      console.log('clear')
+
       this._clearSelection()
     }
   }
@@ -610,6 +616,8 @@ export default (props: IExportedComponentProps) => (
           const range = val(rightStuffP.rangeAndDuration.range)
           const duration = overshootDuration(val(timelineTemplate!._durationD))
           const width = val(rightStuffP.viewportSpace.width)
+          console.log({width, duration, range});
+          
 
           const selectionProviderProps: ISelectionProviderProps = {
             range,
