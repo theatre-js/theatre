@@ -50,6 +50,7 @@
 
     & .input {
       cursor: ns-resize;
+      font-size: 11px;
     }
 
     & .value {
