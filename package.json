@@ -1,7 +1,7 @@
 {
   "name": "@theatrejs/app",
   "private": true,
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -15,8 +15,6 @@
     "ci:check-types": "tsc -p ./ci.tsconfig.json --noEmit",
     "ci:check-types:watch": "tsc -p ./ci.tsconfig.json --noEmit --watch",
     "ci:type-tests": "tslint -c ./typeTests.tslint.json -p ./typeTests.tsconfig.json --format stylish ./src/**/*.typeTest.ts*",
-    "prepush": "run-p ci:check-types test",
-    "precommit": "run-p ci:check-formatting",
     "ci:check-formatting": "prettier --check \"{./src,./webpack,scripts,examples}/**/*.@(ts*|css|js)\"",
     "ci:fix-formatting": "prettier --write \"{./src,./webpack,scripts,examples}/**/*.@(ts*|css|js)\""
   },
