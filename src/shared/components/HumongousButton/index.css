@@ -8,6 +8,7 @@
   background: #4e5d653d;
   border: 1px solid #ffffff12;
   color: #ffffffaa;
+  font-size: 12px;
 
   &:hover {
     border-color: #ffffff55;

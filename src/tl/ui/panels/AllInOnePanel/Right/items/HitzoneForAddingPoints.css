@@ -15,7 +15,6 @@
 
 .blueCursor {
   cursor: url('url-loader!./cursors/AddCursorBlue.svg'), auto;
-  border: 1px solid blue;
 }
 .redCursor {
   cursor: url('url-loader!./cursors/AddCursorRed.svg'), auto;

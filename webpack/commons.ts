@@ -93,10 +93,7 @@ export const makeConfigParts = (options: Options) => {
     module: webpack.Module
     resolve: webpack.Resolve
   } = {
-    entry: mapValues(
-      options.entries || {},
-      ent => ent,
-    ),
+    entry: mapValues(options.entries || {}, ent => ent),
     output: {
       path: bundlesDir,
       filename: '[name].js',

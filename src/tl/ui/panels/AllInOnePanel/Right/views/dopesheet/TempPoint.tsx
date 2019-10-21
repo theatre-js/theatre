@@ -46,7 +46,13 @@ export default ({
   )
 }
 
-export const TempPointCircle = ({colorAccent, x}: {colorAccent: IColorAccent; x: number}) => {
+export const TempPointCircle = ({
+  colorAccent,
+  x,
+}: {
+  colorAccent: IColorAccent
+  x: number
+}) => {
   return (
     <g fill={colorAccent.darkened} stroke={colorAccent.darkened}>
       <circle cx={`${x}%`} cy="50%" r={4} strokeWidth="2" />

@@ -126,7 +126,8 @@ class DopesheetPoint extends React.PureComponent<IProps, IState> {
       colorAccent,
     } = this.props
 
-    const connectorFill = pointIndex === 0 ? colorAccent.darkened : 'transparent'
+    const connectorFill =
+      pointIndex === 0 ? colorAccent.darkened : 'transparent'
 
     return (
       <>

@@ -1,5 +1,8 @@
 import React from 'react'
-import {IColorAccent, INormalizedPoint} from '$tl/ui/panels/AllInOnePanel/Right/types'
+import {
+  IColorAccent,
+  INormalizedPoint,
+} from '$tl/ui/panels/AllInOnePanel/Right/types'
 import BezierConnector from '$tl/ui/panels/AllInOnePanel/Right/views/graphEditor/BezierConnector'
 import PointCircle from '$tl/ui/panels/AllInOnePanel/Right/views/point/PointCircle'
 

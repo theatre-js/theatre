@@ -14,6 +14,7 @@
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
   opacity: 0.5;
   overflow: hidden;
+  font-size: 12px;
 
   &:hover {
     background: rgba(255, 255, 255, 0.1);
@@ -58,6 +59,7 @@
   overflow: scroll;
   padding: 8px;
   cursor: text;
+  box-sizing: border-box;
 
   &::selection {
     background: #638bb3;
