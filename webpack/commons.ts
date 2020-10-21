@@ -5,7 +5,7 @@ import * as webpack from 'webpack'
 import * as CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin'
 import * as TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
 import {mapValues, isPlainObject, mapKeys, merge as mergeDeep} from 'lodash'
-import * as ErrorOverlayPlugin from 'error-overlay-webpack-plugin'
+// import * as ErrorOverlayPlugin from 'error-overlay-webpack-plugin'
 import * as fs from 'fs-extra'
 
 export const context = path.resolve(__dirname, '..')
@@ -146,9 +146,9 @@ export const makeConfigParts = (options: Options) => {
             // new WatchMissingNodeModulesPlugin(
             //   path.resolve(__dirname, '../node_modules'),
             // ),
-            ...(options.withDevServer !== true
-              ? []
-              : [new ErrorOverlayPlugin()]),
+            // ...(options.withDevServer !== true
+            //   ? []
+            //   : [new ErrorOverlayPlugin()]),
           ]
         : [
             new webpack.DefinePlugin(toDefine),
@@ -194,11 +194,11 @@ export const makeConfigParts = (options: Options) => {
           },
           exclude: /node_modules/,
         },
-        {
-          test: /\.js$/,
-          use: require.resolve('babel-loader'),
-          include: [path.resolve(__dirname, '../vendor')],
-        },
+        // {
+        //   test: /\.js$/,
+        //   use: require.resolve('babel-loader'),
+        //   include: [path.resolve(__dirname, '../vendor')],
+        // },
         {
           test: /\.css$/,
           use: [
