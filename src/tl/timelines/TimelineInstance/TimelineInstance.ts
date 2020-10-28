@@ -123,6 +123,10 @@ export default class TimelineInstance {
     this._playbackControllerBox.get().gotoTime(time > dur ? dur : time)
   }
 
+  getDurationCold() {
+    return this._timelineTemplate._durationD.getValueCold()
+  }
+
   get playing() {
     return this._playbackControllerBox.get().playing
   }

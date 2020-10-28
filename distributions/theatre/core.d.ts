@@ -150,9 +150,26 @@ export interface Timeline {
   time: number
 
   /**
+   * Duration of the timeline, in milliseconds.
+   * 
+   * @example console.log(timeline.duration)
+   */
+  readonly duration: number
+
+  /**
+   * A getter/setter for the current time of the timeline, in the scale of 0 to 1.
+   * That is, if the duration of the timeline is 1000 milliseconds, then timeline.progress = 0
+   * sets the time to 0, and timeline.progress = 1 sets the time to 1000.
+   * 
+   * @example console.log(timeline.progress)
+   * @example timeline.progress = 0.5
+   */
+  progress: number
+
+  /**
    * A boolean determining whether the timeline is currently playing
    */
-  playing: boolean
+  readonly playing: boolean
 
   /**
    * Pauses playback

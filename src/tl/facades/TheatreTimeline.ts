@@ -13,6 +13,7 @@ import {defer} from '../../shared/utils/defer'
 import userReadableTypeOfValue from '$shared/utils/userReadableTypeOfValue'
 import {InvalidArgumentError, TheatreError} from '../handy/errors'
 import AudioPlaybackController from '$tl/timelines/TimelineInstance/AudioPlaybackController'
+import clamp from '$shared/number/clamp'
 
 type GetObjectConfig = NativeObjectTypeConfig
 
@@ -27,6 +28,39 @@ export default class TheatreTimeline {
 
   get time() {
     return realInstance(this).time
+  }
+
+  get duration() {
+    return realInstance(this).getDurationCold()
+  }
+
+  get progress() {
+    return this.time / this.duration
+  }
+
+  set progress(prog: number) {
+    if (!$env.tl.isCore) {
+      if (typeof prog !== 'number') {
+        console.warn(
+          `timeline.progress must be a number between 0 and 1. ${userReadableTypeOfValue(
+            prog,
+          )} given.`,
+        )
+        return
+      } else if (prog < 0 || prog > 1) {
+        console.warn(`timeline.time must be between 0 and 1. ${prog} given.`)
+        return
+      } else if (isNaN(prog)) {
+        console.warn(`timeline.progress must be a real number. NaN given.`)
+        return
+      }
+    }
+
+    const progress =
+      typeof prog === 'number' && !isNaN(prog) ? clamp(prog, 0, 1) : 0
+
+    const time = progress * this.duration
+    this.time = time
   }
 
   set time(t: number) {

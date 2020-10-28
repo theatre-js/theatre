@@ -5,6 +5,7 @@ import {BundleAnalyzerPlugin} from 'webpack-bundle-analyzer'
 import * as fs from 'fs-extra'
 import * as path from 'path'
 import * as TerserPlugin from 'terser-webpack-plugin'
+
 const LodashModuleReplacementPlugin = require('lodash-webpack-plugin')
 const WebpackDeepScopeAnalysisPlugin = require('webpack-deep-scope-plugin')
   .default
