@@ -1,32 +1,20 @@
 import path from 'path'
-import {
-  convertObjectToWebpackDefinePaths,
-  getEnvConfig,
-} from './webpack/createWebpackConfig'
 
-const playgroundDir = path.join(__dirname, '..')
-
-const envConfig = getEnvConfig(true)
-
-require('esbuild').serve(
-  {
-    port,
-    servedir: path.join(playgroundDir, 'src'),
-  },
-  {
-    entryPoints: [path.join(playgroundDir, 'src/index.tsx')],
+for (const which of ['core', 'studio']) {
+  const pathToPackage = path.join(__dirname, '../', which)
+  const esbuildConfig = {
+    entryPoints: [path.join(pathToPackage, 'src/index.ts')],
     target: ['firefox88'],
     loader: {'.png': 'file'},
-    // outdir: '.',
-    // watch: true,
+    outfile: path.join(pathToPackage, 'dist/index.js'),
     bundle: true,
     sourcemap: true,
     define: {
       global: 'window',
-      ...convertObjectToWebpackDefinePaths({
-        process: {env: envConfig},
-        'process.env': envConfig,
-      }),
+      'process.env.version': JSON.stringify(
+        require('../studio/package.json').version,
+      ),
     },
-  },
-)
+  }
+  require('esbuild').build(esbuildConfig)
+}

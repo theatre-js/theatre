@@ -13,6 +13,10 @@ interface ProcessEnv {
   version: string
 }
 
+declare var process: {
+  env: ProcessEnv
+}
+
 declare module '*.svg' {
   var s: string
   export default s
