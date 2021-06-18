@@ -1,4 +1,5 @@
 import path from 'path'
+import {definedGlobals} from './buildUtils'
 
 for (const which of ['core', 'studio']) {
   const pathToPackage = path.join(__dirname, '../', which)
@@ -9,12 +10,7 @@ for (const which of ['core', 'studio']) {
     outfile: path.join(pathToPackage, 'dist/index.js'),
     bundle: true,
     sourcemap: true,
-    define: {
-      global: 'window',
-      'process.env.version': JSON.stringify(
-        require('../studio/package.json').version,
-      ),
-    },
+    define: definedGlobals,
   }
   require('esbuild').build(esbuildConfig)
 }

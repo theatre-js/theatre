@@ -1,12 +1,7 @@
 import path from 'path'
-import {
-  convertObjectToWebpackDefinePaths,
-  getEnvConfig,
-} from '../../../theatre/devEnv/webpack/createWebpackConfig'
+import {definedGlobals} from '../../../theatre/devEnv/buildUtils'
 
 const playgroundDir = path.join(__dirname, '..')
-
-const envConfig = getEnvConfig(true)
 
 const port = 8080
 
@@ -24,13 +19,7 @@ require('esbuild')
       // watch: true,
       bundle: true,
       sourcemap: true,
-      define: {
-        global: 'window',
-        ...convertObjectToWebpackDefinePaths({
-          process: {env: envConfig},
-          $env: envConfig,
-        }),
-      },
+      define: definedGlobals,
     },
   )
   .then((server: unknown) => {
