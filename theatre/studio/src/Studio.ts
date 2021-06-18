@@ -32,7 +32,7 @@ export default class Studio {
     this.publicApi = new TheatreStudio(this)
     this.atomP = this._store.atomP
 
-    if ($env.NODE_ENV !== 'test') {
+    if (process.env.NODE_ENV !== 'test') {
       this.ui = new UI(this)
     }
 

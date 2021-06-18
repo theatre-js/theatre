@@ -1,2 +1,3 @@
-// @ts-expect-error ignore
-global.$env = {disableStatePersistence: true, ...process.env, isCore: false}
+import globals from './globals'
+
+globals.disableStatePersistence = true

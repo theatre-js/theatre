@@ -7,12 +7,13 @@ import type {SheetState_Historic} from '@theatre/core/projects/store/types/Sheet
 import * as t from '@theatre/shared/propTypes'
 import getStudio from '@theatre/studio/getStudio'
 import coreTicker from '@theatre/core/coreTicker'
+import globals from './globals'
 /* eslint-enable no-restricted-syntax */
 
 let lastProjectN = 0
 export async function setupTestSheet(sheetState: SheetState_Historic) {
   const projectState: ProjectState_Historic = {
-    definitionVersion: $env.currentProjectStateDefinitionVersion,
+    definitionVersion: globals.currentProjectStateDefinitionVersion,
     sheetsById: {
       Sheet: sheetState,
     },

@@ -11,7 +11,7 @@ const studioPrivateAPI = new Studio()
 export const studio = studioPrivateAPI.publicApi
 export default studio
 
-if ($env.NODE_ENV !== 'test') {
+if (process.env.NODE_ENV !== 'test') {
   studio.ui.show()
 }
 

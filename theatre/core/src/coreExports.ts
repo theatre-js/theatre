@@ -5,6 +5,7 @@ import type {
   IProjectConfig,
 } from '@theatre/core/projects/TheatreProject'
 import TheatreProject from '@theatre/core/projects/TheatreProject'
+import globals from '@theatre/shared/globals'
 import * as types from '@theatre/shared/propTypes'
 import {InvalidArgumentError} from '@theatre/shared/utils/errors'
 import {validateName} from '@theatre/shared/utils/sanitizers'
@@ -17,13 +18,13 @@ export function getProject(id: string, config: IProjectConfig = {}): IProject {
     return projectsSingleton.get(id)!.publicApi
   }
 
-  if ($env.NODE_ENV === 'development') {
+  if (process.env.NODE_ENV !== 'production') {
     validateName(id, 'projectName in Theatre.getProject(projectName)', true)
     validateProjectIdOrThrow(id)
   }
 
   if (config.state) {
-    if ($env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV !== 'production') {
       shallowValidateOnDiskState(id, config.state)
     } else {
       deepValidateOnDiskState(id, config.state)
@@ -41,7 +42,7 @@ const shallowValidateOnDiskState = (projectId: string, s: OnDiskState) => {
   if (
     Array.isArray(s) ||
     s == null ||
-    s.definitionVersion !== $env.currentProjectStateDefinitionVersion
+    s.definitionVersion !== globals.currentProjectStateDefinitionVersion
   ) {
     throw new InvalidArgumentError(
       `Error validating conf.state in Theatre.getProject(${JSON.stringify(

@@ -26,7 +26,7 @@ export function validateAndSanitiseSlashedPathOrThrow(
   fnName: string,
 ) {
   const sanitisedPath = sanifySlashedPath(unsanitisedPath)
-  if ($env.isCore) {
+  if (process.env.NODE_ENV !== 'development') {
     return sanitisedPath
   }
   const validation = getValidationErrorsOfSlashedPath(sanitisedPath)

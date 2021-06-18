@@ -26,7 +26,6 @@ require('esbuild')
       sourcemap: true,
       define: {
         global: 'window',
-        '$env.isCore': false,
         ...convertObjectToWebpackDefinePaths({
           process: {env: envConfig},
           $env: envConfig,

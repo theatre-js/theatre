@@ -3,6 +3,7 @@ import delay from '@theatre/shared/utils/delay'
 import {original} from 'immer'
 import type Project from './Project'
 import type {OnDiskState} from './store/storeTypes'
+import globals from '@theatre/shared/globals'
 
 /**
  * @todo this could be turned into a simple derivation, like:
@@ -40,7 +41,7 @@ export default async function initialiseProjectState(
 
       drafts.historic.coreByProject[projectId] = {
         sheetsById: {},
-        definitionVersion: $env.currentProjectStateDefinitionVersion,
+        definitionVersion: globals.currentProjectStateDefinitionVersion,
       }
     }
 

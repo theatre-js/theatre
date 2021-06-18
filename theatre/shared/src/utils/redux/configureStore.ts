@@ -16,9 +16,9 @@ export default function configureStore<State>(conf: Conf<State>): Store<State> {
   // const middlewares: $FixMe[] = []
   const enhancers = []
 
-  if ($env.NODE_ENV === 'development') {
+  if (process.env.NODE_ENV !== 'production') {
     const devtoolsEnhancer: $IntentionalAny =
-      $env.NODE_ENV === 'development' &&
+      process.env.NODE_ENV !== 'production' &&
       typeof window === 'object' &&
       window.__REDUX_DEVTOOLS_EXTENSION__
         ? window.__REDUX_DEVTOOLS_EXTENSION__(conf.devtoolsOptions)

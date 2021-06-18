@@ -180,7 +180,7 @@ export default class SheetObjectTemplate {
    * Not available in core.
    */
   getMapOfValidSequenceTracks_forStudio(): IDerivation<IPropPathToTrackIdTree> {
-    if (!$env.isCore) {
+    if (process.env.NODE_ENV !== 'production') {
       return this._cache.get('getMapOfValidSequenceTracks_forStudio', () =>
         this.getArrayOfValidSequenceTracks().map((arr) => {
           let map = {}

@@ -24,7 +24,6 @@ export default (type: 'playground' | 'development' | 'production') => {
 
   return bundles.map((which) => {
     const envConfig = getEnvConfig(isDev)
-    envConfig.isCore = which === 'core'
     envConfig.version = require('../../package.json').version
     const packageRoot = path.join(
       privatePackageRoot,
@@ -175,12 +174,6 @@ export default (type: 'playground' | 'development' | 'production') => {
       }
     }
 
-    if (which === 'core') {
-      config.plugins!.push(
-        new webpack.DefinePlugin({'$env.isCore': JSON.stringify(true)}),
-      )
-    }
-
     if (!isDev) {
       config.stats = {
         // @ts-ignore
@@ -196,12 +189,12 @@ export default (type: 'playground' | 'development' | 'production') => {
       }
     }
 
-    // defined process.env and $env
+    // defined process.env and process.env
     config.plugins!.push(
       new webpack.DefinePlugin(
         convertObjectToWebpackDefinePaths({
           process: {env: envConfig},
-          $env: envConfig,
+          'process.env': envConfig,
         }),
       ),
     )

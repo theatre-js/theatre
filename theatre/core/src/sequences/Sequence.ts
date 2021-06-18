@@ -107,7 +107,7 @@ export default class Sequence {
   set position(requestedPosition: number) {
     let position = requestedPosition
     this.pause()
-    if (!$env.isCore) {
+    if (process.env.NODE_ENV !== 'production') {
       if (typeof position !== 'number') {
         logger.error(
           `value t in sequence.position = t must be a number. ${typeof position} given`,
@@ -164,7 +164,7 @@ export default class Sequence {
             end: sequenceDuration,
           }
 
-    if (!$env.isCore) {
+    if (process.env.NODE_ENV !== 'production') {
       if (typeof range.start !== 'number' || range.start < 0) {
         throw new InvalidArgumentError(
           `Argument conf.range.start in sequence.play(conf) must be a positive number. ${JSON.stringify(
@@ -207,7 +207,7 @@ export default class Sequence {
 
     const iterationCount =
       conf && typeof conf.iterationCount === 'number' ? conf.iterationCount : 1
-    if (!$env.isCore) {
+    if (process.env.NODE_ENV !== 'production') {
       if (
         !(Number.isInteger(iterationCount) && iterationCount > 0) &&
         iterationCount !== Infinity
@@ -222,7 +222,7 @@ export default class Sequence {
 
     const rate = conf && typeof conf.rate !== 'undefined' ? conf.rate : 1
 
-    if (!$env.isCore) {
+    if (process.env.NODE_ENV !== 'production') {
       if (typeof rate !== 'number' || rate === 0) {
         throw new InvalidArgumentError(
           `Argument conf.rate in sequence.play(conf) must be a number larger than 0. ${JSON.stringify(
@@ -242,7 +242,7 @@ export default class Sequence {
 
     const direction = conf && conf.direction ? conf.direction : 'normal'
 
-    if (!$env.isCore) {
+    if (process.env.NODE_ENV !== 'production') {
       if (possibleDirections.indexOf(direction) === -1) {
         throw new InvalidArgumentError(
           `Argument conf.direction in sequence.play(conf) must be one of ${JSON.stringify(

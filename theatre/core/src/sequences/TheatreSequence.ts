@@ -43,7 +43,7 @@ export default class TheatreSequence {
     if (privateAPI(this)._project.isReady()) {
       return privateAPI(this).play(conf)
     } else {
-      if (!$env.isCore) {
+      if (process.env.NODE_ENV !== 'production') {
         logger.warn(
           `You seem to have called sequence.play() before the project has finished loading.\n` +
             `This would **not** a problem in production when using '@theatre/core', since Theatre loads instantly in core mode. ` +

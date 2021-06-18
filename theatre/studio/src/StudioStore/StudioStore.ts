@@ -26,6 +26,7 @@ import get from 'lodash-es/get'
 import type {Store} from 'redux'
 import {persistStateOfStudio} from './persistStateOfStudio'
 import {isSheetObject} from '@theatre/shared/instanceTypes'
+import globals from '@theatre/shared/globals'
 
 export type Drafts = {
   historic: Draft<StudioHistoricState>
@@ -59,7 +60,7 @@ export default class StudioStore {
     this._atom = atomFromReduxStore(this._reduxStore)
     this.atomP = this._atom.pointer
 
-    if ($env.disableStatePersistence !== true) {
+    if (globals.disableStatePersistence !== true) {
       const d = defer<void>()
       this.initialized = d.promise
       persistStateOfStudio(this._reduxStore, () => {

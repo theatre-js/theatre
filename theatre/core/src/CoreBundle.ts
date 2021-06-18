@@ -14,7 +14,7 @@ export default class CoreBundle {
   }
 
   get version() {
-    return $env.version
+    return process.env.version
   }
 
   getBitsForStudio(studio: Studio, callback: (bits: CoreBits) => void) {

@@ -12,7 +12,7 @@ export function useForceUpdate(debugLabel?: string) {
   const [, setTick] = useState(0)
 
   const update = useCallback(() => {
-    if ($env.NODE_ENV === 'development' && debugLabel)
+    if (process.env.NODE_ENV !== 'production' && debugLabel)
       logger.log(debugLabel, 'forceUpdate', {trace: new Error()})
 
     setTick((tick) => tick + 1)

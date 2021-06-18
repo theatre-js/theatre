@@ -9,7 +9,7 @@ export default class UIRootWrapper extends React.Component<{
   componentDidMount() {
     const self = this
     if (
-      $env.NODE_ENV === 'development' &&
+      process.env.NODE_ENV !== 'production' &&
       typeof module === 'object' &&
       module &&
       module.hot

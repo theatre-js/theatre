@@ -52,7 +52,7 @@ export default class TheatreProject implements IProject {
       'project.sheet',
     )
 
-    if (!$env.isCore) {
+    if (process.env.NODE_ENV !== 'production') {
       validateName(
         instanceId,
         'instanceId in project.sheet(sheetId, instanceId)',

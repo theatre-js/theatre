@@ -81,7 +81,7 @@ const pp = (
     const currentKeyframe = track.keyframes[currentKeyframeIndex]
 
     if (!currentKeyframe) {
-      if ($env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV !== 'production') {
         logger.error(`Bug here`)
       }
       return states.error
@@ -93,7 +93,7 @@ const pp = (
       if (currentKeyframeIndex === 0) {
         return states.beforeFirstKeyframe(currentKeyframe)
       } else {
-        if ($env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV !== 'production') {
           logger.error(`Bug here`)
         }
         return states.error

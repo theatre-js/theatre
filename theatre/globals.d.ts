@@ -8,42 +8,10 @@ interface NodeModule {
   }
 }
 
-// First, the env variables that exist regardless of the value of NODE_ENV
-type CommonEnvironmentVariables = {
+interface ProcessEnv {
+  NODE_ENV: 'development' | 'production' | 'test'
   version: string
-  isCore: boolean
-  studioPersistenceKey: string
-  currentProjectStateDefinitionVersion: string
-  disableStatePersistence?: boolean
 }
-
-// Some environment variables are specific to NODE_ENV='development'
-type DevSpecificEnvironmentVariables = {
-  NODE_ENV: 'development'
-  devSpecific: {
-    devServerHost: string
-    devServerSSL?: {
-      useSSL?: boolean
-      pathToKey: string
-      pathToCert: string
-    }
-  }
-}
-
-type TestSpecificEnvironmentVariables = {
-  NODE_ENV: 'test'
-}
-
-type ProductionSpecificEnvironmentVariables = {
-  NODE_ENV: 'production'
-}
-
-type EnvironmentVariables =
-  | (CommonEnvironmentVariables & DevSpecificEnvironmentVariables)
-  | (CommonEnvironmentVariables & ProductionSpecificEnvironmentVariables)
-  | (CommonEnvironmentVariables & TestSpecificEnvironmentVariables)
-
-declare let $env: EnvironmentVariables
 
 declare module '*.svg' {
   var s: string

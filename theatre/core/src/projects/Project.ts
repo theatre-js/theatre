@@ -12,6 +12,7 @@ import projectsSingleton from './projectsSingleton'
 import type {ProjectState} from './store/storeTypes'
 import type {Deferred} from '@theatre/shared/utils/defer'
 import {defer} from '@theatre/shared/utils/defer'
+import globals from '@theatre/shared/globals'
 
 export type Conf = Partial<{
   state: OnDiskState
@@ -55,7 +56,7 @@ export default class Project {
       },
       historic: config.state ?? {
         sheetsById: {},
-        definitionVersion: $env.currentProjectStateDefinitionVersion,
+        definitionVersion: globals.currentProjectStateDefinitionVersion,
       },
       ephemeral: {
         loadingState: {
