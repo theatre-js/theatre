@@ -1,0 +1,10 @@
+/node_modules
+/xeno
+/.vscode
+/src
+/devEnv
+*.log
+/.*
+/*.env.json
+/tsconfig.json
+/.temp

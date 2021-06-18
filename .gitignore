@@ -1,0 +1,19 @@
+**/node_modules
+**/xeno
+/packages/*/dist
+/theatre/*/dist
+*.log
+*.temp
+/.vscode
+/.history
+**/.DS_Store
+*.tsbuildinfo
+.eslintcache
+
+.yarn/*
+# !.yarn/cache
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions

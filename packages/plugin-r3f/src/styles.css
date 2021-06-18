@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /*
+    Shadow dom base styles
+    ========
+    */
+
+  #react-three-editable-editor-root {
+    -moz-tab-size: 4;
+    tab-size: 4;
+    line-height: 1.15; /* 1 */
+    -webkit-text-size-adjust: 100%; /* 2 */
+    margin: 0;
+    font-family: system-ui, -apple-system,
+      /* Firefox supports this but not yet `system-ui` */ 'Segoe UI', Roboto,
+      Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+  }
+
+  canvas {
+    outline: none
+  }
+}
+

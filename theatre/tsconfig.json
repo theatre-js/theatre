@@ -1,0 +1,22 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": ".temp/declarations",
+    "lib": ["es2017", "dom", "ESNext"],
+    "rootDir": ".",
+    "composite": true,
+    "types": ["jest"],
+    "plugins": [
+      {
+        "name": "typescript-styled-plugin",
+        "lint": {
+          "unknownProperties": "ignore"
+        }
+      }
+    ]
+  },
+  "files": ["./globals.d.ts"],
+  "references": [{"path": "../packages/dataverse"}],
+  "include": ["./*/src/**/*", "./devEnv/**/*"],
+  "exclude": ["**/node_modules", "**/.*", "**/xeno", "**/dist", "**/.temp"]
+}

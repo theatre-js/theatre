@@ -1,0 +1,8 @@
+{
+  "name": "@theatre/shared",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@theatre/core": "workspace:*",
+    "@theatre/studio": "workspace:*"
+  }
+}

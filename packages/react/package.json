@@ -1,0 +1,35 @@
+{
+  "name": "@theatre/react",
+  "version": "0.1.0-dev",
+  "private": "true",
+  "license": "Apache-2.0",
+  "author": "TheaterJS Oy",
+  "source": "src/index.ts",
+  "main": "dist/index.js",
+  "exports": "./dist/index.modern.js",
+  "module": "dist/index.module.js",
+  "unpkg": "dist/index.umd.js",
+  "scripts": {
+    "build": "microbundle",
+    "dev": "microbundle watch"
+  },
+  "peerDependencies": {
+    "@theatre/studio": "*",
+    "@types/react": "^17.0.3",
+    "react": "^17.0.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.23",
+    "@types/lodash": "^4.14.170",
+    "@types/lodash-es": "^4.17.4",
+    "@types/node": "^15.6.2",
+    "@types/react": "^17.0.9",
+    "microbundle": "^0.13.0",
+    "react": "^17.0.2",
+    "theatre": "*",
+    "typescript": "^4.3.2"
+  },
+  "dependencies": {
+    "lodash-es": "^4.17.21"
+  }
+}

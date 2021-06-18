@@ -1,0 +1,19 @@
+{
+  "name": "@theatre/core",
+  "main": "dist/index.js",
+  "license": "Apache-2.0",
+  "files": [
+    "dist/index.js",
+    "dist/index.d.ts",
+    "index.js.map"
+  ],
+  "scripts": {
+    "prepack": "cd .. && yarn run prepare"
+  },
+  "dependencies": {
+    "@theatre/dataverse": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^4.3.2"
+  }
+}

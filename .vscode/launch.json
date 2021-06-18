@@ -1,0 +1,10 @@
+{
+  "configurations": [
+    {
+      "type": "pwa-chrome",
+      "name": "Browser",
+      "request": "launch",
+      "url": "https://dev.theatre.local:10022/"
+    }
+  ]
+}

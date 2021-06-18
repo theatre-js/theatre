@@ -1,0 +1,46 @@
+{
+  "name": "theatre-monorepo",
+  "license": "Apache-2.0",
+  "workspaces": [
+    "packages/*",
+    "theatre"
+  ],
+  "scripts": {
+    "typecheck": "tsc --build ./devEnv/typecheck-all-projects/tsconfig.all.json",
+    "test": "jest",
+    "postinstall": "husky install",
+    "lint:all": "eslint . --ext ts,tsx --ignore-path=.gitignore --rulesdir ./devEnv/eslint/rules"
+  },
+  "lint-staged": {
+    "**/*.(t|j)s?(x)": [
+      "eslint --rulesdir ./devEnv/eslint/rules --fix",
+      "prettier --write"
+    ]
+  },
+  "devDependencies": {
+    "@babel/core": "^7.14.3",
+    "@babel/plugin-proposal-class-properties": "^7.13.0",
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.14.2",
+    "@babel/plugin-proposal-optional-chaining": "^7.14.2",
+    "@babel/preset-env": "^7.14.4",
+    "@babel/preset-react": "^7.13.13",
+    "@babel/preset-typescript": "^7.13.0",
+    "@typescript-eslint/eslint-plugin": "^4.26.0",
+    "@typescript-eslint/parser": "^4.26.0",
+    "esbuild": "^0.12.5",
+    "esbuild-jest": "^0.5.0",
+    "eslint": "^7.27.0",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "eslint-plugin-unused-imports": "^1.1.1",
+    "husky": "^6.0.0",
+    "jest": "^27.0.3",
+    "lerna": "^4.0.0",
+    "lint-staged": "^11.0.0",
+    "prettier": "^2.3.1",
+    "typescript": "^4.3.2"
+  },
+  "dependencies": {
+    "node-gyp": "^8.1.0"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "@theatre/studio",
+  "version": "0.3.0-dev.1",
+  "license": "AGPL-3.0-only",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/index.js",
+    "dist/index.d.ts",
+    "index.js.map"
+  ],
+  "scripts": {
+    "prepack": "cd .. && yarn run prepare"
+  },
+  "repository": {
+    "type": "https",
+    "url": "https://github.com/AriaMinaei/theatrejs"
+  },
+  "sideEffects": true,
+  "author": "TheaterJS Oy",
+  "dependencies": {
+    "@theatre/dataverse": "workspace:*"
+  },
+  "peerDependencies": {
+    "@theatre/core": "*"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "files.exclude": {
+    "**/node_modules": true,
+    // "**/.yarn": true,
+    "**/.cache": true,
+    "**/.temp": true,
+    "**/.history": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/bower_components": true,
+    "**/*.code-search": true,
+    "**/dist": true
+  },
+  "eslint.workingDirectories": ["./"],
+  "eslint.options": {
+    "rulePaths": ["./devEnv/eslint/rules"],
+    "ignorePath": ".gitignore"
+  },
+  "eslint.run": "onSave",
+  "eslint.lintTask.enable": true,
+  "eslint.lintTask.options": ". --ext ts,tsx --ignore-path=.gitignore --rulesdir ./devEnv/eslint/rules"
+}

@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "rootDir": "../.."
+  },
+  "files": [],
+  "references": [
+    {"path": "../../theatre"},
+    {"path": "../../packages/dataverse"},
+    {"path": "../../packages/playground"},
+    {"path": "../../packages/plugin-r3f"}
+  ]
+}

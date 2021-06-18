@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "jsx": "react",
+    "skipDefaultLibCheck": true,
+    "skipLibCheck": true
+  },
+  "files": ["index.tsx", "Scene.tsx", "useDrag.ts"]
+}

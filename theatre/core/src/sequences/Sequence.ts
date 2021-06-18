@@ -1,0 +1,389 @@
+import type Project from '@theatre/core/projects/Project'
+import coreTicker from '@theatre/core/coreTicker'
+import type Sheet from '@theatre/core/sheets/Sheet'
+import type {SequenceAddress} from '@theatre/shared/utils/addresses'
+import didYouMean from '@theatre/shared/utils/didYouMean'
+import {InvalidArgumentError} from '@theatre/shared/utils/errors'
+import type {IRange} from '@theatre/shared/utils/types'
+import type {IBox, IDerivation, Pointer} from '@theatre/dataverse'
+import {Box, prism, val, valueDerivation} from '@theatre/dataverse'
+import {padStart} from 'lodash-es'
+import type {
+  IPlaybackController,
+  IPlaybackState,
+} from './playbackControllers/DefaultPlaybackController'
+import DefaultPlaybackController from './playbackControllers/DefaultPlaybackController'
+import TheatreSequence from './TheatreSequence'
+import logger from '@theatre/shared/logger'
+
+export type IPlaybackRange = IRange
+
+export type IPlaybackDirection =
+  | 'normal'
+  | 'reverse'
+  | 'alternate'
+  | 'alternateReverse'
+
+const possibleDirections = [
+  'normal',
+  'reverse',
+  'alternate',
+  'alternateReverse',
+]
+
+export default class Sequence {
+  public readonly address: SequenceAddress
+  publicApi: TheatreSequence
+
+  private _playbackControllerBox: IBox<IPlaybackController>
+  private _statePointerDerivation: IDerivation<Pointer<IPlaybackState>>
+  private _positionD: IDerivation<number>
+  private _positionFormatterD: IDerivation<ISequencePositionFormatter>
+  _playableRangeD: undefined | IDerivation<{start: number; end: number}>
+
+  constructor(
+    readonly _project: Project,
+    readonly _sheet: Sheet,
+    readonly _lengthD: IDerivation<number>,
+    readonly _subUnitsPerUnitD: IDerivation<number>,
+    playbackController?: IPlaybackController,
+  ) {
+    this.address = {...this._sheet.address, sequenceName: 'default'}
+
+    this.publicApi = new TheatreSequence(this)
+
+    this._playbackControllerBox = new Box(
+      playbackController ?? new DefaultPlaybackController(coreTicker),
+    )
+
+    this._statePointerDerivation = this._playbackControllerBox.derivation.map(
+      (playbackController) => playbackController.statePointer,
+    )
+
+    this._positionD = this._statePointerDerivation.flatMap((statePointer) =>
+      valueDerivation(statePointer.position),
+    )
+
+    this._positionFormatterD = this._subUnitsPerUnitD.map(
+      (subUnitsPerUnit) => new TimeBasedPositionFormatter(subUnitsPerUnit),
+    )
+  }
+
+  get positionFormatter(): ISequencePositionFormatter {
+    return this._positionFormatterD.getValue()
+  }
+
+  get derivationToStatePointer() {
+    return this._statePointerDerivation
+  }
+
+  get length() {
+    return this._lengthD.getValue()
+  }
+
+  get positionDerivation() {
+    return this._positionD
+  }
+
+  get position() {
+    return this._playbackControllerBox.get().getCurrentPosition()
+  }
+
+  get subUnitsPerUnit(): number {
+    return this._subUnitsPerUnitD.getValue()
+  }
+
+  get positionSnappedToGrid(): number {
+    return this.closestGridPosition(this.position)
+  }
+
+  closestGridPosition(posInUnitSpace: number): number {
+    const subUnitsPerUnit = this.subUnitsPerUnit
+    const gridLength = 1 / subUnitsPerUnit
+
+    return Math.round(posInUnitSpace / gridLength) * gridLength
+  }
+
+  set position(requestedPosition: number) {
+    let position = requestedPosition
+    this.pause()
+    if (!$env.isCore) {
+      if (typeof position !== 'number') {
+        logger.error(
+          `value t in sequence.position = t must be a number. ${typeof position} given`,
+        )
+        position = 0
+      }
+      if (position < 0) {
+        logger.error(
+          `sequence.position must be a positive number. ${position} given`,
+        )
+        position = 0
+      }
+    }
+    if (position > this.length) {
+      position = this.length
+    }
+    const dur = this.length
+    this._playbackControllerBox
+      .get()
+      .gotoPosition(position > dur ? dur : position)
+  }
+
+  getDurationCold() {
+    return this._lengthD.getValue()
+  }
+
+  get playing() {
+    return this._playbackControllerBox.get().playing
+  }
+
+  _makeRangeFromSequenceTemplate(): IDerivation<IPlaybackRange> {
+    return prism(() => {
+      return {
+        start: 0,
+        end: val(this._lengthD),
+      }
+    })
+  }
+
+  async play(
+    conf?: Partial<{
+      iterationCount: number
+      range: IPlaybackRange
+      rate: number
+      direction: IPlaybackDirection
+    }>,
+  ): Promise<boolean> {
+    const sequenceDuration = this.length
+    const range =
+      conf && conf.range
+        ? conf.range
+        : {
+            start: 0,
+            end: sequenceDuration,
+          }
+
+    if (!$env.isCore) {
+      if (typeof range.start !== 'number' || range.start < 0) {
+        throw new InvalidArgumentError(
+          `Argument conf.range.start in sequence.play(conf) must be a positive number. ${JSON.stringify(
+            range.start,
+          )} given.`,
+        )
+      }
+      if (range.start >= sequenceDuration) {
+        throw new InvalidArgumentError(
+          `Argument conf.range.start in sequence.play(conf) cannot be longer than the duration of the sequence, which is ${sequenceDuration}ms. ${JSON.stringify(
+            range.start,
+          )} given.`,
+        )
+      }
+      if (typeof range.end !== 'number' || range.end <= 0) {
+        throw new InvalidArgumentError(
+          `Argument conf.range.end in sequence.play(conf) must be a number larger than zero. ${JSON.stringify(
+            range.end,
+          )} given.`,
+        )
+      }
+
+      if (range.end > sequenceDuration) {
+        logger.warn(
+          `Argument conf.range.end in sequence.play(conf) cannot be longer than the duration of the sequence, which is ${sequenceDuration}ms. ${JSON.stringify(
+            range.end,
+          )} given.`,
+        )
+        range.end = sequenceDuration
+      }
+
+      if (range.end <= range.start) {
+        throw new InvalidArgumentError(
+          `Argument conf.range.end in sequence.play(conf) must be larger than conf.range.start. ${JSON.stringify(
+            range,
+          )} given.`,
+        )
+      }
+    }
+
+    const iterationCount =
+      conf && typeof conf.iterationCount === 'number' ? conf.iterationCount : 1
+    if (!$env.isCore) {
+      if (
+        !(Number.isInteger(iterationCount) && iterationCount > 0) &&
+        iterationCount !== Infinity
+      ) {
+        throw new InvalidArgumentError(
+          `Argument conf.iterationCount in sequence.play(conf) must be an integer larger than 0. ${JSON.stringify(
+            iterationCount,
+          )} given.`,
+        )
+      }
+    }
+
+    const rate = conf && typeof conf.rate !== 'undefined' ? conf.rate : 1
+
+    if (!$env.isCore) {
+      if (typeof rate !== 'number' || rate === 0) {
+        throw new InvalidArgumentError(
+          `Argument conf.rate in sequence.play(conf) must be a number larger than 0. ${JSON.stringify(
+            rate,
+          )} given.`,
+        )
+      }
+
+      if (rate < 0) {
+        throw new InvalidArgumentError(
+          `Argument conf.rate in sequence.play(conf) must be a number larger than 0. ${JSON.stringify(
+            rate,
+          )} given. If you want the animation to play backwards, try setting conf.direction to 'reverse' or 'alternateReverse'.`,
+        )
+      }
+    }
+
+    const direction = conf && conf.direction ? conf.direction : 'normal'
+
+    if (!$env.isCore) {
+      if (possibleDirections.indexOf(direction) === -1) {
+        throw new InvalidArgumentError(
+          `Argument conf.direction in sequence.play(conf) must be one of ${JSON.stringify(
+            possibleDirections,
+          )}. ${JSON.stringify(direction)} given. ${didYouMean(
+            direction,
+            possibleDirections,
+          )}`,
+        )
+      }
+    }
+
+    return await this._play(
+      iterationCount,
+      {start: range.start, end: range.end},
+      rate,
+      direction,
+    )
+  }
+
+  protected _play(
+    iterationCount: number,
+    range: IPlaybackRange,
+    rate: number,
+    direction: IPlaybackDirection,
+  ): Promise<boolean> {
+    return this._playbackControllerBox
+      .get()
+      .play(iterationCount, range, rate, direction)
+  }
+
+  pause() {
+    this._playbackControllerBox.get().pause()
+  }
+
+  replacePlaybackController(playbackController: IPlaybackController) {
+    this.pause()
+    const oldController = this._playbackControllerBox.get()
+    this._playbackControllerBox.set(playbackController)
+
+    const time = oldController.getCurrentPosition()
+    oldController.destroy()
+    playbackController.gotoPosition(time)
+  }
+}
+
+export interface ISequencePositionFormatter {
+  formatSubUnitForGrid(posInUnitSpace: number): string
+  formatFullUnitForGrid(posInUnitSpace: number): string
+  formatForPlayhead(posInUnitSpace: number): string
+}
+
+class TimeBasedPositionFormatter implements ISequencePositionFormatter {
+  constructor(private readonly _fps: number) {}
+  formatSubUnitForGrid(posInUnitSpace: number): string {
+    const subSecondPos = posInUnitSpace % 1
+    const frame = 1 / this._fps
+
+    const frames = Math.round(subSecondPos / frame)
+    return frames + 'f'
+  }
+
+  formatFullUnitForGrid(posInUnitSpace: number): string {
+    let p = posInUnitSpace
+
+    let s = ''
+
+    if (p >= hour) {
+      const hours = Math.floor(p / hour)
+      s += hours + 'h'
+      p = p % hour
+    }
+
+    if (p >= minute) {
+      const minutes = Math.floor(p / minute)
+      s += minutes + 'm'
+      p = p % minute
+    }
+
+    if (p >= second) {
+      const seconds = Math.floor(p / second)
+      s += seconds + 's'
+      p = p % second
+    }
+
+    const frame = 1 / this._fps
+
+    if (p >= frame) {
+      const frames = Math.floor(p / frame)
+      s += frames + 'f'
+      p = p % frame
+    }
+
+    return s.length === 0 ? '0s' : s
+  }
+
+  formatForPlayhead(posInUnitSpace: number): string {
+    let p = posInUnitSpace
+
+    let s = ''
+
+    if (p >= hour) {
+      const hours = Math.floor(p / hour)
+      s += padStart(hours.toString(), 2, '0') + 'h'
+      p = p % hour
+    }
+
+    if (p >= minute) {
+      const minutes = Math.floor(p / minute)
+      s += padStart(minutes.toString(), 2, '0') + 'm'
+      p = p % minute
+    } else if (s.length > 0) {
+      s += '00m'
+    }
+
+    if (p >= second) {
+      const seconds = Math.floor(p / second)
+      s += padStart(seconds.toString(), 2, '0') + 's'
+      p = p % second
+    } else {
+      s += '00s'
+    }
+
+    const frameLength = 1 / this._fps
+
+    if (p >= frameLength) {
+      const frames = Math.round(p / frameLength)
+      s += padStart(frames.toString(), 2, '0') + 'f'
+      p = p % frameLength
+    } else if (p / frameLength > 0.98) {
+      const frames = 1
+      s += padStart(frames.toString(), 2, '0') + 'f'
+      p = p % frameLength
+    } else {
+      s += '00f'
+    }
+
+    return s.length === 0 ? '00s00f' : s
+  }
+}
+
+const second = 1
+const minute = second * 60
+const hour = minute * 60

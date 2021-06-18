@@ -1,0 +1,20 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "script": "test -- --watch",
+      "group": "test",
+      "problemMatcher": [],
+      "label": "npm: test"
+    },
+    {
+      "label": "TypeScript watch",
+      "type": "shell",
+      "command": "yarn tsc --build --watch ./devEnv/typecheck-all-projects/tsconfig.all.json",
+      "problemMatcher": ["$tsc-watch"]
+    }
+  ]
+}
