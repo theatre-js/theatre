@@ -1,4 +1,4 @@
-import type {PropTypeConfig_Number} from '@theatre/shared/src/propTypes'
+import type {PropTypeConfig_Number} from '@theatre/shared/propTypes'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import BasicNumberEditor from '@theatre/studio/uiComponents/BasicNumberEditor'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'

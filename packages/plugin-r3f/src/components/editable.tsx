@@ -51,8 +51,9 @@ const editable = <
 
       const sheet = useEditorStore((state) => state.sheet)
 
-      const [sheetObject, setSheetObject] =
-        useState<undefined | ISheetObject<$FixMe>>(undefined)
+      const [sheetObject, setSheetObject] = useState<
+        undefined | ISheetObject<$FixMe>
+      >(undefined)
 
       useLayoutEffect(() => {
         if (!sheet) return

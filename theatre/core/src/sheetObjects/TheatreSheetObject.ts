@@ -12,7 +12,7 @@ import type {
 } from '@theatre/shared/utils/types'
 import type {IDerivation, Pointer} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'
-import type {PropTypeConfig_Compound} from '@theatre/shared/src/propTypes'
+import type {PropTypeConfig_Compound} from '@theatre/shared/propTypes'
 import type SheetObject from './SheetObject'
 
 export interface ISheetObject<

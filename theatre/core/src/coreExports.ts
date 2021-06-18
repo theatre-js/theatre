@@ -5,7 +5,7 @@ import type {
   IProjectConfig,
 } from '@theatre/core/projects/TheatreProject'
 import TheatreProject from '@theatre/core/projects/TheatreProject'
-import * as types from '@theatre/shared/src/propTypes'
+import * as types from '@theatre/shared/propTypes'
 import {InvalidArgumentError} from '@theatre/shared/utils/errors'
 import {validateName} from '@theatre/shared/utils/sanitizers'
 import userReadableTypeOfValue from '@theatre/shared/utils/userReadableTypeOfValue'

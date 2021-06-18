@@ -5,7 +5,7 @@ import {privateAPI} from '@theatre/shared/privateAPIs'
 import type {ProjectState_Historic} from '@theatre/core/projects/store/storeTypes'
 import type {SheetState_Historic} from '@theatre/core/projects/store/types/SheetState_Historic'
 import * as t from '@theatre/shared/propTypes'
-import getStudio from '@theatre/studio/src/getStudio'
+import getStudio from '@theatre/studio/getStudio'
 import coreTicker from '@theatre/core/coreTicker'
 /* eslint-enable no-restricted-syntax */
 

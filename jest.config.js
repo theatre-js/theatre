@@ -4,7 +4,7 @@ module.exports = {
     '<rootDir>/theatre/*/src/**/*.test.ts',
   ],
   moduleNameMapper: {
-    ...require('./devEnv/getAliasesFromTSConfig').getAliasesFromTsConfigForJest(),
+    ...require('./devEnv/getAliasesFromTsConfig').getAliasesFromTsConfigForJest(),
     '\\.(css)$': 'identity-obj-proxy',
     'lodash-es/(.*)': 'lodash/$1',
     'react-use/esm/(.*)': 'react-use/lib/$1',
