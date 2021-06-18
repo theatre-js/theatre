@@ -1,11 +1,16 @@
 {
   "name": "@theatre/dataverse",
-  "version": "1.0.0-dev",
+  "version": "1.0.0-dev.1",
   "license": "Apache-2.0",
   "author": {
     "name": "Aria Minaei",
     "email": "aria@theatrejs.com",
     "url": "https://github.com/AriaMinaei"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AriaMinaei/theatre",
+    "directory": "packages/dataverse"
   },
   "source": "src/index.ts",
   "main": "dist/index.js",
@@ -22,7 +27,6 @@
     "@types/jest": "^26.0.23",
     "@types/lodash-es": "^4.17.4",
     "@types/node": "^15.6.2",
-    "@types/react": "^17.0.9",
     "typescript": "^4.3.2"
   },
   "dependencies": {

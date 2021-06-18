@@ -1,8 +1,18 @@
 {
   "name": "@theatre/studio",
-  "version": "0.3.0-dev.1",
+  "version": "0.4.0-dev.1",
   "license": "AGPL-3.0-only",
-  "description": "",
+  "description": "Motion design editor for the web",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AriaMinaei/theatre",
+    "directory": "theatre/studio"
+  },
+  "author": {
+    "name": "TheaterJS Oy",
+    "email": "hello@theatrejs.com",
+    "url": "https://www.theatrejs.com"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -13,12 +23,7 @@
   "scripts": {
     "prepack": "cd .. && yarn run prepare"
   },
-  "repository": {
-    "type": "https",
-    "url": "https://github.com/AriaMinaei/theatrejs"
-  },
   "sideEffects": true,
-  "author": "TheaterJS Oy",
   "dependencies": {
     "@theatre/dataverse": "workspace:*"
   },

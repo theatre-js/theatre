@@ -1,7 +1,20 @@
 {
   "name": "@theatre/core",
-  "main": "dist/index.js",
+  "version": "0.4.0-dev.1",
   "license": "Apache-2.0",
+  "description": "Motion design editor for the web",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AriaMinaei/theatre",
+    "directory": "theatre/core"
+  },
+  "author": {
+    "name": "TheaterJS Oy",
+    "email": "hello@theatrejs.com",
+    "url": "https://www.theatrejs.com"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "files": [
     "dist/index.js",
     "dist/index.d.ts",
@@ -10,10 +23,8 @@
   "scripts": {
     "prepack": "cd .. && yarn run prepare"
   },
+  "sideEffects": true,
   "dependencies": {
     "@theatre/dataverse": "workspace:*"
-  },
-  "devDependencies": {
-    "typescript": "^4.3.2"
   }
 }

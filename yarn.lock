@@ -3744,7 +3744,6 @@ __metadata:
   resolution: "@theatre/core@workspace:theatre/core"
   dependencies:
     "@theatre/dataverse": "workspace:*"
-    typescript: ^4.3.2
   languageName: unknown
   linkType: soft
 
@@ -3768,7 +3767,6 @@ __metadata:
     "@types/jest": ^26.0.23
     "@types/lodash-es": ^4.17.4
     "@types/node": ^15.6.2
-    "@types/react": ^17.0.9
     lodash-es: ^4.17.21
     typescript: ^4.3.2
   languageName: unknown
@@ -3801,27 +3799,6 @@ __metadata:
     three: ^0.129.0
     typescript: ^4.3.2
     zustand: ^3.5.1
-  languageName: unknown
-  linkType: soft
-
-"@theatre/react@workspace:packages/react":
-  version: 0.0.0-use.local
-  resolution: "@theatre/react@workspace:packages/react"
-  dependencies:
-    "@types/jest": ^26.0.23
-    "@types/lodash": ^4.14.170
-    "@types/lodash-es": ^4.17.4
-    "@types/node": ^15.6.2
-    "@types/react": ^17.0.9
-    lodash-es: ^4.17.21
-    microbundle: ^0.13.0
-    react: ^17.0.2
-    theatre: "*"
-    typescript: ^4.3.2
-  peerDependencies:
-    "@theatre/studio": "*"
-    "@types/react": ^17.0.3
-    react: ^17.0.2
   languageName: unknown
   linkType: soft
 
@@ -19358,13 +19335,6 @@ resolve@1.17.0:
     typescript: ^4.3.2
   languageName: unknown
   linkType: soft
-
-"theatre@npm:*":
-  version: 0.2.3
-  resolution: "theatre@npm:0.2.3"
-  checksum: a5aba0a490920c52451b0143b81c99c781cd2dc9250b885bbd498ba30360ca4c723a89a6bafc9e92c2c5496b66a04d4714b159a6e6bf337b7f5b6c3a79ff0ca6
-  languageName: node
-  linkType: hard
 
 "three-stdlib@npm:^2.0.1":
   version: 2.0.5
