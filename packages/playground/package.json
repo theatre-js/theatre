@@ -5,7 +5,6 @@
   "source": "src/index.tsx",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "private": "true",
   "files": [
     "dist/**/*"
   ],
