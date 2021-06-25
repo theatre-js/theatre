@@ -6,18 +6,11 @@
   ],
   "scripts": {
     "typecheck": "tsc --build",
-    "build": "run-s _build:clean _build:declarations _build:clean:temp _bundle:production",
-    "prepare": "run-s build",
-    "_build:clean": "run-s _build:clean:temp _build:clean:dist",
-    "_build:clean:temp": "rimraf .temp",
-    "_build:clean:dist": "rimraf .dist",
-    "_build:declarations": "run-s _build:declarations:emit _build:declarations:bundle",
-    "_build:declarations:watch": "run-p _build:declarations:emit:watch _build:declarations:bundle:watch",
-    "_build:declarations:emit": "tsc --build",
-    "_build:declarations:emit:watch": "tsc --build tsconfig.json --watch --preserveWatchOutput",
-    "_build:declarations:bundle": "rollup -c devEnv/declarations-bundler/rollup.config.js",
-    "_build:declarations:bundle:watch": "rollup --watch --no-watch.clearScreen -c devEnv/declarations-bundler/rollup.config.js",
-    "_bundle:production": "node -r esbuild-register devEnv/bundle.ts"
+    "build:js": "node -r esbuild-register devEnv/bundle.ts",
+    "build:dts": "run-s typecheck build:dts:bundle",
+    "build:dts:bundle": "rollup -c devEnv/declarations-bundler/rollup.config.js",
+    "build": "run-p build:dts build:js",
+    "prepare": "run-s build"
   },
   "devDependencies": {
     "@babel/cli": "^7.14.3",
