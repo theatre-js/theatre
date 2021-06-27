@@ -17,7 +17,7 @@ The first line of the commit message (the summary) must have a specific format. 
 The `[Tag]` is one of the following:
 
 * `Fix` - for a bug fix.
-* `Update` - either for a backwards-compatible enhancement or for a rule change that adds reported problems.
+* `Update` - either for a backwards-compatible enhancement.
 * `New` - implemented a new feature.
 * `Breaking` - for a backwards-incompatible enhancement or feature.
 * `Docs` - changes to documentation only.
