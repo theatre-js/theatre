@@ -12,7 +12,6 @@
     "url": "https://github.com/AriaMinaei/theatre",
     "directory": "packages/dataverse"
   },
-  "source": "src/index.ts",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [

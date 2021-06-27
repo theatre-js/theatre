@@ -6,6 +6,7 @@
     "rootDir": "src",
     "types": ["jest", "node"],
     "emitDeclarationOnly": false,
+    "target": "es6",
     "composite": true
   },
   "include": ["./src/**/*"]
