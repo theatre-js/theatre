@@ -1,4 +1,4 @@
-import type Studio from '@theatre/studio/Studio'
+import type {Studio} from '@theatre/studio/Studio'
 import delay from '@theatre/shared/utils/delay'
 import {original} from 'immer'
 import type Project from './Project'

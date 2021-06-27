@@ -1,4 +1,4 @@
-import type Studio from './Studio'
+import type {Studio} from './Studio'
 
 let studio: Studio
 

@@ -2,7 +2,7 @@ import UIRootWrapper from '@theatre/studio/UIRoot/UIRootWrapper'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import React from 'react'
 import ReactDOM from 'react-dom'
-import type Studio from './Studio'
+import type {Studio} from './Studio'
 
 export default class UI {
   readonly containerEl = document.createElement('div')

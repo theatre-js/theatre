@@ -1,5 +1,5 @@
 import getStudio from '@theatre/studio/getStudio'
-import type Studio from '@theatre/studio/Studio'
+import type {Studio} from '@theatre/studio/Studio'
 import {usePrism} from '@theatre/shared/utils/reactDataverse'
 import {val} from '@theatre/dataverse'
 import React from 'react'

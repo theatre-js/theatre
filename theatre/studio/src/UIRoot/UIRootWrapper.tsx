@@ -1,4 +1,4 @@
-import type Studio from '@theatre/studio/Studio'
+import type {Studio} from '@theatre/studio/Studio'
 import React from 'react'
 import UIRoot from './UIRoot'
 
