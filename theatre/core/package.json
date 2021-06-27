@@ -15,7 +15,6 @@
   },
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
-  "browser": "dist/index.min.js",
   "exports": {
     ".": {
       "require": "./dist/index.cjs",
