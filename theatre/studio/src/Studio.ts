@@ -13,8 +13,10 @@ import type {IStudio} from './TheatreStudio'
 import TheatreStudio from './TheatreStudio'
 import {nanoid} from 'nanoid/non-secure'
 import type Project from '@theatre/core/projects/Project'
+import type {CoreBits} from '@theatre/core/CoreBundle'
+import type {privateAPI} from '@theatre/core/privateAPIs'
 
-export default class Studio {
+export class Studio {
   readonly atomP: Pointer<FullStudioState>
   readonly ui!: UI
   readonly publicApi: IStudio
@@ -26,6 +28,7 @@ export default class Studio {
     this._projectsProxy.pointer
 
   private readonly _store = new StudioStore()
+  private _corePrivateApi: typeof privateAPI | undefined
 
   constructor() {
     this.address = {studioId: nanoid(10)}
@@ -59,7 +62,12 @@ export default class Studio {
     attachToProjects(projectsD.getValue())
   }
 
-  setProjectsP(projectsP: Pointer<Record<string, Project>>) {
+  setCoreBits(coreBits: CoreBits) {
+    this._corePrivateApi = coreBits.privateAPI
+    this._setProjectsP(coreBits.projectsP)
+  }
+
+  private _setProjectsP(projectsP: Pointer<Record<string, Project>>) {
     this._projectsProxy.setPointer(projectsP)
   }
 
@@ -77,5 +85,9 @@ export default class Studio {
 
   __dev_startHistoryFromScratch(newHistoricPart: StudioHistoricState) {
     return this._store.__dev_startHistoryFromScratch(newHistoricPart)
+  }
+
+  get corePrivateAPI() {
+    return this._corePrivateApi
   }
 }

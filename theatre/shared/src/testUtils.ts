@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-syntax */
 import '@theatre/studio'
 import {getProject} from '@theatre/core'
-import {privateAPI} from '@theatre/shared/privateAPIs'
+import {privateAPI} from '@theatre/core/privateAPIs'
 import type {ProjectState_Historic} from '@theatre/core/projects/store/storeTypes'
 import type {SheetState_Historic} from '@theatre/core/projects/store/types/SheetState_Historic'
 import * as t from '@theatre/shared/propTypes'

@@ -160,7 +160,7 @@ function useDerivation<T>(der: IDerivation<T>, debugLabel?: string): T {
   }, [der])
 
   useLayoutEffect(() => {
-    return () => {
+    return function onUnmount() {
       refs.current.unmounted = true
       removeFromQueue(refs.current.queueItem)
     }

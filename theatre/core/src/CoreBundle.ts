@@ -1,8 +1,10 @@
-import type Studio from '@theatre/studio/Studio'
+import type {Studio} from '@theatre/studio/Studio'
 import projectsSingleton from './projects/projectsSingleton'
+import {privateAPI} from './privateAPIs'
 
 export type CoreBits = {
   projectsP: typeof projectsSingleton.atom.pointer.projects
+  privateAPI: typeof privateAPI
 }
 
 export default class CoreBundle {
@@ -24,6 +26,7 @@ export default class CoreBundle {
     this._studio = studio
     const bits: CoreBits = {
       projectsP: projectsSingleton.atom.pointer.projects,
+      privateAPI: privateAPI,
     }
 
     callback(bits)

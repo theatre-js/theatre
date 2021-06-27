@@ -1,4 +1,4 @@
-import {privateAPI, setPrivateAPI} from '@theatre/shared/privateAPIs'
+import {privateAPI, setPrivateAPI} from '@theatre/core/privateAPIs'
 import type {IProject} from '@theatre/core/projects/TheatreProject'
 import type TheatreSequence from '@theatre/core/sequences/TheatreSequence'
 import type {ISequence} from '@theatre/core/sequences/TheatreSequence'

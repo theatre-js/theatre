@@ -1,5 +1,5 @@
 import {setStudio} from '@theatre/studio/getStudio'
-import Studio from '@theatre/studio/Studio'
+import {Studio} from '@theatre/studio/Studio'
 export type {IScrub} from '@theatre/studio/Scrub'
 export type {IStudio} from '@theatre/studio/TheatreStudio'
 import * as globalVariableNames from '@theatre/shared/globalVariableNames'
@@ -8,14 +8,13 @@ import StudioBundle from './StudioBundle'
 import type CoreBundle from '@theatre/core/CoreBundle'
 
 const studioPrivateAPI = new Studio()
+setStudio(studioPrivateAPI)
 export const studio = studioPrivateAPI.publicApi
 export default studio
 
 if (process.env.NODE_ENV !== 'test') {
   studio.ui.show()
 }
-
-setStudio(studioPrivateAPI)
 
 registerStudioBundle()
 

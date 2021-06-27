@@ -1,4 +1,4 @@
-import {privateAPI, setPrivateAPI} from '@theatre/shared/privateAPIs'
+import {privateAPI, setPrivateAPI} from '@theatre/core/privateAPIs'
 import Project from '@theatre/core/projects/Project'
 import type {ISheet} from '@theatre/core/sheets/TheatreSheet'
 import type {ProjectAddress} from '@theatre/shared/utils/addresses'

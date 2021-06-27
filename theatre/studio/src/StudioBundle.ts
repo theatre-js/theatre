@@ -1,6 +1,6 @@
 import type CoreBundle from '@theatre/core/CoreBundle'
 import type {CoreBits} from '@theatre/core/CoreBundle'
-import type Studio from './Studio'
+import type {Studio} from './Studio'
 
 export default class StudioBundle {
   private _coreBundle: undefined | CoreBundle
@@ -22,6 +22,6 @@ export default class StudioBundle {
       coreBits = bits
     })
 
-    this._studio.setProjectsP(coreBits.projectsP)
+    this._studio.setCoreBits(coreBits)
   }
 }

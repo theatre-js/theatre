@@ -1,5 +1,5 @@
 import logger from '@theatre/shared/logger'
-import {privateAPI, setPrivateAPI} from '@theatre/shared/privateAPIs'
+import {privateAPI, setPrivateAPI} from '@theatre/core/privateAPIs'
 import {defer} from '@theatre/shared/utils/defer'
 import type Sequence from './Sequence'
 import type {IPlaybackDirection, IPlaybackRange} from './Sequence'

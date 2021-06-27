@@ -2,15 +2,15 @@ import type {ISheetObject} from '@theatre/core'
 import studioTicker from '@theatre/studio/studioTicker'
 import type {IDerivation, Pointer} from '@theatre/dataverse'
 import {prism} from '@theatre/dataverse'
-import {privateAPI, setPrivateAPI} from '@theatre/shared/privateAPIs'
 import SimpleCache from '@theatre/shared/utils/SimpleCache'
 import type {VoidFn} from '@theatre/shared/utils/types'
 import type {IScrub} from '@theatre/studio/Scrub'
 
-import type Studio from '@theatre/studio/Studio'
+import type {Studio} from '@theatre/studio/Studio'
 import {isSheetObjectPublicAPI} from '@theatre/shared/instanceTypes'
 import {getOutlineSelection} from './selectors'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
+import getStudio from './getStudio'
 
 export interface ITransactionAPI {
   set<V>(pointer: Pointer<V>, value: V): void
@@ -39,19 +39,19 @@ export interface IStudio {
 export default class TheatreStudio implements IStudio {
   readonly ui = {
     show() {
-      privateAPI(this).ui.show()
+      getStudio().ui.show()
     },
 
     hide() {
-      privateAPI(this).ui.hide()
+      getStudio().ui.hide()
     },
 
     get showing(): boolean {
-      return privateAPI(this).ui._showing
+      return getStudio().ui._showing
     },
 
     restore() {
-      privateAPI(this).ui.restore()
+      getStudio().ui.restore()
     },
   }
 
@@ -60,13 +60,10 @@ export default class TheatreStudio implements IStudio {
   /**
    * @internal
    */
-  constructor(internals: Studio) {
-    setPrivateAPI(this, internals)
-    setPrivateAPI(this.ui, internals)
-  }
+  constructor(internals: Studio) {}
 
   transaction(fn: (api: ITransactionAPI) => void): void {
-    return privateAPI(this).transaction(({set, unset}) => {
+    return getStudio().transaction(({set, unset}) => {
       return fn({set, unset})
     })
   }
@@ -88,9 +85,9 @@ export default class TheatreStudio implements IStudio {
   __experimental_setSelection(selection: Array<ISheetObject>): void {
     const sanitizedSelection = [...selection]
       .filter((s) => isSheetObjectPublicAPI(s))
-      .map((s) => privateAPI(s))
+      .map((s) => getStudio().corePrivateAPI!(s))
 
-    privateAPI(this).transaction(({stateEditors}) => {
+    getStudio().transaction(({stateEditors}) => {
       stateEditors.studio.historic.panels.outline.selection.set(
         sanitizedSelection,
       )
@@ -106,6 +103,6 @@ export default class TheatreStudio implements IStudio {
   }
 
   scrub(): IScrub {
-    return privateAPI(this).scrub()
+    return getStudio().scrub()
   }
 }
