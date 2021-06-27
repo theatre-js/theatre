@@ -102,3 +102,7 @@ function pointer(args: {root: {}; path?: Array<string | number>}) {
 }
 
 export default pointer
+
+export const isPointer = (p: $IntentionalAny): p is Pointer<unknown> => {
+  return p && !!getPointerMeta(p)
+}

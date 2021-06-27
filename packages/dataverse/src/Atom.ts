@@ -5,6 +5,7 @@ import DerivationFromSource from './derivations/DerivationFromSource'
 import type {IDerivation} from './derivations/IDerivation'
 import {isDerivation} from './derivations/IDerivation'
 import type {Pointer, PointerType} from './pointer'
+import {isPointer} from './pointer'
 import pointer, {getPointerMeta} from './pointer'
 import type {$FixMe, $IntentionalAny} from './types'
 import type {PathBasedReducer} from './utils/PathBasedReducer'
@@ -145,6 +146,8 @@ export default class Atom<State extends {}>
     scope.identityChangeListeners.forEach((cb) => cb(newState))
 
     if (scope.children.size === 0) return
+
+    // @todo we can probably skip checking value types
     const oldValueType = getTypeOfValue(oldState)
     const newValueType = getTypeOfValue(newState)
 
@@ -208,7 +211,7 @@ export const valueDerivation = <P extends PointerType<$IntentionalAny>>(
   return derivation as $IntentionalAny
 }
 
-export function isIdentityChangeProvider(
+function isIdentityChangeProvider(
   val: unknown,
 ): val is IdentityDerivationProvider {
   return (
@@ -234,8 +237,4 @@ export const val = <P>(
   } else {
     return pointerOrDerivationOrPlainValue as $IntentionalAny
   }
-}
-
-export const isPointer = (p: $IntentionalAny): p is Pointer<unknown> => {
-  return p && p.$pointerMeta ? true : false
 }

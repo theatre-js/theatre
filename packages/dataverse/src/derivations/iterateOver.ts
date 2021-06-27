@@ -1,5 +1,6 @@
-import {isPointer, valueDerivation} from '../Atom'
+import {valueDerivation} from '../Atom'
 import type {Pointer} from '../pointer'
+import {isPointer} from '../pointer'
 import Ticker from '../Ticker'
 import type {IDerivation} from './IDerivation'
 import {isDerivation} from './IDerivation'
