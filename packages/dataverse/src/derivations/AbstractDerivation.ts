@@ -113,7 +113,7 @@ export default abstract class AbstractDerivation<V> implements IDerivation<V> {
     if (!this._isFresh) {
       const newValue = this._recalculate()
       this._lastValue = newValue
-      if (this.isHot) {
+      if (this._isHot) {
         this._isFresh = true
         this._didMarkDependentsAsStale = false
       }
