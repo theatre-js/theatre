@@ -2,7 +2,6 @@
   "name": "playground",
   "version": "1.0.0-dev",
   "license": "Apache-2.0",
-  "source": "src/index.tsx",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [

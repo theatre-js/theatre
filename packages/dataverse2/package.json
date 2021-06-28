@@ -7,7 +7,6 @@
     "email": "aria@theatrejs.com",
     "url": "https://github.com/AriaMinaei"
   },
-  "source": "src/index.ts",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {

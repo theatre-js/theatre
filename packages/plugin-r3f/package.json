@@ -19,7 +19,6 @@
     "url": "https://github.com/AriaMinaei/theatre",
     "directory": "packages/plugin-r3f"
   },
-  "source": "src/index.tsx",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
