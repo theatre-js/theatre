@@ -1,4 +1,6 @@
 {
+  "private": true,
+  "version": "0.4.0-dev.2",
   "workspaces": [
     "./shared",
     "./core",
@@ -11,7 +13,8 @@
     "build:dts": "run-s typecheck build:dts:bundle",
     "build:dts:bundle": "rollup -c devEnv/declarations-bundler/rollup.config.js",
     "build": "run-p build:dts build:js",
-    "prepare": "run-s build"
+    "prepare": "run-s update-versions build",
+    "update-versions": "node -r esbuild-register devEnv/updateVersions.ts"
   },
   "devDependencies": {
     "@babel/cli": "^7.14.3",
