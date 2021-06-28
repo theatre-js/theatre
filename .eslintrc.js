@@ -23,7 +23,11 @@ module.exports = {
       parser: '@typescript-eslint/parser',
       plugins: ['@typescript-eslint'],
       parserOptions: {
-        project: ['./packages/**/tsconfig.json', './theatre/**/tsconfig.json'],
+        project: [
+          './packages/*/tsconfig.json',
+          './packages/*/devEnv/tsconfig.json',
+          './theatre/*/tsconfig.json',
+        ],
       },
       rules: {
         '@typescript-eslint/await-thenable': 'warn',
