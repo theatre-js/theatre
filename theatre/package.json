@@ -13,7 +13,11 @@
     "build:dts": "run-s typecheck build:dts:bundle",
     "build:dts:bundle": "rollup -c devEnv/declarations-bundler/rollup.config.js",
     "build": "run-p build:dts build:js",
-    "prepare": "run-s update-versions build",
+    "deploy": "cross-env-shell THEATRE_IS_PUBLISHING=true \"yarn run _deploy:steps\"",
+    "_deploy:steps": "run-s ensure-publishing update-versions build _deploy:core _deploy:studio",
+    "_deploy:core": "yarn workspace @theatre/core npm publish --access public",
+    "_deploy:studio": "yarn workspace @theatre/studio npm publish --access public",
+    "ensure-publishing": "node ./devEnv/ensurePublishing.js",
     "update-versions": "node -r esbuild-register devEnv/updateVersions.ts"
   },
   "devDependencies": {

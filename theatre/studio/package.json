@@ -36,7 +36,7 @@
     "dist/index.d.ts"
   ],
   "scripts": {
-    "prepack": "cd .. && yarn run prepare"
+    "prepublish": "cd .. && yarn run ensure-publishing"
   },
   "sideEffects": true,
   "dependencies": {
