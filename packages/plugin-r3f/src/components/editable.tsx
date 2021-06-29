@@ -17,8 +17,6 @@ import mergeRefs from 'react-merge-refs'
 import type {$FixMe} from '@theatre/shared/utils/types'
 import type {ISheetObject} from '@theatre/core'
 
-const log = console.log
-
 interface Elements {
   group: Group
   mesh: Mesh

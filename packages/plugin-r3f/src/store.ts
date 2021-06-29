@@ -7,7 +7,7 @@ import type {OrbitControls} from '@react-three/drei'
 // @ts-ignore TODO
 import type {ContainerProps} from '@react-three/fiber'
 import type {ISheet, ISheetObject} from '@theatre/core'
-import {types} from '@theatre/core'
+import {types, getProject} from '@theatre/core'
 
 export type EditableType =
   | 'group'
@@ -137,6 +137,7 @@ export interface EditableState {
 
 export type EditorStore = {
   sheet: ISheet | null
+  uiSheet: ISheet | null
   sheetObjects: {[uniqueName in string]?: BaseSheetObjectType}
   scene: Scene | null
   gl: WebGLRenderer | null
@@ -169,7 +170,7 @@ export type EditorStore = {
     allowImplicitInstancing: boolean,
     editorCamera: ContainerProps['camera'],
     sheet: ISheet,
-    initialState?: EditableState,
+    uiSheet: null | ISheet,
   ) => void
 
   setOrbitControlsRef: (
@@ -213,6 +214,7 @@ const config: StateCreator<EditorStore> = (set, get) => {
 
   return {
     sheet: null,
+    uiSheet: null,
     sheetObjects: {},
     scene: null,
     gl: null,
@@ -244,35 +246,15 @@ const config: StateCreator<EditorStore> = (set, get) => {
       allowImplicitInstancing,
       editorCamera,
       sheet,
-      initialState,
+      uiSheet,
     ) => {
-      const editables = get().editables
-
-      const newEditables: Record<string, Editable> = initialState
-        ? Object.fromEntries(
-            Object.entries(initialState.editables).map(
-              ([name, initialEditable]) => {
-                const originalEditable = editables[name]
-                return [
-                  name,
-                  {
-                    type: initialEditable.type,
-                    role: originalEditable?.role ?? 'removed',
-                  },
-                ]
-              },
-            ),
-          )
-        : editables
-
       set({
         scene,
         gl,
         allowImplicitInstancing,
-        editables: newEditables,
         initialEditorCamera: editorCamera,
-        initialState: initialState ?? null,
         sheet,
+        uiSheet,
       })
     },
 
@@ -384,17 +366,20 @@ export const useEditorStore = create<EditorStore>(config)
 
 export type BindFunction = (options: {
   allowImplicitInstancing?: boolean
-  state?: EditableState
   editorCamera?: ContainerProps['camera']
   sheet: ISheet
 }) => (options: {gl: WebGLRenderer; scene: Scene}) => void
 
 export const bindToCanvas: BindFunction = ({
   allowImplicitInstancing = false,
-  state,
   editorCamera = {},
   sheet,
 }) => {
+  const uiSheet: null | ISheet =
+    process.env.NODE_ENV === 'development'
+      ? getProject('R3F Plugin').sheet('UI')
+      : null
+
   return ({gl, scene}) => {
     const init = useEditorStore.getState().init
     init(
@@ -403,7 +388,7 @@ export const bindToCanvas: BindFunction = ({
       allowImplicitInstancing,
       {...{position: [20, 20, 20]}, ...editorCamera},
       sheet,
-      state,
+      uiSheet,
     )
   }
 }
