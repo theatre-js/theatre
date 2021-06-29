@@ -4,7 +4,6 @@ import TransformControlsModeSelect from './TransformControlsModeSelect'
 import {useEditorStore} from '../store'
 import shallow from 'zustand/shallow'
 import ReferenceWindow from './ReferenceWindow'
-import {saveAs} from 'file-saver'
 import TransformControlsSpaceSelect from './TransformControlsSpaceSelect'
 import ViewportShadingSelect from './ViewportShadingSelect'
 import {AiFillEye, GiPocketBow, RiFocus3Line} from 'react-icons/all'
@@ -68,14 +67,15 @@ const UI: VFC = () => {
                   label="Focus on selected"
                   icon={<RiFocus3Line />}
                   onClick={() => {
-                    const orbitControls = useEditorStore.getState()
-                      .orbitControlsRef?.current
+                    const orbitControls =
+                      useEditorStore.getState().orbitControlsRef?.current
                     const selected = useEditorStore.getState().selected
                     let focusObject
 
                     if (selected) {
-                      focusObject = useEditorStore.getState()
-                        .editablesSnapshot![selected].proxyObject
+                      focusObject =
+                        useEditorStore.getState().editablesSnapshot![selected]
+                          .proxyObject
                     }
 
                     if (orbitControls && focusObject) {
@@ -92,15 +92,18 @@ const UI: VFC = () => {
                   label="Align object to view"
                   icon={<GiPocketBow />}
                   onClick={() => {
-                    const camera = (useEditorStore.getState().orbitControlsRef
-                      ?.current as $FixMe)?.object
+                    const camera = (
+                      useEditorStore.getState().orbitControlsRef
+                        ?.current as $FixMe
+                    )?.object
                     const selected = useEditorStore.getState().selected
 
                     let proxyObject
 
                     if (selected) {
-                      proxyObject = useEditorStore.getState()
-                        .editablesSnapshot![selected].proxyObject
+                      proxyObject =
+                        useEditorStore.getState().editablesSnapshot![selected]
+                          .proxyObject
 
                       if (proxyObject && camera) {
                         const direction = new Vector3()
@@ -141,20 +144,6 @@ const UI: VFC = () => {
             onClick={() => setEditorOpen(false)}
           >
             Close
-          </Button>
-
-          {/* Bottom-right corner */}
-          <Button
-            className="absolute right-0 bottom-0 pointer-events-auto"
-            onClick={() => {
-              const blob = new Blob(
-                [JSON.stringify(useEditorStore.getState().serialize())],
-                {type: 'text/json;charset=utf-8'},
-              )
-              saveAs(blob, 'editableState.json')
-            }}
-          >
-            Export
           </Button>
         </div>
       </div>
