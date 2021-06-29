@@ -6,7 +6,7 @@ export {default as EditorHelper} from './components/EditorHelper'
 export type {EditorHelperProps} from './components/EditorHelper'
 
 export {default as editable} from './components/editable'
-export {configure} from './store'
+export {bindToCanvas} from './store'
 export type {EditableState, BindFunction} from './store'
 
 if (process.env.NODE_ENV === 'development') {

@@ -208,12 +208,6 @@ export type EditorStore = {
   ) => void
 }
 
-interface PersistedState {
-  canvases: {
-    [name: string]: EditableState
-  }
-}
-
 const config: StateCreator<EditorStore> = (set, get) => {
   setTimeout(() => {
     const existingHandler = DefaultLoadingManager.onProgress
@@ -408,23 +402,21 @@ export type BindFunction = (options: {
   sheet: ISheet
 }) => (options: {gl: WebGLRenderer; scene: Scene}) => void
 
-export const configure = ({} = {}): BindFunction => {
-  return ({
-    allowImplicitInstancing = false,
-    state,
-    editorCamera = {},
-    sheet,
-  }) => {
-    return ({gl, scene}) => {
-      const init = useEditorStore.getState().init
-      init(
-        scene,
-        gl,
-        allowImplicitInstancing,
-        {...{position: [20, 20, 20]}, ...editorCamera},
-        sheet,
-        state,
-      )
-    }
+export const bindToCanvas: BindFunction = ({
+  allowImplicitInstancing = false,
+  state,
+  editorCamera = {},
+  sheet,
+}) => {
+  return ({gl, scene}) => {
+    const init = useEditorStore.getState().init
+    init(
+      scene,
+      gl,
+      allowImplicitInstancing,
+      {...{position: [20, 20, 20]}, ...editorCamera},
+      sheet,
+      state,
+    )
   }
 }

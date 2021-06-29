@@ -1,4 +1,4 @@
-import {editable as e, configure} from '@theatre/plugin-r3f'
+import {editable as e, bindToCanvas} from '@theatre/plugin-r3f'
 import {PerspectiveCamera} from '@react-three/drei'
 import {getProject} from '@theatre/core'
 import * as THREE from 'three'
@@ -10,8 +10,6 @@ import type {DirectionalLight} from 'three'
 import type {$FixMe} from '../../../plugin-r3f/src/types'
 
 const ECamera = e(PerspectiveCamera, 'perspectiveCamera')
-
-const bindToCanvas = configure({})
 
 // Soft shadows are expensive, comment and refresh when it's too slow
 softShadows()
