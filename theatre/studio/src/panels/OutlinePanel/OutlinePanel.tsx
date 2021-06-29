@@ -36,6 +36,8 @@ const OutlinePanel: React.FC<{}> = (props) => {
 
 const Container = styled(PanelWrapper)`
   overflow-y: hidden;
+  display: flex;
+  flex-direction: column;
 `
 
 const Title = styled.div`
