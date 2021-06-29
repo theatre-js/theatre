@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import BaseItem from '@theatre/studio/panels/OutlinePanel/BaseItem'
 import SheetsList from '@theatre/studio/panels/OutlinePanel/SheetsList/SheetsList'
 import getStudio from '@theatre/studio/getStudio'
-import {usePrism} from '@theatre/shared/utils/reactDataverse'
+import {usePrism} from '@theatre/dataverse-react'
 import {getOutlineSelection} from '@theatre/studio/selectors'
 
 const Container = styled.li<{depth: number}>`

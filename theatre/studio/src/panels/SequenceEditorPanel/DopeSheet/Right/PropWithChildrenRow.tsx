@@ -3,7 +3,7 @@ import type {
   SequenceEditorTree_PrimitiveProp,
   SequenceEditorTree_PropWithChildren,
 } from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
-import {usePrism} from '@theatre/shared/utils/reactDataverse'
+import {usePrism} from '@theatre/dataverse-react'
 import type {Pointer} from '@theatre/dataverse'
 import React from 'react'
 import styled from 'styled-components'

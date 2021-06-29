@@ -1,6 +1,6 @@
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import type {SequenceEditorTree_Sheet} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
-import {usePrism} from '@theatre/shared/utils/reactDataverse'
+import {usePrism} from '@theatre/dataverse-react'
 import type {Pointer} from '@theatre/dataverse'
 import React from 'react'
 import styled from 'styled-components'

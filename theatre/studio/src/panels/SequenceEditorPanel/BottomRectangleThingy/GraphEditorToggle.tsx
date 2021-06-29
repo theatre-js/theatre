@@ -1,6 +1,6 @@
 import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
-import {useVal} from '@theatre/shared/utils/reactDataverse'
+import {useVal} from '@theatre/dataverse-react'
 import getStudio from '@theatre/studio/getStudio'
 import React, {useCallback} from 'react'
 import styled from 'styled-components'

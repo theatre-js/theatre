@@ -1,4 +1,4 @@
-import {usePrism} from '@theatre/shared/utils/reactDataverse'
+import {usePrism} from '@theatre/dataverse-react'
 import React from 'react'
 import styled from 'styled-components'
 import ProjectsList from './ProjectsList/ProjectsList'

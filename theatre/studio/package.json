@@ -39,9 +39,6 @@
     "prepublish": "cd .. && yarn run ensure-publishing"
   },
   "sideEffects": true,
-  "dependencies": {
-    "@theatre/dataverse": "workspace:*"
-  },
   "peerDependencies": {
     "@theatre/core": "*"
   }

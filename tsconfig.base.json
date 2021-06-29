@@ -23,6 +23,7 @@
       "@theatre/core/*": ["./theatre/core/src/*"],
       "@theatre/shared/*": ["./theatre/shared/src/*"],
       "@theatre/dataverse": ["./packages/dataverse/src/index.ts"],
+      "@theatre/dataverse-react": ["./packages/dataverse-react/src/index.ts"],
       "@theatre/plugin-r3f": ["./packages/plugin-r3f/src/index.tsx"],
       "@theatre/dataverse2": ["./packages/dataverse2/src/index.ts"]
     },

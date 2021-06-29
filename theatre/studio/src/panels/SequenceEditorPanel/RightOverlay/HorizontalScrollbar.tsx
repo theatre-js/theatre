@@ -1,6 +1,6 @@
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import DraggableArea from '@theatre/studio/uiComponents/DraggableArea'
-import {useVal} from '@theatre/shared/utils/reactDataverse'
+import {useVal} from '@theatre/dataverse-react'
 import type {IRange} from '@theatre/shared/utils/types'
 import type {Pointer} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'
@@ -156,8 +156,9 @@ const HorizontalScrollbar: React.FC<{
   const {rangeStartX, rangeEndX, clippedSpaceRange, bottom} =
     useVal(relevantValuesD)
 
-  const [beingDragged, setBeingDragged] =
-    useState<'nothing' | 'both' | 'start' | 'end'>('nothing')
+  const [beingDragged, setBeingDragged] = useState<
+    'nothing' | 'both' | 'start' | 'end'
+  >('nothing')
 
   const handles = useMemo(() => {
     let valuesBeforeDrag = val(relevantValuesD)

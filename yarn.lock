@@ -3740,6 +3740,28 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@theatre/dataverse-react@workspace:*, @theatre/dataverse-react@workspace:packages/dataverse-react":
+  version: 0.0.0-use.local
+  resolution: "@theatre/dataverse-react@workspace:packages/dataverse-react"
+  dependencies:
+    "@types/jest": ^26.0.23
+    "@types/lodash-es": ^4.17.4
+    "@types/node": ^15.6.2
+    "@types/react": ^17.0.9
+    "@types/react-dom": ^17.0.6
+    esbuild: ^0.12.5
+    esbuild-register: ^2.5.0
+    lodash-es: ^4.17.21
+    npm-run-all: ^4.1.5
+    queue-microtask: ^1.2.3
+    typescript: ^4.3.2
+  peerDependencies:
+    "@theatre/dataverse": "*"
+    raect-dom: 17.0.2
+    react: 17.0.2
+  languageName: unknown
+  linkType: soft
+
 "@theatre/dataverse2@workspace:packages/dataverse2":
   version: 0.0.0-use.local
   resolution: "@theatre/dataverse2@workspace:packages/dataverse2"
@@ -3776,13 +3798,10 @@ __metadata:
     "@react-three/fiber": ^6.2.2
     "@theatre/core": "workspace:*"
     "@theatre/studio": "workspace:*"
-    "@types/file-saver": ^2.0.2
     "@types/jest": ^26.0.23
     "@types/lodash-es": ^4.17.4
     "@types/node": ^15.6.2
     "@types/react": ^17.0.9
-    fast-deep-equal: ^3.1.3
-    file-saver: ^2.0.5
     lodash-es: ^4.17.21
     prism-react-renderer: 1.2.1
     react: ^17.0.2
@@ -3810,8 +3829,6 @@ __metadata:
 "@theatre/studio@workspace:*, @theatre/studio@workspace:theatre/studio":
   version: 0.0.0-use.local
   resolution: "@theatre/studio@workspace:theatre/studio"
-  dependencies:
-    "@theatre/dataverse": "workspace:*"
   peerDependencies:
     "@theatre/core": "*"
   languageName: unknown
@@ -3904,13 +3921,6 @@ __metadata:
   version: 0.0.39
   resolution: "@types/estree@npm:0.0.39"
   checksum: 43e5361de39969def145f32f4599391ab13055ec94841f1633a7cfe10f0e8a940ebf0e9a4b2770454a6bddd034b57e7e0d51a4d565cb2714ee2accf10a7718be
-  languageName: node
-  linkType: hard
-
-"@types/file-saver@npm:^2.0.2":
-  version: 2.0.2
-  resolution: "@types/file-saver@npm:2.0.2"
-  checksum: ccdfbbe45c68b54192d1a9fb9c5f7594c7eabe64ad55982839f0e758b72a62ae0e2edcee16af2b7c197d53f57047b5e11dac5d7805326718d0cb5a5e2f4dc382
   languageName: node
   linkType: hard
 
@@ -8641,13 +8651,6 @@ __metadata:
   peerDependencies:
     webpack: ^4.0.0 || ^5.0.0
   checksum: 0f103418c072ec66c081a9908cd7824ee19905e18be16889cb050f5f373998afaf7ca4c2fd2df4cabf703a2cd526aefe59105930e3f8d266a5b35e6d5f5b3cf4
-  languageName: node
-  linkType: hard
-
-"file-saver@npm:^2.0.5":
-  version: 2.0.5
-  resolution: "file-saver@npm:2.0.5"
-  checksum: 0f835236534377c9b7591b995d94ae5061166452fb1f784548b706ff48984930e45a7947cfe393ce86b84ef2ec89064120c5d5ab5186146c508bb022c71ced3d
   languageName: node
   linkType: hard
 
@@ -17682,6 +17685,7 @@ resolve@1.17.0:
     "@rollup/plugin-typescript": ^8.2.1
     "@theatre/core": "workspace:*"
     "@theatre/dataverse": "workspace:*"
+    "@theatre/dataverse-react": "workspace:*"
     "@types/fs-extra": ^9.0.11
     "@types/jest": ^26.0.23
     "@types/lodash": ^4.14.170
@@ -17720,7 +17724,6 @@ resolve@1.17.0:
     polished: ^4.1.3
     prop-types: ^15.7.2
     propose: ^0.0.5
-    queue-microtask: ^1.2.3
     react: ^17.0.2
     react-dom: ^17.0.2
     react-icons: ^4.2.0

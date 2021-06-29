@@ -1,6 +1,6 @@
 import {theme} from '@theatre/studio/css'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
-import {usePrism} from '@theatre/shared/utils/reactDataverse'
+import {usePrism} from '@theatre/dataverse-react'
 import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
 import {darken} from 'polished'

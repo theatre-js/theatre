@@ -1,5 +1,5 @@
 import type Sheet from '@theatre/core/sheets/Sheet'
-import {usePrism} from '@theatre/shared/utils/reactDataverse'
+import {usePrism} from '@theatre/dataverse-react'
 import {val} from '@theatre/dataverse'
 import React from 'react'
 import styled from 'styled-components'

@@ -1,6 +1,6 @@
 import getStudio from '@theatre/studio/getStudio'
 import {getOutlineSelection} from '@theatre/studio/selectors'
-import {usePrism} from '@theatre/shared/utils/reactDataverse'
+import {usePrism} from '@theatre/dataverse-react'
 import React, {useCallback} from 'react'
 import styled from 'styled-components'
 import ObjectsList from '@theatre/studio/panels/OutlinePanel/ObjectsList/ObjectsList'

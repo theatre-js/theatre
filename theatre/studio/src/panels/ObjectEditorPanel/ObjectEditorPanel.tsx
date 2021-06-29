@@ -1,6 +1,6 @@
 import {theme} from '@theatre/studio/css'
 import {getOutlineSelection} from '@theatre/studio/selectors'
-import {usePrism} from '@theatre/shared/utils/reactDataverse'
+import {usePrism} from '@theatre/dataverse-react'
 import {prism} from '@theatre/dataverse'
 import React from 'react'
 import styled from 'styled-components'

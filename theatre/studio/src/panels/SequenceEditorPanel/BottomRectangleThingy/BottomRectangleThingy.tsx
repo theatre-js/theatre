@@ -1,6 +1,6 @@
 import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
-import {usePrism} from '@theatre/shared/utils/reactDataverse'
+import {usePrism} from '@theatre/dataverse-react'
 import {theme} from '@theatre/studio/css'
 import React from 'react'
 import styled from 'styled-components'

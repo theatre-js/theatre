@@ -1,4 +1,4 @@
-import {usePrism} from '@theatre/shared/utils/reactDataverse'
+import {usePrism} from '@theatre/dataverse-react'
 import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
 import React from 'react'

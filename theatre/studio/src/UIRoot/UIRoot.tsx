@@ -1,6 +1,6 @@
 import getStudio from '@theatre/studio/getStudio'
 import type {Studio} from '@theatre/studio/Studio'
-import {usePrism} from '@theatre/shared/utils/reactDataverse'
+import {usePrism} from '@theatre/dataverse-react'
 import {val} from '@theatre/dataverse'
 import React from 'react'
 import {createGlobalStyle, StyleSheetManager} from 'styled-components'

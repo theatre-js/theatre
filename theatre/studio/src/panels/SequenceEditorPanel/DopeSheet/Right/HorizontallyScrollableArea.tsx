@@ -2,7 +2,7 @@ import type Sequence from '@theatre/core/sequences/Sequence'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/shared/utils/react/useRefAndState'
-import {usePrism} from '@theatre/shared/utils/reactDataverse'
+import {usePrism} from '@theatre/dataverse-react'
 import type {Pointer} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'
 import {clamp, mapValues} from 'lodash-es'
@@ -45,8 +45,9 @@ const HorizontallyScrollableArea: React.FC<{
     [layoutP],
   )
 
-  const [containerRef, containerNode] =
-    useRefAndState<HTMLDivElement | null>(null)
+  const [containerRef, containerNode] = useRefAndState<HTMLDivElement | null>(
+    null,
+  )
 
   useHandlePanAndZoom(layoutP, containerNode)
   useDragHandlers(layoutP, containerNode)

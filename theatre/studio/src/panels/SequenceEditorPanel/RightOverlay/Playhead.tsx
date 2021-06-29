@@ -3,7 +3,7 @@ import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEdi
 import RoomToClick from '@theatre/studio/uiComponents/RoomToClick'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/shared/utils/react/useRefAndState'
-import {usePrism} from '@theatre/shared/utils/reactDataverse'
+import {usePrism} from '@theatre/dataverse-react'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'

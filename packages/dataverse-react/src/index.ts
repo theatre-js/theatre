@@ -3,10 +3,33 @@ import {Box} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'
 import {findIndex} from 'lodash-es'
 import queueMicrotask from 'queue-microtask'
-import {useCallback, useEffect, useLayoutEffect, useMemo, useRef} from 'react'
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {unstable_batchedUpdates} from 'react-dom'
-import {useForceUpdate} from './react/hooks'
-import type {$IntentionalAny, VoidFn} from './types'
+
+type $IntentionalAny = any
+type VoidFn = () => void
+
+const logger = {log: console.log}
+
+function useForceUpdate(debugLabel?: string) {
+  const [, setTick] = useState(0)
+
+  const update = useCallback(() => {
+    if (process.env.NODE_ENV !== 'production' && debugLabel)
+      logger.log(debugLabel, 'forceUpdate', {trace: new Error()})
+
+    setTick((tick) => tick + 1)
+  }, [])
+
+  return update
+}
 
 export function usePrism<T>(
   fn: () => T,

@@ -1,5 +1,5 @@
 import {val} from '@theatre/dataverse'
-import {usePrism} from '@theatre/shared/utils/reactDataverse'
+import {usePrism} from '@theatre/dataverse-react'
 import getStudio from '@theatre/studio/getStudio'
 import React from 'react'
 import styled from 'styled-components'

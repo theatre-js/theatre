@@ -5,7 +5,7 @@ import useKeyDown from '@theatre/studio/uiComponents/useKeyDown'
 import useValToAtom from '@theatre/studio/uiComponents/useValToAtom'
 import mutableSetDeep from '@theatre/shared/utils/mutableSetDeep'
 import useRefAndState from '@theatre/shared/utils/react/useRefAndState'
-import {usePrism} from '@theatre/shared/utils/reactDataverse'
+import {usePrism} from '@theatre/dataverse-react'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
@@ -24,8 +24,9 @@ const Container = styled.div<{isShiftDown: boolean}>`
 const DopeSheetSelectionView: React.FC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
 }> = ({layoutP, children}) => {
-  const [containerRef, containerNode] =
-    useRefAndState<HTMLDivElement | null>(null)
+  const [containerRef, containerNode] = useRefAndState<HTMLDivElement | null>(
+    null,
+  )
   const isShiftDown = useKeyDown('Shift')
   const selectionBounds = useCaptureSelection(layoutP, containerNode)
   const selectionBoundsRef = useRef<typeof selectionBounds>(selectionBounds)
