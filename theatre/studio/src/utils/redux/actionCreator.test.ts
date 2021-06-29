@@ -1,6 +1,6 @@
-import actionCreator from '@theatre/shared/utils/redux/actionCreator'
+import actionCreator from '@theatre/studio/utils/redux/actionCreator'
 
-describe('@theatre/shared/utils/redux/actionCreator()', () => {
+describe('@theatre/studio/utils/redux/actionCreator()', () => {
   const actionType = 'Bootstrap'
   const payload = {a: 1, b: 2}
   let creator = actionCreator(actionType)

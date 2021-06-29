@@ -1,10 +1,10 @@
 import type {StudioState} from '@theatre/studio/store/types'
-import actionCreator from '@theatre/shared/utils/redux/actionCreator'
-import type {IWithHistory} from '@theatre/shared/utils/redux/withHistory/withHistory'
+import actionCreator from '@theatre/studio/utils/redux/actionCreator'
+import type {IWithHistory} from '@theatre/studio/utils/redux/withHistory/withHistory'
 import {
   historicActions,
   withHistory,
-} from '@theatre/shared/utils/redux/withHistory/withHistory'
+} from '@theatre/studio/utils/redux/withHistory/withHistory'
 import type {ReduxReducer} from '@theatre/shared/utils/types'
 import logger from '@theatre/shared/logger'
 

@@ -1,4 +1,4 @@
-import actionCreator from '@theatre/shared/utils/redux/actionCreator'
+import actionCreator from '@theatre/studio/utils/redux/actionCreator'
 import type {
   $FixMe,
   $IntentionalAny,
