@@ -1,5 +1,5 @@
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
-import mousePositionD from '@theatre/shared/utils/mousePositionD'
+import mousePositionD from '@theatre/studio/utils/mousePositionD'
 import {usePrism, useVal} from '@theatre/dataverse-react'
 import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'

@@ -1,4 +1,4 @@
-import mousePositionD from '@theatre/shared/utils/mousePositionD'
+import mousePositionD from '@theatre/studio/utils/mousePositionD'
 import {usePrism} from '@theatre/dataverse-react'
 import {val} from '@theatre/dataverse'
 import React from 'react'

@@ -1,6 +1,6 @@
 import type {IDerivation, Pointer} from '@theatre/dataverse'
 import {Atom, prism, val} from '@theatre/dataverse'
-import mousePositionD from '@theatre/shared/utils/mousePositionD'
+import mousePositionD from '@theatre/studio/utils/mousePositionD'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import {inRange, last} from 'lodash-es'
 import React, {createContext, useCallback, useContext, useMemo} from 'react'
