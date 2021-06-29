@@ -24,9 +24,9 @@ module.exports = {
       plugins: ['@typescript-eslint'],
       parserOptions: {
         project: [
+          './theatre/tsconfig.json',
           './packages/*/tsconfig.json',
           './packages/*/devEnv/tsconfig.json',
-          './theatre/*/tsconfig.json',
         ],
       },
       rules: {
