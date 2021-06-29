@@ -36,7 +36,6 @@ const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
     transformControlsMode,
     transformControlsSpace,
     viewportShading,
-    setEditableTransform,
     sheetObjects,
   ] = useEditorStore(
     (state) => [
@@ -44,7 +43,6 @@ const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
       state.transformControlsMode,
       state.transformControlsSpace,
       state.viewportShading,
-      state.setEditableTransform,
       state.sheetObjects,
     ],
     shallow,
@@ -251,8 +249,6 @@ const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
                 },
               })
             })
-
-            setEditableTransform(selected, obj.matrix.clone())
           }}
           onDraggingChange={(event) => (isBeingEdited.current = event.value)}
         />

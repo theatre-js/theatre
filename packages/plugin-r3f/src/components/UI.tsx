@@ -22,7 +22,6 @@ const UI: VFC = () => {
     setTransformControlsSpace,
     setViewportShading,
     setEditorOpen,
-    setEditableTransform,
   ] = useEditorStore(
     (state) => [
       state.transformControlsMode,
@@ -33,7 +32,6 @@ const UI: VFC = () => {
       state.setTransformControlsSpace,
       state.setViewportShading,
       state.setEditorOpen,
-      state.setEditableTransform,
     ],
     shallow,
   )
@@ -117,11 +115,6 @@ const UI: VFC = () => {
                         proxyObject.position.copy(position)
 
                         proxyObject.updateMatrix()
-
-                        setEditableTransform(
-                          selected,
-                          proxyObject.matrix.clone(),
-                        )
                       }
                     }
                   }}

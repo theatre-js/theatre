@@ -1,6 +1,6 @@
 import type {StateCreator} from 'zustand'
 import create from 'zustand'
-import type {Matrix4, Object3D, Scene, WebGLRenderer} from 'three'
+import type {Object3D, Scene, WebGLRenderer} from 'three'
 import {DefaultLoadingManager, Group} from 'three'
 import type {MutableRefObject} from 'react'
 import type {OrbitControls} from '@react-three/drei'
@@ -116,53 +116,25 @@ export interface AbstractSerializedEditable<T extends EditableType> {
 }
 
 export interface SerializedEditableGroup
-  extends AbstractSerializedEditable<'group'> {
-  _properties: {
-    transform: number[]
-  }
-}
+  extends AbstractSerializedEditable<'group'> {}
 
 export interface SerializedEditableMesh
-  extends AbstractSerializedEditable<'mesh'> {
-  _properties: {
-    transform: number[]
-  }
-}
+  extends AbstractSerializedEditable<'mesh'> {}
 
 export interface SerializedEditableSpotLight
-  extends AbstractSerializedEditable<'spotLight'> {
-  _properties: {
-    transform: number[]
-  }
-}
+  extends AbstractSerializedEditable<'spotLight'> {}
 
 export interface SerializedEditableDirectionalLight
-  extends AbstractSerializedEditable<'directionalLight'> {
-  _properties: {
-    transform: number[]
-  }
-}
+  extends AbstractSerializedEditable<'directionalLight'> {}
 
 export interface SerializedEditablePointLight
-  extends AbstractSerializedEditable<'pointLight'> {
-  _properties: {
-    transform: number[]
-  }
-}
+  extends AbstractSerializedEditable<'pointLight'> {}
 
 export interface SerializedEditablePerspectiveCamera
-  extends AbstractSerializedEditable<'perspectiveCamera'> {
-  _properties: {
-    transform: number[]
-  }
-}
+  extends AbstractSerializedEditable<'perspectiveCamera'> {}
 
 export interface SerializedEditableOrthographicCamera
-  extends AbstractSerializedEditable<'orthographicCamera'> {
-  _properties: {
-    transform: number[]
-  }
-}
+  extends AbstractSerializedEditable<'orthographicCamera'> {}
 
 export type SerializedEditable =
   | SerializedEditableGroup
@@ -219,8 +191,6 @@ export type EditorStore = {
   ) => void
   addEditable: <T extends EditableType>(type: T, uniqueName: string) => void
   removeEditable: (uniqueName: string) => void
-  setEditableTransform: (uniqueName: string, transform: Matrix4) => void
-  setSelected: (name: string | null) => void
   setSelectedHdr: (hdr: string | null) => void
   setTransformControlsMode: (mode: TransformControlsMode) => void
   setTransformControlsSpace: (mode: TransformControlsSpace) => void
@@ -384,20 +354,6 @@ const config: StateCreator<EditorStore> = (set, get) => {
           [uniqueName]: sheetObject,
         },
       }))
-    },
-    setEditableTransform: (uniqueName, transform) => {
-      set((state) => ({
-        editables: {
-          ...state.editables,
-          [uniqueName]: {
-            ...state.editables[uniqueName],
-            properties: {transform},
-          },
-        },
-      }))
-    },
-    setSelected: (name) => {
-      set({selected: name})
     },
     setSelectedHdr: (hdr) => {
       set({selectedHdr: hdr})
