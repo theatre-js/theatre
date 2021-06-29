@@ -1,7 +1,7 @@
 import type Sequence from '@theatre/core/sequences/Sequence'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
-import useRefAndState from '@theatre/shared/utils/react/useRefAndState'
+import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {usePrism} from '@theatre/dataverse-react'
 import type {Pointer} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'

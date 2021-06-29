@@ -1,6 +1,6 @@
 import getStudio from '@theatre/studio/getStudio'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
-import useRefAndState from '@theatre/shared/utils/react/useRefAndState'
+import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import React from 'react'
 import styled from 'styled-components'
 import type KeyframeEditor from './KeyframeEditor'

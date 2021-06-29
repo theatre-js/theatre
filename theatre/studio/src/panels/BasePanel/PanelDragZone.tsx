@@ -1,4 +1,4 @@
-import useRefAndState from '@theatre/shared/utils/react/useRefAndState'
+import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import getStudio from '@theatre/studio/getStudio'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
