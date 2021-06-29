@@ -4,7 +4,6 @@ import type {Object3D, Scene, WebGLRenderer} from 'three'
 import {DefaultLoadingManager, Group} from 'three'
 import type {MutableRefObject} from 'react'
 import type {OrbitControls} from '@react-three/drei'
-import deepEqual from 'fast-deep-equal'
 // @ts-ignore TODO
 import type {ContainerProps} from '@react-three/fiber'
 import type {ISheet, ISheetObject} from '@theatre/core'
@@ -207,9 +206,6 @@ export type EditorStore = {
     proxyObject: Object3D | null,
     uniqueName: string,
   ) => void
-  serialize: () => {}
-  isPersistedStateDifferentThanInitial: () => boolean
-  applyPersistedState: () => void
 }
 
 interface PersistedState {
@@ -400,71 +396,10 @@ const config: StateCreator<EditorStore> = (set, get) => {
         },
       }))
     },
-    serialize: () => ({}),
-    isPersistedStateDifferentThanInitial: () => {
-      const initialState = get().initialState
-      const canvasName = get().canvasName!
-
-      if (!initialState || !initialPersistedState) {
-        return false
-      }
-
-      return !deepEqual(
-        initialPersistedState.canvases[canvasName],
-        initialState,
-      )
-    },
-    applyPersistedState: () => {
-      const editables = get().editables
-      const canvasName = get().canvasName!
-
-      if (!initialPersistedState) {
-        return
-      }
-    },
   }
 }
 
 export const useEditorStore = create<EditorStore>(config)
-
-const initPersistence = (
-  key: string,
-): [PersistedState | null, (() => void) | undefined] => {
-  let initialPersistedState: PersistedState | null = null
-  let unsub
-
-  if (process.env.NODE_ENV === 'development') {
-    try {
-      const rawPersistedState = localStorage.getItem(key)
-      if (rawPersistedState) {
-        initialPersistedState = JSON.parse(rawPersistedState)
-      }
-    } catch (e) {}
-
-    unsub = useEditorStore.subscribe(
-      () => {
-        const canvasName = useEditorStore.getState().canvasName
-        const serialize = useEditorStore.getState().serialize
-        if (canvasName) {
-          const editables = serialize()
-          localStorage.setItem(
-            key,
-            JSON.stringify({
-              canvases: {
-                [canvasName]: editables,
-              },
-            }),
-          )
-        }
-      },
-      (state) => state.editables,
-    )
-  }
-
-  return [initialPersistedState, unsub]
-}
-
-let [initialPersistedState, unsub] = initPersistence('react-three-editable_')
 
 export type BindFunction = (options: {
   allowImplicitInstancing?: boolean
@@ -473,26 +408,7 @@ export type BindFunction = (options: {
   sheet: ISheet
 }) => (options: {gl: WebGLRenderer; scene: Scene}) => void
 
-export const configure = ({
-  localStorageNamespace = '',
-  enablePersistence = true,
-} = {}): BindFunction => {
-  if (unsub) {
-    unsub()
-  }
-
-  if (enablePersistence) {
-    const persistence = initPersistence(
-      `react-three-editable_${localStorageNamespace}`,
-    )
-
-    initialPersistedState = persistence[0]
-    unsub = persistence[1]
-  } else {
-    initialPersistedState = null
-    unsub = undefined
-  }
-
+export const configure = ({} = {}): BindFunction => {
   return ({
     allowImplicitInstancing = false,
     state,

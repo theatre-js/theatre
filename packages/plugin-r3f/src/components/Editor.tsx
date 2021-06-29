@@ -1,11 +1,5 @@
 import type {VFC} from 'react'
-import React, {
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-  Suspense,
-} from 'react'
+import React, {useEffect, useRef, Suspense} from 'react'
 import {Canvas} from '@react-three/fiber'
 import {useEditorStore} from '../store'
 import {OrbitControls, Environment} from '@react-three/drei'
@@ -14,17 +8,7 @@ import root from 'react-shadow'
 import styles from '../bundle.css.txt'
 import UI from './UI'
 import ProxyManager from './ProxyManager'
-import {
-  Button,
-  Heading,
-  Code,
-  PortalManager,
-  Modal,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  IdProvider,
-} from './elements'
+import {Button, Heading, Code, PortalManager, IdProvider} from './elements'
 import studio from '@theatre/studio'
 
 const EditorScene = () => {
@@ -83,8 +67,6 @@ const Editor: VFC = () => {
     initialEditorCamera,
     setEditorOpen,
     createSnapshot,
-    isPersistedStateDifferentThanInitial,
-    applyPersistedState,
   ] = useEditorStore(
     (state) => [
       state.sceneSnapshot,
@@ -93,21 +75,9 @@ const Editor: VFC = () => {
       state.initialEditorCamera,
       state.setEditorOpen,
       state.createSnapshot,
-      state.isPersistedStateDifferentThanInitial,
-      state.applyPersistedState,
     ],
     shallow,
   )
-
-  const [stateMismatch, setStateMismatch] = useState(false)
-
-  useLayoutEffect(() => {
-    if (initialState) {
-      setStateMismatch(isPersistedStateDifferentThanInitial())
-    } else {
-      applyPersistedState()
-    }
-  }, [applyPersistedState, initialState, isPersistedStateDifferentThanInitial])
 
   return (
     <root.div>
@@ -207,31 +177,7 @@ const MyComponent = () => (
                 </Button>
               )}
             </div>
-            <Modal visible={stateMismatch}>
-              <ModalHeader>Saved state found</ModalHeader>
-              <ModalBody>
-                Would you like to use initial state or saved state?
-              </ModalBody>
-              <ModalFooter>
-                <Button
-                  className="flex-1"
-                  onClick={() => {
-                    applyPersistedState()
-                    setStateMismatch(false)
-                  }}
-                >
-                  Saved
-                </Button>
-                <Button
-                  className="flex-1"
-                  onClick={() => {
-                    setStateMismatch(false)
-                  }}
-                >
-                  Initial
-                </Button>
-              </ModalFooter>
-            </Modal>
+
             <style type="text/css">{styles}</style>
           </IdProvider>
         </PortalManager>
