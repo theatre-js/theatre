@@ -22,41 +22,28 @@ export type TransformControlsMode = 'translate' | 'rotate' | 'scale'
 export type TransformControlsSpace = 'world' | 'local'
 export type ViewportShading = 'wireframe' | 'flat' | 'solid' | 'rendered'
 
-export const createBaseObjectConfig = () => {
-  const {compound, number} = types
-  return {
-    props: compound({
-      position: compound({
-        x: number(0),
-        y: number(0),
-        z: number(0),
-      }),
-      rotation: compound({
-        x: number(0),
-        y: number(0),
-        z: number(0),
-      }),
-      scale: compound({
-        x: number(1),
-        y: number(1),
-        z: number(1),
-      }),
+export const baseSheetObjectType = {
+  props: types.compound({
+    position: types.compound({
+      x: types.number(0),
+      y: types.number(0),
+      z: types.number(0),
     }),
-  }
+    rotation: types.compound({
+      x: types.number(0),
+      y: types.number(0),
+      z: types.number(0),
+    }),
+    scale: types.compound({
+      x: types.number(1),
+      y: types.number(1),
+      z: types.number(1),
+    }),
+  }),
 }
 
-export const getBaseObjectConfig = (() => {
-  let base: undefined | ReturnType<typeof createBaseObjectConfig>
-  return (): ReturnType<typeof createBaseObjectConfig> => {
-    if (!base) {
-      base = createBaseObjectConfig()
-    }
-    return base!
-  }
-})()
-
 export type BaseSheetObjectType = ISheetObject<
-  ReturnType<typeof getBaseObjectConfig>['props']
+  typeof baseSheetObjectType['props']
 >
 
 export interface AbstractEditable<T extends EditableType> {

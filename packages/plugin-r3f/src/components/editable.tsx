@@ -11,10 +11,11 @@ import type {
 } from 'three'
 import {Vector3} from 'three'
 import type {EditableType} from '../store'
-import {getBaseObjectConfig, useEditorStore} from '../store'
+import {baseSheetObjectType} from '../store'
+import {useEditorStore} from '../store'
 import mergeRefs from 'react-merge-refs'
 import type {$FixMe} from '@theatre/shared/utils/types'
-import type {ISheetObject} from '../../../../theatre/core/src/sheetObjects/TheatreSheetObject'
+import type {ISheetObject} from '@theatre/core'
 
 const log = console.log
 
@@ -57,7 +58,7 @@ const editable = <
 
       useLayoutEffect(() => {
         if (!sheet) return
-        const sheetObject = sheet.object(uniqueName, {}, getBaseObjectConfig())
+        const sheetObject = sheet.object(uniqueName, {}, baseSheetObjectType)
         setSheetObject(sheetObject)
 
         useEditorStore
