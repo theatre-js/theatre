@@ -24,3 +24,4 @@ The `[Tag]` is one of the following:
 * `Build` - changes to build process only.
 * `Upgrade` - for a dependency upgrade.
 * `Chore` - for refactoring, adding tests, etc. (anything that isn't user-facing).
+* `WIP` for a work in progress
