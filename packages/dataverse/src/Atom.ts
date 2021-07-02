@@ -227,6 +227,8 @@ export const val = <P>(
   ? T
   : P extends IDerivation<infer T>
   ? T
+  : P extends undefined | null
+  ? P
   : unknown => {
   if (isPointer(pointerOrDerivationOrPlainValue)) {
     return valueDerivation(
