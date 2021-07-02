@@ -1,3 +1,4 @@
+export type {IdentityDerivationProvider} from './Atom'
 export {default as Atom, val, valueDerivation} from './Atom'
 export {default as Box} from './Box'
 export type {IBox} from './Box'
