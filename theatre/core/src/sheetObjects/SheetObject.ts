@@ -13,7 +13,12 @@ import type {
   SerializableValue,
 } from '@theatre/shared/utils/types'
 import {valToAtom} from '@theatre/shared/utils/valToAtom'
-import type {IDerivation, Pointer} from '@theatre/dataverse'
+import type {
+  IdentityDerivationProvider,
+  IDerivation,
+  Pointer,
+} from '@theatre/dataverse'
+
 import {Atom, getPointerParts, pointer, prism, val} from '@theatre/dataverse'
 import type SheetObjectTemplate from './SheetObjectTemplate'
 import TheatreSheetObject from './TheatreSheetObject'
@@ -25,11 +30,11 @@ import TheatreSheetObject from './TheatreSheetObject'
 //   sequenced: SerializableMap
 // }
 
-export default class SheetObject {
+export default class SheetObject implements IdentityDerivationProvider {
   get type(): 'Theatre_SheetObject' {
     return 'Theatre_SheetObject'
   }
-
+  readonly $$isIdentityDerivationProvider: true = true
   readonly address: SheetObjectAddress
   readonly publicApi: TheatreSheetObject<$IntentionalAny>
   private readonly _initialValue = new Atom<SerializableMap>({})
@@ -128,6 +133,16 @@ export default class SheetObject {
     const {path} = getPointerParts(pointer)
 
     return val(pointerDeep(allValuesP as $FixMe, path)) as SerializableMap
+  }
+
+  getIdentityDerivation(path: Array<string | number>): IDerivation<unknown> {
+    /**
+     * @todo perf: Too much indirection here.
+     */
+    return prism(() => {
+      const allValuesP = val(this.getValues())
+      return val(pointerDeep(allValuesP as $FixMe, path)) as SerializableMap
+    })
   }
 
   /**
