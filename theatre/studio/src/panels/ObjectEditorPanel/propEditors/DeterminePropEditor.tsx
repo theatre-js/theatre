@@ -1,4 +1,4 @@
-import type {PropTypeConfig} from '@theatre/shared/propTypes'
+import type {PropTypeConfig} from '@theatre/core/propTypes'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import {getPointerParts} from '@theatre/dataverse'
 import React from 'react'

@@ -9,7 +9,7 @@ import type {
   PropTypeConfig,
   PropTypeConfig_Compound,
   PropTypeConfig_Enum,
-} from '@theatre/shared/propTypes'
+} from '@theatre/core/propTypes'
 
 const cachedDefaults = new WeakMap<PropTypeConfig, SerializableValue>()
 

@@ -6,7 +6,7 @@ import type {
 } from '@theatre/core/projects/TheatreProject'
 import TheatreProject from '@theatre/core/projects/TheatreProject'
 import globals from '@theatre/shared/globals'
-import * as types from '@theatre/shared/propTypes'
+import * as types from '@theatre/core/propTypes'
 import {InvalidArgumentError} from '@theatre/shared/utils/errors'
 import {validateName} from '@theatre/shared/utils/sanitizers'
 import userReadableTypeOfValue from '@theatre/shared/utils/userReadableTypeOfValue'

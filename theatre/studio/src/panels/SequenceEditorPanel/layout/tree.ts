@@ -3,8 +3,8 @@ import type {
   PropTypeConfig,
   PropTypeConfig_AllPrimitives,
   PropTypeConfig_Compound,
-} from '@theatre/shared/propTypes'
-import {isPropConfigComposite} from '@theatre/shared/propTypes/utils'
+} from '@theatre/core/propTypes'
+import {isPropConfigComposite} from '@theatre/shared/src/propTypes/utils'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import type {IPropPathToTrackIdTree} from '@theatre/core/sheetObjects/SheetObjectTemplate'
 import type Sheet from '@theatre/core/sheets/Sheet'
