@@ -137,7 +137,7 @@ export interface EditableState {
 
 export type EditorStore = {
   sheet: ISheet | null
-  uiSheet: ISheet | null
+  editorObject: ISheetObject<typeof editorSheetObjectConfig['props']> | null
   sheetObjects: {[uniqueName in string]?: BaseSheetObjectType}
   scene: Scene | null
   gl: WebGLRenderer | null
@@ -152,7 +152,6 @@ export type EditorStore = {
   transformControlsMode: TransformControlsMode
   transformControlsSpace: TransformControlsSpace
   viewportShading: ViewportShading
-  editorOpen: boolean
   sceneSnapshot: Scene | null
   editablesSnapshot: Record<string, EditableSnapshot> | null
   hdrPaths: string[]
@@ -170,7 +169,7 @@ export type EditorStore = {
     allowImplicitInstancing: boolean,
     editorCamera: ContainerProps['camera'],
     sheet: ISheet,
-    uiSheet: null | ISheet,
+    editorObject: null | ISheetObject<typeof editorSheetObjectConfig['props']>,
   ) => void
 
   setOrbitControlsRef: (
@@ -187,7 +186,6 @@ export type EditorStore = {
   setShowGrid: (show: boolean) => void
   setShowAxes: (show: boolean) => void
   setReferenceWindowSize: (size: number) => void
-  setEditorOpen: (open: boolean) => void
   createSnapshot: () => void
   setSheetObject: (uniqueName: string, sheetObject: BaseSheetObjectType) => void
   setSnapshotProxyObject: (
@@ -214,7 +212,7 @@ const config: StateCreator<EditorStore> = (set, get) => {
 
   return {
     sheet: null,
-    uiSheet: null,
+    editorObject: null,
     sheetObjects: {},
     scene: null,
     gl: null,
@@ -228,7 +226,6 @@ const config: StateCreator<EditorStore> = (set, get) => {
     transformControlsMode: 'translate',
     transformControlsSpace: 'world',
     viewportShading: 'rendered',
-    editorOpen: false,
     sceneSnapshot: null,
     editablesSnapshot: null,
     hdrPaths: [],
@@ -246,7 +243,7 @@ const config: StateCreator<EditorStore> = (set, get) => {
       allowImplicitInstancing,
       editorCamera,
       sheet,
-      uiSheet,
+      editorObject,
     ) => {
       set({
         scene,
@@ -254,7 +251,7 @@ const config: StateCreator<EditorStore> = (set, get) => {
         allowImplicitInstancing,
         initialEditorCamera: editorCamera,
         sheet,
-        uiSheet,
+        editorObject,
       })
     },
 
@@ -339,9 +336,6 @@ const config: StateCreator<EditorStore> = (set, get) => {
       set({showAxes: show})
     },
     setReferenceWindowSize: (size) => set({referenceWindowSize: size}),
-    setEditorOpen: (open) => {
-      set({editorOpen: open})
-    },
     createSnapshot: () => {
       set((state) => ({
         sceneSnapshot: state.scene?.clone() ?? null,
@@ -370,6 +364,12 @@ export type BindFunction = (options: {
   sheet: ISheet
 }) => (options: {gl: WebGLRenderer; scene: Scene}) => void
 
+const editorSheetObjectConfig = {
+  props: types.compound({
+    _isOpen: types.number(0),
+  }),
+}
+
 export const bindToCanvas: BindFunction = ({
   allowImplicitInstancing = false,
   editorCamera = {},
@@ -380,6 +380,9 @@ export const bindToCanvas: BindFunction = ({
       ? getProject('R3F Plugin').sheet('UI')
       : null
 
+  const editorSheetObject =
+    uiSheet?.object('Editor', null, editorSheetObjectConfig) || null
+
   return ({gl, scene}) => {
     const init = useEditorStore.getState().init
     init(
@@ -388,7 +391,7 @@ export const bindToCanvas: BindFunction = ({
       allowImplicitInstancing,
       {...{position: [20, 20, 20]}, ...editorCamera},
       sheet,
-      uiSheet,
+      editorSheetObject,
     )
   }
 }

@@ -145,10 +145,11 @@ const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
     setRenderMaterials(renderMaterials)
 
     return () => {
-      Object.entries(renderMaterials).forEach(([id, material]) => {
-        ;(sceneProxy.getObjectById(Number.parseInt(id)) as Mesh).material =
-          material
-      })
+      // @todo do we need this cleanup?
+      // Object.entries(renderMaterials).forEach(([id, material]) => {
+      //   ;(sceneProxy.getObjectById(Number.parseInt(id)) as Mesh).material =
+      //     material
+      // })
     }
   }, [sceneProxy])
 

@@ -11,9 +11,11 @@ import {Vector3} from 'three'
 import {IconButton, Button, SettingsButton} from './elements'
 import ViewportSettings from './ViewportSettings'
 import type {$FixMe} from '@theatre/shared/utils/types'
+import studio from '@theatre/studio'
 
 const UI: VFC = () => {
   const [
+    editorObject,
     transformControlsMode,
     transformControlsSpace,
     viewportShading,
@@ -21,9 +23,9 @@ const UI: VFC = () => {
     setTransformControlsMode,
     setTransformControlsSpace,
     setViewportShading,
-    setEditorOpen,
   ] = useEditorStore(
     (state) => [
+      state.editorObject,
       state.transformControlsMode,
       state.transformControlsSpace,
       state.viewportShading,
@@ -31,10 +33,11 @@ const UI: VFC = () => {
       state.setTransformControlsMode,
       state.setTransformControlsSpace,
       state.setViewportShading,
-      state.setEditorOpen,
     ],
     shallow,
   )
+
+  if (!editorObject) return <></>
 
   return (
     <div className="absolute inset-0 z-50 pointer-events-none">
@@ -134,7 +137,11 @@ const UI: VFC = () => {
           {/* Bottom-left corner*/}
           <Button
             className="absolute left-0 bottom-0 pointer-events-auto"
-            onClick={() => setEditorOpen(false)}
+            onClick={() =>
+              studio.transaction(({set}) => {
+                set(editorObject.props._isOpen, 0)
+              })
+            }
           >
             Close
           </Button>

@@ -1,4 +1,5 @@
 import type {VFC} from 'react'
+import {useLayoutEffect} from 'react'
 import React, {useEffect, useRef, Suspense} from 'react'
 import {Canvas} from '@react-three/fiber'
 import {useEditorStore} from '../store'
@@ -8,8 +9,9 @@ import root from 'react-shadow'
 import styles from '../bundle.css.txt'
 import UI from './UI'
 import ProxyManager from './ProxyManager'
-import {Button, Heading, Code, PortalManager, IdProvider} from './elements'
+import {Button, PortalManager, IdProvider} from './elements'
 import studio from '@theatre/studio'
+import {useVal} from '@theatre/dataverse-react'
 
 const EditorScene = () => {
   const orbitControlsRef = useRef<typeof OrbitControls>()
@@ -60,24 +62,25 @@ const EditorScene = () => {
 }
 
 const Editor: VFC = () => {
-  const [
-    sceneSnapshot,
-    editorOpen,
-    initialState,
-    initialEditorCamera,
-    setEditorOpen,
-    createSnapshot,
-  ] = useEditorStore(
-    (state) => [
-      state.sceneSnapshot,
-      state.editorOpen,
-      state.initialState,
-      state.initialEditorCamera,
-      state.setEditorOpen,
-      state.createSnapshot,
-    ],
-    shallow,
-  )
+  const [editorObject, sceneSnapshot, initialEditorCamera, createSnapshot] =
+    useEditorStore(
+      (state) => [
+        state.editorObject,
+        state.sceneSnapshot,
+        state.initialEditorCamera,
+        state.createSnapshot,
+      ],
+      shallow,
+    )
+
+  const editorOpen = !!useVal(editorObject?.props._isOpen)
+  useLayoutEffect(() => {
+    if (editorOpen) {
+      createSnapshot()
+    }
+  }, [editorOpen])
+
+  if (!editorObject) return <></>
 
   return (
     <root.div>
@@ -110,67 +113,15 @@ const Editor: VFC = () => {
 
                     <UI />
                   </>
-                ) : (
-                  <div className="flex justify-center items-center bg-white h-screen">
-                    <div className="flex flex-col gap-5 items-center ">
-                      <Heading className="text-2xl mb-4">
-                        No canvas connected
-                      </Heading>
-                      <div>
-                        Please use <Code>configure()</Code> and{' '}
-                        <Code>bind()</Code> to connect a canvas to React Three
-                        Editable.
-                      </div>
-                      <Code block>
-                        {`import React from 'react';
-import { Canvas } from '@react-three/fiber';
-import { configure, editable as e } from 'react-three-editable';
-
-const bind = configure({
-  localStorageNamespace: "MyProject"
-});
-
-const MyComponent = () => (
-  <Canvas onCreated={bind()}>
-    <e.mesh uniqueName="My First Editable Object">
-      <sphereBufferGeometry />
-      <meshStandardMaterial color="rebeccapurple" />
-    </e.mesh>
-  </Canvas>
-);`}
-                      </Code>
-                      <div>
-                        For more details, please consult the{' '}
-                        <a
-                          className="rounded-md font-medium text-green-600 hover:text-green-500"
-                          href="https://github.com/AndrewPrifer/react-three-editable"
-                          rel="noreferrer"
-                          target="_blank"
-                        >
-                          documentation
-                        </a>
-                        .
-                      </div>
-                      <Button
-                        className=""
-                        onClick={() => {
-                          setEditorOpen(false)
-                        }}
-                      >
-                        Close
-                      </Button>
-                    </div>
-                  </div>
-                )}
+                ) : null}
               </div>
               {editorOpen || (
                 <Button
                   className="fixed bottom-5 left-5"
                   onClick={() => {
-                    if (!sceneSnapshot) {
-                      createSnapshot()
-                    }
-                    setEditorOpen(true)
+                    studio.transaction(({set}) => {
+                      set(editorObject.props._isOpen, 1)
+                    })
                   }}
                 >
                   Editor
