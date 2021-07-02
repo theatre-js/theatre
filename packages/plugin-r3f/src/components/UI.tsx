@@ -139,7 +139,7 @@ const UI: VFC = () => {
             className="absolute left-0 bottom-0 pointer-events-auto"
             onClick={() =>
               studio.transaction(({set}) => {
-                set(editorObject.props._isOpen, 0)
+                set(editorObject.props.isOpen, false)
               })
             }
           >

@@ -73,7 +73,7 @@ const Editor: VFC = () => {
       shallow,
     )
 
-  const editorOpen = !!useVal(editorObject?.props._isOpen)
+  const editorOpen = useVal(editorObject?.props.isOpen)
   useLayoutEffect(() => {
     if (editorOpen) {
       createSnapshot()
@@ -120,7 +120,7 @@ const Editor: VFC = () => {
                   className="fixed bottom-5 left-5"
                   onClick={() => {
                     studio.transaction(({set}) => {
-                      set(editorObject.props._isOpen, 1)
+                      set(editorObject.props.isOpen, true)
                     })
                   }}
                 >

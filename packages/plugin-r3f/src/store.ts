@@ -366,7 +366,7 @@ export type BindFunction = (options: {
 
 const editorSheetObjectConfig = {
   props: types.compound({
-    _isOpen: types.number(0),
+    isOpen: types.boolean(false),
   }),
 }
 
