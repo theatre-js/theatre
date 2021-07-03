@@ -1,5 +1,5 @@
 import type {PropTypeConfig_Compound} from '@theatre/core/propTypes'
-import {isPropConfigComposite} from '@theatre/shared/src/propTypes/utils'
+import {isPropConfigComposite} from '@theatre/shared/propTypes/utils'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import {theme} from '@theatre/studio/css'
 import {voidFn} from '@theatre/shared/utils'

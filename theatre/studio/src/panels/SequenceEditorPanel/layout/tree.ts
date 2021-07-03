@@ -4,7 +4,7 @@ import type {
   PropTypeConfig_AllPrimitives,
   PropTypeConfig_Compound,
 } from '@theatre/core/propTypes'
-import {isPropConfigComposite} from '@theatre/shared/src/propTypes/utils'
+import {isPropConfigComposite} from '@theatre/shared/propTypes/utils'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import type {IPropPathToTrackIdTree} from '@theatre/core/sheetObjects/SheetObjectTemplate'
 import type Sheet from '@theatre/core/sheets/Sheet'

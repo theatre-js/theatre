@@ -17672,9 +17672,53 @@ resolve@1.17.0:
   languageName: node
   linkType: hard
 
-"theatre-7edd9a@workspace:theatre":
+"theatre-example-dom@workspace:packages/example-dom":
   version: 0.0.0-use.local
-  resolution: "theatre-7edd9a@workspace:theatre"
+  resolution: "theatre-example-dom@workspace:packages/example-dom"
+  dependencies:
+    "@theatre/core": "workspace:*"
+    "@theatre/studio": "workspace:*"
+    "@types/react": ^17.0.9
+    "@types/react-dom": ^17.0.6
+    parcel-bundler: ^1.12.5
+    react: ^17.0.2
+    react-dom: ^17.0.2
+    typescript: ^4.3.2
+  languageName: unknown
+  linkType: soft
+
+"theatre-monorepo@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "theatre-monorepo@workspace:."
+  dependencies:
+    "@babel/core": ^7.14.3
+    "@babel/plugin-proposal-class-properties": ^7.13.0
+    "@babel/plugin-proposal-nullish-coalescing-operator": ^7.14.2
+    "@babel/plugin-proposal-optional-chaining": ^7.14.2
+    "@babel/preset-env": ^7.14.4
+    "@babel/preset-react": ^7.13.13
+    "@babel/preset-typescript": ^7.13.0
+    "@typescript-eslint/eslint-plugin": ^4.26.0
+    "@typescript-eslint/parser": ^4.26.0
+    esbuild: ^0.12.5
+    esbuild-jest: ^0.5.0
+    eslint: ^7.27.0
+    eslint-plugin-jsx-a11y: ^6.4.1
+    eslint-plugin-react-hooks: ^4.2.0
+    eslint-plugin-unused-imports: ^1.1.1
+    husky: ^6.0.0
+    jest: ^27.0.3
+    lerna: ^4.0.0
+    lint-staged: ^11.0.0
+    node-gyp: ^8.1.0
+    prettier: ^2.3.1
+    typescript: ^4.3.2
+  languageName: unknown
+  linkType: soft
+
+"theatre@workspace:theatre":
+  version: 0.0.0-use.local
+  resolution: "theatre@workspace:theatre"
   dependencies:
     "@babel/cli": ^7.14.3
     "@babel/core": ^7.14.3
@@ -17745,50 +17789,6 @@ resolve@1.17.0:
     typescript: ^4.3.2
     url-loader: ^4.1.1
     uuid: ^8.3.2
-  languageName: unknown
-  linkType: soft
-
-"theatre-example-dom@workspace:packages/example-dom":
-  version: 0.0.0-use.local
-  resolution: "theatre-example-dom@workspace:packages/example-dom"
-  dependencies:
-    "@theatre/core": "workspace:*"
-    "@theatre/studio": "workspace:*"
-    "@types/react": ^17.0.9
-    "@types/react-dom": ^17.0.6
-    parcel-bundler: ^1.12.5
-    react: ^17.0.2
-    react-dom: ^17.0.2
-    typescript: ^4.3.2
-  languageName: unknown
-  linkType: soft
-
-"theatre-monorepo@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "theatre-monorepo@workspace:."
-  dependencies:
-    "@babel/core": ^7.14.3
-    "@babel/plugin-proposal-class-properties": ^7.13.0
-    "@babel/plugin-proposal-nullish-coalescing-operator": ^7.14.2
-    "@babel/plugin-proposal-optional-chaining": ^7.14.2
-    "@babel/preset-env": ^7.14.4
-    "@babel/preset-react": ^7.13.13
-    "@babel/preset-typescript": ^7.13.0
-    "@typescript-eslint/eslint-plugin": ^4.26.0
-    "@typescript-eslint/parser": ^4.26.0
-    esbuild: ^0.12.5
-    esbuild-jest: ^0.5.0
-    eslint: ^7.27.0
-    eslint-plugin-jsx-a11y: ^6.4.1
-    eslint-plugin-react-hooks: ^4.2.0
-    eslint-plugin-unused-imports: ^1.1.1
-    husky: ^6.0.0
-    jest: ^27.0.3
-    lerna: ^4.0.0
-    lint-staged: ^11.0.0
-    node-gyp: ^8.1.0
-    prettier: ^2.3.1
-    typescript: ^4.3.2
   languageName: unknown
   linkType: soft
 

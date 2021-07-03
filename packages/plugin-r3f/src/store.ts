@@ -22,29 +22,25 @@ export type TransformControlsMode = 'translate' | 'rotate' | 'scale'
 export type TransformControlsSpace = 'world' | 'local'
 export type ViewportShading = 'wireframe' | 'flat' | 'solid' | 'rendered'
 
-export const baseSheetObjectType = {
-  props: types.compound({
-    position: types.compound({
-      x: types.number(0),
-      y: types.number(0),
-      z: types.number(0),
-    }),
-    rotation: types.compound({
-      x: types.number(0),
-      y: types.number(0),
-      z: types.number(0),
-    }),
-    scale: types.compound({
-      x: types.number(1),
-      y: types.number(1),
-      z: types.number(1),
-    }),
+export const baseSheetObjectType = types.compound({
+  position: types.compound({
+    x: types.number(0),
+    y: types.number(0),
+    z: types.number(0),
   }),
-}
+  rotation: types.compound({
+    x: types.number(0),
+    y: types.number(0),
+    z: types.number(0),
+  }),
+  scale: types.compound({
+    x: types.number(1),
+    y: types.number(1),
+    z: types.number(1),
+  }),
+})
 
-export type BaseSheetObjectType = ISheetObject<
-  typeof baseSheetObjectType['props']
->
+export type BaseSheetObjectType = ISheetObject<typeof baseSheetObjectType>
 
 export interface AbstractEditable<T extends EditableType> {
   type: T
@@ -137,7 +133,7 @@ export interface EditableState {
 
 export type EditorStore = {
   sheet: ISheet | null
-  editorObject: ISheetObject<typeof editorSheetObjectConfig['props']> | null
+  editorObject: ISheetObject<typeof editorSheetObjectConfig> | null
   sheetObjects: {[uniqueName in string]?: BaseSheetObjectType}
   scene: Scene | null
   gl: WebGLRenderer | null
@@ -157,7 +153,7 @@ export type EditorStore = {
     allowImplicitInstancing: boolean,
     editorCamera: ContainerProps['camera'],
     sheet: ISheet,
-    editorObject: null | ISheetObject<typeof editorSheetObjectConfig['props']>,
+    editorObject: null | ISheetObject<typeof editorSheetObjectConfig>,
   ) => void
 
   setOrbitControlsRef: (
@@ -292,29 +288,27 @@ export type BindFunction = (options: {
   sheet: ISheet
 }) => (options: {gl: WebGLRenderer; scene: Scene}) => void
 
-const editorSheetObjectConfig = {
-  props: types.compound({
-    isOpen: types.boolean(false),
-    showAxes: types.boolean(true),
-    showGrid: types.boolean(true),
-    showOverlayIcons: types.boolean(false),
-    referenceWindowSize: types.number(120, {min: 0, max: 800}),
-    transformControlsMode: types.stringLiteral<TransformControlsMode>(
-      'translate',
-      ['translate', 'rotate', 'scale'],
-    ),
-    transformControlsSpace: types.stringLiteral<TransformControlsSpace>(
-      'world',
-      ['local', 'world'],
-    ),
-    viewportShading: types.stringLiteral<ViewportShading>('rendered', [
-      'flat',
-      'rendered',
-      'solid',
-      'wireframe',
-    ]),
-  }),
-}
+const editorSheetObjectConfig = types.compound({
+  isOpen: types.boolean(false),
+  showAxes: types.boolean(true),
+  showGrid: types.boolean(true),
+  showOverlayIcons: types.boolean(false),
+  referenceWindowSize: types.number(120, {min: 0, max: 800}),
+  transformControlsMode: types.stringLiteral<TransformControlsMode>(
+    'translate',
+    ['translate', 'rotate', 'scale'],
+  ),
+  transformControlsSpace: types.stringLiteral<TransformControlsSpace>('world', [
+    'local',
+    'world',
+  ]),
+  viewportShading: types.stringLiteral<ViewportShading>('rendered', [
+    'flat',
+    'rendered',
+    'solid',
+    'wireframe',
+  ]),
+})
 
 export const bindToCanvas: BindFunction = ({
   allowImplicitInstancing = false,

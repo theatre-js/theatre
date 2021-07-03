@@ -6,12 +6,10 @@ import type {IProject, ISheet, ISheetObject} from '@theatre/core'
 import {types as t} from '@theatre/core'
 import type {IScrub, IStudio} from '@theatre/studio'
 
-const boxObjectConfig = {
-  props: t.compound({
-    x: t.number(0),
-    y: t.number(0),
-  }),
-}
+const boxObjectConfig = t.compound({
+  x: t.number(0),
+  y: t.number(0),
+})
 
 const Box: React.FC<{
   id: string

@@ -13,9 +13,7 @@ import userReadableTypeOfValue from '@theatre/shared/utils/userReadableTypeOfVal
 
 export type SheetObjectConfig<
   Props extends PropTypeConfig_Compound<$IntentionalAny>,
-> = {
-  props: Props
-}
+> = Props
 
 export interface ISheet {
   readonly type: 'Theatre_Sheet_PublicAPI'
