@@ -13,6 +13,7 @@ import ViewportSettings from './ViewportSettings'
 import type {$FixMe} from '@theatre/shared/utils/types'
 import studio from '@theatre/studio'
 import {getSelected} from './useSelected'
+import {useVal} from '@theatre/dataverse-react'
 
 const UI: VFC = () => {
   const [
@@ -20,7 +21,6 @@ const UI: VFC = () => {
     transformControlsMode,
     transformControlsSpace,
     viewportShading,
-    referenceWindowSize,
     setTransformControlsMode,
     setTransformControlsSpace,
     setViewportShading,
@@ -30,13 +30,15 @@ const UI: VFC = () => {
       state.transformControlsMode,
       state.transformControlsSpace,
       state.viewportShading,
-      state.referenceWindowSize,
       state.setTransformControlsMode,
       state.setTransformControlsSpace,
       state.setViewportShading,
     ],
     shallow,
   )
+
+  const referenceWindowSize =
+    useVal(editorObject?.props.referenceWindowSize) ?? 120
 
   if (!editorObject) return <></>
 

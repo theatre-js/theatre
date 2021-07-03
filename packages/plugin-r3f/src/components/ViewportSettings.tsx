@@ -8,19 +8,16 @@ import {useVal} from '@theatre/dataverse-react'
 import studio from '@theatre/studio'
 
 const ViewportShadingSettings: VFC = () => {
-  const [editorObject, referenceWindowSize, setReferenceWindowSize] =
-    useEditorStore(
-      (state) => [
-        state.editorObject,
-        state.referenceWindowSize,
-        state.setReferenceWindowSize,
-      ],
-      shallow,
-    )
+  const [editorObject] = useEditorStore(
+    (state) => [state.editorObject],
+    shallow,
+  )
 
   const showAxes = useVal(editorObject?.props.showAxes) ?? true
   const showGrid = useVal(editorObject?.props.showGrid) ?? true
   const showOverlayIcons = useVal(editorObject?.props.showOverlayIcons) ?? false
+  const referenceWindowSize =
+    useVal(editorObject?.props.referenceWindowSize) ?? 120
 
   return (
     <div className="flex flex-col gap-3">
@@ -76,7 +73,12 @@ const ViewportShadingSettings: VFC = () => {
               min={120}
               max={400}
               onChange={(event) =>
-                setReferenceWindowSize(Number(event.target.value))
+                studio.transaction(({set}) => {
+                  set(
+                    editorObject!.props.referenceWindowSize,
+                    Number(event.target.value),
+                  )
+                })
               }
             />
           </div>

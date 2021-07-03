@@ -155,7 +155,6 @@ export type EditorStore = {
   hdrPaths: string[]
   selectedHdr: string | null
   useHdrAsBackground: boolean
-  referenceWindowSize: number
   initialEditorCamera: ContainerProps['camera']
 
   init: (
@@ -177,7 +176,6 @@ export type EditorStore = {
   setTransformControlsSpace: (mode: TransformControlsSpace) => void
   setViewportShading: (mode: ViewportShading) => void
   setUseHdrAsBackground: (use: boolean) => void
-  setReferenceWindowSize: (size: number) => void
   createSnapshot: () => void
   setSheetObject: (uniqueName: string, sheetObject: BaseSheetObjectType) => void
   setSnapshotProxyObject: (
@@ -221,7 +219,6 @@ const config: StateCreator<EditorStore> = (set, get) => {
     hdrPaths: [],
     selectedHdr: null,
     useHdrAsBackground: false,
-    referenceWindowSize: 120,
     initialEditorCamera: {},
 
     init: (
@@ -315,7 +312,6 @@ const config: StateCreator<EditorStore> = (set, get) => {
       set({useHdrAsBackground: use})
     },
 
-    setReferenceWindowSize: (size) => set({referenceWindowSize: size}),
     createSnapshot: () => {
       set((state) => ({
         sceneSnapshot: state.scene?.clone() ?? null,
@@ -350,6 +346,7 @@ const editorSheetObjectConfig = {
     showAxes: types.boolean(true),
     showGrid: types.boolean(true),
     showOverlayIcons: types.boolean(false),
+    referenceWindowSize: types.number(120, {min: 0, max: 800}),
   }),
 }
 
