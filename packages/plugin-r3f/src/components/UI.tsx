@@ -16,12 +16,8 @@ import {getSelected} from './useSelected'
 import {useVal} from '@theatre/dataverse-react'
 
 const UI: VFC = () => {
-  const [editorObject, viewportShading, setViewportShading] = useEditorStore(
-    (state) => [
-      state.editorObject,
-      state.viewportShading,
-      state.setViewportShading,
-    ],
+  const [editorObject] = useEditorStore(
+    (state) => [state.editorObject],
     shallow,
   )
 
@@ -31,6 +27,8 @@ const UI: VFC = () => {
     useVal(editorObject?.props.transformControlsMode) ?? 'translate'
   const transformControlsSpace =
     useVal(editorObject?.props.transformControlsSpace) ?? 'world'
+  const viewportShading =
+    useVal(editorObject?.props.viewportShading) ?? 'rendered'
 
   if (!editorObject) return <></>
 
@@ -63,7 +61,11 @@ const UI: VFC = () => {
               <div className="pointer-events-auto">
                 <ViewportShadingSelect
                   value={viewportShading}
-                  onChange={setViewportShading}
+                  onChange={(shading) => {
+                    studio.transaction(({set}) => {
+                      set(editorObject.props.viewportShading, shading)
+                    })
+                  }}
                 />
               </div>
               <div className="pointer-events-auto">

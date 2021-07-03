@@ -147,7 +147,6 @@ export type EditorStore = {
   editables: Record<string, Editable>
   // this will come in handy when we start supporting multiple canvases
   canvasName: string
-  viewportShading: ViewportShading
   sceneSnapshot: Scene | null
   editablesSnapshot: Record<string, EditableSnapshot> | null
   hdrPaths: string[]
@@ -170,7 +169,6 @@ export type EditorStore = {
   addEditable: <T extends EditableType>(type: T, uniqueName: string) => void
   removeEditable: (uniqueName: string) => void
   setSelectedHdr: (hdr: string | null) => void
-  setViewportShading: (mode: ViewportShading) => void
   setUseHdrAsBackground: (use: boolean) => void
   createSnapshot: () => void
   setSheetObject: (uniqueName: string, sheetObject: BaseSheetObjectType) => void
@@ -207,7 +205,6 @@ const config: StateCreator<EditorStore> = (set, get) => {
     helpersRoot: new Group(),
     editables: {},
     canvasName: 'default',
-    viewportShading: 'rendered',
     sceneSnapshot: null,
     editablesSnapshot: null,
     hdrPaths: [],
@@ -292,9 +289,6 @@ const config: StateCreator<EditorStore> = (set, get) => {
     setSelectedHdr: (hdr) => {
       set({selectedHdr: hdr})
     },
-    setViewportShading: (mode) => {
-      set({viewportShading: mode})
-    },
 
     setUseHdrAsBackground: (use) => {
       set({useHdrAsBackground: use})
@@ -343,6 +337,12 @@ const editorSheetObjectConfig = {
       'world',
       ['local', 'world'],
     ),
+    viewportShading: types.stringLiteral<ViewportShading>('rendered', [
+      'flat',
+      'rendered',
+      'solid',
+      'wireframe',
+    ]),
   }),
 }
 

@@ -32,21 +32,18 @@ type IEditableProxy = {
 
 const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
   const isBeingEdited = useRef(false)
-  const [editorObject, sceneSnapshot, viewportShading, sheetObjects] =
-    useEditorStore(
-      (state) => [
-        state.editorObject,
-        state.sceneSnapshot,
-        state.viewportShading,
-        state.sheetObjects,
-      ],
-      shallow,
-    )
+  const [editorObject, sceneSnapshot, sheetObjects] = useEditorStore(
+    (state) => [state.editorObject, state.sceneSnapshot, state.sheetObjects],
+    shallow,
+  )
   const transformControlsMode =
     useVal(editorObject?.props.transformControlsMode) ?? 'translate'
 
   const transformControlsSpace =
     useVal(editorObject?.props.transformControlsSpace) ?? 'world'
+
+  const viewportShading =
+    useVal(editorObject?.props.viewportShading) ?? 'rendered'
 
   const sceneProxy = useMemo(() => sceneSnapshot?.clone(), [sceneSnapshot])
   const [editableProxies, setEditableProxies] = useState<{
