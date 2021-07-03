@@ -23,6 +23,7 @@ import {
 import type {IconType} from 'react-icons'
 import studio from '@theatre/studio'
 import {useSelected} from './useSelected'
+import {useVal} from '@theatre/dataverse-react'
 
 export interface EditableProxyProps {
   editableName: string
@@ -36,12 +37,13 @@ const EditableProxy: VFC<EditableProxyProps> = ({
   editableType,
   object,
 }) => {
-  const [showOverlayIcons, setSnapshotProxyObject] = useEditorStore(
-    (state) => [state.showOverlayIcons, state.setSnapshotProxyObject],
+  const [editorObject, setSnapshotProxyObject] = useEditorStore(
+    (state) => [state.editorObject, state.setSnapshotProxyObject],
     shallow,
   )
 
   const selected = useSelected()
+  const showOverlayIcons = useVal(editorObject?.props.showOverlayIcons) ?? false
 
   useEffect(() => {
     setSnapshotProxyObject(object, uniqueName)

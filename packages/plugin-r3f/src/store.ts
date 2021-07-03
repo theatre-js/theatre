@@ -154,7 +154,6 @@ export type EditorStore = {
   editablesSnapshot: Record<string, EditableSnapshot> | null
   hdrPaths: string[]
   selectedHdr: string | null
-  showOverlayIcons: boolean
   useHdrAsBackground: boolean
   referenceWindowSize: number
   initialEditorCamera: ContainerProps['camera']
@@ -177,7 +176,6 @@ export type EditorStore = {
   setTransformControlsMode: (mode: TransformControlsMode) => void
   setTransformControlsSpace: (mode: TransformControlsSpace) => void
   setViewportShading: (mode: ViewportShading) => void
-  setShowOverlayIcons: (show: boolean) => void
   setUseHdrAsBackground: (use: boolean) => void
   setReferenceWindowSize: (size: number) => void
   createSnapshot: () => void
@@ -222,7 +220,6 @@ const config: StateCreator<EditorStore> = (set, get) => {
     editablesSnapshot: null,
     hdrPaths: [],
     selectedHdr: null,
-    showOverlayIcons: false,
     useHdrAsBackground: false,
     referenceWindowSize: 120,
     initialEditorCamera: {},
@@ -313,9 +310,7 @@ const config: StateCreator<EditorStore> = (set, get) => {
     setViewportShading: (mode) => {
       set({viewportShading: mode})
     },
-    setShowOverlayIcons: (show) => {
-      set({showOverlayIcons: show})
-    },
+
     setUseHdrAsBackground: (use) => {
       set({useHdrAsBackground: use})
     },
@@ -354,6 +349,7 @@ const editorSheetObjectConfig = {
     isOpen: types.boolean(false),
     showAxes: types.boolean(true),
     showGrid: types.boolean(true),
+    showOverlayIcons: types.boolean(false),
   }),
 }
 

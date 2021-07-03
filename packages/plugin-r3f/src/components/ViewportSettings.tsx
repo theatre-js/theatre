@@ -8,25 +8,19 @@ import {useVal} from '@theatre/dataverse-react'
 import studio from '@theatre/studio'
 
 const ViewportShadingSettings: VFC = () => {
-  const [
-    editorObject,
-    showOverlayIcons,
-    referenceWindowSize,
-    setShowOverlayIcons,
-    setReferenceWindowSize,
-  ] = useEditorStore(
-    (state) => [
-      state.editorObject,
-      state.showOverlayIcons,
-      state.referenceWindowSize,
-      state.setShowOverlayIcons,
-      state.setReferenceWindowSize,
-    ],
-    shallow,
-  )
+  const [editorObject, referenceWindowSize, setReferenceWindowSize] =
+    useEditorStore(
+      (state) => [
+        state.editorObject,
+        state.referenceWindowSize,
+        state.setReferenceWindowSize,
+      ],
+      shallow,
+    )
 
   const showAxes = useVal(editorObject?.props.showAxes) ?? true
   const showGrid = useVal(editorObject?.props.showGrid) ?? true
+  const showOverlayIcons = useVal(editorObject?.props.showOverlayIcons) ?? false
 
   return (
     <div className="flex flex-col gap-3">
@@ -34,7 +28,11 @@ const ViewportShadingSettings: VFC = () => {
         <Checkbox
           // @ts-ignore
           checked={showOverlayIcons}
-          onChange={() => setShowOverlayIcons(!showOverlayIcons)}
+          onChange={() =>
+            studio.transaction(({set}) => {
+              set(editorObject!.props.showOverlayIcons, !showOverlayIcons)
+            })
+          }
         >
           Show overlay icons
         </Checkbox>
