@@ -157,7 +157,6 @@ export type EditorStore = {
   showOverlayIcons: boolean
   useHdrAsBackground: boolean
   showGrid: boolean
-  showAxes: boolean
   referenceWindowSize: number
   initialEditorCamera: ContainerProps['camera']
 
@@ -182,7 +181,6 @@ export type EditorStore = {
   setShowOverlayIcons: (show: boolean) => void
   setUseHdrAsBackground: (use: boolean) => void
   setShowGrid: (show: boolean) => void
-  setShowAxes: (show: boolean) => void
   setReferenceWindowSize: (size: number) => void
   createSnapshot: () => void
   setSheetObject: (uniqueName: string, sheetObject: BaseSheetObjectType) => void
@@ -229,7 +227,6 @@ const config: StateCreator<EditorStore> = (set, get) => {
     showOverlayIcons: false,
     useHdrAsBackground: false,
     showGrid: true,
-    showAxes: true,
     referenceWindowSize: 120,
     initialEditorCamera: {},
 
@@ -328,9 +325,7 @@ const config: StateCreator<EditorStore> = (set, get) => {
     setShowGrid: (show) => {
       set({showGrid: show})
     },
-    setShowAxes: (show) => {
-      set({showAxes: show})
-    },
+
     setReferenceWindowSize: (size) => set({referenceWindowSize: size}),
     createSnapshot: () => {
       set((state) => ({
@@ -363,6 +358,7 @@ export type BindFunction = (options: {
 const editorSheetObjectConfig = {
   props: types.compound({
     isOpen: types.boolean(false),
+    showAxes: types.boolean(true),
   }),
 }
 

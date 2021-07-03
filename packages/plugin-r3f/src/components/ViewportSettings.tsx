@@ -4,30 +4,36 @@ import {useEditorStore} from '../store'
 import shallow from 'zustand/shallow'
 import {Checkbox, FormControl, Slider} from './elements'
 import UnstyledFormLabel from './elements/UnstyledFormLabel'
+import {useVal} from '@theatre/dataverse-react'
+import studio from '@theatre/studio'
 
 const ViewportShadingSettings: VFC = () => {
   const [
+    editorObject,
     showOverlayIcons,
     showGrid,
-    showAxes,
+    _showAxes,
     referenceWindowSize,
     setShowOverlayIcons,
     setShowGrid,
-    setShowAxes,
+    // setShowAxes,
     setReferenceWindowSize,
   ] = useEditorStore(
     (state) => [
+      state.editorObject,
       state.showOverlayIcons,
       state.showGrid,
       state.showAxes,
       state.referenceWindowSize,
       state.setShowOverlayIcons,
       state.setShowGrid,
-      state.setShowAxes,
+      // state.setShowAxes,
       state.setReferenceWindowSize,
     ],
     shallow,
   )
+
+  const showAxes = useVal(editorObject?.props.showAxes) ?? true
 
   return (
     <div className="flex flex-col gap-3">
@@ -53,7 +59,11 @@ const ViewportShadingSettings: VFC = () => {
         <Checkbox
           // @ts-ignore
           checked={showAxes}
-          onChange={() => setShowAxes(!showAxes)}
+          onChange={() =>
+            studio.transaction(({set}) => {
+              set(editorObject!.props.showAxes, !showAxes)
+            })
+          }
         >
           Show axes
         </Checkbox>
