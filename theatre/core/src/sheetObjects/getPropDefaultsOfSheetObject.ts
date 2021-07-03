@@ -19,7 +19,7 @@ const cachedDefaults = new WeakMap<PropTypeConfig, SerializableValue>()
 export default function getPropDefaultsOfSheetObject(
   config: SheetObjectConfig<$IntentionalAny>,
 ): SerializableMap {
-  return getDefaultsOfPropTypeConfig(config.props) as $IntentionalAny
+  return getDefaultsOfPropTypeConfig(config) as $IntentionalAny
 }
 
 function getDefaultsOfPropTypeConfig(

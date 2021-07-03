@@ -22,9 +22,8 @@ describe(`SheetObjectTemplate`, () => {
             obj: {
               trackIdByPropPath: {
                 [encodePathToProp(['position', 'x'])]: asSequenceTrackId('x'),
-                [encodePathToProp(['position', 'invalid'])]: asSequenceTrackId(
-                  'invalidTrack',
-                ),
+                [encodePathToProp(['position', 'invalid'])]:
+                  asSequenceTrackId('invalidTrack'),
               },
               trackData: {
                 x: null as $IntentionalAny,
@@ -78,9 +77,8 @@ describe(`SheetObjectTemplate`, () => {
             obj: {
               trackIdByPropPath: {
                 [encodePathToProp(['position', 'x'])]: asSequenceTrackId('x'),
-                [encodePathToProp(['position', 'invalid'])]: asSequenceTrackId(
-                  'invalidTrack',
-                ),
+                [encodePathToProp(['position', 'invalid'])]:
+                  asSequenceTrackId('invalidTrack'),
               },
               trackData: {
                 x: null as $IntentionalAny,
@@ -91,6 +89,7 @@ describe(`SheetObjectTemplate`, () => {
         },
       })
 
+      debugger
       const iter = iterateOver(
         obj.template.getMapOfValidSequenceTracks_forStudio(),
       )
