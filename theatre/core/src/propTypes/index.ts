@@ -57,7 +57,27 @@ export const string = (defaultValue: string): PropTypeConfig_String => {
   }
 }
 
-type IValidSheetountProps = {
+export interface PropTypeConfig_StringLiteral<T extends string>
+  extends IBasePropType<T> {
+  type: 'stringLiteral'
+  default: T
+  options: ReadonlyArray<T>
+}
+
+export function stringLiteral<T extends string>(
+  defaultValue: T,
+  options: ReadonlyArray<T>,
+): PropTypeConfig_StringLiteral<T> {
+  return {
+    type: 'stringLiteral',
+    default: defaultValue,
+    options: [...options],
+    [s]: 'TheatrePropType',
+    valueType: null as $IntentionalAny,
+  }
+}
+
+type IValidCompoundProps = {
   [K in string]: PropTypeConfig
 }
 
@@ -66,13 +86,13 @@ type IValidSheetountProps = {
  * I didn't want to use 'object' as it could get confused with
  * SheetObject.
  */
-export interface PropTypeConfig_Compound<Props extends IValidSheetountProps>
+export interface PropTypeConfig_Compound<Props extends IValidCompoundProps>
   extends IBasePropType<{[K in keyof Props]: Props[K]['valueType']}> {
   type: 'compound'
   props: Record<string, PropTypeConfig>
 }
 
-export const compound = <Props extends IValidSheetountProps>(
+export const compound = <Props extends IValidCompoundProps>(
   props: Props,
 ): PropTypeConfig_Compound<Props> => {
   return {
@@ -93,6 +113,7 @@ export type PropTypeConfig_AllPrimitives =
   | PropTypeConfig_Number
   | PropTypeConfig_Boolean
   | PropTypeConfig_String
+  | PropTypeConfig_StringLiteral<$IntentionalAny>
 
 export type PropTypeConfig =
   | PropTypeConfig_AllPrimitives

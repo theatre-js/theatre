@@ -65,6 +65,7 @@ const propEditorByPropType: {
   string: () => <>Implement me</>,
   enum: () => <>Implement me</>,
   boolean: () => <>Implement me</>,
+  stringLiteral: () => <>Implement me</>,
 }
 
 const DeterminePropEditor: React.FC<{
