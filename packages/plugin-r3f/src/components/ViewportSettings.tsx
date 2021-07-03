@@ -11,29 +11,22 @@ const ViewportShadingSettings: VFC = () => {
   const [
     editorObject,
     showOverlayIcons,
-    showGrid,
-    _showAxes,
     referenceWindowSize,
     setShowOverlayIcons,
-    setShowGrid,
-    // setShowAxes,
     setReferenceWindowSize,
   ] = useEditorStore(
     (state) => [
       state.editorObject,
       state.showOverlayIcons,
-      state.showGrid,
-      state.showAxes,
       state.referenceWindowSize,
       state.setShowOverlayIcons,
-      state.setShowGrid,
-      // state.setShowAxes,
       state.setReferenceWindowSize,
     ],
     shallow,
   )
 
   const showAxes = useVal(editorObject?.props.showAxes) ?? true
+  const showGrid = useVal(editorObject?.props.showGrid) ?? true
 
   return (
     <div className="flex flex-col gap-3">
@@ -50,7 +43,11 @@ const ViewportShadingSettings: VFC = () => {
         <Checkbox
           // @ts-ignore
           checked={showGrid}
-          onChange={() => setShowGrid(!showGrid)}
+          onChange={() =>
+            studio.transaction(({set}) => {
+              set(editorObject!.props.showGrid, !showGrid)
+            })
+          }
         >
           Show grid
         </Checkbox>

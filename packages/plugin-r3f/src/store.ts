@@ -156,7 +156,6 @@ export type EditorStore = {
   selectedHdr: string | null
   showOverlayIcons: boolean
   useHdrAsBackground: boolean
-  showGrid: boolean
   referenceWindowSize: number
   initialEditorCamera: ContainerProps['camera']
 
@@ -180,7 +179,6 @@ export type EditorStore = {
   setViewportShading: (mode: ViewportShading) => void
   setShowOverlayIcons: (show: boolean) => void
   setUseHdrAsBackground: (use: boolean) => void
-  setShowGrid: (show: boolean) => void
   setReferenceWindowSize: (size: number) => void
   createSnapshot: () => void
   setSheetObject: (uniqueName: string, sheetObject: BaseSheetObjectType) => void
@@ -226,7 +224,6 @@ const config: StateCreator<EditorStore> = (set, get) => {
     selectedHdr: null,
     showOverlayIcons: false,
     useHdrAsBackground: false,
-    showGrid: true,
     referenceWindowSize: 120,
     initialEditorCamera: {},
 
@@ -322,9 +319,6 @@ const config: StateCreator<EditorStore> = (set, get) => {
     setUseHdrAsBackground: (use) => {
       set({useHdrAsBackground: use})
     },
-    setShowGrid: (show) => {
-      set({showGrid: show})
-    },
 
     setReferenceWindowSize: (size) => set({referenceWindowSize: size}),
     createSnapshot: () => {
@@ -359,6 +353,7 @@ const editorSheetObjectConfig = {
   props: types.compound({
     isOpen: types.boolean(false),
     showAxes: types.boolean(true),
+    showGrid: types.boolean(true),
   }),
 }
 

@@ -17,23 +17,24 @@ const EditorScene = () => {
   const orbitControlsRef = useRef<typeof OrbitControls>()
 
   const [
+    editorObject,
     selectedHdr,
     useHdrAsBackground,
-    showGrid,
-    showAxes,
     helpersRoot,
     setOrbitControlsRef,
   ] = useEditorStore(
     (state) => [
+      state.editorObject,
       state.selectedHdr,
       state.useHdrAsBackground,
-      state.showGrid,
-      state.showAxes,
       state.helpersRoot,
       state.setOrbitControlsRef,
     ],
     shallow,
   )
+
+  const showGrid = useVal(editorObject?.props.showGrid) ?? true
+  const showAxes = useVal(editorObject?.props.showAxes) ?? true
 
   useEffect(() => {
     setOrbitControlsRef(orbitControlsRef)
