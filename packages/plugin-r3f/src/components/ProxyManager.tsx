@@ -18,6 +18,7 @@ import studio from '@theatre/studio'
 import type {ISheetObject} from '@theatre/core'
 import type {$FixMe} from '../types'
 import {useSelected} from './useSelected'
+import {useVal} from '@theatre/dataverse-react'
 
 export interface ProxyManagerProps {
   orbitControlsRef: React.MutableRefObject<typeof OrbitControls | undefined>
@@ -31,22 +32,22 @@ type IEditableProxy = {
 
 const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
   const isBeingEdited = useRef(false)
-  const [
-    sceneSnapshot,
-    transformControlsMode,
-    transformControlsSpace,
-    viewportShading,
-    sheetObjects,
-  ] = useEditorStore(
-    (state) => [
-      state.sceneSnapshot,
-      state.transformControlsMode,
-      state.transformControlsSpace,
-      state.viewportShading,
-      state.sheetObjects,
-    ],
-    shallow,
-  )
+  const [editorObject, sceneSnapshot, viewportShading, sheetObjects] =
+    useEditorStore(
+      (state) => [
+        state.editorObject,
+        state.sceneSnapshot,
+        state.viewportShading,
+        state.sheetObjects,
+      ],
+      shallow,
+    )
+  const transformControlsMode =
+    useVal(editorObject?.props.transformControlsMode) ?? 'translate'
+
+  const transformControlsSpace =
+    useVal(editorObject?.props.transformControlsSpace) ?? 'world'
+
   const sceneProxy = useMemo(() => sceneSnapshot?.clone(), [sceneSnapshot])
   const [editableProxies, setEditableProxies] = useState<{
     [name: string]: IEditableProxy

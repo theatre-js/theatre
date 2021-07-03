@@ -147,8 +147,6 @@ export type EditorStore = {
   editables: Record<string, Editable>
   // this will come in handy when we start supporting multiple canvases
   canvasName: string
-  transformControlsMode: TransformControlsMode
-  transformControlsSpace: TransformControlsSpace
   viewportShading: ViewportShading
   sceneSnapshot: Scene | null
   editablesSnapshot: Record<string, EditableSnapshot> | null
@@ -172,8 +170,6 @@ export type EditorStore = {
   addEditable: <T extends EditableType>(type: T, uniqueName: string) => void
   removeEditable: (uniqueName: string) => void
   setSelectedHdr: (hdr: string | null) => void
-  setTransformControlsMode: (mode: TransformControlsMode) => void
-  setTransformControlsSpace: (mode: TransformControlsSpace) => void
   setViewportShading: (mode: ViewportShading) => void
   setUseHdrAsBackground: (use: boolean) => void
   createSnapshot: () => void
@@ -211,8 +207,6 @@ const config: StateCreator<EditorStore> = (set, get) => {
     helpersRoot: new Group(),
     editables: {},
     canvasName: 'default',
-    transformControlsMode: 'translate',
-    transformControlsSpace: 'world',
     viewportShading: 'rendered',
     sceneSnapshot: null,
     editablesSnapshot: null,
@@ -298,12 +292,6 @@ const config: StateCreator<EditorStore> = (set, get) => {
     setSelectedHdr: (hdr) => {
       set({selectedHdr: hdr})
     },
-    setTransformControlsMode: (mode) => {
-      set({transformControlsMode: mode})
-    },
-    setTransformControlsSpace: (mode) => {
-      set({transformControlsSpace: mode})
-    },
     setViewportShading: (mode) => {
       set({viewportShading: mode})
     },
@@ -347,6 +335,14 @@ const editorSheetObjectConfig = {
     showGrid: types.boolean(true),
     showOverlayIcons: types.boolean(false),
     referenceWindowSize: types.number(120, {min: 0, max: 800}),
+    transformControlsMode: types.stringLiteral<TransformControlsMode>(
+      'translate',
+      ['translate', 'rotate', 'scale'],
+    ),
+    transformControlsSpace: types.stringLiteral<TransformControlsSpace>(
+      'world',
+      ['local', 'world'],
+    ),
   }),
 }
 

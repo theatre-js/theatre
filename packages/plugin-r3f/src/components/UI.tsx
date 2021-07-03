@@ -16,22 +16,10 @@ import {getSelected} from './useSelected'
 import {useVal} from '@theatre/dataverse-react'
 
 const UI: VFC = () => {
-  const [
-    editorObject,
-    transformControlsMode,
-    transformControlsSpace,
-    viewportShading,
-    setTransformControlsMode,
-    setTransformControlsSpace,
-    setViewportShading,
-  ] = useEditorStore(
+  const [editorObject, viewportShading, setViewportShading] = useEditorStore(
     (state) => [
       state.editorObject,
-      state.transformControlsMode,
-      state.transformControlsSpace,
       state.viewportShading,
-      state.setTransformControlsMode,
-      state.setTransformControlsSpace,
       state.setViewportShading,
     ],
     shallow,
@@ -39,6 +27,10 @@ const UI: VFC = () => {
 
   const referenceWindowSize =
     useVal(editorObject?.props.referenceWindowSize) ?? 120
+  const transformControlsMode =
+    useVal(editorObject?.props.transformControlsMode) ?? 'translate'
+  const transformControlsSpace =
+    useVal(editorObject?.props.transformControlsSpace) ?? 'world'
 
   if (!editorObject) return <></>
 
@@ -51,13 +43,21 @@ const UI: VFC = () => {
               <div className="pointer-events-auto">
                 <TransformControlsModeSelect
                   value={transformControlsMode}
-                  onChange={(value) => setTransformControlsMode(value)}
+                  onChange={(value) =>
+                    studio.transaction(({set}) =>
+                      set(editorObject!.props.transformControlsMode, value),
+                    )
+                  }
                 />
               </div>
               <div className="pointer-events-auto">
                 <TransformControlsSpaceSelect
                   value={transformControlsSpace}
-                  onChange={setTransformControlsSpace}
+                  onChange={(space) => {
+                    studio.transaction(({set}) => {
+                      set(editorObject.props.transformControlsSpace, space)
+                    })
+                  }}
                 />
               </div>
               <div className="pointer-events-auto">
