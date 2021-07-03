@@ -3,7 +3,6 @@ import React from 'react'
 import type {ViewportShading} from '../store'
 import {FaCube, GiCube, GiIceCube, BiCube} from 'react-icons/all'
 import {CompactModeSelect} from './elements'
-import ViewportShadingSettings from './ViewportShadingSettings'
 
 export interface ViewportShadingSelectProps {
   value: ViewportShading
@@ -39,7 +38,6 @@ const ViewportShadingSelect: VFC<ViewportShadingSelectProps> = ({
         icon: <GiIceCube />,
       },
     ]}
-    settingsPanel={<ViewportShadingSettings />}
   />
 )
 

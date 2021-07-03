@@ -1,7 +1,7 @@
 import type {StateCreator} from 'zustand'
 import create from 'zustand'
 import type {Object3D, Scene, WebGLRenderer} from 'three'
-import {DefaultLoadingManager, Group} from 'three'
+import {Group} from 'three'
 import type {MutableRefObject} from 'react'
 import type {OrbitControls} from '@react-three/drei'
 // @ts-ignore TODO
@@ -149,9 +149,6 @@ export type EditorStore = {
   canvasName: string
   sceneSnapshot: Scene | null
   editablesSnapshot: Record<string, EditableSnapshot> | null
-  hdrPaths: string[]
-  selectedHdr: string | null
-  useHdrAsBackground: boolean
   initialEditorCamera: ContainerProps['camera']
 
   init: (
@@ -168,8 +165,6 @@ export type EditorStore = {
   ) => void
   addEditable: <T extends EditableType>(type: T, uniqueName: string) => void
   removeEditable: (uniqueName: string) => void
-  setSelectedHdr: (hdr: string | null) => void
-  setUseHdrAsBackground: (use: boolean) => void
   createSnapshot: () => void
   setSheetObject: (uniqueName: string, sheetObject: BaseSheetObjectType) => void
   setSnapshotProxyObject: (
@@ -179,21 +174,6 @@ export type EditorStore = {
 }
 
 const config: StateCreator<EditorStore> = (set, get) => {
-  setTimeout(() => {
-    const existingHandler = DefaultLoadingManager.onProgress
-    DefaultLoadingManager.onProgress = (url, loaded, total) => {
-      existingHandler(url, loaded, total)
-      if (url.match(/\.hdr$/)) {
-        set((state) => {
-          const newPaths = new Set(state.hdrPaths)
-          newPaths.add(url)
-          const selectedHdr = newPaths.size === 1 ? url : state.selectedHdr
-          return {hdrPaths: Array.from(newPaths), selectedHdr}
-        })
-      }
-    }
-  })
-
   return {
     sheet: null,
     editorObject: null,
@@ -207,9 +187,6 @@ const config: StateCreator<EditorStore> = (set, get) => {
     canvasName: 'default',
     sceneSnapshot: null,
     editablesSnapshot: null,
-    hdrPaths: [],
-    selectedHdr: null,
-    useHdrAsBackground: false,
     initialEditorCamera: {},
 
     init: (
@@ -285,13 +262,6 @@ const config: StateCreator<EditorStore> = (set, get) => {
           [uniqueName]: sheetObject,
         },
       }))
-    },
-    setSelectedHdr: (hdr) => {
-      set({selectedHdr: hdr})
-    },
-
-    setUseHdrAsBackground: (use) => {
-      set({useHdrAsBackground: use})
     },
 
     createSnapshot: () => {

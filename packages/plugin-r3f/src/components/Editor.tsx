@@ -1,9 +1,9 @@
 import type {VFC} from 'react'
 import {useLayoutEffect} from 'react'
-import React, {useEffect, useRef, Suspense} from 'react'
+import React, {useEffect, useRef} from 'react'
 import {Canvas} from '@react-three/fiber'
 import {useEditorStore} from '../store'
-import {OrbitControls, Environment} from '@react-three/drei'
+import {OrbitControls} from '@react-three/drei'
 import shallow from 'zustand/shallow'
 import root from 'react-shadow'
 import styles from '../bundle.css.txt'
@@ -16,17 +16,9 @@ import {useVal} from '@theatre/dataverse-react'
 const EditorScene = () => {
   const orbitControlsRef = useRef<typeof OrbitControls>()
 
-  const [
-    editorObject,
-    selectedHdr,
-    useHdrAsBackground,
-    helpersRoot,
-    setOrbitControlsRef,
-  ] = useEditorStore(
+  const [editorObject, helpersRoot, setOrbitControlsRef] = useEditorStore(
     (state) => [
       state.editorObject,
-      state.selectedHdr,
-      state.useHdrAsBackground,
       state.helpersRoot,
       state.setOrbitControlsRef,
     ],
@@ -42,16 +34,6 @@ const EditorScene = () => {
 
   return (
     <>
-      <Suspense fallback={null}>
-        {selectedHdr && (
-          <Environment
-            // @ts-ignore
-            files={selectedHdr}
-            path=""
-            background={useHdrAsBackground}
-          />
-        )}
-      </Suspense>
       {showGrid && <gridHelper args={[1000, 1000, 0x444444, 0x888888]} />}
       {showAxes && <axesHelper args={[500]} />}
       {/* @ts-ignore */}
