@@ -147,8 +147,6 @@ export type EditorStore = {
   editables: Record<string, Editable>
   // this will come in handy when we start supporting multiple canvases
   canvasName: string
-  initialState: EditableState | null
-  selected: string | null
   transformControlsMode: TransformControlsMode
   transformControlsSpace: TransformControlsSpace
   viewportShading: ViewportShading
@@ -221,8 +219,6 @@ const config: StateCreator<EditorStore> = (set, get) => {
     helpersRoot: new Group(),
     editables: {},
     canvasName: 'default',
-    initialState: null,
-    selected: null,
     transformControlsMode: 'translate',
     transformControlsSpace: 'world',
     viewportShading: 'rendered',

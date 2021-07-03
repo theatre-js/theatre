@@ -25,3 +25,14 @@ export function useSelected(): undefined | string {
 
   return state
 }
+
+export function getSelected(): undefined | string {
+  const sheet = useEditorStore.getState().sheet
+  if (!sheet) return undefined
+  const item = studio.selection.find((s) => s.sheet === sheet)
+  if (!item) {
+    return undefined
+  } else {
+    return item.address.objectKey
+  }
+}

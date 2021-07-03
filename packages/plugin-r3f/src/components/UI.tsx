@@ -12,6 +12,7 @@ import {IconButton, Button, SettingsButton} from './elements'
 import ViewportSettings from './ViewportSettings'
 import type {$FixMe} from '@theatre/shared/utils/types'
 import studio from '@theatre/studio'
+import {getSelected} from './useSelected'
 
 const UI: VFC = () => {
   const [
@@ -70,7 +71,8 @@ const UI: VFC = () => {
                   onClick={() => {
                     const orbitControls =
                       useEditorStore.getState().orbitControlsRef?.current
-                    const selected = useEditorStore.getState().selected
+                    const selected = getSelected()
+
                     let focusObject
 
                     if (selected) {
@@ -97,7 +99,8 @@ const UI: VFC = () => {
                       useEditorStore.getState().orbitControlsRef
                         ?.current as $FixMe
                     )?.object
-                    const selected = useEditorStore.getState().selected
+
+                    const selected = getSelected()
 
                     let proxyObject
 
