@@ -56,8 +56,8 @@ export function usePrism<T>(
   return useDerivation(derivation, debugLabel)
 }
 
-export const useVal: typeof val = (p) => {
-  return usePrism(() => val(p), [p])
+export const useVal: typeof val = (p, debugLabel?: string) => {
+  return usePrism(() => val(p), [p], debugLabel)
 }
 
 /**
@@ -87,19 +87,7 @@ let microtaskIsQueued = false
 
 const pushToQueue = (item: QueueItem) => {
   _pushToQueue(item)
-  if (!microtaskIsQueued) {
-    microtaskIsQueued = true
-    queueMicrotask(() => {
-      while (queue.length > 0) {
-        unstable_batchedUpdates(() => {
-          for (const item of queue) {
-            item.runUpdate()
-          }
-        })
-      }
-      microtaskIsQueued = false
-    })
-  }
+  queueIfNeeded()
 }
 
 const _pushToQueue = (item: QueueItem) => {
@@ -132,6 +120,28 @@ const removeFromQueue = (item: QueueItem) => {
   queue.splice(index, 1)
 }
 
+function queueIfNeeded() {
+  if (!microtaskIsQueued) {
+    microtaskIsQueued = true
+    queueMicrotask(() => {
+      let i = 0
+      while (queue.length > 0) {
+        i++
+        if (i > 5) {
+          setTimeout(queueIfNeeded, 1)
+          break
+        }
+        unstable_batchedUpdates(() => {
+          for (const item of queue) {
+            item.runUpdate()
+          }
+        })
+      }
+      microtaskIsQueued = false
+    })
+  }
+}
+
 /**
  * @remarks
  * It looks like this new implementation of useDerivation() manages to:
@@ -151,6 +161,7 @@ function useDerivation<T>(der: IDerivation<T>, debugLabel?: string): T {
   const refs = useRef<{queueItem: QueueItem; unmounted: boolean}>(
     undefined as $IntentionalAny,
   )
+
   if (!refs.current) {
     lastOrder++
     refs.current = {
