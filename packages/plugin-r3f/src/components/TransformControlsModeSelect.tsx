@@ -2,7 +2,7 @@ import type {VFC} from 'react'
 import React from 'react'
 import {GiClockwiseRotation, GiMove, GiResize} from 'react-icons/all'
 import type {TransformControlsMode} from '../store'
-import {CompactModeSelect} from './elements'
+import CompactModeSelect from './elements/CompactModeSelect'
 
 export interface TransformControlsModeSelectProps {
   value: TransformControlsMode

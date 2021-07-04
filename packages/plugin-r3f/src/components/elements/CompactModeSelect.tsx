@@ -2,14 +2,8 @@ import type {ReactElement, ReactNode, VFC} from 'react'
 import React from 'react'
 import type {IconType} from 'react-icons'
 import {Group, Button} from 'reakit'
-import {
-  Tooltip,
-  TooltipReference,
-  usePopoverState,
-  useTooltipState,
-  PopoverDisclosure,
-  Popover,
-} from '.'
+import {Tooltip, TooltipReference, useTooltipState} from './Tooltip'
+import {usePopoverState, PopoverDisclosure, Popover} from './Popover'
 import {FiChevronDown} from 'react-icons/all'
 
 interface OptionButtonProps<Option> {

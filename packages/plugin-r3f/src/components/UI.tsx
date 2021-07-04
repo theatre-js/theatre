@@ -6,14 +6,14 @@ import shallow from 'zustand/shallow'
 import ReferenceWindow from './ReferenceWindow'
 import TransformControlsSpaceSelect from './TransformControlsSpaceSelect'
 import ViewportShadingSelect from './ViewportShadingSelect'
-import {AiFillEye, GiPocketBow, RiFocus3Line} from 'react-icons/all'
+import {GiPocketBow, RiFocus3Line} from 'react-icons/all'
 import {Vector3} from 'three'
-import {IconButton, Button, SettingsButton} from './elements'
-import ViewportSettings from './ViewportSettings'
 import type {$FixMe} from '@theatre/shared/utils/types'
 import studio from '@theatre/studio'
 import {getSelected} from './useSelected'
 import {useVal} from '@theatre/dataverse-react'
+import IconButton from './elements/IconButton'
+import Button from './elements/Button'
 
 const UI: VFC = () => {
   const [editorObject] = useEditorStore(
@@ -129,11 +129,6 @@ const UI: VFC = () => {
                     }
                   }}
                 />
-              </div>
-              <div className="pointer-events-auto">
-                <SettingsButton icon={<AiFillEye />} label="Viewport settings">
-                  <ViewportSettings />
-                </SettingsButton>
               </div>
             </div>
             <div className="absolute right-0 top-0 -z-10">

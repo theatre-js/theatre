@@ -3,7 +3,7 @@ import React, {forwardRef} from 'react'
 import type {ButtonProps} from 'reakit'
 import {Button} from 'reakit'
 import type {IconType} from 'react-icons'
-import {Tooltip, TooltipReference, useTooltipState} from './index'
+import {Tooltip, TooltipReference, useTooltipState} from './Tooltip'
 
 export interface IconButtonProps extends Exclude<ButtonProps, 'children'> {
   icon: ReactElement<IconType>

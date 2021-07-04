@@ -1,6 +1,6 @@
 import type {ReactNode, VFC} from 'react'
 import React, {createContext, useContext} from 'react'
-import {useId} from '.'
+import {useId} from './IdProvider'
 
 const FormControlContext = createContext<string | undefined>(undefined)
 

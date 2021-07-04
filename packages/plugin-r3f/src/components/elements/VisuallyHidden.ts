@@ -1,1 +1,0 @@
-export {VisuallyHidden} from 'reakit'

@@ -9,9 +9,11 @@ import root from 'react-shadow'
 import styles from '../bundle.css.txt'
 import UI from './UI'
 import ProxyManager from './ProxyManager'
-import {Button, PortalManager, IdProvider} from './elements'
 import studio from '@theatre/studio'
 import {useVal} from '@theatre/dataverse-react'
+import {IdProvider} from './elements/IdProvider'
+import PortalManager from './elements/PortalManager'
+import Button from './elements/Button'
 
 const EditorScene = () => {
   const orbitControlsRef = useRef<typeof OrbitControls>()
