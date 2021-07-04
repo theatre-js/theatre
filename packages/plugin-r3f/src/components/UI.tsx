@@ -13,7 +13,6 @@ import studio from '@theatre/studio'
 import {getSelected} from './useSelected'
 import {useVal} from '@theatre/dataverse-react'
 import IconButton from './elements/IconButton'
-import Button from './elements/Button'
 
 const UI: VFC = () => {
   const [editorObject] = useEditorStore(
@@ -135,18 +134,6 @@ const UI: VFC = () => {
               <ReferenceWindow height={referenceWindowSize} />
             </div>
           </div>
-
-          {/* Bottom-left corner*/}
-          <Button
-            className="absolute left-0 bottom-0 pointer-events-auto"
-            onClick={() =>
-              studio.transaction(({set}) => {
-                set(editorObject.props.isOpen, false)
-              })
-            }
-          >
-            Close
-          </Button>
         </div>
       </div>
     </div>
