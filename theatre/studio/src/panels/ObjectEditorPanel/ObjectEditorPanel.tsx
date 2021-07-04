@@ -95,7 +95,7 @@ const Content: React.FC<{}> = () => {
             key={key}
             obj={obj}
             pointerToProp={obj.propsP}
-            propConfig={obj.template.config.props}
+            propConfig={obj.template.config}
             depth={1}
           />
         </F2>
