@@ -2,6 +2,7 @@ import type {PropTypeConfig} from '@theatre/core/propTypes'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import {getPointerParts} from '@theatre/dataverse'
 import React from 'react'
+import BooleanPropEditor from './BooleanPropEditor'
 import CompoundPropEditor from './CompoundPropEditor'
 import NumberPropEditor from './NumberPropEditor'
 
@@ -62,10 +63,10 @@ const propEditorByPropType: {
 } = {
   compound: CompoundPropEditor,
   number: NumberPropEditor,
-  string: () => <>Implement me</>,
-  enum: () => <>Implement me</>,
-  boolean: () => <>Implement me</>,
-  stringLiteral: () => <>Implement me</>,
+  string: () => <></>,
+  enum: () => <></>,
+  boolean: BooleanPropEditor,
+  stringLiteral: () => <></>,
 }
 
 const DeterminePropEditor: React.FC<{

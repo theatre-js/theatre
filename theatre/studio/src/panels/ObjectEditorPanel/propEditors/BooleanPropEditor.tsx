@@ -1,11 +1,10 @@
-import type {PropTypeConfig_Number} from '@theatre/core/propTypes'
+import type {PropTypeConfig_Boolean} from '@theatre/core/propTypes'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
-import BasicNumberEditor from '@theatre/studio/uiComponents/BasicNumberEditor'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {getPointerParts} from '@theatre/dataverse'
 import {last} from 'lodash-es'
-import React from 'react'
+import React, {useCallback} from 'react'
 import styled from 'styled-components'
 import {
   shadeToColor,
@@ -46,12 +45,12 @@ const Body = styled.div`
   margin-left: 4px;
 `
 
-const NumberPropEditor: React.FC<{
-  propConfig: PropTypeConfig_Number
+const BooleanPropEditor: React.FC<{
+  propConfig: PropTypeConfig_Boolean
   pointerToProp: SheetObject['propsP']
   obj: SheetObject
 }> = ({propConfig, pointerToProp, obj}) => {
-  const stuff = useEditingToolsForPrimitiveProp<number>(pointerToProp, obj)
+  const stuff = useEditingToolsForPrimitiveProp<boolean>(pointerToProp, obj)
 
   const label = last(getPointerParts(pointerToProp).path)
 
@@ -61,6 +60,14 @@ const NumberPropEditor: React.FC<{
     items: stuff.contextMenuItems,
   })
 
+  const onChange = useCallback(
+    (el: React.ChangeEvent<HTMLInputElement>) => {
+      window.ppause = true
+      stuff.permenantlySetValue(Boolean(el.target.checked))
+    },
+    [propConfig, pointerToProp, obj],
+  )
+
   const color = shadeToColor[stuff.shade]
 
   return (
@@ -69,15 +76,16 @@ const NumberPropEditor: React.FC<{
       <Label ref={labelRef}>{label}</Label>
       {stuff.controlIndicators}
       <Body>
-        <BasicNumberEditor
+        <input type="checkbox" checked={stuff.value} onChange={onChange} />
+        {/* <BasicNumberEditor
           value={stuff.value}
           temporarilySetValue={stuff.temporarilySetValue}
           discardTemporaryValue={stuff.discardTemporaryValue}
           permenantlySetValue={stuff.permenantlySetValue}
-        />
+        /> */}
       </Body>
     </Container>
   )
 }
 
-export default NumberPropEditor
+export default BooleanPropEditor
