@@ -1,10 +1,8 @@
-import type {ReactElement, ReactNode, VFC} from 'react'
+import type {ReactElement, ReactNode} from 'react'
 import React from 'react'
 import type {IconType} from 'react-icons'
 import {Group, Button} from 'reakit'
 import {Tooltip, TooltipReference, useTooltipState} from './Tooltip'
-import {usePopoverState, PopoverDisclosure, Popover} from './Popover'
-import {FiChevronDown} from 'react-icons/all'
 
 interface OptionButtonProps<Option> {
   value: Option
@@ -42,44 +40,7 @@ function OptionButton<Option>({
   )
 }
 
-interface SettingsProps {
-  children: ReactNode
-}
-
-const Settings: VFC<SettingsProps> = ({children}) => {
-  const tooltip = useTooltipState()
-  const popover = usePopoverState()
-
-  return (
-    <>
-      <TooltipReference
-        {...tooltip}
-        as={'div'}
-        tabIndex={-1}
-        className="focus:outline-none"
-      >
-        <PopoverDisclosure
-          // @ts-ignore
-          {...popover}
-          className={`flex relative items-center justify-center align-middle w-auto text-sm font-semibold h-7 px-1 rounded-r bg-gray-800 text-white hover:bg-gray-900 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-inset`}
-        >
-          <FiChevronDown />
-        </PopoverDisclosure>
-      </TooltipReference>
-      <Tooltip {...tooltip}>Settings</Tooltip>
-      <Popover
-        {...popover}
-        // this seems to be necessary to prevent the popup from forever being closed after the first opening
-        hideOnClickOutside={false}
-        aria-label="More options"
-      >
-        {children}
-      </Popover>
-    </>
-  )
-}
-
-export interface CompactModeSelectProps<Option> {
+interface CompactModeSelectProps<Option> {
   value: Option
   onChange: (value: Option) => void
   options: {
@@ -94,7 +55,6 @@ const CompactModeSelect = <Option extends string | number>({
   value,
   onChange,
   options,
-  settingsPanel,
 }: CompactModeSelectProps<Option>) => {
   return (
     <Group
@@ -111,7 +71,6 @@ const CompactModeSelect = <Option extends string | number>({
           onClick={() => onChange(option)}
         />
       ))}
-      {settingsPanel && <Settings>{settingsPanel}</Settings>}
     </Group>
   )
 }

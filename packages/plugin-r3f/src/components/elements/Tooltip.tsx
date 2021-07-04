@@ -2,9 +2,7 @@ import type {VFC} from 'react'
 import React from 'react'
 import {Tooltip as TooltipImpl, TooltipReference, useTooltipState} from 'reakit'
 
-import type {TooltipProps, TooltipReferenceProps} from 'reakit'
-
-export type {TooltipProps, TooltipReferenceProps}
+import type {TooltipProps} from 'reakit'
 
 export {TooltipReference, useTooltipState}
 

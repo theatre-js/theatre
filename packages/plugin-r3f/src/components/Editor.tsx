@@ -11,8 +11,6 @@ import UI from './UI'
 import ProxyManager from './ProxyManager'
 import studio from '@theatre/studio'
 import {useVal} from '@theatre/dataverse-react'
-import {IdProvider} from './elements/IdProvider'
-import PortalManager from './elements/PortalManager'
 
 const EditorScene = () => {
   const orbitControlsRef = useRef<typeof OrbitControls>()
@@ -69,8 +67,8 @@ const Editor: VFC = () => {
   return (
     <root.div>
       <div id="react-three-editable-editor-root">
-        <PortalManager>
-          <IdProvider>
+        <>
+          <>
             <div className="relative z-50">
               <div
                 className={`fixed ${editorOpen ? 'block' : 'hidden'} inset-0`}
@@ -102,8 +100,8 @@ const Editor: VFC = () => {
             </div>
 
             <style type="text/css">{styles}</style>
-          </IdProvider>
-        </PortalManager>
+          </>
+        </>
       </div>
     </root.div>
   )
