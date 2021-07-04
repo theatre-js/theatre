@@ -6,7 +6,6 @@ import {useEditorStore} from '../store'
 import {OrbitControls} from '@react-three/drei'
 import shallow from 'zustand/shallow'
 import root from 'react-shadow/styled-components'
-import styles from '../bundle.css.txt'
 import UI from './UI'
 import ProxyManager from './ProxyManager'
 import studio from '@theatre/studio'
@@ -131,7 +130,6 @@ const Editor: VFC = () => {
           </>
         ) : null}
       </Wrapper>
-      <style type="text/css">{styles}</style>
     </root.div>
   )
 }

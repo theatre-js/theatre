@@ -4,10 +4,17 @@ import {useEditorStore} from '../store'
 import shallow from 'zustand/shallow'
 import type {WebGLRenderer} from 'three'
 import useMeasure from 'react-use-measure'
+import styled from 'styled-components'
 
 interface ReferenceWindowProps {
   height: number
 }
+
+const Container = styled.div`
+  box-shadow: 0 25px 50px -12px gray;
+  overflow: hidden;
+  border-radius: 0.25rem;
+`
 
 const ReferenceWindow: VFC<ReferenceWindowProps> = ({height}) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -52,7 +59,7 @@ const ReferenceWindow: VFC<ReferenceWindowProps> = ({height}) => {
   }, [gl, height])
 
   return gl?.domElement ? (
-    <div className="rounded overflow-hidden shadow-2xl">
+    <Container>
       <canvas
         ref={canvasRef}
         width={
@@ -62,7 +69,7 @@ const ReferenceWindow: VFC<ReferenceWindowProps> = ({height}) => {
         }
         height={height}
       />
-    </div>
+    </Container>
   ) : null
 }
 

@@ -4,27 +4,63 @@ import type {ButtonProps} from 'reakit'
 import {Button} from 'reakit'
 import type {IconType} from 'react-icons'
 import {Tooltip, TooltipReference, useTooltipState} from './Tooltip'
+import styled from 'styled-components'
 
 export interface IconButtonProps extends Exclude<ButtonProps, 'children'> {
   icon: ReactElement<IconType>
   label: string
 }
 
+const _TooltipRef = styled(TooltipReference)`
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  width: auto;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 600;
+  height: 1.75rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+
+  &:first-child {
+    border-top-left-radius: 0.25rem;
+    border-bottom-left-radius: 0.25rem;
+  }
+
+  &:last-child {
+    border-top-right-radius: 0.25rem;
+    border-bottom-right-radius: 0.25rem;
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  color: rgba(55, 65, 81, 1);
+  background-color: rgba(243, 244, 246, 1);
+
+  &:hover {
+    background-color: rgba(229, 231, 235, 1);
+  }
+
+  border: 0 transparent;
+`
 const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
   ({label, icon, className, ...props}, ref) => {
     const tooltip = useTooltipState()
     return (
       <>
-        <TooltipReference
-          ref={ref}
+        <_TooltipRef
           {...props}
           {...tooltip}
-          as={Button}
-          className={`${className} flex relative items-center justify-center align-middle w-auto text-sm font-semibold h-7 px-2 first:rounded-l last:rounded-r bg-gray-100 text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-inset`}
+          forwardedAs={Button}
           aria-label={label}
         >
           {icon}
-        </TooltipReference>
+        </_TooltipRef>
         <Tooltip {...tooltip}>{label}</Tooltip>
       </>
     )

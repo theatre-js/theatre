@@ -3804,7 +3804,6 @@ __metadata:
     "@types/react": ^17.0.9
     "@types/styled-components": ^5.1.9
     lodash-es: ^4.17.21
-    prism-react-renderer: 1.2.1
     react: ^17.0.2
     react-dom: ^17.0.2
     react-icons: ^4.2.0
@@ -14877,15 +14876,6 @@ fsevents@^1.2.7:
   version: 1.0.3
   resolution: "pretty-hrtime@npm:1.0.3"
   checksum: efb9d4987ec2ba55a6b59c8eab4933ba5cd3c9311b9360f7ec491f1aad643ec8b533c8209170433de93bbc71e66b46f2a7035b991a1826141b128b73949b5577
-  languageName: node
-  linkType: hard
-
-"prism-react-renderer@npm:1.2.1":
-  version: 1.2.1
-  resolution: "prism-react-renderer@npm:1.2.1"
-  peerDependencies:
-    react: ">=0.14.9"
-  checksum: b27670bd96e4320075f9a2932d440b3025f9ce1ff64ddd8d8e71867701aabd6c9d2914d5deecb7bef7e92ed59baaef538a31559ca71c76efee3711a064f3e8ff
   languageName: node
   linkType: hard
 
