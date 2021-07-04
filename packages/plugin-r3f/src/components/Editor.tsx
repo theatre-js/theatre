@@ -5,12 +5,32 @@ import {Canvas} from '@react-three/fiber'
 import {useEditorStore} from '../store'
 import {OrbitControls} from '@react-three/drei'
 import shallow from 'zustand/shallow'
-import root from 'react-shadow'
+import root from 'react-shadow/styled-components'
 import styles from '../bundle.css.txt'
 import UI from './UI'
 import ProxyManager from './ProxyManager'
 import studio from '@theatre/studio'
 import {useVal} from '@theatre/dataverse-react'
+import styled, {createGlobalStyle} from 'styled-components'
+
+const GlobalStyle = createGlobalStyle`
+  :host {
+    contain: strict;
+    all: initial;
+    color: white;
+    font: 11px -apple-system, BlinkMacSystemFont, Segoe WPC, Segoe Editor,
+      HelveticaNeue-Light, Ubuntu, Droid Sans, sans-serif;
+  }
+
+  * {
+    padding: 0;
+    margin: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+    list-style: none;
+  }
+`
 
 const EditorScene = () => {
   const orbitControlsRef = useRef<typeof OrbitControls>()
@@ -43,6 +63,27 @@ const EditorScene = () => {
   )
 }
 
+const Wrapper = styled.div<{editorOpen: boolean}>`
+  tab-size: 4;
+  line-height: 1.15; /* 1 */
+  -webkit-text-size-adjust: 100%; /* 2 */
+  margin: 0;
+
+  position: fixed;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  z-index: 50;
+  display: ${(props) => (props.editorOpen ? 'block' : 'none')};
+`
+
+const CanvasWrapper = styled.div`
+  display: relative;
+  z-index: 0;
+  height: 100%;
+`
+
 const Editor: VFC = () => {
   const [editorObject, sceneSnapshot, initialEditorCamera, createSnapshot] =
     useEditorStore(
@@ -55,7 +96,7 @@ const Editor: VFC = () => {
       shallow,
     )
 
-  const editorOpen = useVal(editorObject?.props.isOpen)
+  const editorOpen = !!useVal(editorObject?.props.isOpen)
   useLayoutEffect(() => {
     if (editorOpen) {
       createSnapshot()
@@ -66,43 +107,31 @@ const Editor: VFC = () => {
 
   return (
     <root.div>
-      <div id="react-three-editable-editor-root">
-        <>
+      <GlobalStyle />
+      <Wrapper id="theatre-plugin-r3f-root" editorOpen={editorOpen}>
+        {sceneSnapshot ? (
           <>
-            <div className="relative z-50">
-              <div
-                className={`fixed ${editorOpen ? 'block' : 'hidden'} inset-0`}
+            <CanvasWrapper>
+              <Canvas
+                // @ts-ignore
+                colorManagement
+                camera={initialEditorCamera}
+                onCreated={({gl}) => {
+                  gl.setClearColor('white')
+                }}
+                shadowMap
+                pixelRatio={window.devicePixelRatio}
+                onPointerMissed={() => studio.__experimental_setSelection([])}
               >
-                {sceneSnapshot ? (
-                  <>
-                    <div className="relative z-0 h-full">
-                      <Canvas
-                        // @ts-ignore
-                        colorManagement
-                        camera={initialEditorCamera}
-                        onCreated={({gl}) => {
-                          gl.setClearColor('white')
-                        }}
-                        shadowMap
-                        pixelRatio={window.devicePixelRatio}
-                        onPointerMissed={() =>
-                          studio.__experimental_setSelection([])
-                        }
-                      >
-                        <EditorScene />
-                      </Canvas>
-                    </div>
+                <EditorScene />
+              </Canvas>
+            </CanvasWrapper>
 
-                    <UI />
-                  </>
-                ) : null}
-              </div>
-            </div>
-
-            <style type="text/css">{styles}</style>
+            <UI />
           </>
-        </>
-      </div>
+        ) : null}
+      </Wrapper>
+      <style type="text/css">{styles}</style>
     </root.div>
   )
 }

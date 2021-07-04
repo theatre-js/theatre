@@ -2,6 +2,7 @@ import type {ReactElement, ReactNode} from 'react'
 import React from 'react'
 import type {IconType} from 'react-icons'
 import {Group, Button} from 'reakit'
+import styled from 'styled-components'
 import {Tooltip, TooltipReference, useTooltipState} from './Tooltip'
 
 interface OptionButtonProps<Option> {
@@ -11,6 +12,8 @@ interface OptionButtonProps<Option> {
   icon: ReactElement<IconType>
   onClick: () => void
 }
+
+// const Ro = styled(TooltipReference)``
 
 function OptionButton<Option>({
   value,
@@ -51,16 +54,17 @@ interface CompactModeSelectProps<Option> {
   settingsPanel?: ReactNode
 }
 
+const Container = styled(Group)`
+  display: flex;
+`
+
 const CompactModeSelect = <Option extends string | number>({
   value,
   onChange,
   options,
 }: CompactModeSelectProps<Option>) => {
   return (
-    <Group
-      // @ts-ignore
-      className="flex"
-    >
+    <Container>
       {options.map(({label, icon, option}) => (
         <OptionButton
           key={option}
@@ -71,7 +75,7 @@ const CompactModeSelect = <Option extends string | number>({
           onClick={() => onChange(option)}
         />
       ))}
-    </Group>
+    </Container>
   )
 }
 
