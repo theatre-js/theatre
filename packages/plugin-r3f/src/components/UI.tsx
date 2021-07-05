@@ -4,7 +4,6 @@ import React from 'react'
 import TransformControlsModeSelect from './TransformControlsModeSelect'
 import {useEditorStore} from '../store'
 import shallow from 'zustand/shallow'
-import ReferenceWindow from './ReferenceWindow'
 import TransformControlsSpaceSelect from './TransformControlsSpaceSelect'
 import ViewportShadingSelect from './ViewportShadingSelect'
 import {GiPocketBow, RiFocus3Line} from 'react-icons/all'
@@ -47,21 +46,12 @@ const ToolGroup = styled.div`
   pointer-events: auto;
 `
 
-const ReferenceWindowContainer = styled.div`
-  z-index: -10;
-  right: 0px;
-  top: 0px;
-  position: absolute;
-`
-
 const UI: VFC = () => {
   const [editorObject] = useEditorStore(
     (state) => [state.editorObject],
     shallow,
   )
 
-  const referenceWindowSize =
-    useVal(editorObject?.props.referenceWindowSize) ?? 120
   const transformControlsMode =
     useVal(editorObject?.props.transformControlsMode) ?? 'translate'
   const transformControlsSpace =
@@ -171,9 +161,6 @@ const UI: VFC = () => {
               />
             </ToolGroup>
           </Toolbar>
-          <ReferenceWindowContainer>
-            <ReferenceWindow height={referenceWindowSize} />
-          </ReferenceWindowContainer>
         </TopRow>
       </Container>
     </PortalContext.Provider>

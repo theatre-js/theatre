@@ -293,7 +293,6 @@ const editorSheetObjectConfig = types.compound({
   showAxes: types.boolean(true),
   showGrid: types.boolean(true),
   showOverlayIcons: types.boolean(false),
-  referenceWindowSize: types.number(120, {min: 0, max: 800}),
   transformControlsMode: types.stringLiteral<TransformControlsMode>(
     'translate',
     ['translate', 'rotate', 'scale'],
