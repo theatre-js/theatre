@@ -55,7 +55,7 @@ const EditorScene = () => {
       {showGrid && <gridHelper args={[1000, 1000, 0x444444, 0x888888]} />}
       {showAxes && <axesHelper args={[500]} />}
       {/* @ts-ignore */}
-      <OrbitControls ref={orbitControlsRef} />
+      <OrbitControls ref={orbitControlsRef} enableDamping={false} />
       <primitive object={helpersRoot}></primitive>
       <ProxyManager orbitControlsRef={orbitControlsRef} />
     </>
