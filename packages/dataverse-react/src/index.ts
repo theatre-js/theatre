@@ -127,7 +127,9 @@ function queueIfNeeded() {
       let i = 0
       while (queue.length > 0) {
         i++
-        if (i > 5) {
+        if (i === 4) {
+          // react might be skipping updates, perhaps in concurrent mode.
+          //we can recheck the queue later
           setTimeout(queueIfNeeded, 1)
           break
         }
@@ -135,7 +137,7 @@ function queueIfNeeded() {
           for (const item of queue) {
             item.runUpdate()
           }
-        })
+        }, 1)
       }
       microtaskIsQueued = false
     })
