@@ -62,7 +62,6 @@ const BooleanPropEditor: React.FC<{
 
   const onChange = useCallback(
     (el: React.ChangeEvent<HTMLInputElement>) => {
-      window.ppause = true
       stuff.permenantlySetValue(Boolean(el.target.checked))
     },
     [propConfig, pointerToProp, obj],
