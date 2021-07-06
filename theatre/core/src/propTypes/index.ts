@@ -61,17 +61,17 @@ export interface PropTypeConfig_StringLiteral<T extends string>
   extends IBasePropType<T> {
   type: 'stringLiteral'
   default: T
-  options: ReadonlyArray<T>
+  options: Record<T, string>
 }
 
-export function stringLiteral<T extends string>(
-  defaultValue: T,
-  options: ReadonlyArray<T>,
-): PropTypeConfig_StringLiteral<T> {
+export function stringLiteral<Opts extends {[key in string]: string}>(
+  defaultValue: Extract<keyof Opts, string>,
+  options: Opts,
+): PropTypeConfig_StringLiteral<Extract<keyof Opts, string>> {
   return {
     type: 'stringLiteral',
     default: defaultValue,
-    options: [...options],
+    options: {...options},
     [s]: 'TheatrePropType',
     valueType: null as $IntentionalAny,
   }

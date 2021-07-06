@@ -77,9 +77,9 @@ const StringLiteralPropEditor: React.FC<{
       {stuff.controlIndicators}
       <Body>
         <select value={stuff.value} onChange={onChange}>
-          {propConfig.options.map((opt, i) => (
-            <option key={'option-' + i} value={opt}>
-              {opt}
+          {Object.keys(propConfig.options).map((key, i) => (
+            <option key={'option-' + i} value={key}>
+              {propConfig.options[key]}
             </option>
           ))}
         </select>

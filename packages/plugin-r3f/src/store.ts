@@ -293,20 +293,21 @@ const editorSheetObjectConfig = types.compound({
   showAxes: types.boolean(true),
   showGrid: types.boolean(true),
   showOverlayIcons: types.boolean(false),
-  transformControlsMode: types.stringLiteral<TransformControlsMode>(
-    'translate',
-    ['translate', 'rotate', 'scale'],
-  ),
-  transformControlsSpace: types.stringLiteral<TransformControlsSpace>('world', [
-    'local',
-    'world',
-  ]),
-  viewportShading: types.stringLiteral<ViewportShading>('rendered', [
-    'flat',
-    'rendered',
-    'solid',
-    'wireframe',
-  ]),
+  transformControlsMode: types.stringLiteral('translate', {
+    translate: 'Translate',
+    rotate: 'Rotate',
+    scale: 'Scale',
+  }),
+  transformControlsSpace: types.stringLiteral('world', {
+    local: 'Local',
+    world: 'World',
+  }),
+  viewportShading: types.stringLiteral('rendered', {
+    flat: 'Flat',
+    rendered: 'Rendered',
+    solid: 'Solid',
+    wireframe: 'Wireframe',
+  }),
 })
 
 export const bindToCanvas: BindFunction = ({
