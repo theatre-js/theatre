@@ -3,7 +3,7 @@ import {isInteger, round} from 'lodash-es'
 import {darken, lighten} from 'polished'
 import React, {useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
-import DraggableArea from './DraggableArea'
+import DraggableArea from '@theatre/studio/uiComponents/DraggableArea'
 
 type IMode = IState['mode']
 

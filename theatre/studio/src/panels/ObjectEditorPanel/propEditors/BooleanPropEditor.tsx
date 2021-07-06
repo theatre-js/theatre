@@ -36,9 +36,11 @@ const Label = styled.div`
     color: white;
   }
 `
-const Body = styled.div`
-  cursor: ew-resize;
+const Body = styled.label`
   display: flex;
+  align-items: center;
+  padding-left: 8px;
+  box-sizing: border-box;
   width: 140px;
   height: 100%;
   margin-right: 16px;
@@ -76,12 +78,6 @@ const BooleanPropEditor: React.FC<{
       {stuff.controlIndicators}
       <Body>
         <input type="checkbox" checked={stuff.value} onChange={onChange} />
-        {/* <BasicNumberEditor
-          value={stuff.value}
-          temporarilySetValue={stuff.temporarilySetValue}
-          discardTemporaryValue={stuff.discardTemporaryValue}
-          permenantlySetValue={stuff.permenantlySetValue}
-        /> */}
       </Body>
     </Container>
   )

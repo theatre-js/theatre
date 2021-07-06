@@ -62,11 +62,13 @@ export interface PropTypeConfig_StringLiteral<T extends string>
   type: 'stringLiteral'
   default: T
   options: Record<T, string>
+  as: 'menu' | 'switch'
 }
 
 export function stringLiteral<Opts extends {[key in string]: string}>(
   defaultValue: Extract<keyof Opts, string>,
   options: Opts,
+  extras?: {as?: 'menu' | 'switch'},
 ): PropTypeConfig_StringLiteral<Extract<keyof Opts, string>> {
   return {
     type: 'stringLiteral',
@@ -74,6 +76,7 @@ export function stringLiteral<Opts extends {[key in string]: string}>(
     options: {...options},
     [s]: 'TheatrePropType',
     valueType: null as $IntentionalAny,
+    as: extras?.as ?? 'menu',
   }
 }
 

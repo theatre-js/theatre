@@ -1,6 +1,6 @@
 import type {PropTypeConfig_Number} from '@theatre/core/propTypes'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
-import BasicNumberEditor from '@theatre/studio/uiComponents/BasicNumberEditor'
+import BasicNumberEditor from '@theatre/studio/uiComponents/form/BasicNumberEditor'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {getPointerParts} from '@theatre/dataverse'

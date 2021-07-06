@@ -11,6 +11,8 @@ import {
   useEditingToolsForPrimitiveProp,
 } from './useEditingToolsForPrimitiveProp'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
+import BasicSwitchEditor from '@theatre/studio/uiComponents/form/BasicSwitchEditor'
+import BasicSelectEditor from '@theatre/studio/uiComponents/form/BasicSelectEditor'
 
 const Container = styled.div`
   display: flex;
@@ -62,8 +64,8 @@ const StringLiteralPropEditor: React.FC<{
   })
 
   const onChange = useCallback(
-    (el: React.ChangeEvent<HTMLSelectElement>) => {
-      stuff.permenantlySetValue(String(el.target.value))
+    (val: string) => {
+      stuff.permenantlySetValue(val)
     },
     [propConfig, pointerToProp, obj],
   )
@@ -76,13 +78,19 @@ const StringLiteralPropEditor: React.FC<{
       <Label ref={labelRef}>{label}</Label>
       {stuff.controlIndicators}
       <Body>
-        <select value={stuff.value} onChange={onChange}>
-          {Object.keys(propConfig.options).map((key, i) => (
-            <option key={'option-' + i} value={key}>
-              {propConfig.options[key]}
-            </option>
-          ))}
-        </select>
+        {propConfig.as === 'menu' ? (
+          <BasicSelectEditor
+            value={stuff.value}
+            onChange={onChange}
+            options={propConfig.options}
+          />
+        ) : (
+          <BasicSwitchEditor
+            value={stuff.value}
+            onChange={onChange}
+            options={propConfig.options}
+          />
+        )}
       </Body>
     </Container>
   )
