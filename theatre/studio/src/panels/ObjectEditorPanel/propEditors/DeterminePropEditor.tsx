@@ -5,6 +5,7 @@ import React from 'react'
 import BooleanPropEditor from './BooleanPropEditor'
 import CompoundPropEditor from './CompoundPropEditor'
 import NumberPropEditor from './NumberPropEditor'
+import StringLiteralPropEditor from './StringLiteralPropEditor'
 
 /**
  * Returns the PropTypeConfig by path. Assumes `path` is a valid prop path and that
@@ -66,7 +67,7 @@ const propEditorByPropType: {
   string: () => <></>,
   enum: () => <></>,
   boolean: BooleanPropEditor,
-  stringLiteral: () => <></>,
+  stringLiteral: StringLiteralPropEditor,
 }
 
 const DeterminePropEditor: React.FC<{
