@@ -1,15 +1,29 @@
-import type {PropTypeConfig_Boolean} from '@theatre/core/propTypes'
+import type {
+  PropTypeConfig,
+  PropTypeConfig_Boolean,
+} from '@theatre/core/propTypes'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {getPointerParts} from '@theatre/dataverse'
 import {last} from 'lodash-es'
 import React, {useCallback} from 'react'
-import styled from 'styled-components'
+import styled, {css} from 'styled-components'
 import {
   shadeToColor,
   useEditingToolsForPrimitiveProp,
 } from './useEditingToolsForPrimitiveProp'
+
+export const labelText = css`
+  font-weight: 300;
+  font-size: 11px;
+  color: #9a9a9a;
+  text-shadow: 0.5px 0.5px 2px black;
+
+  &:hover {
+    color: white;
+  }
+`
 
 const Container = styled.div`
   display: flex;
@@ -18,23 +32,10 @@ const Container = styled.div`
   align-items: center;
 `
 
-export const NumberPropEditor_theme = {
-  label: {
-    color: `#787878`,
-  },
-}
-
-const Label = styled.div`
+const Label = styled.label`
   margin-right: 4px;
-  font-weight: 200;
-  font-size: 12px;
-  color: ${NumberPropEditor_theme.label.color};
-  cursor: default;
   text-align: right;
-
-  &:hover {
-    color: white;
-  }
+  ${labelText};
 `
 const Body = styled.label`
   display: flex;
@@ -47,20 +48,44 @@ const Body = styled.label`
   margin-left: 4px;
 `
 
+export const PrimitivePropEditor: React.FC<{
+  propConfig: PropTypeConfig
+  pointerToProp: SheetObject['propsP']
+  stuff: ReturnType<typeof useEditingToolsForPrimitiveProp>
+}> = ({propConfig, pointerToProp, stuff, children}) => {
+  const label = propConfig.label ?? last(getPointerParts(pointerToProp).path)
+
+  const [labelRef, labelNode] = useRefAndState<HTMLLabelElement | null>(null)
+
+  const [contextMenu] = useContextMenu(labelNode, {
+    items: stuff.contextMenuItems,
+  })
+
+  const color = shadeToColor[stuff.shade]
+
+  return (
+    <Container>
+      {contextMenu}
+      <Label
+        ref={labelRef}
+        title={['obj', 'props', ...getPointerParts(pointerToProp).path].join(
+          '.',
+        )}
+      >
+        {label}
+      </Label>
+      {stuff.controlIndicators}
+      <Body>{children}</Body>
+    </Container>
+  )
+}
+
 const BooleanPropEditor: React.FC<{
   propConfig: PropTypeConfig_Boolean
   pointerToProp: SheetObject['propsP']
   obj: SheetObject
 }> = ({propConfig, pointerToProp, obj}) => {
   const stuff = useEditingToolsForPrimitiveProp<boolean>(pointerToProp, obj)
-
-  const label = last(getPointerParts(pointerToProp).path)
-
-  const [labelRef, labelNode] = useRefAndState<HTMLDivElement | null>(null)
-
-  const [contextMenu] = useContextMenu(labelNode, {
-    items: stuff.contextMenuItems,
-  })
 
   const onChange = useCallback(
     (el: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,17 +94,10 @@ const BooleanPropEditor: React.FC<{
     [propConfig, pointerToProp, obj],
   )
 
-  const color = shadeToColor[stuff.shade]
-
   return (
-    <Container>
-      {contextMenu}
-      <Label ref={labelRef}>{label}</Label>
-      {stuff.controlIndicators}
-      <Body>
-        <input type="checkbox" checked={stuff.value} onChange={onChange} />
-      </Body>
-    </Container>
+    <PrimitivePropEditor {...{stuff, propConfig, pointerToProp}}>
+      <input type="checkbox" checked={stuff.value} onChange={onChange} />
+    </PrimitivePropEditor>
   )
 }
 

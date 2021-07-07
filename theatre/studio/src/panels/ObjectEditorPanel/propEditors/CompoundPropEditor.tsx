@@ -13,6 +13,7 @@ import {GoChevronRight} from 'react-icons/go'
 import styled from 'styled-components'
 import DeterminePropEditor from './DeterminePropEditor'
 import NextPrevKeyframeCursors from './utils/NextPrevKeyframeCursors'
+import {labelText} from './BooleanPropEditor'
 
 const Container = styled.div<{depth: number}>`
   --depth: ${(props) => props.depth};
@@ -36,6 +37,7 @@ const IconContainer = styled.div`
 const PropName = styled.div`
   margin-right: 4px;
   cursor: default;
+  ${labelText}
 `
 
 const SubProps = styled.div<{depth: number; lastSubIsComposite: boolean}>`
@@ -49,7 +51,7 @@ const CompoundPropEditor: React.FC<{
   propConfig: PropTypeConfig_Compound<$IntentionalAny>
   depth: number
 }> = ({pointerToProp, obj, propConfig, depth}) => {
-  const propName = last(getPointerParts(pointerToProp).path)
+  const propName = propConfig.label ?? last(getPointerParts(pointerToProp).path)
 
   const allSubs = Object.entries(propConfig.props)
   const compositeSubs = allSubs.filter(([_, conf]) =>

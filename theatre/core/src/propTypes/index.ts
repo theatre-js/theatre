@@ -6,6 +6,7 @@ type S = typeof s
 interface IBasePropType<ValueType> {
   valueType: ValueType
   [s]: 'TheatrePropType'
+  label: string | undefined
 }
 
 export interface PropTypeConfig_Number extends IBasePropType<number> {
@@ -18,7 +19,8 @@ export interface PropTypeConfig_Number extends IBasePropType<number> {
 
 export const number = (
   defaultValue: number,
-  opts?: Pick<PropTypeConfig_Number, 'min' | 'max' | 'step'>,
+  opts?: Pick<PropTypeConfig_Number, 'min' | 'max' | 'step'> &
+    PropTypeConfigExtras,
 ): PropTypeConfig_Number => {
   return {
     type: 'number',
@@ -26,6 +28,7 @@ export const number = (
     default: defaultValue,
     [s]: 'TheatrePropType',
     ...(opts ? opts : {}),
+    label: opts?.label,
   }
 }
 
@@ -34,12 +37,20 @@ export interface PropTypeConfig_Boolean extends IBasePropType<boolean> {
   default: boolean
 }
 
-export const boolean = (defaultValue: boolean): PropTypeConfig_Boolean => {
+export type PropTypeConfigExtras = {
+  label?: string
+}
+
+export const boolean = (
+  defaultValue: boolean,
+  extras?: PropTypeConfigExtras,
+): PropTypeConfig_Boolean => {
   return {
     type: 'boolean',
     default: defaultValue,
     valueType: null as $IntentionalAny,
     [s]: 'TheatrePropType',
+    label: extras?.label,
   }
 }
 
@@ -48,12 +59,16 @@ export interface PropTypeConfig_String extends IBasePropType<string> {
   default: string
 }
 
-export const string = (defaultValue: string): PropTypeConfig_String => {
+export const string = (
+  defaultValue: string,
+  extras: PropTypeConfigExtras,
+): PropTypeConfig_String => {
   return {
     type: 'string',
     default: defaultValue,
     valueType: null as $IntentionalAny,
     [s]: 'TheatrePropType',
+    label: extras.label,
   }
 }
 
@@ -68,7 +83,7 @@ export interface PropTypeConfig_StringLiteral<T extends string>
 export function stringLiteral<Opts extends {[key in string]: string}>(
   defaultValue: Extract<keyof Opts, string>,
   options: Opts,
-  extras?: {as?: 'menu' | 'switch'},
+  extras?: {as?: 'menu' | 'switch'} & PropTypeConfigExtras,
 ): PropTypeConfig_StringLiteral<Extract<keyof Opts, string>> {
   return {
     type: 'stringLiteral',
@@ -77,6 +92,7 @@ export function stringLiteral<Opts extends {[key in string]: string}>(
     [s]: 'TheatrePropType',
     valueType: null as $IntentionalAny,
     as: extras?.as ?? 'menu',
+    label: extras?.label,
   }
 }
 
@@ -97,12 +113,14 @@ export interface PropTypeConfig_Compound<Props extends IValidCompoundProps>
 
 export const compound = <Props extends IValidCompoundProps>(
   props: Props,
+  extras?: PropTypeConfigExtras,
 ): PropTypeConfig_Compound<Props> => {
   return {
     type: 'compound',
     props,
     valueType: null as $IntentionalAny,
     [s]: 'TheatrePropType',
+    label: extras?.label,
   }
 }
 

@@ -8,11 +8,16 @@ import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
 import React, {useCallback, useRef} from 'react'
 import styled from 'styled-components'
-import {NumberPropEditor_theme} from '@theatre/studio/panels/ObjectEditorPanel/propEditors/NumberPropEditor'
 import {useEditingToolsForPrimitiveProp} from '@theatre/studio/panels/ObjectEditorPanel/propEditors/useEditingToolsForPrimitiveProp'
 import {nextPrevCursorsTheme} from '@theatre/studio/panels/ObjectEditorPanel/propEditors/utils/NextPrevKeyframeCursors'
 import {graphEditorColors} from '@theatre/studio/panels/SequenceEditorPanel/GraphEditor/GraphEditor'
 import {BaseHeader, Container as BaseContainer} from './AnyCompositeRow'
+
+const theme = {
+  label: {
+    color: `#9a9a9a`,
+  },
+}
 
 const Container = styled(BaseContainer)<{}>``
 
@@ -21,7 +26,7 @@ const Head = styled(BaseHeader)<{
   isEven: boolean
 }>`
   display: flex;
-  color: ${NumberPropEditor_theme.label.color};
+  color: ${theme.label.color};
   padding-right: 12px;
   align-items: center;
   justify-content: flex-end;
