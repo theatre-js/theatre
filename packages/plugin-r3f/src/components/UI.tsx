@@ -53,11 +53,11 @@ const UI: VFC = () => {
   )
 
   const transformControlsMode =
-    useVal(editorObject?.props.transformControlsMode) ?? 'translate'
+    useVal(editorObject?.props.transformControls.mode) ?? 'translate'
   const transformControlsSpace =
-    useVal(editorObject?.props.transformControlsSpace) ?? 'world'
+    useVal(editorObject?.props.transformControls.space) ?? 'world'
   const viewportShading =
-    useVal(editorObject?.props.viewportShading) ?? 'rendered'
+    useVal(editorObject?.props.viewport.shading) ?? 'rendered'
 
   const [wrapper, setWrapper] = useState<null | HTMLDivElement>(null)
 
@@ -73,7 +73,7 @@ const UI: VFC = () => {
                 value={transformControlsMode}
                 onChange={(value) =>
                   studio.transaction(({set}) =>
-                    set(editorObject!.props.transformControlsMode, value),
+                    set(editorObject!.props.transformControls.mode, value),
                   )
                 }
               />
@@ -83,7 +83,7 @@ const UI: VFC = () => {
                 value={transformControlsSpace}
                 onChange={(space) => {
                   studio.transaction(({set}) => {
-                    set(editorObject.props.transformControlsSpace, space)
+                    set(editorObject.props.transformControls.space, space)
                   })
                 }}
               />
@@ -93,7 +93,7 @@ const UI: VFC = () => {
                 value={viewportShading}
                 onChange={(shading) => {
                   studio.transaction(({set}) => {
-                    set(editorObject.props.viewportShading, shading)
+                    set(editorObject.props.viewport.shading, shading)
                   })
                 }}
               />

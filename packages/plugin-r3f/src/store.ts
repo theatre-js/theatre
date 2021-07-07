@@ -289,36 +289,47 @@ export type BindFunction = (options: {
 }) => (options: {gl: WebGLRenderer; scene: Scene}) => void
 
 const editorSheetObjectConfig = types.compound({
-  isOpen: types.boolean(false),
-  showAxes: types.boolean(true),
-  showGrid: types.boolean(true),
-  showOverlayIcons: types.boolean(false),
-  transformControlsMode: types.stringLiteral(
-    'translate',
+  isOpen: types.boolean(false, {label: 'Editor Open'}),
+  viewport: types.compound(
     {
-      translate: 'Translate',
-      rotate: 'Rotate',
-      scale: 'Scale',
+      showAxes: types.boolean(true, {label: 'Axes'}),
+      showGrid: types.boolean(true, {label: 'Grid'}),
+      showOverlayIcons: types.boolean(false, {label: 'Overlay Icons'}),
+      resolution: types.number(1440, {label: 'Resolution'}),
+      shading: types.stringLiteral(
+        'rendered',
+        {
+          flat: 'Flat',
+          rendered: 'Rendered',
+          solid: 'Solid',
+          wireframe: 'Wireframe',
+        },
+        {as: 'menu', label: 'Shading'},
+      ),
     },
-    {as: 'switch'},
+    {label: 'Viewport Config'},
   ),
-  transformControlsSpace: types.stringLiteral(
-    'world',
+  transformControls: types.compound(
     {
-      local: 'Local',
-      world: 'World',
+      mode: types.stringLiteral(
+        'translate',
+        {
+          translate: 'Translate',
+          rotate: 'Rotate',
+          scale: 'Scale',
+        },
+        {as: 'switch', label: 'Mode'},
+      ),
+      space: types.stringLiteral(
+        'world',
+        {
+          local: 'Local',
+          world: 'World',
+        },
+        {as: 'switch', label: 'Space'},
+      ),
     },
-    {as: 'switch'},
-  ),
-  viewportShading: types.stringLiteral(
-    'rendered',
-    {
-      flat: 'Flat',
-      rendered: 'Rendered',
-      solid: 'Solid',
-      wireframe: 'Wireframe',
-    },
-    {as: 'menu'},
+    {label: 'Transform Controls'},
   ),
 })
 

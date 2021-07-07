@@ -43,7 +43,8 @@ const EditableProxy: VFC<EditableProxyProps> = ({
   )
 
   const selected = useSelected()
-  const showOverlayIcons = useVal(editorObject?.props.showOverlayIcons) ?? false
+  const showOverlayIcons =
+    useVal(editorObject?.props.viewport.showOverlayIcons) ?? false
 
   useEffect(() => {
     setSnapshotProxyObject(object, uniqueName)

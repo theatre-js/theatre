@@ -43,8 +43,8 @@ const EditorScene = () => {
     shallow,
   )
 
-  const showGrid = useVal(editorObject?.props.showGrid) ?? true
-  const showAxes = useVal(editorObject?.props.showAxes) ?? true
+  const showGrid = useVal(editorObject?.props.viewport.showGrid) ?? true
+  const showAxes = useVal(editorObject?.props.viewport.showAxes) ?? true
 
   useEffect(() => {
     setOrbitControlsRef(orbitControlsRef)

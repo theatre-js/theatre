@@ -37,13 +37,13 @@ const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
     shallow,
   )
   const transformControlsMode =
-    useVal(editorObject?.props.transformControlsMode) ?? 'translate'
+    useVal(editorObject?.props.transformControls.mode) ?? 'translate'
 
   const transformControlsSpace =
-    useVal(editorObject?.props.transformControlsSpace) ?? 'world'
+    useVal(editorObject?.props.transformControls.space) ?? 'world'
 
   const viewportShading =
-    useVal(editorObject?.props.viewportShading) ?? 'rendered'
+    useVal(editorObject?.props.viewport.shading) ?? 'rendered'
 
   const sceneProxy = useMemo(() => sceneSnapshot?.clone(), [sceneSnapshot])
   const [editableProxies, setEditableProxies] = useState<{
