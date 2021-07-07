@@ -10,12 +10,15 @@ function createMechanism() {
 
   type Collector = (d: IDerivation<$IntentionalAny>) => void
 
-  const collectObservedDependencies = (
-    cb: () => void,
-    collector: Collector,
-  ) => {
+  const pushCollector = (collector: Collector): void => {
     stack.push(collector)
-    cb()
+  }
+
+  const popCollector = (collector: Collector): void => {
+    const existing = stack.peek()
+    if (existing !== collector) {
+      throw new Error(`Popped collector is not on top of the stack`)
+    }
     stack.pop()
   }
 
@@ -46,18 +49,14 @@ function createMechanism() {
     stack.pop()
   }
 
-  const isCollectingDependencies = () => {
-    return stack.peek() !== noopCollector
-  }
-
   return {
     type: 'Dataverse_discoveryMechanism' as 'Dataverse_discoveryMechanism',
-    collectObservedDependencies,
     startIgnoringDependencies,
     stopIgnoringDependencies,
     reportResolutionStart,
     reportResolutionEnd,
-    isCollectingDependencies,
+    pushCollector,
+    popCollector,
   }
 }
 
@@ -85,10 +84,10 @@ function getSharedMechanism(): ReturnType<typeof createMechanism> {
 }
 
 export const {
-  collectObservedDependencies,
   startIgnoringDependencies,
   stopIgnoringDependencies,
   reportResolutionEnd,
   reportResolutionStart,
-  isCollectingDependencies,
+  pushCollector,
+  popCollector,
 } = getSharedMechanism()

@@ -4,9 +4,10 @@ import Stack from '../../utils/Stack'
 import AbstractDerivation from '../AbstractDerivation'
 import type {IDerivation} from '../IDerivation'
 import {
-  collectObservedDependencies,
   startIgnoringDependencies,
   stopIgnoringDependencies,
+  pushCollector,
+  popCollector,
 } from './discoveryMechanism'
 
 const voidFn = () => {}
@@ -44,28 +45,30 @@ export class PrismDerivation<V> extends AbstractDerivation<V> {
 
     const newDeps: Set<IDerivation<unknown>> = new Set()
     this._cacheOfDendencyValues.clear()
-    collectObservedDependencies(
-      () => {
-        hookScopeStack.push(this._prismScope)
-        try {
-          value = this._fn()
-        } catch (error) {
-          console.error(error)
-        } finally {
-          const topOfTheStack = hookScopeStack.pop()
-          if (topOfTheStack !== this._prismScope) {
-            console.warn(
-              // @todo guide the user to report the bug in an issue
-              `The Prism hook stack has slipped. This is a bug.`,
-            )
-          }
-        }
-      },
-      (observedDep) => {
-        newDeps.add(observedDep)
-        this._addDependency(observedDep)
-      },
-    )
+
+    const collector = (observedDep: IDerivation<unknown>): void => {
+      newDeps.add(observedDep)
+      this._addDependency(observedDep)
+    }
+
+    pushCollector(collector)
+
+    hookScopeStack.push(this._prismScope)
+    try {
+      value = this._fn()
+    } catch (error) {
+      console.error(error)
+    } finally {
+      const topOfTheStack = hookScopeStack.pop()
+      if (topOfTheStack !== this._prismScope) {
+        console.warn(
+          // @todo guide the user to report the bug in an issue
+          `The Prism hook stack has slipped. This is a bug.`,
+        )
+      }
+    }
+
+    popCollector(collector)
 
     this._dependencies.forEach((dep) => {
       if (!newDeps.has(dep)) {
