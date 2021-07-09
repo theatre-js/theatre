@@ -1,10 +1,11 @@
 import {theme} from '@theatre/studio/css'
 import type {VoidFn} from '@theatre/shared/utils/types'
 import React from 'react'
-import {GoChevronRight} from 'react-icons/go'
+import {HiOutlineChevronRight} from 'react-icons/all'
 import styled from 'styled-components'
 import noop from '@theatre/shared/utils/noop'
 import {lighten} from 'polished'
+import {propNameText} from '@theatre/studio/panels/ObjectEditorPanel/propEditors/utils/SingleRowPropEditor'
 
 export const Container = styled.li<{depth: number}>`
   --depth: ${(props) => props.depth};
@@ -43,7 +44,9 @@ const Header = styled(BaseHeader)<{
   }
 `
 
-const Head_Label = styled.span``
+const Head_Label = styled.span`
+  ${propNameText}
+`
 
 const Head_IconContainer = styled.span`
   width: 12px;
@@ -52,7 +55,7 @@ const Head_IconContainer = styled.span`
 
 const Head_Icon = styled.span<{isOpen: boolean}>`
   width: 12px;
-  font-size: 13px;
+  font-size: 9px;
   transform: rotateZ(${(props) => (props.isOpen ? 90 : 0)}deg);
 `
 
@@ -82,7 +85,8 @@ const BaseItem: React.FC<{
         <Head_IconContainer>
           {canContainChildren && (
             <Head_Icon isOpen={true}>
-              <GoChevronRight />
+              {/* <GoChevronRight /> */}
+              <HiOutlineChevronRight />
             </Head_Icon>
           )}
         </Head_IconContainer>

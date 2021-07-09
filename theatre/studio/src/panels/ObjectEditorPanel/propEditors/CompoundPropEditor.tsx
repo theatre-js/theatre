@@ -9,7 +9,7 @@ import {getPointerParts} from '@theatre/dataverse'
 import last from 'lodash-es/last'
 import {darken} from 'polished'
 import React from 'react'
-import {GoChevronRight} from 'react-icons/go'
+import {HiOutlineChevronRight} from 'react-icons/all'
 import styled from 'styled-components'
 import DeterminePropEditor from './DeterminePropEditor'
 import NextPrevKeyframeCursors from './utils/NextPrevKeyframeCursors'
@@ -29,8 +29,9 @@ const Header = styled.div`
 
 const IconContainer = styled.div`
   width: 12px;
-  margin-right: 8px;
-  font-size: 13px;
+  margin-right: 6px;
+  font-size: 9px;
+  text-align: center;
   transform: rotateZ(90deg);
 `
 
@@ -69,7 +70,7 @@ const CompoundPropEditor: React.FC<{
         {
           <Header>
             <IconContainer>
-              <GoChevronRight />
+              <HiOutlineChevronRight />
             </IconContainer>
             <PropName>{propName || 'props'}</PropName>
             <NextPrevKeyframeCursors
