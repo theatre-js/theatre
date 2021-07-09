@@ -31,7 +31,7 @@ const Select = styled.select`
   }
 `
 
-const BasicSelectEditor: React.FC<{
+const BasicSelect: React.FC<{
   value: string
   onChange: (val: string) => void
   options: Record<string, string>
@@ -54,4 +54,4 @@ const BasicSelectEditor: React.FC<{
   )
 }
 
-export default BasicSelectEditor
+export default BasicSelect

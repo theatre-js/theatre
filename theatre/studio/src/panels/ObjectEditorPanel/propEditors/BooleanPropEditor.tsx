@@ -4,8 +4,9 @@ import React, {useCallback} from 'react'
 import {useEditingToolsForPrimitiveProp} from './utils/useEditingToolsForPrimitiveProp'
 import {SingleRowPropEditor} from './utils/SingleRowPropEditor'
 import styled from 'styled-components'
+import BasicCheckbox from '@theatre/studio/uiComponents/form/BasicCheckbox'
 
-const Input = styled.input`
+const Input = styled(BasicCheckbox)`
   margin-left: 6px;
 `
 
@@ -25,7 +26,7 @@ const BooleanPropEditor: React.FC<{
 
   return (
     <SingleRowPropEditor {...{stuff, propConfig, pointerToProp}}>
-      <Input type="checkbox" checked={stuff.value} onChange={onChange} />
+      <Input checked={stuff.value} onChange={onChange} />
     </SingleRowPropEditor>
   )
 }

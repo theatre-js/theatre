@@ -47,7 +47,7 @@ const Input = styled.input`
   height: 0;
 `
 
-const BasicSwitchEditor: React.FC<{
+const BasicSwitch: React.FC<{
   value: string
   onChange: (val: string) => void
   options: Record<string, string>
@@ -76,4 +76,4 @@ const BasicSwitchEditor: React.FC<{
   )
 }
 
-export default BasicSwitchEditor
+export default BasicSwitch

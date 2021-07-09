@@ -59,7 +59,7 @@ type IState_Dragging = {
 
 type IState = IState_NoFocus | IState_EditingViaKeyboard | IState_Dragging
 
-const BasicNumberEditor: React.FC<{
+const BasicNumberInput: React.FC<{
   value: number
   temporarilySetValue: (v: number) => void
   discardTemporaryValue: () => void
@@ -257,4 +257,4 @@ function format(v: number): string {
   return isNaN(v) ? 'NaN' : isInteger(v) ? v.toFixed(0) : round(v, 3).toString()
 }
 
-export default BasicNumberEditor
+export default BasicNumberInput
