@@ -1,11 +1,11 @@
 import type {PropTypeConfig_StringLiteral} from '@theatre/core/propTypes'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import React, {useCallback} from 'react'
-import {useEditingToolsForPrimitiveProp} from './useEditingToolsForPrimitiveProp'
+import {useEditingToolsForPrimitiveProp} from './utils/useEditingToolsForPrimitiveProp'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import BasicSwitchEditor from '@theatre/studio/uiComponents/form/BasicSwitchEditor'
 import BasicSelectEditor from '@theatre/studio/uiComponents/form/BasicSelectEditor'
-import {PrimitivePropEditor} from './BooleanPropEditor'
+import {SingleRowPropEditor} from './utils/SingleRowPropEditor'
 
 const StringLiteralPropEditor: React.FC<{
   propConfig: PropTypeConfig_StringLiteral<$IntentionalAny>
@@ -22,7 +22,7 @@ const StringLiteralPropEditor: React.FC<{
   )
 
   return (
-    <PrimitivePropEditor {...{stuff, propConfig, pointerToProp}}>
+    <SingleRowPropEditor {...{stuff, propConfig, pointerToProp}}>
       {propConfig.as === 'menu' ? (
         <BasicSelectEditor
           value={stuff.value}
@@ -36,7 +36,7 @@ const StringLiteralPropEditor: React.FC<{
           options={propConfig.options}
         />
       )}
-    </PrimitivePropEditor>
+    </SingleRowPropEditor>
   )
 }
 

@@ -13,7 +13,7 @@ import {GoChevronRight} from 'react-icons/go'
 import styled from 'styled-components'
 import DeterminePropEditor from './DeterminePropEditor'
 import NextPrevKeyframeCursors from './utils/NextPrevKeyframeCursors'
-import {labelText} from './BooleanPropEditor'
+import {labelText} from './utils/SingleRowPropEditor'
 
 const Container = styled.div<{depth: number}>`
   --depth: ${(props) => props.depth};

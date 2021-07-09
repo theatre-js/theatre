@@ -10,8 +10,8 @@ import {getPointerParts, prism, val} from '@theatre/dataverse'
 import get from 'lodash-es/get'
 import last from 'lodash-es/last'
 import React from 'react'
-import DefaultOrStaticValueIndicator from './utils/DefaultValueIndicator'
-import NextPrevKeyframeCursors from './utils/NextPrevKeyframeCursors'
+import DefaultOrStaticValueIndicator from './DefaultValueIndicator'
+import NextPrevKeyframeCursors from './NextPrevKeyframeCursors'
 
 interface CommonStuff<T> {
   value: T
