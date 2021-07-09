@@ -9,38 +9,46 @@ import type {useEditingToolsForPrimitiveProp} from '@theatre/studio/panels/Objec
 import {shadeToColor} from '@theatre/studio/panels/ObjectEditorPanel/propEditors/utils/useEditingToolsForPrimitiveProp'
 import styled, {css} from 'styled-components'
 
-export const labelText = css`
+export const propNameText = css`
   font-weight: 300;
   font-size: 11px;
   color: #9a9a9a;
-  text-shadow: 0.5px 0.5px 2px black;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.3);
 
   &:hover {
     color: white;
   }
 `
 
-const Container = styled.div`
+const Row = styled.div`
   display: flex;
   height: 30px;
-  justify-content: flex-end;
+  justify-content: flex-start;
   align-items: center;
 `
 
-const Label = styled.label`
+const PropNameContainer = styled.div`
   margin-right: 4px;
   text-align: right;
-  ${labelText};
+  flex: 0 0;
+  flex-basis: 106px;
+
+  ${propNameText};
 `
-const Body = styled.label`
+
+const ControlsContainer = styled.div`
+  flex-basis: 8px;
+  flex: 0 0;
+`
+
+const InputContainer = styled.div`
   display: flex;
   align-items: center;
-  padding-left: 8px;
+  justify-content: stretch;
+  padding: 0 16px 0 2px;
   box-sizing: border-box;
-  width: 140px;
   height: 100%;
-  margin-right: 16px;
-  margin-left: 4px;
+  flex: 1 1;
 `
 
 export const SingleRowPropEditor: React.FC<{
@@ -50,27 +58,28 @@ export const SingleRowPropEditor: React.FC<{
 }> = ({propConfig, pointerToProp, stuff, children}) => {
   const label = propConfig.label ?? last(getPointerParts(pointerToProp).path)
 
-  const [labelRef, labelNode] = useRefAndState<HTMLLabelElement | null>(null)
+  const [propNameContainerRef, propNameContainer] =
+    useRefAndState<HTMLDivElement | null>(null)
 
-  const [contextMenu] = useContextMenu(labelNode, {
+  const [contextMenu] = useContextMenu(propNameContainer, {
     items: stuff.contextMenuItems,
   })
 
   const color = shadeToColor[stuff.shade]
 
   return (
-    <Container>
+    <Row>
       {contextMenu}
-      <Label
-        ref={labelRef}
+      <PropNameContainer
+        ref={propNameContainerRef}
         title={['obj', 'props', ...getPointerParts(pointerToProp).path].join(
           '.',
         )}
       >
         {label}
-      </Label>
-      {stuff.controlIndicators}
-      <Body>{children}</Body>
-    </Container>
+      </PropNameContainer>
+      <ControlsContainer>{stuff.controlIndicators}</ControlsContainer>
+      <InputContainer>{children}</InputContainer>
+    </Row>
   )
 }

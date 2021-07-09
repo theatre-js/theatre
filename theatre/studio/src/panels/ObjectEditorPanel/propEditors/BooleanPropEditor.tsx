@@ -3,6 +3,11 @@ import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import React, {useCallback} from 'react'
 import {useEditingToolsForPrimitiveProp} from './utils/useEditingToolsForPrimitiveProp'
 import {SingleRowPropEditor} from './utils/SingleRowPropEditor'
+import styled from 'styled-components'
+
+const Input = styled.input`
+  margin-left: 6px;
+`
 
 const BooleanPropEditor: React.FC<{
   propConfig: PropTypeConfig_Boolean
@@ -20,7 +25,7 @@ const BooleanPropEditor: React.FC<{
 
   return (
     <SingleRowPropEditor {...{stuff, propConfig, pointerToProp}}>
-      <input type="checkbox" checked={stuff.value} onChange={onChange} />
+      <Input type="checkbox" checked={stuff.value} onChange={onChange} />
     </SingleRowPropEditor>
   )
 }

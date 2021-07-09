@@ -8,9 +8,8 @@ import DraggableArea from '@theatre/studio/uiComponents/DraggableArea'
 type IMode = IState['mode']
 
 const Container = styled.div<{mode: IMode}>`
-  display: flex;
-  align-items: center;
   height: 100%;
+  width: 100%;
 `
 
 const Input = styled.input`
@@ -65,6 +64,7 @@ const BasicNumberEditor: React.FC<{
   temporarilySetValue: (v: number) => void
   discardTemporaryValue: () => void
   permenantlySetValue: (v: number) => void
+  className?: string
 }> = (propsA) => {
   const [stateA, setState] = useState<IState>({mode: 'noFocus'})
 
@@ -238,7 +238,7 @@ const BasicNumberEditor: React.FC<{
   )
 
   return (
-    <Container mode={refs.current.state.mode}>
+    <Container mode={refs.current.state.mode} className={propsA.className}>
       <DraggableArea
         key="draggableArea"
         onDragStart={callbacks.transitionToDraggingMode}

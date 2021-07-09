@@ -13,7 +13,7 @@ import {GoChevronRight} from 'react-icons/go'
 import styled from 'styled-components'
 import DeterminePropEditor from './DeterminePropEditor'
 import NextPrevKeyframeCursors from './utils/NextPrevKeyframeCursors'
-import {labelText} from './utils/SingleRowPropEditor'
+import {propNameText} from './utils/SingleRowPropEditor'
 
 const Container = styled.div<{depth: number}>`
   --depth: ${(props) => props.depth};
@@ -37,7 +37,7 @@ const IconContainer = styled.div`
 const PropName = styled.div`
   margin-right: 4px;
   cursor: default;
-  ${labelText}
+  ${propNameText}
 `
 
 const SubProps = styled.div<{depth: number; lastSubIsComposite: boolean}>`
