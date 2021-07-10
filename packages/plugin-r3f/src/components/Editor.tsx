@@ -6,7 +6,7 @@ import {useEditorStore} from '../store'
 import {OrbitControls} from '@react-three/drei'
 import shallow from 'zustand/shallow'
 import root from 'react-shadow/styled-components'
-import UI from './UI'
+import Toolbar from './Toolbar/Toolbar'
 import ProxyManager from './ProxyManager'
 import studio from '@theatre/studio'
 import {useVal} from '@theatre/dataverse-react'
@@ -62,7 +62,7 @@ const EditorScene = () => {
   )
 }
 
-const Wrapper = styled.div<{editorOpen: boolean}>`
+const Wrapper = styled.div<{visible: boolean}>`
   tab-size: 4;
   line-height: 1.15; /* 1 */
   -webkit-text-size-adjust: 100%; /* 2 */
@@ -74,7 +74,7 @@ const Wrapper = styled.div<{editorOpen: boolean}>`
   bottom: 0px;
   left: 0px;
   z-index: 50;
-  display: ${(props) => (props.editorOpen ? 'block' : 'none')};
+  display: ${(props) => (props.visible ? 'block' : 'none')};
 `
 
 const CanvasWrapper = styled.div`
@@ -107,7 +107,8 @@ const Editor: VFC = () => {
   return (
     <root.div>
       <GlobalStyle />
-      <Wrapper id="theatre-plugin-r3f-root" editorOpen={editorOpen}>
+      <Wrapper id="theatre-plugin-r3f-root" visible={true}>
+        <Toolbar />
         {sceneSnapshot ? (
           <>
             <CanvasWrapper>
@@ -125,8 +126,6 @@ const Editor: VFC = () => {
                 <EditorScene />
               </Canvas>
             </CanvasWrapper>
-
-            <UI />
           </>
         ) : null}
       </Wrapper>

@@ -2,7 +2,7 @@ import type {VFC} from 'react'
 import {useState} from 'react'
 import React from 'react'
 import TransformControlsModeSelect from './TransformControlsModeSelect'
-import {useEditorStore} from '../store'
+import {useEditorStore} from '../../store'
 import shallow from 'zustand/shallow'
 import TransformControlsSpaceSelect from './TransformControlsSpaceSelect'
 import ViewportShadingSelect from './ViewportShadingSelect'
@@ -10,9 +10,9 @@ import {GiPocketBow, RiFocus3Line} from 'react-icons/all'
 import {Vector3} from 'three'
 import type {$FixMe} from '@theatre/shared/utils/types'
 import studio from '@theatre/studio'
-import {getSelected} from './useSelected'
+import {getSelected} from '../useSelected'
 import {useVal} from '@theatre/dataverse-react'
-import IconButton from './elements/IconButton'
+import IconButton from './utils/IconButton'
 import {PortalContext} from 'reakit'
 import styled from 'styled-components'
 
@@ -37,7 +37,7 @@ const TopRow = styled.div`
   align-items: flex-start;
 `
 
-const Toolbar = styled.div`
+const Tools = styled.div`
   display: flex;
   gap: 1rem;
 `
@@ -46,7 +46,7 @@ const ToolGroup = styled.div`
   pointer-events: auto;
 `
 
-const UI: VFC = () => {
+const Toolbar: VFC = () => {
   const [editorObject] = useEditorStore(
     (state) => [state.editorObject],
     shallow,
@@ -67,7 +67,7 @@ const UI: VFC = () => {
     <PortalContext.Provider value={wrapper}>
       <Container ref={setWrapper}>
         <TopRow>
-          <Toolbar>
+          <Tools>
             <ToolGroup>
               <TransformControlsModeSelect
                 value={transformControlsMode}
@@ -160,11 +160,11 @@ const UI: VFC = () => {
                 }}
               />
             </ToolGroup>
-          </Toolbar>
+          </Tools>
         </TopRow>
       </Container>
     </PortalContext.Provider>
   )
 }
 
-export default UI
+export default Toolbar

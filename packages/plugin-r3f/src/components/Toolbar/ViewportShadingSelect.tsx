@@ -1,8 +1,8 @@
 import type {VFC} from 'react'
 import React from 'react'
-import type {ViewportShading} from '../store'
+import type {ViewportShading} from '../../store'
 import {FaCube, GiCube, GiIceCube, BiCube} from 'react-icons/all'
-import CompactModeSelect from './elements/CompactModeSelect'
+import CompactModeSelect from './utils/CompactModeSelect'
 
 export interface ViewportShadingSelectProps {
   value: ViewportShading

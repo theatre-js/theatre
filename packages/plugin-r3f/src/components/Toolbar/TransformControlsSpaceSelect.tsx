@@ -1,8 +1,8 @@
 import type {VFC} from 'react'
 import React from 'react'
-import type {TransformControlsSpace} from '../store'
+import type {TransformControlsSpace} from '../../store'
 import {BiCube, BiGlobe} from 'react-icons/all'
-import CompactModeSelect from './elements/CompactModeSelect'
+import CompactModeSelect from './utils/CompactModeSelect'
 
 export interface TransformControlsSpaceSelectProps {
   value: TransformControlsSpace
