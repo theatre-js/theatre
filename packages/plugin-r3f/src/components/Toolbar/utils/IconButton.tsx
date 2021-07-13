@@ -5,45 +5,48 @@ import {Button} from 'reakit'
 import type {IconType} from 'react-icons'
 import {Tooltip, TooltipReference, useTooltipState} from './Tooltip'
 import styled from 'styled-components'
+import {transparentize} from 'polished'
 
 export interface IconButtonProps extends Exclude<ButtonProps, 'children'> {
   icon: ReactElement<IconType>
   label: string
 }
 
-const _TooltipRef = styled(TooltipReference)`
+const TheButton = styled(TooltipReference)`
   display: flex;
   position: relative;
   align-items: center;
   justify-content: center;
   vertical-align: middle;
-  width: auto;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
+  font-size: 11px;
+  line-height: 1.25em;
   font-weight: 600;
-  height: 1.75rem;
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
+  height: 24px;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  color: #e6e6e5;
+  background-color: #313131ba;
+  border: 0 transparent;
 
   &:first-child {
-    border-top-left-radius: 0.25rem;
-    border-bottom-left-radius: 0.25rem;
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
   }
 
   &:last-child {
-    border-top-right-radius: 0.25rem;
-    border-bottom-right-radius: 0.25rem;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
   }
 
   &:focus {
     outline: none;
   }
 
-  color: rgba(55, 65, 81, 1);
-  background-color: rgba(243, 244, 246, 1);
+  color: #e6e6e5;
+  background-color: #313131;
 
   &:hover {
-    background-color: rgba(229, 231, 235, 1);
+    background-color: ${transparentize(0.5, '#313131')};
   }
 
   border: 0 transparent;
@@ -53,14 +56,14 @@ const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
     const tooltip = useTooltipState()
     return (
       <>
-        <_TooltipRef
+        <TheButton
           {...props}
           {...tooltip}
           forwardedAs={Button}
           aria-label={label}
         >
           {icon}
-        </_TooltipRef>
+        </TheButton>
         <Tooltip {...tooltip}>{label}</Tooltip>
       </>
     )

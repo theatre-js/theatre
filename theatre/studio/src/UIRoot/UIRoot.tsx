@@ -1,13 +1,15 @@
 import getStudio from '@theatre/studio/getStudio'
-import type {Studio} from '@theatre/studio/Studio'
 import {usePrism} from '@theatre/dataverse-react'
 import {val} from '@theatre/dataverse'
 import React from 'react'
-import {createGlobalStyle, StyleSheetManager} from 'styled-components'
-import EnsureProjectsDontHaveErrors from './EnsureProjectsDontHaveErrors'
+import styled, {createGlobalStyle, StyleSheetManager} from 'styled-components'
 import PanelsRoot from './PanelsRoot'
 import ProvideTheme from './ProvideTheme'
 import TheTrigger from './TheTrigger'
+import GlobalToolbar from '@theatre/studio/toolbars/GlobalToolbar/GlobalToolbar'
+import useRefAndState from '@theatre/studio/utils/useRefAndState'
+import {PortalContext} from 'reakit'
+import type {$IntentionalAny} from '@theatre/shared/utils/types'
 
 const GlobalStyle = createGlobalStyle`
   :host {
@@ -28,13 +30,28 @@ const GlobalStyle = createGlobalStyle`
   }
 `
 
-export default function UIRoot({studio}: {studio: Studio}) {
+const Container = styled.div`
+  z-index: 50;
+  position: fixed;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  pointer-events: none;
+`
+
+export default function UIRoot() {
+  const studio = getStudio()
+  const [containerRef, container] = useRefAndState<HTMLDivElement>(
+    undefined as $IntentionalAny,
+  )
   const inside = usePrism(() => {
     const visiblityState = val(studio.atomP.ahistoric.visibilityState)
     const initialised = val(studio.atomP.ephemeral.initialised)
 
     const shouldShowTrigger = visiblityState === 'onlyTriggerIsVisible'
     const shouldShowPanels = visiblityState === 'everythingIsVisible'
+    const shouldShowGlobalToolbar = visiblityState !== 'everythingIsHidden'
 
     return !initialised ? null : (
       <StyleSheetManager
@@ -44,13 +61,18 @@ export default function UIRoot({studio}: {studio: Studio}) {
         <>
           <GlobalStyle />
           <ProvideTheme>
-            {shouldShowTrigger && <TheTrigger />}
-            {shouldShowPanels && <PanelsRoot />}
+            <PortalContext.Provider value={container}>
+              <Container ref={containerRef}>
+                {shouldShowGlobalToolbar && <GlobalToolbar />}
+                {shouldShowTrigger && <TheTrigger />}
+                {shouldShowPanels && <PanelsRoot />}
+              </Container>
+            </PortalContext.Provider>
           </ProvideTheme>
         </>
       </StyleSheetManager>
     )
-  }, [studio])
+  }, [studio, containerRef, container])
 
-  return <EnsureProjectsDontHaveErrors>{inside}</EnsureProjectsDontHaveErrors>
+  return inside
 }

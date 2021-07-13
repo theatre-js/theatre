@@ -1,24 +1,22 @@
 import type {VFC} from 'react'
 import React from 'react'
 import {Tooltip as TooltipImpl, TooltipReference, useTooltipState} from 'reakit'
-
+import {transparentize} from 'polished'
 import type {TooltipProps} from 'reakit'
 import styled from 'styled-components'
 
 export {TooltipReference, useTooltipState}
 
 const Container = styled(TooltipImpl)`
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
+  padding: 3px 5px;
 
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  border-radius: 0.125rem;
-  background-color: rgba(55, 65, 81, 1);
+  font-size: 11px;
+  line-height: 1.25em;
+  border-radius: 2px;
+  background-color: ${transparentize(0.5, '#313131')};
   color: white;
   pointer-events: none;
+  font-weight: 500;
 `
 
 export const Tooltip: VFC<TooltipProps> = ({className, ...props}) => (

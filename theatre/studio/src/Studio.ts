@@ -9,7 +9,7 @@ import type {
   ITransactionPrivateApi,
 } from './StudioStore/StudioStore'
 import StudioStore from './StudioStore/StudioStore'
-import type {IStudio} from './TheatreStudio'
+import type {IExtension, IStudio} from './TheatreStudio'
 import TheatreStudio from './TheatreStudio'
 import {nanoid} from 'nanoid/non-secure'
 import type Project from '@theatre/core/projects/Project'
@@ -29,6 +29,11 @@ export class Studio {
 
   private readonly _store = new StudioStore()
   private _corePrivateApi: typeof privateAPI | undefined
+
+  private _extensions: Atom<{byId: Record<string, IExtension>}> = new Atom({
+    byId: {},
+  })
+  readonly extensionsP = this._extensions.pointer.byId
 
   constructor() {
     this.address = {studioId: nanoid(10)}
@@ -89,5 +94,23 @@ export class Studio {
 
   get corePrivateAPI() {
     return this._corePrivateApi
+  }
+
+  extend(extension: IExtension) {
+    if (!extension || typeof extension !== 'object') {
+      throw new Error(`Extensions must be JS objects`)
+    }
+
+    if (typeof extension.id !== 'string') {
+      throw new Error(`extension.id must be a string`)
+    }
+
+    if (this._extensions.getState().byId[extension.id]) {
+      throw new Error(
+        `An extension with the id of ${extension.id} already exists`,
+      )
+    }
+
+    this._extensions.setIn(['byId', extension.id], extension)
   }
 }

@@ -3,7 +3,7 @@ import studioTicker from '@theatre/studio/studioTicker'
 import type {IDerivation, Pointer} from '@theatre/dataverse'
 import {prism} from '@theatre/dataverse'
 import SimpleCache from '@theatre/shared/utils/SimpleCache'
-import type {VoidFn} from '@theatre/shared/utils/types'
+import type {$IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
 import type {IScrub} from '@theatre/studio/Scrub'
 
 import type {Studio} from '@theatre/studio/Studio'
@@ -11,10 +11,37 @@ import {isSheetObjectPublicAPI} from '@theatre/shared/instanceTypes'
 import {getOutlineSelection} from './selectors'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import getStudio from './getStudio'
+import type React from 'react'
+import type {
+  PropTypeConfig_Boolean,
+  PropTypeConfig_Compound,
+} from '@theatre/core/propTypes'
 
 export interface ITransactionAPI {
   set<V>(pointer: Pointer<V>, value: V): void
   unset<V>(pointer: Pointer<V>): void
+}
+
+export interface IPanelType<DataType extends PropTypeConfig_Compound<{}>> {
+  sheetName: string
+  dataType: DataType
+  component: React.ComponentType<{
+    id: string
+    object: ISheetObject<
+      PropTypeConfig_Compound<{
+        visible: PropTypeConfig_Boolean
+        data: DataType
+      }>
+    >
+  }>
+}
+
+export type IExtension = {
+  id: string
+  globalToolbar?: {
+    component: React.ComponentType<{}>
+  }
+  panes?: Record<string, IPanelType<$IntentionalAny>>
 }
 
 export interface IStudio {
@@ -34,6 +61,8 @@ export interface IStudio {
   ): VoidFunction
 
   readonly selection: Array<ISheetObject>
+
+  extend(extension: IExtension): void
 }
 
 export default class TheatreStudio implements IStudio {
@@ -61,6 +90,10 @@ export default class TheatreStudio implements IStudio {
    * @internal
    */
   constructor(internals: Studio) {}
+
+  extend(extension: IExtension): void {
+    getStudio().extend(extension)
+  }
 
   transaction(fn: (api: ITransactionAPI) => void): void {
     return getStudio().transaction(({set, unset}) => {

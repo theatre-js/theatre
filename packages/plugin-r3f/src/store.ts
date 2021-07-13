@@ -306,6 +306,23 @@ const editorSheetObjectConfig = types.compound({
         },
         {as: 'menu', label: 'Shading'},
       ),
+      mode: types.stringLiteral(
+        'translate',
+        {
+          translate: 'Translate',
+          rotate: 'Rotate',
+          scale: 'Scale',
+        },
+        {as: 'switch', label: 'Mode'},
+      ),
+      space: types.stringLiteral(
+        'world',
+        {
+          local: 'Local',
+          world: 'World',
+        },
+        {as: 'switch', label: 'Space'},
+      ),
     },
     {label: 'Viewport Config'},
   ),

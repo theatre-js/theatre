@@ -1,4 +1,4 @@
-import UIRootWrapper from '@theatre/studio/UIRoot/UIRootWrapper'
+import UIRoot from '@theatre/studio/UIRoot/UIRoot'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import React from 'react'
 import ReactDOM from 'react-dom'
@@ -54,10 +54,7 @@ export default class UI {
       this._renderTimeout = undefined
       this._documentBodyUIIsRenderedIn = document.body
       this._documentBodyUIIsRenderedIn.appendChild(this.containerEl)
-      ReactDOM.render(
-        React.createElement(UIRootWrapper, {studio: this.studio}),
-        this.containerShadow,
-      )
+      ReactDOM.render(React.createElement(UIRoot), this.containerShadow)
     }
     this._renderTimeout = setTimeout(renderCallback, 10)
   }

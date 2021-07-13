@@ -68,6 +68,7 @@ const propEditorByPropType: {
   enum: () => <></>,
   boolean: BooleanPropEditor,
   stringLiteral: StringLiteralPropEditor,
+  cssrgba: () => <></>,
 }
 
 const DeterminePropEditor: React.FC<{

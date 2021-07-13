@@ -6,11 +6,10 @@ import {useEditorStore} from '../store'
 import {OrbitControls} from '@react-three/drei'
 import shallow from 'zustand/shallow'
 import root from 'react-shadow/styled-components'
-import Toolbar from './Toolbar/Toolbar'
 import ProxyManager from './ProxyManager'
 import studio from '@theatre/studio'
 import {useVal} from '@theatre/dataverse-react'
-import styled, {createGlobalStyle} from 'styled-components'
+import styled, {createGlobalStyle, StyleSheetManager} from 'styled-components'
 
 const GlobalStyle = createGlobalStyle`
   :host {
@@ -52,12 +51,13 @@ const EditorScene = () => {
 
   return (
     <>
-      {showGrid && <gridHelper args={[1000, 1000, 0x444444, 0x888888]} />}
+      {showGrid && <gridHelper args={[20, 20, '#6e6e6e', '#4a4b4b']} />}
       {showAxes && <axesHelper args={[500]} />}
       {/* @ts-ignore */}
       <OrbitControls ref={orbitControlsRef} enableDamping={false} />
       <primitive object={helpersRoot}></primitive>
       <ProxyManager orbitControlsRef={orbitControlsRef} />
+      <color attach="background" args={[0.24, 0.24, 0.24]} />
     </>
   )
 }
@@ -106,29 +106,36 @@ const Editor: VFC = () => {
 
   return (
     <root.div>
-      <GlobalStyle />
-      <Wrapper id="theatre-plugin-r3f-root" visible={true}>
-        <Toolbar />
-        {sceneSnapshot ? (
-          <>
-            <CanvasWrapper>
-              <Canvas
-                // @ts-ignore
-                colorManagement
-                camera={initialEditorCamera}
-                onCreated={({gl}) => {
-                  gl.setClearColor('white')
-                }}
-                shadowMap
-                pixelRatio={window.devicePixelRatio}
-                onPointerMissed={() => studio.__experimental_setSelection([])}
-              >
-                <EditorScene />
-              </Canvas>
-            </CanvasWrapper>
-          </>
-        ) : null}
-      </Wrapper>
+      <StyleSheetManager disableVendorPrefixes>
+        <>
+          <GlobalStyle />
+          <Wrapper id="theatre-plugin-r3f-root" visible={true}>
+            {/* <Toolbar /> */}
+            {sceneSnapshot ? (
+              <>
+                <CanvasWrapper>
+                  <Canvas
+                    // @ts-ignore
+                    colorManagement
+                    camera={initialEditorCamera}
+                    onCreated={({gl}) => {
+                      gl.setClearColor('white')
+                    }}
+                    shadowMap
+                    dpr={[1, 2]}
+                    fog={'red'}
+                    onPointerMissed={() =>
+                      studio.__experimental_setSelection([])
+                    }
+                  >
+                    <EditorScene />
+                  </Canvas>
+                </CanvasWrapper>
+              </>
+            ) : null}
+          </Wrapper>
+        </>
+      </StyleSheetManager>
     </root.div>
   )
 }

@@ -124,6 +124,25 @@ export const compound = <Props extends IValidCompoundProps>(
   }
 }
 
+export interface PropTypeConfig_CSSRGBA
+  extends IBasePropType<{r: number; g: number; b: number; a: number}> {
+  type: 'cssrgba'
+  default: {r: number; g: number; b: number; a: number}
+}
+
+export const rgba = (
+  defaultValue: {r: number; b: number; g: number; a: number},
+  extras?: PropTypeConfigExtras,
+): PropTypeConfig_CSSRGBA => {
+  return {
+    type: 'cssrgba',
+    valueType: null as $IntentionalAny,
+    [s]: 'TheatrePropType',
+    label: extras?.label,
+    default: defaultValue,
+  }
+}
+
 export interface PropTypeConfig_Enum extends IBasePropType<{}> {
   type: 'enum'
   cases: Record<string, PropTypeConfig>
@@ -135,6 +154,7 @@ export type PropTypeConfig_AllPrimitives =
   | PropTypeConfig_Boolean
   | PropTypeConfig_String
   | PropTypeConfig_StringLiteral<$IntentionalAny>
+  | PropTypeConfig_CSSRGBA
 
 export type PropTypeConfig =
   | PropTypeConfig_AllPrimitives

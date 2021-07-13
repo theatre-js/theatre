@@ -13,42 +13,38 @@ interface OptionButtonProps<Option> {
   onClick: () => void
 }
 
-const _TooltipRef = styled(TooltipReference)<{selected: boolean}>`
+const TheButton = styled(TooltipReference)<{selected: boolean}>`
   display: flex;
   position: relative;
   align-items: center;
   justify-content: center;
   vertical-align: middle;
-  width: auto;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
+  font-size: 11px;
+  line-height: 1.25em;
   font-weight: 600;
-  height: 1.75rem;
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
-  border: 0 transparent;
+  height: 24px;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  border: 1px solid #22222238;
 
-  &:first-child {
-    border-top-left-radius: 0.25rem;
-    border-bottom-left-radius: 0.25rem;
-  }
-
-  &:last-child {
-    border-top-right-radius: 0.25rem;
-    border-bottom-right-radius: 0.25rem;
-  }
+  border-radius: 2px;
 
   &:focus {
     outline: none;
   }
 
-  color: ${({selected}) => (selected ? 'white' : 'rgba(55, 65, 81, 1)')};
-  background-color: ${({selected}) =>
-    selected ? 'rgba(6, 95, 70, 1)' : 'rgba(243, 244, 246, 1);'};
+  color: #e6e6e5;
+  background-color: rgba(0, 0, 0, 0.1);
 
   &:hover {
-    background-color: ${({selected}) =>
-      selected ? 'rgba(6, 78, 59, 1)' : 'rgba(229, 231, 235, 1);'};
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+  }
+
+  &.selected,
+  &.selected:hover {
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5);
   }
 `
 
@@ -62,15 +58,16 @@ function OptionButton<Option>({
   const tooltip = useTooltipState()
   return (
     <>
-      <_TooltipRef
+      <TheButton
         {...tooltip}
         forwardedAs={Button}
         selected={option === value}
+        className={option === value ? 'selected' : undefined}
         aria-label={label}
         onClick={onClick}
       >
         {icon}
-      </_TooltipRef>
+      </TheButton>
       <Tooltip {...tooltip}>{label}</Tooltip>
     </>
   )
@@ -89,6 +86,7 @@ interface CompactModeSelectProps<Option> {
 
 const Container = styled(Group)`
   display: flex;
+  gap: 2px;
 `
 
 const CompactModeSelect = <Option extends string | number>({
