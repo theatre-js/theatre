@@ -9,6 +9,8 @@ module.exports = {
     'lodash-es/(.*)': 'lodash/$1',
     'react-use/esm/(.*)': 'react-use/lib/$1',
     'lodash-es': 'lodash',
+    // An ES module that jest can't handle at the moment.
+    'react-icons/(.*)': 'identity-obj-proxy',
   },
   setupFiles: ['./theatre/shared/src/setupTestEnv.ts'],
   automock: false,
