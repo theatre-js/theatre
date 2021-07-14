@@ -31,7 +31,7 @@ export const F1 = styled.div`
   font-size: 11px;
   border-bottom: 2px solid rgba(0, 0, 0, 0.45);
   background: ${theme.panel.bg};
-  box-size: border-box;
+  box-sizing: border-box;
 `
 
 export const Punctuation = styled.span`

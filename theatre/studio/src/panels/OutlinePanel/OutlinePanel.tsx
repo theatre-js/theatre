@@ -4,10 +4,6 @@ import styled from 'styled-components'
 import ProjectsList from './ProjectsList/ProjectsList'
 import type {PanelPosition} from '@theatre/studio/store/types'
 import BasePanel from '@theatre/studio/panels/BasePanel/BasePanel'
-import {
-  F1,
-  F2,
-} from '@theatre/studio/panels/ObjectEditorPanel/ObjectEditorPanel'
 import PanelWrapper from '@theatre/studio/panels/BasePanel/PanelWrapper'
 import PanelDragZone from '@theatre/studio/panels/BasePanel/PanelDragZone'
 
@@ -38,10 +34,20 @@ const Container = styled(PanelWrapper)`
   overflow-y: hidden;
   display: flex;
   flex-direction: column;
+  background-color: transparent;
+  box-shadow: none;
 `
 
 const Title = styled.div`
   width: 100%;
+`
+
+const Header = styled.div``
+
+const F2 = styled.div`
+  flex-grow: 1;
+  overflow-y: scroll;
+  padding: 0;
 `
 
 const Content: React.FC = () => {
@@ -49,9 +55,9 @@ const Content: React.FC = () => {
     return (
       <Container>
         <PanelDragZone>
-          <F1>
+          <Header>
             <Title>Outline</Title>
-          </F1>
+          </Header>
         </PanelDragZone>
         <F2>
           <ProjectsList />

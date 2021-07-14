@@ -1,11 +1,8 @@
-import {theme} from '@theatre/studio/css'
 import type {VoidFn} from '@theatre/shared/utils/types'
 import React from 'react'
-import {HiOutlineChevronRight} from 'react-icons/all'
-import styled from 'styled-components'
+import {GoChevronRight, DiHtml53DEffects} from 'react-icons/all'
+import styled, {css} from 'styled-components'
 import noop from '@theatre/shared/utils/noop'
-import {lighten} from 'polished'
-import {propNameText} from '@theatre/studio/panels/ObjectEditorPanel/propEditors/utils/SingleRowPropEditor'
 
 export const Container = styled.li<{depth: number}>`
   --depth: ${(props) => props.depth};
@@ -16,46 +13,62 @@ export const Container = styled.li<{depth: number}>`
 
 export const BaseHeader = styled.div<{}>``
 
-const Header = styled(BaseHeader)<{
-  selectionStatus: SelectionStatus
-}>`
-  padding-left: calc(16px + var(--depth) * 20px);
-  height: 28px;
-
+const Header = styled(BaseHeader)`
+  padding-left: calc(16px + var(--depth) * 16px);
+  height: 22px;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
-  color: ${({selectionStatus}) =>
-    lighten(
-      selectionStatus === 'selected' ? 0.2 : 0,
-      theme.panel.body.compoudThing.label.color,
-    )};
+  pointer-events: none;
 
-  background: ${({selectionStatus}) =>
-    selectionStatus === 'selected'
-      ? '#1919245e'
-      : selectionStatus === 'descendant-is-selected'
-      ? '#19192426'
-      : 'transparent'};
+  &.selected {
+  }
 
-  box-sizing: border-box;
-
-  &:hover {
-    color: ${lighten(0.2, theme.panel.body.compoudThing.label.color)};
+  &.descendant-is-selected {
   }
 `
 
+export const outlineItemFont = css`
+  font-weight: 500;
+  font-size: 11px;
+`
+
 const Head_Label = styled.span`
-  ${propNameText}
+  ${outlineItemFont};
+  color: #ffffffdb;
+  background-color: #758184;
+  padding: 2px 8px;
+  border-radius: 2px;
+  pointer-events: auto;
+
+  ${Header}:hover > & {
+    background-color: red;
+  }
+
+  ${Header}.selected > & {
+    color: white;
+    background-color: #464242;
+  }
 `
 
 const Head_IconContainer = styled.span`
   width: 12px;
   margin-right: 8px;
+  /* background-color: #435356d9; */
+  color: black;
+  font-weight: 500;
+
+  ${Header}.selected > & {
+    color: white;
+    background-color: #464242;
+  }
 `
 
-const Head_Icon = styled.span<{isOpen: boolean}>`
+const Head_Icon_WithDescendants = styled.span<{isOpen: boolean}>`
   width: 12px;
   font-size: 9px;
+  position: relative;
+  display: block;
   transform: rotateZ(${(props) => (props.isOpen ? 90 : 0)}deg);
 `
 
@@ -81,13 +94,14 @@ const BaseItem: React.FC<{
 
   return (
     <Container depth={depth}>
-      <Header selectionStatus={selectionStatus} onClick={select ?? noop}>
+      <Header className={selectionStatus} onClick={select ?? noop}>
         <Head_IconContainer>
-          {canContainChildren && (
-            <Head_Icon isOpen={true}>
-              {/* <GoChevronRight /> */}
-              <HiOutlineChevronRight />
-            </Head_Icon>
+          {canContainChildren ? (
+            <Head_Icon_WithDescendants isOpen={true}>
+              <GoChevronRight />
+            </Head_Icon_WithDescendants>
+          ) : (
+            <DiHtml53DEffects />
           )}
         </Head_IconContainer>
 
