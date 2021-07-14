@@ -56,6 +56,11 @@ export type OutlineSelectionState =
 export type OutlineSelectable = Project | Sheet | SheetObject
 export type OutlineSelection = OutlineSelectable[]
 
+export type PanelInstanceDescriptor = {
+  instanceId: string
+  paneClass: string
+}
+
 export type StudioHistoricState = {
   projects: {
     stateByProjectId: StrictRecord<
@@ -77,7 +82,10 @@ export type StudioHistoricState = {
     >
   }
   panels?: Panels
-  panelPositions?: {[panelId in PanelId]?: PanelPosition}
+  panelPositions?: {[panelIdOrPaneId in string]?: PanelPosition}
+  panelInstanceDesceriptors: {
+    [instanceId in string]?: PanelInstanceDescriptor
+  }
   autoKey: boolean
   coreByProject: {[projectId in string]: ProjectState_Historic}
 }

@@ -172,7 +172,7 @@ type IEffect = {
 const memosWeakMap = new WeakMap<PrismScope, Record<string, IMemo>>()
 
 type IMemo = {
-  deps: undefined | unknown[]
+  deps: undefined | unknown[] | ReadonlyArray<unknown>
   cachedValue: unknown
 }
 
@@ -229,8 +229,8 @@ function effect(key: string, cb: () => () => void, deps?: unknown[]): void {
 }
 
 function depsHaveChanged(
-  oldDeps: undefined | unknown[],
-  newDeps: undefined | unknown[],
+  oldDeps: undefined | unknown[] | ReadonlyArray<unknown>,
+  newDeps: undefined | unknown[] | ReadonlyArray<unknown>,
 ): boolean {
   if (oldDeps === undefined || newDeps === undefined) {
     return true
@@ -244,7 +244,7 @@ function depsHaveChanged(
 function memo<T>(
   key: string,
   fn: () => T,
-  deps: undefined | $IntentionalAny[],
+  deps: undefined | $IntentionalAny[] | ReadonlyArray<$IntentionalAny>,
 ): T {
   const scope = hookScopeStack.peek()
   if (!scope) {

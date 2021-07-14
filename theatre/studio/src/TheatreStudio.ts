@@ -3,7 +3,7 @@ import studioTicker from '@theatre/studio/studioTicker'
 import type {IDerivation, Pointer} from '@theatre/dataverse'
 import {prism} from '@theatre/dataverse'
 import SimpleCache from '@theatre/shared/utils/SimpleCache'
-import type {$IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
+import type {$FixMe, VoidFn} from '@theatre/shared/utils/types'
 import type {IScrub} from '@theatre/studio/Scrub'
 
 import type {Studio} from '@theatre/studio/Studio'
@@ -22,8 +22,10 @@ export interface ITransactionAPI {
   unset<V>(pointer: Pointer<V>): void
 }
 
-export interface IPanelType<DataType extends PropTypeConfig_Compound<{}>> {
-  sheetName: string
+export interface PaneClassDefinition<
+  DataType extends PropTypeConfig_Compound<{}>,
+> {
+  class: string
   dataType: DataType
   component: React.ComponentType<{
     id: string
@@ -41,7 +43,16 @@ export type IExtension = {
   globalToolbar?: {
     component: React.ComponentType<{}>
   }
-  panes?: Record<string, IPanelType<$IntentionalAny>>
+  panes?: Array<PaneClassDefinition<$FixMe>>
+}
+
+export type PaneInstance<ClassName extends string> = {
+  extensionId: string
+  instanceId: string
+  object: ISheetObject<
+    PropTypeConfig_Compound<{data: $FixMe; visible: PropTypeConfig_Boolean}>
+  >
+  definition: PaneClassDefinition<$FixMe>
 }
 
 export interface IStudio {
@@ -63,6 +74,14 @@ export interface IStudio {
   readonly selection: Array<ISheetObject>
 
   extend(extension: IExtension): void
+
+  getPanesOfType<PaneClass extends string>(
+    paneClass: PaneClass,
+  ): Array<PaneInstance<PaneClass>>
+
+  createPane<PaneClass extends string>(
+    paneClass: PaneClass,
+  ): PaneInstance<PaneClass>
 }
 
 export default class TheatreStudio implements IStudio {
@@ -137,5 +156,16 @@ export default class TheatreStudio implements IStudio {
 
   scrub(): IScrub {
     return getStudio().scrub()
+  }
+
+  getPanesOfType<PaneClass extends string>(
+    paneClass: PaneClass,
+  ): PaneInstance<PaneClass>[] {
+    return getStudio().paneManager.getPanesOfType(paneClass)
+  }
+  createPane<PaneClass extends string>(
+    paneClass: PaneClass,
+  ): PaneInstance<PaneClass> {
+    return getStudio().paneManager.createPane(paneClass)
   }
 }

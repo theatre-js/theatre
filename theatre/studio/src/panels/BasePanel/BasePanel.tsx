@@ -2,7 +2,7 @@ import {val} from '@theatre/dataverse'
 import {usePrism} from '@theatre/dataverse-react'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import getStudio from '@theatre/studio/getStudio'
-import type {PanelId, PanelPosition} from '@theatre/studio/store/types'
+import type {PanelPosition} from '@theatre/studio/store/types'
 import React, {useContext} from 'react'
 import useWindowSize from 'react-use/esm/useWindowSize'
 import styled from 'styled-components'
@@ -15,7 +15,7 @@ const Container = styled.div`
 `
 
 type PanelStuff = {
-  panelId: PanelId
+  panelId: string
   dims: {
     width: number
     height: number
@@ -69,7 +69,7 @@ const PanelContext = React.createContext<PanelStuff>(null as $IntentionalAny)
 export const usePanel = () => useContext(PanelContext)
 
 const BasePanel: React.FC<{
-  panelId: PanelId
+  panelId: string
   defaultPosition: PanelPosition
   minDims: {width: number; height: number}
 }> = ({panelId, children, defaultPosition, minDims}) => {

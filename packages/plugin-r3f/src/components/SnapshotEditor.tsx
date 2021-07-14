@@ -62,19 +62,17 @@ const EditorScene = () => {
   )
 }
 
-const Wrapper = styled.div<{visible: boolean}>`
+const Wrapper = styled.div`
   tab-size: 4;
   line-height: 1.15; /* 1 */
   -webkit-text-size-adjust: 100%; /* 2 */
   margin: 0;
 
-  position: fixed;
+  position: absolute;
   top: 0px;
   right: 0px;
   bottom: 0px;
   left: 0px;
-  z-index: 50;
-  display: ${(props) => (props.visible ? 'block' : 'none')};
 `
 
 const CanvasWrapper = styled.div`
@@ -83,7 +81,9 @@ const CanvasWrapper = styled.div`
   height: 100%;
 `
 
-const Editor: VFC = () => {
+const SnapshotEditor: VFC = () => {
+  console.log('Snapshot editor!!')
+
   const [editorObject, sceneSnapshot, initialEditorCamera, createSnapshot] =
     useEditorStore(
       (state) => [
@@ -95,10 +95,18 @@ const Editor: VFC = () => {
       shallow,
     )
 
-  const editorOpen = !!useVal(editorObject?.props.isOpen)
+  const editorOpen = true
   useLayoutEffect(() => {
+    let timeout: NodeJS.Timeout | undefined
     if (editorOpen) {
-      createSnapshot()
+      // a hack to make sure all the scene's props are
+      // applied before we take a snapshot
+      timeout = setTimeout(createSnapshot, 100)
+    }
+    return () => {
+      if (timeout !== undefined) {
+        clearTimeout(timeout)
+      }
     }
   }, [editorOpen])
 
@@ -109,8 +117,7 @@ const Editor: VFC = () => {
       <StyleSheetManager disableVendorPrefixes>
         <>
           <GlobalStyle />
-          <Wrapper id="theatre-plugin-r3f-root" visible={true}>
-            {/* <Toolbar /> */}
+          <Wrapper>
             {sceneSnapshot ? (
               <>
                 <CanvasWrapper>
@@ -140,4 +147,4 @@ const Editor: VFC = () => {
   )
 }
 
-export default Editor
+export default SnapshotEditor

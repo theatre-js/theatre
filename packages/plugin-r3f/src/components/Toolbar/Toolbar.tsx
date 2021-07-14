@@ -10,7 +10,7 @@ import {Vector3} from 'three'
 import type {$FixMe} from '@theatre/shared/utils/types'
 import studio from '@theatre/studio'
 import {getSelected} from '../useSelected'
-import {useVal} from '@theatre/dataverse-react'
+import {usePrism, useVal} from '@theatre/dataverse-react'
 import IconButton from './utils/IconButton'
 import styled from 'styled-components'
 
@@ -19,6 +19,10 @@ const ToolGroup = styled.div`
 `
 
 const Toolbar: VFC = () => {
+  usePrism(() => {
+    const panes = studio.getPanesOfType('snapshotEditor')
+  }, [])
+
   const [editorObject] = useEditorStore(
     (state) => [state.editorObject],
     shallow,
@@ -35,6 +39,15 @@ const Toolbar: VFC = () => {
 
   return (
     <>
+      <ToolGroup>
+        <button
+          onClick={() => {
+            studio.createPane('snapshotEditor')
+          }}
+        >
+          Create snapshot
+        </button>
+      </ToolGroup>
       <ToolGroup>
         <TransformControlsModeSelect
           value={transformControlsMode}

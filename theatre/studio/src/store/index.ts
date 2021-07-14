@@ -29,12 +29,17 @@ const initialState: StudioState = {
     },
     autoKey: true,
     coreByProject: {},
+    panelInstanceDesceriptors: {},
   },
   ephemeral: {
     initialised: false,
     coreByProject: {},
     projects: {
       stateByProjectId: {},
+    },
+    extensions: {
+      byId: {},
+      paneClasses: {},
     },
   },
 }

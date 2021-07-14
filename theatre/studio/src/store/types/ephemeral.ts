@@ -1,5 +1,13 @@
 import type {ProjectState} from '@theatre/core/projects/store/storeTypes'
-import type {SerializableMap, StrictRecord} from '@theatre/shared/utils/types'
+import type {
+  $IntentionalAny,
+  SerializableMap,
+  StrictRecord,
+} from '@theatre/shared/utils/types'
+import type {
+  IExtension,
+  PaneClassDefinition,
+} from '@theatre/studio/TheatreStudio'
 
 export type StudioEphemeralState = {
   initialised: boolean
@@ -21,5 +29,14 @@ export type StudioEphemeralState = {
         >
       }
     >
+  }
+  extensions: {
+    byId: {[extensionId in string]?: IExtension}
+    paneClasses: {
+      [paneClassName in string]?: {
+        extensionId: string
+        classDefinition: PaneClassDefinition<$IntentionalAny>
+      }
+    }
   }
 }

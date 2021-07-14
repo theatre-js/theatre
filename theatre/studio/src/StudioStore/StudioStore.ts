@@ -78,6 +78,10 @@ export default class StudioStore {
     }
   }
 
+  getState(): FullStudioState {
+    return this._reduxStore.getState()
+  }
+
   /**
    * This method causes the store to start the history from scratch. This is useful
    * for testing and development where you want to explicitly provide a state to the

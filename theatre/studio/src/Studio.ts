@@ -1,5 +1,4 @@
 import Scrub from '@theatre/studio/Scrub'
-import type {FullStudioState} from '@theatre/studio/store'
 import type {StudioHistoricState} from '@theatre/studio/store/types/historic'
 import UI from '@theatre/studio/UI'
 import type {Pointer} from '@theatre/dataverse'
@@ -14,10 +13,14 @@ import TheatreStudio from './TheatreStudio'
 import {nanoid} from 'nanoid/non-secure'
 import type Project from '@theatre/core/projects/Project'
 import type {CoreBits} from '@theatre/core/CoreBundle'
-import type {privateAPI} from '@theatre/core/privateAPIs'
+import SimpleCache from '@theatre/shared/utils/SimpleCache'
+import type {IProject, ISheet} from '@theatre/core'
+import PaneManager from './PaneManager'
+import type * as _coreExports from '@theatre/core/coreExports'
+
+export type CoreExports = typeof _coreExports
 
 export class Studio {
-  readonly atomP: Pointer<FullStudioState>
   readonly ui!: UI
   readonly publicApi: IStudio
   readonly address: {studioId: string}
@@ -28,23 +31,27 @@ export class Studio {
     this._projectsProxy.pointer
 
   private readonly _store = new StudioStore()
-  private _corePrivateApi: typeof privateAPI | undefined
+  private _corePrivateApi: CoreBits['privateAPI'] | undefined
 
-  private _extensions: Atom<{byId: Record<string, IExtension>}> = new Atom({
-    byId: {},
-  })
-  readonly extensionsP = this._extensions.pointer.byId
+  private readonly _cache = new SimpleCache()
+  readonly paneManager: PaneManager
+
+  private _coreAtom = new Atom<{core?: CoreExports}>({})
+
+  get atomP() {
+    return this._store.atomP
+  }
 
   constructor() {
     this.address = {studioId: nanoid(10)}
     this.publicApi = new TheatreStudio(this)
-    this.atomP = this._store.atomP
 
     if (process.env.NODE_ENV !== 'test') {
       this.ui = new UI(this)
     }
 
     this._attachToIncomingProjects()
+    this.paneManager = new PaneManager(this)
   }
 
   get initialized() {
@@ -69,6 +76,7 @@ export class Studio {
 
   setCoreBits(coreBits: CoreBits) {
     this._corePrivateApi = coreBits.privateAPI
+    this._coreAtom.setIn(['core'], coreBits.coreExports)
     this._setProjectsP(coreBits.projectsP)
   }
 
@@ -96,6 +104,14 @@ export class Studio {
     return this._corePrivateApi
   }
 
+  get core() {
+    return this._coreAtom.getState().core
+  }
+
+  get coreP() {
+    return this._coreAtom.pointer.core
+  }
+
   extend(extension: IExtension) {
     if (!extension || typeof extension !== 'object') {
       throw new Error(`Extensions must be JS objects`)
@@ -105,12 +121,47 @@ export class Studio {
       throw new Error(`extension.id must be a string`)
     }
 
-    if (this._extensions.getState().byId[extension.id]) {
-      throw new Error(
-        `An extension with the id of ${extension.id} already exists`,
-      )
-    }
+    this.transaction(({drafts}) => {
+      if (drafts.ephemeral.extensions.byId[extension.id]) {
+        throw new Error(`Extension id "${extension.id}" is already defined`)
+      }
+      drafts.ephemeral.extensions.byId[extension.id] = extension
 
-    this._extensions.setIn(['byId', extension.id], extension)
+      const allPaneClasses = drafts.ephemeral.extensions.paneClasses
+
+      extension.panes?.forEach((classDefinition) => {
+        if (typeof classDefinition.class !== 'string') {
+          throw new Error(`pane.class must be a string`)
+        }
+
+        if (classDefinition.class.length < 3) {
+          throw new Error(
+            `pane.class should be a string with 3 or more characters`,
+          )
+        }
+
+        const existing = allPaneClasses[classDefinition.class]
+        if (existing) {
+          throw new Error(
+            `Pane class "${classDefinition.class}" already exists and is supplied by extension ${existing}`,
+          )
+        }
+
+        allPaneClasses[classDefinition.class] = {
+          extensionId: extension.id,
+          classDefinition: classDefinition,
+        }
+      })
+    })
+  }
+
+  getStudioProject(core: CoreExports): IProject {
+    return this._cache.get('getStudioProject', () => core.getProject('Studio'))
+  }
+
+  getExtensionSheet(extensionId: string, core: CoreExports): ISheet {
+    return this._cache.get('extensionSheet-' + extensionId, () =>
+      this.getStudioProject(core)!.sheet('Extension ' + extensionId),
+    )
   }
 }

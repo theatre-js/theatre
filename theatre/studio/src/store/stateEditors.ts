@@ -29,7 +29,6 @@ import {graphEditorColors} from '@theatre/studio/panels/SequenceEditorPanel/Grap
 import type {
   OutlineSelectable,
   OutlineSelectionState,
-  PanelId,
   PanelPosition,
 } from './types'
 import {uniq} from 'lodash-es'
@@ -67,7 +66,7 @@ namespace stateEditors {
     export namespace historic {
       export namespace panelPositions {
         export function setPanelPosition(p: {
-          panelId: PanelId
+          panelId: string
           position: PanelPosition
         }) {
           const h = drafts().historic

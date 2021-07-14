@@ -17,9 +17,10 @@ const Container = styled.div`
 
 const GlobalToolbar: React.FC<{}> = (props) => {
   const groups: Array<React.ReactNode> = []
-  const extensions = useVal(getStudio().extensionsP)
+  const extensionsById = useVal(getStudio().atomP.ephemeral.extensions.byId)
 
-  for (const [, extension] of Object.entries(extensions)) {
+  for (const [, extension] of Object.entries(extensionsById)) {
+    if (!extension) continue
     if (extension.globalToolbar) {
       groups.push(
         <extension.globalToolbar.component
