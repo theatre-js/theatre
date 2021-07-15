@@ -3,6 +3,7 @@ import React from 'react'
 import {GoChevronRight, DiHtml53DEffects} from 'react-icons/all'
 import styled, {css} from 'styled-components'
 import noop from '@theatre/shared/utils/noop'
+import {lighten, transparentize} from 'polished'
 
 export const Container = styled.li<{depth: number}>`
   --depth: ${(props) => props.depth};
@@ -14,53 +15,100 @@ export const Container = styled.li<{depth: number}>`
 export const BaseHeader = styled.div<{}>``
 
 const Header = styled(BaseHeader)`
-  padding-left: calc(16px + var(--depth) * 16px);
+  padding-left: calc(4px + var(--depth) * 16px);
   height: 22px;
   box-sizing: border-box;
   display: flex;
   align-items: center;
   pointer-events: none;
 
+  --item-bg: #393d42b8;
+  --item-border-color: ${() => lighten(0.05, '#393d42b8')};
+  color: ${() => transparentize(0.25, 'white')};
+
+  &:hover {
+    color: white;
+
+    --item-bg: ${() => lighten(0.1, '#393d42b8')};
+    --item-border-color: ${() => lighten(0.45, '#393d42b8')};
+  }
+
   &.selected {
+    color: white;
+
+    --item-bg: ${() => lighten(0.2, '#393d42b8')};
+    --item-border-color: ${() => lighten(0.45, '#393d42b8')};
   }
 
   &.descendant-is-selected {
+    color: ${() => transparentize(0.15, 'white')};
+
+    --item-bg: ${() => lighten(0.05, '#393d42b8')};
+    --item-border-color: ${() => lighten(0.1, '#393d42b8')};
   }
 `
 
 export const outlineItemFont = css`
   font-weight: 500;
   font-size: 11px;
+  & {
+  }
 `
 
 const Head_Label = styled.span`
   ${outlineItemFont};
-  color: #ffffffdb;
-  background-color: #758184;
-  padding: 2px 8px;
-  border-radius: 2px;
-  pointer-events: auto;
 
-  ${Header}:hover > & {
-    background-color: red;
+  padding: 2px 8px;
+  pointer-events: auto;
+  position: relative;
+  display: block;
+  height: 15px;
+  background-color: var(--item-bg);
+  border-radius: 2px;
+
+  &:after {
+    border: 1px solid var(--item-border-color);
+    position: absolute;
+    inset: 0px;
+    display: block;
+    content: ' ';
+    z-index: -1;
+    pointer-events: none;
+    border-radius: 2px;
   }
 
-  ${Header}.selected > & {
-    color: white;
-    background-color: #464242;
+  &:before {
+    position: absolute;
+    inset: -1px -20px;
+    display: block;
+    content: ' ';
+    z-index: 0;
+    pointer-events: auto;
   }
 `
 
 const Head_IconContainer = styled.span`
-  width: 12px;
-  margin-right: 8px;
+  width: 18px;
+  box-sizing: border-box;
+  height: 18px;
+  margin-right: 4px;
   /* background-color: #435356d9; */
-  color: black;
   font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  opacity: 0.9;
 
-  ${Header}.selected > & {
-    color: white;
-    background-color: #464242;
+  &:after {
+    display: block;
+    content: ' ';
+    position: absolute;
+    inset: 0px;
+    z-index: -1;
+    background-color: var(--item-bg);
+    opacity: 0.3;
+    border-radius: 2px;
   }
 `
 

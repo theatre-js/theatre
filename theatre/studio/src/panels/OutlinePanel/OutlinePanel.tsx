@@ -42,7 +42,9 @@ const Title = styled.div`
   width: 100%;
 `
 
-const Header = styled.div``
+const Header = styled.div`
+  display: none;
+`
 
 const F2 = styled.div`
   flex-grow: 1;
