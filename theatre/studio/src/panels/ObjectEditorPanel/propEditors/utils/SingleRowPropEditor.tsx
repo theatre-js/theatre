@@ -8,7 +8,10 @@ import React from 'react'
 import type {useEditingToolsForPrimitiveProp} from '@theatre/studio/panels/ObjectEditorPanel/propEditors/utils/useEditingToolsForPrimitiveProp'
 import {shadeToColor} from '@theatre/studio/panels/ObjectEditorPanel/propEditors/utils/useEditingToolsForPrimitiveProp'
 import styled, {css} from 'styled-components'
-import {rowBg} from '@theatre/studio/panels/ObjectEditorPanel/propEditors/CompoundPropEditor'
+import {
+  indentationFormula,
+  rowBg,
+} from '@theatre/studio/panels/ObjectEditorPanel/propEditors/CompoundPropEditor'
 
 export const propNameText = css`
   font-weight: 300;
@@ -34,7 +37,7 @@ const Row = styled.div`
 
 const Left = styled.div`
   box-sizing: border-box;
-  padding-left: calc(var(--left-pad) + (var(--depth) + 1) * var(--step));
+  padding-left: ${indentationFormula};
   padding-right: 4px;
   display: flex;
   flex-direction: row;

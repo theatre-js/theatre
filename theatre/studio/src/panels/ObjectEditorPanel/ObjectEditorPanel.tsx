@@ -16,8 +16,8 @@ const Container = styled(PanelWrapper)`
   overflow-y: hidden;
   display: flex;
   flex-direction: column;
-  /* background-color: transparent; */
-  background-color: #282b2ff0;
+  background-color: transparent;
+  /* background-color: #282b2ff0; */
   box-shadow: none;
 
   &:after {
@@ -28,7 +28,7 @@ const Container = styled(PanelWrapper)`
     width: 1px;
     bottom: 0;
     top: 0;
-    border-left: 1px solid #3a3a44;
+    /* border-left: 1px solid #3a3a44; */
   }
 `
 

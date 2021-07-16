@@ -20,15 +20,15 @@ const Container = styled.div`
 `
 
 export const rowBg = css`
-  /* &:after {
+  &:after {
     position: absolute;
     display: block;
-    inset: 0px 0 0px calc(10px + var(--left-pad) + var(--depth) * var(--step));
+    inset: 0px 0 1px calc(0px + var(--left-pad) + var(--depth) * var(--step));
     content: ' ';
     z-index: -1;
     background-color: #282b2f;
-    opacity: 0.97;
-  } */
+    opacity: 0.95;
+  }
 `
 
 const Header = styled.div`
@@ -42,15 +42,17 @@ const Header = styled.div`
   ${rowBg};
 `
 
+export const indentationFormula = `calc(var(--left-pad) + var(--depth) * var(--step))`
+
 const IconContainer = styled.div`
   width: 12px;
   margin-right: -12px;
-  margin-left: calc(var(--left-pad) + var(--depth) * var(--step));
+  margin-left: ${indentationFormula};
   font-size: 9px;
   text-align: center;
   transform: rotateZ(90deg);
   position: relative;
-  left: -10px;
+  left: -14px;
 `
 
 const PropName = styled.div`
