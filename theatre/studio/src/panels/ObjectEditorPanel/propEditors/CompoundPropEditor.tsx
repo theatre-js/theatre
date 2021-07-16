@@ -8,7 +8,6 @@ import {getPointerParts} from '@theatre/dataverse'
 import last from 'lodash-es/last'
 import {darken, transparentize} from 'polished'
 import React from 'react'
-import {HiOutlineChevronRight} from 'react-icons/all'
 import styled, {css} from 'styled-components'
 import DeterminePropEditor from './DeterminePropEditor'
 import {propNameText} from './utils/SingleRowPropEditor'
@@ -35,7 +34,7 @@ const Header = styled.div`
   height: 30px;
   /* padding-left: calc(var(--left-pad) + var(--depth) * var(--step)); */
   display: flex;
-  align-items: center;
+  align-items: stretch;
   /* color: ${theme.panel.body.compoudThing.label.color}; */
   position: relative;
 
@@ -44,15 +43,21 @@ const Header = styled.div`
 
 export const indentationFormula = `calc(var(--left-pad) + var(--depth) * var(--step))`
 
+const Padding = styled.div`
+  padding-left: ${indentationFormula};
+  display: flex;
+  align-items: center;
+`
+
 const IconContainer = styled.div`
   width: 12px;
   margin-right: -12px;
-  margin-left: ${indentationFormula};
+  /* margin-left: ${indentationFormula}; */
   font-size: 9px;
   text-align: center;
   transform: rotateZ(90deg);
   position: relative;
-  left: -14px;
+  left: -18px;
 `
 
 const PropName = styled.div`
@@ -97,15 +102,17 @@ const CompoundPropEditor: React.FC<{
             // @ts-ignore
             style={{'--depth': depth - 1}}
           >
-            <IconContainer>
-              <HiOutlineChevronRight />
-            </IconContainer>
-            {/* <NextPrevKeyframeCursors
+            <Padding>
+              {/* <IconContainer>
+                <HiOutlineChevronRight />
+              </IconContainer> */}
+              {/* <NextPrevKeyframeCursors
               jumpToPosition={voidFn}
               toggleKeyframeOnCurrentPosition={voidFn}
             /> */}
-            <DefaultOrStaticValueIndicator hasStaticOverride={false} />
-            <PropName>{propName || 'Props'}</PropName>
+              <DefaultOrStaticValueIndicator hasStaticOverride={false} />
+              <PropName>{propName || 'Props'}</PropName>
+            </Padding>
           </Header>
         }
 
