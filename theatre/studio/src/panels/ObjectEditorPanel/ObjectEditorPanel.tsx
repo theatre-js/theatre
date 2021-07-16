@@ -42,6 +42,7 @@ export const TitleBar = styled.div`
   display: flex;
   align-items: center;
   padding: 0 10px;
+  position: relative;
   color: #adadadb3;
   border-bottom: 1px solid rgb(0 0 0 / 13%);
   background-color: #25272b;

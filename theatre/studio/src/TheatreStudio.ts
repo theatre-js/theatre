@@ -163,9 +163,14 @@ export default class TheatreStudio implements IStudio {
   ): PaneInstance<PaneClass>[] {
     return getStudio().paneManager.getPanesOfType(paneClass)
   }
+
   createPane<PaneClass extends string>(
     paneClass: PaneClass,
   ): PaneInstance<PaneClass> {
     return getStudio().paneManager.createPane(paneClass)
+  }
+
+  destroyPane(paneId: string): void {
+    return getStudio().paneManager.destroyPane(paneId)
   }
 }

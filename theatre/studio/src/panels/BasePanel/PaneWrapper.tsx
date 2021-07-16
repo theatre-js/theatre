@@ -1,7 +1,7 @@
 import type {$FixMe} from '@theatre/shared/utils/types'
 import type {PanelPosition} from '@theatre/studio/store/types'
 import type {PaneInstance} from '@theatre/studio/TheatreStudio'
-import React from 'react'
+import React, {useCallback} from 'react'
 import styled from 'styled-components'
 import {
   TitleBar,
@@ -11,6 +11,8 @@ import BasePanel from './BasePanel'
 import PanelDragZone from './PanelDragZone'
 import PanelWrapper from './PanelWrapper'
 import {ErrorBoundary} from 'react-error-boundary'
+import {IoClose} from 'react-icons/all'
+import getStudio from '@theatre/studio/getStudio'
 
 const defaultPosition: PanelPosition = {
   edges: {
@@ -45,6 +47,33 @@ const Container = styled(PanelWrapper)`
 
 const Title = styled.div`
   width: 100%;
+`
+
+const PaneTools = styled.div`
+  display: flex;
+  align-items: center;
+  opacity: 1;
+  position: absolute;
+  right: 4px;
+  top: 0;
+  bottom: 0;
+`
+
+const ClosePanelButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+  font-size: 11px;
+  height: 10px;
+  width: 18px;
+  color: #adadadb3;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  &:hover {
+    color: white;
+  }
 `
 
 const F2 = styled(F2Impl)`
@@ -84,10 +113,19 @@ const Content: React.FC<{paneInstance: PaneInstance<$FixMe>}> = ({
   paneInstance,
 }) => {
   const Comp = paneInstance.definition.component
+  const closePane = useCallback(() => {
+    getStudio().paneManager.destroyPane(paneInstance.instanceId)
+  }, [paneInstance])
+
   return (
     <Container>
       <PanelDragZone>
         <TitleBar>
+          <PaneTools>
+            <ClosePanelButton onClick={closePane} title={'Close Pane'}>
+              <IoClose />
+            </ClosePanelButton>
+          </PaneTools>
           <Title>{paneInstance.instanceId}</Title>
         </TitleBar>
       </PanelDragZone>

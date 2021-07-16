@@ -118,4 +118,17 @@ export default class PaneManager {
 
     return this._getAllPanes().getValue()[instanceId]!
   }
+
+  destroyPane(instanceId: string): void {
+    const core = this._studio.core
+    if (!core) {
+      throw new Error(
+        `Can't do this yet because @theatre/core is not yet loaded`,
+      )
+    }
+
+    this._studio.transaction(({drafts}) => {
+      delete drafts.historic.panelInstanceDesceriptors[instanceId]
+    })
+  }
 }
