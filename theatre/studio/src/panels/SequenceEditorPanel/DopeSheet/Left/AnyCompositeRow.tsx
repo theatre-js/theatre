@@ -4,6 +4,7 @@ import type {VoidFn} from '@theatre/shared/utils/types'
 import React from 'react'
 import {GoChevronRight} from 'react-icons/go'
 import styled from 'styled-components'
+import {propNameText} from '@theatre/studio/panels/ObjectEditorPanel/propEditors/utils/SingleRowPropEditor'
 
 export const Container = styled.li<{depth: number}>`
   --depth: ${(props) => props.depth};
@@ -31,7 +32,9 @@ const Header = styled(BaseHeader)<{
   ${(props) => props.isSelected && `background: blue`};
 `
 
-const Head_Label = styled.span``
+const Head_Label = styled.span`
+  ${propNameText};
+`
 
 const Head_Icon = styled.span<{isOpen: boolean}>`
   width: 12px;

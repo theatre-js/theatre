@@ -12,6 +12,7 @@ import {useEditingToolsForPrimitiveProp} from '@theatre/studio/panels/ObjectEdit
 import {nextPrevCursorsTheme} from '@theatre/studio/panels/ObjectEditorPanel/propEditors/utils/NextPrevKeyframeCursors'
 import {graphEditorColors} from '@theatre/studio/panels/SequenceEditorPanel/GraphEditor/GraphEditor'
 import {BaseHeader, Container as BaseContainer} from './AnyCompositeRow'
+import {propNameText} from '@theatre/studio/panels/ObjectEditorPanel/propEditors/utils/SingleRowPropEditor'
 
 const theme = {
   label: {
@@ -74,6 +75,7 @@ const GraphIcon = () => (
 
 const Head_Label = styled.span`
   margin-right: 4px;
+  ${propNameText};
 `
 
 const PrimitivePropRow: React.FC<{

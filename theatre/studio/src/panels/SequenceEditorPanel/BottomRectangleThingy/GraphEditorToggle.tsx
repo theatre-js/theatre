@@ -16,7 +16,8 @@ const Container = styled.button<{isOpen: boolean}>`
   padding: 0 8px;
   display: flex;
   color: #656d77;
-  line-height: 22px;
+  line-height: 20px;
+  font-size: 10px;
 
   &:hover {
     color: white;

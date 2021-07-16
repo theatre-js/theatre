@@ -4,6 +4,7 @@ import React from 'react'
 import getStudio from '@theatre/studio/getStudio'
 import {useVal} from '@theatre/dataverse-react'
 import PaneWrapper from '@theatre/studio/panels/BasePanel/PaneWrapper'
+import SequenceEditorPanel from '@theatre/studio/panels/SequenceEditorPanel/SequenceEditorPanel'
 
 const PanelsRoot: React.FC = () => {
   const panes = useVal(getStudio().paneManager.allPanesD)
@@ -18,7 +19,7 @@ const PanelsRoot: React.FC = () => {
       {/* {paneEls} */}
       <OutlinePanel />
       <ObjectEditorPanel />
-      {/* <SequenceEditorPanel /> */}
+      <SequenceEditorPanel />
     </>
   )
 }

@@ -52,7 +52,12 @@ const F1_1 = styled.div`
   display: none;
 `
 
-export const Punctuation = styled.span`
+export const TitleBar_Piece = styled.span`
+  white-space: nowrap;
+`
+
+export const TitleBar_Punctuation = styled.span`
+  white-space: nowrap;
   color: ${theme.panel.head.punctuation.color};
 `
 
@@ -109,9 +114,10 @@ const Content: React.FC<{}> = () => {
       <Container>
         <PanelDragZone>
           <F1_1>
-            {obj.sheet.address.sheetId} <Punctuation>{':'}&nbsp;</Punctuation>
+            {obj.sheet.address.sheetId}{' '}
+            <TitleBar_Punctuation>{':'}&nbsp;</TitleBar_Punctuation>
             {obj.sheet.address.sheetInstanceId}{' '}
-            <Punctuation>&nbsp;{'>'}&nbsp;</Punctuation>
+            <TitleBar_Punctuation>&nbsp;{'>'}&nbsp;</TitleBar_Punctuation>
             {obj.address.objectKey}
           </F1_1>
         </PanelDragZone>

@@ -6,8 +6,8 @@ import {prism, val} from '@theatre/dataverse'
 import React from 'react'
 import styled from 'styled-components'
 import {
-  F1,
-  Punctuation,
+  TitleBar_Piece,
+  TitleBar_Punctuation,
 } from '@theatre/studio/panels/ObjectEditorPanel/ObjectEditorPanel'
 import DopeSheet from './DopeSheet/DopeSheet'
 import GraphEditor from './GraphEditor/GraphEditor'
@@ -26,6 +26,24 @@ import {isSheet, isSheetObject} from '@theatre/shared/instanceTypes'
 import {uniq} from 'lodash-es'
 
 const Container = styled(PanelWrapper)``
+
+export const titleBarHeight = 20
+
+const TitleBar = styled.div`
+  height: ${titleBarHeight}px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  color: #adadadb3;
+  border-bottom: 1px solid rgb(0 0 0 / 13%);
+  background: #00000017;
+  font-size: 10px;
+  font-weight: 500;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+`
 
 export const zIndexes = (() => {
   const scrollableArea = 0
@@ -172,12 +190,15 @@ const Header: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
           width: val(layoutP.leftDims.width),
         }}
       >
-        <F1>
-          {sheet.address.sheetId} <Punctuation>{':'}&nbsp;</Punctuation>
-          {sheet.address.sheetInstanceId}{' '}
-          <Punctuation>&nbsp;{'>'}&nbsp;</Punctuation>
-          Sequence
-        </F1>
+        <TitleBar>
+          <TitleBar_Piece>{sheet.address.sheetId} </TitleBar_Piece>
+
+          <TitleBar_Punctuation>{':'}&nbsp;</TitleBar_Punctuation>
+          <TitleBar_Piece>{sheet.address.sheetInstanceId} </TitleBar_Piece>
+
+          <TitleBar_Punctuation>&nbsp;{'>'}&nbsp;</TitleBar_Punctuation>
+          <TitleBar_Piece>Sequence</TitleBar_Piece>
+        </TitleBar>
       </Header_Container>
     )
   }, [layoutP])

@@ -12,8 +12,8 @@ import type {PathToProp} from '@theatre/shared/utils/addresses'
 import type {SequenceTrackId} from '@theatre/shared/utils/ids'
 import type {$FixMe, $IntentionalAny} from '@theatre/shared/utils/types'
 import {prism, val} from '@theatre/dataverse'
-import {F1Height as F1Height} from '@theatre/studio/panels/ObjectEditorPanel/ObjectEditorPanel'
 import logger from '@theatre/shared/logger'
+import {titleBarHeight} from '@theatre/studio/panels/SequenceEditorPanel/SequenceEditorPanel'
 
 export type SequenceEditorTree_Row<Type> = {
   type: Type
@@ -71,7 +71,7 @@ export const calculateSequenceEditorTree = (
   sheet: Sheet,
 ): SequenceEditorTree => {
   prism.ensurePrism()
-  let topSoFar = F1Height
+  let topSoFar = titleBarHeight
   let nSoFar = 0
 
   const tree: SequenceEditorTree = {
@@ -121,7 +121,7 @@ export const calculateSequenceEditorTree = (
       sheetObject,
       trackSetups,
       [],
-      sheetObject.template.config.props,
+      sheetObject.template.config,
       row.children,
       level + 1,
     )

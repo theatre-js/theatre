@@ -22,7 +22,7 @@ export const rowBg = css`
   &:after {
     position: absolute;
     display: block;
-    inset: 0px 0 1px calc(0px + var(--left-pad) + var(--depth) * var(--step));
+    inset: 0px 0 1px calc(-2px + var(--left-pad) + var(--depth) * var(--step));
     content: ' ';
     z-index: -1;
     background-color: #282b2f;
