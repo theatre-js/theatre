@@ -7,7 +7,7 @@ import DraggableArea from '@theatre/studio/uiComponents/DraggableArea'
 
 type IMode = IState['mode']
 
-const Container = styled.div<{mode: IMode}>`
+const Container = styled.div`
   height: 100%;
   width: 100%;
 `
@@ -26,7 +26,8 @@ const Input = styled.input`
   border-radius: 2px;
 
   &:hover,
-  &:focus {
+  &:focus,
+  ${Container}.dragging > & {
     background: ${darken(0.9, theme.panel.bg)};
     border: 1px solid ${lighten(0.1, theme.panel.bg)};
   }
@@ -238,7 +239,7 @@ const BasicNumberInput: React.FC<{
   )
 
   return (
-    <Container mode={refs.current.state.mode} className={propsA.className}>
+    <Container className={propsA.className + ' ' + refs.current.state.mode}>
       <DraggableArea
         key="draggableArea"
         onDragStart={callbacks.transitionToDraggingMode}
