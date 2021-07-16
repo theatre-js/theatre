@@ -2,15 +2,13 @@ import React from 'react'
 import styled from 'styled-components'
 import {usePanel} from './BasePanel'
 import PanelResizers from './PanelResizers'
-import {theme} from '@theatre/studio/css'
 
 const Container = styled.div`
   position: absolute;
   user-select: none;
   box-sizing: border-box;
   pointer-events: auto;
-  background: ${theme.panel.bg};
-  box-shadow: 1px 2px 10px -5px black;
+  /* box-shadow: 1px 2px 10px -5px black; */
 
   z-index: 1000;
 `

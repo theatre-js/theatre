@@ -156,7 +156,7 @@ export function sequenceEditorPanelLayout(
         }
 
         const graphEditorOpen = graphEditorState?.isOpen === true
-        const bottomRectangleThingyHeight = 20
+        const bottomRectangleThingyHeight = 0
         const graphEditorHeight = Math.floor(
           (graphEditorOpen
             ? clamp(graphEditorState?.height ?? 0.5, 0.1, 0.7)

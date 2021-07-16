@@ -44,7 +44,7 @@ export const TitleBar = styled.div`
   padding: 0 10px;
   color: #adadadb3;
   border-bottom: 1px solid rgb(0 0 0 / 13%);
-  background: #00000017;
+  background-color: #25272b;
   font-size: 10px;
   font-weight: 500;
   overflow: hidden;

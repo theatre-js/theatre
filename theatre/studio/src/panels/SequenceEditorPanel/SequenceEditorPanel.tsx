@@ -15,7 +15,6 @@ import GraphEditor from './GraphEditor/GraphEditor'
 import type {PanelDims, SequenceEditorPanelLayout} from './layout/layout'
 import {sequenceEditorPanelLayout} from './layout/layout'
 import RightOverlay from './RightOverlay/RightOverlay'
-import BottomRectangleThingy from './BottomRectangleThingy/BottomRectangleThingy'
 import BasePanel, {usePanel} from '@theatre/studio/panels/BasePanel/BasePanel'
 import type {PanelPosition} from '@theatre/studio/store/types'
 import PanelDragZone from '@theatre/studio/panels/BasePanel/PanelDragZone'
@@ -27,6 +26,17 @@ import {isSheet, isSheetObject} from '@theatre/shared/instanceTypes'
 import {uniq} from 'lodash-es'
 
 const Container = styled(PanelWrapper)``
+
+const LeftBackground = styled.div`
+  background-color: #282b2fed;
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: -1;
+  width: 200px;
+  pointer-events: none;
+`
 
 export const zIndexes = (() => {
   const scrollableArea = 0
@@ -56,13 +66,6 @@ const Header_Container = styled(PanelDragZone)`
   top: 0;
   z-index: 1;
 `
-
-/**
- * @todo Add a message here
- */
-const EmptyPanel: React.FC<{width: number; height: number}> = (props) => (
-  <Container {...props} />
-)
 
 const defaultPosition: PanelPosition = {
   edges: {
@@ -148,10 +151,11 @@ const Content: React.FC<{}> = () => {
     const graphEditorOpen = val(layoutP.graphEditorDims.isOpen)
     return (
       <Container ref={containerRef}>
+        <LeftBackground />
         <FrameStampPositionProvider layoutP={layoutP}>
           <Header layoutP={layoutP} />
           <DopeSheet key={key + '-dopeSheet'} layoutP={layoutP} />
-          <BottomRectangleThingy layoutP={layoutP} />
+          {/* <BottomRectangleThingy layoutP={layoutP} /> */}
           {graphEditorOpen && (
             <GraphEditor key={key + '-graphEditor'} layoutP={layoutP} />
           )}
