@@ -10,6 +10,7 @@ import {
 import BasePanel from './BasePanel'
 import PanelDragZone from './PanelDragZone'
 import PanelWrapper from './PanelWrapper'
+import {ErrorBoundary} from 'react-error-boundary'
 
 const defaultPosition: PanelPosition = {
   edges: {
@@ -50,6 +51,35 @@ const F2 = styled(F2Impl)`
   position: relative;
 `
 
+const ErrorContainer = styled.div`
+  padding: 12px;
+
+  & > pre {
+    border: 1px solid #ff62624f;
+    background-color: rgb(255 0 0 / 5%);
+    margin: 8px 0;
+    padding: 8px;
+    font-family: monospace;
+    overflow: scroll;
+    color: #ff9896;
+  }
+`
+
+const ErrorFallback: React.FC<{error: Error}> = (props) => {
+  return (
+    <ErrorContainer>
+      An Error occured rendering this pane. Open the console for more info.
+      <pre>
+        {JSON.stringify(
+          {message: props.error.message, stack: props.error.stack},
+          null,
+          2,
+        )}
+      </pre>
+    </ErrorContainer>
+  )
+}
+
 const Content: React.FC<{paneInstance: PaneInstance<$FixMe>}> = ({
   paneInstance,
 }) => {
@@ -62,7 +92,9 @@ const Content: React.FC<{paneInstance: PaneInstance<$FixMe>}> = ({
         </TitleBar>
       </PanelDragZone>
       <F2>
-        <Comp id={paneInstance.instanceId} object={paneInstance.object} />
+        <ErrorBoundary FallbackComponent={ErrorFallback}>
+          <Comp id={paneInstance.instanceId} object={paneInstance.object} />
+        </ErrorBoundary>
       </F2>
     </Container>
   )

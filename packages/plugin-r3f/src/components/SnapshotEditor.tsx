@@ -1,4 +1,4 @@
-import type {VFC} from 'react'
+import {useState} from 'react'
 import {useLayoutEffect} from 'react'
 import React, {useEffect, useRef} from 'react'
 import {Canvas} from '@react-three/fiber'
@@ -10,6 +10,9 @@ import ProxyManager from './ProxyManager'
 import studio from '@theatre/studio'
 import {useVal} from '@theatre/dataverse-react'
 import styled, {createGlobalStyle, StyleSheetManager} from 'styled-components'
+import IconButton from './Toolbar/utils/IconButton'
+import {BiRefresh} from 'react-icons/bi'
+import {PortalContext} from 'reakit'
 
 const GlobalStyle = createGlobalStyle`
   :host {
@@ -81,9 +84,21 @@ const CanvasWrapper = styled.div`
   height: 100%;
 `
 
-const SnapshotEditor: VFC = () => {
-  console.log('Snapshot editor!!')
+const Overlay = styled.div`
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+`
 
+const Tools = styled.div`
+  position: absolute;
+  left: 8px;
+  top: 6px;
+  pointer-events: auto;
+`
+
+const SnapshotEditor: React.FC<{}> = () => {
   const [editorObject, sceneSnapshot, initialEditorCamera, createSnapshot] =
     useEditorStore(
       (state) => [
@@ -110,6 +125,8 @@ const SnapshotEditor: VFC = () => {
     }
   }, [editorOpen])
 
+  const [overlay, setOverlay] = useState<HTMLDivElement | null>(null)
+
   if (!editorObject) return <></>
 
   return (
@@ -117,30 +134,42 @@ const SnapshotEditor: VFC = () => {
       <StyleSheetManager disableVendorPrefixes>
         <>
           <GlobalStyle />
-          <Wrapper>
-            {sceneSnapshot ? (
-              <>
-                <CanvasWrapper>
-                  <Canvas
-                    // @ts-ignore
-                    colorManagement
-                    camera={initialEditorCamera}
-                    onCreated={({gl}) => {
-                      gl.setClearColor('white')
-                    }}
-                    shadowMap
-                    dpr={[1, 2]}
-                    fog={'red'}
-                    onPointerMissed={() =>
-                      studio.__experimental_setSelection([])
-                    }
-                  >
-                    <EditorScene />
-                  </Canvas>
-                </CanvasWrapper>
-              </>
-            ) : null}
-          </Wrapper>
+          <PortalContext.Provider value={overlay}>
+            <Wrapper>
+              <Overlay ref={setOverlay}>
+                <Tools>
+                  <IconButton
+                    icon={<BiRefresh />}
+                    label="Refresh Snapshot"
+                    onClick={createSnapshot}
+                  ></IconButton>
+                </Tools>
+              </Overlay>
+
+              {sceneSnapshot ? (
+                <>
+                  <CanvasWrapper>
+                    <Canvas
+                      // @ts-ignore
+                      colorManagement
+                      camera={initialEditorCamera}
+                      onCreated={({gl}) => {
+                        gl.setClearColor('white')
+                      }}
+                      shadowMap
+                      dpr={[1, 2]}
+                      fog={'red'}
+                      onPointerMissed={() =>
+                        studio.__experimental_setSelection([])
+                      }
+                    >
+                      <EditorScene />
+                    </Canvas>
+                  </CanvasWrapper>
+                </>
+              ) : null}
+            </Wrapper>
+          </PortalContext.Provider>
         </>
       </StyleSheetManager>
     </root.div>

@@ -16,7 +16,7 @@ const PanelsRoot: React.FC = () => {
 
   return (
     <>
-      {/* {paneEls} */}
+      {paneEls}
       <OutlinePanel />
       <ObjectEditorPanel />
       <SequenceEditorPanel />

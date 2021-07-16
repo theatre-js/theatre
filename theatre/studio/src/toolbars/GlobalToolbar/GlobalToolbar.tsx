@@ -13,7 +13,6 @@ const Container = styled.div`
 
   display: flex;
   gap: 1rem;
-  display: none;
 `
 
 const GlobalToolbar: React.FC<{}> = (props) => {

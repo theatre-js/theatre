@@ -46,9 +46,11 @@ const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
     useVal(editorObject?.props.viewport.shading) ?? 'rendered'
 
   const sceneProxy = useMemo(() => sceneSnapshot?.clone(), [sceneSnapshot])
-  const [editableProxies, setEditableProxies] = useState<{
-    [name: string]: IEditableProxy
-  }>({})
+  const [editableProxies, setEditableProxies] = useState<
+    {
+      [name in string]?: IEditableProxy
+    }
+  >({})
 
   // set up scene proxies
   useLayoutEffect(() => {
@@ -86,15 +88,13 @@ const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
   }, [orbitControlsRef, sceneProxy])
 
   const selected = useSelected()
+  const editableProxyOfSelected = selected && editableProxies[selected]
 
   // subscribe to external changes
   useEffect(() => {
-    if (!selected) {
-      return
-    }
-
-    const object = editableProxies[selected].object
-    const sheetObject = editableProxies[selected].sheetObject
+    if (!editableProxyOfSelected) return
+    const object = editableProxyOfSelected.object
+    const sheetObject = editableProxyOfSelected.sheetObject
 
     const setFromTheatre = (newValues: any) => {
       object.position.set(
@@ -117,7 +117,7 @@ const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
     return () => {
       untap()
     }
-  }, [editableProxies, selected])
+  }, [editableProxyOfSelected, selected])
 
   // set up viewport shading modes
   const [renderMaterials, setRenderMaterials] = useState<{
@@ -219,15 +219,15 @@ const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
   return (
     <>
       <primitive object={sceneProxy} />
-      {selected && (
+      {selected && editableProxyOfSelected && (
         <TransformControls
           mode={transformControlsMode}
           space={transformControlsSpace}
           orbitControlsRef={orbitControlsRef}
-          object={editableProxies[selected].object}
+          object={editableProxyOfSelected.object}
           onObjectChange={() => {
-            const sheetObject = editableProxies[selected].sheetObject
-            const obj = editableProxies[selected].object
+            const sheetObject = editableProxyOfSelected.sheetObject
+            const obj = editableProxyOfSelected.object
 
             studio.transaction(({set}) => {
               set(sheetObject.props, {
@@ -252,7 +252,9 @@ const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
           onDraggingChange={(event) => (isBeingEdited.current = event.value)}
         />
       )}
-      {Object.values(editableProxies).map(({portal}) => portal)}
+      {Object.values(editableProxies).map(
+        (editableProxy) => editableProxy!.portal,
+      )}
     </>
   )
 }
