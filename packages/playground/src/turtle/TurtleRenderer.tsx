@@ -15,10 +15,10 @@ import {drawTurtlePlan, makeTurtlePlan} from './turtle'
 
 const objConfig = types.compound({
   startingPoint: types.compound({
-    x: types.number(0.5, {min: 0, max: 1}),
-    y: types.number(0.5, {min: 0, max: 1}),
+    x: types.number(0.5, {range: [0, 1]}),
+    y: types.number(0.5, {range: [0, 1]}),
   }),
-  scale: types.number(1, {min: 0.1}),
+  scale: types.number(1, {range: [0.1, 1000]}),
 })
 
 const TurtleRenderer: React.FC<{

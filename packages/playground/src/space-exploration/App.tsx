@@ -60,6 +60,7 @@ function App() {
         <ambientLight intensity={0.75} />
         <e.perspectiveCamera
           uniqueName="Camera"
+          // @ts-ignore
           makeDefault
           position={[0, 0, 16]}
           fov={75}
