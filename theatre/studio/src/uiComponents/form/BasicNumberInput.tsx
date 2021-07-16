@@ -19,8 +19,8 @@ const Container = styled.div`
     inset: 1px 0 2px;
     display: block;
     content: ' ';
-    background-color: #2525252b;
-    border: 1px solid #1c2123;
+    background-color: transparent;
+    border: 1px solid transparent;
     z-index: -2;
     box-sizing: border-box;
     border-radius: 1px;
@@ -31,7 +31,6 @@ const Container = styled.div`
   &.editingViaKeyboard {
     &:after {
       background-color: #10101042;
-      /* background-color: ${darken(0.2, theme.panel.bg)}; */
       border-color: #00000059;
     }
   }

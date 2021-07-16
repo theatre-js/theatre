@@ -20,7 +20,7 @@ const Label = styled.label`
   justify-content: center;
   flex-grow: 1;
   color: #a7a7a7;
-  border: 1px solid #1c2123;
+  border: 1px solid transparent;
   box-sizing: border-box;
   border-right-width: 0px;
 
@@ -29,6 +29,7 @@ const Label = styled.label`
   }
 
   ${Container}:hover > & {
+    border-color: #1c2123;
     /* background-color: #373748; */
     /* color: ${darken(0.1, 'white')}; */
   }

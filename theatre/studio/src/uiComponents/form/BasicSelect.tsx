@@ -1,5 +1,3 @@
-import {theme} from '@theatre/studio/css'
-import {darken, lighten} from 'polished'
 import React, {useCallback} from 'react'
 import styled from 'styled-components'
 import {CgSelect} from 'react-icons/all'
@@ -19,6 +17,7 @@ const IconContainer = styled.div`
   display: flex;
   align-items: center;
   color: #6b7280;
+  pointer-events: none;
 `
 
 const Select = styled.select`
@@ -39,8 +38,8 @@ const Select = styled.select`
 
   &:hover,
   &:focus {
-    background-color: ${darken(0.9, theme.panel.bg)};
-    border: 1px solid ${lighten(0.1, theme.panel.bg)};
+    background-color: #10101042;
+    border-color: #00000059;
   }
 `
 
