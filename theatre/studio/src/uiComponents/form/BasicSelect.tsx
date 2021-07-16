@@ -2,12 +2,30 @@ import {theme} from '@theatre/studio/css'
 import {darken, lighten} from 'polished'
 import React, {useCallback} from 'react'
 import styled from 'styled-components'
+import {CgSelect} from 'react-icons/all'
+
+const Container = styled.div`
+  width: 100%;
+  position: relative;
+`
+
+const IconContainer = styled.div`
+  position: absolute;
+  right: 0px;
+  top: 0;
+  bottom: 0;
+  width: 1.5em;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  color: #6b7280;
+`
 
 const Select = styled.select`
   background-color: transparent;
   box-sizing: border-box;
   border: 1px solid transparent;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.85);
   padding: 1px 6px;
   font: inherit;
   outline: none;
@@ -16,11 +34,6 @@ const Select = styled.select`
   height: calc(100% - 4px);
   border-radius: 2px;
 
-  /** Credit: https://github.com/tailwindlabs/tailwindcss-forms/blob/39946dd5d1c4cd980a3e8fd2a0c597f962fe285e/src/index.js#L86 */
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-  background-position: right 4px center;
-  background-repeat: no-repeat;
-  background-size: 1.5em 1.5em;
   color-adjust: exact;
   appearance: none;
 
@@ -44,13 +57,18 @@ const BasicSelect: React.FC<{
     [onChange],
   )
   return (
-    <Select className={className} value={value} onChange={_onChange}>
-      {Object.keys(options).map((key, i) => (
-        <option key={'option-' + i} value={key}>
-          {options[key]}
-        </option>
-      ))}
-    </Select>
+    <Container>
+      <Select className={className} value={value} onChange={_onChange}>
+        {Object.keys(options).map((key, i) => (
+          <option key={'option-' + i} value={key}>
+            {options[key]}
+          </option>
+        ))}
+      </Select>
+      <IconContainer>
+        <CgSelect />
+      </IconContainer>
+    </Container>
   )
 }
 
