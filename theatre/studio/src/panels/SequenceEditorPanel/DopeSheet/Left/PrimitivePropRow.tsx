@@ -118,6 +118,11 @@ const PrimitivePropRow: React.FC<{
         stateEditors.studio.historic.projects.stateByProjectId.stateBySheetId.sequenceEditor.addPropToGraphEditor(
           {...c, pathToProp: leaf.pathToProp},
         )
+        stateEditors.studio.historic.panels.sequenceEditor.graphEditor.setIsOpen(
+          {
+            isOpen: true,
+          },
+        )
       }
     })
   }, [leaf])
