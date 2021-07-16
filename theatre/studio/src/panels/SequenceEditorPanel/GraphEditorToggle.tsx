@@ -41,11 +41,7 @@ const GraphEditorToggle: React.FC<{
       })
     })
   }, [layoutP])
-  return (
-    <Container isOpen={isOpen} onClick={toggle}>
-      Graph Editor
-    </Container>
-  )
+  return <Container onClick={toggle}>Graph Editor</Container>
 }
 
 export default GraphEditorToggle
