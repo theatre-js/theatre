@@ -12,6 +12,7 @@ import {contentWidth} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet
 import HorizontallyScrollableArea from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/HorizontallyScrollableArea'
 import PrimitivePropGraph from './PrimitivePropGraph'
 import FrameGrid from '@theatre/studio/panels/SequenceEditorPanel/FrameGrid/FrameGrid'
+import {transparentize} from 'polished'
 
 export const graphEditorColors = {
   '1': {iconColor: '#b98b08'},
@@ -26,7 +27,7 @@ const Container = styled.div`
   position: absolute;
   right: 0;
   bottom: 0;
-  background: #1a1c1e;
+  background: ${transparentize(0.03, '#1a1c1e')};
 `
 
 const SVGContainer = styled.svg`

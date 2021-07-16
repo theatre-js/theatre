@@ -68,7 +68,6 @@ export type SequenceEditorPanelLayout = {
     isOpen: boolean
     padding: {top: number; bottom: number}
   }
-  bottomRectangleThingyDims: DimsOfPanelPart & {bottom: number}
   horizontalScrollbarDims: {bottom: number}
   graphEditorVerticalSpace: {
     space: number
@@ -136,7 +135,6 @@ export function sequenceEditorPanelLayout(
       rightDims,
       graphEditorDims,
       dopeSheetDims,
-      bottomRectangleThingyDims,
       horizontalScrollbarDims,
     } = prism.memo(
       'leftDims',
@@ -156,24 +154,14 @@ export function sequenceEditorPanelLayout(
         }
 
         const graphEditorOpen = graphEditorState?.isOpen === true
-        const bottomRectangleThingyHeight = 0
         const graphEditorHeight = Math.floor(
           (graphEditorOpen
             ? clamp(graphEditorState?.height ?? 0.5, 0.1, 0.7)
             : 0) * panelDims.heightWithoutBorder,
         )
 
-        const bottomHeight = bottomRectangleThingyHeight + graphEditorHeight
+        const bottomHeight = 0 + graphEditorHeight
         const dopeSheetHeight = panelDims.height - bottomHeight
-
-        const bottomRectangleThingyDims: SequenceEditorPanelLayout['bottomRectangleThingyDims'] =
-          {
-            width: panelDims.width,
-            height: bottomRectangleThingyHeight,
-            screenX: panelDims.screenX,
-            screenY: panelDims.screenY + dopeSheetHeight,
-            bottom: graphEditorHeight,
-          }
 
         const dopeSheetDims: SequenceEditorPanelLayout['dopeSheetDims'] = {
           width: panelDims.width,
@@ -188,9 +176,7 @@ export function sequenceEditorPanelLayout(
           width: rightDims.width,
           height: graphEditorHeight,
           screenX: panelDims.screenX,
-          screenY:
-            bottomRectangleThingyDims.screenY +
-            bottomRectangleThingyDims.height,
+          screenY: panelDims.screenY + dopeSheetHeight,
           padding: {
             top: 20,
             bottom: 20,
@@ -199,7 +185,7 @@ export function sequenceEditorPanelLayout(
 
         const horizontalScrollbarDims: SequenceEditorPanelLayout['horizontalScrollbarDims'] =
           {
-            bottom: graphEditorOpen ? 0 : bottomRectangleThingyDims.height,
+            bottom: graphEditorOpen ? 0 : 0,
           }
 
         return {
@@ -207,7 +193,6 @@ export function sequenceEditorPanelLayout(
           rightDims,
           graphEditorDims,
           dopeSheetDims,
-          bottomRectangleThingyDims,
           horizontalScrollbarDims,
         }
       },
@@ -337,7 +322,6 @@ export function sequenceEditorPanelLayout(
       leftDims,
       rightDims,
       dopeSheetDims,
-      bottomRectangleThingyDims,
       horizontalScrollbarDims,
       seeker,
       unitSpace,

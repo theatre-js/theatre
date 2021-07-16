@@ -6,12 +6,16 @@ import React, {useCallback} from 'react'
 import styled from 'styled-components'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 
-const Container = styled.button<{isOpen: boolean}>`
-  height: 100%;
-  border: none;
+const Container = styled.button`
   outline: none;
-  background: ${(props) => (props.isOpen ? '#1A1C1E' : '#212327')};
+  background-color: #1c1d21;
+  border: 1px solid #191919;
+  border-radius: 2px;
   display: flex;
+  bottom: 14px;
+  right: 8px;
+  z-index: 1;
+  position: absolute;
 
   padding: 0 8px;
   display: flex;

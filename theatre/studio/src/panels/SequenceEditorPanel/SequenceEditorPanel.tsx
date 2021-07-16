@@ -24,6 +24,7 @@ import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import type Sheet from '@theatre/core/sheets/Sheet'
 import {isSheet, isSheetObject} from '@theatre/shared/instanceTypes'
 import {uniq} from 'lodash-es'
+import GraphEditorToggle from './GraphEditorToggle'
 
 const Container = styled(PanelWrapper)``
 
@@ -46,7 +47,6 @@ export const zIndexes = (() => {
   const currentFrameStamp = seeker + 1
   const lengthIndicator = currentFrameStamp + 1
   const horizontalScrollbar = lengthIndicator + 1
-  const bottomRectangleThingy = horizontalScrollbar + 1
 
   return {
     scrollableArea,
@@ -56,7 +56,6 @@ export const zIndexes = (() => {
     horizontalScrollbar,
     currentFrameStamp,
     lengthIndicator,
-    bottomRectangleThingy,
   }
 })()
 
@@ -155,10 +154,10 @@ const Content: React.FC<{}> = () => {
         <FrameStampPositionProvider layoutP={layoutP}>
           <Header layoutP={layoutP} />
           <DopeSheet key={key + '-dopeSheet'} layoutP={layoutP} />
-          {/* <BottomRectangleThingy layoutP={layoutP} /> */}
           {graphEditorOpen && (
             <GraphEditor key={key + '-graphEditor'} layoutP={layoutP} />
           )}
+          <GraphEditorToggle layoutP={layoutP} />
           <RightOverlay layoutP={layoutP} />
         </FrameStampPositionProvider>
       </Container>

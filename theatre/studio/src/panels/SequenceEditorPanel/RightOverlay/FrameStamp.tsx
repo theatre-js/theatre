@@ -93,16 +93,10 @@ const usePointerPositionInUnitSpace = (
     const {clientX, clientY} = val(mousePositionD)
 
     const {screenX: x, screenY: y, width: rightWidth, height} = rightDims
-    const bottomRectangleThingyDims = val(layoutP.bottomRectangleThingyDims)
 
     if (
       inRange(clientX, x, x + rightWidth) &&
-      inRange(clientY, y, y + height) &&
-      !inRange(
-        clientY,
-        bottomRectangleThingyDims.screenY,
-        bottomRectangleThingyDims.screenY + bottomRectangleThingyDims.height,
-      )
+      inRange(clientY, y, y + height)
     ) {
       const posInRightDims = clientX - x
       const posInUnitSpace = clippedSpaceToUnitSpace(posInRightDims)
