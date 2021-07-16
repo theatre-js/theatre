@@ -19,6 +19,7 @@ const NumberPropEditor: React.FC<{
         temporarilySetValue={stuff.temporarilySetValue}
         discardTemporaryValue={stuff.discardTemporaryValue}
         permenantlySetValue={stuff.permenantlySetValue}
+        range={propConfig.range}
       />
     </SingleRowPropEditor>
   )

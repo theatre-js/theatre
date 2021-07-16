@@ -12,15 +12,12 @@ interface IBasePropType<ValueType> {
 export interface PropTypeConfig_Number extends IBasePropType<number> {
   type: 'number'
   default: number
-  min?: number
-  max?: number
-  step?: number
+  range?: [min: number, max: number]
 }
 
 export const number = (
   defaultValue: number,
-  opts?: Pick<PropTypeConfig_Number, 'min' | 'max' | 'step'> &
-    PropTypeConfigExtras,
+  opts?: Pick<PropTypeConfig_Number, 'range'> & PropTypeConfigExtras,
 ): PropTypeConfig_Number => {
   return {
     type: 'number',

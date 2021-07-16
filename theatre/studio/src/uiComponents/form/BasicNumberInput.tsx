@@ -1,5 +1,5 @@
 import {theme} from '@theatre/studio/css'
-import {isInteger, round} from 'lodash-es'
+import {clamp, isInteger, round} from 'lodash-es'
 import {darken, lighten} from 'polished'
 import React, {useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
@@ -10,6 +10,31 @@ type IMode = IState['mode']
 const Container = styled.div`
   height: 100%;
   width: 100%;
+  position: relative;
+  z-index: 0;
+  box-sizing: border-box;
+
+  &:after {
+    position: absolute;
+    inset: 1px 0 2px;
+    display: block;
+    content: ' ';
+    background-color: #2525252b;
+    border: 1px solid #1c2123;
+    z-index: -2;
+    box-sizing: border-box;
+    border-radius: 1px;
+  }
+
+  &:hover,
+  &.dragging,
+  &.editingViaKeyboard {
+    &:after {
+      background-color: #10101042;
+      /* background-color: ${darken(0.2, theme.panel.bg)}; */
+      border-color: #00000059;
+    }
+  }
 `
 
 const Input = styled.input`
@@ -25,15 +50,29 @@ const Input = styled.input`
   height: calc(100% - 4px);
   border-radius: 2px;
 
-  &:hover,
+  /* &:hover,
   &:focus,
   ${Container}.dragging > & {
     background: ${darken(0.9, theme.panel.bg)};
     border: 1px solid ${lighten(0.1, theme.panel.bg)};
-  }
+  } */
 
   &:focus {
     cursor: text;
+  }
+`
+
+const FillIndicator = styled.div`
+  position: absolute;
+  inset: 3px 2px 4px;
+  transform: scale(var(--percentage), 1);
+  transform-origin: top left;
+  background-color: #2d5561;
+  z-index: -1;
+  border-radius: 2px;
+
+  ${Container}.dragging &, ${Container}.noFocus:hover & {
+    background-color: #338198;
   }
 `
 
@@ -66,6 +105,7 @@ const BasicNumberInput: React.FC<{
   discardTemporaryValue: () => void
   permenantlySetValue: (v: number) => void
   className?: string
+  range?: [min: number, max: number]
 }> = (propsA) => {
   const [stateA, setState] = useState<IState>({mode: 'noFocus'})
 
@@ -238,6 +278,18 @@ const BasicNumberInput: React.FC<{
     />
   )
 
+  const {range} = propsA
+  const num = parseFloat(value)
+
+  const fillIndicator = range ? (
+    <FillIndicator
+      style={{
+        // @ts-ignore
+        '--percentage': clamp((num - range[0]) / (range[1] - range[0]), 0, 1),
+      }}
+    />
+  ) : null
+
   return (
     <Container className={propsA.className + ' ' + refs.current.state.mode}>
       <DraggableArea
@@ -250,6 +302,7 @@ const BasicNumberInput: React.FC<{
       >
         {theInput}
       </DraggableArea>
+      {fillIndicator}
     </Container>
   )
 }
