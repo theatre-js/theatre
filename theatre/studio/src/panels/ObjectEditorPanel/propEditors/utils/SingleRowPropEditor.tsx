@@ -8,6 +8,7 @@ import React from 'react'
 import type {useEditingToolsForPrimitiveProp} from '@theatre/studio/panels/ObjectEditorPanel/propEditors/utils/useEditingToolsForPrimitiveProp'
 import {shadeToColor} from '@theatre/studio/panels/ObjectEditorPanel/propEditors/utils/useEditingToolsForPrimitiveProp'
 import styled, {css} from 'styled-components'
+import {rowBg} from '@theatre/studio/panels/ObjectEditorPanel/propEditors/CompoundPropEditor'
 
 export const propNameText = css`
   font-weight: 300;
@@ -24,14 +25,35 @@ const Row = styled.div`
   display: flex;
   height: 30px;
   justify-content: flex-start;
-  align-items: center;
+  align-items: stretch;
+  --right-width: 60%;
+  position: relative;
+
+  ${rowBg};
+`
+
+const Left = styled.div`
+  box-sizing: border-box;
+  padding-left: calc(var(--left-pad) + (var(--depth) + 1) * var(--step));
+  padding-right: 4px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: stretch;
+  gap: 4px;
+  flex-grow: 0;
+  flex-shrink: 0;
+  width: calc(100% - var(--right-width));
 `
 
 const PropNameContainer = styled.div`
-  margin-right: 4px;
-  text-align: right;
-  flex: 0 0;
-  flex-basis: 106px;
+  text-align: left;
+  flex: 1 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
 
   ${propNameText};
 `
@@ -39,16 +61,20 @@ const PropNameContainer = styled.div`
 const ControlsContainer = styled.div`
   flex-basis: 8px;
   flex: 0 0;
+  display: flex;
+  align-items: center;
 `
 
 const InputContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: stretch;
-  padding: 0 16px 0 2px;
+  padding: 0 8px 0 2px;
   box-sizing: border-box;
   height: 100%;
-  flex: 1 1;
+  width: var(--right-width);
+  flex-shrink: 0;
+  flex-grow: 0;
 `
 
 export const SingleRowPropEditor: React.FC<{
@@ -70,15 +96,19 @@ export const SingleRowPropEditor: React.FC<{
   return (
     <Row>
       {contextMenu}
-      <PropNameContainer
-        ref={propNameContainerRef}
-        title={['obj', 'props', ...getPointerParts(pointerToProp).path].join(
-          '.',
-        )}
-      >
-        {label}
-      </PropNameContainer>
-      <ControlsContainer>{stuff.controlIndicators}</ControlsContainer>
+      <Left>
+        <ControlsContainer>{stuff.controlIndicators}</ControlsContainer>
+
+        <PropNameContainer
+          ref={propNameContainerRef}
+          title={['obj', 'props', ...getPointerParts(pointerToProp).path].join(
+            '.',
+          )}
+        >
+          {label}
+        </PropNameContainer>
+      </Left>
+
       <InputContainer>{children}</InputContainer>
     </Row>
   )

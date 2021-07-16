@@ -2,48 +2,71 @@ import type {PropTypeConfig_Compound} from '@theatre/core/propTypes'
 import {isPropConfigComposite} from '@theatre/shared/propTypes/utils'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import {theme} from '@theatre/studio/css'
-import {voidFn} from '@theatre/shared/utils'
 import {usePrism} from '@theatre/dataverse-react'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import {getPointerParts} from '@theatre/dataverse'
 import last from 'lodash-es/last'
-import {darken} from 'polished'
+import {darken, transparentize} from 'polished'
 import React from 'react'
 import {HiOutlineChevronRight} from 'react-icons/all'
-import styled from 'styled-components'
+import styled, {css} from 'styled-components'
 import DeterminePropEditor from './DeterminePropEditor'
-import NextPrevKeyframeCursors from './utils/NextPrevKeyframeCursors'
 import {propNameText} from './utils/SingleRowPropEditor'
+import DefaultOrStaticValueIndicator from './utils/DefaultValueIndicator'
 
-const Container = styled.div<{depth: number}>`
-  --depth: ${(props) => props.depth};
+const Container = styled.div`
+  --step: 8px;
+  --left-pad: 18px;
+`
+
+export const rowBg = css`
+  /* &:after {
+    position: absolute;
+    display: block;
+    inset: 0px 0 0px calc(10px + var(--left-pad) + var(--depth) * var(--step));
+    content: ' ';
+    z-index: -1;
+    background-color: #282b2f;
+    opacity: 0.97;
+  } */
 `
 
 const Header = styled.div`
   height: 30px;
-  padding-left: calc(-8px + var(--depth) * 20px);
+  /* padding-left: calc(var(--left-pad) + var(--depth) * var(--step)); */
   display: flex;
   align-items: center;
-  color: ${theme.panel.body.compoudThing.label.color};
+  /* color: ${theme.panel.body.compoudThing.label.color}; */
+  position: relative;
+
+  ${rowBg};
 `
 
 const IconContainer = styled.div`
   width: 12px;
-  margin-right: 6px;
+  margin-right: -12px;
+  margin-left: calc(var(--left-pad) + var(--depth) * var(--step));
   font-size: 9px;
   text-align: center;
   transform: rotateZ(90deg);
+  position: relative;
+  left: -10px;
 `
 
 const PropName = styled.div`
-  margin-right: 4px;
+  margin-left: 4px;
   cursor: default;
-  ${propNameText}
+  height: 100%;
+  display: flex;
+  align-items: center;
+  ${() => propNameText};
 `
 
+const color = transparentize(0.05, `#282b2f`)
+
 const SubProps = styled.div<{depth: number; lastSubIsComposite: boolean}>`
-  background: ${({depth}) => darken(depth * 0.03, theme.panel.bg)};
-  padding: ${(props) => (props.lastSubIsComposite ? 0 : '4px')} 0;
+  /* background: ${({depth}) => darken(depth * 0.03, color)}; */
+  /* padding: ${(props) => (props.lastSubIsComposite ? 0 : '4px')} 0; */
 `
 
 const CompoundPropEditor: React.FC<{
@@ -66,21 +89,30 @@ const CompoundPropEditor: React.FC<{
 
   return usePrism(() => {
     return (
-      <Container depth={depth}>
+      <Container>
         {
-          <Header>
+          <Header
+            // @ts-ignore
+            style={{'--depth': depth - 1}}
+          >
             <IconContainer>
               <HiOutlineChevronRight />
             </IconContainer>
-            <PropName>{propName || 'props'}</PropName>
-            <NextPrevKeyframeCursors
+            {/* <NextPrevKeyframeCursors
               jumpToPosition={voidFn}
               toggleKeyframeOnCurrentPosition={voidFn}
-            />
+            /> */}
+            <DefaultOrStaticValueIndicator hasStaticOverride={false} />
+            <PropName>{propName || 'Props'}</PropName>
           </Header>
         }
 
-        <SubProps depth={depth} lastSubIsComposite={lastSubPropIsComposite}>
+        <SubProps
+          // @ts-ignore
+          style={{'--depth': depth}}
+          depth={depth}
+          lastSubIsComposite={lastSubPropIsComposite}
+        >
           {[...nonCompositeSubs, ...compositeSubs].map(
             ([subPropKey, subPropConfig]) => {
               return (

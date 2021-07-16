@@ -16,6 +16,20 @@ const Container = styled(PanelWrapper)`
   overflow-y: hidden;
   display: flex;
   flex-direction: column;
+  /* background-color: transparent; */
+  background-color: #282b2ff0;
+  box-shadow: none;
+
+  &:after {
+    position: absolute;
+    display: block;
+    content: ' ';
+    left: 0;
+    width: 1px;
+    bottom: 0;
+    top: 0;
+    border-left: 1px solid #3a3a44;
+  }
 `
 
 const emptyPanel = <Container />
@@ -34,6 +48,10 @@ export const F1 = styled.div`
   box-sizing: border-box;
 `
 
+const F1_1 = styled.div`
+  display: none;
+`
+
 export const Punctuation = styled.span`
   color: ${theme.panel.head.punctuation.color};
 `
@@ -45,6 +63,13 @@ export const F2 = styled.div`
   flex-grow: 1;
   overflow-y: scroll;
   padding: 0;
+`
+
+const F2_2 = styled.div`
+  background: transparent;
+  flex-grow: 1;
+  overflow-y: scroll;
+  padding: 6px 0 0 0;
 `
 
 const defaultPosition: PanelPosition = {
@@ -83,14 +108,14 @@ const Content: React.FC<{}> = () => {
     return (
       <Container>
         <PanelDragZone>
-          <F1>
+          <F1_1>
             {obj.sheet.address.sheetId} <Punctuation>{':'}&nbsp;</Punctuation>
             {obj.sheet.address.sheetInstanceId}{' '}
             <Punctuation>&nbsp;{'>'}&nbsp;</Punctuation>
             {obj.address.objectKey}
-          </F1>
+          </F1_1>
         </PanelDragZone>
-        <F2>
+        <F2_2>
           <DeterminePropEditor
             key={key}
             obj={obj}
@@ -98,7 +123,7 @@ const Content: React.FC<{}> = () => {
             propConfig={obj.template.config}
             depth={1}
           />
-        </F2>
+        </F2_2>
       </Container>
     )
   }, [])

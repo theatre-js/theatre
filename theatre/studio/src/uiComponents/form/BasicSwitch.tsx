@@ -7,7 +7,9 @@ const Container = styled.form`
   flex-direction: row;
   align-items: stretch;
   vertical-align: middle;
+  justify-content: stretch;
   height: 24px;
+  width: 100%;
 `
 const Label = styled.label`
   padding: 0 0.5em;
@@ -15,6 +17,8 @@ const Label = styled.label`
   /* background: #373748; */
   display: flex;
   align-items: center;
+  justify-content: center;
+  flex-grow: 1;
   color: #a7a7a7;
   border: 1px solid #1c2123;
   box-sizing: border-box;
