@@ -5,6 +5,7 @@ import getStudio from '@theatre/studio/getStudio'
 import React, {useCallback} from 'react'
 import styled from 'styled-components'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
+import {VscTriangleUp} from 'react-icons/all'
 
 const Container = styled.button`
   outline: none;
@@ -17,7 +18,7 @@ const Container = styled.button`
   z-index: 1;
   position: absolute;
 
-  padding: 0 8px;
+  padding: 4px 8px;
   display: flex;
   color: #656d77;
   line-height: 20px;
@@ -25,6 +26,23 @@ const Container = styled.button`
 
   &:hover {
     color: white;
+  }
+
+  & > svg {
+    transition: transform 0.3s;
+    transform: rotateZ(0deg);
+  }
+
+  &:hover > svg {
+    transform: rotateZ(-20deg);
+  }
+
+  &.open > svg {
+    transform: rotateZ(-180deg);
+  }
+
+  &.open:hover > svg {
+    transform: rotateZ(-160deg);
   }
 `
 
@@ -41,7 +59,15 @@ const GraphEditorToggle: React.FC<{
       })
     })
   }, [layoutP])
-  return <Container onClick={toggle}>Graph Editor</Container>
+  return (
+    <Container
+      onClick={toggle}
+      title={'Toggle graph editor'}
+      className={isOpen ? 'open' : ''}
+    >
+      <VscTriangleUp />
+    </Container>
+  )
 }
 
 export default GraphEditorToggle
