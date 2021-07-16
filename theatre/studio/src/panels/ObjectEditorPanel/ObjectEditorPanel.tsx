@@ -34,18 +34,22 @@ const Container = styled(PanelWrapper)`
 
 const emptyPanel = <Container />
 
-export const F1Height = 40
+export const titleBarHeight = 20
 
-export const F1 = styled.div`
-  height: ${F1Height}px;
+export const TitleBar = styled.div`
+  height: ${titleBarHeight}px;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
-  padding: 0 14px;
-  color: ${theme.panel.head.title.color};
-  font-size: 11px;
-  border-bottom: 2px solid rgba(0, 0, 0, 0.45);
-  background: ${theme.panel.bg};
-  box-sizing: border-box;
+  padding: 0 10px;
+  color: #adadadb3;
+  border-bottom: 1px solid rgb(0 0 0 / 13%);
+  background: #00000017;
+  font-size: 10px;
+  font-weight: 500;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 `
 
 const F1_1 = styled.div`
@@ -106,7 +110,7 @@ const Content: React.FC<{}> = () => {
 
     const obj = selection.find((s): s is SheetObject => isSheetObject(s))
 
-    if (!obj) return emptyPanel
+    if (!obj) return <></>
 
     const key = prism.memo('key', () => JSON.stringify(obj.address), [obj])
 

@@ -4,7 +4,7 @@ import type {PaneInstance} from '@theatre/studio/TheatreStudio'
 import React from 'react'
 import styled from 'styled-components'
 import {
-  F1,
+  TitleBar,
   F2 as F2Impl,
 } from '@theatre/studio/panels/ObjectEditorPanel/ObjectEditorPanel'
 import BasePanel from './BasePanel'
@@ -57,9 +57,9 @@ const Content: React.FC<{paneInstance: PaneInstance<$FixMe>}> = ({
   return (
     <Container>
       <PanelDragZone>
-        <F1>
+        <TitleBar>
           <Title>{paneInstance.instanceId}</Title>
-        </F1>
+        </TitleBar>
       </PanelDragZone>
       <F2>
         <Comp id={paneInstance.instanceId} object={paneInstance.object} />

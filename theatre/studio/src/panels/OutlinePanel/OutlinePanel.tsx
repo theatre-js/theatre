@@ -36,6 +36,7 @@ const Container = styled(PanelWrapper)`
   flex-direction: column;
   background-color: transparent;
   box-shadow: none;
+  pointer-events: none;
 `
 
 const Title = styled.div`

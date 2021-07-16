@@ -13,7 +13,7 @@ import type {SequenceTrackId} from '@theatre/shared/utils/ids'
 import type {$FixMe, $IntentionalAny} from '@theatre/shared/utils/types'
 import {prism, val} from '@theatre/dataverse'
 import logger from '@theatre/shared/logger'
-import {titleBarHeight} from '@theatre/studio/panels/SequenceEditorPanel/SequenceEditorPanel'
+import {titleBarHeight} from '@theatre/studio/panels/ObjectEditorPanel/ObjectEditorPanel'
 
 export type SequenceEditorTree_Row<Type> = {
   type: Type

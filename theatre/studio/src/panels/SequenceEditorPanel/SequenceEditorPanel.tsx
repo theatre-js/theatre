@@ -6,6 +6,7 @@ import {prism, val} from '@theatre/dataverse'
 import React from 'react'
 import styled from 'styled-components'
 import {
+  TitleBar,
   TitleBar_Piece,
   TitleBar_Punctuation,
 } from '@theatre/studio/panels/ObjectEditorPanel/ObjectEditorPanel'
@@ -26,24 +27,6 @@ import {isSheet, isSheetObject} from '@theatre/shared/instanceTypes'
 import {uniq} from 'lodash-es'
 
 const Container = styled(PanelWrapper)``
-
-export const titleBarHeight = 20
-
-const TitleBar = styled.div`
-  height: ${titleBarHeight}px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  padding: 0 10px;
-  color: #adadadb3;
-  border-bottom: 1px solid rgb(0 0 0 / 13%);
-  background: #00000017;
-  font-size: 10px;
-  font-weight: 500;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-`
 
 export const zIndexes = (() => {
   const scrollableArea = 0
@@ -134,10 +117,10 @@ const Content: React.FC<{}> = () => {
     )
     const selectedTemplates = uniq(selectedSheets.map((s) => s.template))
 
-    if (selectedTemplates.length !== 1) return <EmptyPanel {...panelSize} />
+    if (selectedTemplates.length !== 1) return <></>
     const sheet = selectedSheets[0]
 
-    if (!sheet) return <EmptyPanel {...panelSize} />
+    if (!sheet) return <></>
 
     const panelSizeP = valToAtom('panelSizeP', panelSize).pointer
 
