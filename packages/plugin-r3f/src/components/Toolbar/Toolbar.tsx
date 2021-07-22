@@ -7,7 +7,7 @@ import {Vector3} from 'three'
 import type {$FixMe} from '@theatre/shared/utils/types'
 import studio, {ToolbarIconButton} from '@theatre/studio'
 import {getSelected} from '../useSelected'
-import {usePrism, useVal} from '@theatre/dataverse-react'
+import {useVal} from '@theatre/dataverse-react'
 import styled from 'styled-components'
 import TransformControlsModeSelect from './TransformControlsModeSelect'
 import ViewportShadingSelect from './ViewportShadingSelect'
@@ -18,10 +18,6 @@ const ToolGroup = styled.div`
 `
 
 const Toolbar: VFC = () => {
-  usePrism(() => {
-    const panes = studio.getPanesOfType('snapshotEditor')
-  }, [])
-
   const [editorObject] = useEditorStore(
     (state) => [state.editorObject],
     shallow,
@@ -38,106 +34,94 @@ const Toolbar: VFC = () => {
 
   return (
     <>
-      <ToolGroup>
-        <ToolbarIconButton
-          onClick={() => {
-            studio.createPane('snapshotEditor')
-          }}
-          icon={<IoCameraOutline />}
-          label="Create snapshot"
-        />
-      </ToolGroup>
-      <ToolGroup>
-        <TransformControlsModeSelect
-          value={transformControlsMode}
-          onChange={(value) =>
-            studio.transaction(({set}) =>
-              set(editorObject!.props.transformControls.mode, value),
+      <ToolbarIconButton
+        onClick={() => {
+          studio.createPane('snapshotEditor')
+        }}
+        icon={<IoCameraOutline />}
+        label="Create snapshot"
+      />
+      <TransformControlsModeSelect
+        value={transformControlsMode}
+        onChange={(value) =>
+          studio.transaction(({set}) =>
+            set(editorObject!.props.transformControls.mode, value),
+          )
+        }
+      />
+      <TransformControlsSpaceSelect
+        value={transformControlsSpace}
+        onChange={(space) => {
+          studio.transaction(({set}) => {
+            set(editorObject.props.transformControls.space, space)
+          })
+        }}
+      />
+      <ViewportShadingSelect
+        value={viewportShading}
+        onChange={(shading) => {
+          studio.transaction(({set}) => {
+            set(editorObject.props.viewport.shading, shading)
+          })
+        }}
+      />
+
+      <ToolbarIconButton
+        label="Focus on selected"
+        icon={<RiFocus3Line />}
+        onClick={() => {
+          const orbitControls =
+            useEditorStore.getState().orbitControlsRef?.current
+          const selected = getSelected()
+
+          let focusObject
+
+          if (selected) {
+            focusObject =
+              useEditorStore.getState().editablesSnapshot![selected].proxyObject
+          }
+
+          if (orbitControls && focusObject) {
+            focusObject.getWorldPosition(
+              // @ts-ignore TODO
+              orbitControls.target as Vector3,
             )
           }
-        />
-      </ToolGroup>
-      <ToolGroup>
-        <TransformControlsSpaceSelect
-          value={transformControlsSpace}
-          onChange={(space) => {
-            studio.transaction(({set}) => {
-              set(editorObject.props.transformControls.space, space)
-            })
-          }}
-        />
-      </ToolGroup>
-      <ToolGroup>
-        <ViewportShadingSelect
-          value={viewportShading}
-          onChange={(shading) => {
-            studio.transaction(({set}) => {
-              set(editorObject.props.viewport.shading, shading)
-            })
-          }}
-        />
-      </ToolGroup>
-      <ToolGroup>
-        <ToolbarIconButton
-          label="Focus on selected"
-          icon={<RiFocus3Line />}
-          onClick={() => {
-            const orbitControls =
-              useEditorStore.getState().orbitControlsRef?.current
-            const selected = getSelected()
+        }}
+      />
 
-            let focusObject
+      <ToolbarIconButton
+        label="Align object to view"
+        icon={<GiPocketBow />}
+        onClick={() => {
+          const camera = (
+            useEditorStore.getState().orbitControlsRef?.current as $FixMe
+          )?.object
 
-            if (selected) {
-              focusObject =
-                useEditorStore.getState().editablesSnapshot![selected]
-                  .proxyObject
+          const selected = getSelected()
+
+          let proxyObject
+
+          if (selected) {
+            proxyObject =
+              useEditorStore.getState().editablesSnapshot![selected].proxyObject
+
+            if (proxyObject && camera) {
+              const direction = new Vector3()
+              const position = camera.position.clone()
+
+              camera.getWorldDirection(direction)
+              proxyObject.position.set(0, 0, 0)
+              proxyObject.lookAt(direction)
+
+              proxyObject.parent!.worldToLocal(position)
+              proxyObject.position.copy(position)
+
+              proxyObject.updateMatrix()
             }
-
-            if (orbitControls && focusObject) {
-              focusObject.getWorldPosition(
-                // @ts-ignore TODO
-                orbitControls.target as Vector3,
-              )
-            }
-          }}
-        />
-      </ToolGroup>
-      <ToolGroup>
-        <ToolbarIconButton
-          label="Align object to view"
-          icon={<GiPocketBow />}
-          onClick={() => {
-            const camera = (
-              useEditorStore.getState().orbitControlsRef?.current as $FixMe
-            )?.object
-
-            const selected = getSelected()
-
-            let proxyObject
-
-            if (selected) {
-              proxyObject =
-                useEditorStore.getState().editablesSnapshot![selected]
-                  .proxyObject
-
-              if (proxyObject && camera) {
-                const direction = new Vector3()
-                const position = camera.position.clone()
-
-                camera.getWorldDirection(direction)
-                proxyObject.position.set(0, 0, 0)
-                proxyObject.lookAt(direction)
-
-                proxyObject.parent!.worldToLocal(position)
-                proxyObject.position.copy(position)
-
-                proxyObject.updateMatrix()
-              }
-            }
-          }}
-        />
-      </ToolGroup>
+          }
+        }}
+      />
     </>
   )
 }

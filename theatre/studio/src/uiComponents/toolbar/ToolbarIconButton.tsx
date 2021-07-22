@@ -1,9 +1,12 @@
 import type {ReactElement} from 'react'
 import React from 'react'
 import styled from 'styled-components'
-import {Tooltip, TooltipReference} from '@theatre/studio/uiComponents/Tooltip'
+import {
+  Tooltip,
+  TooltipReference,
+  useTooltipState,
+} from '@theatre/studio/uiComponents/Tooltip'
 import type {ButtonProps} from 'reakit'
-import {useTooltipState} from 'reakit'
 import {Button} from 'reakit'
 
 export const TheButton = styled(TooltipReference)`
@@ -44,20 +47,19 @@ const ToolbarIconButton: React.FC<
     icon: ReactElement
     label: string
   }
-> = (props) => {
+> = ({label, icon, ...props}) => {
   const tooltip = useTooltipState()
   return (
     <>
       <TheButton
         {...tooltip}
         forwardedAs={Button}
-        aria-label={props.label}
+        aria-label={label}
         onClick={props.onClick}
-        className={props.className}
       >
-        {props.icon}
+        {icon}
       </TheButton>
-      <Tooltip {...tooltip}>{props.label}</Tooltip>
+      <Tooltip {...tooltip}>{label}</Tooltip>
     </>
   )
 }
