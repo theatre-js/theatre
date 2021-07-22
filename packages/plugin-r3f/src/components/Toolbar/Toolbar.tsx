@@ -2,13 +2,16 @@ import type {VFC} from 'react'
 import React from 'react'
 import {useEditorStore} from '../../store'
 import shallow from 'zustand/shallow'
-import {GiPocketBow, IoCameraOutline} from 'react-icons/all'
+import {GiPocketBow, IoCameraOutline, RiFocus3Line} from 'react-icons/all'
 import {Vector3} from 'three'
 import type {$FixMe} from '@theatre/shared/utils/types'
 import studio, {ToolbarIconButton} from '@theatre/studio'
 import {getSelected} from '../useSelected'
 import {usePrism, useVal} from '@theatre/dataverse-react'
 import styled from 'styled-components'
+import TransformControlsModeSelect from './TransformControlsModeSelect'
+import ViewportShadingSelect from './ViewportShadingSelect'
+import TransformControlsSpaceSelect from './TransformControlsSpaceSelect'
 
 const ToolGroup = styled.div`
   pointer-events: auto;
@@ -44,7 +47,7 @@ const Toolbar: VFC = () => {
           label="Create snapshot"
         />
       </ToolGroup>
-      {/* <ToolGroup>
+      <ToolGroup>
         <TransformControlsModeSelect
           value={transformControlsMode}
           onChange={(value) =>
@@ -75,7 +78,7 @@ const Toolbar: VFC = () => {
         />
       </ToolGroup>
       <ToolGroup>
-        <IconButton
+        <ToolbarIconButton
           label="Focus on selected"
           icon={<RiFocus3Line />}
           onClick={() => {
@@ -99,7 +102,7 @@ const Toolbar: VFC = () => {
             }
           }}
         />
-      </ToolGroup> */}
+      </ToolGroup>
       <ToolGroup>
         <ToolbarIconButton
           label="Align object to view"

@@ -55,6 +55,8 @@ function OptionButton<Option>({
   icon,
   onClick,
 }: OptionButtonProps<Option>) {
+  console.log('deprecate CompactModeSelect')
+
   const tooltip = useTooltipState()
   return (
     <>

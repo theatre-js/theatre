@@ -1,0 +1,77 @@
+import type {ReactElement} from 'react'
+import React from 'react'
+import type {IconType} from 'react-icons'
+import {Group, Button} from 'reakit'
+import styled from 'styled-components'
+import {Tooltip, useTooltipState} from '@theatre/studio/uiComponents/Tooltip'
+import {TheButton as ButtonImpl} from './ToolbarIconButton'
+
+const Opt = styled(ButtonImpl)``
+
+function OptionButton<T>({
+  value,
+  label,
+  icon,
+  onClick,
+  isSelected,
+}: {
+  value: T
+  label: string
+  icon: ReactElement<IconType>
+  onClick: () => void
+  isSelected: boolean
+}) {
+  const tooltip = useTooltipState()
+  return (
+    <>
+      <Opt
+        {...tooltip}
+        forwardedAs={Button}
+        className={isSelected ? 'selected' : undefined}
+        aria-label={label}
+        onClick={onClick}
+      >
+        {icon}
+      </Opt>
+      <Tooltip {...tooltip}>{label}</Tooltip>
+    </>
+  )
+}
+
+interface Props<Option> {
+  value: Option
+  onChange: (value: Option) => void
+  options: {
+    value: Option
+    label: string
+    icon: ReactElement<IconType>
+  }[]
+}
+
+const Container = styled(Group)`
+  display: flex;
+  gap: 2px;
+`
+
+const ToolbarSwitchSelect = <Option extends string | number>({
+  value: valueOfSwitch,
+  onChange,
+  options,
+}: Props<Option>) => {
+  return (
+    <Container>
+      {options.map(({label, icon, value: optionValue}) => (
+        <OptionButton
+          key={optionValue}
+          value={optionValue}
+          isSelected={valueOfSwitch === optionValue}
+          label={label}
+          icon={icon}
+          onClick={() => onChange(optionValue)}
+        />
+      ))}
+    </Container>
+  )
+}
+
+export default ToolbarSwitchSelect
