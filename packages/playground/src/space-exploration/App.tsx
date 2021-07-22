@@ -46,6 +46,7 @@ function Model({url}: {url: string}) {
 }
 
 function App() {
+  const bg = '#272730'
   return (
     <div>
       <Canvas
@@ -56,7 +57,8 @@ function App() {
           sheet: getProject('Example project').sheet('R3F-Canvas'),
         })}
       >
-        <fog attach="fog" args={['#272730', 16, 30]} />
+        <fog attach="fog" args={[bg, 16, 30]} />
+        <color attach="background" args={[bg]} />
         <ambientLight intensity={0.75} />
         <e.perspectiveCamera
           uniqueName="Camera"
