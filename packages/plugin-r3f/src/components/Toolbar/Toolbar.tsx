@@ -1,17 +1,13 @@
 import type {VFC} from 'react'
 import React from 'react'
-import TransformControlsModeSelect from './TransformControlsModeSelect'
 import {useEditorStore} from '../../store'
 import shallow from 'zustand/shallow'
-import TransformControlsSpaceSelect from './TransformControlsSpaceSelect'
-import ViewportShadingSelect from './ViewportShadingSelect'
-import {GiPocketBow, RiFocus3Line} from 'react-icons/all'
+import {GiPocketBow, IoCameraOutline} from 'react-icons/all'
 import {Vector3} from 'three'
 import type {$FixMe} from '@theatre/shared/utils/types'
-import studio from '@theatre/studio'
+import studio, {ToolbarIconButton} from '@theatre/studio'
 import {getSelected} from '../useSelected'
 import {usePrism, useVal} from '@theatre/dataverse-react'
-import IconButton from './utils/IconButton'
 import styled from 'styled-components'
 
 const ToolGroup = styled.div`
@@ -40,15 +36,15 @@ const Toolbar: VFC = () => {
   return (
     <>
       <ToolGroup>
-        <button
+        <ToolbarIconButton
           onClick={() => {
             studio.createPane('snapshotEditor')
           }}
-        >
-          Create snapshot
-        </button>
+          icon={<IoCameraOutline />}
+          label="Create snapshot"
+        />
       </ToolGroup>
-      <ToolGroup>
+      {/* <ToolGroup>
         <TransformControlsModeSelect
           value={transformControlsMode}
           onChange={(value) =>
@@ -103,9 +99,9 @@ const Toolbar: VFC = () => {
             }
           }}
         />
-      </ToolGroup>
+      </ToolGroup> */}
       <ToolGroup>
-        <IconButton
+        <ToolbarIconButton
           label="Align object to view"
           icon={<GiPocketBow />}
           onClick={() => {

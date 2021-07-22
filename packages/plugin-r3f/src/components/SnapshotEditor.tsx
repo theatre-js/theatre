@@ -7,12 +7,10 @@ import {OrbitControls} from '@react-three/drei'
 import shallow from 'zustand/shallow'
 import root from 'react-shadow/styled-components'
 import ProxyManager from './ProxyManager'
-import studio from '@theatre/studio'
+import studio, {ToolbarIconButton} from '@theatre/studio'
 import {useVal} from '@theatre/dataverse-react'
 import styled, {createGlobalStyle, StyleSheetManager} from 'styled-components'
-import IconButton from './Toolbar/utils/IconButton'
-import {BiRefresh} from 'react-icons/bi'
-import {PortalContext} from 'reakit'
+import {IoCameraReverseOutline} from 'react-icons/all'
 
 const GlobalStyle = createGlobalStyle`
   :host {
@@ -134,42 +132,42 @@ const SnapshotEditor: React.FC<{}> = () => {
       <StyleSheetManager disableVendorPrefixes>
         <>
           <GlobalStyle />
-          <PortalContext.Provider value={overlay}>
-            <Wrapper>
-              <Overlay ref={setOverlay}>
-                <Tools>
-                  <IconButton
-                    icon={<BiRefresh />}
-                    label="Refresh Snapshot"
-                    onClick={createSnapshot}
-                  ></IconButton>
-                </Tools>
-              </Overlay>
+          {/* <PortalContext.Provider value={overlay}> */}
+          <Wrapper>
+            <Overlay ref={setOverlay}>
+              <Tools>
+                <ToolbarIconButton
+                  icon={<IoCameraReverseOutline />}
+                  label="Refresh Snapshot"
+                  onClick={createSnapshot}
+                ></ToolbarIconButton>
+              </Tools>
+            </Overlay>
 
-              {sceneSnapshot ? (
-                <>
-                  <CanvasWrapper>
-                    <Canvas
-                      // @ts-ignore
-                      colorManagement
-                      camera={initialEditorCamera}
-                      onCreated={({gl}) => {
-                        gl.setClearColor('white')
-                      }}
-                      shadowMap
-                      dpr={[1, 2]}
-                      fog={'red'}
-                      onPointerMissed={() =>
-                        studio.__experimental_setSelection([])
-                      }
-                    >
-                      <EditorScene />
-                    </Canvas>
-                  </CanvasWrapper>
-                </>
-              ) : null}
-            </Wrapper>
-          </PortalContext.Provider>
+            {sceneSnapshot ? (
+              <>
+                <CanvasWrapper>
+                  <Canvas
+                    // @ts-ignore
+                    colorManagement
+                    camera={initialEditorCamera}
+                    onCreated={({gl}) => {
+                      gl.setClearColor('white')
+                    }}
+                    shadowMap
+                    dpr={[1, 2]}
+                    fog={'red'}
+                    onPointerMissed={() =>
+                      studio.__experimental_setSelection([])
+                    }
+                  >
+                    <EditorScene />
+                  </Canvas>
+                </CanvasWrapper>
+              </>
+            ) : null}
+          </Wrapper>
+          {/* </PortalContext.Provider> */}
         </>
       </StyleSheetManager>
     </root.div>

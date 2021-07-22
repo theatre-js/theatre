@@ -40,9 +40,19 @@ const Container = styled.div`
   pointer-events: none;
 `
 
+const PortalLayer = styled.div`
+  z-index: 51;
+  position: fixed;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  pointer-events: none;
+`
+
 export default function UIRoot() {
   const studio = getStudio()
-  const [containerRef, container] = useRefAndState<HTMLDivElement>(
+  const [portalLayerRef, portalLayer] = useRefAndState<HTMLDivElement>(
     undefined as $IntentionalAny,
   )
   const inside = usePrism(() => {
@@ -61,8 +71,9 @@ export default function UIRoot() {
         <>
           <GlobalStyle />
           <ProvideTheme>
-            <PortalContext.Provider value={container}>
-              <Container ref={containerRef}>
+            <PortalContext.Provider value={portalLayer}>
+              <PortalLayer ref={portalLayerRef} />
+              <Container>
                 {shouldShowGlobalToolbar && <GlobalToolbar />}
                 {shouldShowTrigger && <TheTrigger />}
                 {shouldShowPanels && <PanelsRoot />}
@@ -72,7 +83,7 @@ export default function UIRoot() {
         </>
       </StyleSheetManager>
     )
-  }, [studio, containerRef, container])
+  }, [studio, portalLayerRef, portalLayer])
 
   return inside
 }

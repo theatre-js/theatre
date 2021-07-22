@@ -6,6 +6,7 @@ import * as globalVariableNames from '@theatre/shared/globalVariableNames'
 import type {$FixMe} from '@theatre/shared/utils/types'
 import StudioBundle from './StudioBundle'
 import type CoreBundle from '@theatre/core/CoreBundle'
+export {default as ToolbarIconButton} from './uiComponents/toolbar/ToolbarIconButton'
 
 const studioPrivateAPI = new Studio()
 setStudio(studioPrivateAPI)
