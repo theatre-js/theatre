@@ -2,7 +2,6 @@ import type {ReactElement} from 'react'
 import React from 'react'
 import styled from 'styled-components'
 import {Tooltip, TooltipReference} from '@theatre/studio/uiComponents/Tooltip'
-import {lighten, darken} from 'polished'
 import type {ButtonProps} from 'reakit'
 import {useTooltipState} from 'reakit'
 import {Button} from 'reakit'
@@ -20,18 +19,22 @@ export const TheButton = styled(TooltipReference)`
   outline: none;
 
   &:hover {
-    background-color: ${lighten(0.02, '#313131')};
+    background-color: #1a1d23;
     color: white;
+    border-color: #4f5661;
   }
 
   &.selected {
-    background-color: ${darken(0.1, '#313131')};
+    background-color: #1a1d23;
     color: white;
+    &:hover {
+      border-color: #272a2d;
+    }
   }
 
   color: #c0c0c0;
-  background-color: #313131;
-  border: 1px solid #272727;
+  background-color: #222427;
+  border: 1px solid #272a2d;
   border-radius: 3px;
   box-shadow: 1px 1px 0px #0000001c;
 `
