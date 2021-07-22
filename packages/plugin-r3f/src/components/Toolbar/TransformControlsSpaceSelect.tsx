@@ -2,7 +2,7 @@ import type {VFC} from 'react'
 import React from 'react'
 import type {TransformControlsSpace} from '../../store'
 import {BiCube, BiGlobe} from 'react-icons/all'
-import CompactModeSelect from './utils/CompactModeSelect'
+import {ToolbarSwitchSelect} from '@theatre/studio'
 
 export interface TransformControlsSpaceSelectProps {
   value: TransformControlsSpace
@@ -13,17 +13,17 @@ const TransformControlsSpaceSelect: VFC<TransformControlsSpaceSelectProps> = ({
   value,
   onChange,
 }) => (
-  <CompactModeSelect
+  <ToolbarSwitchSelect
     value={value}
     onChange={onChange}
     options={[
       {
-        option: 'world',
+        value: 'world',
         label: 'Space: World',
         icon: <BiGlobe />,
       },
       {
-        option: 'local',
+        value: 'local',
         label: 'Space: Local',
         icon: <BiCube />,
       },

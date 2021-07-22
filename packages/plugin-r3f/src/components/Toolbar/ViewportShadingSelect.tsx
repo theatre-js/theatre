@@ -2,7 +2,7 @@ import type {VFC} from 'react'
 import React from 'react'
 import type {ViewportShading} from '../../store'
 import {FaCube, GiCube, GiIceCube, BiCube} from 'react-icons/all'
-import CompactModeSelect from './utils/CompactModeSelect'
+import {ToolbarSwitchSelect} from '@theatre/studio'
 
 export interface ViewportShadingSelectProps {
   value: ViewportShading
@@ -13,27 +13,27 @@ const ViewportShadingSelect: VFC<ViewportShadingSelectProps> = ({
   value,
   onChange,
 }) => (
-  <CompactModeSelect
+  <ToolbarSwitchSelect
     value={value}
     onChange={onChange}
     options={[
       {
-        option: 'wireframe',
+        value: 'wireframe',
         label: 'Display: Wireframe',
         icon: <BiCube />,
       },
       {
-        option: 'flat',
+        value: 'flat',
         label: 'Display: Flat',
         icon: <GiCube />,
       },
       {
-        option: 'solid',
+        value: 'solid',
         label: 'Display: Solid',
         icon: <FaCube />,
       },
       {
-        option: 'rendered',
+        value: 'rendered',
         label: 'Display: Rendered',
         icon: <GiIceCube />,
       },
