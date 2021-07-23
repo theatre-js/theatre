@@ -1,113 +1,70 @@
-import {theme} from '@theatre/studio/css'
 import {getOutlineSelection} from '@theatre/studio/selectors'
 import {usePrism} from '@theatre/dataverse-react'
 import {prism} from '@theatre/dataverse'
 import React from 'react'
 import styled from 'styled-components'
 import DeterminePropEditor from './propEditors/DeterminePropEditor'
-import type {PanelPosition} from '@theatre/studio/store/types/historic'
-import BasePanel from '@theatre/studio/panels/BasePanel/BasePanel'
-import PanelWrapper from '@theatre/studio/panels/BasePanel/PanelWrapper'
-import PanelDragZone from '@theatre/studio/panels/BasePanel/PanelDragZone'
 import {isSheetObject} from '@theatre/shared/instanceTypes'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
-import {panelZIndexes} from '@theatre/studio/panels/panelZIndexes'
+import {
+  panelZIndexes,
+  TitleBar_Punctuation,
+} from '@theatre/studio/panels/BasePanel/common'
 
-const Container = styled(PanelWrapper)`
-  overflow-y: hidden;
-  display: flex;
-  flex-direction: column;
+const Container = styled.div`
   background-color: transparent;
-  /* background-color: #282b2ff0; */
-  box-shadow: none;
+  pointer-events: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50px;
+  bottom: 8px;
   z-index: ${panelZIndexes.propsPanel};
 
-  &:after {
-    position: absolute;
+  &:before {
     display: block;
     content: ' ';
-    left: 0;
-    width: 1px;
-    bottom: 0;
+    position: absolute;
     top: 0;
-    /* border-left: 1px solid #3a3a44; */
+    bottom: 0;
+    right: 0;
+    width: 20px;
+    pointer-events: auto;
   }
 `
 
-const emptyPanel = <Container />
-
-export const titleBarHeight = 20
-
-export const TitleBar = styled.div`
-  height: ${titleBarHeight}px;
-  box-sizing: border-box;
+const Content = styled.div`
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 320px;
+  overflow-y: hidden;
   display: flex;
-  align-items: center;
-  padding: 0 10px;
-  position: relative;
-  color: #adadadb3;
-  border-bottom: 1px solid rgb(0 0 0 / 13%);
-  background-color: #25272b;
-  font-size: 10px;
-  font-weight: 500;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  flex-direction: column;
+  transform: translateX(100%);
+  pointer-events: auto;
+
+  ${Container}:hover & {
+    transform: translateX(0);
+  }
 `
 
-const F1_1 = styled.div`
+const Title = styled.div`
+  width: 100%;
+`
+
+const Header = styled.div`
   display: none;
 `
 
-export const TitleBar_Piece = styled.span`
-  white-space: nowrap;
-`
-
-export const TitleBar_Punctuation = styled.span`
-  white-space: nowrap;
-  color: ${theme.panel.head.punctuation.color};
-`
-
-export const propsEditorBackground = theme.panel.bg
-
-export const F2 = styled.div`
-  background: ${propsEditorBackground};
+const Body = styled.div`
   flex-grow: 1;
   overflow-y: scroll;
   padding: 0;
 `
 
-const F2_2 = styled.div`
-  background: transparent;
-  flex-grow: 1;
-  overflow-y: scroll;
-  padding: 6px 0 0 0;
-`
-
-const defaultPosition: PanelPosition = {
-  edges: {
-    left: {from: 'screenRight', distance: 0.4},
-    right: {from: 'screenRight', distance: 0.2},
-    top: {from: 'screenTop', distance: 0.2},
-    bottom: {from: 'screenBottom', distance: 0.2},
-  },
-}
-
-const minDims = {width: 300, height: 300}
-
 const ObjectEditorPanel: React.FC<{}> = (props) => {
-  return (
-    <BasePanel
-      panelId="objectEditor"
-      defaultPosition={defaultPosition}
-      minDims={minDims}
-    >
-      <Content />
-    </BasePanel>
-  )
-}
-
-const Content: React.FC<{}> = () => {
   return usePrism(() => {
     const selection = getOutlineSelection()
 
@@ -119,24 +76,26 @@ const Content: React.FC<{}> = () => {
 
     return (
       <Container>
-        <PanelDragZone>
-          <F1_1>
-            {obj.sheet.address.sheetId}{' '}
-            <TitleBar_Punctuation>{':'}&nbsp;</TitleBar_Punctuation>
-            {obj.sheet.address.sheetInstanceId}{' '}
-            <TitleBar_Punctuation>&nbsp;{'>'}&nbsp;</TitleBar_Punctuation>
-            {obj.address.objectKey}
-          </F1_1>
-        </PanelDragZone>
-        <F2_2>
-          <DeterminePropEditor
-            key={key}
-            obj={obj}
-            pointerToProp={obj.propsP}
-            propConfig={obj.template.config}
-            depth={1}
-          />
-        </F2_2>
+        <Content>
+          <Header>
+            <Title>
+              {obj.sheet.address.sheetId}{' '}
+              <TitleBar_Punctuation>{':'}&nbsp;</TitleBar_Punctuation>
+              {obj.sheet.address.sheetInstanceId}{' '}
+              <TitleBar_Punctuation>&nbsp;{'>'}&nbsp;</TitleBar_Punctuation>
+              {obj.address.objectKey}
+            </Title>
+          </Header>
+          <Body>
+            <DeterminePropEditor
+              key={key}
+              obj={obj}
+              pointerToProp={obj.propsP}
+              propConfig={obj.template.config}
+              depth={1}
+            />
+          </Body>
+        </Content>
       </Container>
     )
   }, [])

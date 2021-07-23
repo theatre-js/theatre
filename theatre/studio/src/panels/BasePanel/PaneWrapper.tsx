@@ -3,17 +3,14 @@ import type {PanelPosition} from '@theatre/studio/store/types'
 import type {PaneInstance} from '@theatre/studio/TheatreStudio'
 import React, {useCallback} from 'react'
 import styled from 'styled-components'
-import {
-  TitleBar,
-  F2 as F2Impl,
-} from '@theatre/studio/panels/ObjectEditorPanel/ObjectEditorPanel'
+import {F2 as F2Impl, TitleBar} from './common'
 import BasePanel from './BasePanel'
 import PanelDragZone from './PanelDragZone'
 import PanelWrapper from './PanelWrapper'
 import {ErrorBoundary} from 'react-error-boundary'
 import {IoClose} from 'react-icons/all'
 import getStudio from '@theatre/studio/getStudio'
-import {panelZIndexes} from '@theatre/studio/panels/panelZIndexes'
+import {panelZIndexes} from '@theatre/studio/panels/BasePanel/common'
 
 const defaultPosition: PanelPosition = {
   edges: {

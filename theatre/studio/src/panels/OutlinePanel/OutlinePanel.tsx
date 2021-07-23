@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import {panelZIndexes} from '@theatre/studio/panels/panelZIndexes'
+import {panelZIndexes} from '@theatre/studio/panels/BasePanel/common'
 import ProjectsList from './ProjectsList/ProjectsList'
 
 const Container = styled.div`
@@ -49,7 +49,7 @@ const Header = styled.div`
   display: none;
 `
 
-const F2 = styled.div`
+const Body = styled.div`
   flex-grow: 1;
   overflow-y: scroll;
   padding: 0;
@@ -62,9 +62,9 @@ const OutlinePanel: React.FC<{}> = (props) => {
         <Header>
           <Title>Outline</Title>
         </Header>
-        <F2>
+        <Body>
           <ProjectsList />
-        </F2>
+        </Body>
       </Content>
     </Container>
   )

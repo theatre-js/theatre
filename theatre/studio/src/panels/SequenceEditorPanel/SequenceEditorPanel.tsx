@@ -5,11 +5,7 @@ import type {Pointer} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'
 import React from 'react'
 import styled from 'styled-components'
-import {
-  TitleBar,
-  TitleBar_Piece,
-  TitleBar_Punctuation,
-} from '@theatre/studio/panels/ObjectEditorPanel/ObjectEditorPanel'
+
 import DopeSheet from './DopeSheet/DopeSheet'
 import GraphEditor from './GraphEditor/GraphEditor'
 import type {PanelDims, SequenceEditorPanelLayout} from './layout/layout'
@@ -25,7 +21,12 @@ import type Sheet from '@theatre/core/sheets/Sheet'
 import {isSheet, isSheetObject} from '@theatre/shared/instanceTypes'
 import {uniq} from 'lodash-es'
 import GraphEditorToggle from './GraphEditorToggle'
-import {panelZIndexes} from '@theatre/studio/panels/panelZIndexes'
+import {
+  panelZIndexes,
+  TitleBar,
+  TitleBar_Piece,
+  TitleBar_Punctuation,
+} from '@theatre/studio/panels/BasePanel/common'
 
 const Container = styled(PanelWrapper)`
   z-index: ${panelZIndexes.sequenceEditorPanel};

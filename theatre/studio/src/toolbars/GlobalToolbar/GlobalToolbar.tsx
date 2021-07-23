@@ -1,6 +1,6 @@
 import {useVal} from '@theatre/dataverse-react'
 import getStudio from '@theatre/studio/getStudio'
-import {panelZIndexes} from '@theatre/studio/panels/panelZIndexes'
+import {panelZIndexes} from '@theatre/studio/panels/BasePanel/common'
 import React from 'react'
 import styled from 'styled-components'
 
