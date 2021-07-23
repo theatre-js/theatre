@@ -1,5 +1,5 @@
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
-import type {$IntentionalAny} from '@theatre/shared/utils/types'
+import type {$IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
 import getStudio from '@theatre/studio/getStudio'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
@@ -126,11 +126,19 @@ const PanelResizeHandle: React.FC<{
   const dragOpts: Parameters<typeof useDrag>[1] = useMemo(() => {
     let stuffBeforeDrag = panelStuffRef.current
     let tempTransaction: CommitOrDiscard | undefined
+    let unlock: VoidFn | undefined
+
     return {
       lockCursorTo: cursors[which],
       onDragStart() {
         stuffBeforeDrag = panelStuffRef.current
         setIsDragging(true)
+        if (unlock) {
+          const u = unlock
+          unlock = undefined
+          u()
+        }
+        unlock = panelStuff.addBoundsHighlightLock()
       },
       onDrag(dx, dy) {
         const newDims: typeof panelStuff['dims'] = {
@@ -184,6 +192,11 @@ const PanelResizeHandle: React.FC<{
         })
       },
       onDragEnd(dragHappened) {
+        if (unlock) {
+          const u = unlock
+          unlock = undefined
+          u()
+        }
         setIsDragging(false)
         if (dragHappened) {
           tempTransaction?.commit()
@@ -199,7 +212,11 @@ const PanelResizeHandle: React.FC<{
   const Comp = els[which]
 
   return (
-    <Comp ref={ref} isDragging={isDragging} style={{cursor: cursors[which]}} />
+    <Comp
+      ref={ref}
+      isDragging={isDragging || panelStuff.boundsHighlighted}
+      style={{cursor: cursors[which]}}
+    />
   )
 }
 

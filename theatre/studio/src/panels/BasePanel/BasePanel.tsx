@@ -1,8 +1,9 @@
 import {val} from '@theatre/dataverse'
 import {usePrism} from '@theatre/dataverse-react'
-import type {$IntentionalAny} from '@theatre/shared/utils/types'
+import type {$IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
 import getStudio from '@theatre/studio/getStudio'
 import type {PanelPosition} from '@theatre/studio/store/types'
+import useLockSet from '@theatre/studio/uiComponents/useLockSet'
 import React, {useContext} from 'react'
 import useWindowSize from 'react-use/esm/useWindowSize'
 import styled from 'styled-components'
@@ -26,6 +27,8 @@ type PanelStuff = {
     width: number
     height: number
   }
+  boundsHighlighted: boolean
+  addBoundsHighlightLock: () => VoidFn
 }
 
 export const panelDimsToPanelPosition = (
@@ -74,6 +77,8 @@ const BasePanel: React.FC<{
   minDims: {width: number; height: number}
 }> = ({panelId, children, defaultPosition, minDims}) => {
   const windowSize = useWindowSize(800, 200)
+  const [boundsHighlighted, addBoundsHighlightLock] = useLockSet()
+
   const {stuff} = usePrism(() => {
     const {edges} =
       val(getStudio()!.atomP.historic.panelPositions[panelId]) ??
@@ -119,9 +124,11 @@ const BasePanel: React.FC<{
       },
       panelId,
       minDims,
+      boundsHighlighted,
+      addBoundsHighlightLock,
     }
     return {stuff}
-  }, [panelId, windowSize])
+  }, [panelId, windowSize, boundsHighlighted, addBoundsHighlightLock])
 
   return <PanelContext.Provider value={stuff}>{children}</PanelContext.Provider>
 }

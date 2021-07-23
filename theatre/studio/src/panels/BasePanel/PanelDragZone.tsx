@@ -1,5 +1,5 @@
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
-import type {$IntentionalAny} from '@theatre/shared/utils/types'
+import type {$IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
 import getStudio from '@theatre/studio/getStudio'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
@@ -23,10 +23,17 @@ const PanelDragZone: React.FC<
   const dragOpts: Parameters<typeof useDrag>[1] = useMemo(() => {
     let stuffBeforeDrag = panelStuffRef.current
     let tempTransaction: CommitOrDiscard | undefined
+    let unlock: VoidFn | undefined
     return {
       lockCursorTo: 'move',
       onDragStart() {
         stuffBeforeDrag = panelStuffRef.current
+        if (unlock) {
+          const u = unlock
+          unlock = undefined
+          u()
+        }
+        unlock = panelStuff.addBoundsHighlightLock()
       },
       onDrag(dx, dy) {
         const newDims: typeof panelStuff['dims'] = {
@@ -48,6 +55,11 @@ const PanelDragZone: React.FC<
         })
       },
       onDragEnd(dragHappened) {
+        if (unlock) {
+          const u = unlock
+          unlock = undefined
+          u()
+        }
         if (dragHappened) {
           tempTransaction?.commit()
         } else {
@@ -60,8 +72,35 @@ const PanelDragZone: React.FC<
 
   useDrag(node, dragOpts)
 
-  // @ts-ignore ignore
-  return <Container {...props} ref={ref} />
+  const [onMouseEnter, onMouseLeave] = useMemo(() => {
+    let unlock: VoidFn | undefined
+    return [
+      function onMouseEnter() {
+        if (unlock) {
+          const u = unlock
+          unlock = undefined
+          u()
+        }
+        unlock = panelStuff.addBoundsHighlightLock()
+      },
+      function onMouseLeave() {
+        if (unlock) {
+          const u = unlock
+          unlock = undefined
+          u()
+        }
+      },
+    ]
+  }, [])
+
+  return (
+    <Container
+      {...props}
+      ref={ref}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    />
+  )
 }
 
 export default PanelDragZone
