@@ -50,7 +50,7 @@ interface Props<Option> {
 
 const Container = styled(Group)`
   display: flex;
-  gap: 2px;
+  gap: 5px;
 `
 
 const ToolbarSwitchSelect = <Option extends string | number>({

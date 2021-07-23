@@ -8,6 +8,10 @@ import {
 } from '@theatre/studio/uiComponents/Tooltip'
 import type {ButtonProps} from 'reakit'
 import {Button} from 'reakit'
+import {outlinePanelTheme} from '@theatre/studio/panels/OutlinePanel/BaseItem'
+import {darken, opacify} from 'polished'
+
+const {baseBg, baseBorderColor, baseFontColor} = outlinePanelTheme
 
 export const TheButton = styled(TooltipReference)`
   pointer-events: auto;
@@ -21,25 +25,39 @@ export const TheButton = styled(TooltipReference)`
   height: 28px;
   outline: none;
 
+  color: ${baseFontColor};
+  --item-bg: ${baseBg};
+  --item-border-color: ${baseBorderColor};
+  background-color: var(--item-bg);
+
   &:hover {
-    background-color: #1a1d23;
-    color: white;
-    border-color: #4f5661;
+    color: ${opacify(1, baseFontColor)};
+
+    --item-bg: ${() => darken(0.07, baseBg)};
+    --item-border-color: ${opacify(0.1, baseBorderColor)};
   }
 
   &.selected {
-    background-color: #1a1d23;
-    color: white;
-    &:hover {
-      border-color: #272a2d;
-    }
+    color: ${opacify(1, baseFontColor)};
+
+    --item-bg: ${() => darken(0.15, baseBg)};
+    --item-border-color: ${opacify(0, baseBorderColor)};
   }
 
-  color: #c0c0c0;
-  background-color: #222427;
-  border: 1px solid #272a2d;
-  border-radius: 3px;
-  box-shadow: 1px 1px 0px #0000001c;
+  &:before {
+    border: 1px solid var(--item-border-color);
+    position: absolute;
+    inset: -1px;
+    display: block;
+    content: ' ';
+    z-index: -1;
+    pointer-events: none;
+    border-radius: 2px;
+    box-sizing: border-box;
+    box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
+  }
+
+  border: 0;
 `
 
 const ToolbarIconButton: React.FC<

@@ -8,10 +8,22 @@ import React from 'react'
 import type {useEditingToolsForPrimitiveProp} from '@theatre/studio/panels/ObjectEditorPanel/propEditors/utils/useEditingToolsForPrimitiveProp'
 import {shadeToColor} from '@theatre/studio/panels/ObjectEditorPanel/propEditors/utils/useEditingToolsForPrimitiveProp'
 import styled, {css} from 'styled-components'
-import {
-  indentationFormula,
-  rowBg,
-} from '@theatre/studio/panels/ObjectEditorPanel/propEditors/CompoundPropEditor'
+import {transparentize} from 'polished'
+
+export const indentationFormula = `calc(var(--left-pad) + var(--depth) * var(--step))`
+
+export const rowBgColor = transparentize(0.05, '#282b2f')
+
+export const rowBg = css`
+  &:after {
+    position: absolute;
+    display: block;
+    inset: 0px 0 1px calc(-2px + var(--left-pad) + var(--depth) * var(--step));
+    content: ' ';
+    z-index: -1;
+    background-color: ${rowBgColor};
+  }
+`
 
 export const propNameText = css`
   font-weight: 300;

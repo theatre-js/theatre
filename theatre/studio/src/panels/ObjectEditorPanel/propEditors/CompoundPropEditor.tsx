@@ -8,26 +8,18 @@ import {getPointerParts} from '@theatre/dataverse'
 import last from 'lodash-es/last'
 import {darken, transparentize} from 'polished'
 import React from 'react'
-import styled, {css} from 'styled-components'
+import styled from 'styled-components'
 import DeterminePropEditor from './DeterminePropEditor'
-import {propNameText} from './utils/SingleRowPropEditor'
+import {
+  indentationFormula,
+  propNameText,
+  rowBg,
+} from './utils/SingleRowPropEditor'
 import DefaultOrStaticValueIndicator from './utils/DefaultValueIndicator'
 
 const Container = styled.div`
   --step: 8px;
   --left-pad: 18px;
-`
-
-export const rowBg = css`
-  &:after {
-    position: absolute;
-    display: block;
-    inset: 0px 0 1px calc(-2px + var(--left-pad) + var(--depth) * var(--step));
-    content: ' ';
-    z-index: -1;
-    background-color: #282b2f;
-    opacity: 0.95;
-  }
 `
 
 const Header = styled.div`
@@ -40,8 +32,6 @@ const Header = styled.div`
 
   ${rowBg};
 `
-
-export const indentationFormula = `calc(var(--left-pad) + var(--depth) * var(--step))`
 
 const Padding = styled.div`
   padding-left: ${indentationFormula};
