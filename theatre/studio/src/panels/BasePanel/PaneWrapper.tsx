@@ -13,6 +13,7 @@ import PanelWrapper from './PanelWrapper'
 import {ErrorBoundary} from 'react-error-boundary'
 import {IoClose} from 'react-icons/all'
 import getStudio from '@theatre/studio/getStudio'
+import {panelZIndexes} from '@theatre/studio/panels/panelZIndexes'
 
 const defaultPosition: PanelPosition = {
   edges: {
@@ -45,6 +46,7 @@ const Container = styled(PanelWrapper)`
   flex-direction: column;
 
   box-shadow: 2px 2px 0 rgb(0 0 0 / 11%);
+  z-index: ${panelZIndexes.pluginPanes};
 `
 
 const Title = styled.div`

@@ -11,6 +11,7 @@ import PanelWrapper from '@theatre/studio/panels/BasePanel/PanelWrapper'
 import PanelDragZone from '@theatre/studio/panels/BasePanel/PanelDragZone'
 import {isSheetObject} from '@theatre/shared/instanceTypes'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
+import {panelZIndexes} from '@theatre/studio/panels/panelZIndexes'
 
 const Container = styled(PanelWrapper)`
   overflow-y: hidden;
@@ -19,6 +20,7 @@ const Container = styled(PanelWrapper)`
   background-color: transparent;
   /* background-color: #282b2ff0; */
   box-shadow: none;
+  z-index: ${panelZIndexes.propsPanel};
 
   &:after {
     position: absolute;

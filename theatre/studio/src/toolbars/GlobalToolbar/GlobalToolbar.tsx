@@ -1,11 +1,13 @@
 import {useVal} from '@theatre/dataverse-react'
 import getStudio from '@theatre/studio/getStudio'
+import {panelZIndexes} from '@theatre/studio/panels/panelZIndexes'
 import React from 'react'
 import styled from 'styled-components'
 
 const Container = styled.div`
   position: fixed;
-  z-index: 50;
+  z-index: ${panelZIndexes.toolbar};
+
   top: 12px;
   right: 12px;
   left: 12px;

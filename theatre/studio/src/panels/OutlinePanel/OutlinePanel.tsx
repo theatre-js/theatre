@@ -1,42 +1,44 @@
-import {usePrism} from '@theatre/dataverse-react'
 import React from 'react'
 import styled from 'styled-components'
+import {panelZIndexes} from '@theatre/studio/panels/panelZIndexes'
 import ProjectsList from './ProjectsList/ProjectsList'
-import type {PanelPosition} from '@theatre/studio/store/types'
-import BasePanel from '@theatre/studio/panels/BasePanel/BasePanel'
-import PanelWrapper from '@theatre/studio/panels/BasePanel/PanelWrapper'
-import PanelDragZone from '@theatre/studio/panels/BasePanel/PanelDragZone'
 
-const defaultPosition: PanelPosition = {
-  edges: {
-    left: {from: 'screenLeft', distance: 0.2},
-    right: {from: 'screenLeft', distance: 0.4},
-    top: {from: 'screenTop', distance: 0.2},
-    bottom: {from: 'screenBottom', distance: 0.2},
-  },
-}
+const Container = styled.div`
+  background-color: transparent;
+  pointer-events: none;
+  position: absolute;
+  left: 0;
+  top: 50px;
+  bottom: 8px;
+  right: 0;
+  z-index: ${panelZIndexes.outlinePanel};
 
-const minDims = {width: 300, height: 300}
+  &:before {
+    display: block;
+    content: ' ';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 20px;
+    pointer-events: auto;
+  }
+`
 
-const OutlinePanel: React.FC<{}> = (props) => {
-  return (
-    <BasePanel
-      panelId="outlinePanel"
-      defaultPosition={defaultPosition}
-      minDims={minDims}
-    >
-      <Content />
-    </BasePanel>
-  )
-}
-
-const Container = styled(PanelWrapper)`
+const Content = styled.div`
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
   overflow-y: hidden;
   display: flex;
   flex-direction: column;
-  background-color: transparent;
-  box-shadow: none;
-  pointer-events: none;
+  transform: translateX(-100%);
+  pointer-events: auto;
+
+  ${Container}:hover & {
+    transform: translateX(0);
+  }
 `
 
 const Title = styled.div`
@@ -53,21 +55,19 @@ const F2 = styled.div`
   padding: 0;
 `
 
-const Content: React.FC = () => {
-  return usePrism(() => {
-    return (
-      <Container>
-        <PanelDragZone>
-          <Header>
-            <Title>Outline</Title>
-          </Header>
-        </PanelDragZone>
+const OutlinePanel: React.FC<{}> = (props) => {
+  return (
+    <Container>
+      <Content>
+        <Header>
+          <Title>Outline</Title>
+        </Header>
         <F2>
           <ProjectsList />
         </F2>
-      </Container>
-    )
-  }, [])
+      </Content>
+    </Container>
+  )
 }
 
 export default OutlinePanel

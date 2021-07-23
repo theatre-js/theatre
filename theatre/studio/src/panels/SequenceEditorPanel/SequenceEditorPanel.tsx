@@ -25,8 +25,11 @@ import type Sheet from '@theatre/core/sheets/Sheet'
 import {isSheet, isSheetObject} from '@theatre/shared/instanceTypes'
 import {uniq} from 'lodash-es'
 import GraphEditorToggle from './GraphEditorToggle'
+import {panelZIndexes} from '@theatre/studio/panels/panelZIndexes'
 
-const Container = styled(PanelWrapper)``
+const Container = styled(PanelWrapper)`
+  z-index: ${panelZIndexes.sequenceEditorPanel};
+`
 
 const LeftBackground = styled.div`
   background-color: #282b2fed;
