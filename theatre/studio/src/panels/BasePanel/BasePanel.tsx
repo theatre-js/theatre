@@ -6,14 +6,6 @@ import type {PanelPosition} from '@theatre/studio/store/types'
 import useLockSet from '@theatre/studio/uiComponents/useLockSet'
 import React, {useContext} from 'react'
 import useWindowSize from 'react-use/esm/useWindowSize'
-import styled from 'styled-components'
-
-const Container = styled.div`
-  position: absolute;
-  box-sizing: border-box;
-  pointer-events: auto;
-  z-index: 1000;
-`
 
 type PanelStuff = {
   panelId: string

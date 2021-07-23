@@ -9,7 +9,7 @@ const Container = styled.div`
   position: absolute;
   left: 0;
   top: 50px;
-  bottom: 8px;
+  bottom: 0px;
   right: 0;
   z-index: ${panelZIndexes.outlinePanel};
 
@@ -35,6 +35,7 @@ const Content = styled.div`
   flex-direction: column;
   transform: translateX(-100%);
   pointer-events: auto;
+  /* background-color: blue; */
 
   ${Container}:hover & {
     transform: translateX(0);

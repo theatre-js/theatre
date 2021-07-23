@@ -17,7 +17,7 @@ const Container = styled.div`
   position: absolute;
   left: 0;
   right: 0;
-  top: 50px;
+  top: 10px;
   bottom: 8px;
   z-index: ${panelZIndexes.propsPanel};
 

@@ -8,7 +8,7 @@ import React, {useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
 import {panelDimsToPanelPosition, usePanel} from './BasePanel'
 
-const Base = styled.div<{isDragging: boolean}>`
+const Base = styled.div`
   position: absolute;
   z-index: 10;
   pointer-events: auto;
@@ -21,9 +21,19 @@ const Base = styled.div<{isDragging: boolean}>`
     display: block;
     content: ' ';
   }
-  opacity: ${(props) => (props.isDragging ? 1 : 0)};
-  background: ${(props) =>
-    props.isDragging ? lighten(0.2, '#478698') : '#478698'};
+
+  opacity: 0;
+  background-color: #478698;
+
+  &.isHighlighted {
+    opacity: 0.7;
+  }
+
+  &.isDragging {
+    opacity: 1;
+    /* background-color: ${lighten(0.2, '#478698')}; */
+  }
+
   &:hover {
     opacity: 1;
   }
@@ -211,10 +221,15 @@ const PanelResizeHandle: React.FC<{
   useDrag(node, dragOpts)
   const Comp = els[which]
 
+  const isOnCorner = which.length <= 6
+
   return (
     <Comp
       ref={ref}
-      isDragging={isDragging || panelStuff.boundsHighlighted}
+      className={[
+        isDragging ? 'isDragging' : '',
+        panelStuff.boundsHighlighted && isOnCorner ? 'isHighlighted' : '',
+      ].join(' ')}
       style={{cursor: cursors[which]}}
     />
   )
