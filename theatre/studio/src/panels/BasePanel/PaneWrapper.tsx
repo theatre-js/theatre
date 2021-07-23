@@ -43,6 +43,8 @@ const Container = styled(PanelWrapper)`
   overflow-y: hidden;
   display: flex;
   flex-direction: column;
+
+  box-shadow: 2px 2px 0 rgb(0 0 0 / 11%);
 `
 
 const Title = styled.div`
