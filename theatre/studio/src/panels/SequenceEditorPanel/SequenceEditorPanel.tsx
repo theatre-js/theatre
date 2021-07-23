@@ -145,6 +145,8 @@ const Content: React.FC<{}> = () => {
       )
       .getValue()
 
+    if (val(layoutP.tree.children).length === 0) return <></>
+
     const containerRef = prism.memo(
       'containerRef',
       preventHorizontalWheelEvents,
