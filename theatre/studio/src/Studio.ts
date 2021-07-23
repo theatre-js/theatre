@@ -164,4 +164,12 @@ export class Studio {
       this.getStudioProject(core)!.sheet('Extension ' + extensionId),
     )
   }
+
+  undo() {
+    this._store.undo()
+  }
+
+  redo() {
+    this._store.redo()
+  }
 }

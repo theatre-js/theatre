@@ -10,6 +10,7 @@ import GlobalToolbar from '@theatre/studio/toolbars/GlobalToolbar/GlobalToolbar'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {PortalContext} from 'reakit'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
+import useKeyboardShortcuts from './useKeyboardShortcuts'
 
 const GlobalStyle = createGlobalStyle`
   :host {
@@ -55,6 +56,7 @@ export default function UIRoot() {
   const [portalLayerRef, portalLayer] = useRefAndState<HTMLDivElement>(
     undefined as $IntentionalAny,
   )
+  useKeyboardShortcuts()
   const inside = usePrism(() => {
     const visiblityState = val(studio.atomP.ahistoric.visibilityState)
     const initialised = val(studio.atomP.ephemeral.initialised)

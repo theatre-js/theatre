@@ -257,4 +257,12 @@ export default class StudioStore {
       },
     }
   }
+
+  undo() {
+    this._reduxStore.dispatch(studioActions.historic.undo())
+  }
+
+  redo() {
+    this._reduxStore.dispatch(studioActions.historic.redo())
+  }
 }
