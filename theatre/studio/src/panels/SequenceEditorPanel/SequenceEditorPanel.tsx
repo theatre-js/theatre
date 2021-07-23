@@ -33,13 +33,12 @@ const Container = styled(PanelWrapper)`
 `
 
 const LeftBackground = styled.div`
-  background-color: #282b2fed;
+  background-color: rgba(40, 43, 47, 0.99);
   position: absolute;
   left: 0;
   top: 0;
   bottom: 0;
   z-index: -1;
-  width: 200px;
   pointer-events: none;
 `
 
@@ -154,7 +153,7 @@ const Content: React.FC<{}> = () => {
     const graphEditorOpen = val(layoutP.graphEditorDims.isOpen)
     return (
       <Container ref={containerRef}>
-        <LeftBackground />
+        <LeftBackground style={{width: `${val(layoutP.leftDims.width)}px`}} />
         <FrameStampPositionProvider layoutP={layoutP}>
           <Header layoutP={layoutP} />
           <DopeSheet key={key + '-dopeSheet'} layoutP={layoutP} />
