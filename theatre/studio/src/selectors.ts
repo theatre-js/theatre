@@ -1,6 +1,9 @@
 import type Project from '@theatre/core/projects/Project'
+import type Sequence from '@theatre/core/sequences/Sequence'
+import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import type Sheet from '@theatre/core/sheets/Sheet'
 import {val} from '@theatre/dataverse'
+import {isSheet, isSheetObject} from '@theatre/shared/instanceTypes'
 import {uniq} from 'lodash-es'
 import getStudio from './getStudio'
 import type {OutlineSelectable, OutlineSelection} from './store/types'
@@ -66,4 +69,16 @@ export const getSelectedInstanceOfSheetId = (
  */
 export function getRegisteredSheetIds(project: Project): string[] {
   return Object.keys(val(project.sheetTemplatesP))
+}
+
+export function getSelectedSequence(): undefined | Sequence {
+  const selectedSheets = uniq(
+    getOutlineSelection()
+      .filter((s): s is SheetObject | Sheet => isSheet(s) || isSheetObject(s))
+      .map((s) => (isSheetObject(s) ? s.sheet : s)),
+  )
+  const sheet = selectedSheets[0]
+  if (!sheet) return
+
+  return sheet.getSequence()
 }

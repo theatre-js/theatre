@@ -1,6 +1,7 @@
 import {useEffect} from 'react'
 import getStudio from '@theatre/studio/getStudio'
 import {cmdIsDown} from '@theatre/studio/utils/keyboardUtils'
+import {getSelectedSequence} from '@theatre/studio/selectors'
 
 export default function useKeyboardShortcuts() {
   const studio = getStudio()
@@ -16,6 +17,21 @@ export default function useKeyboardShortcuts() {
             studio.redo()
           } else {
             studio.undo()
+          }
+        }
+      } else if (
+        e.key === ' ' &&
+        !e.shiftKey &&
+        !e.metaKey &&
+        !e.altKey &&
+        !e.ctrlKey
+      ) {
+        const seq = getSelectedSequence()
+        if (seq) {
+          if (seq.playing) {
+            seq.pause()
+          } else {
+            seq.play()
           }
         }
       } else {
