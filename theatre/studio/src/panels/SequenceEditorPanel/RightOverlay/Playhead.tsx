@@ -177,7 +177,7 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
         style={{transform: `translate3d(${posInClippedSpace}px, 0, 0)`}}
       >
         <Thumb ref={thumbRef as $IntentionalAny}>
-          <RoomToClick room={4} />
+          <RoomToClick room={8} />
           <Squinch />
           <Tooltip>
             {sequence.positionFormatter.formatForPlayhead(

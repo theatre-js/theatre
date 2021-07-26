@@ -2,7 +2,8 @@ import React from 'react'
 import styled from 'styled-components'
 
 const Container = styled.div<{room: number}>`
-  position: absolute calc(${(props) => props.room} * -1);
+  position: absolute;
+  inset: ${(props) => props.room * -1}px;
 `
 
 const RoomToClick: React.FC<{room: number}> = (props) => {
