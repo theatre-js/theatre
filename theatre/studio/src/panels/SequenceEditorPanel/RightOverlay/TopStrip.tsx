@@ -4,6 +4,7 @@ import React from 'react'
 import styled from 'styled-components'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import StampsGrid from '@theatre/studio/panels/SequenceEditorPanel/FrameGrid/StampsGrid'
+import PanelDragZone from '@theatre/studio/panels/BasePanel/PanelDragZone'
 
 const height = 20
 
@@ -12,7 +13,7 @@ export const topStripTheme = {
   borderColor: `#1c1e21`,
 }
 
-const Container = styled.div`
+const Container = styled(PanelDragZone)`
   position: absolute;
   top: 0;
   left: 0;
@@ -21,6 +22,7 @@ const Container = styled.div`
   box-sizing: border-box;
   background: ${topStripTheme.backgroundColor};
   border-bottom: 1px solid ${topStripTheme.borderColor};
+  pointer-events: auto;
 `
 
 const TopStrip: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({

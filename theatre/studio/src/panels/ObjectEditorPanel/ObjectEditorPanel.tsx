@@ -14,11 +14,11 @@ import {
 const Container = styled.div`
   background-color: transparent;
   pointer-events: none;
-  position: absolute;
+  position: fixed;
   left: 0;
   right: 0;
-  top: 10px;
-  bottom: 8px;
+  top: 12px;
+  bottom: 0px;
   z-index: ${panelZIndexes.propsPanel};
 
   &:before {
@@ -36,30 +36,39 @@ const Container = styled.div`
 const Content = styled.div`
   position: absolute;
   top: 0;
-  bottom: 0;
   right: 0;
-  width: 320px;
-  overflow-y: hidden;
-  display: flex;
-  flex-direction: column;
-  transform: translateX(100%);
-  pointer-events: auto;
+  width: 300px;
+  bottom: 0;
+  /* transform: translateX(100%); */
+  /* pointer-events: none; */
 
   ${Container}:hover & {
     transform: translateX(0);
   }
 `
 
-const Title = styled.div`
-  width: 100%;
-`
+const Title = styled.div``
+
+const headerHeight = `32px`
 
 const Header = styled.div`
-  display: none;
+  height: ${headerHeight};
+  display: flex;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
 `
 
 const Body = styled.div`
-  flex-grow: 1;
+  pointer-events: auto;
+  position: absolute;
+  top: ${headerHeight};
+  left: 0;
+  right: 0;
+  height: auto;
+  max-height: calc(100% - ${headerHeight});
   overflow-y: scroll;
   padding: 0;
 `

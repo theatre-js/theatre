@@ -11,10 +11,12 @@ const Container = styled.div`
   top: 12px;
   right: 12px;
   left: 12px;
+  height: 28px;
   pointer-events: none;
 
   display: flex;
   gap: 1rem;
+  justify-content: center;
 `
 
 const GlobalToolbar: React.FC<{}> = (props) => {

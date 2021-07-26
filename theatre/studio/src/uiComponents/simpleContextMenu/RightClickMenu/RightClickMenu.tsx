@@ -19,14 +19,15 @@ const Container = styled.ul`
   position: absolute;
   min-width: ${minWidth}px;
   z-index: 10000;
-  background: ${transparentize(0.1, '#111')};
+  background: ${transparentize(0.2, '#111')};
   color: white;
   list-style-type: none;
-  padding: 2px;
+  padding: 2px 0;
   margin: 0;
   border-radius: 1px;
   cursor: default;
   pointer-events: all;
+  border-radius: 3px;
 `
 
 export type IContextMenuItem = {

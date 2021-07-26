@@ -43,6 +43,7 @@ const Row = styled.div`
   align-items: stretch;
   --right-width: 60%;
   position: relative;
+  pointer-events: auto;
 
   ${rowBg};
 `
@@ -69,6 +70,8 @@ const PropNameContainer = styled.div`
   text-overflow: ellipsis;
   display: flex;
   align-items: center;
+  user-select: none;
+  cursor: default;
 
   ${propNameText};
 `

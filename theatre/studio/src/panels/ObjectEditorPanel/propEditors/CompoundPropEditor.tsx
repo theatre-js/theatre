@@ -19,7 +19,8 @@ import DefaultOrStaticValueIndicator from './utils/DefaultValueIndicator'
 
 const Container = styled.div`
   --step: 8px;
-  --left-pad: 18px;
+  --left-pad: 0px;
+  pointer-events: auto;
 `
 
 const Header = styled.div`

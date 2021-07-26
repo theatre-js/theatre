@@ -3,7 +3,6 @@ import React from 'react'
 import type {IconType} from 'react-icons'
 import {Group, Button} from 'reakit'
 import styled from 'styled-components'
-import {Tooltip, useTooltipState} from '@theatre/studio/uiComponents/Tooltip'
 import {TheButton as ButtonImpl} from './ToolbarIconButton'
 
 const Opt = styled(ButtonImpl)``
@@ -21,19 +20,17 @@ function OptionButton<T>({
   onClick: () => void
   isSelected: boolean
 }) {
-  const tooltip = useTooltipState()
   return (
     <>
       <Opt
-        {...tooltip}
         forwardedAs={Button}
         className={isSelected ? 'selected' : undefined}
         aria-label={label}
         onClick={onClick}
+        title={label}
       >
         {icon}
       </Opt>
-      <Tooltip {...tooltip}>{label}</Tooltip>
     </>
   )
 }

@@ -2,7 +2,7 @@ import type {ElementType} from 'react'
 import React from 'react'
 import styled from 'styled-components'
 
-export const height = 30
+export const height = 26
 
 const Container = styled.li`
   height: ${height}px;
@@ -10,10 +10,22 @@ const Container = styled.li`
   margin: 0;
   display: flex;
   align-items: center;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 400;
+  position: relative;
 
-  &:hover {
-    background: #2bb5de;
+  &:after {
+    position: absolute;
+    inset: 2px 1px;
+    display: block;
+    content: ' ';
+    pointer-events: none;
+    z-index: -1;
+    border-radius: 3px;
+  }
+
+  &:hover:after {
+    background-color: rgba(63, 174, 191, 0.75);
   }
 `
 

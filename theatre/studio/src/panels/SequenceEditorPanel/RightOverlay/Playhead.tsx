@@ -120,7 +120,7 @@ const Tooltip = styled.div`
   font-size: 10px;
   line-height: 18px;
   text-align: center;
-  ${Thumb}:hover & {
+  ${Thumb}:hover &, ${Container}.seeking & {
     display: block;
   }
 `
@@ -152,6 +152,7 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
       onDragEnd() {
         setIsSeeking(false)
       },
+      lockCursorTo: 'ew-resize',
     }
   }, [])
 
@@ -175,6 +176,7 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
       <Container
         isVisible={isVisible}
         style={{transform: `translate3d(${posInClippedSpace}px, 0, 0)`}}
+        className={isSeeking ? 'seeking' : ''}
       >
         <Thumb ref={thumbRef as $IntentionalAny}>
           <RoomToClick room={8} />

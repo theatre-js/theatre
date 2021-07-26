@@ -1,19 +1,13 @@
 import type {ReactElement} from 'react'
 import React from 'react'
 import styled from 'styled-components'
-import {
-  Tooltip,
-  TooltipReference,
-  useTooltipState,
-} from '@theatre/studio/uiComponents/Tooltip'
 import type {ButtonProps} from 'reakit'
-import {Button} from 'reakit'
 import {outlinePanelTheme} from '@theatre/studio/panels/OutlinePanel/BaseItem'
 import {darken, opacify} from 'polished'
 
 const {baseBg, baseBorderColor, baseFontColor} = outlinePanelTheme
 
-export const TheButton = styled(TooltipReference)`
+export const TheButton = styled.button`
   pointer-events: auto;
   position: relative;
   display: flex;
@@ -66,18 +60,11 @@ const ToolbarIconButton: React.FC<
     label: string
   }
 > = ({label, icon, ...props}) => {
-  const tooltip = useTooltipState()
   return (
     <>
-      <TheButton
-        {...tooltip}
-        forwardedAs={Button}
-        aria-label={label}
-        onClick={props.onClick}
-      >
+      <TheButton aria-label={label} onClick={props.onClick} title={label}>
         {icon}
       </TheButton>
-      <Tooltip {...tooltip}>{label}</Tooltip>
     </>
   )
 }
