@@ -8,6 +8,7 @@ import {isSheetObject} from '@theatre/shared/instanceTypes'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import {
   panelZIndexes,
+  TitleBar_Piece,
   TitleBar_Punctuation,
 } from '@theatre/studio/panels/BasePanel/common'
 
@@ -37,7 +38,7 @@ const Content = styled.div`
   position: absolute;
   top: 0;
   right: 0;
-  width: 300px;
+  width: 260px;
   bottom: 0;
   /* transform: translateX(100%); */
   /* pointer-events: none; */
@@ -47,7 +48,13 @@ const Content = styled.div`
   }
 `
 
-const Title = styled.div``
+const Title = styled.div`
+  margin: 0 10px;
+  color: #ffffffc2;
+  font-weight: 500;
+  font-size: 10px;
+  user-select: none;
+`
 
 const headerHeight = `32px`
 
@@ -59,6 +66,17 @@ const Header = styled.div`
   top: 0;
   left: 0;
   right: 0;
+
+  &:after {
+    position: absolute;
+    inset: 4px 0px;
+    display: block;
+    content: ' ';
+    pointer-events: none;
+    z-index: -1;
+    background-color: #69777947;
+    border-radius: 2px 0 0 2px;
+  }
 `
 
 const Body = styled.div`
@@ -71,6 +89,7 @@ const Body = styled.div`
   max-height: calc(100% - ${headerHeight});
   overflow-y: scroll;
   padding: 0;
+  user-select: none;
 `
 
 const ObjectEditorPanel: React.FC<{}> = (props) => {
@@ -88,11 +107,15 @@ const ObjectEditorPanel: React.FC<{}> = (props) => {
         <Content>
           <Header>
             <Title>
-              {obj.sheet.address.sheetId}{' '}
+              <TitleBar_Piece>{obj.sheet.address.sheetId} </TitleBar_Piece>
+
               <TitleBar_Punctuation>{':'}&nbsp;</TitleBar_Punctuation>
-              {obj.sheet.address.sheetInstanceId}{' '}
+              <TitleBar_Piece>
+                {obj.sheet.address.sheetInstanceId}{' '}
+              </TitleBar_Piece>
+
               <TitleBar_Punctuation>&nbsp;{'>'}&nbsp;</TitleBar_Punctuation>
-              {obj.address.objectKey}
+              <TitleBar_Piece>{obj.address.objectKey}</TitleBar_Piece>
             </Title>
           </Header>
           <Body>

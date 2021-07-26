@@ -35,6 +35,7 @@ const Content = styled.div`
   flex-direction: column;
   transform: translateX(-100%);
   pointer-events: auto;
+  user-select: none;
   /* background-color: blue; */
 
   ${Container}:hover & {

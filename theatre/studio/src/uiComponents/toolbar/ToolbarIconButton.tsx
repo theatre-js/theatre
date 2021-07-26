@@ -15,8 +15,8 @@ export const TheButton = styled.button`
   justify-content: center;
   font-size: 14px;
   font-weight: 600;
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   outline: none;
 
   color: ${baseFontColor};
