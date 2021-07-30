@@ -29,6 +29,9 @@ const Header = styled(BaseHeader)`
   display: flex;
   align-items: center;
   pointer-events: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 
   color: ${baseFontColor};
   --item-bg: ${baseBg};
