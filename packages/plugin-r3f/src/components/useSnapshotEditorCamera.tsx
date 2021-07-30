@@ -27,7 +27,6 @@ const camConf = types.compound({
   lens: types.compound({
     zoom: types.number(1, {range: [0.0001, 10]}),
     fov: types.number(50, {range: [1, 1000]}),
-    aspect: types.number(1, {range: [0, 1000]}),
     near: types.number(0.1, {range: [0, Infinity]}),
     far: types.number(2000, {range: [0, Infinity]}),
     focus: types.number(10, {range: [0, Infinity]}),
@@ -148,15 +147,14 @@ function usePassValuesFromTheatreToCamera(
     const obj = objRef.current!
     const setFromTheatre = (props: typeof camConf['valueType']): void => {
       const {position, target} = props.transform
-      cam.position.set(position.x, position.y, position.z)
       cam.zoom = props.lens.zoom
       cam.fov = props.lens.fov
-      cam.aspect = props.lens.aspect
       cam.near = props.lens.near
       cam.far = props.lens.far
       cam.focus = props.lens.focus
       cam.filmGauge = props.lens.filmGauge
       cam.filmOffset = props.lens.filmOffset
+      cam.position.set(position.x, position.y, position.z)
       cam.updateProjectionMatrix()
       orbitControls.target.set(target.x, target.y, target.z)
       orbitControls.update()
