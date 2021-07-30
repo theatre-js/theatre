@@ -132,7 +132,7 @@ const Content: React.FC<{paneInstance: PaneInstance<$FixMe>}> = ({
       </PanelDragZone>
       <F2>
         <ErrorBoundary FallbackComponent={ErrorFallback}>
-          <Comp id={paneInstance.instanceId} object={paneInstance.object} />
+          <Comp paneId={paneInstance.instanceId} object={paneInstance.object} />
         </ErrorBoundary>
       </F2>
     </Container>

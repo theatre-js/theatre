@@ -9,7 +9,7 @@ import React, {
 import {useEditorStore} from '../store'
 import {createPortal} from '@react-three/fiber'
 import EditableProxy from './EditableProxy'
-import type {OrbitControls} from '@react-three/drei'
+import type {OrbitControls} from 'three-stdlib'
 import TransformControls from './TransformControls'
 import shallow from 'zustand/shallow'
 import type {Material, Mesh, Object3D} from 'three'
@@ -21,7 +21,7 @@ import {useSelected} from './useSelected'
 import {useVal} from '@theatre/dataverse-react'
 
 export interface ProxyManagerProps {
-  orbitControlsRef: React.MutableRefObject<typeof OrbitControls | undefined>
+  orbitControlsRef: React.MutableRefObject<OrbitControls | null>
 }
 
 type IEditableProxy = {

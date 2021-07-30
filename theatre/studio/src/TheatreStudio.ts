@@ -3,7 +3,7 @@ import studioTicker from '@theatre/studio/studioTicker'
 import type {IDerivation, Pointer} from '@theatre/dataverse'
 import {prism} from '@theatre/dataverse'
 import SimpleCache from '@theatre/shared/utils/SimpleCache'
-import type {$FixMe, VoidFn} from '@theatre/shared/utils/types'
+import type {$FixMe, $IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
 import type {IScrub} from '@theatre/studio/Scrub'
 
 import type {Studio} from '@theatre/studio/Studio'
@@ -16,6 +16,7 @@ import type {
   PropTypeConfig_Boolean,
   PropTypeConfig_Compound,
 } from '@theatre/core/propTypes'
+import {debounce} from 'lodash-es'
 
 export interface ITransactionAPI {
   set<V>(pointer: Pointer<V>, value: V): void
@@ -28,7 +29,7 @@ export interface PaneClassDefinition<
   class: string
   dataType: DataType
   component: React.ComponentType<{
-    id: string
+    paneId: string
     object: ISheetObject<
       PropTypeConfig_Compound<{
         visible: PropTypeConfig_Boolean
@@ -65,6 +66,7 @@ export interface IStudio {
 
   transaction(fn: (api: ITransactionAPI) => void): void
   scrub(): IScrub
+  debouncedScrub(threshhold: number): Pick<IScrub, 'capture'>
 
   __experimental_setSelection(selection: Array<ISheetObject>): void
   __experimental_onSelectionChange(
@@ -156,6 +158,37 @@ export default class TheatreStudio implements IStudio {
 
   scrub(): IScrub {
     return getStudio().scrub()
+  }
+
+  debouncedScrub(threshold: number = 1000): Pick<IScrub, 'capture'> {
+    let currentScrub: IScrub | undefined
+    const scheduleCommit = debounce(() => {
+      const s = currentScrub
+      if (!s) return
+      currentScrub = undefined
+      s.commit()
+    }, threshold)
+
+    const capture = (arg: $IntentionalAny) => {
+      if (!currentScrub) {
+        currentScrub = this.scrub()
+      }
+      let errored = true
+      try {
+        currentScrub.capture(arg)
+        errored = false
+      } finally {
+        if (errored) {
+          const s = currentScrub
+          currentScrub = undefined
+          s.discard()
+        } else {
+          scheduleCommit()
+        }
+      }
+    }
+
+    return {capture}
   }
 
   getPanesOfType<PaneClass extends string>(

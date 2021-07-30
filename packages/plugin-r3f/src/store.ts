@@ -2,10 +2,6 @@ import type {StateCreator} from 'zustand'
 import create from 'zustand'
 import type {Object3D, Scene, WebGLRenderer} from 'three'
 import {Group} from 'three'
-import type {MutableRefObject} from 'react'
-import type {OrbitControls} from '@react-three/drei'
-// @ts-ignore TODO
-import type {ContainerProps} from '@react-three/fiber'
 import type {ISheet, ISheetObject} from '@theatre/core'
 import {types, getProject} from '@theatre/core'
 
@@ -138,27 +134,21 @@ export type EditorStore = {
   scene: Scene | null
   gl: WebGLRenderer | null
   allowImplicitInstancing: boolean
-  orbitControlsRef: MutableRefObject<typeof OrbitControls | undefined> | null
   helpersRoot: Group
   editables: Record<string, Editable>
   // this will come in handy when we start supporting multiple canvases
   canvasName: string
   sceneSnapshot: Scene | null
   editablesSnapshot: Record<string, EditableSnapshot> | null
-  initialEditorCamera: ContainerProps['camera']
 
   init: (
     scene: Scene,
     gl: WebGLRenderer,
     allowImplicitInstancing: boolean,
-    editorCamera: ContainerProps['camera'],
     sheet: ISheet,
     editorObject: null | ISheetObject<typeof editorSheetObjectConfig>,
   ) => void
 
-  setOrbitControlsRef: (
-    orbitControlsRef: MutableRefObject<typeof OrbitControls | undefined>,
-  ) => void
   addEditable: <T extends EditableType>(type: T, uniqueName: string) => void
   removeEditable: (uniqueName: string) => void
   createSnapshot: () => void
@@ -177,7 +167,6 @@ const config: StateCreator<EditorStore> = (set, get) => {
     scene: null,
     gl: null,
     allowImplicitInstancing: false,
-    orbitControlsRef: null,
     helpersRoot: new Group(),
     editables: {},
     canvasName: 'default',
@@ -185,19 +174,11 @@ const config: StateCreator<EditorStore> = (set, get) => {
     editablesSnapshot: null,
     initialEditorCamera: {},
 
-    init: (
-      scene,
-      gl,
-      allowImplicitInstancing,
-      editorCamera,
-      sheet,
-      editorObject,
-    ) => {
+    init: (scene, gl, allowImplicitInstancing, sheet, editorObject) => {
       set({
         scene,
         gl,
         allowImplicitInstancing,
-        initialEditorCamera: editorCamera,
         sheet,
         editorObject,
       })
@@ -238,9 +219,7 @@ const config: StateCreator<EditorStore> = (set, get) => {
           },
         }
       }),
-    setOrbitControlsRef: (camera) => {
-      set({orbitControlsRef: camera})
-    },
+
     removeEditable: (name) =>
       set((state) => {
         const {[name]: removed, ...rest} = state.editables
@@ -284,7 +263,6 @@ export const useEditorStore = create<EditorStore>(config)
 
 export type BindFunction = (options: {
   allowImplicitInstancing?: boolean
-  editorCamera?: ContainerProps['camera']
   sheet: ISheet
 }) => (options: {gl: WebGLRenderer; scene: Scene}) => void
 
@@ -308,23 +286,6 @@ const editorSheetObjectConfig = types.compound({
           wireframe: 'Wireframe',
         },
         {as: 'menu', label: 'Shading'},
-      ),
-      mode: types.stringLiteral(
-        'translate',
-        {
-          translate: 'Translate',
-          rotate: 'Rotate',
-          scale: 'Scale',
-        },
-        {as: 'switch', label: 'Mode'},
-      ),
-      space: types.stringLiteral(
-        'world',
-        {
-          local: 'Local',
-          world: 'World',
-        },
-        {as: 'switch', label: 'Space'},
       ),
     },
     {label: 'Viewport Config'},
@@ -355,7 +316,6 @@ const editorSheetObjectConfig = types.compound({
 
 export const bindToCanvas: BindFunction = ({
   allowImplicitInstancing = false,
-  editorCamera = {},
   sheet,
 }) => {
   const uiSheet: null | ISheet =
@@ -368,13 +328,6 @@ export const bindToCanvas: BindFunction = ({
 
   return ({gl, scene}) => {
     const init = useEditorStore.getState().init
-    init(
-      scene,
-      gl,
-      allowImplicitInstancing,
-      {...{position: [20, 20, 20]}, ...editorCamera},
-      sheet,
-      editorSheetObject,
-    )
+    init(scene, gl, allowImplicitInstancing, sheet, editorSheetObject)
   }
 }

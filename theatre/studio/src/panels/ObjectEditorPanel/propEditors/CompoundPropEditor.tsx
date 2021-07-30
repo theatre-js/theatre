@@ -1,7 +1,6 @@
 import type {PropTypeConfig_Compound} from '@theatre/core/propTypes'
 import {isPropConfigComposite} from '@theatre/shared/propTypes/utils'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
-import {theme} from '@theatre/studio/css'
 import {usePrism} from '@theatre/dataverse-react'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import {getPointerParts} from '@theatre/dataverse'
@@ -25,10 +24,8 @@ const Container = styled.div`
 
 const Header = styled.div`
   height: 30px;
-  /* padding-left: calc(var(--left-pad) + var(--depth) * var(--step)); */
   display: flex;
   align-items: stretch;
-  /* color: ${theme.panel.body.compoudThing.label.color}; */
   position: relative;
 
   ${rowBg};
@@ -38,17 +35,6 @@ const Padding = styled.div`
   padding-left: ${indentationFormula};
   display: flex;
   align-items: center;
-`
-
-const IconContainer = styled.div`
-  width: 12px;
-  margin-right: -12px;
-  /* margin-left: ${indentationFormula}; */
-  font-size: 9px;
-  text-align: center;
-  transform: rotateZ(90deg);
-  position: relative;
-  left: -18px;
 `
 
 const PropName = styled.div`

@@ -54,6 +54,10 @@ const Title = styled.div`
   font-weight: 500;
   font-size: 10px;
   user-select: none;
+  pointer-events: auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `
 
 const headerHeight = `32px`
@@ -106,7 +110,9 @@ const ObjectEditorPanel: React.FC<{}> = (props) => {
       <Container>
         <Content>
           <Header>
-            <Title>
+            <Title
+              title={`${obj.sheet.address.sheetId}: ${obj.sheet.address.sheetInstanceId} > ${obj.address.objectKey}`}
+            >
               <TitleBar_Piece>{obj.sheet.address.sheetId} </TitleBar_Piece>
 
               <TitleBar_Punctuation>{':'}&nbsp;</TitleBar_Punctuation>

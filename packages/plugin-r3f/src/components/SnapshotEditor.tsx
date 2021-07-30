@@ -1,9 +1,7 @@
-import {useState} from 'react'
 import {useLayoutEffect} from 'react'
-import React, {useEffect, useRef} from 'react'
+import React from 'react'
 import {Canvas} from '@react-three/fiber'
 import {useEditorStore} from '../store'
-import {OrbitControls} from '@react-three/drei'
 import shallow from 'zustand/shallow'
 import root from 'react-shadow/styled-components'
 import ProxyManager from './ProxyManager'
@@ -11,6 +9,9 @@ import studio, {ToolbarIconButton} from '@theatre/studio'
 import {useVal} from '@theatre/dataverse-react'
 import styled, {createGlobalStyle, StyleSheetManager} from 'styled-components'
 import {IoCameraReverseOutline} from 'react-icons/all'
+import type {ISheetObject, ISheet} from '@theatre/core'
+import type {$FixMe} from '../types'
+import useSnapshotEditorCamera from './useSnapshotEditorCamera'
 
 const GlobalStyle = createGlobalStyle`
   :host {
@@ -31,31 +32,29 @@ const GlobalStyle = createGlobalStyle`
   }
 `
 
-const EditorScene = () => {
-  const orbitControlsRef = useRef<typeof OrbitControls>()
+const EditorScene: React.FC<{snapshotEditorSheet: ISheet; paneId: string}> = ({
+  snapshotEditorSheet,
+  paneId,
+}) => {
+  const [editorCamera, orbitControlsRef] = useSnapshotEditorCamera(
+    snapshotEditorSheet,
+    paneId,
+  )
 
-  const [editorObject, helpersRoot, setOrbitControlsRef] = useEditorStore(
-    (state) => [
-      state.editorObject,
-      state.helpersRoot,
-      state.setOrbitControlsRef,
-    ],
+  const [editorObject, helpersRoot] = useEditorStore(
+    (state) => [state.editorObject, state.helpersRoot],
     shallow,
   )
 
   const showGrid = useVal(editorObject?.props.viewport.showGrid) ?? true
   const showAxes = useVal(editorObject?.props.viewport.showAxes) ?? true
 
-  useEffect(() => {
-    setOrbitControlsRef(orbitControlsRef)
-  }, [setOrbitControlsRef])
-
   return (
     <>
       {showGrid && <gridHelper args={[20, 20, '#6e6e6e', '#4a4b4b']} />}
       {showAxes && <axesHelper args={[500]} />}
-      {/* @ts-ignore */}
-      <OrbitControls ref={orbitControlsRef} enableDamping={false} />
+      {editorCamera}
+
       <primitive object={helpersRoot}></primitive>
       <ProxyManager orbitControlsRef={orbitControlsRef} />
       <color attach="background" args={[0.24, 0.24, 0.24]} />
@@ -96,82 +95,83 @@ const Tools = styled.div`
   pointer-events: auto;
 `
 
-const SnapshotEditor: React.FC<{}> = () => {
-  const [editorObject, sceneSnapshot, initialEditorCamera, createSnapshot] =
-    useEditorStore(
+const SnapshotEditor: React.FC<{object: ISheetObject<$FixMe>; paneId: string}> =
+  (props) => {
+    const snapshotEditorSheet = props.object.sheet
+    const paneId = props.paneId
+
+    const [editorObject, sceneSnapshot, createSnapshot] = useEditorStore(
       (state) => [
         state.editorObject,
         state.sceneSnapshot,
-        state.initialEditorCamera,
         state.createSnapshot,
       ],
       shallow,
     )
 
-  const editorOpen = true
-  useLayoutEffect(() => {
-    let timeout: NodeJS.Timeout | undefined
-    if (editorOpen) {
-      // a hack to make sure all the scene's props are
-      // applied before we take a snapshot
-      timeout = setTimeout(createSnapshot, 100)
-    }
-    return () => {
-      if (timeout !== undefined) {
-        clearTimeout(timeout)
+    const editorOpen = true
+    useLayoutEffect(() => {
+      let timeout: NodeJS.Timeout | undefined
+      if (editorOpen) {
+        // a hack to make sure all the scene's props are
+        // applied before we take a snapshot
+        timeout = setTimeout(createSnapshot, 100)
       }
-    }
-  }, [editorOpen])
+      return () => {
+        if (timeout !== undefined) {
+          clearTimeout(timeout)
+        }
+      }
+    }, [editorOpen])
 
-  const [overlay, setOverlay] = useState<HTMLDivElement | null>(null)
+    if (!editorObject) return <></>
 
-  if (!editorObject) return <></>
+    return (
+      <root.div>
+        <StyleSheetManager disableVendorPrefixes>
+          <>
+            <GlobalStyle />
+            <Wrapper>
+              <Overlay>
+                <Tools>
+                  <ToolbarIconButton
+                    icon={<IoCameraReverseOutline />}
+                    label="Refresh Snapshot"
+                    onClick={createSnapshot}
+                  ></ToolbarIconButton>
+                </Tools>
+              </Overlay>
 
-  return (
-    <root.div>
-      <StyleSheetManager disableVendorPrefixes>
-        <>
-          <GlobalStyle />
-          {/* <PortalContext.Provider value={overlay}> */}
-          <Wrapper>
-            <Overlay ref={setOverlay}>
-              <Tools>
-                <ToolbarIconButton
-                  icon={<IoCameraReverseOutline />}
-                  label="Refresh Snapshot"
-                  onClick={createSnapshot}
-                ></ToolbarIconButton>
-              </Tools>
-            </Overlay>
-
-            {sceneSnapshot ? (
-              <>
-                <CanvasWrapper>
-                  <Canvas
-                    // @ts-ignore
-                    colorManagement
-                    camera={initialEditorCamera}
-                    onCreated={({gl}) => {
-                      gl.setClearColor('white')
-                    }}
-                    shadowMap
-                    dpr={[1, 2]}
-                    fog={'red'}
-                    onPointerMissed={() =>
-                      studio.__experimental_setSelection([])
-                    }
-                  >
-                    <EditorScene />
-                  </Canvas>
-                </CanvasWrapper>
-              </>
-            ) : null}
-          </Wrapper>
-          {/* </PortalContext.Provider> */}
-        </>
-      </StyleSheetManager>
-    </root.div>
-  )
-}
+              {sceneSnapshot ? (
+                <>
+                  <CanvasWrapper>
+                    <Canvas
+                      // @ts-ignore
+                      colorManagement
+                      onCreated={({gl}) => {
+                        gl.setClearColor('white')
+                      }}
+                      shadowMap
+                      dpr={[1, 2]}
+                      fog={'red'}
+                      onPointerMissed={() =>
+                        studio.__experimental_setSelection([])
+                      }
+                    >
+                      <EditorScene
+                        snapshotEditorSheet={snapshotEditorSheet}
+                        paneId={paneId}
+                      />
+                    </Canvas>
+                  </CanvasWrapper>
+                </>
+              ) : null}
+            </Wrapper>
+            {/* </PortalContext.Provider> */}
+          </>
+        </StyleSheetManager>
+      </root.div>
+    )
+  }
 
 export default SnapshotEditor
