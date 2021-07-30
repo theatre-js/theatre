@@ -23,11 +23,16 @@ const camConf = types.compound({
       y: types.number(10),
       z: types.number(0),
     }),
-    rotation: types.compound({
-      x: types.number(0),
-      y: types.number(0),
-      z: types.number(0),
-    }),
+  }),
+  lens: types.compound({
+    zoom: types.number(1, {range: [0.0001, 10]}),
+    fov: types.number(50, {range: [1, 1000]}),
+    aspect: types.number(1, {range: [0, 1000]}),
+    near: types.number(0.1, {range: [0, Infinity]}),
+    far: types.number(2000, {range: [0, Infinity]}),
+    focus: types.number(10, {range: [0, Infinity]}),
+    filmGauge: types.number(35, {range: [0, Infinity]}),
+    filmOffset: types.number(0, {range: [0, Infinity]}),
   }),
 })
 
@@ -105,15 +110,11 @@ function usePassValuesFromOrbitControlsToTheatre(
       const p = cam!.position
       const position = {x: p.x, y: p.y, z: p.z}
 
-      const r = cam!.rotation
-      const rotation = {x: r.x, y: r.y, z: r.z}
-
       const t = orbitControls!.target
       const target = {x: t.x, y: t.y, z: t.z}
 
       const transform = {
         position,
-        rotation,
         target,
       }
 
@@ -145,14 +146,18 @@ function usePassValuesFromTheatreToCamera(
     if (!cam || orbitControls === null) return
 
     const obj = objRef.current!
-    const setFromTheatre = ({
-      transform,
-    }: {
-      transform: typeof camConf['valueType']['transform']
-    }): void => {
-      const {position, rotation, target} = transform
+    const setFromTheatre = (props: typeof camConf['valueType']): void => {
+      const {position, target} = props.transform
       cam.position.set(position.x, position.y, position.z)
-      cam.rotation.set(rotation.x, rotation.y, rotation.z)
+      cam.zoom = props.lens.zoom
+      cam.fov = props.lens.fov
+      cam.aspect = props.lens.aspect
+      cam.near = props.lens.near
+      cam.far = props.lens.far
+      cam.focus = props.lens.focus
+      cam.filmGauge = props.lens.filmGauge
+      cam.filmOffset = props.lens.filmOffset
+      cam.updateProjectionMatrix()
       orbitControls.target.set(target.x, target.y, target.z)
       orbitControls.update()
       invalidate()
