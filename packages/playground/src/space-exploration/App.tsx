@@ -1,5 +1,5 @@
-import {editable as e, bindToCanvas} from '@theatre/plugin-r3f'
-import {Stars} from '@react-three/drei'
+import {editable as e, Wrapper} from '@theatre/plugin-r3f'
+import {OrbitControls, Stars} from '@react-three/drei'
 import {getProject} from '@theatre/core'
 import React, {Suspense} from 'react'
 import {Canvas} from '@react-three/fiber'
@@ -49,50 +49,47 @@ function App() {
   const bg = '#272730'
   return (
     <div>
-      <Canvas
-        dpr={[1.5, 2]}
-        linear
-        shadows
-        onCreated={bindToCanvas({
-          sheet: getProject('Example project').sheet('R3F-Canvas'),
-        })}
-      >
-        <fog attach="fog" args={[bg, 16, 30]} />
-        <color attach="background" args={[bg]} />
-        <ambientLight intensity={0.75} />
-        <e.perspectiveCamera
-          uniqueName="Camera"
-          // @ts-ignore
-          makeDefault
-          position={[0, 0, 16]}
-          fov={75}
+      <Canvas dpr={[1.5, 2]} linear shadows>
+        <Wrapper
+          getSheet={() => getProject('Example project').sheet('R3F-Canvas')}
         >
-          <e.pointLight
-            uniqueName="Light 1"
-            intensity={1}
-            position={[-10, -25, -10]}
+          <fog attach="fog" args={[bg, 16, 30]} />
+          <color attach="background" args={[bg]} />
+          <ambientLight intensity={0.75} />
+          <e.perspectiveCamera
+            uniqueName="Camera"
+            // @ts-ignore
+            makeDefault
+            position={[0, 0, 16]}
+            fov={75}
+          >
+            <e.pointLight
+              uniqueName="Light 1"
+              intensity={1}
+              position={[-10, -25, -10]}
+            />
+            <e.spotLight
+              uniqueName="Light 2"
+              castShadow
+              intensity={2.25}
+              angle={0.2}
+              penumbra={1}
+              position={[-25, 20, -15]}
+              shadow-mapSize={[1024, 1024]}
+              shadow-bias={-0.0001}
+            />
+          </e.perspectiveCamera>
+          <Suspense fallback={null}>
+            <Model url={sceneGLB} />
+          </Suspense>
+          <OrbitControls
+            enablePan={false}
+            enableZoom={true}
+            maxPolarAngle={Math.PI / 2}
+            minPolarAngle={Math.PI / 2}
           />
-          <e.spotLight
-            uniqueName="Light 2"
-            castShadow
-            intensity={2.25}
-            angle={0.2}
-            penumbra={1}
-            position={[-25, 20, -15]}
-            shadow-mapSize={[1024, 1024]}
-            shadow-bias={-0.0001}
-          />
-        </e.perspectiveCamera>
-        <Suspense fallback={null}>
-          <Model url={sceneGLB} />
-        </Suspense>
-        {/* <OrbitControls
-          enablePan={false}
-          enableZoom={true}
-          maxPolarAngle={Math.PI / 2}
-          minPolarAngle={Math.PI / 2}
-        /> */}
-        <Stars radius={500} depth={50} count={1000} factor={10} />
+          <Stars radius={500} depth={50} count={1000} factor={10} />
+        </Wrapper>
       </Canvas>
     </div>
   )

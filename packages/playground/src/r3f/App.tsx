@@ -1,4 +1,4 @@
-import {editable as e, bindToCanvas} from '@theatre/plugin-r3f'
+import {editable as e, Wrapper} from '@theatre/plugin-r3f'
 import {PerspectiveCamera} from '@react-three/drei'
 import {getProject} from '@theatre/core'
 import * as THREE from 'three'
@@ -97,56 +97,57 @@ function App() {
       <Canvas
         // @ts-ignore
         shadowMap
-        onCreated={bindToCanvas({
-          sheet: getProject('Example project').sheet('R3F-Canvas'),
-        })}
       >
-        <ECamera makeDefault uniqueName="Camera" />
-        <ambientLight intensity={0.4} />
-        <e.pointLight
-          position={[-10, -10, 5]}
-          intensity={2}
-          color="#ff20f0"
-          uniqueName="Light 1"
-        />
-        <e.pointLight
-          position={[0, 0.5, -1]}
-          distance={1}
-          intensity={2}
-          color="#e4be00"
-          uniqueName="Light 2"
-        />
-        <group position={[0, -0.9, -3]}>
-          <Plane
-            color="hotpink"
-            rotation-x={-Math.PI / 2}
-            position-z={2}
-            scale={[4, 20, 0.2]}
-            uniqueName="plane1"
+        <Wrapper
+          getSheet={() => getProject('Example project').sheet('R3F-Canvas')}
+        >
+          <ECamera makeDefault uniqueName="Camera" />
+          <ambientLight intensity={0.4} />
+          <e.pointLight
+            position={[-10, -10, 5]}
+            intensity={2}
+            color="#ff20f0"
+            uniqueName="Light 1"
           />
-          <Plane
+          <e.pointLight
+            position={[0, 0.5, -1]}
+            distance={1}
+            intensity={2}
             color="#e4be00"
-            rotation-x={-Math.PI / 2}
-            position-y={1}
-            scale={[4.2, 0.2, 4]}
-            uniqueName="plane2"
+            uniqueName="Light 2"
           />
-          <Plane
-            color="#736fbd"
-            rotation-x={-Math.PI / 2}
-            position={[-1.7, 1, 3.5]}
-            scale={[0.5, 4, 4]}
-            uniqueName="plane3"
-          />
-          <Plane
-            color="white"
-            rotation-x={-Math.PI / 2}
-            position={[0, 4.5, 3]}
-            scale={[2, 0.03, 4]}
-            uniqueName="plane4"
-          />
-        </group>
-        <Button />
+          <group position={[0, -0.9, -3]}>
+            <Plane
+              color="hotpink"
+              rotation-x={-Math.PI / 2}
+              position-z={2}
+              scale={[4, 20, 0.2]}
+              uniqueName="plane1"
+            />
+            <Plane
+              color="#e4be00"
+              rotation-x={-Math.PI / 2}
+              position-y={1}
+              scale={[4.2, 0.2, 4]}
+              uniqueName="plane2"
+            />
+            <Plane
+              color="#736fbd"
+              rotation-x={-Math.PI / 2}
+              position={[-1.7, 1, 3.5]}
+              scale={[0.5, 4, 4]}
+              uniqueName="plane3"
+            />
+            <Plane
+              color="white"
+              rotation-x={-Math.PI / 2}
+              position={[0, 4.5, 3]}
+              scale={[2, 0.03, 4]}
+              uniqueName="plane4"
+            />
+          </group>
+          <Button />
+        </Wrapper>
       </Canvas>
     </div>
   )
