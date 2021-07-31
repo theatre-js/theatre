@@ -4,9 +4,9 @@ Theatre.js is a motion-graphics toolkit for the web. It comes with an animation 
 
 Theatre works with all rendering stacks. You can use it to animate DOM elements, THREE.js objects, or any kind of JavaScript variable.
 
-## Docs
+## Documentation and Tutorials
 
-Docs are [on github](https://github.com/AriaMinaei/theatre).
+You can find the documentation and video tutorials [here](https://docs.theatrejs.com).
 
 ## `@theatre/studio`
 
