@@ -49,8 +49,9 @@ export const zIndexes = (() => {
   const rightBackground = scrollableArea - 1
   const seeker = rightOverlay + 1
   const currentFrameStamp = seeker + 1
-  const lengthIndicator = currentFrameStamp + 1
-  const horizontalScrollbar = lengthIndicator + 1
+  const lengthIndicatorCover = currentFrameStamp + 1
+  const lengthIndicatorStrip = lengthIndicatorCover + 1
+  const horizontalScrollbar = lengthIndicatorStrip + 1
 
   return {
     scrollableArea,
@@ -59,7 +60,8 @@ export const zIndexes = (() => {
     seeker,
     horizontalScrollbar,
     currentFrameStamp,
-    lengthIndicator,
+    lengthIndicatorCover,
+    lengthIndicatorStrip,
   }
 })()
 
