@@ -1,4 +1,4 @@
-import {useLayoutEffect} from 'react'
+import {useCallback, useLayoutEffect} from 'react'
 import React from 'react'
 import {Canvas} from '@react-three/fiber'
 import {useEditorStore} from '../store'
@@ -100,11 +100,12 @@ const SnapshotEditor: React.FC<{object: ISheetObject<$FixMe>; paneId: string}> =
     const snapshotEditorSheet = props.object.sheet
     const paneId = props.paneId
 
-    const [editorObject, sceneSnapshot, createSnapshot] = useEditorStore(
+    const [editorObject, sceneSnapshot, createSnapshot, sheet] = useEditorStore(
       (state) => [
         state.editorObject,
         state.sceneSnapshot,
         state.createSnapshot,
+        state.sheet,
       ],
       shallow,
     )
@@ -123,6 +124,10 @@ const SnapshotEditor: React.FC<{object: ISheetObject<$FixMe>; paneId: string}> =
         }
       }
     }, [editorOpen])
+
+    const onPointerMissed = useCallback(() => {
+      if (sheet !== null) studio.__experimental_setSelection([sheet])
+    }, [sheet])
 
     if (!editorObject) return <></>
 
@@ -154,9 +159,7 @@ const SnapshotEditor: React.FC<{object: ISheetObject<$FixMe>; paneId: string}> =
                       shadowMap
                       dpr={[1, 2]}
                       fog={'red'}
-                      onPointerMissed={() =>
-                        studio.__experimental_setSelection([])
-                      }
+                      onPointerMissed={onPointerMissed}
                     >
                       <EditorScene
                         snapshotEditorSheet={snapshotEditorSheet}

@@ -5,6 +5,8 @@ import type Sequence from './Sequence'
 import type {IPlaybackDirection, IPlaybackRange} from './Sequence'
 
 export interface ISequence {
+  readonly type: 'Theatre_Sequence_PublicAPI'
+
   /**
    * Starts playback of a sequence.
    * Returns a promise that either resolves to true when the playback completes,
@@ -24,7 +26,11 @@ export interface ISequence {
   time: number
 }
 
-export default class TheatreSequence {
+export default class TheatreSequence implements ISequence {
+  get type(): 'Theatre_Sequence_PublicAPI' {
+    return 'Theatre_Sequence_PublicAPI'
+  }
+
   /**
    * @internal
    */

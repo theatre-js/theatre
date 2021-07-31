@@ -1,4 +1,4 @@
-import type {ISheetObject} from '@theatre/core'
+import type {ISheet, ISheetObject} from '@theatre/core'
 import studioTicker from '@theatre/studio/studioTicker'
 import type {IDerivation, Pointer} from '@theatre/dataverse'
 import {prism} from '@theatre/dataverse'
@@ -7,7 +7,10 @@ import type {$FixMe, $IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
 import type {IScrub} from '@theatre/studio/Scrub'
 
 import type {Studio} from '@theatre/studio/Studio'
-import {isSheetObjectPublicAPI} from '@theatre/shared/instanceTypes'
+import {
+  isSheetObjectPublicAPI,
+  isSheetPublicAPI,
+} from '@theatre/shared/instanceTypes'
 import {getOutlineSelection} from './selectors'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import getStudio from './getStudio'
@@ -68,7 +71,7 @@ export interface IStudio {
   scrub(): IScrub
   debouncedScrub(threshhold: number): Pick<IScrub, 'capture'>
 
-  __experimental_setSelection(selection: Array<ISheetObject>): void
+  __experimental_setSelection(selection: Array<ISheetObject | ISheet>): void
   __experimental_onSelectionChange(
     fn: (s: Array<ISheetObject>) => void,
   ): VoidFunction
@@ -136,9 +139,9 @@ export default class TheatreStudio implements IStudio {
     return this._getSelectionDerivation().getValue()
   }
 
-  __experimental_setSelection(selection: Array<ISheetObject>): void {
+  __experimental_setSelection(selection: Array<ISheetObject | ISheet>): void {
     const sanitizedSelection = [...selection]
-      .filter((s) => isSheetObjectPublicAPI(s))
+      .filter((s) => isSheetObjectPublicAPI(s) || isSheetPublicAPI(s))
       .map((s) => getStudio().corePrivateAPI!(s))
 
     getStudio().transaction(({stateEditors}) => {

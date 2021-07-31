@@ -10,11 +10,19 @@ import type {$IntentionalAny} from '@theatre/shared/utils/types'
 
 const publicAPIToPrivateAPIMap = new WeakMap()
 
-export function privateAPI(pub: IProject): Project
-export function privateAPI(pub: ISheet): Sheet
-export function privateAPI(pub: ISheetObject<$IntentionalAny>): SheetObject
-export function privateAPI(pub: ISequence): Sequence
-export function privateAPI(pub: {}): unknown {
+export function privateAPI<
+  P extends IProject | ISheet | ISheetObject<$IntentionalAny> | ISequence,
+>(
+  pub: P,
+): P extends IProject
+  ? Project
+  : P extends ISheet
+  ? Sheet
+  : P extends ISheetObject<$IntentionalAny>
+  ? SheetObject
+  : P extends ISequence
+  ? Sequence
+  : never {
   return publicAPIToPrivateAPIMap.get(pub)
 }
 
