@@ -10,6 +10,10 @@ Theatre works with all rendering stacks. You can use it to animate DOM elements,
 
 You can find the documentation and video tutorials [here](https://docs.theatrejs.com).
 
+## Community
+
+Join us on [Discord](https://discord.gg/bm9f8F9Y9N) or write us an [email](mailto:hello@theatrejs.com).
+
 ## License
 
 Your use of Theatre.js is governed under the Apache License Version 2.0:
