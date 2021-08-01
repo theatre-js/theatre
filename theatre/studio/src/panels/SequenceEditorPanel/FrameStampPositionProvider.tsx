@@ -3,10 +3,17 @@ import {Atom, prism, val} from '@theatre/dataverse'
 import mousePositionD from '@theatre/studio/utils/mousePositionD'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import {inRange, last} from 'lodash-es'
-import React, {createContext, useCallback, useContext, useMemo} from 'react'
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+} from 'react'
 import type {SequenceEditorPanelLayout} from './layout/layout'
 
-export type FrameStampPositionLock = {
+type FrameStampPositionLock = {
   unlock: () => void
   set: (pointerPositonInUnitSpace: number) => void
 }
@@ -93,7 +100,27 @@ const FrameStampPositionProvider: React.FC<{
   return <context.Provider value={value}>{children}</context.Provider>
 }
 
-export const useFrameStampPosition = () => useContext(context)
+export const useFrameStampPositionD = () => useContext(context).currentD
+
+export const useLockFrameStampPosition = (shouldLock: boolean, val: number) => {
+  const {getLock} = useContext(context)
+  const lockRef = useRef<undefined | ReturnType<typeof getLock>>()
+
+  useLayoutEffect(() => {
+    if (!shouldLock) return
+    lockRef.current = getLock()
+
+    return () => {
+      lockRef.current!.unlock()
+    }
+  }, [shouldLock])
+
+  useLayoutEffect(() => {
+    if (shouldLock) {
+      lockRef.current!.set(val)
+    }
+  }, [val])
+}
 
 /**
  * This attribute is used so that when the cursor hovers over a keyframe,
@@ -128,8 +155,6 @@ const pointerPositionInUnitSpace = (
         if (isFinite(double) && double >= 0) return double
       }
     }
-
-    // if (mousePos.composedPath())
 
     const {clientX, clientY} = mousePos
 

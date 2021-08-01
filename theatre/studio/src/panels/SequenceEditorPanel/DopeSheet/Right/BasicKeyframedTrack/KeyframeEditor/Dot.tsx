@@ -9,14 +9,11 @@ import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {val} from '@theatre/dataverse'
 import {lighten} from 'polished'
-import React, {useMemo, useRef} from 'react'
+import React, {useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
 import type KeyframeEditor from './KeyframeEditor'
-import type {FrameStampPositionLock} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
-import {
-  attributeNameThatLocksFramestamp,
-  useFrameStampPosition,
-} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
+import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
+import {attributeNameThatLocksFramestamp} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 
 export const dotSize = 6
 const hitZoneSize = 12
@@ -112,7 +109,8 @@ function useKeyframeContextMenu(node: HTMLDivElement | null, props: IProps) {
 }
 
 function useDragKeyframe(node: HTMLDivElement | null, props: IProps) {
-  const {getLock} = useFrameStampPosition()
+  const [isDragging, setIsDragging] = useState(false)
+  useLockFrameStampPosition(isDragging, props.keyframe.position)
 
   const propsRef = useRef(props)
   propsRef.current = props
@@ -121,7 +119,6 @@ function useDragKeyframe(node: HTMLDivElement | null, props: IProps) {
     let toUnitSpace: SequenceEditorPanelLayout['scaledSpace']['toUnitSpace']
     let tempTransaction: CommitOrDiscard | undefined
     let propsAtStartOfDrag: IProps
-    let frameStampPositionLock: FrameStampPositionLock
 
     let selectionDragHandlers:
       | ReturnType<DopeSheetSelection['getDragHandlers']>
@@ -130,6 +127,7 @@ function useDragKeyframe(node: HTMLDivElement | null, props: IProps) {
     return {
       lockCursorTo: 'ew-resize',
       onDragStart(event) {
+        setIsDragging(true)
         if (propsRef.current.selection) {
           const {selection, leaf} = propsRef.current
           const {sheetObject} = leaf
@@ -145,9 +143,6 @@ function useDragKeyframe(node: HTMLDivElement | null, props: IProps) {
 
         propsAtStartOfDrag = propsRef.current
         toUnitSpace = val(propsAtStartOfDrag.layoutP.scaledSpace.toUnitSpace)
-
-        frameStampPositionLock = getLock()
-        frameStampPositionLock.set(propsAtStartOfDrag.keyframe.position)
       },
       onDrag(dx, dy, event) {
         if (selectionDragHandlers) {
@@ -155,9 +150,6 @@ function useDragKeyframe(node: HTMLDivElement | null, props: IProps) {
           return
         }
         const delta = toUnitSpace(dx)
-        const original =
-          propsAtStartOfDrag.trackData.keyframes[propsAtStartOfDrag.index]
-        frameStampPositionLock.set(original.position + delta)
 
         if (tempTransaction) {
           tempTransaction.discard()
@@ -177,7 +169,7 @@ function useDragKeyframe(node: HTMLDivElement | null, props: IProps) {
         })
       },
       onDragEnd(dragHappened) {
-        frameStampPositionLock.unlock()
+        setIsDragging(false)
 
         if (selectionDragHandlers) {
           selectionDragHandlers.onDragEnd?.(dragHappened)

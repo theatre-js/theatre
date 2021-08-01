@@ -1,8 +1,7 @@
 import {usePrism} from '@theatre/dataverse-react'
 import type {Pointer} from '@theatre/dataverse'
-import {Box} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
-import React, {useMemo, useRef} from 'react'
+import React, {useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import {zIndexes} from '@theatre/studio/panels/SequenceEditorPanel/SequenceEditorPanel'
@@ -13,7 +12,10 @@ import useDrag from '@theatre/studio/uiComponents/useDrag'
 import getStudio from '@theatre/studio/getStudio'
 import type Sheet from '@theatre/core/sheets/Sheet'
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
-import {attributeNameThatLocksFramestamp} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
+import {
+  attributeNameThatLocksFramestamp,
+  useLockFrameStampPosition,
+} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 
 const coverWidth = 1000
 
@@ -159,7 +161,9 @@ const LengthIndicator: React.FC<IProps> = ({layoutP}) => {
 function useDragBulge(node: HTMLDivElement | null, props: IProps) {
   const propsRef = useRef(props)
   propsRef.current = props
-  const isDragging = useMemo(() => new Box(false), [])
+  const [isDragging, setIsDragging] = useState(false)
+
+  useLockFrameStampPosition(isDragging, -1)
 
   const gestureHandlers = useMemo<Parameters<typeof useDrag>[1]>(() => {
     let toUnitSpace: SequenceEditorPanelLayout['scaledSpace']['toUnitSpace']
@@ -171,12 +175,12 @@ function useDragBulge(node: HTMLDivElement | null, props: IProps) {
     return {
       lockCursorTo: 'ew-resize',
       onDragStart(event) {
+        setIsDragging(true)
         propsAtStartOfDrag = propsRef.current
         sheet = val(propsRef.current.layoutP.sheet)
         initialLength = sheet.getSequence().length
 
         toUnitSpace = val(propsAtStartOfDrag.layoutP.scaledSpace.toUnitSpace)
-        isDragging.set(true)
       },
       onDrag(dx, dy, event) {
         const delta = toUnitSpace(dx)
@@ -192,7 +196,7 @@ function useDragBulge(node: HTMLDivElement | null, props: IProps) {
         })
       },
       onDragEnd(dragHappened) {
-        isDragging.set(false)
+        setIsDragging(false)
         if (dragHappened) {
           if (tempTransaction) {
             tempTransaction.commit()
@@ -209,7 +213,7 @@ function useDragBulge(node: HTMLDivElement | null, props: IProps) {
 
   useDrag(node, gestureHandlers)
 
-  return [isDragging.derivation]
+  return [isDragging]
 }
 
 export default LengthIndicator

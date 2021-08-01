@@ -7,7 +7,7 @@ import styled from 'styled-components'
 import {stampsGridTheme} from '@theatre/studio/panels/SequenceEditorPanel/FrameGrid/StampsGrid'
 import {zIndexes} from '@theatre/studio/panels/SequenceEditorPanel/SequenceEditorPanel'
 import {topStripTheme} from './TopStrip'
-import {useFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
+import {useFrameStampPositionD} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 
 const Label = styled.div`
   position: absolute;
@@ -36,7 +36,7 @@ const Line = styled.div`
 const FrameStamp: React.FC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
 }> = React.memo(({layoutP}) => {
-  const posInUnitSpace = useVal(useFrameStampPosition().currentD)
+  const posInUnitSpace = useVal(useFrameStampPositionD())
   const unitSpaceToClippedSpace = useVal(layoutP.clippedSpace.fromUnitSpace)
   const {sequence, formatter, clippedSpaceWidth} = usePrism(() => {
     const sequence = val(layoutP.sheet).getSequence()

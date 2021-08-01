@@ -6,13 +6,12 @@ import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import type {VoidFn} from '@theatre/shared/utils/types'
 import {val} from '@theatre/dataverse'
-import React, {useMemo, useRef} from 'react'
+import React, {useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
 import type KeyframeEditor from './KeyframeEditor'
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
-import type {FrameStampPositionLock} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
+import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {attributeNameThatLocksFramestamp} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
-import {useFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 
 export const dotSize = 6
 
@@ -80,7 +79,8 @@ const Dot: React.FC<IProps> = (props) => {
 export default Dot
 
 function useDragKeyframe(node: SVGCircleElement | null, _props: IProps): void {
-  const {getLock} = useFrameStampPosition()
+  const [isDragging, setIsDragging] = useState(false)
+  useLockFrameStampPosition(isDragging, _props.keyframe.position)
   const propsRef = useRef(_props)
   propsRef.current = _props
 
@@ -92,11 +92,11 @@ function useDragKeyframe(node: SVGCircleElement | null, _props: IProps): void {
     let verticalToExtremumSpace: SequenceEditorPanelLayout['graphEditorVerticalSpace']['toExtremumSpace']
     let unlockExtremums: VoidFn | undefined
     let keepSpeeds = false
-    let frameStampPositionLock: FrameStampPositionLock
 
     return {
       lockCursorTo: 'move',
       onDragStart(event) {
+        setIsDragging(true)
         keepSpeeds = !!event.altKey
 
         propsAtStartOfDrag = propsRef.current
@@ -106,8 +106,6 @@ function useDragKeyframe(node: SVGCircleElement | null, _props: IProps): void {
           propsAtStartOfDrag.layoutP.graphEditorVerticalSpace.toExtremumSpace,
         )
         unlockExtremums = propsAtStartOfDrag.extremumSpace.lock()
-        frameStampPositionLock = getLock()
-        frameStampPositionLock.set(propsAtStartOfDrag.keyframe.position)
       },
       onDrag(dx, dy) {
         const original =
@@ -128,7 +126,6 @@ function useDragKeyframe(node: SVGCircleElement | null, _props: IProps): void {
           value: original.value + dYInValueSpace,
           handles: [...original.handles],
         }
-        frameStampPositionLock.set(cur.position)
         updatedKeyframes.push(cur)
 
         if (keepSpeeds) {
@@ -189,7 +186,7 @@ function useDragKeyframe(node: SVGCircleElement | null, _props: IProps): void {
         })
       },
       onDragEnd(dragHappened) {
-        frameStampPositionLock.unlock()
+        setIsDragging(false)
         if (unlockExtremums) {
           const unlock = unlockExtremums
           unlockExtremums = undefined
