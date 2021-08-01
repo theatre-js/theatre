@@ -95,6 +95,16 @@ const FrameStampPositionProvider: React.FC<{
 
 export const useFrameStampPosition = () => useContext(context)
 
+/**
+ * This attribute is used so that when the cursor hovers over a keyframe,
+ * the framestamp snaps to the position of that keyframe.
+ *
+ * Elements that need this behavior must set a data attribute like so:
+ * <div data-theatre-lock-framestamp-to="120.55" />
+ * Setting this attribute to "hide" hides the stamp.
+ */
+export const attributeNameThatLocksFramestamp =
+  'data-theatre-lock-framestamp-to'
 const pointerPositionInUnitSpace = (
   layoutP: Pointer<SequenceEditorPanelLayout>,
 ): IDerivation<number> => {
@@ -103,7 +113,25 @@ const pointerPositionInUnitSpace = (
     const clippedSpaceToUnitSpace = val(layoutP.clippedSpace.toUnitSpace)
     const leftPadding = val(layoutP.scaledSpace.leftPadding)
 
-    const {clientX, clientY} = val(mousePositionD)
+    const mousePos = val(mousePositionD)
+    if (!mousePos) return -1
+
+    for (const el of mousePos.composedPath()) {
+      if (!(el instanceof HTMLElement || el instanceof SVGElement)) break
+
+      if (el.hasAttribute(attributeNameThatLocksFramestamp)) {
+        const val = el.getAttribute(attributeNameThatLocksFramestamp)
+        if (typeof val !== 'string') continue
+        if (val === 'hide') return -1
+        const double = parseFloat(val)
+
+        if (isFinite(double) && double >= 0) return double
+      }
+    }
+
+    // if (mousePos.composedPath())
+
+    const {clientX, clientY} = mousePos
 
     const {screenX: x, screenY: y, width: rightWidth, height} = rightDims
 

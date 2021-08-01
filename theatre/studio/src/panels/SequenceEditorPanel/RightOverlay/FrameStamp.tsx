@@ -1,5 +1,4 @@
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
-import mousePositionD from '@theatre/studio/utils/mousePositionD'
 import {usePrism, useVal} from '@theatre/dataverse-react'
 import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
@@ -8,7 +7,6 @@ import styled from 'styled-components'
 import {stampsGridTheme} from '@theatre/studio/panels/SequenceEditorPanel/FrameGrid/StampsGrid'
 import {zIndexes} from '@theatre/studio/panels/SequenceEditorPanel/SequenceEditorPanel'
 import {topStripTheme} from './TopStrip'
-import {inRange} from 'lodash-es'
 import {useFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 
 const Label = styled.div`
@@ -77,33 +75,3 @@ const FrameStamp: React.FC<{
 })
 
 export default FrameStamp
-
-/**
- *
- * @returns -1 if outside, otherwise, a positive number
- */
-const usePointerPositionInUnitSpace = (
-  layoutP: Pointer<SequenceEditorPanelLayout>,
-): number => {
-  return usePrism(() => {
-    const rightDims = val(layoutP.rightDims)
-    const clippedSpaceToUnitSpace = val(layoutP.clippedSpace.toUnitSpace)
-    const leftPadding = val(layoutP.scaledSpace.leftPadding)
-
-    const {clientX, clientY} = val(mousePositionD)
-
-    const {screenX: x, screenY: y, width: rightWidth, height} = rightDims
-
-    if (
-      inRange(clientX, x, x + rightWidth) &&
-      inRange(clientY, y, y + height)
-    ) {
-      const posInRightDims = clientX - x
-      const posInUnitSpace = clippedSpaceToUnitSpace(posInRightDims)
-
-      return posInUnitSpace
-    } else {
-      return -1
-    }
-  }, [layoutP])
-}

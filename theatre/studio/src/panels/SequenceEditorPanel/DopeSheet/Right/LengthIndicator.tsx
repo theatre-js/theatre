@@ -12,8 +12,15 @@ import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import getStudio from '@theatre/studio/getStudio'
 import type Sheet from '@theatre/core/sheets/Sheet'
+import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
+import {attributeNameThatLocksFramestamp} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 
 const coverWidth = 1000
+
+const colors = {
+  stripNormal: `#0000006c`,
+  stripActive: `#000000`,
+}
 
 const Strip = styled.div`
   position: absolute;
@@ -21,37 +28,42 @@ const Strip = styled.div`
   left: 0;
   width: 4px;
   z-index: ${() => zIndexes.lengthIndicatorStrip};
-  pointer-events: auto;
-  cursor: ew-resize;
+  pointer-events: none;
 
   &:after {
     display: block;
     content: ' ';
     position: absolute;
-    top: ${topStripHeight}px;
+    /* top: ${topStripHeight}px; */
+    top: 0;
     bottom: 0;
     left: -1px;
     width: 1px;
-    background-color: #000000a6;
+    background-color: ${colors.stripNormal};
   }
 
   &:hover:after,
   &.dragging:after {
-    background-color: #000000;
+    background-color: ${colors.stripActive};
   }
 `
 
-const Info = styled.div`
+const Bulge = styled.div`
   position: absolute;
   top: ${topStripHeight + 4}px;
   font-size: 10px;
-  left: 4px;
-  color: #eee;
+  left: 0px;
   white-space: nowrap;
-  display: none;
+  padding: 2px 8px 2px 8px;
+  border-radius: 0 2px 2px 0;
+  pointer-events: auto;
+  cursor: ew-resize;
+  color: #555;
+  background-color: ${colors.stripNormal};
 
   ${Strip}:hover &, ${Strip}.dragging & {
-    display: block;
+    color: white;
+    background-color: ${colors.stripActive};
   }
 `
 
@@ -64,7 +76,7 @@ const Cover = styled.div`
   z-index: ${() => zIndexes.lengthIndicatorCover};
   transform-origin: left top;
 
-  ${Strip}:hover ~ &, ${Strip}.dragging ~ & {
+  ${Strip}.dragging ~ & {
     background-color: rgb(23 23 23 / 60%);
   }
 `
@@ -74,8 +86,11 @@ type IProps = {
 }
 
 const LengthIndicator: React.FC<IProps> = ({layoutP}) => {
-  const [stripRef, stripNode] = useRefAndState<HTMLDivElement | null>(null)
-  const [isDraggingD] = useDragStrip(stripNode, {layoutP})
+  const [nodeRef, node] = useRefAndState<HTMLDivElement | null>(null)
+  const [isDraggingD] = useDragBulge(node, {layoutP})
+  const [popoverNode, openPopover, _, isPopoverOpen] = usePopover(() => {
+    return <div>poppio</div>
+  })
 
   return usePrism(() => {
     const sheet = val(layoutP.sheet)
@@ -101,19 +116,25 @@ const LengthIndicator: React.FC<IProps> = ({layoutP}) => {
 
     return (
       <>
+        {popoverNode}
         <Strip
           title="Change Sequence Length"
-          ref={stripRef}
           style={{
             height: height + 'px',
             transform: `translateX(${translateX === 0 ? -1000 : translateX}px)`,
           }}
           className={val(isDraggingD) ? 'dragging' : ''}
         >
-          <Info>
-            sequence.length:{' '}
+          <Bulge
+            ref={nodeRef}
+            title="Length of the sequence (sequence.length)"
+            onClick={(e) => {
+              openPopover(e, node!)
+            }}
+            {...{[attributeNameThatLocksFramestamp]: 'hide'}}
+          >
             {sequence.positionFormatter.formatForPlayhead(sequenceLength)}
-          </Info>
+          </Bulge>
         </Strip>
         <Cover
           title="Length"
@@ -132,10 +153,10 @@ const LengthIndicator: React.FC<IProps> = ({layoutP}) => {
         />
       </>
     )
-  }, [layoutP, stripRef, isDraggingD])
+  }, [layoutP, nodeRef, isDraggingD, popoverNode])
 }
 
-function useDragStrip(node: HTMLDivElement | null, props: IProps) {
+function useDragBulge(node: HTMLDivElement | null, props: IProps) {
   const propsRef = useRef(props)
   propsRef.current = props
   const isDragging = useMemo(() => new Box(false), [])

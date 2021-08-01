@@ -12,6 +12,11 @@ import {lighten} from 'polished'
 import React, {useMemo, useRef} from 'react'
 import styled from 'styled-components'
 import type KeyframeEditor from './KeyframeEditor'
+import type {FrameStampPositionLock} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
+import {
+  attributeNameThatLocksFramestamp,
+  useFrameStampPosition,
+} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 
 export const dotSize = 6
 const hitZoneSize = 12
@@ -64,8 +69,12 @@ const Dot: React.FC<IProps> = (props) => {
     <>
       <HitZone
         ref={ref}
-        title={props.keyframe.position.toString()}
+        title={props.keyframe.position.toFixed(8)}
         data-pos={props.keyframe.position.toFixed(3)}
+        {...{
+          [attributeNameThatLocksFramestamp]:
+            props.keyframe.position.toFixed(3),
+        }}
       />
       <Square isSelected={!!props.selection} />
       {contextMenu}
@@ -103,6 +112,8 @@ function useKeyframeContextMenu(node: HTMLDivElement | null, props: IProps) {
 }
 
 function useDragKeyframe(node: HTMLDivElement | null, props: IProps) {
+  const {getLock} = useFrameStampPosition()
+
   const propsRef = useRef(props)
   propsRef.current = props
 
@@ -110,6 +121,8 @@ function useDragKeyframe(node: HTMLDivElement | null, props: IProps) {
     let toUnitSpace: SequenceEditorPanelLayout['scaledSpace']['toUnitSpace']
     let tempTransaction: CommitOrDiscard | undefined
     let propsAtStartOfDrag: IProps
+    let frameStampPositionLock: FrameStampPositionLock
+
     let selectionDragHandlers:
       | ReturnType<DopeSheetSelection['getDragHandlers']>
       | undefined
@@ -131,8 +144,10 @@ function useDragKeyframe(node: HTMLDivElement | null, props: IProps) {
         }
 
         propsAtStartOfDrag = propsRef.current
-
         toUnitSpace = val(propsAtStartOfDrag.layoutP.scaledSpace.toUnitSpace)
+
+        frameStampPositionLock = getLock()
+        frameStampPositionLock.set(propsAtStartOfDrag.keyframe.position)
       },
       onDrag(dx, dy, event) {
         if (selectionDragHandlers) {
@@ -140,6 +155,10 @@ function useDragKeyframe(node: HTMLDivElement | null, props: IProps) {
           return
         }
         const delta = toUnitSpace(dx)
+        const original =
+          propsAtStartOfDrag.trackData.keyframes[propsAtStartOfDrag.index]
+        frameStampPositionLock.set(original.position + delta)
+
         if (tempTransaction) {
           tempTransaction.discard()
           tempTransaction = undefined
@@ -158,6 +177,8 @@ function useDragKeyframe(node: HTMLDivElement | null, props: IProps) {
         })
       },
       onDragEnd(dragHappened) {
+        frameStampPositionLock.unlock()
+
         if (selectionDragHandlers) {
           selectionDragHandlers.onDragEnd?.(dragHappened)
 

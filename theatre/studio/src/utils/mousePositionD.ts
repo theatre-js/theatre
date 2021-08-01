@@ -1,12 +1,12 @@
 import {prism} from '@theatre/dataverse'
 
 const mousePositionD = prism(() => {
-  const [pos, setPos] = prism.state('pos', {clientX: 0, clientY: 0})
+  const [pos, setPos] = prism.state<MouseEvent | null>('pos', null)
   prism.effect(
     'setupListeners',
     () => {
       const handleMouseMove = (e: MouseEvent) => {
-        setPos({clientX: e.clientX, clientY: e.clientY})
+        setPos(e)
       }
       document.addEventListener('mousemove', handleMouseMove)
 

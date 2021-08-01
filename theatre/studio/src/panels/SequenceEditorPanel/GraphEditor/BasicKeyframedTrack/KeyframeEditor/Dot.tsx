@@ -11,6 +11,7 @@ import styled from 'styled-components'
 import type KeyframeEditor from './KeyframeEditor'
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
 import type {FrameStampPositionLock} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
+import {attributeNameThatLocksFramestamp} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {useFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 
 export const dotSize = 6
@@ -59,6 +60,9 @@ const Dot: React.FC<IProps> = (props) => {
           // @ts-ignore
           cx: `calc(var(--unitSpaceToScaledSpaceMultiplier) * ${cur.position} * 1px)`,
           cy: `calc((var(--graphEditorVerticalSpace) - var(--graphEditorVerticalSpace) * ${cyInExtremumSpace}) * 1px)`,
+        }}
+        {...{
+          [attributeNameThatLocksFramestamp]: cur.position.toFixed(3),
         }}
       />
       <Circle

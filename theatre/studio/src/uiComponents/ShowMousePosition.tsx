@@ -5,7 +5,10 @@ import React from 'react'
 import {createPortal} from 'react-dom'
 
 const ShowMousePosition: React.FC<{}> = (props) => {
-  const pos = usePrism(() => val(mousePositionD), [])
+  const pos = usePrism(
+    () => val(mousePositionD) ?? {clientX: 0, clientY: 0},
+    [],
+  )
   return createPortal(
     <>
       <div

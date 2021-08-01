@@ -5,6 +5,7 @@ import styled from 'styled-components'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import StampsGrid from '@theatre/studio/panels/SequenceEditorPanel/FrameGrid/StampsGrid'
 import PanelDragZone from '@theatre/studio/panels/BasePanel/PanelDragZone'
+import {attributeNameThatLocksFramestamp} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 
 export const topStripHeight = 20
 
@@ -30,7 +31,7 @@ const TopStrip: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
 }) => {
   const width = useVal(layoutP.rightDims.width)
   return (
-    <Container>
+    <Container {...{[attributeNameThatLocksFramestamp]: 'hide'}}>
       <StampsGrid layoutP={layoutP} width={width} height={topStripHeight} />
     </Container>
   )

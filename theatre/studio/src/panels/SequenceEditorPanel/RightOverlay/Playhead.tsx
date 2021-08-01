@@ -11,6 +11,7 @@ import clamp from 'lodash-es/clamp'
 import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import {zIndexes} from '@theatre/studio/panels/SequenceEditorPanel/SequenceEditorPanel'
+import {attributeNameThatLocksFramestamp} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 
 const Container = styled.div<{isVisible: boolean}>`
   --thumbColor: #00e0ff;
@@ -177,6 +178,7 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
         isVisible={isVisible}
         style={{transform: `translate3d(${posInClippedSpace}px, 0, 0)`}}
         className={isSeeking ? 'seeking' : ''}
+        {...{[attributeNameThatLocksFramestamp]: 'hide'}}
       >
         <Thumb ref={thumbRef as $IntentionalAny}>
           <RoomToClick room={8} />
