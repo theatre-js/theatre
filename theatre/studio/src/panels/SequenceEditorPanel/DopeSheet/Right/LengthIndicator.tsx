@@ -61,7 +61,8 @@ const Bulge = styled.div`
   pointer-events: auto;
   cursor: ew-resize;
   color: #555;
-  background-color: ${colors.stripNormal};
+  color: #464646;
+  background-color: #0000004d;
 
   ${Strip}:hover &, ${Strip}.dragging & {
     color: white;
@@ -78,7 +79,7 @@ const Cover = styled.div`
   z-index: ${() => zIndexes.lengthIndicatorCover};
   transform-origin: left top;
 
-  ${Strip}.dragging ~ & {
+  ${Strip}.dragging ~ &, ${Strip}:hover ~ & {
     background-color: rgb(23 23 23 / 60%);
   }
 `
