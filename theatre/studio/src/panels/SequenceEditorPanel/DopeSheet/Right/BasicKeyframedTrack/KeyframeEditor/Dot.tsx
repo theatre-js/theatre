@@ -66,7 +66,6 @@ const Dot: React.FC<IProps> = (props) => {
     <>
       <HitZone
         ref={ref}
-        title={props.keyframe.position.toFixed(8)}
         data-pos={props.keyframe.position.toFixed(3)}
         {...{
           [attributeNameThatLocksFramestamp]:

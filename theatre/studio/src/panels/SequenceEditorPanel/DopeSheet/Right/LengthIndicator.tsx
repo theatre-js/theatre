@@ -16,6 +16,7 @@ import {
   attributeNameThatLocksFramestamp,
   useLockFrameStampPosition,
 } from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
+import {GoChevronLeft, GoChevronRight} from 'react-icons/all'
 
 const coverWidth = 1000
 
@@ -50,23 +51,61 @@ const Strip = styled.div`
   }
 `
 
-const Bulge = styled.div`
+const ThumbContainer = styled.div`
   position: absolute;
-  top: ${topStripHeight + 4}px;
+  top: ${topStripHeight - 15}px;
+  width: 100px;
+  left: -50px;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+`
+
+const Tooltip = styled.div`
+  margin-top: 8px;
   font-size: 10px;
-  left: 0px;
   white-space: nowrap;
-  padding: 2px 8px 2px 8px;
+  padding: 1px 8px;
   border-radius: 0 2px 2px 0;
   pointer-events: auto;
   cursor: ew-resize;
-  color: #555;
   color: #464646;
   background-color: #0000004d;
+  display: none;
+
+  ${Strip}:hover &, ${Strip}.dragging & {
+    display: block;
+    color: white;
+    background-color: ${colors.stripActive};
+  }
+`
+
+const Tumb = styled.div`
+  font-size: 10px;
+  white-space: nowrap;
+  padding: 1px 2px;
+  border-radius: 2px;
+  pointer-events: auto;
+  justify-content: center;
+  align-items: center;
+  cursor: ew-resize;
+  color: #5d5d5d;
+  background-color: #191919;
 
   ${Strip}:hover &, ${Strip}.dragging & {
     color: white;
     background-color: ${colors.stripActive};
+
+    & > svg:first-child {
+      margin-right: -1px;
+    }
+  }
+
+  & > svg:first-child {
+    margin-right: -4px;
   }
 `
 
@@ -121,34 +160,31 @@ const LengthIndicator: React.FC<IProps> = ({layoutP}) => {
       <>
         {popoverNode}
         <Strip
-          title="Change Sequence Length"
           style={{
             height: height + 'px',
             transform: `translateX(${translateX === 0 ? -1000 : translateX}px)`,
           }}
           className={val(isDraggingD) ? 'dragging' : ''}
         >
-          <Bulge
-            ref={nodeRef}
-            title="Length of the sequence (sequence.length)"
-            onClick={(e) => {
-              openPopover(e, node!)
-            }}
-            {...{[attributeNameThatLocksFramestamp]: 'hide'}}
-          >
-            {sequence.positionFormatter.formatForPlayhead(sequenceLength)}
-          </Bulge>
+          <ThumbContainer>
+            <Tumb
+              ref={nodeRef}
+              title="Length of the sequence. Drag or click to change."
+              onClick={(e) => {
+                openPopover(e, node!)
+              }}
+              {...{[attributeNameThatLocksFramestamp]: 'hide'}}
+            >
+              <GoChevronLeft />
+              <GoChevronRight />
+            </Tumb>
+            <Tooltip>
+              {sequence.positionFormatter.formatBasic(sequenceLength)}
+            </Tooltip>
+          </ThumbContainer>
         </Strip>
         <Cover
           title="Length"
-          // onClick={() => {
-          //   getStudio()!.transaction(({stateEditors}) => {
-          //     stateEditors.coreByProject.historic.sheetsById.sequence.setLength({
-          //       ...sheet.address,
-          //       length: 10,
-          //     })
-          //   })
-          // }}
           style={{
             height: height + 'px',
             transform: `translateX(${translateX}px) scale(${scaleX}, 1)`,

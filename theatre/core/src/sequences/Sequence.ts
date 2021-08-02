@@ -293,6 +293,7 @@ export interface ISequencePositionFormatter {
   formatSubUnitForGrid(posInUnitSpace: number): string
   formatFullUnitForGrid(posInUnitSpace: number): string
   formatForPlayhead(posInUnitSpace: number): string
+  formatBasic(posInUnitSpace: number): string
 }
 
 class TimeBasedPositionFormatter implements ISequencePositionFormatter {
@@ -381,6 +382,10 @@ class TimeBasedPositionFormatter implements ISequencePositionFormatter {
     }
 
     return s.length === 0 ? '00s00f' : s
+  }
+
+  formatBasic(posInUnitSpace: number): string {
+    return posInUnitSpace.toFixed(2) + 's'
   }
 }
 
