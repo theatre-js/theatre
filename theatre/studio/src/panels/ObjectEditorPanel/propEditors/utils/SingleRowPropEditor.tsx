@@ -30,10 +30,6 @@ export const propNameText = css`
   font-size: 11px;
   color: #9a9a9a;
   text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.3);
-
-  &:hover {
-    color: white;
-  }
 `
 
 const Row = styled.div`
@@ -74,6 +70,9 @@ const PropNameContainer = styled.div`
   cursor: default;
 
   ${propNameText};
+  &:hover {
+    color: white;
+  }
 `
 
 const ControlsContainer = styled.div`
