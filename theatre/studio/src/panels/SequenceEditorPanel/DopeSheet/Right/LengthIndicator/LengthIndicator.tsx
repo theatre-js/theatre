@@ -17,6 +17,7 @@ import {
   useLockFrameStampPosition,
 } from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {GoChevronLeft, GoChevronRight} from 'react-icons/all'
+import LengthEditorPopover from './LengthEditorPopover'
 
 const coverWidth = 1000
 
@@ -130,9 +131,13 @@ type IProps = {
 const LengthIndicator: React.FC<IProps> = ({layoutP}) => {
   const [nodeRef, node] = useRefAndState<HTMLDivElement | null>(null)
   const [isDraggingD] = useDragBulge(node, {layoutP})
-  const [popoverNode, openPopover, _, isPopoverOpen] = usePopover(() => {
-    return <div>poppio</div>
-  })
+  const [popoverNode, openPopover, closePopover, isPopoverOpen] = usePopover(
+    () => {
+      return (
+        <LengthEditorPopover layoutP={layoutP} onRequestClose={closePopover} />
+      )
+    },
+  )
 
   return usePrism(() => {
     const sheet = val(layoutP.sheet)

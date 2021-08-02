@@ -1,9 +1,11 @@
 import {theme} from '@theatre/studio/css'
 import {clamp, isInteger, round} from 'lodash-es'
 import {darken, lighten} from 'polished'
+import type {MutableRefObject} from 'react'
 import React, {useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
 import DraggableArea from '@theatre/studio/uiComponents/DraggableArea'
+import mergeRefs from 'react-merge-refs'
 
 type IMode = IState['mode']
 
@@ -75,9 +77,8 @@ const FillIndicator = styled.div`
   }
 `
 
-function isValueAcceptable(s: string) {
-  const v = parseFloat(s)
-  return !isNaN(v)
+function isFiniteFloat(s: string) {
+  return isFinite(parseFloat(s))
 }
 
 type IState_NoFocus = {
@@ -98,6 +99,8 @@ type IState_Dragging = {
 
 type IState = IState_NoFocus | IState_EditingViaKeyboard | IState_Dragging
 
+const alwaysValid = (v: number) => true
+
 const BasicNumberInput: React.FC<{
   value: number
   temporarilySetValue: (v: number) => void
@@ -105,13 +108,22 @@ const BasicNumberInput: React.FC<{
   permenantlySetValue: (v: number) => void
   className?: string
   range?: [min: number, max: number]
+  isValid?: (v: number) => boolean
+  inputRef?: MutableRefObject<HTMLInputElement | null>
+  /**
+   * Called when the user hits Enter. One of the *SetValue() callbacks will be called
+   * before this, so use this for UI purposes such as closing a popover.
+   */
+  onBlur?: () => void
 }> = (propsA) => {
   const [stateA, setState] = useState<IState>({mode: 'noFocus'})
+  const isValid = propsA.isValid ?? alwaysValid
 
   const refs = useRef({state: stateA, props: propsA})
   refs.current = {state: stateA, props: propsA}
 
   const inputRef = useRef<HTMLInputElement | null>(null)
+
   const bodyCursorBeforeDrag = useRef<string | null>(null)
 
   const callbacks = useMemo(() => {
@@ -122,9 +134,9 @@ const BasicNumberInput: React.FC<{
 
       setState({...curState, currentEditedValueInString: value})
 
-      if (!isValueAcceptable(value)) return
-
       const valInFloat = parseFloat(value)
+      if (!isFinite(valInFloat) || !isValid(valInFloat)) return
+
       refs.current.props.temporarilySetValue(valInFloat)
     }
 
@@ -132,16 +144,17 @@ const BasicNumberInput: React.FC<{
       if (refs.current.state.mode === 'editingViaKeyboard') {
         commitKeyboardInput()
         setState({mode: 'noFocus'})
-      } else {
       }
+      if (propsA.onBlur) propsA.onBlur()
     }
 
     const commitKeyboardInput = () => {
       const curState = refs.current.state as IState_EditingViaKeyboard
-      if (!isValueAcceptable(curState.currentEditedValueInString)) {
+      const value = parseFloat(curState.currentEditedValueInString)
+
+      if (!isFinite(value) || !isValid(value)) {
         refs.current.props.discardTemporaryValue()
       } else {
-        const value = parseFloat(curState.currentEditedValueInString)
         if (curState.valueBeforeEditing === value) {
           refs.current.props.discardTemporaryValue()
         } else {
@@ -256,6 +269,9 @@ const BasicNumberInput: React.FC<{
     value = 'NaN'
   }
 
+  const _refs = [inputRef]
+  if (propsA.inputRef) _refs.push(propsA.inputRef)
+
   const theInput = (
     <Input
       key="input"
@@ -266,7 +282,7 @@ const BasicNumberInput: React.FC<{
       onKeyDown={callbacks.onInputKeyDown}
       onClick={callbacks.onClick}
       onFocus={callbacks.onFocus}
-      ref={inputRef}
+      ref={mergeRefs(_refs)}
       onMouseDown={(e: React.MouseEvent) => {
         e.stopPropagation()
       }}

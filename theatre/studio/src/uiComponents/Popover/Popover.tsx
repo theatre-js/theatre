@@ -6,8 +6,6 @@ import {createPortal} from 'react-dom'
 import useWindowSize from 'react-use/esm/useWindowSize'
 import styled from 'styled-components'
 
-const minWidth = 190
-
 /**
  * How far from the menu should the pointer travel to auto close the menu
  */
@@ -15,14 +13,11 @@ const defaultPointerDistanceThreshold = 200
 
 const Container = styled.ul`
   position: absolute;
-  min-width: ${minWidth}px;
   z-index: 10000;
   background: ${transparentize(0.2, '#111')};
   color: white;
-  list-style-type: none;
-  padding: 2px 0;
+  padding: 0;
   margin: 0;
-  border-radius: 1px;
   cursor: default;
   pointer-events: all;
   border-radius: 3px;

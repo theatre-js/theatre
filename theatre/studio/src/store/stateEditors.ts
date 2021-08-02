@@ -392,7 +392,7 @@ namespace stateEditors {
           export function setLength(
             p: WithoutSheetInstance<SheetAddress> & {length: number},
           ) {
-            _ensure(p).length = p.length
+            _ensure(p).length = parseFloat(p.length.toFixed(2))
           }
 
           function _ensureTracksOfObject(
