@@ -3,7 +3,7 @@ import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEdi
 import RoomToClick from '@theatre/studio/uiComponents/RoomToClick'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
-import {usePrism} from '@theatre/dataverse-react'
+import {usePrism, useVal} from '@theatre/dataverse-react'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
@@ -11,7 +11,10 @@ import clamp from 'lodash-es/clamp'
 import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import {zIndexes} from '@theatre/studio/panels/SequenceEditorPanel/SequenceEditorPanel'
-import {attributeNameThatLocksFramestamp} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
+import {
+  attributeNameThatLocksFramestamp,
+  useLockFrameStampPosition,
+} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 
 const Container = styled.div<{isVisible: boolean}>`
   --thumbColor: #00e0ff;
@@ -20,7 +23,7 @@ const Container = styled.div<{isVisible: boolean}>`
   left: 0;
   width: 5px;
   height: 100%;
-  z-index: ${() => zIndexes.seeker};
+  z-index: ${() => zIndexes.playhead};
   pointer-events: none;
 
   display: ${(props) => (props.isVisible ? 'block' : 'none')};
@@ -158,6 +161,9 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
   }, [])
 
   useDrag(thumbNode, gestureHandlers)
+
+  // hide the frame stamp when seeking
+  useLockFrameStampPosition(useVal(layoutP.seeker.isSeeking), -1)
 
   return usePrism(() => {
     const isSeeking = val(layoutP.seeker.isSeeking)

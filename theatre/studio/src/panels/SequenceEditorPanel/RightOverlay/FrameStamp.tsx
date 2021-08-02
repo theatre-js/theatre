@@ -20,7 +20,7 @@ const Label = styled.div`
   padding: 1px 8px;
   font-variant-numeric: tabular-nums;
   pointer-events: none;
-  z-index: ${() => zIndexes.rightOverlay + 1};
+  z-index: ${() => zIndexes.currentFrameStamp};
 `
 
 const Line = styled.div`

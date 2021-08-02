@@ -44,25 +44,25 @@ const LeftBackground = styled.div`
 `
 
 export const zIndexes = (() => {
-  const scrollableArea = 0
-  const rightOverlay = scrollableArea + 1
-  const rightBackground = scrollableArea - 1
-  const seeker = rightOverlay + 1
-  const currentFrameStamp = seeker + 1
-  const lengthIndicatorCover = currentFrameStamp + 1
-  const lengthIndicatorStrip = lengthIndicatorCover + 1
-  const horizontalScrollbar = lengthIndicatorStrip + 1
-
-  return {
-    scrollableArea,
-    rightOverlay,
-    rightBackground,
-    seeker,
-    horizontalScrollbar,
-    currentFrameStamp,
-    lengthIndicatorCover,
-    lengthIndicatorStrip,
+  const s = {
+    rightBackground: 0,
+    scrollableArea: 0,
+    rightOverlay: 0,
+    lengthIndicatorCover: 0,
+    lengthIndicatorStrip: 0,
+    playhead: 0,
+    currentFrameStamp: 0,
+    horizontalScrollbar: 0,
   }
+
+  // sort the z-indexes
+  let i = -1
+  for (const key of Object.keys(s)) {
+    s[key as unknown as keyof typeof s] = i
+    i++
+  }
+
+  return s
 })()
 
 const Header_Container = styled(PanelDragZone)`
