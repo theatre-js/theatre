@@ -118,6 +118,7 @@ function useDragKeyframe(node: HTMLDivElement | null, props: IProps) {
     let toUnitSpace: SequenceEditorPanelLayout['scaledSpace']['toUnitSpace']
     let tempTransaction: CommitOrDiscard | undefined
     let propsAtStartOfDrag: IProps
+    let startingLayout: SequenceEditorPanelLayout
 
     let selectionDragHandlers:
       | ReturnType<DopeSheetSelection['getDragHandlers']>
@@ -148,21 +149,21 @@ function useDragKeyframe(node: HTMLDivElement | null, props: IProps) {
           selectionDragHandlers.onDrag(dx, dy, event)
           return
         }
-        const delta = toUnitSpace(dx)
+        const original =
+          propsAtStartOfDrag.trackData.keyframes[propsAtStartOfDrag.index]
+        const deltaPos = toUnitSpace(dx)
+        const newPosBeforeSnapping = Math.max(original.position + deltaPos, 0)
 
         if (tempTransaction) {
           tempTransaction.discard()
           tempTransaction = undefined
         }
         tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
-          stateEditors.coreByProject.historic.sheetsById.sequence.transformKeyframes(
+          stateEditors.coreByProject.historic.sheetsById.sequence.replaceKeyframes(
             {
               ...propsAtStartOfDrag.leaf.sheetObject.address,
               trackId: propsAtStartOfDrag.leaf.trackId,
-              keyframeIds: [propsAtStartOfDrag.keyframe.id],
-              translate: delta,
-              scale: 1,
-              origin: 0,
+              keyframes: [{...original, position: newPosBeforeSnapping}],
             },
           )
         })
