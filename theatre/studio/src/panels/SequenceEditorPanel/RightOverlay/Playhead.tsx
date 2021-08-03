@@ -43,7 +43,7 @@ const Rod = styled.div`
 
     &:after {
       position: absolute;
-      inset: -2px;
+      inset: -8px;
       display: block;
       content: ' ';
     }
