@@ -1,7 +1,7 @@
-import {voidFn} from '@theatre/shared/utils'
 import type {$FixMe} from '@theatre/shared/utils/types'
 import {useLayoutEffect, useRef} from 'react'
-import {createCursorLock} from './createCursorLock'
+import useRefAndState from '@theatre/studio/utils/useRefAndState'
+import {useCursorLock} from './PointerEventsHandler'
 
 export type UseDragOpts = {
   disabled?: boolean
@@ -15,12 +15,19 @@ export type UseDragOpts = {
 export default function useDrag(
   target: HTMLElement | SVGElement | undefined | null,
   opts: UseDragOpts,
-) {
+): [isDragging: boolean] {
   const optsRef = useRef<typeof opts>(opts)
   optsRef.current = opts
 
-  const modeRef =
-    useRef<'dragStartCalled' | 'dragging' | 'notDragging'>('notDragging')
+  const [modeRef, mode] = useRefAndState<
+    'dragStartCalled' | 'dragging' | 'notDragging'
+  >('notDragging')
+
+  useCursorLock(
+    mode === 'dragging' && typeof opts.lockCursorTo === 'string',
+    'dragging',
+    opts.lockCursorTo!,
+  )
 
   const stateRef = useRef<{
     dragHappened: boolean
@@ -38,12 +45,7 @@ export default function useDrag(
       return [event.screenX - startPos.x, event.screenY - startPos.y]
     }
 
-    let relinquishCursorLock = voidFn
-
     const dragHandler = (event: MouseEvent) => {
-      if (!stateRef.current.dragHappened && optsRef.current.lockCursorTo) {
-        relinquishCursorLock = createCursorLock(optsRef.current.lockCursorTo)
-      }
       if (!stateRef.current.dragHappened) stateRef.current.dragHappened = true
       modeRef.current = 'dragging'
 
@@ -57,8 +59,6 @@ export default function useDrag(
 
       optsRef.current.onDragEnd &&
         optsRef.current.onDragEnd(stateRef.current.dragHappened)
-      relinquishCursorLock()
-      relinquishCursorLock = voidFn
     }
 
     const addDragListeners = () => {
@@ -119,7 +119,6 @@ export default function useDrag(
       removeDragListeners()
       target.removeEventListener('mousedown', onMouseDown as $FixMe)
       target.removeEventListener('click', preventUnwantedClick as $FixMe)
-      relinquishCursorLock()
 
       if (modeRef.current !== 'notDragging') {
         optsRef.current.onDragEnd &&
@@ -128,4 +127,6 @@ export default function useDrag(
       modeRef.current = 'notDragging'
     }
   }, [target])
+
+  return [mode === 'dragging']
 }

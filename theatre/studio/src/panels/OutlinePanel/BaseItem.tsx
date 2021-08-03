@@ -5,6 +5,7 @@ import styled, {css} from 'styled-components'
 import noop from '@theatre/shared/utils/noop'
 import {transparentize, darken, opacify, lighten} from 'polished'
 import {rowBgColor} from '@theatre/studio/panels/ObjectEditorPanel/propEditors/utils/SingleRowPropEditor'
+import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 
 export const Container = styled.li<{depth: number}>`
   --depth: ${(props) => props.depth};
@@ -70,7 +71,7 @@ const Head_Label = styled.span`
   ${outlineItemFont};
 
   padding: 2px 8px;
-  pointer-events: auto;
+  ${pointerEventsAutoInNormalMode};
   position: relative;
   display: block;
   height: 13px;
@@ -96,7 +97,7 @@ const Head_Label = styled.span`
     display: block;
     content: ' ';
     z-index: 0;
-    pointer-events: auto;
+    ${pointerEventsAutoInNormalMode};
   }
 `
 

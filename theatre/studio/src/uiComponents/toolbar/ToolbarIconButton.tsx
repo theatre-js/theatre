@@ -4,11 +4,12 @@ import styled from 'styled-components'
 import type {ButtonProps} from 'reakit'
 import {outlinePanelTheme} from '@theatre/studio/panels/OutlinePanel/BaseItem'
 import {darken, opacify} from 'polished'
+import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 
 const {baseBg, baseBorderColor, baseFontColor} = outlinePanelTheme
 
 export const TheButton = styled.button`
-  pointer-events: auto;
+  ${pointerEventsAutoInNormalMode};
   position: relative;
   display: flex;
   align-items: center;

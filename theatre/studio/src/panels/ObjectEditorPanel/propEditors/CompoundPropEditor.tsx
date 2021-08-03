@@ -15,11 +15,12 @@ import {
   rowBg,
 } from './utils/SingleRowPropEditor'
 import DefaultOrStaticValueIndicator from './utils/DefaultValueIndicator'
+import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 
 const Container = styled.div`
   --step: 8px;
   --left-pad: 0px;
-  pointer-events: auto;
+  ${pointerEventsAutoInNormalMode};
 `
 
 const Header = styled.div`

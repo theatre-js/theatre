@@ -11,6 +11,7 @@ import {
   TitleBar_Piece,
   TitleBar_Punctuation,
 } from '@theatre/studio/panels/BasePanel/common'
+import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 
 const Container = styled.div`
   background-color: transparent;
@@ -30,7 +31,7 @@ const Container = styled.div`
     bottom: 0;
     right: 0;
     width: 20px;
-    pointer-events: auto;
+    ${pointerEventsAutoInNormalMode};
   }
 `
 
@@ -54,7 +55,7 @@ const Title = styled.div`
   font-weight: 500;
   font-size: 10px;
   user-select: none;
-  pointer-events: auto;
+  ${pointerEventsAutoInNormalMode};
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -84,7 +85,7 @@ const Header = styled.div`
 `
 
 const Body = styled.div`
-  pointer-events: auto;
+  ${pointerEventsAutoInNormalMode};
   position: absolute;
   top: ${headerHeight};
   left: 0;

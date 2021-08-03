@@ -1,3 +1,4 @@
+import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import getStudio from '@theatre/studio/getStudio'
 import useBoundingClientRect from '@theatre/studio/uiComponents/useBoundingClientRect'
 import transparentize from 'polished/lib/color/transparentize'
@@ -23,7 +24,7 @@ const Container = styled.ul`
   padding: 0;
   margin: 0;
   cursor: default;
-  pointer-events: all;
+  ${pointerEventsAutoInNormalMode};
   border-radius: 3px;
 `
 

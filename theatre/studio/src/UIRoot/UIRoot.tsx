@@ -11,6 +11,7 @@ import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {PortalContext} from 'reakit'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import useKeyboardShortcuts from './useKeyboardShortcuts'
+import PointerEventsHandler from '@theatre/studio/uiComponents/PointerEventsHandler'
 
 const GlobalStyle = createGlobalStyle`
   :host {
@@ -31,14 +32,13 @@ const GlobalStyle = createGlobalStyle`
   }
 `
 
-const Container = styled.div`
+const Container = styled(PointerEventsHandler)`
   z-index: 50;
   position: fixed;
   top: 0px;
   right: 0px;
   bottom: 0px;
   left: 0px;
-  pointer-events: none;
 `
 
 const PortalLayer = styled.div`

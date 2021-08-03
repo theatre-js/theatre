@@ -6,6 +6,7 @@ import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEdi
 import StampsGrid from '@theatre/studio/panels/SequenceEditorPanel/FrameGrid/StampsGrid'
 import PanelDragZone from '@theatre/studio/panels/BasePanel/PanelDragZone'
 import {attributeNameThatLocksFramestamp} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
+import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 
 export const topStripHeight = 20
 
@@ -23,7 +24,7 @@ const Container = styled(PanelDragZone)`
   box-sizing: border-box;
   background: ${topStripTheme.backgroundColor};
   border-bottom: 1px solid ${topStripTheme.borderColor};
-  pointer-events: auto;
+  ${pointerEventsAutoInNormalMode};
 `
 
 const TopStrip: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({

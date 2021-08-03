@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import {panelZIndexes} from '@theatre/studio/panels/BasePanel/common'
 import ProjectsList from './ProjectsList/ProjectsList'
+import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 
 const Container = styled.div`
   background-color: transparent;
@@ -21,7 +22,7 @@ const Container = styled.div`
     bottom: 0;
     left: 0;
     width: 20px;
-    pointer-events: auto;
+    ${pointerEventsAutoInNormalMode};
   }
 
   &:hover:before {
@@ -58,7 +59,7 @@ const Header = styled.div`
   top: 0;
   left: 0;
   width: 180px;
-  pointer-events: auto;
+  ${pointerEventsAutoInNormalMode};
 
   &:after {
     position: absolute;
@@ -78,14 +79,14 @@ const Title = styled.div`
   font-weight: 500;
   font-size: 10px;
   user-select: none;
-  pointer-events: auto;
+  ${pointerEventsAutoInNormalMode};
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 `
 
 const Body = styled.div`
-  pointer-events: auto;
+  ${pointerEventsAutoInNormalMode};
   position: absolute;
   top: ${headerHeight};
   left: 0;

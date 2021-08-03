@@ -18,6 +18,7 @@ import {
 } from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {GoChevronLeft, GoChevronRight} from 'react-icons/all'
 import LengthEditorPopover from './LengthEditorPopover'
+import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 
 const coverWidth = 1000
 
@@ -71,7 +72,7 @@ const Tooltip = styled.div`
   white-space: nowrap;
   padding: 1px 8px;
   border-radius: 0 2px 2px 0;
-  pointer-events: auto;
+  ${pointerEventsAutoInNormalMode};
   cursor: ew-resize;
   color: #464646;
   background-color: #0000004d;
@@ -89,7 +90,7 @@ const Tumb = styled.div`
   white-space: nowrap;
   padding: 1px 2px;
   border-radius: 2px;
-  pointer-events: auto;
+  ${pointerEventsAutoInNormalMode};
   justify-content: center;
   align-items: center;
   cursor: ew-resize;

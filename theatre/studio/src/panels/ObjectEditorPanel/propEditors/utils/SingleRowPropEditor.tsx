@@ -9,6 +9,7 @@ import type {useEditingToolsForPrimitiveProp} from '@theatre/studio/panels/Objec
 import {shadeToColor} from '@theatre/studio/panels/ObjectEditorPanel/propEditors/utils/useEditingToolsForPrimitiveProp'
 import styled, {css} from 'styled-components'
 import {transparentize} from 'polished'
+import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 
 export const indentationFormula = `calc(var(--left-pad) + var(--depth) * var(--step))`
 
@@ -39,7 +40,7 @@ const Row = styled.div`
   align-items: stretch;
   --right-width: 60%;
   position: relative;
-  pointer-events: auto;
+  ${pointerEventsAutoInNormalMode};
 
   ${rowBg};
 `

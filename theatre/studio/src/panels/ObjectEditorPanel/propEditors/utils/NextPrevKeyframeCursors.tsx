@@ -1,4 +1,5 @@
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
+import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import {transparentize} from 'polished'
 import React from 'react'
 import styled from 'styled-components'
@@ -75,7 +76,8 @@ const PrevOrNextButton = styled(Button)<{available: boolean}>`
     props.available
       ? nextPrevCursorsTheme.onColor
       : nextPrevCursorsTheme.offColor};
-  pointer-events: ${(props) => (props.available ? 'auto' : 'none')};
+
+  ${(props) => (props.available ? pointerEventsAutoInNormalMode : '')};
 `
 
 const Prev = styled(PrevOrNextButton)<{available: boolean}>`

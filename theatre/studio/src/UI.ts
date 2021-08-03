@@ -9,7 +9,7 @@ export default class UI {
   _showing = false
   private _renderTimeout: NodeJS.Timer | undefined = undefined
   private _documentBodyUIIsRenderedIn: HTMLElement | undefined = undefined
-  readonly containerShadow: HTMLElement
+  readonly containerShadow: ShadowRoot & HTMLElement
 
   constructor(readonly studio: Studio) {
     // @todo we can't bootstrap theatre (as in, to design theatre using theatre), if we rely on IDed elements
@@ -29,7 +29,7 @@ export default class UI {
       // To see why I had to cast this value to HTMLElement, take a look at its
       // references. There are a few functions that actually work with a ShadowRoot
       // but are typed to accept HTMLElement
-    }) as $IntentionalAny as HTMLElement
+    }) as $IntentionalAny as ShadowRoot & HTMLElement
   }
 
   show() {

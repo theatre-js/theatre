@@ -15,6 +15,7 @@ import {
   attributeNameThatLocksFramestamp,
   useLockFrameStampPosition,
 } from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
+import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 
 const Container = styled.div<{isVisible: boolean}>`
   --thumbColor: #00e0ff;
@@ -36,6 +37,17 @@ const Rod = styled.div`
   height: calc(100% - 8px);
   border-left: 1px solid #27e0fd;
   z-index: 10;
+
+  #pointer-root.draggingpositioninsequenceeditor &:not(.seeking) {
+    pointer-events: auto;
+
+    &:after {
+      position: absolute;
+      inset: -2px;
+      display: block;
+      content: ' ';
+    }
+  }
 `
 
 const Thumb = styled.div`
@@ -47,7 +59,11 @@ const Thumb = styled.div`
   left: -2px;
   z-index: 11;
   cursor: ew-resize;
-  pointer-events: auto;
+  ${pointerEventsAutoInNormalMode};
+
+  #pointer-root.draggingpositioninsequenceeditor &:not(.seeking) {
+    pointer-events: auto;
+  }
 
   &:before {
     position: absolute;
@@ -148,10 +164,29 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
         scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
         setIsSeeking(true)
       },
-      onDrag(dx) {
+      onDrag(dx, _, event) {
         const deltaPos = scaledSpaceToUnitSpace(dx)
-        const newPos = clamp(posBeforeSeek + deltaPos, 0, sequence.length)
-        sequence.position = newPos
+        const unsnappedPos = clamp(posBeforeSeek + deltaPos, 0, sequence.length)
+
+        let newPosition = unsnappedPos
+
+        const snapTarget = event
+          .composedPath()
+          .find(
+            (el): el is Element =>
+              el instanceof Element &&
+              el !== thumbNode &&
+              el.hasAttribute('data-pos'),
+          )
+
+        if (snapTarget) {
+          const snapPos = parseFloat(snapTarget.getAttribute('data-pos')!)
+          if (isFinite(snapPos)) {
+            newPosition = snapPos
+          }
+        }
+
+        sequence.position = newPosition
       },
       onDragEnd() {
         setIsSeeking(false)
@@ -186,7 +221,10 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
         className={isSeeking ? 'seeking' : ''}
         {...{[attributeNameThatLocksFramestamp]: 'hide'}}
       >
-        <Thumb ref={thumbRef as $IntentionalAny}>
+        <Thumb
+          ref={thumbRef as $IntentionalAny}
+          data-pos={posInUnitSpace.toFixed(3)}
+        >
           <RoomToClick room={8} />
           <Squinch />
           <Tooltip>
@@ -196,7 +234,10 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
           </Tooltip>
         </Thumb>
 
-        <Rod />
+        <Rod
+          data-pos={posInUnitSpace.toFixed(3)}
+          className={isSeeking ? 'seeking' : ''}
+        />
       </Container>
     )
   }, [layoutP])

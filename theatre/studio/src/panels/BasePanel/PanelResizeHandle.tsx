@@ -7,11 +7,12 @@ import {lighten} from 'polished'
 import React, {useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
 import {panelDimsToPanelPosition, usePanel} from './BasePanel'
+import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 
 const Base = styled.div`
   position: absolute;
   z-index: 10;
-  pointer-events: auto;
+  ${pointerEventsAutoInNormalMode};
   &:after {
     position: absolute;
     top: -2px;

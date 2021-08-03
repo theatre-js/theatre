@@ -9,6 +9,8 @@ import {clamp, mapValues} from 'lodash-es'
 import React, {useLayoutEffect, useMemo} from 'react'
 import styled from 'styled-components'
 import {useReceiveVerticalWheelEvent} from '@theatre/studio/panels/SequenceEditorPanel/VerticalScrollContainer'
+import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
+import {useCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
 
 const Container = styled.div`
   position: absolute;
@@ -16,7 +18,7 @@ const Container = styled.div`
   right: 0;
   overflow-x: scroll;
   overflow-y: hidden;
-  pointer-events: all;
+  ${pointerEventsAutoInNormalMode};
 
   // hide the scrollbar on Gecko
   scrollbar-width: none;
@@ -87,16 +89,42 @@ function useDragHandlers(
     const setIsSeeking = val(layoutP.seeker.setIsSeeking)
 
     return {
-      onDrag(dx: number) {
+      onDrag(dx: number, _, event) {
         const deltaPos = scaledSpaceToUnitSpace(dx)
-        const newPos = clamp(posBeforeSeek + deltaPos, 0, sequence.length)
-        sequence.position = newPos
+        const unsnappedPos = clamp(posBeforeSeek + deltaPos, 0, sequence.length)
+
+        let newPosition = unsnappedPos
+
+        const snapTarget = event.composedPath().find(
+          (el): el is Element =>
+            el instanceof Element &&
+            // el !== thumbNode &&
+            el.hasAttribute('data-pos'),
+        )
+
+        if (snapTarget) {
+          const snapPos = parseFloat(snapTarget.getAttribute('data-pos')!)
+
+          if (isFinite(snapPos)) {
+            newPosition = snapPos
+          }
+        }
+
+        sequence.position = newPosition
       },
       onDragStart(event) {
         if (event.target instanceof HTMLInputElement) return false
         if (event.shiftKey || event.altKey || event.ctrlKey || event.metaKey) {
           return false
         }
+        if (
+          event
+            .composedPath()
+            .some((el) => el instanceof HTMLElement && el.draggable === true)
+        ) {
+          return false
+        }
+
         const initialPositionInClippedSpace =
           event.clientX - containerEl!.getBoundingClientRect().left
 
@@ -114,11 +142,12 @@ function useDragHandlers(
       onDragEnd() {
         setIsSeeking(false)
       },
-      lockCursorTo: 'ew-resize',
     }
   }, [layoutP, containerEl])
 
-  useDrag(containerEl, handlers)
+  const [isDragigng] = useDrag(containerEl, handlers)
+
+  useCursorLock(isDragigng, 'draggingPositionInSequenceEditor', 'ew-resize')
 }
 
 function useHandlePanAndZoom(
@@ -201,13 +230,17 @@ function useUpdateScrollFromClippedSpaceRange(
       return rangeStartInScaledSpace
     })
 
-    const untap = d.changesWithoutValues().tap(() => {
+    const update = () => {
       const rangeStartInScaledSpace = d.getValue()
-
       node.scrollLeft = rangeStartInScaledSpace
-    })
+    }
+    const untap = d.changesWithoutValues().tap(update)
+
+    update()
+    const timeout = setTimeout(update, 100)
 
     return () => {
+      clearTimeout(timeout)
       untap()
     }
   }, [layoutP, node])

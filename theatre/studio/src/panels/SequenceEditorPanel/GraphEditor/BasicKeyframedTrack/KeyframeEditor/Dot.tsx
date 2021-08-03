@@ -12,6 +12,8 @@ import type KeyframeEditor from './KeyframeEditor'
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
 import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {attributeNameThatLocksFramestamp} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
+import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
+import {useCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
 
 export const dotSize = 6
 
@@ -28,12 +30,22 @@ const HitZone = styled.circle`
   vector-effect: non-scaling-stroke;
   r: 6px;
   fill: transparent;
-  cursor: move;
-  pointer-events: all;
-  &:hover {
-  }
+  ${pointerEventsAutoInNormalMode};
+
   &:hover + ${Circle} {
     r: 6px;
+  }
+
+  #pointer-root.normal & {
+    cursor: move;
+  }
+
+  #pointer-root.draggingpositioninsequenceeditor & {
+    pointer-events: auto;
+  }
+
+  &.beingDragged {
+    pointer-events: none !important;
   }
 `
 
@@ -47,7 +59,7 @@ const Dot: React.FC<IProps> = (props) => {
   const next = trackData.keyframes[index + 1]
 
   const [contextMenu] = useKeyframeContextMenu(node, props)
-  useDragKeyframe(node, props)
+  const isDragging = useDragKeyframe(node, props)
 
   const cyInExtremumSpace = props.extremumSpace.fromValueSpace(cur.value)
 
@@ -63,6 +75,8 @@ const Dot: React.FC<IProps> = (props) => {
         {...{
           [attributeNameThatLocksFramestamp]: cur.position.toFixed(3),
         }}
+        data-pos={cur.position.toFixed(3)}
+        className={isDragging ? 'beingDragged' : ''}
       />
       <Circle
         style={{
@@ -78,7 +92,10 @@ const Dot: React.FC<IProps> = (props) => {
 
 export default Dot
 
-function useDragKeyframe(node: SVGCircleElement | null, _props: IProps): void {
+function useDragKeyframe(
+  node: SVGCircleElement | null,
+  _props: IProps,
+): boolean {
   const [isDragging, setIsDragging] = useState(false)
   useLockFrameStampPosition(isDragging, _props.keyframe.position)
   const propsRef = useRef(_props)
@@ -203,6 +220,8 @@ function useDragKeyframe(node: SVGCircleElement | null, _props: IProps): void {
   }, [])
 
   useDrag(node, gestureHandlers)
+  useCursorLock(isDragging, 'draggingPositionInSequenceEditor', 'ew-resize')
+  return isDragging
 }
 
 function useKeyframeContextMenu(node: SVGCircleElement | null, props: IProps) {

@@ -11,6 +11,7 @@ import React, {useMemo, useRef} from 'react'
 import styled from 'styled-components'
 import {transformBox} from './Curve'
 import type KeyframeEditor from './KeyframeEditor'
+import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 
 export const dotSize = 6
 
@@ -28,7 +29,7 @@ const HitZone = styled.circle`
   r: 6px;
   fill: transparent;
   cursor: move;
-  pointer-events: all;
+  ${pointerEventsAutoInNormalMode};
   &:hover {
   }
   &:hover + ${Circle} {

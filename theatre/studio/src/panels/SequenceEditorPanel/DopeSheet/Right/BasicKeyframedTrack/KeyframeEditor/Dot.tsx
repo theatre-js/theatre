@@ -14,6 +14,7 @@ import styled from 'styled-components'
 import type KeyframeEditor from './KeyframeEditor'
 import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {attributeNameThatLocksFramestamp} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
+import {useCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
 
 export const dotSize = 6
 const hitZoneSize = 12
@@ -46,10 +47,20 @@ const Square = styled.div<{isSelected: boolean}>`
 const HitZone = styled.div`
   position: absolute;
   ${dims(hitZoneSize)};
+
   z-index: 1;
+
   cursor: ew-resize;
 
-  &:hover + ${Square} {
+  #pointer-root.draggingpositioninsequenceeditor & {
+    pointer-events: auto;
+  }
+
+  &.beingDragged {
+    pointer-events: none !important;
+  }
+
+  &:hover + ${Square}, &.beingDragged + ${Square} {
     ${dims(dotSize + 5)}
   }
 `
@@ -60,7 +71,7 @@ const Dot: React.FC<IProps> = (props) => {
   const [ref, node] = useRefAndState<HTMLDivElement | null>(null)
 
   const [contextMenu] = useKeyframeContextMenu(node, props)
-  useDragKeyframe(node, props)
+  const [isDragging] = useDragKeyframe(node, props)
 
   return (
     <>
@@ -71,6 +82,7 @@ const Dot: React.FC<IProps> = (props) => {
           [attributeNameThatLocksFramestamp]:
             props.keyframe.position.toFixed(3),
         }}
+        className={isDragging ? 'beingDragged' : ''}
       />
       <Square isSelected={!!props.selection} />
       {contextMenu}
@@ -107,7 +119,10 @@ function useKeyframeContextMenu(node: HTMLDivElement | null, props: IProps) {
   })
 }
 
-function useDragKeyframe(node: HTMLDivElement | null, props: IProps) {
+function useDragKeyframe(
+  node: HTMLDivElement | null,
+  props: IProps,
+): [isDragging: boolean] {
   const [isDragging, setIsDragging] = useState(false)
   useLockFrameStampPosition(isDragging, props.keyframe.position)
 
@@ -125,7 +140,6 @@ function useDragKeyframe(node: HTMLDivElement | null, props: IProps) {
       | undefined
 
     return {
-      lockCursorTo: 'ew-resize',
       onDragStart(event) {
         setIsDragging(true)
         if (propsRef.current.selection) {
@@ -149,10 +163,29 @@ function useDragKeyframe(node: HTMLDivElement | null, props: IProps) {
           selectionDragHandlers.onDrag(dx, dy, event)
           return
         }
+
         const original =
           propsAtStartOfDrag.trackData.keyframes[propsAtStartOfDrag.index]
         const deltaPos = toUnitSpace(dx)
         const newPosBeforeSnapping = Math.max(original.position + deltaPos, 0)
+
+        let newPosition = newPosBeforeSnapping
+
+        const snapTarget = event
+          .composedPath()
+          .find(
+            (el): el is Element =>
+              el instanceof Element &&
+              el !== node &&
+              el.hasAttribute('data-pos'),
+          )
+
+        if (snapTarget) {
+          const snapPos = parseFloat(snapTarget.getAttribute('data-pos')!)
+          if (isFinite(snapPos)) {
+            newPosition = snapPos
+          }
+        }
 
         if (tempTransaction) {
           tempTransaction.discard()
@@ -163,7 +196,7 @@ function useDragKeyframe(node: HTMLDivElement | null, props: IProps) {
             {
               ...propsAtStartOfDrag.leaf.sheetObject.address,
               trackId: propsAtStartOfDrag.leaf.trackId,
-              keyframes: [{...original, position: newPosBeforeSnapping}],
+              keyframes: [{...original, position: newPosition}],
             },
           )
         })
@@ -191,4 +224,8 @@ function useDragKeyframe(node: HTMLDivElement | null, props: IProps) {
   }, [])
 
   useDrag(node, gestureHandlers)
+
+  useCursorLock(isDragging, 'draggingPositionInSequenceEditor', 'ew-resize')
+
+  return [isDragging]
 }

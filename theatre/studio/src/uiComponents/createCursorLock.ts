@@ -1,18 +1,19 @@
-export function createCursorLock(cursor: string) {
-  const el = document.createElement('div')
-  el.style.cssText = `
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 9999999;`
+// import getStudio from '@theatre/studio/getStudio'
 
-  el.style.cursor = cursor
-  document.body.appendChild(el)
-  const relinquish = () => {
-    document.body.removeChild(el)
-  }
+// export function createCursorLock(cursor: string) {
+//   const el = getStudio()!.ui.containerShadow.getElementById(
+//     'pointer-events-root',
+//   )! as HTMLDivElement
 
-  return relinquish
-}
+//   el.style.cursor = cursor
+//   el.classList.remove('pointer-events-mode-normal')
+//   el.classList.add('pointer-events-mode-locked-for-drag')
+//   const relinquish = () => {
+//     el.style.cursor = ''
+//     el.classList.add('pointer-events-mode-normal')
+//     el.classList.remove('pointer-events-mode-locked-for-drag')
+//   }
+
+//   return relinquish
+// }
+export {}

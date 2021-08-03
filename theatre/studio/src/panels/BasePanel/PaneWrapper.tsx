@@ -77,8 +77,28 @@ const ClosePanelButton = styled.button`
   }
 `
 
+/**
+ * The &:after part blocks pointer events from reaching the content of the
+ * pane when a drag gesture is active in theatre's UI. It's a hack and its downside
+ * is that pane content cannot interact with the rest of theatre's UI while a drag
+ * gesture is active.
+ * @todo find a less hacky way?
+ */
 const F2 = styled(F2Impl)`
   position: relative;
+
+  &:after {
+    z-index: 10;
+    position: absolute;
+    inset: 0;
+    display: block;
+    content: ' ';
+    pointer-events: none;
+
+    #pointer-root:not(.normal) & {
+      pointer-events: auto;
+    }
+  }
 `
 
 const ErrorContainer = styled.div`
