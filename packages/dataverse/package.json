@@ -1,6 +1,6 @@
 {
   "name": "@theatre/dataverse",
-  "version": "1.0.0-dev.2",
+  "version": "0.4.0-dev.4",
   "license": "Apache-2.0",
   "author": {
     "name": "Aria Minaei",
@@ -31,7 +31,8 @@
     "typecheck": "yarn run build",
     "build": "run-s build:ts build:js",
     "build:ts": "tsc --build ./tsconfig.json",
-    "build:js": "node -r esbuild-register ./devEnv/build.ts"
+    "build:js": "node -r esbuild-register ./devEnv/build.ts",
+    "prepublish": "node ../../devEnv/ensurePublishing.js"
   },
   "devDependencies": {
     "@types/jest": "^26.0.23",

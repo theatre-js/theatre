@@ -1,6 +1,6 @@
 {
   "name": "@theatre/core",
-  "version": "0.4.0-dev.3",
+  "version": "0.4.0-dev.4",
   "license": "Apache-2.0",
   "description": "Motion design editor for the web",
   "repository": {
@@ -36,7 +36,7 @@
     "dist/index.d.ts"
   ],
   "scripts": {
-    "prepublish": "cd .. && yarn run ensure-publishing"
+    "prepublish": "node ../../devEnv/ensurePublishing.js"
   },
   "sideEffects": true,
   "dependencies": {

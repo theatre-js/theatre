@@ -1,6 +1,7 @@
 {
   "name": "theatre-monorepo",
   "license": "Apache-2.0",
+  "version": "0.4.0-dev.4",
   "workspaces": [
     "packages/*",
     "theatre"
@@ -9,6 +10,7 @@
     "typecheck": "tsc --build ./devEnv/typecheck-all-projects/tsconfig.all.json",
     "test": "jest",
     "postinstall": "husky install",
+    "deploy": "zx devEnv/deploy.mjs",
     "lint:all": "eslint . --ext ts,tsx --ignore-path=.gitignore --rulesdir ./devEnv/eslint/rules"
   },
   "lint-staged": {
@@ -38,7 +40,8 @@
     "lerna": "^4.0.0",
     "lint-staged": "^11.0.0",
     "prettier": "^2.3.1",
-    "typescript": "^4.3.2"
+    "typescript": "^4.3.2",
+    "zx": "^2.0.0"
   },
   "dependencies": {
     "node-gyp": "^8.1.0"

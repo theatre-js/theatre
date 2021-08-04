@@ -1,6 +1,6 @@
 {
   "name": "@theatre/plugin-r3f",
-  "version": "1.0.0-dev.1",
+  "version": "0.4.0-dev.4",
   "license": "Apache-2.0",
   "authors": [
     {
@@ -27,7 +27,8 @@
   "scripts": {
     "prepack": "yarn run build",
     "typecheck": "yarn run build",
-    "build": "tsc --build ./tsconfig.json"
+    "build": "tsc --build ./tsconfig.json",
+    "prepublish": "node ../../devEnv/ensurePublishing.js"
   },
   "devDependencies": {
     "@types/jest": "^26.0.23",
