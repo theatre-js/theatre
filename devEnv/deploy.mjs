@@ -1,5 +1,6 @@
 import path from 'path'
 import {writeFileSync} from 'fs'
+import {keyBy} from 'lodash-es'
 
 /**
  * This script publishes all packages to npm.
@@ -7,34 +8,85 @@ import {writeFileSync} from 'fs'
  * It assigns the same version number to all packages (like lerna's fixed mode).
  **/
 // It's written in .mjs because I kept running into issues with zx+typescript
+const packagesToBuild = [
+  'theatre',
+  '@theatre/dataverse',
+  '@theatre/dataverse-react',
+  '@theatre/plugin-r3f',
+]
+
+const packagesToPublish = [
+  '@theatre/core',
+  '@theatre/studio',
+  '@theatre/dataverse',
+  '@theatre/dataverse-react',
+  '@theatre/plugin-r3f',
+]
+
 ;(async function () {
   // our packages will check for this env variable to make sure their
   // prepublish script is only called from the `$ cd /path/to/monorepo; yarn run deploy`
   process.env.THEATRE_IS_PUBLISHING = true
 
-  await $`yarn run typecheck`
+  $.verbose = false
+  const gitTags = (await $`git tag --list`).toString().split('\n')
 
-  syncVersionNumbers()
-
-  return
-
-  await Promise.all(
-    [
-      'theatre',
-      '@theatre/dataverse',
-      '@theatre/dataverse-react',
-      '@theatre/plugin-r3f',
-    ].map((workspace) => $`yarn workspace ${workspace} run build`),
+  const allPackages = keyBy(
+    (await $`yarn workspaces list --json`)
+      .toString()
+      .split('\n')
+      .filter((s) => s.trim().length > 0)
+      .map((s) => JSON.parse(s)),
+    'name',
   )
 
+  if ((await $`git status -s`).toString().length > 0) {
+    console.error(`Git working directory contains uncommitted changes:`)
+    $.verbose = true
+    await $`git status -s`
+    console.log('Commit/stash them and try again.')
+    process.exit(1)
+  }
+
+  $.verbose = true
+  console.log('Running a typecheck and lint pass')
+  await Promise.all([
+    $`yarn run typecheck`,
+    $`yarn run lint:all --max-warnings 0`,
+  ])
+
+  const [didOverwriteVersions, monorepoVersion] = syncVersionNumbers()
+
+  console.log('Building all packages')
   await Promise.all(
-    [
-      '@theatre/core',
-      '@theatre/studio',
-      '@theatre/dataverse',
-      '@theatre/dataverse-react',
-      '@theatre/plugin-r3f',
-    ].map(
+    packagesToBuild.map(
+      (workspace) => $`yarn workspace ${workspace} run build`,
+    ),
+  )
+
+  console.log(
+    'Checking if the build produced artifacts that must first be comitted to git',
+  )
+  $.verbose = false
+  if ((await $`git status -s`).toString().length > 0) {
+    console.error(`Git directory contains uncommitted changes.`)
+    $.verbose = true
+    await $`git status -s`
+    process.exit(1)
+  }
+
+  $.verbose = true
+
+  if (!gitTags.some((tag) => tag === monorepoVersion)) {
+    console.log(
+      `No git tag found for version "${monorepoVersion}". Run \`$ git tag ${monorepoVersion}\` and try again.`,
+    )
+    process.exit()
+  }
+
+  console.log('Publishing to npm')
+  await Promise.all(
+    packagesToPublish.map(
       (workspace) => $`yarn workspace ${workspace} npm publish --access public`,
     ),
   )
@@ -55,9 +107,9 @@ function syncVersionNumbers() {
 
   const monorepoVersion = require('../package.json').version
 
-  console.log(
-    `sync-versions: Setting versions of all packages to ${monorepoVersion}`,
-  )
+  console.log(`Syncing packages versions to ${monorepoVersion}`)
+
+  let didOverwrite = false
 
   for (const packagePathRelativeFromRoot of workspaces) {
     const pathToPackage = path.resolve(
@@ -70,6 +122,7 @@ function syncVersionNumbers() {
     const original = require(pathToPackage)
 
     if (original.version !== monorepoVersion) {
+      didOverwrite = true
       console.log(`Setting version of ${original.name} to ${monorepoVersion}`)
 
       const newJson = {...original}
@@ -80,5 +133,5 @@ function syncVersionNumbers() {
       )
     }
   }
-  console.log('sync-versions: Done.')
+  return [didOverwrite, monorepoVersion]
 }
