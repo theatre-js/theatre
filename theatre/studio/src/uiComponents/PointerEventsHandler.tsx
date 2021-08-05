@@ -18,13 +18,12 @@ const Container = styled.div`
   }
 `
 
-const CursorOverride = styled.div<{cursor: null | string}>`
+const CursorOverride = styled.div`
   position: absolute;
   inset: 0;
   pointer-events: none;
 
   #pointer-root:not(.normal) > & {
-    cursor: ${(props) => props.cursor ?? 'default'};
     pointer-events: auto;
   }
 `
@@ -55,10 +54,12 @@ const PointerEventsHandler: React.FC<{
     }
   }, [])
 
+  console.log(locks[0]?.cursor)
+
   return (
     <context.Provider value={contextValue}>
       <Container id={elementId} className={locks[0]?.className ?? 'normal'}>
-        <CursorOverride cursor={locks[0]?.cursor}>
+        <CursorOverride style={{cursor: locks[0]?.cursor ?? ''}}>
           {props.children}
         </CursorOverride>
       </Container>
