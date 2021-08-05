@@ -1,5 +1,5 @@
 import path from 'path'
-import {writeFileSync} from 'fs'
+import {readFileSync, writeFileSync} from 'fs'
 import {keyBy} from 'lodash-es'
 
 /**
@@ -23,6 +23,19 @@ const packagesToPublish = [
   '@theatre/plugin-r3f',
 ]
 
+/**
+ * All these packages will have the same version from monorepo/package.json
+ */
+const packagesWhoseVersionsShouldBump = [
+  '.',
+  'theatre',
+  'theatre/core',
+  'theatre/studio',
+  'packages/dataverse',
+  'packages/dataverse-react',
+  'packages/plugin-r3f',
+]
+
 ;(async function () {
   // our packages will check for this env variable to make sure their
   // prepublish script is only called from the `$ cd /path/to/monorepo; yarn run deploy`
@@ -31,16 +44,28 @@ const packagesToPublish = [
   $.verbose = false
   const gitTags = (await $`git tag --list`).toString().split('\n')
 
-  // const version = argv._[argv._.length - 1]
-  // if (typeof version !== 'string') {
-  //   console.error(
-  //     `You need to specify a version, like: $ yarn deploy 1.2.0-rc.4`,
-  //   )
-  //   process.exit(1)
-  // } else if (!version.match(/^[0-9]+\.[0-9]+\.[0-9]+(\-(dev|rc)\.[0-9])?$/)) {
-  //   console.error(`Use a semver version, like 1.2.3-rc.4. Provided: ${version}`)
-  //   process.exit(1)
-  // }
+  const version = argv._[argv._.length - 1]
+  if (typeof version !== 'string') {
+    console.error(
+      `You need to specify a version, like: $ yarn deploy 1.2.0-rc.4`,
+    )
+    process.exit(1)
+  } else if (!version.match(/^[0-9]+\.[0-9]+\.[0-9]+(\-(dev|rc)\.[0-9])?$/)) {
+    console.error(`Use a semver version, like 1.2.3-rc.4. Provided: ${version}`)
+    process.exit(1)
+  }
+
+  const previousVersion = require('../package.json').version
+
+  if (version === previousVersion) {
+    console.error(`Version ${version} is already assigned to root/package.json`)
+    process.exit(1)
+  }
+
+  if (gitTags.some((tag) => tag === version)) {
+    console.error(`There is already a git tag for version ${version}`)
+    process.exit(1)
+  }
 
   const allPackages = keyBy(
     (await $`yarn workspaces list --json`)
@@ -70,7 +95,8 @@ const packagesToPublish = [
     console.log('Skipping typecheck and lint')
   }
 
-  const [didOverwriteVersions, monorepoVersion] = syncVersionNumbers(version)
+  console.log('Assigning versions')
+  assignVersions(version)
 
   console.log('Building all packages')
   await Promise.all(
@@ -79,25 +105,37 @@ const packagesToPublish = [
     ),
   )
 
+  // temporarily rolling back the version assignments to make sure they don't show
+  // up in `$ git status`. (would've been better to just ignore hese particular changes
+  // but i'm lazy)
+  await restoreVersions()
+
   console.log(
     'Checking if the build produced artifacts that must first be comitted to git',
   )
   $.verbose = false
   if ((await $`git status -s`).toString().length > 0) {
-    console.error(`Git directory contains uncommitted changes.`)
     $.verbose = true
     await $`git status -s`
+    console.error(`Git directory contains uncommitted changes.`)
     process.exit(1)
   }
 
   $.verbose = true
 
-  if (!gitTags.some((tag) => tag === monorepoVersion)) {
-    console.log(
-      `No git tag found for version "${monorepoVersion}". Run \`$ git tag ${monorepoVersion}\` and try again.`,
-    )
-    process.exit()
-  }
+  assignVersions(version)
+  console.log('Committing/tagging')
+
+  await $`git add .`
+  await $`git commit -m "${version}"`
+  await $`git tag ${version}`
+
+  // if (!gitTags.some((tag) => tag === version)) {
+  //   console.log(
+  //     `No git tag found for version "${version}". Run \`$ git tag ${version}\` and try again.`,
+  //   )
+  //   process.exit()
+  // }
 
   console.log('Publishing to npm')
   await Promise.all(
@@ -107,26 +145,8 @@ const packagesToPublish = [
   )
 })()
 
-function syncVersionNumbers() {
-  /**
-   * All these packages will have the same version from monorepo/package.json
-   */
-  const workspaces = [
-    'theatre',
-    'theatre/core',
-    'theatre/studio',
-    'packages/dataverse',
-    'packages/dataverse-react',
-    'packages/plugin-r3f',
-  ]
-
-  const monorepoVersion = require('../package.json').version
-
-  console.log(`Syncing packages versions to ${monorepoVersion}`)
-
-  let didOverwrite = false
-
-  for (const packagePathRelativeFromRoot of workspaces) {
+function assignVersions(monorepoVersion) {
+  for (const packagePathRelativeFromRoot of packagesWhoseVersionsShouldBump) {
     const pathToPackage = path.resolve(
       __dirname,
       '../',
@@ -134,19 +154,26 @@ function syncVersionNumbers() {
       './package.json',
     )
 
-    const original = require(pathToPackage)
+    const original = JSON.parse(
+      readFileSync(pathToPackage, {encoding: 'utf-8'}),
+    )
 
-    if (original.version !== monorepoVersion) {
-      didOverwrite = true
-      console.log(`Setting version of ${original.name} to ${monorepoVersion}`)
-
-      const newJson = {...original}
-      newJson.version = monorepoVersion
-      writeFileSync(
-        path.join(pathToPackage),
-        JSON.stringify(newJson, undefined, 2),
-      )
-    }
+    const newJson = {...original, version: monorepoVersion}
+    writeFileSync(
+      path.join(pathToPackage),
+      JSON.stringify(newJson, undefined, 2),
+      {encoding: 'utf-8'},
+    )
   }
-  return [didOverwrite, monorepoVersion]
+}
+
+async function restoreVersions() {
+  const wasVerbose = $.verbose
+  $.verbose = false
+  for (const packagePathRelativeFromRoot of packagesWhoseVersionsShouldBump) {
+    const pathToPackageInGit = packagePathRelativeFromRoot + '/package.json'
+
+    await $`git checkout ${pathToPackageInGit}`
+  }
+  $.verbose = wasVerbose
 }
