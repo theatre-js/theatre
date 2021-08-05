@@ -74,8 +74,8 @@ export default function UIRoot() {
           <GlobalStyle />
           <ProvideTheme>
             <PortalContext.Provider value={portalLayer}>
-              <PortalLayer ref={portalLayerRef} />
               <Container>
+                <PortalLayer ref={portalLayerRef} />
                 {shouldShowGlobalToolbar && <GlobalToolbar />}
                 {shouldShowTrigger && <TheTrigger />}
                 {shouldShowPanels && <PanelsRoot />}

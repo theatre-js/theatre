@@ -1,13 +1,14 @@
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
-import getStudio from '@theatre/studio/getStudio'
 import useBoundingClientRect from '@theatre/studio/uiComponents/useBoundingClientRect'
 import transparentize from 'polished/lib/color/transparentize'
 import type {ElementType} from 'react'
+import {useContext} from 'react'
 import React, {useLayoutEffect, useState} from 'react'
 import {createPortal} from 'react-dom'
 import useWindowSize from 'react-use/esm/useWindowSize'
 import styled from 'styled-components'
 import Item, {height as itemHeight} from './Item'
+import {PortalContext} from 'reakit'
 
 const minWidth = 190
 
@@ -91,6 +92,7 @@ const RightClickMenu: React.FC<{
       window.removeEventListener('mousemove', onMouseMove)
     }
   }, [rect, container, props.rightClickPoint, windowSize, props.onRequestClose])
+  const portalLayer = useContext(PortalContext)
 
   const items = Array.isArray(props.items) ? props.items : props.items()
 
@@ -109,7 +111,7 @@ const RightClickMenu: React.FC<{
         />
       ))}
     </Container>,
-    getStudio()!.ui.containerShadow,
+    portalLayer!,
   )
 }
 
