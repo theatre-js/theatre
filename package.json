@@ -1,7 +1,7 @@
 {
   "name": "theatre-monorepo",
   "license": "Apache-2.0",
-  "version": "0.4.0-dev.4",
+  "version": "0.4.0-dev.5",
   "workspaces": [
     "packages/*",
     "theatre"

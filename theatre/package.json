@@ -1,7 +1,7 @@
 {
   "name": "theatre",
   "private": true,
-  "version": "0.4.0-dev.4",
+  "version": "0.4.0-dev.5",
   "workspaces": [
     "./shared",
     "./core",
