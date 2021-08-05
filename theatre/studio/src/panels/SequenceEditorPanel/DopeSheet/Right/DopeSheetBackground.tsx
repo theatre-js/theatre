@@ -8,11 +8,10 @@ import React from 'react'
 import styled from 'styled-components'
 import FrameGrid from '@theatre/studio/panels/SequenceEditorPanel/FrameGrid/FrameGrid'
 
-const Container = styled.div<{width: number}>`
+const Container = styled.div`
   position: absolute;
   top: 0;
   right: 0;
-  width: ${(props) => props.width};
   bottom: 0;
   z-index: ${() => zIndexes.rightBackground};
   overflow: hidden;
@@ -27,7 +26,7 @@ const DopeSheetBackground: React.FC<{
   const height = useVal(layoutP.panelDims.height)
 
   return (
-    <Container width={width}>
+    <Container style={{width: width + 'px'}}>
       <FrameGrid width={width} height={height} layoutP={layoutP} />
     </Container>
   )

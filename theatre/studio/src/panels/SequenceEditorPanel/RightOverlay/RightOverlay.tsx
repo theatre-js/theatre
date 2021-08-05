@@ -11,11 +11,10 @@ import HorizontalScrollbar from './HorizontalScrollbar'
 import Playhead from './Playhead'
 import TopStrip from './TopStrip'
 
-const Container = styled.div<{width: number}>`
+const Container = styled.div`
   position: absolute;
   top: 0;
   right: 0;
-  width: ${(props) => props.width}px;
   bottom: 0;
   z-index: ${() => zIndexes.rightOverlay};
   overflow: visible;
@@ -29,7 +28,7 @@ const RightOverlay: React.FC<{
     const width = val(layoutP.rightDims.width)
 
     return (
-      <Container width={width}>
+      <Container style={{width: width + 'px'}}>
         <Playhead layoutP={layoutP} />
         <HorizontalScrollbar layoutP={layoutP} />
         <FrameStamp layoutP={layoutP} />
