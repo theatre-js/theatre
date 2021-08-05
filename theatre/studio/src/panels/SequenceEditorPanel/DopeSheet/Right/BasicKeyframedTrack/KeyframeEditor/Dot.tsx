@@ -52,7 +52,7 @@ const HitZone = styled.div`
 
   cursor: ew-resize;
 
-  #pointer-root.draggingpositioninsequenceeditor & {
+  #pointer-root.draggingPositionInSequenceEditor & {
     pointer-events: auto;
   }
 

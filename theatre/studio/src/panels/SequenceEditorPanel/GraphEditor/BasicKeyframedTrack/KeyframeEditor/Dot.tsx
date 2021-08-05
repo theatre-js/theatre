@@ -40,7 +40,7 @@ const HitZone = styled.circle`
     cursor: move;
   }
 
-  #pointer-root.draggingpositioninsequenceeditor & {
+  #pointer-root.draggingPositionInSequenceEditor & {
     pointer-events: auto;
   }
 

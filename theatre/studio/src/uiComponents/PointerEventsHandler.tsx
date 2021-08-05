@@ -54,8 +54,6 @@ const PointerEventsHandler: React.FC<{
     }
   }, [])
 
-  console.log(locks[0]?.cursor)
-
   return (
     <context.Provider value={contextValue}>
       <Container id={elementId} className={locks[0]?.className ?? 'normal'}>

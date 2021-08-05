@@ -38,7 +38,7 @@ const Rod = styled.div`
   border-left: 1px solid #27e0fd;
   z-index: 10;
 
-  #pointer-root.draggingpositioninsequenceeditor &:not(.seeking) {
+  #pointer-root.draggingPositionInSequenceEditor &:not(.seeking) {
     pointer-events: auto;
 
     &:after {
@@ -61,7 +61,7 @@ const Thumb = styled.div`
   cursor: ew-resize;
   ${pointerEventsAutoInNormalMode};
 
-  #pointer-root.draggingpositioninsequenceeditor &:not(.seeking) {
+  #pointer-root.draggingPositionInSequenceEditor &:not(.seeking) {
     pointer-events: auto;
   }
 
