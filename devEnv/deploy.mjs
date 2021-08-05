@@ -31,6 +31,17 @@ const packagesToPublish = [
   $.verbose = false
   const gitTags = (await $`git tag --list`).toString().split('\n')
 
+  // const version = argv._[argv._.length - 1]
+  // if (typeof version !== 'string') {
+  //   console.error(
+  //     `You need to specify a version, like: $ yarn deploy 1.2.0-rc.4`,
+  //   )
+  //   process.exit(1)
+  // } else if (!version.match(/^[0-9]+\.[0-9]+\.[0-9]+(\-(dev|rc)\.[0-9])?$/)) {
+  //   console.error(`Use a semver version, like 1.2.3-rc.4. Provided: ${version}`)
+  //   process.exit(1)
+  // }
+
   const allPackages = keyBy(
     (await $`yarn workspaces list --json`)
       .toString()
@@ -49,13 +60,17 @@ const packagesToPublish = [
   }
 
   $.verbose = true
-  console.log('Running a typecheck and lint pass')
-  await Promise.all([
-    $`yarn run typecheck`,
-    $`yarn run lint:all --max-warnings 0`,
-  ])
+  if (argv['skip-lint'] !== true) {
+    console.log('Running a typecheck and lint pass')
+    await Promise.all([
+      $`yarn run typecheck`,
+      $`yarn run lint:all --max-warnings 0`,
+    ])
+  } else {
+    console.log('Skipping typecheck and lint')
+  }
 
-  const [didOverwriteVersions, monorepoVersion] = syncVersionNumbers()
+  const [didOverwriteVersions, monorepoVersion] = syncVersionNumbers(version)
 
   console.log('Building all packages')
   await Promise.all(
