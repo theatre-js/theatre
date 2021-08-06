@@ -3720,8 +3720,7 @@ __metadata:
   dependencies:
     "@react-three/drei": ^7.2.2
     "@react-three/fiber": ^7.0.6
-    "@theatre/core": "workspace:*"
-    "@theatre/studio": "workspace:*"
+    "@theatre/dataverse-react": "workspace:*"
     "@types/jest": ^26.0.23
     "@types/lodash-es": ^4.17.4
     "@types/node": ^15.6.2
@@ -3740,6 +3739,9 @@ __metadata:
     three: ^0.130.1
     typescript: ^4.3.2
     zustand: ^3.5.1
+  peerDependencies:
+    "@theatre/core": "*"
+    "@theatre/studio": "*"
   languageName: unknown
   linkType: soft
 
