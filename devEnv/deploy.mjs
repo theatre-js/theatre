@@ -165,7 +165,7 @@ async function assignVersions(monorepoVersion) {
       JSON.stringify(newJson, undefined, 2),
       {encoding: 'utf-8'},
     )
-    await $`prettier --write ${packagePathRelativeFromRoot + './package.json'}`
+    await $`prettier --write ${packagePathRelativeFromRoot + '/package.json'}`
   }
 }
 
