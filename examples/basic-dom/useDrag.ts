@@ -37,8 +37,9 @@ export default function useDrag(
   const optsRef = useRef<typeof opts>(opts)
   optsRef.current = opts
 
-  const modeRef =
-    useRef<'dragStartCalled' | 'dragging' | 'notDragging'>('notDragging')
+  const modeRef = useRef<'dragStartCalled' | 'dragging' | 'notDragging'>(
+    'notDragging',
+  )
 
   const stateRef = useRef<{
     dragHappened: boolean

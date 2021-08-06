@@ -2,6 +2,7 @@
 **/xeno
 /packages/*/dist
 /theatre/*/dist
+/examples/*/dist
 *.log
 *.temp
 /.vscode

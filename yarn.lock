@@ -2123,6 +2123,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@examples/basic-dom@workspace:examples/basic-dom":
+  version: 0.0.0-use.local
+  resolution: "@examples/basic-dom@workspace:examples/basic-dom"
+  dependencies:
+    "@theatre/core": "workspace:*"
+    "@theatre/studio": "workspace:*"
+    "@types/react": ^17.0.9
+    "@types/react-dom": ^17.0.6
+    parcel-bundler: ^1.12.5
+    react: ^17.0.2
+    react-dom: ^17.0.2
+    typescript: ^4.3.2
+  languageName: unknown
+  linkType: soft
+
 "@iarna/toml@npm:^2.2.0":
   version: 2.2.5
   resolution: "@iarna/toml@npm:2.2.5"
@@ -16361,21 +16376,6 @@ fsevents@^1.2.7:
   checksum: 373904ce70524ba11ec7e1905c44fb92671132d5e0b0aba2fb48057161f8bf9cbf7f6178f0adf31810150cf44fb52c7b912dc722bff3fddf9688378596dbeb56
   languageName: node
   linkType: hard
-
-"theatre-example-dom@workspace:packages/example-dom":
-  version: 0.0.0-use.local
-  resolution: "theatre-example-dom@workspace:packages/example-dom"
-  dependencies:
-    "@theatre/core": "workspace:*"
-    "@theatre/studio": "workspace:*"
-    "@types/react": ^17.0.9
-    "@types/react-dom": ^17.0.6
-    parcel-bundler: ^1.12.5
-    react: ^17.0.2
-    react-dom: ^17.0.2
-    typescript: ^4.3.2
-  languageName: unknown
-  linkType: soft
 
 "theatre-monorepo@workspace:.":
   version: 0.0.0-use.local

@@ -27,6 +27,7 @@ module.exports = {
           './theatre/tsconfig.json',
           './packages/*/tsconfig.json',
           './packages/*/devEnv/tsconfig.json',
+          './examples/*/tsconfig.json',
         ],
       },
       rules: {
