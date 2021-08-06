@@ -96,7 +96,7 @@ const packagesWhoseVersionsShouldBump = [
   }
 
   console.log('Assigning versions')
-  assignVersions(version)
+  await assignVersions(version)
 
   console.log('Building all packages')
   await Promise.all(
@@ -123,7 +123,8 @@ const packagesWhoseVersionsShouldBump = [
 
   $.verbose = true
 
-  assignVersions(version)
+  await assignVersions(version)
+
   console.log('Committing/tagging')
 
   await $`git add .`
@@ -145,7 +146,7 @@ const packagesWhoseVersionsShouldBump = [
   )
 })()
 
-function assignVersions(monorepoVersion) {
+async function assignVersions(monorepoVersion) {
   for (const packagePathRelativeFromRoot of packagesWhoseVersionsShouldBump) {
     const pathToPackage = path.resolve(
       __dirname,
@@ -164,6 +165,7 @@ function assignVersions(monorepoVersion) {
       JSON.stringify(newJson, undefined, 2),
       {encoding: 'utf-8'},
     )
+    await $`prettier --write ${packagePathRelativeFromRoot + './package.json'}`
   }
 }
 
