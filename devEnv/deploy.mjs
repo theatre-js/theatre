@@ -127,7 +127,7 @@ const packagesWhoseVersionsShouldBump = [
   console.log('Committing/tagging')
 
   await $`git add .`
-  await $`git commit -m "${version}"`
+  await $`git commit -m ${version}`
   await $`git tag ${version}`
 
   // if (!gitTags.some((tag) => tag === version)) {
