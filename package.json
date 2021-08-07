@@ -8,6 +8,7 @@
     "theatre"
   ],
   "scripts": {
+    "playground": "yarn workspace playground run serve",
     "typecheck": "tsc --build ./devEnv/typecheck-all-projects/tsconfig.all.json",
     "test": "jest",
     "postinstall": "husky install",

@@ -49,7 +49,7 @@ function App() {
   const bg = '#272730'
   return (
     <div>
-      <Canvas dpr={[1.5, 2]} linear shadows>
+      <Canvas dpr={[1.5, 2]} linear shadows frameloop="demand">
         <Wrapper
           getSheet={() => getProject('Example project').sheet('R3F-Canvas')}
         >

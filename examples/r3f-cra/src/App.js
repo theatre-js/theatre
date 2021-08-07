@@ -1,11 +1,8 @@
-import {editable as e, Wrapper} from '@theatre/plugin-r3f'
 import {getProject} from '@theatre/core'
 import * as THREE from 'three'
-import React, {useState, useEffect, useRef} from 'react'
-import type {Color} from '@react-three/fiber'
-import {Canvas, useFrame} from '@react-three/fiber'
-import {softShadows, Shadow} from '@react-three/drei'
-import type {DirectionalLight} from 'three'
+import {useState, useEffect, useRef} from 'react'
+import {useFrame} from '@react-three/fiber'
+import {softShadows} from '@react-three/drei'
 
 // Soft shadows are expensive, comment and refresh when it's too slow
 softShadows()
@@ -14,7 +11,7 @@ softShadows()
 
 function Button() {
   const vec = new THREE.Vector3()
-  const light = useRef<DirectionalLight>(undefined as any)
+  const light = useRef(undefined)
   const [active, setActive] = useState(false)
   const [zoom, set] = useState(true)
   useEffect(
@@ -24,8 +21,8 @@ function Button() {
 
   useFrame((state) => {
     const step = 0.1
-    const camera = state.camera as THREE.PerspectiveCamera
-    camera.fov = (THREE as any).MathUtils.lerp(camera.fov, zoom ? 10 : 42, step)
+    const camera = state.camera
+    camera.fov = THREE.MathUtils.lerp(camera.fov, zoom ? 10 : 42, step)
     camera.position.lerp(
       vec.set(zoom ? 25 : 10, zoom ? 1 : 5, zoom ? 0 : 10),
       step,
@@ -70,15 +67,11 @@ function Button() {
   )
 }
 
-function Plane({
-  color,
-  uniqueName,
-  ...props
-}: {color: Color; uniqueName: string} & Parameters<typeof e.mesh>[0]) {
+function Plane({color, uniqueName, ...props}) {
   return (
     <e.mesh receiveShadow castShadow {...props} uniqueName={uniqueName}>
       <boxBufferGeometry />
-      <meshStandardMaterial color={color as any} />
+      <meshStandardMaterial color={color} />
     </e.mesh>
   )
 }

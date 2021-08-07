@@ -3625,6 +3625,42 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@examples/dom-cra@workspace:examples/dom-cra":
+  version: 0.0.0-use.local
+  resolution: "@examples/dom-cra@workspace:examples/dom-cra"
+  dependencies:
+    "@testing-library/jest-dom": ^5.11.4
+    "@testing-library/react": ^11.1.0
+    "@testing-library/user-event": ^12.1.10
+    "@theatre/core": "workspace:*"
+    "@theatre/studio": "workspace:*"
+    react: ^17.0.2
+    react-dom: ^17.0.2
+    react-scripts: 4.0.3
+    web-vitals: ^1.0.1
+  languageName: unknown
+  linkType: soft
+
+"@examples/r3f-cra@workspace:examples/r3f-cra":
+  version: 0.0.0-use.local
+  resolution: "@examples/r3f-cra@workspace:examples/r3f-cra"
+  dependencies:
+    "@react-three/drei": ^7.2.2
+    "@react-three/fiber": ^7.0.6
+    "@testing-library/jest-dom": ^5.11.4
+    "@testing-library/react": ^11.1.0
+    "@testing-library/user-event": ^12.1.10
+    "@theatre/core": "workspace:*"
+    "@theatre/plugin-r3f": "workspace:*"
+    "@theatre/studio": "workspace:*"
+    react: ^17.0.2
+    react-dom: ^17.0.2
+    react-scripts: 4.0.3
+    three: ^0.130.1
+    web-vitals: ^1.0.1
+  languageName: unknown
+  linkType: soft
+
 "@hapi/address@npm:2.x.x":
   version: 2.1.4
   resolution: "@hapi/address@npm:2.1.4"
@@ -10629,22 +10665,6 @@ __metadata:
   checksum: 437b4464bd3c5e654decf855f9263e939d633d7bb720512f9a400b3e1005d870eb4a5fbead7d9ccb7849f7df5ee30c62f9a56b68143c13575ae5fef16007742c
   languageName: node
   linkType: hard
-
-"dom-cra@workspace:examples/dom-cra":
-  version: 0.0.0-use.local
-  resolution: "dom-cra@workspace:examples/dom-cra"
-  dependencies:
-    "@testing-library/jest-dom": ^5.11.4
-    "@testing-library/react": ^11.1.0
-    "@testing-library/user-event": ^12.1.10
-    "@theatre/core": "workspace:*"
-    "@theatre/studio": "workspace:*"
-    react: ^17.0.2
-    react-dom: ^17.0.2
-    react-scripts: 4.0.3
-    web-vitals: ^1.0.1
-  languageName: unknown
-  linkType: soft
 
 "dom-serializer@npm:0":
   version: 0.2.2

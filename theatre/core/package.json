@@ -14,17 +14,8 @@
     "url": "https://www.theatrejs.com"
   },
   "main": "dist/index.cjs",
-  "module": "dist/index.mjs",
-  "exports": {
-    ".": {
-      "require": "./dist/index.cjs",
-      "import": "./dist/index.mjs",
-      "default": "./dist/index.cjs",
-      "node": "./dist/index.cjs",
-      "script": "./dist/index.min.js"
-    }
-  },
   "types": "dist/index.d.ts",
+  "type": "commonjs",
   "files": [
     "dist/index.cjs",
     "dist/index.cjs.map",
