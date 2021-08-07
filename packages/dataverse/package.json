@@ -18,7 +18,7 @@
     "dist/**/*"
   ],
   "scripts": {
-    "prepack": "yarn run build",
+    "prepack": "node ../../devEnv/ensurePublishing.js",
     "typecheck": "yarn run build",
     "build": "run-s build:ts build:js",
     "build:ts": "tsc --build ./tsconfig.json",
