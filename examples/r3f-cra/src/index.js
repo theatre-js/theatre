@@ -3,6 +3,8 @@ import './index.css'
 import reportWebVitals from './reportWebVitals'
 import '@theatre/studio'
 import {getProject} from '@theatre/core'
+import React from 'react'
+import App from './App'
 
 ReactDOM.render(
   <React.StrictMode>

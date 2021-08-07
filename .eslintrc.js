@@ -3,7 +3,7 @@ module.exports = {
   plugins: ['unused-imports'],
   extends: [],
   rules: {
-    'unused-imports/no-unused-imports-ts': 'warn',
+    'unused-imports/no-unused-imports': 'warn',
     'no-restricted-imports': [
       'error',
       {
@@ -44,7 +44,12 @@ module.exports = {
       },
     },
     {
+      plugins: ['react'],
       files: ['*.mjs', '*.js'],
+      rules: {
+        'react/jsx-uses-react': 'error',
+        'react/jsx-uses-vars': 'error',
+      },
       parser: 'espree',
       parserOptions: {
         sourceType: 'module',

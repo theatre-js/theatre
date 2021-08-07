@@ -1,1 +1,1 @@
-import './space-exploration'
+import './r3f'

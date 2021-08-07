@@ -1,8 +1,10 @@
 import {getProject} from '@theatre/core'
 import * as THREE from 'three'
 import {useState, useEffect, useRef} from 'react'
-import {useFrame} from '@react-three/fiber'
-import {softShadows} from '@react-three/drei'
+import {useFrame, Canvas} from '@react-three/fiber'
+import {Shadow, softShadows} from '@react-three/drei'
+import React from 'react'
+import {editable as e, Wrapper} from '@theatre/plugin-r3f'
 
 // Soft shadows are expensive, comment and refresh when it's too slow
 softShadows()

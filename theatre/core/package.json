@@ -13,7 +13,7 @@
     "email": "hello@theatrejs.com",
     "url": "https://www.theatrejs.com"
   },
-  "main": "dist/index.cjs",
+  "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "commonjs",
   "files": [

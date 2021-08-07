@@ -12,7 +12,7 @@
     "url": "https://github.com/AriaMinaei/theatre",
     "directory": "packages/dataverse-react"
   },
-  "main": "dist/index.cjs",
+  "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist/**/*"
@@ -37,12 +37,12 @@
     "typescript": "^4.3.2"
   },
   "dependencies": {
+    "@theatre/dataverse": "workspace:*",
     "lodash-es": "^4.17.21",
     "queue-microtask": "^1.2.3"
   },
   "peerDependencies": {
-    "@theatre/dataverse": "*",
-    "raect-dom": "17.0.2",
-    "react": "17.0.2"
+    "raect-dom": "*",
+    "react": "*"
   }
 }

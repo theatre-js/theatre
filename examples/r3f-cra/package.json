@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "installConfig": {
-    "hoistingLimits": "dependencies"
+    "hoistingLimits": "workspaces"
   },
   "dependencies": {
     "@react-three/drei": "^7.2.2",

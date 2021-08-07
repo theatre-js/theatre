@@ -44,7 +44,7 @@ function createBundles(watch: boolean) {
   build({
     ...esbuildConfig,
     define: {...definedGlobals, 'process.env.NODE_ENV': '"production"'},
-    outfile: path.join(pathToPackage, 'dist/index.production.cjs'),
+    outfile: path.join(pathToPackage, 'dist/index.production.js'),
     format: 'cjs',
     treeShaking: true,
   })
@@ -52,16 +52,16 @@ function createBundles(watch: boolean) {
   build({
     ...esbuildConfig,
     define: {...definedGlobals, 'process.env.NODE_ENV': '"development"'},
-    outfile: path.join(pathToPackage, 'dist/index.development.cjs'),
+    outfile: path.join(pathToPackage, 'dist/index.development.js'),
     format: 'cjs',
   })
 
   writeFileSync(
-    path.join(pathToPackage, 'dist/index.cjs'),
+    path.join(pathToPackage, 'dist/index.js'),
     `module.exports =
   process.env.NODE_ENV === "production"
-    ? require("./index.production.cjs")
-    : require("./index.development.cjs")`,
+    ? require("./index.production.js")
+    : require("./index.development.js")`,
     {encoding: 'utf-8'},
   )
 
