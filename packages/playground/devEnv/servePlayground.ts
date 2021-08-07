@@ -14,7 +14,7 @@ require('esbuild')
     {
       entryPoints: [path.join(playgroundDir, 'src/index.tsx')],
       target: ['firefox88'],
-      loader: {'.png': 'file', '.glb': 'file'},
+      loader: {'.png': 'file', '.glb': 'file', '.svg': 'dataurl'},
       bundle: true,
       sourcemap: true,
       define: definedGlobals,

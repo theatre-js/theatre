@@ -18,13 +18,23 @@ type FrameStampPositionLock = {
   set: (pointerPositonInUnitSpace: number) => void
 }
 
+export enum FrameStampPositionType {
+  hidden,
+  locked,
+  snapped,
+  free,
+}
+
 const context = createContext<{
-  currentD: IDerivation<number>
+  currentD: IDerivation<[pos: number, posType: FrameStampPositionType]>
   getLock(): FrameStampPositionLock
 }>(null as $IntentionalAny)
 
 type LockItem = {
-  position: number
+  position: [
+    pos: number,
+    posType: FrameStampPositionType.locked | FrameStampPositionType.hidden,
+  ]
   id: number
 }
 
@@ -57,7 +67,7 @@ const FrameStampPositionProvider: React.FC<{
       ...list,
       {
         id,
-        position: -1,
+        position: [-1, FrameStampPositionType.hidden],
       },
     ])
 
@@ -79,7 +89,12 @@ const FrameStampPositionProvider: React.FC<{
 
         newList.splice(index, 1, {
           id,
-          position: posInUnitSpace,
+          position: [
+            posInUnitSpace,
+            posInUnitSpace === -1
+              ? FrameStampPositionType.hidden
+              : FrameStampPositionType.locked,
+          ],
         })
 
         return newList
@@ -132,16 +147,17 @@ export const useLockFrameStampPosition = (shouldLock: boolean, val: number) => {
  */
 export const attributeNameThatLocksFramestamp =
   'data-theatre-lock-framestamp-to'
+
 const pointerPositionInUnitSpace = (
   layoutP: Pointer<SequenceEditorPanelLayout>,
-): IDerivation<number> => {
+): IDerivation<[pos: number, posType: FrameStampPositionType]> => {
   return prism(() => {
     const rightDims = val(layoutP.rightDims)
     const clippedSpaceToUnitSpace = val(layoutP.clippedSpace.toUnitSpace)
     const leftPadding = val(layoutP.scaledSpace.leftPadding)
 
     const mousePos = val(mousePositionD)
-    if (!mousePos) return -1
+    if (!mousePos) return [-1, FrameStampPositionType.hidden]
 
     for (const el of mousePos.composedPath()) {
       if (!(el instanceof HTMLElement || el instanceof SVGElement)) break
@@ -149,10 +165,11 @@ const pointerPositionInUnitSpace = (
       if (el.hasAttribute(attributeNameThatLocksFramestamp)) {
         const val = el.getAttribute(attributeNameThatLocksFramestamp)
         if (typeof val !== 'string') continue
-        if (val === 'hide') return -1
+        if (val === 'hide') return [-1, FrameStampPositionType.hidden]
         const double = parseFloat(val)
 
-        if (isFinite(double) && double >= 0) return double
+        if (isFinite(double) && double >= 0)
+          return [double, FrameStampPositionType.snapped]
       }
     }
 
@@ -167,9 +184,9 @@ const pointerPositionInUnitSpace = (
       const posInRightDims = clientX - x
       const posInUnitSpace = clippedSpaceToUnitSpace(posInRightDims)
 
-      return posInUnitSpace
+      return [posInUnitSpace, FrameStampPositionType.free]
     } else {
-      return -1
+      return [-1, FrameStampPositionType.hidden]
     }
   })
 }

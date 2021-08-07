@@ -15,12 +15,14 @@ import type KeyframeEditor from './KeyframeEditor'
 import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {attributeNameThatLocksFramestamp} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {useCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
+import SnapCursor from './SnapCursor.svg'
 
 export const dotSize = 6
 const hitZoneSize = 12
+const snapCursorSize = 34
 
 const dims = (size: number) => `
-  left: ${-size / 2 + 1}px;
+  left: ${-size / 2}px;
   top: ${-size / 2}px;
   width: ${size}px;
   height: ${size}px;
@@ -54,6 +56,16 @@ const HitZone = styled.div`
 
   #pointer-root.draggingPositionInSequenceEditor & {
     pointer-events: auto;
+    &:hover:after {
+      position: absolute;
+      top: calc(50% - ${snapCursorSize / 2}px);
+      left: calc(50% - ${snapCursorSize / 2}px);
+      width: ${snapCursorSize}px;
+      height: ${snapCursorSize}px;
+      display: block;
+      content: ' ';
+      background: url(${SnapCursor}) no-repeat 100% 100%;
+    }
   }
 
   &.beingDragged {

@@ -14,7 +14,7 @@ export function createBundles(watch: boolean) {
     const esbuildConfig: Parameters<typeof build>[0] = {
       entryPoints: [path.join(pathToPackage, 'src/index.ts')],
       target: ['es6'],
-      loader: {'.png': 'file'},
+      loader: {'.png': 'file', '.svg': 'dataurl'},
       bundle: true,
       sourcemap: true,
       define: definedGlobals,

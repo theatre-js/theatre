@@ -7,7 +7,10 @@ import styled from 'styled-components'
 import {stampsGridTheme} from '@theatre/studio/panels/SequenceEditorPanel/FrameGrid/StampsGrid'
 import {zIndexes} from '@theatre/studio/panels/SequenceEditorPanel/SequenceEditorPanel'
 import {topStripTheme} from './TopStrip'
-import {useFrameStampPositionD} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
+import {
+  FrameStampPositionType,
+  useFrameStampPositionD,
+} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 
 const Label = styled.div`
   position: absolute;
@@ -23,12 +26,12 @@ const Label = styled.div`
   z-index: ${() => zIndexes.currentFrameStamp};
 `
 
-const Line = styled.div`
+const Line = styled.div<{posType: FrameStampPositionType}>`
   position: absolute;
   top: 5px;
-  left: 0;
+  left: -0px;
   bottom: 0;
-  width: 1px;
+  width: 0.5px;
   background: rgba(100, 100, 100, 0.2);
   pointer-events: none;
 `
@@ -36,7 +39,7 @@ const Line = styled.div`
 const FrameStamp: React.FC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
 }> = React.memo(({layoutP}) => {
-  const posInUnitSpace = useVal(useFrameStampPositionD())
+  const [posInUnitSpace, posType] = useVal(useFrameStampPositionD())
   const unitSpaceToClippedSpace = useVal(layoutP.clippedSpace.fromUnitSpace)
   const {sequence, formatter, clippedSpaceWidth} = usePrism(() => {
     const sequence = val(layoutP.sheet).getSequence()
@@ -48,7 +51,11 @@ const FrameStamp: React.FC<{
     return <></>
   }
 
-  const snappedPosInUnitSpace = sequence.closestGridPosition(posInUnitSpace)
+  const snappedPosInUnitSpace =
+    posType === FrameStampPositionType.free
+      ? sequence.closestGridPosition(posInUnitSpace)
+      : posInUnitSpace
+
   const posInClippedSpace = unitSpaceToClippedSpace(snappedPosInUnitSpace)
 
   const isVisible =
@@ -65,6 +72,7 @@ const FrameStamp: React.FC<{
         {formatter.formatForPlayhead(snappedPosInUnitSpace)}
       </Label>
       <Line
+        posType={posType}
         style={{
           opacity: isVisible ? 1 : 0,
           transform: `translate3d(${posInClippedSpace}px, 0, 0)`,
