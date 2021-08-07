@@ -95,13 +95,17 @@ const packagesWhoseVersionsShouldBump = [
     console.log('Skipping typecheck and lint')
   }
 
+  const skipTypescriptEmit = argv['skip-ts'] === true
+
   console.log('Assigning versions')
   await assignVersions(version)
 
   console.log('Building all packages')
   await Promise.all(
-    packagesToBuild.map(
-      (workspace) => $`yarn workspace ${workspace} run build`,
+    packagesToBuild.map((workspace) =>
+      skipTypescriptEmit
+        ? $`yarn workspace ${workspace} run build:js`
+        : $`yarn workspace ${workspace} run build`,
     ),
   )
 

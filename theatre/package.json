@@ -11,9 +11,9 @@
     "typecheck": "tsc --build",
     "build:js": "node -r esbuild-register devEnv/bundle.ts",
     "build:js:watch": "node -r esbuild-register devEnv/watch.ts",
-    "build:dts": "run-s typecheck build:dts:bundle",
-    "build:dts:bundle": "rollup -c devEnv/declarations-bundler/rollup.config.js",
-    "build": "run-p build:dts build:js"
+    "build:ts": "run-s typecheck build:ts:bundle",
+    "build:ts:bundle": "rollup -c devEnv/declarations-bundler/rollup.config.js",
+    "build": "run-p build:ts build:js"
   },
   "devDependencies": {
     "@babel/cli": "^7.14.3",

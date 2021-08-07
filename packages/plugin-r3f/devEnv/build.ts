@@ -1,7 +1,7 @@
 import * as path from 'path'
 import {build} from 'esbuild'
 import type {Plugin} from 'esbuild'
-import {mkdirSync, writeFileSync} from 'fs'
+import {existsSync, mkdirSync, writeFileSync} from 'fs'
 
 const externalPlugin = (patterns: RegExp[]): Plugin => {
   return {
@@ -55,7 +55,8 @@ function createBundles(watch: boolean) {
     format: 'cjs',
   })
 
-  mkdirSync(path.join(pathToPackage, 'dist'))
+  if (!existsSync(path.join(pathToPackage, 'dist')))
+    mkdirSync(path.join(pathToPackage, 'dist'))
 
   writeFileSync(
     path.join(pathToPackage, 'dist/index.js'),
