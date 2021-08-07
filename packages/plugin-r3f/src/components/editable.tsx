@@ -16,6 +16,7 @@ import {useEditorStore} from '../store'
 import mergeRefs from 'react-merge-refs'
 import type {$FixMe} from '@theatre/shared/utils/types'
 import type {ISheetObject} from '@theatre/core'
+import useInvalidate from './useInvalidate'
 
 interface Elements {
   group: Group
@@ -53,6 +54,8 @@ const editable = <
       const [sheetObject, setSheetObject] = useState<
         undefined | ISheetObject<$FixMe>
       >(undefined)
+
+      const invalidate = useInvalidate()
 
       useLayoutEffect(() => {
         if (!sheet) return
@@ -153,6 +156,7 @@ const editable = <
             newValues.scale.y,
             newValues.scale.z,
           )
+          invalidate()
         }
 
         setFromTheatre(sheetObject.value)

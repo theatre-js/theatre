@@ -159,6 +159,7 @@ const SnapshotEditor: React.FC<{object: ISheetObject<$FixMe>; paneId: string}> =
                       shadowMap
                       dpr={[1, 2]}
                       fog={'red'}
+                      frameloop="demand"
                       onPointerMissed={onPointerMissed}
                     >
                       <EditorScene

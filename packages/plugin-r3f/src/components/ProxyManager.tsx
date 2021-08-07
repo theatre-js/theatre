@@ -19,6 +19,7 @@ import type {ISheetObject} from '@theatre/core'
 import type {$FixMe} from '../types'
 import {useSelected} from './useSelected'
 import {useVal} from '@theatre/dataverse-react'
+import useInvalidate from './useInvalidate'
 
 export interface ProxyManagerProps {
   orbitControlsRef: React.MutableRefObject<OrbitControls | null>
@@ -51,6 +52,8 @@ const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
       [name in string]?: IEditableProxy
     }
   >({})
+
+  const invalidate = useInvalidate()
 
   // set up scene proxies
   useLayoutEffect(() => {
@@ -108,6 +111,7 @@ const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
         newValues.rotation.z,
       )
       object.scale.set(newValues.scale.x, newValues.scale.y, newValues.scale.z)
+      invalidate()
     }
 
     setFromTheatre(sheetObject.value)
