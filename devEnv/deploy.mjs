@@ -50,7 +50,7 @@ const packagesWhoseVersionsShouldBump = [
       `You need to specify a version, like: $ yarn deploy 1.2.0-rc.4`,
     )
     process.exit(1)
-  } else if (!version.match(/^[0-9]+\.[0-9]+\.[0-9]+(\-(dev|rc)\.[0-9])?$/)) {
+  } else if (!version.match(/^[0-9]+\.[0-9]+\.[0-9]+(\-(dev|rc)\.[0-9]+)?$/)) {
     console.error(`Use a semver version, like 1.2.3-rc.4. Provided: ${version}`)
     process.exit(1)
   }
