@@ -56,7 +56,7 @@ export function usePrism<T>(
   return useDerivation(derivation, debugLabel)
 }
 
-export const useVal: typeof val = (p, debugLabel?: string) => {
+export const useVal: typeof val = (p: $IntentionalAny, debugLabel?: string) => {
   return usePrism(() => val(p), [p], debugLabel)
 }
 

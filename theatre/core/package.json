@@ -17,14 +17,7 @@
   "types": "dist/index.d.ts",
   "type": "commonjs",
   "files": [
-    "dist/index.cjs",
-    "dist/index.cjs.map",
-    "dist/index.mjs",
-    "dist/index.mjs.map",
-    "dist/index.min.js",
-    "dist/index.min.js.map",
-    "dist/index.min.js.LEGAL.txt",
-    "dist/index.d.ts"
+    "dist/*"
   ],
   "scripts": {
     "prepublish": "node ../../devEnv/ensurePublishing.js"

@@ -1,10 +1,10 @@
 import type {IdentityDerivationProvider} from './Atom'
-import type {Pointer} from './pointer';
+import type {Pointer} from './pointer'
 import pointer from './pointer'
-import type {IBox} from './Box';
+import type {IBox} from './Box'
 import Box from './Box'
 import type {$FixMe, $IntentionalAny} from './types'
-import {valueDerivation} from '@theatre/dataverse'
+import {valueDerivation} from './Atom'
 
 export default class PointerProxy<O extends {}>
   implements IdentityDerivationProvider

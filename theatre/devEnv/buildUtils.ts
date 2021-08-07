@@ -31,29 +31,29 @@ export function createBundles(watch: boolean) {
 
     build({
       ...esbuildConfig,
-      outfile: path.join(pathToPackage, 'dist/index.cjs'),
+      outfile: path.join(pathToPackage, 'dist/index.js'),
       format: 'cjs',
     })
 
-    build({
-      ...esbuildConfig,
-      outfile: path.join(pathToPackage, 'dist/index.mjs'),
-      format: 'esm',
-    })
+    // build({
+    //   ...esbuildConfig,
+    //   outfile: path.join(pathToPackage, 'dist/index.mjs'),
+    //   format: 'esm',
+    // })
 
-    build({
-      ...esbuildConfig,
-      outfile: path.join(pathToPackage, 'dist/index.min.js'),
-      format: 'iife',
-      external: [],
-      minify: true,
-      globalName: `Theatre.${which}`,
-      legalComments: 'external',
-      platform: 'browser',
-      define: {
-        ...definedGlobals,
-        'process.env.NODE_ENV': JSON.stringify('production'),
-      },
-    })
+    // build({
+    //   ...esbuildConfig,
+    //   outfile: path.join(pathToPackage, 'dist/index.min.js'),
+    //   format: 'iife',
+    //   external: [],
+    //   minify: true,
+    //   globalName: `Theatre.${which}`,
+    //   legalComments: 'external',
+    //   platform: 'browser',
+    //   define: {
+    //     ...definedGlobals,
+    //     'process.env.NODE_ENV': JSON.stringify('production'),
+    //   },
+    // })
   }
 }

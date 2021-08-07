@@ -1,7 +1,7 @@
-import path from 'path'
+import * as path from 'path'
 import {build} from 'esbuild'
 import type {Plugin} from 'esbuild'
-import {writeFileSync} from 'fs'
+import {mkdirSync, writeFileSync} from 'fs'
 
 const externalPlugin = (patterns: RegExp[]): Plugin => {
   return {
@@ -46,7 +46,6 @@ function createBundles(watch: boolean) {
     define: {...definedGlobals, 'process.env.NODE_ENV': '"production"'},
     outfile: path.join(pathToPackage, 'dist/index.production.js'),
     format: 'cjs',
-    treeShaking: true,
   })
 
   build({
@@ -55,6 +54,8 @@ function createBundles(watch: boolean) {
     outfile: path.join(pathToPackage, 'dist/index.development.js'),
     format: 'cjs',
   })
+
+  mkdirSync(path.join(pathToPackage, 'dist'))
 
   writeFileSync(
     path.join(pathToPackage, 'dist/index.js'),
@@ -65,11 +66,11 @@ function createBundles(watch: boolean) {
     {encoding: 'utf-8'},
   )
 
-  build({
-    ...esbuildConfig,
-    outfile: path.join(pathToPackage, 'dist/index.mjs'),
-    format: 'esm',
-  })
+  // build({
+  //   ...esbuildConfig,
+  //   outfile: path.join(pathToPackage, 'dist/index.mjs'),
+  //   format: 'esm',
+  // })
 }
 
 createBundles(false)
