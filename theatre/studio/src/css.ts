@@ -2,7 +2,9 @@ import {lighten} from 'polished'
 import {css} from 'styled-components'
 
 export const pointerEventsAutoInNormalMode = css`
-  pointer-events: none;
+  #pointer-root & {
+    pointer-events: none;
+  }
   #pointer-root.normal & {
     pointer-events: auto;
   }
