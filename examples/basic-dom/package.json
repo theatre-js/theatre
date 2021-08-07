@@ -1,6 +1,5 @@
 {
   "name": "@examples/basic-dom",
-  "private": "true",
   "scripts": {
     "start": "parcel serve ./index.html"
   },

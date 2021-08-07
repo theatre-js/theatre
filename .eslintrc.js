@@ -49,6 +49,9 @@ module.exports = {
       parserOptions: {
         sourceType: 'module',
         ecmaVersion: 2021,
+        ecmaFeatures: {
+          jsx: true,
+        },
       },
     },
   ],
