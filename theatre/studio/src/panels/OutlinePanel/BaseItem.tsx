@@ -7,14 +7,17 @@ import {transparentize, darken, opacify, lighten} from 'polished'
 import {rowBgColor} from '@theatre/studio/panels/ObjectEditorPanel/propEditors/utils/SingleRowPropEditor'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 
-export const Container = styled.li<{depth: number}>`
-  --depth: ${(props) => props.depth};
+export const Container = styled.li`
   margin: 0;
   padding: 0;
   list-style: none;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  align-items: flex-start;
 `
 
-export const BaseHeader = styled.div<{}>``
+export const BaseHeader = styled.div``
 
 const baseBg = lighten(0.05, rowBgColor)
 
@@ -25,6 +28,7 @@ export const outlinePanelTheme = {baseBg, baseFontColor, baseBorderColor}
 
 const Header = styled(BaseHeader)`
   padding-left: calc(4px + var(--depth) * 16px);
+  padding-right: 8px;
   height: 24px;
   box-sizing: border-box;
   display: flex;
@@ -155,7 +159,12 @@ const BaseItem: React.FC<{
   const canContainChildren = children !== undefined
 
   return (
-    <Container depth={depth}>
+    <Container
+      style={
+        /* @ts-ignore */
+        {'--depth': depth}
+      }
+    >
       <Header className={selectionStatus} onClick={select ?? noop}>
         <Head_IconContainer>
           {canContainChildren ? (

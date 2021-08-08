@@ -33,9 +33,9 @@ export const rowBg = css`
   &:before {
     height: 2px;
     right: 0;
-    bottom: -1px;
+    bottom: 0px;
     left: calc(-2px + var(--left-pad) + var(--depth) * var(--step));
-    background-color: ${transparentize(0.3, rowBgColor)};
+    background-color: ${transparentize(0.2, rowBgColor)};
   }
 `
 
