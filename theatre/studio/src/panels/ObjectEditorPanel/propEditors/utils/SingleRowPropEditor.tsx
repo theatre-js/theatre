@@ -16,13 +16,26 @@ export const indentationFormula = `calc(var(--left-pad) + var(--depth) * var(--s
 export const rowBgColor = transparentize(0.05, '#282b2f')
 
 export const rowBg = css`
-  &:after {
+  &:after,
+  &:before {
     position: absolute;
     display: block;
-    inset: 0px 0 1px calc(-2px + var(--left-pad) + var(--depth) * var(--step));
     content: ' ';
     z-index: -1;
+    box-sizing: content-box;
+  }
+
+  &:after {
+    inset: 0px 0 1px calc(-2px + var(--left-pad) + var(--depth) * var(--step));
     background-color: ${rowBgColor};
+  }
+
+  &:before {
+    height: 2px;
+    right: 0;
+    bottom: -1px;
+    left: calc(-2px + var(--left-pad) + var(--depth) * var(--step));
+    background-color: ${transparentize(0.3, rowBgColor)};
   }
 `
 
