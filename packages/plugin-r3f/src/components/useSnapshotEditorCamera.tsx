@@ -14,13 +14,13 @@ import {useThree} from '@react-three/fiber'
 const camConf = types.compound({
   transform: types.compound({
     position: types.compound({
-      x: types.number(0),
+      x: types.number(10),
       y: types.number(10),
       z: types.number(0),
     }),
     target: types.compound({
       x: types.number(0),
-      y: types.number(10),
+      y: types.number(0),
       z: types.number(0),
     }),
   }),
@@ -68,7 +68,7 @@ export default function useSnapshotEditorCamera(
 
   const node = (
     <>
-      <PerspectiveCamera makeDefault ref={camRef} position={[0, 10, 0]} />
+      <PerspectiveCamera makeDefault ref={camRef} position={[0, 102, 0]} />
       <OrbitControls
         makeDefault
         ref={orbitControlsRef}
