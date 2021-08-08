@@ -1,4 +1,4 @@
-import {editable as e, Wrapper} from '@theatre/plugin-r3f'
+import {editable as e, RefreshSnapshot, Wrapper} from '@theatre/plugin-r3f'
 import {OrbitControls, Stars} from '@react-three/drei'
 import {getProject} from '@theatre/core'
 import React, {Suspense} from 'react'
@@ -80,6 +80,7 @@ function App() {
             />
           </e.perspectiveCamera>
           <Suspense fallback={null}>
+            <RefreshSnapshot />
             <Model url={sceneGLB} />
           </Suspense>
           <OrbitControls
