@@ -1,19 +1,15 @@
 import type {VFC} from 'react'
 import React from 'react'
-import {useEditorStore} from '../../store'
-import shallow from 'zustand/shallow'
 import {IoCameraOutline} from 'react-icons/all'
 import studio, {ToolbarIconButton} from '@theatre/studio'
 import {useVal} from '@theatre/dataverse-react'
 import TransformControlsModeSelect from './TransformControlsModeSelect'
 import ViewportShadingSelect from './ViewportShadingSelect'
 import TransformControlsSpaceSelect from './TransformControlsSpaceSelect'
+import {getEditorSheetObject} from '../editorStuff'
 
 const Toolbar: VFC = () => {
-  const [editorObject] = useEditorStore(
-    (state) => [state.editorObject],
-    shallow,
-  )
+  const editorObject = getEditorSheetObject()
 
   const transformControlsMode =
     useVal(editorObject?.props.transformControls.mode) ?? 'translate'

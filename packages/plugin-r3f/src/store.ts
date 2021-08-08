@@ -3,7 +3,7 @@ import create from 'zustand'
 import type {Object3D, Scene, WebGLRenderer} from 'three'
 import {Group} from 'three'
 import type {ISheet, ISheetObject} from '@theatre/core'
-import {types, getProject} from '@theatre/core'
+import {types} from '@theatre/core'
 
 export type EditableType =
   | 'group'
@@ -129,7 +129,6 @@ export interface EditableState {
 
 export type EditorStore = {
   sheet: ISheet | null
-  editorObject: ISheetObject<typeof editorSheetObjectConfig> | null
   sheetObjects: {[uniqueName in string]?: BaseSheetObjectType}
   scene: Scene | null
   gl: WebGLRenderer | null
@@ -146,7 +145,6 @@ export type EditorStore = {
     gl: WebGLRenderer,
     allowImplicitInstancing: boolean,
     sheet: ISheet,
-    editorObject: null | ISheetObject<typeof editorSheetObjectConfig>,
   ) => void
 
   addEditable: <T extends EditableType>(type: T, uniqueName: string) => void
@@ -174,13 +172,12 @@ const config: StateCreator<EditorStore> = (set, get) => {
     editablesSnapshot: null,
     initialEditorCamera: {},
 
-    init: (scene, gl, allowImplicitInstancing, sheet, editorObject) => {
+    init: (scene, gl, allowImplicitInstancing, sheet) => {
       set({
         scene,
         gl,
         allowImplicitInstancing,
         sheet,
-        editorObject,
       })
     },
 
@@ -264,70 +261,16 @@ export const useEditorStore = create<EditorStore>(config)
 export type BindFunction = (options: {
   allowImplicitInstancing?: boolean
   sheet: ISheet
-}) => (options: {gl: WebGLRenderer; scene: Scene}) => void
-
-const editorSheetObjectConfig = types.compound({
-  isOpen: types.boolean(false, {label: 'Editor Open'}),
-  viewport: types.compound(
-    {
-      showAxes: types.boolean(true, {label: 'Axes'}),
-      showGrid: types.boolean(true, {label: 'Grid'}),
-      showOverlayIcons: types.boolean(false, {label: 'Overlay Icons'}),
-      resolution: types.number(1440, {
-        label: 'Resolution',
-        range: [0, 1000],
-      }),
-      shading: types.stringLiteral(
-        'rendered',
-        {
-          flat: 'Flat',
-          rendered: 'Rendered',
-          solid: 'Solid',
-          wireframe: 'Wireframe',
-        },
-        {as: 'menu', label: 'Shading'},
-      ),
-    },
-    {label: 'Viewport Config'},
-  ),
-  transformControls: types.compound(
-    {
-      mode: types.stringLiteral(
-        'translate',
-        {
-          translate: 'Translate',
-          rotate: 'Rotate',
-          scale: 'Scale',
-        },
-        {as: 'switch', label: 'Mode'},
-      ),
-      space: types.stringLiteral(
-        'world',
-        {
-          local: 'Local',
-          world: 'World',
-        },
-        {as: 'switch', label: 'Space'},
-      ),
-    },
-    {label: 'Transform Controls'},
-  ),
-})
+  gl: WebGLRenderer
+  scene: Scene
+}) => void
 
 export const bindToCanvas: BindFunction = ({
   allowImplicitInstancing = false,
   sheet,
+  gl,
+  scene,
 }) => {
-  const uiSheet: null | ISheet =
-    process.env.NODE_ENV === 'development'
-      ? getProject('R3F Plugin').sheet('UI')
-      : null
-
-  const editorSheetObject =
-    uiSheet?.object('Editor', null, editorSheetObjectConfig) || null
-
-  return ({gl, scene}) => {
-    const init = useEditorStore.getState().init
-    init(scene, gl, allowImplicitInstancing, sheet, editorSheetObject)
-  }
+  const init = useEditorStore.getState().init
+  init(scene, gl, allowImplicitInstancing, sheet)
 }

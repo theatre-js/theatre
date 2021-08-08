@@ -20,6 +20,7 @@ import type {$FixMe} from '../types'
 import {useSelected} from './useSelected'
 import {useVal} from '@theatre/dataverse-react'
 import useInvalidate from './useInvalidate'
+import {getEditorSheetObject} from './editorStuff'
 
 export interface ProxyManagerProps {
   orbitControlsRef: React.MutableRefObject<OrbitControls | null>
@@ -33,8 +34,9 @@ type IEditableProxy = {
 
 const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
   const isBeingEdited = useRef(false)
-  const [editorObject, sceneSnapshot, sheetObjects] = useEditorStore(
-    (state) => [state.editorObject, state.sceneSnapshot, state.sheetObjects],
+  const editorObject = getEditorSheetObject()
+  const [sceneSnapshot, sheetObjects] = useEditorStore(
+    (state) => [state.sceneSnapshot, state.sheetObjects],
     shallow,
   )
   const transformControlsMode =

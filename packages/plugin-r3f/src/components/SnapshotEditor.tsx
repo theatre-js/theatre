@@ -11,6 +11,7 @@ import styled, {createGlobalStyle, StyleSheetManager} from 'styled-components'
 import {IoCameraReverseOutline} from 'react-icons/all'
 import type {ISheet} from '@theatre/core'
 import useSnapshotEditorCamera from './useSnapshotEditorCamera'
+import {getEditorSheet, getEditorSheetObject} from './editorStuff'
 
 const GlobalStyle = createGlobalStyle`
   :host {
@@ -40,10 +41,9 @@ const EditorScene: React.FC<{snapshotEditorSheet: ISheet; paneId: string}> = ({
     paneId,
   )
 
-  const [editorObject, helpersRoot] = useEditorStore(
-    (state) => [state.editorObject, state.helpersRoot],
-    shallow,
-  )
+  const editorObject = getEditorSheetObject()
+
+  const helpersRoot = useEditorStore((state) => state.helpersRoot, shallow)
 
   const showGrid = useVal(editorObject?.props.viewport.showGrid) ?? true
   const showAxes = useVal(editorObject?.props.viewport.showAxes) ?? true
@@ -95,16 +95,12 @@ const Tools = styled.div`
 `
 
 const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
-  const snapshotEditorSheet = studio.getStudioProject().sheet('Plugin-R3F')
+  const snapshotEditorSheet = getEditorSheet()
   const paneId = props.paneId
+  const editorObject = getEditorSheetObject()
 
-  const [editorObject, sceneSnapshot, createSnapshot, sheet] = useEditorStore(
-    (state) => [
-      state.editorObject,
-      state.sceneSnapshot,
-      state.createSnapshot,
-      state.sheet,
-    ],
+  const [sceneSnapshot, createSnapshot, sheet] = useEditorStore(
+    (state) => [state.sceneSnapshot, state.createSnapshot, state.sheet],
     shallow,
   )
 

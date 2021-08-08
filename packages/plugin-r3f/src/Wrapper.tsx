@@ -15,7 +15,7 @@ const Wrapper: React.FC<{
         `getSheet() in <Wrapper getSheet={getSheet}> has returned an invalid value`,
       )
     }
-    bindToCanvas({sheet})({gl, scene})
+    bindToCanvas({sheet, gl, scene})
   }, [scene, gl])
 
   return <>{props.children}</>
