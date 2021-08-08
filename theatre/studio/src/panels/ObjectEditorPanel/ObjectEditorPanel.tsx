@@ -74,13 +74,13 @@ const Header = styled.div`
 
   &:after {
     position: absolute;
-    inset: 4px 0px;
+    inset: 1px 0px;
     display: block;
     content: ' ';
     pointer-events: none;
     z-index: -1;
-    background-color: #69777947;
-    border-radius: 2px 0 0 2px;
+    background-color: #262c2dd1;
+    /* border-radius: 2px 0 0 2px; */
   }
 `
 
