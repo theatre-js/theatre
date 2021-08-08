@@ -1,4 +1,4 @@
-import type {ISheet, ISheetObject} from '@theatre/core'
+import type {IProject, ISheet, ISheetObject} from '@theatre/core'
 import studioTicker from '@theatre/studio/studioTicker'
 import type {IDerivation, Pointer} from '@theatre/dataverse'
 import {prism} from '@theatre/dataverse'
@@ -15,10 +15,7 @@ import {getOutlineSelection} from './selectors'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import getStudio from './getStudio'
 import type React from 'react'
-import type {
-  PropTypeConfig_Boolean,
-  PropTypeConfig_Compound,
-} from '@theatre/core/propTypes'
+import type {PropTypeConfig_Compound} from '@theatre/core/propTypes'
 import {debounce} from 'lodash-es'
 
 export interface ITransactionAPI {
@@ -33,12 +30,6 @@ export interface PaneClassDefinition<
   dataType: DataType
   component: React.ComponentType<{
     paneId: string
-    object: ISheetObject<
-      PropTypeConfig_Compound<{
-        visible: PropTypeConfig_Boolean
-        data: DataType
-      }>
-    >
   }>
 }
 
@@ -53,9 +44,6 @@ export type IExtension = {
 export type PaneInstance<ClassName extends string> = {
   extensionId: string
   instanceId: string
-  object: ISheetObject<
-    PropTypeConfig_Compound<{data: $FixMe; visible: PropTypeConfig_Boolean}>
-  >
   definition: PaneClassDefinition<$FixMe>
 }
 
@@ -87,6 +75,8 @@ export interface IStudio {
   createPane<PaneClass extends string>(
     paneClass: PaneClass,
   ): PaneInstance<PaneClass>
+
+  getStudioProject(): IProject
 }
 
 export default class TheatreStudio implements IStudio {
@@ -161,6 +151,16 @@ export default class TheatreStudio implements IStudio {
 
   scrub(): IScrub {
     return getStudio().scrub()
+  }
+
+  getStudioProject() {
+    const core = getStudio().core
+    if (!core) {
+      throw new Error(`You're calling studio.getStudioProject() before \`@theatre/core\` is loaded. To fix this:
+1. Check if \`@theatre/core\` is import/required in your bundle.
+2. Check the stack trace of this error and make sure the funciton that calls getStudioProject() is run after \`@theatre/core\` is loaded.`)
+    }
+    return getStudio().getStudioProject(core)
   }
 
   debouncedScrub(threshold: number = 1000): Pick<IScrub, 'capture'> {

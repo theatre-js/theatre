@@ -1,7 +1,7 @@
 import {prism, val} from '@theatre/dataverse'
 import {emptyArray} from '@theatre/shared/utils'
 import SimpleCache from '@theatre/shared/utils/SimpleCache'
-import type {$FixMe, $IntentionalAny} from '@theatre/shared/utils/types'
+import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import type {Studio} from './Studio'
 import type {PaneInstance} from './TheatreStudio'
 
@@ -43,20 +43,9 @@ export default class PaneManager {
           const instance = prism.memo(
             `instance-${instanceDescriptor!.instanceId}`,
             () => {
-              const object = this._studio
-                .getExtensionSheet(extensionId, core)
-                .object(
-                  'Pane: ' + instanceId,
-                  null,
-                  core.types.compound({
-                    panelThingy: core.types.boolean(false),
-                  }),
-                ) as $FixMe
-
               const inst: PaneInstance<$IntentionalAny> = {
                 extensionId,
                 instanceId,
-                object,
                 definition,
               }
               return inst
