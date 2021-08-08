@@ -5,7 +5,7 @@ module.exports = {
   ],
   moduleNameMapper: {
     ...require('./devEnv/getAliasesFromTsConfig').getAliasesFromTsConfigForJest(),
-    '\\.(css)$': 'identity-obj-proxy',
+    '\\.(css|svg|png)$': 'identity-obj-proxy',
     'lodash-es/(.*)': 'lodash/$1',
     'react-use/esm/(.*)': 'react-use/lib/$1',
     'lodash-es': 'lodash',
