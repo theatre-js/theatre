@@ -5318,6 +5318,36 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-three/drei@npm:^7.3.1":
+  version: 7.3.1
+  resolution: "@react-three/drei@npm:7.3.1"
+  dependencies:
+    "@babel/runtime": ^7.11.2
+    blob-polyfill: ^5.0.20210201
+    detect-gpu: ^3.0.0
+    glsl-noise: ^0.0.0
+    lodash.omit: ^4.5.0
+    lodash.pick: ^4.4.0
+    react-merge-refs: ^1.0.0
+    stats.js: ^0.17.0
+    three-mesh-bvh: ^0.4.1
+    three-stdlib: ^2.4.0
+    troika-three-text: ^0.42.0
+    use-asset: ^1.0.4
+    utility-types: ^3.10.0
+    zustand: ^3.5.1
+  peerDependencies:
+    "@react-three/fiber": ">=6.0"
+    react: ">=17.0"
+    react-dom: ">=17.0"
+    three: ">=0.128.0"
+  peerDependenciesMeta:
+    react-dom:
+      optional: true
+  checksum: 696aad6e64b4b858a3182d5cdb42d1a17ccefa2b070d808aa79a8316835b4ca927c6d72d7ae574d4f64ce79e988cfb3318381713e5fba41ec6d9365e819278b7
+  languageName: node
+  linkType: hard
+
 "@react-three/fiber@npm:^7.0.6":
   version: 7.0.6
   resolution: "@react-three/fiber@npm:7.0.6"
@@ -5716,6 +5746,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@theatre/plugin-r3f@workspace:packages/plugin-r3f"
   dependencies:
+    "@react-three/drei": ^7.3.1
     "@theatre/dataverse-react": "workspace:*"
     "@types/jest": ^26.0.23
     "@types/lodash-es": ^4.17.4
@@ -5734,13 +5765,12 @@ __metadata:
     typescript: ^4.3.5
     zustand: ^3.5.1
   peerDependencies:
-    "@react-three/drei": "*"
-    "@react-three/fiber": "*"
+    "@react-three/fiber": ^7.0.6
     "@theatre/core": "*"
     "@theatre/studio": "*"
-    react: "*"
-    react-dom: "*"
-    three: "*"
+    react: ^17.0.2
+    react-dom: ^17.0.2
+    three: ^0.131.3
   languageName: unknown
   linkType: soft
 
@@ -5758,6 +5788,9 @@ __metadata:
   resolution: "@theatre/studio@workspace:theatre/studio"
   dependencies:
     "@theatre/dataverse": "workspace:*"
+    react: ^17.0.2
+    react-dom: ^17.0.2
+    styled-components: ^5.3.0
   peerDependencies:
     "@theatre/core": "*"
   languageName: unknown
@@ -23095,6 +23128,26 @@ fsevents@^1.2.7:
   peerDependencies:
     three: ">=0.128.0"
   checksum: d4a51044878546b225e37f156866077b80984a5b8d46b647787005c987b8f9aed42713d157bae41052544ec46455b8edb31d2400c6c2949a718d2e6498154d98
+  languageName: node
+  linkType: hard
+
+"three-stdlib@npm:^2.4.0":
+  version: 2.4.0
+  resolution: "three-stdlib@npm:2.4.0"
+  dependencies:
+    "@babel/runtime": ^7.14.6
+    "@webgpu/glslang": ^0.0.15
+    "@webxr-input-profiles/motion-controllers": ^1.0.0
+    chevrotain: ^9.0.2
+    fflate: ^0.6.9
+    ktx-parse: ^0.2.1
+    mmd-parser: ^1.0.4
+    opentype.js: ^1.3.3
+    potpack: ^1.0.1
+    zstddec: ^0.0.2
+  peerDependencies:
+    three: ">=0.128.0"
+  checksum: c8a34459642555fc970ade17aad457009415b1b7d37c95d161bfce311990b6ef65607a9c05dfc073b59c7cbf5dffd7baa2e813b5ca141260b710b19d6c7502db
   languageName: node
   linkType: hard
 
