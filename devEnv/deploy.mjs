@@ -41,6 +41,26 @@ const packagesWhoseVersionsShouldBump = [
   // prepublish script is only called from the `$ cd /path/to/monorepo; yarn run deploy`
   process.env.THEATRE_IS_PUBLISHING = true
 
+  // better quote function from https://github.com/google/zx/pull/167
+  $.quote = function quote(arg) {
+    if (/^[a-z0-9/_.-]+$/i.test(arg)) {
+      return arg
+    }
+    return (
+      `$'` +
+      arg
+        .replace(/\\/g, '\\\\')
+        .replace(/'/g, "\\'")
+        .replace(/\f/g, '\\f')
+        .replace(/\n/g, '\\n')
+        .replace(/\r/g, '\\r')
+        .replace(/\t/g, '\\t')
+        .replace(/\v/g, '\\v')
+        .replace(/\0/g, '\\0') +
+      `'`
+    )
+  }
+
   $.verbose = false
   const gitTags = (await $`git tag --list`).toString().split('\n')
 
