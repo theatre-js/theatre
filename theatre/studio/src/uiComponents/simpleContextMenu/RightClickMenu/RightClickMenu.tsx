@@ -9,6 +9,7 @@ import useWindowSize from 'react-use/esm/useWindowSize'
 import styled from 'styled-components'
 import Item, {height as itemHeight} from './Item'
 import {PortalContext} from 'reakit'
+import useOnKeyDown from '@theatre/studio/uiComponents/useOnKeyDown'
 
 const minWidth = 190
 
@@ -93,6 +94,10 @@ const RightClickMenu: React.FC<{
     }
   }, [rect, container, props.rightClickPoint, windowSize, props.onRequestClose])
   const portalLayer = useContext(PortalContext)
+
+  useOnKeyDown((ev) => {
+    if (ev.key === 'Escape') props.onRequestClose()
+  })
 
   const items = Array.isArray(props.items) ? props.items : props.items()
 
