@@ -1,17 +1,16 @@
 import {getOutlineSelection} from '@theatre/studio/selectors'
 import {usePrism} from '@theatre/dataverse-react'
-import {prism} from '@theatre/dataverse'
 import React from 'react'
 import styled from 'styled-components'
-import DeterminePropEditor from './propEditors/DeterminePropEditor'
-import {isSheetObject} from '@theatre/shared/instanceTypes'
-import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
+import {isProject, isSheetObject} from '@theatre/shared/instanceTypes'
 import {
   panelZIndexes,
   TitleBar_Piece,
   TitleBar_Punctuation,
 } from '@theatre/studio/panels/BasePanel/common'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
+import ObjectDetails from './ObjectDetails'
+import ProjectDetails from './ProjectDetails'
 
 const Container = styled.div`
   background-color: transparent;
@@ -97,47 +96,57 @@ const Body = styled.div`
   user-select: none;
 `
 
-const ObjectEditorPanel: React.FC<{}> = (props) => {
+const DetailPanel: React.FC<{}> = (props) => {
   return usePrism(() => {
     const selection = getOutlineSelection()
 
-    const obj = selection.find((s): s is SheetObject => isSheetObject(s))
+    const obj = selection.find(isSheetObject)
+    if (obj) {
+      return (
+        <Container>
+          <Content>
+            <Header>
+              <Title
+                title={`${obj.sheet.address.sheetId}: ${obj.sheet.address.sheetInstanceId} > ${obj.address.objectKey}`}
+              >
+                <TitleBar_Piece>{obj.sheet.address.sheetId} </TitleBar_Piece>
 
-    if (!obj) return <></>
+                <TitleBar_Punctuation>{':'}&nbsp;</TitleBar_Punctuation>
+                <TitleBar_Piece>
+                  {obj.sheet.address.sheetInstanceId}{' '}
+                </TitleBar_Piece>
 
-    const key = prism.memo('key', () => JSON.stringify(obj.address), [obj])
+                <TitleBar_Punctuation>&nbsp;{'>'}&nbsp;</TitleBar_Punctuation>
+                <TitleBar_Piece>{obj.address.objectKey}</TitleBar_Piece>
+              </Title>
+            </Header>
+            <Body>
+              <ObjectDetails objects={[obj]} />
+            </Body>
+          </Content>
+        </Container>
+      )
+    }
+    const project = selection.find(isProject)
+    if (project) {
+      return (
+        <Container>
+          <Content>
+            <Header>
+              <Title title={`${project.address.projectId}`}>
+                <TitleBar_Piece>{project.address.projectId} </TitleBar_Piece>
+              </Title>
+            </Header>
+            <Body>
+              <ProjectDetails projects={[project]} />
+            </Body>
+          </Content>
+        </Container>
+      )
+    }
 
-    return (
-      <Container>
-        <Content>
-          <Header>
-            <Title
-              title={`${obj.sheet.address.sheetId}: ${obj.sheet.address.sheetInstanceId} > ${obj.address.objectKey}`}
-            >
-              <TitleBar_Piece>{obj.sheet.address.sheetId} </TitleBar_Piece>
-
-              <TitleBar_Punctuation>{':'}&nbsp;</TitleBar_Punctuation>
-              <TitleBar_Piece>
-                {obj.sheet.address.sheetInstanceId}{' '}
-              </TitleBar_Piece>
-
-              <TitleBar_Punctuation>&nbsp;{'>'}&nbsp;</TitleBar_Punctuation>
-              <TitleBar_Piece>{obj.address.objectKey}</TitleBar_Piece>
-            </Title>
-          </Header>
-          <Body>
-            <DeterminePropEditor
-              key={key}
-              obj={obj}
-              pointerToProp={obj.propsP}
-              propConfig={obj.template.config}
-              depth={1}
-            />
-          </Body>
-        </Content>
-      </Container>
-    )
+    return <></>
   }, [])
 }
 
-export default ObjectEditorPanel
+export default DetailPanel

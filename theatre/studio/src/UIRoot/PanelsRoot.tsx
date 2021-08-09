@@ -1,5 +1,5 @@
 import OutlinePanel from '@theatre/studio/panels/OutlinePanel/OutlinePanel'
-import ObjectEditorPanel from '@theatre/studio/panels/DetailPanel/ObjectEditorPanel'
+import DetailPanel from '@theatre/studio/panels/DetailPanel/DetailPanel'
 import React from 'react'
 import getStudio from '@theatre/studio/getStudio'
 import {useVal} from '@theatre/dataverse-react'
@@ -18,7 +18,7 @@ const PanelsRoot: React.FC = () => {
     <>
       {paneEls}
       <OutlinePanel />
-      <ObjectEditorPanel />
+      <DetailPanel />
       <SequenceEditorPanel />
     </>
   )
