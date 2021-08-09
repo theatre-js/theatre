@@ -6,7 +6,7 @@ import {usePrism, useVal} from '@theatre/dataverse-react'
 import getStudio from '@theatre/studio/getStudio'
 import BasicNumberInput from '@theatre/studio/uiComponents/form/BasicNumberInput'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
-import {propNameText} from '@theatre/studio/panels/ObjectEditorPanel/propEditors/utils/SingleRowPropEditor'
+import {propNameText} from '@theatre/studio/panels/DetailPanel/propEditors/utils/SingleRowPropEditor'
 
 const greaterThanZero = (v: number) => isFinite(v) && v > 0
 

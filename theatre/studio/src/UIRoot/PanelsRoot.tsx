@@ -1,5 +1,5 @@
 import OutlinePanel from '@theatre/studio/panels/OutlinePanel/OutlinePanel'
-import ObjectEditorPanel from '@theatre/studio/panels/ObjectEditorPanel/ObjectEditorPanel'
+import ObjectEditorPanel from '@theatre/studio/panels/DetailPanel/ObjectEditorPanel'
 import React from 'react'
 import getStudio from '@theatre/studio/getStudio'
 import {useVal} from '@theatre/dataverse-react'

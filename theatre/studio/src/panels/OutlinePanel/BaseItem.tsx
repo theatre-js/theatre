@@ -4,7 +4,7 @@ import {GoChevronRight, DiHtml53DEffects} from 'react-icons/all'
 import styled, {css} from 'styled-components'
 import noop from '@theatre/shared/utils/noop'
 import {transparentize, darken, opacify, lighten} from 'polished'
-import {rowBgColor} from '@theatre/studio/panels/ObjectEditorPanel/propEditors/utils/SingleRowPropEditor'
+import {rowBgColor} from '@theatre/studio/panels/DetailPanel/propEditors/utils/SingleRowPropEditor'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 
 export const Container = styled.li`

@@ -8,11 +8,11 @@ import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
 import React, {useCallback, useRef} from 'react'
 import styled from 'styled-components'
-import {useEditingToolsForPrimitiveProp} from '@theatre/studio/panels/ObjectEditorPanel/propEditors/utils/useEditingToolsForPrimitiveProp'
-import {nextPrevCursorsTheme} from '@theatre/studio/panels/ObjectEditorPanel/propEditors/utils/NextPrevKeyframeCursors'
+import {useEditingToolsForPrimitiveProp} from '@theatre/studio/panels/DetailPanel/propEditors/utils/useEditingToolsForPrimitiveProp'
+import {nextPrevCursorsTheme} from '@theatre/studio/panels/DetailPanel/propEditors/utils/NextPrevKeyframeCursors'
 import {graphEditorColors} from '@theatre/studio/panels/SequenceEditorPanel/GraphEditor/GraphEditor'
 import {BaseHeader, Container as BaseContainer} from './AnyCompositeRow'
-import {propNameText} from '@theatre/studio/panels/ObjectEditorPanel/propEditors/utils/SingleRowPropEditor'
+import {propNameText} from '@theatre/studio/panels/DetailPanel/propEditors/utils/SingleRowPropEditor'
 
 const theme = {
   label: {
