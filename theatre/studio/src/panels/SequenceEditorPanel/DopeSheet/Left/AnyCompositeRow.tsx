@@ -34,8 +34,12 @@ const Header = styled(BaseHeader)<{
 
 const Head_Label = styled.span`
   ${propNameText};
-  display: flex;
-  align-items: center;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-right: 4px;
+  line-height: 26px;
+  flex-wrap: nowrap;
 `
 
 const Head_Icon = styled.span<{isOpen: boolean}>`
