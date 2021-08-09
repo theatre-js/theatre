@@ -145,6 +145,7 @@ export default class StudioStore {
 
                   if (typeof trackId === 'string') {
                     const seq = root.sheet.getSequence()
+                    seq.position = seq.closestGridPosition(seq.position)
                     stateEditors.coreByProject.historic.sheetsById.sequence.setKeyframeAtPosition(
                       {
                         ...propAddress,
