@@ -27,6 +27,7 @@ import type {Store} from 'redux'
 import {persistStateOfStudio} from './persistStateOfStudio'
 import {isSheetObject} from '@theatre/shared/instanceTypes'
 import globals from '@theatre/shared/globals'
+import {nanoid} from 'nanoid'
 
 export type Drafts = {
   historic: Draft<StudioHistoricState>
@@ -268,5 +269,25 @@ export default class StudioStore {
 
   redo() {
     this._reduxStore.dispatch(studioActions.historic.redo())
+  }
+
+  createExportedStateOfProject(projectId: string): string {
+    const projectHistoricState =
+      this._reduxStore.getState().$persistent.historic.innerState.coreByProject[
+        projectId
+      ]
+    const revision = nanoid(16)
+
+    const s = {
+      revision,
+      definitionVersion: globals.currentProjectStateDefinitionVersion,
+      projectState: projectHistoricState,
+    }
+
+    // pushOnDiskRevisionBrowserStateIsBasedOn.originalReducer(s, revision)
+
+    const exportString = JSON.stringify(s, null, 2)
+
+    return exportString
   }
 }

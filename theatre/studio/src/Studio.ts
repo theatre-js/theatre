@@ -172,4 +172,8 @@ export class Studio {
   redo() {
     this._store.redo()
   }
+
+  createExportedStateOfProject(projectId: string): string {
+    return this._store.createExportedStateOfProject(projectId)
+  }
 }
