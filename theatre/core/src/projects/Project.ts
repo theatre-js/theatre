@@ -57,6 +57,7 @@ export default class Project {
       historic: config.state ?? {
         sheetsById: {},
         definitionVersion: globals.currentProjectStateDefinitionVersion,
+        revisionHistory: [],
       },
       ephemeral: {
         loadingState: {

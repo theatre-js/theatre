@@ -17,6 +17,7 @@ export async function setupTestSheet(sheetState: SheetState_Historic) {
     sheetsById: {
       Sheet: sheetState,
     },
+    revisionHistory: [],
   }
   const project = getProject('Test Project ' + lastProjectN++, {
     state: projectState,

@@ -7,7 +7,7 @@ import globals from '@theatre/shared/globals'
 
 /**
  * @todo this could be turned into a simple derivation, like:
- * editor.isReady: IDerivation<{isReady: true} | {isReady: false, readon: 'conflictBetweenDiskStateAndBrowserState'}>
+ * editor.isReady: IDerivation<{isReady: true} | {isReady: false, reason: 'conflictBetweenDiskStateAndBrowserState'}>
  */
 export default async function initialiseProjectState(
   studio: Studio,
@@ -42,6 +42,7 @@ export default async function initialiseProjectState(
       drafts.historic.coreByProject[projectId] = {
         sheetsById: {},
         definitionVersion: globals.currentProjectStateDefinitionVersion,
+        revisionHistory: [],
       }
     }
 
@@ -81,9 +82,8 @@ export default async function initialiseProjectState(
         useBrowserState()
       } else {
         if (
-          !browserState.exportBookkeeping ||
-          browserState.exportBookkeeping.basedOnRevisions.indexOf(
-            onDiskState.exportBookkeeping.revision,
+          browserState.revisionHistory.indexOf(
+            onDiskState.revisionHistory[onDiskState.revisionHistory.length - 1],
           ) == -1
         ) {
           browserStateIsNotBasedOnDiskState(onDiskState)

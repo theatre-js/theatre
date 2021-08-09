@@ -28,6 +28,7 @@ import {persistStateOfStudio} from './persistStateOfStudio'
 import {isSheetObject} from '@theatre/shared/instanceTypes'
 import globals from '@theatre/shared/globals'
 import {nanoid} from 'nanoid'
+import type {OnDiskState} from '@theatre/core/projects/store/storeTypes'
 
 export type Drafts = {
   historic: Draft<StudioHistoricState>
@@ -271,23 +272,29 @@ export default class StudioStore {
     this._reduxStore.dispatch(studioActions.historic.redo())
   }
 
-  createExportedStateOfProject(projectId: string): string {
+  createExportedStateOfProject(projectId: string): OnDiskState {
+    const revision = nanoid(16)
+    // let's assume projectId is already loaded
+
+    this.tempTransaction(({drafts}) => {
+      const state = drafts.historic.coreByProject[projectId]
+
+      const maxNumOfRevisionsToKeep = 50
+      state.revisionHistory.unshift(revision)
+      if (state.revisionHistory.length > maxNumOfRevisionsToKeep) {
+        state.revisionHistory.length = maxNumOfRevisionsToKeep
+      }
+    }).commit()
+
     const projectHistoricState =
       this._reduxStore.getState().$persistent.historic.innerState.coreByProject[
         projectId
       ]
-    const revision = nanoid(16)
 
-    const s = {
-      revision,
-      definitionVersion: globals.currentProjectStateDefinitionVersion,
-      projectState: projectHistoricState,
+    const generatedOnDiskState: OnDiskState = {
+      ...projectHistoricState,
     }
 
-    // pushOnDiskRevisionBrowserStateIsBasedOn.originalReducer(s, revision)
-
-    const exportString = JSON.stringify(s, null, 2)
-
-    return exportString
+    return generatedOnDiskState
   }
 }

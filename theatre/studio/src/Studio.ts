@@ -17,6 +17,7 @@ import SimpleCache from '@theatre/shared/utils/SimpleCache'
 import type {IProject, ISheet} from '@theatre/core'
 import PaneManager from './PaneManager'
 import type * as _coreExports from '@theatre/core/coreExports'
+import type {OnDiskState} from '@theatre/core/projects/store/storeTypes'
 
 export type CoreExports = typeof _coreExports
 
@@ -173,7 +174,7 @@ export class Studio {
     this._store.redo()
   }
 
-  createExportedStateOfProject(projectId: string): string {
+  createExportedStateOfProject(projectId: string): OnDiskState {
     return this._store.createExportedStateOfProject(projectId)
   }
 }

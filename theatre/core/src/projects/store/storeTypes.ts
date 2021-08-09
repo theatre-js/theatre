@@ -1,13 +1,9 @@
 import type {StrictRecord} from '@theatre/shared/utils/types'
 import type {SheetState_Historic} from './types/SheetState_Historic'
 
-export interface ProjectLoadedState {
-  type: 'loaded'
-}
-
 type ProjectLoadingState =
   | {type: 'loading'}
-  | ProjectLoadedState
+  | {type: 'loaded'}
   | {
       type: 'browserStateIsNotBasedOnDiskState'
       onDiskState: OnDiskState
@@ -34,7 +30,11 @@ export interface ProjectEphemeralState {
  */
 export interface ProjectState_Historic {
   sheetsById: StrictRecord<string, SheetState_Historic>
-  exportBookkeeping?: {revision: string; basedOnRevisions: string[]}
+  /**
+   * The last 50 revision IDs this state is based on, starting with the most recent one.
+   * The most recent one is the revision ID of this state
+   */
+  revisionHistory: string[]
   definitionVersion: string
 }
 
@@ -44,6 +44,4 @@ export interface ProjectState {
   ephemeral: ProjectEphemeralState
 }
 
-export interface OnDiskState extends ProjectState_Historic {
-  exportBookkeeping: {revision: string; basedOnRevisions: string[]}
-}
+export interface OnDiskState extends ProjectState_Historic {}
