@@ -83,7 +83,7 @@ export default async function initialiseProjectState(
       } else {
         if (
           browserState.revisionHistory.indexOf(
-            onDiskState.revisionHistory[onDiskState.revisionHistory.length - 1],
+            onDiskState.revisionHistory[0],
           ) == -1
         ) {
           browserStateIsNotBasedOnDiskState(onDiskState)

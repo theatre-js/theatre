@@ -27,8 +27,8 @@ import type {Store} from 'redux'
 import {persistStateOfStudio} from './persistStateOfStudio'
 import {isSheetObject} from '@theatre/shared/instanceTypes'
 import globals from '@theatre/shared/globals'
-import {nanoid} from 'nanoid'
 import type {OnDiskState} from '@theatre/core/projects/store/storeTypes'
+import {generateDiskStateRevision} from './generateDiskStateRevision'
 
 export type Drafts = {
   historic: Draft<StudioHistoricState>
@@ -273,17 +273,14 @@ export default class StudioStore {
   }
 
   createExportedStateOfProject(projectId: string): OnDiskState {
-    const revision = nanoid(16)
+    const revision = generateDiskStateRevision()
     // let's assume projectId is already loaded
 
-    this.tempTransaction(({drafts}) => {
-      const state = drafts.historic.coreByProject[projectId]
-
-      const maxNumOfRevisionsToKeep = 50
-      state.revisionHistory.unshift(revision)
-      if (state.revisionHistory.length > maxNumOfRevisionsToKeep) {
-        state.revisionHistory.length = maxNumOfRevisionsToKeep
-      }
+    this.tempTransaction(({stateEditors}) => {
+      stateEditors.coreByProject.historic.revisionHistory.add({
+        projectId,
+        revision,
+      })
     }).commit()
 
     const projectHistoricState =

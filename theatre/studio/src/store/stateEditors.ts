@@ -363,6 +363,18 @@ namespace stateEditors {
   }
   export namespace coreByProject {
     export namespace historic {
+      export namespace revisionHistory {
+        export function add(p: ProjectAddress & {revision: string}) {
+          const revisionHistory =
+            drafts().historic.coreByProject[p.projectId].revisionHistory
+
+          const maxNumOfRevisionsToKeep = 50
+          revisionHistory.unshift(p.revision)
+          if (revisionHistory.length > maxNumOfRevisionsToKeep) {
+            revisionHistory.length = maxNumOfRevisionsToKeep
+          }
+        }
+      }
       export namespace sheetsById {
         export function _ensure(
           p: WithoutSheetInstance<SheetAddress>,
