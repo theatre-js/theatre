@@ -198,6 +198,9 @@ function useDragKeyframe(
               ...propsAtStartOfDrag.sheetObject.address,
               trackId: propsAtStartOfDrag.trackId,
               keyframes: updatedKeyframes,
+              snappingFunction: val(
+                propsAtStartOfDrag.layoutP.sheet,
+              ).getSequence().closestGridPosition,
             },
           )
         })

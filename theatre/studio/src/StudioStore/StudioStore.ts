@@ -144,12 +144,14 @@ export default class StudioStore {
                   ) as $FixMe as SequenceTrackId | undefined
 
                   if (typeof trackId === 'string') {
+                    const seq = root.sheet.getSequence()
                     stateEditors.coreByProject.historic.sheetsById.sequence.setKeyframeAtPosition(
                       {
                         ...propAddress,
                         trackId,
-                        position: root.sheet.getSequence().position,
+                        position: seq.position,
                         value: v as $FixMe,
+                        snappingFunction: seq.closestGridPosition,
                       },
                     )
                   } else {
@@ -196,7 +198,8 @@ export default class StudioStore {
                       {
                         ...propAddress,
                         trackId,
-                        position: root.sheet.getSequence().position,
+                        position:
+                          root.sheet.getSequence().positionSnappedToGrid,
                       },
                     )
                   } else {

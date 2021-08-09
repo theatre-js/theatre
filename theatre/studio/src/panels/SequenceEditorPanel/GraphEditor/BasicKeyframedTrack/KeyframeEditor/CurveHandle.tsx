@@ -175,6 +175,9 @@ function useOurDrags(node: SVGCircleElement | null, props: IProps): void {
             stateEditors.coreByProject.historic.sheetsById.sequence.replaceKeyframes(
               {
                 ...propsAtStartOfDrag.sheetObject.address,
+                snappingFunction: val(
+                  propsAtStartOfDrag.layoutP.sheet,
+                ).getSequence().closestGridPosition,
                 trackId: propsAtStartOfDrag.trackId,
                 keyframes: [
                   {
@@ -194,6 +197,9 @@ function useOurDrags(node: SVGCircleElement | null, props: IProps): void {
               {
                 ...propsAtStartOfDrag.sheetObject.address,
                 trackId: propsAtStartOfDrag.trackId,
+                snappingFunction: val(
+                  propsAtStartOfDrag.layoutP.sheet,
+                ).getSequence().closestGridPosition,
                 keyframes: [
                   {
                     ...next,

@@ -97,11 +97,13 @@ export default class Sequence {
     return this.closestGridPosition(this.position)
   }
 
-  closestGridPosition(posInUnitSpace: number): number {
+  closestGridPosition = (posInUnitSpace: number): number => {
     const subUnitsPerUnit = this.subUnitsPerUnit
     const gridLength = 1 / subUnitsPerUnit
 
-    return Math.round(posInUnitSpace / gridLength) * gridLength
+    return parseFloat(
+      (Math.round(posInUnitSpace / gridLength) * gridLength).toFixed(3),
+    )
   }
 
   set position(requestedPosition: number) {

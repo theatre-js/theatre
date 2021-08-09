@@ -227,6 +227,7 @@ namespace utils {
                     translate: delta,
                     scale: 1,
                     origin: 0,
+                    snappingFunction: sheet.getSequence().closestGridPosition,
                   })
                 }
               }

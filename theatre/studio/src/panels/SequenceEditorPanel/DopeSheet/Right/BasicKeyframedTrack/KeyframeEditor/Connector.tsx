@@ -14,6 +14,7 @@ import type {
 } from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import {dotSize} from './Dot'
 import type KeyframeEditor from './KeyframeEditor'
+import type Sequence from '@theatre/core/sequences/Sequence'
 
 const connectorHeight = dotSize / 2 + 1
 const connectorWidthUnscaled = 1000
@@ -108,6 +109,8 @@ const Connector: React.FC<IProps> = (props) => {
 
             replaceKeyframes({
               ...props.leaf.sheetObject.address,
+              snappingFunction: val(props.layoutP.sheet).getSequence()
+                .closestGridPosition,
               trackId: props.leaf.trackId,
               keyframes: [
                 {
@@ -157,6 +160,7 @@ function useDragKeyframe(node: HTMLDivElement | null, props: IProps) {
     let selectionDragHandlers:
       | ReturnType<DopeSheetSelection['getDragHandlers']>
       | undefined
+    let sequence: Sequence
     return {
       lockCursorTo: 'ew-resize',
       onDragStart(event) {
@@ -174,6 +178,7 @@ function useDragKeyframe(node: HTMLDivElement | null, props: IProps) {
         }
 
         propsAtStartOfDrag = propsRef.current
+        sequence = val(propsAtStartOfDrag.layoutP.sheet).getSequence()
 
         toUnitSpace = val(propsAtStartOfDrag.layoutP.scaledSpace.toUnitSpace)
       },
@@ -201,6 +206,7 @@ function useDragKeyframe(node: HTMLDivElement | null, props: IProps) {
               translate: delta,
               scale: 1,
               origin: 0,
+              snappingFunction: sequence.closestGridPosition,
             },
           )
         })

@@ -458,11 +458,13 @@ namespace stateEditors {
               trackId: string
               position: number
               value: number
+              snappingFunction: SnappingFunction
             },
           ) {
+            const position = p.snappingFunction(p.position)
             const {keyframes} = _getTrack(p)
             const existingKeyframeIndex = keyframes.findIndex(
-              (kf) => kf.position === p.position,
+              (kf) => kf.position === position,
             )
             if (existingKeyframeIndex !== -1) {
               const kf = keyframes[existingKeyframeIndex]
@@ -471,12 +473,12 @@ namespace stateEditors {
             }
             const indexOfLeftKeyframe = findLastIndex(
               keyframes,
-              (kf) => kf.position < p.position,
+              (kf) => kf.position < position,
             )
             if (indexOfLeftKeyframe === -1) {
               keyframes.unshift({
                 id: generateKeyframeId(),
-                position: p.position,
+                position,
                 connectedRight: true,
                 handles: [0.5, 1, 0.5, 0],
                 value: p.value,
@@ -486,7 +488,7 @@ namespace stateEditors {
             const leftKeyframe = keyframes[indexOfLeftKeyframe]
             keyframes.splice(indexOfLeftKeyframe + 1, 0, {
               id: generateKeyframeId(),
-              position: p.position,
+              position,
               connectedRight: leftKeyframe.connectedRight,
               handles: [0.5, 1, 0.5, 0],
               value: p.value,
@@ -508,6 +510,8 @@ namespace stateEditors {
             keyframes.splice(index, 1)
           }
 
+          type SnappingFunction = (p: number) => number
+
           export function transformKeyframes(
             p: WithoutSheetInstance<SheetObjectAddress> & {
               trackId: string
@@ -515,6 +519,7 @@ namespace stateEditors {
               translate: number
               scale: number
               origin: number
+              snappingFunction: SnappingFunction
             },
           ) {
             const track = _getTrack(p)
@@ -527,7 +532,9 @@ namespace stateEditors {
 
             const transformed = selectedKeyframes.map((untransformedKf) => {
               const oldPosition = untransformedKf.position
-              const newPosition = transformNumber(oldPosition, p)
+              const newPosition = p.snappingFunction(
+                transformNumber(oldPosition, p),
+              )
               return {...untransformedKf, position: newPosition}
             })
 
@@ -551,17 +558,20 @@ namespace stateEditors {
             p: WithoutSheetInstance<SheetObjectAddress> & {
               trackId: string
               keyframes: Array<Keyframe>
+              snappingFunction: SnappingFunction
             },
           ) {
             const track = _getTrack(p)
             const initialKeyframes = current(track.keyframes)
-            const sanitizedKeyframes = p.keyframes.filter((kf) => {
-              if (!isFinite(kf.value)) return false
-              if (!kf.handles.every((handleValue) => isFinite(handleValue)))
-                return false
+            const sanitizedKeyframes = p.keyframes
+              .filter((kf) => {
+                if (!isFinite(kf.value)) return false
+                if (!kf.handles.every((handleValue) => isFinite(handleValue)))
+                  return false
 
-              return true
-            })
+                return true
+              })
+              .map((kf) => ({...kf, position: p.snappingFunction(kf.position)}))
 
             const newKeyframesById = keyBy(sanitizedKeyframes, 'id')
 
@@ -569,13 +579,13 @@ namespace stateEditors {
               (kf) => !newKeyframesById[kf.id],
             )
 
-            const unselectedByPositino = keyBy(unselected, 'position')
+            const unselectedByPosition = keyBy(unselected, 'position')
 
             // If the new transformed keyframes overlap with any existing keyframes,
             // we remove the overlapped keyframes
             sanitizedKeyframes.forEach(({position}) => {
               const existingKeyframeAtThisPosition =
-                unselectedByPositino[position]
+                unselectedByPosition[position]
               if (existingKeyframeAtThisPosition) {
                 pullFromArray(unselected, existingKeyframeAtThisPosition)
               }

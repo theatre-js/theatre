@@ -209,6 +209,9 @@ function useDragKeyframe(
               ...propsAtStartOfDrag.leaf.sheetObject.address,
               trackId: propsAtStartOfDrag.leaf.trackId,
               keyframes: [{...original, position: newPosition}],
+              snappingFunction: val(
+                propsAtStartOfDrag.layoutP.sheet,
+              ).getSequence().closestGridPosition,
             },
           )
         })
