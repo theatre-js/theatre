@@ -2,7 +2,7 @@ import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Histo
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import {transparentize} from 'polished'
 import React from 'react'
-import styled from 'styled-components'
+import styled, {css} from 'styled-components'
 
 const Container = styled.div`
   display: flex;
@@ -71,13 +71,18 @@ const CurButton = styled(Button)<{isOn: boolean}>`
     props.isOn ? nextPrevCursorsTheme.onColor : nextPrevCursorsTheme.offColor};
 `
 
+const pointerEventsNone = css`
+  pointer-events: none !important;
+`
+
 const PrevOrNextButton = styled(Button)<{available: boolean}>`
   color: ${(props) =>
     props.available
       ? nextPrevCursorsTheme.onColor
       : nextPrevCursorsTheme.offColor};
 
-  ${(props) => (props.available ? pointerEventsAutoInNormalMode : '')};
+  ${(props) =>
+    props.available ? pointerEventsAutoInNormalMode : pointerEventsNone};
 `
 
 const Prev = styled(PrevOrNextButton)<{available: boolean}>`
