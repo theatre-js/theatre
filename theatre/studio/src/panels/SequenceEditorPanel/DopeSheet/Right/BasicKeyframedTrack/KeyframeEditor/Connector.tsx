@@ -69,17 +69,21 @@ const Connector: React.FC<IProps> = (props) => {
     items: () => {
       return [
         {
-          label: 'Delete',
+          label: props.selection ? 'Delete Selection' : 'Delete both Keyframes',
           callback: () => {
-            getStudio()!.transaction(({stateEditors}) => {
-              stateEditors.coreByProject.historic.sheetsById.sequence.deleteKeyframes(
-                {
-                  ...props.leaf.sheetObject.address,
-                  keyframeIds: [cur.id, next.id],
-                  trackId: props.leaf.trackId,
-                },
-              )
-            })
+            if (props.selection) {
+              props.selection.delete()
+            } else {
+              getStudio()!.transaction(({stateEditors}) => {
+                stateEditors.coreByProject.historic.sheetsById.sequence.deleteKeyframes(
+                  {
+                    ...props.leaf.sheetObject.address,
+                    keyframeIds: [cur.id, next.id],
+                    trackId: props.leaf.trackId,
+                  },
+                )
+              })
+            }
           },
         },
       ]
@@ -94,14 +98,18 @@ const Connector: React.FC<IProps> = (props) => {
       ref={nodeRef}
       onClick={(event) => {
         if (event.button !== 0) return
+
+        // @todo Put this in the context menu
+
         const orig = JSON.stringify([
           cur.handles[2],
           cur.handles[3],
           next.handles[0],
           next.handles[1],
         ])
-        const modifiedS = window.prompt('As cubic-bezier()', orig)
+        const modifiedS = orig // window.prompt('As cubic-bezier()', orig)
         if (modifiedS && modifiedS !== orig) {
+          return
           const modified = JSON.parse(modifiedS)
           getStudio()!.transaction(({stateEditors}) => {
             const {replaceKeyframes} =
