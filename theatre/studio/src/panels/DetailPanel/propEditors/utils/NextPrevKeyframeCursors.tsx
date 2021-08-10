@@ -34,7 +34,7 @@ const Container = styled.div`
   }
 `
 
-const Button = styled.button`
+const Button = styled.div`
   background: none;
   position: relative;
   border: 0;
