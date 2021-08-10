@@ -5,21 +5,46 @@ import SheetsList from '@theatre/studio/panels/OutlinePanel/SheetsList/SheetsLis
 import getStudio from '@theatre/studio/getStudio'
 import {usePrism} from '@theatre/dataverse-react'
 import {getOutlineSelection} from '@theatre/studio/selectors'
+import {val} from '@theatre/dataverse'
+import styled from 'styled-components'
+
+const ConflictNotice = styled.div`
+  color: #ff6363;
+  margin-left: 11px;
+  background: #ff00002b;
+  padding: 2px 8px;
+  border-radius: 2px;
+  font-size: 10px;
+  box-shadow: 0 2px 8px -4px black;
+`
 
 const ProjectListItem: React.FC<{
   depth: number
   project: Project
 }> = ({depth, project}) => {
   const selection = usePrism(() => getOutlineSelection(), [])
+
+  const hasConflict = usePrism(() => {
+    const projectId = project.address.projectId
+    const loadingState = val(
+      getStudio().atomP.ephemeral.coreByProject[projectId].loadingState,
+    )
+    return loadingState?.type === 'browserStateIsNotBasedOnDiskState'
+  }, [project])
+
   const select = useCallback(() => {
     getStudio().transaction(({stateEditors}) => {
       stateEditors.studio.historic.panels.outline.selection.set([project])
     })
   }, [project])
+
   return (
     <BaseItem
       depth={depth}
       label={project.address.projectId}
+      labelDecoration={
+        hasConflict ? <ConflictNotice>Has Conflicts</ConflictNotice> : null
+      }
       children={<SheetsList project={project} depth={depth + 1} />}
       selectionStatus={
         selection.includes(project)

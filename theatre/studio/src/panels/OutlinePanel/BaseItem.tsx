@@ -155,7 +155,8 @@ const BaseItem: React.FC<{
   select?: VoidFn
   depth: number
   selectionStatus: SelectionStatus
-}> = ({label, children, depth, select, selectionStatus}) => {
+  labelDecoration?: React.ReactNode
+}> = ({label, children, depth, select, selectionStatus, labelDecoration}) => {
   const canContainChildren = children !== undefined
 
   return (
@@ -177,6 +178,7 @@ const BaseItem: React.FC<{
         </Head_IconContainer>
 
         <Head_Label>{label}</Head_Label>
+        {labelDecoration}
       </Header>
       {canContainChildren && <ChildrenContainer>{children}</ChildrenContainer>}
     </Container>
