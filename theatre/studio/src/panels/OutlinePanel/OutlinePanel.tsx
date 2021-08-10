@@ -3,6 +3,8 @@ import styled from 'styled-components'
 import {panelZIndexes} from '@theatre/studio/panels/BasePanel/common'
 import ProjectsList from './ProjectsList/ProjectsList'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
+import ToolbarIconButton from '@theatre/studio/uiComponents/toolbar/ToolbarIconButton'
+import {VscListTree} from 'react-icons/all'
 
 const Container = styled.div`
   background-color: transparent;
@@ -32,7 +34,12 @@ const Container = styled.div`
 `
 
 const TriggerContainer = styled.div`
-  top: 0;
+  margin-left: 12px;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
 `
 
 const Content = styled.div`
@@ -51,15 +58,25 @@ const Content = styled.div`
 
 const headerHeight = `32px`
 
-const Header = styled.div`
-  height: ${headerHeight};
-  display: flex;
-  align-items: center;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 180px;
-  ${pointerEventsAutoInNormalMode};
+const TriggerButton = styled(ToolbarIconButton)`
+  ${Container}:hover & {
+    --item-bg: rgba(36, 38, 42, 0.95);
+    --item-border-color: rgba(255, 255, 255, 0.22);
+    color: white;
+  }
+`
+
+const Title = styled.div`
+  margin: 0 12px;
+  color: #ffffffc2;
+  font-weight: 500;
+  font-size: 10px;
+  user-select: none;
+  position: relative;
+  display: none;
+  ${Container}:hover & {
+    display: block;
+  }
 
   &:after {
     position: absolute;
@@ -73,23 +90,11 @@ const Header = styled.div`
   }
 `
 
-const Title = styled.div`
-  margin: 0 10px;
-  color: #ffffffc2;
-  font-weight: 500;
-  font-size: 10px;
-  user-select: none;
-  ${pointerEventsAutoInNormalMode};
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`
-
 const Body = styled.div`
   ${pointerEventsAutoInNormalMode};
   position: absolute;
   top: ${headerHeight};
-  left: 0;
+  left: 8px;
   height: auto;
   max-height: calc(100% - ${headerHeight});
   overflow-y: scroll;
@@ -102,12 +107,11 @@ const OutlinePanel: React.FC<{}> = (props) => {
   return (
     <Container>
       <TriggerContainer>
-        {/* <ToolbarIconButton icon={} label="Outline" /> */}
+        <TriggerButton icon={<VscListTree />} label="Outline" />
+        <Title>Outline</Title>
       </TriggerContainer>
       <Content>
-        <Header>
-          <Title>Outline</Title>
-        </Header>
+        {/* <Header><Title>Outline</Title></Header> */}
         <Body>
           <ProjectsList />
         </Body>

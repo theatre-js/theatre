@@ -63,7 +63,12 @@ const ToolbarIconButton: React.FC<
 > = ({label, icon, ...props}) => {
   return (
     <>
-      <TheButton aria-label={label} onClick={props.onClick} title={label}>
+      <TheButton
+        aria-label={label}
+        onClick={props.onClick}
+        title={label}
+        className={props.className}
+      >
         {icon}
       </TheButton>
     </>
