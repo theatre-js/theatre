@@ -29,11 +29,12 @@ const Container = styled.ul`
 `
 
 const Popover: React.FC<{
-  clickPoint: {clientX: number; clientY: number}
+  clickPoint?: {clientX: number; clientY: number}
   target: HTMLElement
-  onRequestClose: () => void
+  onPointerOutOfThreshold: () => void
   children: () => React.ReactNode
   pointerDistanceThreshold?: number
+  className?: string
 }> = (props) => {
   const pointerDistanceThreshold =
     props.pointerDistanceThreshold ?? defaultPointerDistanceThreshold
@@ -101,13 +102,13 @@ const Popover: React.FC<{
         e.clientY < pos.top - pointerDistanceThreshold ||
         e.clientY > pos.top + containerRect.height + pointerDistanceThreshold
       ) {
-        props.onRequestClose()
+        props.onPointerOutOfThreshold()
       }
     }
 
     const onMouseDown = (e: MouseEvent) => {
       if (!e.composedPath().includes(container)) {
-        props.onRequestClose()
+        props.onPointerOutOfThreshold()
       }
     }
 
@@ -125,11 +126,11 @@ const Popover: React.FC<{
     props.target,
     targetRect,
     windowSize,
-    props.onRequestClose,
+    props.onPointerOutOfThreshold,
   ])
 
   return createPortal(
-    <Container ref={setContainer}>
+    <Container ref={setContainer} className={props.className}>
       <PopoverArrow ref={arrowRef} />
       {props.children()}
     </Container>,

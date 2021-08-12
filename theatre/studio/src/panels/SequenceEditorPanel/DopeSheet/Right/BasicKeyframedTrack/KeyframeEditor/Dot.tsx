@@ -65,6 +65,7 @@ const HitZone = styled.div`
       display: block;
       content: ' ';
       background: url(${SnapCursor}) no-repeat 100% 100%;
+      // This icon might also fit: GiConvergenceTarget
     }
   }
 

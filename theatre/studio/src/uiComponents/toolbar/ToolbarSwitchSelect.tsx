@@ -3,7 +3,7 @@ import React from 'react'
 import type {IconType} from 'react-icons'
 import {Group, Button} from 'reakit'
 import styled from 'styled-components'
-import {TheButton as ButtonImpl} from './ToolbarIconButton'
+import ButtonImpl from './ToolbarIconButton'
 
 const Opt = styled(ButtonImpl)``
 

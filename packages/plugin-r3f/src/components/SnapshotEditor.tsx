@@ -134,10 +134,11 @@ const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
             <Overlay>
               <Tools>
                 <ToolbarIconButton
-                  icon={<IoCameraReverseOutline />}
-                  label="Refresh Snapshot"
+                  title="Refresh Snapshot"
                   onClick={createSnapshot}
-                ></ToolbarIconButton>
+                >
+                  <IoCameraReverseOutline />
+                </ToolbarIconButton>
               </Tools>
             </Overlay>
 

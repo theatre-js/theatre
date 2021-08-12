@@ -26,9 +26,10 @@ const Toolbar: VFC = () => {
         onClick={() => {
           studio.createPane('snapshotEditor')
         }}
-        icon={<IoCameraOutline />}
-        label="Create snapshot"
-      />
+        title="Create snapshot"
+      >
+        <IoCameraOutline />
+      </ToolbarIconButton>
       <TransformControlsModeSelect
         value={transformControlsMode}
         onChange={(value) =>

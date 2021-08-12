@@ -1,14 +1,11 @@
-import type {ReactElement} from 'react'
-import React from 'react'
 import styled from 'styled-components'
-import type {ButtonProps} from 'reakit'
 import {outlinePanelTheme} from '@theatre/studio/panels/OutlinePanel/BaseItem'
 import {darken, opacify} from 'polished'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 
 const {baseBg, baseBorderColor, baseFontColor} = outlinePanelTheme
 
-export const TheButton = styled.button`
+const ToolbarIconButton = styled.button`
   ${pointerEventsAutoInNormalMode};
   position: relative;
   display: flex;
@@ -54,25 +51,5 @@ export const TheButton = styled.button`
 
   border: 0;
 `
-
-const ToolbarIconButton: React.FC<
-  Exclude<ButtonProps, 'children'> & {
-    icon: ReactElement
-    label: string
-  }
-> = ({label, icon, ...props}) => {
-  return (
-    <>
-      <TheButton
-        aria-label={label}
-        onClick={props.onClick}
-        title={label}
-        className={props.className}
-      >
-        {icon}
-      </TheButton>
-    </>
-  )
-}
 
 export default ToolbarIconButton

@@ -5,6 +5,9 @@ import ProjectsList from './ProjectsList/ProjectsList'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import ToolbarIconButton from '@theatre/studio/uiComponents/toolbar/ToolbarIconButton'
 import {VscListTree} from 'react-icons/all'
+import {usePrism} from '@theatre/dataverse-react'
+import getStudio from '@theatre/studio/getStudio'
+import {val} from '@theatre/dataverse'
 
 const Container = styled.div`
   background-color: transparent;
@@ -103,11 +106,45 @@ const Body = styled.div`
   user-select: none;
 `
 
+const NumberOfConflictsIndicator = styled.div`
+  color: white;
+  width: 14px;
+  height: 14px;
+  background: #d00;
+  border-radius: 4px;
+  text-align: center;
+  line-height: 14px;
+  font-weight: 600;
+  font-size: 8px;
+  position: relative;
+  left: -6px;
+  top: -11px;
+  margin-right: -14px;
+  box-shadow: 0 4px 6px -4px #00000059;
+`
+
 const OutlinePanel: React.FC<{}> = (props) => {
+  const conflicts = usePrism(() => {
+    const ephemeralStateOfAllProjects = val(
+      getStudio().atomP.ephemeral.coreByProject,
+    )
+    return Object.entries(ephemeralStateOfAllProjects).filter(
+      ([a, state]) =>
+        state.loadingState.type === 'browserStateIsNotBasedOnDiskState',
+    )
+  }, [])
+
   return (
     <Container>
       <TriggerContainer>
-        <TriggerButton icon={<VscListTree />} label="Outline" />
+        <TriggerButton title="Outline">
+          <VscListTree />
+        </TriggerButton>
+        {conflicts.length > 0 ? (
+          <NumberOfConflictsIndicator>
+            {conflicts.length}
+          </NumberOfConflictsIndicator>
+        ) : null}
         <Title>Outline</Title>
       </TriggerContainer>
       <Content>

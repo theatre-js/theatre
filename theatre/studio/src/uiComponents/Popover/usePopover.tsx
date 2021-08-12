@@ -38,7 +38,7 @@ export default function usePopover(
       children={render}
       clickPoint={state.clickPoint}
       target={state.target}
-      onRequestClose={close}
+      onPointerOutOfThreshold={close}
     />
   ) : (
     <></>
