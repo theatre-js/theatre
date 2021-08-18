@@ -1,7 +1,7 @@
 import {useLayoutEffect, useState} from 'react'
 
 export default function useBoundingClientRect(
-  node: HTMLElement | null,
+  node: Element | null,
 ): null | DOMRect {
   const [bounds, set] = useState<null | DOMRect>(null)
 
