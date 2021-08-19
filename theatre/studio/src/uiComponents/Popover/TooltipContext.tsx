@@ -1,3 +1,4 @@
+import type {IDerivation} from '@theatre/dataverse'
 import {Box} from '@theatre/dataverse'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import React, {
@@ -9,8 +10,9 @@ import React, {
 } from 'react'
 
 const ctx = createContext<{
-  currentTooltipId: Box<number>
   portalTarget: HTMLElement
+  cur: IDerivation<number>
+  set: (id: number, delay: number) => void
 }>(null!)
 
 let lastTooltipId = 0
@@ -20,29 +22,20 @@ export const useTooltipOpenState = (): [
   setIsOpen: (isOpen: boolean, delay: number) => void,
 ] => {
   const id = useMemo(() => lastTooltipId++, [])
-  const {currentTooltipId} = useContext(ctx)
+  const {cur, set} = useContext(ctx)
   const [isOpenRef, isOpen] = useRefAndState<boolean>(false)
 
   const setIsOpen = useCallback((shouldOpen: boolean, delay: number) => {
-    if (shouldOpen) {
-      if (currentTooltipId.get() !== id) {
-        currentTooltipId.set(id)
-      }
-    } else {
-      if (currentTooltipId.get() === id) {
-        currentTooltipId.set(-1)
-      }
-    }
+    set(shouldOpen ? id : -1, delay)
   }, [])
 
   useEffect(() => {
-    const {derivation} = currentTooltipId
-    return derivation.changesWithoutValues().tap(() => {
-      const flag = derivation.getValue() === id
+    return cur.changesWithoutValues().tap(() => {
+      const flag = cur.getValue() === id
 
       if (isOpenRef.current !== flag) isOpenRef.current = flag
     })
-  }, [currentTooltipId, id])
+  }, [cur, id])
 
   return [isOpen, setIsOpen]
 }
@@ -52,11 +45,28 @@ const TooltipContext: React.FC<{portalTarget: HTMLElement}> = ({
   portalTarget,
 }) => {
   const currentTooltipId = useMemo(() => new Box(-1), [])
+  const cur = currentTooltipId.derivation
+
+  const set = useMemo(() => {
+    let lastTimeout: NodeJS.Timeout | undefined = undefined
+    return (id: number, delay: number) => {
+      if (lastTimeout !== undefined) {
+        clearTimeout(lastTimeout)
+        lastTimeout = undefined
+      }
+      if (delay === 0) {
+        currentTooltipId.set(id)
+      } else {
+        lastTimeout = setTimeout(() => {
+          currentTooltipId.set(id)
+          lastTimeout = undefined
+        }, delay)
+      }
+    }
+  }, [])
 
   return (
-    <ctx.Provider value={{currentTooltipId, portalTarget}}>
-      {children}
-    </ctx.Provider>
+    <ctx.Provider value={{cur, set, portalTarget}}>{children}</ctx.Provider>
   )
 }
 

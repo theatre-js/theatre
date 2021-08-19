@@ -3,7 +3,7 @@ import {outlinePanelTheme} from '@theatre/studio/panels/OutlinePanel/BaseItem'
 import {darken, opacify} from 'polished'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import React from 'react'
-import type {$IntentionalAny} from '@theatre/shared/utils/types'
+import type {$FixMe, $IntentionalAny} from '@theatre/shared/utils/types'
 import useTooltip from '@theatre/studio/uiComponents/Popover/useTooltip'
 import mergeRefs from 'react-merge-refs'
 import MinimalTooltip from '@theatre/studio/uiComponents/Popover/MinimalTooltip'
@@ -58,7 +58,7 @@ const Container = styled.button`
 `
 
 const ToolbarIconButton: typeof Container = React.forwardRef(
-  ({title, ...props}, ref: $IntentionalAny) => {
+  ({title, ...props}: $FixMe, ref: $FixMe) => {
     const [tooltip, localRef] = useTooltip(
       {enabled: typeof title === 'string'},
       () => <MinimalTooltip>{title}</MinimalTooltip>,
