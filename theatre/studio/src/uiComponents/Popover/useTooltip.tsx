@@ -1,11 +1,12 @@
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import type {MutableRefObject} from 'react'
+import {useContext} from 'react'
 import {useEffect} from 'react'
 import React from 'react'
 import TooltipWrapper from './TooltipWrapper'
-import getStudio from '@theatre/studio/getStudio'
 import {createPortal} from 'react-dom'
 import {useTooltipOpenState} from './TooltipContext'
+import {PortalContext} from 'reakit'
 
 export default function useTooltip(
   opts: {enabled?: boolean; delay?: number},
@@ -42,11 +43,13 @@ export default function useTooltip(
     }
   }, [targetRef, enabled, opts.delay])
 
+  const portalLayer = useContext(PortalContext)
+
   const node =
     enabled && isOpen && targetNode ? (
       createPortal(
         <TooltipWrapper children={render} target={targetNode} />,
-        getStudio()!.ui.containerShadow,
+        portalLayer!,
       )
     ) : (
       <></>

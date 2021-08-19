@@ -57,6 +57,10 @@ export default function UIRoot() {
   const [portalLayerRef, portalLayer] = useRefAndState<HTMLDivElement>(
     undefined as $IntentionalAny,
   )
+  const [containerRef, container] = useRefAndState<HTMLDivElement>(
+    undefined as $IntentionalAny,
+  )
+
   useKeyboardShortcuts()
   const inside = usePrism(() => {
     const visiblityState = val(studio.atomP.ahistoric.visibilityState)
@@ -75,7 +79,7 @@ export default function UIRoot() {
           <GlobalStyle />
           <ProvideTheme>
             <PortalContext.Provider value={portalLayer}>
-              <TooltipContext portalTarget={portalLayer}>
+              <TooltipContext>
                 <Container>
                   <PortalLayer ref={portalLayerRef} />
                   {shouldShowGlobalToolbar && <GlobalToolbar />}

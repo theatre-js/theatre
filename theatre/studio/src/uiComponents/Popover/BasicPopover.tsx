@@ -1,9 +1,11 @@
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
+import {transparentize} from 'polished'
 import React from 'react'
 import styled from 'styled-components'
-import {popoverBackgroundColor} from './Popover'
 import PopoverArrow, {popoverArrowColor} from './PopoverArrow'
+
+export const popoverBackgroundColor = transparentize(0.05, `#2a2a31`)
 
 const Container = styled.div`
   position: absolute;

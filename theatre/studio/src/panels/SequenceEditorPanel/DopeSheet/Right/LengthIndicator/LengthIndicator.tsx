@@ -19,6 +19,7 @@ import {
 import {GoChevronLeft, GoChevronRight} from 'react-icons/all'
 import LengthEditorPopover from './LengthEditorPopover'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
+import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
 
 const coverWidth = 1000
 
@@ -136,7 +137,12 @@ const LengthIndicator: React.FC<IProps> = ({layoutP}) => {
     {},
     () => {
       return (
-        <LengthEditorPopover layoutP={layoutP} onRequestClose={closePopover} />
+        <BasicPopover>
+          <LengthEditorPopover
+            layoutP={layoutP}
+            onRequestClose={closePopover}
+          />
+        </BasicPopover>
       )
     },
   )

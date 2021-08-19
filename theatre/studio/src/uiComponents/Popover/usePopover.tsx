@@ -1,6 +1,7 @@
-import noop from '@theatre/shared/utils/noop'
-import React, {useCallback, useState} from 'react'
-import {PopoverContextProvider} from './PopoverContext'
+import React, {useCallback, useContext, useState} from 'react'
+import {createPortal} from 'react-dom'
+import {PortalContext} from 'reakit'
+import TooltipWrapper from './TooltipWrapper'
 
 type OpenFn = (e: React.MouseEvent, target: HTMLElement) => void
 type CloseFn = () => void
@@ -20,7 +21,7 @@ export default function usePopover(
     closeWhenPointerIsDistant?: boolean
     pointerDistanceThreshold?: number
   },
-  render: () => React.ReactNode,
+  render: () => React.ReactElement,
 ): [node: React.ReactNode, open: OpenFn, close: CloseFn, isOpen: boolean] {
   const [state, setState] = useState<State>({
     isOpen: false,
@@ -38,23 +39,14 @@ export default function usePopover(
     setState({isOpen: false})
   }, [])
 
+  const portalLayer = useContext(PortalContext)
+
   const node = state.isOpen ? (
-    <PopoverContextProvider
-      children={render}
-      triggerPoint={state.clickPoint}
-      pointerDistanceThreshold={opts.pointerDistanceThreshold}
-      onPointerOutOfThreshold={
-        opts.closeWhenPointerIsDistant === false ? noop : close
-      }
-    />
+    createPortal(
+      <TooltipWrapper children={render} target={state.target} />,
+      portalLayer!,
+    )
   ) : (
-    // <Popover
-    //   children={render}
-    //   triggerPoint={state.clickPoint}
-    //   target={state.target}
-    //   onPointerOutOfThreshold={
-    //   }
-    // />
     <></>
   )
 

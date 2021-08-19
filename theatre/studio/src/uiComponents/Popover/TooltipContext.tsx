@@ -10,7 +10,6 @@ import React, {
 } from 'react'
 
 const ctx = createContext<{
-  portalTarget: HTMLElement
   cur: IDerivation<number>
   set: (id: number, delay: number) => void
 }>(null!)
@@ -40,10 +39,7 @@ export const useTooltipOpenState = (): [
   return [isOpen, setIsOpen]
 }
 
-const TooltipContext: React.FC<{portalTarget: HTMLElement}> = ({
-  children,
-  portalTarget,
-}) => {
+const TooltipContext: React.FC<{}> = ({children}) => {
   const currentTooltipId = useMemo(() => new Box(-1), [])
   const cur = currentTooltipId.derivation
 
@@ -65,9 +61,7 @@ const TooltipContext: React.FC<{portalTarget: HTMLElement}> = ({
     }
   }, [])
 
-  return (
-    <ctx.Provider value={{cur, set, portalTarget}}>{children}</ctx.Provider>
-  )
+  return <ctx.Provider value={{cur, set}}>{children}</ctx.Provider>
 }
 
 export default TooltipContext
