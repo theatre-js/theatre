@@ -1,5 +1,6 @@
+import noop from '@theatre/shared/utils/noop'
 import React, {useCallback, useState} from 'react'
-import Popover from './Popover'
+import {PopoverContextProvider} from './PopoverContext'
 
 type OpenFn = (e: React.MouseEvent, target: HTMLElement) => void
 type CloseFn = () => void
@@ -15,6 +16,10 @@ type State =
     }
 
 export default function usePopover(
+  opts: {
+    closeWhenPointerIsDistant?: boolean
+    pointerDistanceThreshold?: number
+  },
   render: () => React.ReactNode,
 ): [node: React.ReactNode, open: OpenFn, close: CloseFn, isOpen: boolean] {
   const [state, setState] = useState<State>({
@@ -34,13 +39,22 @@ export default function usePopover(
   }, [])
 
   const node = state.isOpen ? (
-    <Popover
+    <PopoverContextProvider
       children={render}
-      clickPoint={state.clickPoint}
-      target={state.target}
-      onPointerOutOfThreshold={close}
+      triggerPoint={state.clickPoint}
+      pointerDistanceThreshold={opts.pointerDistanceThreshold}
+      onPointerOutOfThreshold={
+        opts.closeWhenPointerIsDistant === false ? noop : close
+      }
     />
   ) : (
+    // <Popover
+    //   children={render}
+    //   triggerPoint={state.clickPoint}
+    //   target={state.target}
+    //   onPointerOutOfThreshold={
+    //   }
+    // />
     <></>
   )
 

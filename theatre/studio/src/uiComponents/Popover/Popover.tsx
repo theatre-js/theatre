@@ -6,14 +6,11 @@ import React, {useLayoutEffect, useRef, useState} from 'react'
 import {createPortal} from 'react-dom'
 import useWindowSize from 'react-use/esm/useWindowSize'
 import styled from 'styled-components'
+import useOnClickOutside from '@theatre/studio/uiComponents/useOnClickOutside'
 import PopoverArrow from './PopoverArrow'
+import {usePopoverContext} from './PopoverContext'
 
-/**
- * How far from the menu should the pointer travel to auto close the menu
- */
-const defaultPointerDistanceThreshold = 200
-
-export const popoverBackgroundColor = transparentize(0.2, '#111')
+export const popoverBackgroundColor = transparentize(0.05, `#2a2a31`)
 const minimumDistanceOfArrowToEdgeOfPopover = 8
 
 const Container = styled.ul`
@@ -29,15 +26,12 @@ const Container = styled.ul`
 `
 
 const Popover: React.FC<{
-  clickPoint?: {clientX: number; clientY: number}
-  target: HTMLElement
-  onPointerOutOfThreshold: () => void
+  target: Element
   children: () => React.ReactNode
-  pointerDistanceThreshold?: number
   className?: string
 }> = (props) => {
-  const pointerDistanceThreshold =
-    props.pointerDistanceThreshold ?? defaultPointerDistanceThreshold
+  const {pointerDistanceThreshold, onPointerOutOfThreshold} =
+    usePopoverContext()
 
   const [container, setContainer] = useState<HTMLElement | null>(null)
   const arrowRef = useRef<HTMLDivElement>(null)
@@ -102,32 +96,25 @@ const Popover: React.FC<{
         e.clientY < pos.top - pointerDistanceThreshold ||
         e.clientY > pos.top + containerRect.height + pointerDistanceThreshold
       ) {
-        props.onPointerOutOfThreshold()
-      }
-    }
-
-    const onMouseDown = (e: MouseEvent) => {
-      if (!e.composedPath().includes(container)) {
-        props.onPointerOutOfThreshold()
+        onPointerOutOfThreshold()
       }
     }
 
     window.addEventListener('mousemove', onMouseMove)
-    window.addEventListener('mousedown', onMouseDown, {capture: true})
 
     return () => {
       window.removeEventListener('mousemove', onMouseMove)
-      window.removeEventListener('mousedown', onMouseDown, {capture: true})
     }
   }, [
     containerRect,
     container,
-    props.clickPoint,
     props.target,
     targetRect,
     windowSize,
-    props.onPointerOutOfThreshold,
+    onPointerOutOfThreshold,
   ])
+
+  useOnClickOutside(container, onPointerOutOfThreshold)
 
   return createPortal(
     <Container ref={setContainer} className={props.className}>

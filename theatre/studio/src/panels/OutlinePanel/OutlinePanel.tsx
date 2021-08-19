@@ -8,6 +8,9 @@ import {VscListTree} from 'react-icons/all'
 import {usePrism} from '@theatre/dataverse-react'
 import getStudio from '@theatre/studio/getStudio'
 import {val} from '@theatre/dataverse'
+import useTooltip from '@theatre/studio/uiComponents/Popover/useTooltip'
+import type {$IntentionalAny} from '@theatre/shared/utils/types'
+import BasicTooltip from '@theatre/studio/uiComponents/Popover/BasicTooltip'
 
 const Container = styled.div`
   background-color: transparent;
@@ -29,8 +32,7 @@ const Container = styled.div`
     width: 20px;
     ${pointerEventsAutoInNormalMode};
   }
-
-  &:hover:before {
+  ب &:hover:before {
     top: -12px;
     width: 300px;
   }
@@ -58,6 +60,8 @@ const Content = styled.div`
     transform: translateX(0);
   }
 `
+
+const ErrorTooltip = styled(BasicTooltip)``
 
 const headerHeight = `32px`
 
@@ -128,16 +132,30 @@ const OutlinePanel: React.FC<{}> = (props) => {
     const ephemeralStateOfAllProjects = val(
       getStudio().atomP.ephemeral.coreByProject,
     )
-    return Object.entries(ephemeralStateOfAllProjects).filter(
-      ([a, state]) =>
-        state.loadingState.type === 'browserStateIsNotBasedOnDiskState',
-    )
+    return Object.entries(ephemeralStateOfAllProjects)
+      .map(([projectId, state]) => ({projectId, state}))
+      .filter(
+        ({state}) =>
+          state.loadingState.type === 'browserStateIsNotBasedOnDiskState',
+      )
   }, [])
+
+  const [errorTooltip, triggerButtonRef] = useTooltip(
+    {enabled: conflicts.length > 0, delay: 0},
+    () => (
+      <ErrorTooltip>
+        {conflicts.length === 1
+          ? `There is a state conflict in project "${conflicts[0].projectId}". Select the project in the outline below in order to fix it.`
+          : `There are ${conflicts.length} projects that have state conflicts. They are highlighted in the outline below. `}
+      </ErrorTooltip>
+    ),
+  )
 
   return (
     <Container>
       <TriggerContainer>
-        <TriggerButton title="Outline">
+        {errorTooltip}
+        <TriggerButton ref={triggerButtonRef as $IntentionalAny}>
           <VscListTree />
         </TriggerButton>
         {conflicts.length > 0 ? (
@@ -148,7 +166,6 @@ const OutlinePanel: React.FC<{}> = (props) => {
         <Title>Outline</Title>
       </TriggerContainer>
       <Content>
-        {/* <Header><Title>Outline</Title></Header> */}
         <Body>
           <ProjectsList />
         </Body>

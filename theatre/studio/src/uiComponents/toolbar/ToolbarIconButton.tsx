@@ -2,10 +2,15 @@ import styled from 'styled-components'
 import {outlinePanelTheme} from '@theatre/studio/panels/OutlinePanel/BaseItem'
 import {darken, opacify} from 'polished'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
+import React from 'react'
+import type {$IntentionalAny} from '@theatre/shared/utils/types'
+import useTooltip from '@theatre/studio/uiComponents/Popover/useTooltip'
+import mergeRefs from 'react-merge-refs'
+import MinimalTooltip from '@theatre/studio/uiComponents/Popover/MinimalTooltip'
 
 const {baseBg, baseBorderColor, baseFontColor} = outlinePanelTheme
 
-const ToolbarIconButton = styled.button`
+const Container = styled.button`
   ${pointerEventsAutoInNormalMode};
   position: relative;
   display: flex;
@@ -51,5 +56,21 @@ const ToolbarIconButton = styled.button`
 
   border: 0;
 `
+
+const ToolbarIconButton: typeof Container = React.forwardRef(
+  ({title, ...props}, ref: $IntentionalAny) => {
+    const [tooltip, localRef] = useTooltip(
+      {enabled: typeof title === 'string'},
+      () => <MinimalTooltip>{title}</MinimalTooltip>,
+    )
+
+    return (
+      <>
+        {tooltip}
+        <Container ref={mergeRefs([localRef, ref])} {...props} />{' '}
+      </>
+    )
+  },
+) as $IntentionalAny
 
 export default ToolbarIconButton

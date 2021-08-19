@@ -12,6 +12,7 @@ import {PortalContext} from 'reakit'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import useKeyboardShortcuts from './useKeyboardShortcuts'
 import PointerEventsHandler from '@theatre/studio/uiComponents/PointerEventsHandler'
+import TooltipContext from '@theatre/studio/uiComponents/Popover/TooltipContext'
 
 const GlobalStyle = createGlobalStyle`
   :host {
@@ -74,12 +75,14 @@ export default function UIRoot() {
           <GlobalStyle />
           <ProvideTheme>
             <PortalContext.Provider value={portalLayer}>
-              <Container>
-                <PortalLayer ref={portalLayerRef} />
-                {shouldShowGlobalToolbar && <GlobalToolbar />}
-                {shouldShowTrigger && <TheTrigger />}
-                {shouldShowPanels && <PanelsRoot />}
-              </Container>
+              <TooltipContext portalTarget={portalLayer}>
+                <Container>
+                  <PortalLayer ref={portalLayerRef} />
+                  {shouldShowGlobalToolbar && <GlobalToolbar />}
+                  {shouldShowTrigger && <TheTrigger />}
+                  {shouldShowPanels && <PanelsRoot />}
+                </Container>
+              </TooltipContext>
             </PortalContext.Provider>
           </ProvideTheme>
         </>
