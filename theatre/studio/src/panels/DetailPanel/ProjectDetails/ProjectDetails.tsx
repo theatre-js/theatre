@@ -1,13 +1,12 @@
 import type Project from '@theatre/core/projects/Project'
-import {val} from '@theatre/dataverse'
-import {usePrism} from '@theatre/dataverse-react'
 import getStudio from '@theatre/studio/getStudio'
-import {generateDiskStateRevision} from '@theatre/studio/StudioStore/generateDiskStateRevision'
 import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 import React, {useCallback, useState} from 'react'
 import styled from 'styled-components'
-import {rowBgColor} from './propEditors/utils/SingleRowPropEditor'
+import {rowBgColor} from '@theatre/studio/panels/DetailPanel/propEditors/utils/SingleRowPropEditor'
+import StateConflictRow from './StateConflictRow'
+import DetailPanelButton from '@theatre/studio/uiComponents/DetailPanelButton'
 
 const Container = styled.div`
   background-color: ${rowBgColor};
@@ -18,26 +17,6 @@ const TheExportRow = styled.div`
   display: flex;
   flex-direction: column;
   align-items: stretch;
-`
-
-const Button = styled.button<{disabled?: boolean}>`
-  text-align: center;
-  padding: 8px;
-  border-radius: 2px;
-  border: 1px solid #627b7b87;
-  background-color: #4b787d3d;
-  color: #eaeaea;
-  font-weight: 400;
-  display: block;
-  appearance: none;
-  flex-grow: 1;
-  cursor: ${(props) => (props.disabled ? 'none' : 'pointer')};
-  opacity: ${(props) => (props.disabled ? 0.4 : 1)};
-
-  &:hover {
-    background-color: #7dc1c878;
-    border-color: #9ebcbf;
-  }
 `
 
 const ExportTooltip = styled(BasicPopover)`
@@ -51,51 +30,6 @@ const ProjectDetails: React.FC<{
   const project = projects[0]
 
   const projectId = project.address.projectId
-  const nn = usePrism(() => {
-    const loadingState = val(
-      getStudio().atomP.ephemeral.coreByProject[projectId].loadingState,
-    )
-    if (!loadingState) return
-    if (loadingState.type === 'browserStateIsNotBasedOnDiskState') {
-      /**
-       * This stuff is not undo-safe, but once we switch to the new persistence
-       * scheme, these will be unnecessary anyway.
-       */
-      const useBrowserState = () => {
-        getStudio().transaction(({drafts, stateEditors}) => {
-          stateEditors.coreByProject.historic.revisionHistory.add({
-            projectId,
-            revision: loadingState.onDiskState.revisionHistory[0],
-          })
-
-          stateEditors.coreByProject.historic.revisionHistory.add({
-            projectId,
-            revision: generateDiskStateRevision(),
-          })
-
-          drafts.ephemeral.coreByProject[projectId].loadingState = {
-            type: 'loaded',
-          }
-        })
-      }
-
-      const useOnDiskState = () => {
-        getStudio().transaction(({drafts}) => {
-          drafts.historic.coreByProject[projectId] = loadingState.onDiskState
-          drafts.ephemeral.coreByProject[projectId].loadingState = {
-            type: 'loaded',
-          }
-        })
-      }
-      return (
-        <div>
-          Browser state is not based on disk state.
-          <button onClick={useBrowserState}>Use browser's state</button>
-          <button onClick={useOnDiskState}>Use disk state</button>
-        </div>
-      )
-    }
-  }, [project])
 
   const [downloaded, setDownloaded] = useState(false)
 
@@ -140,11 +74,11 @@ const ProjectDetails: React.FC<{
 
   return (
     <>
-      {nn}
       {tooltip}
       <Container>
+        <StateConflictRow projectId={projectId} />
         <TheExportRow>
-          <Button
+          <DetailPanelButton
             onMouseEnter={(e) =>
               openExportTooltip(e, e.target as unknown as HTMLButtonElement)
             }
@@ -152,7 +86,7 @@ const ProjectDetails: React.FC<{
             disabled={downloaded}
           >
             {downloaded ? '(Exported)' : `Export ${projectId} to JSON`}
-          </Button>
+          </DetailPanelButton>
         </TheExportRow>
       </Container>
     </>
