@@ -141,7 +141,7 @@ const OutlinePanel: React.FC<{}> = (props) => {
   }, [])
 
   const [errorTooltip, triggerButtonRef] = useTooltip(
-    {enabled: conflicts.length > 0, delay: 0},
+    {enabled: conflicts.length > 0, enterDelay: 0},
     () => (
       <ErrorTooltip>
         {conflicts.length === 1

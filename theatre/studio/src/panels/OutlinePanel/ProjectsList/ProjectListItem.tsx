@@ -11,7 +11,7 @@ import styled from 'styled-components'
 const ConflictNotice = styled.div`
   color: #ff6363;
   margin-left: 11px;
-  background: #ff00002b;
+  background: #4c282d;
   padding: 2px 8px;
   border-radius: 2px;
   font-size: 10px;

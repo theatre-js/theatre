@@ -27,6 +27,9 @@ const Container = styled.div`
 
 const Message = styled.div`
   margin-bottom: 1em;
+  & a {
+    color: inherit;
+  }
 `
 
 const ChooseStateRow = styled.div`
@@ -100,7 +103,15 @@ const InConflict: React.FC<{
 
   return (
     <Container>
-      <Message>Browser state is not based on disk state.</Message>
+      <Message>
+        Browser state is not based on disk state.{' '}
+        <a
+          href="https://docs.theatrejs.com/export.html#conflict"
+          target="_blank"
+        >
+          Learn more.
+        </a>
+      </Message>
       <ChooseStateRow>
         {browserStateNode}
         <DetailPanelButton
