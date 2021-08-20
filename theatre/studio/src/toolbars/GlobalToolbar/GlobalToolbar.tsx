@@ -1,4 +1,5 @@
 import {useVal} from '@theatre/dataverse-react'
+import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import getStudio from '@theatre/studio/getStudio'
 import {panelZIndexes} from '@theatre/studio/panels/BasePanel/common'
 import React from 'react'
@@ -23,10 +24,16 @@ const Bg = styled.div`
   display: flex;
   align-items: center;
   gap: 1rem;
-  background-color: rgba(0, 0, 0, 0.15);
-  border-radius: 4px;
 
+  border-radius: 4px;
   padding: 6px 6px;
+
+  ${pointerEventsAutoInNormalMode};
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(4px);
+  }
 `
 
 const GlobalToolbar: React.FC<{}> = (props) => {
