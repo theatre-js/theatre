@@ -46,11 +46,12 @@ const TooltipContext: React.FC<{}> = ({children}) => {
   const set = useMemo(() => {
     let lastTimeout: NodeJS.Timeout | undefined = undefined
     return (id: number, delay: number) => {
+      const overridingPreviousTimeout = lastTimeout !== undefined
       if (lastTimeout !== undefined) {
         clearTimeout(lastTimeout)
         lastTimeout = undefined
       }
-      if (delay === 0) {
+      if (delay === 0 || overridingPreviousTimeout) {
         currentTooltipId.set(id)
       } else {
         lastTimeout = setTimeout(() => {

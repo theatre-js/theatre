@@ -10,7 +10,7 @@ import {PortalContext} from 'reakit'
 import noop from '@theatre/shared/utils/noop'
 
 export default function useTooltip(
-  opts: {enabled?: boolean; delay?: number},
+  opts: {enabled?: boolean; enterDelay?: number; exitDelay?: number},
   render: () => React.ReactElement,
 ): [
   node: React.ReactNode,
@@ -32,8 +32,8 @@ export default function useTooltip(
     const target = targetRef.current
     if (!target) return
 
-    const onMouseEnter = () => setIsOpen(true, opts.delay ?? 200)
-    const onMouseLeave = () => setIsOpen(false, opts.delay ?? 200)
+    const onMouseEnter = () => setIsOpen(true, opts.enterDelay ?? 400)
+    const onMouseLeave = () => setIsOpen(false, opts.exitDelay ?? 200)
 
     target.addEventListener('mouseenter', onMouseEnter)
     target.addEventListener('mouseleave', onMouseLeave)
@@ -42,7 +42,7 @@ export default function useTooltip(
       target.removeEventListener('mouseenter', onMouseEnter)
       target.removeEventListener('mouseleave', onMouseLeave)
     }
-  }, [targetRef, enabled, opts.delay])
+  }, [targetRef, enabled, opts.enterDelay, opts.exitDelay])
 
   const portalLayer = useContext(PortalContext)
 
