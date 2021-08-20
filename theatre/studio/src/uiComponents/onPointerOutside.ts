@@ -1,31 +1,28 @@
-import {useEffect} from 'react'
-import useBoundingClientRect from './useBoundingClientRect'
-
+/**
+ * Calls the callback when the mouse pointer moves outside the
+ * bounds of the node.
+ */
 export default function onPointerOutside(
-  container: Element | null,
+  node: Element,
   threshold: number,
-  onPointerOutside: () => void,
+  onPointerOutside: (e: MouseEvent) => void,
 ) {
-  const containerRect = useBoundingClientRect(container)
+  const containerRect = node.getBoundingClientRect()
 
-  useEffect(() => {
-    if (!containerRect) return
-
-    const onMouseMove = (e: MouseEvent) => {
-      if (
-        e.clientX < containerRect.left - threshold ||
-        e.clientX > containerRect.left + containerRect.width + threshold ||
-        e.clientY < containerRect.top - threshold ||
-        e.clientY > containerRect.top + containerRect.height + threshold
-      ) {
-        onPointerOutside()
-      }
+  const onMouseMove = (e: MouseEvent) => {
+    if (
+      e.clientX < containerRect.left - threshold ||
+      e.clientX > containerRect.left + containerRect.width + threshold ||
+      e.clientY < containerRect.top - threshold ||
+      e.clientY > containerRect.top + containerRect.height + threshold
+    ) {
+      onPointerOutside(e)
     }
+  }
 
-    window.addEventListener('mousemove', onMouseMove)
+  window.addEventListener('mousemove', onMouseMove)
 
-    return () => {
-      window.removeEventListener('mousemove', onMouseMove)
-    }
-  }, [containerRect, threshold])
+  return () => {
+    window.removeEventListener('mousemove', onMouseMove)
+  }
 }

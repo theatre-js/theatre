@@ -7,6 +7,7 @@ import TooltipWrapper from './TooltipWrapper'
 import {createPortal} from 'react-dom'
 import {useTooltipOpenState} from './TooltipContext'
 import {PortalContext} from 'reakit'
+import noop from '@theatre/shared/utils/noop'
 
 export default function useTooltip(
   opts: {enabled?: boolean; delay?: number},
@@ -48,7 +49,11 @@ export default function useTooltip(
   const node =
     enabled && isOpen && targetNode ? (
       createPortal(
-        <TooltipWrapper children={render} target={targetNode} />,
+        <TooltipWrapper
+          children={render}
+          target={targetNode}
+          onClickOutside={noop}
+        />,
         portalLayer!,
       )
     ) : (

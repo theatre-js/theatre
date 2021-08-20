@@ -4,12 +4,20 @@ import useWindowSize from 'react-use/esm/useWindowSize'
 import useBoundingClientRect from '@theatre/studio/uiComponents/useBoundingClientRect'
 import ArrowContext from './ArrowContext'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
+import useOnClickOutside from '@theatre/studio/uiComponents/useOnClickOutside'
+import onPointerOutside from '@theatre/studio/uiComponents/onPointerOutside'
+import noop from '@theatre/shared/utils/noop'
 
 const minimumDistanceOfArrowToEdgeOfPopover = 8
 
 const TooltipWrapper: React.FC<{
   target: HTMLElement | SVGElement
+  onClickOutside?: (e: MouseEvent) => void
   children: () => React.ReactElement
+  onPointerOutside?: {
+    threshold: number
+    callback: (e: MouseEvent) => void
+  }
 }> = (props) => {
   const originalElement = props.children()
   const [ref, container] = useRefAndState<HTMLElement | SVGElement | null>(null)
@@ -75,8 +83,16 @@ const TooltipWrapper: React.FC<{
     container.style.top = pos.top + 'px'
     setArrowContextValue(arrowStyle)
 
-    return () => {}
+    if (props.onPointerOutside) {
+      return onPointerOutside(
+        container,
+        props.onPointerOutside.threshold,
+        props.onPointerOutside.callback,
+      )
+    }
   }, [containerRect, container, props.target, targetRect, windowSize])
+
+  useOnClickOutside(container, props.onClickOutside ?? noop)
 
   return (
     <ArrowContext.Provider value={arrowContextValue}>

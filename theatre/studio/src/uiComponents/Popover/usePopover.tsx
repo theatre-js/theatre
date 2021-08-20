@@ -1,4 +1,4 @@
-import React, {useCallback, useContext, useState} from 'react'
+import React, {useCallback, useContext, useMemo, useState} from 'react'
 import {createPortal} from 'react-dom'
 import {PortalContext} from 'reakit'
 import TooltipWrapper from './TooltipWrapper'
@@ -20,6 +20,7 @@ export default function usePopover(
   opts: {
     closeWhenPointerIsDistant?: boolean
     pointerDistanceThreshold?: number
+    closeOnClickOutside?: boolean
   },
   render: () => React.ReactElement,
 ): [node: React.ReactNode, open: OpenFn, close: CloseFn, isOpen: boolean] {
@@ -39,11 +40,29 @@ export default function usePopover(
     setState({isOpen: false})
   }, [])
 
+  const onClickOutside = useCallback(() => {
+    if (opts.closeOnClickOutside !== false) {
+      close()
+    }
+  }, [opts.closeOnClickOutside])
+
   const portalLayer = useContext(PortalContext)
+  const onPointerOutside = useMemo(() => {
+    if (opts.closeOnClickOutside === false) return undefined
+    return {
+      threshold: opts.pointerDistanceThreshold ?? 100,
+      callback: close,
+    }
+  }, [opts.closeWhenPointerIsDistant])
 
   const node = state.isOpen ? (
     createPortal(
-      <TooltipWrapper children={render} target={state.target} />,
+      <TooltipWrapper
+        children={render}
+        target={state.target}
+        onClickOutside={onClickOutside}
+        onPointerOutside={onPointerOutside}
+      />,
       portalLayer!,
     )
   ) : (
