@@ -1,26 +1,13 @@
 import React, {forwardRef, useContext} from 'react'
-import styled, {css} from 'styled-components'
+import styled from 'styled-components'
 import ArrowContext from './ArrowContext'
-
-export const popoverArrowColors = ({
-  fill,
-  innerStroke,
-  outerStroke,
-}: {
-  fill: string
-  innerStroke: string
-  outerStroke: string
-}) => css`
-  --popover-arrow-fill: ${fill};
-  --popover-arrow-inner-stroke: ${innerStroke};
-  --popover-arrow-outer-stroke: ${outerStroke};
-`
 
 const Container = styled.div`
   position: absolute;
   width: 0;
   height: 0;
   color: var(--popover-arrow-color);
+  pointer-events: none;
 `
 
 const Adjust = styled.div`
@@ -38,15 +25,15 @@ type Props = {
 }
 
 const InnerTriangle = styled.path`
-  fill: var(--popover-arrow-fill);
+  fill: var(--popover-bg);
 `
 
 const InnerStroke = styled.path`
-  fill: var(--popover-arrow-inner-stroke);
+  fill: var(--popover-inner-stroke);
 `
 
 const OuterStroke = styled.path`
-  fill: var(--popover-arrow-outer-stroke);
+  fill: var(--popover-outer-stroke);
 `
 
 const PopoverArrow = forwardRef<HTMLDivElement, Props>(({className}, ref) => {

@@ -1,14 +1,10 @@
 import styled from 'styled-components'
-import {outlinePanelTheme} from '@theatre/studio/panels/OutlinePanel/BaseItem'
-import {darken, opacify} from 'polished'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import React from 'react'
 import type {$FixMe, $IntentionalAny} from '@theatre/shared/utils/types'
 import useTooltip from '@theatre/studio/uiComponents/Popover/useTooltip'
 import mergeRefs from 'react-merge-refs'
 import MinimalTooltip from '@theatre/studio/uiComponents/Popover/MinimalTooltip'
-
-const {baseBg, baseBorderColor, baseFontColor} = outlinePanelTheme
 
 const Container = styled.button`
   ${pointerEventsAutoInNormalMode};
@@ -22,27 +18,29 @@ const Container = styled.button`
   height: 24px;
   outline: none;
 
-  color: ${baseFontColor};
-  --item-bg: ${baseBg};
-  --item-border-color: ${baseBorderColor};
-  background-color: var(--item-bg);
+  color: rgba(255, 255, 255, 0.75);
+  background-color: rgb(47, 49, 53);
 
   &:hover {
-    color: ${opacify(1, baseFontColor)};
+    color: #fff;
 
-    --item-bg: ${() => darken(0.07, baseBg)};
-    --item-border-color: ${opacify(0.1, baseBorderColor)};
+    background-color: rgba(28, 30, 32, 0.95);
+    &:after {
+      border-color: rgba(90, 90, 90, 1);
+    }
   }
 
   &.selected {
-    color: ${opacify(1, baseFontColor)};
+    color: #fff;
 
-    --item-bg: ${() => darken(0.15, baseBg)};
-    --item-border-color: ${opacify(0, baseBorderColor)};
+    background-color: rgba(17, 18, 20, 0.95);
+    &:after {
+      border-color: rgb(43, 43, 43);
+    }
   }
 
   &:before {
-    border: 1px solid var(--item-border-color);
+    border: 1px solid rgb(62, 62, 62);
     position: absolute;
     inset: -1px;
     display: block;
@@ -51,7 +49,7 @@ const Container = styled.button`
     pointer-events: none;
     border-radius: 2px;
     box-sizing: border-box;
-    box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 3px 4px -3px rgba(0, 0, 0, 0.49);
   }
 
   border: 0;

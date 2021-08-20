@@ -11,12 +11,22 @@ const Container = styled.div`
   top: 12px;
   right: 12px;
   left: 12px;
-  height: 28px;
+  height: 36px;
   pointer-events: none;
 
   display: flex;
   gap: 1rem;
   justify-content: center;
+`
+
+const Bg = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+
+  padding: 6px 6px;
 `
 
 const GlobalToolbar: React.FC<{}> = (props) => {
@@ -34,7 +44,13 @@ const GlobalToolbar: React.FC<{}> = (props) => {
     }
   }
 
-  return <Container>{groups}</Container>
+  if (groups.length === 0) return null
+
+  return (
+    <Container>
+      <Bg>{groups}</Bg>
+    </Container>
+  )
 }
 
 export default GlobalToolbar

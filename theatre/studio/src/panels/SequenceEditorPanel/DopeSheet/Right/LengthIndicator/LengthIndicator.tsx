@@ -71,8 +71,8 @@ const Tooltip = styled.div`
   margin-top: 8px;
   font-size: 10px;
   white-space: nowrap;
-  padding: 1px 8px;
-  border-radius: 0 2px 2px 0;
+  padding: 2px 8px;
+  border-radius: 2px;
   ${pointerEventsAutoInNormalMode};
   cursor: ew-resize;
   color: #464646;
@@ -182,7 +182,7 @@ const LengthIndicator: React.FC<IProps> = ({layoutP}) => {
           <ThumbContainer>
             <Tumb
               ref={nodeRef}
-              title="Length of the sequence. Drag or click to change."
+              // title="Length of the sequence. Drag or click to change."
               onClick={(e) => {
                 openPopover(e, node!)
               }}
@@ -192,6 +192,7 @@ const LengthIndicator: React.FC<IProps> = ({layoutP}) => {
               <GoChevronRight />
             </Tumb>
             <Tooltip>
+              Sequence length:{' '}
               {sequence.positionFormatter.formatBasic(sequenceLength)}
             </Tooltip>
           </ThumbContainer>

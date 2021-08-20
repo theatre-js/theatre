@@ -3,18 +3,18 @@ import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import {transparentize} from 'polished'
 import React from 'react'
 import styled from 'styled-components'
-import PopoverArrow, {popoverArrowColors} from './PopoverArrow'
+import PopoverArrow from './PopoverArrow'
 
 export const popoverBackgroundColor = transparentize(0.05, `#2a2a31`)
 
 const Container = styled.div`
   position: absolute;
-  background: ${popoverBackgroundColor};
-  ${popoverArrowColors({
-    fill: popoverBackgroundColor,
-    innerStroke: `#505159`,
-    outerStroke: `black`,
-  })};
+  --popover-bg: ${popoverBackgroundColor};
+  --popover-inner-stroke: #505159;
+  --popover-outer-stroke: #111;
+
+  background: var(--popover-bg);
+
   color: white;
   padding: 0;
   margin: 0;
@@ -22,8 +22,8 @@ const Container = styled.div`
   ${pointerEventsAutoInNormalMode};
   border-radius: 3px;
   z-index: 10000;
-  border: 1px solid #505159;
-  box-shadow: 0 6px 8px -4px black, 0 0 0 1px black;
+  border: 1px solid var(--popover-inner-stroke);
+  box-shadow: 0 6px 8px -4px black, 0 0 0 1px var(--popover-outer-stroke);
   backdrop-filter: blur(8px);
 `
 
