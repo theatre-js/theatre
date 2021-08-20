@@ -32,7 +32,7 @@ const Container = styled.div`
     width: 20px;
     ${pointerEventsAutoInNormalMode};
   }
-  ب &:hover:before {
+  &:hover:before {
     top: -12px;
     width: 300px;
   }
