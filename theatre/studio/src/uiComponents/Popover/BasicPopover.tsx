@@ -25,6 +25,10 @@ const Container = styled.div`
   border: 1px solid var(--popover-inner-stroke);
   box-shadow: 0 6px 8px -4px black, 0 0 0 1px var(--popover-outer-stroke);
   backdrop-filter: blur(8px);
+
+  & a {
+    color: inherit;
+  }
 `
 
 const BasicPopover: React.FC<{className?: string}> = React.forwardRef(

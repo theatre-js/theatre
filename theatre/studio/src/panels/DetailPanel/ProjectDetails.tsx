@@ -3,7 +3,8 @@ import {val} from '@theatre/dataverse'
 import {usePrism} from '@theatre/dataverse-react'
 import getStudio from '@theatre/studio/getStudio'
 import {generateDiskStateRevision} from '@theatre/studio/StudioStore/generateDiskStateRevision'
-import PopoverArrow from '@theatre/studio/uiComponents/Popover/PopoverArrow'
+import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
+import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 import React, {useCallback, useState} from 'react'
 import styled from 'styled-components'
 import {rowBgColor} from './propEditors/utils/SingleRowPropEditor'
@@ -17,27 +18,6 @@ const TheExportRow = styled.div`
   display: flex;
   flex-direction: column;
   align-items: stretch;
-`
-
-const ExportInfo = styled.div`
-  background-color: #515357;
-  padding: 6px 11px;
-  margin-top: 8px;
-  border: 1px solid #535353;
-  box-shadow: 0 13px 8px -4px #0000004f;
-  border-radius: 3px;
-  position: relative;
-
-  & a {
-    color: inherit;
-  }
-`
-
-const InfoArrow = styled(PopoverArrow)`
-  position: absolute;
-  top: -2px;
-  left: 18px;
-  color: #515357;
 `
 
 const Button = styled.button<{disabled?: boolean}>`
@@ -58,6 +38,11 @@ const Button = styled.button<{disabled?: boolean}>`
     background-color: #7dc1c878;
     border-color: #9ebcbf;
   }
+`
+
+const ExportTooltip = styled(BasicPopover)`
+  width: 280px;
+  padding: 1em;
 `
 
 const ProjectDetails: React.FC<{
@@ -139,26 +124,35 @@ const ProjectDetails: React.FC<{
     }, 40000)
   }, [])
 
+  const [tooltip, openExportTooltip] = usePopover(
+    {pointerDistanceThreshold: 50},
+    () => (
+      <ExportTooltip>
+        This will create a JSON file with the state of your project. You can
+        commit this file to your git repo and include it in your production
+        bundle.{' '}
+        <a href="https://docs.theatrejs.com/export.html" target="_blank">
+          Here is a quick guide on how to export to production.
+        </a>
+      </ExportTooltip>
+    ),
+  )
+
   return (
     <>
       {nn}
+      {tooltip}
       <Container>
         <TheExportRow>
           <Button
+            onMouseEnter={(e) =>
+              openExportTooltip(e, e.target as unknown as HTMLButtonElement)
+            }
             onClick={!downloaded ? exportProject : undefined}
             disabled={downloaded}
           >
             {downloaded ? '(Exported)' : `Export ${projectId} to JSON`}
           </Button>
-          <ExportInfo>
-            <InfoArrow />
-            This will create a JSON file with the state of your project. You can
-            commit this file to your git repo and include it in your production
-            bundle.{' '}
-            <a href="https://docs.theatrejs.com/export.html" target="_blank">
-              Here is a quick guide on how to export to production.
-            </a>
-          </ExportInfo>
         </TheExportRow>
       </Container>
     </>
