@@ -3,8 +3,7 @@ import React from 'react'
 import {GoChevronRight, DiHtml53DEffects} from 'react-icons/all'
 import styled, {css} from 'styled-components'
 import noop from '@theatre/shared/utils/noop'
-import {transparentize, darken, opacify, lighten} from 'polished'
-import {rowBgColor} from '@theatre/studio/panels/DetailPanel/propEditors/utils/SingleRowPropEditor'
+import {darken, lighten} from 'polished'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 
 export const Container = styled.li`
@@ -19,48 +18,44 @@ export const Container = styled.li`
 
 export const BaseHeader = styled.div``
 
-const baseBg = lighten(0.05, rowBgColor)
+const baseBg = `#3e4447`
 
-const baseFontColor = transparentize(0.25, 'white')
-const baseBorderColor = transparentize(0.88, 'white')
-
-export const outlinePanelTheme = {baseBg, baseFontColor, baseBorderColor}
+const baseBorderColor = `#34343e`
 
 const Header = styled(BaseHeader)`
   padding-left: calc(4px + var(--depth) * 16px);
   padding-right: 8px;
-  height: 24px;
+  height: 28px;
   box-sizing: border-box;
   display: flex;
+  flex-wrap: nowrap;
   align-items: center;
   pointer-events: none;
-  overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
 
-  color: ${baseFontColor};
+  color: rgba(255, 255, 255, 0.75);
   --item-bg: ${baseBg};
   --item-border-color: ${baseBorderColor};
 
-  &:hover {
-    color: ${opacify(1, baseFontColor)};
+  &.descendant-is-selected {
+    color: rgba(255, 255, 255, 0.9);
 
-    --item-bg: ${() => darken(0.07, baseBg)};
-    --item-border-color: ${opacify(0.1, baseBorderColor)};
+    --item-bg: ${() => darken(0.1, baseBg)};
+    --item-border-color: ${baseBorderColor};
+  }
+
+  &:hover {
+    color: #fff;
+
+    --item-bg: ${() => darken(0.12, baseBg)};
+    --item-border-color: ${lighten(0.1, baseBorderColor)};
   }
 
   &.selected {
-    color: ${opacify(1, baseFontColor)};
+    color: #fff;
 
     --item-bg: ${() => darken(0.15, baseBg)};
-    --item-border-color: ${opacify(0.05, baseBorderColor)};
-  }
-
-  &.descendant-is-selected {
-    color: ${opacify(0.1, baseFontColor)};
-
-    --item-bg: ${() => darken(0.05, baseBg)};
-    --item-border-color: ${baseBorderColor};
+    --item-border-color: ${lighten(0.05, baseBorderColor)};
   }
 `
 
@@ -77,10 +72,11 @@ const Head_Label = styled.span`
   padding: 2px 8px;
   ${pointerEventsAutoInNormalMode};
   position: relative;
-  display: block;
-  height: 13px;
+  display: flex;
+  height: 17px;
+  align-items: center;
+
   background-color: var(--item-bg);
-  /* border-radius: 2px; */
 
   &:after {
     border: 1px solid var(--item-border-color);
@@ -92,9 +88,10 @@ const Head_Label = styled.span`
     pointer-events: none;
     border-radius: 2px;
     box-sizing: border-box;
-    box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 3px 4px -1px rgba(0, 0, 0, 0.48);
   }
 
+  // hit-zone
   &:before {
     position: absolute;
     inset: -1px -20px;
@@ -110,7 +107,6 @@ const Head_IconContainer = styled.span`
   box-sizing: border-box;
   height: 18px;
   margin-right: 4px;
-  /* background-color: #435356d9; */
   font-weight: 500;
   display: flex;
   align-items: center;
@@ -125,13 +121,12 @@ const Head_IconContainer = styled.span`
     inset: 0px;
     z-index: -1;
     background-color: var(--item-bg);
-    opacity: 0.75;
+    opacity: 1;
     border-radius: 2px;
   }
 `
 
 const Head_Icon_WithDescendants = styled.span<{isOpen: boolean}>`
-  width: 12px;
   font-size: 9px;
   position: relative;
   display: block;
@@ -177,7 +172,9 @@ const BaseItem: React.FC<{
           )}
         </Head_IconContainer>
 
-        <Head_Label>{label}</Head_Label>
+        <Head_Label>
+          <span>{label}</span>
+        </Head_Label>
         {labelDecoration}
       </Header>
       {canContainChildren && <ChildrenContainer>{children}</ChildrenContainer>}
