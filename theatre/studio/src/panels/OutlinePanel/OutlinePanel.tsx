@@ -11,6 +11,7 @@ import {val} from '@theatre/dataverse'
 import useTooltip from '@theatre/studio/uiComponents/Popover/useTooltip'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import BasicTooltip from '@theatre/studio/uiComponents/Popover/BasicTooltip'
+import ErrorTooltip from '@theatre/studio/uiComponents/Popover/ErrorTooltip'
 
 const Container = styled.div`
   background-color: transparent;
@@ -53,7 +54,7 @@ const Content = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  transform: translateX(-100%);
+  /* transform: translateX(-100%); */
   pointer-events: none;
 
   ${Container}:hover & {
@@ -61,14 +62,14 @@ const Content = styled.div`
   }
 `
 
-const ErrorTooltip = styled(BasicTooltip)``
-
 const headerHeight = `32px`
 
 const TriggerButton = styled(ToolbarIconButton)`
   ${Container}:hover & {
-    --item-bg: rgba(36, 38, 42, 0.95);
-    --item-border-color: rgba(255, 255, 255, 0.22);
+    background-color: rgba(36, 38, 42, 0.95);
+    &:after {
+      border-color: rgba(255, 255, 255, 0.22);
+    }
     color: white;
   }
 `
@@ -81,6 +82,8 @@ const Title = styled.div`
   user-select: none;
   position: relative;
   display: none;
+  background-color: rgba(60, 60, 60, 0.2);
+  height: 24px;
   ${Container}:hover & {
     display: block;
   }
@@ -105,7 +108,7 @@ const Body = styled.div`
   height: auto;
   max-height: calc(100% - ${headerHeight});
   overflow-y: scroll;
-  overflow-x: visible;
+  overflow-x: hidden;
   padding: 0;
   user-select: none;
 `
@@ -140,21 +143,24 @@ const OutlinePanel: React.FC<{}> = (props) => {
       )
   }, [])
 
-  const [errorTooltip, triggerButtonRef] = useTooltip(
-    {enabled: conflicts.length > 0, enterDelay: 0},
-    () => (
-      <ErrorTooltip>
-        {conflicts.length === 1
-          ? `There is a state conflict in project "${conflicts[0].projectId}". Select the project in the outline below in order to fix it.`
-          : `There are ${conflicts.length} projects that have state conflicts. They are highlighted in the outline below. `}
-      </ErrorTooltip>
-    ),
+  const [triggerTooltip, triggerButtonRef] = useTooltip(
+    {enterDelay: conflicts.length > 0 ? 0 : 200},
+    () =>
+      conflicts.length > 0 ? (
+        <ErrorTooltip>
+          {conflicts.length === 1
+            ? `There is a state conflict in project "${conflicts[0].projectId}". Select the project in the outline below in order to fix it.`
+            : `There are ${conflicts.length} projects that have state conflicts. They are highlighted in the outline below. `}
+        </ErrorTooltip>
+      ) : (
+        <BasicTooltip>Outline</BasicTooltip>
+      ),
   )
 
   return (
     <Container>
       <TriggerContainer>
-        {errorTooltip}
+        {triggerTooltip}
         <TriggerButton ref={triggerButtonRef as $IntentionalAny}>
           <VscListTree />
         </TriggerButton>
@@ -163,7 +169,7 @@ const OutlinePanel: React.FC<{}> = (props) => {
             {conflicts.length}
           </NumberOfConflictsIndicator>
         ) : null}
-        <Title>Outline</Title>
+        {/* <Title>Outline</Title> */}
       </TriggerContainer>
       <Content>
         <Body>
