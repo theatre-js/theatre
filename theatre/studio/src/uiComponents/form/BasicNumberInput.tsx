@@ -15,6 +15,8 @@ const Container = styled.div`
   position: relative;
   z-index: 0;
   box-sizing: border-box;
+  display: flex;
+  align-items: center;
 
   &:after {
     position: absolute;
