@@ -3,7 +3,6 @@ import React from 'react'
 import {GoChevronRight, DiHtml53DEffects} from 'react-icons/all'
 import styled, {css} from 'styled-components'
 import noop from '@theatre/shared/utils/noop'
-import {darken, lighten} from 'polished'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 
 export const Container = styled.li`
@@ -40,22 +39,22 @@ const Header = styled(BaseHeader)`
   &.descendant-is-selected {
     color: rgba(255, 255, 255, 0.9);
 
-    --item-bg: ${() => darken(0.1, baseBg)};
-    --item-border-color: ${baseBorderColor};
+    --item-bg: #2e4244ed;
+    --item-border-color: #254355;
   }
 
   &:hover {
     color: #fff;
 
-    --item-bg: ${() => darken(0.12, baseBg)};
-    --item-border-color: ${lighten(0.1, baseBorderColor)};
+    --item-bg: #1e5866;
+    --item-border-color: #152f42;
   }
 
   &.selected {
-    color: #fff;
+    color: rgba(255, 255, 255, 0.9);
 
-    --item-bg: ${() => darken(0.15, baseBg)};
-    --item-border-color: ${lighten(0.05, baseBorderColor)};
+    --item-bg: #1e5866;
+    --item-border-color: #152f42;
   }
 `
 
@@ -81,7 +80,7 @@ const Head_Label = styled.span`
   &:after {
     border: 1px solid var(--item-border-color);
     position: absolute;
-    inset: -1px;
+    inset: 0px;
     display: block;
     content: ' ';
     z-index: -1;
@@ -121,7 +120,7 @@ const Head_IconContainer = styled.span`
     inset: 0px;
     z-index: -1;
     background-color: var(--item-bg);
-    opacity: 1;
+    opacity: 0.6;
     border-radius: 2px;
   }
 `
