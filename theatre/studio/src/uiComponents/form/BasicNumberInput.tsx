@@ -73,6 +73,7 @@ const FillIndicator = styled.div`
   background-color: #2d5561;
   z-index: -1;
   border-radius: 2px;
+  pointer-events: none;
 
   ${Container}.dragging &, ${Container}.noFocus:hover & {
     background-color: #338198;
@@ -103,6 +104,12 @@ type IState = IState_NoFocus | IState_EditingViaKeyboard | IState_Dragging
 
 const alwaysValid = (v: number) => true
 
+export type BasicNumberInputNudgeFn = (params: {
+  deltaX: number
+  deltaFraction: number
+  magnitude: number
+}) => number
+
 const BasicNumberInput: React.FC<{
   value: number
   temporarilySetValue: (v: number) => void
@@ -117,6 +124,7 @@ const BasicNumberInput: React.FC<{
    * before this, so use this for UI purposes such as closing a popover.
    */
   onBlur?: () => void
+  nudge: BasicNumberInputNudgeFn
 }> = (propsA) => {
   const [stateA, setState] = useState<IState>({mode: 'noFocus'})
   const isValid = propsA.isValid ?? alwaysValid
@@ -207,8 +215,11 @@ const BasicNumberInput: React.FC<{
       })
     }
 
+    let inputWidth: number
+
     const transitionToDraggingMode = () => {
       const curValue = refs.current.props.value
+      inputWidth = inputRef.current?.getBoundingClientRect().width!
 
       setState({
         mode: 'dragging',
@@ -238,9 +249,16 @@ const BasicNumberInput: React.FC<{
       }
     }
 
-    const onDrag = (dx: number, _dy: number) => {
+    const onDrag = (deltaX: number, _dy: number) => {
       const curState = refs.current.state as IState_Dragging
-      const newValue = curState.valueBeforeDragging + dx
+
+      const newValue =
+        curState.valueBeforeDragging +
+        propsA.nudge({
+          deltaX,
+          deltaFraction: deltaX / inputWidth,
+          magnitude: 1,
+        })
 
       setState({
         ...curState,

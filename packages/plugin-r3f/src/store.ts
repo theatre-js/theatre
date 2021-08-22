@@ -18,21 +18,25 @@ export type TransformControlsMode = 'translate' | 'rotate' | 'scale'
 export type TransformControlsSpace = 'world' | 'local'
 export type ViewportShading = 'wireframe' | 'flat' | 'solid' | 'rendered'
 
+const positionComp = types.number(1, {nudgeMultiplier: 0.1})
+const rotationComp = types.number(1, {nudgeMultiplier: 0.02})
+const scaleComp = types.number(1, {nudgeMultiplier: 0.1})
+
 export const baseSheetObjectType = types.compound({
   position: types.compound({
-    x: types.number(0),
-    y: types.number(0),
-    z: types.number(0),
+    x: positionComp,
+    y: positionComp,
+    z: positionComp,
   }),
   rotation: types.compound({
-    x: types.number(0),
-    y: types.number(0),
-    z: types.number(0),
+    x: rotationComp,
+    y: rotationComp,
+    z: rotationComp,
   }),
   scale: types.compound({
-    x: types.number(1),
-    y: types.number(1),
-    z: types.number(1),
+    x: scaleComp,
+    y: scaleComp,
+    z: scaleComp,
   }),
 })
 

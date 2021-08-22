@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import {usePrism, useVal} from '@theatre/dataverse-react'
 import getStudio from '@theatre/studio/getStudio'
+import type {BasicNumberInputNudgeFn} from '@theatre/studio/uiComponents/form/BasicNumberInput'
 import BasicNumberInput from '@theatre/studio/uiComponents/form/BasicNumberInput'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import {propNameText} from '@theatre/studio/panels/DetailPanel/propEditors/utils/SingleRowPropEditor'
@@ -22,6 +23,8 @@ const Label = styled.div`
   ${propNameText};
   white-space: nowrap;
 `
+
+const nudge: BasicNumberInputNudgeFn = ({deltaX}) => deltaX * 0.25
 
 const LengthEditorPopover: React.FC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
@@ -87,6 +90,7 @@ const LengthEditorPopover: React.FC<{
           isValid={greaterThanZero}
           inputRef={inputRef}
           onBlur={onRequestClose}
+          nudge={nudge}
         />
       </Container>
     )

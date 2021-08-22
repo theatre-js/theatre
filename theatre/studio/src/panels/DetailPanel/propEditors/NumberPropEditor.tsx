@@ -1,7 +1,7 @@
 import type {PropTypeConfig_Number} from '@theatre/core/propTypes'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import BasicNumberInput from '@theatre/studio/uiComponents/form/BasicNumberInput'
-import React from 'react'
+import React, {useCallback} from 'react'
 import {useEditingToolsForPrimitiveProp} from './utils/useEditingToolsForPrimitiveProp'
 import {SingleRowPropEditor} from './utils/SingleRowPropEditor'
 
@@ -12,6 +12,13 @@ const NumberPropEditor: React.FC<{
 }> = ({propConfig, pointerToProp, obj}) => {
   const stuff = useEditingToolsForPrimitiveProp<number>(pointerToProp, obj)
 
+  const nudge = useCallback(
+    (params: {deltaX: number; deltaFraction: number; magnitude: number}) => {
+      return propConfig.nudgeFn({...params, config: propConfig})
+    },
+    [propConfig],
+  )
+
   return (
     <SingleRowPropEditor {...{stuff, propConfig, pointerToProp}}>
       <BasicNumberInput
@@ -20,6 +27,7 @@ const NumberPropEditor: React.FC<{
         discardTemporaryValue={stuff.discardTemporaryValue}
         permenantlySetValue={stuff.permenantlySetValue}
         range={propConfig.range}
+        nudge={nudge}
       />
     </SingleRowPropEditor>
   )

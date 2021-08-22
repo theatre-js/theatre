@@ -13,11 +13,40 @@ export interface PropTypeConfig_Number extends IBasePropType<number> {
   type: 'number'
   default: number
   range?: [min: number, max: number]
+  nudgeFn: NumberNudgeFn
+  nudgeMultiplier: number
+}
+
+export type NumberNudgeFn = (p: {
+  deltaX: number
+  deltaFraction: number
+  magnitude: number
+  config: PropTypeConfig_Number
+}) => number
+
+const defaultNumberNudgeFn: NumberNudgeFn = ({
+  config,
+  deltaX,
+  deltaFraction,
+  magnitude,
+}) => {
+  const {range} = config
+  if (range) {
+    return (
+      deltaFraction * (range[1] - range[0]) * magnitude * config.nudgeMultiplier
+    )
+  }
+
+  return deltaX * magnitude * config.nudgeMultiplier
 }
 
 export const number = (
   defaultValue: number,
-  opts?: Pick<PropTypeConfig_Number, 'range'> & PropTypeConfigExtras,
+  opts?: {
+    nudgeFn?: PropTypeConfig_Number['nudgeFn']
+    range?: PropTypeConfig_Number['range']
+    nudgeMultiplier?: number
+  } & PropTypeConfigExtras,
 ): PropTypeConfig_Number => {
   return {
     type: 'number',
@@ -26,6 +55,9 @@ export const number = (
     [s]: 'TheatrePropType',
     ...(opts ? opts : {}),
     label: opts?.label,
+    nudgeFn: opts?.nudgeFn ?? defaultNumberNudgeFn,
+    nudgeMultiplier:
+      typeof opts?.nudgeMultiplier === 'number' ? opts.nudgeMultiplier : 1,
   }
 }
 

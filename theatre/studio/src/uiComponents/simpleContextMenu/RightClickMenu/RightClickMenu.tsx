@@ -23,6 +23,7 @@ const Container = styled.ul`
   min-width: ${minWidth}px;
   z-index: 10000;
   background: ${transparentize(0.2, '#111')};
+  backdrop-filter: blur(2px);
   color: white;
   list-style-type: none;
   padding: 2px 0;

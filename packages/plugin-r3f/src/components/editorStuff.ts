@@ -13,7 +13,7 @@ const editorSheetObjectConfig = types.compound({
       showAxes: types.boolean(true, {label: 'Axes'}),
       showGrid: types.boolean(true, {label: 'Grid'}),
       showOverlayIcons: types.boolean(false, {label: 'Overlay Icons'}),
-      resolution: types.number(1440, {
+      resolution: types.number(500, {
         label: 'Resolution',
         range: [0, 1000],
       }),
