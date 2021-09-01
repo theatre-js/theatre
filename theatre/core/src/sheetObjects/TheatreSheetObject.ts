@@ -19,8 +19,9 @@ export interface ISheetObject<
   Props extends PropTypeConfig_Compound<$IntentionalAny> = PropTypeConfig_Compound<$IntentionalAny>,
 > {
   readonly type: 'Theatre_SheetObject_PublicAPI'
+
   /**
-   * The type of the values of the SheetObject.
+   *
    */
   readonly value: Props['valueType']
   readonly props: Pointer<Props['valueType']>

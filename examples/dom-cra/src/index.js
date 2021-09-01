@@ -1,8 +1,10 @@
 import ReactDOM from 'react-dom'
 import './index.css'
 import reportWebVitals from './reportWebVitals'
-import '@theatre/studio'
+import studio from '@theatre/studio'
 import {getProject} from '@theatre/core'
+
+studio.initialize()
 
 ReactDOM.render(
   <React.StrictMode>

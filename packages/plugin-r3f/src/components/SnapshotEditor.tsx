@@ -120,7 +120,7 @@ const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
   }, [editorOpen])
 
   const onPointerMissed = useCallback(() => {
-    if (sheet !== null) studio.__experimental_setSelection([sheet])
+    if (sheet !== null) studio.setSelection([sheet])
   }, [sheet])
 
   if (!editorObject) return <></>

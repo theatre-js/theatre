@@ -2,10 +2,7 @@ import type {ProjectState} from '@theatre/core/projects/store/storeTypes'
 import type {IRange, StrictRecord} from '@theatre/shared/utils/types'
 
 export type StudioAhistoricState = {
-  visibilityState:
-    | 'everythingIsHidden'
-    | 'everythingIsVisible'
-    | 'onlyTriggerIsVisible'
+  visibilityState: 'everythingIsHidden' | 'everythingIsVisible'
 
   theTrigger: {
     position: {

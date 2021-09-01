@@ -5,7 +5,7 @@ import {getProject} from '@theatre/core'
 import {Scene} from './Scene'
 import bg from '../../xeno/bgs/8.png'
 
-studio.ui
+studio.initialize()
 
 document.body.style.cssText = `
   background-image: url(${bg});

@@ -6,6 +6,8 @@ import type {IProject, ISheet, ISheetObject} from '@theatre/core'
 import {types as t} from '@theatre/core'
 import type {IScrub, IStudio} from '@theatre/studio'
 
+studio.initialize()
+
 const boxObjectConfig = t.compound({
   x: t.number(0),
   y: t.number(0),
@@ -44,7 +46,7 @@ const Box: React.FC<{
       },
       onDrag(x, y) {
         if (!firstOnDragCalled) {
-          studio.__experimental_setSelection([obj])
+          studio.setSelection([obj])
           firstOnDragCalled = true
         }
         scrub!.capture(({set}) => {
@@ -67,7 +69,7 @@ const Box: React.FC<{
   return (
     <div
       onClick={() => {
-        studio.__experimental_setSelection([obj])
+        studio.setSelection([obj])
       }}
       ref={setDivRef}
       style={{
@@ -94,7 +96,7 @@ export const Scene: React.FC<{project: IProject}> = ({project}) => {
   const [selection, setSelection] = useState<IStudio['selection']>()
 
   useLayoutEffect(() => {
-    return studio.__experimental_onSelectionChange((newState) => {
+    return studio.onSelectionChange((newState) => {
       setSelection(newState)
     })
   })

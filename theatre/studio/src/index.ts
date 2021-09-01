@@ -15,10 +15,6 @@ setStudio(studioPrivateAPI)
 export const studio = studioPrivateAPI.publicApi
 export default studio
 
-if (process.env.NODE_ENV !== 'test') {
-  studio.ui.show()
-}
-
 registerStudioBundle()
 
 function registerStudioBundle() {

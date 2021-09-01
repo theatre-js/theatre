@@ -172,7 +172,7 @@ const EditableProxy: VFC<EditableProxyProps> = ({
             if (!theatreObject) {
               console.log('no theatre object for', uniqueName)
             } else {
-              studio.__experimental_setSelection([theatreObject])
+              studio.setSelection([theatreObject])
             }
           }
         }}
@@ -206,7 +206,7 @@ const EditableProxy: VFC<EditableProxyProps> = ({
                   if (!theatreObject) {
                     console.log('no theatre object for', uniqueName)
                   } else {
-                    studio.__experimental_setSelection([theatreObject])
+                    studio.setSelection([theatreObject])
                   }
                 }
               }}

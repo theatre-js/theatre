@@ -4,7 +4,7 @@ import studio from '@theatre/studio'
 import {getProject} from '@theatre/core'
 import {Scene} from './Scene'
 
-studio.ui
+studio.initialize()
 
 ReactDOM.render(
   <Scene project={getProject('Sample project')} />,

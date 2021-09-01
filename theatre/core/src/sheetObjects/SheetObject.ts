@@ -64,10 +64,6 @@ export default class SheetObject implements IdentityDerivationProvider {
     this.template.overrideConfig(nativeObject, config)
   }
 
-  // getValues(): Record<string, unknown> {
-  //   return {}
-  // }
-
   getValues(): IDerivation<Pointer<SerializableMap>> {
     return this._cache.get('getValues()', () =>
       prism(() => {

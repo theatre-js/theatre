@@ -6,6 +6,8 @@ import {types as t} from '@theatre/core'
 import type {UseDragOpts} from './useDrag'
 import useDrag from './useDrag'
 
+studio.initialize()
+
 const boxObjectConfig = t.compound({
   x: t.number(0),
   y: t.number(0),

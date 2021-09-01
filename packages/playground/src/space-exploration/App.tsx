@@ -5,6 +5,9 @@ import React, {Suspense} from 'react'
 import {Canvas} from '@react-three/fiber'
 import {useGLTF} from '@react-three/drei'
 import sceneGLB from './scene.glb'
+import studio from '@theatre/studio'
+
+studio.initialize()
 
 document.body.style.backgroundColor = '#171717'
 

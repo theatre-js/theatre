@@ -49,20 +49,42 @@ export type PaneInstance<ClassName extends string> = {
 
 export interface IStudio {
   readonly ui: {
-    show(): void
+    /**
+     * Temporarily hides the studio
+     */
     hide(): void
-    readonly showing: boolean
+    /**
+     * Whether the studio is currently visible or hidden
+     */
+    readonly isHidden: boolean
+    /**
+     * Makes the studio visible again.
+     */
     restore(): void
   }
+
+  /**
+   * Initializes the studio. Call this in your index.js/index.ts module.
+   *
+   * Usage with **tree-shaking**:
+   * ```ts
+   * import studio from '@theratre/studio'
+   *
+   * // Add this check if you wish to not include the studio in your production bundle
+   * if (process.env.NODE_ENV === "development") {
+   *   studio.initialize()
+   * }
+   * ```
+   */
+  initialize(): void
 
   transaction(fn: (api: ITransactionAPI) => void): void
   scrub(): IScrub
   debouncedScrub(threshhold: number): Pick<IScrub, 'capture'>
 
-  __experimental_setSelection(selection: Array<ISheetObject | ISheet>): void
-  __experimental_onSelectionChange(
-    fn: (s: Array<ISheetObject>) => void,
-  ): VoidFunction
+  setSelection(selection: Array<ISheetObject | ISheet>): void
+
+  onSelectionChange(fn: (s: Array<ISheetObject>) => void): VoidFunction
 
   readonly selection: Array<ISheetObject>
 
@@ -81,16 +103,12 @@ export interface IStudio {
 
 export default class TheatreStudio implements IStudio {
   readonly ui = {
-    show() {
-      getStudio().ui.show()
-    },
-
     hide() {
       getStudio().ui.hide()
     },
 
-    get showing(): boolean {
-      return getStudio().ui._showing
+    get isHidden(): boolean {
+      return getStudio().ui.isHidden
     },
 
     restore() {
@@ -104,6 +122,10 @@ export default class TheatreStudio implements IStudio {
    * @internal
    */
   constructor(internals: Studio) {}
+
+  initialize() {
+    getStudio().ui.render()
+  }
 
   extend(extension: IExtension): void {
     getStudio().extend(extension)
@@ -129,7 +151,7 @@ export default class TheatreStudio implements IStudio {
     return this._getSelectionDerivation().getValue()
   }
 
-  __experimental_setSelection(selection: Array<ISheetObject | ISheet>): void {
+  setSelection(selection: Array<ISheetObject | ISheet>): void {
     const sanitizedSelection = [...selection]
       .filter((s) => isSheetObjectPublicAPI(s) || isSheetPublicAPI(s))
       .map((s) => getStudio().corePrivateAPI!(s))
@@ -141,7 +163,7 @@ export default class TheatreStudio implements IStudio {
     })
   }
 
-  __experimental_onSelectionChange(fn: (s: ISheetObject[]) => void): VoidFn {
+  onSelectionChange(fn: (s: ISheetObject[]) => void): VoidFn {
     return this._getSelectionDerivation().tapImmediate(studioTicker, fn)
   }
 

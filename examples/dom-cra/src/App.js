@@ -3,6 +3,8 @@ import {useLayoutEffect, useMemo, useState} from 'react'
 import {types as t} from '@theatre/core'
 import useDrag from './useDrag'
 
+studio.initialize()
+
 const boxObjectConfig = t.compound({
   x: t.number(0),
   y: t.number(0),

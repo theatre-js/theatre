@@ -20,7 +20,7 @@ export function useSelected(): undefined | string {
       }
     }
     setFromStudio(studio.selection)
-    return studio.__experimental_onSelectionChange(setFromStudio)
+    return studio.onSelectionChange(setFromStudio)
   }, [sheet])
 
   return state

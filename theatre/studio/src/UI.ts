@@ -3,10 +3,11 @@ import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import type {Studio} from './Studio'
+import {val} from '@theatre/dataverse'
 
 export default class UI {
   readonly containerEl = document.createElement('div')
-  _showing = false
+  private _rendered = false
   private _renderTimeout: NodeJS.Timer | undefined = undefined
   private _documentBodyUIIsRenderedIn: HTMLElement | undefined = undefined
   readonly containerShadow: ShadowRoot & HTMLElement
@@ -27,20 +28,16 @@ export default class UI {
     this.containerShadow = this.containerEl.attachShadow({
       mode: 'open',
       // To see why I had to cast this value to HTMLElement, take a look at its
-      // references. There are a few functions that actually work with a ShadowRoot
-      // but are typed to accept HTMLElement
+      // references of this prop. There are a few functions that actually work
+      // with a ShadowRoot but are typed to accept HTMLElement
     }) as $IntentionalAny as ShadowRoot & HTMLElement
   }
 
-  show() {
-    if (this._showing) {
-      if (this._documentBodyUIIsRenderedIn && document.body) {
-        this.hide()
-      } else {
-        return
-      }
+  render() {
+    if (this._rendered) {
+      return
     }
-    this._showing = true
+    this._rendered = true
 
     this._render()
   }
@@ -60,24 +57,21 @@ export default class UI {
   }
 
   hide() {
-    if (!this._showing) return
-    this._showing = false
-    if (this._renderTimeout) {
-      clearTimeout(this._renderTimeout)
-      this._renderTimeout = undefined
-    } else {
-      ReactDOM.unmountComponentAtNode(this.containerShadow)
-      try {
-        this._documentBodyUIIsRenderedIn!.removeChild(this.containerEl)
-        this._documentBodyUIIsRenderedIn = undefined
-      } catch (e) {}
-    }
+    this.studio.transaction(({drafts}) => {
+      drafts.ahistoric.visibilityState = 'everythingIsHidden'
+    })
   }
 
   restore() {
-    this.show()
+    this.render()
     this.studio.transaction(({drafts}) => {
       drafts.ahistoric.visibilityState = 'everythingIsVisible'
     })
+  }
+
+  get isHidden() {
+    return (
+      val(this.studio.atomP.ahistoric.visibilityState) === 'everythingIsHidden'
+    )
   }
 }

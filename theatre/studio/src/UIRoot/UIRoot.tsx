@@ -5,7 +5,6 @@ import React from 'react'
 import styled, {createGlobalStyle, StyleSheetManager} from 'styled-components'
 import PanelsRoot from './PanelsRoot'
 import ProvideTheme from './ProvideTheme'
-import TheTrigger from './TheTrigger'
 import GlobalToolbar from '@theatre/studio/toolbars/GlobalToolbar/GlobalToolbar'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {PortalContext} from 'reakit'
@@ -66,7 +65,6 @@ export default function UIRoot() {
     const visiblityState = val(studio.atomP.ahistoric.visibilityState)
     const initialised = val(studio.atomP.ephemeral.initialised)
 
-    const shouldShowTrigger = visiblityState === 'onlyTriggerIsVisible'
     const shouldShowPanels = visiblityState === 'everythingIsVisible'
     const shouldShowGlobalToolbar = visiblityState !== 'everythingIsHidden'
 
@@ -83,7 +81,6 @@ export default function UIRoot() {
                 <Container>
                   <PortalLayer ref={portalLayerRef} />
                   {shouldShowGlobalToolbar && <GlobalToolbar />}
-                  {shouldShowTrigger && <TheTrigger />}
                   {shouldShowPanels && <PanelsRoot />}
                 </Container>
               </TooltipContext>

@@ -13,6 +13,8 @@ import {types} from '@theatre/core'
 import type {ITurtle} from './turtle'
 import {drawTurtlePlan, makeTurtlePlan} from './turtle'
 
+studio.initialize()
+
 const objConfig = types.compound({
   startingPoint: types.compound({
     x: types.number(0.5, {range: [0, 1]}),
