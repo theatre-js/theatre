@@ -1,7 +1,7 @@
 import {editable as e, RefreshSnapshot, Wrapper} from '@theatre/plugin-r3f'
 import {OrbitControls, Stars} from '@react-three/drei'
 import {getProject} from '@theatre/core'
-import React, {Suspense} from 'react'
+import React, {Suspense, useState} from 'react'
 import {Canvas} from '@react-three/fiber'
 import {useGLTF} from '@react-three/drei'
 import sceneGLB from './scene.glb'
@@ -49,12 +49,36 @@ function Model({url}: {url: string}) {
 }
 
 function App() {
-  const bg = '#272730'
+  const bgs = ['#272730', '#b7c5d1']
+  const [bgIndex, setBgIndex] = useState(0)
+  const bg = bgs[bgIndex]
   return (
-    <div>
+    <div onClick={() => setBgIndex((bgIndex) => (bgIndex + 1) % bgs.length)}>
       <Canvas dpr={[1.5, 2]} linear shadows frameloop="demand">
         <Wrapper
-          getSheet={() => getProject('Example project').sheet('R3F-Canvas')}
+          getSheet={() =>
+            getProject('Space', {
+              state: {
+                sheetsById: {
+                  'R3F-Canvas': {
+                    staticOverrides: {
+                      byObject: {
+                        'Light 1': {
+                          position: {
+                            x: -60,
+                            y: -63,
+                            z: -79,
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+                definitionVersion: '0.3.0-dev',
+                revisionHistory: ['1__HCrX_ol8j4wK3-Pi'],
+              },
+            }).sheet('Scene')
+          }
         >
           <fog attach="fog" args={[bg, 16, 30]} />
           <color attach="background" args={[bg]} />

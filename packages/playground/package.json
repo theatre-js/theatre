@@ -25,6 +25,6 @@
     "esbuild": "^0.12.15",
     "esbuild-register": "^2.5.0",
     "three": "^0.130.1",
-    "typescript": "^4.3.5"
+    "typescript": "^4.4.2"
   }
 }
