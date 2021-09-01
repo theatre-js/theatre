@@ -2,12 +2,17 @@ import {useEffect} from 'react'
 import getStudio from '@theatre/studio/getStudio'
 import {cmdIsDown} from '@theatre/studio/utils/keyboardUtils'
 import {getSelectedSequence} from '@theatre/studio/selectors'
+import type {$IntentionalAny} from '@theatre/shared/utils/types'
 
 export default function useKeyboardShortcuts() {
   const studio = getStudio()
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.target && (e.target as HTMLElement).tagName === 'INPUT') {
+      const target: null | HTMLElement = e.target as unknown as $IntentionalAny
+      if (
+        target &&
+        (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')
+      ) {
         return
       }
 
@@ -18,6 +23,8 @@ export default function useKeyboardShortcuts() {
           } else {
             studio.undo()
           }
+        } else {
+          return
         }
       } else if (
         e.key === ' ' &&
@@ -33,6 +40,8 @@ export default function useKeyboardShortcuts() {
           } else {
             seq.play()
           }
+        } else {
+          return
         }
       } else {
         return
