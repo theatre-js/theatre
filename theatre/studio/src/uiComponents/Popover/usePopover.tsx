@@ -48,7 +48,7 @@ export default function usePopover(
 
   const portalLayer = useContext(PortalContext)
   const onPointerOutside = useMemo(() => {
-    if (opts.closeOnClickOutside === false) return undefined
+    if (opts.closeWhenPointerIsDistant === false) return undefined
     return {
       threshold: opts.pointerDistanceThreshold ?? 100,
       callback: close,
