@@ -147,8 +147,8 @@ export function useEditingToolsForPrimitiveProp<
             ].sequence.tracksByObject[obj.address.objectKey].trackData[
               sequenceTrcackId
             ],
-          )!
-          if (track.keyframes.length === 0) return {}
+          )
+          if (!track || track.keyframes.length === 0) return {}
 
           const pos = val(obj.sheet.getSequence().positionDerivation)
 
@@ -176,7 +176,7 @@ export function useEditingToolsForPrimitiveProp<
             }
           }
         },
-        [],
+        [sequenceTrcackId],
       )
 
       let shade: Shade
