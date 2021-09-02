@@ -42,7 +42,7 @@ const TurtleRenderer: React.FC<{
   dimsRef.current = {width: props.width, height: props.height}
 
   const obj = useMemo(() => {
-    return props.sheet.object(props.objKey, null, objConfig)
+    return props.sheet.object(props.objKey, objConfig)
   }, [props.sheet, props.objKey])
 
   useEffect(() => {

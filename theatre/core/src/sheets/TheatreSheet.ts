@@ -22,7 +22,6 @@ export interface ISheet {
 
   object<Props extends PropTypeConfig_Compound<$IntentionalAny>>(
     key: string,
-    nativeObject: unknown,
     config: SheetObjectConfig<Props>,
   ): ISheetObject<Props>
 
@@ -42,7 +41,6 @@ export default class TheatreSheet implements ISheet {
 
   object<Props extends PropTypeConfig_Compound<$IntentionalAny>>(
     key: string,
-    nativeObject: unknown,
     config: SheetObjectConfig<Props>,
   ): ISheetObject<Props> {
     const internal = privateAPI(this)
@@ -54,6 +52,8 @@ export default class TheatreSheet implements ISheet {
     // @todo sanitize config
 
     const existingObject = internal.getObject(sanitizedPath)
+
+    const nativeObject = null
 
     if (existingObject) {
       existingObject.overrideConfig(nativeObject, config)

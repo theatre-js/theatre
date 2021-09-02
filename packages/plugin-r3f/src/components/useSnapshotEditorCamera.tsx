@@ -57,7 +57,6 @@ export default function useSnapshotEditorCamera(
     if (!objRef.current) {
       objRef.current = snapshotEditorSheet.object(
         `Editor Camera ${paneId}`,
-        {},
         camConf,
       )
     }

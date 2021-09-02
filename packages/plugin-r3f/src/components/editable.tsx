@@ -59,7 +59,7 @@ const editable = <
 
       useLayoutEffect(() => {
         if (!sheet) return
-        const sheetObject = sheet.object(uniqueName, {}, baseSheetObjectType)
+        const sheetObject = sheet.object(uniqueName, baseSheetObjectType)
         setSheetObject(sheetObject)
 
         useEditorStore

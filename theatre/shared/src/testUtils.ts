@@ -30,7 +30,6 @@ export async function setupTestSheet(sheetState: SheetState_Historic) {
   const sheetPublicAPI = project.sheet('Sheet')
   const objPublicAPI = sheetPublicAPI.object(
     'obj',
-    null,
     t.compound({
       position: t.compound({
         x: t.number(0),

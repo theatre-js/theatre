@@ -32,7 +32,7 @@ const Box: React.FC<{
   selection: ISheetObject[]
 }> = ({id, sheet, selection: selection}) => {
   // This is cheap to call and always returns the same value, so no need for useMemo()
-  const obj = sheet.object('object ' + id, null, boxObjectConfig)
+  const obj = sheet.object('object ' + id, boxObjectConfig)
 
   const isSelected = selection.includes(obj)
 

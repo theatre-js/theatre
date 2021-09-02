@@ -66,7 +66,7 @@ export function getEditorSheetObject(): ISheetObject<
 > | null {
   if (!sheetObject) {
     sheetObject =
-      getEditorSheet().object('Editor', null, editorSheetObjectConfig) || null
+      getEditorSheet().object('Editor', editorSheetObjectConfig) || null
   }
   return sheetObject
 }
