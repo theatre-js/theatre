@@ -59,7 +59,7 @@ const ProjectDetails: React.FC<{
   }, [])
 
   const [tooltip, openExportTooltip] = usePopover(
-    {pointerDistanceThreshold: 50, closeWhenPointerIsDistant: false},
+    {pointerDistanceThreshold: 50},
     () => (
       <ExportTooltip>
         This will create a JSON file with the state of your project. You can

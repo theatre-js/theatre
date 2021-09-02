@@ -17,6 +17,7 @@ const Adjust = styled.div`
   left: -7px;
   top: -8px;
   text-align: center;
+  line-height: 0;
 `
 
 type Props = {
