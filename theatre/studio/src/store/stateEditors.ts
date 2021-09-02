@@ -458,7 +458,7 @@ namespace stateEditors {
           function _getTrack(
             p: WithoutSheetInstance<SheetObjectAddress> & {trackId: string},
           ) {
-            return _ensureTracksOfObject(p).trackData[p.trackId]!
+            return _ensureTracksOfObject(p).trackData[p.trackId]
           }
 
           /**
@@ -474,7 +474,9 @@ namespace stateEditors {
             },
           ) {
             const position = p.snappingFunction(p.position)
-            const {keyframes} = _getTrack(p)
+            const track = _getTrack(p)
+            if (!track) return
+            const {keyframes} = track
             const existingKeyframeIndex = keyframes.findIndex(
               (kf) => kf.position === position,
             )
@@ -513,7 +515,9 @@ namespace stateEditors {
               position: number
             },
           ) {
-            const {keyframes} = _getTrack(p)
+            const track = _getTrack(p)
+            if (!track) return
+            const {keyframes} = track
             const index = keyframes.findIndex(
               (kf) => kf.position === p.position,
             )
@@ -535,6 +539,7 @@ namespace stateEditors {
             },
           ) {
             const track = _getTrack(p)
+            if (!track) return
             const initialKeyframes = current(track.keyframes)
             // debugger
 
@@ -560,6 +565,7 @@ namespace stateEditors {
             },
           ) {
             const track = _getTrack(p)
+            if (!track) return
 
             track.keyframes = track.keyframes.filter(
               (kf) => p.keyframeIds.indexOf(kf.id) === -1,
@@ -574,6 +580,7 @@ namespace stateEditors {
             },
           ) {
             const track = _getTrack(p)
+            if (!track) return
             const initialKeyframes = current(track.keyframes)
             const sanitizedKeyframes = p.keyframes
               .filter((kf) => {
