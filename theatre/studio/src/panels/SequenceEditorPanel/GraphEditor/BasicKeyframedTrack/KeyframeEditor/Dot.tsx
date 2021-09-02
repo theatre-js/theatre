@@ -223,7 +223,7 @@ function useDragKeyframe(
   }, [])
 
   useDrag(node, gestureHandlers)
-  useCursorLock(isDragging, 'draggingPositionInSequenceEditor', 'ew-resize')
+  useCursorLock(isDragging, 'draggingPositionInSequenceEditor', 'move')
   return isDragging
 }
 
