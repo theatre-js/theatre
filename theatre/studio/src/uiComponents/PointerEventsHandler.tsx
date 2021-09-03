@@ -56,7 +56,10 @@ const PointerEventsHandler: React.FC<{
 
   return (
     <context.Provider value={contextValue}>
-      <Container id={elementId} className={locks[0]?.className ?? 'normal'}>
+      <Container
+        id={elementId}
+        className={(locks[0]?.className ?? 'normal') + ' ' + props.className}
+      >
         <CursorOverride style={{cursor: locks[0]?.cursor ?? ''}}>
           {props.children}
         </CursorOverride>

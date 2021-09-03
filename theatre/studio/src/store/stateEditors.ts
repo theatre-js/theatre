@@ -30,6 +30,7 @@ import type {
   OutlineSelectable,
   OutlineSelectionState,
   PanelPosition,
+  StudioAhistoricState,
 } from './types'
 import {uniq} from 'lodash-es'
 import {
@@ -306,6 +307,11 @@ namespace stateEditors {
       }
     }
     export namespace ahistoric {
+      export function setVisibilityState(
+        visibilityState: StudioAhistoricState['visibilityState'],
+      ) {
+        drafts().ahistoric.visibilityState = visibilityState
+      }
       export namespace projects {
         export namespace stateByProjectId {
           export function _ensure(p: ProjectAddress) {

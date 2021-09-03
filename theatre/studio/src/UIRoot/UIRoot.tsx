@@ -1,7 +1,7 @@
 import getStudio from '@theatre/studio/getStudio'
-import {usePrism} from '@theatre/dataverse-react'
+import {usePrism, useVal} from '@theatre/dataverse-react'
 import {val} from '@theatre/dataverse'
-import React from 'react'
+import React, {useEffect} from 'react'
 import styled, {createGlobalStyle, StyleSheetManager} from 'styled-components'
 import PanelsRoot from './PanelsRoot'
 import ProvideTheme from './ProvideTheme'
@@ -39,6 +39,11 @@ const Container = styled(PointerEventsHandler)`
   right: 0px;
   bottom: 0px;
   left: 0px;
+
+  &.invisible {
+    pointer-events: none !important;
+    opacity: 0;
+  }
 `
 
 const PortalLayer = styled.div`
@@ -61,12 +66,20 @@ export default function UIRoot() {
   )
 
   useKeyboardShortcuts()
+  const visiblityState = useVal(studio.atomP.ahistoric.visibilityState)
+  useEffect(() => {
+    if (visiblityState === 'everythingIsHidden') {
+      console.warn(
+        `Theatre Studio is hidden. You can restore it by either hitting alt/option+\` or calling studio.ui.restore()`,
+      )
+    }
+    return () => {}
+  }, [visiblityState])
+
   const inside = usePrism(() => {
     const visiblityState = val(studio.atomP.ahistoric.visibilityState)
-    const initialised = val(studio.atomP.ephemeral.initialised)
 
-    const shouldShowPanels = visiblityState === 'everythingIsVisible'
-    const shouldShowGlobalToolbar = visiblityState !== 'everythingIsHidden'
+    const initialised = val(studio.atomP.ephemeral.initialised)
 
     return !initialised ? null : (
       <StyleSheetManager
@@ -78,10 +91,14 @@ export default function UIRoot() {
           <ProvideTheme>
             <PortalContext.Provider value={portalLayer}>
               <TooltipContext>
-                <Container>
+                <Container
+                  className={
+                    visiblityState === 'everythingIsHidden' ? 'invisible' : ''
+                  }
+                >
                   <PortalLayer ref={portalLayerRef} />
-                  {shouldShowGlobalToolbar && <GlobalToolbar />}
-                  {shouldShowPanels && <PanelsRoot />}
+                  {<GlobalToolbar />}
+                  {<PanelsRoot />}
                 </Container>
               </TooltipContext>
             </PortalContext.Provider>
