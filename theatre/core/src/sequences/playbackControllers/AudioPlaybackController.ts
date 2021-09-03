@@ -64,15 +64,8 @@ export default class AudioPlaybackController implements IPlaybackController {
     this.playing = true
 
     const ticker = this._ticker
-    let lastTickerTime = ticker.time
-    const dur = range.end - range.start
-    const prevTime = this.getCurrentPosition()
-
-    if (rate !== 1.0) {
-      throw new InvalidArgumentError(
-        `Audio-controlled sequences can only have a playbackRate of 1.0. ${rate} given.`,
-      )
-    }
+    const startPos = this.getCurrentPosition()
+    const iterationLength = range.end - range.start
 
     if (direction !== 'normal') {
       throw new InvalidArgumentError(
@@ -81,98 +74,64 @@ export default class AudioPlaybackController implements IPlaybackController {
       )
     }
 
-    if (prevTime < range.start || prevTime > range.end) {
+    if (iterationCount !== 1) {
+      throw new InvalidArgumentError(
+        `Audio-controlled sequences can only have an iterationCount of 1 ` +
+          `'${iterationCount}' given.`,
+      )
+    }
+
+    if (startPos < range.start || startPos > range.end) {
       // if we're currently out of the range
       this._updatePositionInState(range.start)
-    } else if (prevTime === range.end) {
+    } else if (startPos === range.end) {
       // if we're currently at the very end of the range
       this._updatePositionInState(range.start)
     }
-
-    let countSoFar = 1
 
     const deferred = defer<boolean>()
 
     const currentSource = this._audioContext.createBufferSource()
     currentSource.buffer = this._decodedBuffer
     currentSource.connect(this._mainGain)
+    currentSource.playbackRate.value = rate
+
     const audioStartTimeInSeconds = this._audioContext.currentTime
     const wait = 0
-    const timeToRangeEnd = range.end - prevTime
-
-    if (iterationCount > 1) {
-      currentSource.loop = true
-      currentSource.loopStart = range.start
-      currentSource.loopEnd = range.end
-    }
+    const timeToRangeEnd = range.end - startPos
 
     currentSource.start(
       audioStartTimeInSeconds + wait,
-      prevTime - wait,
-      iterationCount === 1 ? wait + timeToRangeEnd : undefined,
+      startPos - wait,
+      wait + timeToRangeEnd,
     )
+    const initialTickerTime = ticker.time
+    let initialElapsedPos = this.getCurrentPosition() - range.start
+    const totalPlaybackLength = iterationLength * iterationCount
 
-    const tick = (tickerTime: number) => {
-      const lastTime = this.getCurrentPosition()
-      const timeDiff = (tickerTime - lastTickerTime) * rate
-      lastTickerTime = tickerTime
-      /*
-       * I don't know why exactly this happens, but every 10 times or so, the first sequence.play({iterationCount: 1}),
-       * the first call of tick() will have a timeDiff < 0.
-       * This might be because of Spectre mitigation (they randomize performance.now() a bit), or it could be that
-       * I'm using performance.now() the wrong way.
-       * Anyway, this seems like a working fix for it:
-       */
-      if (timeDiff < 0) {
+    const tick = (currentTickerTime: number) => {
+      const elapsedTickerTime = Math.max(
+        currentTickerTime - initialTickerTime,
+        0,
+      )
+      const elapsedTickerTimeInSeconds = elapsedTickerTime / 1000
+
+      const elapsedPos = Math.min(
+        elapsedTickerTimeInSeconds * rate + initialElapsedPos,
+        totalPlaybackLength,
+      )
+
+      if (elapsedPos !== totalPlaybackLength) {
+        let currentIterationPos =
+          ((elapsedPos / iterationLength) % 1) * iterationLength
+
+        this._updatePositionInState(currentIterationPos)
         requestNextTick()
-        return
-      }
-      const newTime = lastTime + timeDiff
-
-      if (newTime < range.start) {
-        if (countSoFar === iterationCount) {
-          this._updatePositionInState(range.start)
-          this.playing = false
-          cleanup()
-          deferred.resolve(true)
-          return
-        } else {
-          countSoFar++
-          const diff = (range.start - newTime) % dur
-
-          this._updatePositionInState(range.start + diff)
-          requestNextTick()
-          return
-        }
-      } else if (newTime === range.end) {
-        this._updatePositionInState(range.end)
-        if (countSoFar === iterationCount) {
-          this.playing = false
-          cleanup()
-          deferred.resolve(true)
-          return
-        }
-        requestNextTick()
-        return
-      } else if (newTime > range.end) {
-        if (countSoFar === iterationCount) {
-          this._updatePositionInState(range.end)
-          this.playing = false
-          cleanup()
-          deferred.resolve(true)
-          return
-        } else {
-          countSoFar++
-          const diff = (newTime - range.end) % dur
-          this._updatePositionInState(range.start + diff)
-
-          requestNextTick()
-          return
-        }
       } else {
-        this._updatePositionInState(newTime)
-        requestNextTick()
-        return
+        this._updatePositionInState(range.end)
+        this.playing = false
+        cleanup()
+        deferred.resolve(true)
       }
     }
 

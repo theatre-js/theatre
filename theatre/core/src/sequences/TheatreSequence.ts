@@ -3,6 +3,23 @@ import {privateAPI, setPrivateAPI} from '@theatre/core/privateAPIs'
 import {defer} from '@theatre/shared/utils/defer'
 import type Sequence from './Sequence'
 import type {IPlaybackDirection, IPlaybackRange} from './Sequence'
+import AudioPlaybackController from './playbackControllers/AudioPlaybackController'
+import coreTicker from '@theatre/core/coreTicker'
+
+interface IAttachAudioArgs {
+  /**
+   * Either a URL to the audio file (eg "https://localhost/audio.mp3") or an instance of AudioBuffer
+   */
+  source: string | AudioBuffer
+  /**
+   * An optional AudioContext. If not provided, one will be created.
+   */
+  audioContext?: AudioContext
+  /**
+   * An AudioDestinationNode to feed the audio into. One will be created if not provided.
+   */
+  destinationNode?: AudioDestinationNode
+}
 
 export interface ISequence {
   readonly type: 'Theatre_Sequence_PublicAPI'
@@ -43,6 +60,12 @@ export interface ISequence {
    * In a time-based sequence, this represents the current time.
    */
   position: number
+
+  /**
+   *
+   * @param args
+   */
+  attachAudio(args: IAttachAudioArgs): Promise<void>
 }
 
 export default class TheatreSequence implements ISequence {
@@ -97,5 +120,77 @@ export default class TheatreSequence implements ISequence {
 
   set position(position: number) {
     privateAPI(this).position = position
+  }
+
+  async attachAudio(args: IAttachAudioArgs): Promise<void> {
+    const {audioContext, destinationNode, decodedBuffer} =
+      await resolveAudioBuffer(args)
+
+    const playbackController = new AudioPlaybackController(
+      coreTicker,
+      decodedBuffer,
+      audioContext,
+      destinationNode,
+    )
+
+    privateAPI(this).replacePlaybackController(playbackController)
+  }
+}
+
+async function resolveAudioBuffer(args: IAttachAudioArgs): Promise<{
+  decodedBuffer: AudioBuffer
+  audioContext: AudioContext
+  destinationNode: AudioDestinationNode
+}> {
+  const audioContext = args.audioContext || new AudioContext()
+
+  const decodedBufferDeferred = defer<AudioBuffer>()
+  if (args.source instanceof AudioBuffer) {
+    decodedBufferDeferred.resolve(args.source)
+  } else if (typeof args.source !== 'string') {
+    throw new Error(
+      `Error validating arguments to sequence.attachAudio(). ` +
+        `args.source must either be a string or an instance of AudioBuffer.`,
+    )
+  } else {
+    let fetchResponse
+    try {
+      fetchResponse = await fetch(args.source)
+    } catch (e) {
+      console.error(e)
+      throw new Error(
+        `Could not fetch '${args.source}'. Network error logged above.`,
+      )
+    }
+
+    let buffer
+    try {
+      buffer = await fetchResponse.arrayBuffer()
+    } catch (e) {
+      console.error(e)
+      throw new Error(`Could not read '${args.source}' as an arrayBuffer.`)
+    }
+
+    audioContext.decodeAudioData(
+      buffer,
+      decodedBufferDeferred.resolve,
+      decodedBufferDeferred.reject,
+    )
+  }
+
+  let decodedBuffer
+  try {
+    decodedBuffer = await decodedBufferDeferred.promise
+  } catch (e) {
+    console.error(e)
+    throw new Error(`Could not decode ${args.source} as an audio file.`)
+  }
+
+  const destinationNode = args.destinationNode || audioContext.destination
+
+  return {
+    destinationNode,
+    audioContext,
+    decodedBuffer,
   }
 }
