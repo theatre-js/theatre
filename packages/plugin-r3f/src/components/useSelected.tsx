@@ -2,6 +2,7 @@ import {useLayoutEffect, useRef, useState} from 'react'
 import {useEditorStore} from '../store'
 import shallow from 'zustand/shallow'
 import studio from '@theatre/studio'
+import type {ISheetObject} from '@theatre/core'
 
 export function useSelected(): undefined | string {
   const [state, set] = useState<string | undefined>(undefined)
@@ -12,7 +13,10 @@ export function useSelected(): undefined | string {
 
   useLayoutEffect(() => {
     const setFromStudio = (selection: typeof studio.selection) => {
-      const item = selection.find((s) => s.sheet === sheet)
+      const item = selection.find(
+        (s): s is ISheetObject =>
+          s.type === 'Theatre_SheetObject_PublicAPI' && s.sheet === sheet,
+      )
       if (!item) {
         set(undefined)
       } else {
@@ -29,7 +33,10 @@ export function useSelected(): undefined | string {
 export function getSelected(): undefined | string {
   const sheet = useEditorStore.getState().sheet
   if (!sheet) return undefined
-  const item = studio.selection.find((s) => s.sheet === sheet)
+  const item = studio.selection.find(
+    (s): s is ISheetObject =>
+      s.type === 'Theatre_SheetObject_PublicAPI' && s.sheet === sheet,
+  )
   if (!item) {
     return undefined
   } else {

@@ -17,6 +17,7 @@ import getStudio from './getStudio'
 import type React from 'react'
 import type {PropTypeConfig_Compound} from '@theatre/core/propTypes'
 import {debounce} from 'lodash-es'
+import type Sheet from '@theatre/core/sheets/Sheet'
 
 export interface ITransactionAPI {
   set<V>(pointer: Pointer<V>, value: V): void
@@ -82,11 +83,30 @@ export interface IStudio {
   scrub(): IScrub
   debouncedScrub(threshhold: number): Pick<IScrub, 'capture'>
 
+  /**
+   * Sets the current selection.
+   *
+   * Usage:
+   * ```ts
+   * const sheet1: ISheet = ...
+   * const obj1: ISheetObject<any> = ...
+   *
+   * studio.setSelection([sheet1, obj1])
+   * ```
+   *
+   * You can read the current selection from studio.selection
+   */
   setSelection(selection: Array<ISheetObject | ISheet>): void
 
-  onSelectionChange(fn: (s: Array<ISheetObject>) => void): VoidFunction
+  /**
+   * Calls fn every time the current selection changes.
+   */
+  onSelectionChange(fn: (s: Array<ISheetObject | ISheet>) => void): VoidFunction
 
-  readonly selection: Array<ISheetObject>
+  /**
+   * The current selection, consisting of Sheets and Sheet Objects
+   */
+  readonly selection: Array<ISheetObject | ISheet>
 
   extend(extension: IExtension): void
 
@@ -137,17 +157,20 @@ export default class TheatreStudio implements IStudio {
     })
   }
 
-  private _getSelectionDerivation(): IDerivation<ISheetObject[]> {
+  private _getSelectionDerivation(): IDerivation<(ISheetObject | ISheet)[]> {
     return this._cache.get('_getStateDerivation()', () =>
-      prism((): ISheetObject[] => {
+      prism((): (ISheetObject | ISheet)[] => {
         return getOutlineSelection()
-          .filter((s): s is SheetObject => s.type === 'Theatre_SheetObject')
+          .filter(
+            (s): s is SheetObject | Sheet =>
+              s.type === 'Theatre_SheetObject' || s.type === 'Theatre_Sheet',
+          )
           .map((s) => s.publicApi)
       }),
     )
   }
 
-  private _getSelection(): ISheetObject[] {
+  private _getSelection(): (ISheetObject | ISheet)[] {
     return this._getSelectionDerivation().getValue()
   }
 
@@ -163,11 +186,11 @@ export default class TheatreStudio implements IStudio {
     })
   }
 
-  onSelectionChange(fn: (s: ISheetObject[]) => void): VoidFn {
+  onSelectionChange(fn: (s: (ISheetObject | ISheet)[]) => void): VoidFn {
     return this._getSelectionDerivation().tapImmediate(studioTicker, fn)
   }
 
-  get selection(): ISheetObject[] {
+  get selection(): (ISheetObject | ISheet)[] {
     return this._getSelection()
   }
 

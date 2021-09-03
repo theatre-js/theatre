@@ -2,7 +2,7 @@ import type {UseDragOpts} from '@theatre/studio/uiComponents/useDrag'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import React, {useLayoutEffect, useMemo, useState} from 'react'
 import studio from '@theatre/studio'
-import type {IProject, ISheet, ISheetObject} from '@theatre/core'
+import type {IProject, ISheet} from '@theatre/core'
 import {types as t} from '@theatre/core'
 import type {IScrub, IStudio} from '@theatre/studio'
 
@@ -29,7 +29,7 @@ const boxObjectConfig = t.compound({
 const Box: React.FC<{
   id: string
   sheet: ISheet
-  selection: ISheetObject[]
+  selection: IStudio['selection']
 }> = ({id, sheet, selection: selection}) => {
   // This is cheap to call and always returns the same value, so no need for useMemo()
   const obj = sheet.object('object ' + id, boxObjectConfig)
