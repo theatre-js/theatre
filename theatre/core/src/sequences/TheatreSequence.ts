@@ -12,18 +12,37 @@ export interface ISequence {
    * Returns a promise that either resolves to true when the playback completes,
    * or resolves to false if playback gets interrupted (for example by calling sequence.pause())
    */
-  play(
-    conf?: Partial<{
-      iterationCount: number
-      range: IPlaybackRange
-      rate: number
-      direction: IPlaybackDirection
-    }>,
-  ): Promise<boolean>
+  play(conf?: {
+    /**
+     * The number of times the animation must run. Must be an integer larger
+     * than 0. Defaults to 1. Pick Infinity to run forever
+     */
+    iterationCount?: number
+    /**
+     * Limits the range to be played. Default is [0, sequence.length]
+     */
+    range?: IPlaybackRange
+    /**
+     * The playback rate. Defaults to 1. Choosing 2 would play the animation
+     * at twice the speed.
+     */
+    rate?: number
+    /**
+     * The direction of the playback. Similar to CSS's animation-direction
+     */
+    direction?: IPlaybackDirection
+  }): Promise<boolean>
 
+  /**
+   * Pauses the currently playing animation
+   */
   pause(): void
 
-  time: number
+  /**
+   * The current position of the playhead.
+   * In a time-based sequence, this represents the current time.
+   */
+  position: number
 }
 
 export default class TheatreSequence implements ISequence {
@@ -72,11 +91,11 @@ export default class TheatreSequence implements ISequence {
     privateAPI(this).pause()
   }
 
-  get time() {
+  get position() {
     return privateAPI(this).position
   }
 
-  set time(t: number) {
-    privateAPI(this).position = t
+  set position(position: number) {
+    privateAPI(this).position = position
   }
 }

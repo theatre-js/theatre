@@ -99,29 +99,29 @@ describe(`SheetObject`, () => {
       }),
     )
 
-    expect(seq.time).toEqual(0)
+    expect(seq.position).toEqual(0)
 
     expect(objValues.next().value).toMatchObject({
       position: {x: 0, y: 3, z: 2},
     })
 
-    seq.time = 5
-    expect(seq.time).toEqual(5)
+    seq.position = 5
+    expect(seq.position).toEqual(5)
     expect(objValues.next().value).toMatchObject({
       position: {x: 0, y: 3, z: 2},
     })
 
-    seq.time = 11
+    seq.position = 11
     expect(objValues.next().value).toMatchObject({
       position: {x: 0, y: 3.29999747758308, z: 2},
     })
 
-    seq.time = 15
+    seq.position = 15
     expect(objValues.next().value).toMatchObject({
       position: {x: 0, y: 4.5, z: 2},
     })
 
-    seq.time = 22
+    seq.position = 22
     expect(objValues.next().value).toMatchObject({
       position: {x: 0, y: 6, z: 2},
     })

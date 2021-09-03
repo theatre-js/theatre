@@ -70,98 +70,93 @@ export default class DefaultPlaybackController implements IPlaybackController {
     this.playing = true
 
     const ticker = this._ticker
-    let lastTickerTime = ticker.time
-    const dur = range.end - range.start
-    const prevTime = this.getCurrentPosition()
+    const iterationLength = range.end - range.start
 
-    if (prevTime < range.start || prevTime > range.end) {
-      this._updatePositionInState(range.start)
-    } else if (
-      prevTime === range.end &&
-      (direction === 'normal' || direction === 'alternate')
-    ) {
-      this._updatePositionInState(range.start)
-    } else if (
-      prevTime === range.start &&
-      (direction === 'reverse' || direction === 'alternateReverse')
-    ) {
-      this._updatePositionInState(range.end)
+    {
+      const startPos = this.getCurrentPosition()
+
+      if (startPos < range.start || startPos > range.end) {
+        this._updatePositionInState(range.start)
+      } else if (
+        startPos === range.end &&
+        (direction === 'normal' || direction === 'alternate')
+      ) {
+        this._updatePositionInState(range.start)
+      } else if (
+        startPos === range.start &&
+        (direction === 'reverse' || direction === 'alternateReverse')
+      ) {
+        this._updatePositionInState(range.end)
+      }
     }
 
-    let goingForward =
-      direction === 'alternateReverse' || direction === 'reverse' ? -1 : 1
-
-    let countSoFar = 1
-
     const deferred = defer<boolean>()
+    const initialTickerTime = ticker.time
+    const totalPlaybackLength = iterationLength * iterationCount
+    let initialElapsedPos = this.getCurrentPosition() - range.start
+    if (direction === 'reverse' || direction === 'alternateReverse') {
+      initialElapsedPos = range.end - initialElapsedPos
+    }
 
-    const tick = (tickerTimeInMs: number) => {
-      const tickerTime = tickerTimeInMs / 1000
-      const lastTime = this.getCurrentPosition()
-      const timeDiff = (tickerTime - lastTickerTime) * (rate * goingForward)
-      lastTickerTime = tickerTime
-      /*
-       * I don't know why exactly this happens, but every 10 times or so, the first sequence.play({iterationCount: 1}),
-       * the first call of tick() will have a timeDiff < 0.
-       * This might be because of Spectre mitigation (they randomize performance.now() a bit), or it could be that
-       * I'm using performance.now() the wrong way.
-       * Anyway, this seems like a working fix for it:
-       */
-      if (timeDiff < 0) {
-        requestNextTick()
-        return
-      }
-      const newTime = lastTime + timeDiff
+    const tick = (currentTickerTime: number) => {
+      const elapsedTickerTime = Math.max(
+        currentTickerTime - initialTickerTime,
+        0,
+      )
+      const elapsedTickerTimeInSeconds = elapsedTickerTime / 1000
 
-      if (newTime < range.start) {
-        if (countSoFar === iterationCount) {
-          this._updatePositionInState(range.start)
-          this.playing = false
-          deferred.resolve(true)
-          return
-        } else {
-          countSoFar++
-          const diff = (range.start - newTime) % dur
+      const elapsedPos = Math.min(
+        elapsedTickerTimeInSeconds * rate + initialElapsedPos,
+        totalPlaybackLength,
+      )
+
+      if (elapsedPos !== totalPlaybackLength) {
+        const iterationNumber = Math.floor(elapsedPos / iterationLength)
+        let currentIterationPos =
+          ((elapsedPos / iterationLength) % 1) * iterationLength
+
+        if (direction !== 'normal') {
           if (direction === 'reverse') {
-            this._updatePositionInState(range.end - diff)
+            currentIterationPos = iterationLength - currentIterationPos
           } else {
-            goingForward = 1
-            this._updatePositionInState(range.start + diff)
+            const isCurrentIterationNumberEven = iterationNumber % 2 === 0
+            if (direction === 'alternate') {
+              if (!isCurrentIterationNumberEven) {
+                currentIterationPos = iterationLength - currentIterationPos
+              }
+            } else {
+              if (isCurrentIterationNumberEven) {
+                currentIterationPos = iterationLength - currentIterationPos
+              }
+            }
           }
-          requestNextTick()
-          return
         }
-      } else if (newTime === range.end) {
-        this._updatePositionInState(range.end)
-        if (countSoFar === iterationCount) {
-          this.playing = false
-          deferred.resolve(true)
-          return
-        }
+
+        this._updatePositionInState(currentIterationPos)
         requestNextTick()
-        return
-      } else if (newTime > range.end) {
-        if (countSoFar === iterationCount) {
-          this._updatePositionInState(range.end)
-          this.playing = false
-          deferred.resolve(true)
-          return
-        } else {
-          countSoFar++
-          const diff = (newTime - range.end) % dur
-          if (direction === 'normal') {
-            this._updatePositionInState(range.start + diff)
-          } else {
-            goingForward = -1
-            this._updatePositionInState(range.end - diff)
-          }
-          requestNextTick()
-          return
-        }
       } else {
-        this._updatePositionInState(newTime)
-        requestNextTick()
-        return
+        if (direction === 'normal') {
+          this._updatePositionInState(range.end)
+        } else if (direction === 'reverse') {
+          this._updatePositionInState(range.start)
+        } else {
+          const isLastIterationEven = (iterationCount - 1) % 2 === 0
+          if (direction === 'alternate') {
+            if (isLastIterationEven) {
+              this._updatePositionInState(range.end)
+            } else {
+              this._updatePositionInState(range.start)
+            }
+          } else {
+            if (isLastIterationEven) {
+              this._updatePositionInState(range.start)
+            } else {
+              this._updatePositionInState(range.end)
+            }
+          }
+        }
+        this.playing = false
+        deferred.resolve(true)
       }
     }
 

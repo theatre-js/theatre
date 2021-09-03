@@ -128,9 +128,12 @@ function useDragHandlers(
         const initialPositionInClippedSpace =
           event.clientX - containerEl!.getBoundingClientRect().left
 
-        const initialPositionInUnitSpace = val(
-          layoutP.clippedSpace.toUnitSpace,
-        )(initialPositionInClippedSpace)
+        const initialPositionInUnitSpace = clamp(
+          val(layoutP.clippedSpace.toUnitSpace)(initialPositionInClippedSpace),
+          0,
+          Infinity,
+        )
+
         sequence = val(layoutP.sheet).getSequence()
 
         sequence.position = initialPositionInUnitSpace
