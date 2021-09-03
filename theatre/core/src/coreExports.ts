@@ -10,12 +10,44 @@ import * as types from '@theatre/core/propTypes'
 import {InvalidArgumentError} from '@theatre/shared/utils/errors'
 import {validateName} from '@theatre/shared/utils/sanitizers'
 import userReadableTypeOfValue from '@theatre/shared/utils/userReadableTypeOfValue'
+import deepEqual from 'fast-deep-equal'
 export {types}
 
+/**
+ * Returns a project of the given id, or creates one if it doesn't already exist.
+ *
+ * If @theatre/studio is also loaded, then the state of the project will be managed by the studio.
+ *
+ * Usage:
+ * ```ts
+ * import {getProject} from '@theatre/core'
+ * const config = {} // the config can be empty when starting a new project
+ * const project = getProject("a-unique-id", config)
+ * ```
+ *
+ * Usage with an explicit state:
+ * ```ts
+ * import {getProject} from '@theatre/core'
+ * import state from './saved-state.json'
+ * const config = {state} // here the config contains our saved state
+ * const project = getProject("a-unique-id", config)
+ * ```
+ */
 export function getProject(id: string, config: IProjectConfig = {}): IProject {
   const {...restOfConfig} = config
-  if (projectsSingleton.has(id)) {
-    return projectsSingleton.get(id)!.publicApi
+  const existingProject = projectsSingleton.get(id)
+  if (existingProject) {
+    if (process.env.NODE_ENV !== 'production') {
+      if (!deepEqual(config, existingProject.config)) {
+        throw new Error(
+          `You seem to have called Theatre.getProject("${id}", config) twice, with different config objects. ` +
+            `This is disallowed because changing the config of a project on the fly can lead to hard-to-debug issues.\n\n` +
+            `You can fix this by either calling Theatre.getProject() once per project-id,` +
+            ` or calling it multiple times but with the exact same config.`,
+        )
+      }
+    }
+    return existingProject.publicApi
   }
 
   if (process.env.NODE_ENV !== 'production') {

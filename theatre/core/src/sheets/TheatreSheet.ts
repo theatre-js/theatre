@@ -10,6 +10,7 @@ import {InvalidArgumentError} from '@theatre/shared/utils/errors'
 import {validateAndSanitiseSlashedPathOrThrow} from '@theatre/shared/utils/slashedPaths'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import userReadableTypeOfValue from '@theatre/shared/utils/userReadableTypeOfValue'
+import deepEqual from 'fast-deep-equal'
 
 export type SheetObjectConfig<
   Props extends PropTypeConfig_Compound<$IntentionalAny>,
@@ -25,7 +26,7 @@ export interface ISheet {
     config: SheetObjectConfig<Props>,
   ): ISheetObject<Props>
 
-  sequence(): ISequence
+  readonly sequence: ISequence
 }
 
 export default class TheatreSheet implements ISheet {
@@ -49,14 +50,21 @@ export default class TheatreSheet implements ISheet {
       `sheet.object("${key}", ...)`,
     )
 
-    // @todo sanitize config
-
     const existingObject = internal.getObject(sanitizedPath)
 
     const nativeObject = null
 
     if (existingObject) {
-      existingObject.overrideConfig(nativeObject, config)
+      if (process.env.NODE_ENV !== 'production') {
+        if (!deepEqual(config, existingObject.template.config)) {
+          throw new Error(
+            `You seem to have called sheet.object("${key}", config) twice, with different values for \`config\`. ` +
+              `This is disallowed because changing the config of an object on the fly would make it difficult to reason about.\n\n` +
+              `You can fix this by either re-using the existing object, or calling sheet.object("${key}", config) with the same config.`,
+          )
+        }
+      }
+
       return existingObject.publicApi as $IntentionalAny
     } else {
       const object = internal.createObject(sanitizedPath, nativeObject, config)
@@ -64,7 +72,7 @@ export default class TheatreSheet implements ISheet {
     }
   }
 
-  sequence(): TheatreSequence {
+  get sequence(): TheatreSequence {
     return privateAPI(this).getSequence().publicApi
   }
 

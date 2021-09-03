@@ -22697,6 +22697,7 @@ fsevents@^1.2.7:
     esbuild-loader: ^2.13.1
     esbuild-register: ^2.5.0
     exec-loader: ^4.0.0
+    fast-deep-equal: ^3.1.3
     file-loader: ^6.2.0
     fs-extra: ^10.0.0
     html-loader: ^2.1.2

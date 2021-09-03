@@ -87,5 +87,8 @@
     "typescript": "^4.4.2",
     "url-loader": "^4.1.1",
     "uuid": "^8.3.2"
+  },
+  "dependencies": {
+    "fast-deep-equal": "^3.1.3"
   }
 }

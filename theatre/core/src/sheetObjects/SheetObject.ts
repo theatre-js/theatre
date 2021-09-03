@@ -1,6 +1,5 @@
 import trackValueAtTime from '@theatre/core/sequences/trackValueAtTime'
 import type Sheet from '@theatre/core/sheets/Sheet'
-import type {SheetObjectConfig} from '@theatre/core/sheets/TheatreSheet'
 import type {SheetObjectAddress} from '@theatre/shared/utils/addresses'
 import deepMergeWithCache from '@theatre/shared/utils/deepMergeWithCache'
 import type {SequenceTrackId} from '@theatre/shared/utils/ids'
@@ -51,17 +50,6 @@ export default class SheetObject implements IdentityDerivationProvider {
     }
 
     this.publicApi = new TheatreSheetObject(this)
-  }
-
-  overrideConfig(
-    nativeObject: unknown,
-    config: SheetObjectConfig<$IntentionalAny>,
-  ) {
-    if (nativeObject !== this.nativeObject) {
-      // @todo
-    }
-
-    this.template.overrideConfig(nativeObject, config)
   }
 
   getValues(): IDerivation<Pointer<SerializableMap>> {

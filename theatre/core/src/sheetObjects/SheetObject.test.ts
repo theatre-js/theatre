@@ -91,7 +91,7 @@ describe(`SheetObject`, () => {
       },
     })
 
-    const seq = sheet.publicApi.sequence()
+    const seq = sheet.publicApi.sequence
 
     const objValues = iterateOver(
       prism(() => {
