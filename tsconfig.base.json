@@ -14,7 +14,7 @@
     "skipDefaultLibCheck": true,
     "declarationMap": true,
     "stripInternal": true,
-    "emitDeclarationOnly": true,
+    // "emitDeclarationOnly": true,
     "declaration": true,
     "paths": {
       "@theatre/core": ["./theatre/core/src/index.ts"],
