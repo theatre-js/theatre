@@ -1,3 +1,9 @@
+/**
+ * Theatre comes in two packages: `@theatre/core` (the library) and
+ * `@theatre/studio` (the editor). This package is the core library.
+ *
+ * @module \@theatre/core
+ */
 export * from './coreExports'
 export type {
   IProject,

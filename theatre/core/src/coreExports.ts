@@ -42,7 +42,7 @@ export function getProject(id: string, config: IProjectConfig = {}): IProject {
         throw new Error(
           `You seem to have called Theatre.getProject("${id}", config) twice, with different config objects. ` +
             `This is disallowed because changing the config of a project on the fly can lead to hard-to-debug issues.\n\n` +
-            `You can fix this by either calling Theatre.getProject() once per project-id,` +
+            `You can fix this by either calling Theatre.getProject() once per projectId,` +
             ` or calling it multiple times but with the exact same config.`,
         )
       }

@@ -56,11 +56,20 @@ module.exports = {
         ],
       },
     ],
-    // sidebarDepth: 4,
     sidebar: [
       {
+        title: 'Guide',
+        children: ['/getting-started'],
+      },
+      {
         title: 'API',
-        path: '/api/',
+        path: '/api',
+        // sidebarDepth: 2,
+        children: ['/api/core/', '/api/studio/'],
+      },
+      {
+        title: 'Support',
+        children: ['/support', '/faq'],
       },
     ],
     lastUpdated: 'Last Updated',
@@ -73,39 +82,19 @@ module.exports = {
     editLinkText: 'Edit this page on Github',
   },
   plugins: [
-    [
-      'vuepress-plugin-typedoc',
-      {
-        entryPoints: [
-          path.join(pathToMonorepo, './theatre/core/dist/index.d.ts'),
-        ],
-        tsconfig: path.join(pathToMonorepo, './theatre/tsconfig.json'),
-        out: 'api/core',
-        // sidebar: {
-        //   fullNames: true,
-        //   parentCategory: 'api',
-        // },
-        readme: 'none',
-        hideInPageTOC: true,
-        categorizeByGroup: false,
-      },
-    ],
-    // [
-    //   'vuepress-plugin-typedoc',
-    //   {
-    //     entryPoints: [
-    //       path.join(pathToMonorepo, './theatre/studio/src/index.ts'),
-    //     ],
-    //     tsconfig: path.join(pathToMonorepo, './theatre/tsconfig.json'),
-    //     out: 'api/studio',
-    //     // sidebar: {
-    //     //   fullNames: true,
-    //     //   parentCategory: 'api',
-    //     // },
-    //     readme: 'none',
-    //     hideInPageTOC: true,
-    //     categorizeByGroup: false,
-    //   },
-    // ],
+    //   ...['core', 'studio'].map((which) => [
+    //     'vuepress-plugin-typedoc',
+    //     {
+    //       entryPoints: [
+    //         path.join(pathToMonorepo, `./theatre/${which}/src/index.ts`),
+    //       ],
+    //       tsconfig: path.join(pathToMonorepo, `./theatre/tsconfig.json`),
+    //       out: `api/${which}`,
+    //       sidebar: null,
+    //       readme: `none`,
+    //       // hideInPageTOC: true,
+    //       // categorizeByGroup: false,
+    //     },
+    //   ]),
   ],
 }

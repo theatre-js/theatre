@@ -6,19 +6,37 @@ import {validateName} from '@theatre/shared/utils/sanitizers'
 import {validateAndSanitiseSlashedPathOrThrow} from '@theatre/shared/utils/slashedPaths'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 
-export type IProjectConfig = Partial<{
-  state: $IntentionalAny
-}>
+/**
+ * A project's config object (currently the only point of configuration is the project's state)
+ */
+export type IProjectConfig = {
+  /**
+   * The state of the project, as [exported](https://docs.theatrejs.com/export.html) by the studio.
+   */
+  state?: $IntentionalAny
+}
 
+/**
+ * A Theatre project
+ */
 export interface IProject {
   readonly type: 'Theatre_Project_PublicAPI'
+  /**
+   * If `@theatre/studio` is used, this promise would resolve when studio has loaded
+   * the state of the project into memory.
+   *
+   * If `@theatre/studio` is not used, this promise is already resolved.
+   */
   readonly ready: Promise<void>
   /**
    * Shows whether the project is ready to be used.
-   * Better to use IProject.ready, which is a promise that will
+   * Better to use {@link IProject.ready}, which is a promise that would
    * resolve when the project is ready.
    */
   readonly isReady: boolean
+  /**
+   * The project's address
+   */
   readonly address: ProjectAddress
   sheet(sheetId: string, instanceId?: string): ISheet
 }
