@@ -18,6 +18,7 @@ import mergeRefs from 'react-merge-refs'
 import type {$FixMe} from '@theatre/shared/utils/types'
 import type {ISheetObject} from '@theatre/core'
 import useInvalidate from './useInvalidate'
+import {useWrapperContext} from '../Wrapper'
 
 interface Elements {
   group: Group
@@ -50,7 +51,14 @@ const editable = <
     ({uniqueName, visible, editableType, ...props}: Props, ref) => {
       const objectRef = useRef<Elements[U]>()
 
-      const sheet = useEditorStore((state) => state.sheet)
+      const wrapperContext = useWrapperContext()
+      if (!wrapperContext) {
+        throw new Error(
+          `Editable components must be a descendent of a <Wrapper>`,
+        )
+      }
+
+      const {sheet} = wrapperContext
 
       const [sheetObject, setSheetObject] = useState<
         undefined | ISheetObject<$FixMe>

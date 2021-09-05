@@ -1,6 +1,5 @@
 import {useLayoutEffect, useRef, useState} from 'react'
-import {useEditorStore} from '../store'
-import shallow from 'zustand/shallow'
+import {allRegisteredObjects} from '../store'
 import studio from '@theatre/studio'
 import type {ISheetObject} from '@theatre/core'
 
@@ -9,13 +8,12 @@ export function useSelected(): undefined | string {
   const stateRef = useRef(state)
   stateRef.current = state
 
-  const sheet = useEditorStore((state) => state.sheet, shallow)
-
   useLayoutEffect(() => {
     const setFromStudio = (selection: typeof studio.selection) => {
       const item = selection.find(
         (s): s is ISheetObject =>
-          s.type === 'Theatre_SheetObject_PublicAPI' && s.sheet === sheet,
+          s.type === 'Theatre_SheetObject_PublicAPI' &&
+          allRegisteredObjects.has(s),
       )
       if (!item) {
         set(undefined)
@@ -25,17 +23,15 @@ export function useSelected(): undefined | string {
     }
     setFromStudio(studio.selection)
     return studio.onSelectionChange(setFromStudio)
-  }, [sheet])
+  }, [])
 
   return state
 }
 
 export function getSelected(): undefined | string {
-  const sheet = useEditorStore.getState().sheet
-  if (!sheet) return undefined
   const item = studio.selection.find(
     (s): s is ISheetObject =>
-      s.type === 'Theatre_SheetObject_PublicAPI' && s.sheet === sheet,
+      s.type === 'Theatre_SheetObject_PublicAPI' && allRegisteredObjects.has(s),
   )
   if (!item) {
     return undefined

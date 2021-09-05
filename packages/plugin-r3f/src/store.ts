@@ -2,7 +2,7 @@ import type {StateCreator} from 'zustand'
 import create from 'zustand'
 import type {Object3D, Scene, WebGLRenderer} from 'three'
 import {Group} from 'three'
-import type {ISheet, ISheetObject} from '@theatre/core'
+import type {ISheetObject} from '@theatre/core'
 import {types} from '@theatre/core'
 
 export type EditableType =
@@ -134,7 +134,6 @@ export interface EditableState {
 }
 
 export type EditorStore = {
-  sheet: ISheet | null
   sheetObjects: {[uniqueName in string]?: BaseSheetObjectType}
   scene: Scene | null
   gl: WebGLRenderer | null
@@ -150,7 +149,6 @@ export type EditorStore = {
     scene: Scene,
     gl: WebGLRenderer,
     allowImplicitInstancing: boolean,
-    sheet: ISheet,
   ) => void
 
   addEditable: <T extends EditableType>(type: T, uniqueName: string) => void
@@ -178,12 +176,11 @@ const config: StateCreator<EditorStore> = (set, get) => {
     editablesSnapshot: null,
     initialEditorCamera: {},
 
-    init: (scene, gl, allowImplicitInstancing, sheet) => {
+    init: (scene, gl, allowImplicitInstancing) => {
       set({
         scene,
         gl,
         allowImplicitInstancing,
-        sheet,
       })
     },
 
@@ -266,17 +263,15 @@ export const useEditorStore = create<EditorStore>(config)
 
 export type BindFunction = (options: {
   allowImplicitInstancing?: boolean
-  sheet: ISheet
   gl: WebGLRenderer
   scene: Scene
 }) => void
 
 export const bindToCanvas: BindFunction = ({
   allowImplicitInstancing = false,
-  sheet,
   gl,
   scene,
 }) => {
   const init = useEditorStore.getState().init
-  init(scene, gl, allowImplicitInstancing, sheet)
+  init(scene, gl, allowImplicitInstancing)
 }
