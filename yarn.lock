@@ -4896,26 +4896,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/plugin-alias@npm:^3.1.2":
-  version: 3.1.2
-  resolution: "@rollup/plugin-alias@npm:3.1.2"
+"@rollup/plugin-alias@npm:^3.1.5":
+  version: 3.1.5
+  resolution: "@rollup/plugin-alias@npm:3.1.5"
   dependencies:
     slash: ^3.0.0
   peerDependencies:
     rollup: ^1.20.0||^2.0.0
-  checksum: cb0e59b25308d10c5bde8cc1f6e200d74fc98d4739800b4bd4b91d6b8ff07514a068d3a63a0c8fb125e7bc5602566c69687c291330580ca85425269413d7639c
+  checksum: 376aa1bc66373d92764557ae5e6b2f63d49133a3f66c3522d9b7a4b975d46951d9c3c84466466d324126da4623b50336da9245d62f02fc38af7cd3274742dcb3
   languageName: node
   linkType: hard
 
-"@rollup/plugin-multi-entry@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "@rollup/plugin-multi-entry@npm:4.0.0"
+"@rollup/plugin-multi-entry@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "@rollup/plugin-multi-entry@npm:4.1.0"
   dependencies:
     "@rollup/plugin-virtual": ^2.0.3
     matched: ^5.0.0
   peerDependencies:
     rollup: ^1.20.0 || ^2.0.0
-  checksum: 8ccc30b54fc712b75bd736e94475a36f875fab6b01c7d13381a5e370b008551c0348cafd13a26dccddd569fc0ed2e138fa4bcb1a8359f802808523bc5fdafc0a
+  checksum: 2c600a9cf3f64dafc89c95ea5a4b32f63b7552400842f257a1373877c354f63073766f6cfa2e541dd5e6a6be0620a85c3b65829c62e171bb093a8ecb3fa5dc30
   languageName: node
   linkType: hard
 
@@ -4946,9 +4946,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/plugin-typescript@npm:^8.2.1":
-  version: 8.2.1
-  resolution: "@rollup/plugin-typescript@npm:8.2.1"
+"@rollup/plugin-typescript@npm:^8.2.5":
+  version: 8.2.5
+  resolution: "@rollup/plugin-typescript@npm:8.2.5"
   dependencies:
     "@rollup/pluginutils": ^3.1.0
     resolve: ^1.17.0
@@ -4956,7 +4956,7 @@ __metadata:
     rollup: ^2.14.0
     tslib: "*"
     typescript: ">=3.7.0"
-  checksum: 87f0a8308c734ee4f0e2c3bba4df5ac9965ae6f2ee8d77fd4ea2056030eff2882c51a3b056c06ca0ecc4f2d356885cbbc80cac366d40595d7dd7b89b0f38bfba
+  checksum: 31e26d13f32f02b27c667f5e372ca8b02297346fbe11af5757b3427eff77a7adb00e9d9e54f0c4107fec2bfada5c5c458db04a62b5d52a1b9ea878c4de6212f2
   languageName: node
   linkType: hard
 
@@ -20809,19 +20809,19 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"rollup-plugin-dts@npm:^3.0.2":
-  version: 3.0.2
-  resolution: "rollup-plugin-dts@npm:3.0.2"
+"rollup-plugin-dts@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "rollup-plugin-dts@npm:4.0.0"
   dependencies:
-    "@babel/code-frame": ^7.12.13
+    "@babel/code-frame": ^7.14.5
     magic-string: ^0.25.7
   peerDependencies:
-    rollup: ^2.48.0
-    typescript: ^4.2.4
+    rollup: ^2.56.3
+    typescript: ^4.4.2
   dependenciesMeta:
     "@babel/code-frame":
       optional: true
-  checksum: 11e32d247652210bbf052ef8d09551a031f774ee7dfd4f3c7d11e3fd6ee60f1856ebebdbd041104ea049f86ab1e413c3f8db6c1bab015895fe82707b9f1ce251
+  checksum: a51158078d26ded81549ec87139a17965d116d49fe60f17e70decbd446609e2ee6d99288b7d602c7a96ce4dfc696eb4f6520cbbdf415bc393f8caa44be49eddf
   languageName: node
   linkType: hard
 
@@ -20862,17 +20862,17 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"rollup@npm:^2.50.5":
-  version: 2.50.5
-  resolution: "rollup@npm:2.50.5"
+"rollup@npm:^2.56.3":
+  version: 2.56.3
+  resolution: "rollup@npm:2.56.3"
   dependencies:
-    fsevents: ~2.3.1
+    fsevents: ~2.3.2
   dependenciesMeta:
     fsevents:
       optional: true
   bin:
     rollup: dist/bin/rollup
-  checksum: 1e56eb05085fdba94eca783cbf399617d3151cf024ed39897ea46f4e2fa8a37b836770926575dcfe7e3a419e5a34c4a7dc8d77c90e94117a7072bfc327c77117
+  checksum: 459ac36f8d325385a6b66522bf60ea4ae1400b405de30d7c64c483cc875dbf11c4f6c352d796b2ec634a567a6db1ff1c48fe29d434354c1330c88bb187c539b4
   languageName: node
   linkType: hard
 
@@ -22668,10 +22668,10 @@ fsevents@^1.2.7:
     "@babel/cli": ^7.14.3
     "@babel/core": ^7.14.3
     "@babel/runtime": ^7.14.0
-    "@rollup/plugin-alias": ^3.1.2
-    "@rollup/plugin-multi-entry": ^4.0.0
+    "@rollup/plugin-alias": ^3.1.5
+    "@rollup/plugin-multi-entry": ^4.1.0
     "@rollup/plugin-replace": ^2.4.2
-    "@rollup/plugin-typescript": ^8.2.1
+    "@rollup/plugin-typescript": ^8.2.5
     "@theatre/core": "workspace:*"
     "@theatre/dataverse": "workspace:*"
     "@theatre/dataverse-react": "workspace:*"
@@ -22726,8 +22726,8 @@ fsevents@^1.2.7:
     redux: ^3.7.2
     redux-actions: ^2.6.5
     rimraf: ^3.0.2
-    rollup: ^2.50.5
-    rollup-plugin-dts: ^3.0.2
+    rollup: ^2.56.3
+    rollup-plugin-dts: ^4.0.0
     shallowequal: ^1.1.0
     styled-components: ^5.3.0
     svg-inline-loader: ^0.8.2

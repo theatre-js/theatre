@@ -163,16 +163,10 @@ export function stringLiteral<Opts extends {[key in string]: string}>(
 
 interface IBasePropType<ValueType> {
   valueType: ValueType
-  /**
-   * @internal
-   */
   [s]: 'TheatrePropType'
   label: string | undefined
 }
 
-/**
- * @internal
- */
 export interface PropTypeConfig_Number extends IBasePropType<number> {
   type: 'number'
   default: number
@@ -180,9 +174,7 @@ export interface PropTypeConfig_Number extends IBasePropType<number> {
   nudgeFn: NumberNudgeFn
   nudgeMultiplier: number
 }
-/**
- * @internal
- */
+
 export type NumberNudgeFn = (p: {
   deltaX: number
   deltaFraction: number
@@ -205,29 +197,20 @@ const defaultNumberNudgeFn: NumberNudgeFn = ({
 
   return deltaX * magnitude * config.nudgeMultiplier
 }
-/**
- * @internal
- */
+
 export interface PropTypeConfig_Boolean extends IBasePropType<boolean> {
   type: 'boolean'
   default: boolean
 }
-/**
- * @internal
- */
+
 export interface PropTypeConfigExtras {
   label?: string
 }
-/**
- * @internal
- */ export interface PropTypeConfig_String extends IBasePropType<string> {
+export interface PropTypeConfig_String extends IBasePropType<string> {
   type: 'string'
   default: string
 }
 
-/**
- * @internal
- */
 export interface PropTypeConfig_StringLiteral<T extends string>
   extends IBasePropType<T> {
   type: 'stringLiteral'
@@ -244,8 +227,10 @@ type IValidCompoundProps = {
  * @todo Determine if 'compound' is a clear term for what this is.
  * I didn't want to use 'object' as it could get confused with
  * SheetObject.
+ */
+
+/**
  *
- * @internal
  */
 export interface PropTypeConfig_Compound<Props extends IValidCompoundProps>
   extends IBasePropType<{[K in keyof Props]: Props[K]['valueType']}> {
@@ -258,26 +243,20 @@ export interface PropTypeConfig_Compound<Props extends IValidCompoundProps>
 //   type: 'cssrgba'
 //   default: {r: number; g: number; b: number; a: number}
 // }
-/**
- * @internal
- */
+
 export interface PropTypeConfig_Enum extends IBasePropType<{}> {
   type: 'enum'
   cases: Record<string, PropTypeConfig>
   defaultCase: string
 }
-/**
- * @category Prop type definitions
- */
+
 export type PropTypeConfig_AllPrimitives =
   | PropTypeConfig_Number
   | PropTypeConfig_Boolean
   | PropTypeConfig_String
   | PropTypeConfig_StringLiteral<$IntentionalAny>
 // | PropTypeConfig_CSSRGBA
-/**
- * @internal
- */
+
 export type PropTypeConfig =
   | PropTypeConfig_AllPrimitives
   | PropTypeConfig_Compound<$IntentionalAny>
