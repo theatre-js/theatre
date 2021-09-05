@@ -52,7 +52,7 @@
     "fs-extra": "^10.0.0",
     "html-loader": "^2.1.2",
     "identity-obj-proxy": "^3.0.0",
-    "immer": "^8.0.4",
+    "immer": "^9.0.6",
     "jiff": "^0.7.3",
     "json-touch-patch": "^0.11.2",
     "lodash": "^4.17.21",
