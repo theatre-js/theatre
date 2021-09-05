@@ -1,18 +1,23 @@
+/**
+ * @module @theatre/studio
+ */
 import {setStudio} from '@theatre/studio/getStudio'
 import {Studio} from '@theatre/studio/Studio'
-export type {IScrub} from '@theatre/studio/Scrub'
-export type {IStudio} from '@theatre/studio/TheatreStudio'
+
 import * as globalVariableNames from '@theatre/shared/globalVariableNames'
 import type {$FixMe} from '@theatre/shared/utils/types'
 import StudioBundle from './StudioBundle'
 import type CoreBundle from '@theatre/core/CoreBundle'
-export {default as ToolbarSwitchSelect} from './uiComponents/toolbar/ToolbarSwitchSelect'
-export {default as ToolbarIconButton} from './uiComponents/toolbar/ToolbarIconButton'
-export {default as ToolbarDropdownSelect} from './uiComponents/toolbar/ToolbarDropdownSelect'
+import type {IStudio} from '@theatre/studio/TheatreStudio'
 
 const studioPrivateAPI = new Studio()
 setStudio(studioPrivateAPI)
-export const studio = studioPrivateAPI.publicApi
+
+/**
+ * The main instance of Studio. Read more at {@link IStudio}
+ */
+const studio: IStudio = studioPrivateAPI.publicApi
+
 export default studio
 
 registerStudioBundle()
@@ -60,3 +65,9 @@ function registerStudioBundle() {
     studioBundle.registerCoreBundle(possibleCoreBundle)
   }
 }
+
+export {default as ToolbarSwitchSelect} from './uiComponents/toolbar/ToolbarSwitchSelect'
+export {default as ToolbarIconButton} from './uiComponents/toolbar/ToolbarIconButton'
+export {default as ToolbarDropdownSelect} from './uiComponents/toolbar/ToolbarDropdownSelect'
+export type {IScrub} from '@theatre/studio/Scrub'
+export type {IStudio, IExtension} from '@theatre/studio/TheatreStudio'

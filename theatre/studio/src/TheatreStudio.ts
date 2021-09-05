@@ -23,7 +23,9 @@ export interface ITransactionAPI {
   set<V>(pointer: Pointer<V>, value: V): void
   unset<V>(pointer: Pointer<V>): void
 }
-
+/**
+ *
+ */
 export interface PaneClassDefinition<
   DataType extends PropTypeConfig_Compound<{}>,
 > {
@@ -34,11 +36,28 @@ export interface PaneClassDefinition<
   }>
 }
 
-export type IExtension = {
+/**
+ * A Theatre.js Studio extension. You can define one either
+ * in a separate package, or within your project.
+ */
+export interface IExtension {
+  /**
+   * Pick a unique ID for your extension. Ideally the name would be unique if
+   * the extension was to be published to the npm repository.
+   */
   id: string
+  /**
+   * Set this if you'd like to add a component to the global toolbar (on the top)
+   */
   globalToolbar?: {
+    /**
+     * A basic react component.
+     */
     component: React.ComponentType<{}>
   }
+  /**
+   * Introduces new pane types.
+   */
   panes?: Array<PaneClassDefinition<$FixMe>>
 }
 
@@ -47,7 +66,25 @@ export type PaneInstance<ClassName extends string> = {
   instanceId: string
   definition: PaneClassDefinition<$FixMe>
 }
-
+/**
+ * This is the public api of Theatre's studio. It is exposed through:
+ *
+ * Basic usage:
+ * ```ts
+ * import studio from '@theatre/studio'
+ *
+ * studio.initialize()
+ * ```
+ *
+ * Usage with **tree-shaking**:
+ * ```ts
+ * import studio from '@theatre/studio'
+ *
+ * if (process.env.NODE_ENV !== 'production') {
+ *   studio.initialize()
+ * }
+ * ```
+ */
 export interface IStudio {
   readonly ui: {
     /**
@@ -65,17 +102,8 @@ export interface IStudio {
   }
 
   /**
-   * Initializes the studio. Call this in your index.js/index.ts module.
-   *
-   * Usage with **tree-shaking**:
-   * ```ts
-   * import studio from '@theratre/studio'
-   *
-   * // Add this check if you wish to not include the studio in your production bundle
-   * if (process.env.NODE_ENV === "development") {
-   *   studio.initialize()
-   * }
-   * ```
+   * Initializes the studio. Call it once in your index.js/index.ts module.
+   * It silently ignores subsequent calls.
    */
   initialize(): void
 
@@ -105,10 +133,23 @@ export interface IStudio {
 
   /**
    * The current selection, consisting of Sheets and Sheet Objects
+   *
+   * Example:
+   * ```ts
+   * console.log(studio.selection) // => [ISheetObject, ISheet]
+   * ```
    */
   readonly selection: Array<ISheetObject | ISheet>
 
-  extend(extension: IExtension): void
+  /**
+   * Registers an extension
+   */
+  extend(
+    /**
+     * The extension's definition
+     */
+    extension: IExtension,
+  ): void
 
   getPanesOfType<PaneClass extends string>(
     paneClass: PaneClass,
@@ -118,6 +159,12 @@ export interface IStudio {
     paneClass: PaneClass,
   ): PaneInstance<PaneClass>
 
+  /**
+   * Returns the Theatre.js project that contains the studio's sheets and objects.
+   *
+   * It is useful if you'd like to have sheets/objects that are present only when
+   * studio is present.
+   */
   getStudioProject(): IProject
 }
 

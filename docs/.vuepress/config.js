@@ -56,6 +56,7 @@ module.exports = {
         ],
       },
     ],
+
     sidebar: [
       {
         title: 'Guide',
@@ -64,8 +65,28 @@ module.exports = {
       {
         title: 'API',
         path: '/api',
-        // sidebarDepth: 2,
-        children: ['/api/core/', '/api/studio/'],
+        sidebarDepth: 2,
+        children: [
+          {
+            title: '@theatre/core',
+            path: '/api/core/',
+            children: [
+              {
+                title: 'Main exports',
+                path: '/api/core/',
+              },
+              {
+                title: 'types',
+                path: '/api/core/modules/types',
+              },
+            ],
+          },
+
+          {
+            title: '@theatre/studio',
+            path: '/api/studio/',
+          },
+        ],
       },
       {
         title: 'Support',
