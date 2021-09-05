@@ -5,7 +5,6 @@ import {prism} from '@theatre/dataverse'
 import SimpleCache from '@theatre/shared/utils/SimpleCache'
 import type {$FixMe, $IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
 import type {IScrub} from '@theatre/studio/Scrub'
-
 import type {Studio} from '@theatre/studio/Studio'
 import {
   isSheetObjectPublicAPI,

@@ -1,7 +1,8 @@
 import {useCallback, useLayoutEffect} from 'react'
 import React from 'react'
 import {Canvas} from '@react-three/fiber'
-import {useEditorStore} from '../store'
+import type {BaseSheetObjectType} from '../store'
+import {allRegisteredObjects, useEditorStore} from '../store'
 import shallow from 'zustand/shallow'
 import root from 'react-shadow/styled-components'
 import ProxyManager from './ProxyManager'
@@ -12,6 +13,7 @@ import {IoCameraReverseOutline} from 'react-icons/all'
 import type {ISheet} from '@theatre/core'
 import useSnapshotEditorCamera from './useSnapshotEditorCamera'
 import {getEditorSheet, getEditorSheetObject} from './editorStuff'
+import type {$IntentionalAny} from '@theatre/shared/utils/types'
 
 const GlobalStyle = createGlobalStyle`
   :host {
@@ -99,8 +101,8 @@ const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
   const paneId = props.paneId
   const editorObject = getEditorSheetObject()
 
-  const [sceneSnapshot, createSnapshot, sheet] = useEditorStore(
-    (state) => [state.sceneSnapshot, state.createSnapshot, state.sheet],
+  const [sceneSnapshot, createSnapshot] = useEditorStore(
+    (state) => [state.sceneSnapshot, state.createSnapshot],
     shallow,
   )
 
@@ -120,8 +122,18 @@ const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
   }, [editorOpen])
 
   const onPointerMissed = useCallback(() => {
-    if (sheet !== null) studio.setSelection([sheet])
-  }, [sheet])
+    // This callback runs when the user clicks in an empty space inside a SnapshotEditor.
+    // We'll try to set the current selection to the nearest sheet _if_ at least one object
+    // belonging to R3F was selected previously.
+    const obj: undefined | BaseSheetObjectType = studio.selection.find(
+      (sheetOrObject) =>
+        allRegisteredObjects.has(sheetOrObject as $IntentionalAny),
+    ) as $IntentionalAny
+
+    if (obj) {
+      studio.setSelection([obj.sheet])
+    }
+  }, [])
 
   if (!editorObject) return <></>
 

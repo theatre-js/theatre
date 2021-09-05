@@ -11,6 +11,7 @@ import type {
 } from 'three'
 import {Vector3} from 'three'
 import type {EditableType} from '../store'
+import {allRegisteredObjects} from '../store'
 import {baseSheetObjectType} from '../store'
 import {useEditorStore} from '../store'
 import mergeRefs from 'react-merge-refs'
@@ -60,6 +61,7 @@ const editable = <
       useLayoutEffect(() => {
         if (!sheet) return
         const sheetObject = sheet.object(uniqueName, baseSheetObjectType)
+        allRegisteredObjects.add(sheetObject)
         setSheetObject(sheetObject)
 
         useEditorStore

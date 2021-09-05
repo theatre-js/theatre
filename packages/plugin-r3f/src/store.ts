@@ -42,6 +42,8 @@ export const baseSheetObjectType = types.compound({
 
 export type BaseSheetObjectType = ISheetObject<typeof baseSheetObjectType>
 
+export const allRegisteredObjects = new WeakSet<BaseSheetObjectType>()
+
 export interface AbstractEditable<T extends EditableType> {
   type: T
   role: 'active' | 'removed'

@@ -7,16 +7,11 @@ let sheetObject: ISheetObject<typeof editorSheetObjectConfig> | undefined =
   undefined
 
 const editorSheetObjectConfig = types.compound({
-  isOpen: types.boolean(false, {label: 'Editor Open'}),
   viewport: types.compound(
     {
       showAxes: types.boolean(true, {label: 'Axes'}),
       showGrid: types.boolean(true, {label: 'Grid'}),
       showOverlayIcons: types.boolean(false, {label: 'Overlay Icons'}),
-      resolution: types.number(500, {
-        label: 'Resolution',
-        range: [0, 1000],
-      }),
       shading: types.stringLiteral(
         'rendered',
         {
