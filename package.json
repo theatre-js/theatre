@@ -13,10 +13,7 @@
     "test": "jest",
     "postinstall": "husky install",
     "deploy": "zx devEnv/deploy.mjs",
-    "lint:all": "eslint . --ext ts,tsx --ignore-path=.gitignore --rulesdir ./devEnv/eslint/rules",
-    "docs:api": "zx devEnv/api-docs.mjs",
-    "docs:dev": "vuepress dev docs",
-    "docs:build": "vuepress build docs"
+    "lint:all": "eslint . --ext ts,tsx --ignore-path=.gitignore --rulesdir ./devEnv/eslint/rules"
   },
   "lint-staged": {
     "**/*.(t|j)s?(x)": [
@@ -50,10 +47,6 @@
     "zx": "^2.0.0"
   },
   "dependencies": {
-    "node-gyp": "^8.1.0",
-    "typedoc": "^0.21.9",
-    "typedoc-plugin-markdown": "^3.10.4",
-    "vuepress": "^1.8.2",
-    "vuepress-plugin-typedoc": "^0.8.2"
+    "node-gyp": "^8.1.0"
   }
 }
