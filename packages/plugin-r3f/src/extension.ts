@@ -9,7 +9,7 @@ const r3fExtension: IExtension = {
   },
   panes: [
     {
-      class: 'snapshotEditor',
+      class: 'snapshot',
       component: SnapshotEditor,
     },
   ],

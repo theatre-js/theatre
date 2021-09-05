@@ -24,7 +24,7 @@ const Toolbar: VFC = () => {
     <>
       <ToolbarIconButton
         onClick={() => {
-          studio.createPane('snapshotEditor')
+          studio.createPane('snapshot')
         }}
         title="Create snapshot"
       >
