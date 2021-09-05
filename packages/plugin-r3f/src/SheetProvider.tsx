@@ -10,13 +10,21 @@ import {bindToCanvas} from './store'
 
 const ctx = createContext<{sheet: ISheet | undefined} | undefined>(undefined)
 
-export const useWrapperContext = ():
-  | {sheet: ISheet | undefined}
-  | undefined => {
-  return useContext(ctx)
+const useWrapperContext = (): {sheet: ISheet | undefined} => {
+  const val = useContext(ctx)
+  if (!val) {
+    throw new Error(
+      `No sheet found. You need to add a <SheetProvider> higher up in the tree. https://docs.theatrejs.com/r3f.html#sheetprovider`,
+    )
+  }
+  return val
 }
 
-const Wrapper: React.FC<{
+export const useCurrentSheet = (): ISheet | undefined => {
+  return useWrapperContext().sheet
+}
+
+const SheetProvider: React.FC<{
   getSheet: () => ISheet
 }> = (props) => {
   const {scene, gl} = useThree((s) => ({scene: s.scene, gl: s.gl}))
@@ -36,4 +44,4 @@ const Wrapper: React.FC<{
   return <ctx.Provider value={{sheet}}>{props.children}</ctx.Provider>
 }
 
-export default Wrapper
+export default SheetProvider

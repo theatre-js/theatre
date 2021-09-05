@@ -1,7 +1,7 @@
 import {
   editable as e,
   RefreshSnapshot,
-  Wrapper,
+  SheetProvider,
   extension,
 } from '@theatre/plugin-r3f'
 import {OrbitControls, Stars} from '@react-three/drei'
@@ -61,7 +61,7 @@ function App() {
   return (
     <div onClick={() => setBgIndex((bgIndex) => (bgIndex + 1) % bgs.length)}>
       <Canvas dpr={[1.5, 2]} linear shadows frameloop="demand">
-        <Wrapper getSheet={() => getProject('Space').sheet('Scene')}>
+        <SheetProvider getSheet={() => getProject('Space').sheet('Scene')}>
           <fog attach="fog" args={[bg, 16, 30]} />
           <color attach="background" args={[bg]} />
           <ambientLight intensity={0.75} />
@@ -99,7 +99,7 @@ function App() {
             minPolarAngle={Math.PI / 2}
           />
           <Stars radius={500} depth={50} count={1000} factor={10} />
-        </Wrapper>
+        </SheetProvider>
       </Canvas>
     </div>
   )

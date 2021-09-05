@@ -1,4 +1,4 @@
-import {editable as e, Wrapper} from '@theatre/plugin-r3f'
+import {editable as e, SheetProvider} from '@theatre/plugin-r3f'
 import {getProject} from '@theatre/core'
 import * as THREE from 'three'
 import React, {useState, useEffect, useRef} from 'react'
@@ -90,7 +90,7 @@ function App() {
         // @ts-ignore
         shadowMap
       >
-        <Wrapper
+        <SheetProvider
           getSheet={() => getProject('Playground - R3F').sheet('R3F-Canvas')}
         >
           {/* @ts-ignore */}
@@ -140,7 +140,7 @@ function App() {
             />
           </group>
           <Button />
-        </Wrapper>
+        </SheetProvider>
       </Canvas>
     </div>
   )
