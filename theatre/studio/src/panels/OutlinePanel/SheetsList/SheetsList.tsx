@@ -1,5 +1,5 @@
 import {getRegisteredSheetIds} from '@theatre/studio/selectors'
-import {usePrism} from '@theatre/dataverse-react'
+import {usePrism} from '@theatre/react'
 import React from 'react'
 import {SheetItem} from './SheetItem'
 import type Project from '@theatre/core/projects/Project'

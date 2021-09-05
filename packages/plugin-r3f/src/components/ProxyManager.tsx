@@ -18,7 +18,7 @@ import studio from '@theatre/studio'
 import type {ISheetObject} from '@theatre/core'
 import type {$FixMe} from '../types'
 import {useSelected} from './useSelected'
-import {useVal} from '@theatre/dataverse-react'
+import {useVal} from '@theatre/react'
 import useInvalidate from './useInvalidate'
 import {getEditorSheetObject} from './editorStuff'
 

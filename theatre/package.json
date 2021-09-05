@@ -25,7 +25,7 @@
     "@rollup/plugin-typescript": "^8.2.5",
     "@theatre/core": "workspace:*",
     "@theatre/dataverse": "workspace:*",
-    "@theatre/dataverse-react": "workspace:*",
+    "@theatre/react": "workspace:*",
     "@types/fs-extra": "^9.0.11",
     "@types/jest": "^26.0.23",
     "@types/lodash": "^4.14.170",

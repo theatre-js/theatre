@@ -1,7 +1,7 @@
 import {theme} from '@theatre/studio/css'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import {zIndexes} from '@theatre/studio/panels/SequenceEditorPanel/SequenceEditorPanel'
-import {useVal} from '@theatre/dataverse-react'
+import {useVal} from '@theatre/react'
 import type {Pointer} from '@theatre/dataverse'
 import {darken, transparentize} from 'polished'
 import React from 'react'

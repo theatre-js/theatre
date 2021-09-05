@@ -1,4 +1,4 @@
-import {useVal} from '@theatre/dataverse-react'
+import {useVal} from '@theatre/react'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import getStudio from '@theatre/studio/getStudio'
 import {panelZIndexes} from '@theatre/studio/panels/BasePanel/common'

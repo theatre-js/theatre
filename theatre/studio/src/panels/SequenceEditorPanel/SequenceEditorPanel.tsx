@@ -1,5 +1,5 @@
 import {getOutlineSelection} from '@theatre/studio/selectors'
-import {usePrism} from '@theatre/dataverse-react'
+import {usePrism} from '@theatre/react'
 import {valToAtom} from '@theatre/shared/utils/valToAtom'
 import type {Pointer} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'

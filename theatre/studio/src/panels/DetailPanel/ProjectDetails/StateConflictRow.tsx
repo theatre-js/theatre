@@ -1,4 +1,4 @@
-import {useVal} from '@theatre/dataverse-react'
+import {useVal} from '@theatre/react'
 import getStudio from '@theatre/studio/getStudio'
 import React from 'react'
 import styled from 'styled-components'

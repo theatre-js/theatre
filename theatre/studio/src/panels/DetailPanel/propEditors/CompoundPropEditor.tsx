@@ -1,7 +1,7 @@
 import type {PropTypeConfig_Compound} from '@theatre/core/propTypes'
 import {isPropConfigComposite} from '@theatre/shared/propTypes/utils'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
-import {usePrism} from '@theatre/dataverse-react'
+import {usePrism} from '@theatre/react'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import {getPointerParts} from '@theatre/dataverse'
 import last from 'lodash-es/last'

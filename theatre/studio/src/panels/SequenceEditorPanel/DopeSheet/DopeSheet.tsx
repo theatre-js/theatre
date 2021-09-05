@@ -1,4 +1,4 @@
-import {useVal} from '@theatre/dataverse-react'
+import {useVal} from '@theatre/react'
 import type {Pointer} from '@theatre/dataverse'
 import React from 'react'
 import styled from 'styled-components'

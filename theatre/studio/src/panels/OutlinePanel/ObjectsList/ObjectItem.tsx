@@ -2,7 +2,7 @@ import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import getStudio from '@theatre/studio/getStudio'
 import React from 'react'
 import BaseItem from '@theatre/studio/panels/OutlinePanel/BaseItem'
-import {usePrism} from '@theatre/dataverse-react'
+import {usePrism} from '@theatre/react'
 import {getOutlineSelection} from '@theatre/studio/selectors'
 
 export const ObjectItem: React.FC<{

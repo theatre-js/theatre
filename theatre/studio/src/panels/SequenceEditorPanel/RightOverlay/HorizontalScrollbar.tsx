@@ -1,6 +1,6 @@
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import DraggableArea from '@theatre/studio/uiComponents/DraggableArea'
-import {useVal} from '@theatre/dataverse-react'
+import {useVal} from '@theatre/react'
 import type {IRange} from '@theatre/shared/utils/types'
 import type {Pointer} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'

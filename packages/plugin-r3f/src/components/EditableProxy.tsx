@@ -23,7 +23,7 @@ import {
 import type {IconType} from 'react-icons'
 import studio from '@theatre/studio'
 import {useSelected} from './useSelected'
-import {useVal} from '@theatre/dataverse-react'
+import {useVal} from '@theatre/react'
 import {getEditorSheetObject} from './editorStuff'
 
 export interface EditableProxyProps {

@@ -1,5 +1,5 @@
 import type {SequenceEditorTree_SheetObject} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
-import {usePrism} from '@theatre/dataverse-react'
+import {usePrism} from '@theatre/react'
 import React from 'react'
 import styled from 'styled-components'
 import CompoundRow from './AnyCompositeRow'

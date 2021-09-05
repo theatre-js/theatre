@@ -1,5 +1,5 @@
 import {val} from '@theatre/dataverse'
-import {usePrism} from '@theatre/dataverse-react'
+import {usePrism} from '@theatre/react'
 import type {$IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
 import getStudio from '@theatre/studio/getStudio'
 import type {PanelPosition} from '@theatre/studio/store/types'

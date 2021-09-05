@@ -1,5 +1,5 @@
 import {getOutlineSelection} from '@theatre/studio/selectors'
-import {usePrism} from '@theatre/dataverse-react'
+import {usePrism} from '@theatre/react'
 import React from 'react'
 import styled from 'styled-components'
 import {isProject, isSheetObject} from '@theatre/shared/instanceTypes'

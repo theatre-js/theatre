@@ -1,6 +1,6 @@
 import type Project from '@theatre/core/projects/Project'
 
-import {usePrism} from '@theatre/dataverse-react'
+import {usePrism} from '@theatre/react'
 import {val} from '@theatre/dataverse'
 import React from 'react'
 import styled from 'styled-components'

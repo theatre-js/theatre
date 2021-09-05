@@ -5215,28 +5215,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@theatre/dataverse-react@workspace:*, @theatre/dataverse-react@workspace:packages/dataverse-react":
-  version: 0.0.0-use.local
-  resolution: "@theatre/dataverse-react@workspace:packages/dataverse-react"
-  dependencies:
-    "@theatre/dataverse": "workspace:*"
-    "@types/jest": ^26.0.23
-    "@types/lodash-es": ^4.17.4
-    "@types/node": ^15.6.2
-    "@types/react": ^17.0.9
-    "@types/react-dom": ^17.0.6
-    esbuild: ^0.12.15
-    esbuild-register: ^2.5.0
-    lodash-es: ^4.17.21
-    npm-run-all: ^4.1.5
-    queue-microtask: ^1.2.3
-    typescript: ^4.4.2
-  peerDependencies:
-    raect-dom: "*"
-    react: "*"
-  languageName: unknown
-  linkType: soft
-
 "@theatre/dataverse2@workspace:packages/dataverse2":
   version: 0.0.0-use.local
   resolution: "@theatre/dataverse2@workspace:packages/dataverse2"
@@ -5270,7 +5248,7 @@ __metadata:
   resolution: "@theatre/plugin-r3f@workspace:packages/plugin-r3f"
   dependencies:
     "@react-three/drei": ^7.3.1
-    "@theatre/dataverse-react": "workspace:*"
+    "@theatre/react": "workspace:*"
     "@types/jest": ^26.0.23
     "@types/lodash-es": ^4.17.4
     "@types/node": ^15.6.2
@@ -5294,6 +5272,28 @@ __metadata:
     react: ^17.0.2
     react-dom: ^17.0.2
     three: ^0.131.3
+  languageName: unknown
+  linkType: soft
+
+"@theatre/react@workspace:*, @theatre/react@workspace:packages/react":
+  version: 0.0.0-use.local
+  resolution: "@theatre/react@workspace:packages/react"
+  dependencies:
+    "@theatre/dataverse": "workspace:*"
+    "@types/jest": ^26.0.23
+    "@types/lodash-es": ^4.17.4
+    "@types/node": ^15.6.2
+    "@types/react": ^17.0.9
+    "@types/react-dom": ^17.0.6
+    esbuild: ^0.12.15
+    esbuild-register: ^2.5.0
+    lodash-es: ^4.17.21
+    npm-run-all: ^4.1.5
+    queue-microtask: ^1.2.3
+    typescript: ^4.4.2
+  peerDependencies:
+    raect-dom: "*"
+    react: "*"
   languageName: unknown
   linkType: soft
 
@@ -22674,7 +22674,7 @@ fsevents@^1.2.7:
     "@rollup/plugin-typescript": ^8.2.5
     "@theatre/core": "workspace:*"
     "@theatre/dataverse": "workspace:*"
-    "@theatre/dataverse-react": "workspace:*"
+    "@theatre/react": "workspace:*"
     "@types/fs-extra": ^9.0.11
     "@types/jest": ^26.0.23
     "@types/lodash": ^4.14.170

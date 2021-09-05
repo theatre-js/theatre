@@ -11,7 +11,7 @@ import {keyBy} from 'lodash-es'
 const packagesToBuild = [
   'theatre',
   '@theatre/dataverse',
-  '@theatre/dataverse-react',
+  '@theatre/react',
   '@theatre/plugin-r3f',
 ]
 
@@ -19,7 +19,7 @@ const packagesToPublish = [
   '@theatre/core',
   '@theatre/studio',
   '@theatre/dataverse',
-  '@theatre/dataverse-react',
+  '@theatre/react',
   '@theatre/plugin-r3f',
 ]
 
@@ -32,7 +32,7 @@ const packagesWhoseVersionsShouldBump = [
   'theatre/core',
   'theatre/studio',
   'packages/dataverse',
-  'packages/dataverse-react',
+  'packages/react',
   'packages/plugin-r3f',
 ]
 
