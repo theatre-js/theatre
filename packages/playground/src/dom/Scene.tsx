@@ -1,6 +1,6 @@
 import studio from '@theatre/studio'
-import type {UseDragOpts} from '@theatre/studio/uiComponents/useDrag'
-import useDrag from '@theatre/studio/uiComponents/useDrag'
+import type {UseDragOpts} from './useDrag'
+import useDrag from './useDrag'
 import React, {useLayoutEffect, useMemo, useState} from 'react'
 import type {IProject, ISheet} from '@theatre/core'
 import {types as t} from '@theatre/core'
@@ -105,14 +105,19 @@ export const Scene: React.FC<{project: IProject}> = ({project}) => {
     <div
       style={{
         position: 'absolute',
-        left: '20vw',
-        right: '20vw',
+        left: '0',
+        right: '0',
         top: 0,
-        bottom: '30vh',
+        bottom: '0',
         background: 'black',
       }}
     >
       <button
+        style={{
+          top: '16px',
+          left: '60px',
+          position: 'absolute',
+        }}
         onClick={() => {
           setBoxes((boxes) => [...boxes, String(++lastBoxId)])
         }}
