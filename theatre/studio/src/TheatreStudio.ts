@@ -104,7 +104,21 @@ export interface IStudio {
    * Initializes the studio. Call it once in your index.js/index.ts module.
    * It silently ignores subsequent calls.
    */
-  initialize(): void
+  initialize(opts?: {
+    /**
+     * The local storage key to use to persist the state.
+     *
+     * @default "theatrejs:0.4"
+     */
+    persistenceKey?: string
+    /**
+     * Whether to persist the changes in the browser's temporary storage.
+     * It is useful to set this to false in the test environment or when debugging things.
+     *
+     * @default true
+     */
+    usePersistentStorage?: boolean
+  }): void
 
   transaction(fn: (api: ITransactionAPI) => void): void
   scrub(): IScrub
@@ -189,8 +203,9 @@ export default class TheatreStudio implements IStudio {
    */
   constructor(internals: Studio) {}
 
-  initialize() {
-    getStudio().ui.render()
+  initialize(opts?: Parameters<IStudio['initialize']>[0]): Promise<void> {
+    const studio = getStudio()
+    return studio.initialize(opts)
   }
 
   extend(extension: IExtension): void {

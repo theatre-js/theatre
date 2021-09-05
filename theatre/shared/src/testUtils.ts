@@ -12,6 +12,9 @@ import globals from './globals'
 
 let lastProjectN = 0
 export async function setupTestSheet(sheetState: SheetState_Historic) {
+  const studio = getStudio()!
+  studio.initialize({usePersistentStorage: false})
+
   const projectState: ProjectState_Historic = {
     definitionVersion: globals.currentProjectStateDefinitionVersion,
     sheetsById: {
@@ -40,8 +43,6 @@ export async function setupTestSheet(sheetState: SheetState_Historic) {
   )
 
   const obj = privateAPI(objPublicAPI)
-
-  const studio = getStudio()!
 
   return {
     obj,

@@ -18,6 +18,8 @@ import type {IProject, ISheet} from '@theatre/core'
 import PaneManager from './PaneManager'
 import type * as _coreExports from '@theatre/core/coreExports'
 import type {OnDiskState} from '@theatre/core/projects/store/storeTypes'
+import type {Deferred} from '@theatre/shared/utils/defer'
+import {defer} from '@theatre/shared/utils/defer'
 
 export type CoreExports = typeof _coreExports
 
@@ -38,6 +40,8 @@ export class Studio {
   readonly paneManager: PaneManager
 
   private _coreAtom = new Atom<{core?: CoreExports}>({})
+  private readonly _initializedDeferred: Deferred<void> = defer()
+  private _initializeFnCalled = false
 
   get atomP() {
     return this._store.atomP
@@ -55,8 +59,39 @@ export class Studio {
     this.paneManager = new PaneManager(this)
   }
 
-  get initialized() {
-    return this._store.initialized
+  async initialize(opts?: Parameters<IStudio['initialize']>[0]) {
+    if (this._initializeFnCalled) {
+      return this._initializedDeferred.promise
+    }
+    const storeOpts: Parameters<typeof this._store['initialize']>[0] = {
+      persistenceKey: 'theatre-0.4',
+      usePersistentStorage: true,
+    }
+
+    if (typeof opts?.persistenceKey === 'string') {
+      storeOpts.persistenceKey = opts.persistenceKey
+    }
+
+    if (opts?.usePersistentStorage === false) {
+      storeOpts.usePersistentStorage = false
+    }
+
+    try {
+      await this._store.initialize(storeOpts)
+    } catch (e) {
+      this._initializedDeferred.reject(e)
+      return
+    }
+
+    this._initializedDeferred.resolve()
+
+    if (process.env.NODE_ENV !== 'test') {
+      this.ui.render()
+    }
+  }
+
+  get initialized(): Promise<void> {
+    return this._initializedDeferred.promise
   }
 
   _attachToIncomingProjects() {

@@ -11,6 +11,7 @@ import type {
   StudioEphemeralState,
   StudioHistoricState,
 } from '@theatre/studio/store/types'
+import type {Deferred} from '@theatre/shared/utils/defer'
 import {defer} from '@theatre/shared/utils/defer'
 import forEachDeep from '@theatre/shared/utils/forEachDeep'
 import getDeep from '@theatre/shared/utils/getDeep'
@@ -26,7 +27,6 @@ import get from 'lodash-es/get'
 import type {Store} from 'redux'
 import {persistStateOfStudio} from './persistStateOfStudio'
 import {isSheetObject} from '@theatre/shared/instanceTypes'
-import globals from '@theatre/shared/globals'
 import type {OnDiskState} from '@theatre/core/projects/store/storeTypes'
 import {generateDiskStateRevision} from './generateDiskStateRevision'
 
@@ -52,7 +52,6 @@ export default class StudioStore {
   private readonly _reduxStore: Store<FullStudioState>
   private readonly _atom: Atom<FullStudioState>
   readonly atomP: Pointer<FullStudioState>
-  readonly initialized: Promise<void>
 
   constructor() {
     this._reduxStore = configureStore({
@@ -61,23 +60,32 @@ export default class StudioStore {
     })
     this._atom = atomFromReduxStore(this._reduxStore)
     this.atomP = this._atom.pointer
+  }
 
-    if (globals.disableStatePersistence !== true) {
-      const d = defer<void>()
-      this.initialized = d.promise
-      persistStateOfStudio(this._reduxStore, () => {
-        this.tempTransaction(({drafts}) => {
-          drafts.ephemeral.initialised = true
-        }).commit()
-        d.resolve()
-      })
+  initialize(opts: {
+    persistenceKey: string
+    usePersistentStorage: boolean
+  }): Promise<void> {
+    const d: Deferred<void> = defer<void>()
+    if (opts.usePersistentStorage === true) {
+      persistStateOfStudio(
+        this._reduxStore,
+        () => {
+          this.tempTransaction(({drafts}) => {
+            drafts.ephemeral.initialised = true
+          }).commit()
+          d.resolve()
+        },
+        opts.persistenceKey,
+      )
     } else {
       this.tempTransaction(({drafts}) => {
         drafts.ephemeral.initialised = true
       }).commit()
 
-      this.initialized = Promise.resolve()
+      d.resolve()
     }
+    return d.promise
   }
 
   getState(): FullStudioState {

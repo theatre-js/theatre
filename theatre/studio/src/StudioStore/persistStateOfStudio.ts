@@ -5,17 +5,16 @@ import type {FullStudioState} from '@theatre/studio/store/index'
 import debounce from 'lodash-es/debounce'
 import type {Store} from 'redux'
 
-const studioPersistenceKey = 'theatrejs:0.3/studio'
-
 export const persistStateOfStudio = (
   reduxStore: Store<FullStudioState>,
   onInitialize: () => void,
+  localStoragePrefix: string,
 ) => {
   const loadState = (s: StudioPersistentState) => {
     reduxStore.dispatch(studioActions.replacePersistentState(s))
   }
 
-  const storageKey = studioPersistenceKey + '.persistent'
+  const storageKey = localStoragePrefix + '.persistent'
   const getState = () => reduxStore.getState().$persistent
 
   loadFromPersistentStorage()

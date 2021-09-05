@@ -1,6 +1,5 @@
 const globals = {
-  disableStatePersistence: false,
-  currentProjectStateDefinitionVersion: '0.3.0-dev',
+  currentProjectStateDefinitionVersion: '0.4.0',
 }
 
 export default globals
