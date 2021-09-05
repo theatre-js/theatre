@@ -30,7 +30,6 @@ export interface PaneClassDefinition<
   DataType extends PropTypeConfig_Compound<{}>,
 > {
   class: string
-  dataType: DataType
   component: React.ComponentType<{
     paneId: string
   }>
@@ -237,7 +236,7 @@ export default class TheatreStudio implements IStudio {
     return this._getSelectionDerivation().tapImmediate(studioTicker, fn)
   }
 
-  get selection(): (ISheetObject | ISheet)[] {
+  get selection(): Array<ISheetObject | ISheet> {
     return this._getSelection()
   }
 

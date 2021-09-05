@@ -55,31 +55,7 @@ function App() {
   return (
     <div onClick={() => setBgIndex((bgIndex) => (bgIndex + 1) % bgs.length)}>
       <Canvas dpr={[1.5, 2]} linear shadows frameloop="demand">
-        <Wrapper
-          getSheet={() =>
-            getProject('Space', {
-              state: {
-                sheetsById: {
-                  'R3F-Canvas': {
-                    staticOverrides: {
-                      byObject: {
-                        'Light 1': {
-                          position: {
-                            x: -60,
-                            y: -63,
-                            z: -79,
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-                definitionVersion: '0.3.0-dev',
-                revisionHistory: ['1__HCrX_ol8j4wK3-Pi'],
-              },
-            }).sheet('Scene')
-          }
-        >
+        <Wrapper getSheet={() => getProject('Space').sheet('Scene')}>
           <fog attach="fog" args={[bg, 16, 30]} />
           <color attach="background" args={[bg]} />
           <ambientLight intensity={0.75} />
