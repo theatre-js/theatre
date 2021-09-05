@@ -1,4 +1,9 @@
-import {editable as e, RefreshSnapshot, Wrapper} from '@theatre/plugin-r3f'
+import {
+  editable as e,
+  RefreshSnapshot,
+  Wrapper,
+  extension,
+} from '@theatre/plugin-r3f'
 import {OrbitControls, Stars} from '@react-three/drei'
 import {getProject} from '@theatre/core'
 import React, {Suspense, useState} from 'react'
@@ -7,6 +12,7 @@ import {useGLTF} from '@react-three/drei'
 import sceneGLB from './scene.glb'
 import studio from '@theatre/studio'
 
+studio.extend(extension)
 studio.initialize()
 
 document.body.style.backgroundColor = '#171717'
