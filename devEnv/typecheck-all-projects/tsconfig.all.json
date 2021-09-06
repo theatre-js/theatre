@@ -9,6 +9,6 @@
     {"path": "../../theatre"},
     {"path": "../../packages/dataverse"},
     {"path": "../../packages/playground"},
-    {"path": "../../packages/plugin-r3f"}
+    {"path": "../../packages/r3f"}
   ]
 }

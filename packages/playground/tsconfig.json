@@ -11,7 +11,7 @@
   "references": [
     {"path": "../../theatre"},
     {"path": "../dataverse"},
-    {"path": "../plugin-r3f"}
+    {"path": "../r3f"}
   ],
   "include": ["./src/**/*", "./devEnv/**/*"]
 }

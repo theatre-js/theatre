@@ -3157,7 +3157,7 @@ __metadata:
     "@testing-library/react": ^11.1.0
     "@testing-library/user-event": ^12.1.10
     "@theatre/core": "workspace:*"
-    "@theatre/plugin-r3f": "workspace:*"
+    "@theatre/r3f": "workspace:*"
     "@theatre/studio": "workspace:*"
     react: ^17.0.2
     react-dom: ^17.0.2
@@ -5243,9 +5243,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@theatre/plugin-r3f@workspace:*, @theatre/plugin-r3f@workspace:packages/plugin-r3f":
+"@theatre/r3f@workspace:*, @theatre/r3f@workspace:packages/r3f":
   version: 0.0.0-use.local
-  resolution: "@theatre/plugin-r3f@workspace:packages/plugin-r3f"
+  resolution: "@theatre/r3f@workspace:packages/r3f"
   dependencies:
     "@react-three/drei": ^7.3.1
     "@theatre/react": "workspace:*"
@@ -18215,7 +18215,7 @@ fsevents@^1.2.7:
     "@react-three/drei": ^7.2.2
     "@react-three/fiber": ^7.0.6
     "@theatre/core": "workspace:*"
-    "@theatre/plugin-r3f": "workspace:*"
+    "@theatre/r3f": "workspace:*"
     "@theatre/studio": "workspace:*"
     "@types/jest": ^26.0.23
     "@types/lodash-es": ^4.17.4

@@ -1,4 +1,4 @@
-import {editable as e, SheetProvider} from '@theatre/plugin-r3f'
+import {editable as e, SheetProvider} from '@theatre/r3f'
 import {getProject} from '@theatre/core'
 import * as THREE from 'three'
 import React, {useState, useEffect, useRef} from 'react'

@@ -3,7 +3,7 @@ import type {IExtension} from '@theatre/studio'
 import Toolbar from './components/Toolbar/Toolbar'
 
 const r3fExtension: IExtension = {
-  id: '@theatre/plugin-r3f',
+  id: '@theatre/r3f',
   globalToolbar: {
     component: Toolbar,
   },

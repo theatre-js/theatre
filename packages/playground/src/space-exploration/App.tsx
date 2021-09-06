@@ -3,7 +3,7 @@ import {
   RefreshSnapshot,
   SheetProvider,
   extension,
-} from '@theatre/plugin-r3f'
+} from '@theatre/r3f'
 import {OrbitControls, Stars} from '@react-three/drei'
 import {getProject} from '@theatre/core'
 import React, {Suspense, useState} from 'react'
