@@ -3,6 +3,7 @@ import type {IProject} from '@theatre/core/projects/TheatreProject'
 import type TheatreSequence from '@theatre/core/sequences/TheatreSequence'
 import type {ISequence} from '@theatre/core/sequences/TheatreSequence'
 import type {PropTypeConfig_Compound} from '@theatre/core/propTypes'
+import {compound} from '@theatre/core/propTypes'
 import type {ISheetObject} from '@theatre/core/sheetObjects/TheatreSheetObject'
 import type Sheet from '@theatre/core/sheets/Sheet'
 import type {SheetAddress} from '@theatre/shared/utils/addresses'
@@ -11,6 +12,7 @@ import {validateAndSanitiseSlashedPathOrThrow} from '@theatre/shared/utils/slash
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import userReadableTypeOfValue from '@theatre/shared/utils/userReadableTypeOfValue'
 import deepEqual from 'fast-deep-equal'
+import type {IShorthandCompoundProps} from '@theatre/core/propTypes/internals'
 
 export type SheetObjectConfig<
   Props extends PropTypeConfig_Compound<$IntentionalAny>,
@@ -21,13 +23,15 @@ export interface ISheet {
   readonly project: IProject
   readonly address: SheetAddress
 
-  object<Props extends PropTypeConfig_Compound<$IntentionalAny>>(
+  object<Props extends IShorthandCompoundProps>(
     key: string,
-    config: SheetObjectConfig<Props>,
+    config: Props,
   ): ISheetObject<Props>
 
   readonly sequence: ISequence
 }
+
+const weakMapOfUnsanitizedProps = new WeakMap()
 
 export default class TheatreSheet implements ISheet {
   get type(): 'Theatre_Sheet_PublicAPI' {
@@ -40,9 +44,9 @@ export default class TheatreSheet implements ISheet {
     setPrivateAPI(this, sheet)
   }
 
-  object<Props extends PropTypeConfig_Compound<$IntentionalAny>>(
+  object<Props extends IShorthandCompoundProps>(
     key: string,
-    config: SheetObjectConfig<Props>,
+    config: Props,
   ): ISheetObject<Props> {
     const internal = privateAPI(this)
     const sanitizedPath = validateAndSanitiseSlashedPathOrThrow(
@@ -67,7 +71,11 @@ export default class TheatreSheet implements ISheet {
 
       return existingObject.publicApi as $IntentionalAny
     } else {
-      const object = internal.createObject(sanitizedPath, nativeObject, config)
+      const object = internal.createObject(
+        sanitizedPath,
+        nativeObject,
+        compound(config),
+      )
       return object.publicApi as $IntentionalAny
     }
   }

@@ -28,17 +28,18 @@ export type IShorthandCompoundProps = {
   [K in string]: IShorthandProp
 }
 
-type ShorthandPropToLonghandProp<P extends IShorthandProp> = P extends string
-  ? PropTypeConfig_String
-  : P extends number
-  ? PropTypeConfig_Number
-  : P extends boolean
-  ? PropTypeConfig_Boolean
-  : P extends PropTypeConfig
-  ? P
-  : P extends IShorthandCompoundProps
-  ? PropTypeConfig_Compound<ShorthandCompoundPropsToLonghandCompoundProps<P>>
-  : never
+export type ShorthandPropToLonghandProp<P extends IShorthandProp> =
+  P extends string
+    ? PropTypeConfig_String
+    : P extends number
+    ? PropTypeConfig_Number
+    : P extends boolean
+    ? PropTypeConfig_Boolean
+    : P extends PropTypeConfig
+    ? P
+    : P extends IShorthandCompoundProps
+    ? PropTypeConfig_Compound<ShorthandCompoundPropsToLonghandCompoundProps<P>>
+    : never
 
 export type ShorthandCompoundPropsToLonghandCompoundProps<
   P extends IShorthandCompoundProps,

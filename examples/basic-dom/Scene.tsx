@@ -2,16 +2,15 @@ import type {IScrub, IStudio} from '@theatre/studio'
 import studio from '@theatre/studio'
 import React, {useLayoutEffect, useMemo, useState} from 'react'
 import type {ISheet, ISheetObject, IProject} from '@theatre/core'
-import {types as t} from '@theatre/core'
 import type {UseDragOpts} from './useDrag'
 import useDrag from './useDrag'
 
 studio.initialize()
 
-const boxObjectConfig = t.compound({
-  x: t.number(0),
-  y: t.number(0),
-})
+const boxObjectConfig = {
+  x: 0,
+  y: 0,
+}
 
 const Box: React.FC<{
   id: string

@@ -22,23 +22,23 @@ const positionComp = types.number(1, {nudgeMultiplier: 0.1})
 const rotationComp = types.number(1, {nudgeMultiplier: 0.02})
 const scaleComp = types.number(1, {nudgeMultiplier: 0.1})
 
-export const baseSheetObjectType = types.compound({
-  position: types.compound({
+export const baseSheetObjectType = {
+  position: {
     x: positionComp,
     y: positionComp,
     z: positionComp,
-  }),
-  rotation: types.compound({
+  },
+  rotation: {
     x: rotationComp,
     y: rotationComp,
     z: rotationComp,
-  }),
-  scale: types.compound({
+  },
+  scale: {
     x: scaleComp,
     y: scaleComp,
     z: scaleComp,
-  }),
-})
+  },
+}
 
 export type BaseSheetObjectType = ISheetObject<typeof baseSheetObjectType>
 

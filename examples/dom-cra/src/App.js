@@ -1,14 +1,13 @@
 import studio from '@theatre/studio'
 import {useLayoutEffect, useMemo, useState} from 'react'
-import {types as t} from '@theatre/core'
 import useDrag from './useDrag'
 
 studio.initialize()
 
-const boxObjectConfig = t.compound({
-  x: t.number(0),
-  y: t.number(0),
-})
+const boxObjectConfig = {
+  x: 0,
+  y: 0,
+}
 
 const Box = ({id, sheet, selectedObject}) => {
   // This is cheap to call and always returns the same value, so no need for useMemo()

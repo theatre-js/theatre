@@ -6,37 +6,37 @@ import type {SheetObjectAddress} from '@theatre/shared/utils/addresses'
 import SimpleCache from '@theatre/shared/utils/SimpleCache'
 import type {
   $FixMe,
-  $IntentionalAny,
   DeepPartialOfSerializableValue,
   VoidFn,
 } from '@theatre/shared/utils/types'
 import type {IDerivation, Pointer} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'
-import type {PropTypeConfig_Compound} from '@theatre/core/propTypes'
 import type SheetObject from './SheetObject'
+import type {
+  IShorthandCompoundProps,
+  ShorthandPropToLonghandProp,
+} from '@theatre/core/propTypes/internals'
 
-export interface ISheetObject<
-  Props extends PropTypeConfig_Compound<$IntentionalAny> = PropTypeConfig_Compound<$IntentionalAny>,
-> {
+export interface ISheetObject<Props extends IShorthandCompoundProps = {}> {
   readonly type: 'Theatre_SheetObject_PublicAPI'
 
   /**
    *
    */
-  readonly value: Props['valueType']
-  readonly props: Pointer<Props['valueType']>
+  readonly value: ShorthandPropToLonghandProp<Props>['valueType']
+  readonly props: Pointer<this['value']>
 
   readonly sheet: ISheet
   readonly project: IProject
   readonly address: SheetObjectAddress
 
-  onValuesChange(fn: (values: Props['valueType']) => void): VoidFn
+  onValuesChange(fn: (values: this['value']) => void): VoidFn
   // prettier-ignore
-  set initialValue(value: DeepPartialOfSerializableValue<Props['valueType']>)
+  set initialValue(value: DeepPartialOfSerializableValue<this['value']>)
 }
 
 export default class TheatreSheetObject<
-  Props extends PropTypeConfig_Compound<$IntentionalAny>,
+  Props extends IShorthandCompoundProps = {},
 > implements ISheetObject<Props>
 {
   get type(): 'Theatre_SheetObject_PublicAPI' {
@@ -51,7 +51,7 @@ export default class TheatreSheetObject<
     setPrivateAPI(this, internals)
   }
 
-  get props(): Pointer<Props['valueType']> {
+  get props(): Pointer<this['value']> {
     return privateAPI(this).propsP as $FixMe
   }
 
@@ -67,7 +67,7 @@ export default class TheatreSheetObject<
     return {...privateAPI(this).address}
   }
 
-  private _valuesDerivation(): IDerivation<Props['valueType']> {
+  private _valuesDerivation(): IDerivation<this['value']> {
     return this._cache.get('onValuesChangeDerivation', () => {
       const sheetObject = privateAPI(this)
       const d: IDerivation<Props> = prism(() => {
@@ -77,15 +77,15 @@ export default class TheatreSheetObject<
     })
   }
 
-  onValuesChange(fn: (values: Props['valueType']) => void): VoidFn {
+  onValuesChange(fn: (values: this['value']) => void): VoidFn {
     return this._valuesDerivation().tapImmediate(coreTicker, fn)
   }
 
-  get value(): Props['valueType'] {
+  get value(): ShorthandPropToLonghandProp<Props>['valueType'] {
     return this._valuesDerivation().getValue()
   }
 
-  set initialValue(val: DeepPartialOfSerializableValue<Props['valueType']>) {
+  set initialValue(val: DeepPartialOfSerializableValue<this['value']>) {
     privateAPI(this).setInitialValue(val)
   }
 }

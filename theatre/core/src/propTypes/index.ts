@@ -12,13 +12,13 @@ import {propTypeSymbol} from './internals'
  * Usage:
  * ```ts
  * // the root prop type of an object is always a compound
- * const props = t.compound({
+ * const props = {
  *   // compounds can be nested
  *   position: t.compound({
  *     x: t.number(0),
  *     y: t.number(0)
  *   })
- * })
+ * }
  *
  * const obj = sheet.obj('key', props)
  * console.log(obj.value) // {position: {x: 10.3, y: -1}}

@@ -2,6 +2,7 @@ import {useLayoutEffect, useRef, useState} from 'react'
 import {allRegisteredObjects} from '../store'
 import studio from '@theatre/studio'
 import type {ISheetObject} from '@theatre/core'
+import type {$IntentionalAny} from '../types'
 
 export function useSelected(): undefined | string {
   const [state, set] = useState<string | undefined>(undefined)
@@ -13,7 +14,7 @@ export function useSelected(): undefined | string {
       const item = selection.find(
         (s): s is ISheetObject =>
           s.type === 'Theatre_SheetObject_PublicAPI' &&
-          allRegisteredObjects.has(s),
+          allRegisteredObjects.has(s as $IntentionalAny),
       )
       if (!item) {
         set(undefined)
@@ -31,7 +32,8 @@ export function useSelected(): undefined | string {
 export function getSelected(): undefined | string {
   const item = studio.selection.find(
     (s): s is ISheetObject =>
-      s.type === 'Theatre_SheetObject_PublicAPI' && allRegisteredObjects.has(s),
+      s.type === 'Theatre_SheetObject_PublicAPI' &&
+      allRegisteredObjects.has(s as $IntentionalAny),
   )
   if (!item) {
     return undefined

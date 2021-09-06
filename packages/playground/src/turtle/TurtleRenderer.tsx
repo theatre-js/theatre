@@ -15,13 +15,13 @@ import {drawTurtlePlan, makeTurtlePlan} from './turtle'
 
 studio.initialize()
 
-const objConfig = types.compound({
-  startingPoint: types.compound({
+const objConfig = {
+  startingPoint: {
     x: types.number(0.5, {range: [0, 1]}),
     y: types.number(0.5, {range: [0, 1]}),
-  }),
+  },
   scale: types.number(1, {range: [0.1, 1000]}),
-})
+}
 
 const TurtleRenderer: React.FC<{
   sheet: ISheet

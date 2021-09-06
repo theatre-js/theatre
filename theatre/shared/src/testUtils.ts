@@ -31,16 +31,13 @@ export async function setupTestSheet(sheetState: SheetState_Historic) {
   ticker.tick()
   await project.ready
   const sheetPublicAPI = project.sheet('Sheet')
-  const objPublicAPI = sheetPublicAPI.object(
-    'obj',
-    t.compound({
-      position: {
-        x: 0,
-        y: t.number(1),
-        z: t.number(2),
-      },
-    }),
-  )
+  const objPublicAPI = sheetPublicAPI.object('obj', {
+    position: {
+      x: 0,
+      y: t.number(1),
+      z: t.number(2),
+    },
+  })
 
   const obj = privateAPI(objPublicAPI)
 

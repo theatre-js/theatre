@@ -11,20 +11,20 @@ import {types} from '@theatre/core'
 import type {ISheetObject} from '@theatre/core'
 import {useThree} from '@react-three/fiber'
 
-const camConf = types.compound({
-  transform: types.compound({
-    position: types.compound({
+const camConf = {
+  transform: {
+    position: {
       x: types.number(10),
       y: types.number(10),
       z: types.number(0),
-    }),
-    target: types.compound({
+    },
+    target: {
       x: types.number(0),
       y: types.number(0),
       z: types.number(0),
-    }),
-  }),
-  lens: types.compound({
+    },
+  },
+  lens: {
     zoom: types.number(1, {range: [0.0001, 10]}),
     fov: types.number(50, {range: [1, 1000]}),
     near: types.number(0.1, {range: [0, Infinity]}),
@@ -32,8 +32,8 @@ const camConf = types.compound({
     focus: types.number(10, {range: [0, Infinity]}),
     filmGauge: types.number(35, {range: [0, Infinity]}),
     filmOffset: types.number(0, {range: [0, Infinity]}),
-  }),
-})
+  },
+}
 
 export default function useSnapshotEditorCamera(
   snapshotEditorSheet: ISheet,
@@ -144,7 +144,9 @@ function usePassValuesFromTheatreToCamera(
     if (!cam || orbitControls === null) return
 
     const obj = objRef.current!
-    const setFromTheatre = (props: typeof camConf['valueType']): void => {
+    const setFromTheatre = (
+      props: ISheetObject<typeof camConf>['value'],
+    ): void => {
       const {position, target} = props.transform
       cam.zoom = props.lens.zoom
       cam.fov = props.lens.fov

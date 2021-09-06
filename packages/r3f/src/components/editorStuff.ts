@@ -6,7 +6,7 @@ let sheet: ISheet | undefined = undefined
 let sheetObject: ISheetObject<typeof editorSheetObjectConfig> | undefined =
   undefined
 
-const editorSheetObjectConfig = types.compound({
+const editorSheetObjectConfig = {
   viewport: types.compound(
     {
       showAxes: types.boolean(true, {label: 'Axes'}),
@@ -47,7 +47,7 @@ const editorSheetObjectConfig = types.compound({
     },
     {label: 'Transform Controls'},
   ),
-})
+}
 
 export function getEditorSheet(): ISheet {
   if (!sheet) {
