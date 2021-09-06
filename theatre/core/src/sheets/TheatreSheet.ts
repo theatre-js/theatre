@@ -13,6 +13,7 @@ import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import userReadableTypeOfValue from '@theatre/shared/utils/userReadableTypeOfValue'
 import deepEqual from 'fast-deep-equal'
 import type {IShorthandCompoundProps} from '@theatre/core/propTypes/internals'
+import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 
 export type SheetObjectConfig<
   Props extends PropTypeConfig_Compound<$IntentionalAny>,
@@ -31,7 +32,10 @@ export interface ISheet {
   readonly sequence: ISequence
 }
 
-const weakMapOfUnsanitizedProps = new WeakMap()
+const weakMapOfUnsanitizedProps = new WeakMap<
+  SheetObject,
+  IShorthandCompoundProps
+>()
 
 export default class TheatreSheet implements ISheet {
   get type(): 'Theatre_Sheet_PublicAPI' {
@@ -60,22 +64,29 @@ export default class TheatreSheet implements ISheet {
 
     if (existingObject) {
       if (process.env.NODE_ENV !== 'production') {
-        if (!deepEqual(config, existingObject.template.config)) {
-          throw new Error(
-            `You seem to have called sheet.object("${key}", config) twice, with different values for \`config\`. ` +
-              `This is disallowed because changing the config of an object on the fly would make it difficult to reason about.\n\n` +
-              `You can fix this by either re-using the existing object, or calling sheet.object("${key}", config) with the same config.`,
-          )
+        const prevConfig = weakMapOfUnsanitizedProps.get(existingObject)
+        if (prevConfig) {
+          if (!deepEqual(config, prevConfig)) {
+            throw new Error(
+              `You seem to have called sheet.object("${key}", config) twice, with different values for \`config\`. ` +
+                `This is disallowed because changing the config of an object on the fly would make it difficult to reason about.\n\n` +
+                `You can fix this by either re-using the existing object, or calling sheet.object("${key}", config) with the same config.`,
+            )
+          }
         }
       }
 
       return existingObject.publicApi as $IntentionalAny
     } else {
+      const sanitizedConfig = compound(config)
       const object = internal.createObject(
         sanitizedPath,
         nativeObject,
-        compound(config),
+        sanitizedConfig,
       )
+      if (process.env.NODE_ENV !== 'production') {
+        weakMapOfUnsanitizedProps.set(object, config)
+      }
       return object.publicApi as $IntentionalAny
     }
   }
