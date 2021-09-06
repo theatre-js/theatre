@@ -13,9 +13,10 @@
  * ```
  * @module types
  */
+import {InvalidArgumentError} from '@theatre/shared/utils/errors'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
-
-const s = Symbol('TheatrePropType_Basic')
+import userReadableTypeOfValue from '@theatre/shared/utils/userReadableTypeOfValue'
+import {isLonghandPropType, propTypeSymbol, toLonghandProp} from './internals'
 
 /**
  * Creates a compound prop type (basically a JS object).
@@ -43,11 +44,53 @@ export const compound = <Props extends IValidCompoundProps>(
   props: Props,
   extras?: PropTypeConfigExtras,
 ): PropTypeConfig_Compound<Props> => {
+  let sanitizedProps: Props
+  if (process.env.NODE_ENV !== 'production') {
+    sanitizedProps = {} as $IntentionalAny
+    if (typeof props !== 'object' || !props) {
+      throw new InvalidArgumentError(
+        `t.compound() expects an object, like: {x: 10}. ${userReadableTypeOfValue(
+          props,
+        )} given.`,
+      )
+    }
+    for (const key of Object.keys(props) as Array<keyof Props>) {
+      if (typeof key !== 'string') {
+        throw new InvalidArgumentError(
+          `t.compound()'s keys must be all strings. ${userReadableTypeOfValue(
+            key,
+          )} given.`,
+        )
+      } else if (key.length === 0 || !key.match(/^\w+$/)) {
+        throw new InvalidArgumentError(
+          `compound key ${userReadableTypeOfValue(
+            key,
+          )} is invalid. The keys must be alphanumeric and start with a letter.`,
+        )
+      } else if (key.length > 64) {
+        throw new InvalidArgumentError(
+          `compound key ${userReadableTypeOfValue(key)} is too long.`,
+        )
+      }
+
+      const val = props[key]
+      if (isLonghandPropType(val)) {
+        sanitizedProps[key as keyof Props] = val as $IntentionalAny
+      } else {
+        sanitizedProps[key as keyof Props] = toLonghandProp(
+          val,
+        ) as $IntentionalAny
+      }
+    }
+  } else {
+    sanitizedProps = {...props}
+  }
+
   return {
     type: 'compound',
-    props,
+    props: sanitizedProps,
     valueType: null as $IntentionalAny,
-    [s]: 'TheatrePropType',
+    [propTypeSymbol]: 'TheatrePropType',
     label: extras?.label,
   }
 }
@@ -72,7 +115,7 @@ export const number = (
     type: 'number',
     valueType: 0,
     default: defaultValue,
-    [s]: 'TheatrePropType',
+    [propTypeSymbol]: 'TheatrePropType',
     ...(opts ? opts : {}),
     label: opts?.label,
     nudgeFn: opts?.nudgeFn ?? defaultNumberNudgeFn,
@@ -97,7 +140,7 @@ export const boolean = (
     type: 'boolean',
     default: defaultValue,
     valueType: null as $IntentionalAny,
-    [s]: 'TheatrePropType',
+    [propTypeSymbol]: 'TheatrePropType',
     label: extras?.label,
   }
 }
@@ -112,14 +155,14 @@ export const boolean = (
  */
 export const string = (
   defaultValue: string,
-  extras: PropTypeConfigExtras,
+  extras?: PropTypeConfigExtras,
 ): PropTypeConfig_String => {
   return {
     type: 'string',
     default: defaultValue,
     valueType: null as $IntentionalAny,
-    [s]: 'TheatrePropType',
-    label: extras.label,
+    [propTypeSymbol]: 'TheatrePropType',
+    label: extras?.label,
   }
 }
 
@@ -141,7 +184,7 @@ export function stringLiteral<Opts extends {[key in string]: string}>(
     type: 'stringLiteral',
     default: defaultValue,
     options: {...options},
-    [s]: 'TheatrePropType',
+    [propTypeSymbol]: 'TheatrePropType',
     valueType: null as $IntentionalAny,
     as: extras?.as ?? 'menu',
     label: extras?.label,
@@ -163,7 +206,7 @@ export function stringLiteral<Opts extends {[key in string]: string}>(
 
 interface IBasePropType<ValueType> {
   valueType: ValueType
-  [s]: 'TheatrePropType'
+  [propTypeSymbol]: 'TheatrePropType'
   label: string | undefined
 }
 

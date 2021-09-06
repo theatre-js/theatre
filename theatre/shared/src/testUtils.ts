@@ -34,11 +34,11 @@ export async function setupTestSheet(sheetState: SheetState_Historic) {
   const objPublicAPI = sheetPublicAPI.object(
     'obj',
     t.compound({
-      position: t.compound({
+      position: {
         x: t.number(0),
         y: t.number(1),
         z: t.number(2),
-      }),
+      },
     }),
   )
 
