@@ -1,22 +1,11 @@
-/**
- * Usage:
- * ```ts
- * import {types as t} from '@theatre/core'
- *
- * const props = t.compound({
- *   x: t.number(0),
- *   y: t.number(0)
- * })
- *
- *
- * const obj = sheet.obj("An object", props)
- * ```
- * @module types
- */
-import {InvalidArgumentError} from '@theatre/shared/utils/errors'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
-import userReadableTypeOfValue from '@theatre/shared/utils/userReadableTypeOfValue'
-import {isLonghandPropType, propTypeSymbol, toLonghandProp} from './internals'
+import type {
+  IShorthandCompoundProps,
+  IValidCompoundProps,
+  ShorthandCompoundPropsToLonghandCompoundProps,
+} from './internals'
+import {sanitizeCompoundProps} from './internals'
+import {propTypeSymbol} from './internals'
 
 /**
  * Creates a compound prop type (basically a JS object).
@@ -38,57 +27,16 @@ import {isLonghandPropType, propTypeSymbol, toLonghandProp} from './internals'
  * @param extras
  * @returns
  *
- * @category Prop type definitions
  */
-export const compound = <Props extends IValidCompoundProps>(
+export const compound = <Props extends IShorthandCompoundProps>(
   props: Props,
   extras?: PropTypeConfigExtras,
-): PropTypeConfig_Compound<Props> => {
-  let sanitizedProps: Props
-  if (process.env.NODE_ENV !== 'production') {
-    sanitizedProps = {} as $IntentionalAny
-    if (typeof props !== 'object' || !props) {
-      throw new InvalidArgumentError(
-        `t.compound() expects an object, like: {x: 10}. ${userReadableTypeOfValue(
-          props,
-        )} given.`,
-      )
-    }
-    for (const key of Object.keys(props) as Array<keyof Props>) {
-      if (typeof key !== 'string') {
-        throw new InvalidArgumentError(
-          `t.compound()'s keys must be all strings. ${userReadableTypeOfValue(
-            key,
-          )} given.`,
-        )
-      } else if (key.length === 0 || !key.match(/^\w+$/)) {
-        throw new InvalidArgumentError(
-          `compound key ${userReadableTypeOfValue(
-            key,
-          )} is invalid. The keys must be alphanumeric and start with a letter.`,
-        )
-      } else if (key.length > 64) {
-        throw new InvalidArgumentError(
-          `compound key ${userReadableTypeOfValue(key)} is too long.`,
-        )
-      }
-
-      const val = props[key]
-      if (isLonghandPropType(val)) {
-        sanitizedProps[key as keyof Props] = val as $IntentionalAny
-      } else {
-        sanitizedProps[key as keyof Props] = toLonghandProp(
-          val,
-        ) as $IntentionalAny
-      }
-    }
-  } else {
-    sanitizedProps = {...props}
-  }
-
+): PropTypeConfig_Compound<
+  ShorthandCompoundPropsToLonghandCompoundProps<Props>
+> => {
   return {
     type: 'compound',
-    props: sanitizedProps,
+    props: sanitizeCompoundProps(props),
     valueType: null as $IntentionalAny,
     [propTypeSymbol]: 'TheatrePropType',
     label: extras?.label,
@@ -101,7 +49,6 @@ export const compound = <Props extends IValidCompoundProps>(
  * @param opts
  * @returns
  *
- * @category Prop type definitions
  */
 export const number = (
   defaultValue: number,
@@ -130,7 +77,6 @@ export const number = (
  * @param extras
  * @returns
  *
- * @category Prop type definitions
  */
 export const boolean = (
   defaultValue: boolean,
@@ -151,7 +97,6 @@ export const boolean = (
  * @param extras
  * @returns
  *
- * @category Prop type definitions
  */
 export const string = (
   defaultValue: string,
@@ -173,7 +118,6 @@ export const string = (
  * @param extras
  * @returns
  *
- * @category Prop type definitions
  */
 export function stringLiteral<Opts extends {[key in string]: string}>(
   defaultValue: Extract<keyof Opts, string>,
@@ -260,10 +204,6 @@ export interface PropTypeConfig_StringLiteral<T extends string>
   default: T
   options: Record<T, string>
   as: 'menu' | 'switch'
-}
-
-type IValidCompoundProps = {
-  [K in string]: PropTypeConfig
 }
 
 /**

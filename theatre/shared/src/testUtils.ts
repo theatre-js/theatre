@@ -35,7 +35,7 @@ export async function setupTestSheet(sheetState: SheetState_Historic) {
     'obj',
     t.compound({
       position: {
-        x: t.number(0),
+        x: 0,
         y: t.number(1),
         z: t.number(2),
       },
