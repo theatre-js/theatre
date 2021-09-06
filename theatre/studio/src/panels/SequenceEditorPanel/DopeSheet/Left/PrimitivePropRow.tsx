@@ -90,6 +90,7 @@ const PrimitivePropRow: React.FC<{
   const {controlIndicators} = useEditingToolsForPrimitiveProp(
     pointerToProp,
     obj,
+    leaf.propConf,
   )
 
   const possibleColor = usePrism(() => {

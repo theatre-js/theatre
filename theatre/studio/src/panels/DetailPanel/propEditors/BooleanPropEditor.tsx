@@ -15,7 +15,11 @@ const BooleanPropEditor: React.FC<{
   pointerToProp: SheetObject['propsP']
   obj: SheetObject
 }> = ({propConfig, pointerToProp, obj}) => {
-  const stuff = useEditingToolsForPrimitiveProp<boolean>(pointerToProp, obj)
+  const stuff = useEditingToolsForPrimitiveProp<boolean>(
+    pointerToProp,
+    obj,
+    propConfig,
+  )
 
   const onChange = useCallback(
     (el: React.ChangeEvent<HTMLInputElement>) => {

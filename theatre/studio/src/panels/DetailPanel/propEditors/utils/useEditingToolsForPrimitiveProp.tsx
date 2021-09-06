@@ -12,6 +12,7 @@ import last from 'lodash-es/last'
 import React from 'react'
 import DefaultOrStaticValueIndicator from './DefaultValueIndicator'
 import NextPrevKeyframeCursors from './NextPrevKeyframeCursors'
+import type {PropTypeConfig} from '@theatre/core/propTypes'
 
 interface CommonStuff<T> {
   value: T
@@ -44,7 +45,11 @@ type Stuff<T> = Default<T> | Static<T> | Sequenced<T>
 
 export function useEditingToolsForPrimitiveProp<
   T extends SerializablePrimitive,
->(pointerToProp: SheetObject['propsP'], obj: SheetObject): Stuff<T> {
+>(
+  pointerToProp: SheetObject['propsP'],
+  obj: SheetObject,
+  propConfig: PropTypeConfig,
+): Stuff<T> {
   return usePrism(() => {
     const pathToProp = getPointerParts(pointerToProp).path
 
@@ -114,114 +119,118 @@ export function useEditingToolsForPrimitiveProp<
       controlIndicators: <></>,
     }
 
-    const validSequencedTracks = val(
-      obj.template.getMapOfValidSequenceTracks_forStudio(),
-    )
-    const possibleSequenceTrackId = getDeep(validSequencedTracks, pathToProp)
+    const isSequencable = isPropConfSequencable(propConfig)
 
-    const isSequenced = typeof possibleSequenceTrackId === 'string'
+    if (isSequencable) {
+      const validSequencedTracks = val(
+        obj.template.getMapOfValidSequenceTracks_forStudio(),
+      )
+      const possibleSequenceTrackId = getDeep(validSequencedTracks, pathToProp)
 
-    if (isSequenced) {
-      contextMenuItems.push({
-        label: 'Make static',
-        callback: () => {
-          getStudio()!.transaction(({stateEditors}) => {
-            const propAddress = {...obj.address, pathToProp}
-            stateEditors.coreByProject.historic.sheetsById.sequence.setPrimitivePropAsStatic(
-              {
-                ...propAddress,
-                value: obj.getValueByPointer(pointerToProp) as T,
-              },
+      const isSequenced = typeof possibleSequenceTrackId === 'string'
+
+      if (isSequenced) {
+        contextMenuItems.push({
+          label: 'Make static',
+          callback: () => {
+            getStudio()!.transaction(({stateEditors}) => {
+              const propAddress = {...obj.address, pathToProp}
+              stateEditors.coreByProject.historic.sheetsById.sequence.setPrimitivePropAsStatic(
+                {
+                  ...propAddress,
+                  value: obj.getValueByPointer(pointerToProp) as T,
+                },
+              )
+            })
+          },
+        })
+
+        const sequenceTrcackId = possibleSequenceTrackId as $FixMe as string
+        const nearbyKeyframes = prism.sub(
+          'lcr',
+          (): NearbyKeyframes => {
+            const track = val(
+              obj.template.project.pointers.historic.sheetsById[
+                obj.address.sheetId
+              ].sequence.tracksByObject[obj.address.objectKey].trackData[
+                sequenceTrcackId
+              ],
             )
-          })
-        },
-      })
+            if (!track || track.keyframes.length === 0) return {}
 
-      const sequenceTrcackId = possibleSequenceTrackId as $FixMe as string
-      const nearbyKeyframes = prism.sub(
-        'lcr',
-        (): NearbyKeyframes => {
-          const track = val(
-            obj.template.project.pointers.historic.sheetsById[
-              obj.address.sheetId
-            ].sequence.tracksByObject[obj.address.objectKey].trackData[
-              sequenceTrcackId
-            ],
-          )
-          if (!track || track.keyframes.length === 0) return {}
+            const pos = val(obj.sheet.getSequence().positionDerivation)
 
-          const pos = val(obj.sheet.getSequence().positionDerivation)
+            const i = track.keyframes.findIndex((kf) => kf.position >= pos)
 
-          const i = track.keyframes.findIndex((kf) => kf.position >= pos)
+            if (i === -1)
+              return {
+                prev: last(track.keyframes),
+              }
 
-          if (i === -1)
-            return {
-              prev: last(track.keyframes),
-            }
-
-          const k = track.keyframes[i]!
-          if (k.position === pos) {
-            return {
-              prev: i > 0 ? track.keyframes[i - 1] : undefined,
-              cur: k,
-              next:
-                i === track.keyframes.length - 1
-                  ? undefined
-                  : track.keyframes[i + 1],
-            }
-          } else {
-            return {
-              next: k,
-              prev: i > 0 ? track.keyframes[i - 1] : undefined,
-            }
-          }
-        },
-        [sequenceTrcackId],
-      )
-
-      let shade: Shade
-
-      if (common.beingScrubbed) {
-        shade = 'Sequenced_OnKeyframe_BeingScrubbed'
-      } else {
-        if (nearbyKeyframes.cur) {
-          shade = 'Sequenced_OnKeyframe'
-        } else if (nearbyKeyframes.prev?.connectedRight === true) {
-          shade = 'Sequenced_BeingInterpolated'
-        } else {
-          shade = 'Sequened_NotBeingInterpolated'
-        }
-      }
-
-      const nextPrevKeyframeCursors = (
-        <NextPrevKeyframeCursors
-          {...nearbyKeyframes}
-          jumpToPosition={(position) => {
-            obj.sheet.getSequence().position = position
-          }}
-          toggleKeyframeOnCurrentPosition={() => {
-            if (nearbyKeyframes.cur) {
-              getStudio()!.transaction((api) => {
-                api.unset(pointerToProp)
-              })
+            const k = track.keyframes[i]!
+            if (k.position === pos) {
+              return {
+                prev: i > 0 ? track.keyframes[i - 1] : undefined,
+                cur: k,
+                next:
+                  i === track.keyframes.length - 1
+                    ? undefined
+                    : track.keyframes[i + 1],
+              }
             } else {
-              getStudio()!.transaction((api) => {
-                api.set(pointerToProp, common.value)
-              })
+              return {
+                next: k,
+                prev: i > 0 ? track.keyframes[i - 1] : undefined,
+              }
             }
-          }}
-        />
-      )
+          },
+          [sequenceTrcackId],
+        )
 
-      const ret: Sequenced<T> = {
-        ...common,
-        type: 'Sequenced',
-        shade,
-        nearbyKeyframes,
-        controlIndicators: nextPrevKeyframeCursors,
+        let shade: Shade
+
+        if (common.beingScrubbed) {
+          shade = 'Sequenced_OnKeyframe_BeingScrubbed'
+        } else {
+          if (nearbyKeyframes.cur) {
+            shade = 'Sequenced_OnKeyframe'
+          } else if (nearbyKeyframes.prev?.connectedRight === true) {
+            shade = 'Sequenced_BeingInterpolated'
+          } else {
+            shade = 'Sequened_NotBeingInterpolated'
+          }
+        }
+
+        const nextPrevKeyframeCursors = (
+          <NextPrevKeyframeCursors
+            {...nearbyKeyframes}
+            jumpToPosition={(position) => {
+              obj.sheet.getSequence().position = position
+            }}
+            toggleKeyframeOnCurrentPosition={() => {
+              if (nearbyKeyframes.cur) {
+                getStudio()!.transaction((api) => {
+                  api.unset(pointerToProp)
+                })
+              } else {
+                getStudio()!.transaction((api) => {
+                  api.set(pointerToProp, common.value)
+                })
+              }
+            }}
+          />
+        )
+
+        const ret: Sequenced<T> = {
+          ...common,
+          type: 'Sequenced',
+          shade,
+          nearbyKeyframes,
+          controlIndicators: nextPrevKeyframeCursors,
+        }
+
+        return ret
       }
-
-      return ret
     }
 
     contextMenuItems.push({
@@ -233,17 +242,19 @@ export function useEditingToolsForPrimitiveProp<
       },
     })
 
-    contextMenuItems.push({
-      label: 'Sequence',
-      callback: () => {
-        getStudio()!.transaction(({stateEditors}) => {
-          const propAddress = {...obj.address, pathToProp}
-          stateEditors.coreByProject.historic.sheetsById.sequence.setPrimitivePropAsSequenced(
-            propAddress,
-          )
-        })
-      },
-    })
+    if (isSequencable) {
+      contextMenuItems.push({
+        label: 'Sequence',
+        callback: () => {
+          getStudio()!.transaction(({stateEditors}) => {
+            const propAddress = {...obj.address, pathToProp}
+            stateEditors.coreByProject.historic.sheetsById.sequence.setPrimitivePropAsSequenced(
+              propAddress,
+            )
+          })
+        },
+      })
+    }
 
     const statics = val(obj.template.getStaticValues())
 
@@ -296,3 +307,7 @@ type Shade =
   | 'Sequenced_OnKeyframe_BeingScrubbed'
   | 'Sequenced_BeingInterpolated'
   | 'Sequened_NotBeingInterpolated'
+
+function isPropConfSequencable(conf: PropTypeConfig): boolean {
+  return conf.type === 'number'
+}

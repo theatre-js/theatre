@@ -12,7 +12,11 @@ const StringLiteralPropEditor: React.FC<{
   pointerToProp: SheetObject['propsP']
   obj: SheetObject
 }> = ({propConfig, pointerToProp, obj}) => {
-  const stuff = useEditingToolsForPrimitiveProp<string>(pointerToProp, obj)
+  const stuff = useEditingToolsForPrimitiveProp<string>(
+    pointerToProp,
+    obj,
+    propConfig,
+  )
 
   const onChange = useCallback(
     (val: string) => {

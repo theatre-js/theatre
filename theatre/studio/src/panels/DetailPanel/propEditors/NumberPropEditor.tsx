@@ -10,7 +10,11 @@ const NumberPropEditor: React.FC<{
   pointerToProp: SheetObject['propsP']
   obj: SheetObject
 }> = ({propConfig, pointerToProp, obj}) => {
-  const stuff = useEditingToolsForPrimitiveProp<number>(pointerToProp, obj)
+  const stuff = useEditingToolsForPrimitiveProp<number>(
+    pointerToProp,
+    obj,
+    propConfig,
+  )
 
   const nudge = useCallback(
     (params: {deltaX: number; deltaFraction: number; magnitude: number}) => {

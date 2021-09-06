@@ -54,6 +54,7 @@ export type SequenceEditorTree_PrimitiveProp =
     sheetObject: SheetObject
     pathToProp: PathToProp
     trackId: SequenceTrackId
+    propConf: PropTypeConfig_AllPrimitives
   }
 
 export type SequenceEditorTree_AllRowTypes =
@@ -250,7 +251,7 @@ export const calculateSequenceEditorTree = (
     sheetObject: SheetObject,
     trackId: SequenceTrackId,
     pathToProp: PathToProp,
-    conf: PropTypeConfig_AllPrimitives,
+    propConf: PropTypeConfig_AllPrimitives,
     arrayOfChildren: Array<
       SequenceEditorTree_PrimitiveProp | SequenceEditorTree_PropWithChildren
     >,
@@ -258,6 +259,7 @@ export const calculateSequenceEditorTree = (
   ) {
     const row: SequenceEditorTree_PrimitiveProp = {
       type: 'primitiveProp',
+      propConf: propConf,
       depth: level,
       sheetObject: sheetObject,
       pathToProp,
