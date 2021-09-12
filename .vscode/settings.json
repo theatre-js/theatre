@@ -21,5 +21,6 @@
   },
   "eslint.run": "onSave",
   "eslint.lintTask.enable": true,
-  "eslint.lintTask.options": ". --ext ts,tsx --ignore-path=.gitignore --rulesdir ./devEnv/eslint/rules"
+  "eslint.lintTask.options": ". --ext ts,tsx --ignore-path=.gitignore --rulesdir ./devEnv/eslint/rules",
+  "jest.jestCommandLine": "yarn jest"
 }

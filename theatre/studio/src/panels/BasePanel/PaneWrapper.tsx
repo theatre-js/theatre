@@ -86,6 +86,7 @@ const ClosePanelButton = styled.button`
  */
 const F2 = styled(F2Impl)`
   position: relative;
+  overflow: hidden;
 
   &:after {
     z-index: 10;

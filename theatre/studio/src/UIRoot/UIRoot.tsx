@@ -43,6 +43,7 @@ const Container = styled(PointerEventsHandler)`
   &.invisible {
     pointer-events: none !important;
     opacity: 0;
+    transform: translateX(1000000px);
   }
 `
 

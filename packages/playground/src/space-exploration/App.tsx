@@ -59,7 +59,11 @@ function App() {
   const [bgIndex, setBgIndex] = useState(0)
   const bg = bgs[bgIndex]
   return (
-    <div onClick={() => setBgIndex((bgIndex) => (bgIndex + 1) % bgs.length)}>
+    <div
+      onClick={() => {
+        // return setBgIndex((bgIndex) => (bgIndex + 1) % bgs.length)
+      }}
+    >
       <Canvas dpr={[1.5, 2]} linear shadows frameloop="demand">
         <SheetProvider getSheet={() => getProject('Space').sheet('Scene')}>
           <fog attach="fog" args={[bg, 16, 30]} />
