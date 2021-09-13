@@ -1,6 +1,4 @@
-import {theme} from '@theatre/studio/css'
 import {clamp, isInteger, round} from 'lodash-es'
-import {darken, lighten} from 'polished'
 import type {MutableRefObject} from 'react'
 import React, {useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
@@ -52,13 +50,6 @@ const Input = styled.input`
   width: 100%;
   height: calc(100% - 4px);
   border-radius: 2px;
-
-  /* &:hover,
-  &:focus,
-  ${Container}.dragging > & {
-    background: ${darken(0.9, theme.panel.bg)};
-    border: 1px solid ${lighten(0.1, theme.panel.bg)};
-  } */
 
   &:focus {
     cursor: text;
