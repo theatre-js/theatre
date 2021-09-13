@@ -4,7 +4,6 @@ import type Sheet from '@theatre/core/sheets/Sheet'
 import type {SequenceAddress} from '@theatre/shared/utils/addresses'
 import didYouMean from '@theatre/shared/utils/didYouMean'
 import {InvalidArgumentError} from '@theatre/shared/utils/errors'
-import type {IRange} from '@theatre/shared/utils/types'
 import type {IBox, IDerivation, Pointer} from '@theatre/dataverse'
 import {Box, prism, val, valueDerivation} from '@theatre/dataverse'
 import {padStart} from 'lodash-es'
@@ -16,7 +15,7 @@ import DefaultPlaybackController from './playbackControllers/DefaultPlaybackCont
 import TheatreSequence from './TheatreSequence'
 import logger from '@theatre/shared/logger'
 
-export type IPlaybackRange = IRange
+export type IPlaybackRange = [from: number, to: number]
 
 export type IPlaybackDirection =
   | 'normal'
@@ -142,10 +141,7 @@ export default class Sequence {
 
   _makeRangeFromSequenceTemplate(): IDerivation<IPlaybackRange> {
     return prism(() => {
-      return {
-        start: 0,
-        end: val(this._lengthD),
-      }
+      return [0, val(this._lengthD)]
     })
   }
 
@@ -158,49 +154,44 @@ export default class Sequence {
     }>,
   ): Promise<boolean> {
     const sequenceDuration = this.length
-    const range =
-      conf && conf.range
-        ? conf.range
-        : {
-            start: 0,
-            end: sequenceDuration,
-          }
+    const range: IPlaybackRange =
+      conf && conf.range ? conf.range : [0, sequenceDuration]
 
     if (process.env.NODE_ENV !== 'production') {
-      if (typeof range.start !== 'number' || range.start < 0) {
+      if (typeof range[0] !== 'number' || range[0] < 0) {
         throw new InvalidArgumentError(
-          `Argument conf.range.start in sequence.play(conf) must be a positive number. ${JSON.stringify(
-            range.start,
+          `Argument conf.range[0] in sequence.play(conf) must be a positive number. ${JSON.stringify(
+            range[0],
           )} given.`,
         )
       }
-      if (range.start >= sequenceDuration) {
+      if (range[0] >= sequenceDuration) {
         throw new InvalidArgumentError(
-          `Argument conf.range.start in sequence.play(conf) cannot be longer than the duration of the sequence, which is ${sequenceDuration}ms. ${JSON.stringify(
-            range.start,
+          `Argument conf.range[0] in sequence.play(conf) cannot be longer than the duration of the sequence, which is ${sequenceDuration}ms. ${JSON.stringify(
+            range[0],
           )} given.`,
         )
       }
-      if (typeof range.end !== 'number' || range.end <= 0) {
+      if (typeof range[1] !== 'number' || range[1] <= 0) {
         throw new InvalidArgumentError(
-          `Argument conf.range.end in sequence.play(conf) must be a number larger than zero. ${JSON.stringify(
-            range.end,
+          `Argument conf.range[1] in sequence.play(conf) must be a number larger than zero. ${JSON.stringify(
+            range[1],
           )} given.`,
         )
       }
 
-      if (range.end > sequenceDuration) {
+      if (range[1] > sequenceDuration) {
         logger.warn(
-          `Argument conf.range.end in sequence.play(conf) cannot be longer than the duration of the sequence, which is ${sequenceDuration}ms. ${JSON.stringify(
-            range.end,
+          `Argument conf.range[1] in sequence.play(conf) cannot be longer than the duration of the sequence, which is ${sequenceDuration}ms. ${JSON.stringify(
+            range[1],
           )} given.`,
         )
-        range.end = sequenceDuration
+        range[1] = sequenceDuration
       }
 
-      if (range.end <= range.start) {
+      if (range[1] <= range[0]) {
         throw new InvalidArgumentError(
-          `Argument conf.range.end in sequence.play(conf) must be larger than conf.range.start. ${JSON.stringify(
+          `Argument conf.range[1] in sequence.play(conf) must be larger than conf.range[0]. ${JSON.stringify(
             range,
           )} given.`,
         )
@@ -259,7 +250,7 @@ export default class Sequence {
 
     return await this._play(
       iterationCount,
-      {start: range.start, end: range.end},
+      [range[0], range[1]],
       rate,
       direction,
     )

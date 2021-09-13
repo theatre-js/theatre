@@ -70,32 +70,32 @@ export default class DefaultPlaybackController implements IPlaybackController {
     this.playing = true
 
     const ticker = this._ticker
-    const iterationLength = range.end - range.start
+    const iterationLength = range[1] - range[0]
 
     {
       const startPos = this.getCurrentPosition()
 
-      if (startPos < range.start || startPos > range.end) {
-        this._updatePositionInState(range.start)
+      if (startPos < range[0] || startPos > range[1]) {
+        this._updatePositionInState(range[0])
       } else if (
-        startPos === range.end &&
+        startPos === range[1] &&
         (direction === 'normal' || direction === 'alternate')
       ) {
-        this._updatePositionInState(range.start)
+        this._updatePositionInState(range[0])
       } else if (
-        startPos === range.start &&
+        startPos === range[0] &&
         (direction === 'reverse' || direction === 'alternateReverse')
       ) {
-        this._updatePositionInState(range.end)
+        this._updatePositionInState(range[1])
       }
     }
 
     const deferred = defer<boolean>()
     const initialTickerTime = ticker.time
     const totalPlaybackLength = iterationLength * iterationCount
-    let initialElapsedPos = this.getCurrentPosition() - range.start
+    let initialElapsedPos = this.getCurrentPosition() - range[0]
     if (direction === 'reverse' || direction === 'alternateReverse') {
-      initialElapsedPos = range.end - initialElapsedPos
+      initialElapsedPos = range[1] - initialElapsedPos
     }
 
     const tick = (currentTickerTime: number) => {
@@ -136,22 +136,22 @@ export default class DefaultPlaybackController implements IPlaybackController {
         requestNextTick()
       } else {
         if (direction === 'normal') {
-          this._updatePositionInState(range.end)
+          this._updatePositionInState(range[1])
         } else if (direction === 'reverse') {
-          this._updatePositionInState(range.start)
+          this._updatePositionInState(range[0])
         } else {
           const isLastIterationEven = (iterationCount - 1) % 2 === 0
           if (direction === 'alternate') {
             if (isLastIterationEven) {
-              this._updatePositionInState(range.end)
+              this._updatePositionInState(range[1])
             } else {
-              this._updatePositionInState(range.start)
+              this._updatePositionInState(range[0])
             }
           } else {
             if (isLastIterationEven) {
-              this._updatePositionInState(range.start)
+              this._updatePositionInState(range[0])
             } else {
-              this._updatePositionInState(range.end)
+              this._updatePositionInState(range[1])
             }
           }
         }

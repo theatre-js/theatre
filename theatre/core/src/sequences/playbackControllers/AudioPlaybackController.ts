@@ -65,7 +65,7 @@ export default class AudioPlaybackController implements IPlaybackController {
 
     const ticker = this._ticker
     const startPos = this.getCurrentPosition()
-    const iterationLength = range.end - range.start
+    const iterationLength = range[1] - range[0]
 
     if (direction !== 'normal') {
       throw new InvalidArgumentError(
@@ -81,12 +81,12 @@ export default class AudioPlaybackController implements IPlaybackController {
       )
     }
 
-    if (startPos < range.start || startPos > range.end) {
+    if (startPos < range[0] || startPos > range[1]) {
       // if we're currently out of the range
-      this._updatePositionInState(range.start)
-    } else if (startPos === range.end) {
+      this._updatePositionInState(range[0])
+    } else if (startPos === range[1]) {
       // if we're currently at the very end of the range
-      this._updatePositionInState(range.start)
+      this._updatePositionInState(range[0])
     }
 
     const deferred = defer<boolean>()
@@ -98,7 +98,7 @@ export default class AudioPlaybackController implements IPlaybackController {
 
     const audioStartTimeInSeconds = this._audioContext.currentTime
     const wait = 0
-    const timeToRangeEnd = range.end - startPos
+    const timeToRangeEnd = range[1] - startPos
 
     currentSource.start(
       audioStartTimeInSeconds + wait,
@@ -106,7 +106,7 @@ export default class AudioPlaybackController implements IPlaybackController {
       wait + timeToRangeEnd,
     )
     const initialTickerTime = ticker.time
-    let initialElapsedPos = this.getCurrentPosition() - range.start
+    let initialElapsedPos = this.getCurrentPosition() - range[0]
     const totalPlaybackLength = iterationLength * iterationCount
 
     const tick = (currentTickerTime: number) => {
@@ -128,7 +128,7 @@ export default class AudioPlaybackController implements IPlaybackController {
         this._updatePositionInState(currentIterationPos)
         requestNextTick()
       } else {
-        this._updatePositionInState(range.end)
+        this._updatePositionInState(range[1])
         this.playing = false
         cleanup()
         deferred.resolve(true)
