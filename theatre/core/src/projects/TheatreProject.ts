@@ -2,7 +2,7 @@ import {privateAPI, setPrivateAPI} from '@theatre/core/privateAPIs'
 import Project from '@theatre/core/projects/Project'
 import type {ISheet} from '@theatre/core/sheets/TheatreSheet'
 import type {ProjectAddress} from '@theatre/shared/utils/addresses'
-import {validateName} from '@theatre/shared/utils/sanitizers'
+import {validateInstanceId} from '@theatre/shared/utils/sanitizers'
 import {validateAndSanitiseSlashedPathOrThrow} from '@theatre/shared/utils/slashedPaths'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 
@@ -71,7 +71,7 @@ export default class TheatreProject implements IProject {
     )
 
     if (process.env.NODE_ENV !== 'production') {
-      validateName(
+      validateInstanceId(
         instanceId,
         'instanceId in project.sheet(sheetId, instanceId)',
         true,
