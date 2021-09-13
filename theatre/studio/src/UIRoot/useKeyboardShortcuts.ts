@@ -38,7 +38,7 @@ export default function useKeyboardShortcuts() {
           if (seq.playing) {
             seq.pause()
           } else {
-            seq.play()
+            seq.play({iterationCount: Infinity})
           }
         } else {
           return
