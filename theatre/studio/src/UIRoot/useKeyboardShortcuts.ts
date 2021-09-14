@@ -8,7 +8,8 @@ export default function useKeyboardShortcuts() {
   const studio = getStudio()
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      const target: null | HTMLElement = e.target as unknown as $IntentionalAny
+      const target: null | HTMLElement =
+        e.composedPath()[0] as unknown as $IntentionalAny
       if (
         target &&
         (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')

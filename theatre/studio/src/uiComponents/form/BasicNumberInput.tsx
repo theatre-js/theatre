@@ -5,8 +5,6 @@ import styled from 'styled-components'
 import DraggableArea from '@theatre/studio/uiComponents/DraggableArea'
 import mergeRefs from 'react-merge-refs'
 
-type IMode = IState['mode']
-
 const Container = styled.div`
   height: 100%;
   width: 100%;
