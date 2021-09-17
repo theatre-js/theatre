@@ -216,18 +216,20 @@ namespace utils {
                 stateEditors.coreByProject.historic.sheetsById.sequence
                   .transformKeyframes
 
-              for (const objKey of Object.keys(selection.byObjectKey)) {
-                const {byTrackId} = selection.byObjectKey[objKey]!
+              for (const objectKey of Object.keys(selection.byObjectKey)) {
+                const {byTrackId} = selection.byObjectKey[objectKey]!
                 for (const trackId of Object.keys(byTrackId)) {
                   const {byKeyframeId} = byTrackId[trackId]!
                   transformKeyframes({
-                    ...origin,
                     trackId,
                     keyframeIds: Object.keys(byKeyframeId),
                     translate: delta,
                     scale: 1,
                     origin: 0,
                     snappingFunction: sheet.getSequence().closestGridPosition,
+                    objectKey,
+                    projectId: origin.projectId,
+                    sheetId: origin.sheetId,
                   })
                 }
               }
