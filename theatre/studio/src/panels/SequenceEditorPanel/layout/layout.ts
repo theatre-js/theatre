@@ -56,6 +56,7 @@ export type DopeSheetSelection = {
       trackId: string
       keyframeId: string
       positionAtStartOfDrag: number
+      domNode: Element
     },
   ): Parameters<typeof useDrag>[1]
   delete(): void

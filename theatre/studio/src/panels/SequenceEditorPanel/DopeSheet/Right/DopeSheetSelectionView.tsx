@@ -212,12 +212,14 @@ namespace utils {
               tempTransaction = undefined
             }
 
-            const snapTarget = event.composedPath().find(
-              (el): el is Element =>
-                el instanceof Element &&
-                // el !== node &&
-                el.hasAttribute('data-pos'),
-            )
+            const snapTarget = event
+              .composedPath()
+              .find(
+                (el): el is Element =>
+                  el instanceof Element &&
+                  el !== origin.domNode &&
+                  el.hasAttribute('data-pos'),
+              )
 
             if (snapTarget) {
               const snapPos = parseFloat(snapTarget.getAttribute('data-pos')!)
