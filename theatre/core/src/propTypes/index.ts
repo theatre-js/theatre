@@ -157,9 +157,16 @@ export const number = (
             `opts.range in t.number(defaultValue, opts) must have two elements. ${opts.range.length} given.`,
           )
         }
-        if (!opts.range.every((n) => typeof n === 'number' && isFinite(n))) {
+        if (!opts.range.every((n) => typeof n === 'number' && !isNaN(n))) {
           throw new Error(
-            `opts.range in t.number(defaultValue, opts) must be a tuple of two finite numbers.`,
+            `opts.range in t.number(defaultValue, opts) must be a tuple of two numbers.`,
+          )
+        }
+        if (opts.range[0] >= opts.range[1]) {
+          throw new Error(
+            `opts.range[0] in t.number(defaultValue, opts) must be smaller than opts.range[1]. Given: ${JSON.stringify(
+              opts.range,
+            )}`,
           )
         }
       }
