@@ -28,6 +28,32 @@ export interface ISequence {
    * Starts playback of a sequence.
    * Returns a promise that either resolves to true when the playback completes,
    * or resolves to false if playback gets interrupted (for example by calling sequence.pause())
+   *
+   * @returns A promise that resolves when the playback is finished, or rejects if interruped
+   *
+   * @example
+   * ```ts
+   * // plays the sequence from the current position to sequence.length
+   * sheet.sequence.play()
+   *
+   * // plays the sequence at 2.4x speed
+   * sheet.sequence.play({rate: 2.4})
+   *
+   * // plays the sequence from second 1 to 4
+   * sheet.sequence.play({range: [1, 4]})
+   *
+   * // plays the sequence 4 times
+   * sheet.sequence.play({iterationCount: 4})
+   *
+   * // plays the sequence in reverse
+   * sheet.sequence.play({direction: 'reverse'})
+   *
+   * // plays the sequence back and forth forever (until interrupted)
+   * sheet.sequence.play({iterationCount: Infinity, direction: 'alternateReverse})
+   *
+   * // plays the sequence and logs "done" once playback is finished
+   * sheet.sequence.play().then(() => console.log('done'))
+   * ```
    */
   play(conf?: {
     /**
@@ -57,13 +83,29 @@ export interface ISequence {
 
   /**
    * The current position of the playhead.
-   * In a time-based sequence, this represents the current time.
+   * In a time-based sequence, this represents the current time in seconds.
    */
   position: number
 
   /**
+   * Attaches an audio source to the sequence. Playing the sequence automatically
+   * plays the audio source and their times are kept in sync.
    *
-   * @param args
+   * @returns A promise that resolves once the audio source is loaded and decoded
+   *
+   * @example
+   * ```ts
+   * // Loads and decodes audio from the URL and then attaches it to the sequence
+   * await sheet.sequence.attachAudio({source: "https://localhost/audio.ogg"})
+   * sheet.sequence.play()
+   *
+   * // Providing your own AudioAPI Context, destination, etc
+   * const audioContext: AudioContext = {...} // create an AudioContext using the Audio API
+   * const audioBuffer: AudioBuffer = {...} // create an AudioBuffer
+   * const destinationNode = audioContext.destination
+   *
+   * await sheet.sequence.attachAudio({source: audioBuffer, audioContext, destinationNode})
+   * ```
    */
   attachAudio(args: IAttachAudioArgs): Promise<void>
 }

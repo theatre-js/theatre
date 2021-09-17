@@ -38,6 +38,15 @@ export interface IProject {
    * The project's address
    */
   readonly address: ProjectAddress
+
+  /**
+   * Creates a Sheet under the project
+   * @param sheetId Sheets are identified by their `sheetId`, which must be a string longer than 3 characters
+   * @param instanceId Optionally provide an `instanceId` if you want to create multiple instances of the same Sheet
+   * @returns The newly created Sheet
+   *
+   * **Docs: https://docs.theatrejs.com/in-depth/#sheets**
+   */
   sheet(sheetId: string, instanceId?: string): ISheet
 }
 

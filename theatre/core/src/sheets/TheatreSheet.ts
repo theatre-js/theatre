@@ -20,15 +20,55 @@ export type SheetObjectConfig<
 > = Props
 
 export interface ISheet {
+  /**
+   * All sheets have `sheet.type === 'Theatre_Sheet_PublicAPI'`
+   */
   readonly type: 'Theatre_Sheet_PublicAPI'
+
+  /**
+   * The Project this Sheet belongs to
+   */
   readonly project: IProject
+
+  /**
+   * The address of the Sheet
+   */
   readonly address: SheetAddress
 
+  /**
+   * Creates a child object for the sheet
+   *
+   * **Docs: https://docs.theatrejs.com/in-depth/#objects**
+   *
+   * @param key Each object is identified by a key, which is a non-empty string
+   * @param props The props of the object. See examples
+   *
+   * @returns An Object
+   *
+   * @example
+   * ```ts
+   * // Create an object named "a unique key" with no props
+   * const obj = sheet.object("a unique key", {})
+   * obj.address.objectKey // "a unique key"
+   *
+   *
+   * // Create an object with {x: 0}
+   * const obj = sheet.object("obj", {x: 0})
+   * obj.value.x // returns 0 or the current number that the user has set
+   *
+   * // Create an object with nested props
+   * const obj = sheet.object("obj", {position: {x: 0, y: 0}})
+   * obj.value.position // {x: 0, y: 0}
+   * ```
+   */
   object<Props extends IShorthandCompoundProps>(
     key: string,
-    config: Props,
+    props: Props,
   ): ISheetObject<Props>
 
+  /**
+   * The Sequence of this Sheet
+   */
   readonly sequence: ISequence
 }
 

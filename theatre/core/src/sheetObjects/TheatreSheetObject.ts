@@ -18,20 +18,82 @@ import type {
 } from '@theatre/core/propTypes/internals'
 
 export interface ISheetObject<Props extends IShorthandCompoundProps = {}> {
+  /**
+   * All Objects will have `object.type === 'Theatre_SheetObject_PublicAPI'`
+   */
   readonly type: 'Theatre_SheetObject_PublicAPI'
 
   /**
+   * The current values of the props.
    *
+   * @example
+   * ```ts
+   * const obj = sheet.object("obj", {x: 0})
+   * console.log(obj.value.x) // prints 0 or the current numeric value
+   * ```
    */
   readonly value: ShorthandPropToLonghandProp<Props>['valueType']
+
+  /**
+   * A Pointer to the props of the object.
+   *
+   * More documentation soon.
+   */
   readonly props: Pointer<this['value']>
 
+  /**
+   * The instance of Sheet the Object belongs to
+   */
   readonly sheet: ISheet
+
+  /**
+   * The Project the project belongs to
+   */
   readonly project: IProject
+
+  /**
+   * An object representing the address of the Object
+   */
   readonly address: SheetObjectAddress
 
+  /**
+   * Calls `fn` every time the value of the props change.
+   *
+   * @returns an Unsubscribe function
+   *
+   * @example
+   * ```ts
+   * const obj = sheet.object("Box", {position: {x: 0, y: 0}})
+   * const div = document.getElementById("box")
+   *
+   * const unsubscribe = obj.onValuesChange((newValues) => {
+   *   div.style.left = newValues.position.x + 'px'
+   *   div.style.top = newValues.position.y + 'px'
+   * })
+   *
+   * // you can call unsubscribe() to stop listening to changes
+   * ```
+   */
   onValuesChange(fn: (values: this['value']) => void): VoidFn
-  // prettier-ignore
+
+  /**
+   * Sets the initial value of the object. This value overrides the default
+   * values defined in the prop types, but would itself be overridden if the user
+   * overrides it in the UI with a static or animated value.
+   *
+   *
+   * @example
+   * ```ts
+   * const obj = sheet.object("obj", {position: {x: 0, y: 0}})
+   *
+   * obj.value // {position: {x: 0, y: 0}}
+   *
+   * // here, we only override position.x
+   * obj.initialValue = {position: {x: 2}}
+   *
+   * obj.value // {position: {x: 2, y: 0}}
+   * ```
+   */
   set initialValue(value: DeepPartialOfSerializableValue<this['value']>)
 }
 

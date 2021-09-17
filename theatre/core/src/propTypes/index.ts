@@ -1,4 +1,5 @@
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
+import userReadableTypeOfValue from '@theatre/shared/utils/userReadableTypeOfValue'
 import type {
   IShorthandCompoundProps,
   IValidCompoundProps,
@@ -7,48 +8,123 @@ import type {
 import {sanitizeCompoundProps} from './internals'
 import {propTypeSymbol} from './internals'
 
+const validateCommonOpts = (
+  fnCallSignature: string,
+  opts?: PropTypeConfigOpts,
+) => {
+  if (process.env.NODE_ENV !== 'production') {
+    if (opts === undefined) return
+    if (typeof opts !== 'object' || opts === null) {
+      throw new Error(
+        `opts in ${fnCallSignature} must either be undefined or an object.`,
+      )
+    }
+    if (Object.prototype.hasOwnProperty.call(opts, 'label')) {
+      const {label} = opts
+      if (typeof label !== 'string') {
+        throw new Error(
+          `opts.label in ${fnCallSignature} should be a string. ${userReadableTypeOfValue(
+            label,
+          )} given.`,
+        )
+      }
+      if (label.trim().length !== label.length) {
+        throw new Error(
+          `opts.label in ${fnCallSignature} should not start/end with whitespace. "${label}" given.`,
+        )
+      }
+      if (label.length === 0) {
+        throw new Error(
+          `opts.label in ${fnCallSignature} should not be an empty string. If you wish to have no label, remove opts.label from opts.`,
+        )
+      }
+    }
+  }
+}
+
 /**
- * Creates a compound prop type (basically a JS object).
+ * A compound prop type (basically a JS object).
+ *
  * Usage:
  * ```ts
- * // the root prop type of an object is always a compound
- * const props = {
- *   // compounds can be nested
- *   position: t.compound({
- *     x: t.number(0),
- *     y: t.number(0)
- *   })
+ * // shorthand
+ * const position = {
+ *   x: 0,
+ *   y: 0
  * }
+ * assert(sheet.object('some object', position).value.x === 0)
  *
- * const obj = sheet.obj('key', props)
- * console.log(obj.value) // {position: {x: 10.3, y: -1}}
+ * // nesting
+ * const foo = {bar: {baz: {quo: 0}}}
+ * assert(sheet.object('some object', foo).bar.baz.quo === 0)
+ *
+ * // With additional options:
+ * const position = t.compound(
+ *   {x: 0, y: 0},
+ *   // a custom label for the prop:
+ *   {label: "Position"}
+ * )
  * ```
  * @param props
- * @param extras
+ * @param opts
  * @returns
  *
  */
 export const compound = <Props extends IShorthandCompoundProps>(
   props: Props,
-  extras?: PropTypeConfigExtras,
+  opts?: PropTypeConfigOpts,
 ): PropTypeConfig_Compound<
   ShorthandCompoundPropsToLonghandCompoundProps<Props>
 > => {
+  validateCommonOpts('t.compound(props, opts)', opts)
   return {
     type: 'compound',
     props: sanitizeCompoundProps(props),
     valueType: null as $IntentionalAny,
     [propTypeSymbol]: 'TheatrePropType',
-    label: extras?.label,
+    label: opts?.label,
   }
 }
 
 /**
+ * A number prop type.
  *
- * @param defaultValue
- * @param opts
- * @returns
+ * Usage
+ * ```ts
+ * // shorthand:
+ * const obj = sheet.object('key', {x: 0})
  *
+ * // With options (equal to above)
+ * const obj = sheet.object('key', {
+ *   x: t.number(0)
+ * })
+ *
+ * // With a range (note that opts.range is just a visual guide, not a validation rule)
+ * const x = t.number(0, {range: [0, 10]}) // limited to 0 and 10
+ *
+ * // With custom nudging
+ * const x = t.number(0, {nudgeMultiplier: 0.1}) // nudging will happen in 0.1 increments
+ *
+ * // With custom nudging function
+ * const x = t.number({
+ *   nudgeFn: (
+ *     // the mouse movement (in pixels)
+ *     deltaX: number,
+ *     // the movement as a fraction of the width of the number editor's input
+ *     deltaFraction: number,
+ *     // A multiplier that's usually 1, but might be another number if user wants to nudge slower/faster
+ *     magnitude: number,
+ *     // the configuration of the number
+ *     config: {nudgeMultiplier?: number; range?: [number, number]},
+ *   ): number => {
+ *     return deltaX * magnitude
+ *   },
+ * })
+ * ```
+ *
+ * @param defaultValue The default value (Must be a finite number)
+ * @param opts The options (See usage examples)
+ * @returns A number prop config
  */
 export const number = (
   defaultValue: number,
@@ -56,8 +132,60 @@ export const number = (
     nudgeFn?: PropTypeConfig_Number['nudgeFn']
     range?: PropTypeConfig_Number['range']
     nudgeMultiplier?: number
-  } & PropTypeConfigExtras,
+  } & PropTypeConfigOpts,
 ): PropTypeConfig_Number => {
+  if (process.env.NODE_ENV !== 'production') {
+    validateCommonOpts('t.number(defaultValue, opts)', opts)
+    if (typeof defaultValue !== 'number' || !isFinite(defaultValue)) {
+      throw new Error(
+        `Argument defaultValue in t.number(defaultValue) must be a number. ${userReadableTypeOfValue(
+          defaultValue,
+        )} given.`,
+      )
+    }
+    if (typeof opts === 'object' && opts) {
+      if (Object.prototype.hasOwnProperty.call(opts, 'range')) {
+        if (!Array.isArray(opts.range)) {
+          throw new Error(
+            `opts.range in t.number(defaultValue, opts) must be a tuple of two numbers. ${userReadableTypeOfValue(
+              opts.range,
+            )} given.`,
+          )
+        }
+        if (opts.range.length !== 2) {
+          throw new Error(
+            `opts.range in t.number(defaultValue, opts) must have two elements. ${opts.range.length} given.`,
+          )
+        }
+        if (!opts.range.every((n) => typeof n === 'number' && isFinite(n))) {
+          throw new Error(
+            `opts.range in t.number(defaultValue, opts) must be a tuple of two finite numbers.`,
+          )
+        }
+      }
+    }
+    if (Object.prototype.hasOwnProperty.call(opts, 'nudgeMultiplier')) {
+      if (
+        typeof opts!.nudgeMultiplier !== 'number' ||
+        !isFinite(opts!.nudgeMultiplier)
+      ) {
+        throw new Error(
+          `opts.nudgeMultiplier in t.number(defaultValue, opts) must be a finite number. ${userReadableTypeOfValue(
+            opts!.nudgeMultiplier,
+          )} given.`,
+        )
+      }
+    }
+    if (Object.prototype.hasOwnProperty.call(opts, 'nudgeFn')) {
+      if (typeof opts?.nudgeFn !== 'function') {
+        throw new Error(
+          `opts.nudgeFn in t.number(defaultValue, opts) must be a function. ${userReadableTypeOfValue(
+            opts!.nudgeFn,
+          )} given.`,
+        )
+      }
+    }
+  }
   return {
     type: 'number',
     valueType: 0,
@@ -72,57 +200,117 @@ export const number = (
 }
 
 /**
+ * A boolean prop type
  *
- * @param defaultValue
- * @param extras
- * @returns
+ * Usage:
+ * ```ts
+ * // shorthand:
+ * const obj = sheet.object('key', {isOn: true})
  *
+ * // with a label:
+ * const obj = sheet.object('key', {
+ *   isOn: t.boolean(true, {
+ *     label: 'Enabled'
+ *   })
+ * })
+ * ```
+ *
+ * @param defaultValue The default value (must be a boolean)
+ * @param opts Options (See usage examples)
  */
 export const boolean = (
   defaultValue: boolean,
-  extras?: PropTypeConfigExtras,
+  opts?: PropTypeConfigOpts,
 ): PropTypeConfig_Boolean => {
+  if (process.env.NODE_ENV !== 'production') {
+    validateCommonOpts('t.boolean(defaultValue, opts)', opts)
+    if (typeof defaultValue !== 'boolean') {
+      throw new Error(
+        `defaultValue in t.boolean(defaultValue) must be a boolean. ${userReadableTypeOfValue(
+          defaultValue,
+        )} given.`,
+      )
+    }
+  }
   return {
     type: 'boolean',
     default: defaultValue,
     valueType: null as $IntentionalAny,
     [propTypeSymbol]: 'TheatrePropType',
-    label: extras?.label,
+    label: opts?.label,
   }
 }
 
 /**
+ * A string prop type
  *
- * @param defaultValue
- * @param extras
- * @returns
+ * Usage:
+ * ```ts
+ * // shorthand:
+ * const obj = sheet.object('key', {message: "Animation loading"})
  *
+ * // with a label:
+ * const obj = sheet.object('key', {
+ *   message: t.string("Animation Loading", {
+ *     label: 'The Message'
+ *   })
+ * })
+ * ```
+ *
+ * @param defaultValue The default value (must be a string)
+ * @param opts The options (See usage examples)
+ * @returns A string prop type
  */
 export const string = (
   defaultValue: string,
-  extras?: PropTypeConfigExtras,
+  opts?: PropTypeConfigOpts,
 ): PropTypeConfig_String => {
+  if (process.env.NODE_ENV !== 'production') {
+    validateCommonOpts('t.string(defaultValue, opts)', opts)
+    if (typeof defaultValue !== 'string') {
+      throw new Error(
+        `defaultValue in t.string(defaultValue) must be a string. ${userReadableTypeOfValue(
+          defaultValue,
+        )} given.`,
+      )
+    }
+  }
   return {
     type: 'string',
     default: defaultValue,
     valueType: null as $IntentionalAny,
     [propTypeSymbol]: 'TheatrePropType',
-    label: extras?.label,
+    label: opts?.label,
   }
 }
 
 /**
+ * A stringLiteral prop type, useful for building menus or radio buttons.
  *
- * @param defaultValue
- * @param options
- * @param extras
- * @returns
+ * Usage:
+ * ```ts
+ * // Basic usage
+ * const obj = sheet.object('key', {
+ *   light: t.stringLiteral("r", {r: "Red", "g": "Green"})
+ * })
+ *
+ * // Shown as a radio switch with a custom label
+ * const obj = sheet.object('key', {
+ *   light: t.stringLiteral("r", {r: "Red", "g": "Green"})
+ * }, {as: "switch", label: "Street Light"})
+ * ```
+ *
+ * @param defaultValue A string
+ * @param options An object like `{[value]: Label}`. Example: {r: "Red", "g": "Green"}
+ * @param opts Extra opts
+ * @param opts.as Determines if editor is shown as a menu or a switch. Either 'menu' or 'switch'.  Default: 'menu'
+ * @returns A stringLiteral prop type
  *
  */
 export function stringLiteral<Opts extends {[key in string]: string}>(
   defaultValue: Extract<keyof Opts, string>,
   options: Opts,
-  extras?: {as?: 'menu' | 'switch'} & PropTypeConfigExtras,
+  opts?: {as?: 'menu' | 'switch'} & PropTypeConfigOpts,
 ): PropTypeConfig_StringLiteral<Extract<keyof Opts, string>> {
   return {
     type: 'stringLiteral',
@@ -130,23 +318,10 @@ export function stringLiteral<Opts extends {[key in string]: string}>(
     options: {...options},
     [propTypeSymbol]: 'TheatrePropType',
     valueType: null as $IntentionalAny,
-    as: extras?.as ?? 'menu',
-    label: extras?.label,
+    as: opts?.as ?? 'menu',
+    label: opts?.label,
   }
 }
-
-// export const rgba = (
-//   defaultValue: {r: number; b: number; g: number; a: number},
-//   extras?: PropTypeConfigExtras,
-// ): PropTypeConfig_CSSRGBA => {
-//   return {
-//     type: 'cssrgba',
-//     valueType: null as $IntentionalAny,
-//     [s]: 'TheatrePropType',
-//     label: extras?.label,
-//     default: defaultValue,
-//   }
-// }
 
 interface IBasePropType<ValueType> {
   valueType: ValueType
@@ -190,7 +365,7 @@ export interface PropTypeConfig_Boolean extends IBasePropType<boolean> {
   default: boolean
 }
 
-export interface PropTypeConfigExtras {
+export interface PropTypeConfigOpts {
   label?: string
 }
 export interface PropTypeConfig_String extends IBasePropType<string> {
@@ -207,12 +382,6 @@ export interface PropTypeConfig_StringLiteral<T extends string>
 }
 
 /**
- * @todo Determine if 'compound' is a clear term for what this is.
- * I didn't want to use 'object' as it could get confused with
- * SheetObject.
- */
-
-/**
  *
  */
 export interface PropTypeConfig_Compound<Props extends IValidCompoundProps>
@@ -220,12 +389,6 @@ export interface PropTypeConfig_Compound<Props extends IValidCompoundProps>
   type: 'compound'
   props: Record<string, PropTypeConfig>
 }
-
-// export interface PropTypeConfig_CSSRGBA
-//   extends IBasePropType<{r: number; g: number; b: number; a: number}> {
-//   type: 'cssrgba'
-//   default: {r: number; g: number; b: number; a: number}
-// }
 
 export interface PropTypeConfig_Enum extends IBasePropType<{}> {
   type: 'enum'
@@ -238,7 +401,6 @@ export type PropTypeConfig_AllPrimitives =
   | PropTypeConfig_Boolean
   | PropTypeConfig_String
   | PropTypeConfig_StringLiteral<$IntentionalAny>
-// | PropTypeConfig_CSSRGBA
 
 export type PropTypeConfig =
   | PropTypeConfig_AllPrimitives

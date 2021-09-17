@@ -3,15 +3,32 @@ import type {
   SerializableMap,
   SerializableValue,
 } from '@theatre/shared/utils/types'
+
+/**
+ * Represents the address to a project
+ */
 export interface ProjectAddress {
   projectId: string
 }
 
+/**
+ * Represents the address to a specific instance of a Sheet
+ *
+ * ```ts
+ * const sheet = project.sheet('a sheet', 'some instance id')
+ * sheet.address.sheetId === 'a sheet'
+ * sheet.address.sheetInstanceId === 'sheetInstanceId'
+ * ```
+ */
 export interface SheetAddress extends ProjectAddress {
   sheetId: string
   sheetInstanceId: string
 }
 
+/**
+ * Removes `sheetInstanceId` from an address, making it refer to
+ * all instances of a certain `sheetId`
+ */
 export type WithoutSheetInstance<T extends SheetAddress> = Omit<
   T,
   'sheetInstanceId'
@@ -20,7 +37,18 @@ export type WithoutSheetInstance<T extends SheetAddress> = Omit<
 export type SheetInstanceOptional<T extends SheetAddress> =
   WithoutSheetInstance<T> & {sheetInstanceId?: string | undefined}
 
+/**
+ * Represents the address to a Sheet's Object
+ */
 export interface SheetObjectAddress extends SheetAddress {
+  /**
+   * The key of the object.
+   *
+   * ```ts
+   * const obj = sheet.object('foo', {})
+   * obj.address.objectKey === 'foo'
+   * ```
+   */
   objectKey: string
 }
 
@@ -34,6 +62,9 @@ export const encodePathToProp = (p: PathToProp): PathToProp_Encoded =>
 export const decodePathToProp = (s: PathToProp_Encoded): PathToProp =>
   JSON.parse(s)
 
+/**
+ * Represents the path to a certain prop of an object
+ */
 export interface PropAddress extends SheetObjectAddress {
   pathToProp: PathToProp
 }
