@@ -143,7 +143,7 @@ export const number = (
         )} given.`,
       )
     }
-    if (typeof opts === 'object' && opts) {
+    if (typeof opts === 'object' && opts !== null) {
       if (Object.prototype.hasOwnProperty.call(opts, 'range')) {
         if (!Array.isArray(opts.range)) {
           throw new Error(
@@ -163,26 +163,26 @@ export const number = (
           )
         }
       }
-    }
-    if (Object.prototype.hasOwnProperty.call(opts, 'nudgeMultiplier')) {
-      if (
-        typeof opts!.nudgeMultiplier !== 'number' ||
-        !isFinite(opts!.nudgeMultiplier)
-      ) {
-        throw new Error(
-          `opts.nudgeMultiplier in t.number(defaultValue, opts) must be a finite number. ${userReadableTypeOfValue(
-            opts!.nudgeMultiplier,
-          )} given.`,
-        )
+      if (Object.prototype.hasOwnProperty.call(opts, 'nudgeMultiplier')) {
+        if (
+          typeof opts!.nudgeMultiplier !== 'number' ||
+          !isFinite(opts!.nudgeMultiplier)
+        ) {
+          throw new Error(
+            `opts.nudgeMultiplier in t.number(defaultValue, opts) must be a finite number. ${userReadableTypeOfValue(
+              opts!.nudgeMultiplier,
+            )} given.`,
+          )
+        }
       }
-    }
-    if (Object.prototype.hasOwnProperty.call(opts, 'nudgeFn')) {
-      if (typeof opts?.nudgeFn !== 'function') {
-        throw new Error(
-          `opts.nudgeFn in t.number(defaultValue, opts) must be a function. ${userReadableTypeOfValue(
-            opts!.nudgeFn,
-          )} given.`,
-        )
+      if (Object.prototype.hasOwnProperty.call(opts, 'nudgeFn')) {
+        if (typeof opts?.nudgeFn !== 'function') {
+          throw new Error(
+            `opts.nudgeFn in t.number(defaultValue, opts) must be a function. ${userReadableTypeOfValue(
+              opts!.nudgeFn,
+            )} given.`,
+          )
+        }
       }
     }
   }
