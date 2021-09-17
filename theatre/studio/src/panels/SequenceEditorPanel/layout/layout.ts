@@ -52,7 +52,11 @@ export type DopeSheetSelection = {
     }
   >
   getDragHandlers(
-    origin: PropAddress & {trackId: string; keyframeId: string},
+    origin: PropAddress & {
+      trackId: string
+      keyframeId: string
+      positionAtStartOfDrag: number
+    },
   ): Parameters<typeof useDrag>[1]
   delete(): void
 }

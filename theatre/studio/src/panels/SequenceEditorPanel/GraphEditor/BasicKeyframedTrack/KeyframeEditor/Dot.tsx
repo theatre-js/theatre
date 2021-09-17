@@ -150,13 +150,6 @@ function useDragKeyframe(
             propsAtStartOfDrag.trackData.keyframes[propsAtStartOfDrag.index - 1]
 
           if (prev && Math.abs(original.value - prev.value) > 0) {
-            // cur.handles[1] = preserveLeftHandle(
-            //   cur.handles[1],
-            //   original.value,
-            //   cur.value,
-            //   prev.value,
-            //   prev.value,
-            // )
             const newPrev: Keyframe = {...prev, handles: [...prev.handles]}
             updatedKeyframes.push(newPrev)
             newPrev.handles[3] = preserveRightHandle(
@@ -171,14 +164,6 @@ function useDragKeyframe(
             propsAtStartOfDrag.trackData.keyframes[propsAtStartOfDrag.index + 1]
 
           if (next && Math.abs(original.value - next.value) > 0) {
-            // cur.handles[3] = preserveRightHandle(
-            //   cur.handles[3],
-            //   original.value,
-            //   cur.value,
-            //   next.value,
-            //   next.value,
-            // )
-
             const newNext: Keyframe = {...next, handles: [...next.handles]}
             updatedKeyframes.push(newNext)
             newNext.handles[1] = preserveLeftHandle(

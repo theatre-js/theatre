@@ -547,7 +547,6 @@ namespace stateEditors {
             const track = _getTrack(p)
             if (!track) return
             const initialKeyframes = current(track.keyframes)
-            // debugger
 
             const selectedKeyframes = initialKeyframes.filter(
               (kf) => p.keyframeIds.indexOf(kf.id) !== -1,

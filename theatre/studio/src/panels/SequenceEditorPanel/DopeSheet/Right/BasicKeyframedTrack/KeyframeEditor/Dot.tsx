@@ -155,20 +155,23 @@ function useDragKeyframe(
     return {
       onDragStart(event) {
         setIsDragging(true)
-        if (propsRef.current.selection) {
-          const {selection, leaf} = propsRef.current
+        const props = propsRef.current
+        if (props.selection) {
+          const {selection, leaf} = props
           const {sheetObject} = leaf
           selectionDragHandlers = selection.getDragHandlers({
             ...sheetObject.address,
             pathToProp: leaf.pathToProp,
             trackId: leaf.trackId,
-            keyframeId: propsRef.current.keyframe.id,
+            keyframeId: props.keyframe.id,
+            positionAtStartOfDrag:
+              props.trackData.keyframes[props.index].position,
           })
           selectionDragHandlers.onDragStart?.(event)
           return
         }
 
-        propsAtStartOfDrag = propsRef.current
+        propsAtStartOfDrag = props
         toUnitSpace = val(propsAtStartOfDrag.layoutP.scaledSpace.toUnitSpace)
       },
       onDrag(dx, dy, event) {

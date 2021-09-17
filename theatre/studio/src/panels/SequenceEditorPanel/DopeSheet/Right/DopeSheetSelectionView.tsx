@@ -205,12 +205,27 @@ namespace utils {
           onDragStart() {
             toUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
           },
-          onDrag(dx) {
-            const delta = toUnitSpace(dx)
+          onDrag(dx, _, event) {
+            let delta = toUnitSpace(dx)
             if (tempTransaction) {
               tempTransaction.discard()
               tempTransaction = undefined
             }
+
+            const snapTarget = event.composedPath().find(
+              (el): el is Element =>
+                el instanceof Element &&
+                // el !== node &&
+                el.hasAttribute('data-pos'),
+            )
+
+            if (snapTarget) {
+              const snapPos = parseFloat(snapTarget.getAttribute('data-pos')!)
+              if (isFinite(snapPos)) {
+                delta = snapPos - origin.positionAtStartOfDrag
+              }
+            }
+
             tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
               const transformKeyframes =
                 stateEditors.coreByProject.historic.sheetsById.sequence
