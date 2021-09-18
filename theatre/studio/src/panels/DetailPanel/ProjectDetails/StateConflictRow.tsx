@@ -106,7 +106,7 @@ const InConflict: React.FC<{
       <Message>
         Browser state is not based on disk state.{' '}
         <a
-          href="https://docs.theatrejs.com/export.html#conflict"
+          href="https://docs.theatrejs.com/in-depth/#exporting"
           target="_blank"
         >
           Learn more.

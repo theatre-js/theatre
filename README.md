@@ -4,7 +4,29 @@ Theatre.js is an animation library for high-fidelity motion graphics. It is desi
 
 Theatre can be used both programmatically _and_ visually.
 
-Theatre works with all rendering stacks. You can use it to animate DOM elements, THREE.js objects, or any kind of JavaScript variable.
+You can use Theatre.js to:
+
+* Animate 3D objects made with THREE.js or other 3D libraries
+  
+  ![s](https://raw.githubusercontent.com/AriaMinaei/theatre-docs/main/docs/.vuepress/public/preview-3d-short.gif)
+
+* Animate HTML/SVG via React or other libraries
+
+  ![s](https://raw.githubusercontent.com/AriaMinaei/theatre-docs/main/docs/.vuepress/public/preview-dom.gif)
+
+* Design micro-interactions
+
+  ![s](https://raw.githubusercontent.com/AriaMinaei/theatre-docs/main/docs/.vuepress/public/preview-micro-interaction.gif)
+
+* Choreograph generative interactive art
+
+  ![s](https://raw.githubusercontent.com/AriaMinaei/theatre-docs/main/docs/.vuepress/public/preview-generative.gif)
+
+  
+
+* Or animate any other JS variable
+
+  ![s](https://raw.githubusercontent.com/AriaMinaei/theatre-docs/main/docs/.vuepress/public/preview-console.gif)
 
 ## Documentation and Tutorials
 

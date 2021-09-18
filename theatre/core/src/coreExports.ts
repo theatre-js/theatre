@@ -11,6 +11,11 @@ import {InvalidArgumentError} from '@theatre/shared/utils/errors'
 import {validateName} from '@theatre/shared/utils/sanitizers'
 import userReadableTypeOfValue from '@theatre/shared/utils/userReadableTypeOfValue'
 import deepEqual from 'fast-deep-equal'
+import type {IDerivation, PointerType} from '@theatre/dataverse'
+import {isPointer} from '@theatre/dataverse'
+import {isDerivation, valueDerivation} from '@theatre/dataverse'
+import type {$IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
+import coreTicker from './coreTicker'
 export {types}
 
 /**
@@ -32,6 +37,8 @@ export {types}
  * const config = {state} // here the config contains our saved state
  * const project = getProject("a-unique-id", config)
  * ```
+ *
+ * Learn more about exporting https://docs.theatrejs.com/in-depth/#exporting
  */
 export function getProject(id: string, config: IProjectConfig = {}): IProject {
   const {...restOfConfig} = config
@@ -92,7 +99,7 @@ const deepValidateOnDiskState = (projectId: string, s: OnDiskState) => {
 const validateProjectIdOrThrow = (value: string) => {
   if (typeof value !== 'string') {
     throw new InvalidArgumentError(
-      `Argument 'name' in \`Theatre.getProject(name, ...)\` must be a string. Instead, it was ${userReadableTypeOfValue(
+      `Argument 'projectId' in \`Theatre.getProject(projectId, ...)\` must be a string. Instead, it was ${userReadableTypeOfValue(
         value,
       )}.`,
     )
@@ -101,13 +108,36 @@ const validateProjectIdOrThrow = (value: string) => {
   const idTrimmed = value.trim()
   if (idTrimmed.length !== value.length) {
     throw new InvalidArgumentError(
-      `Argument 'name' in \`Theatre.getProject("${value}", ...)\` should not have surrounding whitespace.`,
+      `Argument 'projectId' in \`Theatre.getProject("${value}", ...)\` should not have surrounding whitespace.`,
     )
   }
 
   if (idTrimmed.length < 3) {
     throw new InvalidArgumentError(
-      `Argument 'name' in \`Theatre.getProject("${value}", ...)\` should be at least 3 characters long.`,
+      `Argument 'projectId' in \`Theatre.getProject("${value}", ...)\` should be at least 3 characters long.`,
+    )
+  }
+}
+
+/**
+ * Calls `callback` every time the pointed value of `pointer` changes.
+ *
+ * @param pointer A pointer (like `object.props.x`)
+ * @param callback The callback is called every time the value of pointerOrDerivation changes
+ * @returns An unsubscribe function
+ */
+export function onChange<O, P extends PointerType<O> | IDerivation<O>>(
+  pointer: P,
+  callback: (value: O) => void,
+): VoidFn {
+  if (isPointer(pointer)) {
+    const derivation = valueDerivation(pointer)
+    return derivation.tapImmediate(coreTicker, callback as $IntentionalAny)
+  } else if (isDerivation(pointer)) {
+    return pointer.tapImmediate(coreTicker, callback as $IntentionalAny)
+  } else {
+    throw new Error(
+      `Called onChange(p) where p is neither a pointer nor a derivation.`,
     )
   }
 }

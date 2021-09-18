@@ -99,7 +99,7 @@ export default class Project {
               `while you are using @theatre/core along with @theatre/sutdio. But since @theatre/studio ` +
               `is not loaded, the state of project "${id}" will be empty.\n\n` +
               `To fix this, you need to add @theatre/studio into the bundle and export ` +
-              `the projet's state. Learn how to do that at https://docs.theatrejs.com/export.html`,
+              `the projet's state. Learn how to do that at https://docs.theatrejs.com/in-depth/#exporting`,
           )
         }
       }, 1000)

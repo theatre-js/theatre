@@ -11,7 +11,7 @@ import type {$IntentionalAny} from '@theatre/shared/utils/types'
  */
 export type IProjectConfig = {
   /**
-   * The state of the project, as [exported](https://docs.theatrejs.com/export.html) by the studio.
+   * The state of the project, as [exported](https://docs.theatrejs.com/in-depth/#exporting) by the studio.
    */
   state?: $IntentionalAny
 }
