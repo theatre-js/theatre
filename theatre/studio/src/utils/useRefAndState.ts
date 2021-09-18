@@ -4,8 +4,8 @@ import {useMemo, useState} from 'react'
 /**
  * Combines useRef() and useState().
  *
- * @example
- * ```typescript
+ * Usage:
+ * ```ts
  * const [ref, val] = useRefAndState<HTMLDivElement | null>(null)
  *
  * useEffect(() => {

@@ -3,7 +3,7 @@ import studioTicker from '@theatre/studio/studioTicker'
 import type {IDerivation, Pointer} from '@theatre/dataverse'
 import {prism} from '@theatre/dataverse'
 import SimpleCache from '@theatre/shared/utils/SimpleCache'
-import type {$FixMe, $IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
+import type {$IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
 import type {IScrub} from '@theatre/studio/Scrub'
 import type {Studio} from '@theatre/studio/Studio'
 import {
@@ -14,22 +14,67 @@ import {getOutlineSelection} from './selectors'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import getStudio from './getStudio'
 import type React from 'react'
-import type {PropTypeConfig_Compound} from '@theatre/core/propTypes'
 import {debounce} from 'lodash-es'
 import type Sheet from '@theatre/core/sheets/Sheet'
 
 export interface ITransactionAPI {
+  /**
+   * Set the value of a prop by its pointer. If the prop is sequenced, the value
+   * will be a keyframe at the current sequence position.
+   *
+   * Usage:
+   * ```ts
+   * const obj = sheet.object("box", {x: 0, y: 0})
+   * studio.transaction(({set}) => {
+   *   // set a specific prop's value
+   *   set(obj.props.x, 10) // New value is {x: 10, y: 0}
+   *   // values are set partially
+   *   set(obj.props, {y: 11}) // New value is {x: 10, y: 11}
+   *
+   *   // this will error, as there is no such prop as 'z'
+   *   set(obj.props.z, 10)
+   * })
+   * ```
+   * @param pointer A Pointer, like object.props
+   * @param value The value to override the existing value. This is treated as a deep partial value.
+   */
   set<V>(pointer: Pointer<V>, value: V): void
+  /**
+   * Unsets the value of a prop by its pointer.
+   *
+   * Usage:
+   * ```ts
+   * const obj = sheet.object("box", {x: 0, y: 0})
+   * studio.transaction(({set}) => {
+   *   // set props.x to its default value
+   *   unset(obj.props.x)
+   *   // set all props to their default value
+   *   set(obj.props)
+   * })
+   * ```
+   * @param pointer A pointer, like object.props
+   */
   unset<V>(pointer: Pointer<V>): void
 }
 /**
  *
  */
-export interface PaneClassDefinition<
-  DataType extends PropTypeConfig_Compound<{}>,
-> {
+export interface PaneClassDefinition {
+  /**
+   * Each pane has a `class`, which is a string.
+   */
   class: string
+  /**
+   * A react component that renders the content of the pane. It is given
+   * a single prop, `paneId`, which is a unique identifier for the pane.
+   *
+   * If you wish to store and persist the state of the pane,
+   * simply use a sheet and an object.
+   */
   component: React.ComponentType<{
+    /**
+     * The unique identifier of the pane
+     */
     paneId: string
   }>
 }
@@ -56,13 +101,13 @@ export interface IExtension {
   /**
    * Introduces new pane types.
    */
-  panes?: Array<PaneClassDefinition<$FixMe>>
+  panes?: Array<PaneClassDefinition>
 }
 
 export type PaneInstance<ClassName extends string> = {
   extensionId: string
   instanceId: string
-  definition: PaneClassDefinition<$FixMe>
+  definition: PaneClassDefinition
 }
 /**
  * This is the public api of Theatre's studio. It is exposed through:
@@ -119,8 +164,83 @@ export interface IStudio {
     usePersistentStorage?: boolean
   }): void
 
+  /**
+   * Runs an undo-able transaction. Creates a single undo level for all
+   * the operations inside the transaction.
+   *
+   * Will roll back if an error is thrown.
+   *
+   * Usage:
+   * ```ts
+   * studio.transaction(({set, unset}) => {
+   *   set(obj.props.x, 10) // set the value of obj.props.x to 10
+   *   unset(obj.props.y) // unset the override at obj.props.y
+   * })
+   * ```
+   */
   transaction(fn: (api: ITransactionAPI) => void): void
+
+  /**
+   * Creates a scrub, which is just like a transaction, except you
+   * can run it multiple times without creating extra undo levels.
+   *
+   * Usage:
+   * ```ts
+   * const scrub = studio.scrub()
+   * scrub.capture(({set}) => {
+   *   set(obj.props.x, 10) // set the value of obj.props.x to 10
+   * })
+   *
+   * // half a second later...
+   * scrub.capture(({set}) => {
+   *   set(obj.props.y, 11) // set the value of obj.props.y to 11
+   *   // note that since we're not setting obj.props.x, its value reverts back to its old value (ie. not 10)
+   * })
+   *
+   * // then either:
+   * scrub.commit() // commits the scrub and creates a single undo level
+   * // or:
+   * scrub.reset() // clear all the ops in the scrub so we can run scrub.capture() again
+   * // or:
+   * scrub.discard() // clears the ops and destroys it (ie. can't call scrub.capture() anymore)
+   * ```
+   */
   scrub(): IScrub
+
+  /**
+   * Creates a debounced scrub, which is just like a normal scrub, but
+   * automatically runs scrub.commit() after `threshhold` milliseconds have
+   * passed after the last `scrub.capture`.
+   *
+   * @param threshhold How long to wait before committing the scrub
+   *
+   * Usage:
+   * ```ts
+   * // Will create a new undo-level after 2 seconds have passed
+   * // since the last scrub.capture()
+   * const scrub = studio.debouncedScrub(2000)
+   *
+   * // capture some ops
+   * scrub.capture(...)
+   * // wait one second
+   * await delay(1000)
+   * // capture more ops but no new undo level is made,
+   * // because the last scrub.capture() was called less than 2 seconds ago
+   * scrub.capture(...)
+   *
+   * // wait another seonc and half
+   * await delay(1500)
+   * // still no new undo level, because less than 2 seconds have passed
+   * // since the last capture
+   * scrub.capture(...)
+   *
+   * // wait 3 seconds
+   * await delay(3000) // at this point, one undo level is created.
+   *
+   * // this call to capture will start a new undo level
+   * scrub.capture(...)
+   * ```
+   */
   debouncedScrub(threshhold: number): Pick<IScrub, 'capture'>
 
   /**
@@ -163,10 +283,11 @@ export interface IStudio {
     extension: IExtension,
   ): void
 
-  getPanesOfType<PaneClass extends string>(
-    paneClass: PaneClass,
-  ): Array<PaneInstance<PaneClass>>
-
+  /**
+   * Creates a new pane
+   *
+   * @param paneClass The class name of the pane (provided by an extension)
+   */
   createPane<PaneClass extends string>(
     paneClass: PaneClass,
   ): PaneInstance<PaneClass>
@@ -297,12 +418,6 @@ export default class TheatreStudio implements IStudio {
     }
 
     return {capture}
-  }
-
-  getPanesOfType<PaneClass extends string>(
-    paneClass: PaneClass,
-  ): PaneInstance<PaneClass>[] {
-    return getStudio().paneManager.getPanesOfType(paneClass)
   }
 
   createPane<PaneClass extends string>(

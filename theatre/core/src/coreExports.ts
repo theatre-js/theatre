@@ -11,7 +11,7 @@ import {InvalidArgumentError} from '@theatre/shared/utils/errors'
 import {validateName} from '@theatre/shared/utils/sanitizers'
 import userReadableTypeOfValue from '@theatre/shared/utils/userReadableTypeOfValue'
 import deepEqual from 'fast-deep-equal'
-import type {IDerivation, PointerType} from '@theatre/dataverse'
+import type {PointerType} from '@theatre/dataverse'
 import {isPointer} from '@theatre/dataverse'
 import {isDerivation, valueDerivation} from '@theatre/dataverse'
 import type {$IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
@@ -126,9 +126,9 @@ const validateProjectIdOrThrow = (value: string) => {
  * @param callback The callback is called every time the value of pointerOrDerivation changes
  * @returns An unsubscribe function
  */
-export function onChange<O, P extends PointerType<O> | IDerivation<O>>(
+export function onChange<P extends PointerType<$IntentionalAny>>(
   pointer: P,
-  callback: (value: O) => void,
+  callback: (value: P extends PointerType<infer T> ? T : unknown) => void,
 ): VoidFn {
   if (isPointer(pointer)) {
     const derivation = valueDerivation(pointer)

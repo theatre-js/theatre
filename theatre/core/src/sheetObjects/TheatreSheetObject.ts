@@ -26,7 +26,7 @@ export interface ISheetObject<Props extends IShorthandCompoundProps = {}> {
   /**
    * The current values of the props.
    *
-   * @example
+   * Usage:
    * ```ts
    * const obj = sheet.object("obj", {x: 0})
    * console.log(obj.value.x) // prints 0 or the current numeric value
@@ -61,7 +61,7 @@ export interface ISheetObject<Props extends IShorthandCompoundProps = {}> {
    *
    * @returns an Unsubscribe function
    *
-   * @example
+   * Usage:
    * ```ts
    * const obj = sheet.object("Box", {position: {x: 0, y: 0}})
    * const div = document.getElementById("box")
@@ -82,7 +82,7 @@ export interface ISheetObject<Props extends IShorthandCompoundProps = {}> {
    * overrides it in the UI with a static or animated value.
    *
    *
-   * @example
+   * Usage:
    * ```ts
    * const obj = sheet.object("obj", {position: {x: 0, y: 0}})
    *

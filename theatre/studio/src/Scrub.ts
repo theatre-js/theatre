@@ -23,14 +23,63 @@ type State =
 
 let lastScrubIdAsNumber = 0
 
+/**
+ * The scrub API
+ */
 export interface IScrubApi {
+  /**
+   * Set the value of a prop by its pointer. If the prop is sequenced, the value
+   * will be a keyframe at the current sequence position.
+   *
+   * Usage:
+   * ```ts
+   * const obj = sheet.object("box", {x: 0, y: 0})
+   * const scrub = studio.scrub()
+   * scrub.capture(({set}) => {
+   *   // set a specific prop's value
+   *   set(obj.props.x, 10) // New value is {x: 10, y: 0}
+   *   // values are set partially
+   *   set(obj.props, {y: 11}) // New value is {x: 10, y: 11}
+   *
+   *   // this will error, as there is no such prop as 'z'
+   *   set(obj.props.z, 10)
+   * })
+   * ```
+   * @param pointer A Pointer, like object.props
+   * @param value The value to override the existing value. This is treated as a deep partial value.
+   */
   set<T>(pointer: Pointer<T>, value: T): void
 }
 
 export interface IScrub {
+  /**
+   * Clears all the ops in the scrub, but keeps the scrub open so you can call
+   * `scrub.capture()` again.
+   */
   reset(): void
+  /**
+   * Commits the scrub and creates a single undo level.
+   */
   commit(): void
+  /**
+   * Captures operations for the scrub.
+   *
+   * Note that running `scrub.capture()` multiple times means all the older
+   * calls of `scrub.capture()` will be reset.
+   *
+   * Usage:
+   * ```ts
+   * scrub.capture(({set}) => {
+   *   set(obj.props.x, 10) // set the value of obj.props.x to 10
+   * })
+   * ```
+   */
   capture(fn: (api: IScrubApi) => void): void
+
+  /**
+   * Clearts the ops of the scrub and destroys it. After calling this,
+   * you won't be able to call `scrub.capture()` anymore.
+   */
   discard(): void
 }
 

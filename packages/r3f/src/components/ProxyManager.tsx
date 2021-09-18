@@ -218,6 +218,10 @@ const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
     })
   }, [viewportShading, renderMaterials, sceneProxy])
 
+  const scrub = useMemo(() => {
+    return studio.debouncedScrub(1000)
+  }, [selected, editableProxyOfSelected])
+
   if (!sceneProxy) {
     return null
   }
@@ -235,7 +239,7 @@ const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
             const sheetObject = editableProxyOfSelected.sheetObject
             const obj = editableProxyOfSelected.object
 
-            studio.transaction(({set}) => {
+            scrub.capture(({set}) => {
               set(sheetObject.props, {
                 position: {
                   x: obj.position.x,

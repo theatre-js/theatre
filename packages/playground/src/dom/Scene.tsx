@@ -3,6 +3,7 @@ import type {UseDragOpts} from './useDrag'
 import useDrag from './useDrag'
 import React, {useLayoutEffect, useMemo, useState} from 'react'
 import type {IProject, ISheet} from '@theatre/core'
+import {onChange} from '@theatre/core'
 import type {IScrub, IStudio} from '@theatre/studio'
 
 studio.initialize()
@@ -25,7 +26,7 @@ const Box: React.FC<{
   const [pos, setPos] = useState<{x: number; y: number}>({x: 0, y: 0})
 
   useLayoutEffect(() => {
-    const unsubscribeFromChanges = obj.onValuesChange((newValues) => {
+    const unsubscribeFromChanges = onChange(obj.props, (newValues) => {
       setPos(newValues)
     })
     return unsubscribeFromChanges

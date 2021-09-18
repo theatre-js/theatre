@@ -64,12 +64,6 @@ export default class PaneManager {
     return this._getAllPanes()
   }
 
-  getPanesOfType<PaneClass extends string>(
-    paneClass: PaneClass,
-  ): PaneInstance<PaneClass>[] {
-    return []
-  }
-
   createPane<PaneClass extends string>(
     paneClass: PaneClass,
   ): PaneInstance<PaneClass> {

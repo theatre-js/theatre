@@ -31,7 +31,7 @@ export interface ISequence {
    *
    * @returns A promise that resolves when the playback is finished, or rejects if interruped
    *
-   * @example
+   * Usage:
    * ```ts
    * // plays the sequence from the current position to sequence.length
    * sheet.sequence.play()
@@ -93,7 +93,7 @@ export interface ISequence {
    *
    * @returns A promise that resolves once the audio source is loaded and decoded
    *
-   * @example
+   * Usage:
    * ```ts
    * // Loads and decodes audio from the URL and then attaches it to the sequence
    * await sheet.sequence.attachAudio({source: "https://localhost/audio.ogg"})
