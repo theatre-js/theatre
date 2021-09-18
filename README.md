@@ -10,6 +10,8 @@ You can use Theatre.js to:
   
   ![s](https://raw.githubusercontent.com/AriaMinaei/theatre-docs/main/docs/.vuepress/public/preview-3d-short.gif)
 
+  <sub>Art by [drei.lu](https://sketchfab.com/models/91964c1ce1a34c3985b6257441efa500)</sub>
+
 * Animate HTML/SVG via React or other libraries
 
   ![s](https://raw.githubusercontent.com/AriaMinaei/theatre-docs/main/docs/.vuepress/public/preview-dom.gif)
