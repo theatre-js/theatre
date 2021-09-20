@@ -12,7 +12,7 @@ const packagesToBuild = [
   'theatre',
   '@theatre/dataverse',
   '@theatre/react',
-  '@theatre/r3f',
+  // '@theatre/r3f',
 ]
 
 const packagesToPublish = [
@@ -20,7 +20,7 @@ const packagesToPublish = [
   '@theatre/studio',
   '@theatre/dataverse',
   '@theatre/react',
-  '@theatre/r3f',
+  // '@theatre/r3f',
 ]
 
 /**
@@ -33,12 +33,13 @@ const packagesWhoseVersionsShouldBump = [
   'theatre/studio',
   'packages/dataverse',
   'packages/react',
-  'packages/r3f',
+  // 'packages/r3f',
 ]
 
 ;(async function () {
   // our packages will check for this env variable to make sure their
   // prepublish script is only called from the `$ cd /path/to/monorepo; yarn run deploy`
+  // @ts-ignore ignore
   process.env.THEATRE_IS_PUBLISHING = true
 
   // better quote function from https://github.com/google/zx/pull/167
