@@ -5292,8 +5292,8 @@ __metadata:
     queue-microtask: ^1.2.3
     typescript: ^4.4.2
   peerDependencies:
-    raect-dom: "*"
     react: "*"
+    react-dom: "*"
   languageName: unknown
   linkType: soft
 

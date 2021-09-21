@@ -42,7 +42,7 @@
     "queue-microtask": "^1.2.3"
   },
   "peerDependencies": {
-    "react-dom": "*",
-    "react": "*"
+    "react": "*",
+    "react-dom": "*"
   }
 }
