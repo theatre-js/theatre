@@ -167,7 +167,7 @@ export default class Sequence {
       }
       if (range[0] >= sequenceDuration) {
         throw new InvalidArgumentError(
-          `Argument conf.range[0] in sequence.play(conf) cannot be longer than the duration of the sequence, which is ${sequenceDuration}ms. ${JSON.stringify(
+          `Argument conf.range[0] in sequence.play(conf) cannot be longer than the duration of the sequence, which is ${sequenceDuration}s. ${JSON.stringify(
             range[0],
           )} given.`,
         )
@@ -182,7 +182,7 @@ export default class Sequence {
 
       if (range[1] > sequenceDuration) {
         logger.warn(
-          `Argument conf.range[1] in sequence.play(conf) cannot be longer than the duration of the sequence, which is ${sequenceDuration}ms. ${JSON.stringify(
+          `Argument conf.range[1] in sequence.play(conf) cannot be longer than the duration of the sequence, which is ${sequenceDuration}s. ${JSON.stringify(
             range[1],
           )} given.`,
         )

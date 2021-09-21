@@ -39,7 +39,7 @@ export default function useKeyboardShortcuts() {
           if (seq.playing) {
             seq.pause()
           } else {
-            seq.play({iterationCount: Infinity})
+            seq.play({iterationCount: 1000})
           }
         } else {
           return

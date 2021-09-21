@@ -76,26 +76,33 @@ export default class DefaultPlaybackController implements IPlaybackController {
       const startPos = this.getCurrentPosition()
 
       if (startPos < range[0] || startPos > range[1]) {
-        this._updatePositionInState(range[0])
-      } else if (
-        startPos === range[1] &&
-        (direction === 'normal' || direction === 'alternate')
-      ) {
-        this._updatePositionInState(range[0])
-      } else if (
-        startPos === range[0] &&
-        (direction === 'reverse' || direction === 'alternateReverse')
-      ) {
-        this._updatePositionInState(range[1])
+        if (direction === 'normal' || direction === 'alternate') {
+          this._updatePositionInState(range[0])
+        } else if (
+          direction === 'reverse' ||
+          direction === 'alternateReverse'
+        ) {
+          this._updatePositionInState(range[1])
+        }
+      } else if (direction === 'normal' || direction === 'alternate') {
+        if (startPos === range[1]) {
+          this._updatePositionInState(range[0])
+        }
+      } else {
+        if (startPos === range[0]) {
+          this._updatePositionInState(range[1])
+        }
       }
     }
 
     const deferred = defer<boolean>()
     const initialTickerTime = ticker.time
     const totalPlaybackLength = iterationLength * iterationCount
+
     let initialElapsedPos = this.getCurrentPosition() - range[0]
+
     if (direction === 'reverse' || direction === 'alternateReverse') {
-      initialElapsedPos = range[1] - initialElapsedPos
+      initialElapsedPos = range[1] - this.getCurrentPosition()
     }
 
     const tick = (currentTickerTime: number) => {
@@ -112,6 +119,7 @@ export default class DefaultPlaybackController implements IPlaybackController {
 
       if (elapsedPos !== totalPlaybackLength) {
         const iterationNumber = Math.floor(elapsedPos / iterationLength)
+
         let currentIterationPos =
           ((elapsedPos / iterationLength) % 1) * iterationLength
 
@@ -132,7 +140,7 @@ export default class DefaultPlaybackController implements IPlaybackController {
           }
         }
 
-        this._updatePositionInState(currentIterationPos)
+        this._updatePositionInState(currentIterationPos + range[0])
         requestNextTick()
       } else {
         if (direction === 'normal') {

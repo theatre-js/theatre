@@ -64,20 +64,13 @@ export default class AudioPlaybackController implements IPlaybackController {
     this.playing = true
 
     const ticker = this._ticker
-    const startPos = this.getCurrentPosition()
+    let startPos = this.getCurrentPosition()
     const iterationLength = range[1] - range[0]
 
     if (direction !== 'normal') {
       throw new InvalidArgumentError(
         `Audio-controlled sequences can only be played in the "normal" direction. ` +
           `'${direction}' given.`,
-      )
-    }
-
-    if (iterationCount !== 1) {
-      throw new InvalidArgumentError(
-        `Audio-controlled sequences can only have an iterationCount of 1 ` +
-          `'${iterationCount}' given.`,
       )
     }
 
@@ -88,6 +81,7 @@ export default class AudioPlaybackController implements IPlaybackController {
       // if we're currently at the very end of the range
       this._updatePositionInState(range[0])
     }
+    startPos = this.getCurrentPosition()
 
     const deferred = defer<boolean>()
 
@@ -96,18 +90,24 @@ export default class AudioPlaybackController implements IPlaybackController {
     currentSource.connect(this._mainGain)
     currentSource.playbackRate.value = rate
 
-    const audioStartTimeInSeconds = this._audioContext.currentTime
-    const wait = 0
-    const timeToRangeEnd = range[1] - startPos
+    if (iterationCount > 1000) {
+      console.warn(
+        `Audio-controlled sequences cannot have an iterationCount larger than 1000. It has been clamped to 1000.`,
+      )
+      iterationCount = 1000
+    }
 
-    currentSource.start(
-      audioStartTimeInSeconds + wait,
-      startPos - wait,
-      wait + timeToRangeEnd,
-    )
+    if (iterationCount > 1) {
+      currentSource.loop = true
+      currentSource.loopStart = range[0]
+      currentSource.loopEnd = range[1]
+    }
+
     const initialTickerTime = ticker.time
-    let initialElapsedPos = this.getCurrentPosition() - range[0]
+    let initialElapsedPos = startPos - range[0]
     const totalPlaybackLength = iterationLength * iterationCount
+
+    currentSource.start(0, startPos, totalPlaybackLength - initialElapsedPos)
 
     const tick = (currentTickerTime: number) => {
       const elapsedTickerTime = Math.max(
@@ -125,7 +125,7 @@ export default class AudioPlaybackController implements IPlaybackController {
         let currentIterationPos =
           ((elapsedPos / iterationLength) % 1) * iterationLength
 
-        this._updatePositionInState(currentIterationPos)
+        this._updatePositionInState(currentIterationPos + range[0])
         requestNextTick()
       } else {
         this._updatePositionInState(range[1])
