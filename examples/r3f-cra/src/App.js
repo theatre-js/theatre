@@ -4,7 +4,11 @@ import {useState, useEffect, useRef} from 'react'
 import {useFrame, Canvas} from '@react-three/fiber'
 import {Shadow, softShadows} from '@react-three/drei'
 import React from 'react'
-import {editable as e, Wrapper} from '@theatre/r3f'
+import {editable as e, SheetProvider, extension} from '@theatre/r3f'
+import studio from '@theatre/studio'
+
+studio.extend(extension)
+studio.initialize()
 
 // Soft shadows are expensive, comment and refresh when it's too slow
 softShadows()
@@ -85,7 +89,7 @@ function App() {
         // @ts-ignore
         shadowMap
       >
-        <Wrapper
+        <SheetProvider
           getSheet={() => getProject('Playground - R3F').sheet('R3F-Canvas')}
         >
           {/* @ts-ignore */}
@@ -135,7 +139,7 @@ function App() {
             />
           </group>
           <Button />
-        </Wrapper>
+        </SheetProvider>
       </Canvas>
     </div>
   )
