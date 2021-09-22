@@ -18,7 +18,7 @@ const Box: React.FC<{
   selectedObject: ISheetObject | undefined
 }> = ({id, sheet, selectedObject}) => {
   // This is cheap to call and always returns the same value, so no need for useMemo()
-  const obj = sheet.object(id, null, boxObjectConfig)
+  const obj = sheet.object(id, boxObjectConfig)
 
   const isSelected = selectedObject === obj
 
@@ -45,7 +45,7 @@ const Box: React.FC<{
       },
       onDrag(x, y) {
         if (!firstOnDragCalled) {
-          studio.__experimental_setSelection([obj])
+          studio.setSelection([obj])
           firstOnDragCalled = true
         }
         scrub!.capture(({set}) => {
@@ -68,7 +68,7 @@ const Box: React.FC<{
   return (
     <div
       onClick={() => {
-        studio.__experimental_setSelection([obj])
+        studio.setSelection([obj])
       }}
       ref={setDivRef}
       style={{
@@ -95,7 +95,7 @@ export const Scene: React.FC<{project: IProject}> = ({project}) => {
   const [selection, _setSelection] = useState<IStudio['selection']>([])
 
   useLayoutEffect(() => {
-    return studio.__experimental_onSelectionChange((newSelection) => {
+    return studio.onSelectionChange((newSelection) => {
       _setSelection(newSelection)
     })
   })
