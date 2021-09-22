@@ -256,12 +256,14 @@ export interface IStudio {
    *
    * You can read the current selection from studio.selection
    */
-  setSelection(selection: Array<ISheetObject | ISheet>): void
+  setSelection(selection: Array<ISheetObject<any> | ISheet>): void
 
   /**
    * Calls fn every time the current selection changes.
    */
-  onSelectionChange(fn: (s: Array<ISheetObject | ISheet>) => void): VoidFunction
+  onSelectionChange(
+    fn: (s: Array<ISheetObject<{}> | ISheet>) => void,
+  ): VoidFunction
 
   /**
    * The current selection, consisting of Sheets and Sheet Objects
@@ -271,7 +273,7 @@ export interface IStudio {
    * console.log(studio.selection) // => [ISheetObject, ISheet]
    * ```
    */
-  readonly selection: Array<ISheetObject | ISheet>
+  readonly selection: Array<ISheetObject<{}> | ISheet>
 
   /**
    * Registers an extension
