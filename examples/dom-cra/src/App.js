@@ -11,7 +11,7 @@ const boxObjectConfig = {
 
 const Box = ({id, sheet, selectedObject}) => {
   // This is cheap to call and always returns the same value, so no need for useMemo()
-  const obj = sheet.object(id, null, boxObjectConfig)
+  const obj = sheet.object(id, boxObjectConfig)
 
   const isSelected = selectedObject === obj
 
@@ -38,7 +38,7 @@ const Box = ({id, sheet, selectedObject}) => {
       },
       onDrag(x, y) {
         if (!firstOnDragCalled) {
-          studio.__experimental_setSelection([obj])
+          studio.setSelection([obj])
           firstOnDragCalled = true
         }
         scrub.capture(({set}) => {
@@ -61,7 +61,7 @@ const Box = ({id, sheet, selectedObject}) => {
   return (
     <div
       onClick={() => {
-        studio.__experimental_setSelection([obj])
+        studio.setSelection([obj])
       }}
       ref={setDivRef}
       style={{
@@ -88,7 +88,7 @@ const App = ({project}) => {
   const [selection, _setSelection] = useState([])
 
   useLayoutEffect(() => {
-    return studio.__experimental_onSelectionChange((newSelection) => {
+    return studio.onSelectionChange((newSelection) => {
       _setSelection(newSelection)
     })
   })

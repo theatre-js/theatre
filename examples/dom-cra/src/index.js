@@ -3,6 +3,8 @@ import './index.css'
 import reportWebVitals from './reportWebVitals'
 import studio from '@theatre/studio'
 import {getProject} from '@theatre/core'
+import React from 'react'
+import App from './App'
 
 studio.initialize()
 
