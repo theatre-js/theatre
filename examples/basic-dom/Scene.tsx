@@ -1,4 +1,4 @@
-import type {IScrub, IStudio} from '@theatre/studio'
+import type {IScrub} from '@theatre/studio'
 import studio from '@theatre/studio'
 import React, {useLayoutEffect, useMemo, useState} from 'react'
 import type {ISheet, ISheetObject, IProject} from '@theatre/core'
@@ -15,7 +15,7 @@ const boxObjectConfig = {
 const Box: React.FC<{
   id: string
   sheet: ISheet
-  selectedObject: ISheetObject | undefined
+  selectedObject: ISheetObject<any> | undefined
 }> = ({id, sheet, selectedObject}) => {
   // This is cheap to call and always returns the same value, so no need for useMemo()
   const obj = sheet.object(id, boxObjectConfig)
@@ -92,11 +92,15 @@ export const Scene: React.FC<{project: IProject}> = ({project}) => {
 
   // This is cheap to call and always returns the same value, so no need for useMemo()
   const sheet = project.sheet('Scene', 'default')
-  const [selection, _setSelection] = useState<IStudio['selection']>([])
+  const [selection, _setSelection] = useState<Array<ISheetObject>>([])
 
   useLayoutEffect(() => {
     return studio.onSelectionChange((newSelection) => {
-      _setSelection(newSelection)
+      _setSelection(
+        newSelection.filter(
+          (s): s is ISheetObject => s.type === 'Theatre_SheetObject_PublicAPI',
+        ),
+      )
     })
   })
 

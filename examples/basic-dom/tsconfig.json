@@ -3,7 +3,9 @@
     "esModuleInterop": true,
     "jsx": "react",
     "skipDefaultLibCheck": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "composite": true,
+    "noEmit": true
   },
   "files": ["index.tsx", "Scene.tsx", "useDrag.ts"]
 }
