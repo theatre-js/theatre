@@ -106,8 +106,31 @@ export interface ISequence {
    *
    * await sheet.sequence.attachAudio({source: audioBuffer, audioContext, destinationNode})
    * ```
+   *
+   * Note: It's better to provide the `audioContext` rather than allow Theatre to create it.
+   * That's because some browsers [suspend the audioContext](https://developer.chrome.com/blog/autoplay/#webaudio)
+   * unless it's initiated by a user gesture, like a click. If that happens, Theatre will
+   * wait for a user gesture to resume the audioContext. But that's probably not an
+   * optimal user experience. It is better to provide a button or some other UI element
+   * to communicate to the user that they have to initiate the animation.
+   *
+   * Example:
+   * ```ts
+   * // html: <button id="#start">start</button>
+   * const button = document.getElementById('start')
+   *
+   * button.addEventListener('click', async () => {
+   *   const audioContext = ...
+   *   await sheet.sequence.attachAudio({audioContext, source: '...'})
+   *   sheet.sequence.play()
+   * })
+   * ```
    */
-  attachAudio(args: IAttachAudioArgs): Promise<void>
+  attachAudio(args: IAttachAudioArgs): Promise<{
+    decodedBuffer: AudioBuffer
+    audioContext: AudioContext
+    destinationNode: AudioDestinationNode
+  }>
 }
 
 export default class TheatreSequence implements ISequence {
@@ -164,7 +187,11 @@ export default class TheatreSequence implements ISequence {
     privateAPI(this).position = position
   }
 
-  async attachAudio(args: IAttachAudioArgs): Promise<void> {
+  async attachAudio(args: IAttachAudioArgs): Promise<{
+    decodedBuffer: AudioBuffer
+    audioContext: AudioContext
+    destinationNode: AudioDestinationNode
+  }> {
     const {audioContext, destinationNode, decodedBuffer} =
       await resolveAudioBuffer(args)
 
@@ -176,6 +203,8 @@ export default class TheatreSequence implements ISequence {
     )
 
     privateAPI(this).replacePlaybackController(playbackController)
+
+    return {audioContext, destinationNode, decodedBuffer}
   }
 }
 
@@ -184,17 +213,53 @@ async function resolveAudioBuffer(args: IAttachAudioArgs): Promise<{
   audioContext: AudioContext
   destinationNode: AudioDestinationNode
 }> {
-  const audioContext = args.audioContext || new AudioContext()
+  function getAudioContext(): Promise<AudioContext> {
+    if (args.audioContext) return Promise.resolve(args.audioContext)
+    const ctx = new AudioContext()
+    if (ctx.state === 'running') return Promise.resolve(ctx)
 
-  const decodedBufferDeferred = defer<AudioBuffer>()
-  if (args.source instanceof AudioBuffer) {
-    decodedBufferDeferred.resolve(args.source)
-  } else if (typeof args.source !== 'string') {
-    throw new Error(
-      `Error validating arguments to sequence.attachAudio(). ` +
-        `args.source must either be a string or an instance of AudioBuffer.`,
-    )
-  } else {
+    // AudioContext is suspended, probably because the browser
+    // has blocked it since it is not initiated by a user gesture
+    return new Promise<AudioContext>((resolve) => {
+      const listener = () => {
+        ctx.resume()
+      }
+
+      const eventsToHookInto: Array<keyof WindowEventMap> = [
+        'mousedown',
+        'keydown',
+        'touchstart',
+      ]
+
+      const eventListenerOpts = {capture: true, passive: false}
+      eventsToHookInto.forEach((eventName) => {
+        window.addEventListener(eventName, listener, eventListenerOpts)
+      })
+
+      ctx.addEventListener('statechange', () => {
+        if (ctx.state === 'running') {
+          eventsToHookInto.forEach((eventName) => {
+            window.removeEventListener(eventName, listener, eventListenerOpts)
+          })
+          resolve(ctx)
+        }
+      })
+    })
+  }
+
+  async function getAudioBuffer(): Promise<AudioBuffer> {
+    if (args.source instanceof AudioBuffer) {
+      return args.source
+    }
+
+    const decodedBufferDeferred = defer<AudioBuffer>()
+    if (typeof args.source !== 'string') {
+      throw new Error(
+        `Error validating arguments to sequence.attachAudio(). ` +
+          `args.source must either be a string or an instance of AudioBuffer.`,
+      )
+    }
+
     let fetchResponse
     try {
       fetchResponse = await fetch(args.source)
@@ -205,28 +270,40 @@ async function resolveAudioBuffer(args: IAttachAudioArgs): Promise<{
       )
     }
 
-    let buffer
+    let arrayBuffer
     try {
-      buffer = await fetchResponse.arrayBuffer()
+      arrayBuffer = await fetchResponse.arrayBuffer()
     } catch (e) {
       console.error(e)
       throw new Error(`Could not read '${args.source}' as an arrayBuffer.`)
     }
 
+    const audioContext = await audioContextPromise
+
     audioContext.decodeAudioData(
-      buffer,
+      arrayBuffer,
       decodedBufferDeferred.resolve,
       decodedBufferDeferred.reject,
     )
+
+    let decodedBuffer
+    try {
+      decodedBuffer = await decodedBufferDeferred.promise
+    } catch (e) {
+      console.error(e)
+      throw new Error(`Could not decode ${args.source} as an audio file.`)
+    }
+
+    return decodedBuffer
   }
 
-  let decodedBuffer
-  try {
-    decodedBuffer = await decodedBufferDeferred.promise
-  } catch (e) {
-    console.error(e)
-    throw new Error(`Could not decode ${args.source} as an audio file.`)
-  }
+  const audioContextPromise = getAudioContext()
+  const audioBufferPromise = getAudioBuffer()
+
+  const [audioContext, decodedBuffer] = await Promise.all([
+    audioContextPromise,
+    audioBufferPromise,
+  ])
 
   const destinationNode = args.destinationNode || audioContext.destination
 
