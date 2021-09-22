@@ -1,4 +1,5 @@
 {
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "esModuleInterop": true,
     "jsx": "react",
@@ -7,5 +8,6 @@
     "composite": true,
     "noEmit": true
   },
-  "files": ["index.tsx", "Scene.tsx", "useDrag.ts"]
+  "files": ["index.tsx", "Scene.tsx", "useDrag.ts"],
+  "references": [{"path": "../../theatre"}]
 }
