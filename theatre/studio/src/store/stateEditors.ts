@@ -18,7 +18,11 @@ import {
 } from '@theatre/shared/utils/ids'
 import removePathFromObject from '@theatre/shared/utils/removePathFromObject'
 import {transformNumber} from '@theatre/shared/utils/transformNumber'
-import type {IRange, SerializablePrimitive} from '@theatre/shared/utils/types'
+import type {
+  IRange,
+  SerializableMap,
+  SerializablePrimitive,
+} from '@theatre/shared/utils/types'
 import {current} from 'immer'
 import findLastIndex from 'lodash-es/findLastIndex'
 import keyBy from 'lodash-es/keyBy'
@@ -461,6 +465,33 @@ namespace stateEditors {
             )
           }
 
+          export function setCompoundPropAsStatic(
+            p: WithoutSheetInstance<PropAddress> & {
+              value: SerializableMap
+            },
+          ) {
+            const tracks = _ensureTracksOfObject(p)
+
+            for (const encodedPropPath of Object.keys(
+              tracks.trackIdByPropPath,
+            )) {
+              const propPath = JSON.parse(encodedPropPath)
+              const isSubOfTargetPath = p.pathToProp.every(
+                (key, i) => propPath[i] === key,
+              )
+              if (isSubOfTargetPath) {
+                const trackId = tracks.trackIdByPropPath[encodedPropPath]
+                if (typeof trackId !== 'string') continue
+                delete tracks.trackIdByPropPath[encodedPropPath]
+                delete tracks.trackData[trackId]
+              }
+            }
+
+            stateEditors.coreByProject.historic.sheetsById.staticOverrides.byObject.setValueOfCompoundProp(
+              p,
+            )
+          }
+
           function _getTrack(
             p: WithoutSheetInstance<SheetObjectAddress> & {trackId: string},
           ) {
@@ -632,6 +663,15 @@ namespace stateEditors {
                   .staticOverrides.byObject
               byObject[p.objectKey] ??= {}
               return byObject[p.objectKey]!
+            }
+
+            export function setValueOfCompoundProp(
+              p: WithoutSheetInstance<PropAddress> & {
+                value: SerializableMap
+              },
+            ) {
+              const existingOverrides = _ensure(p)
+              set(existingOverrides, p.pathToProp, p.value)
             }
 
             export function setValueOfPrimitiveProp(

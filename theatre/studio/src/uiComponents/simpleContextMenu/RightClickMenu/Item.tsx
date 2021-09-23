@@ -1,10 +1,11 @@
+import noop from '@theatre/shared/utils/noop'
 import type {ElementType} from 'react'
 import React from 'react'
 import styled from 'styled-components'
 
 export const height = 26
 
-const Container = styled.li`
+const Container = styled.li<{enabled: boolean}>`
   height: ${height}px;
   padding: 0 12px;
   margin: 0;
@@ -13,6 +14,8 @@ const Container = styled.li`
   font-size: 11px;
   font-weight: 400;
   position: relative;
+  pointer-events: ${(props) => (props.enabled ? 'auto' : 'none')};
+  color: ${(props) => (props.enabled ? 'white' : '#AAA')};
 
   &:after {
     position: absolute;
@@ -34,9 +37,13 @@ const Label = styled.span``
 const Item: React.FC<{
   label: string | ElementType
   onClick: (e: React.MouseEvent) => void
+  enabled: boolean
 }> = (props) => {
   return (
-    <Container onClick={props.onClick}>
+    <Container
+      onClick={props.enabled ? props.onClick : noop}
+      enabled={props.enabled}
+    >
       <Label>{props.label}</Label>
     </Container>
   )

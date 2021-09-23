@@ -1,9 +1,11 @@
 import type {PropTypeConfig_Compound} from '@theatre/core/propTypes'
 import {isPropConfigComposite} from '@theatre/shared/propTypes/utils'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
-import {usePrism} from '@theatre/react'
-import type {$IntentionalAny} from '@theatre/shared/utils/types'
-import {getPointerParts} from '@theatre/dataverse'
+import type {
+  $IntentionalAny,
+  SerializableMap,
+} from '@theatre/shared/utils/types'
+import {getPointerParts, val} from '@theatre/dataverse'
 import last from 'lodash-es/last'
 import {darken, transparentize} from 'polished'
 import React from 'react'
@@ -16,6 +18,11 @@ import {
 } from './utils/SingleRowPropEditor'
 import DefaultOrStaticValueIndicator from './utils/DefaultValueIndicator'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
+import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
+import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
+import useRefAndState from '@theatre/studio/utils/useRefAndState'
+import getStudio from '@theatre/studio/getStudio'
+import getDeep from '@theatre/shared/utils/getDeep'
 
 const Container = styled.div`
   --step: 8px;
@@ -45,6 +52,9 @@ const PropName = styled.div`
   display: flex;
   align-items: center;
   user-select: none;
+  &:hover {
+    color: white;
+  }
 
   ${() => propNameText};
 `
@@ -72,53 +82,96 @@ const CompoundPropEditor: React.FC<{
     ([_, conf]) => !isPropConfigComposite(conf),
   )
 
+  const [propNameContainerRef, propNameContainer] =
+    useRefAndState<HTMLDivElement | null>(null)
+
+  const [contextMenu] = useContextMenu(propNameContainer, {
+    items: () => {
+      const items: IContextMenuItem[] = []
+
+      const pathToProp = getPointerParts(pointerToProp).path
+
+      const validSequencedTracks = val(
+        obj.template.getMapOfValidSequenceTracks_forStudio(),
+      )
+      const possibleSequenceTrackIds = getDeep(validSequencedTracks, pathToProp)
+
+      const hasSequencedTracks = !!(
+        typeof possibleSequenceTrackIds === 'object' &&
+        possibleSequenceTrackIds &&
+        Object.keys(possibleSequenceTrackIds).length > 0
+      )
+
+      if (hasSequencedTracks) {
+        items.push({
+          label: 'Make All Static',
+          enabled: hasSequencedTracks,
+          callback: () => {
+            getStudio()!.transaction(({stateEditors}) => {
+              const propAddress = {...obj.address, pathToProp}
+
+              stateEditors.coreByProject.historic.sheetsById.sequence.setCompoundPropAsStatic(
+                {
+                  ...propAddress,
+                  value: obj.getValueByPointer(
+                    pointerToProp,
+                  ) as unknown as SerializableMap,
+                },
+              )
+            })
+          },
+        })
+      }
+
+      items.push({
+        label: 'Reset all',
+        callback: () => {
+          getStudio()!.transaction(({unset}) => {
+            unset(pointerToProp)
+          })
+        },
+      })
+      return items
+    },
+  })
+
   const lastSubPropIsComposite = compositeSubs.length > 0
 
-  return usePrism(() => {
-    return (
-      <Container>
-        {
-          <Header
-            // @ts-ignore
-            style={{'--depth': depth - 1}}
-          >
-            <Padding>
-              {/* <IconContainer>
-                <HiOutlineChevronRight />
-              </IconContainer> */}
-              {/* <NextPrevKeyframeCursors
-              jumpToPosition={voidFn}
-              toggleKeyframeOnCurrentPosition={voidFn}
-            /> */}
-              <DefaultOrStaticValueIndicator hasStaticOverride={false} />
-              <PropName>{propName || 'Props'}</PropName>
-            </Padding>
-          </Header>
-        }
+  return (
+    <Container>
+      {contextMenu}
+      <Header
+        // @ts-ignore
+        style={{'--depth': depth - 1}}
+      >
+        <Padding>
+          <DefaultOrStaticValueIndicator hasStaticOverride={false} />
+          <PropName ref={propNameContainerRef}>{propName || 'Props'}</PropName>
+        </Padding>
+      </Header>
 
-        <SubProps
-          // @ts-ignore
-          style={{'--depth': depth}}
-          depth={depth}
-          lastSubIsComposite={lastSubPropIsComposite}
-        >
-          {[...nonCompositeSubs, ...compositeSubs].map(
-            ([subPropKey, subPropConfig]) => {
-              return (
-                <DeterminePropEditor
-                  key={'prop-' + subPropKey}
-                  propConfig={subPropConfig}
-                  pointerToProp={pointerToProp[subPropKey]}
-                  obj={obj}
-                  depth={depth + 1}
-                />
-              )
-            },
-          )}
-        </SubProps>
-      </Container>
-    )
-  }, [pointerToProp, obj])
+      <SubProps
+        // @ts-ignore
+        style={{'--depth': depth}}
+        depth={depth}
+        lastSubIsComposite={lastSubPropIsComposite}
+      >
+        {[...nonCompositeSubs, ...compositeSubs].map(
+          ([subPropKey, subPropConfig]) => {
+            return (
+              <DeterminePropEditor
+                key={'prop-' + subPropKey}
+                propConfig={subPropConfig}
+                pointerToProp={pointerToProp[subPropKey]}
+                obj={obj}
+                depth={depth + 1}
+              />
+            )
+          },
+        )}
+      </SubProps>
+    </Container>
+  )
 }
 
 export default CompoundPropEditor

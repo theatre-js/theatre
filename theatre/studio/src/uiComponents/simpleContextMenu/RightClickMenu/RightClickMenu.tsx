@@ -37,6 +37,7 @@ const Container = styled.ul`
 export type IContextMenuItem = {
   label: string | ElementType
   callback?: (e: React.MouseEvent) => void
+  enabled?: boolean
   // subs?: Item[]
 }
 
@@ -108,6 +109,7 @@ const RightClickMenu: React.FC<{
         <Item
           key={`item-${i}`}
           label={item.label}
+          enabled={item.enabled === false ? false : true}
           onClick={(e) => {
             if (item.callback) {
               item.callback(e)
