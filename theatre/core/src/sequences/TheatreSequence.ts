@@ -16,9 +16,9 @@ interface IAttachAudioArgs {
    */
   audioContext?: AudioContext
   /**
-   * An AudioDestinationNode to feed the audio into. One will be created if not provided.
+   * An AudioNode to feed the audio into. Will use audioContext.destination if not provided.
    */
-  destinationNode?: AudioDestinationNode
+  destinationNode?: AudioNode
 }
 
 export interface ISequence {
@@ -129,7 +129,7 @@ export interface ISequence {
   attachAudio(args: IAttachAudioArgs): Promise<{
     decodedBuffer: AudioBuffer
     audioContext: AudioContext
-    destinationNode: AudioDestinationNode
+    destinationNode: AudioNode
   }>
 }
 
@@ -190,7 +190,7 @@ export default class TheatreSequence implements ISequence {
   async attachAudio(args: IAttachAudioArgs): Promise<{
     decodedBuffer: AudioBuffer
     audioContext: AudioContext
-    destinationNode: AudioDestinationNode
+    destinationNode: AudioNode
   }> {
     const {audioContext, destinationNode, decodedBuffer} =
       await resolveAudioBuffer(args)
@@ -211,7 +211,7 @@ export default class TheatreSequence implements ISequence {
 async function resolveAudioBuffer(args: IAttachAudioArgs): Promise<{
   decodedBuffer: AudioBuffer
   audioContext: AudioContext
-  destinationNode: AudioDestinationNode
+  destinationNode: AudioNode
 }> {
   function getAudioContext(): Promise<AudioContext> {
     if (args.audioContext) return Promise.resolve(args.audioContext)

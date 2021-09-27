@@ -23,7 +23,7 @@ export default class AudioPlaybackController implements IPlaybackController {
     private readonly _ticker: Ticker,
     private readonly _decodedBuffer: AudioBuffer,
     private readonly _audioContext: AudioContext,
-    private readonly _nodeDestination: AudioDestinationNode,
+    private readonly _nodeDestination: AudioNode,
   ) {
     this.statePointer = this._state.pointer
 
