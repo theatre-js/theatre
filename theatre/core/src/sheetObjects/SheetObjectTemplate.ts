@@ -66,10 +66,7 @@ export default class SheetObjectTemplate {
     return new SheetObject(sheet, this, nativeObject)
   }
 
-  overrideConfig(
-    nativeObject: unknown,
-    config: SheetObjectConfig<$IntentionalAny>,
-  ) {
+  overrideConfig(config: SheetObjectConfig<$IntentionalAny>) {
     this._config.setState(config)
   }
 
@@ -149,10 +146,7 @@ export default class SheetObjectTemplate {
               continue
             }
             const defaultValue = get(defaults, pathToProp)
-            if (
-              typeof defaultValue === 'undefined' ||
-              typeof defaultValue === 'object'
-            ) {
+            if (typeof defaultValue !== 'number') {
               continue
             }
 
