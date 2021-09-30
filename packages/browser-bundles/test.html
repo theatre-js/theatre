@@ -1,0 +1,11 @@
+<script src="./dist/core-and-studio.js"></script>
+<script>
+  const {core} = Theatre
+  const studio = Theatre.studio
+  studio.initialize()
+
+  const project = core.getProject('My project')
+  const sheet = project.sheet('My sheet')
+  const obj = sheet.object('Box', {x: 0, y: 0})
+  console.log(obj.value.x)
+</script>

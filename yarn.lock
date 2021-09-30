@@ -5207,6 +5207,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@theatre/browser-bundles@workspace:packages/browser-bundles":
+  version: 0.0.0-use.local
+  resolution: "@theatre/browser-bundles@workspace:packages/browser-bundles"
+  dependencies:
+    "@types/jest": ^26.0.23
+    "@types/node": ^15.6.2
+    "@types/react": ^17.0.9
+    "@types/react-dom": ^17.0.6
+    esbuild: ^0.12.15
+    esbuild-register: ^2.5.0
+    npm-run-all: ^4.1.5
+    typescript: ^4.4.2
+  peerDependencies:
+    "@theatre/core": "*"
+    "@theatre/studio": "*"
+  languageName: unknown
+  linkType: soft
+
 "@theatre/core@workspace:*, @theatre/core@workspace:theatre/core":
   version: 0.0.0-use.local
   resolution: "@theatre/core@workspace:theatre/core"
