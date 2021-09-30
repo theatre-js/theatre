@@ -1,11 +1,8 @@
 import type {PropTypeConfig_Compound} from '@theatre/core/propTypes'
 import {isPropConfigComposite} from '@theatre/shared/propTypes/utils'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
-import type {
-  $IntentionalAny,
-  SerializableMap,
-} from '@theatre/shared/utils/types'
-import {getPointerParts, val} from '@theatre/dataverse'
+import type {$IntentionalAny} from '@theatre/shared/utils/types'
+import {getPointerParts} from '@theatre/dataverse'
 import last from 'lodash-es/last'
 import {darken, transparentize} from 'polished'
 import React from 'react'
@@ -18,11 +15,7 @@ import {
 } from './utils/SingleRowPropEditor'
 import DefaultOrStaticValueIndicator from './utils/DefaultValueIndicator'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
-import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
-import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
-import getStudio from '@theatre/studio/getStudio'
-import getDeep from '@theatre/shared/utils/getDeep'
 
 const Container = styled.div`
   --step: 8px;
@@ -53,7 +46,7 @@ const PropName = styled.div`
   align-items: center;
   user-select: none;
   &:hover {
-    color: white;
+    /* color: white; */
   }
 
   ${() => propNameText};
@@ -85,61 +78,61 @@ const CompoundPropEditor: React.FC<{
   const [propNameContainerRef, propNameContainer] =
     useRefAndState<HTMLDivElement | null>(null)
 
-  const [contextMenu] = useContextMenu(propNameContainer, {
-    items: () => {
-      const items: IContextMenuItem[] = []
+  // const [contextMenu] = useContextMenu(propNameContainer, {
+  //   items: () => {
+  //     const items: IContextMenuItem[] = []
 
-      const pathToProp = getPointerParts(pointerToProp).path
+  //     const pathToProp = getPointerParts(pointerToProp).path
 
-      const validSequencedTracks = val(
-        obj.template.getMapOfValidSequenceTracks_forStudio(),
-      )
-      const possibleSequenceTrackIds = getDeep(validSequencedTracks, pathToProp)
+  //     const validSequencedTracks = val(
+  //       obj.template.getMapOfValidSequenceTracks_forStudio(),
+  //     )
+  //     const possibleSequenceTrackIds = getDeep(validSequencedTracks, pathToProp)
 
-      const hasSequencedTracks = !!(
-        typeof possibleSequenceTrackIds === 'object' &&
-        possibleSequenceTrackIds &&
-        Object.keys(possibleSequenceTrackIds).length > 0
-      )
+  //     const hasSequencedTracks = !!(
+  //       typeof possibleSequenceTrackIds === 'object' &&
+  //       possibleSequenceTrackIds &&
+  //       Object.keys(possibleSequenceTrackIds).length > 0
+  //     )
 
-      if (hasSequencedTracks) {
-        items.push({
-          label: 'Make All Static',
-          enabled: hasSequencedTracks,
-          callback: () => {
-            getStudio()!.transaction(({stateEditors}) => {
-              const propAddress = {...obj.address, pathToProp}
+  //     if (hasSequencedTracks) {
+  //       items.push({
+  //         label: 'Make All Static',
+  //         enabled: hasSequencedTracks,
+  //         callback: () => {
+  //           getStudio()!.transaction(({stateEditors}) => {
+  //             const propAddress = {...obj.address, pathToProp}
 
-              stateEditors.coreByProject.historic.sheetsById.sequence.setCompoundPropAsStatic(
-                {
-                  ...propAddress,
-                  value: obj.getValueByPointer(
-                    pointerToProp,
-                  ) as unknown as SerializableMap,
-                },
-              )
-            })
-          },
-        })
-      }
+  //             stateEditors.coreByProject.historic.sheetsById.sequence.setCompoundPropAsStatic(
+  //               {
+  //                 ...propAddress,
+  //                 value: obj.getValueByPointer(
+  //                   pointerToProp,
+  //                 ) as unknown as SerializableMap,
+  //               },
+  //             )
+  //           })
+  //         },
+  //       })
+  //     }
 
-      items.push({
-        label: 'Reset all',
-        callback: () => {
-          getStudio()!.transaction(({unset}) => {
-            unset(pointerToProp)
-          })
-        },
-      })
-      return items
-    },
-  })
+  //     items.push({
+  //       label: 'Reset all',
+  //       callback: () => {
+  //         getStudio()!.transaction(({unset}) => {
+  //           unset(pointerToProp)
+  //         })
+  //       },
+  //     })
+  //     return items
+  //   },
+  // })
 
   const lastSubPropIsComposite = compositeSubs.length > 0
 
   return (
     <Container>
-      {contextMenu}
+      {/* {contextMenu} */}
       <Header
         // @ts-ignore
         style={{'--depth': depth - 1}}
