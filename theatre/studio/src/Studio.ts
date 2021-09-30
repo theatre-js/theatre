@@ -57,6 +57,13 @@ export class Studio {
 
     this._attachToIncomingProjects()
     this.paneManager = new PaneManager(this)
+
+    /**
+     * @todo If studio.initialize() is not called within a few milliseconds,
+     * we should console.warn() the user that `@theatre/studio` is still in
+     * their bundle. This way we can avoid issues like
+     * [this](https://discord.com/channels/870988717190426644/892469755225710642/892479678797971486).
+     */
   }
 
   async initialize(opts?: Parameters<IStudio['initialize']>[0]) {
@@ -209,7 +216,7 @@ export class Studio {
     this._store.redo()
   }
 
-  createExportedStateOfProject(projectId: string): OnDiskState {
-    return this._store.createExportedStateOfProject(projectId)
+  createContentOfSaveFile(projectId: string): OnDiskState {
+    return this._store.createContentOfSaveFile(projectId)
   }
 }

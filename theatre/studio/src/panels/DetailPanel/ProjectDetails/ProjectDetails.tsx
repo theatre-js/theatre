@@ -35,7 +35,7 @@ const ProjectDetails: React.FC<{
 
   const exportProject = useCallback(() => {
     const str = JSON.stringify(
-      getStudio().createExportedStateOfProject(project.address.projectId),
+      getStudio().createContentOfSaveFile(project.address.projectId),
       null,
       2,
     )

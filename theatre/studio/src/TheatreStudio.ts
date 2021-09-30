@@ -301,6 +301,25 @@ export interface IStudio {
    * studio is present.
    */
   getStudioProject(): IProject
+
+  /**
+   * Creates a JSON object that contains the state of the project. You can use this
+   * to programmatically save the state of your projects to the storage system of your
+   * choice, rather than manually clicking on the "Export" button in the UI.
+   *
+   * @param projectId same projectId as in `core.getProject(projectId)`
+   *
+   * Usage:
+   * ```ts
+   * const projectId = "project"
+   * const json = studio.createContentOfSaveFile(projectId)
+   * const string = JSON.stringify(json)
+   * fetch(`/projects/${projectId}/state`, {method: 'POST', body: string}).then(() => {
+   *   console.log("Saved")
+   * })
+   * ```
+   */
+  createContentOfSaveFile(projectId: string): Record<string, unknown>
 }
 
 export default class TheatreStudio implements IStudio {
@@ -430,5 +449,9 @@ export default class TheatreStudio implements IStudio {
 
   destroyPane(paneId: string): void {
     return getStudio().paneManager.destroyPane(paneId)
+  }
+
+  createContentOfSaveFile(projectId: string): Record<string, unknown> {
+    return getStudio().createContentOfSaveFile(projectId) as $IntentionalAny
   }
 }

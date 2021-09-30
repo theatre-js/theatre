@@ -280,9 +280,17 @@ export default class StudioStore {
     this._reduxStore.dispatch(studioActions.historic.redo())
   }
 
-  createExportedStateOfProject(projectId: string): OnDiskState {
+  createContentOfSaveFile(projectId: string): OnDiskState {
+    const projectState =
+      this._reduxStore.getState().$persistent.historic.innerState.coreByProject[
+        projectId
+      ]
+
+    if (!projectState) {
+      throw new Error(`Project ${projectId} has not been initialized.`)
+    }
+
     const revision = generateDiskStateRevision()
-    // let's assume projectId is already loaded
 
     this.tempTransaction(({stateEditors}) => {
       stateEditors.coreByProject.historic.revisionHistory.add({
