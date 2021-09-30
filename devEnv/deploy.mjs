@@ -12,6 +12,7 @@ const packagesToBuild = [
   'theatre',
   '@theatre/dataverse',
   '@theatre/react',
+  '@theatre/browser-bundles',
   // '@theatre/r3f',
 ]
 
@@ -20,6 +21,7 @@ const packagesToPublish = [
   '@theatre/studio',
   '@theatre/dataverse',
   '@theatre/react',
+  '@theatre/browser-bundles',
   // '@theatre/r3f',
 ]
 
@@ -33,6 +35,7 @@ const packagesWhoseVersionsShouldBump = [
   'theatre/studio',
   'packages/dataverse',
   'packages/react',
+  'packages/browser-bundles',
   // 'packages/r3f',
 ]
 
