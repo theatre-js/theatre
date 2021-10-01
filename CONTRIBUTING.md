@@ -49,13 +49,15 @@ git remote add upstream git@github.com:AriaMinaei/theatre.git
 
 ### `@theatre/core`
 
-The core animation library. This project is located under
-[`./theatre/core`](`/theatre/core).
+The core animation library.
+
+This project is located under [`./theatre/core`](./theatre/core).
 
 ### `@theatre/studio`
 
-The visual editor. This project is located under
-[`./theatre/studio`](`/theatre/studio).
+The visual editor.
+
+This project is located under [`./theatre/studio`](./theatre/studio).
 
 ### Commands
 
