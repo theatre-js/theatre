@@ -127,9 +127,48 @@ export interface ISequence {
    * ```
    */
   attachAudio(args: IAttachAudioArgs): Promise<{
+    /**
+     * An {@link https://developer.mozilla.org/en-US/docs/Web/API/AudioBuffer AudioBuffer}.
+     * If `args.source` is a URL, then `decodedBuffer` would be the result
+     * of {@link https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/decodeAudioData audioContext.decodeAudioData()}
+     * on the audio file at that URL.
+     *
+     * If `args.source` is an `AudioBuffer`, then `decodedBuffer` would be equal to `args.source`
+     */
     decodedBuffer: AudioBuffer
+    /**
+     * The `AudioContext`. It is either equal to `source.audioContext` if it is provided, or
+     * one that's created on the fly.
+     */
     audioContext: AudioContext
+    /**
+     * Equals to either `args.destinationNode`, or if none is provided, it equals `audioContext.destinationNode`.
+     *
+     * See `gainNode` for more info.
+     */
     destinationNode: AudioNode
+
+    /**
+     * This is an intermediate GainNode that Theatre feeds its audio to. It is by default
+     * connected to destinationNode, but you can disconnect the gainNode and feed it to your own graph.
+     *
+     * For example:
+     * ```ts
+     * const {gainNode, audioContext} = await sequence.attachAudio({source: '/audio.mp3'})
+     * // disconnect the gainNode (at this point, the sequence's audio track won't be audible)
+     * gainNode.disconnect()
+     * // create our own gain node
+     * const lowerGain = audioContext.createGain()
+     * // lower its volume to 10%
+     * lowerGain.gain.setValueAtTime(0.1, audioContext.currentTime)
+     * // feed the sequence's audio to our lowered gainNode
+     * gainNode.connect(lowerGain)
+     * // feed the lowered gainNode to the audioContext's destination
+     * lowerGain.connect(audioContext.destination)
+     * // now audio will be audible, with 10% the volume
+     * ```
+     */
+    gainNode: GainNode
   }>
 }
 
@@ -191,20 +230,21 @@ export default class TheatreSequence implements ISequence {
     decodedBuffer: AudioBuffer
     audioContext: AudioContext
     destinationNode: AudioNode
+    gainNode: GainNode
   }> {
-    const {audioContext, destinationNode, decodedBuffer} =
+    const {audioContext, destinationNode, decodedBuffer, gainNode} =
       await resolveAudioBuffer(args)
 
     const playbackController = new AudioPlaybackController(
       coreTicker,
       decodedBuffer,
       audioContext,
-      destinationNode,
+      gainNode,
     )
 
     privateAPI(this).replacePlaybackController(playbackController)
 
-    return {audioContext, destinationNode, decodedBuffer}
+    return {audioContext, destinationNode, decodedBuffer, gainNode}
   }
 }
 
@@ -212,6 +252,7 @@ async function resolveAudioBuffer(args: IAttachAudioArgs): Promise<{
   decodedBuffer: AudioBuffer
   audioContext: AudioContext
   destinationNode: AudioNode
+  gainNode: GainNode
 }> {
   function getAudioContext(): Promise<AudioContext> {
     if (args.audioContext) return Promise.resolve(args.audioContext)
@@ -306,10 +347,13 @@ async function resolveAudioBuffer(args: IAttachAudioArgs): Promise<{
   ])
 
   const destinationNode = args.destinationNode || audioContext.destination
+  const gainNode = audioContext.createGain()
+  gainNode.connect(destinationNode)
 
   return {
-    destinationNode,
     audioContext,
     decodedBuffer,
+    gainNode,
+    destinationNode,
   }
 }
