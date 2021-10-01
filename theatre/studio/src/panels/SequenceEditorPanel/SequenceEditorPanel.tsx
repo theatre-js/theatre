@@ -155,7 +155,9 @@ const Content: React.FC<{}> = () => {
       [],
     )
 
+    const graphEditorAvailable = val(layoutP.graphEditorDims.isAvailable)
     const graphEditorOpen = val(layoutP.graphEditorDims.isOpen)
+
     return (
       <Container ref={containerRef}>
         <LeftBackground style={{width: `${val(layoutP.leftDims.width)}px`}} />
@@ -165,7 +167,7 @@ const Content: React.FC<{}> = () => {
           {graphEditorOpen && (
             <GraphEditor key={key + '-graphEditor'} layoutP={layoutP} />
           )}
-          <GraphEditorToggle layoutP={layoutP} />
+          {graphEditorAvailable && <GraphEditorToggle layoutP={layoutP} />}
           <RightOverlay layoutP={layoutP} />
         </FrameStampPositionProvider>
       </Container>

@@ -70,6 +70,7 @@ export type SequenceEditorPanelLayout = {
   rightDims: DimsOfPanelPart
   dopeSheetDims: DimsOfPanelPart
   graphEditorDims: DimsOfPanelPart & {
+    isAvailable: boolean
     isOpen: boolean
     padding: {top: number; bottom: number}
   }
@@ -135,6 +136,13 @@ export function sequenceEditorPanelLayout(
       studio.atomP.historic.panels.sequenceEditor.graphEditor,
     )
 
+    const selectedPropsByObject = val(
+      historicStateP.sequenceEditor.selectedPropsByObject,
+    )
+
+    const graphEditorAvailable =
+      !!selectedPropsByObject && Object.keys(selectedPropsByObject).length > 0
+
     const {
       leftDims,
       rightDims,
@@ -158,7 +166,9 @@ export function sequenceEditorPanelLayout(
           screenY: panelDims.screenY,
         }
 
-        const graphEditorOpen = graphEditorState?.isOpen === true
+        const graphEditorOpen =
+          graphEditorAvailable && graphEditorState?.isOpen === true
+
         const graphEditorHeight = Math.floor(
           (graphEditorOpen
             ? clamp(graphEditorState?.height ?? 0.5, 0.1, 0.7)
@@ -177,6 +187,7 @@ export function sequenceEditorPanelLayout(
 
         // const graphEditorHeight = panelDims.height - dopeSheetDims.height
         const graphEditorDims: SequenceEditorPanelLayout['graphEditorDims'] = {
+          isAvailable: graphEditorAvailable,
           isOpen: graphEditorOpen,
           width: rightDims.width,
           height: graphEditorHeight,
@@ -201,7 +212,7 @@ export function sequenceEditorPanelLayout(
           horizontalScrollbarDims,
         }
       },
-      [panelDims, graphEditorState],
+      [panelDims, graphEditorState, graphEditorAvailable],
     )
 
     const graphEditorVerticalSpace = prism.memo(
