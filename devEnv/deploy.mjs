@@ -104,7 +104,7 @@ const packagesWhoseVersionsShouldBump = [
       )
       process.exit(1)
     }
-    const npmTag = matches[1]
+    npmTag = matches[1]
     console.log('npm tag: ' + npmTag)
   }
 
