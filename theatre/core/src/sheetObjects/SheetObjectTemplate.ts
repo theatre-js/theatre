@@ -174,21 +174,17 @@ export default class SheetObjectTemplate {
    * Not available in core.
    */
   getMapOfValidSequenceTracks_forStudio(): IDerivation<IPropPathToTrackIdTree> {
-    if (process.env.NODE_ENV !== 'production') {
-      return this._cache.get('getMapOfValidSequenceTracks_forStudio', () =>
-        this.getArrayOfValidSequenceTracks().map((arr) => {
-          let map = {}
+    return this._cache.get('getMapOfValidSequenceTracks_forStudio', () =>
+      this.getArrayOfValidSequenceTracks().map((arr) => {
+        let map = {}
 
-          for (const {pathToProp, trackId} of arr) {
-            set(map, pathToProp, trackId)
-          }
+        for (const {pathToProp, trackId} of arr) {
+          set(map, pathToProp, trackId)
+        }
 
-          return map
-        }),
-      )
-    } else {
-      return new ConstantDerivation({})
-    }
+        return map
+      }),
+    )
   }
 
   getDefaultsAtPointer(
