@@ -91,14 +91,22 @@ const packagesWhoseVersionsShouldBump = [
     process.exit(1)
   }
 
-  const allPackages = keyBy(
-    (await $`yarn workspaces list --json`)
-      .toString()
-      .split('\n')
-      .filter((s) => s.trim().length > 0)
-      .map((s) => JSON.parse(s)),
-    'name',
-  )
+  let npmTag = 'latest'
+  if (version.match(/^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$/)) {
+    console.log('npm tag: latest')
+  } else {
+    const matches = version.match(
+      /^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\-(dev|rc|beta)\.[0-9]{1,3}$/,
+    )
+    if (!matches) {
+      console.log(
+        'Invalid version. Currently xx.xx.xx or xx.xx.xx-(dev|rc|beta).xx is allowed',
+      )
+      process.exit(1)
+    }
+    const npmTag = matches[1]
+    console.log('npm tag: ' + npmTag)
+  }
 
   if ((await $`git status -s`).toString().length > 0) {
     console.error(`Git working directory contains uncommitted changes:`)
@@ -169,7 +177,8 @@ const packagesWhoseVersionsShouldBump = [
   console.log('Publishing to npm')
   await Promise.all(
     packagesToPublish.map(
-      (workspace) => $`yarn workspace ${workspace} npm publish --access public`,
+      (workspace) =>
+        $`yarn workspace ${workspace} npm publish --access public --tag ${npmTag}`,
     ),
   )
 })()
