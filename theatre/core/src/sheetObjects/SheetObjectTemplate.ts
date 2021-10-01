@@ -18,13 +18,7 @@ import type {
   SerializableValue,
 } from '@theatre/shared/utils/types'
 import type {IDerivation, Pointer} from '@theatre/dataverse'
-import {
-  Atom,
-  ConstantDerivation,
-  getPointerParts,
-  prism,
-  val,
-} from '@theatre/dataverse'
+import {Atom, getPointerParts, prism, val} from '@theatre/dataverse'
 import get from 'lodash-es/get'
 import set from 'lodash-es/set'
 import getPropDefaultsOfSheetObject from './getPropDefaultsOfSheetObject'
