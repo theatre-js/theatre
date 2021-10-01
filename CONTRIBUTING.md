@@ -123,7 +123,8 @@ Other references
 
 ## Testing
 
-Run tests during development with `yarn test` to re-run tests on file changes.
+Run tests during development with `yarn test --watch` to re-run tests on file
+changes.
 
 ### Examples
 
