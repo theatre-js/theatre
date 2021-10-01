@@ -24,8 +24,6 @@ You can use Theatre.js to:
 
   ![s](https://raw.githubusercontent.com/AriaMinaei/theatre-docs/main/docs/.vuepress/public/preview-generative.gif)
 
-  
-
 * Or animate any other JS variable
 
   ![s](https://raw.githubusercontent.com/AriaMinaei/theatre-docs/main/docs/.vuepress/public/preview-console.gif)
@@ -36,7 +34,7 @@ You can find the documentation and video tutorials [here](https://docs.theatrejs
 
 ## Community
 
-Join us on [Discord](https://discord.gg/bm9f8F9Y9N) or write us an [email](mailto:hello@theatrejs.com).
+Join us on [Discord](https://discord.gg/bm9f8F9Y9N), follow the updates on [twitter](https://twitter.com/AriaMinaei) or write us an [email](mailto:hello@theatrejs.com).
 
 ## License
 
