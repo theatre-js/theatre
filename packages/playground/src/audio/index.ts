@@ -13,13 +13,17 @@ setTimeout(async () => {
   //   d.resolve(null)
   // })
   // await d.promise
-  await sheet.sequence
-    .attachAudio({
-      source: 'http://localhost:5000/Kai%20Engel%20-%20Moonlight%20Reprise.mp3',
-    })
-    .then(() => {
-      console.log('ready')
-    })
+  const {gainNode, audioContext} = await sheet.sequence.attachAudio({
+    source: 'http://localhost:5000/audio.mp3',
+  })
+
+  const lowerGain = audioContext.createGain()
+  gainNode.disconnect()
+  gainNode.connect(lowerGain)
+
+  lowerGain.gain.setValueAtTime(0.01, audioContext.currentTime)
+  lowerGain.connect(audioContext.destination)
+
   sheet.sequence.position = 11
   await sheet.sequence.play({
     iterationCount: 4,
