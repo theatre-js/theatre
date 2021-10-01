@@ -93,6 +93,8 @@ export interface ISequence {
    *
    * @returns A promise that resolves once the audio source is loaded and decoded
    *
+   * Learn more [here](https://docs.theatrejs.com/in-depth/#sequence-attachaudio).
+   *
    * Usage:
    * ```ts
    * // Loads and decodes audio from the URL and then attaches it to the sequence
