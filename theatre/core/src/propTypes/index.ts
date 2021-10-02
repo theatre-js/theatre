@@ -291,6 +291,7 @@ export const string = (
 /**
  * A stringLiteral prop type, useful for building menus or radio buttons.
  *
+ * @example
  * Usage:
  * ```ts
  * // Basic usage
@@ -304,16 +305,23 @@ export const string = (
  * }, {as: "switch", label: "Street Light"})
  * ```
  *
- * @param defaultValue A string
- * @param options An object like `{[value]: Label}`. Example: {r: "Red", "g": "Green"}
- * @param opts Extra opts
- * @param opts.as Determines if editor is shown as a menu or a switch. Either 'menu' or 'switch'.  Default: 'menu'
  * @returns A stringLiteral prop type
  *
  */
 export function stringLiteral<Opts extends {[key in string]: string}>(
+  /**
+   * Default value (a string that equals one of the options)
+   */
   defaultValue: Extract<keyof Opts, string>,
+  /**
+   * The options. Use the `"value": "Label"` format.
+   *
+   * An object like `{[value]: Label}`. Example: `{r: "Red", "g": "Green"}`
+   */
   options: Opts,
+  /**
+   * opts.as Determines if editor is shown as a menu or a switch. Either 'menu' or 'switch'.  Default: 'menu'
+   */
   opts?: {as?: 'menu' | 'switch'} & PropTypeConfigOpts,
 ): PropTypeConfig_StringLiteral<Extract<keyof Opts, string>> {
   return {

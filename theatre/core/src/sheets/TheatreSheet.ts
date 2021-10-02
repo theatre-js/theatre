@@ -40,8 +40,8 @@ export interface ISheet {
    *
    * **Docs: https://docs.theatrejs.com/in-depth/#objects**
    *
-   * @param key Each object is identified by a key, which is a non-empty string
-   * @param props The props of the object. See examples
+   * @param key - Each object is identified by a key, which is a non-empty string
+   * @param props - The props of the object. See examples
    *
    * @returns An Object
    *

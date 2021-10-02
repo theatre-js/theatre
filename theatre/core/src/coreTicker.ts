@@ -5,7 +5,8 @@ const coreTicker = new Ticker()
 export default coreTicker
 
 /**
- * @todo users should also be able to define their own ticker.
+ * @remarks
+ * TODO users should also be able to define their own ticker.
  */
 const onAnimationFrame = (t: number) => {
   coreTicker.tick(t)

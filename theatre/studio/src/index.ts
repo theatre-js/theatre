@@ -1,6 +1,3 @@
-/**
- * @module @theatre/studio
- */
 import {setStudio} from '@theatre/studio/getStudio'
 import {Studio} from '@theatre/studio/Studio'
 

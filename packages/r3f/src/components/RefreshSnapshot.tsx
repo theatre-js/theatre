@@ -5,9 +5,9 @@ import useRefreshSnapshot from './useRefreshSnapshot'
  * Putting this element in a suspense tree makes sure the snapshot editor
  * gets refreshed once the tree renders.
  *
- * Alternatively you can use
- * @link useRefreshSnapshot()
+ * Alternatively you can use {@link useRefreshSnapshot}
  *
+ * @example
  * Usage
  * ```jsx
  * <Suspense fallback={null}>

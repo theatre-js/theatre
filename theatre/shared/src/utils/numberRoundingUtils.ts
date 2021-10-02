@@ -124,7 +124,7 @@ export const stringifyNumber = (n: number): string => {
 }
 
 /**
- * it is expected that both args are 0 < arg < 1
+ * it is expected that both args are 0 \< arg \< 1
  */
 export const roundestFloat = (a: number, b: number): number => {
   const inString = {

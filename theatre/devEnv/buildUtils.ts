@@ -24,15 +24,15 @@ export function createBundles(watch: boolean) {
         /**
          * Prevents double-bundling react.
          *
-         * @notes
+         * @remarks
          * Ideally we'd want to just bundle our own fixed version of react to keep things
          * simple, but for now we keep react external because we're exposing these
-         * react-dependant API from @theatre/studio:
+         * react-dependant API from \@theatre/studio:
          *
-         * - ToolbarIconButton
-         * - IStudio['extend']({globalToolbar: {component}})
+         * - `ToolbarIconButton`
+         * - `IStudio['extend']({globalToolbar: {component}})`
          *
-         * These are further exposed by @theatre/r3f which provides `<Wrapper />`
+         * These are further exposed by \@theatre/r3f which provides `<Wrapper />`
          * as an API.
          *
          * It's probably possible to bundle our own react version and somehow share it
@@ -58,11 +58,11 @@ export function createBundles(watch: boolean) {
     })
 
     /**
-     * @notes
+     * @remarks
      * I just disabled ESM builds because I couldn't get them to work
      * with create-react-app which uses webpack v4. I'm sure that's fixable,
      * but not worth the hassle right now. There is not much to tree-shake
-     * in @theatre/core as we've done all the tree-shaking pre-bundle already.
+     * in \@theatre/core as we've done all the tree-shaking pre-bundle already.
      */
 
     // build({

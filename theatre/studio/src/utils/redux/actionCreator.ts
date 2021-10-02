@@ -33,7 +33,7 @@ interface ActionCreatorCreator {
 }
 
 /**
- * This is basically the same as {createAction} from 'redux-actions',
+ * This is basically the same as `{createAction}` from 'redux-actions',
  * only that you can query the type of the action from the resulting
  * action creator.
  */

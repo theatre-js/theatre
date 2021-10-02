@@ -45,8 +45,8 @@ export interface IScrubApi {
    *   set(obj.props.z, 10)
    * })
    * ```
-   * @param pointer A Pointer, like object.props
-   * @param value The value to override the existing value. This is treated as a deep partial value.
+   * @param pointer - A Pointer, like object.props
+   * @param value - The value to override the existing value. This is treated as a deep partial value.
    */
   set<T>(pointer: Pointer<T>, value: T): void
 }

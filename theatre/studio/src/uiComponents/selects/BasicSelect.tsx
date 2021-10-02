@@ -22,9 +22,6 @@ type Option = {
   value: string
 }
 
-/**
- * @todo Implement me
- */
 const BasicSelect: React.FC<{
   label: string | ElementType
   options: Array<Option>

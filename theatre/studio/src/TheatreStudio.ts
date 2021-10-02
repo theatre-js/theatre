@@ -52,7 +52,7 @@ export interface ITransactionAPI {
    *   set(obj.props)
    * })
    * ```
-   * @param pointer A pointer, like object.props
+   * @param pointer - A pointer, like object.props
    */
   unset<V>(pointer: Pointer<V>): void
 }

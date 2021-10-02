@@ -22,7 +22,8 @@ function typeOfValue(v: unknown): ValueType {
 }
 
 /**
- * @todo explain what this does.
+ * @remarks
+ * TODO explain what this does.
  */
 export default function minimalOverride<T>(base: T, override: T): T {
   const typeofOverride = typeOfValue(override)

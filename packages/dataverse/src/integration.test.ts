@@ -1,4 +1,5 @@
 /**
+ // eslint-disable-next-line
  * @jest-environment jsdom
  */
 import Atom, {val} from './Atom'

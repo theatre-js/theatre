@@ -148,7 +148,7 @@ function queueIfNeeded() {
  * @remarks
  * It looks like this new implementation of useDerivation() manages to:
  * 1. Not over-calculate the derivations
- * 2. Render derivation in ancestor -> descendent order
+ * 2. Render derivation in ancestor -\> descendent order
  * 3. Not set off React's concurrent mode alarms
  *
  * It works like an implementation of Dataverse's Ticker, except that it runs

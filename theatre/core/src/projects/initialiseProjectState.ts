@@ -6,8 +6,9 @@ import type {OnDiskState} from './store/storeTypes'
 import globals from '@theatre/shared/globals'
 
 /**
- * @todo this could be turned into a simple derivation, like:
- * editor.isReady: IDerivation<{isReady: true} | {isReady: false, reason: 'conflictBetweenDiskStateAndBrowserState'}>
+ * @remarks
+ * TODO this could be turned into a simple derivation, like:
+ * `editor.isReady: IDerivation<{isReady: true} | {isReady: false, reason: 'conflictBetweenDiskStateAndBrowserState'}>`
  */
 export default async function initialiseProjectState(
   studio: Studio,

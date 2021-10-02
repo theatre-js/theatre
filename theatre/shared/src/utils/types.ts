@@ -32,7 +32,7 @@ export type StrictRecord<Key extends string, V> = {[K in Key]?: V}
  * This is supposed to create an "opaque" or "nominal" type, but since typescript
  * doesn't allow generic index signatures, we're leaving it be.
  *
- * @todo fix this once https://github.com/microsoft/TypeScript/pull/26797 lands (likely typescript 4.4)
+ * TODO fix this once https://github.com/microsoft/TypeScript/pull/26797 lands (likely typescript 4.4)
  */
 export type Nominal<T, N extends string> = T
 

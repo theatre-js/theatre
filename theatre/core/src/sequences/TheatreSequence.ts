@@ -130,9 +130,9 @@ export interface ISequence {
    */
   attachAudio(args: IAttachAudioArgs): Promise<{
     /**
-     * An {@link https://developer.mozilla.org/en-US/docs/Web/API/AudioBuffer AudioBuffer}.
+     * An {@link https://developer.mozilla.org/en-US/docs/Web/API/AudioBuffer | AudioBuffer}.
      * If `args.source` is a URL, then `decodedBuffer` would be the result
-     * of {@link https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/decodeAudioData audioContext.decodeAudioData()}
+     * of {@link https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/decodeAudioData | audioContext.decodeAudioData()}
      * on the audio file at that URL.
      *
      * If `args.source` is an `AudioBuffer`, then `decodedBuffer` would be equal to `args.source`

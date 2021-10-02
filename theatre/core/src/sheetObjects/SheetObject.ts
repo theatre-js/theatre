@@ -121,7 +121,8 @@ export default class SheetObject implements IdentityDerivationProvider {
 
   getIdentityDerivation(path: Array<string | number>): IDerivation<unknown> {
     /**
-     * @todo perf: Too much indirection here.
+     * @remarks
+     * TODO perf: Too much indirection here.
      */
     return prism(() => {
       const allValuesP = val(this.getValues())

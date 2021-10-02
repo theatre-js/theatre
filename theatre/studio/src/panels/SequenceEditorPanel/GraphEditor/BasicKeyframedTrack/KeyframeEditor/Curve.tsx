@@ -68,10 +68,10 @@ const Curve: React.FC<IProps> = (props) => {
 }
 
 /**
- * Assuming a box such that: {x: 0, y: 0, width: 1px, height: 1px}
+ * Assuming a box such that: `{x: 0, y: 0, width: 1px, height: 1px}`
  * and given the desired coordinates of:
- * {x: xInUnitSpace, y: yInExtremumSpace, width: widthInUnitSpace, height: heightInExtremumSpace},
- * transformBox() returns a CSS transform that transforms the box into its right dimensions
+ * `{x: xInUnitSpace, y: yInExtremumSpace, width: widthInUnitSpace, height: heightInExtremumSpace}`,
+ * `transformBox()` returns a CSS transform that transforms the box into its right dimensions
  * in the GraphEditor space.
  */
 export function transformBox(

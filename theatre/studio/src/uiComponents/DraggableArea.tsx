@@ -42,7 +42,7 @@ type State = {
 }
 
 /**
- * @todo low-hanging-fruit replace all DraggableArea instances with `react-use-gesture`
+ * TODO low-hanging-fruit replace all DraggableArea instances with `react-use-gesture`
  */
 class DraggableArea extends React.PureComponent<IProps, {}> {
   s: State
