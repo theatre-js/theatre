@@ -11,6 +11,7 @@ import styled from 'styled-components'
 import {useReceiveVerticalWheelEvent} from '@theatre/studio/panels/SequenceEditorPanel/VerticalScrollContainer'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import {useCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
+import type {IRange} from '@theatre/shared/utils/types'
 
 const Container = styled.div`
   position: absolute;
@@ -192,7 +193,8 @@ function useHandlePanAndZoom(
         )
 
         const oldRange = val(layoutP.clippedSpace.range)
-        const scaleFactor = 1 + event.deltaY * 0.03
+        const delta = normalize(event.deltaY, [-50, 50])
+        const scaleFactor = 1 + delta * 0.03
 
         const newRange = mapValues(oldRange, (originalPos) => {
           return (
@@ -200,6 +202,33 @@ function useHandlePanAndZoom(
             pivotPointInUnitSpace
           )
         })
+
+        // Set maximum scroll points based on the sequence length.
+        // This is to avoid zooming out to infinity.
+        const sequenceLength = val(layoutP.sheet).getSequence().length
+        const maxEnd = sequenceLength + sequenceLength * 0.25
+
+        val(layoutP.clippedSpace.setRange)(
+          normalizeRange(newRange, [0, maxEnd]),
+        )
+      }
+      // paning
+      else if (event.shiftKey) {
+        event.preventDefault()
+        event.stopPropagation()
+
+        const sequenceLength = val(layoutP.sheet).getSequence().length
+        const oldRange = val(layoutP.clippedSpace.range)
+        const windowSize = oldRange.end - oldRange.start
+        const speed = windowSize / sequenceLength
+
+        const delta = normalize(event.deltaY, [-50, 50])
+        const scaleFactor = delta * 0.05 * speed
+
+        const newRange = mapValues(
+          oldRange,
+          (originalPos) => originalPos + scaleFactor,
+        )
 
         val(layoutP.clippedSpace.setRange)(newRange)
       }
@@ -215,6 +244,17 @@ function useHandlePanAndZoom(
       node.removeEventListener('wheel', receiveWheelEvent, listenerOptions)
     }
   }, [node, layoutP])
+}
+
+function normalize(value: number, [min, max]: [min: number, max: number]) {
+  return Math.max(Math.min(value, max), min)
+}
+
+function normalizeRange(
+  range: IRange<number>,
+  minMax: [min: number, max: number],
+) {
+  return mapValues(range, (pos) => normalize(pos, minMax))
 }
 
 function useUpdateScrollFromClippedSpaceRange(
