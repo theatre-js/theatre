@@ -9,10 +9,12 @@
   ],
   "scripts": {
     "playground": "yarn workspace playground run serve",
-    "typecheck": "tsc --build ./devEnv/typecheck-all-projects/tsconfig.all.json",
+    "typecheck": "yarn run build:ts",
+    "build:ts": "tsc --build ./devEnv/typecheck-all-projects/tsconfig.all.json",
     "test": "jest",
     "postinstall": "husky install",
     "deploy": "zx devEnv/deploy.mjs",
+    "build:api-docs": "zx devEnv/api-docs.mjs",
     "lint:all": "eslint . --ext ts,tsx --ignore-path=.gitignore --rulesdir ./devEnv/eslint/rules"
   },
   "lint-staged": {
@@ -37,6 +39,7 @@
     "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-react": "^7.25.1",
     "eslint-plugin-react-hooks": "^4.2.0",
+    "eslint-plugin-tsdoc": "^0.2.14",
     "eslint-plugin-unused-imports": "^1.1.4",
     "husky": "^6.0.0",
     "jest": "^27.1.0",
@@ -47,6 +50,8 @@
     "zx": "^2.0.0"
   },
   "dependencies": {
+    "@microsoft/api-documenter": "^7.13.54",
+    "@microsoft/api-extractor": "^7.18.11",
     "node-gyp": "^8.1.0"
   }
 }

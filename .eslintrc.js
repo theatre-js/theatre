@@ -1,9 +1,10 @@
 module.exports = {
   root: true,
-  plugins: ['unused-imports'],
+  plugins: ['unused-imports', 'eslint-plugin-tsdoc'],
   extends: [],
   rules: {
     'unused-imports/no-unused-imports': 'warn',
+    'tsdoc/syntax': 'warn',
     'no-restricted-imports': [
       'error',
       {
@@ -16,7 +17,7 @@ module.exports = {
       },
     ],
   },
-  ignorePatterns: ['*.d.ts'],
+  ignorePatterns: ['*.d.ts', '*.ignore.ts'],
   overrides: [
     {
       files: ['*.ts', '*.tsx'],

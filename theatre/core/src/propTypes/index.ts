@@ -65,9 +65,6 @@ const validateCommonOpts = (
  *   {label: "Position"}
  * )
  * ```
- * @param props
- * @param opts
- * @returns
  *
  */
 export const compound = <Props extends IShorthandCompoundProps>(
@@ -122,8 +119,8 @@ export const compound = <Props extends IShorthandCompoundProps>(
  * })
  * ```
  *
- * @param defaultValue The default value (Must be a finite number)
- * @param opts The options (See usage examples)
+ * @param defaultValue - The default value (Must be a finite number)
+ * @param opts - The options (See usage examples)
  * @returns A number prop config
  */
 export const number = (
@@ -222,8 +219,8 @@ export const number = (
  * })
  * ```
  *
- * @param defaultValue The default value (must be a boolean)
- * @param opts Options (See usage examples)
+ * @param defaultValue - The default value (must be a boolean)
+ * @param opts - Options (See usage examples)
  */
 export const boolean = (
   defaultValue: boolean,
@@ -264,8 +261,8 @@ export const boolean = (
  * })
  * ```
  *
- * @param defaultValue The default value (must be a string)
- * @param opts The options (See usage examples)
+ * @param defaultValue - The default value (must be a string)
+ * @param opts - The options (See usage examples)
  * @returns A string prop type
  */
 export const string = (

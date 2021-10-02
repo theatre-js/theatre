@@ -35,8 +35,8 @@ export interface ITransactionAPI {
    *   set(obj.props.z, 10)
    * })
    * ```
-   * @param pointer A Pointer, like object.props
-   * @param value The value to override the existing value. This is treated as a deep partial value.
+   * @param pointer - A Pointer, like object.props
+   * @param value - The value to override the existing value. This is treated as a deep partial value.
    */
   set<V>(pointer: Pointer<V>, value: V): void
   /**
@@ -152,14 +152,14 @@ export interface IStudio {
     /**
      * The local storage key to use to persist the state.
      *
-     * @default "theatrejs:0.4"
+     * Default: "theatrejs:0.4"
      */
     persistenceKey?: string
     /**
      * Whether to persist the changes in the browser's temporary storage.
      * It is useful to set this to false in the test environment or when debugging things.
      *
-     * @default true
+     * Default: true
      */
     usePersistentStorage?: boolean
   }): void
@@ -212,7 +212,7 @@ export interface IStudio {
    * automatically runs scrub.commit() after `threshhold` milliseconds have
    * passed after the last `scrub.capture`.
    *
-   * @param threshhold How long to wait before committing the scrub
+   * @param threshhold - How long to wait before committing the scrub
    *
    * Usage:
    * ```ts
@@ -288,7 +288,7 @@ export interface IStudio {
   /**
    * Creates a new pane
    *
-   * @param paneClass The class name of the pane (provided by an extension)
+   * @param paneClass - The class name of the pane (provided by an extension)
    */
   createPane<PaneClass extends string>(
     paneClass: PaneClass,
@@ -307,7 +307,7 @@ export interface IStudio {
    * to programmatically save the state of your projects to the storage system of your
    * choice, rather than manually clicking on the "Export" button in the UI.
    *
-   * @param projectId same projectId as in `core.getProject(projectId)`
+   * @param projectId - same projectId as in `core.getProject(projectId)`
    *
    * Usage:
    * ```ts

@@ -21,8 +21,12 @@ export {types}
 /**
  * Returns a project of the given id, or creates one if it doesn't already exist.
  *
- * If @theatre/studio is also loaded, then the state of the project will be managed by the studio.
+ * @remarks
+ * If \@theatre/studio is also loaded, then the state of the project will be managed by the studio.
  *
+ * [Learn more about exporting](https://docs.theatrejs.com/in-depth/#exporting)
+ *
+ * @example
  * Usage:
  * ```ts
  * import {getProject} from '@theatre/core'
@@ -30,6 +34,7 @@ export {types}
  * const project = getProject("a-unique-id", config)
  * ```
  *
+ * @example
  * Usage with an explicit state:
  * ```ts
  * import {getProject} from '@theatre/core'
@@ -37,8 +42,6 @@ export {types}
  * const config = {state} // here the config contains our saved state
  * const project = getProject("a-unique-id", config)
  * ```
- *
- * Learn more about exporting https://docs.theatrejs.com/in-depth/#exporting
  */
 export function getProject(id: string, config: IProjectConfig = {}): IProject {
   const {...restOfConfig} = config
@@ -122,8 +125,8 @@ const validateProjectIdOrThrow = (value: string) => {
 /**
  * Calls `callback` every time the pointed value of `pointer` changes.
  *
- * @param pointer A pointer (like `object.props.x`)
- * @param callback The callback is called every time the value of pointerOrDerivation changes
+ * @param pointer - A pointer (like `object.props.x`)
+ * @param callback - The callback is called every time the value of pointerOrDerivation changes
  * @returns An unsubscribe function
  */
 export function onChange<P extends PointerType<$IntentionalAny>>(

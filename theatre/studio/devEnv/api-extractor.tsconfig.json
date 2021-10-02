@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@theatre/studio/*": ["../../.temp/declarations/studio/src/*"],
+      "@theatre/shared/*": ["../../.temp/declarations/shared/src/*"],
+      // not sure why it can't resolve react-icons, but we don't need it in the declarations anyway.
+      "react-icons": ["./cantResolve.ignore.ts"]
+    }
+  }
+}

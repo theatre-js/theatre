@@ -13,12 +13,16 @@
     "build:js:watch": "node -r esbuild-register devEnv/watch.ts",
     "build:ts": "run-s typecheck build:ts:bundle",
     "build:ts:bundle": "rollup -c devEnv/declarations-bundler/rollup.config.js",
+    "build:api-json": "run-p build:api-json:core build:api-json:studio",
+    "build:api-json:core": "api-extractor run --local --config core/devEnv/api-extractor.json",
+    "build:api-json:studio": "api-extractor run --local --config studio/devEnv/api-extractor.json",
     "build": "run-p build:ts build:js"
   },
   "devDependencies": {
     "@babel/cli": "^7.14.3",
     "@babel/core": "^7.14.3",
     "@babel/runtime": "^7.14.0",
+    "@microsoft/api-extractor": "^7.18.11",
     "@rollup/plugin-alias": "^3.1.5",
     "@rollup/plugin-multi-entry": "^4.1.0",
     "@rollup/plugin-replace": "^2.4.2",

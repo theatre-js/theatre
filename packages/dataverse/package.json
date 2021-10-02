@@ -19,13 +19,15 @@
   ],
   "scripts": {
     "prepack": "node ../../devEnv/ensurePublishing.js",
-    "typecheck": "yarn run build",
-    "build": "run-s build:ts build:js",
+    "typecheck": "yarn run build:ts",
+    "build": "run-s build:ts build:js build:api-json",
     "build:ts": "tsc --build ./tsconfig.json",
     "build:js": "node -r esbuild-register ./devEnv/build.ts",
+    "build:api-json": "api-extractor run --local --config devEnv/api-extractor.json",
     "prepublish": "node ../../devEnv/ensurePublishing.js"
   },
   "devDependencies": {
+    "@microsoft/api-extractor": "^7.18.11",
     "@types/jest": "^26.0.23",
     "@types/lodash-es": "^4.17.4",
     "@types/node": "^15.6.2",
