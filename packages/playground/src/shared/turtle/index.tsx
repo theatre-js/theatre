@@ -1,4 +1,7 @@
-// sdf
+/**
+ * A super basic Turtle geometry renderer hooked up to Theatre, so the parameters
+ * can be tweaked and animated.
+ */
 import React, {useMemo, useState} from 'react'
 import {render} from 'react-dom'
 import {getProject} from '@theatre/core'
@@ -30,9 +33,9 @@ const TurtleExample: React.FC<{}> = (props) => {
       style={{
         position: 'fixed',
         top: '0',
-        right: '20vw',
-        bottom: '30vh',
-        left: '20vw',
+        right: '0',
+        bottom: '0',
+        left: '0',
         background: 'black',
       }}
     >
