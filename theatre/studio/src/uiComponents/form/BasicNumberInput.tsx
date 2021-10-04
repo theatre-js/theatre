@@ -241,13 +241,17 @@ const BasicNumberInput: React.FC<{
     const onDrag = (deltaX: number, _dy: number) => {
       const curState = refs.current.state as IState_Dragging
 
-      const newValue =
+      let newValue =
         curState.valueBeforeDragging +
         propsA.nudge({
           deltaX,
           deltaFraction: deltaX / inputWidth,
           magnitude: 1,
         })
+
+      if (propsA.range) {
+        newValue = clamp(newValue, propsA.range[0], propsA.range[1])
+      }
 
       setState({
         ...curState,
