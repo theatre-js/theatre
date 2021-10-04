@@ -1,6 +1,13 @@
+/**
+ * The deploy script. This must be called with zx from the repo's root.
+ * Example:
+ * ```
+ * $ cd /path/to/repo
+ * $ yarn run deploy 0.4.2
+ * ```
+ */
 import path from 'path'
 import {readFileSync, writeFileSync} from 'fs'
-import {keyBy} from 'lodash-es'
 
 /**
  * This script publishes all packages to npm.
