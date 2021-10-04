@@ -22878,6 +22878,7 @@ fsevents@^1.2.7:
     eslint-plugin-unused-imports: ^1.1.4
     husky: ^6.0.0
     jest: ^27.1.0
+    jsonc-parser: ^3.0.0
     lerna: ^4.0.0
     lint-staged: ^11.1.2
     node-gyp: ^8.1.0

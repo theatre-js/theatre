@@ -175,7 +175,7 @@
      * SUPPORTED TOKENS: <projectFolder>, <packageName>, <unscopedPackageName>
      * DEFAULT VALUE: "<projectFolder>/temp/<unscopedPackageName>.api.json"
      */
-    "apiJsonFilePath": "<projectFolder>/dist/<unscopedPackageName>.api.json"
+    "apiJsonFilePath": "../.temp/api/<unscopedPackageName>.api.json"
   },
 
   /**
@@ -341,7 +341,7 @@
         "logLevel": "none"
       },
       "ae-forgotten-export": {
-        "logLevel": "none"
+        "logLevel": "warning"
       }
 
       // "ae-extra-release-tag": {

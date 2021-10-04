@@ -4,6 +4,7 @@ import {useMemo, useState} from 'react'
 /**
  * Combines useRef() and useState().
  *
+ * @example
  * Usage:
  * ```ts
  * const [ref, val] = useRefAndState<HTMLDivElement | null>(null)

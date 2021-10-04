@@ -14,6 +14,7 @@ export interface ProjectAddress {
 /**
  * Represents the address to a specific instance of a Sheet
  *
+ * @example
  * ```ts
  * const sheet = project.sheet('a sheet', 'some instance id')
  * sheet.address.sheetId === 'a sheet'
@@ -44,6 +45,7 @@ export interface SheetObjectAddress extends SheetAddress {
   /**
    * The key of the object.
    *
+   * @example
    * ```ts
    * const obj = sheet.object('foo', {})
    * obj.address.objectKey === 'foo'

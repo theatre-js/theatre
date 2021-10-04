@@ -45,6 +45,7 @@ const validateCommonOpts = (
 /**
  * A compound prop type (basically a JS object).
  *
+ * @example
  * Usage:
  * ```ts
  * // shorthand
@@ -86,6 +87,7 @@ export const compound = <Props extends IShorthandCompoundProps>(
 /**
  * A number prop type.
  *
+ * @example
  * Usage
  * ```ts
  * // shorthand:
@@ -206,6 +208,7 @@ export const number = (
 /**
  * A boolean prop type
  *
+ * @example
  * Usage:
  * ```ts
  * // shorthand:
@@ -248,6 +251,7 @@ export const boolean = (
 /**
  * A string prop type
  *
+ * @example
  * Usage:
  * ```ts
  * // shorthand:

@@ -45,6 +45,7 @@ export interface ISheet {
    *
    * @returns An Object
    *
+   * @example
    * Usage:
    * ```ts
    * // Create an object named "a unique key" with no props

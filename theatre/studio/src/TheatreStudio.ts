@@ -22,6 +22,7 @@ export interface ITransactionAPI {
    * Set the value of a prop by its pointer. If the prop is sequenced, the value
    * will be a keyframe at the current sequence position.
    *
+   * @example
    * Usage:
    * ```ts
    * const obj = sheet.object("box", {x: 0, y: 0})
@@ -42,6 +43,7 @@ export interface ITransactionAPI {
   /**
    * Unsets the value of a prop by its pointer.
    *
+   * @example
    * Usage:
    * ```ts
    * const obj = sheet.object("box", {x: 0, y: 0})
@@ -91,15 +93,23 @@ export interface IExtension {
   id: string
   /**
    * Set this if you'd like to add a component to the global toolbar (on the top)
+   *
+   * @example
+   * TODO
    */
   globalToolbar?: {
     /**
      * A basic react component.
+     *
+     * @example
+     * TODO
      */
     component: React.ComponentType<{}>
   }
   /**
    * Introduces new pane types.
+   * @example
+   * TODO
    */
   panes?: Array<PaneClassDefinition>
 }
@@ -109,9 +119,42 @@ export type PaneInstance<ClassName extends string> = {
   instanceId: string
   definition: PaneClassDefinition
 }
+
+export interface IStudioUI {
+  /**
+   * Temporarily hides the studio
+   */
+  hide(): void
+  /**
+   * Whether the studio is currently visible or hidden
+   */
+  readonly isHidden: boolean
+  /**
+   * Makes the studio visible again.
+   */
+  restore(): void
+}
+
+export interface _StudioInitializeOpts {
+  /**
+   * The local storage key to use to persist the state.
+   *
+   * Default: "theatrejs:0.4"
+   */
+  persistenceKey?: string
+  /**
+   * Whether to persist the changes in the browser's temporary storage.
+   * It is useful to set this to false in the test environment or when debugging things.
+   *
+   * Default: true
+   */
+  usePersistentStorage?: boolean
+}
+
 /**
  * This is the public api of Theatre's studio. It is exposed through:
  *
+ * @example
  * Basic usage:
  * ```ts
  * import studio from '@theatre/studio'
@@ -119,6 +162,7 @@ export type PaneInstance<ClassName extends string> = {
  * studio.initialize()
  * ```
  *
+ * @example
  * Usage with **tree-shaking**:
  * ```ts
  * import studio from '@theatre/studio'
@@ -129,40 +173,13 @@ export type PaneInstance<ClassName extends string> = {
  * ```
  */
 export interface IStudio {
-  readonly ui: {
-    /**
-     * Temporarily hides the studio
-     */
-    hide(): void
-    /**
-     * Whether the studio is currently visible or hidden
-     */
-    readonly isHidden: boolean
-    /**
-     * Makes the studio visible again.
-     */
-    restore(): void
-  }
+  readonly ui: IStudioUI
 
   /**
    * Initializes the studio. Call it once in your index.js/index.ts module.
    * It silently ignores subsequent calls.
    */
-  initialize(opts?: {
-    /**
-     * The local storage key to use to persist the state.
-     *
-     * Default: "theatrejs:0.4"
-     */
-    persistenceKey?: string
-    /**
-     * Whether to persist the changes in the browser's temporary storage.
-     * It is useful to set this to false in the test environment or when debugging things.
-     *
-     * Default: true
-     */
-    usePersistentStorage?: boolean
-  }): void
+  initialize(opts?: _StudioInitializeOpts): void
 
   /**
    * Runs an undo-able transaction. Creates a single undo level for all
@@ -170,6 +187,7 @@ export interface IStudio {
    *
    * Will roll back if an error is thrown.
    *
+   * @example
    * Usage:
    * ```ts
    * studio.transaction(({set, unset}) => {
@@ -184,6 +202,7 @@ export interface IStudio {
    * Creates a scrub, which is just like a transaction, except you
    * can run it multiple times without creating extra undo levels.
    *
+   * @example
    * Usage:
    * ```ts
    * const scrub = studio.scrub()
@@ -214,6 +233,7 @@ export interface IStudio {
    *
    * @param threshhold - How long to wait before committing the scrub
    *
+   * @example
    * Usage:
    * ```ts
    * // Will create a new undo-level after 2 seconds have passed
@@ -246,6 +266,7 @@ export interface IStudio {
   /**
    * Sets the current selection.
    *
+   * @example
    * Usage:
    * ```ts
    * const sheet1: ISheet = ...
@@ -268,7 +289,8 @@ export interface IStudio {
   /**
    * The current selection, consisting of Sheets and Sheet Objects
    *
-   * Example:
+   * @example
+   * Usage:
    * ```ts
    * console.log(studio.selection) // => [ISheetObject, ISheet]
    * ```
@@ -309,6 +331,7 @@ export interface IStudio {
    *
    * @param projectId - same projectId as in `core.getProject(projectId)`
    *
+   * @example
    * Usage:
    * ```ts
    * const projectId = "project"

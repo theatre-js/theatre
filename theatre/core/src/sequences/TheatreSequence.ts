@@ -31,6 +31,7 @@ export interface ISequence {
    *
    * @returns A promise that resolves when the playback is finished, or rejects if interruped
    *
+   * @example
    * Usage:
    * ```ts
    * // plays the sequence from the current position to sequence.length
@@ -95,6 +96,7 @@ export interface ISequence {
    *
    * Learn more [here](https://docs.theatrejs.com/in-depth/#sequence-attachaudio).
    *
+   * @example
    * Usage:
    * ```ts
    * // Loads and decodes audio from the URL and then attaches it to the sequence
@@ -116,6 +118,7 @@ export interface ISequence {
    * optimal user experience. It is better to provide a button or some other UI element
    * to communicate to the user that they have to initiate the animation.
    *
+   * @example
    * Example:
    * ```ts
    * // html: <button id="#start">start</button>
@@ -154,6 +157,7 @@ export interface ISequence {
      * This is an intermediate GainNode that Theatre feeds its audio to. It is by default
      * connected to destinationNode, but you can disconnect the gainNode and feed it to your own graph.
      *
+     * @example
      * For example:
      * ```ts
      * const {gainNode, audioContext} = await sequence.attachAudio({source: '/audio.mp3'})

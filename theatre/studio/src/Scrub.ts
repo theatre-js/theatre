@@ -31,6 +31,10 @@ export interface IScrubApi {
    * Set the value of a prop by its pointer. If the prop is sequenced, the value
    * will be a keyframe at the current sequence position.
    *
+   * @param pointer - A Pointer, like object.props
+   * @param value - The value to override the existing value. This is treated as a deep partial value.
+   *
+   * @example
    * Usage:
    * ```ts
    * const obj = sheet.object("box", {x: 0, y: 0})
@@ -45,8 +49,6 @@ export interface IScrubApi {
    *   set(obj.props.z, 10)
    * })
    * ```
-   * @param pointer - A Pointer, like object.props
-   * @param value - The value to override the existing value. This is treated as a deep partial value.
    */
   set<T>(pointer: Pointer<T>, value: T): void
 }
@@ -67,6 +69,7 @@ export interface IScrub {
    * Note that running `scrub.capture()` multiple times means all the older
    * calls of `scrub.capture()` will be reset.
    *
+   * @example
    * Usage:
    * ```ts
    * scrub.capture(({set}) => {

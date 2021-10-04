@@ -67,4 +67,11 @@ export {default as ToolbarSwitchSelect} from './uiComponents/toolbar/ToolbarSwit
 export {default as ToolbarIconButton} from './uiComponents/toolbar/ToolbarIconButton'
 export {default as ToolbarDropdownSelect} from './uiComponents/toolbar/ToolbarDropdownSelect'
 export type {IScrub} from '@theatre/studio/Scrub'
-export type {IStudio, IExtension} from '@theatre/studio/TheatreStudio'
+export type {
+  IStudio,
+  IExtension,
+  PaneInstance,
+  PaneClassDefinition,
+  IStudioUI,
+  _StudioInitializeOpts,
+} from '@theatre/studio/TheatreStudio'
