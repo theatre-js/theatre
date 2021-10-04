@@ -24,7 +24,9 @@
       "@theatre/dataverse": ["./packages/dataverse/src/index.ts"],
       "@theatre/react": ["./packages/react/src/index.ts"],
       "@theatre/r3f": ["./packages/r3f/src/index.tsx"],
-      "@theatre/dataverse2": ["./packages/dataverse2/src/index.ts"]
+      "@theatre/dataverse-experiments": [
+        "./packages/dataverse-experiments/src/index.ts"
+      ]
     },
     "forceConsistentCasingInFileNames": true
   },

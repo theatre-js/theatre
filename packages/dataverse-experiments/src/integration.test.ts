@@ -2,7 +2,7 @@ import Atom, {val} from './Atom'
 import prism from './derivations/prism/prism'
 import Ticker from './Ticker'
 
-describe.skip(`dataverse2 integration tests`, () => {
+describe.skip(`dataverse-experiments integration tests`, () => {
   describe(`identity pointers`, () => {
     it(`should work`, () => {
       const data = {foo: 'hi', bar: 0}

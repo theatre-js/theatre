@@ -5337,9 +5337,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@theatre/dataverse2@workspace:packages/dataverse2":
+"@theatre/dataverse-experiments@workspace:packages/dataverse-experiments":
   version: 0.0.0-use.local
-  resolution: "@theatre/dataverse2@workspace:packages/dataverse2"
+  resolution: "@theatre/dataverse-experiments@workspace:packages/dataverse-experiments"
   dependencies:
     "@types/jest": ^26.0.23
     "@types/lodash-es": ^4.17.4

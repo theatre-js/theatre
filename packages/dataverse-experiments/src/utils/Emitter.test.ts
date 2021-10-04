@@ -1,6 +1,6 @@
 import Emitter from './Emitter'
 
-describe.skip('DataVerse2.Emitter', () => {
+describe.skip('dataverse-experiments.Emitter', () => {
   it('should work', () => {
     const e: Emitter<string> = new Emitter()
     e.emit('no one will see this')
