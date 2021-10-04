@@ -13,7 +13,7 @@
     "build:ts": "tsc --build ./devEnv/typecheck-all-projects/tsconfig.all.json",
     "test": "jest",
     "postinstall": "husky install",
-    "deploy": "zx scripts/deploy.mjs",
+    "release": "zx scripts/release.mjs",
     "build:api-docs": "zx scripts/build-api-docs.mjs",
     "lint:all": "eslint . --ext ts,tsx --ignore-path=.gitignore --rulesdir ./devEnv/eslint/rules"
   },

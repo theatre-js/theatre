@@ -1,9 +1,9 @@
 /**
- * The deploy script. This must be called with zx from the repo's root.
+ * The release script. This must be called with zx from the repo's root.
  * Example:
  * ```
  * $ cd /path/to/repo
- * $ yarn run deploy 0.4.2
+ * $ yarn run release 0.4.2
  * ```
  */
 import path from 'path'
@@ -48,7 +48,7 @@ const packagesWhoseVersionsShouldBump = [
 
 ;(async function () {
   // our packages will check for this env variable to make sure their
-  // prepublish script is only called from the `$ cd /path/to/monorepo; yarn run deploy`
+  // prepublish script is only called from the `$ cd /path/to/monorepo; yarn run release`
   // @ts-ignore ignore
   process.env.THEATRE_IS_PUBLISHING = true
 
@@ -78,7 +78,7 @@ const packagesWhoseVersionsShouldBump = [
   const version = argv._[argv._.length - 1]
   if (typeof version !== 'string') {
     console.error(
-      `You need to specify a version, like: $ yarn deploy 1.2.0-rc.4`,
+      `You need to specify a version, like: $ yarn release 1.2.0-rc.4`,
     )
     process.exit(1)
   } else if (!version.match(/^[0-9]+\.[0-9]+\.[0-9]+(\-(dev|rc)\.[0-9]+)?$/)) {
