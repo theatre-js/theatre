@@ -4,3 +4,8 @@ Dataverse is the reactive dataflow library [Theatre.js](https://www.theatrejs.co
 
 Dataverse is currently an internal library. It is used within Theatre.js, but its API is not exposed through Theatre. This is so that we can iterate on the reactive internals while keeping the public API stable. We plan to eventually have an LTS release, but for now, expect a high release cadence and API churn in dataverse while the API in Theatre.js remains stable.
 
+## Documentation
+
+* API Docs: [docs.theatrejs.com/api/dataverse](https://docs.theatrejs.com/api/dataverse.html)
+* Guide: TODO
+

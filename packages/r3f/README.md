@@ -4,4 +4,4 @@ A [Theatre.js](https://github.com/AriaMinaei/theatre) extension for [THREE.js](h
 
 ## Documentation
 
-Docs and video tutorials are [here](https://docs.theatrejs.com/r3f/).
+Docs and video tutorials are [here](https://docs.theatrejs.com/extensions/r3f/).
