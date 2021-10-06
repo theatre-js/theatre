@@ -56,7 +56,7 @@ $ yarn serve
 
 The playground is a bunch of ready-made projects that you can run to experiment with Theatre.js.
 
-It uses a single ESBuild config to build all of the related packages in one go, so you don't have to run a bunch of build commands.
+It uses a single ESBuild config to build all of the related packages in one go, so you don't have to run a bunch of build commands separately.
 
 Read more at [`./packages/playground/README.md`](./packages/playground/README.md).
 
@@ -67,20 +67,22 @@ Read more at [`./packages/playground/README.md`](./packages/playground/README.md
 * `@theatre/studio` – The visual editor.
   * Location: [`./theatre/studio`](./theatre/studio)
 * `@theatre/dataverse` – The reactive dataflow library.
-  * Location: [`./packagtes/dataverse`](./packages/dataverse)
+  * Location: [`./packages/dataverse`](./packages/dataverse)
 * `@theatre/react` – Utilities for using Theatre with React.
-  * Location: [`./packagtes/react`](./packages/react)
+  * Location: [`./packages/react`](./packages/react)
 * `@theatre/r3f` – The react-three-fiber extension.
-  * Location: [`./packagtes/r3f`](./packages/r3f)
+  * Location: [`./packages/r3f`](./packages/r3f)
 * `playground` – The quickest way to hack on the internals of Theatre. It bundles all the related packages together with one ESBuild setup.
-  * Location: [`./packagtes/playground`](./packages/playground)
-* `examples/`
-  * A bunch of examples, using Theatre with [parcel](https://parceljs.org) or [Create react app](create-react-app.dev).
+  * Location: [`./packages/playground`](./packages/playground)
+* `examples/` * A bunch of examples, using Theatre with [parcel](https://parceljs.org), [Create react app](create-react-app.dev), etc.
+* `*/devEnv`: Each package may have a `devEnv` folder that holds dev-related files, like bundler configuration, lint config, etc.
 
 
 ### Commands
 
 #### Root commands
+
+These commands are available at the root workspace:
 
 ```sh
 # Run the playground. It's a shortcut for `cd ./playground; yarn run serve`
@@ -102,23 +104,9 @@ yarn lint:all
 yarn lint:all --fix
 ```
 
-> Yarn passes all extra parameters to the internal scripts. So, for example, if you wish to run the tests in watch more, you can run `yarn test --watch`.
-
-## Workflow
-
-> This section is lacking in instructions (PRs welcome!).
-
-1. Find (or create) an issue you would like to look at
-2. Implement the changes & test it against
-3. Run the tests to ensure that nothing has been broken
-4. Create a PR & reference the issue 🎉
-
-If you have any questions or issues along the way, drop a message in the
-[discord community](https://discord.gg/bm9f8F9Y9N) and maybe someone can help!
+> Yarn passes all extra parameters to the internal scripts. So, for example, if you wish to run the tests in watch mode, you can run `yarn test --watch`.
 
 ## Documentation
-
-> This section is lacking in instructions (PRs welcome!).
 
 The libraries come bundled with typescript definitions with TSDoc comments. You can explore the API if your editor is configured to display TSDoc comments.
 
@@ -133,8 +121,14 @@ Run tests during development with `yarn test --watch` to re-run tests on file ch
 
 ### Examples
 
-> This section is lacking in instructions (PRs welcome!).
+Other than `playground`, the [`examples/`](./examples) folder contains a few small projects using the bundled version of the library. This means that unlike `playground`, you have to build all the packages before running the examples.
 
 ## Releasing
 
-> This section is lacking in instructions (PRs welcome!).
+Currently all packages (except for [`@theatre/r3f`](./packages/r3f/)) share the same version number. In order to publish to npm, you can run the `release` script from the root of the repo:
+
+```sh
+$ yarn release x.y.z # npm publish version x.y.z
+$ yarn release x.y.z-dev.w # npm publish version x.y.z-dev.w and tag it as "dev"
+$ yarn release x.y.z-rc.w # npm publish version x.y.z-rc.w and tag it as "rc"
+```
