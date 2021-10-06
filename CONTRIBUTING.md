@@ -186,3 +186,20 @@ Other references
 - [Documentation: https://docs.theatrejs.com](https://docs.theatrejs.com/getting-started/)
 - [API docs: https://docs.theatrejs.com/api/](https://docs.theatrejs.com/api/)
 - [Video: Theatre.js Crash Course](https://www.youtube.com/watch?v=icR9EIS1q34)
+
+## What to contribute
+
+You can contribute with:
+
+* Bug fixes
+* Feature suggestions 
+* Features implementations
+* [Documentation](https://github.com/ariaminaei/theatre-docs/) (or write/record tutorials of your own which we'll showcase)
+* Create examples projects for your own particular dev stack (eg. using Pixie/Vue/THREE.js/Babylon/etc)
+
+Another great way to help is to join our [community](https://discord.gg/bm9f8F9Y9N) and chime in on questions and share ideas.
+
+### Helping with outstanding issues
+
+Feel free to chime in on any [issue](https://github.com/AriaMinaei/theatre/issues). We have labeled some with ["Help wanted"](https://github.com/AriaMinaei/theatre/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc+label%3A%22help+wanted%22) or ["Good first issue"](https://github.com/AriaMinaei/theatre/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc+label%3A%22good+first+issue%22) if you're just getting started with the codebase.
+
