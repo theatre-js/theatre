@@ -30,11 +30,41 @@ You can use Theatre.js to:
 
 ## Documentation and Tutorials
 
-You can find the documentation and video tutorials [here](https://docs.theatrejs.com).
+The docs are at [docs.theatrejs.com](https://docs.theatrejs.com):
 
-## Community
+* [Getting started](https://docs.theatrejs.com/getting-started/)
+* [In depth guide](https://docs.theatrejs.com/in-depth/)
+* [API docs](https://docs.theatrejs.com/in-depth/)
+* [Extensions](https://docs.theatrejs.com/extensions/)
+* [Video tutorials](https://www.youtube.com/channel/UCsp9XOCs8v2twyq5kMLzS2Q)
+  * [Crash course](https://www.youtube.com/watch?v=icR9EIS1q34)
+  * [Animating with music](https://www.youtube.com/watch?v=QoS4gMxwq_4)
+  * [Yuri Artiukh](https://twitter.com/akella)'s [stream](https://youtu.be/qmRqgFbNprM?t=3462) with a section on using Theatre with THREE.js
+  * \<Add your own tutorials here\>
 
-Join us on [Discord](https://discord.gg/bm9f8F9Y9N), follow the updates on [twitter](https://twitter.com/AriaMinaei) or write us an [email](mailto:hello@theatrejs.com).
+## Community and support
+
+Join our friendly community on [Discord](https://discord.gg/bm9f8F9Y9N), follow the updates on [twitter](https://twitter.com/AriaMinaei) or write us an [email](mailto:hello@theatrejs.com).
+
+## Development and contributing
+
+If you want to change the source of Theatre, have a look at the guide [here](./CONTRIBUTING.md).
+
+### Proposing fixes and changes
+
+You can always get help with bugfixes or discuss changes with our community on [Discord](https://discord.gg/bm9f8F9Y9N), or directly open an issue on Github.
+
+### Helping with outstanding issues
+
+Feel free to chime in on any [issue](https://github.com/AriaMinaei/theatre/issues). We have also labeled some issues with ["Help wanted"](https://github.com/AriaMinaei/theatre/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc+label%3A%22help+wanted%22) or ["Good first issue"](https://github.com/AriaMinaei/theatre/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc+label%3A%22good+first+issue%22) if you're just getting started with the codebase.
+
+### Helping with documentation
+
+The documentation website's repo is [here](https://github.com/ariaminaei/theatre-docs/).
+
+### Writing/recording tutorials
+
+If you make tutorials or video content about Theare, tell us to showcase it here :)
 
 ## License
 

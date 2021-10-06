@@ -1,6 +1,11 @@
+/**
+ * This script generates API documentation files in the target folder.
+ * Usage: `$ yarn build:api-docs <path>` creates the .md files in <path>.
+ * Example: `$ yarn build:api-docs path/to/theatre-docs/docs/api/`
+ *
+ * Usually <path> is https://github.com/AriaMinaei/theatre-docs/tree/main/docs/api
+ */
 import path from 'path'
-import {readFileSync, writeFileSync} from 'fs'
-import {keyBy} from 'lodash-es'
 import {parse as parseJsonC} from 'jsonc-parser'
 ;(async function () {
   // better quote function from https://github.com/google/zx/pull/167
