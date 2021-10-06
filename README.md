@@ -34,7 +34,7 @@ The docs are at [docs.theatrejs.com](https://docs.theatrejs.com):
 
 * [Getting started](https://docs.theatrejs.com/getting-started/)
 * [In depth guide](https://docs.theatrejs.com/in-depth/)
-* [API docs](https://docs.theatrejs.com/in-depth/)
+* [API docs](https://docs.theatrejs.com/api/)
 * [Extensions](https://docs.theatrejs.com/extensions/)
 * [Video tutorials](https://www.youtube.com/channel/UCsp9XOCs8v2twyq5kMLzS2Q)
   * [Crash course](https://www.youtube.com/watch?v=icR9EIS1q34)
