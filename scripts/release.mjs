@@ -126,10 +126,7 @@ const packagesWhoseVersionsShouldBump = [
   $.verbose = true
   if (argv['skip-lint'] !== true) {
     console.log('Running a typecheck and lint pass')
-    await Promise.all([
-      $`yarn run typecheck`,
-      $`yarn run lint:all --max-warnings 0`,
-    ])
+    await Promise.all([$`yarn run typecheck`, $`yarn run lint:all`])
   } else {
     console.log('Skipping typecheck and lint')
   }
