@@ -125,9 +125,23 @@ const validateProjectIdOrThrow = (value: string) => {
 /**
  * Calls `callback` every time the pointed value of `pointer` changes.
  *
- * @param pointer - A pointer (like `object.props.x`)
- * @param callback - The callback is called every time the value of pointerOrDerivation changes
+ * @param pointer - A Pointer (like `object.props.x`)
+ * @param callback - The callback is called every time the value of pointer changes
  * @returns An unsubscribe function
+ *
+ * @example
+ * Usage:
+ * ```ts
+ * import {getProject, onChange} from '@theatre/core'
+ *
+ * const obj = getProject("A project").sheet("Scene").object("Box", {position: {x: 0}})
+ *
+ * const usubscribe = onChange(obj.props.position.x, (x) => {
+ *   console.log('position.x changed to:', x)
+ * })
+ *
+ * setTimeout(usubscribe, 10000) // stop listening to changes after 10 seconds
+ * ```
  */
 export function onChange<P extends PointerType<$IntentionalAny>>(
   pointer: P,
@@ -142,5 +156,30 @@ export function onChange<P extends PointerType<$IntentionalAny>>(
     throw new Error(
       `Called onChange(p) where p is neither a pointer nor a derivation.`,
     )
+  }
+}
+
+/**
+ * Takes a Pointer and returns the value it points to.
+ *
+ * @param pointer - A pointer (like `object.props.x`)
+ * @returns The value the pointer points to
+ *
+ * @example
+ *
+ * Usage
+ * ```ts
+ * import {val, getProject} from '@theatre/core'
+ *
+ * const obj = getProject("A project").sheet("Scene").object("Box", {position: {x: 0}})
+ *
+ * console.log(val(obj.props.position.x)) // logs the value of obj.props.x
+ * ```
+ */
+export function val<T>(pointer: PointerType<T>): T {
+  if (isPointer(pointer)) {
+    return valueDerivation(pointer).getValue() as $IntentionalAny
+  } else {
+    throw new Error(`Called val(p) where p is not a pointer.`)
   }
 }

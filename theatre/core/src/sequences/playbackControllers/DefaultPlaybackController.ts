@@ -9,13 +9,13 @@ import {Atom} from '@theatre/dataverse'
 
 export interface IPlaybackState {
   position: number
+  playing: boolean
 }
 
 export interface IPlaybackController {
-  playing: boolean
   getCurrentPosition(): number
   gotoPosition(position: number): void
-  statePointer: Pointer<IPlaybackState>
+  readonly statePointer: Pointer<IPlaybackState>
   destroy(): void
 
   play(
@@ -29,10 +29,13 @@ export interface IPlaybackController {
 }
 
 export default class DefaultPlaybackController implements IPlaybackController {
-  playing: boolean = false
   _stopPlayCallback: () => void = noop
-  private _state: Atom<IPlaybackState> = new Atom({position: 0})
+  private _state: Atom<IPlaybackState> = new Atom<IPlaybackState>({
+    position: 0,
+    playing: false,
+  })
   readonly statePointer: Pointer<IPlaybackState>
+
   constructor(private readonly _ticker: Ticker) {
     this.statePointer = this._state.pointer
   }
@@ -55,6 +58,14 @@ export default class DefaultPlaybackController implements IPlaybackController {
 
   getCurrentPosition() {
     return this._state.getState().position
+  }
+
+  get playing() {
+    return this._state.getState().playing
+  }
+
+  set playing(playing: boolean) {
+    this._state.setIn(['playing'], playing)
   }
 
   play(

@@ -5,6 +5,7 @@ import type {SequenceAddress} from '@theatre/shared/utils/addresses'
 import didYouMean from '@theatre/shared/utils/didYouMean'
 import {InvalidArgumentError} from '@theatre/shared/utils/errors'
 import type {IBox, IDerivation, Pointer} from '@theatre/dataverse'
+import {pointer} from '@theatre/dataverse'
 import {Box, prism, val, valueDerivation} from '@theatre/dataverse'
 import {padStart} from 'lodash-es'
 import type {
@@ -14,6 +15,7 @@ import type {
 import DefaultPlaybackController from './playbackControllers/DefaultPlaybackController'
 import TheatreSequence from './TheatreSequence'
 import logger from '@theatre/shared/logger'
+import type {ISequence} from '..'
 
 export type IPlaybackRange = [from: number, to: number]
 
@@ -39,6 +41,9 @@ export default class Sequence {
   private _positionD: IDerivation<number>
   private _positionFormatterD: IDerivation<ISequencePositionFormatter>
   _playableRangeD: undefined | IDerivation<{start: number; end: number}>
+
+  readonly pointer: ISequence['pointer'] = pointer({root: this, path: []})
+  readonly $$isIdentityDerivationProvider = true
 
   constructor(
     readonly _project: Project,
@@ -66,6 +71,31 @@ export default class Sequence {
     this._positionFormatterD = this._subUnitsPerUnitD.map(
       (subUnitsPerUnit) => new TimeBasedPositionFormatter(subUnitsPerUnit),
     )
+  }
+
+  getIdentityDerivation(path: Array<string | number>): IDerivation<unknown> {
+    if (path.length === 0) {
+      return prism((): ISequence['pointer']['$$__pointer_type'] => ({
+        length: val(this.pointer.length),
+        playing: val(this.pointer.playing),
+        position: val(this.pointer.position),
+      }))
+    }
+    if (path.length > 1) {
+      return prism(() => undefined)
+    }
+    const [prop] = path
+    if (prop === 'length') {
+      return this._lengthD
+    } else if (prop === 'position') {
+      return this._positionD
+    } else if (prop === 'playing') {
+      return prism(() => {
+        return val(this._statePointerDerivation.getValue().playing)
+      })
+    } else {
+      return prism(() => undefined)
+    }
   }
 
   get positionFormatter(): ISequencePositionFormatter {
@@ -136,7 +166,7 @@ export default class Sequence {
   }
 
   get playing() {
-    return this._playbackControllerBox.get().playing
+    return val(this._playbackControllerBox.get().statePointer.playing)
   }
 
   _makeRangeFromSequenceTemplate(): IDerivation<IPlaybackRange> {

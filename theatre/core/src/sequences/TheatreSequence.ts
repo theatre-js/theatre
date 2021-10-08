@@ -5,6 +5,7 @@ import type Sequence from './Sequence'
 import type {IPlaybackDirection, IPlaybackRange} from './Sequence'
 import AudioPlaybackController from './playbackControllers/AudioPlaybackController'
 import coreTicker from '@theatre/core/coreTicker'
+import type {Pointer} from '@theatre/dataverse'
 
 interface IAttachAudioArgs {
   /**
@@ -87,6 +88,42 @@ export interface ISequence {
    * In a time-based sequence, this represents the current time in seconds.
    */
   position: number
+
+  /**
+   * A Pointer to the sequence's inner state.
+   *
+   * @remarks
+   * As with any Pointer, you can use this with {@link onChange | onChange()} to listen to its value changes
+   * or with {@link val | val()} to read its current value.
+   *
+   * @example Usage
+   * ```ts
+   * import {onChange, val} from '@theatre/core'
+   *
+   * // let's assume `sheet` is a sheet
+   * const sequence = sheet.sequence
+   *
+   * onChange(sequence.pointer.length, (len) => {
+   *   console.log("Length of the sequence changed to:", len)
+   * })
+   *
+   * onChange(sequence.pointer.position, (position) => {
+   *   console.log("Position of the sequence changed to:", position)
+   * })
+   *
+   * onChange(sequence.pointer.playing, (playing) => {
+   *   console.log(playing ? 'playing' : 'paused')
+   * })
+   *
+   * // we can also read the current value of the pointer
+   * console.log('current length is', val(sequence.pointer.length))
+   * ```
+   */
+  pointer: Pointer<{
+    playing: boolean
+    length: number
+    position: number
+  }>
 
   /**
    * Attaches an audio source to the sequence. Playing the sequence automatically
@@ -251,6 +288,10 @@ export default class TheatreSequence implements ISequence {
     privateAPI(this).replacePlaybackController(playbackController)
 
     return {audioContext, destinationNode, decodedBuffer, gainNode}
+  }
+
+  get pointer(): ISequence['pointer'] {
+    return privateAPI(this).pointer
   }
 }
 

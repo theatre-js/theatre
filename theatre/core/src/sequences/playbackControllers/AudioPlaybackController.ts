@@ -14,10 +14,12 @@ import type {
 
 export default class AudioPlaybackController implements IPlaybackController {
   _mainGain: GainNode
-  private _state: Atom<IPlaybackState> = new Atom({position: 0})
+  private _state: Atom<IPlaybackState> = new Atom<IPlaybackState>({
+    position: 0,
+    playing: false,
+  })
   readonly statePointer: Pointer<IPlaybackState>
   _stopPlayCallback: () => void = noop
-  playing: boolean = false
 
   constructor(
     private readonly _ticker: Ticker,
@@ -31,11 +33,19 @@ export default class AudioPlaybackController implements IPlaybackController {
     this._mainGain.connect(this._nodeDestination)
   }
 
+  private get _playing() {
+    return this._state.getState().playing
+  }
+
+  private set _playing(playing: boolean) {
+    this._state.setIn(['playing'], playing)
+  }
+
   destroy() {}
 
   pause() {
     this._stopPlayCallback()
-    this.playing = false
+    this._playing = false
     this._stopPlayCallback = noop
   }
 
@@ -57,11 +67,11 @@ export default class AudioPlaybackController implements IPlaybackController {
     rate: number,
     direction: IPlaybackDirection,
   ): Promise<boolean> {
-    if (this.playing) {
+    if (this._playing) {
       this.pause()
     }
 
-    this.playing = true
+    this._playing = true
 
     const ticker = this._ticker
     let startPos = this.getCurrentPosition()
@@ -129,7 +139,7 @@ export default class AudioPlaybackController implements IPlaybackController {
         requestNextTick()
       } else {
         this._updatePositionInState(range[1])
-        this.playing = false
+        this._playing = false
         cleanup()
         deferred.resolve(true)
       }
@@ -145,7 +155,7 @@ export default class AudioPlaybackController implements IPlaybackController {
       ticker.offThisOrNextTick(tick)
       ticker.offNextTick(tick)
 
-      if (this.playing) deferred.resolve(false)
+      if (this._playing) deferred.resolve(false)
     }
     const requestNextTick = () => ticker.onNextTick(tick)
     ticker.onThisOrNextTick(tick)
