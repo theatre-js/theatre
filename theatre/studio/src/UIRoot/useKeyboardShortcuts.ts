@@ -44,7 +44,12 @@ export default function useKeyboardShortcuts() {
         } else {
           return
         }
-      } else if (e.key === `'` && e.altKey) {
+      }
+      // alt + \
+      else if (
+        e.altKey &&
+        (e.key === '\\' || e.code === 'Backslash' || e.code === 'IntlBackslash')
+      ) {
         studio.transaction(({stateEditors, drafts}) => {
           stateEditors.studio.ahistoric.setVisibilityState(
             drafts.ahistoric.visibilityState === 'everythingIsHidden'

@@ -71,7 +71,7 @@ export default function UIRoot() {
   useEffect(() => {
     if (visiblityState === 'everythingIsHidden') {
       console.warn(
-        `Theatre Studio is hidden. You can restore it by either hitting alt/option+\` or calling studio.ui.restore()`,
+        `Theatre Studio is hidden. Use the keyboard shortcut 'alt + \\' to restore the studio, or call studio.ui.restore().`,
       )
     }
     return () => {}
