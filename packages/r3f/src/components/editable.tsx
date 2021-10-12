@@ -40,6 +40,8 @@ const editable = <
   type Props = Omit<ComponentProps<T>, 'visible'> & {
     uniqueName: string
     visible?: boolean | 'editor'
+    additionalProps?: $FixMe
+    objRef?: $FixMe
   } & (T extends 'primitive'
       ? {
           editableType: U
@@ -48,7 +50,17 @@ const editable = <
     RefAttributes<Elements[U]>
 
   return forwardRef(
-    ({uniqueName, visible, editableType, ...props}: Props, ref) => {
+    (
+      {
+        uniqueName,
+        visible,
+        editableType,
+        additionalProps,
+        objRef,
+        ...props
+      }: Props,
+      ref,
+    ) => {
       const objectRef = useRef<Elements[U]>()
 
       const sheet = useCurrentSheet()
@@ -61,14 +73,19 @@ const editable = <
 
       useLayoutEffect(() => {
         if (!sheet) return
-        const sheetObject = sheet.object(uniqueName, baseSheetObjectType)
+        const sheetObject = sheet.object(uniqueName, {
+          ...baseSheetObjectType,
+          ...additionalProps,
+        })
         allRegisteredObjects.add(sheetObject)
         setSheetObject(sheetObject)
+
+        if (objRef) objRef!.current = sheetObject
 
         useEditorStore
           .getState()
           .setSheetObject(uniqueName, sheetObject as $FixMe)
-      }, [sheet, uniqueName])
+      }, [sheet, uniqueName, additionalProps])
 
       const transformDeps: string[] = []
 
