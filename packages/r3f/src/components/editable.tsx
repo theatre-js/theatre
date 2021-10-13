@@ -85,7 +85,7 @@ const editable = <
         useEditorStore
           .getState()
           .setSheetObject(uniqueName, sheetObject as $FixMe)
-      }, [sheet, uniqueName, additionalProps])
+      }, [sheet, uniqueName])
 
       const transformDeps: string[] = []
 
