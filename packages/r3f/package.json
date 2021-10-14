@@ -26,12 +26,12 @@
     "dist/**/*"
   ],
   "scripts": {
-    "prepack": "node ../../devEnv/ensurePublishing.js",
+    "prepack": "yarn run build",
     "typecheck": "yarn run build",
     "build": "run-s build:ts build:js",
     "build:ts": "tsc --build ./tsconfig.json",
     "build:js": "node -r esbuild-register ./devEnv/build.ts",
-    "prepublish": "node ../../devEnv/ensurePublishing.js"
+    "prepublish": "yarn run build"
   },
   "devDependencies": {
     "@types/jest": "^26.0.23",
