@@ -34,7 +34,7 @@ const GlobalStyle = createGlobalStyle`
 
 const Container = styled(PointerEventsHandler)`
   z-index: 50;
-  position: fixed;
+  position: absolute;
   top: 0px;
   right: 0px;
   bottom: 0px;
@@ -49,7 +49,7 @@ const Container = styled(PointerEventsHandler)`
 
 const PortalLayer = styled.div`
   z-index: 51;
-  position: fixed;
+  position: absolute;
   top: 0px;
   right: 0px;
   bottom: 0px;

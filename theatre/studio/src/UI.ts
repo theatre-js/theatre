@@ -33,23 +33,23 @@ export default class UI {
     }) as $IntentionalAny as ShadowRoot & HTMLElement
   }
 
-  render() {
+  render(renderInElement?: HTMLElement) {
     if (this._rendered) {
       return
     }
     this._rendered = true
 
-    this._render()
+    this._render(renderInElement)
   }
 
-  protected _render() {
+  protected _render(renderInElement?: HTMLElement) {
     const renderCallback = () => {
       if (!document.body) {
         this._renderTimeout = setTimeout(renderCallback, 5)
         return
       }
       this._renderTimeout = undefined
-      this._documentBodyUIIsRenderedIn = document.body
+      this._documentBodyUIIsRenderedIn = renderInElement ?? document.body
       this._documentBodyUIIsRenderedIn.appendChild(this.containerEl)
       ReactDOM.render(React.createElement(UIRoot), this.containerShadow)
     }

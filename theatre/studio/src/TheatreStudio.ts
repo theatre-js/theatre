@@ -149,6 +149,8 @@ export interface _StudioInitializeOpts {
    * Default: true
    */
   usePersistentStorage?: boolean
+
+  renderInElement?: HTMLElement | null
 }
 
 /**

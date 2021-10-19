@@ -94,7 +94,7 @@ export class Studio {
     this._initializedDeferred.resolve()
 
     if (process.env.NODE_ENV !== 'test') {
-      this.ui.render()
+      this.ui.render(opts?.renderInElement)
     }
   }
 
