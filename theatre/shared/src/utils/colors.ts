@@ -21,7 +21,6 @@ export function hexToDecimal(hex: string): number {
 export function decimalToHex(value: number): string {
   let alpha = ((value >> 24) & 0xff).toString(16).padStart(2, '0')
   if (value > 0xffffff && value >>> 24 === 0xff) alpha = ''
-  console.log(value)
   return (
     '#' +
     ((value >> 16) & 0xff).toString(16).padStart(2, '0') +
