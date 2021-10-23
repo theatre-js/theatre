@@ -157,7 +157,7 @@ export default class SheetObject implements IdentityDerivationProvider {
             const updateSequenceValueFromItsDerivation = () => {
               const valueConfig = get(this.template.config.props, pathToProp)
               let value: any = derivation.getValue()
-              if (valueConfig.type === 'color' && value !== undefined) {
+              if (valueConfig?.type === 'color' && value !== undefined) {
                 valsAtom.setIn(pathToProp, decimalToHex(value))
               } else {
                 valsAtom.setIn(pathToProp, value)
