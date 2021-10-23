@@ -50,7 +50,7 @@ type IStartedState = {
 }
 type IState = {started: false} | IStartedState
 
-function trackValueAtTime_keyframedTrack<T>(
+function trackValueAtTime_keyframedTrack(
   track: KeyframedTrack,
   timeD: IDerivation<number>,
   computeValue: (left: number, right: number, progression: number) => number,
@@ -71,7 +71,7 @@ function trackValueAtTime_keyframedTrack<T>(
 
 const undefinedConstD = new ConstantDerivation(undefined)
 
-const updateState = <T>(
+const updateState = (
   progressionD: IDerivation<number>,
   track: KeyframedTrack,
   computeValue: (left: number, right: number, progression: number) => number,
