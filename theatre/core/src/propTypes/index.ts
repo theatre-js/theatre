@@ -1,3 +1,4 @@
+import {validHex} from '@theatre/shared/utils/colors'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import userReadableTypeOfValue from '@theatre/shared/utils/userReadableTypeOfValue'
 import type {
@@ -249,6 +250,50 @@ export const boolean = (
 }
 
 /**
+ * A color prop type
+ *
+ * @example
+ * Usage:
+ * ```ts
+ * // shorthand:
+ * const obj = sheet.object('key', { color: '#ff00ff'})
+ *
+ * // with a label:
+ * const obj = sheet.object('key', {
+ *   color: t.color('#ff00ff', {
+ *     label: 'Color'
+ *   })
+ * })
+ * ```
+ *
+ * @param defaultValue - The default value (must be a color)
+ * @param opts - Options (See usage examples)
+ */
+export const color = (
+  defaultValue: string,
+  opts?: PropTypeConfigOpts,
+): PropTypeConfig_Color => {
+  if (process.env.NODE_ENV !== 'production') {
+    validateCommonOpts('t.color(defaultValue, opts)', opts)
+    if (typeof defaultValue !== 'string' || !validHex(defaultValue)) {
+      throw new Error(
+        `defaultValue in t.color(defaultValue) must be a hex color. ${userReadableTypeOfValue(
+          defaultValue,
+        )} given.`,
+      )
+    }
+  }
+
+  return {
+    type: 'color',
+    default: defaultValue,
+    valueType: null as $IntentionalAny,
+    [propTypeSymbol]: 'TheatrePropType',
+    label: opts?.label,
+  }
+}
+
+/**
  * A string prop type
  *
  * @example
@@ -381,9 +426,15 @@ export interface PropTypeConfig_Boolean extends IBasePropType<boolean> {
   default: boolean
 }
 
+export interface PropTypeConfig_Color extends IBasePropType<string> {
+  type: 'color'
+  default: string
+}
+
 export interface PropTypeConfigOpts {
   label?: string
 }
+
 export interface PropTypeConfig_String extends IBasePropType<string> {
   type: 'string'
   default: string
@@ -416,6 +467,7 @@ export type PropTypeConfig_AllPrimitives =
   | PropTypeConfig_Number
   | PropTypeConfig_Boolean
   | PropTypeConfig_String
+  | PropTypeConfig_Color
   | PropTypeConfig_StringLiteral<$IntentionalAny>
 
 export type PropTypeConfig =

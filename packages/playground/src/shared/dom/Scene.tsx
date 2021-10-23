@@ -3,14 +3,15 @@ import type {UseDragOpts} from './useDrag'
 import useDrag from './useDrag'
 import React, {useLayoutEffect, useMemo, useState} from 'react'
 import type {IProject, ISheet} from '@theatre/core'
-import {onChange} from '@theatre/core'
+import {onChange, types} from '@theatre/core'
 import type {IScrub, IStudio} from '@theatre/studio'
 
 studio.initialize()
 
 const boxObjectConfig = {
-  x: 0,
-  y: 0,
+  x: types.number(200),
+  y: types.number(200),
+  background: types.color('#FF0000'),
 }
 
 const Box: React.FC<{
@@ -23,11 +24,15 @@ const Box: React.FC<{
 
   const isSelected = selection.includes(obj)
 
-  const [pos, setPos] = useState<{x: number; y: number}>({x: 0, y: 0})
+  const [state, setState] = useState<{
+    x: number
+    y: number
+    background: string
+  }>({x: 0, y: 0, background: '#ff0000'})
 
   useLayoutEffect(() => {
     const unsubscribeFromChanges = onChange(obj.props, (newValues) => {
-      setPos(newValues)
+      setState(newValues)
     })
     return unsubscribeFromChanges
   }, [id])
@@ -50,7 +55,11 @@ const Box: React.FC<{
           firstOnDragCalled = true
         }
         scrub!.capture(({set}) => {
-          set(obj.props, {x: x + initial.x, y: y + initial.y})
+          set(obj.props, {
+            x: x + initial.x,
+            y: y + initial.y,
+            background: initial.background,
+          })
         })
       },
       onDragEnd(dragHappened) {
@@ -75,10 +84,10 @@ const Box: React.FC<{
       style={{
         width: 100,
         height: 100,
-        background: 'gray',
+        background: state.background,
         position: 'absolute',
-        left: pos.x + 'px',
-        top: pos.y + 'px',
+        left: state.x + 'px',
+        top: state.y + 'px',
         boxSizing: 'border-box',
         border: isSelected ? '1px solid #5a92fa' : '1px solid transparent',
       }}

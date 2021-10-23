@@ -29,14 +29,20 @@ const PrimitivePropGraph: React.FC<{
       ].trackData[trackId],
     )
 
-    if (trackData?.type !== 'BasicKeyframedTrack') {
-      console.error(
-        `trackData type ${trackData?.type} is not yet supported on the graph editor`,
-      )
-      return <></>
-    } else {
-      return <BasicKeyframedTrack {...props} trackData={trackData} />
+    const trackDataType = trackData?.type
+    if (trackData) {
+      if (
+        trackDataType !== 'BasicKeyframedTrack' &&
+        trackDataType !== 'ColorKeyframedTrack'
+      ) {
+        console.error(
+          `trackData type ${trackDataType} is not yet supported on the graph editor`,
+        )
+      } else {
+        return <BasicKeyframedTrack {...props} trackData={trackData} />
+      }
     }
+    return <></>
   }, [props.trackId, props.layoutP])
 }
 

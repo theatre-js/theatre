@@ -35,7 +35,7 @@ type PositionalSequence = {
   >
 }
 
-export type TrackData = BasicKeyframedTrack
+export type TrackData = KeyframedTrack
 
 export type Keyframe = {
   id: KeyframeId
@@ -45,7 +45,15 @@ export type Keyframe = {
   connectedRight: boolean
 }
 
-export type BasicKeyframedTrack = {
-  type: 'BasicKeyframedTrack'
+export type KeyframedTrack = {
+  type: 'BasicKeyframedTrack' | 'ColorKeyframedTrack'
   keyframes: Keyframe[]
+}
+
+export type BasicKeyframedTrack = KeyframedTrack & {
+  type: 'BasicKeyframedTrack'
+}
+
+export type ColorKeyframedTrack = KeyframedTrack & {
+  type: 'ColorKeyframedTrack'
 }
