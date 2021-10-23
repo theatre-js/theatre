@@ -46,6 +46,8 @@ import {
 } from '@theatre/shared/instanceTypes'
 import type SheetTemplate from '@theatre/core/sheets/SheetTemplate'
 import type SheetObjectTemplate from '@theatre/core/sheetObjects/SheetObjectTemplate'
+import type {PropTypeConfig} from '@theatre/core/propTypes'
+import {hexToDecimal} from '@theatre/shared/utils/colors'
 
 export const setDrafts__onlyMeantToBeCalledByTransaction = (
   drafts: undefined | Drafts,
@@ -432,15 +434,20 @@ namespace stateEditors {
 
           export function setPrimitivePropAsSequenced(
             p: WithoutSheetInstance<PropAddress>,
+            config?: PropTypeConfig,
           ) {
             const tracks = _ensureTracksOfObject(p)
             const pathEncoded = encodePathToProp(p.pathToProp)
             const possibleTrackId = tracks.trackIdByPropPath[pathEncoded]
             if (typeof possibleTrackId === 'string') return
 
+            const type = config?.type
             const trackId = generateSequenceTrackId()
             tracks.trackData[trackId] = {
-              type: 'BasicKeyframedTrack',
+              type:
+                type === 'color'
+                  ? 'ColorKeyframedTrack'
+                  : 'BasicKeyframedTrack',
               keyframes: [],
             }
             tracks.trackIdByPropPath[pathEncoded] = trackId
@@ -506,20 +513,31 @@ namespace stateEditors {
             p: WithoutSheetInstance<SheetObjectAddress> & {
               trackId: string
               position: number
-              value: number
+              value: any
               snappingFunction: SnappingFunction
             },
           ) {
             const position = p.snappingFunction(p.position)
             const track = _getTrack(p)
             if (!track) return
-            const {keyframes} = track
+
+            const {keyframes, type: trackType} = track
+            let computedValue
+            if (
+              trackType === 'ColorKeyframedTrack' &&
+              typeof p.value === 'string'
+            ) {
+              computedValue = hexToDecimal(p.value)
+            } else {
+              computedValue = p.value
+            }
+
             const existingKeyframeIndex = keyframes.findIndex(
               (kf) => kf.position === position,
             )
             if (existingKeyframeIndex !== -1) {
               const kf = keyframes[existingKeyframeIndex]
-              kf.value = p.value
+              kf.value = computedValue
               return
             }
             const indexOfLeftKeyframe = findLastIndex(
@@ -532,7 +550,7 @@ namespace stateEditors {
                 position,
                 connectedRight: true,
                 handles: [0.5, 1, 0.5, 0],
-                value: p.value,
+                value: computedValue,
               })
               return
             }
@@ -542,7 +560,7 @@ namespace stateEditors {
               position,
               connectedRight: leftKeyframe.connectedRight,
               handles: [0.5, 1, 0.5, 0],
-              value: p.value,
+              value: computedValue,
             })
           }
 
