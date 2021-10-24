@@ -5,10 +5,24 @@ import React, {useLayoutEffect, useMemo, useState} from 'react'
 import type {IProject, ISheet} from '@theatre/core'
 import {onChange, types} from '@theatre/core'
 import type {IScrub, IStudio} from '@theatre/studio'
+import type {Interpolator} from '@theatre/core/propTypes'
 
-studio.initialize()
+studio.initialize({usePersistentStorage: false})
+
+const textInterpolator: Interpolator<string> = (left, right, progression) => {
+  if (!left || right.startsWith(left)) {
+    const length = Math.floor(
+      Math.max(0, (right.length - left.length) * progression),
+    )
+    return left + right.slice(left.length, left.length + length)
+  }
+  return left
+}
 
 const boxObjectConfig = {
+  test: types.string('Hello?', {interpolator: textInterpolator}),
+  testLiteral: types.stringLiteral('a', {a: 'Option A', b: 'Option B'}),
+  bool: types.boolean(false),
   x: types.number(200),
   y: types.number(200),
   background: types.color('#FF0000'),
@@ -28,7 +42,7 @@ const Box: React.FC<{
     x: number
     y: number
     background: string
-  }>({x: 0, y: 0, background: '#ff0000'})
+  }>(obj.value)
 
   useLayoutEffect(() => {
     const unsubscribeFromChanges = onChange(obj.props, (newValues) => {
@@ -59,6 +73,9 @@ const Box: React.FC<{
             x: x + initial.x,
             y: y + initial.y,
             background: initial.background,
+            test: initial.test,
+            testLiteral: initial.testLiteral,
+            bool: initial.bool,
           })
         })
       },
@@ -82,16 +99,21 @@ const Box: React.FC<{
       }}
       ref={setDivRef}
       style={{
-        width: 100,
-        height: 100,
+        width: 300,
+        height: 300,
+        color: 'white',
         background: state.background,
         position: 'absolute',
         left: state.x + 'px',
         top: state.y + 'px',
         boxSizing: 'border-box',
-        border: isSelected ? '1px solid #5a92fa' : '1px solid transparent',
+        border: isSelected ? '1px solid #5a92fa' : '1px solid white',
       }}
-    ></div>
+    >
+      <pre style={{margin: 0, padding: '1rem'}}>
+        {JSON.stringify(state, null, 4)}
+      </pre>
+    </div>
   )
 }
 
@@ -118,7 +140,7 @@ export const Scene: React.FC<{project: IProject}> = ({project}) => {
         right: '0',
         top: 0,
         bottom: '0',
-        background: 'black',
+        background: '#333',
       }}
     >
       <button
