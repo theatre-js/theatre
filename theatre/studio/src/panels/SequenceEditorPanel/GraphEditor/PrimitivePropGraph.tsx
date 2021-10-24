@@ -10,6 +10,7 @@ import styled from 'styled-components'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import BasicKeyframedTrack from './BasicKeyframedTrack/BasicKeyframedTrack'
 import type {graphEditorColors} from './GraphEditor'
+import type {TrackData} from '@theatre/core/projects/store/types/SheetState_Historic'
 
 const Container = styled.div``
 
@@ -35,7 +36,12 @@ const PrimitivePropGraph: React.FC<{
       )
       return <></>
     } else {
-      return <BasicKeyframedTrack {...props} trackData={trackData} />
+      return (
+        <BasicKeyframedTrack
+          {...props}
+          trackData={trackData as TrackData<number>}
+        />
+      )
     }
   }, [props.trackId, props.layoutP])
 }

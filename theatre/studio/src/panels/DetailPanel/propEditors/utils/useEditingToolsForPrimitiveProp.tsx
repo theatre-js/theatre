@@ -248,8 +248,10 @@ export function useEditingToolsForPrimitiveProp<
         callback: () => {
           getStudio()!.transaction(({stateEditors}) => {
             const propAddress = {...obj.address, pathToProp}
+
             stateEditors.coreByProject.historic.sheetsById.sequence.setPrimitivePropAsSequenced(
               propAddress,
+              propConfig,
             )
           })
         },

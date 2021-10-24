@@ -59,9 +59,12 @@ const Dot: React.FC<IProps> = (props) => {
   const next = trackData.keyframes[index + 1]
 
   const [contextMenu] = useKeyframeContextMenu(node, props)
-  const isDragging = useDragKeyframe(node, props)
+  const isDragging =
+    typeof cur.value === 'number' ? useDragKeyframe(node, props) : false
 
-  const cyInExtremumSpace = props.extremumSpace.fromValueSpace(cur.value)
+  const cyInExtremumSpace = props.extremumSpace.fromValueSpace(
+    typeof cur.value === 'number' ? cur.value : 0,
+  )
 
   return (
     <>
@@ -125,8 +128,9 @@ function useDragKeyframe(
         unlockExtremums = propsAtStartOfDrag.extremumSpace.lock()
       },
       onDrag(dx, dy) {
-        const original =
-          propsAtStartOfDrag.trackData.keyframes[propsAtStartOfDrag.index]
+        const original = propsAtStartOfDrag.trackData.keyframes[
+          propsAtStartOfDrag.index
+        ] as Keyframe<number>
 
         const deltaPos = toUnitSpace(dx)
         const dyInVerticalSpace = -dy
@@ -135,9 +139,9 @@ function useDragKeyframe(
         const dYInValueSpace =
           propsAtStartOfDrag.extremumSpace.deltaToValueSpace(dYInExtremumSpace)
 
-        const updatedKeyframes: Keyframe[] = []
+        const updatedKeyframes: Keyframe<number>[] = []
 
-        const cur: Keyframe = {
+        const cur: Keyframe<number> = {
           ...original,
           position: original.position + deltaPos,
           value: original.value + dYInValueSpace,
@@ -146,11 +150,15 @@ function useDragKeyframe(
         updatedKeyframes.push(cur)
 
         if (keepSpeeds) {
-          const prev =
-            propsAtStartOfDrag.trackData.keyframes[propsAtStartOfDrag.index - 1]
+          const prev = propsAtStartOfDrag.trackData.keyframes[
+            propsAtStartOfDrag.index - 1
+          ] as Keyframe<number>
 
           if (prev && Math.abs(original.value - prev.value) > 0) {
-            const newPrev: Keyframe = {...prev, handles: [...prev.handles]}
+            const newPrev: Keyframe<number> = {
+              ...prev,
+              handles: [...prev.handles],
+            }
             updatedKeyframes.push(newPrev)
             newPrev.handles[3] = preserveRightHandle(
               prev.handles[3],
@@ -160,11 +168,15 @@ function useDragKeyframe(
               cur.value,
             )
           }
-          const next =
-            propsAtStartOfDrag.trackData.keyframes[propsAtStartOfDrag.index + 1]
+          const next = propsAtStartOfDrag.trackData.keyframes[
+            propsAtStartOfDrag.index + 1
+          ] as Keyframe<number>
 
           if (next && Math.abs(original.value - next.value) > 0) {
-            const newNext: Keyframe = {...next, handles: [...next.handles]}
+            const newNext: Keyframe<number> = {
+              ...next,
+              handles: [...next.handles],
+            }
             updatedKeyframes.push(newNext)
             newNext.handles[1] = preserveLeftHandle(
               newNext.handles[1],

@@ -7,12 +7,12 @@ import type {IDerivation, Pointer} from '@theatre/dataverse'
 import {ConstantDerivation, prism, val} from '@theatre/dataverse'
 import logger from '@theatre/shared/logger'
 import UnitBezier from 'timing-function/lib/UnitBezier'
-import type {Interpolator} from '@theatre/core/propTypes'
+import type {Interpolator, PropTypeConfig} from '@theatre/core/propTypes'
 
-export default function trackValueAtTime<T>(
-  trackP: Pointer<TrackData | undefined>,
+export default function trackValueAtTime(
+  trackP: Pointer<TrackData<unknown> | undefined>,
   timeD: IDerivation<number>,
-  interpolator: Interpolator<T>,
+  propConfig: PropTypeConfig | undefined,
 ): IDerivation<unknown> {
   return prism(() => {
     const track = val(trackP)
@@ -22,8 +22,20 @@ export default function trackValueAtTime<T>(
         if (!track) {
           return new ConstantDerivation(undefined)
         } else if (track.type === 'BasicKeyframedTrack') {
-          return trackValueAtTime_keyframedTrack(
-            track as BasicKeyframedTrack<T>,
+          let interpolator = propConfig?.interpolator as Interpolator<unknown>
+          if (!interpolator)
+            interpolator = (
+              left: unknown,
+              right: unknown,
+              progression: number,
+            ) => {
+              if (typeof left === 'number' && typeof right === 'number') {
+                return left + progression * (right - left)
+              }
+              return left
+            }
+          return trackValueAtTime_keyframedTrack<unknown>(
+            track as BasicKeyframedTrack<unknown>,
             timeD,
             interpolator,
           )

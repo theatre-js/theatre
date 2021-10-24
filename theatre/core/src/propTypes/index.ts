@@ -87,6 +87,7 @@ export const compound = <Props extends IShorthandCompoundProps>(
     sanitizer: opts?.sanitizer,
     mutator: opts?.mutator,
     interpolator: opts?.interpolator,
+    isScalar: false,
   }
 }
 
@@ -208,6 +209,7 @@ export const number = (
     nudgeFn: opts?.nudgeFn ?? defaultNumberNudgeFn,
     nudgeMultiplier:
       typeof opts?.nudgeMultiplier === 'number' ? opts.nudgeMultiplier : 1,
+    isScalar: true,
     sanitizer(value) {
       if (opts?.sanitizer) return opts.sanitizer(value)
       return typeof value === 'number' ? value : undefined
@@ -263,6 +265,7 @@ export const boolean = (
     valueType: null as $IntentionalAny,
     [propTypeSymbol]: 'TheatrePropType',
     label: opts?.label,
+    isScalar: false,
     sanitizer(value: unknown) {
       if (opts?.sanitizer) return opts.sanitizer(value)
       return typeof value === 'boolean' ? value : undefined
@@ -321,6 +324,7 @@ export const color = (
     valueType: null as $IntentionalAny,
     [propTypeSymbol]: 'TheatrePropType',
     label: opts?.label,
+    isScalar: false,
     sanitizer(value: unknown) {
       if (opts?.sanitizer) return opts.sanitizer(value)?.toString()
       if (typeof value !== 'string') return undefined
@@ -383,6 +387,7 @@ export const string = (
     valueType: null as $IntentionalAny,
     [propTypeSymbol]: 'TheatrePropType',
     label: opts?.label,
+    isScalar: false,
     sanitizer(value: unknown) {
       if (opts?.sanitizer) return opts.sanitizer(value)
       return typeof value === 'string' ? value : undefined
@@ -438,6 +443,7 @@ export function stringLiteral<Opts extends {[key in string]: string}>(
     valueType: null as $IntentionalAny,
     as: opts?.as ?? 'menu',
     label: opts?.label,
+    isScalar: false,
     sanitizer(value: unknown) {
       if (opts?.sanitizer) return opts.sanitizer(value)
       return typeof value === 'string' && Object.keys(options).includes(value)
@@ -468,6 +474,7 @@ interface IBasePropType<ValueType, PropTypes = ValueType> {
   valueType: ValueType
   [propTypeSymbol]: 'TheatrePropType'
   label: string | undefined
+  isScalar: boolean
   sanitizer?: Sanitizer<PropTypes>
   mutator?: Mutator<PropTypes, ValueType>
   interpolator?: Interpolator<PropTypes>

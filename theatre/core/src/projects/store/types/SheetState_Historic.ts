@@ -30,12 +30,12 @@ type PositionalSequence = {
     string,
     {
       trackIdByPropPath: StrictRecord<string, SequenceTrackId>
-      trackData: StrictRecord<SequenceTrackId, TrackData>
+      trackData: StrictRecord<SequenceTrackId, TrackData<unknown>>
     }
   >
 }
 
-export type TrackData = BasicKeyframedTrack<unknown>
+export type TrackData<T> = BasicKeyframedTrack<T>
 
 export type Keyframe<T> = {
   id: KeyframeId

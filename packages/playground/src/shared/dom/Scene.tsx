@@ -93,8 +93,6 @@ const Box: React.FC<{
 
   useDrag(divRef, dragOpts)
 
-  console.log(state.background)
-
   return (
     <div
       onClick={() => {

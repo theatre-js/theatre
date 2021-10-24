@@ -204,16 +204,8 @@ export default class SheetObject implements IdentityDerivationProvider {
     const propConfig = get(this.template.config.props, pathToProp) as
       | PropTypeConfig
       | undefined
-    const interpolator =
-      propConfig?.interpolator ??
-      function (left: unknown, right: unknown, progression: number) {
-        if (typeof left === 'number' && typeof right === 'number') {
-          return left + progression * (right - left)
-        }
-        return left
-      }
 
-    return trackValueAtTime(trackP, timeD, interpolator)
+    return trackValueAtTime(trackP, timeD, propConfig)
   }
 
   get propsP(): Pointer<$FixMe> {

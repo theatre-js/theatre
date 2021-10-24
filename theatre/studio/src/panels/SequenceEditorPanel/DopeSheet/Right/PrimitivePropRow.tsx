@@ -5,7 +5,7 @@ import {usePrism} from '@theatre/react'
 import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
 import React from 'react'
-import BasicKeyframedTrack from './BasicKeyframedTrack/BasicKeyframedTrack'
+import KeyframedTrack from './BasicKeyframedTrack/BasicKeyframedTrack'
 import Row from './Row'
 
 const PrimitivePropRow: React.FC<{
@@ -30,12 +30,9 @@ const PrimitivePropRow: React.FC<{
       return <Row leaf={leaf} node={<div />}></Row>
     } else {
       const node = (
-        <BasicKeyframedTrack
-          layoutP={layoutP}
-          trackData={trackData}
-          leaf={leaf}
-        />
+        <KeyframedTrack layoutP={layoutP} trackData={trackData} leaf={leaf} />
       )
+
       return <Row leaf={leaf} node={node}></Row>
     }
   }, [leaf, layoutP])

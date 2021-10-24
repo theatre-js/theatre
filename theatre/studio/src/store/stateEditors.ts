@@ -46,6 +46,7 @@ import {
 } from '@theatre/shared/instanceTypes'
 import type SheetTemplate from '@theatre/core/sheets/SheetTemplate'
 import type SheetObjectTemplate from '@theatre/core/sheetObjects/SheetObjectTemplate'
+import type {PropTypeConfig} from '@theatre/core/propTypes'
 
 export const setDrafts__onlyMeantToBeCalledByTransaction = (
   drafts: undefined | Drafts,
@@ -432,6 +433,7 @@ namespace stateEditors {
 
           export function setPrimitivePropAsSequenced(
             p: WithoutSheetInstance<PropAddress>,
+            config: PropTypeConfig,
           ) {
             const tracks = _ensureTracksOfObject(p)
             const pathEncoded = encodePathToProp(p.pathToProp)
@@ -439,6 +441,7 @@ namespace stateEditors {
             if (typeof possibleTrackId === 'string') return
 
             const trackId = generateSequenceTrackId()
+
             tracks.trackData[trackId] = {
               type: 'BasicKeyframedTrack',
               keyframes: [],
