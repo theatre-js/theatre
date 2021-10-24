@@ -7,7 +7,7 @@ import type {IDerivation, Pointer} from '@theatre/dataverse'
 import {ConstantDerivation, prism, val} from '@theatre/dataverse'
 import logger from '@theatre/shared/logger'
 import UnitBezier from 'timing-function/lib/UnitBezier'
-import type {Interpolator} from '@theatre/corepropTypes'
+import type {Interpolator} from '@theatre/core/propTypes'
 
 export default function trackValueAtTime<T>(
   trackP: Pointer<TrackData | undefined>,

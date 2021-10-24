@@ -25,7 +25,7 @@ import {Atom, getPointerParts, pointer, prism, val} from '@theatre/dataverse'
 import type SheetObjectTemplate from './SheetObjectTemplate'
 import TheatreSheetObject from './TheatreSheetObject'
 import {get} from 'lodash-es'
-import type {Mutator, PropTypeConfig} from '@theatre/corepropTypes'
+import type {Mutator, PropTypeConfig} from '@theatre/core/propTypes'
 
 // type Everything = {
 //   final: SerializableMap

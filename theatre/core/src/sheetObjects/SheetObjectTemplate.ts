@@ -27,7 +27,7 @@ import logger from '@theatre/shared/logger'
 import type {
   PropTypeConfig,
   PropTypeConfig_Compound,
-} from '@theatre/corepropTypes'
+} from '@theatre/core/propTypes'
 
 export type IPropPathToTrackIdTree = {
   [key in string]?: SequenceTrackId | IPropPathToTrackIdTree
@@ -99,8 +99,6 @@ export default class SheetObjectTemplate {
               this.address.objectKey
             ],
           ) || {}
-
-        console.log(JSON.stringify(value))
 
         return value
       }),
