@@ -6,6 +6,7 @@ import type {IProject, ISheet} from '@theatre/core'
 import {onChange, types} from '@theatre/core'
 import type {IScrub, IStudio} from '@theatre/studio'
 import type {Interpolator} from '@theatre/core/propTypes'
+import type Color from 'tinycolor2'
 
 studio.initialize({usePersistentStorage: false})
 
@@ -25,7 +26,7 @@ const boxObjectConfig = {
   bool: types.boolean(false),
   x: types.number(200),
   y: types.number(200),
-  background: types.color('#FF0000'),
+  background: types.color('#FF000044'),
 }
 
 const Box: React.FC<{
@@ -41,7 +42,7 @@ const Box: React.FC<{
   const [state, setState] = useState<{
     x: number
     y: number
-    background: string
+    background: Color.ColorInput
   }>(obj.value)
 
   useLayoutEffect(() => {
@@ -92,6 +93,8 @@ const Box: React.FC<{
 
   useDrag(divRef, dragOpts)
 
+  console.log(state.background)
+
   return (
     <div
       onClick={() => {
@@ -102,7 +105,7 @@ const Box: React.FC<{
         width: 300,
         height: 300,
         color: 'white',
-        background: state.background,
+        background: state.background.toString(),
         position: 'absolute',
         left: state.x + 'px',
         top: state.y + 'px',

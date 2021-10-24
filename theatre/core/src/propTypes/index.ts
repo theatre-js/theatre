@@ -1,4 +1,3 @@
-import * as colors from '@theatre/shared/utils/colors'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import userReadableTypeOfValue from '@theatre/shared/utils/userReadableTypeOfValue'
 import type {
@@ -9,6 +8,7 @@ import type {
 import {sanitizeCompoundProps} from './internals'
 import {propTypeSymbol} from './internals'
 import type UnitBezier from 'timing-function/lib/UnitBezier'
+import Color from 'tinycolor2'
 
 const validateCommonOpts = <T>(
   fnCallSignature: string,
@@ -300,13 +300,15 @@ export const boolean = (
  */
 export const color = (
   defaultValue: string,
-  opts?: PropTypeConfigOpts<number>,
+  opts?: PropTypeConfigOpts<Color.Instance>,
 ): PropTypeConfig_Color => {
+  const value = Color(defaultValue)
+
   if (process.env.NODE_ENV !== 'production') {
     validateCommonOpts('t.color(defaultValue, opts)', opts)
-    if (typeof defaultValue !== 'string' || !colors.validHex(defaultValue)) {
+    if (!value?.isValid()) {
       throw new Error(
-        `defaultValue in t.color(defaultValue) must be a hex color. ${userReadableTypeOfValue(
+        `defaultValue in t.color(defaultValue) must be a valid color. ${userReadableTypeOfValue(
           defaultValue,
         )} given.`,
       )
@@ -320,18 +322,22 @@ export const color = (
     [propTypeSymbol]: 'TheatrePropType',
     label: opts?.label,
     sanitizer(value: unknown) {
-      if (opts?.sanitizer) return opts.sanitizer(value)
-      return typeof value === 'string' && colors.validHex(value)
-        ? colors.hexToDecimal(value)
-        : undefined
+      if (opts?.sanitizer) return opts.sanitizer(value)?.toString()
+      if (typeof value !== 'string') return undefined
+      const color = Color(value as string)
+      return color.isValid() ? (value as string) : undefined
     },
-    mutator(value: number) {
-      return colors.decimalToHex(value)
-    },
-    interpolator(left, right, progression, solver) {
-      if (opts?.interpolator)
-        return opts.interpolator(left, right, progression, solver)
-      return colors.interpolate(left, right, progression)
+    interpolator(_left, _right, progression, solver) {
+      const left = Color(_left),
+        right = Color(_right)
+      if (opts?.interpolator) {
+        return opts
+          .interpolator(left, right, progression, solver)
+          .toString(left.getFormat() as any)
+      }
+      return Color.mix(left, right, progression * 100).toString(
+        left.getFormat() as any,
+      )
     },
   }
 }
@@ -503,7 +509,7 @@ export interface PropTypeConfig_Boolean extends IBasePropType<boolean> {
   default: boolean
 }
 
-export interface PropTypeConfig_Color extends IBasePropType<string, number> {
+export interface PropTypeConfig_Color extends IBasePropType<string> {
   type: 'color'
   default: string
 }

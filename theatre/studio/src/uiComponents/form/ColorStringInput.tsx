@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import type {MutableRefObject} from 'react'
 import React, {useMemo, useRef, useState} from 'react'
 import mergeRefs from 'react-merge-refs'
-import {validHex} from '@theatre/shared/utils/colors'
+import Color from 'tinycolor2'
 
 const Input = styled.input.attrs({type: 'text'})`
   background: transparent;
@@ -59,7 +59,11 @@ const ColorStringInput: React.FC<{
   onBlur?: () => void
 }> = (propsA) => {
   const [stateA, setState] = useState<IState>({mode: 'noFocus'})
-  const isValid = propsA.isValid ?? validHex
+  const isValid =
+    propsA.isValid ??
+    function (v: string) {
+      return Color(v).isValid()
+    }
 
   const refs = useRef({state: stateA, props: propsA})
   refs.current = {state: stateA, props: propsA}
