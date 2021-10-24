@@ -17,10 +17,10 @@ export const getPropTypeByPointer = (
   pointerToProp: SheetObject['propsP'],
   obj: SheetObject,
 ): PropTypeConfig => {
-  const rootConf = obj.template.config.props
+  const rootConf = obj.template.config
 
   const p = getPointerParts(pointerToProp).path
-  let conf: PropTypeConfig = rootConf as PropTypeConfig
+  let conf = rootConf as PropTypeConfig
 
   while (p.length !== 0) {
     const key = p.shift()

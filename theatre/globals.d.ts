@@ -46,7 +46,13 @@ declare module 'propose' {
 //   export default inspect
 // }
 
-declare module 'timing-function/lib/UnitBezier'
+declare module 'timing-function/lib/UnitBezier' {
+  export default class UnitBezier {
+    constructor(p1x: numbe, p1y: number, p2x: number, p2y: number)
+    solve(progression: number, epsilon: number)
+    solveSimple(progression: number)
+  }
+}
 declare module 'clean-webpack-plugin'
 declare module 'webpack-notifier'
 declare module 'case-sensitive-paths-webpack-plugin'

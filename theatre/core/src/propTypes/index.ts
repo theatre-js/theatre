@@ -1,4 +1,4 @@
-import {validHex} from '@theatre/shared/utils/colors'
+import * as colors from '@theatre/shared/utils/colors'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import userReadableTypeOfValue from '@theatre/shared/utils/userReadableTypeOfValue'
 import type {
@@ -8,10 +8,11 @@ import type {
 } from './internals'
 import {sanitizeCompoundProps} from './internals'
 import {propTypeSymbol} from './internals'
+import type UnitBezier from 'timing-function/lib/UnitBezier'
 
-const validateCommonOpts = (
+const validateCommonOpts = <T>(
   fnCallSignature: string,
-  opts?: PropTypeConfigOpts,
+  opts?: PropTypeConfigOpts<T>,
 ) => {
   if (process.env.NODE_ENV !== 'production') {
     if (opts === undefined) return
@@ -71,9 +72,10 @@ const validateCommonOpts = (
  */
 export const compound = <Props extends IShorthandCompoundProps>(
   props: Props,
-  opts?: PropTypeConfigOpts,
+  opts?: PropTypeConfigOpts<Props>,
 ): PropTypeConfig_Compound<
-  ShorthandCompoundPropsToLonghandCompoundProps<Props>
+  ShorthandCompoundPropsToLonghandCompoundProps<Props>,
+  Props
 > => {
   validateCommonOpts('t.compound(props, opts)', opts)
   return {
@@ -82,6 +84,9 @@ export const compound = <Props extends IShorthandCompoundProps>(
     valueType: null as $IntentionalAny,
     [propTypeSymbol]: 'TheatrePropType',
     label: opts?.label,
+    sanitizer: opts?.sanitizer,
+    mutator: opts?.mutator,
+    interpolator: opts?.interpolator,
   }
 }
 
@@ -132,7 +137,7 @@ export const number = (
     nudgeFn?: PropTypeConfig_Number['nudgeFn']
     range?: PropTypeConfig_Number['range']
     nudgeMultiplier?: number
-  } & PropTypeConfigOpts,
+  } & PropTypeConfigOpts<number>,
 ): PropTypeConfig_Number => {
   if (process.env.NODE_ENV !== 'production') {
     validateCommonOpts('t.number(defaultValue, opts)', opts)
@@ -203,6 +208,18 @@ export const number = (
     nudgeFn: opts?.nudgeFn ?? defaultNumberNudgeFn,
     nudgeMultiplier:
       typeof opts?.nudgeMultiplier === 'number' ? opts.nudgeMultiplier : 1,
+    sanitizer(value) {
+      if (opts?.sanitizer) return opts.sanitizer(value)
+      return typeof value === 'number' ? value : undefined
+    },
+    mutator(value) {
+      return value
+    },
+    interpolator(left, right, progression, solver) {
+      if (opts?.interpolator)
+        return opts.interpolator(left, right, progression, solver)
+      return left + progression * (right - left)
+    },
   }
 }
 
@@ -228,7 +245,7 @@ export const number = (
  */
 export const boolean = (
   defaultValue: boolean,
-  opts?: PropTypeConfigOpts,
+  opts?: PropTypeConfigOpts<boolean>,
 ): PropTypeConfig_Boolean => {
   if (process.env.NODE_ENV !== 'production') {
     validateCommonOpts('t.boolean(defaultValue, opts)', opts)
@@ -246,6 +263,18 @@ export const boolean = (
     valueType: null as $IntentionalAny,
     [propTypeSymbol]: 'TheatrePropType',
     label: opts?.label,
+    sanitizer(value: unknown) {
+      if (opts?.sanitizer) return opts.sanitizer(value)
+      return typeof value === 'boolean' ? value : undefined
+    },
+    mutator(value) {
+      return value
+    },
+    interpolator(left, right, progression, solver) {
+      if (opts?.interpolator)
+        return opts.interpolator(left, right, progression, solver)
+      return left
+    },
   }
 }
 
@@ -271,11 +300,11 @@ export const boolean = (
  */
 export const color = (
   defaultValue: string,
-  opts?: PropTypeConfigOpts,
+  opts?: PropTypeConfigOpts<number>,
 ): PropTypeConfig_Color => {
   if (process.env.NODE_ENV !== 'production') {
     validateCommonOpts('t.color(defaultValue, opts)', opts)
-    if (typeof defaultValue !== 'string' || !validHex(defaultValue)) {
+    if (typeof defaultValue !== 'string' || !colors.validHex(defaultValue)) {
       throw new Error(
         `defaultValue in t.color(defaultValue) must be a hex color. ${userReadableTypeOfValue(
           defaultValue,
@@ -290,6 +319,20 @@ export const color = (
     valueType: null as $IntentionalAny,
     [propTypeSymbol]: 'TheatrePropType',
     label: opts?.label,
+    sanitizer(value: unknown) {
+      if (opts?.sanitizer) return opts.sanitizer(value)
+      return typeof value === 'string' && colors.validHex(value)
+        ? colors.hexToDecimal(value)
+        : undefined
+    },
+    mutator(value: number) {
+      return colors.decimalToHex(value)
+    },
+    interpolator(left, right, progression, solver) {
+      if (opts?.interpolator)
+        return opts.interpolator(left, right, progression, solver)
+      return colors.interpolate(left, right, progression)
+    },
   }
 }
 
@@ -316,7 +359,7 @@ export const color = (
  */
 export const string = (
   defaultValue: string,
-  opts?: PropTypeConfigOpts,
+  opts?: PropTypeConfigOpts<string>,
 ): PropTypeConfig_String => {
   if (process.env.NODE_ENV !== 'production') {
     validateCommonOpts('t.string(defaultValue, opts)', opts)
@@ -334,6 +377,12 @@ export const string = (
     valueType: null as $IntentionalAny,
     [propTypeSymbol]: 'TheatrePropType',
     label: opts?.label,
+    sanitizer(value: unknown) {
+      if (opts?.sanitizer) return opts.sanitizer(value)
+      return typeof value === 'string' ? value : undefined
+    },
+    mutator: opts?.mutator,
+    interpolator: opts?.interpolator,
   }
 }
 
@@ -371,7 +420,9 @@ export function stringLiteral<Opts extends {[key in string]: string}>(
   /**
    * opts.as Determines if editor is shown as a menu or a switch. Either 'menu' or 'switch'.  Default: 'menu'
    */
-  opts?: {as?: 'menu' | 'switch'} & PropTypeConfigOpts,
+  opts?: {as?: 'menu' | 'switch'} & PropTypeConfigOpts<
+    Extract<keyof Opts, string>
+  >,
 ): PropTypeConfig_StringLiteral<Extract<keyof Opts, string>> {
   return {
     type: 'stringLiteral',
@@ -381,13 +432,39 @@ export function stringLiteral<Opts extends {[key in string]: string}>(
     valueType: null as $IntentionalAny,
     as: opts?.as ?? 'menu',
     label: opts?.label,
+    sanitizer(value: unknown) {
+      if (opts?.sanitizer) return opts.sanitizer(value)
+      return typeof value === 'string' && Object.keys(options).includes(value)
+        ? (value as Extract<keyof Opts, string>)
+        : undefined
+    },
+    mutator(value) {
+      return value
+    },
+    interpolator(left, right, progression, solver) {
+      if (opts?.interpolator)
+        return opts.interpolator(left, right, progression, solver)
+      return left
+    },
   }
 }
 
-interface IBasePropType<ValueType> {
+export type Sanitizer<T> = (value: unknown) => T | undefined
+export type Mutator<T, V = T> = (value: T) => V | undefined
+export type Interpolator<T> = (
+  left: T,
+  right: T,
+  progression: number,
+  solver: UnitBezier,
+) => T
+
+interface IBasePropType<ValueType, PropTypes = ValueType> {
   valueType: ValueType
   [propTypeSymbol]: 'TheatrePropType'
   label: string | undefined
+  sanitizer?: Sanitizer<PropTypes>
+  mutator?: Mutator<PropTypes, ValueType>
+  interpolator?: Interpolator<PropTypes>
 }
 
 export interface PropTypeConfig_Number extends IBasePropType<number> {
@@ -426,13 +503,16 @@ export interface PropTypeConfig_Boolean extends IBasePropType<boolean> {
   default: boolean
 }
 
-export interface PropTypeConfig_Color extends IBasePropType<string> {
+export interface PropTypeConfig_Color extends IBasePropType<string, number> {
   type: 'color'
   default: string
 }
 
-export interface PropTypeConfigOpts {
+export interface PropTypeConfigOpts<ValueType, PropTypes = ValueType> {
   label?: string
+  sanitizer?: Sanitizer<ValueType>
+  mutator?: Mutator<ValueType, PropTypes>
+  interpolator?: Interpolator<ValueType>
 }
 
 export interface PropTypeConfig_String extends IBasePropType<string> {
@@ -451,8 +531,13 @@ export interface PropTypeConfig_StringLiteral<T extends string>
 /**
  *
  */
-export interface PropTypeConfig_Compound<Props extends IValidCompoundProps>
-  extends IBasePropType<{[K in keyof Props]: Props[K]['valueType']}> {
+export interface PropTypeConfig_Compound<
+  Props extends IValidCompoundProps,
+  PropTypes = Props,
+> extends IBasePropType<
+    {[K in keyof Props]: Props[K]['valueType']},
+    PropTypes
+  > {
   type: 'compound'
   props: Record<string, PropTypeConfig>
 }

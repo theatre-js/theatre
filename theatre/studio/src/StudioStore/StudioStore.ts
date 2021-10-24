@@ -29,6 +29,7 @@ import {persistStateOfStudio} from './persistStateOfStudio'
 import {isSheetObject} from '@theatre/shared/instanceTypes'
 import type {OnDiskState} from '@theatre/core/projects/store/storeTypes'
 import {generateDiskStateRevision} from './generateDiskStateRevision'
+import type {PropTypeConfig} from '@theatre/core/propTypes'
 
 export type Drafts = {
   historic: Draft<StudioHistoricState>
@@ -146,6 +147,7 @@ export default class StudioStore {
                   if (typeof v === 'undefined' || v === null) {
                     return
                   }
+
                   const propAddress = {...root.address, pathToProp}
 
                   const trackId = get(
@@ -154,6 +156,12 @@ export default class StudioStore {
                   ) as $FixMe as SequenceTrackId | undefined
 
                   if (typeof trackId === 'string') {
+                    const propConfig = get(
+                      root.template.config.props,
+                      pathToProp,
+                    ) as PropTypeConfig | undefined
+                    if (propConfig?.sanitizer) v = propConfig.sanitizer(v)
+
                     const seq = root.sheet.getSequence()
                     seq.position = seq.closestGridPosition(seq.position)
                     stateEditors.coreByProject.historic.sheetsById.sequence.setKeyframeAtPosition(

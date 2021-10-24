@@ -21,7 +21,7 @@ const PrimitivePropGraph: React.FC<{
   color: keyof typeof graphEditorColors
 }> = (props) => {
   return usePrism(() => {
-    const {sheetObject, trackId, pathToProp} = props
+    const {sheetObject, trackId} = props
     const trackData = val(
       getStudio()!.atomP.historic.coreByProject[sheetObject.address.projectId]
         .sheetsById[sheetObject.address.sheetId].sequence.tracksByObject[
@@ -29,20 +29,14 @@ const PrimitivePropGraph: React.FC<{
       ].trackData[trackId],
     )
 
-    const trackDataType = trackData?.type
-    if (trackData) {
-      if (
-        trackDataType !== 'BasicKeyframedTrack' &&
-        trackDataType !== 'ColorKeyframedTrack'
-      ) {
-        console.error(
-          `trackData type ${trackDataType} is not yet supported on the graph editor`,
-        )
-      } else {
-        return <BasicKeyframedTrack {...props} trackData={trackData} />
-      }
+    if (trackData?.type !== 'BasicKeyframedTrack') {
+      console.error(
+        `trackData type ${trackData?.type} is not yet supported on the graph editor`,
+      )
+      return <></>
+    } else {
+      return <BasicKeyframedTrack {...props} trackData={trackData} />
     }
-    return <></>
   }, [props.trackId, props.layoutP])
 }
 

@@ -24,7 +24,10 @@ import set from 'lodash-es/set'
 import getPropDefaultsOfSheetObject from './getPropDefaultsOfSheetObject'
 import SheetObject from './SheetObject'
 import logger from '@theatre/shared/logger'
-import {encodePathToProp} from '@theatre/shared/utils/addresses'
+import type {
+  PropTypeConfig,
+  PropTypeConfig_Compound,
+} from '@theatre/corepropTypes'
 
 export type IPropPathToTrackIdTree = {
   [key in string]?: SequenceTrackId | IPropPathToTrackIdTree
@@ -33,7 +36,9 @@ export type IPropPathToTrackIdTree = {
 export default class SheetObjectTemplate {
   readonly address: WithoutSheetInstance<SheetObjectAddress>
   readonly type: 'Theatre_SheetObjectTemplate' = 'Theatre_SheetObjectTemplate'
-  protected _config: Atom<SheetObjectConfig<$IntentionalAny>>
+  protected _config: Atom<
+    SheetObjectConfig<PropTypeConfig_Compound<$IntentionalAny>>
+  >
   readonly _cache = new SimpleCache()
   readonly project: Project
 
@@ -88,13 +93,16 @@ export default class SheetObjectTemplate {
             this.address.sheetId
           ]
 
-        return (
+        const value =
           val(
             pointerToSheetState.staticOverrides.byObject[
               this.address.objectKey
             ],
           ) || {}
-        )
+
+        console.log(JSON.stringify(value))
+
+        return value
       }),
     )
   }
@@ -120,11 +128,6 @@ export default class SheetObjectTemplate {
             .trackIdByPropPath,
         )
 
-        const trackDataType = val(
-          pointerToSheetState.sequence.tracksByObject[this.address.objectKey]
-            .trackData,
-        )
-
         const arrayOfIds: Array<{
           pathToProp: PathToProp
           trackId: SequenceTrackId
@@ -146,15 +149,14 @@ export default class SheetObjectTemplate {
               continue
             }
 
+            const propConfig = get(this.config.props, pathToProp) as
+              | PropTypeConfig
+              | undefined
             const defaultValue = get(defaults, pathToProp)
-            const trackKey =
-              get(trackIdByPropPath, encodePathToProp(pathToProp)) ?? ''
-            const trackType = get(trackDataType, trackKey)?.type
 
             if (
               typeof defaultValue !== 'number' &&
-              (typeof defaultValue !== 'string' ||
-                trackType !== 'ColorKeyframedTrack')
+              (!propConfig?.sanitizer || !propConfig.interpolator)
             ) {
               continue
             }

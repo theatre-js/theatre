@@ -250,7 +250,6 @@ export function useEditingToolsForPrimitiveProp<
             const propAddress = {...obj.address, pathToProp}
             stateEditors.coreByProject.historic.sheetsById.sequence.setPrimitivePropAsSequenced(
               propAddress,
-              propConfig,
             )
           })
         },
@@ -285,9 +284,9 @@ export function useEditingToolsForPrimitiveProp<
 }
 
 type NearbyKeyframes = {
-  prev?: Keyframe
-  cur?: Keyframe
-  next?: Keyframe
+  prev?: Keyframe<unknown>
+  cur?: Keyframe<unknown>
+  next?: Keyframe<unknown>
 }
 
 export const shadeToColor: {[K in Shade]: string} = {
@@ -310,5 +309,5 @@ type Shade =
   | 'Sequened_NotBeingInterpolated'
 
 function isPropConfSequencable(conf: PropTypeConfig): boolean {
-  return conf.type === 'number' || conf.type === 'color'
+  return conf.type === 'number' || (!!conf.sanitizer && !!conf.interpolator)
 }

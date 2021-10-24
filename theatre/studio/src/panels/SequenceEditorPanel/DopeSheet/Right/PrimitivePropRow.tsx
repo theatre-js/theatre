@@ -23,28 +23,21 @@ const PrimitivePropRow: React.FC<{
       ].trackData[trackId],
     )
 
-    if (trackData) {
-      const trackDataType = trackData.type
-
-      if (
-        trackDataType !== 'BasicKeyframedTrack' &&
-        trackDataType !== 'ColorKeyframedTrack'
-      ) {
-        console.error(
-          `trackData type ${trackDataType} is not yet supported on the sequence editor`,
-        )
-      } else {
-        const node = (
-          <BasicKeyframedTrack
-            layoutP={layoutP}
-            trackData={trackData}
-            leaf={leaf}
-          />
-        )
-        return <Row leaf={leaf} node={node}></Row>
-      }
+    if (trackData?.type !== 'BasicKeyframedTrack') {
+      console.error(
+        `trackData type ${trackData?.type} is not yet supported on the sequence editor`,
+      )
+      return <Row leaf={leaf} node={<div />}></Row>
+    } else {
+      const node = (
+        <BasicKeyframedTrack
+          layoutP={layoutP}
+          trackData={trackData}
+          leaf={leaf}
+        />
+      )
+      return <Row leaf={leaf} node={node}></Row>
     }
-    return <Row leaf={leaf} node={<div />}></Row>
   }, [leaf, layoutP])
 }
 

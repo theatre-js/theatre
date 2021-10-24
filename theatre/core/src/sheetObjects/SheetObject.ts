@@ -1,6 +1,9 @@
 import trackValueAtTime from '@theatre/core/sequences/trackValueAtTime'
 import type Sheet from '@theatre/core/sheets/Sheet'
-import type {SheetObjectAddress} from '@theatre/shared/utils/addresses'
+import type {
+  PathToProp,
+  SheetObjectAddress,
+} from '@theatre/shared/utils/addresses'
 import deepMergeWithCache from '@theatre/shared/utils/deepMergeWithCache'
 import type {SequenceTrackId} from '@theatre/shared/utils/ids'
 import pointerDeep from '@theatre/shared/utils/pointerDeep'
@@ -17,12 +20,12 @@ import type {
   IDerivation,
   Pointer,
 } from '@theatre/dataverse'
-import {get} from 'lodash-es'
 
 import {Atom, getPointerParts, pointer, prism, val} from '@theatre/dataverse'
 import type SheetObjectTemplate from './SheetObjectTemplate'
 import TheatreSheetObject from './TheatreSheetObject'
-import {decimalToHex} from '@theatre/shared/utils/colors'
+import {get} from 'lodash-es'
+import type {Mutator, PropTypeConfig} from '@theatre/corepropTypes'
 
 // type Everything = {
 //   final: SerializableMap
@@ -152,16 +155,22 @@ export default class SheetObject implements IdentityDerivationProvider {
           const untaps: Array<() => void> = []
 
           for (const {trackId, pathToProp} of tracksToProcess) {
-            const derivation = this._trackIdToDerivation(trackId)
+            const derivation = this._trackIdToDerivation(trackId, pathToProp)
+
+            const propConfig = get(this.template.config.props, pathToProp) as
+              | PropTypeConfig
+              | undefined
+            const mutator: Mutator<any> =
+              propConfig?.mutator ??
+              function (val: any) {
+                return val
+              }
 
             const updateSequenceValueFromItsDerivation = () => {
-              const valueConfig = get(this.template.config.props, pathToProp)
-              let value: any = derivation.getValue()
-              if (valueConfig?.type === 'color' && value !== undefined) {
-                valsAtom.setIn(pathToProp, decimalToHex(value))
-              } else {
-                valsAtom.setIn(pathToProp, value)
-              }
+              const value: any = derivation.getValue()
+              const mutatedValue: any =
+                value === undefined ? undefined : mutator(value)
+              valsAtom.setIn(pathToProp, mutatedValue)
             }
             const untap = derivation
               .changesWithoutValues()
@@ -185,13 +194,26 @@ export default class SheetObject implements IdentityDerivationProvider {
 
   protected _trackIdToDerivation(
     trackId: SequenceTrackId,
+    pathToProp: PathToProp,
   ): IDerivation<unknown> {
     const trackP =
       this.template.project.pointers.historic.sheetsById[this.address.sheetId]
         .sequence.tracksByObject[this.address.objectKey].trackData[trackId]
     const timeD = this.sheet.getSequence().positionDerivation
 
-    return trackValueAtTime(trackP, timeD)
+    const propConfig = get(this.template.config.props, pathToProp) as
+      | PropTypeConfig
+      | undefined
+    const interpolator =
+      propConfig?.interpolator ??
+      function (left: unknown, right: unknown, progression: number) {
+        if (typeof left === 'number' && typeof right === 'number') {
+          return left + progression * (right - left)
+        }
+        return left
+      }
+
+    return trackValueAtTime(trackP, timeD, interpolator)
   }
 
   get propsP(): Pointer<$FixMe> {

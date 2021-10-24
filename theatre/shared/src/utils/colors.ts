@@ -11,7 +11,6 @@ export function hexToDecimal(hex: string): number {
     const values = hex.match(/[A-Fa-f0-9]{2}/g)
     if (values != null) {
       const [r, g, b, a] = values.map((hex) => parseInt(hex, 16))
-      console.log(hex, r, g, b, a)
       return ((a << 24) | (r << 16) | (g << 8) | b) >>> 0
     }
   }

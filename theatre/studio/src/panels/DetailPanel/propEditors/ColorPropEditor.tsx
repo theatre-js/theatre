@@ -3,7 +3,7 @@ import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import React from 'react'
 import {useEditingToolsForPrimitiveProp} from './utils/useEditingToolsForPrimitiveProp'
 import {SingleRowPropEditor} from './utils/SingleRowPropEditor'
-import BasicStringInput from '@theatre/studio/uiComponents/form/BasicStringInput'
+import ColorStringInput from '@theatre/studio/uiComponents/form/ColorStringInput'
 
 const StringPropEditor: React.FC<{
   propConfig: PropTypeConfig_Color
@@ -18,7 +18,7 @@ const StringPropEditor: React.FC<{
 
   return (
     <SingleRowPropEditor {...{stuff, propConfig, pointerToProp}}>
-      <BasicStringInput
+      <ColorStringInput
         value={stuff.value}
         temporarilySetValue={stuff.temporarilySetValue}
         discardTemporaryValue={stuff.discardTemporaryValue}

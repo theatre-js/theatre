@@ -1,17 +1,18 @@
 import type {
-  KeyframedTrack,
+  BasicKeyframedTrack,
   Keyframe,
   TrackData,
 } from '@theatre/core/projects/store/types/SheetState_Historic'
 import type {IDerivation, Pointer} from '@theatre/dataverse'
 import {ConstantDerivation, prism, val} from '@theatre/dataverse'
 import logger from '@theatre/shared/logger'
-import {interpolate} from '@theatre/shared/utils/colors'
 import UnitBezier from 'timing-function/lib/UnitBezier'
+import type {Interpolator} from '@theatre/corepropTypes'
 
-export default function trackValueAtTime(
+export default function trackValueAtTime<T>(
   trackP: Pointer<TrackData | undefined>,
   timeD: IDerivation<number>,
+  interpolator: Interpolator<T>,
 ): IDerivation<unknown> {
   return prism(() => {
     const track = val(trackP)
@@ -22,14 +23,10 @@ export default function trackValueAtTime(
           return new ConstantDerivation(undefined)
         } else if (track.type === 'BasicKeyframedTrack') {
           return trackValueAtTime_keyframedTrack(
-            track,
+            track as BasicKeyframedTrack<T>,
             timeD,
-            (left, right, progression) => {
-              return left + progression * (right - left)
-            },
+            interpolator,
           )
-        } else if (track.type === 'ColorKeyframedTrack') {
-          return trackValueAtTime_keyframedTrack(track, timeD, interpolate)
         } else {
           logger.error(`Track type not yet supported.`)
           return new ConstantDerivation(undefined)
@@ -50,10 +47,10 @@ type IStartedState = {
 }
 type IState = {started: false} | IStartedState
 
-function trackValueAtTime_keyframedTrack(
-  track: KeyframedTrack,
+function trackValueAtTime_keyframedTrack<T>(
+  track: BasicKeyframedTrack<T>,
   timeD: IDerivation<number>,
-  computeValue: (left: number, right: number, progression: number) => number,
+  interpolator: Interpolator<T>,
 ): IDerivation<unknown> {
   return prism(() => {
     let stateRef = prism.ref<IState>('state', {started: false})
@@ -62,7 +59,7 @@ function trackValueAtTime_keyframedTrack(
     const time = timeD.getValue()
 
     if (!state.started || time < state.validFrom || state.validTo <= time) {
-      stateRef.current = state = updateState(timeD, track, computeValue)
+      stateRef.current = state = updateState(timeD, track, interpolator)
     }
 
     return state.der.getValue()
@@ -71,10 +68,10 @@ function trackValueAtTime_keyframedTrack(
 
 const undefinedConstD = new ConstantDerivation(undefined)
 
-const updateState = (
+const updateState = <T>(
   progressionD: IDerivation<number>,
-  track: KeyframedTrack,
-  computeValue: (left: number, right: number, progression: number) => number,
+  track: BasicKeyframedTrack<T>,
+  interpolator: Interpolator<T>,
 ): IStartedState => {
   const progression = progressionD.getValue()
   if (track.keyframes.length === 0) {
@@ -116,11 +113,11 @@ const updateState = (
       if (isLastKeyframe) {
         return states.lastKeyframe(currentKeyframe)
       } else {
-        return states.between(
+        return states.between<T>(
           currentKeyframe,
           track.keyframes[currentKeyframeIndex + 1],
           progressionD,
-          computeValue,
+          interpolator,
         )
       }
     } else {
@@ -133,11 +130,11 @@ const updateState = (
           currentKeyframeIndex = nextKeyframeIndex
           continue
         } else {
-          return states.between(
+          return states.between<T>(
             currentKeyframe,
             track.keyframes[currentKeyframeIndex + 1],
             progressionD,
-            computeValue,
+            interpolator,
           )
         }
       }
@@ -146,7 +143,7 @@ const updateState = (
 }
 
 const states = {
-  beforeFirstKeyframe(kf: Keyframe): IStartedState {
+  beforeFirstKeyframe<T>(kf: Keyframe<T>): IStartedState {
     return {
       started: true,
       validFrom: -Infinity,
@@ -154,7 +151,7 @@ const states = {
       der: new ConstantDerivation(kf.value),
     }
   },
-  lastKeyframe(kf: Keyframe): IStartedState {
+  lastKeyframe<T>(kf: Keyframe<T>): IStartedState {
     return {
       started: true,
       validFrom: kf.position,
@@ -162,11 +159,11 @@ const states = {
       der: new ConstantDerivation(kf.value),
     }
   },
-  between(
-    left: Keyframe,
-    right: Keyframe,
+  between<T>(
+    left: Keyframe<T>,
+    right: Keyframe<T>,
     progressionD: IDerivation<number>,
-    computeValue: (left: number, right: number, progression: number) => number,
+    interpolator: Interpolator<T>,
   ): IStartedState {
     if (!left.connectedRight) {
       return {
@@ -196,7 +193,7 @@ const states = {
       )
 
       const valueProgression = solver.solveSimple(progression)
-      return computeValue(left.value, right.value, valueProgression)
+      return interpolator(left.value, right.value, valueProgression, solver)
     })
 
     return {
