@@ -17,10 +17,12 @@ import type {
   IDerivation,
   Pointer,
 } from '@theatre/dataverse'
+import {get} from 'lodash-es'
 
 import {Atom, getPointerParts, pointer, prism, val} from '@theatre/dataverse'
 import type SheetObjectTemplate from './SheetObjectTemplate'
 import TheatreSheetObject from './TheatreSheetObject'
+import {decimalToHex} from '@theatre/shared/utils/colors'
 
 // type Everything = {
 //   final: SerializableMap
@@ -153,7 +155,13 @@ export default class SheetObject implements IdentityDerivationProvider {
             const derivation = this._trackIdToDerivation(trackId)
 
             const updateSequenceValueFromItsDerivation = () => {
-              valsAtom.setIn(pathToProp, derivation.getValue())
+              const valueConfig = get(this.template.config.props, pathToProp)
+              let value: any = derivation.getValue()
+              if (valueConfig?.type === 'color' && value !== undefined) {
+                valsAtom.setIn(pathToProp, decimalToHex(value))
+              } else {
+                valsAtom.setIn(pathToProp, value)
+              }
             }
             const untap = derivation
               .changesWithoutValues()

@@ -24,6 +24,7 @@ import set from 'lodash-es/set'
 import getPropDefaultsOfSheetObject from './getPropDefaultsOfSheetObject'
 import SheetObject from './SheetObject'
 import logger from '@theatre/shared/logger'
+import {encodePathToProp} from '@theatre/shared/utils/addresses'
 
 export type IPropPathToTrackIdTree = {
   [key in string]?: SequenceTrackId | IPropPathToTrackIdTree
@@ -119,6 +120,11 @@ export default class SheetObjectTemplate {
             .trackIdByPropPath,
         )
 
+        const trackDataType = val(
+          pointerToSheetState.sequence.tracksByObject[this.address.objectKey]
+            .trackData,
+        )
+
         const arrayOfIds: Array<{
           pathToProp: PathToProp
           trackId: SequenceTrackId
@@ -139,8 +145,17 @@ export default class SheetObjectTemplate {
               )
               continue
             }
+
             const defaultValue = get(defaults, pathToProp)
-            if (typeof defaultValue !== 'number') {
+            const trackKey =
+              get(trackIdByPropPath, encodePathToProp(pathToProp)) ?? ''
+            const trackType = get(trackDataType, trackKey)?.type
+
+            if (
+              typeof defaultValue !== 'number' &&
+              (typeof defaultValue !== 'string' ||
+                trackType !== 'ColorKeyframedTrack')
+            ) {
               continue
             }
 
