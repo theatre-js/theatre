@@ -5,12 +5,11 @@ import React, {useLayoutEffect, useMemo, useState} from 'react'
 import type {IProject, ISheet} from '@theatre/core'
 import {onChange, types} from '@theatre/core'
 import type {IScrub, IStudio} from '@theatre/studio'
-import type {Interpolator} from '@theatre/core/propTypes'
 import type Color from 'tinycolor2'
 
 studio.initialize({usePersistentStorage: false})
 
-const textInterpolator: Interpolator<string> = (left, right, progression) => {
+const textInterpolator = (left: string, right: string, progression: number) => {
   if (!left || right.startsWith(left)) {
     const length = Math.floor(
       Math.max(0, (right.length - left.length) * progression),
