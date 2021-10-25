@@ -154,7 +154,7 @@ export default class SheetObjectTemplate {
 
             if (
               typeof defaultValue !== 'number' &&
-              (!propConfig?.sanitizer || !propConfig.interpolator)
+              (!propConfig?.sanitize || !propConfig.interpolate)
             ) {
               continue
             }

@@ -9,7 +9,7 @@ import type Color from 'tinycolor2'
 
 studio.initialize({usePersistentStorage: false})
 
-const textInterpolator = (left: string, right: string, progression: number) => {
+const textInterpolate = (left: string, right: string, progression: number) => {
   if (!left || right.startsWith(left)) {
     const length = Math.floor(
       Math.max(0, (right.length - left.length) * progression),
@@ -20,7 +20,7 @@ const textInterpolator = (left: string, right: string, progression: number) => {
 }
 
 const boxObjectConfig = {
-  test: types.string('Hello?', {interpolator: textInterpolator}),
+  test: types.string('Hello?', {interpolate: textInterpolate}),
   testLiteral: types.stringLiteral('a', {a: 'Option A', b: 'Option B'}),
   bool: types.boolean(false),
   x: types.number(200),

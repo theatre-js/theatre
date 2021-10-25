@@ -25,7 +25,7 @@ import {Atom, getPointerParts, pointer, prism, val} from '@theatre/dataverse'
 import type SheetObjectTemplate from './SheetObjectTemplate'
 import TheatreSheetObject from './TheatreSheetObject'
 import {get} from 'lodash-es'
-import type {Mutator, PropTypeConfig} from '@theatre/core/propTypes'
+import type {PropTypeConfig} from '@theatre/core/propTypes'
 
 // type Everything = {
 //   final: SerializableMap
@@ -157,19 +157,9 @@ export default class SheetObject implements IdentityDerivationProvider {
           for (const {trackId, pathToProp} of tracksToProcess) {
             const derivation = this._trackIdToDerivation(trackId, pathToProp)
 
-            const propConfig = get(this.template.config.props, pathToProp) as
-              | PropTypeConfig
-              | undefined
-            const mutator: Mutator<any> =
-              propConfig?.mutator ??
-              function (val: any) {
-                return val
-              }
-
             const updateSequenceValueFromItsDerivation = () => {
               const value: any = derivation.getValue()
-              const mutatedValue: any =
-                value === undefined ? undefined : mutator(value)
+              const mutatedValue: any = value === undefined ? undefined : value
               valsAtom.setIn(pathToProp, mutatedValue)
             }
             const untap = derivation

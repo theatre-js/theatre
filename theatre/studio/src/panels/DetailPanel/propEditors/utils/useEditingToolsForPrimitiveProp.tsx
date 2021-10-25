@@ -311,5 +311,5 @@ type Shade =
   | 'Sequened_NotBeingInterpolated'
 
 function isPropConfSequencable(conf: PropTypeConfig): boolean {
-  return conf.type === 'number' || (!!conf.sanitizer && !!conf.interpolator)
+  return conf.type === 'number' || (!!conf.sanitize && !!conf.interpolate)
 }

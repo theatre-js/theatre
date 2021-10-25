@@ -22,9 +22,9 @@ export default function trackValueAtTime(
         if (!track) {
           return new ConstantDerivation(undefined)
         } else if (track.type === 'BasicKeyframedTrack') {
-          let interpolator = propConfig?.interpolator as Interpolator<unknown>
-          if (!interpolator)
-            interpolator = (
+          let interpolate = propConfig?.interpolate as Interpolator<unknown>
+          if (!interpolate)
+            interpolate = (
               left: unknown,
               right: unknown,
               progression: number,
@@ -37,7 +37,7 @@ export default function trackValueAtTime(
           return trackValueAtTime_keyframedTrack(
             track as BasicKeyframedTrack,
             timeD,
-            interpolator,
+            interpolate,
           )
         } else {
           logger.error(`Track type not yet supported.`)

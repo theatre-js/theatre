@@ -160,7 +160,7 @@ export default class StudioStore {
                       root.template.config.props,
                       pathToProp,
                     ) as PropTypeConfig | undefined
-                    if (propConfig?.sanitizer) v = propConfig.sanitizer(v)
+                    if (propConfig?.sanitize) v = propConfig.sanitize(v)
 
                     const seq = root.sheet.getSequence()
                     seq.position = seq.closestGridPosition(seq.position)

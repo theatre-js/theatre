@@ -84,9 +84,8 @@ export const compound = <Props extends IShorthandCompoundProps>(
     valueType: null as $IntentionalAny,
     [propTypeSymbol]: 'TheatrePropType',
     label: opts?.label,
-    sanitizer: opts?.sanitizer,
-    mutator: opts?.mutator,
-    interpolator: opts?.interpolator,
+    sanitize: opts?.sanitize,
+    interpolate: opts?.interpolate,
     isScalar: false,
   }
 }
@@ -210,16 +209,13 @@ export const number = (
     nudgeMultiplier:
       typeof opts?.nudgeMultiplier === 'number' ? opts.nudgeMultiplier : 1,
     isScalar: true,
-    sanitizer(value) {
-      if (opts?.sanitizer) return opts.sanitizer(value)
+    sanitize(value) {
+      if (opts?.sanitize) return opts.sanitize(value)
       return typeof value === 'number' ? value : undefined
     },
-    mutator(value) {
-      return value
-    },
-    interpolator(left, right, progression, solver) {
-      if (opts?.interpolator)
-        return opts.interpolator(left, right, progression, solver)
+    interpolate(left, right, progression, solver) {
+      if (opts?.interpolate)
+        return opts.interpolate(left, right, progression, solver)
       return left + progression * (right - left)
     },
   }
@@ -266,16 +262,13 @@ export const boolean = (
     [propTypeSymbol]: 'TheatrePropType',
     label: opts?.label,
     isScalar: false,
-    sanitizer(value: unknown) {
-      if (opts?.sanitizer) return opts.sanitizer(value)
+    sanitize(value: unknown) {
+      if (opts?.sanitize) return opts.sanitize(value)
       return typeof value === 'boolean' ? value : undefined
     },
-    mutator(value) {
-      return value
-    },
-    interpolator(left, right, progression, solver) {
-      if (opts?.interpolator)
-        return opts.interpolator(left, right, progression, solver)
+    interpolate(left, right, progression, solver) {
+      if (opts?.interpolate)
+        return opts.interpolate(left, right, progression, solver)
       return left
     },
   }
@@ -325,18 +318,18 @@ export const color = (
     [propTypeSymbol]: 'TheatrePropType',
     label: opts?.label,
     isScalar: false,
-    sanitizer(value: unknown) {
-      if (opts?.sanitizer) return opts.sanitizer(value)?.toString()
+    sanitize(value: unknown) {
+      if (opts?.sanitize) return opts.sanitize(value)?.toString()
       if (typeof value !== 'string') return undefined
       const color = Color(value as string)
       return color.isValid() ? (value as string) : undefined
     },
-    interpolator(_left, _right, progression, solver) {
+    interpolate(_left, _right, progression, solver) {
       const left = Color(_left),
         right = Color(_right)
-      if (opts?.interpolator) {
+      if (opts?.interpolate) {
         return opts
-          .interpolator(left, right, progression, solver)
+          .interpolate(left, right, progression, solver)
           .toString(left.getFormat() as any)
       }
       return Color.mix(left, right, progression * 100).toString(
@@ -388,12 +381,11 @@ export const string = (
     [propTypeSymbol]: 'TheatrePropType',
     label: opts?.label,
     isScalar: false,
-    sanitizer(value: unknown) {
-      if (opts?.sanitizer) return opts.sanitizer(value)
+    sanitize(value: unknown) {
+      if (opts?.sanitize) return opts.sanitize(value)
       return typeof value === 'string' ? value : undefined
     },
-    mutator: opts?.mutator,
-    interpolator: opts?.interpolator,
+    interpolate: opts?.interpolate,
   }
 }
 
@@ -444,25 +436,21 @@ export function stringLiteral<Opts extends {[key in string]: string}>(
     as: opts?.as ?? 'menu',
     label: opts?.label,
     isScalar: false,
-    sanitizer(value: unknown) {
-      if (opts?.sanitizer) return opts.sanitizer(value)
+    sanitize(value: unknown) {
+      if (opts?.sanitize) return opts.sanitize(value)
       return typeof value === 'string' && Object.keys(options).includes(value)
         ? (value as Extract<keyof Opts, string>)
         : undefined
     },
-    mutator(value) {
-      return value
-    },
-    interpolator(left, right, progression, solver) {
-      if (opts?.interpolator)
-        return opts.interpolator(left, right, progression, solver)
+    interpolate(left, right, progression, solver) {
+      if (opts?.interpolate)
+        return opts.interpolate(left, right, progression, solver)
       return left
     },
   }
 }
 
 export type Sanitizer<T> = (value: unknown) => T | undefined
-export type Mutator<T, V = T> = (value: T) => V | undefined
 export type Interpolator<T> = (
   left: T,
   right: T,
@@ -475,9 +463,8 @@ interface IBasePropType<ValueType, PropTypes = ValueType> {
   [propTypeSymbol]: 'TheatrePropType'
   label: string | undefined
   isScalar: boolean
-  sanitizer?: Sanitizer<PropTypes>
-  mutator?: Mutator<PropTypes, ValueType>
-  interpolator?: Interpolator<PropTypes>
+  sanitize?: Sanitizer<PropTypes>
+  interpolate?: Interpolator<PropTypes>
 }
 
 export interface PropTypeConfig_Number extends IBasePropType<number> {
@@ -521,11 +508,10 @@ export interface PropTypeConfig_Color extends IBasePropType<string> {
   default: string
 }
 
-export interface PropTypeConfigOpts<ValueType, PropTypes = ValueType> {
+export interface PropTypeConfigOpts<ValueType> {
   label?: string
-  sanitizer?: Sanitizer<ValueType>
-  mutator?: Mutator<ValueType, PropTypes>
-  interpolator?: Interpolator<ValueType>
+  sanitize?: Sanitizer<ValueType>
+  interpolate?: Interpolator<ValueType>
 }
 
 export interface PropTypeConfig_String extends IBasePropType<string> {
