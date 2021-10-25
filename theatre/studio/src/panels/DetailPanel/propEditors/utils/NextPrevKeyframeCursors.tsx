@@ -159,9 +159,9 @@ namespace Icons {
 }
 
 const NextPrevKeyframeCursors: React.FC<{
-  prev?: Keyframe<unknown>
-  cur?: Keyframe<unknown>
-  next?: Keyframe<unknown>
+  prev?: Keyframe
+  cur?: Keyframe
+  next?: Keyframe
   jumpToPosition: (position: number) => void
   toggleKeyframeOnCurrentPosition: () => void
 }> = (props) => {

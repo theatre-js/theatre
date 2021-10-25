@@ -286,9 +286,9 @@ export function useEditingToolsForPrimitiveProp<
 }
 
 type NearbyKeyframes = {
-  prev?: Keyframe<unknown>
-  cur?: Keyframe<unknown>
-  next?: Keyframe<unknown>
+  prev?: Keyframe
+  cur?: Keyframe
+  next?: Keyframe
 }
 
 export const shadeToColor: {[K in Shade]: string} = {

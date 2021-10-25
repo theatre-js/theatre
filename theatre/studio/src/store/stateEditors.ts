@@ -614,7 +614,7 @@ namespace stateEditors {
           export function replaceKeyframes<T>(
             p: WithoutSheetInstance<SheetObjectAddress> & {
               trackId: string
-              keyframes: Array<Keyframe<T>>
+              keyframes: Array<Keyframe>
               snappingFunction: SnappingFunction
             },
           ) {

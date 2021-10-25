@@ -30,22 +30,22 @@ type PositionalSequence = {
     string,
     {
       trackIdByPropPath: StrictRecord<string, SequenceTrackId>
-      trackData: StrictRecord<SequenceTrackId, TrackData<unknown>>
+      trackData: StrictRecord<SequenceTrackId, TrackData>
     }
   >
 }
 
-export type TrackData<T> = BasicKeyframedTrack<T>
+export type TrackData = BasicKeyframedTrack
 
-export type Keyframe<T> = {
+export type Keyframe = {
   id: KeyframeId
-  value: T
+  value: unknown
   position: number
   handles: [leftX: number, leftY: number, rightX: number, rightY: number]
   connectedRight: boolean
 }
 
-export type BasicKeyframedTrack<T> = {
+export type BasicKeyframedTrack = {
   type: 'BasicKeyframedTrack'
-  keyframes: Keyframe<T>[]
+  keyframes: Keyframe[]
 }

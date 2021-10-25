@@ -27,7 +27,7 @@ const BasicKeyframedTrack: React.FC<{
   sheetObject: SheetObject
   pathToProp: PathToProp
   trackId: SequenceTrackId
-  trackData: TrackData<unknown>
+  trackData: TrackData
   color: keyof typeof graphEditorColors
 }> = React.memo(({layoutP, trackData, sheetObject, trackId, color}) => {
   const [areExtremumsLocked, setAreExtremumsLocked] = useState<boolean>(false)
@@ -105,7 +105,7 @@ export default BasicKeyframedTrack
 
 type Extremums = [min: number, max: number]
 
-function calculateExtremums(keyframes: Keyframe<unknown>[]): Extremums {
+function calculateExtremums(keyframes: Keyframe[]): Extremums {
   let min = Infinity,
     max = -Infinity
 

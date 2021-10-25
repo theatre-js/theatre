@@ -37,10 +37,7 @@ const PrimitivePropGraph: React.FC<{
       return <></>
     } else {
       return (
-        <BasicKeyframedTrack
-          {...props}
-          trackData={trackData as TrackData<number>}
-        />
+        <BasicKeyframedTrack {...props} trackData={trackData as TrackData} />
       )
     }
   }, [props.trackId, props.layoutP])

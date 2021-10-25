@@ -21,8 +21,8 @@ const noConnector = <></>
 
 const KeyframeEditor: React.FC<{
   index: number
-  keyframe: Keyframe<unknown>
-  trackData: TrackData<unknown>
+  keyframe: Keyframe
+  trackData: TrackData
   layoutP: Pointer<SequenceEditorPanelLayout>
   leaf: SequenceEditorTree_PrimitiveProp
   selection: undefined | DopeSheetSelection

@@ -10,7 +10,7 @@ import UnitBezier from 'timing-function/lib/UnitBezier'
 import type {Interpolator, PropTypeConfig} from '@theatre/core/propTypes'
 
 export default function trackValueAtTime(
-  trackP: Pointer<TrackData<unknown> | undefined>,
+  trackP: Pointer<TrackData | undefined>,
   timeD: IDerivation<number>,
   propConfig: PropTypeConfig | undefined,
 ): IDerivation<unknown> {
@@ -34,8 +34,8 @@ export default function trackValueAtTime(
               }
               return left
             }
-          return trackValueAtTime_keyframedTrack<unknown>(
-            track as BasicKeyframedTrack<unknown>,
+          return trackValueAtTime_keyframedTrack(
+            track as BasicKeyframedTrack,
             timeD,
             interpolator,
           )
@@ -59,10 +59,10 @@ type IStartedState = {
 }
 type IState = {started: false} | IStartedState
 
-function trackValueAtTime_keyframedTrack<T>(
-  track: BasicKeyframedTrack<T>,
+function trackValueAtTime_keyframedTrack(
+  track: BasicKeyframedTrack,
   timeD: IDerivation<number>,
-  interpolator: Interpolator<T>,
+  interpolator: Interpolator<unknown>,
 ): IDerivation<unknown> {
   return prism(() => {
     let stateRef = prism.ref<IState>('state', {started: false})
@@ -80,10 +80,10 @@ function trackValueAtTime_keyframedTrack<T>(
 
 const undefinedConstD = new ConstantDerivation(undefined)
 
-const updateState = <T>(
+const updateState = (
   progressionD: IDerivation<number>,
-  track: BasicKeyframedTrack<T>,
-  interpolator: Interpolator<T>,
+  track: BasicKeyframedTrack,
+  interpolator: Interpolator<unknown>,
 ): IStartedState => {
   const progression = progressionD.getValue()
   if (track.keyframes.length === 0) {
@@ -125,7 +125,7 @@ const updateState = <T>(
       if (isLastKeyframe) {
         return states.lastKeyframe(currentKeyframe)
       } else {
-        return states.between<T>(
+        return states.between(
           currentKeyframe,
           track.keyframes[currentKeyframeIndex + 1],
           progressionD,
@@ -142,7 +142,7 @@ const updateState = <T>(
           currentKeyframeIndex = nextKeyframeIndex
           continue
         } else {
-          return states.between<T>(
+          return states.between(
             currentKeyframe,
             track.keyframes[currentKeyframeIndex + 1],
             progressionD,
@@ -155,7 +155,7 @@ const updateState = <T>(
 }
 
 const states = {
-  beforeFirstKeyframe<T>(kf: Keyframe<T>): IStartedState {
+  beforeFirstKeyframe(kf: Keyframe): IStartedState {
     return {
       started: true,
       validFrom: -Infinity,
@@ -163,7 +163,7 @@ const states = {
       der: new ConstantDerivation(kf.value),
     }
   },
-  lastKeyframe<T>(kf: Keyframe<T>): IStartedState {
+  lastKeyframe(kf: Keyframe): IStartedState {
     return {
       started: true,
       validFrom: kf.position,
@@ -171,11 +171,11 @@ const states = {
       der: new ConstantDerivation(kf.value),
     }
   },
-  between<T>(
-    left: Keyframe<T>,
-    right: Keyframe<T>,
+  between(
+    left: Keyframe,
+    right: Keyframe,
     progressionD: IDerivation<number>,
-    interpolator: Interpolator<T>,
+    interpolator: Interpolator<unknown>,
   ): IStartedState {
     if (!left.connectedRight) {
       return {

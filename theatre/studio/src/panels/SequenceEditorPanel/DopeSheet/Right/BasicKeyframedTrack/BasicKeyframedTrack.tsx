@@ -14,7 +14,7 @@ const BasicKeyframedTrack: React.FC<{
   leaf: SequenceEditorTree_PrimitiveProp
 
   layoutP: Pointer<SequenceEditorPanelLayout>
-  trackData: TrackData<unknown>
+  trackData: TrackData
 }> = React.memo(({layoutP, trackData, leaf}) => {
   const {selectedKeyframeIds, selection} = usePrism(() => {
     const selectionAtom = val(layoutP.selectionAtom)
