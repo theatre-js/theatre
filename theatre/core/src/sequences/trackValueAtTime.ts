@@ -205,7 +205,7 @@ const states = {
       )
 
       const valueProgression = solver.solveSimple(progression)
-      return interpolator(left.value, right.value, valueProgression, solver)
+      return interpolator(left.value, right.value, valueProgression)
     })
 
     return {

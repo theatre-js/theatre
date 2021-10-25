@@ -7,7 +7,6 @@ import type {
 } from './internals'
 import {sanitizeCompoundProps} from './internals'
 import {propTypeSymbol} from './internals'
-import type UnitBezier from 'timing-function/lib/UnitBezier'
 import Color from 'tinycolor2'
 
 const validateCommonOpts = <T>(
@@ -213,9 +212,8 @@ export const number = (
       if (opts?.sanitize) return opts.sanitize(value)
       return typeof value === 'number' ? value : undefined
     },
-    interpolate(left, right, progression, solver) {
-      if (opts?.interpolate)
-        return opts.interpolate(left, right, progression, solver)
+    interpolate(left, right, progression) {
+      if (opts?.interpolate) return opts.interpolate(left, right, progression)
       return left + progression * (right - left)
     },
   }
@@ -266,9 +264,8 @@ export const boolean = (
       if (opts?.sanitize) return opts.sanitize(value)
       return typeof value === 'boolean' ? value : undefined
     },
-    interpolate(left, right, progression, solver) {
-      if (opts?.interpolate)
-        return opts.interpolate(left, right, progression, solver)
+    interpolate(left, right, progression) {
+      if (opts?.interpolate) return opts.interpolate(left, right, progression)
       return left
     },
   }
@@ -324,12 +321,12 @@ export const color = (
       const color = Color(value as string)
       return color.isValid() ? (value as string) : undefined
     },
-    interpolate(_left, _right, progression, solver) {
+    interpolate(_left, _right, progression) {
       const left = Color(_left),
         right = Color(_right)
       if (opts?.interpolate) {
         return opts
-          .interpolate(left, right, progression, solver)
+          .interpolate(left, right, progression)
           .toString(left.getFormat() as any)
       }
       return Color.mix(left, right, progression * 100).toString(
@@ -442,21 +439,15 @@ export function stringLiteral<Opts extends {[key in string]: string}>(
         ? (value as Extract<keyof Opts, string>)
         : undefined
     },
-    interpolate(left, right, progression, solver) {
-      if (opts?.interpolate)
-        return opts.interpolate(left, right, progression, solver)
+    interpolate(left, right, progression) {
+      if (opts?.interpolate) return opts.interpolate(left, right, progression)
       return left
     },
   }
 }
 
 export type Sanitizer<T> = (value: unknown) => T | undefined
-export type Interpolator<T> = (
-  left: T,
-  right: T,
-  progression: number,
-  solver: UnitBezier,
-) => T
+export type Interpolator<T> = (left: T, right: T, progression: number) => T
 
 interface IBasePropType<ValueType, PropTypes = ValueType> {
   valueType: ValueType
