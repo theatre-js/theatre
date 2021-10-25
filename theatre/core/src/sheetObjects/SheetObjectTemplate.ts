@@ -156,6 +156,7 @@ export default class SheetObjectTemplate {
               typeof defaultValue !== 'number' &&
               (!propConfig?.sanitize || !propConfig.interpolate)
             ) {
+              //@checking defaultValue because tests don't provide prop config, and fail if this is omitted.
               continue
             }
 

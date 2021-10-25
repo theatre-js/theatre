@@ -7,13 +7,15 @@ import type {IDerivation, Pointer} from '@theatre/dataverse'
 import {ConstantDerivation, prism, val} from '@theatre/dataverse'
 import logger from '@theatre/shared/logger'
 import UnitBezier from 'timing-function/lib/UnitBezier'
-import type {Interpolator, PropTypeConfig} from '@theatre/core/propTypes'
+
+export type KeyframeValueAtTime =
+  | {left: unknown; right?: unknown; progression: number}
+  | undefined
 
 export default function trackValueAtTime(
   trackP: Pointer<TrackData | undefined>,
   timeD: IDerivation<number>,
-  propConfig: PropTypeConfig | undefined,
-): IDerivation<unknown> {
+): IDerivation<KeyframeValueAtTime> {
   return prism(() => {
     const track = val(trackP)
     const driverD = prism.memo(
@@ -22,23 +24,7 @@ export default function trackValueAtTime(
         if (!track) {
           return new ConstantDerivation(undefined)
         } else if (track.type === 'BasicKeyframedTrack') {
-          let interpolate = propConfig?.interpolate as Interpolator<unknown>
-          if (!interpolate)
-            interpolate = (
-              left: unknown,
-              right: unknown,
-              progression: number,
-            ) => {
-              if (typeof left === 'number' && typeof right === 'number') {
-                return left + progression * (right - left)
-              }
-              return left
-            }
-          return trackValueAtTime_keyframedTrack(
-            track as BasicKeyframedTrack,
-            timeD,
-            interpolate,
-          )
+          return trackValueAtTime_keyframedTrack(track, timeD)
         } else {
           logger.error(`Track type not yet supported.`)
           return new ConstantDerivation(undefined)
@@ -55,15 +41,15 @@ type IStartedState = {
   started: true
   validFrom: number
   validTo: number
-  der: IDerivation<unknown>
+  der: IDerivation<KeyframeValueAtTime>
 }
+
 type IState = {started: false} | IStartedState
 
 function trackValueAtTime_keyframedTrack(
   track: BasicKeyframedTrack,
   timeD: IDerivation<number>,
-  interpolator: Interpolator<unknown>,
-): IDerivation<unknown> {
+): IDerivation<KeyframeValueAtTime> {
   return prism(() => {
     let stateRef = prism.ref<IState>('state', {started: false})
     let state = stateRef.current
@@ -71,7 +57,7 @@ function trackValueAtTime_keyframedTrack(
     const time = timeD.getValue()
 
     if (!state.started || time < state.validFrom || state.validTo <= time) {
-      stateRef.current = state = updateState(timeD, track, interpolator)
+      stateRef.current = state = updateState(timeD, track)
     }
 
     return state.der.getValue()
@@ -83,7 +69,6 @@ const undefinedConstD = new ConstantDerivation(undefined)
 const updateState = (
   progressionD: IDerivation<number>,
   track: BasicKeyframedTrack,
-  interpolator: Interpolator<unknown>,
 ): IStartedState => {
   const progression = progressionD.getValue()
   if (track.keyframes.length === 0) {
@@ -129,7 +114,6 @@ const updateState = (
           currentKeyframe,
           track.keyframes[currentKeyframeIndex + 1],
           progressionD,
-          interpolator,
         )
       }
     } else {
@@ -146,7 +130,6 @@ const updateState = (
             currentKeyframe,
             track.keyframes[currentKeyframeIndex + 1],
             progressionD,
-            interpolator,
           )
         }
       }
@@ -160,7 +143,7 @@ const states = {
       started: true,
       validFrom: -Infinity,
       validTo: kf.position,
-      der: new ConstantDerivation(kf.value),
+      der: new ConstantDerivation({left: kf.value, progression: 0}),
     }
   },
   lastKeyframe(kf: Keyframe): IStartedState {
@@ -168,21 +151,20 @@ const states = {
       started: true,
       validFrom: kf.position,
       validTo: Infinity,
-      der: new ConstantDerivation(kf.value),
+      der: new ConstantDerivation({left: kf.value, progression: 0}),
     }
   },
   between(
     left: Keyframe,
     right: Keyframe,
     progressionD: IDerivation<number>,
-    interpolator: Interpolator<unknown>,
   ): IStartedState {
     if (!left.connectedRight) {
       return {
         started: true,
         validFrom: left.position,
         validTo: right.position,
-        der: new ConstantDerivation(left.value),
+        der: new ConstantDerivation({left: left.value, progression: 0}),
       }
     }
 
@@ -205,7 +187,11 @@ const states = {
       )
 
       const valueProgression = solver.solveSimple(progression)
-      return interpolator(left.value, right.value, valueProgression)
+      return {
+        left: left.value,
+        right: right.value,
+        progression: valueProgression,
+      }
     })
 
     return {
