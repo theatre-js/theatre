@@ -42,7 +42,6 @@
     "@types/shallowequal": "^1.1.1",
     "@types/styled-components": "^5.1.9",
     "@types/three": "^0.129.0",
-    "@types/tinycolor2": "^1.4.3",
     "@types/uuid": "^8.3.0",
     "babel-loader": "^8.2.2",
     "babel-polyfill": "^6.26.0",
@@ -94,7 +93,6 @@
     "uuid": "^8.3.2"
   },
   "dependencies": {
-    "fast-deep-equal": "^3.1.3",
-    "tinycolor2": "^1.4.2"
+    "fast-deep-equal": "^3.1.3"
   }
 }
