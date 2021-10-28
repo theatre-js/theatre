@@ -67,11 +67,11 @@ function createBundles(watch: boolean) {
     {encoding: 'utf-8'},
   )
 
-  // build({
-  //   ...esbuildConfig,
-  //   outfile: path.join(pathToPackage, 'dist/index.mjs'),
-  //   format: 'esm',
-  // })
+  build({
+    ...esbuildConfig,
+    outfile: path.join(pathToPackage, 'dist/index.mjs'),
+    format: 'esm',
+  })
 }
 
 createBundles(false)
