@@ -7,7 +7,6 @@ import CompoundPropEditor from './CompoundPropEditor'
 import NumberPropEditor from './NumberPropEditor'
 import StringLiteralPropEditor from './StringLiteralPropEditor'
 import StringPropEditor from './StringPropEditor'
-import ColorPropEditor from './ColorPropEditor'
 
 /**
  * Returns the PropTypeConfig by path. Assumes `path` is a valid prop path and that
@@ -67,7 +66,6 @@ const propEditorByPropType: {
   compound: CompoundPropEditor,
   number: NumberPropEditor,
   string: StringPropEditor,
-  color: ColorPropEditor,
   enum: () => <></>,
   boolean: BooleanPropEditor,
   stringLiteral: StringLiteralPropEditor,

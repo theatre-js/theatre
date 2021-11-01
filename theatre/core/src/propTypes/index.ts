@@ -7,7 +7,6 @@ import type {
 } from './internals'
 import {sanitizeCompoundProps} from './internals'
 import {propTypeSymbol} from './internals'
-import Color from 'tinycolor2'
 
 const validateCommonOpts = <T>(
   fnCallSignature: string,
@@ -272,71 +271,6 @@ export const boolean = (
 }
 
 /**
- * A color prop type
- *
- * @example
- * Usage:
- * ```ts
- * // shorthand:
- * const obj = sheet.object('key', { color: '#ff00ff'})
- *
- * // with a label:
- * const obj = sheet.object('key', {
- *   color: t.color('#ff00ff', {
- *     label: 'Color'
- *   })
- * })
- * ```
- *
- * @param defaultValue - The default value (must be a color)
- * @param opts - Options (See usage examples)
- */
-export const color = (
-  defaultValue: string,
-  opts?: PropTypeConfigOpts<Color.Instance>,
-): PropTypeConfig_Color => {
-  const value = Color(defaultValue)
-
-  if (process.env.NODE_ENV !== 'production') {
-    validateCommonOpts('t.color(defaultValue, opts)', opts)
-    if (!value?.isValid()) {
-      throw new Error(
-        `defaultValue in t.color(defaultValue) must be a valid color. ${userReadableTypeOfValue(
-          defaultValue,
-        )} given.`,
-      )
-    }
-  }
-
-  return {
-    type: 'color',
-    default: defaultValue,
-    valueType: null as $IntentionalAny,
-    [propTypeSymbol]: 'TheatrePropType',
-    label: opts?.label,
-    isScalar: false,
-    sanitize(value: unknown) {
-      if (opts?.sanitize) return opts.sanitize(value)?.toString()
-      if (typeof value !== 'string') return undefined
-      const color = Color(value as string)
-      return color.isValid() ? (value as string) : undefined
-    },
-    interpolate(_left, _right, progression) {
-      const left = Color(_left),
-        right = Color(_right)
-      if (opts?.interpolate) {
-        return opts
-          .interpolate(left, right, progression)
-          .toString(left.getFormat() as any)
-      }
-      return Color.mix(left, right, progression * 100).toString(
-        left.getFormat() as any,
-      )
-    },
-  }
-}
-
-/**
  * A string prop type
  *
  * @example
@@ -494,9 +428,10 @@ export interface PropTypeConfig_Boolean extends IBasePropType<boolean> {
   default: boolean
 }
 
-export interface PropTypeConfig_Color extends IBasePropType<string> {
+export interface PropTypeConfig_Color<ColorObject>
+  extends IBasePropType<ColorObject> {
   type: 'color'
-  default: string
+  default: ColorObject
 }
 
 export interface PropTypeConfigOpts<ValueType> {
@@ -542,7 +477,6 @@ export type PropTypeConfig_AllPrimitives =
   | PropTypeConfig_Number
   | PropTypeConfig_Boolean
   | PropTypeConfig_String
-  | PropTypeConfig_Color
   | PropTypeConfig_StringLiteral<$IntentionalAny>
 
 export type PropTypeConfig =

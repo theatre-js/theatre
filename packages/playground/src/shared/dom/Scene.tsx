@@ -5,7 +5,6 @@ import React, {useLayoutEffect, useMemo, useState} from 'react'
 import type {IProject, ISheet} from '@theatre/core'
 import {onChange, types} from '@theatre/core'
 import type {IScrub, IStudio} from '@theatre/studio'
-import type Color from 'tinycolor2'
 
 studio.initialize({usePersistentStorage: false})
 
@@ -25,7 +24,6 @@ const boxObjectConfig = {
   bool: types.boolean(false),
   x: types.number(200),
   y: types.number(200),
-  background: types.color('#FF000044'),
 }
 
 const Box: React.FC<{
@@ -41,7 +39,9 @@ const Box: React.FC<{
   const [state, setState] = useState<{
     x: number
     y: number
-    background: Color.ColorInput
+    test: string
+    testLiteral: string
+    bool: boolean
   }>(obj.value)
 
   useLayoutEffect(() => {
@@ -72,7 +72,6 @@ const Box: React.FC<{
           set(obj.props, {
             x: x + initial.x,
             y: y + initial.y,
-            background: initial.background,
             test: initial.test,
             testLiteral: initial.testLiteral,
             bool: initial.bool,
@@ -102,7 +101,6 @@ const Box: React.FC<{
         width: 300,
         height: 300,
         color: 'white',
-        background: state.background.toString(),
         position: 'absolute',
         left: state.x + 'px',
         top: state.y + 'px',
