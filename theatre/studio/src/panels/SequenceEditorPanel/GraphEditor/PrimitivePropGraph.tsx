@@ -10,6 +10,7 @@ import styled from 'styled-components'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import BasicKeyframedTrack from './BasicKeyframedTrack/BasicKeyframedTrack'
 import type {graphEditorColors} from './GraphEditor'
+import type {TrackData} from '@theatre/core/projects/store/types/SheetState_Historic'
 
 const Container = styled.div``
 
@@ -21,7 +22,7 @@ const PrimitivePropGraph: React.FC<{
   color: keyof typeof graphEditorColors
 }> = (props) => {
   return usePrism(() => {
-    const {sheetObject, trackId, pathToProp} = props
+    const {sheetObject, trackId} = props
     const trackData = val(
       getStudio()!.atomP.historic.coreByProject[sheetObject.address.projectId]
         .sheetsById[sheetObject.address.sheetId].sequence.tracksByObject[
@@ -35,7 +36,9 @@ const PrimitivePropGraph: React.FC<{
       )
       return <></>
     } else {
-      return <BasicKeyframedTrack {...props} trackData={trackData} />
+      return (
+        <BasicKeyframedTrack {...props} trackData={trackData as TrackData} />
+      )
     }
   }, [props.trackId, props.layoutP])
 }

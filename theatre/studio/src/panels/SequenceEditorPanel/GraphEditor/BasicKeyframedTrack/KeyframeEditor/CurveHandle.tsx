@@ -72,20 +72,23 @@ const CurveHandle: React.FC<IProps> = (props) => {
     // debugger
   }
 
-  const value = cur.value + (next.value - cur.value) * valInDiffSpace
+  const curValue = typeof cur.value === 'number' ? cur.value : 0
+  const nextValue = typeof next.value === 'number' ? next.value : 1
+
+  const value = curValue + (nextValue - curValue) * valInDiffSpace
 
   const valInExtremumSpace = props.extremumSpace.fromValueSpace(value)
 
   const heightInExtremumSpace =
     valInExtremumSpace -
     props.extremumSpace.fromValueSpace(
-      props.which === 'left' ? cur.value : next.value,
+      props.which === 'left' ? curValue : nextValue,
     )
 
   const lineTransform = transformBox(
     props.which === 'left' ? cur.position : next.position,
     props.extremumSpace.fromValueSpace(
-      props.which === 'left' ? cur.value : next.value,
+      props.which === 'left' ? curValue : nextValue,
     ),
     posInUnitSpace - (props.which === 'left' ? cur.position : next.position),
     heightInExtremumSpace,
@@ -165,7 +168,9 @@ function useOurDrags(node: SVGCircleElement | null, props: IProps): void {
         const dYInValueSpace =
           propsAtStartOfDrag.extremumSpace.deltaToValueSpace(dYInExtremumSpace)
 
-        const dyInKeyframeDiffSpace = dYInValueSpace / (next.value - cur.value)
+        const curValue = typeof cur.value === 'number' ? cur.value : 0
+        const nextValue = typeof next.value === 'number' ? next.value : 1
+        const dyInKeyframeDiffSpace = dYInValueSpace / (nextValue - curValue)
 
         if (propsAtStartOfDrag.which === 'left') {
           const handleX = clamp(cur.handles[2] + dPosInKeyframeDiffSpace, 0, 1)

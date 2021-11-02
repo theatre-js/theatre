@@ -35,7 +35,7 @@ const KeyframeEditor: React.FC<{
   const next = trackData.keyframes[index + 1]
 
   const connected = cur.connectedRight && !!next
-  const shouldShowCurve = connected && next.value - cur.value !== 0
+  const shouldShowCurve = connected && next.value !== cur.value
 
   return (
     <Container>

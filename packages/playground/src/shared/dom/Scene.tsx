@@ -3,14 +3,27 @@ import type {UseDragOpts} from './useDrag'
 import useDrag from './useDrag'
 import React, {useLayoutEffect, useMemo, useState} from 'react'
 import type {IProject, ISheet} from '@theatre/core'
-import {onChange} from '@theatre/core'
+import {onChange, types} from '@theatre/core'
 import type {IScrub, IStudio} from '@theatre/studio'
 
-studio.initialize()
+studio.initialize({usePersistentStorage: false})
+
+const textInterpolate = (left: string, right: string, progression: number) => {
+  if (!left || right.startsWith(left)) {
+    const length = Math.floor(
+      Math.max(0, (right.length - left.length) * progression),
+    )
+    return left + right.slice(left.length, left.length + length)
+  }
+  return left
+}
 
 const boxObjectConfig = {
-  x: 0,
-  y: 0,
+  test: types.string('Hello?', {interpolate: textInterpolate}),
+  testLiteral: types.stringLiteral('a', {a: 'Option A', b: 'Option B'}),
+  bool: types.boolean(false),
+  x: types.number(200),
+  y: types.number(200),
 }
 
 const Box: React.FC<{
@@ -23,11 +36,17 @@ const Box: React.FC<{
 
   const isSelected = selection.includes(obj)
 
-  const [pos, setPos] = useState<{x: number; y: number}>({x: 0, y: 0})
+  const [state, setState] = useState<{
+    x: number
+    y: number
+    test: string
+    testLiteral: string
+    bool: boolean
+  }>(obj.value)
 
   useLayoutEffect(() => {
     const unsubscribeFromChanges = onChange(obj.props, (newValues) => {
-      setPos(newValues)
+      setState(newValues)
     })
     return unsubscribeFromChanges
   }, [id])
@@ -50,7 +69,13 @@ const Box: React.FC<{
           firstOnDragCalled = true
         }
         scrub!.capture(({set}) => {
-          set(obj.props, {x: x + initial.x, y: y + initial.y})
+          set(obj.props, {
+            x: x + initial.x,
+            y: y + initial.y,
+            test: initial.test,
+            testLiteral: initial.testLiteral,
+            bool: initial.bool,
+          })
         })
       },
       onDragEnd(dragHappened) {
@@ -73,16 +98,20 @@ const Box: React.FC<{
       }}
       ref={setDivRef}
       style={{
-        width: 100,
-        height: 100,
-        background: 'gray',
+        width: 300,
+        height: 300,
+        color: 'white',
         position: 'absolute',
-        left: pos.x + 'px',
-        top: pos.y + 'px',
+        left: state.x + 'px',
+        top: state.y + 'px',
         boxSizing: 'border-box',
-        border: isSelected ? '1px solid #5a92fa' : '1px solid transparent',
+        border: isSelected ? '1px solid #5a92fa' : '1px solid white',
       }}
-    ></div>
+    >
+      <pre style={{margin: 0, padding: '1rem'}}>
+        {JSON.stringify(state, null, 4)}
+      </pre>
+    </div>
   )
 }
 
@@ -109,7 +138,7 @@ export const Scene: React.FC<{project: IProject}> = ({project}) => {
         right: '0',
         top: 0,
         bottom: '0',
-        background: 'black',
+        background: '#333',
       }}
     >
       <button

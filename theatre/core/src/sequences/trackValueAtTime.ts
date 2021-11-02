@@ -8,10 +8,14 @@ import {ConstantDerivation, prism, val} from '@theatre/dataverse'
 import logger from '@theatre/shared/logger'
 import UnitBezier from 'timing-function/lib/UnitBezier'
 
+export type KeyframeValueAtTime =
+  | {left: unknown; right?: unknown; progression: number}
+  | undefined
+
 export default function trackValueAtTime(
   trackP: Pointer<TrackData | undefined>,
   timeD: IDerivation<number>,
-): IDerivation<unknown> {
+): IDerivation<KeyframeValueAtTime> {
   return prism(() => {
     const track = val(trackP)
     const driverD = prism.memo(
@@ -20,7 +24,7 @@ export default function trackValueAtTime(
         if (!track) {
           return new ConstantDerivation(undefined)
         } else if (track.type === 'BasicKeyframedTrack') {
-          return trackValueAtTime_basicKeyframedTrack(track, timeD)
+          return trackValueAtTime_keyframedTrack(track, timeD)
         } else {
           logger.error(`Track type not yet supported.`)
           return new ConstantDerivation(undefined)
@@ -37,14 +41,15 @@ type IStartedState = {
   started: true
   validFrom: number
   validTo: number
-  der: IDerivation<unknown>
+  der: IDerivation<KeyframeValueAtTime>
 }
+
 type IState = {started: false} | IStartedState
 
-function trackValueAtTime_basicKeyframedTrack(
+function trackValueAtTime_keyframedTrack(
   track: BasicKeyframedTrack,
   timeD: IDerivation<number>,
-): IDerivation<unknown> {
+): IDerivation<KeyframeValueAtTime> {
   return prism(() => {
     let stateRef = prism.ref<IState>('state', {started: false})
     let state = stateRef.current
@@ -52,7 +57,7 @@ function trackValueAtTime_basicKeyframedTrack(
     const time = timeD.getValue()
 
     if (!state.started || time < state.validFrom || state.validTo <= time) {
-      stateRef.current = state = pp(timeD, track)
+      stateRef.current = state = updateState(timeD, track)
     }
 
     return state.der.getValue()
@@ -61,7 +66,7 @@ function trackValueAtTime_basicKeyframedTrack(
 
 const undefinedConstD = new ConstantDerivation(undefined)
 
-const pp = (
+const updateState = (
   progressionD: IDerivation<number>,
   track: BasicKeyframedTrack,
 ): IStartedState => {
@@ -138,7 +143,7 @@ const states = {
       started: true,
       validFrom: -Infinity,
       validTo: kf.position,
-      der: new ConstantDerivation(kf.value),
+      der: new ConstantDerivation({left: kf.value, progression: 0}),
     }
   },
   lastKeyframe(kf: Keyframe): IStartedState {
@@ -146,7 +151,7 @@ const states = {
       started: true,
       validFrom: kf.position,
       validTo: Infinity,
-      der: new ConstantDerivation(kf.value),
+      der: new ConstantDerivation({left: kf.value, progression: 0}),
     }
   },
   between(
@@ -159,7 +164,7 @@ const states = {
         started: true,
         validFrom: left.position,
         validTo: right.position,
-        der: new ConstantDerivation(left.value),
+        der: new ConstantDerivation({left: left.value, progression: 0}),
       }
     }
 
@@ -182,7 +187,11 @@ const states = {
       )
 
       const valueProgression = solver.solveSimple(progression)
-      return left.value + valueProgression * (right.value - left.value)
+      return {
+        left: left.value,
+        right: right.value,
+        progression: valueProgression,
+      }
     })
 
     return {

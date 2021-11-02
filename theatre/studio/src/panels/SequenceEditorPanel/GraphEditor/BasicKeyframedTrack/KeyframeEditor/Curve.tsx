@@ -19,21 +19,16 @@ const Curve: React.FC<IProps> = (props) => {
   const cur = trackData.keyframes[index]
   const next = trackData.keyframes[index + 1]
 
-  const handles = [
-    cur.handles[2],
-    cur.handles[3],
-    next.handles[0],
-    next.handles[1],
-  ]
-
   const connectorLengthInUnitSpace = next.position - cur.position
 
   const [nodeRef, node] = useRefAndState<SVGPathElement | null>(null)
 
   const [contextMenu] = useConnectorContextMenu(node, props)
 
-  const leftYInExtremumSpace = props.extremumSpace.fromValueSpace(cur.value)
-  const rightYInExtremumSpace = props.extremumSpace.fromValueSpace(next.value)
+  const curValue = typeof cur.value === 'number' ? cur.value : 0
+  const nextValue = typeof next.value === 'number' ? next.value : 1
+  const leftYInExtremumSpace = props.extremumSpace.fromValueSpace(curValue)
+  const rightYInExtremumSpace = props.extremumSpace.fromValueSpace(nextValue)
 
   const heightInExtremumSpace = rightYInExtremumSpace - leftYInExtremumSpace
 

@@ -52,7 +52,7 @@ const IconContainer = styled.button<{
       ? graphEditorColors[props.graphEditorColor].iconColor
       : nextPrevCursorsTheme.offColor};
 
-  &:hover {
+  &:not([disabled]):hover {
     color: white;
   }
 `
@@ -129,6 +129,9 @@ const PrimitivePropRow: React.FC<{
   }, [leaf])
 
   const label = leaf.pathToProp[leaf.pathToProp.length - 1]
+  const isSelectable =
+    leaf.propConf.type !== 'boolean' && leaf.propConf.type !== 'stringLiteral'
+
   return (
     <Container depth={leaf.depth}>
       <Head
@@ -144,6 +147,8 @@ const PrimitivePropRow: React.FC<{
           onClick={toggleSelect}
           isSelected={isSelected === true}
           graphEditorColor={possibleColor ?? '1'}
+          style={{opacity: isSelectable ? 1 : 0.25}}
+          disabled={!isSelectable}
         >
           <GraphIcon />
         </IconContainer>

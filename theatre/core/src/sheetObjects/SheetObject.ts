@@ -1,3 +1,4 @@
+import type {KeyframeValueAtTime} from '@theatre/core/sequences/trackValueAtTime'
 import trackValueAtTime from '@theatre/core/sequences/trackValueAtTime'
 import type Sheet from '@theatre/core/sheets/Sheet'
 import type {SheetObjectAddress} from '@theatre/shared/utils/addresses'
@@ -21,6 +22,8 @@ import type {
 import {Atom, getPointerParts, pointer, prism, val} from '@theatre/dataverse'
 import type SheetObjectTemplate from './SheetObjectTemplate'
 import TheatreSheetObject from './TheatreSheetObject'
+import {get} from 'lodash-es'
+import type {Interpolator, PropTypeConfig} from '@theatre/core/propTypes'
 
 // type Everything = {
 //   final: SerializableMap
@@ -153,7 +156,32 @@ export default class SheetObject implements IdentityDerivationProvider {
             const derivation = this._trackIdToDerivation(trackId)
 
             const updateSequenceValueFromItsDerivation = () => {
-              valsAtom.setIn(pathToProp, derivation.getValue())
+              const propConfig = get(this.template.config.props, pathToProp) as
+                | PropTypeConfig
+                | undefined
+              const value: KeyframeValueAtTime = derivation.getValue()
+              if (!value) return valsAtom.setIn(pathToProp, value)
+              if (value.right === undefined)
+                return valsAtom.setIn(pathToProp, value.left)
+              if (propConfig?.interpolate) {
+                const interpolate =
+                  propConfig.interpolate as Interpolator<unknown>
+                return valsAtom.setIn(
+                  pathToProp,
+                  interpolate(value.left, value.right, value.progression),
+                )
+              }
+              if (
+                typeof value.left === 'number' &&
+                typeof value.right === 'number'
+              ) {
+                //@Because tests don't provide prop config, and fail if this is omitted.
+                return valsAtom.setIn(
+                  pathToProp,
+                  value.left + value.progression * (value.right - value.left),
+                )
+              }
+              valsAtom.setIn(pathToProp, value.left)
             }
             const untap = derivation
               .changesWithoutValues()
@@ -177,12 +205,11 @@ export default class SheetObject implements IdentityDerivationProvider {
 
   protected _trackIdToDerivation(
     trackId: SequenceTrackId,
-  ): IDerivation<unknown> {
+  ): IDerivation<KeyframeValueAtTime | undefined> {
     const trackP =
       this.template.project.pointers.historic.sheetsById[this.address.sheetId]
         .sequence.tracksByObject[this.address.objectKey].trackData[trackId]
     const timeD = this.sheet.getSequence().positionDerivation
-
     return trackValueAtTime(trackP, timeD)
   }
 

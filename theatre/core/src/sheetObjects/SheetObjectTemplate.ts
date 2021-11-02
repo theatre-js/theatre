@@ -24,6 +24,10 @@ import set from 'lodash-es/set'
 import getPropDefaultsOfSheetObject from './getPropDefaultsOfSheetObject'
 import SheetObject from './SheetObject'
 import logger from '@theatre/shared/logger'
+import type {
+  PropTypeConfig,
+  PropTypeConfig_Compound,
+} from '@theatre/core/propTypes'
 
 export type IPropPathToTrackIdTree = {
   [key in string]?: SequenceTrackId | IPropPathToTrackIdTree
@@ -32,7 +36,9 @@ export type IPropPathToTrackIdTree = {
 export default class SheetObjectTemplate {
   readonly address: WithoutSheetInstance<SheetObjectAddress>
   readonly type: 'Theatre_SheetObjectTemplate' = 'Theatre_SheetObjectTemplate'
-  protected _config: Atom<SheetObjectConfig<$IntentionalAny>>
+  protected _config: Atom<
+    SheetObjectConfig<PropTypeConfig_Compound<$IntentionalAny>>
+  >
   readonly _cache = new SimpleCache()
   readonly project: Project
 
@@ -87,13 +93,14 @@ export default class SheetObjectTemplate {
             this.address.sheetId
           ]
 
-        return (
+        const value =
           val(
             pointerToSheetState.staticOverrides.byObject[
               this.address.objectKey
             ],
           ) || {}
-        )
+
+        return value
       }),
     )
   }
@@ -139,8 +146,17 @@ export default class SheetObjectTemplate {
               )
               continue
             }
+
+            const propConfig = get(this.config.props, pathToProp) as
+              | PropTypeConfig
+              | undefined
             const defaultValue = get(defaults, pathToProp)
-            if (typeof defaultValue !== 'number') {
+
+            if (
+              typeof defaultValue !== 'number' &&
+              (!propConfig?.sanitize || !propConfig.interpolate)
+            ) {
+              //@checking defaultValue because tests don't provide prop config, and fail if this is omitted.
               continue
             }
 

@@ -46,6 +46,7 @@ import {
 } from '@theatre/shared/instanceTypes'
 import type SheetTemplate from '@theatre/core/sheets/SheetTemplate'
 import type SheetObjectTemplate from '@theatre/core/sheetObjects/SheetObjectTemplate'
+import type {PropTypeConfig} from '@theatre/core/propTypes'
 
 export const setDrafts__onlyMeantToBeCalledByTransaction = (
   drafts: undefined | Drafts,
@@ -432,6 +433,7 @@ namespace stateEditors {
 
           export function setPrimitivePropAsSequenced(
             p: WithoutSheetInstance<PropAddress>,
+            config: PropTypeConfig,
           ) {
             const tracks = _ensureTracksOfObject(p)
             const pathEncoded = encodePathToProp(p.pathToProp)
@@ -439,6 +441,7 @@ namespace stateEditors {
             if (typeof possibleTrackId === 'string') return
 
             const trackId = generateSequenceTrackId()
+
             tracks.trackData[trackId] = {
               type: 'BasicKeyframedTrack',
               keyframes: [],
@@ -502,11 +505,11 @@ namespace stateEditors {
            * Sets a keyframe at the exact specified position.
            * Any position snapping should be done by the caller.
            */
-          export function setKeyframeAtPosition(
+          export function setKeyframeAtPosition<T>(
             p: WithoutSheetInstance<SheetObjectAddress> & {
               trackId: string
               position: number
-              value: number
+              value: T
               snappingFunction: SnappingFunction
             },
           ) {
@@ -608,7 +611,7 @@ namespace stateEditors {
             )
           }
 
-          export function replaceKeyframes(
+          export function replaceKeyframes<T>(
             p: WithoutSheetInstance<SheetObjectAddress> & {
               trackId: string
               keyframes: Array<Keyframe>
@@ -620,7 +623,8 @@ namespace stateEditors {
             const initialKeyframes = current(track.keyframes)
             const sanitizedKeyframes = p.keyframes
               .filter((kf) => {
-                if (!isFinite(kf.value)) return false
+                if (typeof kf.value === 'number' && !isFinite(kf.value))
+                  return false
                 if (!kf.handles.every((handleValue) => isFinite(handleValue)))
                   return false
 

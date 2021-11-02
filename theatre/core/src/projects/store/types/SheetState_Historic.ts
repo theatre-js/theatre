@@ -39,7 +39,7 @@ export type TrackData = BasicKeyframedTrack
 
 export type Keyframe = {
   id: KeyframeId
-  value: number
+  value: unknown
   position: number
   handles: [leftX: number, leftY: number, rightX: number, rightY: number]
   connectedRight: boolean
