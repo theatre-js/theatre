@@ -29,6 +29,10 @@ const Input = styled.input.attrs({type: 'text'})`
     background-color: #10101042;
     border-color: #00000059;
   }
+
+  &.invalid {
+    border-color: red;
+  }
 `
 
 type IState_NoFocus = {
@@ -165,6 +169,7 @@ const BasicStringInput: React.FC<{
     <Input
       key="input"
       type="text"
+      className={!isValid(value) ? 'invalid' : ''}
       onChange={callbacks.inputChange}
       value={value}
       onBlur={callbacks.onBlur}

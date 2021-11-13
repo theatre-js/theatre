@@ -15,6 +15,9 @@ import type {
 import {dotSize} from './Dot'
 import type KeyframeEditor from './KeyframeEditor'
 import type Sequence from '@theatre/core/sequences/Sequence'
+import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
+import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
+import CurveEditorPopover from './CurveEditorPopover/CurveEditorPopover'
 
 const connectorHeight = dotSize / 2 + 1
 const connectorWidthUnscaled = 1000
@@ -47,6 +50,16 @@ const Container = styled.div<{isSelected: boolean}>`
   z-index: 0;
   cursor: ew-resize;
 
+  &:after {
+    display: block;
+    position: absolute;
+    content: ' ';
+    top: -4px;
+    bottom: -4px;
+    left: 0;
+    right: 0;
+  }
+
   &:hover {
     background: ${(props) =>
       props.isSelected
@@ -64,6 +77,17 @@ const Connector: React.FC<IProps> = (props) => {
   const connectorLengthInUnitSpace = next.position - cur.position
 
   const [nodeRef, node] = useRefAndState<HTMLDivElement | null>(null)
+
+  const [popoverNode, openPopover, closePopover, isPopoverOpen] = usePopover(
+    {},
+    () => {
+      return (
+        <BasicPopover>
+          <CurveEditorPopover {...props} onRequestClose={closePopover} />
+        </BasicPopover>
+      )
+    },
+  )
 
   const [contextMenu] = useContextMenu(node, {
     items: () => {
@@ -86,6 +110,12 @@ const Connector: React.FC<IProps> = (props) => {
             }
           },
         },
+        {
+          label: 'Edit Curve',
+          callback: (e) => {
+            openPopover(e, node!)
+          },
+        },
       ]
     },
   })
@@ -96,60 +126,13 @@ const Connector: React.FC<IProps> = (props) => {
     <Container
       isSelected={!!props.selection}
       ref={nodeRef}
-      onClick={(event) => {
-        if (event.button !== 0) return
-
-        // @todo Put this in the context menu
-
-        const orig = JSON.stringify([
-          cur.handles[2],
-          cur.handles[3],
-          next.handles[0],
-          next.handles[1],
-        ])
-        const modifiedS = orig // window.prompt('As cubic-bezier()', orig)
-        if (modifiedS && modifiedS !== orig) {
-          return
-          // const modified = JSON.parse(modifiedS)
-          // getStudio()!.transaction(({stateEditors}) => {
-          //   const {replaceKeyframes} =
-          //     stateEditors.coreByProject.historic.sheetsById.sequence
-
-          //   replaceKeyframes({
-          //     ...props.leaf.sheetObject.address,
-          //     snappingFunction: val(props.layoutP.sheet).getSequence()
-          //       .closestGridPosition,
-          //     trackId: props.leaf.trackId,
-          //     keyframes: [
-          //       {
-          //         ...cur,
-          //         handles: [
-          //           cur.handles[0],
-          //           cur.handles[1],
-          //           modified[0],
-          //           modified[1],
-          //         ],
-          //       },
-          //       {
-          //         ...next,
-          //         handles: [
-          //           modified[2],
-          //           modified[3],
-          //           next.handles[2],
-          //           next.handles[3],
-          //         ],
-          //       },
-          //     ],
-          //   })
-          // })
-        }
-      }}
       style={{
         transform: `scale3d(calc(var(--unitSpaceToScaledSpaceMultiplier) * ${
           connectorLengthInUnitSpace / connectorWidthUnscaled
         }), 1, 1)`,
       }}
     >
+      {popoverNode}
       {contextMenu}
     </Container>
   )
