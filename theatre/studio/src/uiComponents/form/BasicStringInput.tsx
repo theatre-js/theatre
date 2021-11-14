@@ -1,7 +1,8 @@
 import styled from 'styled-components'
 import type {MutableRefObject} from 'react'
-import React, {useMemo, useRef, useState} from 'react'
+import React, {useMemo, useRef} from 'react'
 import mergeRefs from 'react-merge-refs'
+import useRefAndState from '@theatre/studio/utils/useRefAndState'
 
 const Input = styled.input.attrs({type: 'text'})`
   background: transparent;
@@ -62,12 +63,12 @@ const BasicStringInput: React.FC<{
    * before this, so use this for UI purposes such as closing a popover.
    */
   onBlur?: () => void
-}> = (propsA) => {
-  const [stateA, setState] = useState<IState>({mode: 'noFocus'})
-  const isValid = propsA.isValid ?? alwaysValid
+}> = (props) => {
+  const [stateRef] = useRefAndState<IState>({mode: 'noFocus'})
+  const isValid = props.isValid ?? alwaysValid
 
-  const refs = useRef({state: stateA, props: propsA})
-  refs.current = {state: stateA, props: propsA}
+  const propsRef = useRef(props)
+  propsRef.current = props
 
   const inputRef = useRef<HTMLInputElement | null>(null)
 
@@ -75,41 +76,42 @@ const BasicStringInput: React.FC<{
     const inputChange = (e: React.ChangeEvent) => {
       const target = e.target as HTMLInputElement
       const {value} = target
-      const curState = refs.current.state as IState_EditingViaKeyboard
+      const curState = stateRef.current as IState_EditingViaKeyboard
 
-      setState({...curState, currentEditedValueInString: value})
+      stateRef.current = {...curState, currentEditedValueInString: value}
 
       if (!isValid(value)) return
 
-      refs.current.props.temporarilySetValue(value)
+      propsRef.current.temporarilySetValue(value)
     }
 
     const onBlur = () => {
-      if (refs.current.state.mode === 'editingViaKeyboard') {
+      if (stateRef.current.mode === 'editingViaKeyboard') {
         commitKeyboardInput()
-        setState({mode: 'noFocus'})
+        stateRef.current = {mode: 'noFocus'}
       }
-      if (propsA.onBlur) propsA.onBlur()
+      propsRef.current.onBlur?.()
     }
 
     const commitKeyboardInput = () => {
-      const curState = refs.current.state as IState_EditingViaKeyboard
+      const curState = stateRef.current as IState_EditingViaKeyboard
       const value = curState.currentEditedValueInString
 
       if (!isValid(value)) {
-        refs.current.props.discardTemporaryValue()
+        propsRef.current.discardTemporaryValue()
       } else {
         if (curState.valueBeforeEditing === value) {
-          refs.current.props.discardTemporaryValue()
+          propsRef.current.discardTemporaryValue()
         } else {
-          refs.current.props.permenantlySetValue(value)
+          propsRef.current.permenantlySetValue(value)
         }
       }
     }
 
     const onInputKeyDown = (e: React.KeyboardEvent) => {
       if (e.key === 'Escape') {
-        refs.current.props.discardTemporaryValue()
+        propsRef.current.discardTemporaryValue()
+        stateRef.current = {mode: 'noFocus'}
         inputRef.current!.blur()
       } else if (e.key === 'Enter' || e.key === 'Tab') {
         commitKeyboardInput()
@@ -118,7 +120,7 @@ const BasicStringInput: React.FC<{
     }
 
     const onClick = (e: React.MouseEvent) => {
-      if (refs.current.state.mode === 'noFocus') {
+      if (stateRef.current.mode === 'noFocus') {
         const c = inputRef.current!
         c.focus()
         e.preventDefault()
@@ -129,19 +131,19 @@ const BasicStringInput: React.FC<{
     }
 
     const onFocus = () => {
-      if (refs.current.state.mode === 'noFocus') {
+      if (stateRef.current.mode === 'noFocus') {
         transitionToEditingViaKeyboardMode()
-      } else if (refs.current.state.mode === 'editingViaKeyboard') {
+      } else if (stateRef.current.mode === 'editingViaKeyboard') {
       }
     }
 
     const transitionToEditingViaKeyboardMode = () => {
-      const curValue = refs.current.props.value
-      setState({
+      const curValue = propsRef.current.value
+      stateRef.current = {
         mode: 'editingViaKeyboard',
         currentEditedValueInString: String(curValue),
         valueBeforeEditing: curValue,
-      })
+      }
 
       setTimeout(() => {
         inputRef.current!.focus()
@@ -155,15 +157,15 @@ const BasicStringInput: React.FC<{
       onClick,
       onFocus,
     }
-  }, [refs, setState, inputRef])
+  }, [])
 
   let value =
-    stateA.mode !== 'editingViaKeyboard'
-      ? format(propsA.value)
-      : stateA.currentEditedValueInString
+    stateRef.current.mode !== 'editingViaKeyboard'
+      ? format(props.value)
+      : stateRef.current.currentEditedValueInString
 
   const _refs = [inputRef]
-  if (propsA.inputRef) _refs.push(propsA.inputRef)
+  if (props.inputRef) _refs.push(props.inputRef)
 
   const theInput = (
     <Input
