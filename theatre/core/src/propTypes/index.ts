@@ -84,7 +84,6 @@ export const compound = <Props extends IShorthandCompoundProps>(
     label: opts?.label,
     sanitize: opts?.sanitize,
     interpolate: opts?.interpolate,
-    isScalar: false,
   }
 }
 
@@ -258,7 +257,6 @@ export const boolean = (
     valueType: null as $IntentionalAny,
     [propTypeSymbol]: 'TheatrePropType',
     label: opts?.label,
-    isScalar: false,
     sanitize(value: unknown) {
       if (opts?.sanitize) return opts.sanitize(value)
       return typeof value === 'boolean' ? value : undefined
@@ -311,7 +309,6 @@ export const string = (
     valueType: null as $IntentionalAny,
     [propTypeSymbol]: 'TheatrePropType',
     label: opts?.label,
-    isScalar: false,
     sanitize(value: unknown) {
       if (opts?.sanitize) return opts.sanitize(value)
       return typeof value === 'string' ? value : undefined
@@ -366,7 +363,6 @@ export function stringLiteral<Opts extends {[key in string]: string}>(
     valueType: null as $IntentionalAny,
     as: opts?.as ?? 'menu',
     label: opts?.label,
-    isScalar: false,
     sanitize(value: unknown) {
       if (opts?.sanitize) return opts.sanitize(value)
       return typeof value === 'string' && Object.keys(options).includes(value)
@@ -387,7 +383,7 @@ interface IBasePropType<ValueType, PropTypes = ValueType> {
   valueType: ValueType
   [propTypeSymbol]: 'TheatrePropType'
   label: string | undefined
-  isScalar: boolean
+  isScalar?: true
   sanitize?: Sanitizer<PropTypes>
   interpolate?: Interpolator<PropTypes>
 }

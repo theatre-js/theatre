@@ -19,15 +19,12 @@ import type {
 } from '@theatre/shared/utils/types'
 import type {IDerivation, Pointer} from '@theatre/dataverse'
 import {Atom, getPointerParts, prism, val} from '@theatre/dataverse'
-import get from 'lodash-es/get'
 import set from 'lodash-es/set'
 import getPropDefaultsOfSheetObject from './getPropDefaultsOfSheetObject'
 import SheetObject from './SheetObject'
 import logger from '@theatre/shared/logger'
-import type {
-  PropTypeConfig,
-  PropTypeConfig_Compound,
-} from '@theatre/core/propTypes'
+import type {PropTypeConfig_Compound} from '@theatre/core/propTypes'
+import {getPropConfigByPath} from '@theatre/shared/propTypes/utils'
 
 export type IPropPathToTrackIdTree = {
   [key in string]?: SequenceTrackId | IPropPathToTrackIdTree
@@ -116,8 +113,6 @@ export default class SheetObjectTemplate {
   > {
     return this._cache.get('getArrayOfValidSequenceTracks', () =>
       prism((): Array<{pathToProp: PathToProp; trackId: SequenceTrackId}> => {
-        const defaults = val(this.getDefaultValues())
-
         const pointerToSheetState =
           this.project.pointers.historic.sheetsById[this.address.sheetId]
 
@@ -131,39 +126,19 @@ export default class SheetObjectTemplate {
           trackId: SequenceTrackId
         }> = []
 
-        if (trackIdByPropPath) {
-          for (const [pathToPropInString, trackId] of Object.entries(
-            trackIdByPropPath,
-          )) {
-            let pathToProp
-            try {
-              pathToProp = JSON.parse(pathToPropInString)
-            } catch (e) {
-              logger.warn(
-                `property ${JSON.stringify(
-                  pathToPropInString,
-                )} cannot be parsed. Skipping.`,
-              )
-              continue
-            }
+        if (!trackIdByPropPath) return emptyArray as $IntentionalAny
 
-            const propConfig = get(this.config.props, pathToProp) as
-              | PropTypeConfig
-              | undefined
-            const defaultValue = get(defaults, pathToProp)
+        const _entries = Object.entries(trackIdByPropPath)
+        for (const [pathToPropInString, trackId] of _entries) {
+          const pathToProp = parsePathToProp(pathToPropInString)
+          if (!pathToProp) continue
 
-            if (
-              typeof defaultValue !== 'number' &&
-              (!propConfig?.sanitize || !propConfig.interpolate)
-            ) {
-              //@checking defaultValue because tests don't provide prop config, and fail if this is omitted.
-              continue
-            }
+          const propConfig = getPropConfigByPath(this.config, pathToProp)
 
-            arrayOfIds.push({pathToProp, trackId: trackId!})
-          }
-        } else {
-          return emptyArray as $IntentionalAny
+          if (!propConfig || !propConfig?.sanitize || !propConfig.interpolate)
+            continue
+
+          arrayOfIds.push({pathToProp, trackId: trackId!})
         }
 
         if (arrayOfIds.length === 0) {
@@ -205,5 +180,21 @@ export default class SheetObjectTemplate {
 
     const defaultsAtPath = getDeep(defaults, path)
     return defaultsAtPath as $FixMe
+  }
+}
+
+function parsePathToProp(
+  pathToPropInString: string,
+): undefined | Array<string | number> {
+  try {
+    const pathToProp = JSON.parse(pathToPropInString)
+    return pathToProp
+  } catch (e) {
+    logger.warn(
+      `property ${JSON.stringify(
+        pathToPropInString,
+      )} cannot be parsed. Skipping.`,
+    )
+    return undefined
   }
 }
