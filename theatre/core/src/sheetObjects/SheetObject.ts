@@ -1,5 +1,5 @@
-import type {KeyframeValueAtTime} from '@theatre/core/sequences/trackValueAtTime'
-import trackValueAtTime from '@theatre/core/sequences/trackValueAtTime'
+import type {InterpolationTriple} from '@theatre/core/sequences/interpolationTripleAtPosition'
+import interpolationTripleAtPosition from '@theatre/core/sequences/interpolationTripleAtPosition'
 import type Sheet from '@theatre/core/sheets/Sheet'
 import type {SheetObjectAddress} from '@theatre/shared/utils/addresses'
 import deepMergeWithCache from '@theatre/shared/utils/deepMergeWithCache'
@@ -22,8 +22,8 @@ import type {
 import {Atom, getPointerParts, pointer, prism, val} from '@theatre/dataverse'
 import type SheetObjectTemplate from './SheetObjectTemplate'
 import TheatreSheetObject from './TheatreSheetObject'
-import {get} from 'lodash-es'
-import type {Interpolator, PropTypeConfig} from '@theatre/core/propTypes'
+import type {Interpolator} from '@theatre/core/propTypes'
+import {getPropConfigByPath} from '@theatre/shared/propTypes/utils'
 
 // type Everything = {
 //   final: SerializableMap
@@ -154,34 +154,32 @@ export default class SheetObject implements IdentityDerivationProvider {
 
           for (const {trackId, pathToProp} of tracksToProcess) {
             const derivation = this._trackIdToDerivation(trackId)
+            const propConfig = getPropConfigByPath(
+              this.template.config,
+              pathToProp,
+            )!
+
+            const sanitize = propConfig.sanitize!
+            const interpolate =
+              propConfig.interpolate! as Interpolator<$IntentionalAny>
 
             const updateSequenceValueFromItsDerivation = () => {
-              const propConfig = get(this.template.config.props, pathToProp) as
-                | PropTypeConfig
-                | undefined
-              const value: KeyframeValueAtTime = derivation.getValue()
-              if (!value) return valsAtom.setIn(pathToProp, value)
-              if (value.right === undefined)
-                return valsAtom.setIn(pathToProp, value.left)
-              if (propConfig?.interpolate) {
-                const interpolate =
-                  propConfig.interpolate as Interpolator<unknown>
-                return valsAtom.setIn(
-                  pathToProp,
-                  interpolate(value.left, value.right, value.progression),
-                )
-              }
-              if (
-                typeof value.left === 'number' &&
-                typeof value.right === 'number'
-              ) {
-                //@Because tests don't provide prop config, and fail if this is omitted.
-                return valsAtom.setIn(
-                  pathToProp,
-                  value.left + value.progression * (value.right - value.left),
-                )
-              }
-              valsAtom.setIn(pathToProp, value.left)
+              const triple = derivation.getValue()
+
+              if (!triple)
+                return valsAtom.setIn(pathToProp, propConfig!.default)
+
+              const left = sanitize(triple.left) || propConfig.default
+
+              if (triple.right === undefined)
+                return valsAtom.setIn(pathToProp, left)
+
+              const right = sanitize(triple.right) || propConfig.default
+
+              return valsAtom.setIn(
+                pathToProp,
+                interpolate(left, right, triple.progression),
+              )
             }
             const untap = derivation
               .changesWithoutValues()
@@ -205,12 +203,14 @@ export default class SheetObject implements IdentityDerivationProvider {
 
   protected _trackIdToDerivation(
     trackId: SequenceTrackId,
-  ): IDerivation<KeyframeValueAtTime | undefined> {
+  ): IDerivation<InterpolationTriple | undefined> {
     const trackP =
       this.template.project.pointers.historic.sheetsById[this.address.sheetId]
         .sequence.tracksByObject[this.address.objectKey].trackData[trackId]
+
     const timeD = this.sheet.getSequence().positionDerivation
-    return trackValueAtTime(trackP, timeD)
+
+    return interpolationTripleAtPosition(trackP, timeD)
   }
 
   get propsP(): Pointer<$FixMe> {

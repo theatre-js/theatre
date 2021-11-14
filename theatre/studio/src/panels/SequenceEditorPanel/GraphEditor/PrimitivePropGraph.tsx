@@ -6,13 +6,9 @@ import {usePrism} from '@theatre/react'
 import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
 import React from 'react'
-import styled from 'styled-components'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import BasicKeyframedTrack from './BasicKeyframedTrack/BasicKeyframedTrack'
 import type {graphEditorColors} from './GraphEditor'
-import type {TrackData} from '@theatre/core/projects/store/types/SheetState_Historic'
-
-const Container = styled.div``
 
 const PrimitivePropGraph: React.FC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
@@ -36,9 +32,7 @@ const PrimitivePropGraph: React.FC<{
       )
       return <></>
     } else {
-      return (
-        <BasicKeyframedTrack {...props} trackData={trackData as TrackData} />
-      )
+      return <BasicKeyframedTrack {...props} trackData={trackData} />
     }
   }, [props.trackId, props.layoutP])
 }

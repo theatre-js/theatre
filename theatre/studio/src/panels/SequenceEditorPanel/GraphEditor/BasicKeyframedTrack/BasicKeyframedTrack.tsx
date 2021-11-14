@@ -8,12 +8,10 @@ import type {SequenceTrackId} from '@theatre/shared/utils/ids'
 import type {$IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
 import type {Pointer} from '@theatre/dataverse'
 import React, {useMemo, useRef, useState} from 'react'
-import styled from 'styled-components'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import {graphEditorColors} from '@theatre/studio/panels/SequenceEditorPanel/GraphEditor/GraphEditor'
 import KeyframeEditor from './KeyframeEditor/KeyframeEditor'
-
-const Container = styled.div``
+import {getPropConfigByPath} from '@theatre/shared/propTypes/utils'
 
 export type ExtremumSpace = {
   fromValueSpace: (v: number) => number
@@ -29,83 +27,93 @@ const BasicKeyframedTrack: React.FC<{
   trackId: SequenceTrackId
   trackData: TrackData
   color: keyof typeof graphEditorColors
-}> = React.memo(({layoutP, trackData, sheetObject, trackId, color}) => {
-  const [areExtremumsLocked, setAreExtremumsLocked] = useState<boolean>(false)
-  const lockExtremums = useMemo(() => {
-    const locks = new Set<VoidFn>()
-    return function lockExtremums() {
-      const shouldLock = locks.size === 0
-      locks.add(unlock)
-      if (shouldLock) setAreExtremumsLocked(true)
+}> = React.memo(
+  ({layoutP, trackData, sheetObject, trackId, color, pathToProp}) => {
+    const propConfig = getPropConfigByPath(
+      sheetObject.template.config,
+      pathToProp,
+    )!
 
-      function unlock() {
-        const wasLocked = locks.size > 0
-        locks.delete(unlock)
-        if (wasLocked && locks.size === 0) setAreExtremumsLocked(false)
+    const [areExtremumsLocked, setAreExtremumsLocked] = useState<boolean>(false)
+    const lockExtremums = useMemo(() => {
+      const locks = new Set<VoidFn>()
+      return function lockExtremums() {
+        const shouldLock = locks.size === 0
+        locks.add(unlock)
+        if (shouldLock) setAreExtremumsLocked(true)
+
+        function unlock() {
+          const wasLocked = locks.size > 0
+          locks.delete(unlock)
+          if (wasLocked && locks.size === 0) setAreExtremumsLocked(false)
+        }
+
+        return unlock
       }
+    }, [])
 
-      return unlock
+    const extremumSpace: ExtremumSpace = useMemo(() => {
+      const extremums =
+        propConfig.isScalar === true
+          ? calculateScalarExtremums(trackData.keyframes)
+          : calculateNonScalarExtremums(trackData.keyframes)
+
+      const fromValueSpace = (val: number): number =>
+        (val - extremums[0]) / (extremums[1] - extremums[0])
+
+      const toValueSpace = (ex: number): number =>
+        extremums[0] + deltaToValueSpace(ex)
+
+      const deltaToValueSpace = (ex: number): number =>
+        ex * (extremums[1] - extremums[0])
+
+      return {
+        fromValueSpace,
+        toValueSpace,
+        deltaToValueSpace,
+        lock: lockExtremums,
+      }
+    }, [trackData.keyframes])
+
+    const cachedExtremumSpace = useRef<ExtremumSpace>(
+      undefined as $IntentionalAny,
+    )
+    if (!areExtremumsLocked) {
+      cachedExtremumSpace.current = extremumSpace
     }
-  }, [])
 
-  const extremumSpace: ExtremumSpace = useMemo(() => {
-    const extremums = calculateExtremums(trackData.keyframes)
+    const keyframeEditors = trackData.keyframes.map((kf, index) => (
+      <KeyframeEditor
+        keyframe={kf}
+        index={index}
+        trackData={trackData}
+        layoutP={layoutP}
+        sheetObject={sheetObject}
+        trackId={trackId}
+        key={'keyframe-' + kf.id}
+        extremumSpace={cachedExtremumSpace.current}
+        color={color}
+      />
+    ))
 
-    const fromValueSpace = (val: number): number =>
-      (val - extremums[0]) / (extremums[1] - extremums[0])
-
-    const toValueSpace = (ex: number): number =>
-      extremums[0] + deltaToValueSpace(ex)
-
-    const deltaToValueSpace = (ex: number): number =>
-      ex * (extremums[1] - extremums[0])
-
-    return {
-      fromValueSpace,
-      toValueSpace,
-      deltaToValueSpace,
-      lock: lockExtremums,
-    }
-  }, [trackData.keyframes])
-
-  const cachedExtremumSpace = useRef<ExtremumSpace>(
-    undefined as $IntentionalAny,
-  )
-  if (!areExtremumsLocked) {
-    cachedExtremumSpace.current = extremumSpace
-  }
-
-  const keyframeEditors = trackData.keyframes.map((kf, index) => (
-    <KeyframeEditor
-      keyframe={kf}
-      index={index}
-      trackData={trackData}
-      layoutP={layoutP}
-      sheetObject={sheetObject}
-      trackId={trackId}
-      key={'keyframe-' + kf.id}
-      extremumSpace={cachedExtremumSpace.current}
-      color={color}
-    />
-  ))
-
-  return (
-    <g
-      style={{
-        // @ts-ignore
-        '--main-color': graphEditorColors[color].iconColor,
-      }}
-    >
-      {keyframeEditors}
-    </g>
-  )
-})
+    return (
+      <g
+        style={{
+          // @ts-ignore
+          '--main-color': graphEditorColors[color].iconColor,
+        }}
+      >
+        {keyframeEditors}
+      </g>
+    )
+  },
+)
 
 export default BasicKeyframedTrack
 
 type Extremums = [min: number, max: number]
 
-function calculateExtremums(keyframes: Keyframe[]): Extremums {
+function calculateScalarExtremums(keyframes: Keyframe[]): Extremums {
   let min = Infinity,
     max = -Infinity
 
@@ -123,6 +131,26 @@ function calculateExtremums(keyframes: Keyframe[]): Extremums {
     const diff = (typeof next.value === 'number' ? next.value : 1) - curVal
     check(curVal + cur.handles[3] * diff)
     check(curVal + next.handles[1] * diff)
+  })
+
+  return [min, max]
+}
+
+function calculateNonScalarExtremums(keyframes: Keyframe[]): Extremums {
+  let min = 0,
+    max = 1
+
+  function check(n: number): void {
+    min = Math.min(n, min)
+    max = Math.max(n, max)
+  }
+
+  keyframes.forEach((cur, i) => {
+    if (!cur.connectedRight) return
+    const next = keyframes[i + 1]
+    if (!next) return
+    check(cur.handles[3])
+    check(next.handles[1])
   })
 
   return [min, max]

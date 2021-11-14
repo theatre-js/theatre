@@ -129,8 +129,7 @@ const PrimitivePropRow: React.FC<{
   }, [leaf])
 
   const label = leaf.pathToProp[leaf.pathToProp.length - 1]
-  const isSelectable =
-    leaf.propConf.type !== 'boolean' && leaf.propConf.type !== 'stringLiteral'
+  const isSelectable = true
 
   return (
     <Container depth={leaf.depth}>

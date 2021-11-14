@@ -1,5 +1,6 @@
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import userReadableTypeOfValue from '@theatre/shared/utils/userReadableTypeOfValue'
+import {mapValues} from 'lodash-es'
 import type {
   IShorthandCompoundProps,
   IValidCompoundProps,
@@ -8,10 +9,7 @@ import type {
 import {sanitizeCompoundProps} from './internals'
 import {propTypeSymbol} from './internals'
 
-const validateCommonOpts = <T>(
-  fnCallSignature: string,
-  opts?: PropTypeConfigOpts<T>,
-) => {
+const validateCommonOpts = (fnCallSignature: string, opts?: CommonOpts) => {
   if (process.env.NODE_ENV !== 'production') {
     if (opts === undefined) return
     if (typeof opts !== 'object' || opts === null) {
@@ -70,20 +68,22 @@ const validateCommonOpts = <T>(
  */
 export const compound = <Props extends IShorthandCompoundProps>(
   props: Props,
-  opts?: PropTypeConfigOpts<Props>,
+  opts?: {
+    label?: string
+  },
 ): PropTypeConfig_Compound<
   ShorthandCompoundPropsToLonghandCompoundProps<Props>,
   Props
 > => {
   validateCommonOpts('t.compound(props, opts)', opts)
+  const sanitizedProps = sanitizeCompoundProps(props)
   return {
     type: 'compound',
-    props: sanitizeCompoundProps(props),
+    props: sanitizedProps,
     valueType: null as $IntentionalAny,
     [propTypeSymbol]: 'TheatrePropType',
     label: opts?.label,
-    sanitize: opts?.sanitize,
-    interpolate: opts?.interpolate,
+    default: mapValues(sanitizedProps, (p) => p.default) as $IntentionalAny,
   }
 }
 
@@ -134,7 +134,10 @@ export const number = (
     nudgeFn?: PropTypeConfig_Number['nudgeFn']
     range?: PropTypeConfig_Number['range']
     nudgeMultiplier?: number
-  } & PropTypeConfigOpts<number>,
+    label?: string
+    sanitize?: Sanitizer<number>
+    interpolate?: Interpolator<number>
+  },
 ): PropTypeConfig_Number => {
   if (process.env.NODE_ENV !== 'production') {
     validateCommonOpts('t.number(defaultValue, opts)', opts)
@@ -195,6 +198,15 @@ export const number = (
       }
     }
   }
+  const sanitize = !opts?.sanitize
+    ? _sanitizeNumber
+    : (val: unknown): number | undefined => {
+        const n = _sanitizeNumber(val)
+        if (typeof n === 'number') {
+          return opts.sanitize!(n)
+        }
+      }
+
   return {
     type: 'number',
     valueType: 0,
@@ -206,15 +218,20 @@ export const number = (
     nudgeMultiplier:
       typeof opts?.nudgeMultiplier === 'number' ? opts.nudgeMultiplier : 1,
     isScalar: true,
-    sanitize(value) {
-      if (opts?.sanitize) return opts.sanitize(value)
-      return typeof value === 'number' ? value : undefined
-    },
-    interpolate(left, right, progression) {
-      if (opts?.interpolate) return opts.interpolate(left, right, progression)
-      return left + progression * (right - left)
-    },
+    sanitize: sanitize,
+    interpolate: opts?.interpolate ?? _interpolateNumber,
   }
+}
+
+const _sanitizeNumber = (value: unknown): undefined | number =>
+  typeof value === 'number' && isFinite(value) ? value : undefined
+
+const _interpolateNumber = (
+  left: number,
+  right: number,
+  progression: number,
+): number => {
+  return left + progression * (right - left)
 }
 
 /**
@@ -239,7 +256,11 @@ export const number = (
  */
 export const boolean = (
   defaultValue: boolean,
-  opts?: PropTypeConfigOpts<boolean>,
+  opts?: {
+    label?: string
+    sanitize?: Sanitizer<boolean>
+    interpolate?: Interpolator<boolean>
+  },
 ): PropTypeConfig_Boolean => {
   if (process.env.NODE_ENV !== 'production') {
     validateCommonOpts('t.boolean(defaultValue, opts)', opts)
@@ -251,21 +272,24 @@ export const boolean = (
       )
     }
   }
+
   return {
     type: 'boolean',
     default: defaultValue,
     valueType: null as $IntentionalAny,
     [propTypeSymbol]: 'TheatrePropType',
     label: opts?.label,
-    sanitize(value: unknown) {
-      if (opts?.sanitize) return opts.sanitize(value)
-      return typeof value === 'boolean' ? value : undefined
-    },
-    interpolate(left, right, progression) {
-      if (opts?.interpolate) return opts.interpolate(left, right, progression)
-      return left
-    },
+    sanitize: _sanitizeBoolean,
+    interpolate: leftInterpolate,
   }
+}
+
+const _sanitizeBoolean = (val: unknown): boolean | undefined => {
+  return typeof val === 'boolean' ? val : undefined
+}
+
+function leftInterpolate<T>(left: T): T {
+  return left
 }
 
 /**
@@ -291,7 +315,11 @@ export const boolean = (
  */
 export const string = (
   defaultValue: string,
-  opts?: PropTypeConfigOpts<string>,
+  opts?: {
+    label?: string
+    sanitize?: Sanitizer<string>
+    interpolate?: Interpolator<string>
+  },
 ): PropTypeConfig_String => {
   if (process.env.NODE_ENV !== 'production') {
     validateCommonOpts('t.string(defaultValue, opts)', opts)
@@ -313,7 +341,7 @@ export const string = (
       if (opts?.sanitize) return opts.sanitize(value)
       return typeof value === 'string' ? value : undefined
     },
-    interpolate: opts?.interpolate,
+    interpolate: opts?.interpolate ?? leftInterpolate,
   }
 }
 
@@ -351,9 +379,7 @@ export function stringLiteral<Opts extends {[key in string]: string}>(
   /**
    * opts.as Determines if editor is shown as a menu or a switch. Either 'menu' or 'switch'.  Default: 'menu'
    */
-  opts?: {as?: 'menu' | 'switch'} & PropTypeConfigOpts<
-    Extract<keyof Opts, string>
-  >,
+  opts?: {as?: 'menu' | 'switch'; label?: string},
 ): PropTypeConfig_StringLiteral<Extract<keyof Opts, string>> {
   return {
     type: 'stringLiteral',
@@ -364,15 +390,14 @@ export function stringLiteral<Opts extends {[key in string]: string}>(
     as: opts?.as ?? 'menu',
     label: opts?.label,
     sanitize(value: unknown) {
-      if (opts?.sanitize) return opts.sanitize(value)
-      return typeof value === 'string' && Object.keys(options).includes(value)
-        ? (value as Extract<keyof Opts, string>)
-        : undefined
+      if (typeof value !== 'string') return undefined
+      if (Object.hasOwnProperty.call(options, value)) {
+        return value as $IntentionalAny
+      } else {
+        return undefined
+      }
     },
-    interpolate(left, right, progression) {
-      if (opts?.interpolate) return opts.interpolate(left, right, progression)
-      return left
-    },
+    interpolate: leftInterpolate,
   }
 }
 
@@ -386,6 +411,7 @@ interface IBasePropType<ValueType, PropTypes = ValueType> {
   isScalar?: true
   sanitize?: Sanitizer<PropTypes>
   interpolate?: Interpolator<PropTypes>
+  default: ValueType
 }
 
 export interface PropTypeConfig_Number extends IBasePropType<number> {
@@ -424,16 +450,8 @@ export interface PropTypeConfig_Boolean extends IBasePropType<boolean> {
   default: boolean
 }
 
-export interface PropTypeConfig_Color<ColorObject>
-  extends IBasePropType<ColorObject> {
-  type: 'color'
-  default: ColorObject
-}
-
-export interface PropTypeConfigOpts<ValueType> {
+interface CommonOpts {
   label?: string
-  sanitize?: Sanitizer<ValueType>
-  interpolate?: Interpolator<ValueType>
 }
 
 export interface PropTypeConfig_String extends IBasePropType<string> {

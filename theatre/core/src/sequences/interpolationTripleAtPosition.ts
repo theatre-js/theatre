@@ -8,14 +8,16 @@ import {ConstantDerivation, prism, val} from '@theatre/dataverse'
 import logger from '@theatre/shared/logger'
 import UnitBezier from 'timing-function/lib/UnitBezier'
 
-export type KeyframeValueAtTime =
-  | {left: unknown; right?: unknown; progression: number}
-  | undefined
+export type InterpolationTriple = {
+  left: unknown
+  right?: unknown
+  progression: number
+}
 
-export default function trackValueAtTime(
+export default function interpolationTripleAtPosition(
   trackP: Pointer<TrackData | undefined>,
   timeD: IDerivation<number>,
-): IDerivation<KeyframeValueAtTime> {
+): IDerivation<InterpolationTriple | undefined> {
   return prism(() => {
     const track = val(trackP)
     const driverD = prism.memo(
@@ -24,7 +26,7 @@ export default function trackValueAtTime(
         if (!track) {
           return new ConstantDerivation(undefined)
         } else if (track.type === 'BasicKeyframedTrack') {
-          return trackValueAtTime_keyframedTrack(track, timeD)
+          return _forKeyframedTrack(track, timeD)
         } else {
           logger.error(`Track type not yet supported.`)
           return new ConstantDerivation(undefined)
@@ -41,15 +43,15 @@ type IStartedState = {
   started: true
   validFrom: number
   validTo: number
-  der: IDerivation<KeyframeValueAtTime>
+  der: IDerivation<InterpolationTriple | undefined>
 }
 
 type IState = {started: false} | IStartedState
 
-function trackValueAtTime_keyframedTrack(
+function _forKeyframedTrack(
   track: BasicKeyframedTrack,
   timeD: IDerivation<number>,
-): IDerivation<KeyframeValueAtTime> {
+): IDerivation<InterpolationTriple | undefined> {
   return prism(() => {
     let stateRef = prism.ref<IState>('state', {started: false})
     let state = stateRef.current
