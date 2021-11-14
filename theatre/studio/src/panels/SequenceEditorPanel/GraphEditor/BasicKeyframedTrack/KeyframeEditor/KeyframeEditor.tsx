@@ -12,7 +12,8 @@ import type {graphEditorColors} from '@theatre/studio/panels/SequenceEditorPanel
 import type {ExtremumSpace} from '@theatre/studio/panels/SequenceEditorPanel/GraphEditor/BasicKeyframedTrack/BasicKeyframedTrack'
 import Curve from './Curve'
 import CurveHandle from './CurveHandle'
-import Dot from './Dot'
+import GraphEditorDotScalar from './GraphEditorDotScalar'
+import GraphEditorDotNonScalar from './GraphEditorDotNonScalar'
 
 const Container = styled.g`
   /* position: absolute; */
@@ -28,9 +29,10 @@ const KeyframeEditor: React.FC<{
   trackId: SequenceTrackId
   sheetObject: SheetObject
   extremumSpace: ExtremumSpace
+  isScalar: boolean
   color: keyof typeof graphEditorColors
 }> = (props) => {
-  const {index, trackData} = props
+  const {index, trackData, isScalar} = props
   const cur = trackData.keyframes[index]
   const next = trackData.keyframes[index + 1]
 
@@ -48,7 +50,19 @@ const KeyframeEditor: React.FC<{
       ) : (
         noConnector
       )}
-      <Dot {...props} />
+      {isScalar ? (
+        <GraphEditorDotScalar {...props} />
+      ) : (
+        <>
+          <GraphEditorDotNonScalar {...props} which="left" />
+          {shouldShowCurve && (
+            <GraphEditorDotNonScalar
+              {...{...props, index: index + 1, keyframe: next}}
+              which="right"
+            />
+          )}
+        </>
+      )}
     </Container>
   )
 }

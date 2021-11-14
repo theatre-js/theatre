@@ -90,6 +90,7 @@ const BasicKeyframedTrack: React.FC<{
         layoutP={layoutP}
         sheetObject={sheetObject}
         trackId={trackId}
+        isScalar={propConfig.isScalar === true}
         key={'keyframe-' + kf.id}
         extremumSpace={cachedExtremumSpace.current}
         color={color}

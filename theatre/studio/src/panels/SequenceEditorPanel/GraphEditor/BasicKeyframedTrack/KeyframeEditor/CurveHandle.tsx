@@ -68,12 +68,8 @@ const CurveHandle: React.FC<IProps> = (props) => {
   const valInDiffSpace =
     props.which === 'left' ? cur.handles[3] : next.handles[1]
 
-  if (!valInDiffSpace) {
-    // debugger
-  }
-
-  const curValue = typeof cur.value === 'number' ? cur.value : 0
-  const nextValue = typeof next.value === 'number' ? next.value : 1
+  const curValue = props.isScalar ? (cur.value as number) : 0
+  const nextValue = props.isScalar ? (next.value as number) : 1
 
   const value = curValue + (nextValue - curValue) * valInDiffSpace
 
@@ -168,8 +164,8 @@ function useOurDrags(node: SVGCircleElement | null, props: IProps): void {
         const dYInValueSpace =
           propsAtStartOfDrag.extremumSpace.deltaToValueSpace(dYInExtremumSpace)
 
-        const curValue = typeof cur.value === 'number' ? cur.value : 0
-        const nextValue = typeof next.value === 'number' ? next.value : 1
+        const curValue = props.isScalar ? (cur.value as number) : 0
+        const nextValue = props.isScalar ? (next.value as number) : 1
         const dyInKeyframeDiffSpace = dYInValueSpace / (nextValue - curValue)
 
         if (propsAtStartOfDrag.which === 'left') {

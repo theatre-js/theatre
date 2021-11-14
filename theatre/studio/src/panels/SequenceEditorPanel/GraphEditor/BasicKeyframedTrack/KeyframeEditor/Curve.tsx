@@ -25,8 +25,8 @@ const Curve: React.FC<IProps> = (props) => {
 
   const [contextMenu] = useConnectorContextMenu(node, props)
 
-  const curValue = typeof cur.value === 'number' ? cur.value : 0
-  const nextValue = typeof next.value === 'number' ? next.value : 1
+  const curValue = props.isScalar ? (cur.value as number) : 0
+  const nextValue = props.isScalar ? (next.value as number) : 1
   const leftYInExtremumSpace = props.extremumSpace.fromValueSpace(curValue)
   const rightYInExtremumSpace = props.extremumSpace.fromValueSpace(nextValue)
 

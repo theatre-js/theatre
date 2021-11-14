@@ -51,7 +51,7 @@ const HitZone = styled.circle`
 
 type IProps = Parameters<typeof KeyframeEditor>[0]
 
-const Dot: React.FC<IProps> = (props) => {
+const GraphEditorDotScalar: React.FC<IProps> = (props) => {
   const [ref, node] = useRefAndState<SVGCircleElement | null>(null)
 
   const {index, trackData} = props
@@ -59,12 +59,12 @@ const Dot: React.FC<IProps> = (props) => {
   const next = trackData.keyframes[index + 1]
 
   const [contextMenu] = useKeyframeContextMenu(node, props)
-  const isDragging =
-    typeof cur.value === 'number' ? useDragKeyframe(node, props) : false
 
-  const cyInExtremumSpace = props.extremumSpace.fromValueSpace(
-    typeof cur.value === 'number' ? cur.value : 0,
-  )
+  const curValue = cur.value as number
+
+  const isDragging = useDragKeyframe(node, props)
+
+  const cyInExtremumSpace = props.extremumSpace.fromValueSpace(curValue)
 
   return (
     <>
@@ -93,7 +93,7 @@ const Dot: React.FC<IProps> = (props) => {
   )
 }
 
-export default Dot
+export default GraphEditorDotScalar
 
 function useDragKeyframe(
   node: SVGCircleElement | null,
@@ -146,6 +146,7 @@ function useDragKeyframe(
           value: (original.value as number) + dYInValueSpace,
           handles: [...original.handles],
         }
+
         updatedKeyframes.push(cur)
 
         if (keepSpeeds) {
