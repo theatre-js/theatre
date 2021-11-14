@@ -109,6 +109,7 @@ const CurveEditorPopover: React.FC<
   const inputRef = useRef<HTMLInputElement>(null)
   useLayoutEffect(() => {
     inputRef.current!.focus()
+    inputRef.current!.setSelectionRange(0, 100)
   }, [])
 
   const {index, trackData} = props
