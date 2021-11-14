@@ -1,9 +1,10 @@
 import {clamp, isInteger, round} from 'lodash-es'
 import type {MutableRefObject} from 'react'
-import React, {useMemo, useRef, useState} from 'react'
+import React, {useMemo, useRef} from 'react'
 import styled from 'styled-components'
 import DraggableArea from '@theatre/studio/uiComponents/DraggableArea'
 import mergeRefs from 'react-merge-refs'
+import useRefAndState from '@theatre/studio/utils/useRefAndState'
 
 const Container = styled.div`
   height: 100%;
@@ -115,11 +116,11 @@ const BasicNumberInput: React.FC<{
   onBlur?: () => void
   nudge: BasicNumberInputNudgeFn
 }> = (propsA) => {
-  const [stateA, setState] = useState<IState>({mode: 'noFocus'})
+  const [stateRef] = useRefAndState<IState>({mode: 'noFocus'})
   const isValid = propsA.isValid ?? alwaysValid
 
-  const refs = useRef({state: stateA, props: propsA})
-  refs.current = {state: stateA, props: propsA}
+  const propsRef = useRef(propsA)
+  propsRef.current = propsA
 
   const inputRef = useRef<HTMLInputElement | null>(null)
 
@@ -129,42 +130,43 @@ const BasicNumberInput: React.FC<{
     const inputChange = (e: React.ChangeEvent) => {
       const target = e.target as HTMLInputElement
       const {value} = target
-      const curState = refs.current.state as IState_EditingViaKeyboard
+      const curState = stateRef.current as IState_EditingViaKeyboard
 
-      setState({...curState, currentEditedValueInString: value})
+      stateRef.current = {...curState, currentEditedValueInString: value}
 
       const valInFloat = parseFloat(value)
       if (!isFinite(valInFloat) || !isValid(valInFloat)) return
 
-      refs.current.props.temporarilySetValue(valInFloat)
+      propsRef.current.temporarilySetValue(valInFloat)
     }
 
     const onBlur = () => {
-      if (refs.current.state.mode === 'editingViaKeyboard') {
+      if (stateRef.current.mode === 'editingViaKeyboard') {
         commitKeyboardInput()
-        setState({mode: 'noFocus'})
+        stateRef.current = {mode: 'noFocus'}
       }
       if (propsA.onBlur) propsA.onBlur()
     }
 
     const commitKeyboardInput = () => {
-      const curState = refs.current.state as IState_EditingViaKeyboard
+      const curState = stateRef.current as IState_EditingViaKeyboard
       const value = parseFloat(curState.currentEditedValueInString)
 
       if (!isFinite(value) || !isValid(value)) {
-        refs.current.props.discardTemporaryValue()
+        propsRef.current.discardTemporaryValue()
       } else {
         if (curState.valueBeforeEditing === value) {
-          refs.current.props.discardTemporaryValue()
+          propsRef.current.discardTemporaryValue()
         } else {
-          refs.current.props.permenantlySetValue(value)
+          propsRef.current.permenantlySetValue(value)
         }
       }
     }
 
     const onInputKeyDown = (e: React.KeyboardEvent) => {
       if (e.key === 'Escape') {
-        refs.current.props.discardTemporaryValue()
+        propsRef.current.discardTemporaryValue()
+        stateRef.current = {mode: 'noFocus'}
         inputRef.current!.blur()
       } else if (e.key === 'Enter' || e.key === 'Tab') {
         commitKeyboardInput()
@@ -173,7 +175,7 @@ const BasicNumberInput: React.FC<{
     }
 
     const onClick = (e: React.MouseEvent) => {
-      if (refs.current.state.mode === 'noFocus') {
+      if (stateRef.current.mode === 'noFocus') {
         const c = inputRef.current!
         c.focus()
         e.preventDefault()
@@ -184,19 +186,19 @@ const BasicNumberInput: React.FC<{
     }
 
     const onFocus = () => {
-      if (refs.current.state.mode === 'noFocus') {
+      if (stateRef.current.mode === 'noFocus') {
         transitionToEditingViaKeyboardMode()
-      } else if (refs.current.state.mode === 'editingViaKeyboard') {
+      } else if (stateRef.current.mode === 'editingViaKeyboard') {
       }
     }
 
     const transitionToEditingViaKeyboardMode = () => {
-      const curValue = refs.current.props.value
-      setState({
+      const curValue = propsRef.current.value
+      stateRef.current = {
         mode: 'editingViaKeyboard',
         currentEditedValueInString: String(curValue),
         valueBeforeEditing: curValue,
-      })
+      }
 
       setTimeout(() => {
         inputRef.current!.focus()
@@ -207,39 +209,39 @@ const BasicNumberInput: React.FC<{
     let inputWidth: number
 
     const transitionToDraggingMode = () => {
-      const curValue = refs.current.props.value
+      const curValue = propsRef.current.value
       inputWidth = inputRef.current?.getBoundingClientRect().width!
 
-      setState({
+      stateRef.current = {
         mode: 'dragging',
         valueBeforeDragging: curValue,
         currentDraggingValue: curValue,
-      })
+      }
 
       bodyCursorBeforeDrag.current = document.body.style.cursor
     }
 
     const onDragEnd = (happened: boolean) => {
       if (!happened) {
-        refs.current.props.discardTemporaryValue()
-        setState({mode: 'noFocus'})
+        propsRef.current.discardTemporaryValue()
+        stateRef.current = {mode: 'noFocus'}
 
         inputRef.current!.focus()
         inputRef.current!.setSelectionRange(0, 100)
       } else {
-        const curState = refs.current.state as IState_Dragging
+        const curState = stateRef.current as IState_Dragging
         const value = curState.currentDraggingValue
         if (curState.valueBeforeDragging === value) {
-          refs.current.props.discardTemporaryValue()
+          propsRef.current.discardTemporaryValue()
         } else {
-          refs.current.props.permenantlySetValue(value)
+          propsRef.current.permenantlySetValue(value)
         }
-        setState({mode: 'noFocus'})
+        stateRef.current = {mode: 'noFocus'}
       }
     }
 
     const onDrag = (deltaX: number, _dy: number) => {
-      const curState = refs.current.state as IState_Dragging
+      const curState = stateRef.current as IState_Dragging
 
       let newValue =
         curState.valueBeforeDragging +
@@ -253,12 +255,12 @@ const BasicNumberInput: React.FC<{
         newValue = clamp(newValue, propsA.range[0], propsA.range[1])
       }
 
-      setState({
+      stateRef.current = {
         ...curState,
         currentDraggingValue: newValue,
-      })
+      }
 
-      refs.current.props.temporarilySetValue(newValue)
+      propsRef.current.temporarilySetValue(newValue)
     }
 
     return {
@@ -271,12 +273,12 @@ const BasicNumberInput: React.FC<{
       onDragEnd,
       onDrag,
     }
-  }, [refs, setState, inputRef])
+  }, [])
 
   let value =
-    stateA.mode !== 'editingViaKeyboard'
+    stateRef.current.mode !== 'editingViaKeyboard'
       ? format(propsA.value)
-      : stateA.currentEditedValueInString
+      : stateRef.current.currentEditedValueInString
 
   if (typeof value === 'number' && isNaN(value)) {
     value = 'NaN'
@@ -319,13 +321,13 @@ const BasicNumberInput: React.FC<{
   ) : null
 
   return (
-    <Container className={propsA.className + ' ' + refs.current.state.mode}>
+    <Container className={propsA.className + ' ' + stateRef.current.mode}>
       <DraggableArea
         key="draggableArea"
         onDragStart={callbacks.transitionToDraggingMode}
         onDragEnd={callbacks.onDragEnd}
         onDrag={callbacks.onDrag}
-        enabled={refs.current.state.mode !== 'editingViaKeyboard'}
+        enabled={stateRef.current.mode !== 'editingViaKeyboard'}
         lockCursorTo="ew-resize"
       >
         {theInput}
