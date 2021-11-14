@@ -5,6 +5,7 @@ import styled from 'styled-components'
 import DraggableArea from '@theatre/studio/uiComponents/DraggableArea'
 import mergeRefs from 'react-merge-refs'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
+import useOnClickOutside from '@theatre/studio/uiComponents/useOnClickOutside'
 
 const Container = styled.div`
   height: 100%;
@@ -123,6 +124,14 @@ const BasicNumberInput: React.FC<{
   propsRef.current = propsA
 
   const inputRef = useRef<HTMLInputElement | null>(null)
+
+  useOnClickOutside(
+    inputRef.current,
+    () => {
+      inputRef.current!.blur()
+    },
+    stateRef.current.mode === 'editingViaKeyboard',
+  )
 
   const bodyCursorBeforeDrag = useRef<string | null>(null)
 

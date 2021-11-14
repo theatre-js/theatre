@@ -3,6 +3,7 @@ import type {MutableRefObject} from 'react'
 import React, {useMemo, useRef} from 'react'
 import mergeRefs from 'react-merge-refs'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
+import useOnClickOutside from '@theatre/studio/uiComponents/useOnClickOutside'
 
 const Input = styled.input.attrs({type: 'text'})`
   background: transparent;
@@ -71,6 +72,14 @@ const BasicStringInput: React.FC<{
   propsRef.current = props
 
   const inputRef = useRef<HTMLInputElement | null>(null)
+
+  useOnClickOutside(
+    inputRef.current,
+    () => {
+      inputRef.current!.blur()
+    },
+    stateRef.current.mode === 'editingViaKeyboard',
+  )
 
   const callbacks = useMemo(() => {
     const inputChange = (e: React.ChangeEvent) => {
