@@ -56,7 +56,6 @@ const GraphEditorDotNonScalar: React.FC<IProps> = (props) => {
 
   const {index, trackData} = props
   const cur = trackData.keyframes[index]
-  const next = trackData.keyframes[index + 1]
 
   const [contextMenu] = useKeyframeContextMenu(node, props)
 

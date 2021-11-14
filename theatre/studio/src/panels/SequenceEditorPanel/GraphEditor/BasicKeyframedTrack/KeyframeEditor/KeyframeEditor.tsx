@@ -14,6 +14,7 @@ import Curve from './Curve'
 import CurveHandle from './CurveHandle'
 import GraphEditorDotScalar from './GraphEditorDotScalar'
 import GraphEditorDotNonScalar from './GraphEditorDotNonScalar'
+import GraphEditorNonScalarDash from './GraphEditorNonScalarDash'
 
 const Container = styled.g`
   /* position: absolute; */
@@ -55,12 +56,8 @@ const KeyframeEditor: React.FC<{
       ) : (
         <>
           <GraphEditorDotNonScalar {...props} which="left" />
-          {shouldShowCurve && (
-            <GraphEditorDotNonScalar
-              {...{...props, index: index + 1, keyframe: next}}
-              which="right"
-            />
-          )}
+          <GraphEditorDotNonScalar {...props} which="right" />
+          <GraphEditorNonScalarDash {...props} />
         </>
       )}
     </Container>
