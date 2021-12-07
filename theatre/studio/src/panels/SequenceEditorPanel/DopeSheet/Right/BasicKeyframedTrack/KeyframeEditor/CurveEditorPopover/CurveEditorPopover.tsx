@@ -62,7 +62,7 @@ const OptionsContainer = styled.div`
   max-height: 130px;
 `
 
-const EasingOption = styled.div<{candidate: boolean}>`
+const EasingOption = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -74,8 +74,10 @@ const EasingOption = styled.div<{candidate: boolean}>`
   border-radius: 4px;
 
   // The candidate preset is going to be applied when enter is pressed
-  box-shadow: 0 0 0 2px
-    ${(props) => (props.candidate ? 'rgba(255,255,255,0.4)' : 'transparent')};
+
+  &:focus {
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4);
+  }
 
   &:hover {
     background: rgba(255, 255, 255, 0.2);
@@ -261,7 +263,6 @@ const CurveEditorPopover: React.FC<
                 onMouseOut={() => {
                   fns.discardTemporaryValue()
                 }}
-                candidate={useQuery && result === presetResults[0]}
               >
                 <EasingCurveContainer>
                   <svg
