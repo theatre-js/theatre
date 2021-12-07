@@ -70,7 +70,7 @@ const EasingOption = styled.div<{candidate: boolean}>`
   overflow: hidden;
 
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
+  border-radius: 4px;
 
   // The candidate preset is going to be applied when enter is pressed
   box-shadow: 0 0 0 2px
