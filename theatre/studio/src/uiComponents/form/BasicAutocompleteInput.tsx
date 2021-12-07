@@ -6,34 +6,21 @@ import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import useOnClickOutside from '@theatre/studio/uiComponents/useOnClickOutside'
 
 const Input = styled.input.attrs({type: 'text'})`
-  background: transparent;
-  border: 1px solid transparent;
+  background-color: #10101042;
+  border: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.16);
   color: rgba(255, 255, 255, 0.9);
-  padding: 1px 6px;
+  padding: 10px;
   font: inherit;
   outline: none;
   cursor: text;
   text-align: left;
   width: 100%;
   height: calc(100% - 4px);
-  border-radius: 2px;
-  border: 1px solid transparent;
   box-sizing: border-box;
 
-  &:hover {
-    background-color: #10101042;
-    border-color: #00000059;
-  }
-
-  &:hover,
   &:focus {
     cursor: text;
-    background-color: #10101042;
-    border-color: #00000059;
-  }
-
-  &.invalid {
-    border-color: red;
   }
 `
 
@@ -51,8 +38,7 @@ type IState = IState_NoFocus | IState_EditingViaKeyboard
 
 const alwaysValid = (v: string) => true
 
-const BasicAutocompleteInput: React.FC<{
-  autocompleteOptions: Array<{label: string; value: string}>
+const BasicStringInput: React.FC<{
   value: string
   temporarilySetValue: (v: string) => void
   discardTemporaryValue: () => void
@@ -174,10 +160,6 @@ const BasicAutocompleteInput: React.FC<{
       ? format(props.value)
       : stateRef.current.currentEditedValueInString
 
-  let autocompleteMenu = null
-  if (stateRef.current.mode === 'editingViaKeyboard') {
-  }
-
   const _refs = [inputRef]
   if (props.inputRef) _refs.push(props.inputRef)
 
@@ -203,11 +185,11 @@ const BasicAutocompleteInput: React.FC<{
     />
   )
 
-  return <>{theInput}</>
+  return theInput
 }
 
 function format(v: string): string {
   return v
 }
 
-export default BasicAutocompleteInput
+export default BasicStringInput

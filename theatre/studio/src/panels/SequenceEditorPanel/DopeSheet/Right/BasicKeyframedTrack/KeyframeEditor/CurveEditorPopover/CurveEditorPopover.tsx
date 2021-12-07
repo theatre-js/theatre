@@ -1,11 +1,10 @@
 import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
-import React, {useLayoutEffect, useMemo, useRef} from 'react'
+import React, {useLayoutEffect, useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import getStudio from '@theatre/studio/getStudio'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
-import {propNameText} from '@theatre/studio/panels/DetailPanel/propEditors/utils/SingleRowPropEditor'
 import type KeyframeEditor from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/KeyframeEditor/KeyframeEditor'
 import {round} from 'lodash-es'
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
@@ -41,23 +40,58 @@ const presets = [
   {label: 'Sine Out', value: '0.390, 0.575, 0.565, 1'},
 ]
 
-const results = fuzzySort.go('out', presets, {key: 'label', allowTypo: false})
-console.log(results)
-results.forEach((r) => {
-  console.log(fuzzySort.highlight(r))
-})
-
 const Container = styled.div`
   display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 230px;
+`
+
+const InputContainer = styled.div`
+  display: flex;
   gap: 8px;
-  padding: 4px 8px;
-  height: 28px;
   align-items: center;
 `
 
-const Label = styled.div`
-  ${propNameText};
-  white-space: nowrap;
+const OptionsContainer = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 8px;
+  overflow: auto;
+  max-height: 130px;
+`
+
+const EasingOption = styled.div<{candidate: boolean}>`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  overflow: hidden;
+
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+
+  // The candidate preset is going to be applied when enter is pressed
+  box-shadow: 0 0 0 2px
+    ${(props) => (props.candidate ? 'rgba(255,255,255,0.4)' : 'transparent')};
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  b {
+    text-decoration: underline;
+    // Default underline is too close to the text to be subtle
+    text-underline-offset: 2px;
+    text-decoration-color: rgba(255, 255, 255, 0.4);
+  }
+`
+
+const EasingCurveContainer = styled.div`
+  display: flex;
+  padding: 6px;
+  background: rgba(255, 255, 255, 0.18);
 `
 
 const CurveEditorPopover: React.FC<
@@ -70,16 +104,36 @@ const CurveEditorPopover: React.FC<
     onRequestClose: () => void
   } & Parameters<typeof KeyframeEditor>[0]
 > = (props) => {
+  const [filter, setFilter] = useState<string>('')
+
+  const presetResults = useMemo(
+    () =>
+      fuzzySort.go(filter, presets, {
+        key: 'label',
+        allowTypo: false,
+      }),
+    [filter],
+  )
+
   const fns = useMemo(() => {
     let tempTransaction: CommitOrDiscard | undefined
 
     return {
-      temporarilySetValue(newCurve: string): void {
+      temporarilySetValue(newCurve: string, applyFilter = true): void {
+        if (applyFilter) {
+          setFilter(newCurve)
+        }
+
         if (tempTransaction) {
           tempTransaction.discard()
           tempTransaction = undefined
         }
+
         const args = cssCubicBezierArgsToHandles(newCurve)!
+        if (!args) {
+          return
+        }
+
         tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
           const {replaceKeyframes} =
             stateEditors.coreByProject.historic.sheetsById.sequence
@@ -113,7 +167,14 @@ const CurveEditorPopover: React.FC<
           tempTransaction.discard()
           tempTransaction = undefined
         }
-        const args = cssCubicBezierArgsToHandles(newCurve)!
+        const args =
+          cssCubicBezierArgsToHandles(newCurve) ??
+          cssCubicBezierArgsToHandles(presetResults[0].obj.value)
+
+        if (!args) {
+          return
+        }
+
         getStudio()!.transaction(({stateEditors}) => {
           const {replaceKeyframes} =
             stateEditors.coreByProject.historic.sheetsById.sequence
@@ -135,9 +196,11 @@ const CurveEditorPopover: React.FC<
             ],
           })
         })
+
+        props.onRequestClose()
       },
     }
-  }, [props.layoutP, props.index])
+  }, [props.layoutP, props.index, presetResults])
 
   const inputRef = useRef<HTMLInputElement>(null)
   useLayoutEffect(() => {
@@ -151,18 +214,103 @@ const CurveEditorPopover: React.FC<
 
   const cssCubicBezierString = keyframesToCssCubicBezierArgs(cur, next)
 
+  // Need some padding *inside* the SVG so that the handles and overshoots are not clipped
+  const svgPadding = 0.12
+  const svgCircleRadius = 0.08
+  const svgColor = '#DDAE37'
+
+  // query
+  const useQuery = /^[A-Za-z]/.test(filter)
+  const optionsEmpty = useQuery && presetResults.length === 0
+
   return (
     <Container>
-      <Label>cubic-bezier{'('}</Label>
-      <BasicAutocompleteInput
-        autocompleteOptions={presets}
-        value={cssCubicBezierString}
-        {...fns}
-        isValid={isValid}
-        inputRef={inputRef}
-        onBlur={props.onRequestClose}
-      />
-      <Label>{')'}</Label>
+      <InputContainer>
+        <BasicAutocompleteInput
+          value={cssCubicBezierString}
+          {...fns}
+          inputRef={inputRef}
+          onBlur={() => props.onRequestClose()}
+        />
+      </InputContainer>
+      {!optionsEmpty && (
+        <OptionsContainer
+          // Don't wanna lose focus on a misclick
+          onPointerDown={(e) => {
+            e.preventDefault()
+          }}
+        >
+          {(useQuery ? presetResults : presets).map((result) => {
+            const preset = ((result as any).obj ?? result) as typeof presets[0]
+
+            const easing = preset.value.split(', ').map((e) => Number(e))
+
+            return (
+              <EasingOption
+                key={preset.label}
+                onClick={() => {
+                  fns.permenantlySetValue(preset.value)
+                  props.onRequestClose()
+                }}
+                // Temporarily apply on hover
+                onMouseOver={() => {
+                  // When previewing with hover, we don't want to set the filter too
+                  fns.temporarilySetValue(preset.value, false)
+                }}
+                onMouseOut={() => {
+                  fns.discardTemporaryValue()
+                }}
+                candidate={useQuery && result === presetResults[0]}
+              >
+                <EasingCurveContainer>
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox={`0 0 ${1 + svgPadding * 2} ${1 + svgPadding * 2}`}
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d={`M${svgPadding} ${1 + svgPadding} C${
+                        easing[0] + svgPadding
+                      } ${1 - easing[1] + svgPadding} ${
+                        easing[2] + svgPadding
+                      } ${1 - easing[3] + svgPadding} ${
+                        1 + svgPadding
+                      } ${svgPadding}`}
+                      stroke={svgColor}
+                      strokeWidth="0.08"
+                    />
+                    <circle
+                      cx={svgPadding}
+                      cy={1 + svgPadding}
+                      r={svgCircleRadius}
+                      fill={svgColor}
+                    />
+                    <circle
+                      cx={1 + svgPadding}
+                      cy={svgPadding}
+                      r={svgCircleRadius}
+                      fill={svgColor}
+                    />
+                  </svg>
+                </EasingCurveContainer>
+                <span>
+                  {useQuery ? (
+                    <span
+                      dangerouslySetInnerHTML={{
+                        __html: fuzzySort.highlight(result as any)!,
+                      }}
+                    />
+                  ) : (
+                    preset.label
+                  )}
+                </span>
+              </EasingOption>
+            )
+          })}
+        </OptionsContainer>
+      )}
     </Container>
   )
 }
