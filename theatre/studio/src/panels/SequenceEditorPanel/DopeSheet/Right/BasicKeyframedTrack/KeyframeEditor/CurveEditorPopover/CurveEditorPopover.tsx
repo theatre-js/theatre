@@ -69,7 +69,7 @@ const EasingOption = styled.div<{candidate: boolean}>`
   gap: 4px;
   overflow: hidden;
 
-  background: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 8px;
 
   // The candidate preset is going to be applied when enter is pressed
@@ -91,7 +91,7 @@ const EasingOption = styled.div<{candidate: boolean}>`
 const EasingCurveContainer = styled.div`
   display: flex;
   padding: 6px;
-  background: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.1);
 `
 
 const CurveEditorPopover: React.FC<
@@ -217,7 +217,7 @@ const CurveEditorPopover: React.FC<
   // Need some padding *inside* the SVG so that the handles and overshoots are not clipped
   const svgPadding = 0.12
   const svgCircleRadius = 0.08
-  const svgColor = '#DDAE37'
+  const svgColor = '#b98b08'
 
   // query
   const useQuery = /^[A-Za-z]/.test(filter)
