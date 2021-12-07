@@ -87,7 +87,7 @@ const EasingOption = styled.div`
     text-decoration: underline;
     // Default underline is too close to the text to be subtle
     text-underline-offset: 2px;
-    text-decoration-color: rgba(255, 255, 255, 0.4);
+    text-decoration-color: rgba(255, 255, 255, 0.3);
   }
 `
 
