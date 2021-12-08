@@ -53,22 +53,23 @@ const InputContainer = styled.div`
 const OptionsContainer = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  padding: 8px;
+  gap: 1px;
+  padding: 1px;
   overflow: auto;
   max-height: 130px;
+  background: rgba(0, 0, 0, 0.18);
 `
 
 const EasingOption = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 4px;
+  gap: 7px;
   overflow: hidden;
 
-  background: rgba(255, 255, 255, 0.1);
+  background: rgb(0 0 0 / 10%);
   color: rgba(255, 255, 255, 0.75);
-  border-radius: 4px;
+  border-radius: 1px;
 
   // The candidate preset is going to be applied when enter is pressed
 
@@ -77,7 +78,8 @@ const EasingOption = styled.div`
   }
 
   &:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgb(0 0 0 / 33%);
+    color: white;
   }
 
   b {
@@ -91,7 +93,11 @@ const EasingOption = styled.div`
 const EasingCurveContainer = styled.div`
   display: flex;
   padding: 6px;
-  background: rgba(255, 255, 255, 0.1);
+  color: #b98b08;
+
+  ${EasingOption}:hover & {
+    color: #f9ba06;
+  }
 `
 
 const SearchBox = styled.input.attrs({type: 'text'})`
@@ -229,7 +235,6 @@ const CurveEditorPopover: React.FC<
   // Need some padding *inside* the SVG so that the handles and overshoots are not clipped
   const svgPadding = 0.12
   const svgCircleRadius = 0.08
-  const svgColor = '#b98b08'
 
   // query
   const useQuery = /^[A-Za-z]/.test(filter)
@@ -300,20 +305,20 @@ const CurveEditorPopover: React.FC<
                       } ${1 - easing[3] + svgPadding} ${
                         1 + svgPadding
                       } ${svgPadding}`}
-                      stroke={svgColor}
+                      stroke={'currentColor'}
                       strokeWidth="0.08"
                     />
                     <circle
                       cx={svgPadding}
                       cy={1 + svgPadding}
                       r={svgCircleRadius}
-                      fill={svgColor}
+                      fill={'currentColor'}
                     />
                     <circle
                       cx={1 + svgPadding}
                       cy={svgPadding}
                       r={svgCircleRadius}
-                      fill={svgColor}
+                      fill={'currentColor'}
                     />
                   </svg>
                 </EasingCurveContainer>
