@@ -51,12 +51,16 @@ const InputContainer = styled.div`
 `
 
 const OptionsContainer = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  padding: 8px;
   overflow: auto;
   max-height: 130px;
+
+  // Firefox doesn't let grids overflow their own element when the height is fixed so we need an extra inner div for the grid
+  & > div {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 8px;
+  }
 `
 
 const EasingOption = styled.div`
@@ -263,74 +267,80 @@ const CurveEditorPopover: React.FC<
             e.preventDefault()
           }}
         >
-          {(useQuery ? presetResults : presets).map((result) => {
-            const preset = ((result as any).obj ?? result) as typeof presets[0]
+          {/*Firefox doesn't let grids overflow their own element when the height is fixed so we need an extra inner div for the grid*/}
+          <div>
+            {(useQuery ? presetResults : presets).map((result) => {
+              const preset = ((result as any).obj ??
+                result) as typeof presets[0]
 
-            const easing = preset.value.split(', ').map((e) => Number(e))
+              const easing = preset.value.split(', ').map((e) => Number(e))
 
-            return (
-              <EasingOption
-                key={preset.label}
-                onClick={() => {
-                  fns.permenantlySetValue(preset.value)
-                  props.onRequestClose()
-                }}
-                // Temporarily apply on hover
-                onMouseOver={() => {
-                  // When previewing with hover, we don't want to set the filter too
-                  fns.temporarilySetValue(preset.value)
-                }}
-                onMouseOut={() => {
-                  fns.discardTemporaryValue()
-                }}
-              >
-                <EasingCurveContainer>
-                  <svg
-                    width="18"
-                    height="18"
-                    viewBox={`0 0 ${1 + svgPadding * 2} ${1 + svgPadding * 2}`}
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d={`M${svgPadding} ${1 + svgPadding} C${
-                        easing[0] + svgPadding
-                      } ${1 - easing[1] + svgPadding} ${
-                        easing[2] + svgPadding
-                      } ${1 - easing[3] + svgPadding} ${
-                        1 + svgPadding
-                      } ${svgPadding}`}
-                      stroke={svgColor}
-                      strokeWidth="0.08"
-                    />
-                    <circle
-                      cx={svgPadding}
-                      cy={1 + svgPadding}
-                      r={svgCircleRadius}
-                      fill={svgColor}
-                    />
-                    <circle
-                      cx={1 + svgPadding}
-                      cy={svgPadding}
-                      r={svgCircleRadius}
-                      fill={svgColor}
-                    />
-                  </svg>
-                </EasingCurveContainer>
-                <span>
-                  {useQuery ? (
-                    <span
-                      dangerouslySetInnerHTML={{
-                        __html: fuzzySort.highlight(result as any)!,
-                      }}
-                    />
-                  ) : (
-                    preset.label
-                  )}
-                </span>
-              </EasingOption>
-            )
-          })}
+              return (
+                <EasingOption
+                  key={preset.label}
+                  onClick={() => {
+                    fns.permenantlySetValue(preset.value)
+                    props.onRequestClose()
+                  }}
+                  // Temporarily apply on hover
+                  onMouseOver={() => {
+                    // When previewing with hover, we don't want to set the filter too
+                    fns.temporarilySetValue(preset.value)
+                  }}
+                  onMouseOut={() => {
+                    fns.discardTemporaryValue()
+                  }}
+                >
+                  <EasingCurveContainer>
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox={`0 0 ${1 + svgPadding * 2} ${
+                        1 + svgPadding * 2
+                      }`}
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d={`M${svgPadding} ${1 + svgPadding} C${
+                          easing[0] + svgPadding
+                        } ${1 - easing[1] + svgPadding} ${
+                          easing[2] + svgPadding
+                        } ${1 - easing[3] + svgPadding} ${
+                          1 + svgPadding
+                        } ${svgPadding}`}
+                        stroke={svgColor}
+                        strokeWidth="0.08"
+                      />
+                      <circle
+                        cx={svgPadding}
+                        cy={1 + svgPadding}
+                        r={svgCircleRadius}
+                        fill={svgColor}
+                      />
+                      <circle
+                        cx={1 + svgPadding}
+                        cy={svgPadding}
+                        r={svgCircleRadius}
+                        fill={svgColor}
+                      />
+                    </svg>
+                  </EasingCurveContainer>
+                  <span>
+                    {useQuery ? (
+                      <span
+                        dangerouslySetInnerHTML={{
+                          __html: fuzzySort.highlight(result as any)!,
+                        }}
+                      />
+                    ) : (
+                      preset.label
+                    )}
+                  </span>
+                </EasingOption>
+              )
+            })}
+          </div>
         </OptionsContainer>
       )}
     </Container>
