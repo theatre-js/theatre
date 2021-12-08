@@ -6,10 +6,7 @@ import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEdi
 import getStudio from '@theatre/studio/getStudio'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import type KeyframeEditor from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/KeyframeEditor/KeyframeEditor'
-import {round} from 'lodash-es'
-import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
-import BasicAutocompleteInput from '@theatre/studio/uiComponents/form/BasicAutocompleteInput'
 import fuzzySort from 'fuzzysort'
 
 const presets = [
@@ -97,6 +94,25 @@ const EasingCurveContainer = styled.div`
   background: rgba(255, 255, 255, 0.1);
 `
 
+const SearchBox = styled.input.attrs({type: 'text'})`
+  background-color: #10101042;
+  border: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.16);
+  color: rgba(255, 255, 255, 0.9);
+  padding: 10px;
+  font: inherit;
+  outline: none;
+  cursor: text;
+  text-align: left;
+  width: 100%;
+  height: calc(100% - 4px);
+  box-sizing: border-box;
+
+  &:focus {
+    cursor: text;
+  }
+`
+
 const CurveEditorPopover: React.FC<
   {
     layoutP: Pointer<SequenceEditorPanelLayout>
@@ -122,11 +138,7 @@ const CurveEditorPopover: React.FC<
     let tempTransaction: CommitOrDiscard | undefined
 
     return {
-      temporarilySetValue(newCurve: string, applyFilter = true): void {
-        if (applyFilter) {
-          setFilter(newCurve)
-        }
-
+      temporarilySetValue(newCurve: string): void {
         if (tempTransaction) {
           tempTransaction.discard()
           tempTransaction = undefined
@@ -208,14 +220,11 @@ const CurveEditorPopover: React.FC<
   const inputRef = useRef<HTMLInputElement>(null)
   useLayoutEffect(() => {
     inputRef.current!.focus()
-    inputRef.current!.setSelectionRange(0, 100)
   }, [])
 
   const {index, trackData} = props
   const cur = trackData.keyframes[index]
   const next = trackData.keyframes[index + 1]
-
-  const cssCubicBezierString = keyframesToCssCubicBezierArgs(cur, next)
 
   // Need some padding *inside* the SVG so that the handles and overshoots are not clipped
   const svgPadding = 0.12
@@ -229,11 +238,22 @@ const CurveEditorPopover: React.FC<
   return (
     <Container>
       <InputContainer>
-        <BasicAutocompleteInput
-          value={cssCubicBezierString}
-          {...fns}
-          inputRef={inputRef}
+        <SearchBox
+          value={filter}
+          placeholder="Search presets..."
+          onChange={(e) => {
+            setFilter(e.target.value)
+          }}
+          ref={inputRef}
           onBlur={() => props.onRequestClose()}
+          onKeyPress={(e) => {
+            if (e.key === 'Escape') {
+              props.onRequestClose()
+            } else if (e.key === 'Enter') {
+              fns.permenantlySetValue(filter)
+              props.onRequestClose()
+            }
+          }}
         />
       </InputContainer>
       {!optionsEmpty && (
@@ -258,7 +278,7 @@ const CurveEditorPopover: React.FC<
                 // Temporarily apply on hover
                 onMouseOver={() => {
                   // When previewing with hover, we don't want to set the filter too
-                  fns.temporarilySetValue(preset.value, false)
+                  fns.temporarilySetValue(preset.value)
                 }}
                 onMouseOut={() => {
                   fns.discardTemporaryValue()
@@ -318,12 +338,6 @@ const CurveEditorPopover: React.FC<
 }
 
 export default CurveEditorPopover
-
-function keyframesToCssCubicBezierArgs(left: Keyframe, right: Keyframe) {
-  return [left.handles[2], left.handles[3], right.handles[0], right.handles[1]]
-    .map((n) => round(n, 3).toString())
-    .join(', ')
-}
 
 const isValid = (str: string): boolean => !!cssCubicBezierArgsToHandles(str)
 
