@@ -263,20 +263,18 @@ const CurveEditorPopover: React.FC<
             setFilter(e.target.value)
           }}
           ref={inputRef}
-          onBlur={() => props.onRequestClose()}
-          onKeyPress={(e) => {
-            if (e.key === 'Escape') {
-              props.onRequestClose()
-            } else if (e.key === 'Enter') {
-              fns.permenantlySetValue(filter)
-              props.onRequestClose()
-            }
-          }}
           onKeyDown={(e) => {
             if (e.key === 'ArrowDown') {
               // Prevent scrolling on arrow key press
               e.preventDefault()
               optionsRef.current[displayedPresets[0].label].current?.focus()
+            }
+            if (e.key === 'Escape') {
+              props.onRequestClose()
+            }
+            if (e.key === 'Enter') {
+              fns.permenantlySetValue(filter)
+              props.onRequestClose()
             }
           }}
         />
@@ -292,6 +290,12 @@ const CurveEditorPopover: React.FC<
                 <EasingOption
                   tabIndex={0}
                   onKeyDown={(e) => {
+                    if (e.key === 'Escape') {
+                      props.onRequestClose()
+                    } else if (e.key === 'Enter') {
+                      fns.permenantlySetValue(preset.value)
+                      props.onRequestClose()
+                    }
                     if (e.key === 'ArrowRight') {
                       optionsRef.current[
                         displayedPresets[(index + 1) % displayedPresets.length]
