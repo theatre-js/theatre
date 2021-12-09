@@ -1,0 +1,6 @@
+{
+  "sandboxes": [
+    "examples/r3f-cra",
+    "xamples/dom-cra"
+  ]
+}
