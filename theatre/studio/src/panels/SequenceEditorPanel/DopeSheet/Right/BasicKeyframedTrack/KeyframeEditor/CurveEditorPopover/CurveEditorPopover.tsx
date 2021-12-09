@@ -77,7 +77,8 @@ const EasingOption = styled.div`
   // The candidate preset is going to be applied when enter is pressed
 
   &:focus {
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4);
+    outline: none;
+    box-shadow: 0 0 0 2px rgb(78, 134, 136);
   }
 
   &:hover {
@@ -129,13 +130,22 @@ const CurveEditorPopover: React.FC<
 > = (props) => {
   const [filter, setFilter] = useState<string>('')
 
-  const presetResults = useMemo(
+  const presetSearchResults = useMemo(
     () =>
       fuzzySort.go(filter, presets, {
         key: 'label',
         allowTypo: false,
       }),
     [filter],
+  )
+
+  const useQuery = /^[A-Za-z]/.test(filter)
+  const optionsEmpty = useQuery && presetSearchResults.length === 0
+
+  const displayedPresets = useMemo(
+    () =>
+      useQuery ? presetSearchResults.map((result) => result.obj) : presets,
+    [presetSearchResults, useQuery],
   )
 
   const fns = useMemo(() => {
@@ -188,7 +198,7 @@ const CurveEditorPopover: React.FC<
         }
         const args =
           cssCubicBezierArgsToHandles(newCurve) ??
-          cssCubicBezierArgsToHandles(presetResults[0].obj.value)
+          cssCubicBezierArgsToHandles(presetSearchResults[0].obj.value)
 
         if (!args) {
           return
@@ -219,7 +229,7 @@ const CurveEditorPopover: React.FC<
         props.onRequestClose()
       },
     }
-  }, [props.layoutP, props.index, presetResults])
+  }, [props.layoutP, props.index, presetSearchResults])
 
   const inputRef = useRef<HTMLInputElement>(null)
   useLayoutEffect(() => {
@@ -235,9 +245,13 @@ const CurveEditorPopover: React.FC<
   const svgCircleRadius = 0.08
   const svgColor = '#b98b08'
 
-  // query
-  const useQuery = /^[A-Za-z]/.test(filter)
-  const optionsEmpty = useQuery && presetResults.length === 0
+  const optionsRef = useRef(
+    presets.reduce((acc, curr) => {
+      acc[curr.label] = {current: null}
+
+      return acc
+    }, {} as {[key: string]: {current: HTMLDivElement | null}}),
+  )
 
   return (
     <Container>
@@ -258,25 +272,73 @@ const CurveEditorPopover: React.FC<
               props.onRequestClose()
             }
           }}
+          onKeyDown={(e) => {
+            if (e.key === 'ArrowDown') {
+              // Prevent scrolling on arrow key press
+              e.preventDefault()
+              optionsRef.current[displayedPresets[0].label].current?.focus()
+            }
+          }}
         />
       </InputContainer>
       {!optionsEmpty && (
-        <OptionsContainer
-          // Don't wanna lose focus on a misclick
-          onPointerDown={(e) => {
-            e.preventDefault()
-          }}
-        >
+        <OptionsContainer onKeyDown={(e) => e.preventDefault()}>
           {/*Firefox doesn't let grids overflow their own element when the height is fixed so we need an extra inner div for the grid*/}
           <div>
-            {(useQuery ? presetResults : presets).map((result) => {
-              const preset = ((result as any).obj ??
-                result) as typeof presets[0]
-
+            {displayedPresets.map((preset, index) => {
               const easing = preset.value.split(', ').map((e) => Number(e))
 
               return (
                 <EasingOption
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'ArrowRight') {
+                      optionsRef.current[
+                        displayedPresets[(index + 1) % displayedPresets.length]
+                          .label
+                      ].current!.focus()
+                    }
+                    if (e.key === 'ArrowLeft') {
+                      if (preset === displayedPresets[0]) {
+                        optionsRef.current[
+                          displayedPresets[displayedPresets.length - 1].label
+                        ].current?.focus()
+                      } else {
+                        optionsRef.current[
+                          displayedPresets[
+                            (index - 1) % displayedPresets.length
+                          ].label
+                        ].current?.focus()
+                      }
+                    }
+                    if (e.key === 'ArrowUp') {
+                      if (preset === displayedPresets[0]) {
+                        inputRef.current!.focus()
+                      } else {
+                        optionsRef.current[
+                          displayedPresets[index - 2].label
+                        ].current?.focus()
+                      }
+                    }
+                    if (e.key === 'ArrowDown') {
+                      if (
+                        preset === displayedPresets[displayedPresets.length - 1]
+                      ) {
+                        inputRef.current!.focus()
+                      } else if (
+                        preset === displayedPresets[displayedPresets.length - 2]
+                      ) {
+                        optionsRef.current[
+                          displayedPresets[displayedPresets.length - 1].label
+                        ].current?.focus()
+                      } else {
+                        optionsRef.current[
+                          displayedPresets[index + 2].label
+                        ].current?.focus()
+                      }
+                    }
+                  }}
+                  ref={optionsRef.current[preset.label]}
                   key={preset.label}
                   onClick={() => {
                     fns.permenantlySetValue(preset.value)
@@ -330,7 +392,9 @@ const CurveEditorPopover: React.FC<
                     {useQuery ? (
                       <span
                         dangerouslySetInnerHTML={{
-                          __html: fuzzySort.highlight(result as any)!,
+                          __html: fuzzySort.highlight(
+                            presetSearchResults[index] as any,
+                          )!,
                         }}
                       />
                     ) : (
