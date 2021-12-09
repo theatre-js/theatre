@@ -314,6 +314,10 @@ const CurveEditorPopover: React.FC<
                     if (e.key === 'ArrowUp') {
                       if (preset === displayedPresets[0]) {
                         inputRef.current!.focus()
+                      } else if (preset === displayedPresets[1]) {
+                        optionsRef.current[
+                          displayedPresets[0].label
+                        ].current?.focus()
                       } else {
                         optionsRef.current[
                           displayedPresets[index - 2].label
