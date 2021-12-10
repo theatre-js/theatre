@@ -2,12 +2,12 @@ import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
 import React, {useLayoutEffect, useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
+import fuzzySort from 'fuzzysort'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import getStudio from '@theatre/studio/getStudio'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import type KeyframeEditor from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/KeyframeEditor/KeyframeEditor'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
-import fuzzySort from 'fuzzysort'
 
 const presets = [
   {label: 'Linear', value: '0.5, 0.5, 0.5, 0.5'},
@@ -139,6 +139,7 @@ const CurveEditorPopover: React.FC<
     [filter],
   )
 
+  // Whether to interpret the search box input as a search query
   const useQuery = /^[A-Za-z]/.test(filter)
   const optionsEmpty = useQuery && presetSearchResults.length === 0
 
@@ -245,6 +246,7 @@ const CurveEditorPopover: React.FC<
   const svgCircleRadius = 0.08
   const svgColor = '#b98b08'
 
+  // A map to store all html elements corresponding to easing options
   const optionsRef = useRef(
     presets.reduce((acc, curr) => {
       acc[curr.label] = {current: null}
@@ -427,8 +429,6 @@ const CurveEditorPopover: React.FC<
 }
 
 export default CurveEditorPopover
-
-const isValid = (str: string): boolean => !!cssCubicBezierArgsToHandles(str)
 
 function cssCubicBezierArgsToHandles(
   str: string,
