@@ -111,7 +111,7 @@ const Connector: React.FC<IProps> = (props) => {
           },
         },
         {
-          label: 'Edit Curve',
+          label: 'Open Easing Palette',
           callback: (e) => {
             openPopover(e, node!)
           },
