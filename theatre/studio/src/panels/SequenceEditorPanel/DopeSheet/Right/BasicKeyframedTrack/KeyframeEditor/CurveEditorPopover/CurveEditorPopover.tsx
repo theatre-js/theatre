@@ -269,6 +269,13 @@ const CurveEditorPopover: React.FC<
               e.preventDefault()
               optionsRef.current[displayedPresets[0].label].current?.focus()
             }
+            if (e.key === 'ArrowUp') {
+              // Prevent scrolling on arrow key press
+              e.preventDefault()
+              optionsRef.current[
+                displayedPresets[displayedPresets.length - 1].label
+              ].current?.focus()
+            }
             if (e.key === 'Escape') {
               props.onRequestClose()
             }
