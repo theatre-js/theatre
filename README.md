@@ -1,5 +1,7 @@
 # Theatre.js
 
+> ✨ Update: [Join us as a Founding Designer or Engineer](https://join.theatrejs.com/).
+
 Theatre.js is an animation library for high-fidelity motion graphics. It is designed to help you express detailed animation, enabling you to create intricate movement, and convey nuance.
 
 Theatre can be used both programmatically _and_ visually.
