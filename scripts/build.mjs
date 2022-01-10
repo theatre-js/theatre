@@ -32,7 +32,7 @@ const packagesToBuild = [
   }
 
   await Promise.all([
-    $`yarn run buid:ts`,
+    $`yarn run build:ts`,
     ...packagesToBuild.map(
       (workspace) => $`yarn workspace ${workspace} run build`,
     ),
