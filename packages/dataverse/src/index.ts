@@ -1,3 +1,9 @@
+/**
+ * The animation-optimized FRP library powering the internals of Theatre.js.
+ *
+ * @packageDocumentation
+ */
+
 export type {IdentityDerivationProvider} from './Atom'
 export {default as Atom, val, valueDerivation} from './Atom'
 export {default as Box} from './Box'

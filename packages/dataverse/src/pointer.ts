@@ -22,10 +22,19 @@ export type UnindexablePointer = {
 
 const pointerMetaWeakMap = new WeakMap<{}, PointerMeta>()
 
+/**
+ * A wrapper type for the type a `Pointer` points to.
+ */
 export type PointerType<O> = {
   $$__pointer_type: O
 }
 
+/**
+ * The type of {@link Atom} pointers. See {@link pointer|pointer()} for an
+ * explanation of pointers.
+ *
+ * @see Atom
+ */
 export type Pointer<O> = PointerType<O> &
   (O extends UnindexableTypesForPointer
     ? UnindexablePointer
@@ -67,6 +76,12 @@ const handler = {
   },
 }
 
+/**
+ * Returns the metadata associated with the pointer. Usually the root object and
+ * the path.
+ *
+ * @param p The pointer.
+ */
 export const getPointerMeta = (
   p: Pointer<$IntentionalAny> | Pointer<{}> | Pointer<unknown>,
 ): PointerMeta => {
@@ -77,6 +92,18 @@ export const getPointerMeta = (
   return meta
 }
 
+/**
+ * Returns the root object and the path of the pointer.
+ *
+ * @example
+ * ```ts
+ * const {root, path} = getPointerParts(pointer)
+ * ```
+ *
+ * @param p The pointer.
+ *
+ * @returns An object with two properties: `root`-the root object or the pointer, and `path`-the path of the pointer. `path` is an array of the property-chain.
+ */
 export const getPointerParts = (
   p: Pointer<$IntentionalAny> | Pointer<{}> | Pointer<unknown>,
 ): {root: {}; path: PathToProp} => {
@@ -84,25 +111,52 @@ export const getPointerParts = (
   return {root, path}
 }
 
-function pointer<O>({
-  root,
-  path,
-}: {
-  root: {}
-  path: Array<string | number>
-}): Pointer<O>
-function pointer(args: {root: {}; path?: Array<string | number>}) {
+/**
+ * Creates a pointer to a (nested) property of an {@link Atom}.
+ *
+ * @remarks
+ * Pointers are used to make derivations of properties or nested properties of
+ * {@link Atom|Atoms}.
+ *
+ * Pointers also allow easy construction of new pointers pointing to nested members
+ * of the root object, by simply using property chaining. E.g. `somePointer.a.b` will
+ * create a new pointer that has `'a'` and `'b'` added to the path of `somePointer`.
+ *
+ * @example
+ * ```ts
+ * // Here, sum is a derivation that updates whenever the a or b prop of someAtom does.
+ * const sum = prism(() => {
+ *   return val(pointer({root: someAtom, path: ['a']})) + val(pointer({root: someAtom, path: ['b']}));
+ * });
+ *
+ * // Note, atoms have a convenience Atom.pointer property that points to the root,
+ * // which you would normally use in this situation.
+ * const sum = prism(() => {
+ *   return val(someAtom.pointer.a) + val(someAtom.pointer.b);
+ * });
+ * ```
+ *
+ * @param args The pointer parameters.
+ * @param args.root The {@link Atom} the pointer applies to.
+ * @param args.path The path to the (nested) property the pointer points to.
+ *
+ * @typeParam O The type of the value being pointed to.
+ */
+function pointer<O>(args: {root: {}; path?: Array<string | number>}) {
   const meta: PointerMeta = {
     root: args.root as $IntentionalAny,
     path: args.path ?? [],
   }
   const hiddenObj = {}
   pointerMetaWeakMap.set(hiddenObj, meta)
-  return new Proxy(hiddenObj, handler) as Pointer<$IntentionalAny>
+  return new Proxy(hiddenObj, handler) as Pointer<O>
 }
 
 export default pointer
 
+/**
+ * Returns whether `p` is a pointer.
+ */
 export const isPointer = (p: $IntentionalAny): p is Pointer<unknown> => {
   return p && !!getPointerMeta(p)
 }

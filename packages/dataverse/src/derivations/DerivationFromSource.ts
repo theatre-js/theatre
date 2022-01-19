@@ -3,11 +3,18 @@ import AbstractDerivation from './AbstractDerivation'
 
 const noop = () => {}
 
+/**
+ * Represents a derivation based on a tappable (subscribable) data source.
+ */
 export default class DerivationFromSource<V> extends AbstractDerivation<V> {
   private _untapFromChanges: () => void
   private _cachedValue: undefined | V
   private _hasCachedValue: boolean
 
+  /**
+   * @param _tapToSource A function that takes a listener and subscribes it to the underlying data source.
+   * @param _getValueFromSource A function that returns the current value of the data source.
+   */
   constructor(
     private readonly _tapToSource: (listener: (newValue: V) => void) => VoidFn,
     private readonly _getValueFromSource: () => V,
@@ -18,6 +25,9 @@ export default class DerivationFromSource<V> extends AbstractDerivation<V> {
     this._hasCachedValue = false
   }
 
+  /**
+   * @internal
+   */
   _recalculate() {
     if (this.isHot) {
       if (!this._hasCachedValue) {
@@ -30,6 +40,9 @@ export default class DerivationFromSource<V> extends AbstractDerivation<V> {
     }
   }
 
+  /**
+   * @internal
+   */
   _keepHot() {
     this._hasCachedValue = false
     this._cachedValue = undefined
@@ -41,6 +54,9 @@ export default class DerivationFromSource<V> extends AbstractDerivation<V> {
     })
   }
 
+  /**
+   * @internal
+   */
   _becomeCold() {
     this._untapFromChanges()
     this._untapFromChanges = noop
@@ -49,5 +65,8 @@ export default class DerivationFromSource<V> extends AbstractDerivation<V> {
     this._cachedValue = undefined
   }
 
+  /**
+   * @internal
+   */
   _reactToDependencyBecomingStale() {}
 }

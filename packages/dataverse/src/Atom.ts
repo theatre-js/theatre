@@ -19,8 +19,19 @@ enum ValueTypes {
   Other,
 }
 
+/**
+ * Interface for objects that can provide a derivation at a certain path.
+ */
 export interface IdentityDerivationProvider {
+  /**
+   * @internal
+   */
   readonly $$isIdentityDerivationProvider: true
+  /**
+   * Returns a derivation of the value at the provided path.
+   *
+   * @param path The path to create the derivation at.
+   */
   getIdentityDerivation(path: Array<string | number>): IDerivation<unknown>
 }
 
@@ -99,12 +110,24 @@ class Scope {
   }
 }
 
+/**
+ * Wraps an object whose (sub)properties can be individually tracked.
+ */
 export default class Atom<State extends {}>
   implements IdentityDerivationProvider
 {
   private _currentState: State
+  /**
+   * @internal
+   */
   readonly $$isIdentityDerivationProvider = true
   private readonly _rootScope: Scope
+  /**
+   * Convenience property that gives you a pointer to the root of the atom.
+   *
+   * @remarks
+   * Equivalent to `pointer({ root: thisAtom, path: [] })`.
+   */
   readonly pointer: Pointer<State>
 
   constructor(initialState: State) {
@@ -113,6 +136,11 @@ export default class Atom<State extends {}>
     this.pointer = pointer({root: this as $FixMe, path: []})
   }
 
+  /**
+   * Sets the state of the atom.
+   *
+   * @param newState The new state of the atom.
+   */
   setState(newState: State) {
     const oldState = this._currentState
     this._currentState = newState
@@ -120,14 +148,39 @@ export default class Atom<State extends {}>
     this._checkUpdates(this._rootScope, oldState, newState)
   }
 
+  /**
+   * Gets the current state of the atom.
+   */
   getState() {
     return this._currentState
   }
 
+  /**
+   * Gets the state of the atom at `path`.
+   */
   getIn(path: (string | number)[]): unknown {
     return path.length === 0 ? this.getState() : get(this.getState(), path)
   }
 
+  /**
+   * Creates a new state object from the current one, where the value at `path`
+   * is replaced by the return value of `reducer`, then sets it.
+   *
+   * @remarks
+   * Doesn't mutate the old state, and preserves referential equality between
+   * values of the old state and the new state where possible.
+   *
+   * @example
+   * ```ts
+   * someAtom.getIn(['a']) // 1
+   * someAtom.reduceState(['a'], (state) => state + 1);
+   * someAtom.getIn(['a']) // 2
+   * ```
+   *
+   * @param path The path to call the reducer at.
+   * @param reducer The function to use for creating the new state.
+   */
+  // TODO: Why is this a property and not a method?
   reduceState: PathBasedReducer<State, State> = (
     path: $IntentionalAny[],
     reducer: $IntentionalAny,
@@ -137,6 +190,9 @@ export default class Atom<State extends {}>
     return newState
   }
 
+  /**
+   * Sets the state of the atom at `path`.
+   */
   setIn(path: $FixMe[], val: $FixMe) {
     return this.reduceState(path, () => val)
   }
@@ -181,6 +237,11 @@ export default class Atom<State extends {}>
     return untap
   }
 
+  /**
+   * Returns a new derivation of the value at the provided path.
+   *
+   * @param path The path to create the derivation at.
+   */
   getIdentityDerivation(path: Array<string | number>): IDerivation<unknown> {
     return new DerivationFromSource<$IntentionalAny>(
       (listener) => this._onPathValueChange(path, listener),
@@ -191,6 +252,12 @@ export default class Atom<State extends {}>
 
 const identityDerivationWeakMap = new WeakMap<{}, IDerivation<unknown>>()
 
+/**
+ * Returns a derivation of the value at the provided pointer. Derivations are
+ * cached per pointer.
+ *
+ * @param pointer The pointer to return the derivation at.
+ */
 export const valueDerivation = <P extends PointerType<$IntentionalAny>>(
   pointer: P,
 ): IDerivation<P extends PointerType<infer T> ? T : void> => {
@@ -211,6 +278,7 @@ export const valueDerivation = <P extends PointerType<$IntentionalAny>>(
   return derivation as $IntentionalAny
 }
 
+// TODO: Rename it to isIdentityDerivationProvider
 function isIdentityChangeProvider(
   val: unknown,
 ): val is IdentityDerivationProvider {
@@ -221,6 +289,16 @@ function isIdentityChangeProvider(
   )
 }
 
+/**
+ * Convenience function that returns a plain value from its argument, whether it
+ * is a pointer, a derivation or a plain value itself.
+ *
+ * @remarks
+ * For pointers, the value is returned by first creating a derivation, so it is
+ * reactive e.g. when used in a `prism`.
+ *
+ * @param pointerOrDerivationOrPlainValue The argument to return a value from.
+ */
 export const val = <P>(
   pointerOrDerivationOrPlainValue: P,
 ): P extends PointerType<infer T>

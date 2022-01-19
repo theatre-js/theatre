@@ -7,6 +7,9 @@ interface IProps<V> {
 
 type Listener<V> = ((v: V) => void) | (() => void)
 
+/**
+ * Represents a data-source that can be tapped (subscribed to).
+ */
 export default class Tappable<V> {
   private _props: IProps<V>
   private _tappers: Map<number, {bivarianceHack(v: V): void}['bivarianceHack']>
@@ -55,6 +58,11 @@ export default class Tappable<V> {
     })
   }
 
+  /**
+   * Tap (subscribe to) the data source.
+   *
+   * @param cb The callback to be called on a change.
+   */
   tap(cb: Listener<V>): Untap {
     const tapperId = this._lastTapperId++
     this._tappers.set(tapperId, cb)
