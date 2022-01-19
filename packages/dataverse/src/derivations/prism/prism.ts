@@ -334,6 +334,12 @@ type IPrismFn = {
   inPrism: typeof inPrism
 }
 
+/**
+ * Creates a derivation from the passed function that adds all derivations referenced
+ * in it as dependencies, and reruns the function when these change.
+ *
+ * @param fn The function to rerun when the derivations referenced in it change.
+ */
 const prism: IPrismFn = (fn) => {
   return new PrismDerivation(fn)
 }

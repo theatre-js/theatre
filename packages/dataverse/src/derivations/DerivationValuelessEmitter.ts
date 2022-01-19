@@ -3,7 +3,10 @@ import type {default as Tappable} from '../utils/Tappable'
 import type {IDerivation} from './IDerivation'
 
 /**
- * Just like DerivationEmitter, except it doesn't emit the value and doesn't need a ticker
+ * Like DerivationEmitter, but with a different performance model. DerivationValuelessEmitter emits every time the
+ * derivation is updated, even if the value didn't change, and tappers are called without the value. The advantage of
+ * this is that you have control over when the underlying derivation is freshened, it won't automatically be freshened
+ * by the emitter.
  */
 export default class DerivationValuelessEmitter<V> {
   _derivation: IDerivation<V>
@@ -39,6 +42,9 @@ export default class DerivationValuelessEmitter<V> {
     }
   }
 
+  /**
+   * The tappable associated with the emitter. You can use it to tap (subscribe to) the underlying derivation.
+   */
   tappable(): Tappable<void> {
     return this._emitter.tappable
   }

@@ -54,5 +54,23 @@ import {parse as parseJsonC} from 'jsonc-parser'
       (pkg) => $`yarn workspace ${pkg} run build:api-json`,
     ),
   )
+
+  /*
+   We replace the Pointer name with a similar-looking one so that that shitty
+   api-documenter generates two different pages for Pointer and pointer, instead
+   of overwriting one with the other.
+
+   Apparently any non-english character, including this one will break links,
+   probably due to some overzealous regex. Didn't find any replacement that doesn't
+   change the look of the name AND doesn't break links, however the below code does
+   replace links too, in case we find something in the future. For now, we shouldn't
+   @link to the Pointer type in TSDoc comments.
+   */
+  const replacement = 'Pointer\u200E'
+
+  fs.writeFileSync('./.temp/api/dataverse.api.json', fs.readFileSync('./.temp/api/dataverse.api.json', {
+    encoding: 'utf-8',
+  }).replaceAll('"name": "Pointer"', `"name": "${replacement}"`).replaceAll('{@link Pointer}', `{@link ${replacement}}`))
+
   await $`api-documenter markdown --input-folder ${pathToApiJsonFiles} --output-folder ${outputPath}`
 })()

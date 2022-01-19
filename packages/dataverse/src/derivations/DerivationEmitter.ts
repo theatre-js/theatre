@@ -3,6 +3,9 @@ import Emitter from '../utils/Emitter'
 import type {default as Tappable} from '../utils/Tappable'
 import type {IDerivation} from './IDerivation'
 
+/**
+ * An event emitter that emits events on changes to a derivation.
+ */
 export default class DerivationEmitter<V> {
   private _derivation: IDerivation<V>
   private _ticker: Ticker
@@ -11,6 +14,10 @@ export default class DerivationEmitter<V> {
   private _lastValueRecorded: boolean
   private _hadTappers: boolean
 
+  /**
+   * @param derivation The derivation to emit events for.
+   * @param ticker The ticker to use to batch events.
+   */
   constructor(derivation: IDerivation<V>, ticker: Ticker) {
     this._derivation = derivation
     this._ticker = ticker
@@ -40,6 +47,9 @@ export default class DerivationEmitter<V> {
     }
   }
 
+  /**
+   * The tappable associated with the emitter. You can use it to tap (subscribe to) the underlying derivation.
+   */
   tappable(): Tappable<V> {
     return this._emitter.tappable
   }

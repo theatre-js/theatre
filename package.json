@@ -15,7 +15,7 @@
     "test": "jest",
     "postinstall": "husky install",
     "release": "zx scripts/release.mjs",
-    "build:api-docs": "zx scripts/build-api-docs.mjs",
+    "build:api-docs": "zx scripts/build-api-docs.mjs /Users/andrew/Projects/theatre-docs/docs/api",
     "lint:all": "eslint . --ext ts,tsx --ignore-path=.gitignore --rulesdir ./devEnv/eslint/rules"
   },
   "lint-staged": {
