@@ -1,7 +1,9 @@
 /**
- * Theatre comes in two packages: `@theatre/core` (the library) and
- * `@theatre/studio` (the editor). This package is the core library.
+ * The library providing the runtime functionality of Theatre.js.
+ *
+ * @packageDocumentation
  */
+
 export * from './coreExports'
 export type {
   IProject,

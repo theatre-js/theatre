@@ -1,3 +1,9 @@
+/**
+ * React bindings for dataverse.
+ *
+ * @packageDocumentation
+ */
+
 import type {IDerivation} from '@theatre/dataverse'
 import {Box} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'
