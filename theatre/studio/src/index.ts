@@ -1,3 +1,9 @@
+/**
+ * The library providing the editor components of Theatre.js.
+ *
+ * @packageDocumentation
+ */
+
 import {setStudio} from '@theatre/studio/getStudio'
 import {Studio} from '@theatre/studio/Studio'
 
