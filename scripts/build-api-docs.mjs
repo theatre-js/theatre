@@ -56,7 +56,7 @@ import {parse as parseJsonC} from 'jsonc-parser'
   )
 
   /*
-   We replace the Pointer name with a similar-looking one so that that shitty
+   We replace the Pointer name with a similar-looking one so that 
    api-documenter generates two different pages for Pointer and pointer, instead
    of overwriting one with the other.
 
@@ -68,9 +68,15 @@ import {parse as parseJsonC} from 'jsonc-parser'
    */
   const replacement = 'Pointer\u200E'
 
-  fs.writeFileSync('./.temp/api/dataverse.api.json', fs.readFileSync('./.temp/api/dataverse.api.json', {
-    encoding: 'utf-8',
-  }).replaceAll('"name": "Pointer"', `"name": "${replacement}"`).replaceAll('{@link Pointer}', `{@link ${replacement}}`))
+  fs.writeFileSync(
+    './.temp/api/dataverse.api.json',
+    fs
+      .readFileSync('./.temp/api/dataverse.api.json', {
+        encoding: 'utf-8',
+      })
+      .replaceAll('"name": "Pointer"', `"name": "${replacement}"`)
+      .replaceAll('{@link Pointer}', `{@link ${replacement}}`),
+  )
 
   await $`api-documenter markdown --input-folder ${pathToApiJsonFiles} --output-folder ${outputPath}`
 })()
