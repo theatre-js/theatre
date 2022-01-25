@@ -1,5 +1,7 @@
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import userReadableTypeOfValue from '@theatre/shared/utils/userReadableTypeOfValue'
+import type {Rgba, Laba} from '@theatre/shared/utils/color'
+import {decorateRgba} from '@theatre/shared/utils/color'
 import {mapValues} from 'lodash-es'
 import type {
   IShorthandCompoundProps,
@@ -232,6 +234,95 @@ const _interpolateNumber = (
   progression: number,
 ): number => {
   return left + progression * (right - left)
+}
+
+export const rgba = (
+  defaultValue: Rgba,
+  opts?: {
+    label?: string
+    sanitize?: Sanitizer<Rgba>
+    interpolate?: Interpolator<Rgba>
+  },
+): PropTypeConfig_Rgba => {
+  if (process.env.NODE_ENV !== 'production') {
+    validateCommonOpts('t.rgba(defaultValue, opts)', opts)
+    // FIXME: validate default value
+  }
+
+  return {
+    type: 'rgba',
+    valueType: null as $IntentionalAny,
+    default: defaultValue,
+    [propTypeSymbol]: 'TheatrePropType',
+    label: opts?.label,
+    sanitize: _sanitizeRgba,
+    interpolate: opts?.interpolate ?? _interpolateRgba,
+  }
+}
+
+// FIXME
+// TODO: clamp components to allowed range
+const _sanitizeRgba = (val: unknown): Rgba | undefined => {
+  return val as Rgba
+}
+
+// FIXME: add gamma conversion
+const _interpolateRgba = (
+  left: Rgba,
+  right: Rgba,
+  progression: number,
+): Rgba => {
+  // TODO: Factor out all these utility functions
+  function linearSrgbToOklab(rgba: Rgba) {
+    let l =
+      0.4122214708 * rgba.r + 0.5363325363 * rgba.g + 0.0514459929 * rgba.b
+    let m =
+      0.2119034982 * rgba.r + 0.6806995451 * rgba.g + 0.1073969566 * rgba.b
+    let s =
+      0.0883024619 * rgba.r + 0.2817188376 * rgba.g + 0.6299787005 * rgba.b
+
+    let l_ = Math.cbrt(l)
+    let m_ = Math.cbrt(m)
+    let s_ = Math.cbrt(s)
+
+    return {
+      L: 0.2104542553 * l_ + 0.793617785 * m_ - 0.0040720468 * s_,
+      a: 1.9779984951 * l_ - 2.428592205 * m_ + 0.4505937099 * s_,
+      b: 0.0259040371 * l_ + 0.7827717662 * m_ - 0.808675766 * s_,
+      alpha: rgba.a,
+    }
+  }
+
+  function oklabToLinearSrgb(laba: Laba) {
+    let l_ = laba.L + 0.3963377774 * laba.a + 0.2158037573 * laba.b
+    let m_ = laba.L - 0.1055613458 * laba.a - 0.0638541728 * laba.b
+    let s_ = laba.L - 0.0894841775 * laba.a - 1.291485548 * laba.b
+
+    let l = l_ * l_ * l_
+    let m = m_ * m_ * m_
+    let s = s_ * s_ * s_
+
+    return {
+      r: +4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
+      g: -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
+      b: -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s,
+      a: laba.alpha,
+    }
+  }
+
+  const leftLab = linearSrgbToOklab(left)
+  const rightLab = linearSrgbToOklab(right)
+
+  const interpolatedLab = {
+    L: (1 - progression) * leftLab.L + progression * rightLab.L,
+    a: (1 - progression) * leftLab.a + progression * rightLab.a,
+    b: (1 - progression) * leftLab.b + progression * rightLab.b,
+    alpha: (1 - progression) * leftLab.alpha + progression * rightLab.alpha,
+  }
+
+  const interpolatedRgba = oklabToLinearSrgb(interpolatedLab)
+
+  return decorateRgba(interpolatedRgba)
 }
 
 /**
@@ -467,6 +558,11 @@ export interface PropTypeConfig_StringLiteral<T extends string>
   as: 'menu' | 'switch'
 }
 
+export interface PropTypeConfig_Rgba extends IBasePropType<Rgba> {
+  type: 'rgba'
+  default: Rgba
+}
+
 /**
  *
  */
@@ -492,6 +588,7 @@ export type PropTypeConfig_AllPrimitives =
   | PropTypeConfig_Boolean
   | PropTypeConfig_String
   | PropTypeConfig_StringLiteral<$IntentionalAny>
+  | PropTypeConfig_Rgba
 
 export type PropTypeConfig =
   | PropTypeConfig_AllPrimitives

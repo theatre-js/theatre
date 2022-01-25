@@ -30,6 +30,7 @@ import {isSheetObject} from '@theatre/shared/instanceTypes'
 import type {OnDiskState} from '@theatre/core/projects/store/storeTypes'
 import {generateDiskStateRevision} from './generateDiskStateRevision'
 import type {PropTypeConfig} from '@theatre/core/propTypes'
+import type {PathToProp} from '@theatre/shared/src/utils/addresses'
 
 export type Drafts = {
   historic: Draft<StudioHistoricState>
@@ -131,7 +132,7 @@ export default class StudioStore {
         const api: ITransactionPrivateApi = {
           set: (pointer, value) => {
             ensureRunning()
-            const {root} = getPointerParts(pointer as Pointer<$FixMe>)
+            const {root, path} = getPointerParts(pointer as Pointer<$FixMe>)
             if (isSheetObject(root)) {
               root.validateValue(pointer as Pointer<$FixMe>, value)
 
@@ -141,46 +142,62 @@ export default class StudioStore {
                   .getValue(),
               )
 
-              forEachDeep(
-                value,
-                (v, pathToProp) => {
-                  if (typeof v === 'undefined' || v === null) {
-                    return
-                  }
+              const propConfig = get(
+                root.template.config.props,
+                path,
+              ) as PropTypeConfig
 
-                  const propAddress = {...root.address, pathToProp}
+              const setPropStaticOrKeyframe = <T>(
+                value: T,
+                path: PathToProp,
+              ) => {
+                if (typeof value === 'undefined' || value === null) {
+                  return
+                }
 
-                  const trackId = get(
-                    sequenceTracksTree,
-                    pathToProp,
-                  ) as $FixMe as SequenceTrackId | undefined
+                const propAddress = {...root.address, pathToProp: path}
 
-                  if (typeof trackId === 'string') {
-                    const propConfig = get(
-                      root.template.config.props,
-                      pathToProp,
-                    ) as PropTypeConfig | undefined
-                    if (propConfig?.sanitize) v = propConfig.sanitize(v)
+                const trackId = get(sequenceTracksTree, path) as $FixMe as
+                  | SequenceTrackId
+                  | undefined
+                if (typeof trackId === 'string') {
+                  const propConfig = get(root.template.config.props, path) as
+                    | PropTypeConfig
+                    | undefined
+                  if (propConfig?.sanitize) value = propConfig.sanitize(value)
 
-                    const seq = root.sheet.getSequence()
-                    seq.position = seq.closestGridPosition(seq.position)
-                    stateEditors.coreByProject.historic.sheetsById.sequence.setKeyframeAtPosition(
-                      {
-                        ...propAddress,
-                        trackId,
-                        position: seq.position,
-                        value: v as $FixMe,
-                        snappingFunction: seq.closestGridPosition,
-                      },
-                    )
-                  } else {
-                    stateEditors.coreByProject.historic.sheetsById.staticOverrides.byObject.setValueOfPrimitiveProp(
-                      {...propAddress, value: v},
-                    )
-                  }
-                },
-                getPointerParts(pointer as Pointer<$IntentionalAny>).path,
-              )
+                  const seq = root.sheet.getSequence()
+                  seq.position = seq.closestGridPosition(seq.position)
+                  stateEditors.coreByProject.historic.sheetsById.sequence.setKeyframeAtPosition(
+                    {
+                      ...propAddress,
+                      trackId,
+                      position: seq.position,
+                      value: value as $FixMe,
+                      snappingFunction: seq.closestGridPosition,
+                    },
+                  )
+                } else {
+                  stateEditors.coreByProject.historic.sheetsById.staticOverrides.byObject.setValueOfPrimitiveProp(
+                    {...propAddress, value: value as $FixMe},
+                  )
+                }
+              }
+
+              // If we are dealing with a compound prop, we recurse through its
+              // nested properties. The root prop with path.length === 0 is
+              // implicitly considered a compound prop.
+              if (path.length === 0 || propConfig.type === 'compound') {
+                forEachDeep(
+                  value,
+                  (v, pathToProp) => {
+                    setPropStaticOrKeyframe(v, pathToProp)
+                  },
+                  getPointerParts(pointer as Pointer<$IntentionalAny>).path,
+                )
+              } else {
+                setPropStaticOrKeyframe(value, path)
+              }
             } else {
               throw new Error(
                 'Only setting props of SheetObject-s is supported in a transaction so far',

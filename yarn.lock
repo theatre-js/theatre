@@ -5436,6 +5436,7 @@ __metadata:
   dependencies:
     "@theatre/dataverse": "workspace:*"
     react: ^17.0.2
+    react-colorful: ^5.5.1
     react-dom: ^17.0.2
     styled-components: ^5.3.0
   peerDependencies:
@@ -19937,6 +19938,16 @@ fsevents@^1.2.7:
     regenerator-runtime: ^0.13.7
     whatwg-fetch: ^3.4.1
   checksum: 96b8bb3bdeb5279ebb73622744dcaba75a2f48861e8353052cb758e33db850845b11fa7da87c52663a4e4ee9ed356069f6a1e42151a74f01dc24bbfbbc5ad79a
+  languageName: node
+  linkType: hard
+
+"react-colorful@npm:^5.5.1":
+  version: 5.5.1
+  resolution: "react-colorful@npm:5.5.1"
+  peerDependencies:
+    react: ">=16.8.0"
+    react-dom: ">=16.8.0"
+  checksum: 2b0beb90ab5c93c3b2a19c5a9c5c7ca9cedd5eeac61807335d4466f089cc3b3530724c0d685014a9ae0b4c40db638c8cfa27fccab6485f2d3cda00819edcceb7
   languageName: node
   linkType: hard
 

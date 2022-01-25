@@ -24,6 +24,7 @@ const boxObjectConfig = {
   bool: types.boolean(false),
   x: types.number(200),
   y: types.number(200),
+  color: types.rgba({r: 1, g: 0, b: 0, a: 1}),
 }
 
 const Box: React.FC<{
@@ -42,6 +43,12 @@ const Box: React.FC<{
     test: string
     testLiteral: string
     bool: boolean
+    color: {
+      r: number
+      g: number
+      b: number
+      a: number
+    }
   }>(obj.value)
 
   useLayoutEffect(() => {
@@ -75,6 +82,7 @@ const Box: React.FC<{
             test: initial.test,
             testLiteral: initial.testLiteral,
             bool: initial.bool,
+            color: initial.color,
           })
         })
       },
@@ -111,6 +119,12 @@ const Box: React.FC<{
       <pre style={{margin: 0, padding: '1rem'}}>
         {JSON.stringify(state, null, 4)}
       </pre>
+      <div
+        style={{
+          height: 50,
+          background: state.color.toString(),
+        }}
+      />
     </div>
   )
 }

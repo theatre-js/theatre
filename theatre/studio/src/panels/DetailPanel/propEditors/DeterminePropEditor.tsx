@@ -7,6 +7,7 @@ import CompoundPropEditor from './CompoundPropEditor'
 import NumberPropEditor from './NumberPropEditor'
 import StringLiteralPropEditor from './StringLiteralPropEditor'
 import StringPropEditor from './StringPropEditor'
+import RgbaPropEditor from './RgbaPropEditor'
 
 /**
  * Returns the PropTypeConfig by path. Assumes `path` is a valid prop path and that
@@ -69,7 +70,7 @@ const propEditorByPropType: {
   enum: () => <></>,
   boolean: BooleanPropEditor,
   stringLiteral: StringLiteralPropEditor,
-  // cssrgba: () => <></>,
+  rgba: RgbaPropEditor,
 }
 
 const DeterminePropEditor: React.FC<{
