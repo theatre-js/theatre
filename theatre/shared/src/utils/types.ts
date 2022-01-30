@@ -12,7 +12,7 @@ export type SerializableMap<
 > = {[Key in string]?: SerializableValue<Primitives>}
 
 // TODO: I'm sure we can make this type make more sense
-export type SerializablePrimitive = string | number | boolean | Object
+export type SerializablePrimitive = string | number | boolean | {}
 
 export type SerializableValue<
   Primitives extends SerializablePrimitive = SerializablePrimitive,
