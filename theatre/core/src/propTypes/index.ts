@@ -273,6 +273,35 @@ const _interpolateRgba = (
   progression: number,
 ): Rgba => {
   // TODO: Factor out all these utility functions
+  function linearSrgbToSrgb(rgba: Rgba) {
+    function compress(x: number) {
+      // This looks funky because sRGB uses a linear scale below 0.0031308 in
+      // order to avoid an infinite slope, while trying to approximate gamma 2.2
+      // as closely as possible, hence the branching and the 2.4 exponent.
+      if (x >= 0.0031308) return 1.055 * x ** (1.0 / 2.4) - 0.055
+      else return 12.92 * x
+    }
+    return {
+      r: compress(rgba.r),
+      g: compress(rgba.g),
+      b: compress(rgba.b),
+      a: rgba.a,
+    }
+  }
+
+  function srgbToLinearSrgb(rgba: Rgba) {
+    function expand(x: number) {
+      if (x >= 0.04045) return ((x + 0.055) / (1 + 0.055)) ** 2.4
+      else return x / 12.92
+    }
+    return {
+      r: expand(rgba.r),
+      g: expand(rgba.g),
+      b: expand(rgba.b),
+      a: rgba.a,
+    }
+  }
+
   function linearSrgbToOklab(rgba: Rgba) {
     let l =
       0.4122214708 * rgba.r + 0.5363325363 * rgba.g + 0.0514459929 * rgba.b
@@ -310,8 +339,8 @@ const _interpolateRgba = (
     }
   }
 
-  const leftLab = linearSrgbToOklab(left)
-  const rightLab = linearSrgbToOklab(right)
+  const leftLab = linearSrgbToOklab(srgbToLinearSrgb(left))
+  const rightLab = linearSrgbToOklab(srgbToLinearSrgb(right))
 
   const interpolatedLab = {
     L: (1 - progression) * leftLab.L + progression * rightLab.L,
@@ -320,7 +349,7 @@ const _interpolateRgba = (
     alpha: (1 - progression) * leftLab.alpha + progression * rightLab.alpha,
   }
 
-  const interpolatedRgba = oklabToLinearSrgb(interpolatedLab)
+  const interpolatedRgba = linearSrgbToSrgb(oklabToLinearSrgb(interpolatedLab))
 
   return decorateRgba(interpolatedRgba)
 }
