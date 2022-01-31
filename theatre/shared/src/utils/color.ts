@@ -1,6 +1,6 @@
 export function parseRgbaFromHex(rgba: string) {
   rgba = rgba.trim().toLowerCase()
-  const hex = rgba.match(/^#([0-9a-f]{8})$/i)
+  const hex = rgba.match(/^#?([0-9a-f]{8})$/i)
 
   if (!hex) {
     return {

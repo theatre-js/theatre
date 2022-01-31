@@ -10,8 +10,30 @@ import React, {useCallback, useMemo, useRef} from 'react'
 import {useEditingToolsForPrimitiveProp} from './utils/useEditingToolsForPrimitiveProp'
 import {SingleRowPropEditor} from './utils/SingleRowPropEditor'
 import {debounce} from 'lodash-es'
-import {RgbaColorPicker, HexColorInput} from 'react-colorful'
+import {RgbaColorPicker} from 'react-colorful'
+import styled from 'styled-components'
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
+import BasicStringInput from '@theatre/studio/uiComponents/form/BasicStringInput'
+
+const RowContainer = styled.div`
+  display: flex;
+  align-items: center;
+  height: 100%;
+  gap: 4px;
+`
+
+const Puck = styled.div<{background: Rgba}>`
+  height: calc(100% - 4px);
+  aspect-ratio: 1;
+  background: ${(props) => rgba2hex(props.background)};
+  border-radius: 2px;
+`
+
+const HexInput = styled(BasicStringInput)`
+  flex: 1;
+`
+
+const noop = () => {}
 
 const RgbaPropEditor: React.FC<{
   propConfig: PropTypeConfig_Rgba
@@ -78,20 +100,22 @@ const RgbaPropEditor: React.FC<{
           '.react-colorful{position:relative;display:flex;flex-direction:column;width:200px;height:200px;user-select:none;cursor:default}.react-colorful__saturation{position:relative;flex-grow:1;border-color:transparent;border-bottom:12px solid #000;border-radius:8px 8px 0 0;background-image:linear-gradient(to top,#000,rgba(0,0,0,0)),linear-gradient(to right,#fff,rgba(255,255,255,0))}.react-colorful__alpha-gradient,.react-colorful__pointer-fill{content:"";position:absolute;left:0;top:0;right:0;bottom:0;pointer-events:none;border-radius:inherit}.react-colorful__alpha-gradient,.react-colorful__saturation{box-shadow:inset 0 0 0 1px rgba(0,0,0,.05)}.react-colorful__alpha,.react-colorful__hue{position:relative;height:24px}.react-colorful__hue{background:linear-gradient(to right,red 0,#ff0 17%,#0f0 33%,#0ff 50%,#00f 67%,#f0f 83%,red 100%)}.react-colorful__last-control{border-radius:0 0 8px 8px}.react-colorful__interactive{position:absolute;left:0;top:0;right:0;bottom:0;border-radius:inherit;outline:0;touch-action:none}.react-colorful__pointer{position:absolute;z-index:1;box-sizing:border-box;width:28px;height:28px;transform:translate(-50%,-50%);background-color:#fff;border:2px solid #fff;border-radius:50%;box-shadow:0 2px 4px rgba(0,0,0,.2)}.react-colorful__interactive:focus .react-colorful__pointer{transform:translate(-50%,-50%) scale(1.1)}.react-colorful__alpha,.react-colorful__alpha-pointer{background-color:#fff;background-image:url(\'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill-opacity=".05"><rect x="8" width="8" height="8"/><rect y="8" width="8" height="8"/></svg>\')}.react-colorful__saturation-pointer{z-index:3}.react-colorful__hue-pointer{z-index:2}'
         }
       </style>
-      {/* FIXME: Placeholder UI */}
-      <div
-        ref={containerRef}
-        style={{backgroundColor: rgba2hex(stuff.value), width: 20, height: 20}}
-        onClick={(e) => {
-          openPopover(e, containerRef.current)
-        }}
-      />
-      <HexColorInput
-        color={rgba2hex(stuff.value)}
-        onChange={onChange}
-        prefixed
-        alpha
-      />
+      <RowContainer>
+        <Puck
+          background={stuff.value}
+          ref={containerRef}
+          onClick={(e) => {
+            openPopover(e, containerRef.current)
+          }}
+        />
+        <HexInput
+          value={rgba2hex(stuff.value)}
+          temporarilySetValue={noop}
+          discardTemporaryValue={noop}
+          permenantlySetValue={onChange}
+          isValid={(v) => !!v.match(/^#?([0-9a-f]{8})$/i)}
+        />
+      </RowContainer>
       {popoverNode}
     </SingleRowPropEditor>
   )
