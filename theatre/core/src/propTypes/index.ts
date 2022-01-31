@@ -252,13 +252,41 @@ export const rgba = (
 ): PropTypeConfig_Rgba => {
   if (process.env.NODE_ENV !== 'production') {
     validateCommonOpts('t.rgba(defaultValue, opts)', opts)
-    // FIXME: validate default value
+
+    // Lots of duplicated code and stuff that probably shouldn't be here, mostly
+    // because we are still figuring out how we are doing validation, sanitization,
+    // decoding, decorating.
+
+    // Validate default value
+    let valid = true
+    for (const p of ['r', 'g', 'b', 'a']) {
+      if (
+        !Object.prototype.hasOwnProperty.call(defaultValue, p) ||
+        typeof (defaultValue as $IntentionalAny)[p] !== 'number'
+      ) {
+        valid = false
+      }
+    }
+
+    if (!valid) {
+      throw new Error(
+        `Argument defaultValue in t.rgba(defaultValue) must be of the shape { r: number; g: number, b: number, a: number; }.`,
+      )
+    }
+
+    // Clamp defaultValue components between 0 and 1
+    for (const component of ['r', 'g', 'b', 'a']) {
+      ;(defaultValue as $IntentionalAny)[component] = Math.min(
+        Math.max((defaultValue as $IntentionalAny)[component], 0),
+        1,
+      )
+    }
   }
 
   return {
     type: 'rgba',
     valueType: null as $IntentionalAny,
-    default: defaultValue,
+    default: decorateRgba(defaultValue),
     [propTypeSymbol]: 'TheatrePropType',
     label: opts?.label,
     sanitize: _sanitizeRgba,
@@ -266,13 +294,28 @@ export const rgba = (
   }
 }
 
-// FIXME
-// TODO: clamp components to allowed range
 const _sanitizeRgba = (val: unknown): Rgba | undefined => {
-  return val as Rgba
+  let valid = true
+  for (const c of ['r', 'g', 'b', 'a']) {
+    if (
+      !Object.prototype.hasOwnProperty.call(val, c) ||
+      typeof (val as $IntentionalAny)[c] !== 'number'
+    ) {
+      valid = false
+    }
+  }
+
+  // Clamp defaultValue components between 0 and 1
+  for (const c of ['r', 'g', 'b', 'a']) {
+    ;(val as $IntentionalAny)[c] = Math.min(
+      Math.max((val as $IntentionalAny)[c], 0),
+      1,
+    )
+  }
+
+  return valid ? decorateRgba(val as Rgba) : undefined
 }
 
-// FIXME: add gamma conversion
 const _interpolateRgba = (
   left: Rgba,
   right: Rgba,
