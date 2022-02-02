@@ -219,33 +219,47 @@ export default class StudioStore {
                 path,
               )
 
-              forEachDeep(
-                defaultValue,
-                (v, pathToProp) => {
-                  const propAddress = {...root.address, pathToProp}
+              const propConfig = get(
+                root.template.config.props,
+                path,
+              ) as PropTypeConfig
 
-                  const trackId = get(
-                    sequenceTracksTree,
-                    pathToProp,
-                  ) as $FixMe as SequenceTrackId | undefined
+              const unsetStaticOrKeyframeProp = <T>(
+                value: T,
+                path: PathToProp,
+              ) => {
+                const propAddress = {...root.address, pathToProp: path}
 
-                  if (typeof trackId === 'string') {
-                    stateEditors.coreByProject.historic.sheetsById.sequence.unsetKeyframeAtPosition(
-                      {
-                        ...propAddress,
-                        trackId,
-                        position:
-                          root.sheet.getSequence().positionSnappedToGrid,
-                      },
-                    )
-                  } else {
-                    stateEditors.coreByProject.historic.sheetsById.staticOverrides.byObject.unsetValueOfPrimitiveProp(
-                      propAddress,
-                    )
-                  }
-                },
-                getPointerParts(pointer as Pointer<$IntentionalAny>).path,
-              )
+                const trackId = get(sequenceTracksTree, path) as $FixMe as
+                  | SequenceTrackId
+                  | undefined
+
+                if (typeof trackId === 'string') {
+                  stateEditors.coreByProject.historic.sheetsById.sequence.unsetKeyframeAtPosition(
+                    {
+                      ...propAddress,
+                      trackId,
+                      position: root.sheet.getSequence().positionSnappedToGrid,
+                    },
+                  )
+                } else {
+                  stateEditors.coreByProject.historic.sheetsById.staticOverrides.byObject.unsetValueOfPrimitiveProp(
+                    propAddress,
+                  )
+                }
+              }
+
+              if (path.length === 0 || propConfig?.type === 'compound') {
+                forEachDeep(
+                  defaultValue,
+                  (v, pathToProp) => {
+                    unsetStaticOrKeyframeProp(v, pathToProp)
+                  },
+                  getPointerParts(pointer as Pointer<$IntentionalAny>).path,
+                )
+              } else {
+                unsetStaticOrKeyframeProp(defaultValue, path)
+              }
             } else {
               throw new Error(
                 'Only setting props of SheetObject-s is supported in a transaction so far',
