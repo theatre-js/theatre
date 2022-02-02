@@ -147,7 +147,7 @@ export default class StudioStore {
                 path,
               ) as PropTypeConfig
 
-              const setPropStaticOrKeyframe = <T>(
+              const setStaticOrKeyframeProp = <T>(
                 value: T,
                 path: PathToProp,
               ) => {
@@ -191,12 +191,12 @@ export default class StudioStore {
                 forEachDeep(
                   value,
                   (v, pathToProp) => {
-                    setPropStaticOrKeyframe(v, pathToProp)
+                    setStaticOrKeyframeProp(v, pathToProp)
                   },
                   getPointerParts(pointer as Pointer<$IntentionalAny>).path,
                 )
               } else {
-                setPropStaticOrKeyframe(value, path)
+                setStaticOrKeyframeProp(value, path)
               }
             } else {
               throw new Error(
