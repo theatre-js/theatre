@@ -31,6 +31,7 @@ import type {OnDiskState} from '@theatre/core/projects/store/storeTypes'
 import {generateDiskStateRevision} from './generateDiskStateRevision'
 import type {PropTypeConfig} from '@theatre/core/propTypes'
 import type {PathToProp} from '@theatre/shared/src/utils/addresses'
+import {getPropConfigByPath} from '../../../.temp/declarations/shared/src/propTypes/utils'
 
 export type Drafts = {
   historic: Draft<StudioHistoricState>
@@ -142,8 +143,8 @@ export default class StudioStore {
                   .getValue(),
               )
 
-              const propConfig = get(
-                root.template.config.props,
+              const propConfig = getPropConfigByPath(
+                root.template.config,
                 path,
               ) as PropTypeConfig
 
@@ -161,9 +162,10 @@ export default class StudioStore {
                   | SequenceTrackId
                   | undefined
                 if (typeof trackId === 'string') {
-                  const propConfig = get(root.template.config.props, path) as
-                    | PropTypeConfig
-                    | undefined
+                  const propConfig = getPropConfigByPath(
+                    root.template.config,
+                    path,
+                  ) as PropTypeConfig | undefined
                   if (propConfig?.sanitize) value = propConfig.sanitize(value)
 
                   const seq = root.sheet.getSequence()
