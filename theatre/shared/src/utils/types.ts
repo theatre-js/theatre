@@ -16,7 +16,7 @@ export type SerializableMap<
  * What instead we should do is somehow exclude objects where
  * object.type !== 'compound'. One way to do this would be
  *
- * type SerializablePrimitive<T> = string | number | boolean | (T extends {type: 'compound'} ? never : T);
+ * type SerializablePrimitive<T> = T extends {type: 'compound'} ? never : T;
  *
  * const badStuff = {
  *   type: 'compound',
