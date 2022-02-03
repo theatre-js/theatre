@@ -1,5 +1,6 @@
 import Scrub from '@theatre/studio/Scrub'
 import type {StudioHistoricState} from '@theatre/studio/store/types/historic'
+import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
 import UI from '@theatre/studio/UI'
 import type {Pointer} from '@theatre/dataverse'
 import {Atom, PointerProxy, valueDerivation} from '@theatre/dataverse'
@@ -20,6 +21,9 @@ import type * as _coreExports from '@theatre/core/coreExports'
 import type {OnDiskState} from '@theatre/core/projects/store/storeTypes'
 import type {Deferred} from '@theatre/shared/utils/defer'
 import {defer} from '@theatre/shared/utils/defer'
+import type {SequenceEditorTree_Row} from './panels/SequenceEditorPanel/layout/tree'
+import pointerDeep from '@theatre/shared/utils/pointerDeep'
+import type {$IntentionalAny} from '@theatre/shared/utils/types'
 
 export type CoreExports = typeof _coreExports
 
@@ -215,6 +219,35 @@ export class Studio {
 
   redo() {
     this._store.redo()
+  }
+
+  copyKeyframes(keyframes: Keyframe[]) {
+    this._store.copiedKeyframes = keyframes
+    console.info('Keyframes copied:', this.getCopiedKeyframes())
+  }
+
+  getCopiedKeyframes(): Keyframe[] {
+    return this._store.copiedKeyframes
+  }
+
+  pasteKeyframes(leaf: SequenceEditorTree_Row<unknown>, keyframes: Keyframe[]) {
+    const pointerToProp = pointerDeep(
+      leaf.sheetObject.propsP,
+      leaf.pathToProp,
+    ) as Pointer<$IntentionalAny>
+
+    /**
+     * TODO:
+     * - enable context menu on Connector
+     * - get mouse position and set first keyframe there, maybe?
+     * - offset remaining keyframes accordingly
+     */
+
+    this.transaction((api) => {
+      keyframes.forEach(({value}) => {
+        api.set(pointerToProp, value)
+      })
+    })
   }
 
   createContentOfSaveFile(projectId: string): OnDiskState {

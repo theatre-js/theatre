@@ -127,6 +127,43 @@ function useKeyframeContextMenu(node: HTMLDivElement | null, props: IProps) {
             }
           },
         },
+        {
+          label: props.selection ? 'Copy Keyframes' : 'Copy Keyframe',
+          callback: () => {
+            const {leaf} = props
+            const {sheetObject, trackId} = leaf
+            const {address} = sheetObject
+
+            if (props.selection) {
+              const {projectId, objectKey, sheetId} = address
+
+              // What if there's multiple objects on same sheet?
+              const {byTrackId} = props.selection.byObjectKey[objectKey]!
+
+              if (Object.keys(byTrackId).length > 1) {
+                // Todo: display toast or better warning
+                console.warn(
+                  'Keyframes failed to copy! Keyframes can only be copied from a single track.',
+                )
+              } else {
+                const projectP = val(getStudio().projectsP[projectId].pointers)
+                const {sequence} = val(projectP.historic).sheetsById[sheetId]!
+                const {trackData} = sequence?.tracksByObject[objectKey]!
+                const selectedKeyframeIds = Object.keys(
+                  byTrackId[trackId]?.byKeyframeId || {},
+                )
+                const {keyframes = []} = trackData[trackId] || {}
+                const selectedKeyframes = keyframes.filter(
+                  ({id}) => selectedKeyframeIds.indexOf(id) > -1,
+                )
+
+                getStudio().copyKeyframes(selectedKeyframes)
+              }
+            } else {
+              getStudio().copyKeyframes([props.keyframe])
+            }
+          },
+        },
       ]
     },
   })
