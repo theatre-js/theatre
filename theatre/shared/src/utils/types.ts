@@ -11,8 +11,35 @@ export type SerializableMap<
   Primitives extends SerializablePrimitive = SerializablePrimitive,
 > = {[Key in string]?: SerializableValue<Primitives>}
 
-// TODO: I'm sure we can make this type make more sense
-export type SerializablePrimitive = string | number | boolean | {}
+/*
+ * TODO: For now the rgba primitive type is hard-coded. We should make it proper.
+ * What instead we should do is somehow exclude objects where
+ * object.type !== 'compound'. One way to do this would be
+ *
+ * type SerializablePrimitive<T> = string | number | boolean | (T extends {type: 'compound'} ? never : T);
+ *
+ * const badStuff = {
+ *   type: 'compound',
+ *   foo: 3,
+ * } as const
+ *
+ * const goodStuff = {
+ *   type: 'literallyanythingelse',
+ *   foo: 3,
+ * } as const
+ *
+ * function serializeStuff<T>(giveMeStuff: SerializablePrimitive<T>) {
+ *   // ...
+ * }
+ *
+ * serializeStuff(badStuff)
+ * serializeStuff(goodStuff)
+ */
+export type SerializablePrimitive =
+  | string
+  | number
+  | boolean
+  | {r: number; g: number; b: number; a: number}
 
 export type SerializableValue<
   Primitives extends SerializablePrimitive = SerializablePrimitive,
