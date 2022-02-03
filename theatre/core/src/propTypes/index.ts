@@ -273,20 +273,21 @@ export const rgba = (
         `Argument defaultValue in t.rgba(defaultValue) must be of the shape { r: number; g: number, b: number, a: number; }.`,
       )
     }
+  }
 
-    // Clamp defaultValue components between 0 and 1
-    for (const component of ['r', 'g', 'b', 'a']) {
-      ;(defaultValue as $IntentionalAny)[component] = Math.min(
-        Math.max((defaultValue as $IntentionalAny)[component], 0),
-        1,
-      )
-    }
+  // Clamp defaultValue components between 0 and 1
+  const sanitized = {}
+  for (const component of ['r', 'g', 'b', 'a']) {
+    ;(sanitized as $IntentionalAny)[component] = Math.min(
+      Math.max((defaultValue as $IntentionalAny)[component], 0),
+      1,
+    )
   }
 
   return {
     type: 'rgba',
     valueType: null as $IntentionalAny,
-    default: decorateRgba(defaultValue),
+    default: decorateRgba(sanitized as Rgba),
     [propTypeSymbol]: 'TheatrePropType',
     label: opts?.label,
     sanitize: _sanitizeRgba,
@@ -306,14 +307,15 @@ const _sanitizeRgba = (val: unknown): Rgba | undefined => {
   }
 
   // Clamp defaultValue components between 0 and 1
+  const sanitized = {}
   for (const c of ['r', 'g', 'b', 'a']) {
-    ;(val as $IntentionalAny)[c] = Math.min(
+    ;(sanitized as $IntentionalAny)[c] = Math.min(
       Math.max((val as $IntentionalAny)[c], 0),
       1,
     )
   }
 
-  return valid ? decorateRgba(val as Rgba) : undefined
+  return valid ? decorateRgba(sanitized as Rgba) : undefined
 }
 
 const _interpolateRgba = (
