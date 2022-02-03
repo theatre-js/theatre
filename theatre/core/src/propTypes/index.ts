@@ -246,7 +246,6 @@ export const rgba = (
   defaultValue: Rgba = {r: 0, g: 0, b: 0, a: 1},
   opts?: {
     label?: string
-    interpolate?: Interpolator<Rgba>
   },
 ): PropTypeConfig_Rgba => {
   if (process.env.NODE_ENV !== 'production') {
@@ -290,7 +289,7 @@ export const rgba = (
     [propTypeSymbol]: 'TheatrePropType',
     label: opts?.label,
     sanitize: _sanitizeRgba,
-    interpolate: opts?.interpolate ?? _interpolateRgba,
+    interpolate: _interpolateRgba,
   }
 }
 
