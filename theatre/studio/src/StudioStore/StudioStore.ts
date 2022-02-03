@@ -181,7 +181,7 @@ export default class StudioStore {
                       snappingFunction: seq.closestGridPosition,
                     },
                   )
-                } else {
+                } else if (propConfig !== undefined) {
                   stateEditors.coreByProject.historic.sheetsById.staticOverrides.byObject.setValueOfPrimitiveProp(
                     {...propAddress, value: value as $FixMe},
                   )
@@ -223,8 +223,8 @@ export default class StudioStore {
                 path,
               )
 
-              const propConfig = get(
-                root.template.config.props,
+              const propConfig = getPropConfigByPath(
+                root.template.config,
                 path,
               ) as PropTypeConfig
 
@@ -246,7 +246,7 @@ export default class StudioStore {
                       position: root.sheet.getSequence().positionSnappedToGrid,
                     },
                   )
-                } else {
+                } else if (propConfig !== undefined) {
                   stateEditors.coreByProject.historic.sheetsById.staticOverrides.byObject.unsetValueOfPrimitiveProp(
                     propAddress,
                   )
