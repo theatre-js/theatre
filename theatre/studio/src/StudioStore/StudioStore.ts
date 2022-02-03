@@ -32,6 +32,7 @@ import {generateDiskStateRevision} from './generateDiskStateRevision'
 import type {PropTypeConfig} from '@theatre/core/propTypes'
 import type {PathToProp} from '@theatre/shared/src/utils/addresses'
 import {getPropConfigByPath} from '../../../.temp/declarations/shared/src/propTypes/utils'
+import {cloneDeep} from 'lodash-es'
 
 export type Drafts = {
   historic: Draft<StudioHistoricState>
@@ -133,9 +134,10 @@ export default class StudioStore {
         const api: ITransactionPrivateApi = {
           set: (pointer, value) => {
             ensureRunning()
+            const _value = cloneDeep(value)
             const {root, path} = getPointerParts(pointer as Pointer<$FixMe>)
             if (isSheetObject(root)) {
-              root.validateValue(pointer as Pointer<$FixMe>, value)
+              root.validateValue(pointer as Pointer<$FixMe>, _value)
 
               const sequenceTracksTree = val(
                 root.template
@@ -191,14 +193,14 @@ export default class StudioStore {
               // implicitly considered a compound prop.
               if (path.length === 0 || propConfig?.type === 'compound') {
                 forEachDeep(
-                  value,
+                  _value,
                   (v, pathToProp) => {
                     setStaticOrKeyframeProp(v, pathToProp)
                   },
                   getPointerParts(pointer as Pointer<$IntentionalAny>).path,
                 )
               } else {
-                setStaticOrKeyframeProp(value, path)
+                setStaticOrKeyframeProp(_value, path)
               }
             } else {
               throw new Error(
