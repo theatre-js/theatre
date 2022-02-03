@@ -246,7 +246,6 @@ export const rgba = (
   defaultValue: Rgba = {r: 0, g: 0, b: 0, a: 1},
   opts?: {
     label?: string
-    sanitize?: Sanitizer<Rgba>
     interpolate?: Interpolator<Rgba>
   },
 ): PropTypeConfig_Rgba => {
