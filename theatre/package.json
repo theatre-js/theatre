@@ -68,6 +68,7 @@
     "prop-types": "^15.7.2",
     "propose": "^0.0.5",
     "react": "^17.0.2",
+    "react-colorful": "^5.5.1",
     "react-dom": "^17.0.2",
     "react-error-boundary": "^3.1.3",
     "react-icons": "^4.2.0",
