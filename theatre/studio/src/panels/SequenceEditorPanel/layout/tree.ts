@@ -16,8 +16,6 @@ import logger from '@theatre/shared/logger'
 import {titleBarHeight} from '@theatre/studio/panels/BasePanel/common'
 
 export type SequenceEditorTree_Row<Type> = {
-  sheetObject: SheetObject
-  pathToProp: PathToProp
   type: Type
   nodeHeight: number
   heightIncludingChildren: number
@@ -25,6 +23,8 @@ export type SequenceEditorTree_Row<Type> = {
   top: number
   n: number
   trackId?: string
+  sheetObject?: SheetObject
+  pathToProp?: PathToProp
 }
 
 export type SequenceEditorTree = SequenceEditorTree_Sheet

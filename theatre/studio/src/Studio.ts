@@ -231,23 +231,18 @@ export class Studio {
   }
 
   pasteKeyframes(leaf: SequenceEditorTree_Row<unknown>, keyframes: Keyframe[]) {
-    const pointerToProp = pointerDeep(
-      leaf.sheetObject.propsP,
-      leaf.pathToProp,
-    ) as Pointer<$IntentionalAny>
+    if (leaf.sheetObject && leaf.pathToProp) {
+      const pointerToProp = pointerDeep(
+        leaf.sheetObject.propsP,
+        leaf.pathToProp,
+      ) as Pointer<$IntentionalAny>
 
-    /**
-     * TODO:
-     * - enable context menu on Connector
-     * - get mouse position and set first keyframe there, maybe?
-     * - offset remaining keyframes accordingly
-     */
-
-    this.transaction((api) => {
-      keyframes.forEach(({value}) => {
-        api.set(pointerToProp, value)
+      this.transaction((api) => {
+        keyframes.forEach(({value}) => {
+          api.set(pointerToProp, value)
+        })
       })
-    })
+    }
   }
 
   createContentOfSaveFile(projectId: string): OnDiskState {
