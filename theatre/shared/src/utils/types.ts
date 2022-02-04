@@ -34,6 +34,9 @@ export type SerializableMap<
  *
  * serializeStuff(badStuff)
  * serializeStuff(goodStuff)
+ *
+ * However this wouldn't protect against other unserializable stuff, or nested
+ * unserializable stuff, since using mapped types seem to break it for some reason.
  */
 export type SerializablePrimitive =
   | string
