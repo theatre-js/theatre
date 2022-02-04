@@ -168,6 +168,9 @@ export default class StudioStore {
                     root.template.config,
                     path,
                   ) as PropTypeConfig | undefined
+                  // TODO: Make sure this causes no problems wrt decorated
+                  // or otherwise unserializable stuff that sanitize might return.
+                  // value needs to be serializable.
                   if (propConfig?.sanitize) value = propConfig.sanitize(value)
 
                   const seq = root.sheet.getSequence()
