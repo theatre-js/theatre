@@ -92,6 +92,11 @@ const Body = styled.div`
   height: auto;
   max-height: calc(100% - ${headerHeight});
   overflow-y: scroll;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  scrollbar-width: none;
   padding: 0;
   user-select: none;
 `
