@@ -31,7 +31,7 @@ import type {OnDiskState} from '@theatre/core/projects/store/storeTypes'
 import {generateDiskStateRevision} from './generateDiskStateRevision'
 import type {PropTypeConfig} from '@theatre/core/propTypes'
 import type {PathToProp} from '@theatre/shared/src/utils/addresses'
-import {getPropConfigByPath} from '../../../.temp/declarations/shared/src/propTypes/utils'
+import {getPropConfigByPath} from '@theatre/shared/src/propTypes/utils'
 import {cloneDeep} from 'lodash-es'
 
 export type Drafts = {
