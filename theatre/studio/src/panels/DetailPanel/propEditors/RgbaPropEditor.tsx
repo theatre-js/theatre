@@ -22,10 +22,17 @@ const RowContainer = styled.div`
   gap: 4px;
 `
 
-const Puck = styled.div<{background: Rgba}>`
+interface PuckProps {
+  background: Rgba
+}
+
+const Puck = styled.div.attrs<PuckProps>((props) => ({
+  style: {
+    background: props.background,
+  },
+}))<PuckProps>`
   height: calc(100% - 4px);
   aspect-ratio: 1;
-  background: ${(props) => rgba2hex(props.background)};
   border-radius: 2px;
 `
 
