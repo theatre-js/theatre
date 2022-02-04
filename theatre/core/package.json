@@ -25,5 +25,6 @@
   "sideEffects": true,
   "dependencies": {
     "@theatre/dataverse": "workspace:*"
-  }
+  },
+  "//": "Add packages here to make them externals of core. Add them to theatre/package.json if you want to bundle them with studio."
 }

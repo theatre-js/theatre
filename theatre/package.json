@@ -95,5 +95,6 @@
   "dependencies": {
     "fast-deep-equal": "^3.1.3",
     "fuzzysort": "^1.1.4"
-  }
+  },
+  "//": "Add packages here to have them bundled with studio, otherwise add them in the package.json of either studio or core, and they'll be treated as their externals."
 }
