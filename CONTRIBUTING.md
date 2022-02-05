@@ -128,6 +128,8 @@ To generate the API docs, run the `build:api-docs` from the root of the repo:
 $ yarn build:api-docs /path/to/theatre-docs/docs/api/ # this will empty the /api folder and regenerate the markdown files
 ```
 
+Learn more about api documentation [here](./contributing/api-docs.md).
+
 ## Project structure
 
 The [monorepo](https://en.wikipedia.org/wiki/Monorepo) consists of:
