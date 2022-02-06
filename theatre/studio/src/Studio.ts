@@ -21,9 +21,7 @@ import type * as _coreExports from '@theatre/core/coreExports'
 import type {OnDiskState} from '@theatre/core/projects/store/storeTypes'
 import type {Deferred} from '@theatre/shared/utils/defer'
 import {defer} from '@theatre/shared/utils/defer'
-import type {SequenceEditorTree_Row} from './panels/SequenceEditorPanel/layout/tree'
-import pointerDeep from '@theatre/shared/utils/pointerDeep'
-import type {$IntentionalAny} from '@theatre/shared/utils/types'
+import type {SheetObjectAddress} from '@theatre/shared/utils/addresses'
 
 export type CoreExports = typeof _coreExports
 
@@ -221,19 +219,26 @@ export class Studio {
     this._store.redo()
   }
 
-  pasteKeyframes(leaf: SequenceEditorTree_Row<unknown>, keyframes: Keyframe[]) {
-    if (leaf.sheetObject && leaf.pathToProp) {
-      const pointerToProp = pointerDeep(
-        leaf.sheetObject.propsP,
-        leaf.pathToProp,
-      ) as Pointer<$IntentionalAny>
+  pasteKeyframes({
+    address,
+    trackId,
+    keyframes,
+  }: {
+    address: SheetObjectAddress
+    trackId: string
+    keyframes: Keyframe[]
+  }) {
+    /**
+     * TODO:
+     * - get mouse position and set first keyframe there
+     * - offset remaining keyframes accordingly
+     */
 
-      this.transaction((api) => {
-        keyframes.forEach(({value}) => {
-          api.set(pointerToProp, value)
-        })
-      })
-    }
+    this.transaction((api) => {
+      api.stateEditors.coreByProject.historic.sheetsById.sequence.mergeKeyframes(
+        {...address, trackId, keyframes, snappingFunction: (n) => n},
+      )
+    })
   }
 
   createContentOfSaveFile(projectId: string): OnDiskState {

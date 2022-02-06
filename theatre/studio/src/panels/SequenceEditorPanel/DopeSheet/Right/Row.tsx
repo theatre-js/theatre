@@ -1,11 +1,11 @@
-import type {SequenceEditorTree_Row} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
+import type {SequenceEditorTree_PrimitiveProp} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
 import React from 'react'
 import styled from 'styled-components'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
-import getStudio from '@theatre/studio/getStudio'
-import {getCopiedKeyframes} from '@theatre/studio/selectors'
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
+import {getCopiedKeyframes} from '@theatre/studio/selectors'
+import getStudio from '@theatre/studio/getStudio'
 
 const Container = styled.li<{}>`
   margin: 0;
@@ -40,23 +40,20 @@ const Children = styled.ul`
   list-style: none;
 `
 interface IProps {
-  trackId?: string
-  leaf: SequenceEditorTree_Row<unknown>
+  leaf: SequenceEditorTree_PrimitiveProp
   copiedKeyframes: Keyframe[]
 }
 
 const Row: React.FC<{
-  leaf: SequenceEditorTree_Row<unknown>
+  leaf: SequenceEditorTree_PrimitiveProp
   node: React.ReactElement
 }> = ({leaf, children, node}) => {
   const {trackId} = leaf
-
   const copiedKeyframes = getCopiedKeyframes()
   const [ref, refNode] = useRefAndState<HTMLDivElement | null>(null)
   const [contextMenu] = useTrackContextMenu(refNode, {
-    trackId,
-    copiedKeyframes,
     leaf,
+    copiedKeyframes,
   })
 
   const hasChildren = Array.isArray(children) && children.length > 0
@@ -79,17 +76,22 @@ const Row: React.FC<{
 
 function useTrackContextMenu(
   node: HTMLDivElement | null,
-  {trackId, copiedKeyframes, leaf}: IProps,
+  {leaf, copiedKeyframes}: IProps,
 ) {
   return useContextMenu(node, {
     items: () => {
       const items = []
+      const {trackId, sheetObject} = leaf
 
       if (trackId && copiedKeyframes.length) {
         items.push({
           label: `Paste ${copiedKeyframes.length} keyframe(s)`,
           callback: () => {
-            getStudio().pasteKeyframes(leaf, copiedKeyframes)
+            getStudio().pasteKeyframes({
+              trackId,
+              address: sheetObject.address,
+              keyframes: copiedKeyframes,
+            })
           },
         })
       }

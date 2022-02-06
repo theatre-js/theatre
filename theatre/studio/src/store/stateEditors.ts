@@ -615,7 +615,7 @@ namespace stateEditors {
             )
           }
 
-          export function replaceKeyframes<T>(
+          export function replaceKeyframes(
             p: WithoutSheetInstance<SheetObjectAddress> & {
               trackId: string
               keyframes: Array<Keyframe>
@@ -660,6 +660,26 @@ namespace stateEditors {
             )
 
             track.keyframes = sorted
+          }
+
+          export function mergeKeyframes(
+            p: WithoutSheetInstance<SheetObjectAddress> & {
+              trackId: string
+              keyframes: Array<Keyframe>
+              snappingFunction: SnappingFunction
+            },
+          ) {
+            const track = _getTrack(p)
+            if (!track) return
+
+            const currentKeyframes = current(track.keyframes)
+            const keyframesWithNewIds = p.keyframes.map((kf) => ({
+              ...kf,
+              id: generateKeyframeId(),
+            }))
+            const keyframes = [...currentKeyframes, ...keyframesWithNewIds]
+
+            replaceKeyframes({...p, keyframes})
           }
         }
 
