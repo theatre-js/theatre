@@ -221,15 +221,6 @@ export class Studio {
     this._store.redo()
   }
 
-  copyKeyframes(keyframes: Keyframe[]) {
-    this._store.copiedKeyframes = keyframes
-    console.info('Keyframes copied:', this.getCopiedKeyframes())
-  }
-
-  getCopiedKeyframes(): Keyframe[] {
-    return this._store.copiedKeyframes
-  }
-
   pasteKeyframes(leaf: SequenceEditorTree_Row<unknown>, keyframes: Keyframe[]) {
     if (leaf.sheetObject && leaf.pathToProp) {
       const pointerToProp = pointerDeep(

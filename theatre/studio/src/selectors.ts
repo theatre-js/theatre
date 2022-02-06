@@ -7,6 +7,7 @@ import {isSheet, isSheetObject} from '@theatre/shared/instanceTypes'
 import {uniq} from 'lodash-es'
 import getStudio from './getStudio'
 import type {OutlineSelectable, OutlineSelection} from './store/types'
+import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
 
 export const getOutlineSelection = (): OutlineSelection => {
   const projects = val(getStudio().projectsP)
@@ -81,4 +82,8 @@ export function getSelectedSequence(): undefined | Sequence {
   if (!sheet) return
 
   return sheet.getSequence()
+}
+
+export function getCopiedKeyframes(): Keyframe[] {
+  return val(getStudio()!.atomP.ahistoric.keyframesClipboard)
 }

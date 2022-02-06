@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import getStudio from '@theatre/studio/getStudio'
+import {getCopiedKeyframes} from '@theatre/studio/selectors'
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
 
 const Container = styled.li<{}>`
@@ -50,7 +51,7 @@ const Row: React.FC<{
 }> = ({leaf, children, node}) => {
   const {trackId} = leaf
 
-  const copiedKeyframes = getStudio().getCopiedKeyframes()
+  const copiedKeyframes = getCopiedKeyframes()
   const [ref, refNode] = useRefAndState<HTMLDivElement | null>(null)
   const [contextMenu] = useTrackContextMenu(refNode, {
     trackId,

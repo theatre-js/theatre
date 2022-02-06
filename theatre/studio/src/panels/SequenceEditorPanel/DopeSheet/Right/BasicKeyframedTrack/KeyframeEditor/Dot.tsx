@@ -157,10 +157,18 @@ function useKeyframeContextMenu(node: HTMLDivElement | null, props: IProps) {
                   ({id}) => selectedKeyframeIds.indexOf(id) > -1,
                 )
 
-                getStudio().copyKeyframes(selectedKeyframes)
+                getStudio().transaction(({stateEditors}) => {
+                  stateEditors.studio.ahistoric.setKeyframesClipboard(
+                    selectedKeyframes,
+                  )
+                })
               }
             } else {
-              getStudio().copyKeyframes([props.keyframe])
+              getStudio().transaction(({stateEditors}) => {
+                stateEditors.studio.ahistoric.setKeyframesClipboard([
+                  props.keyframe,
+                ])
+              })
             }
           },
         },
