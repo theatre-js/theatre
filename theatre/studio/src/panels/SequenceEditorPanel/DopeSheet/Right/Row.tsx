@@ -1,4 +1,8 @@
-import type {SequenceEditorTree_PrimitiveProp} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
+import type {
+  SequenceEditorTree_PrimitiveProp,
+  SequenceEditorTree_PropWithChildren,
+  SequenceEditorTree_SheetObject,
+} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
 import React from 'react'
 import styled from 'styled-components'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
@@ -40,12 +44,18 @@ const Children = styled.ul`
   list-style: none;
 `
 interface IProps {
-  leaf: SequenceEditorTree_PrimitiveProp
+  leaf:
+    | SequenceEditorTree_SheetObject
+    | SequenceEditorTree_PropWithChildren
+    | SequenceEditorTree_PrimitiveProp
   copiedKeyframes: Keyframe[]
 }
 
 const Row: React.FC<{
-  leaf: SequenceEditorTree_PrimitiveProp
+  leaf:
+    | SequenceEditorTree_SheetObject
+    | SequenceEditorTree_PropWithChildren
+    | SequenceEditorTree_PrimitiveProp
   node: React.ReactElement
 }> = ({leaf, children, node}) => {
   const {trackId} = leaf

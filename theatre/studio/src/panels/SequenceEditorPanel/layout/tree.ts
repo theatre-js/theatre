@@ -23,8 +23,6 @@ export type SequenceEditorTree_Row<Type> = {
   top: number
   n: number
   trackId?: string
-  sheetObject?: SheetObject
-  pathToProp?: PathToProp
 }
 
 export type SequenceEditorTree = SequenceEditorTree_Sheet
@@ -37,6 +35,14 @@ export type SequenceEditorTree_Sheet = SequenceEditorTree_Row<'sheet'> & {
 export type SequenceEditorTree_SheetObject =
   SequenceEditorTree_Row<'sheetObject'> & {
     sheetObject: SheetObject
+    children: Array<
+      SequenceEditorTree_PropWithChildren | SequenceEditorTree_PrimitiveProp
+    >
+  }
+
+export type SequenceEditorTree_MaybeSheetObject =
+  SequenceEditorTree_Row<'sheetObject'> & {
+    sheetObject?: SheetObject
     children: Array<
       SequenceEditorTree_PropWithChildren | SequenceEditorTree_PrimitiveProp
     >

@@ -3,11 +3,8 @@ import type {SequenceEditorTree_SheetObject} from '@theatre/studio/panels/Sequen
 import {usePrism} from '@theatre/react'
 import type {Pointer} from '@theatre/dataverse'
 import React from 'react'
-import styled from 'styled-components'
 import {decideRowByPropType} from './PropWithChildrenRow'
 import Row from './Row'
-
-const Container = styled.div``
 
 const SheetObjectRow: React.FC<{
   leaf: SequenceEditorTree_SheetObject

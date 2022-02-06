@@ -11,6 +11,7 @@ import logger from '@theatre/shared/logger'
 const initialState: StudioState = {
   ahistoric: {
     visibilityState: 'everythingIsVisible',
+    keyframesClipboard: [],
     theTrigger: {
       position: {
         closestCorner: 'bottomLeft',

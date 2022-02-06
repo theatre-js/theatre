@@ -6,7 +6,6 @@ import type {
 import {usePrism} from '@theatre/react'
 import type {Pointer} from '@theatre/dataverse'
 import React from 'react'
-import styled from 'styled-components'
 import PrimitivePropRow from './PrimitivePropRow'
 import Row from './Row'
 
@@ -27,8 +26,6 @@ export const decideRowByPropType = (
       key={'prop' + leaf.pathToProp[leaf.pathToProp.length - 1]}
     />
   )
-
-const Container = styled.div``
 
 const PropWithChildrenRow: React.FC<{
   leaf: SequenceEditorTree_PropWithChildren
