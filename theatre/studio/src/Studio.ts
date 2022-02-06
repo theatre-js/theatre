@@ -21,7 +21,7 @@ import type * as _coreExports from '@theatre/core/coreExports'
 import type {OnDiskState} from '@theatre/core/projects/store/storeTypes'
 import type {Deferred} from '@theatre/shared/utils/defer'
 import {defer} from '@theatre/shared/utils/defer'
-import type {SheetObjectAddress} from '@theatre/shared/utils/addresses'
+import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 
 export type CoreExports = typeof _coreExports
 
@@ -220,23 +220,37 @@ export class Studio {
   }
 
   pasteKeyframes({
-    address,
+    sheetObject,
     trackId,
     keyframes,
+    posInUnitSpace,
   }: {
-    address: SheetObjectAddress
+    sheetObject: SheetObject
     trackId: string
     keyframes: Keyframe[]
+    posInUnitSpace: number
   }) {
-    /**
-     * TODO:
-     * - get mouse position and set first keyframe there
-     * - offset remaining keyframes accordingly
-     */
+    const keyframesWithNewPositions = keyframes.map((kf, i) => {
+      if (i === 0) {
+        return {...kf, position: posInUnitSpace}
+      }
+
+      const firstKeyframe = keyframes[0]
+      const positionDiff = kf.position - firstKeyframe.position
+      const position = posInUnitSpace + positionDiff
+
+      return {...kf, position}
+    })
 
     this.transaction((api) => {
+      const {address, sheet} = sheetObject
       api.stateEditors.coreByProject.historic.sheetsById.sequence.mergeKeyframes(
-        {...address, trackId, keyframes, snappingFunction: (n) => n},
+        {
+          ...address,
+          trackId,
+          keyframes: keyframesWithNewPositions,
+          snappingFunction: sheet.getSequence().closestGridPosition,
+        },
       )
     })
   }

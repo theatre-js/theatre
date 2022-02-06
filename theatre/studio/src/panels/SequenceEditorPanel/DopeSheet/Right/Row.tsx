@@ -10,6 +10,8 @@ import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useCo
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
 import {getCopiedKeyframes} from '@theatre/studio/selectors'
 import getStudio from '@theatre/studio/getStudio'
+import {useFrameStampPositionD} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
+import {useVal} from '@theatre/react'
 
 const Container = styled.li<{}>`
   margin: 0;
@@ -49,6 +51,7 @@ interface IProps {
     | SequenceEditorTree_PropWithChildren
     | SequenceEditorTree_PrimitiveProp
   copiedKeyframes: Keyframe[]
+  posInUnitSpace: number
 }
 
 const Row: React.FC<{
@@ -58,12 +61,14 @@ const Row: React.FC<{
     | SequenceEditorTree_PrimitiveProp
   node: React.ReactElement
 }> = ({leaf, children, node}) => {
+  const [posInUnitSpace] = useVal(useFrameStampPositionD())
   const {trackId} = leaf
   const copiedKeyframes = getCopiedKeyframes()
   const [ref, refNode] = useRefAndState<HTMLDivElement | null>(null)
   const [contextMenu] = useTrackContextMenu(refNode, {
     leaf,
     copiedKeyframes,
+    posInUnitSpace,
   })
 
   const hasChildren = Array.isArray(children) && children.length > 0
@@ -86,7 +91,7 @@ const Row: React.FC<{
 
 function useTrackContextMenu(
   node: HTMLDivElement | null,
-  {leaf, copiedKeyframes}: IProps,
+  {leaf, copiedKeyframes, posInUnitSpace}: IProps,
 ) {
   return useContextMenu(node, {
     items: () => {
@@ -99,8 +104,9 @@ function useTrackContextMenu(
           callback: () => {
             getStudio().pasteKeyframes({
               trackId,
-              address: sheetObject.address,
+              sheetObject,
               keyframes: copiedKeyframes,
+              posInUnitSpace,
             })
           },
         })
