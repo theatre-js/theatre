@@ -1,5 +1,6 @@
 import getStudio from '@theatre/studio/getStudio'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
+import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
@@ -18,6 +19,7 @@ import type Sequence from '@theatre/core/sequences/Sequence'
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
 import CurveEditorPopover from './CurveEditorPopover/CurveEditorPopover'
+import usePasteKeyframesItem from '@theatre/studio/uiComponents/simpleContextMenu/usePasteKeyframesItem'
 
 const connectorHeight = dotSize / 2 + 1
 const connectorWidthUnscaled = 1000
@@ -70,7 +72,8 @@ const Container = styled.div<{isSelected: boolean}>`
 type IProps = Parameters<typeof KeyframeEditor>[0]
 
 const Connector: React.FC<IProps> = (props) => {
-  const {index, trackData} = props
+  const {index, trackData, leaf} = props
+  const pasteKeyframesItem = usePasteKeyframesItem(leaf)
   const cur = trackData.keyframes[index]
   const next = trackData.keyframes[index + 1]
 
@@ -91,7 +94,7 @@ const Connector: React.FC<IProps> = (props) => {
 
   const [contextMenu] = useContextMenu(node, {
     items: () => {
-      return [
+      const items: IContextMenuItem[] = [
         {
           label: props.selection ? 'Delete Selection' : 'Delete both Keyframes',
           callback: () => {
@@ -117,6 +120,12 @@ const Connector: React.FC<IProps> = (props) => {
           },
         },
       ]
+
+      if (pasteKeyframesItem) {
+        items.unshift(pasteKeyframesItem)
+      }
+
+      return items
     },
   })
 

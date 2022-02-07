@@ -7,11 +7,7 @@ import React from 'react'
 import styled from 'styled-components'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
-import type {ISelectedKeyframes} from '@theatre/core/projects/store/types/SheetState_Historic'
-import {getCopiedKeyframes} from '@theatre/studio/selectors'
-import getStudio from '@theatre/studio/getStudio'
-import {useFrameStampPositionD} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
-import {useVal} from '@theatre/react'
+import usePasteKeyframesItem from '@theatre/studio/uiComponents/simpleContextMenu/usePasteKeyframesItem'
 
 const Container = styled.li<{}>`
   margin: 0;
@@ -50,8 +46,6 @@ interface IProps {
     | SequenceEditorTree_SheetObject
     | SequenceEditorTree_PropWithChildren
     | SequenceEditorTree_PrimitiveProp
-  copiedKeyframes: ISelectedKeyframes
-  posInUnitSpace: number
 }
 
 const Row: React.FC<{
@@ -61,14 +55,10 @@ const Row: React.FC<{
     | SequenceEditorTree_PrimitiveProp
   node: React.ReactElement
 }> = ({leaf, children, node}) => {
-  const [posInUnitSpace] = useVal(useFrameStampPositionD())
   const {trackId} = leaf
-  const copiedKeyframes = getCopiedKeyframes()
   const [ref, refNode] = useRefAndState<HTMLDivElement | null>(null)
   const [contextMenu] = useTrackContextMenu(refNode, {
     leaf,
-    copiedKeyframes,
-    posInUnitSpace,
   })
 
   const hasChildren = Array.isArray(children) && children.length > 0
@@ -89,31 +79,14 @@ const Row: React.FC<{
   )
 }
 
-function useTrackContextMenu(
-  node: HTMLDivElement | null,
-  {leaf, copiedKeyframes, posInUnitSpace}: IProps,
-) {
+function useTrackContextMenu(node: HTMLDivElement | null, {leaf}: IProps) {
+  const pasteKeyframesItem = usePasteKeyframesItem(leaf)
   return useContextMenu(node, {
     items: () => {
-      const items = []
-      const {trackId, sheetObject} = leaf
-
-      if (trackId) {
-        //  && copiedKeyframes.length
-        items.push({
-          label: `Paste keyframe(s)`,
-          callback: () => {
-            getStudio().pasteKeyframes({
-              trackId,
-              sheetObject,
-              keyframes: copiedKeyframes,
-              posInUnitSpace,
-            })
-          },
-        })
+      if (pasteKeyframesItem) {
+        return [pasteKeyframesItem]
       }
-
-      return items
+      return []
     },
   })
 }
