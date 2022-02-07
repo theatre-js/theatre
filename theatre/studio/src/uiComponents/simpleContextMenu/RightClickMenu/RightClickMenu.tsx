@@ -103,6 +103,8 @@ const RightClickMenu: React.FC<{
 
   const items = Array.isArray(props.items) ? props.items : props.items()
 
+  if (!items.length) return null
+
   return createPortal(
     <Container ref={setContainer}>
       {items.map((item, i) => (

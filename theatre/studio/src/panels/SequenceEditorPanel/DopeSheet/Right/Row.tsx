@@ -17,7 +17,7 @@ const Container = styled.li<{}>`
   position: relative;
 `
 
-const NodeWrapper = styled.div<{isEven: boolean}>`
+const NodeWrapper = styled.div<{isEven: boolean; canHighlight: boolean}>`
   box-sizing: border-box;
   width: 100%;
   position: relative;
@@ -33,6 +33,17 @@ const NodeWrapper = styled.div<{isEven: boolean}>`
     box-sizing: border-box;
     border-bottom: 1px solid #252b3869;
     background: ${(props) => (props.isEven ? 'transparent' : '#6b8fb505')};
+    transition: background 0.15s ease-in-out;
+  }
+
+  &:hover:before {
+    transition: background 0.05s ease-in-out;
+    background: ${(props) =>
+      props.canHighlight
+        ? '#7a22221f'
+        : props.isEven
+        ? 'transparent'
+        : '#6b8fb505'};
   }
 `
 
@@ -69,11 +80,11 @@ const Row: React.FC<{
         style={{height: leaf.nodeHeight + 'px'}}
         isEven={leaf.n % 2 === 0}
         ref={ref}
+        canHighlight={Boolean(trackId)}
       >
         {node}
       </NodeWrapper>
       {hasChildren && <Children>{children}</Children>}
-      {/* TODO: update useContextMenu so it renders null if !items.length */}
       {trackId ? contextMenu : null}
     </Container>
   )
