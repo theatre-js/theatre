@@ -1,6 +1,9 @@
 import Scrub from '@theatre/studio/Scrub'
 import type {StudioHistoricState} from '@theatre/studio/store/types/historic'
-import type {ISelectedKeyframes} from '@theatre/core/projects/store/types/SheetState_Historic'
+import type {
+  ISelectedKeyframes,
+  Keyframe,
+} from '@theatre/core/projects/store/types/SheetState_Historic'
 import UI from '@theatre/studio/UI'
 import type {Pointer} from '@theatre/dataverse'
 import {Atom, PointerProxy, valueDerivation} from '@theatre/dataverse'
@@ -23,6 +26,10 @@ import type {Deferred} from '@theatre/shared/utils/defer'
 import {defer} from '@theatre/shared/utils/defer'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import {getTracks} from './selectors'
+import type {
+  WithoutSheetInstance,
+  SheetObjectAddress,
+} from '@theatre/shared/utils/addresses'
 
 export type CoreExports = typeof _coreExports
 
@@ -243,20 +250,26 @@ export class Studio {
     // The track we want to start pasting from
     const selectedTrackIndex = allTrackIds.indexOf(trackId)
 
-    let isFirst = true
+    let isFirstKeyframe = true
     let trackToPasteIndex = 0
 
+    const tracksToPaste: (WithoutSheetInstance<SheetObjectAddress> & {
+      trackId: string
+      keyframes: Array<Keyframe>
+      snappingFunction: (p: number) => number
+    })[] = []
+
     for (let i = selectedTrackIndex; i < allTrackIds.length; i++) {
-      const id = allTrackIds[i]
+      const trackToPasteToId = allTrackIds[i]
 
       if (!keyframesToPasteValues[trackToPasteIndex]) break
 
       const keyframesWithNewPositions = keyframesToPasteValues[
         trackToPasteIndex
       ].map((kf) => {
-        if (isFirst) {
+        if (isFirstKeyframe) {
           // We want the first keyframe to start at posInUnitSpace
-          isFirst = false
+          isFirstKeyframe = false
           return {...kf, position: posInUnitSpace}
         }
 
@@ -268,19 +281,21 @@ export class Studio {
         return {...kf, position}
       })
 
-      trackToPasteIndex++
-
-      this.transaction((api) => {
-        api.stateEditors.coreByProject.historic.sheetsById.sequence.mergeKeyframes(
-          {
-            ...address,
-            trackId: id,
-            keyframes: keyframesWithNewPositions,
-            snappingFunction: sheet.getSequence().closestGridPosition,
-          },
-        )
+      tracksToPaste.push({
+        ...address,
+        trackId: trackToPasteToId,
+        keyframes: keyframesWithNewPositions,
+        snappingFunction: sheet.getSequence().closestGridPosition,
       })
+
+      trackToPasteIndex++
     }
+
+    this.transaction((api) => {
+      api.stateEditors.coreByProject.historic.sheetsById.sequence.mergeKeyframes(
+        tracksToPaste,
+      )
+    })
   }
 
   createContentOfSaveFile(projectId: string): OnDiskState {

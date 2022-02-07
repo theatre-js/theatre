@@ -174,19 +174,26 @@ function useOurDrags(node: SVGCircleElement | null, props: IProps): void {
 
           tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
             stateEditors.coreByProject.historic.sheetsById.sequence.replaceKeyframes(
-              {
-                ...propsAtStartOfDrag.sheetObject.address,
-                snappingFunction: val(
-                  propsAtStartOfDrag.layoutP.sheet,
-                ).getSequence().closestGridPosition,
-                trackId: propsAtStartOfDrag.trackId,
-                keyframes: [
-                  {
-                    ...cur,
-                    handles: [cur.handles[0], cur.handles[1], handleX, handleY],
-                  },
-                ],
-              },
+              [
+                {
+                  ...propsAtStartOfDrag.sheetObject.address,
+                  snappingFunction: val(
+                    propsAtStartOfDrag.layoutP.sheet,
+                  ).getSequence().closestGridPosition,
+                  trackId: propsAtStartOfDrag.trackId,
+                  keyframes: [
+                    {
+                      ...cur,
+                      handles: [
+                        cur.handles[0],
+                        cur.handles[1],
+                        handleX,
+                        handleY,
+                      ],
+                    },
+                  ],
+                },
+              ],
             )
           })
         } else {
@@ -195,24 +202,26 @@ function useOurDrags(node: SVGCircleElement | null, props: IProps): void {
 
           tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
             stateEditors.coreByProject.historic.sheetsById.sequence.replaceKeyframes(
-              {
-                ...propsAtStartOfDrag.sheetObject.address,
-                trackId: propsAtStartOfDrag.trackId,
-                snappingFunction: val(
-                  propsAtStartOfDrag.layoutP.sheet,
-                ).getSequence().closestGridPosition,
-                keyframes: [
-                  {
-                    ...next,
-                    handles: [
-                      handleX,
-                      handleY,
-                      next.handles[2],
-                      next.handles[3],
-                    ],
-                  },
-                ],
-              },
+              [
+                {
+                  ...propsAtStartOfDrag.sheetObject.address,
+                  trackId: propsAtStartOfDrag.trackId,
+                  snappingFunction: val(
+                    propsAtStartOfDrag.layoutP.sheet,
+                  ).getSequence().closestGridPosition,
+                  keyframes: [
+                    {
+                      ...next,
+                      handles: [
+                        handleX,
+                        handleY,
+                        next.handles[2],
+                        next.handles[3],
+                      ],
+                    },
+                  ],
+                },
+              ],
             )
           })
         }
