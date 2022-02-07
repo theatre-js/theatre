@@ -7,7 +7,7 @@ import React from 'react'
 import styled from 'styled-components'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
-import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
+import type {ISelectedKeyframes} from '@theatre/core/projects/store/types/SheetState_Historic'
 import {getCopiedKeyframes} from '@theatre/studio/selectors'
 import getStudio from '@theatre/studio/getStudio'
 import {useFrameStampPositionD} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
@@ -50,7 +50,7 @@ interface IProps {
     | SequenceEditorTree_SheetObject
     | SequenceEditorTree_PropWithChildren
     | SequenceEditorTree_PrimitiveProp
-  copiedKeyframes: Keyframe[]
+  copiedKeyframes: ISelectedKeyframes
   posInUnitSpace: number
 }
 
@@ -84,7 +84,7 @@ const Row: React.FC<{
       </NodeWrapper>
       {hasChildren && <Children>{children}</Children>}
       {/* TODO: update useContextMenu so it renders null if !items.length */}
-      {trackId && copiedKeyframes.length ? contextMenu : null}
+      {trackId ? contextMenu : null}
     </Container>
   )
 }
@@ -98,9 +98,10 @@ function useTrackContextMenu(
       const items = []
       const {trackId, sheetObject} = leaf
 
-      if (trackId && copiedKeyframes.length) {
+      if (trackId) {
+        //  && copiedKeyframes.length
         items.push({
-          label: `Paste ${copiedKeyframes.length} keyframe(s)`,
+          label: `Paste keyframe(s)`,
           callback: () => {
             getStudio().pasteKeyframes({
               trackId,

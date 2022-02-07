@@ -1,10 +1,13 @@
 import type {ProjectState} from '@theatre/core/projects/store/storeTypes'
 import type {IRange, StrictRecord} from '@theatre/shared/utils/types'
-import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
+import type {
+  Keyframe,
+  ISelectedKeyframes,
+} from '@theatre/core/projects/store/types/SheetState_Historic'
 
 export type StudioAhistoricState = {
   visibilityState: 'everythingIsHidden' | 'everythingIsVisible'
-  keyframesClipboard: Keyframe[]
+  keyframesClipboard: ISelectedKeyframes
 
   theTrigger: {
     position: {

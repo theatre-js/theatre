@@ -16,6 +16,7 @@ import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPa
 import {attributeNameThatLocksFramestamp} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {useCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
 import SnapCursor from './SnapCursor.svg'
+import {getTracks} from '@theatre/studio/selectors'
 
 export const dotSize = 6
 const hitZoneSize = 12
@@ -140,34 +141,35 @@ function useKeyframeContextMenu(node: HTMLDivElement | null, props: IProps) {
               // What if there's multiple objects on same sheet?
               const {byTrackId} = props.selection.byObjectKey[objectKey]!
 
-              if (Object.keys(byTrackId).length > 1) {
-                // Todo: display toast or better warning
-                console.warn(
-                  'Keyframes failed to copy! Keyframes can only be copied from a single track.',
-                )
-              } else {
-                const projectP = val(getStudio().projectsP[projectId].pointers)
-                const {sequence} = val(projectP.historic).sheetsById[sheetId]!
-                const {trackData} = sequence?.tracksByObject[objectKey]!
-                const selectedKeyframeIds = Object.keys(
-                  byTrackId[trackId]?.byKeyframeId || {},
-                )
-                const {keyframes = []} = trackData[trackId] || {}
-                const selectedKeyframes = keyframes.filter(
-                  ({id}) => selectedKeyframeIds.indexOf(id) > -1,
-                )
+              const tracks = getTracks(projectId, sheetId)
+              const {trackData = {}} = tracks?.[objectKey] || {}
 
-                getStudio().transaction(({stateEditors}) => {
-                  stateEditors.studio.ahistoric.setKeyframesClipboard(
-                    selectedKeyframes,
+              const selectedKeyframes = Object.keys(trackData).reduce(
+                (prev, key) => {
+                  const selectedKeyframeIds = Object.keys(
+                    byTrackId[key]?.byKeyframeId || {},
                   )
-                })
-              }
+
+                  return {
+                    ...prev,
+                    [key]: trackData[key]!.keyframes.filter(
+                      ({id}) => selectedKeyframeIds.indexOf(id) > -1,
+                    ),
+                  }
+                },
+                {},
+              )
+
+              getStudio().transaction(({stateEditors}) => {
+                stateEditors.studio.ahistoric.setKeyframesClipboard(
+                  selectedKeyframes,
+                )
+              })
             } else {
               getStudio().transaction(({stateEditors}) => {
-                stateEditors.studio.ahistoric.setKeyframesClipboard([
-                  props.keyframe,
-                ])
+                stateEditors.studio.ahistoric.setKeyframesClipboard({
+                  [trackId]: [props.keyframe],
+                })
               })
             }
           },

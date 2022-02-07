@@ -1,4 +1,5 @@
 import type {
+  ISelectedKeyframes,
   Keyframe,
   SheetState_Historic,
 } from '@theatre/core/projects/store/types/SheetState_Historic'
@@ -318,7 +319,7 @@ namespace stateEditors {
         drafts().ahistoric.visibilityState = visibilityState
       }
 
-      export function setKeyframesClipboard(keyframes: Keyframe[]) {
+      export function setKeyframesClipboard(keyframes: ISelectedKeyframes) {
         drafts().ahistoric.keyframesClipboard = keyframes
       }
       export namespace projects {

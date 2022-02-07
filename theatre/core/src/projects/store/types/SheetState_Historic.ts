@@ -26,14 +26,16 @@ type PositionalSequence = {
    */
   subUnitsPerUnit: number
 
-  tracksByObject: StrictRecord<
-    string,
-    {
-      trackIdByPropPath: StrictRecord<string, SequenceTrackId>
-      trackData: StrictRecord<SequenceTrackId, TrackData>
-    }
-  >
+  tracksByObject: TracksByObject
 }
+
+export type TracksByObject = StrictRecord<
+  string,
+  {
+    trackIdByPropPath: StrictRecord<string, SequenceTrackId>
+    trackData: StrictRecord<SequenceTrackId, TrackData>
+  }
+>
 
 export type TrackData = BasicKeyframedTrack
 
@@ -43,6 +45,10 @@ export type Keyframe = {
   position: number
   handles: [leftX: number, leftY: number, rightX: number, rightY: number]
   connectedRight: boolean
+}
+
+export interface ISelectedKeyframes {
+  [trackId: string]: Keyframe[]
 }
 
 export type BasicKeyframedTrack = {
