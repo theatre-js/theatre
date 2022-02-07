@@ -1,9 +1,6 @@
 import Scrub from '@theatre/studio/Scrub'
 import type {StudioHistoricState} from '@theatre/studio/store/types/historic'
-import type {
-  ISelectedKeyframes,
-  Keyframe,
-} from '@theatre/core/projects/store/types/SheetState_Historic'
+import type {ISelectedKeyframes} from '@theatre/core/projects/store/types/SheetState_Historic'
 import UI from '@theatre/studio/UI'
 import type {Pointer} from '@theatre/dataverse'
 import {Atom, PointerProxy, valueDerivation} from '@theatre/dataverse'
@@ -247,14 +244,16 @@ export class Studio {
     const selectedTrackIndex = allTrackIds.indexOf(trackId)
 
     let isFirst = true
-    let j = 0
+    let keyframeToPasteIndex = 0
 
     for (let i = selectedTrackIndex; i < allTrackIds.length; i++) {
       const id = allTrackIds[i]
 
-      if (!keyframesToPasteValues[j]) break
+      if (!keyframesToPasteValues[keyframeToPasteIndex]) break
 
-      const keyframesWithNewPositions = keyframesToPasteValues[j].map((kf) => {
+      const keyframesWithNewPositions = keyframesToPasteValues[
+        keyframeToPasteIndex
+      ].map((kf) => {
         if (isFirst) {
           // We want the first keyframe to start at posInUnitSpace
           isFirst = false
@@ -269,7 +268,7 @@ export class Studio {
         return {...kf, position}
       })
 
-      j++
+      keyframeToPasteIndex++
 
       this.transaction((api) => {
         api.stateEditors.coreByProject.historic.sheetsById.sequence.mergeKeyframes(
