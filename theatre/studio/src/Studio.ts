@@ -244,15 +244,15 @@ export class Studio {
     const selectedTrackIndex = allTrackIds.indexOf(trackId)
 
     let isFirst = true
-    let keyframeToPasteIndex = 0
+    let trackToPasteIndex = 0
 
     for (let i = selectedTrackIndex; i < allTrackIds.length; i++) {
       const id = allTrackIds[i]
 
-      if (!keyframesToPasteValues[keyframeToPasteIndex]) break
+      if (!keyframesToPasteValues[trackToPasteIndex]) break
 
       const keyframesWithNewPositions = keyframesToPasteValues[
-        keyframeToPasteIndex
+        trackToPasteIndex
       ].map((kf) => {
         if (isFirst) {
           // We want the first keyframe to start at posInUnitSpace
@@ -268,7 +268,7 @@ export class Studio {
         return {...kf, position}
       })
 
-      keyframeToPasteIndex++
+      trackToPasteIndex++
 
       this.transaction((api) => {
         api.stateEditors.coreByProject.historic.sheetsById.sequence.mergeKeyframes(

@@ -129,7 +129,7 @@ function useKeyframeContextMenu(node: HTMLDivElement | null, props: IProps) {
           },
         },
         {
-          label: props.selection ? 'Copy Keyframes' : 'Copy Keyframe',
+          label: 'Copy Keyframe(s)',
           callback: () => {
             const {leaf} = props
             const {sheetObject, trackId} = leaf
@@ -137,8 +137,6 @@ function useKeyframeContextMenu(node: HTMLDivElement | null, props: IProps) {
 
             if (props.selection) {
               const {projectId, objectKey, sheetId} = address
-
-              // What if there's multiple objects on same sheet?
               const {byTrackId} = props.selection.byObjectKey[objectKey]!
 
               const tracks = getTracks(projectId, sheetId)
