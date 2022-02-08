@@ -97,6 +97,6 @@ export function getTracks(
   sheetId: string,
 ): TracksByObject | undefined {
   const projectP = val(getStudio().projectsP[projectId].pointers)
-  const {sequence} = val(projectP.historic).sheetsById[sheetId]!
+  const {sequence} = val(projectP.historic).sheetsById[sheetId] || {}
   return sequence?.tracksByObject
 }

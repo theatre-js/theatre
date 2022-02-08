@@ -52,18 +52,17 @@ const Children = styled.ul`
   padding: 0;
   list-style: none;
 `
+
+type LeafTypes =
+  | SequenceEditorTree_SheetObject
+  | SequenceEditorTree_PropWithChildren
+  | SequenceEditorTree_PrimitiveProp
 interface IProps {
-  leaf:
-    | SequenceEditorTree_SheetObject
-    | SequenceEditorTree_PropWithChildren
-    | SequenceEditorTree_PrimitiveProp
+  leaf: LeafTypes
 }
 
 const Row: React.FC<{
-  leaf:
-    | SequenceEditorTree_SheetObject
-    | SequenceEditorTree_PropWithChildren
-    | SequenceEditorTree_PrimitiveProp
+  leaf: LeafTypes
   node: React.ReactElement
 }> = ({leaf, children, node}) => {
   const {trackId} = leaf

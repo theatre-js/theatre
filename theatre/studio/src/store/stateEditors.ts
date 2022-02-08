@@ -624,7 +624,6 @@ namespace stateEditors {
             },
           ) {
             const track = _getTrack(p)
-
             if (!track) return
 
             const initialKeyframes = current(track.keyframes)
@@ -676,7 +675,9 @@ namespace stateEditors {
             },
           ) {
             const track = _getTrack(p)
-            const currentKeyframes = current(track!.keyframes) || []
+            if (!track) return
+
+            const currentKeyframes = current(track.keyframes)
             const keyframesWithNewIds = p.keyframes.map((kf) => ({
               ...kf,
               id: generateKeyframeId(),
