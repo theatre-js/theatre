@@ -19,7 +19,10 @@ import type Sequence from '@theatre/core/sequences/Sequence'
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
 import CurveEditorPopover from './CurveEditorPopover/CurveEditorPopover'
-import usePasteKeyframesItem from '@theatre/studio/uiComponents/simpleContextMenu/usePasteKeyframesItem'
+import {
+  useCopyKeyframesItem,
+  usePasteKeyframesItem,
+} from '@theatre/studio/uiComponents/simpleContextMenu/useCopyPasteKeyframesItem'
 
 const connectorHeight = dotSize / 2 + 1
 const connectorWidthUnscaled = 1000
@@ -72,8 +75,9 @@ const Container = styled.div<{isSelected: boolean}>`
 type IProps = Parameters<typeof KeyframeEditor>[0]
 
 const Connector: React.FC<IProps> = (props) => {
-  const {index, trackData, leaf} = props
+  const {index, trackData, leaf, selection} = props
   const pasteKeyframesItem = usePasteKeyframesItem(leaf)
+  const copyKeyframesItem = useCopyKeyframesItem({leaf, selection})
   const cur = trackData.keyframes[index]
   const next = trackData.keyframes[index + 1]
 
@@ -123,6 +127,10 @@ const Connector: React.FC<IProps> = (props) => {
 
       if (pasteKeyframesItem) {
         items.unshift(pasteKeyframesItem)
+      }
+
+      if (copyKeyframesItem) {
+        items.unshift(copyKeyframesItem)
       }
 
       return items

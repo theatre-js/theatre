@@ -7,7 +7,7 @@ import React from 'react'
 import styled from 'styled-components'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
-import usePasteKeyframesItem from '@theatre/studio/uiComponents/simpleContextMenu/usePasteKeyframesItem'
+import {usePasteKeyframesItem} from '@theatre/studio/uiComponents/simpleContextMenu/useCopyPasteKeyframesItem'
 
 const Container = styled.li<{}>`
   margin: 0;

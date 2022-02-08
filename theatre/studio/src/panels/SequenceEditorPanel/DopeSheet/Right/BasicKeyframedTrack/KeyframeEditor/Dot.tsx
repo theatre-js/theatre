@@ -4,6 +4,7 @@ import type {
 } from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import getStudio from '@theatre/studio/getStudio'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
+import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
@@ -16,7 +17,7 @@ import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPa
 import {attributeNameThatLocksFramestamp} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {useCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
 import SnapCursor from './SnapCursor.svg'
-import {getTracks} from '@theatre/studio/selectors'
+import {useCopyKeyframesItem} from '@theatre/studio/uiComponents/simpleContextMenu/useCopyPasteKeyframesItem'
 
 export const dotSize = 6
 const hitZoneSize = 12
@@ -107,9 +108,12 @@ const Dot: React.FC<IProps> = (props) => {
 export default Dot
 
 function useKeyframeContextMenu(node: HTMLDivElement | null, props: IProps) {
+  const {leaf, selection, keyframe} = props
+  const copyKeyframesItem = useCopyKeyframesItem({leaf, selection, keyframe})
+
   return useContextMenu(node, {
     items: () => {
-      return [
+      const items: IContextMenuItem[] = [
         {
           label: props.selection ? 'Delete Selection' : 'Delete Keyframe',
           callback: () => {
@@ -128,51 +132,13 @@ function useKeyframeContextMenu(node: HTMLDivElement | null, props: IProps) {
             }
           },
         },
-        {
-          label: 'Copy Keyframe(s)',
-          callback: () => {
-            const {leaf} = props
-            const {sheetObject, trackId} = leaf
-            const {address} = sheetObject
-
-            if (props.selection) {
-              const {projectId, objectKey, sheetId} = address
-              const {byTrackId} = props.selection.byObjectKey[objectKey]!
-
-              const tracks = getTracks(projectId, sheetId)
-              const {trackData = {}} = tracks?.[objectKey] || {}
-
-              const selectedKeyframes = Object.keys(trackData).reduce(
-                (prev, key) => {
-                  const selectedKeyframeIds = Object.keys(
-                    byTrackId[key]?.byKeyframeId || {},
-                  )
-
-                  return {
-                    ...prev,
-                    [key]: trackData[key]!.keyframes.filter(
-                      ({id}) => selectedKeyframeIds.indexOf(id) > -1,
-                    ),
-                  }
-                },
-                {},
-              )
-
-              getStudio().transaction(({stateEditors}) => {
-                stateEditors.studio.ahistoric.setKeyframesClipboard(
-                  selectedKeyframes,
-                )
-              })
-            } else {
-              getStudio().transaction(({stateEditors}) => {
-                stateEditors.studio.ahistoric.setKeyframesClipboard({
-                  [trackId]: [props.keyframe],
-                })
-              })
-            }
-          },
-        },
       ]
+
+      if (copyKeyframesItem) {
+        items.unshift(copyKeyframesItem)
+      }
+
+      return items
     },
   })
 }
