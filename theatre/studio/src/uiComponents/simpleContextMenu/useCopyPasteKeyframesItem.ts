@@ -1,16 +1,14 @@
 import {useMemo} from 'react'
-import {useVal} from '@theatre/react'
+import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
+import type {DopeSheetSelection} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import getStudio from '@theatre/studio/getStudio'
-import {useFrameStampPositionD} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import type {
-  SequenceEditorTree_PrimitiveProp,
-  SequenceEditorTree_PropWithChildren,
   SequenceEditorTree_SheetObject,
+  SequenceEditorTree_PropWithChildren,
+  SequenceEditorTree_PrimitiveProp,
 } from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
 import {getCopiedKeyframes, getTracks} from '@theatre/studio/selectors'
 import type {IContextMenuItem} from './useContextMenu'
-import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
-import type {DopeSheetSelection} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 
 type LeafType =
   | SequenceEditorTree_SheetObject
@@ -20,31 +18,32 @@ type LeafType =
 export const usePasteKeyframesItem = (
   leaf: LeafType,
 ): IContextMenuItem | null => {
-  const [posInUnitSpace] = useVal(useFrameStampPositionD())
   const copiedKeyframes = getCopiedKeyframes()
-  const totalKeyframes = useMemo(() => {
-    return Object.values(copiedKeyframes).reduce((prev, curr) => {
-      return prev + curr.length
-    }, 0)
-  }, [copiedKeyframes])
 
   return useMemo(() => {
+    const totalKeyframes = Object.values(copiedKeyframes).reduce(
+      (prev, curr) => {
+        return prev + curr.length
+      },
+      0,
+    )
+
     const {trackId, sheetObject} = leaf
 
     if (!trackId || !totalKeyframes) return null
 
     return {
       label: `Paste ${totalKeyframes} keyframe${totalKeyframes > 1 ? 's' : ''}`,
-      callback: () => {
+      callback: (e, position) => {
         getStudio().pasteKeyframes({
           trackId,
           sheetObject,
           keyframes: copiedKeyframes,
-          posInUnitSpace,
+          position,
         })
       },
     }
-  }, [leaf, posInUnitSpace, copiedKeyframes, totalKeyframes])
+  }, [leaf, copiedKeyframes])
 }
 
 export const useCopyKeyframesItem = ({

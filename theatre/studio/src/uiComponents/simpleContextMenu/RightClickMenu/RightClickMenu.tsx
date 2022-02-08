@@ -1,15 +1,17 @@
+import React, {useLayoutEffect, useState, useRef} from 'react'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import useBoundingClientRect from '@theatre/studio/uiComponents/useBoundingClientRect'
 import transparentize from 'polished/lib/color/transparentize'
 import type {ElementType} from 'react'
 import {useContext} from 'react'
-import React, {useLayoutEffect, useState} from 'react'
 import {createPortal} from 'react-dom'
 import useWindowSize from 'react-use/esm/useWindowSize'
 import styled from 'styled-components'
 import Item, {height as itemHeight} from './Item'
 import {PortalContext} from 'reakit'
 import useOnKeyDown from '@theatre/studio/uiComponents/useOnKeyDown'
+import {useVal} from '@theatre/react'
+import {useFrameStampPositionD} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 
 const minWidth = 190
 
@@ -36,7 +38,7 @@ const Container = styled.ul`
 
 export type IContextMenuItem = {
   label: string | ElementType
-  callback?: (e: React.MouseEvent) => void
+  callback?: (e: React.MouseEvent, initialPosInUnitSpace: number) => void
   enabled?: boolean
   // subs?: Item[]
 }
@@ -49,6 +51,8 @@ const RightClickMenu: React.FC<{
   const [container, setContainer] = useState<HTMLElement | null>(null)
   const rect = useBoundingClientRect(container)
   const windowSize = useWindowSize()
+  const [posInUnitSpace] = useVal(useFrameStampPositionD())
+  const initialPosInUnitSpace = useRef(posInUnitSpace)
 
   useLayoutEffect(() => {
     if (!rect || !container) return
@@ -114,7 +118,7 @@ const RightClickMenu: React.FC<{
           enabled={item.enabled === false ? false : true}
           onClick={(e) => {
             if (item.callback) {
-              item.callback(e)
+              item.callback(e, initialPosInUnitSpace.current)
             }
             props.onRequestClose()
           }}

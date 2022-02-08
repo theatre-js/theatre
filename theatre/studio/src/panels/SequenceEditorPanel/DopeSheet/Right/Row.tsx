@@ -91,6 +91,7 @@ const Row: React.FC<{
 
 function useTrackContextMenu(node: HTMLDivElement | null, {leaf}: IProps) {
   const pasteKeyframesItem = usePasteKeyframesItem(leaf)
+
   return useContextMenu(node, {
     items: () => {
       if (pasteKeyframesItem) {

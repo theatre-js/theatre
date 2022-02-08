@@ -20,8 +20,8 @@ import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
 import CurveEditorPopover from './CurveEditorPopover/CurveEditorPopover'
 import {
-  useCopyKeyframesItem,
   usePasteKeyframesItem,
+  useCopyKeyframesItem,
 } from '@theatre/studio/uiComponents/simpleContextMenu/useCopyPasteKeyframesItem'
 
 const connectorHeight = dotSize / 2 + 1

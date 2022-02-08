@@ -231,12 +231,12 @@ export class Studio {
     sheetObject,
     trackId,
     keyframes: keyframesToPaste,
-    posInUnitSpace,
+    position,
   }: {
     sheetObject: SheetObject
     trackId: string
     keyframes: ISelectedKeyframes
-    posInUnitSpace: number
+    position: number
   }) {
     const keyframesToPasteValues = Object.values(keyframesToPaste)
 
@@ -268,17 +268,16 @@ export class Studio {
         trackToPasteIndex
       ].map((kf) => {
         if (isFirstKeyframe) {
-          // We want the first keyframe to start at posInUnitSpace
+          // We want the first keyframe to start at position
           isFirstKeyframe = false
-          return {...kf, position: posInUnitSpace}
+          return {...kf, position}
         }
 
         // The rest will be offset from the firstKeyframe
         const firstKeyframe = keyframesToPasteValues[0][0]
         const positionDiff = kf.position - firstKeyframe.position
-        const position = posInUnitSpace + positionDiff
 
-        return {...kf, position}
+        return {...kf, position: position + positionDiff}
       })
 
       tracksToPaste.push({
