@@ -168,24 +168,22 @@ const CurveEditorPopover: React.FC<
           const {replaceKeyframes} =
             stateEditors.coreByProject.historic.sheetsById.sequence
 
-          replaceKeyframes([
-            {
-              ...props.leaf.sheetObject.address,
-              snappingFunction: val(props.layoutP.sheet).getSequence()
-                .closestGridPosition,
-              trackId: props.leaf.trackId,
-              keyframes: [
-                {
-                  ...cur,
-                  handles: [cur.handles[0], cur.handles[1], args[0], args[1]],
-                },
-                {
-                  ...next,
-                  handles: [args[2], args[3], next.handles[2], next.handles[3]],
-                },
-              ],
-            },
-          ])
+          replaceKeyframes({
+            ...props.leaf.sheetObject.address,
+            snappingFunction: val(props.layoutP.sheet).getSequence()
+              .closestGridPosition,
+            trackId: props.leaf.trackId,
+            keyframes: [
+              {
+                ...cur,
+                handles: [cur.handles[0], cur.handles[1], args[0], args[1]],
+              },
+              {
+                ...next,
+                handles: [args[2], args[3], next.handles[2], next.handles[3]],
+              },
+            ],
+          })
         })
       },
       discardTemporaryValue(): void {
@@ -211,24 +209,22 @@ const CurveEditorPopover: React.FC<
           const {replaceKeyframes} =
             stateEditors.coreByProject.historic.sheetsById.sequence
 
-          replaceKeyframes([
-            {
-              ...props.leaf.sheetObject.address,
-              snappingFunction: val(props.layoutP.sheet).getSequence()
-                .closestGridPosition,
-              trackId: props.leaf.trackId,
-              keyframes: [
-                {
-                  ...cur,
-                  handles: [cur.handles[0], cur.handles[1], args[0], args[1]],
-                },
-                {
-                  ...next,
-                  handles: [args[2], args[3], next.handles[2], next.handles[3]],
-                },
-              ],
-            },
-          ])
+          replaceKeyframes({
+            ...props.leaf.sheetObject.address,
+            snappingFunction: val(props.layoutP.sheet).getSequence()
+              .closestGridPosition,
+            trackId: props.leaf.trackId,
+            keyframes: [
+              {
+                ...cur,
+                handles: [cur.handles[0], cur.handles[1], args[0], args[1]],
+              },
+              {
+                ...next,
+                handles: [args[2], args[3], next.handles[2], next.handles[3]],
+              },
+            ],
+          })
         })
 
         props.onRequestClose()

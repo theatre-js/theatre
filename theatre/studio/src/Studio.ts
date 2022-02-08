@@ -292,9 +292,11 @@ export class Studio {
     }
 
     this.transaction((api) => {
-      api.stateEditors.coreByProject.historic.sheetsById.sequence.mergeKeyframes(
-        tracksToPaste,
-      )
+      tracksToPaste.forEach((track) => {
+        api.stateEditors.coreByProject.historic.sheetsById.sequence.mergeKeyframes(
+          track,
+        )
+      })
     })
   }
 

@@ -55,8 +55,6 @@ export default class StudioStore {
   private readonly _atom: Atom<FullStudioState>
   readonly atomP: Pointer<FullStudioState>
 
-  private _copiedKeyframes: Keyframe[]
-
   constructor() {
     this._reduxStore = configureStore({
       rootReducer: studioReducer,
@@ -64,7 +62,6 @@ export default class StudioStore {
     })
     this._atom = atomFromReduxStore(this._reduxStore)
     this.atomP = this._atom.pointer
-    this._copiedKeyframes = []
   }
 
   initialize(opts: {
@@ -290,14 +287,6 @@ export default class StudioStore {
 
   redo() {
     this._reduxStore.dispatch(studioActions.historic.redo())
-  }
-
-  get copiedKeyframes(): Keyframe[] {
-    return this._copiedKeyframes
-  }
-
-  set copiedKeyframes(keyframes: Keyframe[]) {
-    this._copiedKeyframes = keyframes
   }
 
   createContentOfSaveFile(projectId: string): OnDiskState {

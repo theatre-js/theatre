@@ -221,16 +221,14 @@ function useDragKeyframe(
         }
         tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
           stateEditors.coreByProject.historic.sheetsById.sequence.replaceKeyframes(
-            [
-              {
-                ...propsAtStartOfDrag.leaf.sheetObject.address,
-                trackId: propsAtStartOfDrag.leaf.trackId,
-                keyframes: [{...original, position: newPosition}],
-                snappingFunction: val(
-                  propsAtStartOfDrag.layoutP.sheet,
-                ).getSequence().closestGridPosition,
-              },
-            ],
+            {
+              ...propsAtStartOfDrag.leaf.sheetObject.address,
+              trackId: propsAtStartOfDrag.leaf.trackId,
+              keyframes: [{...original, position: newPosition}],
+              snappingFunction: val(
+                propsAtStartOfDrag.layoutP.sheet,
+              ).getSequence().closestGridPosition,
+            },
           )
         })
       },

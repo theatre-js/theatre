@@ -599,7 +599,7 @@ namespace stateEditors {
               return {...untransformedKf, position: newPosition}
             })
 
-            replaceKeyframes([{...p, keyframes: transformed}])
+            replaceKeyframes({...p, keyframes: transformed})
           }
 
           export function deleteKeyframes(
@@ -617,77 +617,73 @@ namespace stateEditors {
           }
 
           export function replaceKeyframes(
-            pointers: (WithoutSheetInstance<SheetObjectAddress> & {
+            p: WithoutSheetInstance<SheetObjectAddress> & {
               trackId: string
               keyframes: Array<Keyframe>
               snappingFunction: SnappingFunction
-            })[],
+            },
           ) {
-            pointers.forEach((p) => {
-              const track = _getTrack(p)
-              if (!track) return
-              const initialKeyframes = current(track.keyframes)
-              const sanitizedKeyframes = p.keyframes
-                .filter((kf) => {
-                  if (typeof kf.value === 'number' && !isFinite(kf.value))
-                    return false
-                  if (!kf.handles.every((handleValue) => isFinite(handleValue)))
-                    return false
+            const track = _getTrack(p)
 
-                  return true
-                })
-                .map((kf) => ({
-                  ...kf,
-                  position: p.snappingFunction(kf.position),
-                }))
+            if (!track) return
 
-              const newKeyframesById = keyBy(sanitizedKeyframes, 'id')
+            const initialKeyframes = current(track.keyframes)
+            const sanitizedKeyframes = p.keyframes
+              .filter((kf) => {
+                if (typeof kf.value === 'number' && !isFinite(kf.value))
+                  return false
+                if (!kf.handles.every((handleValue) => isFinite(handleValue)))
+                  return false
 
-              const unselected = initialKeyframes.filter(
-                (kf) => !newKeyframesById[kf.id],
-              )
-
-              const unselectedByPosition = keyBy(unselected, 'position')
-
-              // If the new transformed keyframes overlap with any existing keyframes,
-              // we remove the overlapped keyframes
-              sanitizedKeyframes.forEach(({position}) => {
-                const existingKeyframeAtThisPosition =
-                  unselectedByPosition[position]
-                if (existingKeyframeAtThisPosition) {
-                  pullFromArray(unselected, existingKeyframeAtThisPosition)
-                }
+                return true
               })
+              .map((kf) => ({
+                ...kf,
+                position: p.snappingFunction(kf.position),
+              }))
 
-              const sorted = sortBy(
-                [...unselected, ...sanitizedKeyframes],
-                'position',
-              )
+            const newKeyframesById = keyBy(sanitizedKeyframes, 'id')
 
-              track.keyframes = sorted
+            const unselected = initialKeyframes.filter(
+              (kf) => !newKeyframesById[kf.id],
+            )
+
+            const unselectedByPosition = keyBy(unselected, 'position')
+
+            // If the new transformed keyframes overlap with any existing keyframes,
+            // we remove the overlapped keyframes
+            sanitizedKeyframes.forEach(({position}) => {
+              const existingKeyframeAtThisPosition =
+                unselectedByPosition[position]
+              if (existingKeyframeAtThisPosition) {
+                pullFromArray(unselected, existingKeyframeAtThisPosition)
+              }
             })
+
+            const sorted = sortBy(
+              [...unselected, ...sanitizedKeyframes],
+              'position',
+            )
+
+            track.keyframes = sorted
           }
 
           export function mergeKeyframes(
-            pointers: (WithoutSheetInstance<SheetObjectAddress> & {
+            p: WithoutSheetInstance<SheetObjectAddress> & {
               trackId: string
               keyframes: Array<Keyframe>
               snappingFunction: SnappingFunction
-            })[],
+            },
           ) {
-            const tracks = pointers.map((p) => {
-              const track = _getTrack(p)
-              const currentKeyframes = current(track!.keyframes) || []
-              const keyframesWithNewIds = p.keyframes.map((kf) => ({
-                ...kf,
-                id: generateKeyframeId(),
-              }))
-              const keyframes = [...currentKeyframes, ...keyframesWithNewIds]
+            const track = _getTrack(p)
+            const currentKeyframes = current(track!.keyframes) || []
+            const keyframesWithNewIds = p.keyframes.map((kf) => ({
+              ...kf,
+              id: generateKeyframeId(),
+            }))
+            const keyframes = [...currentKeyframes, ...keyframesWithNewIds]
 
-              return {...p, keyframes}
-            })
-
-            replaceKeyframes(tracks)
+            replaceKeyframes({...p, keyframes})
           }
         }
 
