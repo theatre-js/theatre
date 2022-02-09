@@ -2,21 +2,12 @@ import {useMemo} from 'react'
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
 import type {DopeSheetSelection} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import getStudio from '@theatre/studio/getStudio'
-import type {
-  SequenceEditorTree_SheetObject,
-  SequenceEditorTree_PropWithChildren,
-  SequenceEditorTree_PrimitiveProp,
-} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
+import type {SequenceEditorTree_PrimitiveProp} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
 import {getCopiedKeyframes, getTracks} from '@theatre/studio/selectors'
 import type {IContextMenuItem} from './useContextMenu'
 
-type LeafType =
-  | SequenceEditorTree_SheetObject
-  | SequenceEditorTree_PropWithChildren
-  | SequenceEditorTree_PrimitiveProp
-
 export const usePasteKeyframesItem = (
-  leaf: LeafType,
+  leaf: SequenceEditorTree_PrimitiveProp,
 ): IContextMenuItem | null => {
   const copiedKeyframes = getCopiedKeyframes()
 
@@ -51,7 +42,7 @@ export const useCopyKeyframesItem = ({
   selection,
   keyframe,
 }: {
-  leaf: LeafType
+  leaf: SequenceEditorTree_PrimitiveProp
   selection?: DopeSheetSelection
   keyframe?: Keyframe
 }): IContextMenuItem | null => {

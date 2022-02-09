@@ -22,7 +22,6 @@ export type SequenceEditorTree_Row<Type> = {
   depth: number
   top: number
   n: number
-  trackId?: string
 }
 
 export type SequenceEditorTree = SequenceEditorTree_Sheet

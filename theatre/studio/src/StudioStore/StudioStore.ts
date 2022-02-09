@@ -11,7 +11,6 @@ import type {
   StudioEphemeralState,
   StudioHistoricState,
 } from '@theatre/studio/store/types'
-import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
 import type {Deferred} from '@theatre/shared/utils/defer'
 import {defer} from '@theatre/shared/utils/defer'
 import forEachDeep from '@theatre/shared/utils/forEachDeep'
