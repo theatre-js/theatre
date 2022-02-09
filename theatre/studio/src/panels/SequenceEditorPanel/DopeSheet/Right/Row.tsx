@@ -7,7 +7,7 @@ import React from 'react'
 import styled from 'styled-components'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
-import {usePasteKeyframesItem} from '@theatre/studio/uiComponents/simpleContextMenu/useCopyPasteKeyframesItem'
+import {getPasteKeyframesItem} from '@theatre/studio/uiComponents/simpleContextMenu/getCopyPasteKeyframesItem'
 
 const Container = styled.li<{}>`
   margin: 0;
@@ -90,7 +90,7 @@ const Row: React.FC<{
 }
 
 function useTrackContextMenu(node: HTMLDivElement | null, {leaf}: IProps) {
-  const pasteKeyframesItem = usePasteKeyframesItem(leaf)
+  const pasteKeyframesItem = getPasteKeyframesItem(leaf)
 
   return useContextMenu(node, {
     items: () => {
