@@ -1,9 +1,10 @@
 import {useMemo} from 'react'
+import {val} from '@theatre/dataverse'
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
 import type {DopeSheetSelection} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import getStudio from '@theatre/studio/getStudio'
 import type {SequenceEditorTree_PrimitiveProp} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
-import {getCopiedKeyframes, getTracks} from '@theatre/studio/selectors'
+import {getCopiedKeyframes} from '@theatre/studio/selectors'
 import type {IContextMenuItem} from './useContextMenu'
 
 export const usePasteKeyframesItem = (
@@ -56,7 +57,9 @@ export const useCopyKeyframesItem = ({
       const {projectId, objectKey, sheetId} = address
       const {byTrackId} = selection.byObjectKey[objectKey]!
 
-      const tracks = getTracks(projectId, sheetId)
+      const projectP = val(getStudio().projectsP[projectId].pointers)
+      const {sequence} = val(projectP.historic).sheetsById[sheetId] || {}
+      const tracks = sequence?.tracksByObject
       const {trackData = {}} = tracks?.[objectKey] || {}
 
       const selectedKeyframes = Object.keys(trackData).reduce((prev, key) => {
@@ -64,11 +67,17 @@ export const useCopyKeyframesItem = ({
           byTrackId[key]?.byKeyframeId || {},
         )
 
+        const keyframes = trackData[key]!.keyframes.filter(
+          ({id}) => selectedKeyframeIds.indexOf(id) > -1,
+        )
+
+        if (!keyframes.length) {
+          return prev
+        }
+
         return {
           ...prev,
-          [key]: trackData[key]!.keyframes.filter(
-            ({id}) => selectedKeyframeIds.indexOf(id) > -1,
-          ),
+          [key]: keyframes,
         }
       }, {})
 

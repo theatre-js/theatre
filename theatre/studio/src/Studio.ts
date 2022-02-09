@@ -3,7 +3,7 @@ import type {StudioHistoricState} from '@theatre/studio/store/types/historic'
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
 import UI from '@theatre/studio/UI'
 import type {Pointer} from '@theatre/dataverse'
-import {Atom, PointerProxy, valueDerivation} from '@theatre/dataverse'
+import {Atom, PointerProxy, valueDerivation, val} from '@theatre/dataverse'
 import type {
   CommitOrDiscard,
   ITransactionPrivateApi,
@@ -22,7 +22,7 @@ import type {OnDiskState} from '@theatre/core/projects/store/storeTypes'
 import type {Deferred} from '@theatre/shared/utils/defer'
 import {defer} from '@theatre/shared/utils/defer'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
-import {getTracks} from './selectors'
+
 import type {
   WithoutSheetInstance,
   SheetObjectAddress,
@@ -239,11 +239,10 @@ export class Studio {
     const keyframesToPasteValues = Object.values(keyframesToPaste)
 
     const {address, sheet} = sheetObject
-    const {projectId, sheetId, objectKey} = address
 
-    const allTrackIds = Object.keys(
-      getTracks(projectId, sheetId)?.[objectKey]?.trackData || {},
-    )
+    const allTrackIds = val(
+      sheetObject.template.getArrayOfValidSequenceTracks(),
+    ).map(({trackId}) => trackId)
 
     // The track we want to start pasting from
     const selectedTrackIndex = allTrackIds.indexOf(trackId)

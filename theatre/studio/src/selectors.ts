@@ -11,7 +11,6 @@ import type {
   OutlineSelectable,
   OutlineSelection,
 } from './store/types'
-import type {TracksByObject} from '@theatre/core/projects/store/types/SheetState_Historic'
 
 export const getOutlineSelection = (): OutlineSelection => {
   const projects = val(getStudio().projectsP)
@@ -89,14 +88,5 @@ export function getSelectedSequence(): undefined | Sequence {
 }
 
 export function getCopiedKeyframes(): ISelectedKeyframes {
-  return val(getStudio()!.atomP.ahistoric.keyframesClipboard) || []
-}
-
-export function getTracks(
-  projectId: string,
-  sheetId: string,
-): TracksByObject | undefined {
-  const projectP = val(getStudio().projectsP[projectId].pointers)
-  const {sequence} = val(projectP.historic).sheetsById[sheetId] || {}
-  return sequence?.tracksByObject
+  return val(getStudio()!.atomP.ahistoric.keyframesClipboard) || {}
 }
