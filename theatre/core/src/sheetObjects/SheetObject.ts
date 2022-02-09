@@ -169,12 +169,21 @@ export default class SheetObject implements IdentityDerivationProvider {
               if (!triple)
                 return valsAtom.setIn(pathToProp, propConfig!.default)
 
-              const left = sanitize(triple.left) || propConfig.default
+              const leftSanitized = sanitize(triple.left)
+
+              const left =
+                typeof leftSanitized === 'undefined'
+                  ? propConfig.default
+                  : leftSanitized
 
               if (triple.right === undefined)
                 return valsAtom.setIn(pathToProp, left)
 
-              const right = sanitize(triple.right) || propConfig.default
+              const rightSanitized = sanitize(triple.right)
+              const right =
+                typeof rightSanitized === 'undefined'
+                  ? propConfig.default
+                  : rightSanitized
 
               return valsAtom.setIn(
                 pathToProp,
