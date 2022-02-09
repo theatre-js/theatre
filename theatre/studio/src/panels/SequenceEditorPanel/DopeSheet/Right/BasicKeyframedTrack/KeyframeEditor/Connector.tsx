@@ -1,3 +1,4 @@
+import React, {useMemo, useEffect, useRef} from 'react'
 import getStudio from '@theatre/studio/getStudio'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
@@ -6,8 +7,6 @@ import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {val} from '@theatre/dataverse'
 import {lighten} from 'polished'
-import React from 'react'
-import {useMemo, useRef} from 'react'
 import styled from 'styled-components'
 import type {
   SequenceEditorPanelLayout,
@@ -23,6 +22,7 @@ import {
   getPasteKeyframesItem,
   getCopyKeyframesItem,
 } from '@theatre/studio/uiComponents/simpleContextMenu/getCopyPasteKeyframesItem'
+import {useTracksProvider} from '@theatre/studio/panels/SequenceEditorPanel/TracksProvider'
 
 const connectorHeight = dotSize / 2 + 1
 const connectorWidthUnscaled = 1000
@@ -80,10 +80,13 @@ const Connector: React.FC<IProps> = (props) => {
   const copyKeyframesItem = getCopyKeyframesItem({leaf, selection})
   const cur = trackData.keyframes[index]
   const next = trackData.keyframes[index + 1]
+  const {trackId} = leaf
 
   const connectorLengthInUnitSpace = next.position - cur.position
 
   const [nodeRef, node] = useRefAndState<HTMLDivElement | null>(null)
+
+  const {setTrackToHighlight} = useTracksProvider()
 
   const [popoverNode, openPopover, closePopover, isPopoverOpen] = usePopover(
     {},
@@ -96,7 +99,7 @@ const Connector: React.FC<IProps> = (props) => {
     },
   )
 
-  const [contextMenu] = useContextMenu(node, {
+  const [contextMenu, , isOpen] = useContextMenu(node, {
     items: () => {
       const items: IContextMenuItem[] = [
         {
@@ -136,6 +139,14 @@ const Connector: React.FC<IProps> = (props) => {
       return items
     },
   })
+
+  useEffect(() => {
+    if (trackId && isOpen) {
+      setTrackToHighlight(trackId)
+    } else {
+      setTrackToHighlight(undefined)
+    }
+  }, [trackId, isOpen])
 
   useDragKeyframe(node, props)
 

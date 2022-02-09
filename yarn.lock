@@ -11183,17 +11183,17 @@ __metadata:
   linkType: hard
 
 "eslint-plugin-unused-imports@npm:^1.1.4":
-  version: 1.1.4
-  resolution: "eslint-plugin-unused-imports@npm:1.1.4"
+  version: 1.1.5
+  resolution: "eslint-plugin-unused-imports@npm:1.1.5"
   dependencies:
     eslint-rule-composer: ^0.3.0
   peerDependencies:
     "@typescript-eslint/eslint-plugin": ^4.14.2
-    eslint: ^7.19.0
+    eslint: ^6.0.0 || ^7.0.0
   peerDependenciesMeta:
     "@typescript-eslint/eslint-plugin":
       optional: true
-  checksum: 9ad716323ae4128b6a44492f4f07eb7c6475836b3df6e83fde4a4269a7605d22eb598b51918966804994fc3b7ee4ebd2e7039ff3bc3470addc3d8c306639e7eb
+  checksum: 1b6956b3cdb6f86171b4922e188f862bae06a61542e7468f1bed8aca4912204ce99efa506cdf5fc71ea3fe468769c96663ceea4eb2907c77d6531fb77c0e1471
   languageName: node
   linkType: hard
 

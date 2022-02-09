@@ -1,13 +1,10 @@
-import type {
-  SequenceEditorTree_PrimitiveProp,
-  SequenceEditorTree_PropWithChildren,
-  SequenceEditorTree_SheetObject,
-} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
-import React from 'react'
+import type {SequenceEditorTree_PrimitiveProp} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
+import React, {useEffect} from 'react'
 import styled from 'styled-components'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import {getPasteKeyframesItem} from '@theatre/studio/uiComponents/simpleContextMenu/getCopyPasteKeyframesItem'
+import {useTracksProvider} from '@theatre/studio/panels/SequenceEditorPanel/TracksProvider'
 
 const Container = styled.li<{}>`
   margin: 0;
@@ -17,7 +14,7 @@ const Container = styled.li<{}>`
   position: relative;
 `
 
-const NodeWrapper = styled.div<{isEven: boolean; canHighlight: boolean}>`
+const NodeWrapper = styled.div<{isEven: boolean; highlight: boolean}>`
   box-sizing: border-box;
   width: 100%;
   position: relative;
@@ -36,10 +33,10 @@ const NodeWrapper = styled.div<{isEven: boolean; canHighlight: boolean}>`
     transition: background 0.15s ease-in-out;
   }
 
-  &:hover:before {
+  &:before {
     transition: background 0.05s ease-in-out;
     background: ${(props) =>
-      props.canHighlight
+      props.highlight
         ? '#7a22221f'
         : props.isEven
         ? 'transparent'
@@ -53,23 +50,25 @@ const Children = styled.ul`
   list-style: none;
 `
 
-type LeafTypes =
-  | SequenceEditorTree_SheetObject
-  | SequenceEditorTree_PropWithChildren
-  | SequenceEditorTree_PrimitiveProp
-interface IProps {
-  leaf: LeafTypes
-}
-
 const Row: React.FC<{
-  leaf: LeafTypes
+  leaf: SequenceEditorTree_PrimitiveProp
   node: React.ReactElement
 }> = ({leaf, children, node}) => {
   const {trackId} = leaf
   const [ref, refNode] = useRefAndState<HTMLDivElement | null>(null)
-  const [contextMenu] = useTrackContextMenu(refNode, {
+  const [contextMenu, , isOpen] = useTrackContextMenu(refNode, {
     leaf,
   })
+
+  const {trackToHighlight, setTrackToHighlight} = useTracksProvider()
+
+  useEffect(() => {
+    if (trackId && isOpen) {
+      setTrackToHighlight(trackId)
+    } else {
+      setTrackToHighlight(undefined)
+    }
+  }, [trackId, isOpen])
 
   const hasChildren = Array.isArray(children) && children.length > 0
 
@@ -79,7 +78,7 @@ const Row: React.FC<{
         style={{height: leaf.nodeHeight + 'px'}}
         isEven={leaf.n % 2 === 0}
         ref={ref}
-        canHighlight={Boolean(trackId)}
+        highlight={Boolean(trackId && trackToHighlight === trackId)}
       >
         {node}
       </NodeWrapper>
@@ -89,7 +88,14 @@ const Row: React.FC<{
   )
 }
 
-function useTrackContextMenu(node: HTMLDivElement | null, {leaf}: IProps) {
+function useTrackContextMenu(
+  node: HTMLDivElement | null,
+  {
+    leaf,
+  }: {
+    leaf: SequenceEditorTree_PrimitiveProp
+  },
+) {
   const pasteKeyframesItem = getPasteKeyframesItem(leaf)
 
   return useContextMenu(node, {

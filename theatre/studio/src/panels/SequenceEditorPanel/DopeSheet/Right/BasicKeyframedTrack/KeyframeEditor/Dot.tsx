@@ -1,3 +1,4 @@
+import React, {useMemo, useEffect, useRef, useState} from 'react'
 import type {
   DopeSheetSelection,
   SequenceEditorPanelLayout,
@@ -10,7 +11,6 @@ import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {val} from '@theatre/dataverse'
 import {lighten} from 'polished'
-import React, {useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
 import type KeyframeEditor from './KeyframeEditor'
 import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
@@ -18,6 +18,7 @@ import {attributeNameThatLocksFramestamp} from '@theatre/studio/panels/SequenceE
 import {useCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
 import SnapCursor from './SnapCursor.svg'
 import {getCopyKeyframesItem} from '@theatre/studio/uiComponents/simpleContextMenu/getCopyPasteKeyframesItem'
+import {useTracksProvider} from '@theatre/studio/panels/SequenceEditorPanel/TracksProvider'
 
 export const dotSize = 6
 const hitZoneSize = 12
@@ -83,10 +84,21 @@ const HitZone = styled.div`
 type IProps = Parameters<typeof KeyframeEditor>[0]
 
 const Dot: React.FC<IProps> = (props) => {
+  const {trackId} = props.leaf
   const [ref, node] = useRefAndState<HTMLDivElement | null>(null)
 
-  const [contextMenu] = useKeyframeContextMenu(node, props)
+  const [contextMenu, , isOpen] = useKeyframeContextMenu(node, props)
   const [isDragging] = useDragKeyframe(node, props)
+
+  const {setTrackToHighlight} = useTracksProvider()
+
+  useEffect(() => {
+    if (trackId && isOpen) {
+      setTrackToHighlight(trackId)
+    } else {
+      setTrackToHighlight(undefined)
+    }
+  }, [trackId, isOpen])
 
   return (
     <>
