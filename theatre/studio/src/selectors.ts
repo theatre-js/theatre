@@ -6,12 +6,12 @@ import {val} from '@theatre/dataverse'
 import {isSheet, isSheetObject} from '@theatre/shared/instanceTypes'
 import {uniq} from 'lodash-es'
 import getStudio from './getStudio'
-import type {OutlineSelectable, OutlineSelection} from './store/types'
 import type {
   ISelectedKeyframes,
-  Keyframe,
-  TracksByObject,
-} from '@theatre/core/projects/store/types/SheetState_Historic'
+  OutlineSelectable,
+  OutlineSelection,
+} from './store/types'
+import type {TracksByObject} from '@theatre/core/projects/store/types/SheetState_Historic'
 
 export const getOutlineSelection = (): OutlineSelection => {
   const projects = val(getStudio().projectsP)

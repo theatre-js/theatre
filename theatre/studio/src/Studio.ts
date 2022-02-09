@@ -1,9 +1,6 @@
 import Scrub from '@theatre/studio/Scrub'
 import type {StudioHistoricState} from '@theatre/studio/store/types/historic'
-import type {
-  ISelectedKeyframes,
-  Keyframe,
-} from '@theatre/core/projects/store/types/SheetState_Historic'
+import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
 import UI from '@theatre/studio/UI'
 import type {Pointer} from '@theatre/dataverse'
 import {Atom, PointerProxy, valueDerivation} from '@theatre/dataverse'
@@ -30,6 +27,7 @@ import type {
   WithoutSheetInstance,
   SheetObjectAddress,
 } from '@theatre/shared/utils/addresses'
+import type {ISelectedKeyframes} from './store/types'
 
 export type CoreExports = typeof _coreExports
 

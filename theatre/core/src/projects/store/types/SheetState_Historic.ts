@@ -47,10 +47,6 @@ export type Keyframe = {
   connectedRight: boolean
 }
 
-export interface ISelectedKeyframes {
-  [trackId: string]: Keyframe[]
-}
-
 export type BasicKeyframedTrack = {
   type: 'BasicKeyframedTrack'
   keyframes: Keyframe[]

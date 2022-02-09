@@ -1,5 +1,4 @@
 import type {
-  ISelectedKeyframes,
   Keyframe,
   SheetState_Historic,
 } from '@theatre/core/projects/store/types/SheetState_Historic'
@@ -32,6 +31,7 @@ import set from 'lodash-es/set'
 import sortBy from 'lodash-es/sortBy'
 import {graphEditorColors} from '@theatre/studio/panels/SequenceEditorPanel/GraphEditor/GraphEditor'
 import type {
+  ISelectedKeyframes,
   OutlineSelectable,
   OutlineSelectionState,
   PanelPosition,
