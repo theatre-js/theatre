@@ -23,7 +23,6 @@ import {Atom, getPointerParts, prism, val} from '@theatre/dataverse'
 import set from 'lodash-es/set'
 import getPropDefaultsOfSheetObject from './getPropDefaultsOfSheetObject'
 import SheetObject from './SheetObject'
-import logger from '@theatre/shared/logger'
 import type {PropTypeConfig_Compound} from '@theatre/core/propTypes'
 
 export type IPropPathToTrackIdTree = {
@@ -216,21 +215,5 @@ export default class SheetObjectTemplate {
 
     const defaultsAtPath = getDeep(defaults, path)
     return defaultsAtPath as $FixMe
-  }
-}
-
-function parsePathToProp(
-  pathToPropInString: string,
-): undefined | Array<string | number> {
-  try {
-    const pathToProp = JSON.parse(pathToPropInString)
-    return pathToProp
-  } catch (e) {
-    logger.warn(
-      `property ${JSON.stringify(
-        pathToPropInString,
-      )} cannot be parsed. Skipping.`,
-    )
-    return undefined
   }
 }
