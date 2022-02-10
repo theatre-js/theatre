@@ -5,9 +5,14 @@ import type {
 } from '@theatre/core/propTypes'
 import type {PathToProp} from '@theatre/shared/utils/addresses'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
+import type {SequenceTrackId} from '@theatre/shared/utils/ids'
 
+export type IsCompositePropType = PropTypeConfig & {
+  trackId?: SequenceTrackId
+  pathToProp?: PathToProp
+}
 export function isPropConfigComposite(
-  c: PropTypeConfig,
+  c: IsCompositePropType,
 ): c is PropTypeConfig_Compound<{}> | PropTypeConfig_Enum {
   return c.type === 'compound' || c.type === 'enum'
 }

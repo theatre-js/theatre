@@ -20,10 +20,15 @@ import type {
 } from '@theatre/shared/utils/types'
 import type {IDerivation, Pointer} from '@theatre/dataverse'
 import {Atom, getPointerParts, prism, val} from '@theatre/dataverse'
-import set from 'lodash-es/set'
 import getPropDefaultsOfSheetObject from './getPropDefaultsOfSheetObject'
 import SheetObject from './SheetObject'
-import type {PropTypeConfig_Compound} from '@theatre/core/propTypes'
+import type {
+  PropTypeConfig,
+  PropTypeConfig_Compound,
+} from '@theatre/core/propTypes'
+import {set} from 'lodash-es'
+import type {IsCompositePropType} from '@theatre/shared/propTypes/utils'
+import {isPropConfigComposite} from '@theatre/shared/propTypes/utils'
 
 export type IPropPathToTrackIdTree = {
   [key in string]?: SequenceTrackId | IPropPathToTrackIdTree
@@ -107,51 +112,7 @@ export default class SheetObjectTemplate {
   }
 
   /**
-   * Iterates through a tree of properties and returns the path and trackId if the trackId exists
-   *
-   * Returns an array.
-   */
-  getOrderedTrackIds({
-    props,
-    trackIdByPropPath,
-    trackIds = [],
-    currentPathToProp = [],
-  }: {
-    props: SerializableMap
-    trackIdByPropPath: StrictRecord<string, string>
-    trackIds?: IdsArray
-    currentPathToProp?: PathToProp
-  }): IdsArray {
-    const propKeys = Object.keys(props)
-
-    for (const propKey of propKeys) {
-      const prop = props[propKey]
-
-      if (typeof prop === 'object') {
-        this.getOrderedTrackIds({
-          props: prop,
-          trackIdByPropPath,
-          trackIds,
-          currentPathToProp: [...currentPathToProp, propKey],
-        })
-      } else {
-        const pathToProp = [...currentPathToProp, propKey]
-        const trackId = trackIdByPropPath[JSON.stringify(pathToProp)]
-
-        if (trackId) {
-          trackIds.push({
-            pathToProp,
-            trackId,
-          })
-        }
-      }
-    }
-
-    return trackIds
-  }
-
-  /**
-   * Filters through the config and returns only those that are sequenced,
+   * Filters through the config and returns only those tracks that are sequenced,
    * keeping the same order as the config
    *
    * Returns an array.
@@ -171,9 +132,11 @@ export default class SheetObjectTemplate {
 
         if (!trackIdByPropPath) return emptyArray as $IntentionalAny
 
-        const arrayOfIds = this.getOrderedTrackIds({
-          props: getPropDefaultsOfSheetObject(this.config),
+        const arrayOfIds = getOrderedTrackIds({
+          props: this.config.props,
           trackIdByPropPath,
+          currentPathToProp: [],
+          tracks: [],
         })
 
         if (arrayOfIds.length === 0) {
@@ -216,4 +179,68 @@ export default class SheetObjectTemplate {
     const defaultsAtPath = getDeep(defaults, path)
     return defaultsAtPath as $FixMe
   }
+}
+
+/**
+ * Iterates through a tree of properties and returns the path and trackId
+ * if the trackId exists, sorted by composite root props first
+ *
+ * Returns an array.
+ */
+function getOrderedTrackIds({
+  props,
+  trackIdByPropPath,
+  tracks = [],
+  currentPathToProp = [],
+  config,
+}: {
+  props: Record<string, PropTypeConfig>
+  trackIdByPropPath: StrictRecord<string, string>
+  tracks: IsCompositePropType[]
+  currentPathToProp: PathToProp
+  config?: PropTypeConfig
+}): IdsArray {
+  const propKeys = Object.keys(props)
+
+  for (const propKey of propKeys) {
+    const prop = (props as $FixMe)[propKey]
+
+    if (prop.props) {
+      getOrderedTrackIds({
+        props: prop.props,
+        trackIdByPropPath,
+        tracks,
+        currentPathToProp: [...currentPathToProp, propKey],
+        config: config || prop,
+      })
+    } else {
+      const pathToProp = [...currentPathToProp, propKey]
+      const trackId = trackIdByPropPath[JSON.stringify(pathToProp)]
+
+      if (trackId && config) {
+        tracks.push({
+          ...config,
+          pathToProp,
+          trackId,
+        })
+      }
+    }
+  }
+
+  tracks.sort((a, b) => {
+    if (isPropConfigComposite(b)) {
+      return -1
+    }
+
+    if (isPropConfigComposite(a)) {
+      return 1
+    }
+
+    return 0
+  })
+
+  return tracks.map(({pathToProp, trackId}) => ({
+    pathToProp: pathToProp!,
+    trackId: trackId!,
+  }))
 }
