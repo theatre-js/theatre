@@ -211,15 +211,16 @@ function getOrderedTrackIds({
         trackIdByPropPath,
         tracks,
         currentPathToProp: [...currentPathToProp, propKey],
-        config: config || prop,
+        config: config || prop, // Preserve the top level config so we can check later if it's a Composite prop
       })
     } else {
       const pathToProp = [...currentPathToProp, propKey]
       const trackId = trackIdByPropPath[JSON.stringify(pathToProp)]
+      const rest = ({...config} || {...props}) as PropTypeConfig
 
-      if (trackId && config) {
+      if (trackId && rest) {
         tracks.push({
-          ...config,
+          ...rest,
           pathToProp,
           trackId,
         })
