@@ -24,7 +24,6 @@ import getPropDefaultsOfSheetObject from './getPropDefaultsOfSheetObject'
 import SheetObject from './SheetObject'
 import logger from '@theatre/shared/logger'
 import type {PropTypeConfig_Compound} from '@theatre/core/propTypes'
-import {getPropConfigByPath} from '@theatre/shared/propTypes/utils'
 
 export type IPropPathToTrackIdTree = {
   [key in string]?: SequenceTrackId | IPropPathToTrackIdTree
@@ -121,25 +120,52 @@ export default class SheetObjectTemplate {
             .trackIdByPropPath,
         )
 
-        const arrayOfIds: Array<{
-          pathToProp: PathToProp
-          trackId: SequenceTrackId
-        }> = []
-
         if (!trackIdByPropPath) return emptyArray as $IntentionalAny
 
-        const _entries = Object.entries(trackIdByPropPath)
-        for (const [pathToPropInString, trackId] of _entries) {
-          const pathToProp = parsePathToProp(pathToPropInString)
-          if (!pathToProp) continue
+        type IdsArray = Array<{
+          pathToProp: PathToProp
+          trackId: SequenceTrackId
+        }>
 
-          const propConfig = getPropConfigByPath(this.config, pathToProp)
+        const getOrderedTrackIds = ({
+          props,
+          trackIds = [],
+          currentPathToProp = [],
+        }: {
+          props: SerializableMap
+          trackIds?: IdsArray
+          currentPathToProp?: PathToProp
+        }): IdsArray => {
+          const propKeys = Object.keys(props)
 
-          if (!propConfig || !propConfig?.sanitize || !propConfig.interpolate)
-            continue
+          for (const propKey of propKeys) {
+            const prop = props[propKey]
 
-          arrayOfIds.push({pathToProp, trackId: trackId!})
+            if (typeof prop === 'object') {
+              getOrderedTrackIds({
+                props: prop,
+                trackIds,
+                currentPathToProp: [...currentPathToProp, propKey],
+              })
+            } else {
+              const pathToProp = [...currentPathToProp, propKey]
+              const trackId = trackIdByPropPath[JSON.stringify(pathToProp)]
+
+              if (trackId) {
+                trackIds.push({
+                  pathToProp,
+                  trackId,
+                })
+              }
+            }
+          }
+
+          return trackIds
         }
+
+        const arrayOfIds = getOrderedTrackIds({
+          props: getPropDefaultsOfSheetObject(this.config),
+        })
 
         if (arrayOfIds.length === 0) {
           return emptyArray as $IntentionalAny
