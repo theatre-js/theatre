@@ -111,6 +111,11 @@ const Body = styled.div`
   overflow-x: hidden;
   padding: 0;
   user-select: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  scrollbar-width: none;
 `
 
 const NumberOfConflictsIndicator = styled.div`

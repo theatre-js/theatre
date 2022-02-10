@@ -16,6 +16,8 @@ const Container = styled.div`
   &::-webkit-scrollbar {
     display: none;
   }
+
+  scrollbar-width: none;
 `
 
 type ReceiveVerticalWheelEventFn = (ev: WheelEvent) => void

@@ -16,6 +16,7 @@ import type {
   $IntentionalAny,
   SerializableMap,
   SerializableValue,
+  StrictRecord,
 } from '@theatre/shared/utils/types'
 import type {IDerivation, Pointer} from '@theatre/dataverse'
 import {Atom, getPointerParts, prism, val} from '@theatre/dataverse'
@@ -24,11 +25,15 @@ import getPropDefaultsOfSheetObject from './getPropDefaultsOfSheetObject'
 import SheetObject from './SheetObject'
 import logger from '@theatre/shared/logger'
 import type {PropTypeConfig_Compound} from '@theatre/core/propTypes'
-import {getPropConfigByPath} from '@theatre/shared/propTypes/utils'
 
 export type IPropPathToTrackIdTree = {
   [key in string]?: SequenceTrackId | IPropPathToTrackIdTree
 }
+
+type IdsArray = Array<{
+  pathToProp: PathToProp
+  trackId: SequenceTrackId
+}>
 
 export default class SheetObjectTemplate {
   readonly address: WithoutSheetInstance<SheetObjectAddress>
@@ -103,8 +108,52 @@ export default class SheetObjectTemplate {
   }
 
   /**
-   * Filters through the sequenced tracks those tracks who are valid
-   * according to the object's prop types.
+   * Iterates through a tree of properties and returns the path and trackId if the trackId exists
+   *
+   * Returns an array.
+   */
+  getOrderedTrackIds({
+    props,
+    trackIdByPropPath,
+    trackIds = [],
+    currentPathToProp = [],
+  }: {
+    props: SerializableMap
+    trackIdByPropPath: StrictRecord<string, string>
+    trackIds?: IdsArray
+    currentPathToProp?: PathToProp
+  }): IdsArray {
+    const propKeys = Object.keys(props)
+
+    for (const propKey of propKeys) {
+      const prop = props[propKey]
+
+      if (typeof prop === 'object') {
+        this.getOrderedTrackIds({
+          props: prop,
+          trackIdByPropPath,
+          trackIds,
+          currentPathToProp: [...currentPathToProp, propKey],
+        })
+      } else {
+        const pathToProp = [...currentPathToProp, propKey]
+        const trackId = trackIdByPropPath[JSON.stringify(pathToProp)]
+
+        if (trackId) {
+          trackIds.push({
+            pathToProp,
+            trackId,
+          })
+        }
+      }
+    }
+
+    return trackIds
+  }
+
+  /**
+   * Filters through the config and returns only those that are sequenced,
+   * keeping the same order as the config
    *
    * Returns an array.
    */
@@ -121,25 +170,12 @@ export default class SheetObjectTemplate {
             .trackIdByPropPath,
         )
 
-        const arrayOfIds: Array<{
-          pathToProp: PathToProp
-          trackId: SequenceTrackId
-        }> = []
-
         if (!trackIdByPropPath) return emptyArray as $IntentionalAny
 
-        const _entries = Object.entries(trackIdByPropPath)
-        for (const [pathToPropInString, trackId] of _entries) {
-          const pathToProp = parsePathToProp(pathToPropInString)
-          if (!pathToProp) continue
-
-          const propConfig = getPropConfigByPath(this.config, pathToProp)
-
-          if (!propConfig || !propConfig?.sanitize || !propConfig.interpolate)
-            continue
-
-          arrayOfIds.push({pathToProp, trackId: trackId!})
-        }
+        const arrayOfIds = this.getOrderedTrackIds({
+          props: getPropDefaultsOfSheetObject(this.config),
+          trackIdByPropPath,
+        })
 
         if (arrayOfIds.length === 0) {
           return emptyArray as $IntentionalAny

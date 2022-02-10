@@ -128,6 +128,8 @@ To generate the API docs, run the `build:api-docs` from the root of the repo:
 $ yarn build:api-docs /path/to/theatre-docs/docs/api/ # this will empty the /api folder and regenerate the markdown files
 ```
 
+Learn more about api documentation [here](./contributing/api-docs.md).
+
 ## Project structure
 
 The [monorepo](https://en.wikipedia.org/wiki/Monorepo) consists of:
@@ -203,3 +205,11 @@ Another great way to help is to join our [community](https://discord.gg/bm9f8F9Y
 
 Feel free to chime in on any [issue](https://github.com/AriaMinaei/theatre/issues). We have labeled some with ["Help wanted"](https://github.com/AriaMinaei/theatre/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc+label%3A%22help+wanted%22) or ["Good first issue"](https://github.com/AriaMinaei/theatre/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc+label%3A%22good+first+issue%22) if you're just getting started with the codebase.
 
+## Sending pull requests
+
+We use Github's regular PR workflow. Basically fork the repo, push your commits, and send a pull request.
+
+If you're a core contributor and have write access to the repo, you should submit your pull requests from a branch
+rather than a personal fork. The naming convention for these branches should be:
+
+* `(feature|hotfix)/[identifier]`
