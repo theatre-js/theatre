@@ -126,8 +126,6 @@ export default class SheetObjectTemplate {
         const arrayOfIds = getOrderedTrackIdsAndPaths({
           config: this.config,
           trackIdByPropPath,
-          pathToProp: [],
-          tracks: [],
         })
 
         if (arrayOfIds.length === 0) {
