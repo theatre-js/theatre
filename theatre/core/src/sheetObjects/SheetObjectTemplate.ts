@@ -19,14 +19,13 @@ import type {
 } from '@theatre/shared/utils/types'
 import type {IDerivation, Pointer} from '@theatre/dataverse'
 import {Atom, getPointerParts, prism, val} from '@theatre/dataverse'
+import set from 'lodash-es/set'
 import getPropDefaultsOfSheetObject from './getPropDefaultsOfSheetObject'
 import SheetObject from './SheetObject'
-import type {PropTypeConfig_Compound} from '@theatre/core/propTypes'
-import {set} from 'lodash-es'
-
-import getOrderingOfPropTypeConfig from './getOrderingOfPropTypeConfig'
 import logger from '@theatre/shared/logger'
+import type {PropTypeConfig_Compound} from '@theatre/core/propTypes'
 import {getPropConfigByPath} from '@theatre/shared/propTypes/utils'
+import getOrderingOfPropTypeConfig from './getOrderingOfPropTypeConfig'
 
 export type IPropPathToTrackIdTree = {
   [key in string]?: SequenceTrackId | IPropPathToTrackIdTree
