@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import {Interactive} from './Interactive'
 
-// So we can reference it for contextual styling
+// Create an "empty" styled version, so we can reference it for contextual styling
 const StyledInteractive = styled(Interactive)``
 
 const Container = styled.div`

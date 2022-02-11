@@ -15,41 +15,37 @@ export function useColorManipulation<T extends AnyColor>(
   onPermanentlyChange: (color: T) => void,
 ): [HsvaColor, (color: Partial<HsvaColor>) => void] {
   const {editing} = useEditing()
-  const [editingValue, setEditingValue] = useState<T>(colorModel.defaultColor)
+  const [editingValue, setEditingValue] = useState<T>(color)
 
-  // Save onChange callback in the ref for avoiding "useCallback hell"
+  // Save onChange callbacks in refs for to avoid unnecessarily updating when parent doesn't use useCallback
   const onTemporarilyChangeCallback = useEventCallback<T>(onTemporarilyChange)
   const onPermanentlyChangeCallback = useEventCallback<T>(onPermanentlyChange)
 
+  // If editing, be uncontrolled, if not editing, be controlled
   let value = editing ? editingValue : color
 
   // No matter which color model is used (HEX, RGB(A) or HSL(A)),
-  // all internal calculations are based on HSVA model
+  // all internal calculations are in HSVA
   const [hsva, updateHsva] = useState<HsvaColor>(() => colorModel.toHsva(value))
 
-  // By using this ref we're able to prevent extra updates
-  // and the effects recursion during the color conversion
+  // Use refs to prevent infinite update loops. They basically serve as a more
+  // explicit hack around the rigidity of React hooks' dep lists, since we want
+  // to do all color equality checks in HSVA, without breaking the roles of hooks.
+  // We use separate refs for temporary updates and permanent updates,
+  // since they are two independent update models.
   const tempCache = useRef({color: value, hsva})
   const permCache = useRef({color: value, hsva})
 
-  useEffect(() => {
-    setEditingValue(tempCache.current.color)
-  }, [editing])
-
-  // Update local HSVA-value if `color` property value is changed,
-  // but only if that's not the same color that we just sent to the parent
+  // When entering editing mode, set the internal state of the uncontrolled mode
+  // to the last value of the controlled mode.
   useEffect(() => {
     if (editing) {
-      if (!colorModel.equal(value, tempCache.current.color)) {
-        const newHsva = colorModel.toHsva(value)
-        tempCache.current = {hsva: newHsva, color: value}
-        updateHsva(newHsva)
-      }
+      setEditingValue(tempCache.current.color)
     }
-  }, [editing, value, colorModel])
+  }, [editing])
 
-  // Trigger `onChange` callback only if an updated color is different from cached one;
-  // save the new color to the ref to prevent unnecessary updates
+  // Trigger `on*Change` callbacks only if an updated color is different from
+  // the  cached one; save the new color to the ref to prevent unnecessary updates.
   useEffect(() => {
     let newColor = colorModel.fromHsva(hsva)
 
@@ -58,6 +54,8 @@ export function useColorManipulation<T extends AnyColor>(
         !equalColorObjects(hsva, tempCache.current.hsva) &&
         !colorModel.equal(newColor, tempCache.current.color)
       ) {
+        console.log('hsva', hsva)
+        console.log('hsva cache', tempCache.current.hsva)
         tempCache.current = {hsva, color: newColor}
 
         setEditingValue(newColor)
@@ -68,6 +66,7 @@ export function useColorManipulation<T extends AnyColor>(
         !equalColorObjects(hsva, permCache.current.hsva) &&
         !colorModel.equal(newColor, permCache.current.color)
       ) {
+        permCache.current = {hsva, color: newColor}
         tempCache.current = {hsva, color: newColor}
 
         onPermanentlyChangeCallback(newColor)
@@ -81,6 +80,11 @@ export function useColorManipulation<T extends AnyColor>(
     onPermanentlyChangeCallback,
   ])
 
+  // This has to come after the callback calling effect, so that the cache isn't
+  // updated before the above effect checks for equality, otherwise no updates would
+  // be issued.
+  // Note: it doesn't make sense to have an editing version of this effect because
+  // the callback calling effect already updates the caches.
   useEffect(() => {
     if (!editing) {
       if (!colorModel.equal(value, permCache.current.color)) {

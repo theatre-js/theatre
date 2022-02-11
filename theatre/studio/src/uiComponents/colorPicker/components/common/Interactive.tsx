@@ -129,6 +129,8 @@ const InteractiveBase = ({onMove, onKey, ...rest}: Props) => {
       // after the user has moved the mouse/finger back to the document, we check `event.buttons`
       // and `event.touches`. It allows us to detect that the user is just moving his pointer
       // without pressing it down
+      // Note: we should use pointer events to fix this, since we don't have strict compatibility
+      // requirements.
       const isDown = isTouch(event)
         ? event.touches.length > 0
         : event.buttons > 0
@@ -143,6 +145,8 @@ const InteractiveBase = ({onMove, onKey, ...rest}: Props) => {
       }
     }
 
+    // Use move-end anyway (see above) so we can terminate early if we receive one
+    // instead of having to wait for the user to move the mouse, which they might not do.
     const handleMoveEnd = (event: MouseEvent | TouchEvent) => {
       setEditing(false)
       toggleDocumentEvents(false)
