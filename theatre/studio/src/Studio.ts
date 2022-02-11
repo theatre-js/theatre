@@ -27,7 +27,7 @@ import type {
   WithoutSheetInstance,
   SheetObjectAddress,
 } from '@theatre/shared/utils/addresses'
-import type {ISelectedKeyframes} from './store/types'
+import type {SelectedKeyframe} from './store/types'
 
 export type CoreExports = typeof _coreExports
 
@@ -233,16 +233,13 @@ export class Studio {
   }: {
     sheetObject: SheetObject
     trackId: string
-    keyframes: ISelectedKeyframes
+    keyframes: SelectedKeyframe[]
     position: number
   }) {
-    const keyframesToPasteValues = Object.values(keyframesToPaste)
-
     const {address, sheet} = sheetObject
 
-    const allTrackIds = val(
-      sheetObject.template.getArrayOfValidSequenceTracks(),
-    ).map(({trackId}) => trackId)
+    const allTracks = val(sheetObject.template.getArrayOfValidSequenceTracks())
+    const allTrackIds = allTracks.map(({trackId}) => trackId)
 
     // The track we want to start pasting from
     const selectedTrackIndex = allTrackIds.indexOf(trackId)
@@ -259,11 +256,11 @@ export class Studio {
     for (let i = selectedTrackIndex; i < allTrackIds.length; i++) {
       const trackToPasteToId = allTrackIds[i]
 
-      if (!keyframesToPasteValues[trackToPasteIndex]) break
+      if (!keyframesToPaste[trackToPasteIndex]) break
 
-      const keyframesWithNewPositions = keyframesToPasteValues[
+      const keyframesWithNewPositions = keyframesToPaste[
         trackToPasteIndex
-      ].map((kf) => {
+      ].keyframes.map((kf) => {
         if (isFirstKeyframe) {
           // We want the first keyframe to start at position
           isFirstKeyframe = false
@@ -271,7 +268,7 @@ export class Studio {
         }
 
         // The rest will be offset from the firstKeyframe
-        const firstKeyframe = keyframesToPasteValues[0][0]
+        const firstKeyframe = keyframesToPaste[0].keyframes[0]
         const positionDiff = kf.position - firstKeyframe.position
 
         return {...kf, position: position + positionDiff}

@@ -11,8 +11,8 @@ export const getPasteKeyframesItem = (
 ): IContextMenuItem | null => {
   const copiedKeyframes = getCopiedKeyframes()
 
-  const totalKeyframes = Object.values(copiedKeyframes).reduce((prev, curr) => {
-    return prev + curr.length
+  const totalKeyframes = copiedKeyframes.reduce((currentTotal, {keyframes}) => {
+    return currentTotal + keyframes.length
   }, 0)
 
   const {trackId, sheetObject} = leaf
@@ -55,24 +55,23 @@ export const getCopyKeyframesItem = ({
     const tracks = sequence?.tracksByObject
     const {trackData = {}} = tracks?.[objectKey] || {}
 
-    const selectedKeyframes = Object.keys(trackData).reduce((prev, key) => {
+    const allTracks = val(sheetObject.template.getArrayOfValidSequenceTracks())
+
+    const selectedKeyframes = allTracks.map(({pathToProp, trackId}) => {
       const selectedKeyframeIds = Object.keys(
-        byTrackId[key]?.byKeyframeId || {},
+        byTrackId[trackId]?.byKeyframeId || {},
       )
 
-      const keyframes = trackData[key]!.keyframes.filter(
+      const keyframes = trackData[trackId]!.keyframes.filter(
         ({id}) => selectedKeyframeIds.indexOf(id) > -1,
       )
 
-      if (!keyframes.length) {
-        return prev
-      }
-
       return {
-        ...prev,
-        [key]: keyframes,
+        pathToProp,
+        trackId,
+        keyframes,
       }
-    }, {})
+    })
 
     return {
       label: 'Copy selected keyframes',
@@ -86,11 +85,12 @@ export const getCopyKeyframesItem = ({
     return {
       label: 'Copy keyframe',
       callback: () => {
-        getStudio().transaction(({stateEditors}) => {
-          stateEditors.studio.ahistoric.setKeyframesClipboard({
-            [trackId]: [keyframe],
-          })
-        })
+        // TODO:
+        // getStudio().transaction(({stateEditors}) => {
+        //   stateEditors.studio.ahistoric.setKeyframesClipboard({
+        //     [trackId]: [keyframe],
+        //   })
+        // })
       },
     }
   }
