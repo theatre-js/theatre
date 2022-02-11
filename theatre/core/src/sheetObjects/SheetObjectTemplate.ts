@@ -16,28 +16,19 @@ import type {
   $IntentionalAny,
   SerializableMap,
   SerializableValue,
-  StrictRecord,
 } from '@theatre/shared/utils/types'
 import type {IDerivation, Pointer} from '@theatre/dataverse'
 import {Atom, getPointerParts, prism, val} from '@theatre/dataverse'
 import getPropDefaultsOfSheetObject from './getPropDefaultsOfSheetObject'
 import SheetObject from './SheetObject'
-import type {
-  PropTypeConfig,
-  PropTypeConfig_Compound,
-} from '@theatre/core/propTypes'
+import type {PropTypeConfig_Compound} from '@theatre/core/propTypes'
 import {set} from 'lodash-es'
-import type {IsCompositePropType} from '@theatre/shared/propTypes/utils'
-import {isPropConfigComposite} from '@theatre/shared/propTypes/utils'
+
+import getOrderedTrackIdsAndPaths from './getOrderedTrackIdsAndPath'
 
 export type IPropPathToTrackIdTree = {
   [key in string]?: SequenceTrackId | IPropPathToTrackIdTree
 }
-
-type IdsArray = Array<{
-  pathToProp: PathToProp
-  trackId: SequenceTrackId
-}>
 
 export default class SheetObjectTemplate {
   readonly address: WithoutSheetInstance<SheetObjectAddress>
@@ -132,11 +123,9 @@ export default class SheetObjectTemplate {
 
         if (!trackIdByPropPath) return emptyArray as $IntentionalAny
 
-        const arrayOfIds = getOrderedTrackIds({
-          props: this.config.props,
+        const arrayOfIds = getOrderedTrackIdsAndPaths({
+          config: this.config,
           trackIdByPropPath,
-          currentPathToProp: [],
-          tracks: [],
         })
 
         if (arrayOfIds.length === 0) {
@@ -179,69 +168,4 @@ export default class SheetObjectTemplate {
     const defaultsAtPath = getDeep(defaults, path)
     return defaultsAtPath as $FixMe
   }
-}
-
-/**
- * Iterates through a tree of properties and returns the path and trackId
- * if the trackId exists, sorted by composite root props first
- *
- * Returns an array.
- */
-function getOrderedTrackIds({
-  props,
-  trackIdByPropPath,
-  tracks = [],
-  currentPathToProp = [],
-  config,
-}: {
-  props: Record<string, PropTypeConfig>
-  trackIdByPropPath: StrictRecord<string, string>
-  tracks: IsCompositePropType[]
-  currentPathToProp: PathToProp
-  config?: PropTypeConfig
-}): IdsArray {
-  const propKeys = Object.keys(props)
-
-  for (const propKey of propKeys) {
-    const prop = (props as $FixMe)[propKey]
-
-    if (prop.props) {
-      getOrderedTrackIds({
-        props: prop.props,
-        trackIdByPropPath,
-        tracks,
-        currentPathToProp: [...currentPathToProp, propKey],
-        config: config || prop, // Preserve the top level config so we can check later if it's a Composite prop
-      })
-    } else {
-      const pathToProp = [...currentPathToProp, propKey]
-      const trackId = trackIdByPropPath[JSON.stringify(pathToProp)]
-      const rest = ({...config} || {...props}) as PropTypeConfig
-
-      if (trackId && rest) {
-        tracks.push({
-          ...rest,
-          pathToProp,
-          trackId,
-        })
-      }
-    }
-  }
-
-  tracks.sort((a, b) => {
-    if (isPropConfigComposite(b)) {
-      return -1
-    }
-
-    if (isPropConfigComposite(a)) {
-      return 1
-    }
-
-    return 0
-  })
-
-  return tracks.map(({pathToProp, trackId}) => ({
-    pathToProp: pathToProp!,
-    trackId: trackId!,
-  }))
 }
