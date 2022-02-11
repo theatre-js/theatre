@@ -12,8 +12,6 @@ export type IdsArray = Array<{
   trackId: SequenceTrackId
 }>
 
-let updatedTracks = []
-
 /**
  * Iterates through a tree of properties and returns the path and trackId if the
  * trackId exists (i.e. is sequenced), sorted by compound root props last
@@ -22,39 +20,54 @@ let updatedTracks = []
  */
 export default function getOrderedTrackIdsAndPaths({
   config,
-  subProp,
   trackIdByPropPath,
+}: {
+  config: PropTypeConfig_Compound<{}>
+  trackIdByPropPath: StrictRecord<string, string>
+}) {
+  const tracks: IdsArray = []
+
+  const newTracks = iterateOnCompound({
+    config,
+    trackIdByPropPath,
+    tracks,
+  })
+
+  return newTracks
+}
+
+function iterateOnCompound({
+  config,
+  trackIdByPropPath,
+  subProp,
   tracks,
   pathToProp = [],
 }: {
   config: PropTypeConfig_Compound<{}>
-  subProp?: PropTypeConfig_Compound<{}>
   trackIdByPropPath: StrictRecord<string, string>
-  tracks?: IdsArray
+  subProp?: PropTypeConfig_Compound<{}>
+  tracks: IdsArray
   pathToProp?: PathToProp
 }): IdsArray {
   const propKeys = Object.keys(subProp?.props || config.props)
-
-  updatedTracks = tracks ? [...tracks] : []
 
   for (const propKey of propKeys) {
     const updatedPathToProp = [...pathToProp, propKey]
     const subProp = getPropConfigByPath(config, updatedPathToProp)
 
     if (subProp?.type === 'compound') {
-      console.log('propKey', propKey)
-      getOrderedTrackIdsAndPaths({
+      iterateOnCompound({
         config,
         subProp,
         trackIdByPropPath,
-        tracks: updatedTracks,
+        tracks,
         pathToProp: updatedPathToProp,
       })
     } else {
       const trackId = trackIdByPropPath[JSON.stringify(updatedPathToProp)]
 
       if (trackId) {
-        updatedTracks.push({
+        tracks.push({
           pathToProp: updatedPathToProp,
           trackId,
         })
@@ -62,7 +75,7 @@ export default function getOrderedTrackIdsAndPaths({
     }
   }
 
-  updatedTracks.sort((a, b) => {
+  tracks.sort((a, b) => {
     const [keyA] = a.pathToProp
     const [keyB] = b.pathToProp
     const configA = getPropConfigByPath(config, [keyA])
@@ -79,5 +92,5 @@ export default function getOrderedTrackIdsAndPaths({
     return 0
   })
 
-  return updatedTracks
+  return tracks
 }
