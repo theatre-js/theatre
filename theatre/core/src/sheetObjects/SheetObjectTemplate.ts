@@ -104,8 +104,8 @@ export default class SheetObjectTemplate {
   }
 
   /**
-   * Filters through the config and returns only those tracks that are sequenced,
-   * keeping the same order as the config
+   * Filters through the sequenced tracks and returns those tracks who are valid
+   * according to the object's prop types, then sorted in the same order as the config
    *
    * Returns an array.
    */
