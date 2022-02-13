@@ -3,7 +3,7 @@ import type {StudioHistoricState} from '@theatre/studio/store/types/historic'
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
 import UI from '@theatre/studio/UI'
 import type {Pointer} from '@theatre/dataverse'
-import {Atom, PointerProxy, valueDerivation, val} from '@theatre/dataverse'
+import {Atom, PointerProxy, valueDerivation} from '@theatre/dataverse'
 import type {
   CommitOrDiscard,
   ITransactionPrivateApi,
@@ -238,51 +238,35 @@ export class Studio {
   }) {
     const {address, sheet} = sheetObject
 
-    const allTracks = val(sheetObject.template.getArrayOfValidSequenceTracks())
-    const allTrackIds = allTracks.map(({trackId}) => trackId)
+    let initialPosition: number | undefined = undefined
 
-    // The track we want to start pasting from
-    const selectedTrackIndex = allTrackIds.indexOf(trackId)
-
-    let isFirstKeyframe = true
-    let trackToPasteIndex = 0
-
+    // Paste back to same tracks
     const tracksToPaste: (WithoutSheetInstance<SheetObjectAddress> & {
       trackId: string
       keyframes: Array<Keyframe>
       snappingFunction: (p: number) => number
-    })[] = []
-
-    for (let i = selectedTrackIndex; i < allTrackIds.length; i++) {
-      const trackToPasteToId = allTrackIds[i]
-
-      if (!keyframesToPaste[trackToPasteIndex]) break
-
-      const keyframesWithNewPositions = keyframesToPaste[
-        trackToPasteIndex
-      ].keyframes.map((kf) => {
-        if (isFirstKeyframe) {
-          // We want the first keyframe to start at position
-          isFirstKeyframe = false
+    })[] = keyframesToPaste.map(({trackId, keyframes}) => {
+      const keyframesWithNewPositions = keyframes.map((kf) => {
+        if (initialPosition === undefined) {
+          initialPosition = kf.position
           return {...kf, position}
         }
 
         // The rest will be offset from the firstKeyframe
-        const firstKeyframe = keyframesToPaste[0].keyframes[0]
-        const positionDiff = kf.position - firstKeyframe.position
+        const positionDiff = kf.position - initialPosition
 
         return {...kf, position: position + positionDiff}
       })
 
-      tracksToPaste.push({
+      return {
         ...address,
-        trackId: trackToPasteToId,
+        trackId,
         keyframes: keyframesWithNewPositions,
         snappingFunction: sheet.getSequence().closestGridPosition,
-      })
+      }
+    })
 
-      trackToPasteIndex++
-    }
+    // TODO: paste to different track
 
     this.transaction((api) => {
       tracksToPaste.forEach((track) => {
