@@ -32,7 +32,7 @@ function iterateOnCompound(
   map: Mapping,
 ) {
   for (const [key, subConf] of Object.entries(config.props)) {
-    if (!isPropConfigComposite(config)) {
+    if (!isPropConfigComposite(subConf)) {
       const subPath = [...path, key]
       map.set(JSON.stringify(subPath), map.size)
       iterateOnAny(subPath, subConf, map)
@@ -40,7 +40,7 @@ function iterateOnCompound(
   }
 
   for (const [key, subConf] of Object.entries(config.props)) {
-    if (isPropConfigComposite(config)) {
+    if (isPropConfigComposite(subConf)) {
       const subPath = [...path, key]
       map.set(JSON.stringify(subPath), map.size)
       iterateOnAny(subPath, subConf, map)
