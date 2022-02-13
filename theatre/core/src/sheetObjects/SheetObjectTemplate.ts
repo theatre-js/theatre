@@ -19,12 +19,13 @@ import type {
 } from '@theatre/shared/utils/types'
 import type {IDerivation, Pointer} from '@theatre/dataverse'
 import {Atom, getPointerParts, prism, val} from '@theatre/dataverse'
+import set from 'lodash-es/set'
 import getPropDefaultsOfSheetObject from './getPropDefaultsOfSheetObject'
 import SheetObject from './SheetObject'
+import logger from '@theatre/shared/logger'
 import type {PropTypeConfig_Compound} from '@theatre/core/propTypes'
-import {set} from 'lodash-es'
-
-import getOrderedTrackIdsAndPaths from './getOrderedTrackIdsAndPath'
+import {getPropConfigByPath} from '@theatre/shared/propTypes/utils'
+import getOrderingOfPropTypeConfig from './getOrderingOfPropTypeConfig'
 
 export type IPropPathToTrackIdTree = {
   [key in string]?: SequenceTrackId | IPropPathToTrackIdTree
@@ -103,8 +104,8 @@ export default class SheetObjectTemplate {
   }
 
   /**
-   * Filters through the config and returns only those tracks that are sequenced,
-   * keeping the same order as the config
+   * Filters through the sequenced tracks and returns those tracks who are valid
+   * according to the object's prop types, then sorted in the same order as the config
    *
    * Returns an array.
    */
@@ -123,9 +124,40 @@ export default class SheetObjectTemplate {
 
         if (!trackIdByPropPath) return emptyArray as $IntentionalAny
 
-        const arrayOfIds = getOrderedTrackIdsAndPaths({
-          config: this.config,
-          trackIdByPropPath,
+        const arrayOfIds: Array<{
+          pathToProp: PathToProp
+          trackId: SequenceTrackId
+        }> = []
+
+        if (!trackIdByPropPath) return emptyArray as $IntentionalAny
+
+        const _entries = Object.entries(trackIdByPropPath)
+        for (const [pathToPropInString, trackId] of _entries) {
+          const pathToProp = parsePathToProp(pathToPropInString)
+          if (!pathToProp) continue
+
+          const propConfig = getPropConfigByPath(this.config, pathToProp)
+
+          if (!propConfig || !propConfig?.sanitize || !propConfig.interpolate)
+            continue
+
+          arrayOfIds.push({pathToProp, trackId: trackId!})
+        }
+
+        const mapping = getOrderingOfPropTypeConfig(this.config)
+
+        arrayOfIds.sort((a, b) => {
+          const pathToPropA = a.pathToProp
+          const pathToPropB = b.pathToProp
+
+          const indexA = mapping.get(JSON.stringify(pathToPropA))!
+          const indexB = mapping.get(JSON.stringify(pathToPropB))!
+
+          if (indexA > indexB) {
+            return 1
+          }
+
+          return -1
         })
 
         if (arrayOfIds.length === 0) {
@@ -167,5 +199,21 @@ export default class SheetObjectTemplate {
 
     const defaultsAtPath = getDeep(defaults, path)
     return defaultsAtPath as $FixMe
+  }
+}
+
+function parsePathToProp(
+  pathToPropInString: string,
+): undefined | Array<string | number> {
+  try {
+    const pathToProp = JSON.parse(pathToPropInString)
+    return pathToProp
+  } catch (e) {
+    logger.warn(
+      `property ${JSON.stringify(
+        pathToPropInString,
+      )} cannot be parsed. Skipping.`,
+    )
+    return undefined
   }
 }
