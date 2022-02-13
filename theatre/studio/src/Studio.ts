@@ -3,6 +3,7 @@ import type {StudioHistoricState} from '@theatre/studio/store/types/historic'
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
 import UI from '@theatre/studio/UI'
 import type {Pointer} from '@theatre/dataverse'
+import {val} from '@theatre/dataverse'
 import {Atom, PointerProxy, valueDerivation} from '@theatre/dataverse'
 import type {
   CommitOrDiscard,
@@ -227,7 +228,7 @@ export class Studio {
 
   pasteKeyframes({
     sheetObject,
-    trackId,
+    trackId: selectedTrackId,
     keyframes: keyframesToPaste,
     position,
   }: {
@@ -240,41 +241,95 @@ export class Studio {
 
     let initialPosition: number | undefined = undefined
 
-    // Paste back to same tracks
-    const tracksToPaste: (WithoutSheetInstance<SheetObjectAddress> & {
-      trackId: string
-      keyframes: Array<Keyframe>
-      snappingFunction: (p: number) => number
-    })[] = keyframesToPaste.map(({trackId, keyframes}) => {
-      const keyframesWithNewPositions = keyframes.map((kf) => {
-        if (initialPosition === undefined) {
-          initialPosition = kf.position
-          return {...kf, position}
+    const allTracks = val(sheetObject.template.getArrayOfValidSequenceTracks())
+    const selectedTrackIndex = allTracks.findIndex(
+      ({trackId}) => trackId === selectedTrackId,
+    )
+    const firstTrackToPasteIndex = keyframesToPaste.findIndex(
+      ({keyframes}) => keyframes.length,
+    )
+
+    if (selectedTrackIndex === firstTrackToPasteIndex) {
+      // Paste back to same tracks
+      const tracksToPaste: (WithoutSheetInstance<SheetObjectAddress> & {
+        trackId: string
+        keyframes: Keyframe[]
+        snappingFunction: (p: number) => number
+      })[] = keyframesToPaste.map(({trackId, keyframes}) => {
+        const keyframesWithNewPositions = keyframes.map((kf) => {
+          if (initialPosition === undefined) {
+            initialPosition = kf.position
+            return {...kf, position}
+          }
+
+          // The rest will be offset from the firstKeyframe
+          const positionDiff = kf.position - initialPosition
+
+          return {...kf, position: position + positionDiff}
+        })
+
+        return {
+          ...address,
+          trackId,
+          keyframes: keyframesWithNewPositions,
+          snappingFunction: sheet.getSequence().closestGridPosition,
+        }
+      })
+
+      this.transaction((api) => {
+        tracksToPaste.forEach((track) => {
+          api.stateEditors.coreByProject.historic.sheetsById.sequence.mergeKeyframes(
+            track,
+          )
+        })
+      })
+    } else {
+      // Paste to different tracks
+
+      // Remove any empty tracks at the start
+      const trimmedKeyframesToPaste = keyframesToPaste.slice(
+        firstTrackToPasteIndex,
+      )
+
+      const tracksToPaste: (WithoutSheetInstance<SheetObjectAddress> & {
+        trackId: string
+        keyframes: Keyframe[]
+        snappingFunction: (p: number) => number
+      })[] = allTracks.map(({trackId}, i) => {
+        let keyframesWithNewPositions: Keyframe[] = []
+
+        if (i >= selectedTrackIndex) {
+          const track = trimmedKeyframesToPaste.shift()
+          keyframesWithNewPositions =
+            track?.keyframes.map((kf) => {
+              if (initialPosition === undefined) {
+                initialPosition = kf.position
+                return {...kf, position}
+              }
+
+              // The rest will be offset from the firstKeyframe
+              const positionDiff = kf.position - initialPosition
+
+              return {...kf, position: position + positionDiff}
+            }) || []
         }
 
-        // The rest will be offset from the firstKeyframe
-        const positionDiff = kf.position - initialPosition
-
-        return {...kf, position: position + positionDiff}
+        return {
+          ...address,
+          trackId,
+          keyframes: keyframesWithNewPositions,
+          snappingFunction: sheet.getSequence().closestGridPosition,
+        }
       })
 
-      return {
-        ...address,
-        trackId,
-        keyframes: keyframesWithNewPositions,
-        snappingFunction: sheet.getSequence().closestGridPosition,
-      }
-    })
-
-    // TODO: paste to different track
-
-    this.transaction((api) => {
-      tracksToPaste.forEach((track) => {
-        api.stateEditors.coreByProject.historic.sheetsById.sequence.mergeKeyframes(
-          track,
-        )
+      this.transaction((api) => {
+        tracksToPaste.forEach((track) => {
+          api.stateEditors.coreByProject.historic.sheetsById.sequence.mergeKeyframes(
+            track,
+          )
+        })
       })
-    })
+    }
   }
 
   createContentOfSaveFile(projectId: string): OnDiskState {
