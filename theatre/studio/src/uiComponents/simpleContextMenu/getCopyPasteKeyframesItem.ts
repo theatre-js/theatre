@@ -41,41 +41,41 @@ export const getCopyKeyframesItem = ({
   selection?: DopeSheetSelection
   keyframe?: Keyframe
 }): IContextMenuItem | null => {
-  const {sheetObject, trackId} = leaf
+  const {sheetObject, trackId: selectedTrackId} = leaf
   const {address} = sheetObject
 
-  if (!trackId) return null
+  if (!selectedTrackId) return null
 
   if (selection) {
-    const {projectId, objectKey, sheetId} = address
-    const {byTrackId} = selection.byObjectKey[objectKey]!
-
-    const projectP = val(getStudio().projectsP[projectId].pointers)
-    const {sequence} = val(projectP.historic).sheetsById[sheetId] || {}
-    const tracks = sequence?.tracksByObject
-    const {trackData = {}} = tracks?.[objectKey] || {}
-
-    const allTracks = val(sheetObject.template.getArrayOfValidSequenceTracks())
-
-    const selectedKeyframes = allTracks.map(({pathToProp, trackId}) => {
-      const selectedKeyframeIds = Object.keys(
-        byTrackId[trackId]?.byKeyframeId || {},
-      )
-
-      const keyframes = trackData[trackId]!.keyframes.filter(
-        ({id}) => selectedKeyframeIds.indexOf(id) > -1,
-      )
-
-      return {
-        pathToProp,
-        trackId,
-        keyframes,
-      }
-    })
-
     return {
       label: 'Copy selected keyframes',
       callback: () => {
+        const {projectId, objectKey, sheetId} = address
+        const {byTrackId} = selection.byObjectKey[objectKey]!
+
+        const projectP = val(getStudio().projectsP[projectId].pointers)
+        const {sequence} = val(projectP.historic).sheetsById[sheetId] || {}
+        const tracks = sequence?.tracksByObject
+        const {trackData = {}} = tracks?.[objectKey] || {}
+
+        const allTracks = val(
+          sheetObject.template.getArrayOfValidSequenceTracks(),
+        )
+        const selectedKeyframes = allTracks.map(({pathToProp, trackId}) => {
+          const selectedKeyframeIds = Object.keys(
+            byTrackId[trackId]?.byKeyframeId || {},
+          )
+
+          const keyframes = trackData[trackId]!.keyframes.filter(
+            ({id}) => selectedKeyframeIds.indexOf(id) > -1,
+          )
+
+          return {
+            pathToProp,
+            trackId,
+            keyframes,
+          }
+        })
         getStudio().transaction(({stateEditors}) => {
           stateEditors.studio.ahistoric.setKeyframesClipboard(selectedKeyframes)
         })
@@ -85,12 +85,20 @@ export const getCopyKeyframesItem = ({
     return {
       label: 'Copy keyframe',
       callback: () => {
-        // TODO:
-        // getStudio().transaction(({stateEditors}) => {
-        //   stateEditors.studio.ahistoric.setKeyframesClipboard({
-        //     [trackId]: [keyframe],
-        //   })
-        // })
+        const allTracks = val(
+          sheetObject.template.getArrayOfValidSequenceTracks(),
+        )
+        const selectedKeyframes = allTracks.map(({pathToProp, trackId}) => {
+          return {
+            pathToProp,
+            trackId,
+            keyframes: trackId === selectedTrackId ? [keyframe] : [],
+          }
+        })
+
+        getStudio().transaction(({stateEditors}) => {
+          stateEditors.studio.ahistoric.setKeyframesClipboard(selectedKeyframes)
+        })
       },
     }
   }
