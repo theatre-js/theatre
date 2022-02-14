@@ -13,6 +13,7 @@ import {RgbaColorPicker} from '@theatre/studio/uiComponents/colorPicker'
 import styled from 'styled-components'
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 import BasicStringInput from '@theatre/studio/uiComponents/form/BasicStringInput'
+import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
 
 const RowContainer = styled.div`
   display: flex;
@@ -64,30 +65,33 @@ const RgbaPropEditor: React.FC<{
 
   const [popoverNode, openPopover] = usePopover({}, () => {
     return (
-      <div
-        style={{
-          pointerEvents: 'all',
-        }}
-      >
-        <RgbaColorPicker
-          color={{
-            r: stuff.value.r,
-            g: stuff.value.g,
-            b: stuff.value.b,
-            a: stuff.value.a,
+      <BasicPopover>
+        <div
+          style={{
+            margin: 8,
+            pointerEvents: 'all',
           }}
-          temporarilySetValue={(color) => {
-            const rgba = decorateRgba(color)
-            stuff.temporarilySetValue(rgba)
-          }}
-          permanentlySetValue={(color) => {
-            // console.log('perm')
-            const rgba = decorateRgba(color)
-            stuff.permenantlySetValue(rgba)
-          }}
-          discardTemporaryValue={stuff.discardTemporaryValue}
-        />
-      </div>
+        >
+          <RgbaColorPicker
+            color={{
+              r: stuff.value.r,
+              g: stuff.value.g,
+              b: stuff.value.b,
+              a: stuff.value.a,
+            }}
+            temporarilySetValue={(color) => {
+              const rgba = decorateRgba(color)
+              stuff.temporarilySetValue(rgba)
+            }}
+            permanentlySetValue={(color) => {
+              // console.log('perm')
+              const rgba = decorateRgba(color)
+              stuff.permenantlySetValue(rgba)
+            }}
+            discardTemporaryValue={stuff.discardTemporaryValue}
+          />
+        </div>
+      </BasicPopover>
     )
   })
 

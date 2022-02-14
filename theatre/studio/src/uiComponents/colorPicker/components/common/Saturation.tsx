@@ -13,7 +13,7 @@ const Container = styled.div`
   flex-grow: 1;
   border-color: transparent; /* Fixes https://github.com/omgovich/react-colorful/issues/139 */
   border-bottom: 12px solid #000;
-  border-radius: 4px 4px 0 0;
+  border-radius: 4px 4px 4px 4px;
   background-image: linear-gradient(to top, #000, rgba(0, 0, 0, 0)),
     linear-gradient(to right, #fff, rgba(255, 255, 255, 0));
 

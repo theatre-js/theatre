@@ -13,6 +13,7 @@ import styled from 'styled-components'
 const Container = styled.div`
   position: relative;
   height: 24px;
+  border-radius: 4px;
   // Checkerboard
   background-color: #fff;
   background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill-opacity=".05"><rect x="8" width="8" height="8"/><rect y="8" width="8" height="8"/></svg>');

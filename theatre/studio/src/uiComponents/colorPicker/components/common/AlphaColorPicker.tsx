@@ -15,15 +15,12 @@ import styled from 'styled-components'
 const Container = styled.div`
   position: relative;
   display: flex;
+  gap: 8px;
   flex-direction: column;
   width: 200px;
   height: 200px;
   user-select: none;
   cursor: default;
-`
-
-const AlphaAsLastElement = styled(Alpha)`
-  border-radius: 0 0 4px 4px;
 `
 
 interface Props<T extends AnyColor> extends ColorPickerBaseProps<T> {
@@ -56,7 +53,7 @@ export const AlphaColorPicker = <T extends AnyColor>({
     <Container {...rest}>
       <Saturation hsva={tempHsva} onChange={updateHsva} />
       <Hue hue={tempHsva.h} onChange={updateHsva} />
-      <AlphaAsLastElement hsva={tempHsva} onChange={updateHsva} />
+      <Alpha hsva={tempHsva} onChange={updateHsva} />
     </Container>
   )
 }
