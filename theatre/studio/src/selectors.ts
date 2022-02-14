@@ -88,5 +88,5 @@ export function getSelectedSequence(): undefined | Sequence {
 }
 
 export function getCopiedKeyframes(): CopiedKeyframes[] {
-  return val(getStudio()!.atomP.ahistoric.keyframesClipboard) || {}
+  return val(getStudio()!.atomP.ahistoric.keyframesClipboard) || []
 }
