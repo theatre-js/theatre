@@ -90,6 +90,7 @@ function useTrackContextMenu(
   const pasteKeyframesItem = getPasteKeyframesItem(leaf)
 
   return useContextMenu(node, {
+    withInitialPosition: true,
     items: () => {
       if (pasteKeyframesItem) {
         return [pasteKeyframesItem]

@@ -115,7 +115,7 @@ const FrameStampPositionProvider: React.FC<{
   return <context.Provider value={value}>{children}</context.Provider>
 }
 
-export const useFrameStampPositionD = () => useContext(context)?.currentD || []
+export const useFrameStampPositionD = () => useContext(context).currentD
 
 export const useLockFrameStampPosition = (shouldLock: boolean, val: number) => {
   const {getLock} = useContext(context)

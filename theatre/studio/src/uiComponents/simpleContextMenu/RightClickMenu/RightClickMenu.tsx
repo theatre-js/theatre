@@ -38,21 +38,23 @@ const Container = styled.ul`
 
 export type IContextMenuItem = {
   label: string | ElementType
-  callback?: (e: React.MouseEvent, initialPosInUnitSpace: number) => void
+  callback?: (e: React.MouseEvent, initialPosInUnitSpace?: number) => void
   enabled?: boolean
   // subs?: Item[]
 }
 
-const RightClickMenu: React.FC<{
+interface IRightClickMenuProps {
   items: IContextMenuItem[] | (() => IContextMenuItem[])
   rightClickPoint: {clientX: number; clientY: number}
   onRequestClose: () => void
-}> = (props) => {
+}
+
+const RightClickMenu: React.FC<
+  IRightClickMenuProps & {initialPosition?: number}
+> = (props) => {
   const [container, setContainer] = useState<HTMLElement | null>(null)
   const rect = useBoundingClientRect(container)
   const windowSize = useWindowSize()
-  const [posInUnitSpace] = useVal(useFrameStampPositionD())
-  const initialPosInUnitSpace = useRef(posInUnitSpace)
 
   useLayoutEffect(() => {
     if (!rect || !container) return
@@ -118,7 +120,7 @@ const RightClickMenu: React.FC<{
           enabled={item.enabled === false ? false : true}
           onClick={(e) => {
             if (item.callback) {
-              item.callback(e, initialPosInUnitSpace.current)
+              item.callback(e, props.initialPosition)
             }
             props.onRequestClose()
           }}
@@ -128,5 +130,18 @@ const RightClickMenu: React.FC<{
     portalLayer!,
   )
 }
+
+export const RightClickMenuWithInitialPosition: React.FC<IRightClickMenuProps> =
+  (props) => {
+    const [posInUnitSpace] = useVal(useFrameStampPositionD())
+    const initialPosInUnitSpace = useRef(posInUnitSpace)
+
+    return (
+      <RightClickMenu
+        {...props}
+        initialPosition={initialPosInUnitSpace.current}
+      />
+    )
+  }
 
 export default RightClickMenu
