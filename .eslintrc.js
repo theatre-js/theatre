@@ -1,7 +1,7 @@
 module.exports = {
   root: true,
   plugins: ['unused-imports', 'eslint-plugin-tsdoc'],
-  extends: [],
+  extends: ['plugin:react-hooks/recommended'],
   rules: {
     'unused-imports/no-unused-imports': 'warn',
     'tsdoc/syntax': 'warn',
