@@ -2,7 +2,7 @@ import {clamp, isInteger, round} from 'lodash-es'
 import type {MutableRefObject} from 'react'
 import React, {useMemo, useRef} from 'react'
 import styled from 'styled-components'
-import DraggableArea from '@theatre/studio/uiComponents/DraggableArea'
+import DraggableArea from '@theatre/studio/uiComponents/DraggableArea2'
 import mergeRefs from 'react-merge-refs'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import useOnClickOutside from '@theatre/studio/uiComponents/useOnClickOutside'
@@ -133,8 +133,6 @@ const BasicNumberInput: React.FC<{
     stateRef.current.mode === 'editingViaKeyboard',
   )
 
-  const bodyCursorBeforeDrag = useRef<string | null>(null)
-
   const callbacks = useMemo(() => {
     const inputChange = (e: React.ChangeEvent) => {
       const target = e.target as HTMLInputElement
@@ -226,8 +224,6 @@ const BasicNumberInput: React.FC<{
         valueBeforeDragging: curValue,
         currentDraggingValue: curValue,
       }
-
-      bodyCursorBeforeDrag.current = document.body.style.cursor
     }
 
     const onDragEnd = (happened: boolean) => {
@@ -253,10 +249,10 @@ const BasicNumberInput: React.FC<{
       const curState = stateRef.current as IState_Dragging
 
       let newValue =
-        curState.valueBeforeDragging +
+        curState.currentDraggingValue +
         propsA.nudge({
           deltaX,
-          deltaFraction: deltaX / inputWidth,
+          deltaFraction: deltaX / inputWidth, // TODO: tweak delta
           magnitude: 1,
         })
 
@@ -336,8 +332,7 @@ const BasicNumberInput: React.FC<{
         onDragStart={callbacks.transitionToDraggingMode}
         onDragEnd={callbacks.onDragEnd}
         onDrag={callbacks.onDrag}
-        enabled={stateRef.current.mode !== 'editingViaKeyboard'}
-        lockCursorTo="ew-resize"
+        // lockCursorTo="ew-resize"
       >
         {theInput}
       </DraggableArea>

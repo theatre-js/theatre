@@ -1,4 +1,3 @@
-import type {MutableRefObject} from 'react'
 import React, {
   useCallback,
   useState,
@@ -11,7 +10,6 @@ import {createPortal} from 'react-dom'
 import {PortalContext} from 'reakit'
 
 interface IDraggableAreaProps {
-  elementRef?: MutableRefObject<HTMLInputElement | null>
   onDrag: (dx: number, dy: number, event: MouseEvent) => void
   onDragStart?: (
     event: React.MouseEvent<HTMLElement | SVGElement>,
@@ -32,7 +30,6 @@ const DraggableArea: React.FC<IDraggableAreaProps> = ({
   onDrag,
   onDragStart,
   onDragEnd,
-  elementRef,
 }) => {
   const portalLayer = useContext(PortalContext)
   const [isMouseDown, setIsMouseDown] = useState(false)
@@ -108,7 +105,7 @@ const DraggableArea: React.FC<IDraggableAreaProps> = ({
   const childrenWithProps = useMemo(() => {
     return React.Children.map(children, (child) => {
       if (React.isValidElement(child)) {
-        return React.cloneElement(child, {onMouseDown, ref: elementRef})
+        return React.cloneElement(child, {onMouseDown})
       }
       return child
     })
