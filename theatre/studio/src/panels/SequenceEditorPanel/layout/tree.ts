@@ -4,7 +4,6 @@ import type {
   PropTypeConfig_AllPrimitives,
   PropTypeConfig_Compound,
 } from '@theatre/core/propTypes'
-import {isPropConfigComposite} from '@theatre/shared/propTypes/utils'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import type {IPropPathToTrackIdTree} from '@theatre/core/sheetObjects/SheetObjectTemplate'
 import type Sheet from '@theatre/core/sheets/Sheet'
@@ -127,11 +126,6 @@ export const calculateSequenceEditorTree = (
       level + 1,
     )
 
-    // for (const [propKey, propConfig] of Object.entries(
-    //   sheetObject.template.config.props.props,
-    // )) {
-    //   addProp(sheetObject, [propKey], propConfig, row.children, level + 1)
-    // }
     row.heightIncludingChildren = topSoFar - row.top
   }
 
@@ -147,20 +141,6 @@ export const calculateSequenceEditorTree = (
   ) {
     for (const [propKey, setupOrSetups] of Object.entries(trackSetups)) {
       const propConfig = parentPropConfig.props[propKey]
-      if (isPropConfigComposite(propConfig)) continue
-      addProp(
-        sheetObject,
-        setupOrSetups!,
-        [...pathSoFar, propKey],
-        propConfig,
-        arrayOfChildren,
-        level,
-      )
-    }
-
-    for (const [propKey, setupOrSetups] of Object.entries(trackSetups)) {
-      const propConfig = parentPropConfig.props[propKey]
-      if (!isPropConfigComposite(propConfig)) continue
       addProp(
         sheetObject,
         setupOrSetups!,
@@ -275,32 +255,4 @@ export const calculateSequenceEditorTree = (
   }
 
   return tree
-}
-
-type _Info = {
-  propKey: string
-  propConfig: PropTypeConfig
-  trackIdOrMapping: SequenceTrackId | IPropPathToTrackIdTree
-}
-
-function sortTrackSetups(
-  trackMapping: IPropPathToTrackIdTree,
-  rootPropConfig: $FixMe,
-): Array<_Info> {
-  const all: _Info[] = Object.entries(trackMapping).map(
-    ([propKey, trackIdOrMapping]) => ({
-      propKey,
-      trackIdOrMapping: trackIdOrMapping!,
-      propConfig: rootPropConfig[propKey],
-    }),
-  )
-
-  const primitives = all.filter(
-    ({propConfig}) => !isPropConfigComposite(propConfig),
-  )
-  const composites = all.filter(({propConfig}) =>
-    isPropConfigComposite(propConfig),
-  )
-
-  return [...primitives, ...composites]
 }
