@@ -24,10 +24,6 @@ import type {Deferred} from '@theatre/shared/utils/defer'
 import {defer} from '@theatre/shared/utils/defer'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 
-import type {
-  WithoutSheetInstance,
-  SheetObjectAddress,
-} from '@theatre/shared/utils/addresses'
 import type {SelectedKeyframe} from './store/types'
 
 export type CoreExports = typeof _coreExports
@@ -238,9 +234,6 @@ export class Studio {
     position: number
   }) {
     const {address, sheet} = sheetObject
-
-    let initialPosition: number | undefined = undefined
-
     const allTracks = val(sheetObject.template.getArrayOfValidSequenceTracks())
     const selectedTrackIndex = allTracks.findIndex(
       ({trackId}) => trackId === selectedTrackId,
@@ -248,24 +241,20 @@ export class Studio {
     const firstTrackToPasteIndex = keyframesToPaste.findIndex(
       ({keyframes}) => keyframes.length,
     )
+    let offsetPosition: number | undefined = undefined
 
     if (selectedTrackIndex === firstTrackToPasteIndex) {
       // Paste back to same tracks
-      const tracksToPaste: (WithoutSheetInstance<SheetObjectAddress> & {
-        trackId: string
-        keyframes: Keyframe[]
-        snappingFunction: (p: number) => number
-      })[] = keyframesToPaste.map(({trackId, keyframes}) => {
+      const tracksToPaste = keyframesToPaste.map(({trackId, keyframes}) => {
         const keyframesWithNewPositions = keyframes.map((kf) => {
-          if (initialPosition === undefined) {
-            initialPosition = kf.position
+          if (offsetPosition === undefined) {
+            offsetPosition = kf.position
             return {...kf, position}
           }
 
-          // The rest will be offset from the firstKeyframe
-          const positionDiff = kf.position - initialPosition
-
-          return {...kf, position: position + positionDiff}
+          // Offset the position from the first keyframe
+          const newPosition = kf.position + position - offsetPosition
+          return {...kf, position: newPosition}
         })
 
         return {
@@ -285,32 +274,26 @@ export class Studio {
       })
     } else {
       // Paste to different tracks
-
-      // Remove any empty tracks at the start
       const trimmedKeyframesToPaste = keyframesToPaste.slice(
+        // Remove any empty tracks from the start
         firstTrackToPasteIndex,
       )
 
-      const tracksToPaste: (WithoutSheetInstance<SheetObjectAddress> & {
-        trackId: string
-        keyframes: Keyframe[]
-        snappingFunction: (p: number) => number
-      })[] = allTracks.map(({trackId}, i) => {
+      const tracksToPaste = allTracks.map(({trackId}, i) => {
         let keyframesWithNewPositions: Keyframe[] = []
 
         if (i >= selectedTrackIndex) {
           const track = trimmedKeyframesToPaste.shift()
           keyframesWithNewPositions =
             track?.keyframes.map((kf) => {
-              if (initialPosition === undefined) {
-                initialPosition = kf.position
+              if (offsetPosition === undefined) {
+                offsetPosition = kf.position
                 return {...kf, position}
               }
 
-              // The rest will be offset from the firstKeyframe
-              const positionDiff = kf.position - initialPosition
-
-              return {...kf, position: position + positionDiff}
+              // Offset the position from the first keyframe
+              const newPosition = kf.position + position - offsetPosition
+              return {...kf, position: newPosition}
             }) || []
         }
 
