@@ -27,10 +27,6 @@ const NodeWrapper = styled.div<{isEven: boolean}>`
     border-bottom: 1px solid #252b3869;
     background: ${(props) => (props.isEven ? 'transparent' : '#6b8fb505')};
   }
-
-  &:before {
-    background: ${(props) => (props.isEven ? 'transparent' : '#6b8fb505')};
-  }
 `
 
 const Children = styled.ul`

@@ -625,7 +625,6 @@ namespace stateEditors {
           ) {
             const track = _getTrack(p)
             if (!track) return
-
             const initialKeyframes = current(track.keyframes)
             const sanitizedKeyframes = p.keyframes
               .filter((kf) => {
@@ -636,10 +635,7 @@ namespace stateEditors {
 
                 return true
               })
-              .map((kf) => ({
-                ...kf,
-                position: p.snappingFunction(kf.position),
-              }))
+              .map((kf) => ({...kf, position: p.snappingFunction(kf.position)}))
 
             const newKeyframesById = keyBy(sanitizedKeyframes, 'id')
 

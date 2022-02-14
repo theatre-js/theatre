@@ -245,6 +245,7 @@ export class Studio {
 
     if (selectedTrackIndex === firstTrackToPasteIndex) {
       // Paste back to same tracks
+
       const tracksToPaste = keyframesToPaste.map(({trackId, keyframes}) => {
         const keyframesWithNewPositions = keyframes.map((kf) => {
           if (offsetPosition === undefined) {
@@ -274,8 +275,9 @@ export class Studio {
       })
     } else {
       // Paste to different tracks
+
+      // Remove any empty tracks from the start
       const trimmedKeyframesToPaste = keyframesToPaste.slice(
-        // Remove any empty tracks from the start
         firstTrackToPasteIndex,
       )
 

@@ -23,12 +23,12 @@ const DopeSheet: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
   return (
     <Container style={{height: height + 'px'}}>
       <DopeSheetBackground layoutP={layoutP} />
-      <TracksProvider>
-        <VerticalScrollContainer>
-          <Left layoutP={layoutP} />
+      <VerticalScrollContainer>
+        <Left layoutP={layoutP} />
+        <TracksProvider>
           <Right layoutP={layoutP} />
-        </VerticalScrollContainer>
-      </TracksProvider>
+        </TracksProvider>
+      </VerticalScrollContainer>
     </Container>
   )
 }

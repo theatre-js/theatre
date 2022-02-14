@@ -78,6 +78,8 @@ const Connector: React.FC<IProps> = (props) => {
   const {index, trackData, leaf, selection} = props
   const pasteKeyframesItem = getPasteKeyframesItem(leaf)
   const copyKeyframesItem = getCopyKeyframesItem({leaf, selection})
+  const {setTrackToHighlightId} = useTracksProvider()
+
   const cur = trackData.keyframes[index]
   const next = trackData.keyframes[index + 1]
   const {trackId} = leaf
@@ -85,8 +87,6 @@ const Connector: React.FC<IProps> = (props) => {
   const connectorLengthInUnitSpace = next.position - cur.position
 
   const [nodeRef, node] = useRefAndState<HTMLDivElement | null>(null)
-
-  const {setTrackToHighlight} = useTracksProvider()
 
   const [popoverNode, openPopover, closePopover, isPopoverOpen] = usePopover(
     {},
@@ -142,9 +142,9 @@ const Connector: React.FC<IProps> = (props) => {
 
   useEffect(() => {
     if (trackId && isOpen) {
-      setTrackToHighlight(trackId)
+      setTrackToHighlightId(trackId)
     } else {
-      setTrackToHighlight(undefined)
+      setTrackToHighlightId(undefined)
     }
   }, [trackId, isOpen])
 

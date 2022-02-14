@@ -26,16 +26,14 @@ type PositionalSequence = {
    */
   subUnitsPerUnit: number
 
-  tracksByObject: TracksByObject
+  tracksByObject: StrictRecord<
+    string,
+    {
+      trackIdByPropPath: StrictRecord<string, SequenceTrackId>
+      trackData: StrictRecord<SequenceTrackId, TrackData>
+    }
+  >
 }
-
-export type TracksByObject = StrictRecord<
-  string,
-  {
-    trackIdByPropPath: StrictRecord<string, SequenceTrackId>
-    trackData: StrictRecord<SequenceTrackId, TrackData>
-  }
->
 
 export type TrackData = BasicKeyframedTrack
 

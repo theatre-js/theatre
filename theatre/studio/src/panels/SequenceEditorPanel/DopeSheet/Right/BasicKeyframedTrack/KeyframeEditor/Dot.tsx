@@ -1,16 +1,15 @@
-import React, {useMemo, useEffect, useRef, useState} from 'react'
 import type {
   DopeSheetSelection,
   SequenceEditorPanelLayout,
 } from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import getStudio from '@theatre/studio/getStudio'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
-import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {val} from '@theatre/dataverse'
 import {lighten} from 'polished'
+import React, {useMemo, useEffect, useRef, useState} from 'react'
 import styled from 'styled-components'
 import type KeyframeEditor from './KeyframeEditor'
 import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
@@ -19,6 +18,7 @@ import {useCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
 import SnapCursor from './SnapCursor.svg'
 import {getCopyKeyframesItem} from '@theatre/studio/uiComponents/simpleContextMenu/getCopyPasteKeyframesItem'
 import {useTracksProvider} from '@theatre/studio/panels/SequenceEditorPanel/TracksProvider'
+import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 
 export const dotSize = 6
 const hitZoneSize = 12
@@ -90,13 +90,13 @@ const Dot: React.FC<IProps> = (props) => {
   const [contextMenu, , isOpen] = useKeyframeContextMenu(node, props)
   const [isDragging] = useDragKeyframe(node, props)
 
-  const {setTrackToHighlight} = useTracksProvider()
+  const {setTrackToHighlightId} = useTracksProvider()
 
   useEffect(() => {
     if (trackId && isOpen) {
-      setTrackToHighlight(trackId)
+      setTrackToHighlightId(trackId)
     } else {
-      setTrackToHighlight(undefined)
+      setTrackToHighlightId(undefined)
     }
   }, [trackId, isOpen])
 

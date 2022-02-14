@@ -2,18 +2,18 @@ import type {Dispatch, SetStateAction} from 'react'
 import React, {createContext, useState, useContext} from 'react'
 
 const Context = createContext<{
-  trackToHighlight?: string
-  setTrackToHighlight: Dispatch<SetStateAction<string | undefined>>
+  trackToHighlightId?: string
+  setTrackToHighlightId: Dispatch<SetStateAction<string | undefined>>
 }>({
-  trackToHighlight: '',
-  setTrackToHighlight: () => {},
+  trackToHighlightId: '',
+  setTrackToHighlightId: () => {},
 })
 
 const TracksProvider: React.FC = ({children}) => {
-  const [trackToHighlight, setTrackToHighlight] = useState<string>()
+  const [trackToHighlightId, setTrackToHighlightId] = useState<string>()
 
   return (
-    <Context.Provider value={{trackToHighlight, setTrackToHighlight}}>
+    <Context.Provider value={{trackToHighlightId, setTrackToHighlightId}}>
       {children}
     </Context.Provider>
   )

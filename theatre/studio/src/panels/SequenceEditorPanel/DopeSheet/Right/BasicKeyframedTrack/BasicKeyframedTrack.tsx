@@ -1,4 +1,5 @@
 import React, {useEffect} from 'react'
+import styled from 'styled-components'
 import type {TrackData} from '@theatre/core/projects/store/types/SheetState_Historic'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import type {SequenceEditorTree_PrimitiveProp} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
@@ -10,7 +11,6 @@ import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {useTracksProvider} from '@theatre/studio/panels/SequenceEditorPanel/TracksProvider'
 import {getPasteKeyframesItem} from '@theatre/studio/uiComponents/simpleContextMenu/getCopyPasteKeyframesItem'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
-import styled from 'styled-components'
 
 const TrackContainer = styled.div<{highlight: boolean}>`
   height: 100%;
@@ -24,7 +24,7 @@ const BasicKeyframedTrack: React.FC<{
   trackData: TrackData
 }> = React.memo(({layoutP, trackData, leaf}) => {
   const {trackId} = leaf
-  const {trackToHighlight, setTrackToHighlight} = useTracksProvider()
+  const {trackToHighlightId, setTrackToHighlightId} = useTracksProvider()
   const [ref, refNode] = useRefAndState<HTMLDivElement | null>(null)
   const [contextMenu, , isOpen] = useTrackContextMenu(refNode, {
     leaf,
@@ -32,9 +32,9 @@ const BasicKeyframedTrack: React.FC<{
 
   useEffect(() => {
     if (trackId && isOpen) {
-      setTrackToHighlight(trackId)
+      setTrackToHighlightId(trackId)
     } else {
-      setTrackToHighlight(undefined)
+      setTrackToHighlightId(undefined)
     }
   }, [trackId, isOpen])
 
@@ -71,7 +71,7 @@ const BasicKeyframedTrack: React.FC<{
   return (
     <TrackContainer
       ref={ref}
-      highlight={Boolean(trackId && trackToHighlight === trackId)}
+      highlight={Boolean(trackId && trackToHighlightId === trackId)}
     >
       {contextMenu}
       {keyframeEditors}
