@@ -31,7 +31,7 @@ import set from 'lodash-es/set'
 import sortBy from 'lodash-es/sortBy'
 import {graphEditorColors} from '@theatre/studio/panels/SequenceEditorPanel/GraphEditor/GraphEditor'
 import type {
-  SelectedKeyframe,
+  CopiedKeyframes,
   OutlineSelectable,
   OutlineSelectionState,
   PanelPosition,
@@ -319,7 +319,7 @@ namespace stateEditors {
         drafts().ahistoric.visibilityState = visibilityState
       }
 
-      export function setKeyframesClipboard(keyframes: SelectedKeyframe[]) {
+      export function setKeyframesClipboard(keyframes: CopiedKeyframes[]) {
         drafts().ahistoric.keyframesClipboard = keyframes
       }
       export namespace projects {

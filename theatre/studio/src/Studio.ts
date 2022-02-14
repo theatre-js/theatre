@@ -24,7 +24,7 @@ import type {Deferred} from '@theatre/shared/utils/defer'
 import {defer} from '@theatre/shared/utils/defer'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 
-import type {SelectedKeyframe} from './store/types'
+import type {CopiedKeyframes} from './store/types'
 
 export type CoreExports = typeof _coreExports
 
@@ -230,7 +230,7 @@ export class Studio {
   }: {
     sheetObject: SheetObject
     trackId: string
-    keyframes: SelectedKeyframe[]
+    keyframes: CopiedKeyframes[]
     position: number
   }) {
     const {address, sheet} = sheetObject

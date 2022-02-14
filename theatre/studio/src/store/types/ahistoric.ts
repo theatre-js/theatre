@@ -3,7 +3,7 @@ import type {IRange, StrictRecord} from '@theatre/shared/utils/types'
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
 import type {PathToProp} from '@theatre/shared/utils/addresses'
 
-export type SelectedKeyframe = {
+export type CopiedKeyframes = {
   pathToProp: PathToProp
   trackId: string
   keyframes: Keyframe[]
@@ -11,7 +11,7 @@ export type SelectedKeyframe = {
 
 export type StudioAhistoricState = {
   visibilityState: 'everythingIsHidden' | 'everythingIsVisible'
-  keyframesClipboard: SelectedKeyframe[]
+  keyframesClipboard: CopiedKeyframes[]
 
   theTrigger: {
     position: {
