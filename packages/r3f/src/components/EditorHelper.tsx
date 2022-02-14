@@ -11,9 +11,8 @@ const EditorHelper = <T extends ElementType>({
   component: Component,
   ...props
 }: EditorHelperProps<T>) => {
+  const helpersRoot = useEditorStore((state) => state.helpersRoot)
   if (process.env.NODE_ENV === 'development') {
-    const helpersRoot = useEditorStore((state) => state.helpersRoot)
-
     return <>{createPortal(<Component {...props} />, helpersRoot)}</>
   } else {
     return null
