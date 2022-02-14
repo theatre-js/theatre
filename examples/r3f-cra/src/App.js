@@ -2,9 +2,9 @@ import {getProject} from '@theatre/core'
 import * as THREE from 'three'
 import {useState, useEffect, useRef} from 'react'
 import {useFrame, Canvas} from '@react-three/fiber'
-import {Shadow, softShadows} from '@react-three/drei'
+import {Shadow, softShadows, PerspectiveCamera} from '@react-three/drei'
 import React from 'react'
-import {editable as e, SheetProvider, extension} from '@theatre/r3f'
+import {editable as e, SheetProvider, extension, editable} from '@theatre/r3f'
 import studio from '@theatre/studio'
 
 studio.extend(extension)
@@ -14,6 +14,8 @@ studio.initialize()
 softShadows()
 
 // credit: https://codesandbox.io/s/camera-pan-nsb7f
+
+const EditableCamera = editable(PerspectiveCamera, 'perspectiveCamera')
 
 function Button() {
   const vec = new THREE.Vector3()
@@ -92,8 +94,7 @@ function App() {
         <SheetProvider
           getSheet={() => getProject('Playground - R3F').sheet('R3F-Canvas')}
         >
-          {/* @ts-ignore */}
-          <e.perspectiveCamera makeDefault uniqueName="Camera" />
+          <EditableCamera makeDefault uniqueName="Camera" />
           <ambientLight intensity={0.4} />
           <e.pointLight
             position={[-10, -10, 5]}
