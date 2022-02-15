@@ -23,7 +23,7 @@ import {defer} from '@theatre/shared/utils/defer'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
 import type {CopiedTrack} from './store/types'
-import type {Tracks} from './selectors'
+import type {Track} from './selectors'
 import {getMergedTracks} from './selectors'
 
 export type CoreExports = typeof _coreExports
@@ -252,7 +252,7 @@ export class Studio {
       ({keyframes}) => keyframes.length,
     )
     let offsetPosition: number | undefined = undefined
-    let tracksToPaste: Tracks[] = []
+    let tracksToPaste: Track[] = []
 
     // Paste back to same tracks
     if (selectedTrackIndex === firstTrackContainingKeyframesIndex) {

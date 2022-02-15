@@ -22,7 +22,7 @@ import type {
 import type {StrictRecord} from '@theatre/shared/utils/types'
 import {generateKeyframeId} from '@theatre/shared/utils/ids'
 
-export type Tracks = WithoutSheetInstance<SheetObjectAddress> & {
+export type Track = WithoutSheetInstance<SheetObjectAddress> & {
   trackId: string
   keyframes: Array<Keyframe>
   snappingFunction: (p: number) => number
@@ -123,8 +123,8 @@ export function getAllTrackData(
 export function getMergedTracks(
   project: Project,
   sheetObject: SheetObject,
-  tracks: Tracks[],
-): Tracks[] {
+  tracks: Track[],
+): Track[] {
   const allTrackData = getAllTrackData(project, sheetObject)
   const mergeTracks = tracks.map(({trackId, keyframes, ...rest}) => {
     const currentKeyframes = allTrackData![trackId]!.keyframes

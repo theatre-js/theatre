@@ -148,6 +148,8 @@ const Connector: React.FC<IProps> = (props) => {
     },
   })
 
+  // TODO: avoid race condition
+  // see: https://github.com/theatre-js/theatre/blob/main/theatre/studio/src/uiComponents/useLockSet.ts
   useEffect(() => {
     if (trackId && isOpen) {
       setTrackToHighlightId(trackId)
