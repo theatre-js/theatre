@@ -229,34 +229,43 @@ export class Studio {
     sheetObject: SheetObject
     trackId: string
     keyframes: CopiedKeyframes[]
-    position?: number
+    position: number
   }) {
-    if (typeof position !== 'number') return
-
     const {address, sheet} = sheetObject
     const allTracks = val(sheetObject.template.getArrayOfValidSequenceTracks())
     const selectedTrackIndex = allTracks.findIndex(
       ({trackId}) => trackId === selectedTrackId,
     )
-    const firstTrackToPasteIndex = keyframesToPaste.findIndex(
+
+    /**
+     * In order to paste keyframes back into their original place, keyframesToPaste will include
+     * all tracks (even those without any copied keyframes), in their current order.
+     *
+     * To determine if we are pasting back to the same track or a different track, we need to find
+     * the first track that contains any keyframes and see if it is equal to the selectedTrackId
+     */
+
+    const firstTrackContainingKeyframesIndex = keyframesToPaste.findIndex(
       ({keyframes}) => keyframes.length,
     )
     let offsetPosition: number | undefined = undefined
 
-    if (selectedTrackIndex === firstTrackToPasteIndex) {
-      // Paste back to same tracks
-
+    // Paste back to same tracks
+    if (selectedTrackIndex === firstTrackContainingKeyframesIndex) {
       const tracksToPaste = keyframesToPaste.map(({trackId, keyframes}) => {
-        const keyframesWithNewPositions = keyframes.map((kf) => {
+        const keyframesWithNewPositions: Keyframe[] = []
+
+        for (let i = 0; i < keyframes.length; i++) {
+          const kf = keyframes[i]
           if (offsetPosition === undefined) {
             offsetPosition = kf.position
-            return {...kf, position}
+            keyframesWithNewPositions.push({...kf, position})
+          } else {
+            // Offset the position from the first keyframe
+            const newPosition = kf.position + position - offsetPosition
+            keyframesWithNewPositions.push({...kf, position: newPosition})
           }
-
-          // Offset the position from the first keyframe
-          const newPosition = kf.position + position - offsetPosition
-          return {...kf, position: newPosition}
-        })
+        }
 
         return {
           ...address,
@@ -278,25 +287,25 @@ export class Studio {
 
       // Remove any empty tracks from the start
       const trimmedKeyframesToPaste = keyframesToPaste.slice(
-        firstTrackToPasteIndex,
+        firstTrackContainingKeyframesIndex,
       )
 
       const tracksToPaste = allTracks.map(({trackId}, i) => {
-        let keyframesWithNewPositions: Keyframe[] = []
+        const keyframesWithNewPositions: Keyframe[] = []
 
-        if (i >= selectedTrackIndex) {
-          const track = trimmedKeyframesToPaste.shift()
-          keyframesWithNewPositions =
-            track?.keyframes.map((kf) => {
-              if (offsetPosition === undefined) {
-                offsetPosition = kf.position
-                return {...kf, position}
-              }
-
+        const track = trimmedKeyframesToPaste.shift()
+        if (i >= selectedTrackIndex && track) {
+          for (let i = 0; i < track.keyframes.length; i++) {
+            const kf = track.keyframes[i]
+            if (offsetPosition === undefined) {
+              offsetPosition = kf.position
+              keyframesWithNewPositions.push({...kf, position})
+            } else {
               // Offset the position from the first keyframe
               const newPosition = kf.position + position - offsetPosition
-              return {...kf, position: newPosition}
-            }) || []
+              keyframesWithNewPositions.push({...kf, position: newPosition})
+            }
+          }
         }
 
         return {

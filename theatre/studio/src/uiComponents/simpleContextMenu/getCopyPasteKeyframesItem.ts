@@ -22,6 +22,8 @@ export const getPasteKeyframesItem = (
   return {
     label: `Paste ${totalKeyframes} keyframe${totalKeyframes > 1 ? 's' : ''}`,
     callback: (e, position) => {
+      if (typeof position !== 'number') return
+
       getStudio().pasteKeyframes({
         trackId,
         sheetObject,

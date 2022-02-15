@@ -38,14 +38,6 @@ export type SequenceEditorTree_SheetObject =
     >
   }
 
-export type SequenceEditorTree_MaybeSheetObject =
-  SequenceEditorTree_Row<'sheetObject'> & {
-    sheetObject?: SheetObject
-    children: Array<
-      SequenceEditorTree_PropWithChildren | SequenceEditorTree_PrimitiveProp
-    >
-  }
-
 export type SequenceEditorTree_PropWithChildren =
   SequenceEditorTree_Row<'propWithChildren'> & {
     sheetObject: SheetObject
