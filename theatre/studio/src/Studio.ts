@@ -24,7 +24,7 @@ import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
 import type {CopiedTrack} from './store/types'
 import type {Track} from './selectors'
-import {getMergedTracks} from './selectors'
+import {generateKeyframeId} from '@theatre/shared/utils/ids'
 
 export type CoreExports = typeof _coreExports
 
@@ -314,12 +314,21 @@ export class Studio {
       })
     }
 
-    const {projectId} = address
-    const projects = val(this.projectsP)
-    const project = projects[projectId]
+    const withNewIds = tracksToPaste.map(({trackId, keyframes, ...rest}) => {
+      const keyframesWithNewIds = keyframes.map((kf) => ({
+        ...kf,
+        id: generateKeyframeId(),
+      }))
+
+      return {
+        ...rest,
+        trackId,
+        keyframes: keyframesWithNewIds,
+      }
+    })
 
     this.transaction((api) => {
-      getMergedTracks(project, sheetObject, tracksToPaste).forEach((track) => {
+      withNewIds.forEach((track) => {
         api.stateEditors.coreByProject.historic.sheetsById.sequence.replaceKeyframes(
           track,
         )

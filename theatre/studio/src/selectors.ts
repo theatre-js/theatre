@@ -15,12 +15,7 @@ import type {
   OutlineSelectable,
   OutlineSelection,
 } from './store/types'
-import type {
-  BasicKeyframedTrack,
-  Keyframe,
-} from '@theatre/core/projects/store/types/SheetState_Historic'
-import type {StrictRecord} from '@theatre/shared/utils/types'
-import {generateKeyframeId} from '@theatre/shared/utils/ids'
+import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
 
 export type Track = WithoutSheetInstance<SheetObjectAddress> & {
   trackId: string
@@ -105,39 +100,4 @@ export function getSelectedSequence(): undefined | Sequence {
 
 export function getCopiedKeyframes(): CopiedTrack[] {
   return val(getStudio()!.atomP.ahistoric.keyframesClipboard) || []
-}
-
-export function getAllTrackData(
-  project: Project,
-  sheetObject: SheetObject,
-): StrictRecord<string, BasicKeyframedTrack> {
-  const {sheetId, objectKey} = sheetObject.address
-  const instance = getSelectedInstanceOfSheetId(project, sheetId)!
-
-  const tracks = val(instance.project.pointers.historic).sheetsById[sheetId]
-    ?.sequence?.tracksByObject[objectKey]!
-
-  return tracks.trackData
-}
-
-export function getMergedTracks(
-  project: Project,
-  sheetObject: SheetObject,
-  tracks: Track[],
-): Track[] {
-  const allTrackData = getAllTrackData(project, sheetObject)
-  const mergeTracks = tracks.map(({trackId, keyframes, ...rest}) => {
-    const currentKeyframes = allTrackData![trackId]!.keyframes
-    const keyframesWithNewIds = keyframes.map((kf) => ({
-      ...kf,
-      id: generateKeyframeId(),
-    }))
-    return {
-      ...rest,
-      trackId,
-      keyframes: [...currentKeyframes, ...keyframesWithNewIds],
-    }
-  })
-
-  return mergeTracks
 }
