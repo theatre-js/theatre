@@ -4,6 +4,10 @@ import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import type Sheet from '@theatre/core/sheets/Sheet'
 import {val} from '@theatre/dataverse'
 import {isSheet, isSheetObject} from '@theatre/shared/instanceTypes'
+import type {
+  WithoutSheetInstance,
+  SheetObjectAddress,
+} from '@theatre/shared/utils/addresses'
 import {uniq} from 'lodash-es'
 import getStudio from './getStudio'
 import type {
@@ -11,6 +15,18 @@ import type {
   OutlineSelectable,
   OutlineSelection,
 } from './store/types'
+import type {
+  BasicKeyframedTrack,
+  Keyframe,
+} from '@theatre/core/projects/store/types/SheetState_Historic'
+import type {StrictRecord} from '@theatre/shared/utils/types'
+import {generateKeyframeId} from '@theatre/shared/utils/ids'
+
+export type Tracks = WithoutSheetInstance<SheetObjectAddress> & {
+  trackId: string
+  keyframes: Array<Keyframe>
+  snappingFunction: (p: number) => number
+}
 
 export const getOutlineSelection = (): OutlineSelection => {
   const projects = val(getStudio().projectsP)
@@ -89,4 +105,39 @@ export function getSelectedSequence(): undefined | Sequence {
 
 export function getCopiedKeyframes(): CopiedKeyframes[] {
   return val(getStudio()!.atomP.ahistoric.keyframesClipboard) || []
+}
+
+export function getAllTrackData(
+  project: Project,
+  sheetObject: SheetObject,
+): StrictRecord<string, BasicKeyframedTrack> {
+  const {sheetId, objectKey} = sheetObject.address
+  const instance = getSelectedInstanceOfSheetId(project, sheetId)!
+
+  const tracks = val(instance.project.pointers.historic).sheetsById[sheetId]
+    ?.sequence?.tracksByObject[objectKey]!
+
+  return tracks.trackData
+}
+
+export function getMergedTracks(
+  project: Project,
+  sheetObject: SheetObject,
+  tracks: Tracks[],
+): Tracks[] {
+  const allTrackData = getAllTrackData(project, sheetObject)
+  const mergeTracks = tracks.map(({trackId, keyframes, ...rest}) => {
+    const currentKeyframes = allTrackData![trackId]!.keyframes
+    const keyframesWithNewIds = keyframes.map((kf) => ({
+      ...kf,
+      id: generateKeyframeId(),
+    }))
+    return {
+      ...rest,
+      trackId,
+      keyframes: [...currentKeyframes, ...keyframesWithNewIds],
+    }
+  })
+
+  return mergeTracks
 }
