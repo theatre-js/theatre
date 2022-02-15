@@ -238,7 +238,7 @@ export class Studio {
     const sequence = sheetObject.sheet.getSequence()
     const position = sequence.positionDerivation.getValue()
 
-    /**
+    /*
      * In order to paste keyframes back into their original place, keyframesToPaste will include
      * all tracks (even those without any copied keyframes), in their current order.
      *
@@ -293,18 +293,19 @@ export class Studio {
 
       const tracksToPaste = allTracks.map(({trackId}, i) => {
         const keyframesWithNewPositions: Keyframe[] = []
-
-        const track = trimmedKeyframesToPaste.shift()
-        if (i >= selectedTrackIndex && track) {
-          for (let i = 0; i < track.keyframes.length; i++) {
-            const kf = track.keyframes[i]
-            if (offsetPosition === undefined) {
-              offsetPosition = kf.position
-              keyframesWithNewPositions.push({...kf, position})
-            } else {
-              // Offset the position from the first keyframe
-              const newPosition = kf.position + position - offsetPosition
-              keyframesWithNewPositions.push({...kf, position: newPosition})
+        if (i >= selectedTrackIndex) {
+          const track = trimmedKeyframesToPaste.shift()
+          if (track) {
+            for (let j = 0; j < track.keyframes.length; j++) {
+              const kf = track.keyframes[j]
+              if (offsetPosition === undefined) {
+                offsetPosition = kf.position
+                keyframesWithNewPositions.push({...kf, position})
+              } else {
+                // Offset the position from the first keyframe
+                const newPosition = kf.position + position - offsetPosition
+                keyframesWithNewPositions.push({...kf, position: newPosition})
+              }
             }
           }
         }
