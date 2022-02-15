@@ -1,9 +1,9 @@
-import React, {useLayoutEffect, useState} from 'react'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import useBoundingClientRect from '@theatre/studio/uiComponents/useBoundingClientRect'
 import transparentize from 'polished/lib/color/transparentize'
 import type {ElementType} from 'react'
 import {useContext} from 'react'
+import React, {useLayoutEffect, useState} from 'react'
 import {createPortal} from 'react-dom'
 import useWindowSize from 'react-use/esm/useWindowSize'
 import styled from 'styled-components'
@@ -36,18 +36,16 @@ const Container = styled.ul`
 
 export type IContextMenuItem = {
   label: string | ElementType
-  callback?: (e: React.MouseEvent, initialPosInUnitSpace?: number) => void
+  callback?: (e: React.MouseEvent) => void
   enabled?: boolean
   // subs?: Item[]
 }
 
-interface IRightClickMenuProps {
+const RightClickMenu: React.FC<{
   items: IContextMenuItem[] | (() => IContextMenuItem[])
   rightClickPoint: {clientX: number; clientY: number}
   onRequestClose: () => void
-}
-
-const RightClickMenu: React.FC<IRightClickMenuProps> = (props) => {
+}> = (props) => {
   const [container, setContainer] = useState<HTMLElement | null>(null)
   const rect = useBoundingClientRect(container)
   const windowSize = useWindowSize()
