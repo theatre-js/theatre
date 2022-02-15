@@ -87,11 +87,9 @@ function useTrackContextMenu(
     leaf: SequenceEditorTree_PrimitiveProp
   },
 ) {
-  const pasteKeyframesItem = getPasteKeyframesItem(leaf)
-
   return useContextMenu(node, {
-    withInitialPosition: true,
     items: () => {
+      const pasteKeyframesItem = getPasteKeyframesItem(leaf)
       if (pasteKeyframesItem) {
         return [pasteKeyframesItem]
       }

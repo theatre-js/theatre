@@ -100,7 +100,6 @@ const Connector: React.FC<IProps> = (props) => {
   )
 
   const [contextMenu, , isOpen] = useContextMenu(node, {
-    withInitialPosition: true,
     items: () => {
       const items: IContextMenuItem[] = [
         {

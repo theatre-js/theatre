@@ -17,18 +17,19 @@ export const getPasteKeyframesItem = (
 
   const {trackId, sheetObject} = leaf
 
+  const sequence = sheetObject.sheet.getSequence()
+  const posInUnitSpace = sequence.positionDerivation.getValue()
+
   if (!trackId || !totalKeyframes) return null
 
   return {
     label: `Paste ${totalKeyframes} keyframe${totalKeyframes > 1 ? 's' : ''}`,
-    callback: (e, position) => {
-      if (typeof position !== 'number') return
-
+    callback: (e) => {
       getStudio().pasteKeyframes({
         trackId,
         sheetObject,
         keyframes: copiedKeyframes,
-        position,
+        position: posInUnitSpace,
       })
     },
   }
