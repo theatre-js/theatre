@@ -83,11 +83,13 @@ export interface IDerivation<V> {
    * by `flatMap` takes the value of that derivation.
    *
    * @example
-   * // Simply using `map()` here would return the inner derivation when we call `getValue()`
+   * ```ts
+   * // Simply using map() here would return the inner derivation when we call getValue()
    * new Box(3).derivation.map((value) => new Box(value).derivation).getValue()
    *
-   * // Using `flatMap()` eliminates the inner derivation
+   * // Using flatMap() eliminates the inner derivation
    * new Box(3).derivation.flatMap((value) => new Box(value).derivation).getValue()
+   * ```
    *
    * @param fn The mapping function to use. Note: it accepts a plain value, not a derivation.
    */

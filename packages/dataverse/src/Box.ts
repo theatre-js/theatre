@@ -74,7 +74,7 @@ export default class Box<V> implements IBox<V> {
    * Note: usages of `get()` aren't tracked, they are only for retrieving the value. To track changes, you need to
    * create a derivation.
    *
-   * @see derivation
+   * @see Box.derivation
    */
   get() {
     return this._value
