@@ -6,7 +6,7 @@ import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEdi
 import Left from './Left/Left'
 import DopeSheetBackground from './Right/DopeSheetBackground'
 import Right from './Right/Right'
-import TracksProvider from '@theatre/studio/panels/SequenceEditorPanel/TracksProvider'
+import TrackHighlightProvider from '@theatre/studio/panels/SequenceEditorPanel/TrackHighlightProvider'
 import VerticalScrollContainer from '@theatre/studio/panels/SequenceEditorPanel/VerticalScrollContainer'
 
 const Container = styled.div`
@@ -25,9 +25,9 @@ const DopeSheet: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
       <DopeSheetBackground layoutP={layoutP} />
       <VerticalScrollContainer>
         <Left layoutP={layoutP} />
-        <TracksProvider>
+        <TrackHighlightProvider>
           <Right layoutP={layoutP} />
-        </TracksProvider>
+        </TrackHighlightProvider>
       </VerticalScrollContainer>
     </Container>
   )

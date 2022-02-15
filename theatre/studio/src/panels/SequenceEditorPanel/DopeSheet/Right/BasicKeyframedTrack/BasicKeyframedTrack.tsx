@@ -8,7 +8,7 @@ import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
 import KeyframeEditor from './KeyframeEditor/KeyframeEditor'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
-import {useTracksProvider} from '@theatre/studio/panels/SequenceEditorPanel/TracksProvider'
+import {useTrackHighlightProvider} from '@theatre/studio/panels/SequenceEditorPanel/TrackHighlightProvider'
 import {getPasteKeyframesItem} from '@theatre/studio/uiComponents/simpleContextMenu/getCopyPasteKeyframesItem'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import {getCopiedKeyframes} from '@theatre/studio/selectors'
@@ -25,7 +25,8 @@ const BasicKeyframedTrack: React.FC<{
   trackData: TrackData
 }> = React.memo(({layoutP, trackData, leaf}) => {
   const {trackId} = leaf
-  const {trackToHighlightId, setTrackToHighlightId} = useTracksProvider()
+  const {trackToHighlightId, setTrackToHighlightId} =
+    useTrackHighlightProvider()
   const [ref, refNode] = useRefAndState<HTMLDivElement | null>(null)
   const [contextMenu, , isOpen] = useTrackContextMenu(refNode, {
     leaf,

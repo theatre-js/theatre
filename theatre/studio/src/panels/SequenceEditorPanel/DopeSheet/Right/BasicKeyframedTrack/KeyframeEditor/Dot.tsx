@@ -17,7 +17,7 @@ import {attributeNameThatLocksFramestamp} from '@theatre/studio/panels/SequenceE
 import {useCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
 import SnapCursor from './SnapCursor.svg'
 import {getCopyKeyframesItem} from '@theatre/studio/uiComponents/simpleContextMenu/getCopyPasteKeyframesItem'
-import {useTracksProvider} from '@theatre/studio/panels/SequenceEditorPanel/TracksProvider'
+import {useTrackHighlightProvider} from '@theatre/studio/panels/SequenceEditorPanel/TrackHighlightProvider'
 import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 
 export const dotSize = 6
@@ -90,7 +90,7 @@ const Dot: React.FC<IProps> = (props) => {
   const [contextMenu, , isOpen] = useKeyframeContextMenu(node, props)
   const [isDragging] = useDragKeyframe(node, props)
 
-  const {setTrackToHighlightId} = useTracksProvider()
+  const {setTrackToHighlightId} = useTrackHighlightProvider()
 
   useEffect(() => {
     if (trackId && isOpen) {
