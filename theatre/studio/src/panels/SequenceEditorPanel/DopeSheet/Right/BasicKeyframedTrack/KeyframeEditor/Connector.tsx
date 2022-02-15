@@ -19,8 +19,8 @@ import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
 import CurveEditorPopover from './CurveEditorPopover/CurveEditorPopover'
 import {
-  getPasteKeyframesItem,
-  getCopyKeyframesItem,
+  getContextMenuItemForPasteKeyframes,
+  getContextMenuItemForCopyKeyframes,
 } from '@theatre/studio/uiComponents/simpleContextMenu/getCopyPasteKeyframesItem'
 import {useTrackHighlightProvider} from '@theatre/studio/panels/SequenceEditorPanel/TrackHighlightProvider'
 import {getCopiedKeyframes} from '@theatre/studio/selectors'
@@ -79,11 +79,11 @@ const Connector: React.FC<IProps> = (props) => {
   const {index, trackData, leaf, selection} = props
   const copiedKeyframes = getCopiedKeyframes()
   const pasteKeyframesItem = useMemo(
-    () => getPasteKeyframesItem(leaf, copiedKeyframes),
+    () => getContextMenuItemForPasteKeyframes(leaf, copiedKeyframes),
     [leaf, copiedKeyframes],
   )
   const copyKeyframesItem = useMemo(
-    () => getCopyKeyframesItem({leaf, selection}),
+    () => getContextMenuItemForCopyKeyframes({leaf, selection}),
     [leaf, selection],
   )
   const {setTrackToHighlightId} = useTrackHighlightProvider()

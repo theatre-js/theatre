@@ -16,7 +16,7 @@ import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPa
 import {attributeNameThatLocksFramestamp} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {useCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
 import SnapCursor from './SnapCursor.svg'
-import {getCopyKeyframesItem} from '@theatre/studio/uiComponents/simpleContextMenu/getCopyPasteKeyframesItem'
+import {getContextMenuItemForCopyKeyframes} from '@theatre/studio/uiComponents/simpleContextMenu/getCopyPasteKeyframesItem'
 import {useTrackHighlightProvider} from '@theatre/studio/panels/SequenceEditorPanel/TrackHighlightProvider'
 import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 
@@ -122,7 +122,7 @@ export default Dot
 function useKeyframeContextMenu(node: HTMLDivElement | null, props: IProps) {
   const {leaf, selection, keyframe} = props
   const copyKeyframesItem = useMemo(
-    () => getCopyKeyframesItem({leaf, selection, keyframe}),
+    () => getContextMenuItemForCopyKeyframes({leaf, selection, keyframe}),
     [leaf, selection, keyframe],
   )
 

@@ -4,11 +4,11 @@ import type {DopeSheetSelection} from '@theatre/studio/panels/SequenceEditorPane
 import getStudio from '@theatre/studio/getStudio'
 import type {SequenceEditorTree_PrimitiveProp} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
 import type {IContextMenuItem} from './useContextMenu'
-import type {CopiedKeyframes} from '@theatre/studio/store/types'
+import type {CopiedTrack} from '@theatre/studio/store/types'
 
-export const getPasteKeyframesItem = (
+export const getContextMenuItemForPasteKeyframes = (
   leaf: SequenceEditorTree_PrimitiveProp,
-  copiedKeyframes: CopiedKeyframes[],
+  copiedKeyframes: CopiedTrack[],
 ): IContextMenuItem | null => {
   const totalKeyframes = copiedKeyframes.reduce((currentTotal, {keyframes}) => {
     return currentTotal + keyframes.length
@@ -30,7 +30,7 @@ export const getPasteKeyframesItem = (
   }
 }
 
-export const getCopyKeyframesItem = ({
+export const getContextMenuItemForCopyKeyframes = ({
   leaf,
   selection,
   keyframe,

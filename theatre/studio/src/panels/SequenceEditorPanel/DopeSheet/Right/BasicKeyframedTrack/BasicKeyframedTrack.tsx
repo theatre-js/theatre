@@ -9,7 +9,7 @@ import {val} from '@theatre/dataverse'
 import KeyframeEditor from './KeyframeEditor/KeyframeEditor'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {useTrackHighlightProvider} from '@theatre/studio/panels/SequenceEditorPanel/TrackHighlightProvider'
-import {getPasteKeyframesItem} from '@theatre/studio/uiComponents/simpleContextMenu/getCopyPasteKeyframesItem'
+import {getContextMenuItemForPasteKeyframes} from '@theatre/studio/uiComponents/simpleContextMenu/getCopyPasteKeyframesItem'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import {getCopiedKeyframes} from '@theatre/studio/selectors'
 
@@ -91,7 +91,7 @@ function useTrackContextMenu(
 ) {
   const copiedKeyframes = getCopiedKeyframes()
   const pasteKeyframesItem = useMemo(
-    () => getPasteKeyframesItem(leaf, copiedKeyframes),
+    () => getContextMenuItemForPasteKeyframes(leaf, copiedKeyframes),
     [leaf, copiedKeyframes],
   )
 

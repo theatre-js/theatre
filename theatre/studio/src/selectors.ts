@@ -11,7 +11,7 @@ import type {
 import {uniq} from 'lodash-es'
 import getStudio from './getStudio'
 import type {
-  CopiedKeyframes,
+  CopiedTrack,
   OutlineSelectable,
   OutlineSelection,
 } from './store/types'
@@ -103,7 +103,7 @@ export function getSelectedSequence(): undefined | Sequence {
   return sheet.getSequence()
 }
 
-export function getCopiedKeyframes(): CopiedKeyframes[] {
+export function getCopiedKeyframes(): CopiedTrack[] {
   return val(getStudio()!.atomP.ahistoric.keyframesClipboard) || []
 }
 
