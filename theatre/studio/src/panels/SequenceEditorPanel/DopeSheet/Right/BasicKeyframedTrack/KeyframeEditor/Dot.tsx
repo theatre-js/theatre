@@ -121,7 +121,10 @@ export default Dot
 
 function useKeyframeContextMenu(node: HTMLDivElement | null, props: IProps) {
   const {leaf, selection, keyframe} = props
-  const copyKeyframesItem = getCopyKeyframesItem({leaf, selection, keyframe})
+  const copyKeyframesItem = useMemo(
+    () => getCopyKeyframesItem({leaf, selection, keyframe}),
+    [leaf, selection, keyframe],
+  )
 
   return useContextMenu(node, {
     items: () => {

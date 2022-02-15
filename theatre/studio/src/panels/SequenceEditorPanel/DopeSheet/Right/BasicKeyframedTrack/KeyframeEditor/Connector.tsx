@@ -23,6 +23,7 @@ import {
   getCopyKeyframesItem,
 } from '@theatre/studio/uiComponents/simpleContextMenu/getCopyPasteKeyframesItem'
 import {useTracksProvider} from '@theatre/studio/panels/SequenceEditorPanel/TracksProvider'
+import {getCopiedKeyframes} from '@theatre/studio/selectors'
 
 const connectorHeight = dotSize / 2 + 1
 const connectorWidthUnscaled = 1000
@@ -76,8 +77,15 @@ type IProps = Parameters<typeof KeyframeEditor>[0]
 
 const Connector: React.FC<IProps> = (props) => {
   const {index, trackData, leaf, selection} = props
-  const pasteKeyframesItem = getPasteKeyframesItem(leaf)
-  const copyKeyframesItem = getCopyKeyframesItem({leaf, selection})
+  const copiedKeyframes = getCopiedKeyframes()
+  const pasteKeyframesItem = useMemo(
+    () => getPasteKeyframesItem(leaf, copiedKeyframes),
+    [leaf, copiedKeyframes],
+  )
+  const copyKeyframesItem = useMemo(
+    () => getCopyKeyframesItem({leaf, selection}),
+    [leaf, selection],
+  )
   const {setTrackToHighlightId} = useTracksProvider()
 
   const cur = trackData.keyframes[index]

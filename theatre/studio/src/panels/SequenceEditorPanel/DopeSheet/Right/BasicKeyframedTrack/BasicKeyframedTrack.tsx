@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React, {useEffect, useMemo} from 'react'
 import styled from 'styled-components'
 import type {TrackData} from '@theatre/core/projects/store/types/SheetState_Historic'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
@@ -11,6 +11,7 @@ import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {useTracksProvider} from '@theatre/studio/panels/SequenceEditorPanel/TracksProvider'
 import {getPasteKeyframesItem} from '@theatre/studio/uiComponents/simpleContextMenu/getCopyPasteKeyframesItem'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
+import {getCopiedKeyframes} from '@theatre/studio/selectors'
 
 const TrackContainer = styled.div<{highlight: boolean}>`
   height: 100%;
@@ -87,9 +88,14 @@ function useTrackContextMenu(
     leaf: SequenceEditorTree_PrimitiveProp
   },
 ) {
+  const copiedKeyframes = getCopiedKeyframes()
+  const pasteKeyframesItem = useMemo(
+    () => getPasteKeyframesItem(leaf, copiedKeyframes),
+    [leaf, copiedKeyframes],
+  )
+
   return useContextMenu(node, {
     items: () => {
-      const pasteKeyframesItem = getPasteKeyframesItem(leaf)
       if (pasteKeyframesItem) {
         return [pasteKeyframesItem]
       }

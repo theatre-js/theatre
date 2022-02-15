@@ -3,22 +3,18 @@ import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Histo
 import type {DopeSheetSelection} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import getStudio from '@theatre/studio/getStudio'
 import type {SequenceEditorTree_PrimitiveProp} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
-import {getCopiedKeyframes} from '@theatre/studio/selectors'
 import type {IContextMenuItem} from './useContextMenu'
+import type {CopiedKeyframes} from '@theatre/studio/store/types'
 
 export const getPasteKeyframesItem = (
   leaf: SequenceEditorTree_PrimitiveProp,
+  copiedKeyframes: CopiedKeyframes[],
 ): IContextMenuItem | null => {
-  const copiedKeyframes = getCopiedKeyframes()
-
   const totalKeyframes = copiedKeyframes.reduce((currentTotal, {keyframes}) => {
     return currentTotal + keyframes.length
   }, 0)
 
   const {trackId, sheetObject} = leaf
-
-  const sequence = sheetObject.sheet.getSequence()
-  const posInUnitSpace = sequence.positionDerivation.getValue()
 
   if (!trackId || !totalKeyframes) return null
 
@@ -29,7 +25,6 @@ export const getPasteKeyframesItem = (
         trackId,
         sheetObject,
         keyframes: copiedKeyframes,
-        position: posInUnitSpace,
       })
     },
   }

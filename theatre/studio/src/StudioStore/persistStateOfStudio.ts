@@ -33,6 +33,7 @@ export const persistStateOfStudio = (
 
   function loadFromPersistentStorage() {
     const persistedS = localStorage.getItem(storageKey)
+
     if (persistedS) {
       let persistedObj
       let errored = true

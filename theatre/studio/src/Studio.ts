@@ -224,18 +224,19 @@ export class Studio {
     sheetObject,
     trackId: selectedTrackId,
     keyframes: keyframesToPaste,
-    position,
   }: {
     sheetObject: SheetObject
     trackId: string
     keyframes: CopiedKeyframes[]
-    position: number
   }) {
     const {address, sheet} = sheetObject
     const allTracks = val(sheetObject.template.getArrayOfValidSequenceTracks())
     const selectedTrackIndex = allTracks.findIndex(
       ({trackId}) => trackId === selectedTrackId,
     )
+
+    const sequence = sheetObject.sheet.getSequence()
+    const position = sequence.positionDerivation.getValue()
 
     /**
      * In order to paste keyframes back into their original place, keyframesToPaste will include
