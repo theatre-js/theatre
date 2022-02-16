@@ -1,5 +1,5 @@
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
-import DraggableArea from '@theatre/studio/uiComponents/DraggableArea'
+import DraggableArea from '@theatre/studio/uiComponents/DraggableArea2'
 import {useVal} from '@theatre/react'
 import type {IRange} from '@theatre/shared/utils/types'
 import type {Pointer} from '@theatre/dataverse'
@@ -185,7 +185,7 @@ const HorizontalScrollbar: React.FC<{
         const deltaPosInUnitSpace = deltaXToDeltaPos(dx)
 
         const newRange: IRange = mapValues(
-          valuesBeforeDrag.clippedSpaceRange,
+          clippedSpaceRange,
           (p) => p + deltaPosInUnitSpace,
         )
 
@@ -198,8 +198,8 @@ const HorizontalScrollbar: React.FC<{
         const deltaPosInUnitSpace = deltaXToDeltaPos(dx)
 
         const newRange: IRange = {
-          start: valuesBeforeDrag.clippedSpaceRange.start + deltaPosInUnitSpace,
-          end: valuesBeforeDrag.clippedSpaceRange.end,
+          start: clippedSpaceRange.start + deltaPosInUnitSpace,
+          end: clippedSpaceRange.end,
         }
 
         if (newRange.start > newRange.end - 1) {
@@ -219,8 +219,8 @@ const HorizontalScrollbar: React.FC<{
         const deltaPosInUnitSpace = deltaXToDeltaPos(dx)
 
         const newRange: IRange = {
-          start: valuesBeforeDrag.clippedSpaceRange.start,
-          end: valuesBeforeDrag.clippedSpaceRange.end + deltaPosInUnitSpace,
+          start: clippedSpaceRange.start,
+          end: clippedSpaceRange.end + deltaPosInUnitSpace,
         }
 
         if (newRange.end < newRange.start + 1) {
@@ -236,7 +236,7 @@ const HorizontalScrollbar: React.FC<{
     }
 
     return self
-  }, [layoutP, relevantValuesD])
+  }, [layoutP, relevantValuesD, clippedSpaceRange])
 
   return (
     <Container

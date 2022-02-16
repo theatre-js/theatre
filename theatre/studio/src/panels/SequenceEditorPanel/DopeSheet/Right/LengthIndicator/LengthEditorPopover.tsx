@@ -8,8 +8,7 @@ import type {BasicNumberInputNudgeFn} from '@theatre/studio/uiComponents/form/Ba
 import BasicNumberInput from '@theatre/studio/uiComponents/form/BasicNumberInput'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import {propNameText} from '@theatre/studio/panels/DetailPanel/propEditors/utils/SingleRowPropEditor'
-
-const greaterThanZero = (v: number) => isFinite(v) && v > 0
+import isGreaterThanZero from '@theatre/studio/utils/isGreaterThanZero'
 
 const Container = styled.div`
   display: flex;
@@ -87,7 +86,7 @@ const LengthEditorPopover: React.FC<{
         <BasicNumberInput
           value={sequenceLength}
           {...fns}
-          isValid={greaterThanZero}
+          isValid={isGreaterThanZero}
           inputRef={inputRef}
           onBlur={onRequestClose}
           nudge={nudge}

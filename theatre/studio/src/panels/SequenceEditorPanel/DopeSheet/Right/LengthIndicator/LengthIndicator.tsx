@@ -20,6 +20,7 @@ import {GoChevronLeft, GoChevronRight} from 'react-icons/all'
 import LengthEditorPopover from './LengthEditorPopover'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
+import isGreaterThanZero from '@theatre/studio/utils/isGreaterThanZero'
 
 const coverWidth = 1000
 
@@ -239,10 +240,12 @@ function useDragBulge(node: HTMLDivElement | null, props: IProps) {
           tempTransaction.discard()
           tempTransaction = undefined
         }
+
         tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
+          const newLength = initialLength + delta
           stateEditors.coreByProject.historic.sheetsById.sequence.setLength({
             ...sheet.address,
-            length: initialLength + delta,
+            length: isGreaterThanZero(newLength) ? newLength : 0,
           })
         })
       },
