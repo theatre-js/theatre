@@ -33,14 +33,13 @@ const BasicKeyframedTrack: React.FC<{
   })
 
   // TODO: avoid race condition
-  // see: https://github.com/theatre-js/theatre/blob/main/theatre/studio/src/uiComponents/useLockSet.ts
   useEffect(() => {
     if (trackId && isOpen) {
       setTrackToHighlightId(trackId)
     } else {
       setTrackToHighlightId(undefined)
     }
-  }, [trackId, isOpen])
+  }, [trackId, isOpen, setTrackToHighlightId])
 
   // TODO: Prevent the rerenders this causes when selecting keyframes
   const {selectedKeyframeIds, selection} = usePrism(() => {

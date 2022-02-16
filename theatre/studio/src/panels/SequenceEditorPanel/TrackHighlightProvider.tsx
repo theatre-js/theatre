@@ -1,5 +1,5 @@
-import type {Dispatch, SetStateAction} from 'react'
 import React, {createContext, useState, useContext} from 'react'
+import type {SetStateAction, Dispatch} from 'react'
 
 const Context = createContext<{
   trackToHighlightId?: string

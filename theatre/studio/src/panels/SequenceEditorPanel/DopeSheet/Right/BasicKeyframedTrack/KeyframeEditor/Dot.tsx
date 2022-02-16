@@ -93,14 +93,13 @@ const Dot: React.FC<IProps> = (props) => {
   const {setTrackToHighlightId} = useTrackHighlightProvider()
 
   // TODO: avoid race condition
-  // see: https://github.com/theatre-js/theatre/blob/main/theatre/studio/src/uiComponents/useLockSet.ts
   useEffect(() => {
     if (trackId && isOpen) {
       setTrackToHighlightId(trackId)
     } else {
       setTrackToHighlightId(undefined)
     }
-  }, [trackId, isOpen])
+  }, [trackId, isOpen, setTrackToHighlightId])
 
   return (
     <>
