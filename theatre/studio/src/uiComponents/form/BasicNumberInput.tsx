@@ -332,7 +332,7 @@ const BasicNumberInput: React.FC<{
         onDragStart={callbacks.transitionToDraggingMode}
         onDragEnd={callbacks.onDragEnd}
         onDrag={callbacks.onDrag}
-        // lockCursorTo="ew-resize"
+        lockCursorTo="ew-resize"
       >
         {theInput}
       </DraggableArea>

@@ -10,6 +10,7 @@ import {createPortal} from 'react-dom'
 import {PortalContext} from 'reakit'
 
 interface IDraggableAreaProps {
+  lockCursorTo?: 'ew-resize' | 'e-resize' | 'w-resize'
   onDrag: (dx: number, dy: number, event: MouseEvent) => void
   onDragStart?: (
     event: React.MouseEvent<HTMLElement | SVGElement>,
@@ -17,12 +18,12 @@ interface IDraggableAreaProps {
   onDragEnd?: (dragHappened: boolean) => void
 }
 
-namespace Icons {
-  export const EWResize = () => (
+const Icons = {
+  'ew-resize': () => (
     <svg
-      width="27px"
-      height="16px"
-      viewBox="0 0 27 16"
+      width="26"
+      height="16"
+      viewBox="0 0 26 16"
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
@@ -34,7 +35,41 @@ namespace Icons {
         fill="black"
       />
     </svg>
-  )
+  ),
+  'e-resize': () => (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 18 18"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M2.5 10.8794L2.5 6.91959L11.7179 6.91964L11.7886 2.88913L17.799 8.89954L11.7886 14.91L11.7886 10.9502L2.5 10.8794Z"
+        fill="white"
+      />
+      <path
+        d="M3.3137 9.88948V7.90958L12.7785 7.98029L12.7785 5.29328L16.3848 8.89953L12.7785 12.5058L12.7785 9.96019L3.3137 9.88948Z"
+        fill="black"
+      />
+    </svg>
+  ),
+  'w-resize': () => (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 18 18"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M15.8191 6.91963L15.8191 10.8794L6.60122 10.8794L6.53051 14.9099L0.520101 8.89947L6.53051 2.88906L6.53051 6.84886L15.8191 6.91963Z"
+        fill="white"
+      />
+      <path
+        d="M15.0054 7.90954L15.0054 9.88943L5.54056 9.81872L5.54056 12.5057L1.93432 8.89948L5.54056 5.29324L5.54056 7.83882L15.0054 7.90954Z"
+        fill="black"
+      />
+    </svg>
+  ),
 }
 
 const Cursor = styled.span`
@@ -47,6 +82,7 @@ const DraggableArea: React.FC<IDraggableAreaProps> = ({
   onDrag,
   onDragStart,
   onDragEnd,
+  lockCursorTo = 'ew-resize',
 }) => {
   const portalLayer = useContext(PortalContext)
   const [isMouseDown, setIsMouseDown] = useState(false)
@@ -141,7 +177,7 @@ const DraggableArea: React.FC<IDraggableAreaProps> = ({
                 ...fakeCursorPosition,
               }}
             >
-              <Icons.EWResize />
+              {Icons[lockCursorTo]()}
             </Cursor>,
             portalLayer!,
           )
