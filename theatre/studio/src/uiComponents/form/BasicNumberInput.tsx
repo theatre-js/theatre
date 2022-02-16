@@ -252,7 +252,7 @@ const BasicNumberInput: React.FC<{
         curState.currentDraggingValue +
         propsA.nudge({
           deltaX,
-          deltaFraction: deltaX / inputWidth, // TODO: tweak delta
+          deltaFraction: deltaX / inputWidth,
           magnitude: 1,
         })
 
@@ -278,7 +278,7 @@ const BasicNumberInput: React.FC<{
       onDragEnd,
       onDrag,
     }
-  }, [])
+  }, []) // TODO: fix the missing dependency warning
 
   let value =
     stateRef.current.mode !== 'editingViaKeyboard'
