@@ -16,6 +16,7 @@ interface IDraggableAreaProps {
     event: React.MouseEvent<HTMLElement | SVGElement>,
   ) => void | false
   onDragEnd?: (dragHappened: boolean) => void
+  enabled?: boolean
 }
 
 const Icons = {
@@ -83,7 +84,9 @@ const DraggableArea: React.FC<IDraggableAreaProps> = ({
   onDragStart,
   onDragEnd,
   lockCursorTo = 'ew-resize',
+  enabled,
 }) => {
+  const [hasDragged, setHasDragged] = useState(false)
   const portalLayer = useContext(PortalContext)
   const [isMouseDown, setIsMouseDown] = useState(false)
   const [fakeCursorPosition, setFakeCursorPosition] = useState({
@@ -108,15 +111,20 @@ const DraggableArea: React.FC<IDraggableAreaProps> = ({
     const onMouseUp = () => {
       document.exitPointerLock()
       setIsMouseDown(false)
-      onDragEnd?.(true)
+      onDragEnd?.(hasDragged)
+      setHasDragged(false)
     }
 
-    document.addEventListener('mouseup', onMouseUp)
+    if (isMouseDown) {
+      document.addEventListener('mouseup', onMouseUp)
+    } else {
+      document.removeEventListener('mouseup', onMouseUp)
+    }
 
     return () => {
       document.removeEventListener('mouseup', onMouseUp)
     }
-  }, [onDragEnd])
+  }, [isMouseDown, onDragEnd, hasDragged])
 
   const handleSetCursorPosition = useCallback(
     (movementX, movementY) => {
@@ -145,6 +153,7 @@ const DraggableArea: React.FC<IDraggableAreaProps> = ({
       const {movementX, movementY} = event
       handleSetCursorPosition(movementX, movementY)
       onDrag(movementX, movementY, event)
+      setHasDragged(true)
     }
 
     if (isMouseDown) {
@@ -159,13 +168,19 @@ const DraggableArea: React.FC<IDraggableAreaProps> = ({
   }, [isMouseDown, handleSetCursorPosition, onDrag])
 
   const childrenWithProps = useMemo(() => {
-    return React.Children.map(children, (child) => {
-      if (React.isValidElement(child)) {
-        return React.cloneElement(child, {onMouseDown})
-      }
-      return child
-    })
-  }, [children, onMouseDown])
+    const shouldRegisterEvents = enabled !== false
+
+    if (shouldRegisterEvents) {
+      return React.Children.map(children, (child) => {
+        if (React.isValidElement(child)) {
+          return React.cloneElement(child, {onMouseDown})
+        }
+        return child
+      })
+    }
+
+    return children
+  }, [children, onMouseDown, enabled])
 
   return (
     <>

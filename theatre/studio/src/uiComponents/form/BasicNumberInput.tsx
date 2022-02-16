@@ -118,7 +118,6 @@ const BasicNumberInput: React.FC<{
   nudge: BasicNumberInputNudgeFn
 }> = (propsA) => {
   const [stateRef] = useRefAndState<IState>({mode: 'noFocus'})
-  const isValid = propsA.isValid ?? alwaysValid
 
   const propsRef = useRef(propsA)
   propsRef.current = propsA
@@ -134,6 +133,8 @@ const BasicNumberInput: React.FC<{
   )
 
   const callbacks = useMemo(() => {
+    const isValid = propsA.isValid ?? alwaysValid
+
     const inputChange = (e: React.ChangeEvent) => {
       const target = e.target as HTMLInputElement
       const {value} = target
@@ -142,6 +143,7 @@ const BasicNumberInput: React.FC<{
       stateRef.current = {...curState, currentEditedValueInString: value}
 
       const valInFloat = parseFloat(value)
+
       if (!isFinite(valInFloat) || !isValid(valInFloat)) return
 
       propsRef.current.temporarilySetValue(valInFloat)
@@ -193,10 +195,7 @@ const BasicNumberInput: React.FC<{
     }
 
     const onFocus = () => {
-      if (stateRef.current.mode === 'noFocus') {
-        transitionToEditingViaKeyboardMode()
-      } else if (stateRef.current.mode === 'editingViaKeyboard') {
-      }
+      transitionToEditingViaKeyboardMode()
     }
 
     const transitionToEditingViaKeyboardMode = () => {
@@ -214,17 +213,6 @@ const BasicNumberInput: React.FC<{
     }
 
     let inputWidth: number
-
-    const transitionToDraggingMode = () => {
-      const curValue = propsRef.current.value
-      inputWidth = inputRef.current?.getBoundingClientRect().width!
-
-      stateRef.current = {
-        mode: 'dragging',
-        valueBeforeDragging: curValue,
-        currentDraggingValue: curValue,
-      }
-    }
 
     const onDragEnd = (happened: boolean) => {
       if (!happened) {
@@ -248,8 +236,15 @@ const BasicNumberInput: React.FC<{
     const onDrag = (deltaX: number, _dy: number) => {
       const curState = stateRef.current as IState_Dragging
 
+      if (stateRef.current.mode !== 'dragging') {
+        inputWidth = inputRef.current?.getBoundingClientRect().width!
+      }
+
+      const currentDraggingValue =
+        curState.currentDraggingValue ?? propsRef.current.value
+
       let newValue =
-        curState.currentDraggingValue +
+        currentDraggingValue +
         propsA.nudge({
           deltaX,
           deltaFraction: deltaX / inputWidth,
@@ -263,6 +258,7 @@ const BasicNumberInput: React.FC<{
       stateRef.current = {
         ...curState,
         currentDraggingValue: newValue,
+        mode: 'dragging',
       }
 
       propsRef.current.temporarilySetValue(newValue)
@@ -271,7 +267,6 @@ const BasicNumberInput: React.FC<{
     return {
       inputChange,
       onBlur,
-      transitionToDraggingMode,
       onInputKeyDown,
       onClick,
       onFocus,
@@ -328,11 +323,11 @@ const BasicNumberInput: React.FC<{
   return (
     <Container className={propsA.className + ' ' + stateRef.current.mode}>
       <DraggableArea
-        key="draggableArea"
-        onDragStart={callbacks.transitionToDraggingMode}
         onDragEnd={callbacks.onDragEnd}
         onDrag={callbacks.onDrag}
         lockCursorTo="ew-resize"
+        // TODO: see if we can remove this to allow dragging when focused already
+        enabled={stateRef.current.mode !== 'editingViaKeyboard'}
       >
         {theInput}
       </DraggableArea>
