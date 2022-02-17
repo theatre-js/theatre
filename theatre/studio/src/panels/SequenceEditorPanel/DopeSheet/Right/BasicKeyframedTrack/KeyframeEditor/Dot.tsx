@@ -121,14 +121,14 @@ const Dot: React.FC<IProps> = (props) => {
 export default Dot
 
 function useKeyframeContextMenu(node: HTMLDivElement | null, props: IProps) {
-  const {leaf, selection, keyframe} = props
-  const copyKeyframesItem = useMemo(
-    () => getContextMenuItemForCopyKeyframes({leaf, selection, keyframe}),
-    [leaf, selection, keyframe],
-  )
-
   return useContextMenu(node, {
     items: () => {
+      const {leaf, selection, keyframe} = props
+      const copyKeyframesItem = getContextMenuItemForCopyKeyframes({
+        leaf,
+        selection,
+        keyframe,
+      })
       const items: IContextMenuItem[] = [
         {
           label: props.selection ? 'Delete Selection' : 'Delete Keyframe',
