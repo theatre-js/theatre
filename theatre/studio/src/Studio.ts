@@ -259,8 +259,7 @@ export class Studio {
       tracksToPaste = keyframesToPaste.map(({trackId, keyframes}) => {
         const keyframesWithNewPositions: Keyframe[] = []
 
-        for (let i = 0; i < keyframes.length; i++) {
-          const kf = keyframes[i]
+        for (const kf of keyframes) {
           if (offsetPosition === undefined) {
             offsetPosition = kf.position
             keyframesWithNewPositions.push({...kf, position: startPosition})
@@ -291,8 +290,7 @@ export class Studio {
         if (i >= selectedTrackIndex) {
           const track = trimmedKeyframesToPaste.shift()
           if (track) {
-            for (let j = 0; j < track.keyframes.length; j++) {
-              const kf = track.keyframes[j]
+            for (const kf of track.keyframes) {
               if (offsetPosition === undefined) {
                 offsetPosition = kf.position
                 keyframesWithNewPositions.push({...kf, position: startPosition})
