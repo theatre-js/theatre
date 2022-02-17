@@ -11,7 +11,7 @@ export type CopiedTrack = {
 
 export type StudioAhistoricState = {
   visibilityState: 'everythingIsHidden' | 'everythingIsVisible'
-  keyframesClipboard: CopiedTrack[]
+  keyframesClipboard?: CopiedTrack[]
 
   theTrigger: {
     position: {
