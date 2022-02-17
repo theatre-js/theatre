@@ -140,7 +140,10 @@ const BasicNumberInput: React.FC<{
       const {value} = target
       const curState = stateRef.current as IState_EditingViaKeyboard
 
-      stateRef.current = {...curState, currentEditedValueInString: value}
+      stateRef.current = {
+        ...curState,
+        currentEditedValueInString: value,
+      }
 
       const valInFloat = parseFloat(value)
 
@@ -184,17 +187,25 @@ const BasicNumberInput: React.FC<{
     }
 
     const onClick = (e: React.MouseEvent) => {
+      console.log('onClick', stateRef.current.mode)
+
       if (stateRef.current.mode === 'noFocus') {
         const c = inputRef.current!
         c.focus()
         e.preventDefault()
         e.stopPropagation()
       } else {
+        console.log('!?!?!?!?!?')
+
+        // inputRef.current!.setSelectionRange(100, 100)
+        document?.getSelection()?.collapseToEnd()
         e.stopPropagation()
       }
     }
 
     const onFocus = () => {
+      console.log('onFocus?!?')
+
       transitionToEditingViaKeyboardMode()
     }
 
@@ -217,7 +228,7 @@ const BasicNumberInput: React.FC<{
     const onDragEnd = (happened: boolean) => {
       if (!happened) {
         propsRef.current.discardTemporaryValue()
-        stateRef.current = {mode: 'noFocus'}
+        // stateRef.current = {mode: 'noFocus'}
 
         inputRef.current!.focus()
         inputRef.current!.setSelectionRange(0, 100)
@@ -281,6 +292,8 @@ const BasicNumberInput: React.FC<{
       : stateRef.current.currentEditedValueInString
 
   if (typeof value === 'number' && isNaN(value)) {
+    console.log('🥳🥳🥳🥳🥳')
+
     value = 'NaN'
   }
 
@@ -299,7 +312,9 @@ const BasicNumberInput: React.FC<{
       onFocus={callbacks.onFocus}
       ref={mergeRefs(_refs)}
       onMouseDown={(e: React.MouseEvent) => {
-        e.stopPropagation()
+        console.log('mousedown!?!')
+
+        // e.stopPropagation()
       }}
       onDoubleClick={(e: React.MouseEvent) => {
         e.preventDefault()

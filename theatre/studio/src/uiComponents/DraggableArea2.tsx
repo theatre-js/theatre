@@ -170,16 +170,16 @@ const DraggableArea: React.FC<IDraggableAreaProps> = ({
   const childrenWithProps = useMemo(() => {
     const shouldRegisterEvents = enabled !== false
 
-    if (shouldRegisterEvents) {
-      return React.Children.map(children, (child) => {
-        if (React.isValidElement(child)) {
-          return React.cloneElement(child, {onMouseDown})
-        }
-        return child
-      })
-    }
+    // if (shouldRegisterEvents) {
+    return React.Children.map(children, (child) => {
+      if (React.isValidElement(child)) {
+        return React.cloneElement(child, {onMouseDown})
+      }
+      return child
+    })
+    // }
 
-    return children
+    // return children
   }, [children, onMouseDown, enabled])
 
   return (
