@@ -11,6 +11,7 @@ import {PortalContext} from 'reakit'
 
 interface IDraggableAreaProps {
   lockCursorTo?: 'ew-resize' | 'e-resize' | 'w-resize'
+  onClick?: (event: React.MouseEvent) => void
   onDrag: (dx: number, dy: number, event: MouseEvent) => void
   onDragStart?: (
     event: React.MouseEvent<HTMLElement | SVGElement>,
@@ -85,6 +86,7 @@ const DraggableArea: React.FC<IDraggableAreaProps> = ({
   onDragEnd,
   lockCursorTo = 'ew-resize',
   enabled,
+  onClick,
 }) => {
   const [hasDragged, setHasDragged] = useState(false)
   const portalLayer = useContext(PortalContext)
@@ -102,9 +104,10 @@ const DraggableArea: React.FC<IDraggableAreaProps> = ({
         setIsMouseDown(true)
         setFakeCursorPosition({top: pageY, left: pageX})
         onDragStart?.(event)
+        onClick?.(event)
       }
     },
-    [onDragStart],
+    [onDragStart, onClick],
   )
 
   useEffect(() => {

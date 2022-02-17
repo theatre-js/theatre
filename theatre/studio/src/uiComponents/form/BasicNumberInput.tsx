@@ -71,10 +71,6 @@ const FillIndicator = styled.div`
   }
 `
 
-function isFiniteFloat(s: string) {
-  return isFinite(parseFloat(s))
-}
-
 type IState_NoFocus = {
   mode: 'noFocus'
 }
@@ -187,40 +183,28 @@ const BasicNumberInput: React.FC<{
     }
 
     const onClick = (e: React.MouseEvent) => {
-      console.log('onClick', stateRef.current.mode)
-
       if (stateRef.current.mode === 'noFocus') {
+        // Start editing
+        const curValue = propsRef.current.value
+        stateRef.current = {
+          mode: 'editingViaKeyboard',
+          currentEditedValueInString: String(curValue),
+          valueBeforeEditing: curValue,
+        }
+
         const c = inputRef.current!
         c.focus()
         e.preventDefault()
         e.stopPropagation()
-      } else {
-        console.log('!?!?!?!?!?')
 
-        // inputRef.current!.setSelectionRange(100, 100)
-        document?.getSelection()?.collapseToEnd()
+        setTimeout(() => {
+          c.setSelectionRange(0, 100)
+        })
+      } else {
+        // if clicked again we clear the selection
+        window?.getSelection()?.empty()
         e.stopPropagation()
       }
-    }
-
-    const onFocus = () => {
-      console.log('onFocus?!?')
-
-      transitionToEditingViaKeyboardMode()
-    }
-
-    const transitionToEditingViaKeyboardMode = () => {
-      const curValue = propsRef.current.value
-      stateRef.current = {
-        mode: 'editingViaKeyboard',
-        currentEditedValueInString: String(curValue),
-        valueBeforeEditing: curValue,
-      }
-
-      setTimeout(() => {
-        inputRef.current!.focus()
-        inputRef.current!.setSelectionRange(0, 100)
-      })
     }
 
     let inputWidth: number
@@ -228,10 +212,6 @@ const BasicNumberInput: React.FC<{
     const onDragEnd = (happened: boolean) => {
       if (!happened) {
         propsRef.current.discardTemporaryValue()
-        // stateRef.current = {mode: 'noFocus'}
-
-        inputRef.current!.focus()
-        inputRef.current!.setSelectionRange(0, 100)
       } else {
         const curState = stateRef.current as IState_Dragging
         const value = curState.currentDraggingValue
@@ -280,7 +260,6 @@ const BasicNumberInput: React.FC<{
       onBlur,
       onInputKeyDown,
       onClick,
-      onFocus,
       onDragEnd,
       onDrag,
     }
@@ -292,8 +271,6 @@ const BasicNumberInput: React.FC<{
       : stateRef.current.currentEditedValueInString
 
   if (typeof value === 'number' && isNaN(value)) {
-    console.log('🥳🥳🥳🥳🥳')
-
     value = 'NaN'
   }
 
@@ -308,14 +285,7 @@ const BasicNumberInput: React.FC<{
       value={value}
       onBlur={callbacks.onBlur}
       onKeyDown={callbacks.onInputKeyDown}
-      onClick={callbacks.onClick}
-      onFocus={callbacks.onFocus}
       ref={mergeRefs(_refs)}
-      onMouseDown={(e: React.MouseEvent) => {
-        console.log('mousedown!?!')
-
-        // e.stopPropagation()
-      }}
       onDoubleClick={(e: React.MouseEvent) => {
         e.preventDefault()
         e.stopPropagation()
@@ -341,8 +311,7 @@ const BasicNumberInput: React.FC<{
         onDragEnd={callbacks.onDragEnd}
         onDrag={callbacks.onDrag}
         lockCursorTo="ew-resize"
-        // TODO: see if we can remove this to allow dragging when focused already
-        enabled={stateRef.current.mode !== 'editingViaKeyboard'}
+        onClick={callbacks.onClick}
       >
         {theInput}
       </DraggableArea>
