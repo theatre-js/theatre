@@ -77,15 +77,6 @@ type IProps = Parameters<typeof KeyframeEditor>[0]
 
 const Connector: React.FC<IProps> = (props) => {
   const {index, trackData, leaf, selection} = props
-  const copiedKeyframes = getCopiedKeyframes()
-  const pasteKeyframesItem = useMemo(
-    () => getContextMenuItemForPasteKeyframes(leaf, copiedKeyframes),
-    [leaf, copiedKeyframes],
-  )
-  const copyKeyframesItem = useMemo(
-    () => getContextMenuItemForCopyKeyframes({leaf, selection}),
-    [leaf, selection],
-  )
   const {setTrackToHighlightId} = useTrackHighlightProvider()
 
   const cur = trackData.keyframes[index]
@@ -135,6 +126,16 @@ const Connector: React.FC<IProps> = (props) => {
           },
         },
       ]
+
+      const copiedKeyframes = getCopiedKeyframes()
+      const pasteKeyframesItem = getContextMenuItemForPasteKeyframes(
+        leaf,
+        copiedKeyframes,
+      )
+      const copyKeyframesItem = getContextMenuItemForCopyKeyframes({
+        leaf,
+        selection,
+      })
 
       if (pasteKeyframesItem) {
         items.unshift(pasteKeyframesItem)

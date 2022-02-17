@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo} from 'react'
+import React, {useEffect} from 'react'
 import styled from 'styled-components'
 import type {TrackData} from '@theatre/core/projects/store/types/SheetState_Historic'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
@@ -90,14 +90,14 @@ function useTrackContextMenu(
     leaf: SequenceEditorTree_PrimitiveProp
   },
 ) {
-  const copiedKeyframes = getCopiedKeyframes()
-  const pasteKeyframesItem = useMemo(
-    () => getContextMenuItemForPasteKeyframes(leaf, copiedKeyframes),
-    [leaf, copiedKeyframes],
-  )
-
   return useContextMenu(node, {
     items: () => {
+      const copiedKeyframes = getCopiedKeyframes()
+      const pasteKeyframesItem = getContextMenuItemForPasteKeyframes(
+        leaf,
+        copiedKeyframes,
+      )
+
       if (pasteKeyframesItem) {
         return [pasteKeyframesItem]
       }
