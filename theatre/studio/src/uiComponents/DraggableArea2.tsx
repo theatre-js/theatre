@@ -77,6 +77,7 @@ const Icons = {
 const Cursor = styled.span`
   position: fixed;
   transform: translate3d(-50%, -50%, 0);
+  z-index: 10001;
 `
 
 const DraggableArea: React.FC<IDraggableAreaProps> = ({
@@ -171,18 +172,12 @@ const DraggableArea: React.FC<IDraggableAreaProps> = ({
   }, [isMouseDown, handleSetCursorPosition, onDrag])
 
   const childrenWithProps = useMemo(() => {
-    const shouldRegisterEvents = enabled !== false
-
-    // if (shouldRegisterEvents) {
     return React.Children.map(children, (child) => {
       if (React.isValidElement(child)) {
         return React.cloneElement(child, {onMouseDown})
       }
       return child
     })
-    // }
-
-    // return children
   }, [children, onMouseDown, enabled])
 
   return (

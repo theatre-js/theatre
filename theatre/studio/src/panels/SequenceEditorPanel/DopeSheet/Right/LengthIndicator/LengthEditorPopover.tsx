@@ -46,7 +46,7 @@ const LengthEditorPopover: React.FC<{
         tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
           stateEditors.coreByProject.historic.sheetsById.sequence.setLength({
             ...sheet.address,
-            length: newLength,
+            length: newLength > 0 ? newLength : 0,
           })
         })
       },
@@ -69,7 +69,7 @@ const LengthEditorPopover: React.FC<{
         })
       },
     }
-  }, [layoutP, sheet])
+  }, [sheet])
 
   const inputRef = useRef<HTMLInputElement>(null)
   useLayoutEffect(() => {
