@@ -17,7 +17,6 @@ interface IDraggableAreaProps {
     event: React.MouseEvent<HTMLElement | SVGElement>,
   ) => void | false
   onDragEnd?: (dragHappened: boolean) => void
-  enabled?: boolean
 }
 
 const Icons = {
@@ -86,7 +85,6 @@ const DraggableArea: React.FC<IDraggableAreaProps> = ({
   onDragStart,
   onDragEnd,
   lockCursorTo = 'ew-resize',
-  enabled,
   onClick,
 }) => {
   const [hasDragged, setHasDragged] = useState(false)
@@ -178,7 +176,7 @@ const DraggableArea: React.FC<IDraggableAreaProps> = ({
       }
       return child
     })
-  }, [children, onMouseDown, enabled])
+  }, [children, onMouseDown])
 
   return (
     <>
