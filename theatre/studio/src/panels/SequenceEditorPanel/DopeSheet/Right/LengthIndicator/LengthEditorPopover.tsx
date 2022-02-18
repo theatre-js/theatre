@@ -64,12 +64,12 @@ const LengthEditorPopover: React.FC<{
         getStudio()!.transaction(({stateEditors}) => {
           stateEditors.coreByProject.historic.sheetsById.sequence.setLength({
             ...sheet.address,
-            length: newLength, // TODO: set min here or in BasicNumberInput?
+            length: newLength > range[0] ? newLength : range[0],
           })
         })
       },
     }
-  }, [sheet])
+  }, [sheet, range])
 
   return usePrism(() => {
     const sequence = sheet.getSequence()
