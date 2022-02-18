@@ -4,11 +4,11 @@ import type {DopeSheetSelection} from '@theatre/studio/panels/SequenceEditorPane
 import getStudio from '@theatre/studio/getStudio'
 import type {SequenceEditorTree_PrimitiveProp} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
 import type {IContextMenuItem} from './useContextMenu'
-import type {CopiedTrack} from '@theatre/studio/store/types'
+import type {TracksClipboard} from '@theatre/studio/store/types'
 
 export const getContextMenuItemForPasteKeyframes = (
   leaf: SequenceEditorTree_PrimitiveProp,
-  copiedKeyframes: CopiedTrack[],
+  copiedKeyframes: TracksClipboard[],
 ): IContextMenuItem | null => {
   const totalKeyframes = copiedKeyframes.reduce((currentTotal, {keyframes}) => {
     return currentTotal + keyframes.length
@@ -59,21 +59,24 @@ export const getContextMenuItemForCopyKeyframes = ({
         const allTracks = val(
           sheetObject.template.getArrayOfValidSequenceTracks(),
         )
-        const selectedKeyframes = allTracks.map(({pathToProp, trackId}) => {
-          const selectedKeyframeIds = Object.keys(
-            byTrackId[trackId]?.byKeyframeId || {},
-          )
+        const selectedKeyframes = allTracks.map(
+          ({pathToProp, trackId}): TracksClipboard => {
+            const selectedKeyframeIds = Object.keys(
+              byTrackId[trackId]?.byKeyframeId || {},
+            )
 
-          const keyframes = trackData[trackId]!.keyframes.filter(
-            ({id}) => selectedKeyframeIds.indexOf(id) > -1,
-          )
+            const keyframes = trackData[trackId]!.keyframes.filter(
+              ({id}) => selectedKeyframeIds.indexOf(id) > -1,
+            )
 
-          return {
-            pathToProp,
-            trackId,
-            keyframes,
-          }
-        })
+            return {
+              version: '1',
+              pathToProp,
+              trackId,
+              keyframes,
+            }
+          },
+        )
         getStudio().transaction(({stateEditors}) => {
           stateEditors.studio.ahistoric.setKeyframesClipboard(selectedKeyframes)
         })
@@ -86,13 +89,16 @@ export const getContextMenuItemForCopyKeyframes = ({
         const allTracks = val(
           sheetObject.template.getArrayOfValidSequenceTracks(),
         )
-        const selectedKeyframes = allTracks.map(({pathToProp, trackId}) => {
-          return {
-            pathToProp,
-            trackId,
-            keyframes: trackId === selectedTrackId ? [keyframe] : [],
-          }
-        })
+        const selectedKeyframes = allTracks.map(
+          ({pathToProp, trackId}): TracksClipboard => {
+            return {
+              version: '1',
+              pathToProp,
+              trackId,
+              keyframes: trackId === selectedTrackId ? [keyframe] : [],
+            }
+          },
+        )
 
         getStudio().transaction(({stateEditors}) => {
           stateEditors.studio.ahistoric.setKeyframesClipboard(selectedKeyframes)

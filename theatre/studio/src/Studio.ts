@@ -22,7 +22,7 @@ import type {Deferred} from '@theatre/shared/utils/defer'
 import {defer} from '@theatre/shared/utils/defer'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
-import type {CopiedTrack} from './store/types'
+import type {TracksClipboard} from './store/types'
 import type {Track} from './selectors'
 import {generateKeyframeId} from '@theatre/shared/utils/ids'
 
@@ -229,7 +229,7 @@ export class Studio {
   }: {
     sheetObject: SheetObject
     trackId: string
-    keyframes: CopiedTrack[]
+    keyframes: TracksClipboard[]
   }) {
     const {address, sheet} = sheetObject
     const allTracks = val(sheetObject.template.getArrayOfValidSequenceTracks())
