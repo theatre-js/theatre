@@ -86,7 +86,7 @@ const Tooltip = styled.div`
   }
 `
 
-const Tumb = styled.div`
+const Thumb = styled.div`
   font-size: 10px;
   white-space: nowrap;
   padding: 1px 2px;
@@ -183,7 +183,7 @@ const LengthIndicator: React.FC<IProps> = ({layoutP}) => {
           className={val(isDraggingD) ? 'dragging' : ''}
         >
           <ThumbContainer>
-            <Tumb
+            <Thumb
               ref={nodeRef}
               // title="Length of the sequence. Drag or click to change."
               onClick={(e) => {
@@ -193,7 +193,7 @@ const LengthIndicator: React.FC<IProps> = ({layoutP}) => {
             >
               <GoChevronLeft />
               <GoChevronRight />
-            </Tumb>
+            </Thumb>
             <Tooltip>
               Sequence length:{' '}
               {sequence.positionFormatter.formatBasic(sequenceLength)}
