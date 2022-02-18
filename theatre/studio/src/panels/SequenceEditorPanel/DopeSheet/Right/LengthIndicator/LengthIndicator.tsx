@@ -20,7 +20,6 @@ import {GoChevronLeft, GoChevronRight} from 'react-icons/all'
 import LengthEditorPopover from './LengthEditorPopover'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
-import isGreaterThanZero from '@theatre/studio/utils/isGreaterThanZero'
 
 const coverWidth = 1000
 
@@ -127,6 +126,8 @@ const Cover = styled.div`
   }
 `
 
+const MIN_VALUE = 2
+
 type IProps = {
   layoutP: Pointer<SequenceEditorPanelLayout>
 }
@@ -142,6 +143,7 @@ const LengthIndicator: React.FC<IProps> = ({layoutP}) => {
           <LengthEditorPopover
             layoutP={layoutP}
             onRequestClose={closePopover}
+            range={[MIN_VALUE, Infinity]}
           />
         </BasicPopover>
       )
@@ -245,7 +247,7 @@ function useDragBulge(node: HTMLDivElement | null, props: IProps) {
           const newLength = initialLength + delta
           stateEditors.coreByProject.historic.sheetsById.sequence.setLength({
             ...sheet.address,
-            length: isGreaterThanZero(newLength) ? newLength : 0,
+            length: newLength > MIN_VALUE ? newLength : MIN_VALUE,
           })
         })
       },

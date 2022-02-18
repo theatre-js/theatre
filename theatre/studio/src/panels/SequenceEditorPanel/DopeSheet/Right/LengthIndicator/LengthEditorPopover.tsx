@@ -1,5 +1,5 @@
 import type {Pointer} from '@theatre/dataverse'
-import React, {useLayoutEffect, useMemo, useRef} from 'react'
+import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import {usePrism, useVal} from '@theatre/react'
@@ -8,7 +8,6 @@ import type {BasicNumberInputNudgeFn} from '@theatre/studio/uiComponents/form/Ba
 import BasicNumberInput from '@theatre/studio/uiComponents/form/BasicNumberInput'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import {propNameText} from '@theatre/studio/panels/DetailPanel/propEditors/utils/SingleRowPropEditor'
-import isGreaterThanZero from '@theatre/studio/utils/isGreaterThanZero'
 
 const Container = styled.div`
   display: flex;
@@ -23,7 +22,7 @@ const Label = styled.div`
   white-space: nowrap;
 `
 
-const nudge: BasicNumberInputNudgeFn = ({deltaX}) => deltaX * 0.25
+const nudge: BasicNumberInputNudgeFn = ({deltaX}) => deltaX * 0.1
 
 const LengthEditorPopover: React.FC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
@@ -31,7 +30,8 @@ const LengthEditorPopover: React.FC<{
    * Called when user hits enter/escape
    */
   onRequestClose: () => void
-}> = ({layoutP, onRequestClose}) => {
+  range: [min: number, max: number]
+}> = ({layoutP, onRequestClose, range}) => {
   const sheet = useVal(layoutP.sheet)
 
   const fns = useMemo(() => {
@@ -46,7 +46,7 @@ const LengthEditorPopover: React.FC<{
         tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
           stateEditors.coreByProject.historic.sheetsById.sequence.setLength({
             ...sheet.address,
-            length: newLength > 0 ? newLength : 0,
+            length: newLength,
           })
         })
       },
@@ -64,17 +64,12 @@ const LengthEditorPopover: React.FC<{
         getStudio()!.transaction(({stateEditors}) => {
           stateEditors.coreByProject.historic.sheetsById.sequence.setLength({
             ...sheet.address,
-            length: newLength,
+            length: newLength, // TODO: set min here or in BasicNumberInput?
           })
         })
       },
     }
   }, [sheet])
-
-  const inputRef = useRef<HTMLInputElement>(null)
-  useLayoutEffect(() => {
-    inputRef.current!.focus()
-  }, [])
 
   return usePrism(() => {
     const sequence = sheet.getSequence()
@@ -84,16 +79,16 @@ const LengthEditorPopover: React.FC<{
       <Container>
         <Label>Sequence length</Label>
         <BasicNumberInput
-          value={sequenceLength}
           {...fns}
-          isValid={isGreaterThanZero}
-          inputRef={inputRef}
+          value={sequenceLength}
           onBlur={onRequestClose}
           nudge={nudge}
+          range={range}
+          defaultMode="editingViaKeyboard"
         />
       </Container>
     )
-  }, [sheet, fns, inputRef])
+  }, [sheet, fns])
 }
 
 export default LengthEditorPopover

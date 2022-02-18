@@ -1,6 +1,6 @@
-import {clamp, isInteger, round} from 'lodash-es'
+import React, {useMemo, useRef, useEffect} from 'react'
 import type {MutableRefObject} from 'react'
-import React, {useMemo, useRef} from 'react'
+import {clamp, isInteger, round} from 'lodash-es'
 import styled from 'styled-components'
 import DraggableArea from '@theatre/studio/uiComponents/DraggableArea2'
 import mergeRefs from 'react-merge-refs'
@@ -112,8 +112,11 @@ const BasicNumberInput: React.FC<{
    */
   onBlur?: () => void
   nudge: BasicNumberInputNudgeFn
+  defaultMode?: IState['mode']
 }> = (propsA) => {
-  const [stateRef] = useRefAndState<IState>({mode: 'noFocus'})
+  const [stateRef] = useRefAndState<IState>({
+    mode: 'noFocus',
+  })
 
   const propsRef = useRef(propsA)
   propsRef.current = propsA
@@ -130,6 +133,7 @@ const BasicNumberInput: React.FC<{
 
   const callbacks = useMemo(() => {
     const isValid = propsA.isValid ?? alwaysValid
+    let inputWidth: number
 
     const inputChange = (e: React.ChangeEvent) => {
       const target = e.target as HTMLInputElement
@@ -182,15 +186,30 @@ const BasicNumberInput: React.FC<{
       }
     }
 
+    const transitionToEditingViaKeyboardMode = () => {
+      const curValue = propsRef.current.value
+      stateRef.current = {
+        mode: 'editingViaKeyboard',
+        currentEditedValueInString: String(curValue),
+        valueBeforeEditing: curValue,
+      }
+    }
+
+    const transitionToDraggingMode = () => {
+      inputWidth = inputRef.current?.getBoundingClientRect().width!
+      const curValue = propsRef.current.value
+
+      stateRef.current = {
+        mode: 'dragging',
+        valueBeforeDragging: curValue,
+        currentDraggingValue: curValue,
+      }
+    }
+
     const onClick = (e: React.MouseEvent) => {
       if (stateRef.current.mode === 'noFocus') {
         // Start editing
-        const curValue = propsRef.current.value
-        stateRef.current = {
-          mode: 'editingViaKeyboard',
-          currentEditedValueInString: String(curValue),
-          valueBeforeEditing: curValue,
-        }
+        transitionToEditingViaKeyboardMode()
 
         const c = inputRef.current!
         c.focus()
@@ -207,8 +226,6 @@ const BasicNumberInput: React.FC<{
       }
     }
 
-    let inputWidth: number
-
     const onDragEnd = (happened: boolean) => {
       if (!happened) {
         propsRef.current.discardTemporaryValue()
@@ -220,22 +237,18 @@ const BasicNumberInput: React.FC<{
         } else {
           propsRef.current.permenantlySetValue(value)
         }
-        stateRef.current = {mode: 'noFocus'}
+        transitionToEditingViaKeyboardMode()
       }
     }
 
     const onDrag = (deltaX: number, _dy: number) => {
+      if (stateRef.current.mode !== 'dragging') {
+        transitionToDraggingMode()
+      }
       const curState = stateRef.current as IState_Dragging
 
-      if (stateRef.current.mode !== 'dragging') {
-        inputWidth = inputRef.current?.getBoundingClientRect().width!
-      }
-
-      const currentDraggingValue =
-        curState.currentDraggingValue ?? propsRef.current.value
-
       let newValue =
-        currentDraggingValue +
+        curState.currentDraggingValue +
         propsA.nudge({
           deltaX,
           deltaFraction: deltaX / inputWidth,
@@ -249,7 +262,6 @@ const BasicNumberInput: React.FC<{
       stateRef.current = {
         ...curState,
         currentDraggingValue: newValue,
-        mode: 'dragging',
       }
 
       propsRef.current.temporarilySetValue(newValue)
@@ -262,8 +274,19 @@ const BasicNumberInput: React.FC<{
       onClick,
       onDragEnd,
       onDrag,
+      transitionToEditingViaKeyboardMode,
+      transitionToDraggingMode,
     }
   }, []) // TODO: fix the missing dependency warning
+
+  useEffect(() => {
+    if (propsA?.defaultMode === 'editingViaKeyboard') {
+      inputRef.current!.focus()
+      callbacks.transitionToEditingViaKeyboardMode()
+    } else if (propsA?.defaultMode === 'dragging') {
+      callbacks.transitionToDraggingMode()
+    }
+  }, [propsA.defaultMode, callbacks])
 
   let value =
     stateRef.current.mode !== 'editingViaKeyboard'
