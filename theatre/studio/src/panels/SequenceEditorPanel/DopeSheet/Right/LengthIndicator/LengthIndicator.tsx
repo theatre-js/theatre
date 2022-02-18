@@ -126,7 +126,7 @@ const Cover = styled.div`
   }
 `
 
-const MIN_VALUE = 2
+const MIN_VALUE = 1 // seconds
 
 type IProps = {
   layoutP: Pointer<SequenceEditorPanelLayout>
