@@ -30,5 +30,6 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "styled-components": "^5.3.0"
-  }
+  },
+  "//": "Add packages here to make them externals of studio. Add them to theatre/package.json if you want to bundle them with studio."
 }

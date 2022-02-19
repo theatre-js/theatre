@@ -1,5 +1,13 @@
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import userReadableTypeOfValue from '@theatre/shared/utils/userReadableTypeOfValue'
+import type {Rgba} from '@theatre/shared/utils/color'
+import {
+  decorateRgba,
+  linearSrgbToOklab,
+  oklabToLinearSrgb,
+  srgbToLinearSrgb,
+  linearSrgbToSrgb,
+} from '@theatre/shared/utils/color'
 import {mapValues} from 'lodash-es'
 import type {
   IShorthandCompoundProps,
@@ -232,6 +240,100 @@ const _interpolateNumber = (
   progression: number,
 ): number => {
   return left + progression * (right - left)
+}
+
+export const rgba = (
+  defaultValue: Rgba = {r: 0, g: 0, b: 0, a: 1},
+  opts?: {
+    label?: string
+  },
+): PropTypeConfig_Rgba => {
+  if (process.env.NODE_ENV !== 'production') {
+    validateCommonOpts('t.rgba(defaultValue, opts)', opts)
+
+    // Lots of duplicated code and stuff that probably shouldn't be here, mostly
+    // because we are still figuring out how we are doing validation, sanitization,
+    // decoding, decorating.
+
+    // Validate default value
+    let valid = true
+    for (const p of ['r', 'g', 'b', 'a']) {
+      if (
+        !Object.prototype.hasOwnProperty.call(defaultValue, p) ||
+        typeof (defaultValue as $IntentionalAny)[p] !== 'number'
+      ) {
+        valid = false
+      }
+    }
+
+    if (!valid) {
+      throw new Error(
+        `Argument defaultValue in t.rgba(defaultValue) must be of the shape { r: number; g: number, b: number, a: number; }.`,
+      )
+    }
+  }
+
+  // Clamp defaultValue components between 0 and 1
+  const sanitized = {}
+  for (const component of ['r', 'g', 'b', 'a']) {
+    ;(sanitized as $IntentionalAny)[component] = Math.min(
+      Math.max((defaultValue as $IntentionalAny)[component], 0),
+      1,
+    )
+  }
+
+  return {
+    type: 'rgba',
+    valueType: null as $IntentionalAny,
+    default: decorateRgba(sanitized as Rgba),
+    [propTypeSymbol]: 'TheatrePropType',
+    label: opts?.label,
+    sanitize: _sanitizeRgba,
+    interpolate: _interpolateRgba,
+  }
+}
+
+const _sanitizeRgba = (val: unknown): Rgba | undefined => {
+  let valid = true
+  for (const c of ['r', 'g', 'b', 'a']) {
+    if (
+      !Object.prototype.hasOwnProperty.call(val, c) ||
+      typeof (val as $IntentionalAny)[c] !== 'number'
+    ) {
+      valid = false
+    }
+  }
+
+  // Clamp defaultValue components between 0 and 1
+  const sanitized = {}
+  for (const c of ['r', 'g', 'b', 'a']) {
+    ;(sanitized as $IntentionalAny)[c] = Math.min(
+      Math.max((val as $IntentionalAny)[c], 0),
+      1,
+    )
+  }
+
+  return valid ? decorateRgba(sanitized as Rgba) : undefined
+}
+
+const _interpolateRgba = (
+  left: Rgba,
+  right: Rgba,
+  progression: number,
+): Rgba => {
+  const leftLab = linearSrgbToOklab(srgbToLinearSrgb(left))
+  const rightLab = linearSrgbToOklab(srgbToLinearSrgb(right))
+
+  const interpolatedLab = {
+    L: (1 - progression) * leftLab.L + progression * rightLab.L,
+    a: (1 - progression) * leftLab.a + progression * rightLab.a,
+    b: (1 - progression) * leftLab.b + progression * rightLab.b,
+    alpha: (1 - progression) * leftLab.alpha + progression * rightLab.alpha,
+  }
+
+  const interpolatedRgba = linearSrgbToSrgb(oklabToLinearSrgb(interpolatedLab))
+
+  return decorateRgba(interpolatedRgba)
 }
 
 /**
@@ -467,6 +569,11 @@ export interface PropTypeConfig_StringLiteral<T extends string>
   as: 'menu' | 'switch'
 }
 
+export interface PropTypeConfig_Rgba extends IBasePropType<Rgba> {
+  type: 'rgba'
+  default: Rgba
+}
+
 /**
  *
  */
@@ -492,6 +599,7 @@ export type PropTypeConfig_AllPrimitives =
   | PropTypeConfig_Boolean
   | PropTypeConfig_String
   | PropTypeConfig_StringLiteral<$IntentionalAny>
+  | PropTypeConfig_Rgba
 
 export type PropTypeConfig =
   | PropTypeConfig_AllPrimitives

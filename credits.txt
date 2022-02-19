@@ -1,0 +1,1 @@
+The color picker is a fork of https://github.com/omgovich/react-colorful
