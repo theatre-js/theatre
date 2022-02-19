@@ -192,9 +192,8 @@ export default class StudioStore {
               }
 
               // If we are dealing with a compound prop, we recurse through its
-              // nested properties. The root prop with path.length === 0 is
-              // implicitly considered a compound prop.
-              if (path.length === 0 || propConfig.type === 'compound') {
+              // nested properties.
+              if (propConfig.type === 'compound') {
                 forEachDeep(
                   _value,
                   (v, pathToProp) => {
@@ -256,7 +255,7 @@ export default class StudioStore {
                 }
               }
 
-              if (path.length === 0 || propConfig?.type === 'compound') {
+              if (propConfig.type === 'compound') {
                 forEachDeep(
                   defaultValue,
                   (v, pathToProp) => {
