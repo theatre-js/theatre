@@ -1,4 +1,10 @@
-import React, {useMemo, useRef, useEffect} from 'react'
+import React, {
+  useLayoutEffect,
+  useCallback,
+  useRef,
+  useEffect,
+  useState,
+} from 'react'
 import type {MutableRefObject} from 'react'
 import {clamp, isInteger, round} from 'lodash-es'
 import styled from 'styled-components'
@@ -114,12 +120,12 @@ const BasicNumberInput: React.FC<{
   nudge: BasicNumberInputNudgeFn
   defaultMode?: IState['mode']
 }> = (propsA) => {
+  const isValid = propsA.isValid ?? alwaysValid
+
+  const [inputWidth, setInputWidth] = useState(0)
   const [stateRef] = useRefAndState<IState>({
     mode: 'noFocus',
   })
-
-  const propsRef = useRef(propsA)
-  propsRef.current = propsA
 
   const inputRef = useRef<HTMLInputElement | null>(null)
 
@@ -131,82 +137,64 @@ const BasicNumberInput: React.FC<{
     stateRef.current.mode === 'editingViaKeyboard',
   )
 
-  const callbacks = useMemo(() => {
-    const isValid = propsA.isValid ?? alwaysValid
-    let inputWidth: number
-
-    const inputChange = (e: React.ChangeEvent) => {
-      const target = e.target as HTMLInputElement
-      const {value} = target
-      const curState = stateRef.current as IState_EditingViaKeyboard
-
-      stateRef.current = {
-        ...curState,
-        currentEditedValueInString: value,
-      }
-
-      const valInFloat = parseFloat(value)
-
-      if (!isFinite(valInFloat) || !isValid(valInFloat)) return
-
-      propsRef.current.temporarilySetValue(valInFloat)
+  const transitionToEditingViaKeyboardMode = useCallback(() => {
+    const curValue = propsA.value
+    stateRef.current = {
+      mode: 'editingViaKeyboard',
+      currentEditedValueInString: String(curValue),
+      valueBeforeEditing: curValue,
     }
+  }, [propsA.value, stateRef])
 
-    const onBlur = () => {
-      if (stateRef.current.mode === 'editingViaKeyboard') {
-        commitKeyboardInput()
-        stateRef.current = {mode: 'noFocus'}
-      }
-      if (propsA.onBlur) propsA.onBlur()
+  const transitionToDraggingMode = useCallback(() => {
+    const curValue = propsA.value
+
+    stateRef.current = {
+      mode: 'dragging',
+      valueBeforeDragging: curValue,
+      currentDraggingValue: curValue,
     }
+  }, [propsA.value, stateRef])
 
-    const commitKeyboardInput = () => {
-      const curState = stateRef.current as IState_EditingViaKeyboard
-      const value = parseFloat(curState.currentEditedValueInString)
+  const commitKeyboardInput = useCallback(() => {
+    const curState = stateRef.current as IState_EditingViaKeyboard
+    const value = parseFloat(curState.currentEditedValueInString)
 
-      if (!isFinite(value) || !isValid(value)) {
-        propsRef.current.discardTemporaryValue()
+    if (!isFinite(value) || !isValid(value)) {
+      propsA.discardTemporaryValue()
+    } else {
+      if (curState.valueBeforeEditing === value) {
+        propsA.discardTemporaryValue()
       } else {
-        if (curState.valueBeforeEditing === value) {
-          propsRef.current.discardTemporaryValue()
-        } else {
-          propsRef.current.permenantlySetValue(value)
-        }
+        propsA.permenantlySetValue(value)
       }
     }
+  }, [isValid, propsA, stateRef])
 
-    const onInputKeyDown = (e: React.KeyboardEvent) => {
+  const onBlur = useCallback(() => {
+    if (stateRef.current.mode === 'editingViaKeyboard') {
+      commitKeyboardInput()
+      stateRef.current = {mode: 'noFocus'}
+    }
+    if (propsA.onBlur) propsA.onBlur()
+  }, [commitKeyboardInput, propsA, stateRef])
+
+  const onInputKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
       if (e.key === 'Escape') {
-        propsRef.current.discardTemporaryValue()
+        propsA.discardTemporaryValue()
         stateRef.current = {mode: 'noFocus'}
         inputRef.current!.blur()
       } else if (e.key === 'Enter' || e.key === 'Tab') {
         commitKeyboardInput()
         inputRef.current!.blur()
       }
-    }
+    },
+    [commitKeyboardInput, propsA, stateRef],
+  )
 
-    const transitionToEditingViaKeyboardMode = () => {
-      const curValue = propsRef.current.value
-      stateRef.current = {
-        mode: 'editingViaKeyboard',
-        currentEditedValueInString: String(curValue),
-        valueBeforeEditing: curValue,
-      }
-    }
-
-    const transitionToDraggingMode = () => {
-      inputWidth = inputRef.current?.getBoundingClientRect().width!
-      const curValue = propsRef.current.value
-
-      stateRef.current = {
-        mode: 'dragging',
-        valueBeforeDragging: curValue,
-        currentDraggingValue: curValue,
-      }
-    }
-
-    const onClick = (e: React.MouseEvent) => {
+  const onClick = useCallback(
+    (e: React.MouseEvent) => {
       if (stateRef.current.mode === 'noFocus') {
         // Start editing
         transitionToEditingViaKeyboardMode()
@@ -224,24 +212,50 @@ const BasicNumberInput: React.FC<{
         window?.getSelection()?.empty()
         e.stopPropagation()
       }
-    }
+    },
+    [stateRef, transitionToEditingViaKeyboardMode],
+  )
 
-    const onDragEnd = (happened: boolean) => {
+  const inputChange = useCallback(
+    (e: React.ChangeEvent) => {
+      const target = e.target as HTMLInputElement
+      const {value} = target
+      const curState = stateRef.current as IState_EditingViaKeyboard
+
+      stateRef.current = {
+        ...curState,
+        currentEditedValueInString: value,
+      }
+
+      const valInFloat = parseFloat(value)
+
+      if (!isFinite(valInFloat) || !isValid(valInFloat)) return
+
+      propsA.temporarilySetValue(valInFloat)
+    },
+    [isValid, propsA, stateRef],
+  )
+
+  const onDragEnd = useCallback(
+    (happened: boolean) => {
       if (!happened) {
-        propsRef.current.discardTemporaryValue()
+        propsA.discardTemporaryValue()
       } else {
         const curState = stateRef.current as IState_Dragging
         const value = curState.currentDraggingValue
         if (curState.valueBeforeDragging === value) {
-          propsRef.current.discardTemporaryValue()
+          propsA.discardTemporaryValue()
         } else {
-          propsRef.current.permenantlySetValue(value)
+          propsA.permenantlySetValue(value)
         }
         transitionToEditingViaKeyboardMode()
       }
-    }
+    },
+    [transitionToEditingViaKeyboardMode, propsA, stateRef],
+  )
 
-    const onDrag = (deltaX: number, _dy: number) => {
+  const onDrag = useCallback(
+    (deltaX: number, _dy: number) => {
       if (stateRef.current.mode !== 'dragging') {
         transitionToDraggingMode()
       }
@@ -264,29 +278,27 @@ const BasicNumberInput: React.FC<{
         currentDraggingValue: newValue,
       }
 
-      propsRef.current.temporarilySetValue(newValue)
-    }
-
-    return {
-      inputChange,
-      onBlur,
-      onInputKeyDown,
-      onClick,
-      onDragEnd,
-      onDrag,
-      transitionToEditingViaKeyboardMode,
-      transitionToDraggingMode,
-    }
-  }, []) // TODO: fix the missing dependency warning
+      propsA.temporarilySetValue(newValue)
+    },
+    [transitionToDraggingMode, inputWidth, propsA, stateRef],
+  )
 
   useEffect(() => {
     if (propsA?.defaultMode === 'editingViaKeyboard') {
       inputRef.current!.focus()
-      callbacks.transitionToEditingViaKeyboardMode()
+      transitionToEditingViaKeyboardMode()
     } else if (propsA?.defaultMode === 'dragging') {
-      callbacks.transitionToDraggingMode()
+      transitionToDraggingMode()
     }
-  }, [propsA.defaultMode, callbacks])
+  }, [
+    propsA.defaultMode,
+    transitionToEditingViaKeyboardMode,
+    transitionToDraggingMode,
+  ])
+
+  useLayoutEffect(() => {
+    setInputWidth(inputRef.current?.getBoundingClientRect().width!)
+  }, [])
 
   let value =
     stateRef.current.mode !== 'editingViaKeyboard'
@@ -299,22 +311,6 @@ const BasicNumberInput: React.FC<{
 
   const _refs = [inputRef]
   if (propsA.inputRef) _refs.push(propsA.inputRef)
-
-  const theInput = (
-    <Input
-      key="input"
-      type="text"
-      onChange={callbacks.inputChange}
-      value={value}
-      onBlur={callbacks.onBlur}
-      onKeyDown={callbacks.onInputKeyDown}
-      ref={mergeRefs(_refs)}
-      onDoubleClick={(e: React.MouseEvent) => {
-        e.preventDefault()
-        e.stopPropagation()
-      }}
-    />
-  )
 
   const {range} = propsA
   const num = parseFloat(value)
@@ -331,12 +327,24 @@ const BasicNumberInput: React.FC<{
   return (
     <Container className={propsA.className + ' ' + stateRef.current.mode}>
       <DraggableArea
-        onDragEnd={callbacks.onDragEnd}
-        onDrag={callbacks.onDrag}
+        onDragEnd={onDragEnd}
+        onDrag={onDrag}
         lockCursorTo="ew-resize"
-        onClick={callbacks.onClick}
+        onClick={onClick}
       >
-        {theInput}
+        <Input
+          key="input"
+          type="text"
+          onChange={inputChange}
+          value={value}
+          onBlur={onBlur}
+          onKeyDown={onInputKeyDown}
+          ref={mergeRefs(_refs)}
+          onDoubleClick={(e: React.MouseEvent) => {
+            e.preventDefault()
+            e.stopPropagation()
+          }}
+        />
       </DraggableArea>
       {fillIndicator}
     </Container>
