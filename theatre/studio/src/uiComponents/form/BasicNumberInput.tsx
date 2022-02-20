@@ -148,7 +148,6 @@ const BasicNumberInput: React.FC<{
 
   const transitionToDraggingMode = useCallback(() => {
     const curValue = propsA.value
-
     stateRef.current = {
       mode: 'dragging',
       valueBeforeDragging: curValue,
@@ -284,6 +283,7 @@ const BasicNumberInput: React.FC<{
   )
 
   useEffect(() => {
+    if (stateRef.current.mode) return
     if (propsA?.defaultMode === 'editingViaKeyboard') {
       inputRef.current!.focus()
       transitionToEditingViaKeyboardMode()
@@ -291,9 +291,10 @@ const BasicNumberInput: React.FC<{
       transitionToDraggingMode()
     }
   }, [
-    propsA.defaultMode,
+    propsA?.defaultMode,
     transitionToEditingViaKeyboardMode,
     transitionToDraggingMode,
+    stateRef,
   ])
 
   useLayoutEffect(() => {

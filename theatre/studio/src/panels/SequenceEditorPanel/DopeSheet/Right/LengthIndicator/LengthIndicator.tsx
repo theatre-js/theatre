@@ -126,11 +126,12 @@ const Cover = styled.div`
   }
 `
 
-const MIN_VALUE = 1 // seconds
-
 type IProps = {
   layoutP: Pointer<SequenceEditorPanelLayout>
 }
+
+const MIN_LENGTH = 1 // seconds
+const RANGE: [min: number, max: number] = [MIN_LENGTH, Infinity]
 
 const LengthIndicator: React.FC<IProps> = ({layoutP}) => {
   const [nodeRef, node] = useRefAndState<HTMLDivElement | null>(null)
@@ -143,7 +144,7 @@ const LengthIndicator: React.FC<IProps> = ({layoutP}) => {
           <LengthEditorPopover
             layoutP={layoutP}
             onRequestClose={closePopover}
-            range={[MIN_VALUE, Infinity]}
+            range={RANGE}
           />
         </BasicPopover>
       )
@@ -245,9 +246,10 @@ function useDragBulge(node: HTMLDivElement | null, props: IProps) {
 
         tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
           const newLength = initialLength + delta
+
           stateEditors.coreByProject.historic.sheetsById.sequence.setLength({
             ...sheet.address,
-            length: newLength > MIN_VALUE ? newLength : MIN_VALUE,
+            length: newLength > MIN_LENGTH ? newLength : MIN_LENGTH,
           })
         })
       },
