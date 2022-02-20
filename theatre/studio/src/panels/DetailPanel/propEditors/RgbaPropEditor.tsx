@@ -58,7 +58,7 @@ const RgbaPropEditor: React.FC<{
   const onChange = useCallback(
     (color: string) => {
       const rgba = decorateRgba(parseRgbaFromHex(color))
-      stuff.permenantlySetValue(rgba)
+      stuff.permanentlySetValue(rgba)
     },
     [stuff],
   )
@@ -86,7 +86,7 @@ const RgbaPropEditor: React.FC<{
             permanentlySetValue={(color) => {
               // console.log('perm')
               const rgba = decorateRgba(color)
-              stuff.permenantlySetValue(rgba)
+              stuff.permanentlySetValue(rgba)
             }}
             discardTemporaryValue={stuff.discardTemporaryValue}
           />
@@ -109,7 +109,7 @@ const RgbaPropEditor: React.FC<{
           value={rgba2hex(stuff.value)}
           temporarilySetValue={noop}
           discardTemporaryValue={noop}
-          permenantlySetValue={onChange}
+          permanentlySetValue={onChange}
           isValid={(v) => !!v.match(/^#?([0-9a-f]{8})$/i)}
         />
       </RowContainer>
