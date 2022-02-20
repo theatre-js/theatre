@@ -20,7 +20,7 @@ const StringLiteralPropEditor: React.FC<{
 
   const onChange = useCallback(
     (val: string) => {
-      stuff.permenantlySetValue(val)
+      stuff.permanentlySetValue(val)
     },
     [propConfig, pointerToProp, obj],
   )

@@ -55,7 +55,7 @@ const BasicStringInput: React.FC<{
   value: string
   temporarilySetValue: (v: string) => void
   discardTemporaryValue: () => void
-  permenantlySetValue: (v: string) => void
+  permanentlySetValue: (v: string) => void
   className?: string
   isValid?: (v: string) => boolean
   inputRef?: MutableRefObject<HTMLInputElement | null>
@@ -112,7 +112,7 @@ const BasicStringInput: React.FC<{
         if (curState.valueBeforeEditing === value) {
           propsRef.current.discardTemporaryValue()
         } else {
-          propsRef.current.permenantlySetValue(value)
+          propsRef.current.permanentlySetValue(value)
         }
       }
     }

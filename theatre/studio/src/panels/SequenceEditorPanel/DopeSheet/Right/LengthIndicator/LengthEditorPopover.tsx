@@ -56,11 +56,12 @@ const LengthEditorPopover: React.FC<{
           tempTransaction = undefined
         }
       },
-      permenantlySetValue(newLength: number): void {
+      permanentlySetValue(newLength: number): void {
         if (tempTransaction) {
           tempTransaction.discard()
           tempTransaction = undefined
         }
+
         getStudio()!.transaction(({stateEditors}) => {
           stateEditors.coreByProject.historic.sheetsById.sequence.setLength({
             ...sheet.address,

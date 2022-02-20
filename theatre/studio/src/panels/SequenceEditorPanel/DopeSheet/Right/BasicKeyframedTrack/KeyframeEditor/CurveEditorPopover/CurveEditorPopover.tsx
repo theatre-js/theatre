@@ -192,7 +192,7 @@ const CurveEditorPopover: React.FC<
           tempTransaction = undefined
         }
       },
-      permenantlySetValue(newCurve: string): void {
+      permanentlySetValue(newCurve: string): void {
         if (tempTransaction) {
           tempTransaction.discard()
           tempTransaction = undefined
@@ -282,7 +282,7 @@ const CurveEditorPopover: React.FC<
               props.onRequestClose()
             }
             if (e.key === 'Enter') {
-              fns.permenantlySetValue(filter)
+              fns.permanentlySetValue(filter)
               props.onRequestClose()
             }
           }}
@@ -302,7 +302,7 @@ const CurveEditorPopover: React.FC<
                     if (e.key === 'Escape') {
                       props.onRequestClose()
                     } else if (e.key === 'Enter') {
-                      fns.permenantlySetValue(preset.value)
+                      fns.permanentlySetValue(preset.value)
                       props.onRequestClose()
                     }
                     if (e.key === 'ArrowRight') {
@@ -358,7 +358,7 @@ const CurveEditorPopover: React.FC<
                   ref={optionsRef.current[preset.label]}
                   key={preset.label}
                   onClick={() => {
-                    fns.permenantlySetValue(preset.value)
+                    fns.permanentlySetValue(preset.value)
                     props.onRequestClose()
                   }}
                   // Temporarily apply on hover
