@@ -30,6 +30,9 @@ import {isSheetObject} from '@theatre/shared/instanceTypes'
 import type {OnDiskState} from '@theatre/core/projects/store/storeTypes'
 import {generateDiskStateRevision} from './generateDiskStateRevision'
 import type {PropTypeConfig} from '@theatre/core/propTypes'
+import type {PathToProp} from '@theatre/shared/src/utils/addresses'
+import {getPropConfigByPath} from '@theatre/shared/propTypes/utils'
+import {cloneDeep} from 'lodash-es'
 
 export type Drafts = {
   historic: Draft<StudioHistoricState>
@@ -131,9 +134,10 @@ export default class StudioStore {
         const api: ITransactionPrivateApi = {
           set: (pointer, value) => {
             ensureRunning()
-            const {root} = getPointerParts(pointer as Pointer<$FixMe>)
+            const _value = cloneDeep(value)
+            const {root, path} = getPointerParts(pointer as Pointer<$FixMe>)
             if (isSheetObject(root)) {
-              root.validateValue(pointer as Pointer<$FixMe>, value)
+              root.validateValue(pointer as Pointer<$FixMe>, _value)
 
               const sequenceTracksTree = val(
                 root.template
@@ -141,46 +145,65 @@ export default class StudioStore {
                   .getValue(),
               )
 
-              forEachDeep(
-                value,
-                (v, pathToProp) => {
-                  if (typeof v === 'undefined' || v === null) {
-                    return
-                  }
+              const propConfig = getPropConfigByPath(
+                root.template.config,
+                path,
+              ) as PropTypeConfig
 
-                  const propAddress = {...root.address, pathToProp}
+              const setStaticOrKeyframeProp = <T>(
+                value: T,
+                path: PathToProp,
+              ) => {
+                if (typeof value === 'undefined' || value === null) {
+                  return
+                }
 
-                  const trackId = get(
-                    sequenceTracksTree,
-                    pathToProp,
-                  ) as $FixMe as SequenceTrackId | undefined
+                const propAddress = {...root.address, pathToProp: path}
 
-                  if (typeof trackId === 'string') {
-                    const propConfig = get(
-                      root.template.config.props,
-                      pathToProp,
-                    ) as PropTypeConfig | undefined
-                    if (propConfig?.sanitize) v = propConfig.sanitize(v)
+                const trackId = get(sequenceTracksTree, path) as $FixMe as
+                  | SequenceTrackId
+                  | undefined
+                if (typeof trackId === 'string') {
+                  const propConfig = getPropConfigByPath(
+                    root.template.config,
+                    path,
+                  ) as PropTypeConfig | undefined
+                  // TODO: Make sure this causes no problems wrt decorated
+                  // or otherwise unserializable stuff that sanitize might return.
+                  // value needs to be serializable.
+                  if (propConfig?.sanitize) value = propConfig.sanitize(value)
 
-                    const seq = root.sheet.getSequence()
-                    seq.position = seq.closestGridPosition(seq.position)
-                    stateEditors.coreByProject.historic.sheetsById.sequence.setKeyframeAtPosition(
-                      {
-                        ...propAddress,
-                        trackId,
-                        position: seq.position,
-                        value: v as $FixMe,
-                        snappingFunction: seq.closestGridPosition,
-                      },
-                    )
-                  } else {
-                    stateEditors.coreByProject.historic.sheetsById.staticOverrides.byObject.setValueOfPrimitiveProp(
-                      {...propAddress, value: v},
-                    )
-                  }
-                },
-                getPointerParts(pointer as Pointer<$IntentionalAny>).path,
-              )
+                  const seq = root.sheet.getSequence()
+                  seq.position = seq.closestGridPosition(seq.position)
+                  stateEditors.coreByProject.historic.sheetsById.sequence.setKeyframeAtPosition(
+                    {
+                      ...propAddress,
+                      trackId,
+                      position: seq.position,
+                      value: value as $FixMe,
+                      snappingFunction: seq.closestGridPosition,
+                    },
+                  )
+                } else if (propConfig !== undefined) {
+                  stateEditors.coreByProject.historic.sheetsById.staticOverrides.byObject.setValueOfPrimitiveProp(
+                    {...propAddress, value: value as $FixMe},
+                  )
+                }
+              }
+
+              // If we are dealing with a compound prop, we recurse through its
+              // nested properties.
+              if (propConfig.type === 'compound') {
+                forEachDeep(
+                  _value,
+                  (v, pathToProp) => {
+                    setStaticOrKeyframeProp(v, pathToProp)
+                  },
+                  getPointerParts(pointer as Pointer<$IntentionalAny>).path,
+                )
+              } else {
+                setStaticOrKeyframeProp(_value, path)
+              }
             } else {
               throw new Error(
                 'Only setting props of SheetObject-s is supported in a transaction so far',
@@ -202,33 +225,47 @@ export default class StudioStore {
                 path,
               )
 
-              forEachDeep(
-                defaultValue,
-                (v, pathToProp) => {
-                  const propAddress = {...root.address, pathToProp}
+              const propConfig = getPropConfigByPath(
+                root.template.config,
+                path,
+              ) as PropTypeConfig
 
-                  const trackId = get(
-                    sequenceTracksTree,
-                    pathToProp,
-                  ) as $FixMe as SequenceTrackId | undefined
+              const unsetStaticOrKeyframeProp = <T>(
+                value: T,
+                path: PathToProp,
+              ) => {
+                const propAddress = {...root.address, pathToProp: path}
 
-                  if (typeof trackId === 'string') {
-                    stateEditors.coreByProject.historic.sheetsById.sequence.unsetKeyframeAtPosition(
-                      {
-                        ...propAddress,
-                        trackId,
-                        position:
-                          root.sheet.getSequence().positionSnappedToGrid,
-                      },
-                    )
-                  } else {
-                    stateEditors.coreByProject.historic.sheetsById.staticOverrides.byObject.unsetValueOfPrimitiveProp(
-                      propAddress,
-                    )
-                  }
-                },
-                getPointerParts(pointer as Pointer<$IntentionalAny>).path,
-              )
+                const trackId = get(sequenceTracksTree, path) as $FixMe as
+                  | SequenceTrackId
+                  | undefined
+
+                if (typeof trackId === 'string') {
+                  stateEditors.coreByProject.historic.sheetsById.sequence.unsetKeyframeAtPosition(
+                    {
+                      ...propAddress,
+                      trackId,
+                      position: root.sheet.getSequence().positionSnappedToGrid,
+                    },
+                  )
+                } else if (propConfig !== undefined) {
+                  stateEditors.coreByProject.historic.sheetsById.staticOverrides.byObject.unsetValueOfPrimitiveProp(
+                    propAddress,
+                  )
+                }
+              }
+
+              if (propConfig.type === 'compound') {
+                forEachDeep(
+                  defaultValue,
+                  (v, pathToProp) => {
+                    unsetStaticOrKeyframeProp(v, pathToProp)
+                  },
+                  getPointerParts(pointer as Pointer<$IntentionalAny>).path,
+                )
+              } else {
+                unsetStaticOrKeyframeProp(defaultValue, path)
+              }
             } else {
               throw new Error(
                 'Only setting props of SheetObject-s is supported in a transaction so far',

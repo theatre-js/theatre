@@ -180,7 +180,7 @@ const BasicStringInput: React.FC<{
     <Input
       key="input"
       type="text"
-      className={!isValid(value) ? 'invalid' : ''}
+      className={`${props.className ?? ''} ${!isValid(value) ? 'invalid' : ''}`}
       onChange={callbacks.inputChange}
       value={value}
       onBlur={callbacks.onBlur}
