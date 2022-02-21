@@ -84,7 +84,6 @@ const RgbaPropEditor: React.FC<{
               stuff.temporarilySetValue(rgba)
             }}
             permanentlySetValue={(color) => {
-              // console.log('perm')
               const rgba = decorateRgba(color)
               stuff.permanentlySetValue(rgba)
             }}

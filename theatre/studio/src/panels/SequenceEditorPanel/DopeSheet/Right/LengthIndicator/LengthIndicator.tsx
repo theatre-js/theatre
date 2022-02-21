@@ -130,7 +130,7 @@ type IProps = {
   layoutP: Pointer<SequenceEditorPanelLayout>
 }
 
-const MIN_LENGTH = 1 // seconds
+const MIN_LENGTH = 0.5 // seconds
 const RANGE: [min: number, max: number] = [MIN_LENGTH, Infinity]
 
 const LengthIndicator: React.FC<IProps> = ({layoutP}) => {
