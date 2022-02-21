@@ -68,11 +68,11 @@ describe(`numberRoundingUtils()`, () => {
         sign
       )
     }
-    for (let i = 0; i < 2000; i++) {
-      const from = toPrecision(getRandomNumber())
-      const to = toPrecision(getRandomNumber())
+    test(`roundestNumberBetween() => fuzzy`, () => {
+      for (let i = 0; i < 2000; i++) {
+        const from = toPrecision(getRandomNumber())
+        const to = toPrecision(getRandomNumber())
 
-      test(`roundestNumberBetween(${from}, ${to}) => fuzzy`, () => {
         const result = roundestNumberBetween(from, to)
         if (from < to) {
           if (result < from || result > to) {
@@ -83,8 +83,8 @@ describe(`numberRoundingUtils()`, () => {
             throw new Error(`Invalid: ${to} ${from} ${result}`)
           }
         }
-      })
-    }
+      }
+    })
   })
   describe(`roundestIntegerBetween`, () => {
     example(roundestIntegerBetween, [-1, 6], 0, {})

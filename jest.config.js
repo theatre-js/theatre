@@ -15,8 +15,18 @@ module.exports = {
   setupFiles: ['./theatre/shared/src/setupTestEnv.ts'],
   automock: false,
   transform: {
-    '^.+\\.tsx?$': 'esbuild-jest',
-    '^.+\\.js$': 'esbuild-jest',
+    '^.+\\.tsx?$': [
+      'esbuild-jest',
+      {
+        sourcemap: true,
+      },
+    ],
+    '^.+\\.js$': [
+      'esbuild-jest',
+      {
+        sourcemap: true,
+      },
+    ],
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
 }

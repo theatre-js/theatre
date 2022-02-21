@@ -1,6 +1,6 @@
 import Emitter from './Emitter'
 
-describe.only('DataVerse.Emitter', () => {
+describe('DataVerse.Emitter', () => {
   it('should work', () => {
     const e: Emitter<string> = new Emitter()
     e.emit('no one will see this')
