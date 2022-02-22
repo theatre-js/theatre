@@ -66,7 +66,7 @@ The documentation website's repo is [here](https://github.com/ariaminaei/theatre
 
 ### Writing/recording tutorials
 
-If you make tutorials or video content about Theare, tell us to showcase it here :)
+If you make tutorials or video content about Theatre, tell us to showcase it here :)
 
 ## License
 
