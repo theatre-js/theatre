@@ -65,17 +65,14 @@ export default class Emitter<V> {
   }
 
   /**
-   * Handler to execute when the number of tappers (subscribers) changes.
-   *
-   * @callback Emitter~numberOfTappersChangeHandler
-   *
-   * @param {number} n - The current number of  tappers (subscribers).
-   */
-
-  /**
    * Calls callback when the number of tappers (subscribers) changes.
    *
-   * @param {Emitter~requestCallback} cb - The function to be called.
+   * @example
+   * ```ts
+   * emitter.onNumberOfTappersChange((n) => {
+   *   console.log("number of tappers changed:", n)
+   * })
+   * ```
    */
   onNumberOfTappersChange(cb: (n: number) => void) {
     this._onNumberOfTappersChangeListener = cb

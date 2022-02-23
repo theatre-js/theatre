@@ -137,8 +137,6 @@ export const getPointerParts = (
  * ```
  *
  * @param args - The pointer parameters.
- * @param args.root - The {@link Atom} the pointer applies to.
- * @param args.path - The path to the (nested) property the pointer points to.
  *
  * @typeParam O - The type of the value being pointed to.
  */
