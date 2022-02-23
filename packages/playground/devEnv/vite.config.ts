@@ -1,11 +1,13 @@
-import {existsSync, writeFileSync} from 'fs'
+import {defineConfig} from 'vite'
+import react from '@vitejs/plugin-react'
 import path from 'path'
+import {getAliasesFromTsConfigForRollup} from '../../../devEnv/getAliasesFromTsConfig'
 import {definedGlobals} from '../../../theatre/devEnv/buildUtils'
+import {existsSync, writeFileSync} from 'fs'
 
 const playgroundDir = path.join(__dirname, '..')
 
 const port = 8080
-
 const playgroundIndexContent = `
 /**
  * This file is created automatically and won't be comitted to the repo.
@@ -27,26 +29,21 @@ if (!existsSync(playgroundEntry)) {
   writeFileSync(playgroundEntry, playgroundIndexContent, {encoding: 'utf-8'})
 }
 
-require('esbuild')
-  .serve(
-    {
-      port,
-      servedir: path.join(playgroundDir, 'src'),
-    },
-    {
-      entryPoints: [playgroundEntry],
-      target: ['firefox88'],
-      loader: {
-        '.png': 'file',
-        '.glb': 'file',
-        '.gltf': 'file',
-        '.svg': 'dataurl',
-      },
-      bundle: true,
-      sourcemap: true,
-      define: definedGlobals,
-    },
-  )
-  .then((server: unknown) => {
-    console.log('Playground running at', 'http://localhost:' + port)
-  })
+// https://vitejs.dev/config/
+export default defineConfig({
+  root: path.join(playgroundDir, './src'),
+  assetsInclude: ['**/*.gltf', '**/*.glb'],
+  server: {
+    port,
+  },
+
+  plugins: [react()],
+  resolve: {
+    /*
+    This will alias paths like `@theatre/core` to `path/to/theatre/core/src/index.ts` and so on,
+    so vite won't treat the monorepo's packages as externals and won't pre-bundle them.
+    */
+    alias: [...getAliasesFromTsConfigForRollup()],
+  },
+  define: definedGlobals,
+})

@@ -8,7 +8,7 @@
     "dist/**/*"
   ],
   "scripts": {
-    "serve": "node -r esbuild-register devEnv/servePlayground.ts",
+    "serve": "vite --config ./devEnv/vite.config.ts",
     "typecheck": "yarn run build",
     "build": "tsc --build ./tsconfig.json"
   },
@@ -22,9 +22,9 @@
     "@types/lodash-es": "^4.17.4",
     "@types/node": "^15.6.2",
     "@types/react": "^17.0.9",
-    "esbuild": "^0.12.15",
-    "esbuild-register": "^2.5.0",
+    "@vitejs/plugin-react": "^1.2.0",
     "three": "^0.130.1",
-    "typescript": "^4.4.2"
+    "typescript": "^4.4.2",
+    "vite": "^2.8.4"
   }
 }
