@@ -9728,15 +9728,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-react-hooks@npm:^4.3.0":
-  version: 4.3.0
-  resolution: "eslint-plugin-react-hooks@npm:4.3.0"
-  peerDependencies:
-    eslint: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0
-  checksum: 0ba1566ba0780bbc75a5921f49188edf232db2085ab32c8d3889592f0db9d6fadc97fcf639775e0101dec6b5409ca3c803ec44213b90c8bacaf0bdf921871c2e
-  languageName: node
-  linkType: hard
-
 "eslint-plugin-react@npm:^7.21.5":
   version: 7.24.0
   resolution: "eslint-plugin-react@npm:7.24.0"
@@ -20382,7 +20373,6 @@ fsevents@^1.2.7:
     eslint: ^7.32.0
     eslint-plugin-jsx-a11y: ^6.4.1
     eslint-plugin-react: ^7.25.1
-    eslint-plugin-react-hooks: ^4.3.0
     eslint-plugin-tsdoc: ^0.2.14
     eslint-plugin-unused-imports: ^1.1.4
     husky: ^6.0.0

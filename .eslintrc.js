@@ -1,7 +1,29 @@
+/**
+ * @remarks
+ * Notes on plugins we _don't_ use:
+ *
+ *  ## plugin:react-hooks
+ *  We don't use the react hooks plugin because it disallows valid use-cases
+ *  such as this:
+ *
+ *  ```ts
+ *  export default function useValToAtom<S>(val: S): Atom<S> {
+ *  const atom = useMemo(() => {
+ *    return new Atom(val)
+ *  }, []) // <-- we don't _need_ to include `val` here, but the lint rule will require it
+ *
+ *  useLayoutEffect(() => {
+ *    atom.setState(val)
+ *  }, [val]) // <-- we also know `atom` will never change, but the lint rule doesn't
+ *
+ *  return atom
+ * ```
+ */
+
 module.exports = {
   root: true,
   plugins: ['unused-imports', 'eslint-plugin-tsdoc'],
-  extends: ['plugin:react-hooks/recommended'],
+  extends: [],
   rules: {
     'unused-imports/no-unused-imports': 'warn',
     'tsdoc/syntax': 'warn',
