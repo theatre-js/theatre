@@ -1,5 +1,4 @@
-/**
- // eslint-disable-next-line tsdoc/syntax
+/*
  * @jest-environment jsdom
  */
 import {setupTestSheet} from '@theatre/shared/testUtils'

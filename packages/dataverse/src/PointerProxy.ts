@@ -36,7 +36,7 @@ export default class PointerProxy<O extends {}>
 
   /**
    * Sets the underlying pointer.
-   * @param p The pointer to be proxied.
+   * @param p - The pointer to be proxied.
    */
   setPointer(p: Pointer<O>) {
     this._currentPointerBox.set(p)
@@ -45,7 +45,7 @@ export default class PointerProxy<O extends {}>
   /**
    * Returns a derivation of the value at the provided sub-path of the proxied pointer.
    *
-   * @param path The path to create the derivation at.
+   * @param path - The path to create the derivation at.
    */
   getIdentityDerivation(path: Array<string | number>) {
     return this._currentPointerBox.derivation.flatMap((p) => {

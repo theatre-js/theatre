@@ -7,7 +7,7 @@ export default class ConstantDerivation<V> extends AbstractDerivation<V> {
   private readonly _v: V
 
   /**
-   * @param v The value of the derivation.
+   * @param v - The value of the derivation.
    */
   constructor(v: V) {
     super()

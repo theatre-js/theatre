@@ -30,7 +30,7 @@ export interface IdentityDerivationProvider {
   /**
    * Returns a derivation of the value at the provided path.
    *
-   * @param path The path to create the derivation at.
+   * @param path - The path to create the derivation at.
    */
   getIdentityDerivation(path: Array<string | number>): IDerivation<unknown>
 }
@@ -139,7 +139,7 @@ export default class Atom<State extends {}>
   /**
    * Sets the state of the atom.
    *
-   * @param newState The new state of the atom.
+   * @param newState - The new state of the atom.
    */
   setState(newState: State) {
     const oldState = this._currentState
@@ -177,8 +177,8 @@ export default class Atom<State extends {}>
    * someAtom.getIn(['a']) // 2
    * ```
    *
-   * @param path The path to call the reducer at.
-   * @param reducer The function to use for creating the new state.
+   * @param path - The path to call the reducer at.
+   * @param reducer - The function to use for creating the new state.
    */
   // TODO: Why is this a property and not a method?
   reduceState: PathBasedReducer<State, State> = (
@@ -240,7 +240,7 @@ export default class Atom<State extends {}>
   /**
    * Returns a new derivation of the value at the provided path.
    *
-   * @param path The path to create the derivation at.
+   * @param path - The path to create the derivation at.
    */
   getIdentityDerivation(path: Array<string | number>): IDerivation<unknown> {
     return new DerivationFromSource<$IntentionalAny>(
@@ -256,7 +256,7 @@ const identityDerivationWeakMap = new WeakMap<{}, IDerivation<unknown>>()
  * Returns a derivation of the value at the provided pointer. Derivations are
  * cached per pointer.
  *
- * @param pointer The pointer to return the derivation at.
+ * @param pointer - The pointer to return the derivation at.
  */
 export const valueDerivation = <P extends PointerType<$IntentionalAny>>(
   pointer: P,
@@ -297,7 +297,7 @@ function isIdentityChangeProvider(
  * For pointers, the value is returned by first creating a derivation, so it is
  * reactive e.g. when used in a `prism`.
  *
- * @param pointerOrDerivationOrPlainValue The argument to return a value from.
+ * @param pointerOrDerivationOrPlainValue - The argument to return a value from.
  */
 export const val = <P>(
   pointerOrDerivationOrPlainValue: P,

@@ -80,7 +80,7 @@ const handler = {
  * Returns the metadata associated with the pointer. Usually the root object and
  * the path.
  *
- * @param p The pointer.
+ * @param p - The pointer.
  */
 export const getPointerMeta = (
   p: Pointer<$IntentionalAny> | Pointer<{}> | Pointer<unknown>,
@@ -100,7 +100,7 @@ export const getPointerMeta = (
  * const {root, path} = getPointerParts(pointer)
  * ```
  *
- * @param p The pointer.
+ * @param p - The pointer.
  *
  * @returns An object with two properties: `root`-the root object or the pointer, and `path`-the path of the pointer. `path` is an array of the property-chain.
  */
@@ -136,11 +136,11 @@ export const getPointerParts = (
  * });
  * ```
  *
- * @param args The pointer parameters.
- * @param args.root The {@link Atom} the pointer applies to.
- * @param args.path The path to the (nested) property the pointer points to.
+ * @param args - The pointer parameters.
+ * @param args.root - The {@link Atom} the pointer applies to.
+ * @param args.path - The path to the (nested) property the pointer points to.
  *
- * @typeParam O The type of the value being pointed to.
+ * @typeParam O - The type of the value being pointed to.
  */
 function pointer<O>(args: {root: {}; path?: Array<string | number>}) {
   const meta: PointerMeta = {

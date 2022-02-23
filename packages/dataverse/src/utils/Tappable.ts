@@ -61,7 +61,7 @@ export default class Tappable<V> {
   /**
    * Tap (subscribe to) the data source.
    *
-   * @param cb The callback to be called on a change.
+   * @param cb - The callback to be called on a change.
    */
   tap(cb: Listener<V>): Untap {
     const tapperId = this._lastTapperId++

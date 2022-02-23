@@ -26,7 +26,7 @@ export default class Ticker {
    * Note that `fn` will be added to a `Set()`. Which means, if you call `onThisOrNextTick(fn)`
    * with the same fn twice in a single tick, it'll only run once.
    *
-   * @param fn The function to be registered.
+   * @param fn - The function to be registered.
    *
    * @see offThisOrNextTick
    */
@@ -37,7 +37,7 @@ export default class Ticker {
   /**
    * Registers a side effect to be called on the next tick.
    *
-   * @param fn The function to be registered.
+   * @param fn - The function to be registered.
    *
    * @see onThisOrNextTick
    * @see offNextTick
@@ -49,7 +49,7 @@ export default class Ticker {
   /**
    * De-registers a fn to be called either on this tick or the next tick.
    *
-   * @param fn The function to be de-registered.
+   * @param fn - The function to be de-registered.
    *
    * @see onThisOrNextTick
    */
@@ -60,7 +60,7 @@ export default class Ticker {
   /**
    * De-registers a fn to be called on the next tick.
    *
-   * @param fn The function to be de-registered.
+   * @param fn - The function to be de-registered.
    *
    * @see onNextTick
    */
@@ -81,7 +81,7 @@ export default class Ticker {
   /**
    * Triggers a tick which starts executing the callbacks scheduled for this tick.
    *
-   * @param t The time at the tick.
+   * @param t - The time at the tick.
    *
    * @see onThisOrNextTick
    * @see onNextTick

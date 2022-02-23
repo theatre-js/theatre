@@ -9,7 +9,7 @@ export interface IBox<V> {
   /**
    * Sets the value of the Box.
    *
-   * @param v The value to update the Box with.
+   * @param v - The value to update the Box with.
    */
 
   set(v: V): void
@@ -43,7 +43,7 @@ export default class Box<V> implements IBox<V> {
   private _emitter = new Emitter<V>()
 
   /**
-   * @param _value The initial value of the Box.
+   * @param _value - The initial value of the Box.
    */
   constructor(
     /**
@@ -60,7 +60,7 @@ export default class Box<V> implements IBox<V> {
   /**
    * Sets the value of the Box.
    *
-   * @param v The value to update the Box with.
+   * @param v - The value to update the Box with.
    */
   set(v: V) {
     if (v === this._value) return

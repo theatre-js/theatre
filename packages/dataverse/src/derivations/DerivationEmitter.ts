@@ -15,8 +15,8 @@ export default class DerivationEmitter<V> {
   private _hadTappers: boolean
 
   /**
-   * @param derivation The derivation to emit events for.
-   * @param ticker The ticker to use to batch events.
+   * @param derivation - The derivation to emit events for.
+   * @param ticker - The ticker to use to batch events.
    */
   constructor(derivation: IDerivation<V>, ticker: Ticker) {
     this._derivation = derivation

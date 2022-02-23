@@ -40,8 +40,8 @@ export interface IDerivation<V> {
    * Convenience method that taps (subscribes to) the derivation using `this.changes(ticker).tap(fn)` and immediately calls
    * the callback with the current value.
    *
-   * @param ticker The ticker to use for batching.
-   * @param fn The callback to call on update.
+   * @param ticker - The ticker to use for batching.
+   * @param fn - The callback to call on update.
    *
    * @see changes
    */
@@ -50,7 +50,7 @@ export interface IDerivation<V> {
   /**
    * Add a derivation as a dependent of this derivation.
    *
-   * @param d The derivation to be made a dependent of this derivation.
+   * @param d - The derivation to be made a dependent of this derivation.
    *
    * @see removeDependent
    */
@@ -59,7 +59,7 @@ export interface IDerivation<V> {
   /**
    * Remove a derivation as a dependent of this derivation.
    *
-   * @param d The derivation to be removed from as a dependent of this derivation.
+   * @param d - The derivation to be removed from as a dependent of this derivation.
    *
    * @see addDependent
    */
@@ -74,7 +74,7 @@ export interface IDerivation<V> {
    * Creates a new derivation from this derivation using the provided mapping function. The new derivation's value will be
    * `fn(thisDerivation.getValue())`.
    *
-   * @param fn The mapping function to use. Note: it accepts a plain value, not a derivation.
+   * @param fn - The mapping function to use. Note: it accepts a plain value, not a derivation.
    */
   map<T>(fn: (v: V) => T): IDerivation<T>
 
@@ -91,7 +91,7 @@ export interface IDerivation<V> {
    * new Box(3).derivation.flatMap((value) => new Box(value).derivation).getValue()
    * ```
    *
-   * @param fn The mapping function to use. Note: it accepts a plain value, not a derivation.
+   * @param fn - The mapping function to use. Note: it accepts a plain value, not a derivation.
    */
   flatMap<R>(
     fn: (v: V) => R,

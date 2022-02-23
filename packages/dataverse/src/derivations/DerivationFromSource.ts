@@ -12,8 +12,8 @@ export default class DerivationFromSource<V> extends AbstractDerivation<V> {
   private _hasCachedValue: boolean
 
   /**
-   * @param _tapToSource A function that takes a listener and subscribes it to the underlying data source.
-   * @param _getValueFromSource A function that returns the current value of the data source.
+   * @param _tapToSource - A function that takes a listener and subscribes it to the underlying data source.
+   * @param _getValueFromSource - A function that returns the current value of the data source.
    */
   constructor(
     private readonly _tapToSource: (listener: (newValue: V) => void) => VoidFn,

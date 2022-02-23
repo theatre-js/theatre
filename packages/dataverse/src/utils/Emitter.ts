@@ -49,7 +49,7 @@ export default class Emitter<V> {
   /**
    * Emit a value.
    *
-   * @param payload The value to be emitted.
+   * @param payload - The value to be emitted.
    */
   emit(payload: V) {
     this._tappers.forEach((cb) => {
@@ -69,13 +69,13 @@ export default class Emitter<V> {
    *
    * @callback Emitter~numberOfTappersChangeHandler
    *
-   * @param {number} n The current number of  tappers (subscribers).
+   * @param {number} n - The current number of  tappers (subscribers).
    */
 
   /**
    * Calls callback when the number of tappers (subscribers) changes.
    *
-   * @param {Emitter~requestCallback} cb The function to be called.
+   * @param {Emitter~requestCallback} cb - The function to be called.
    */
   onNumberOfTappersChange(cb: (n: number) => void) {
     this._onNumberOfTappersChangeListener = cb
