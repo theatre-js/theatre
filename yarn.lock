@@ -16903,6 +16903,15 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"nanoid@npm:^3.3.1":
+  version: 3.3.1
+  resolution: "nanoid@npm:3.3.1"
+  bin:
+    nanoid: bin/nanoid.cjs
+  checksum: 4ef0969e1bbe866fc223eb32276cbccb0961900bfe79104fa5abe34361979dead8d0e061410a5c03bc3d47455685adf32c09d6f27790f4a6898fb51f7df7ec86
+  languageName: node
+  linkType: hard
+
 "nanomatch@npm:^1.2.9":
   version: 1.2.13
   resolution: "nanomatch@npm:1.2.13"
@@ -22962,7 +22971,7 @@ fsevents@^1.2.7:
     json-touch-patch: ^0.11.2
     lodash: ^4.17.21
     lodash-es: ^4.17.21
-    nanoid: ^3.1.23
+    nanoid: ^3.3.1
     npm-run-all: ^4.1.5
     null-loader: ^4.0.1
     polished: ^4.1.3
