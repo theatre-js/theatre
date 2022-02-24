@@ -1,43 +1,20 @@
 import {OrbitControls, PerspectiveCamera} from '@react-three/drei'
 import type {OrbitControls as OrbitControlsImpl} from 'three-stdlib'
 import type {MutableRefObject} from 'react'
-import {useLayoutEffect, useRef} from 'react'
+import {useLayoutEffect} from 'react'
 import React from 'react'
 import useRefAndState from './useRefAndState'
 import studio from '@theatre/studio'
 import type {PerspectiveCamera as PerspectiveCameraImpl} from 'three'
 import type {ISheet} from '@theatre/core'
-import {types} from '@theatre/core'
 import type {ISheetObject} from '@theatre/core'
 import {useThree} from '@react-three/fiber'
-
-const camConf = {
-  transform: {
-    position: {
-      x: types.number(10),
-      y: types.number(10),
-      z: types.number(0),
-    },
-    target: {
-      x: types.number(0),
-      y: types.number(0),
-      z: types.number(0),
-    },
-  },
-  lens: {
-    zoom: types.number(1, {range: [0.0001, 10]}),
-    fov: types.number(50, {range: [1, 1000]}),
-    near: types.number(0.1, {range: [0, Infinity]}),
-    far: types.number(2000, {range: [0, Infinity]}),
-    focus: types.number(10, {range: [0, Infinity]}),
-    filmGauge: types.number(35, {range: [0, Infinity]}),
-    filmOffset: types.number(0, {range: [0, Infinity]}),
-  },
-}
+import type {cameraSheetObjectType} from '../store'
 
 export default function useSnapshotEditorCamera(
   snapshotEditorSheet: ISheet,
   paneId: string,
+  cameraSheetObject: ISheetObject<typeof cameraSheetObjectType>,
 ): [
   node: React.ReactNode,
   orbitControlsRef: MutableRefObject<OrbitControlsImpl | null>,
@@ -51,19 +28,8 @@ export default function useSnapshotEditorCamera(
     undefined,
   )
 
-  const objRef = useRef<ISheetObject<typeof camConf> | null>(null)
-
-  useLayoutEffect(() => {
-    if (!objRef.current) {
-      objRef.current = snapshotEditorSheet.object(
-        `Editor Camera ${paneId}`,
-        camConf,
-      )
-    }
-  }, [paneId])
-
-  usePassValuesFromTheatreToCamera(cam, orbitControls, objRef)
-  usePassValuesFromOrbitControlsToTheatre(cam, orbitControls, objRef)
+  usePassValuesFromTheatreToCamera(cam, orbitControls, cameraSheetObject)
+  usePassValuesFromOrbitControlsToTheatre(cam, orbitControls, cameraSheetObject)
 
   const node = (
     <>
@@ -83,7 +49,7 @@ export default function useSnapshotEditorCamera(
 function usePassValuesFromOrbitControlsToTheatre(
   cam: PerspectiveCameraImpl | undefined,
   orbitControls: OrbitControlsImpl | null,
-  objRef: MutableRefObject<ISheetObject<typeof camConf> | null>,
+  cameraSheetObject: ISheetObject<typeof cameraSheetObjectType>,
 ) {
   useLayoutEffect(() => {
     if (!cam || orbitControls == null) return
@@ -117,7 +83,7 @@ function usePassValuesFromOrbitControlsToTheatre(
       }
 
       currentScrub!.capture(({set}) => {
-        set(objRef.current!.props.transform, transform)
+        set(cameraSheetObject.props.transform, transform)
       })
     }
 
@@ -136,16 +102,15 @@ function usePassValuesFromOrbitControlsToTheatre(
 function usePassValuesFromTheatreToCamera(
   cam: PerspectiveCameraImpl | undefined,
   orbitControls: OrbitControlsImpl | null,
-  objRef: MutableRefObject<ISheetObject<typeof camConf> | null>,
+  cameraSheetObject: ISheetObject<typeof cameraSheetObjectType>,
 ) {
   const invalidate = useThree(({invalidate}) => invalidate)
 
   useLayoutEffect(() => {
     if (!cam || orbitControls === null) return
 
-    const obj = objRef.current!
     const setFromTheatre = (
-      props: ISheetObject<typeof camConf>['value'],
+      props: ISheetObject<typeof cameraSheetObjectType>['value'],
     ): void => {
       const {position, target} = props.transform
       cam.zoom = props.lens.zoom
@@ -162,9 +127,9 @@ function usePassValuesFromTheatreToCamera(
       invalidate()
     }
 
-    const unsub = obj.onValuesChange(setFromTheatre)
-    setFromTheatre(obj.value)
+    const unsub = cameraSheetObject.onValuesChange(setFromTheatre)
+    setFromTheatre(cameraSheetObject.value)
 
     return unsub
-  }, [cam, orbitControls, objRef, invalidate])
+  }, [cam, orbitControls, invalidate])
 }

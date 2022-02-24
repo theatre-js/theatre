@@ -14,6 +14,7 @@ import type {ISheet} from '@theatre/core'
 import useSnapshotEditorCamera from './useSnapshotEditorCamera'
 import {getEditorSheet, getEditorSheetObject} from './editorStuff'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
+import {ViewCubeExperiment} from './ViewCubeExperiment'
 
 const GlobalStyle = createGlobalStyle`
   :host {
@@ -38,14 +39,18 @@ const EditorScene: React.FC<{snapshotEditorSheet: ISheet; paneId: string}> = ({
   snapshotEditorSheet,
   paneId,
 }) => {
+  const [helpersRoot, editorCameraSheetObject] = useEditorStore(
+    (state) => [state.helpersRoot, state.editorCameraSheetObject],
+    shallow,
+  )
+
   const [editorCamera, orbitControlsRef] = useSnapshotEditorCamera(
     snapshotEditorSheet,
     paneId,
+    editorCameraSheetObject,
   )
 
   const editorObject = getEditorSheetObject()
-
-  const helpersRoot = useEditorStore((state) => state.helpersRoot, shallow)
 
   const showGrid = useVal(editorObject?.props.viewport.showGrid) ?? true
   const showAxes = useVal(editorObject?.props.viewport.showAxes) ?? true
@@ -101,10 +106,15 @@ const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
   const paneId = props.paneId
   const editorObject = getEditorSheetObject()
 
-  const [sceneSnapshot, createSnapshot] = useEditorStore(
-    (state) => [state.sceneSnapshot, state.createSnapshot],
-    shallow,
-  )
+  const [sceneSnapshot, createSnapshot, editorCameraSheetObject] =
+    useEditorStore(
+      (state) => [
+        state.sceneSnapshot,
+        state.createSnapshot,
+        state.editorCameraSheetObject,
+      ],
+      shallow,
+    )
 
   const editorOpen = true
   useLayoutEffect(() => {
@@ -151,6 +161,9 @@ const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
                 >
                   <IoCameraReverseOutline />
                 </ToolbarIconButton>
+                <ViewCubeExperiment
+                  cameraSheetObject={editorCameraSheetObject}
+                />
               </Tools>
             </Overlay>
 
