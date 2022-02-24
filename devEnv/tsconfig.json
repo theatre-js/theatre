@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "lib": ["ESNext", "DOM"],
+    "rootDir": ".",
+    "types": ["node"],
+    "noEmit": true,
+    "target": "es6",
+    "composite": true
+  }
+}
