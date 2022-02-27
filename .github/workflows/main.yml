@@ -37,3 +37,13 @@ jobs:
       - run: yarn typecheck
       - run: yarn lint:all
       - run: yarn test
+      - name: Download playwright
+        run: yarn workspace playground run playwright install
+      - name: Run e2e tests
+        run: yarn test:e2e
+      - name: Upload e2e test results
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: playwright-results
+          path: test-results
