@@ -1,5 +1,7 @@
 import {test, expect} from '@playwright/test'
 
+const isMac = process.platform === 'darwin'
+
 test.describe('setting-static-props', () => {
   test.beforeEach(async ({page}) => {
     // Go to the starting url before each test.
@@ -29,10 +31,10 @@ test.describe('setting-static-props', () => {
     await secondInput.press('Enter')
 
     // Press z with modifiers
-    await page.locator('body').press('Ctrl+z')
+    await page.locator('body').press('Control+z')
     await expect(firstInput).toHaveAttribute('value', '1')
     await expect(secondInput).toHaveAttribute('value', '0')
-    await page.locator('body').press('Ctrl+Shift+z')
+    await page.locator('body').press('Control+Shift+z')
     await expect(firstInput).toHaveAttribute('value', '1')
     await expect(secondInput).toHaveAttribute('value', '2')
   })
