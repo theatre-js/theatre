@@ -30,11 +30,13 @@ test.describe('setting-static-props', () => {
     // Press Enter
     await secondInput.press('Enter')
 
+    const metaKey = isMac ? 'Meta' : 'Control'
+
     // Press z with modifiers
-    await page.locator('body').press('Control+z')
+    await page.locator('body').press(`${metaKey}+z`)
     await expect(firstInput).toHaveAttribute('value', '1')
     await expect(secondInput).toHaveAttribute('value', '0')
-    await page.locator('body').press('Control+Shift+z')
+    await page.locator('body').press(`${metaKey}+Shift+z`)
     await expect(firstInput).toHaveAttribute('value', '1')
     await expect(secondInput).toHaveAttribute('value', '2')
   })
