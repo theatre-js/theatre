@@ -27,11 +27,12 @@ test.describe('setting-static-props', () => {
     await secondInput.fill('2')
     // Press Enter
     await secondInput.press('Enter')
+
     // Press z with modifiers
-    await page.locator('body').press('Meta+z')
+    await page.locator('body').press('Ctrl+z')
     await expect(firstInput).toHaveAttribute('value', '1')
     await expect(secondInput).toHaveAttribute('value', '0')
-    await page.locator('body').press('Meta+Shift+z')
+    await page.locator('body').press('Ctrl+Shift+z')
     await expect(firstInput).toHaveAttribute('value', '1')
     await expect(secondInput).toHaveAttribute('value', '2')
   })
