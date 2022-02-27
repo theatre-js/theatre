@@ -10,9 +10,11 @@
   "scripts": {
     "serve": "vite --config ./devEnv/vite.config.ts",
     "typecheck": "yarn run build",
+    "test": "playwright test --config=devEnv/playwright.config.ts",
     "build": "tsc --build ./tsconfig.json"
   },
   "devDependencies": {
+    "@playwright/test": "^1.19.1",
     "@react-three/drei": "^7.2.2",
     "@react-three/fiber": "^7.0.6",
     "@theatre/core": "workspace:*",

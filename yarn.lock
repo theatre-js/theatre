@@ -17417,6 +17417,7 @@ fsevents@^1.2.7:
   version: 0.0.0-use.local
   resolution: "playground@workspace:packages/playground"
   dependencies:
+    "@playwright/test": ^1.19.1
     "@react-three/drei": ^7.2.2
     "@react-three/fiber": ^7.0.6
     "@theatre/core": "workspace:*"
@@ -21731,7 +21732,6 @@ fsevents@^1.2.7:
     "@babel/preset-typescript": ^7.15.0
     "@microsoft/api-documenter": ^7.13.54
     "@microsoft/api-extractor": ^7.18.11
-    "@playwright/test": ^1.19.1
     "@typescript-eslint/eslint-plugin": ^4.30.0
     "@typescript-eslint/parser": ^4.30.0
     esbuild: ^0.12.24

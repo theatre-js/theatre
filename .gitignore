@@ -11,9 +11,6 @@
 *.tsbuildinfo
 .eslintcache
 
-test-results/
-playwright-report/
-
 .yarn/*
 # !.yarn/cache
 !.yarn/patches

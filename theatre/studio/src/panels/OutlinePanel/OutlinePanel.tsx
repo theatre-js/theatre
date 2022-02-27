@@ -166,7 +166,10 @@ const OutlinePanel: React.FC<{}> = (props) => {
     <Container>
       <TriggerContainer>
         {triggerTooltip}
-        <TriggerButton ref={triggerButtonRef as $IntentionalAny}>
+        <TriggerButton
+          ref={triggerButtonRef as $IntentionalAny}
+          data-testid="OutlinePanel-TriggerButton"
+        >
           <VscListTree />
         </TriggerButton>
         {conflicts.length > 0 ? (
@@ -177,7 +180,7 @@ const OutlinePanel: React.FC<{}> = (props) => {
         {/* <Title>Outline</Title> */}
       </TriggerContainer>
       <Content>
-        <Body>
+        <Body data-testid="OutlinePanel-Content">
           <ProjectsList />
         </Body>
       </Content>
