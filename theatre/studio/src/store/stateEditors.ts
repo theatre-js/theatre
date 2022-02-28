@@ -36,7 +36,7 @@ import type {
   PanelPosition,
   StudioAhistoricState,
 } from './types'
-import {uniq} from 'lodash-es'
+import {clamp, uniq} from 'lodash-es'
 import {
   isProject,
   isSheet,
@@ -415,7 +415,11 @@ namespace stateEditors {
           export function setLength(
             p: WithoutSheetInstance<SheetAddress> & {length: number},
           ) {
-            _ensure(p).length = parseFloat(p.length.toFixed(2))
+            _ensure(p).length = clamp(
+              parseFloat(p.length.toFixed(2)),
+              0.01,
+              Infinity,
+            )
           }
 
           function _ensureTracksOfObject(
