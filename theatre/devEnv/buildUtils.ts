@@ -17,7 +17,7 @@ export function createBundles(watch: boolean) {
       loader: {'.png': 'file', '.svg': 'dataurl'},
       bundle: true,
       sourcemap: true,
-      define: definedGlobals,
+      define: {...definedGlobals, __IS_VISUAL_REGRESSION_TESTING: 'false'},
       watch,
       external: [
         '@theatre/dataverse',
