@@ -41,6 +41,6 @@ test.describe('setting-static-props', () => {
     await expect(firstInput).toHaveAttribute('value', '1')
     await expect(secondInput).toHaveAttribute('value', '2')
 
-    await percySnapshot(page, 'After redo')
+    await percySnapshot(page, test.info().titlePath.join('/') + '/After redo')
   })
 })
