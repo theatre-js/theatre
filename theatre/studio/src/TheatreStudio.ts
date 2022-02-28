@@ -1,6 +1,9 @@
 import type {IProject, ISheet, ISheetObject} from '@theatre/core'
-import studioTicker from '@theatre/studio/studioTicker'
-import type {IDerivation, Pointer} from '@theatre/dataverse'
+import studioTicker, {
+  enableDefaultTicker,
+  disableDefaultTicker,
+} from '@theatre/studio/studioTicker'
+import type {IDerivation, Pointer, Ticker} from '@theatre/dataverse'
 import {prism} from '@theatre/dataverse'
 import SimpleCache from '@theatre/shared/utils/SimpleCache'
 import type {$IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
@@ -174,6 +177,12 @@ export interface _StudioInitializeOpts {
  */
 export interface IStudio {
   readonly ui: IStudioUI
+  /**
+   * The studio ticker. To schedule work yourself, first call
+   * `studio.disableDefaultTicker()`, then call
+   * `studio.ticker.tick()` regularly.
+   */
+  readonly ticker: Ticker
 
   /**
    * Initializes the studio. Call it once in your index.js/index.ts module.
@@ -343,6 +352,20 @@ export interface IStudio {
    * ```
    */
   createContentOfSaveFile(projectId: string): Record<string, unknown>
+
+  /**
+   * Enables the default studio ticker, which schedules ticks via
+   * `requestAnimationFrame()`. The default ticker is enabled by default, so
+   * this does nothing unless there was a prior call to
+   * `disableDefaultTicker()`.
+   */
+  enableDefaultTicker(): void
+
+  /**
+   * Disables the default studio ticker. When the default ticker is disabled,
+   * you must call `studio.ticker.tick()` manually.
+   */
+  disableDefaultTicker(): void
 }
 
 export default class TheatreStudio implements IStudio {
@@ -360,6 +383,7 @@ export default class TheatreStudio implements IStudio {
     },
   }
 
+  readonly ticker = studioTicker
   private readonly _cache = new SimpleCache()
 
   /**
@@ -477,4 +501,7 @@ export default class TheatreStudio implements IStudio {
   createContentOfSaveFile(projectId: string): Record<string, unknown> {
     return getStudio().createContentOfSaveFile(projectId) as $IntentionalAny
   }
+
+  readonly enableDefaultTicker = enableDefaultTicker
+  readonly disableDefaultTicker = disableDefaultTicker
 }

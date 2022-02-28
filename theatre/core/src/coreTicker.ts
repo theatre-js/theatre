@@ -4,12 +4,21 @@ const coreTicker = new Ticker()
 
 export default coreTicker
 
-/**
- * @remarks
- * TODO users should also be able to define their own ticker.
- */
+let defaultTickerEnabled = true
+
+export function enableDefaultTicker() {
+  if (!defaultTickerEnabled) {
+    defaultTickerEnabled = true
+    window.requestAnimationFrame(onAnimationFrame)
+  }
+}
+
+export function disableDefaultTicker() {
+  defaultTickerEnabled = false
+}
+
 const onAnimationFrame = (t: number) => {
   coreTicker.tick(t)
-  window.requestAnimationFrame(onAnimationFrame)
+  if (defaultTickerEnabled) window.requestAnimationFrame(onAnimationFrame)
 }
-window.requestAnimationFrame(onAnimationFrame)
+if (defaultTickerEnabled) window.requestAnimationFrame(onAnimationFrame)

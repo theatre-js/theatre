@@ -15,7 +15,10 @@ import type {PointerType} from '@theatre/dataverse'
 import {isPointer} from '@theatre/dataverse'
 import {isDerivation, valueDerivation} from '@theatre/dataverse'
 import type {$IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
-import coreTicker from './coreTicker'
+import coreTicker, {
+  enableDefaultTicker,
+  disableDefaultTicker,
+} from './coreTicker'
 export {types}
 
 /**
@@ -182,4 +185,25 @@ export function val<T>(pointer: PointerType<T>): T {
   } else {
     throw new Error(`Called val(p) where p is not a pointer.`)
   }
+}
+
+export {
+  /**
+   * The core ticker. To schedule work yourself, first call
+   * `Theatre.core.disableDefaultTicker()`, then call
+   * `Theatre.core.ticker.tick()` regularly.
+   */
+  coreTicker as ticker,
+  /**
+   * Enables the default core ticker, which schedules ticks via
+   * `requestAnimationFrame()`. The default ticker is enabled by default, so
+   * this does nothing unless there was a prior call to
+   * `disableDefaultTicker()`.
+   */
+  enableDefaultTicker,
+  /**
+   * Disables the default core ticker. When the default ticker is disabled,
+   * you must call `Theatre.core.ticker.tick()` manually.
+   */
+  disableDefaultTicker,
 }
