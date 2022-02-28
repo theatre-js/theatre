@@ -34,13 +34,13 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - run: yarn install
-      # - run: yarn typecheck
-      # - run: yarn lint:all
-      # - run: yarn test
+      - run: yarn typecheck
+      - run: yarn lint:all
+      - run: yarn test
       - name: Download playwright
         run: yarn workspace playground run playwright install
-      # - name: Run e2e tests
-      #   run: yarn test:e2e
+      - name: Run e2e tests
+        run: yarn test:e2e
       - name: Run e2e tests with percy
         uses: percy/exec-action@v0.3.1
         with:
