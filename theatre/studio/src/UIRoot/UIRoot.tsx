@@ -85,7 +85,11 @@ export default function UIRoot() {
     return !initialised ? null : (
       <StyleSheetManager
         disableVendorPrefixes
-        target={getStudio()!.ui.containerShadow}
+        target={
+          window.__IS_VISUAL_REGRESSION_TESTING === true
+            ? undefined
+            : getStudio()!.ui.containerShadow
+        }
       >
         <>
           <GlobalStyle />

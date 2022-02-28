@@ -1,5 +1,6 @@
 interface Window {
   __REDUX_DEVTOOLS_EXTENSION__?: $IntentionalAny
+  __IS_VISUAL_REGRESSION_TESTING?: boolean
 }
 
 interface NodeModule {

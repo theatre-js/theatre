@@ -9,6 +9,8 @@
   ],
   "scripts": {
     "playground": "yarn workspace playground run serve",
+    "test:e2e": "yarn workspace playground run test",
+    "test:e2e:ci": "yarn workspace playground run test:ci",
     "typecheck": "yarn run build:ts",
     "build": "zx scripts/build.mjs",
     "build:ts": "tsc --build ./devEnv/typecheck-all-projects/tsconfig.all.json",

@@ -109,7 +109,7 @@ const DetailPanel: React.FC<{}> = (props) => {
     if (obj) {
       return (
         <Container>
-          <Content>
+          <Content data-testid="DetailPanel-Object">
             <Header>
               <Title
                 title={`${obj.sheet.address.sheetId}: ${obj.sheet.address.sheetInstanceId} > ${obj.address.objectKey}`}
