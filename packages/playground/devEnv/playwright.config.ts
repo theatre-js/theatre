@@ -61,7 +61,12 @@ const config: PlaywrightTestConfig = {
   /* Folder for test artifacts such as screenshots, videos, traces, etc. */
   outputDir: '../test-results/',
 
-  /* Run your local dev server before starting the tests */
+  /*
+  This will serve the playground before running the tests, unless the playground is already running.
+
+  Note that if the playground is not running but some other server is serving at port 8080, this will fail.
+  TODO 👆
+  */
   webServer: {
     command: 'yarn run serve',
     port: 8080,

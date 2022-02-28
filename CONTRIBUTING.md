@@ -41,11 +41,12 @@ The quickest way to start tweaking things is to run the `playground` package.
 ```sh
 $ cd ./packages/playground
 $ yarn serve
+# or, shortcut:
+$ cd root
+$ yarn playground
 ```
 
-The playground is a bunch of ready-made projects that you can run to experiment with Theatre.js.
-
-It uses a single ESBuild config to build all of the related packages in one go, so you don't have to run a bunch of build commands separately.
+The playground is a bunch of ready-made projects that you can run to experiment with Theatre.js. It also contains the project's end-to-end tests.
 
 Read more at [`./packages/playground/README.md`](./packages/playground/README.md).
 
@@ -65,7 +66,7 @@ $ cd examples/dom-cra
 $ yarn start
 ```
 
-### Running tests
+### Running unit/integration tests
 
 We use a single [jest](https://jestjs.io/) setup for the repo. The tests files have the `.test.ts` or `.test.tsx` extension.
 
@@ -77,6 +78,10 @@ $ yarn test
 # or run them in watch mode:
 $ yarn test --watch
 ```
+
+### Running end-to-end tests
+
+End-to-end tests are hosted in the playground package. More details [there](./packages/playground/README.md).
 
 ### Type checking
 
