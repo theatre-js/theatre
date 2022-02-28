@@ -11,9 +11,12 @@
     "serve": "vite --config ./devEnv/vite.config.ts",
     "typecheck": "yarn run build",
     "test": "playwright test --config=devEnv/playwright.config.ts",
+    "test:ci": "percy exec -- playwright test --reporter=dot --config=devEnv/playwright.config.ts",
     "build": "tsc --build ./tsconfig.json"
   },
   "devDependencies": {
+    "@percy/cli": "^1.0.0-beta.76",
+    "@percy/playwright": "^1.0.1",
     "@playwright/test": "^1.19.1",
     "@react-three/drei": "^7.2.2",
     "@react-three/fiber": "^7.0.6",

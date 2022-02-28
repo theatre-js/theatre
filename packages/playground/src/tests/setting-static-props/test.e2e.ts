@@ -1,4 +1,5 @@
 import {test, expect} from '@playwright/test'
+import percySnapshot from '@percy/playwright'
 
 const isMac = process.platform === 'darwin'
 
@@ -39,5 +40,7 @@ test.describe('setting-static-props', () => {
     await page.locator('body').press(`${metaKey}+Shift+z`)
     await expect(firstInput).toHaveAttribute('value', '1')
     await expect(secondInput).toHaveAttribute('value', '2')
+
+    await percySnapshot(page, 'After redo')
   })
 })
