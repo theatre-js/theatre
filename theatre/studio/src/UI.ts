@@ -25,12 +25,15 @@ export default class UI {
       pointer-events: none;
       z-index: 100;
     `
-    this.containerShadow = this.containerEl.attachShadow({
-      mode: 'open',
-      // To see why I had to cast this value to HTMLElement, take a look at its
-      // references of this prop. There are a few functions that actually work
-      // with a ShadowRoot but are typed to accept HTMLElement
-    }) as $IntentionalAny as ShadowRoot & HTMLElement
+    this.containerShadow =
+      window.__IS_VISUAL_REGRESSION_TESTING === true
+        ? (document.getElementById('root') as $IntentionalAny)
+        : (this.containerEl.attachShadow({
+            mode: 'open',
+            // To see why I had to cast this value to HTMLElement, take a look at its
+            // references of this prop. There are a few functions that actually work
+            // with a ShadowRoot but are typed to accept HTMLElement
+          }) as $IntentionalAny as ShadowRoot & HTMLElement)
   }
 
   render() {
