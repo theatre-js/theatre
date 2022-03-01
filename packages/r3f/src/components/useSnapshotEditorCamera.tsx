@@ -79,11 +79,15 @@ function usePassValuesFromOrbitControlsToTheatre(
       const p = cam!.position
       const position = {x: p.x, y: p.y, z: p.z}
 
+      const u = cam!.up
+      const up = {x: u.x, y: u.y, z: u.z}
+
       const t = orbitControls!.target
       const target = {x: t.x, y: t.y, z: t.z}
 
       const transform = {
         position,
+        up,
         target,
       }
 
@@ -117,7 +121,7 @@ function usePassValuesFromTheatreToCamera(
     const setFromTheatre = (
       props: ISheetObject<typeof cameraSheetObjectType>['value'],
     ): void => {
-      const {position, target} = props.transform
+      const {position, up, target} = props.transform
       cam.zoom = props.lens.zoom
       cam.fov = props.lens.fov
       cam.near = props.lens.near
@@ -126,6 +130,7 @@ function usePassValuesFromTheatreToCamera(
       cam.filmGauge = props.lens.filmGauge
       cam.filmOffset = props.lens.filmOffset
       cam.position.set(position.x, position.y, position.z)
+      cam.up.set(up.x, up.y, up.z)
       cam.updateProjectionMatrix()
       orbitControls.target.set(target.x, target.y, target.z)
       orbitControls.update()

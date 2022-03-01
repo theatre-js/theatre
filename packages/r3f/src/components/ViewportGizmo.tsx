@@ -22,6 +22,7 @@ import {OrthographicCamera} from '@react-three/drei'
 import {useCamera} from '@react-three/drei'
 import {createContext, useEffect, useRef, useState} from 'react'
 import type {ISheetObject} from '@theatre/core'
+import type {cameraSheetObjectType} from '../store'
 
 type GizmoHelperContext = {
   tweenCamera: (direction: Vector3) => void
@@ -194,32 +195,23 @@ export type ViewportGizmoProps = JSX.IntrinsicElements['group'] & {
   renderPriority?: number
   temporarilySetValue: ({
     position,
+    up,
     target,
   }: {
     position: SimpleVector
+    up: SimpleVector
     target: SimpleVector
   }) => void
   permanentlySetValue: ({
     position,
+    up,
     target,
   }: {
     position: SimpleVector
+    up: SimpleVector
     target: SimpleVector
   }) => void
-  cameraSheetObject: ISheetObject<{
-    transform: {
-      position: {
-        x: number
-        y: number
-        z: number
-      }
-      target: {
-        x: number
-        y: number
-        z: number
-      }
-    }
-  }>
+  cameraSheetObject: ISheetObject<typeof cameraSheetObjectType>
 }
 
 export const ViewportGizmo = ({
@@ -284,6 +276,11 @@ export const ViewportGizmo = ({
           y: cameraProxy.position.y,
           z: cameraProxy.position.z,
         },
+        up: {
+          x: cameraProxy.up.x,
+          y: cameraProxy.up.y,
+          z: cameraProxy.up.z,
+        },
         target: {
           x: focusPoint.current.x,
           y: focusPoint.current.y,
@@ -303,7 +300,7 @@ export const ViewportGizmo = ({
       .applyQuaternion(q1)
       .multiplyScalar(radius.current)
       .add(focusPoint.current)
-    // cameraProxy.up.set(0, 1, 0).applyQuaternion(q1).normalize()
+    cameraProxy.up.set(0, 1, 0).applyQuaternion(q1).normalize()
     cameraProxy.quaternion.copy(q1)
 
     temporarilySetValue({
@@ -311,6 +308,11 @@ export const ViewportGizmo = ({
         x: cameraProxy.position.x,
         y: cameraProxy.position.y,
         z: cameraProxy.position.z,
+      },
+      up: {
+        x: cameraProxy.up.x,
+        y: cameraProxy.up.y,
+        z: cameraProxy.up.z,
       },
       target: {
         x: focusPoint.current.x,
@@ -346,6 +348,11 @@ export const ViewportGizmo = ({
         values.transform.position.x,
         values.transform.position.y,
         values.transform.position.z,
+      )
+      cameraProxy.up.set(
+        values.transform.up.x,
+        values.transform.up.y,
+        values.transform.up.z,
       )
       cameraProxy.lookAt(
         values.transform.target.x,

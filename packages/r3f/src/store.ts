@@ -48,6 +48,11 @@ export const cameraSheetObjectType = {
       y: types.number(10),
       z: types.number(0),
     },
+    up: {
+      x: types.number(0),
+      y: types.number(1),
+      z: types.number(0),
+    },
     target: {
       x: types.number(0),
       y: types.number(0),
