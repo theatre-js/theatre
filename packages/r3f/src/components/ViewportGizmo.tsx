@@ -20,7 +20,7 @@ import {
 } from 'three'
 import {OrthographicCamera} from '@react-three/drei'
 import {useCamera} from '@react-three/drei'
-import {useState} from 'react'
+import {createContext, useEffect, useRef, useState} from 'react'
 import type {ISheetObject} from '@theatre/core'
 
 type GizmoHelperContext = {
@@ -28,9 +28,7 @@ type GizmoHelperContext = {
   raycast: (raycaster: Raycaster, intersects: Intersection[]) => void
 }
 
-const Context = React.createContext<GizmoHelperContext>(
-  {} as GizmoHelperContext,
-)
+const Context = createContext<GizmoHelperContext>({} as GizmoHelperContext)
 
 export const useGizmoContext = () => {
   return React.useContext<GizmoHelperContext>(Context)
@@ -49,26 +47,17 @@ type AxisProps = {
 }
 
 type AxisHeadProps = JSX.IntrinsicElements['sprite'] & {
-  arcStyle: string
+  fillColor: string
   label?: string
   labelColor: string
-  axisHeadScale?: number
   disabled?: boolean
-  font: string
-  onClick?: (e: Event) => null
 }
 
-type GizmoViewportProps = JSX.IntrinsicElements['group'] & {
-  axisColors?: [string, string, string]
+type ViewportGizmoSceneProps = JSX.IntrinsicElements['group'] & {
   axisScale?: [number, number, number]
   labels?: [string, string, string]
-  axisHeadScale?: number
   labelColor?: string
-  hideNegativeAxes?: boolean
-  hideAxisHeads?: boolean
   disabled?: boolean
-  font?: string
-  onClick?: (e: Event) => null
 }
 
 function Axis({scale = [0.8, 0.05, 0.05], color, rotation}: AxisProps) {
@@ -83,15 +72,13 @@ function Axis({scale = [0.8, 0.05, 0.05], color, rotation}: AxisProps) {
 }
 
 function AxisHead({
-  onClick,
-  font,
   disabled,
-  arcStyle,
+  fillColor,
   label,
   labelColor,
-  axisHeadScale = 1,
   ...props
 }: AxisHeadProps) {
+  const [active, setActive] = React.useState(false)
   const gl = useThree((state) => state.gl)
   const texture = React.useMemo(() => {
     const canvas = document.createElement('canvas')
@@ -102,20 +89,19 @@ function AxisHead({
     context.beginPath()
     context.arc(32, 32, 16, 0, 2 * Math.PI)
     context.closePath()
-    context.fillStyle = arcStyle
+    context.fillStyle = fillColor
     context.fill()
 
     if (label) {
-      context.font = font
+      context.font = '18px Inter var, Arial, sans-serif'
       context.textAlign = 'center'
-      context.fillStyle = labelColor
-      context.fillText(label, 32, 41)
+      context.fillStyle = active ? '#fff' : '#000'
+      context.fillText(label, 32, 39)
     }
     return new CanvasTexture(canvas)
-  }, [arcStyle, label, labelColor, font])
+  }, [fillColor, label, active])
 
-  const [active, setActive] = React.useState(false)
-  const scale = (label ? 1 : 0.75) * (active ? 1.2 : 1) * axisHeadScale
+  const scale = 1
   const handlePointerOver = (e: Event) => {
     e.stopPropagation()
     setActive(true)
@@ -128,7 +114,7 @@ function AxisHead({
     <sprite
       scale={scale}
       onPointerOver={!disabled ? handlePointerOver : undefined}
-      onPointerOut={!disabled ? onClick || handlePointerOut : undefined}
+      onPointerOut={!disabled ? handlePointerOut : undefined}
       {...props}
     >
       <spriteMaterial
@@ -142,28 +128,19 @@ function AxisHead({
   )
 }
 
-export const GizmoViewport = ({
-  hideNegativeAxes,
-  hideAxisHeads,
+export const ViewportGizmoScene = ({
   disabled,
-  font = '18px Inter var, Arial, sans-serif',
-  axisColors = ['#ff3653', '#0adb50', '#2c8fdf'],
-  axisHeadScale = 1,
   axisScale,
   labels = ['X', 'Y', 'Z'],
   labelColor = '#000',
-  onClick,
   ...props
-}: GizmoViewportProps) => {
-  const [colorX, colorY, colorZ] = axisColors
+}: ViewportGizmoSceneProps) => {
+  const [colorX, colorY, colorZ] = ['#B90808', '#40AA6A', '#0879B9']
   const {tweenCamera, raycast} = useGizmoContext()
   const axisHeadProps = {
-    font,
     disabled,
     labelColor,
     raycast,
-    onClick,
-    axisHeadScale,
     onPointerDown: !disabled
       ? (e: ThreeEvent<PointerEvent>) => {
           tweenCamera(e.object.position)
@@ -178,26 +155,26 @@ export const GizmoViewport = ({
       <Axis color={colorZ} rotation={[0, -Math.PI / 2, 0]} scale={axisScale} />
 
       <AxisHead
-        arcStyle={colorX}
+        fillColor={colorX}
         position={[1, 0, 0]}
         label={labels[0]}
         {...axisHeadProps}
       />
       <AxisHead
-        arcStyle={colorY}
+        fillColor={colorY}
         position={[0, 1, 0]}
         label={labels[1]}
         {...axisHeadProps}
       />
       <AxisHead
-        arcStyle={colorZ}
+        fillColor={colorZ}
         position={[0, 0, 1]}
         label={labels[2]}
         {...axisHeadProps}
       />
-      <AxisHead arcStyle={colorX} position={[-1, 0, 0]} {...axisHeadProps} />
-      <AxisHead arcStyle={colorY} position={[0, -1, 0]} {...axisHeadProps} />
-      <AxisHead arcStyle={colorZ} position={[0, 0, -1]} {...axisHeadProps} />
+      <AxisHead fillColor={colorX} position={[-1, 0, 0]} {...axisHeadProps} />
+      <AxisHead fillColor={colorY} position={[0, -1, 0]} {...axisHeadProps} />
+      <AxisHead fillColor={colorZ} position={[0, 0, -1]} {...axisHeadProps} />
 
       <ambientLight intensity={0.5} />
       <pointLight position={[10, 10, 10]} intensity={0.5} />
@@ -205,24 +182,30 @@ export const GizmoViewport = ({
   )
 }
 
-type ControlsProto = {update(): void; target: Vector3}
-
 type SimpleVector = {
   x: number
   y: number
   z: number
 }
 
-export type GizmoHelperProps = JSX.IntrinsicElements['group'] & {
+export type ViewportGizmoProps = JSX.IntrinsicElements['group'] & {
   alignment?: 'top-left' | 'top-right' | 'bottom-right' | 'bottom-left'
   margin?: [number, number]
   renderPriority?: number
-  onUpdate?: () => void // update controls during animation
-  // TODO: in a new major state.controls should be the only means of consuming controls, the
-  // onTarget prop can then be removed!
-  onTarget: () => Vector3 // return the target to rotate around
-  temporarilySetValue: (position: SimpleVector, target: SimpleVector) => void
-  permanentlySetValue: (position: SimpleVector, target: SimpleVector) => void
+  temporarilySetValue: ({
+    position,
+    target,
+  }: {
+    position: SimpleVector
+    target: SimpleVector
+  }) => void
+  permanentlySetValue: ({
+    position,
+    target,
+  }: {
+    position: SimpleVector
+    target: SimpleVector
+  }) => void
   cameraSheetObject: ISheetObject<{
     transform: {
       position: {
@@ -239,17 +222,16 @@ export type GizmoHelperProps = JSX.IntrinsicElements['group'] & {
   }>
 }
 
-export const GizmoHelper = ({
-  alignment = 'bottom-right',
+export const ViewportGizmo = ({
+  alignment = 'top-right',
   margin = [80, 80],
   renderPriority = 0,
-  onUpdate,
-  onTarget,
-}: GizmoHelperProps): any => {
+  cameraSheetObject,
+  temporarilySetValue,
+  permanentlySetValue,
+}: ViewportGizmoProps): any => {
   const size = useThree(({size}) => size)
   const [cameraProxy] = useState(() => new PerspectiveCamera())
-  // @ts-expect-error new in @react-three/fiber@7.0.5
-  const defaultControls = useThree(({controls}) => controls) as ControlsProto
   const gl = useThree(({gl}) => gl)
   const scene = useThree(({scene}) => scene)
   const invalidate = useThree(({invalidate}) => invalidate)
@@ -263,9 +245,17 @@ export const GizmoHelper = ({
   const radius = React.useRef(0)
   const focusPoint = React.useRef(new Vector3(0, 0, 0))
 
+  const isFirstFrame = useRef(true)
+
   const tweenCamera = (direction: Vector3) => {
     animating.current = true
-    focusPoint.current = onTarget()
+    isFirstFrame.current = true
+
+    focusPoint.current.set(
+      cameraSheetObject.value.transform.target.x,
+      cameraSheetObject.value.transform.target.y,
+      cameraSheetObject.value.transform.target.z,
+    )
     radius.current = cameraProxy.position.distanceTo(focusPoint.current)
 
     // Rotate from current camera orientation
@@ -287,6 +277,19 @@ export const GizmoHelper = ({
 
     if (q1.angleTo(q2) < 0.01) {
       animating.current = false
+
+      permanentlySetValue({
+        position: {
+          x: cameraProxy.position.x,
+          y: cameraProxy.position.y,
+          z: cameraProxy.position.z,
+        },
+        target: {
+          x: focusPoint.current.x,
+          y: focusPoint.current.y,
+          z: focusPoint.current.z,
+        },
+      })
       return
     }
 
@@ -303,9 +306,20 @@ export const GizmoHelper = ({
     // cameraProxy.up.set(0, 1, 0).applyQuaternion(q1).normalize()
     cameraProxy.quaternion.copy(q1)
 
-    if (onUpdate) onUpdate()
-    else if (defaultControls) defaultControls.update()
+    temporarilySetValue({
+      position: {
+        x: cameraProxy.position.x,
+        y: cameraProxy.position.y,
+        z: cameraProxy.position.z,
+      },
+      target: {
+        x: focusPoint.current.x,
+        y: focusPoint.current.y,
+        z: focusPoint.current.z,
+      },
+    })
 
+    isFirstFrame.current = false
     invalidate()
   }
 
@@ -325,16 +339,28 @@ export const GizmoHelper = ({
     }
   }, [])
 
-  const beforeRender = () => {
-    // Sync gizmo with main camera orientation
-    matrix.copy(cameraProxy.matrix).invert()
-    gizmoRef.current?.quaternion.setFromRotationMatrix(matrix)
-  }
+  useEffect(() => {
+    cameraSheetObject.onValuesChange((values) => {
+      // Sync camera proxy with theatre props
+      cameraProxy.position.set(
+        values.transform.position.x,
+        values.transform.position.y,
+        values.transform.position.z,
+      )
+      cameraProxy.lookAt(
+        values.transform.target.x,
+        values.transform.target.y,
+        values.transform.target.z,
+      )
+      // Sync gizmo with main camera orientation
+      matrix.copy(cameraProxy.matrix).invert()
+      gizmoRef.current?.quaternion.setFromRotationMatrix(matrix)
+    })
+  }, [cameraSheetObject])
 
   useFrame((_, delta) => {
     if (virtualCam.current && gizmoRef.current) {
-      animateStep(delta)
-      beforeRender()
+      animateStep(isFirstFrame.current ? 0.016 : delta)
       gl.autoClear = false
       gl.clearDepth()
       gl.render(virtualScene, virtualCam.current)
@@ -362,7 +388,7 @@ export const GizmoHelper = ({
         position={[0, 0, 200]}
       />
       <group ref={gizmoRef} position={[x, y, 0]}>
-        <GizmoViewport />
+        <ViewportGizmoScene />
       </group>
     </Context.Provider>,
     virtualScene,

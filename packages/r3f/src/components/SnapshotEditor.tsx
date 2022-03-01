@@ -1,4 +1,4 @@
-import {useCallback, useLayoutEffect} from 'react'
+import {useCallback, useLayoutEffect, useRef} from 'react'
 import React from 'react'
 import {Canvas} from '@react-three/fiber'
 import type {BaseSheetObjectType} from '../store'
@@ -6,6 +6,7 @@ import {allRegisteredObjects, useEditorStore} from '../store'
 import shallow from 'zustand/shallow'
 import root from 'react-shadow/styled-components'
 import ProxyManager from './ProxyManager'
+import type {IScrub} from '@theatre/studio'
 import studio, {ToolbarIconButton} from '@theatre/studio'
 import {useVal} from '@theatre/react'
 import styled, {createGlobalStyle, StyleSheetManager} from 'styled-components'
@@ -14,7 +15,7 @@ import type {ISheet} from '@theatre/core'
 import useSnapshotEditorCamera from './useSnapshotEditorCamera'
 import {getEditorSheet, getEditorSheetObject} from './editorStuff'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
-import {ViewCubeExperiment} from './ViewCubeExperiment'
+import {ViewportGizmo} from './ViewportGizmo'
 
 const GlobalStyle = createGlobalStyle`
   :host {
@@ -145,6 +146,8 @@ const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
     }
   }, [])
 
+  const scrub = useRef<IScrub>()
+
   if (!editorObject) return <></>
 
   return (
@@ -161,9 +164,6 @@ const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
                 >
                   <IoCameraReverseOutline />
                 </ToolbarIconButton>
-                <ViewCubeExperiment
-                  cameraSheetObject={editorCameraSheetObject}
-                />
               </Tools>
             </Overlay>
 
@@ -185,6 +185,39 @@ const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
                     <EditorScene
                       snapshotEditorSheet={snapshotEditorSheet}
                       paneId={paneId}
+                    />
+                    <ViewportGizmo
+                      temporarilySetValue={(value) => {
+                        if (!scrub.current) {
+                          scrub.current = studio.scrub()
+                        }
+                        scrub.current.capture((api) => {
+                          api.set(
+                            editorCameraSheetObject.props.transform,
+                            value,
+                          )
+                        })
+                      }}
+                      permanentlySetValue={(value) => {
+                        if (scrub.current) {
+                          scrub.current.capture((api) => {
+                            api.set(
+                              editorCameraSheetObject.props.transform,
+                              value,
+                            )
+                          })
+                          scrub.current.commit()
+                          scrub.current = undefined
+                        } else {
+                          studio.transaction((api) => {
+                            api.set(
+                              editorCameraSheetObject.props.transform,
+                              value,
+                            )
+                          })
+                        }
+                      }}
+                      cameraSheetObject={editorCameraSheetObject}
                     />
                   </Canvas>
                 </CanvasWrapper>
