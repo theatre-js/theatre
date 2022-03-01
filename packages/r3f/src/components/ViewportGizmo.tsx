@@ -272,9 +272,9 @@ export const ViewportGizmo = ({
 
       permanentlySetValue({
         position: {
-          x: cameraProxy.position.x,
-          y: cameraProxy.position.y,
-          z: cameraProxy.position.z,
+          x: targetPosition.x,
+          y: targetPosition.y,
+          z: targetPosition.z,
         },
         up: {
           x: 0,
