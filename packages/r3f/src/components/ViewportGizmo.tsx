@@ -250,6 +250,8 @@ export const ViewportGizmo = ({
     )
     radius.current = cameraProxy.position.distanceTo(focusPoint.current)
 
+    dummy.position.copy(focusPoint.current)
+
     // Rotate from current camera orientation
     q1.copy(cameraProxy.quaternion)
 
