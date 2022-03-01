@@ -277,9 +277,9 @@ export const ViewportGizmo = ({
           z: cameraProxy.position.z,
         },
         up: {
-          x: cameraProxy.up.x,
-          y: cameraProxy.up.y,
-          z: cameraProxy.up.z,
+          x: 0,
+          y: 1,
+          z: 0,
         },
         target: {
           x: focusPoint.current.x,
