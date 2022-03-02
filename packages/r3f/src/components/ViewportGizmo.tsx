@@ -174,7 +174,7 @@ export const ViewportGizmoScene = ({
   labelColor = '#000',
   ...props
 }: ViewportGizmoSceneProps) => {
-  const [colorX, colorY, colorZ] = ['#f52222', '#65f39e', '#3c9ff1']
+  const [colorX, colorY, colorZ] = ['#f52222', '#1bd366', '#3c9ff1']
   const {tweenCamera, raycast} = useGizmoContext()
   const axisHeadProps = {
     disabled,
