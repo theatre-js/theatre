@@ -60,22 +60,28 @@ type AxisHeadProps = JSX.IntrinsicElements['sprite'] & {
   fillColor: string
   label?: string
   labelColor: string
+  permanentLabel?: boolean
   disabled?: boolean
 }
 
 type ViewportGizmoSceneProps = JSX.IntrinsicElements['group'] & {
   axisScale?: [number, number, number]
-  labels?: [string, string, string]
+  labels?: [string, string, string, string, string, string]
   labelColor?: string
   disabled?: boolean
 }
 
-function Axis({scale = [0.8, 0.05, 0.05], color, rotation}: AxisProps) {
+function Axis({scale = [0.02, 0.02, 0.8], color, rotation}: AxisProps) {
   return (
-    <group rotation={rotation}>
-      <mesh position={[0.4, 0, 0]}>
-        <boxGeometry args={scale} />
-        <meshBasicMaterial color={color} toneMapped={false} />
+    <group rotation={rotation} renderOrder={1}>
+      <mesh position={[0.4, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+        <cylinderGeometry args={scale} />
+        <meshBasicMaterial
+          color={color}
+          toneMapped={false}
+          opacity={0.7}
+          transparent
+        />
       </mesh>
     </group>
   )
@@ -87,6 +93,7 @@ function AxisHead({
   fillColor,
   label,
   labelColor,
+  permanentLabel,
   ...props
 }: AxisHeadProps) {
   const spriteRef = useRef<Sprite>(null!)
@@ -113,7 +120,7 @@ function AxisHead({
     spriteRef.current.getWorldPosition(worldPosition)
     const context = canvas.getContext('2d')!
     context.beginPath()
-    context.arc(32, 32, 16, 0, 2 * Math.PI)
+    context.arc(32, 32, 32, 0, 2 * Math.PI)
     context.closePath()
     context.fillStyle = fillColor
     context.fill()
@@ -122,18 +129,17 @@ function AxisHead({
     })`
     context.fill()
 
-    if (label) {
-      context.font = 'bold 18px Inter var, Arial, sans-serif'
+    if (label && (permanentLabel || active)) {
+      context.font = '36px Inter var, Arial, sans-serif'
       context.textAlign = 'center'
       context.fillStyle = active ? '#fff' : fillColor
-      context.fillText(label, 32, 39)
+      context.fillText(label, 32, 45)
       context.fillStyle = active ? '#fff' : 'rgba(0, 0, 0, 0.7)'
-      context.fillText(label, 32, 39)
+      context.fillText(label, 32, 45)
     }
     texture.needsUpdate = true
   })
 
-  const scale = 1
   const handlePointerOver = (e: Event) => {
     e.stopPropagation()
     setActive(true)
@@ -144,8 +150,9 @@ function AxisHead({
   }
   return (
     <sprite
+      renderOrder={-1}
       ref={spriteRef}
-      scale={scale}
+      scale={0.5}
       onPointerOver={!disabled ? handlePointerOver : undefined}
       onPointerOut={!disabled ? handlePointerOut : undefined}
       {...props}
@@ -153,7 +160,7 @@ function AxisHead({
       <spriteMaterial
         map={texture}
         map-anisotropy={gl.capabilities.getMaxAnisotropy() || 1}
-        alphaTest={0.3}
+        alphaTest={0.5}
         toneMapped={false}
       />
     </sprite>
@@ -163,11 +170,11 @@ function AxisHead({
 export const ViewportGizmoScene = ({
   disabled,
   axisScale,
-  labels = ['X', 'Y', 'Z'],
+  labels = ['X', 'Y', 'Z', '-X', '-Y', '-Z'],
   labelColor = '#000',
   ...props
 }: ViewportGizmoSceneProps) => {
-  const [colorX, colorY, colorZ] = ['#B90808', '#40AA6A', '#0879B9']
+  const [colorX, colorY, colorZ] = ['#f52222', '#65f39e', '#3c9ff1']
   const {tweenCamera, raycast} = useGizmoContext()
   const axisHeadProps = {
     disabled,
@@ -194,6 +201,7 @@ export const ViewportGizmoScene = ({
         fillColor={colorX}
         position={[1, 0, 0]}
         label={labels[0]}
+        permanentLabel
         {...axisHeadProps}
       />
       <AxisHead
@@ -201,6 +209,7 @@ export const ViewportGizmoScene = ({
         fillColor={colorY}
         position={[0, 1, 0]}
         label={labels[1]}
+        permanentLabel
         {...axisHeadProps}
       />
       <AxisHead
@@ -208,24 +217,28 @@ export const ViewportGizmoScene = ({
         fillColor={colorZ}
         position={[0, 0, 1]}
         label={labels[2]}
+        permanentLabel
         {...axisHeadProps}
       />
       <AxisHead
         parentScale={scale}
         fillColor={colorX}
         position={[-1, 0, 0]}
+        label={labels[3]}
         {...axisHeadProps}
       />
       <AxisHead
         parentScale={scale}
         fillColor={colorY}
         position={[0, -1, 0]}
+        label={labels[4]}
         {...axisHeadProps}
       />
       <AxisHead
         parentScale={scale}
         fillColor={colorZ}
         position={[0, 0, -1]}
+        label={labels[5]}
         {...axisHeadProps}
       />
 
@@ -267,7 +280,7 @@ export type ViewportGizmoProps = JSX.IntrinsicElements['group'] & {
 }
 
 export const ViewportGizmo = ({
-  alignment = 'top-right',
+  alignment = 'bottom-right',
   margin = [80, 80],
   renderPriority = 0,
   cameraSheetObject,
