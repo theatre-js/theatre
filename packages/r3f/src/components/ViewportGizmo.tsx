@@ -142,8 +142,8 @@ export const ViewportGizmoScene = ({
     disabled,
     labelColor,
     raycast,
-    onPointerDown: !disabled
-      ? (e: ThreeEvent<PointerEvent>) => {
+    onClick: !disabled
+      ? (e: ThreeEvent<MouseEvent>) => {
           tweenCamera(e.object.position)
           e.stopPropagation()
         }
