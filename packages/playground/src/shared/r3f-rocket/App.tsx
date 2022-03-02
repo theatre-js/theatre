@@ -1,19 +1,10 @@
-import {
-  editable as e,
-  RefreshSnapshot,
-  SheetProvider,
-  extension,
-} from '@theatre/r3f'
+import {editable as e, RefreshSnapshot, SheetProvider} from '@theatre/r3f'
 import {OrbitControls, Stars} from '@react-three/drei'
 import {getProject} from '@theatre/core'
 import React, {Suspense, useState} from 'react'
 import {Canvas} from '@react-three/fiber'
 import {useGLTF} from '@react-three/drei'
 import sceneGLB from './scene.glb'
-import studio from '@theatre/studio'
-
-studio.extend(extension)
-studio.initialize()
 
 document.body.style.backgroundColor = '#171717'
 
