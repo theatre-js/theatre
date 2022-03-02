@@ -1,6 +1,6 @@
 import * as React from 'react'
 import type {ThreeEvent} from '@react-three/fiber'
-import {createPortal, useFrame, useThree} from '@react-three/fiber'
+import {createPortal, invalidate, useFrame, useThree} from '@react-three/fiber'
 import type {
   Camera,
   Color,
@@ -8,6 +8,7 @@ import type {
   Intersection,
   Raycaster,
   Texture,
+  Sprite,
 } from 'three'
 import {
   CanvasTexture,
@@ -20,7 +21,14 @@ import {
 } from 'three'
 import {OrthographicCamera} from '@react-three/drei'
 import {useCamera} from '@react-three/drei'
-import {createContext, useEffect, useRef, useState} from 'react'
+import {
+  createContext,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import type {ISheetObject} from '@theatre/core'
 import type {cameraSheetObjectType} from '../store'
 
@@ -48,6 +56,7 @@ type AxisProps = {
 }
 
 type AxisHeadProps = JSX.IntrinsicElements['sprite'] & {
+  parentScale: number
   fillColor: string
   label?: string
   labelColor: string
@@ -73,34 +82,56 @@ function Axis({scale = [0.8, 0.05, 0.05], color, rotation}: AxisProps) {
 }
 
 function AxisHead({
+  parentScale,
   disabled,
   fillColor,
   label,
   labelColor,
   ...props
 }: AxisHeadProps) {
-  const [active, setActive] = React.useState(false)
+  const spriteRef = useRef<Sprite>(null!)
+  const [active, setActive] = useState(false)
+  const worldPosition = useMemo(() => new Vector3(), [])
   const gl = useThree((state) => state.gl)
-  const texture = React.useMemo(() => {
+  const canvas = useMemo(() => {
     const canvas = document.createElement('canvas')
     canvas.width = 64
     canvas.height = 64
 
+    return canvas
+  }, [])
+
+  const texture = useMemo(() => {
+    return new CanvasTexture(canvas)
+  }, [])
+
+  useLayoutEffect(() => {
+    invalidate()
+  })
+
+  useFrame(() => {
+    spriteRef.current.getWorldPosition(worldPosition)
     const context = canvas.getContext('2d')!
     context.beginPath()
     context.arc(32, 32, 16, 0, 2 * Math.PI)
     context.closePath()
     context.fillStyle = fillColor
     context.fill()
+    context.fillStyle = `rgba(0, 0, 0, ${
+      0.125 - worldPosition.z / parentScale / 8
+    })`
+    context.fill()
 
     if (label) {
-      context.font = '18px Inter var, Arial, sans-serif'
+      context.font = 'bold 18px Inter var, Arial, sans-serif'
       context.textAlign = 'center'
-      context.fillStyle = active ? '#fff' : '#000'
+      context.fillStyle = active ? '#fff' : fillColor
+      context.fillText(label, 32, 39)
+      context.fillStyle = active ? '#fff' : 'rgba(0, 0, 0, 0.7)'
       context.fillText(label, 32, 39)
     }
-    return new CanvasTexture(canvas)
-  }, [fillColor, label, active])
+    texture.needsUpdate = true
+  })
 
   const scale = 1
   const handlePointerOver = (e: Event) => {
@@ -113,6 +144,7 @@ function AxisHead({
   }
   return (
     <sprite
+      ref={spriteRef}
       scale={scale}
       onPointerOver={!disabled ? handlePointerOver : undefined}
       onPointerOut={!disabled ? handlePointerOut : undefined}
@@ -122,7 +154,6 @@ function AxisHead({
         map={texture}
         map-anisotropy={gl.capabilities.getMaxAnisotropy() || 1}
         alphaTest={0.3}
-        opacity={label ? 1 : 0.75}
         toneMapped={false}
       />
     </sprite>
@@ -149,33 +180,54 @@ export const ViewportGizmoScene = ({
         }
       : undefined,
   }
+
+  const scale = 40
+
   return (
-    <group scale={40} {...props}>
+    <group scale={scale} {...props}>
       <Axis color={colorX} rotation={[0, 0, 0]} scale={axisScale} />
       <Axis color={colorY} rotation={[0, 0, Math.PI / 2]} scale={axisScale} />
       <Axis color={colorZ} rotation={[0, -Math.PI / 2, 0]} scale={axisScale} />
 
       <AxisHead
+        parentScale={scale}
         fillColor={colorX}
         position={[1, 0, 0]}
         label={labels[0]}
         {...axisHeadProps}
       />
       <AxisHead
+        parentScale={scale}
         fillColor={colorY}
         position={[0, 1, 0]}
         label={labels[1]}
         {...axisHeadProps}
       />
       <AxisHead
+        parentScale={scale}
         fillColor={colorZ}
         position={[0, 0, 1]}
         label={labels[2]}
         {...axisHeadProps}
       />
-      <AxisHead fillColor={colorX} position={[-1, 0, 0]} {...axisHeadProps} />
-      <AxisHead fillColor={colorY} position={[0, -1, 0]} {...axisHeadProps} />
-      <AxisHead fillColor={colorZ} position={[0, 0, -1]} {...axisHeadProps} />
+      <AxisHead
+        parentScale={scale}
+        fillColor={colorX}
+        position={[-1, 0, 0]}
+        {...axisHeadProps}
+      />
+      <AxisHead
+        parentScale={scale}
+        fillColor={colorY}
+        position={[0, -1, 0]}
+        {...axisHeadProps}
+      />
+      <AxisHead
+        parentScale={scale}
+        fillColor={colorZ}
+        position={[0, 0, -1]}
+        {...axisHeadProps}
+      />
 
       <ambientLight intensity={0.5} />
       <pointLight position={[10, 10, 10]} intensity={0.5} />
@@ -367,8 +419,6 @@ export const ViewportGizmo = ({
       // Sync gizmo with main camera orientation
       matrix.copy(cameraProxy.matrix).invert()
       gizmoRef.current?.quaternion.setFromRotationMatrix(matrix)
-
-      console.log('sync')
     }
     const unsub = cameraSheetObject.onValuesChange(syncWithTheatre)
     syncWithTheatre(cameraSheetObject.value)
