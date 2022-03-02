@@ -344,7 +344,9 @@ export const ViewportGizmo = ({
   }, [])
 
   useEffect(() => {
-    cameraSheetObject.onValuesChange((values) => {
+    const syncWithTheatre = (
+      values: ISheetObject<typeof cameraSheetObjectType>['value'],
+    ) => {
       // Sync camera proxy with theatre props
       cameraProxy.position.set(
         values.transform.position.x,
@@ -364,8 +366,12 @@ export const ViewportGizmo = ({
       // Sync gizmo with main camera orientation
       matrix.copy(cameraProxy.matrix).invert()
       gizmoRef.current?.quaternion.setFromRotationMatrix(matrix)
-    })
-  }, [cameraSheetObject])
+    }
+    const unsub = cameraSheetObject.onValuesChange(syncWithTheatre)
+    syncWithTheatre(cameraSheetObject.value)
+
+    return unsub
+  }, [cameraSheetObject, cameraProxy])
 
   useFrame((_, delta) => {
     if (virtualCam.current && gizmoRef.current) {
