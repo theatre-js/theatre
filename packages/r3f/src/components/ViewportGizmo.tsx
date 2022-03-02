@@ -363,9 +363,12 @@ export const ViewportGizmo = ({
         values.transform.target.y,
         values.transform.target.z,
       )
+      cameraProxy.updateMatrix()
       // Sync gizmo with main camera orientation
       matrix.copy(cameraProxy.matrix).invert()
       gizmoRef.current?.quaternion.setFromRotationMatrix(matrix)
+
+      console.log('sync')
     }
     const unsub = cameraSheetObject.onValuesChange(syncWithTheatre)
     syncWithTheatre(cameraSheetObject.value)
