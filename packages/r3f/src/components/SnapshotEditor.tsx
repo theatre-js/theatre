@@ -74,12 +74,14 @@ const Wrapper = styled.div`
   right: 0px;
   bottom: 0px;
   left: 0px;
+  overflow: hidden;
 `
 
 const CanvasWrapper = styled.div`
   display: relative;
   z-index: 0;
   height: 100%;
+  overflow: hidden;
 `
 
 const Overlay = styled.div`
@@ -138,7 +140,7 @@ const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
   if (!editorObject) return <></>
 
   return (
-    <root.div>
+    <root.div style={{overflow: 'hidden'}}>
       <StyleSheetManager disableVendorPrefixes>
         <>
           <GlobalStyle />

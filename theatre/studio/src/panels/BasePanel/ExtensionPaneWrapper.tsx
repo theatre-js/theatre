@@ -23,7 +23,7 @@ const defaultPosition: PanelPosition = {
 
 const minDims = {width: 300, height: 300}
 
-const PaneWrapper: React.FC<{
+const ExtensionPaneWrapper: React.FC<{
   paneInstance: PaneInstance<$FixMe>
 }> = ({paneInstance}) => {
   return (
@@ -38,7 +38,8 @@ const PaneWrapper: React.FC<{
 }
 
 const Container = styled(PanelWrapper)`
-  overflow-y: hidden;
+  overflow: hidden;
+
   display: flex;
   flex-direction: column;
 
@@ -160,4 +161,4 @@ const Content: React.FC<{paneInstance: PaneInstance<$FixMe>}> = ({
   )
 }
 
-export default PaneWrapper
+export default ExtensionPaneWrapper
