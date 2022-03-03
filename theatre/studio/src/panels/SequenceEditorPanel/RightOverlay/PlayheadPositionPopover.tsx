@@ -39,18 +39,20 @@ const PlayheadPositionPopover: React.FC<{
 
   const fns = useMemo(() => {
     let tempPosition: number | undefined
+    const originalPosition = sequence.position
 
     return {
       temporarilySetValue(newPosition: number): void {
         if (tempPosition) {
           tempPosition = undefined
         }
-
         tempPosition = clamp(newPosition, 0, sequence.length)
+        sequence.position = tempPosition
       },
       discardTemporaryValue(): void {
         if (tempPosition) {
           tempPosition = undefined
+          sequence.position = originalPosition
         }
       },
       permenantlySetValue(newPosition: number): void {
