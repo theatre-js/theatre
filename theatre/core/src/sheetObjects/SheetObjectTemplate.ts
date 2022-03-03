@@ -91,14 +91,16 @@ export default class SheetObjectTemplate {
             this.address.sheetId
           ]
 
-        const value =
+        const json =
           val(
             pointerToSheetState.staticOverrides.byObject[
               this.address.objectKey
             ],
           ) || {}
 
-        return value
+        const config = val(this._config.pointer)
+        const deserialized = config.deserialize(json) || {}
+        return deserialized
       }),
     )
   }

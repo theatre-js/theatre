@@ -1,4 +1,4 @@
-import type {$IntentionalAny} from '@theatre/shared/utils/types'
+import type {$FixMe, $IntentionalAny} from '@theatre/shared/utils/types'
 import userReadableTypeOfValue from '@theatre/shared/utils/userReadableTypeOfValue'
 import type {Rgba} from '@theatre/shared/utils/color'
 import {
@@ -8,7 +8,7 @@ import {
   srgbToLinearSrgb,
   linearSrgbToSrgb,
 } from '@theatre/shared/utils/color'
-import {mapValues} from 'lodash-es'
+import {clamp, mapValues} from 'lodash-es'
 import type {
   IShorthandCompoundProps,
   IValidCompoundProps,
@@ -85,15 +85,49 @@ export const compound = <Props extends IShorthandCompoundProps>(
 > => {
   validateCommonOpts('t.compound(props, opts)', opts)
   const sanitizedProps = sanitizeCompoundProps(props)
-  return {
+  const deserializationCache = new WeakMap<{}, unknown>()
+  const config: PropTypeConfig_Compound<
+    ShorthandCompoundPropsToLonghandCompoundProps<Props>,
+    Props
+  > = {
     type: 'compound',
     props: sanitizedProps,
     valueType: null as $IntentionalAny,
     [propTypeSymbol]: 'TheatrePropType',
     label: opts?.label,
     default: mapValues(sanitizedProps, (p) => p.default) as $IntentionalAny,
+    deserialize: (json: unknown) => {
+      if (typeof json !== 'object' || !json) return undefined
+      if (deserializationCache.has(json)) {
+        return deserializationCache.get(json)
+      }
+
+      const deserialized: $FixMe = {}
+      let atLeastOnePropWasDeserialized = false
+      for (const [key, propConfig] of Object.entries(sanitizedProps)) {
+        if (Object.prototype.hasOwnProperty.call(json, key)) {
+          const deserializedSub = propConfig.deserialize(
+            (json as $IntentionalAny)[key] as unknown,
+          )
+          if (
+            typeof deserializedSub !== 'undefined' &&
+            deserializedSub !== null
+          ) {
+            atLeastOnePropWasDeserialized = true
+            deserialized[key] = deserializedSub
+          }
+        }
+      }
+      deserializationCache.set(json, deserialized)
+      if (atLeastOnePropWasDeserialized) {
+        return deserialized
+      }
+    },
   }
+  return config
 }
+
+const deserializationCache = new WeakMap<{}, unknown>()
 
 /**
  * A number prop type.
@@ -228,6 +262,14 @@ export const number = (
     isScalar: true,
     sanitize: sanitize,
     interpolate: opts?.interpolate ?? _interpolateNumber,
+    deserialize: (json: unknown): undefined | number => {
+      if (!(typeof json === 'number' && isFinite(json))) return undefined
+      if (opts?.range) {
+        return clamp(json, opts.range[0], opts.range[1])
+      } else {
+        return json
+      }
+    },
   }
 }
 
@@ -290,6 +332,21 @@ export const rgba = (
     label: opts?.label,
     sanitize: _sanitizeRgba,
     interpolate: _interpolateRgba,
+    deserialize(json: unknown): undefined | Rgba {
+      if (typeof json !== 'object' || !json) return undefined
+      let valid = true
+      for (const p of ['r', 'g', 'b', 'a']) {
+        if (
+          !Object.prototype.hasOwnProperty.call(defaultValue, p) ||
+          typeof (defaultValue as $IntentionalAny)[p] !== 'number'
+        ) {
+          valid = false
+        }
+      }
+      if (!valid) return undefined
+      const validJson = json as Rgba
+      return {r: validJson.r, g: validJson.g, b: validJson.b, a: validJson.a}
+    },
   }
 }
 
@@ -383,6 +440,13 @@ export const boolean = (
     label: opts?.label,
     sanitize: _sanitizeBoolean,
     interpolate: leftInterpolate,
+    deserialize: (json: unknown): boolean | undefined => {
+      if (typeof json === 'boolean') {
+        return json
+      } else {
+        return undefined
+      }
+    },
   }
 }
 
@@ -444,6 +508,13 @@ export const string = (
       return typeof value === 'string' ? value : undefined
     },
     interpolate: opts?.interpolate ?? leftInterpolate,
+    deserialize: (json: unknown): string | undefined => {
+      if (typeof json !== 'string') {
+        return undefined
+      } else {
+        return json
+      }
+    },
   }
 }
 
@@ -493,13 +564,21 @@ export function stringLiteral<Opts extends {[key in string]: string}>(
     label: opts?.label,
     sanitize(value: unknown) {
       if (typeof value !== 'string') return undefined
-      if (Object.hasOwnProperty.call(options, value)) {
+      if (Object.prototype.hasOwnProperty.call(options, value)) {
         return value as $IntentionalAny
       } else {
         return undefined
       }
     },
     interpolate: leftInterpolate,
+    deserialize(json: unknown): undefined | Extract<keyof Opts, string> {
+      if (typeof json !== 'string') return undefined
+      if (Object.prototype.hasOwnProperty.call(options, json)) {
+        return json as $IntentionalAny
+      } else {
+        return undefined
+      }
+    },
   }
 }
 
@@ -514,6 +593,7 @@ export interface IBasePropType<ValueType, PropTypes = ValueType> {
   sanitize?: Sanitizer<PropTypes>
   interpolate?: Interpolator<PropTypes>
   default: ValueType
+  deserialize: (json: unknown) => $FixMe
 }
 
 export interface PropTypeConfig_Number extends IBasePropType<number> {
