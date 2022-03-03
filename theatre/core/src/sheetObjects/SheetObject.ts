@@ -159,6 +159,7 @@ export default class SheetObject implements IdentityDerivationProvider {
               pathToProp,
             )!
 
+            const deserialize = propConfig.deserialize
             const interpolate =
               propConfig.interpolate! as Interpolator<$IntentionalAny>
 
@@ -168,12 +169,21 @@ export default class SheetObject implements IdentityDerivationProvider {
               if (!triple)
                 return valsAtom.setIn(pathToProp, propConfig!.default)
 
-              const left = valueInProp(triple.left, propConfig)
+              const leftDeserialized = deserialize(triple.left)
+
+              const left =
+                typeof leftDeserialized === 'undefined'
+                  ? propConfig.default
+                  : leftDeserialized
 
               if (triple.right === undefined)
                 return valsAtom.setIn(pathToProp, left)
 
-              const right = valueInProp(triple.right, propConfig)
+              const rightDeserialized = deserialize(triple.right)
+              const right =
+                typeof rightDeserialized === 'undefined'
+                  ? propConfig.default
+                  : rightDeserialized
 
               return valsAtom.setIn(
                 pathToProp,

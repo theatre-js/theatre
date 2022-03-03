@@ -140,8 +140,7 @@ export default class SheetObjectTemplate {
 
           const propConfig = getPropConfigByPath(this.config, pathToProp)
 
-          if (!propConfig || !propConfig?.sanitize || !propConfig.interpolate)
-            continue
+          if (!propConfig || !propConfig.interpolate) continue
 
           arrayOfIds.push({pathToProp, trackId: trackId!})
         }
