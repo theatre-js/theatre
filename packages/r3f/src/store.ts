@@ -4,6 +4,7 @@ import type {Object3D, Scene, WebGLRenderer} from 'three'
 import {Group} from 'three'
 import type {ISheetObject} from '@theatre/core'
 import {types} from '@theatre/core'
+import {getEditorSheet} from './components/editorStuff'
 
 export type EditableType =
   | 'group'
@@ -40,7 +41,38 @@ export const baseSheetObjectType = {
   },
 }
 
+export const cameraSheetObjectType = {
+  transform: {
+    position: {
+      x: types.number(10),
+      y: types.number(10),
+      z: types.number(0),
+    },
+    up: {
+      x: types.number(0),
+      y: types.number(1),
+      z: types.number(0),
+    },
+    target: {
+      x: types.number(0),
+      y: types.number(0),
+      z: types.number(0),
+    },
+  },
+  lens: {
+    zoom: types.number(1, {range: [0.0001, 10]}),
+    fov: types.number(50, {range: [1, 1000]}),
+    near: types.number(0.1, {range: [0, Infinity]}),
+    far: types.number(2000, {range: [0, Infinity]}),
+    focus: types.number(10, {range: [0, Infinity]}),
+    filmGauge: types.number(35, {range: [0, Infinity]}),
+    filmOffset: types.number(0, {range: [0, Infinity]}),
+  },
+}
+
 export type BaseSheetObjectType = ISheetObject<typeof baseSheetObjectType>
+
+export type CameraSheetObjectType = ISheetObject<typeof cameraSheetObjectType>
 
 export const allRegisteredObjects = new WeakSet<BaseSheetObjectType>()
 
@@ -144,6 +176,7 @@ export type EditorStore = {
   canvasName: string
   sceneSnapshot: Scene | null
   editablesSnapshot: Record<string, EditableSnapshot> | null
+  editorCameraSheetObject: CameraSheetObjectType
 
   init: (
     scene: Scene,
@@ -162,6 +195,8 @@ export type EditorStore = {
 }
 
 const config: StateCreator<EditorStore> = (set, get) => {
+  const editorSheet = getEditorSheet()
+
   return {
     sheet: null,
     editorObject: null,
@@ -174,7 +209,10 @@ const config: StateCreator<EditorStore> = (set, get) => {
     canvasName: 'default',
     sceneSnapshot: null,
     editablesSnapshot: null,
-    initialEditorCamera: {},
+    editorCameraSheetObject: editorSheet.object(
+      `Editor Camera`,
+      cameraSheetObjectType,
+    ),
 
     init: (scene, gl, allowImplicitInstancing) => {
       set({
