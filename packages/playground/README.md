@@ -25,7 +25,7 @@ src/
 
 Simply run `yarn run serve` in this folder to start the dev server.
 
-There are some shared playgrounds in `src/shared` which are committed to the repo. You can make your own playgrounds in `src/personal` which will be `.gitignore`d. Each 
+There are some shared playgrounds in `src/shared` which are committed to the repo. You can make your own playgrounds in `src/personal` which will be `.gitignore`d. Note that every playground must include an entry file called `index.tsx` (as you see in the [Directory structure section](#directory-structure)).
 
 ## How to write and run end-to-end tests
 
