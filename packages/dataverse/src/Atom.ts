@@ -297,10 +297,10 @@ function isIdentityChangeProvider(
  * For pointers, the value is returned by first creating a derivation, so it is
  * reactive e.g. when used in a `prism`.
  *
- * @param pointerOrDerivationOrPlainValue - The argument to return a value from.
+ * @param input - The argument to return a value from.
  */
 export const val = <P>(
-  pointerOrDerivationOrPlainValue: P,
+  input: P,
 ): P extends PointerType<infer T>
   ? T
   : P extends IDerivation<infer T>
@@ -308,13 +308,11 @@ export const val = <P>(
   : P extends undefined | null
   ? P
   : unknown => {
-  if (isPointer(pointerOrDerivationOrPlainValue)) {
-    return valueDerivation(
-      pointerOrDerivationOrPlainValue,
-    ).getValue() as $IntentionalAny
-  } else if (isDerivation(pointerOrDerivationOrPlainValue)) {
-    return pointerOrDerivationOrPlainValue.getValue() as $IntentionalAny
+  if (isPointer(input)) {
+    return valueDerivation(input).getValue() as $IntentionalAny
+  } else if (isDerivation(input)) {
+    return input.getValue() as $IntentionalAny
   } else {
-    return pointerOrDerivationOrPlainValue as $IntentionalAny
+    return input as $IntentionalAny
   }
 }
