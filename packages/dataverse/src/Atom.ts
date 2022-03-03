@@ -299,7 +299,13 @@ function isIdentityChangeProvider(
  *
  * @param input - The argument to return a value from.
  */
-export const val = <P>(
+export const val = <
+  P extends
+    | PointerType<$IntentionalAny>
+    | IDerivation<$IntentionalAny>
+    | undefined
+    | null,
+>(
   input: P,
 ): P extends PointerType<infer T>
   ? T

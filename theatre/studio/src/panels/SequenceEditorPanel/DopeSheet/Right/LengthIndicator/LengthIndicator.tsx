@@ -132,7 +132,7 @@ type IProps = {
 
 const LengthIndicator: React.FC<IProps> = ({layoutP}) => {
   const [nodeRef, node] = useRefAndState<HTMLDivElement | null>(null)
-  const [isDraggingD] = useDragBulge(node, {layoutP})
+  const [isDragging] = useDragBulge(node, {layoutP})
   const [popoverNode, openPopover, closePopover, isPopoverOpen] = usePopover(
     {},
     () => {
@@ -177,7 +177,7 @@ const LengthIndicator: React.FC<IProps> = ({layoutP}) => {
             height: height + 'px',
             transform: `translateX(${translateX === 0 ? -1000 : translateX}px)`,
           }}
-          className={val(isDraggingD) ? 'dragging' : ''}
+          className={isDragging ? 'dragging' : ''}
         >
           <ThumbContainer>
             <Tumb
@@ -206,10 +206,13 @@ const LengthIndicator: React.FC<IProps> = ({layoutP}) => {
         />
       </>
     )
-  }, [layoutP, nodeRef, isDraggingD, popoverNode])
+  }, [layoutP, nodeRef, isDragging, popoverNode])
 }
 
-function useDragBulge(node: HTMLDivElement | null, props: IProps) {
+function useDragBulge(
+  node: HTMLDivElement | null,
+  props: IProps,
+): [isDragging: boolean] {
   const propsRef = useRef(props)
   propsRef.current = props
   const [isDragging, setIsDragging] = useState(false)

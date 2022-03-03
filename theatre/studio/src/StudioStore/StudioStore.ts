@@ -20,7 +20,7 @@ import atomFromReduxStore from '@theatre/studio/utils/redux/atomFromReduxStore'
 import configureStore from '@theatre/studio/utils/redux/configureStore'
 import type {$FixMe, $IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
 import type {Atom, Pointer} from '@theatre/dataverse'
-import {getPointerParts, val} from '@theatre/dataverse'
+import {getPointerParts} from '@theatre/dataverse'
 import type {Draft} from 'immer'
 import {createDraft, finishDraft} from 'immer'
 import get from 'lodash-es/get'
@@ -139,11 +139,9 @@ export default class StudioStore {
             if (isSheetObject(root)) {
               root.validateValue(pointer as Pointer<$FixMe>, _value)
 
-              const sequenceTracksTree = val(
-                root.template
-                  .getMapOfValidSequenceTracks_forStudio()
-                  .getValue(),
-              )
+              const sequenceTracksTree = root.template
+                .getMapOfValidSequenceTracks_forStudio()
+                .getValue()
 
               const propConfig = getPropConfigByPath(
                 root.template.config,
@@ -214,11 +212,9 @@ export default class StudioStore {
             ensureRunning()
             const {root, path} = getPointerParts(pointer as Pointer<$FixMe>)
             if (isSheetObject(root)) {
-              const sequenceTracksTree = val(
-                root.template
-                  .getMapOfValidSequenceTracks_forStudio()
-                  .getValue(),
-              )
+              const sequenceTracksTree = root.template
+                .getMapOfValidSequenceTracks_forStudio()
+                .getValue()
 
               const defaultValue = getDeep(
                 root.template.getDefaultValues().getValue(),
