@@ -355,6 +355,24 @@ namespace stateEditors {
                 return sheetState.sequence!
               }
 
+              export namespace focusRange {
+                export function set(
+                  p: WithoutSheetInstance<SheetAddress> & {
+                    range: IRange
+                  },
+                ) {
+                  stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence._ensure(
+                    p,
+                  ).clippedSpaceRange = {...p.range}
+                }
+
+                export function unset(p: WithoutSheetInstance<SheetAddress>) {
+                  stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence._ensure(
+                    p,
+                  ).clippedSpaceRange = undefined
+                }
+              }
+
               export namespace clippedSpaceRange {
                 export function set(
                   p: WithoutSheetInstance<SheetAddress> & {

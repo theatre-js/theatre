@@ -1,6 +1,6 @@
 import useOnKeyDown from '@theatre/studio/uiComponents/useOnKeyDown'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
-import type {Pointer} from '@theatre/dataverse'
+import {Pointer, prism} from '@theatre/dataverse'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import React, {useMemo, useState} from 'react'
 import {usePrism} from '@theatre/react'
@@ -10,6 +10,8 @@ import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import {clamp} from 'lodash-es'
+import getStudio from '@theatre/studio/getStudio'
+import {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 
 const RangeStart = styled.div`
   background-color: blue;
@@ -36,33 +38,71 @@ const FocusRange: React.FC<{
 }> = ({layoutP, className}) => {
   const [startRef, startNode] = useRefAndState<HTMLElement | null>(null)
   const [endRef, endNode] = useRefAndState<HTMLElement | null>(null)
-  const [startPosition, setStartPosition] = useState(0)
-  const [endPosition, setEndPosition] = useState(1)
-  let sequence = val(layoutP.sheet).getSequence()
+
+  const existingRangeD = useMemo(
+    () =>
+      prism(() => {
+        const {projectId, sheetId} = val(layoutP.sheet).address
+        const existingRange = val(
+          getStudio().atomP.ahistoric.projects.stateByProjectId[projectId]
+            .stateBySheetId[sheetId].sequence.focusRange,
+        )
+        return existingRange
+      }),
+    [layoutP],
+  )
+
+  const sheet = val(layoutP.sheet)
+  let sequence = sheet.getSequence()
 
   const startGestureHandlers = useMemo((): Parameters<typeof useDrag>[1] => {
-    // let sequence: Sequence
     let scaledSpaceToUnitSpace: typeof layoutP.scaledSpace.toUnitSpace.$$__pointer_type
-    let posBeforeDrag = startPosition
+    let posBeforeDrag = 0
+    let tempTransaction: CommitOrDiscard | undefined
+    let dragHappened = false
 
     return {
       onDragStart() {
+        dragHappened = false
         sequence = val(layoutP.sheet).getSequence()
-        posBeforeDrag = startPosition
+        posBeforeDrag = existingRangeD.getValue()?.range.start || 0
         // position before drag
         scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
       },
       onDrag(dx, _, event) {
+        dragHappened = true
         const deltaPos = scaledSpaceToUnitSpace(dx)
         const newPosition = clamp(posBeforeDrag + deltaPos, 0, sequence.length)
-        // startPosInClippedSpace = newPosition
-        window.startPos = newPosition
-        setStartPosition(newPosition)
+
+        if (tempTransaction) {
+          tempTransaction.discard()
+        }
+
+        tempTransaction = getStudio().tempTransaction(({stateEditors}) => {
+          stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.set(
+            {
+              ...sheet.address,
+              // todo
+              range: {start: 0, end: 0},
+            },
+          )
+        })
       },
-      onDragEnd() {},
+      onDragEnd() {
+        if (dragHappened) {
+          if (tempTransaction) {
+            tempTransaction.commit()
+          }
+        } else {
+          if (tempTransaction) {
+            tempTransaction.discard()
+          }
+        }
+        tempTransaction = undefined
+      },
       lockCursorTo: 'ew-resize',
     }
-  }, [])
+  }, [sheet])
 
   const endGestureHandlers = useMemo((): Parameters<typeof useDrag>[1] => {
     // let sequence: Sequence
@@ -95,28 +135,14 @@ const FocusRange: React.FC<{
   useDrag(startNode, startGestureHandlers)
   useDrag(endNode, endGestureHandlers)
 
-  useOnKeyDown(
-    (ev) => {
-      if (ev.code === 'Space') {
-        if (sequence.playing) {
-          sequence.pause()
-        } else {
-          sequence.play({
-            range: [window.startPos || 0, window.endPos || sequence.length],
-            iterationCount: Infinity,
-          })
-        }
-        ev.stopImmediatePropagation()
-      }
-    },
-    [startPosition, endPosition],
-  )
-
   return usePrism(() => {
-    // const sheet = val(layoutP.sheet)
-    // const sequence = sheet.getSequence()
-    // const sequenceLength = sequence.length
-    // const posInUnitSpace = sequenceLength
+    const existingRange = existingRangeD.getValue()
+    // todo: what to show here?
+    if (typeof existingRange === 'undefined') return <></>
+
+    const startPosition = existingRange.range.start
+    const endPosition = existingRange.range.end
+
     const startPosInClippedSpace = val(layoutP.clippedSpace.fromUnitSpace)(
       startPosition,
     )
@@ -147,7 +173,7 @@ const FocusRange: React.FC<{
         />
       </div>
     )
-  }, [layoutP, startRef, endRef, startPosition, endPosition])
+  }, [layoutP, startRef, endRef, existingRangeD])
 }
 
 export default FocusRange

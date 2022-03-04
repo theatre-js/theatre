@@ -39,6 +39,7 @@ export default function useKeyboardShortcuts() {
           if (seq.playing) {
             seq.pause()
           } else {
+            // TODO: use focusRange if it's set
             seq.play({iterationCount: 1000})
           }
         } else {
