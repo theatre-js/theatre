@@ -1,8 +1,8 @@
-import useOnKeyDown from '@theatre/studio/uiComponents/useOnKeyDown'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
-import {Pointer, prism} from '@theatre/dataverse'
+import type {Pointer} from '@theatre/dataverse'
+import {prism} from '@theatre/dataverse'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
-import React, {useMemo, useState} from 'react'
+import React, {useMemo} from 'react'
 import {usePrism} from '@theatre/react'
 import {val} from '@theatre/dataverse'
 import styled from 'styled-components'
@@ -11,33 +11,22 @@ import useDrag from '@theatre/studio/uiComponents/useDrag'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import {clamp} from 'lodash-es'
 import getStudio from '@theatre/studio/getStudio'
-import {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
+import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 
-const RangeStart = styled.div`
+const Handler = styled.div`
   background-color: blue;
   width: 20px;
-  left: -20px;
   height: 100%;
   position: absolute;
   cursor: ew-resize;
   ${pointerEventsAutoInNormalMode};
 `
 
-const RangeEnd = styled.div`
-  background-color: green;
-  width: 20px;
-  height: 100%;
-  position: absolute;
-  cursor: ew-resize;
-  ${pointerEventsAutoInNormalMode};
-`
-
-const FocusRange: React.FC<{
+const FocusRangeThumb: React.FC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
-  className: string
-}> = ({layoutP, className}) => {
+  type: 'start' | 'end'
+}> = ({layoutP, type}) => {
   const [startRef, startNode] = useRefAndState<HTMLElement | null>(null)
-  const [endRef, endNode] = useRefAndState<HTMLElement | null>(null)
 
   const existingRangeD = useMemo(
     () =>
@@ -55,9 +44,11 @@ const FocusRange: React.FC<{
   const sheet = val(layoutP.sheet)
   let sequence = sheet.getSequence()
 
-  const startGestureHandlers = useMemo((): Parameters<typeof useDrag>[1] => {
+  const gestureHandlers = useMemo((): Parameters<typeof useDrag>[1] => {
     let scaledSpaceToUnitSpace: typeof layoutP.scaledSpace.toUnitSpace.$$__pointer_type
-    let posBeforeDrag = 0
+    const defaultFocusRange = {start: 0, end: sequence.length}
+    let focusRange = existingRangeD.getValue()?.range || defaultFocusRange
+    let posBeforeDrag = focusRange[type]
     let tempTransaction: CommitOrDiscard | undefined
     let dragHappened = false
 
@@ -65,14 +56,23 @@ const FocusRange: React.FC<{
       onDragStart() {
         dragHappened = false
         sequence = val(layoutP.sheet).getSequence()
-        posBeforeDrag = existingRangeD.getValue()?.range.start || 0
-        // position before drag
+        posBeforeDrag =
+          existingRangeD.getValue()?.range[type] || defaultFocusRange[type]
         scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
       },
       onDrag(dx, _, event) {
         dragHappened = true
+        focusRange = existingRangeD.getValue()?.range || defaultFocusRange
+
         const deltaPos = scaledSpaceToUnitSpace(dx)
-        const newPosition = clamp(posBeforeDrag + deltaPos, 0, sequence.length)
+        const newPosition =
+          type === 'start'
+            ? clamp(posBeforeDrag + deltaPos, 0, focusRange['end'])
+            : clamp(
+                posBeforeDrag + deltaPos,
+                focusRange['start'],
+                sequence.length,
+              )
 
         if (tempTransaction) {
           tempTransaction.discard()
@@ -82,8 +82,7 @@ const FocusRange: React.FC<{
           stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.set(
             {
               ...sheet.address,
-              // todo
-              range: {start: 0, end: 0},
+              range: {...focusRange, [type]: newPosition},
             },
           )
         })
@@ -104,76 +103,36 @@ const FocusRange: React.FC<{
     }
   }, [sheet])
 
-  const endGestureHandlers = useMemo((): Parameters<typeof useDrag>[1] => {
-    // let sequence: Sequence
-    let scaledSpaceToUnitSpace: typeof layoutP.scaledSpace.toUnitSpace.$$__pointer_type
-    let posBeforeDrag = endPosition
-
-    return {
-      onDragStart() {
-        sequence = val(layoutP.sheet).getSequence()
-        posBeforeDrag = endPosition
-        // position before drag
-        scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
-        console.log('drag start')
-      },
-      onDrag(dx, _, event) {
-        const deltaPos = scaledSpaceToUnitSpace(dx)
-        const newPosition = clamp(posBeforeDrag + deltaPos, 0, sequence.length)
-        // endPosInClippedSpace = newPosition
-        setEndPosition(newPosition)
-        window.endPos = newPosition
-        console.log('being dragged')
-      },
-      onDragEnd() {
-        console.log('drag end')
-      },
-      lockCursorTo: 'ew-resize',
-    }
-  }, [])
-
-  useDrag(startNode, startGestureHandlers)
-  useDrag(endNode, endGestureHandlers)
+  useDrag(startNode, gestureHandlers)
 
   return usePrism(() => {
-    const existingRange = existingRangeD.getValue()
-    // todo: what to show here?
-    if (typeof existingRange === 'undefined') return <></>
+    let existingRange = existingRangeD.getValue() || {
+      range: {start: 0, end: sequence.length},
+    }
+    // TODO: what should be displayed when the focusRange is not set?
 
-    const startPosition = existingRange.range.start
-    const endPosition = existingRange.range.end
+    const position = existingRange.range[type]
 
-    const startPosInClippedSpace = val(layoutP.clippedSpace.fromUnitSpace)(
-      startPosition,
-    )
-    const endPosInClippedSpace = val(layoutP.clippedSpace.fromUnitSpace)(
-      endPosition,
-    )
-
-    let width = val(layoutP.clippedSpace.fromUnitSpace)(
-      endPosition - startPosition,
-    )
+    const posInClippedSpace = val(layoutP.clippedSpace.fromUnitSpace)(position)
 
     return (
-      <div
-        className={className}
-        style={{
-          width: `${width}px`,
-        }}
-      >
-        <RangeStart
-          ref={startRef as $IntentionalAny}
-          onClick={() => alert('clicked')}
-          style={{transform: `translate3d(${startPosInClippedSpace}px, 0, 0)`}}
-        />
-        <RangeEnd
-          ref={endRef as $IntentionalAny}
-          onClick={() => alert('clicked')}
-          style={{transform: `translate3d(${endPosInClippedSpace}px, 0, 0)`}}
-        />
-      </div>
+      <Handler
+        ref={startRef as $IntentionalAny}
+        style={{transform: `translate3d(${posInClippedSpace}px, 0, 0)`}}
+      />
     )
-  }, [layoutP, startRef, endRef, existingRangeD])
+  }, [layoutP, startRef, existingRangeD])
+}
+
+const FocusRange: React.FC<{
+  layoutP: Pointer<SequenceEditorPanelLayout>
+}> = ({layoutP}) => {
+  return (
+    <>
+      <FocusRangeThumb type="start" layoutP={layoutP} />
+      <FocusRangeThumb type="end" layoutP={layoutP} />
+    </>
+  )
 }
 
 export default FocusRange

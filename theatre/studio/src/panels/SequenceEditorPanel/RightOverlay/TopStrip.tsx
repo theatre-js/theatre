@@ -28,14 +28,13 @@ const Container = styled(PanelDragZone)`
   ${pointerEventsAutoInNormalMode};
 `
 
-const FocusRangeContainer = styled(FocusRange)`
+const FocusRangeContainer = styled.div`
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   height: ${topStripHeight}px;
   box-sizing: border-box;
-  /* background: rgba(256, 0, 0, 1); */
 `
 
 const TopStrip: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
@@ -48,7 +47,9 @@ const TopStrip: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
       <Container {...{[attributeNameThatLocksFramestamp]: 'hide'}}>
         <StampsGrid layoutP={layoutP} width={width} height={topStripHeight} />
       </Container>
-      <FocusRangeContainer layoutP={layoutP} />
+      <FocusRangeContainer>
+        <FocusRange layoutP={layoutP} />
+      </FocusRangeContainer>
     </>
   )
 }

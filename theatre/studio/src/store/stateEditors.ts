@@ -363,13 +363,13 @@ namespace stateEditors {
                 ) {
                   stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence._ensure(
                     p,
-                  ).clippedSpaceRange = {...p.range}
+                  ).focusRange = {range: p.range}
                 }
 
                 export function unset(p: WithoutSheetInstance<SheetAddress>) {
                   stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence._ensure(
                     p,
-                  ).clippedSpaceRange = undefined
+                  ).focusRange = undefined
                 }
               }
 

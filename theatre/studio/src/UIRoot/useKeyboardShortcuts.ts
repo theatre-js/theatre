@@ -28,7 +28,7 @@ export default function useKeyboardShortcuts() {
           return
         }
       } else if (
-        e.key === ' ' &&
+        e.code === 'Space' &&
         !e.shiftKey &&
         !e.metaKey &&
         !e.altKey &&
