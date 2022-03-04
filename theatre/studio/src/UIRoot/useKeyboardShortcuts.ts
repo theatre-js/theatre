@@ -40,20 +40,26 @@ export default function useKeyboardShortcuts() {
           if (seq.playing) {
             seq.pause()
           } else {
-            // TODO: use focusRange if it's set
             const {projectId, sheetId} = seq.address
             const focusRange = val(
               getStudio().atomP.ahistoric.projects.stateByProjectId[projectId]
                 .stateBySheetId[sheetId].sequence.focusRange,
             )
 
-            if (typeof focusRange === 'undefined') {
-              seq.play({iterationCount: 1000})
-            } else {
+            if (
+              typeof focusRange !== 'undefined' &&
+              focusRange.range.start <= seq.position &&
+              focusRange.range.end >= seq.position
+            ) {
+              const {start, end} = focusRange.range
               seq.play({
                 iterationCount: 1000,
-                range: [focusRange.range.start, focusRange.range.end],
+                range: [start, end],
               })
+              console.log('in', seq.position, focusRange)
+            } else {
+              console.log(seq.position, focusRange)
+              seq.play({iterationCount: 1000})
             }
           }
         } else {
