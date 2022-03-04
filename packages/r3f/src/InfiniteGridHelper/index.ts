@@ -106,7 +106,7 @@ export class InfiniteGridHelper extends Mesh {
               // The last x percentage of the current step over which we want to fade
               float fadeRange = 0.3;
 
-              // We calculate the fade percentage from the step percentage to only fade in the fade range
+              // We calculate the fade percentage from the step percentage and the fade range
               float fadePercentage = max(stepPercentage - 1.0 + fadeRange, 0.0) / fadeRange;
 
               // Set base opacity based on how close we are to the drawing distance, with a cubic falloff
