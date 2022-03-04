@@ -1,3 +1,4 @@
+// Inspired by https://github.com/Fyrestar/THREE.InfiniteGridHelper
 import {
   Color,
   DoubleSide,
