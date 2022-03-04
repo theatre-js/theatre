@@ -1,4 +1,4 @@
-import {useCallback, useLayoutEffect} from 'react'
+import {useCallback, useLayoutEffect, useMemo} from 'react'
 import React from 'react'
 import {Canvas} from '@react-three/fiber'
 import type {BaseSheetObjectType} from '../store'
@@ -14,6 +14,7 @@ import type {ISheet} from '@theatre/core'
 import useSnapshotEditorCamera from './useSnapshotEditorCamera'
 import {getEditorSheet, getEditorSheetObject} from './editorStuff'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
+import {InfiniteGridHelper} from '../InfiniteGridHelper'
 
 const GlobalStyle = createGlobalStyle`
   :host {
@@ -50,9 +51,11 @@ const EditorScene: React.FC<{snapshotEditorSheet: ISheet; paneId: string}> = ({
   const showGrid = useVal(editorObject?.props.viewport.showGrid) ?? true
   const showAxes = useVal(editorObject?.props.viewport.showAxes) ?? true
 
+  const grid = useMemo(() => new InfiniteGridHelper(), [])
+
   return (
     <>
-      {showGrid && <gridHelper args={[20, 20, '#6e6e6e', '#4a4b4b']} />}
+      {showGrid && <primitive object={grid} />}
       {showAxes && <axesHelper args={[500]} />}
       {editorCamera}
 
