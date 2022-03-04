@@ -3,6 +3,7 @@ import getStudio from '@theatre/studio/getStudio'
 import {cmdIsDown} from '@theatre/studio/utils/keyboardUtils'
 import {getSelectedSequence} from '@theatre/studio/selectors'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
+import {val} from '@theatre/dataverse'
 
 export default function useKeyboardShortcuts() {
   const studio = getStudio()
@@ -40,7 +41,20 @@ export default function useKeyboardShortcuts() {
             seq.pause()
           } else {
             // TODO: use focusRange if it's set
-            seq.play({iterationCount: 1000})
+            const {projectId, sheetId} = seq.address
+            const focusRange = val(
+              getStudio().atomP.ahistoric.projects.stateByProjectId[projectId]
+                .stateBySheetId[sheetId].sequence.focusRange,
+            )
+
+            if (typeof focusRange === 'undefined') {
+              seq.play({iterationCount: 1000})
+            } else {
+              seq.play({
+                iterationCount: 1000,
+                range: [focusRange.range.start, focusRange.range.end],
+              })
+            }
           }
         } else {
           return
