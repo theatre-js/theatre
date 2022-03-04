@@ -35,9 +35,7 @@ const FocusRangeContainer = styled(FocusRange)`
   right: 0;
   height: ${topStripHeight}px;
   box-sizing: border-box;
-  background: rgba(256, 0, 0, 1);
-  pointer-events: none;
-  user-select: none;
+  /* background: rgba(256, 0, 0, 1); */
 `
 
 const TopStrip: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
