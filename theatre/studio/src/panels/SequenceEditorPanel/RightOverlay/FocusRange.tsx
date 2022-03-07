@@ -12,6 +12,7 @@ import type {$IntentionalAny, IRange} from '@theatre/shared/utils/types'
 import {clamp} from 'lodash-es'
 import getStudio from '@theatre/studio/getStudio'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
+import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 
 export const focusRangeTheme = {
   active: {
@@ -210,25 +211,45 @@ const FocusRangeStrip: React.FC<{
     null,
   )
 
+  const [contextMenu] = useContextMenu(rangeStripNode, {
+    items: () => {
+      return [
+        {
+          label: 'Delete focus range',
+          callback: () => {
+            getStudio()
+              .tempTransaction(({stateEditors}) => {
+                stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.set(
+                  {
+                    ...sheet.address,
+                    range: {start: 0, end: sequence.length},
+                    enabled: false,
+                  },
+                )
+              })
+              .commit()
+          },
+        },
+      ]
+    },
+  })
+
   const gestureHandlers = useMemo((): Parameters<typeof useDrag>[1] => {
     let scaledSpaceToUnitSpace: typeof layoutP.scaledSpace.toUnitSpace.$$__pointer_type
     const defaultRange = {start: 0, end: sequence.length}
-    let focusRangeEnabled = existingRangeD.getValue()?.enabled || false
-    const focusRangeObject = {
-      range: existingRangeD.getValue()?.range || defaultRange,
-      enabled: existingRangeD.getValue()?.enabled || false,
-    }
-    let startPosBeforeDrag = focusRangeObject.range.start
-    let endPosBeforeDrag = focusRangeObject.range.end
-    let tempTransaction: CommitOrDiscard | undefined
+    let range: IRange
+    let focusRangeEnabled: boolean,
+      startPosBeforeDrag: number,
+      endPosBeforeDrag: number,
+      tempTransaction: CommitOrDiscard | undefined
     let dragHappened = false
     let createRange = false
 
     return {
       onDragStart(event) {
         scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
-        focusRangeObject.range =
-          existingRangeD.getValue()?.range || defaultRange
+        range = existingRangeD.getValue()?.range || defaultRange
+        focusRangeEnabled = existingRangeD.getValue()?.enabled || false
 
         if (event.shiftKey && focusRangeEnabled === false) {
           focusRangeEnabled = true
@@ -251,8 +272,8 @@ const FocusRangeStrip: React.FC<{
             })
             .commit()
         } else {
-          startPosBeforeDrag = focusRangeObject.range.start
-          endPosBeforeDrag = focusRangeObject.range.end
+          startPosBeforeDrag = range.start
+          endPosBeforeDrag = range.end
         }
 
         dragHappened = false
@@ -260,8 +281,7 @@ const FocusRangeStrip: React.FC<{
       },
       onDrag(dx) {
         dragHappened = true
-        focusRangeObject.range =
-          existingRangeD.getValue()?.range || defaultRange
+        range = existingRangeD.getValue()?.range || defaultRange
 
         const deltaPos = scaledSpaceToUnitSpace(dx)
 
@@ -325,18 +345,21 @@ const FocusRangeStrip: React.FC<{
     )
 
     return (
-      <RangeStrip
-        ref={rangeStripRef as $IntentionalAny}
-        style={{
-          transform: `translate3d(${startPosInClippedSpace}px, 0, 0)`,
-          width: endPosInClippedSpace - startPosInClippedSpace,
-          backgroundColor: existingRange.enabled
-            ? focusRangeTheme.active.backgroundColor
-            : focusRangeTheme.inactive.backgroundColor,
-        }}
-      />
+      <>
+        <RangeStrip
+          ref={rangeStripRef as $IntentionalAny}
+          style={{
+            transform: `translate3d(${startPosInClippedSpace}px, 0, 0)`,
+            width: endPosInClippedSpace - startPosInClippedSpace,
+            backgroundColor: existingRange.enabled
+              ? focusRangeTheme.active.backgroundColor
+              : focusRangeTheme.inactive.backgroundColor,
+          }}
+        />
+        {contextMenu}
+      </>
     )
-  }, [layoutP, rangeStripRef, existingRangeD])
+  }, [layoutP, rangeStripRef, existingRangeD, contextMenu])
 }
 
 const FocusRange: React.FC<{
