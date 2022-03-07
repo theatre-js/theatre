@@ -359,11 +359,12 @@ namespace stateEditors {
                 export function set(
                   p: WithoutSheetInstance<SheetAddress> & {
                     range: IRange
+                    enabled: boolean
                   },
                 ) {
                   stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence._ensure(
                     p,
-                  ).focusRange = {range: p.range}
+                  ).focusRange = {range: p.range, enabled: p.enabled}
                 }
 
                 export function unset(p: WithoutSheetInstance<SheetAddress>) {

@@ -8,7 +8,7 @@ import {val} from '@theatre/dataverse'
 import styled from 'styled-components'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
-import type {$IntentionalAny} from '@theatre/shared/utils/types'
+import type {$IntentionalAny, IRange} from '@theatre/shared/utils/types'
 import {clamp} from 'lodash-es'
 import getStudio from '@theatre/studio/getStudio'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
@@ -22,7 +22,10 @@ export const focusRangeTheme = {
   },
 }
 
-const focusRangeThumbWidth = 10
+// TODO: find a solution for re-using the topStripHeight from the `TopStrip.tsx` file
+const topStripHeight = 20
+
+export const focusRangeThumbWidth = 10
 
 const Handler = styled.div`
   content: ' ';
@@ -41,7 +44,17 @@ const RangeStrip = styled.div`
   height: 100%;
   cursor: ew-resize;
   ${pointerEventsAutoInNormalMode};
-  left: -${focusRangeThumbWidth / 2}px;
+`
+
+const Container = styled.div`
+  position: absolute;
+  top: ${topStripHeight}px;
+  left: 0;
+  right: 0;
+  height: 10px;
+  background-color: ${focusRangeTheme.inactive.backgroundColor};
+  box-sizing: border-box;
+  overflow: hidden;
 `
 
 function clampRange(
@@ -68,8 +81,8 @@ function clampRange(
 
 const FocusRangeThumb: React.FC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
-  type: 'start' | 'end'
-}> = ({layoutP, type}) => {
+  thumbType: keyof IRange
+}> = ({layoutP, thumbType}) => {
   const [thumbRef, thumbNode] = useRefAndState<HTMLElement | null>(null)
 
   const existingRangeD = useMemo(
@@ -87,36 +100,39 @@ const FocusRangeThumb: React.FC<{
 
   const sheet = val(layoutP.sheet)
   let sequence = sheet.getSequence()
+  const focusRangeEnabled = existingRangeD.getValue()?.enabled || false
 
   const gestureHandlers = useMemo((): Parameters<typeof useDrag>[1] => {
     let scaledSpaceToUnitSpace: typeof layoutP.scaledSpace.toUnitSpace.$$__pointer_type
     const defaultFocusRange = {start: 0, end: sequence.length}
-    let focusRange = existingRangeD.getValue()?.range || defaultFocusRange
-    let posBeforeDrag = focusRange[type]
+    let range = existingRangeD.getValue()?.range || defaultFocusRange
+    let focusRangeEnabled: boolean
+    let posBeforeDrag =
+      typeof range !== 'undefined'
+        ? range[thumbType]
+        : defaultFocusRange[thumbType]
     let tempTransaction: CommitOrDiscard | undefined
     let dragHappened = false
 
     return {
       onDragStart() {
+        focusRangeEnabled = existingRangeD.getValue()?.enabled || false
         dragHappened = false
         sequence = val(layoutP.sheet).getSequence()
         posBeforeDrag =
-          existingRangeD.getValue()?.range[type] || defaultFocusRange[type]
+          existingRangeD.getValue()?.range[thumbType] ||
+          defaultFocusRange[thumbType]
         scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
       },
-      onDrag(dx, _, event) {
+      onDrag(dx) {
         dragHappened = true
-        focusRange = existingRangeD.getValue()?.range || defaultFocusRange
+        range = existingRangeD.getValue()?.range || defaultFocusRange
 
         const deltaPos = scaledSpaceToUnitSpace(dx)
         const newPosition =
-          type === 'start'
-            ? clamp(posBeforeDrag + deltaPos, 0, focusRange['end'])
-            : clamp(
-                posBeforeDrag + deltaPos,
-                focusRange['start'],
-                sequence.length,
-              )
+          thumbType === 'start'
+            ? clamp(posBeforeDrag + deltaPos, 0, range['end'])
+            : clamp(posBeforeDrag + deltaPos, range['start'], sequence.length)
 
         if (tempTransaction) {
           tempTransaction.discard()
@@ -126,60 +142,54 @@ const FocusRangeThumb: React.FC<{
           stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.set(
             {
               ...sheet.address,
-              range: {...focusRange, [type]: newPosition},
+              range: {...range, [thumbType]: newPosition},
+              enabled: focusRangeEnabled,
             },
           )
         })
       },
       onDragEnd() {
-        if (dragHappened) {
-          if (tempTransaction) {
-            tempTransaction.commit()
-          }
-        } else {
-          if (tempTransaction) {
-            tempTransaction.discard()
-          }
+        if (dragHappened && tempTransaction !== undefined) {
+          tempTransaction.commit()
+        } else if (tempTransaction) {
+          tempTransaction.discard()
         }
         tempTransaction = undefined
       },
-      lockCursorTo: type === 'start' ? 'w-resize' : 'e-resize',
+      lockCursorTo: thumbType === 'start' ? 'w-resize' : 'e-resize',
     }
   }, [sheet])
 
   useDrag(thumbNode, gestureHandlers)
 
   return usePrism(() => {
-    let existingRange = existingRangeD.getValue() || {
+    const existingRange = existingRangeD.getValue() || {
       range: {start: 0, end: sequence.length},
+      enabled: false,
     }
-    // TODO: what should be displayed when the focusRange is not set?
-
-    const position = existingRange.range[type]
+    const position = existingRange.range[thumbType]
 
     const posInClippedSpace = val(layoutP.clippedSpace.fromUnitSpace)(position)
 
-    return (
+    return focusRangeEnabled ? (
       <Handler
         ref={thumbRef as $IntentionalAny}
         style={{
           transform: `translate3d(${posInClippedSpace}px, 0, 0)`,
-          cursor: type === 'start' ? 'w-resize' : 'e-resize',
-          /* left:
-            type === 'start'
-              ? `${focusRangeThumbWidth / 2}px`
-              : `-${focusRangeThumbWidth / 2}px`, */
-          // left: 0,
+          cursor: thumbType === 'start' ? 'w-resize' : 'e-resize',
+          // TODO: remove the next line later
+          background: 'blue',
         }}
       />
+    ) : (
+      <></>
     )
-  }, [layoutP, thumbRef, existingRangeD])
+  }, [layoutP, thumbRef, existingRangeD, focusRangeEnabled])
 }
 
 const FocusRangeStrip: React.FC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
 }> = ({layoutP}) => {
-  console.log('rerendered')
   const existingRangeD = useMemo(
     () =>
       prism(() => {
@@ -196,39 +206,74 @@ const FocusRangeStrip: React.FC<{
   const sheet = val(layoutP.sheet)
   let sequence = sheet.getSequence()
 
-  const [rangeSripRef, rangeStripNode] = useRefAndState<HTMLElement | null>(
+  const [rangeStripRef, rangeStripNode] = useRefAndState<HTMLElement | null>(
     null,
   )
 
   const gestureHandlers = useMemo((): Parameters<typeof useDrag>[1] => {
     let scaledSpaceToUnitSpace: typeof layoutP.scaledSpace.toUnitSpace.$$__pointer_type
-    const defaultFocusRange = {start: 0, end: sequence.length}
-    let focusRange = existingRangeD.getValue()?.range || defaultFocusRange
-    let startPosBeforeDrag = focusRange.start
-    let endPosBeforeDrag = focusRange.end
-    let width = focusRange.end - focusRange.start
+    const defaultRange = {start: 0, end: sequence.length}
+    let focusRangeEnabled = existingRangeD.getValue()?.enabled || false
+    const focusRangeObject = {
+      range: existingRangeD.getValue()?.range || defaultRange,
+      enabled: existingRangeD.getValue()?.enabled || false,
+    }
+    let startPosBeforeDrag = focusRangeObject.range.start
+    let endPosBeforeDrag = focusRangeObject.range.end
     let tempTransaction: CommitOrDiscard | undefined
     let dragHappened = false
+    let createRange = false
 
     return {
-      onDragStart() {
+      onDragStart(event) {
+        scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
+        focusRangeObject.range =
+          existingRangeD.getValue()?.range || defaultRange
+
+        if (event.shiftKey && focusRangeEnabled === false) {
+          focusRangeEnabled = true
+          createRange = true
+
+          const targetElement: HTMLElement = event.target as HTMLElement
+          const rect = targetElement!.getBoundingClientRect()
+          startPosBeforeDrag = scaledSpaceToUnitSpace(event.clientX - rect.left)
+          endPosBeforeDrag = startPosBeforeDrag
+
+          getStudio()
+            .tempTransaction(({stateEditors}) => {
+              stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.set(
+                {
+                  ...sheet.address,
+                  range: {start: startPosBeforeDrag, end: endPosBeforeDrag},
+                  enabled: focusRangeEnabled,
+                },
+              )
+            })
+            .commit()
+        } else {
+          startPosBeforeDrag = focusRangeObject.range.start
+          endPosBeforeDrag = focusRangeObject.range.end
+        }
+
         dragHappened = false
         sequence = val(layoutP.sheet).getSequence()
-        startPosBeforeDrag =
-          existingRangeD.getValue()?.range.start || defaultFocusRange.start
-        endPosBeforeDrag =
-          existingRangeD.getValue()?.range.end || defaultFocusRange.end
-        scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
       },
-      onDrag(dx, _, event) {
+      onDrag(dx) {
         dragHappened = true
-        focusRange = existingRangeD.getValue()?.range || defaultFocusRange
-        console.log(focusRange.end)
+        focusRangeObject.range =
+          existingRangeD.getValue()?.range || defaultRange
 
         const deltaPos = scaledSpaceToUnitSpace(dx)
 
-        const [newStartPosition, newEndPosition] = clampRange(
-          startPosBeforeDrag + deltaPos,
+        let newStartPosition: number, newEndPosition: number
+
+        let start = startPosBeforeDrag
+        if (!createRange) {
+          start += deltaPos
+        }
+
+        ;[newStartPosition, newEndPosition] = clampRange(
+          start,
           endPosBeforeDrag + deltaPos,
           0,
           sequence.length,
@@ -246,19 +291,17 @@ const FocusRangeStrip: React.FC<{
                 start: newStartPosition,
                 end: newEndPosition,
               },
+              enabled: focusRangeEnabled,
             },
           )
         })
       },
       onDragEnd() {
-        if (dragHappened) {
-          if (tempTransaction) {
-            tempTransaction.commit()
-          }
-        } else {
-          if (tempTransaction) {
-            tempTransaction.discard()
-          }
+        createRange = false
+        if (dragHappened && tempTransaction !== undefined) {
+          tempTransaction.commit()
+        } else if (tempTransaction) {
+          tempTransaction.discard()
         }
         tempTransaction = undefined
       },
@@ -271,6 +314,7 @@ const FocusRangeStrip: React.FC<{
   return usePrism(() => {
     let existingRange = existingRangeD.getValue() || {
       range: {start: 0, end: sequence.length},
+      enabled: false,
     }
 
     const startPosInClippedSpace = val(layoutP.clippedSpace.fromUnitSpace)(
@@ -282,25 +326,28 @@ const FocusRangeStrip: React.FC<{
 
     return (
       <RangeStrip
-        ref={rangeSripRef as $IntentionalAny}
+        ref={rangeStripRef as $IntentionalAny}
         style={{
           transform: `translate3d(${startPosInClippedSpace}px, 0, 0)`,
           width: endPosInClippedSpace - startPosInClippedSpace,
+          backgroundColor: existingRange.enabled
+            ? focusRangeTheme.active.backgroundColor
+            : focusRangeTheme.inactive.backgroundColor,
         }}
       />
     )
-  }, [layoutP, rangeStripNode, existingRangeD])
+  }, [layoutP, rangeStripRef, existingRangeD])
 }
 
 const FocusRange: React.FC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
 }> = ({layoutP}) => {
   return (
-    <>
+    <Container>
       <FocusRangeStrip layoutP={layoutP} />
-      <FocusRangeThumb type="start" layoutP={layoutP} />
-      <FocusRangeThumb type="end" layoutP={layoutP} />
-    </>
+      <FocusRangeThumb thumbType="start" layoutP={layoutP} />
+      <FocusRangeThumb thumbType="end" layoutP={layoutP} />
+    </Container>
   )
 }
 

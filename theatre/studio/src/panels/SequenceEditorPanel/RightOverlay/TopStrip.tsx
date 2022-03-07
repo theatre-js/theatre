@@ -7,7 +7,7 @@ import StampsGrid from '@theatre/studio/panels/SequenceEditorPanel/FrameGrid/Sta
 import PanelDragZone from '@theatre/studio/panels/BasePanel/PanelDragZone'
 import {attributeNameThatLocksFramestamp} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
-import FocusRange, {focusRangeTheme} from './FocusRange'
+import FocusRange from './FocusRange'
 
 export const topStripHeight = 20
 
@@ -28,18 +28,6 @@ const Container = styled(PanelDragZone)`
   ${pointerEventsAutoInNormalMode};
 `
 
-const FocusRangeContainer = styled.div`
-  position: absolute;
-  /* t */
-  op: ${topStripHeight}px;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: ${topStripHeight / 2}px;
-  background-color: ${focusRangeTheme.inactive.backgroundColor};
-  box-sizing: border-box;
-`
-
 const TopStrip: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
   layoutP,
 }) => {
@@ -50,9 +38,7 @@ const TopStrip: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
       <Container {...{[attributeNameThatLocksFramestamp]: 'hide'}}>
         <StampsGrid layoutP={layoutP} width={width} height={topStripHeight} />
       </Container>
-      <FocusRangeContainer>
-        <FocusRange layoutP={layoutP} />
-      </FocusRangeContainer>
+      <FocusRange layoutP={layoutP} />
     </>
   )
 }

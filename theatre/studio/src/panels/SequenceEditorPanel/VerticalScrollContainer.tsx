@@ -18,6 +18,7 @@ const Container = styled.div`
   }
 
   scrollbar-width: none;
+  margin-top: 16px;
 `
 
 type ReceiveVerticalWheelEventFn = (ev: WheelEvent) => void

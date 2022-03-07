@@ -56,9 +56,7 @@ export default function useKeyboardShortcuts() {
                 iterationCount: 1000,
                 range: [start, end],
               })
-              console.log('in', seq.position, focusRange)
             } else {
-              console.log(seq.position, focusRange)
               seq.play({iterationCount: 1000})
             }
           }

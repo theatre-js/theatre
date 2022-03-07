@@ -37,6 +37,7 @@ export type StudioAhistoricState = {
                * If that is not feasible, then we should write a migration script.
                */
               focusRange?: {
+                enabled: boolean
                 range: IRange
               }
             }
