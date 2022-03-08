@@ -1,6 +1,7 @@
 import {voidFn} from '@theatre/shared/utils'
 import React, {createContext, useCallback, useContext, useRef} from 'react'
 import styled from 'styled-components'
+import {focusRangeTheme} from './RightOverlay/FocusRange'
 import {zIndexes} from './SequenceEditorPanel'
 
 const Container = styled.div`
@@ -18,7 +19,7 @@ const Container = styled.div`
   }
 
   scrollbar-width: none;
-  margin-top: 16px;
+  margin-top: ${focusRangeTheme.height + 5}px;
 `
 
 type ReceiveVerticalWheelEventFn = (ev: WheelEvent) => void

@@ -21,6 +21,8 @@ export const focusRangeTheme = {
   inactive: {
     backgroundColor: '#395209',
   },
+  height: 5,
+  thumbWidth: 10,
 }
 
 // TODO: find a solution for re-using the topStripHeight from the `TopStrip.tsx` file
@@ -31,11 +33,11 @@ export const focusRangeThumbWidth = 10
 const Handler = styled.div`
   content: ' ';
   background-color: ${focusRangeTheme.active.backgroundColor};
-  width: ${focusRangeThumbWidth};
+  width: ${focusRangeTheme.thumbWidth};
   height: 100%;
   position: absolute;
   ${pointerEventsAutoInNormalMode};
-  left: -${focusRangeThumbWidth / 2}px;
+  left: -${focusRangeTheme.thumbWidth / 2}px;
 `
 
 const RangeStrip = styled.div`
@@ -52,7 +54,7 @@ const Container = styled.div`
   top: ${topStripHeight}px;
   left: 0;
   right: 0;
-  height: 10px;
+  height: ${focusRangeTheme.height};
   background-color: ${focusRangeTheme.inactive.backgroundColor};
   box-sizing: border-box;
   overflow: hidden;

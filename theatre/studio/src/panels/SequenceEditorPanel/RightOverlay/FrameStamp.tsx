@@ -11,12 +11,13 @@ import {
   FrameStampPositionType,
   useFrameStampPositionD,
 } from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
+import {focusRangeTheme} from './FocusRange'
 
 const Container = styled.div`
   position: absolute;
   top: 0;
   left: 0;
-  margin-top: 16px;
+  margin-top: ${focusRangeTheme.height + 5}px;
 `
 
 const Label = styled.div`
