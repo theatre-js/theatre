@@ -3,7 +3,8 @@ import getStudio from '@theatre/studio/getStudio'
 import {cmdIsDown} from '@theatre/studio/utils/keyboardUtils'
 import {getSelectedSequence} from '@theatre/studio/selectors'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
-import {valueDerivation} from '@theatre/dataverse'
+import {prism, val} from '@theatre/dataverse'
+import type {IPlaybackRange} from '@theatre/core/sequences/Sequence'
 
 export default function useKeyboardShortcuts() {
   const studio = getStudio()
@@ -41,16 +42,50 @@ export default function useKeyboardShortcuts() {
             seq.pause()
           } else {
             const {projectId, sheetId} = seq.address
-            const focusRangeD = valueDerivation(
-              getStudio().atomP.ahistoric.projects.stateByProjectId[projectId]
-                .stateBySheetId[sheetId].sequence.focusRange,
-            )
+            const focusRangeD = prism((): IPlaybackRange => {
+              const focusRange = val(
+                getStudio().atomP.ahistoric.projects.stateByProjectId[projectId]
+                  .stateBySheetId[sheetId].sequence.focusRange,
+              )
 
-            seq.playDynamicRange(
-              focusRangeD.map((x) =>
-                x?.enabled === true ? [x.range.start, x.range.end] : undefined,
-              ),
-            )
+              const shouldFollowFocusRange = prism.memo<boolean>(
+                'shouldFollowFocusRange',
+                (): boolean => {
+                  // if there is a focusRange
+                  // what if there is one, but disabled?
+                  // if there is no focusRange
+
+                  // first, let's determine if during this plyaback, we want to use the focusRange at all or not
+                  const posBeforePlay = seq.position
+                  if (focusRange) {
+                    const withinRange =
+                      posBeforePlay >= focusRange.range.start &&
+                      posBeforePlay <= focusRange.range.end
+                    if (focusRange.enabled) {
+                      if (withinRange) {
+                        return true
+                      } else {
+                        return false
+                      }
+                    } else {
+                      return true
+                    }
+                  } else {
+                    return true
+                  }
+                },
+                [],
+              )
+
+              if (shouldFollowFocusRange && focusRange && focusRange.enabled) {
+                return [focusRange.range.start, focusRange.range.end]
+              } else {
+                const sequenceLength = val(seq.pointer.length)
+                return [0, sequenceLength]
+              }
+            })
+
+            seq.playDynamicRange(focusRangeD)
           }
         } else {
           return
