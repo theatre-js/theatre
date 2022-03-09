@@ -291,12 +291,19 @@ const FocusRangeStrip: React.FC<{
         let newStartPosition: number, newEndPosition: number
 
         let start = startPosBeforeDrag
+        let end = endPosBeforeDrag + deltaPos
+
         if (createRange === false) {
           start += deltaPos
         }
+
+        if (end < start) {
+          end = start
+        }
+
         ;[newStartPosition, newEndPosition] = clampRange(
           start,
-          endPosBeforeDrag + deltaPos,
+          end,
           0,
           sequence.length,
           createRange,
