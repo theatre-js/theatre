@@ -65,6 +65,7 @@ function clampRange(
   end: number,
   minWidth: number,
   maxWidth: number,
+  createRange: boolean = false,
 ): [number, number] {
   let overflow = 0
 
@@ -76,7 +77,7 @@ function clampRange(
     overflow = maxWidth - end
   }
 
-  start += overflow
+  if (createRange === false) start += overflow
   end += overflow
 
   return [start, end]
@@ -290,15 +291,15 @@ const FocusRangeStrip: React.FC<{
         let newStartPosition: number, newEndPosition: number
 
         let start = startPosBeforeDrag
-        if (!createRange) {
+        if (createRange === false) {
           start += deltaPos
         }
-
         ;[newStartPosition, newEndPosition] = clampRange(
           start,
           endPosBeforeDrag + deltaPos,
           0,
           sequence.length,
+          createRange,
         )
 
         if (tempTransaction) {
