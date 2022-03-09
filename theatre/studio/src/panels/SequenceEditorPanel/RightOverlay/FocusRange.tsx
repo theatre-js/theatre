@@ -348,8 +348,15 @@ const FocusRangeStrip: React.FC<{
 
     return (
       <>
+        {contextMenu}
         <RangeStrip
           ref={rangeStripRef as $IntentionalAny}
+          onContextMenuCapture={(e) => {
+            if (existingRange.enabled !== true) {
+              e.preventDefault()
+              e.stopPropagation()
+            }
+          }}
           style={{
             transform: `translate3d(${startPosInClippedSpace}px, 0, 0)`,
             width: endPosInClippedSpace - startPosInClippedSpace,
@@ -358,7 +365,6 @@ const FocusRangeStrip: React.FC<{
               : focusRangeTheme.inactive.backgroundColor,
           }}
         />
-        {contextMenu}
       </>
     )
   }, [layoutP, rangeStripRef, existingRangeD, contextMenu])
