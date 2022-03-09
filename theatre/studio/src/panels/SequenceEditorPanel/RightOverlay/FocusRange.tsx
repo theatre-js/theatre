@@ -222,11 +222,9 @@ const FocusRangeStrip: React.FC<{
           callback: () => {
             getStudio()
               .tempTransaction(({stateEditors}) => {
-                stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.set(
+                stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.unset(
                   {
                     ...sheet.address,
-                    range: {start: 0, end: sequence.length},
-                    enabled: false,
                   },
                 )
               })
