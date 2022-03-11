@@ -167,18 +167,18 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
     },
   )
 
+  const scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
+
   const gestureHandlers = useMemo((): Parameters<typeof useDrag>[1] => {
     const setIsSeeking = val(layoutP.seeker.setIsSeeking)
 
     let posBeforeSeek = 0
     let sequence: Sequence
-    let scaledSpaceToUnitSpace: typeof layoutP.scaledSpace.toUnitSpace.$$__pointer_type
 
     return {
       onDragStart() {
         sequence = val(layoutP.sheet).getSequence()
         posBeforeSeek = sequence.position
-        scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
         setIsSeeking(true)
       },
       onDrag(dx, _, event) {
@@ -210,7 +210,7 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
       },
       lockCursorTo: 'ew-resize',
     }
-  }, [])
+  }, [scaledSpaceToUnitSpace])
 
   useDrag(thumbNode, gestureHandlers)
 

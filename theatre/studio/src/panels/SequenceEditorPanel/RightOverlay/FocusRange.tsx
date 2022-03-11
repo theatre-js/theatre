@@ -15,11 +15,13 @@ import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 
 export const focusRangeTheme = {
-  active: {
+  enabled: {
     backgroundColor: '#70a904',
+    opacity: 0.3,
   },
-  inactive: {
-    backgroundColor: '#395209',
+  disabled: {
+    backgroundColor: '#70a904',
+    opacity: 0.15,
   },
   height: 5,
   thumbWidth: 10,
@@ -32,7 +34,7 @@ export const focusRangeThumbWidth = 10
 
 const Handler = styled.div`
   content: ' ';
-  background-color: ${focusRangeTheme.active.backgroundColor};
+  background-color: ${focusRangeTheme.enabled.backgroundColor};
   width: ${focusRangeTheme.thumbWidth};
   height: 100%;
   position: absolute;
@@ -41,21 +43,24 @@ const Handler = styled.div`
 `
 
 const RangeStrip = styled.div`
-  /* background-color: ${focusRangeTheme.active.backgroundColor}; */
-  background-color: blue;
+  /* background-color: ${focusRangeTheme.enabled.backgroundColor}; */
   position: absolute;
   height: 100%;
-  cursor: ew-resize;
+  opacity: ${focusRangeTheme.enabled.opacity};
+  /* transition: opacity 150ms; */
+  /* opacity: ${focusRangeTheme.disabled.opacity}; */
+  /* TODO: find out the line below doesn't work when the strip is being dragged */
+  /* &:hover {
+    opacity: ${focusRangeTheme.enabled.opacity};
+  } */
   ${pointerEventsAutoInNormalMode};
 `
 
 const Container = styled.div`
   position: absolute;
-  top: ${topStripHeight}px;
+  height: ${topStripHeight};
   left: 0;
   right: 0;
-  height: ${focusRangeTheme.height};
-  background-color: ${focusRangeTheme.inactive.backgroundColor};
   box-sizing: border-box;
   overflow: hidden;
 `
@@ -103,11 +108,13 @@ const FocusRangeThumb: React.FC<{
   )
 
   const sheet = val(layoutP.sheet)
+
+  const scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
+
   let sequence = sheet.getSequence()
   const focusRangeEnabled = existingRangeD.getValue()?.enabled || false
 
   const gestureHandlers = useMemo((): Parameters<typeof useDrag>[1] => {
-    let scaledSpaceToUnitSpace: typeof layoutP.scaledSpace.toUnitSpace.$$__pointer_type
     const defaultFocusRange = {start: 0, end: sequence.length}
     let range = existingRangeD.getValue()?.range || defaultFocusRange
     let focusRangeEnabled: boolean
@@ -126,7 +133,6 @@ const FocusRangeThumb: React.FC<{
         posBeforeDrag =
           existingRangeD.getValue()?.range[thumbType] ||
           defaultFocusRange[thumbType]
-        scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
       },
       onDrag(dx) {
         dragHappened = true
@@ -162,7 +168,7 @@ const FocusRangeThumb: React.FC<{
       },
       lockCursorTo: thumbType === 'start' ? 'w-resize' : 'e-resize',
     }
-  }, [sheet])
+  }, [sheet, scaledSpaceToUnitSpace])
 
   useDrag(thumbNode, gestureHandlers)
 
@@ -216,6 +222,7 @@ const FocusRangeStrip: React.FC<{
 
   const [contextMenu] = useContextMenu(rangeStripNode, {
     items: () => {
+      const existingRange = existingRangeD.getValue()
       return [
         {
           label: 'Delete focus range',
@@ -231,125 +238,171 @@ const FocusRangeStrip: React.FC<{
               .commit()
           },
         },
+        {
+          label: existingRange?.enabled
+            ? 'Disable focus range'
+            : 'Enable focus range',
+          callback: () => {
+            if (existingRange !== undefined) {
+              getStudio()
+                .tempTransaction(({stateEditors}) => {
+                  stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.set(
+                    {
+                      ...sheet.address,
+                      range: existingRange.range,
+                      enabled: !existingRange.enabled,
+                    },
+                  )
+                })
+                .commit()
+            }
+          },
+        },
       ]
     },
   })
 
+  const scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
+
   const gestureHandlers = useMemo((): Parameters<typeof useDrag>[1] => {
-    let scaledSpaceToUnitSpace: typeof layoutP.scaledSpace.toUnitSpace.$$__pointer_type
-    const defaultRange = {start: 0, end: sequence.length}
-    let range: IRange
-    let focusRangeEnabled: boolean,
-      startPosBeforeDrag: number,
+    let startPosBeforeDrag: number,
       endPosBeforeDrag: number,
       tempTransaction: CommitOrDiscard | undefined
     let dragHappened = false
     let createRange = false
+    let existingRange: {enabled: boolean; range: IRange<number>} | undefined
 
     return {
       onDragStart(event) {
-        scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
-        range = existingRangeD.getValue()?.range || defaultRange
-        focusRangeEnabled = existingRangeD.getValue()?.enabled || false
+        existingRange = existingRangeD.getValue()
 
-        if (event.shiftKey && focusRangeEnabled === false) {
-          focusRangeEnabled = true
+        if (event.shiftKey && existingRange === undefined) {
           createRange = true
 
           const targetElement: HTMLElement = event.target as HTMLElement
           const rect = targetElement!.getBoundingClientRect()
-          startPosBeforeDrag = scaledSpaceToUnitSpace(event.clientX - rect.left)
-          endPosBeforeDrag = startPosBeforeDrag
+          const tempPos = scaledSpaceToUnitSpace(event.clientX - rect.left)
+          if (tempPos <= sequence.length) {
+            startPosBeforeDrag = tempPos
+            endPosBeforeDrag = startPosBeforeDrag
 
-          getStudio()
-            .tempTransaction(({stateEditors}) => {
-              stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.set(
-                {
-                  ...sheet.address,
-                  range: {start: startPosBeforeDrag, end: endPosBeforeDrag},
-                  enabled: focusRangeEnabled,
-                },
-              )
-            })
-            .commit()
-        } else {
-          startPosBeforeDrag = range.start
-          endPosBeforeDrag = range.end
+            getStudio()
+              .tempTransaction(({stateEditors}) => {
+                stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.set(
+                  {
+                    ...sheet.address,
+                    range: {start: startPosBeforeDrag, end: endPosBeforeDrag},
+                    enabled: existingRange?.enabled || true,
+                  },
+                )
+              })
+              .commit()
+          }
+        } else if (existingRange?.enabled === true) {
+          startPosBeforeDrag = existingRange.range.start
+          endPosBeforeDrag = existingRange.range.end
         }
 
-        dragHappened = false
-        sequence = val(layoutP.sheet).getSequence()
+        if (existingRange?.enabled === true) {
+          dragHappened = false
+          sequence = val(layoutP.sheet).getSequence()
+        }
       },
       onDrag(dx) {
-        dragHappened = true
-        range = existingRangeD.getValue()?.range || defaultRange
+        existingRange = existingRangeD.getValue()
+        if (existingRange?.enabled) {
+          dragHappened = true
+          const deltaPos = scaledSpaceToUnitSpace(dx)
 
-        const deltaPos = scaledSpaceToUnitSpace(dx)
+          let newStartPosition: number, newEndPosition: number
 
-        let newStartPosition: number, newEndPosition: number
+          let start = startPosBeforeDrag
+          let end = endPosBeforeDrag + deltaPos
 
-        let start = startPosBeforeDrag
-        let end = endPosBeforeDrag + deltaPos
+          if (createRange === false) {
+            start += deltaPos
+          }
 
-        if (createRange === false) {
-          start += deltaPos
-        }
+          if (end < start) {
+            end = start
+          }
 
-        if (end < start) {
-          end = start
-        }
-
-        ;[newStartPosition, newEndPosition] = clampRange(
-          start,
-          end,
-          0,
-          sequence.length,
-          createRange,
-        )
-
-        if (tempTransaction) {
-          tempTransaction.discard()
-        }
-
-        tempTransaction = getStudio().tempTransaction(({stateEditors}) => {
-          stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.set(
-            {
-              ...sheet.address,
-              range: {
-                start: newStartPosition,
-                end: newEndPosition,
-              },
-              enabled: focusRangeEnabled,
-            },
+          ;[newStartPosition, newEndPosition] = clampRange(
+            start,
+            end,
+            0,
+            sequence.length,
+            createRange,
           )
-        })
+
+          if (tempTransaction) {
+            tempTransaction.discard()
+          }
+
+          tempTransaction = getStudio().tempTransaction(({stateEditors}) => {
+            stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.set(
+              {
+                ...sheet.address,
+                range: {
+                  start: newStartPosition,
+                  end: newEndPosition,
+                },
+                enabled: existingRange?.enabled || true,
+              },
+            )
+          })
+        }
       },
       onDragEnd() {
-        createRange = false
-        if (dragHappened && tempTransaction !== undefined) {
-          tempTransaction.commit()
-        } else if (tempTransaction) {
-          tempTransaction.discard()
+        if (existingRange?.enabled) {
+          createRange = false
+          if (dragHappened && tempTransaction !== undefined) {
+            tempTransaction.commit()
+          } else if (tempTransaction) {
+            tempTransaction.discard()
+          }
+          tempTransaction = undefined
         }
-        tempTransaction = undefined
       },
-      lockCursorTo: 'ew-resize',
+      lockCursorTo: 'grabbing',
     }
-  }, [sheet])
+  }, [sheet, scaledSpaceToUnitSpace])
 
   useDrag(rangeStripNode, gestureHandlers)
 
   return usePrism(() => {
-    let existingRange = existingRangeD.getValue() || {
-      range: {start: 0, end: sequence.length},
-      enabled: false,
+    const existingRange = existingRangeD.getValue()
+
+    const range = existingRange?.range || {start: 0, end: sequence.length}
+
+    const stripes = `repeating-linear-gradient(
+      45deg,
+      ${focusRangeTheme.disabled.backgroundColor},
+      ${focusRangeTheme.disabled.backgroundColor} 7px,
+      rgba(0, 0, 0, 0) 7px,
+      rgba(0, 0, 0, 0) 14px
+    )`
+
+    let background = 'transparent'
+
+    let cursor = 'default'
+
+    if (existingRange !== undefined) {
+      if (existingRange.enabled === true) {
+        background = focusRangeTheme.enabled.backgroundColor
+        cursor = 'grab'
+      } else {
+        background = stripes
+        cursor = 'default'
+      }
     }
 
     const startPosInClippedSpace = val(layoutP.clippedSpace.fromUnitSpace)(
-      existingRange.range.start,
+      range.start,
     )
+
     const endPosInClippedSpace = val(layoutP.clippedSpace.fromUnitSpace)(
-      existingRange.range.end,
+      range.end,
     )
 
     return (
@@ -358,7 +411,7 @@ const FocusRangeStrip: React.FC<{
         <RangeStrip
           ref={rangeStripRef as $IntentionalAny}
           onContextMenuCapture={(e) => {
-            if (existingRange.enabled !== true) {
+            if (existingRange === undefined) {
               e.preventDefault()
               e.stopPropagation()
             }
@@ -366,9 +419,11 @@ const FocusRangeStrip: React.FC<{
           style={{
             transform: `translate3d(${startPosInClippedSpace}px, 0, 0)`,
             width: endPosInClippedSpace - startPosInClippedSpace,
-            backgroundColor: existingRange.enabled
-              ? focusRangeTheme.active.backgroundColor
-              : focusRangeTheme.inactive.backgroundColor,
+            background,
+            opacity: existingRange?.enabled
+              ? focusRangeTheme.enabled.opacity
+              : focusRangeTheme.disabled.opacity,
+            cursor: cursor,
           }}
         />
       </>
