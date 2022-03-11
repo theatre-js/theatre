@@ -17,14 +17,17 @@ import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useCo
 export const focusRangeTheme = {
   enabled: {
     backgroundColor: '#70a904',
-    opacity: 0.3,
+    opacity: 0.2,
   },
   disabled: {
-    backgroundColor: '#70a904',
+    backgroundColor: '#2B351B',
     opacity: 0.15,
   },
+  default: {
+    backgroundColor: '#70a904',
+  },
   height: 5,
-  thumbWidth: 10,
+  thumbWidth: 5,
 }
 
 // TODO: find a solution for re-using the topStripHeight from the `TopStrip.tsx` file
@@ -43,16 +46,9 @@ const Handler = styled.div`
 `
 
 const RangeStrip = styled.div`
-  /* background-color: ${focusRangeTheme.enabled.backgroundColor}; */
   position: absolute;
   height: 100%;
   opacity: ${focusRangeTheme.enabled.opacity};
-  /* transition: opacity 150ms; */
-  /* opacity: ${focusRangeTheme.disabled.opacity}; */
-  /* TODO: find out the line below doesn't work when the strip is being dragged */
-  /* &:hover {
-    opacity: ${focusRangeTheme.enabled.opacity};
-  } */
   ${pointerEventsAutoInNormalMode};
 `
 
@@ -144,6 +140,8 @@ const FocusRangeThumb: React.FC<{
             ? clamp(posBeforeDrag + deltaPos, 0, range['end'])
             : clamp(posBeforeDrag + deltaPos, range['start'], sequence.length)
 
+        const newPositionInFrame = sequence.closestGridPosition(newPosition)
+
         if (tempTransaction) {
           tempTransaction.discard()
         }
@@ -152,7 +150,7 @@ const FocusRangeThumb: React.FC<{
           stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.set(
             {
               ...sheet.address,
-              range: {...range, [thumbType]: newPosition},
+              range: {...range, [thumbType]: newPositionInFrame},
               enabled: focusRangeEnabled,
             },
           )
@@ -173,22 +171,27 @@ const FocusRangeThumb: React.FC<{
   useDrag(thumbNode, gestureHandlers)
 
   return usePrism(() => {
-    const existingRange = existingRangeD.getValue() || {
+    const existingRange = existingRangeD.getValue()
+    const defaultRange = {
       range: {start: 0, end: sequence.length},
       enabled: false,
     }
-    const position = existingRange.range[thumbType]
+    const position =
+      existingRange?.range[thumbType] || defaultRange.range[thumbType]
 
     const posInClippedSpace = val(layoutP.clippedSpace.fromUnitSpace)(position)
 
-    return focusRangeEnabled ? (
+    return existingRange !== undefined ? (
       <Handler
         ref={thumbRef as $IntentionalAny}
+        data-pos={position.toFixed(3)}
         style={{
           transform: `translate3d(${posInClippedSpace}px, 0, 0)`,
           cursor: thumbType === 'start' ? 'w-resize' : 'e-resize',
-          // TODO: remove the next line later
-          background: 'blue',
+          background: focusRangeEnabled
+            ? focusRangeTheme.enabled.backgroundColor
+            : focusRangeTheme.disabled.backgroundColor,
+          pointerEvents: focusRangeEnabled ? 'auto' : 'none',
         }}
       />
     ) : (
@@ -333,7 +336,7 @@ const FocusRangeStrip: React.FC<{
             0,
             sequence.length,
             createRange,
-          )
+          ).map((pos) => sequence.closestGridPosition(pos))
 
           if (tempTransaction) {
             tempTransaction.discard()
@@ -377,8 +380,8 @@ const FocusRangeStrip: React.FC<{
 
     const stripes = `repeating-linear-gradient(
       45deg,
-      ${focusRangeTheme.disabled.backgroundColor},
-      ${focusRangeTheme.disabled.backgroundColor} 7px,
+      ${focusRangeTheme.default.backgroundColor},
+      ${focusRangeTheme.default.backgroundColor} 7px,
       rgba(0, 0, 0, 0) 7px,
       rgba(0, 0, 0, 0) 14px
     )`
@@ -431,12 +434,50 @@ const FocusRangeStrip: React.FC<{
   }, [layoutP, rangeStripRef, existingRangeD, contextMenu])
 }
 
+const FocusRangeStripContainer: React.FC<{
+  layoutP: Pointer<SequenceEditorPanelLayout>
+}> = ({layoutP, children}) => {
+  const existingRangeD = useMemo(
+    () =>
+      prism(() => {
+        const {projectId, sheetId} = val(layoutP.sheet).address
+        const existingRange = val(
+          getStudio().atomP.ahistoric.projects.stateByProjectId[projectId]
+            .stateBySheetId[sheetId].sequence.focusRange,
+        )
+        return existingRange
+      }),
+    [layoutP],
+  )
+
+  return usePrism(() => {
+    const existingRange = existingRangeD.getValue()
+
+    // const pointerEvents = existingRange?.enabled ? 'auto' : 'none'
+
+    const handleClick = (event: React.PointerEvent<HTMLDivElement>) => {
+      if (existingRange === undefined && !event.shiftKey) {
+        event.preventDefault()
+        event.stopPropagation()
+      }
+    }
+
+    return (
+      <Container onPointerDownCapture={(e) => handleClick(e)}>
+        {children}
+      </Container>
+    )
+  }, [layoutP])
+}
+
 const FocusRange: React.FC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
 }> = ({layoutP}) => {
   return (
     <Container>
-      <FocusRangeStrip layoutP={layoutP} />
+      <FocusRangeStripContainer layoutP={layoutP}>
+        <FocusRangeStrip layoutP={layoutP} />
+      </FocusRangeStripContainer>
       <FocusRangeThumb thumbType="start" layoutP={layoutP} />
       <FocusRangeThumb thumbType="end" layoutP={layoutP} />
     </Container>
