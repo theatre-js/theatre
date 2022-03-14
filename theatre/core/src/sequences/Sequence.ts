@@ -176,51 +176,27 @@ export default class Sequence {
   }
 
   playDynamicRange(rangeD: IDerivation<IPlaybackRange | undefined>): void {
-    //derivation: IDerivation
-    //TODO: write the function
-
-    // TODO: remove the line below if it's not necessary
     let untap: () => void
-    let dragHappening = false
-    // posBeforeDrag
-    let posBeforeDrag: [number, number] | undefined
 
     const updatePlayback = (): void => {
-      const focusRange = rangeD.getValue()
+      const range = rangeD.getValue()
 
-      let start = 0,
-        end = this.length
-
-      if (focusRange !== undefined) {
-        if (dragHappening === true) {
-          if (posBeforeDrag !== undefined) {
-            console.log(posBeforeDrag)
-          }
-        }
-        if (focusRange[0] <= this.position && focusRange[1] >= this.position) {
-          ;[start, end] = [...focusRange]
-        }
-      }
+      if (range === undefined) return
 
       this._playbackControllerBox
         .get()
-        .play(1000, [start, end], 1, 'normal')
+        .play(1000, range, 1, 'normal')
         .then(() => {
           if (this.playing === false) {
-            dragHappening = false
-            posBeforeDrag = undefined
-            console.log('stop')
             untap()
-          } else {
-            dragHappening = true
-            posBeforeDrag = [start, end]
           }
         })
-      // untap()
     }
+
     untap = rangeD.changesWithoutValues().tap(() => {
       updatePlayback()
     })
+
     updatePlayback()
   }
 

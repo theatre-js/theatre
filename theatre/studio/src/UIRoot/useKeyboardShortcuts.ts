@@ -51,11 +51,6 @@ export default function useKeyboardShortcuts() {
               const shouldFollowFocusRange = prism.memo<boolean>(
                 'shouldFollowFocusRange',
                 (): boolean => {
-                  // if there is a focusRange
-                  // what if there is one, but disabled?
-                  // if there is no focusRange
-
-                  // first, let's determine if during this playback, we want to use the focusRange at all or not
                   const posBeforePlay = seq.position
                   if (focusRange) {
                     const withinRange =
@@ -74,7 +69,7 @@ export default function useKeyboardShortcuts() {
                     return true
                   }
                 },
-                [focusRange],
+                [],
               )
 
               if (shouldFollowFocusRange && focusRange && focusRange.enabled) {
