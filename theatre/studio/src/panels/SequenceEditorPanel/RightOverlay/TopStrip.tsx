@@ -37,8 +37,8 @@ const TopStrip: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
     <>
       <Container {...{[attributeNameThatLocksFramestamp]: 'hide'}}>
         <StampsGrid layoutP={layoutP} width={width} height={topStripHeight} />
+        <FocusRange layoutP={layoutP} />
       </Container>
-      <FocusRange layoutP={layoutP} />
     </>
   )
 }

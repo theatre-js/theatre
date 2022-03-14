@@ -150,7 +150,7 @@ const FocusRangeThumb: React.FC<{
 
         const newPositionInFrame = sequence.closestGridPosition(newPosition)
 
-        if (tempTransaction) {
+        if (tempTransaction !== undefined) {
           tempTransaction.discard()
         }
 
@@ -468,10 +468,9 @@ const FocusRangeStripContainer: React.FC<{
   return usePrism(() => {
     const existingRange = existingRangeD.getValue()
 
-    // const pointerEvents = existingRange?.enabled ? 'auto' : 'none'
-
     const handleClick = (event: React.PointerEvent<HTMLDivElement>) => {
       if (existingRange === undefined && !event.shiftKey) {
+        // TODO: move the panel
         event.preventDefault()
         event.stopPropagation()
       }
@@ -489,13 +488,11 @@ const FocusRange: React.FC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
 }> = ({layoutP}) => {
   return (
-    <Container>
-      <FocusRangeStripContainer layoutP={layoutP}>
-        <FocusRangeStrip layoutP={layoutP} />
-      </FocusRangeStripContainer>
+    <FocusRangeStripContainer layoutP={layoutP}>
+      <FocusRangeStrip layoutP={layoutP} />
       <FocusRangeThumb thumbType="start" layoutP={layoutP} />
       <FocusRangeThumb thumbType="end" layoutP={layoutP} />
-    </Container>
+    </FocusRangeStripContainer>
   )
 }
 
