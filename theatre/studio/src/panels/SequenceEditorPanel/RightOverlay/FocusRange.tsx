@@ -30,8 +30,12 @@ export const focusRangeTheme = {
 }
 
 const topStripHeight = 20
-
-export const focusRangeThumbWidth = 10
+const hitZoneSize = topStripHeight * 1.5
+const dims = (size: number) => `
+  left: ${-size / 2}px;
+  width: ${size}px;
+  height: ${size}px;
+`
 
 const Handler = styled.div`
   content: ' ';
@@ -41,6 +45,12 @@ const Handler = styled.div`
   position: absolute;
   ${pointerEventsAutoInNormalMode};
   left: -${focusRangeTheme.thumbWidth / 2}px;
+`
+
+const HitZone = styled.div`
+  position: absolute;
+  z-index: 1;
+  ${dims(hitZoneSize)}
 `
 
 const RangeStrip = styled.div`
@@ -180,18 +190,25 @@ const FocusRangeThumb: React.FC<{
     const posInClippedSpace = val(layoutP.clippedSpace.fromUnitSpace)(position)
 
     return existingRange !== undefined ? (
-      <Handler
-        ref={thumbRef as $IntentionalAny}
-        data-pos={position.toFixed(3)}
-        style={{
-          transform: `translate3d(${posInClippedSpace}px, 0, 0)`,
-          cursor: thumbType === 'start' ? 'w-resize' : 'e-resize',
-          background: focusRangeEnabled
-            ? focusRangeTheme.enabled.backgroundColor
-            : focusRangeTheme.disabled.backgroundColor,
-          pointerEvents: focusRangeEnabled ? 'auto' : 'none',
-        }}
-      />
+      <>
+        <Handler
+          style={{
+            transform: `translate3d(${posInClippedSpace}px, 0, 0)`,
+            background: focusRangeEnabled
+              ? focusRangeTheme.enabled.backgroundColor
+              : focusRangeTheme.disabled.backgroundColor,
+          }}
+        />
+        <HitZone
+          ref={thumbRef as $IntentionalAny}
+          data-pos={position.toFixed(3)}
+          style={{
+            transform: `translate3d(${posInClippedSpace}px, 0, 0)`,
+            cursor: thumbType === 'start' ? 'w-resize' : 'e-resize',
+            pointerEvents: focusRangeEnabled ? 'auto' : 'none',
+          }}
+        />
+      </>
     ) : (
       <></>
     )
