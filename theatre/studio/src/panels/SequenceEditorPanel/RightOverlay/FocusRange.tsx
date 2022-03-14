@@ -1,18 +1,17 @@
-import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import type {Pointer} from '@theatre/dataverse'
-import {prism} from '@theatre/dataverse'
-import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
-import React, {useMemo} from 'react'
+import {prism, val} from '@theatre/dataverse'
 import {usePrism} from '@theatre/react'
-import {val} from '@theatre/dataverse'
-import styled from 'styled-components'
-import useRefAndState from '@theatre/studio/utils/useRefAndState'
-import useDrag from '@theatre/studio/uiComponents/useDrag'
 import type {$IntentionalAny, IRange} from '@theatre/shared/utils/types'
-import {clamp} from 'lodash-es'
+import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import getStudio from '@theatre/studio/getStudio'
+import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
+import useDrag from '@theatre/studio/uiComponents/useDrag'
+import useRefAndState from '@theatre/studio/utils/useRefAndState'
+import {clamp} from 'lodash-es'
+import React, {useMemo} from 'react'
+import styled from 'styled-components'
 
 export const focusRangeTheme = {
   enabled: {
@@ -30,7 +29,6 @@ export const focusRangeTheme = {
   thumbWidth: 5,
 }
 
-// TODO: find a solution for re-using the topStripHeight from the `TopStrip.tsx` file
 const topStripHeight = 20
 
 export const focusRangeThumbWidth = 10
