@@ -1,5 +1,8 @@
 import {prism} from '@theatre/dataverse'
 
+/**
+ * A derivation that holds the current mouse position.
+ */
 const mousePositionD = prism(() => {
   const [pos, setPos] = prism.state<MouseEvent | null>('pos', null)
   prism.effect(
