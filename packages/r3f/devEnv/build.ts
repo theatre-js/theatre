@@ -2,6 +2,7 @@ import * as path from 'path'
 import {build} from 'esbuild'
 import type {Plugin} from 'esbuild'
 import {existsSync, mkdirSync, writeFileSync} from 'fs'
+import {globPlugin} from 'esbuild-plugin-glob'
 
 const externalPlugin = (patterns: RegExp[]): Plugin => {
   return {
@@ -67,10 +68,16 @@ function createBundles(watch: boolean) {
     {encoding: 'utf-8'},
   )
 
+  if (!existsSync(path.join(pathToPackage, 'dist/esm')))
+    mkdirSync(path.join(pathToPackage, 'dist/esm'))
+
   build({
     ...esbuildConfig,
-    outfile: path.join(pathToPackage, 'dist/index.mjs'),
+    entryPoints: ['src/**/**/*.ts', 'src/**/**/*.tsx'],
+    outdir: path.join(pathToPackage, 'dist/esm'),
     format: 'esm',
+    bundle: false,
+    plugins: [globPlugin()],
   })
 }
 
