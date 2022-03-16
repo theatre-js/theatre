@@ -25,6 +25,8 @@ export interface IPlaybackController {
     direction: IPlaybackDirection,
   ): Promise<boolean>
 
+  playToggle(iterationCount: number, range: IPlaybackRange): void
+
   pause(): void
 }
 
@@ -188,5 +190,70 @@ export default class DefaultPlaybackController implements IPlaybackController {
     const requestNextTick = () => ticker.onNextTick(tick)
     ticker.onThisOrNextTick(tick)
     return deferred.promise
+  }
+
+  // TODO: Find a better name
+  playToggle(iterationCount: number, range: IPlaybackRange) {
+    if (this.playing) {
+      this.pause()
+    }
+
+    this.playing = true
+
+    const ticker = this._ticker
+    const iterationLength = range[1] - range[0]
+
+    {
+      const startPos = this.getCurrentPosition()
+
+      if (startPos < range[0] || startPos > range[1]) {
+        this._updatePositionInState(range[0])
+      } else {
+        if (startPos === range[1]) {
+          this._updatePositionInState(range[0])
+        }
+      }
+    }
+
+    const deferred = defer<boolean>()
+    const initialTickerTime = ticker.time
+    const totalPlaybackLength = iterationLength * iterationCount
+
+    let initialElapsedPos = this.getCurrentPosition() - range[0]
+
+    const tick = (currentTickerTime: number) => {
+      const elapsedTickerTime = Math.max(
+        currentTickerTime - initialTickerTime,
+        0,
+      )
+      const elapsedTickerTimeInSeconds = elapsedTickerTime / 1000
+
+      const elapsedPos = Math.min(
+        elapsedTickerTimeInSeconds + initialElapsedPos,
+        totalPlaybackLength,
+      )
+
+      if (elapsedPos !== totalPlaybackLength) {
+        let currentIterationPos =
+          ((elapsedPos / iterationLength) % 1) * iterationLength
+
+        this._updatePositionInState(currentIterationPos + range[0])
+        requestNextTick()
+      } else {
+        this._updatePositionInState(range[1])
+        this.playing = false
+        deferred.resolve(true)
+      }
+    }
+
+    this._stopPlayCallback = () => {
+      ticker.offThisOrNextTick(tick)
+      ticker.offNextTick(tick)
+
+      if (this.playing) deferred.resolve(false)
+    }
+    const requestNextTick = () => ticker.onNextTick(tick)
+    ticker.onThisOrNextTick(tick)
+    // return deferred.promise
   }
 }

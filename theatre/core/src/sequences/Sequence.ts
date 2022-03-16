@@ -176,24 +176,14 @@ export default class Sequence {
   }
 
   playDynamicRange(rangeD: IDerivation<IPlaybackRange | undefined>): void {
-    let untap: () => void
-
     const updatePlayback = (): void => {
       const range = rangeD.getValue()
 
       if (range === undefined) return
-
-      this._playbackControllerBox
-        .get()
-        .play(1000, range, 1, 'normal')
-        .then(() => {
-          if (this.playing === false) {
-            untap()
-          }
-        })
+      this._playbackControllerBox.get().playToggle(1000, range)
     }
 
-    untap = rangeD.changesWithoutValues().tap(() => {
+    rangeD.changesWithoutValues().tap(() => {
       updatePlayback()
     })
 
