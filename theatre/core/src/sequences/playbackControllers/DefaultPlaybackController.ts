@@ -25,7 +25,10 @@ export interface IPlaybackController {
     direction: IPlaybackDirection,
   ): Promise<boolean>
 
-  playToggle(iterationCount: number, range: IPlaybackRange): void
+  // TODO: should return a promise
+  // TODO: no iteration count
+  // TODO: range should be a derivation
+  playDynamicRange(iterationCount: number, range: IPlaybackRange): void
 
   pause(): void
 }
@@ -192,8 +195,11 @@ export default class DefaultPlaybackController implements IPlaybackController {
     return deferred.promise
   }
 
-  // TODO: Find a better name
-  playToggle(iterationCount: number, range: IPlaybackRange) {
+  // TODO: this should take a derivation, so that it doesn't trigger this.pause() when
+  // the value of the derivation changes
+  // TODO: no need for iteration count
+  // TODO: annotate the return type, so we know this is returning a promise
+  playDynamicRange(iterationCount: number, range: IPlaybackRange) {
     if (this.playing) {
       this.pause()
     }
