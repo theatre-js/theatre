@@ -5,7 +5,7 @@ import type {
 import {defer} from '@theatre/shared/utils/defer'
 import {InvalidArgumentError} from '@theatre/shared/utils/errors'
 import noop from '@theatre/shared/utils/noop'
-import type {Pointer, Ticker} from '@theatre/dataverse'
+import type {IDerivation, Pointer, Ticker} from '@theatre/dataverse'
 import {Atom} from '@theatre/dataverse'
 import type {
   IPlaybackController,
@@ -31,6 +31,10 @@ export default class AudioPlaybackController implements IPlaybackController {
 
     this._mainGain = this._audioContext.createGain()
     this._mainGain.connect(this._nodeDestination)
+  }
+  // TODO implement me
+  playDynamicRange(rangeD: IDerivation<IPlaybackRange>): Promise<unknown> {
+    throw new Error('Method not implemented.')
   }
 
   private get _playing() {

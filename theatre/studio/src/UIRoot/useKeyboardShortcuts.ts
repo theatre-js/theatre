@@ -82,7 +82,11 @@ export default function useKeyboardShortcuts() {
 
             // TODO: hold on to the promise here, and put it in some sort of state,
             // which could be available to other components, through a react context
-            seq.playDynamicRange(focusRangeD)
+            const playbackPromise = seq.playDynamicRange(focusRangeD)
+            console.log('playback started')
+            playbackPromise.finally(() => {
+              console.log('playback over')
+            })
           }
         } else {
           return

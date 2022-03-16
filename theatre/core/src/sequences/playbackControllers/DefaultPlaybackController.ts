@@ -4,7 +4,7 @@ import type {
 } from '@theatre/core/sequences/Sequence'
 import {defer} from '@theatre/shared/utils/defer'
 import noop from '@theatre/shared/utils/noop'
-import type {Pointer, Ticker} from '@theatre/dataverse'
+import type {IDerivation, Pointer, Ticker} from '@theatre/dataverse'
 import {Atom} from '@theatre/dataverse'
 
 export interface IPlaybackState {
@@ -25,10 +25,7 @@ export interface IPlaybackController {
     direction: IPlaybackDirection,
   ): Promise<boolean>
 
-  // TODO: should return a promise
-  // TODO: no iteration count
-  // TODO: range should be a derivation
-  playDynamicRange(iterationCount: number, range: IPlaybackRange): void
+  playDynamicRange(rangeD: IDerivation<IPlaybackRange>): Promise<unknown>
 
   pause(): void
 }
@@ -195,11 +192,7 @@ export default class DefaultPlaybackController implements IPlaybackController {
     return deferred.promise
   }
 
-  // TODO: this should take a derivation, so that it doesn't trigger this.pause() when
-  // the value of the derivation changes
-  // TODO: no need for iteration count
-  // TODO: annotate the return type, so we know this is returning a promise
-  playDynamicRange(iterationCount: number, range: IPlaybackRange) {
+  playDynamicRange(rangeD: IDerivation<IPlaybackRange>): Promise<unknown> {
     if (this.playing) {
       this.pause()
     }
@@ -207,59 +200,50 @@ export default class DefaultPlaybackController implements IPlaybackController {
     this.playing = true
 
     const ticker = this._ticker
-    const iterationLength = range[1] - range[0]
-
-    {
-      const startPos = this.getCurrentPosition()
-
-      if (startPos < range[0] || startPos > range[1]) {
-        this._updatePositionInState(range[0])
-      } else {
-        if (startPos === range[1]) {
-          this._updatePositionInState(range[0])
-        }
-      }
-    }
 
     const deferred = defer<boolean>()
-    const initialTickerTime = ticker.time
-    const totalPlaybackLength = iterationLength * iterationCount
 
-    let initialElapsedPos = this.getCurrentPosition() - range[0]
+    // we're keeping the rangeD hot, so we can read from it on every tick without
+    // causing unnecessary recalculations
+    const untapFromRangeD = rangeD.keepHot()
+    // we'll release our subscription once this promise resolves/rejects, for whatever reason
+    deferred.promise.then(untapFromRangeD, untapFromRangeD)
+
+    let lastTickerTime = ticker.time
 
     const tick = (currentTickerTime: number) => {
-      const elapsedTickerTime = Math.max(
-        currentTickerTime - initialTickerTime,
+      const elapsedSinceLastTick = Math.max(
+        currentTickerTime - lastTickerTime,
         0,
       )
-      const elapsedTickerTimeInSeconds = elapsedTickerTime / 1000
+      lastTickerTime = currentTickerTime
+      const elapsedSinceLastTickInSeconds = elapsedSinceLastTick / 1000
 
-      const elapsedPos = Math.min(
-        elapsedTickerTimeInSeconds + initialElapsedPos,
-        totalPlaybackLength,
-      )
+      const lastPosition = this.getCurrentPosition()
 
-      if (elapsedPos !== totalPlaybackLength) {
-        let currentIterationPos =
-          ((elapsedPos / iterationLength) % 1) * iterationLength
+      const range = rangeD.getValue()
 
-        this._updatePositionInState(currentIterationPos + range[0])
-        requestNextTick()
+      if (lastPosition < range[0] || lastPosition > range[1]) {
+        this.gotoPosition(range[0])
       } else {
-        this._updatePositionInState(range[1])
-        this.playing = false
-        deferred.resolve(true)
+        let newPosition = lastPosition + elapsedSinceLastTickInSeconds
+        if (newPosition > range[1]) {
+          newPosition = range[0] + (newPosition - range[1])
+        }
+        this.gotoPosition(newPosition)
       }
+
+      requestNextTick()
     }
 
     this._stopPlayCallback = () => {
       ticker.offThisOrNextTick(tick)
       ticker.offNextTick(tick)
 
-      if (this.playing) deferred.resolve(false)
+      deferred.resolve(false)
     }
     const requestNextTick = () => ticker.onNextTick(tick)
     ticker.onThisOrNextTick(tick)
-    // return deferred.promise
+    return deferred.promise
   }
 }

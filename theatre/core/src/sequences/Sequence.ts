@@ -175,23 +175,8 @@ export default class Sequence {
     })
   }
 
-  // TODO: to simplify, rangeD should not have an undefined inside
-  // which means, if there is no range, then the caller can just read the
-  // length of the sequence, and give us a playbackrange based on that, ie. [0, sequence.length]
-  playDynamicRange(rangeD: IDerivation<IPlaybackRange | undefined>): void {
-    // we should just patch rangeD to playbackController.playDynamicRange()
-    const updatePlayback = (): void => {
-      const range = rangeD.getValue()
-
-      if (range === undefined) return
-      this._playbackControllerBox.get().playDynamicRange(1000, range)
-    }
-
-    rangeD.changesWithoutValues().tap(() => {
-      updatePlayback()
-    })
-
-    updatePlayback()
+  playDynamicRange(rangeD: IDerivation<IPlaybackRange>): Promise<unknown> {
+    return this._playbackControllerBox.get().playDynamicRange(rangeD)
   }
 
   async play(
