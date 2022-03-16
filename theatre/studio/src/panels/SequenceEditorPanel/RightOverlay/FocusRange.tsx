@@ -1,6 +1,6 @@
 import type {Pointer} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'
-import {usePrism} from '@theatre/react'
+import {usePrism, useVal} from '@theatre/react'
 import type {$IntentionalAny, IRange} from '@theatre/shared/utils/types'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import getStudio from '@theatre/studio/getStudio'
@@ -8,6 +8,7 @@ import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEdi
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
+import {getPlaybackStateBox} from '@theatre/studio/UIRoot/useKeyboardShortcuts'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {clamp} from 'lodash-es'
 import React, {useMemo} from 'react'
@@ -481,14 +482,20 @@ const FocusRangeStripContainer: React.FC<{
         {children}
       </Container>
     )
-  }, [layoutP])
+  }, [layoutP, children])
 }
 
 const FocusRange: React.FC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
 }> = ({layoutP}) => {
+  const sequence = useVal(layoutP.sheet).getSequence()
+
+  const playbackStateBox = getPlaybackStateBox(sequence)
+  const isPlayingInFocusRange = useVal(playbackStateBox.derivation)
+
   return (
     <FocusRangeStripContainer layoutP={layoutP}>
+      <div>{isPlayingInFocusRange ? 'true' : 'false'}</div>
       <FocusRangeStrip layoutP={layoutP} />
       <FocusRangeThumb thumbType="start" layoutP={layoutP} />
       <FocusRangeThumb thumbType="end" layoutP={layoutP} />

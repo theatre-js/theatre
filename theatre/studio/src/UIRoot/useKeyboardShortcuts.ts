@@ -3,8 +3,9 @@ import getStudio from '@theatre/studio/getStudio'
 import {cmdIsDown} from '@theatre/studio/utils/keyboardUtils'
 import {getSelectedSequence} from '@theatre/studio/selectors'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
-import {prism, val} from '@theatre/dataverse'
+import {Box, prism, val} from '@theatre/dataverse'
 import type {IPlaybackRange} from '@theatre/core/sequences/Sequence'
+import type Sequence from '@theatre/core/sequences/Sequence'
 
 export default function useKeyboardShortcuts() {
   const studio = getStudio()
@@ -80,13 +81,18 @@ export default function useKeyboardShortcuts() {
               }
             })
 
-            // TODO: hold on to the promise here, and put it in some sort of state,
-            // which could be available to other components, through a react context
             const playbackPromise = seq.playDynamicRange(focusRangeD)
-            console.log('playback started')
+
+            const playbackStateBox = getPlaybackStateBox(seq)
+            if (playbackStateBox.get() === true) {
+              console.warn('this is a bug. fix it before merge :D')
+            }
+
             playbackPromise.finally(() => {
-              console.log('playback over')
+              playbackStateBox.set(false)
             })
+
+            playbackStateBox.set(true)
           }
         } else {
           return
@@ -116,4 +122,16 @@ export default function useKeyboardShortcuts() {
       window.removeEventListener('keydown', handleKeyDown)
     }
   }, [])
+}
+
+const weakMapOfPlaybackStateBoxes = new WeakMap<Sequence, Box<boolean>>()
+
+export function getPlaybackStateBox(sequence: Sequence): Box<boolean> {
+  if (weakMapOfPlaybackStateBoxes.has(sequence)) {
+    return weakMapOfPlaybackStateBoxes.get(sequence)!
+  } else {
+    const box = new Box<boolean>(false)
+    weakMapOfPlaybackStateBoxes.set(sequence, box)
+    return box
+  }
 }
