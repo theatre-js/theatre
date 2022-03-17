@@ -475,44 +475,14 @@ const FocusRangeStrip: React.FC<{
   ])
 }
 
-const FocusRangeStripContainer: React.FC<{
-  layoutP: Pointer<SequenceEditorPanelLayout>
-}> = ({layoutP, children}) => {
-  const existingRangeD = useMemo(
-    () =>
-      prism(() => {
-        const {projectId, sheetId} = val(layoutP.sheet).address
-        const existingRange = val(
-          getStudio().atomP.ahistoric.projects.stateByProjectId[projectId]
-            .stateBySheetId[sheetId].sequence.focusRange,
-        )
-        return existingRange
-      }),
-    [layoutP],
-  )
-
-  return usePrism(() => {
-    const existingRange = existingRangeD.getValue()
-
-    const handleClick = (event: React.PointerEvent<HTMLDivElement>) => {
-      if (existingRange === undefined && !event.shiftKey) {
-        event.preventDefault()
-        event.stopPropagation()
-      }
-    }
-
-    return (
-      <Container onPointerDownCapture={(e) => handleClick(e)}>
-        {children}
-      </Container>
-    )
-  }, [layoutP, children])
-}
-
 const FocusRange: React.FC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
 }> = ({layoutP}) => {
-  const sequence = useVal(layoutP.sheet).getSequence()
+  const [containerRef, containerNode] = useRefAndState<HTMLElement | null>(null)
+
+  let sequence = useVal(layoutP.sheet).getSequence()
+  const sheet = val(layoutP.sheet)
+  const scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
 
   const playbackStateBox = getPlaybackStateBox(sequence)
   const existingRangeD = useMemo(
@@ -528,39 +498,155 @@ const FocusRange: React.FC<{
     [layoutP],
   )
 
-  const existingRange = existingRangeD.getValue()
+  const gestureHandlers = useMemo((): Parameters<typeof useDrag>[1] => {
+    let startPosBeforeDrag: number,
+      endPosBeforeDrag: number,
+      tempTransaction: CommitOrDiscard | undefined
+    let dragHappened = false
+    let createRange = false
+    let existingRange: {enabled: boolean; range: IRange<number>} | undefined
 
-  const playing = useVal(playbackStateBox.derivation)
+    return {
+      onDragStart(event) {
+        existingRange = existingRangeD.getValue()
 
-  let isPlayingInFocusRange = false
+        if (event.shiftKey && existingRange?.enabled !== false) {
+          createRange = true
 
-  if (
-    playing &&
-    existingRange &&
-    sequence.position >= existingRange.range.start &&
-    sequence.position <= existingRange.range.end
-  ) {
-    isPlayingInFocusRange = true
-  }
+          const targetElement: HTMLElement = event.target as HTMLElement
+          const rect = targetElement!.getBoundingClientRect()
+          const tempPos = scaledSpaceToUnitSpace(event.clientX - rect.left)
+          if (tempPos <= sequence.length) {
+            startPosBeforeDrag = tempPos
+            endPosBeforeDrag = startPosBeforeDrag
 
-  return (
-    <FocusRangeStripContainer layoutP={layoutP}>
-      <FocusRangeStrip
-        layoutP={layoutP}
-        isPlayingInFocusRange={isPlayingInFocusRange}
-      />
-      <FocusRangeThumb
-        thumbType="start"
-        layoutP={layoutP}
-        isPlayingInFocusRange={isPlayingInFocusRange}
-      />
-      <FocusRangeThumb
-        thumbType="end"
-        layoutP={layoutP}
-        isPlayingInFocusRange={isPlayingInFocusRange}
-      />
-    </FocusRangeStripContainer>
-  )
+            getStudio()
+              .tempTransaction(({stateEditors}) => {
+                stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.set(
+                  {
+                    ...sheet.address,
+                    range: {start: startPosBeforeDrag, end: endPosBeforeDrag},
+                    enabled: existingRange?.enabled || true,
+                  },
+                )
+              })
+              .commit()
+          }
+        }
+
+        if (existingRange?.enabled === true) {
+          dragHappened = false
+          sequence = val(layoutP.sheet).getSequence()
+        }
+      },
+      onDrag(dx) {
+        existingRange = existingRangeD.getValue()
+        if (existingRange?.enabled) {
+          dragHappened = true
+          const deltaPos = scaledSpaceToUnitSpace(dx)
+
+          let newStartPosition: number, newEndPosition: number
+
+          let start = startPosBeforeDrag
+          let end = endPosBeforeDrag + deltaPos
+
+          if (createRange === false) {
+            start += deltaPos
+          }
+
+          if (end < start) {
+            end = start
+          }
+
+          ;[newStartPosition, newEndPosition] = clampRange(
+            start,
+            end,
+            0,
+            sequence.length,
+            createRange,
+          ).map((pos) => sequence.closestGridPosition(pos))
+
+          if (tempTransaction) {
+            tempTransaction.discard()
+          }
+
+          tempTransaction = getStudio().tempTransaction(({stateEditors}) => {
+            stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.set(
+              {
+                ...sheet.address,
+                range: {
+                  start: newStartPosition,
+                  end: newEndPosition,
+                },
+                enabled: existingRange?.enabled || true,
+              },
+            )
+          })
+        }
+      },
+      onDragEnd() {
+        if (existingRange?.enabled) {
+          createRange = false
+          if (dragHappened && tempTransaction !== undefined) {
+            tempTransaction.commit()
+          } else if (tempTransaction) {
+            tempTransaction.discard()
+          }
+          tempTransaction = undefined
+        }
+      },
+      lockCursorTo: 'grabbing',
+    }
+  }, [sheet, scaledSpaceToUnitSpace])
+
+  useDrag(containerNode, gestureHandlers)
+
+  // const playing = useVal(playbackStateBox.derivation)
+
+  return usePrism(() => {
+    const existingRange = existingRangeD.getValue()
+    const playing = playbackStateBox.derivation.getValue()
+
+    let isPlayingInFocusRange = false
+
+    if (
+      playing &&
+      existingRange &&
+      sequence.position >= existingRange.range.start &&
+      sequence.position <= existingRange.range.end
+    ) {
+      isPlayingInFocusRange = true
+    }
+
+    const width = `${val(layoutP.clippedSpace.fromUnitSpace)(
+      sequence.length,
+    )}px`
+    console.log(sequence.length)
+
+    // change the length to the active sequence
+
+    return (
+      <Container
+        ref={containerRef as $IntentionalAny}
+        style={{width, background: 'black'}}
+      >
+        <FocusRangeStrip
+          layoutP={layoutP}
+          isPlayingInFocusRange={isPlayingInFocusRange}
+        />
+        <FocusRangeThumb
+          thumbType="start"
+          layoutP={layoutP}
+          isPlayingInFocusRange={isPlayingInFocusRange}
+        />
+        <FocusRangeThumb
+          thumbType="end"
+          layoutP={layoutP}
+          isPlayingInFocusRange={isPlayingInFocusRange}
+        />
+      </Container>
+    )
+  }, [layoutP, existingRangeD, playbackStateBox, sequence])
 }
 
 export default FocusRange
