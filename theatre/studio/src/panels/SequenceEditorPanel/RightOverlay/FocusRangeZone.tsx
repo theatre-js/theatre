@@ -577,7 +577,6 @@ const FocusRangeZone: React.FC<{
         },
         lockCursorTo: 'grabbing',
       }
-      // finish this
     }
 
     let currentGestureHandlers: undefined | Parameters<typeof useDrag>[1]
@@ -618,16 +617,17 @@ const FocusRangeZone: React.FC<{
       isPlayingInFocusRange = true
     }
 
-    const width = `${val(layoutP.clippedSpace.fromUnitSpace)(
-      sequence.length,
-    )}px`
-
-    // change the length to the active sequence
+    const endPos = val(layoutP.clippedSpace.fromUnitSpace)(sequence.length)
 
     return (
       <Container
+        className="focusContainer-2"
         ref={containerRef as $IntentionalAny}
-        style={{width, background: 'black'}}
+        style={{
+          width: `${endPos}px`,
+          background: 'black',
+          left: 0,
+        }}
       >
         <FocusRangeStrip
           layoutP={layoutP}
