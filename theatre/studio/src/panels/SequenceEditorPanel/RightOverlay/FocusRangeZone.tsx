@@ -1,7 +1,7 @@
 import type {Pointer} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'
 import {usePrism, useVal} from '@theatre/react'
-import type {$IntentionalAny, IRange} from '@theatre/shared/utils/types'
+import type {$IntentionalAny, IRange, VoidFn} from '@theatre/shared/utils/types'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import getStudio from '@theatre/studio/getStudio'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
@@ -13,7 +13,10 @@ import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {clamp} from 'lodash-es'
 import React, {useMemo, useRef} from 'react'
 import styled from 'styled-components'
-import {usePanel} from '@theatre/studio/panels/BasePanel/BasePanel'
+import {
+  usePanel,
+  panelDimsToPanelPosition,
+} from '@theatre/studio/panels/BasePanel/BasePanel'
 
 export const focusRangeTheme = {
   enabled: {
@@ -565,17 +568,53 @@ const FocusRangeZone: React.FC<{
     }
 
     const panelMoveGestureHandlers = (): Parameters<typeof useDrag>[1] => {
+      let stuffBeforeDrag = panelStuffRef.current
+      let tempTransaction: CommitOrDiscard | undefined
+      let unlock: VoidFn | undefined
       return {
-        onDragStart(event) {
-          console.log('Start panel drag')
+        onDragStart() {
+          stuffBeforeDrag = panelStuffRef.current
+          if (unlock) {
+            const u = unlock
+            unlock = undefined
+            u()
+          }
+          unlock = panelStuff.addBoundsHighlightLock()
         },
-        onDrag(dx, dy, event) {
-          console.log('Drag panel')
+        onDrag(dx, dy) {
+          console.log('FocusRangeZone', unlock)
+          const newDims: typeof panelStuff['dims'] = {
+            ...stuffBeforeDrag.dims,
+            top: stuffBeforeDrag.dims.top + dy,
+            left: stuffBeforeDrag.dims.left + dx,
+          }
+          const position = panelDimsToPanelPosition(newDims, {
+            width: window.innerWidth,
+            height: window.innerHeight,
+          })
+
+          tempTransaction?.discard()
+          tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
+            stateEditors.studio.historic.panelPositions.setPanelPosition({
+              position,
+              panelId: stuffBeforeDrag.panelId,
+            })
+          })
         },
         onDragEnd(dragHappened) {
-          console.log('End panel drag')
+          if (unlock) {
+            const u = unlock
+            unlock = undefined
+            u()
+          }
+          if (dragHappened) {
+            tempTransaction?.commit()
+          } else {
+            tempTransaction?.discard()
+          }
+          tempTransaction = undefined
         },
-        lockCursorTo: 'grabbing',
+        lockCursorTo: 'move',
       }
     }
 
@@ -588,9 +627,18 @@ const FocusRangeZone: React.FC<{
         } else {
           currentGestureHandlers = panelMoveGestureHandlers()
         }
-        currentGestureHandlers!.onDragStart!(event)
+        currentGestureHandlers.onDragStart!(event)
       },
       onDrag(dx, dy, event) {
+        // `currentGestureHandlers` can be `undefined` if the user
+        // moves the panel too fast while dragging.
+        if (currentGestureHandlers === undefined) {
+          if (event.shiftKey) {
+            currentGestureHandlers = focusRangeCreationGestureHandlers()
+          } else {
+            currentGestureHandlers = panelMoveGestureHandlers()
+          }
+        }
         currentGestureHandlers!.onDrag(dx, dy, event)
       },
       onDragEnd(dragHappened) {
@@ -598,9 +646,34 @@ const FocusRangeZone: React.FC<{
       },
       lockCursorTo: 'grabbing',
     }
-  }, [sheet, scaledSpaceToUnitSpace])
+  }, [sheet, scaledSpaceToUnitSpace, panelStuffRef])
 
   useDrag(containerNode, gestureHandlers)
+
+  const [onMouseEnter, onMouseLeave] = useMemo(() => {
+    let unlock: VoidFn | undefined
+    return [
+      function onMouseEnter(event: React.MouseEvent) {
+        if (event.shiftKey === false) {
+          if (unlock) {
+            const u = unlock
+            unlock = undefined
+            u()
+          }
+          unlock = panelStuff.addBoundsHighlightLock()
+        }
+      },
+      function onMouseLeave(event: React.MouseEvent) {
+        if (event.shiftKey === false) {
+          if (unlock) {
+            const u = unlock
+            unlock = undefined
+            u()
+          }
+        }
+      },
+    ]
+  }, [])
 
   return usePrism(() => {
     const existingRange = existingRangeD.getValue()
@@ -628,6 +701,8 @@ const FocusRangeZone: React.FC<{
           background: 'black',
           left: 0,
         }}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
       >
         <FocusRangeStrip
           layoutP={layoutP}
