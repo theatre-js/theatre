@@ -74,27 +74,40 @@ const Container = styled.div`
   overflow: hidden;
 `
 
+/**
+ * Clamps the lower and upper bounds of a range to the lower and upper bounds of the reference range, while maintaining the original width of the range. If the range to be clamped has a greater width than the reference range, then the reference range is returned.
+ *
+ * @param range - The range bounds to be clamped
+ * @param referenceRange - The reference range
+ *
+ * @returns The clamped bounds.
+ *
+ * @example
+ * ```ts
+ * clampRange([-1, 4], [2, 3]) // returns [2, 3]
+ * clampRange([-1, 2.5], [2, 3]) // returns [2, 2.5]
+ * ```
+ */
 function clampRange(
-  start: number,
-  end: number,
-  minWidth: number,
-  maxWidth: number,
-  createRange: boolean = false,
+  range: [number, number],
+  referenceRange: [number, number],
 ): [number, number] {
   let overflow = 0
 
-  if (start < minWidth) {
+  const [start, end] = range
+  const [lower, upper] = referenceRange
+
+  if (end - start > upper - lower) return [lower, upper]
+
+  if (start < lower) {
     overflow = 0 - start
   }
 
-  if (end > maxWidth) {
-    overflow = maxWidth - end
+  if (end > upper) {
+    overflow = upper - end
   }
 
-  if (createRange === false) start += overflow
-  end += overflow
-
-  return [start, end]
+  return [start + overflow, end + overflow]
 }
 
 const FocusRangeThumb: React.FC<{
@@ -118,10 +131,9 @@ const FocusRangeThumb: React.FC<{
   )
 
   const sheet = val(layoutP.sheet)
-
   const scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
-
   let sequence = sheet.getSequence()
+
   const focusRangeEnabled = existingRangeD.getValue()?.enabled || false
 
   const gestureHandlers = useMemo((): Parameters<typeof useDrag>[1] => {
@@ -251,7 +263,6 @@ const FocusRangeStrip: React.FC<{
   )
 
   const sheet = val(layoutP.sheet)
-  let sequence = sheet.getSequence()
 
   const [rangeStripRef, rangeStripNode] = useRefAndState<HTMLElement | null>(
     null,
@@ -302,45 +313,20 @@ const FocusRangeStrip: React.FC<{
   const scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
 
   const gestureHandlers = useMemo((): Parameters<typeof useDrag>[1] => {
+    let sequence = sheet.getSequence()
     let startPosBeforeDrag: number,
       endPosBeforeDrag: number,
       tempTransaction: CommitOrDiscard | undefined
     let dragHappened = false
-    let createRange = false
     let existingRange: {enabled: boolean; range: IRange<number>} | undefined
 
     return {
-      onDragStart(event) {
+      onDragStart() {
         existingRange = existingRangeD.getValue()
 
-        if (event.shiftKey && existingRange === undefined) {
-          createRange = true
-
-          const targetElement: HTMLElement = event.target as HTMLElement
-          const rect = targetElement!.getBoundingClientRect()
-          const tempPos = scaledSpaceToUnitSpace(event.clientX - rect.left)
-          if (tempPos <= sequence.length) {
-            startPosBeforeDrag = tempPos
-            endPosBeforeDrag = startPosBeforeDrag
-
-            getStudio()
-              .tempTransaction(({stateEditors}) => {
-                stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.set(
-                  {
-                    ...sheet.address,
-                    range: {start: startPosBeforeDrag, end: endPosBeforeDrag},
-                    enabled: existingRange?.enabled || true,
-                  },
-                )
-              })
-              .commit()
-          }
-        } else if (existingRange?.enabled === true) {
+        if (existingRange?.enabled === true) {
           startPosBeforeDrag = existingRange.range.start
           endPosBeforeDrag = existingRange.range.end
-        }
-
-        if (existingRange?.enabled === true) {
           dragHappened = false
           sequence = val(layoutP.sheet).getSequence()
         }
@@ -353,23 +339,16 @@ const FocusRangeStrip: React.FC<{
 
           let newStartPosition: number, newEndPosition: number
 
-          let start = startPosBeforeDrag
+          const start = startPosBeforeDrag + deltaPos
           let end = endPosBeforeDrag + deltaPos
-
-          if (createRange === false) {
-            start += deltaPos
-          }
 
           if (end < start) {
             end = start
           }
 
           ;[newStartPosition, newEndPosition] = clampRange(
-            start,
-            end,
-            0,
-            sequence.length,
-            createRange,
+            [start, end],
+            [0, sequence.length],
           ).map((pos) => sequence.closestGridPosition(pos))
 
           if (tempTransaction) {
@@ -392,7 +371,6 @@ const FocusRangeStrip: React.FC<{
       },
       onDragEnd() {
         if (existingRange?.enabled) {
-          createRange = false
           if (dragHappened && tempTransaction !== undefined) {
             tempTransaction.commit()
           } else if (tempTransaction) {
@@ -410,7 +388,7 @@ const FocusRangeStrip: React.FC<{
   return usePrism(() => {
     const existingRange = existingRangeD.getValue()
 
-    const range = existingRange?.range || {start: 0, end: sequence.length}
+    const range = existingRange?.range || {start: 0, end: 0}
 
     const stripes = `repeating-linear-gradient(
       45deg,
@@ -436,33 +414,36 @@ const FocusRangeStrip: React.FC<{
       }
     }
 
-    const startPosInClippedSpace = val(layoutP.clippedSpace.fromUnitSpace)(
-      range.start,
-    )
+    let startPosInClippedSpace: number,
+      endPosInClippedSpace: number,
+      conditionalStyleProps: {width: number; transform: string} | undefined
 
-    const endPosInClippedSpace = val(layoutP.clippedSpace.fromUnitSpace)(
-      range.end,
-    )
+    if (existingRange !== undefined) {
+      startPosInClippedSpace = val(layoutP.clippedSpace.fromUnitSpace)(
+        range.start,
+      )
 
-    return (
+      endPosInClippedSpace = val(layoutP.clippedSpace.fromUnitSpace)(range.end)
+      conditionalStyleProps = {
+        width: endPosInClippedSpace - startPosInClippedSpace,
+        transform: `translate3d(${startPosInClippedSpace}px, 0, 0)`,
+      }
+    }
+
+    return existingRange === undefined ? (
+      <></>
+    ) : (
       <>
         {contextMenu}
         <RangeStrip
           ref={rangeStripRef as $IntentionalAny}
-          onContextMenuCapture={(e) => {
-            if (existingRange === undefined) {
-              e.preventDefault()
-              e.stopPropagation()
-            }
-          }}
           style={{
-            transform: `translate3d(${startPosInClippedSpace}px, 0, 0)`,
-            width: endPosInClippedSpace - startPosInClippedSpace,
             background,
-            opacity: existingRange?.enabled
+            opacity: existingRange.enabled
               ? focusRangeTheme.enabled.opacity
               : focusRangeTheme.disabled.opacity,
             cursor: cursor,
+            ...conditionalStyleProps,
           }}
         />
       </>
@@ -512,12 +493,9 @@ const FocusRangeZone: React.FC<{
         tempTransaction: CommitOrDiscard | undefined
 
       let dragHappened = false
-      let createRange = false
       return {
         onDragStart(event) {
           if (event.shiftKey) {
-            createRange = true
-
             const targetElement: HTMLElement = event.target as HTMLElement
             const rect = targetElement!.getBoundingClientRect()
             const tempPos = scaledSpaceToUnitSpace(event.clientX - rect.left)
@@ -545,24 +523,17 @@ const FocusRangeZone: React.FC<{
 
           let newStartPosition: number, newEndPosition: number
 
-          let start = startPosBeforeDrag
+          const start = startPosBeforeDrag
           let end = endPosBeforeDrag + deltaPos
-
-          if (createRange === false) {
-            start += deltaPos
-          }
 
           if (end < start) {
             end = start
           }
 
-          ;[newStartPosition, newEndPosition] = clampRange(
+          ;[newStartPosition, newEndPosition] = [
             start,
-            end,
-            0,
-            sequence.length,
-            createRange,
-          ).map((pos) => sequence.closestGridPosition(pos))
+            clamp(end, start, sequence.length),
+          ].map((pos) => sequence.closestGridPosition(pos))
 
           if (tempTransaction) {
             tempTransaction.discard()
@@ -582,7 +553,6 @@ const FocusRangeZone: React.FC<{
           })
         },
         onDragEnd() {
-          createRange = false
           if (dragHappened && tempTransaction !== undefined) {
             tempTransaction.commit()
           } else if (tempTransaction) {
@@ -594,7 +564,21 @@ const FocusRangeZone: React.FC<{
       }
     }
 
-    const panelMoveGestureHandlers = (): Parameters<typeof useDrag>[1] => {}
+    const panelMoveGestureHandlers = (): Parameters<typeof useDrag>[1] => {
+      return {
+        onDragStart(event) {
+          console.log('Start panel drag')
+        },
+        onDrag(dx, dy, event) {
+          console.log('Drag panel')
+        },
+        onDragEnd(dragHappened) {
+          console.log('End panel drag')
+        },
+        lockCursorTo: 'grabbing',
+      }
+      // finish this
+    }
 
     let currentGestureHandlers: undefined | Parameters<typeof useDrag>[1]
 
@@ -619,8 +603,6 @@ const FocusRangeZone: React.FC<{
 
   useDrag(containerNode, gestureHandlers)
 
-  // const playing = useVal(playbackStateBox.derivation)
-
   return usePrism(() => {
     const existingRange = existingRangeD.getValue()
     const playing = playbackStateBox.derivation.getValue()
@@ -639,7 +621,6 @@ const FocusRangeZone: React.FC<{
     const width = `${val(layoutP.clippedSpace.fromUnitSpace)(
       sequence.length,
     )}px`
-    console.log(sequence.length)
 
     // change the length to the active sequence
 
