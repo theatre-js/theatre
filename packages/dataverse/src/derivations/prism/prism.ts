@@ -277,6 +277,40 @@ function memo<T>(
   return memo.cachedValue as $IntentionalAny as T
 }
 
+/**
+ * A state hook, similar to react's `useState()`.
+ *
+ * @param key - the key for the state
+ * @param initialValue - the initial value
+ * @returns [currentState, setState]
+ *
+ * @example
+ * ```ts
+ * import {prism} from 'dataverse'
+ *
+ * // This derivation holds the current mouse position and updates when the mouse moves
+ * const mousePositionD = prism(() => {
+ *   const [pos, setPos] = prism.state<[x: number, y: number]>('pos', [0, 0])
+ *
+ *   prism.effect(
+ *     'setupListeners',
+ *     () => {
+ *       const handleMouseMove = (e: MouseEvent) => {
+ *         setPos([e.screenX, e.screenY])
+ *       }
+ *       document.addEventListener('mousemove', handleMouseMove)
+ *
+ *       return () => {
+ *         document.removeEventListener('mousemove', handleMouseMove)
+ *       }
+ *     },
+ *     [],
+ *   )
+ *
+ *   return pos
+ * })
+ * ```
+ */
 function state<T>(key: string, initialValue: T): [T, (val: T) => void] {
   const {b, setValue} = prism.memo(
     'state/' + key,
@@ -291,6 +325,27 @@ function state<T>(key: string, initialValue: T): [T, (val: T) => void] {
   return [b.derivation.getValue(), setValue]
 }
 
+/**
+ * This is useful to make sure your code is running inside a `prism()` call.
+ *
+ * @example
+ * ```ts
+ * import {prism} from '@theatre/dataverse'
+ *
+ * function onlyUsefulInAPrism() {
+ *   prism.ensurePrism()
+ * }
+ *
+ * prism(() => {
+ *   onlyUsefulInAPrism() // will run fine
+ * })
+ *
+ * setTimeout(() => {
+ *   onlyUsefulInAPrism() // throws an error
+ *   console.log('This will never get logged')
+ * }, 0)
+ * ```
+ */
 function ensurePrism(): void {
   const scope = hookScopeStack.peek()
   if (!scope) {

@@ -25,15 +25,24 @@ export default class UI {
       pointer-events: none;
       z-index: 100;
     `
-    this.containerShadow =
-      window.__IS_VISUAL_REGRESSION_TESTING === true
-        ? (document.getElementById('root') as $IntentionalAny)
-        : (this.containerEl.attachShadow({
-            mode: 'open',
-            // To see why I had to cast this value to HTMLElement, take a look at its
-            // references of this prop. There are a few functions that actually work
-            // with a ShadowRoot but are typed to accept HTMLElement
-          }) as $IntentionalAny as ShadowRoot & HTMLElement)
+
+    const createShadowRoot = (): ShadowRoot & HTMLElement => {
+      if (window.__IS_VISUAL_REGRESSION_TESTING === true) {
+        const fauxRoot = document.createElement('div')
+        fauxRoot.id = 'theatrejs-faux-shadow-root'
+        document.body.appendChild(fauxRoot)
+        return fauxRoot as $IntentionalAny
+      } else {
+        return this.containerEl.attachShadow({
+          mode: 'open',
+          // To see why I had to cast this value to HTMLElement, take a look at its
+          // references of this prop. There are a few functions that actually work
+          // with a ShadowRoot but are typed to accept HTMLElement
+        }) as $IntentionalAny
+      }
+    }
+
+    this.containerShadow = createShadowRoot()
   }
 
   render() {

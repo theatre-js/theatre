@@ -62,6 +62,58 @@ export type DopeSheetSelection = {
   delete(): void
 }
 
+/**
+ * @remarks
+ * In order to lay out the playhead and the keyframes on the sequence editor,
+ * we map their position to different spaces based on the zoom and scroll.
+ *
+ * These spaces are called `unitSpace`, `scaledSpace`, and `clippedSpace`.
+ *
+ * * `unitSpace` is the space the sequence is in. So, `5 seconds` in unitSpace
+ * would equal `5`.
+ *
+ * * `scaledSpace` basically takes into account zoom level, but not scroll.
+ *
+ * * `clippedSpace` is just like `scaledSpace`, but also accounts for scroll.
+ *
+ *
+ *                           2 seconds ─┐                      #
+ *                                      ▼                      # 2 seconds would represent as `2` in unitSpace
+ * `unitSpace`              00    01    02    03    04    05   # regardless of zoom or scroll.
+ *                                      |                      #
+ * ─────────────────────────────────────┼───────────────────────────────────────────────────────────────────────
+ *                                      |                      #
+ *                                      ▼                      # If zoom=1, then scaledSpace acts the same as
+ * `scaledSpace`            00    01    02    03    04    05   # unitSpace.
+ * (zoom=1)                             |                      #
+ * ─────────────────────────────────────┼───────────────────────────────────────────────────────────────────────
+ *                                ┌─────┘                      #
+ *                                ▼     |                      # We're zoomed out (zoom=0.5), so 2 seconds
+ * `scaledSpace`            00 01 02 03 04 05 06 07 08 09 10   # falls on the position of 1 second (2 * 0.5 = 1).
+ *  (zoom=0.5)                    |     |                      #
+ * ───────────────────────────────┼─────┼───────────────────────────────────────────────────────────────────────
+ *                                └─────┼───────────┐          #
+ *                                      |           ▼          # We're zoomed in (zoom=2), so 2 seconds
+ * `scaledSpace`            00          01          02         # falls on the position of 4 seconds (2 * 2 = 4).
+ *  (zoom=2)                            |           |          #
+ * ─────────────────────────────────────┼───────────┼───────────────────────────────────────────────────────────
+ *                                      ┌───────────┘          #
+ *                                      │                      # With no zoom or scroll, clippedSpace is
+ * `clippedSpace`                       ▼                      # just like unitSpace.
+ *  (zoom=1, scroll=0)      00    01    02    03    04    05   #
+ * ─────────────────────────────────────┼───────────────────────────────────────────────────────────────────────
+ *                                      |                      #
+ *                                ┌─────┘                      # No zoom, but we're scrolled in by 1 seconds,
+ * `clippedSpace`                 ▼     |                      # so everything shifts 1s back.
+ *  (zoom=1, scroll=1)      01    02    03    04    05    06   #
+ * ────────────────────────────────┼────┼───────────────────────────────────────────────────────────────────────
+ *                                 └────┐                      #
+ *                                      ▼                      # Zoomed in 2x with 1s of scroll.
+ * `clippedSpace` (zoom=2,  01          02          03         #
+ *               scroll=1)                                     #
+ * ─────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ *
+ */
 export type SequenceEditorPanelLayout = {
   sheet: Sheet
   tree: SequenceEditorTree

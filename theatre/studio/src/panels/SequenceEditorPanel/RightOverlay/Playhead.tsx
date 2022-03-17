@@ -16,6 +16,9 @@ import {
   useLockFrameStampPosition,
 } from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
+import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
+import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
+import PlayheadPositionPopover from './PlayheadPositionPopover'
 
 const Container = styled.div<{isVisible: boolean}>`
   --thumbColor: #00e0ff;
@@ -150,6 +153,20 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
 }) => {
   const [thumbRef, thumbNode] = useRefAndState<HTMLElement | null>(null)
 
+  const [popoverNode, openPopover, closePopover, isPopoverOpen] = usePopover(
+    {},
+    () => {
+      return (
+        <BasicPopover>
+          <PlayheadPositionPopover
+            layoutP={layoutP}
+            onRequestClose={closePopover}
+          />
+        </BasicPopover>
+      )
+    },
+  )
+
   const gestureHandlers = useMemo((): Parameters<typeof useDrag>[1] => {
     const setIsSeeking = val(layoutP.seeker.setIsSeeking)
 
@@ -215,32 +232,38 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
       posInClippedSpace <= val(layoutP.clippedSpace.width)
 
     return (
-      <Container
-        isVisible={isVisible}
-        style={{transform: `translate3d(${posInClippedSpace}px, 0, 0)`}}
-        className={isSeeking ? 'seeking' : ''}
-        {...{[attributeNameThatLocksFramestamp]: 'hide'}}
-      >
-        <Thumb
-          ref={thumbRef as $IntentionalAny}
-          data-pos={posInUnitSpace.toFixed(3)}
-        >
-          <RoomToClick room={8} />
-          <Squinch />
-          <Tooltip>
-            {sequence.positionFormatter.formatForPlayhead(
-              sequence.closestGridPosition(posInUnitSpace),
-            )}
-          </Tooltip>
-        </Thumb>
-
-        <Rod
-          data-pos={posInUnitSpace.toFixed(3)}
+      <>
+        {popoverNode}
+        <Container
+          isVisible={isVisible}
+          style={{transform: `translate3d(${posInClippedSpace}px, 0, 0)`}}
           className={isSeeking ? 'seeking' : ''}
-        />
-      </Container>
+          {...{[attributeNameThatLocksFramestamp]: 'hide'}}
+        >
+          <Thumb
+            ref={thumbRef as $IntentionalAny}
+            data-pos={posInUnitSpace.toFixed(3)}
+            onClick={(e) => {
+              openPopover(e, thumbNode!)
+            }}
+          >
+            <RoomToClick room={8} />
+            <Squinch />
+            <Tooltip>
+              {sequence.positionFormatter.formatForPlayhead(
+                sequence.closestGridPosition(posInUnitSpace),
+              )}
+            </Tooltip>
+          </Thumb>
+
+          <Rod
+            data-pos={posInUnitSpace.toFixed(3)}
+            className={isSeeking ? 'seeking' : ''}
+          />
+        </Container>
+      </>
     )
-  }, [layoutP])
+  }, [layoutP, thumbRef, popoverNode])
 }
 
 export default Playhead
