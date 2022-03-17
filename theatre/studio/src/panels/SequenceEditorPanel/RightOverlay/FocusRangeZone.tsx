@@ -11,8 +11,9 @@ import useDrag from '@theatre/studio/uiComponents/useDrag'
 import {getPlaybackStateBox} from '@theatre/studio/UIRoot/useKeyboardShortcuts'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {clamp} from 'lodash-es'
-import React, {useMemo} from 'react'
+import React, {useMemo, useRef} from 'react'
 import styled from 'styled-components'
+import {usePanel} from '@theatre/studio/panels/BasePanel/BasePanel'
 
 export const focusRangeTheme = {
   enabled: {
@@ -478,6 +479,10 @@ const FocusRangeStrip: React.FC<{
 const FocusRangeZone: React.FC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
 }> = ({layoutP}) => {
+  const panelStuff = usePanel()
+  const panelStuffRef = useRef(panelStuff)
+  panelStuffRef.current = panelStuff
+
   const [containerRef, containerNode] = useRefAndState<HTMLElement | null>(null)
 
   let sequence = useVal(layoutP.sheet).getSequence()
@@ -499,49 +504,42 @@ const FocusRangeZone: React.FC<{
   )
 
   const gestureHandlers = useMemo((): Parameters<typeof useDrag>[1] => {
-    let startPosBeforeDrag: number,
-      endPosBeforeDrag: number,
-      tempTransaction: CommitOrDiscard | undefined
-    let dragHappened = false
-    let createRange = false
-    let existingRange: {enabled: boolean; range: IRange<number>} | undefined
+    const focusRangeCreationGestureHandlers = (): Parameters<
+      typeof useDrag
+    >[1] => {
+      let startPosBeforeDrag: number,
+        endPosBeforeDrag: number,
+        tempTransaction: CommitOrDiscard | undefined
 
-    return {
-      onDragStart(event) {
-        existingRange = existingRangeD.getValue()
+      let dragHappened = false
+      let createRange = false
+      return {
+        onDragStart(event) {
+          if (event.shiftKey) {
+            createRange = true
 
-        if (event.shiftKey && existingRange?.enabled !== false) {
-          createRange = true
+            const targetElement: HTMLElement = event.target as HTMLElement
+            const rect = targetElement!.getBoundingClientRect()
+            const tempPos = scaledSpaceToUnitSpace(event.clientX - rect.left)
+            if (tempPos <= sequence.length) {
+              startPosBeforeDrag = tempPos
+              endPosBeforeDrag = startPosBeforeDrag
 
-          const targetElement: HTMLElement = event.target as HTMLElement
-          const rect = targetElement!.getBoundingClientRect()
-          const tempPos = scaledSpaceToUnitSpace(event.clientX - rect.left)
-          if (tempPos <= sequence.length) {
-            startPosBeforeDrag = tempPos
-            endPosBeforeDrag = startPosBeforeDrag
-
-            getStudio()
-              .tempTransaction(({stateEditors}) => {
-                stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.set(
-                  {
-                    ...sheet.address,
-                    range: {start: startPosBeforeDrag, end: endPosBeforeDrag},
-                    enabled: existingRange?.enabled || true,
-                  },
-                )
-              })
-              .commit()
+              getStudio()
+                .tempTransaction(({stateEditors}) => {
+                  stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.set(
+                    {
+                      ...sheet.address,
+                      range: {start: startPosBeforeDrag, end: endPosBeforeDrag},
+                      enabled: true,
+                    },
+                  )
+                })
+                .commit()
+            }
           }
-        }
-
-        if (existingRange?.enabled === true) {
-          dragHappened = false
-          sequence = val(layoutP.sheet).getSequence()
-        }
-      },
-      onDrag(dx) {
-        existingRange = existingRangeD.getValue()
-        if (existingRange?.enabled) {
+        },
+        onDrag(dx) {
           dragHappened = true
           const deltaPos = scaledSpaceToUnitSpace(dx)
 
@@ -578,14 +576,12 @@ const FocusRangeZone: React.FC<{
                   start: newStartPosition,
                   end: newEndPosition,
                 },
-                enabled: existingRange?.enabled || true,
+                enabled: true,
               },
             )
           })
-        }
-      },
-      onDragEnd() {
-        if (existingRange?.enabled) {
+        },
+        onDragEnd() {
           createRange = false
           if (dragHappened && tempTransaction !== undefined) {
             tempTransaction.commit()
@@ -593,7 +589,29 @@ const FocusRangeZone: React.FC<{
             tempTransaction.discard()
           }
           tempTransaction = undefined
+        },
+        lockCursorTo: 'grabbing',
+      }
+    }
+
+    const panelMoveGestureHandlers = (): Parameters<typeof useDrag>[1] => {}
+
+    let currentGestureHandlers: undefined | Parameters<typeof useDrag>[1]
+
+    return {
+      onDragStart(event) {
+        if (event.shiftKey) {
+          currentGestureHandlers = focusRangeCreationGestureHandlers()
+        } else {
+          currentGestureHandlers = panelMoveGestureHandlers()
         }
+        currentGestureHandlers!.onDragStart!(event)
+      },
+      onDrag(dx, dy, event) {
+        currentGestureHandlers!.onDrag(dx, dy, event)
+      },
+      onDragEnd(dragHappened) {
+        currentGestureHandlers!.onDragEnd!(dragHappened)
       },
       lockCursorTo: 'grabbing',
     }
