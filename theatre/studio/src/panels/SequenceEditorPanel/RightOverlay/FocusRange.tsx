@@ -26,6 +26,9 @@ export const focusRangeTheme = {
   default: {
     backgroundColor: '#70a904',
   },
+  playing: {
+    backgroundColor: 'red',
+  },
   height: 5,
   thumbWidth: 5,
 }
@@ -96,7 +99,8 @@ function clampRange(
 const FocusRangeThumb: React.FC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
   thumbType: keyof IRange
-}> = ({layoutP, thumbType}) => {
+  isPlayingInFocusRange: boolean
+}> = ({layoutP, isPlayingInFocusRange, thumbType}) => {
   const [thumbRef, thumbNode] = useRefAndState<HTMLElement | null>(null)
 
   const existingRangeD = useMemo(
@@ -190,14 +194,20 @@ const FocusRangeThumb: React.FC<{
 
     const posInClippedSpace = val(layoutP.clippedSpace.fromUnitSpace)(position)
 
+    let background = focusRangeTheme.disabled.backgroundColor
+
+    if (focusRangeEnabled) {
+      background = isPlayingInFocusRange
+        ? focusRangeTheme.playing.backgroundColor
+        : focusRangeTheme.default.backgroundColor
+    }
+
     return existingRange !== undefined ? (
       <>
         <Handler
           style={{
             transform: `translate3d(${posInClippedSpace}px, 0, 0)`,
-            background: focusRangeEnabled
-              ? focusRangeTheme.enabled.backgroundColor
-              : focusRangeTheme.disabled.backgroundColor,
+            background,
           }}
         />
         <HitZone
@@ -213,12 +223,19 @@ const FocusRangeThumb: React.FC<{
     ) : (
       <></>
     )
-  }, [layoutP, thumbRef, existingRangeD, focusRangeEnabled])
+  }, [
+    layoutP,
+    thumbRef,
+    existingRangeD,
+    focusRangeEnabled,
+    isPlayingInFocusRange,
+  ])
 }
 
 const FocusRangeStrip: React.FC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
-}> = ({layoutP}) => {
+  isPlayingInFocusRange: boolean
+}> = ({layoutP, isPlayingInFocusRange}) => {
   const existingRangeD = useMemo(
     () =>
       prism(() => {
@@ -408,7 +425,9 @@ const FocusRangeStrip: React.FC<{
 
     if (existingRange !== undefined) {
       if (existingRange.enabled === true) {
-        background = focusRangeTheme.enabled.backgroundColor
+        background = isPlayingInFocusRange
+          ? focusRangeTheme.playing.backgroundColor
+          : focusRangeTheme.enabled.backgroundColor
         cursor = 'grab'
       } else {
         background = stripes
@@ -447,7 +466,13 @@ const FocusRangeStrip: React.FC<{
         />
       </>
     )
-  }, [layoutP, rangeStripRef, existingRangeD, contextMenu])
+  }, [
+    layoutP,
+    rangeStripRef,
+    existingRangeD,
+    contextMenu,
+    isPlayingInFocusRange,
+  ])
 }
 
 const FocusRangeStripContainer: React.FC<{
@@ -471,7 +496,6 @@ const FocusRangeStripContainer: React.FC<{
 
     const handleClick = (event: React.PointerEvent<HTMLDivElement>) => {
       if (existingRange === undefined && !event.shiftKey) {
-        // TODO: move the panel
         event.preventDefault()
         event.stopPropagation()
       }
@@ -491,14 +515,50 @@ const FocusRange: React.FC<{
   const sequence = useVal(layoutP.sheet).getSequence()
 
   const playbackStateBox = getPlaybackStateBox(sequence)
-  const isPlayingInFocusRange = useVal(playbackStateBox.derivation)
+  const existingRangeD = useMemo(
+    () =>
+      prism(() => {
+        const {projectId, sheetId} = val(layoutP.sheet).address
+        const existingRange = val(
+          getStudio().atomP.ahistoric.projects.stateByProjectId[projectId]
+            .stateBySheetId[sheetId].sequence.focusRange,
+        )
+        return existingRange
+      }),
+    [layoutP],
+  )
+
+  const existingRange = existingRangeD.getValue()
+
+  const playing = useVal(playbackStateBox.derivation)
+
+  let isPlayingInFocusRange = false
+
+  if (
+    playing &&
+    existingRange &&
+    sequence.position >= existingRange.range.start &&
+    sequence.position <= existingRange.range.end
+  ) {
+    isPlayingInFocusRange = true
+  }
 
   return (
     <FocusRangeStripContainer layoutP={layoutP}>
-      <div>{isPlayingInFocusRange ? 'true' : 'false'}</div>
-      <FocusRangeStrip layoutP={layoutP} />
-      <FocusRangeThumb thumbType="start" layoutP={layoutP} />
-      <FocusRangeThumb thumbType="end" layoutP={layoutP} />
+      <FocusRangeStrip
+        layoutP={layoutP}
+        isPlayingInFocusRange={isPlayingInFocusRange}
+      />
+      <FocusRangeThumb
+        thumbType="start"
+        layoutP={layoutP}
+        isPlayingInFocusRange={isPlayingInFocusRange}
+      />
+      <FocusRangeThumb
+        thumbType="end"
+        layoutP={layoutP}
+        isPlayingInFocusRange={isPlayingInFocusRange}
+      />
     </FocusRangeStripContainer>
   )
 }
