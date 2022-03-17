@@ -11,7 +11,7 @@ import {
   FrameStampPositionType,
   useFrameStampPositionD,
 } from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
-import {focusRangeTheme} from './FocusRange'
+import {focusRangeTheme} from './FocusRangeZone'
 
 const Container = styled.div`
   position: absolute;

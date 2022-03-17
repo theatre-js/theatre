@@ -1,7 +1,7 @@
 import {voidFn} from '@theatre/shared/utils'
 import React, {createContext, useCallback, useContext, useRef} from 'react'
 import styled from 'styled-components'
-import {focusRangeTheme} from './RightOverlay/FocusRange'
+import {focusRangeTheme} from './RightOverlay/FocusRangeZone'
 import {zIndexes} from './SequenceEditorPanel'
 
 const Container = styled.div`

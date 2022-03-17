@@ -475,7 +475,7 @@ const FocusRangeStrip: React.FC<{
   ])
 }
 
-const FocusRange: React.FC<{
+const FocusRangeZone: React.FC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
 }> = ({layoutP}) => {
   const [containerRef, containerNode] = useRefAndState<HTMLElement | null>(null)
@@ -649,4 +649,4 @@ const FocusRange: React.FC<{
   }, [layoutP, existingRangeD, playbackStateBox, sequence])
 }
 
-export default FocusRange
+export default FocusRangeZone
