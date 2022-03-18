@@ -101,17 +101,9 @@ const FocusRangeZone: React.FC<{
       isPlayingInFocusRange = true
     }
 
-    const endPos = val(layoutP.clippedSpace.fromUnitSpace)(sequence.length)
-
     return (
       <Container
-        className="focusContainer-2"
         ref={containerRef as $IntentionalAny}
-        style={{
-          width: `${endPos}px`,
-          // background: 'black',
-          left: 0,
-        }}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
       >
@@ -144,58 +136,41 @@ function usePanelDragZoneGestureHandlers(
     const focusRangeCreationGestureHandlers = (): Parameters<
       typeof useDrag
     >[1] => {
-      let startPosBeforeDrag: number,
-        endPosBeforeDrag: number,
+      let startPosInUnitSpace: number,
         tempTransaction: CommitOrDiscard | undefined
 
-      let dragHappened = false
+      let clippedSpaceToUnitSpace: (s: number) => number
       let scaledSpaceToUnitSpace: (s: number) => number
       let sequence: Sequence
       let sheet: Sheet
 
       return {
         onDragStart(event) {
+          clippedSpaceToUnitSpace = val(layoutP.clippedSpace.toUnitSpace)
           scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
           sheet = val(layoutP.sheet)
           sequence = sheet.getSequence()
 
           const targetElement: HTMLElement = event.target as HTMLElement
           const rect = targetElement!.getBoundingClientRect()
-          const tempPos = scaledSpaceToUnitSpace(event.clientX - rect.left)
-          if (tempPos <= sequence.length) {
-            startPosBeforeDrag = tempPos
-            endPosBeforeDrag = startPosBeforeDrag
-
-            getStudio()
-              .tempTransaction(({stateEditors}) => {
-                stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.set(
-                  {
-                    ...sheet.address,
-                    range: {start: startPosBeforeDrag, end: endPosBeforeDrag},
-                    enabled: true,
-                  },
-                )
-              })
-              .commit()
-          }
+          startPosInUnitSpace = clippedSpaceToUnitSpace(
+            event.clientX - rect.left,
+          )
         },
         onDrag(dx) {
-          dragHappened = true
           const deltaPos = scaledSpaceToUnitSpace(dx)
 
-          let newStartPosition: number, newEndPosition: number
+          let start = startPosInUnitSpace
+          let end = startPosInUnitSpace + deltaPos
 
-          const start = startPosBeforeDrag
-          let end = endPosBeforeDrag + deltaPos
+          ;[start, end] = [
+            clamp(start, 0, sequence.length),
+            clamp(end, 0, sequence.length),
+          ].map((pos) => sequence.closestGridPosition(pos))
 
           if (end < start) {
-            end = start
+            ;[start, end] = [end, start]
           }
-
-          ;[newStartPosition, newEndPosition] = [
-            start,
-            clamp(end, start, sequence.length),
-          ].map((pos) => sequence.closestGridPosition(pos))
 
           if (tempTransaction) {
             tempTransaction.discard()
@@ -205,16 +180,13 @@ function usePanelDragZoneGestureHandlers(
             stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.set(
               {
                 ...sheet.address,
-                range: {
-                  start: newStartPosition,
-                  end: newEndPosition,
-                },
+                range: {start, end},
                 enabled: true,
               },
             )
           })
         },
-        onDragEnd() {
+        onDragEnd(dragHappened) {
           if (dragHappened && tempTransaction !== undefined) {
             tempTransaction.commit()
           } else if (tempTransaction) {
