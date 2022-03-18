@@ -9,7 +9,7 @@ import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {clamp} from 'lodash-es'
-import React, {useMemo} from 'react'
+import React, {useMemo, useRef} from 'react'
 import styled from 'styled-components'
 import {topStripHeight} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/TopStrip'
 import {focusRangeTheme} from './FocusRangeStrip'
@@ -21,6 +21,10 @@ const Handler = styled.div`
   position: absolute;
   ${pointerEventsAutoInNormalMode};
   stroke: ${focusRangeTheme.enabled.stroke};
+  user-select: none;
+  &:hover {
+    background: ${focusRangeTheme.highlight.backgroundColor} !important;
+  }
 `
 
 const dims = (size: number) => `
@@ -31,7 +35,7 @@ const dims = (size: number) => `
 
 const HitZone = styled.div`
   position: absolute;
-  z-index: 1;
+  z-index: 3;
   ${() => dims(topStripHeight * 1.5)}
 `
 
@@ -40,7 +44,8 @@ const FocusRangeThumb: React.FC<{
   thumbType: keyof IRange
   isPlayingInFocusRange: boolean
 }> = ({layoutP, isPlayingInFocusRange, thumbType}) => {
-  const [thumbRef, thumbNode] = useRefAndState<HTMLElement | null>(null)
+  const [hitZoneRef, hitZoneNode] = useRefAndState<HTMLElement | null>(null)
+  const handlerRef = useRef<HTMLElement | null>(null)
 
   const existingRangeD = useMemo(
     () =>
@@ -71,6 +76,8 @@ const FocusRangeThumb: React.FC<{
         : defaultFocusRange[thumbType]
     let tempTransaction: CommitOrDiscard | undefined
     let dragHappened = false
+    let originalBackground: string
+    let originalStroke: string
 
     return {
       onDragStart() {
@@ -80,6 +87,14 @@ const FocusRangeThumb: React.FC<{
         posBeforeDrag =
           existingRangeD.getValue()?.range[thumbType] ||
           defaultFocusRange[thumbType]
+
+        if (handlerRef.current) {
+          originalBackground = handlerRef.current.style.background
+          originalStroke = handlerRef.current.style.stroke
+          handlerRef.current.style.background =
+            focusRangeTheme.highlight.backgroundColor
+          handlerRef.current.style.stroke = focusRangeTheme.highlight.stroke
+        }
       },
       onDrag(dx) {
         dragHappened = true
@@ -108,6 +123,14 @@ const FocusRangeThumb: React.FC<{
         })
       },
       onDragEnd() {
+        if (handlerRef.current) {
+          if (originalBackground) {
+            handlerRef.current.style.background = originalBackground
+          }
+          if (originalBackground) {
+            handlerRef.current.style.stroke = originalStroke
+          }
+        }
         if (dragHappened && tempTransaction !== undefined) {
           tempTransaction.commit()
         } else if (tempTransaction) {
@@ -119,7 +142,7 @@ const FocusRangeThumb: React.FC<{
     }
   }, [sheet, scaledSpaceToUnitSpace])
 
-  useDrag(thumbNode, gestureHandlers)
+  useDrag(hitZoneNode, gestureHandlers)
 
   return usePrism(() => {
     const existingRange = existingRangeD.getValue()
@@ -132,6 +155,8 @@ const FocusRangeThumb: React.FC<{
 
     const posInClippedSpace = val(layoutP.clippedSpace.fromUnitSpace)(position)
 
+    const pointerEvents = focusRangeEnabled ? 'auto' : 'none'
+
     let background = focusRangeTheme.disabled.backgroundColor
 
     if (focusRangeEnabled) {
@@ -141,39 +166,40 @@ const FocusRangeThumb: React.FC<{
         background = focusRangeTheme.enabled.backgroundColor
       }
     }
+    const handlerOffset = (1.5 * topStripHeight) / 2
 
     return existingRange !== undefined ? (
       <>
-        <Handler
-          style={{
-            transform: `translate3d(${posInClippedSpace}px, 0, 0)`,
-            background,
-            left: `${
-              thumbType === 'start' ? 0 : -focusRangeTheme.thumbWidth
-            }px`,
-          }}
-        >
-          <svg viewBox="0 0 9 18" xmlns="http://www.w3.org/2000/svg">
-            <line x1="4" y1="6" x2="4" y2="12" />
-            <line x1="6" y1="6" x2="6" y2="12" />
-          </svg>
-        </Handler>
         <HitZone
-          ref={thumbRef as $IntentionalAny}
+          ref={hitZoneRef as $IntentionalAny}
           data-pos={position.toFixed(3)}
           style={{
             transform: `translate3d(${posInClippedSpace}px, 0, 0)`,
             cursor: thumbType === 'start' ? 'w-resize' : 'e-resize',
-            pointerEvents: focusRangeEnabled ? 'auto' : 'none',
+            pointerEvents,
           }}
-        />
+        >
+          <Handler
+            ref={handlerRef as $IntentionalAny}
+            style={{
+              background,
+              left: `${thumbType === 'start' ? handlerOffset : 0}px`,
+              pointerEvents,
+            }}
+          >
+            <svg viewBox="0 0 9 18" xmlns="http://www.w3.org/2000/svg">
+              <line x1="4" y1="6" x2="4" y2="12" />
+              <line x1="6" y1="6" x2="6" y2="12" />
+            </svg>
+          </Handler>
+        </HitZone>
       </>
     ) : (
       <></>
     )
   }, [
     layoutP,
-    thumbRef,
+    hitZoneRef,
     existingRangeD,
     focusRangeEnabled,
     isPlayingInFocusRange,

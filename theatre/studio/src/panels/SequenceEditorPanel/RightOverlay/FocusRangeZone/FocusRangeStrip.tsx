@@ -29,6 +29,11 @@ export const focusRangeTheme = {
     stroke: '#646568',
     opacity: 1,
   },
+  highlight: {
+    backgroundColor: '#575C66',
+    stroke: '#C8CAC0',
+    opacity: 1,
+  },
   thumbWidth: 9,
 }
 
