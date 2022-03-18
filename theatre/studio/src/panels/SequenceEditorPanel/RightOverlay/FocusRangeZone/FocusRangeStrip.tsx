@@ -35,6 +35,7 @@ export const focusRangeTheme = {
     opacity: 1,
   },
   thumbWidth: 9,
+  hitZoneWidth: 26,
 }
 
 const RangeStrip = styled.div`

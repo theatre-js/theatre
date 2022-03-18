@@ -11,7 +11,6 @@ import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {clamp} from 'lodash-es'
 import React, {useMemo, useRef} from 'react'
 import styled from 'styled-components'
-import {topStripHeight} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/TopStrip'
 import {focusRangeTheme} from './FocusRangeStrip'
 
 const Handler = styled.div`
@@ -36,7 +35,7 @@ const dims = (size: number) => `
 const HitZone = styled.div`
   position: absolute;
   z-index: 3;
-  ${() => dims(topStripHeight * 1.5)}
+  ${() => dims(focusRangeTheme.hitZoneWidth)}
 `
 
 const FocusRangeThumb: React.FC<{
@@ -166,7 +165,9 @@ const FocusRangeThumb: React.FC<{
         background = focusRangeTheme.enabled.backgroundColor
       }
     }
-    const handlerOffset = (1.5 * topStripHeight) / 2
+
+    const startHandlerOffset = focusRangeTheme.hitZoneWidth / 2
+    const endHandlerOffset = startHandlerOffset - focusRangeTheme.thumbWidth
 
     return existingRange !== undefined ? (
       <>
@@ -183,7 +184,9 @@ const FocusRangeThumb: React.FC<{
             ref={handlerRef as $IntentionalAny}
             style={{
               background,
-              left: `${thumbType === 'start' ? handlerOffset : 0}px`,
+              left: `${
+                thumbType === 'start' ? startHandlerOffset : endHandlerOffset
+              }px`,
               pointerEvents,
             }}
           >
