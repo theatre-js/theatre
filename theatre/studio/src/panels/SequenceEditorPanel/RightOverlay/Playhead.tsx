@@ -133,7 +133,7 @@ const Squinch = styled.div`
 const Tooltip = styled.div`
   display: none;
   position: absolute;
-  top: -20px;
+  top: -18px;
   left: 4px;
   padding: 0 2px;
   transform: translateX(-50%);

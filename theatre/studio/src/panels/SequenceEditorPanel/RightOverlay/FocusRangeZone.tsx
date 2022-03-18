@@ -20,24 +20,26 @@ import {
 
 export const focusRangeTheme = {
   enabled: {
-    backgroundColor: '#70a904',
-    opacity: 0.2,
+    backgroundColor: '#33373D',
+    opacity: 1,
+    stroke: '#646568',
   },
   disabled: {
-    backgroundColor: '#2B351B',
-    opacity: 0.15,
-  },
-  default: {
-    backgroundColor: '#70a904',
+    backgroundColor: '#282A2C',
+    // backgroundColor: '#212221',
+    opacity: 1,
+    stroke: '#3C3D3D',
   },
   playing: {
     backgroundColor: 'red',
+    stroke: '#646568',
+    opacity: 1,
   },
   height: 5,
-  thumbWidth: 5,
+  thumbWidth: 9,
 }
 
-const topStripHeight = 20
+const topStripHeight = 18
 const hitZoneSize = topStripHeight * 1.5
 const dims = (size: number) => `
   left: ${-size / 2}px;
@@ -47,12 +49,11 @@ const dims = (size: number) => `
 
 const Handler = styled.div`
   content: ' ';
-  background-color: ${focusRangeTheme.enabled.backgroundColor};
   width: ${focusRangeTheme.thumbWidth};
   height: 100%;
   position: absolute;
   ${pointerEventsAutoInNormalMode};
-  left: -${focusRangeTheme.thumbWidth / 2}px;
+  stroke: ${focusRangeTheme.enabled.stroke};
 `
 
 const HitZone = styled.div`
@@ -213,9 +214,11 @@ const FocusRangeThumb: React.FC<{
     let background = focusRangeTheme.disabled.backgroundColor
 
     if (focusRangeEnabled) {
-      background = isPlayingInFocusRange
-        ? focusRangeTheme.playing.backgroundColor
-        : focusRangeTheme.default.backgroundColor
+      if (isPlayingInFocusRange) {
+        background = focusRangeTheme.playing.backgroundColor
+      } else {
+        background = focusRangeTheme.enabled.backgroundColor
+      }
     }
 
     return existingRange !== undefined ? (
@@ -224,8 +227,16 @@ const FocusRangeThumb: React.FC<{
           style={{
             transform: `translate3d(${posInClippedSpace}px, 0, 0)`,
             background,
+            left: `${
+              thumbType === 'start' ? 0 : -focusRangeTheme.thumbWidth
+            }px`,
           }}
-        />
+        >
+          <svg viewBox="0 0 9 18" xmlns="http://www.w3.org/2000/svg">
+            <line x1="4" y1="6" x2="4" y2="12" />
+            <line x1="6" y1="6" x2="6" y2="12" />
+          </svg>
+        </Handler>
         <HitZone
           ref={thumbRef as $IntentionalAny}
           data-pos={position.toFixed(3)}
@@ -393,14 +404,6 @@ const FocusRangeStrip: React.FC<{
 
     const range = existingRange?.range || {start: 0, end: 0}
 
-    const stripes = `repeating-linear-gradient(
-      45deg,
-      ${focusRangeTheme.default.backgroundColor},
-      ${focusRangeTheme.default.backgroundColor} 7px,
-      rgba(0, 0, 0, 0) 7px,
-      rgba(0, 0, 0, 0) 14px
-    )`
-
     let background = 'transparent'
 
     let cursor = 'default'
@@ -412,7 +415,7 @@ const FocusRangeStrip: React.FC<{
           : focusRangeTheme.enabled.backgroundColor
         cursor = 'grab'
       } else {
-        background = stripes
+        background = focusRangeTheme.disabled.backgroundColor
         cursor = 'default'
       }
     }
@@ -698,7 +701,7 @@ const FocusRangeZone: React.FC<{
         ref={containerRef as $IntentionalAny}
         style={{
           width: `${endPos}px`,
-          background: 'black',
+          // background: 'black',
           left: 0,
         }}
         onMouseEnter={onMouseEnter}

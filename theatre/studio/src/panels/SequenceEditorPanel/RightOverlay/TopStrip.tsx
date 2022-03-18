@@ -9,7 +9,7 @@ import {attributeNameThatLocksFramestamp} from '@theatre/studio/panels/SequenceE
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import FocusRangeZone from './FocusRangeZone'
 
-export const topStripHeight = 20
+export const topStripHeight = 18
 
 export const topStripTheme = {
   backgroundColor: `#1f2120eb`,
