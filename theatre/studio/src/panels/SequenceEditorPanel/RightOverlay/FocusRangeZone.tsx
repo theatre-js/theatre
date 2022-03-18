@@ -17,6 +17,8 @@ import {
   usePanel,
   panelDimsToPanelPosition,
 } from '@theatre/studio/panels/BasePanel/BasePanel'
+import type Sequence from '@theatre/core/sequences/Sequence'
+import type Sheet from '@theatre/core/sheets/Sheet'
 
 export const focusRangeTheme = {
   enabled: {
@@ -466,15 +468,14 @@ const FocusRangeStrip: React.FC<{
 const FocusRangeZone: React.FC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
 }> = ({layoutP}) => {
+  const [containerRef, containerNode] = useRefAndState<HTMLElement | null>(null)
+
+  const sheet = useVal(layoutP.sheet)
+  let sequence = sheet.getSequence()
+
   const panelStuff = usePanel()
   const panelStuffRef = useRef(panelStuff)
   panelStuffRef.current = panelStuff
-
-  const [containerRef, containerNode] = useRefAndState<HTMLElement | null>(null)
-
-  let sequence = useVal(layoutP.sheet).getSequence()
-  const sheet = val(layoutP.sheet)
-  const scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
 
   const playbackStateBox = getPlaybackStateBox(sequence)
   const existingRangeD = useMemo(
@@ -490,168 +491,10 @@ const FocusRangeZone: React.FC<{
     [layoutP],
   )
 
-  const gestureHandlers = useMemo((): Parameters<typeof useDrag>[1] => {
-    const focusRangeCreationGestureHandlers = (): Parameters<
-      typeof useDrag
-    >[1] => {
-      let startPosBeforeDrag: number,
-        endPosBeforeDrag: number,
-        tempTransaction: CommitOrDiscard | undefined
-
-      let dragHappened = false
-      return {
-        onDragStart(event) {
-          if (event.shiftKey) {
-            const targetElement: HTMLElement = event.target as HTMLElement
-            const rect = targetElement!.getBoundingClientRect()
-            const tempPos = scaledSpaceToUnitSpace(event.clientX - rect.left)
-            if (tempPos <= sequence.length) {
-              startPosBeforeDrag = tempPos
-              endPosBeforeDrag = startPosBeforeDrag
-
-              getStudio()
-                .tempTransaction(({stateEditors}) => {
-                  stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.set(
-                    {
-                      ...sheet.address,
-                      range: {start: startPosBeforeDrag, end: endPosBeforeDrag},
-                      enabled: true,
-                    },
-                  )
-                })
-                .commit()
-            }
-          }
-        },
-        onDrag(dx) {
-          dragHappened = true
-          const deltaPos = scaledSpaceToUnitSpace(dx)
-
-          let newStartPosition: number, newEndPosition: number
-
-          const start = startPosBeforeDrag
-          let end = endPosBeforeDrag + deltaPos
-
-          if (end < start) {
-            end = start
-          }
-
-          ;[newStartPosition, newEndPosition] = [
-            start,
-            clamp(end, start, sequence.length),
-          ].map((pos) => sequence.closestGridPosition(pos))
-
-          if (tempTransaction) {
-            tempTransaction.discard()
-          }
-
-          tempTransaction = getStudio().tempTransaction(({stateEditors}) => {
-            stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.set(
-              {
-                ...sheet.address,
-                range: {
-                  start: newStartPosition,
-                  end: newEndPosition,
-                },
-                enabled: true,
-              },
-            )
-          })
-        },
-        onDragEnd() {
-          if (dragHappened && tempTransaction !== undefined) {
-            tempTransaction.commit()
-          } else if (tempTransaction) {
-            tempTransaction.discard()
-          }
-          tempTransaction = undefined
-        },
-        lockCursorTo: 'grabbing',
-      }
-    }
-
-    const panelMoveGestureHandlers = (): Parameters<typeof useDrag>[1] => {
-      let stuffBeforeDrag = panelStuffRef.current
-      let tempTransaction: CommitOrDiscard | undefined
-      let unlock: VoidFn | undefined
-      return {
-        onDragStart() {
-          stuffBeforeDrag = panelStuffRef.current
-          if (unlock) {
-            const u = unlock
-            unlock = undefined
-            u()
-          }
-          unlock = panelStuff.addBoundsHighlightLock()
-        },
-        onDrag(dx, dy) {
-          console.log('FocusRangeZone', unlock)
-          const newDims: typeof panelStuff['dims'] = {
-            ...stuffBeforeDrag.dims,
-            top: stuffBeforeDrag.dims.top + dy,
-            left: stuffBeforeDrag.dims.left + dx,
-          }
-          const position = panelDimsToPanelPosition(newDims, {
-            width: window.innerWidth,
-            height: window.innerHeight,
-          })
-
-          tempTransaction?.discard()
-          tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
-            stateEditors.studio.historic.panelPositions.setPanelPosition({
-              position,
-              panelId: stuffBeforeDrag.panelId,
-            })
-          })
-        },
-        onDragEnd(dragHappened) {
-          if (unlock) {
-            const u = unlock
-            unlock = undefined
-            u()
-          }
-          if (dragHappened) {
-            tempTransaction?.commit()
-          } else {
-            tempTransaction?.discard()
-          }
-          tempTransaction = undefined
-        },
-        lockCursorTo: 'move',
-      }
-    }
-
-    let currentGestureHandlers: undefined | Parameters<typeof useDrag>[1]
-
-    return {
-      onDragStart(event) {
-        if (event.shiftKey) {
-          currentGestureHandlers = focusRangeCreationGestureHandlers()
-        } else {
-          currentGestureHandlers = panelMoveGestureHandlers()
-        }
-        currentGestureHandlers.onDragStart!(event)
-      },
-      onDrag(dx, dy, event) {
-        // `currentGestureHandlers` can be `undefined` if the user
-        // moves the panel too fast while dragging.
-        if (currentGestureHandlers === undefined) {
-          if (event.shiftKey) {
-            currentGestureHandlers = focusRangeCreationGestureHandlers()
-          } else {
-            currentGestureHandlers = panelMoveGestureHandlers()
-          }
-        }
-        currentGestureHandlers!.onDrag(dx, dy, event)
-      },
-      onDragEnd(dragHappened) {
-        currentGestureHandlers!.onDragEnd!(dragHappened)
-      },
-      lockCursorTo: 'grabbing',
-    }
-  }, [sheet, scaledSpaceToUnitSpace, panelStuffRef])
-
-  useDrag(containerNode, gestureHandlers)
+  useDrag(
+    containerNode,
+    usePanelDragZoneGestureHandlers(layoutP, panelStuffRef),
+  )
 
   const [onMouseEnter, onMouseLeave] = useMemo(() => {
     let unlock: VoidFn | undefined
@@ -663,7 +506,7 @@ const FocusRangeZone: React.FC<{
             unlock = undefined
             u()
           }
-          unlock = panelStuff.addBoundsHighlightLock()
+          unlock = panelStuffRef.current.addBoundsHighlightLock()
         }
       },
       function onMouseLeave(event: React.MouseEvent) {
@@ -727,3 +570,168 @@ const FocusRangeZone: React.FC<{
 }
 
 export default FocusRangeZone
+
+function usePanelDragZoneGestureHandlers(
+  layoutP: Pointer<SequenceEditorPanelLayout>,
+  panelStuffRef: React.MutableRefObject<ReturnType<typeof usePanel>>,
+) {
+  return useMemo((): Parameters<typeof useDrag>[1] => {
+    const focusRangeCreationGestureHandlers = (): Parameters<
+      typeof useDrag
+    >[1] => {
+      let startPosBeforeDrag: number,
+        endPosBeforeDrag: number,
+        tempTransaction: CommitOrDiscard | undefined
+
+      let dragHappened = false
+      let scaledSpaceToUnitSpace: (s: number) => number
+      let sequence: Sequence
+      let sheet: Sheet
+
+      return {
+        onDragStart(event) {
+          scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
+          sheet = val(layoutP.sheet)
+          sequence = sheet.getSequence()
+
+          const targetElement: HTMLElement = event.target as HTMLElement
+          const rect = targetElement!.getBoundingClientRect()
+          const tempPos = scaledSpaceToUnitSpace(event.clientX - rect.left)
+          if (tempPos <= sequence.length) {
+            startPosBeforeDrag = tempPos
+            endPosBeforeDrag = startPosBeforeDrag
+
+            getStudio()
+              .tempTransaction(({stateEditors}) => {
+                stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.set(
+                  {
+                    ...sheet.address,
+                    range: {start: startPosBeforeDrag, end: endPosBeforeDrag},
+                    enabled: true,
+                  },
+                )
+              })
+              .commit()
+          }
+        },
+        onDrag(dx) {
+          dragHappened = true
+          const deltaPos = scaledSpaceToUnitSpace(dx)
+
+          let newStartPosition: number, newEndPosition: number
+
+          const start = startPosBeforeDrag
+          let end = endPosBeforeDrag + deltaPos
+
+          if (end < start) {
+            end = start
+          }
+
+          ;[newStartPosition, newEndPosition] = [
+            start,
+            clamp(end, start, sequence.length),
+          ].map((pos) => sequence.closestGridPosition(pos))
+
+          if (tempTransaction) {
+            tempTransaction.discard()
+          }
+
+          tempTransaction = getStudio().tempTransaction(({stateEditors}) => {
+            stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.set(
+              {
+                ...sheet.address,
+                range: {
+                  start: newStartPosition,
+                  end: newEndPosition,
+                },
+                enabled: true,
+              },
+            )
+          })
+        },
+        onDragEnd() {
+          if (dragHappened && tempTransaction !== undefined) {
+            tempTransaction.commit()
+          } else if (tempTransaction) {
+            tempTransaction.discard()
+          }
+          tempTransaction = undefined
+        },
+        lockCursorTo: 'grabbing',
+      }
+    }
+
+    const panelMoveGestureHandlers = (): Parameters<typeof useDrag>[1] => {
+      let stuffBeforeDrag = panelStuffRef.current
+      let tempTransaction: CommitOrDiscard | undefined
+      let unlock: VoidFn | undefined
+      return {
+        onDragStart() {
+          stuffBeforeDrag = panelStuffRef.current
+          if (unlock) {
+            const u = unlock
+            unlock = undefined
+            u()
+          }
+          unlock = panelStuffRef.current.addBoundsHighlightLock()
+        },
+        onDrag(dx, dy) {
+          const newDims: typeof panelStuffRef.current['dims'] = {
+            ...stuffBeforeDrag.dims,
+            top: stuffBeforeDrag.dims.top + dy,
+            left: stuffBeforeDrag.dims.left + dx,
+          }
+          const position = panelDimsToPanelPosition(newDims, {
+            width: window.innerWidth,
+            height: window.innerHeight,
+          })
+
+          tempTransaction?.discard()
+          tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
+            stateEditors.studio.historic.panelPositions.setPanelPosition({
+              position,
+              panelId: stuffBeforeDrag.panelId,
+            })
+          })
+        },
+        onDragEnd(dragHappened) {
+          if (unlock) {
+            const u = unlock
+            unlock = undefined
+            u()
+          }
+          if (dragHappened) {
+            tempTransaction?.commit()
+          } else {
+            tempTransaction?.discard()
+          }
+          tempTransaction = undefined
+        },
+        lockCursorTo: 'move',
+      }
+    }
+
+    let currentGestureHandlers: undefined | Parameters<typeof useDrag>[1]
+
+    return {
+      onDragStart(event) {
+        if (event.shiftKey) {
+          currentGestureHandlers = focusRangeCreationGestureHandlers()
+        } else {
+          currentGestureHandlers = panelMoveGestureHandlers()
+        }
+        currentGestureHandlers.onDragStart!(event)
+      },
+      onDrag(dx, dy, event) {
+        if (!currentGestureHandlers) {
+          console.error('oh hno')
+        }
+        currentGestureHandlers!.onDrag(dx, dy, event)
+      },
+      onDragEnd(dragHappened) {
+        currentGestureHandlers!.onDragEnd!(dragHappened)
+      },
+      lockCursorTo: 'grabbing',
+    }
+  }, [layoutP, panelStuffRef])
+}

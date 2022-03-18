@@ -16,7 +16,7 @@ export const topStripTheme = {
   borderColor: `#1c1e21`,
 }
 
-const Container = styled(PanelDragZone)`
+const Container = styled.div`
   position: absolute;
   top: 0;
   left: 0;
