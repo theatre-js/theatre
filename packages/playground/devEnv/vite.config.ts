@@ -20,6 +20,11 @@ const port = 8080
 // https://vitejs.dev/config/
 export default defineConfig({
   root: path.join(playgroundDir, './src'),
+  build: {
+    outDir: '../build',
+    minify: false,
+    emptyOutDir: true,
+  },
 
   assetsInclude: ['**/*.gltf', '**/*.glb'],
   server: {
