@@ -5,6 +5,7 @@ import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEdi
 import React, {useMemo} from 'react'
 import getStudio from '@theatre/studio/getStudio'
 import {usePrism} from '@theatre/react'
+import {topStripHeight} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/TopStrip'
 
 const focusRangeAreaTheme = {
   enabled: {
@@ -23,8 +24,7 @@ const Container = styled.div`
 `
 const FocusRangeArea: React.FC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
-  height: number
-}> = ({layoutP, height}) => {
+}> = ({layoutP}) => {
   const existingRangeD = useMemo(
     () =>
       prism(() => {
@@ -45,6 +45,8 @@ const FocusRangeArea: React.FC<{
 
     const opacity = focusRangeAreaTheme.enabled.opacity
     let background = 'transparent'
+
+    const height = val(layoutP.rightDims.height) + topStripHeight
 
     if (existingRange !== undefined) {
       if (existingRange.enabled === true) {
