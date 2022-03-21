@@ -23,7 +23,7 @@ import {topStripHeight} from '@theatre/studio/panels/SequenceEditorPanel/RightOv
 
 const Container = styled.div`
   position: absolute;
-  height: ${() => topStripHeight};
+  height: ${() => topStripHeight}px;
   left: 0;
   right: 0;
   box-sizing: border-box;

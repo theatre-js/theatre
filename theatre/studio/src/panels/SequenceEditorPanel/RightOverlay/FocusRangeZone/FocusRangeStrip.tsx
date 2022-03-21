@@ -34,6 +34,9 @@ export const focusRangeTheme = {
     stroke: '#C8CAC0',
     opacity: 1,
   },
+  dragging: {
+    backgroundColor: '#212221',
+  },
   thumbWidth: 9,
   hitZoneWidth: 26,
 }
@@ -43,6 +46,9 @@ const RangeStrip = styled.div`
   height: 100%;
   opacity: ${focusRangeTheme.enabled.opacity};
   ${pointerEventsAutoInNormalMode};
+  &:hover {
+    background-color: ${focusRangeTheme.highlight.backgroundColor}!important;
+  }
 `
 
 /**
@@ -155,9 +161,10 @@ const FocusRangeStrip: React.FC<{
       tempTransaction: CommitOrDiscard | undefined
     let dragHappened = false
     let existingRange: {enabled: boolean; range: IRange<number>} | undefined
+    let target: HTMLDivElement | undefined
 
     return {
-      onDragStart() {
+      onDragStart(event) {
         existingRange = existingRangeD.getValue()
 
         if (existingRange?.enabled === true) {
@@ -165,6 +172,9 @@ const FocusRangeStrip: React.FC<{
           endPosBeforeDrag = existingRange.range.end
           dragHappened = false
           sequence = val(layoutP.sheet).getSequence()
+          target = event.target as HTMLDivElement
+          target.style.backgroundColor =
+            focusRangeTheme.dragging.backgroundColor
         }
       },
       onDrag(dx) {
@@ -213,6 +223,10 @@ const FocusRangeStrip: React.FC<{
             tempTransaction.discard()
           }
           tempTransaction = undefined
+        }
+        if (target !== undefined) {
+          target.style.backgroundColor = focusRangeTheme.enabled.backgroundColor
+          target = undefined
         }
       },
       lockCursorTo: 'grabbing',

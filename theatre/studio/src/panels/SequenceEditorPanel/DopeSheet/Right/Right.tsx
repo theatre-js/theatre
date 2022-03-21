@@ -49,7 +49,7 @@ const Right: React.FC<{
     return (
       <>
         <HorizontallyScrollableArea layoutP={layoutP} height={height}>
-          <FocusRangeArea layoutP={layoutP} height={height} />
+          <FocusRangeArea layoutP={layoutP} />
           <DopeSheetSelectionView layoutP={layoutP}>
             <ListContainer style={{top: tree.top + 'px'}}>
               <SheetRow leaf={tree} layoutP={layoutP} />
