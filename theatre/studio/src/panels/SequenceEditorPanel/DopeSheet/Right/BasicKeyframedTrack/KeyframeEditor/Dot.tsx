@@ -110,6 +110,23 @@ function useKeyframeContextMenu(node: HTMLDivElement | null, props: IProps) {
     items: () => {
       return [
         {
+          label: 'Copy Keyframe',
+          callback: () => {
+            console.log(props.selection)
+            const selection = props.selection
+            if (!selection) return
+            for (const objectKey of Object.keys(selection.byObjectKey)) {
+              const {byTrackId} = selection.byObjectKey[objectKey]!
+              for (const trackId of Object.keys(byTrackId)) {
+                const {byKeyframeId} = byTrackId[trackId]!
+
+                const keyframeIds = Object.keys(byKeyframeId)
+                //props.trackData.keyframes.find((keyframe) => keyframe.id === keyframeIds[0])
+              }
+            }
+          },
+        },
+        {
           label: props.selection ? 'Delete Selection' : 'Delete Keyframe',
           callback: () => {
             if (props.selection) {
