@@ -9,7 +9,7 @@ import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
-import React, {useMemo} from 'react'
+import React, {useMemo, useState} from 'react'
 import styled from 'styled-components'
 
 export const focusRangeTheme = {
@@ -20,7 +20,6 @@ export const focusRangeTheme = {
   },
   disabled: {
     backgroundColor: '#282A2C',
-    // backgroundColor: '#212221',
     opacity: 1,
     stroke: '#3C3D3D',
   },
@@ -110,6 +109,11 @@ const FocusRangeStrip: React.FC<{
     null,
   )
 
+  const [previousRangeState, setPreviousRangeState] = useState<null | {
+    start: number
+    end: number
+  }>(null)
+
   const [contextMenu] = useContextMenu(rangeStripNode, {
     items: () => {
       const existingRange = existingRangeD.getValue()
@@ -162,6 +166,7 @@ const FocusRangeStrip: React.FC<{
     let dragHappened = false
     let existingRange: {enabled: boolean; range: IRange<number>} | undefined
     let target: HTMLDivElement | undefined
+    let newStartPosition: number, newEndPosition: number
 
     return {
       onDragStart(event) {
@@ -182,8 +187,6 @@ const FocusRangeStrip: React.FC<{
         if (existingRange?.enabled) {
           dragHappened = true
           const deltaPos = scaledSpaceToUnitSpace(dx)
-
-          let newStartPosition: number, newEndPosition: number
 
           const start = startPosBeforeDrag + deltaPos
           let end = endPosBeforeDrag + deltaPos
@@ -219,6 +222,10 @@ const FocusRangeStrip: React.FC<{
         if (existingRange?.enabled) {
           if (dragHappened && tempTransaction !== undefined) {
             tempTransaction.commit()
+            setPreviousRangeState({
+              start: newStartPosition,
+              end: newEndPosition,
+            })
           } else if (tempTransaction) {
             tempTransaction.discard()
           }
@@ -234,6 +241,42 @@ const FocusRangeStrip: React.FC<{
   }, [sheet, scaledSpaceToUnitSpace])
 
   useDrag(rangeStripNode, gestureHandlers)
+
+  const handleDoubleClick = useMemo(
+    (): (() => void) => (): void => {
+      const existingRange = existingRangeD.getValue()
+
+      if (existingRange) {
+        const sheet = val(layoutP.sheet)
+        let sequence = sheet.getSequence()
+
+        let newRange: {start: number; end: number}
+
+        if (previousRangeState === null) {
+          newRange = {start: 0, end: sequence.length}
+          setPreviousRangeState(existingRange.range)
+        } else {
+          newRange = previousRangeState
+          setPreviousRangeState(null)
+        }
+
+        const tempTransaction = getStudio().tempTransaction(
+          ({stateEditors}) => {
+            stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.set(
+              {
+                ...sheet.address,
+                range: newRange,
+                enabled: true,
+              },
+            )
+          },
+        )
+
+        tempTransaction.commit()
+      }
+    },
+    [existingRangeD, layoutP, previousRangeState],
+  )
 
   return usePrism(() => {
     const existingRange = existingRangeD.getValue()
@@ -279,6 +322,7 @@ const FocusRangeStrip: React.FC<{
         {contextMenu}
         <RangeStrip
           ref={rangeStripRef as $IntentionalAny}
+          onDoubleClick={handleDoubleClick}
           style={{
             background,
             opacity: existingRange.enabled
@@ -296,6 +340,7 @@ const FocusRangeStrip: React.FC<{
     existingRangeD,
     contextMenu,
     isPlayingInFocusRange,
+    previousRangeState,
   ])
 }
 
