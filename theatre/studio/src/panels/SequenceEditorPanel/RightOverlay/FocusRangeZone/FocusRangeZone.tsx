@@ -41,7 +41,6 @@ const FocusRangeZone: React.FC<{
   const panelStuffRef = useRef(panelStuff)
   panelStuffRef.current = panelStuff
 
-  // const playbackStateBox = getPlaybackStateBox(sequence)
   const existingRangeD = useMemo(
     () =>
       prism(() => {
@@ -86,41 +85,15 @@ const FocusRangeZone: React.FC<{
   }, [])
 
   return usePrism(() => {
-    const existingRange = existingRangeD.getValue()
-    const playing = false
-    // console.log('playing')
-
-    let isPlayingInFocusRange = false
-
-    if (
-      playing &&
-      existingRange &&
-      sequence.position >= existingRange.range.start &&
-      sequence.position <= existingRange.range.end
-    ) {
-      isPlayingInFocusRange = true
-    }
-
     return (
       <Container
         ref={containerRef as $IntentionalAny}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
       >
-        <FocusRangeStrip
-          layoutP={layoutP}
-          isPlayingInFocusRange={isPlayingInFocusRange}
-        />
-        <FocusRangeThumb
-          thumbType="start"
-          layoutP={layoutP}
-          isPlayingInFocusRange={isPlayingInFocusRange}
-        />
-        <FocusRangeThumb
-          thumbType="end"
-          layoutP={layoutP}
-          isPlayingInFocusRange={isPlayingInFocusRange}
-        />
+        <FocusRangeStrip layoutP={layoutP} />
+        <FocusRangeThumb thumbType="start" layoutP={layoutP} />
+        <FocusRangeThumb thumbType="end" layoutP={layoutP} />
       </Container>
     )
   }, [layoutP, existingRangeD, sequence])
@@ -273,7 +246,7 @@ function usePanelDragZoneGestureHandlers(
       },
       onDrag(dx, dy, event) {
         if (!currentGestureHandlers) {
-          console.error('oh hno')
+          console.error('oh no')
         }
         currentGestureHandlers!.onDrag(dx, dy, event)
       },

@@ -89,8 +89,7 @@ function clampRange(
 
 const FocusRangeStrip: React.FC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
-  isPlayingInFocusRange: boolean
-}> = ({layoutP, isPlayingInFocusRange}) => {
+}> = ({layoutP}) => {
   const existingRangeD = useMemo(
     () =>
       prism(() => {
@@ -333,14 +332,7 @@ const FocusRangeStrip: React.FC<{
         />
       </>
     )
-  }, [
-    layoutP,
-    rangeStripRef,
-    existingRangeD,
-    contextMenu,
-    isPlayingInFocusRange,
-    previousRangeState,
-  ])
+  }, [layoutP, rangeStripRef, existingRangeD, contextMenu, previousRangeState])
 }
 
 export default FocusRangeStrip

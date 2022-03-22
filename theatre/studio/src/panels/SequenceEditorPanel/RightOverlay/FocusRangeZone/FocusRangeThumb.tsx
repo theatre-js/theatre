@@ -40,8 +40,7 @@ const HitZone = styled.div`
 const FocusRangeThumb: React.FC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
   thumbType: keyof IRange
-  isPlayingInFocusRange: boolean
-}> = ({layoutP, isPlayingInFocusRange, thumbType}) => {
+}> = ({layoutP, thumbType}) => {
   const [hitZoneRef, hitZoneNode] = useRefAndState<HTMLElement | null>(null)
   const handlerRef = useRef<HTMLElement | null>(null)
 
@@ -212,13 +211,7 @@ const FocusRangeThumb: React.FC<{
     ) : (
       <></>
     )
-  }, [
-    layoutP,
-    hitZoneRef,
-    existingRangeD,
-    focusRangeEnabled,
-    isPlayingInFocusRange,
-  ])
+  }, [layoutP, hitZoneRef, existingRangeD, focusRangeEnabled])
 }
 
 export default FocusRangeThumb
