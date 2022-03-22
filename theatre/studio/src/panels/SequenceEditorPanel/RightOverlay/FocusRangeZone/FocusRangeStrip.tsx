@@ -45,9 +45,14 @@ const RangeStrip = styled.div`
   position: absolute;
   height: 100%;
   opacity: ${focusRangeTheme.enabled.opacity};
+  background-color: ${focusRangeTheme.enabled.backgroundColor};
   ${pointerEventsAutoInNormalMode};
   &:hover {
-    background-color: ${focusRangeTheme.highlight.backgroundColor}!important;
+    background-color: ${focusRangeTheme.highlight.backgroundColor};
+  }
+  &.dragging {
+    background-color: ${focusRangeTheme.dragging.backgroundColor};
+    cursor: grabbing !important;
   }
 `
 
@@ -178,8 +183,7 @@ const FocusRangeStrip: React.FC<{
           dragHappened = false
           sequence = val(layoutP.sheet).getSequence()
           target = event.target as HTMLDivElement
-          target.style.backgroundColor =
-            focusRangeTheme.dragging.backgroundColor
+          target.classList.add('dragging')
         }
       },
       onDrag(dx) {
@@ -232,7 +236,8 @@ const FocusRangeStrip: React.FC<{
           tempTransaction = undefined
         }
         if (target !== undefined) {
-          target.style.backgroundColor = focusRangeTheme.enabled.backgroundColor
+          // target.style.backgroundColor = focusRangeTheme.enabled.backgroundColor
+          target.classList.remove('dragging')
           target = undefined
         }
       },
@@ -283,23 +288,16 @@ const FocusRangeStrip: React.FC<{
 
     const range = existingRange?.range || {start: 0, end: 0}
 
-    let background = 'transparent'
-
-    let cursor = 'default'
-
-    if (existingRange !== undefined) {
-      if (existingRange.enabled === true) {
-        background = focusRangeTheme.enabled.backgroundColor
-        cursor = 'grab'
-      } else {
-        background = focusRangeTheme.disabled.backgroundColor
-        cursor = 'default'
-      }
-    }
-
     let startPosInClippedSpace: number,
       endPosInClippedSpace: number,
-      conditionalStyleProps: {width: number; transform: string} | undefined
+      conditionalStyleProps:
+        | {
+            width: number
+            transform: string
+            background?: string
+            cursor?: string
+          }
+        | undefined
 
     if (existingRange !== undefined) {
       startPosInClippedSpace = val(layoutP.clippedSpace.fromUnitSpace)(
@@ -310,6 +308,14 @@ const FocusRangeStrip: React.FC<{
       conditionalStyleProps = {
         width: endPosInClippedSpace - startPosInClippedSpace,
         transform: `translate3d(${startPosInClippedSpace}px, 0, 0)`,
+      }
+
+      if (existingRange.enabled === false) {
+        conditionalStyleProps.background =
+          focusRangeTheme.disabled.backgroundColor
+        conditionalStyleProps.cursor = 'default'
+      } else {
+        conditionalStyleProps.cursor = 'grab'
       }
     }
 
@@ -322,11 +328,9 @@ const FocusRangeStrip: React.FC<{
           ref={rangeStripRef as $IntentionalAny}
           onDoubleClick={handleDoubleClick}
           style={{
-            background,
             opacity: existingRange.enabled
               ? focusRangeTheme.enabled.opacity
               : focusRangeTheme.disabled.opacity,
-            cursor: cursor,
             ...conditionalStyleProps,
           }}
         />
