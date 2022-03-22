@@ -89,6 +89,7 @@ const FocusRangeZone: React.FC<{
   return usePrism(() => {
     const existingRange = existingRangeD.getValue()
     const playing = playbackStateBox.derivation.getValue()
+    console.log('playing')
 
     let isPlayingInFocusRange = false
 

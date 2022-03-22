@@ -174,15 +174,9 @@ const FocusRangeThumb: React.FC<{
 
     const pointerEvents = focusRangeEnabled ? 'auto' : 'none'
 
-    let background = focusRangeTheme.disabled.backgroundColor
-
-    if (focusRangeEnabled) {
-      if (isPlayingInFocusRange) {
-        background = focusRangeTheme.playing.backgroundColor
-      } else {
-        background = focusRangeTheme.enabled.backgroundColor
-      }
-    }
+    let background = focusRangeEnabled
+      ? focusRangeTheme.disabled.backgroundColor
+      : focusRangeTheme.enabled.backgroundColor
 
     const startHandlerOffset = focusRangeTheme.hitZoneWidth / 2
     const endHandlerOffset = startHandlerOffset - focusRangeTheme.thumbWidth

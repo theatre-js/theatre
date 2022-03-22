@@ -243,9 +243,7 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
           <Thumb
             ref={thumbRef as $IntentionalAny}
             data-pos={posInUnitSpace.toFixed(3)}
-            onClick={(e) => {
-              openPopover(e, thumbNode!)
-            }}
+            style={{transform: 'scaleX(1.5) scaleY(1.5)'}}
           >
             <RoomToClick room={8} />
             <Squinch />

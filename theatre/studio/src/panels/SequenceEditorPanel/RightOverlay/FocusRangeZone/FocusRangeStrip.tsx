@@ -14,7 +14,7 @@ import styled from 'styled-components'
 
 export const focusRangeTheme = {
   enabled: {
-    backgroundColor: '#33373D',
+    backgroundColor: '#2C2F34',
     opacity: 1,
     stroke: '#646568',
   },
@@ -29,12 +29,12 @@ export const focusRangeTheme = {
     opacity: 1,
   },
   highlight: {
-    backgroundColor: '#575C66',
+    backgroundColor: '#34373D',
     stroke: '#C8CAC0',
     opacity: 1,
   },
   dragging: {
-    backgroundColor: '#212221',
+    backgroundColor: '#3F444A',
   },
   thumbWidth: 9,
   hitZoneWidth: 26,
@@ -290,9 +290,7 @@ const FocusRangeStrip: React.FC<{
 
     if (existingRange !== undefined) {
       if (existingRange.enabled === true) {
-        background = isPlayingInFocusRange
-          ? focusRangeTheme.playing.backgroundColor
-          : focusRangeTheme.enabled.backgroundColor
+        background = focusRangeTheme.enabled.backgroundColor
         cursor = 'grab'
       } else {
         background = focusRangeTheme.disabled.backgroundColor
