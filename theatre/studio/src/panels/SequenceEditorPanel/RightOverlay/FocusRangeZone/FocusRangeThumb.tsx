@@ -8,7 +8,6 @@ import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEdi
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
-import {clamp} from 'lodash-es'
 import React, {useMemo, useRef} from 'react'
 import styled from 'styled-components'
 import {focusRangeTheme} from './FocusRangeStrip'
@@ -77,6 +76,7 @@ const FocusRangeThumb: React.FC<{
     let dragHappened = false
     let originalBackground: string
     let originalStroke: string
+    let minWidth: number
 
     return {
       onDragStart() {
@@ -86,6 +86,7 @@ const FocusRangeThumb: React.FC<{
         posBeforeDrag =
           existingRangeD.getValue()?.range[thumbType] ||
           defaultFocusRange[thumbType]
+        minWidth = scaledSpaceToUnitSpace(focusRangeTheme.rangeStripMinWidth)
 
         if (handlerRef.current) {
           originalBackground = handlerRef.current.style.background
@@ -100,10 +101,20 @@ const FocusRangeThumb: React.FC<{
         range = existingRangeD.getValue()?.range || defaultFocusRange
 
         const deltaPos = scaledSpaceToUnitSpace(dx)
-        const newPosition =
-          thumbType === 'start'
-            ? clamp(posBeforeDrag + deltaPos, 0, range['end'])
-            : clamp(posBeforeDrag + deltaPos, range['start'], sequence.length)
+        let newPosition: number
+        const oldPosPlusDeltaPos = posBeforeDrag + deltaPos
+
+        if (thumbType === 'start') {
+          newPosition = Math.max(
+            Math.min(oldPosPlusDeltaPos, range['end'] - minWidth),
+            0,
+          )
+        } else {
+          newPosition = Math.min(
+            Math.max(oldPosPlusDeltaPos, range['start'] + minWidth),
+            sequence.length,
+          )
+        }
 
         const newPositionInFrame = sequence.closestGridPosition(newPosition)
 
@@ -135,7 +146,6 @@ const FocusRangeThumb: React.FC<{
         } else if (tempTransaction) {
           tempTransaction.discard()
         }
-        tempTransaction = undefined
       },
       lockCursorTo: thumbType === 'start' ? 'w-resize' : 'e-resize',
     }

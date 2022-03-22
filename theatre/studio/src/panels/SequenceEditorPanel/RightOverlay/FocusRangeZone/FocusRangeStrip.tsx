@@ -38,6 +38,7 @@ export const focusRangeTheme = {
   },
   thumbWidth: 9,
   hitZoneWidth: 26,
+  rangeStripMinWidth: 30,
 }
 
 const RangeStrip = styled.div`
