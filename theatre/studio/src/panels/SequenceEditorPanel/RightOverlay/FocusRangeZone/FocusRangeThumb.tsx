@@ -76,7 +76,7 @@ const FocusRangeThumb: React.FC<{
     let dragHappened = false
     let originalBackground: string
     let originalStroke: string
-    let minWidth: number
+    let minFocusRangeStripWidth: number
 
     return {
       onDragStart() {
@@ -86,7 +86,9 @@ const FocusRangeThumb: React.FC<{
         posBeforeDrag =
           existingRangeD.getValue()?.range[thumbType] ||
           defaultFocusRange[thumbType]
-        minWidth = scaledSpaceToUnitSpace(focusRangeTheme.rangeStripMinWidth)
+        minFocusRangeStripWidth = scaledSpaceToUnitSpace(
+          focusRangeTheme.rangeStripMinWidth,
+        )
 
         if (handlerRef.current) {
           originalBackground = handlerRef.current.style.background
@@ -106,12 +108,18 @@ const FocusRangeThumb: React.FC<{
 
         if (thumbType === 'start') {
           newPosition = Math.max(
-            Math.min(oldPosPlusDeltaPos, range['end'] - minWidth),
+            Math.min(
+              oldPosPlusDeltaPos,
+              range['end'] - minFocusRangeStripWidth,
+            ),
             0,
           )
         } else {
           newPosition = Math.min(
-            Math.max(oldPosPlusDeltaPos, range['start'] + minWidth),
+            Math.max(
+              oldPosPlusDeltaPos,
+              range['start'] + minFocusRangeStripWidth,
+            ),
             sequence.length,
           )
         }

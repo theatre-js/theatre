@@ -18,7 +18,7 @@ import {
 import type Sequence from '@theatre/core/sequences/Sequence'
 import type Sheet from '@theatre/core/sheets/Sheet'
 import FocusRangeThumb from './FocusRangeThumb'
-import FocusRangeStrip from './FocusRangeStrip'
+import FocusRangeStrip, {focusRangeTheme} from './FocusRangeStrip'
 import {topStripHeight} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/TopStrip'
 
 const Container = styled.div`
@@ -143,6 +143,7 @@ function usePanelDragZoneGestureHandlers(
       let scaledSpaceToUnitSpace: (s: number) => number
       let sequence: Sequence
       let sheet: Sheet
+      let minFocusRangeStripWidth: number
 
       return {
         onDragStart(event) {
@@ -155,6 +156,9 @@ function usePanelDragZoneGestureHandlers(
           const rect = targetElement!.getBoundingClientRect()
           startPosInUnitSpace = clippedSpaceToUnitSpace(
             event.clientX - rect.left,
+          )
+          minFocusRangeStripWidth = scaledSpaceToUnitSpace(
+            focusRangeTheme.rangeStripMinWidth,
           )
         },
         onDrag(dx) {
@@ -169,7 +173,15 @@ function usePanelDragZoneGestureHandlers(
           ].map((pos) => sequence.closestGridPosition(pos))
 
           if (end < start) {
-            ;[start, end] = [end, start]
+            ;[start, end] = [
+              Math.max(Math.min(end, start - minFocusRangeStripWidth), 0),
+              start,
+            ]
+          } else if (dx > 0) {
+            end = Math.min(
+              Math.max(end, start + minFocusRangeStripWidth),
+              sequence.length,
+            )
           }
 
           if (tempTransaction) {
