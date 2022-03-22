@@ -6,7 +6,6 @@ import getStudio from '@theatre/studio/getStudio'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
-import {getPlaybackStateBox} from '@theatre/studio/UIRoot/useKeyboardShortcuts'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {clamp} from 'lodash-es'
 import React, {useMemo, useRef} from 'react'
@@ -42,7 +41,7 @@ const FocusRangeZone: React.FC<{
   const panelStuffRef = useRef(panelStuff)
   panelStuffRef.current = panelStuff
 
-  const playbackStateBox = getPlaybackStateBox(sequence)
+  // const playbackStateBox = getPlaybackStateBox(sequence)
   const existingRangeD = useMemo(
     () =>
       prism(() => {
@@ -88,8 +87,8 @@ const FocusRangeZone: React.FC<{
 
   return usePrism(() => {
     const existingRange = existingRangeD.getValue()
-    const playing = playbackStateBox.derivation.getValue()
-    console.log('playing')
+    const playing = false
+    // console.log('playing')
 
     let isPlayingInFocusRange = false
 
@@ -124,7 +123,7 @@ const FocusRangeZone: React.FC<{
         />
       </Container>
     )
-  }, [layoutP, existingRangeD, playbackStateBox, sequence])
+  }, [layoutP, existingRangeD, sequence])
 }
 
 export default FocusRangeZone

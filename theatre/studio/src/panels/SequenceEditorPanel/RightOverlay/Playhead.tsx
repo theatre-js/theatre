@@ -19,6 +19,7 @@ import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
 import PlayheadPositionPopover from './PlayheadPositionPopover'
+import {getIsPlayheadAttachedToFocusRange} from '@theatre/studio/UIRoot/useKeyboardShortcuts'
 
 const Container = styled.div<{isVisible: boolean}>`
   --thumbColor: #00e0ff;
@@ -231,6 +232,10 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
       posInClippedSpace >= 0 &&
       posInClippedSpace <= val(layoutP.clippedSpace.width)
 
+    const isPlayheadAttachedToFocusRange = val(
+      getIsPlayheadAttachedToFocusRange(sequence),
+    )
+
     return (
       <>
         {popoverNode}
@@ -243,7 +248,9 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
           <Thumb
             ref={thumbRef as $IntentionalAny}
             data-pos={posInUnitSpace.toFixed(3)}
-            style={{transform: 'scaleX(1.5) scaleY(1.5)'}}
+            style={{
+              transform: isPlayheadAttachedToFocusRange ? 'scale(1.5)' : '',
+            }}
           >
             <RoomToClick room={8} />
             <Squinch />
