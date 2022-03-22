@@ -105,27 +105,58 @@ const Dot: React.FC<IProps> = (props) => {
 
 export default Dot
 
+const copyKeyFrameContextMenuItem = (props: IProps) => ({
+  label: 'Copy Keyframes',
+  callback: () => {
+    const selection = props.selection
+    if (!selection) return
+    for (const objectKey of Object.keys(selection.byObjectKey)) {
+      const {byTrackId} = selection.byObjectKey[objectKey]!
+      for (const trackId of Object.keys(byTrackId)) {
+        const {byKeyframeId} = byTrackId[trackId]!
+
+        const keyframeIds = Object.keys(byKeyframeId)
+
+        const keyframes = keyframeIds.map((keyframeId) =>
+          props.trackData.keyframes.find(
+            (keyframe) => keyframe.id === keyframeId,
+          ),
+        )
+
+        const sheet = val(props.layoutP.sheet)
+        const sequence = sheet.getSequence()
+
+        window.selectionKeyframes = keyframes
+        window.selectionPlayhead = sequence.position
+      }
+    }
+  },
+})
+
+const selectionContainsKeyFramesInOnlyASingleTrack = (
+  selection: DopeSheetSelection | undefined,
+) => {
+  if (!selection) return false
+  const objectKeys = Object.keys(selection.byObjectKey)
+  if (objectKeys.length !== 1) return false
+  const object = selection.byObjectKey[objectKeys[0]]
+  if (!object) return false
+  const trackIds = Object.keys(object.byTrackId)
+  if (trackIds.length !== 1) return false
+  return true
+}
+
 function useKeyframeContextMenu(node: HTMLDivElement | null, props: IProps) {
   return useContextMenu(node, {
     items: () => {
       return [
-        {
-          label: 'Copy Keyframe',
-          callback: () => {
-            console.log(props.selection)
-            const selection = props.selection
-            if (!selection) return
-            for (const objectKey of Object.keys(selection.byObjectKey)) {
-              const {byTrackId} = selection.byObjectKey[objectKey]!
-              for (const trackId of Object.keys(byTrackId)) {
-                const {byKeyframeId} = byTrackId[trackId]!
-
-                const keyframeIds = Object.keys(byKeyframeId)
-                //props.trackData.keyframes.find((keyframe) => keyframe.id === keyframeIds[0])
-              }
-            }
-          },
-        },
+        /**
+         * Add the ability to copy a selection of keyFrames that can then be pasted to another track.
+         * If the selection contains keyframes on multiple tracks, copying is not possible for now.
+         */
+        ...(selectionContainsKeyFramesInOnlyASingleTrack(props.selection)
+          ? [copyKeyFrameContextMenuItem(props)]
+          : []),
         {
           label: props.selection ? 'Delete Selection' : 'Delete Keyframe',
           callback: () => {
