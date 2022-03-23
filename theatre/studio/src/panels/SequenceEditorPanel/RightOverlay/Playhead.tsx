@@ -55,7 +55,6 @@ const Rod = styled.div`
 `
 
 const Thumb = styled.div`
-  background-color: var(--thumbColor);
   position: absolute;
   width: 5px;
   height: 13px;
@@ -68,75 +67,11 @@ const Thumb = styled.div`
   #pointer-root.draggingPositionInSequenceEditor &:not(.seeking) {
     pointer-events: auto;
   }
-
-  &:before {
-    position: absolute;
-    display: block;
-    content: ' ';
-    left: -2px;
-    width: 0;
-    height: 0;
-    border-bottom: 4px solid #1f2b2b;
-    border-left: 2px solid transparent;
-  }
-
-  &:after {
-    position: absolute;
-    display: block;
-    content: ' ';
-    right: -2px;
-    width: 0;
-    height: 0;
-    border-bottom: 4px solid #1f2b2b;
-    border-right: 2px solid transparent;
-  }
-`
-
-const Squinch = styled.div`
-  position: absolute;
-  left: 1px;
-  right: 1px;
-  top: 13px;
-  border-top: 3px solid var(--thumbColor);
-  border-right: 1px solid transparent;
-  border-left: 1px solid transparent;
-  pointer-events: none;
-
-  &:before {
-    position: absolute;
-    display: block;
-    content: ' ';
-    top: -4px;
-    left: -2px;
-    height: 8px;
-    width: 2px;
-    background: none;
-    border-radius: 0 100% 0 0;
-    border-top: 1px solid var(--thumbColor);
-    border-right: 1px solid var(--thumbColor);
-  }
-
-  &:after {
-    position: absolute;
-    display: block;
-    content: ' ';
-    top: -4px;
-    right: -2px;
-    height: 8px;
-    width: 2px;
-    background: none;
-    border-radius: 100% 0 0 0;
-    border-top: 1px solid var(--thumbColor);
-    border-left: 1px solid var(--thumbColor);
-  }
 `
 
 const Tooltip = styled.div`
   display: none;
   position: absolute;
-  top: -18px;
-  left: 4px;
-  padding: 0 2px;
   transform: translateX(-50%);
   background: #1a1a1a;
   border-radius: 4px;
@@ -148,6 +83,34 @@ const Tooltip = styled.div`
     display: block;
   }
 `
+
+const RegularThumbSvg: React.FC = () => (
+  <svg
+    width="7"
+    height="26"
+    viewBox="0 0 7 26"
+    xmlns="http://www.w3.org/2000/svg"
+    style={{fill: '#00e0ff', marginLeft: '-1px'}}
+  >
+    <path d="M 0,0 L 7,0 L 7,13 C 4,15 4,26 4,26 L 3,26 C 3,26 3,15 0,13 L 0,0 Z" />
+  </svg>
+)
+
+const LargeThumbSvg: React.FC = () => (
+  <svg
+    width="9"
+    height="37"
+    viewBox="0 0 9 37"
+    xmlns="http://www.w3.org/2000/svg"
+    style={{
+      fill: '#00e0ff',
+      marginLeft: '-2px',
+      marginTop: '-4px',
+    }}
+  >
+    <path d="M 0,0 L 9,0 L 9,18 C 5,20 5,37 5,37 L 4,37 C 4,37 4,20 0,18 L 0,0 Z" />
+  </svg>
+)
 
 const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
   layoutP,
@@ -248,13 +211,16 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
           <Thumb
             ref={thumbRef as $IntentionalAny}
             data-pos={posInUnitSpace.toFixed(3)}
-            style={{
-              transform: isPlayheadAttachedToFocusRange ? 'scale(1.5)' : '',
-            }}
           >
             <RoomToClick room={8} />
-            <Squinch />
-            <Tooltip>
+            {isPlayheadAttachedToFocusRange ? (
+              <LargeThumbSvg />
+            ) : (
+              <RegularThumbSvg />
+            )}
+            <Tooltip
+              style={{top: isPlayheadAttachedToFocusRange ? '-23px' : '-18px'}}
+            >
               {sequence.positionFormatter.formatForPlayhead(
                 sequence.closestGridPosition(posInUnitSpace),
               )}
