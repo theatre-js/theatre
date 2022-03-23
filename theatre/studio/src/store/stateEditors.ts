@@ -317,6 +317,16 @@ namespace stateEditors {
       ) {
         drafts().ahistoric.visibilityState = visibilityState
       }
+      export function setClipboardKeyframes(keyframes: Keyframe[]) {
+        const draft = drafts()
+        if (draft.ahistoric.clipboard) {
+          draft.ahistoric.clipboard.keyframes = keyframes
+        } else {
+          draft.ahistoric.clipboard = {
+            keyframes,
+          }
+        }
+      }
       export namespace projects {
         export namespace stateByProjectId {
           export function _ensure(p: ProjectAddress) {

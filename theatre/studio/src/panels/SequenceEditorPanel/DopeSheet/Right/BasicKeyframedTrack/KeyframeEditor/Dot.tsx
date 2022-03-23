@@ -117,17 +117,16 @@ const copyKeyFrameContextMenuItem = (props: IProps) => ({
 
         const keyframeIds = Object.keys(byKeyframeId)
 
-        const keyframes = keyframeIds.map((keyframeId) =>
-          props.trackData.keyframes.find(
-            (keyframe) => keyframe.id === keyframeId,
-          ),
+        const keyframes = keyframeIds.map(
+          (keyframeId) =>
+            props.trackData.keyframes.find(
+              (keyframe) => keyframe.id === keyframeId,
+            )!,
         )
 
-        const sheet = val(props.layoutP.sheet)
-        const sequence = sheet.getSequence()
-
-        window.selectionKeyframes = keyframes
-        window.selectionPlayhead = sequence.position
+        getStudio!().transaction((api) => {
+          api.stateEditors.studio.ahistoric.setClipboardKeyframes(keyframes)
+        })
       }
     }
   },

@@ -38,7 +38,10 @@ const BasicKeyframedTrack: React.FC<IProps> = React.memo((props) => {
     }
   }, [layoutP, leaf.trackId])
 
-  const [contextMenu] = useBasicKeyframedTrackContextMenu(containerNode, props)
+  const [contextMenu, _, isOpen] = useBasicKeyframedTrackContextMenu(
+    containerNode,
+    props,
+  )
 
   const keyframeEditors = trackData.keyframes.map((kf, index) => (
     <KeyframeEditor
@@ -53,7 +56,12 @@ const BasicKeyframedTrack: React.FC<IProps> = React.memo((props) => {
   ))
 
   return (
-    <Container ref={containerRef}>
+    <Container
+      ref={containerRef}
+      style={{
+        background: isOpen ? '#444850 ' : 'unset',
+      }}
+    >
       {keyframeEditors}
       {contextMenu}
     </Container>
@@ -62,51 +70,53 @@ const BasicKeyframedTrack: React.FC<IProps> = React.memo((props) => {
 
 export default BasicKeyframedTrack
 
+const earliestKeyframe = (keyframes: Keyframe[]) => {
+  let curEarliest: Keyframe | null = null
+  for (const keyframe of keyframes) {
+    if (curEarliest === null || keyframe.position < curEarliest.position) {
+      curEarliest = keyframe
+    }
+  }
+  return curEarliest
+}
+
+const pasteKeyframesContextMenuItem = (
+  props: IProps,
+  keyframes: Keyframe[],
+) => ({
+  label: 'Paste Keyframes',
+  callback: () => {
+    const sheet = val(props.layoutP.sheet)
+    const sequence = sheet.getSequence()
+
+    getStudio()!.transaction(({stateEditors}) => {
+      const keyframeOffset = earliestKeyframe(keyframes)?.position!
+      for (const keyframe of keyframes) {
+        stateEditors.coreByProject.historic.sheetsById.sequence.setKeyframeAtPosition(
+          {
+            ...props.leaf.sheetObject.address,
+            trackId: props.leaf.trackId,
+            position: sequence.position + keyframe.position - keyframeOffset,
+            value: keyframe.value,
+            snappingFunction: sequence.closestGridPosition,
+          },
+        )
+      }
+    })
+  },
+})
+
 function useBasicKeyframedTrackContextMenu(
   node: HTMLDivElement | null,
   props: IProps,
 ) {
   return useContextMenu(node, {
     items: () => {
-      const selectionPlayheadPosition = window.selectionPlayhead as
-        | number
-        | undefined
-      const selectionKeyframes = window.selectionKeyframes as
-        | Array<Keyframe>
-        | undefined
+      const selectionKeyframes =
+        val(getStudio()!.atomP.ahistoric.clipboard.keyframes) || []
 
-      if (
-        Array.isArray(selectionKeyframes) &&
-        selectionPlayheadPosition !== undefined
-      ) {
-        return [
-          /**
-           * Add the ability to paste a selection of keyframes onto a single track
-           */
-          {
-            label: 'Paste Keyframes',
-            callback: () => {
-              const sheet = val(props.layoutP.sheet)
-              const sequence = sheet.getSequence()
-
-              getStudio()!.transaction(({stateEditors}) => {
-                for (const keyframe of selectionKeyframes) {
-                  const keyframePositionOffset =
-                    keyframe.position - selectionPlayheadPosition
-                  stateEditors.coreByProject.historic.sheetsById.sequence.setKeyframeAtPosition(
-                    {
-                      ...props.leaf.sheetObject.address,
-                      trackId: props.leaf.trackId,
-                      position: sequence.position + keyframePositionOffset,
-                      value: keyframe.value,
-                      snappingFunction: sequence.closestGridPosition,
-                    },
-                  )
-                }
-              })
-            },
-          },
-        ]
+      if (selectionKeyframes.length > 0) {
+        return [pasteKeyframesContextMenuItem(props, selectionKeyframes)]
       } else {
         return []
       }
