@@ -10,12 +10,13 @@ import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import React, {useMemo, useRef} from 'react'
 import styled from 'styled-components'
+import {topStripHeight} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/TopStrip'
 import {focusRangeTheme} from './FocusRangeStrip'
 
 const Handler = styled.div`
   content: ' ';
   width: ${focusRangeTheme.thumbWidth};
-  height: 100%;
+  height: ${() => topStripHeight};
   position: absolute;
   ${pointerEventsAutoInNormalMode};
   stroke: ${focusRangeTheme.enabled.stroke};
@@ -38,6 +39,24 @@ const HitZone = styled.div`
   position: absolute;
   z-index: 3;
   ${() => dims(focusRangeTheme.hitZoneWidth)}
+`
+
+const Tooltip = styled.div`
+  font-size: 10px;
+  white-space: nowrap;
+  padding: 2px 8px;
+  border-radius: 2px;
+  ${pointerEventsAutoInNormalMode};
+  background-color: #0000004d;
+  display: none;
+  position: absolute;
+  top: -${() => topStripHeight + 2};
+  transform: translateX(-50%);
+  ${HitZone}:hover &, ${HitZone}.dragging & {
+    display: block;
+    color: white;
+    background-color: '#000000';
+  }
 `
 
 const FocusRangeThumb: React.FC<{
@@ -217,6 +236,9 @@ const FocusRangeThumb: React.FC<{
               <line x1="4" y1="6" x2="4" y2="12" />
               <line x1="6" y1="6" x2="6" y2="12" />
             </svg>
+            <Tooltip>
+              {sequence.positionFormatter.formatBasic(sequence.length)}
+            </Tooltip>
           </Handler>
         </HitZone>
       </>
