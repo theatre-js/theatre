@@ -32,6 +32,9 @@ const dims = (size: number) => `
 `
 
 const HitZone = styled.div`
+  top: 0;
+  left: 0;
+  transform-origin: left top;
   position: absolute;
   z-index: 3;
   ${() => dims(focusRangeTheme.hitZoneWidth)}
@@ -169,7 +172,16 @@ const FocusRangeThumb: React.FC<{
     const position =
       existingRange?.range[thumbType] || defaultRange.range[thumbType]
 
-    const posInClippedSpace = val(layoutP.clippedSpace.fromUnitSpace)(position)
+    let posInClippedSpace: number = val(layoutP.clippedSpace.fromUnitSpace)(
+      position,
+    )
+
+    if (
+      posInClippedSpace < 0 ||
+      val(layoutP.clippedSpace.width) < posInClippedSpace
+    ) {
+      posInClippedSpace = -1000
+    }
 
     const pointerEvents = focusRangeEnabled ? 'auto' : 'none'
 

@@ -11,6 +11,7 @@ import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import React, {useMemo, useState} from 'react'
 import styled from 'styled-components'
+import {topStripHeight} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/TopStrip'
 
 export const focusRangeTheme = {
   enabled: {
@@ -41,12 +42,17 @@ export const focusRangeTheme = {
   rangeStripMinWidth: 30,
 }
 
+const stripWidth = 1000
+
 const RangeStrip = styled.div`
   position: absolute;
-  height: 100%;
+  height: ${() => topStripHeight};
   opacity: ${focusRangeTheme.enabled.opacity};
   background-color: ${focusRangeTheme.enabled.backgroundColor};
-  ${pointerEventsAutoInNormalMode};
+  top: 0;
+  left: 0;
+  width: ${stripWidth}px;
+  transform-origin: left top;
   &:hover {
     background-color: ${focusRangeTheme.highlight.backgroundColor};
   }
@@ -54,6 +60,7 @@ const RangeStrip = styled.div`
     background-color: ${focusRangeTheme.dragging.backgroundColor};
     cursor: grabbing !important;
   }
+  ${pointerEventsAutoInNormalMode};
 `
 
 /**
@@ -287,29 +294,32 @@ const FocusRangeStrip: React.FC<{
     const existingRange = existingRangeD.getValue()
 
     const range = existingRange?.range || {start: 0, end: 0}
+    let startX = val(layoutP.clippedSpace.fromUnitSpace)(range.start)
+    let endX = val(layoutP.clippedSpace.fromUnitSpace)(range.end)
+    let scaleX: number, translateX: number
 
-    let startPosInClippedSpace: number,
-      endPosInClippedSpace: number,
-      conditionalStyleProps:
-        | {
-            width: number
-            transform: string
-            background?: string
-            cursor?: string
-          }
-        | undefined
+    if (startX < 0) {
+      startX = 0
+    }
+
+    if (endX > val(layoutP.clippedSpace.width)) {
+      endX = val(layoutP.clippedSpace.width)
+    }
+
+    if (startX > endX) {
+      translateX = 0
+      scaleX = 0
+    } else {
+      translateX = startX
+      scaleX = (endX - startX) / stripWidth
+    }
+
+    let conditionalStyleProps: {
+      background?: string
+      cursor?: string
+    } = {}
 
     if (existingRange !== undefined) {
-      startPosInClippedSpace = val(layoutP.clippedSpace.fromUnitSpace)(
-        range.start,
-      )
-
-      endPosInClippedSpace = val(layoutP.clippedSpace.fromUnitSpace)(range.end)
-      conditionalStyleProps = {
-        width: endPosInClippedSpace - startPosInClippedSpace,
-        transform: `translate3d(${startPosInClippedSpace}px, 0, 0)`,
-      }
-
       if (existingRange.enabled === false) {
         conditionalStyleProps.background =
           focusRangeTheme.disabled.backgroundColor
@@ -325,9 +335,11 @@ const FocusRangeStrip: React.FC<{
       <>
         {contextMenu}
         <RangeStrip
+          id="range-strip"
           ref={rangeStripRef as $IntentionalAny}
           onDoubleClick={handleDoubleClick}
           style={{
+            transform: `translateX(${translateX}px) scale(${scaleX}, 1)`,
             opacity: existingRange.enabled
               ? focusRangeTheme.enabled.opacity
               : focusRangeTheme.disabled.opacity,

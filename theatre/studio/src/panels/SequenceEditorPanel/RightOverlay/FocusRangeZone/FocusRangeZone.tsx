@@ -26,7 +26,6 @@ const Container = styled.div`
   left: 0;
   right: 0;
   box-sizing: border-box;
-  overflow: hidden;
 `
 
 const FocusRangeZone: React.FC<{
