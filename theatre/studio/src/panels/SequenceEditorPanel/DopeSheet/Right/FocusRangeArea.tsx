@@ -48,15 +48,8 @@ const FocusRangeArea: React.FC<{
 
     const height = val(layoutP.rightDims.height) + topStripHeight
 
-    // TODO: set background color
-    if (existingRange !== undefined) {
-      if (existingRange.enabled === true) {
-        background = focusRangeAreaTheme.enabled.backgroundColor
-        /*  cursor = 'grab' */
-      } else {
-        /* background = focusRangeTheme.disabled.backgroundColor
-        cursor = 'default' */
-      }
+    if (existingRange?.enabled === true) {
+      background = focusRangeAreaTheme.enabled.backgroundColor
     }
 
     let startPosInClippedSpace: number,

@@ -38,7 +38,7 @@ const HitZone = styled.div`
   transform-origin: left top;
   position: absolute;
   z-index: 3;
-  ${() => dims(focusRangeStripTheme.hitZoneWidth)}
+  ${dims(focusRangeStripTheme.hitZoneWidth)}
 `
 
 const Tooltip = styled.div`
