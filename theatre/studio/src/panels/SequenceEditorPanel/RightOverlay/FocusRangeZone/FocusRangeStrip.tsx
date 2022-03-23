@@ -13,26 +13,20 @@ import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import {topStripHeight} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/TopStrip'
 
-export const focusRangeTheme = {
+export const focusRangeStripTheme = {
   enabled: {
     backgroundColor: '#2C2F34',
-    opacity: 1,
     stroke: '#646568',
   },
   disabled: {
     backgroundColor: '#282A2C',
-    opacity: 1,
-    stroke: '#3C3D3D',
   },
   playing: {
     backgroundColor: 'red',
-    stroke: '#646568',
-    opacity: 1,
   },
   highlight: {
     backgroundColor: '#34373D',
     stroke: '#C8CAC0',
-    opacity: 1,
   },
   dragging: {
     backgroundColor: '#3F444A',
@@ -47,17 +41,16 @@ const stripWidth = 1000
 const RangeStrip = styled.div`
   position: absolute;
   height: ${() => topStripHeight};
-  opacity: ${focusRangeTheme.enabled.opacity};
-  background-color: ${focusRangeTheme.enabled.backgroundColor};
+  background-color: ${focusRangeStripTheme.enabled.backgroundColor};
   top: 0;
   left: 0;
   width: ${stripWidth}px;
   transform-origin: left top;
   &:hover {
-    background-color: ${focusRangeTheme.highlight.backgroundColor};
+    background-color: ${focusRangeStripTheme.highlight.backgroundColor};
   }
   &.dragging {
-    background-color: ${focusRangeTheme.dragging.backgroundColor};
+    background-color: ${focusRangeStripTheme.dragging.backgroundColor};
     cursor: grabbing !important;
   }
   ${pointerEventsAutoInNormalMode};
@@ -234,7 +227,6 @@ const FocusRangeStrip: React.FC<{
           tempTransaction = undefined
         }
         if (target !== undefined) {
-          // target.style.backgroundColor = focusRangeTheme.enabled.backgroundColor
           target.classList.remove('dragging')
           target = undefined
         }
@@ -277,7 +269,7 @@ const FocusRangeStrip: React.FC<{
     if (existingRange !== undefined) {
       if (existingRange.enabled === false) {
         conditionalStyleProps.background =
-          focusRangeTheme.disabled.backgroundColor
+          focusRangeStripTheme.disabled.backgroundColor
         conditionalStyleProps.cursor = 'default'
       } else {
         conditionalStyleProps.cursor = 'grab'
@@ -294,9 +286,6 @@ const FocusRangeStrip: React.FC<{
           ref={rangeStripRef as $IntentionalAny}
           style={{
             transform: `translateX(${translateX}px) scale(${scaleX}, 1)`,
-            opacity: existingRange.enabled
-              ? focusRangeTheme.enabled.opacity
-              : focusRangeTheme.disabled.opacity,
             ...conditionalStyleProps,
           }}
         />

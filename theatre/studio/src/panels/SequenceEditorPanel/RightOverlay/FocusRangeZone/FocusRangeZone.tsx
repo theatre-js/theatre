@@ -17,7 +17,7 @@ import {
 import type Sequence from '@theatre/core/sequences/Sequence'
 import type Sheet from '@theatre/core/sheets/Sheet'
 import FocusRangeThumb from './FocusRangeThumb'
-import FocusRangeStrip, {focusRangeTheme} from './FocusRangeStrip'
+import FocusRangeStrip, {focusRangeStripTheme} from './FocusRangeStrip'
 import {topStripHeight} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/TopStrip'
 
 const Container = styled.div`
@@ -130,7 +130,7 @@ function usePanelDragZoneGestureHandlers(
             event.clientX - rect.left,
           )
           minFocusRangeStripWidth = scaledSpaceToUnitSpace(
-            focusRangeTheme.rangeStripMinWidth,
+            focusRangeStripTheme.rangeStripMinWidth,
           )
         },
         onDrag(dx) {

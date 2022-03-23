@@ -11,18 +11,18 @@ import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import React, {useMemo, useRef} from 'react'
 import styled from 'styled-components'
 import {topStripHeight} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/TopStrip'
-import {focusRangeTheme} from './FocusRangeStrip'
+import {focusRangeStripTheme} from './FocusRangeStrip'
 
 const Handler = styled.div`
   content: ' ';
-  width: ${focusRangeTheme.thumbWidth};
+  width: ${focusRangeStripTheme.thumbWidth};
   height: ${() => topStripHeight};
   position: absolute;
   ${pointerEventsAutoInNormalMode};
-  stroke: ${focusRangeTheme.enabled.stroke};
+  stroke: ${focusRangeStripTheme.enabled.stroke};
   user-select: none;
   &:hover {
-    background: ${focusRangeTheme.highlight.backgroundColor} !important;
+    background: ${focusRangeStripTheme.highlight.backgroundColor} !important;
   }
 `
 
@@ -38,7 +38,7 @@ const HitZone = styled.div`
   transform-origin: left top;
   position: absolute;
   z-index: 3;
-  ${() => dims(focusRangeTheme.hitZoneWidth)}
+  ${() => dims(focusRangeStripTheme.hitZoneWidth)}
 `
 
 const Tooltip = styled.div`
@@ -108,15 +108,16 @@ const FocusRangeThumb: React.FC<{
           existingRangeD.getValue()?.range[thumbType] ||
           defaultFocusRange[thumbType]
         minFocusRangeStripWidth = scaledSpaceToUnitSpace(
-          focusRangeTheme.rangeStripMinWidth,
+          focusRangeStripTheme.rangeStripMinWidth,
         )
 
         if (handlerRef.current) {
           originalBackground = handlerRef.current.style.background
           originalStroke = handlerRef.current.style.stroke
           handlerRef.current.style.background =
-            focusRangeTheme.highlight.backgroundColor
-          handlerRef.current.style.stroke = focusRangeTheme.highlight.stroke
+            focusRangeStripTheme.highlight.backgroundColor
+          handlerRef.current.style.stroke =
+            focusRangeStripTheme.highlight.stroke
         }
       },
       onDrag(dx) {
@@ -205,11 +206,12 @@ const FocusRangeThumb: React.FC<{
     const pointerEvents = focusRangeEnabled ? 'auto' : 'none'
 
     let background = focusRangeEnabled
-      ? focusRangeTheme.disabled.backgroundColor
-      : focusRangeTheme.enabled.backgroundColor
+      ? focusRangeStripTheme.disabled.backgroundColor
+      : focusRangeStripTheme.enabled.backgroundColor
 
-    const startHandlerOffset = focusRangeTheme.hitZoneWidth / 2
-    const endHandlerOffset = startHandlerOffset - focusRangeTheme.thumbWidth
+    const startHandlerOffset = focusRangeStripTheme.hitZoneWidth / 2
+    const endHandlerOffset =
+      startHandlerOffset - focusRangeStripTheme.thumbWidth
 
     return existingRange !== undefined ? (
       <>
