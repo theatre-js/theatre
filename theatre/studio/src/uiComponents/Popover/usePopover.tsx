@@ -3,7 +3,7 @@ import {createPortal} from 'react-dom'
 import {PortalContext} from 'reakit'
 import TooltipWrapper from './TooltipWrapper'
 
-type OpenFn = (e: React.MouseEvent, target: HTMLElement) => void
+export type OpenFn = (e: React.MouseEvent, target: HTMLElement) => void
 type CloseFn = () => void
 type State =
   | {isOpen: false}

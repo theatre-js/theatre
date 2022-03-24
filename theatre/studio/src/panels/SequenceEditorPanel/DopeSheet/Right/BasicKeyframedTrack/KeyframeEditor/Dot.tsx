@@ -16,6 +16,7 @@ import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPa
 import {attributeNameThatLocksFramestamp} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {useCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
 import SnapCursor from './SnapCursor.svg'
+import selectedKeyframeIdsIfInSingleTrack from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/selectedKeyframeIdsIfInSingleTrack'
 
 export const dotSize = 6
 const hitZoneSize = 12
@@ -106,28 +107,17 @@ const Dot: React.FC<IProps> = (props) => {
 export default Dot
 
 function useKeyframeContextMenu(node: HTMLDivElement | null, props: IProps) {
+  const maybeKeyframeIds = selectedKeyframeIdsIfInSingleTrack(props.selection)
+
+  const keyframeSelectionItems = maybeKeyframeIds
+    ? [copyKeyFrameContextMenuItem(props, maybeKeyframeIds)]
+    : []
+
+  const deleteItem = deleteSelectionOrKeyframeContextMenuItem(props)
+
   return useContextMenu(node, {
     items: () => {
-      return [
-        {
-          label: props.selection ? 'Delete Selection' : 'Delete Keyframe',
-          callback: () => {
-            if (props.selection) {
-              props.selection.delete()
-            } else {
-              getStudio()!.transaction(({stateEditors}) => {
-                stateEditors.coreByProject.historic.sheetsById.sequence.deleteKeyframes(
-                  {
-                    ...props.leaf.sheetObject.address,
-                    keyframeIds: [props.keyframe.id],
-                    trackId: props.leaf.trackId,
-                  },
-                )
-              })
-            }
-          },
-        },
-      ]
+      return [...keyframeSelectionItems, deleteItem]
     },
   })
 }
@@ -248,4 +238,43 @@ function useDragKeyframe(
   useCursorLock(isDragging, 'draggingPositionInSequenceEditor', 'ew-resize')
 
   return [isDragging]
+}
+
+function deleteSelectionOrKeyframeContextMenuItem(props: IProps) {
+  return {
+    label: props.selection ? 'Delete Selection' : 'Delete Keyframe',
+    callback: () => {
+      if (props.selection) {
+        props.selection.delete()
+      } else {
+        getStudio()!.transaction(({stateEditors}) => {
+          stateEditors.coreByProject.historic.sheetsById.sequence.deleteKeyframes(
+            {
+              ...props.leaf.sheetObject.address,
+              keyframeIds: [props.keyframe.id],
+              trackId: props.leaf.trackId,
+            },
+          )
+        })
+      }
+    },
+  }
+}
+
+function copyKeyFrameContextMenuItem(props: IProps, keyframeIds: string[]) {
+  return {
+    label: 'Copy Keyframes',
+    callback: () => {
+      const keyframes = keyframeIds.map(
+        (keyframeId) =>
+          props.trackData.keyframes.find(
+            (keyframe) => keyframe.id === keyframeId,
+          )!,
+      )
+
+      getStudio!().transaction((api) => {
+        api.stateEditors.studio.ahistoric.setClipboardKeyframes(keyframes)
+      })
+    },
+  }
 }

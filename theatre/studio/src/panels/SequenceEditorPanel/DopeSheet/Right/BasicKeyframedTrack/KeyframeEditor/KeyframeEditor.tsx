@@ -8,6 +8,7 @@ import type {
 } from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import type {SequenceEditorTree_PrimitiveProp} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
 import type {Pointer} from '@theatre/dataverse'
+import {val} from '@theatre/dataverse'
 import React from 'react'
 import styled from 'styled-components'
 import Connector from './Connector'
@@ -37,7 +38,11 @@ const KeyframeEditor: React.FC<{
     <Container
       style={{
         top: `${props.leaf.nodeHeight / 2}px`,
-        left: `calc(var(--unitSpaceToScaledSpaceMultiplier) * ${cur.position}px)`,
+        left: `calc(${val(
+          props.layoutP.scaledSpace.leftPadding,
+        )}px + calc(var(--unitSpaceToScaledSpaceMultiplier) * ${
+          cur.position
+        }px))`,
       }}
     >
       <Dot {...props} />

@@ -18,6 +18,9 @@ import type Sequence from '@theatre/core/sequences/Sequence'
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
 import CurveEditorPopover from './CurveEditorPopover/CurveEditorPopover'
+import selectedKeyframeIdsIfInSingleTrack from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/selectedKeyframeIdsIfInSingleTrack'
+import type {OpenFn} from '@theatre/studio/src/uiComponents/Popover/usePopover'
+import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
 
 const connectorHeight = dotSize / 2 + 1
 const connectorWidthUnscaled = 1000
@@ -89,37 +92,13 @@ const Connector: React.FC<IProps> = (props) => {
     },
   )
 
-  const [contextMenu] = useContextMenu(node, {
-    items: () => {
-      return [
-        {
-          label: props.selection ? 'Delete Selection' : 'Delete both Keyframes',
-          callback: () => {
-            if (props.selection) {
-              props.selection.delete()
-            } else {
-              getStudio()!.transaction(({stateEditors}) => {
-                stateEditors.coreByProject.historic.sheetsById.sequence.deleteKeyframes(
-                  {
-                    ...props.leaf.sheetObject.address,
-                    keyframeIds: [cur.id, next.id],
-                    trackId: props.leaf.trackId,
-                  },
-                )
-              })
-            }
-          },
-        },
-        {
-          label: 'Open Easing Palette',
-          callback: (e) => {
-            openPopover(e, node!)
-          },
-        },
-      ]
-    },
-  })
-
+  const [contextMenu] = useConnectorContextMenu(
+    props,
+    node,
+    cur,
+    next,
+    openPopover,
+  )
   useDragKeyframe(node, props)
 
   return (
@@ -227,4 +206,70 @@ function useDragKeyframe(node: HTMLDivElement | null, props: IProps) {
   }, [])
 
   useDrag(node, gestureHandlers)
+}
+
+function useConnectorContextMenu(
+  props: IProps,
+  node: HTMLDivElement | null,
+  cur: Keyframe,
+  next: Keyframe,
+  openPopover: OpenFn,
+) {
+  const maybeKeyframeIds = selectedKeyframeIdsIfInSingleTrack(props.selection)
+  return useContextMenu(node, {
+    items: () => {
+      return [
+        {
+          label: maybeKeyframeIds ? 'Copy Selection' : 'Copy both Keyframes',
+          callback: () => {
+            if (maybeKeyframeIds) {
+              const keyframes = maybeKeyframeIds.map(
+                (keyframeId) =>
+                  props.trackData.keyframes.find(
+                    (keyframe) => keyframe.id === keyframeId,
+                  )!,
+              )
+
+              getStudio!().transaction((api) => {
+                api.stateEditors.studio.ahistoric.setClipboardKeyframes(
+                  keyframes,
+                )
+              })
+            } else {
+              getStudio!().transaction((api) => {
+                api.stateEditors.studio.ahistoric.setClipboardKeyframes([
+                  cur,
+                  next,
+                ])
+              })
+            }
+          },
+        },
+        {
+          label: props.selection ? 'Delete Selection' : 'Delete both Keyframes',
+          callback: () => {
+            if (props.selection) {
+              props.selection.delete()
+            } else {
+              getStudio()!.transaction(({stateEditors}) => {
+                stateEditors.coreByProject.historic.sheetsById.sequence.deleteKeyframes(
+                  {
+                    ...props.leaf.sheetObject.address,
+                    keyframeIds: [cur.id, next.id],
+                    trackId: props.leaf.trackId,
+                  },
+                )
+              })
+            }
+          },
+        },
+        {
+          label: 'Open Easing Palette',
+          callback: (e) => {
+            openPopover(e, node!)
+          },
+        },
+      ]
+    },
+  })
 }
