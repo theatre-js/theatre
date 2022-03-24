@@ -106,14 +106,17 @@ const Dot: React.FC<IProps> = (props) => {
 export default Dot
 
 function useKeyframeContextMenu(node: HTMLDivElement | null, props: IProps) {
+  const maybeKeyframeIds = selectedKeyframeIdsIfInSingleTrack(props.selection)
+
+  const keyframeSelectionItems = maybeKeyframeIds
+    ? [copyKeyFrameContextMenuItem(props, maybeKeyframeIds)]
+    : []
+
+  const deleteItem = deleteSelectionOrKeyframeContextMenuItem(props)
+
   return useContextMenu(node, {
     items: () => {
-      return [
-        ...(containsKeyFramesInOnlyASingleTrack(props.selection)
-          ? [copyKeyFrameContextMenuItem(props)]
-          : []),
-        deleteSelectionOrKeyframeContextMenuItem(props),
-      ]
+      return [...keyframeSelectionItems, deleteItem]
     },
   })
 }
@@ -257,44 +260,39 @@ function deleteSelectionOrKeyframeContextMenuItem(props: IProps) {
   }
 }
 
-function copyKeyFrameContextMenuItem(props: IProps) {
+function copyKeyFrameContextMenuItem(props: IProps, keyframeIds: string[]) {
   return {
     label: 'Copy Keyframes',
     callback: () => {
-      const selection = props.selection
-      if (!selection) return
-      for (const objectKey of Object.keys(selection.byObjectKey)) {
-        const {byTrackId} = selection.byObjectKey[objectKey]!
-        for (const trackId of Object.keys(byTrackId)) {
-          const {byKeyframeId} = byTrackId[trackId]!
+      const keyframes = keyframeIds.map(
+        (keyframeId) =>
+          props.trackData.keyframes.find(
+            (keyframe) => keyframe.id === keyframeId,
+          )!,
+      )
 
-          const keyframeIds = Object.keys(byKeyframeId)
-
-          const keyframes = keyframeIds.map(
-            (keyframeId) =>
-              props.trackData.keyframes.find(
-                (keyframe) => keyframe.id === keyframeId,
-              )!,
-          )
-
-          getStudio!().transaction((api) => {
-            api.stateEditors.studio.ahistoric.setClipboardKeyframes(keyframes)
-          })
-        }
-      }
+      getStudio!().transaction((api) => {
+        api.stateEditors.studio.ahistoric.setClipboardKeyframes(keyframes)
+      })
     },
   }
 }
-
-function containsKeyFramesInOnlyASingleTrack(
+/**
+ * @param selection selection on the dope sheet, or undefined if there isn't a selection
+ * @returns If the selection exists and contains one or more keyframes only in a single track,
+ * then a list of those keyframe's ids; otherwise null
+ */
+function selectedKeyframeIdsIfInSingleTrack(
   selection: DopeSheetSelection | undefined,
-) {
-  if (!selection) return false
+): string[] | null {
+  if (!selection) return null
   const objectKeys = Object.keys(selection.byObjectKey)
-  if (objectKeys.length !== 1) return false
+  if (objectKeys.length !== 1) return null
   const object = selection.byObjectKey[objectKeys[0]]
-  if (!object) return false
+  if (!object) return null
   const trackIds = Object.keys(object.byTrackId)
-  if (trackIds.length !== 1) return false
-  return true
+  const firstTrack = object.byTrackId[trackIds[0]]
+  if (trackIds.length !== 1 && firstTrack) return null
+
+  return Object.keys(firstTrack!.byKeyframeId)
 }

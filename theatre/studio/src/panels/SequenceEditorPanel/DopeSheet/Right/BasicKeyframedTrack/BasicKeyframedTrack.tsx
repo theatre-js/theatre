@@ -80,44 +80,6 @@ const BasicKeyframedTrack: React.FC<BasicKeyframedTracksProps> = React.memo(
 
 export default BasicKeyframedTrack
 
-const earliestKeyframe = (keyframes: Keyframe[]) => {
-  let curEarliest: Keyframe | null = null
-  for (const keyframe of keyframes) {
-    if (curEarliest === null || keyframe.position < curEarliest.position) {
-      curEarliest = keyframe
-    }
-  }
-  return curEarliest
-}
-
-const pasteKeyframesContextMenuItem = (
-  props: BasicKeyframedTracksProps,
-  keyframes: Keyframe[],
-) => ({
-  label: 'Paste Keyframes',
-  callback: () => {
-    const sheet = val(props.layoutP.sheet)
-    const sequence = sheet.getSequence()
-
-    getStudio()!.transaction(({stateEditors}) => {
-      sequence.position = sequence.closestGridPosition(sequence.position)
-      const keyframeOffset = earliestKeyframe(keyframes)?.position!
-
-      for (const keyframe of keyframes) {
-        stateEditors.coreByProject.historic.sheetsById.sequence.setKeyframeAtPosition(
-          {
-            ...props.leaf.sheetObject.address,
-            trackId: props.leaf.trackId,
-            position: sequence.position + keyframe.position - keyframeOffset,
-            value: keyframe.value,
-            snappingFunction: sequence.closestGridPosition,
-          },
-        )
-      }
-    })
-  },
-})
-
 function useBasicKeyframedTrackContextMenu(
   node: HTMLDivElement | null,
   props: BasicKeyframedTracksProps,
@@ -134,4 +96,44 @@ function useBasicKeyframedTrackContextMenu(
       }
     },
   })
+}
+
+const earliestKeyframe = (keyframes: Keyframe[]) => {
+  let curEarliest: Keyframe | null = null
+  for (const keyframe of keyframes) {
+    if (curEarliest === null || keyframe.position < curEarliest.position) {
+      curEarliest = keyframe
+    }
+  }
+  return curEarliest
+}
+
+function pasteKeyframesContextMenuItem(
+  props: BasicKeyframedTracksProps,
+  keyframes: Keyframe[],
+) {
+  return {
+    label: 'Paste Keyframes',
+    callback: () => {
+      const sheet = val(props.layoutP.sheet)
+      const sequence = sheet.getSequence()
+
+      getStudio()!.transaction(({stateEditors}) => {
+        sequence.position = sequence.closestGridPosition(sequence.position)
+        const keyframeOffset = earliestKeyframe(keyframes)?.position!
+
+        for (const keyframe of keyframes) {
+          stateEditors.coreByProject.historic.sheetsById.sequence.setKeyframeAtPosition(
+            {
+              ...props.leaf.sheetObject.address,
+              trackId: props.leaf.trackId,
+              position: sequence.position + keyframe.position - keyframeOffset,
+              value: keyframe.value,
+              snappingFunction: sequence.closestGridPosition,
+            },
+          )
+        }
+      })
+    },
+  }
 }
