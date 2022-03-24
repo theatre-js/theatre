@@ -278,7 +278,7 @@ function copyKeyFrameContextMenuItem(props: IProps, keyframeIds: string[]) {
   }
 }
 /**
- * @param selection selection on the dope sheet, or undefined if there isn't a selection
+ * @param selection - selection on the dope sheet, or undefined if there isn't a selection
  * @returns If the selection exists and contains one or more keyframes only in a single track,
  * then a list of those keyframe's ids; otherwise null
  */
