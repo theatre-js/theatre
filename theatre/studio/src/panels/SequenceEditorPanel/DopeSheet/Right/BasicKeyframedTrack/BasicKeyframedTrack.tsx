@@ -98,16 +98,6 @@ function useBasicKeyframedTrackContextMenu(
   })
 }
 
-const earliestKeyframe = (keyframes: Keyframe[]) => {
-  let curEarliest: Keyframe | null = null
-  for (const keyframe of keyframes) {
-    if (curEarliest === null || keyframe.position < curEarliest.position) {
-      curEarliest = keyframe
-    }
-  }
-  return curEarliest
-}
-
 function pasteKeyframesContextMenuItem(
   props: BasicKeyframedTracksProps,
   keyframes: Keyframe[],
@@ -136,4 +126,14 @@ function pasteKeyframesContextMenuItem(
       })
     },
   }
+}
+
+function earliestKeyframe(keyframes: Keyframe[]) {
+  let curEarliest: Keyframe | null = null
+  for (const keyframe of keyframes) {
+    if (curEarliest === null || keyframe.position < curEarliest.position) {
+      curEarliest = keyframe
+    }
+  }
+  return curEarliest
 }
