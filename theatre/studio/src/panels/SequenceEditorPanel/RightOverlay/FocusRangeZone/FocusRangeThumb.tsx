@@ -7,9 +7,10 @@ import getStudio from '@theatre/studio/getStudio'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import {topStripHeight} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/TopStrip'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
+import {useCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
-import React, {useMemo, useRef} from 'react'
+import React, {useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
 import {focusRangeStripTheme} from './FocusRangeStrip'
 
@@ -65,6 +66,7 @@ const FocusRangeThumb: React.FC<{
 }> = ({layoutP, thumbType}) => {
   const [hitZoneRef, hitZoneNode] = useRefAndState<HTMLElement | null>(null)
   const handlerRef = useRef<HTMLElement | null>(null)
+  const [isDragging, setIsDragging] = useState<boolean>(false)
 
   const existingRangeD = useMemo(
     () =>
@@ -119,9 +121,10 @@ const FocusRangeThumb: React.FC<{
             focusRangeStripTheme.highlight.stroke
           handlerRef.current.style
           handlerRef.current.classList.add('dragging')
+          setIsDragging(true)
         }
       },
-      onDrag(dx) {
+      onDrag(dx, _, event) {
         dragHappened = true
         range = existingRangeD.getValue()?.range || defaultRange
 
@@ -150,6 +153,24 @@ const FocusRangeThumb: React.FC<{
           )
         }
 
+        // Enable snapping
+        const snapTarget = event
+          .composedPath()
+          .find(
+            (el): el is Element =>
+              el instanceof Element &&
+              el !== hitZoneNode &&
+              el.hasAttribute('data-pos'),
+          )
+
+        if (snapTarget) {
+          const snapPos = parseFloat(snapTarget.getAttribute('data-pos')!)
+
+          if (isFinite(snapPos)) {
+            newPosition = snapPos
+          }
+        }
+
         const newPositionInFrame = sequence.closestGridPosition(newPosition)
 
         if (tempTransaction !== undefined) {
@@ -169,6 +190,7 @@ const FocusRangeThumb: React.FC<{
       onDragEnd() {
         if (handlerRef.current) {
           handlerRef.current.classList.remove('dragging')
+          setIsDragging(false)
 
           if (originalBackground) {
             handlerRef.current.style.background = originalBackground
@@ -188,6 +210,8 @@ const FocusRangeThumb: React.FC<{
   }, [sheet, scaledSpaceToUnitSpace])
 
   useDrag(hitZoneNode, gestureHandlers)
+
+  useCursorLock(isDragging, 'draggingPositionInSequenceEditor', 'ew-resize')
 
   return usePrism(() => {
     const existingRange = existingRangeD.getValue()
