@@ -5,13 +5,13 @@ import type {$IntentionalAny, IRange} from '@theatre/shared/utils/types'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import getStudio from '@theatre/studio/getStudio'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
+import {topStripHeight} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/TopStrip'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import React, {useMemo} from 'react'
 import styled from 'styled-components'
-import {topStripHeight} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/TopStrip'
 
 export const focusRangeStripTheme = {
   enabled: {

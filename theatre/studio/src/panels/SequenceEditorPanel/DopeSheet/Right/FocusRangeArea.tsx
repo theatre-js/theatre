@@ -1,11 +1,11 @@
 import type {Pointer} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'
-import styled from 'styled-components'
-import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
-import React, {useMemo} from 'react'
-import getStudio from '@theatre/studio/getStudio'
 import {usePrism} from '@theatre/react'
+import getStudio from '@theatre/studio/getStudio'
+import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import {topStripHeight} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/TopStrip'
+import React, {useMemo} from 'react'
+import styled from 'styled-components'
 
 const focusRangeAreaTheme = {
   enabled: {

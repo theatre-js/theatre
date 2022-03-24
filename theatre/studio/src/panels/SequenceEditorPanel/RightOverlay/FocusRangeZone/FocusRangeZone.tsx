@@ -1,24 +1,24 @@
+import type Sequence from '@theatre/core/sequences/Sequence'
+import type Sheet from '@theatre/core/sheets/Sheet'
 import type {Pointer} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'
-import {usePrism, useVal} from '@theatre/react'
+import {usePrism} from '@theatre/react'
 import type {$IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
 import getStudio from '@theatre/studio/getStudio'
+import {
+  panelDimsToPanelPosition,
+  usePanel,
+} from '@theatre/studio/panels/BasePanel/BasePanel'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
+import {topStripHeight} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/TopStrip'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {clamp} from 'lodash-es'
 import React, {useMemo, useRef} from 'react'
 import styled from 'styled-components'
-import {
-  usePanel,
-  panelDimsToPanelPosition,
-} from '@theatre/studio/panels/BasePanel/BasePanel'
-import type Sequence from '@theatre/core/sequences/Sequence'
-import type Sheet from '@theatre/core/sheets/Sheet'
-import FocusRangeThumb from './FocusRangeThumb'
 import FocusRangeStrip, {focusRangeStripTheme} from './FocusRangeStrip'
-import {topStripHeight} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/TopStrip'
+import FocusRangeThumb from './FocusRangeThumb'
 
 const Container = styled.div`
   position: absolute;
@@ -32,9 +32,6 @@ const FocusRangeZone: React.FC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
 }> = ({layoutP}) => {
   const [containerRef, containerNode] = useRefAndState<HTMLElement | null>(null)
-
-  const sheet = useVal(layoutP.sheet)
-  let sequence = sheet.getSequence()
 
   const panelStuff = usePanel()
   const panelStuffRef = useRef(panelStuff)
@@ -95,7 +92,7 @@ const FocusRangeZone: React.FC<{
         <FocusRangeThumb thumbType="end" layoutP={layoutP} />
       </Container>
     )
-  }, [layoutP, existingRangeD, sequence])
+  }, [layoutP, existingRangeD])
 }
 
 export default FocusRangeZone

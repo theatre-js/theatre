@@ -5,12 +5,12 @@ import type {$IntentionalAny, IRange} from '@theatre/shared/utils/types'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import getStudio from '@theatre/studio/getStudio'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
+import {topStripHeight} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/TopStrip'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import React, {useMemo, useRef} from 'react'
 import styled from 'styled-components'
-import {topStripHeight} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/TopStrip'
 import {focusRangeStripTheme} from './FocusRangeStrip'
 
 const Handler = styled.div`
@@ -211,7 +211,7 @@ const FocusRangeThumb: React.FC<{
 
     const pointerEvents = focusRangeEnabled ? 'auto' : 'none'
 
-    let background = focusRangeEnabled
+    const background = focusRangeEnabled
       ? focusRangeStripTheme.disabled.backgroundColor
       : focusRangeStripTheme.enabled.backgroundColor
 
