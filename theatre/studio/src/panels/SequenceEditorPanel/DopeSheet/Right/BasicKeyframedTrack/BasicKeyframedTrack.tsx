@@ -1,7 +1,11 @@
+import type {TrackData} from '@theatre/core/projects/store/types/SheetState_Historic'
+import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
+import type {SequenceEditorTree_PrimitiveProp} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
 import {usePrism} from '@theatre/react'
 import {val} from '@theatre/dataverse'
 import React from 'react'
+import type {Pointer} from '@theatre/dataverse'
 import styled from 'styled-components'
 import KeyframeEditor from './KeyframeEditor/KeyframeEditor'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
@@ -14,59 +18,65 @@ const Container = styled.div`
   width: 100%;
 `
 
-type IProps = Parameters<typeof KeyframeEditor>[0]
+type BasicKeyframedTracksProps = {
+  leaf: SequenceEditorTree_PrimitiveProp
+  layoutP: Pointer<SequenceEditorPanelLayout>
+  trackData: TrackData
+}
 
-const BasicKeyframedTrack: React.FC<IProps> = React.memo((props) => {
-  const {layoutP, trackData, leaf} = props
-  const [containerRef, containerNode] = useRefAndState<HTMLDivElement | null>(
-    null,
-  )
-  const {selectedKeyframeIds, selection} = usePrism(() => {
-    const selectionAtom = val(layoutP.selectionAtom)
-    const selectedKeyframeIds = val(
-      selectionAtom.pointer.current.byObjectKey[
-        leaf.sheetObject.address.objectKey
-      ].byTrackId[leaf.trackId].byKeyframeId,
+const BasicKeyframedTrack: React.FC<BasicKeyframedTracksProps> = React.memo(
+  (props) => {
+    const {layoutP, trackData, leaf} = props
+    const [containerRef, containerNode] = useRefAndState<HTMLDivElement | null>(
+      null,
     )
-    if (selectedKeyframeIds) {
-      return {
-        selectedKeyframeIds,
-        selection: val(selectionAtom.pointer.current),
+    const {selectedKeyframeIds, selection} = usePrism(() => {
+      const selectionAtom = val(layoutP.selectionAtom)
+      const selectedKeyframeIds = val(
+        selectionAtom.pointer.current.byObjectKey[
+          leaf.sheetObject.address.objectKey
+        ].byTrackId[leaf.trackId].byKeyframeId,
+      )
+      if (selectedKeyframeIds) {
+        return {
+          selectedKeyframeIds,
+          selection: val(selectionAtom.pointer.current),
+        }
+      } else {
+        return {selectedKeyframeIds: {}, selection: undefined}
       }
-    } else {
-      return {selectedKeyframeIds: {}, selection: undefined}
-    }
-  }, [layoutP, leaf.trackId])
+    }, [layoutP, leaf.trackId])
 
-  const [contextMenu, _, isOpen] = useBasicKeyframedTrackContextMenu(
-    containerNode,
-    props,
-  )
+    const [contextMenu, _, isOpen] = useBasicKeyframedTrackContextMenu(
+      containerNode,
+      props,
+    )
 
-  const keyframeEditors = trackData.keyframes.map((kf, index) => (
-    <KeyframeEditor
-      keyframe={kf}
-      index={index}
-      trackData={trackData}
-      layoutP={layoutP}
-      leaf={leaf}
-      key={'keyframe-' + kf.id}
-      selection={selectedKeyframeIds[kf.id] === true ? selection : undefined}
-    />
-  ))
+    const keyframeEditors = trackData.keyframes.map((kf, index) => (
+      <KeyframeEditor
+        keyframe={kf}
+        index={index}
+        trackData={trackData}
+        layoutP={layoutP}
+        leaf={leaf}
+        key={'keyframe-' + kf.id}
+        selection={selectedKeyframeIds[kf.id] === true ? selection : undefined}
+      />
+    ))
 
-  return (
-    <Container
-      ref={containerRef}
-      style={{
-        background: isOpen ? '#444850 ' : 'unset',
-      }}
-    >
-      {keyframeEditors}
-      {contextMenu}
-    </Container>
-  )
-})
+    return (
+      <Container
+        ref={containerRef}
+        style={{
+          background: isOpen ? '#444850 ' : 'unset',
+        }}
+      >
+        {keyframeEditors}
+        {contextMenu}
+      </Container>
+    )
+  },
+)
 
 export default BasicKeyframedTrack
 
@@ -81,7 +91,7 @@ const earliestKeyframe = (keyframes: Keyframe[]) => {
 }
 
 const pasteKeyframesContextMenuItem = (
-  props: IProps,
+  props: BasicKeyframedTracksProps,
   keyframes: Keyframe[],
 ) => ({
   label: 'Paste Keyframes',
@@ -110,7 +120,7 @@ const pasteKeyframesContextMenuItem = (
 
 function useBasicKeyframedTrackContextMenu(
   node: HTMLDivElement | null,
-  props: IProps,
+  props: BasicKeyframedTracksProps,
 ) {
   return useContextMenu(node, {
     items: () => {
