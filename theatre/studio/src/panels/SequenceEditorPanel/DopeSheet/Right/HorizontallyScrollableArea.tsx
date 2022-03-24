@@ -30,10 +30,6 @@ const Container = styled.div`
   }
 `
 
-const ShiftRight = styled.div`
-  position: absolute;
-`
-
 const HorizontallyScrollableArea: React.FC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
   height: number
@@ -66,13 +62,7 @@ const HorizontallyScrollableArea: React.FC<{
         '--unitSpaceToScaledSpaceMultiplier': unitSpaceToScaledSpaceMultiplier,
       }}
     >
-      <ShiftRight
-        style={{
-          left: val(layoutP.scaledSpace.leftPadding) + 'px',
-        }}
-      >
-        {children}
-      </ShiftRight>
+      {children}
     </Container>
   )
 })
