@@ -113,9 +113,9 @@ const GraphEditor: React.FC<{
           >
             <g
               style={{
-                transform: `translate(0, ${val(
-                  layoutP.graphEditorDims.padding.top,
-                )}px)`,
+                transform: `translate(${val(
+                  layoutP.scaledSpace.leftPadding,
+                )}px, ${val(layoutP.graphEditorDims.padding.top)}px)`,
               }}
             >
               {graphs}

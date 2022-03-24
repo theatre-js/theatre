@@ -523,6 +523,7 @@ namespace stateEditors {
             p: WithoutSheetInstance<SheetObjectAddress> & {
               trackId: string
               position: number
+              handles?: [number, number, number, number]
               value: T
               snappingFunction: SnappingFunction
             },
@@ -548,7 +549,7 @@ namespace stateEditors {
                 id: generateKeyframeId(),
                 position,
                 connectedRight: true,
-                handles: [0.5, 1, 0.5, 0],
+                handles: p.handles || [0.5, 1, 0.5, 0],
                 value: p.value,
               })
               return
@@ -558,7 +559,7 @@ namespace stateEditors {
               id: generateKeyframeId(),
               position,
               connectedRight: leftKeyframe.connectedRight,
-              handles: [0.5, 1, 0.5, 0],
+              handles: p.handles || [0.5, 1, 0.5, 0],
               value: p.value,
             })
           }
